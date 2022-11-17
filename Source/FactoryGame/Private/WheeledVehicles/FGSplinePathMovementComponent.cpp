@@ -2,10 +2,10 @@
 
 #include "WheeledVehicles/FGSplinePathMovementComponent.h"
 
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 void UFGSplinePathMovementComponent::DrawDebug(int debugLevel) const{ }
 #endif 
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 void UFGSplinePathMovementComponent::DrawDebugVehicle(int visualDebugLevel, int textualDebugLevel){ }
 #endif 
 UFGSplinePathMovementComponent::UFGSplinePathMovementComponent() : Super() {
@@ -16,7 +16,6 @@ UFGSplinePathMovementComponent::UFGSplinePathMovementComponent() : Super() {
 	this->mPreviousTarget = nullptr;
 	this->mSimulatedLocationOffset = FVector::ZeroVector;
 	this->mEndOfPath = false;
-	this->mTemporaryPath = nullptr;
 	this->mServerStartTime = 0.0;
 	this->mServerPauseTime = 0.0;
 	this->mIsMoving = false;
@@ -38,10 +37,11 @@ void UFGSplinePathMovementComponent::TickComponent(float DeltaTime, enum ELevelT
 void UFGSplinePathMovementComponent::TicTac(float DeltaTime){ }
 void UFGSplinePathMovementComponent::OnBecameTheChosenWheeledVehicle(){ }
 void UFGSplinePathMovementComponent::RestoreEssentialClaims(){ }
-void UFGSplinePathMovementComponent::ForceClaimTemporaryEssentialTargets(){ }
 void UFGSplinePathMovementComponent::DestroyPath_Server(){ }
-void UFGSplinePathMovementComponent::TransitionToSplinePath_Server( AFGTargetPoint* target, const TArray< FVector >& intermediateStops, bool startReversing){ }
-void UFGSplinePathMovementComponent::TransitionToSplinePath_Multi_Implementation( AFGTargetPoint* target, const TArray< FVector >& intermediateStops, bool startReversing, bool skipTemporaryPath){ }
+void UFGSplinePathMovementComponent::AddDynamicStops_Server(const TArray< FVector >& stops){ }
+void UFGSplinePathMovementComponent::StartSplinePathMovement_Server( AFGTargetPoint* target){ }
+void UFGSplinePathMovementComponent::StartSplinePathMovement_Multi_Implementation( AFGTargetPoint* target){ }
+void UFGSplinePathMovementComponent::TransitionToSimulation(){ }
 void UFGSplinePathMovementComponent::SetPaused(bool isPaused){ }
 const FVector& UFGSplinePathMovementComponent::GetSimulatedLocation(){ return *(new FVector); }
 const FRotator& UFGSplinePathMovementComponent::GetSimulatedRotation(){ return *(new FRotator); }
@@ -63,10 +63,10 @@ void UFGSplinePathMovementComponent::OnRep_PauseTarget(){ }
 void UFGSplinePathMovementComponent::OnRep_ServerStartTime(){ }
 void UFGSplinePathMovementComponent::OnRep_IsMoving(){ }
 bool UFGSplinePathMovementComponent::TickSplinePathMovement(double deltaTime){ return bool(); }
+FVector UFGSplinePathMovementComponent::GetSimulationLocation(){ return FVector(); }
 void UFGSplinePathMovementComponent::AdvanceOnSplinePath(){ }
 void UFGSplinePathMovementComponent::TryClaimTarget(){ }
 void UFGSplinePathMovementComponent::SetTarget( AFGTargetPoint* newTarget, bool resetStatus){ }
-void UFGSplinePathMovementComponent::ReleaseTemporaryTargets(){ }
 float UFGSplinePathMovementComponent::GetStartTime(float adjustment){ return float(); }
 void UFGSplinePathMovementComponent::SetStartTime(float startTime){ }
 bool UFGSplinePathMovementComponent::ShouldAdjustClient() const{ return bool(); }

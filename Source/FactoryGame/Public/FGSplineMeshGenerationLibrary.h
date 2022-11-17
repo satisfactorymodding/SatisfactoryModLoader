@@ -114,13 +114,29 @@ public:
 	 * See function above.
 	 * This uses a variable segment length approach to more segments where needed.
 	 */
-	static void BuildSplineCollisionBoxesWithVariableSteps(
+	template< typename ComponentType >
+	static TArray< ComponentType* > BuildSplineCollisionBoxesWithVariableSteps(
 		class USplineComponent* spline,
 		const FVector& collisionExtent,
 		float collisionSpacing,
 		const FVector& collisionOffset,
-		FName collisionProfile );
+		FName collisionProfile,
+		USceneComponent* optionalRoot = nullptr );
 
+	/**
+	 *
+	 *
+	 *
+	 */
+	static UInstancedStaticMeshComponent* BuildSplineMeshCollisionWithDistanceFieldProxies(
+		class USplineComponent* spline,
+		const FVector& collisionExtent,
+		float collisionSpacing,
+		const FVector& collisionOffset,
+		FName collisionProfile,
+		UStaticMesh* oneMeterBoxMesh,
+		USceneComponent* optionalRoot = nullptr);
+	
 	/**
 	 * Given a spline, this creates collisions along the spline.
 	 *
@@ -170,6 +186,97 @@ public:
 /**
  * Templated function implementations.
  */
+template< typename ComponentType >
+TArray< ComponentType* > UFGSplineMeshGenerationLibrary::BuildSplineCollisionBoxesWithVariableSteps(
+	USplineComponent* spline,
+	const FVector& collisionExtent,
+	float collisionSpacing,
+	const FVector& collisionOffset,
+	FName collisionProfile,
+	USceneComponent* optionalRoot /* nullptr */ )
+{
+	fgcheck( spline );
+	auto debugActor = spline->GetOwner();
+
+	collisionSpacing *= 0.7f; //just make a bit smaller to make up for potential errors margins in the binary search
+	//FVector startPos = spline->GetLocationAtSplinePoint( 0, optionalRoot ? ESplineCoordinateSpace::Local : ESplineCoordinateSpace::World );
+	FVector startPos = spline->GetLocationAtSplinePoint( 0, ESplineCoordinateSpace::World );
+	FVector endPos = startPos;
+	float dist = 0.0f;
+	float endDist = 1.0f;
+	float length = 1.0f;
+	int32 i = 0;
+	
+	UObject* outer = optionalRoot ? optionalRoot->GetOuter() : spline->GetOuter();
+	USceneComponent* attachTo = optionalRoot ? optionalRoot : spline;
+	EComponentMobility::Type mobility = optionalRoot ? optionalRoot->Mobility : spline->Mobility;
+	TArray< ComponentType* > generatedComopnents;
+	
+	//FVector lastDir = spline->GetDirectionAtSplinePoint( 0, optionalRoot ? ESplineCoordinateSpace::Local : ESplineCoordinateSpace::World );
+	FVector lastDir = spline->GetDirectionAtSplinePoint( 0, ESplineCoordinateSpace::World );
+	
+	while( true )
+	{
+		//FColor debugColor = Debug_GetColorForAnIndex( i );
+		bool hasMore = UFGSplineMeshGenerationLibrary::GetNextDistanceExceedingTolerance( spline, startPos, dist, collisionSpacing, 22.0f, endDist, endPos, length );
+		FVector dir = ( endPos - startPos ) / length;
+		FVector centerPos = ( startPos + endPos ) * 0.5f;
+
+		{
+			float radDiff = FMath::Acos( FVector::DotProduct( dir, lastDir ) ) * collisionExtent.Y; //Rough estimate. This is the radians difference, so if we multiply it by the side extent, we get the length of the circle segment missing.
+			length += radDiff * 0.5f;
+			centerPos -= dir * radDiff * 0.5f;
+			////@TODO:[DavalliusA:Wed/05-02-2020] ideally we should apply half this to us and half to next.. and front and back side need different compensation so we need to offset our center...  so for now just try to apply it on us only
+		}
+
+		//const float distance = ( float )i * collisionLength + collisionLength * 0.5f;
+		//const FVector newLocation = spline->GetLocationAtDistanceAlongSpline( distance, ESplineCoordinateSpace::World );
+
+		//FVector side = spline->GetRightVectorAtDistanceAlongSpline( ( dist + endDist ) * 0.5f, optionalRoot ? ESplineCoordinateSpace::Local : ESplineCoordinateSpace::World );
+		FVector side = spline->GetRightVectorAtDistanceAlongSpline( ( dist + endDist ) * 0.5f, ESplineCoordinateSpace::World );
+
+		// When using an optional root we may be spawning onto an actor that already has splineCollision (blueprints can have many "actors" on a single root when making the hologram)
+		// In that case we don't want to assume a name so for simplicity (and since the names are temporary as its a hologram) just allow the engine to find a nice available name
+		FName name = optionalRoot ? NAME_None : FName(*FString::Printf( TEXT( "SplineCollision_%i" ), i ));
+		
+		ComponentType* newComponent = NewObject< ComponentType >( outer, ComponentType::StaticClass(), name );
+		fgcheck( newComponent );
+
+		//newComponent->SetupAttachment( attachTo );
+		newComponent->SetMobility( mobility ); // Inherit the mobility from the spline, if these mismatch we cannot register.
+		newComponent->AttachToComponent( attachTo, FAttachmentTransformRules::SnapToTargetNotIncludingScale );
+		newComponent->SetNetAddressable();
+		FVector  ext = collisionExtent;
+		ext.X = ( length * .5f ) - .05f; // Make it a bit smaller so clearance checks can go through in some cases.
+		newComponent->SetBoxExtent( ext, false );
+		newComponent->SetCollisionProfileName( collisionProfile );
+		newComponent->SetWorldLocation( centerPos );
+		//newComponent->SetRelativeLocation( centerPos );
+		newComponent->AddRelativeLocation( collisionOffset );
+
+		FQuat q = FRotationMatrix::MakeFromXYUnsafe( dir, side ).ToQuat();
+		newComponent->SetWorldRotation( q );
+		//newComponent->SetRelativeRotation( q );
+		newComponent->SetRelativeScale3D( FVector( 1.0f ) );
+
+		newComponent->RegisterComponent();
+		generatedComopnents.Add( newComponent );
+		//if( debugActor ){ DrawDebugBox( debugActor->GetWorld(), centerPos, ext, q, debugColor, false, 90.04f, 99, 1.0f ); }
+
+		lastDir = dir;
+		startPos = endPos;
+		dist = endDist;
+		++i;
+		if( !hasMore )
+		{
+			break;
+		}
+	}
+
+	return generatedComopnents;
+}
+
+
 template< typename MeshConstructor >
 void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	class USplineComponent* spline,

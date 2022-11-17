@@ -13,7 +13,6 @@ AFGFreightWagon::AFGFreightWagon() : Super() {
 	this->mContainerMeshLiquid = nullptr;
 	this->mInventorySize = 24;
 	this->mFluidStackSizeDefault = EStackSize::SS_ONE;
-	this->mFluidStackSizeMultiplier = 0;
 	this->mCargoMeshComponent = nullptr;
 	this->mCargoMeshComponentDerailedTransform = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 }

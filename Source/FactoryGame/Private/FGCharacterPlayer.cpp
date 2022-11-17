@@ -8,6 +8,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "FGCharacterMovementComponent.h"
 
+#if !IS_PUBLIC_BUILD
+void AFGCharacterPlayer::UndoPressed(){ }
+#endif 
 AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UFGCharacterMovementComponent>(ACharacter::CharacterMovementComponentName)) {
 	this->mBaseTurnRate = 45.0;
 	this->mBaseLookUpRate = 45.0;
@@ -31,7 +34,6 @@ AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializ
 	this->mLastSafeGroundPositions[0] = FVector::ZeroVector;
 	this->mLastSafeGroundPositions[1] = FVector::ZeroVector;
 	this->mLastSafeGroundPositions[2] = FVector::ZeroVector;
-	this->mLastSafeGroundPositionLoopHead = 0;
 	this->mCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT(" PlayerCamera "));
 	this->mCinematicCameraComponent = nullptr;
 	this->mSpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"));
@@ -49,7 +51,6 @@ AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializ
 	this->mTrashSlot = nullptr;
 	this->mAllowCameraToggling = false;
 	this->mUseDistance = 450.0;
-	this->mPickupCounter = 0;
 	this->mReviver = nullptr;
 	this->mDefaultWalkHeadBobShake = nullptr;
 	this->mDefaultSprintHeadBobShake = nullptr;
@@ -72,7 +73,6 @@ AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializ
 	this->mCrouchSpeed = 3.0;
 	this->mStandSpeed = 3.0;
 	this->mSlideToCrouchSpeed = 1.0;
-	this->mIncomingAttackers = 0;
 	this->mZiplineParticle = nullptr;
 	this->mCurrentEmote = nullptr;
 	this->mCurrentEmoteSFX = nullptr;
@@ -149,6 +149,7 @@ void AFGCharacterPlayer::StartIsLookedAt_Implementation( AFGCharacterPlayer* byC
 FText AFGCharacterPlayer::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGCharacterPlayer::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGCharacterPlayer::ReceiveRadiation_Implementation(float amount, float duration, FVector direction, TSubclassOf< UFGDamageType > damageType){ }
+bool AFGCharacterPlayer::CanReceiveRadiation_Implementation() const{ return bool(); }
 bool AFGCharacterPlayer::ShouldSave_Implementation() const{ return bool(); }
 void AFGCharacterPlayer::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGCharacterPlayer::AddAsRepresentation(){ return bool(); }
@@ -198,6 +199,7 @@ void AFGCharacterPlayer::ToggleBuildGunPaint(){ }
 void AFGCharacterPlayer::HotKeyRecipe(TSubclassOf<  UFGRecipe > recipe){ }
 void AFGCharacterPlayer::HotKeyDismantle(){ }
 void AFGCharacterPlayer::HotKeyPaint(TSubclassOf<  UFGCustomizationRecipe > customization){ }
+void AFGCharacterPlayer::HotKeyBlueprint(const FString& blueprintName){ }
 USkeletalMeshComponent* AFGCharacterPlayer::GetMesh3P() const{ return nullptr; }
 USkeletalMeshComponent* AFGCharacterPlayer::GetMainMesh() const{ return nullptr; }
 void AFGCharacterPlayer::ToggleCameraMode(){ }
@@ -230,7 +232,7 @@ bool AFGCharacterPlayer::Server_CycleHandEquipmentPressed_Validate(int32 dir){ r
 void AFGCharacterPlayer::DoCycleEquipment(int32 dir){ }
 void AFGCharacterPlayer::StartDriving( AFGDriveablePawn* vehicle){ }
 void AFGCharacterPlayer::StopDriving( AFGDriveablePawn* vehicle){ }
-UFGGameUI* AFGCharacterPlayer::GetGameUI(){ return nullptr; }
+UFGGameUI* AFGCharacterPlayer::GetGameUI() const{ return nullptr; }
 void AFGCharacterPlayer::TrySpawnInitialGear(){ }
 void AFGCharacterPlayer::SpawnInitialGear_Implementation(){ }
 void AFGCharacterPlayer::OnPickUpItem(){ }
@@ -244,9 +246,9 @@ void AFGCharacterPlayer::TickHealthGeneration(float delta){ }
 UFGLadderComponent* AFGCharacterPlayer::GetCurrentLadderComponent(){ return nullptr; }
 TSubclassOf< class UMatineeCameraShake > AFGCharacterPlayer::GetDesiredSprintHeadBobShake(){ return TSubclassOf<class UMatineeCameraShake>(); }
 TSubclassOf< class UMatineeCameraShake > AFGCharacterPlayer::GetDesiredWalkHeadBobShake(){ return TSubclassOf<class UMatineeCameraShake>(); }
-UFGCharacterMovementComponent* AFGCharacterPlayer::GetFGMovementComponent(){ return nullptr; }
+UFGCharacterMovementComponent* AFGCharacterPlayer::GetFGMovementComponent() const{ return nullptr; }
 void AFGCharacterPlayer::SetWantSprintBobbing(bool wantBobbing){ }
-FVector AFGCharacterPlayer::GetInventoryDropLocation_Implementation(const  UFGInventoryComponent* component, FInventoryStack stack){ return FVector(); }
+FVector AFGCharacterPlayer::GetInventoryDropLocation() const{ return FVector(); }
 void AFGCharacterPlayer::AddRadiationImmunity(float toAdd){ }
 void AFGCharacterPlayer::SetRadiationImmunity(float newImmunity){ }
 void AFGCharacterPlayer::ClientCheatWalk_Implementation(){ }
@@ -270,12 +272,12 @@ bool AFGCharacterPlayer::Client_HyperTubeStart_Validate(AActor* tubeStart, float
 void AFGCharacterPlayer::Client_HyperTubeEnd_Implementation(FVector point, FVector velocity, float startTime){ }
 bool AFGCharacterPlayer::Client_HyperTubeEnd_Validate(FVector point, FVector velocity, float startTime){ return bool(); }
 void AFGCharacterPlayer::ZiplineStart(AActor* ziplineActor, FVector actorForward){ }
-void AFGCharacterPlayer::ZiplineEnd(FVector exitForce){ }
+void AFGCharacterPlayer::ZiplineEnd(const FVector &exitForce) const{ }
 void AFGCharacterPlayer::Multicast_ZiplineStart_Implementation(AActor* ziplineActor, FVector actorForward){ }
 bool AFGCharacterPlayer::Multicast_ZiplineStart_Validate(AActor* ziplineActor, FVector actorForward){ return bool(); }
 void AFGCharacterPlayer::Multicast_ZiplineEnd_Implementation(FVector exitForce){ }
 bool AFGCharacterPlayer::Multicast_ZiplineEnd_Validate(FVector exitForce){ return bool(); }
-void AFGCharacterPlayer::PlayZiplineEffects(FVector inLocation){ }
+void AFGCharacterPlayer::PlayZiplineEffects(const FVector &inLocation) const{ }
 void AFGCharacterPlayer::NetMulticast_CheatFly_Implementation(){ }
 void AFGCharacterPlayer::PlayEmote(TSubclassOf<class UFGEmote> emote){ }
 void AFGCharacterPlayer::Server_PlayEmote_Implementation(TSubclassOf<class UFGEmote> emote, int32 randomInteger){ }
@@ -307,7 +309,7 @@ void AFGCharacterPlayer::OnUsePressed(){ }
 void AFGCharacterPlayer::OnUseReleased(){ }
 void AFGCharacterPlayer::OnUse(){ }
 void AFGCharacterPlayer::OnUseStop(){ }
-bool AFGCharacterPlayer::CanBePickedUp(const FHitResult& hitResult){ return bool(); }
+bool AFGCharacterPlayer::CanBePickedUp(const FHitResult& hitResult) const{ return bool(); }
 void AFGCharacterPlayer::MoveForward(float Val){ }
 void AFGCharacterPlayer::MoveRight(float Val){ }
 void AFGCharacterPlayer::TurnAtRate(float Rate){ }
@@ -315,30 +317,30 @@ void AFGCharacterPlayer::LookUpAtRate(float Rate){ }
 void AFGCharacterPlayer::SetBestUsableActor( AActor* newBestUsableActor){ }
 float AFGCharacterPlayer::GetUseDistance(){ return float(); }
 void AFGCharacterPlayer::OnReviveTimerComplete(){ }
-float AFGCharacterPlayer::GetReviveProgress(){ return float(); }
+float AFGCharacterPlayer::GetReviveProgress() const{ return float(); }
 void AFGCharacterPlayer::Client_Revived_Implementation(){ }
 void AFGCharacterPlayer::Client_ReviveStarted_Implementation(){ }
 void AFGCharacterPlayer::Client_ReviveEnded_Implementation(){ }
-float AFGCharacterPlayer::GetPickupProgress(){ return float(); }
+float AFGCharacterPlayer::GetPickupProgress() const{ return float(); }
 void AFGCharacterPlayer::StartReceivingRadiation(){ }
 void AFGCharacterPlayer::StopReceivingRadiation(){ }
 void AFGCharacterPlayer::TornOff(){ }
-void AFGCharacterPlayer::DebugBuildablesInFrustum(){ }
+void AFGCharacterPlayer::DebugBuildablesInFrustum() const{ }
 void AFGCharacterPlayer::TriggerBestUsableActorDelegate(){ }
 void AFGCharacterPlayer::UpdateHUDCrosshair(){ }
 bool AFGCharacterPlayer::IsSliding() const{ return bool(); }
-bool AFGCharacterPlayer::IsInPumpiMode(){ return bool(); }
+bool AFGCharacterPlayer::IsInPumpiMode() const{ return bool(); }
 void AFGCharacterPlayer::UpdatePlayerNameWidget(){ }
 void AFGCharacterPlayer::UpdatePlayerStatus(){ }
-AFGEquipment* AFGCharacterPlayer::SpawnEquipment(TSubclassOf< AFGEquipment > equipmentClass, AActor* owner){ return nullptr; }
-AFGEquipmentAttachment* AFGCharacterPlayer::SpawnAttachmentForEquipment(AFGEquipment* equipment){ return nullptr; }
-AFGEquipmentAttachment* AFGCharacterPlayer::SpawnSecondaryAttachmentForEquipment(AFGEquipment* equipment){ return nullptr; }
-bool AFGCharacterPlayer::UpdateActorPerceptionInfo(FFGActorPlayerPerceptionInfo& info){ return bool(); }
+AFGEquipment* AFGCharacterPlayer::SpawnEquipment(TSubclassOf< AFGEquipment > equipmentClass, AActor* owner) const{ return nullptr; }
+AFGEquipmentAttachment* AFGCharacterPlayer::SpawnAttachmentForEquipment(const AFGEquipment* equipment){ return nullptr; }
+AFGEquipmentAttachment* AFGCharacterPlayer::SpawnSecondaryAttachmentForEquipment(const AFGEquipment* equipment){ return nullptr; }
+bool AFGCharacterPlayer::UpdateActorPerceptionInfo(FFGActorPlayerPerceptionInfo& info) const{ return bool(); }
 void AFGCharacterPlayer::RemoveActorPerceptionInfo(const FFGActorPlayerPerceptionInfo& info){ }
 void AFGCharacterPlayer::UpdateHeadBob(){ }
 void AFGCharacterPlayer::NotifyGameStatePlayerAdded(){ }
 void AFGCharacterPlayer::UpdateGameUIRadiationStatus(){ }
-void AFGCharacterPlayer::UpdateGameUIRadiationIntensity(){ }
+void AFGCharacterPlayer::UpdateGameUIRadiationIntensity() const{ }
 int32 AFGCharacterPlayer::GetTotalPlayerInventorySlots() const{ return int32(); }
 int32 AFGCharacterPlayer::GetTotalPlayerArmEquipmentSlots() const{ return int32(); }
 void AFGCharacterPlayer::Server_EquipEquipment_Implementation(AFGEquipment* newEquipment){ }
@@ -372,11 +374,11 @@ void AFGCharacterPlayer::OnRep_HeadEquipmentSlot(){ }
 void AFGCharacterPlayer::OnRep_BodyEquipmentSlot(){ }
 void AFGCharacterPlayer::OnRep_ActorPerceptionInfo(const TArray< FFGActorPlayerPerceptionInfo >& OldValues){ }
 void AFGCharacterPlayer::MigrateNumSavedSlots(){ }
-void AFGCharacterPlayer::CheckItemPickedUp(){ }
+void AFGCharacterPlayer::CheckItemPickedUp() const{ }
 void AFGCharacterPlayer::OnRep_IsPossessed(){ }
 void AFGCharacterPlayer::OnRep_PlayerState(){ }
 void AFGCharacterPlayer::SetOnlineState(bool isOnline){ }
-AFGPlayerState* AFGCharacterPlayer::GetControllingPlayerState(){ return nullptr; }
+AFGPlayerState* AFGCharacterPlayer::GetControllingPlayerState() const{ return nullptr; }
 bool AFGCharacterPlayer::HasHolsteredEquipment(){ return bool(); }
 int32 AFGCharacterPlayer::GetHolsteredEquipmentIndex() const{ return int32(); }
 bool AFGCharacterPlayer::FilterInventoryClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }

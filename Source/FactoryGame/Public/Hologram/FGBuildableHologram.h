@@ -127,8 +127,8 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	const TArray< class UFGPipeConnectionComponent* >& GetCachedPipeConnectionComponents() const { return mCachedPipeConnectionComponents; }
 
-	/** Whether or not the specified buildable should be considered for our guideline alignments. */
-	virtual bool ShouldBuildableBeConsideredForGuidelines( class AFGBuildable* buildable ) const;
+	/** Whether or not the specified actor should be considered for our guideline alignments. */
+	virtual bool ShouldActorBeConsideredForGuidelines( class AActor* actor ) const;
 
 	/** Checks if connections face the same direction and are in line with eachother in order for guidelines to be used. */
 	bool AreConnectionsAlignedForGuidelines( class UFGConnectionComponent* connection, class UFGConnectionComponent* otherConnection, const FVector& connectionOffset, float allowedAngleDeviation ) const;
@@ -146,6 +146,9 @@ public:
 	void UpdateGuidelineVisuals( const TArray< FFGHologramGuidelineData >& guidelineData );
 
 	void ClearGuidelineVisuals();
+
+	void SetNeedsValidFloor( bool needsValidFloor ) { mNeedsValidFloor = needsValidFloor; }
+	bool GetNeedsValidFloor() const { return mNeedsValidFloor; }
 
 	/**
      * Function used to filter unwanted attachment points on the buildable based on hitresult. Such as removing all points which are pointing sideways.
@@ -183,6 +186,13 @@ protected:
 	 * @return - true if the floor is valid; false if the floor is to steep, another building etc.
 	 */
 	virtual void CheckValidFloor();
+
+	/**
+	 * Do any validation checks to ensure a hologram is not connecting a building inside a blueprint designer
+	 * To one outside the designer. Ofter clearance will disallow this but this is an additional safety check
+	 * Wires for example wont have a collision problem so in their hologram we verify the connections / placement
+	 */
+	virtual void CheckBlueprintCommingling() {}
 
 	/** Minimum Z value for a floor normal. If less the hologram is not placeable. */
 	FORCEINLINE float GetMinPlacementFloorZ() const { return FMath::Cos( FMath::DegreesToRadians( mMaxPlacementFloorAngle ) ); }

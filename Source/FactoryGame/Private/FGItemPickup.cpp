@@ -14,7 +14,6 @@ AFGItemPickup::AFGItemPickup() : Super() {
 	this->mGrowTimeInDays = 3;
 	this->mSavedNumItems = -1;
 	this->mMaxRespawns = -1;
-	this->mNumRespawns = 0;
 	this->mSendTelemetryOnPickup = false;
 }
 void AFGItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

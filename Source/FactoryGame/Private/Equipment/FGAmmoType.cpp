@@ -12,7 +12,6 @@ UFGAmmoType::UFGAmmoType() : Super() {
 	this->mInstigator = nullptr;
 	this->mFiringTransform = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 	this->mFiringDirection = FVector::ZeroVector;
-	this->mMagazineSize = 0;
 	this->mMaxAmmoEffectiveRange = 5000.0;
 	this->mReloadTimeMultiplier = 1.0;
 	this->mFireRate = 1.0;

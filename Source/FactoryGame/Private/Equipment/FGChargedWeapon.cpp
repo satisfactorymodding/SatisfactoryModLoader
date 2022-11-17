@@ -5,8 +5,6 @@
 AFGChargedWeapon::AFGChargedWeapon() : Super() {
 	this->mIsPendingExecuteFire = false;
 	this->mMaxChargeTime = 0.0;
-	this->mMaxThrowForce = 0;
-	this->mMinThrowForce = 0;
 	this->mDelayBetweenSecondaryTriggers = 0.25;
 	this->mAutoReloadDelay = 1.0;
 }

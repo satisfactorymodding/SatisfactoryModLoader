@@ -309,6 +309,8 @@ public:
 	const TMap< FString, FPerLevelSaveData* >& GetPerLevelDataMap() const { return mPerLevelDataMap; }
 
 protected:
+	friend class AFGBlueprintSubsystem;
+	
 	// Load a save game that was created before the LevelStreaming save era
 	bool LoadPreLevelStreamingSave( FString saveName );
 

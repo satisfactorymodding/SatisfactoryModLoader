@@ -7,7 +7,7 @@ AFGStickyExplosive::AFGStickyExplosive() : Super() {
 	this->mDetonateIn = 0.0;
 	this->mEnvironmentDestructionSphere = nullptr;
 	this->mRotatingMovementComp = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingMovementComponent"));
-	this->mThrowRotation = FRotator(-187.912841796875, -42.274085998535156, -238.4398956298828);
+	this->mThrowRotation = FRotator(-298.8830261230469, 86.32542419433594, -221.03701782226562);
 }
 void AFGStickyExplosive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

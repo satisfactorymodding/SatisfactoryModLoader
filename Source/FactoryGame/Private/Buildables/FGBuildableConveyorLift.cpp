@@ -4,7 +4,13 @@
 #include "Components/SceneComponent.h"
 #include "FGConveyorInstanceSplineMesh.h"
 
+#if WITH_EDITORONLY_DATA
+#endif 
+#if WITH_EDITOR
+void AFGBuildableConveyorLift::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent){ }
+#endif 
 AFGBuildableConveyorLift::AFGBuildableConveyorLift() : Super() {
+	this->mConveyorLiftSparesDataCDO = nullptr;
 	this->mMeshHeight = 200.0;
 	this->mBottomMesh = nullptr;
 	this->mMidMesh = nullptr;
@@ -28,6 +34,7 @@ void AFGBuildableConveyorLift::BeginPlay(){ }
 int32 AFGBuildableConveyorLift::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableConveyorLift::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildableConveyorLift::Dismantle_Implementation(){ }
+TArray<struct FInstanceData> AFGBuildableConveyorLift::GetActorLightweightInstanceData_Implementation(){ return TArray<struct FInstanceData>(); }
 float AFGBuildableConveyorLift::GetLastRenderTime() const{ return float(); }
 void AFGBuildableConveyorLift::DestroyVisualItems(){ }
 void AFGBuildableConveyorLift::TickItemTransforms(float dt){ }

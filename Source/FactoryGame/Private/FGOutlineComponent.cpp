@@ -11,20 +11,13 @@ UFGOutlineComponent::UFGOutlineComponent() : Super() {
 UFGOutlineComponent* UFGOutlineComponent::Get(UWorld* world){ return nullptr; }
 void UFGOutlineComponent::ShowOutline(AActor* actorToOutline, EOutlineColor color){ }
 void UFGOutlineComponent::ShowProxyOutline( UStaticMesh* outlineMesh, const FTransform transform, EOutlineColor color){ }
-void UFGOutlineComponent::ShowMultiActorOutline(TArray<AActor*> actorsToOutline, EOutlineColor color){ }
+void UFGOutlineComponent::ShowMultiActorOutline(TArray< AActor* > actorsToOutline, EOutlineColor color){ }
 void UFGOutlineComponent::UpdateProxyOutlineMesh( UStaticMesh* newOutlineMesh){ }
 void UFGOutlineComponent::UpdateProxyOutlineLocationAndRotation(FVector newLocation, FRotator newRotation){ }
 void UFGOutlineComponent::HideOutline(){ }
-void UFGOutlineComponent::ShowDismantlePendingMaterial(TArray<class AActor*> actorPendingDismantle){ }
-void UFGOutlineComponent::ShowDismantlePendingMaterial( AActor* actorPendingDismantle){ }
-void UFGOutlineComponent::ShowDismantlePendingMaterial( UFGSplineComponent* splineComponent){ }
-void UFGOutlineComponent::ShowDismantlePendingMaterial( UProxyInstancedStaticMeshComponent* proxyMesh){ }
-void UFGOutlineComponent::HideAllDismantlePendingMaterial(){ }
 void UFGOutlineComponent::ShowActorOutline( AActor* actorToOutline, EOutlineColor color){ }
 void UFGOutlineComponent::HideActorOutline( AActor* actorToDisableOutlineOn){ }
-void UFGOutlineComponent::ShowDismantlePendingMaterialOnActor( AActor* actorPendingForDismantle){ }
-void UFGOutlineComponent::HideDismantlePendingMaterialOnActor( AActor* actorPendingForDismantle){ }
-void UFGOutlineComponent::ShowDismantlePendingMaterialOnProxyMesh( UProxyInstancedStaticMeshComponent* proxyMesh){ }
-void UFGOutlineComponent::HideDismantlePendingMaterialOnProxyMesh( UProxyInstancedStaticMeshComponent* proxyMesh){ }
-void UFGOutlineComponent::HideDismantlePendingMaterialOnSplineComponent( UFGSplineComponent* splineComponent){ }
+void UFGOutlineComponent::ShowDismantlePendingMaterial(TArray< AActor* > actorPendingDismantle){ }
+void UFGOutlineComponent::ShowDismantlePendingMaterial(AActor* actorPendingDismantle){ }
+void UFGOutlineComponent::ShowDismantlePendingMaterialOnActor(AActor* actorPendingForDismantle){ }
 bool UFGOutlineComponent::IsOwnedByLocalPlayer(){ return bool(); }

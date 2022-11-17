@@ -13,8 +13,6 @@ AFGDroneStationInfo::AFGDroneStationInfo() : Super() {
 	this->mEstimatedRoundTripTime = 0.0;
 	this->mEstimatedTransportRate = 0.0;
 	this->mDroneTripStatistics.LatestRoundTripTime = 0.0;
-	this->mDroneTripStatistics.LatestIncomingItemAmount = 0;
-	this->mDroneTripStatistics.LatestOutgoingItemAmount = 0;
 	this->mDroneTripStatistics.LatestIncomingItemStacks = 0.0;
 	this->mDroneTripStatistics.LatestOutgoingItemStacks = 0.0;
 	this->mDroneTripStatistics.LatestIncomingItemStackRate = 0.0;

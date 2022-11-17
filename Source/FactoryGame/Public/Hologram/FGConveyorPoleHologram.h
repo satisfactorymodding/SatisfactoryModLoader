@@ -25,6 +25,8 @@ public:
 	void SnapToConnection( UFGFactoryConnectionComponent* connection, class AFGConveyorBeltHologram* parentConveyor );
 
 	void SetSnappBuilding( class AFGBuildable* snappedBuilding );
+protected:
+
 private:
 	/** The connection conveyors snap to, used when placing a pole automatically. */
 	UPROPERTY( )

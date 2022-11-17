@@ -6,15 +6,29 @@
 #include "CoreMinimal.h"
 #include "FGOptionsSettings.h"
 #include "UObject/Interface.h"
+#include "Misc/Variant.h"
 #include "FGOptionInterface.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam( FOptionUpdated, FString, updatedCvar );
+DECLARE_DELEGATE_TwoParams( FOnOptionUpdated, FString, FVariant );
 
 UINTERFACE( Blueprintable, meta = ( CannotImplementInterfaceInBlueprint ) )
 class UFGOptionInterface : public UInterface
 {
 	GENERATED_BODY()
 };
+
+/** Holds delegates to be called when a specific option is changed */
+USTRUCT()
+struct FOnOptionUpdateDelegateData
+{
+	GENERATED_BODY();
+public:
+
+	UPROPERTY()
+	TArray<FOptionUpdated> OptionUpdatedDelegates;
+};
+
 
 /**
  * 
@@ -24,6 +38,19 @@ class FACTORYGAME_API IFGOptionInterface
 	GENERATED_BODY()
 
 public:
+	// Generic FVariant getter, setters and subscribe functions
+	virtual FVariant GetOptionValue( const FString& strId ) const = 0;
+	/** Force set is used when we just want to update a value and not go through the whole apply cycle */
+	virtual void ForceSetOptionValue( const FString& strId, const FVariant& variant, const UObject* instigator ) = 0;
+	virtual void SubscribeToOptionUpdate( const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate ) = 0;
+	virtual void UnsubscribeToOptionUpdate( const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate ) = 0;
+
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	virtual void ApplyChanges() = 0;
+	
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	virtual void ResetAllSettingsToDefault() = 0;
+	
 	/** Get the currently active option value for a bool */
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	virtual bool GetBoolOptionValue( const FString& cvar ) const = 0;

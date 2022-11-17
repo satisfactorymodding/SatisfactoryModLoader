@@ -24,5 +24,10 @@ private:
 
 	/** Keep track of the names of objects, so we can find them faster */
 	TMap< FString, UObject* > mObjectNames;
+	
+	
+	/** Rebase transforms to this origin. Useful for blueprinted Actors */
+	FTransform mNewOrigin;
+
 };
 

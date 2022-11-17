@@ -20,7 +20,6 @@ void AFGFoliageRemoval::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 }
 bool AFGFoliageRemoval::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const{ return bool(); }
 AFGFoliageRemoval::AFGFoliageRemoval() : Super() {
-	this->mRemovalCount = 0;
 	this->mLevelName = TEXT("None");
 	this->mFoliageTypeName = TEXT("None");
 	this->mLevelBounds = FBox(FVector::ZeroVector, FVector::ZeroVector);

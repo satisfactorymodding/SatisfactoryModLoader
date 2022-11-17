@@ -251,9 +251,10 @@ private:
 	/** Telemetry */
 	bool InitTelemetry( const FString& gameID, const FString& buildID, const FString& onlinePlatformIdentifier, const FString& onlinePlatformUserID );
 	void ShutdownTelemetry();
-	void SubmitGameStartTelemetry();
+	void SubmitGameStartTelemetry() const;
 	UFUNCTION()
-	void SubmitNetModeTelemetry( UWorld* world );
+	void SubmitNetModeTelemetry( UWorld* world ) const;
+	void SubmitModTelemetry() const;
 
 	/** EOS metrics */
 	void InitEpicOnlineServicesMetrics();

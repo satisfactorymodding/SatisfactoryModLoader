@@ -3,7 +3,6 @@
 #include "FGFactoryColoringTypes.h"
 
 UFGFactoryCustomizationDescriptor::UFGFactoryCustomizationDescriptor() : Super() {
-	this->ID = 0;
 	this->mIcon = nullptr;
 }
 #if WITH_EDITOR

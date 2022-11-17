@@ -4,7 +4,10 @@
 #include "FGInventoryComponent.h"
 
 UFGReplicationDetailInventoryComponent::UFGReplicationDetailInventoryComponent() : Super() {
-
+	this->mActiveInventoryComponent = nullptr;
+	this->mMainInventoryComponent = nullptr;
+	this->mReplicationInventoryComponent = nullptr;
+	this->mReplicationDetailActor = nullptr;
 }
 void UFGReplicationDetailInventoryComponent::SetMainInventoryComponent( UFGInventoryComponent* inventoryComponent){ }
 void UFGReplicationDetailInventoryComponent::SetReplicationInventoryComponent( UFGInventoryComponent* inventoryComponent){ }

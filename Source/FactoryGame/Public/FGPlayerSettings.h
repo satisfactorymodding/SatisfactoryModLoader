@@ -27,4 +27,9 @@ public:
 
 	UPROPERTY( EditAnywhere, config, Category = "Inventory Slots", meta = ( ToolTip = "The number of starting slots for players arm equipments" ) )
 	int32 mDefaultArmEquipmentSlots;
+
+	/** Affected in game by AFGUnlockSubssytem::mUnlockedCentralStorageUploadSlots */
+	UPROPERTY( EditAnywhere, config, Category = "Inventory Slots", meta = ( ToolTip = "The number of starting slots for players upload inventory (central storage)" ) )
+	int32 mDefaultUploadSlots;
+	
 };

@@ -8,8 +8,6 @@ AFGLadderHologram::AFGLadderHologram() : Super() {
 	this->mWidth = 0.0;
 	this->mMeshHeight = 0.0;
 	this->mPlacementPosition = FVector::ZeroVector;
-	this->mMaxSegmentCount = 0;
-	this->mTargetSegmentHeight = 0;
 	this->mCanDragDown = true;
 	this->mCanDragUp = true;
 	this->mInstancedMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Instanced Mesh Component"));

@@ -33,19 +33,6 @@ enum class ESelfDrivingLocomotiveError : uint8
 };
 
 /**
- * Signal aspects used for signaling and ATC points.
- */
-UENUM( BlueprintType )
-enum class ERailroadSignalAspect : uint8
-{
-	RSA_None			UMETA( DisplayName = "None" ),
-	RSA_Clear			UMETA( DisplayName = "Clear" ),
-	RSA_Stop			UMETA( DisplayName = "Stop" ),
-	RSA_Dock			UMETA( DisplayName = "Dock" )
-	//RSA_Reserved		UMETA( DisplayName = "Reserved" )
-};
-
-/**
  * Docked state.
  */
 UENUM( BlueprintType )
@@ -116,7 +103,7 @@ GENERATED_BODY()
 public:
 	/** The vehicles in this consist. */
 	UPROPERTY( BlueprintReadOnly )
-	TArray< TSubclassOf< AFGRailroadVehicle > > Vehicles;
+	TArray< AFGRailroadVehicle* > Vehicles;
 
 	/** Length of the consist, [cm] */
 	UPROPERTY( BlueprintReadOnly )
@@ -643,6 +630,9 @@ private:
 	float CalcTargetSpeed( float targetSpeed, float distance, float deceleration ) const;
 	float CalcTargetAcceleration( float currentSpeed, float targetSpeed, float distance ) const;
 	float CalcTargetDeceleration( float currentSpeed, float targetSpeed, float distance ) const;
+
+	/** Called on the server when the MU master has changed. */
+	void OnMultipleUnitMasterChanged();
 
 	/** On reps */
 	UFUNCTION()

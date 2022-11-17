@@ -262,6 +262,9 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
 	UNamedSlot* GetAudioMessageSlot();
 
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	bool ShouldShowFicsitSplashWidget() const;
+
 public:
 	/** Array with messages that the player has stocked up */
 	TArray< FPendingMessageQueue > mPendingMessageQueues;

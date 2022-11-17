@@ -28,7 +28,6 @@ UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindOverlappingC
 void UFGPipeConnectionComponentBase::UpdateClientCachedConnection(){ }
 UFGPipeConnectionComponent::UFGPipeConnectionComponent() : Super() {
 	this->mConnectionInventory = nullptr;
-	this->mInventoryAccessIndex = 0;
 	this->mPipeNetworkID = -1;
 	this->mFluidDescriptor = nullptr;
 }

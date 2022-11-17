@@ -15,11 +15,13 @@ void UFGSplineMeshGenerationLibrary::BuildSplineCollisionBoxesWithFixedSteps_DEP
 		float collisionSpacing,
 		const FVector& collisionOffset,
 		FName collisionProfile){ }
-void UFGSplineMeshGenerationLibrary::BuildSplineCollisionBoxesWithVariableSteps( USplineComponent* spline,
+UInstancedStaticMeshComponent* UFGSplineMeshGenerationLibrary::BuildSplineMeshCollisionWithDistanceFieldProxies( USplineComponent* spline,
 		const FVector& collisionExtent,
 		float collisionSpacing,
 		const FVector& collisionOffset,
-		FName collisionProfile){ }
+		FName collisionProfile,
+		UStaticMesh* oneMeterBoxMesh,
+		USceneComponent* optionalRoot){ return nullptr; }
 void UFGSplineMeshGenerationLibrary::BuildSplineCollisionCapsules( USplineComponent* spline,
 		float collisionRadius,
 		float collisionSpacing,

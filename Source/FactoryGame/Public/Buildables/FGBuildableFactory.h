@@ -623,6 +623,17 @@ private:
 	/** Indicates if we have already started the production effects effects */
 	uint8 mDidStartProductionEffects : 1;
 
+protected:
+	/* Determines if we should Factory_PullPipeInput in factory tick.*/
+	uint8 mHasPipeInput : 1;
+
+	/* Determines if we should Factory_PushPipeOutput in factory tick.*/
+	uint8 mHasPipeOutput : 1;
+
+	/* Determines if we should collect inputs in factory tick.*/
+	uint8 mHasSolidInput : 1 ;
+	
+private:	
 	/** Caching all skel meshes so that we can set tick optimizations later from significance manager */
 	UPROPERTY()
 	TArray< USkeletalMeshComponent* > mCachedSkeletalMeshes;

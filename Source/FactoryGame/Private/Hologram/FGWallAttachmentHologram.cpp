@@ -9,4 +9,3 @@ AFGWallAttachmentHologram::AFGWallAttachmentHologram() : Super() {
 }
 bool AFGWallAttachmentHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGWallAttachmentHologram::CheckValidFloor(){ }
-void AFGWallAttachmentHologram::CheckClearance(const FVector& locationOffset){ }

@@ -11,7 +11,6 @@ void UFGLightSourceClipboardRCO::Server_PasteSettingsBuildableLight_Implementati
 void UFGLightSourceClipboardRCO::Server_PasteSettingsControlPanel_Implementation( AFGBuildableLightsControlPanel* controlPanel, FLightSourceControlData lightSourceControlData){ }
 AFGBuildableLightSource::AFGBuildableLightSource() : Super() {
 	this->mIsEnabled = true;
-	this->mLightControlData.ColorSlotIndex = 0;
 	this->mLightControlData.Intensity = 1.0;
 	this->mLightControlData.IsTimeOfDayAware = false;
 	this->mCurrentLightColor = FLinearColor(1.0, 1.0, 1.0, 1.0);

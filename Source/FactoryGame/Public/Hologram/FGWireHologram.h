@@ -34,10 +34,12 @@ public:
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
+	virtual void CheckBlueprintCommingling() override;
 	// End AFGHologram Interface
 
 	// Begin AFGBuildableHologram Interface
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
+	virtual bool ShouldActorBeConsideredForGuidelines( class AActor* actor ) const override;
 	// End AFGBuildableHologram Interface
 
 	void SetConnection( int32 ix, UFGCircuitConnectionComponent* connection );

@@ -100,9 +100,18 @@ struct FACTORYGAME_API FSaveCustomVersion
 
 		// 2021-12-03: Added sublevel streaming support
 		AddedSublevelStreaming,
+		
+		// 2022-08-10: Added additional track progression path to resource sink subsystem
+		AddedResourceSinkTrack,
 
 		// 2022-07-28: Added Coloring support to concrete pillars, in post load we check if the swatch if the default one, if so we swap it with concrete.
 		AddedColoringSupportToConcretePillars,
+		
+		// 2022-10-24: Readded since AddedColoringSupportToConcretePillars was merged to main
+		AddedResourceSinkTrack2,
+
+		// 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
+		AddedCachedLocationsForWire,
 
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,

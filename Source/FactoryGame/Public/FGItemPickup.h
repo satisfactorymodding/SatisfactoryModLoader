@@ -117,7 +117,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Pickup" )
 	FORCEINLINE FInventoryStack GetPickupItems() const{ return mPickupItems; }
 
-	FORCEINLINE const TSubclassOf< class UFGItemDescriptor >& GetPickupItemClass() const { return mPickupItems.Item.ItemClass; }
+	FORCEINLINE const TSubclassOf< class UFGItemDescriptor > GetPickupItemClass() const { return mPickupItems.Item.GetItemClass(); }
 
 	/** Get the respawn time in days*/
 	UFUNCTION( BlueprintPure, Category = "Pickup" )

@@ -8,6 +8,47 @@
 #include "Buildables/FGBuildablePassthrough.h"
 #include "FGBuildableConveyorLift.generated.h"
 
+class UStaticMesh;
+
+UCLASS( EditInlineNew )
+class FACTORYGAME_API UFGBuildableConveyorLiftSparseData : public UObject
+{
+	GENERATED_BODY()
+public:
+	/** What's the height of the meshes used. */
+	UPROPERTY( EditDefaultsOnly )
+	float mMeshHeight;
+
+	/** Mesh at the bottom of the lift. */
+	UPROPERTY( EditDefaultsOnly )
+	UStaticMesh* mBottomMesh;
+	
+	/** Mesh repeated for the mid section. */
+	UPROPERTY( EditDefaultsOnly )
+	UStaticMesh* mMidMesh;
+	
+	/** Half Size Mid Mesh for passthrough visuals (200 units is too long so we use a half mesh in certain cases). */
+	UPROPERTY( EditDefaultsOnly )
+	UStaticMesh* mHalfMidMesh;
+	
+	/** Mesh at the top of the lift. */
+	UPROPERTY( EditDefaultsOnly )
+	UStaticMesh* mTopMesh;
+	
+	/** Mesh placed on the input/output as a bellow between a wall or factory. */
+	UPROPERTY( EditDefaultsOnly )
+	UStaticMesh* mBellowMesh;
+	
+	/** Mesh placed between two joined lift sections. */
+	UPROPERTY( EditDefaultsOnly )
+	UStaticMesh* mJointMesh;
+	
+	/** Shelf placed under each item. */
+	UPROPERTY( EditDefaultsOnly )
+	UStaticMesh* mShelfMesh;
+};
+
+
 /** Base for conveyor lifts. */
 UCLASS()
 class FACTORYGAME_API AFGBuildableConveyorLift : public AFGBuildableConveyorBase
@@ -35,6 +76,11 @@ public:
 	virtual void Dismantle_Implementation() override;
 	// End IFGDismantleInterface
 
+	/* Force enable lightweight instancing on lifts. */
+	virtual bool DoesContainLightweightInstances_Native() const override { return true; }
+	virtual TArray<struct FInstanceData> GetActorLightweightInstanceData_Implementation() override;
+	//virtual void SetupInstances_Native() override;
+
 	/** Get the height for this lift. */
 	float GetHeight() const { return FMath::Abs( mTopTransform.GetTranslation().Z ); }
 
@@ -44,6 +90,18 @@ public:
 	void DestroyVisualItems();
 
 	FORCEINLINE TArray< class AFGBuildablePassthrough* > GetSnappedPassthroughs() { return mSnappedPassthroughs; }
+
+	FORCEINLINE FTransform GetTopTransform() const { return mTopTransform; }
+	
+#if WITH_EDITORONLY_DATA
+	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Buildable")
+	UFGBuildableConveyorLiftSparseData* mConveyorLiftSparesData;
+#endif
+
+	UPROPERTY( )
+	UFGBuildableConveyorLiftSparseData* mConveyorLiftSparesDataCDO;
+	
+	FORCEINLINE const UFGBuildableConveyorLiftSparseData* GetConveyorLiftSparesData() const { return mConveyorLiftSparesDataCDO; }
 	
 protected:
 	// Begin AFGBuildableConveyorBase interface
@@ -51,8 +109,14 @@ protected:
 	virtual void TickRadioactivity() override;
 	virtual void Factory_UpdateRadioactivity( class AFGRadioactivitySubsystem* subsystem ) override;
 	// End AFGBuildableConveyorBase interface
-
+	
+#if WITH_EDITOR
+	virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;
+#endif
+		
 private:
+	friend class AFGBlueprintHologram;
+	
 	template< typename MeshConstructor >
 	static void BuildStaticMeshes(
 		USceneComponent* parent,
@@ -71,6 +135,7 @@ private:
 		float stepHeight,
 		const FVector2D& extend2D,
 		const FVector& extentBias = FVector::ZeroVector );
+
 
 public:
 	static const FVector2D CLEARANCE_EXTENT_2D;
@@ -118,9 +183,11 @@ private:
 
 	UPROPERTY( SaveGame, ReplicatedUsing= OnRep_TopTransform )
 	FTransform mTopTransform;
+
 	UPROPERTY( SaveGame, Replicated )
 	bool mIsReversed;
 
+	/* DEPRECATED */
 	/** Meshes for items. */
 	UPROPERTY( Meta = ( NoAutoJson ) )
 	TMap< FName, class UInstancedStaticMeshComponent* > mItemMeshMap;
@@ -134,7 +201,6 @@ private:
 	/** The names of the fog plane components so they can be referenced */
 	inline static const FName FOG_PLANE_0 = FName( TEXT( "FogPlane0" ) );
 	inline static const FName FOG_PLANE_1 = FName( TEXT( "FogPlane1" ) );
-
 };
 
 /**

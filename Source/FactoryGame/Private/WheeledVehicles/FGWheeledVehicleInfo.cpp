@@ -2,7 +2,7 @@
 
 #include "WheeledVehicles/FGWheeledVehicleInfo.h"
 
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 void AFGWheeledVehicleInfo::DrawDebug(int debugLevel){ }
 #endif 
 AFGWheeledVehicleInfo::AFGWheeledVehicleInfo() : Super() {
@@ -94,11 +94,12 @@ void AFGWheeledVehicleInfo::UpdateTarget(){ }
 bool AFGWheeledVehicleInfo::ShouldStayAtDock(){ return bool(); }
 void AFGWheeledVehicleInfo::OnTargetDestroyed( AFGTargetPoint* target){ }
 AFGDrivingTargetList* AFGWheeledVehicleInfo::GetTargetList() const{ return nullptr; }
-void AFGWheeledVehicleInfo::TryActivatePathSimulation(){ }
+void AFGWheeledVehicleInfo::TryStartSplinePathMovement(){ }
 void AFGWheeledVehicleInfo::SetSimulationVisible(bool isVisible){ }
 void AFGWheeledVehicleInfo::UpdateCustomizationData( AFGWheeledVehicle* vehicle){ }
 void AFGWheeledVehicleInfo::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
 void AFGWheeledVehicleInfo::ShowGhostingEffect(bool enabled){ }
+bool AFGWheeledVehicleInfo::IsOnCanonPath() const{ return bool(); }
 void AFGWheeledVehicleInfo::OnRep_ReplicatedMesh(){ }
 void AFGWheeledVehicleInfo::OnRep_StaticMeshComponent(){ }
 void AFGWheeledVehicleInfo::OnRep_ReplicatedVehicle(){ }

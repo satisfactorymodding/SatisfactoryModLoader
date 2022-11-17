@@ -13,8 +13,6 @@ AFGBuildableTradingPost::AFGBuildableTradingPost() : Super() {
 	this->mWorkBench = nullptr;
 	this->mCalendar = nullptr;
 	this->mMiniGame = nullptr;
-	this->mStorageInventorySize = 0;
-	this->mStorageVisibilityLevel = 0;
 	this->mInputInventory = nullptr;
 	this->mSpawningGroundZOffset = 5.0;
 	this->mGroundSearchZDistance = 250.0;

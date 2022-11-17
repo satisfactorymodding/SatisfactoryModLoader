@@ -9,7 +9,6 @@ AFGBuildableGeneratorFuel::AFGBuildableGeneratorFuel() : Super() {
 	this->mFuelLoadAmount = 1;
 	this->mRequiresSupplementalResource = false;
 	this->mSupplementalResourceClass = nullptr;
-	this->mSupplementalLoadAmount = 0;
 	this->mSupplementalToPowerRatio = 0.0;
 	this->mIsFullBlast = false;
 	this->mFuelInventory = nullptr;
@@ -38,23 +37,23 @@ void AFGBuildableGeneratorFuel::GetDismantleRefund_Implementation(TArray< FInven
 bool AFGBuildableGeneratorFuel::IsValidFuel(TSubclassOf<  UFGItemDescriptor > resource) const{ return bool(); }
 bool AFGBuildableGeneratorFuel::IsValidSupplementalResource(TSubclassOf<  UFGItemDescriptor > resource) const{ return bool(); }
 bool AFGBuildableGeneratorFuel::HasFuel() const{ return bool(); }
-bool AFGBuildableGeneratorFuel::HasSuppleentalResource() const{ return bool(); }
+bool AFGBuildableGeneratorFuel::HasSupplementalResource() const{ return bool(); }
 float AFGBuildableGeneratorFuel::GetSupplementalConsumptionRateCurrent() const{ return float(); }
 float AFGBuildableGeneratorFuel::GetSupplementalConsumptionRateMaximum() const{ return float(); }
 float AFGBuildableGeneratorFuel::GetFuelAmount() const{ return float(); }
 float AFGBuildableGeneratorFuel::GetSupplementalAmount() const{ return float(); }
 void AFGBuildableGeneratorFuel::SetPendingPotential(float newPendingPotential){ }
-void AFGBuildableGeneratorFuel::Factory_CollectFuel(float dt){ }
-void AFGBuildableGeneratorFuel::Factory_CollectSupplimentalResource(float dt){ }
-void AFGBuildableGeneratorFuel::LoadFuel(){ }
-void AFGBuildableGeneratorFuel::LoadSupplemental(){ }
+void AFGBuildableGeneratorFuel::OnRep_ReplicationDetailActor(){ }
 bool AFGBuildableGeneratorFuel::CanStartPowerProduction_Implementation() const{ return bool(); }
 void AFGBuildableGeneratorFuel::Factory_StartPowerProduction_Implementation(){ }
 void AFGBuildableGeneratorFuel::Factory_StopPowerProduction_Implementation(){ }
 void AFGBuildableGeneratorFuel::Factory_TickPowerProduction_Implementation(float dt){ }
+void AFGBuildableGeneratorFuel::Factory_CollectFuel(float dt){ }
+void AFGBuildableGeneratorFuel::Factory_CollectSupplementalResource(float dt){ }
+void AFGBuildableGeneratorFuel::LoadFuel(){ }
+void AFGBuildableGeneratorFuel::LoadSupplemental(){ }
 bool AFGBuildableGeneratorFuel::CanLoadFuel() const{ return bool(); }
-bool AFGBuildableGeneratorFuel::CanLoadSupplenmental() const{ return bool(); }
-void AFGBuildableGeneratorFuel::OnRep_ReplicationDetailActor(){ }
+bool AFGBuildableGeneratorFuel::CanLoadSupplemental() const{ return bool(); }
 bool AFGBuildableGeneratorFuel::FilterFuelClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
 void AFGBuildableGeneratorFuel::OnRep_FuelInventory(){ }
 AFGReplicationDetailActor_GeneratorFuel* AFGBuildableGeneratorFuel::GetCastRepDetailsActor() const{ return nullptr; }

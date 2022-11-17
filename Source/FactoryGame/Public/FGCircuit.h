@@ -104,7 +104,7 @@ private:
 	/** Set if we should replicate details. */
 	void SetReplicateDetails( bool replicateDetails );
 
-	virtual UFGCircuitGroup* CreateCircuitGroup( AFGCircuitSubsystem* subsystem ) const { return nullptr; }
+	virtual class UFGCircuitGroup* CreateCircuitGroup( AFGCircuitSubsystem* subsystem ) const { return nullptr; }
 
 protected:
 	/** The id used to identify this circuit. */
@@ -146,13 +146,17 @@ class FACTORYGAME_API UFGCircuitGroup : public UObject
 public:
 	virtual void PushCircuit( UFGCircuit* circuit ) { }
 	virtual void Reset() { }
+	
 	/**
-	* Make structural changes to the circuit group as needed.
-	* @returns true if such changes were made that the circuit groups need to be rebuilt and pre-tick restarted, false otherwise.
-	*/
+	 * Make structural changes to the circuit group as needed.
+	 * @returns true if such changes were made that the circuit groups need to be rebuilt and pre-tick restarted, false otherwise.
+	 */
 	virtual bool PreTickCircuitGroup( float dt, bool hasAuthority ) { return false; }
 	virtual void TickCircuitGroup( float dt, bool hasAuthority ) { }
+	
 	//~ Begin UFGCircuitGroup -> AFGBuildableCircuitSwitch visitor pattern
 	virtual void VisitCircuitBridge( class AFGBuildableCircuitBridge* circuitBridge ) { }
 	//~ End UFGCircuitGroup -> AFGBuildableCircuitSwitch visitor pattern
+
+	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent ) { }
 };

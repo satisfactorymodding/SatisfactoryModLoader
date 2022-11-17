@@ -4,28 +4,42 @@
 #include "Equipment/FGEquipment.h"
 
 AFGJetPack::AFGJetPack() : Super() {
-	this->mJumpTimeStamp = -1.0;
+	this->mDefaultAirControl = 0.0;
+	this->mRTPCInterval = 0.0;
+	this->mThrustCooldown = 0.0;
+	this->mCurrentFuel = 0.0;
 	this->mIsThrusting = false;
-	this->mActiveNoise = nullptr;
-	this->mActiveNoiseFrequency = 0.2;
+	this->mCachedMovementComponent = nullptr;
 	this->mEquipmentSlot = EEquipmentSlot::ES_BACK;
 	this->mBackAnimation = EBackEquipment::BE_Jetpack;
 }
-void AFGJetPack::Tick(float DeltaSeconds){ }
+void AFGJetPack::Tick(const float deltaTime){ }
 bool AFGJetPack::ShouldSaveState() const{ return bool(); }
 void AFGJetPack::DisableEquipment(){ }
-void AFGJetPack::SetIsThrusting(bool newIsThrusting){ }
-void AFGJetPack::Equip( AFGCharacterPlayer* character){ }
-void AFGJetPack::UnEquip(){ }
+void AFGJetPack::SetIsThrusting(const bool newIsThrusting){ }
+float AFGJetPack::GetNewVelocityWhenThrusting(const float delta) const{ return float(); }
 void AFGJetPack::JetPackThrust(){ }
 void AFGJetPack::JetPackStopThrust(){ }
-float AFGJetPack::GetCurrentFuel_Implementation() const{ return float(); }
-float AFGJetPack::GetMaxFuel_Implementation(){ return float(); }
+void AFGJetPack::GetSupportedConsumableTypes(TArray<TSubclassOf< UFGItemDescriptor >>& out_itemDescriptors) const{ }
+int AFGJetPack::GetSelectedConsumableTypeIndex() const{ return int(); }
+void AFGJetPack::SetSelectedConsumableTypeIndex(const int selectedIndex){ }
 void AFGJetPack::AddEquipmentActionBindings(){ }
+void AFGJetPack::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGJetPack, mCurrentFuel);
+	DOREPLIFETIME(AFGJetPack, mSelectedFuelType);
+	DOREPLIFETIME(AFGJetPack, mCurrentFuelType);
+}
+void AFGJetPack::ConsumeFuel(const float delta){ }
+void AFGJetPack::RegenerateFuel(const float delta){ }
+void AFGJetPack::Equip( AFGCharacterPlayer* character){ }
+void AFGJetPack::UnEquip(){ }
+bool AFGJetPack::CanThrust() const{ return bool(); }
 void AFGJetPack::MakeActiveNoise(){ }
+bool AFGJetPack::CheckCurrentAvailableFuel(){ return bool(); }
 void AFGJetPackAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGJetPackAttachment, mIsThrusting);
 }
 void AFGJetPackAttachment::OnRep_IsThrusting(){ }
-void AFGJetPackAttachment::SetIsThrusting(bool newIsThrusting){ }
+void AFGJetPackAttachment::SetIsThrusting(const bool newIsThrusting){ }

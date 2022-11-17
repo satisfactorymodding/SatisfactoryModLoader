@@ -18,8 +18,6 @@ AFGDroneVehicle::AFGDroneVehicle() : Super() {
 	this->mCurrentPowerLevel = 0.0;
 	this->mCurrentTripPowerCost = 0.0;
 	this->mCurrentTripInformation.TripDuration = 0.0;
-	this->mCurrentTripInformation.IncomingItemCount = 0;
-	this->mCurrentTripInformation.OutgoingItemCount = 0;
 	this->mCurrentTripInformation.IncomingItemStacks = 0.0;
 	this->mCurrentTripInformation.OutgoingItemStacks = 0.0;
 	this->mIsBraking = false;

@@ -30,7 +30,7 @@ public:
 	// End AFGHologram Interface
 
 	// Begin AFGBuildableHologram Interface
-	virtual bool ShouldBuildableBeConsideredForGuidelines( class AFGBuildable* buildable ) const override;
+	virtual bool ShouldActorBeConsideredForGuidelines( class AActor* actor ) const override;
 	// End AFGBuildableHologram Interface
 
 protected:

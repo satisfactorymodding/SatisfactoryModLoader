@@ -167,10 +167,19 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static FText GetItemName( TSubclassOf< UFGItemDescriptor > inClass );
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	FText GetItemNameFromInstance() const { return GetItemNameInternal(); }
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	FString GetItemNameFromInstanceAsString() const { return GetItemNameInternalAsString(); }
+
 	/** Used to get the resource description in blueprints */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static FText GetItemDescription( TSubclassOf< UFGItemDescriptor > inClass );
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	FText GetItemDescriptionFromInstance() const { return GetItemDescriptionInternal(); };
+	
 	/** Used to get the abbreviated name of the item in blueprints */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static FText GetAbbreviatedDisplayName( TSubclassOf< UFGItemDescriptor > inClass );
@@ -179,13 +188,15 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static UTexture2D* GetSmallIcon( TSubclassOf< UFGItemDescriptor > inClass );
 
-	virtual UTexture2D* Internal_GetSmallIcon() const;
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	UTexture2D* GetSmallIconFromInstance() const { return Internal_GetSmallIcon(); }
 
 	/** The big icon of the item */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static UTexture2D* GetBigIcon( TSubclassOf< UFGItemDescriptor > inClass );
 
-	virtual UTexture2D* Internal_GetBigIcon() const;
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	UTexture2D* GetBigIconFromInstance() const { return Internal_GetBigIcon(); }
 
 	/** Returns the crosshair material used with this item */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
@@ -229,10 +240,16 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Organization" )
 	static TSubclassOf< class UFGCategory > GetCategory( TSubclassOf< UFGItemDescriptor > inClass );
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Organization" )
+	TSubclassOf< class UFGCategory > GetCategoryFromInstance() const { return mCategory; }
+	
 	/** Get the category for this descriptor. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Descriptor|Organization" )
 	static void GetSubCategories( TSubclassOf< UFGItemDescriptor > inClass, TArray< TSubclassOf< class UFGCategory > >& out_subCategories );
 
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Descriptor|Organization" )
+	void GetSubCategoriesFromInstance( TArray< TSubclassOf< class UFGCategory > >& out_subCategories ) const { out_subCategories.Append( mSubCategories ); }
+	
 	/** Get the category for this descriptor of the given output class. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Descriptor|Organization", meta = (DeterminesOutputType = "outputCategoryClass") )
 	static TArray< TSubclassOf< class UFGCategory > > GetSubCategoriesOfClass( TSubclassOf< UFGItemDescriptor > inClass, TSubclassOf< class UFGCategory > outputCategoryClass );
@@ -291,8 +308,14 @@ protected:
 	/** Internal function to get the display name. */
 	virtual FText GetItemNameInternal() const;
 
+	/** Internal function to get the display name as a string */
+	virtual FString GetItemNameInternalAsString() const;
+
 	/** Internal function to get the display description. */
 	virtual FText GetItemDescriptionInternal() const;
+	
+	virtual UTexture2D* Internal_GetSmallIcon() const;
+	virtual UTexture2D* Internal_GetBigIcon() const;
 
 public:
 	/**
@@ -388,9 +411,9 @@ protected:
 	FColor mFluidColor;
 
 	/**
-	* Color for this gas, RGB is the color and A is the transparency of the gas.
-	* Form must be liquid or gas for this to be useful.
-	*/
+	 * Color for this gas, RGB is the color and A is the transparency of the gas.
+	 * Form must be liquid or gas for this to be useful.
+	 */
 	UPROPERTY( EditDefaultsOnly, Category = "Item", Meta = (DisplayName="Color 2 (Gas Color)") )
 	FColor mGasColor;
 
@@ -420,19 +443,27 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Scanning" )
 	FColor mScannerLightColor;
 	
-	/** This is just a hook for the resource sink points so we can add them to the 
-	* JSON wiki file even though they are in a separate datatable.  
-	*/
+	/**
+	 * This is just a hook for the resource sink points so we can add them to the 
+	 * JSON wiki file even though they are in a separate datatable.  
+	 */
 	UPROPERTY()
 	int32 mResourceSinkPoints;
 
-	/*Stack size will be cached on post load, this way we dont need to cast every time to get the value.*/
+	/** Stack size will be cached on post load, this way we dont need to cast every time to get the value.*/
 	UPROPERTY( Transient )
 	int32 mCachedStackSize;
-	
+public:
+	/*for by passing get CDO calls */
+	FColor FluidColor() const	{ return mFluidColor; }
+	FColor GasColor() const		{ return mGasColor; }
+	EResourceForm Form() const	{ return mForm; }
+
 private:
-	/* Index used by the conveyor item subsystem.
-	 * Written onto the mutable default object. */
+	/**
+	 * Index used by the conveyor item subsystem.
+	 * Written onto the mutable default object.
+	 */
 	UPROPERTY( Transient )
 	int32 mItemIndex;
 

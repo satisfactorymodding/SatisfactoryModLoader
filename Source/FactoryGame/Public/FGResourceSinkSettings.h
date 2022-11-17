@@ -53,7 +53,7 @@ struct FResourceSinkPointsData : public FTableRowBase
 /**
  * 
  */
-UCLASS( Blueprintable, config = Game, defaultconfig, meta = ( DisplayName = "Resource Sink" ) )
+UCLASS( Blueprintable, config = Game, defaultconfig, meta = ( DisplayName = "Resource Sink Settings" ) )
 class FACTORYGAME_API UFGResourceSinkSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
@@ -63,7 +63,6 @@ public:
 	static TSubclassOf< class UFGItemDescriptor > GetCouponClass();
 
 #if WITH_EDITOR
-
 	virtual void PostInitProperties() override;
 	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override;
 
@@ -90,14 +89,27 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "Settings" )
 	void SetNumLevels( int32 numLevels );
-
-	UFUNCTION( BlueprintPure, Category = "Settings" )
-	static TSoftObjectPtr< class UDataTable > GetPointsDataTable() { return GetDefault<UFGResourceSinkSettings>()->mPointsDataTable; }
-
-	UFUNCTION( BlueprintPure, Category = "Settings" )
-	static TSoftObjectPtr< class UDataTable > GetRewardLevelsDataTable() { return GetDefault<UFGResourceSinkSettings>()->mRewardLevelsDataTable; }
-
 #endif
+
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static class UDataTable* GetPointsDataTable();
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static TSoftObjectPtr< class UDataTable > GetPointsDataTablePtr() { return GetDefault<UFGResourceSinkSettings>()->mPointsDataTable; }
+
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static class UDataTable* GetRewardLevelsDataTable();
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static TSoftObjectPtr< class UDataTable > GetRewardLevelsDataTablePtr() { return GetDefault<UFGResourceSinkSettings>()->mRewardLevelsDataTable; }
+
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static class UDataTable* GetExplorationPointsDataTable();
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static TSoftObjectPtr< class UDataTable > GetExplorationPointsDataTablePtr() { return GetDefault<UFGResourceSinkSettings>()->mExplorationPointsDataTable; }
+
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static class UDataTable* GetExplorationRewardLevelsDataTable();
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static TSoftObjectPtr< class UDataTable > GetExplorationRewardLevelsDataTablePtr() { return GetDefault<UFGResourceSinkSettings>()->mExplorationRewardLevelsDataTable; }
 
 public:
 
@@ -106,6 +118,12 @@ public:
 
 	UPROPERTY( EditAnywhere, config, Category = "Data table" )
 	TSoftObjectPtr< class UDataTable > mRewardLevelsDataTable;
+
+	UPROPERTY( EditAnywhere, config, Category = "Data table" )
+	TSoftObjectPtr< class UDataTable > mExplorationPointsDataTable;
+
+	UPROPERTY( EditAnywhere, config, Category = "Data table" )
+	TSoftObjectPtr< class UDataTable > mExplorationRewardLevelsDataTable;
 
 	UPROPERTY( VisibleAnywhere, config, Category = "Settings", meta = ( ToolTip = "The maximum value an item can be worth, 0 = No cap" ) )
 	int32 mMaxPointsForItem;
@@ -142,5 +160,8 @@ public:
 
 	UPROPERTY( EditAnywhere, config, Category = "Rewards", meta = ( ToolTip = "Number of repeats per each level" ) )
 	int32 mDefaultNumRepeats;
+
+	UPROPERTY( EditAnywhere, config, Category = "Tool", meta = ( ToolTip = "The subclasses of UFGItemDescriptor that we don't want to show up in resource sink balancer", AllowAbstract=true ) )
+	TArray<TSubclassOf<class UFGItemDescriptor>> mExcludedDescriptors;
 
 };

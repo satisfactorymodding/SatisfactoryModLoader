@@ -24,8 +24,6 @@ AFGSkySphere::AFGSkySphere() : Super() {
 	this->mDefaultLowSpecMaterial = nullptr;
 	this->mDefaultMesh = nullptr;
 	this->mSkyMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SkySphere"));
-	this->mCurrentSelectedWeather = 0;
-	this->mDefaultWeatherEntry = 0;
 	this->mWeatherChangeDelayTime = FFloatInterval(3.40282e+38, -3.40282e+38);
 	this->mRainOcclusionSceneCapture2DComponent = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("OcclusionSceneCapture"));
 	this->mRainOcclusionRT = nullptr;

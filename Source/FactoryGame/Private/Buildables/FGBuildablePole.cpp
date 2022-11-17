@@ -6,11 +6,12 @@
 #include "FGFactoryConnectionComponent.h"
 #include "Hologram/FGPoleHologram.h"
 
-AFGBuildablePole::AFGBuildablePole() : Super() {
+AFGBuildablePole::AFGBuildablePole(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mHeight = 100.0;
 	this->mPoleComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("PoleComponentProxy"));
 	this->mSnapOnly0 = CreateDefaultSubobject<UFGFactoryConnectionComponent>(TEXT("SnapOnly0"));
 	this->mPoleMesh = nullptr;
+	this->mSelectedPoleVersion = -1;
 	this->mUseStaticHeight = false;
 	this->mHologramClass = AFGPoleHologram::StaticClass();
 	this->mPoleComponentProxy->SetupAttachment(RootComponent);
@@ -19,10 +20,14 @@ AFGBuildablePole::AFGBuildablePole() : Super() {
 void AFGBuildablePole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildablePole, mHeight);
-	DOREPLIFETIME(AFGBuildablePole, mPoleMesh);
+	DOREPLIFETIME(AFGBuildablePole, mSelectedPoleVersion);
 }
 void AFGBuildablePole::BeginPlay(){ }
 void AFGBuildablePole::SetPoleHeight(float height){ }
 void AFGBuildablePole::SetupConnectionComponent(){ }
-void AFGBuildablePole::PostLoad(){ Super::PostLoad(); }
+TArray<struct FInstanceData> AFGBuildablePole::GetActorLightweightInstanceData_Implementation(){ return TArray<struct FInstanceData>(); }
+void AFGBuildablePole::SetupInstances_Native(bool bSpawnHidden){ }
 const FName AFGBuildablePole::PoleMeshName = FName();
+AFGBuildablePoleLightweight::AFGBuildablePoleLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mPoleComponentProxy = nullptr;
+}

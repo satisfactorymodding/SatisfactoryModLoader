@@ -40,7 +40,7 @@ struct FACTORYGAME_API FActiveDOT
  * Component used for an actor to receive damage from DOT sources.
  */
 UCLASS( hidecategories = ( Cooking, Collision, Rendering, Sockets ), ClassGroup = ( Custom ), meta = ( BlueprintSpawnableComponent, DisplayName = "DotReceiverComponent" ) )
-class FACTORYGAME_API UFGDotReceiverComponent : public USceneComponent
+class FACTORYGAME_API UFGDotReceiverComponent : public UActorComponent
 {
 	GENERATED_BODY()
 public:

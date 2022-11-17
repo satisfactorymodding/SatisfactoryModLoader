@@ -31,7 +31,6 @@ AFGTutorialIntroManager::AFGTutorialIntroManager() : Super() {
 	this->mDidStep5Upgrade = false;
 	this->mStartingPodClass = nullptr;
 	this->mStartingPod = nullptr;
-	this->mTradingPostLevel = 0;
 	this->mWaitTimeAfterCompletingMinorStep = 0.0;
 	this->mWaitTimeAfterCompletingHubStep = 0.0;
 	this->mHoldTimeToSkipIntro = 0.0;

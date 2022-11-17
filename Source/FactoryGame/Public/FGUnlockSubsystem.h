@@ -114,6 +114,7 @@ public:
 
 	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
 	FOnNewScannableObjectUnlocked mOnNewScannableObjectUnlocked;
+	
 protected:
 
 	/** Message sent when the map is unlocked */
@@ -182,4 +183,5 @@ private:
 
 	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf< class UFGTapeData > > mUnlockedTapes;
+	
 };

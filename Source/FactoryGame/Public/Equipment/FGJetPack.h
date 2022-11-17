@@ -1,114 +1,119 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-
 #include "FactoryGame.h"
 #include "Equipment/FGEquipment.h"
 #include "Equipment/FGEquipmentAttachment.h"
 #include "FGJetPack.generated.h"
 
 UCLASS()
-class FACTORYGAME_API AFGJetPack : public AFGEquipment
+class FACTORYGAME_API AFGJetPack final : public AFGEquipment
 {
 	GENERATED_BODY()
-
 public:
-
 	/** You know what this is */
 	AFGJetPack();
-
-	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
+	virtual void Tick( const float deltaTime ) override;
 
 	// Begin AFGEquipment interface
 	virtual bool ShouldSaveState() const override;
 	virtual void DisableEquipment() override;
-	// End
+	// End AFGEquipment interface
 
-	/** Simple set */
-	void SetIsThrusting( bool newIsThrusting );
-
+	void SetIsThrusting( const bool newIsThrusting );
 	FORCEINLINE bool GetIsThrusting() const { return mIsThrusting; }
 
-	virtual void Equip( class AFGCharacterPlayer* character ) override;
-	virtual void UnEquip() override;
-
+	/** This function calculates our new velocity when we are thrusting. */
+	float GetNewVelocityWhenThrusting( const float delta ) const;
+	
 	/** Player pressed thrust */
 	void JetPackThrust();
-
 	/** Player released thrust */
 	void JetPackStopThrust();
-
-	/** This function calculates our new velocity when we are thrusting */
-	UFUNCTION( BlueprintImplementableEvent )
-	FVector GetNewVelocityWhenThrusting( float delta );
-
-	/** This function calculates our new velocity when we are thrusting */
-	UFUNCTION( BlueprintImplementableEvent )
-	bool CanThrust();
-
-	/** Called when we start thrusting */
-	UFUNCTION( BlueprintImplementableEvent )
-	void OnStartThrusting();
-
-	/** Called when we stop thrusting */
-	UFUNCTION( BlueprintImplementableEvent )
-	void OnStopThrusting();
-
-	/** Returns the current amount of fuel for the jet pack. Please override. */
-	UFUNCTION( BlueprintNativeEvent, BlueprintPure, Category = "JetPack" )
-	float GetCurrentFuel() const;
-
-	/** Returns the maximum amount of fuel for the jet pack. Please override. */
-	UFUNCTION( BlueprintNativeEvent, BlueprintPure, Category = "JetPack" )
-	float GetMaxFuel();
+	
+	virtual void GetSupportedConsumableTypes(TArray<TSubclassOf< UFGItemDescriptor >>& out_itemDescriptors) const override;
+	virtual int GetSelectedConsumableTypeIndex() const override;
+	virtual void SetSelectedConsumableTypeIndex( const int selectedIndex ) override;
 
 protected:
 	/** @copydoc AFGEquipment::AddEquipmentActionBindings */
 	virtual void AddEquipmentActionBindings() override;
 
+	/** Replication. */
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	
+	UFUNCTION( BlueprintCallable )
+	void ConsumeFuel( const float delta );
+	UFUNCTION( BlueprintCallable )
+	void RegenerateFuel( const float delta );
+	
+	/** Called when we start thrusting */
+	UFUNCTION( BlueprintImplementableEvent )
+	void OnStartThrusting();
+	/** Called when we stop thrusting */
+	UFUNCTION( BlueprintImplementableEvent )
+	void OnStopThrusting();
+	
+	virtual void Equip( class AFGCharacterPlayer* character ) override;
+	virtual void UnEquip() override;
+	
 private:
+	/** This function checks if the JetPack can thrust. */
+	bool CanThrust() const;
+	
 	/** Used to report a noise event for when the jetpack is active. */
-	UFUNCTION()
 	void MakeActiveNoise();
 
-public:
-	
-	/** The duration we've held down thrust this flight, only resets when Landed*/
-	UPROPERTY( VisibleInstanceOnly, BlueprintReadOnly )
-	float mJumpTimeStamp;
+	bool CheckCurrentAvailableFuel();
 
 protected:
+	/** Default air control, used while not thrusting. */
+	UPROPERTY( BlueprintReadWrite )
+	float mDefaultAirControl;
+	/**  */
+	UPROPERTY( BlueprintReadWrite )
+	float mRTPCInterval;
+	
+	/** */
+	UPROPERTY( BlueprintReadWrite )
+	float mThrustCooldown;
+	/** The current amount of fuel in the JetPack. */
+	UPROPERTY( VisibleInstanceOnly, BlueprintReadOnly, SaveGame, Replicated )
+	float mCurrentFuel;
 	/** If we are actually thrusting or not */
 	UPROPERTY( VisibleInstanceOnly, BlueprintReadOnly )
 	bool mIsThrusting;
 	
-	/** The noise to make when the jetpack is active. */
-    UPROPERTY( EditDefaultsOnly, Category = "JetPack" )
-    TSubclassOf< class UFGNoise > mActiveNoise;
+	/** Array of Fuel Parameters that give stats to the JetPack. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "JetPack" )
+	TArray<TSubclassOf< class UFGJetPackFuelParameters >> mFuelTypes;
 
-    /** How often to make the noise (in seconds) while the jetpack is active. */
-    UPROPERTY( EditDefaultsOnly, Category = "JetPack" )
-    float mActiveNoiseFrequency;
-
-    FTimerHandle mActiveNoiseTimerHandle;
-
+	/** */
+	UPROPERTY( BlueprintReadOnly, SaveGame, Replicated, Category = "JetPack" )
+	int mSelectedFuelType = 0;
+	UPROPERTY( BlueprintReadOnly, SaveGame, Replicated, Category = "JetPack" )
+	int mCurrentFuelType = 0;
+	
 private:
-
+	/** How much fuel that has been paid for. */
+	float mPaidForFuel;
+	/** The duration we've held down thrust this flight, only resets when Landed. */
+	float mJumpTimeStamp;
 	/** The player is holding down the thrust key and wants to thrust */
 	bool mWantsToThrust;
-
-	/** A cached instance of the instigators movementcomponent */
+	/** A cached instance of the instigators MovementComponent */
+	UPROPERTY()
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
+	
+	FTimerHandle mActiveNoiseTimerHandle;
+
 };
 
 UCLASS()
-class FACTORYGAME_API AFGJetPackAttachment : public AFGEquipmentAttachment
+class FACTORYGAME_API AFGJetPackAttachment final : public AFGEquipmentAttachment
 {
 	GENERATED_BODY()
-
 public:
-
 	/** Replication. */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
@@ -125,12 +130,10 @@ public:
 	void OnStopThrusting();
 
 	/** Simple set */
-	void SetIsThrusting( bool newIsThrusting );
+	void SetIsThrusting( const bool newIsThrusting );
 
 protected:
 	UPROPERTY( ReplicatedUsing = OnRep_IsThrusting )
 	bool mIsThrusting;
 
 };
-
-

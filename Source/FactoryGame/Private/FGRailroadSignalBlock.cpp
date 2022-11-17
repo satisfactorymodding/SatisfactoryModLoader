@@ -10,7 +10,7 @@ void FFGRailroadBlockReservation::NotifyExitCondition(bool isClear){ }
 bool FFGRailroadBlockReservation::HasExitedReservation( AFGTrain* train){ return bool(); }
 void FFGRailroadSignalBlock::BlockEntered( AFGRailroadVehicle* byVehicle){ }
 void FFGRailroadSignalBlock::BlockExited( AFGRailroadVehicle* byVehicle){ }
-ERailroadBlockOccupancy FFGRailroadSignalBlock::GetOccupancyFor( AFGBuildableRailroadSignal* signal) const{ return ERailroadBlockOccupancy(); }
+ERailroadSignalAspect FFGRailroadSignalBlock::GetAspectFor( AFGBuildableRailroadSignal* signal) const{ return ERailroadSignalAspect(); }
 bool FFGRailroadSignalBlock::IsOccupied() const{ return bool(); }
 bool FFGRailroadSignalBlock::IsOccupiedBy( AFGTrain* train) const{ return bool(); }
 TWeakPtr< FFGRailroadBlockReservation > FFGRailroadSignalBlock::CreateReservation( AFGTrain* train, AFGBuildableRailroadSignal* entrySignal, int32 entryPathSegment, FRailroadPathSharedPtr trainPath){ return TWeakPtr<FFGRailroadBlockReservation>(); }
@@ -23,3 +23,4 @@ void FFGRailroadSignalBlock::UpdateReservation(FFGRailroadBlockReservation* rese
 void FFGRailroadSignalBlock::ApproveReservation(FFGRailroadBlockReservation* reservation){ }
 void FFGRailroadSignalBlock::CancelReservation(FFGRailroadBlockReservation* reservation){ }
 void FFGRailroadSignalBlock::NotifyEnteredReservation(FFGRailroadBlockReservation* reservation){ }
+bool FFGRailroadSignalBlock::HasApprovedReservation(const  AFGTrain* train) const{ return bool(); }

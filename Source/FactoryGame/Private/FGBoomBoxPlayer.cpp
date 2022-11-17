@@ -35,7 +35,6 @@ AFGBoomBoxPlayer::AFGBoomBoxPlayer() : Super() {
 	this->mTurboBassAudioEvent = nullptr;
 	this->mTurboBassBlockingThreshold = -48.0;
 	this->mTapeTextureParameter = TEXT("Albedo");
-	this->mTapeMaterialIndex = 0;
 	this->mAkComponent = CreateDefaultSubobject<UAkComponent>(TEXT("AkComponent"));
 	this->mMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	this->mSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
@@ -56,9 +55,7 @@ AFGBoomBoxPlayer::AFGBoomBoxPlayer() : Super() {
 	this->mCachedMaterialInstance = nullptr;
 	this->mState.mCurrentTape = nullptr;
 	this->mState.mCurrentSongIx = -1;
-	this->mState.mSongOffsetMS = 0;
 	this->mState.mVolume = 1.0;
-	this->mState.mPlaybackState = 0;
 	this->mMode = EBoomBoxMode::Undefined;
 	this->mRepeatMode = EBoomBoxRepeatMode::RepeatTape;
 	this->mOwningCharacter = nullptr;

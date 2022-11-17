@@ -71,16 +71,19 @@ void AFGEquipment::SetAttachment( AFGEquipmentAttachment* newAttachment){ }
 void AFGEquipment::SetSecondaryAttachment( AFGEquipmentAttachment* newAttachment){ }
 void AFGEquipment::Server_UpdateAttachmentUseState_Implementation(int newUseState){ }
 bool AFGEquipment::Server_UpdateAttachmentUseState_Validate(int newUseState){ return bool(); }
-float AFGEquipment::AdjustDamage_Implementation(float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ return float(); }
+float AFGEquipment::AdjustDamage_Implementation(const float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ return float(); }
 EEquipmentSlot AFGEquipment::GetEquipmentSlot(TSubclassOf< AFGEquipment > inClass){ return EEquipmentSlot(); }
 void AFGEquipment::SpawnChildEquipment(){ }
 bool AFGEquipment::ShouldShowStinger() const{ return bool(); }
 void AFGEquipment::WasRemovedFromSlot_Implementation(){ }
 void AFGEquipment::WasSlottedIn_Implementation( AFGCharacterPlayer* holder){ }
+void AFGEquipment::GetSupportedConsumableTypes(TArray<TSubclassOf< UFGItemDescriptor >>& out_itemDescriptors) const{ }
+int AFGEquipment::GetSelectedConsumableTypeIndex() const{ return int(); }
+void AFGEquipment::SetSelectedConsumableTypeIndex(const int selectedIndex){ }
 void AFGEquipment::WasEquipped_Implementation(){ }
 void AFGEquipment::WasUnEquipped_Implementation(){ }
-void AFGEquipment::AddEquipmentHUD(){ }
-void AFGEquipment::RemoveEquipmentHUD(){ }
+void AFGEquipment::AddEquipmentHUD() const{ }
+void AFGEquipment::RemoveEquipmentHUD() const{ }
 void AFGEquipment::SetEquipmentTicks(bool inTick){ }
 void AFGEquipment::AddEquipmentActionBindings(){ }
 void AFGEquipment::ClearEquipmentActionBindings(){ }

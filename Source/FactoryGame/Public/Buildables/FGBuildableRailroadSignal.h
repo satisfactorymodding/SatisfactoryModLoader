@@ -44,6 +44,10 @@ public:
 	virtual	void SetupForSignificance() override;
 	//End IFGSignificanceInterface
 
+	// Begin IFGDismantleInterface
+	virtual void PreUpgrade_Implementation() override;
+	// End IFGDismantleInterface
+	
 	/** @return If this is significant. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Signal" )
 	bool IsSignificant() const { return mIsSignificant; }
@@ -116,6 +120,9 @@ protected:
 	void OnVisualStateChanged();
 
 private:
+	/** Called when this signal is about to be removed. */
+	void DisconnectSignal();
+	
 	/** Updates the material parameters of this signal. */
 	void UpdateVisuals();
 	void ApplyVisualState( int16 state );

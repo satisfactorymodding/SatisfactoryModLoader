@@ -7,6 +7,7 @@
 
 AFGBuildableConveyorBelt::AFGBuildableConveyorBelt() : Super() {
 	this->mMesh = nullptr;
+	this->mCollisionProxyMesh = nullptr;
 	this->mMeshLength = 0.0;
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	this->mSoundSplineComponent = nullptr;

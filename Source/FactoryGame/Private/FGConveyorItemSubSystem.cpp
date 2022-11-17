@@ -9,17 +9,14 @@ void FInstanceLODs::AddInstance_Internal(AActor* Outer){ }
 #if WITH_PIE_SUPPORT
 #endif 
 AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
-	this->mInitialPreAllocatedNumberOfItemTypes = 0;
 	this->mInitialPreAllocatedNumberOfItemsInstances = 512;
 	this->mItemInstanceIncrementSize = 32;
 	this->mItemInstanceUpdateThreshold = 64;
-	this->mItemTypeIncrementSize = 0;
 	this->mLiftMesh = nullptr;
 	this->mMaxParallelTasks = 10;
 	this->mInstanceVertsSplit = 32768;
 	this->mMinInstancesPerBucket = 16;
 	this->mMaxInstancesPerBucket = 128;
-	this->mNumberOfChecksBeforeUsingCachedData = 0;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_LastDemotable;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;

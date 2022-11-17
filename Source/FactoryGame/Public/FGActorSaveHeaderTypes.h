@@ -126,6 +126,21 @@ struct FACTORYGAME_API FActorSaveHeader
 		return false;
 	}
 
+	bool Set( UObject* obj, FTransform overrideTransform )
+	{
+		ObjectHeader.Set( obj );
+		if( AActor* actor = Cast<AActor>( obj ) )
+		{
+			Transform = overrideTransform;
+			NeedTransform = IFGSaveInterface::Execute_NeedTransform( actor );
+			WasPlacedInLevel = actor->HasAnyFlags( RF_WasLoaded );
+
+			return true;
+		}
+
+		return false;
+	}
+
 	/** Helper to get object names */
 	FORCEINLINE void ParseObjectName( FString& out_objName )
 	{

@@ -23,6 +23,7 @@ public:
 
 	// Begin AFGHologram interface
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
+	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
 	// End AFGHologram interface
 
 protected:

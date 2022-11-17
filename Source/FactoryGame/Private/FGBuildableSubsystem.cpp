@@ -83,7 +83,6 @@ AFGBuildableSubsystem* AFGBuildableSubsystem::Get(UObject* worldContext){ return
 AFGBuildable* AFGBuildableSubsystem::BeginSpawnBuildable(TSubclassOf<  AFGBuildable > inClass, const FTransform& inTransform){ return nullptr; }
 void AFGBuildableSubsystem::AddBuildable( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::AddConveyor(AFGBuildableConveyorBase* conveyor){ }
-void AFGBuildableSubsystem::RemoveFogPlanes( AFGBuildable* buildable){ }
 AFGBuildableConveyorBase* AFGBuildableSubsystem::GetConnectedConveyorBelt( UFGFactoryConnectionComponent* connection){ return nullptr; }
 void AFGBuildableSubsystem::RemoveBuildable( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::RemoveConveyor(AFGBuildableConveyorBase* conveyor){ }
@@ -103,7 +102,6 @@ void AFGBuildableSubsystem::BuildableLightColorSlotsUpdated(const TArray< FLinea
 void AFGBuildableSubsystem::UpdateBuildableCullDistances(float newFactor){ }
 UMaterialInstanceDynamic* AFGBuildableSubsystem::GetConveyorBelTrackMaterialFromSpeed(float speed, UMaterialInterface* currentMaterial){ return nullptr; }
 void AFGBuildableSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
-void AFGBuildableSubsystem::DebugEnableInstancing(bool enabled){ }
 void AFGBuildableSubsystem::DebugGetFactoryActors(TArray< AActor* >& out_actors){ }
 FName AFGBuildableSubsystem::GetMeshMapName(UStaticMesh* mesh, UMeshComponent* sourceComponent){ return FName(); }
 FNetConstructionID AFGBuildableSubsystem::GetNewNetConstructionID(){ return FNetConstructionID(); }
@@ -121,7 +119,6 @@ float AFGBuildableSubsystem::GetDistanceSqToBoundingBox(const FVector& point,  A
 void AFGBuildableSubsystem::RegisterFactoryTickFunction(bool shouldRegister){ }
 void AFGBuildableSubsystem::CreateFactoryStatID() const{ }
 void AFGBuildableSubsystem::UpdateReplayEffects(float dt){ }
-void AFGBuildableSubsystem::AddBuildableMeshInstances( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::AddToTickGroup(AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::RemoveFromTickGroup(AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::SetupColoredMeshInstances(AFGBuildable* buildable){ }

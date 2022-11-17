@@ -12,8 +12,6 @@ void UFGResearchRecipe::UpdateAssetBundleData(){ }
 UFGResearchRecipe::UFGResearchRecipe() : Super() {
 	this->mIsRepeatable = false;
 	this->mRewardUsesDropPackage = false;
-	this->mDecorPoints = 0;
-	this->mStructurePoints = 0;
 }
 FResearchRecipeReward UFGResearchRecipe::GetResearcResults(TSubclassOf<UFGResearchRecipe> inClass){ return FResearchRecipeReward(); }
 float UFGResearchRecipe::GetResearchTime(TSubclassOf<UFGResearchRecipe> inClass){ return float(); }

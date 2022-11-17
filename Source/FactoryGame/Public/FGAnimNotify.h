@@ -21,7 +21,7 @@ public:
 	virtual void Notify( USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation ) override;
 	//~ End UAnimNotify interface
 
-	/** Called from OnAttackNotify. */
-	UPROPERTY( BlueprintAssignable, Category = "Attack", DisplayName = "OnAttackNotify" )
+	/** Called from Notify. */
+	UPROPERTY( BlueprintAssignable, Category = "Notify", DisplayName = "OnNotifyTriggered" )
 	FNotifyTrigger mOnNotifyTriggered;
 };

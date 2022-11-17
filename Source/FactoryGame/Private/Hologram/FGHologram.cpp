@@ -22,10 +22,12 @@ AFGHologram::AFGHologram() : Super() {
 	this->mParent = nullptr;
 	this->mBuildClass = nullptr;
 	this->mUseBuildClearanceOverlapSnapp = false;
+	this->mBlueprintDesigner = nullptr;
+	this->mAllowEdgePlacementInDesignerEvenOnIntersect = false;
+	this->mCanBePlacedInBlueprintDesigner = false;
 	this->mConstructionInstigator = nullptr;
 	this->mIsDisabled = false;
 	this->mIsChanged = false;
-	this->mInitialScrollModeValue = 0;
 	this->mConstructionPosition = FVector::ZeroVector;
 	this->mConstructionRotation = FRotator::ZeroRotator;
 	this->SetHidden(true);
@@ -104,11 +106,14 @@ void AFGHologram::ResetConstructDisqualifiers(){ }
 void AFGHologram::UpdateRotationValuesFromTransform(){ }
 void AFGHologram::SetBuildClass(TSubclassOf<  AActor > buildClass){ }
 TSubclassOf< AActor > AFGHologram::GetActorClass() const{ return TSubclassOf<AActor>(); }
+void AFGHologram::SetInsideBlueprintDesigner( AFGBuildableBlueprintDesigner* designer){ }
+AFGBuildableBlueprintDesigner* AFGHologram::GetBlueprintDesigner(){ return nullptr; }
 void AFGHologram::OnHologramTransformUpdated(){ }
 void AFGHologram::SetupClearance( UFGClearanceComponent* clearanceComponent){ }
 void AFGHologram::SetupClearanceDetector( UFGClearanceComponent* clearanceComponent){ }
 void AFGHologram::CheckClearance(const FVector& locationOffset){ }
 void AFGHologram::HandleClearanceOverlap(const FOverlapResult& overlap, const FVector& locationOffset, bool HologramHasSoftClearance){ }
+bool AFGHologram::CanIntersectWithDesigner( AFGBuildableBlueprintDesigner* designer){ return bool(); }
 UPrimitiveComponent* AFGHologram::GetClearanceOverlapCheckComponent() const{ return nullptr; }
 void AFGHologram::CheckValidPlacement(){ }
 void AFGHologram::CheckCanAfford( UFGInventoryComponent* inventory){ }
@@ -118,6 +123,7 @@ void AFGHologram::SetMaterial( UMaterialInterface* material){ }
 void AFGHologram::SetMaterialState(EHologramMaterialState state){ }
 uint8 AFGHologram::GetStencilForHologramMaterialState(EHologramMaterialState state) const{ return uint8(); }
 USceneComponent* AFGHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
+TArray<UStaticMeshComponent*> AFGHologram::SpawnLightWeightInstanceData(USceneComponent* attachParent){ return TArray<UStaticMeshComponent*>(); }
 void AFGHologram::SetIsChanged(bool isChanged){ }
 bool AFGHologram::IsLocalHologram() const{ return bool(); }
 bool AFGHologram::IsValidHitActor(AActor* hitActor) const{ return bool(); }

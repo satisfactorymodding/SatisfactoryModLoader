@@ -2,11 +2,12 @@
 
 #include "Hologram/FGPoleHologram.h"
 #include "Components/SceneComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 AFGPoleHologram::AFGPoleHologram() : Super() {
 	this->mPoleMesh.Mesh = nullptr;
 	this->mPoleMesh.Height = 0.0;
-	this->mPoleMeshComponent = nullptr;
+	this->mPoleMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PoleMesh"));
 	this->mPoleHeightComponent = nullptr;
 	this->mInstancedMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Instanced Mesh Component"));
 	this->mPoleHeight = 0.0;
@@ -14,6 +15,8 @@ AFGPoleHologram::AFGPoleHologram() : Super() {
 	this->mBuildModeZoop = nullptr;
 	this->mClearanceExtent = FVector::ZeroVector;
 	this->mUseGradualFoundationRotations = true;
+	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
+	this->mPoleMeshComponent->SetupAttachment(RootComponent);
 	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {

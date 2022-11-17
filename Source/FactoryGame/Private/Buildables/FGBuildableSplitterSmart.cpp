@@ -4,7 +4,6 @@
 
 AFGBuildableSplitterSmart::AFGBuildableSplitterSmart() : Super() {
 	this->mMaxNumSortRules = 64;
-	this->mLastOutputIndex = 0;
 	this->mToggleDormancyOnInteraction = true;
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 }

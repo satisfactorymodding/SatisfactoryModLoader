@@ -37,6 +37,10 @@ public class FactoryGame : ModuleRules
 		});
 		
 		PublicDependencyModuleNames.AddRange(new[] {
+			"AbstractInstance",
+		});
+		
+		PublicDependencyModuleNames.AddRange(new[] {
 			"DummyHeaders",
 		});
         

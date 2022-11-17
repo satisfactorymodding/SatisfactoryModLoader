@@ -4,13 +4,12 @@
 
 void UFGCheatManager::InitCheatManager(){ }
 bool UFGCheatManager::IsSupportedForNetworking() const{ return bool(); }
+bool UFGCheatManager::ReplicateSubobjects( UActorChannel *Channel,  FOutBunch *Bunch, FReplicationFlags *RepFlags){ return bool(); }
 int32 UFGCheatManager::GetFunctionCallspace(UFunction* Function, FFrame* Stack){ return int32(); }
 bool UFGCheatManager::CallRemoteFunction(UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){ return bool(); }
 void UFGCheatManager::PreSave(const ITargetPlatform* TargetPlatform){ }
-bool UFGCheatManager::ReplicateSubobjects( UActorChannel *Channel,  FOutBunch *Bunch, FReplicationFlags *RepFlags){ return bool(); }
-void UFGCheatManager::CacheFunctionCategoryMapping(){ }
 void UFGCheatManager::InitDefaultCheats(){ }
-bool UFGCheatManager::IsClient() const{ return bool(); }
+void UFGCheatManager::Cheats(){ }
 void UFGCheatManager::Server_NoCost_Implementation(bool enabled){ }
 void UFGCheatManager::NoCost(bool enabled){ }
 bool UFGCheatManager::NoCost_Get(){ return bool(); }
@@ -20,28 +19,76 @@ bool UFGCheatManager::NoPower_Get(){ return bool(); }
 void UFGCheatManager::Server_NoFuel_Implementation(bool enabled){ }
 void UFGCheatManager::NoFuel(bool enabled){ }
 bool UFGCheatManager::NoFuel_Get(){ return bool(); }
-void UFGCheatManager::NoMessages(bool enabled){ }
-bool UFGCheatManager::NoMessages_Get(){ return bool(); }
 void UFGCheatManager::TurboBuildMode(bool enabled){ }
 bool UFGCheatManager::TurboBuildMode_Get(){ return bool(); }
 void UFGCheatManager::TurboProductionMode(bool enabled){ }
-bool UFGCheatManager::TurboMode_Get(){ return bool(); }
+bool UFGCheatManager::TurboProductionMode_Get(){ return bool(); }
 void UFGCheatManager::Server_GiveItemStacks_Implementation( AFGCharacterPlayer* character, TSubclassOf<  UFGItemDescriptor > resource, int32 numberOfStacks){ }
 void UFGCheatManager::GiveItemStacks(TSubclassOf<  UFGItemDescriptor > resource, int32 numberOfStacks){ }
 void UFGCheatManager::Server_GiveItemsSingle_Implementation( AFGCharacterPlayer* character, TSubclassOf<  UFGItemDescriptor > resource, int32 numberOfItems){ }
 void UFGCheatManager::GiveItemsSingle(TSubclassOf<  UFGItemDescriptor > resource, int32 numberOfItems){ }
+void UFGCheatManager::ClearGiveItemPopularList(){ }
 void UFGCheatManager::Server_GiveResourceSinkCoupons_Implementation(int32 numCoupons){ }
 void UFGCheatManager::GiveResourceSinkCoupons(int32 numCoupons){ }
-void UFGCheatManager::DrawSphere(int32 radius){ }
+void UFGCheatManager::NoMessages(bool enabled){ }
+bool UFGCheatManager::NoMessages_Get(){ return bool(); }
+void UFGCheatManager::PumpiMode(bool enable){ }
+bool UFGCheatManager::PumpiMode_Get(){ return bool(); }
+void UFGCheatManager::HiddenHUDMode(bool enable){ }
+bool UFGCheatManager::HiddenHUDMode_Get() const{ return bool(); }
+void UFGCheatManager::Server_SetTimeOfDay_Implementation(int32 hour, int32 minute){ }
+void UFGCheatManager::SetTimeOfDay(int32 hour, int32 minute){ }
+void UFGCheatManager::Server_SetTimeSpeedMultiplier_Implementation(float speed){ }
+void UFGCheatManager::SetTimeSpeedMultiplier(float speed){ }
+void UFGCheatManager::Server_SetTimeSpeedMultiplierResetTime_Implementation(int32 resetHour){ }
+void UFGCheatManager::SetTimeSpeedMultiplierResetTime(int32 resetHour){ }
+int32 UFGCheatManager::SetTimeOfDay_hour_Get(){ return int32(); }
+int32 UFGCheatManager::SetTimeOfDay_minute_Get(){ return int32(); }
+void UFGCheatManager::Server_SetSlomo_Implementation(float slomo){ }
+void UFGCheatManager::SetSlomo(float slomo){ }
+void UFGCheatManager::Server_SetPlanetPosition_Implementation(float value){ }
+void UFGCheatManager::SetPlanetPosition(float value){ }
+void UFGCheatManager::Server_SetPlanetPositionDeg_Implementation(int32 value){ }
+void UFGCheatManager::SetPlanetPositionDeg(int32 value){ }
+void UFGCheatManager::Server_SetPlanetMovementEnabled_Implementation(bool enabled){ }
+void UFGCheatManager::SetPlanetMovementEnabled(bool enabled){ }
+void UFGCheatManager::Server_SetPlanetSpeedMultiplier_Implementation(float multiplier){ }
+void UFGCheatManager::SetPlanetSpeedMultiplier(float multiplier){ }
+void UFGCheatManager::ForceSetWeatherType(TSubclassOf<class AFGWeatherReaction> Reaction){ }
+void UFGCheatManager::LockWeather(bool bState){ }
+void UFGCheatManager::Server_Creature_CanAttackEachother_Implementation(bool canAttack){ }
+void UFGCheatManager::Creature_CanAttackEachother(bool canAttack){ }
+void UFGCheatManager::Creature_SetStressEnabled(bool enable){ }
+void UFGCheatManager::Server_Creature_SpawnNew_Implementation(TSubclassOf<  AFGCreature > creatureClass, int32 numToSpawn){ }
+void UFGCheatManager::Creature_SpawnNew(TSubclassOf<  AFGCreature > creatureClass, int32 numToSpawn){ }
+void UFGCheatManager::Server_Creature_KillAllCreaturesInRadius_Implementation(float radius){ }
+void UFGCheatManager::Creature_KillAllCreaturesInRadius(float radius){ }
+void UFGCheatManager::Server_Creature_KillAllCreatures_Implementation(){ }
+void UFGCheatManager::Creature_KillAllCreatures(){ }
+void UFGCheatManager::Server_Creature_ForceSpawnCreatures_Implementation(){ }
+void UFGCheatManager::Creature_ForceSpawnCreatures(){ }
 void UFGCheatManager::PlayerFly(bool flyModeEnabled){ }
+bool UFGCheatManager::PlayerFly_Get(){ return bool(); }
 void UFGCheatManager::Server_PlayerAllFly_Implementation(bool flyModeEnabled){ }
 void UFGCheatManager::PlayerAllFly(bool flyModeEnabled){ }
 bool UFGCheatManager::PlayerAllFly_Get(){ return bool(); }
-bool UFGCheatManager::PlayerFly_Get(){ return bool(); }
 void UFGCheatManager::PlayerNoClipModeOnFly(bool ghostMode){ }
 bool UFGCheatManager::PlayerNoClipModeOnFly_Get(){ return bool(); }
 void UFGCheatManager::UpdatePlayerNametags(){ }
-void UFGCheatManager::ClearGiveItemPopularList(){ }
+void UFGCheatManager::EnablePlayerFOV(bool enable){ }
+bool UFGCheatManager::EnablePlayerFOV_Get(){ return bool(); }
+void UFGCheatManager::DestroyPawn(){ }
+void UFGCheatManager::ToggleCameraMode(){ }
+void UFGCheatManager::ListDebugStartingPoint(){ }
+void UFGCheatManager::SetDebugStartingPoint(FName startingPoint){ }
+void UFGCheatManager::SetRandomDebugStartingPoint(){ }
+void UFGCheatManager::SetCreatureHostility(EPlayerHostilityMode hostility){ }
+void UFGCheatManager::Foliage_RemoveOneByOne(int32 maxNumInstances){ }
+void UFGCheatManager::Server_Foliage_RemoveOneByOne_Implementation(int32 maxNumInstances){ }
+void UFGCheatManager::Foliage_RemoveInBulk(int32 maxNumInstances){ }
+void UFGCheatManager::Server_Foliage_RemoveInBulk_Implementation(int32 maxNumInstances){ }
+void UFGCheatManager::Foliage_RemoveByTarget(float radius){ }
+void UFGCheatManager::Server_Foliage_RemoveByTarget_Implementation(float radius){ }
 void UFGCheatManager::Server_GiveAllSchematics_Implementation(){ }
 void UFGCheatManager::GiveAllSchematics(){ }
 void UFGCheatManager::Server_GiveAllSchematicsAndPhases_Implementation(){ }
@@ -58,74 +105,38 @@ void UFGCheatManager::Server_GiveStorySchematics_Implementation(){ }
 void UFGCheatManager::GiveStorySchematics(){ }
 void UFGCheatManager::Server_GiveAllResearchTrees_Implementation(){ }
 void UFGCheatManager::GiveAllResearchTrees(){ }
-void UFGCheatManager::TriggerNextPrimaryStoryMessageInQueue(){ }
-void UFGCheatManager::TriggerNextSecondaryStoryMessageInQueue(int32 storyQueueIndex){ }
-void UFGCheatManager::TriggerNextFloatingMessageInPrimaryQueue(){ }
-void UFGCheatManager::TriggerRandomTriggeredBarksMessage(){ }
-void UFGCheatManager::StartNextStoryQueue(){ }
-void UFGCheatManager::ResetAllStoryQueues(){ }
-void UFGCheatManager::ResetCurrentStoryQueue(){ }
-void UFGCheatManager::Server_RebuildPowerCircuits_Implementation(){ }
-void UFGCheatManager::RebuildPowerCircuits(){ }
-void UFGCheatManager::Server_EnableBuildableTick_Implementation(bool enable){ }
-void UFGCheatManager::EnableBuildableTick(bool enable){ }
-bool UFGCheatManager::EnableBuildableTick_Get(){ return bool(); }
-void UFGCheatManager::EnablePlayerFOV(bool enable){ }
-bool UFGCheatManager::EnablePlayerFOV_Get(){ return bool(); }
-void UFGCheatManager::DestroyPawn(){ }
-void UFGCheatManager::RemoveFoliageOneByOne(int32 maxNumInstances){ }
-void UFGCheatManager::Server_RemoveFoliageOneByOne_Implementation(int32 maxNumInstances){ }
-void UFGCheatManager::RemoveFoliageInBulk(int32 maxNumInstances){ }
-void UFGCheatManager::Server_RemoveFoliageInBulk_Implementation(int32 maxNumInstances){ }
-void UFGCheatManager::RemoveFoliageByTarget(float radius){ }
-void UFGCheatManager::Server_RemoveFoliageByTarget_Implementation(float radius){ }
-void UFGCheatManager::Server_SetCreatureHostility_Implementation(ECreatureHostility hostility){ }
-void UFGCheatManager::SetCreatureHostility(ECreatureHostility hostility){ }
-void UFGCheatManager::SetCreatureStressEnabled(bool enable){ }
-void UFGCheatManager::Server_SpawnCreature_Implementation(TSubclassOf<  AFGCreature > creatureClass, int32 numToSpawn){ }
-void UFGCheatManager::SpawnCreature(TSubclassOf<  AFGCreature > creatureClass, int32 numToSpawn){ }
-void UFGCheatManager::Server_KillAllCreaturesInRadius_Implementation(float radius){ }
-void UFGCheatManager::KillAllCreaturesInRadius(float radius){ }
-void UFGCheatManager::Server_KillAllCreatures_Implementation(){ }
-void UFGCheatManager::KillAllCreatures(){ }
-void UFGCheatManager::Server_SetTimeOfDay_Implementation(int32 hour, int32 minute){ }
-void UFGCheatManager::SetTimeOfDay(int32 hour, int32 minute){ }
-void UFGCheatManager::Server_SetTimeSpeedMultiplierResetTime_Implementation(int32 resetHour){ }
-void UFGCheatManager::SetTimeSpeedMultiplierResetTime(int32 resetHour){ }
-int32 UFGCheatManager::SetTimeOfDay_hour_Get(){ return int32(); }
-int32 UFGCheatManager::SetTimeOfDay_minute_Get(){ return int32(); }
-void UFGCheatManager::Server_SetPlanetPosition_Implementation(float value){ }
-void UFGCheatManager::SetPlanetPosition(float value){ }
-void UFGCheatManager::Server_SetPlanetPositionDeg_Implementation(int32 value){ }
-void UFGCheatManager::SetPlanetPositionDeg(int32 value){ }
-void UFGCheatManager::Server_SetPlanetMovementEnabled_Implementation(bool enabled){ }
-void UFGCheatManager::SetPlanetMovementEnabled(bool enabled){ }
-void UFGCheatManager::Server_SetPlanetSpeedMultiplier_Implementation(float multiplier){ }
-void UFGCheatManager::SetPlanetSpeedMultiplier(float multiplier){ }
-void UFGCheatManager::Server_ShowFactoryOnly_Implementation(bool environmentHidden){ }
-void UFGCheatManager::ShowFactoryOnly(bool environmentHidden){ }
-bool UFGCheatManager::ShowFactoryOnly_Get(){ return bool(); }
-void UFGCheatManager::Server_HideFactoryOnly_Implementation(bool factoryHidden){ }
-void UFGCheatManager::HideFactoryOnly(bool factoryHidden){ }
-bool UFGCheatManager::HideFactoryOnly_Get(){ return bool(); }
-void UFGCheatManager::DumpAllAvailableRecipes(){ }
-void UFGCheatManager::EnableAudioDebug(bool isEnabled){ }
-void UFGCheatManager::ToggleAudioDebug(){ }
-void UFGCheatManager::Server_SetSlomo_Implementation(float slomo){ }
-void UFGCheatManager::SetSlomo(float slomo){ }
-void UFGCheatManager::OpenModMap(){ }
-void UFGCheatManager::PumpiMode(bool enable){ }
-void UFGCheatManager::HiddenHUDMode(bool enable){ }
-bool UFGCheatManager::PumpiMode_Get(){ return bool(); }
-void UFGCheatManager::SplitAllConveyors(){ }
-void UFGCheatManager::MergeAllConveyors(){ }
-void UFGCheatManager::Server_SetTimeSpeedMultiplier_Implementation(float speed){ }
-void UFGCheatManager::SetTimeSpeedMultiplier(float speed){ }
-void UFGCheatManager::SetFactoryDetailReplication(bool enable){ }
-bool UFGCheatManager::SetFactoryDetailReplication_Get(){ return bool(); }
-void UFGCheatManager::Server_ResetFuses_Implementation(){ }
-void UFGCheatManager::ResetFuses(){ }
-void UFGCheatManager::ToggleCameraMode(){ }
+void UFGCheatManager::Server_GiveSchematicsOfTier_Implementation(int32 tier){ }
+void UFGCheatManager::GiveSchematicsOfTier(int32 tier){ }
+void UFGCheatManager::Server_SetGamePhase_Implementation(EGamePhase phase){ }
+void UFGCheatManager::SetGamePhase(EGamePhase phase){ }
+void UFGCheatManager::Server_SetNextGamePhase_Implementation(){ }
+void UFGCheatManager::SetNextGamePhase(){ }
+void UFGCheatManager::Server_ResetGamePhases_Implementation(){ }
+void UFGCheatManager::ResetGamePhases(){ }
+void UFGCheatManager::Server_ResetHubTutorial_Implementation(){ }
+void UFGCheatManager::ResetHubTutorial(){ }
+void UFGCheatManager::Server_ResetSchematics_Implementation(){ }
+void UFGCheatManager::ResetSchematics(){ }
+void UFGCheatManager::Server_ResetRecipes_Implementation(){ }
+void UFGCheatManager::ResetRecipes(){ }
+void UFGCheatManager::Server_CompleteResearch_Implementation(){ }
+void UFGCheatManager::CompleteResearch(){ }
+void UFGCheatManager::Server_SetTradingPostLevel_Implementation(int32 inLevel){ }
+void UFGCheatManager::SetTradingPostLevel(int32 inLevel){ }
+void UFGCheatManager::Map_RemoveMarker(int32 index){ }
+void UFGCheatManager::NetMulticast_Map_Reveal_Implementation(){ }
+void UFGCheatManager::Server_Map_Reveal_Implementation(){ }
+void UFGCheatManager::Map_Reveal(){ }
+void UFGCheatManager::NetMulticast_Map_Hide_Implementation(){ }
+void UFGCheatManager::Server_Map_Hide_Implementation(){ }
+void UFGCheatManager::Map_Hide(){ }
+void UFGCheatManager::Story_TriggerNextPrimaryMessageInQueue(){ }
+void UFGCheatManager::Story_TriggerNextSecondaryMessageInQueue(int32 storyQueueIndex){ }
+void UFGCheatManager::Story_TriggerNextFloatingMessageInPrimaryQueue(){ }
+void UFGCheatManager::Story_TriggerRandomTriggeredBarksMessage(){ }
+void UFGCheatManager::Story_StartNextStoryQueue(){ }
+void UFGCheatManager::Story_ResetAllStoryQueues(){ }
+void UFGCheatManager::Story_ResetCurrentStoryQueue(){ }
 void UFGCheatManager::Photo_ToggleAdvancedPhotoMode(){ }
 void UFGCheatManager::Photo_SetManualFocusDistance(float manualFocusDistance){ }
 void UFGCheatManager::Photo_FocusTrackLookedAtObject(){ }
@@ -135,126 +146,114 @@ void UFGCheatManager::Photo_ResetToDefault(){ }
 void UFGCheatManager::Photo_AddCurrentPlayerPosAndRot(){ }
 void UFGCheatManager::Photo_PlaySequence(){ }
 void UFGCheatManager::Photo_ToggleSequencer(){ }
-void UFGCheatManager::Server_GiveSchematicsOfTier_Implementation(int32 tier){ }
-void UFGCheatManager::GiveSchematicsOfTier(int32 tier){ }
-void UFGCheatManager::Server_SetGamePhase_Implementation(EGamePhase phase){ }
-void UFGCheatManager::SetGamePhase(EGamePhase phase){ }
-void UFGCheatManager::Server_SetNextGamePhase_Implementation(){ }
-void UFGCheatManager::SetNextGamePhase(){ }
-void UFGCheatManager::Server_ResetGamePhases_Implementation(){ }
-void UFGCheatManager::ResetGamePhases(){ }
-void UFGCheatManager::DumpGamePhases(){ }
-void UFGCheatManager::TestSharedInventoryPtr(){ }
-void UFGCheatManager::Server_ForceSpawnCreatures_Implementation(){ }
-void UFGCheatManager::ForceSpawnCreatures(){ }
-void UFGCheatManager::ForceSetWeatherType(TSubclassOf<class AFGWeatherReaction> Reaction){ }
-void UFGCheatManager::LockWeather(bool bState){ }
-void UFGCheatManager::DumpNonDormantActors(){ }
-void UFGCheatManager::ToggleAudioLandingDebug(){ }
-void UFGCheatManager::DumpAttachedToSkelMesh(bool detailed){ }
-void UFGCheatManager::DumpTicking(bool detailed){ }
-void UFGCheatManager::DumpActiveGPUParticles(){ }
-void UFGCheatManager::ReplayBuildingEffects(){ }
-void UFGCheatManager::Server_HideAllBuildings_Implementation(bool inVisibility){ }
-void UFGCheatManager::HideAllBuildings(bool inVisibility){ }
-bool UFGCheatManager::HideAllBuildings_Get(){ return bool(); }
-void UFGCheatManager::RandomizeBuildingsColorSlot(uint8 slotIndex){ }
-void UFGCheatManager::UpdateSessionToOSS(){ }
-void UFGCheatManager::NetMulticast_RevealMap_Implementation(){ }
-void UFGCheatManager::Server_RevealMap_Implementation(){ }
-void UFGCheatManager::RevealMap(){ }
-void UFGCheatManager::NetMulticast_HideMap_Implementation(){ }
-void UFGCheatManager::Server_HideMap_Implementation(){ }
-void UFGCheatManager::HideMap(){ }
-void UFGCheatManager::RemoveMapMarker(int32 index){ }
-void UFGCheatManager::DumpPlayerStates(){ }
-void UFGCheatManager::DumpHotbarShortcuts(){ }
-void UFGCheatManager::EnableInstancingOnFactory(bool enabled){ }
-void UFGCheatManager::DumpActorRepresentations(){ }
-void UFGCheatManager::DumpSignificanceManagedObjects(){ }
+void UFGCheatManager::Online_EpicLogin(FString username, FString password){ }
+void UFGCheatManager::Online_EpicLogout(){ }
+void UFGCheatManager::Online_GetOnlineStatus(int32 localPlayerNum){ }
+void UFGCheatManager::Online_UpdatePresence(FString key, FString value){ }
+void UFGCheatManager::Online_UpdatePresenceString(FString string){ }
+void UFGCheatManager::Online_LogPresence(){ }
+void UFGCheatManager::Online_GetFriends(){ }
+void UFGCheatManager::Online_TriggerPresenceUpdate(){ }
+void UFGCheatManager::Online_SendInviteToFriend(FString friendName){ }
+void UFGCheatManager::Online_UpdateGameSession(){ }
+void UFGCheatManager::Online_DumpConnectionString(){ }
+void UFGCheatManager::Server_Vehicle_FlipDrivenVehicle_Implementation( AFGWheeledVehicle* vehicle){ }
+void UFGCheatManager::Vehicle_FlipDrivenVehicle(){ }
+void UFGCheatManager::Server_Vehicle_ResetDeadlocks_Implementation(){ }
+void UFGCheatManager::Vehicle_ResetDeadlocks(){ }
+void UFGCheatManager::Server_Vehicle_ResetTheChosenVehicle_Implementation(){ }
+void UFGCheatManager::Vehicle_ResetTheChosenVehicle(){ }
+void UFGCheatManager::Vehicle_DumpInfoAboutLookedAtVehicle(){ }
+void UFGCheatManager::Trains_ToggleSelfDriving(){ }
+void UFGCheatManager::Server_Trains_FillAllFreightCars_Implementation(float pct){ }
+void UFGCheatManager::Trains_FillAllFreightCars(float pct){ }
+void UFGCheatManager::Server_Trains_EmptyAllFreightCars_Implementation(){ }
+void UFGCheatManager::Trains_EmptyAllFreightCars(){ }
+void UFGCheatManager::Server_Trains_RerailAll_Implementation(){ }
+void UFGCheatManager::Trains_RerailAll(){ }
+void UFGCheatManager::Server_Trains_MarkTrackGraphsAsChanged_Implementation(){ }
+void UFGCheatManager::Trains_MarkTrackGraphsAsChanged(){ }
+void UFGCheatManager::Server_Trains_MarkTrackGraphsForRebuild_Implementation(){ }
+void UFGCheatManager::Trains_MarkTrackGraphsForRebuild(){ }
+void UFGCheatManager::Server_Pipe_FillFirstInEachNetwork_Implementation(){ }
+void UFGCheatManager::Pipe_FillFirstInEachNetwork(){ }
+void UFGCheatManager::Server_Pipe_EmptyAll_Implementation(){ }
+void UFGCheatManager::Pipe_EmptyAll(){ }
+void UFGCheatManager::Server_Pipe_ResetAll_Implementation(){ }
+void UFGCheatManager::Pipe_ResetAll(){ }
+void UFGCheatManager::Pipe_PrintMinSizes(){ }
+void UFGCheatManager::Pipe_SetVerboseLoggingOnAimedFluidBox(bool enabled){ }
+void UFGCheatManager::Pipe_EnableProbingOnAimedIntegrant(){ }
+void UFGCheatManager::Pipe_DisableProbingOnAimedIntegrant(){ }
+void UFGCheatManager::Pipe_ClearProbingOnAllPipe(){ }
+void UFGCheatManager::Pipe_AddSelectedNetworkToDisplayDebugList(){ }
+void UFGCheatManager::Pipe_ClearDisplayDebugList(){ }
+void UFGCheatManager::Pipe_PrintTweakables(){ }
+void UFGCheatManager::Pipe_TweakMaximumFlow(float rate){ }
+void UFGCheatManager::Pipe_TweakMinimumMaxContent(float minimumMaxContent, bool keepRelativeContent){ }
+void UFGCheatManager::Pipe_TweakPressureLoss(float pressureLoss){ }
+void UFGCheatManager::Pipe_TweakOverfill(float maxOverfillPct, float maxOverfillForPressure){ }
+void UFGCheatManager::Pipe_TweakGravity(float gravity){ }
+void UFGCheatManager::Pipe_TweakFluidFriction(float fluidFriction){ }
+void UFGCheatManager::Pipe_TweakFluidDensity(float fluidDensity){ }
+void UFGCheatManager::Pipe_TweakFluidViscosity(float fluidViscosity){ }
+void UFGCheatManager::Circuit_DumpCircuitsToLog(){ }
+void UFGCheatManager::Server_Circuit_RebuildAll_Implementation(){ }
+void UFGCheatManager::Circuit_RebuildAll(){ }
+void UFGCheatManager::Server_Circuit_ResetFuses_Implementation(){ }
+void UFGCheatManager::Circuit_ResetFuses(){ }
+void UFGCheatManager::Circuit_Bug_InsertDupeComponentIntoCircuit(int32 target){ }
+void UFGCheatManager::Circuit_Bug_InsertDupeComponentIntoAnotherCircuit(int32 source, int32 target){ }
 void UFGCheatManager::Server_PurgeInactiveClientsFromSave_Implementation( AFGCharacterPlayer* characterToReceiveInventories, bool fetchInventories){ }
 void UFGCheatManager::PurgeInactiveClientsFromSave(bool fetchInventories){ }
 void UFGCheatManager::Server_PurgeAllBeaconsFromSave_Implementation(){ }
 void UFGCheatManager::PurgeAllBeaconsFromSave(){ }
 void UFGCheatManager::Server_PurgeDeathMarkersFromSave_Implementation(){ }
 void UFGCheatManager::PurgeDeathMarkersFromSave(){ }
-void UFGCheatManager::ListItemPickups(){ }
-void UFGCheatManager::Server_SetTradingPostLevel_Implementation(int32 inLevel){ }
-void UFGCheatManager::SetTradingPostLevel(int32 inLevel){ }
-void UFGCheatManager::ListUnlockedRecipesAndSchematics(){ }
-void UFGCheatManager::GetVehicleInfo(){ }
-void UFGCheatManager::MCP_Login(FString username, FString password){ }
-void UFGCheatManager::MCP_Logout(){ }
-void UFGCheatManager::MCP_GetOnlineStatus(int32 localPlayerNum){ }
-void UFGCheatManager::MCP_UpdatePresence(FString key, FString value){ }
-void UFGCheatManager::MCP_UpdatePresenceString(FString string){ }
-void UFGCheatManager::MCP_LogPresence(){ }
-void UFGCheatManager::MCP_GetFriends(){ }
-void UFGCheatManager::TriggerPresenceUpdate(){ }
-void UFGCheatManager::ShowSequenceList(){ }
-void UFGCheatManager::SendInviteToFriend(FString friendName){ }
-void UFGCheatManager::Server_ResetHubTutorial_Implementation(){ }
-void UFGCheatManager::ResetHubTutorial(){ }
-void UFGCheatManager::Server_ResetSchematics_Implementation(){ }
-void UFGCheatManager::ResetSchematics(){ }
-void UFGCheatManager::Server_ResetRecipes_Implementation(){ }
-void UFGCheatManager::ResetRecipes(){ }
-void UFGCheatManager::DumpSchematics(){ }
-void UFGCheatManager::PrintStaticMeshesHierarchy(){ }
-void UFGCheatManager::Server_FlipVehicle_Implementation( AFGWheeledVehicle* vehicle){ }
-void UFGCheatManager::FlipVehicle(){ }
-void UFGCheatManager::Server_ResetVehicleDeadlocks_Implementation(){ }
-void UFGCheatManager::ResetVehicleDeadlocks(){ }
-void UFGCheatManager::Server_ResetTheChosenWheeledVehicle_Implementation(){ }
-void UFGCheatManager::ResetTheChosenWheeledVehicle(){ }
-void UFGCheatManager::ListDebugStartingPoint(){ }
-void UFGCheatManager::SetDebugStartingPoint(FName startingPoint){ }
-void UFGCheatManager::SetRandomDebugStartingPoint(){ }
-void UFGCheatManager::Server_CompleteResearch_Implementation(){ }
-void UFGCheatManager::CompleteResearch(){ }
 void UFGCheatManager::Server_PurgeAllTrainState_Implementation(){ }
 void UFGCheatManager::PurgeAllTrainState(){ }
 void UFGCheatManager::ResetAllFactoryLegsToZero(bool repopulateEmptyLegs){ }
 void UFGCheatManager::RebuildFactoryLegsOneTileAroundPlayer(){ }
-void UFGCheatManager::ToggleTrainSelfDriving(){ }
-void UFGCheatManager::Server_PipeFillFirstInEachNetwork_Implementation(){ }
-void UFGCheatManager::PipeFillFirstInEachNetwork(){ }
-void UFGCheatManager::Server_PipeEmptyAll_Implementation(){ }
-void UFGCheatManager::PipeEmptyAll(){ }
-void UFGCheatManager::Server_PipeResetAll_Implementation(){ }
-void UFGCheatManager::PipeResetAll(){ }
-void UFGCheatManager::PipePrintMinSizes(){ }
-void UFGCheatManager::PipeSetVerboseLoggingOnAimedFluidBox(bool enabled){ }
-void UFGCheatManager::PipeEnableProbingOnAimedIntegrant(){ }
-void UFGCheatManager::PipeDisableProbingOnAimedIntegrant(){ }
-void UFGCheatManager::PipeClearProbingOnAllPipe(){ }
-void UFGCheatManager::PipeAddSelectedNetworkToDisplayDebugList(){ }
-void UFGCheatManager::PipeClearDisplayDebugList(){ }
-void UFGCheatManager::PipePrintTweakables(){ }
-void UFGCheatManager::PipeTweakMaximumFlow(float rate){ }
-void UFGCheatManager::PipeTweakMinimumMaxContent(float minimumMaxContent, bool keepRelativeContent){ }
-void UFGCheatManager::PipeTweakPressureLoss(float pressureLoss){ }
-void UFGCheatManager::PipeTweakOverfill(float maxOverfillPct, float maxOverfillForPressure){ }
-void UFGCheatManager::PipeTweakGravity(float gravity){ }
-void UFGCheatManager::PipeTweakFluidFriction(float fluidFriction){ }
-void UFGCheatManager::PipeTweakFluidDensity(float fluidDensity){ }
-void UFGCheatManager::PipeTweakFluidViscosity(float fluidViscosity){ }
-void UFGCheatManager::DupeComponentInCircuit(int32 target){ }
-void UFGCheatManager::DupeComponentToAnotherCircuit(int32 source, int32 target){ }
-void UFGCheatManager::DumpConnectionString(){ }
-void UFGCheatManager::Server_FillAllFreightCars_Implementation(float pct){ }
-void UFGCheatManager::FillAllFreightCars(float pct){ }
-void UFGCheatManager::Server_EmptyAllFreightCars_Implementation(){ }
-void UFGCheatManager::EmptyAllFreightCars(){ }
-void UFGCheatManager::DumpCircuitsToLog(){ }
-void UFGCheatManager::Server_RerailAllTrains_Implementation(){ }
-void UFGCheatManager::RerailAllTrains(){ }
-void UFGCheatManager::Server_MarkTrackGraphsAsChanged_Implementation(){ }
-void UFGCheatManager::MarkTrackGraphsAsChanged(){ }
-void UFGCheatManager::Server_MarkTrackGraphsForRebuild_Implementation(){ }
-void UFGCheatManager::MarkTrackGraphsForRebuild(){ }
+void UFGCheatManager::Server_ShowFactoryOnly_Implementation(bool environmentHidden){ }
+void UFGCheatManager::ShowFactoryOnly(bool environmentHidden){ }
+bool UFGCheatManager::ShowFactoryOnly_Get(){ return bool(); }
+void UFGCheatManager::Server_HideFactoryOnly_Implementation(bool factoryHidden){ }
+void UFGCheatManager::HideFactoryOnly(bool factoryHidden){ }
+bool UFGCheatManager::HideFactoryOnly_Get(){ return bool(); }
+void UFGCheatManager::SplitAllConveyors(){ }
+void UFGCheatManager::MergeAllConveyors(){ }
+void UFGCheatManager::SetFactoryDetailReplication(bool enable){ }
+bool UFGCheatManager::SetFactoryDetailReplication_Get(){ return bool(); }
+void UFGCheatManager::Server_HideAllBuildings_Implementation(bool inVisibility){ }
+void UFGCheatManager::HideAllBuildings(bool inVisibility){ }
+bool UFGCheatManager::HideAllBuildings_Get(){ return bool(); }
+void UFGCheatManager::Server_EnableBuildableTick_Implementation(bool enable){ }
+void UFGCheatManager::EnableBuildableTick(bool enable){ }
+bool UFGCheatManager::EnableBuildableTick_Get(){ return bool(); }
+void UFGCheatManager::ReplayBuildingEffects(){ }
+void UFGCheatManager::DumpNonDormantActors(){ }
+void UFGCheatManager::DumpAttachedToSkelMesh(bool detailed){ }
+void UFGCheatManager::DumpTicking(bool detailed){ }
+void UFGCheatManager::DumpActiveGPUParticles(){ }
+void UFGCheatManager::DumpPlayerStates(){ }
+void UFGCheatManager::DumpHotbarShortcuts(){ }
+void UFGCheatManager::DumpActorRepresentations(){ }
+void UFGCheatManager::DumpSignificanceManagedObjects(){ }
+void UFGCheatManager::DumpItemPickups(){ }
+void UFGCheatManager::DumpStaticMeshesHierarchy(){ }
+void UFGCheatManager::DumpComponentCounts(){ }
+void UFGCheatManager::DumpSchematics(){ }
+void UFGCheatManager::DumpUnlockedRecipesAndSchematics(){ }
+void UFGCheatManager::DumpAllAvailableRecipes(){ }
+void UFGCheatManager::DumpGamePhases(){ }
+void UFGCheatManager::Audio_EnableDebug(bool isEnabled){ }
+void UFGCheatManager::Audio_ToggleLandingDebug(){ }
 void UFGCheatManager::RunHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ }
-void UFGCheatManager::Cheats(){ }
+void UFGCheatManager::TestSharedInventoryPtr(){ }
+void UFGCheatManager::RandomizeBuildingsColorSlot(uint8 slotIndex){ }
+void UFGCheatManager::ShowSequenceList(){ }
+void UFGCheatManager::CacheFunctionCategoryMapping(){ }
+bool UFGCheatManager::IsClient() const{ return bool(); }
 UActorComponent* UFGCheatManager::GetOuterPlayersUseComponent() const{ return nullptr; }
 AActor* UFGCheatManager::GetOuterPlayersUseActor() const{ return nullptr; }
 AActor* UFGCheatManager::GetOuterPlayersAimedAtActor(FVector& out_aimLocation) const{ return nullptr; }

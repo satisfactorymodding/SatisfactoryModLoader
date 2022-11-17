@@ -17,7 +17,6 @@ AFGEquipmentAttachment::AFGEquipmentAttachment() : Super() {
 	this->mBackAnimation = EBackEquipment::BE_None;
 	this->mAttachedTo = nullptr;
 	this->mEquipmentSlot = EEquipmentSlot::ES_NONE;
-	this->mAnimationState = 0;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;

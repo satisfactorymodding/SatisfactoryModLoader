@@ -3,7 +3,6 @@
 #include "FGRailroadTimeTable.h"
 
 AFGRailroadTimeTable::AFGRailroadTimeTable() : Super() {
-	this->mCurrentStop = 0;
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
 }

@@ -20,13 +20,16 @@ enum class ERailroadBlockValidation : uint8
 };
 
 
-/** Status this block can have at a given entry signal. */
-enum class ERailroadBlockOccupancy : uint8
+/**
+ * Signal aspects used for signaling.
+ */
+UENUM( BlueprintType )
+enum class ERailroadSignalAspect : uint8
 {
-	RBO_Clear,
-	RBO_Occupied,
-	RBO_ReservationNeeded,
-	RBO_ReservationExclusive
+	RSA_None			UMETA( DisplayName = "None" ),
+	RSA_Clear			UMETA( DisplayName = "Clear" ),
+	RSA_Stop			UMETA( DisplayName = "Stop" ),
+	RSA_Dock			UMETA( DisplayName = "Dock" )
 };
 
 
@@ -106,8 +109,8 @@ public:
 	/** The block this reservation was made in. */
 	TWeakPtr< struct FFGRailroadSignalBlock > Block;
 
-	/** Saved name for owner of this reservation, used for debugging purposes. */
-	FString TrainName;
+	/** The train that made this reservation. */
+	TWeakObjectPtr< class AFGTrain > Train;
 	
 	/** The type of this reservation. */
 	ERailroadBlockReservationType Type = ERailroadBlockReservationType::RBRT_Exclusive;
@@ -186,14 +189,14 @@ public:
 	void BlockExited( class AFGRailroadVehicle* byVehicle );
 
 	/**
-	 * See if this block is occupied from the given signals perspective.
+	 * See this block from the given signals perspective.
 	 *
 	 * For standard blocks, this reflects the occupancy of the block and any reservations from a trains brake distance.
 	 * For path blocks, multiple inbound signals might be green at the same time.
 	 *
-	 * If no signal is given, this always returns true.
+	 * If no signal is given, this always returns stop.
 	 */
-	ERailroadBlockOccupancy GetOccupancyFor( class AFGBuildableRailroadSignal* signal ) const;
+	ERailroadSignalAspect GetAspectFor( class AFGBuildableRailroadSignal* signal ) const;
 	
 	/** @return If this block is occupied by vehicles. */
 	bool IsOccupied() const;
@@ -251,6 +254,9 @@ private:
 	void ApproveReservation( FFGRailroadBlockReservation* reservation );
 	void CancelReservation( FFGRailroadBlockReservation* reservation );
 	void NotifyEnteredReservation( FFGRailroadBlockReservation* reservation );
+
+	/** Return true if this train have an approved reservation inside this block. */
+	bool HasApprovedReservation( const class AFGTrain* train ) const;
 
 public:
 	/** Delegate for when changes happens to this block, it can be aspect, reservation or validation changes. */
