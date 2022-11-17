@@ -629,7 +629,7 @@ void AModContentRegistry::FlushPendingResourceSinkRegistrations() {
 			Pair.Key->GetAllRows(TEXT("ResourceSinkPointsData"), OutModPointsData);
 			for (FResourceSinkPointsData* ModItemRow : OutModPointsData) {
 				int32 Points = FMath::Max(ModItemRow->Points, ModItemRow->OverriddenResourceSinkPoints);
-				ResourceSinkSubsystem->mResourceSinkPoints.Add(ModItemRow->ItemClass, Points);
+				ResourceSinkSubsystem->mCachedResourceSinkPoints.Add(ModItemRow->ItemClass, FResourceSinkValuePair32(EResourceSinkTrack::RST_Default, Points));
 			}
 		}
 
