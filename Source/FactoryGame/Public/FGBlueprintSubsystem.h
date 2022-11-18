@@ -562,6 +562,11 @@ public:
 
 	UPROPERTY( EditDefaultsOnly )
 	TArray< TSubclassOf<class AFGBuildable > > mBlacklistedDesignerBuildables;
+
+	/** Some buildables are NOT available in the recipe manager but should still be able to be blueprinted. Add those here. Noteable mentions, signpoles, train switch*/
+	UPROPERTY( EditDefaultsOnly )
+	TArray< TSubclassOf<class AFGBuildable > > mIgnoreRecipeRequirements;
+
 	
 private:
 	friend class UFGBlueprintRemoteCallObject;

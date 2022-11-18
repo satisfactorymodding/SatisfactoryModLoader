@@ -61,6 +61,7 @@ void AFGBuildableBlueprintDesigner::SaveBlueprint(FBlueprintRecord blueprintReco
 void AFGBuildableBlueprintDesigner::DismantleCurrentBuildables(AFGPlayerController* controller){ }
 void AFGBuildableBlueprintDesigner::GetCurrentBuildablesDismantleRefund(TArray< FInventoryStack >& out_refund){ }
 EBlueprintDesignerLoadResult AFGBuildableBlueprintDesigner::LoadBlueprintIntoDesigner(UFGBlueprintDescriptor* blueprintDescriptor, AFGPlayerController* controller){ return EBlueprintDesignerLoadResult(); }
+FVector AFGBuildableBlueprintDesigner::GetBlueprintDesignerSize() const{ return FVector(); }
 bool AFGBuildableBlueprintDesigner::IsTransformOnPerimeterOfDesigner(const FTransform& trans) const{ return bool(); }
 bool AFGBuildableBlueprintDesigner::IsLocationOnPerimeterOfDesigner(const FVector& location) const{ return bool(); }
 bool AFGBuildableBlueprintDesigner::IsLocationInsideDesigner(const FVector& location) const{ return bool(); }
