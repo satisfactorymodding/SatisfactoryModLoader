@@ -1,6 +1,7 @@
 #include "SatisfactoryModLoader.h"
 #include "FGPlayerController.h"
 #include "Configuration/ConfigManager.h"
+#include "CrashReporting/SMLCrashReporter.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
 #include "Registry/ModContentRegistry.h"
 #include "Network/NetworkHandler.h"
@@ -71,22 +72,28 @@ void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
     }
 
     if (bShouldWriteConfiguration) {
-        const TSharedRef<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
-        FSMLConfiguration::WriteToJson(JsonObject, SMLConfigurationPrivate);
+        SaveSMLConfiguration();
+    }
+}
 
-        FString OutSerializedConfiguration;
-        const TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&OutSerializedConfiguration);
-        FJsonSerializer::Serialize(JsonObject, JsonWriter);
+void FSatisfactoryModLoader::SaveSMLConfiguration() {
+    const FString ConfigLocation = UConfigManager::GetConfigurationFilePath(FConfigId{TEXT("SML")});
+    
+    const TSharedRef<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+    FSMLConfiguration::WriteToJson(JsonObject, SMLConfigurationPrivate);
 
-        //Make sure configuration directory exists
-        FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*FPaths::GetPath(ConfigLocation));
+    FString OutSerializedConfiguration;
+    const TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&OutSerializedConfiguration);
+    FJsonSerializer::Serialize(JsonObject, JsonWriter);
 
-        //Write file onto the disk now
-        if (FFileHelper::SaveStringToFile(OutSerializedConfiguration, *ConfigLocation)) {
-            UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Successfully saved SML configuration"));
-        } else {
-            UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to save SML configuration to %s"), *ConfigLocation);
-        }
+    //Make sure configuration directory exists
+    FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*FPaths::GetPath(ConfigLocation));
+
+    //Write file onto the disk now
+    if (FFileHelper::SaveStringToFile(OutSerializedConfiguration, *ConfigLocation)) {
+        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Successfully saved SML configuration"));
+    } else {
+        UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to save SML configuration to %s"), *ConfigLocation);
     }
 }
 
@@ -131,6 +138,8 @@ void FSatisfactoryModLoader::RegisterSubsystemPatches() {
     //Only register these patches in shipping, where bodies of the ACharacter::Cheat methods are stripped
 #if UE_BUILD_SHIPPING
     FCheatManagerPatch::RegisterPatch();
+    
+    FSmlCrashReporter::ApplyCrashReporterPatch();
 #endif
 }
 
