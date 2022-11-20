@@ -75,6 +75,14 @@ void SAlpakitModEntryList::LoadMods() {
         if (Plugin->GetName() == TEXT("WWise")) {
             continue;
         }
+        //Skip AbstractInstance, it is already shipped with the game
+        if (Plugin->GetName() == TEXT("AbstractInstance")) {
+            continue;
+        }
+        //Skip SMLEditor, editor-only plugin
+        if (Plugin->GetName() == TEXT("AbstractInstance")) {
+            continue;
+        }
         //Only include project plugins for now
         //TODO make sure UAT task supports engine plugins
         if ((bShowEngine && Plugin->GetType() == EPluginType::Engine) || Plugin->GetType() == EPluginType::Project) {
