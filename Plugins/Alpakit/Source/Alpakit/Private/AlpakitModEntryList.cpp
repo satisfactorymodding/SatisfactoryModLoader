@@ -80,7 +80,7 @@ void SAlpakitModEntryList::LoadMods() {
             continue;
         }
         //Skip SMLEditor, editor-only plugin
-        if (Plugin->GetName() == TEXT("AbstractInstance")) {
+        if (Plugin->GetName() == TEXT("SMLEditor")) {
             continue;
         }
         //Only include project plugins for now
