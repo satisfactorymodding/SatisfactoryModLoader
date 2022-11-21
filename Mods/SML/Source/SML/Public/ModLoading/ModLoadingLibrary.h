@@ -129,7 +129,7 @@ public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	/** Determines whenever provided plugin should be treated as a mod. In editor, project plugins are treated as mods */
-	static bool IsPluginAMod(IPlugin& Plugin);
+	static bool IsPluginAMod(const IPlugin& Plugin);
 private:
     /** Retrieves metadata for mod plugins, or creates a default metadata for engine or other plugins */
     FSMLPluginDescriptorMetadata FindMetadataOrFallback(IPlugin& Plugin);

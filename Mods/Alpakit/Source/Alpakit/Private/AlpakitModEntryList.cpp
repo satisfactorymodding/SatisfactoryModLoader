@@ -85,7 +85,10 @@ void SAlpakitModEntryList::LoadMods() {
         }
         //Only include project plugins for now
         //TODO make sure UAT task supports engine plugins
-        if ((bShowEngine && Plugin->GetType() == EPluginType::Engine) || Plugin->GetType() == EPluginType::Project) {
+        if ((bShowEngine && Plugin->GetType() == EPluginType::Engine) ||
+            (bShowProject && Plugin->GetType() == EPluginType::Project) ||
+            Plugin->GetType() == EPluginType::Mod) {
+            
             const bool bHasRuntime = DoesPluginHaveRuntime(Plugin.Get());
             if (bHasRuntime) {
                 Mods.Add(Plugin);
@@ -142,6 +145,11 @@ FString SAlpakitModEntryList::GetLastFilter() const {
 
 void SAlpakitModEntryList::SetShowEngine(bool bInShowEngine) {
     bShowEngine = bInShowEngine;
+    LoadMods();
+}
+
+void SAlpakitModEntryList::SetShowProject(bool bInShowProject) {
+    bShowProject = bInShowProject;
     LoadMods();
 }
 
