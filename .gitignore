@@ -70,6 +70,9 @@ Mods/*/Intermediate/*
 DerivedDataCache/*
 .idea
 
+# Cursed Rider project model files for Mods
+Mods/*/Mods/*
+
 # Wwise
 *_WwiseProject/*
 Plugins/Wwise/*
