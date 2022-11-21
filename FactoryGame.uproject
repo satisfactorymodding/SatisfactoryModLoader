@@ -10,7 +10,6 @@
 			"LoadingPhase": "Default"
 		},
 		{
-
 			"Name": "DummyHeaders",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
@@ -35,18 +34,6 @@
 		},
 		{
 			"Name": "SignificanceManager",
-			"Enabled": true
-		},
-		{
-			"Name": "Alpakit",
-			"Enabled": true
-		},
-		{
-			"Name": "SML",
-			"Enabled": true
-		},
-		{
-			"Name": "SMLEditor",
 			"Enabled": true
 		},
 		{
