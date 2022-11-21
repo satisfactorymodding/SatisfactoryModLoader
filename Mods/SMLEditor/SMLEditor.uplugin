@@ -1,6 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
+	"SemVersion": "1.0.0",
 	"VersionName": "1.0.0",
 	"FriendlyName": "SML Editor",
 	"Description": "Satisfactory Mod Loader: Editor Module",
@@ -19,6 +20,12 @@
 			"Name": "SMLEditor",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
+		}
+	],
+	"LocalizationTargets": [
+		{
+			"Name": "SMLEditor",
+			"LoadingPolicy": "Always"
 		}
 	]
 }
