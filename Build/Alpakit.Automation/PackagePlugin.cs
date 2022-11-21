@@ -291,7 +291,7 @@ namespace Alpakit.Automation
 		public override void ExecuteBuild()
         {
             string gameDir = ParseOptionalStringParam("GameDir");
-            if (gameDir != null)
+            if (!string.IsNullOrEmpty(gameDir))
 			{
 				var bootstrapExePath = Path.Combine(gameDir, "FactoryGame.exe");
 				if (!FileExists(bootstrapExePath))

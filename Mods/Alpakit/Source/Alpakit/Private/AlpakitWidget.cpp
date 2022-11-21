@@ -43,15 +43,33 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
                 })
             ]
             +SHorizontalBox::Slot().AutoWidth()[
+                SNew(SSpacer)
+                .Size(FVector2D(20.0f, 10.0f))
+            ]
+            +SHorizontalBox::Slot().AutoWidth()[
                 SNew(SCheckBox)
                 .Content()[
                     SNew(STextBlock)
-                    .Text(LOCTEXT("CheckAllPlugins", "All Content Plugins"))
+                    .Text(LOCTEXT("ShowEnginePlugins", "Show Engine Plugins"))
                 ]
                 .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
                     this->ModList->SetShowEngine(InState == ECheckBoxState::Checked);
                 })
             ]
+            +SHorizontalBox::Slot().AutoWidth()[
+                SNew(SSpacer)
+                .Size(FVector2D(10.0f, 10.0f))
+            ]
+            +SHorizontalBox::Slot().AutoWidth()[
+              SNew(SCheckBox)
+              .Content()[
+                  SNew(STextBlock)
+                  .Text(LOCTEXT("ShowProjectPlugins", "Show Project Plugins"))
+              ]
+              .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
+                  this->ModList->SetShowProject(InState == ECheckBoxState::Checked);
+              })
+          ]
         ]
         +SVerticalBox::Slot().FillHeight(1).Padding(3)[
             SAssignNew(ModList, SAlpakitModEntryList)

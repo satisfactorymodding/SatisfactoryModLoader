@@ -29,13 +29,14 @@ class SAlpakitModEntryList : public SCompoundWidget {
 	 * True if engine plugins are considered being mods
 	 */
 	void SetShowEngine(bool bInShowEngine);
-
+	void SetShowProject(bool bInShowProject);
 private:
 	TSharedPtr<SListView<TSharedRef<IPlugin>>> ModList;
 	TArray<TSharedRef<IPlugin>> Mods;
 	TArray<TSharedRef<IPlugin>> FilteredMods;
 	FString LastFilter;
 	bool bShowEngine = false;
+	bool bShowProject = false;
 
 	FReply PackageAllMods();
 	FReply CheckAllMods();

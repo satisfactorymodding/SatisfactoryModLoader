@@ -28,7 +28,7 @@ void FAlpakitModule::StartupModule() {
     PluginCommands->MapAction(
         FAlpakitCommands::Get().OpenPluginWindow,
         FExecuteAction::CreateLambda([](){
-            FGlobalTabmanager::Get()->InvokeTab(AlpakitTabName);
+            FGlobalTabmanager::Get()->TryInvokeTab(AlpakitTabName);
         }),
         FCanExecuteAction());
     FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));

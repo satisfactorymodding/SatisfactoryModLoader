@@ -147,18 +147,9 @@ FSMLPluginDescriptorMetadata UModLoadingLibrary::FindMetadataOrFallback(IPlugin&
     return DefaultMetadata;
 }
 
-bool UModLoadingLibrary::IsPluginAMod(IPlugin& Plugin) {
+bool UModLoadingLibrary::IsPluginAMod(const IPlugin& Plugin) {
 	//Mod plugins are always considered mods
-	if (Plugin.GetType() == EPluginType::Mod) {
-		return true;
-	}
-	//Project plugins are considered mods too when we're built with editor
-#if WITH_EDITOR
-	if (Plugin.GetType() == EPluginType::Project) {
-		return true;
-	}
-#endif
-	return false;
+	return Plugin.GetType() == EPluginType::Mod;
 }
 
 FModInfo UModLoadingLibrary::CreateFactoryGameModInfo() {
