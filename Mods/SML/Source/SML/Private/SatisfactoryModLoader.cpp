@@ -13,6 +13,7 @@
 #include "Patching/Patch/OptionsKeybindPatch.h"
 #include "Patching/Patch/SaveMetadataPatch.h"
 #include "Player/PlayerCheatManagerHandler.h"
+#include "Util/DebuggerHelper.h"
 // #include "Toolkit/OldToolkit/FGNativeClassDumper.h"
 
 #ifndef SML_BUILD_METADATA
@@ -147,8 +148,41 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Build Date: %s %s"), ANSI_TO_TCHAR(__DATE__), ANSI_TO_TCHAR(__TIME__));
 
     //Don't try to save configuration in the editor, because it will make new folders for no real reason
-    const bool bAllowSavingConfiguration = !WITH_EDITOR;
+    const bool bAllowSavingConfiguration = FPlatformProperties::RequiresCookedData();
     LoadSMLConfiguration(bAllowSavingConfiguration);
+
+#if UE_BUILD_SHIPPING
+    //Wait for the debugger if prompted
+    //We need to manually do that in shipping because the normal UE code is stripped
+    if (FParse::Param(FCommandLine::Get(), TEXT("WaitForDebugger"))) {
+        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Waiting for the debugger to attach as prompted..."));
+
+        FSlowHeartBeatScope SuspendHeartBeat(true);
+        while (!FDebuggerHelper::IsDebuggerPresent()) {
+            FPlatformProcess::Sleep(0.1f);
+        }
+        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Debugger attached"));
+        FDebuggerHelper::DebugBreak();
+    }
+
+    //Add hooks to break into the debugger on ensure and error
+    if (FParse::Param(FCommandLine::Get(), TEXT("BreakIntoDebuggerOnErrorAndEnsure"))) {
+        FCoreDelegates::OnHandleSystemEnsure.AddLambda([]() {
+            if (FDebuggerHelper::IsDebuggerPresent()) {
+                FDebuggerHelper::DebugBreak();
+            }
+        });
+        FCoreDelegates::OnHandleSystemError.AddLambda([]() {
+            if (FDebuggerHelper::IsDebuggerPresent()) {
+                FDebuggerHelper::DebugBreak();
+            }
+        });
+    }
+
+    if (FParse::Param(FCommandLine::Get(), TEXT("TestDebugBreakOnEnsure"))) {
+        ensureMsgf(false, TEXT("Test failed ensure"));
+    }
+#endif
 
     //Check game version only on shipping platform, because in editor builds
     //changelist number is not actually correctly set, since it is built from scratch

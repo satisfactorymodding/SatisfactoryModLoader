@@ -8,6 +8,7 @@
 
 class UModSubsystemHolder;
 class UModConfiguration;
+class URootBlueprintSCSHookData;
 
 /** Holds information about individual key binding registration */
 USTRUCT(BlueprintType)
@@ -86,6 +87,14 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = Advanced)
     TArray<FModAxisBindingInfo> ModAxisBindings;
 
+    /**
+     * Simple construction script hooks to install for this mod
+     * SCS hooks allow adding modded components to any blueprint-based actor
+     * Consult documentation if you're not sure what you want to achieve
+     */
+    UPROPERTY(Instanced, EditDefaultsOnly, Category = Advanced)
+    TArray<URootBlueprintSCSHookData*> BlueprintSCSHooks;
+    
     /** Game instance modules can access world context from game instance */
     virtual UWorld* GetWorld() const override;
 

@@ -3,6 +3,7 @@
 #include "Tooltip/ItemTooltipSubsystem.h"
 #include "Registry/ModKeyBindRegistry.h"
 #include "Engine/Engine.h"
+#include "Patching/BlueprintSCSHookManager.h"
 
 UGameInstance* UGameInstanceModule::GetGameInstance() const {
     //Game Instance module hierarchy is built on top of UGameInstanceSubsystem,
@@ -68,5 +69,11 @@ void UGameInstanceModule::RegisterDefaultContent() {
         
         //Register fixed axis mapping with proper action names now
         UModKeyBindRegistry::RegisterModAxisBind(OwnerModReferenceString, FixedPositiveAxisMapping, FixedNegativeAxisMapping, AxisBindingInfo.PositiveAxisDisplayName, AxisBindingInfo.NegativeAxisDisplayName);
+    }
+
+    UBlueprintSCSHookManager* HookManager = GetGameInstance()->GetEngine()->GetEngineSubsystem<UBlueprintSCSHookManager>();
+    
+    for (URootBlueprintSCSHookData* HookData : BlueprintSCSHooks) {
+        HookManager->RegisterBlueprintSCSHook(HookData);
     }
 }
