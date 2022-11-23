@@ -680,7 +680,8 @@ protected:
 	/** Length of the conveyor. */
 	float mLength;
 
-	/** All the locally simulated resource offsets on the conveyor belt. */
+	/** All the locally simulated resource offsets on the conveyor belt.
+	 * This array is an items queue, first items in the array is the last item on the belt. */
 	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
 	FConveyorBeltItems mItems;
 

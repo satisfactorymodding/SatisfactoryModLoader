@@ -61,6 +61,8 @@ void UFGBuildGunStateBuild::InternalExecuteDuBuildStepInput(bool isInputFromARel
 void UFGBuildGunStateBuild::OnRep_CurrentHologramBuildMode(){ }
 void UFGBuildGunStateBuild::ResetHologram(){ }
 void UFGBuildGunStateBuild::Client_OnBuildableConstructed_Implementation(TSubclassOf< UFGItemDescriptor > desc){ }
+void UFGBuildGunStateBuild::Client_OnRecipeBuilt_Implementation(TSubclassOf<  UFGRecipe > recipe, int32 numConstructed){ }
+void UFGBuildGunStateBuild::Client_OnBlueprintConstructed_Implementation(const FString& blueprintName, int32 numConstructed){ }
 void UFGBuildGunStateBuild::Client_OnBuildableFailedConstruction_Implementation(FNetConstructionID netConstructionID){ }
 void UFGBuildGunStateBuild::SpawnHologram(){ }
 void UFGBuildGunStateBuild::RemoveHologram(){ }

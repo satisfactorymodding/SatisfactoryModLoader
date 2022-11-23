@@ -33,6 +33,8 @@ public:
 	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
 	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes ) const override;
 	virtual void PostHologramPlacement() override;
+	virtual void CheckClearance(const FVector& locationOffset) override;
+	virtual void CheckBlueprintCommingling() override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface

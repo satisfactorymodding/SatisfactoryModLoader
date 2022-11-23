@@ -268,6 +268,18 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
 	virtual int32 AddStackToIndex( int32 idx, const FInventoryStack& stack, bool allowPartial = false );
 
+	FORCEINLINE int32 AddSingleItemToEmptyIndex_Unsafe( int32 idx, const FInventoryItem& item )
+	{
+		FInventoryStack& stackAtIdx = mInventoryStacks[ idx ];
+
+		stackAtIdx.Item = item;
+		stackAtIdx.NumItems = 1;
+
+		OnItemsAdded( idx, 1 );
+	
+		return 1;
+	}
+
 	/**
 	 * Get the item of a slot.
 	 * @note true if valid index, it is the callers responsibility to check if the slot contains an item or not.
@@ -324,12 +336,17 @@ public:
 	{
 		fgcheckf( mInventoryStacks.Num() > 0 , TEXT( "Inventory need to be initialized before use %s" ), SHOWVAR( mInventoryStacks.Num() ) );
 		
-		if( !IsValidIndex( idx ) )
+		if( UNLIKELY( !IsValidIndex( idx ) ) )
 		{
 			UE_LOG( LogGame, Warning, TEXT( "RemoveFromIndex failed cause invalid index (%i) in component '%s'" ), idx, *GetName() );
 			return false;
 		}
 		
+		return !mInventoryStacks[ idx ].HasItems();
+	}
+
+	FORCEINLINE bool IsIndexEmpty_Unsafe( int32 idx ) const
+	{
 		return !mInventoryStacks[ idx ].HasItems();
 	}
 	

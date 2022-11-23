@@ -244,9 +244,18 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "BuildGunState|Build" )
 	void OnResetHologram();
 
-	/** Helper to notify the client that something was built */
+	/** Helper to notify the client that something was built. @todok2 remove this and use the other ones for recipe and blueprint below.
+	 * Didn't want to change this behaviour on main so we have an extra call for now to make sure old systems don't break */
 	UFUNCTION( Client, Reliable )
 	void Client_OnBuildableConstructed( TSubclassOf< UFGItemDescriptor > desc );
+
+	/** Helper to notify the client that a recipe was used to construct buildings */
+	UFUNCTION( Client, Reliable )
+	void Client_OnRecipeBuilt( TSubclassOf< class UFGRecipe > recipe, int32 numConstructed );
+	
+	/** Helper to notify the client that a blueprint was built */
+	UFUNCTION( Client, Reliable )
+	void Client_OnBlueprintConstructed( const FString& blueprintName, int32 numConstructed );
 
 	UFUNCTION( Client, Reliable )
 	void Client_OnBuildableFailedConstruction( FNetConstructionID netConstructionID );

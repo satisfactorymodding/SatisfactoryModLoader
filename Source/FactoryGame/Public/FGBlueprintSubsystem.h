@@ -114,7 +114,7 @@ public:
 	/// Designer RPCS
 	
 	// Server call from client to initiate a save of a designer
-	UFUNCTION( Server, Reliable )
+	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_SaveBlueprintInDesigner( class AFGBuildableBlueprintDesigner* designer, class AFGPlayerController* controller, FBlueprintRecord record );
 
 	UFUNCTION( Server, Reliable )
@@ -232,15 +232,21 @@ public:
 	void FindBlueprintHeaders( FString blueprintDir, TArray< FBlueprintHeader >& out_Headers );
 	
 	/** Load Actors into blueprint designer
-	 * @param Instigator (optional)  AActor* the actor that requested the blueprint. */
+	 * @param instigator (optional)  AActor* the actor that requested the blueprint. */
 	void LoadStoredBlueprint(UFGBlueprintDescriptor* blueprintDesc, const FTransform& blueprintOrigin, TArray< class AFGBuildable* >& out_spawnedBuildables, bool useBlueprintWorld = false, class
-	                         AFGBuildableBlueprintDesigner* = nullptr, APawn* Instigator = nullptr );
+	                         AFGBuildableBlueprintDesigner* = nullptr, APawn* instigator = nullptr );
 
 	/** Collects all objects for a given "root set". The root set in this case will be a list of buildables and we gather objects from them */
 	void CollectObjects( TArray< class AFGBuildable* >& buildables, TArray< UObject* >& out_objectsToSerialize );
 
 	/** Gets the folder for which Blueprint Read/Writes should occur */
 	FString GetSessionBlueprintPath();
+
+	/**
+	 * Removes any invalid path characters from a blueprint name. This is a security meassure to block invalid access attempts by passing "../.." values in redirecting to higher level folders
+	 * @return Returns true if any characters were removed
+	**/
+	static bool SanitizeBlueprintSessionOrFileName( FString& out_santizedString );
 
 	/** Get an array to all blueprint world buildables present */
 	const TArray< class AFGBuildable* >& GetBlueprintWorldBuildables() { return mBlueprintWorldBuildables; }

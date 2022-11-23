@@ -4,6 +4,7 @@
 
 AFGGenericBuildableHologram::AFGGenericBuildableHologram() : Super() {
 	this->mIsWallRotationAllowed = true;
+	this->mAllowGranularRotation = false;
 	this->mCanSnapToFoundationFloor = true;
 	this->mCanSnapToFoundationCeiling = false;
 	this->mCanSnapToFoundationSide = false;

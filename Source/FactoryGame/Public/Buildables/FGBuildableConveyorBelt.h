@@ -148,6 +148,8 @@ public:
 
 	// Temp function will be removed.
 	void DestroyVisualItems();
+
+	void PostSerializedFromBlueprint() override;
 	
 protected:
 	// Begin AFGBuildableFactory interface
@@ -184,7 +186,8 @@ protected:
 
 private:
 	friend class AFGConveyorBeltHologram;
-
+	friend class AFGBlueprintHologram;
+	
 	/** Meshes for items. */
 	UPROPERTY( Meta = ( NoAutoJson ) )
 	TMap< FName, class UInstancedStaticMeshComponent* > mItemMeshMap;

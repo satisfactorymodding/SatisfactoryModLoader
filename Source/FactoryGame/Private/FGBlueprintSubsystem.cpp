@@ -14,6 +14,7 @@ void UFGBlueprintRemoteCallObject::Client_RespondFileDataResponse_Implementation
 void UFGBlueprintRemoteCallObject::Client_RespondFinalFileDataResponse_Implementation(const TArray< uint8 >& fileData, FBlueprintRecord record){ }
 void UFGBlueprintRemoteCallObject::Client_RespondFileFailure_Implementation(const FString& fileName){ }
 void UFGBlueprintRemoteCallObject::Server_SaveBlueprintInDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, FBlueprintRecord record){ }
+bool UFGBlueprintRemoteCallObject::Server_SaveBlueprintInDesigner_Validate( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, FBlueprintRecord record){ return bool(); }
 void UFGBlueprintRemoteCallObject::Server_ClearBlueprintDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller){ }
 void UFGBlueprintRemoteCallObject::Server_LoadBlueprintInDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, const FString& blueprintName){ }
 AFGBlueprintSubsystem::AFGBlueprintSubsystem() : Super() {
@@ -68,9 +69,10 @@ void AFGBlueprintSubsystem::EnumerateBlueprints(){ }
 void AFGBlueprintSubsystem::EnumerateBlueprintConfigs(){ }
 void AFGBlueprintSubsystem::FindBlueprintHeaders(FString blueprintDir, TArray< FBlueprintHeader >& out_Headers){ }
 void AFGBlueprintSubsystem::LoadStoredBlueprint(UFGBlueprintDescriptor* blueprintDesc, const FTransform& blueprintOrigin, TArray<  AFGBuildable* >& out_spawnedBuildables, bool useBlueprintWorld , 
-	                         AFGBuildableBlueprintDesigner* , APawn* Instigator){ }
+	                         AFGBuildableBlueprintDesigner* , APawn* instigator){ }
 void AFGBlueprintSubsystem::CollectObjects(TArray<  AFGBuildable* >& buildables, TArray< UObject* >& out_objectsToSerialize){ }
 FString AFGBlueprintSubsystem::GetSessionBlueprintPath(){ return FString(); }
+bool AFGBlueprintSubsystem::SanitizeBlueprintSessionOrFileName(FString& out_santizedString){ return bool(); }
 void AFGBlueprintSubsystem::GatherRecipeObjectRefsForBuildableArray(const TArray< AFGBuildable* >& buildables, TArray< FObjectReferenceDisc >& out_recipeRefs){ }
 AFGBuildableBlueprintDesigner* AFGBlueprintSubsystem::IsLocationInsideABlueprintDesigner(const FVector& hitLocation){ return nullptr; }
 void AFGBlueprintSubsystem::NotifyBuildableWithBlueprintBuildIDSet( AFGBuildable* buildable, int32 id){ }

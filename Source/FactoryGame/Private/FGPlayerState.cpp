@@ -62,6 +62,8 @@ void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(AFGPlayerState, mNumObservedInventorySlots);
 	DOREPLIFETIME(AFGPlayerState, mFavoriteShopSchematics);
 	DOREPLIFETIME(AFGPlayerState, mPrivateTodoList);
+	DOREPLIFETIME(AFGPlayerState, mShoppingListBlueprints);
+	DOREPLIFETIME(AFGPlayerState, mShoppingListRecipes);
 	DOREPLIFETIME(AFGPlayerState, mOpenedWidgetsPersistent);
 }
 bool AFGPlayerState::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
@@ -159,6 +161,21 @@ void AFGPlayerState::PasteFactoryClipboard(UObject* object){ }
 bool AFGPlayerState::GetWidgetHasBeenOpened(TSubclassOf<  UUserWidget > widget, bool& openedThisSession){ return bool(); }
 void AFGPlayerState::SetWidgetHasBeenOpened(TSubclassOf<  UUserWidget > widget, bool save){ }
 void AFGPlayerState::Server_SetWidgetHasBeenOpened_Implementation(TSubclassOf<  UUserWidget > widget){ }
+void AFGPlayerState::AddBlueprintToShoppingList( UFGBlueprintDescriptor* blueprintDescriptor, int32 amount){ }
+void AFGPlayerState::Server_AddBlueprintToShoppingList_Implementation(const FString& blueprintName, int32 amount){ }
+void AFGPlayerState::RemoveBlueprintFromShoppingList( UFGBlueprintDescriptor* blueprintDescriptor, int32 amount){ }
+void AFGPlayerState::Server_RemoveBlueprintFromShoppingList_Implementation(const FString& blueprintName, int32 amount){ }
+void AFGPlayerState::AddRecipeClassToShoppingList(TSubclassOf<  UFGRecipe > recipeClass, int32 amount){ }
+void AFGPlayerState::Server_AddRecipeClassToShoppingList_Implementation(TSubclassOf<  UFGRecipe > recipeClass, int32 amount){ }
+void AFGPlayerState::RemoveRecipeClassFromShoppingList(TSubclassOf<  UFGRecipe > recipeClass, int32 amount){ }
+void AFGPlayerState::Server_RemoveClassRecipeFromShoppingList_Implementation(TSubclassOf<  UFGRecipe > recipeClass, int32 amount){ }
+void AFGPlayerState::EmptyShoppingList(){ }
+void AFGPlayerState::Server_EmptyShoppingList_Implementation(){ }
+TMap< FString, int32 > AFGPlayerState::GetShoppingListItems(){ return TMap<FString,int32>(); }
+TArray< FItemAmount > AFGPlayerState::GetShoppingListCost() const{ return TArray<FItemAmount>(); }
+void AFGPlayerState::Client_OnRecipeConstructed_Implementation(TSubclassOf<  UFGRecipe > recipe, int32 numConstructed){ }
+void AFGPlayerState::Native_OnRecipeConstructed(TSubclassOf<  UFGRecipe > recipe, int32 numConstructed){ }
+void AFGPlayerState::Native_OnBlueprintConstructed(const FString& blueprintName, int32 numConstructed){ }
 bool AFGPlayerState::IsInPlayerArray(){ return bool(); }
 void AFGPlayerState::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
@@ -166,9 +183,12 @@ void AFGPlayerState::OnRep_HotbarShortcuts(){ }
 void AFGPlayerState::OnRep_CurrentHotbarIndex(){ }
 void AFGPlayerState::OnRep_PlayerColorData(){ }
 void AFGPlayerState::OnRep_PlayerRules(){ }
+void AFGPlayerState::OnRep_ShoppingListBlueprints(){ }
+void AFGPlayerState::OnRep_ShoppingListRecipes(){ }
 void AFGPlayerState::Server_UpdateNumObservedInventorySlots_Implementation(){ }
 bool AFGPlayerState::Server_UpdateNumObservedInventorySlots_Validate(){ return bool(); }
 void AFGPlayerState::Native_OnPlayerColorDataUpdated(){ }
 void AFGPlayerState::SetupPlayerRules(){ }
 void AFGPlayerState::PushRulesToGameModesSubssytem(){ }
 void AFGPlayerState::OnCreatureHostilityModeUpdated(FString strId, FVariant value){ }
+void AFGPlayerState::Internal_RemoveBlueprintFromShoppingList(const FString& blueprintName, int32 amount){ }

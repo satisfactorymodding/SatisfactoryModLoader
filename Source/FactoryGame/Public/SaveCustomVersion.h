@@ -113,6 +113,9 @@ struct FACTORYGAME_API FSaveCustomVersion
 		// 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
 		AddedCachedLocationsForWire,
 
+		// 2022-11-17: Added migration of inventories from the old splitters and mergers to the new ones that have a smaller inventories.
+		ReworkedSplittersAndMergers,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1

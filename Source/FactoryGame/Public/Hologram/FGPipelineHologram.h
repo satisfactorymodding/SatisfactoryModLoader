@@ -42,6 +42,8 @@ public:
 	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
 	virtual void SetSnapToGuideLines( bool isEnabled ) override;
 	virtual float GetHologramHoverHeight() const override;
+	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void CheckBlueprintCommingling() override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface

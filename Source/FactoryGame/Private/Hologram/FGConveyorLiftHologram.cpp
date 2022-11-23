@@ -39,6 +39,8 @@ float AFGConveyorLiftHologram::GetHologramHoverHeight() const{ return float(); }
 void AFGConveyorLiftHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
 void AFGConveyorLiftHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes) const{ }
 void AFGConveyorLiftHologram::PostHologramPlacement(){ }
+void AFGConveyorLiftHologram::CheckClearance(const FVector& locationOffset){ }
+void AFGConveyorLiftHologram::CheckBlueprintCommingling(){ }
 void AFGConveyorLiftHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGConveyorLiftHologram::ServerPostConstructMessageDeserialization(){ }
 void AFGConveyorLiftHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }

@@ -108,6 +108,7 @@ void AFGWorldSettings::BeginDestroy() {
 void AFGWorldSettings::AddReferencedObjects(UObject* inThis, FReferenceCollector& collector) {
 	AFGWorldSettings* Settings = CastChecked<AFGWorldSettings>(inThis);
 	collector.AddReferencedObjects(Settings->mSaveActors, inThis);
+
 }
 void AFGWorldSettings::Serialize(FArchive& ar) {
 	Super::Serialize(ar);
