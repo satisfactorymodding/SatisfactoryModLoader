@@ -11,6 +11,7 @@
 #include "FGActorRepresentation.h"
 #include "FGHotbarShortcut.h"
 #include "FGCreatureSubsystem.h"
+#include "ShoppingList/FGShoppingListComponent.h"
 #include "FGPlayerState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedNew, TSubclassOf< class UFGItemDescriptor >, itemDesc );
@@ -154,44 +155,6 @@ struct FPlayerRules
 	/** What kind of hostility creatures should have agaisnt this player. */
 	UPROPERTY( SaveGame, BlueprintReadOnly )
 	EPlayerHostilityMode CreatureHostilityMode;
-};
-
-USTRUCT()
-struct FACTORYGAME_API FShoppingListBlueprintEntry
-{
-	GENERATED_BODY()
-
-	FShoppingListBlueprintEntry( const FString& inBlueprintName, int32 inAmount ) :
-		BlueprintName( inBlueprintName ),
-		Amount( inAmount )
-	{}
-
-	FShoppingListBlueprintEntry(){}
-	
-	UPROPERTY( SaveGame )
-	FString BlueprintName = "";
-	
-	UPROPERTY( SaveGame )
-	int32 Amount = 0;
-};
-
-USTRUCT( BlueprintType )
-struct FACTORYGAME_API FShoppingListRecipeEntry
-{
-	GENERATED_BODY()
-
-	FShoppingListRecipeEntry( TSubclassOf<class UFGRecipe> inRecipeClass, int32 inAmount ) :
-		RecipeClass( inRecipeClass ),
-		Amount( inAmount )
-	{}
-
-	FShoppingListRecipeEntry(){}
-	
-	UPROPERTY( SaveGame, BlueprintReadWrite )
-	TSubclassOf<class UFGRecipe> RecipeClass = nullptr;
-	
-	UPROPERTY( SaveGame, BlueprintReadWrite )
-	int32 Amount = 0;
 };
 
 UCLASS()
@@ -639,31 +602,8 @@ public:
 	UFUNCTION( Server, Reliable )
 	void Server_SetWidgetHasBeenOpened( TSubclassOf< class UUserWidget > widget );
 
-	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
-	void AddBlueprintToShoppingList( class UFGBlueprintDescriptor* blueprintDescriptor, int32 amount );
-	UFUNCTION( Server, Reliable )
-	void Server_AddBlueprintToShoppingList( const FString& blueprintName, int32 amount );
-	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
-	void RemoveBlueprintFromShoppingList( class UFGBlueprintDescriptor* blueprintDescriptor, int32 amount );
-	UFUNCTION( Server, Reliable )
-	void Server_RemoveBlueprintFromShoppingList( const FString& blueprintName, int32 amount );
-	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
-	void AddRecipeClassToShoppingList( TSubclassOf< class UFGRecipe > recipeClass, int32 amount );
-	UFUNCTION( Server, Reliable )
-	void Server_AddRecipeClassToShoppingList( TSubclassOf< class UFGRecipe > recipeClass, int32 amount );
-	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
-	void RemoveRecipeClassFromShoppingList( TSubclassOf< class UFGRecipe > recipeClass, int32 amount );
-	UFUNCTION( Server, Reliable )
-	void Server_RemoveClassRecipeFromShoppingList( TSubclassOf< class UFGRecipe > recipeClass, int32 amount );
-	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
-	void EmptyShoppingList();
-	UFUNCTION( Server, Reliable )
-	void Server_EmptyShoppingList();
-
-	UFUNCTION( BlueprintCallable )
-	TMap< FString, int32 > GetShoppingListItems();
-	UFUNCTION( BlueprintCallable )
-	TArray< FItemAmount > GetShoppingListCost() const;
+	UFUNCTION( BlueprintPure, Category = "Shopping List"  )
+	UFGShoppingListComponent* GetShoppingListComponent() const { return mShoppingListComponent; }
 
 	// On recipe constructed could mean both constructing buildings and crafting items
 	UFUNCTION( Client, Reliable )
@@ -697,12 +637,6 @@ protected:
 
 	UFUNCTION()
 	void OnRep_PlayerRules();
-	
-	UFUNCTION()
-	void OnRep_ShoppingListBlueprints();
-	
-	UFUNCTION()
-	void OnRep_ShoppingListRecipes();
 
 private:
 	/** Server function for updating number observed inventory slots */
@@ -716,8 +650,6 @@ private:
 	void PushRulesToGameModesSubssytem();
 
 	void OnCreatureHostilityModeUpdated( FString strId, FVariant value );
-
-	void Internal_RemoveBlueprintFromShoppingList( const FString& blueprintName, int32 amount );
 
 public:
 	/** Broadcast when a buildable or decor has been constructed. */
@@ -864,12 +796,9 @@ private:
 	/** The personal todolist. Only replicated on initial send. Then RPCed back to server for saving. */
 	UPROPERTY( SaveGame, Replicated )
 	FString mPrivateTodoList;
-
-	// Shopping list entries for the in game todo list. Separated for blueprints and recipes.
-	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_ShoppingListBlueprints )
-	TArray< FShoppingListBlueprintEntry > mShoppingListBlueprints;
-	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_ShoppingListRecipes )
-	TArray< FShoppingListRecipeEntry > mShoppingListRecipes;
+	
+	UPROPERTY( SaveGame, Replicated )
+	class UFGShoppingListComponent* mShoppingListComponent;
 
 	/** The current factory clipboard. Used to copy and paste settings between buildings. Buildings with the same key use can copy/paste between each other.
 	 *	The key is usually the most derived class for the building/object but can be changed by developers to share key with other buildings. Key could be any UObject subclass.

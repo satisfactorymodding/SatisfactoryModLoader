@@ -65,25 +65,30 @@ struct FAttachmentPointRepresentation
 };
 
 USTRUCT()
-struct FBuildableClearanceData
+struct FActorClearanceData
 {
 	GENERATED_BODY()
 
-	FBuildableClearanceData() :
-		Buildable( nullptr )
+	FActorClearanceData() :
+		Actor( nullptr ),
+		BlueprintProxyMesh( nullptr )
 	{
 	}
 
-	FBuildableClearanceData( class AFGBuildable* inBuildable ) :
-		Buildable( inBuildable )
+	FActorClearanceData( class AActor* inActor ) :
+		Actor( inActor ),
+		BlueprintProxyMesh( nullptr )
 	{
 	}
 
 	UPROPERTY()
-	class AFGBuildable* Buildable;
+	class AActor* Actor;
 
 	UPROPERTY()
 	TArray< class UStaticMeshComponent* > ClearanceMeshComponents;
+
+	UPROPERTY()
+	class UStaticMeshComponent* BlueprintProxyMesh;
 
 	UPROPERTY()
 	TArray< FConnectionRepresentation > mConnectionComponents;
@@ -358,10 +363,9 @@ private:
 	/** Moves the clearance box collision to where we are aiming */
 	void UpdateClearanceData();
 
-	//@TODO:[DavalliusA:Wed/20-11-2019] should these not be marked as transient?
 	/** Contains all the proximate clearances volumes */
 	UPROPERTY()
-	TArray< FBuildableClearanceData > mProximateClearances;
+	TArray< FActorClearanceData > mProximateClearances;
 
 	//@TODO:[DavalliusA:Wed/20-11-2019] should these not be marked as transient?
 	/** Component that finds close clearances of nearby buildings and visualize them */

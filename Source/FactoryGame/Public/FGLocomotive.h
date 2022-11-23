@@ -76,6 +76,10 @@ public:
 	virtual void UpdatePower() override;
 	virtual class UFGPowerConnectionComponent* GetSlidingShoe() const override { return mSlidingShoe; }
 	// End ARailroadVehicle interface
+	
+	//Begin IFGSignificanceInterface
+	virtual void GainedSignificance_Implementation() override;
+	//End IFGSignificanceInterface
 
 	/**
 	 * Get the role for this locomotive when MUing.
@@ -138,10 +142,8 @@ public:
 	 */
 	void GiveHumanDriverControl();
 
-	/**
-	 * Turn the headlights on or off or set them to act as tail lights.
-	 */
-	void SetHeadlightsMode( ELocomotiveHeadlightsMode::Type mode );
+	/** Update the headlights to correctly reflect the state of the train. I.e. direction, power etc. */
+	void UpdateHeadlightsMode();
 
 	/**
 	 * @return true if the headlights are on, otherwise false.
@@ -166,6 +168,9 @@ private:
 	void SetPowerConsumption( float pct );
 	void SetPowerRegeneration( float pct );
 
+	/** Called when the power status changes for this locomotive. */
+	void OnHasPowerChanged();
+
 	/** Called whenever the headlight mode has been changed (both server and client) so the lights can be configured. */
 	UFUNCTION()
 	void OnRep_HeadlightMode();
@@ -188,7 +193,7 @@ private:
 
 	/** Has power. Used to keep clients in sync with circuit power state */
 	UPROPERTY( Replicated )
-	uint8 mHasPower : 1;
+	bool mHasPower;
 
 	/** vehicle simulation component */
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = Vehicle, meta = ( AllowPrivateAccess = "true" ) )

@@ -22,8 +22,10 @@ struct FACTORYGAME_API FHologramHelpers
 	 */
 	static class UStaticMeshComponent* CreateClearanceMeshComponent( class USceneComponent* attachTo, class UFGClearanceComponent* fromClearanceBox );
 
+	static class UStaticMeshComponent* CreateBlueprintProxyMeshComponent( class USceneComponent* attachTo, class AFGBlueprintProxy* fromProxy );
+
 	/** Sets extents and relative location on the clearance mesh to match the specified clearance box. */
-	static void SetClearanceMeshData( class UStaticMeshComponent* clearanceMesh, class UFGClearanceComponent* fromClearanceBox );
+	static void SetScaledBoxMeshData( class UStaticMeshComponent* clearanceMesh, const FTransform& relativeTransform, const FVector& extent );
 
 	/** Creates the representation mesh for a connection component */
 	static class UStaticMeshComponent* CreateConnectionRepresentation( class UFGConnectionComponent* connectionComponent, bool isOutput, float heightOffset );

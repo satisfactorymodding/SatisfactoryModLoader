@@ -3,7 +3,8 @@
 #include "Hologram/HologramHelpers.h"
 
 UStaticMeshComponent* FHologramHelpers::CreateClearanceMeshComponent( USceneComponent* attachTo,  UFGClearanceComponent* fromClearanceBox){ return nullptr; }
-void FHologramHelpers::SetClearanceMeshData( UStaticMeshComponent* clearanceMesh,  UFGClearanceComponent* fromClearanceBox){ }
+UStaticMeshComponent* FHologramHelpers::CreateBlueprintProxyMeshComponent( USceneComponent* attachTo,  AFGBlueprintProxy* fromProxy){ return nullptr; }
+void FHologramHelpers::SetScaledBoxMeshData( UStaticMeshComponent* clearanceMesh, const FTransform& relativeTransform, const FVector& extent){ }
 UStaticMeshComponent* FHologramHelpers::CreateConnectionRepresentation( UFGConnectionComponent* connectionComponent, bool isOutput, float heightOffset){ return nullptr; }
 UStaticMeshComponent* FHologramHelpers::CreateAttachmentPointRepresentation(const  FFGAttachmentPoint* attachmentPoint, const  AFGBuildable* buildable){ return nullptr; }
 void FHologramHelpers::ApplyClearanceExtentShrink( UFGClearanceComponent* clearanceComponent){ }
