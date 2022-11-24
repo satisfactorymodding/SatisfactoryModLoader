@@ -75,7 +75,7 @@ class SML_API URootBlueprintSCSHookData : public UBlueprintSCSHookData {
 public:
 	/** Blueprint class to hook. Must be a Blueprint! */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (ShowTreeView, BlueprintBaseOnly))
-	TSubclassOf<AActor> ActorClass;
+	TSoftClassPtr<AActor> ActorClass;
 	
 	/**
 	 * Parent Component Name to Attach to. If left empty, it will be attached to the DefaultSceneRoot component.

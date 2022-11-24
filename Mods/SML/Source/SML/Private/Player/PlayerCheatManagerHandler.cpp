@@ -6,7 +6,7 @@
 
 void FPlayerCheatManagerHandler::HandlePlayerJoined(class AGameModeBase* /*GameMode*/, APlayerController* PlayerController) {
     const FSMLConfiguration Configuration = FSatisfactoryModLoader::GetSMLConfiguration();
-    if (Configuration.bEnableCheatConsoleCommands) {
+    if (Configuration.bEnableCheatConsoleCommands || FParse::Param(FCommandLine::Get(), TEXT("EnableCheats"))) {
         PlayerController->AddCheats(true);
     }
 }

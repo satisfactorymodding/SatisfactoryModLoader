@@ -1,4 +1,6 @@
 #include "ModLoading/ModLoadingLibrary.h"
+
+#include "GeneralProjectSettings.h"
 #include "PluginDescriptor.h"
 #include "SatisfactoryModLoader.h"
 #include "Interfaces/IPluginManager.h"
@@ -97,7 +99,7 @@ bool ModSorter(FModInfo const& lhs, FModInfo const& rhs) {
 
 TArray<FModInfo> UModLoadingLibrary::GetLoadedMods() {
     TArray<FModInfo> OutModInfoList;
-    OutModInfoList.Add(CreateFactoryGameModInfo());
+    OutModInfoList.Add(CreateGameProjectModInfo());
 
     const TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
     for (const TSharedRef<IPlugin>& Plugin : EnabledPlugins) {
@@ -111,8 +113,8 @@ TArray<FModInfo> UModLoadingLibrary::GetLoadedMods() {
 }
 
 bool UModLoadingLibrary::GetLoadedModInfo(const FString& Name, FModInfo& OutModInfo) {
-    if (Name == FACTORYGAME_MOD_NAME) {
-        OutModInfo = CreateFactoryGameModInfo();
+    if (Name == FApp::GetProjectName()) {
+        OutModInfo = CreateGameProjectModInfo();
     }
     const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(Name);
 
@@ -152,14 +154,22 @@ bool UModLoadingLibrary::IsPluginAMod(const IPlugin& Plugin) {
 	return Plugin.GetType() == EPluginType::Mod;
 }
 
-FModInfo UModLoadingLibrary::CreateFactoryGameModInfo() {
-    const int64 ChangelistNum = FEngineVersion::Current().GetChangelist();
+FModInfo UModLoadingLibrary::CreateGameProjectModInfo() {
+    const UGeneralProjectSettings* ProjectSettings = GetDefault<UGeneralProjectSettings>();
     FModInfo ResultModInfo{};
-    ResultModInfo.Name = FACTORYGAME_MOD_NAME;
+    ResultModInfo.Name = FApp::GetProjectName();
+    ResultModInfo.Description = ProjectSettings->Description;
+    ResultModInfo.FriendlyName = ProjectSettings->ProjectName;
+    ResultModInfo.CreatedBy = ProjectSettings->CompanyName;
+    ResultModInfo.SupportURL = ProjectSettings->Homepage;
+
+    //TODO: Maybe when FG adapts consistent semantic versioning
+    //FString ErrorMessage;
+    //ResultModInfo.Version.ParseVersion(ProjectSettings->ProjectVersion, ErrorMessage);
+    
+    const int64 ChangelistNum = FEngineVersion::Current().GetChangelist();
     ResultModInfo.Version = FVersion(ChangelistNum, 0, 0);
 
-    ResultModInfo.FriendlyName = TEXT("Satisfactory");
-    ResultModInfo.CreatedBy = TEXT("Coffee Stain Studios");
     ResultModInfo.bAcceptsAnyRemoteVersion = true;
     return ResultModInfo;
 }
@@ -304,10 +314,6 @@ void UModLoadingLibrary::LoadMetadataForPlugin(IPlugin& Plugin) {
 
 FVersion UModLoadingLibrary::GetModLoaderVersion() const {
     return FSatisfactoryModLoader::GetModLoaderVersion();
-}
-
-bool UModLoadingLibrary::IsDevelopmentModeEnabled() const {
-    return FSatisfactoryModLoader::GetSMLConfiguration().bDevelopmentMode;
 }
 
 TMap<FName, FString> UModLoadingLibrary::GetExtraModLoaderAttributes() const {

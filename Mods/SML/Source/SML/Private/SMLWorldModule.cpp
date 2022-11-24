@@ -6,12 +6,9 @@
 #include "ModLoading/ModLoadingLibrary.h"
 #include "Patching/Patch/SaveMetadataPatch.h"
 
-USMLWorldModule::USMLWorldModule() {
-	this->bRootModule = true;
-}
-
 void USMLWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
 	Super::DispatchLifecycleEvent(Phase);
+
 	if (Phase == ELifecyclePhase::POST_INITIALIZATION) {
 		AGameStateBase* State = GetWorld()->GetGameState();
 		if (State && State->HasAuthority()) {

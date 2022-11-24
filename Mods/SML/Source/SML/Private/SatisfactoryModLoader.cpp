@@ -8,13 +8,9 @@
 #include "Network/SMLConnection/SMLNetworkManager.h"
 #include "Patching/Patch/CheatManagerPatch.h"
 #include "Player/SMLRemoteCallObject.h"
-#include "Patching/Patch/MainMenuPatch.h"
-#include "Patching/Patch/OfflinePlayerHandler.h"
-#include "Patching/Patch/OptionsKeybindPatch.h"
 #include "Patching/Patch/SaveMetadataPatch.h"
 #include "Player/PlayerCheatManagerHandler.h"
 #include "Util/DebuggerHelper.h"
-// #include "Toolkit/OldToolkit/FGNativeClassDumper.h"
 
 #ifndef SML_BUILD_METADATA
 #define SML_BUILD_METADATA "unknown"
@@ -117,15 +113,6 @@ void FSatisfactoryModLoader::RegisterSubsystemPatches() {
     //Initialize tooltip handler
     UItemTooltipSubsystem::InitializePatches();
 
-    //Register offline player handler, providing ability to fallback to offline username and net id
-    FOfflinePlayerHandler::RegisterHandlerPatches();
-
-    //Register main menu additions, like mod list and labels
-    FMainMenuPatch::RegisterPatch();
-
-    //Register options menu key bindings patch, providing better keybind categorization
-    FOptionsKeybindPatch::RegisterPatch();
-
     //Register save metadata patch to enable storing a save's mod list and other mod-specified metadata
     FSaveMetadataPatch::RegisterPatch();
 
@@ -189,13 +176,7 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     if (FPlatformProperties::RequiresCookedData()) {
         CheckGameVersion();
     }
-
-    //Show console if we have been asked to in configuration
-    //Console can also be shown using -LOG command line switch
-    if (GetSMLConfiguration().bConsoleWindow) {
-        GLogConsole->Show(true);
-    }
-
+    
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Pre-initialization finished!"));
 }
 

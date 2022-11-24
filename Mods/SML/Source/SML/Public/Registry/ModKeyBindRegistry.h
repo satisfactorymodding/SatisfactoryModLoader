@@ -1,38 +1,56 @@
 ﻿#pragma once
 #include "FGInputLibrary.h"
+#include "Module/GameInstanceModule.h"
 #include "ModKeyBindRegistry.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogModKeyBindRegistry, All, All);
+
+USTRUCT()
+struct SML_API FModKeyBindRegistrationEntry {
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, Category = "Default")
+	FString PluginName;
+
+	UPROPERTY(VisibleAnywhere, Category = "Default")
+	FFGKeyMapping KeyMapping;
+};
+
 UCLASS()
-class SML_API UModKeyBindRegistry : public UBlueprintFunctionLibrary {
+class SML_API UModKeyBindRegistry : public UEngineSubsystem {
     GENERATED_BODY()
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Default")
+	TArray<FModKeyBindRegistrationEntry> RegistrationEntries;
 public:
     /**
      * Register given key mapping and associates it with mod reference provided
      * Action name should be unique and start with "ModReference." prefix to avoid conflicts with other mods
-     * This function will throw exception if action name doesn't start with prefix described above
-     * You can only register two keys with same name, and one of them should be keyboard and another is gamepad (optional)
      * 
-     * @param ModReference reference of the mod this key bind belongs to
+     * @param PluginName reference of the mod this key bind belongs to
      * @param KeyMapping information about KeyMapping being registered. 
-     * @param DisplayName Name of the key binding used for options/controls menu
      */
-    UFUNCTION(BlueprintCallable)
-    static void RegisterModKeyBind(const FString& ModReference, FInputActionKeyMapping KeyMapping, const FText& DisplayName);
+    UFUNCTION(BlueprintCallable, Category = "Input")
+	void RegisterModKeyBind(const FString& PluginName, const FFGKeyMapping& KeyMapping);
 
-    /**
-     * Registers given axis key mappings and associate them with given mod reference
-     * Axis names should be unique and start with "ModReference." prefix to avoid conflicts with other mods
-     * This function will throw exception if axis names don't start with prefix described above
-     * Both axis mappings should have equal action name, too.
-     * FactoryGame requires all axis binds to have 2 keys with opposite directions, and they will be displayed as 2 keys in control options too
-     * You can only register two axis binding pairs, and one of them should be keyboard and another is gamepad (optional)
-     *
-     * @param ModReference reference of the mod this axis bind belongs to
-     * @param PositiveAxisMapping information about axis key in positive direction (Scale > 0)
-     * @param NegativeAxisMapping information about axis key in negative direction (Scale < 0)
-     * @param PositiveDisplayName Name of the positive axis binding for options/controls menu
-     * @param NegativeDisplayName Name of the negative axis binding for options/controls menu
-     */
-    UFUNCTION(BlueprintCallable)
-    static void RegisterModAxisBind(const FString& ModReference, FInputAxisKeyMapping PositiveAxisMapping, FInputAxisKeyMapping NegativeAxisMapping, const FText& PositiveDisplayName, const FText& NegativeDisplayName);
+	/**
+	 * Registers display name and tooltip for the provided action key mapping
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void RegisterModActionKeyBindDisplayName(const FString& PluginName, const FActionMappingDisplayName& ActionMappingDisplayName);
+
+	/**
+	 * Registers display name and tooltip for the provided axis key mapping
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void RegisterModAxisKeyBindDisplayName(const FString& PluginName, const FAxisMappingDisplayName& AxisMappingDisplayName);
+	
+	/**
+	 * Retrieves the name of the plugin that has registered the passed key binding
+	 * @param ActionName the key binding
+	 * @param OutPluginName if successful, name of the plugin holding the registration
+	 * @return true if lookup is successful, false otherwise
+	 */
+	UFUNCTION(BlueprintPure, Category = "Input")
+	bool FindKeyBindOwnerPluginName(const FName& ActionName, bool bIsAxisMapping, FString& OutPluginName);
 };

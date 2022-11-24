@@ -5,7 +5,6 @@
 #include "FGPlayerController.h"
 #include "FGSaveManagerInterface.h"
 #include "SatisfactoryModLoader.h"
-#include "Patching/Patch/MainMenuPatch.h"
 #include "Patching/BlueprintHookHelper.h"
 #include "Patching/BlueprintHookManager.h"
 #include "Reflection/ReflectionHelper.h"

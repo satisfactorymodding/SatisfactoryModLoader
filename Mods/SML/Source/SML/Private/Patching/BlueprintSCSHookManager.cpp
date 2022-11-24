@@ -85,7 +85,12 @@ void UBlueprintSCSHookData::ReinitializeActorComponentTemplate() {
 		}
 		if (ActorComponentClass != NULL) {
 			//Calling NewObject with Template of unrelated UClass seems to be okay, FObjectInitializer will only carry over properties that belong to the new class
-			ActorComponentTemplate = NewObject<UActorComponent>(this, ActorComponentClass, VariableName, RF_ArchetypeObject | RF_Transactional, ActorComponentTemplate);
+			UActorComponent* OldActorComponentTemplate = ActorComponentTemplate;
+			ActorComponentTemplate = NewObject<UActorComponent>(this, ActorComponentClass, VariableName, RF_ArchetypeObject | RF_Transactional);
+
+			if (OldActorComponentTemplate && ActorComponentTemplate) {
+				UEngine::CopyPropertiesForUnrelatedObjects(OldActorComponentTemplate, ActorComponentTemplate);
+			}
 			ActorComponentTemplate->Modify();
 		} else {
 			//If we have no class anymore
@@ -119,7 +124,7 @@ TArray<FString> URootBlueprintSCSHookData::GetParentComponentNames() const {
 	TArray<FString> ResultArray;
 	ResultArray.Add(FName(NAME_None).ToString());
 
-	if (const UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(ActorClass)) {
+	if (const UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(ActorClass.LoadSynchronous())) {
 		//Append native component names first
 		ForEachObjectWithOuter(BlueprintGeneratedClass->GetDefaultObject(), [&](const UObject* NestedObject){
 			//We only want direct UActorComponent children that are default subobjects
@@ -157,7 +162,7 @@ bool URootBlueprintSCSHookData::ResolveParentComponent(FParentComponentInfo& Out
 		}
 	}
 	
-	UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(ActorClass);
+	UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(ActorClass.LoadSynchronous());
 	if (BlueprintGeneratedClass == NULL) {
 		return false;
 	}
@@ -347,7 +352,7 @@ void UBlueprintSCSHookManager::RegisterBlueprintSCSHook(URootBlueprintSCSHookDat
 		return;
 	}
 	
-	const UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(HookData->ActorClass);
+	const UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(HookData->ActorClass.LoadSynchronous());
 	if (!BlueprintGeneratedClass) {
 		UE_LOG(LogBlueprintSCSHookManager, Error, TEXT("InstallBlueprintSCSHook(%s) failed: Provided Class %s is not a Blueprint"), *HookData->GetPathName(), *HookData->ActorClass->GetPathName());
 		return;
@@ -386,21 +391,21 @@ void UBlueprintSCSHookManager::InstallSCSHookRecursive(UBlueprintSCSHookData* Ho
 	USimpleConstructionScript* SimpleConstructionScript = OutHookDescriptor.SimpleConstructionScript;
 	USCS_Node* NewNode = CreateNewTransientSCSNode(SimpleConstructionScript, HookData->ActorComponentClass, HookData->VariableName, HookData->ActorComponentTemplate);
 	if (NewNode == NULL) {
-		UE_LOG(LogBlueprintSCSHookManager, Error, TEXT("InstallBlueprintSCSHook(%s) failed: Failed to create new SCSNode"), *HookData->GetPathName());
+		UE_LOG(LogBlueprintSCSHookManager, Error, TEXT("Failed to instance SCS hook %s: cannot create new SCSNode"), *HookData->GetPathName());
 		return;
 	}
 	NewNode->AttachToName = HookData->AttachToName;
 
 	FParentComponentInfo ParentComponentInfo{};
 	if (!HookData->ResolveParentComponent(ParentComponentInfo) || !MountSCSNodeToParent(NewNode, ParentComponentInfo, OutHookDescriptor)) {
-		UE_LOG(LogBlueprintSCSHookManager, Error, TEXT("InstallSCSHookRecursive(%s) failed: Failed to mount Node %s declared by hook %s"),
+		UE_LOG(LogBlueprintSCSHookManager, Error, TEXT("Failed to instance SCS hook %s: cannot mount Node %s declared by hook %s"),
 			*OutHookDescriptor.RootHookData->GetPathName(), *NewNode->GetPathName(), *HookData->GetPathName());
 		return;
 	}
 	OutHookDescriptor.InstalledNodes.Add(HookData, NewNode);
 	OutHookDescriptor.InstalledNodesOrdered.Add(NewNode);
 
-	UE_LOG(LogBlueprintSCSHookManager, Log, TEXT("InstallSCSHookRecursive(%s): Hooked Actor Component Hook %s to Blueprint %s"),
+	UE_LOG(LogBlueprintSCSHookManager, Log, TEXT("Successfully installed SCS Hook %s Subhook %s at Blueprint %s"),
 			*OutHookDescriptor.RootHookData->GetPathName(), *HookData->GetPathName(), *OutHookDescriptor.SimpleConstructionScript->GetOwnerClass()->GetPathName());
 
 	for (UBlueprintSCSHookData* ChildHook : HookData->Children) {
@@ -415,7 +420,7 @@ void UBlueprintSCSHookManager::UninstallSCSHookOrdered(const FBPSCSHookDescripto
 		HookDescriptor.SimpleConstructionScript->RemoveNode(SCSNode);
 		const UBlueprintSCSHookData* HookData = *HookDescriptor.InstalledNodes.FindKey(SCSNode);
 		
-		UE_LOG(LogBlueprintSCSHookManager, Log, TEXT("UninstallSCSHookOrdered(%s): Removed Actor Component Hook %s from Blueprint %s"),
+		UE_LOG(LogBlueprintSCSHookManager, Log, TEXT("Removed SCS hook %s subhook %s from Blueprint %s"),
 			*HookDescriptor.RootHookData->GetPathName(), *HookData->GetPathName(), *HookDescriptor.SimpleConstructionScript->GetOwnerClass()->GetPathName());
 	}
 }

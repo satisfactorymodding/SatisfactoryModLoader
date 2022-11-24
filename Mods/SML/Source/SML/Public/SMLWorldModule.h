@@ -3,13 +3,14 @@
 #include "SMLWorldModule.generated.h"
 
 UCLASS()
-class SML_API USMLWorldModule : public UGameWorldModule
-{
+class SML_API USMLWorldModule : public UGameWorldModule {
 	GENERATED_BODY()
+protected:
+	/** Mod references that will be left out of save mod metadata */
+	UPROPERTY(EditDefaultsOnly, Category = "SML")
+	TArray<FString> IgnoredModReferences;
 public:
-	USMLWorldModule();
 	virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
-	void WriteModMetadataToSave();
 private:
-	TArray<FString> IgnoredModReferences = {"FactoryGame", "SML"};
+	void WriteModMetadataToSave();
 };

@@ -113,11 +113,7 @@ public:
     /** Returns the currently used SML version */
     UFUNCTION(BlueprintPure, Category = "SML|Mod Loading", meta = (BlueprintThreadSafe))
     FVersion GetModLoaderVersion() const;
-
-    /** Returns true if development mode is currently enabled */
-    UFUNCTION(BlueprintPure, Category = "SML|Mod Loading", meta = (BlueprintThreadSafe))
-    bool IsDevelopmentModeEnabled() const;
-
+    
     /** Returns extra attributes exposed by the mod loader implementation */
     UFUNCTION(BlueprintPure, Category = "SML|Mod Loading", meta = (BlueprintThreadSafe))
     TMap<FName, FString> GetExtraModLoaderAttributes() const;
@@ -135,7 +131,7 @@ private:
     FSMLPluginDescriptorMetadata FindMetadataOrFallback(IPlugin& Plugin);
 
     /** Initializes mod info object for the FactoryGame itself */
-    static FModInfo CreateFactoryGameModInfo();
+    static FModInfo CreateGameProjectModInfo();
 
     /** Performs global plugin dependencies verification through all the plugins */
     void VerifyPluginDependencies();

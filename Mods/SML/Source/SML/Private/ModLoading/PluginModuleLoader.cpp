@@ -2,7 +2,7 @@
 #include "AssetRegistryModule.h"
 #include "FGGameMode.h"
 #include "IPlatformFilePak.h"
-#include "Util/BlueprintAssetHelperLibrary.h"
+#include "Kismet/BlueprintAssetHelperLibrary.h"
 #include "SatisfactoryModLoader.h"
 
 //Switch to enable mod loading in editor. Currently it's disabled because we don't have proper FactoryGame editor build

@@ -3,7 +3,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Reflection/BlueprintReflectedObject.h"
 #include "Reflection/ReflectionHelper.h"
-#include "Util/BlueprintAssetHelperLibrary.h"
+#include "Kismet/BlueprintAssetHelperLibrary.h"
 #include "SatisfactoryModLoader.h"
 #include "BlueprintReflectionLibrary.generated.h"
 

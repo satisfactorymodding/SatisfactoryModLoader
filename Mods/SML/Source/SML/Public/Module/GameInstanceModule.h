@@ -1,55 +1,64 @@
 #pragma once
+#include "FGOptionsSettings.h"
 #include "Module/ModModule.h"
 #include "GameFramework/PlayerInput.h"
 #include "Templates/SubclassOf.h"
-#include "Engine/GameInstance.h"
 
 #include "GameInstanceModule.generated.h"
 
 class UModSubsystemHolder;
 class UModConfiguration;
 class URootBlueprintSCSHookData;
+class UWidgetBlueprintHookData;
 
-/** Holds information about individual key binding registration */
-USTRUCT(BlueprintType)
+USTRUCT()
 struct SML_API FModKeyBindingInfo {
     GENERATED_BODY()
-
-    /** Name of the action this key bindings corresponds to. Should be prefixed with ModReference. */
-    UPROPERTY(EditAnywhere)
+	
+    UPROPERTY()
     FName ActionName;
-    
-    /** Information about key binding being registered */
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     FInputActionKeyMapping KeyMapping;
-    
-    /** Display name of Key Binding in Options|Controls menu */
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     FText DisplayName;
 };
 
-/** Holds information about individual axis binding registration */
-USTRUCT(BlueprintType)
+USTRUCT()
 struct SML_API FModAxisBindingInfo {
     GENERATED_BODY()
-
-    /** Name of the axis this key bindings corresponds to. Should be prefixed with ModReference. */
-    UPROPERTY(EditAnywhere)
+	
+    UPROPERTY()
     FName AxisName;
-    
-    /** Information about Positive (Scale > 0) axis mapping. AxisName should be the same and prefixed with ModReference. */
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     FInputAxisKeyMapping PositiveAxisMapping;
-    /** Information about Negative (Scale < 0) axis mapping. AxisName should be the same and prefixed with ModReference. */
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     FInputAxisKeyMapping NegativeAxisMapping;
-    
-    /** Display name of *Positive* Axis Binding in Options|Controls menu */
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     FText PositiveAxisDisplayName;
-    /** Display name of *Negative* Axis Binding in Options|Controls menu */
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     FText NegativeAxisDisplayName;
+};
+
+USTRUCT()
+struct FInputActionKeyMappingNamePair {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	FName ActionName;
+
+	UPROPERTY(EditAnywhere)
+	FInputActionKeyMapping ActionKeyMapping;
+};
+
+USTRUCT()
+struct FInputAxisKeyMappingNamePair {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	FName AxisName;
+
+	UPROPERTY(EditAnywhere)
+	FInputAxisKeyMapping AxisKeyMapping;
 };
 
 /** Describes module loaded with game instance and active as long as game instance is loaded */
@@ -62,44 +71,79 @@ public:
     UGameInstance* GetGameInstance() const;
   
     /** Configurations defined and used by this mod */
-    UPROPERTY(EditDefaultsOnly, Category = Default)
+    UPROPERTY(EditDefaultsOnly, Category = "Default")
     TArray<TSubclassOf<UModConfiguration>> ModConfigurations;
-    
-    /** Key Bindings for this mod to be registered */
-    UPROPERTY(EditDefaultsOnly, Category = Default)
-    TArray<FModKeyBindingInfo> ModKeyBindings;
 
     /**
     * List of classes for objects implementing ISMLItemTooltipProvider
     * These will be registered on startup and used to obtain additional description
     * text/widget for all items
     */
-    UPROPERTY(EditDefaultsOnly, Category = Advanced)
+    UPROPERTY(EditDefaultsOnly, Category = "Advanced | Tooltips")
     TArray<UClass*> GlobalItemTooltipProviders;
 
     /**
-    * Axis Bindings for this mod to be registered
-    * They are very similar to key bindings in behavior, but there are some differences:
-    *  - Axis Bindings provide /degrees of input/ and not discrete 0/1 values
-    *  - Axis Bindings are continuously polled and not triggered on action (so they are good for movement)
-    *  So use them for movement basically
-    */
-    UPROPERTY(EditDefaultsOnly, Category = Advanced)
-    TArray<FModAxisBindingInfo> ModAxisBindings;
+     * Key Bindings for this mod to be registered
+     * You can register up to two key bindings for a single action name,
+     * one for the keyboard layout and one for the gamepad
+     */
+    UPROPERTY(EditDefaultsOnly, Category = "Advanced | Action Key Mappings")
+    TArray<FInputActionKeyMappingNamePair> ModActionMappings;
 
+    /**
+     * Display names for action mappings registered by the mod
+     */
+	UPROPERTY(EditDefaultsOnly, Category = "Advanced | Action Key Mappings")
+	TArray<FActionMappingDisplayName> ModActionMappingDisplayNames;
+
+    /**
+      * Axis Bindings for this mod to be registered
+      * They are very similar to key bindings in behavior, but there are some differences:
+      *  - Axis Bindings provide /degrees of input/ and not discrete 0/1 values
+      *  - Axis Bindings are continuously polled and not triggered on action (so they are good for movement)
+      *  So use them for movement basically
+      */
+    UPROPERTY(EditDefaultsOnly, Category = "Advanced | Axis Key Mappings")
+    TArray<FInputAxisKeyMappingNamePair> ModAxisMappings;
+
+    /**
+     * Display names for axis mappings registered by the mod
+     */
+    UPROPERTY(EditDefaultsOnly, Category = "Advanced | Axis Key Mappings")
+    TArray<FAxisMappingDisplayName> ModAxisMappingDisplayNames;
+    
     /**
      * Simple construction script hooks to install for this mod
      * SCS hooks allow adding modded components to any blueprint-based actor
      * Consult documentation if you're not sure what you want to achieve
      */
-    UPROPERTY(Instanced, EditDefaultsOnly, Category = Advanced)
+    UPROPERTY(Instanced, EditDefaultsOnly, Category = "Advanced | Hooks")
     TArray<URootBlueprintSCSHookData*> BlueprintSCSHooks;
+
+    /**
+     * Widget blueprint hooks to add your custom widget into one of the existing game blueprints
+     * Works on the widget archetype level so your widget ends up fully integrated into the game's asset
+     * You have full control over slot properties and widget settings
+     *
+     * It should be noted that a similar effect can be achieved by blueprint hooknig the widget's construct
+     * and manually adding your widget there, but this system provides a simpler and more convenient way
+     */
+    UPROPERTY(Instanced, EditDefaultsOnly, Category = "Advanced | Hooks")
+    TArray<UWidgetBlueprintHookData*> WidgetBlueprintHooks;
+    
+    UPROPERTY()
+    TArray<FModAxisBindingInfo> ModAxisBindings_DEPRECATED;
+    
+    UPROPERTY()
+    TArray<FModKeyBindingInfo> ModKeyBindings_DEPRECATED;
     
     /** Game instance modules can access world context from game instance */
     virtual UWorld* GetWorld() const override;
 
     /** Register content from properties here */
     virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
+
+	virtual void PostLoad() override;
 protected:
     /** Allow SetOwnerModReference access to game instance module manager */
     friend class UGameInstanceModuleManager;

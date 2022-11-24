@@ -1,8 +1,10 @@
 #include "Subsystem/SubsystemActorManager.h"
+
+#include "EngineUtils.h"
 #include "Command/ChatCommandLibrary.h"
 #include "ModLoading/PluginModuleLoader.h"
 #include "Registry/ModContentRegistry.h"
-#include "Util/BlueprintAssetHelperLibrary.h"
+#include "Kismet/BlueprintAssetHelperLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogSubsystemManager)
 

@@ -17,7 +17,7 @@
 #include "Engine/AssetManager.h"
 #include "ModLoading/ModLoadingLibrary.h"
 #include "Subsystem/SubsystemActorManager.h"
-#include "Util/BlueprintAssetHelperLibrary.h"
+#include "Kismet/BlueprintAssetHelperLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogContentRegistry);
 
@@ -123,14 +123,14 @@ FName AModContentRegistry::FindContentOwnerFast(UClass* ContentClass) {
 
     //Shortcut used for quickly registering vanilla content
     if (GIsRegisteringVanillaContent) {
-        return FACTORYGAME_MOD_NAME;
+        return FApp::GetProjectName();
     }
 
     //Use GetName on package instead of GetPathName() because it's faster and avoids string concat
     const FString ContentOwnerName = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(ContentClass->GetOuterUPackage()->GetName());
     if (ContentOwnerName.IsEmpty()) {
         UE_LOG(LogContentRegistry, Error, TEXT("Failed to determine content owner for object %s. This is an error, report to mod author!"), *ContentClass->GetPathName());
-        return FACTORYGAME_MOD_NAME;
+        return FApp::GetProjectName();
     }
     return *ContentOwnerName;
 }
@@ -184,7 +184,7 @@ void AModContentRegistry::SubscribeToSchematicManager(AFGSchematicManager* Schem
 
 void AModContentRegistry::Init() {
     //Register vanilla content in the registry
-    const FName FactoryGame = FACTORYGAME_MOD_NAME;
+    const FName FactoryGame = FApp::GetProjectName();
 
     UE_LOG(LogContentRegistry, Display, TEXT("Initializing mod content registry"));
     const TArray<TSubclassOf<UFGSchematic>> AllSchematics = DiscoverVanillaContentOfType<UFGSchematic>();

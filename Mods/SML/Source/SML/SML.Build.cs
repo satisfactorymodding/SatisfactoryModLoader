@@ -20,7 +20,10 @@ public class SML : ModuleRules
             "MovieScene",
             "Projects"
         });
-        PrivateDependencyModuleNames.AddRange(new[] {"RenderCore"});
+        PrivateDependencyModuleNames.AddRange(new[] {
+            "RenderCore",
+            "EngineSettings"
+        });
         
         PublicDependencyModuleNames.AddRange(new string[] {"FactoryGame"});
         

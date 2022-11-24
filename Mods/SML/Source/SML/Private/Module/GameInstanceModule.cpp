@@ -4,6 +4,7 @@
 #include "Registry/ModKeyBindRegistry.h"
 #include "Engine/Engine.h"
 #include "Patching/BlueprintSCSHookManager.h"
+#include "Patching/WidgetBlueprintHookManager.h"
 
 UGameInstance* UGameInstanceModule::GetGameInstance() const {
     //Game Instance module hierarchy is built on top of UGameInstanceSubsystem,
@@ -32,6 +33,44 @@ void UGameInstanceModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     Super::DispatchLifecycleEvent(Phase);
 }
 
+void UGameInstanceModule::PostLoad() {
+    Super::PostLoad();
+
+    //Migrate deprecated properties
+    for (const FModKeyBindingInfo& ModKeyBindingInfo : ModKeyBindings_DEPRECATED) {
+        FInputActionKeyMappingNamePair Pair;
+        Pair.ActionName = ModKeyBindingInfo.ActionName;
+        Pair.ActionKeyMapping = ModKeyBindingInfo.KeyMapping;
+        ModActionMappings.Add(Pair);
+
+        FActionMappingDisplayName ActionMappingDisplayName;
+        ActionMappingDisplayName.ActionMappingName = ModKeyBindingInfo.ActionName;
+        ActionMappingDisplayName.DisplayName = ModKeyBindingInfo.DisplayName;
+        ModActionMappingDisplayNames.Add(ActionMappingDisplayName);
+    }
+    ModKeyBindings_DEPRECATED.Empty();
+    
+    for (const FModAxisBindingInfo& ModAxisBindingInfo : ModAxisBindings_DEPRECATED) {
+        FInputAxisKeyMappingNamePair PositivePair;
+        PositivePair.AxisName = ModAxisBindingInfo.AxisName;
+        PositivePair.AxisKeyMapping = ModAxisBindingInfo.PositiveAxisMapping;
+
+        FInputAxisKeyMappingNamePair NegativePair;
+        NegativePair.AxisName = ModAxisBindingInfo.AxisName;
+        NegativePair.AxisKeyMapping = ModAxisBindingInfo.NegativeAxisMapping;
+        
+        ModAxisMappings.Add(PositivePair);
+        ModAxisMappings.Add(NegativePair);
+
+        FAxisMappingDisplayName AxisMappingDisplayName;
+        AxisMappingDisplayName.AxisMappingName = ModAxisBindingInfo.AxisName;
+        AxisMappingDisplayName.DisplayNamePositiveScale = ModAxisBindingInfo.PositiveAxisDisplayName;
+        AxisMappingDisplayName.DisplayNameNegativeScale = ModAxisBindingInfo.NegativeAxisDisplayName;
+        ModAxisMappingDisplayNames.Add(AxisMappingDisplayName);
+    }
+    ModAxisBindings_DEPRECATED.Empty();
+}
+
 void UGameInstanceModule::RegisterDefaultContent() {
     //Register default content
     UGameInstance* GameInstance = GetGameInstance();
@@ -50,30 +89,41 @@ void UGameInstanceModule::RegisterDefaultContent() {
     }
     
     //Key Bindings and Axis Bindings
-    for (const FModKeyBindingInfo& KeyBindingInfo : ModKeyBindings) {
-        //Because action binding editor UI is stupid and you cannot set action name directly apparently...
-        FInputActionKeyMapping FixedKeyMapping = KeyBindingInfo.KeyMapping;
-        FixedKeyMapping.ActionName = KeyBindingInfo.ActionName;
-        
-        //Register fixed key mapping with proper action name now
-        UModKeyBindRegistry::RegisterModKeyBind(OwnerModReferenceString, FixedKeyMapping, KeyBindingInfo.DisplayName);
+    UModKeyBindRegistry* ModKeyBindRegistry = GameInstance->GetEngine()->GetEngineSubsystem<UModKeyBindRegistry>();
+
+    //Register action key mappings
+    for (const FInputActionKeyMappingNamePair& ActionKeyMapping : ModActionMappings) {
+        FFGKeyMapping KeyMapping{};
+        KeyMapping.IsAxisMapping = false;
+        KeyMapping.ActionKeyMapping = ActionKeyMapping.ActionKeyMapping;
+        KeyMapping.ActionKeyMapping.ActionName = ActionKeyMapping.ActionName;
+        ModKeyBindRegistry->RegisterModKeyBind(OwnerModReferenceString, KeyMapping);
+    }
+
+    //Register axis key mappings
+    for (const FInputAxisKeyMappingNamePair& AxisKeyMapping : ModAxisMappings) {
+        FFGKeyMapping KeyMapping{};
+        KeyMapping.IsAxisMapping = true;
+        KeyMapping.AxisKeyMapping = AxisKeyMapping.AxisKeyMapping;
+        KeyMapping.AxisKeyMapping.AxisName = AxisKeyMapping.AxisName;
+        ModKeyBindRegistry->RegisterModKeyBind(OwnerModReferenceString, KeyMapping);
     }
     
-    for (const FModAxisBindingInfo& AxisBindingInfo : ModAxisBindings) {
-        //Same problem as with action binding editor - see comment above
-        FInputAxisKeyMapping FixedPositiveAxisMapping = AxisBindingInfo.PositiveAxisMapping;
-        FInputAxisKeyMapping FixedNegativeAxisMapping = AxisBindingInfo.NegativeAxisMapping;
-        
-        FixedPositiveAxisMapping.AxisName = AxisBindingInfo.AxisName;
-        FixedNegativeAxisMapping.AxisName = AxisBindingInfo.AxisName;
-        
-        //Register fixed axis mapping with proper action names now
-        UModKeyBindRegistry::RegisterModAxisBind(OwnerModReferenceString, FixedPositiveAxisMapping, FixedNegativeAxisMapping, AxisBindingInfo.PositiveAxisDisplayName, AxisBindingInfo.NegativeAxisDisplayName);
+    //Register key mappings display names
+    for (const FActionMappingDisplayName& ActionMappingDisplayName : ModActionMappingDisplayNames) {
+        ModKeyBindRegistry->RegisterModActionKeyBindDisplayName(OwnerModReferenceString, ActionMappingDisplayName);
+    }
+    for (const FAxisMappingDisplayName& AxisMappingDisplayName : ModAxisMappingDisplayNames) {
+        ModKeyBindRegistry->RegisterModAxisKeyBindDisplayName(OwnerModReferenceString, AxisMappingDisplayName);
     }
 
     UBlueprintSCSHookManager* HookManager = GetGameInstance()->GetEngine()->GetEngineSubsystem<UBlueprintSCSHookManager>();
-    
     for (URootBlueprintSCSHookData* HookData : BlueprintSCSHooks) {
         HookManager->RegisterBlueprintSCSHook(HookData);
+    }
+
+    UWidgetBlueprintHookManager* WidgetHookManager = GetGameInstance()->GetEngine()->GetEngineSubsystem<UWidgetBlueprintHookManager>();
+    for (UWidgetBlueprintHookData* HookData : WidgetBlueprintHooks) {
+        WidgetHookManager->RegisterWidgetBlueprintHook(HookData);
     }
 }

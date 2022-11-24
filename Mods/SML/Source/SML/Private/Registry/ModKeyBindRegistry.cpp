@@ -1,117 +1,133 @@
 #include "Registry/ModKeyBindRegistry.h"
-
 #include "FGGameUserSettings.h"
 #include "FGOptionsSettings.h"
 #include "GameFramework/InputSettings.h"
 
-void UModKeyBindRegistry::RegisterModKeyBind(const FString& ModReference, FInputActionKeyMapping KeyMapping, const FText& DisplayName) {
+DEFINE_LOG_CATEGORY(LogModKeyBindRegistry);
+
+void UModKeyBindRegistry::RegisterModKeyBind(const FString& PluginName, const FFGKeyMapping& KeyMapping) {
     UInputSettings* InputSettings = UInputSettings::GetInputSettings();
-    UFGOptionsSettings* OptionsSettings = GetMutableDefault<UFGOptionsSettings>();
-    const FString ModPrefix = FString::Printf(TEXT("%s."), *ModReference);
 
-    //Ensure that we are prefixed by ModReference to allow unique identification
-    const FString ActionName = KeyMapping.ActionName.ToString();
-    checkf(ActionName.StartsWith(ModPrefix), TEXT("RegisterModKeyBind called with ActionName not being prefixed by ModReference"));
+    //Check for uniqueness first
+    if (!KeyMapping.IsAxisMapping) {
+        TArray<FInputActionKeyMapping> ActionMappings;
+        InputSettings->GetActionMappingByName(KeyMapping.ActionKeyMapping.ActionName, ActionMappings);
 
-    //Try to find changed user settings for the key bind
-    UFGGameUserSettings* UserSettings = UFGGameUserSettings::GetFGGameUserSettings();
-    for (const FFGKeyMapping& KeyMap : UserSettings->GetKeyMappings()) {
-        if (KeyMap.IsAxisMapping) continue;
-        if (KeyMap.ActionKeyMapping.ActionName == KeyMapping.ActionName) {
-            KeyMapping = KeyMap.ActionKeyMapping;
-            break;
+        //We allow up to two registrations for every key, one for gamepad and one for normal keyboard keys
+        const FInputActionKeyMapping* ConflictingMapping = ActionMappings.FindByPredicate([&](const FInputActionKeyMapping& OtherMapping) {
+            return OtherMapping.Key.IsGamepadKey() == KeyMapping.ActionKeyMapping.Key.IsGamepadKey();
+        });
+        if (ConflictingMapping != NULL) {
+            UE_LOG(LogModKeyBindRegistry, Error, TEXT("Attempt to register action key mapping %s by mod %s with conflicting input type (must have at most one registration for keyboard and one for game pad)"),
+                *KeyMapping.ActionKeyMapping.ActionName.ToString(), *PluginName);
+            return;
         }
-    }
-    
-    //Check for uniqueness. We want mapping registered only one time
-    TArray<FInputActionKeyMapping> MappingsAlreadyRegistered;
-    InputSettings->GetActionMappingByName(KeyMapping.ActionName, MappingsAlreadyRegistered);
-    if (MappingsAlreadyRegistered.Contains(KeyMapping)) {
-        return;
-    }
-    
-    //If we already have non-gamepad/gamepad mapping registered, don't register this one
-    //This is because FactoryGame currently can only differentiate 2 mappings with same action name currently:
-    //One should be bound to gamepad (and be not editable in controls), and other should be not-gamepad,
-    //but editable in control options. So we only allow 2 mappings at most, and they should have different types
-    const bool bIsGamePadKey = KeyMapping.Key.IsGamepadKey();
-    for (const FInputActionKeyMapping& OtherMapping : MappingsAlreadyRegistered) {
-        const bool bIsOtherGamePadKey = OtherMapping.Key.IsGamepadKey();
-        if (bIsGamePadKey == bIsOtherGamePadKey)
-            return; //Disallow registering 2 mappings with same type
-    }
-    
-    //Either we don't have registered mapping, or it is of different type at this point
-    //We can add it now, and calling AddActionMapping will also update all active PlayerInput objects
-    InputSettings->AddActionMapping(KeyMapping);
-    
-    //Only register display name for non-gamepad mappings, because
-    //FactoryGame option slider currently only supports 1 key per 1 action, and it
-    //should be non-gamepad action key mapping
-    if (!bIsGamePadKey) {
-        FActionMappingDisplayName DisplayNameMapping;
-        DisplayNameMapping.ActionMappingName = KeyMapping.ActionName;
-        DisplayNameMapping.DisplayName = DisplayName;
-        OptionsSettings->mActionBindingsDisplayNames.Add(DisplayNameMapping);
-    }
-}
+    } else {
+        TArray<FInputAxisKeyMapping> AxisMappings;
+        InputSettings->GetAxisMappingByName(KeyMapping.AxisKeyMapping.AxisName, AxisMappings);
 
-void PerformChecksForModAxisBindings(const FInputAxisKeyMapping& PositiveAxisMapping, const FInputAxisKeyMapping& NegativeAxisMapping) {
-    const FString PositiveAxisName = PositiveAxisMapping.AxisName.ToString();
-    const FString NegativeAxisName = NegativeAxisMapping.AxisName.ToString();
-    checkf(PositiveAxisName == NegativeAxisName, TEXT("RegisterModAxisBind called with different axis names for positive and negative mappings"));
-    checkf(PositiveAxisMapping.Scale > 0, TEXT("PositiveAxisMapping should have positive scale"));
-    checkf(NegativeAxisMapping.Scale < 0, TEXT("NegativeAxisMapping should have negative scale"));
-    checkf(PositiveAxisMapping.Key.IsGamepadKey() == NegativeAxisMapping.Key.IsGamepadKey(), TEXT("Negative and Positive mappings should be same type"));
-}
-
-void UModKeyBindRegistry::RegisterModAxisBind(const FString& ModReference, FInputAxisKeyMapping PositiveAxisMapping, FInputAxisKeyMapping NegativeAxisMapping, const FText& PositiveDisplayName, const FText& NegativeDisplayName) {
-    UInputSettings* InputSettings = UInputSettings::GetInputSettings();
-    UFGOptionsSettings* OptionsSettings = GetMutableDefault<UFGOptionsSettings>();
-    const FString ModPrefix = FString::Printf(TEXT("%s."), *ModReference);
-
-    //Just like with action mapping, check that both axis names start with mod prefix
-    const FString AxisName = PositiveAxisMapping.AxisName.ToString();
-    checkf(AxisName.StartsWith(ModPrefix), TEXT("RegisterModAxisBind called with AxisName not being prefixed by ModReference"));
-    PerformChecksForModAxisBindings(PositiveAxisMapping, NegativeAxisMapping);
-
-    //Try to find changed user settings for the key bind
-    UFGGameUserSettings* UserSettings = UFGGameUserSettings::GetFGGameUserSettings();
-    for (const FFGKeyMapping& KeyMap : UserSettings->GetKeyMappings()) {
-        if (!KeyMap.IsAxisMapping) continue;
-        if (KeyMap.AxisKeyMapping.AxisName == PositiveAxisMapping.AxisName) {
-            if (KeyMap.AxisKeyMapping.Scale > 0) PositiveAxisMapping = KeyMap.AxisKeyMapping;
-            if (KeyMap.AxisKeyMapping.Scale < 0) NegativeAxisMapping = KeyMap.AxisKeyMapping;
+        //We allow up to two registrations for axis mappings, one for positive and one for negative axis
+        const FInputAxisKeyMapping* ConflictingMapping = AxisMappings.FindByPredicate([&](const FInputAxisKeyMapping& OtherMapping) {
+            return OtherMapping.Key.IsGamepadKey() == KeyMapping.AxisKeyMapping.Key.IsGamepadKey() &&
+                FMath::Sign(OtherMapping.Scale) == FMath::Sign(KeyMapping.AxisKeyMapping.Scale);
+        });
+        if (ConflictingMapping != NULL) {
+            UE_LOG(LogModKeyBindRegistry, Error, TEXT("Attempt to register axis key mapping %s by mod %s with conflicting input type (must have at most one registration for keyboard and one for game pad per axis direction)"),
+                *KeyMapping.AxisKeyMapping.AxisName.ToString(), *PluginName);
+            return;
         }
     }
 
-    //Ensure we don't have duplicate axis mappings already registered
-    TArray<FInputAxisKeyMapping> MappingsAlreadyRegistered;
-    InputSettings->GetAxisMappingByName(PositiveAxisMapping.AxisName, MappingsAlreadyRegistered);
-    if (MappingsAlreadyRegistered.Contains(PositiveAxisMapping) ||
-        MappingsAlreadyRegistered.Contains(NegativeAxisMapping)) {
+    //Register inside of the input settings then
+    //TODO: Not very good idea to register plugin key bindings globally, this way they will end up in engine input configuration files
+    //TODO: But we need deeper engine support for other sources, which we do not have unfortunately
+    if (!KeyMapping.IsAxisMapping) {
+        InputSettings->AddActionMapping(KeyMapping.ActionKeyMapping);
+
+        UE_LOG(LogModKeyBindRegistry, Log, TEXT("Registered action key mapping %s by mod %s (Gamepad: %d)"),
+            *KeyMapping.ActionKeyMapping.ActionName.ToString(), *PluginName, (int32)KeyMapping.ActionKeyMapping.Key.IsGamepadKey());
+    } else {
+        InputSettings->AddAxisMapping(KeyMapping.AxisKeyMapping);
+
+        UE_LOG(LogModKeyBindRegistry, Log, TEXT("Registered axis key mapping %s by mod %s (Gamepad: %d, Axis: %d)"),
+            *KeyMapping.AxisKeyMapping.AxisName.ToString(), *PluginName, KeyMapping.AxisKeyMapping.Key.IsGamepadKey(), (int32)FMath::Sign(KeyMapping.AxisKeyMapping.Scale));
+    }
+
+    //Add mod registration into the registry list
+    FModKeyBindRegistrationEntry RegistrationEntry;
+    RegistrationEntry.PluginName = PluginName;
+    RegistrationEntry.KeyMapping = KeyMapping;
+
+    RegistrationEntries.Add(RegistrationEntry);
+}
+
+void UModKeyBindRegistry::RegisterModActionKeyBindDisplayName(const FString& PluginName, const FActionMappingDisplayName& ActionMappingDisplayName) {
+    const FModKeyBindRegistrationEntry* RegistrationEntry = RegistrationEntries.FindByPredicate([&](const FModKeyBindRegistrationEntry& OtherEntry) {
+        return OtherEntry.PluginName == PluginName &&
+            !OtherEntry.KeyMapping.IsAxisMapping &&
+            OtherEntry.KeyMapping.ActionKeyMapping.ActionName == ActionMappingDisplayName.ActionMappingName;
+    });
+
+    //Only allow registering display names for registered modded key bindings
+    if (RegistrationEntry == NULL) {
+        UE_LOG(LogModKeyBindRegistry, Error, TEXT("Attempt to register action key mapping display name %s by plugin %s for unknown key mapping"), *ActionMappingDisplayName.ActionMappingName.ToString(), *PluginName);
         return;
     }
+    
+    UFGOptionsSettings* OptionsSettings = GetMutableDefault<UFGOptionsSettings>();
+    const FActionMappingDisplayName* ExistingMapping = OptionsSettings->mActionBindingsDisplayNames.FindByPredicate([&](const FActionMappingDisplayName& OtherDisplayName) {
+               return OtherDisplayName.ActionMappingName == ActionMappingDisplayName.ActionMappingName;
+    });
 
-    //Ensure we don't have same type of axis mappings registered
-    const bool bIsGamePadKey = PositiveAxisMapping.Key.IsGamepadKey();
-    for (const FInputAxisKeyMapping& OtherMapping : MappingsAlreadyRegistered) {
-        const bool bIsOtherGamePadKey = OtherMapping.Key.IsGamepadKey();
-        if (bIsGamePadKey == bIsOtherGamePadKey)
-            return; //Disallow registering 2 mappings with same type
+    //Do not allow registering multiple display names
+    if (ExistingMapping != NULL) {
+        UE_LOG(LogModKeyBindRegistry, Error, TEXT("Attempt to register duplicate action key mapping display name %s by plugin %s"), *ActionMappingDisplayName.ActionMappingName.ToString(), *PluginName);
+        return;
     }
+    OptionsSettings->mActionBindingsDisplayNames.Add(ActionMappingDisplayName);
+}
 
-    //Register both axis bindings
-    InputSettings->AddAxisMapping(PositiveAxisMapping);
-    InputSettings->AddAxisMapping(NegativeAxisMapping);
+void UModKeyBindRegistry::RegisterModAxisKeyBindDisplayName(const FString& PluginName, const FAxisMappingDisplayName& AxisMappingDisplayName) {
+    const FModKeyBindRegistrationEntry* RegistrationEntry = RegistrationEntries.FindByPredicate([&](const FModKeyBindRegistrationEntry& OtherEntry) {
+       return OtherEntry.PluginName == PluginName &&
+           OtherEntry.KeyMapping.IsAxisMapping &&
+           OtherEntry.KeyMapping.AxisKeyMapping.AxisName == AxisMappingDisplayName.AxisMappingName;
+    });
 
-    //Only register display name for non-gamepad mappings, same reason as for keys
-    if (!bIsGamePadKey) {
-        FAxisMappingDisplayName DisplayName;
-        DisplayName.AxisMappingName = PositiveAxisMapping.AxisName;
-        DisplayName.DisplayNamePositiveScale = PositiveDisplayName;
-        DisplayName.DisplayNameNegativeScale = NegativeDisplayName;
-        OptionsSettings->mAxisBindingsDisplayNames.Add(DisplayName);
+    //Only allow registering display names for registered modded key bindings
+    if (RegistrationEntry == NULL) {
+        UE_LOG(LogModKeyBindRegistry, Error, TEXT("Attempt to register axis key mapping display name %s by plugin %s for unknown key mapping"), *AxisMappingDisplayName.AxisMappingName.ToString(), *PluginName);
+        return;
     }
+    
+    UFGOptionsSettings* OptionsSettings = GetMutableDefault<UFGOptionsSettings>();
+    const FAxisMappingDisplayName* ExistingMapping = OptionsSettings->mAxisBindingsDisplayNames.FindByPredicate([&](const FAxisMappingDisplayName& OtherDisplayName) {
+        return OtherDisplayName.AxisMappingName == AxisMappingDisplayName.AxisMappingName;
+    });
+
+    //Do not allow registering multiple display names
+    if (ExistingMapping != NULL) {
+        UE_LOG(LogModKeyBindRegistry, Error, TEXT("Attempt to register duplicate axis key mapping display name %s by plugin %s"), *AxisMappingDisplayName.AxisMappingName.ToString(), *PluginName);
+        return;
+    }
+    OptionsSettings->mAxisBindingsDisplayNames.Add(AxisMappingDisplayName);
+}
+
+bool UModKeyBindRegistry::FindKeyBindOwnerPluginName(const FName& ActionName, bool bIsAxisMapping, FString& OutPluginName) {
+    
+    const FModKeyBindRegistrationEntry* RegistrationEntry = RegistrationEntries.FindByPredicate([&](const FModKeyBindRegistrationEntry& OtherEntry) {
+        return OtherEntry.KeyMapping.IsAxisMapping == bIsAxisMapping &&
+            (bIsAxisMapping ? OtherEntry.KeyMapping.AxisKeyMapping.AxisName == ActionName :
+                OtherEntry.KeyMapping.ActionKeyMapping.ActionName == ActionName);
+    });
+
+    //If we have a registration entry, it's a modded key binding
+    if (RegistrationEntry != NULL) {
+        OutPluginName = RegistrationEntry->PluginName;
+        return true;
+    }
+    //Otherwise assume FactoryGame ownership
+    OutPluginName = FApp::GetProjectName();
+    return true;
 }
 
