@@ -2,8 +2,12 @@
 
 #include "ShoppingList/FGShoppingListObject.h"
 
+UFGShoppingListObject::UFGShoppingListObject() : Super() {
+
+}
 void UFGShoppingListObject::SetAmount(int32 totalAmount){ }
-void UFGShoppingListObject::IncreaseAmount(int32 increase){ }
-void UFGShoppingListObject::DecreaseAmount(int32 decrease){ }
-void UFGShoppingListObject::UpdateShoppingList( AFGPlayerState* playerState){ }
+void UFGShoppingListObject::IncreaseAmount(int32 amountToAdd){ }
+void UFGShoppingListObject::DecreaseAmount(int32 amountToRemove){ }
+void UFGShoppingListObject::Native_OnAmountUpdated(){ }
+UObject* UFGShoppingListObject::GetIdentifierObject() const{ return nullptr; }
 void UFGShoppingListObject::AddCost(TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost) const{ }

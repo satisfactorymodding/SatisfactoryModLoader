@@ -56,7 +56,7 @@ float UFGCharacterMovementComponent::ImmersionDepth() const{ return float(); }
 void UFGCharacterMovementComponent::ServerSetHookLocation_Implementation(const FVector& hookLocation){ }
 bool UFGCharacterMovementComponent::ServerSetHookLocation_Validate(const FVector& hookLocation){ return bool(); }
 void UFGCharacterMovementComponent::SetHookLocation(const FVector& hookLocation){ }
-void UFGCharacterMovementComponent::ToggleWantsToSprintAndHoldSprint(const bool isHoldSprintOn){ }
+void UFGCharacterMovementComponent::ToggleWantsToSprintAndSetHoldSprint(const bool isHoldSprintOn){ }
 void UFGCharacterMovementComponent::SetWantsToSprintAndHoldSprint(const bool wantsToSprint, const bool isHoldSprintOn){ }
 bool UFGCharacterMovementComponent::CanGrabLadder(const  UFGLadderComponent* ladder) const{ return bool(); }
 void UFGCharacterMovementComponent::StartClimbLadder( UFGLadderComponent* ladder){ }

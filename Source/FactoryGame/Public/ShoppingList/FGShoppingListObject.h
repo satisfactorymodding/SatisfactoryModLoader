@@ -10,12 +10,14 @@
 /**
  * 
  */
-UCLASS( BlueprintType )
+UCLASS( BlueprintType, Abstract )
 class FACTORYGAME_API UFGShoppingListObject : public UObject
 {
 	GENERATED_BODY()
 
 public:
+	UFGShoppingListObject();
+
 	UFUNCTION( BlueprintPure )
 	FText GetShoppingListName() const { return Internal_GetShoppingListName(); }
 
@@ -28,17 +30,18 @@ public:
 	UFUNCTION( BlueprintCallable )
 	void SetAmount( int32 totalAmount );
 	UFUNCTION( BlueprintCallable )
-	void IncreaseAmount( int32 increase );
+	void IncreaseAmount( int32 amountToAdd );
 	UFUNCTION( BlueprintCallable )
-	void DecreaseAmount( int32 decrease );
+	void DecreaseAmount( int32 amountToRemove );
 
-	virtual void UpdateShoppingList( class AFGPlayerState* playerState );
+	virtual void Native_OnAmountUpdated();
+
+	virtual UObject* GetIdentifierObject() const;
 	virtual void AddCost( TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost ) const;
 
 protected:
 	virtual FText Internal_GetShoppingListName() const { return FText::GetEmpty(); }
 	
-	UPROPERTY( Transient, BlueprintReadOnly, Meta = ( ExposeOnSpawn = "true" ) )
 	int32 mAmount = 0;
 	
 };

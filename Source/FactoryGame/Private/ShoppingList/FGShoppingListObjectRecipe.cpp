@@ -4,5 +4,6 @@
 
 void UFGShoppingListObjectRecipe::Init(TSubclassOf<  UFGRecipe > recipe, int32 amount){ }
 void UFGShoppingListObjectRecipe::SetRecipe(TSubclassOf<  UFGRecipe > recipe){ }
+UObject* UFGShoppingListObjectRecipe::GetIdentifierObject() const{ return nullptr; }
 FText UFGShoppingListObjectRecipe::Internal_GetShoppingListName() const{ return FText(); }
 void UFGShoppingListObjectRecipe::AddCost(TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost) const{ }

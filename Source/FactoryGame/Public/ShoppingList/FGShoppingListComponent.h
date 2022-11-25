@@ -9,6 +9,12 @@
 #include "Components/ActorComponent.h"
 #include "FGShoppingListComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnShoppingListUpdated );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnShoppingListCleared );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnShoppingListObjectAdded, class UFGShoppingListObject*, shoppingListObject );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnShoppingListObjectUpdated, class UFGShoppingListObject*, shoppingListObject );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnShoppingListObjectRemoved, class UFGShoppingListObject*, shoppingListObject );
+
 USTRUCT()
 struct FACTORYGAME_API FShoppingListBlueprintEntry
 {
@@ -48,8 +54,7 @@ struct FACTORYGAME_API FShoppingListRecipeEntry
 };
 
 // Shopping list class to move away code from bloated player state
-// @todok2 This can use some cleaning up.
-UCLASS( BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( BlueprintType, ClassGroup=(Custom) )
 class FACTORYGAME_API UFGShoppingListComponent : public UActorComponent, public IFGSaveInterface
 {
 	GENERATED_BODY()
@@ -64,7 +69,7 @@ public:
 	void CopyShoppingListComponent( const UFGShoppingListComponent* otherShoppingListComponent );
 	
 	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
-	TArray<class UFGShoppingListObject*> GetShoppingListObjects();
+	void GetShoppingListObjects( TArray<class UFGShoppingListObject*>& out_ShoppingListObjects );
 	TArray<class UFGShoppingListObject*> GetShoppingListObjects_Slow();
 	
 	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
@@ -77,14 +82,6 @@ public:
 	TArray< FItemAmount > GetShoppingListCost() const;
 	TArray< FItemAmount > GetShoppingListCost_Slow() const;
 	
-	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
-	void SetShoppingListObject( class UFGShoppingListObject* shoppingListObject );
-
-	// UFUNCTION( BlueprintCallable, Category = "Shopping List" )
-	// void UpdateShoppingListFromClass( TSubclassOf<UObject> objectClass, int32 diff );
-	// UFUNCTION( BlueprintCallable, Category = "Shopping List" )
-	// void UpdateShoppingListFromObject( UObject* object, int32 diff );
-
 	void RemoveRecipeFromShoppingList( TSubclassOf< class UFGRecipe > recipeClass, int32 amountToRemove );
 	void RemoveBlueprintFromShoppingList( const FString& blueprintName, int32 amountToRemove );
 	
@@ -92,8 +89,11 @@ public:
 	void ClearShoppingList();
 
 	// Use only for migration
-	void MigrateShoppingList( TArray< FShoppingListRecipeEntry > recipeEntries ); 
-	
+	void MigrateShoppingList( TArray< FShoppingListRecipeEntry > recipeEntries );
+
+	void OnShoppingListObjectUpdated( UFGShoppingListObject* shoppingListObject );
+	void OnBlueprintRemoved( const FString& blueprintName );
+
 protected:
 	
 	virtual void BeginPlay() override;
@@ -110,44 +110,46 @@ protected:
 	// End IFSaveInterface
 
 private:
-	class UFGShoppingListObjectRecipe* Internal_GetShoppingListObjectFromRecipe( TSubclassOf<class UFGRecipe> recipe );
-	class UFGShoppingListObjectBlueprint* Internal_GetShoppingListObjectFromBlueprint( class UFGBlueprintDescriptor* blueprintDescriptor );
-	class UFGShoppingListObject* Internal_AddUniqueShoppingListObjectFromRecipe( TSubclassOf<class UFGRecipe> recipe, int32 amount );
-	void Internal_AddOrReplaceShoppingListObjectFromRecipe( TSubclassOf<class UFGRecipe> recipe, int32 amount );
-	class UFGShoppingListObject* Internal_AddUniqueShoppingListObjectFromBlueprint( class UFGBlueprintDescriptor* blueprintDescriptor, int32 amount );
-	void Internal_AddOrReplaceShoppingListObjectFromBlueprint( class UFGBlueprintDescriptor* blueprintDescriptor, int32 amount );
-
-	void Internal_RemoveShoppingListObjectFromRecipe( TSubclassOf<class UFGRecipe> recipe );
-	void Internal_RemoveShoppingListObjectFromBlueprint( class UFGBlueprintDescriptor* blueprintDescriptor );
-	
-	void SetNumBlueprintsInShoppingList( class UFGShoppingListObjectBlueprint* shoppingListObjectBlueprint );
+	void UpdateShoppingListObjectBlueprint( class UFGShoppingListObjectBlueprint* shoppingListObjectBlueprint );
 	UFUNCTION( Server, Reliable )
 	void Server_SetNumBlueprintsInShoppingList( const FString& blueprintName, int32 totalAmount );
 	
-	void SetNumRecipeClassInShoppingList( class UFGShoppingListObjectRecipe* shoppingListObjectRecipe );
+	void UpdateShoppingListObjectRecipe( class UFGShoppingListObjectRecipe* shoppingListObjectRecipe );
 	UFUNCTION( Server, Reliable )
 	void Server_SetNumRecipeClassInShoppingList( TSubclassOf< class UFGRecipe > recipeClass, int32 totalAmount );
+	
 	UFUNCTION( Server, Reliable )
+	void Server_ClearShoppingList();
 	
-	void Server_EmptyShoppingList();
-	
-	void BroadcastShoppingListUpdated();
+	void BroadcastShoppingListUpdated() const;
 
-	bool OwnerHasAuthority();
-	bool OwnerHasLocalNetOwner();
+	bool OwnerHasAuthority() const;
+	bool OwnerHasLocalNetOwner() const;
 	
 	UFUNCTION()
 	void OnRep_ShoppingListBlueprints();
-	void SetupInitalShoppingListObjectForBlueprints();
+	void SetupInitialShoppingListObjectForBlueprints();
 	
 	UFUNCTION()
 	void OnRep_ShoppingListRecipes();
-	void SetupInitalShoppingListObjectForRecipes();
+	void SetupInitialShoppingListObjectForRecipes();
+
+public:
+	UPROPERTY( BlueprintAssignable, BlueprintCallable, Category = "Shopping List")
+	FOnShoppingListUpdated mOnShoppingListUpdated;
+	UPROPERTY( BlueprintAssignable, BlueprintCallable, Category = "Shopping List")
+	FOnShoppingListCleared mOnShoppingListCleared;
+	UPROPERTY( BlueprintAssignable, BlueprintCallable, Category = "Shopping List")
+	FOnShoppingListObjectAdded mOnShoppingListObjectAdded;
+	UPROPERTY( BlueprintAssignable, BlueprintCallable, Category = "Shopping List")
+	FOnShoppingListObjectUpdated mOnShoppingListObjectUpdated;
+	UPROPERTY( BlueprintAssignable, BlueprintCallable, Category = "Shopping List")
+	FOnShoppingListObjectRemoved mOnShoppingListObjectRemoved;
 
 private:
 	// Used for UI representation to expose a more scalable system
 	UPROPERTY( Transient )
-	TArray< class UFGShoppingListObject* > mShoppingListObjects;
+	TMap< UObject*, class UFGShoppingListObject* >mShoppingListObjects;
 
 	// Underlying Shopping list data. Separated for different types.
 	// We could look into saving and replicating mShoppingListObjects as subobjects but this feels cheaper network wise

@@ -165,6 +165,8 @@ void AFGPlayerState::Server_SetWidgetHasBeenOpened_Implementation(TSubclassOf<  
 void AFGPlayerState::Client_OnRecipeConstructed_Implementation(TSubclassOf<  UFGRecipe > recipe, int32 numConstructed){ }
 void AFGPlayerState::Native_OnRecipeConstructed(TSubclassOf<  UFGRecipe > recipe, int32 numConstructed){ }
 void AFGPlayerState::Native_OnBlueprintConstructed(const FString& blueprintName, int32 numConstructed){ }
+void AFGPlayerState::Server_OnBlueprintRemoved_Implementation(const FString& blueprintName){ }
+void AFGPlayerState::Client_OnBlueprintRemoved_Implementation(const FString& blueprintName){ }
 bool AFGPlayerState::IsInPlayerArray(){ return bool(); }
 void AFGPlayerState::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }

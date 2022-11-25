@@ -4,6 +4,7 @@
 
 void UFGShoppingListObjectBlueprint::Init( UFGBlueprintDescriptor* blueprintDescriptor, int32 amount){ }
 void UFGShoppingListObjectBlueprint::SetBlueprintDescriptor( UFGBlueprintDescriptor* blueprintDescriptor){ }
-UFGBlueprintDescriptor* UFGShoppingListObjectBlueprint::GetBlueprintDescriptor(){ return nullptr; }
+UFGBlueprintDescriptor* UFGShoppingListObjectBlueprint::GetBlueprintDescriptor() const{ return nullptr; }
+UObject* UFGShoppingListObjectBlueprint::GetIdentifierObject() const{ return nullptr; }
 FText UFGShoppingListObjectBlueprint::Internal_GetShoppingListName() const{ return FText(); }
 void UFGShoppingListObjectBlueprint::AddCost(TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost) const{ }

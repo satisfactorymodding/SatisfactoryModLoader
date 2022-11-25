@@ -18,7 +18,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedNew, TSubcla
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHotbarUpdatedForMaterialDescriptor, TSubclassOf< class UFGFactoryCustomizationDescriptor_Material >, materialDesc );
 DECLARE_DELEGATE( FOnHotbarReplicated );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnPublicTodoListUpdated );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnShoppingListUpdated );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSlotDataUpdated, class AFGPlayerState*, playerState  );
 
 
@@ -610,6 +609,12 @@ public:
 	void Client_OnRecipeConstructed( TSubclassOf< class UFGRecipe > recipe, int32 numConstructed );
 	void Native_OnRecipeConstructed( TSubclassOf< class UFGRecipe > recipe, int32 numConstructed );
 	void Native_OnBlueprintConstructed( const FString& blueprintName, int32 numConstructed );
+
+	// Not the prettiest solution but handles when blueprints are removed. We should have an event in blueprint subsystem instead
+	UFUNCTION( Server, Reliable, BlueprintCallable )
+	void Server_OnBlueprintRemoved( const FString& blueprintName );
+	UFUNCTION( Client, Reliable )
+	void Client_OnBlueprintRemoved( const FString& blueprintName );
 
 	// Only for migration purposes.
 	UFUNCTION( BlueprintImplementableEvent )

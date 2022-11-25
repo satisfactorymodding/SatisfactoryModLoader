@@ -36,6 +36,7 @@ void AFGBuildable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGBuildable, mBuildEffectInstignator);
 	DOREPLIFETIME(AFGBuildable, mIsMultiSpawnedBuildable);
 	DOREPLIFETIME(AFGBuildable, mDidFirstTimeUse);
+	DOREPLIFETIME(AFGBuildable, mBlueprintDesigner);
 	DOREPLIFETIME(AFGBuildable, mNetConstructionID);
 	DOREPLIFETIME(AFGBuildable, mBuiltWithRecipe);
 	DOREPLIFETIME(AFGBuildable, mOriginalBuildableVariant);

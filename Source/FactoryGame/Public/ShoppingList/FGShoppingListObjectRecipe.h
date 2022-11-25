@@ -23,6 +23,8 @@ public:
 
 	UFUNCTION( BlueprintPure )
 	TSubclassOf< class UFGRecipe > GetRecipe() const { return mRecipe; }
+
+	virtual UObject* GetIdentifierObject() const override;
 	
 protected:
 	virtual FText Internal_GetShoppingListName() const override;
