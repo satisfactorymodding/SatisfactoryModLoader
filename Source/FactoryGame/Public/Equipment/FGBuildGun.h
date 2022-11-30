@@ -375,6 +375,9 @@ public:
 	void SetAllowRayClearanceHit( bool allow );
 	void SetAllowRayBlueprintProxyHit( bool allow );
 
+	bool IsRayClearanceHitAllowed() const { return mAllowCleranceRayHits; }
+	bool IsRayBlueprintProxyHitAllowed() const { return mAllowBlueprintProxyRayHits; }
+
 	/** Set the state to enter on the next equip */
 	void SetPendingEntryState( EBuildGunState state );
 

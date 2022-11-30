@@ -53,6 +53,8 @@ bool AFGConveyorBeltHologram::TrySnapToActor(const FHitResult& hitResult){ retur
 void AFGConveyorBeltHologram::Scroll(int32 delta){ }
 void AFGConveyorBeltHologram::GetSupportedScrollModes(TArray<EHologramScrollMode>* out_modes) const{ }
 float AFGConveyorBeltHologram::GetHologramHoverHeight() const{ return float(); }
+void AFGConveyorBeltHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+void AFGConveyorBeltHologram::CheckBlueprintCommingling(){ }
 void AFGConveyorBeltHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGConveyorBeltHologram::ClientPreConstructMessageSerialization(){ }
 void AFGConveyorBeltHologram::ServerPostConstructMessageDeserialization(){ }

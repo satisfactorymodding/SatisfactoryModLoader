@@ -20,7 +20,7 @@ void AFGFoundationHologram::UpdateZoop(){ }
 void AFGFoundationHologram::ConstructZoop(TArray<AActor*>& out_children){ }
 FVector AFGFoundationHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return FVector(); }
 void AFGFoundationHologram::CheckValidPlacement(){ }
-bool AFGFoundationHologram::IsHologramIdenticalToBuildable( AFGBuildable* buildable, const FVector& hologramLocationOffset) const{ return bool(); }
+bool AFGFoundationHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
 void AFGFoundationHologram::SetZoopFromHitresult(const FHitResult& hitResult){ }
 void AFGFoundationHologram::CreateDefaultFoundationZoop(const FHitResult& hitResult){ }
 void AFGFoundationHologram::CreateVerticalFoundationZoop(const FHitResult& hitResult){ }

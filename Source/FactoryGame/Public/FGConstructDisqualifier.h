@@ -625,36 +625,36 @@ class FACTORYGAME_API UFGCDIdenticalOverlappingBuildable : public UFGConstructDi
 };
 
 UCLASS()
-class FACTORYGAME_API UFGNotAllowedInBlueprint : public UFGConstructDisqualifier
+class FACTORYGAME_API UFGCDNotAllowedInBlueprint : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
 	
-	UFGNotAllowedInBlueprint()
+	UFGCDNotAllowedInBlueprint()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGNotAllowedInBlueprint", "Hologram cannot be placed in blueprint designer!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDNotAllowedInBlueprint", "Hologram cannot be placed in blueprint designer!" );
 	}
 };
 
 
 UCLASS()
-class FACTORYGAME_API UFGIntersectingBlueprintDesigner : public UFGConstructDisqualifier
+class FACTORYGAME_API UFGCDIntersectingBlueprintDesigner : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
 	
-	UFGIntersectingBlueprintDesigner()
+	UFGCDIntersectingBlueprintDesigner()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGIntersectingBlueprintDesigner", "Partially overlapping blueprint designer!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDIntersectingBlueprintDesigner", "Partially overlapping blueprint designer!" );
 	}
 };
 
 UCLASS()
-class FACTORYGAME_API UFGDesignerWorldCommingling : public UFGConstructDisqualifier
+class FACTORYGAME_API UFGCDDesignerWorldCommingling : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
 	
-	UFGDesignerWorldCommingling()
+	UFGCDDesignerWorldCommingling()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGDesignerWorldCommingling", "Cannot connect buildables in a designer to world buildables!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDDesignerWorldCommingling", "Cannot connect buildables in a designer to world buildables!" );
 	}
 };
 

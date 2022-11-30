@@ -170,6 +170,8 @@ public:
 	/** Get the values of the percentages for use in the indicator or UI. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Pipes|Pipeline" )
 	void GetRawValues( UPARAM( ref ) float& flowPct, UPARAM( ref ) float& contentPct ) const;
+
+	virtual void PostSerializedFromBlueprint() override;
 	
 protected:
 	/** Updates sounds depending on liquid in pipe */

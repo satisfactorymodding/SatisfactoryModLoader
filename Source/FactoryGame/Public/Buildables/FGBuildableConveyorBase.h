@@ -588,6 +588,16 @@ public:
 	{
 		return mCachedAvailableBeltSpace;
 	}
+
+#if !UE_BUILD_SHIPPING 
+	void DebugDrawStalled() const;
+#endif
+	
+#if UE_BUILD_SHIPPING // Shipping uses a force inline without debug logic.
+	FORCEINLINE void SetStalled(bool stall) const { mIsStalled = stall; }
+#else
+	void SetStalled(bool stall) const;
+#endif
 	
 protected:
 	// Begin Factory_ interface
@@ -680,7 +690,8 @@ protected:
 	/** Length of the conveyor. */
 	float mLength;
 
-	/** All the locally simulated resource offsets on the conveyor belt. */
+	/** All the locally simulated resource offsets on the conveyor belt.
+	 * This array is an items queue, first items in the array is the last item on the belt. */
 	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
 	FConveyorBeltItems mItems;
 

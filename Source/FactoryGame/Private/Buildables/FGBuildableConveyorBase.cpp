@@ -23,6 +23,11 @@ void FConveyorBeltItems::MarkArrayDirty(){ }
 void FConveyorBeltItems::UpdateLastestIDFromState(){ }
 float FConveyorBeltItems::ConsumeAndUpdateConveyorOffsetDebt(float dt){ return float(); }
 void FConveyorBeltItems::MarkItemDirty(FConveyorBeltItem& item){ }
+#if !UE_BUILD_SHIPPING
+void AFGBuildableConveyorBase::DebugDrawStalled() const{ }
+#endif 
+#if UE_BUILD_SHIPPING
+#endif 
 AFGBuildableConveyorBase::AFGBuildableConveyorBase() : Super() {
 	this->mSpeed = 0.0;
 	this->mConnection0 = CreateDefaultSubobject<UFGFactoryConnectionComponent>(TEXT("ConveyorAny0"));

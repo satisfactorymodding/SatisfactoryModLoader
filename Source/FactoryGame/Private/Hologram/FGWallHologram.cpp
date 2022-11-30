@@ -22,5 +22,5 @@ void AFGWallHologram::CheckValidPlacement(){ }
 void AFGWallHologram::UpdateZoop(){ }
 void AFGWallHologram::ConstructZoop(TArray<AActor*>& out_children){ }
 FVector AFGWallHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return FVector(); }
-bool AFGWallHologram::IsHologramIdenticalToBuildable( AFGBuildable* buildable, const FVector& hologramLocationOffset) const{ return bool(); }
+bool AFGWallHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
 void AFGWallHologram::SelectWallVariantForElevation(float NewAngle){ }

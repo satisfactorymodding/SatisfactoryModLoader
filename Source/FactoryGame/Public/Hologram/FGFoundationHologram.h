@@ -41,7 +41,7 @@ protected:
 	// End AFGHologram Interface
 	
 	// Begin AFGBuildableHologram Interface
-	virtual bool IsHologramIdenticalToBuildable( class AFGBuildable* buildable, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
 	// End AFGBuildableHologram Interface
 
 	virtual void SetZoopFromHitresult( const FHitResult& hitResult );

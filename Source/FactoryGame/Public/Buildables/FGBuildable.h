@@ -836,7 +836,7 @@ protected:
 	TArray< FFGAttachmentPoint > mAttachmentPoints;
 	
 	/** If the buildable is inside of a blueprint designer, this will be the reference to the designer. */
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, Replicated )
 	class AFGBuildableBlueprintDesigner* mBlueprintDesigner;
 	
 private:

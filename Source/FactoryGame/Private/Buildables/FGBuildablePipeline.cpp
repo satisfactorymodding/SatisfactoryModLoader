@@ -69,6 +69,7 @@ TSubclassOf< UFGItemDescriptor > AFGBuildablePipeline::GetFluidDescriptor() cons
 AFGBuildablePipelineFlowIndicator* AFGBuildablePipeline::GetFlowIndicator() const{ return nullptr; }
 void AFGBuildablePipeline::SmoothValues(float& flowPct,  float& contentPct, float dt) const{ }
 void AFGBuildablePipeline::GetRawValues(float& flowPct,  float& contentPct) const{ }
+void AFGBuildablePipeline::PostSerializedFromBlueprint(){ }
 void AFGBuildablePipeline::UpdateSounds(){ }
 bool AFGBuildablePipeline::FindBestInidicatorPlacement(FTransform& out_transform){ return bool(); }
 const FName AFGBuildablePipeline::mConnectionName0 = FName();

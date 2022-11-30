@@ -143,6 +143,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Clearance" )
 	class UMaterialInstance* mClearanceMaterial;
 
+	/** Material for blueprint proxies. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Clearance" )
+	class UMaterialInstance* mBlueprintProxyMaterial;
+
 	/** Default sound loop placed on holograms. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Sound" )
 	class UAkAudioEvent* mHologramLoopSound;

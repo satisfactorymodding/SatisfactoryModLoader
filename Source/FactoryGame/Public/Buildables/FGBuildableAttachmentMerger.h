@@ -20,20 +20,17 @@ public:
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	// End AActor interface
+
+	// Begin IFGSaveInterface
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	// End IFGSaveInterface
 	
 	// Begin Factory_ interface
 	virtual void Factory_Tick( float deltaTime ) override;
 	// End Factory_ interface
-
-protected:
-	// Begin Factory_ interface
-	virtual bool Factory_GrabOutput_Implementation( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type ) override;
-	// End Factory_ interface
+	
 private:
 	/** Cycles through the inputs, stores the input we want to check next. Index is for the mInputs array. */
 	UPROPERTY( SaveGame, Meta = ( NoAutoJson ) )
 	int32 mCurrentInputIndex;
-
-	UPROPERTY( SaveGame, Meta = ( NoAutoJson ) )
-	int32 mCurrentInventoryIndex;
 };
