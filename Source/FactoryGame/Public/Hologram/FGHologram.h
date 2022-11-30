@@ -454,6 +454,9 @@ protected:
 	/** Runs for every overlap result from our clearance check. */
 	virtual void HandleClearanceOverlap( const FOverlapResult& overlap, const FVector& locationOffset, bool HologramHasSoftClearance );
 
+	/** Whether or not building our hologram would result in an identical buildable inside of another. */
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const;
+
 	/** When overlapping with the edge of a designer, this function determines whether or not the overlap is allowed. */
 	virtual bool CanIntersectWithDesigner( class AFGBuildableBlueprintDesigner* designer );
 	

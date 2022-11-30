@@ -22,7 +22,7 @@ struct FACTORYGAME_API FHologramHelpers
 	 */
 	static class UStaticMeshComponent* CreateClearanceMeshComponent( class USceneComponent* attachTo, class UFGClearanceComponent* fromClearanceBox );
 
-	static class UStaticMeshComponent* CreateBlueprintProxyMeshComponent( class USceneComponent* attachTo, class AFGBlueprintProxy* fromProxy );
+	static class UStaticMeshComponent* CreateBlueprintBoundsMeshComponent( class USceneComponent* attachTo, const FTransform& boundsRelativeTransform, const FVector& boundsExtent );
 
 	/** Sets extents and relative location on the clearance mesh to match the specified clearance box. */
 	static void SetScaledBoxMeshData( class UStaticMeshComponent* clearanceMesh, const FTransform& relativeTransform, const FVector& extent );

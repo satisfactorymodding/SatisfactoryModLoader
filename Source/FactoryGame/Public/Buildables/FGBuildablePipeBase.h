@@ -76,6 +76,7 @@ public:
 	FVector GetCollisionExtent() override { return COLLISION_EXTENT; }
 	float GetCollisionSpacing() override { return COLLISION_SPACING; }
 	FVector GetCollisionOffset() override { return COLLISION_OFFSET; }
+	UStaticMesh* GetUsedSplineMesh() override { return mMesh; }
 	// End IFGSplineBuildableInterface
 	
 	FORCEINLINE TArray< class AFGBuildablePassthrough* > GetSnappedPassthroughs() { return mSnappedPassthroughs; }
@@ -95,11 +96,11 @@ public:
 
 	const static float PIPE_COST_LENGTH_MULTIPLIER;
 protected:
-	/** Mesh to use for his conveyor. */
+	/** Mesh to use for his pipe. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
 	class UStaticMesh* mMesh;
 
-	/** Length of the mesh to use for this conveyor. */
+	/** Length of the mesh to use for this pipe. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
 	float mMeshLength;
 

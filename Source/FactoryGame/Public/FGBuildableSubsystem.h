@@ -158,6 +158,12 @@ public:
 	/** Adds a buildable to the buildable array. */
 	void AddBuildable( class AFGBuildable* buildable );
 
+	/**
+	 * Notify the subsystem a buildable was spawned inside the designer for any special logic that needs to run even if
+	 * the buildable is not added to the buildable tick groups
+	 */
+	void OnDesignerBuildableSpawned( AFGBuildable* buildable );
+
 	/** Adds a conveyor to the conveyor buckets */
 	void AddConveyor( AFGBuildableConveyorBase* conveyor );
 	

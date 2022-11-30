@@ -17,6 +17,7 @@ void UFGBlueprintRemoteCallObject::Server_SaveBlueprintInDesigner_Implementation
 bool UFGBlueprintRemoteCallObject::Server_SaveBlueprintInDesigner_Validate( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, FBlueprintRecord record){ return bool(); }
 void UFGBlueprintRemoteCallObject::Server_ClearBlueprintDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller){ }
 void UFGBlueprintRemoteCallObject::Server_LoadBlueprintInDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, const FString& blueprintName){ }
+void UFGBlueprintRemoteCallObject::Server_DeleteBlueprintDescriptor_Implementation(const FString& blueprintName){ }
 AFGBlueprintSubsystem::AFGBlueprintSubsystem() : Super() {
 	this->mDefaultBuildEffectActor = nullptr;
 	this->mTimeSinceLastBlueprintRecordMulticast = 0.0;
@@ -80,6 +81,7 @@ void AFGBlueprintSubsystem::OnRep_BlueprintCategoryRecords(){ }
 bool AFGBlueprintSubsystem::AreRecipeRequirementsMetForBlueprint(const FBlueprintHeader& header){ return bool(); }
 void AFGBlueprintSubsystem::SetBlueprintCategories(TArray< UFGBlueprintCategory* > blueprintCategories){ }
 bool AFGBlueprintSubsystem::DeleteBlueprintDescriptor(UFGBlueprintDescriptor* blueprintDesc){ return bool(); }
+bool AFGBlueprintSubsystem::DeleteBlueprintDescriptor_Internal(UFGBlueprintDescriptor* blueprintDesc){ return bool(); }
 void AFGBlueprintSubsystem::GetBlueprintDescriptors(TArray< UFGBlueprintDescriptor* >& out_descriptors, UObject* worldContext){ }
 void AFGBlueprintSubsystem::CreateBlueprintCategoriesFromRecords(){ }
 void AFGBlueprintSubsystem::GetBlueprintRecordForDescriptor(UFGBlueprintDescriptor* desc, FBlueprintRecord& out_blueprintRecord){ }
@@ -101,5 +103,6 @@ void AFGBlueprintSubsystem::RemoveRawDataForFile(const FString& fileName){ }
 void AFGBlueprintSubsystem::OnRep_ServerManifest(){ }
 void AFGBlueprintSubsystem::Multicast_BroadcastBlueprintRecordChanges_Implementation(const TArray< FBlueprintRecord >& records){ }
 void AFGBlueprintSubsystem::Multicast_AddBlueprintBuildEffectData_Implementation(const FBlueprintBuildEffectData& buildeffectData){ }
+void AFGBlueprintSubsystem::Multicast_DeleteBlueprintDescriptor_Implementation(const FString& blueprintName){ }
 void AFGBlueprintSubsystem::AddOrModifyEntryToServerManifest(const FString& fileName, const FString& hash){ }
 void AFGBlueprintSubsystem::GenerateClientServerManifestDiff(){ }

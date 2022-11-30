@@ -116,6 +116,12 @@ struct FACTORYGAME_API FSaveCustomVersion
 		// 2022-11-17: Added migration of inventories from the old splitters and mergers to the new ones that have a smaller inventories.
 		ReworkedSplittersAndMergers,
 
+		// 2022-11-23: Added new productivity monitor implementation.
+		ReworkedProductivityMonitor,
+
+		// 2022-11-25: Nativized shopping list and added blueprint support.
+		NativizedShoppingList,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1

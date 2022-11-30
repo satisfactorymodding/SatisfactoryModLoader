@@ -17,6 +17,7 @@ AFGBuildableResourceExtractor::AFGBuildableResourceExtractor() : Super() {
 	this->mCurrentExtractProgress = 0.0;
 	this->mOutputInventory = nullptr;
 	this->mReplicatedFlowRate = 0.0;
+	this->mCanEverMonitorProductivity = true;
 }
 void AFGBuildableResourceExtractor::OnReplicationDetailActorRemoved(){ }
 void AFGBuildableResourceExtractor::BeginPlay(){ }
@@ -28,7 +29,6 @@ float AFGBuildableResourceExtractor::GetNumExtractedItemsPerCycleConverted() con
 float AFGBuildableResourceExtractor::GetExtractionPerMinute() const{ return float(); }
 bool AFGBuildableResourceExtractor::IsStartupComplete(){ return bool(); }
 float AFGBuildableResourceExtractor::GetMaxFlowRate() const{ return float(); }
-void AFGBuildableResourceExtractor::Factory_StartProducing(){ }
 void AFGBuildableResourceExtractor::Factory_TickProducing(float dt){ }
 void AFGBuildableResourceExtractor::Factory_PushPipeOutput_Implementation(float dt){ }
 void AFGBuildableResourceExtractor::OnRep_ReplicationDetailActor(){ }

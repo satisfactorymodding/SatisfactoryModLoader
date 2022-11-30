@@ -45,6 +45,7 @@ void AFGBuildableHologram::FilterAttachmentPoints(TArray< const FFGAttachmentPoi
 USceneComponent* AFGBuildableHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
 void AFGBuildableHologram::CheckValidPlacement(){ }
 int32 AFGBuildableHologram::GetRotationStep() const{ return int32(); }
+bool AFGBuildableHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
 void AFGBuildableHologram::SnapToFloor( AFGBuildable* floor, FVector& location, FRotator& rotation){ }
 void AFGBuildableHologram::SnapToFoundationSide( AFGBuildableFoundation* foundation, const FVector& localSideNormal, EAxis::Type snapAxis, FVector& location, FRotator& rotation){ }
 void AFGBuildableHologram::SnapToWall( AFGBuildableWall* wall,
@@ -58,13 +59,11 @@ void AFGBuildableHologram::SnapToWall( AFGBuildableWall* wall,
 void AFGBuildableHologram::CheckValidFloor(){ }
 void AFGBuildableHologram::HandleClearanceSnapping(FVector& newLocation, FRotator& newRotation, const FHitResult& hitResult){ }
 void AFGBuildableHologram::SnapToClearanceBox(const UFGClearanceComponent* targetSnapClearanceComponent, FVector& newLocation, FRotator& newRotation){ }
-bool AFGBuildableHologram::IsHologramIdenticalToBuildable( AFGBuildable* buildable, const FVector& hologramLocationOffset) const{ return bool(); }
 void AFGBuildableHologram::PreConfigureActor( AFGBuildable* inBuildable){ }
 void AFGBuildableHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureBuildEffect( AFGBuildable* inBuildable){ }
 void AFGBuildableHologram::SetupClearance( UFGClearanceComponent* clearanceComponent){ }
-void AFGBuildableHologram::HandleClearanceOverlap(const FOverlapResult& overlap, const FVector& locationOffset, bool HologramHasSoftClearance){ }
 void AFGBuildableHologram::SetMaterial( UMaterialInterface* material){ }
 UPrimitiveComponent* AFGBuildableHologram::GetClearanceOverlapCheckComponent() const{ return nullptr; }
 void AFGBuildableHologram::SetHologramClearanceTransformAndExtent(const FVector& newRelativeLocation, const FRotator& newRelativeRotation, const FVector& newExtent){ }

@@ -11,3 +11,15 @@ void UFGShoppingListObject::DecreaseAmount(int32 amountToRemove){ }
 void UFGShoppingListObject::Native_OnAmountUpdated(){ }
 UObject* UFGShoppingListObject::GetIdentifierObject() const{ return nullptr; }
 void UFGShoppingListObject::AddCost(TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost) const{ }
+void UFGShoppingListObject_Class::Init(TSubclassOf<  UObject > subClass, int32 amount){ }
+void UFGShoppingListObject_Class::SetSubClass(TSubclassOf<  UObject > subClass){ }
+UObject* UFGShoppingListObject_Class::GetIdentifierObject() const{ return nullptr; }
+void UFGShoppingListObject_Class::Native_OnAmountUpdated(){ }
+FText UFGShoppingListObject_Class::Internal_GetShoppingListName() const{ return FText(); }
+void UFGShoppingListObject_Class::AddCost(TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost) const{ }
+void UFGShoppingListObject_Object::Init(UObject* object, int32 amount){ }
+void UFGShoppingListObject_Object::SetObject(UObject* object){ }
+UObject* UFGShoppingListObject_Object::GetIdentifierObject() const{ return nullptr; }
+void UFGShoppingListObject_Object::Native_OnAmountUpdated(){ }
+FText UFGShoppingListObject_Object::Internal_GetShoppingListName() const{ return FText(); }
+void UFGShoppingListObject_Object::AddCost(TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost) const{ }

@@ -122,6 +122,9 @@ public:
 
 	UFUNCTION( Server, Reliable )
 	void Server_LoadBlueprintInDesigner( class AFGBuildableBlueprintDesigner* designer, class AFGPlayerController* controller, const FString& blueprintName );
+	
+	UFUNCTION( Server, Reliable )
+	void Server_DeleteBlueprintDescriptor( const FString& blueprintName );
 
 };
 
@@ -294,6 +297,7 @@ public:
 	/** Deletes a blueprint file and returns true if the file was found */
 	UFUNCTION( BlueprintCallable, Category="Blueprint Subsystem" )
 	bool DeleteBlueprintDescriptor( UFGBlueprintDescriptor* blueprintDesc );
+	bool DeleteBlueprintDescriptor_Internal( UFGBlueprintDescriptor* blueprintDesc );
 	
 	UFUNCTION(BlueprintCallable, Category="Blueprint Subsystem")
 	static void GetBlueprintDescriptors( TArray< UFGBlueprintDescriptor* >& out_descriptors, UObject* worldContext );
@@ -516,6 +520,9 @@ private:
 	UFUNCTION( NetMulticast, Reliable )
 	void Multicast_AddBlueprintBuildEffectData( const FBlueprintBuildEffectData& buildeffectData );
 
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_DeleteBlueprintDescriptor( const FString& blueprintName );
+
 	/** Adds or modifies and entry in the server manifest (called when saving a blueprint) */
 	void AddOrModifyEntryToServerManifest( const FString& fileName, const FString& hash );
 
@@ -532,6 +539,19 @@ private:
 		if( idx != INDEX_NONE )
 		{
 			mServerManifest.Entries.RemoveAtSwap( idx );
+		}
+	}
+
+	void RemoveEntryFromClientManifest( const FString& fileName )
+	{
+		int32 idx = mClientManifest.Entries.IndexOfByPredicate( [&]( const FBlueprintNameAndHash& nameAndHash )
+		{
+			return AreNamesConsideredEqual( nameAndHash.BlueprintName, fileName );
+		} );
+
+		if( idx != INDEX_NONE )
+		{
+			mClientManifest.Entries.RemoveAtSwap( idx );
 		}
 	}
 	
@@ -692,3 +712,5 @@ private:
 	bool mClientAwaitingResponse;
 	
 };
+
+

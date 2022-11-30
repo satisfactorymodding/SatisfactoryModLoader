@@ -82,6 +82,7 @@ AFGBuildableSubsystem* AFGBuildableSubsystem::Get(UWorld* world){ return nullptr
 AFGBuildableSubsystem* AFGBuildableSubsystem::Get(UObject* worldContext){ return nullptr; }
 AFGBuildable* AFGBuildableSubsystem::BeginSpawnBuildable(TSubclassOf<  AFGBuildable > inClass, const FTransform& inTransform){ return nullptr; }
 void AFGBuildableSubsystem::AddBuildable( AFGBuildable* buildable){ }
+void AFGBuildableSubsystem::OnDesignerBuildableSpawned(AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::AddConveyor(AFGBuildableConveyorBase* conveyor){ }
 AFGBuildableConveyorBase* AFGBuildableSubsystem::GetConnectedConveyorBelt( UFGFactoryConnectionComponent* connection){ return nullptr; }
 void AFGBuildableSubsystem::RemoveBuildable( AFGBuildable* buildable){ }

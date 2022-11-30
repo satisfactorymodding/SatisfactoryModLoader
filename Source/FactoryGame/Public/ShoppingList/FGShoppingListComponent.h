@@ -94,6 +94,9 @@ public:
 	void OnShoppingListObjectUpdated( UFGShoppingListObject* shoppingListObject );
 	void OnBlueprintRemoved( const FString& blueprintName );
 
+	void UpdateShoppingListObjectBlueprint( class UFGShoppingListObject_Object* shoppingListObject_Object );
+	void UpdateShoppingListObjectRecipe( class UFGShoppingListObject_Class* shoppingListObject_Class  );
+
 protected:
 	
 	virtual void BeginPlay() override;
