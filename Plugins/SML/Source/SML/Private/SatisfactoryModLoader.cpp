@@ -20,7 +20,7 @@
 #endif
 
 extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("3.4.1+") TEXT(SML_BUILD_METADATA);
-extern "C" DLLEXPORT const long targetGameVersion = 210763;
+extern "C" DLLEXPORT const long targetGameVersion = 210924;
 
 DEFINE_LOG_CATEGORY(LogSatisfactoryModLoader);
 
