@@ -169,6 +169,10 @@ public:
 
 	bool HasSufficientFuelType() const;
 
+	virtual void PreSerializedToBlueprint() override;
+	virtual void PostSerializedToBlueprint() override;
+	virtual void PostSerializedFromBlueprint() override;
+	
 protected:
 	// Begin Factory_ interface
 	virtual void Factory_Tick( float dt ) override;
@@ -333,6 +337,10 @@ protected:
 private:
 	UPROPERTY( Replicated, SaveGame )
 	class AFGDockingStationInfo* mInfo;
+
+	/** Used to hold a reference to the mInfo during blueprint serialization. Holds a reference to mInfo which is nulled during blueprint serialization */
+	UPROPERTY()
+	class AFGDockingStationInfo* mTempInfo;
 
 	/** Inventory where we transfer items to when unloading from a vehicle  */
 	UPROPERTY( SaveGame )

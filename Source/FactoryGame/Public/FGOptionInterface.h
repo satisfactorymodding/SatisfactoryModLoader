@@ -12,7 +12,7 @@
 DECLARE_DYNAMIC_DELEGATE_OneParam( FOptionUpdated, FString, updatedCvar );
 DECLARE_DELEGATE_TwoParams( FOnOptionUpdated, FString, FVariant );
 
-UINTERFACE( Blueprintable, meta = ( CannotImplementInterfaceInBlueprint ) )
+UINTERFACE( MinimalAPI, Blueprintable, meta = ( CannotImplementInterfaceInBlueprint ) )
 class UFGOptionInterface : public UInterface
 {
 	GENERATED_BODY()

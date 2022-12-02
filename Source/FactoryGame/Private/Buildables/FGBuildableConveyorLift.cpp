@@ -43,6 +43,9 @@ void AFGBuildableConveyorLift::Factory_UpdateRadioactivity( AFGRadioactivitySubs
 FBoxCenterAndExtent AFGBuildableConveyorLift::FitClearance(float transformZ,
 		float stepHeight,
 		const FVector2D& extend2D,
-		const FVector& extentBias){ return FBoxCenterAndExtent(); }
+		const FVector& extentBias ,
+		bool hasBottomHole ,
+		bool hasTopHole ,
+		bool isReversed){ return FBoxCenterAndExtent(); }
 void AFGBuildableConveyorLift::OnRep_TopTransform(){ }
 const FVector2D AFGBuildableConveyorLift::CLEARANCE_EXTENT_2D = FVector2D();

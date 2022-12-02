@@ -435,6 +435,18 @@ public:
 
 	/** Gets the blueprint proxy this buildable belongs to. */
 	FORCEINLINE class AFGBlueprintProxy* GetBlueprintProxy() const { return mBlueprintProxy; }
+
+	/**
+	* Called from blueprint subsystem after being loaded. Can be used to run custom logic post serialization
+	*/
+	virtual void PreSerializedToBlueprint();
+
+	/**
+	 * Called After blueprint serialization. This is commonly used for reapplying back properties that we dont want saved but
+	 * may be expected to exist like in UI interaction. Tex. DroneStations need to clear their DroneInfo so it isn't saved however we still want
+	 * that dummy info around after (so it gets cleared and then set back)
+	 */
+	virtual void PostSerializedToBlueprint();
 	
 	/**
 	 * Called from blueprint subsystem after being loaded. Can be used to run custom logic post serialization

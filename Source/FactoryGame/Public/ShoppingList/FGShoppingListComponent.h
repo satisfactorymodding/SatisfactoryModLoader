@@ -97,6 +97,8 @@ public:
 	void UpdateShoppingListObjectBlueprint( class UFGShoppingListObject_Object* shoppingListObject_Object );
 	void UpdateShoppingListObjectRecipe( class UFGShoppingListObject_Class* shoppingListObject_Class  );
 
+	void UpdateShoppingList();
+
 protected:
 	
 	virtual void BeginPlay() override;
@@ -163,5 +165,6 @@ private:
 
 	// Silly quickfix for not knowing when blueprints are replicated.
 	int32 mRetryCount = 0;
-		
+
+	FTimerHandle mUpdateShoppingListHandle;
 };

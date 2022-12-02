@@ -134,7 +134,10 @@ private:
 		float transformZ,
 		float stepHeight,
 		const FVector2D& extend2D,
-		const FVector& extentBias = FVector::ZeroVector );
+		const FVector& extentBias = FVector::ZeroVector,
+		bool hasBottomHole = false,
+		bool hasTopHole = false,
+		bool isReversed = false );
 
 
 public:
@@ -211,6 +214,7 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 												 float stepHeight, TArray< AFGBuildablePassthrough* > snappedPassthroughs, TArray< UStaticMeshComponent* >& meshPool, MeshConstructor meshConstructor )
 {
 	fgcheck( parent );
+	const bool bHasPassthrough = snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ];
 
 	float heightOfBottomPassthrough = snappedPassthroughs[ 0 ] == nullptr ? 0.f : snappedPassthroughs[ 0 ]->GetSnappedBuildingThickness();
 	float heightOfTopPassthrough = snappedPassthroughs[ 1 ] == nullptr ? 0.f : snappedPassthroughs[ 1 ]->GetSnappedBuildingThickness();
@@ -219,12 +223,15 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 	const float height = FMath::Abs( endTransform.GetTranslation().Z ) - ( totalPassthroughHeight / 2.f );
 	const float stepDir = FMath::FloatSelect( endTransform.GetTranslation().Z, 1.f, -1.f );
 	const bool isReversed = stepDir < 0.f;
-	int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( height / stepHeight ) + 1 );
+	int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( height / stepHeight ) + (bHasPassthrough ? 0 : 1) );
 
 	// When snapping to two passthroughs it is sometimes neccesary to use a half segment at the end to ensure the mesh doesn't clip through thin foundations
 	bool useHalfMeshEnd =	( snappedPassthroughs[ 0 ] && isReversed ) &&
 							( snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ] && 
 							( ( FMath::FloorToInt( height ) % FMath::FloorToInt( stepHeight ) ) != 0 ) );
+	
+	useHalfMeshEnd =		useHalfMeshEnd ||
+							( !snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ] && ( ( FMath::FloorToInt( height ) % FMath::FloorToInt( stepHeight ) ) != 0 ) );
 
 	// Special case here for conveyor lifts snapped at the bottom. Their minimum height is allowed to be so small no mid meshes are required
 	if( height <= stepHeight && isReversed )

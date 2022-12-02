@@ -5,3 +5,4 @@
 AFGResourceNodeGeyser::AFGResourceNodeGeyser() : Super() {
 
 }
+void AFGResourceNodeGeyser::BeginPlay(){ }

@@ -33,6 +33,7 @@ AFGBuildableDroneStation::AFGBuildableDroneStation() : Super() {
 	this->mOutputInventory = nullptr;
 	this->mBatteryInventory = nullptr;
 	this->mInfo = nullptr;
+	this->mTempInfo = nullptr;
 	this->mActorRepresentationTexture = nullptr;
 	this->mMapText = INVTEXT("");
 }
@@ -84,6 +85,9 @@ void AFGBuildableDroneStation::StartDockingSequence_Implementation( AFGDroneVehi
 void AFGBuildableDroneStation::EndDockingSequence_Implementation( AFGDroneVehicle* Drone, bool ShouldTransferItems){ }
 void AFGBuildableDroneStation::StartTakeoffSequence_Implementation( AFGDroneVehicle* Drone){ }
 void AFGBuildableDroneStation::EndTakeoffSequence_Implementation( AFGDroneVehicle* Drone){ }
+void AFGBuildableDroneStation::PreSerializedToBlueprint(){ }
+void AFGBuildableDroneStation::PostSerializedToBlueprint(){ }
+void AFGBuildableDroneStation::PostSerializedFromBlueprint(){ }
 void AFGBuildableDroneStation::OnRep_ReplicationDetailActor(){ }
 AFGReplicationDetailActor_DroneStation* AFGBuildableDroneStation::GetCastRepDetailsActor() const{ return nullptr; }
 bool AFGBuildableDroneStation::FilterBatteryClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
