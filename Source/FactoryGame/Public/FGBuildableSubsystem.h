@@ -313,6 +313,9 @@ public:
 		return mCurrentSubStep == mCurrentSubStepMax;
 	}
 
+	/* Get "world time" for factory simulation. */
+	FORCEINLINE float GetFactorySimulationTime() const { return mAccumulatedFactorySimulationTime; }
+
 	// Called from BuildGunPaint for previewing skin logic
 	TArray< TSubclassOf< class AFGBuildable >> GetPreviewSkinsOnBuildableList() { return mPreviewSkinsOnBuildablesList; }
 	
@@ -599,6 +602,8 @@ private:
 	UPROPERTY()
 	TMap < int32, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > > mSlotToSwatchDescMigrationMap;
 
+	/* World time for the factory tick*/
+	float mAccumulatedFactorySimulationTime;
 };
 
 template< typename T >
