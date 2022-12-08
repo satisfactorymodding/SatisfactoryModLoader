@@ -75,3 +75,14 @@ UClass * UEditorBlueprintFunctionLibrary::GetClassGeneratedByBlueprint(UObject *
 	UClass* InnerBPClass = LoadObject<UClass>(NULL, *PathName);
 	return InnerBPClass;
 }
+
+void UEditorBlueprintFunctionLibrary::MarkClassDirty( UClass* Class )
+{
+	if( IsValid( Class ) )
+	{
+		Class->MarkPackageDirty();
+		Class->GetDefaultObject()->MarkPackageDirty();
+		return;
+	}
+	UE_LOG(LogTemp, Error, TEXT("Try to mark a invalid Class Dirty!"));
+}
