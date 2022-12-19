@@ -1,19 +1,23 @@
 #include "Alpakit.h"
 #include "AlpakitStyle.h"
 #include "AlpakitCommands.h"
+#include "AlpakitSettings.h"
 #include "AlpakitWidget.h"
-#include "AssetRegistryModule.h"
 #include "ContentBrowserModule.h"
 #include "ISettingsContainer.h"
 #include "ISettingsModule.h"
 #include "ISettingsSection.h"
 #include "LevelEditor.h"
+#include "IPluginBrowser.h"
+#include "ModWizardDefinition.h"
 
 static const FName AlpakitTabName("Alpakit");
 
 #define LOCTEXT_NAMESPACE "FAlpakitModule"
 
 DEFINE_LOG_CATEGORY(LogAlpakit)
+
+const FName FAlpakitModule::ModCreatorTabName(TEXT("ModCreator"));
 
 void FAlpakitModule::StartupModule() {
     //Register editor settings
@@ -61,6 +65,12 @@ void FAlpakitModule::StartupModule() {
         }))
         .SetDisplayName(LOCTEXT("FAlpakitTabTitle", "Alpakit"))
         .SetMenuType(ETabSpawnerMenuType::Hidden);
+    
+    FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
+        ModCreatorTabName,
+        FOnSpawnTab::CreateRaw(this, &FAlpakitModule::HandleSpawnModCreatorTab))
+        .SetDisplayName(LOCTEXT("NewPluginTabHeader", "New Mod"))
+        .SetMenuType(ETabSpawnerMenuType::Hidden);
 }
 
 void FAlpakitModule::ShutdownModule() {
@@ -72,6 +82,12 @@ void FAlpakitModule::ShutdownModule() {
     FAlpakitCommands::Unregister();
 
     FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitTabName);
+}
+
+TSharedRef<SDockTab> FAlpakitModule::HandleSpawnModCreatorTab(const FSpawnTabArgs& SpawnTabArgs)
+{
+    IPluginBrowser& PluginBrowser = FModuleManager::Get().GetModuleChecked<IPluginBrowser>(TEXT("PluginBrowser"));
+    return PluginBrowser.SpawnPluginCreatorTab(SpawnTabArgs, MakeShared<FModWizardDefinition>());
 }
 
 void FAlpakitModule::RegisterSettings() const {
