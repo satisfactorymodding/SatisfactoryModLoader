@@ -40,7 +40,8 @@ public class SMLEditor : ModuleRules
         });
         
         PrivateDependencyModuleNames.AddRange(new[] {
-            "DesktopPlatform"
+            "DesktopPlatform",
+            "Kismet"
         });
     }
 }

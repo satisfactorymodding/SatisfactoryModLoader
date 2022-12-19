@@ -1,6 +1,8 @@
 ﻿#include "SMLEditorModule.h"
+#include "BlueprintCompilationManager.h"
 #include "ContentBrowserModule.h"
 #include "IContentBrowserSingleton.h"
+#include "BlueprintExtension/FactoryTickBlueprintExtension.h"
 #include "CodeGeneration/NativeCodeGenerator.h"
 #include "CodeGeneration/UserDefinedStructCodeGenerator.h"
 #include "Configuration/ModConfiguration.h"
@@ -75,6 +77,8 @@ void FSMLEditorModule::StartupModule() {
 	FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
 	TArray<FContentBrowserMenuExtender_SelectedAssets>& CBMenuExtenderDelegates = ContentBrowserModule.GetAllAssetViewContextMenuExtenders();
 	CBMenuExtenderDelegates.Add(FContentBrowserMenuExtender_SelectedAssets::CreateStatic(&OnExtendContentBrowserAssetSelectionMenu));
+
+	FBlueprintCompilationManager::RegisterCompilerExtension(UBlueprint::StaticClass(), GetMutableDefault<UFactoryTickBlueprintExtension>());
 }
 
 void FSMLEditorModule::ShutdownModule() {
