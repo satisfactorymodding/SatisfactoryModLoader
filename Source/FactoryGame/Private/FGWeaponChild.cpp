@@ -4,13 +4,12 @@
 
 void AFGWeaponChild::SetIsLoaded(bool isLoaded){ }
 void AFGWeaponChild::Multicast_NotifySetIsLoaded_Implementation(bool isLoaded){ }
-void AFGWeaponChild::Multicast_NotifyBeginPrimaryFire_Implementation(){ }
 void AFGWeaponChild::Multicast_NotifyEndPrimaryFire_Implementation(){ }
 void AFGWeaponChild::Multicast_NotifyFailedToFire_Implementation(){ }
 void AFGWeaponChild::Multicast_NotifyPrimaryFireExecuted_Implementation(){ }
 void AFGWeaponChild::Multicast_NotifyBeginSecondaryFire_Implementation(){ }
 void AFGWeaponChild::Multicast_NotifyEndSecondaryFire_Implementation(){ }
-void AFGWeaponChild::Multicast_NotifyReloading_Implementation(){ }
+void AFGWeaponChild::Multicast_NotifyReloading_Implementation(bool hadAmmoLeft){ }
 void AFGWeaponChild::Multicast_NotifyReloadComplete_Implementation(){ }
 void AFGWeaponChild::NotifySetIsLoaded_Implementation(bool isLoaded){ }
 void AFGWeaponChild::NotifyBeginPrimaryFire_Implementation(){ }
@@ -19,5 +18,5 @@ void AFGWeaponChild::NotifyFailedToFire_Implementation(){ }
 void AFGWeaponChild::NotifyPrimaryFireExecuted_Implementation(){ }
 void AFGWeaponChild::NotifyBeginSecondaryFire_Implementation(){ }
 void AFGWeaponChild::NotifyEndSecondaryFire_Implementation(){ }
-void AFGWeaponChild::NotifyReloading_Implementation(){ }
+void AFGWeaponChild::NotifyReloading_Implementation(bool hadAmmoLeft){ }
 void AFGWeaponChild::NotifyReloadComplete_Implementation(){ }

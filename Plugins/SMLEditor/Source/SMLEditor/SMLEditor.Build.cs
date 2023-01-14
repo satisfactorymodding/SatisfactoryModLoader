@@ -35,11 +35,13 @@ public class SMLEditor : ModuleRules
             "GameplayTasks",
             "SlateCore", "Slate", "UMG",
             "InstancedSplines",
-            "Projects"
+            "Projects",
+            "FunctionalTestingEditor"
         });
         
         PrivateDependencyModuleNames.AddRange(new[] {
-            "DesktopPlatform"
+            "DesktopPlatform",
+            "Kismet"
         });
     }
 }

@@ -2,6 +2,109 @@
 
 #include "FGDroneVehicle.h"
 
+AFGDroneVehicle::AFGDroneVehicle() : Super() {
+	this->mStorageInventory = nullptr;
+	this->mBatteryInventory = nullptr;
+	this->mInventorySize = 20;
+	this->mBatteryStorageSize = 1;
+	this->mDockingSequenceDuration = 0.0;
+	this->mTakeoffSequenceDuration = 0.0;
+	this->mTravelStartSequenceDuration = 0.0;
+	this->mFlyingSpeed = 0.0;
+	this->mTravelingSpeed = 0.0;
+	this->mFlyingStoppingDistance = 0.0;
+	this->mTravelingStoppingDistance = 0.0;
+	this->mTurningStrength = 0.0;
+	this->mCurrentPowerLevel = 0.0;
+	this->mCurrentTripPowerCost = 0.0;
+	this->mCurrentTripInformation.TripDuration = 0.0;
+	this->mCurrentTripInformation.IncomingItemStacks = 0.0;
+	this->mCurrentTripInformation.OutgoingItemStacks = 0.0;
+	this->mIsBraking = false;
+	this->mCurrentVelocity = FVector::ZeroVector;
+	this->mCurrentDestination = FVector::ZeroVector;
+	this->mDesiredFacingDirection = FVector::ZeroVector;
+	this->mCurrentFlyingMode = EDroneFlyingMode::DFM_None;
+	this->mCurrentDockingState.State = EDroneDockingState::DS_UNDOCKED;
+	this->mCurrentDockingState.StateStartTime = 0.0;
+	this->mStopAtDestination = false;
+	this->mDockedStation = nullptr;
+	this->mHomeStation = nullptr;
+	this->mCurrentTripDestinationStation = nullptr;
+	this->mCurrentAction = nullptr;
+}
+void AFGDroneVehicle::BeginPlay(){ }
+void AFGDroneVehicle::Tick(float DeltaTime){ }
+void AFGDroneVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDroneVehicle, mIsBraking);
+	DOREPLIFETIME(AFGDroneVehicle, mCurrentVelocity);
+	DOREPLIFETIME(AFGDroneVehicle, mDesiredFacingDirection);
+	DOREPLIFETIME(AFGDroneVehicle, mCurrentFlyingMode);
+	DOREPLIFETIME(AFGDroneVehicle, mCurrentDockingState);
+	DOREPLIFETIME(AFGDroneVehicle, mDockedStation);
+}
+void AFGDroneVehicle::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+bool AFGDroneVehicle::IsUseable_Implementation() const{ return bool(); }
+void AFGDroneVehicle::Dismantle_Implementation(){ }
+void AFGDroneVehicle::OnIsSimulatedChanged(){ }
+void AFGDroneVehicle::GainedSignificance_Implementation(){ }
+void AFGDroneVehicle::LostSignificance_Implementation(){ }
+void AFGDroneVehicle::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+bool AFGDroneVehicle::AddAsRepresentation(){ return bool(); }
+bool AFGDroneVehicle::UpdateRepresentation(){ return bool(); }
+bool AFGDroneVehicle::RemoveAsRepresentation(){ return bool(); }
+bool AFGDroneVehicle::IsActorStatic(){ return bool(); }
+FVector AFGDroneVehicle::GetRealActorLocation(){ return FVector(); }
+FRotator AFGDroneVehicle::GetRealActorRotation(){ return FRotator(); }
+UTexture2D* AFGDroneVehicle::GetActorRepresentationTexture(){ return nullptr; }
+FText AFGDroneVehicle::GetActorRepresentationText(){ return FText(); }
+void AFGDroneVehicle::SetActorRepresentationText(const FText& newText){ }
+FLinearColor AFGDroneVehicle::GetActorRepresentationColor(){ return FLinearColor(); }
+void AFGDroneVehicle::SetActorRepresentationColor(FLinearColor newColor){ }
+ERepresentationType AFGDroneVehicle::GetActorRepresentationType(){ return ERepresentationType(); }
+bool AFGDroneVehicle::GetActorShouldShowInCompass(){ return bool(); }
+bool AFGDroneVehicle::GetActorShouldShowOnMap(){ return bool(); }
+EFogOfWarRevealType AFGDroneVehicle::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
+float AFGDroneVehicle::GetActorFogOfWarRevealRadius(){ return float(); }
+ECompassViewDistance AFGDroneVehicle::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
+void AFGDroneVehicle::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+void AFGDroneVehicle::NotifyPairedStationUpdated( AFGBuildableDroneStation* NewPairedStation){ }
+void AFGDroneVehicle::OnUndocked(){ }
+void AFGDroneVehicle::OnDockedStationDestroyed(){ }
+void AFGDroneVehicle::OnBeginLoadVehicle_Implementation(){ }
+void AFGDroneVehicle::OnBeginUnloadVehicle_Implementation(){ }
+void AFGDroneVehicle::OnTransferComplete_Implementation(){ }
+TArray<FVector> AFGDroneVehicle::GeneratePathToDestination(const FVector& CurrentLocation, const FVector& Destination, UWorld* World){ return TArray<FVector>(); }
+void AFGDroneVehicle::SetCurrentDestination(const FVector& NewDestination, EDroneFlyingMode FlyingMode, bool StopAtDestination){ }
+void AFGDroneVehicle::StopMoving(){ }
+void AFGDroneVehicle::BeginDocking( AFGBuildableDroneStation* station){ }
+void AFGDroneVehicle::UpdateDockingQueuePosition(int NewPosition){ }
+float AFGDroneVehicle::GetSpeedForFlyingMode(EDroneFlyingMode Mode) const{ return float(); }
+float AFGDroneVehicle::GetStoppingDistanceForFlyingMode(EDroneFlyingMode Mode) const{ return float(); }
+float AFGDroneVehicle::GetTimeSinceDockingStateChanged() const{ return float(); }
+void AFGDroneVehicle::SetHomeStation( AFGBuildableDroneStation* station){ }
+bool AFGDroneVehicle::GrabRequiredBatteriesForTrip( AFGBuildableDroneStation* FromStation,  AFGBuildableDroneStation* ToStation, bool AllowTravelWithoutCost){ return bool(); }
+bool AFGDroneVehicle::TravelToStation( AFGBuildableDroneStation* station, bool ShouldTransferItems){ return bool(); }
+void AFGDroneVehicle::BeginNewTrip( AFGBuildableDroneStation* Station){ }
+void AFGDroneVehicle::EndCurrentTrip(bool Completed){ }
+void AFGDroneVehicle::SetFacingDirection(const FVector& Direction){ }
+void AFGDroneVehicle::StartDockingSequence_Implementation( AFGBuildableDroneStation* Station){ }
+void AFGDroneVehicle::EndDockingSequence_Implementation( AFGBuildableDroneStation* Station, bool ShouldTransferItems){ }
+void AFGDroneVehicle::StartTakeoffSequence_Implementation( AFGBuildableDroneStation* Station){ }
+void AFGDroneVehicle::EndTakeoffSequence_Implementation( AFGBuildableDroneStation* Station){ }
+void AFGDroneVehicle::StartTravelStartSequence_Implementation(){ }
+void AFGDroneVehicle::EndTravelStartSequence_Implementation(){ }
+void AFGDroneVehicle::OnRep_IsBraking(){ }
+void AFGDroneVehicle::OnRep_FlyingMode(){ }
+void AFGDroneVehicle::OnRep_DockingState(){ }
+void AFGDroneVehicle::OnRep_DockedStation(){ }
+void AFGDroneVehicle::OnSignificanceUpdate(){ }
+void AFGDroneVehicle::ClearAllActions(bool KeepCurrentAction){ }
+void AFGDroneVehicle::SetNewFlyingMode(EDroneFlyingMode Mode){ }
+void AFGDroneVehicle::SetDockingState(EDroneDockingState State){ }
+bool AFGDroneVehicle::ConsumeBatteriesForPower(float PowerRequirement){ return bool(); }
+void AFGDroneVehicle::CalculateInventoryPotentialPower(){ }
 #ifdef DEBUG_DRONES
 void UFGDroneAction::DisplayDebugInformation(){ }
 #endif 
@@ -72,113 +175,3 @@ void UFGDroneAction_TravelStartSequence::SetDestination(const FVector& Destinati
 void UFGDroneAction_TravelStartSequence::Begin(){ }
 void UFGDroneAction_TravelStartSequence::End(){ }
 float UFGDroneAction_TravelStartSequence::GetActionDuration() const{ return float(); }
-AFGDroneVehicle::AFGDroneVehicle() : Super() {
-	this->mStorageInventory = nullptr;
-	this->mBatteryInventory = nullptr;
-	this->mInventorySize = 20;
-	this->mBatteryStorageSize = 1;
-	this->mDockingSequenceDuration = 0.0;
-	this->mTakeoffSequenceDuration = 0.0;
-	this->mTravelStartSequenceDuration = 0.0;
-	this->mFlyingSpeed = 0.0;
-	this->mTravelingSpeed = 0.0;
-	this->mFlyingStoppingDistance = 0.0;
-	this->mTravelingStoppingDistance = 0.0;
-	this->mTurningStrength = 0.0;
-	this->mCurrentPowerLevel = 0.0;
-	this->mCurrentTripPowerCost = 0.0;
-	this->mCurrentTripInformation.TripDuration = 0.0;
-	this->mCurrentTripInformation.IncomingItemCount = 0;
-	this->mCurrentTripInformation.OutgoingItemCount = 0;
-	this->mCurrentTripInformation.IncomingItemStacks = 0.0;
-	this->mCurrentTripInformation.OutgoingItemStacks = 0.0;
-	this->mIsBraking = false;
-	this->mCurrentVelocity.X = 0.0;
-	this->mCurrentVelocity.Y = 0.0;
-	this->mCurrentVelocity.Z = 0.0;
-	this->mCurrentDestination.X = 0.0;
-	this->mCurrentDestination.Y = 0.0;
-	this->mCurrentDestination.Z = 0.0;
-	this->mDesiredFacingDirection.X = 0.0;
-	this->mDesiredFacingDirection.Y = 0.0;
-	this->mDesiredFacingDirection.Z = 0.0;
-	this->mCurrentFlyingMode = EDroneFlyingMode::DFM_None;
-	this->mCurrentDockingState.State = EDroneDockingState::DS_UNDOCKED;
-	this->mCurrentDockingState.StateStartTime = 0.0;
-	this->mStopAtDestination = false;
-	this->mDockedStation = nullptr;
-	this->mHomeStation = nullptr;
-	this->mCurrentTripDestinationStation = nullptr;
-	this->mCurrentAction = nullptr;
-}
-void AFGDroneVehicle::BeginPlay(){ }
-void AFGDroneVehicle::Tick(float DeltaTime){ }
-void AFGDroneVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGDroneVehicle, mIsBraking);
-	DOREPLIFETIME(AFGDroneVehicle, mCurrentVelocity);
-	DOREPLIFETIME(AFGDroneVehicle, mDesiredFacingDirection);
-	DOREPLIFETIME(AFGDroneVehicle, mCurrentFlyingMode);
-	DOREPLIFETIME(AFGDroneVehicle, mCurrentDockingState);
-	DOREPLIFETIME(AFGDroneVehicle, mDockedStation);
-}
-bool AFGDroneVehicle::IsUseable_Implementation() const{ return bool(); }
-void AFGDroneVehicle::Dismantle_Implementation(){ }
-void AFGDroneVehicle::OnIsSimulatedChanged(){ }
-void AFGDroneVehicle::GainedSignificance_Implementation(){ }
-void AFGDroneVehicle::LostSignificance_Implementation(){ }
-void AFGDroneVehicle::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-bool AFGDroneVehicle::AddAsRepresentation(){ return bool(); }
-bool AFGDroneVehicle::UpdateRepresentation(){ return bool(); }
-bool AFGDroneVehicle::RemoveAsRepresentation(){ return bool(); }
-bool AFGDroneVehicle::IsActorStatic(){ return bool(); }
-FVector AFGDroneVehicle::GetRealActorLocation(){ return FVector(); }
-FRotator AFGDroneVehicle::GetRealActorRotation(){ return FRotator(); }
-UTexture2D* AFGDroneVehicle::GetActorRepresentationTexture(){ return nullptr; }
-FText AFGDroneVehicle::GetActorRepresentationText(){ return FText(); }
-void AFGDroneVehicle::SetActorRepresentationText(const FText& newText){ }
-FLinearColor AFGDroneVehicle::GetActorRepresentationColor(){ return FLinearColor(); }
-void AFGDroneVehicle::SetActorRepresentationColor(FLinearColor newColor){ }
-ERepresentationType AFGDroneVehicle::GetActorRepresentationType(){ return ERepresentationType(); }
-bool AFGDroneVehicle::GetActorShouldShowInCompass(){ return bool(); }
-bool AFGDroneVehicle::GetActorShouldShowOnMap(){ return bool(); }
-EFogOfWarRevealType AFGDroneVehicle::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
-float AFGDroneVehicle::GetActorFogOfWarRevealRadius(){ return float(); }
-ECompassViewDistance AFGDroneVehicle::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
-void AFGDroneVehicle::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
-void AFGDroneVehicle::NotifyPairedStationUpdated( AFGBuildableDroneStation* NewPairedStation){ }
-void AFGDroneVehicle::OnUndocked(){ }
-void AFGDroneVehicle::OnDockedStationDestroyed(){ }
-void AFGDroneVehicle::OnBeginLoadVehicle_Implementation(){ }
-void AFGDroneVehicle::OnBeginUnloadVehicle_Implementation(){ }
-void AFGDroneVehicle::OnTransferComplete_Implementation(){ }
-TArray<FVector> AFGDroneVehicle::GeneratePathToDestination(const FVector& CurrentLocation, const FVector& Destination, UWorld* World){ return TArray<FVector>(); }
-void AFGDroneVehicle::SetCurrentDestination(const FVector& NewDestination, EDroneFlyingMode FlyingMode, bool StopAtDestination){ }
-void AFGDroneVehicle::StopMoving(){ }
-void AFGDroneVehicle::BeginDocking( AFGBuildableDroneStation* station){ }
-void AFGDroneVehicle::UpdateDockingQueuePosition(int NewPosition){ }
-float AFGDroneVehicle::GetSpeedForFlyingMode(EDroneFlyingMode Mode) const{ return float(); }
-float AFGDroneVehicle::GetStoppingDistanceForFlyingMode(EDroneFlyingMode Mode) const{ return float(); }
-float AFGDroneVehicle::GetTimeSinceDockingStateChanged() const{ return float(); }
-void AFGDroneVehicle::SetHomeStation( AFGBuildableDroneStation* station){ }
-bool AFGDroneVehicle::GrabRequiredBatteriesForTrip( AFGBuildableDroneStation* FromStation,  AFGBuildableDroneStation* ToStation, bool AllowTravelWithoutCost){ return bool(); }
-bool AFGDroneVehicle::TravelToStation( AFGBuildableDroneStation* station, bool ShouldTransferItems){ return bool(); }
-void AFGDroneVehicle::BeginNewTrip( AFGBuildableDroneStation* Station){ }
-void AFGDroneVehicle::EndCurrentTrip(bool Completed){ }
-void AFGDroneVehicle::SetFacingDirection(const FVector& Direction){ }
-void AFGDroneVehicle::StartDockingSequence_Implementation( AFGBuildableDroneStation* Station){ }
-void AFGDroneVehicle::EndDockingSequence_Implementation( AFGBuildableDroneStation* Station, bool ShouldTransferItems){ }
-void AFGDroneVehicle::StartTakeoffSequence_Implementation( AFGBuildableDroneStation* Station){ }
-void AFGDroneVehicle::EndTakeoffSequence_Implementation( AFGBuildableDroneStation* Station){ }
-void AFGDroneVehicle::StartTravelStartSequence_Implementation(){ }
-void AFGDroneVehicle::EndTravelStartSequence_Implementation(){ }
-void AFGDroneVehicle::OnRep_IsBraking(){ }
-void AFGDroneVehicle::OnRep_FlyingMode(){ }
-void AFGDroneVehicle::OnRep_DockingState(){ }
-void AFGDroneVehicle::OnRep_DockedStation(){ }
-void AFGDroneVehicle::OnSignificanceUpdate(){ }
-void AFGDroneVehicle::ClearAllActions(bool KeepCurrentAction){ }
-void AFGDroneVehicle::SetNewFlyingMode(EDroneFlyingMode Mode){ }
-void AFGDroneVehicle::SetDockingState(EDroneDockingState State){ }
-bool AFGDroneVehicle::ConsumeBatteriesForPower(float PowerRequirement){ return bool(); }
-void AFGDroneVehicle::CalculateInventoryPotentialPower(){ }

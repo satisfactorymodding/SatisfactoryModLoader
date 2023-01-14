@@ -4,9 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableFactory.h"
-#include "Replication/FGReplicationDetailInventoryComponent.h"
-#include "Replication/FGReplicationDetailActor_Storage.h"
+#include "Buildables/FGBuildable.h"
 #include "FGBuildableConveyorAttachment.generated.h"
 
 /**
@@ -57,7 +55,7 @@ struct FACTORYGAME_API FConnectionItemStruct
  * Base class for conveyor attachments such as the splitters and mergers.
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildableConveyorAttachment : public AFGBuildableFactory
+class FACTORYGAME_API AFGBuildableConveyorAttachment : public AFGBuildable
 {
 	GENERATED_BODY()
 public:
@@ -71,20 +69,8 @@ public:
 	virtual void Dismantle_Implementation() override;
 	//~ End IFGDismantleInterface
 
+	/** @return The buffer inventory for this attachment, always valid, server only. */
 	FORCEINLINE class UFGInventoryComponent* GetBufferInventory() const { return mBufferInventory; }
-
-protected:
-	friend class AFGReplicationDetailActor_Storage;
-
-	// Begin Factory_ interface
-	virtual void Factory_CollectInput_Implementation() override;
-	// End Factory_ interface
-
-	// Begin IFGReplicationDetailActorOwnerInterface
-	virtual void OnRep_ReplicationDetailActor() override;
-	virtual void OnBuildableReplicationDetailStateChange( bool newStateIsActive ) override;
-	virtual class AFGReplicationDetailActor* GetOrCreateReplicationDetailActor() override;
-	// End IFGReplicationDetailActorOwnerInterface
 
 public:
 	/** The size of the inventory for this attachment. Used to hold a buffer of incoming items */
@@ -94,7 +80,7 @@ public:
 	int32 mInventorySizeY;
 
 protected:
-	/** The inventory to store everything in. Don't use this directly, use mStorageInventoryHandler->GetActiveInventoryComponent() */
+	/** The buffer inventory to store the items in transit. */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mBufferInventory;
 
@@ -106,4 +92,12 @@ protected:
 
 	/** Cached linear size of the inventory component*/
 	int32 mCachedInventorySize;
+};
+
+/* Lightweight class containing no components, used for abstract instances etc. */
+UCLASS()
+class FACTORYGAME_API AFGBuildableConveyorAttachmentLightweight : public AFGBuildableConveyorAttachment
+{
+	GENERATED_BODY()
+	AFGBuildableConveyorAttachmentLightweight();
 };

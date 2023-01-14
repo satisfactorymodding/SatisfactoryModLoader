@@ -2,7 +2,12 @@
 
 #include "UI/FGMapObjectWidget.h"
 
+bool UFGMapObjectWidget::CanBeHighlighted() const{ return bool(); }
+void UFGMapObjectWidget::SetHighlighted(bool highlighted){ }
+FLinearColor UFGMapObjectWidget::IsHighlighted(bool& out_IsHighlighted,  bool& out_HighlightedByLocalPlayer) const{ return FLinearColor(); }
 void UFGMapObjectWidget::NativeConstruct(){ }
 void UFGMapObjectWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ }
-void UFGMapObjectWidget::initMapObject(){ }
+void UFGMapObjectWidget::InitMapObject(){ }
+void UFGMapObjectWidget::InitMapObjectPostion(){ }
 void UFGMapObjectWidget::OnActorRepresentationFiltered(ERepresentationType representationType, bool visible){ }
+void UFGMapObjectWidget::OnMarkerHighlightUpdated( UFGActorRepresentation* actorRepresentation, bool highlighted,  AFGPlayerState* playerState){ }

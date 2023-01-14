@@ -18,12 +18,12 @@ class FACTORYGAME_API UFGOptionsLibrary : public UBlueprintFunctionLibrary
 	
 public:
 	
-	static TArray<class UFGDynamicOptionsRow*> GetDynamicOptionsWidgets( UUserWidget* owningWidget, EOptionCategory category );
+	static TArray<class UFGDynamicOptionsRow*> GetDynamicOptionsWidgets( UUserWidget* owningWidget, EOptionCategory category, TScriptInterface< class IFGOptionInterface > optionInterface );
 
 	static void GetDynamicOptionData( TArray<FOptionRowData>& out_optionRowData );
-
-private:
 	
-	static TArray<class UFGDynamicOptionsRow*> SetupOptionRows( UUserWidget* owningWidget, TArray<FOptionRowData> optionRows, EOptionCategory optionCategory, TSubclassOf< class UFGDynamicOptionsRow > optionsRowWidgetClass );
+	static TArray<class UFGDynamicOptionsRow*> SetupOptionRows( UUserWidget* owningWidget, TArray<FOptionRowData> optionRows, EOptionCategory optionCategory, TSubclassOf< class UFGDynamicOptionsRow > optionsRowWidgetClass, TScriptInterface< class IFGOptionInterface > optionInterface );
+	
+	static UFGDynamicOptionsRow* SetupUserSetting( UUserWidget* owningWidget, class UFGUserSetting* userSetting, TScriptInterface< class IFGOptionInterface > optionInterface );
 
 };

@@ -93,7 +93,7 @@ public:
 
 	/** @param index Set the stop the train is heading to. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|TimeTable" )
-	void SetCurrentStop( int32 index ) { mCurrentStop = index; }
+	void SetCurrentStop( int32 index );
 
 	/** Increment the current stop to the next one in order. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|TimeTable" )
@@ -115,6 +115,6 @@ private:
 	TArray< FTimeTableStop > mStops;
 
 	/** Current stop the train is at or heading to. */
-	UPROPERTY( SaveGame, VisibleAnywhere, Category = "Time Table" )
+	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Time Table" )
 	int32 mCurrentStop;
 };

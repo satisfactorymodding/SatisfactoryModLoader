@@ -168,7 +168,9 @@ void AModContentRegistry::FlushStateToResearchManager(AFGResearchManager* Resear
 
     for (const TSharedPtr<FResearchTreeRegistrationInfo>& RegistrationInfo : RegisteredResearchTrees) {
         TSubclassOf<UFGResearchTree> ResearchTree = RegistrationInfo->RegisteredObject;
-        ResearchManager->mAvailableResearchTrees.Add(ResearchTree);
+        if (ResearchManager->CanAddToAvailableResearchTrees(ResearchTree)) {
+        	ResearchManager->mAvailableResearchTrees.Add(ResearchTree);
+        }
     }
     //Update unlocked research trees
     ResearchManager->UpdateUnlockedResearchTrees();
@@ -627,7 +629,7 @@ void AModContentRegistry::FlushPendingResourceSinkRegistrations() {
 			Pair.Key->GetAllRows(TEXT("ResourceSinkPointsData"), OutModPointsData);
 			for (FResourceSinkPointsData* ModItemRow : OutModPointsData) {
 				int32 Points = FMath::Max(ModItemRow->Points, ModItemRow->OverriddenResourceSinkPoints);
-				ResourceSinkSubsystem->mResourceSinkPoints.Add(ModItemRow->ItemClass, Points);
+				ResourceSinkSubsystem->mCachedResourceSinkPoints.Add(ModItemRow->ItemClass, FResourceSinkValuePair32(EResourceSinkTrack::RST_Default, Points));
 			}
 		}
 

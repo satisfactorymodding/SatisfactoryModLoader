@@ -35,6 +35,7 @@ public:
 	void HideConnectionFeedback();
 
 	virtual void Dismantle_Implementation() override;
+	virtual bool ShouldBeConsideredForBase_Implementation() override;
 
 	virtual void OnBuildEffectFinished() override;
 
@@ -83,7 +84,7 @@ private:
 	TArray<class UFGPowerConnectionComponent*> mPowerConnections;
 
 	/** The mesh component for this pole. */
-	UPROPERTY( VisibleAnywhere )
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true") )
 	class UFGColoredInstanceMeshProxy* mMeshComponentProxy = nullptr;
 
 	/** What kind of power pole this is. */

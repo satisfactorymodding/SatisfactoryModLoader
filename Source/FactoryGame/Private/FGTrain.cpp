@@ -2,6 +2,7 @@
 
 #include "FGTrain.h"
 #include "Components/SceneComponent.h"
+#include "Internationalization/StringTableRegistry.h"
 
 float TrainConstants::CATCH_DISTANCE = float();
 float TrainConstants::DOCK_STOP_OFFSET = float();
@@ -139,7 +140,8 @@ void AFGTrain::CancelDockingSequence(){ }
 bool AFGTrain::IsDockingCancelRequested(){ return bool(); }
 void AFGTrain::OnDocked(AFGBuildableRailroadStation* station){ }
 void AFGTrain::OnDockingComplete(){ }
-void AFGTrain::ConnectToThirdRail( UFGPowerConnectionComponent* thirdRail){ }
+void AFGTrain::ConnectToThirdRail(){ }
+void AFGTrain::DisconnectFromThirdRail(){ }
 void AFGTrain::OnVehiclesChanged(){ }
 void AFGTrain::OnConsistChanged(){ }
 void AFGTrain::GetDockingRuleSetForCurrentStop(FTrainDockingRuleSet& out_ruleSet) const{ }
@@ -166,8 +168,10 @@ float AFGTrain::CalcBrakeDistance(float currentSpeed, float targetSpeed, float d
 float AFGTrain::CalcTargetSpeed(float targetSpeed, float distance, float deceleration) const{ return float(); }
 float AFGTrain::CalcTargetAcceleration(float currentSpeed, float targetSpeed, float distance) const{ return float(); }
 float AFGTrain::CalcTargetDeceleration(float currentSpeed, float targetSpeed, float distance) const{ return float(); }
+void AFGTrain::OnMultipleUnitMasterChanged(){ }
 void AFGTrain::OnRep_DockingState(){ }
 void AFGTrain::OnRep_IsSelfDrivingEnabled(){ }
 void AFGTrain::OnRep_SelfDrivingError(){ }
 void AFGTrain::OnRep_IsDerailed(){ }
 void AFGTrain::OnRep_TrainStatus(){ }
+void AFGTrain::OnRep_MultipleUnitMaster(){ }

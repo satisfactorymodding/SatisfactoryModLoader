@@ -22,31 +22,31 @@ class SML_API UBlueprintLoggingLibrary : public UBlueprintFunctionLibrary {
     GENERATED_BODY()
 public:
     /**
-    * Logs the given string in verbose level to the SML Log file and the game log as well as into the console
+    * Logs the given string in verbose level to the SML Log file and the game log in the LogYourModReference category
     */
     UFUNCTION(BlueprintCallable, Category = "SML|Logging", CustomThunk, meta = (BlueprintThreadSafe))
     static void LogVerbose(const FString& Str) BP_FUNCTION_ONLY_STUB();
 
     /**
-    * Logs the given string in info level to the SML Log file and the game log as well as into the console
+    * Logs the given string in display level to the SML Log file and the game log in the LogYourModReference category
     */
     UFUNCTION(BlueprintCallable, Category = "SML|Logging", CustomThunk, meta = (BlueprintThreadSafe))
     static void LogDisplay(const FString& Str) BP_FUNCTION_ONLY_STUB();
 	
     /**
-    * Logs the given string in warning level to the SML Log file and the game log as well as into the console
+    * Logs the given string in warning level to the SML Log file and the game log in the LogYourModReference category
     */
     UFUNCTION(BlueprintCallable, Category = "SML|Logging", CustomThunk, meta = (BlueprintThreadSafe))
     static void LogWarning(const FString& Str) BP_FUNCTION_ONLY_STUB(); 
 
     /**
-    * Logs the given string in error level to the SML Log file and the game log as well as into the console
+    * Logs the given string in error level to the SML Log file and the game log in the LogYourModReference category
     */
     UFUNCTION(BlueprintCallable, Category = "SML|Logging", CustomThunk, meta = (BlueprintThreadSafe))
     static void LogError(const FString& Str) BP_FUNCTION_ONLY_STUB();
 
     /**
-    * Logs the given string in fatal level to the SML Log file and the game log as well as into the console
+    * Logs the given string in fatal level to the SML Log file and the game log in the LogYourModReference category. This crashes the game!
     */
     UFUNCTION(BlueprintCallable, Category = "SML|Logging", CustomThunk, meta = (BlueprintThreadSafe))
     static void LogFatal(const FString& Str) BP_FUNCTION_ONLY_STUB();

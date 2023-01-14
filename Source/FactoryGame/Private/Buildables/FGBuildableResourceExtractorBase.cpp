@@ -4,6 +4,8 @@
 #include "FGConstructDisqualifier.h"
 #include "Hologram/FGResourceExtractorHologram.h"
 
+int AFGBuildableResourceExtractorBase::GetDebugLevel(){ return int(); }
+void AFGBuildableResourceExtractorBase::SetDebugLevel(int level){ }
 void AFGBuildableResourceExtractorBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableResourceExtractorBase, mExtractableResource);
@@ -14,6 +16,7 @@ AFGBuildableResourceExtractorBase::AFGBuildableResourceExtractorBase() : Super()
 	this->mOnlyAllowCertainResources = false;
 	this->mMustPlaceOnResourceDisqualifier = UFGCDNeedsResourceNode::StaticClass();
 	this->mExtractorTypeName = TEXT("None");
+	this->mTryFindMissingResource = false;
 	this->mExtractResourceNode = nullptr;
 	this->mExtractableResource = nullptr;
 	this->mCanChangePotential = true;
@@ -28,4 +31,5 @@ void AFGBuildableResourceExtractorBase::SetResourceNode( AFGResourceNode* resour
 UParticleSystem* AFGBuildableResourceExtractorBase::GetMiningParticle(){ return nullptr; }
 bool AFGBuildableResourceExtractorBase::CanOccupyResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }
 bool AFGBuildableResourceExtractorBase::IsAllowedOnResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }
+AActor* AFGBuildableResourceExtractorBase::TryFindMissingResource(){ return nullptr; }
 void AFGBuildableResourceExtractorBase::OnExtractableResourceSet(){ }

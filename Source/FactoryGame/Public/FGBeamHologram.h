@@ -39,6 +39,7 @@ public:
 	virtual void ConfigureActor( AFGBuildable* inBuildable ) const override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual bool CanBeZooped() const override;
+	virtual bool CanIntersectWithDesigner( AFGBuildableBlueprintDesigner* designer ) override;
 	// End AFGHologram interface
 
 	// Begin FGConstructionMessageInterface
@@ -52,7 +53,7 @@ protected:
 	void OnRep_CurrentLength();
 
 	// Begin AFGBuildableHologram Interface
-	virtual bool IsHologramIdenticalToBuildable( class AFGBuildable* buildable, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
 	virtual void CreateAttachmentPointTransform( FTransform& out_transformResult, const FHitResult& HitResult, AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint ) override;
 	// End AFGBuildableHologram Interface
 

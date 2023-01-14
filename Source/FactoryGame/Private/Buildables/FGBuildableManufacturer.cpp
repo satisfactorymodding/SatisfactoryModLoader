@@ -2,6 +2,11 @@
 
 #include "Buildables/FGBuildableManufacturer.h"
 
+void UFGManufacturerClipboardRCO::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGManufacturerClipboardRCO, mForceNetField_UFGManufacturerClipboardRCO);
+}
+void UFGManufacturerClipboardRCO::Server_PasteSettings_Implementation( AFGBuildableManufacturer* manufacturer, AFGCharacterPlayer* player, TSubclassOf<  UFGRecipe > recipe, float overclock){ }
 void AFGBuildableManufacturer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableManufacturer, mCurrentRecipe);
@@ -13,6 +18,8 @@ AFGBuildableManufacturer::AFGBuildableManufacturer() : Super() {
 	this->mInputInventory = nullptr;
 	this->mOutputInventory = nullptr;
 	this->mCurrentRecipe = nullptr;
+	this->mCachedRecipe = nullptr;
+	this->mCanEverMonitorProductivity = true;
 	this->mCanChangePotential = true;
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 }
@@ -24,6 +31,9 @@ float AFGBuildableManufacturer::GetDefaultProductionCycleTime() const{ return fl
 float AFGBuildableManufacturer::GetProductionCycleTimeForRecipe(TSubclassOf< UFGRecipe > recipe) const{ return float(); }
 float AFGBuildableManufacturer::CalcProductionCycleTimeForPotential(float potential) const{ return float(); }
 void AFGBuildableManufacturer::OnReplicationDetailActorRemoved(){ }
+UFGFactoryClipboardSettings* AFGBuildableManufacturer::CopySettings_Implementation(){ return nullptr; }
+bool AFGBuildableManufacturer::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
+float AFGBuildableManufacturer::TryFillPotentialInventory(AFGCharacterPlayer* player, float targetPotential, bool simulate){ return float(); }
 bool AFGBuildableManufacturer::MoveOrDropInputInventory(AFGCharacterPlayer* pawn){ return bool(); }
 bool AFGBuildableManufacturer::MoveOrDropOutputInventory(AFGCharacterPlayer* pawn){ return bool(); }
 float AFGBuildableManufacturer::GetProductionProgress() const{ return float(); }
@@ -34,9 +44,13 @@ void AFGBuildableManufacturer::Factory_CollectInput_Implementation(){ }
 void AFGBuildableManufacturer::Factory_PullPipeInput_Implementation(float dt){ }
 void AFGBuildableManufacturer::Factory_PushPipeOutput_Implementation(float dt){ }
 void AFGBuildableManufacturer::Factory_TickProducing(float dt){ }
+void AFGBuildableManufacturer::OnRep_ReplicationDetailActor(){ }
+void AFGBuildableManufacturer::InvalidateCacheCanProduce_InputItemAdded(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded){ }
+void AFGBuildableManufacturer::InvalidateCacheCanProduce_InputItemRemoved(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded){ }
+void AFGBuildableManufacturer::InvalidateCacheCanProduce_OutputItemAdded(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded){ }
+void AFGBuildableManufacturer::InvalidateCacheCanProduce_OutputItemRemoved(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded){ }
 void AFGBuildableManufacturer::CreateInventories(){ }
 void AFGBuildableManufacturer::OnRep_CurrentRecipe(){ }
-void AFGBuildableManufacturer::OnRep_ReplicationDetailActor(){ }
 void AFGBuildableManufacturer::GetInputInventoryItems(TArray< FInventoryStack >& out_items) const{ }
 void AFGBuildableManufacturer::ClearInputInventoryItems(){ }
 void AFGBuildableManufacturer::GetOutputInventoryItems(TArray< FInventoryStack >& out_items){ }

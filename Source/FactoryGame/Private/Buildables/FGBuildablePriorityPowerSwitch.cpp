@@ -4,10 +4,14 @@
 
 void AFGBuildablePriorityPowerSwitch::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildablePriorityPowerSwitch::BeginPlay(){ }
+void AFGBuildablePriorityPowerSwitch::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGBuildablePriorityPowerSwitch::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildablePriorityPowerSwitch, mPriority);
+	DOREPLIFETIME(AFGBuildablePriorityPowerSwitch, mInfo);
 }
 void AFGBuildablePriorityPowerSwitch::AcceptCircuitGroup( UFGPowerCircuitGroup* circuitGroup){ }
-void AFGBuildablePriorityPowerSwitch::SetPriority(int priority){ }
+TArray< class AFGPriorityPowerSwitchInfo* > AFGBuildablePriorityPowerSwitch::GetAllInfos() const{ return TArray<class AFGPriorityPowerSwitchInfo*>(); }
+void AFGBuildablePriorityPowerSwitch::SetPriority(int32 priority){ }
+void AFGBuildablePriorityPowerSwitch::EnsureInfoCreated(){ }
 void AFGBuildablePriorityPowerSwitch::OnRep_Priority(){ }

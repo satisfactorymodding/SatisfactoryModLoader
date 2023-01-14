@@ -17,3 +17,4 @@ int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_CurrentMax(TSubclassOf<  AA
 int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_Total(TSubclassOf<  AActor > actor){ return int32(); }
 int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_TotalDismantled(TSubclassOf<  AActor > actor){ return int32(); }
 void AFGStatisticsSubsystem::GetStatisticsDebugData(TArray<FString>& out_debugData){ }
+void AFGStatisticsSubsystem::UpdateProducedItems(const TMap< TSubclassOf< UFGItemDescriptor >, uint64 >& ProducedItems){ }

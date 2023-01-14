@@ -2,7 +2,7 @@
 
 #include "WheeledVehicles/FGWheeledVehicleInfo.h"
 
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 void AFGWheeledVehicleInfo::DrawDebug(int debugLevel){ }
 #endif 
 AFGWheeledVehicleInfo::AFGWheeledVehicleInfo() : Super() {
@@ -15,28 +15,20 @@ AFGWheeledVehicleInfo::AFGWheeledVehicleInfo() : Super() {
 	this->mSimulationMovement = nullptr;
 	this->mCurrentStation = nullptr;
 	this->mIsSimulated = false;
-	this->mAuthoritativeLocation.X = 0.0;
-	this->mAuthoritativeLocation.Y = 0.0;
-	this->mAuthoritativeLocation.Z = 0.0;
+	this->mAuthoritativeLocation = FVector::ZeroVector;
 	this->mAuthoritativeRotation.X = 0.0;
 	this->mAuthoritativeRotation.Y = 0.0;
 	this->mAuthoritativeRotation.Z = 0.0;
 	this->mAuthoritativeRotation.W = 0.0;
-	this->mAuthoritativeLinearVel.X = 0.0;
-	this->mAuthoritativeLinearVel.Y = 0.0;
-	this->mAuthoritativeLinearVel.Z = 0.0;
+	this->mAuthoritativeLinearVel = FVector::ZeroVector;
 	this->mIsGhosting = false;
 	this->mCurrentFuelClass = nullptr;
 	this->mActorRepresentationTexture = nullptr;
 	this->mMapText = INVTEXT("");
 	this->mDefaultRepresentationColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mPlayerNametagColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
-	this->mBoundingBoxExtent.X = 0.0;
-	this->mBoundingBoxExtent.Y = 0.0;
-	this->mBoundingBoxExtent.Z = 0.0;
-	this->mBoundingBoxOffset.X = 0.0;
-	this->mBoundingBoxOffset.Y = 0.0;
-	this->mBoundingBoxOffset.Z = 0.0;
+	this->mBoundingBoxExtent = FVector::ZeroVector;
+	this->mBoundingBoxOffset = FVector::ZeroVector;
 	this->mWheelRadius = 0.0;
 	this->mStaticMeshComponent = nullptr;
 	this->bAlwaysRelevant = true;
@@ -102,12 +94,17 @@ void AFGWheeledVehicleInfo::UpdateTarget(){ }
 bool AFGWheeledVehicleInfo::ShouldStayAtDock(){ return bool(); }
 void AFGWheeledVehicleInfo::OnTargetDestroyed( AFGTargetPoint* target){ }
 AFGDrivingTargetList* AFGWheeledVehicleInfo::GetTargetList() const{ return nullptr; }
-void AFGWheeledVehicleInfo::TryActivatePathSimulation(){ }
+void AFGWheeledVehicleInfo::TryStartSplinePathMovement(){ }
 void AFGWheeledVehicleInfo::SetSimulationVisible(bool isVisible){ }
 void AFGWheeledVehicleInfo::UpdateCustomizationData( AFGWheeledVehicle* vehicle){ }
 void AFGWheeledVehicleInfo::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
 void AFGWheeledVehicleInfo::ShowGhostingEffect(bool enabled){ }
+bool AFGWheeledVehicleInfo::IsOnCanonPath() const{ return bool(); }
+void AFGWheeledVehicleInfo::OnRep_ReplicatedMesh(){ }
+void AFGWheeledVehicleInfo::OnRep_StaticMeshComponent(){ }
+void AFGWheeledVehicleInfo::OnRep_ReplicatedVehicle(){ }
 void AFGWheeledVehicleInfo::OnRep_Status(){ }
 void AFGWheeledVehicleInfo::OnRep_IsFollowingPath(){ }
 void AFGWheeledVehicleInfo::OnRep_IsGhosting(){ }
 void AFGWheeledVehicleInfo::OnSimulationTargetReached(AFGTargetPoint* newTarget){ }
+void AFGWheeledVehicleInfo::UpdateComponentVisibility(){ }

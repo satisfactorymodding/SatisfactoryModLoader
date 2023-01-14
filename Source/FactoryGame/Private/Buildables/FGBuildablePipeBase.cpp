@@ -12,13 +12,6 @@ AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
 	this->mConnection1 = nullptr;
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	this->mHologramClass = AFGPipelineHologram::StaticClass();
-	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.bTickEvenWhenPaused = false;
-	this->PrimaryActorTick.bCanEverTick = true;
-	this->PrimaryActorTick.bStartWithTickEnabled = false;
-	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
-	this->PrimaryActorTick.TickInterval = 0.0;
 	this->NetDormancy = ENetDormancy::DORM_Awake;
 	this->mSplineComponent->SetupAttachment(RootComponent);
 }
@@ -30,6 +23,7 @@ void AFGBuildablePipeBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 void AFGBuildablePipeBase::BeginPlay(){ }
 void AFGBuildablePipeBase::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 int32 AFGBuildablePipeBase::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
+bool AFGBuildablePipeBase::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildablePipeBase::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildablePipeBase::Dismantle_Implementation(){ }
 void AFGBuildablePipeBase::GainedSignificance_Implementation(){ }

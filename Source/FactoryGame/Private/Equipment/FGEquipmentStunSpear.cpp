@@ -2,21 +2,21 @@
 
 #include "Equipment/FGEquipmentStunSpear.h"
 #include "Components/SceneComponent.h"
-#include "DamageTypes/FGDamageType.h"
 
 AFGEquipmentStunSpear::AFGEquipmentStunSpear() : Super() {
 	this->mCollisionComp = nullptr;
-	this->mDamageTypeClass = UFGDamageType::StaticClass();
+	this->mAttackNoise = nullptr;
 	this->mSecondSwingMaxTime = 0.7;
 	this->mSecondSwingCooldDownTime = 1.0;
-	this->mDamage = 10;
 	this->mAttackDistance = 100.0;
+	this->mAttackSweepRadius = 10.0;
 	this->mArmAnimation = EArmEquipment::AE_StunSpear;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
 void AFGEquipmentStunSpear::AddEquipmentActionBindings(){ }
 void AFGEquipmentStunSpear::DoAttack(){ }
 void AFGEquipmentStunSpear::OnHitTarget_Implementation(){ }
-void AFGEquipmentStunSpear::Server_ShockEnemy_Implementation(){ }
-bool AFGEquipmentStunSpear::Server_ShockEnemy_Validate(){ return bool(); }
+void AFGEquipmentStunSpear::Server_ShockEnemy_Implementation(FVector attackDirection){ }
+bool AFGEquipmentStunSpear::Server_ShockEnemy_Validate(FVector attackDirection){ return bool(); }
+void AFGEquipmentStunSpear::Multicast_PlayHitEffects_Implementation(const TArray<FHitResult> &hitResults){ }
 void AFGEquipmentStunSpear::OnFirePressed(){ }

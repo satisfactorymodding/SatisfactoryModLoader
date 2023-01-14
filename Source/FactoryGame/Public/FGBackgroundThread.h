@@ -350,19 +350,6 @@ struct FACTORYGAME_API FPoolItem
 
 		// Max 0 since it can become below zero otherwise when applying the radius offset, below 0 values are considered "off" 
 		Relevance = FMath::Max< float >( dist / FMath::Square( MaxRelevance * RelevancyMultiplier ), 0.f);
-
-		
-#if 0
-		// Maybe to consider for the future.
-		FVector dirToInstance = Transform.GetLocation() - pawnLocation;
-		dirToInstance.Normalize(0.01f);
-		
-		float dotP = FMath::Clamp(FVector::DotProduct( dirToInstance, pawnDirection ),-1.f,1.f);
-		float relevanceInfluence = dotP > -0.5 ? 1 :  2.f;	
-		
-		const float dist = FVector::DistSquared( Transform.GetLocation(), pawnLocation );
-		Relevance = (dist / FMath::Square( MaxRelevance ) ) * relevanceInfluence;	
-#endif
 	}
 
 	/* Assign relevancy location, can be different from the instance due to their target location; see lights. */
@@ -489,6 +476,28 @@ struct FACTORYGAME_API FPoolInstanceType
 	}
 };
 
+struct FACTORYGAME_API FProductionEntry
+{
+	TSubclassOf<class UFGItemDescriptor> mProducedItem;
+	uint64 mCount;
+	float mWorldTime;
+
+	FProductionEntry( const TSubclassOf<class UFGItemDescriptor> ProducedItem, uint64 NumItems, float WorldTime )
+	{
+		mProducedItem = ProducedItem;
+		mCount = NumItems;
+		mWorldTime = WorldTime;
+	}
+	
+	FProductionEntry()
+		: mProducedItem( nullptr )
+		, mCount( 0 )
+		, mWorldTime( 0 )
+	{
+		
+	}
+};
+
 class FACTORYGAME_API FFGBackgroundThread :	public FRunnable
 {
 	FFGBackgroundThread( UWorld* WorldContext );
@@ -511,6 +520,11 @@ public:
 #endif
 	
 private:
+	// Production Data
+	TQueue<FProductionEntry,EQueueMode::Mpsc> mProductionDataQueue;
+
+	TMap< TSubclassOf<class UFGItemDescriptor>, uint64 > mProducedItems;
+	
 	// TODO consider a weak ptr?
 	/** Cached pointer to the world, made when initialized. */
 	UWorld* mWorldContext;
@@ -658,7 +672,13 @@ private:
 public:
 	void MarkScalabilityDirty() { mShouldUpdateScalability.Set( 1 ); }
 	FORCEINLINE int32 GetCurrentScalabilityLevel() const { return CurrentLevel; }
-	// End Scalability	
+	// End Scalability
+
+	static void EnqueueProductionEntry( const TSubclassOf<class UFGItemDescriptor> mProducedItem, uint64 mCount, float mWorldTime, AActor* Actor );
+
+	void ResolveProductionQueue();
+	
+	void DispatchToStatisticsSubsystem();
 	
 #if !UE_BUILD_SHIPPING
 public:

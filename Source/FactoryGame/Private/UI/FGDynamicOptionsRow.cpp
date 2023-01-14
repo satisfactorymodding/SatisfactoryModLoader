@@ -3,7 +3,8 @@
 #include "UI/FGDynamicOptionsRow.h"
 
 void UFGDynamicOptionsRow::NativePreConstruct(){ }
-void UFGDynamicOptionsRow::InitOptionRow(FOptionRowData optionRowData, TSubclassOf<class UFGOptionsValueController> widgetOptionClass){ }
+void UFGDynamicOptionsRow::InitOptionRow(FOptionRowData optionRowData, TSubclassOf<class UFGOptionsValueController> widgetOptionClass, TScriptInterface<  IFGOptionInterface > optionInterface){ }
+void UFGDynamicOptionsRow::InitOptionRow( UFGUserSetting* userSetting, TScriptInterface<  IFGOptionInterface > optionInterface){ }
 void UFGDynamicOptionsRow::AddSubOption(UFGDynamicOptionsRow* dynamicOptionsRow){ }
 bool UFGDynamicOptionsRow::IsPendingApply(){ return bool(); }
 bool UFGDynamicOptionsRow::IsPendingRestart(){ return bool(); }

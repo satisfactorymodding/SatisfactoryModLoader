@@ -76,14 +76,6 @@ public:
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
     float GetHoverAccelerationSpeed( bool IsSprinting ) const;
 
-	/** Gets the rail road surfing speed multiplier */
-	UFUNCTION( BlueprintPure, Category = "HoverPack" )
-	float GetRailroadSurfSpeed() const { return mRailRoadSurfSpeed; }
-
-	/** Gets the rail road surf sensitivity. Determines how loosely you need to follow the track with the view. */
-	UFUNCTION( BlueprintPure, Category = "HoverPack" )
-    float GetRailroadSurfSensitivity() const { return FMath::Clamp( mRailroadSurfSensitivity, 0.0f, 0.99f ); }
-
 	/** Gets the friction used when flying with the hover pack. */
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
 	float GetFriction() const { return mHoverFriction; }
@@ -220,6 +212,10 @@ private:
 	/** Checks if player is in one of the hover movement modes */
 	bool PlayerIsInHoverMovementMode() const;
 
+	/** Used to report a noise event for when the hoverpack is active. */
+	UFUNCTION()
+	void MakeActiveNoise();
+
 private:
 	UFUNCTION()
 	void OnRep_HasConnection();
@@ -242,14 +238,6 @@ private:
 	/** How fast the character moves with the hover pack when sprinting. */
 	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
 	float mHoverSprintMultiplier;
-
-	/** How fast the character moves with the hover pack when rail surfing. */
-	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
-	float mRailRoadSurfSpeed;
-
-	/** Determines how loosely you need to follow the track with the view in order to surf it. */
-	UPROPERTY( EditDefaultsOnly, Category = "HoverPack", meta = (ClampMin = "0.0", ClampMax = "0.99", UIMin = "0.0", UIMax = "0.99") )
-	float mRailroadSurfSensitivity;
 
 	/** Friction of the movement while airborne (0-1). */
 	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
@@ -329,6 +317,16 @@ private:
 	/** How far the character using the hoverpack can reach when it's active. */
     UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
     float mCharacterUseDistanceWhenActive;
+
+	/** The noise to make when the hoverpack is active. */
+    UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
+    TSubclassOf< class UFGNoise > mActiveNoise;
+
+	/** How often to make the noise (in seconds) while the hoverpack is active. */
+	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
+	float mActiveNoiseFrequency;
+
+	FTimerHandle mActiveNoiseTimerHandle;
 
 	/** The location of our power connection. */
 	UPROPERTY( ReplicatedUsing = OnRep_CurrentConnectionLocation )

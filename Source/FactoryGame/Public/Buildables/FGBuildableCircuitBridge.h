@@ -24,12 +24,12 @@ public:
 
 	/**
 	 * @returns true if this bridge is turned on, false otherwise
-	*/
+	 */
 	virtual bool IsBridgeActive() const { return true; }
 
 	/**
 	 * @returns true if this bridge is connected to two circuits, false otherwise
-	*/
+	 */
 	bool IsBridgeConnected() const;
 
 	/**
@@ -46,12 +46,10 @@ public:
 	//~ Begin UFGCircuitGroup -> AFGBuildableCircuitBridge visitor pattern
 	/** Called after a visit to the newly created circuit group that this bridge belongs to. */
 	virtual void AcceptCircuitGroup( class UFGCircuitGroup* circuitGroup ) { }
-	/** Called after a visit to the newly created circuit group that this bridge belongs to. */
 	virtual void AcceptCircuitGroup( class UFGPowerCircuitGroup* circuitGroup ) { }
 	//~ End UFGCircuitGroup -> AFGBuildableCircuitBridge visitor pattern
 
 protected:
-
 	virtual void OnCircuitsChanged();
 
 private:

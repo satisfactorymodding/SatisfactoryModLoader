@@ -4,8 +4,20 @@
 
 void AFGPowerPoleHologram::BeginPlay(){ }
 void AFGPowerPoleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
+bool AFGPowerPoleHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
+void AFGPowerPoleHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 USceneComponent* AFGPowerPoleHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
 bool AFGPowerPoleHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 AActor* AFGPowerPoleHologram::GetUpgradedActor() const{ return nullptr; }
 bool AFGPowerPoleHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 bool AFGPowerPoleHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
+AActor* AFGPowerPoleHologram::Construct(TArray<AActor*>& out_children, FNetConstructionID constructionID){ return nullptr; }
+void AFGPowerPoleHologram::OnInvalidHitResult(){ }
+void AFGPowerPoleHologram::Destroyed(){ }
+void AFGPowerPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPowerPoleHologram, mWireHologramIn);
+	DOREPLIFETIME(AFGPowerPoleHologram, mWireHologramOut);
+	DOREPLIFETIME(AFGPowerPoleHologram, mDefaultPowerLineRecipe);
+}
+void AFGPowerPoleHologram::ResetByproductHolograms(){ }

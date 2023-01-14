@@ -3,6 +3,3 @@
 #include "FGCombatFunctionLibrary.h"
 
 AFGCharacterBase* UFGCombatFunctionLibrary::TryGetCharacterFromDamageCauser( AActor* damageCauser){ return nullptr; }
-bool UFGCombatFunctionLibrary::IsWithinAttackRange( APawn* attacker,  TScriptInterface<  IFGAggroTargetInterface > victim, TSubclassOf<  UFGAttack > attackClass){ return bool(); }
-bool UFGCombatFunctionLibrary::IsWithinRange( APawn* attacker,  TScriptInterface<  IFGAggroTargetInterface > victim, float range){ return bool(); }
-void UFGCombatFunctionLibrary::DoRadialDamageWithinCollision(AController* controller, UShapeComponent* collisionShape, FVector centerLocation, TSubclassOf<  UFGDamageType > damageType, float damage, float radius){ }

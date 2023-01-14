@@ -7,8 +7,12 @@ void AFGBuildableLightsControlPanel::GetLifetimeReplicatedProps(TArray< FLifetim
 	DOREPLIFETIME(AFGBuildableLightsControlPanel, mLightControlData);
 	DOREPLIFETIME(AFGBuildableLightsControlPanel, mIsEnabled);
 }
+UFGFactoryClipboardSettings* AFGBuildableLightsControlPanel::CopySettings_Implementation(){ return nullptr; }
+bool AFGBuildableLightsControlPanel::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
+TSubclassOf<UObject> AFGBuildableLightsControlPanel::GetClipboardMappingClass_Implementation(){ return TSubclassOf<UObject>(); }
 void AFGBuildableLightsControlPanel::SetLightEnabled(bool isEnabled){ }
 void AFGBuildableLightsControlPanel::SetLightControlData(FLightSourceControlData data){ }
+void AFGBuildableLightsControlPanel::SetLightDataOnControlledLights(FLightSourceControlData data){ }
 bool AFGBuildableLightsControlPanel::IsLightEnabled() const{ return bool(); }
 FLightSourceControlData AFGBuildableLightsControlPanel::GetLightControlData() const{ return FLightSourceControlData(); }
 void AFGBuildableLightsControlPanel::OnRep_IsEnabled(){ }

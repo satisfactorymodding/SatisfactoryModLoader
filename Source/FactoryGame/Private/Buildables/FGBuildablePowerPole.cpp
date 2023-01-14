@@ -24,6 +24,7 @@ void AFGBuildablePowerPole::StopIsLookedAtForConnection( AFGCharacterPlayer* byC
 void AFGBuildablePowerPole::ShowConnectionFeedback( UFGCircuitConnectionComponent* overlappingConnection){ }
 void AFGBuildablePowerPole::HideConnectionFeedback(){ }
 void AFGBuildablePowerPole::Dismantle_Implementation(){ }
+bool AFGBuildablePowerPole::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildablePowerPole::OnBuildEffectFinished(){ }
 UFGPowerCircuit* AFGBuildablePowerPole::GetPowerCircuit() const{ return nullptr; }
 void AFGBuildablePowerPole::OnPowerConnectionChanged( UFGCircuitConnectionComponent* connection){ }

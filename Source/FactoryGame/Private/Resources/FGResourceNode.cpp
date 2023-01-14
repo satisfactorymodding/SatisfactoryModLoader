@@ -8,7 +8,6 @@ void AFGResourceNode::PostEditChangeProperty( FPropertyChangedEvent& propertyCha
 AFGResourceNode::AFGResourceNode() : Super() {
 	this->mPurity = EResourcePurity::RP_Normal;
 	this->mAmount = EResourceAmount::RA_Infinite;
-	this->mResourcesLeft = 0;
 	this->mCanPlaceResourceExtractor = true;
 	this->mExtractMultiplier = 1;
 }
@@ -23,7 +22,11 @@ bool AFGResourceNode::HasAnyResources() const{ return bool(); }
 int32 AFGResourceNode::ExtractResource(int32 amount){ return int32(); }
 float AFGResourceNode::GetExtractionSpeedMultiplier() const{ return float(); }
 bool AFGResourceNode::CanPlaceResourceExtractor() const{ return bool(); }
-void AFGResourceNode::InitResource(TSubclassOf<UFGResourceDescriptor> resourceClass, EResourceAmount amount, EResourcePurity purity){ }
+void AFGResourceNode::InitResource(TSubclassOf<UFGResourceDescriptor> resourceClass, EResourceAmount amount, EResourcePurity purity) {
+  this->mResourceClass = resourceClass;
+    this->mAmount = amount;
+    this->mPurity = purity;
+}
 FText AFGResourceNode::GetResoucesLeftText() const{ return FText(); }
 FText AFGResourceNode::GetResoucePurityText() const{ return FText(); }
 const FInt32Interval& AFGResourceNode::GetResourceAmount(EResourceAmount amount) const{ return *(new FInt32Interval); }

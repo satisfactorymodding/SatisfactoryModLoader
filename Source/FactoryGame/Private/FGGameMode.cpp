@@ -14,6 +14,7 @@ AFGGameMode::AFGGameMode() : Super() {
 	this->mAllowPossessAny = false;
 	this->mDebugStartingPointTagName = TEXT("None");
 	this->mDefaultRemoteCallObjectsClassNames.Add(FSoftClassPath("/Game/FactoryGame/Character/Player/BP_RemoteCallObject.BP_RemoteCallObject_C"));
+	this->mDefaultRemoteCallObjectsClassNames.Add(FSoftClassPath("/Script/FactoryGame.FGBoomBoxRemoteCallObject"));
 	this->mServerRestartTimeHours = 24.0;
 	this->mIsMainMenu = false;
 	this->InactivePlayerStateLifeSpan = 0.0;
@@ -30,6 +31,8 @@ AFGGameMode::AFGGameMode() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGGameMode::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGGameMode::BeginPlay(){ }
+void AFGGameMode::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGGameMode::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameMode::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameMode::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

@@ -9,11 +9,8 @@ AFGPipelineAttachmentHologram::AFGPipelineAttachmentHologram() : Super() {
 	this->mRotationAxis = EAxis::Z;
 	this->mIncrementSnappedConnectionOnScroll = true;
 	this->mUseProducerDirectionalArrow = true;
-	this->mProducerArrowRelativeLocation.X = 0.0;
-	this->mProducerArrowRelativeLocation.Y = 0.0;
-	this->mProducerArrowRelativeLocation.Z = 200.0;
-	this->mWallSnapOffset.X = 0.0;
-	this->mWallSnapOffset.Y = 75.0;
+	this->mProducerArrowRelativeLocation = FVector((0, 0, 200));
+	this->mWallSnapOffset = FVector2D((0, 75));
 	this->mHasPipeRotationBuildStep = true;
 	this->mSnappedPipeline = nullptr;
 	this->mSnappedConnectionComponent = nullptr;
@@ -30,7 +27,7 @@ void AFGPipelineAttachmentHologram::SetHologramLocationAndRotation(const FHitRes
 bool AFGPipelineAttachmentHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 float AFGPipelineAttachmentHologram::GetHologramHoverHeight() const{ return float(); }
 void AFGPipelineAttachmentHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
-bool AFGPipelineAttachmentHologram::ShouldBuildableBeConsideredForGuidelines( AFGBuildable* buildable) const{ return bool(); }
+bool AFGPipelineAttachmentHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
 void AFGPipelineAttachmentHologram::ScrollRotate(int32 delta, int32 step){ }
 int32 AFGPipelineAttachmentHologram::GetRotationStep() const{ return int32(); }
 void AFGPipelineAttachmentHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }

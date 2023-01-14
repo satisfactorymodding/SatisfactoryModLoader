@@ -51,6 +51,12 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	bool mBlockInstancing = false;
 
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	bool mBlockColoring = false;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	bool mHasScalabilityMaterial = false;
+	
 	/** Only used for holding info about where the instance is located, for quicker changes.*/
 	UFGColoredInstanceManager::FInstanceHandle mInstanceHandle;
 

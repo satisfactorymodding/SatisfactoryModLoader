@@ -35,12 +35,15 @@ public:
 	virtual void GetSupportedBuildModes_Implementation( TArray<TSubclassOf<UFGHologramBuildModeDescriptor>>& out_buildmodes ) const override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
+	virtual void PreHologramPlacement() override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void OnInvalidHitResult() override;
 	virtual void Scroll( int32 delta ) override;
 	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
 	virtual void SetSnapToGuideLines( bool isEnabled ) override;
 	virtual float GetHologramHoverHeight() const override;
+	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void CheckBlueprintCommingling() override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface
@@ -164,6 +167,14 @@ private:
 	UPROPERTY( Replicated )
 	class AFGPipelineSupportHologram* mChildPoleHologram = nullptr;
 
+	/**Used to redirect input and construct wall poles when needed*/
+	UPROPERTY( Replicated )
+	class AFGWallAttachmentHologram* mChildWallPoleHologram = nullptr;
+
+	/** Connection component used for snapping with our child wall pole. */
+	UPROPERTY()
+	UFGPipeConnectionComponentBase* mChildWallPoleConnection = nullptr;
+
 	/** The two connection components for this pipeline. */
 	UPROPERTY()
 	class UFGPipeConnectionComponentBase* mConnectionComponents[ 2 ];
@@ -176,9 +187,13 @@ private:
 	UPROPERTY()
 	class AFGBuildablePipeline* mUpgradedPipeline;
 	
-	/** Class of conveyor pole to place at the end. */
+	/** Class of pipe pole to place at the end. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	TSubclassOf< class UFGRecipe > mDefaultPipelineSupportRecipe;
+
+	/** Class of pipe wall pole to place at the end. */
+	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
+	TSubclassOf< class UFGRecipe > mDefaultPipelineWallSupportRecipe;
 
 	/** What radius will the bends have. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
@@ -231,6 +246,9 @@ private:
 
 	UPROPERTY()
 	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
+
+	UPROPERTY()
+	FVector mPassthroughOverrideStartLocation;
 
 	/** Cached from the default buildable. */
 	UPROPERTY()

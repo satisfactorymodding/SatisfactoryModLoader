@@ -36,4 +36,10 @@ public:
 	/** Emote wheel widget to select a widget */
 	UPROPERTY( EditAnywhere, config, Category = UI )
 	TSubclassOf< class UFGInteractWidget > mEmoteMenuWidget;
+
+	/** Widget used to customize and spawn a map marker in the world */
+	UPROPERTY( EditAnywhere, config, Category = UI )
+	TSubclassOf< class UFGInteractWidget > mAddMapMarkerWidget;
+
+	
 };

@@ -5,18 +5,20 @@
 AFGDockingStationInfo::AFGDockingStationInfo() : Super() {
 	this->mStatus = EDockingStationStatus::DSS_Operational;
 	this->mStation = nullptr;
+	this->mLocation = FVector::ZeroVector;
 	this->mActorRepresentationTexture = nullptr;
-	this->mMapText = INVTEXT("");
 	this->mDefaultRepresentationColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mBuildingTag = TEXT("DockingStation");
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
 }
 void AFGDockingStationInfo::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGDockingStationInfo, mStatus);
+	DOREPLIFETIME(AFGDockingStationInfo, mLocation);
 	DOREPLIFETIME(AFGDockingStationInfo, mActorRepresentationTexture);
-	DOREPLIFETIME(AFGDockingStationInfo, mMapText);
 	DOREPLIFETIME(AFGDockingStationInfo, mDefaultRepresentationColor);
+	DOREPLIFETIME(AFGDockingStationInfo, mBuildingTag);
 }
 void AFGDockingStationInfo::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGDockingStationInfo::AddAsRepresentation(){ return bool(); }
@@ -37,8 +39,10 @@ EFogOfWarRevealType AFGDockingStationInfo::GetActorFogOfWarRevealType(){ return 
 float AFGDockingStationInfo::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGDockingStationInfo::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGDockingStationInfo::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+void AFGDockingStationInfo::SetBuildingTag_Implementation(const FString& buildingTag){ }
 void AFGDockingStationInfo::BeginPlay(){ }
 void AFGDockingStationInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGDockingStationInfo::Init( AFGBuildableDockingStation* station){ }
 void AFGDockingStationInfo::SetStationStatus(EDockingStationStatus status){ }
 void AFGDockingStationInfo::OnRep_Status(){ }
+void AFGDockingStationInfo::OnRep_BuildingTag(){ }

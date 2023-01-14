@@ -7,8 +7,7 @@ AFGPowerPoleWallHologram::AFGPowerPoleWallHologram() : Super() {
 	this->mCanSnapToFoundationCeiling = false;
 	this->mCanSnapToFoundationSide = false;
 	this->mCanSnapToBeams = false;
-	this->mSnapOffset.X = 0.0;
-	this->mSnapOffset.Y = 0.0;
+	this->mSnapOffset = FVector2D::ZeroVector;
 	this->mFoundationSnappingInset = 0.0;
 }
 void AFGPowerPoleWallHologram::BeginPlay(){ }

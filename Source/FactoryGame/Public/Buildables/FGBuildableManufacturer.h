@@ -4,11 +4,47 @@
 
 #include "FactoryGame.h"
 #include "Buildables/FGBuildableFactory.h"
+#include "FGFactoryClipboard.h"
 #include "Replication/FGReplicationDetailInventoryComponent.h"
 #include "Replication/FGReplicationDetailActor_Manufacturing.h"
 #include "FGBuildableManufacturer.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewRecipeDelegate, TSubclassOf< class UFGRecipe >, newRecipe );
+
+UCLASS()
+class FACTORYGAME_API UFGManufacturerClipboardSettings : public UFGFactoryClipboardSettings
+{
+	GENERATED_BODY()
+public:
+	
+	UPROPERTY( BlueprintReadWrite )
+	TSubclassOf< UFGRecipe > mRecipe;
+
+	/** The pontential we would like to apply */
+	UPROPERTY( BlueprintReadWrite )
+	float mTargetPotential;
+
+	/** The calculated potential we can apply with the shards/crystals we have. Used to simulate UI changes */
+	UPROPERTY( BlueprintReadWrite )
+	float mReachablePotential;
+	
+};
+
+UCLASS()
+class FACTORYGAME_API UFGManufacturerClipboardRCO : public UFGRemoteCallObject
+{
+	GENERATED_BODY()
+public:
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+
+	UFUNCTION( Server, Reliable )
+	void Server_PasteSettings( class AFGBuildableManufacturer* manufacturer, AFGCharacterPlayer* player, TSubclassOf< class UFGRecipe > recipe, float overclock );
+
+private:
+	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
+	bool mForceNetField_UFGManufacturerClipboardRCO = false;
+
+};
 
 /**
  * Base class for all buildings that are producing something out of something, i.e. constructors, smelters, refinery etc.
@@ -43,6 +79,17 @@ public:
 	virtual void OnReplicationDetailActorRemoved() override;
 	// End IFGReplicationDetailActorOwnerInterface
 
+	//~ Begin IFGFactoryClipboardInterface
+	bool CanUseFactoryClipboard_Implementation() override { return true; }
+	UFGFactoryClipboardSettings* CopySettings_Implementation() override;
+	bool PasteSettings_Implementation( UFGFactoryClipboardSettings* settings ) override;
+	//~ End IFGFactoryClipboardInterface
+
+	/** Tries to fill up the potential inventory from the given players inventory so we can use the target potential. Doesn't apply target potential
+	 *	Returns the potential we will be able to set given how many shards/crystals we have in our inventory.
+	 */
+	float TryFillPotentialInventory( AFGCharacterPlayer* player, float targetPotential, bool simulate = false );
+	
 	/**
 	 * Move all items in the input inventory to the given inventory.
 	 * @return true if successful; false if the given inventory is full or does not support the given type of item.
@@ -106,7 +153,20 @@ protected:
 	virtual void Factory_PullPipeInput_Implementation( float dt ) override;
 	virtual void Factory_PushPipeOutput_Implementation( float dt ) override;
 	virtual void Factory_TickProducing( float dt ) override;
+	virtual void OnRep_ReplicationDetailActor() override;
 	// End AFGBuildableFactory interface
+
+	UFUNCTION()
+	void InvalidateCacheCanProduce_InputItemAdded(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded);
+	
+	UFUNCTION()
+	void InvalidateCacheCanProduce_InputItemRemoved(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded);
+	
+	UFUNCTION()
+	void InvalidateCacheCanProduce_OutputItemAdded(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded);
+	
+	UFUNCTION()
+	void InvalidateCacheCanProduce_OutputItemRemoved(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded);
 
 	/** Creates inventories needed for the manufacturer */
 	virtual void CreateInventories();
@@ -114,8 +174,6 @@ protected:
 	/** Called when NewRecipe is replicated */
 	UFUNCTION()
 	virtual void OnRep_CurrentRecipe();
-
-	virtual void OnRep_ReplicationDetailActor() override;
 
 	/** Read the items in the input inventory. */
 	void GetInputInventoryItems( TArray< FInventoryStack >& out_items ) const;
@@ -203,6 +261,14 @@ protected:
 	UPROPERTY( SaveGame, Replicated, ReplicatedUsing = OnRep_CurrentRecipe, Meta = (NoAutoJson = true) )
 	TSubclassOf< class UFGRecipe > mCurrentRecipe;
 
+	/** Cached Recipe CDO to reduce calls.*/
+	UPROPERTY()
+	const UFGRecipe* mCachedRecipe;
+
+	/* Updated once an item is removed from the input inventory.*/
+	bool mCachedCanProduce;
+
+	bool bCachedHasOutputSpace;
 private:
 	class AFGReplicationDetailActor_Manufacturing* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_Manufacturing>( mReplicationDetailActor ); };
 };

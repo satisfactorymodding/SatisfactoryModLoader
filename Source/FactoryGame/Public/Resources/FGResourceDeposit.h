@@ -53,6 +53,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Deposit" )
 	FORCEINLINE int32 GetMineAmount() { return mMineAmount; }
 protected:
+	/** Called on client when resource deposit index is set so that we can correctly setup the mesh / material*/
+	UFUNCTION()
+	void OnRep_ResourceDepositTableIndex();
+	
 	/** Called on client when resource deposit has been emptied */
 	UFUNCTION()
 	void OnRep_ResourceDepositEmptied();
@@ -62,11 +66,11 @@ protected:
 
 private:
 	/** Valid if mLootTableIndex is not INDEX_NONE */
-	UPROPERTY()
+	UPROPERTY( )
 	FResourceDepositPackage mResourceDepositPackage;
 
 	/** Index in the resource deposit table */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_ResourceDepositTableIndex )
 	int32 mResourceDepositTableIndex;
 
 	/** is deposit emptied */
@@ -76,6 +80,10 @@ private:
 	/** How much to mine per cycle */
 	UPROPERTY( SaveGame, Replicated )
 	int32 mMineAmount;
+
+	UPROPERTY( Transient )
+	bool mHasInitializedVisuals;
+	
 public:
 	/** The mesh we use for displaying the resource deposit */
 	UPROPERTY( BlueprintReadWrite, VisibleAnywhere, Category = "Resources" )

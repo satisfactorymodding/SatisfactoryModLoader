@@ -32,16 +32,18 @@ public:
 
 	// Begin AActor Interface
 	virtual void PostActorCreated() override;
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// End AActor interface
 
 	// Begin IFGSaveInterface
-	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
+	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
+	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override;
-	virtual bool NeedTransform_Implementation() override;
-	virtual bool ShouldSave_Implementation() const override;
+	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override {}
+	virtual bool NeedTransform_Implementation() override { return true; }
+	virtual bool ShouldSave_Implementation() const override { return true; }
 	// End IFSaveInterface
 
 	// Begin IFGActorRepresentationInterface
@@ -65,9 +67,12 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	// End IFGActorRepresentationInterface
 
+	//~ Begin IFGUseableInterface
+	virtual bool IsUseable_Implementation() const override;
 	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
 	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
-
+	//~ End IFGUseableInterface
+	
 	/** @return The crates inventory; cannot be null. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	class UFGInventoryComponent* GetInventory() const { return mInventory; }
@@ -77,18 +82,21 @@ public:
 	bool FilterInventoryClasses( TSubclassOf< UObject > object, int32 idx ) const;
 
 	void SetupInventoryFilter();
-
-
-
-	/** Called when we want a crate to be visible on the compasse. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Compass" )
-	void OnRequestReprecentMarker();
-
+	
 	/** Fetches the color to use for this actors representation */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	FLinearColor GetDefaultRepresentationColor();
 
 	void SetIconType( EFGCrateIconType type );
+
+private:
+	UFUNCTION()
+	void OnInventoryItemRemoved( TSubclassOf< class UFGItemDescriptor > itemClass, int32 numRemoved );
+	
+protected:
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Compass" )
+	EFGCrateIconType mIconType;
+	
 private:
 	/** The inventory of this crate */
 	UPROPERTY( SaveGame, Replicated )
@@ -97,12 +105,7 @@ private:
 	/** Players interacting with this crate, used to toggle dormancy */
 	UPROPERTY()
 	TArray< class AFGCharacterPlayer* > mInteractingPlayers;
-
-protected:
-	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Compass" )
-	EFGCrateIconType mIconType;
-
-private:
+	
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTexture;
 
@@ -110,3 +113,4 @@ private:
 	FText mMapText;
 
 };
+

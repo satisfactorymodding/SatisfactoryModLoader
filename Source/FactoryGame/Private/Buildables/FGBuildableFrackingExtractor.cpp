@@ -3,6 +3,9 @@
 #include "Buildables/FGBuildableFrackingExtractor.h"
 #include "Resources/FGResourceNodeFrackingCore.h"
 
+AFGBuildableFrackingExtractor::AFGBuildableFrackingExtractor() : Super() {
+	this->mTryFindMissingResource = true;
+}
 void AFGBuildableFrackingExtractor::BeginPlay(){ }
 bool AFGBuildableFrackingExtractor::Factory_HasPower() const{ return bool(); }
 bool AFGBuildableFrackingExtractor::CanProduce_Implementation() const{ return bool(); }

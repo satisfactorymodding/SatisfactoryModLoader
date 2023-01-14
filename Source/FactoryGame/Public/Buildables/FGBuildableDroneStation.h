@@ -184,8 +184,14 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	FLinearColor GetDefaultRepresentationColor();
 
-protected:	
+	virtual void PreSerializedToBlueprint() override;
+	virtual void PostSerializedToBlueprint() override;
+	virtual void PostSerializedFromBlueprint() override;
+
+protected:
+	// Begin FGBuildableFactory interface
 	virtual void OnRep_ReplicationDetailActor() override;
+	// End FGBuildableFactory interface
 
 	class AFGReplicationDetailActor_DroneStation* GetCastRepDetailsActor() const;
 
@@ -342,6 +348,10 @@ private:
 	
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_DroneStationInfo )
 	AFGDroneStationInfo* mInfo;
+
+	/** Used to hold a reference to the mInfo during blueprint serialization. Holds a reference to mInfo which is nulled during blueprint serialization */
+	UPROPERTY()
+	AFGDroneStationInfo* mTempInfo;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTexture;

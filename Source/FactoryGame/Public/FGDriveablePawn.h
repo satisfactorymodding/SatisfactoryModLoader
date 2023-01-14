@@ -34,7 +34,10 @@ public:
 	// Begin APawn interface
 	virtual void PossessedBy( AController* newController ) override;
 	virtual void UnPossessed() override;
+	virtual void OnRep_PlayerState() override;
 	// End APawn interface
+
+	virtual void UpdatePlayerStatus();
 
 	/** Gets the driving pawn. */
 	UFUNCTION( BlueprintPure, Category = "Driveable" )
@@ -122,6 +125,9 @@ private:
 	/** Rep notifies */
 	UFUNCTION()
 	void OnRep_IsDriving();
+	
+	UFUNCTION()
+	void OnRep_Driver();
 
 public:
 	/** True if the driver should be attached, false if this is a "remote controlled" pawn. */
@@ -150,7 +156,7 @@ private:
 
 	//@todo Verify if vehicle should be occupied when client leaves or not.
 	/** The driver, not saved, pawns remember their last driven vehicle and enters it in begin play. */
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_Driver )
 	class AFGCharacterPlayer* mDriver;
 
 	/** Is this vehicle being driven. */

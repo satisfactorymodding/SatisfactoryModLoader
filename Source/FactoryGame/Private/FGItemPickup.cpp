@@ -14,7 +14,7 @@ AFGItemPickup::AFGItemPickup() : Super() {
 	this->mGrowTimeInDays = 3;
 	this->mSavedNumItems = -1;
 	this->mMaxRespawns = -1;
-	this->mNumRespawns = 0;
+	this->mSendTelemetryOnPickup = false;
 }
 void AFGItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -51,6 +51,8 @@ void AFGItemPickup::PlantPickup(){ }
 void AFGItemPickup::Grow(){ }
 void AFGItemPickup::SetNumItems(int32 numItems){ }
 void AFGItemPickup::OnCollectTimerComplete(){ }
+bool AFGItemPickup::IsEquipment() const{ return bool(); }
+void AFGItemPickup::AddToPlayerEquipmentSlots(AFGCharacterPlayer* byCharacter){ }
 void AFGItemPickup::AddToPlayerInventory( AFGCharacterPlayer* character){ }
 void AFGItemPickup::OnRep_PickedUp(){ }
 void AFGItemPickup::OnRep_StateUpdated(){ }

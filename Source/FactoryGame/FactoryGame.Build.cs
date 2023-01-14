@@ -32,12 +32,19 @@ public class FactoryGame : ModuleRules
 			"InstancedSplines",
 			"RenderCore",
 			"CinematicCamera",
+			"Foliage",
+            "Niagara",
+		});
+		
+		PublicDependencyModuleNames.AddRange(new[] {
+			"AbstractInstance",
 		});
 		
 		PublicDependencyModuleNames.AddRange(new[] {
 			"DummyHeaders",
 		});
-        
-		PublicDefinitions.Add( "IS_PUBLIC_BUILD=1" ); 
+
+		PublicDefinitions.Add("IS_PUBLIC_BUILD=1");
+		PublicDefinitions.Add("WITH_TELEMETRY=0");
 	}
 }

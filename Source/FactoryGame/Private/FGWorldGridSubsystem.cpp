@@ -22,6 +22,7 @@ AFGWorldGridSubsystem::AFGWorldGridSubsystem() : Super() {
 AFGWorldGridSubsystem* AFGWorldGridSubsystem::Get(UWorld* world){ return nullptr; }
 AFGWorldGridSubsystem* AFGWorldGridSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGWorldGridSubsystem::UpdateCellContainingBuildable( AFGBuildable* pBuildable){ }
+void AFGWorldGridSubsystem::UpdateCellContainingLocation(const FVector& location){ }
 FFGWorldGridCell* AFGWorldGridSubsystem::GetCellContainingWorldLocation(const FVector& WorldLocation){ return nullptr; }
 FFGWorldGridCell* AFGWorldGridSubsystem::GetClosestCellToWorldLocation(const FVector& WorldLocation){ return nullptr; }
 float AFGWorldGridSubsystem::GetCellElevationFromWorldLocation(const FVector& WorldLocation) const{ return float(); }

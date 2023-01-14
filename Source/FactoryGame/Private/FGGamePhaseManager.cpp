@@ -12,6 +12,8 @@ void AFGGamePhaseManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AFGGamePhaseManager, mGamePhase);
 	DOREPLIFETIME(AFGGamePhaseManager, mGamePhaseCosts);
 }
+void AFGGamePhaseManager::BeginPlay(){ }
+void AFGGamePhaseManager::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGGamePhaseManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGamePhaseManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGamePhaseManager::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -32,3 +34,4 @@ void AFGGamePhaseManager::OnRep_GamePhaseCosts(){ }
 void AFGGamePhaseManager::Debug_DumpStateToLog(){ }
 void AFGGamePhaseManager::ResetGamePhase(){ }
 int32 AFGGamePhaseManager::GetLastTechTierForGamePhase(EGamePhase phase) const{ return int32(); }
+void AFGGamePhaseManager::SubmitGamePhaseTelemetry(EGamePhase phase){ }

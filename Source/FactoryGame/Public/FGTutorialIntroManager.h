@@ -379,4 +379,5 @@ private:
 	/** Bool for when codex has been opened */
 	UPROPERTY( SaveGame )
 	bool mDidOpenCodex;
+	
 };

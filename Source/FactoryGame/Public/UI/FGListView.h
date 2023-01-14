@@ -4,83 +4,46 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
-#include "Widgets/SWidget.h"
-#include "Widgets/SBoxPanel.h"
-#include "Components/PanelWidget.h"
-#include "Framework/Views/ITypedTableView.h"
+#include "Components/ListView.h"
+#include "Widgets/Views/SListView.h"
 #include "FGListView.generated.h"
 
-class UFGListViewSlot;
 
 /**
- * A vertical box widget is a view panel allowing child widgets to be automatically laid out vertically from an array.
- * Supports selection and dynamic data binding to an array through delegates.
- *
- * * Many Children
- * * Flows Vertical
- * * Selection Functionality
+ * Created so we can exposes hidden properties that isn't exposed for Epics UListView.
+ * For example the scrollbar style 
  */
 UCLASS()
-class UFGListView : public UPanelWidget
+class FACTORYGAME_API UFGListView : public UListView
 {
-	GENERATED_UCLASS_BODY()
-
-	/** Delegate for constructing a UWidget for an item to display. */
-	DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam( UWidget*, FOnGenerateRow, int32, item );
-
-	/** Delegate for getting the number of items to display. */
-	DECLARE_DYNAMIC_DELEGATE_RetVal( int32, FGetNumRows );
+	GENERATED_BODY()
 
 public:
-	/** Tells the list view to refresh the items in the list. */
-	UFUNCTION( BlueprintCallable, Category = "ListView" )
-	void Refresh();
+	UFGListView(const FObjectInitializer& ObjectInitializer);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Style", meta=( DisplayName="Bar Style" ))
+	FScrollBarStyle mWidgetBarStyle;
 
-#if WITH_EDITOR
-	// UWidget interface
-	virtual const FText GetPaletteCategory() override;
-	// End UWidget interface
-#endif
-
-protected:
-	// UPanelWidget
-	virtual UClass* GetSlotClass() const override;
-	virtual void OnSlotAdded( UPanelSlot* slot ) override;
-	virtual void OnSlotRemoved( UPanelSlot* slot ) override;
-	// End UPanelWidget
-
-	// UVisual
-	virtual void ReleaseSlateResources( bool releaseChildren ) override;
-	// End UVisual
-
-public:
-	/** Delegate for constructing a UWidget for an item to display. */
-	UPROPERTY( EditAnywhere, Category = "Events", DisplayName = "OnGenerateRowEvent", meta = ( IsBindableEvent = "True" ) )
-	FOnGenerateRow mOnGenerateRowEvent;
-
-	/** Delegate for getting the number of items to display. */
-	UPROPERTY( EditAnywhere, Category = "Events", DisplayName = "GetNumRowsEvent", meta = ( IsBindableEvent = "True" ) )
-	FGetNumRows mGetNumRowsEvent;
-
-protected:
-	/** Internal slate vertical box. */
-	TSharedPtr< class SVerticalBox > mMyVerticalBox;
-
-	// Begin @todo Implement selection logic
-	/** Which index in the array maps to which widget. */
-	TArray< UFGListViewSlot* > mItemToWidgetMap;
-	/** Which widget maps to which index in the array. */
-	TMap< UFGListViewSlot*, int32 > mWidgetToItemMap;
-	/** The selection method for the list */
-	UPROPERTY( /*Edit*/ VisibleAnywhere, Category = "ListView" )
-	TEnumAsByte< ESelectionMode::Type > mSelectionMode;
-	/** A set of selected items */
-	TSet< int32 > mSelectedItems;
-	// End @todo
-
-protected:
-	// UWidget interface
-	virtual TSharedRef< SWidget > RebuildWidget() override;
-	// End of UWidget interface
+	virtual TSharedRef<STableViewBase> RebuildListWidget() override;
 };
+
+template < typename ItemType >
+class FACTORYGAME_API SFGListView : public SListView< ItemType >
+{
+public:
+	void SetBarStyle( const FScrollBarStyle& inBarStyle );
+
+private:
+	FScrollBarStyle mWidgetBarStyle;
+};
+
+template<typename ItemType>
+void SFGListView<ItemType>::SetBarStyle( const FScrollBarStyle& inBarStyle )
+{
+	mWidgetBarStyle = inBarStyle;
+	if( this->ScrollBar )
+	{
+		this->ScrollBar->SetStyle( &mWidgetBarStyle );
+	}
+}
+

@@ -28,26 +28,35 @@ public:
 
 	void RestoreEssentialClaims();
 
-	void ForceClaimTemporaryEssentialTargets();
-
 	void DestroyPath_Server();
 
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 	void DrawDebug( int debugLevel ) const;
 #endif
 
-	void TransitionToSplinePath_Server( class AFGTargetPoint* target, const TArray< FVector >& intermediateStops, bool startReversing = false );
+	void AddDynamicStops_Server( const TArray< FVector >& stops );
 
-	UFUNCTION( Unreliable, NetMulticast )
-	void TransitionToSplinePath_Multi( class AFGTargetPoint* target, const TArray< FVector >& intermediateStops, bool startReversing, bool skipTemporaryPath );
+	/**
+	 * Starts movement on the spline path. Called on server and then multicast.
+	 */
+	void StartSplinePathMovement_Server( class AFGTargetPoint* target );
+
+	/**
+	 * Starts movement on the spline path.
+	 */
+	UFUNCTION( Reliable, NetMulticast )
+	void StartSplinePathMovement_Multi( class AFGTargetPoint* target );
+
+	/**
+	 * Called when a vehicle goes from physical to simulated, to create smooth transition. Called on server and then multicast.
+	 */
+	void TransitionToSimulation();
 
 	DECLARE_DELEGATE_OneParam( FTargetReached, class AFGTargetPoint* );
 	FTargetReached mTargetReachedDelegate;
 
 	void SetPaused( bool isPaused );
 	bool IsPaused() const { return mIsPaused; }
-
-	bool IsOnCanonPath() const { return mTemporaryPath == nullptr; }
 
 	bool HasValidPosition() const { return mHasValidPosition; }
 
@@ -68,14 +77,11 @@ public:
 	int GetDeadlockId() { return mDeadlockId; }
 	bool IsDeadlocked() const { return mDeadlockId != -1; }
 
-	bool IsOnTemporaryPath() const { return mIsOnTemporaryPath; }
-
 	float GetTimeSpentOnPath() const { return mTimeSpentOnPath; }
 	float GetTimeSpentOnRegularPath() const;
 
 	void ResetTarget( bool resetStatus );
 
-	const TSet< TWeakObjectPtr< class AFGTargetPoint > >& GetTemporaryClaimTargets() const { return mTemporaryClaimTargets; }
 	const TSet< TWeakObjectPtr< class AFGWheeledVehicleInfo > >& GetBlockingVehicles() const { return mBlockingVehicles; }
 	TSet< TWeakObjectPtr< class AFGWheeledVehicleInfo > >& GetDeadlockedVehicles() { return mDeadlockingVehicles; }
 	void ResetDeadlockedVehicles() { mDeadlockingVehicles.Reset(); }
@@ -125,7 +131,9 @@ private:
 
 	bool TickSplinePathMovement( double deltaTime );
 
-#ifdef DEBUG_SELF_DRIVING
+	FVector GetSimulationLocation();
+
+#if DEBUG_SELF_DRIVING
 	void DrawDebugVehicle( int visualDebugLevel, int textualDebugLevel );
 #endif
 
@@ -134,8 +142,6 @@ private:
 	void TryClaimTarget();
 
 	void SetTarget( class AFGTargetPoint* newTarget, bool resetStatus );
-
-	void ReleaseTemporaryTargets();
 
 	float GetStartTime( float adjustment );
 
@@ -165,72 +171,144 @@ private:
 	UPROPERTY( Transient )
 	class AFGTargetPoint* mPreviousTarget;
 
+	/**
+	 * Server only. Stops to make a physical vehicle take a route around an obstacle.
+	 */
+	TArray< FVector > mDynamicStops;
+
+	/**
+	* How much the simulated vehicle deviates from the spline path, replicated.
+	* Used for "lifting" vehicles out of other objects before they are physical.
+	*/
 	UPROPERTY( Replicated )
 	FVector mSimulatedLocationOffset = FVector::ZeroVector;
 
+	/**
+	* How much the simulated vehicle deviates from the spline path, non-replicated (independently calculated on server and client).
+	* Used to create smooth transitions from physical to simulated vehicles.
+	*/
+	FVector mLocalLocationOffset = FVector::ZeroVector;
+	FRotator mLocalRotationOffset = FRotator::ZeroRotator;
+	
 	FVector mVelocityVector = FVector::ZeroVector;
 
+	/**
+	 * Has reached the end of the road? Only for non-circular paths.
+	 */
 	UPROPERTY( Replicated )
 	bool mEndOfPath = false;
 
+	/**
+	 * Actual time spent on the current target in physical mode
+	 */
 	float mRealTimeSpentOnTarget = 0.0f;
+
+	/**
+	 * For debug purposes, to know how well the physical vehicle is doing compared to simulated mode
+	 */
 	float mTargetTimeFulfilment = 0.0f;
 	
+	/**
+	 * Used for dynamically searching for vehicle 
+	 */
 	FVector mDeadlockSegmentCenter;
 
-	UPROPERTY( Transient )
-	class USplineComponent* mTemporaryPath;
-
+	/**
+	 * The simulated time it takes for this vehicle to get from the previous to the current target.
+	 */
 	float mTargetTime = 0.0f;
-	float mTimeSpentOnTarget = 0.0f;
-	float mTimeSpentOnPath = 0.0f;
-	float mLastTimeSpentOnRegularPath = 0.0f;
-	float mPathProgress = 0.0f;
-	float mTargetProgress = 0.0f;
-	float mTempDistance = 0.0f;
-	float mTempStraightDistance = 0.0f;
-	float mTempSpeed = 0.0f;
 
+	/**
+	 * The simulated time the vehicle has spent trying to reach the current target
+	 */
+	float mTimeSpentOnTarget = 0.0f;
+
+	/**
+	 * The simulated time the vehicle has spent on the path since the path origin (reset every lap)
+	 */
+	float mTimeSpentOnPath = 0.0f;
+
+	/**
+	 * The normalized progress on the path, where each target is worth 1.0
+	 */
+	float mPathProgress = 0.0f;
+
+	/**
+	 * Normalized progress from the previous target to the current one, between 0.0 and 1.0
+	 */
+	float mTargetProgress = 0.0f;
+
+	/**
+	 * Canonical start time for server and ideally client too (see mClientStartTime).
+	 */
 	UPROPERTY( ReplicatedUsing = OnRep_ServerStartTime )
 	float mServerStartTime = 0.0f;
 
+	/**
+	 * For client to know at what time the server stopped moving, in case mIsMoving is false.
+	 * In that case this is used to continuously recalculate mServerStartTime on client.
+	 */
 	UPROPERTY( Replicated )
 	float mServerPauseTime = 0.0f;
 
+	/**
+	 * Continuously adjusted to match mServerStartTime, in case they are not matching.
+	 */
 	float mClientStartTime = 0.0f;
 
+	/**
+	 * Should we trust the simulated location and rotation?
+	 */
 	bool mHasValidPosition = false;
 
+	/**
+	 * Whether path progress is paused because the physical vehicle has not caught up yet (so should never be true for simulated vehicles).
+	 */
 	bool mIsPaused = false;
-	float mPauseTime = 0.0f;
 
-	int mIntermediateStopsLeft = 0;
-	float mTemporaryProgressStart = 0.0f;
+	/**
+	 * The path-progression time at which this vehicle was paused.
+	 */
+	float mPauseTime = 0.0f;
 
 	int counter = 0;
 
+	/**
+	 * Whether path progress is paused because the vehicle is placed at a docking station waiting for docking to complete.
+	 */
 	bool mIsDocked = false;
 
+	/**
+	 * Whether path progress is paused because the vehicle is blocked by other vehicles.
+	 */
 	bool mIsBlocked = false;
 
+	/**
+	 * Is the vehicle moving? Written on the server as a summary of several properties. Read on client to determine if the vehicle should be standing still.
+	 */
 	UPROPERTY( ReplicatedUsing = OnRep_IsMoving )
 	bool mIsMoving = false;
 
+	/**
+	 * How long has this vehicle been blocked?
+	 */
 	float mTimeBlocked = 0.0f;
 
-	bool mIsOnTemporaryPath = false;
-
-	TSet< TWeakObjectPtr< class AFGTargetPoint > > mTemporaryClaimTargets;
-	TSet< TWeakObjectPtr< class AFGTargetPoint > > mTemporaryEssentialClaimTargets;
-	int mTemporaryClaimTargetsForceClaimLevel = 0;
-	bool mTemporaryClaimTargetsWereReset = false;
-	TArray< FVector > mTemporarySearchPoints;
-	FVector mTemporarySegmentCenter;
+	/**
+	 * List of the vehicles this vehicle is being blocked by.
+	 */
 	TSet< TWeakObjectPtr< class AFGWheeledVehicleInfo > > mBlockingVehicles;
+
+	/**
+	 * List of the vehicles that are in a deadlock with this vehicle.
+	 */
 	TSet< TWeakObjectPtr< class AFGWheeledVehicleInfo > > mDeadlockingVehicles;
 
 	int mDeadlockId = -1;
 
+	/**
+	 * The simulated location and rotation of this vehicle.
+	 */
 	FVector mSimulatedLocation;
 	FRotator mSimulatedRotation;
 };

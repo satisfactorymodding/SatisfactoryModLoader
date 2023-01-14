@@ -4,11 +4,9 @@
 
 #include "FactoryGame.h"
 #include "FGVehicle.h"
-#include "ItemAmount.h"
 #include "PhysXPublic.h"
 #include "WheeledVehicles/FGSplinePathMovementComponent.h"
 #include "FGVehicleSubsystem.h"
-#include "FGActorRepresentationInterface.h"
 #include "FGWheeledVehicle.generated.h"
 
 // TODO: migrate from PhysX to Chaos; in the meantime, stfu
@@ -365,6 +363,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Docking" )
 	void DockToRefuelingStation();
 
+	void FindSurroundingLevels();
+
+	virtual void UpdatePlayerStatus() override;
+
 protected:
 	// Begin AFGVehicle interface
 	virtual void Died( AActor* thisActor ) override;
@@ -580,7 +582,7 @@ public:
 
 	void TryLeaveSimulatedMode();
 	bool IsAboveSolidGround( const FTransform& transform ) const;
-	bool IsOverlappingOther( const FTransform& transform ) const;
+	AActor* IsOverlappingOther( const FTransform& transform ) const;
 
 	bool WasFuelAdded() const { return mWasFuelAdded; }
 
@@ -1010,8 +1012,11 @@ private:
 	UPROPERTY( SaveGame )
 	float mTargetWaitTime = 0.0f;
 
-	bool mIsAboveSolidGround = false;
-	bool mIsOverlappingOther = false;
+	TWeakObjectPtr< AActor > mOverlappingActor;
 
 	float mNextTimeToCheckForLost = 0.0f;
+
+	bool mAreSurroundingLevelsLoaded = false;
+	TArray< AFGVehicleSubsystem::TileLevelData* > mSurroundingTiles;
+	TArray< AFGVehicleSubsystem::CaveLevelData* > mSurroundingCaves;
 };

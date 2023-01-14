@@ -23,7 +23,7 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
 	/** Override to modify rotation behaviour */
-	virtual void OnImpact( const FHitResult& hitResult ) override;
+	virtual void OnImpact_Native( const FHitResult& hitResult ) override;
 
 	// Start AActor interface
 	virtual float TakeDamage( float DamageAmount, const struct FDamageEvent& DamageEvent,
@@ -44,6 +44,9 @@ public:
 	/** Called when the server has blown this explosive */
 	UFUNCTION()
 	void OnRep_DetonateIn();
+
+protected:
+	virtual void OnExplode_Implementation() override;
 
 protected:
 	/** Tells client to mark this to explode after a certain time */

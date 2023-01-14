@@ -10,10 +10,7 @@ AFGWireHologram::AFGWireHologram() : Super() {
 	this->mDefaultPowerPoleRecipe = nullptr;
 	this->mCircuitType = nullptr;
 	this->mDefaultPowerPoleWallRecipe = nullptr;
-	this->mStartLocation.X = 0.0;
-	this->mStartLocation.Y = 0.0;
-	this->mStartLocation.Z = 0.0;
-	this->mCurrentConnection = 0;
+	this->mStartLocation = FVector::ZeroVector;
 	this->mWireMesh = nullptr;
 	this->mUpgradeTarget = nullptr;
 	this->mNeedsValidFloor = false;
@@ -44,7 +41,10 @@ void AFGWireHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation
 void AFGWireHologram::ScrollRotate(int32 delta, int32 step){ }
 AActor* AFGWireHologram::GetUpgradedActor() const{ return nullptr; }
 bool AFGWireHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
+void AFGWireHologram::CheckBlueprintCommingling(){ }
 void AFGWireHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
+bool AFGWireHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
+void AFGWireHologram::SetConnection(int32 ix, UFGCircuitConnectionComponent* connection){ }
 void AFGWireHologram::Destroyed(){ }
 void AFGWireHologram::CheckValidPlacement(){ }
 void AFGWireHologram::CheckClearance(const FVector& locationOffset){ }

@@ -7,5 +7,4 @@ UFGConveyorInstanceMeshBucket::UFGConveyorInstanceMeshBucket() : Super() {
 	this->bCanEverAffectNavigation = false;
 }
 void UFGConveyorInstanceMeshBucket::Init(){ }
-void UFGConveyorInstanceMeshBucket::DirectUpdateInstance(){ }
 FBoxSphereBounds UFGConveyorInstanceMeshBucket::CalcBounds(const FTransform& LocalToWorld) const{ return FBoxSphereBounds(); }

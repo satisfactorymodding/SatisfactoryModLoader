@@ -64,6 +64,7 @@ public:
 	virtual void GetNavigationData( FNavigationRelevantData& Data ) const override;
 	virtual FBox GetNavigationBounds() const override;
 	virtual void RebuildNavigationData() override;
+	virtual bool IsNavigationRelevant() const override;
 	//~ End NavInterface
 
 	/** Getter for significance */
@@ -112,6 +113,10 @@ protected:
 	/** Specify what typ of nav area blocker this is ( defaults to null )  */
 	UPROPERTY( EditDefaultsOnly, Category = "Navigation" )
 	TSubclassOf< UNavArea > mAreaClass;
+
+	/** Whether or not this water volume should affect navigation. This should preferably be disabled if the water isnt deep enough to swim in or if it's a river, since the navigation uses the bounding box of the actor. */
+	UPROPERTY( EditInstanceOnly, Category="Navigation" )
+	bool mAffectNavigation;
 	
 	/** Audio settings for the this water volume */
 	UPROPERTY( EditInstanceOnly, Category="Audio")

@@ -7,7 +7,6 @@
 #include "FGSignificanceInterface.h"
 #include "FGActorRepresentationInterface.h"
 #include "FGSaveInterface.h"
-#include "AI/FGAggroTargetInterface.h"
 #include "FGDriveablePawn.h"
 #include "FGDismantleInterface.h"
 #include "FGBlueprintFunctionLibrary.h"
@@ -16,6 +15,7 @@
 #include "FGBuildableSubsystem.h"
 #include "FGVehicle.generated.h"
 
+class UFGDamageType;
 class FDebugDisplayInfo;
 
 /** Physics data we want to be able to restore, we store the bone name to be able to change the bone structure in updates */
@@ -109,7 +109,7 @@ struct FACTORYGAME_API FVehicleSeat
  * Base class for all vehicles in the game, cars, train etc.
  */
 UCLASS()
-class FACTORYGAME_API AFGVehicle : public AFGDriveablePawn, public IFGUseableInterface, public IFGDismantleInterface, public IFGAggroTargetInterface, public IFGDockableInterface, public IFGColorInterface, public IFGSignificanceInterface
+class FACTORYGAME_API AFGVehicle : public AFGDriveablePawn, public IFGUseableInterface, public IFGDismantleInterface, public IFGDockableInterface, public IFGColorInterface, public IFGSignificanceInterface
 {
 	GENERATED_BODY()
 public:
@@ -200,17 +200,6 @@ public:
 	virtual void StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter ) override;
 	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
 	//~ End IFGDismantleInferface
-
-	// Begin IFGAggroTargetInterface
-	virtual void RegisterIncomingAttacker_Implementation( class AFGEnemyController* forController ) override;
-	virtual void UnregisterAttacker_Implementation( class AFGEnemyController* forController ) override;
-	virtual AActor* GetActor_Implementation() override;
-	virtual float GetEnemyTargetDesirability_Implementation( class AFGEnemyController* forController ) override;
-	virtual bool ShouldAutoregisterAsTargetable_Implementation() const override;
-	virtual class UPrimitiveComponent* GetTargetComponent_Implementation() override;
-	virtual bool IsAlive_Implementation() const override;
-	virtual FVector GetAttackLocation_Implementation() const override;
-	// End IFGAggroTargetInterface
 
 	/** Getter for simulation distance */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Vehicle" )
@@ -424,6 +413,10 @@ protected:
 	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Health" )
 	class UFGHealthComponent* mHealthComponent;
 
+	/** Keeps track of active DOT effects applied to us. */
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
+	class UFGDotReceiverComponent* mDOTReceiverComponent;
+
 	/** If any of these locations enters water, then we are unusable */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	TArray< FVector > mDisabledByWaterLocations;
@@ -497,9 +490,9 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	float mSubmergedBouyantForce;
 
-	/** Gas damage typ that should be redirected to the driver*/
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	TSubclassOf< class UFGDamageType > mGasDamageType; 
+	/** Damage types that should be redirected to the driver. Damages here act as damage multipliers (i.e setting it to gas damage with 0.5 damage will x0.5 the incoming damages */
+	UPROPERTY( EditDefaultsOnly, Category= "Vehicle" )
+	TArray< TSubclassOf< UFGDamageType > > mDamageTypesRedirectedToDriver;
 	
 	/** How much to to multiply the jump pad force with. */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )

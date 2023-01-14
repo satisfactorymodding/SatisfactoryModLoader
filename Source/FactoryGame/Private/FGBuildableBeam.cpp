@@ -2,7 +2,7 @@
 
 #include "FGBuildableBeam.h"
 
-AFGBuildableBeam::AFGBuildableBeam() : Super() {
+AFGBuildableBeam::AFGBuildableBeam(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mSize = 0.0;
 	this->mDefaultLength = 0.0;
 	this->mMaxLength = 0.0;
@@ -17,4 +17,8 @@ void AFGBuildableBeam::GetAttachmentPoints(TArray< const FFGAttachmentPoint* >& 
 void AFGBuildableBeam::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 int32 AFGBuildableBeam::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableBeam::SetLength(float NewLength){ }
+void AFGBuildableBeam::OnBuildEffectActorFinished(){ }
 void AFGBuildableBeam::OnRep_Length(){ }
+AFGBuildableBeamLightweight::AFGBuildableBeamLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mMeshComponentProxy = nullptr;
+}

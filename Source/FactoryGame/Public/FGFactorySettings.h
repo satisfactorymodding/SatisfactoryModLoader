@@ -143,6 +143,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Clearance" )
 	class UMaterialInstance* mClearanceMaterial;
 
+	/** Material for blueprint proxies. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Clearance" )
+	class UMaterialInstance* mBlueprintProxyMaterial;
+
 	/** Default sound loop placed on holograms. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Sound" )
 	class UAkAudioEvent* mHologramLoopSound;
@@ -202,6 +206,13 @@ public:
 	/** The default resource miner class to spawn */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	TSubclassOf< class AFGResourceMiner > mResourceMinerClass;
+	
+	/** The class to be used as a boom box player */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
+	TSubclassOf< class AFGBoomBoxPlayer > mBoomBoxPlayerClass;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
+	TSubclassOf< class UFGItemDescriptor > mBoomBoxEquipmentDesc;
 
 	/** The mesh to be used as legs on factories */
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
@@ -226,6 +237,10 @@ public:
 	/** The class we want to spawn for emote shortcuts */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	TSubclassOf< class UFGEmoteShortcut > mEmoteShortcutClass;
+
+	/** The class we want to spawn for blueprint shortcuts */
+	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
+	TSubclassOf< class UFGBlueprintShortcut > mBlueprintShortcutClass;
 
 	/** Names if the input actions that defines the shortcuts. This maps directly to their index (so first entry here should mean that it should call ExecuteShortcut 0) */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )

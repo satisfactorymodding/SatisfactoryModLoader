@@ -25,6 +25,9 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Map" )
 	static FVector2D GetNormalizedPosition( const AFGMinimapCaptureActor* minimapCaptureActor, FVector worldLocation );
+	
+	UFUNCTION( BlueprintPure, Category = "Map" )
+	static FVector GetWorldPosition( const AFGMinimapCaptureActor* minimapCaptureActor, FVector2D normalizedLocation );
 
 	UFUNCTION( BlueprintPure, Category = "Map" )
 	static float GetMapDistance ( const AFGMinimapCaptureActor* minimapCaptureActor, float worldDistance, float mapResolution );

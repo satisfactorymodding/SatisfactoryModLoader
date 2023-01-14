@@ -17,6 +17,9 @@ bool UFGHealthComponent::ShouldSave_Implementation() const{ return bool(); }
 void UFGHealthComponent::TakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }
 void UFGHealthComponent::TakePointDamage(AActor* damagedActor, float damage,  AController* instigatedBy, FVector hitLocation,  UPrimitiveComponent* hitComponent, FName boneName, FVector shotFromDirection, const  UDamageType* damageType, AActor* damageCauser){ }
 void UFGHealthComponent::TakeRadialDamage(AActor* damagedActor, float damage, const  UDamageType* damageType, FVector hitLocation, FHitResult hitInfo,  AController* instigatedBy, AActor* damageCauser){ }
+void UFGHealthComponent::AddDamageModifier(const FDamageModifier damageMod){ }
+void UFGHealthComponent::RemoveDamageModifiersOfType(TSubclassOf<UFGDamageType> dmgType, bool includeSubClasses){ }
+void UFGHealthComponent::RemoveDamageModifiersAppliedFromObject(UObject* applyingObject){ }
 void UFGHealthComponent::SetMaxHealth(float NewMaxHealth){ }
 float UFGHealthComponent::GetCurrentHealth() const{ return float(); }
 float UFGHealthComponent::GetMaxHealth() const{ return float(); }
@@ -25,7 +28,7 @@ void UFGHealthComponent::Client_TakePointDamage_Implementation(AActor* damagedAc
 void UFGHealthComponent::Client_TakeRadialDamage_Implementation(AActor* damagedActor, float damage, const  UDamageType* damageType, FVector hitLocation, FHitResult hitInfo,  AController* instigatedBy, AActor* damageCauser){ }
 void UFGHealthComponent::Client_Died_Implementation(AActor* deadActor){ }
 void UFGHealthComponent::Client_Heal_Implementation(float amount){ }
-void UFGHealthComponent::Heal(float healAmount){ }
+void UFGHealthComponent::Heal(float healAmount, bool notifyClient){ }
 void UFGHealthComponent::ResetHealth(){ }
 void UFGHealthComponent::ResetHealthFromDeath(){ }
 void UFGHealthComponent::ReviveResetHealth(){ }

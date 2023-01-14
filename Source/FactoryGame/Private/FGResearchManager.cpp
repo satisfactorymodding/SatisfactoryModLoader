@@ -38,6 +38,7 @@ TSubclassOf<class UFGResearchTree> AFGResearchManager::GetInitiatingResearchTree
 void AFGResearchManager::GetPendingRewards(TSubclassOf<class UFGSchematic> schematic, TArray< TSubclassOf< UFGSchematic > >& out_rewards) const{ }
 void AFGResearchManager::UpdateUnlockedResearchTrees(){ }
 void AFGResearchManager::UnlockResearchTree(TSubclassOf<class UFGResearchTree> researchTree){ }
+bool AFGResearchManager::IsTreeFullyResearched(UObject* worldContextObject, TSubclassOf<class UFGResearchTree> reserachTree, TSubclassOf<  UFGSchematic > schematicToIgnore){ return bool(); }
 void AFGResearchManager::OnRep_OngoingResearch(){ }
 void AFGResearchManager::Multicast_ResearchCompleted_Implementation(TSubclassOf<  UFGSchematic > research){ }
 void AFGResearchManager::PopulateResearchTreeList(){ }
@@ -50,3 +51,4 @@ void AFGResearchManager::OnResearchTimerComplete(TSubclassOf<class UFGSchematic>
 bool AFGResearchManager::PayForResearch(UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
 void AFGResearchManager::ClaimPendingRewards(AFGCharacterPlayer* instigatorPlayer, TSubclassOf<UFGSchematic> schematic, int32 selectedRewardIndex){ }
 bool AFGResearchManager::AreResearchTreeUnlockDependeciesMet(TSubclassOf <UFGResearchTree> inClass){ return bool(); }
+void AFGResearchManager::SubmitResearchCompletedTelemetry(const TArray< TSubclassOf<  UFGSchematic > >& allSchematics, TSubclassOf< UFGSchematic > chosenSchematic) const{ }

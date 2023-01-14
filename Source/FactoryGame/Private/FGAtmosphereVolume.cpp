@@ -12,6 +12,8 @@ void AFGAtmosphereVolume::PostEditChangeProperty(FPropertyChangedEvent& property
 void AFGAtmosphereVolume::MoveCurvesToBaseBiome(){ }
 void AFGAtmosphereVolume::CopyLegacyPropertiesToAsset(){ }
 #endif 
+#if WITH_EDITORONLY_DATA
+#endif 
 AFGAtmosphereVolume::AFGAtmosphereVolume() : Super() {
 	this->mBiome = NewObject<UFGBiome>(this, TEXT("Biome"));
 	this->mPriority = 1.0;

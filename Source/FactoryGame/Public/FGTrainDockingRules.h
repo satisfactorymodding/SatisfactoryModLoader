@@ -18,7 +18,7 @@ struct FACTORYGAME_API FTrainDockingRuleSet
 {
 	GENERATED_BODY()
 public:
-	FTrainDockingRuleSet() : DockingDefinition( ETrainDockingDefinition::TDD_LoadUnloadOnce ), DockForDuration( 15.f ), IsDurationAndRule( false ) {}
+	FTrainDockingRuleSet() : DockingDefinition( ETrainDockingDefinition::TDD_LoadUnloadOnce ), DockForDuration( 15.f ), IsDurationAndRule( false ), IgnoreFullLoadUnloadIfTransferBlockedByFilters( false ) {}
 
 	UPROPERTY( BlueprintReadWrite, SaveGame )
 	ETrainDockingDefinition DockingDefinition;
@@ -28,6 +28,9 @@ public:
 
 	UPROPERTY( BlueprintReadWrite, SaveGame )
 	bool IsDurationAndRule;
+
+	UPROPERTY( BlueprintReadWrite, SaveGame )
+	bool IgnoreFullLoadUnloadIfTransferBlockedByFilters;
 	
 	UPROPERTY( BlueprintReadWrite, SaveGame )
 	TArray< TSubclassOf< class UFGItemDescriptor > > LoadFilterDescriptors;

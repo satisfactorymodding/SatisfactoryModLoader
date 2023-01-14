@@ -23,6 +23,7 @@ public:
 
 	// Begin AFGHologram interface
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
+	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
 	// End AFGHologram interface
 
 protected:
@@ -31,7 +32,7 @@ protected:
 	// End AFGHologram Interface
 
 	// Begin AFGBuildableHologram Interface
-	virtual bool IsHologramIdenticalToBuildable( class AFGBuildable* buildable, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
 	// End AFGBuildableHologram Interface
 
 protected:

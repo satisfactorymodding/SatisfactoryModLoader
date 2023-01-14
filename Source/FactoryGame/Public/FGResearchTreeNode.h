@@ -14,5 +14,9 @@ UCLASS( Blueprintable, DefaultToInstanced, abstract, editinlinenew )
 class FACTORYGAME_API UFGResearchTreeNode : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION( BlueprintImplementableEvent, Category="Research" )
+	TSubclassOf< class UFGSchematic > GetNodeSchematic() const;
 	
 };

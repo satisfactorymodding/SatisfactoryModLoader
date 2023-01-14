@@ -7,6 +7,7 @@
 
 AFGBuildableConveyorBelt::AFGBuildableConveyorBelt() : Super() {
 	this->mMesh = nullptr;
+	this->mCollisionProxyMesh = nullptr;
 	this->mMeshLength = 0.0;
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	this->mSoundSplineComponent = nullptr;
@@ -33,6 +34,7 @@ void AFGBuildableConveyorBelt::LostSignificance_Implementation(){ }
 void AFGBuildableConveyorBelt::SetupForSignificance(){ }
 void AFGBuildableConveyorBelt::UpdateMeshLodLevels(int32 newLodLevel){ }
 int32 AFGBuildableConveyorBelt::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
+void AFGBuildableConveyorBelt::OnBuildEffectFinished(){ }
 float AFGBuildableConveyorBelt::FindOffsetClosestToLocation(const FVector& location) const{ return float(); }
 void AFGBuildableConveyorBelt::GetLocationAndDirectionAtOffset(float offset, FVector& out_location, FVector& out_direction) const{ }
 FVector AFGBuildableConveyorBelt::GetVelocityForBase( AActor* basedActor,  UPrimitiveComponent* baseComponent) const{ return FVector(); }
@@ -44,6 +46,7 @@ AFGBuildableConveyorBelt* AFGBuildableConveyorBelt::Respline(AFGBuildableConveyo
 void AFGBuildableConveyorBelt::OnUseServerRepInput( AFGCharacterPlayer* byCharacter, uint32 itemRepID, float itemOffset){ }
 void AFGBuildableConveyorBelt::SetShadowCasting(bool inStateBelt, bool inStateItems){ }
 void AFGBuildableConveyorBelt::DestroyVisualItems(){ }
+void AFGBuildableConveyorBelt::PostSerializedFromBlueprint(){ }
 bool AFGBuildableConveyorBelt::VerifyDefaults(FString& out_message){ return bool(); }
 void AFGBuildableConveyorBelt::TickItemTransforms(float dt){ }
 void AFGBuildableConveyorBelt::TickRadioactivity(){ }

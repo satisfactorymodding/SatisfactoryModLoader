@@ -70,7 +70,6 @@ public:
 
 protected:
 	// Begin Factory_ Interface
-	virtual void Factory_StartProducing() override;
 	virtual void Factory_TickProducing( float dt ) override;
 	virtual void Factory_PushPipeOutput_Implementation( float dt ) override;
 	// End Factory_ Interface

@@ -8,6 +8,7 @@
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "GameFramework/Actor.h"
+
 #include "FGRiver.generated.h"
 
 class ACharacter;
@@ -23,6 +24,11 @@ public:
 	// Sets default values for this actor's properties
 	AFGRiver();
 
+	USplineComponent* GetRiverSpline() const 	{ return mSplineComponent; }
+	float GetVolumePrecision() const 			{ return mVolumePrecision; }
+	float GetVolumeHeightOffset() const 		{ return mVolumeHeightOffset; }
+	float GetRiverDepth() const 				{ return 1000; }
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,7 +43,15 @@ protected:
 	/* Set Red vertex color on the mesh component based on spline Z scale / 100. */
 	void ApplyVertexColors(TArray<USplineMeshComponent*>& MeshComponents);
 
-	float GetRiverLocationHeightOffset( FVector WorldLocation, float IntensityOnSpline) const;
+	FORCEINLINE float GetRiverLocationHeightOffset( FVector WorldLocation, float IntensityOnSpline) const
+	{
+		float Time = GetWorld()->GetTimeSeconds();
+	
+		float X = FMath::Sin((((WorldLocation.X / BuoyancyScale.X) + Time)) * PI * 2);
+		float Y = FMath::Sin((((WorldLocation.Y / BuoyancyScale.Y) + Time)) * PI * 2);
+	
+		return (X + Y) * BuoyancyMaxIntensity * FMath::Max<float>(IntensityOnSpline, 0.01 );
+	}
 	
 private:
 	void HandlePush(float DeltaTime, ACharacter* Actor);
@@ -71,6 +85,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
     float mVolumePrecision;
 	
+	/* Height offset for water volume.*/
+	UPROPERTY(EditDefaultsOnly)
+	float mVolumeHeightOffset;
+	
 	/*Intensity the character will get pushed with. */
 	UPROPERTY(EditAnywhere, Category = "Gameplay" )
 	float mDefaultFlowRate;
@@ -90,6 +108,13 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float BuoyancyMaxIntensity;
+
+	UPROPERTY(EditAnywhere)
+	UMaterialParameterCollection* mDataCollection;
+	
+	//UPROPERTY(EditDefaultsOnly)
+	//class UAKAudioEvent* mRiverSound;
+
 	
 public:
 
@@ -106,8 +131,12 @@ public:
 	UMaterialInstanceDynamic* mEditorOnlyMaterialInstance;
 	
 	bool bWasSelected;
-	
+
+	/*Hide editor spline, mainly usefull for landscape based spline.*/
+	UPROPERTY(EditAnywhere)
+	bool ED_HideSpline;
 	/* end */
+	
 #endif
 #if WITH_EDITOR
 	
@@ -119,7 +148,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "CSS Editor tools", meta = (DevelopmentOnly))
 	static void BuildRiverFromData(const UObject* WorldContext, TSubclassOf<AFGRiver> BaseClass, TArray<FVector> WorldLocations, TArray<FVector> PointScales, TArray<FRotator> PointRotations, TArray<FVector> ArriaveTangets, TArray<FVector> LeaveTangents);
-	
+
+	UFUNCTION(BlueprintCallable, Category = "CSS Editor tools", meta = (DevelopmentOnly))
+	static void UpdateRiverFromData( AFGRiver* River, USplineComponent* SourceSpline );
+
 #endif
 	
 };

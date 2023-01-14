@@ -8,6 +8,7 @@ AFGBuildableRailroadStation::AFGBuildableRailroadStation() : Super() {
 	this->mCurrentDockedWithRuleSet.DockingDefinition = ETrainDockingDefinition::TDD_LoadUnloadOnce;
 	this->mCurrentDockedWithRuleSet.DockForDuration = 15.0;
 	this->mCurrentDockedWithRuleSet.IsDurationAndRule = false;
+	this->mCurrentDockedWithRuleSet.IgnoreFullLoadUnloadIfTransferBlockedByFilters = false;
 	this->mDockingLocomotive = nullptr;
 	this->mCurrentDockForDuration = 0.0;
 	this->mActorRepresentationTexture = nullptr;

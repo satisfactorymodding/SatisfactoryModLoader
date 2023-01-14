@@ -45,8 +45,11 @@ public:
 	
 	/** Update the value of the height fog in each world */
 	void Tick( float dt );
+	virtual void FinishDestroy() override;
 	
 	const TArray< FAtmosphereVolumeBlend > &GetEffectiveAtmosphereVolumes() const;
+
+	static UFGAtmosphereUpdater* AtmosphereUpdaterStatic;
 
 #if WITH_EDITORONLY_DATA
 	UPROPERTY()
@@ -87,6 +90,10 @@ public:
 	}
 
 #endif 
+
+	/* Clamped between 0 - 1*/
+	float mDirectionalLightMultiplierOverride = 1;
+	float mSkylightLightMultiplierOverride = 1;
 	
 protected:
 	/** Apply the fog settings to the current world */

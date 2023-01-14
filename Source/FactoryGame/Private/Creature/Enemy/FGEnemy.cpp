@@ -2,17 +2,6 @@
 
 #include "Creature/Enemy/FGEnemy.h"
 
-void AFGEnemy::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGEnemy, mCurrentAttack);
-	DOREPLIFETIME(AFGEnemy, mCurrentAggroTarget);
-}
 AFGEnemy::AFGEnemy(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-	this->mCurrentAttack = nullptr;
-	this->mCurrentAggroTarget = nullptr;
+
 }
-FVector AFGEnemy::GetAttackLocation_Implementation(){ return FVector(); }
-void AFGEnemy::PerformCustomRadialAttack_Implementation(){ }
-void AFGEnemy::SetCurrentAggroTarget(AActor* newTarget){ }
-void AFGEnemy::OnCurrentAggroTargetReplicated_Implementation(){ }
-void AFGEnemy::OnRep_CurrentAggroTarget(){ }

@@ -25,7 +25,7 @@ protected:
 
 	
 	UFUNCTION( BlueprintImplementableEvent, Category = "Map" )
-	void OnObjectAddedToMap( class UFGActorRepresentation* actorRepresentation );
+	void OnObjectAddedToMap( class UFGActorRepresentation* actorRepresentation, bool addedAfterMapOpened );
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "Map" )
 	void OnObjectUpdatedOnMap( class UFGActorRepresentation* actorRepresentation );
@@ -44,6 +44,7 @@ private:
 	
 	UFUNCTION()
 	void OnActorRepresentationAdded( class UFGActorRepresentation* actorRepresentation );
+	void AddMapObject( class UFGActorRepresentation* actorRepresentation, bool addedAfterMapOpened );
 	UFUNCTION()
 	void OnActorRepresentationUpdated( class UFGActorRepresentation* actorRepresentation );
 	UFUNCTION()

@@ -4,22 +4,20 @@
 #include "Resources/FGItemDescriptor.h"
 
 AFGResourceSinkSubsystem::AFGResourceSinkSubsystem() : Super() {
-	this->mSchematicManager = nullptr;
 	this->mCouponClass = nullptr;
-	this->mTotalResourceSinkPoints = 0LL;
-	this->mCurrentPointLevel = 0;
-	this->mNumResourceSinkCoupons = 0;
-	this->mGlobalPointHistory.Add(0);
-	this->mGlobalPointHistory.Add(0);
-	this->mGlobalPointHistory.Add(0);
-	this->mGlobalPointHistory.Add(0);
-	this->mGlobalPointHistory.Add(0);
-	this->mGlobalPointHistory.Add(0);
-	this->mGlobalPointHistory.Add(0);
-	this->mGlobalPointHistory.Add(0);
-	this->mGlobalPointHistory.Add(0);
-	this->mGlobalPointHistory.Add(0);
+	this->mTotalPoints.Emplace();
+	this->mTotalPoints.Emplace();
+	this->mLastSeenPointLevel.Emplace();
+	this->mLastSeenPointLevel.Emplace();
+	this->mCurrentPointLevels.Emplace();
+	this->mCurrentPointLevels.Emplace();
+	this->mGlobalPointHistoryValues.Emplace();
+	this->mGlobalPointHistoryValues.Emplace();
 	this->mFailedItemSinkMessages.Add(FSoftClassPath("/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C").ResolveClass(), FSoftClassPath("/Game/FactoryGame/Interface/UI/Message/GameplayBeat/ResourceSink/Message_ADA_AWESOME_Nuclear.Message_ADA_AWESOME_Nuclear_C").ResolveClass());
+	this->mFailedItemSinkMessages.Add(FSoftClassPath("/Game/FactoryGame/Resource/Parts/Non-FissibleUranium/Desc_NonFissibleUranium.Desc_NonFissibleUranium_C").ResolveClass(), FSoftClassPath("/Game/FactoryGame/Interface/UI/Message/GameplayBeat/ResourceSink/Message_ADA_AWESOME_Nuclear.Message_ADA_AWESOME_Nuclear_C").ResolveClass());
+	this->mFailedItemSinkMessages.Add(FSoftClassPath("/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_PlutoniumWaste.Desc_PlutoniumWaste_C").ResolveClass(), FSoftClassPath("/Game/FactoryGame/Interface/UI/Message/GameplayBeat/ResourceSink/Message_ADA_AWESOME_Nuclear.Message_ADA_AWESOME_Nuclear_C").ResolveClass());
+	this->mFailedItemSinkMessages.Add(FSoftClassPath("/Game/FactoryGame/Resource/Parts/PlutoniumPellet/Desc_PlutoniumPellet.Desc_PlutoniumPellet_C").ResolveClass(), FSoftClassPath("/Game/FactoryGame/Interface/UI/Message/GameplayBeat/ResourceSink/Message_ADA_AWESOME_Nuclear.Message_ADA_AWESOME_Nuclear_C").ResolveClass());
+	this->mFailedItemSinkMessages.Add(FSoftClassPath("/Game/FactoryGame/Resource/Parts/PlutoniumCell/Desc_PlutoniumCell.Desc_PlutoniumCell_C").ResolveClass(), FSoftClassPath("/Game/FactoryGame/Interface/UI/Message/GameplayBeat/ResourceSink/Message_ADA_AWESOME_Nuclear.Message_ADA_AWESOME_Nuclear_C").ResolveClass());
 	this->mAnyGenericItemsFailedToSink = false;
 	this->mIsCouponEverSunk = false;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
@@ -32,31 +30,38 @@ AFGResourceSinkSubsystem::AFGResourceSinkSubsystem() : Super() {
 }
 void AFGResourceSinkSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGResourceSinkSubsystem, mTotalResourceSinkPoints);
-	DOREPLIFETIME(AFGResourceSinkSubsystem, mCurrentPointLevel);
+	DOREPLIFETIME(AFGResourceSinkSubsystem, mTotalPoints);
+	DOREPLIFETIME(AFGResourceSinkSubsystem, mCurrentPointLevels);
 	DOREPLIFETIME(AFGResourceSinkSubsystem, mNumResourceSinkCoupons);
-	DOREPLIFETIME(AFGResourceSinkSubsystem, mGlobalPointHistory);
+	DOREPLIFETIME(AFGResourceSinkSubsystem, mGlobalPointHistoryValues);
 }
 void AFGResourceSinkSubsystem::BeginPlay(){ }
 void AFGResourceSinkSubsystem::Tick(float DeltaSeconds){ }
 void AFGResourceSinkSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 AFGResourceSinkSubsystem* AFGResourceSinkSubsystem::Get(UWorld* world){ return nullptr; }
 AFGResourceSinkSubsystem* AFGResourceSinkSubsystem::Get(UObject* worldContext){ return nullptr; }
+void AFGResourceSinkSubsystem::SetupRewardLevelData(EResourceSinkTrack ResourceSinkTrack,  UDataTable* rewardLevelsDataTable){ }
+void AFGResourceSinkSubsystem::SetupPointData(EResourceSinkTrack ResourceSinkTrack,  UDataTable* pointsDataTable){ }
 void AFGResourceSinkSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 bool AFGResourceSinkSubsystem::AddPoints_ThreadSafe(TSubclassOf<class UFGItemDescriptor> item){ return bool(); }
-int64 AFGResourceSinkSubsystem::GetNumPointsToNextCoupon() const{ return int64(); }
-float AFGResourceSinkSubsystem::GetProgressionTowardsNextCoupon() const{ return float(); }
+int64 AFGResourceSinkSubsystem::GetNumTotalPoints(EResourceSinkTrack resourceSinkTrack) const{ return int64(); }
+TArray<int32> AFGResourceSinkSubsystem::GetGlobalPointHistory(EResourceSinkTrack resourceSinkTrack) const{ return TArray<int32>(); }
+int64 AFGResourceSinkSubsystem::GetNumPointsToNextCoupon(EResourceSinkTrack resourceSinkTrack) const{ return int64(); }
+float AFGResourceSinkSubsystem::GetProgressionTowardsNextCoupon(EResourceSinkTrack resourceSinkTrack) const{ return float(); }
 int32 AFGResourceSinkSubsystem::GetCostOfSchematics(TArray< TSubclassOf<  UFGSchematic > > schematics) const{ return int32(); }
-bool AFGResourceSinkSubsystem::CanAffordResourceSinkSchematics(UFGInventoryComponent* playerInventory, TArray< TSubclassOf<  UFGSchematic > > schematics) const{ return bool(); }
+bool AFGResourceSinkSubsystem::CanAffordResourceSinkSchematics( UFGInventoryComponent* playerInventory, TArray< TSubclassOf<  UFGSchematic > > schematics) const{ return bool(); }
+bool AFGResourceSinkSubsystem::HasTrackGivenCouponSinceLastCheck(EResourceSinkTrack resourceSinkTrack){ return bool(); }
 bool AFGResourceSinkSubsystem::PurchaseResourceSinkSchematics( UFGInventoryComponent* playerInventory, TArray< TSubclassOf<  UFGSchematic > > schematics){ return bool(); }
-void AFGResourceSinkSubsystem::AddResourceSinkCoupons(int32 numCoupons){ }
+void AFGResourceSinkSubsystem::AddResourceSinkCoupons(int32 numCoupons, bool sendTelemetryData, ECouponSource couponSource){ }
 int32 AFGResourceSinkSubsystem::RemoveResourceSinkCoupons(int32 numCoupons){ return int32(); }
 int32 AFGResourceSinkSubsystem::GetResourceSinkPointsForItem(TSubclassOf<  UFGItemDescriptor > itemDescriptor){ return int32(); }
 void AFGResourceSinkSubsystem::HandleQueuedPoints(){ }
 void AFGResourceSinkSubsystem::HandleQueuedFailedItems(){ }
 void AFGResourceSinkSubsystem::InitCouponClass(){ }
 void AFGResourceSinkSubsystem::CalculateLevel(){ }
-int64 AFGResourceSinkSubsystem::GetRequiredPointsForLevel(int32 level) const{ return int64(); }
+int32 AFGResourceSinkSubsystem::GetCurrentPointLevel(EResourceSinkTrack resourceSinkTrack) const{ return int32(); }
+int64 AFGResourceSinkSubsystem::GetRequiredPointsForLevel(EResourceSinkTrack resourceSinkTrack, int32 level) const{ return int64(); }
 void AFGResourceSinkSubsystem::CalculateAccumulatedPointsPastInterval(){ }
 void AFGResourceSinkSubsystem::TriggerCyberCoupon(){ }
 void AFGResourceSinkSubsystem::TriggerCustomReward(TSubclassOf<  UFGItemDescriptor> item){ }
+int32 AFGResourceSinkSubsystem::GetNumTotalCouponsFromSource(ECouponSource couponSource) const{ return int32(); }

@@ -84,6 +84,10 @@ public:
 
 	/** Ticks the scheduler and makes reservation on behalf of the tracked trains. */
 	void TickScheduler();
+
+public:
+	/** Each tick we output details about the scheduling, and decrease this by one. Only valid in non-shipping builds. */
+	int32 mDebugDumpNextTick;
 	
 private:
 	//@todo-trains Split the master tick into manageable functions.

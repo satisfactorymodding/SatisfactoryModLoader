@@ -53,6 +53,13 @@ class FACTORYGAME_API IFGColorInterface
 	UFUNCTION( BlueprintNativeEvent, Category = "Factory Customization")
 	bool GetCanBeColored();
 
+	/**
+	 *	Returns wherther the building can have a pattern applied. The stencil still needs that buildable type to be added to itself.
+	 *	This acts as an override for similar buildables (noteably foundations) where special types or meshes should not allow patters
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category = "Factory Customization")
+	bool GetCanBePatterned();
+
 	/** For special case buildables, do we want to defer how colors are applied to the buildable itself? */
 	virtual bool IsColorApplicationDeferred() = 0;
 
@@ -64,15 +71,15 @@ class FACTORYGAME_API IFGColorInterface
 
 	/** For special cases where actors are in chanrge of their own color application, can */
 
-	/**
+	/** 
 	* Called on by the interface if we are looking at something that's useable
 	*/
 	UFUNCTION( BlueprintNativeEvent, Category = "Use" )
-	void StartIsAimedAtForColor( AFGCharacterPlayer* byCharacter, bool isValid = true );
+	void StartIsAimedAtForColor( class AFGCharacterPlayer* byCharacter, bool isValid = true );
 
 	/**
 	* Called when we stop looking at the item
 	*/
 	UFUNCTION( BlueprintNativeEvent, Category = "Use" )
-	void StopIsAimedAtForColor( AFGCharacterPlayer* byCharacter );
+	void StopIsAimedAtForColor( class AFGCharacterPlayer* byCharacter );
 };

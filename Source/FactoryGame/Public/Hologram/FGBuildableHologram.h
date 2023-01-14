@@ -127,8 +127,8 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	const TArray< class UFGPipeConnectionComponent* >& GetCachedPipeConnectionComponents() const { return mCachedPipeConnectionComponents; }
 
-	/** Whether or not the specified buildable should be considered for our guideline alignments. */
-	virtual bool ShouldBuildableBeConsideredForGuidelines( class AFGBuildable* buildable ) const;
+	/** Whether or not the specified actor should be considered for our guideline alignments. */
+	virtual bool ShouldActorBeConsideredForGuidelines( class AActor* actor ) const;
 
 	/** Checks if connections face the same direction and are in line with eachother in order for guidelines to be used. */
 	bool AreConnectionsAlignedForGuidelines( class UFGConnectionComponent* connection, class UFGConnectionComponent* otherConnection, const FVector& connectionOffset, float allowedAngleDeviation ) const;
@@ -147,6 +147,9 @@ public:
 
 	void ClearGuidelineVisuals();
 
+	void SetNeedsValidFloor( bool needsValidFloor ) { mNeedsValidFloor = needsValidFloor; }
+	bool GetNeedsValidFloor() const { return mNeedsValidFloor; }
+
 	/**
      * Function used to filter unwanted attachment points on the buildable based on hitresult. Such as removing all points which are pointing sideways.
      */
@@ -157,6 +160,7 @@ protected:
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
 	virtual void CheckValidPlacement() override;
 	virtual int32 GetRotationStep() const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
 	// End AFGHologram interface	
 
 	/** Helper function to snap to the factory building grid. */
@@ -184,6 +188,13 @@ protected:
 	 */
 	virtual void CheckValidFloor();
 
+	/**
+	 * Do any validation checks to ensure a hologram is not connecting a building inside a blueprint designer
+	 * To one outside the designer. Ofter clearance will disallow this but this is an additional safety check
+	 * Wires for example wont have a collision problem so in their hologram we verify the connections / placement
+	 */
+	virtual void CheckBlueprintCommingling() {}
+
 	/** Minimum Z value for a floor normal. If less the hologram is not placeable. */
 	FORCEINLINE float GetMinPlacementFloorZ() const { return FMath::Cos( FMath::DegreesToRadians( mMaxPlacementFloorAngle ) ); }
 
@@ -196,12 +207,6 @@ protected:
 	 * Snaps the hologram to the target clearance box.
 	 */
 	void SnapToClearanceBox( const UFGClearanceComponent* targetSnapClearanceComponent, FVector& newLocation, FRotator& newRotation );
-
-	/**
-	 * Function used to determine if a buildable is identical to ourselves in terms of position, rotation, etc.
-	 * Used to avoid overlapping buildables.
-	 */
-	virtual bool IsHologramIdenticalToBuildable( class AFGBuildable* buildable, const FVector& hologramLocationOffset ) const;
 
 	/**
 	 * Function to allow any pre-initialization on the actor before the configuration occurs. This is to allow for
@@ -269,7 +274,6 @@ protected:
 
 	// Begin AFGHologram interface
 	virtual void SetupClearance( class UFGClearanceComponent* clearanceComponent ) override;
-	virtual void HandleClearanceOverlap( const FOverlapResult& overlap, const FVector& locationOffset, bool HologramHasSoftClearance ) override;
 	virtual void SetMaterial( class UMaterialInterface* material ) override;
 	virtual class UPrimitiveComponent* GetClearanceOverlapCheckComponent() const override;
 	// End AFGHologram interface

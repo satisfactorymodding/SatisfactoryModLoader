@@ -86,7 +86,7 @@ void UItemTooltipSubsystem::RegisterGlobalTooltipProvider(const FString& ModRefe
 }
 
 FText UItemTooltipSubsystem::GetItemName(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
-    UClass* ItemClass = InventoryStack.Item.ItemClass;
+    UClass* ItemClass = InventoryStack.Item.GetItemClass();
     if (ItemClass != NULL) {
         UObject* ItemObject = ItemClass->GetDefaultObject();
         if (ItemObject->Implements<USMLItemDisplayInterface>()) {
@@ -97,7 +97,7 @@ FText UItemTooltipSubsystem::GetItemName(APlayerController* OwningPlayer, const 
 }
 
 FText UItemTooltipSubsystem::GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
-    UClass* ItemClass = InventoryStack.Item.ItemClass;
+    UClass* ItemClass = InventoryStack.Item.GetItemClass();
     TArray<FString> DescriptionText;
 
     const FString VanillaDescription = UFGItemDescriptor::GetItemDescription(ItemClass).ToString();
@@ -127,7 +127,7 @@ FText UItemTooltipSubsystem::GetItemDescription(APlayerController* OwningPlayer,
 
 TArray<UWidget*> UItemTooltipSubsystem::CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
     TArray<UWidget*> ResultWidgets;
-    UClass* ItemClass = InventoryStack.Item.ItemClass;
+    UClass* ItemClass = InventoryStack.Item.GetItemClass();
     
     if (ItemClass != NULL) {
         UObject* ItemObject = ItemClass->GetDefaultObject();

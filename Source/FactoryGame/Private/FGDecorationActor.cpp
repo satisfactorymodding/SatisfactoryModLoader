@@ -16,3 +16,7 @@ void AFGDecorationActor::PostLoadGame_Implementation(int32 saveVersion, int32 ga
 void AFGDecorationActor::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGDecorationActor::NeedTransform_Implementation(){ return bool(); }
 bool AFGDecorationActor::ShouldSave_Implementation() const{ return bool(); }
+void AFGDecorationActor::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
+FText AFGDecorationActor::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
+void AFGDecorationActor::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
+void AFGDecorationActor::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }

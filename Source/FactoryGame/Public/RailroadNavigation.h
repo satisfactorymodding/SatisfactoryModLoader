@@ -34,6 +34,9 @@ public:
  */
 struct FACTORYGAME_API FRailroadPath
 {
+	/** Keep the station here so we can detect if the destination changes. */
+	TWeakObjectPtr< class AFGBuildableRailroadStation > Station;
+	
 	/** Path points to follow to the destination. */
 	TArray< FRailroadPathPoint > PathPoints;
 };

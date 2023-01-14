@@ -5,9 +5,7 @@
 void FFGDroneTripStatistics::Clear(){ }
 AFGDroneStationInfo::AFGDroneStationInfo() : Super() {
 	this->mStation = nullptr;
-	this->mStationLocation.X = 0.0;
-	this->mStationLocation.Y = 0.0;
-	this->mStationLocation.Z = 0.0;
+	this->mStationLocation = FVector::ZeroVector;
 	this->mStationClass = nullptr;
 	this->mPairedStation = nullptr;
 	this->mBuildingTag = TEXT("");
@@ -15,8 +13,6 @@ AFGDroneStationInfo::AFGDroneStationInfo() : Super() {
 	this->mEstimatedRoundTripTime = 0.0;
 	this->mEstimatedTransportRate = 0.0;
 	this->mDroneTripStatistics.LatestRoundTripTime = 0.0;
-	this->mDroneTripStatistics.LatestIncomingItemAmount = 0;
-	this->mDroneTripStatistics.LatestOutgoingItemAmount = 0;
 	this->mDroneTripStatistics.LatestIncomingItemStacks = 0.0;
 	this->mDroneTripStatistics.LatestOutgoingItemStacks = 0.0;
 	this->mDroneTripStatistics.LatestIncomingItemStackRate = 0.0;

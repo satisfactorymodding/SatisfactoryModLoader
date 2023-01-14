@@ -4,12 +4,8 @@
 #include "Replication/FGReplicationDetailInventoryComponent.h"
 
 AFGBuildableDroneStation::AFGBuildableDroneStation() : Super() {
-	this->mDroneDockingStartLocationLocal.X = 0.0;
-	this->mDroneDockingStartLocationLocal.Y = 0.0;
-	this->mDroneDockingStartLocationLocal.Z = 0.0;
-	this->mDroneDockingLocationLocal.X = 0.0;
-	this->mDroneDockingLocationLocal.Y = 0.0;
-	this->mDroneDockingLocationLocal.Z = 0.0;
+	this->mDroneDockingStartLocationLocal = FVector::ZeroVector;
+	this->mDroneDockingLocationLocal = FVector::ZeroVector;
 	this->mDroneClass = nullptr;
 	this->mUIBatteryCostItemClass = nullptr;
 	this->mStationHasDronesInQueue = false;
@@ -37,6 +33,7 @@ AFGBuildableDroneStation::AFGBuildableDroneStation() : Super() {
 	this->mOutputInventory = nullptr;
 	this->mBatteryInventory = nullptr;
 	this->mInfo = nullptr;
+	this->mTempInfo = nullptr;
 	this->mActorRepresentationTexture = nullptr;
 	this->mMapText = INVTEXT("");
 }
@@ -88,6 +85,9 @@ void AFGBuildableDroneStation::StartDockingSequence_Implementation( AFGDroneVehi
 void AFGBuildableDroneStation::EndDockingSequence_Implementation( AFGDroneVehicle* Drone, bool ShouldTransferItems){ }
 void AFGBuildableDroneStation::StartTakeoffSequence_Implementation( AFGDroneVehicle* Drone){ }
 void AFGBuildableDroneStation::EndTakeoffSequence_Implementation( AFGDroneVehicle* Drone){ }
+void AFGBuildableDroneStation::PreSerializedToBlueprint(){ }
+void AFGBuildableDroneStation::PostSerializedToBlueprint(){ }
+void AFGBuildableDroneStation::PostSerializedFromBlueprint(){ }
 void AFGBuildableDroneStation::OnRep_ReplicationDetailActor(){ }
 AFGReplicationDetailActor_DroneStation* AFGBuildableDroneStation::GetCastRepDetailsActor() const{ return nullptr; }
 bool AFGBuildableDroneStation::FilterBatteryClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }

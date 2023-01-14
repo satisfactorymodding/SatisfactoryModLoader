@@ -27,6 +27,7 @@ void AFGRailroadTrackHologram::SetHologramLocationAndRotation(const FHitResult& 
 int32 AFGRailroadTrackHologram::GetBaseCostMultiplier() const{ return int32(); }
 void AFGRailroadTrackHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 bool AFGRailroadTrackHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
+void AFGRailroadTrackHologram::CheckBlueprintCommingling(){ }
 void AFGRailroadTrackHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGRailroadTrackHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGRailroadTrackHologram::SetLocationAndRotationFromPlatformConnections( UFGTrainPlatformConnection* connectionOne,  UFGTrainPlatformConnection* connectionTwo){ }

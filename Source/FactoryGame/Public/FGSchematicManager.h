@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
+#include "FGSchematic.h"
 #include "ItemAmount.h"
 #include "IncludeInBuild.h"
 #include "FGSchematicManager.generated.h"
@@ -25,6 +26,46 @@ struct FACTORYGAME_API FSchematicCost
 	/** Amount paid off */
 	UPROPERTY( SaveGame, EditDefaultsOnly )
 	TArray< FItemAmount > ItemCost;
+};
+
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FSchematicSubCategoryData
+{
+	GENERATED_BODY()
+
+	FSchematicSubCategoryData( TSubclassOf< class UFGSchematicCategory > schematicSubCategory ) :
+	SchematicSubCategory( schematicSubCategory )
+	{}
+	FSchematicSubCategoryData() :
+		SchematicSubCategory( nullptr )
+	{}
+
+	UPROPERTY( Transient, BlueprintReadOnly )
+	TSubclassOf< class UFGSchematicCategory > SchematicSubCategory;
+
+	UPROPERTY( Transient, BlueprintReadOnly )
+	TArray< TSubclassOf< UFGSchematic > > Schematics;
+	
+};
+
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FSchematicCategoryData
+{
+	GENERATED_BODY()
+
+	FSchematicCategoryData( TSubclassOf<UFGSchematicCategory> schematicCategory ) :
+		SchematicCategory( schematicCategory )
+	{}
+	FSchematicCategoryData() :
+		SchematicCategory( nullptr )
+	{}
+
+	UPROPERTY( Transient, BlueprintReadOnly )
+	TSubclassOf< class UFGSchematicCategory > SchematicCategory;
+
+	UPROPERTY( Transient, BlueprintReadOnly )
+	TArray<FSchematicSubCategoryData> SchematicSubCategoryData;
+	
 };
 
 /**
@@ -63,6 +104,7 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void PreInitializeComponents() override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	virtual void Tick( float dt ) override;
 	//~ End AActor interface
 
@@ -103,6 +145,10 @@ public:
 	/** Returns all schematics of a type that have any of their dependencies met. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
 	void GetAllSchematicsOfTypeFilteredOnDependency( ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
+
+	/** Returns all schematics of a type that is not in hte hidden state. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
+	void GetAllVisibleSchematicsOfType( ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
 
 	/** returns true if the passed schematic has been purchased */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
@@ -184,6 +230,10 @@ public:
 	/** Checks if it's valid to give access to the given schematic */
 	bool CanGiveAccessToSchematic( TSubclassOf< UFGSchematic > schematic ) const;
 
+	/** Returns a sorted struct of all schematic data for a certain schematic type */
+	UFUNCTION( BlueprintCallable, Category = "Organization" )
+	void GetVisibleSchematicCategoryData( ESchematicType schematicType, TArray< FSchematicCategoryData >& out_schematicCategoryData );
+
 private:
 	/** Populate list with all schematics */
 	void PopulateSchematicsLists();
@@ -194,7 +244,7 @@ private:
 	UFUNCTION()
 	void OnRep_ActiveSchematic();
 	UFUNCTION()
-	void OnRep_PurchasedSchematic();
+	void OnRep_PurchasedSchematic( TArray< TSubclassOf< UFGSchematic > > lastPurchasedSchematics );
 	UFUNCTION()
 	void OnRep_PaidOffOnSchematic();
 
@@ -205,6 +255,12 @@ private:
 	FSchematicCost* FindSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
 	void AddSchematicPayOff( TSubclassOf< class UFGSchematic > schematic, const TArray< FItemAmount >& amount );
 	void RemoveSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
+
+	/** Telemetry helper. */
+	void SubmitUnlockSchematicTelemetry( TSubclassOf< UFGSchematic > schematicClass );
+
+	UFUNCTION()
+	void SubmitMilestoneTelemetry( TSubclassOf< UFGSchematic > activeSchematic );
 
 protected:	
 	/** All schematic assets that have been sucked up in the PopulateSchematicsList function. Contains cheats and all sort of schematic. */

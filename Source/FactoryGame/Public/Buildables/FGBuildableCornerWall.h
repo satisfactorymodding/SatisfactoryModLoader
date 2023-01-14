@@ -26,4 +26,8 @@ public:
 	/** Height of the wall corner */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Wall" )
 	float mHeight;
+
+	/** Whether or not this is an inverted corner. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Wall" )
+	bool mIsInverted;
 };

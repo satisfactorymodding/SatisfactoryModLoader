@@ -7,6 +7,7 @@
 #include "Equipment/FGEquipment.h"
 #include "FGEquipmentStunSpear.generated.h"
 
+class UFGDamageType;
 /**
  * 
  */
@@ -26,6 +27,9 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Stun Spear" )
 	void PlayStunEffects();
 
+	UFUNCTION( BlueprintImplementableEvent, Category = "Stun Spear" )
+	void PlayHitEffects(const TArray<FHitResult> &hitResults);
+	
 	/** Getter for mShouldPlaySecondSwing */
 	UFUNCTION( BlueprintPure, Category = "Stun Spear" )
 	FORCEINLINE bool GetShouldPlaySecondSwing(){ return mShouldPlaySecondSwing; }
@@ -40,7 +44,10 @@ public:
 protected:
 	/** server notified of hit from client to verify */
 	UFUNCTION( Reliable, Server, WithValidation )
-	void Server_ShockEnemy();
+	void Server_ShockEnemy( FVector attackDirection );
+
+	UFUNCTION( Reliable, NetMulticast )
+	void Multicast_PlayHitEffects(const TArray<FHitResult> &hitResults);
 private:
 	/** Key binded functions */
 	virtual void OnFirePressed();
@@ -49,9 +56,13 @@ private:
 	UPROPERTY( VisibleDefaultsOnly, Category = "Stun Spear" )
 	class USphereComponent* mCollisionComp;
 
-	/** Damage type to use when hitting others */
+	UPROPERTY( EditDefaultsOnly, Instanced, Category= "Stun Spear")
+	TArray < UFGDamageType* > mDamageTypes;
+	
+	/** The noise to make when attacking with the spear. */
 	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
-	TSubclassOf< class UFGDamageType > mDamageTypeClass;	
+	TSubclassOf< class UFGNoise > mAttackNoise;
+
 public:
 	/** Timer started */
 	float mFirstSwingTime;
@@ -70,11 +81,11 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
 	float mSecondSwingCooldDownTime;
 
-	/** Damage amount */
-	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
-	int32 mDamage;
-
 	/** How much inf ront of character the attack is */
 	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
 	float mAttackDistance;
+
+	/** Defined half-width of the attack in front of the instigator */
+	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
+	float mAttackSweepRadius;
 };

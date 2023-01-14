@@ -25,18 +25,18 @@ public:
 	FORCEINLINE float GetPriority() const{ return mPriority; }
 protected:
 	/** Normal settings for post process  */
-	UPROPERTY( EditDefaultsOnly, Category = "PostProcess" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "PostProcess" )
 	FPostProcessSettings mPostProcessSettings;
 
 	/** At what distance do we want to blend in the post process settings for the water */
-	UPROPERTY( EditDefaultsOnly, Category = "PostProcess" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "PostProcess" )
 	float mBlendRadius;
 
 	/** How much do we want to blend in the post process effect */
-	UPROPERTY( EditDefaultsOnly, Category = "PostProcess" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "PostProcess" )
 	float mBlendWeight;
 
 	/** Priority of the post process effect */
-	UPROPERTY( EditDefaultsOnly, Category = "PostProcess" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "PostProcess" )
 	float mPriority;
 };

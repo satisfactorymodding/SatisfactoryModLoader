@@ -14,12 +14,16 @@ class FACTORYGAME_API AFGBuildableFoundation : public AFGBuildableFactoryBuildin
 {
 	GENERATED_BODY()
 protected:
-	AFGBuildableFoundation();
+	AFGBuildableFoundation(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 public:
-	/** Size of the foundation (size of one side of the square). */
+	/** Width of the foundation. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Foundation" )
-	float mSize;
+	float mWidth;
+
+	/** Depth of the foundation. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Foundation" )
+	float mDepth;
 
 	/** Height of the foundation. Origo is assumed to be half way between. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Foundation" )
@@ -40,4 +44,13 @@ public:
 	/** Disable attachment snapping on specific sides. */
 	UPROPERTY( EditDefaultsOnly, Category = "Foundation" )
 	FFoundationSideSelectionFlags mDisableAttachmentSnapOn;
+
+	virtual FSimpleBuildingInfo GetRainOcclusionShape() override { return FSimpleBuildingInfo::DefaultSquareFoundation( this ); }
+};
+
+UCLASS( Abstract )
+class FACTORYGAME_API AFGBuildableFoundationLightweight : public AFGBuildableFoundation
+{
+	GENERATED_BODY()
+	AFGBuildableFoundationLightweight( const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 };

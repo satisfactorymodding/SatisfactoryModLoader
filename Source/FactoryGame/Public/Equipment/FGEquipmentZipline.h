@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class FACTORYGAME_API AFGEquipmentZipline : public AFGEquipment
+class FACTORYGAME_API AFGEquipmentZipline final: public AFGEquipment
 {
 	GENERATED_BODY()
 public:
@@ -55,11 +55,16 @@ public:
 	
 	void OnCrouchPressed();
 	void OnCrouchReleased();
-
+	
 	void OnJumpPressed();
 
 	/** Called during tick, tries to grab onto a wire if mWantToGrab is set  */
 	void TryToGrab();
+
+private:
+	/** Used to make noise for when the zipline is active. */
+	UFUNCTION()
+	void MakeActiveNoise();
 	
 private:
 	/** Set if we dropped from a zipline so that we don't call UnCrouch when button is released */
@@ -72,7 +77,7 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
 	float mZiplineJumpLaunchVelocity;
 
-	/** Max allowed angle on wire for ziplining. Sine value of the angle needs to be lower than this in order to be valid for zipline. 0-1 value. */
+	/** Max allowed angle on wire for zip-lining. Sine value of the angle needs to be lower than this in order to be valid for zipline. 0-1 value. */
 	UPROPERTY( EditDefaultsOnly, Category = "Zipline", meta=( ClampMin=0, UIMin=0, ClampMax=1, UIMax=1 ) )
 	float mMaxZiplineAngle;
 
@@ -92,6 +97,16 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
 	bool mVisualizeTraceDistance;
 
+	/** The noise to make when the zipline is active. */
+    UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
+    TSubclassOf< class UFGNoise > mActiveNoise;
+
+    /** How often to make the noise (in seconds) while the zipline is active. */
+    UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
+    float mActiveNoiseFrequency;
+
+    FTimerHandle mActiveNoiseTimerHandle;
+	
 	/** Duration we need to wait before allowing the player to reattach zipline */
 	UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
 	float mZiplineReattachCooldown;

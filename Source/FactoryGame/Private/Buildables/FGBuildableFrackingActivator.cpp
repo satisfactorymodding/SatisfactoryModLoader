@@ -6,10 +6,9 @@ AFGBuildableFrackingActivator::AFGBuildableFrackingActivator() : Super() {
 	this->mActivationStartupTime = 0.0;
 	this->mActivationStartupTimer = 0.0;
 	this->mSatelliteActivationComplete = false;
-	this->mSatelliteNodeCount = 0;
-	this->mConnectedExtractorCount = 0;
 	this->mDefaultPotentialExtractionPerMinute = 0.0;
 	this->mDefaultExtractor = nullptr;
+	this->mTryFindMissingResource = true;
 }
 void AFGBuildableFrackingActivator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

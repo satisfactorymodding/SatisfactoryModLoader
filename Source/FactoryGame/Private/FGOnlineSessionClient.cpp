@@ -6,7 +6,6 @@
 FString FPendingInvite::ToDebugString() const{ return FString(); }
 #endif 
 void FSessionInformation::Init(const FString& InMapName, const FString& InOptions, const FString& InSessionName, ESessionVisibility InVisibility){ }
-void FSessionInformation::SendAnalytics(UWorld* world){ }
 void FSessionInformation::MarkAsOffline(){ }
 void FSessionInformation::SetState(ECreateSessionState newState, FOnCreateSessionStateChanged& createSessionChanged){ }
 UFGOnlineSessionClient::UFGOnlineSessionClient() : Super() {

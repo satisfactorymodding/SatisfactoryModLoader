@@ -23,6 +23,11 @@ void FConveyorBeltItems::MarkArrayDirty(){ }
 void FConveyorBeltItems::UpdateLastestIDFromState(){ }
 float FConveyorBeltItems::ConsumeAndUpdateConveyorOffsetDebt(float dt){ return float(); }
 void FConveyorBeltItems::MarkItemDirty(FConveyorBeltItem& item){ }
+#if !UE_BUILD_SHIPPING
+void AFGBuildableConveyorBase::DebugDrawStalled() const{ }
+#endif 
+#if UE_BUILD_SHIPPING
+#endif 
 AFGBuildableConveyorBase::AFGBuildableConveyorBase() : Super() {
 	this->mSpeed = 0.0;
 	this->mConnection0 = CreateDefaultSubobject<UFGFactoryConnectionComponent>(TEXT("ConveyorAny0"));
@@ -48,6 +53,7 @@ void AFGBuildableConveyorBase::EndPlay(const EEndPlayReason::Type endPlayReason)
 void AFGBuildableConveyorBase::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildableConveyorBase::Tick(float dt){ }
 void AFGBuildableConveyorBase::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+bool AFGBuildableConveyorBase::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildableConveyorBase::Factory_Tick(float deltaTime){ }
 uint8 AFGBuildableConveyorBase::MaxNumGrab(float dt) const{ return uint8(); }
 uint8 AFGBuildableConveyorBase::EstimatedMaxNumGrab_Threadsafe(float estimatedDeltaTime) const{ return uint8(); }

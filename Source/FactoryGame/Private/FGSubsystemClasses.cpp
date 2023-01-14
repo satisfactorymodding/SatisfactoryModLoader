@@ -2,7 +2,10 @@
 
 #include "FGSubsystemClasses.h"
 #include "FGAdminInterface.h"
+#include "FGBlueprintSubsystem.h"
+#include "FGCreatureSubsystem.h"
 #include "FGFoliageRemovalSubsystem.h"
+#include "FGScannableSubsystem.h"
 #include "FGSignSubsystem.h"
 
 UFGSubsystemClasses::UFGSubsystemClasses() : Super() {
@@ -16,7 +19,6 @@ UFGSubsystemClasses::UFGSubsystemClasses() : Super() {
 	this->mTutorialIntroManagerClass = nullptr;
 	this->mRadioactivitySubsystemClass = nullptr;
 	this->mChatManagerClass = nullptr;
-	this->mCentralStorageSubsystemClass = nullptr;
 	this->mMapManagerClass = nullptr;
 	this->mBuildableSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_BuildableSubsystem.BP_BuildableSubsystem_C").ResolveClass();
 	this->mFoliageRemovalSubsystemClass = AFGFoliageRemovalSubsystem::StaticClass();
@@ -33,5 +35,8 @@ UFGSubsystemClasses::UFGSubsystemClasses() : Super() {
 	this->mStatisticsSubsystemClass = nullptr;
 	this->mSignSubsystemClass = AFGSignSubsystem::StaticClass();
 	this->mPhotoModeManagerClass = nullptr;
+	this->mCreatureSubsystemClass = AFGCreatureSubsystem::StaticClass();
+	this->mScannableSubsystemClass = AFGScannableSubsystem::StaticClass();
+	this->mBlueprintSubsystem = AFGBlueprintSubsystem::StaticClass();
 }
 UFGSubsystemClasses* UFGSubsystemClasses::Get(){ return nullptr; }

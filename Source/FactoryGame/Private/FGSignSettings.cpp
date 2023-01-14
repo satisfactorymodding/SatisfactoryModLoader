@@ -3,11 +3,9 @@
 #include "FGSignSettings.h"
 
 UFGSignSettings::UFGSignSettings() : Super() {
-	this->mGridSize = 0;
 	this->mTextMaterial = nullptr;
 	this->mIconMaterial = nullptr;
 	this->mBackgroundMaterial = nullptr;
-	this->mBackgroundMeshMaterialIndex = 0;
 	this->mTextMaterialColorParam = TEXT("None");
 	this->mIconMaterialColorParam = TEXT("None");
 	this->mBackgroundMaterialColorParam = TEXT("None");

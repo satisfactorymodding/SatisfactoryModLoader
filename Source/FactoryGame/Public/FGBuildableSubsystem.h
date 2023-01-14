@@ -13,6 +13,9 @@ class UFGProductionIndicatorInstanceManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedGlobal, AFGBuildable*, buildable );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnBuildableLightColorSlotsUpdated );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnColorChanged, int32, Index );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOccluderBuildingConstructed, AFGBuildable*, buildable );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOccluderBuildingRemoved, AFGBuildable*, buildable );
 
 /** Used to track constructed (spawned) buildables matched with their holograms between client and server */
 USTRUCT()
@@ -155,11 +158,14 @@ public:
 	/** Adds a buildable to the buildable array. */
 	void AddBuildable( class AFGBuildable* buildable );
 
+	/**
+	 * Notify the subsystem a buildable was spawned inside the designer for any special logic that needs to run even if
+	 * the buildable is not added to the buildable tick groups
+	 */
+	void OnDesignerBuildableSpawned( AFGBuildable* buildable );
+
 	/** Adds a conveyor to the conveyor buckets */
 	void AddConveyor( AFGBuildableConveyorBase* conveyor );
-
-	/** Cleans up fog planes spawned by this buildable. */
-	void RemoveFogPlanes(class AFGBuildable* buildable);
 	
 	/** 
 	* Get the connected conveyor belt from the given connection. 
@@ -199,6 +205,9 @@ public:
 	template< typename T >
 	void GetTypedBuildable( TArray< T* >& out_buildables ) const;
 
+	void GetOcclusionAffectingBuildebles(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range, bool bParallel = true) const;
+
+
 	/** Starts replaying of build effects in the build order of the buildings. */
 	UFUNCTION()
 	void ReplayBuildingEffects();
@@ -237,10 +246,9 @@ public:
 
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
-	void DebugEnableInstancing( bool enabled );
 	void DebugGetFactoryActors( TArray< AActor* >& out_actors );
 
-	static FName GetMeshMapName(UStaticMesh* mesh, UMeshComponent* sourceComponent);
+	static FName GetMeshMapName( UStaticMesh* mesh, UMeshComponent* sourceComponent );
 	
 	/** Returns the factory stat ID of the object used for the profiling tool. */
 	FORCEINLINE TStatId GetFactoryStatID( bool forDeferredUse = false ) const
@@ -305,6 +313,9 @@ public:
 		return mCurrentSubStep == mCurrentSubStepMax;
 	}
 
+	/* Get "world time" for factory simulation. */
+	FORCEINLINE float GetFactorySimulationTime() const { return mAccumulatedFactorySimulationTime; }
+
 	// Called from BuildGunPaint for previewing skin logic
 	TArray< TSubclassOf< class AFGBuildable >> GetPreviewSkinsOnBuildableList() { return mPreviewSkinsOnBuildablesList; }
 	
@@ -324,7 +335,6 @@ private:
 	void UpdateReplayEffects( float dt );
 
 	/** Internal helpers to setup a buildable that is registered. */
-	void AddBuildableMeshInstances( class AFGBuildable* buildable );
 	void AddToTickGroup( AFGBuildable* buildable );
 	void RemoveFromTickGroup( AFGBuildable* buildable );
 	void SetupColoredMeshInstances( AFGBuildable* buildable );
@@ -363,6 +373,16 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Light Color" )
 	FOnBuildableLightColorSlotsUpdated mOnBuildableLightColorSlotsUpdated;
 
+	UPROPERTY( BlueprintAssignable, Category = "Occlusion" )
+	FOnOccluderBuildingConstructed mOnOccluderBuildingAdded;
+
+	UPROPERTY( BlueprintAssignable, Category = "Occlusion" )
+	FOnOccluderBuildingRemoved mOnOccluderBuildingRemoved;
+
+	/** Broadcast when when a color index has been changes, ##DO NOT BIND BUILDINGS OR VEHICLES TO THIS they are managed already## */
+	UPROPERTY( BlueprintAssignable, Category = "Factory Color" )
+	FOnColorChanged mOnColorIndexChanged;
+	
 	/**
 	 * Used by UFGColoredInstanceMeshProxy to get an instance if it's not already been assigned
 	 */
@@ -443,10 +463,7 @@ private:
 	/** Hierarchical instances for the factory Legs. */
 	UPROPERTY( EditAnywhere, Category = "FactoryLeg Instance Actor" )
 	AActor* mFactoryLegInstancesActor;
-
-	UPROPERTY()
-	TMap< class UStaticMesh*, class UProxyHierarchicalInstancedStaticMeshComponent* > mBuildableMeshInstances;
-
+	
 	/**/
 	UPROPERTY()
 	UFGProductionIndicatorInstanceManager* mProductionIndicatorInstanceManager = nullptr;
@@ -454,7 +471,6 @@ private:
 	/** Map of colorable static meshes to their corresponding instance manager */
 	UPROPERTY(EditAnywhere, Category="Colored Instance Managers" )
 	TMap< FName, class UFGColoredInstanceManager* > mColoredInstances;
-//	TMap< class UStaticMesh*, class UFGColoredInstanceManager* > mColoredInstances;
 
 	/** Map of factory leg meshes to their corresponding instance manager */
 	UPROPERTY( EditAnywhere, Category = "Factory Leg Instance Managers" )
@@ -488,6 +504,8 @@ private:
 
 	/** This contains all buildable light sources. Used to update light sources when light color slots have changed */
 	TArray< class AFGBuildableLightSource* > mBuildableLightSources;
+
+	TArray< class AFGBuildable* > mOcclusionEffectors;
 
 	/** The player adjustable color slots used by the buildable lights. Saved and replicated in game state. */ 
 	UPROPERTY( Transient )
@@ -584,6 +602,8 @@ private:
 	UPROPERTY()
 	TMap < int32, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > > mSlotToSwatchDescMigrationMap;
 
+	/* World time for the factory tick*/
+	float mAccumulatedFactorySimulationTime;
 };
 
 template< typename T >

@@ -3,8 +3,6 @@
 #include "FGLocomotiveMovementComponent.h"
 
 UFGLocomotiveMovementComponent::UFGLocomotiveMovementComponent() : Super() {
-	this->mRawReverserInput = 0;
-	this->mRawSteeringInput = 0;
 	this->mRawThrottleInput = 0.0;
 	this->mRawDynamicBrakeInput = 0.0;
 	this->mRawAirBrakeInput = 0.0;
@@ -16,7 +14,6 @@ UFGLocomotiveMovementComponent::UFGLocomotiveMovementComponent() : Super() {
 	this->mDynamicBrakeVelocityThreshold = 0.0;
 	this->mAirBrakeInputRate.RiseRate = 5.0;
 	this->mAirBrakeInputRate.FallRate = 5.0;
-	this->mReverserInput = 0;
 	this->mSteeringInput = 0.0;
 	this->mThrottleInput = 0.0;
 	this->mAirBrakeInput = 0.0;

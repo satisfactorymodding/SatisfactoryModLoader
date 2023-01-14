@@ -34,6 +34,7 @@ public:
 
 protected:
 	/** Fluid box managed by this connection. This is special to PipeConnectionFactory as other connections do not have their own fluid box */
+	UPROPERTY( SaveGame )
 	FFluidBox mFluidBox;
 
 	/** Volume of the fluid box inside this attachment. [m3] */

@@ -6,17 +6,14 @@
 AFGResourceDeposit::AFGResourceDeposit() : Super() {
 	this->mResourceDepositPackage.DropChance = 0.0;
 	this->mResourceDepositPackage.ResourceClass = nullptr;
-	this->mResourceDepositPackage.MinAmount = 0;
-	this->mResourceDepositPackage.MaxAmount = 0;
-	this->mResourceDepositPackage.MiningAmount = 0;
 	this->mResourceDepositTableIndex = -1;
 	this->mIsEmptied = false;
-	this->mMineAmount = 0;
+	this->mHasInitializedVisuals = false;
 	this->mDepositMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DepositMesh"));
 	this->mOverrideResourceClass = nullptr;
 	this->mCanPlaceResourceExtractor = false;
 	this->mExtractMultiplier = 2;
-	this->bNetLoadOnClient = false;
+	this->bAlwaysRelevant = false;
 	this->RootComponent = mDepositMeshComponent;
 }
 void AFGResourceDeposit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -31,6 +28,7 @@ void AFGResourceDeposit::RollResourceType(){ }
 void AFGResourceDeposit::TrySetDesiredResourceType(){ }
 void AFGResourceDeposit::SetupResourceInfo(){ }
 void AFGResourceDeposit::ExtractResourceAndGiveToPlayer(AFGCharacterPlayer* toPlayer, int32 amount){ }
+void AFGResourceDeposit::OnRep_ResourceDepositTableIndex(){ }
 void AFGResourceDeposit::OnRep_ResourceDepositEmptied(){ }
 void AFGResourceDeposit::InitRadioactivity(){ }
 void AFGResourceDeposit::UpdateRadioactivity(){ }

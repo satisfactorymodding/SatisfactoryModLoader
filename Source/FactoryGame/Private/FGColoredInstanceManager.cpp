@@ -4,7 +4,7 @@
 
 void UFGColoredInstanceManager::SetupInstanceList(UStaticMeshComponent* sourceStaticMeshComponent, uint8 numCustomDataFloats, bool useAsOccluder , EDistanceCullCategory CullCategory){ }
 void UFGColoredInstanceManager::ClearInstances(){ }
-void UFGColoredInstanceManager::AddInstance(const FTransform& transform, FInstanceHandle& handle, uint8 colorIndex){ }
+void UFGColoredInstanceManager::AddInstance(const FTransform& transform, FInstanceHandle& handle, uint8 colorIndex, int32 numCustomDataFloats){ }
 void UFGColoredInstanceManager::RemoveInstance(FInstanceHandle& handle){ }
 void UFGColoredInstanceManager::UpdateTransformForInstance(const FTransform& newTransform, int32 handleId){ }
 void UFGColoredInstanceManager::UpdateColorForInstance(uint8 colorIndex, FInstanceHandle& handle){ }
@@ -13,4 +13,5 @@ void UFGColoredInstanceManager::SetUserDefinedData(TArray< float > userData, FIn
 void UFGColoredInstanceManager::SetHasPowerData(float newHasPower, FInstanceHandle& handle){ }
 void UFGColoredInstanceManager::UpdateColorForInstanceFromDataArray(FInstanceHandle& handle){ }
 void UFGColoredInstanceManager::UpdateMaterialColors(){ }
+void UFGColoredInstanceManager::UpdateScalabilityMaterials(bool bEnableLightweightMaterials){ }
 UHierarchicalInstancedStaticMeshComponent* UFGColoredInstanceManager::CreateHierarchicalInstancingComponent( UStaticMesh* staticMesh,TArray<class UMaterialInterface*> overridenMaterials, uint8 numCustomData, bool useAsOccluder, FVector2D& minMaxCullDistance){ return nullptr; }

@@ -16,10 +16,8 @@ UCLASS()
 class FACTORYGAME_API AFGBuildablePipeHyper : public AFGBuildablePipeBase, public IFGPipeHyperInterface
 {
 	GENERATED_BODY()
-
-	AFGBuildablePipeHyper();
-	
 public:
+	AFGBuildablePipeHyper();
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
@@ -34,12 +32,10 @@ public:
 	virtual bool OnPipeEnter_Implementation( UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough = nullptr, const AActor* fromPipe = nullptr ) override;
 	// End FGHyperTube Interface
 private:
-
 	static const FName mConnectionName0;
 	static const FName mConnectionName1;
 
 	UPROPERTY()
 	FVector mExitOffset;
-
 };
 

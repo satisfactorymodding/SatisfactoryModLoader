@@ -119,6 +119,7 @@ private:
 	/** Helper to try and deduce the name of the mesh element on a given mesh component (Used to track changes to applied meshes between start and end of Material Effect) */
 	void TryGetFNameFromMeshComponent( UMeshComponent* meshComp, FName& out_meshName );
 
+	bool bDidCallFinished = false;
 public:
 	/** Delegates */
 	DECLARE_DELEGATE( FMaterialEffectStarted );

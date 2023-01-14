@@ -117,7 +117,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Pickup" )
 	FORCEINLINE FInventoryStack GetPickupItems() const{ return mPickupItems; }
 
-	FORCEINLINE const TSubclassOf< class UFGItemDescriptor >& GetPickupItemClass() const { return mPickupItems.Item.ItemClass; }
+	FORCEINLINE const TSubclassOf< class UFGItemDescriptor > GetPickupItemClass() const { return mPickupItems.Item.GetItemClass(); }
 
 	/** Get the respawn time in days*/
 	UFUNCTION( BlueprintPure, Category = "Pickup" )
@@ -152,6 +152,10 @@ public:
 	/** Should this item be destroyed on pickup b*/
 	UFUNCTION( BlueprintPure, Category = "Pickup" )
 	FORCEINLINE bool GetDestroyOnPickup() const{ return mDestroyOnPickup; }
+
+	/** Get the number of items the pickup have */
+	UFUNCTION( BlueprintPure, Category = "Pickup" )
+	FORCEINLINE int32 GetNumItems() const{ return mPickupItems.NumItems; }
 protected:
 	/**
 	* SERVER and Client picking up: Called right after this item is added to the players inventory, for GameplayEffects.
@@ -164,15 +168,15 @@ protected:
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Pickup" )
 	void SetNumItems( int32 numItems );
 
-	/** Get the number of items the pickup have */
-	UFUNCTION( BlueprintPure, Category = "Pickup" )
-	FORCEINLINE int32 GetNumItems() const{ return mPickupItems.NumItems; }
-
 	/** Called when the collection timer expires */
 	void OnCollectTimerComplete();
 
+	UFUNCTION(BlueprintPure)
+	bool IsEquipment() const;
 private:
-	/** Add the item to the player inventory */
+	/** Stack the item onto the player equipment slot, or as many as we can stack onto there. */
+	void AddToPlayerEquipmentSlots( AFGCharacterPlayer* byCharacter );
+	/** Add the item to the player inventory, or as many as we can add to there. */
 	void AddToPlayerInventory( class AFGCharacterPlayer* character );
 
 	/** Replicated and set when we are picked up */
@@ -242,4 +246,8 @@ private:
 	/** How many respawns are allowed on this item */
 	UPROPERTY( SaveGame )
 	int32 mNumRespawns;
+
+	/** Should this item be tracked by telemetry. */
+	UPROPERTY( EditDefaultsOnly, Category = "Telemetry" )
+	bool mSendTelemetryOnPickup;
 };

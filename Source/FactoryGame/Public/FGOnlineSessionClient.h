@@ -74,7 +74,6 @@ struct FSessionInformation
 	}
 
 	void Init( const FString& InMapName, const FString& InOptions, const FString& InSessionName, ESessionVisibility InVisibility );
-	void SendAnalytics( UWorld* world  );
 
 	void MarkAsOffline();
 

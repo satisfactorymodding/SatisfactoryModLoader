@@ -51,9 +51,6 @@ public:
 	/** Subsystem that handles the chat messages. */
 	UPROPERTY( EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGChatManager > mChatManagerClass;
-	/** Subsystem that handles the central storage. */
-	UPROPERTY( EditDefaultsOnly, Category = "Subsystem" )
-	TSubclassOf< class AFGCentralStorageSubsystem > mCentralStorageSubsystemClass;
 	/** Subsystem that handles the map */
 	UPROPERTY( EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGMapManager > mMapManagerClass;
@@ -101,4 +98,13 @@ public:
 	/** Handles actions relevant for photo mode, Camera adjustments, Simple sequences etc. */ 
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGSubsystem > mPhotoModeManagerClass;
+	/** Handles everything related to creatures. */ 
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGCreatureSubsystem > mCreatureSubsystemClass;
+	/** Helps scanning of objects */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGScannableSubsystem > mScannableSubsystemClass;
+	/** Responsible for Blueprint related functionality (in game blueprints, ie. templated buildings )*/
+	UPROPERTY( EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGBlueprintSubsystem > mBlueprintSubsystem;
 };

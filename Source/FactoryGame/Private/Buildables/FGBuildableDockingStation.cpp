@@ -4,12 +4,10 @@
 #include "Replication/FGReplicationDetailInventoryComponent.h"
 
 AFGBuildableDockingStation::AFGBuildableDockingStation() : Super() {
-	this->mDockPosition.X = 0.0;
-	this->mDockPosition.Y = 0.0;
+	this->mDockPosition = FVector2D::ZeroVector;
 	this->mMinimumDockingTime = 10.0;
 	this->mDockArea = nullptr;
 	this->mActorRepresentationTexture = nullptr;
-	this->mMapText = INVTEXT("DockingStation");
 	this->mStorageSizeX = 4;
 	this->mStorageSizeY = 4;
 	this->mFuelInventorySizeX = 1;
@@ -25,6 +23,7 @@ AFGBuildableDockingStation::AFGBuildableDockingStation() : Super() {
 	this->mStackTransferSize = 0.25;
 	this->mIsLoadUnloading = false;
 	this->mInfo = nullptr;
+	this->mTempInfo = nullptr;
 	this->mInventory = nullptr;
 	this->mFuelInventory = nullptr;
 	this->mForceSignificance = false;
@@ -34,7 +33,6 @@ AFGBuildableDockingStation::AFGBuildableDockingStation() : Super() {
 }
 void AFGBuildableDockingStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGBuildableDockingStation, mMapText);
 	DOREPLIFETIME(AFGBuildableDockingStation, mTransferProgress);
 	DOREPLIFETIME(AFGBuildableDockingStation, mIsInLoadMode);
 	DOREPLIFETIME(AFGBuildableDockingStation, mIsLoadUnloading);
@@ -72,6 +70,9 @@ void AFGBuildableDockingStation::UpdateItemTransferRate(bool dispatchToMainThrea
 bool AFGBuildableDockingStation::CanBeRefuelingVehicle(AFGWheeledVehicle* vehicle) const{ return bool(); }
 void AFGBuildableDockingStation::SetRefuelingVehicle(AFGWheeledVehicle* vehicle){ }
 bool AFGBuildableDockingStation::HasSufficientFuelType() const{ return bool(); }
+void AFGBuildableDockingStation::PreSerializedToBlueprint(){ }
+void AFGBuildableDockingStation::PostSerializedToBlueprint(){ }
+void AFGBuildableDockingStation::PostSerializedFromBlueprint(){ }
 void AFGBuildableDockingStation::Factory_Tick(float dt){ }
 void AFGBuildableDockingStation::Factory_TickProducing(float dt){ }
 void AFGBuildableDockingStation::Factory_CollectInput_Implementation(){ }

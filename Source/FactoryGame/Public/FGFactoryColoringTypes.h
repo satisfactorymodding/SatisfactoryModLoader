@@ -137,6 +137,18 @@ protected:
 	// Is this Material Desc the "default" for its category. This means it will be prioritized as the Build Menu Default selection if the player hasn't specified yet
 	UPROPERTY( EditDefaultsOnly )
 	bool IsCategoryDefault;
+
+public:
+	// Returns true if a new type was added, will crash if any entry is null to avoid issues in the material system.
+	bool AddType( TSubclassOf< class AFGBuildable > inBuildable, TSubclassOf<UFGRecipe> inRecipe );
+
+#if WITH_EDITOR
+	UFUNCTION(BlueprintCallable)
+	static void Sanitize( TSubclassOf<UFGFactoryCustomizationDescriptor_Material> MaterialToSanitize, FString invalidTypeName, TArray<TSubclassOf<class AFGBuildable>> &mPurgeList );
+
+	UFUNCTION(BlueprintCallable)
+	static void Purge(TSubclassOf<UFGFactoryCustomizationDescriptor_Material> MaterialToSanitize, TArray<TSubclassOf<class AFGBuildable>> mPurgeList);
+#endif
 };
 
 

@@ -1,9 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "ContentBrowserDelegates.h"
-#include "AlpakitSettings.h"
-#include "AssetData.h"
-#include "Dom/JsonObject.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogAlpakit, Verbose, All);
 
@@ -12,8 +9,13 @@ public:
     /** IModuleInterface implementation */
     virtual void StartupModule() override;
     virtual void ShutdownModule() override;
+    
+    /** ID name for the mod creator tab */
+    static const FName ModCreatorTabName;
 private:
     TSharedPtr<class FUICommandList> PluginCommands;
+
+    TSharedRef<SDockTab> HandleSpawnModCreatorTab(const FSpawnTabArgs& SpawnTabArgs);
     
     void RegisterSettings() const;
     void UnregisterSettings() const;

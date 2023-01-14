@@ -6,6 +6,8 @@
 #include "Equipment/FGEquipmentAttachment.h"
 #include "FGWeaponAttachment.generated.h"
 
+class UFGAmmoType;
+
 UCLASS()
 class FACTORYGAME_API AFGWeaponAttachment : public AFGEquipmentAttachment
 {
@@ -15,22 +17,21 @@ public:
 	/** Replication. */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
+	UFUNCTION( NetMulticast, Reliable, Category = "Attachment" )
+	void Multicast_PlayFireEffect( UFGAmmoType* ammoType );
+	
 	/** Handles playing of effects on remote clients */
 	UFUNCTION( BlueprintNativeEvent, Category = "Attachment" )
-	void PlayFireEffect( FVector flashLocation );
-
-	/** Called on all relevant attachments */
-	UFUNCTION( NetMulticast, Unreliable, Category = "Attachment" )
-	void Multicast_SetFlashLocation( const FVector& newFlashLocation );
+	void PlayFireEffect( UFGAmmoType* ammoType );
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "Attachment" )
 	void OnBeginFireEffect( FVector location );
 
-	UFUNCTION( NetMulticast, Unreliable, Category = "Attachment" )
+	UFUNCTION( NetMulticast, Reliable, Category = "Attachment" )
 	void Multicast_PlayBeginFireEffect( const FVector& location );
 
 	/** Called on all relevant attachments */
-	UFUNCTION( NetMulticast, Unreliable, Category = "Attachment" )
+	UFUNCTION( NetMulticast, Reliable, Category = "Attachment" )
 	void Multicast_PlayReloadEffectMulticast();
 
 	/** For client only */
@@ -42,14 +43,7 @@ public:
 
 	UFUNCTION( NetMulticast, Reliable, Category = "Attachment" )
 	void Multicast_SetIsLoaded( bool isLoaded );
-
 protected:
-	/** Called on remote clients when the player fires the weapon. Needed a function so I could overload in FGWeaponAttachmentProjectile */
-	virtual void PlayerFired( FVector flashLocation );
-protected:
-	/** Location that was hit ( or sometimes shoot direction ) */
-	FVector mFlashLocation;
-
 	UPROPERTY( BlueprintReadWrite, Category = "Attachment" )
 	bool mIsLoaded;
 };

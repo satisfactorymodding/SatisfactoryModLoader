@@ -15,7 +15,7 @@ bool AFGConveyorAttachmentHologram::TrySnapToActor(const FHitResult& hitResult){
 bool AFGConveyorAttachmentHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 float AFGConveyorAttachmentHologram::GetHologramHoverHeight() const{ return float(); }
 void AFGConveyorAttachmentHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
-bool AFGConveyorAttachmentHologram::ShouldBuildableBeConsideredForGuidelines( AFGBuildable* buildable) const{ return bool(); }
+bool AFGConveyorAttachmentHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
 int32 AFGConveyorAttachmentHologram::GetRotationStep() const{ return int32(); }
 void AFGConveyorAttachmentHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGConveyorAttachmentHologram::CheckValidPlacement(){ }

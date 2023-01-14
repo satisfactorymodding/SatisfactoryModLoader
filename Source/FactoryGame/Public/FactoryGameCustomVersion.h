@@ -76,6 +76,9 @@ struct FFactoryGameCustomVersion
 		// 2021-08-12: Moved variables and functions from BuildDescriptor to ItemDescriptor
 		RefactorDescriptors,
 
+		// 2021-12-03: Add support for sublevel saving. World actors are now cached in FGWorldSettings
+		CachedSaveActors,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1

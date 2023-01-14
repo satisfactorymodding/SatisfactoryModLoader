@@ -49,6 +49,9 @@ public:
 	/** Sets the amount of segments the ladder consists of. */
 	void SetNumSegments( int32 Num, bool ForceUpdate = false );
 
+	/* returns number of segments in the ladder */
+	int32 GetLadderNumSegments() const { return mNumSegments; }
+	
 	// Begin IFGSaveInterface
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	// End IFGSaveInterface

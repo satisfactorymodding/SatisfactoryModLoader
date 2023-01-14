@@ -15,25 +15,30 @@ enum class ERailroadBlockValidation : uint8
 	RBV_Valid 						UMETA( DisplayName = "Valid" ),
 	RBV_NoExitSignals				UMETA( DisplayName = "No Exit Signal" ),
 	RBV_ContainsLoop				UMETA( DisplayName = "Contains Loop" ),
-	RBV_ContainsMixedEntrySignals	UMETA( DisplayName = "Contains Mixed Entry Signals" )
+	RBV_ContainsMixedEntrySignals	UMETA( DisplayName = "Contains Mixed Entry Signals" ),
+	RBV_ContainsStation				UMETA( DisplayName = "Contain Station" ),
 };
 
 
-/** Status this block can have at a given entry signal. */
-enum class ERailroadBlockOccupancy : uint8
+/**
+ * Signal aspects used for signaling.
+ */
+UENUM( BlueprintType )
+enum class ERailroadSignalAspect : uint8
 {
-	RBO_Clear,
-	RBO_Occupied,
-	RBO_ReservationNeeded,
-	RBO_ReservationExclusive
+	RSA_None			UMETA( DisplayName = "None" ),
+	RSA_Clear			UMETA( DisplayName = "Clear" ),
+	RSA_Stop			UMETA( DisplayName = "Stop" ),
+	RSA_Dock			UMETA( DisplayName = "Dock" )
 };
 
 
-/** Status this block can have at a given entry signal. */
+/** How have this block been reserved. */
 enum class ERailroadBlockReservationType : uint8
 {
 	RBRT_Exclusive,
-	RBRT_Path
+	RBRT_Path,
+	RBRT_PartialPath
 };
 
 /**
@@ -104,8 +109,8 @@ public:
 	/** The block this reservation was made in. */
 	TWeakPtr< struct FFGRailroadSignalBlock > Block;
 
-	/** Saved name for owner of this reservation, used for debugging purposes. */
-	FString TrainName;
+	/** The train that made this reservation. */
+	TWeakObjectPtr< class AFGTrain > Train;
 	
 	/** The type of this reservation. */
 	ERailroadBlockReservationType Type = ERailroadBlockReservationType::RBRT_Exclusive;
@@ -133,10 +138,14 @@ public:
 	/**
 	 * The entry point into the block.
 	 * This is used to keep this signal green (valid entry).
+	 * This is reset when the train enters the reserved block.
 	 */
 	TWeakObjectPtr< class AFGBuildableRailroadSignal > EntrySignal;
 
-	/** First path segment in this reservation. */
+	/**
+	 * First path segment in this reservation.
+	 * This is reset when the train enters the reserved block.
+	 */
 	int32 EntryPathSegment = INDEX_NONE;
 	
 	/**
@@ -180,14 +189,14 @@ public:
 	void BlockExited( class AFGRailroadVehicle* byVehicle );
 
 	/**
-	 * See if this block is occupied from the given signals perspective.
+	 * See this block from the given signals perspective.
 	 *
 	 * For standard blocks, this reflects the occupancy of the block and any reservations from a trains brake distance.
 	 * For path blocks, multiple inbound signals might be green at the same time.
 	 *
-	 * If no signal is given, this always returns true.
+	 * If no signal is given, this always returns stop.
 	 */
-	ERailroadBlockOccupancy GetOccupancyFor( class AFGBuildableRailroadSignal* signal ) const;
+	ERailroadSignalAspect GetAspectFor( class AFGBuildableRailroadSignal* signal ) const;
 	
 	/** @return If this block is occupied by vehicles. */
 	bool IsOccupied() const;
@@ -246,6 +255,9 @@ private:
 	void CancelReservation( FFGRailroadBlockReservation* reservation );
 	void NotifyEnteredReservation( FFGRailroadBlockReservation* reservation );
 
+	/** Return true if this train have an approved reservation inside this block. */
+	bool HasApprovedReservation( const class AFGTrain* train ) const;
+
 public:
 	/** Delegate for when changes happens to this block, it can be aspect, reservation or validation changes. */
 	DECLARE_MULTICAST_DELEGATE( FOnBlockChanged )
@@ -256,6 +268,7 @@ public:
 	bool HasExitSignal = false;
 	bool ContainsLoop = false;
 	bool ContainsMixedEntrySignals = false;
+	bool ContainsStation = false;
 
 	/** Unique id for this block. Unique per track graph and not globally. */
 	int32 ID = INDEX_NONE;

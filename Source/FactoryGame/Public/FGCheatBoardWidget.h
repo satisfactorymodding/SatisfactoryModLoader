@@ -112,9 +112,7 @@ public:
 
 	/** Our cached cheat manager */
 	TWeakObjectPtr< UFGCheatManager > mCachedCheatManager;
-
-	/** Indicates if this widgets want to be destroyed */
-	bool mMarkedForDestroy;
+	
 private:
 	
 	/** Cached slot for the list of cheat buttons */

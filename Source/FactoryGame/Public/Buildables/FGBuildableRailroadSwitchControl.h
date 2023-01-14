@@ -25,7 +25,7 @@ public:
  * A component for controlling a switch's position.
  */
 UCLASS( Blueprintable )
-class FACTORYGAME_API AFGBuildableRailroadSwitchControl : public AFGBuildableFactory
+class FACTORYGAME_API AFGBuildableRailroadSwitchControl : public AFGBuildableFactory //@todo Why is this a factory.
 {
 	GENERATED_BODY()
 public:
@@ -47,6 +47,7 @@ public:
 
 	//~ Begin AFGBuildable interface
 	virtual bool CanBeSampled_Implementation() const{ return false; }
+	virtual bool ShouldBeConsideredForBase_Implementation() override { return false; }
 	//~ End AFGBuildable interface
 
 	// Begin IFGUseableInterface

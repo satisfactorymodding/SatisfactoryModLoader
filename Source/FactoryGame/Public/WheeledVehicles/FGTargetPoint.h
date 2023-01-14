@@ -183,7 +183,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 	virtual void Tick( float DeltaSeconds );
 #endif
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason );

@@ -6,7 +6,7 @@
  * Custom serialization version for save games.
  * If a custom version is no longer supported and has been cleaned up, add the prefix DROPPED_.
  */
-struct FSaveCustomVersion
+struct FACTORYGAME_API FSaveCustomVersion
 {
 	enum Type
 	{
@@ -98,15 +98,39 @@ struct FSaveCustomVersion
 		// 2021-09-21 Migrate FGTrain from native only to a blueprint class BP_Train.
 		TrainBlueprintClassAdded,
 
+		// 2021-12-03: Added sublevel streaming support
+		AddedSublevelStreaming,
+		
+		// 2022-08-10: Added additional track progression path to resource sink subsystem
+		AddedResourceSinkTrack,
+
+		// 2022-07-28: Added Coloring support to concrete pillars, in post load we check if the swatch if the default one, if so we swap it with concrete.
+		AddedColoringSupportToConcretePillars,
+		
+		// 2022-10-24: Readded since AddedColoringSupportToConcretePillars was merged to main
+		AddedResourceSinkTrack2,
+
+		// 2022-10-18: Added Cached locations for wire locations for use in visualization in blueprint hologram (can't depend on connection components)
+		AddedCachedLocationsForWire,
+
+		// 2022-11-17: Added migration of inventories from the old splitters and mergers to the new ones that have a smaller inventories.
+		ReworkedSplittersAndMergers,
+
+		// 2022-11-23: Added new productivity monitor implementation.
+		ReworkedProductivityMonitor,
+
+		// 2022-11-25: Nativized shopping list and added blueprint support.
+		NativizedShoppingList,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1
 	};
 
 	// The GUID for this custom version number
-	const static FGuid GUID;
+	inline static const FGuid GUID = FGuid( 0x21043E2F, 0x13E61FD6, 0x513B9D51, 0x3636A230 );
 
-	const static Type MinSupportedVersion;
+	inline static const Type MinSupportedVersion = DROPPED_CircuitObjects;
 
 private:
 	FSaveCustomVersion() {}

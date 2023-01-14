@@ -6,3 +6,5 @@
 void UFGRadiationSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 void UFGRadiationSettings::PostInitProperties(){ Super::PostInitProperties(); }
 #endif 
+#if WITH_EDITORONLY_DATA
+#endif 

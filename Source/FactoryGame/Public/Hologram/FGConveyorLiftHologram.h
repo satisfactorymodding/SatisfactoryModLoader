@@ -33,6 +33,9 @@ public:
 	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
 	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes ) const override;
 	virtual void PostHologramPlacement() override;
+	virtual void CheckClearance(const FVector& locationOffset) override;
+	virtual void CheckBlueprintCommingling() override;
+	virtual bool IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface
@@ -145,5 +148,8 @@ private:
 	
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
 	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeReverse;
+
+	UPROPERTY()
+	float mFirstStepYaw;
 };
 

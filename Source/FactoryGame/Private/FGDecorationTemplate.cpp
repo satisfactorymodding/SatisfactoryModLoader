@@ -3,6 +3,8 @@
 #include "FGDecorationTemplate.h"
 #include "Components/SceneComponent.h"
 
+#if WITH_EDITORONLY_DATA
+#endif 
 AFGDecorationTemplate::AFGDecorationTemplate() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 }

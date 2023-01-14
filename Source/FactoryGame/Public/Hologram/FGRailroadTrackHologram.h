@@ -36,6 +36,7 @@ public:
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
+	virtual void CheckBlueprintCommingling() override;
 	// End AFGHologram interface
 
 	// Begin AFGBuildableHologram interface

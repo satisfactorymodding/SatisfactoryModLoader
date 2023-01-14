@@ -2,9 +2,12 @@
 
 #include "FGBuildablePillar.h"
 
-AFGBuildablePillar::AFGBuildablePillar() : Super() {
-	this->mSize.X = 0.0;
-	this->mSize.Y = 0.0;
-	this->mSize.Z = 0.0;
+AFGBuildablePillar::AFGBuildablePillar(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mSize = FVector::ZeroVector;
 	this->mIsSupport = false;
+	this->mLegacySwatch = nullptr;
+}
+void AFGBuildablePillar::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+AFGBuildablePillarLightweight::AFGBuildablePillarLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mMeshComponentProxy = nullptr;
 }

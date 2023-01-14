@@ -3,7 +3,7 @@
 #include "Buildables/FGBuildableWalkway.h"
 #include "Hologram/FGWalkwayHologram.h"
 
-AFGBuildableWalkway::AFGBuildableWalkway() : Super() {
+AFGBuildableWalkway::AFGBuildableWalkway(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mSize = 200.0;
 	this->mElevation = 0.0;
 	this->mDisableSnapOn.Front = false;
@@ -13,4 +13,7 @@ AFGBuildableWalkway::AFGBuildableWalkway() : Super() {
 	this->mDisableSnapOn.Top = true;
 	this->mDisableSnapOn.Bottom = true;
 	this->mHologramClass = AFGWalkwayHologram::StaticClass();
+}
+AFGBuildableWalkwayLightweight::AFGBuildableWalkwayLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mMeshComponentProxy = nullptr;
 }

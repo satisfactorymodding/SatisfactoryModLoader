@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGActorRepresentation.h"
+#include "FGRemoteCallObject.h"
 #include "FGActorRepresentationManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActorRepresentationAdded, UFGActorRepresentation*, newRepresentation );
@@ -14,6 +15,51 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnActorRepresentationUpdatedCompa
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnActorRepresentationUpdatedMapShow, UFGActorRepresentation*, updatedRepresentation, bool, newShouldShowOnMap );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnActorRepresentationTypeFilteredOnMap, ERepresentationType, representationType, bool, visible );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnActorRepresentationTypeFilteredOnCompass, ERepresentationType, representationType, bool, visible );
+
+USTRUCT()
+struct FResourceNodeRepresentationPair
+{
+	GENERATED_BODY()
+	
+	FResourceNodeRepresentationPair():
+		ResourceNode( nullptr ),
+		ScanCount( 0 )
+	{}
+
+	FResourceNodeRepresentationPair( class AFGResourceNodeBase* resourceNode, int32 scanCount ) :
+		ResourceNode( resourceNode ),
+		ScanCount( scanCount )
+	{}
+
+	UPROPERTY()
+	class AFGResourceNodeBase* ResourceNode;
+	UPROPERTY()
+	int32 ScanCount;
+};
+
+UCLASS()
+class FACTORYGAME_API UFGActorRepresentationRemoteCallObject : public UFGRemoteCallObject
+{
+	GENERATED_BODY()
+public:
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+
+	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
+	bool mForceNetField_UFGActorRepresentationRemoteCallObject = false;
+
+	// UFUNCTION( Client, Reliable )
+	// void Client_AddResourceNodeRepresentations( const TArray< class AFGResourceNodeBase* >& resourceNodes );
+	//
+	// UFUNCTION( Client, Reliable )
+	// void Client_RemoveResourceNodeRepresentations( const TArray< class AFGResourceNodeBase* >& resourceNodes );
+
+	// UFUNCTION( Server, Reliable )
+	// void Server_RequestResourceNodeRepresentations();
+	//
+	// UFUNCTION( Client, Reliable )
+	// void Client_SyncResourceNodeRepresentations( const TArray< FResourceNodeRepresentationPair >& resourceNodeRepresentationPairs );
+
+};
 
 /**
  * This class manages all the representations of actors that are used in the compass and on the map.
@@ -32,27 +78,39 @@ public:
 
 public:
 	AFGActorRepresentationManager();
-
-	/** Replication */
-	void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	
+	// Begin AActor interface
+	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void PreReplication( IRepChangedPropertyTracker& changedPropertyTracker ) override;
 	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags ) override;
+	virtual void OnSubobjectCreatedFromReplication(UObject* newSubobject) override;
+	virtual void OnSubobjectDestroyFromReplication(UObject* subobject) override;
+	virtual void BeginPlay() override;
+	// End AActor interface
 
 	/** Creates a new actor representation. Must be called on server for representation that aren't local to appear for all players. */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	bool CreateAndAddNewRepresentation( AActor* realActor, bool isLocal = false );
-
-	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	bool UpdateRepresentation( AActor* realActor, bool isLocal = false );
+	UFGActorRepresentation* CreateAndAddNewRepresentation( AActor* realActor, const bool isLocal = false, TSubclassOf<UFGActorRepresentation> representationClass = nullptr );
 
 	/** Creates a new representation for something that doesn't have an actor. Must be called on server for representations that aren't local to appear for all players. */
+	UFGActorRepresentation* CreateNewRepresentationNoActor( FVector location, class UTexture2D* compassTexture, FLinearColor compassColor, float lifeSpan, bool shouldShowInCompass, bool shouldShowOnMap, ERepresentationType representationType = ERepresentationType::RT_Default, TSubclassOf<UFGActorRepresentation> representationClass = nullptr );
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	bool CreateAndAddNewRepresentationNoActor( FVector location, class UTexture2D* compassTexture, FLinearColor compassColor, float lifeTime, bool shouldShowInCompass, bool shouldShowOnMap, ERepresentationType representationType = ERepresentationType::RT_Default, bool isLocal = true );
+	UFGActorRepresentation* CreateAndAddNewRepresentationNoActor( FVector location, class UTexture2D* compassTexture, FLinearColor compassColor, float lifeSpan, bool shouldShowInCompass, bool shouldShowOnMap, ERepresentationType representationType = ERepresentationType::RT_Default, TSubclassOf<UFGActorRepresentation> representationClass = nullptr );
 
+	void AddRepresentation( class UFGActorRepresentation* actorRepresentation );
+	
+	UFUNCTION( BlueprintCallable, Category = "Representation" )
+	bool UpdateRepresentationOfActor( AActor* realActor ); // const
+	bool UpdateRepresentation( UFGActorRepresentation* actorRepresentation ) const; // const
+	
 	/** Removes the representation of an actor */
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Representation" )
 	bool RemoveRepresentationOfActor( AActor* realActor );
 
+	void RemoveRepresentation( class UFGActorRepresentation* actorRepresentation );
+	
+	class UFGResourceNodeRepresentation* FindResourceNodeRepresentation( class AFGResourceNodeBase* resourceNode );
+	
 	/** Gathers all representations and returns them */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
 	void GetAllActorRepresentations( UPARAM( ref ) TArray< class UFGActorRepresentation* >& out_AllRepresentations );
@@ -85,14 +143,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Filtering" )
 	float GetDistanceValueFromCompassViewDistance( ECompassViewDistance compassViewDistance );
 
-protected:
-	// Begin AActor interface
-	virtual void Tick( float dt ) override;
-	// End AActor interface
-
 private:
 	UFUNCTION()
-	void OnRep_ReplicatedRepresentations();
+	void OnRep_ReplicatedRepresentations( TArray< class UFGActorRepresentation* > previousReplicatedRepresentations );
 
 public:
 	/** Called whenever a new representation is added */
@@ -124,15 +177,14 @@ public:
 	FOnActorRepresentationTypeFilteredOnCompass mOnActorRepresentationTypeFilteredOnCompass;
 
 private:
+	friend class UFGActorRepresentationRemoteCallObject;
+
+	/** All actor representations. Parts of it are synced over network and other parts is added locally. Used to get all relevant representations for the current instance */
+	UPROPERTY()
+	TArray< class UFGActorRepresentation* > mAllRepresentations;
+	
 	/** These are all the representations of actors that should replicate from server to clients */
 	UPROPERTY( ReplicatedUsing = OnRep_ReplicatedRepresentations )
 	TArray< class UFGActorRepresentation* > mReplicatedRepresentations;
-
-	/** Simulated on client to keep track of added and removed representations */
-	UPROPERTY()
-	TArray< UFGActorRepresentation* > mClientReplicatedRepresentations;
-
-	/** These are representation that the local player adds for them selves, often temporary stuff that others shouldn't see */
-	UPROPERTY()
-	TArray< UFGActorRepresentation* > mLocalRepresentations;
+	
 };

@@ -5,8 +5,6 @@
 
 DEFINE_LOG_CATEGORY(LogPoolSystem);
 bool FPoolInstanceBase::ResolveHitResults(const TArray<FHitResult>& inHits, const TArray<UClass*>& classesToCheckAgainst, FVector& outHitLocation, float& inNearestDistance){ return bool(); }
-#if 0
-#endif 
 void FPoolInstanceComponent::Claim(int32 EntryId){ }
 bool FPoolInstanceComponent::Update(const TArray<FPoolItem*>& entries){ return bool(); }
 void FPoolMeshComponent::Claim(int32 EntryId){ }
@@ -47,6 +45,9 @@ void FFGBackgroundThread::UpdateItems(TArray<FPoolItem*> &Bucket, const FVector 
 void FFGBackgroundThread::DumpDebug(){ }
 void FFGBackgroundThread::RefreshScalabilityVariables(){ }
 void FFGBackgroundThread::ApplyScalability(){ }
+void FFGBackgroundThread::EnqueueProductionEntry(const TSubclassOf<class UFGItemDescriptor> mProducedItem, uint64 mCount, float mWorldTime, AActor* Actor){ }
+void FFGBackgroundThread::ResolveProductionQueue(){ }
+void FFGBackgroundThread::DispatchToStatisticsSubsystem(){ }
 void APoolRoot::UpdateBuildingState( AFGBuildable* Building, int32 FlagsToSet){ }
 void APoolRoot::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos){ }
 void APoolRoot::SetFlag(AFGBuildable* Buildable,  int32 Flags){ }

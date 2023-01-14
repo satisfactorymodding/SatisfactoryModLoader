@@ -4,6 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Styling/SlateBrush.h"
+#include "Engine/Texture2D.h"
 #include "UObject/NoExportTypes.h"
 #include "FGCategory.generated.h"
 
@@ -20,19 +22,35 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Organization" )
 	static FText GetCategoryName( TSubclassOf< UFGCategory > inClass );
 
+	UFUNCTION( BlueprintPure, Category = "Organization" )
+	FText GetCategoryNameFromInstance() const { return mDisplayName; }
+	
+	UFUNCTION( BlueprintPure, Category = "Organization" )
+	FString GetCategoryNameFromInstanceAsString() const { return mDisplayName.ToString(); }
+	
 	/** The order we want item categories in menus, lower is earlier */
 	UFUNCTION( BlueprintPure, Category = "Organization" )
 	static float GetMenuPriority( TSubclassOf< UFGCategory > inClass );
-
+	
+	UFUNCTION( BlueprintPure, Category = "Organization" )
+	float GetMenuPriorityFromInstance() const { return mMenuPriority; }
+	
 	/** Sort an array dependent on their menu priority. */
 	UFUNCTION( BlueprintCallable, Category = "Organization" )
 	static void SortByMenuPriority( UPARAM( ref ) TArray< TSubclassOf< UFGCategory > >& itemCategories );
 
+	UFUNCTION( BlueprintCallable, Category = "Organization" )
+	static void SortInstancesByMenuPriority( UPARAM( ref ) TArray< UFGCategory* >& itemCategories );
+	
+	
 	/** Get the icon for a category */
 	UFUNCTION( BlueprintPure, Category = "Organization" )
 	static FSlateBrush GetCategoryIcon( TSubclassOf< UFGCategory > inClass );
 
-private:
+	UFUNCTION( BlueprintPure, Category = "Organization" )
+	UTexture2D* GetCategoryIconFromInstance();
+	
+protected:
 	/** Name of this item category*/
 	UPROPERTY( EditDefaultsOnly, Category = "Organization" )
 	FText mDisplayName;

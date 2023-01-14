@@ -9,6 +9,8 @@ AFGEquipmentZipline::AFGEquipmentZipline() : Super() {
 	this->mTraceStartOffset = 300.0;
 	this->mTraceRadius = 70.0;
 	this->mVisualizeTraceDistance = false;
+	this->mActiveNoise = nullptr;
+	this->mActiveNoiseFrequency = 0.2;
 	this->mZiplineReattachCooldown = 1.0;
 }
 void AFGEquipmentZipline::AddEquipmentActionBindings(){ }
@@ -30,3 +32,4 @@ void AFGEquipmentZipline::OnCrouchPressed(){ }
 void AFGEquipmentZipline::OnCrouchReleased(){ }
 void AFGEquipmentZipline::OnJumpPressed(){ }
 void AFGEquipmentZipline::TryToGrab(){ }
+void AFGEquipmentZipline::MakeActiveNoise(){ }

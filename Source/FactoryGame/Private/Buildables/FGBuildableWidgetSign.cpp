@@ -8,7 +8,7 @@ AFGBuildableWidgetSign::AFGBuildableWidgetSign() : Super() {
 	this->mWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetDisplayRoot"));
 	this->mSignTypeDescriptor = nullptr;
 	this->mPrefabLayout = nullptr;
-	this->mGainSignificanceDistance = 1000000.0;
+	this->mGainSignificanceDistance = 10000.0;
 	this->mWidgetMaterial = nullptr;
 	this->mActivePrefabLayout = nullptr;
 	this->mForegroundColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
@@ -34,6 +34,9 @@ TSubclassOf< UFGSignTypeDescriptor > AFGBuildableWidgetSign::GetSignTypeDescript
 FVector2D AFGBuildableWidgetSign::GetSignDimensions_Implementation(){ return FVector2D(); }
 void AFGBuildableWidgetSign::GainedSignificance_Implementation(){ }
 void AFGBuildableWidgetSign::LostSignificance_Implementation(){ }
+UFGFactoryClipboardSettings* AFGBuildableWidgetSign::CopySettings_Implementation(){ return nullptr; }
+bool AFGBuildableWidgetSign::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
+void AFGBuildableWidgetSign::OnBuildEffectFinished(){ }
 void AFGBuildableWidgetSign::SetPrefabSignData(FPrefabSignData& signData){ }
 void AFGBuildableWidgetSign::GetSignPrefabData(FPrefabSignData& out_signData){ }
 void AFGBuildableWidgetSign::UpdateSignElements(FPrefabSignData& prefabSignData){ }

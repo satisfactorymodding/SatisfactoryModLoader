@@ -9,8 +9,7 @@ AFGBuildableSignSupport::AFGBuildableSignSupport() : Super() {
 	this->mPoleComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("PoleComponentProxy"));
 	this->mHeight = 100.0;
 	this->mPoleMesh = nullptr;
-	this->mPoleScale.X = 1.0;
-	this->mPoleScale.Y = 1.0;
+	this->mPoleScale = FVector2D::UnitVector;
 	this->mHologramClass = AFGSignPoleHologram::StaticClass();
 	this->mPoleComponentProxy->SetupAttachment(RootComponent);
 }

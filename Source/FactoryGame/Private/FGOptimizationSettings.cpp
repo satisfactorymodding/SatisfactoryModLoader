@@ -2,5 +2,7 @@
 
 #include "FGOptimizationSettings.h"
 
+#if WITH_EDITORONLY_DATA
+#endif 
 #if WITH_EDITOR
 #endif 

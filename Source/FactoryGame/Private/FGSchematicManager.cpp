@@ -31,6 +31,7 @@ void AFGSchematicManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 }
 void AFGSchematicManager::PreInitializeComponents(){ Super::PreInitializeComponents(); }
 void AFGSchematicManager::BeginPlay(){ }
+void AFGSchematicManager::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGSchematicManager::Tick(float dt){ }
 void AFGSchematicManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGSchematicManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -46,6 +47,7 @@ void AFGSchematicManager::GetAllPurchasedSchematics(TArray< TSubclassOf< UFGSche
 void AFGSchematicManager::GetAllSchematics(TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllSchematicsOfType(ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllSchematicsOfTypeFilteredOnDependency(ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
+void AFGSchematicManager::GetAllVisibleSchematicsOfType(ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 bool AFGSchematicManager::IsSchematicPurchased(TSubclassOf< UFGSchematic > schematicClass) const{ return bool(); }
 void AFGSchematicManager::GiveAccessToSchematic(TSubclassOf< UFGSchematic > schematicClass, bool accessedViaCheats){ }
 void AFGSchematicManager::AddAvailableSchematic(TSubclassOf< UFGSchematic > schematicClassToAdd){ }
@@ -68,12 +70,15 @@ void AFGSchematicManager::Debug_DumpStateToLog() const{ }
 TArray< TSubclassOf< class UFGRecipe > > AFGSchematicManager::Debug_GetAllRecipes() const{ return TArray<TSubclassOf<class UFGRecipe> >(); }
 void AFGSchematicManager::Cheat_GiveAllSchematics(){ }
 bool AFGSchematicManager::CanGiveAccessToSchematic(TSubclassOf< UFGSchematic > schematic) const{ return bool(); }
+void AFGSchematicManager::GetVisibleSchematicCategoryData(ESchematicType schematicType, TArray< FSchematicCategoryData >& out_schematicCategoryData){ }
 void AFGSchematicManager::PopulateSchematicsLists(){ }
 void AFGSchematicManager::PopulateAvailableSchematicsList(){ }
 void AFGSchematicManager::OnRep_ActiveSchematic(){ }
-void AFGSchematicManager::OnRep_PurchasedSchematic(){ }
+void AFGSchematicManager::OnRep_PurchasedSchematic(TArray< TSubclassOf< UFGSchematic > > lastPurchasedSchematics){ }
 void AFGSchematicManager::OnRep_PaidOffOnSchematic(){ }
 int32 AFGSchematicManager::FindHighestAvailableTechTier(){ return int32(); }
 FSchematicCost* AFGSchematicManager::FindSchematicPayOff(TSubclassOf<  UFGSchematic > schematic){ return nullptr; }
 void AFGSchematicManager::AddSchematicPayOff(TSubclassOf<  UFGSchematic > schematic, const TArray< FItemAmount >& amount){ }
 void AFGSchematicManager::RemoveSchematicPayOff(TSubclassOf<  UFGSchematic > schematic){ }
+void AFGSchematicManager::SubmitUnlockSchematicTelemetry(TSubclassOf< UFGSchematic > schematicClass){ }
+void AFGSchematicManager::SubmitMilestoneTelemetry(TSubclassOf< UFGSchematic > activeSchematic){ }

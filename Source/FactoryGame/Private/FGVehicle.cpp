@@ -2,6 +2,7 @@
 
 #include "FGVehicle.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "FGDotReceiverComponent.h"
 #include "FGHealthComponent.h"
 #include "FGSwatchGroup.h"
 
@@ -24,20 +25,8 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mHologramClass = nullptr;
 	this->mMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("VehicleMesh"));
 	this->mHealthComponent = CreateDefaultSubobject<UFGHealthComponent>(TEXT("HealthComponent"));
-	this->mDisabledByWaterLocations.Emplace();
-	this->mDisabledByWaterLocations[0].X = 0.0;
-	this->mDisabledByWaterLocations[0].Y = 0.0;
-	this->mDisabledByWaterLocations[0].Z = 0.0;
-	this->mCustomizationData.SwatchDesc = nullptr;
-	this->mCustomizationData.PatternDesc = nullptr;
-	this->mCustomizationData.MaterialDesc = nullptr;
-	this->mCustomizationData.SkinDesc = nullptr;
-	this->mCustomizationData.OverrideColorData.Metallic = 0.0;
-	this->mCustomizationData.OverrideColorData.Roughness = 0.0;
-	this->mCustomizationData.PatternRotation = 0;
-	this->mCustomizationData.ColorSlot = 0;
-	this->mCustomizationData.NeedsSkinUpdate = false;
-	this->mCustomizationData.HasPower = 0;
+	this->mDOTReceiverComponent = CreateDefaultSubobject<UFGDotReceiverComponent>(TEXT("DotReceiverComponent"));
+	this->mDisabledByWaterLocations.Add(FVector::ZeroVector);
 	this->mFactorySkinClass = nullptr;
 	this->mSwatchGroup = UFGSwatchGroup_Vehicle::StaticClass();
 	this->mBuiltWithRecipe = nullptr;
@@ -49,7 +38,6 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mSubmergedAngularDamping = 6.0;
 	this->mSubmergedLinearDamping = 15.0;
 	this->mSubmergedBouyantForce = 1000.0;
-	this->mGasDamageType = nullptr;
 	this->mJumpPadForceMultiplier = 1.0;
 	this->mIsSimulated = false;
 	this->mAddToSignificanceManager = true;
@@ -100,14 +88,6 @@ void AFGVehicle::Dismantle_Implementation(){ }
 void AFGVehicle::StartIsLookedAtForDismantle_Implementation(AFGCharacterPlayer* byCharacter){ }
 void AFGVehicle::StopIsLookedAtForDismantle_Implementation(AFGCharacterPlayer* byCharacter){ }
 void AFGVehicle::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }
-void AFGVehicle::RegisterIncomingAttacker_Implementation( AFGEnemyController* forController){ }
-void AFGVehicle::UnregisterAttacker_Implementation( AFGEnemyController* forController){ }
-AActor* AFGVehicle::GetActor_Implementation(){ return nullptr; }
-float AFGVehicle::GetEnemyTargetDesirability_Implementation( AFGEnemyController* forController){ return float(); }
-bool AFGVehicle::ShouldAutoregisterAsTargetable_Implementation() const{ return bool(); }
-UPrimitiveComponent* AFGVehicle::GetTargetComponent_Implementation(){ return nullptr; }
-bool AFGVehicle::IsAlive_Implementation() const{ return bool(); }
-FVector AFGVehicle::GetAttackLocation_Implementation() const{ return FVector(); }
 bool AFGVehicle::CanBeSampled(){ return bool(); }
 USkeletalMeshComponent* AFGVehicle::GetMesh() const{ return nullptr; }
 bool AFGVehicle::DriverEnter( AFGCharacterPlayer* driver){ return bool(); }

@@ -7,7 +7,6 @@
 AFGBuildableRailroadSwitchControl::AFGBuildableRailroadSwitchControl() : Super() {
 	this->mSwitchComponent = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("Switch Component"));
 	this->mControlledConnection = nullptr;
-	this->mVisualState = 0;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;

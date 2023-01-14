@@ -40,6 +40,7 @@ public:
 	virtual void GetSupportedBuildModes_Implementation( TArray<TSubclassOf<UFGHologramBuildModeDescriptor>>& out_buildmodes ) const override;
 	virtual void OnBuildModeChanged() override;
 	virtual bool CanBeZooped() const override;
+	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
 	// End AFGHologram interface
 
 	// Begin AFGBuildableHologram interface
@@ -59,7 +60,7 @@ protected:
 	// End AFGHologram Interface
 	
 	// Begin AFGBuildableHologram interface
-	virtual bool IsHologramIdenticalToBuildable( class AFGBuildable* buildable, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
 	// End AFGBuildableHologram interface
 	
 	UFUNCTION()

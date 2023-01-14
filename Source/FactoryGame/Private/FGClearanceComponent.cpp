@@ -10,10 +10,12 @@ UFGClearanceComponent::UFGClearanceComponent() : Super() {
 	this->BodyInstance.SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	this->BodyInstance.SetCollisionProfileName(TEXT("Clearance"));
 	this->Mobility = EComponentMobility::Static;
+	this->bCanEverAffectNavigation = false;
 }
 UFGComplexClearanceComponent::UFGComplexClearanceComponent() : Super() {
 	this->BodyInstance.SetObjectType(ECC_GameTraceChannel4);
 	this->BodyInstance.SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	this->BodyInstance.SetCollisionProfileName(TEXT("Clearance"));
 	this->Mobility = EComponentMobility::Static;
+	this->bCanEverAffectNavigation = false;
 }

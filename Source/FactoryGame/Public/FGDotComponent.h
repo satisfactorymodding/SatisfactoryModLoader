@@ -17,10 +17,6 @@ class FACTORYGAME_API UFGDotComponent : public USceneComponent
 public:
 	UFGDotComponent();
 
-	//~ Begin UObject interface
-	virtual void PostLoad() override;
-	//~ End UObject interface
-
 	//~ Begin ActorComponent interface
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
@@ -31,35 +27,22 @@ public:
 #if WITH_EDITOR
 	virtual void CheckForErrors();
 #endif
-protected:
-	/** Start the timer that will damage actors */
-	void StartDamageTimer();
-
-	/** Called whenever a primitive component enters the volume, this triggers check if we should start damage them */
-	UFUNCTION()
-	virtual void OnPrimitiveComponentEntered( UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult );
-
-	/** Called whenever a primitive component enters the volume, stop damage them */
-	UFUNCTION()
-	virtual void OnPrimitiveComponentExited( UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex );
-
-	/** Called by timer to tell us to damage the containing actors */
-	UFUNCTION()
-	void DamageContainingActors();
-
-private:
-	void AddActorToDamage( AActor* actor );
-	void RemoveActorToDamage( AActor* actor );
 	
 protected:
+	UFUNCTION()
+	virtual void OnActorBeginOverlap( AActor* overlappedActor, AActor* otherActor );
+	
+	UFUNCTION()
+	virtual void OnActorEndOverlap( AActor* overlappedActor, AActor* otherActor );
+
+	void RegisterDOTForActor( AActor* actor, bool shouldRegister ) const;
+	
+protected:	
 	/** The dot we should apply to things in the primitive component we are attached to */
 	UPROPERTY( EditAnywhere, Category = "Dot" )
 	TSubclassOf< class UFGDamageOverTime > mDotClass;
 
-	/** The actors we want to damage */
+	/** Actors which our primitive component is overlapping. */
 	UPROPERTY()
-	TArray< class AActor* > mActorsToDamage;
-
-	/** handle to keep track of when we want to damage actors */
-	FTimerHandle mDamageTimerHandle;
+	TArray< AActor* > mOverlappingActor;
 };

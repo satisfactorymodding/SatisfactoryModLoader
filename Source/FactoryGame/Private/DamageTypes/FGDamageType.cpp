@@ -2,14 +2,16 @@
 
 #include "DamageTypes/FGDamageType.h"
 
+TAutoConsoleVariable<int32> CVarDamageTypeRangeDebug(TEXT("CVarDamageTypeRangeDebug"), 0, TEXT(""));
 UFGDamageType::UFGDamageType(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mImpactAudioEvent = nullptr;
-	this->mPlayImpactAudioOn = EPlayOnDamageEvent::PODE_OnTakeAnyDamage;
-	this->mImpactAudioSetting = EOverrideSetting::OS_Additive;
 	this->mImpactParticle = nullptr;
-	this->mPlayImpactParticleOn = EPlayOnDamageEvent::PODE_OnTakeAnyDamage;
-	this->mImpactParticleSetting = EOverrideSetting::OS_Additive;
+	this->mAttachParticleToTarget = false;
 	this->mShouldDamageDestructible = false;
-	this->mDamageImpulseZ = 100.0;
-	this->mShouldShockEnemy = false;
+	this->mDamageAmount = 1.0;
+	this->mAlwaysCauseStun = false;
+	this->DamageImpulse = 0.0;
+	this->DestructibleImpulse = 0.0;
 }
+void UFGDamageType::ProcessDamage(const FHitResult& hitResult,  AController* instigator, AActor* damageCauser, float damageAmount, TArray<AActor*> ignoredActors){ }
+void UFGDamageType::SpawnEffects(const FHitResult& hitResult, AActor* outer){ }

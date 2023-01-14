@@ -2,5 +2,3 @@
 
 #include "SaveCustomVersion.h"
 
-const FGuid FSaveCustomVersion::GUID =  FGuid(0x21043E2F, 0x13E61FD6, 0x513B9D51, 0x3636A230); //See symbol ?GUID@FSaveCustomVersion@@2UFGuid@@B in IDA for value <21043E2Fh, 13E61FD6h, 513B9D51h, 3636A230h>;
-const FSaveCustomVersion::Type FSaveCustomVersion::MinSupportedVersion = FSaveCustomVersion::Type();

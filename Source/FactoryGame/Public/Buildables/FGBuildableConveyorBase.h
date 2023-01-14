@@ -353,11 +353,14 @@ struct FConveyorBeltItems
 	}
 
 
-	FORCEINLINE void RemoveItemFromListAt( int16 index )
+	FORCEINLINE void RemoveItemFromListAt( int16 index, bool bMarkDirty = true )
 	{
 		Items.RemoveAt( index );
 
-		MarkArrayDirty();
+		if ( bMarkDirty )
+		{
+			MarkArrayDirty();
+		}
 	}
 
 	FORCEINLINE bool IsRemovedAt( int16 index ) const
@@ -375,6 +378,16 @@ struct FConveyorBeltItems
 		return Items[ index ];
 	}
 
+	FORCEINLINE FConveyorBeltItem& GetItemUnsafe( int16 index )
+	{
+		return Items.GetData()[index];
+	}
+
+	FORCEINLINE const FConveyorBeltItem& GetItemUnsafe( int16 index ) const
+	{
+		return Items.GetData()[index];
+	}
+	
 	FORCEINLINE const FConveyorBeltItem& operator[]( int16 index ) const
 	{
 		return Items[ index ];
@@ -410,6 +423,13 @@ struct FConveyorBeltItems
 
 	void UpdateLastestIDFromState();
 
+	void Empty()
+	{
+		Items.Empty();
+		
+		MarkArrayDirty();
+	}
+	
 	/** Custom serialization of all items. */
 	friend FArchive& operator<<( FArchive& ar, FConveyorBeltItems& items );
 
@@ -509,6 +529,10 @@ public:
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	// End IFGSaveInterface
 
+	// Begin AFGBuildable interface
+	virtual bool ShouldBeConsideredForBase_Implementation() override;
+	// End AFGBuildable interface
+	
 	// Begin AFGBuildableFactory interface
 	virtual void Factory_Tick( float deltaTime ) override;
 	virtual uint8 MaxNumGrab( float dt ) const override;
@@ -564,7 +588,6 @@ public:
 	FORCEINLINE void MarkItemTransformsDirty()
 	{
 		mPendingUpdateItemTransforms = true;
-		mFramesStalled = 0;
 	}
 
 	/** Returns how much room there was on the belt after the last factory tick. If the belt is empty it will return the length of the belt */
@@ -572,6 +595,18 @@ public:
 	{
 		return mCachedAvailableBeltSpace;
 	}
+
+#if !UE_BUILD_SHIPPING 
+	void DebugDrawStalled() const;
+#endif
+	
+#if UE_BUILD_SHIPPING // Shipping uses a force inline without debug logic.
+	FORCEINLINE void SetStalled(bool stall) const { mIsStalled = stall; }
+#else
+	void SetStalled(bool stall) const;
+#endif
+
+	void EmptyBelt() { mItems.Empty(); }
 	
 protected:
 	// Begin Factory_ interface
@@ -650,14 +685,17 @@ public:
 	/** Spacing between each conveyor item, from origo to origo. */
 	static constexpr float ITEM_SPACING = 120.0f;
 
-	// TODO maybe add a getter & Setter instead of moving this to public.
+	FORCEINLINE bool IsStalled() const { return mCanEverStall && mIsStalled && mItems.Num() != 0; }
+
 	bool mPendingUpdateItemTransforms;
 
-	TMap< FName, TArray< FTransform > > mCachedTransforms;
+private:
+	/* Used to block updating when items cannot move.*/
+	mutable uint8 mIsStalled:1;
 
-	/* Number of frames the conveyor belt has stalled used in the experimental conveyor renderer to see if we should cache or not. */
-	uint8 mFramesStalled;
-
+	/* Belts directly connected cannot stall.*/
+	uint8 mCanEverStall:1;
+	
 protected:
 
 	/** Speed of this conveyor. */
@@ -667,7 +705,8 @@ protected:
 	/** Length of the conveyor. */
 	float mLength;
 
-	/** All the locally simulated resource offsets on the conveyor belt. */
+	/** All the locally simulated resource offsets on the conveyor belt.
+	 * This array is an items queue, first items in the array is the last item on the belt. */
 	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
 	FConveyorBeltItems mItems;
 
@@ -689,5 +728,4 @@ private:
 
 	/** The id for the conveyor bucket this conveyor belongs to */
 	int32 mConveyorBucketID;
-
 };

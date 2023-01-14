@@ -15,13 +15,12 @@ AFGMapManager::AFGMapManager() : Super() {
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.1;
-}
-void AFGMapManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	this->SetHidden(false);
 }
 void AFGMapManager::BeginPlay(){ }
+void AFGMapManager::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGMapManager::Tick(float dt){ }
+void AFGMapManager::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGMapManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGMapManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGMapManager::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -31,9 +30,45 @@ bool AFGMapManager::NeedTransform_Implementation(){ return bool(); }
 bool AFGMapManager::ShouldSave_Implementation() const{ return bool(); }
 void AFGMapManager::RequestFogOfWarData( AFGPlayerController* playerController){ }
 void AFGMapManager::TransferFogOfWarData(){ }
+void AFGMapManager::TransferMapMarkerData(){ }
 void AFGMapManager::SyncFogOfWarChanges(const TArray<uint8>& fogOfWarRawData, int32 finalIndex){ }
+void AFGMapManager::SyncMapMarkerChanges(const TArray<FMapMarker>& mapMarkers){ }
 void AFGMapManager::RevealMap(){ }
 void AFGMapManager::HideMap(){ }
+bool AFGMapManager::AddNewMapMarker(const FMapMarker& mapMarker, FMapMarker& out_NewMapMarker){ return bool(); }
+void AFGMapManager::AddIndexedMapMarker(const FMapMarker& mapMarker){ }
+void AFGMapManager::SyncMapMarkerAdded(const FMapMarker& mapMarker){ }
+void AFGMapManager::UpdateMapMarker(const FMapMarker& mapMarker, bool localUpdateOnly){ }
+void AFGMapManager::GetMapMarkers(TArray<FMapMarker>& out_mapMarkers){ }
+int32 AFGMapManager::GetNumMapMarkers() const{ return int32(); }
+bool AFGMapManager::CanAddNewMapMarker() const{ return bool(); }
+void AFGMapManager::RemoveMapMarker(const FMapMarker& mapMarker){ }
+void AFGMapManager::RemoveMapMarkerOnIndex(int32 index){ }
+void AFGMapManager::SetMapMarkerComponentsVisible(bool visible){ }
+void AFGMapManager::SpawnMapMarkerObjectOfType(const FMapMarker& mapMarker){ }
+void AFGMapManager::RemoveMapMarkerObjectOfType(const FMapMarker& mapMarker){ }
+bool AFGMapManager::FindMapMarkerFromHitResult(const FHitResult& hitResult, FMapMarker& out_mapMarker){ return bool(); }
+UFGMapMarkerRepresentation* AFGMapManager::FindMapMarkerRepresentation(const FMapMarker& mapMarker){ return nullptr; }
+UFGMapMarkerRepresentation* AFGMapManager::FindMapMarkerRepresentation(const int32 mapMarkerID){ return nullptr; }
+FLinearColor AFGMapManager::IsMarkerHighlighted(const FMapMarker& mapMarker,  bool& out_IsHighlighted,  bool& out_HighlightedByLocalPlayer){ return FLinearColor(); }
+void AFGMapManager::SetMarkerHighlighted(const FMapMarker& mapMarker, bool highlighted){ }
+void AFGMapManager::SetHighLightMarker( AFGPlayerState* fgPlayerState, UFGActorRepresentation* actorRepresentation){ }
+void AFGMapManager::OnMarkerHighlightUpdated( AFGPlayerState* fgPlayerState, UFGActorRepresentation* actorRepresentation, bool highlighted){ }
+void AFGMapManager::HighlightMapMarkerInstance( UHierarchicalInstancedStaticMeshComponent* component, int32 instanceIndex, bool highlighted, FLinearColor color){ }
+void AFGMapManager::OnSetHighLightMarker( AFGPlayerState* fgPlayerState, UFGActorRepresentation* actorRepresentation){ }
+void AFGMapManager::OnSetHighLightMarker( AFGPlayerState* fgPlayerState, int32 markerID){ }
+UStaticMeshComponent* AFGMapManager::SpawnHighLightMarkerMeshComp(){ return nullptr; }
+UNiagaraComponent* AFGMapManager::SpawnHighLightMarkerNiagaraComponent(const FVector& location){ return nullptr; }
+void AFGMapManager::SyncSetHighLightMarker( AFGPlayerState* fgPlayerState, UFGActorRepresentation* actorRepresentation){ }
+UFGHighlightedMarker* AFGMapManager::GetHighlightedActorRepresentation(const  AFGPlayerState* fgPlayerState) const{ return nullptr; }
+bool AFGMapManager::IsActorRepresentationHighlighted(const UFGActorRepresentation* actorRepresentation, FLinearColor& out_HighlightColor, bool& out_HighlightByLocalPlayer) const{ return bool(); }
+void AFGMapManager::UpdateHoveredMapMarker(const FHitResult& hitResult){ }
+void AFGMapManager::SetMapMarkerHovered(TPair<  UHierarchicalInstancedStaticMeshComponent*, int32> instancedMeshPair, bool enabled){ }
+void AFGMapManager::ClearHoveredMapMarker(){ }
+void AFGMapManager::MapToHighlightedMarker(UFGActorRepresentation* actorRepresentation){ }
+void AFGMapManager::RequestMapMarkerData( AFGPlayerController* playerController){ }
+void AFGMapManager::UpdateMarkerComponentVisiblity(){ }
+void AFGMapManager::SetMarkerComponentVisiblity(float opacity){ }
 void AFGMapManager::SetupFogOfWarTexture(){ }
 void AFGMapManager::InitialFogOfWarRequest(){ }
 void AFGMapManager::SetupRepresentationManager(){ }
@@ -41,8 +76,15 @@ void AFGMapManager::BindActorRepresentationManager( AFGActorRepresentationManage
 void AFGMapManager::UpdateFogOfWar(UFGActorRepresentation* actor){ }
 FVector2D AFGMapManager::GetMapPositionFromWorldLocation(FVector worldLocation){ return FVector2D(); }
 float AFGMapManager::GetMapDistanceFromWorldDistance(float worldDistance){ return float(); }
-void AFGMapManager::DrawCircle(FVector2D centerPoint, float radius, float gradientHeightModifier){ }
+void AFGMapManager::DrawCircle(FVector2D centerPoint, float radius, float gradientHeightModifier, bool useGradientFalloff){ }
+void AFGMapManager::InitialMapMarkerRequest(){ }
 void AFGMapManager::OnActorRepresentationAdded( UFGActorRepresentation* actorRepresentation){ }
 void AFGMapManager::OnActorRepresentationUpdated( UFGActorRepresentation* actorRepresentation){ }
+void AFGMapManager::OnActorRepresentationFOWUpdated( UFGActorRepresentation* actorRepresentation){ }
 void AFGMapManager::OnActorRepresentationRemoved( UFGActorRepresentation* actorRepresentation){ }
-const int32 AFGMapManager::PIXEL_OFFSET = int32();
+void AFGMapManager::OnPlayerStateSlotDataUpdated( AFGPlayerState* playerState){ }
+void AFGMapManager::RecreateSavedMarkers(){ }
+void AFGMapManager::RefreshHighlightedMarkers(){ }
+void FFogOfWarWorker::DoWork(){ }
+void FFogOfWarTask::DoWork(){ }
+FFogOfWarTask::~FFogOfWarTask(){ }

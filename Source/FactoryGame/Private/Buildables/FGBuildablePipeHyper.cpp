@@ -5,9 +5,7 @@
 #include "FGPipeConnectionComponentHyper.h"
 
 AFGBuildablePipeHyper::AFGBuildablePipeHyper() : Super() {
-	this->mExitOffset.X = 0.0;
-	this->mExitOffset.Y = 0.0;
-	this->mExitOffset.Z = 0.0;
+	this->mExitOffset = FVector::ZeroVector;
 	this->mConnection0 = CreateDefaultSubobject<UFGPipeConnectionComponentHyper>(TEXT("PipeHyperConnection0"));
 	this->mConnection1 = CreateDefaultSubobject<UFGPipeConnectionComponentHyper>(TEXT("PipeHyperConnection1"));
 	this->NetDormancy = ENetDormancy::DORM_Initial;

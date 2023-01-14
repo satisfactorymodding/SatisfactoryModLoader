@@ -59,6 +59,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
 	FORCEINLINE bool HasBeenOpened() const { return mHasBeenOpened; }
 
+	/** @return true if this has not been opened and looted (it's hard drive have been removed) */
+	bool HasBeenLooted() const;
+	
 	/** @return The inventory containing possible loot */
 	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
 	FORCEINLINE class UFGInventoryComponent* GetLootInventory() const { return mInventory; }
@@ -98,6 +101,9 @@ protected:
 
 	UFUNCTION( BlueprintCallable, Category = "Drop Pod" )
 	void GenerateDropPodInventory( TArray<TSubclassOf<class UFGItemDescriptor>> includedItems, int32 numItemsCreated );
+
+	UFUNCTION()
+	void OnInventoryItemRemoved( TSubclassOf< UFGItemDescriptor > itemClass, int32 numRemoved );
 
 	/** The amount of available inventory slots for the drop pod */
 	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )

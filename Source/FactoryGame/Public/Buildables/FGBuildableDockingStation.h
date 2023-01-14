@@ -169,6 +169,10 @@ public:
 
 	bool HasSufficientFuelType() const;
 
+	virtual void PreSerializedToBlueprint() override;
+	virtual void PostSerializedToBlueprint() override;
+	virtual void PostSerializedFromBlueprint() override;
+	
 protected:
 	// Begin Factory_ interface
 	virtual void Factory_Tick( float dt ) override;
@@ -178,9 +182,8 @@ protected:
 
 	// Begin AFGBuildableFactory interface
 	virtual bool CanProduce_Implementation() const override;
-	// End AFGBuildableFactory interface
-
 	virtual void OnRep_ReplicationDetailActor() override;
+	// End AFGBuildableFactory interface
 
 	class AFGReplicationDetailActor_DockingStation* GetCastRepDetailsActor() const;
 
@@ -204,8 +207,8 @@ protected:
 	 */
 	UFUNCTION()
 	bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
+	
 private:
-
 	void EnsureInfoCreated();
 
 	/** Loads fuel into the docked vehicles inventory.
@@ -257,9 +260,6 @@ public:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTexture;
-
-	UPROPERTY( SaveGame, Replicated )
-	FText mMapText;
 	
 protected:
 	friend class AFGReplicationDetailActor_DockingStation;
@@ -337,6 +337,10 @@ protected:
 private:
 	UPROPERTY( Replicated, SaveGame )
 	class AFGDockingStationInfo* mInfo;
+
+	/** Used to hold a reference to the mInfo during blueprint serialization. Holds a reference to mInfo which is nulled during blueprint serialization */
+	UPROPERTY()
+	class AFGDockingStationInfo* mTempInfo;
 
 	/** Inventory where we transfer items to when unloading from a vehicle  */
 	UPROPERTY( SaveGame )

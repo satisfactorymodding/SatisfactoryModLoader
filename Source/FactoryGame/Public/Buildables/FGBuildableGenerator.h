@@ -23,6 +23,7 @@ public:
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
+	virtual void SetActorHiddenInGame( bool bNewHidden ) override;
 	// End AACtor interface
 
 	// Begin AFGBuildableFactory interface
@@ -47,10 +48,8 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Power" )
 	float CalcPowerProductionCapacityForPotential( float potential ) const;
 
-	virtual void SetActorHiddenInGame( bool bNewHidden ) override;
-
 	/** Called to check if power production can be started. */
-	UFUNCTION( BlueprintNativeEvent, BlueprintPure, Category = "Generator" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing=mHas_CanStartPowerProduction, BlueprintPure, Category = "Generator" )
 	bool CanStartPowerProduction() const;
 
 protected:
@@ -61,18 +60,18 @@ protected:
 	// End AFGBuildableFactory interface
 
 	/** Called when we start producing fuel. */
-	UFUNCTION( BlueprintNativeEvent, Category = "Generator" )
+	UFUNCTION( BlueprintNativeEvent,CustomEventUsing=mHas_Factory_StartPowerProduction, Category = "Generator" )
 	void Factory_StartPowerProduction();
 
 	/** Called when we stop producing fuel. */
-	UFUNCTION( BlueprintNativeEvent, Category = "Generator" )
+	UFUNCTION( BlueprintNativeEvent,CustomEventUsing=mHas_Factory_StopPowerProduction, Category = "Generator" )
 	void Factory_StopPowerProduction();
 
 	/**
 	 * Tick the power production, consume any fuel, update base and dynamic production.
 	 * @param dt - Time since last tick.
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "Generator" )
+	UFUNCTION( BlueprintNativeEvent,CustomEventUsing=mHas_TickPowerProduction, Category = "Generator" )
 	void Factory_TickPowerProduction( float dt );
 
 protected:
@@ -80,18 +79,14 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Power" )
 	float mPowerProduction;
 
-	/**
-	 * Exponent used in power production calculations.
-	 * To calculate maximum production: max = overclock ^ ( 1 / exponent )
-	 * Example: 2.5 ^ ( 1 / 1.6 ) = 1.77      An exponent of 1.6 gives a maximum production of 177% at 2.5x overclock.
-	 * If exponent is 1.0 the function becomes linear.
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = "1.0", ClampMax = "4.0" ) )
-	float mPowerProductionExponent;
-
 private:
 	/** Current load of this generator in the range [0,1]. */
 	UPROPERTY( Replicated )
 	float mLoadPercentage;
 
+	/* if true these functions have a blueprint implemented version, otherwise call native. */
+	uint8 mHas_CanStartPowerProduction:1;
+	uint8 mHas_Factory_StartPowerProduction:1;
+	uint8 mHas_Factory_StopPowerProduction:1;
+	uint8 mHas_TickPowerProduction:1;
 };

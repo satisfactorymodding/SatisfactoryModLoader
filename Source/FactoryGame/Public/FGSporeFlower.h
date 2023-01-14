@@ -7,13 +7,12 @@
 #include "GameFramework/Actor.h"
 #include "FGSaveInterface.h"
 #include "FGSignificanceInterface.h"
-#include "FGExplosiveDestroyableInterface.h"
 #include "Replication/FGStaticReplicatedActor.h"
 #include "FGSporeFlower.generated.h"
 
 /** todo: (a bigish one) this is just a start of what should be a much more complete nativization of the spore flower */
 UCLASS()
-class FACTORYGAME_API AFGSporeFlower : public AFGStaticReplicatedActor, public IFGSaveInterface, public IFGSignificanceInterface, public IFGExplosiveDestroyableInterface
+class FACTORYGAME_API AFGSporeFlower : public AFGStaticReplicatedActor, public IFGSaveInterface, public IFGSignificanceInterface
 {
 	GENERATED_BODY()
 
@@ -24,6 +23,8 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	//~ End UObject interface
+
+	virtual float TakeDamage( float damage, struct FDamageEvent const& damageEvent, AController* eventInstigator, AActor* damageCauser ) override;
 
 	//IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
