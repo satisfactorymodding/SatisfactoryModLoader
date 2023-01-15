@@ -57,5 +57,13 @@
 			"Name": "SteamVR",
 			"Enabled": false
 		}
-	]
+	],
+	"PreBuildSteps": {
+		"Win64": [
+			"powershell -Command \"$file = '$(ProjectDir)\\Plugins\\Wwise\\Source\\AkAudio\\Classes\\OcclusionObstructionService\\AkOcclusionObstructionService.h'; if (Test-Path $file) { (Get-Content $file) -replace 'class AkOcclusionObstructionService', 'class AKAUDIO_API AkOcclusionObstructionService' | Out-File -encoding UTF8 $file }\""
+		],
+		"Linux": [
+			"sed -i 's/class AkOcclusionObstructionService/class AKAUDIO_API AkOcclusionObstructionService/' $(ProjectDir)/Plugins/Wwise/Source/AkAudio/Classes/OcclusionObstructionService/AkOcclusionObstructionService.h"
+		]
+	}
 }
