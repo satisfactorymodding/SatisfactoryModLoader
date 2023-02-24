@@ -17,44 +17,31 @@ public class SML : ModuleRules
         //SML transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
             "Json",
-            "MovieScene",
             "Projects"
         });
         PrivateDependencyModuleNames.AddRange(new[] {"RenderCore"});
-        
+
         PublicDependencyModuleNames.AddRange(new string[] {"FactoryGame"});
-        
+
         //FactoryGame transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
             "Core", "CoreUObject",
             "Engine",
             "InputCore",
-            "OnlineSubsystem", "OnlineSubsystemNull", "OnlineSubsystemEOS", "OnlineSubsystemUtils",
-            "SignificanceManager",
-            "APEX", "ApexDestruction",
-            "AnimGraphRuntime",
-            "AkAudio", 
-            "PhysXVehicles",
-            "AssetRegistry",
-            "NavigationSystem",
-            "ReplicationGraph",
-            "AIModule",
-            "GameplayTasks",
             "SlateCore", "Slate", "UMG",
-            "InstancedSplines"
         });
 
         if (Target.bBuildEditor) {
             PublicDependencyModuleNames.Add("UnrealEd");
             PrivateDependencyModuleNames.Add("MainFrame");
         }
-        
+
         var thirdPartyFolder = Path.Combine(ModuleDirectory, "../../ThirdParty");
         PublicIncludePaths.Add(Path.Combine(thirdPartyFolder, "include"));
-        
+
         var platformName = Target.Platform.ToString();
         var libraryFolder = Path.Combine(thirdPartyFolder, platformName);
-        
+
         PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "funchook.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "detex.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libfbxsdk-md.lib"));
@@ -63,18 +50,17 @@ public class SML : ModuleRules
         PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "AssemblyAnalyzer.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zydis.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zycore.lib"));
-        
+
         //Collect build metadata from the environment and pass it to C++
         var currentBranch = Environment.GetEnvironmentVariable("BRANCH_NAME");
         var buildId = Environment.GetEnvironmentVariable("BUILD_NUMBER");
-        
-        var githubActionsWorkflow = Environment.GetEnvironmentVariable("GITHUB_WORKFLOW"); 
-        if(githubActionsWorkflow != null && githubActionsWorkflow.Length > 0)
-        {
+
+        var githubActionsWorkflow = Environment.GetEnvironmentVariable("GITHUB_WORKFLOW");
+        if (githubActionsWorkflow != null && githubActionsWorkflow.Length > 0) {
             currentBranch = Environment.GetEnvironmentVariable("GITHUB_REF_NAME");
             buildId = Environment.GetEnvironmentVariable("GITHUB_RUN_NUMBER");
         }
-        
+
         if (currentBranch == null) {
             RetrieveHeadBranchAndCommitFromGit(Target.ProjectFile.Directory, out currentBranch, out buildId);
             if (buildId != null && buildId.Length > 8) {
@@ -87,11 +73,11 @@ public class SML : ModuleRules
             PrivateDefinitions.Add(string.Format("SML_BUILD_METADATA=\"{0}\"", buildMetadataString));
         }
     }
-    
+
     private static void RetrieveHeadBranchAndCommitFromGit(DirectoryReference RootDir, out string branchName, out string commitRef) {
         branchName = null;
         commitRef = null;
-        
+
         var gitRepository = Path.Combine(RootDir.FullName, ".git");
         if (!Directory.Exists(gitRepository)) {
             return;
@@ -102,15 +88,15 @@ public class SML : ModuleRules
         }
 
         try {
-            var headFileContents = File.ReadAllText(gitHeadFile).Replace("\n", "");;
-            
+            var headFileContents = File.ReadAllText(gitHeadFile).Replace("\n", "");
+
             //It is a normal HEAD ref, so it's name should equal to local branch name
             if (headFileContents.StartsWith("ref: refs/heads/")) {
                 branchName = headFileContents.Substring(16);
                 //Try to resolve commit name directly from the ref file
                 var headRefFile = Path.Combine(gitRepository, "refs", "heads", branchName);
                 if (!File.Exists(headRefFile)) return;
-                
+
                 var headRefFileContents = File.ReadAllText(headRefFile).Replace("\n", "");
                 commitRef = headRefFileContents;
                 return;
