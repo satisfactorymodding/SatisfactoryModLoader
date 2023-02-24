@@ -25,7 +25,7 @@ public class SMLEditor : ModuleRules
             "Engine",
             "BlueprintGraph",
             "KismetCompiler",
-            "SlateCore", "Slate",
+            "SlateCore", "Slate"
         });
         
         PrivateDependencyModuleNames.AddRange(new[] {
