@@ -46,7 +46,7 @@
 		},
 		{
 			"Name": "SMLEditor",
-			"Enabled": true
+			"Enabled": false
 		},
 		{
 			"Name": "EditorScriptingUtilities",
