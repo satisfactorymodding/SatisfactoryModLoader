@@ -99,11 +99,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Details")
 	FString CreatedByURL;
 
-	/** Documentation URL for the mod */
+	/** Documentation URL for the mod. In-game mod list will offer a button to users labeled "Open Documentation", http:// prefix is optional */
 	UPROPERTY(EditAnywhere, Category = "Details")
 	FString DocsURL;
 
-	/** Support URL for the mod */
+	/** Support URL for the mod. In-game mod list will offer a button to users labeled "Get Support", http:// prefix is optional */
 	UPROPERTY(EditAnywhere, Category = "Details")
 	FString SupportURL;
 
