@@ -11,8 +11,7 @@
 FModWizardDefinition::FModWizardDefinition(bool bContentOnlyProject)
 	: bIsContentOnlyProject(bContentOnlyProject)
 {
-	// TODO Replace with custom templates
-	PluginBaseDir = IPluginManager::Get().FindPlugin(TEXT("PluginBrowser"))->GetBaseDir();
+	PluginBaseDir = IPluginManager::Get().FindPlugin(TEXT("Alpakit"))->GetBaseDir();
 
 	PopulateTemplatesSource();
 }
@@ -25,13 +24,11 @@ void FModWizardDefinition::PopulateTemplatesSource()
 	const FText CPPTemplateDescription = LOCTEXT("CPPDesc", "Create a mod that contains both C++ and Blueprint code.");
 	const FText BPTemplateDescription = LOCTEXT("BPDesc", "Create a mod that contains only Blueprint code. (You can add C++ code later)");
 
-	// TODO Replace with custom templates
-	
-	TemplateDefinitions.Add(MakeShareable(new FPluginTemplateDescription(BPTemplateName, BPTemplateDescription, TEXT("ContentOnly"), true, EHostType::Runtime)));
+	TemplateDefinitions.Add(MakeShareable(new FPluginTemplateDescription(BPTemplateName, BPTemplateDescription, TEXT("BlueprintBlank"), true, EHostType::Runtime)));
 	if (!bIsContentOnlyProject)
 	{
 		// Insert the blank template to make sure it appears before the content only template.
-		TemplateDefinitions.Insert(MakeShareable(new FPluginTemplateDescription(CPPTemplateName, CPPTemplateDescription, TEXT("Blank"), true, EHostType::Runtime)), 0);
+		TemplateDefinitions.Insert(MakeShareable(new FPluginTemplateDescription(CPPTemplateName, CPPTemplateDescription, TEXT("CPPAndBlueprintBlank"), true, EHostType::Runtime)), 0);
 	}
 }
 
