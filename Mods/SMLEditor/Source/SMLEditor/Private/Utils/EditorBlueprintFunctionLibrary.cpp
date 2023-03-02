@@ -1,6 +1,8 @@
 
 
 #include "Utils/EditorBlueprintFunctionLibrary.h"
+
+#include "Engine/ObjectLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
 UObject * UEditorBlueprintFunctionLibrary::CreateBlueprintOfClass(UClass * Class, FString Name, FString Path) {
@@ -76,7 +78,7 @@ UClass * UEditorBlueprintFunctionLibrary::GetClassGeneratedByBlueprint(UObject *
 	return InnerBPClass;
 }
 
-void UEditorBlueprintFunctionLibrary::MarkClassDirty( UClass* Class )
+void UEditorBlueprintFunctionLibrary::Editor_MarkDefaultDirty( UClass* Class )
 {
 	if( IsValid( Class ) )
 	{
