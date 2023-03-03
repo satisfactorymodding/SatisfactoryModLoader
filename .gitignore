@@ -43,6 +43,7 @@ Mods/*/Binaries/*
 
 # Builds
 Build/*
+Mods/*/Build/*
 CMakeLists.txt
 
 # Whitelist PakBlacklist-<BuildConfiguration>.txt files
