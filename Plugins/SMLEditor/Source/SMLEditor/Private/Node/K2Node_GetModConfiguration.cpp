@@ -12,7 +12,7 @@
 #include "Engine/UserDefinedStruct.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
-#include "Util/BlueprintAssetHelperLibrary.h"
+#include "Kismet/BlueprintAssetHelperLibrary.h"
 #define LOCTEXT_NAMESPACE "SML"
 
 static FName GetModConfiguration_OutputPinName(TEXT("Config"));

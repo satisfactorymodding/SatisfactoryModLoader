@@ -6,7 +6,7 @@
 #include "Interfaces/IPluginManager.h"
 #include "Misc/FileHelper.h"
 #include "UObject/Object.h"
-#include "Util/BlueprintAssetHelperLibrary.h"
+#include "Kismet/BlueprintAssetHelperLibrary.h"
 #define LOCTEXT_NAMESPACE "SML"
 
 bool FNativeCodeGenerator::GenerateConfigStructForConfigurationAsset(UBlueprint* Blueprint) {
