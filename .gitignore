@@ -91,5 +91,4 @@ Mods/*
 Mods/*/Metadata/Crypto.json
 !Mods/Alpakit/
 !Mods/SML/
-!Mods/SMLEditor/
 !Mods/ExampleMod/
