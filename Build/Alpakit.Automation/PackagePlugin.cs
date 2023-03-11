@@ -218,8 +218,9 @@ namespace Alpakit.Automation
 		private static string GetPluginPathRelativeToStageRoot(ProjectParams projectParams, DeploymentContext SC)
 		{
 			var projectName = projectParams.RawProjectPath.GetFileNameWithoutAnyExtensions();
-			var dlcName = projectParams.DLCFile.GetFileNameWithoutAnyExtensions();
-			return Path.Combine(projectName, "Mods", dlcName);
+			var relativePath = projectParams.DLCFile.Directory.MakeRelativeTo(SC.ProjectRoot);
+			relativePath = relativePath.Replace(@"Plugins\", @"Mods\");
+			return Path.Combine(projectName, relativePath);
 		}
 
 		private static void ArchivePluginProject(ProjectParams projectParams,
