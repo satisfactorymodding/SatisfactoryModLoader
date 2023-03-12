@@ -171,15 +171,19 @@ namespace Alpakit.Automation
 				//deploymentContext.RemapDirectories.Add(Tuple.Create());
 
 				var projectName = projectParams.RawProjectPath.GetFileNameWithoutAnyExtensions();
-				
-				var sourceEngineDirectory = Path.Combine("Engine", "Plugins");
-				var sourceProjectDirectory = Path.Combine(projectName, "Plugins");
+
+				string dlcSourceDirectory;
+				if (projectParams.DLCFile.IsUnderDirectory(deploymentContext.EngineRoot))
+					dlcSourceDirectory = Path.Combine("Engine", projectParams.DLCFile.Directory.ParentDirectory.MakeRelativeTo(deploymentContext.EngineRoot));
+				else if (projectParams.DLCFile.IsUnderDirectory(deploymentContext.ProjectRoot))
+					dlcSourceDirectory = Path.Combine(projectName, projectParams.DLCFile.Directory.ParentDirectory.MakeRelativeTo(deploymentContext.ProjectRoot));
+				else
+					throw new Exception("Unknown DLC remap for DLC " + projectParams.DLCFile.GetFileNameWithoutExtension());
+
 				var destinationModsDir = Path.Combine(projectName, "Mods");
+				
 				deploymentContext.RemapDirectories.Add(Tuple.Create(
-					new StagedDirectoryReference(sourceEngineDirectory), 
-					new StagedDirectoryReference(destinationModsDir)));
-				deploymentContext.RemapDirectories.Add(Tuple.Create(
-					new StagedDirectoryReference(sourceProjectDirectory), 
+					new StagedDirectoryReference(dlcSourceDirectory), 
 					new StagedDirectoryReference(destinationModsDir)));
 			}
 		}
@@ -217,10 +221,11 @@ namespace Alpakit.Automation
 
 		private static string GetPluginPathRelativeToStageRoot(ProjectParams projectParams, DeploymentContext SC)
 		{
+			// All DLC paths are remapped to projectName/Mods/DLCName during RemapCookedPluginsContentPaths, regardless of nesting
+			// so the relative stage path is projectName/Mods/DLCName
 			var projectName = projectParams.RawProjectPath.GetFileNameWithoutAnyExtensions();
-			var relativePath = projectParams.DLCFile.Directory.MakeRelativeTo(SC.ProjectRoot);
-			relativePath = relativePath.Replace(@"Plugins\", @"Mods\");
-			return Path.Combine(projectName, relativePath);
+			var dlcName = projectParams.DLCFile.GetFileNameWithoutAnyExtensions();
+			return Path.Combine(projectName, "Mods", dlcName);
 		}
 
 		private static void ArchivePluginProject(ProjectParams projectParams,
