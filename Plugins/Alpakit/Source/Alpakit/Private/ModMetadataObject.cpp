@@ -10,7 +10,7 @@
 #include "DetailLayoutBuilder.h"
 #include "DetailWidgetRow.h"
 #include "DetailCategoryBuilder.h"
-#include "SExternalImageReference.h"
+#include "SExternalImage.h"
 
 UModMetadataObject::UModMetadataObject(const FObjectInitializer& ObjectInitializer)
 {
@@ -143,8 +143,7 @@ void FModMetadataCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBui
 			FString CurrentIconPath = ModMetadata->TargetIconPath;
 			if(!FPaths::FileExists(CurrentIconPath))
 			{
-				// TODO Custom default icon
-				CurrentIconPath = IPluginManager::Get().FindPlugin(TEXT("PluginBrowser"))->GetBaseDir() / TEXT("Resources") / TEXT("DefaultIcon128.png");
+				CurrentIconPath = IPluginManager::Get().FindPlugin(TEXT("Alpakit"))->GetBaseDir() / TEXT("Resources") / TEXT("DefaultIcon128.png");
 			}
 
 			// Add the customization to edit the icon row
@@ -172,9 +171,10 @@ void FModMetadataCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBui
 				.FillWidth(1.0f)
 				.VAlign(VAlign_Center)
 				[
-					SNew(SExternalImageReference, CurrentIconPath, ModMetadata->TargetIconPath)
+					SNew(SExternalImage, CurrentIconPath, ModMetadata->TargetIconPath)
 					.FileDescription(IconDesc)
-					.RequiredSize(FIntPoint(128, 128))
+					.MaxDisplaySize(FIntPoint(128, 128))
+					// .RequiredSize(FIntPoint(128, 128)) // UE wants the image to be 128x128, but that size is not enforced anywhere else
 				]
 			];
 		}

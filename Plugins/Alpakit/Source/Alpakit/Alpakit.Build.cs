@@ -22,7 +22,7 @@ public class Alpakit : ModuleRules
 			"Engine",
 			"Slate",
 			"SlateCore",
-			"SharedSettingsWidgets",
+			"ExternalImagePicker",
 			"EditorStyle",
 			"PluginBrowser",
 		});
