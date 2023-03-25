@@ -14,6 +14,7 @@ public class Alpakit : ModuleRules
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new[] {
+			"Json",
 			"Projects",
 			"InputCore",
 			"UnrealEd",

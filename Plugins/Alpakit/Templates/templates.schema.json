@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "definitions": {
+    "versionRange": {
+      "type": "string",
+      "pattern": "^(<=|<|>|>=|\\^)?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "dependency": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Dependency name",
+          "description": "The name of the dependency"
+        },
+        "version": {
+          "$ref": "#/definitions/versionRange",
+          "title": "Dependency version",
+          "description": "The version of the dependency.\nCan be omitted and Alpakit will use ^installedVersion\nNote that the dependency must be installed in the project for the automatic detection to work, otherwise the template will be skipped entirely"
+        },
+        "optional": {
+          "type": "boolean",
+          "title": "Optional",
+          "description": "Whether the dependency is optional or not"
+        },
+        "basePlugin": {
+          "type": "boolean",
+          "title": "Base plugin",
+          "description": "Whether the dependency is a base plugin or not"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    }
+  },
+  "properties": {
+    "templates": {
+      "type": "array",
+      "title": "Mod templates",
+      "description": "A list of templates to be added to the Alpakit mod template list",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Template name",
+            "description": "The name of the template to be displayed in the Alpakit mod template list"
+          },
+          "description": {
+            "type": "string",
+            "title": "Template description",
+            "description": "The description of the template to be displayed in the Alpakit mod template list"
+          },
+          "path": {
+            "type": "string",
+            "title": "Template path",
+            "description": "The relative path to the template folder"
+          },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/dependency"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "path"
+        ]
+      }
+    }
+  },
+  "required": [
+    "templates"
+  ]
+}

@@ -23,6 +23,9 @@ void FAlpakitModule::StartupModule() {
     //Register editor settings
     RegisterSettings();
 
+    //Register mod templates
+    RegisterModTemplates();
+
     //Initialize Slate stuff, including commands
     FAlpakitStyle::Initialize();
     FAlpakitStyle::ReloadTextures();
@@ -32,7 +35,7 @@ void FAlpakitModule::StartupModule() {
     PluginCommands->MapAction(
         FAlpakitCommands::Get().OpenPluginWindow,
         FExecuteAction::CreateLambda([](){
-            FGlobalTabmanager::Get()->InvokeTab(AlpakitTabName);
+            FGlobalTabmanager::Get()->TryInvokeTab(AlpakitTabName);
         }),
         FCanExecuteAction());
     FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));
@@ -119,6 +122,78 @@ void FAlpakitModule::UnregisterSettings() const {
     if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>(TEXT("Settings"))) {
         SettingsModule->UnregisterSettings(TEXT("Project"), TEXT("Alpakit"), TEXT("General"));
     }
+}
+
+bool IsPluginAMod(IPlugin& Plugin) {
+    //Mod plugins are always considered mods
+    if (Plugin.GetType() == EPluginType::Mod) {
+        return true;
+    }
+    //Project plugins are considered mods too, for now
+    if (Plugin.GetType() == EPluginType::Project) {
+        return true;
+    }
+    return false;
+}
+
+void FAlpakitModule::RegisterModTemplates() {
+    TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
+    for (TSharedRef<IPlugin> Plugin : EnabledPlugins) {
+        if (IsPluginAMod(Plugin.Get())) {
+            AddModTemplatesFromPlugin(Plugin.Get());
+        }
+    }
+    IPluginManager::Get().OnNewPluginMounted().AddLambda([this](IPlugin& Plugin){
+        if (IsPluginAMod(Plugin)) {
+            AddModTemplatesFromPlugin(Plugin);
+        }
+    });
+}
+
+void FAlpakitModule::AddModTemplatesFromPlugin(IPlugin& Plugin) {
+    FString TemplatesPath = Plugin.GetBaseDir() / TEXT("Templates");
+    if (!FPaths::DirectoryExists(TemplatesPath)) {
+        return;
+    }
+    FString TemplatesJSONPath = TemplatesPath / TEXT("templates.json");
+    if (!FPaths::FileExists(TemplatesJSONPath)) {
+        return;
+    }
+    FString TemplatesJSON;
+    if (!FFileHelper::LoadFileToString(TemplatesJSON, *TemplatesJSONPath)) {
+        return;
+    }
+    const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(TemplatesJSON);
+    TSharedPtr<FJsonObject> TemplatesJSONObj;
+    if (!FJsonSerializer::Deserialize(JsonReader, TemplatesJSONObj)) {
+        UE_LOG(LogAlpakit, Error, TEXT("Invalid templates for mod %s: invalid json"), *Plugin.GetName());
+        return;
+    }
+
+    const TArray<TSharedPtr<FJsonValue>>* TemplatesArrayPtr;
+    if(!TemplatesJSONObj->TryGetArrayField(TEXT("templates"), TemplatesArrayPtr)) {
+        UE_LOG(LogAlpakit, Error, TEXT("Invalid templates for mod %s: \"templates\" not in json"), *Plugin.GetName());
+        return;
+    }
+    int i = 0;
+    for(TSharedPtr<FJsonValue> Item : *TemplatesArrayPtr)
+    {
+        i++;
+        const TSharedPtr<FJsonObject>* ItemObjPtr;
+        if(!Item->TryGetObject(ItemObjPtr)) {
+            UE_LOG(LogAlpakit, Error, TEXT("Invalid template for mod %s: template %d: not an object"), *Plugin.GetName(), i);
+            continue;
+        }
+
+        FString Error;
+        TSharedPtr<FModTemplateDescription> ModTemplate = FModTemplateDescription::Load(*ItemObjPtr, TemplatesPath, Error);
+        if(!ModTemplate.IsValid())
+        {
+            UE_LOG(LogAlpakit, Error, TEXT("Invalid templates for mod %s: template %d: %s"), *Plugin.GetName(), i, *Error);
+            continue;
+        }
+        ModTemplates.Add(ModTemplate.ToSharedRef());
+    }    
 }
 
 #undef LOCTEXT_NAMESPACE

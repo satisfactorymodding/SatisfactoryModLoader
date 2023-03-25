@@ -2,6 +2,8 @@
 
 #include "IPluginWizardDefinition.h"
 
+struct FModTemplateDescription;
+
 class FModWizardDefinition : public IPluginWizardDefinition
 {
 public:
@@ -35,22 +37,55 @@ public:
 	// End IPluginWizardDefinition interface
 
 private:
-	/** Creates the templates that can be used by the plugin manager to generate the plugin */
-	void PopulateTemplatesSource();
-
 	/** Gets the folder for the specified template. */
 	FString GetFolderForTemplate(TSharedRef<FPluginTemplateDescription> InTemplate) const;
 
 private:
 	/** The templates available to this definition */
+	TArray<TSharedRef<FModTemplateDescription>> ModTemplateDefinitions;
+	
+	/** The inner templates available to this definition */
 	TArray<TSharedRef<FPluginTemplateDescription>> TemplateDefinitions;
 
 	/** The currently selected template definition */
-	TSharedPtr<FPluginTemplateDescription> CurrentTemplateDefinition;
+	TSharedPtr<FModTemplateDescription> CurrentTemplateDefinition;
 
 	/** Base directory of the plugin templates */
 	FString PluginBaseDir;
 
 	/** If true, this definition is for a project that can only contain content */
 	bool bIsContentOnlyProject;
+};
+
+struct FModTemplateDependency
+{
+	FString Name;
+	FString Version;
+	bool bOptional;
+	bool bBasePlugin;
+
+	FModTemplateDependency(const FString& InName, const FString& InVersion, bool bInOptional, bool bInBasePlugin)
+		: Name(InName)
+		, Version(InVersion)
+		, bOptional(bInOptional)
+		, bBasePlugin(bInBasePlugin)
+	{
+	}
+	
+	static TSharedPtr<FModTemplateDependency> Load(const TSharedPtr<FJsonObject> JSON, FString& Error);
+};
+
+struct FModTemplateDescription
+{
+	TSharedRef<FPluginTemplateDescription> TemplateDescription;
+
+	TArray<TSharedPtr<FModTemplateDependency>> Dependencies;
+
+	FModTemplateDescription(TSharedRef<FPluginTemplateDescription> InTemplateDescription, const TArray<TSharedPtr<FModTemplateDependency>>& InDependencies)
+		: TemplateDescription(InTemplateDescription)
+		, Dependencies(InDependencies)
+	{
+	}
+	
+	static TSharedPtr<FModTemplateDescription> Load(const TSharedPtr<FJsonObject> JSON, const FString TemplatesPath, FString& Error);
 };

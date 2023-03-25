@@ -1,6 +1,7 @@
 #include "ModWizardDefinition.h"
 
 #include "Alpakit.h"
+#include "Dom/JsonObject.h"
 #include "GenericPlatform/GenericPlatformFile.h"
 #include "Interfaces/IPluginManager.h"
 #include "HAL/PlatformFilemanager.h"
@@ -13,22 +14,10 @@ FModWizardDefinition::FModWizardDefinition(bool bContentOnlyProject)
 {
 	PluginBaseDir = IPluginManager::Get().FindPlugin(TEXT("Alpakit"))->GetBaseDir();
 
-	PopulateTemplatesSource();
-}
-
-void FModWizardDefinition::PopulateTemplatesSource()
-{
-	const FText CPPTemplateName = LOCTEXT("CPPLabel", "C++ & Blueprint");
-	const FText BPTemplateName = LOCTEXT("BPLabel", "Blueprint Only");
-
-	const FText CPPTemplateDescription = LOCTEXT("CPPDesc", "Create a mod that contains both C++ and Blueprint code.");
-	const FText BPTemplateDescription = LOCTEXT("BPDesc", "Create a mod that contains only Blueprint code. (You can add C++ code later)");
-
-	TemplateDefinitions.Add(MakeShareable(new FPluginTemplateDescription(BPTemplateName, BPTemplateDescription, TEXT("BlueprintBlank"), true, EHostType::Runtime)));
-	if (!bIsContentOnlyProject)
+	ModTemplateDefinitions = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit")).GetModTemplates();
+	for (TSharedRef<FModTemplateDescription> Template : ModTemplateDefinitions)
 	{
-		// Insert the blank template to make sure it appears before the content only template.
-		TemplateDefinitions.Insert(MakeShareable(new FPluginTemplateDescription(CPPTemplateName, CPPTemplateDescription, TEXT("CPPAndBlueprintBlank"), true, EHostType::Runtime)), 0);
+		TemplateDefinitions.Add(Template->TemplateDescription);
 	}
 }
 
@@ -44,7 +33,8 @@ void FModWizardDefinition::OnTemplateSelectionChanged(TArray<TSharedRef<FPluginT
 	
 	if (InSelectedItems.Num() > 0)
 	{
-		CurrentTemplateDefinition = InSelectedItems[0];
+		CurrentTemplateDefinition = *ModTemplateDefinitions.FindByPredicate([InSelectedItems](TSharedRef<FModTemplateDescription> Template)
+			{ return Template->TemplateDescription == InSelectedItems[0]; });
 	}
 }
 
@@ -53,7 +43,7 @@ TArray<TSharedPtr<FPluginTemplateDescription>> FModWizardDefinition::GetSelected
 	TArray<TSharedPtr<FPluginTemplateDescription>> Selection;
 	if (CurrentTemplateDefinition.IsValid())
 	{
-		Selection.Add(CurrentTemplateDefinition);
+		Selection.Add(CurrentTemplateDefinition->TemplateDescription);
 	}
 
 	return Selection;
@@ -77,7 +67,7 @@ bool FModWizardDefinition::AllowsEnginePlugins() const
 
 bool FModWizardDefinition::CanContainContent() const
 {
-	return CurrentTemplateDefinition.IsValid() ? CurrentTemplateDefinition->bCanContainContent : false;
+	return CurrentTemplateDefinition.IsValid() ? CurrentTemplateDefinition->TemplateDescription->bCanContainContent : false;
 }
 
 bool FModWizardDefinition::HasModules() const
@@ -99,7 +89,7 @@ FText FModWizardDefinition::GetInstructions() const
 
 bool FModWizardDefinition::GetPluginIconPath(FString& OutIconPath) const
 {
-	return GetTemplateIconPath(CurrentTemplateDefinition.ToSharedRef(), OutIconPath);
+	return GetTemplateIconPath(CurrentTemplateDefinition.ToSharedRef()->TemplateDescription, OutIconPath);
 }
 
 EHostType::Type FModWizardDefinition::GetPluginModuleDescriptor() const
@@ -108,7 +98,7 @@ EHostType::Type FModWizardDefinition::GetPluginModuleDescriptor() const
 
 	if (CurrentTemplateDefinition.IsValid())
 	{
-		ModuleDescriptorType = CurrentTemplateDefinition->ModuleDescriptorType;
+		ModuleDescriptorType = CurrentTemplateDefinition->TemplateDescription->ModuleDescriptorType;
 	}
 
 	return ModuleDescriptorType;
@@ -120,7 +110,7 @@ ELoadingPhase::Type FModWizardDefinition::GetPluginLoadingPhase() const
 
 	if (CurrentTemplateDefinition.IsValid())
 	{
-		Phase = CurrentTemplateDefinition->LoadingPhase;
+		Phase = CurrentTemplateDefinition->TemplateDescription->LoadingPhase;
 	}
 
 	return Phase;
@@ -148,7 +138,7 @@ TArray<FString> FModWizardDefinition::GetFoldersForSelection() const
 
 	if (CurrentTemplateDefinition.IsValid())
 	{
-		SelectedFolders.Add(GetFolderForTemplate(CurrentTemplateDefinition.ToSharedRef()));
+		SelectedFolders.Add(GetFolderForTemplate(CurrentTemplateDefinition.ToSharedRef()->TemplateDescription));
 	}
 
 	return SelectedFolders;
@@ -169,6 +159,9 @@ void FModWizardDefinition::PluginCreated(const FString& PluginName, bool bWasSuc
 	}
 	// Initialize SML required fields
 	FPluginDescriptor Descriptor = Plugin->GetDescriptor();
+	if (Descriptor.FriendlyName.IsEmpty()) {
+		Descriptor.FriendlyName = PluginName;
+	}
 	Descriptor.SemVersion = TEXT("1.0.0");
 	Descriptor.VersionName = TEXT("1.0.0");
 	Descriptor.Version = 1;
@@ -186,6 +179,19 @@ void FModWizardDefinition::PluginCreated(const FString& PluginName, bool bWasSuc
 	SMLDependency.SemVersion = TEXT("^") + SMLPlugin->GetDescriptor().SemVersion;
 	Descriptor.Plugins.Add(SMLDependency);
 
+	// Initialize extra dependencies
+	for (const TSharedPtr<FModTemplateDependency>& Dependency : CurrentTemplateDefinition->Dependencies) {
+		FPluginReferenceDescriptor DependencyDescriptor(Dependency->Name, true);
+		DependencyDescriptor.SemVersion = TEXT("^") + Dependency->Version;
+		if(Dependency->bOptional) {
+			DependencyDescriptor.bOptional = true;
+		}
+		if(Dependency->bBasePlugin) {
+			DependencyDescriptor.bBasePlugin = true;
+		}
+		Descriptor.Plugins.Add(DependencyDescriptor);
+	}
+
 	FText FailReason; 
 	if(!Plugin->UpdateDescriptor(Descriptor, FailReason))
 	{
@@ -198,14 +204,93 @@ void FModWizardDefinition::PluginCreated(const FString& PluginName, bool bWasSuc
 
 FString FModWizardDefinition::GetPluginFolderPath() const
 {
-	return GetFolderForTemplate(CurrentTemplateDefinition.ToSharedRef());
+	return GetFolderForTemplate(CurrentTemplateDefinition.ToSharedRef()->TemplateDescription);
 }
 
 FString FModWizardDefinition::GetFolderForTemplate(TSharedRef<FPluginTemplateDescription> InTemplate) const
 {
-	FString TemplateFolderName = PluginBaseDir / TEXT("Templates") / InTemplate->OnDiskPath;
+	return InTemplate->OnDiskPath;
+}
 
-	return TemplateFolderName;
+TSharedPtr<FModTemplateDependency> FModTemplateDependency::Load(const TSharedPtr<FJsonObject> JSON, FString& Error)
+{
+	FString DependencyName;
+	if(!JSON->TryGetStringField(TEXT("name"), DependencyName)) {
+		Error = TEXT("\"name\" not in dependency");
+		return nullptr;
+	}
+
+	FString DependencyVersion;
+	if(!JSON->TryGetStringField(TEXT("version"), DependencyVersion)) {
+		TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(DependencyName);
+		if(!Plugin.IsValid()) {
+			Error = TEXT("\"version\" not in dependency and plugin not installed");
+			return nullptr;
+		}
+		DependencyVersion = Plugin->GetDescriptor().SemVersion;
+	}
+
+	bool bOptional = false;
+	JSON->TryGetBoolField(TEXT("optional"), bOptional);
+
+	bool bBasePlugin = false;
+	JSON->TryGetBoolField(TEXT("basePlugin"), bBasePlugin);
+
+	return MakeShareable(new FModTemplateDependency(DependencyName, DependencyVersion, bOptional, bBasePlugin));
+}
+
+TSharedPtr<FModTemplateDescription> FModTemplateDescription::Load(const TSharedPtr<FJsonObject> JSON, const FString TemplatesPath, FString& Error)
+{
+	FString TemplateName;
+	if(!JSON->TryGetStringField(TEXT("name"), TemplateName)) {
+		Error = TEXT("\"name\" not in template");
+		return nullptr;
+	}
+
+	FString TemplateDescription;
+	if(!JSON->TryGetStringField(TEXT("description"), TemplateDescription)) {
+		Error = TEXT("\"description\" not in template");
+		return nullptr;
+	}
+
+	FString TemplateFolderName;
+	if(!JSON->TryGetStringField(TEXT("path"), TemplateFolderName)) {
+		Error = TEXT("\"path\" not in template");
+		return nullptr;
+	}
+
+	TArray<TSharedPtr<FModTemplateDependency>> Dependencies;
+	const TArray<TSharedPtr<FJsonValue>>* DependenciesPtr;
+	if(JSON->TryGetArrayField(TEXT("dependencies"), DependenciesPtr)) {
+		int i = 0;
+		for(const TSharedPtr<FJsonValue>& Item : *DependenciesPtr) {
+			i++;
+			const TSharedPtr<FJsonObject>* DependencyObjPtr;
+			if(!Item->TryGetObject(DependencyObjPtr)) {
+				Error = FString::Printf(TEXT("dependency %d: not an object"), i);
+				return nullptr;
+			}
+
+			FString DependencyError;
+			TSharedPtr<FModTemplateDependency> Dependency = FModTemplateDependency::Load(*DependencyObjPtr, DependencyError);
+			if (!Dependency.IsValid()) {
+				Error = FString::Printf(TEXT("dependency %d: %s"), i, *DependencyError);
+				return nullptr;
+			}
+			
+			Dependencies.Add(Dependency);
+		}
+	}
+	
+    return MakeShareable(new FModTemplateDescription(
+    	MakeShareable(new FPluginTemplateDescription(
+    		FText::FromString(TemplateName),
+    		FText::FromString(TemplateDescription),
+    		TemplatesPath / TemplateFolderName,
+    		true,
+    		EHostType::Runtime)),
+    	Dependencies
+    ));
 }
 
 #undef LOCTEXT_NAMESPACE
