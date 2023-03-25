@@ -1,0 +1,30 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0.0",
+	"SemVersion": "1.0.0",
+	"FriendlyName": "Example ContentLib Mod",
+	"Description": "This mod is a example skeleton from the ContentLib documentation.",
+	"Category": "Modding",
+	"CreatedBy": "Robb, You!",
+	"CreatedByURL": "",
+	"DocsURL": "https://docs.ficsit.app/contentlib/latest/index.html",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Plugins": [
+		{
+			"Name": "SML",
+			"Enabled": true,
+			"SemVersion": "^3.3.2"
+		},
+		{
+			"Name": "ContentLib",
+			"Enabled": true,
+			"SemVersion": "^1.0.0"
+		}
+	]
+}

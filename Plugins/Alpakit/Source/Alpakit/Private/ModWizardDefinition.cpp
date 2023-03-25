@@ -20,9 +20,11 @@ void FModWizardDefinition::PopulateTemplatesSource()
 {
 	const FText CPPTemplateName = LOCTEXT("CPPLabel", "C++ & Blueprint");
 	const FText BPTemplateName = LOCTEXT("BPLabel", "Blueprint Only");
+	const FText CLBPTemplateName = LOCTEXT("CLBPLabel", "ContentLib: Blueprint Only");
 
 	const FText CPPTemplateDescription = LOCTEXT("CPPDesc", "Create a mod that contains both C++ and Blueprint code.");
 	const FText BPTemplateDescription = LOCTEXT("BPDesc", "Create a mod that contains only Blueprint code. (You can add C++ code later)");
+	const FText CLBPTemplateDescription = LOCTEXT("BPDesc", "Create a mod that is ready to use ContentLib JSON features. Consider downloading a copy of the ContentLib mod to use its Blueprint/C++ libraries in your editor!");
 
 	TemplateDefinitions.Add(MakeShareable(new FPluginTemplateDescription(BPTemplateName, BPTemplateDescription, TEXT("BlueprintBlank"), true, EHostType::Runtime)));
 	if (!bIsContentOnlyProject)
@@ -30,6 +32,8 @@ void FModWizardDefinition::PopulateTemplatesSource()
 		// Insert the blank template to make sure it appears before the content only template.
 		TemplateDefinitions.Insert(MakeShareable(new FPluginTemplateDescription(CPPTemplateName, CPPTemplateDescription, TEXT("CPPAndBlueprintBlank"), true, EHostType::Runtime)), 0);
 	}
+	TemplateDefinitions.Add(MakeShareable(new FPluginTemplateDescription(CLBPTemplateDescription, CLBPTemplateDescription, TEXT("ContentLibBlueprintBlank"), true, EHostType::Runtime)));
+	// TODO template needs to bring along dependency on ContentLib and the other assorted CL folders + readme
 }
 
 const TArray<TSharedRef<FPluginTemplateDescription>>& FModWizardDefinition::GetTemplatesSource() const
