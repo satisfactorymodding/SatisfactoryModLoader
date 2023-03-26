@@ -43,6 +43,7 @@ Mods/*/Binaries/*
 
 # Builds
 Build/*
+Mods/*/Build/*
 CMakeLists.txt
 
 # Whitelist PakBlacklist-<BuildConfiguration>.txt files
@@ -78,17 +79,16 @@ Mods/*/Mods/*
 Plugins/Wwise/*
 Plugins/Developer/RiderLink/*
 
-# Alpakit Mods folder
-Mods/*
-Configs/*
-
 # Packaged plugins
 *.pak
 
+# Mod config files
+Configs/*
+
+# Alpakit Mods folder
 # Ignore all non-Starter Project mods
 Mods/*
 Mods/*/Metadata/Crypto.json
 !Mods/Alpakit/
 !Mods/SML/
-!Mods/SMLEditor/
 !Mods/ExampleMod/

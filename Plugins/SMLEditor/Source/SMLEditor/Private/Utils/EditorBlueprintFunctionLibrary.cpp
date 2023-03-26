@@ -1,6 +1,8 @@
 
 
 #include "Utils/EditorBlueprintFunctionLibrary.h"
+
+#include "Engine/ObjectLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
 UObject * UEditorBlueprintFunctionLibrary::CreateBlueprintOfClass(UClass * Class, FString Name, FString Path) {
@@ -74,4 +76,15 @@ UClass * UEditorBlueprintFunctionLibrary::GetClassGeneratedByBlueprint(UObject *
 	}
 	UClass* InnerBPClass = LoadObject<UClass>(NULL, *PathName);
 	return InnerBPClass;
+}
+
+void UEditorBlueprintFunctionLibrary::Editor_MarkDefaultDirty( UClass* Class )
+{
+	if( IsValid( Class ) )
+	{
+		Class->MarkPackageDirty();
+		Class->GetDefaultObject()->MarkPackageDirty();
+		return;
+	}
+	UE_LOG(LogTemp, Error, TEXT("Try to mark a invalid Class Dirty!"));
 }

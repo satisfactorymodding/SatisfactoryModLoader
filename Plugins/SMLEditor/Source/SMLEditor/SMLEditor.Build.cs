@@ -7,19 +7,9 @@ public class SMLEditor : ModuleRules
     public SMLEditor(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        PublicDependencyModuleNames.AddRange(new string[] {"SML", "FactoryGame", "UnrealEd", "BlueprintGraph"});
         bLegacyPublicIncludePaths = false;
-               
-        PublicDependencyModuleNames.AddRange(new[] {
-            "SML", 
-            "FactoryGame", 
-            "UnrealEd", 
-            "BlueprintGraph", 
-            "GraphEditor", 
-            "EditorWidgets",
-            "DesktopPlatform",
-            "Kismet"
-        });
-
+        
         //SML transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
             "Json"
@@ -46,7 +36,11 @@ public class SMLEditor : ModuleRules
             "SlateCore", "Slate", "UMG",
             "InstancedSplines",
             "Projects",
-            "FunctionalTestingEditor",
+            "FunctionalTestingEditor"
+        });
+        
+        PrivateDependencyModuleNames.AddRange(new[] {
+            "DesktopPlatform"
         });
     }
 }
