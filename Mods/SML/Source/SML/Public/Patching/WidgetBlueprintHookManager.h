@@ -1,5 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/PanelSlot.h"
 #include "WidgetBlueprintHookManager.generated.h"
 

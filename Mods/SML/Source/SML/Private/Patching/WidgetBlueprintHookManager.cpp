@@ -116,9 +116,12 @@ void UWidgetBlueprintHookData::ReinitializeNewWidgetTemplate() {
 		if (NewWidgetClass != NULL) {
 			UUserWidget* OldWidgetTemplate = NewWidgetTemplate;
 			
-			//Calling NewObject with Template of unrelated UClass seems to be okay, FObjectInitializer will only carry over properties that belong to the new class
-			NewWidgetTemplate = NewObject<UUserWidget>(this, NewWidgetClass, NewWidgetName, RF_ArchetypeObject | RF_Transactional);
+			//The object needs RF_Public, otherwise a blueprint referencing an instance of UWidgetBlueprintHookData
+			//(or another object containing it) will cause a cooking error, since it would be referencing a private object
+			//in another package
+			NewWidgetTemplate = NewObject<UUserWidget>(this, NewWidgetClass, NewWidgetName, RF_Public | RF_ArchetypeObject | RF_Transactional);
 
+			//Transfer properties from the old object to the new one
 			if (OldWidgetTemplate && NewWidgetTemplate) {
 				UEngine::CopyPropertiesForUnrelatedObjects(OldWidgetTemplate, NewWidgetTemplate);
 			}
@@ -155,9 +158,12 @@ void UWidgetBlueprintHookData::ReinitializePanelSlotTemplate() {
 		}
 		if (PanelSlotClass != NULL) {
 			UPanelSlot* OldPanelSlotTemplate = PanelSlotTemplate;
-			//Calling NewObject with Template of unrelated UClass seems to be okay, FObjectInitializer will only carry over properties that belong to the new class
-			PanelSlotTemplate = NewObject<UPanelSlot>(this, PanelSlotClass, *PanelSlotName, RF_ArchetypeObject | RF_Transactional);
+			//The object needs RF_Public, otherwise a blueprint referencing an instance of UWidgetBlueprintHookData
+			//(or another object containing it) will cause a cooking error, since it would be referencing a private object
+			//in another package
+			PanelSlotTemplate = NewObject<UPanelSlot>(this, PanelSlotClass, *PanelSlotName, RF_Public | RF_ArchetypeObject | RF_Transactional);
 
+			//Transfer properties from the old object to the new one
 			if (OldPanelSlotTemplate && PanelSlotTemplate) {
 				UEngine::CopyPropertiesForUnrelatedObjects(OldPanelSlotTemplate, PanelSlotTemplate);
 			}
@@ -217,6 +223,10 @@ TArray<FString> UWidgetBlueprintHookData::GetParentWidgetNames() const {
 
 UPanelWidget* UWidgetBlueprintHookData::ResolveParentWidget() const {
 	const UWidgetBlueprintGeneratedClass* WidgetBlueprintClass = Cast<UWidgetBlueprintGeneratedClass>(WidgetClass.LoadSynchronous());
+	if (WidgetBlueprintClass == NULL) {
+		return NULL;
+	}
+	
 	UWidget* ParentWidget = WidgetBlueprintClass->GetWidgetTreeArchetype()->FindWidget(ParentWidgetName);
 
 	UPanelWidget* OutParentWidget;

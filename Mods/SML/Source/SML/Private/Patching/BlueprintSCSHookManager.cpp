@@ -84,10 +84,13 @@ void UBlueprintSCSHookData::ReinitializeActorComponentTemplate() {
 			ActorComponentTemplate->Rename(nullptr, GetTransientPackage(), REN_DontCreateRedirectors | REN_ForceNoResetLoaders);
 		}
 		if (ActorComponentClass != NULL) {
-			//Calling NewObject with Template of unrelated UClass seems to be okay, FObjectInitializer will only carry over properties that belong to the new class
+			//The object needs RF_Public, otherwise a blueprint referencing an instance of UBlueprintSCSHookData
+			//(or another object containing it) will cause a cooking error, since it would be referencing a private object
+			//in another package
 			UActorComponent* OldActorComponentTemplate = ActorComponentTemplate;
-			ActorComponentTemplate = NewObject<UActorComponent>(this, ActorComponentClass, VariableName, RF_ArchetypeObject | RF_Transactional);
+			ActorComponentTemplate = NewObject<UActorComponent>(this, ActorComponentClass, VariableName, RF_Public | RF_ArchetypeObject | RF_Transactional);
 
+			//Transfer properties from the old object to the new one
 			if (OldActorComponentTemplate && ActorComponentTemplate) {
 				UEngine::CopyPropertiesForUnrelatedObjects(OldActorComponentTemplate, ActorComponentTemplate);
 			}
