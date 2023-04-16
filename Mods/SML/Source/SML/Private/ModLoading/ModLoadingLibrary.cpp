@@ -329,6 +329,7 @@ UTexture2D* UModIconStorage::FindOrLoadModIcon(const FString& PluginName, bool& 
     if (LoadedModIcons.Contains(PluginName)) {
         UTexture2D* LoadedIcon = LoadedModIcons.FindChecked(PluginName);
         bOutIsBlankTexture = LoadedIcon == BlankTexture;
+        return LoadedIcon;
     }
 
     UTexture2D* ActuallyLoadedTexture = LoadModIcon(PluginName);
