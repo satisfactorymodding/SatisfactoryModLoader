@@ -1,8 +1,6 @@
 # Visual Studio 2015 user specific files
 .vs/
 
-Binaries/
-
 # Compiled Object files
 *.slo
 *.lo
@@ -15,6 +13,20 @@ Binaries/
 # Precompiled Headers
 *.gch
 *.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
 
 # Executables
 *.exe
@@ -37,7 +49,7 @@ SourceArt/**/*.png
 SourceArt/**/*.tga
 
 # Binary Files
-# Binaries/*
+Binaries/*
 Plugins/*/Binaries/*
 
 # Builds
