@@ -1,7 +1,7 @@
 
 
 #include "Util/RuntimeBlueprintFunctionLibrary.h"
-
+#include "SatisfactoryModLoader.h"
 
 #include "Patching/BlueprintHookHelper.h"
 #include "Patching/BlueprintHookManager.h"
@@ -347,19 +347,19 @@ void URuntimeBlueprintFunctionLibrary::BindOnBPFunction(const TSubclassOf<UObjec
 		if(!Class)
 			return;
 		UFunction* Function = Class->FindFunctionByName(*FunctionName);
-		if (!Function || Function->IsNative())
+		if (!Function)
 		{
-			if (!Function)
-			{
-				for (auto Prop = TFieldIterator<UFunction>(Class); Prop; ++Prop) {
-					if (!Prop)
-						continue;
-					UE_LOG(LogTemp, Error, TEXT("FunctionName : %s"), *Prop->GetName())
-				}
+			UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to Bind on BP Function '%s' of class '%s' : Function not found. The available functions on this class are (note, some listed here could be native):"), *FunctionName, *Class->GetPathName());
+			for (auto Prop = TFieldIterator<UFunction>(Class); Prop; ++Prop) {
+				if (!Prop)
+					continue;
+				UE_LOG(LogSatisfactoryModLoader, Error, TEXT("FunctionName : %s"), *Prop->GetName())
 			}
-			else
-				UE_LOG(LogTemp, Error, TEXT("Was not able to Bind on Function : %s Function is Native"), *FunctionName);
-
+			return;
+		}
+		if (Function->IsNative())
+		{
+			UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to Bind on BP Function '%s' of class '%s' : Function is Native"), *FunctionName, *Class->GetPathName());
 			return;
 		}
 		EPredefinedHookOffset Offset = HookOffsetStart ? EPredefinedHookOffset::Start : EPredefinedHookOffset::Return;
