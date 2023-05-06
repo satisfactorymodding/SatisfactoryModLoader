@@ -365,6 +365,6 @@ void URuntimeBlueprintFunctionLibrary::BindOnBPFunction(const TSubclassOf<UObjec
 		EPredefinedHookOffset Offset = HookOffsetStart ? EPredefinedHookOffset::Start : EPredefinedHookOffset::Return;
 		UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
 		HookManager->HookBlueprintFunction(Function, [Binding](FBlueprintHookHelper& HookHelper) {
-            Binding.ExecuteIfBound(HookHelper.GetContext());
-        }, Offset);
+			Binding.ExecuteIfBound(HookHelper.GetContext());
+		}, Offset);
 }
