@@ -194,12 +194,12 @@ FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetNa
     
     if(TargetSettings.bCopyModsToGame) {
         UATArguments.Append(FString::Printf(TEXT("-%s_CopyToGameDir "), *TargetName));
-        UATArguments.Append(FString::Printf(TEXT("-%s_GameDir=%s "), *TargetName, *TargetSettings.SatisfactoryGamePath.Path));
-    }
+    	UATArguments.Append(FString::Printf(TEXT("-%s_GameDir=%s "), *TargetName, *TargetSettings.SatisfactoryGamePath.Path));
 
-    if(TargetSettings.LaunchGameAfterPacking != EAlpakitStartGameType::NONE && LaunchGame) {
-        UATArguments.Append(FString::Printf(TEXT("-%s_LaunchGame "), *TargetName));
-        UATArguments.Append(FString::Printf(TEXT("-%s_LaunchType=%s "), *TargetName, *GetArgumentForLaunchType(TargetSettings.LaunchGameAfterPacking)));
+    	if(TargetSettings.LaunchGameAfterPacking != EAlpakitStartGameType::NONE && LaunchGame) {
+    		UATArguments.Append(FString::Printf(TEXT("-%s_LaunchGame "), *TargetName));
+    		UATArguments.Append(FString::Printf(TEXT("-%s_LaunchType=%s "), *TargetName, *GetArgumentForLaunchType(TargetSettings.LaunchGameAfterPacking)));
+    	}
     }
 
     return UATArguments;
