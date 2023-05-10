@@ -233,6 +233,11 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& Ne
         AdditionalUATArguments.Append(MakeUATArguments(Settings->LinuxServerTargetSettings, TEXT("LinuxServer"), NextEntries.Num() == 0));
     }
 
+	if(Settings->bMerge)
+	{
+		AdditionalUATArguments.Append(TEXT("-MergeArchive"));	
+	}
+
     UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, NextEntries.Num());
 
     const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" %s"),

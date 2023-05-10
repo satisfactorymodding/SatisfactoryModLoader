@@ -263,30 +263,56 @@ namespace Alpakit.Automation
 			return Path.Combine(projectName, "Mods", dlcName);
 		}
 
-		private static void ArchivePluginProject(ProjectParams projectParams,
+		private void ArchivePluginProject(ProjectParams projectParams,
 			IEnumerable<DeploymentContext> deploymentContexts)
 		{
 			var baseArchiveDirectory = CombinePaths(Path.GetDirectoryName(projectParams.RawProjectPath.ToString()),
 				"Saved", "ArchivedPlugins");
 
-			foreach (var deploymentContext in deploymentContexts)
+            var archiveDirectory = Path.Combine(baseArchiveDirectory, projectParams.DLCFile.GetFileNameWithoutAnyExtensions());
+            CreateDirectory(archiveDirectory);
+
+            var mergeArchive = ParseParam("MergeArchive");
+
+			var mergedDirectory = Path.Combine(archiveDirectory, "merged");
+			var mergedArchive = Path.Combine(archiveDirectory, projectParams.DLCFile.GetFileNameWithoutAnyExtensions() + ".zip");
+
+            if (mergeArchive)
+            {
+                CreateDirectory(mergedDirectory);
+				DeleteDirectoryContents(mergedDirectory);
+			}
+
+            foreach (var deploymentContext in deploymentContexts)
 			{
 				var stageRootDirectory = deploymentContext.StageDirectory;
 				var relativePluginPath = GetPluginPathRelativeToStageRoot(projectParams, deploymentContext);
 				var stagePluginDirectory = Path.Combine(stageRootDirectory.ToString(), relativePluginPath);
 
-				var archiveDirectory = Path.Combine(baseArchiveDirectory, deploymentContext.FinalCookPlatform);
-				CreateDirectory(archiveDirectory);
-
 				var zipFilePath = Path.Combine(archiveDirectory,
-					projectParams.DLCFile.GetFileNameWithoutAnyExtensions() + ".zip");
+					projectParams.DLCFile.GetFileNameWithoutAnyExtensions() + "-" + deploymentContext.FinalCookPlatform + ".zip");
 				if (FileExists(zipFilePath))
 				{
 					DeleteFile(zipFilePath);
 				}
 
 				ZipFile.CreateFromDirectory(stagePluginDirectory, zipFilePath);
+
+				if (mergeArchive)
+				{
+					CopyDirectory_NoExceptions(stagePluginDirectory, Path.Combine(mergedDirectory, deploymentContext.FinalCookPlatform));
+				}
 			}
+
+			if (mergeArchive)
+            {
+	            if (FileExists(mergedArchive))
+	            {
+		            DeleteFile(mergedArchive);
+	            }
+                ZipFile.CreateFromDirectory(mergedDirectory, mergedArchive);
+				DeleteDirectory(mergedDirectory);
+            }
 		}
 
 		private static void DeployPluginProject(ProjectParams projectParams,
