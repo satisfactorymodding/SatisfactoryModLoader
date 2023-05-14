@@ -1,5 +1,6 @@
 #include "Kismet/RuntimeBlueprintFunctionLibrary.h"
 #include "Configuration/RootConfigValueHolder.h"
+#include "SatisfactoryModLoader.h"
 #include "Patching/BlueprintHookHelper.h"
 #include "Patching/BlueprintHookManager.h"
 
@@ -272,13 +273,17 @@ void URuntimeBlueprintFunctionLibrary::SetComboBoxFont(UComboBoxString* Box, FSl
 }
 
 void URuntimeBlueprintFunctionLibrary::BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName, bool bHookOffsetStart) {
-	UFunction* Function = Class ? Class->FindFunctionByName(*FunctionName) : NULL;
-	if (Function == NULL || Function->IsNative()) {
-		if (Function == NULL) {
-			UE_LOG(LogTemp, Error, TEXT("Failed to bind on Blueprint Function %s: Function does not exist"), *FunctionName);
-		} else {
-			UE_LOG(LogTemp, Error, TEXT("Failed to bind on Blueprint Function %s: Function is native"), *FunctionName);
-		}
+	if (Class == NULL) {
+		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to bind on Blueprint Function '%s': Class is null"), *FunctionName);
+		return;
+	}
+	UFunction* Function = Class->FindFunctionByName(*FunctionName);
+	if (Function == NULL) {
+		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to bind on Blueprint Function '%s' of class '%s': Function does not exist"), *FunctionName, *Class->GetPathName());
+		return;
+	}
+	if (Function->IsNative()) {
+		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to bind on Blueprint Function '%s' of class '%s': Function is native"), *FunctionName, *Class->GetPathName());
 		return;
 	}
 	const EPredefinedHookOffset Offset = bHookOffsetStart ? EPredefinedHookOffset::Start : EPredefinedHookOffset::Return;
