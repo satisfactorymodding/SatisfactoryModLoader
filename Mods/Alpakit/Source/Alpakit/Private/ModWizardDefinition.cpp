@@ -1,0 +1,296 @@
+#include "ModWizardDefinition.h"
+
+#include "Alpakit.h"
+#include "Dom/JsonObject.h"
+#include "GenericPlatform/GenericPlatformFile.h"
+#include "Interfaces/IPluginManager.h"
+#include "HAL/PlatformFilemanager.h"
+#include "Misc/App.h"
+
+#define LOCTEXT_NAMESPACE "NewModWizard"
+
+FModWizardDefinition::FModWizardDefinition(bool bContentOnlyProject)
+	: bIsContentOnlyProject(bContentOnlyProject)
+{
+	PluginBaseDir = IPluginManager::Get().FindPlugin(TEXT("Alpakit"))->GetBaseDir();
+
+	ModTemplateDefinitions = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit")).GetModTemplates();
+	for (TSharedRef<FModTemplateDescription> Template : ModTemplateDefinitions)
+	{
+		TemplateDefinitions.Add(Template->TemplateDescription);
+	}
+}
+
+const TArray<TSharedRef<FPluginTemplateDescription>>& FModWizardDefinition::GetTemplatesSource() const
+{
+	return TemplateDefinitions;
+}
+
+
+void FModWizardDefinition::OnTemplateSelectionChanged(TArray<TSharedRef<FPluginTemplateDescription>> InSelectedItems, ESelectInfo::Type SelectInfo)
+{
+	CurrentTemplateDefinition.Reset();
+	
+	if (InSelectedItems.Num() > 0)
+	{
+		CurrentTemplateDefinition = *ModTemplateDefinitions.FindByPredicate([InSelectedItems](TSharedRef<FModTemplateDescription> Template)
+			{ return Template->TemplateDescription == InSelectedItems[0]; });
+	}
+}
+
+TArray<TSharedPtr<FPluginTemplateDescription>> FModWizardDefinition::GetSelectedTemplates() const
+{
+	TArray<TSharedPtr<FPluginTemplateDescription>> Selection;
+	if (CurrentTemplateDefinition.IsValid())
+	{
+		Selection.Add(CurrentTemplateDefinition->TemplateDescription);
+	}
+
+	return Selection;
+}
+
+bool FModWizardDefinition::HasValidTemplateSelection() const
+{
+	return CurrentTemplateDefinition.IsValid();
+}
+
+void FModWizardDefinition::ClearTemplateSelection()
+{
+	CurrentTemplateDefinition.Reset();
+}
+
+bool FModWizardDefinition::AllowsEnginePlugins() const
+{
+	// Don't show the option to make an engine plugin in installed builds
+	return !FApp::IsEngineInstalled();
+}
+
+bool FModWizardDefinition::CanContainContent() const
+{
+	return CurrentTemplateDefinition.IsValid() ? CurrentTemplateDefinition->TemplateDescription->bCanContainContent : false;
+}
+
+bool FModWizardDefinition::HasModules() const
+{
+	FString SourceFolderPath = GetPluginFolderPath() / TEXT("Source");
+	
+	return FPaths::DirectoryExists(SourceFolderPath);
+}
+
+bool FModWizardDefinition::IsMod() const
+{
+	return false; // TODO Update this when migrating to Mods
+}
+
+FText FModWizardDefinition::GetInstructions() const
+{
+	return LOCTEXT("ChooseModTemplate", "Choose a template and then specify a name to create a new mod.");
+}
+
+bool FModWizardDefinition::GetPluginIconPath(FString& OutIconPath) const
+{
+	return GetTemplateIconPath(CurrentTemplateDefinition.ToSharedRef()->TemplateDescription, OutIconPath);
+}
+
+EHostType::Type FModWizardDefinition::GetPluginModuleDescriptor() const
+{
+	EHostType::Type ModuleDescriptorType = EHostType::Runtime;
+
+	if (CurrentTemplateDefinition.IsValid())
+	{
+		ModuleDescriptorType = CurrentTemplateDefinition->TemplateDescription->ModuleDescriptorType;
+	}
+
+	return ModuleDescriptorType;
+}
+
+ELoadingPhase::Type FModWizardDefinition::GetPluginLoadingPhase() const
+{
+	ELoadingPhase::Type Phase = ELoadingPhase::Default;
+
+	if (CurrentTemplateDefinition.IsValid())
+	{
+		Phase = CurrentTemplateDefinition->TemplateDescription->LoadingPhase;
+	}
+
+	return Phase;
+}
+
+bool FModWizardDefinition::GetTemplateIconPath(TSharedRef<FPluginTemplateDescription> Template, FString& OutIconPath) const
+{
+	bool bRequiresDefaultIcon = false;
+
+	FString TemplateFolderName = GetFolderForTemplate(Template);
+
+	OutIconPath = TemplateFolderName / TEXT("Resources/Icon128.png");
+	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*OutIconPath))
+	{
+		OutIconPath = PluginBaseDir / TEXT("Resources/DefaultIcon128.png");
+		bRequiresDefaultIcon = true;
+	}
+
+	return bRequiresDefaultIcon;
+}
+
+TArray<FString> FModWizardDefinition::GetFoldersForSelection() const
+{
+	TArray<FString> SelectedFolders;
+
+	if (CurrentTemplateDefinition.IsValid())
+	{
+		SelectedFolders.Add(GetFolderForTemplate(CurrentTemplateDefinition.ToSharedRef()->TemplateDescription));
+	}
+
+	return SelectedFolders;
+}
+
+void FModWizardDefinition::PluginCreated(const FString& PluginName, bool bWasSuccessful) const
+{
+	if(!bWasSuccessful)
+	{
+		UE_LOG(LogAlpakit, Error, TEXT("Failed to create mod %s"), *PluginName);
+		return;
+	}
+	TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(PluginName);
+	if(!Plugin.IsValid())
+	{
+		UE_LOG(LogAlpakit, Error, TEXT("Created mod %s was invalid"), *PluginName);
+		return;
+	}
+	// Initialize SML required fields
+	FPluginDescriptor Descriptor = Plugin->GetDescriptor();
+	if (Descriptor.FriendlyName.IsEmpty()) {
+		Descriptor.FriendlyName = PluginName;
+	}
+	Descriptor.SemVersion = TEXT("1.0.0");
+	Descriptor.VersionName = TEXT("1.0.0");
+	Descriptor.Version = 1;
+	Descriptor.Category = TEXT("Modding");
+
+	// Initialize SML dependency
+	TSharedPtr<IPlugin> SMLPlugin = IPluginManager::Get().FindPlugin(TEXT("SML"));
+	if(!Plugin.IsValid())
+	{
+		UE_LOG(LogAlpakit, Error, TEXT("Could not find SML plugin"));
+		return;
+	}
+	
+	FPluginReferenceDescriptor SMLDependency(TEXT("SML"), true);
+	SMLDependency.SemVersion = TEXT("^") + SMLPlugin->GetDescriptor().SemVersion;
+	Descriptor.Plugins.Add(SMLDependency);
+
+	// Initialize extra dependencies
+	for (const TSharedPtr<FModTemplateDependency>& Dependency : CurrentTemplateDefinition->Dependencies) {
+		FPluginReferenceDescriptor DependencyDescriptor(Dependency->Name, true);
+		DependencyDescriptor.SemVersion = TEXT("^") + Dependency->Version;
+		if(Dependency->bOptional) {
+			DependencyDescriptor.bOptional = true;
+		}
+		if(Dependency->bBasePlugin) {
+			DependencyDescriptor.bBasePlugin = true;
+		}
+		Descriptor.Plugins.Add(DependencyDescriptor);
+	}
+
+	FText FailReason; 
+	if(!Plugin->UpdateDescriptor(Descriptor, FailReason))
+	{
+		UE_LOG(LogAlpakit, Error, TEXT("Failed to update descriptor for mod %s: %s"), *PluginName, *FailReason.ToString());
+		return;
+	}
+
+	UE_LOG(LogAlpakit, Log, TEXT("Created mod %s"), *PluginName);
+}
+
+FString FModWizardDefinition::GetPluginFolderPath() const
+{
+	return GetFolderForTemplate(CurrentTemplateDefinition.ToSharedRef()->TemplateDescription);
+}
+
+FString FModWizardDefinition::GetFolderForTemplate(TSharedRef<FPluginTemplateDescription> InTemplate) const
+{
+	return InTemplate->OnDiskPath;
+}
+
+TSharedPtr<FModTemplateDependency> FModTemplateDependency::Load(const TSharedPtr<FJsonObject> JSON, FString& Error)
+{
+	FString DependencyName;
+	if(!JSON->TryGetStringField(TEXT("name"), DependencyName)) {
+		Error = TEXT("\"name\" not in dependency");
+		return nullptr;
+	}
+
+	FString DependencyVersion;
+	if(!JSON->TryGetStringField(TEXT("version"), DependencyVersion)) {
+		TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(DependencyName);
+		if(!Plugin.IsValid()) {
+			Error = TEXT("\"version\" not in dependency and plugin not installed");
+			return nullptr;
+		}
+		DependencyVersion = Plugin->GetDescriptor().SemVersion;
+	}
+
+	bool bOptional = false;
+	JSON->TryGetBoolField(TEXT("optional"), bOptional);
+
+	bool bBasePlugin = false;
+	JSON->TryGetBoolField(TEXT("basePlugin"), bBasePlugin);
+
+	return MakeShareable(new FModTemplateDependency(DependencyName, DependencyVersion, bOptional, bBasePlugin));
+}
+
+TSharedPtr<FModTemplateDescription> FModTemplateDescription::Load(const TSharedPtr<FJsonObject> JSON, const FString TemplatesPath, FString& Error)
+{
+	FString TemplateName;
+	if(!JSON->TryGetStringField(TEXT("name"), TemplateName)) {
+		Error = TEXT("\"name\" not in template");
+		return nullptr;
+	}
+
+	FString TemplateDescription;
+	if(!JSON->TryGetStringField(TEXT("description"), TemplateDescription)) {
+		Error = TEXT("\"description\" not in template");
+		return nullptr;
+	}
+
+	FString TemplateFolderName;
+	if(!JSON->TryGetStringField(TEXT("path"), TemplateFolderName)) {
+		Error = TEXT("\"path\" not in template");
+		return nullptr;
+	}
+
+	TArray<TSharedPtr<FModTemplateDependency>> Dependencies;
+	const TArray<TSharedPtr<FJsonValue>>* DependenciesPtr;
+	if(JSON->TryGetArrayField(TEXT("dependencies"), DependenciesPtr)) {
+		int i = 0;
+		for(const TSharedPtr<FJsonValue>& Item : *DependenciesPtr) {
+			i++;
+			const TSharedPtr<FJsonObject>* DependencyObjPtr;
+			if(!Item->TryGetObject(DependencyObjPtr)) {
+				Error = FString::Printf(TEXT("dependency %d: not an object"), i);
+				return nullptr;
+			}
+
+			FString DependencyError;
+			TSharedPtr<FModTemplateDependency> Dependency = FModTemplateDependency::Load(*DependencyObjPtr, DependencyError);
+			if (!Dependency.IsValid()) {
+				Error = FString::Printf(TEXT("dependency %d: %s"), i, *DependencyError);
+				return nullptr;
+			}
+			
+			Dependencies.Add(Dependency);
+		}
+	}
+	
+    return MakeShareable(new FModTemplateDescription(
+    	MakeShareable(new FPluginTemplateDescription(
+    		FText::FromString(TemplateName),
+    		FText::FromString(TemplateDescription),
+    		TemplatesPath / TemplateFolderName,
+    		true,
+    		EHostType::Runtime)),
+    	Dependencies
+    ));
+}
+
+#undef LOCTEXT_NAMESPACE
