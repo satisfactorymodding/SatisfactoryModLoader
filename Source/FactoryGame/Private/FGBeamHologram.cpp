@@ -30,7 +30,7 @@ bool AFGBeamHologram::CanIntersectWithDesigner(AFGBuildableBlueprintDesigner* de
 void AFGBeamHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGBeamHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
 void AFGBeamHologram::OnRep_CurrentLength(){ }
-bool AFGBeamHologram::IsHologramIdenticalToBuildable( AFGBuildable* buildable, const FVector& hologramLocationOffset) const{ return bool(); }
+bool AFGBeamHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
 void AFGBeamHologram::CreateAttachmentPointTransform(FTransform& out_transformResult, const FHitResult& HitResult, AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint){ }
 void AFGBeamHologram::CreateVerticalBeam(const FHitResult& hitResult, bool allowDiagonal){ }
 void AFGBeamHologram::CreateFreeformBeam(const FHitResult& hitResult){ }

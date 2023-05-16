@@ -29,24 +29,10 @@ public class SMLEditor : ModuleRules
         PublicDependencyModuleNames.AddRange(new[] {
             "Core", "CoreUObject",
             "Engine",
-            "InputCore",
-            "OnlineSubsystem", "OnlineSubsystemNull", "OnlineSubsystemEOS", "OnlineSubsystemUtils",
-            "SignificanceManager",
-            "APEX", "ApexDestruction",
             "BlueprintGraph",
             "KismetCompiler",
-            "AnimGraphRuntime",
-            "AkAudio", 
-            "PhysXVehicles",
-            "AssetRegistry",
-            "NavigationSystem",
-            "ReplicationGraph",
-            "AIModule",
-            "GameplayTasks",
-            "SlateCore", "Slate", "UMG",
-            "InstancedSplines",
-            "Projects",
-            "FunctionalTestingEditor",
+            "SlateCore", "Slate",
+            "Projects"
         });
     }
 }

@@ -10,3 +10,4 @@ void UFGDebugOverlayWidget::GetDefaultOverlayData(TArray<FString>& out_debugOver
 void UFGDebugOverlayWidget::GetStoryOverlayData(TArray<FString>& out_debugOverlayData){ }
 void UFGDebugOverlayWidget::GetOptionsOverlayData(TArray<FString>& out_debugOverlayData){ }
 void UFGDebugOverlayWidget::GetStatisticsOverlayData(TArray<FString>& out_debugOverlayData){ }
+void UFGDebugOverlayWidget::GetShoppingListOverlayData(TArray<FString>& out_debugOverlayData){ }

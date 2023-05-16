@@ -14,7 +14,7 @@ AFGBuildableFactory::AFGBuildableFactory() : Super() {
 	this->mMinimumProducingTime = 2.0;
 	this->mMinimumStoppedTime = 5.0;
 	this->mTimeSinceStartStopProducing = 0.0;
-	this->mNumCyclesForProductivity = 20;
+	this->mCanEverMonitorProductivity = false;
 	this->mCanChangePotential = false;
 	this->mPendingPotential = 1.0;
 	this->mMinPotential = 0.01;
@@ -28,7 +28,13 @@ AFGBuildableFactory::AFGBuildableFactory() : Super() {
 	this->mInventoryPotentialHandler = CreateDefaultSubobject<UFGReplicationDetailInventoryComponent>(TEXT("InventoryPotentialHandler"));
 	this->mCurrentPotential = 1.0;
 	this->mEffectUpdateInterval = 0.0;
+	this->mDefaultProductivityMeasurementDuration = 300.0;
+	this->mLastProductivityMeasurementProduceDuration = 300.0;
+	this->mLastProductivityMeasurementDuration = 300.0;
+	this->mCurrentProductivityMeasurementProduceDuration = 0.0;
+	this->mCurrentProductivityMeasurementDuration = 0.0;
 	this->mCurrentProductivity = 0;
+	this->mProductivityMonitorEnabled = false;
 	this->mIsProducing = false;
 	this->mHasPower = false;
 	this->mAddToSignificanceManager = true;
@@ -68,6 +74,7 @@ void AFGBuildableFactory::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBuildableFactory::Tick(float dt){ }
 void AFGBuildableFactory::Destroyed(){ }
 void AFGBuildableFactory::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGBuildableFactory::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableFactory::GainedSignificance_Implementation(){ }
 void AFGBuildableFactory::LostSignificance_Implementation(){ }
 void AFGBuildableFactory::GainedSignificance_Native(){ }
@@ -97,7 +104,8 @@ float AFGBuildableFactory::GetProductionCycleTime() const{ return float(); }
 float AFGBuildableFactory::GetDefaultProductionCycleTime() const{ return float(); }
 float AFGBuildableFactory::GetProductionCycleTimeForRecipe(TSubclassOf< UFGRecipe > recipe) const{ return float(); }
 float AFGBuildableFactory::CalcProductionCycleTimeForPotential(float potential) const{ return float(); }
-float AFGBuildableFactory::GetProductivity(){ return float(); }
+float AFGBuildableFactory::GetProductivity() const{ return float(); }
+float AFGBuildableFactory::GetProductivityMeasurementDuration() const{ return float(); }
 void AFGBuildableFactory::SetPendingPotential(float newPendingPotential){ }
 float AFGBuildableFactory::GetCurrentMaxPotential() const{ return float(); }
 float AFGBuildableFactory::GetMaxPossiblePotential() const{ return float(); }
@@ -129,3 +137,4 @@ bool AFGBuildableFactory::FilterPotentialInventoryClasses(TSubclassOf< UObject >
 void AFGBuildableFactory::SetIsProducing(uint8 isProducing){ }
 void AFGBuildableFactory::SetHasPower(uint8 hasPower){ }
 void AFGBuildableFactory::SetCurrentProductivity(uint8 productivity){ }
+void AFGBuildableFactory::SetProductivityMonitorEnabled(bool enabled){ }

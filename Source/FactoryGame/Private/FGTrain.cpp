@@ -140,7 +140,8 @@ void AFGTrain::CancelDockingSequence(){ }
 bool AFGTrain::IsDockingCancelRequested(){ return bool(); }
 void AFGTrain::OnDocked(AFGBuildableRailroadStation* station){ }
 void AFGTrain::OnDockingComplete(){ }
-void AFGTrain::ConnectToThirdRail( UFGPowerConnectionComponent* thirdRail){ }
+void AFGTrain::ConnectToThirdRail(){ }
+void AFGTrain::DisconnectFromThirdRail(){ }
 void AFGTrain::OnVehiclesChanged(){ }
 void AFGTrain::OnConsistChanged(){ }
 void AFGTrain::GetDockingRuleSetForCurrentStop(FTrainDockingRuleSet& out_ruleSet) const{ }

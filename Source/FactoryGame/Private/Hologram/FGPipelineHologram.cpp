@@ -50,6 +50,8 @@ void AFGPipelineHologram::Scroll(int32 delta){ }
 void AFGPipelineHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
 void AFGPipelineHologram::SetSnapToGuideLines(bool isEnabled){ }
 float AFGPipelineHologram::GetHologramHoverHeight() const{ return float(); }
+void AFGPipelineHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+void AFGPipelineHologram::CheckBlueprintCommingling(){ }
 void AFGPipelineHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGPipelineHologram::ClientPreConstructMessageSerialization(){ }
 void AFGPipelineHologram::ServerPostConstructMessageDeserialization(){ }

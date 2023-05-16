@@ -547,8 +547,9 @@ public:
 	void OnDocked( AFGBuildableRailroadStation* station );
 	void OnDockingComplete();
 
-	/** Connect this train to the third rail given. */
-	void ConnectToThirdRail( class UFGPowerConnectionComponent* thirdRail );
+	/** Connect/disconnect this train to/from the third rail given. */
+	void ConnectToThirdRail();
+	void DisconnectFromThirdRail();
 	
 	/** Called when the vehicles in the train are changed so it can reconnect to the third rail etc. */
 	void OnVehiclesChanged();

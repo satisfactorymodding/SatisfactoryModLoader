@@ -19,6 +19,7 @@ AFGBuildableManufacturer::AFGBuildableManufacturer() : Super() {
 	this->mOutputInventory = nullptr;
 	this->mCurrentRecipe = nullptr;
 	this->mCachedRecipe = nullptr;
+	this->mCanEverMonitorProductivity = true;
 	this->mCanChangePotential = true;
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 }

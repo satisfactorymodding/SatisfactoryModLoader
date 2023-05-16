@@ -1,6 +1,7 @@
 #include "AlpakitWidget.h"
 #include "Alpakit.h"
 #include "AlpakitModEntryList.h"
+#include "AlpakitSettings.h"
 #include "DesktopPlatform/Public/DesktopPlatformModule.h"
 
 #define LOCTEXT_NAMESPACE "AlpakitWidget"

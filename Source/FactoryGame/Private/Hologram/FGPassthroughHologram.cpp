@@ -15,6 +15,7 @@ AFGPassthroughHologram::AFGPassthroughHologram() : Super() {
 	this->mClearanceHeightMin = 0.0;
 	this->mClearanceThickness = 0.0;
 	this->mConnectionClass = nullptr;
+	this->mMinHeight = 0.0;
 }
 void AFGPassthroughHologram::BeginPlay(){ }
 void AFGPassthroughHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

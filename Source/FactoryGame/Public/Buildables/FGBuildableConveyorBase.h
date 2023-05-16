@@ -423,6 +423,13 @@ struct FConveyorBeltItems
 
 	void UpdateLastestIDFromState();
 
+	void Empty()
+	{
+		Items.Empty();
+		
+		MarkArrayDirty();
+	}
+	
 	/** Custom serialization of all items. */
 	friend FArchive& operator<<( FArchive& ar, FConveyorBeltItems& items );
 
@@ -588,6 +595,18 @@ public:
 	{
 		return mCachedAvailableBeltSpace;
 	}
+
+#if !UE_BUILD_SHIPPING 
+	void DebugDrawStalled() const;
+#endif
+	
+#if UE_BUILD_SHIPPING // Shipping uses a force inline without debug logic.
+	FORCEINLINE void SetStalled(bool stall) const { mIsStalled = stall; }
+#else
+	void SetStalled(bool stall) const;
+#endif
+
+	void EmptyBelt() { mItems.Empty(); }
 	
 protected:
 	// Begin Factory_ interface
@@ -666,11 +685,17 @@ public:
 	/** Spacing between each conveyor item, from origo to origo. */
 	static constexpr float ITEM_SPACING = 120.0f;
 
-	/* Used to block updating when items cannot move.*/
-	mutable uint8 mIsStalled:1;
-	
+	FORCEINLINE bool IsStalled() const { return mCanEverStall && mIsStalled && mItems.Num() != 0; }
+
 	bool mPendingUpdateItemTransforms;
 
+private:
+	/* Used to block updating when items cannot move.*/
+	mutable uint8 mIsStalled:1;
+
+	/* Belts directly connected cannot stall.*/
+	uint8 mCanEverStall:1;
+	
 protected:
 
 	/** Speed of this conveyor. */
@@ -680,7 +705,8 @@ protected:
 	/** Length of the conveyor. */
 	float mLength;
 
-	/** All the locally simulated resource offsets on the conveyor belt. */
+	/** All the locally simulated resource offsets on the conveyor belt.
+	 * This array is an items queue, first items in the array is the last item on the belt. */
 	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
 	FConveyorBeltItems mItems;
 

@@ -43,7 +43,7 @@ protected:
 private:
 	float mTimeSinceLastGrab;
 
-	/* Is selected event the same as assigned in mEventType, when the event that is assigned is the same
-	 * it will be true, if there is no event assigned it true too */
+	/* ONLY VALID ON SERVER. Is selected event the same as assigned in mEventType, when the event that is assigned is the same
+	 * it will be true, if there is no event assigned it true too. */
 	bool mIsEventActive = true;
 };

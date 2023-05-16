@@ -26,7 +26,7 @@ protected:
 	// End AActor interface
 
 	// Begin AFGHologram interface
-	virtual bool IsHologramIdenticalToBuildable( AFGBuildable* buildable, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
 	// End AFGHologram interface
 	
 	// Begin AFGFactoryBuildingHologram interface

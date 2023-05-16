@@ -39,6 +39,8 @@ public:
 	virtual void Scroll( int32 delta ) override;
 	virtual void GetSupportedScrollModes( TArray<EHologramScrollMode>* out_modes ) const override;
 	virtual float GetHologramHoverHeight() const override;
+	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void CheckBlueprintCommingling() override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface

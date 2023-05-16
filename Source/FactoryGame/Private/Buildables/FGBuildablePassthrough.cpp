@@ -11,7 +11,7 @@ AFGBuildablePassthrough::AFGBuildablePassthrough() : Super() {
 	this->mEndCapRotation = FRotator::ZeroRotator;
 	this->mMidMeshRotation = FRotator::ZeroRotator;
 	this->mEndCapTranslation = FVector::ZeroVector;
-	this->mClearanceHeightMin = 50.0;
+	this->mClearanceHeightMin = 100.0;
 	this->mClearanceThickness = 80.0;
 	this->mUseSoftClearance = true;
 	this->mBottomSnappedConnection = nullptr;

@@ -40,6 +40,7 @@ public:
 
 	// Begin IFGSaveInterface
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
 	// End IFGSaveInterface
 
 	//Begin IFGSignificanceInterface
@@ -218,10 +219,14 @@ public:
 	/** Calculates the production cycle time of this factory with a certain potential */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Production" )
 	virtual float CalcProductionCycleTimeForPotential( float potential ) const;
-
+	
 	/** A measure of how productive this factory is. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Productivity" )
-	float GetProductivity();
+	float GetProductivity() const;
+
+	/** How long is the measurement for the buildings productivity. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Productivity" )
+	float GetProductivityMeasurementDuration() const;
 
 	/** Get the inventory that we place crystal in to unlock the slider of potential */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Productivity" )
@@ -425,6 +430,12 @@ private:
 	void SetHasPower( uint8 hasPower );
 	void SetCurrentProductivity( uint8 productivity );
 
+	/**
+	 * Toggle productivity monitoring.
+	 * When turned off, the productivity is reset to 0. 
+	 */
+	void SetProductivityMonitorEnabled( bool enabled );
+
 public:
 	/** Power consumption of this factory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = "0.0" ) )
@@ -487,18 +498,12 @@ protected:
 	UPROPERTY( SaveGame, Meta = (NoAutoJson = true) )
 	float mTimeSinceStartStopProducing;
 
-	/** How many cycles back do we base the productivity on */
-	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
-	int32 mNumCyclesForProductivity;
-
-	/** These are a list of timestamps for the most recently completed production cycles, used to calculate productivity */
-	TArray< float > mCompletedCycleTimeStamps;
-
-	/** An estimation on when the current cycle will be done. If we didn't produce for a frame we add delta to this */
-	float mCurrentProductionCycleETA;
-
 	/** Keeps track if we produced this tick or not */
 	bool mDidProduceThisTick;
+	
+	/** Should this building ever be able to have productivity monitoring? */
+	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
+	bool mCanEverMonitorProductivity;
 
 	/** Set this to true if we want this building to be able to change the production rate potential with the "Slider of Potential" */
 	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
@@ -566,10 +571,34 @@ private:
 	/** The cached production status, evaluated once every tick. */
 	EProductionStatus mCachedProductionStatus;
 
-	/** A replicated compressed version of the productivity */
+	/**
+	 * For how long do the building calculate and average of the productivity. [seconds]
+	 * Due to a simplified implementation the real average for the mCurrentProductivity will be over [default, default * 2] seconds.
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
+	float mDefaultProductivityMeasurementDuration = 300.f;
+	
+	/**
+	 * Calculate and average over time by using two averages, we save one average from the past and update the current one.
+	 * When the current one gets above the specified measured time, save it to the last and start over on the current one.
+	 */
+	UPROPERTY( SaveGame )
+	float mLastProductivityMeasurementProduceDuration;
+	UPROPERTY( SaveGame )
+	float mLastProductivityMeasurementDuration;
+	UPROPERTY( SaveGame )
+	float mCurrentProductivityMeasurementProduceDuration;
+	UPROPERTY( SaveGame )
+	float mCurrentProductivityMeasurementDuration;
+	
+	/** A replicated compressed version of the productivity, where a value of 0-255 is 0-100 percent. */
 	UPROPERTY( Replicated, Meta = (NoAutoJson = true) )
 	uint8 mCurrentProductivity;
-
+	
+	/** Should this building calculate its productivity, buildings do not tick productivity when newly built or in standby. */
+	UPROPERTY( SaveGame )
+	uint8 mProductivityMonitorEnabled : 1;
+	
 	/** Are we producing? Do not set this manually, some delegates and other stuff might not get triggered then. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsProducing, Meta = (NoAutoJson = true) )
 	uint8 mIsProducing:1;

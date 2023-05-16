@@ -11,13 +11,13 @@
 #include "FGActorRepresentation.h"
 #include "FGHotbarShortcut.h"
 #include "FGCreatureSubsystem.h"
+#include "ShoppingList/FGShoppingListComponent.h"
 #include "FGPlayerState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedNew, TSubclassOf< class UFGItemDescriptor >, itemDesc );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHotbarUpdatedForMaterialDescriptor, TSubclassOf< class UFGFactoryCustomizationDescriptor_Material >, materialDesc );
 DECLARE_DELEGATE( FOnHotbarReplicated );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnPublicTodoListUpdated );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnShoppingListUpdated );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSlotDataUpdated, class AFGPlayerState*, playerState  );
 
 
@@ -601,6 +601,25 @@ public:
 	UFUNCTION( Server, Reliable )
 	void Server_SetWidgetHasBeenOpened( TSubclassOf< class UUserWidget > widget );
 
+	UFUNCTION( BlueprintPure, Category = "Shopping List"  )
+	UFGShoppingListComponent* GetShoppingListComponent() const { return mShoppingListComponent; }
+
+	// On recipe constructed could mean both constructing buildings and crafting items
+	UFUNCTION( Client, Reliable )
+	void Client_OnRecipeConstructed( TSubclassOf< class UFGRecipe > recipe, int32 numConstructed );
+	void Native_OnRecipeConstructed( TSubclassOf< class UFGRecipe > recipe, int32 numConstructed );
+	void Native_OnBlueprintConstructed( const FString& blueprintName, int32 numConstructed );
+
+	// Not the prettiest solution but handles when blueprints are removed. We should have an event in blueprint subsystem instead
+	UFUNCTION( Server, Reliable, BlueprintCallable )
+	void Server_OnBlueprintRemoved( const FString& blueprintName );
+	UFUNCTION( Client, Reliable )
+	void Client_OnBlueprintRemoved( const FString& blueprintName );
+
+	// Only for migration purposes.
+	UFUNCTION( BlueprintImplementableEvent )
+	TArray< FShoppingListRecipeEntry > GetAndClearShoppingListForMigration();
+	
 	/** Checks if the player state is in the player array. Tried to use IsInactive but it's not updated when a player state is loaded and is inactive.
 	 *  And I don't want to start chancing that logic since other things might depend on it. -K2
 	 */
@@ -782,6 +801,9 @@ private:
 	/** The personal todolist. Only replicated on initial send. Then RPCed back to server for saving. */
 	UPROPERTY( SaveGame, Replicated )
 	FString mPrivateTodoList;
+	
+	UPROPERTY( SaveGame, Replicated )
+	class UFGShoppingListComponent* mShoppingListComponent;
 
 	/** The current factory clipboard. Used to copy and paste settings between buildings. Buildings with the same key use can copy/paste between each other.
 	 *	The key is usually the most derived class for the building/object but can be changed by developers to share key with other buildings. Key could be any UObject subclass.

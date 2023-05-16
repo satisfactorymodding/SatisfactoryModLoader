@@ -14,14 +14,18 @@ public class Alpakit : ModuleRules
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new[] {
-				"Projects",
-				"InputCore",
-				"UnrealEd",
-				"LevelEditor",
-				"CoreUObject",
-				"Engine",
-				"Slate",
-				"SlateCore",
+			"Json",
+			"Projects",
+			"InputCore",
+			"UnrealEd",
+			"LevelEditor",
+			"CoreUObject",
+			"Engine",
+			"Slate",
+			"SlateCore",
+			"ExternalImagePicker",
+			"EditorStyle",
+			"PluginBrowser",
 		});
 	}
 }

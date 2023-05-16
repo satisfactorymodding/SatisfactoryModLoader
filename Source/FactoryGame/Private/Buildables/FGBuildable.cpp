@@ -36,6 +36,7 @@ void AFGBuildable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGBuildable, mBuildEffectInstignator);
 	DOREPLIFETIME(AFGBuildable, mIsMultiSpawnedBuildable);
 	DOREPLIFETIME(AFGBuildable, mDidFirstTimeUse);
+	DOREPLIFETIME(AFGBuildable, mBlueprintDesigner);
 	DOREPLIFETIME(AFGBuildable, mNetConstructionID);
 	DOREPLIFETIME(AFGBuildable, mBuiltWithRecipe);
 	DOREPLIFETIME(AFGBuildable, mOriginalBuildableVariant);
@@ -203,6 +204,8 @@ TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGBuildable::GetD
 void AFGBuildable::ToggleInstanceVisibility(bool bNewState){ }
 void AFGBuildable::SetInsideBlueprintDesigner( AFGBuildableBlueprintDesigner* designer){ }
 AFGBuildableBlueprintDesigner* AFGBuildable::GetBlueprintDesigner(){ return nullptr; }
+void AFGBuildable::PreSerializedToBlueprint(){ }
+void AFGBuildable::PostSerializedToBlueprint(){ }
 void AFGBuildable::PostSerializedFromBlueprint(){ }
 void AFGBuildable::OnSkinCustomizationApplied_Implementation(TSubclassOf<  UFGFactoryCustomizationDescriptor_Skin > skin){ }
 void AFGBuildable::PlayConstructSound_Implementation(){ }

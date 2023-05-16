@@ -136,6 +136,7 @@ public:
 	FVector GetCollisionExtent() override { return COLLISION_EXTENT; }
 	float GetCollisionSpacing() override { return COLLISION_SPACING; }
 	FVector GetCollisionOffset() override { return COLLISION_OFFSET; }
+	UStaticMesh* GetUsedSplineMesh() override { return mMesh; }
 	// End IFGSplineBuildableInterface
 
 	/** Returns the spline component */
@@ -148,6 +149,8 @@ public:
 
 	// Temp function will be removed.
 	void DestroyVisualItems();
+
+	void PostSerializedFromBlueprint() override;
 	
 protected:
 	// Begin AFGBuildableFactory interface
@@ -184,7 +187,8 @@ protected:
 
 private:
 	friend class AFGConveyorBeltHologram;
-
+	friend class AFGBlueprintHologram;
+	
 	/** Meshes for items. */
 	UPROPERTY( Meta = ( NoAutoJson ) )
 	TMap< FName, class UInstancedStaticMeshComponent* > mItemMeshMap;

@@ -38,6 +38,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Power" )
 	float GetMaxPowerProduction() const { return mMaxPowerProduction; }
 
+	/** Utilized by the blueprint hologram just to clear errorneously saved generators */
+	void ClearExtractableResource() { mExtractableResource = nullptr; }
+
 protected:
 	// Begin Factory_ interface
 	virtual void Factory_Tick( float dt ) override;

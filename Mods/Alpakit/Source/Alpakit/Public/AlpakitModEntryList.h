@@ -30,6 +30,8 @@ class SAlpakitModEntryList : public SCompoundWidget {
 	 */
 	void SetShowEngine(bool bInShowEngine);
 	void SetShowProject(bool bInShowProject);
+
+	void OnNewPluginCreated(IPlugin& Plugin);
 private:
 	TSharedPtr<SListView<TSharedRef<IPlugin>>> ModList;
 	TArray<TSharedRef<IPlugin>> Mods;
@@ -41,4 +43,5 @@ private:
 	FReply PackageAllMods();
 	FReply CheckAllMods();
 	FReply UncheckAllMods();
+	FReply CreateMod();
 };

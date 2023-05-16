@@ -10,6 +10,7 @@ void AFGBuildableGenerator::PreReplication(IRepChangedPropertyTracker& ChangedPr
 AFGBuildableGenerator::AFGBuildableGenerator() : Super() {
 	this->mPowerProduction = 0.0;
 	this->mLoadPercentage = 0.0;
+	this->mCanEverMonitorProductivity = true;
 }
 void AFGBuildableGenerator::BeginPlay(){ }
 void AFGBuildableGenerator::SetActorHiddenInGame(bool bNewHidden){ }

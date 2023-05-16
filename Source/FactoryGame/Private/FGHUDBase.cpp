@@ -8,4 +8,5 @@ void AFGHUDBase::ToggleDebugOverlay(){ }
 void AFGHUDBase::ToggleStoryDebugOverlay(){ }
 void AFGHUDBase::ToggleOptionsDebugOverlay(){ }
 void AFGHUDBase::ToggleStatisticsDebugOverlay(){ }
+void AFGHUDBase::ToggleShoppingListDebugOverlay(){ }
 void AFGHUDBase::QuickSwitchLanguage(){ }

@@ -1,0 +1,15 @@
+{
+    "$schema": "./templates.schema.json",
+    "templates": [
+        {
+            "name": "Blueprint Only",
+            "description": "Create a mod that contains only Blueprint code. (You can add C++ code later)",
+            "path": "BlueprintBlank"
+        },
+        {
+            "name": "C++ & Blueprint",
+            "description": "Create a mod that contains both C++ and Blueprint code.",
+            "path": "CPPAndBlueprintBlank"
+        }
+    ]
+}

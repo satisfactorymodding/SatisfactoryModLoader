@@ -113,6 +113,7 @@ void AFGHologram::SetupClearance( UFGClearanceComponent* clearanceComponent){ }
 void AFGHologram::SetupClearanceDetector( UFGClearanceComponent* clearanceComponent){ }
 void AFGHologram::CheckClearance(const FVector& locationOffset){ }
 void AFGHologram::HandleClearanceOverlap(const FOverlapResult& overlap, const FVector& locationOffset, bool HologramHasSoftClearance){ }
+bool AFGHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
 bool AFGHologram::CanIntersectWithDesigner( AFGBuildableBlueprintDesigner* designer){ return bool(); }
 UPrimitiveComponent* AFGHologram::GetClearanceOverlapCheckComponent() const{ return nullptr; }
 void AFGHologram::CheckValidPlacement(){ }

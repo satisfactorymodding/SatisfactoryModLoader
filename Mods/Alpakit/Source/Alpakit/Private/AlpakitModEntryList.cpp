@@ -16,35 +16,43 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                 .Text(LOCTEXT("PackageModAlpakitAll", "Alpakit Selected!"))
                 .OnClicked(this,& SAlpakitModEntryList::PackageAllMods)
             ]
-                + SHorizontalBox::Slot().AutoWidth()[
+            + SHorizontalBox::Slot().AutoWidth()[
                 SNew(SButton)
                 .Text(LOCTEXT("PackageModCheckAll", "Check All"))
                 .OnClicked(this,& SAlpakitModEntryList::CheckAllMods)
-                ]
-                    + SHorizontalBox::Slot().AutoWidth()[
+            ]
+            + SHorizontalBox::Slot().AutoWidth()[
                 SNew(SButton)
                 .Text(LOCTEXT("PackageModUncheckAll", "Check None"))
                 .OnClicked(this,& SAlpakitModEntryList::UncheckAllMods)
             ]
+            + SHorizontalBox::Slot().FillWidth(1.0f)
+            + SHorizontalBox::Slot().AutoWidth()[
+                SNew(SButton)
+                .Text(LOCTEXT("CreateMod", "Create Mod"))
+                .OnClicked(this,& SAlpakitModEntryList::CreateMod)
+            ]
         ]
         + SVerticalBox::Slot().FillHeight(1.0f)[
             SNew(SScrollBox)
-                .Orientation(Orient_Vertical)
-                .ScrollBarAlwaysVisible(true)
-                + SScrollBox::Slot()[
-                    SAssignNew(ModList, SListView<TSharedRef<IPlugin>>)
-                    .SelectionMode(ESelectionMode::None)
-                    .ListItemsSource(&FilteredMods)
-                    .OnGenerateRow_Lambda(
-                        [this](TSharedRef<IPlugin> Mod, const TSharedRef<STableViewBase>& List) {
-                            return SNew(STableRow<TSharedRef<IPlugin>>, List)[
-                                SNew(SAlpakitModEntry, Mod, SharedThis(this))
-                            ];
-                        })
-                ]
-        ]];
+            .Orientation(Orient_Vertical)
+            .ScrollBarAlwaysVisible(true)
+            + SScrollBox::Slot()[
+                SAssignNew(ModList, SListView<TSharedRef<IPlugin>>)
+                .SelectionMode(ESelectionMode::None)
+                .ListItemsSource(&FilteredMods)
+                .OnGenerateRow_Lambda(
+                    [this](TSharedRef<IPlugin> Mod, const TSharedRef<STableViewBase>& List) {
+                        return SNew(STableRow<TSharedRef<IPlugin>>, List)[
+                            SNew(SAlpakitModEntry, Mod, SharedThis(this))
+                        ];
+                    })
+            ]
+        ]
+    ];
 
     LoadMods();
+    IPluginManager::Get().OnNewPluginCreated().AddSP(this, &SAlpakitModEntryList::OnNewPluginCreated);
 }
 
 bool DoesPluginHaveRuntime(const IPlugin& Plugin) {
@@ -153,6 +161,11 @@ void SAlpakitModEntryList::SetShowProject(bool bInShowProject) {
     LoadMods();
 }
 
+void SAlpakitModEntryList::OnNewPluginCreated(IPlugin& Plugin)
+{
+    LoadMods();
+}
+
 FReply SAlpakitModEntryList::PackageAllMods() {
     TSharedPtr<SAlpakitModEntry> First;
     TArray<TSharedPtr<SAlpakitModEntry>> NextEntries;
@@ -227,6 +240,12 @@ FReply SAlpakitModEntryList::UncheckAllMods() {
         }
         ModEntry->SetSelected(false);
     }
+    return FReply::Handled();
+}
+
+FReply SAlpakitModEntryList::CreateMod()
+{
+    FGlobalTabmanager::Get()->TryInvokeTab(FAlpakitModule::ModCreatorTabName);
     return FReply::Handled();
 }
 

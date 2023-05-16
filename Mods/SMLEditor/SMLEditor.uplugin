@@ -22,6 +22,12 @@
 			"LoadingPhase": "Default"
 		}
 	],
+	"Plugins": [
+		{
+			"Name": "SML",
+			"Enabled": true
+		}
+	],
 	"LocalizationTargets": [
 		{
 			"Name": "SMLEditor",

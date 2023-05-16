@@ -28,6 +28,7 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mDefaultPowerConnectionMesh = nullptr;
 	this->mClearanceMesh = nullptr;
 	this->mClearanceMaterial = nullptr;
+	this->mBlueprintProxyMaterial = nullptr;
 	this->mHologramLoopSound = nullptr;
 	this->mHologramSnapSound = nullptr;
 	this->mBuildGuideMesh = nullptr;
