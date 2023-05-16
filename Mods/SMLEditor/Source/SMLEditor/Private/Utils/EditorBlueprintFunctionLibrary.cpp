@@ -12,7 +12,7 @@ UObject * UEditorBlueprintFunctionLibrary::CreateBlueprintOfClass(UClass * Class
 		Path.Append("/");
 	}
 	Path.Append(Name);
-	UPackage* TargetPackage = CreatePackage(nullptr, *Path);
+	UPackage* TargetPackage = CreatePackage(*Path);
 	EBlueprintType BlueprintType = BPTYPE_Normal;
 	UBlueprint * BP = FKismetEditorUtilities::CreateBlueprint(Class, TargetPackage, *Name, BlueprintType, UBlueprint::StaticClass(), UBlueprintGeneratedClass::StaticClass(), NAME_None);
 	BP->MarkPackageDirty();
