@@ -8,11 +8,14 @@
 #include "ModMetadataObject.h"
 #include "SourceControlOperations.h"
 #include "Async/Async.h"
-#include "UATHelper/Public/IUATHelperModule.h"
 
 #define LOCTEXT_NAMESPACE "AlpakitModListEntry"
 
 void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InMod, TSharedRef<SAlpakitModEntryList> InOwner) {
+	FAlpakitModule& AlpakitModule = FModuleManager::GetModuleChecked<FAlpakitModule>("Alpakit");
+	AlpakitModule.GetOnQueueStarted().AddSP(this, &SAlpakitModEntry::QueueStarted);
+	AlpakitModule.GetOnQueueComplete().AddSP(this, &SAlpakitModEntry::QueueComplete);
+	
     Mod = InMod;
 	Owner = InOwner;
 
@@ -29,10 +32,10 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
             Checkbox.ToSharedRef()
         ]
         + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0).VAlign(VAlign_Center)[
-            SNew(SButton)
+            SAssignNew(AlpakitButton, SButton)
             .Text(LOCTEXT("PackageModAlpakit", "Alpakit!"))
             .OnClicked_Lambda([this](){
-                PackageMod(TArray<TSharedPtr<SAlpakitModEntry>>());
+                PackageMod();
                 return FReply::Handled();
             })
             .ToolTipText_Lambda([this](){
@@ -40,7 +43,7 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
             })
         ]
         + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0).VAlign(VAlign_Center)[
-            SNew(SButton)
+            SAssignNew(EditButton, SButton)
             .Text(LOCTEXT("EditModAlpakit", "Edit"))
             .OnClicked_Lambda([this](){
 				this->OnEditMod();
@@ -160,109 +163,19 @@ FReply SAlpakitModEntry::OnEditModFinished(UModMetadataObject* MetadataObject)
 	return FReply::Handled();
 }
 
-FString GetArgumentForLaunchType(EAlpakitStartGameType LaunchMode) {
-    switch (LaunchMode) {
-    case EAlpakitStartGameType::STEAM:
-        return TEXT("Steam");
-    case EAlpakitStartGameType::STEAM_SERVER:
-        return TEXT("SteamDS");
-    case EAlpakitStartGameType::EPIC_EARLY_ACCESS:
-        return TEXT("EpicEA");
-    case EAlpakitStartGameType::EPIC_EXPERIMENTAL:
-        return TEXT("EpicExp");
-    case EAlpakitStartGameType::EPIC_SERVER:
-        return TEXT("EpicDS");
-    default:
-        return TEXT("");
-    }
+void SAlpakitModEntry::QueueStarted() {
+	AlpakitButton->SetEnabled(false);
+	EditButton->SetEnabled(false);
 }
 
-FText GetCurrentPlatformName() {
-#if PLATFORM_WINDOWS
-    return LOCTEXT("PlatformName_Windows", "Windows");
-#elif PLATFORM_MAC
-    return LOCTEXT("PlatformName_Mac", "Mac");
-#elif PLATFORM_LINUX
-    return LOCTEXT("PlatformName_Linux", "Linux");
-#else
-    return LOCTEXT("PlatformName_Other", "Other OS");
-#endif
+void SAlpakitModEntry::QueueComplete() {
+	AlpakitButton->SetEnabled(true);
+	EditButton->SetEnabled(true);
 }
 
-FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetName, bool LaunchGame = false)
-{
-    FString UATArguments;
-    
-    if(TargetSettings.bCopyModsToGame) {
-        UATArguments.Append(FString::Printf(TEXT("-%s_CopyToGameDir "), *TargetName));
-    	UATArguments.Append(FString::Printf(TEXT("-%s_GameDir=%s "), *TargetName, *TargetSettings.SatisfactoryGamePath.Path));
-
-    	if(TargetSettings.LaunchGameAfterPacking != EAlpakitStartGameType::NONE && LaunchGame) {
-    		UATArguments.Append(FString::Printf(TEXT("-%s_LaunchGame "), *TargetName));
-    		UATArguments.Append(FString::Printf(TEXT("-%s_LaunchType=%s "), *TargetName, *GetArgumentForLaunchType(TargetSettings.LaunchGameAfterPacking)));
-    	}
-    }
-
-    return UATArguments;
-}
-
-void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& NextEntries) const {
-    UAlpakitSettings* Settings = UAlpakitSettings::Get();
-    const FString PluginName = Mod->GetName();
-
-    const FString ProjectPath = FPaths::IsProjectFilePathSet()
-        ? FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath())
-        : FPaths::RootDir() / FApp::GetProjectName() / FApp::GetProjectName() + TEXT(".uproject");
-
-    FString AdditionalUATArguments;
-
-    if(Settings->WindowsNoEditorTargetSettings.bEnabled)
-    {
-        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
-        AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsNoEditorTargetSettings, TEXT("WindowsNoEditor"), NextEntries.Num() == 0));
-    }
-
-    if(Settings->WindowsServerTargetSettings.bEnabled)
-    {
-        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64_Server\" "));
-        AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsServerTargetSettings, TEXT("WindowsServer"), NextEntries.Num() == 0));
-    }
-
-    if(Settings->LinuxServerTargetSettings.bEnabled)
-    {
-        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Linux_Server\" "));
-        AdditionalUATArguments.Append(MakeUATArguments(Settings->LinuxServerTargetSettings, TEXT("LinuxServer"), NextEntries.Num() == 0));
-    }
-
-	if(Settings->bMerge)
-	{
-		AdditionalUATArguments.Append(TEXT("-MergeArchive"));	
-	}
-
-    UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, NextEntries.Num());
-
-    const FString CommandLine = FString::Printf(TEXT("-Compile -ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" %s"),
-                                                *ProjectPath, *ProjectPath, *PluginName, *AdditionalUATArguments);
-
-    const FText PlatformName = GetCurrentPlatformName();
-    IUATHelperModule::Get().CreateUatTask(
-        CommandLine,
-        PlatformName,
-        LOCTEXT("PackageModTaskName", "Packaging Mod"),
-        LOCTEXT("PackageModTaskShortName", "Package Mod Task"),
-        FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"),
-        NextEntries.Num() == 0 ? (IUATHelperModule::UatTaskResultCallack)nullptr : [NextEntries](FString resultType, double runTime) {
-            AsyncTask(ENamedThreads::GameThread, [NextEntries]() {
-                TSharedPtr<SAlpakitModEntry> NextMod = NextEntries[0];
-
-                TArray<TSharedPtr<SAlpakitModEntry>> RemainingEntries = NextEntries.FilterByPredicate([NextMod](const TSharedPtr<SAlpakitModEntry>& X) {
-                    return X != NextMod;
-                });
-
-                NextMod->PackageMod(RemainingEntries);
-            });
-        }
-    );
+void SAlpakitModEntry::PackageMod() const {
+	FAlpakitModule& AlpakitModule = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit"));
+	AlpakitModule.PackageMods({ Mod->GetName() });
 }
 
 void SAlpakitModEntry::OnEnableCheckboxChanged(ECheckBoxState NewState) {
@@ -273,6 +186,8 @@ void SAlpakitModEntry::OnEnableCheckboxChanged(ECheckBoxState NewState) {
     Settings->ModSelection.Add(PluginName, NewState == ECheckBoxState::Checked);
 
     Settings->SaveSettings();
+
+	Owner->UpdateAllCheckbox();
 }
 
 #undef LOCTEXT_NAMESPACE

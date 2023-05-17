@@ -11,6 +11,7 @@ public class Alpakit : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new[] {
 			"Core",
+			"UATHelper",
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new[] {

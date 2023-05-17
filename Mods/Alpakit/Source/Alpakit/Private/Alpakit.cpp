@@ -9,6 +9,7 @@
 #include "ISettingsSection.h"
 #include "LevelEditor.h"
 #include "IPluginBrowser.h"
+#include "IUATHelperModule.h"
 #include "ModWizardDefinition.h"
 
 static const FName AlpakitTabName("Alpakit");
@@ -86,7 +87,6 @@ void FAlpakitModule::ShutdownModule() {
 
     FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitTabName);
 }
-
 TSharedRef<SDockTab> FAlpakitModule::HandleSpawnModCreatorTab(const FSpawnTabArgs& SpawnTabArgs)
 {
     IPluginBrowser& PluginBrowser = FModuleManager::Get().GetModuleChecked<IPluginBrowser>(TEXT("PluginBrowser"));
@@ -195,6 +195,156 @@ void FAlpakitModule::AddModTemplatesFromPlugin(IPlugin& Plugin) {
         ModTemplates.Add(ModTemplate.ToSharedRef());
     }    
 }
+
+FString GetArgumentForLaunchType(EAlpakitStartGameType LaunchMode) {
+    switch (LaunchMode) {
+    case EAlpakitStartGameType::STEAM:
+        return TEXT("Steam");
+    case EAlpakitStartGameType::STEAM_SERVER:
+        return TEXT("SteamDS");
+    case EAlpakitStartGameType::EPIC_EARLY_ACCESS:
+        return TEXT("EpicEA");
+    case EAlpakitStartGameType::EPIC_EXPERIMENTAL:
+        return TEXT("EpicExp");
+    case EAlpakitStartGameType::EPIC_SERVER:
+        return TEXT("EpicDS");
+    default:
+        return TEXT("");
+    }
+}
+
+FText GetCurrentPlatformName() {
+#if PLATFORM_WINDOWS
+    return LOCTEXT("PlatformName_Windows", "Windows");
+#elif PLATFORM_MAC
+    return LOCTEXT("PlatformName_Mac", "Mac");
+#elif PLATFORM_LINUX
+    return LOCTEXT("PlatformName_Linux", "Linux");
+#else
+    return LOCTEXT("PlatformName_Other", "Other OS");
+#endif
+}
+
+FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetName, bool LaunchGame = false)
+{
+    FString UATArguments;
+    
+    if(TargetSettings.bCopyModsToGame) {
+        UATArguments.Append(FString::Printf(TEXT("-%s_CopyToGameDir "), *TargetName));
+        UATArguments.Append(FString::Printf(TEXT("-%s_GameDir=%s "), *TargetName, *TargetSettings.SatisfactoryGamePath.Path));
+
+        if(TargetSettings.LaunchGameAfterPacking != EAlpakitStartGameType::NONE && LaunchGame) {
+            UATArguments.Append(FString::Printf(TEXT("-%s_LaunchGame "), *TargetName));
+            UATArguments.Append(FString::Printf(TEXT("-%s_LaunchType=%s "), *TargetName, *GetArgumentForLaunchType(TargetSettings.LaunchGameAfterPacking)));
+        }
+    }
+
+    return UATArguments;
+}
+
+#pragma optimize ("", off)
+
+void FAlpakitModule::PackageMods(TArray<FString> PluginName) {
+    if(QueueRunning) {
+        UE_LOG(LogAlpakit, Warning, TEXT("PackageMods called while another queue is in progress"));
+        return;
+    }
+    {
+        FScopeLock Lock = FScopeLock(&QueueLock);
+        ModQueue = PluginName;
+    }
+    OnQueueChanged.Broadcast(ModQueue);
+    OnQueueStarted.Broadcast();
+    QueueRunning = true;
+    AsyncThread([this] {
+        ProcessQueue();
+        QueueRunning = false;
+        AsyncTask(ENamedThreads::GameThread, [this] {
+            OnQueueComplete.Broadcast();
+        });
+    });
+}
+
+void FAlpakitModule::ProcessQueue() {
+    int NumQueued;
+    {
+        FScopeLock Lock = FScopeLock(&QueueLock);
+        NumQueued = ModQueue.Num();
+    }
+    for (int i = NumQueued - 1; i >= 0; i--) {
+        FString PluginName;
+        {
+            FScopeLock Lock = FScopeLock(&QueueLock);
+            PluginName = ModQueue[0];
+        }
+        ProcessQueueItem(PluginName, i == 0);
+        {
+            FScopeLock Lock = FScopeLock(&QueueLock);
+            ModQueue.RemoveAt(0);
+            AsyncTask(ENamedThreads::GameThread, [this] {
+                OnQueueChanged.Broadcast(ModQueue);
+            });
+        }
+    }
+}
+
+void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
+    UAlpakitSettings* Settings = UAlpakitSettings::Get();
+
+    const FString ProjectPath = FPaths::IsProjectFilePathSet()
+        ? FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath())
+        : FPaths::RootDir() / FApp::GetProjectName() / FApp::GetProjectName() + TEXT(".uproject");
+
+    FString AdditionalUATArguments;
+
+    if(Settings->WindowsNoEditorTargetSettings.bEnabled)
+    {
+        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
+        AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsNoEditorTargetSettings, TEXT("WindowsNoEditor"), bIsLastItem));
+    }
+
+    if(Settings->WindowsServerTargetSettings.bEnabled)
+    {
+        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64_Server\" "));
+        AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsServerTargetSettings, TEXT("WindowsServer"), bIsLastItem));
+    }
+
+    if(Settings->LinuxServerTargetSettings.bEnabled)
+    {
+        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Linux_Server\" "));
+        AdditionalUATArguments.Append(MakeUATArguments(Settings->LinuxServerTargetSettings, TEXT("LinuxServer"), bIsLastItem));
+    }
+
+	if(Settings->bMerge)
+	{
+		AdditionalUATArguments.Append(TEXT("-MergeArchive"));
+	}
+
+    UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\""), *PluginName);
+
+    const FString CommandLine = FString::Printf(TEXT("-Compile -ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" %s"),
+                                                *ProjectPath, *ProjectPath, *PluginName, *AdditionalUATArguments);
+
+    const FText PlatformName = GetCurrentPlatformName();
+    {
+        // Destructor of FScopedEvent will wait for the event to be triggered
+        FScopedEvent Done;
+        AsyncTask(ENamedThreads::GameThread, [&]() {
+            IUATHelperModule::Get().CreateUatTask(
+                CommandLine,
+                PlatformName,
+                FText::Format(LOCTEXT("PackageModTaskName", "Packaging {0}"), FText::FromString(PluginName)),
+                FText::Format(LOCTEXT("PackageModTaskShortName", "Package {0}"), FText::FromString(PluginName)),
+                FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"),
+                [&Done](FString resultType, double runTime) {
+                    Done.Trigger();
+                }
+            );
+        });
+    }
+    UE_LOG(LogAlpakit, Display, TEXT("Finished packaging mod %s"), *PluginName);
+ }
+
 
 #undef LOCTEXT_NAMESPACE
     

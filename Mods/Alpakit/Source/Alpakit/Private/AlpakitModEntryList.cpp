@@ -1,6 +1,7 @@
 #include "AlpakitModEntryList.h"
 #include "Alpakit.h"
 #include "AlpakitModEntry.h"
+#include "AlpakitSettings.h"
 #include "Interfaces/IPluginManager.h"
 #include "Slate.h"
 
@@ -8,30 +9,54 @@
 
 void SAlpakitModEntryList::Construct(const FArguments& Args) {
     ChildSlot[
-        SNew(SVerticalBox)
-        + SVerticalBox::Slot().AutoHeight()[
+    SNew(SVerticalBox)
+        +SVerticalBox::Slot().AutoHeight().Padding(0, 5)[
             SNew(SHorizontalBox)
-            + SHorizontalBox::Slot().AutoWidth()[
-                SNew(SButton)
-                .Text(LOCTEXT("PackageModAlpakitAll", "Alpakit Selected!"))
-                .OnClicked(this,& SAlpakitModEntryList::PackageAllMods)
+            +SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0)[
+                SAssignNew(AllModsCheckbox, SCheckBox)
+                .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
+                    if(InState == ECheckBoxState::Checked) {
+                        this->CheckAllMods();
+                    } else if (InState == ECheckBoxState::Unchecked) {
+                        this->UncheckAllMods();
+                    }
+                })
             ]
-            + SHorizontalBox::Slot().AutoWidth()[
-                SNew(SButton)
-                .Text(LOCTEXT("PackageModCheckAll", "Check All"))
-                .OnClicked(this,& SAlpakitModEntryList::CheckAllMods)
+            +SHorizontalBox::Slot().FillWidth(1)[
+                SNew(SEditableTextBox)
+                .HintText(LOCTEXT("SearchHint", "Search Plugin..."))
+                .OnTextChanged_Lambda([this](const FText& InText) {
+                    this->Filter(InText.ToString());
+                })
             ]
-            + SHorizontalBox::Slot().AutoWidth()[
-                SNew(SButton)
-                .Text(LOCTEXT("PackageModUncheckAll", "Check None"))
-                .OnClicked(this,& SAlpakitModEntryList::UncheckAllMods)
+            +SHorizontalBox::Slot().AutoWidth()[
+                SNew(SSpacer)
+                .Size(FVector2D(20.0f, 10.0f))
             ]
-            + SHorizontalBox::Slot().FillWidth(1.0f)
-            + SHorizontalBox::Slot().AutoWidth()[
-                SNew(SButton)
-                .Text(LOCTEXT("CreateMod", "Create Mod"))
-                .OnClicked(this,& SAlpakitModEntryList::CreateMod)
+            +SHorizontalBox::Slot().AutoWidth()[
+                SNew(SCheckBox)
+                .Content()[
+                    SNew(STextBlock)
+                    .Text(LOCTEXT("ShowEnginePlugins", "Show Engine Plugins"))
+                ]
+                .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
+                    this->SetShowEngine(InState == ECheckBoxState::Checked);
+                })
             ]
+            +SHorizontalBox::Slot().AutoWidth()[
+                SNew(SSpacer)
+                .Size(FVector2D(10.0f, 10.0f))
+            ]
+            +SHorizontalBox::Slot().AutoWidth()[
+              SNew(SCheckBox)
+              .Content()[
+                  SNew(STextBlock)
+                  .Text(LOCTEXT("ShowProjectPlugins", "Show Project Plugins"))
+              ]
+              .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
+                  this->SetShowProject(InState == ECheckBoxState::Checked);
+              })
+          ]
         ]
         + SVerticalBox::Slot().FillHeight(1.0f)[
             SNew(SScrollBox)
@@ -166,46 +191,6 @@ void SAlpakitModEntryList::OnNewPluginCreated(IPlugin& Plugin)
     LoadMods();
 }
 
-FReply SAlpakitModEntryList::PackageAllMods() {
-    TSharedPtr<SAlpakitModEntry> First;
-    TArray<TSharedPtr<SAlpakitModEntry>> NextEntries;
-
-    UE_LOG(LogAlpakit, Display, TEXT("Alpakit Selected!"));
-
-    for (TSharedRef<IPlugin> Mod : FilteredMods) {
-        UE_LOG(LogAlpakit, Display, TEXT("Collecting Plugin %s!"), *Mod->GetName());
-
-        TSharedPtr<ITableRow> TableRow = ModList->WidgetFromItem(Mod);
-        if (!TableRow.IsValid()) {
-            UE_LOG(LogAlpakit, Display, TEXT("TableRow not found!"));
-            continue;
-        }
-
-        TSharedPtr<SAlpakitModEntry> ModEntry = StaticCastSharedPtr<SAlpakitModEntry>(TableRow->GetContent());
-        if (!ModEntry.IsValid()) {
-            UE_LOG(LogAlpakit, Display, TEXT("TableRow content is not valid!"));
-            continue;
-        }
-
-        if(!ModEntry->IsSelected()) {
-            UE_LOG(LogAlpakit, Display, TEXT("Plugin is not selected: %s"), * Mod->GetName());
-            continue;
-        }
-
-        if (!First) {
-            First = ModEntry.ToSharedRef();
-        } else {
-            NextEntries.Add(ModEntry.ToSharedRef());
-        }
-    }
-
-    if (First) {
-        First->PackageMod(NextEntries);
-    }
-
-    return FReply::Handled();
-}
-
 FReply SAlpakitModEntryList::CheckAllMods() {
     for (TSharedRef<IPlugin> Mod : FilteredMods) {
         TSharedPtr<ITableRow> TableRow = ModList->WidgetFromItem(Mod);
@@ -243,10 +228,24 @@ FReply SAlpakitModEntryList::UncheckAllMods() {
     return FReply::Handled();
 }
 
-FReply SAlpakitModEntryList::CreateMod()
-{
-    FGlobalTabmanager::Get()->TryInvokeTab(FAlpakitModule::ModCreatorTabName);
-    return FReply::Handled();
+void SAlpakitModEntryList::UpdateAllCheckbox() {
+    UAlpakitSettings* Settings = UAlpakitSettings::Get();
+
+    bool allFalse = true;
+    bool allTrue = true;
+    
+    for (auto Mod : Settings->ModSelection) {
+        if (Mod.Value)
+            allFalse = false;
+        if (!Mod.Value)
+            allTrue = false;
+    }
+    if (!allTrue && !allFalse)
+        AllModsCheckbox->SetIsChecked(ECheckBoxState::Undetermined);
+    else if (allTrue)
+        AllModsCheckbox->SetIsChecked(ECheckBoxState::Checked);
+    else if (allFalse)
+        AllModsCheckbox->SetIsChecked(ECheckBoxState::Unchecked);
 }
 
 #undef LOCTEXT_NAMESPACE

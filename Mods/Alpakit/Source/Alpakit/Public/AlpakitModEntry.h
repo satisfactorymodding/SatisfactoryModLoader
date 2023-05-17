@@ -11,7 +11,7 @@ class SAlpakitModEntry : public SCompoundWidget {
 
     void Construct(const FArguments& Args, TSharedRef<IPlugin> InMod, TSharedRef<SAlpakitModEntryList> InOwner);
 
-    void PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& NextEntries) const;
+    void PackageMod() const;
     void OnEnableCheckboxChanged(ECheckBoxState NewState);
 
     void OnEditMod();
@@ -31,7 +31,12 @@ private:
     TSharedPtr<IPlugin> Mod;
     TSharedPtr<SAlpakitModEntryList> Owner;
     TSharedPtr<class SCheckBox> Checkbox;
+    TSharedPtr<SButton> AlpakitButton;
+    TSharedPtr<SButton> EditButton;
     
     /** Dialog for editing mod properties */
     TSharedPtr<SWindow> PropertiesWindow;
+    
+    void QueueStarted();
+    void QueueComplete();
 };

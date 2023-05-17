@@ -31,17 +31,18 @@ class SAlpakitModEntryList : public SCompoundWidget {
 	void SetShowEngine(bool bInShowEngine);
 	void SetShowProject(bool bInShowProject);
 
+	void UpdateAllCheckbox();
+
 	void OnNewPluginCreated(IPlugin& Plugin);
 private:
 	TSharedPtr<SListView<TSharedRef<IPlugin>>> ModList;
+	TSharedPtr<SCheckBox> AllModsCheckbox;
 	TArray<TSharedRef<IPlugin>> Mods;
 	TArray<TSharedRef<IPlugin>> FilteredMods;
 	FString LastFilter;
 	bool bShowEngine = false;
 	bool bShowProject = false;
 
-	FReply PackageAllMods();
 	FReply CheckAllMods();
 	FReply UncheckAllMods();
-	FReply CreateMod();
 };

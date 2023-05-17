@@ -7,6 +7,12 @@
 #define LOCTEXT_NAMESPACE "AlpakitWidget"
 
 void SAlpakitWidget::Construct(const FArguments& InArgs) {
+    FAlpakitModule& AlpakitModule = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit"));
+    
+    AlpakitModule.GetOnQueueStarted().AddSP(this, &SAlpakitWidget::QueueStarted);
+    AlpakitModule.GetOnQueueComplete().AddSP(this, &SAlpakitWidget::QueueComplete);
+    AlpakitModule.GetOnQueueChanged().AddSP(this, &SAlpakitWidget::QueueChanged);
+    
     FDetailsViewArgs DetailsViewArgs;
     DetailsViewArgs.bAllowSearch = true;
     DetailsViewArgs.bHideSelectionTip = true;
@@ -34,48 +40,63 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
         +SVerticalBox::Slot().AutoHeight()[
             DetailsView.ToSharedRef()
         ]
-        +SVerticalBox::Slot().AutoHeight()[
+        + SVerticalBox::Slot().AutoHeight()[
             SNew(SHorizontalBox)
-            +SHorizontalBox::Slot().FillWidth(1)[
-                SNew(SEditableTextBox)
-                .HintText(LOCTEXT("SearchHint", "Search Plugin..."))
-                .OnTextChanged_Lambda([this](const FText& InText) {
-                    this->ModList->Filter(InText.ToString());
-                })
+            + SHorizontalBox::Slot().AutoWidth()[
+                SAssignNew(AlpakitAllButton, SButton)
+                .Text(LOCTEXT("PackageModAlpakitAll", "Alpakit Selected!"))
+                .OnClicked(this, &SAlpakitWidget::PackageAllMods)
             ]
-            +SHorizontalBox::Slot().AutoWidth()[
-                SNew(SSpacer)
-                .Size(FVector2D(20.0f, 10.0f))
+            + SHorizontalBox::Slot().FillWidth(1.0f)
+            + SHorizontalBox::Slot().AutoWidth()[
+                SNew(SButton)
+                .Text(LOCTEXT("CreateMod", "Create Mod"))
+                .OnClicked(this, &SAlpakitWidget::CreateMod)
             ]
-            +SHorizontalBox::Slot().AutoWidth()[
-                SNew(SCheckBox)
-                .Content()[
-                    SNew(STextBlock)
-                    .Text(LOCTEXT("ShowEnginePlugins", "Show Engine Plugins"))
-                ]
-                .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
-                    this->ModList->SetShowEngine(InState == ECheckBoxState::Checked);
-                })
-            ]
-            +SHorizontalBox::Slot().AutoWidth()[
-                SNew(SSpacer)
-                .Size(FVector2D(10.0f, 10.0f))
-            ]
-            +SHorizontalBox::Slot().AutoWidth()[
-              SNew(SCheckBox)
-              .Content()[
-                  SNew(STextBlock)
-                  .Text(LOCTEXT("ShowProjectPlugins", "Show Project Plugins"))
-              ]
-              .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
-                  this->ModList->SetShowProject(InState == ECheckBoxState::Checked);
-              })
-          ]
         ]
         +SVerticalBox::Slot().FillHeight(1).Padding(3)[
             SAssignNew(ModList, SAlpakitModEntryList)
+            ]
+        +SVerticalBox::Slot().AutoHeight()[
+            SAssignNew(QueueText, STextBlock)
+            .Text(LOCTEXT("QueuedPlaceholder", "Queued (0): "))
         ]
     ];
 }
+
+FReply SAlpakitWidget::PackageAllMods() {
+    FAlpakitModule& AlpakitModule = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit"));
+
+    TArray<FString> ModsToPackage;
+    
+    UAlpakitSettings* Settings = UAlpakitSettings::Get();
+    for (auto Mod : Settings->ModSelection) {
+        if (Mod.Value) {
+            ModsToPackage.Add(Mod.Key);
+        }
+    }
+    AlpakitModule.PackageMods(ModsToPackage);
+
+    return FReply::Handled();
+}
+
+FReply SAlpakitWidget::CreateMod()
+{
+    FGlobalTabmanager::Get()->TryInvokeTab(FAlpakitModule::ModCreatorTabName);
+    return FReply::Handled();
+}
+
+void SAlpakitWidget::QueueStarted() {
+    AlpakitAllButton->SetEnabled(false);
+}
+
+void SAlpakitWidget::QueueComplete() {
+    AlpakitAllButton->SetEnabled(true);
+}
+
+void SAlpakitWidget::QueueChanged(TArray<FString> NewQueue) {
+    QueueText->SetText(FText::FromString(FString::Printf(TEXT("Queued (%d): %s"), NewQueue.Num(), *FString::Join(NewQueue, TEXT(", ")))));
+}
+
 
 #undef LOCTEXT_NAMESPACE
