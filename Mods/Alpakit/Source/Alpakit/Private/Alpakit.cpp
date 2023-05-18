@@ -296,11 +296,11 @@ void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
 
     FString AdditionalUATArguments;
 
-    if(Settings->WindowsNoEditorTargetSettings.bEnabled)
+    if(Settings->WindowsGameTargetSettings.bEnabled)
     {
         AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
         if(!bReleaseBuild)
-            AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsNoEditorTargetSettings, TEXT("WindowsNoEditor"), bIsLastItem));
+            AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsGameTargetSettings, TEXT("WindowsNoEditor"), bIsLastItem));
     }
 
     if(Settings->WindowsServerTargetSettings.bEnabled)

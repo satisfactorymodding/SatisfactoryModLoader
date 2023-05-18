@@ -44,8 +44,8 @@ public:
     /** Saves alpakit settings to configuration file */
     void SaveSettings();
 
-    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows Client")
-    FAlpakitTargetSettings WindowsNoEditorTargetSettings;
+    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows")
+    FAlpakitTargetSettings WindowsGameTargetSettings;
 
     UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows Server")
     FAlpakitTargetSettings WindowsServerTargetSettings;
