@@ -402,7 +402,12 @@ namespace Alpakit.Automation
                 }
                 if (factoryGameParams.StartGame)
                 {
-                    factoryGameParams.LaunchGameURL = GetGameLaunchURL(ParseRequiredStringParam(string.Format("{0}_LaunchType", deploymentContext.FinalCookPlatform)));
+	                var launchGameType =
+		                ParseRequiredStringParam(string.Format("{0}_LaunchType", deploymentContext.FinalCookPlatform));
+	                if (launchGameType == "Custom")
+		                factoryGameParams.LaunchGameURL = ParseRequiredStringParam(string.Format("{0}_CustomLaunchPath", deploymentContext.FinalCookPlatform));
+                    else
+						factoryGameParams.LaunchGameURL = GetGameLaunchURL(launchGameType);
                 }
 
                 factoryGameTargetParams.Add(deploymentContext.FinalCookPlatform, factoryGameParams);

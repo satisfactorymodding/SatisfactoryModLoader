@@ -6,12 +6,12 @@
 
 UENUM()
 enum class EAlpakitStartGameType : uint8 {
-    NONE UMETA(DisplayName = "Do not launch"),
     STEAM UMETA(DisplayName = "Steam"),
-    STEAM_SERVER UMETA(DisplayName = "Steam Dedicated Server"),
+    STEAM_SERVER UMETA(DisplayName = "Steam: Dedicated Server"),
     EPIC_EARLY_ACCESS UMETA(DisplayName = "Epic: Early Access"),
     EPIC_EXPERIMENTAL UMETA(DisplayName = "Epic: Experimental"),
-    EPIC_SERVER UMETA(DisplayName = "Epic: Dedicated Server")
+    EPIC_SERVER UMETA(DisplayName = "Epic: Dedicated Server"),
+    CUSTOM UMETA(DisplayName = "Custom")
 };
 
 USTRUCT()
@@ -29,9 +29,14 @@ public:
     UPROPERTY(EditAnywhere, config, Category = Config, DisplayName = "Copy to Game Path", meta = ( EditCondition = bCopyModsToGame ))
     FDirectoryPath SatisfactoryGamePath;
 
-    UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = bCopyModsToGame ))
+    UPROPERTY(config)
+    bool bLaunchGame = false;
+
+    UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = bLaunchGame ))
     EAlpakitStartGameType LaunchGameAfterPacking;
 
+    UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = "LaunchGameAfterPacking == EAlpakitStartGameType::CUSTOM", EditConditionHides ))
+    FString CustomLaunchPath;
 };
 
 UCLASS(config=Game)

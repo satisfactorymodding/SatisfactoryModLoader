@@ -208,6 +208,8 @@ FString GetArgumentForLaunchType(EAlpakitStartGameType LaunchMode) {
         return TEXT("EpicExp");
     case EAlpakitStartGameType::EPIC_SERVER:
         return TEXT("EpicDS");
+    case EAlpakitStartGameType::CUSTOM:
+        return TEXT("Custom");
     default:
         return TEXT("");
     }
@@ -225,7 +227,7 @@ FText GetCurrentPlatformName() {
 #endif
 }
 
-FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetName, bool LaunchGame = false)
+FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetName, bool AllowGameLaunch = false)
 {
     FString UATArguments;
     
@@ -233,9 +235,12 @@ FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetNa
         UATArguments.Append(FString::Printf(TEXT("-%s_CopyToGameDir "), *TargetName));
         UATArguments.Append(FString::Printf(TEXT("-%s_GameDir=%s "), *TargetName, *TargetSettings.SatisfactoryGamePath.Path));
 
-        if(TargetSettings.LaunchGameAfterPacking != EAlpakitStartGameType::NONE && LaunchGame) {
+        if(TargetSettings.bLaunchGame && AllowGameLaunch) {
             UATArguments.Append(FString::Printf(TEXT("-%s_LaunchGame "), *TargetName));
             UATArguments.Append(FString::Printf(TEXT("-%s_LaunchType=%s "), *TargetName, *GetArgumentForLaunchType(TargetSettings.LaunchGameAfterPacking)));
+            if(TargetSettings.LaunchGameAfterPacking == EAlpakitStartGameType::CUSTOM) {
+                UATArguments.Append(FString::Printf(TEXT("-%s_CustomLaunchPath=\"%s\" "), *TargetName, *TargetSettings.CustomLaunchPath));
+            }
         }
     }
 
