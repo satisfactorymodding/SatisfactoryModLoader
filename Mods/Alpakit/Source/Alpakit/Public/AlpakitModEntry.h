@@ -15,7 +15,6 @@ class SAlpakitModEntry : public SCompoundWidget {
     void OnEnableCheckboxChanged(ECheckBoxState NewState);
 
     void OnEditMod();
-    FReply OnEditModFinished(class UModMetadataObject* Metadata);
 
     FORCEINLINE bool IsSelected() {
         return Checkbox && Checkbox->IsChecked();
