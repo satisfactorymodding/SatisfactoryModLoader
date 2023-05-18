@@ -215,18 +215,6 @@ FString GetArgumentForLaunchType(EAlpakitStartGameType LaunchMode) {
     }
 }
 
-FText GetCurrentPlatformName() {
-#if PLATFORM_WINDOWS
-    return LOCTEXT("PlatformName_Windows", "Windows");
-#elif PLATFORM_MAC
-    return LOCTEXT("PlatformName_Mac", "Mac");
-#elif PLATFORM_LINUX
-    return LOCTEXT("PlatformName_Linux", "Linux");
-#else
-    return LOCTEXT("PlatformName_Other", "Other OS");
-#endif
-}
-
 FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetName, bool AllowGameLaunch = false)
 {
     FString UATArguments;
@@ -301,11 +289,13 @@ void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
 
     FString AdditionalUATArguments;
 
+    TArray<FString> PlatformNames;
     if(Settings->WindowsGameTargetSettings.bEnabled)
     {
         AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
         if(!bReleaseBuild)
             AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsGameTargetSettings, TEXT("WindowsNoEditor"), bIsLastItem));
+        PlatformNames.Add(TEXT("Windows"));
     }
 
     if(Settings->WindowsServerTargetSettings.bEnabled)
@@ -313,6 +303,7 @@ void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
         AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64_Server\" "));
         if(!bReleaseBuild)
             AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsServerTargetSettings, TEXT("WindowsServer"), bIsLastItem));
+        PlatformNames.Add(TEXT("Windows Server"));
     }
 
     if(Settings->LinuxServerTargetSettings.bEnabled)
@@ -320,6 +311,7 @@ void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
         AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Linux_Server\" "));
         if(!bReleaseBuild)
             AdditionalUATArguments.Append(MakeUATArguments(Settings->LinuxServerTargetSettings, TEXT("LinuxServer"), bIsLastItem));
+        PlatformNames.Add(TEXT("Linux Server"));
     }
 
 	if(bReleaseBuild)
@@ -329,15 +321,14 @@ void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
 
     const FString CommandLine = FString::Printf(TEXT("-Compile -ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" %s"),
                                                 *ProjectPath, *ProjectPath, *PluginName, *AdditionalUATArguments);
-
-    const FText PlatformName = GetCurrentPlatformName();
+    
     {
         // Destructor of FScopedEvent will wait for the event to be triggered
         FScopedEvent Done;
         AsyncTask(ENamedThreads::GameThread, [&]() {
             IUATHelperModule::Get().CreateUatTask(
                 CommandLine,
-                PlatformName,
+                FText::FromString(FString::Join(PlatformNames, TEXT(", "))),
                 FText::Format(LOCTEXT("PackageModTaskName", "Packaging {0}"), FText::FromString(PluginName)),
                 FText::Format(LOCTEXT("PackageModTaskShortName", "Package {0}"), FText::FromString(PluginName)),
                 FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"),
