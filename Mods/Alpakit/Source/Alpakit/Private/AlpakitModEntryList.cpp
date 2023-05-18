@@ -79,14 +79,6 @@ void SAlpakitModEntryList::LoadMods() {
     Mods.Empty();
     const TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
     for (TSharedRef<IPlugin> Plugin : EnabledPlugins) {
-        //Skip WWise, it is already shipped with the game
-        if (Plugin->GetName() == TEXT("WWise")) {
-            continue;
-        }
-        //Skip AbstractInstance, it is already shipped with the game
-        if (Plugin->GetName() == TEXT("AbstractInstance")) {
-            continue;
-        }
         //Skip SMLEditor, editor-only plugin
         if (Plugin->GetName() == TEXT("SMLEditor")) {
             continue;
