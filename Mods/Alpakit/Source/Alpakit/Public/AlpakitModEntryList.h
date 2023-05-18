@@ -34,6 +34,7 @@ class SAlpakitModEntryList : public SCompoundWidget {
 	void UpdateAllCheckbox();
 
 	void OnNewPluginCreated(IPlugin& Plugin);
+	void SetAllMods(bool Checked);
 private:
 	TSharedPtr<SListView<TSharedRef<IPlugin>>> ModList;
 	TSharedPtr<SCheckBox> AllModsCheckbox;
@@ -42,7 +43,4 @@ private:
 	FString LastFilter;
 	bool bShowEngine = false;
 	bool bShowProject = false;
-
-	FReply CheckAllMods();
-	FReply UncheckAllMods();
 };

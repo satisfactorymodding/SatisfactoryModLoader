@@ -15,11 +15,7 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
             +SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0)[
                 SAssignNew(AllModsCheckbox, SCheckBox)
                 .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
-                    if(InState == ECheckBoxState::Checked) {
-                        this->CheckAllMods();
-                    } else if (InState == ECheckBoxState::Unchecked) {
-                        this->UncheckAllMods();
-                    }
+                    SetAllMods(InState == ECheckBoxState::Checked);
                 })
             ]
             +SHorizontalBox::Slot().FillWidth(1)[
@@ -77,6 +73,7 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
     ];
 
     LoadMods();
+    UpdateAllCheckbox();
     IPluginManager::Get().OnNewPluginCreated().AddSP(this, &SAlpakitModEntryList::OnNewPluginCreated);
 }
 
@@ -170,6 +167,7 @@ void SAlpakitModEntryList::Filter(const FString& InFilter) {
     }
 
     ModList->RequestListRefresh();
+    UpdateAllCheckbox();
 }
 
 FString SAlpakitModEntryList::GetLastFilter() const {
@@ -191,7 +189,8 @@ void SAlpakitModEntryList::OnNewPluginCreated(IPlugin& Plugin)
     LoadMods();
 }
 
-FReply SAlpakitModEntryList::CheckAllMods() {
+void SAlpakitModEntryList::SetAllMods(bool Checked) {
+    UAlpakitSettings* Settings = UAlpakitSettings::Get();
     for (TSharedRef<IPlugin> Mod : FilteredMods) {
         TSharedPtr<ITableRow> TableRow = ModList->WidgetFromItem(Mod);
         if (!TableRow.IsValid()) {
@@ -204,28 +203,12 @@ FReply SAlpakitModEntryList::CheckAllMods() {
             UE_LOG(LogAlpakit, Display, TEXT("TableRow content is not valid!"));
             continue;
         }
-        ModEntry->SetSelected(true);
+        ModEntry->SetSelected(Checked);
+
+        Settings->ModSelection.Add(Mod->GetName(), Checked);
     }
-    return FReply::Handled();
-}
 
-
-FReply SAlpakitModEntryList::UncheckAllMods() {
-    for (TSharedRef<IPlugin> Mod : FilteredMods) {
-        TSharedPtr<ITableRow> TableRow = ModList->WidgetFromItem(Mod);
-        if (!TableRow.IsValid()) {
-            UE_LOG(LogAlpakit, Display, TEXT("TableRow not found!"));
-            continue;
-        }
-
-        TSharedPtr<SAlpakitModEntry> ModEntry = StaticCastSharedPtr<SAlpakitModEntry>(TableRow->GetContent());
-        if (!ModEntry.IsValid()) {
-            UE_LOG(LogAlpakit, Display, TEXT("TableRow content is not valid!"));
-            continue;
-        }
-        ModEntry->SetSelected(false);
-    }
-    return FReply::Handled();
+    Settings->SaveSettings();
 }
 
 void SAlpakitModEntryList::UpdateAllCheckbox() {
@@ -234,10 +217,10 @@ void SAlpakitModEntryList::UpdateAllCheckbox() {
     bool allFalse = true;
     bool allTrue = true;
     
-    for (auto Mod : Settings->ModSelection) {
-        if (Mod.Value)
+    for (TSharedRef<IPlugin> Mod : FilteredMods) {
+        if (Settings->ModSelection.FindOrAdd(Mod->GetName(), false))
             allFalse = false;
-        if (!Mod.Value)
+        else
             allTrue = false;
     }
     if (!allTrue && !allFalse)
