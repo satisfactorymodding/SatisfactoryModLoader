@@ -14,12 +14,13 @@ private:
     TSharedPtr<IDetailsView> DetailsView;
     TSharedPtr<SAlpakitModEntryList> ModList;
     TSharedPtr<STextBlock> QueueText;
-    TSharedPtr<SButton> AlpakitAllButton;
+    TSharedPtr<SButton> AlpakitAllDevButton;
+    TSharedPtr<SButton> AlpakitAllReleaseButton;
 
     void QueueStarted();
     void QueueComplete();
     void QueueChanged(TArray<FString> NewQueue);
 
-    FReply PackageAllMods();
+    FReply PackageAllMods(bool ReleaseBuild);
     FReply CreateMod();
 };

@@ -52,9 +52,6 @@ public:
 
     UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Linux Server")
     FAlpakitTargetSettings LinuxServerTargetSettings;
-
-    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Create merged mod for release")
-    bool bMerge;
     
     UPROPERTY(BlueprintReadOnly, config, Category = Config)
     TMap<FString, bool> ModSelection;

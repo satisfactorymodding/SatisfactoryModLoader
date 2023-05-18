@@ -15,7 +15,7 @@ public:
     virtual void StartupModule() override;
     virtual void ShutdownModule() override;
 
-    void PackageMods(TArray<FString> PluginNames);
+    void PackageMods(TArray<FString> PluginNames, bool ReleaseBuild);
 
     FOnQueueStarted& GetOnQueueStarted() { return OnQueueStarted; }
     FOnQueueChanged& GetOnQueueChanged() { return OnQueueChanged; }
@@ -37,6 +37,7 @@ private:
     void ProcessQueueItem(FString PluginName, bool bIsLastItem);
     FCriticalSection QueueLock;
 	TArray<FString> ModQueue;
+    bool bReleaseBuild = false;
     bool QueueRunning = false;
 
     FOnQueueStarted OnQueueStarted;

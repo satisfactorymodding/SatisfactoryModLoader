@@ -40,23 +40,34 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
         +SVerticalBox::Slot().AutoHeight()[
             DetailsView.ToSharedRef()
         ]
-        + SVerticalBox::Slot().AutoHeight()[
-            SNew(SHorizontalBox)
-            + SHorizontalBox::Slot().AutoWidth()[
-                SAssignNew(AlpakitAllButton, SButton)
-                .Text(LOCTEXT("PackageModAlpakitAll", "Alpakit Selected!"))
-                .OnClicked(this, &SAlpakitWidget::PackageAllMods)
-            ]
-            + SHorizontalBox::Slot().FillWidth(1.0f)
-            + SHorizontalBox::Slot().AutoWidth()[
-                SNew(SButton)
-                .Text(LOCTEXT("CreateMod", "Create Mod"))
-                .OnClicked(this, &SAlpakitWidget::CreateMod)
-            ]
-        ]
         +SVerticalBox::Slot().FillHeight(1).Padding(3)[
             SAssignNew(ModList, SAlpakitModEntryList)
+            .BarSlot()[
+                SNew(SHorizontalBox)
+                + SHorizontalBox::Slot().AutoWidth()[
+                    SAssignNew(AlpakitAllDevButton, SButton)
+                    .Text(LOCTEXT("PackageModAlpakitAllDev", "Alpakit Dev"))
+                    .OnClicked_Lambda([this] {
+                        PackageAllMods(false);
+                        return FReply::Handled();
+                    })
+                ]
+                + SHorizontalBox::Slot().AutoWidth()[
+                    SAssignNew(AlpakitAllReleaseButton, SButton)
+                    .Text(LOCTEXT("PackageModAlpakitAllRelease", "Alpakit Release"))
+                    .OnClicked_Lambda([this] {
+                        PackageAllMods(true);
+                        return FReply::Handled();
+                    })
+                ]
+                + SHorizontalBox::Slot().FillWidth(1.0f)
+                + SHorizontalBox::Slot().AutoWidth()[
+                    SNew(SButton)
+                    .Text(LOCTEXT("CreateMod", "Create Mod"))
+                    .OnClicked(this, &SAlpakitWidget::CreateMod)
+                ]
             ]
+        ]
         +SVerticalBox::Slot().AutoHeight()[
             SAssignNew(QueueText, STextBlock)
             .Text(LOCTEXT("QueuedPlaceholder", "Queued (0): "))
@@ -64,7 +75,7 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
     ];
 }
 
-FReply SAlpakitWidget::PackageAllMods() {
+FReply SAlpakitWidget::PackageAllMods(bool ReleaseBuild) {
     FAlpakitModule& AlpakitModule = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit"));
 
     TArray<FString> ModsToPackage;
@@ -75,7 +86,7 @@ FReply SAlpakitWidget::PackageAllMods() {
             ModsToPackage.Add(Mod.Key);
         }
     }
-    AlpakitModule.PackageMods(ModsToPackage);
+    AlpakitModule.PackageMods(ModsToPackage, ReleaseBuild);
 
     return FReply::Handled();
 }
@@ -87,11 +98,13 @@ FReply SAlpakitWidget::CreateMod()
 }
 
 void SAlpakitWidget::QueueStarted() {
-    AlpakitAllButton->SetEnabled(false);
+    AlpakitAllDevButton->SetEnabled(false);
+    AlpakitAllReleaseButton->SetEnabled(false);
 }
 
 void SAlpakitWidget::QueueComplete() {
-    AlpakitAllButton->SetEnabled(true);
+    AlpakitAllDevButton->SetEnabled(true);
+    AlpakitAllReleaseButton->SetEnabled(true);
 }
 
 void SAlpakitWidget::QueueChanged(TArray<FString> NewQueue) {

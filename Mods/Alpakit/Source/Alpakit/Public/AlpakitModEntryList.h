@@ -6,6 +6,7 @@
  */
 class SAlpakitModEntryList : public SCompoundWidget {
 	SLATE_BEGIN_ARGS(SAlpakitModEntryList) {}
+    SLATE_NAMED_SLOT(FArguments, BarSlot)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& Args);

@@ -12,47 +12,86 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
     SNew(SVerticalBox)
         +SVerticalBox::Slot().AutoHeight().Padding(0, 5)[
             SNew(SHorizontalBox)
-            +SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0)[
-                SAssignNew(AllModsCheckbox, SCheckBox)
-                .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
-                    SetAllMods(InState == ECheckBoxState::Checked);
-                })
-            ]
-            +SHorizontalBox::Slot().FillWidth(1)[
-                SNew(SEditableTextBox)
-                .HintText(LOCTEXT("SearchHint", "Search Plugin..."))
-                .OnTextChanged_Lambda([this](const FText& InText) {
-                    this->Filter(InText.ToString());
-                })
-            ]
-            +SHorizontalBox::Slot().AutoWidth()[
-                SNew(SSpacer)
-                .Size(FVector2D(20.0f, 10.0f))
-            ]
-            +SHorizontalBox::Slot().AutoWidth()[
-                SNew(SCheckBox)
-                .Content()[
-                    SNew(STextBlock)
-                    .Text(LOCTEXT("ShowEnginePlugins", "Show Engine Plugins"))
+            +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[
+                SNew(SVerticalBox)
+                +SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 5)[
+                    Args._BarSlot.Widget
                 ]
-                .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
-                    this->SetShowEngine(InState == ECheckBoxState::Checked);
-                })
+                +SVerticalBox::Slot()[
+                    SNew(SHorizontalBox)
+                    +SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0)[
+                        SAssignNew(AllModsCheckbox, SCheckBox)
+                        .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
+                            SetAllMods(InState == ECheckBoxState::Checked);
+                        })
+                    ]
+                    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[
+                        SNew(SEditableTextBox)
+                        .HintText(LOCTEXT("SearchHint", "Search Plugin..."))
+                        .OnTextChanged_Lambda([this](const FText& InText) {
+                            this->Filter(InText.ToString());
+                        })
+                    ]
+                    +SHorizontalBox::Slot().AutoWidth()[
+                        SNew(SSpacer)
+                        .Size(FVector2D(20.0f, 10.0f))
+                    ]
+                    +SHorizontalBox::Slot().AutoWidth()[
+                        SNew(SCheckBox)
+                        .Content()[
+                            SNew(STextBlock)
+                            .Text(LOCTEXT("ShowEnginePlugins", "Show Engine Plugins"))
+                        ]
+                        .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
+                            this->SetShowEngine(InState == ECheckBoxState::Checked);
+                        })
+                    ]
+                    +SHorizontalBox::Slot().AutoWidth()[
+                        SNew(SSpacer)
+                        .Size(FVector2D(10.0f, 10.0f))
+                    ]
+                    +SHorizontalBox::Slot().AutoWidth()[
+                        SNew(SCheckBox)
+                        .Content()[
+                            SNew(STextBlock)
+                            .Text(LOCTEXT("ShowProjectPlugins", "Show Project Plugins"))
+                        ]
+                        .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
+                            this->SetShowProject(InState == ECheckBoxState::Checked);
+                        })
+                    ]
+                ]
             ]
-            +SHorizontalBox::Slot().AutoWidth()[
-                SNew(SSpacer)
-                .Size(FVector2D(10.0f, 10.0f))
+            
+            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Fill).Padding(5,0)[
+                SNew(SSeparator)
+                .Orientation(Orient_Vertical)
             ]
-            +SHorizontalBox::Slot().AutoWidth()[
-              SNew(SCheckBox)
-              .Content()[
-                  SNew(STextBlock)
-                  .Text(LOCTEXT("ShowProjectPlugins", "Show Project Plugins"))
-              ]
-              .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
-                  this->SetShowProject(InState == ECheckBoxState::Checked);
-              })
-          ]
+
+            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(5, 0, 15, 0)[
+                SNew(SVerticalBox)
+                    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0, 0, 0, 5)[
+                        SNew(STextBlock)
+                        .Text(LOCTEXT("ReleaseTargets", "Release Targets"))
+                    ]
+                    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0, 5, 0, 0)[
+                        SNew(SHorizontalBox)
+                            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(5,0)[
+                                SNew(STextBlock)
+                                .Text(LOCTEXT("ReleaseWindows", "Windows"))
+                            ]
+                
+                            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(5,0)[
+                                SNew(STextBlock)
+                                .Text(LOCTEXT("ReleaseWindowsServer", "Windows Server"))
+                            ]
+                
+                            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(5,0)[
+                                SNew(STextBlock)
+                                .Text(LOCTEXT("ReleaseLinuxServer", "Linux Server"))
+                            ]
+                    ]
+            ]
         ]
         + SVerticalBox::Slot().FillHeight(1.0f)[
             SNew(SScrollBox)

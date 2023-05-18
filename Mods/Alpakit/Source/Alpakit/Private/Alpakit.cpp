@@ -242,16 +242,15 @@ FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetNa
     return UATArguments;
 }
 
-#pragma optimize ("", off)
-
-void FAlpakitModule::PackageMods(TArray<FString> PluginName) {
+void FAlpakitModule::PackageMods(TArray<FString> PluginNames, bool ReleaseBuild) {
     if(QueueRunning) {
         UE_LOG(LogAlpakit, Warning, TEXT("PackageMods called while another queue is in progress"));
         return;
     }
     {
         FScopeLock Lock = FScopeLock(&QueueLock);
-        ModQueue = PluginName;
+        ModQueue = PluginNames;
+        bReleaseBuild = ReleaseBuild;
     }
     OnQueueChanged.Broadcast(ModQueue);
     OnQueueStarted.Broadcast();
@@ -300,25 +299,26 @@ void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
     if(Settings->WindowsNoEditorTargetSettings.bEnabled)
     {
         AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
-        AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsNoEditorTargetSettings, TEXT("WindowsNoEditor"), bIsLastItem));
+        if(!bReleaseBuild)
+            AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsNoEditorTargetSettings, TEXT("WindowsNoEditor"), bIsLastItem));
     }
 
     if(Settings->WindowsServerTargetSettings.bEnabled)
     {
         AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64_Server\" "));
-        AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsServerTargetSettings, TEXT("WindowsServer"), bIsLastItem));
+        if(!bReleaseBuild)
+            AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsServerTargetSettings, TEXT("WindowsServer"), bIsLastItem));
     }
 
     if(Settings->LinuxServerTargetSettings.bEnabled)
     {
         AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Linux_Server\" "));
-        AdditionalUATArguments.Append(MakeUATArguments(Settings->LinuxServerTargetSettings, TEXT("LinuxServer"), bIsLastItem));
+        if(!bReleaseBuild)
+            AdditionalUATArguments.Append(MakeUATArguments(Settings->LinuxServerTargetSettings, TEXT("LinuxServer"), bIsLastItem));
     }
 
-	if(Settings->bMerge)
-	{
+	if(bReleaseBuild)
 		AdditionalUATArguments.Append(TEXT("-MergeArchive"));
-	}
 
     UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\""), *PluginName);
 
