@@ -128,7 +128,8 @@ namespace Alpakit.Automation
 				},
 				DedicatedServer: DedicatedServer,
 
-				Build: false,
+				Build: true,
+				SkipBuildEditor: true,
 				Cook: true,
 				Stage: true,
 				Pak: true,
@@ -367,8 +368,9 @@ namespace Alpakit.Automation
 
 		public override void ExecuteBuild()
         {
-			var projectParams = GetParams(this);
+	        var projectParams = GetParams(this);
 
+	        Project.Build(this, projectParams);
 			Project.Cook(projectParams);
 			var deploymentContexts = CreateDeploymentContexts(projectParams);
 			RemapCookedPluginsContentPaths(projectParams, deploymentContexts);
