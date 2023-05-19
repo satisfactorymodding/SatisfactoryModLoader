@@ -50,47 +50,11 @@
 	
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 	<Import Project="Alpakit.Automation.csproj.props" Condition="Exists('Alpakit.Automation.csproj.props')" />
-
-	<ItemGroup>
-		<ProjectReference Include="$(EngineDir)\Source\Programs\DotNETCommon\DotNETUtilities\DotNETUtilities.csproj">
-		  <Project>{5D7D66E8-8C76-4AF9-B3EC-2EF03421D730}</Project>
-		  <Name>DotNETUtilities</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\AutomationUtils\AutomationUtils.Automation.csproj">
-		  <Project>{2c96a7f2-b1a3-4258-8e0a-e588ff41a53e}</Project>
-		  <Name>AutomationUtils.Automation</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\Scripts\AutomationScripts.Automation.csproj">
-		  <Project>{8aa00d65-0954-4a27-ac0d-fb8b1106120f}</Project>
-		  <Name>AutomationScripts.Automation</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="$(EngineDir)\Source\Programs\UnrealBuildTool\UnrealBuildTool.csproj">
-		  <Project>{fd7c5e1a-cfe4-4fd5-a525-1eb1599a39ac}</Project>
-		  <Name>UnrealBuildTool</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\AllDesktop\AllDesktop.Automation.csproj">
-		  <Project>{a9cd1a06-764a-4c53-86ce-2f34b94f0283}</Project>
-          <Name>AllDesktop.Automation</Name>
-          <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\BuildGraph\BuildGraph.Automation.csproj">
-		  <Project>{a002361e-37f9-4124-af82-cf0d393cb928}</Project>
-		  <Name>BuildGraph.Automation</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\Gauntlet\Gauntlet.Automation.csproj">
-		  <Project>{767b4f85-ab56-4b00-a033-04c7600acc3d}</Project>
-		  <Name>Gauntlet.Automation</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\Win\Win.Automation.csproj">
-		  <Project>{6f6f8e5b-53ca-4c9f-a696-96aa9b8fb128}</Project>
-		  <Name>Win.Automation</Name>
-		  <Private>false</Private>
-		</ProjectReference>
-	</ItemGroup>
+    
+    <ItemGroup>
+        <Reference Include="$(EngineDir)\Binaries\DotNET\DotNETUtilities.dll" />
+        <Reference Include="$(EngineDir)\Binaries\DotNET\AutomationUtils.Automation.dll" />
+        <Reference Include="$(EngineDir)\Binaries\DotNET\AutomationScripts\AutomationScripts.Automation.dll" />
+        <Reference Include="$(EngineDir)\Binaries\DotNET\UnrealBuildTool.exe" />        
+    </ItemGroup>
 </Project>
