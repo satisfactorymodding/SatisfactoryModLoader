@@ -11,6 +11,7 @@
 #include "Patching/Patch/SaveMetadataPatch.h"
 #include "Player/PlayerCheatManagerHandler.h"
 #include "Util/DebuggerHelper.h"
+#include "funchook.h"
 
 #ifndef SML_BUILD_METADATA
 #define SML_BUILD_METADATA "unknown"
@@ -175,6 +176,10 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     //changelist number is not actually correctly set, since it is built from scratch
     if (FPlatformProperties::RequiresCookedData()) {
         CheckGameVersion();
+    }
+
+    if(SMLConfigurationPrivate.bEnableFunchookLogging) {
+        funchook_set_debug_file(TCHAR_TO_ANSI(*(FPaths::ProjectLogDir() / TEXT("SML_funchook.log"))));
     }
     
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Pre-initialization finished!"));

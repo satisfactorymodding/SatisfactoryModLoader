@@ -18,6 +18,11 @@ public:
     * See UFGCheatManager for command list
     */
     bool bEnableCheatConsoleCommands;
+
+    /**
+     * Whether to enable funchook logging
+     */
+    bool bEnableFunchookLogging;
 public:
     /** Deserializes configuration from JSON object */
     static void ReadFromJson(const TSharedPtr<class FJsonObject>& Json, FSMLConfiguration& OutConfiguration, bool* OutIsMissingSections = NULL);

@@ -2,7 +2,8 @@
 #include "Dom/JsonObject.h"
 
 FSMLConfiguration::FSMLConfiguration() :
-    bEnableCheatConsoleCommands(false) {
+    bEnableCheatConsoleCommands(false),
+    bEnableFunchookLogging(false) {
 }
 
 void FSMLConfiguration::ReadFromJson(const TSharedPtr<FJsonObject>& Json, FSMLConfiguration& OutConfiguration, bool* OutIsMissingSections) {
@@ -23,6 +24,12 @@ void FSMLConfiguration::ReadFromJson(const TSharedPtr<FJsonObject>& Json, FSMLCo
     } else {
         bIsMissingSectionsInternal = true;
     }
+    
+    if (Json->HasTypedField<EJson::Boolean>(TEXT("enableFunchookLogging"))) {
+        OutConfiguration.bEnableFunchookLogging = Json->GetBoolField(TEXT("enableFunchookLogging"));
+    } else {
+        bIsMissingSectionsInternal = true;
+    }
 
     if (OutIsMissingSections) {
         *OutIsMissingSections = bIsMissingSectionsInternal;
@@ -37,4 +44,6 @@ void FSMLConfiguration::WriteToJson(const TSharedPtr<FJsonObject>& OutJson, cons
         DisabledChatCommands.Add(MakeShareable(new FJsonValueString(Value)));
     }
     OutJson->SetArrayField(TEXT("disabledChatCommands"), DisabledChatCommands);
+
+    OutJson->SetBoolField(TEXT("enableFunchookLogging"), Configuration.bEnableFunchookLogging);
 }
