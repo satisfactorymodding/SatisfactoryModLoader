@@ -14,7 +14,7 @@ FReflectedObject UBlueprintReflectionLibrary::ReflectObject(UObject* Object) {
 FReflectedObject UBlueprintReflectionLibrary::ReflectStruct(const FDynamicStructInfo& StructInfo) {
     checkf(StructInfo.StructValue, TEXT("Cannot Reflect NULL struct"));
     FReflectedObject ReflectedObject{};
-    ReflectedObject.SetupFromStruct(StructInfo.Struct, StructInfo.Struct);
+    ReflectedObject.SetupFromStruct(StructInfo.Struct, StructInfo.StructValue);
     return ReflectedObject;
 }
 
