@@ -30,7 +30,7 @@ FTimerManager* FEngineUtil::GetGlobalTimerManager() {
     return nullptr;    
 }
 
-void FEngineUtil::DispatchWhenTimerManagerIsReady(const TBaseDelegate<void, FTimerManager*>& Delegate) {
+void FEngineUtil::DispatchWhenTimerManagerIsReady(const TDelegate<void(FTimerManager*)>& Delegate) {
     FTimerManager* TimerManager = GetGlobalTimerManager();
     if (TimerManager != NULL) {
         //Timer manager instance is ready already, dispatch delegate instantly

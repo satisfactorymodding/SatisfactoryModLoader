@@ -13,5 +13,5 @@ public:
     static class FTimerManager* GetGlobalTimerManager();
 
     /** Dispatches passed delegate when timer manager instance is ready */
-    static void DispatchWhenTimerManagerIsReady(const TBaseDelegate<void, FTimerManager*>& Delegate);
+    static void DispatchWhenTimerManagerIsReady(const TDelegate<void(FTimerManager*)>& Delegate);
 };

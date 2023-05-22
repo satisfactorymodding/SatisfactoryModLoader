@@ -332,13 +332,13 @@ FString FNativeCodeGenerator::GetIncludePathForClass(UStruct* Class) {
     static const TCHAR PrivateFolderName[] = TEXT("Private/");
     static const TCHAR ClassesFolderName[] = TEXT("Classes/");
     if (IncludePath.StartsWith(PublicFolderName)) {
-        IncludePath.RemoveAt(0, ARRAY_COUNT(PublicFolderName) - 1);
+        IncludePath.RemoveAt(0, UE_ARRAY_COUNT(PublicFolderName) - 1);
     }
     if (IncludePath.StartsWith(PrivateFolderName)) {
-        IncludePath.RemoveAt(0, ARRAY_COUNT(PrivateFolderName) - 1);
+        IncludePath.RemoveAt(0, UE_ARRAY_COUNT(PrivateFolderName) - 1);
     }
     if (IncludePath.StartsWith(ClassesFolderName)) {
-        IncludePath.RemoveAt(0, ARRAY_COUNT(ClassesFolderName) - 1);
+        IncludePath.RemoveAt(0, UE_ARRAY_COUNT(ClassesFolderName) - 1);
     }
     return IncludePath;
 }

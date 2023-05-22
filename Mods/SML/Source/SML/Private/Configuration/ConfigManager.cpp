@@ -140,7 +140,7 @@ void UConfigManager::MarkConfigurationDirty(const FConfigId& ConfigId) {
         //Make sure cached structs are synchronized with real configuration state
         ReinitializeCachedStructs(ConfigId);
         // TODO: Replace me with something better
-        FEngineUtil::DispatchWhenTimerManagerIsReady(TBaseDelegate<void, FTimerManager*>::CreateUObject(this, &UConfigManager::OnConfigMarkedDirty));
+        FEngineUtil::DispatchWhenTimerManagerIsReady(TDelegate<void(FTimerManager*)>::CreateUObject(this, &UConfigManager::OnConfigMarkedDirty));
     }
 }
 
@@ -281,7 +281,7 @@ void UConfigManager::Initialize(FSubsystemCollectionBase& Collection) {
     //Subscribe to exit event so we make sure that pending saves are written to filesystem
     FCoreDelegates::OnPreExit.AddUObject(this, &UConfigManager::FlushPendingSaves);
     //Subscribe to timer manager availability delegate to be able to do periodic auto-saves
-    FEngineUtil::DispatchWhenTimerManagerIsReady(TBaseDelegate<void, FTimerManager*>::CreateUObject(this, &UConfigManager::OnTimerManagerAvailable));
+    FEngineUtil::DispatchWhenTimerManagerIsReady(TDelegate<void(FTimerManager*)>::CreateUObject(this, &UConfigManager::OnTimerManagerAvailable));
 }
 
 FString UConfigManager::GetConfigurationFolderPath() {
