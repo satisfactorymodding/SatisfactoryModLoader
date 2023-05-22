@@ -5,7 +5,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogAlpakit, Verbose, All);
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnQueueChanged, TArray<FString>)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnQueueChanged, TArray<TSharedRef<IPlugin>>)
 DECLARE_MULTICAST_DELEGATE(FOnQueueStarted)
 DECLARE_MULTICAST_DELEGATE(FOnQueueComplete)
 
@@ -15,7 +15,7 @@ public:
     virtual void StartupModule() override;
     virtual void ShutdownModule() override;
 
-    void PackageMods(TArray<FString> PluginNames, bool ReleaseBuild);
+    void PackageMods(TArray<TSharedRef<IPlugin>> Plugins, bool ReleaseBuild);
 
     FOnQueueStarted& GetOnQueueStarted() { return OnQueueStarted; }
     FOnQueueChanged& GetOnQueueChanged() { return OnQueueChanged; }
@@ -34,9 +34,9 @@ private:
     void UnregisterSettings() const;
 
     void ProcessQueue();
-    void ProcessQueueItem(FString PluginName, bool bIsLastItem);
+    void ProcessQueueItem(TSharedRef<IPlugin> Plugin, bool bIsLastItem);
     FCriticalSection QueueLock;
-	TArray<FString> ModQueue;
+	TArray<TSharedRef<IPlugin>> ModQueue;
     bool bReleaseBuild = false;
     bool QueueRunning = false;
 

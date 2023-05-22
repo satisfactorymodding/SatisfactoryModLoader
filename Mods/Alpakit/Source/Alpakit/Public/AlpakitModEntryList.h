@@ -32,6 +32,8 @@ class SAlpakitModEntryList : public SCompoundWidget {
 	void SetShowEngine(bool bInShowEngine);
 	void SetShowProject(bool bInShowProject);
 
+	TArray<TSharedRef<IPlugin>> GetFilteredMods() const { return FilteredMods; }
+
 	void UpdateAllCheckbox();
 
 	void OnNewPluginCreated(IPlugin& Plugin);

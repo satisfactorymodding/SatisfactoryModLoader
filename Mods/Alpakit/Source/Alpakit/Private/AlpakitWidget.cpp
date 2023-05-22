@@ -78,12 +78,12 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
 FReply SAlpakitWidget::PackageAllMods(bool ReleaseBuild) {
     FAlpakitModule& AlpakitModule = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit"));
 
-    TArray<FString> ModsToPackage;
+    TArray<TSharedRef<IPlugin>> ModsToPackage;
     
     UAlpakitSettings* Settings = UAlpakitSettings::Get();
-    for (auto Mod : Settings->ModSelection) {
-        if (Mod.Value) {
-            ModsToPackage.Add(Mod.Key);
+    for (TSharedRef<IPlugin> Mod : ModList->GetFilteredMods()) {
+        if (Settings->ModSelection.FindOrAdd(Mod->GetName(), false)) {
+            ModsToPackage.Add(Mod);
         }
     }
     AlpakitModule.PackageMods(ModsToPackage, ReleaseBuild);
@@ -107,8 +107,12 @@ void SAlpakitWidget::QueueComplete() {
     AlpakitAllReleaseButton->SetEnabled(true);
 }
 
-void SAlpakitWidget::QueueChanged(TArray<FString> NewQueue) {
-    QueueText->SetText(FText::FromString(FString::Printf(TEXT("Queued (%d): %s"), NewQueue.Num(), *FString::Join(NewQueue, TEXT(", ")))));
+void SAlpakitWidget::QueueChanged(TArray<TSharedRef<IPlugin>> NewQueue) {
+    TArray<FString> NewQueueNames;
+    for (auto Plugin : NewQueue) {
+        NewQueueNames.Add(Plugin->GetName());
+    }
+    QueueText->SetText(FText::FromString(FString::Printf(TEXT("Queued (%d): %s"), NewQueueNames.Num(), *FString::Join(NewQueueNames, TEXT(", ")))));
 }
 
 

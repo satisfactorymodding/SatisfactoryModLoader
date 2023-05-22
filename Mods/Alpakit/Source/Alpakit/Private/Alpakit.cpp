@@ -11,6 +11,7 @@
 #include "IPluginBrowser.h"
 #include "IUATHelperModule.h"
 #include "ModWizardDefinition.h"
+#include "ModTargetsConfig.h"
 
 static const FName AlpakitTabName("Alpakit");
 
@@ -235,14 +236,14 @@ FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetNa
     return UATArguments;
 }
 
-void FAlpakitModule::PackageMods(TArray<FString> PluginNames, bool ReleaseBuild) {
+void FAlpakitModule::PackageMods(TArray<TSharedRef<IPlugin>> Plugins, bool ReleaseBuild) {
     if(QueueRunning) {
         UE_LOG(LogAlpakit, Warning, TEXT("PackageMods called while another queue is in progress"));
         return;
     }
     {
         FScopeLock Lock = FScopeLock(&QueueLock);
-        ModQueue = PluginNames;
+        ModQueue = Plugins;
         bReleaseBuild = ReleaseBuild;
     }
     OnQueueChanged.Broadcast(ModQueue);
@@ -264,12 +265,12 @@ void FAlpakitModule::ProcessQueue() {
         NumQueued = ModQueue.Num();
     }
     for (int i = NumQueued - 1; i >= 0; i--) {
-        FString PluginName;
+        TSharedPtr<IPlugin> Plugin;
         {
             FScopeLock Lock = FScopeLock(&QueueLock);
-            PluginName = ModQueue[0];
+            Plugin = ModQueue[0];
         }
-        ProcessQueueItem(PluginName, i == 0);
+        ProcessQueueItem(Plugin.ToSharedRef(), i == 0);
         {
             FScopeLock Lock = FScopeLock(&QueueLock);
             ModQueue.RemoveAt(0);
@@ -280,7 +281,7 @@ void FAlpakitModule::ProcessQueue() {
     }
 }
 
-void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
+void FAlpakitModule::ProcessQueueItem(TSharedRef<IPlugin> Plugin, bool bIsLastItem) {
     UAlpakitSettings* Settings = UAlpakitSettings::Get();
 
     const FString ProjectPath = FPaths::IsProjectFilePathSet()
@@ -290,37 +291,50 @@ void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
     FString AdditionalUATArguments;
 
     TArray<FString> PlatformNames;
-    if(Settings->WindowsGameTargetSettings.bEnabled)
-    {
-        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
-        if(!bReleaseBuild)
+    if (bReleaseBuild) {        
+        FModTargetsConfig TargetsConfig(Plugin);
+        if(TargetsConfig.bWindowsNoEditor) {
+            AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
+            PlatformNames.Add(TEXT("Windows"));
+        }
+        if(TargetsConfig.bWindowsServer) {
+            AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64_Server\" "));
+            PlatformNames.Add(TEXT("Windows Server"));
+        }
+        if(TargetsConfig.bLinuxServer) {
+            AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Linux_Server\" "));
+            PlatformNames.Add(TEXT("Linux Server"));
+        }
+    } else {
+        if(Settings->WindowsGameTargetSettings.bEnabled)
+        {
+            AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
             AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsGameTargetSettings, TEXT("WindowsNoEditor"), bIsLastItem));
-        PlatformNames.Add(TEXT("Windows"));
-    }
+            PlatformNames.Add(TEXT("Windows"));
+        }
 
-    if(Settings->WindowsServerTargetSettings.bEnabled)
-    {
-        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64_Server\" "));
-        if(!bReleaseBuild)
+        if(Settings->WindowsServerTargetSettings.bEnabled)
+        {
+            AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64_Server\" "));
             AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsServerTargetSettings, TEXT("WindowsServer"), bIsLastItem));
-        PlatformNames.Add(TEXT("Windows Server"));
-    }
+            PlatformNames.Add(TEXT("Windows Server"));
+        }
 
-    if(Settings->LinuxServerTargetSettings.bEnabled)
-    {
-        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Linux_Server\" "));
-        if(!bReleaseBuild)
+        if(Settings->LinuxServerTargetSettings.bEnabled)
+        {
+            AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Linux_Server\" "));
             AdditionalUATArguments.Append(MakeUATArguments(Settings->LinuxServerTargetSettings, TEXT("LinuxServer"), bIsLastItem));
-        PlatformNames.Add(TEXT("Linux Server"));
+            PlatformNames.Add(TEXT("Linux Server"));
+        }
     }
 
 	if(bReleaseBuild)
 		AdditionalUATArguments.Append(TEXT("-MergeArchive"));
 
-    UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\""), *PluginName);
+    UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\""), *Plugin->GetName());
 
     const FString CommandLine = FString::Printf(TEXT("-Compile -ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" %s"),
-                                                *ProjectPath, *ProjectPath, *PluginName, *AdditionalUATArguments);
+                                                *ProjectPath, *ProjectPath, *Plugin->GetName(), *AdditionalUATArguments);
     
     {
         // Destructor of FScopedEvent will wait for the event to be triggered
@@ -329,8 +343,8 @@ void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
             IUATHelperModule::Get().CreateUatTask(
                 CommandLine,
                 FText::FromString(FString::Join(PlatformNames, TEXT(", "))),
-                FText::Format(LOCTEXT("PackageModTaskName", "Packaging {0}"), FText::FromString(PluginName)),
-                FText::Format(LOCTEXT("PackageModTaskShortName", "Package {0}"), FText::FromString(PluginName)),
+                FText::Format(LOCTEXT("PackageModTaskName", "Packaging {0}"), FText::FromString(Plugin->GetName())),
+                FText::Format(LOCTEXT("PackageModTaskShortName", "Package {0}"), FText::FromString(Plugin->GetName())),
                 FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"),
                 [&Done](FString resultType, double runTime) {
                     Done.Trigger();
@@ -338,7 +352,7 @@ void FAlpakitModule::ProcessQueueItem(FString PluginName, bool bIsLastItem) {
             );
         });
     }
-    UE_LOG(LogAlpakit, Display, TEXT("Finished packaging mod %s"), *PluginName);
+    UE_LOG(LogAlpakit, Display, TEXT("Finished packaging mod %s"), *Plugin->GetName());
  }
 
 

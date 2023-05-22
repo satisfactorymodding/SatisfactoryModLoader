@@ -19,7 +19,7 @@ private:
 
     void QueueStarted();
     void QueueComplete();
-    void QueueChanged(TArray<FString> NewQueue);
+    void QueueChanged(TArray<TSharedRef<IPlugin>> NewQueue);
 
     FReply PackageAllMods(bool ReleaseBuild);
     FReply CreateMod();
