@@ -19,6 +19,7 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
     const FString PluginName = Mod->GetName();
 
     Checkbox = SNew(SCheckBox)
+        .ToolTipText(LOCTEXT("AlpakitModEntryEnabled_Tooltip", "If enabled, this mod will be packaged when the Alpakit Dev or Alpakit Release buttons are pressed"))
         .OnCheckStateChanged(this, &SAlpakitModEntry::OnEnableCheckboxChanged)
         .IsChecked(Settings->ModSelection.FindOrAdd(PluginName, false) ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 
@@ -38,7 +39,7 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
                 return FReply::Handled();
             })
             .ToolTipText_Lambda([this](){
-                return FText::FromString(FString::Printf(TEXT("Edit %s"), *this->Mod->GetName()));
+                return FText::FromString(FString::Printf(TEXT("Edit %s via the wizard"), *this->Mod->GetName()));
             })
         ]
         + SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[

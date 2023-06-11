@@ -20,22 +20,22 @@ struct ALPAKIT_API FAlpakitTargetSettings
     GENERATED_BODY()
 public:
 
-    UPROPERTY(EditAnywhere, config, Category = Config)
+    UPROPERTY(EditAnywhere, config, Category = Config, meta = (ToolTip = "Controls if any action will be taken for this target platform after a successful pack"))
     bool bEnabled = true;
 
     UPROPERTY(config)
     bool bCopyModsToGame = false;
     
-    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName = "Copy to Game Path", meta = ( EditCondition = bCopyModsToGame ))
+    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName = "Copy to Game Path", meta = (EditCondition = bCopyModsToGame, ToolTip = "If enabled, mods will be copied to this installation location after a successful pack"))
     FDirectoryPath SatisfactoryGamePath;
 
     UPROPERTY(config)
     bool bLaunchGame = false;
 
-    UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = bLaunchGame ))
+    UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = bLaunchGame, ToolTip = "If enabled, this approach will be used to launch this platform after a successful pack"))
     EAlpakitStartGameType LaunchGameAfterPacking;
 
-    UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = "LaunchGameAfterPacking == EAlpakitStartGameType::CUSTOM", EditConditionHides ))
+    UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = "LaunchGameAfterPacking == EAlpakitStartGameType::CUSTOM", EditConditionHides, ToolTip = "The Unreal Automation tool will execute this after a successful pack.\nCheck the 'Testing' page on the modding docs for example scripts to call with this feature.\n\nExample value:\nC:\\Git\\SF_ModProject\\RobWorkingDir\\Auto_Exp_LoadLatest.bat"))
     FString CustomLaunchPath;
 };
 
@@ -49,13 +49,13 @@ public:
     /** Saves alpakit settings to configuration file */
     void SaveSettings();
 
-    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows")
+    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows", meta = (ToolTip = "After packaging settings for the Windows target"))
     FAlpakitTargetSettings WindowsGameTargetSettings;
 
-    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows Server")
+    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows Server", meta = (ToolTip = "After packaging settings for the Windows Server target"))
     FAlpakitTargetSettings WindowsServerTargetSettings;
 
-    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Linux Server")
+    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Linux Server", meta = (ToolTip = "After packaging settings for the Linux Server target"))
     FAlpakitTargetSettings LinuxServerTargetSettings;
     
     UPROPERTY(BlueprintReadOnly, config, Category = Config)

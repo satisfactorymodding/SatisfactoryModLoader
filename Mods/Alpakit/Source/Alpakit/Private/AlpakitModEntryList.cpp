@@ -21,12 +21,14 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                     SNew(SHorizontalBox)
                     +SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0)[
                         SAssignNew(AllModsCheckbox, SCheckBox)
+                        .ToolTipText(LOCTEXT("AllModsCheckboxAlpakit_Tooltip", "Select/deselect all displayed mods. Search can be used to narrow down which are affected"))
                         .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
                             SetAllMods(InState == ECheckBoxState::Checked);
                         })
                     ]
                     +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[
                         SNew(SEditableTextBox)
+                        .ToolTipText(LOCTEXT("SearchHint_Tooltip", "Filter the list based on the text entered here. Friendly name and Mod Reference supported"))
                         .HintText(LOCTEXT("SearchHint", "Search Plugin..."))
                         .OnTextChanged_Lambda([this](const FText& InText) {
                             this->Filter(InText.ToString());
@@ -40,6 +42,7 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                         SNew(SCheckBox)
                         .Content()[
                             SNew(STextBlock)
+                            .ToolTipText(LOCTEXT("ShowEnginePlugins_Tooltip", "Display all Unreal Engine plugins loaded at the engine level (notably not mods, you usually don't need this enabled)"))
                             .Text(LOCTEXT("ShowEnginePlugins", "Show Engine Plugins"))
                         ]
                         .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
@@ -54,6 +57,7 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                         SNew(SCheckBox)
                         .Content()[
                             SNew(STextBlock)
+                            .ToolTipText(LOCTEXT("ShowProjectPlugins_Tooltip", "Display all Unreal Engine plugins loaded at the project level (such as Plugins folder mods, you usually don't need this enabled)"))
                             .Text(LOCTEXT("ShowProjectPlugins", "Show Project Plugins"))
                         ]
                         .OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
@@ -72,6 +76,7 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                 SNew(SVerticalBox)
                     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0, 0, 0, 5)[
                         SNew(STextBlock)
+                        .ToolTipText(LOCTEXT("ReleaseTargets_Tooltip", "Select what target platforms this mod has custom C++ implementations for"))
                         .Text(LOCTEXT("ReleaseTargets", "Release Targets"))
                     ]
                     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0, 5, 0, 0)[
