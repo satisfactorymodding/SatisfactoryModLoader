@@ -20,7 +20,7 @@ struct ALPAKIT_API FAlpakitTargetSettings
     GENERATED_BODY()
 public:
 
-    UPROPERTY(EditAnywhere, config, Category = Config, meta = (ToolTip = "Controls if any action will be taken for this target platform after a successful pack"))
+    UPROPERTY(EditAnywhere, config, Category = Config, meta = (ToolTip = "Controls if this target will be built when pressing the 'Alpakit Dev' button, and what action will be taken for this target after a successful pack"))
     bool bEnabled = true;
 
     UPROPERTY(config)
@@ -49,13 +49,13 @@ public:
     /** Saves alpakit settings to configuration file */
     void SaveSettings();
 
-    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows", meta = (ToolTip = "After packaging settings for the Windows target"))
+    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows", meta = (ToolTip = "Packaging settings for 'Alpakit Dev' for the Windows target"))
     FAlpakitTargetSettings WindowsGameTargetSettings;
 
-    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows Server", meta = (ToolTip = "After packaging settings for the Windows Server target"))
+    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows Server", meta = (ToolTip = "Packaging settings for 'Alpakit Dev' for the Windows Server target"))
     FAlpakitTargetSettings WindowsServerTargetSettings;
 
-    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Linux Server", meta = (ToolTip = "After packaging settings for the Linux Server target"))
+    UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Linux Server", meta = (ToolTip = "Packaging settings for 'Alpakit Dev' for the Linux Server target"))
     FAlpakitTargetSettings LinuxServerTargetSettings;
     
     UPROPERTY(BlueprintReadOnly, config, Category = Config)
