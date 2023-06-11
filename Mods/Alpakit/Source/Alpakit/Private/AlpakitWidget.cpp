@@ -47,6 +47,7 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
                 + SHorizontalBox::Slot().AutoWidth()[
                     SAssignNew(AlpakitAllDevButton, SButton)
                     .Text(LOCTEXT("PackageModAlpakitAllDev", "Alpakit Dev"))
+                    .ToolTipText(LOCTEXT("PackageModAlpakitAllDev_Tooltip", "For each selected mod, package the mod, then follow the after packing tasks after all packaging is complete"))
                     .OnClicked_Lambda([this] {
                         PackageAllMods(false);
                         return FReply::Handled();
@@ -55,6 +56,7 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
                 + SHorizontalBox::Slot().AutoWidth()[
                     SAssignNew(AlpakitAllReleaseButton, SButton)
                     .Text(LOCTEXT("PackageModAlpakitAllRelease", "Alpakit Release"))
+                    .ToolTipText(LOCTEXT("PackageModAlpakitAllRelease_Tooltip", "For each selected mod, prepare the multi-target zip for upload to the Mod Repository. Can build C++ as needed. Does not execute the after packing tasks"))
                     .OnClicked_Lambda([this] {
                         PackageAllMods(true);
                         return FReply::Handled();
@@ -64,6 +66,7 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
                 + SHorizontalBox::Slot().AutoWidth()[
                     SNew(SButton)
                     .Text(LOCTEXT("CreateMod", "Create Mod"))
+                    .ToolTipText(LOCTEXT("CreateMod_Tooltip", "Open the wizard to create a new mod from a template"))
                     .OnClicked(this, &SAlpakitWidget::CreateMod)
                 ]
             ]
