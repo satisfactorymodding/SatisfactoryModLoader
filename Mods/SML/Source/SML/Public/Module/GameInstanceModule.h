@@ -125,7 +125,7 @@ public:
      * Works on the widget archetype level so your widget ends up fully integrated into the game's asset
      * You have full control over slot properties and widget settings
      *
-     * It should be noted that a similar effect can be achieved by blueprint hooknig the widget's construct
+     * It should be noted that a similar effect can be achieved by blueprint hooking the widget's construct
      * and manually adding your widget there, but this system provides a simpler and more convenient way
      */
     UPROPERTY(Instanced, EditDefaultsOnly, Category = "Advanced | Hooks")

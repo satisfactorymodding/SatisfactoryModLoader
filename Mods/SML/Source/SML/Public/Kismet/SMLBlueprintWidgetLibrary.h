@@ -20,7 +20,7 @@ public:
 	 * Keep in mind that normally widgets should make ZERO assumptions about their container
 	 * and use public properties, named slots and delegates instead to facillate interaction with their host,
 	 * but in some particular cases (read "widget blueprint hooking") interacting with host blueprint can be really tricky
-	 * because you have no access to it's bindings (since your injected widget has no backing FObjectPropeerty).
+	 * because you have no access to it's bindings (since your injected widget has no backing FObjectProperty).
 	 *
 	 * But because in such cases you have a very clear knowledge of your supposed parent widget,
 	 * you can utilize it to retrieve it's data directly. Such operations should be carefully done
@@ -31,7 +31,7 @@ public:
 
 	/**
 	 * Traverses all of the direct and potentially indirect widgets owned by the provided widget tree
-	 * And attempts to find all the widget matching the provided class
+	 * and attempts to find all the widget matching the provided class
 	 *
 	 * Keep in mind that normally widgets should just use bindings, named slots or manually read properties of the nested
 	 * widget trees to access and modify their content, but in some particular cases (read "widget blueprint hooking")
