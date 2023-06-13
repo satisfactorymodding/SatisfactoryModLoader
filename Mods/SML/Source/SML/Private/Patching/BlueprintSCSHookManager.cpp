@@ -100,7 +100,7 @@ void UBlueprintSCSHookData::ReinitializeActorComponentTemplate() {
 			ActorComponentTemplate = NULL;
 		}
 	}
-	//Rename the component if it's name does not match the variable name
+	//Rename the component if its name does not match the variable name
 	if (ActorComponentTemplate != NULL) {
 		if (ActorComponentTemplate->GetFName() != VariableName) {
 			ActorComponentTemplate->Rename(*VariableName.ToString(), NULL, REN_DontCreateRedirectors | REN_ForceNoResetLoaders);
@@ -154,7 +154,7 @@ TArray<FString> URootBlueprintSCSHookData::GetParentComponentNames() const {
 }
 
 bool URootBlueprintSCSHookData::ResolveParentComponent(FParentComponentInfo& OutParentComponent) const {
-	//If we have a parent node, make sure it's actor class always matched what we expect
+	//If we have a parent node, make sure its actor class always matched what we expect
 	//We might end up in a really, really weird situations if user picks some nonsense in the editor
 	//Realistically speaking, root nodes should never end up as other node children, but users are dumb and weird
 	if (const URootBlueprintSCSHookData* ParentRootData = GetTypedOuter<URootBlueprintSCSHookData>()) {

@@ -162,7 +162,7 @@ public:
 
     /** Returns number of elements in this object, if it represents array. Otherwise returns 0 */
     int32 GetArrayNum() const;
-    /** Adds new element into the array, and returns it's index. Returns -1 if this object does not represent array */
+    /** Adds new element into the array, and returns its index. Returns -1 if this object does not represent array */
     int32 AddNewArrayElement() const;
     /** Removes specified number of elements starting at the provided index from the array, if this object represents an array */
     void RemoveArrayElements(int32 Index, int32 Count = 1) const;
