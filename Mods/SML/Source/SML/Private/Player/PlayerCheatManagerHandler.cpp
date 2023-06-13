@@ -1,16 +1,18 @@
 ﻿#include "Player/PlayerCheatManagerHandler.h"
-#include "FGPlayerController.h"
-#include "SatisfactoryModLoader.h"
-#include "SMLConfiguration.h"
-#include "GameFramework/GameModeBase.h"
+#include "GameFramework/PlayerController.h"
+#include "Patching/NativeHookManager.h"
 
-void FPlayerCheatManagerHandler::HandlePlayerJoined(class AGameModeBase* /*GameMode*/, APlayerController* PlayerController) {
-    const FSMLConfiguration Configuration = FSatisfactoryModLoader::GetSMLConfiguration();
-    if (Configuration.bEnableCheatConsoleCommands || FParse::Param(FCommandLine::Get(), TEXT("EnableCheats"))) {
-        PlayerController->AddCheats(true);
-    }
-}
+static TAutoConsoleVariable CVarForceAllowCheats(
+    TEXT("SML.ForceAllowCheats"),
+    false,
+    TEXT("Allows EnableCheats to be used to activate Cheat Manager regardless of the Game Mode settings. This is on by default in non-Shipping builds."),
+    ECVF_Default);
 
 void FPlayerCheatManagerHandler::RegisterHandler() {
-    FGameModeEvents::GameModePostLoginEvent.AddStatic(HandlePlayerJoined);
+    SUBSCRIBE_UOBJECT_METHOD(APlayerController, EnableCheats, [](auto& Scope, APlayerController* PlayerController) {
+        if (CVarForceAllowCheats.GetValueOnGameThread()) {
+            PlayerController->AddCheats(true);
+            Scope.Cancel();
+        }
+    });
 }

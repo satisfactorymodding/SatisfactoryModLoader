@@ -51,7 +51,7 @@ class SML_API FNativeHookManagerInternal {
 public:
 	static void* GetHandlerListInternal(void* RealFunctionAddress);
 	static void SetHandlerListInstanceInternal(void* RealFunctionAddress, void* handlerList);
-	static void* RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction);
+	static void* RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction);
 };
 
 template <typename T, typename E>
@@ -329,7 +329,7 @@ private:
 	}
 public:
 	//Handles normal member function hooking, e.g hooking fixed symbol implementation in executable
-	static void InstallHook(const FString& DebugSymbolName, void* SampleObjectInstance = NULL) {
+	static void InstallHook(const FString& DebugSymbolName, const void* SampleObjectInstance = NULL) {
 		if (!bHookInitialized) {
 			bHookInitialized = true;
 			void* HookFunctionPointer = getApplyCall();
@@ -418,3 +418,11 @@ HookInvoker<decltype(&MethodReference), &MethodReference>::addHandlerAfter(Handl
 #define SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL_AFTER(MethodSignature, MethodReference, SampleObjectInstance, Handler) \
 HookInvoker<MethodSignature, &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
 HookInvoker<MethodSignature, &MethodReference>::addHandlerAfter(Handler);
+
+#define SUBSCRIBE_UOBJECT_METHOD(ObjectClass, MethodName, Handler) \
+HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::InstallHook(TEXT(#ObjectClass "::" #MethodName), GetDefault<ObjectClass>()); \
+HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::addHandlerBefore(Handler);
+
+#define SUBSCRIBE_UOBJECT_METHOD_AFTER(ObjectClass, MethodName, Handler) \
+HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::InstallHook(TEXT(#ObjectClass "::" #MethodName), GetDefault<ObjectClass>()); \
+HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::addHandlerAfter(Handler);

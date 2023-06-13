@@ -5,6 +5,8 @@
 #include "Engine/Engine.h"
 #include "Patching/BlueprintSCSHookManager.h"
 #include "Patching/WidgetBlueprintHookManager.h"
+#include "Registry/GameMapRegistry.h"
+#include "Registry/SessionSettingsRegistry.h"
 
 UGameInstance* UGameInstanceModule::GetGameInstance() const {
     //Game Instance module hierarchy is built on top of UGameInstanceSubsystem,
@@ -125,5 +127,15 @@ void UGameInstanceModule::RegisterDefaultContent() {
     UWidgetBlueprintHookManager* WidgetHookManager = GetGameInstance()->GetEngine()->GetEngineSubsystem<UWidgetBlueprintHookManager>();
     for (UWidgetBlueprintHookData* HookData : WidgetBlueprintHooks) {
         WidgetHookManager->RegisterWidgetBlueprintHook(HookData);
+    }
+
+    USMLGameMapRegistry* GameMapRegistry = GetGameInstance()->GetEngine()->GetEngineSubsystem<USMLGameMapRegistry>();
+    for (USMLGameMapData* MapData : GameMaps) {
+        GameMapRegistry->RegisterGameMap(OwnerModReferenceString, MapData);
+    }
+
+    USMLSessionSettingsRegistry* SessionSettingsRegistry = GetGameInstance()->GetEngine()->GetEngineSubsystem<USMLSessionSettingsRegistry>();
+    for (USMLSessionSetting* SessionSetting : SessionSettings) {
+        SessionSettingsRegistry->RegisterSessionSetting(OwnerModReferenceString, SessionSetting);
     }
 }

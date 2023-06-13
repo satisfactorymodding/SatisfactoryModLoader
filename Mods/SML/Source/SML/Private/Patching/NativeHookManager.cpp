@@ -47,7 +47,7 @@ bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunction
 	return true;
 }
 
-SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction) {
+SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction) {
 	SetDebugLoggingHook(&LogDebugAssemblyAnalyzer);
 	FunctionInfo FunctionInfo = DiscoverFunction((uint8*) OriginalFunctionPointer);
 	checkf(FunctionInfo.bIsValid, TEXT("Attempt to hook invalid function %s: Provided code pointer %p is not valid"), *DebugSymbolName, OriginalFunctionPointer);

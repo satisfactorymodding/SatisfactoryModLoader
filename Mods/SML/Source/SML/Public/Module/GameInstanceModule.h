@@ -3,13 +3,14 @@
 #include "Module/ModModule.h"
 #include "GameFramework/PlayerInput.h"
 #include "Templates/SubclassOf.h"
-
 #include "GameInstanceModule.generated.h"
 
 class UModSubsystemHolder;
 class UModConfiguration;
 class URootBlueprintSCSHookData;
 class UWidgetBlueprintHookData;
+class USMLGameMapData;
+class USMLSessionSetting;
 
 USTRUCT()
 struct SML_API FModKeyBindingInfo {
@@ -130,7 +131,15 @@ public:
      */
     UPROPERTY(Instanced, EditDefaultsOnly, Category = "Advanced | Hooks")
     TArray<UWidgetBlueprintHookData*> WidgetBlueprintHooks;
-    
+
+	/** Additional maps to register */
+	UPROPERTY(EditDefaultsOnly, Category = "Advanced | World")
+	TArray<USMLGameMapData*> GameMaps;
+
+	/** Additional session settings to register */
+	UPROPERTY(EditDefaultsOnly, Category = "Advanced | World")
+	TArray<USMLSessionSetting*> SessionSettings;
+	
     UPROPERTY()
     TArray<FModAxisBindingInfo> ModAxisBindings_DEPRECATED;
     

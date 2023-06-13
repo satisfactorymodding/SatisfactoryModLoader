@@ -140,21 +140,21 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     LoadSMLConfiguration(bAllowSavingConfiguration);
 
 #if UE_BUILD_SHIPPING
-    //Wait for the debugger if prompted
-    //We need to manually do that in shipping because the normal UE code is stripped
-    if (FParse::Param(FCommandLine::Get(), TEXT("WaitForDebugger"))) {
-        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Waiting for the debugger to attach as prompted..."));
+    if (FDebuggerHelper::IsDebuggerHelperSupported()) {
+        //Wait for the debugger if prompted
+        //We need to manually do that in shipping because the normal UE code is stripped
+        if (FParse::Param(FCommandLine::Get(), TEXT("WaitForDebugger"))) {
+            UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Waiting for the debugger to attach as prompted..."));
 
-        FSlowHeartBeatScope SuspendHeartBeat(true);
-        while (!FDebuggerHelper::IsDebuggerPresent()) {
-            FPlatformProcess::Sleep(0.1f);
+            FSlowHeartBeatScope SuspendHeartBeat(true);
+            while (!FDebuggerHelper::IsDebuggerPresent()) {
+                FPlatformProcess::Sleep(0.1f);
+            }
+            UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Debugger attached"));
+            FDebuggerHelper::DebugBreak();
         }
-        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Debugger attached"));
-        FDebuggerHelper::DebugBreak();
-    }
 
-    //Add hooks to break into the debugger on ensure and error
-    if (FParse::Param(FCommandLine::Get(), TEXT("BreakIntoDebuggerOnErrorAndEnsure"))) {
+        //Make sure to break into the debugger on ensures and errors if we have a debugger attached
         FCoreDelegates::OnHandleSystemEnsure.AddLambda([]() {
             if (FDebuggerHelper::IsDebuggerPresent()) {
                 FDebuggerHelper::DebugBreak();
@@ -165,10 +165,13 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
                 FDebuggerHelper::DebugBreak();
             }
         });
-    }
 
-    if (FParse::Param(FCommandLine::Get(), TEXT("TestDebugBreakOnEnsure"))) {
-        ensureMsgf(false, TEXT("Test failed ensure"));
+        //Warn if we are running guarded but with the debugger attached
+        if (GIsGuarded && FDebuggerHelper::IsDebuggerPresent()) {
+            UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Running in a Guarded mode with Debugger attached. Debugger will not be able to handle SEH exceptions (like Access Violation) in this mode. Run with -noexceptionhandler switch to disable SEH guard."));
+        }
+    } else {
+        UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("DebugHelper implementation not found for the platform, debugging support functionality in Shipping build will be inaccessible"));
     }
 #endif
 

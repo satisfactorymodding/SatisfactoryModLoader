@@ -24,7 +24,7 @@ enum class EWidgetBlueprintHookParentType : uint8 {
 	/** Hook directly using the parent widget name */
 	Direct UMETA(DisplayName = "Direct"),
 	/** Hook indirectly by traversing the widget hierarchy of the provided widget for the closest panel widget */
-	Indirect_Child UMETA(DisplayName = "Indirect (Child)"),
+	Indirect_Child UMETA(DisplayName = "Indirect (Child)")
 };
 
 namespace WidgetBlueprintHookParentValidator {
@@ -36,8 +36,8 @@ namespace WidgetBlueprintHookParentValidator {
 }
 
 /** Data required to hook into the existing widget blueprint */
-UCLASS(BlueprintType, EditInlineNew)
-class SML_API UWidgetBlueprintHookData : public UObject {
+UCLASS(NotBlueprintable, BlueprintType, EditInlineNew)
+class SML_API UWidgetBlueprintHookData : public UDataAsset {
 	GENERATED_BODY()
 public:
 	UWidgetBlueprintHookData();
@@ -60,7 +60,7 @@ public:
 	FName NewWidgetName;
 
 	/** The template of the new widget that will be added to SCS */
-	UPROPERTY(Instanced, VisibleAnywhere, Category = "Default", BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Default", meta = (ShowInnerProperties))
 	UUserWidget* NewWidgetTemplate;
 
 	/**

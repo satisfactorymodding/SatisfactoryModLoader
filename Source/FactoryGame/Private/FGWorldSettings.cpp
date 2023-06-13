@@ -95,13 +95,17 @@ void AFGWorldSettings::BeginDestroy() {
 
 #if WITH_EDITOR
 	//Unregister Map Change Events
-	FLevelEditorModule& LevelEditor = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
-	LevelEditor.OnMapChanged().Remove(mOnMapChangedDelegateHandle);
-	mOnMapChangedDelegateHandle.Reset();
+	if (mOnMapChangedDelegateHandle.IsValid()) {
+		FLevelEditorModule& LevelEditor = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
+		LevelEditor.OnMapChanged().Remove(mOnMapChangedDelegateHandle);
+		mOnMapChangedDelegateHandle.Reset();
+	}
 
 	//Unregister Actor Spawned Event
-	GetWorld()->RemoveOnActorSpawnedHandler(mActorSpawnedDelegateHandle);
-	mActorSpawnedDelegateHandle.Reset();
+	if (GetWorld() != NULL) {
+		GetWorld()->RemoveOnActorSpawnedHandler(mActorSpawnedDelegateHandle);
+		mActorSpawnedDelegateHandle.Reset();
+	}
 #endif
 
 }
