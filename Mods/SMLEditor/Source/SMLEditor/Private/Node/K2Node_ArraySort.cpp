@@ -327,7 +327,7 @@ FText UK2Node_ArraySort::GetNodeTitle(ENodeTitleType::Type TitleType) const {
 }
 
 FText UK2Node_ArraySort::GetTooltipText() const {
-	return LOCTEXT("ArraySortNodeTitle_Tooltip", "Sort array elements using the provided comparator function\n\nProvided by SMLEditor, works at game runtime");
+	return LOCTEXT("ArraySortNodeTitle_Tooltip", "Sort array elements using the provided comparator function\nComparator should return true when item A is less than item B\n\nProvided by SMLEditor, works at game runtime");
 }
 
 UObject* UK2Node_ArraySort::GetJumpTargetForDoubleClick() const {
