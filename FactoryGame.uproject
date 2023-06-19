@@ -18,30 +18,37 @@
 	"Plugins": [
 		{
 			"Name": "ApexDestruction",
+			"SemVersion": "",
 			"Enabled": true
 		},
 		{
 			"Name": "ReplicationGraph",
+			"SemVersion": "",
 			"Enabled": true
 		},
 		{
 			"Name": "AnalyticsBlueprintLibrary",
+			"SemVersion": "",
 			"Enabled": true
 		},
 		{
 			"Name": "AnalyticsMulticast",
+			"SemVersion": "",
 			"Enabled": true
 		},
 		{
 			"Name": "SignificanceManager",
+			"SemVersion": "",
 			"Enabled": true
 		},
 		{
 			"Name": "OculusVR",
+			"SemVersion": "",
 			"Enabled": false
 		},
 		{
 			"Name": "SteamVR",
+			"SemVersion": "",
 			"Enabled": false
 		}
 	]
