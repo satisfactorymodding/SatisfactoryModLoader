@@ -140,10 +140,7 @@ void UGameInstanceModule::RegisterDefaultContent() {
     }
 
 	URemoteCallObjectRegistry* RemoteCallObjectRegistry = GameInstance->GetSubsystem<URemoteCallObjectRegistry>();
-
-    if(RemoteCallObjectRegistry != nullptr){
-        for (TSubclassOf<UFGRemoteCallObject> RemoteCallObject: RemoteCallObjects) {
-            RemoteCallObjectRegistry->RegisterRemoteCallObject(RemoteCallObject);
-        }
+    for (TSubclassOf<UFGRemoteCallObject> RemoteCallObject: RemoteCallObjects) {
+        RemoteCallObjectRegistry->RegisterRemoteCallObject(RemoteCallObject);
     }
 }

@@ -47,5 +47,4 @@ protected:
 	
     /** Registers default content from properties specified above */
     void RegisterDefaultContent();
-
 };
