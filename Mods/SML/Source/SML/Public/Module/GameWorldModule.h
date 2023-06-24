@@ -1,6 +1,8 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Module/WorldModule.h"
+#include "FGRemoteCallObject.h"
+#include "Registry/RemoteCallObjectRegistry.h"
 #include "GameWorldModule.generated.h"
 
 /** World module initialized for normal game world only (e.g skipped for menu world) */
@@ -39,6 +41,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category= Advanced)
 	TArray<TSubclassOf<class AModSubsystem>> ModSubsystems;
 
+
+    /** Mod Remote Call Objects to be registered automatically during construction phase */
+    UPROPERTY(EditDefaultsOnly, Category="Advanced")
+	TArray<TSubclassOf<class UFGRemoteCallObject>> mRCOs;
+
     /** Register content from properties here */
     virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
 protected:
@@ -47,4 +54,5 @@ protected:
 	
     /** Registers default content from properties specified above */
     void RegisterDefaultContent();
+
 };
