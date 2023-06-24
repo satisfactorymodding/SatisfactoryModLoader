@@ -3,6 +3,8 @@
 #include "Module/ModModule.h"
 #include "GameFramework/PlayerInput.h"
 #include "Templates/SubclassOf.h"
+#include "FGRemoteCallObject.h"
+#include "Registry/RemoteCallObjectRegistry.h"
 #include "GameInstanceModule.generated.h"
 
 class UModSubsystemHolder;
@@ -139,6 +141,10 @@ public:
 	/** Additional session settings to register */
 	UPROPERTY(EditDefaultsOnly, Category = "Advanced | World")
 	TArray<USMLSessionSetting*> SessionSettings;
+
+    /** Mod Remote Call Objects to be registered automatically during construction phase */
+    UPROPERTY(EditDefaultsOnly, Category="Advanced")
+	TArray<TSubclassOf<class UFGRemoteCallObject>> RemoteCallObjects;
 	
     UPROPERTY()
     TArray<FModAxisBindingInfo> ModAxisBindings_DEPRECATED;

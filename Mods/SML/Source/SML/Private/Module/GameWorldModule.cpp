@@ -24,15 +24,6 @@ void UGameWorldModule::RegisterConstructionPhaseContent() {
 	for (const TSubclassOf<AModSubsystem>& SubsystemClass : ModSubsystems) {
 		SubsystemActorManager->RegisterSubsystemActor(SubsystemClass);
 	}
-
-    UGameInstance* OwnerGameInstance = GetWorld()->GetGameInstance();
-	URemoteCallObjectRegistry* RCORegistry = OwnerGameInstance->GetSubsystem<URemoteCallObjectRegistry>();
-
-    if(RCORegistry != nullptr){
-        for (TSubclassOf<UFGRemoteCallObject> rco: mRCOs) {
-            RCORegistry->RegisterRemoteCallObject(rco);
-        }
-    }
 }
 
 void UGameWorldModule::RegisterDefaultContent() {
