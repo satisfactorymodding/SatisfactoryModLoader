@@ -143,7 +143,7 @@ public:
 	TArray<USMLSessionSetting*> SessionSettings;
 
     /** Mod Remote Call Objects to be registered automatically during construction phase */
-    UPROPERTY(EditDefaultsOnly, Category="Advanced")
+    UPROPERTY(EditDefaultsOnly, Category = "Advanced | Replication")
 	TArray<TSubclassOf<class UFGRemoteCallObject>> RemoteCallObjects;
 	
     UPROPERTY()
