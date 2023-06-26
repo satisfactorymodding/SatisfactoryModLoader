@@ -138,4 +138,9 @@ void UGameInstanceModule::RegisterDefaultContent() {
     for (USMLSessionSetting* SessionSetting : SessionSettings) {
         SessionSettingsRegistry->RegisterSessionSetting(OwnerModReferenceString, SessionSetting);
     }
+
+	URemoteCallObjectRegistry* RemoteCallObjectRegistry = GameInstance->GetSubsystem<URemoteCallObjectRegistry>();
+    for (TSubclassOf<UFGRemoteCallObject> RemoteCallObject: RemoteCallObjects) {
+        RemoteCallObjectRegistry->RegisterRemoteCallObject(RemoteCallObject);
+    }
 }
