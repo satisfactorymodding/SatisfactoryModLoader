@@ -14,7 +14,7 @@ FLogCategoryBase* CreateOrFindLogCategory(const FName LogCategoryName, ELogVerbo
 	}
 
 	UE_LOG(LogSatisfactoryModLoader, Log, TEXT("Registering dynamic Blueprint logging category %s with default verbosity %s"),
-		*LogCategoryName.ToString(), FOutputDeviceHelper::VerbosityToString(DefaultVerbosity));
+		*LogCategoryName.ToString(), ToString(DefaultVerbosity));
 
 	const TSharedPtr<FLogCategoryBase> NewCategory = MakeShared<FLogCategoryBase>(LogCategoryName, DefaultVerbosity, ELogVerbosity::All);
 	RegisteredCategories.Add(LogCategoryName, NewCategory);

@@ -46,7 +46,7 @@ FString FModMismatch::ToString()
 
 FModMismatch::FModMismatch(FModMetadata Was, FModInfo Is, bool IsMissing) : Was(Was), Is(Is), IsMissing(IsMissing) {}
 
-bool FSaveMetadataPatch::Patch(FSaveHeader Header, APlayerController* PlayerController)
+bool FSaveMetadataPatch::Patch(FSaveHeader Header, TMap<FString, FString> Options, APlayerController* PlayerController)
 {
 	if (IsCallback) {
 		return false;
@@ -56,7 +56,7 @@ bool FSaveMetadataPatch::Patch(FSaveHeader Header, APlayerController* PlayerCont
 
 	TArray<FModMismatch> ModMismatches = FindModMismatches(Header);
 
-	USaveMetadataCallback* CallbackObject = USaveMetadataCallback::New(System, Header, PlayerController);
+	USaveMetadataCallback* CallbackObject = USaveMetadataCallback::New(System, Header, Options, PlayerController);
 	if (ModMismatches.Num() > 0)
 	{
 #if !UE_SERVER
@@ -71,9 +71,9 @@ bool FSaveMetadataPatch::Patch(FSaveHeader Header, APlayerController* PlayerCont
 void FSaveMetadataPatch::RegisterPatch() {
 	UFGSaveSystem* Context = GetMutableDefault<UFGSaveSystem>();
     void* ContextInterface = static_cast<IFGSaveManagerInterface*>(Context);
-	SUBSCRIBE_METHOD_VIRTUAL(UFGSaveSystem::LoadSaveFile, ContextInterface, [](auto& scope, UFGSaveSystem* self, const FSaveHeader& SaveGame, APlayerController* Player)
+	SUBSCRIBE_METHOD_VIRTUAL(UFGSaveSystem::LoadSaveFile, ContextInterface, [](auto& scope, UFGSaveSystem* self, const FSaveHeader& SaveGame, TMap<FString, FString> Options, APlayerController* Player)
 	{
-		bool bAbort = Patch(SaveGame, Player);
+		bool bAbort = Patch(SaveGame, Options, Player);
 		if (bAbort)
 		{
 			scope.Cancel();
@@ -85,7 +85,7 @@ void FSaveMetadataPatch::RegisterPatch() {
 			return;
 		}
 		APlayerController* Player = self->GetWorld()->GetFirstPlayerController();
-		bool bAbort = Patch(save, Player);
+		bool bAbort = Patch(save, {}, Player);
 		if (bAbort)
 		{
 			scope.Cancel();
@@ -211,18 +211,19 @@ void USaveMetadataCallback::Callback(bool Continue)
 	if (Continue)
 	{
 		FSaveMetadataPatch::IsCallback = true;
-		System->LoadSaveFile(this->SaveGame, Player);
+		System->LoadSaveFile(this->SaveGame, Options, Player);
 		FSaveMetadataPatch::IsCallback = false;
 	}
 	this->RemoveFromRoot();
 }
 
-USaveMetadataCallback* USaveMetadataCallback::New(UFGSaveSystem* System, FSaveHeader SaveGame, APlayerController* Player)
+USaveMetadataCallback* USaveMetadataCallback::New(UFGSaveSystem* System, FSaveHeader SaveGame, TMap<FString, FString> Options, APlayerController* Player)
 {
 	USaveMetadataCallback* CallbackObject = NewObject<USaveMetadataCallback>();
 	CallbackObject->AddToRoot();
 	CallbackObject->System = System;
 	CallbackObject->SaveGame = SaveGame;
+	CallbackObject->Options = Options;
 	CallbackObject->Player = Player;
 	return CallbackObject;
 }

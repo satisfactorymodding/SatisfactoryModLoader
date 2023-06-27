@@ -129,8 +129,8 @@ public:
     FText GetTextProperty(FName PropertyName) const;
     void SetTextProperty(FName PropertyName, const FText Text) const;
 
-    UObject* GetObjectProperty(FName PropertyName) const;
-    void SetObjectProperty(FName PropertyName, UObject* Object) const;
+    TObjectPtr<UObject> GetObjectProperty(FName PropertyName) const;
+    void SetObjectProperty(FName PropertyName, TObjectPtr<UObject> Object) const;
 
     FWeakObjectPtr GetWeakObjectProperty(FName PropertyName) const;
     void SetWeakObjectProperty(FName PropertyName, FWeakObjectPtr Object) const;

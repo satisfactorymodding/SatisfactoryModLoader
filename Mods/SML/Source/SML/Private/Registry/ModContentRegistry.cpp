@@ -261,7 +261,7 @@ void AModContentRegistry::UnlockTutorialSchematics() {
 			//and other kinds of nasty stuff, so for now i'm leaving as it is while we're looking for a better solution
 			if (UFGSchematic::GetType(Schematic) == ESchematicType::EST_Tutorial &&
 					SchematicManager->mPurchasedSchematics.Find(Schematic) == INDEX_NONE) {
-				SchematicManager->GiveAccessToSchematic(Schematic);
+				SchematicManager->GiveAccessToSchematic(Schematic, nullptr);
 			}
 		}
     }

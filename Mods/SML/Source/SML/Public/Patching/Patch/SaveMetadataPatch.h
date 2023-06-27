@@ -32,7 +32,7 @@ class SML_API FSaveMetadataPatch {
     friend class FSatisfactoryModLoader;
     friend class USaveMetadataCallback;
 
-    static bool Patch(FSaveHeader Header, APlayerController* PlayerController);
+    static bool Patch(FSaveHeader Header, TMap<FString, FString> Options, APlayerController* PlayerController);
     static void RegisterPatch();
     static void PopupWarning(TArray<FModMismatch> ModMismatches, USaveMetadataCallback* CallbackObject);
     static TArray<FModMismatch> FindModMismatches(FSaveHeader Header);
@@ -51,11 +51,12 @@ public:
     UFUNCTION()
     void Callback(bool Continue);
 
-    static USaveMetadataCallback* New(UFGSaveSystem* System, FSaveHeader SaveGame, APlayerController* Player);
+    static USaveMetadataCallback* New(UFGSaveSystem* System, FSaveHeader SaveGame, TMap<FString, FString> Options, APlayerController* Player);
 private:
     UPROPERTY()
     UFGSaveSystem* System;
     FSaveHeader SaveGame;
+    TMap<FString, FString> Options;
     UPROPERTY()
     APlayerController* Player;
 };

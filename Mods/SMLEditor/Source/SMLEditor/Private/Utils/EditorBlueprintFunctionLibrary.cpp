@@ -30,7 +30,7 @@ TArray<UObject *> UEditorBlueprintFunctionLibrary::GetBlueprintsFromPath(FString
 	}
 
 	if (Path.EndsWith("/") || Path.EndsWith("'\'")) {
-		Path.RightChop(1);
+		Path = Path.RightChop(1);
 	}
 
 	if (Path == "/Game" || Path == "'\'Game") {

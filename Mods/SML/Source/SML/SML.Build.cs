@@ -5,7 +5,7 @@ using System.IO;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Tools.DotNETCommon;
+using EpicGames.Core;
 
 public class SML : ModuleRules
 {
@@ -17,7 +17,8 @@ public class SML : ModuleRules
         //SML transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
             "Json",
-            "Projects"
+            "Projects",
+            "NetCore",
         });
         
         PrivateDependencyModuleNames.AddRange(new[] {

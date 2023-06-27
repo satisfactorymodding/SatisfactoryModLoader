@@ -140,7 +140,7 @@ TArray<FString> URootBlueprintSCSHookData::GetParentComponentNames() const {
 		const UBlueprintGeneratedClass* CurrentClass = BlueprintGeneratedClass;
 		while (CurrentClass != NULL) {
 			if (const USimpleConstructionScript* SimpleConstructionScript = CurrentClass->SimpleConstructionScript) {
-				for (const USCS_Node* SCSNode : SimpleConstructionScript->GetAllNodesConst()) {
+				for (const USCS_Node* SCSNode : SimpleConstructionScript->GetAllNodes()) {
 					const FName OtherVariableName = SCSNode->GetVariableName();
 					if (OtherVariableName != NAME_None) {
 						ResultArray.AddUnique(OtherVariableName.ToString());

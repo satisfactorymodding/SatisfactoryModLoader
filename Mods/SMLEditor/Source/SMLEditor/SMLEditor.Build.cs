@@ -10,14 +10,15 @@ public class SMLEditor : ModuleRules
         bLegacyPublicIncludePaths = false;
                
         PublicDependencyModuleNames.AddRange(new[] {
-            "SML", 
-            "FactoryGame", 
-            "UnrealEd", 
-            "BlueprintGraph", 
-            "GraphEditor", 
+            "SML",
+            "FactoryGame",
+            "UnrealEd",
+            "BlueprintGraph",
+            "GraphEditor",
             "EditorWidgets",
             "DesktopPlatform",
-            "Kismet"
+            "Kismet",
+            "ToolWidgets",
         });
 
         //SML transitive dependencies
