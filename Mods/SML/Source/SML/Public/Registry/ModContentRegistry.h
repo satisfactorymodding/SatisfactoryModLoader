@@ -2,6 +2,7 @@
 #include "FGResearchTree.h"
 #include "FGSchematic.h"
 #include "FGRecipe.h"
+#include "FGResourceSinkSubsystem.h"
 #include "Engine/DataTable.h"
 #include "Subsystem/ModSubsystem.h"
 #include "ModContentRegistry.generated.h"
@@ -122,6 +123,14 @@ struct FMissingObjectStruct {
     FString ObjectPath;
 };
 
+USTRUCT()
+struct FItemSinkRegistrationStruct {
+    GENERATED_BODY()
+public:
+    FName ModName;
+    EResourceSinkTrack Track;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSchematicRegistered, TSubclassOf<UFGSchematic>, Schematic, FSchematicRegistrationInfo, RegistrationInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResearchTreeRegistered, TSubclassOf<UFGResearchTree>, ResearchTree, FResearchTreeRegistrationInfo, RegistrationInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRecipeRegistered, TSubclassOf<UFGRecipe>, Recipe, FRecipeRegistrationInfo, RegistrationInfo);
@@ -185,7 +194,7 @@ public:
 
     /** Register resource sink item points for each item row in the passed table object */
     UFUNCTION(BlueprintCallable, CustomThunk)
-    void RegisterResourceSinkItemPointTable(const FName ModReference, UDataTable* PointTable);
+    void RegisterResourceSinkItemPointTable(const FName ModReference, UDataTable* PointTable, EResourceSinkTrack Track);
 
     /** Retrieves list of all currently loaded item descriptors */
     UFUNCTION(BlueprintPure)
@@ -324,7 +333,7 @@ private:
 
 	/** Pending registrations of item sink point tables */
 	UPROPERTY()
-	TMap<UDataTable*, FName> PendingItemSinkPointsRegistrations;
+	TMap<UDataTable*, FItemSinkRegistrationStruct> PendingItemSinkPointsRegistrations;
 
 	/** Pointer to the currently active script callstack frame, used for debugging purposes */
 	FFrame* ActiveScriptFramePtr;
