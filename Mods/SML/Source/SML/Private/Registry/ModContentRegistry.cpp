@@ -646,7 +646,7 @@ void AModContentRegistry::FlushPendingResourceSinkRegistrations() {
 DEFINE_FUNCTION(AModContentRegistry::execRegisterResourceSinkItemPointTable) {
 	P_GET_PROPERTY(FNameProperty, ModReference);
 	P_GET_OBJECT(UDataTable, PointTable);
-    P_GET_ENUM(EResourceSinkTrack, Track);
+	P_GET_ENUM(EResourceSinkTrack, Track);
 	P_FINISH;
 	P_NATIVE_BEGIN;
 	P_SET_ACTIVE_FRAME;
