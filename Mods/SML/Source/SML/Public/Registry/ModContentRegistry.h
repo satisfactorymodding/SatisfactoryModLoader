@@ -127,8 +127,9 @@ USTRUCT()
 struct FItemSinkRegistrationStruct {
     GENERATED_BODY()
 public:
-    FName ModName;
+    FName ModReference;
     EResourceSinkTrack Track;
+    UDataTable* PointTable;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSchematicRegistered, TSubclassOf<UFGSchematic>, Schematic, FSchematicRegistrationInfo, RegistrationInfo);
@@ -332,8 +333,8 @@ private:
     bool bSubscribedToSchematicManager;
 
 	/** Pending registrations of item sink point tables */
-	UPROPERTY()
-	TMap<UDataTable*, FItemSinkRegistrationStruct> PendingItemSinkPointsRegistrations;
+    UPROPERTY()
+    TArray<FItemSinkRegistrationStruct> PendingItemSinkPointsRegistrations;
 
 	/** Pointer to the currently active script callstack frame, used for debugging purposes */
 	FFrame* ActiveScriptFramePtr;
