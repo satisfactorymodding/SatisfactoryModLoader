@@ -207,7 +207,7 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& Ne
 
     UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, NextEntries.Num());
 
-    const FString CommandLine = FString::Printf(TEXT("-Compile -ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" -GameDir=\"%s\" %s"),
+    const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" -GameDir=\"%s\" %s"),
                                                 *ProjectPath, *ProjectPath, *PluginName, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);
 
     const FText PlatformName = GetCurrentPlatformName();
@@ -217,6 +217,7 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& Ne
         LOCTEXT("PackageModTaskName", "Packaging Mod"),
         LOCTEXT("PackageModTaskShortName", "Package Mod Task"),
         FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"),
+        nullptr,
         NextEntries.Num() == 0 ? (IUATHelperModule::UatTaskResultCallack)nullptr : [NextEntries](FString resultType, double runTime) {
             AsyncTask(ENamedThreads::GameThread, [NextEntries]() {
                 TSharedPtr<SAlpakitModEntry> NextMod = NextEntries[0];

@@ -9,8 +9,7 @@
 
 #define LOCTEXT_NAMESPACE "NewModWizard"
 
-FModWizardDefinition::FModWizardDefinition(bool bContentOnlyProject)
-	: bIsContentOnlyProject(bContentOnlyProject)
+FModWizardDefinition::FModWizardDefinition()
 {
 	PluginBaseDir = IPluginManager::Get().FindPlugin(TEXT("Alpakit"))->GetBaseDir();
 
@@ -27,26 +26,18 @@ const TArray<TSharedRef<FPluginTemplateDescription>>& FModWizardDefinition::GetT
 }
 
 
-void FModWizardDefinition::OnTemplateSelectionChanged(TArray<TSharedRef<FPluginTemplateDescription>> InSelectedItems, ESelectInfo::Type SelectInfo)
+void FModWizardDefinition::OnTemplateSelectionChanged(TSharedPtr<FPluginTemplateDescription> InSelectedItem, ESelectInfo::Type SelectInfo)
 {
-	CurrentTemplateDefinition.Reset();
-	
-	if (InSelectedItems.Num() > 0)
+	if (InSelectedItem.IsValid())
 	{
-		CurrentTemplateDefinition = *ModTemplateDefinitions.FindByPredicate([InSelectedItems](TSharedRef<FModTemplateDescription> Template)
-			{ return Template->TemplateDescription == InSelectedItems[0]; });
+		CurrentTemplateDefinition = *ModTemplateDefinitions.FindByPredicate([InSelectedItem](TSharedRef<FModTemplateDescription> Template)
+			{ return Template->TemplateDescription == InSelectedItem; });
 	}
 }
 
-TArray<TSharedPtr<FPluginTemplateDescription>> FModWizardDefinition::GetSelectedTemplates() const
+TSharedPtr<FPluginTemplateDescription> FModWizardDefinition::GetSelectedTemplate() const
 {
-	TArray<TSharedPtr<FPluginTemplateDescription>> Selection;
-	if (CurrentTemplateDefinition.IsValid())
-	{
-		Selection.Add(CurrentTemplateDefinition->TemplateDescription);
-	}
-
-	return Selection;
+	return CurrentTemplateDefinition->TemplateDescription;
 }
 
 bool FModWizardDefinition::HasValidTemplateSelection() const
@@ -57,17 +48,6 @@ bool FModWizardDefinition::HasValidTemplateSelection() const
 void FModWizardDefinition::ClearTemplateSelection()
 {
 	CurrentTemplateDefinition.Reset();
-}
-
-bool FModWizardDefinition::AllowsEnginePlugins() const
-{
-	// Don't show the option to make an engine plugin in installed builds
-	return !FApp::IsEngineInstalled();
-}
-
-bool FModWizardDefinition::CanContainContent() const
-{
-	return CurrentTemplateDefinition.IsValid() ? CurrentTemplateDefinition->TemplateDescription->bCanContainContent : false;
 }
 
 bool FModWizardDefinition::HasModules() const
