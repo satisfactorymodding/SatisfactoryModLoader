@@ -23,11 +23,11 @@ UCLASS()
 class SML_API URuntimeBlueprintFunctionLibrary : public UBlueprintFunctionLibrary {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable, Category = "SML | Utilities", meta = (DeprecatedFunction))
+	UFUNCTION(BlueprintCallable, Category = "SML | Utilities", meta = (DeprecatedFunction, DeprecationMessage = "Use 'Load Class Asset Blocking' or 'Async Load Class Asset' from Unreal as needed instead", DisplayName = "Find Class By Name (Deprecated)"))
 	static UClass* FindClassByName(FString ClassNameInput);
-	
+
 	/** Returns true in Editor*/
-	UFUNCTION(BlueprintPure, Category = "SML | Utilities", meta = (DeprecatedFunction, DisplayName = "Is Editor (Deprecated)"))
+	UFUNCTION(BlueprintPure, Category = "SML | Utilities", meta = (DeprecatedFunction, DeprecationMessage = "Use 'IsGEditor' from SML Blueprint System Library instead", DisplayName = "Is Editor (Deprecated)"))
 	static bool IsEditor();
 
 	/** Retrieves FName from UConfigProperty */
