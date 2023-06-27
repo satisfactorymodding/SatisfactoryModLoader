@@ -17,7 +17,7 @@ public class FactoryGame : ModuleRules
 			"DeveloperSettings",
 			"PhysicsCore",
 			"InputCore",
-			"OnlineSubsystem", "OnlineSubsystemNull", "OnlineSubsystemEOS", "OnlineSubsystemUtils",
+			"OnlineSubsystem", "OnlineSubsystemNull", "OnlineSubsystemUtils",
 			"SignificanceManager",
 			"GeometryCollectionEngine",
 			"ChaosVehiclesCore", "ChaosVehicles", "ChaosSolverEngine",
@@ -40,6 +40,13 @@ public class FactoryGame : ModuleRules
             "NetCore",
             "GameplayTags",
 		});
+        
+		if (Target.Platform == UnrealTargetPlatform.Win64) {
+			// Plugins that only support Win64
+			PublicDependencyModuleNames.AddRange(new[] {
+				"OnlineSubsystemEOS",
+			});
+		}
 		
 		PublicDependencyModuleNames.AddRange(new[] {
 			"AbstractInstance",
