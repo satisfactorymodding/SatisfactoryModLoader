@@ -101,6 +101,7 @@ Configs/*
 Mods/*
 Mods/*/Metadata/Crypto.json
 !Mods/Alpakit/
+!Mods/AccessTransformers/
 !Mods/SML/
 !Mods/SMLEditor/
 !Mods/ExampleMod/
