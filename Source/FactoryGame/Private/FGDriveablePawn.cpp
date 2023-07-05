@@ -42,5 +42,6 @@ void AFGDriveablePawn::PlaceExitingDriver(){ }
 void AFGDriveablePawn::SetDriving(bool isDriving){ }
 void AFGDriveablePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent){ }
 void AFGDriveablePawn::Input_LeaveVehicle(const FInputActionValue& actionValue){ }
+UFGGameUI* AFGDriveablePawn::GetGameUI() const{ return nullptr; }
 void AFGDriveablePawn::OnRep_IsDriving(){ }
 void AFGDriveablePawn::OnRep_Driver(AFGCharacterPlayer* previousDriver){ }

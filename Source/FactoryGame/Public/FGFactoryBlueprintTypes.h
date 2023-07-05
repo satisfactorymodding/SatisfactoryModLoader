@@ -186,6 +186,20 @@ public:
 	
 	FBlueprintHeader() {}
 
+	// When overwriting a blueprint, we need to update the cached header with the "new" headers data so serialization is correct
+	void UpdateHeaderDataWithNewData( FBlueprintHeader& newHeader )
+	{
+		SaveVersion = newHeader.SaveVersion;
+		BuildVersion = newHeader.BuildVersion;
+		Dimensions = newHeader.Dimensions;
+		Cost.Reset();
+		Cost.Append( newHeader.Cost );
+		Recipes.Reset();
+		Recipes.Append( newHeader.Recipes );
+		RecipeRefs.Reset();
+		RecipeRefs.Append( newHeader.RecipeRefs );
+	}
+
 	// @todoBlueprint - Probably want more sophisticated checking of validity
 	bool IsValid() const { return !BlueprintName.IsEmpty(); }
 

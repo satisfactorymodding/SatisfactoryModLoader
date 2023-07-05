@@ -4,7 +4,7 @@
 
 void UFGDebugOverlayWidget::AddToViewport(int32 ZOrder){ }
 bool UFGDebugOverlayWidget::AddToPlayerScreen(int32 ZOrder){ return bool(); }
-void UFGDebugOverlayWidget::RemoveFromParent(){ }
+void UFGDebugOverlayWidget::RemoveFromParent(){ Super::RemoveFromParent(); }
 void UFGDebugOverlayWidget::UpdateDebugOverlay(){ }
 void UFGDebugOverlayWidget::SetDebugOverlayType(EDebugOverlayType type){ }
 void UFGDebugOverlayWidget::GetDefaultOverlayData(TArray<FString>& out_debugOverlayData){ }

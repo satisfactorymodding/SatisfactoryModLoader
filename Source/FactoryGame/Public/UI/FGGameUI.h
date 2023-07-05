@@ -72,6 +72,12 @@ public:
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "UI" )
 	void AddInteractWidget( UFGInteractWidget* widgetToAdd );
 
+	/** Toggles a widget on and off. Useful in cases where you want to open and close the UI with the same button, like with the Locomotive UI.
+	 *  Native version of BPIGameUI::ToogleInteractWidget. Calls the same BP code in BP_GameUI
+	 */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI" )
+	void OnToggleInteractWidget( TSubclassOf<UFGInteractWidget> widgetToToogle, UObject* interactObject );
+
 	/* Pushes widget */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI")
 	void PushWidget(UFGInteractWidget* Widget);

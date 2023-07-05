@@ -71,6 +71,7 @@ public:
 	virtual bool DriverEnter( class AFGCharacterPlayer* driver ) override;
 	virtual bool DriverLeave( bool keepDriving = false ) override;
 	virtual void AddInputBindings( UInputComponent* inputComponent ) override;
+	virtual bool CanLeaveVehicle( AFGCharacterPlayer* character ) override;
 	// End ADriveablePawn/AFGVehicle interface
 		
 	// Begin ARailroadVehicle interface
@@ -151,7 +152,6 @@ public:
 	 */
 	ELocomotiveHeadlightsMode::Type GetHeadlightsMode() const { return mHeadlightMode; }
 
-	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|Railroad|Locomotive" )
 	void OpenLocomotiveMenu();
 	
 protected:
@@ -237,4 +237,8 @@ private:
 	 */
 	UPROPERTY( EditDefaultsOnly, Category = Vehicle )
 	FHeadlightParams mHeadlightModes[ ELocomotiveHeadlightsMode::LHM_MAX ];
+
+	/** The widget that is shown when player interact with the locomotive from inside the locomotive, Train scheduler etc. */
+	UPROPERTY( EditDefaultsOnly, Category = Vehicle )
+	TSoftClassPtr<UFGInteractWidget> mLocomotiveMenuWidgetClass;
 };
