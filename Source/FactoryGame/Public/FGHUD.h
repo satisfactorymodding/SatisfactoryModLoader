@@ -9,6 +9,7 @@
 
 #include "FGHUD.generated.h"
 
+class AFGCharacterBase;
 UENUM( BlueprintType )
 enum class ECrosshairState : uint8
 {
@@ -20,13 +21,18 @@ enum class ECrosshairState : uint8
 		ECS_Workbench		UMETA( DisplayName = "Workbench" ),
 		ECS_Dismantle		UMETA( DisplayName = "Dismantle" ),
 		ECS_Build			UMETA( DisplayName = "Build" ),
-		ECS_Custom			UMETA( DisplayName = "Cutom" )
+		ECS_Custom			UMETA( DisplayName = "Custom" ),
+		ECS_Hidden			UMETA( DisplayName = "Hidden" )
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPumpiModeChanged, bool, hideHUD );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPartialPumpiModeChanged, bool, partialHideHUD );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHiddenHUDModeChanged, bool, HideHUD );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHUDVisibilityChanged, bool, hudVisibility );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnPlayerHitFeedback, AFGCharacterBase*, hitCharacter, AActor*, damageCauser );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams( FOnCrosshairUpdated, bool, crosshairVisibility, UTexture2D*, crossHairTexture, FLinearColor, color );
+
+DECLARE_LOG_CATEGORY_EXTERN( LogHUD, Log, All );
 
 UCLASS()
 class FACTORYGAME_API AFGHUD : public AFGHUDBase
@@ -40,8 +46,6 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	//~ End AActor interface
-
-	virtual void DrawHUD() override;
 
 	/** Adds a HUD of the widget class for the provided pawn. Needs a valid pawn */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
@@ -76,42 +80,17 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|UI" )
 	class UFGGameUI* GetGameUI() const { return mGameUI; }
 
-	/** Set the actor class to preview in a rendertarget */
-	UFUNCTION( BlueprintCallable, Category="FactoryGame|ActorPreview" )
-	void SetPreviewActorClass( TSubclassOf<AActor> actorClass );
-
-	/** Set the distance we preview the actor from */
-	UE_DEPRECATED( 4.16, "SetPreviewDistance is deprecated, use SetPreviewView instead" )
-	UFUNCTION( BlueprintCallable, Category="FactoryGame|ActorPreview", meta = ( DeprecatedFunction, DeprecationMessage = "SetPreviewDistance is deprecated, use SetPreviewView instead" ) )
-	void SetPreviewDistance( float previewDistance );
-
-	/** Set the view we preview the actor from  */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|ActorPreview" )
-	void SetPreviewView( const FItemView& view );
-
-	/** Get the texture that we use to preview the actor */
-	UFUNCTION( BlueprintPure, Category="FactoryGame|ActorPreview" )
-	class UTextureRenderTarget2D* GetPreviewTexture() const;
-	
-	/** Start rendering the preview actor */
-	UFUNCTION( BlueprintCallable, Category="FactoryGame|ActorPreview" )
-	void BeginPreviewActor();
-
-	/** stop rendering the preview actor */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|ActorPreview" )
-	void EndPreviewActor();
-
 	/** Getter */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
 	FORCEINLINE bool GetShowCrosshair() { return !mForceCrossHairHidden && mShowCrosshair; }
 
 	/** Setter */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
-	void SetShowCrossHair( bool showCrosshair ) { mShowCrosshair = showCrosshair; }
+	void SetShowCrossHair( bool showCrosshair );
 
 	/** Setter */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
-	void SetForceHideCrossHair( bool forceHide ) { mForceCrossHairHidden = forceHide; }
+	void SetForceHideCrossHair( bool forceHide );
 
 	/** HUD visibility */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
@@ -150,7 +129,7 @@ public:
 
 	/** Setter for Crosshair State */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
-	void SetCrosshairState( ECrosshairState crosshairState ) { mActiveCrosshairState = crosshairState; }
+	void SetCrosshairState( ECrosshairState crosshairState );
 
 	/**
 	* Updates the crosshair to match set the proper CrosshairState
@@ -185,16 +164,25 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
 	FORCEINLINE UUserWidget* GetPawnHUD() { return mPawnHUD; }
 
+	/** Called when player hits something but it's not a weak spot or armor */
+	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|HUD|Damage")
+	void NotifyHitFeedbackNormal(AFGCharacterBase* hitCharacter, AActor* damageCauser);
+
+	/** Called when player hits a weak spot */
+	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|HUD|Damage")
+	void NotifyHitFeedbackWeakSpot(AFGCharacterBase* hitCharacter, AActor* damageCauser);
+
+	/** Called when player hits an armored spot */
+	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|HUD|Damage")
+	void NotifyNotifyHitFeedbackArmor(AFGCharacterBase* hitCharacter, AActor* damageCauser);
+
 #if WITH_CHEATS
 	void ToggleCheatBoard();
 #endif
 	
 private:
-	/** Setup our preview for a building/vehicle from our current set preview class */
-	void SetupActorPreview();
-
-	/** Filter out what components we want to gather to preview a building */
-	class USceneComponent* CreatePreviewComponent( class USceneComponent* attachParent, class UActorComponent* componentTemplate, const FName& componentName );
+	/** Updates the crosshair by sending a delegate with current state */
+	void UpdateCrosshair();
 
 public:
 	/** Called when the pumpi mode changes. */
@@ -212,7 +200,23 @@ public:
 	/** Called when HUD visibility changes. */
 	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
 	FOnHUDVisibilityChanged mOnHUDVisibilityChanged;
+	
+	/** Called when the player hits something normally (no weakspot or armor) */
+	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
+	FOnPlayerHitFeedback mOnHitFeedbackNormal;
 
+	/** Called when the player hits something at an armored spot */
+	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
+	FOnPlayerHitFeedback mOnHitFeedbackArmor;
+
+	/** Called when the player hits something at a weak spot */
+	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
+	FOnPlayerHitFeedback mOnHitFeedbackWeakSpot;
+
+	/** Called when cross hair is updated */
+	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
+	FOnCrosshairUpdated mOnCrosshairUpdated;
+	
 protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Game UI" )
 	TSubclassOf< UUserWidget > mGameUIClass;
@@ -281,21 +285,6 @@ private:
 	UPROPERTY( transient )
 	class UFGGameUI* mGameUI;
 
-	/** A world for previewing the current building */
-	UPROPERTY( transient )
-	class UWorld* mPreviewBuildingWorld;
-
-	/** Class that stages the preview building item */
-	UPROPERTY( EditDefaultsOnly, Category = "PreviewBuilding" )
-	TSubclassOf<class AFGRenderTargetStage> mPreviewStageClass;
-
-	// This isn't marked as UPROPERTY as this actor resides in another world, so I think the GC will be sad if we create a reference to it
-	class AFGRenderTargetStage* mPreviewBuildingStage;
-
-	/** The actor class we want to preview, we don't use buildable as we want to support vehicles too */
-	UPROPERTY()
-	TSubclassOf<class AActor> mPreviewActorClass;
-
 	/** The latest created pawn HUD widget */
 	UPROPERTY()
 	UUserWidget* mPawnHUD;
@@ -304,4 +293,8 @@ private:
 	TMap< TSubclassOf< UUserWidget >, UUserWidget* > mCachedWidgets;
 
 	FUserWidgetPool mUserWidgetPool;
+
+	/** Runtime set crosshair to keep track of when we should trigger delegate updates */
+	//UPROPERTY( Transient )
+	//TPair<bool, UTexture2D*> mCachedCrosshairState;
 };

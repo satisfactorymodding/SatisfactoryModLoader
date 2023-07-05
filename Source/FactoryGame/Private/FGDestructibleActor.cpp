@@ -5,13 +5,21 @@
 
 AFGDestructibleActor::AFGDestructibleActor() : Super() {
 	this->mStaticMeshProxy = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshProxy"));
+	this->mGeometryCollection = nullptr;
+	this->mDestructibleActorFractureTime = 10.0;
+	this->mDestructibleActorState = EDestructibleActorState::DSS_Intact;
+	this->mGeometryCollectionComponent = nullptr;
+	this->mDestructionImpulseScale = 1.0;
+	this->mBindChaosPhysicsCollisionEvent = false;
+	this->mDestroyedByForceLocation = FVector::ZeroVector;
+	this->mRadialForceDestruction = 0.0;
+	this->mDestroyedByActor = nullptr;
 	this->mHasBeenFractured = false;
 	this->bReplicates = true;
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 	this->RootComponent = mStaticMeshProxy;
 }
 void AFGDestructibleActor::BeginPlay(){ }
-void AFGDestructibleActor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 float AFGDestructibleActor::TakeDamage(float damage,  FDamageEvent const& damageEvent, AController* eventInstigator, AActor* damageCauser){ return float(); }
 void AFGDestructibleActor::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDestructibleActor::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -20,7 +28,14 @@ void AFGDestructibleActor::PostLoadGame_Implementation(int32 saveVersion, int32 
 void AFGDestructibleActor::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGDestructibleActor::NeedTransform_Implementation(){ return bool(); }
 bool AFGDestructibleActor::ShouldSave_Implementation() const{ return bool(); }
-void AFGDestructibleActor::DisableCollision(){ }
-void AFGDestructibleActor::MakeDestructible(){ }
-void AFGDestructibleActor::OnDestructibleFractured(const FVector& hitPoint, const FVector& hitDirection){ }
-void AFGDestructibleActor::Multicast_OnDestructibleFractured_Implementation(const FVector& hitPoint, const FVector& hitDirection){ }
+void AFGDestructibleActor::SetDestructibleActorState(EDestructibleActorState newState){ }
+void AFGDestructibleActor::ApplyDestructibleActorState(){ }
+void AFGDestructibleActor::OnDestructibleFractured(){ }
+void AFGDestructibleActor::OnFracturingFinished(){ }
+void AFGDestructibleActor::OnRep_DestructibleActorState(){ }
+void AFGDestructibleActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDestructibleActor, mDestructibleActorState);
+	DOREPLIFETIME(AFGDestructibleActor, mDestroyedByForceLocation);
+	DOREPLIFETIME(AFGDestructibleActor, mRadialForceDestruction);
+}

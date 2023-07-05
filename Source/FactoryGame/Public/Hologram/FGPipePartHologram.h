@@ -29,6 +29,7 @@ public:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual void CheckValidFloor( ) override;
 	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual bool CanNudgeHologram() const override;
 	// End AFGHologram interface
 
 

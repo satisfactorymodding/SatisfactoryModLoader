@@ -55,6 +55,7 @@ bool AFGResourceSinkSubsystem::PurchaseResourceSinkSchematics( UFGInventoryCompo
 void AFGResourceSinkSubsystem::AddResourceSinkCoupons(int32 numCoupons, bool sendTelemetryData, ECouponSource couponSource){ }
 int32 AFGResourceSinkSubsystem::RemoveResourceSinkCoupons(int32 numCoupons){ return int32(); }
 int32 AFGResourceSinkSubsystem::GetResourceSinkPointsForItem(TSubclassOf<  UFGItemDescriptor > itemDescriptor){ return int32(); }
+bool AFGResourceSinkSubsystem::FindResourceSinkPointsForItem(TSubclassOf<  UFGItemDescriptor > itemDescriptor, int32& out_numPoints, EResourceSinkTrack& out_itemTrack){ return bool(); }
 void AFGResourceSinkSubsystem::HandleQueuedPoints(){ }
 void AFGResourceSinkSubsystem::HandleQueuedFailedItems(){ }
 void AFGResourceSinkSubsystem::InitCouponClass(){ }

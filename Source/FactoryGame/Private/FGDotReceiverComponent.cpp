@@ -11,7 +11,9 @@ UFGDotReceiverComponent::UFGDotReceiverComponent() : Super() {
 	this->PrimaryComponentTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryComponentTick.TickInterval = 0.0;
 }
+void UFGDotReceiverComponent::BeginPlay(){ }
 void UFGDotReceiverComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction){ }
 void UFGDotReceiverComponent::RegisterActiveDOT(TSubclassOf<  UFGDamageOverTime > DotClass, AActor* SourceActor){ }
 void UFGDotReceiverComponent::UnregisterActiveDOT(TSubclassOf<  UFGDamageOverTime > DotClass, AActor* SourceActor){ }
 void UFGDotReceiverComponent::ClearAllDOTs(){ }
+FOnDotReceiverCreated UFGDotReceiverComponent::OnDOTReceiverCreated = FOnDotReceiverCreated();

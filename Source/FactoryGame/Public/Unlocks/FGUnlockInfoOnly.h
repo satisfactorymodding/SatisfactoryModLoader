@@ -19,7 +19,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	FText mUnlockName;
 
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, meta = ( Multiline = true ) )
 	FText mUnlockDescription;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )

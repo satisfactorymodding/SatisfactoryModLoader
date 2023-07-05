@@ -28,7 +28,7 @@ public:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
-	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
+	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
@@ -45,6 +45,7 @@ public:
 	FORCEINLINE UFGCircuitConnectionComponent* GetSnapConnection() const { return mSnapConnection; }
 
 protected:
+	UPROPERTY()
 	class UStaticMeshComponent* mPowerConnectionMesh;
 
 	EBreakWireState mBreakingWireState = EBreakWireState::Initial;
@@ -54,6 +55,9 @@ private:
 	/** The connection wires snap to, used when placing a pole automatically. */
 	UPROPERTY()
 	class UFGCircuitConnectionComponent* mSnapConnection;
+
+	UPROPERTY()
+	class UFGCircuitConnectionComponent* mPowerTowerSnapConnection;
 
 	UPROPERTY()
 	class AFGBuildable* mSnapWire = nullptr;

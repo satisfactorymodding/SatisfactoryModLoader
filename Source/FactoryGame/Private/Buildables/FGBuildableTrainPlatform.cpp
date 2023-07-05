@@ -38,7 +38,7 @@ void AFGBuildableTrainPlatform::PreSaveGame_Implementation(int32 saveVersion, in
 void AFGBuildableTrainPlatform::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGBuildableTrainPlatform::CanDismantle_Implementation() const{ return bool(); }
 void AFGBuildableTrainPlatform::Dismantle_Implementation(){ }
-void AFGBuildableTrainPlatform::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }
+void AFGBuildableTrainPlatform::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }
 bool AFGBuildableTrainPlatform::IsUseable_Implementation() const{ return bool(); }
 FRailroadTrackPosition AFGBuildableTrainPlatform::GetTrackPosition() const{ return FRailroadTrackPosition(); }
 int32 AFGBuildableTrainPlatform::GetTrackGraphID() const{ return int32(); }

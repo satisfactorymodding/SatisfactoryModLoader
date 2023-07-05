@@ -26,9 +26,9 @@ void UFGRailroadTrackConnectionComponent::AddConnection(UFGRailroadTrackConnecti
 void UFGRailroadTrackConnectionComponent::RemoveConnection(UFGRailroadTrackConnectionComponent* toComponent){ }
 bool UFGRailroadTrackConnectionComponent::IsFacingSwitch() const{ return bool(); }
 bool UFGRailroadTrackConnectionComponent::IsTrailingSwitch() const{ return bool(); }
+int32 UFGRailroadTrackConnectionComponent::GetSwitchPositionForTrack( AFGBuildableRailroadTrack* track) const{ return int32(); }
 bool UFGRailroadTrackConnectionComponent::IsSwitchClear() const{ return bool(); }
 void UFGRailroadTrackConnectionComponent::SetSwitchPosition(int32 position){ }
-void UFGRailroadTrackConnectionComponent::SetSwitchPosition( AFGBuildableRailroadTrack* track){ }
 TWeakPtr< FFGRailroadSignalBlock > UFGRailroadTrackConnectionComponent::GetSignalBlock() const{ return TWeakPtr<FFGRailroadSignalBlock>(); }
 UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::GetOpposite() const{ return nullptr; }
 UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::GetNext() const{ return nullptr; }

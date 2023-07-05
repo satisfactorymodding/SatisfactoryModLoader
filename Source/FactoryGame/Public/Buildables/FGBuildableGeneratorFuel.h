@@ -39,7 +39,7 @@ public:
 	// End IFGReplicationDetailActorOwnerInterface
 
 	// Begin IFGDismantleInterface
-	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund ) const override;
+	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
 	// End IFGDismantleInterface
 
 	/**
@@ -62,7 +62,7 @@ public:
 	 * @return a valid pointer to the inventory if this machine runs on fuel. Can be nullptr on client.
 	 */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	FORCEINLINE class UFGInventoryComponent* GetFuelInventory() const { return mFuelInventoryHandler->GetActiveInventoryComponent(); };
+	FORCEINLINE class UFGInventoryComponent* GetFuelInventory() const { return mFuelInventoryHandlerData.GetActiveInventoryComponent(); };
 
 	/**
 	 * Check if this generator has fuel.
@@ -157,6 +157,12 @@ protected:
 	/** Can we load supplemental resources into the generator. Only call this on server. */
 	virtual bool CanLoadSupplemental() const;
 
+	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
+	{
+		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
+		out_repDetailData.Add( &mFuelInventoryHandlerData );
+	}
+
 private:
 	/**
 	 * Filter out what we consider as fuel for our fuel inventory.
@@ -176,7 +182,7 @@ protected:
 
 	/** Maintainer of the active storage component for this actor. Use this to get the active inventory component. */
 	UPROPERTY()
-	class UFGReplicationDetailInventoryComponent* mFuelInventoryHandler;
+	FReplicationDetailData mFuelInventoryHandlerData;
 
 	/** Kept for save game compatibility. @see mDefaultFuelClasses */
 	UPROPERTY()

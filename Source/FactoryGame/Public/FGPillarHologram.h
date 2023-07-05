@@ -37,8 +37,8 @@ public:
 	virtual AActor* Construct( TArray<AActor*>& out_children, FNetConstructionID constructionID ) override;
 	virtual void SetMaterial( class UMaterialInterface* material ) override;
 	virtual int32 GetBaseCostMultiplier() const override;
-	virtual void GetSupportedBuildModes_Implementation( TArray<TSubclassOf<UFGHologramBuildModeDescriptor>>& out_buildmodes ) const override;
-	virtual void OnBuildModeChanged() override;
+	virtual void GetSupportedBuildModes_Implementation( TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes ) const override;
+	virtual void OnBuildModeChanged( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) override;
 	virtual bool CanBeZooped() const override;
 	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
 	// End AFGHologram interface

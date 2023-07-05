@@ -5,7 +5,7 @@
 #include "FactoryGame.h"
 #include "UObject/Object.h"
 #include "ItemAmount.h"
-#include "AssetBundleData.h"
+#include "AssetRegistry/AssetBundleData.h"
 #include "IncludeInBuild.h"
 #include "Styling/SlateBrush.h"
 #include "FGEventSubsystem.h"
@@ -73,8 +73,8 @@ public:
 	virtual void PostLoad() override;
 	virtual void Serialize( FArchive& ar ) override;
 #if WITH_EDITOR
-	virtual void PreSave( const class ITargetPlatform* targetPlatform ) override;
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual void PreSave( FObjectPreSaveContext saveContext ) override;
+	virtual EDataValidationResult IsDataValid(TArray< FText >& ValidationErrors) override;
 #endif
 	// End UObject interface
 
@@ -113,6 +113,10 @@ public:
 	/** Returns the cost of this schematic*/
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static TArray< FItemAmount > GetCost( TSubclassOf< UFGSchematic > inClass );
+
+	/** Returns if this schematic is player specific */
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+	static bool GetIsPlayerSpecific( TSubclassOf< UFGSchematic > inClass );
 
 	/** Returns the unlocks granted by this schematic */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
@@ -162,7 +166,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static bool CanGiveAccessToSchematic( TSubclassOf< UFGSchematic > inClass, UObject* worldContext );
 
-	/** Returns true if this schematic is allowed to be purchased more than once */
+	/** Returns true if this schematic only contains unlocks that can be purchased more than once. If we have no unlocks we return false */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static bool IsRepeatPurchasesAllowed( TSubclassOf< UFGSchematic > inClass );
 
@@ -228,10 +232,15 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
 	TArray< TSubclassOf<UFGSchematic> > mRelevantShopSchematics;
 
+	/** If true this schematic is purchased per player rather than session wide. Only really applicable if type is EST_ResourceSink so we
+	 *  do a check for that in IsDataValid */
+	UPROPERTY( EditDefaultsOnly, Category = "Unlocks" )
+	bool mIsPlayerSpecific;
+	
 	/** The unlocks you get when purchasing */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Unlocks" )
 	TArray< class UFGUnlock* > mUnlocks;
-
+	
 	/** Icon used when displaying this schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "UI" )
 	FSlateBrush mSchematicIcon;
@@ -248,7 +257,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Dependencies" )
 	bool mDependenciesBlocksSchematicAccess;
 
-	/** Should schematic be hidden utnil dependencies are met. Used to filter out the visibilty of schematics when browsing them ingame */
+	/** Should schematic be hidden until dependencies are met. Used to filter out the visibility of schematics when browsing them ingame */
 	UPROPERTY( EditDefaultsOnly, Category = "Dependencies" )
 	bool mHiddenUntilDependenciesMet;
 

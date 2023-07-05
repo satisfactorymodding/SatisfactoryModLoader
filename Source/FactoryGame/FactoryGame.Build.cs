@@ -19,10 +19,10 @@ public class FactoryGame : ModuleRules
 			"InputCore",
 			"OnlineSubsystem", "OnlineSubsystemNull", "OnlineSubsystemEOS", "OnlineSubsystemUtils",
 			"SignificanceManager",
-			"APEX", "ApexDestruction",
+			"GeometryCollectionEngine",
+			"ChaosVehiclesCore", "ChaosVehicles", "ChaosSolverEngine",
 			"AnimGraphRuntime",
 			"AkAudio", 
-			"PhysXVehicles",
 			"AssetRegistry",
 			"NavigationSystem",
 			"ReplicationGraph",
@@ -34,16 +34,24 @@ public class FactoryGame : ModuleRules
 			"CinematicCamera",
 			"Foliage",
             "Niagara",
+            "EnhancedInput",
+            "GameplayCameras",
+            "TemplateSequence",
+            "NetCore",
+            "GameplayTags",
 		});
 		
 		PublicDependencyModuleNames.AddRange(new[] {
 			"AbstractInstance",
+			"InstancedSplinesComponent",
+			"SignificanceISPC"
 		});
 		
 		PublicDependencyModuleNames.AddRange(new[] {
 			"DummyHeaders",
 		});
         
-		PublicDefinitions.Add( "IS_PUBLIC_BUILD=1" ); 
+		PublicDefinitions.Add("IS_PUBLIC_BUILD=1");
+		PublicDefinitions.Add("WITH_TELEMETRY=0");
 	}
 }

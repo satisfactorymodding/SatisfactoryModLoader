@@ -6,12 +6,11 @@
 AFGConsumableEquipment::AFGConsumableEquipment() : Super() {
 	this->mEquipmentSlot = EEquipmentSlot::ES_ARMS;
 	this->mArmAnimation = EArmEquipment::AE_Consumables;
+	this->mDefaultEquipmentActions = 1;
 }
 bool AFGConsumableEquipment::ShouldSaveState() const{ return bool(); }
-void AFGConsumableEquipment::OnPrimaryFire(){ }
-void AFGConsumableEquipment::OnConsumePressed(){ }
+void AFGConsumableEquipment::Server_Consume_Implementation(){ }
+void AFGConsumableEquipment::Consume(){ }
 void AFGConsumableEquipment::GetConsumeable(TSubclassOf<  UFGConsumableDescriptor >& out_consumeable, int32& out_numConsumeable) const{ }
-void AFGConsumableEquipment::Server_PrimaryFire_Implementation(){ }
-bool AFGConsumableEquipment::Server_PrimaryFire_Validate(){ return bool(); }
 void AFGConsumableEquipment::PlayConsumeEffects_Implementation( UFGConsumableDescriptor* consumable){ }
-void AFGConsumableEquipment::AddEquipmentActionBindings(){ }
+void AFGConsumableEquipment::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }

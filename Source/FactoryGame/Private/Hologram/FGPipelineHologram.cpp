@@ -3,9 +3,12 @@
 #include "Hologram/FGPipelineHologram.h"
 
 AFGPipelineHologram::AFGPipelineHologram() : Super() {
-	this->mChildPoleHologram = nullptr;
-	this->mChildWallPoleHologram = nullptr;
-	this->mChildWallPoleConnection = nullptr;
+	this->mChildPoleHologram[0] = nullptr;
+	this->mChildPoleHologram[1] = nullptr;
+	this->mChildWallPoleHologram[0] = nullptr;
+	this->mChildWallPoleHologram[1] = nullptr;
+	this->mChildWallPoleConnection[0] = nullptr;
+	this->mChildWallPoleConnection[1] = nullptr;
 	this->mConnectionComponents[0] = nullptr;
 	this->mConnectionComponents[1] = nullptr;
 	this->mSnappedConnectionComponents[0] = nullptr;
@@ -39,11 +42,11 @@ bool AFGPipelineHologram::DoMultiStepPlacement(bool isInputFromARelease){ return
 int32 AFGPipelineHologram::GetBaseCostMultiplier() const{ return int32(); }
 AActor* AFGPipelineHologram::GetUpgradedActor() const{ return nullptr; }
 void AFGPipelineHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
-void AFGPipelineHologram::GetSupportedScrollModes(TArray< EHologramScrollMode >* out_modes) const{ }
-void AFGPipelineHologram::GetSupportedBuildModes_Implementation(TArray<TSubclassOf<UFGHologramBuildModeDescriptor>>& out_buildmodes) const{ }
+void AFGPipelineHologram::GetSupportedBuildModes_Implementation(TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes) const{ }
 bool AFGPipelineHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGPipelineHologram::AdjustForGround(FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
-void AFGPipelineHologram::PreHologramPlacement(){ }
+void AFGPipelineHologram::PreHologramPlacement(const FHitResult& hitResult){ }
+void AFGPipelineHologram::PostHologramPlacement(const FHitResult& hitResult){ }
 bool AFGPipelineHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPipelineHologram::OnInvalidHitResult(){ }
 void AFGPipelineHologram::Scroll(int32 delta){ }
@@ -52,6 +55,8 @@ void AFGPipelineHologram::SetSnapToGuideLines(bool isEnabled){ }
 float AFGPipelineHologram::GetHologramHoverHeight() const{ return float(); }
 void AFGPipelineHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
 void AFGPipelineHologram::CheckBlueprintCommingling(){ }
+AFGHologram* AFGPipelineHologram::GetNudgeHologramTarget(){ return nullptr; }
+bool AFGPipelineHologram::CanTakeNextBuildStep() const{ return bool(); }
 void AFGPipelineHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGPipelineHologram::ClientPreConstructMessageSerialization(){ }
 void AFGPipelineHologram::ServerPostConstructMessageDeserialization(){ }

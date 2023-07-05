@@ -28,6 +28,9 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Significance" )
 	void LostSignificance();
 
+	UFUNCTION( BlueprintNativeEvent, Category = "Significance" )
+	void UpdateSignificanceTickRate( float NewTickRate, bool bTickEnabled );
+
 	/** Call before adding object to significance in order to prepare it. ( Set up bounds and stuff ) */
 	UFUNCTION()
 	virtual void SetupForSignificance();
@@ -35,6 +38,12 @@ public:
 	/** Defaults to 10000.f */
 	UFUNCTION()
 	virtual float GetSignificanceRange();
+
+	virtual bool DoesReduceTick() const { return false; };
+	
+	virtual int32 NumTickLevels() const { return 0; };
+
+	virtual float GetTickExponent() const { return 1.f; }
 
 	UFUNCTION()
 	virtual void UpdateMeshLodLevels(int32 newLodLevel);
@@ -44,4 +53,6 @@ public:
 	virtual void GainedSignificance_Native();
 	UFUNCTION()
 	virtual void LostSignificance_Native();
+
+	virtual void SetInitialState(bool bState) {}
 };

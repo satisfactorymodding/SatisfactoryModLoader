@@ -135,6 +135,38 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
 	class UStaticMesh* mDefaultPowerConnectionMesh;
 
+	/** Mesh used to visualize forward direction of blueprints. @note Do not set in code! */
+    UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
+    class UStaticMesh* mBlueprintDirectionIndicatorMesh;
+
+	/** Material for blueprint direction indicator. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
+	class UMaterialInstance* mBlueprintDirectionIndicatorMaterial;
+
+	/** Minimum scale of the blueprint direction indicator mesh. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
+	float mBlueprintDirectionMeshScale;
+
+	/** How much forward offset to add to the blueprint direction indicator. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
+	float mBlueprintDirectionMeshForwardOffset;
+	
+	/** How much vertical offset to add to the blueprint direction indicator. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
+	float mBlueprintDirectionMeshHeightOffset;
+
+	/** How much to rotate the blueprint direction indicator (degrees). */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
+	float mBlueprintDirectionMeshRotation;
+
+	/** Whether or not to put the direction mesh indicator on the ground. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
+	bool mBlueprintDirectionMeshPlaceOnGround;
+
+	/** Material for blueprint proxies. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
+	class UMaterialInstance* mBlueprintProxyMaterial;
+
 	/** Mesh used to visualize the clearance mesh on factories @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Clearance" )
 	class UStaticMesh* mClearanceMesh;
@@ -142,10 +174,6 @@ public:
 	/** Material on hologram for clearance. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Clearance" )
 	class UMaterialInstance* mClearanceMaterial;
-
-	/** Material for blueprint proxies. @note Do not set in code! */
-	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Clearance" )
-	class UMaterialInstance* mBlueprintProxyMaterial;
 
 	/** Default sound loop placed on holograms. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Sound" )
@@ -277,5 +305,9 @@ public:
 	*/
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
 	TArray< FViscosityToPuddlePair > mViscosityToPuddlePairs;
+
+	/** Material Param Collection containing the panini settings so scaling can be exposed to the Settings Menu */
+	UPROPERTY( EditDefaultsOnly, Category = "Rendering" )
+	class UMaterialParameterCollection* mPaniniProjectionCollection;
 
 };

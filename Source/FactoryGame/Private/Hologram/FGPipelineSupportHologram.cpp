@@ -27,8 +27,9 @@ bool AFGPipelineSupportHologram::IsValidHitResult(const FHitResult& hitResult) c
 bool AFGPipelineSupportHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPipelineSupportHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 AActor* AFGPipelineSupportHologram::Construct(TArray<AActor*>& out_children, FNetConstructionID constructionID){ return nullptr; }
-void AFGPipelineSupportHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes) const{ }
-void AFGPipelineSupportHologram::OnBuildModeChanged(){ }
+void AFGPipelineSupportHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
+void AFGPipelineSupportHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ }
+bool AFGPipelineSupportHologram::CanNudgeHologram() const{ return bool(); }
 int32 AFGPipelineSupportHologram::GetBaseCostMultiplier() const{ return int32(); }
 void AFGPipelineSupportHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGPipelineSupportHologram::SetSupportLength(float height){ }

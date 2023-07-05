@@ -5,6 +5,7 @@
 
 UFGPowerConnectionComponent::UFGPowerConnectionComponent() : Super() {
 	this->mPowerInfo = nullptr;
+	this->mPowerConnectionType = EPowerConnectionType::PCT_Default;
 	this->mHasPower = false;
 	this->mCircuitType = UFGPowerCircuit::StaticClass();
 }

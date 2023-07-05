@@ -28,25 +28,29 @@ struct FFGOnlineSessionSettings
 
 	/** IMPORTANT: Don't rename this! This is parsed in engine code */
 	UPROPERTY()
-	FUniqueNetIdRepl	HostId;
+	FUniqueNetIdRepl	HostId = {};
 
 	/** Number of players currently connected to the game */
 	UPROPERTY(BlueprintReadOnly)
-	int32				NumConnectedPlayers;
+	int32				NumConnectedPlayers = 0;
 
 	/** For how long has the game been played in seconds */
 	UPROPERTY(BlueprintReadOnly)
-	int32				PlayDuration;
+	int32				PlayDuration = 0;
 
 	/** The build version on the form ++FactoryGame+Main-4.20-CL-123456 */
 	UPROPERTY( BlueprintReadOnly )
-	FString				BuildVersion;
+	FString				BuildVersion = {};
 
 	/** Name of the session, same as the name exposed in the Save/Load menus */
 	UPROPERTY(BlueprintReadOnly)
-	FString				SaveSessionName;
+	FString				SaveSessionName = {};
 
 	/** Hosts nat type */
 	UPROPERTY(BlueprintReadOnly)
-	ECachedNATType		NATType;
+	ECachedNATType		NATType = ECachedNATType::CNT_TBD;
+
+	/** IF creative mode is enabled for this session. i.e. players can use advanced game settings */
+	UPROPERTY(BlueprintReadOnly)
+	bool				IsCreativeModeEnabled = false;
 };

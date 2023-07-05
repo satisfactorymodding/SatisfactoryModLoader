@@ -38,8 +38,8 @@ AActor* AFGConveyorLiftHologram::GetUpgradedActor() const{ return nullptr; }
 int32 AFGConveyorLiftHologram::GetBaseCostMultiplier() const{ return int32(); }
 float AFGConveyorLiftHologram::GetHologramHoverHeight() const{ return float(); }
 void AFGConveyorLiftHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
-void AFGConveyorLiftHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes) const{ }
-void AFGConveyorLiftHologram::PostHologramPlacement(){ }
+void AFGConveyorLiftHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
+void AFGConveyorLiftHologram::PostHologramPlacement(const FHitResult& hitResult){ }
 void AFGConveyorLiftHologram::CheckClearance(const FVector& locationOffset){ }
 void AFGConveyorLiftHologram::CheckBlueprintCommingling(){ }
 bool AFGConveyorLiftHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }

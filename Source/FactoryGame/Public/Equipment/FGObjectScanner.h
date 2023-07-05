@@ -46,6 +46,8 @@ public:
 	*/
 	virtual void UnEquip() override;
 
+	virtual void AddEquipmentActionBindings() override;
+
 	UFUNCTION( BlueprintPure, Category = "Scanner" )
 	FORCEINLINE bool IsBeeping() { return mIsBeeping; }
 
@@ -85,6 +87,20 @@ public:
 	/** Sets which descriptor that we want to search for */
 	UFUNCTION( BlueprintCallable, Category = "Scanner" ) 
 	void SetScannableDescriptor( TSubclassOf<UFGItemDescriptor> newScannableDescriptor );
+
+protected:
+	UFUNCTION( BlueprintImplementableEvent, Category = "Scanner" )
+	void OnOpenScannerMenu();
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "Scanner" )
+	void OnCloseScannerMenu();
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "Scanner" )
+	void OnCycle();
+	
+	/** Input Actions*/
+	void Input_OpenMenu( const FInputActionValue& actionValue );
+	void Input_Cycle( const FInputActionValue& actionValue );
 
 private:
 

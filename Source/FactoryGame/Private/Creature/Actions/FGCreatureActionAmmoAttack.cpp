@@ -18,6 +18,11 @@ UFGCreatureActionAmmoAttack::UFGCreatureActionAmmoAttack(const FObjectInitialize
 	this->mTargetRequirements.MinimumAggro = 0.0;
 	this->mCancelsOnStateChange = false;
 }
+void UFGCreatureActionAmmoAttack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGCreatureActionAmmoAttack, mMagazineObject);
+}
+void UFGCreatureActionAmmoAttack::BeginDestroy(){ Super::BeginDestroy(); }
 bool UFGCreatureActionAmmoAttack::InitializeAction(AController* controller, APawn* pawn){ return bool(); }
 void UFGCreatureActionAmmoAttack::PerformAction_Implementation(){ }
 void UFGCreatureActionAmmoAttack::OnAnimNotify_Implementation(const UFGAnimNotify* Notify){ }

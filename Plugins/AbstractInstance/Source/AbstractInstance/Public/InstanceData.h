@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Ben de Hullu. All Rights Reserved.
 
 #pragma once
 

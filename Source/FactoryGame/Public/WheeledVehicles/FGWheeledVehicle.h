@@ -4,115 +4,19 @@
 
 #include "FactoryGame.h"
 #include "FGVehicle.h"
-#include "PhysXPublic.h"
 #include "WheeledVehicles/FGSplinePathMovementComponent.h"
 #include "FGVehicleSubsystem.h"
+#include "WheeledVehicles/FGWheeledVehicleMovementComponent.h"
 #include "FGWheeledVehicle.generated.h"
-
-// TODO: migrate from PhysX to Chaos; in the meantime, stfu
-#pragma warning( disable : 4996 )
-
 
 DECLARE_STATS_GROUP( TEXT( "Wheeled vehicles" ), STATGROUP_WheeledVehicles, STATCAT_Advanced );
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnAutopilotEnabledChanged, bool, autopilotEnabled );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnVehiclePathVisibilityChanged, bool, pathVisibility );
+
+extern TAutoConsoleVariable< int32 > CVarVehicleDebug;
+
 class FDebugDisplayInfo;
-
-USTRUCT( BlueprintType )
-struct FACTORYGAME_API FTireData
-{
-	GENERATED_BODY()
-	
-	UPROPERTY( BlueprintReadOnly, Category = "Vehicle" )
-	UPhysicalMaterial* SurfaceMaterial;
-
-	UPROPERTY( BlueprintReadOnly, Category = "Vehicle" )
-	FVector WheelLocation;
-
-	UPROPERTY( BlueprintReadOnly, Category = "Vehicle" )
-	float WheelRadius;
-
-	UPROPERTY( BlueprintReadOnly, Category = "Vehicle" )
-	float WheelWidth;
-
-	UPROPERTY( BlueprintReadOnly, Category = "Vehicle" )
-	int32 WheelIndex;
-
-	UPROPERTY( BlueprintReadOnly, Category = "Vehicle" )
-	bool IsInAir;
-};
-
-USTRUCT( BlueprintType )
-struct FACTORYGAME_API FTireTrackDecalDetails
-{
-	GENERATED_BODY()
-
-	/** Surface material to override for */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	UPhysicalMaterial* SurfacePhysicsMaterial;
-
-	/** Material to use as an override */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	class UMaterial* DecalMaterialOverride;
-};
-
-USTRUCT( BlueprintType )
-struct FSurfaceParticlePair
-{
-	GENERATED_BODY()
-
-	UPROPERTY( EditDefaultsOnly, Category = "SurfaceParticlePair" )
-	UParticleSystem* EmitterTemplate;
-
-	UPROPERTY( EditDefaultsOnly, Category = "SurfaceParticlePair" )
-	TEnumAsByte< EPhysicalSurface > Surface;
-};
-
-USTRUCT()
-struct FParticleTemplatePair
-{
-	GENERATED_BODY()
-
-	FParticleTemplatePair() : Template( nullptr ), Particle( nullptr ) {}
-
-	UPROPERTY()
-	UParticleSystem* Template;
-
-	UPROPERTY()
-	UParticleSystemComponent* Particle;
-};
-
-USTRUCT()
-struct FTireParticleCollection
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	TArray< FParticleTemplatePair > Collection;
-};
-
-/**
-* Some replicated state for this vehicle.
-* Done here instead of movement component
-* because this is the only shared place
-* between the 4W & 6W movement components
-*/
-USTRUCT()
-struct FReplicatedAddedVelocitiesState
-{
-	GENERATED_USTRUCT_BODY()
-
-	// input replication: steering
-	UPROPERTY()
-	bool IsDrifting;
-
-	// input replication: angular velocity pitch
-	UPROPERTY()
-	float AddedAngularVelocityInputPitch;
-
-	// input replication: angular velocity yaw
-	UPROPERTY()
-	float AddedAngularVelocityInputYaw;
-};
 
 UENUM( BlueprintType )
 enum class ERecordingStatus : uint8
@@ -159,11 +63,14 @@ public:
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 	virtual void Destroyed() override;
 	virtual void Tick( float dt ) override;
-	virtual void DisplayDebug(class UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos) override;
+	virtual void DisplayDebug(UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos) override;
 	// End AActor interface
 
 	// Begin ADriveablePawn interface
-	virtual bool DriverEnter( class AFGCharacterPlayer* driver ) override;
+	virtual bool DriverEnter( AFGCharacterPlayer* driver ) override;
+	virtual bool DriverLeave(bool keepDriving) override;
+	virtual void Server_DriverLeave_Implementation() override;
+	virtual bool CanLeaveVehicle( AFGCharacterPlayer* character ) override;
 	// End ADriveablePawn interface
 
 	// Begin IFGSignificanceInterface
@@ -177,9 +84,9 @@ public:
 
 	//~ Begin IFGDockableInterface
 	virtual bool CanDock_Implementation( EDockStationType atStation ) const override;
-	virtual class UFGInventoryComponent* GetDockInventory_Implementation() const override;
-	virtual class UFGInventoryComponent* GetDockFuelInventory_Implementation() const override;
-	virtual void WasDocked_Implementation( class AFGBuildableDockingStation* atStation ) override;
+	virtual UFGInventoryComponent* GetDockInventory_Implementation() const override;
+	virtual UFGInventoryComponent* GetDockFuelInventory_Implementation() const override;
+	virtual void WasDocked_Implementation( AFGBuildableDockingStation* atStation ) override;
 	virtual void WasUndocked_Implementation() override;
 	virtual void OnBeginLoadVehicle_Implementation() override;
 	virtual void OnBeginUnloadVehicle_Implementation() override;
@@ -196,7 +103,38 @@ public:
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	//~ End IFGUseableInterface
 
-	virtual FVector GetRealActorLocation() const override;
+	UFUNCTION()
+	void OnVehicleLanded();
+
+	/** Add the bindings to vehicle and child-classes. */
+	virtual void AddInputBindings( UInputComponent* enhancedInput ) override;
+
+	UFUNCTION( Reliable, NetMulticast )
+	virtual void Multicast_OnVehicleEntered();
+
+	/** Input Actions */
+	UFUNCTION()
+    void Input_ThrottleSteer( const FInputActionValue& actionValue );
+	
+	UFUNCTION()
+	void Input_LookAxis( const FInputActionValue& actionValue );
+
+	UFUNCTION()
+	void Input_Handbrake( const FInputActionValue& actionValue );
+	
+	UFUNCTION()
+    void Input_Honk( const FInputActionValue& actionValue );
+
+	UFUNCTION()
+	void Input_ToggleCamera( const FInputActionValue& actionValue );
+
+	UFUNCTION()
+	void Input_ToggleLights( const FInputActionValue& actionValue );
+
+	UFUNCTION()
+	void Input_OpenRecorder( const FInputActionValue& actionValue );
+	
+	virtual FVector GetVehicleRealActorLocation() const override;
 
 	/** Returns the static mesh that is attached to the skeletal mesh of some vehicles, nullptr if there is no such static mesh */
 	UFUNCTION( BlueprintNativeEvent, Category = "Vehicle" )
@@ -204,42 +142,25 @@ public:
 
 	/** Returns VehicleMovement subobject **/
 	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	class UWheeledVehicleMovementComponent* GetVehicleMovementComponent() const;
-
-	/** Sets the movement component to the given component. Used to initialise 4W, 6W, NW movement components. */
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void SetMovementComponent( UWheeledVehicleMovementComponent* movementComponent );
+	UFGWheeledVehicleMovementComponent* GetVehicleMovementComponent() const;
 
 	/** Do we have fuel? */
 	UFUNCTION( BlueprintPure, Category = "Vehicle" )
 	bool HasFuel() const;
 
-	/** Gets information about tires ( such as IsInAir etc ) */
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void GetTireData( TArray< FTireData >& out_tireData );
-
-	/** Gets the particle system that corresponds to physmat */
-	UParticleSystem* GetSurfaceParticleSystem( UPhysicalMaterial* physMat);
-
-	/** Gets air status */
-	UFUNCTION( BlueprintPure, Category = "Vehicle" )
-	bool GetIsInAir() { return mIsInAir; }
-
-	/** Is any wheel on the ground*/
-	UFUNCTION( BlueprintPure, Category = "Vehicle" )
-	int32 NumWheelsOnGround() { return mNumWheelsOnGround; }	
-
 	/** Get the fuel inventory. */
 	UFUNCTION( BlueprintPure, Category = "Vehicle" )
-	FORCEINLINE class UFGInventoryComponent* GetFuelInventory() const { return mFuelInventory; }
+	FORCEINLINE UFGInventoryComponent* GetFuelInventory() const { return mFuelInventory; }
 
 	/** Get the storage inventory. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	FORCEINLINE class UFGInventoryComponent* GetStorageInventory() const { return mStorageInventory; }
+	FORCEINLINE UFGInventoryComponent* GetStorageInventory() const { return mStorageInventory; }
+
+	FORCEINLINE UBoxComponent* GetFoliageCollideBox() const { return mFoliageCollideBox; } 
 
 	/** Use this function instead of the one in movement component because we have multiple components that move the vehicle */
 	UFUNCTION( BlueprintPure, Category = "Velocity" )
-	float GetForwardSpeed();
+	float GetForwardSpeed() const;
 
 	/**
 	 * Check if a resource is valid as fuel for this station.
@@ -247,21 +168,8 @@ public:
 	 * @return - true if resource valid as fuel; false if not valid or if generator does not run on fuel.
 	 */
 	UFUNCTION()
-	bool IsValidFuel( TSubclassOf< class UFGItemDescriptor > resource ) const;
-
-	/**
-	 * If an object can be destroyed by a vehicle collision (foliage that are static meshes) this function destroys it IF the required force is met.
-	 * Some objects only need an overlap, in which case force is irrelevant and forceOfCollision will be -1.0f.
-	 * @param actor - collided actor
-	 * @param forceOfCollision - the force of the collision, or 0.0f if an overlap
-	 */
-	void HandleDestroyStaticMesh( AActor* actor, float forceOfCollision = 0.0f );
-
-	/**
-	* If an object can be destroyed by a vehicle running over it (eg. foliage) this function destroys it IF the required force is met.
-	*/
-	void HandleDestroyFoliage();
-
+	bool IsValidFuel( TSubclassOf< UFGItemDescriptor > resource ) const;
+	
 	/**
 	 * Filter out what we consider as fuel for our fuel inventory.
 	 * @see IsValidFuel
@@ -277,54 +185,25 @@ public:
 	float GetFuelBurnRatio();
 
 	UFUNCTION( BlueprintPure, Category = "Vehicle" )
-	class AFGWheeledVehicleInfo* GetInfo() const { return mInfo; }
+	AFGWheeledVehicleInfo* GetInfo() const { return mInfo; }
 
 	/**Returns the simulation component */
 	UFUNCTION( BlueprintPure, Category = "LinkedList" )
-	class AFGDrivingTargetList* GetTargetList( bool createIfNeeded = false );
+	AFGDrivingTargetList* GetTargetList( bool createIfNeeded = false );
 
 	/**Getter for path visibility */
 	UFUNCTION( BlueprintPure, Category = "Path" )
-	bool GetPathVisibility();
-
-	/** Multicast from server when foliage was destroyed */
-	UFUNCTION( NetMulticast, Unreliable, Category = "Character" )
-	void Multicast_PlayFoliageDestroyedEffect( class UParticleSystem* destroyEffect, class UAkAudioEvent* destroyAudioEvent, FVector location );
+	bool GetPathVisibility() const;
 
 	/** Blueprint client accessor for when foliage was destroyed */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Character" )
-	void Client_PlayFoliageDestroyedEffect( class UParticleSystem* destroyEffect, class UAkAudioEvent* destroyAudioEvent, FVector location );
-
-	UFUNCTION()
-	void OnOverlapBegin( UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult );
-
-	UFUNCTION()
-	void OnOverlapEnd( UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex );
+	void Client_PlayFoliageDestroyedEffect( UParticleSystem* destroyEffect, UAkAudioEvent* destroyAudioEvent, FVector location );
 	
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void SetIsDrifting( bool newDrifting ) { mIsDrifting = newDrifting; }
-
-	UFUNCTION( BlueprintPure, Category = "Vehicle" )
-	FORCEINLINE bool GetIsDrifting() const { return mIsDrifting; }
-
-	/** Called from Movement Component's TickVehicle
-	*  eg. to manage/clamp/add custom fake forces vehicle for handling purposes
-	*/
-	void ManageFakeForces( float DeltaTime );
-
-	/** retrieves the world location of where the drift force should be applied. eg. use a blueprint to position it */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Vehicle" )
-	FVector GetDriftForceOffset();
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "Vehicle" )
+	void CloseVehicleTrunk( AFGCharacterPlayer* player );
 
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "Vehicle" )
-	void CloseVehicleTrunk( class AFGCharacterPlayer* player );
-
-	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "Vehicle" )
-	void OpenVehicleTrunk( class AFGCharacterPlayer* player );
-
-	/** Returns the cached surface material */
-	UFUNCTION( BlueprintPure, Category = "Vehicle" )
-	FORCEINLINE UPhysicalMaterial* GetCachedSurfaceMaterial() { return mCachedSurfaceMaterial; }
+	void OpenVehicleTrunk( AFGCharacterPlayer* player );
 
 	void MeasureVelocities( float deltaTime );
 
@@ -339,16 +218,16 @@ public:
 
 	float CalculateFuelNeed() const;
 
-	float GetMaxFuelEnergy( TSubclassOf< class UFGItemDescriptor > fuelClass ) const;
+	static float GetMaxFuelEnergy( TSubclassOf< UFGItemDescriptor > fuelClass );
 
 	float GetMaxFuelEnergy() const;
 
 	bool HasFuelForRoundtrip() const;
 
-	bool IsSufficientFuelType( TSubclassOf< class UFGItemDescriptor > fuelType ) const;
+	bool IsSufficientFuelType( TSubclassOf< UFGItemDescriptor > fuelType ) const;
 
 	UFUNCTION( BlueprintPure, Category = "Docking" )
-	ETransferAnimationState GetTransferAnimationState( float animationLength, float& animationTime );
+	ETransferAnimationState GetTransferAnimationState( float animationLength, float& animationTime ) const;
 
 	void CalculateManualDockingState();
 
@@ -356,14 +235,12 @@ public:
 	EManualDockingState GetManualDockingState() const { return mManualDockingState; }
 
 	UFUNCTION( BlueprintPure, Category = "Docking" )
-	class AFGBuildableDockingStation* GetRefuelingStation() const { return mRefuelingStation; }
+	AFGBuildableDockingStation* GetRefuelingStation() const { return mRefuelingStation; }
 
-	void SetRefuelingStation( class AFGBuildableDockingStation* station );
+	void SetRefuelingStation( AFGBuildableDockingStation* station );
 
 	UFUNCTION( BlueprintCallable, Category = "Docking" )
 	void DockToRefuelingStation();
-
-	void FindSurroundingLevels();
 
 	virtual void UpdatePlayerStatus() override;
 
@@ -377,32 +254,6 @@ protected:
 	UFUNCTION( BlueprintNativeEvent, Category = "Vehicle" )
 	void CreateInventoryItemDrops();
 
-	/** sets mAddedAngularVelocityInputPitch and lerps it using mAddedAngularVelocityInputSmoothingSpeed */
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void SetAddedAngularVelocityPitch( float pitchToAdd );
-
-	/** sets mAddedAngularVelocityInputYaw and lerps it using mAddedAngularVelocityInputSmoothingSpeed */
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void SetAddedAngularVelocityYaw( float yawToAdd );
-
-	//@todo Deprecated REMOVE ME
-	UFUNCTION( BlueprintPure, Category = "Vehicle", meta = ( DeprecatedFunction, DeprecationMessage = "Duplicate, use GetIsInAir instead" ) )
-	FORCEINLINE bool GetIsGrounded() { return !GetIsInAir(); }
-
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void ResetAddedAngularVelocityValues();
-
-	/** Read current state for simulation */
-	void UpdateAssistedVelocitiesState();
-
-	/** Pass current state to server */
-	UFUNCTION( Unreliable, Server, WithValidation )
-	void ServerUpdateAssistedVelocitiesState( bool inDrifting, float inInputYaw, float inInputPitch );
-
-	/** Update the clients state from the replicated state */
-	UFUNCTION()
-	void UseReplicatedState();
-
 	UFUNCTION()
 	void SmoothMovementReplication(float DeltaTime);
 
@@ -412,40 +263,18 @@ protected:
 	/** Notify to allow updating of simulated vehicle colors */
 	virtual void OnCustomizationDataApplied( const FFactoryCustomizationData& customizationData ) override;
 
+	/** Ticks foliage removal and character ragdoll */
+	virtual void TickPendingVehicleCollisions( float dt );
 private:
 	void EnsureInfoCreated();
 
 	/** Tick helpers */
-	void UpdateAirStatus();
-	void UpdateTireEffects();
-	void UpdateTireParticle( FTireData tireData );
 	void BurnFuel( float dt );
-
-	/** Applies added angular velocity to the vehicle to assist sliding and air control */
-	void ApplyAddedAngularVelocityModifiers( float deltaTime );
-
-	/** Activates/deactivates tire particles so that it's only the one matching the template that is active */
-	void SwitchParticle( int32 tireIndex, UParticleSystem* particleTemplate );
-
-	/** Draws a tire track decal if necessary */
-	void DrawTireTrack( FTireData tireData, FVector decalLocation );
-
-	/** Clamp angular and linear velocities */
-	void ClampVelocities();
-
-	/** handles added linear velocity on throttle */
-	void AddedLinearThrottleVelocity();
-
-	/** logic for stabilising roll angular velocity in the air */
-	void ApplyRollStabilisation( float deltaTime );
-
-	/** applies assisted acceleration and drifting velocities */
-	void ApplyAssistedVelocities( float deltaTime );
 
 	void SetRecordingStatus( ERecordingStatus recordingStatus );
 
 	UFUNCTION()
-	void OnFuelAdded( TSubclassOf< class UFGItemDescriptor > itemClass, int32 numAdded );
+	void OnFuelAdded( TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded );
 
 	UFUNCTION()
 	void OnRep_TransferStatusChanged();
@@ -477,11 +306,26 @@ public:
 
 	float GetLocalTime() const;
 	
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void MoveForward( float axisValue );
+	UFUNCTION()
+	void MoveForward( float throttle, float brake );
 	
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
+	UFUNCTION()
 	void MoveRight( float axisValue );
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetVehicleLightsOn( bool active );
+	
+	UFUNCTION(BlueprintNativeEvent, Category="Vehicle")
+	void OnVehicleLightStatusChanged();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetHonkStatus(bool active);
+
+	UFUNCTION(BlueprintNativeEvent, Category="Vehicle")
+	void OnHonkStatusChanged();
+
+	UFUNCTION(BlueprintNativeEvent, Category="Vehicle")
+	void OnOpenRecorderMenu();
 
 	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
 	void TurnOverVehicle();
@@ -516,21 +360,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
 	bool CanSavePath() const;
 
-	/** Get the current target */
-	/*UFUNCTION( BlueprintPure, Category = "LinkedList" )
-	FORCEINLINE class AFGTargetPoint* GetCurrentTarget() { return mCurrentTarget; }*/
-
-	/** Set the current target */
-	/*UFUNCTION( BlueprintCallable, Category = "LinkedList" )
-	void SetCurrentTarget( class AFGTargetPoint* newTarget );
-	void UpdateCurrentTarget();*/
-
 	/** Sets target in the linked list to the next available. Will loop */
 	UFUNCTION( BlueprintCallable, Category = "LinkedList" )
 	void PickNextTarget();
-
-	UFUNCTION( BlueprintCallable, Server, Reliable )
-	void Server_Leave();
 
 	UFUNCTION( BlueprintCallable, Server, Reliable )
 	void Server_ToggleAutoPilot();
@@ -563,20 +395,22 @@ public:
 	void OnRep_ManualDockingState();
 
 	UFUNCTION()
+	void OnRep_IsAutopilotEnabled();
+
+	UFUNCTION()
 	void OnRep_Info();
 
+	UFUNCTION()
+	void OnRep_TargetList( AFGDrivingTargetList* oldList );
+
 	/** Updates the vehicles settings depending on if it should be simulated or "real" */
-	virtual void OnIsSimulatedChanged();
+	virtual void OnIsSimulatedChanged() override;
 
 	FVector GetVelocityVector() const;
 
 	void OnSimulationTargetReached( AFGTargetPoint* newTarget );
 
-	void PickFirstTargetAfterStation();
-
 	AFGTargetPoint* SpawnNewTargetPoint( const FVector& location, const FRotator& rotation, AFGDrivingTargetList* targetList, int targetSpeed, AFGTargetPoint* afterTarget = nullptr );
-
-	class UFGVehicleCollisionBoxComponent* FindCollisionBox() const;
 
 	void StartGhosting();
 
@@ -588,11 +422,20 @@ public:
 
 	float GetTargetWaitTime() const { return mTargetWaitTime; }
 	bool IsWaitingAtTarget() const { return mTargetWaitTime > 0.0f; }
+	
+	UFUNCTION()
+	void OnPathVisibilityChanged( bool pathVisibility );
 
 private:
 	float CalculateAutomatedFuelToConsume( float deltaTime );
 
+	// Used so we can know when target list changed and listen for path visibility updates from the targetlist. 
+	void SetTargetList( AFGDrivingTargetList* targetList );
+
 public:
+	/** Name of the MeshComponent. Use this name if you want to prevent creation of the component (with ObjectInitializer.DoNotCreateDefaultSubobject). */
+	static FName VehicleMeshComponentName;
+	
 	/** Name of the VehicleMovement. Use this name if you want to use a different class (with ObjectInitializer.SetDefaultSubobjectClass). */
 	static FName VehicleMovementComponentName;
 
@@ -610,6 +453,12 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Docking", DisplayName = "OnManualDockingStateChanged" )
 	FManualDockingStateChanged ManualDockingStateChangedDelegate;
 
+	UPROPERTY( BlueprintAssignable, Category = "Vehicle" )
+	FOnAutopilotEnabledChanged mOnAutopilotEnabledChanged;
+
+	UPROPERTY( BlueprintAssignable, Category = "Vehicle" )
+	FOnVehiclePathVisibilityChanged mOnVehiclePathVisibilityChanged;
+
 protected:
 	friend class AFGWheeledVehicleAIController;
 	friend class UFGSplinePathMovementComponent;
@@ -617,6 +466,24 @@ protected:
 	friend class AFGVehicleSubsystem;
 	friend class AFGDrivingTargetList;
 
+	float mTimeDriverEntered;
+
+	/** Angular damping strength (multiplier?) that is applied to the vehicle when in the air. Used to stabilize vehicles in the air and prever over-rotation */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Replicated, SaveGame, Category= "Vehicle" )
+	float mAirDampingStrength = 2.5f;
+
+	/** Damage class applied to characters being ran over by this vehicle */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category= "Damage" )
+	TSubclassOf<UFGDamageType> mRunOverDamageTypeClass;
+
+	/** Base Damage applied to characters that get run over this vehicle at its current speed. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category= "Damage" )
+	FRuntimeFloatCurve mDamageAtSpeed;
+	
+	/** Min speed required to ragdoll a character that's being ran over. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category= "Vehicle" )
+	float mRagdollRunOverMinSpeed = 10.f;
+	
 	/** This vehicles fuel consumption in MW/s */
 	UPROPERTY( EditDefaultsOnly, Category = "Fuel", meta = ( AddAutoJSON = true ) )
 	float mFuelConsumption;
@@ -636,269 +503,59 @@ protected:
 	UPROPERTY( BlueprintReadOnly, SaveGame, ReplicatedUsing = OnRep_TransferStatusChanged, Meta = ( NoAutoJson = true ) )
 	bool mIsUnloadingVehicle;
 
-	/** Is vehicle in air */
-	UPROPERTY()
-	bool mIsInAir;
-
-	/** Is there at least 1 wheel on the ground */
-	UPROPERTY()
-	int32 mNumWheelsOnGround;
-
 	/** vehicle simulation component */
-	UPROPERTY( VisibleDefaultsOnly, Category = Vehicle )
-	class UWheeledVehicleMovementComponent* mVehicleMovement;
-
-	/** Distance between tire track decals */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mDistBetweenDecals;
-
-	/** Time, in seconds, for the tire track decal to live */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mDecalLifespan;
-
-	/** default tire track decal. Can be empty for no default. */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	class UMaterial* mDefaultTireTrackDecal;
-
-	/** tire track decal  settings */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	TArray< FTireTrackDecalDetails > mTireTrackDecals;
-
-	/** The scale for the decal. This will probably need to be uniquely set for every vehicle. */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	FVector mDecalSize;
-
-	/** When foliage is run over by this vehicle, this is the radius of foliage that should be cleared */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mFoliageDestroyRadius;
-
-	/** Strength of the angular velocity yaw modifier when on the ground and holding "drift" */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mAddedGroundAngularVelocityStrengthYaw;
-
-	/** Strength of the angular velocity pitch modifier when on the ground and holding "drift" */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mAddedGroundAngularVelocityStrengthPitch;
-
-	/** Strength of the added air control angular yaw velocity */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mAddedAirControlAngularVelocityStrengthYaw;
-
-	/** Strength of the added air control angular pitch velocity */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mAddedAirControlAngularVelocityStrengthPitch;
-
-	/**
-	* Strength of the natural added angular yaw velocity when turning.
-	* Used to generate natural sliding when not in the air and turning without handbrake.
-	*/
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mNaturalAngularVelocityStrengthYaw;
-
-	/** 
-	 * Strength of the natural added angular pitch velocity when turning.
-	 * Used to generate natural sliding when not in the air and turning without handbrake.
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mNaturalAngularVelocityStrengthPitch;
-
-	/**
-	* Strength of the natural added angular yaw velocity during air control.
-	* Used to generate natural sliding when not in the air and turning without handbrake.
-	*/
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mNaturalAirAngularVelocityStrengthYaw;
-
-	/**
-	* Strength of the natural added angular pitch velocity during air control.
-	* Used to generate natural sliding when not in the air and turning without handbrake.
-	*/
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mNaturalAirAngularVelocityStrengthPitch;
-
-	/** 
-	 * Speed at which the added angular velocity input smooths from previous input to the next
-	 * Should be between 0.1 to 1.0
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle", meta = (ClampMin = 0.1, ClampMax = 1.0) )
-	float mAddedAngularVelocityInputSmoothingSpeed;
+    UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
+    TObjectPtr<UFGWheeledVehicleMovementComponent> mVehicleMovement;
 
 	/** Collision box for detecting overlaps with foliage only. Shape modified in BP */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	UBoxComponent* mFoliageCollideBox;
-	
-	FDateTime mLastAccurateLocation;	
+	TObjectPtr<UBoxComponent> mFoliageCollideBox;
+
+	/** Last time we had a position sort of matching server position on the client */
+	FDateTime mLastAccurateLocation;
+
+	/** List of head lights this vehicle has */
+	UPROPERTY( BlueprintReadOnly, Category = "Vehicle")
+	TArray<TObjectPtr<ULightComponent> > mVehicleHeadlights;
+
+	/** List of tail lights this vehicle has */
+	UPROPERTY( BlueprintReadOnly, Category = "Vehicle")
+	TArray<TObjectPtr<ULightComponent> > mVehicleTailLights;
+
+	/** Are lights on? */
+	UPROPERTY( BlueprintReadOnly, ReplicatedUsing=OnVehicleLightStatusChanged )
+	bool mVehicleLightsOn;
+
+	/** Is Vehicle honking? */
+	UPROPERTY( BlueprintReadOnly, ReplicatedUsing=OnHonkStatusChanged )
+	bool mVehicleHonkOn;
+
+	UPROPERTY( BlueprintReadOnly )
+	TSoftObjectPtr<USpringArmComponent> mSpringArmComponent;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	FRotator mDefaultLockedSprintArmRotation;
+
+	bool mCameraLocked;
 	
 private:
 	bool mIsServer = false;
-
-	/** replicated state of vehicle. */
-	UPROPERTY( Transient, Replicated )
-	FReplicatedAddedVelocitiesState mReplicatedState;
-
-	/** Used for simulated movement along path described by mTemporaryTargetList */
-	//UPROPERTY( ReplicatedUsing = OnRep_TemporarySimulationMovement )
-	//class UFGSplinePathMovementComponent* mTemporarySimulationMovement;
 	
 	/** Inventory for fuel */
 	UPROPERTY( VisibleDefaultsOnly, SaveGame, Replicated )
-	class UFGInventoryComponent* mFuelInventory;
+	TObjectPtr<UFGInventoryComponent> mFuelInventory;
 
 	/** Inventory for storage */
 	UPROPERTY( VisibleDefaultsOnly, SaveGame, Replicated )
-	class UFGInventoryComponent* mStorageInventory;
+	TObjectPtr<UFGInventoryComponent> mStorageInventory;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle", meta = ( AddAutoJSON = true ) )
 	int32 mInventorySize;
 
-	UPROPERTY()
-	/** A complete collection of all tire particles gathered per tire */
-	TArray< FTireParticleCollection > mTireParticleCollection;
-
-	/** Map that lists which templates corresponds to what surface type */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	TArray< FSurfaceParticlePair > mVehicleParticeMap;
-
-	/** Contains references to all current active partice systems on the tires */
-	UPROPERTY()
-	TArray< FParticleTemplatePair > mActiveParticleAndTemplate;
-
-	/** Base name of socket use for tire particles */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	FString mTireEffectSocketName;
-
 	/** Deprecated. Kept for compatibility with legacy saves */
 	UPROPERTY( SaveGame )
 	class UFGTargetPointLinkedList* mTargetNodeLinkedList;
-
-	/** location of the last placed decals for each wheel */
-	UPROPERTY()
-	TArray< FVector > mLastDecalLocations;
-
-	/** If we have overlapped foliage go nuts and destroy them */
-	UPROPERTY()
-	TArray< class UHierarchicalInstancedStaticMeshComponent* > mOverlappedHISMComponents;
-
-	/**
-	* input for added angular Pitch velocity modifier. Between -1.0 and 1.0.
-	* This is to be updated via blueprint.
-	*/
-	UPROPERTY()
-	float mAddedAngularVelocityInputPitch;
-
-	/** 
-	 * input for added angular yaw velocity modifier. Between -1.0 and 1.0. 
-	 * This is to be updated via blueprint.
-	 */
-	UPROPERTY()
-	float mAddedAngularVelocityInputYaw;
-
-	// Set from blueprint. True if drift button is down.
-	bool mIsDrifting;
-
-	/** 
-	 * it may be a good idea to make the added velocity stronger when reversing.
-	 * eg. with the explorer, it will make it easier to drift 180 when reversing.
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle", meta = (ClampMin = 0.1, ClampMax = 5.0) )
-	float mReverseAddedAngularVelocityYawMultiplier;
-
-	/** if true, can control vehicle in air */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	bool mHasAirControl;
-
-	/** length to trace to check for ground */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mGroundTraceLength;
-
-	/** change in linear velocity since last frame */
-	float mDeltaLinearVelocity;
-
-	/** max change in linear velocity since last frame */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mMaxDeltaLinearVelocity;
-
-	/** change in angular velocity since last frame */
-	float mDeltaAngularVelocity;
-
-	/** max change in angular velocity since last frame */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mMaxDeltaAngularVelocity;
-
-	/** Amount of damping to add to roll */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mRollStabilisationStrength;
-
-	/** The min roll angle to consider the vehicle upside down - only as far as roll goes. Other factors are also taken into account. */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mMaxRollAngleForUpsideDown;
-
-	/** The max roll angle to consider the vehicle flat on ground - only as far as roll goes. Other factors are also taken into account. */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mMaxFlatOnGroundRollAngleLimit;
-
-	/** If roll angle is over this value then assisted velocities will not be applied. */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mMaxRollForActivationOfAssistedVelocities;
-
-	/** 
-	 * There can be added acceleration when at low speeds. This max speed is when no more acceleration is added. 
-	 * Added acceleration is interpolated between mMaxAssistedAcceleration -> Zero
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	int32 mMaxSpeedForAddedAcceleration;
-
-	/** Maximum amount of force that can be added to assist acceleration */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mMaxAssistedAcceleration;
-
-	/** If true, Assisted Acceleration & drifting is be in effect */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	bool mHasAssistedVelocities;
-
-	/** If true, roll stabilisation is be in effect */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	bool mHasRollStabilisation;
-
-	/** the lateral force we add for drifting */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mDriftingLateralForce;
-
-	/** the upward force we add for drifting (this is to reduce friction & encourage oversteer) */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mDriftingUpwardForce;
-
-	/** 
-	 * the curve representing the force we add to the drift angle relevant to the current angle.
-	 * Y-axis is abs( degrees ) between forward vector and current velocity direction
-	 * Should be 0 at slight angles to prevent basic speed up when holding drift
-	 * should peak at 90 degrees or so.
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	UCurveFloat* mDriftForwardForceStrengthCurve;
-
-	/** 
-	 * List of bones to apply drift force to when drifting
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	TArray< FName > mDriftForceBones;
-
-	/**
-	* min angle for drift (degrees)
-	*/
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mMinAngleForDrift;
-
-	/** Indicates that we have found ground from previously being airborn */
-	bool mWantsToLand;
-
-	/* Saved velocity while no wheels are touching the ground */
-	float mLandVelocityZ;
-
-	/** Cached surface material under the first tire */
-	UPROPERTY( )
-	UPhysicalMaterial* mCachedSurfaceMaterial;
-
+	
 	/** Do we need fuel to drive */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	bool mNeedsFuelToDrive;
@@ -942,11 +599,11 @@ private:
 	// Self-driving
 
 	UPROPERTY( ReplicatedUsing = OnRep_Info, SaveGame )
-	class AFGWheeledVehicleInfo* mInfo;
+	TObjectPtr<AFGWheeledVehicleInfo> mInfo;
 	
 	/** Linked list with target nodes that make up our path to travel */
-	UPROPERTY( SaveGame, Replicated )
-	class AFGDrivingTargetList* mTargetList;
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_TargetList )
+	TObjectPtr<AFGDrivingTargetList> mTargetList;
 
 	int mSpeedInKMH = 0;
 	bool mIsMenuOpen = false;
@@ -964,6 +621,8 @@ private:
 	UPROPERTY( Replicated, SaveGame )
 	int mSpeedLimit = -1;
 
+	bool mDesiredBrakeAsReverse = true;
+	
 	float mDesiredSteering = 0.0f;
 
 	float mDesiredThrottle = 0.0f;
@@ -972,23 +631,25 @@ private:
 
 	bool mDesiredHandbrake = false;
 
-	UPROPERTY( Replicated, SaveGame )
+	UPROPERTY( ReplicatedUsing = OnRep_IsAutopilotEnabled, SaveGame )
 	bool mIsAutopilotEnabled = false;
-
+	
 	/** The station at which this vehicle is currently being refueled */
-	class AFGBuildableDockingStation* mRefuelingStation = nullptr;
+	UPROPERTY()
+	TObjectPtr<AFGBuildableDockingStation> mRefuelingStation = nullptr;
 
 	UPROPERTY( ReplicatedUsing = OnRep_ManualDockingState )
 	EManualDockingState mManualDockingState = EManualDockingState::MDS_NoDocking;
 
 	/** Deprecated. Use mInfo->mTarget. */
 	UPROPERTY( SaveGame )
-	class AFGTargetPoint* mCurrentTarget;
+	TObjectPtr<AFGTargetPoint> mCurrentTarget;
 
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_RecordingStatus )
 	ERecordingStatus mRecordingStatus = ERecordingStatus::RS_NoRecording;
 
-	class AFGTargetPoint* mStoredTarget = nullptr;
+	UPROPERTY()
+	TObjectPtr<AFGTargetPoint> mStoredTarget = nullptr;
 
 	float mThrottleSampleCount = 0.0f;
 	float mThrottleSampleSum = 0.0f;
@@ -1015,8 +676,4 @@ private:
 	TWeakObjectPtr< AActor > mOverlappingActor;
 
 	float mNextTimeToCheckForLost = 0.0f;
-
-	bool mAreSurroundingLevelsLoaded = false;
-	TArray< AFGVehicleSubsystem::TileLevelData* > mSurroundingTiles;
-	TArray< AFGVehicleSubsystem::CaveLevelData* > mSurroundingCaves;
 };

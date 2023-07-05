@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "CameraAnimationCameraModifier.h"
 #include "FGPlayerControllerBase.h"
 #include "FGChatManager.h"
 #include "FGCharacterPlayer.h"
@@ -12,6 +13,7 @@
 #include "Server/FGDedicatedServerTypes.h"
 #include "FGMapMarker.h"
 #include "Equipment/FGBuildGun.h"
+
 #include "FGPlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FPawnChangedDelegate, APawn*, newPawn );
@@ -27,6 +29,16 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHotbarIndexChanged, int32, newHo
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FRefreshHotbarShortcuts );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnFinishRespawn );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRespawnUIVisibilityChanged, bool, respawnUIVisibility );
+DECLARE_MULTICAST_DELEGATE_TwoParams( FOnChatMessageEnteredDelegate, FChatMessageStruct&, bool& );
+DECLARE_MULTICAST_DELEGATE_OneParam( FOnPlayerControllerBegunPlay, class AFGPlayerController* );
+
+UENUM()
+enum EHitFeedbackType
+{
+	Normal,
+	WeakSpot,
+	Armor
+};
 
 UCLASS( Config=Game)
 class FACTORYGAME_API AFGPlayerController : public AFGPlayerControllerBase
@@ -41,7 +53,6 @@ public:
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags ) override;
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
@@ -51,6 +62,9 @@ public:
 	// Begin AController interface
 	virtual void OnRep_PlayerState() override;
 	virtual void SetPawn( APawn* inPawn ) override;
+	virtual void OnPossess(APawn* aPawn) override;
+	virtual void OnUnPossess() override;
+
 	// End AController interface
 
 	// Begin APlayerController interface
@@ -73,6 +87,8 @@ public:
 	* @param character - the character that died
 	**/
 	virtual void OnControlledCharacterDied( class AFGCharacterBase* character ) override;
+
+	virtual void OnControlledCharacterRevived( AFGCharacterBase* character ) override;
 
 	//@todonow I do not think respawn works entirely correct for vehicles.
 	/** Begin respawning this controllers pawn, call Respawn when done playing any respawn effects. */
@@ -273,6 +289,12 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "UI"  )
 	FOnRespawnUIVisibilityChanged mOnRespawnUIVisibilityChanged;
 
+	/** Called when chat message has been entered by the player but before it has been processed by anything, gives the opportunity to process or cancel it */
+	FOnChatMessageEnteredDelegate ChatMessageEntered;
+
+	/** Called when player controller has received a BeginPlay event and after vanilla logic has been run */
+	static FOnPlayerControllerBegunPlay PlayerControllerBegunPlay;
+
 	// Begin AFGMapManager RPCs
 	// @todok2 should me move these to a RCO of its own in map manager instead?
 	/** Tells the server to start transferring fog of war data to the requesting client  */
@@ -311,6 +333,13 @@ public:
 	UFUNCTION( Reliable, Client )
 	void Client_OnMarkerHighlighted( class AFGPlayerState* fgPlayerState, int32 markerID );
 	// End AFGMapManager RPCs
+
+	/** Play the indicated CameraAnim on this camera.
+	 * @param AnimToPlay - Camera animation to play
+	 * @param AnimParams - Animation Parameters
+	 */
+	UFUNCTION(unreliable, client, BlueprintCallable, Category="Camera")
+	void ClientPlayCameraAnimationSequence(class UCameraAnimationSequence* AnimToPlay, float Scale=1.f, float Rate=1.f, float BlendInTime=0.f, float BlendOutTime=0.f, bool bLoop=false, bool bRandomStartTime=false, ECameraShakePlaySpace Space=ECameraShakePlaySpace::CameraLocal, FRotator CustomPlaySpace=FRotator::ZeroRotator );
 	
 	/** Gets the size on the viewport of the given actor */
 	UFUNCTION( BlueprintPure, Category = "HUD" )
@@ -322,15 +351,7 @@ public:
 
 	/** Gets called on the client */
 	UFUNCTION( Reliable, Client, BlueprintCallable )
-	void Client_AddMessage( FPendingMessageQueue newMessageQueue );
-
-	/** Gets called on the client */
-	UFUNCTION( Reliable, Client )
-    void Client_AnswerCall( TSubclassOf< class UFGAudioMessage > messageToAnswer );
-
-	/** Gets called on the client */
-	UFUNCTION( Reliable, Client )
-    void Client_DeclineCall( TSubclassOf< class UFGAudioMessage > messageToDecline );
+	void Client_AddMessage( TSubclassOf<class UFGMessageBase> newMessage );
 
 	/** Gets called on the client */
 	UFUNCTION( BlueprintCallable, Category = "Message" )
@@ -361,14 +382,13 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	void SetTutorialMode( bool active ) { mInTutorialMode = active; }
 
-	/** Deals the damage on an impact from a projectile fired by a weapon */
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_DealImpactDamage( const FHitResult& impact, FVector forwardVector, float damage, TSubclassOf< UDamageType > damageType, AActor* inInstigator );
+	UFUNCTION( Client, Reliable )
+	void Client_NotifyHitFeedback( EHitFeedbackType feedbackType, AActor* damageCauser, AFGCharacterBase* hitCharacter );
 
-	/** Deals the radial damage from an exploding projectile fired by a weapon */
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_DealRadialDamage( const FHitResult& impact, float damage, float radius, TSubclassOf< UDamageType > damageType, AActor* inInstigator );
-
+	/** Sends chat message visible only to this particular client */
+	UFUNCTION( Client, Reliable )
+	void Client_SendChatMessage( const FChatMessageStruct& chatMessage );
+	
 	/** Used to create our list of sequences  */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Cheat" )
 	void CreateSequenceList();
@@ -409,12 +429,16 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Map" )
 	FORCEINLINE bool HasCurrentAreaBeenPreviouslyVisited() const { return mCurrentAreaWasPreviouslyVisited; }
 
+	/** Lower limit of photo mode FOV. */
+	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
+	FORCEINLINE int32 GetPhotoModeFOVMin() const { return mMinPhotoModeFOV; }
+
+	/** Upper limit of photo mode FOV. */
+	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
+    FORCEINLINE int32 GetPhotoModeFOVMax() const { return mMaxPhotoModeFOV; }
+
 	UFUNCTION(Server, Reliable)
 	void OnAreaEnteredServer(TSubclassOf< UFGMapArea > newArea);
-
-	/** User pressed secondary fire button */
-	UFUNCTION()
-    virtual void OnSecondaryFire();
 
 	/** Notified from the build gun that the build state has changed */
 	UFUNCTION()
@@ -424,22 +448,24 @@ public:
 	UFUNCTION()
 	void OnBuildGunRecipeChanged( TSubclassOf<class UFGRecipe> recipe );
 
+	/** Called whenever an interact widget gets added or removed. */
+	void OnInteractWidgetAddedOrRemoved( class UFGInteractWidget* widget, bool added );
+
 	UFUNCTION( BlueprintImplementableEvent, Category = "Photo Mode" )
 	class UFGPhotoModeWidget* GetPhotoModeWidget() const;
 	
 	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
 	bool GetIsPhotoMode() { return mPhotoModeEnabled; }
 
+	UFUNCTION( BlueprintPure, Category = "Input" )
+	int32 GetMappingContextPriority() const;
+	
 	/** Used to distinguish admin players from simple clients on dedicated servers. Will only hold a useful value on dedicated servers */
 	FServerEntryToken mServerEntryTicket;
-	
-	// Exposes mInputComponentChords so we can bind action chords from outside the player controller. We should look into another system for this though. Maybe the enhanced input plugin from epic.
-	class UInputComponent* GetInputComponentChords() const { return mInputComponentChords; }
-
-	/** Handle pause game input and routes it to game UI */
-	void OnPauseGamePressed();
 
 	class UFGGameUI* GetGameUI() const;
+
+	UInputMappingContext* GetMappingContextChords() const { return mMappingContextChords; }
 	
 protected:
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
@@ -465,14 +491,10 @@ protected:
 
 	// Begin APlayerController interface
 	virtual void SetupInputComponent() override;
-	virtual void BuildInputStack( TArray< UInputComponent* >& inputStack ) override;
 	// End APlayerController interface
 
 	/** Trace and find a location to spawn a ping */
 	void TraceLocationForPing( FHitResult& hitResult );
-
-	/** Sends a ping to the other players at the look at location */
-	void OnAttentionPingPressed();
 	
 	/** Sends a ping to the other players from a given normalized 2D location. Maps the normalized value to the map bounds and linetraces down to the first thing it hits at that location */
 	UFUNCTION( BlueprintCallable, Category = "Map" )
@@ -483,9 +505,7 @@ protected:
 	UFUNCTION( BlueprintCallable, Category = "Map" )
 	UPARAM( DisplayName = "Success" ) bool AddMapMarkerFrom2DLoc( const FMapMarker& mapMarker, FVector2D normalizedLocation, FMapMarker& out_NewMapMarker );
 	
-	void OnMapMarkerModePressed();
 	void EnterMapMarkerMode();
-	void OnMapMarkerModeReleased();
 	UFUNCTION( BlueprintCallable, Category = "Map" )
 	void ExitMapMarkerMode();
 	void OnAddMapMarkerPressed();
@@ -508,11 +528,17 @@ protected:
 	/** Caches a lot off stuff needed for the map area checks */
 	bool InitMapAreaCheckFunction();
 
+	UFUNCTION( BlueprintImplementableEvent, Category = "Map" )
+	void OnChat();
+	
 	UFUNCTION( BlueprintCallable, Category = "Chat" )
 	void EnterChatMessage( const FString& inMessage );
 
 	UFUNCTION( BlueprintNativeEvent, Category = "Input" )
 	void OnDisabledInputGateChanged();
+
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Map" )
+	void ToggleMap();
 
 	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
 	void EnablePhotoMode( bool isEnabled );
@@ -532,17 +558,22 @@ protected:
 	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
 	void ToggleHiResPhotoMode();
 
-	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
-	void IncrementPhotoModeFOV();
-	
-	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
-	void DecrementPhotoModeFOV();
-
 	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
 	int32 GetPhotoModeFOV() { return mPhotoModeFOV; }
 
 	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
 	bool GetHiResPhotoModeEnabled() { return mHiResPhotoMode; }
+	
+	/** Returns true if we could give all items to the player. Partial adds are allowed */
+	UFUNCTION( BlueprintCallable, Category = "Items" )
+	bool GiveItemStacks( TSubclassOf< class UFGItemDescriptor > itemDescriptor, int32 numberOfStacks = 1 );
+	UFUNCTION( Reliable, Server )
+	void Server_GiveItemStacks( TSubclassOf< class UFGItemDescriptor > itemDescriptor, int32 numberOfStacks );
+	/** Returns true if we could give all items to the player. Partial adds are allowed */
+	UFUNCTION( BlueprintCallable, Category = "Items" )
+	bool GiveItemSingle( TSubclassOf< class UFGItemDescriptor > itemDescriptor, int32 numberOfItems = 1 );
+	UFUNCTION( Reliable, Server )
+	void Server_GiveItemSingle( TSubclassOf< class UFGItemDescriptor > itemDescriptor, int32 numberOfItems );
 
 #if WITH_CHEATS
 	void ToggleCheatBoard();
@@ -595,12 +626,65 @@ private:
 	void SetRespawnUIVisibility( bool respawnUIVisibility );
 
 	static void testAndProcesAdaMessages( AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds, class APlayerState* PlayerState, class AFGGameState* fgGameState );
+	
+	/** Gets the saved mappings from game user settings and applies them to the enhanced input subsystem */
+	void SetupSavedKeyMappings( class UEnhancedInputLocalPlayerSubsystem* inputSubsystem );
 
+	/** Input Actions */
+	virtual void Input_Respawn( const FInputActionValue& ActionValue );
+
+	// Tried to merge all these down into the same binding (1D Axis, round the value to int), but couldn't get it to work with the pressed trigger for some reason, so we're doing it this way ¯\_(ツ)_/¯
+	virtual void Input_HotbarShortcut1( const FInputActionValue& ActionValue );
+	virtual void Input_HotbarShortcut2( const FInputActionValue& ActionValue );
+	virtual void Input_HotbarShortcut3( const FInputActionValue& ActionValue );
+	virtual void Input_HotbarShortcut4( const FInputActionValue& ActionValue );
+	virtual void Input_HotbarShortcut5( const FInputActionValue& ActionValue );
+	virtual void Input_HotbarShortcut6( const FInputActionValue& ActionValue );
+	virtual void Input_HotbarShortcut7( const FInputActionValue& ActionValue );
+	virtual void Input_HotbarShortcut8( const FInputActionValue& ActionValue );
+	virtual void Input_HotbarShortcut9( const FInputActionValue& ActionValue );
+	virtual void Input_HotbarShortcut10( const FInputActionValue& ActionValue );
+	
+	virtual void Input_Chat( const FInputActionValue& ActionValue );
+	
+	virtual void Input_Pause( const FInputActionValue& ActionValue );
+	
+	virtual void Input_CheatMenu( const FInputActionValue& ActionValue );
+	
+	virtual void Input_CycleHotbarAxis( const FInputActionValue& ActionValue );
+	
+	virtual void Input_AttentionPing( const FInputActionValue& ActionValue );
+	
+	virtual void Input_MapMarkerMode( const FInputActionValue& ActionValue );
+	virtual void Input_MapMarkerPlace( const FInputActionValue& ActionValue );
+
+	virtual void Input_ToggleMap( const FInputActionValue& ActionValue );
+	virtual void Input_TogglePhotoMode( const FInputActionValue& ActionValue );
+	
+	virtual void Input_PhotoModeFOVScroll( const FInputActionValue& ActionValue );
+    virtual void Input_PhotoModeToggleInstructionWidget( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeToggleHiRes( const FInputActionValue& ActionValue );
+	
+	virtual void Input_ClipboardCopy( const FInputActionValue& actionValue );
+    virtual void Input_ClipboardPaste( const FInputActionValue& actionValue );
+	
 public:
+	/**
+	 * Binds the input context to the input subsystem owned by this local player
+	 * Will also apply additional associated mapping contexts on top with lower priority
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void SetMappingContextBound( UInputMappingContext* context, bool bind, int32 priority = 0 );
+	
 	/** Indicates if this playercontroller should trigger sound volumes */
 	UPROPERTY( EditDefaultsOnly, Category = "Sound" )
 	bool mCanAffectAudioVolumes;
 
+	float mRespawnInvincibilityTimer = 0.0f;
+
+	UPROPERTY( Replicated )
+	TObjectPtr<class AFGFoliageStateRepProxy> mFoliageStateRepProxy;
+	
 protected:
 	/** Object that manages non-cheat commands. Instantiated in shipping builds. */
 	UPROPERTY( Transient )
@@ -610,12 +694,25 @@ protected:
 	UPROPERTY( Replicated )
 	TArray< UFGRemoteCallObject* > mRemoteCallObjects;
 
-	/** 
-	 * This input component should only be used for chords, Alt/Ctrl/Shift/Cmd + Any Key.
-	 * This will be on top of stack, since it only consumes input if entire chord is pressed, so a single left click will be let through
-	 */
-	UPROPERTY()
-	class UInputComponent* mInputComponentChords;
+	/** Mapping context for chorded keys. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextChords;
+
+	/** Mapping context for the player controller. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContext;
+
+	/** Mapping context which gets applied when the player dies. */
+    UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+    TObjectPtr< UInputMappingContext > mMappingContextDead;
+	
+	/** Mapping context for the photo mode. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextPhotoMode;
+
+	/** Mapping context for the map marker mode. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextMapMarkerMode;
 
 	/** The class of the attention ping actor we want to use */
 	UPROPERTY( EditDefaultsOnly, Category = "Attention Ping" )
@@ -682,9 +779,6 @@ private:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Photo Mode" )
 	int32 mMaxPhotoModeFOV;
-
-	UPROPERTY()
-	class UInputComponent* mPhotomodeInputComponent;
 
 	/** Subsystem that keeps track of effects in proximity to the player */
 	UPROPERTY()

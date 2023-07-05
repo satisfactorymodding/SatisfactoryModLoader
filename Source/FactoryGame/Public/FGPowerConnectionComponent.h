@@ -7,6 +7,15 @@
 #include "FGPowerConnectionComponent.generated.h"
 
 
+UENUM( BlueprintType )
+enum class EPowerConnectionType : uint8
+{
+	PCT_Default 			UMETA( DisplayName = "Default" ),
+	PCT_PowerTower 			UMETA( DisplayName = "Power Tower" ),
+
+	PCT_Any					UMETA( DisplayName = "Any" )
+};
+
 /**
  * Special type of circuit connection that provides a connection to the power grid.
  */
@@ -25,6 +34,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerConnection" )
 	FORCEINLINE class UFGPowerInfoComponent* GetPowerInfo() const { return mPowerInfo; }
 
+	/** Get what type of power connection this is. Power connections of different types are incompatible. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerConnection" )
+	FORCEINLINE EPowerConnectionType GetPowerConnectionType() const { return mPowerConnectionType; }
+	
 	/**
 	 * @return The circuit this is connected to; nullptr if not connected.
 	 * @note This can be changed/removed at any time so do not save copies to it.
@@ -56,6 +69,10 @@ private:
 	 */
 	UPROPERTY()
 	class UFGPowerInfoComponent* mPowerInfo;
+
+	/** What kind of power connection this is. Power connections of different types are incompatible. */
+	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
+	EPowerConnectionType mPowerConnectionType;
 
 	/** true if the power production the circuit connected to this is above zero, false otherwise. */
 	UPROPERTY()

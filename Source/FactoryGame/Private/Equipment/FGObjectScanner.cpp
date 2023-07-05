@@ -19,10 +19,13 @@ void AFGObjectScanner::BeginPlay(){ }
 void AFGObjectScanner::Tick(float deltaTime){ }
 void AFGObjectScanner::Equip( AFGCharacterPlayer* character){ }
 void AFGObjectScanner::UnEquip(){ }
+void AFGObjectScanner::AddEquipmentActionBindings(){ }
 bool AFGObjectScanner::CycleForward(){ return bool(); }
 bool AFGObjectScanner::CycleBackward(){ return bool(); }
 void AFGObjectScanner::GetAvailableScannableDescriptors(TArray < TSubclassOf<UFGItemDescriptor> >& out_availableDescriptors){ }
 void AFGObjectScanner::SetScannableDescriptor(TSubclassOf<UFGItemDescriptor> newScannableDescriptor){ }
+void AFGObjectScanner::Input_OpenMenu(const FInputActionValue& actionValue){ }
+void AFGObjectScanner::Input_Cycle(const FInputActionValue& actionValue){ }
 bool AFGObjectScanner::Internal_CycleObjects(ECycleDirection direction){ return bool(); }
 void AFGObjectScanner::RemoveInvalidObjectsFromCache(TSubclassOf< AActor > scannableClass){ }
 void AFGObjectScanner::UpdateClosestObject(){ }

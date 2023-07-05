@@ -27,7 +27,7 @@ public:
 	FNativeBusMeteringCallback OnNativeBusMeteringInfoUpdate;
 
 	UFUNCTION(BlueprintCallable)
-	void SetMeteringFlags(UPARAM(meta = (Bitmask, BitmaskEnum = EAkMeteringFlags) ) EAkMeteringFlags MeteringFlags);
+	void SetMeteringFlags(UPARAM(meta = (Bitmask, BitmaskEnum = "/Script/AkAudio.EAkMeteringFlags") ) EAkMeteringFlags MeteringFlags);
 	
 	virtual void BusMeteringInfoUpdate( const FAkBusMeteringInfo& meteringInfo ) override;
 

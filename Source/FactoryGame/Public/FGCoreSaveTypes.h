@@ -45,3 +45,4 @@ namespace SaveSystemConstants
 	static const TCHAR BlueprintHeaderCustomVersionFriendlyName[] = TEXT("BlueprintHeaderVersion");
 
 }
+

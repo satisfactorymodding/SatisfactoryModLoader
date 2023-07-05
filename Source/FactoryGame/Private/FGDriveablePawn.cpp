@@ -8,6 +8,7 @@ AFGDriveablePawn::AFGDriveablePawn() : Super() {
 	this->mDriverSeatSocket = TEXT("None");
 	this->mDriverSeatAnimation = nullptr;
 	this->mDriverExitOffset = FVector::ZeroVector;
+	this->mMappingContext = nullptr;
 	this->mDriver = nullptr;
 	this->mIsDriving = false;
 }
@@ -30,10 +31,16 @@ void AFGDriveablePawn::UpdatePlayerStatus(){ }
 bool AFGDriveablePawn::CanDriverEnter( AFGCharacterPlayer* character){ return bool(); }
 bool AFGDriveablePawn::DriverEnter( AFGCharacterPlayer* driver){ return bool(); }
 bool AFGDriveablePawn::DriverLeave(bool keepDriving){ return bool(); }
+void AFGDriveablePawn::Server_DriverLeave_Implementation(){ }
+bool AFGDriveablePawn::CanLeaveVehicle( AFGCharacterPlayer* character){ return bool(); }
 void AFGDriveablePawn::AttachDriver( AFGCharacterPlayer* driver){ }
 bool AFGDriveablePawn::GetSafeExitLocation( AFGCharacterPlayer* exitingCharacter, const FVector& exitOffset, FVector& out_location, FRotator& out_rotation) const{ return bool(); }
 void AFGDriveablePawn::OnDrivingStatusChanged(){ }
+void AFGDriveablePawn::AddInputBindings(UInputComponent* inputComponent){ }
+void AFGDriveablePawn::ClearInputBindings( AFGPlayerController* playerController){ }
 void AFGDriveablePawn::PlaceExitingDriver(){ }
 void AFGDriveablePawn::SetDriving(bool isDriving){ }
+void AFGDriveablePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent){ }
+void AFGDriveablePawn::Input_LeaveVehicle(const FInputActionValue& actionValue){ }
 void AFGDriveablePawn::OnRep_IsDriving(){ }
-void AFGDriveablePawn::OnRep_Driver(){ }
+void AFGDriveablePawn::OnRep_Driver(AFGCharacterPlayer* previousDriver){ }

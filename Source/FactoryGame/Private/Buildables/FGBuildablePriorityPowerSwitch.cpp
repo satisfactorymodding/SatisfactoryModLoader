@@ -11,7 +11,6 @@ void AFGBuildablePriorityPowerSwitch::GetLifetimeReplicatedProps(TArray< FLifeti
 	DOREPLIFETIME(AFGBuildablePriorityPowerSwitch, mInfo);
 }
 void AFGBuildablePriorityPowerSwitch::AcceptCircuitGroup( UFGPowerCircuitGroup* circuitGroup){ }
-TArray< class AFGPriorityPowerSwitchInfo* > AFGBuildablePriorityPowerSwitch::GetAllInfos() const{ return TArray<class AFGPriorityPowerSwitchInfo*>(); }
 void AFGBuildablePriorityPowerSwitch::SetPriority(int32 priority){ }
 void AFGBuildablePriorityPowerSwitch::EnsureInfoCreated(){ }
 void AFGBuildablePriorityPowerSwitch::OnRep_Priority(){ }

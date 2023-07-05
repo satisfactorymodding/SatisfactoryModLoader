@@ -80,6 +80,10 @@ public:
 
 	/** Get the back animation to play on the player */
 	FORCEINLINE EBackEquipment GetBackAnimation() const{ return mBackAnimation; }
+
+	/** Called when the camera mode of the player having the equipment changes to third or first person */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	void OnCameraModeChanged( ECameraMode newCameraMode );
 protected:
 	/** @return character this is attached to; nullptr if not attached. */
 	UFUNCTION( BlueprintPure, Category = "Equipment|Attachment" )

@@ -20,10 +20,9 @@ public:
 	
 	// Begin UObject interface
 	virtual bool IsSupportedForNetworking() const override;
-	virtual bool ReplicateSubobjects( class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags );
 	virtual int32 GetFunctionCallspace( UFunction* Function, FFrame* Stack ) override;
 	virtual bool CallRemoteFunction( UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack ) override;
-	virtual void PreSave( const ITargetPlatform* TargetPlatform ) override;
+	virtual void PreSave( FObjectPreSaveContext saveContext ) override;
 	// End UObject interface
 
 	/** Applies default cheats when "EnableCheats" command is triggered. */
@@ -45,6 +44,10 @@ public:
 	void NoCost( bool enabled );
 	UFUNCTION( exec, CheatBoard )
 	bool NoCost_Get();
+	UFUNCTION( exec, CheatBoard, Category = "Resources" )
+	void NoUnlockCost( bool enabled );
+	UFUNCTION( exec, CheatBoard )
+	bool NoUnlockCost_Get();
 	UFUNCTION( Server, Reliable )
 	void Server_NoPower( bool enabled );
 	UFUNCTION( exec, CheatBoard, Category = "Resources" )
@@ -75,11 +78,17 @@ public:
 	void GiveItemsSingle( TSubclassOf< class UFGItemDescriptor > resource, int32 numberOfItems );
 	UFUNCTION( exec, Category = "Resources" )
 	void ClearGiveItemPopularList();
+	UFUNCTION( Exec, CheatBoard, Category = "Resources", meta = ( ToolTip = "Clear the inventory of the player" ) )
+	void ClearInventory();
+	UFUNCTION( Server, Reliable )
+	void Server_ClearInventory();
 	UFUNCTION( Server, Reliable )
 	void Server_GiveResourceSinkCoupons( int32 numCoupons );
 	UFUNCTION( exec, CheatBoard, Category = "Resources:-2", meta = ( ToolTip = "Give the number of coupons specified" ) )
 	void GiveResourceSinkCoupons( int32 numCoupons );
-
+	UFUNCTION( exec, CheatBoard, Category = "Resources" )
+	void EnableCreativeMode();
+	
 	/****************************************************************
 	 * UI
 	 ****************************************************************/
@@ -166,6 +175,16 @@ public:
 	/** Forces active spawners to spawn creatures even if the creature isn't set to spawn yet (because of day/night restrictions etc) */
 	UFUNCTION( exec, CheatBoard, category = "Creature" )
 	void Creature_ForceSpawnCreatures();
+	UFUNCTION( Server, Reliable )
+	void Server_Creature_AddCreatureOverride( TSubclassOf< class AFGCreature > creatureClassToReplace, TSubclassOf< class AFGCreature > creatureClassOverride );
+	/** Adds a creature class override, so trying to spawn a creature of a certain type will instead spawn another. Override with null to disable the creature, override with the same creature to re-enable it. */
+	UFUNCTION( exec, CheatBoard, category = "Creature" )
+	void Creature_AddCreatureOverride( TSubclassOf< class AFGCreature > creatureClassToReplace, TSubclassOf< class AFGCreature > creatureClassOverride );
+	UFUNCTION( Server, Reliable )
+	void Server_Creature_SetArachnidCreaturesDisabled( bool disabled );
+	/** Whether or not to enable / disable arachnid creatures from spawning. */
+	UFUNCTION( exec, CheatBoard, category = "Creature" )
+	void Creature_SetArachnidCreaturesDisabled( bool disabled );
 
 	/****************************************************************
 	 * Player
@@ -202,6 +221,34 @@ public:
 	void SetRandomDebugStartingPoint();
 	UFUNCTION( exec, CheatBoard, category = "Player|Rules" )
 	void SetCreatureHostility( EPlayerHostilityMode hostility );
+	/** Makes the player into the server admin. That does not change the admin password, but gives temporarily privileges to the logged in player. Only available in non-Shipping builds */
+	UFUNCTION( Exec, CheatBoard, Category = "Player|Server" )
+	void PromoteToServerAdmin();
+	/** Revokes the admin permissions from the logged in player temporarily. Does not change admin password. Only available in non-Shipping builds */
+	UFUNCTION( Exec, CheatBoard, Category = "Player|Server" )
+	void DemoteToServerPlayer();
+	UFUNCTION( Server, Reliable )
+	void Server_PromoteToServerAdmin( bool isAdminNow );
+	/** Collects items from all of the crates in the world to the player inventory */
+	UFUNCTION( Exec, CheatBoard, Category = "Player" )
+	void CollectAllCrates();
+	UFUNCTION( Server, Reliable )
+	void Server_CollectAllCrates();
+	/** Brings all unpossessed player pawns to the player location */
+	UFUNCTION( Exec, CheatBoard, Category = "Player" )
+	void BringAllUnpossessedPawnsHere();
+	UFUNCTION( Server, Reliable )
+	void Server_BringAllUnpossessedPawnsHere();
+	/** Revives the currently possessed pawn */
+	UFUNCTION( Exec, CheatBoard, Category = "Player" )
+	void ReviveSelf();
+	UFUNCTION( Server, Reliable )
+	void Server_ReviveSelf();
+	/** Ragdolls the character */
+	UFUNCTION( Exec, CheatBoard, Category = "Player" )
+	void RagdollSelf();
+	UFUNCTION( Server, Reliable )
+	void Server_RagdollSelf();
 
 	/****************************************************************
 	 * Foliage
@@ -309,26 +356,6 @@ public:
 	UFUNCTION( exec, CheatBoard, category = "Map" )
 	void Map_Hide();
 	
-	/****************************************************************
-	 * Story
-	 ****************************************************************/
-	// @todok2 implement client support when we now what to do with story
-	// Removed cheatboard tag for now so we don't have them on the cheat board
-	UFUNCTION( exec, category = "Story" )
-	void Story_TriggerNextPrimaryMessageInQueue();
-	UFUNCTION( exec, category = "Story" )
-	void Story_TriggerNextSecondaryMessageInQueue( int32 storyQueueIndex = 0 );
-	UFUNCTION( exec, category = "Story" )
-	void Story_TriggerNextFloatingMessageInPrimaryQueue();
-	UFUNCTION( exec, category = "Story" )
-	void Story_TriggerRandomTriggeredBarksMessage();
-	UFUNCTION( exec, category = "Story" )
-	void Story_StartNextStoryQueue();
-	UFUNCTION( exec, category = "Story" )
-	void Story_ResetAllStoryQueues();
-	UFUNCTION( exec, category = "Story" )
-	void Story_ResetCurrentStoryQueue();
-
 	/****************************************************************
 	 * Photo
 	 ****************************************************************/
@@ -587,8 +614,6 @@ public:
 	 * Audio
 	 ****************************************************************/
 	UFUNCTION( exec, CheatBoard, category = "Audio" )
-	void Audio_EnableDebug(bool isEnabled);
-	UFUNCTION( exec, CheatBoard, category = "Audio" )
 	void Audio_ToggleLandingDebug();
 	
 	/****************************************************************
@@ -603,6 +628,17 @@ public:
 	UFUNCTION( exec )
 	void ShowSequenceList();
 
+	/** Overwrites the Dedicated Server's currently configured admin password. Only works in Development config */
+	UFUNCTION( Exec, CheatBoard, Category = "Player|Server" )
+	void SetServerAdminPassword( const FString& inNewAdminPassword );
+	/** Overwrites the Dedicated Server's currently configured player password. Only works in Development config */
+	UFUNCTION( Exec, CheatBoard, Category = "Player|Server" )
+	void SetServerPlayerPassword( const FString& inNewPlayerPassword );
+
+	UFUNCTION( Server, Reliable )
+	void Server_SetAdminPassword( const FString& inNewAdminPassword );
+	UFUNCTION( Server, Reliable )
+	void Server_SetPlayerPassword( const FString& inNewPlayerPassword );
 private:
 	// Traverse all UFGCheatManager cheat functions and store a mapping so we know what category they belong to since that data isn't available in packaged builds
 	void CacheFunctionCategoryMapping();

@@ -11,9 +11,9 @@ AFGResourceDeposit::AFGResourceDeposit() : Super() {
 	this->mHasInitializedVisuals = false;
 	this->mDepositMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DepositMesh"));
 	this->mOverrideResourceClass = nullptr;
+	this->mCanBeRadioactive = true;
 	this->mCanPlaceResourceExtractor = false;
 	this->mExtractMultiplier = 2;
-	this->bAlwaysRelevant = false;
 	this->RootComponent = mDepositMeshComponent;
 }
 void AFGResourceDeposit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

@@ -2,10 +2,14 @@
 
 #include "FGWaterVolume.h"
 #include "AI/FGNavArea_Water.h"
+#include "UObject/ObjectSaveContext.h"
 
+#if DEBUG_POST_PROCESS_VOLUME_ENABLE
+FString AFGWaterVolume::GetDebugName() const{ return FString(); }
+#endif 
 #if WITH_EDITOR
 void AFGWaterVolume::PostLoad(){ Super::PostLoad(); }
-void AFGWaterVolume::PreSave(const  ITargetPlatform* targetPlatform){ }
+void AFGWaterVolume::PreSave(FObjectPreSaveContext saveContext){ }
 void AFGWaterVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 void AFGWaterVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
@@ -17,10 +21,10 @@ AFGWaterVolume::AFGWaterVolume() : Super() {
 	this->mWaterAudio = nullptr;
 	this->mCanPlaceExtractor = true;
 	this->mPostProcessSettings = nullptr;
-	this->mResourceClass = FSoftClassPath("/Game/FactoryGame/Resource/RawResources/Water/Desc_Water.Desc_Water_C").ResolveClass();
+	this->mResourceClass = nullptr;
 	this->bWaterVolume = true;
 }
-void AFGWaterVolume::PostInitProperties(){ Super::PostInitProperties(); }
+void AFGWaterVolume::OnConstruction(const FTransform& transform){ }
 void AFGWaterVolume::BeginPlay(){ }
 void AFGWaterVolume::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 bool AFGWaterVolume::IsOverlapInVolume(const  USceneComponent& testComponent) const{ return bool(); }

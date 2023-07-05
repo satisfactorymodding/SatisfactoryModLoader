@@ -18,13 +18,14 @@ AFGEquipment::AFGEquipment() : Super() {
 	this->mBackAnimation = EBackEquipment::BE_None;
 	this->mHasPersistentOwner = false;
 	this->mOnlyVisibleToOwner = true;
+	this->mMappingContext = nullptr;
+	this->mDefaultEquipmentActions = 0;
 	this->mAttachment = nullptr;
 	this->mSecondaryAttachment = nullptr;
 	this->mIdlePoseAnimation = nullptr;
 	this->mIdlePoseAnimation3p = nullptr;
 	this->mCrouchPoseAnimation3p = nullptr;
 	this->mSlidePoseAnimation3p = nullptr;
-	this->mUseDefaultPrimaryFire = false;
 	this->mAttachmentIdleAO = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -56,12 +57,8 @@ bool AFGEquipment::ShouldSave_Implementation() const{ return bool(); }
 void AFGEquipment::Equip( AFGCharacterPlayer* character){ }
 void AFGEquipment::UnEquip(){ }
 void AFGEquipment::OnCharacterMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode, EMovementMode NewMovementMode, uint8 NewCustomMode){ }
-void AFGEquipment::OnDefaultPrimaryFirePressed(){ }
 void AFGEquipment::UpdatePrimitiveColors(){ }
-void AFGEquipment::Server_DefaultPrimaryFire_Implementation(){ }
-bool AFGEquipment::Server_DefaultPrimaryFire_Validate(){ return bool(); }
-void AFGEquipment::DoDefaultPrimaryFire_Native(){ }
-bool AFGEquipment::CanDoDefaultPrimaryFire_Implementation(){ return bool(); }
+void AFGEquipment::UpdateMaterialsFromCameraMode(){ }
 void AFGEquipment::DisableEquipment(){ }
 AFGCharacterPlayer* AFGEquipment::GetInstigatorCharacter() const{ return nullptr; }
 void AFGEquipment::OnColorUpdate(int32 index){ }
@@ -80,6 +77,13 @@ void AFGEquipment::WasSlottedIn_Implementation( AFGCharacterPlayer* holder){ }
 void AFGEquipment::GetSupportedConsumableTypes(TArray<TSubclassOf< UFGItemDescriptor >>& out_itemDescriptors) const{ }
 int AFGEquipment::GetSelectedConsumableTypeIndex() const{ return int(); }
 void AFGEquipment::SetSelectedConsumableTypeIndex(const int selectedIndex){ }
+int32 AFGEquipment::GetMappingContextPriority() const{ return int32(); }
+ECameraMode AFGEquipment::GetInstigatorCameraMode() const{ return ECameraMode(); }
+void AFGEquipment::OnCameraModeChanged_Implementation(ECameraMode newCameraMode){ }
+void AFGEquipment::OnInteractWidgetAddedOrRemoved( UFGInteractWidget* widget, bool added){ }
+void AFGEquipment::Server_TriggerDefaultEquipmentActionEvent_Implementation(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
+void AFGEquipment::TriggerDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
+void AFGEquipment::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
 void AFGEquipment::WasEquipped_Implementation(){ }
 void AFGEquipment::WasUnEquipped_Implementation(){ }
 void AFGEquipment::AddEquipmentHUD() const{ }
@@ -94,3 +98,6 @@ void AFGEquipment::Server_ChargeForUse_Implementation(){ }
 bool AFGEquipment::Server_ChargeForUse_Validate(){ return bool(); }
 void AFGEquipment::ChargeForUse_Internal(){ }
 void AFGEquipment::OnChildEquipmentReplicated(){ }
+void AFGEquipment::SetMappingContextApplied(bool applied){ }
+void AFGEquipment::Input_DefaultPrimaryFire(const FInputActionValue& actionValue){ }
+void AFGEquipment::Input_DefaultSecondaryFire(const FInputActionValue& actionValue){ }

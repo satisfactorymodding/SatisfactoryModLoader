@@ -14,10 +14,12 @@
 class FObjectReaderFName : public FObjectReader
 {
 public:
-	FObjectReaderFName( UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion, class UWorld* world );
+	FObjectReaderFName( UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion, class UWorld* world, FPackageFileVersion version, bool migrateObjectRefsToPersistent );
 
-	FObjectReaderFName& operator<<( class UObject*& Res );
+	virtual FArchive& operator<<( class UObject*& Res ) override;
+	virtual FArchive& operator<<( FObjectPtr& Res ) override;
 	virtual FArchive& operator<<( class FName& N ) override;
 private:
 	class UWorld* mWorld;
+	bool mMigrateObjectRefsToPersistentLevel;
 };

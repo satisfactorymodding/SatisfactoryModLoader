@@ -37,9 +37,6 @@ public:
 	// Begin AFGHologram Interface
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-	// End AFGHologram Interface
-
-	// Begin AFGHologram Interface
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;

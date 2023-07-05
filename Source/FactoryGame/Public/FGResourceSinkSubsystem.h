@@ -171,6 +171,8 @@ public:
 
 	int32 GetResourceSinkPointsForItem( TSubclassOf< class UFGItemDescriptor > itemDescriptor );
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|ResourceSink" )
+	bool FindResourceSinkPointsForItem( TSubclassOf< class UFGItemDescriptor > itemDescriptor, int32& out_numPoints, EResourceSinkTrack& out_itemTrack );
 private:
 	/** Handle the points added to the point queue and adds them to the system */
 	void HandleQueuedPoints();

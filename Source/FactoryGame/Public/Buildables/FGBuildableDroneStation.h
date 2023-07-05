@@ -47,24 +47,24 @@ public:
 	AFGBuildableDroneStation();
 
 	// Begin IFGActorRepresentationInterface
-	virtual bool AddAsRepresentation() override;
-	virtual bool UpdateRepresentation() override;
-	virtual bool RemoveAsRepresentation() override;
-	virtual bool IsActorStatic() override;
-	virtual FVector GetRealActorLocation() override;
-	virtual FRotator GetRealActorRotation() override;
-	virtual class UTexture2D* GetActorRepresentationTexture() override;
-	virtual FText GetActorRepresentationText() override;
-	virtual void SetActorRepresentationText( const FText& newText ) override;
-	virtual FLinearColor GetActorRepresentationColor() override;
-	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
-	virtual ERepresentationType GetActorRepresentationType() override;
-	virtual bool GetActorShouldShowInCompass() override;
-	virtual bool GetActorShouldShowOnMap() override;
-	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
-	virtual float GetActorFogOfWarRevealRadius() override;
-	virtual ECompassViewDistance GetActorCompassViewDistance() override;
-	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	UFUNCTION() virtual bool AddAsRepresentation() override;
+	UFUNCTION() virtual bool UpdateRepresentation() override;
+	UFUNCTION() virtual bool RemoveAsRepresentation() override;
+	UFUNCTION() virtual bool IsActorStatic() override;
+	UFUNCTION() virtual FVector GetRealActorLocation() override;
+	UFUNCTION() virtual FRotator GetRealActorRotation() override;
+	UFUNCTION() virtual class UTexture2D* GetActorRepresentationTexture() override;
+	UFUNCTION() virtual FText GetActorRepresentationText() override;
+	UFUNCTION() virtual void SetActorRepresentationText( const FText& newText ) override;
+	UFUNCTION() virtual FLinearColor GetActorRepresentationColor() override;
+	UFUNCTION() virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	UFUNCTION() virtual ERepresentationType GetActorRepresentationType() override;
+	UFUNCTION() virtual bool GetActorShouldShowInCompass() override;
+	UFUNCTION() virtual bool GetActorShouldShowOnMap() override;
+	UFUNCTION() virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	UFUNCTION() virtual float GetActorFogOfWarRevealRadius() override;
+	UFUNCTION() virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	// End IFGActorRepresentationInterface
 
 	// Begin AActor interface
@@ -101,6 +101,9 @@ public:
 	/** If successful, returns 0 if docking is approved right away, otherwise returns position in queue. */
 	UFUNCTION( BlueprintCallable, Category = "Drone Station" )
 	int32 RequestDocking( class AFGDroneVehicle* DroneToDock );
+
+	UFUNCTION( BlueprintCallable, Category = "Drone Station" )
+	bool IsDroneInQueue( class AFGDroneVehicle* Drone ) const;
 
 	UFUNCTION( BlueprintPure, Category = "Drone Station" )
     EItemTransferringStage GetItemTransferringStage() const { return mItemTransferringStage; }
@@ -139,15 +142,15 @@ public:
 	
 	/** Get the inventory that the docked drone unloads into */
 	UFUNCTION( BlueprintPure, Category = "Drone Station" )
-	class UFGInventoryComponent* GetInputInventory() const { return mInputInventoryHandler->GetActiveInventoryComponent(); }
+	class UFGInventoryComponent* GetInputInventory() const { return mInputInventoryHandler.GetActiveInventoryComponent(); }
 
 	/** Get the inventory that the docked drone loads from */
 	UFUNCTION( BlueprintPure, Category = "Drone Station" )
-	class UFGInventoryComponent* GetOutputInventory() const { return mOutputInventoryHandler->GetActiveInventoryComponent(); }
+	class UFGInventoryComponent* GetOutputInventory() const { return mOutputInventoryHandler.GetActiveInventoryComponent(); }
 
 	/** Get the inventory that the docked drone loads from */
 	UFUNCTION( BlueprintPure, Category = "Drone Station" )
-	class UFGInventoryComponent* GetBatteryInventory() const { return mBatteryInventoryHandler->GetActiveInventoryComponent(); }
+	class UFGInventoryComponent* GetBatteryInventory() const { return mBatteryInventoryHandler.GetActiveInventoryComponent(); }
 
 	/** @returns the info that is always present on both client and server */
 	UFUNCTION( BlueprintPure, Category = "Drone Station" )
@@ -186,7 +189,7 @@ public:
 
 	virtual void PreSerializedToBlueprint() override;
 	virtual void PostSerializedToBlueprint() override;
-	virtual void PostSerializedFromBlueprint() override;
+	virtual void PostSerializedFromBlueprint( bool isBlueprintWorld ) override;
 
 protected:
 	// Begin FGBuildableFactory interface
@@ -199,6 +202,14 @@ protected:
     bool FilterBatteryClasses( TSubclassOf< UObject > object, int32 idx ) const;
 
 	bool IsValidFuel( TSubclassOf< class UFGItemDescriptor > resource ) const;
+
+	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
+	{
+		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
+		out_repDetailData.Add( &mBatteryInventoryHandler );
+		out_repDetailData.Add( &mInputInventoryHandler );
+		out_repDetailData.Add( &mOutputInventoryHandler );
+	}
 	
 private:
 	UFUNCTION()
@@ -323,13 +334,13 @@ private:
 	int8 mBatteryStorageSizeY;
 	
 	UPROPERTY()
-	class UFGReplicationDetailInventoryComponent* mInputInventoryHandler;
+	FReplicationDetailData mInputInventoryHandler;
 	
 	UPROPERTY()
-	class UFGReplicationDetailInventoryComponent* mOutputInventoryHandler;
+	FReplicationDetailData mOutputInventoryHandler;
 	
 	UPROPERTY()
-	class UFGReplicationDetailInventoryComponent* mBatteryInventoryHandler;
+	FReplicationDetailData mBatteryInventoryHandler;
 
 	/** Inventory where we transfer items from when loading a drone.  */
 	UPROPERTY( SaveGame )

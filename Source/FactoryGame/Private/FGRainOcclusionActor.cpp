@@ -2,6 +2,7 @@
 
 #include "FGRainOcclusionActor.h"
 #include "Components/SceneComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 
 FSimpleBuildingInfo FSimpleBuildingInfo::DefaultSquareFoundation(AFGBuildable* Source){ return FSimpleBuildingInfo(); }
 FSimpleBuildingInfo::FSimpleBuildingInfo(AFGBuildable* Source){ }

@@ -41,233 +41,412 @@ public:
 	UPROPERTY( EditAnywhere, Category = "Weather", meta = ( Bitmask, BitmaskEnum = "EWeatherStateMask" ) )
 	uint8 WeatherStatesMask;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", meta=(editcondition = "OverrideFogHeight") )
-	FCyclicRuntimeFloatCurve FogHeight;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FogHeight_DEPRECATED;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", meta=(editcondition = "OverrideFogDensity") )
-	FCyclicRuntimeFloatCurve FogDensity;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", DisplayName="FogHeight", meta=(editcondition = "OverrideFogHeight") );
+	FRuntimeFloatCurve FogHeight2;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", meta=(editcondition = "OverrideFogInscatteringColor") )
-	FCyclicRuntimeColorCurve FogInscatteringColor;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FogDensity_DEPRECATED;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", AdvancedDisplay, meta=(editcondition = "OverrideFullyDirectionalInscatteringColorDistance") )
-	FCyclicRuntimeFloatCurve FullyDirectionalInscatteringColorDistance;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", DisplayName="FogDensity", meta=(editcondition = "OverrideFogDensity") )
+	FRuntimeFloatCurve FogDensity2;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", AdvancedDisplay, meta=(editcondition = "OverrideNonDirectionalInscatteringColorDistance") )
-	FCyclicRuntimeFloatCurve NonDirectionalInscatteringColorDistance;
+	UPROPERTY()
+	FCyclicRuntimeColorCurve FogInscatteringColor_DEPRECATED;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve FogInscatteringLuminance_DEPRECATED;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", AdvancedDisplay, meta=(editcondition = "OverrideDirectionalInscatteringExponent") )
-	FCyclicRuntimeFloatCurve DirectionalInscatteringExponent;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", DisplayName="FogInscatteringLuminance", meta=(editcondition = "OverrideFogInscatteringLuminance") )
+	FRuntimeCurveLinearColor FogInscatteringLuminance2;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", AdvancedDisplay, meta=(editcondition = "OverrideDirectionalInscatteringStartDistance") )
-	FCyclicRuntimeFloatCurve DirectionalInscatteringStartDistance;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FullyDirectionalInscatteringColorDistance_DEPRECATED;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", meta=(editcondition = "OverrideDirectionalInscatteringColor") )
-	FCyclicRuntimeColorCurve DirectionalInscatteringColor;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", AdvancedDisplay, DisplayName="FullyDirectionalInscatteringColorDistance", meta=(editcondition = "OverrideFullyDirectionalInscatteringColorDistance") )
+	FRuntimeFloatCurve FullyDirectionalInscatteringColorDistance2;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", meta=(editcondition = "OverrideFogHeightFalloff") )
-	FCyclicRuntimeFloatCurve FogHeightFalloff;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve NonDirectionalInscatteringColorDistance_DEPRECATED;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", AdvancedDisplay, DisplayName="NonDirectionalInscatteringColorDistance", meta=(editcondition = "OverrideNonDirectionalInscatteringColorDistance") )
+	FRuntimeFloatCurve NonDirectionalInscatteringColorDistance2;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", AdvancedDisplay, meta=(editcondition = "OverrideFogMaxOpacity") )
-	FCyclicRuntimeFloatCurve FogMaxOpacity;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve DirectionalInscatteringExponent_DEPRECATED;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", meta=(editcondition = "OverrideStartDistance") )
-	FCyclicRuntimeFloatCurve StartDistance;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", AdvancedDisplay, DisplayName="DirectionalInscatteringExponent", meta=(editcondition = "OverrideDirectionalInscatteringExponent") )
+	FRuntimeFloatCurve DirectionalInscatteringExponent2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve DirectionalInscatteringStartDistance_DEPRECATED;
 
-	/** Interpolate the fog height during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", meta=(editcondition = "OverrideFogCutoffDistance") )
-	FCyclicRuntimeFloatCurve FogCutoffDistance;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", AdvancedDisplay, DisplayName="DirectionalInscatteringStartDistance", meta=(editcondition = "OverrideDirectionalInscatteringStartDistance") )
+	FRuntimeFloatCurve DirectionalInscatteringStartDistance2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve DirectionalInscatteringColor_DEPRECATED;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve DirectionalInscatteringLuminance_DEPRECATED;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", DisplayName="DirectionalInscatteringLuminance", meta=(editcondition = "OverrideDirectionalInscatteringLuminance") )
+	FRuntimeCurveLinearColor DirectionalInscatteringLuminance2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FogHeightFalloff_DEPRECATED;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", DisplayName="FogHeightFalloff", meta=(editcondition = "OverrideFogHeightFalloff") )
+	FRuntimeFloatCurve FogHeightFalloff2;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog|SecondFog", meta=(editcondition = "OverrideSecondFogDensity") )
-	FCyclicRuntimeFloatCurve SecondFogDensity;
-
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FogMaxOpacity_DEPRECATED;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", AdvancedDisplay, DisplayName="FogMaxOpacity", meta=(editcondition = "OverrideFogMaxOpacity") )
+	FRuntimeFloatCurve FogMaxOpacity2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve StartDistance_DEPRECATED;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", DisplayName="StartDistance", meta=(editcondition = "OverrideStartDistance") )
+	FRuntimeFloatCurve StartDistance2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FogCutoffDistance_DEPRECATED;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog", DisplayName="FogCutoffDistance", meta=(editcondition = "OverrideFogCutoffDistance") )
+	FRuntimeFloatCurve FogCutoffDistance2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve SecondFogDensity_DEPRECATED;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog|SecondFog", DisplayName="SecondFogDensity", meta=(editcondition = "OverrideSecondFogDensity") )
+	FRuntimeFloatCurve SecondFogDensity2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve SecondFogHeightFalloff_DEPRECATED;
+	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog|SecondFog", meta=(editcondition = "OverrideSecondFogHeightFalloff") )
-	FCyclicRuntimeFloatCurve SecondFogHeightFalloff;
+	FRuntimeFloatCurve SecondFogHeightFalloff2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve SecondFogHeightOffset_DEPRECATED;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog|SecondFog", DisplayName="SecondFogHeightOffset", meta=(editcondition = "OverrideSecondFogHeightOffset") )
+	FRuntimeFloatCurve SecondFogHeightOffset2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve CloudColor_DEPRECATED;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", DisplayName="CloudColor", meta = (editcondition = "OverrideCloudColor") )
+	FRuntimeCurveLinearColor CloudColor2;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "HeightFog|SecondFog", meta=(editcondition = "OverrideSecondFogHeightOffset") )
-	FCyclicRuntimeFloatCurve SecondFogHeightOffset;
+	UPROPERTY()
+	FCyclicRuntimeColorCurve SunLightColor_DEPRECATED;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", DisplayName="SunLightColor", meta = (editcondition = "OverrideSunLightColor") )
+	FRuntimeCurveLinearColor SunLightColor2;
 
-	/** How the color of clouds zenith changes during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", meta = (editcondition = "OverrideCloudColor") )
-	FCyclicRuntimeColorCurve CloudColor;
+	UPROPERTY()
+	FCyclicRuntimeColorCurve MoonLightColor_DEPRECATED;
 
-	/** How the opaqueness of the clouds change during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", meta = (editcondition = "OverrideSunLightColor") )
-	FCyclicRuntimeColorCurve SunLightColor;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", DisplayName="MoonLightColor", meta = ( editcondition = "OverrideMoonLightColor" ) )
+	FRuntimeCurveLinearColor MoonLightColor2;
 
-	/** How the opaqueness of the clouds change during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", meta = ( editcondition = "OverrideMoonLightColor" ) )
-	FCyclicRuntimeColorCurve MoonLightColor;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve SunIntensity_DEPRECATED;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", DisplayName="SunIntensity", meta = ( editcondition = "OverrideSunIntensity" ) )
+	FRuntimeFloatCurve SunIntensity2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve MoonIntensity_DEPRECATED;
 
-	/** How the opaqueness of the clouds change during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", meta = ( editcondition = "OverrideSunIntensity" ) )
-	FCyclicRuntimeFloatCurve SunIntensity;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", DisplayName="MoonIntensity", meta = ( editcondition = "OverrideMoonIntensity" ) )
+	FRuntimeFloatCurve MoonIntensity2;
 
-	/** How the opaqueness of the clouds change during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", meta = ( editcondition = "OverrideMoonIntensity" ) )
-	FCyclicRuntimeFloatCurve MoonIntensity;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve CloudOpacity_DEPRECATED;
 
-	/** How the opaqueness of the clouds change during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", DisplayName="mCloudiness", meta = ( editcondition = "OverrideCloudOpacity" ) )
-	FCyclicRuntimeFloatCurve CloudOpacity;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", DisplayName="Cloudiness", meta = ( editcondition = "OverrideCloudOpacity" ) )
+	FRuntimeFloatCurve CloudOpacity2;
 	
 	/** The blend weight of the post process volume */
 	UPROPERTY( EditAnywhere, Category = "PostProcess" )
 	float mBlendWeight;
 
 
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve WhiteTemp_DEPRECATED;
+
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|WhiteBalance", meta = ( UIMin = "1500.0", UIMax = "15000.0", editcondition = "OverrideWhiteTemp", DisplayName = "Temp" ) )
-	FCyclicRuntimeFloatCurve WhiteTemp;
+	FRuntimeFloatCurve WhiteTemp2;
 	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve WhiteTint_DEPRECATED;
+
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|WhiteBalance", meta = ( UIMin = "-1.0", UIMax = "1.0", editcondition = "OverrideWhiteTint", DisplayName = "Tint" ) )
-	FCyclicRuntimeFloatCurve WhiteTint;
+	FRuntimeFloatCurve WhiteTint2;
 
 	// Color Correction controls
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorSaturation_DEPRECATED;
+
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Global", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "saturation", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorSaturation", DisplayName = "Saturation" ) )
-	FCyclicRuntimeColorCurve ColorSaturation;
+	FRuntimeCurveLinearColor ColorSaturation2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorContrast_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Global", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "contrast", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorContrast", DisplayName = "Contrast" ) )
-	FCyclicRuntimeColorCurve ColorContrast;
+	FRuntimeCurveLinearColor ColorContrast2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorGamma_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Global", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "gamma", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorGamma", DisplayName = "Gamma" ) )
-	FCyclicRuntimeColorCurve ColorGamma;
+	FRuntimeCurveLinearColor ColorGamma2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorGain_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Global", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "gain", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorGain", DisplayName = "Gain" ) )
-	FCyclicRuntimeColorCurve ColorGain;
+	FRuntimeCurveLinearColor ColorGain2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorOffset_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Global", meta = ( UIMin = "-1.0", UIMax = "1.0", Delta = "0.001", ColorGradingMode = "offset", ShiftMouseMovePixelPerDelta = "20", SupportDynamicSliderMaxValue = "true", SupportDynamicSliderMinValue = "true", editcondition = "OverrideColorOffset", DisplayName = "Offset" ) )
-	FCyclicRuntimeColorCurve ColorOffset;
+	FRuntimeCurveLinearColor ColorOffset2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorSaturationShadows_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Shadows", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "saturation", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorSaturationShadows", DisplayName = "Saturation" ) )
-	FCyclicRuntimeColorCurve ColorSaturationShadows;
+	FRuntimeCurveLinearColor ColorSaturationShadows2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorContrastShadows_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Shadows", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "contrast", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorContrastShadows", DisplayName = "Contrast" ) )
-	FCyclicRuntimeColorCurve ColorContrastShadows;
+	FRuntimeCurveLinearColor ColorContrastShadows2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorGammaShadows_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Shadows", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "gamma", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorGammaShadows", DisplayName = "Gamma" ) )
-	FCyclicRuntimeColorCurve ColorGammaShadows;
+	FRuntimeCurveLinearColor ColorGammaShadows2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorGainShadows_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Shadows", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "gain", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorGainShadows", DisplayName = "Gain" ) )
-	FCyclicRuntimeColorCurve ColorGainShadows;
+	FRuntimeCurveLinearColor ColorGainShadows2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorOffsetShadows_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Shadows", meta = ( UIMin = "-1.0", UIMax = "1.0", Delta = "0.001", ColorGradingMode = "offset", ShiftMouseMovePixelPerDelta = "20", SupportDynamicSliderMaxValue = "true", SupportDynamicSliderMinValue = "true", editcondition = "OverrideColorOffsetShadows", DisplayName = "Offset" ) )
-	FCyclicRuntimeColorCurve ColorOffsetShadows;
+	FRuntimeCurveLinearColor ColorOffsetShadows2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorSaturationMidtones_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Midtones", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "saturation", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorSaturationMidtones", DisplayName = "Saturation" ) )
-	FCyclicRuntimeColorCurve ColorSaturationMidtones;
+	FRuntimeCurveLinearColor ColorSaturationMidtones2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorContrastMidtones_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Midtones", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "contrast", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorContrastMidtones", DisplayName = "Contrast" ) )
-	FCyclicRuntimeColorCurve ColorContrastMidtones;
+	FRuntimeCurveLinearColor ColorContrastMidtones2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorGammaMidtones_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Midtones", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "gamma", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorGammaMidtones", DisplayName = "Gamma" ) )
-	FCyclicRuntimeColorCurve ColorGammaMidtones;
+	FRuntimeCurveLinearColor ColorGammaMidtones2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorGainMidtones_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Midtones", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "gain", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorGainMidtones", DisplayName = "Gain" ) )
-	FCyclicRuntimeColorCurve ColorGainMidtones;
+	FRuntimeCurveLinearColor ColorGainMidtones2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorOffsetMidtones_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Midtones", meta = ( UIMin = "-1.0", UIMax = "1.0", Delta = "0.001", ColorGradingMode = "offset", ShiftMouseMovePixelPerDelta = "20", SupportDynamicSliderMaxValue = "true", SupportDynamicSliderMinValue = "true", editcondition = "OverrideColorOffsetMidtones", DisplayName = "Offset" ) )
-	FCyclicRuntimeColorCurve ColorOffsetMidtones;
+	FRuntimeCurveLinearColor ColorOffsetMidtones2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorSaturationHighlights_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Highlights", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "saturation", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorSaturationHighlights", DisplayName = "Saturation" ) )
-	FCyclicRuntimeColorCurve ColorSaturationHighlights;
+	FRuntimeCurveLinearColor ColorSaturationHighlights2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorContrastHighlights_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Highlights", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "contrast", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorContrastHighlights", DisplayName = "Contrast" ) )
-	FCyclicRuntimeColorCurve ColorContrastHighlights;
+	FRuntimeCurveLinearColor ColorContrastHighlights2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorGammaHighlights_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Highlights", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "gamma", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorGammaHighlights", DisplayName = "Gamma" ) )
-	FCyclicRuntimeColorCurve ColorGammaHighlights;
+	FRuntimeCurveLinearColor ColorGammaHighlights2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorGainHighlights_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Highlights", meta = ( UIMin = "0.0", UIMax = "2.0", Delta = "0.01", ColorGradingMode = "gain", ShiftMouseMovePixelPerDelta = "10", SupportDynamicSliderMaxValue = "true", editcondition = "OverrideColorGainHighlights", DisplayName = "Gain" ) )
-	FCyclicRuntimeColorCurve ColorGainHighlights;
+	FRuntimeCurveLinearColor ColorGainHighlights2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve ColorOffsetHighlights_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Highlights", meta = ( UIMin = "-1.0", UIMax = "1.0", Delta = "0.001", ColorGradingMode = "offset", ShiftMouseMovePixelPerDelta = "20", SupportDynamicSliderMaxValue = "true", SupportDynamicSliderMinValue = "true", editcondition = "OverrideColorOffsetHighlights", DisplayName = "Offset" ) )
-	FCyclicRuntimeColorCurve ColorOffsetHighlights;
+	FRuntimeCurveLinearColor ColorOffsetHighlights2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve ColorCorrectionHighlightsMin_DEPRECATED;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Highlights", meta = ( UIMin = "-1.0", UIMax = "1.0", editcondition = "OverrideColorCorrectionHighlightsMin", DisplayName = "HighlightsMin" ) )
-	FCyclicRuntimeFloatCurve ColorCorrectionHighlightsMin;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Color Grading|Highlights",  meta = ( UIMin = "-1.0", UIMax = "1.0", editcondition = "OverrideColorCorrectionHighlightsMin", DisplayName = "HighlightsMin" ) )
+	FRuntimeFloatCurve ColorCorrectionHighlightsMin2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve ColorCorrectionShadowsMax_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, Category = "PostProcess|Color Grading|Shadows", meta = ( UIMin = "-1.0", UIMax = "1.0", editcondition = "OverrideColorCorrectionShadowsMax", DisplayName = "ShadowsMax" ) )
-	FCyclicRuntimeFloatCurve ColorCorrectionShadowsMax;
-
+	FRuntimeFloatCurve ColorCorrectionShadowsMax2;
+	
 	/** Correct for artifacts with "electric" blues due to the ACEScg color space. Bright blue desaturates instead of going to violet. */
-	UPROPERTY( EditAnywhere, Category = "PostProcess|Color Grading|Misc", meta = ( ClampMin = "0.0", ClampMax = "1.0", editcondition = "OverrideBlueCorrection" ) )
-	FCyclicRuntimeFloatCurve BlueCorrection;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve BlueCorrection_DEPRECATED;
 
+	UPROPERTY( EditAnywhere, Category = "PostProcess|Color Grading|Misc", DisplayName="BlueCorrection", meta = ( ClampMin = "0.0", ClampMax = "1.0", editcondition = "OverrideBlueCorrection" ) )
+	FRuntimeFloatCurve BlueCorrection2;
+	
 	/** Expand bright saturated colors outside the sRGB gamut to fake wide gamut rendering. */
-	UPROPERTY( EditAnywhere, Category = "PostProcess|Color Grading|Misc", meta = ( ClampMin = "0.0", UIMax = "1.0", editcondition = "OverrideExpandGamut" ) )
-	FCyclicRuntimeFloatCurve ExpandGamut;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve ExpandGamut_DEPRECATED;
 
+	UPROPERTY( EditAnywhere, Category = "PostProcess|Color Grading|Misc", DisplayName="ExpandGamut", meta = ( ClampMin = "0.0", UIMax = "1.0", editcondition = "OverrideExpandGamut" ) )
+	FRuntimeFloatCurve ExpandGamut2;
+	
 	/** Scene tint color */
-	UPROPERTY( EditAnywhere, Category = "PostProcess|Color Grading|Misc", meta = ( editcondition = "OverrideSceneColorTint", HideAlphaChannel ) )
-	FCyclicRuntimeColorCurve SceneColorTint;
+	UPROPERTY()
+	FCyclicRuntimeColorCurve SceneColorTint_DEPRECATED;
 
+	UPROPERTY( EditAnywhere, Category = "PostProcess|Color Grading|Misc", DisplayName="SceneColorTint", meta = ( editcondition = "OverrideSceneColorTint", HideAlphaChannel ) )
+	FRuntimeCurveLinearColor SceneColorTint2;
+	
 	// Film Controls
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FilmSlope_DEPRECATED;
+
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Film", meta = ( UIMin = "0.0", UIMax = "1.0", editcondition = "OverrideFilmSlope", DisplayName = "Slope" ) )
-	FCyclicRuntimeFloatCurve FilmSlope;
+	FRuntimeFloatCurve FilmSlope2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FilmToe_DEPRECATED;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Film", meta = ( UIMin = "0.0", UIMax = "1.0", editcondition = "OverrideFilmToe", DisplayName = "Toe" ) )
-	FCyclicRuntimeFloatCurve FilmToe;
-
+	FRuntimeFloatCurve FilmToe2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FilmShoulder_DEPRECATED;
+	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Film", meta = ( UIMin = "0.0", UIMax = "1.0", editcondition = "OverrideFilmShoulder", DisplayName = "Shoulder" ) )
-	FCyclicRuntimeFloatCurve FilmShoulder;
+	FRuntimeFloatCurve FilmShoulder2;
 	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FilmBlackClip_DEPRECATED;
+
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Film", meta = ( UIMin = "0.0", UIMax = "1.0", editcondition = "OverrideFilmBlackClip", DisplayName = "Black clip" ) )
-	FCyclicRuntimeFloatCurve FilmBlackClip;
+	FRuntimeFloatCurve FilmBlackClip2;
 	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve FilmWhiteClip_DEPRECATED;
+
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Film", meta = ( UIMin = "0.0", UIMax = "1.0", editcondition = "OverrideFilmWhiteClip", DisplayName = "White clip" ) )
-	FCyclicRuntimeFloatCurve FilmWhiteClip;
-
+	FRuntimeFloatCurve FilmWhiteClip2;
+	
 	// Sky atmosphere controls
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Rayleigh Scattering", meta = ( editcondition = "OverrideRayleighScattering" ) )
-	FCyclicRuntimeColorCurve RayleighScattering;
+	UPROPERTY()
+	FCyclicRuntimeColorCurve RayleighScattering_DEPRECATED;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Rayleigh Scattering", meta = ( editcondition = "OverrideRayleighScatteringScale", UIMin = 0.0, UIMax = 2.0, ClampMin = 0.0, SliderExponent = 4.0 ))
-	FCyclicRuntimeFloatCurve RayleighScatteringScale;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Rayleigh Scattering", meta = ( editcondition = "OverrideRayleighExponentialDistribution" ) )
-	FCyclicRuntimeFloatCurve RayleighExponentialDistribution;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", meta = ( editcondition = "OverrideMieScatteringScale" ) )
-	FCyclicRuntimeFloatCurve MieScatteringScale;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", meta = ( editcondition = "OverrideMieScattering" ) )
-	FCyclicRuntimeColorCurve MieScattering;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Rayleigh Scattering", DisplayName="RayleighScattering", meta = ( editcondition = "OverrideRayleighScattering" ) )
+	FRuntimeCurveLinearColor RayleighScattering2;
 	
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", meta = ( editcondition = "OverrideMieAbsorptionScale" ) )
-	FCyclicRuntimeFloatCurve MieAbsorptionScale;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve RayleighScatteringScale_DEPRECATED;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Rayleigh Scattering", DisplayName="RayleighScatteringScale", meta = ( editcondition = "OverrideRayleighScatteringScale", UIMin = 0.0, UIMax = 2.0, ClampMin = 0.0, SliderExponent = 4.0 ))
+	FRuntimeFloatCurve RayleighScatteringScale2;
 	
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", meta = ( editcondition = "OverrideMieAbsorption" ) )
-	FCyclicRuntimeColorCurve MieAbsorption;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve RayleighExponentialDistribution_DEPRECATED;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", meta = ( editcondition = "OverrideMieAnisotropy" ) )
-	FCyclicRuntimeFloatCurve MieAnisotropy;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Rayleigh Scattering", DisplayName="RayleighExponentialDistribution", meta = ( editcondition = "OverrideRayleighExponentialDistribution" ) )
+	FRuntimeFloatCurve RayleighExponentialDistribution2;
 	
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", meta = ( editcondition = "OverrideMieExponentialDistribution" ) )
-	FCyclicRuntimeFloatCurve MieExponentialDistribution;
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve MieScatteringScale_DEPRECATED;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Absorption", meta = ( editcondition = "OverrideOtherAbsorptionScale" ) )
-	FCyclicRuntimeFloatCurve OtherAbsorptionScale;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", DisplayName="MieScatteringScale", meta = ( editcondition = "OverrideMieScatteringScale" ) )
+	FRuntimeFloatCurve MieScatteringScale2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve MieScattering_DEPRECATED;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Absorption", meta = ( editcondition = "OverrideOtherAbsorption" ) )
-	FCyclicRuntimeColorCurve OtherAbsorption;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", DisplayName="MieScattering", meta = ( editcondition = "OverrideMieScattering" ) )
+	FRuntimeCurveLinearColor MieScattering2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve MieAbsorptionScale_DEPRECATED;
 
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", DisplayName="MieAbsorptionScale", meta = ( editcondition = "OverrideMieAbsorptionScale" ) )
+	FRuntimeFloatCurve MieAbsorptionScale2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve MieAbsorption_DEPRECATED;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", DisplayName="MieAbsorption", meta = ( editcondition = "OverrideMieAbsorption" ) )
+	FRuntimeCurveLinearColor MieAbsorption2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve MieAnisotropy_DEPRECATED;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", DisplayName="MieAnisotropy", meta = ( editcondition = "OverrideMieAnisotropy" ) )
+	FRuntimeFloatCurve MieAnisotropy2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve MieExponentialDistribution_DEPRECATED;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Mie Scattering", DisplayName="MieExponentialDistribution", meta = ( editcondition = "OverrideMieExponentialDistribution" ) )
+	FRuntimeFloatCurve MieExponentialDistribution2;
+	
+	UPROPERTY()
+	FCyclicRuntimeFloatCurve OtherAbsorptionScale_DEPRECATED;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Absorption", DisplayName="OtherAbsorptionScale", meta = ( editcondition = "OverrideOtherAbsorptionScale" ) )
+	FRuntimeFloatCurve OtherAbsorptionScale2;
+	
+	UPROPERTY()
+	FCyclicRuntimeColorCurve OtherAbsorption_DEPRECATED;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Sky Atmosphere|Absorption", DisplayName="OtherAbsorption", meta = ( editcondition = "OverrideOtherAbsorption" ) )
+	FRuntimeCurveLinearColor OtherAbsorption2;
+	
 	// Height fog bools
 	UPROPERTY( EditAnywhere, meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
 	uint8 OverrideFogDensity : 1;
 
 	UPROPERTY( EditAnywhere, meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
-	uint8 OverrideFogInscatteringColor : 1;
+	uint8 OverrideFogInscatteringLuminance : 1;
 
 	UPROPERTY( EditAnywhere, meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
 	uint8 OverrideFullyDirectionalInscatteringColorDistance : 1;
@@ -282,7 +461,7 @@ public:
 	uint8 OverrideDirectionalInscatteringStartDistance : 1;
 
 	UPROPERTY( EditAnywhere, meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
-	uint8 OverrideDirectionalInscatteringColor : 1;
+	uint8 OverrideDirectionalInscatteringLuminance : 1;
 
 	UPROPERTY( EditAnywhere, meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
 	uint8 OverrideFogHeightFalloff : 1;
@@ -459,5 +638,8 @@ public:
 
 	UPROPERTY( EditAnywhere, Category = Overrides, meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
 	uint8 OverrideOtherAbsorption : 1;
+
+protected:
+	virtual void Serialize(FArchive& Ar) override;
 
 };

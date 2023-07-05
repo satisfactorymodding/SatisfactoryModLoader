@@ -3,118 +3,145 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGSubsystem.h"
+#include "FGFoliageTypes.h"
 #include "FGSaveInterface.h"
+#include "IntVectorTypes.h"
 #include "FGFoliageResourceUserData.h"
 #include "FGFoliageRemovalSubsystem.generated.h"
 
-#define DEBUG_FOLIAGE_REMOVAL_SUBSYSTEM ( UE_BUILD_SHIPPING == 0 )
+DECLARE_STATS_GROUP( TEXT("FoliageRemovalSubsystem"), STATGROUP_FoliageRemovalSubsystem, STATCAT_Advanced );
 
-/**
- * Represents a foliage instance in the removal cache
- */
-struct FoliageInstanceData
+struct FFoliageOctreeSemantics
 {
-	FoliageInstanceData( int index, int id, FTransform transform, class UHierarchicalInstancedStaticMeshComponent* component );
+	// When a leaf gets more than this number of elements, it will split itself into a node with multiple child leaves
+	enum { MaxElementsPerLeaf = 10 };
 
-	/**
-	* Index into the FoliageTypeData::foliageInstances array, for replication
-	*/
-	int index = 0;
+	// This is used for incremental updates.  When removing a polygon, larger values will cause leaves to be removed and collapsed into a parent node.
+	enum { MinInclusiveElementsPerNode = 5 };
 
-	/**
-	* ID into the HISM internal data structure
-	*/
-	int id = 0;
+	// How deep the tree can go.
+	enum { MaxNodeDepth = 20 };
 
-	/**
-	* World placement
-	*/
-	FTransform transform;
+	using FOctree = TOctree2<UHierarchicalInstancedStaticMeshComponent*, FFoliageOctreeSemantics>;
 
-	/**
-	* The component to which the id applies
-	*/
-	TWeakObjectPtr< class UHierarchicalInstancedStaticMeshComponent > component;
+	typedef TInlineAllocator<MaxElementsPerLeaf> ElementAllocator;
 
-	/**
-	 * True if this instance is removed
-	 */
-	bool isRemoved = false;
+	static FBoxCenterAndExtent GetBoundingBox(const UHierarchicalInstancedStaticMeshComponent* Element);
+	static bool AreElementsEqual(const UHierarchicalInstancedStaticMeshComponent* A, const UHierarchicalInstancedStaticMeshComponent* B);
+	static void SetElementId(FOctree& Octree, const UHierarchicalInstancedStaticMeshComponent* Element, FOctreeElementId2 OctreeElementID);
 };
 
-/**
- * Map for lookup of instance from exact location.
- */
-using FoliageLocationToDataMultiMap = TMultiMap< FVector, FoliageInstanceData* >;
-
-/**
- * Represents all foliage of a certain kind on a level (tile or cave) in the foliage-removal cache.
- * Should be one per foliage component, but sadly isn't.
- */
-struct FoliageTypeData
+struct FFoliageComponentsOctree : public TOctree2<UHierarchicalInstancedStaticMeshComponent*, FFoliageOctreeSemantics>
 {
-	/**
-	* Foliage instance data, sorted on location
-	*/
-	TArray< FoliageInstanceData > foliageInstances;
-
-	/**
-	* Map for lookup of instance from exact location.
-	*/
-	FoliageLocationToDataMultiMap foliageLocationToDataMultiMap;
-
-	/**
-	* All the components that are referenced by instances in this data. Ideally one, but 
-	*/
-	TSet< TWeakObjectPtr< class UHierarchicalInstancedStaticMeshComponent > > components;
-
-	/**
-	 * The foliage removal actor that corresponds to this type/level
-	 */
-	class AFGFoliageRemoval* foliageRemoval = nullptr;
+	TMap<const UHierarchicalInstancedStaticMeshComponent*, FOctreeElementId2> mElementIdMap;
 };
 
-/**
- * Map for lookup of foliage-type data by asset name
- */
-using FoliageTypeToDataMap = TMap< FName, FoliageTypeData >;
-
-/**
- * Represents a level in the foliage-removal cache
- */
-struct LevelFoliageData
-{
-	/**
-	 * Map for lookup of foliage-type data by asset name
-	 */
-	FoliageTypeToDataMap foliageTypeToDataMap;
-
-	/**
-	 * Is the cache build for this particular level
-	 */
-	bool isCacheBuilt = false;
-
-	/**
-	 * Is the cache build for this particular level
-	 */
-	bool isLevelLoaded = false;
-};
-
-using LevelFoliageDataMap = TMap< FName, LevelFoliageData >;
-
-
-UCLASS()
-class FACTORYGAME_API AFGFoliageRemovalSubsystem : public AFGSubsystem
+USTRUCT()
+struct FFoliageRemovalSaveDataForFoliageType
 {
 	GENERATED_BODY()
+	
+	bool Append( TArrayView< FVector > newRemovals );
+	bool Add(const FVector& Location );
+
+	const TArray<FVector>& Locations() const { return RemovedLocations; }
+	bool Contains(const FVector& Location) const;
+
+	int32 NumBuckets() const
+	{
+		return RemovalBuckets.Num();
+	}
+
+	TArrayView<const FVector> GetBucket(int32 bucketId) const
+	{
+		fgcheck( RemovalBuckets.IsValidIndex( bucketId ) );
+		const auto& bucket = RemovalBuckets[bucketId];
+		const TArrayView<const FVector> entireArray( RemovedLocations );
+		return entireArray.Slice( bucket.GetLowerBound().GetValue(), bucket.Size<int32>() );
+	}
+	
+	TSet< FHashableVectorWrapper > GetRemovalLocations() const;
+	void CollapseBuckets(int32 FirstBucket, int32 LastBucket);
+	bool IsEmpty() const
+	{
+		return RemovedLocations.IsEmpty();
+	}
+	
+	bool PostSerialize(const FArchive& Ar);
+private:
+	/**
+	 * An array of all the removed locations.
+	 */
+	UPROPERTY(SaveGame)
+	TArray<FVector> RemovedLocations = {};
+
+	/**
+	 * A lookup table for the above array
+	 */
+	UPROPERTY(SaveGame)
+	TSet<uint32> RemovedLocationLookup = {};
+
+	UPROPERTY()
+	TArray<FInt32Range> RemovalBuckets = {};
+};
+
+template<> struct TStructOpsTypeTraits<FFoliageRemovalSaveDataForFoliageType> : public TStructOpsTypeTraitsBase2<FFoliageRemovalSaveDataForFoliageType>
+{
+	enum
+	{
+		WithPostSerialize = true
+	};
+};
+
+
+USTRUCT()
+struct FFoliageRemovalSaveDataPerCell
+{
+	GENERATED_BODY()
+	using KeyType = const UFoliageType*;
+	
+	UPROPERTY(SaveGame)
+	TMap<const UFoliageType*, FFoliageRemovalSaveDataForFoliageType> SaveDataMap;
+};
+
+USTRUCT()
+struct FFoliageRemovalUnresolvedSaveDataPerCell
+{
+	GENERATED_BODY()
+	using KeyType = FName;
+	
+	UPROPERTY(SaveGame)
+	TMap<FName, FFoliageRemovalSaveDataForFoliageType> SaveDataMap;
+};
+
+DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnNewFoliageBucketRemoved, const FIntVector& cell, const UFoliageType* foliageType, int32 bucketId );
+UCLASS()
+class FACTORYGAME_API AFGFoliageRemovalSubsystem : public AInfo, public IFGSaveInterface
+{
+	GENERATED_BODY()
+	friend class UFGFoliageEditorSubsystem;
 public:
 	/** ctor */
 	AFGFoliageRemovalSubsystem();
 
 	// Begin AActor interface
+	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
+	virtual void Serialize(FArchive& Ar) override;
+#if WITH_EDITORONLY_DATA
+	virtual void PostLoad() override;
+#endif
 	// End AActor interface
+
+	// Begin IFGSaveInterface
+	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override;
+	virtual bool NeedTransform_Implementation() override;
+	virtual bool ShouldSave_Implementation() const override;
+	// End IFSaveInterface
 
 	/** Called to initialize the subsystem and spawn actors for the levels that's already loaded when we was created */
 	void Init();
@@ -126,12 +153,6 @@ public:
 	UFUNCTION(BlueprintPure, Category="Foliage", Meta = ( DefaultToSelf = "worldContext" ) )
 	static AFGFoliageRemovalSubsystem* GetFoliageRemovalSubsystem( UObject* worldContext );
 	
-	/** Get the foliage removal actor that is associated with the component */
-	class AFGFoliageRemoval* FindFoliageRemovalActorByComponent( class UHierarchicalInstancedStaticMeshComponent* component ) const;
-
-	/** Alternative way of getting a foliage removal actor */
-	class AFGFoliageRemoval* FindFoliageRemovalActor( const FName& levelName, const FName& foliageTypeName );
-
 	/**
 	 * Tries to emulate looking at a location from a location, and get the closest actor you are looking at
 	 *
@@ -183,14 +204,8 @@ public:
 	/**
 	 * @return true if at least one instance was found
 	 */
-	int32 FindInstanceByTransform( const FTransform& foliageTransform, const class UHierarchicalInstancedStaticMeshComponent* component, const FName& levelName, const FName& foliageTypeName );
+	int32 FindInstanceByTransform( const FTransform& foliageTransform, const class UHierarchicalInstancedStaticMeshComponent* component );
 
-	/**
-	 * Takes the foliage component and checks if it is indeed in a cave level or not.
-	 */
-	UFUNCTION(BlueprintPure	, Category = "Foliage")
-	static bool IsFoliageComponentInACave(UHierarchicalInstancedStaticMeshComponent* TestComponent);
-	
 	/**
 	 * Finds foliage within a provided radius to a specified location.
 	 * 
@@ -212,32 +227,84 @@ public:
 	 * @param foliageIdentifier - find foliage that matches this tag
 	 * @returns true if the UHierarchicalInstanctedStaticMeshComponent has the given foliageIdentifier.
 	 */
-	bool HasIdentifier( const class UHierarchicalInstancedStaticMeshComponent* component, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier );
-
-	/**
-	 * Register a foliage removal actor with the subsystem, this should not be used except from the AFGFoilageRemoval actor
-	 *
-	 * @param actor - need to be valid and not already registered
-	 */
-	void Register( class AFGFoliageRemoval* actor );
-
-	/**
-	 * Unregisters a foliage removal actor from the subsystem, this should not be used except from the AFGFoilageRemoval actor
-	 *
-	 * @param actor - need to be valid and registered
-	 */
-	void UnRegister( class AFGFoliageRemoval* actor );
+	static bool HasIdentifier( const class UHierarchicalInstancedStaticMeshComponent* component, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier );
 
 	/**
 	 * @return true if the foliage type is removable
 	 */
-	bool IsRemovable( const class UFoliageType* foliageType ) const;
+	static bool IsRemovable( const class UFoliageType* foliageType );
 
 	// Begin FactoryStatHelpers functions
 	int32 Stat_NumRemovedInstances() const;
 	// End FactoryStatHelpers functions
 
+	/**
+	 * Removes a foliage instance from the hism. Handles Replication and save data.
+	 * @param component: The Component that the instance will be removed from
+	 * @param instanceId: The instance Id that will be removed. This is literally an index into
+	 *						UInstancedStaticMeshComponent::PerInstanceSMData. It needs to be a valid index at the time of this call
+	 *						(not to be confused with persistent instance id's that are defined by the foliage data cache).
+	 */
+	bool RemoveFoliageInstance(UHierarchicalInstancedStaticMeshComponent* component, int32 instanceId, FTransform* out_InstanceTransform = nullptr);
+	/**
+	 * Tries to remove a foliage instance hash (which could resolve to more than one foliage instances). This will work even if the cell that
+	 * the hash belongs to isn't loaded, as the actual resolving of the instance id is delayed until the cell gets loaded.
+	 */
+	bool RemoveFoliageInstance(FFoliageInstanceStableId StableId);
+	
+	/**
+	 * Removes all instances specified by @InstanceIds from @Component
+	 * Handles replication. Every provided id is assumed to be a valid instance id in the context of @Component.
+	 * Not meeting this assumption will have undefined behavior.
+	 * @outRemovedInstanceTransforms will be reset and will contain the transforms of all the removed instances
+	 */ 
+	bool RemoveFoliageInstances(UHierarchicalInstancedStaticMeshComponent* hism, const TArray<int32>& instIds, TArray<FTransform> *outRemovedInstanceTransforms = nullptr);
+
+	void RemoveFoliageInstanceHashes( FIntVector cell, const UFoliageType* foliageType, const TSet<uint32>& instanceHashes );
+	
+	/**
+	 * Removes foliage instances by their foliage type. Only useful for legacy foliage removals, as they migrate their legacy save data.
+	 */
+	UE_DEPRECATED( 5.1, "This function should only be used by legacy AFGFoliageRemoval actors, as they migrate their old save data" )
+	void RecordUnregisteredRemovalLocations(const TSet<FVector> &locations, const FName& foliageTypeName);
+	
+	/**
+	 *	Asynchronously looks up the stable instance id of a foliage instance in the foliage data cache.
+	 *	A stable id can be reliably replicated and is going to represent the same actual instance on clients and servers.
+	 */
+	FFoliageInstanceStableId GetStableInstanceId(UHierarchicalInstancedStaticMeshComponent* Component, int32 InstanceId);
+	FFoliageInstanceStableId GetStableInstanceId(UHierarchicalInstancedStaticMeshComponent* Component, const FTransform &Transform);
+	
+	static uint32 HashFoliageInstanceLocation( const FVector& Location );
+	FIntVector GetFoliageCellForIFA( class AInstancedFoliageActor* IFA );
+	static FIntVector GetFoliageCellForLocation( const FVector& Location, uint32 GridSize );
+	uint32 GetFoliageGridSize() const;
+
+	const auto& GetSaveData() const
+	{
+		return mSaveData;
+	}
+
+	const FFoliageRemovalSaveDataForFoliageType* GetSaveDataForCellForFoliageType(const FIntVector& cell, const UFoliageType* foliageType) const;
+	FOnNewFoliageBucketRemoved OnNewFoliageBucketRemoved;
+
+	/**
+	 * Attempts to find the HISM corresponding to a stable foliage id. This may fail if for example the foliage cell for that id isn't streamed in
+	 */
+	UHierarchicalInstancedStaticMeshComponent* GetHISM( const FFoliageInstanceStableId& stableId );
+	UHierarchicalInstancedStaticMeshComponent* GetHISM( FIntVector cell, const UFoliageType* foliageType );
+	class UFoliageType* GetFoliageType( const UHierarchicalInstancedStaticMeshComponent* hism );
 protected:
+	FFoliageRemovalSaveDataForFoliageType* GetSaveDataForCellForFoliageType(const FIntVector& cell, const UFoliageType* foliageType);
+	FFoliageRemovalSaveDataForFoliageType& GetOrCreateSaveDataForCellForFoliageType(const FIntVector& cell, const UFoliageType* foliageType);
+
+	const FFoliageRemovalSaveDataForFoliageType* GetUnresolvedSaveDataForCellForFoliageType(const FIntVector& cell, FName foliageTypeName) const;
+	FFoliageRemovalSaveDataForFoliageType* GetUnresolvedSaveDataForCellForFoliageType(const FIntVector& cell, FName foliageTypeName);
+	FFoliageRemovalSaveDataForFoliageType& GetOrCreateUnresolvedSaveDataForCellForFoliageType(const FIntVector& cell, FName foliageTypeName);
+
+	void TryResolveRemovals( const TSet< FIntVector > &unresolvedCells );
+	void TryResolveRemovalHashes( const TSet< FIntVector > &unresolvedCells );
+	TArray<int32> FindInstanceIdsForHashes( const UHierarchicalInstancedStaticMeshComponent* hism, const TSet< uint32 > &instanceHashes );
 	/**
 	 * Called when a new level was found
 	 *
@@ -245,48 +312,12 @@ protected:
 	 */
 	void LevelFound( ULevel* level );
 
-	void BuildFoliageRemovalCache( ULevel* level, struct LevelFoliageData& levelFoliageData );
-
-	/**
-	 * Searches for all HierarchicalInstancedStaticMeshComponents in the level, and adds them to the potential list
-	 * of components to be able to remove
-	 *
-	 * @param level - must be valid, the level we want to gather components from
-	 */
-	void SetupFoliageRemovalsForLevel( ULevel* level, struct LevelFoliageData& levelFoliageData, bool firstLoad );
+	void CacheFoliageHISMsForLevel( ULevel* level );
 
 	/**
 	 * Take existing foliage and remove it from this level (usally when streamed in, or loaded)
-	 *
-	 * @param inLevel - must be 
 	 */
-	void ApplyInitialRemovals_Server( const FName& levelName, bool firstLoad );
-
-	/**
-	 * Mark the level as it has no foliage actor
-	 */
-	void MarkAsLevelAsWithoutRemovableFoliage( const FName& levelName );
-
-	/**
-	 * Mark the level as it has spawned foliage actors
-	 */
-	void MarkAsLevelAsSpawnedRemovableFoliage( const FName& levelName );
-
-	/**
-	 * @return true if the level has spawned a foliage removal actor
-	 */
-	bool HasSpawnedFoliageActor( const FName& levelName ) const;
-	
-	/**
-	 * Spawn a foliage removal actor
-	 * SERVER ONLY!
-	 *
-	 * @param levelBounds - the bounds of the level we want to spawn the actor in (used for net cull distance + location)
-	 * @param levelName - the name of the level that the actor should handle spawning for
-	 * @param meshComponent - the component that the actor is responsible for removing foliage for
-	 * @return return a new foliage removal actor if one was created (client will always return nullptr)
-	 **/
-	class AFGFoliageRemoval* SpawnFoliageRemovalActor( const FBox& levelBounds, const FName& levelName, class UFoliageType* foilageType, class UHierarchicalInstancedStaticMeshComponent* meshComponent, bool firstLoad );
+	void ApplyInitialRemovals( class AInstancedFoliageActor* IFA );
 
 	/** Called whenever a level is added to the world, used to gather more potential components to get foliage from */
 	UFUNCTION()
@@ -294,7 +325,7 @@ protected:
 
 	/** Called whenever a level is removed from the world, used to remove components that is no longer relevant for to be able to pickup */
 	UFUNCTION()
-	void OnLevelRemovedFromWorld( ULevel* inLevel, UWorld* inWorld );
+	void OnPreLevelRemovedFromWorld( ULevel* inLevel, UWorld* inWorld );
 
 	/**
 	* Remove all HierarchicalInstancedStaticMeshComponents that was in the level
@@ -304,69 +335,35 @@ protected:
 	*/
 	void RemoveComponentsInLevel( ULevel* level );
 
-	/**
-	 * Get the name of the level
-	 *
-	 * @param level - must be valid
-	 * @return the name of the level
-	 */
-	FName GetLevelName( ULevel* level ) const;
+	/** 
+	 * An octree with all the currently loaded foliage hisms
+	 */ 
+	FFoliageComponentsOctree mMeshComponentsOctree;
 
-	/**
-	 * If the level contains a level bounds actor, then get the center of the level bounds, else, calculate it (expensive)
-	 * SERVER ONLY!
-	 *
-	 * @param level - must be valid
-	 */
-	FVector GetLevelCenter( ULevel* level ) const;
-
-	/**
-	 * If the level contains a level bounds actor, then get the bounds of the level, else, calculate it (expensive)
-	 * SERVER ONLY!
-	 *
-	 * @param level - must be valid
-	 */
-	FBox GetLevelBounds( ULevel* level ) const;
-protected:
-	/** Data that is waiting for it's foliage removal actor to be replicated */
-	struct FPendingLevelData
-	{
-		FPendingLevelData( class UFoliageType* foliage, const FName& levelName, class UHierarchicalInstancedStaticMeshComponent* component ) :
-			Foliage( foliage ),
-			LevelName( levelName ),
-			Component( component )
-		{
-		}
-
-		// To be able to use Contains/Find etc.
-		bool operator==( const FPendingLevelData& other ) const
-		{
-			return Foliage == other.Foliage && LevelName == other.LevelName && Component == other.Component;
-		}
-
-		// Need this pair to identify the level actor
-		class UFoliageType* Foliage; // @todogc: Verify that this is safe have without UPROPERTY
-		FName LevelName;
-
-		// Component we should assign to the actor when it becomes relevant
-		class UHierarchicalInstancedStaticMeshComponent* Component; // @todogc: Verify that this is safe have without UPROPERTY
-
-	};
 	
-	/** Store level data for non relevant foliage removal actors until they become relevant  */
-	TArray< FPendingLevelData > mDataForNonRelevantFoliageRemovals;
+private:
+	void RebuildSaveData(int32 OldGridSize, int32 NewGridSize);
 
-	/** Keep track of what maps has spawned their foliage removals */
-	TSet< FName > mMapsWithSpawnedFoliageRemovals;
+	/**
+	 * A Map of foliage grid cells to all the loaded IFAs.
+	 */
+	UPROPERTY()
+	TMap<FIntVector, AInstancedFoliageActor*> mCellToLoadedIFAMap;
 
-	/** SERVER ONLY: The maps that doesn't have any removable foliage on it  (@todonow: Remove?)*/
-	TSet< FName > mMapsWithNoRemovableFoliage;
+	UPROPERTY()
+	TMap< class UHierarchicalInstancedStaticMeshComponent*, class UFoliageType* > mFoliageComponentTypeMapping;
 
-	/** All foliage mesh components that have potential for contain instances to remove */
-	TArray< class UHierarchicalInstancedStaticMeshComponent* > mFoilageMeshComponents;
+	UPROPERTY()
+	uint32 mFoliageGridSize = 0;
+	
+	UPROPERTY(VisibleAnywhere, SaveGame)
+	uint32 mSavedFoliageGridSize = 0;
 
-	TSet< ULevel* > mLoadedLevels;
+	UPROPERTY(SaveGame)
+	TMap<FIntVector, FFoliageRemovalSaveDataPerCell> mSaveData;
 
-public:
-	LevelFoliageDataMap mLevelFoliageDataMap;
+	UPROPERTY(SaveGame)
+	TMap<FIntVector, FFoliageRemovalUnresolvedSaveDataPerCell> mUnresolvedSaveData;
+
+	TPerCellPerTypeMap<TSet<uint32>> mUnresolvedHashes;
 };

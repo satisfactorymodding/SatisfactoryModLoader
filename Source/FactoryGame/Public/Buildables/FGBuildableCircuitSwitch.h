@@ -36,19 +36,19 @@ public:
 	/**
 	 * @param isSwitchOn true if this switch should be turned on, false otherwise
 	 */
-	UFUNCTION( BlueprintCallable, Category = "CircuitSwitch" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|Switch" )
 	void SetSwitchOn( bool isSwitchOn );
 
 	/**
 	 * @returns true if this switch is turned on, false otherwise
 	 */
-	UFUNCTION( BlueprintPure, Category = "CircuitSwitch" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Switch")
 	bool IsSwitchOn() const { return mIsSwitchOn; }
 	
 	/**
 	 * @returns true if this bridge is connected to two circuits, false otherwise
 	 */
-	UFUNCTION( BlueprintPure, Category = "CircuitSwitch" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Switch" )
 	bool IsSwitchConnected() const { return Super::IsBridgeConnected(); }
 	
 	virtual bool IsBridgeActive() const override { return mIsSwitchOn; }

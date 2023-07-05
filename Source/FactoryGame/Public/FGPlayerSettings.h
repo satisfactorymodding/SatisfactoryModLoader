@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "FGPlayerState.h"
+#include "FGRecipe.h"
 #include "FGPlayerSettings.generated.h"
 
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Player" ) )
@@ -31,5 +32,11 @@ public:
 	/** Affected in game by AFGUnlockSubssytem::mUnlockedCentralStorageUploadSlots */
 	UPROPERTY( EditAnywhere, config, Category = "Inventory Slots", meta = ( ToolTip = "The number of starting slots for players upload inventory (central storage)" ) )
 	int32 mDefaultUploadSlots;
+
+	UPROPERTY( EditAnywhere, config, Category = "Starting Resources", meta = ( ToolTip = "The default items each player will start with. This will be given once per player when they join a new game" ) )
+	TMap< TSoftClassPtr< class UFGItemDescriptor >, int32 >mStartingItems;
+	
+	UPROPERTY( EditAnywhere, config, Category = "Starting Resources", meta = ( ToolTip = "The recipes you should be able to build when you start a new game. The integer key represents starting tier. 0 is tutorial and so on. The combined items from the specified recipes in the given tier is given once to the FIRST player joining a game" ) )
+	TMap< int32, FRecipeAmounts > mRecipesToGivePlayersPerTier;
 	
 };

@@ -5,7 +5,7 @@
 #include "FactoryGame.h"
 #include "Engine/DeveloperSettings.h"
 #include "IncludeInBuild.h"
-#include "OptionValueContainer.h"
+#include "EngineMinimal.h"
 #include "Templates/SubclassOf.h"
 #include "FGOptionsSettings.generated.h"
 
@@ -112,7 +112,6 @@ public:
 		DefaultSliderValue( 0.0f ),
 		DefaultSelectionIndex( 0 ),
 		CustomWidgetClass( nullptr ),
-		OptionApplyType( EOptionApplyType::OAT_Normal ),
 		NetmodeAvailability( EOptionNetmodeType::ONT_ServerAndClient ),
 		GamemodeAvailability( EOptionGamemodeType::OGT_Always ),
 		RHIAvailability( EOptionRHIType::ORT_Always ),
@@ -171,9 +170,6 @@ public:
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	TSubclassOf< class UFGOptionsValueController > CustomWidgetClass;
-
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
-	EOptionApplyType OptionApplyType;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	EOptionNetmodeType NetmodeAvailability;
@@ -242,89 +238,36 @@ class FACTORYGAME_API UFGOptionsSettings : public UDeveloperSettings
 	GENERATED_BODY()
 public:
 	static const UFGOptionsSettings* Get() { return GetDefault<UFGOptionsSettings>(); };
-	
-	/** Return the display name struct for an action mapping */
-	UFUNCTION( BlueprintCallable )
-	static bool GetActionMappingDisplayName( FName actionMappingName, FActionMappingDisplayName& out_ActionMappingDisplayName )
-	{
-		TArray<FActionMappingDisplayName> actionBindingsDisplayNames = GetDefault<UFGOptionsSettings>()->mActionBindingsDisplayNames;
-		bool result = false;
-		if( FActionMappingDisplayName* actionMappingDisplayName = actionBindingsDisplayNames.FindByPredicate( [ actionMappingName ]( const FActionMappingDisplayName& actionBindingsDisplayNames ){ return actionBindingsDisplayNames.ActionMappingName.IsEqual( actionMappingName ); } ) )
-		{
-			out_ActionMappingDisplayName = *actionMappingDisplayName;
-			result = true;
-		}
-		return result;
-	}
 
-	/** Return the display name struct for an axis mapping */
-	UFUNCTION( BlueprintCallable )
-	static bool GetAxisMappingDisplayName( FName axisMappingName, FAxisMappingDisplayName& out_AxisMappingDisplayName )
-	{
-		TArray<FAxisMappingDisplayName> axisBindingsDisplayNames = GetDefault<UFGOptionsSettings>()->mAxisBindingsDisplayNames;
-		bool result = false;
-		if( FAxisMappingDisplayName* axisMappingDisplayName = axisBindingsDisplayNames.FindByPredicate( [ axisMappingName ]( const FAxisMappingDisplayName& axisBindingsDisplayNames ){ return axisBindingsDisplayNames.AxisMappingName.IsEqual( axisMappingName ); } ) )
-		{
-			out_AxisMappingDisplayName = *axisMappingDisplayName;
-			result = true;
-		}
-		return result;
-	}
-
-	/** Return all display name structs for an action mappings */
-	UFUNCTION( BlueprintCallable )
-	static void GetActionMappings( TArray<FActionMappingDisplayName>& out_ActionMappingDisplayName )
-	{
-		out_ActionMappingDisplayName.Append( GetDefault<UFGOptionsSettings>()->mActionBindingsDisplayNames );
-	}
-
-	/** Return all display name structs for an axis mappings */
-	UFUNCTION( BlueprintCallable )
-	static void GetAxisMappings( TArray<FAxisMappingDisplayName>& out_AxisMappingDisplayName )
-	{
-		out_AxisMappingDisplayName.Append( GetDefault<UFGOptionsSettings>()->mAxisBindingsDisplayNames );
-	}
-
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override;
-#endif
 public:
-	UPROPERTY( EditAnywhere, config, Category = "Key Bindings", meta = ( ShowOnlyInnerProperties, ToolTip = "This maps a axis name to a postive and negative display name. If no display name is provided we show the axis name" ) )
-	TArray<FAxisMappingDisplayName> mAxisBindingsDisplayNames;
-
-	UPROPERTY( EditAnywhere, config, Category = "Key Bindings", meta = ( ShowOnlyInnerProperties, ToolTip = "This maps a action name to a display name. If no display name is provided we show the action name" ) )
-	TArray<FActionMappingDisplayName> mActionBindingsDisplayNames;
-
-	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
-	TArray<FOptionRowData> mGameplayOptions;
-
-	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
-	TArray<FOptionRowData> mAudioOptions;
-
-	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
-	TArray<FOptionRowData> mVideoOptions;
-
-	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
-	TArray<FOptionRowData> mControlsOptions;
-
-	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
-	TArray<FOptionRowData> mUserInterfaceOptions;
-		
-	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
-	TArray<FOptionRowData> mOnlineOptions;
-
-	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
-	TArray<FOptionRowData> mDebugOptions;
-
 	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "" ) )
 	TMap<EOptionType, TSubclassOf< class UFGOptionsValueController >> mOptionTypeWidgetsClasses;
+	
+	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "The widget class used when option type is integer selection and we want to show it as a dropdown menu" ) )
+	TSubclassOf< class UFGOptionsValueController > mDropDownWidgetClass; 
 
 	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "" ) )
 	TSubclassOf< class UFGDynamicOptionsRow > mOptionRowWidgetClass;
 
 	UPROPERTY( EditAnywhere, config, Category = "Hologram", meta = ( ToolTip = "" ) )
-	TAssetPtr<class UMaterialParameterCollection> mHologramColourParameterCollection;
+	TSoftObjectPtr<class UMaterialParameterCollection> mHologramColourParameterCollection;
 
 	UPROPERTY( EditAnywhere, config, Category = "Video", meta = ( ToolTip = "This maps video quality scalability levels to benchmark results to. float value represents max benchamrk result for that level. e.g 0 - 50, 1 - 150 and so on" ) )
 	TMap< int32, float > mVideoQualityBenchmarkMapping;
+
+	UPROPERTY( EditAnywhere, config, Category = "Video" )
+	TSoftClassPtr<class UFGUserSettingCategory> mVideoQualityCategory;
+
+	// @todok2 Move below to input settings when that is added
+	UPROPERTY( EditAnywhere, config, Category = "Input", meta = ( ToolTip = "These are the mapping contexts we want to show in the options menu to allow rebinding of their actions" ) )
+	TArray<TSoftObjectPtr<class UInputMappingContext>> mPlayerRebindableMappingContexts;
+
+	UPROPERTY( EditAnywhere, config, Category = "Input", meta = ( ToolTip = "" ) )
+	TSoftObjectPtr<class UInputAction> mCtrlInputAction;
+
+	UPROPERTY( EditAnywhere, config, Category = "Input", meta = ( ToolTip = "" ) )
+	TSoftObjectPtr<class UInputAction> mShiftInputAction;
+
+	UPROPERTY( EditAnywhere, config, Category = "Input", meta = ( ToolTip = "" ) )
+	TSoftObjectPtr<class UInputAction> mAltInputAction;
 };

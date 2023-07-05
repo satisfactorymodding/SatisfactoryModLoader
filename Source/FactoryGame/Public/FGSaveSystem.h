@@ -13,6 +13,7 @@ DECLARE_DELEGATE_ThreeParams( FOnEnumerateSaveGamesComplete, bool, const TArray<
 DECLARE_DELEGATE_FourParams( FOnEnumerateSessionsComplete, bool Success, const TArray<struct FSessionSaveStruct>& Sessions, int32 CurrentSession, void* UserData );
 DECLARE_DELEGATE_TwoParams( FOnDeleteSaveGameComplete, bool, void* );
 DECLARE_MULTICAST_DELEGATE( FOnSaveCollectionChanged );
+DECLARE_DELEGATE_RetVal_TwoParams( ESaveModCheckResult, FCheckModdedSaveCompatibility, const FSaveHeader&, FText& );
 
 /**
  * Handles the "higher level" save functionality, like listing saves, save directories, sorting saves and validating filenames.
@@ -95,6 +96,10 @@ public:
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Save" )
 	static ESaveState GetSaveState( const FSaveHeader& saveGame );
 
+	/** Called when loading a modded save to potentially run mod list check */
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Save" )
+	static ESaveModCheckResult CheckModdedSaveCompatibility( const FSaveHeader& saveGame, FText& outCustomMessage );
+
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	bool IsSessionNameUsed( FString sessionName ) const;
 
@@ -163,6 +168,12 @@ public:
 	static bool FindNewMapName( const FString& oldMapName, FString& out_newMapName );
 
 	/**
+	 * Look for a new map name in the blueprint redirects
+	 * This is only utilized when loading a blueprint as a means of resolving the level in a blueprint world
+	 */
+	static bool FindNewBlueprintWorldMapName( const FString& oldMapName, FString& out_newMapName );
+
+	/**
 	* Look for a new classname
 	*
 	* @param oldClassName - the old class name
@@ -208,11 +219,20 @@ public:
 	virtual bool IsSaveManagerAvailable() override;
 	virtual void DeleteSaveFile(const FSaveHeader& SaveGame, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate) override;
 	virtual void DeleteSaveSession(const FSessionSaveStruct& Session, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate) override;
-	virtual void LoadSaveFile(const FSaveHeader& SaveGame, class APlayerController* Player) override;
+	virtual void LoadSaveFile(const FSaveHeader& SaveGame, TMap<FString, FString> Options, class APlayerController* Player) override;
 	virtual void SaveGame(const FString& SaveName, FOnSaveMgrInterfaceSaveGameComplete CompleteDelegate ) override;
 	// end IFGSaveManagerInterface overrides
+
+	//*** Special Redirects for Blueprint subsystem for redirecting between different maps ***/
+	static bool AddBlueprintMapRedirector( FString oldName, FString newName );
+	static void RemoveBlueprintMapRedirector( FString redirectorName );
 	
 	static FOnSaveCollectionChanged OnSaveCollectionChanged;
+
+	static FCheckModdedSaveCompatibility CheckModdedSaveCompatibilityDelegate;
+
+	/** Temporary Redirects for blueprint world **/
+	static inline TArray<FMapRedirector> mBlueprintMapRedirectors = TArray<FMapRedirector>();
 protected:
 	/** 
 	* Checks the local backup directory for saves and if their are too many it deletes the oldest ones

@@ -19,6 +19,9 @@ class FACTORYGAME_API UFGCreatureDescriptor : public UFGItemDescriptor
 	virtual UTexture2D* Internal_GetSmallIcon() const override;
 	virtual UTexture2D* Internal_GetBigIcon() const override;
 
+protected:
+	FORCEINLINE virtual bool Internal_CanItemBePickedup() const override { return false; }
+
 public:
 	/** The creature this descriptor stores information about */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Creature", meta = ( AddAutoJSON = true ) )

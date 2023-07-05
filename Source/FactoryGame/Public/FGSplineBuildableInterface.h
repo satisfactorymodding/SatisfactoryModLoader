@@ -23,10 +23,11 @@ class FACTORYGAME_API IFGSplineBuildableInterface
 	GENERATED_BODY()
 
 public:
-	virtual TArray< FSplinePointData > GetSplinePointData() = 0;
+	virtual const TArray< FSplinePointData >& GetSplinePointData() const = 0;
 	virtual float GetMeshLength() = 0;
 	virtual FVector GetCollisionExtent() = 0;
 	virtual float GetCollisionSpacing() = 0;
 	virtual FVector GetCollisionOffset() = 0;
 	virtual UStaticMesh* GetUsedSplineMesh() = 0;
+	virtual void SetupConnections() = 0;
 };

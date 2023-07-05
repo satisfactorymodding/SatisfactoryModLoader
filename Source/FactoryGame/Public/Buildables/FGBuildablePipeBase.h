@@ -2,8 +2,6 @@
 
 #pragma once
 
-#pragma once
-
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildable.h"
@@ -43,9 +41,12 @@ public:
 	// Begin IFGSignificance Interface
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
-	virtual void GainedSignificance_Native() override;
-	virtual void LostSignificance_Native() override;
-	virtual	void SetupForSignificance() override;
+	virtual void GainedSignificance_Native() override;				// TODO deprecate
+	virtual void LostSignificance_Native() override;				// TODO deprecate				
+	virtual	void SetupForSignificance() override;					// TODO deprecate		
+
+	virtual float GetSignificanceRange() override;
+
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|PipeBase" )
 	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
 	// End IFGSignificance Interface
@@ -71,17 +72,33 @@ public:
 	virtual void GetLocationAndDirectionAtOffset( float offset, FVector& out_location, FVector& out_direction ) const;
 
 	// Begin IFGSplineBuildableInterface
-	TArray< FSplinePointData > GetSplinePointData() { return mSplineData; };
+	const TArray< FSplinePointData >& GetSplinePointData() const { return mSplineData; };
 	float GetMeshLength() { return mMeshLength; }
 	FVector GetCollisionExtent() override { return COLLISION_EXTENT; }
 	float GetCollisionSpacing() override { return COLLISION_SPACING; }
 	FVector GetCollisionOffset() override { return COLLISION_OFFSET; }
 	UStaticMesh* GetUsedSplineMesh() override { return mMesh; }
+	void SetupConnections() override;
 	// End IFGSplineBuildableInterface
 	
 	FORCEINLINE TArray< class AFGBuildablePassthrough* > GetSnappedPassthroughs() { return mSnappedPassthroughs; }
 
+	/**
+	 * Splices the provided pipeline into two pieces.
+	 * Unlike splitting, splicing does decrease the size of the pipeline and leads an empty area in the middle,
+	 * suitable for an insertion of the new piece in that area.
+	 * That means it will void the resources, unless you manually account for that before the splice.
+	 *
+	 * The resulting splices will be of length [0, offset - splice_length / 2], [offset + splice_length / 2, length]
+	 * And will be automatically reconnected with the original connections of the previous pipelineon the ends
+	 * On success, the original pipeline will be dismantled
+	 * The returned pieces will always come in the order specified above, so you can make a safe assumption
+	 * on the fact that Connection1 of the first piece will be spliced, and Connection0 of the second one as well.
+	 */
+	static TArray<AFGBuildablePipeBase*> Splice(AFGBuildablePipeBase* Pipe, float SpliceOffset, float SpliceLength);
 
+	virtual void PostSerializedFromBlueprint(bool isBlueprintWorld) override;
+	
 protected:
 	/**
 	 * @return The UClass for the connection type for this pipe. All pipe types should have their own function here, or their connection can snap to the wrong type of pipes.
@@ -90,6 +107,7 @@ protected:
 	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Pipes|PipeBase" )
 	TSubclassOf< class UFGPipeConnectionComponentBase > GetConnectionType();
 
+	void UnrotateForBlueprintPlaced();
 public:
 	/** Default height above ground level for pipes */
 	static constexpr float DEFAULT_PIPE_HEIGHT = 175.f;
@@ -129,11 +147,10 @@ protected:
 	/** The spline component for this splined factory. */
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
 	class USplineComponent* mSplineComponent;
-
-	/** The spline meshes for this train track. */
+	
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
-	class UFGInstancedSplineMeshComponent* mInstancedSplineComponent;
-
+	class UInstancedSplineMeshComponent* mInstancedSplineMeshComponent;
+	
 	/** Saved passthroughs this pipeline is connected to. Used to notify passthrough when dismantled. */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;

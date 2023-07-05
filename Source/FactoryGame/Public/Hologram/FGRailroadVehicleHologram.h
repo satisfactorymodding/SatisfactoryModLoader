@@ -14,14 +14,15 @@ UCLASS()
 class FACTORYGAME_API AFGRailroadVehicleHologram : public AFGVehicleHologram
 {
 	GENERATED_BODY()
-	
 public:
-	/** Do all custom initialization from mBuildClass here. */
+	// Begin AActor interface
 	virtual void BeginPlay() override;
+	// End AActor interface
 
 	// Begin AFGHologram interface
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	// End of AFGHologram interface
 
 	// Begin Net Construction Messages
@@ -30,7 +31,7 @@ public:
 
 protected:
 	// Begin AFGHologram interface
-	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
+	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual void CheckValidPlacement() override;
 	// End of AFGHologram interface
 

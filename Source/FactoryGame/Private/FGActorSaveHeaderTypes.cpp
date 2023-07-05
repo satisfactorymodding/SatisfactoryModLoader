@@ -2,3 +2,6 @@
 
 #include "FGActorSaveHeaderTypes.h"
 
+FString FObjectBaseSaveHeader::ToString() const{ return FString(); }
+UClass* FObjectBaseSaveHeader::ResolveClass() const{ return nullptr; }
+FString FObjectSaveHeader::ToString() const{ return FString(); }

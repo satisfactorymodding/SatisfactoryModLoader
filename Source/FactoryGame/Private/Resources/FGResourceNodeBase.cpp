@@ -21,7 +21,6 @@ AFGResourceNodeBase::AFGResourceNodeBase() : Super() {
 	this->mMeshActor = nullptr;
 	this->mAddToSignificanceManager = true;
 	this->mSignificanceRange = 18000.0;
-	this->bAlwaysRelevant = true;
 }
 void AFGResourceNodeBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

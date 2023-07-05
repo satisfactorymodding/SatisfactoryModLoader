@@ -9,7 +9,7 @@
 #include "FGJetPackFuelParameters.generated.h"
 
 UCLASS( Blueprintable, Abstract )
-class FACTORYGAME_API UFGJetPackFuelParameters : public UObject
+class FACTORYGAME_API UFGJetPackFuelParameters final : public UObject
 {
 	GENERATED_BODY()
 protected:
@@ -39,22 +39,14 @@ protected:
 	/** How much of the full tank is 1 Fuel worth. */
 	UPROPERTY( EditDefaultsOnly, Category = "JetPack" )
 	float mFuelWorth = 0.5f;
-	/** How often to make the noise (in seconds) while the jetpack is active. */
-	UPROPERTY( EditDefaultsOnly, Category = "JetPack" )
-	float mActiveNoiseFrequency = 0.2f;
-	/** The noise to make when the jetpack is active. */
-	UPROPERTY( EditDefaultsOnly, Category = "JetPack" )
-	TSubclassOf< class UFGNoise > mActiveNoise;
 	/** The maximum amount of fuel in the JetPack */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "JetPack")
 	float mMaxFuel = 1.0f;
 	/** Adjusted air control (in character movement) while thrusting. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "JetPack" )
 	float mThrustAirControl = 0.3f;
-
-
+	
 	// Reference to Fuel Type Desc class.
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "JetPack" )
 	TSubclassOf< UFGItemDescriptor > mFuelTypeDesc; 
-	
 };

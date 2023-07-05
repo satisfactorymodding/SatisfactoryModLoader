@@ -50,6 +50,7 @@ void AFGBuildablePipeline::Factory_Tick(float dt){ }
 void AFGBuildablePipeline::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildablePipeline::GainedSignificance_Implementation(){ }
 void AFGBuildablePipeline::LostSignificance_Implementation(){ }
+float AFGBuildablePipeline::GetSignificanceRange(){ return float(); }
 TSubclassOf< UFGPipeConnectionComponentBase > AFGBuildablePipeline::GetConnectionType_Implementation(){ return TSubclassOf<UFGPipeConnectionComponentBase>(); }
 void AFGBuildablePipeline::SetCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
 void AFGBuildablePipeline::ApplyCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
@@ -69,7 +70,6 @@ TSubclassOf< UFGItemDescriptor > AFGBuildablePipeline::GetFluidDescriptor() cons
 AFGBuildablePipelineFlowIndicator* AFGBuildablePipeline::GetFlowIndicator() const{ return nullptr; }
 void AFGBuildablePipeline::SmoothValues(float& flowPct,  float& contentPct, float dt) const{ }
 void AFGBuildablePipeline::GetRawValues(float& flowPct,  float& contentPct) const{ }
-void AFGBuildablePipeline::PostSerializedFromBlueprint(){ }
 void AFGBuildablePipeline::UpdateSounds(){ }
 bool AFGBuildablePipeline::FindBestInidicatorPlacement(FTransform& out_transform){ return bool(); }
 const FName AFGBuildablePipeline::mConnectionName0 = FName();

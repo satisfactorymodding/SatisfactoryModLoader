@@ -8,5 +8,5 @@ AFGBuildableControlPanelHost::AFGBuildableControlPanelHost() : Super() {
 }
 void AFGBuildableControlPanelHost::BeginPlay(){ }
 TArray< AFGBuildable* >& AFGBuildableControlPanelHost::GetControlledBuildables(TSubclassOf< AFGBuildable > outputType){ return *(new TArray< AFGBuildable* >); }
-void AFGBuildableControlPanelHost::OnCircuitsChanged(){ }
+void AFGBuildableControlPanelHost::OnCircuitsRebuilt(){ }
 void AFGBuildableControlPanelHost::SearchDownstreamCircuit(){ }

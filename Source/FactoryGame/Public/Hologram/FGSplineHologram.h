@@ -11,6 +11,7 @@ UENUM()
 enum class ESplineHologramBuildStep : uint8
 {
 	SHBS_FindStart,
+	SHBS_AdjustStartingPole,
 	SHBS_PlacePoleOrSnapEnding,
 	SHBS_AdjustPole
 };
@@ -35,6 +36,8 @@ public:
 	virtual void ClientPreConstructMessageSerialization() override;
 	virtual void ServerPostConstructMessageDeserialization() override;
 	// End FGConstructionMessageInterface
+
+	virtual bool CanNudgeHologram() const override;
 
 	// Handles the pending hologram state copy
 	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;

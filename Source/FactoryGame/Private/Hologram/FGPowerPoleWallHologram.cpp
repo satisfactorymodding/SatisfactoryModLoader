@@ -3,14 +3,13 @@
 #include "Hologram/FGPowerPoleWallHologram.h"
 
 AFGPowerPoleWallHologram::AFGPowerPoleWallHologram() : Super() {
-	this->mIsRotationAllowed = false;
-	this->mCanSnapToFoundationCeiling = false;
-	this->mCanSnapToFoundationSide = false;
-	this->mCanSnapToBeams = false;
-	this->mSnapOffset = FVector2D::ZeroVector;
-	this->mFoundationSnappingInset = 0.0;
+	this->mPowerConnectionMesh = nullptr;
+	this->mSnapConnection = nullptr;
+	this->mUpgradeTarget = nullptr;
 }
 void AFGPowerPoleWallHologram::BeginPlay(){ }
-bool AFGPowerPoleWallHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
-void AFGPowerPoleWallHologram::CheckValidFloor(){ }
-void AFGPowerPoleWallHologram::CheckClearance(const FVector& locationOffset){ }
+USceneComponent* AFGPowerPoleWallHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
+void AFGPowerPoleWallHologram::PostHologramPlacement(const FHitResult& hitResult){ }
+bool AFGPowerPoleWallHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
+bool AFGPowerPoleWallHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
+AActor* AFGPowerPoleWallHologram::GetUpgradedActor() const{ return nullptr; }

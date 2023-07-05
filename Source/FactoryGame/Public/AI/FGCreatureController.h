@@ -52,15 +52,15 @@ struct FFGCreatureAggroData
 
 	/** The target this data belongs to. */
 	UPROPERTY( BlueprintReadOnly )
-	AActor* Target;
+	AActor* Target = nullptr;
 
 	/** The aggro level of this target. */
 	UPROPERTY( BlueprintReadOnly )
-	float Aggro;
+	float Aggro = 0.f;
 
 	/** Whether or not this aggro target is visible to us. */
 	UPROPERTY( BlueprintReadOnly )
-	bool IsVisible;
+	bool IsVisible = false;
 };
 
 USTRUCT( BlueprintType )
@@ -70,19 +70,19 @@ struct FFGCreatureVisibilityData
 	
 	/** The target this data belongs to. */
 	UPROPERTY( BlueprintReadOnly )
-	AActor* Target;
+	AActor* Target = nullptr;
 
 	/** 0-1 value describing how visible the target is. */
 	UPROPERTY( BlueprintReadOnly )
-	float VisibilityLevel;
+	float VisibilityLevel = 0.f;
 
 	/** Whether or not the target is currently perceived, this does not mean they are fully seen yet. */
 	UPROPERTY( BlueprintReadOnly )
-	bool IsPerceived;
+	bool IsPerceived = false;
 
 	/** Whether or not the target is actively visible. Meaning they are fully seen. */
 	UPROPERTY( BlueprintReadOnly )
-	bool IsActivelyVisible;
+	bool IsActivelyVisible = false;
 };
 
 USTRUCT( BlueprintType )
@@ -119,27 +119,27 @@ struct FFGRecentDamageTaken
 
 	/** What kind of damage that was received. */
 	UPROPERTY( BlueprintReadOnly )
-	const class UFGDamageType* DamageType;
+	const class UFGDamageType* DamageType = nullptr;
 
 	/** When the damage was received. */
 	UPROPERTY( BlueprintReadOnly )
-	float Timestamp;
+	float Timestamp = 0.f;
 
 	/** How much damage was received. */
 	UPROPERTY( BlueprintReadOnly )
-	float Amount;
+	float Amount = 0.f;
 
 	/** What dealt damage to us. */
 	UPROPERTY( BlueprintReadOnly )
-	AActor* DamageCauser;
+	AActor* DamageCauser = nullptr;
 
 	/** Who instigated the damage dealt to us. */
 	UPROPERTY( BlueprintReadOnly )
-	AController* DamageInstigator;
+	AController* DamageInstigator = nullptr;
 
 	/** The location we were at when we were damaged. */
 	UPROPERTY( BlueprintReadOnly )
-	FVector DamageLocation;
+	FVector DamageLocation = FVector::ZeroVector;
 };
 
 /**

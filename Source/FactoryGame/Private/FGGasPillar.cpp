@@ -5,24 +5,40 @@
 #include "Components/StaticMeshComponent.h"
 #include "FGDotComponent.h"
 
+#if DEBUG_POST_PROCESS_VOLUME_ENABLE
+FString AFGGasPillar::GetDebugName() const{ return FString(); }
+#endif 
+#if WITH_EDITOR
+#endif 
 AFGGasPillar::AFGGasPillar() : Super() {
 	this->mMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	this->mNearbyGasCloud = nullptr;
+	this->mEffectHeightOffset = 300.0;
 	this->mOverlapCollision = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapBox"));
 	this->mOverlapCollision->SetupAttachment(mMesh);
 	this->mDotComponent = CreateDefaultSubobject<UFGDotComponent>(TEXT("DotComponent"));
 	this->mDotComponent->SetupAttachment(mOverlapCollision);
 	this->mPostProcessSettings = nullptr;
-	this->mSignificanceRange = 15000.0;
+	this->mSignificanceRange = 150000.0;
+	this->mBindChaosPhysicsCollisionEvent = true;
 	this->RootComponent = mMesh;
 }
 void AFGGasPillar::BeginPlay(){ }
 void AFGGasPillar::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGGasPillar::PostUnregisterAllComponents(void){ }
 void AFGGasPillar::PostRegisterAllComponents(){ }
+void AFGGasPillar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
 void AFGGasPillar::GainedSignificance_Implementation(){ }
 void AFGGasPillar::LostSignificance_Implementation(){ }
 void AFGGasPillar::GainedSignificance_Native(){ }
 void AFGGasPillar::LostSignificance_Native(){ }
 float AFGGasPillar::GetSignificanceRange(){ return float(); }
+void AFGGasPillar::RemoveGasComponents(){ }
+void AFGGasPillar::NotifyGasCloudOfRemoval(){ }
+void AFGGasPillar::OnDestructibleFractured(){ }
+void AFGGasPillar::OnDesctructibleDestroyed(){ }
 bool AFGGasPillar::EncompassesPoint(FVector point, float sphereRadius , float* out_distanceToPoint){ return bool(); }
 FPostProcessVolumeProperties AFGGasPillar::GetProperties() const{ return FPostProcessVolumeProperties(); }

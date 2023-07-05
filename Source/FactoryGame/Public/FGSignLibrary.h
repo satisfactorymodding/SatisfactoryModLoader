@@ -18,22 +18,6 @@ class FACTORYGAME_API UFGSignLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 public:
 
-	// Takes a raw (markup version) of a sign element and parses it into a SignStringElement structure
-	static void ParseStringDataIntoElement( const FString& rawString, FSignStringElement& out_Element );
-
-	// Parse a string pair [attr, value] into a stringElement. Will attempt to parse the value based on the attr type
-	static bool ParseAttributeValuePair( const FString& attr, const FString& value, FSignStringElement& out_Element );
-
-	// PArse out sign elements into string format
-	static bool ParseOutStringData( const TArray< FSignStringElement >& stringElements, TArray< FString >& out_ElementArray );
-
-	// Takes a Canvas Root. Will 
-	UFUNCTION( BlueprintCallable, Category="SignLibrary" )
-	static void ConvertCanvasPrefabToStringArray( class UCanvasPanel* canvasRoot, TArray<FString>& out_elementStrings );
-
-	// Combines a template type with user defined data
-	static void CombineSignTemplateAndUserElement( const FSignStringElement& templateElement, const FSignStringElement& userElement, FSignStringElement& out_combinedElement  );
-
 
 	//////////////////////////////////////////////////////////////////////////
 	/// Sign Type Descriptor Getters for UI to access from Class Type

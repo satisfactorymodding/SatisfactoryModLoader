@@ -103,7 +103,14 @@ public:
 	/** Maps the actors that need to be always relevant across streaming levels */
 	TMap<FName, FActorRepListRefView> mAlwaysRelevantStreamingLevelActors;
 
+	/**
+	 * Registers the default replication policy for the specified actor
+	 * If the actor is not explicitly registered in the replication graph, it will be assumed to be ConditionallyRelevant, which
+	 * should be good enough for a lot of use cases but if you want spatialization or per-connection relevancy, you can override that
+	 */
+	static void RegisterCustomClassRepPolicy( TSoftClassPtr<AActor> inActor, EClassRepPolicy inRepPolicy );
 protected:
+	static TMap<TSoftClassPtr<AActor>, EClassRepPolicy> CustomClassRepPolicies;
 	 
 	/** Class types of equipment who's dependency to the pawn shouldn't be removed if they're unequipped. */
 	UPROPERTY()
@@ -217,45 +224,7 @@ public:
 			return  Hz > 0.f ? ( uint32 )FMath::CeilToInt( TargetFrameRate / Hz ) : 0;
 		}
 	};
-
-	// --------------------------------------------------------
-	struct FConnectionSaturationInfo
-	{
-		FConnectionSaturationInfo( const FConnectionSaturationInfo& otherInfo )
-		{
-			RepGraphConnection = otherInfo.RepGraphConnection;
-			CurrentRatePCT = otherInfo.CurrentRatePCT;
-			MaxClientRate = otherInfo.MaxClientRate;
-		}
-
-		FConnectionSaturationInfo() : RepGraphConnection( nullptr ) {}
-
-		// Init based on UNetReplicationGraphConnection
-		FConnectionSaturationInfo( UNetReplicationGraphConnection* connection ) : RepGraphConnection( connection )
-		{
-			for( int32 i = 0; i < LoadBalanceFrameCount; ++i )
-			{
-				FramesSelfSaturated[ i ] = false;
-				FramesExternalSaturated[ i ] = false;
-			}
-
-			MaxClientRate = connection->NetConnection->Driver->MaxClientRate;
-			UE_LOG( LogGame, Log, TEXT( "Initialized MaxClientRate == %i" ), MaxClientRate );
-		}
-
-		UNetReplicationGraphConnection* RepGraphConnection;
-		float MaxRatePCT = 0.35f;	 // Maximum % of the total budget
-		float MinRatePCT = 0.15f;	 // Minimum % of the total budget
-		float DefaultRatePCT = 0.3f;
-		float CurrentRatePCT = 0.3f;
-		int32 MaxClientRate = 15000;	// Is copied from NetDriver on initialization
-
-		static const int32 LoadBalanceFrameCount = 60;
-		bool FramesSelfSaturated[ LoadBalanceFrameCount ];
-		bool FramesExternalSaturated[ LoadBalanceFrameCount ];
-	};
-
-
+	
 	// --------------------------------------------------------
 	struct FSettings
 	{
@@ -739,32 +708,11 @@ protected:
 	// Sorted Cell Lists (will be per connection, but for now, rebuild each gather)
 	TMap< UNetConnection*, TArray<FConveyorFrequency_SortedCell*> > mConnectionToSortedCellList;
 
-	// Track Bandwidth Saturation per connection so that we can allocate more budget per connection if other property replication isn't utilizing available budget
-	TArray< FConnectionSaturationInfo > mConnectionSaturationInfo;
-
 	// Working ints for adaptive load balancing. Does not count actors that rep every frame
 	int32 mNumExpectedReplicationsThisFrame = 0;
 	int32 mNumExpectedReplicationsNextFrame = 0;
 
 	int32 CalcFrequencyForCell( FFrequencyGrid2D_Cell* GridCell, UReplicationGraph* RepGraph, UNetReplicationGraphConnection& ConnectionManager, UNetConnection* NetConnection, FSettings& MySettings, const FNetViewerArray& Viewers, const uint32 FrameNum, bool IsPlayerInCell );
-	
-	void CleanUpConnectionSaturationInfo( UReplicationGraph* RepGraph )
-	{
-		mConnectionSaturationInfo.RemoveAll(
-			[ & ]( FConnectionSaturationInfo& connectionInfo ) { return !RepGraph->Connections.Contains( connectionInfo.RepGraphConnection ) || connectionInfo.RepGraphConnection->IsPendingKill(); } );
-	}
-
-	FConnectionSaturationInfo& GetConnectionSaturationInfo( UNetReplicationGraphConnection* repGraphConnection )
-	{
-		int32 infoIndex = mConnectionSaturationInfo.IndexOfByPredicate( [ & ]( const FConnectionSaturationInfo& connection ) { return connection.RepGraphConnection == repGraphConnection; } );
-
-		if( infoIndex == INDEX_NONE )
-		{
-			infoIndex = mConnectionSaturationInfo.Add( FConnectionSaturationInfo( repGraphConnection ) );
-		}
-
-		return mConnectionSaturationInfo[ infoIndex ];
-	}
 
 	// Has this Node Initialized its frequency grid
 	bool mHasInitializedGrid;

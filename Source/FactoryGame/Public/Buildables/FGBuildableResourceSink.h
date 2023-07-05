@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Replication/FGReplicationDetailActor_ResourceSink.h"
 #include "Buildables/FGBuildableFactory.h"
 #include "FGBuildableResourceSink.generated.h"
 
@@ -30,9 +31,18 @@ public:
 	bool CanProduce_Implementation() const override;
 	// End BuildableFactoryInterface
 
+	// Begin FGBuildableFactory interface
+	virtual void OnRep_ReplicationDetailActor() override;
+	// End FGBuildableFactory interface
+
+	// Begin IFGReplicationDetailActorOwnerInterface
+	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_ResourceSink::StaticClass(); };
+	virtual void OnReplicationDetailActorRemoved() override;
+	// End IFGReplicationDetailActorOwnerInterface
+
 	/** Get the inventory where we store coupons for this resource sink */
 	UFUNCTION( BlueprintPure, Category = "Resource Sink" )
-	FORCEINLINE class UFGInventoryComponent* GetCouponInventory() const { return mCouponInventory; }
+	FORCEINLINE class UFGInventoryComponent* GetCouponInventory() const { return mCouponInventoryHandler.GetActiveInventoryComponent(); }
 
 	/** 
 	* Claims the given number of coupons. If less coupons than the given num is available it will claim the maximum amount available. 
@@ -46,8 +56,17 @@ public:
 	void ReturnUnclaimedCoupons();
 
 private:
-	UPROPERTY( VisibleDefaultsOnly, SaveGame, Replicated, Category = "Resource Sink" )
+	class AFGReplicationDetailActor_ResourceSink* GetCastRepDetailsActor() const;
+
+protected:
+	friend class AFGReplicationDetailActor_ResourceSink;
+	
+private:
+	UPROPERTY( VisibleDefaultsOnly, SaveGame, Category = "Resource Sink" )
 	class UFGInventoryComponent* mCouponInventory;
+
+	UPROPERTY()
+	FReplicationDetailData mCouponInventoryHandler;
 
 	/** Cached factory input connections */
 	UPROPERTY( Transient )

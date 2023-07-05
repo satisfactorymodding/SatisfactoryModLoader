@@ -14,7 +14,7 @@
 class FBlueprintObjectReaderFName : public FObjectReader
 {
 public:
-	FBlueprintObjectReaderFName( UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion, class UWorld* world );
+	FBlueprintObjectReaderFName( UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion, class UWorld* world, FPackageFileVersion version );
 
 	FBlueprintObjectReaderFName& operator<<( class UObject*& Res );
 	virtual FArchive& operator<<( class FName& N ) override;

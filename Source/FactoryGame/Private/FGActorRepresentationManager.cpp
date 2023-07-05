@@ -16,6 +16,7 @@ AFGActorRepresentationManager::AFGActorRepresentationManager() : Super() {
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
+	this->bReplicateUsingRegisteredSubObjectList = true;
 	this->NetUpdateFrequency = 2.0;
 }
 void AFGActorRepresentationManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -23,7 +24,6 @@ void AFGActorRepresentationManager::GetLifetimeReplicatedProps(TArray<FLifetimeP
 	DOREPLIFETIME(AFGActorRepresentationManager, mReplicatedRepresentations);
 }
 void AFGActorRepresentationManager::PreReplication(IRepChangedPropertyTracker& changedPropertyTracker){ }
-bool AFGActorRepresentationManager::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGActorRepresentationManager::OnSubobjectCreatedFromReplication(UObject* newSubobject){ }
 void AFGActorRepresentationManager::OnSubobjectDestroyFromReplication(UObject* subobject){ }
 void AFGActorRepresentationManager::BeginPlay(){ }

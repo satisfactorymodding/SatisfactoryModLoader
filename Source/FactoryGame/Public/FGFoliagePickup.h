@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGFoliageRemovalSubsystem.h"
 #include "FGUseableInterface.h"
 #include "GameFramework/Actor.h"
 #include "FGFoliagePickup.generated.h"
@@ -51,20 +52,18 @@ public:
 private:
 	void DoPickup();
 
-	void OnUseKeyPressed();
-
-	void OnUseKeyReleased();
+	void Input_Use( const struct FInputActionValue& actionValue );
 
 protected:
 	/** Sends to the server that something should be removed up at a specific location */
-	UFUNCTION(Server, reliable, WithValidation)
-	void Server_PickUpFoliage( class AFGCharacterPlayer* byCharacter, AFGFoliageRemoval* foliageRemoval, int index );
+	UFUNCTION(Server, Reliable)
+	void Server_PickUpFoliage( class AFGCharacterPlayer* byCharacter, FFoliageInstanceStableId StableId, const FVector& instanceLocation );
 
 	/** Add the item to the player inventory */
-	bool AddToPlayerInventory( class AFGCharacterPlayer* character, class UHierarchicalInstancedStaticMeshComponent* meshComponent );
+	bool AddToPlayerInventory( class AFGCharacterPlayer* character, class UHierarchicalInstancedStaticMeshComponent* meshComponent, uint32 seed );
 
 	/** Returns true if the player has space for the items in the component */
-	bool HasPlayerSpaceFor( class AFGCharacterPlayer* character, class UHierarchicalInstancedStaticMeshComponent* meshComponent );
+	bool HasPlayerSpaceFor( class AFGCharacterPlayer* character, class UHierarchicalInstancedStaticMeshComponent* meshComponent, uint32 seed );
 
 	/**
 	 * The minimum number of seconds between each pickup when the pickup key is held down 

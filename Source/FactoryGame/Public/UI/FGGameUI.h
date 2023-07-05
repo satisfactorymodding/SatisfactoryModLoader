@@ -30,6 +30,8 @@ class FACTORYGAME_API UFGGameUI : public UFGBaseUI
 {
 	GENERATED_BODY()
 public:
+	UFGGameUI( const FObjectInitializer& ObjectInitializer );
+	
 	/** Closes down all interact widgets */
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "UI" )
 	void PopAllWidgets(); 
@@ -83,31 +85,19 @@ public:
 	bool PopWidget(UFGInteractWidget* WidgetToRemove );
 
 	/** Adds a new message to the pending message array */
-	UFUNCTION( BlueprintCallable, Category = "UI" )
-	void AddPendingMessage( FPendingMessageQueue message );
+	void AddPendingMessage( UFGMessageBase* message );
+	void AddPendingMessage( UFGMessage* message );
+	void AddPendingMessage( TSubclassOf<UFGMessageBase> messageClass );
 
 	/** Handle message. Usually grabbed from the pending message list at appropriate time */
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
 	void ReceivedMessage( TSubclassOf< class UFGMessageBase > inMessage );
 
-	/** Answer a call that is shown on the screen */
-    void AnswerCall( TSubclassOf< class UFGAudioMessage > inMessage );
-
-	/** Decline a call that is shown on the screen */
-    void DeclineCall( TSubclassOf< class UFGAudioMessage > inMessage );
-
 	/** Handle pending messages and push them at appropriate time */
 	void HandlePendingMessages( float InDeltaTime );
 
-	void PlayMessageQueue( FPendingMessageQueue newMessageQueue );
-
-	void UpdateActiveMessageQueue();
-
-	UFUNCTION()
-	void PlayNextMessageInActiveMessageQueue();
-
 	/**  Is this a good time to start the given message queue? */
-	bool CanReceiveMessageQueue( FPendingMessageQueue inMessageQueue );
+	bool CanReceiveMessageQueue();
 
 	/**  Is this a good time to play the given message? */
 	bool CanReceiveMessage( TSubclassOf< class UFGMessageBase > inMessage );
@@ -130,6 +120,14 @@ public:
 	/** Brings up the in game pause menu */
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
 	void OnPauseGame();
+
+	/** Sets whether the pause menu is currently open at the moment. Does not actually open the pause menu. */
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	void SetPauseMenuOpen( bool isOpen );
+
+	/** Returns whether or not the pause menu is currently open. */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	bool IsPauseMenuOpen() const { return mPauseMenuOpen; }
 
 	/** Triggered when we have finished playing the active audio message */
 	UFUNCTION()
@@ -200,13 +198,12 @@ public:
 	UFUNCTION( BlueprintCallable, Category ="FactoryGame|Message")
 	void PlayAudioMessage( TSubclassOf<UFGAudioMessage> messageClass );
 
+	// @todok2 Temporary until we cleaned up system
+	void Internal_PlayAudioMessage( class UFGAudioMessage* audioMessage );
+
 	/** Finds a widget in the interact widget stack, returns null if not found */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|UI")
 	UFGInteractWidget* FindWidgetByClass( TSubclassOf<UFGInteractWidget> widgetClass );
-
-	/** Get the on screen call widget */
-	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
-    class UFGOnScreenCallWidget* GetOnScreenCallWidget() const;
 
 	/** Call this to setup the hud for resuming the game */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|HUD")
@@ -241,6 +238,8 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "UI" )
 	void ShowTextNotification( const FText& Text );
 
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+	bool OnShortcutPressed( int32 shortcutIndex );
 protected:
 	// Begin UUserWidget interface
 	virtual FReply NativeOnPreviewMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent ) override;
@@ -266,8 +265,9 @@ protected:
 	bool ShouldShowFicsitSplashWidget() const;
 
 public:
-	/** Array with messages that the player has stocked up */
-	TArray< FPendingMessageQueue > mPendingMessageQueues;
+	/** Array with messages that the player has stocked up and are awaiting to be played */
+	UPROPERTY( Transient )
+	TArray< class UFGMessageBase* > mPendingMessages;
 
 	/** Delegate for when mouse button is pressed. The event will not be handled 
 	so if you already are listening for mouse input you might get this and your own event */
@@ -292,14 +292,13 @@ private:
 	UPROPERTY()
 	class UFGAudioMessage* mActiveAudioMessage;
 
-	/** Message queue that the currently active audio message belongs to */
-	UPROPERTY()
-	FPendingMessageQueue mActiveMessageQueue;
-
 	/** How much time must pass between receiving audio messages at least? */
 	UPROPERTY( EditDefaultsOnly, Category = "UI" )
 	float mMinTimeBetweenAudioMessage;
 
 	/** Timer value used so that we don't push audio message direct after another */
 	float mAudioMessageCooldown;
+
+	/** Whether or not the pause menu is open. */
+	bool mPauseMenuOpen;
 };

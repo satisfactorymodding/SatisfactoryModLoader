@@ -4,8 +4,13 @@
 
 UFGBuildGunStateDismantle::UFGBuildGunStateDismantle() : Super() {
 	this->mHoverProxyMaterial = nullptr;
-	this->mMultiDismantleSpecifiedType = nullptr;
+	this->mCurrentDismantleClassFilter = nullptr;
+	this->mCurrentDismantleBlueprintFilter = nullptr;
 	this->mCurrentlySelectedActor = nullptr;
+	this->mCurrentlyAimedAtActor = nullptr;
+	this->mDefaultDismantleMode = nullptr;
+	this->mBlueprintDismantleMode = nullptr;
+	this->mBlueprintProxyDetector = nullptr;
 }
 void UFGBuildGunStateDismantle::GetLifetimeReplicatedProps(TArray<  FLifetimeProperty > & OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -17,29 +22,41 @@ void UFGBuildGunStateDismantle::TickState_Implementation(float deltaTime){ }
 void UFGBuildGunStateDismantle::PrimaryFire_Implementation(){ }
 void UFGBuildGunStateDismantle::SecondaryFire_Implementation(){ }
 void UFGBuildGunStateDismantle::OnRecipeSampled_Implementation(TSubclassOf<class UFGRecipe> recipe){ }
+void UFGBuildGunStateDismantle::GetSupportedBuildModes_Implementation(TArray<TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildModes) const{ }
+TSubclassOf< UFGBuildGunModeDescriptor > UFGBuildGunStateDismantle::GetInitialBuildGunMode_Implementation() const{ return TSubclassOf<UFGBuildGunModeDescriptor>(); }
+void UFGBuildGunStateDismantle::OnBuildGunModeChanged_Implementation(TSubclassOf< UFGBuildGunModeDescriptor > newMode){ }
+void UFGBuildGunStateDismantle::BindInputActions( UFGEnhancedInputComponent* inputComponent){ }
+void UFGBuildGunStateDismantle::SetMultiDismantleState(bool isActive){ }
+void UFGBuildGunStateDismantle::SetDismantleClassFilter(AActor* actorToFilter){ }
+bool UFGBuildGunStateDismantle::IsMultiDismantleActive() const{ return bool(); }
 AActor* UFGBuildGunStateDismantle::GetSelectedActor() const{ return nullptr; }
 TArray<FInventoryStack> UFGBuildGunStateDismantle::GetPeekDismantleRefund() const{ return TArray<FInventoryStack>(); }
 bool UFGBuildGunStateDismantle::CanDismantle() const{ return bool(); }
-TArray< FInventoryStack > UFGBuildGunStateDismantle::GetDismantleRefund() const{ return TArray<FInventoryStack>(); }
+TArray< FInventoryStack > UFGBuildGunStateDismantle::GetDismantleRefund(bool noBuildCostEnabled) const{ return TArray<FInventoryStack>(); }
 bool UFGBuildGunStateDismantle::CanBeginBuildGunDelay() const{ return bool(); }
 void UFGBuildGunStateDismantle::BeginBuildGunDelay(){ }
 void UFGBuildGunStateDismantle::ResetBuildGunDelay(){ }
 void UFGBuildGunStateDismantle::Internal_OnMultiDismantleStateChanged(bool newValue){ }
-void UFGBuildGunStateDismantle::Internal_OnSingleTypeMultiDismantleChanged(bool newValue){ }
 void UFGBuildGunStateDismantle::UpdateHighlightedActors(){ }
 void UFGBuildGunStateDismantle::Server_DismantleActors_Implementation(const TArray<class AActor*>& selectedActors){ }
 bool UFGBuildGunStateDismantle::Server_DismantleActors_Validate(const TArray<class AActor*>& selectedActors){ return bool(); }
-void UFGBuildGunStateDismantle::Server_PeekAtDismantleRefund_Implementation(const TArray<class AActor*>& selectedActors){ }
-bool UFGBuildGunStateDismantle::Server_PeekAtDismantleRefund_Validate(const TArray<class AActor*>& selectedActors){ return bool(); }
+void UFGBuildGunStateDismantle::Server_PeekAtDismantleRefund_Implementation(const TArray<class AActor*>& selectedActors, bool noBuildCostEnabled){ }
+bool UFGBuildGunStateDismantle::Server_PeekAtDismantleRefund_Validate(const TArray<class AActor*>& selectedActors, bool noBuildCostEnabled){ return bool(); }
 void UFGBuildGunStateDismantle::OnRep_PeekDismantleRefund(){ }
 void UFGBuildGunStateDismantle::Internal_DismantleActor( AActor* actorToDismantle){ }
 void UFGBuildGunStateDismantle::SetAimedAtActor( AActor* selected){ }
 void UFGBuildGunStateDismantle::AddPendingDismantleActor( AActor* selected){ }
 void UFGBuildGunStateDismantle::ClearPendingSelectedActors(){ }
 bool UFGBuildGunStateDismantle::DoesReplicatedPeekDataMatch() const{ return bool(); }
-void UFGBuildGunStateDismantle::UpdatePeekDismantleRefunds(){ }
+void UFGBuildGunStateDismantle::UpdatePeekDismantleRefunds(bool noBuildCostEnabled){ }
 void UFGBuildGunStateDismantle::ClearStaleDismantleActors(){ }
 void UFGBuildGunStateDismantle::CreateStencilProxy(AActor* selected){ }
 void UFGBuildGunStateDismantle::DestroySingleStencilProxy(AActor* actor){ }
 void UFGBuildGunStateDismantle::DestroyStencilProxies(bool destroyComponents){ }
 void UFGBuildGunStateDismantle::ResetStencilValues(AActor* actor){ }
+bool UFGBuildGunStateDismantle::CanDismantleActor(AActor* actor) const{ return bool(); }
+void UFGBuildGunStateDismantle::BeginDetectorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){ }
+void UFGBuildGunStateDismantle::EndDetectorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex){ }
+void UFGBuildGunStateDismantle::ClearBlueprintProxyVisuals(){ }
+void UFGBuildGunStateDismantle::Input_DismantleMultiSelect(const FInputActionValue& actionValue){ }
+void UFGBuildGunStateDismantle::Input_SelectBuildingForDismantleFilter(const FInputActionValue& actionValue){ }

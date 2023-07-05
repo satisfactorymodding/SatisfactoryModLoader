@@ -14,19 +14,6 @@
 DECLARE_STATS_GROUP( TEXT( "Hologram" ), STATGROUP_Hologram, STATCAT_Advanced );
 
 /**
- * Enum for different scroll modes a hologram can implement.
- */
-UENUM( BlueprintType )
-enum class EHologramScrollMode : uint8
-{
-	HSM_NONE = 0					UMETA( DisplayName = "None" ),
-	HSM_ROTATE = 1					UMETA( DisplayName = "Rotate" ),
-	HSM_RAISE_LOWER = 2				UMETA( DisplayName = "Raise/Lower" ),
-	HSM_SPLINE_PATH_MODE = 3		UMETA( DisplayName = "Spline Mode" ),
-	HSM_MAX							UMETA( Hidden )
-};
-
-/**
 * Enum for caching recently used build modes in different categories on the buildgun.
 */
 UENUM( BlueprintType )
@@ -156,18 +143,23 @@ public:
 	/**
 	* Gets called before all the placement logic of the hologram has been run.
 	*/
-	virtual void PreHologramPlacement();
+	virtual void PreHologramPlacement( const FHitResult& hitResult );
 	
 	/**
 	 * Gets called after all the placement logic of the hologram has been run.
 	 */
-	virtual void PostHologramPlacement();
+	virtual void PostHologramPlacement( const FHitResult& hitResult );
 
 	/**
 	 * Notify that the hologram hit result is NOT valid and that the hologram is sett to hidden in game. Will usually trigger when E.g. Aiming up in the sky. 
 	 (Called when the IsValidHitResult returns false.)
 	 */
 	virtual void OnInvalidHitResult();
+
+	/**
+	 * Called from the buildgun when the hologram is locked, if it supports nudging.
+	 */
+	virtual void SetHologramNudgeLocation();
 
 	/**
 	 * Checks placement and cost. Default behavior is to call functions, CheckCanAfford, consider placement if the actor is visible and not an upgrade. Also responsible for applying the valid/invalid render materials with the SetMaterial function. Will do the same on all active child holograms.
@@ -191,7 +183,7 @@ public:
 	virtual bool DoMultiStepPlacement(bool isInputFromARelease);
 
 	/**
-	 * Update scroll input on the hologram. Default is to branch on mScrollMode and call ScrollRotate() or change the mScrollRaiseLowerValue with the input.
+	 * Update scroll input on the hologram.
 	 * @param delta	The scroll direction and amount, negative is down and positive is up.
 	 */
 	virtual void Scroll( int32 delta );
@@ -210,45 +202,8 @@ public:
 
 	//@todoscroll Cleanup or use old scroll with modes, there are some problems with how it was implemented before -G2
 	virtual void ScrollRotate( int32 delta, int32 step );
-	int32 GetScrollRotateValue() const { return mScrollRotation; }
-	void SetScrollRotateValue(int32 rotValue)  { mScrollRotation = rotValue; }
-
-	/**
-	 * Set the initial scroll value that has been saved in the BuildGun.
-	 *
-	 * @param scrollMode - if this scroll mode isn't supported, no value will be set
-	 * @param scrollValue - the value we want to set to the scroll mode
-	 */
-	void SetInitialScrollValue( EHologramScrollMode scrollMode, int32 scrollValue );
-
-	/**
-	 * Get the scroll value of the specified mode
-	 *
-	 * @param scrollMode - the scroll mode we want to get the scroll value of
-	 * @return if scrollMode is HSM_NONE or invalid, then we return 0
-	 */
-	int32 GetScrollValue( EHologramScrollMode scrollMode ) const;
-
-	/**
-	 * Change the scroll mode on the hologram if many.
-	 */
-	void SetScrollMode( EHologramScrollMode mode );
-
-	/**
-	 * Get the currently active scroll mode.
-	 */
-	EHologramScrollMode GetScrollMode() const;
-
-	/**
-	 * Set the active scroll mode, changes what happens when Scroll is called.
-	 */
-	bool IsScrollModeSupported( EHologramScrollMode mode ) const;
-
-	/**
-	 * Change the scroll mode on the hologram if many.
-	 * @param out_modes		Array with the supported modes in the preferred toggle order.
-	 */
-	virtual void GetSupportedScrollModes( TArray< EHologramScrollMode >* out_modes ) const;
+	int32 GetScrollRotateValue() const;
+	void SetScrollRotateValue( int32 rotValue );
 
 	/** Set additional clearance boxes to check for collision */
 	void SetAdditionalClearanceBoxes( TArray< class UFGClearanceComponent* >& clearanceComps ) { mAdditionalClearanceBoxes.Reset(); mAdditionalClearanceBoxes.Append( clearanceComps ); }
@@ -259,38 +214,28 @@ public:
 	*
 	* TODO Tobias 2021/07/07: Might be worth wrapping these build mode descriptors to avoid errors where build modes haven't been assigned / a hologram uses the same descriptor for multiple build modes.
 	*/
-	UFUNCTION( BlueprintNativeEvent, Category = "Hologram" )
-	void GetSupportedBuildModes( TArray< TSubclassOf<UFGHologramBuildModeDescriptor> >& out_buildmodes ) const;
+	UFUNCTION( BlueprintNativeEvent, BlueprintPure, Category = "Hologram" )
+	void GetSupportedBuildModes( TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes ) const;
 
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
-	TSubclassOf<UFGHologramBuildModeDescriptor> GetCurrentBuildMode();
+	TSubclassOf< UFGHologramBuildModeDescriptor > GetDefaultBuildGunMode() const { return mDefaultBuildMode; }
 
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	EHologramBuildModeCategory GetBuildModeCategory() const { return mBuildModeCategory; }
 
-	UFUNCTION( BlueprintCallable, Category = "Hologram" )
-	void SetBuildMode( TSubclassOf<UFGHologramBuildModeDescriptor> mode );
-
-	UFUNCTION( BlueprintCallable, Category = "Hologram" )
-	void CycleBuildMode( int32 deltaIndex );
-
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	bool IsCurrentBuildMode( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) const;
 
-	virtual void OnBuildModeChanged();
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	FORCEINLINE TSubclassOf< AActor > GetBuildClass() const { return mBuildClass; }
+
+	virtual void OnBuildModeChanged( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode );
 
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	virtual bool CanBeZooped() const { return false; }
 
-	/** Set the no snap mode. @see mNoSnapMode */
-	void SetNoSnapMode( bool isEnabled ) { mNoSnapMode = isEnabled; }
-
 	/** Set hologram to snap to guide lines */
 	virtual void SetSnapToGuideLines( bool isEnabled );
-
-	/** @return true if no snap mode is enabled; false otherwise. */
-	UFUNCTION( BlueprintPure, Category = "Hologram" )
-	FORCEINLINE bool GetNoSnapMode() const { return mNoSnapMode; }
 
 	/**
 	 * Set the placement material state, this is updated when calling ValidatePlacementAndCost, so call this only if you want to override it.
@@ -302,6 +247,10 @@ public:
 	 * Returns the hologram material state the hologram should currently have.
 	 */
 	virtual EHologramMaterialState GetHologramMaterialState() const;
+
+	/** Used to override the range of the buildgun. Return value below 0 will be ignored and default will be used instead. */
+	UFUNCTION( BlueprintNativeEvent, Category = "Hologram" )
+	float GetBuildGunRangeOverride() const;
 
 	/**
 	 * If the hologram contains changes that can be reset using the right mouse button, e.g. multi step placement and rotation.
@@ -435,6 +384,53 @@ public:
 	void SetInsideBlueprintDesigner( class AFGBuildableBlueprintDesigner* designer );
 	class AFGBuildableBlueprintDesigner* GetBlueprintDesigner();
 
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	virtual bool CanLockHologram() const { return mCanLockHologram; }
+
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	virtual bool CanNudgeHologram() const;
+
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	bool IsHologramLocked() const { return mHologramIsLocked; }
+
+	UFUNCTION( BlueprintCallable, Category = "Hologram" )
+	void LockHologramPosition( bool lock );
+
+	UFUNCTION( BlueprintCallable, Category = "Hologram" )
+	void ToggleHologramPositionLock() { LockHologramPosition( !mHologramIsLocked ); }
+
+	/** Used to nudge the hologram location when locking it in place. */
+	UFUNCTION( BlueprintCallable, Category = "Hologram" )
+	void SetNudgeOffset( const FVector& NewNudgeOffset );
+
+	/** Used to nudge the hologram location when locking it in place. */
+	UFUNCTION( BlueprintCallable, Category = "Hologram" )
+	ENudgeFailReason AddNudgeOffset( const FVector& Offset );
+
+	/** The amount of distance to nudge the hologram. */
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	virtual float GetNudgeDistance() const { return mDefaultNudgeDistance; }
+
+	/** Used to nudge the hologram location when locking it in place. */
+	UFUNCTION( BlueprintCallable, Category = "Hologram" )
+	virtual ENudgeFailReason NudgeTowardsWorldDirection( const FVector& Direction );
+
+	/** Used to nudge the hologram based on an input and the current hitresult of the buildgun. */
+	UFUNCTION( BlueprintCallable, Category = "Hologram" )
+	virtual ENudgeFailReason NudgeHologram( const FVector& NudgeInput, const FHitResult& HitResult );
+
+	/** When nudging the hologram, this is the current offset. */
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	const FVector& GetNudgeOffset() const { return mHologramNudgeOffset; }
+
+	/** If the hologram is locked, this is the location the hologram was locked at. */
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	const FVector& GetHologramLockLocation() const { return mHologramLockLocation; }
+
+	/** Gets the hologram we want to apply nudge to. Can be overridden in case of child holograms such as wire -> automatic wire pole for example. */
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	virtual AFGHologram* GetNudgeHologramTarget();
+
 protected:
 	/** OnHologramTransformUpdated
 	 * Let's holograms react to rotation and location chnages applied after the initial move. Currently used for stuff like snapping and having sub holograms like hub parts update.
@@ -511,7 +507,7 @@ protected:
 	 * @param componentTemplate - Create the component using this template.
 	 * @return - The newly created component.
 	 */
-	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName );
+	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName );
 
 	virtual TArray<UStaticMeshComponent*> SpawnLightWeightInstanceData( USceneComponent* attachParent );
 	
@@ -528,7 +524,7 @@ protected:
 	void AddValidHitClass( TSubclassOf< AActor > hitClass ) { mValidHitClasses.AddUnique( hitClass ); }
 
 	/** Check if a class is a valid hit. */
-	bool IsValidHitActor( AActor* hitActor ) const;
+	virtual bool IsValidHitActor( AActor* hitActor ) const;
 
 	/** @return The overridden rotation step size to use when rotating. */
 	virtual int32 GetRotationStep() const;
@@ -539,6 +535,10 @@ protected:
 	 */
 	float ApplyScrollRotationTo( float base, bool onlyUseBaseForAlignment = false ) const;
 
+	FVector GetMaxNudgeDistance() const;
+
+	/** Tags for marking components in the hologram. */
+	static const FName HOLOGRAM_MESH_TAG;
 private:
 	/** Spawns a hologram from recipe */
 	static AFGHologram* SpawnHologramFromRecipe( TSubclassOf< class UFGRecipe > inRecipe, AFGHologram* parent, AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator );
@@ -555,9 +555,6 @@ private:
 	 */
 	UFUNCTION( Client, Reliable )
 	void Client_PlaySnapSound();
-
-	UFUNCTION()
-	void OnRep_InitialScrollModeValue();
 
 protected:
 	/**
@@ -605,21 +602,13 @@ protected:
 
 	UPROPERTY()
 	TArray<UStaticMeshComponent*> mGeneratedAbstractComponents;
-	
-	/** No enforced snapping, foundations use this for now. */
-	bool mNoSnapMode;
 
 	/** Whether the hologram should snap to guide lines or not */
 	bool mSnapToGuideLines;
 
-	/** Current scroll mode, determines what calls to Scroll() does. */
-	EHologramScrollMode mScrollMode;
-
 	/** Current scroll value of the rotation. How this is interpreted as a rotation is up to the hologram placement code. */
+	UPROPERTY( Replicated )
 	int32 mScrollRotation;
-
-	/** Current scroll value of the raise/lower. How this is interpreted as a height is up to the hologram placement code. */
-	int32 mScrollRaiseLowerValue;
 
 	/** The hologram saves and shares the last used build mode between holograms in the same category. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
@@ -628,10 +617,6 @@ protected:
 	/** The default build mode of the hologram. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
 	TSubclassOf<UFGHologramBuildModeDescriptor> mDefaultBuildMode;
-
-	/** Current build mode used by the hologram. Used differently case by case for each hologram. */
-	UPROPERTY( VisibleAnywhere, Category = "Hologram|BuildMode" )
-	TSubclassOf<UFGHologramBuildModeDescriptor> mCurrentBuildMode;
 
 	/** Current material state of the hologram, which dictates the color using stencil values. */
 	UPROPERTY( ReplicatedUsing = OnRep_PlacementMaterialState )
@@ -644,9 +629,6 @@ protected:
 	/** Material on hologram for invalid placement. */
 	UPROPERTY()
 	class UMaterialInstance* mInvalidPlacementMaterial;
-
-	/** Tags for marking components in the hologram. */
-	static const FName HOLOGRAM_MESH_TAG;
 
 	/**
 	 * Enables composite holograms.
@@ -698,8 +680,33 @@ protected:
 	/** Initialized on spawn - Can this hologram be placed in a blueprint designer? */
 	UPROPERTY()
 	bool mCanBePlacedInBlueprintDesigner;
+
+	/** Whether or not this hologram can be locked in place while positioning it. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	bool mCanLockHologram;
+
+	/** Used to lock the hologram in place. */
+	bool mHologramIsLocked;
+	
+	/** Whether or not this hologram can use the nudge system when locked to adjust its position. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	bool mCanNudgeHologram;
+
+	/** The default nudge distance of this hologram. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	float mDefaultNudgeDistance;
+
+	/** The maximum amount of distance (per axis) that this hologram can be nudged. The actual value used is whatever is highest between this, and half the clearance box size, if it exists. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	float mMaxNudgeDistance;
 	
 private:
+	/** Used for offsetting the hologram location with the nudge system. */
+	FVector mHologramNudgeOffset;
+
+	/** Location of the hologram when it was locked. */
+	FVector mHologramLockLocation;
+	
 	/** Who is building */
 	UPROPERTY( Replicated, CustomSerialization )
 	APawn* mConstructionInstigator;
@@ -711,10 +718,6 @@ private:
 	/** If the hologram has changed, i.e. multi step placement or rotation. */
 	UPROPERTY( Replicated )
 	bool mIsChanged;
-
-	/** The client needs to know the initial saved scroll mode value from the BuildGun. */
-	UPROPERTY( ReplicatedUsing = OnRep_InitialScrollModeValue )
-	int32 mInitialScrollModeValue;
 
 	/** This hologram is marked to be constructed, will not disappear if the build gun is unequipped for client */
 	bool mIsPendingToBeConstructed = false;

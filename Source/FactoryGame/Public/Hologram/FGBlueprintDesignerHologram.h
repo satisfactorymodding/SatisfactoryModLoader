@@ -22,7 +22,7 @@ class FACTORYGAME_API AFGBlueprintDesignerHologram : public AFGBuildableHologram
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
 
 protected:
-	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
+	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual void OnHologramTransformUpdated() override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	

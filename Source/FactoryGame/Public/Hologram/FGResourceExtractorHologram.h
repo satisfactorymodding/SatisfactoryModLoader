@@ -28,6 +28,7 @@ public:
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual AActor* GetUpgradedActor() const override;
+	virtual bool CanNudgeHologram() const override;
 	// End AFGHologram Interface
 
 protected:

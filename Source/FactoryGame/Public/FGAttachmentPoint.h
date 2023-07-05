@@ -1,27 +1,18 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-
 #include "FactoryGame.h"
+#include "CoreMinimal.h"
+#include "Templates/SubclassOf.h"
 #include "FGAttachmentPoint.generated.h"
 
-/** Type class for attachment points, used to allow / disallow snapping. */
-UCLASS( Blueprintable, Abstract )
-class FACTORYGAME_API UFGAttachmentPointType : public UObject
-{
-	GENERATED_BODY()
-public:
-	virtual bool CanAttach( const struct FFGAttachmentPoint& point, const struct FFGAttachmentPoint& targetPoint ) const;
-
-	/** What attachment point types this type can snap to. */
-	UPROPERTY( EditDefaultsOnly, Category = "Attachment Point")
-	TArray< TSubclassOf< UFGAttachmentPointType > > mAllowedAttachmentPointSnapTypes;
-};
+struct FFGAttachmentPoint;
+class UFGAttachmentPointType;
 
 /**
  * Basic attachment point struct. Used for snapping actors together.
  */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FACTORYGAME_API FFGAttachmentPoint
 {
 	GENERATED_BODY()
@@ -32,14 +23,28 @@ struct FACTORYGAME_API FFGAttachmentPoint
 	bool CanAttachTo( const FFGAttachmentPoint* otherPoint ) const;
 
 	/** Relative transform of the attachment point. */
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, Category = "Attachment Point")
 	FTransform RelativeTransform;
 
 	/** Type of the attachment point. */
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, Category = "Attachment Point")
 	TSubclassOf< UFGAttachmentPointType > Type;
 
 	/** The actor this attachment point belongs to. */
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, Category = "Attachment Point")
 	AActor* Owner;
+};
+
+/** Type class for attachment points, used to allow / disallow snapping. */
+UCLASS( Blueprintable, Abstract )
+class FACTORYGAME_API UFGAttachmentPointType : public UObject
+{
+	GENERATED_BODY()
+public:
+	UFUNCTION( BlueprintNativeEvent, Category = "Attachment Point" )
+	bool CanAttach( const FFGAttachmentPoint& point, const FFGAttachmentPoint& targetPoint ) const;
+
+	/** What attachment point types this type can snap to. */
+	UPROPERTY( EditDefaultsOnly, Category = "Attachment Point" )
+	TArray< TSubclassOf< UFGAttachmentPointType > > mAllowedAttachmentPointSnapTypes;
 };

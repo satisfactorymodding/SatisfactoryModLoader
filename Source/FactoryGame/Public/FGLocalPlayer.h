@@ -9,7 +9,7 @@
 #include "Engine/LocalPlayer.h"
 #include "OnlineSubsystemTypes.h"
 #include "FGErrorMessage.h"
-#include "UObject/CoreOnline.h"
+#include "Online/CoreOnline.h"
 #include "EOSAccountHelpers.h"
 #include "FindSessionsCallbackProxy.h"
 #include "EOSSDKForwards.h"
@@ -17,6 +17,7 @@
 #include "FGLocalPlayer.generated.h"
 
 
+class UFGInputMappingContext;
 UCLASS()
 class UFGEM_LoggedOutFromOnlineService : public UFGErrorMessage
 {
@@ -159,7 +160,7 @@ public:
 	UFGLocalPlayer();
 
 	//~Begin ULocalPlayer interface
-	virtual void PlayerAdded( class UGameViewportClient* inViewportClient, int32 inControllerID ) override;
+	virtual void PlayerAdded( class UGameViewportClient* inViewportClient, FPlatformUserId inUserId ) override;
 	virtual void PlayerRemoved() override;
 	//~End ULocalPlayer interface
 	
@@ -309,6 +310,7 @@ public:
 
 	void ContinueWithoutMultiplayer();
 
+	void FindChildMappingContexts( const UFGInputMappingContext* mainContext, TArray<UFGInputMappingContext*>& out_childContexts ) const;
 protected:
 	//~Begin Online Delegates
 	//~Begin OnlineIdentity delegates
@@ -476,4 +478,11 @@ protected:
 	bool mHastTriedLoggingIn = false;
 	bool mAutoSignedOutEpicDueToIncompatibility = false;
 	bool mResetAccountLinkingIsWaitingForEpicLogout = false;
+
+	/**
+	 * A cache of the parent to children mapping contexts, built when the player is added
+	 * Used to avoid frequently looking up asset registry when we are re-binding the input contexts on the player
+	 * TODO @Nick: FGLocalPlayer doesn't seem like the best place for this, but making a local player subsystem for this sounds a bit excessive
+	 */
+	TMultiMap<TSoftObjectPtr<UFGInputMappingContext>, TSoftObjectPtr<UFGInputMappingContext>> mParentToChildMappingContexts;
 };

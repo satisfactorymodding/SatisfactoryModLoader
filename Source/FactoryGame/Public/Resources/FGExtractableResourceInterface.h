@@ -8,7 +8,7 @@
 /**
  * Interface for all mineable resource objects ( Resource Nodes, Water Volumes )
  */
-UINTERFACE( Blueprintable, meta = ( CannotImplementInterfaceInBlueprint ) )
+UINTERFACE( BlueprintType, NotBlueprintable )
 class FACTORYGAME_API UFGExtractableResourceInterface : public UInterface
 {
 	GENERATED_UINTERFACE_BODY()

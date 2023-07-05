@@ -91,4 +91,9 @@ public:
 
 	UPROPERTY( EditInstanceOnly, Category = "Resources" )
 	TSubclassOf< class UFGResourceDescriptor > mOverrideResourceClass;
+
+	/** Determines if the resource node should be able to be radio active. */
+	UPROPERTY( BlueprintReadWrite, EditInstanceOnly, Category = "Resources" )
+	bool mCanBeRadioactive = true;
+	
 };

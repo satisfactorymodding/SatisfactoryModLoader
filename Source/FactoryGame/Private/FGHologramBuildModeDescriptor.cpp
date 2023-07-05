@@ -2,4 +2,3 @@
 
 #include "FGHologramBuildModeDescriptor.h"
 
-FText UFGHologramBuildModeDescriptor::GetDisplayName(TSubclassOf<UFGHologramBuildModeDescriptor> inClass){ return FText(); }

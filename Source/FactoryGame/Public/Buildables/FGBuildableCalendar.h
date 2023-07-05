@@ -21,9 +21,9 @@ struct FSlotIndextoRandomRewardMapping
 	{}
 	
 	UPROPERTY()
-	int32 SlotIndex;
+	int32 SlotIndex = 0;
 	UPROPERTY()
-	int32 RandomRewardIndex;
+	int32 RandomRewardIndex = 0;
 	
 };
 
@@ -46,7 +46,7 @@ public:
 
 	// Begin IFGDismantleInterface
 	virtual bool CanDismantle_Implementation() const override { return false; }
-	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund ) const override;
+	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
 	// End IFGDismantleInterface
 
 	// Begin IFGSaveInterface

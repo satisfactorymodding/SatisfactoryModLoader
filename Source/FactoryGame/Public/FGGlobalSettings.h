@@ -6,19 +6,14 @@
 #include "UObject/Object.h"
 #include "FGGlobalSettings.generated.h"
 
-/**
- * 
- */
-UCLASS( Blueprintable, config = Game, defaultconfig )
-class FACTORYGAME_API UFGGlobalSettings : public UObject
+
+UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Settings Classes" ) )
+class FACTORYGAME_API UFGGlobalSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
+	
 public:
-	UFUNCTION( BlueprintPure, Category = "Settings" )
-	static class UFGGlobalSettings* GetGlobalSettingsClassCDO();
-
-	UFUNCTION( BlueprintPure, Category = "Settings" )
-	static class UFGResourceSettings* GetResourceSettingsCDO();
+	static const UFGGlobalSettings* Get() { return GetDefault<UFGGlobalSettings>(); };
 
 	UFUNCTION( BlueprintPure, Category = "Settings" )
 	static class UFGFactorySettings* GetFactorySettingsCDO();
@@ -33,55 +28,31 @@ public:
 	static class UFGEnvironmentSettings* GetEnvironmentSettingsCDO();
 
 	UFUNCTION( BlueprintPure, Category = "Settings" )
-	static class UFGSubsystemClasses* GetSubsystemClassesCDO();
-
-	UFUNCTION( BlueprintPure, Category = "Settings" )
-	static class UFGSignSettings* GetSignSettingsCDO();
-
-	UFUNCTION( BlueprintPure, Category = "Settings" )
 	static class UFGIconLibrary* GetIconLibraryCDO();
 
 	UFUNCTION( BlueprintPure, Category = "Settings" )
 	static class UFGServerManagerSettings* GetServerManagerSettingsCDO();
 
-protected:
 	/** Settings for resources */
-	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
-	TSubclassOf< class UFGResourceSettings > mResourceSettings;
-
-	/** Settings for resources */
-	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
-	TSubclassOf< class UFGFactorySettings > mFactorySettings;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
+	TSoftClassPtr< class UFGFactorySettings > mFactorySettings;
 	
 	/** Settings for drop pods */
-	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
-	TSubclassOf< class UFGDropPodSettings > mDropPodSettings;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
+	TSoftClassPtr< class UFGDropPodSettings > mDropPodSettings;
 
 	/** Settings for Hard Drive Research */
-	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
-	TSubclassOf< class UFGHardDriveSettings > mHardDriveSettings;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
+	TSoftClassPtr< class UFGHardDriveSettings > mHardDriveSettings;
 
 	/** Settings for drop pods */
-	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
-	TSubclassOf< class UFGEnvironmentSettings > mEnvironmentSettings;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
+	TSoftClassPtr< class UFGEnvironmentSettings > mEnvironmentSettings;
 
-	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
-	TSubclassOf< class UFGSubsystemClasses > mSubsystemClasses;
-
-	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
-	TSubclassOf< class UFGSignSettings > mSignSettings;
-
-	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
-	TSubclassOf< class UFGIconLibrary > mIconLibrary;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
+	TSoftClassPtr< class UFGIconLibrary > mIconLibrary;
 
 	/** Settings for the server manager, which lives on the client */
-	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
-	TSubclassOf< class UFGServerManagerSettings > mServerManagerSettings;
-
-	/** Default class for specifying the settings class */
-	UPROPERTY( config, noclear )
-	FSoftClassPath mGlobalSettingsClassName;
-
-	/** The actual class */
-	static TSubclassOf< UFGGlobalSettings > mGlobalSettingsClass;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
+	TSoftClassPtr< class UFGServerManagerSettings > mServerManagerSettings;
 };

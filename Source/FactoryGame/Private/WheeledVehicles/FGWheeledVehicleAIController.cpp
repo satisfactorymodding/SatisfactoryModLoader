@@ -6,7 +6,7 @@
 void AFGWheeledVehicleAIController::DrawDebug(float deltaTime, const Input& input, const Output& output){ }
 #endif 
 AFGWheeledVehicleAIController::AFGWheeledVehicleAIController() : Super() {
-	this->mDetection = nullptr;
+
 }
 void AFGWheeledVehicleAIController::OnPossess(APawn* InPawn){ }
 void AFGWheeledVehicleAIController::OnUnPossess(){ }

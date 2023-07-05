@@ -75,12 +75,12 @@ void AFGHoverPack::ConnectToPowerConnection( UFGPowerConnectionComponent* Connec
 void AFGHoverPack::DisconnectFromCurrentPowerConnection(){ }
 void AFGHoverPack::ConnectToRailroadTrack( AFGBuildableRailroadTrack* RailroadTrack){ }
 void AFGHoverPack::SetCharacterHoverMovementMode() const{ }
-void AFGHoverPack::OnCrouchPressed(){ }
 void AFGHoverPack::PlayerStopHover_Server_Implementation(){ }
 bool AFGHoverPack::PlayerStopHover_Server_Validate(){ return bool(); }
 void AFGHoverPack::PlayerStopHover(){ }
 bool AFGHoverPack::PlayerIsInHoverMovementMode() const{ return bool(); }
 void AFGHoverPack::MakeActiveNoise(){ }
+void AFGHoverPack::Input_Crouch(const FInputActionValue& actionValue){ }
 void AFGHoverPack::OnRep_HasConnection(){ }
 void AFGHoverPack::OnRep_CurrentHoverMode(){ }
 void AFGHoverPack::OnRep_CurrentConnectionLocation(){ }

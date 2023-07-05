@@ -2,28 +2,34 @@
 
 #include "UI/FGGameUI.h"
 
+UFGGameUI::UFGGameUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mActiveTutorialHintData.ID = EIntroTutorialSteps::ITS_NONE;
+	this->mActiveTutorialHintData.Title = INVTEXT("");
+	this->mActiveTutorialHintData.Message = nullptr;
+	this->mActiveAudioMessage = nullptr;
+	this->mMinTimeBetweenAudioMessage = 0.0;
+}
 void UFGGameUI::PopAllWidgets_Implementation(){ }
 void UFGGameUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ }
 UFGInteractWidget* UFGGameUI::GetInteractWidgetOfClass(TSubclassOf< UFGInteractWidget > interactWidgetClass) const{ return nullptr; }
 bool UFGGameUI::ContainsInteractWidgetOfClass(TSubclassOf< UFGInteractWidget > interactWidgetClass) const{ return bool(); }
 void UFGGameUI::RemoveInteractWidget(UFGInteractWidget* widgetToRemove){ }
 void UFGGameUI::AddInteractWidget_Implementation(UFGInteractWidget* widgetToAdd){ }
-void UFGGameUI::AddPendingMessage(FPendingMessageQueue message){ }
-void UFGGameUI::AnswerCall(TSubclassOf<  UFGAudioMessage > inMessage){ }
-void UFGGameUI::DeclineCall(TSubclassOf<  UFGAudioMessage > inMessage){ }
+void UFGGameUI::AddPendingMessage(UFGMessageBase* message){ }
+void UFGGameUI::AddPendingMessage(UFGMessage* message){ }
+void UFGGameUI::AddPendingMessage(TSubclassOf<UFGMessageBase> messageClass){ }
 void UFGGameUI::HandlePendingMessages(float InDeltaTime){ }
-void UFGGameUI::PlayMessageQueue(FPendingMessageQueue newMessageQueue){ }
-void UFGGameUI::UpdateActiveMessageQueue(){ }
-void UFGGameUI::PlayNextMessageInActiveMessageQueue(){ }
-bool UFGGameUI::CanReceiveMessageQueue(FPendingMessageQueue inMessageQueue){ return bool(); }
+bool UFGGameUI::CanReceiveMessageQueue(){ return bool(); }
 bool UFGGameUI::CanReceiveMessage(TSubclassOf<  UFGMessageBase > inMessage){ return bool(); }
 void UFGGameUI::Native_HandlePauseGamePressed(){ }
+void UFGGameUI::SetPauseMenuOpen(bool isOpen){ }
 void UFGGameUI::AudioMessageFinishedPlayback(){ }
 void UFGGameUI::RemoveAudioMessage_Implementation(){ }
 AFGCharacterPlayer* UFGGameUI::GetFGCharacter(){ return nullptr; }
 void UFGGameUI::AddIntroTutorialInfo(FTutorialHintData tutorialHintData){ }
 void UFGGameUI::ClearHintOnTutorialStepCompleted(){ }
 void UFGGameUI::PlayAudioMessage(TSubclassOf<UFGAudioMessage> messageClass){ }
+void UFGGameUI::Internal_PlayAudioMessage( UFGAudioMessage* audioMessage){ }
 UFGInteractWidget* UFGGameUI::FindWidgetByClass(TSubclassOf<UFGInteractWidget> widgetClass){ return nullptr; }
 void UFGGameUI::ResumeGame(){ }
 void UFGGameUI::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboardSettings){ }

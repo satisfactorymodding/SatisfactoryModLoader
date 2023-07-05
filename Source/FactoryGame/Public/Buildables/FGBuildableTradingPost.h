@@ -8,6 +8,21 @@
 #include "FGActorRepresentationInterface.h"
 #include "FGBuildableTradingPost.generated.h"
 
+UINTERFACE( Blueprintable )
+class FACTORYGAME_API UFGTradingPostIntegratedBuildable : public UInterface
+{
+	GENERATED_BODY()
+};
+
+class FACTORYGAME_API IFGTradingPostIntegratedBuildable
+{
+	GENERATED_BODY()
+public:
+	/** Called when the buildable visibility changed */
+	UFUNCTION( BlueprintNativeEvent, Category = "Trading Post" )
+	void UpdateBuildableVisibility( bool isVisible, bool isTutorialComplete );
+}; 
+
 /**
  * The trading post, it has N inputs and sells inputed items for money.
  */
@@ -31,30 +46,48 @@ public:
 
 	//~ Begin IFGDismantleInterface
 	virtual void Dismantle_Implementation() override;
-	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund ) const override;
+	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
 	virtual void StartIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	virtual void StopIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
 	//~ End IFGDismantleInferface
 
 	// Begin IFGActorRepresentationInterface
+	UFUNCTION()
 	virtual bool AddAsRepresentation() override;
+	UFUNCTION()
 	virtual bool UpdateRepresentation() override;
+	UFUNCTION()
 	virtual bool RemoveAsRepresentation() override;
+	UFUNCTION()
 	virtual bool IsActorStatic() override;
+	UFUNCTION()
 	virtual FVector GetRealActorLocation() override;
+	UFUNCTION()
 	virtual FRotator GetRealActorRotation() override;
+	UFUNCTION()
 	virtual class UTexture2D* GetActorRepresentationTexture() override;
+	UFUNCTION()
 	virtual FText GetActorRepresentationText() override;
+	UFUNCTION()
 	virtual void SetActorRepresentationText( const FText& newText ) override;
+	UFUNCTION()
 	virtual FLinearColor GetActorRepresentationColor() override;
+	UFUNCTION()
 	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	UFUNCTION()
 	virtual ERepresentationType GetActorRepresentationType() override;
+	UFUNCTION()
 	virtual bool GetActorShouldShowInCompass() override;
+	UFUNCTION()
 	virtual bool GetActorShouldShowOnMap() override;
+	UFUNCTION()
 	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	UFUNCTION()
 	virtual float GetActorFogOfWarRevealRadius() override;
+	UFUNCTION()
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	UFUNCTION()
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	// End IFGActorRepresentationInterface
 
@@ -69,6 +102,10 @@ public:
 	/** Handles the storage visibility depending on tutorial step */
 	UFUNCTION( BlueprintCallable, Category = "Trading Post" )
 	void UpdateStorageVisibility();
+
+	/** Updates the visibility of the terminal and work bench, depending on the current upgrade level of the hub */
+	UFUNCTION( BlueprintCallable, Category = "Trading Post" )
+	void UpdateTerminalAndWorkbenchVisibility();
 
 	/** Returns level of trading post upgrade */
 	UFUNCTION( BlueprintPure, Category = "Trading Post" )

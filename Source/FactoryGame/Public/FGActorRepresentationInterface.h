@@ -10,7 +10,7 @@
 * This interface makes sure this actor gets a representation that is to be shown in compass and
 * in the minimap and similar things.
 */
-UINTERFACE( Blueprintable, meta = ( CannotImplementInterfaceInBlueprint ) )
+UINTERFACE( BlueprintType, NotBlueprintable )
 class FACTORYGAME_API UFGActorRepresentationInterface : public UInterface
 {
 	GENERATED_UINTERFACE_BODY()

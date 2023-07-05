@@ -28,5 +28,7 @@ void UFGCreatureActionCharge::OnAnimationBlendingOut_Implementation( UAnimMontag
 void UFGCreatureActionCharge::BeginCharge_Implementation(){ }
 void UFGCreatureActionCharge::EndCharge_Implementation(){ }
 void UFGCreatureActionCharge::ProcessHit_Implementation( AFGCharacterBase* HitCharacter, const FHitResult& HitResult){ }
+void UFGCreatureActionCharge::OnMovementModeChanged(ACharacter* character, EMovementMode previousMode, uint8 prevCustomMode){ }
 void UFGCreatureActionCharge::NetMulticast_BeginCharge_Implementation(){ }
 void UFGCreatureActionCharge::NetMulticast_EndCharge_Implementation(){ }
+void UFGCreatureActionCharge::OnFall(){ }

@@ -5,8 +5,9 @@
 void AFGRailroadVehicleHologram::BeginPlay(){ }
 void AFGRailroadVehicleHologram::ScrollRotate(int32 delta, int32 step){ }
 void AFGRailroadVehicleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
+bool AFGRailroadVehicleHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGRailroadVehicleHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
-USceneComponent* AFGRailroadVehicleHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
+USceneComponent* AFGRailroadVehicleHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 void AFGRailroadVehicleHologram::CheckValidPlacement(){ }
 AFGVehicle* AFGRailroadVehicleHologram::ConstructVehicle(FNetConstructionID netConstructionID) const{ return nullptr; }
 AFGRailroadVehicle* AFGRailroadVehicleHologram::OverlapRailroadVehicle(const FTransform& boxTransform, const FVector& boxExtent) const{ return nullptr; }

@@ -30,8 +30,9 @@ public:
 
 	UFGCircuit();
 
-	/** Cleanup code */
+	// Begin UObject interface
 	virtual void BeginDestroy() override;
+	// End UObject interface
 
 	// Begin IFGSaveInterface
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
@@ -57,15 +58,17 @@ public:
 	void MarkAsChanged();
 	void MarkForFullRebuild();
 
-	/** Haxx to be able to disable replication when no one is looking at the circuit */
+	/** Hax to be able to disable replication when no one is looking at the circuit */
 	void RegisterInteractingPlayer( class AFGCharacterPlayer* player );
 	void UnregisterInteractingPlayer( class AFGCharacterPlayer* player );
 
 	/** @return true if this circuit is replicating detailed information about it; false otherwise. */
 	bool IsReplicatingDetails() const { return mReplicateDetails; }
 
-	int32 GetCircuitGroupID() { return mCircuitGroupId; }
+	/** @return the group this circuit belongs too. */
+	int32 GetCircuitGroupID() const { return mCircuitGroupID; }
 
+	/** @return All components that are part of this circuit, this data might change when circuits are rebuilt. */
 	TArray< class UFGCircuitConnectionComponent* >& GetComponents() { return mComponents; }
 
 	/** Logs the internal state of this circuit. */
@@ -73,7 +76,7 @@ public:
 
 	/**
 	 * @return true if this circuit can be removed without any impact on game logic, false otherwise.
-	*/
+	 */
 	virtual bool IsTrivial() const;
 
 	/**
@@ -126,7 +129,8 @@ protected:
 	/** If this buildable is replicating details, i.e. for the UI. */
 	uint8 mReplicateDetails : 1;
 
-	int32 mCircuitGroupId;
+	/** Which group does this circuit belong too. */
+	int32 mCircuitGroupID;
 private:
 	friend class AFGCircuitSubsystem;
 	friend class UFGCheatManager;
@@ -151,8 +155,8 @@ public:
 	 * Make structural changes to the circuit group as needed.
 	 * @returns true if such changes were made that the circuit groups need to be rebuilt and pre-tick restarted, false otherwise.
 	 */
-	virtual bool PreTickCircuitGroup( float dt, bool hasAuthority ) { return false; }
-	virtual void TickCircuitGroup( float dt, bool hasAuthority ) { }
+	virtual bool PreTickCircuitGroup( float dt ) { return false; }
+	virtual void TickCircuitGroup( float dt ) { }
 	
 	//~ Begin UFGCircuitGroup -> AFGBuildableCircuitSwitch visitor pattern
 	virtual void VisitCircuitBridge( class AFGBuildableCircuitBridge* circuitBridge ) { }

@@ -158,7 +158,7 @@ public:
 	void DeleteSaveSession(const FSessionSaveStruct& Session, FOnDeleteSaveGameComplete CompleteDelegate, void* UserData );
 	
 	UFUNCTION( Server, Reliable )
-	void LoadSaveFile(const FSaveHeader& SaveGame); 	
+	void LoadSaveFile(const FSaveHeader& SaveGame, const TArray<FString>& OptionsKeys, const TArray<FString>& OptionsValues ); 	
 
 protected:
 	virtual void OnConnected() override;

@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Ben de Hullu. All Rights Reserved.
 
 #pragma once
 
@@ -122,7 +122,7 @@ public:
 	
 	/* Called from the cvar sink. */
 	void StartDrawDebug(bool bEnabled);
-	void HideAllInstance(bool bHide);
+	void HideAllInstance(bool bIsHidden);
 
 	FORCEINLINE bool CanLazyLoad() const { return bAllowLazySpawn; }
 	

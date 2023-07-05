@@ -23,7 +23,7 @@ public:
 	* @oaram meshComponent - MeshComponent for the foliage to be added to the inventory
 	* @return true of player has space in inventory for foliage pickup
 	*/
-	static bool HasPlayerInventorySpaceFor( class AFGCharacterPlayer* character, class UHierarchicalInstancedStaticMeshComponent* meshComponent );
+	static bool HasPlayerInventorySpaceFor( class AFGCharacterPlayer* character, class UHierarchicalInstancedStaticMeshComponent* meshComponent, uint32 randomSeed );
 	
 	/**
 	* Returns true of the player has space for the items in the component
@@ -33,7 +33,7 @@ public:
 	* @param out_validStacks - The stacks that can be added to the inventory
 	* @return true of player has space in inventory for foliage pickup
 	*/
-	static bool CheckInventorySpaceAndGetStacks( class AFGCharacterPlayer* character, class UHierarchicalInstancedStaticMeshComponent* meshComponent, TArray<struct FInventoryStack>& out_inventoryStacks );
+	static bool CheckInventorySpaceAndGetStacks( class AFGCharacterPlayer* character, class UHierarchicalInstancedStaticMeshComponent* meshComponent, TArrayView< uint32 > randomSeeds, TArray<struct FInventoryStack>& out_inventoryStacks );
 
 	/**
 	 * Tries to add the foliage pickup from the MeshComponent to the Player inventory. 
@@ -42,12 +42,12 @@ public:
 	 * @oaram meshComponent - MeshComponent for the foliage to be added to the inventory
 	 * @return true of player had space in inventory for foliage pickup and it was added to it
 	*/
-	static bool TryAddToPlayerInventory( class AFGCharacterPlayer* character, class UHierarchicalInstancedStaticMeshComponent* meshComponent );
+	static bool TryAddToPlayerInventory( class AFGCharacterPlayer* character, class UHierarchicalInstancedStaticMeshComponent* meshComponent, uint32 randomSeed );
 
 	
 
 protected:
 
 	/** Returns an array of stacks that can be added to the player inventory. */
-	static TArray<FInventoryStack> GetValidInventoryStacks( class UFGFoliageResourceUserData* foliageUserData );
+	static TArray<FInventoryStack> GetValidInventoryStacks( class UFGFoliageResourceUserData* foliageUserData, uint32 randomSeed );
 };

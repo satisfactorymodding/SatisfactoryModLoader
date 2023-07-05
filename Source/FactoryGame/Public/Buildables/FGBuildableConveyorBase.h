@@ -14,6 +14,13 @@ using FG_ConveyorVersionType = uint32;
 
 enum { FG_CONVEYOR_REP_KEY_NONE = 0 };
 
+enum class EConveyorChainFlags : uint8
+{
+	CCL_None	= 0b00000000,
+	CCL_First	= 0b00000001,
+	CCL_Mid		= 0b00000010,
+	CCL_Last	= 0b00000100
+};
 
 /**
 *A class used for clients to be able to call the server through the local player character.
@@ -37,6 +44,22 @@ class FACTORYGAME_API UFGConveyorRemoteCallObject : public UFGRemoteCallObject
 
 	//UFUNCTION( Reliable, Server, WithValidation, Category = "Sync" )
 	//void Server_RequestCleanSync( class AFGBuildableConveyorBelt* target );
+};
+
+struct FACTORYGAME_API FPreviousFrameLocationData
+{
+	explicit FPreviousFrameLocationData(const FMatrix& inTransform)
+	{
+		mTransform = inTransform;
+		mPrevTransform = inTransform;
+	}
+
+private:
+	FMatrix mTransform;
+	FMatrix mPrevTransform;
+
+	friend struct FConveyorBeltItem;
+	friend class AFGConveyorItemSubsystem;
 };
 
 
@@ -63,7 +86,10 @@ public:
 	//[Gafgar:Fri/20-11-2020] just explicitly adding these "the rule of 5" to make sure that is not the issue of a bug we are ahving. Once confirmed we can remove them.
 	virtual ~FConveyorBeltItem()
 	{
-
+		if (PreviousFrameLocationData)
+		{
+			delete PreviousFrameLocationData;
+		}
 	}
 
 	FConveyorBeltItem(const FConveyorBeltItem& b)
@@ -120,6 +146,50 @@ public:
 	UPROPERTY()
 	FInventoryItem Item;
 
+	/* Made on the fly when needed to avoid tons of memory, contains a last seen variable to see if we need to copy this over or not.*/
+	FPreviousFrameLocationData* PreviousFrameLocationData = nullptr;
+
+	FORCEINLINE FPreviousFrameLocationData* GetPreviousFrameLocationDataObject(const FMatrix& Transform)
+	{
+		if(!PreviousFrameLocationData)
+		{
+			PreviousFrameLocationData = new FPreviousFrameLocationData(Transform);
+		}
+		
+		return PreviousFrameLocationData;
+	}
+	
+	FORCEINLINE void SetTransformFrameData(const FMatrix& Transform)
+	{		
+		if ( !PreviousFrameLocationData )
+		{
+			PreviousFrameLocationData = new FPreviousFrameLocationData(Transform);
+			return;
+		}
+
+		PreviousFrameLocationData->mPrevTransform = PreviousFrameLocationData->mTransform;
+		PreviousFrameLocationData->mTransform = Transform;
+	}
+
+	FORCEINLINE FMatrix GetPreviousFrameTransform(const FMatrix& Default) const
+	{
+		if (PreviousFrameLocationData)
+		{
+			return PreviousFrameLocationData->mPrevTransform;
+		}
+		return Default;
+	}
+	
+	FORCEINLINE FMatrix GetCurrentFrameTransform(const FMatrix& Default) const
+	{
+		if (PreviousFrameLocationData)
+		{
+			return PreviousFrameLocationData->mTransform;
+		}
+		return Default;		
+	}
+
+
 	/**
 	* The offset of this item along the conveyor belt in range [0,LENGTH].
 	*/
@@ -139,7 +209,7 @@ private:
 	friend struct FConveyorBeltItems;
 
 	friend class AFGBuildableConveyorBelt; //[DavalliusA:Mon/03-06-2019] for debugging only for now
-
+	friend class AFGConveyorItemSubsystem;
 	FG_ConveyorItemRepKeyType ReplicationID = FG_CONVEYOR_REP_KEY_NONE;
 
 	FG_ConveyorItemRepKeyType ReplicationKey = FG_CONVEYOR_REP_KEY_NONE;
@@ -504,6 +574,7 @@ struct TStructOpsTypeTraits< FConveyorBeltItems > : public TStructOpsTypeTraitsB
 	};
 };
 
+extern bool GIsConveyorFreezingEnabled;
 
 /**
  * Shared base for conveyor belts and lifts.
@@ -539,6 +610,10 @@ public:
 	virtual uint8 EstimatedMaxNumGrab_Threadsafe( float estimatedDeltaTime ) const override;
 	// End AFGBuildableFactory interface
 
+	// Begin IFGColorInterface
+	//virtual void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData ) override;
+	// End
+	
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
@@ -546,6 +621,9 @@ public:
 	virtual void LostSignificance_Native() override;
 	virtual	void SetupForSignificance() override;
 
+	virtual void BuildStaticItemInstances();
+	void DestroyStaticItemInstancesNextFrame();
+	
 	UFUNCTION( BlueprintPure, Category = "Significance" )
 	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
 	// End IFGSignificanceInterface
@@ -562,11 +640,13 @@ public:
 	/** Get the location and direction of the conveyor at the given offset. */
 	virtual void GetLocationAndDirectionAtOffset( float offset, FVector& out_location, FVector& out_direction ) const PURE_VIRTUAL( , );
 
-	FORCEINLINE void SetConveyorBucketID(int32 ID)
-	{
-		mConveyorBucketID = ID;
-	}
+	/** Conveyor Ticking Function accessors and settors */
+	FORCEINLINE void SetConveyorBucketID(int32 ID) { mConveyorBucketID = ID; }
 	FORCEINLINE int32 GetConveyorBucketID() const { return mConveyorBucketID; }
+	FORCEINLINE void SetConveyorChainFlags( uint8 chainFlags ){ mConveyorChainFlags = chainFlags; }
+	FORCEINLINE uint8 GetConveyorChainFlags() { return mConveyorChainFlags; }
+	FORCEINLINE bool HasConveyorChainFlag( uint8 flag ) { return mConveyorChainFlags && flag; }
+	FORCEINLINE void SetNextTickConveyor( AFGBuildableConveyorBase* nextConveyor ) { mNextConveyor = nextConveyor; }
 
 	/** Returns how much room there currently is on the belt. If the belt is empty it will return the length of the belt */
 	FORCEINLINE float GetAvailableSpace() const
@@ -607,12 +687,15 @@ public:
 #endif
 
 	void EmptyBelt() { mItems.Empty(); }
+
 	
 protected:
 	// Begin Factory_ interface
 	virtual bool Factory_PeekOutput_Implementation( const class UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type ) const override;
 	virtual bool Factory_GrabOutput_Implementation( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type ) override;
 	// End Factory_ interface
+
+	virtual bool Factory_QuickPullConveyorToConveyor( FConveyorBeltItem& out_item, float availableSpace, float deltaTime );
 
 	// Begin AFGBuildable interface
 	virtual void GetDismantleInventoryReturns( TArray< FInventoryStack >& out_returns ) const override;
@@ -643,6 +726,10 @@ protected:
 	}
 	/** Remove an item from the belt at index. */
 	void Factory_RemoveItemAt( int32 index );
+
+	/* Destroys all ISMs generated for frozen conveyors.*/
+	UFUNCTION()
+	virtual void DestroyStaticItemInstances();
 
 private:
 	/** Take the first element on the belt. */
@@ -685,8 +772,31 @@ public:
 	/** Spacing between each conveyor item, from origo to origo. */
 	static constexpr float ITEM_SPACING = 120.0f;
 
+	// TODO make this a cvar?
+	static constexpr float NumSecStalledToConsiderFrozen = 2;
+	
 	FORCEINLINE bool IsStalled() const { return mCanEverStall && mIsStalled && mItems.Num() != 0; }
 
+	/*Increment num frames items didnt move, used for conveyor renderer optimization. */
+	FORCEINLINE void IncrementMovementStalledCounter(float Delta)
+	{
+		mTimeStalled += Delta;
+	}
+	
+	/*Flushes num frames items didnt move, used for conveyor renderer optimization. */
+	FORCEINLINE void FlushMovementStalledCounter()
+	{
+		mTimeStalled = 0;
+		bIsRenderingFrozen = false;
+		bWasFrozen = true;
+	}
+	
+	FORCEINLINE bool IsMovementStalled() const			{ return mTimeStalled > NumSecStalledToConsiderFrozen && GIsConveyorFreezingEnabled; }
+	FORCEINLINE void SetRenderingFrozen() const			{ bIsRenderingFrozen = true; }
+	FORCEINLINE bool IsRenderingFrozen() const			{ return bIsRenderingFrozen; }
+	FORCEINLINE bool WasFrozen() const					{ return bWasFrozen; }
+	FORCEINLINE void ResetWasFrozen() const				{ bWasFrozen = false;}
+	
 	bool mPendingUpdateItemTransforms;
 
 private:
@@ -720,6 +830,16 @@ protected:
 	/** Stores how much space is available on this belt after its tick runs (thread safe way to access how much space there is to enqueue new items) */
 	float mCachedAvailableBeltSpace;
 
+	/** When ticking this conveyor should tick this conveyor next */
+	UPROPERTY()
+	AFGBuildableConveyorBase* mNextConveyor;
+
+	UPROPERTY()
+	uint8 mConveyorChainFlags;
+
+	UPROPERTY(Transient)
+	TArray<UInstancedStaticMeshComponent*> mFrozenItemsInstancedStaticMeshComponents;
+
 private:
 	int16 mLastItemsDirtyKey = -2;
 
@@ -728,4 +848,15 @@ private:
 
 	/** The id for the conveyor bucket this conveyor belongs to */
 	int32 mConveyorBucketID;
+
+	/** Temp new item. Used when quick pulling conveyor to conveyor as a temp storage before adding the item. More performant than a scoped allocation every factory tick  */
+	FConveyorBeltItem mNewItem;
+
+	float mTimeStalled = 0;
+	
+	mutable bool bIsRenderingFrozen = false;
+	mutable bool bWasFrozen = false;
+	
 };
+
+

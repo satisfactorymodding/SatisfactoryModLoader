@@ -26,14 +26,17 @@ class FACTORYGAME_API AFGWeapon : public AFGEquipment
 {
 	GENERATED_BODY()
 public:
-	/** Replication. */
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags ) override;
-
 	AFGWeapon();
 
+	// Begin UObject interface
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	// End UObject interface
+	
+	// Begin AActor interface
+	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaSeconds ) override;
-
+	// End AActor interface
+	
 	// Begin AFGEquipment interface
 	virtual bool ShouldSaveState() const override;
 	bool InitializeMagazineObject();
@@ -54,23 +57,9 @@ public:
 	/**to be called when equipping a weapon on a local player. Enabling weapons to affect the hud. */
 	void AssignHud( AFGHUD* associatedHud = nullptr );
 
-	/** Called on the owner, client or server but not both. */
-	virtual void OnPrimaryFirePressed();
-
-	/** Called by client to start fire on server. */
-	UFUNCTION( Server, Reliable )
-	void Server_StartPrimaryFire();
-
 	/** Called on both client and server when firing. */
 	UFUNCTION( NetMulticast, Reliable )
 	void Multicast_BeginPrimaryFire();
-
-	/** Called on the owner, client or server but not both. */
-	virtual void OnPrimaryFireReleased();
-
-	/** Called by client to start fire on server. */
-	UFUNCTION( Server, Reliable )
-	void Server_EndPrimaryFire();
 
 	UFUNCTION( NetMulticast, Reliable )
 	void Multicast_EndPrimaryFire();
@@ -78,8 +67,7 @@ public:
 	/** Called on both client and server when firing. */
 	virtual void EndPrimaryFire();
 
-	/** Called when reload button is pressed */
-	void OnReloadPressed();
+	void Reload();
 
 	/** Actual reload implementation */
 	UFUNCTION(NetMulticast, Reliable)
@@ -100,12 +88,6 @@ public:
 	/** Will return the location of the specified socket on the weapon mesh. Will use weapon mesh if locally controlled, otherwise it will grab the socket on the attachment mesh. */
 	UFUNCTION( BlueprintPure, BlueprintNativeEvent, Category = "Weapon" )
 	FVector GetWeaponMeshSocketLocation( FName socketName ) const;
-
-	/** When the CycleAmmunition action is triggered */
-	void OnCycleAmmunitionTypePressed();
-
-	/** When the CycleAmmunition action is released */
-	void OnCycleAmmunitionTypeReleased();
 
 	UFUNCTION( Server, Reliable )
 	void Server_CycleDesiredAmmunitionType();
@@ -202,6 +184,12 @@ public:
 	/** Returns the assosiated hud object if there is one assigned */
 	UFUNCTION( BlueprintPure, Category = "Hud" )
 	FORCEINLINE AFGHUD* GetAssociatedHud() const { return mAssociatedHud; }
+
+protected:
+	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
+
+	/** Input Actions */
+	void Input_Reload( const FInputActionValue& actionValue );
 
 public:
 	UPROPERTY( BlueprintAssignable )

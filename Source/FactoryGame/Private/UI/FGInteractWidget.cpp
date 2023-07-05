@@ -9,6 +9,10 @@ UFGInteractWidget::UFGInteractWidget(const FObjectInitializer& ObjectInitializer
 	this->mHideCursorDuringCapture = true;
 	this->mListenForShortcutPressed = false;
 	this->mRestoreFocusWhenLost = true;
+	this->mDisablePlayerActions = true;
+	this->mDisableBuildGunActions = true;
+	this->mDisablePlayerEquipmentManagement = true;
+	this->mFlushMouseKeysOnOpen = false;
 	this->mCaptureInput = false;
 	this->mDesiredHorizontalAlignment = EHorizontalAlignment::HAlign_Fill;
 	this->mDesiredVerticalAlignment = EVerticalAlignment::VAlign_Fill;
@@ -26,7 +30,6 @@ UFGInteractWidget::UFGInteractWidget(const FObjectInitializer& ObjectInitializer
 void UFGInteractWidget::Native_Init(){ }
 void UFGInteractWidget::Init_Implementation(){ }
 void UFGInteractWidget::SetInputMode_Implementation(){ }
-void UFGInteractWidget::HandleEquipment(){ }
 void UFGInteractWidget::PassThroughKeybindings(){ }
 void UFGInteractWidget::UpdateIgnoreMoveInput_Implementation(){ }
 void UFGInteractWidget::UpdateIgnoreLookInput_Implementation(){ }

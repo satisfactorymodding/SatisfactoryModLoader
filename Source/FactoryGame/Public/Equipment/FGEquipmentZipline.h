@@ -19,19 +19,8 @@ public:
 	
 	// Begin AFGEquipment interface
     virtual void AddEquipmentActionBindings() override;
-    virtual void DoDefaultPrimaryFire_Native() override;
 	virtual void UnEquip() override;
 	// End AFGEquipment interface
-	
-	/** Called on the owner, client or server but not both. */
-	void OnDefaultPrimaryFireReleased();
-	
-	/** Only server implementation of primary fire */
-	UFUNCTION( Server, Reliable, WithValidation )
-    void Server_DefaultPrimaryFireReleased();
-
-	/** Cancel the zipline movement */
-    void DoDefaultPrimaryFireReleased_Native();
 	
 	virtual void Tick( float delta ) override;
 
@@ -52,14 +41,27 @@ public:
 	/** Jump exit the zipline */
 	UFUNCTION()
     void JumpExit();
-	
-	void OnCrouchPressed();
-	void OnCrouchReleased();
-	
-	void OnJumpPressed();
+
+	/** Input actions */
+	void Input_Crouch( const FInputActionValue& actionValue );
+	void Input_Jump( const FInputActionValue& actionValue );
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "Zipline" )
+	void OnZiplineSprintStatusChanged( bool sprint );
 
 	/** Called during tick, tries to grab onto a wire if mWantToGrab is set  */
 	void TryToGrab();
+
+	bool CanGrab( AActor* attachActor, const FVector& point1, const FVector& point2 ) const;
+
+protected:
+	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
+
+	/** Called whenever our "Want to grab" value changes. */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Zipline" )
+	void OnWantToGrabChanged( bool newWantToGrab );
+	
+	void SetWantsToGrab( bool wantToGrab );
 
 private:
 	/** Used to make noise for when the zipline is active. */
@@ -67,9 +69,6 @@ private:
 	void MakeActiveNoise();
 	
 private:
-	/** Set if we dropped from a zipline so that we don't call UnCrouch when button is released */
-	bool mDidDrop;
-
 	/** Set if we should try to grab a zipline */
 	bool mWantToGrab;
 

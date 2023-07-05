@@ -199,8 +199,6 @@ private:
 
 	/** Set character movement mode to hover. */
 	void SetCharacterHoverMovementMode() const;
-
-	void OnCrouchPressed();
 	
 	/** Called when the player presses crouch, on server. */
 	UFUNCTION( Server, Reliable, WithValidation )
@@ -215,6 +213,9 @@ private:
 	/** Used to report a noise event for when the hoverpack is active. */
 	UFUNCTION()
 	void MakeActiveNoise();
+
+	/** Input Actions */
+	void Input_Crouch( const FInputActionValue& actionValue );
 
 private:
 	UFUNCTION()

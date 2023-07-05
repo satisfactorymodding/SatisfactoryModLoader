@@ -3,57 +3,29 @@
 #include "Equipment/FGParachute.h"
 #include "Equipment/FGEquipment.h"
 
-UFGParachuteCameraShake::UFGParachuteCameraShake() : Super() {
-	this->OscillationDuration = 2.1;
-	this->OscillationBlendInTime = 0.15;
-	this->OscillationBlendOutTime = 1.8;
-	this->RotOscillation.Pitch.Amplitude = 16.0;
-	this->RotOscillation.Pitch.Frequency = 3.0;
-	this->RotOscillation.Pitch.InitialOffset = EInitialOscillatorOffset::EOO_OffsetRandom;
-	this->RotOscillation.Pitch.Waveform = EOscillatorWaveform::SineWave;
-	this->RotOscillation.Yaw.Amplitude = 5.0;
-	this->RotOscillation.Yaw.Frequency = 5.0;
-	this->RotOscillation.Yaw.InitialOffset = EInitialOscillatorOffset::EOO_OffsetRandom;
-	this->RotOscillation.Yaw.Waveform = EOscillatorWaveform::SineWave;
-	this->RotOscillation.Roll.Amplitude = 5.0;
-	this->RotOscillation.Roll.Frequency = 2.0;
-	this->RotOscillation.Roll.InitialOffset = EInitialOscillatorOffset::EOO_OffsetRandom;
-	this->RotOscillation.Roll.Waveform = EOscillatorWaveform::SineWave;
-	this->LocOscillation.X.Amplitude = 6.0;
-	this->LocOscillation.X.Frequency = 7.0;
-	this->LocOscillation.X.InitialOffset = EInitialOscillatorOffset::EOO_OffsetRandom;
-	this->LocOscillation.X.Waveform = EOscillatorWaveform::SineWave;
-	this->LocOscillation.Y.Amplitude = 6.0;
-	this->LocOscillation.Y.Frequency = 7.0;
-	this->LocOscillation.Y.InitialOffset = EInitialOscillatorOffset::EOO_OffsetRandom;
-	this->LocOscillation.Y.Waveform = EOscillatorWaveform::SineWave;
-	this->LocOscillation.Z.Amplitude = 9.0;
-	this->LocOscillation.Z.Frequency = 4.0;
-	this->LocOscillation.Z.InitialOffset = EInitialOscillatorOffset::EOO_OffsetRandom;
-	this->LocOscillation.Z.Waveform = EOscillatorWaveform::SineWave;
-	this->bSingleInstance = true;
-}
 AFGParachute::AFGParachute() : Super() {
-	this->mTerminalVelocityZ = 100.0;
+	this->mParachuteSettings = nullptr;
+	this->mUseDistanceOverride = 2000.0;
 	this->mIsDeployed = false;
-	this->mCachedMovementComponent = nullptr;
 	this->mEquipmentSlot = EEquipmentSlot::ES_BACK;
+	this->mOnlyVisibleToOwner = false;
 }
 void AFGParachute::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGParachute, mIsDeployed);
 }
 void AFGParachute::Tick(float DeltaSeconds){ }
-void AFGParachute::Equip( AFGCharacterPlayer* character){ }
 void AFGParachute::UnEquip(){ }
+void AFGParachute::Input_Deploy(const FInputActionValue& actionValue){ }
+void AFGParachute::Input_UnDeploy(const FInputActionValue& actionValue){ }
 void AFGParachute::Deploy(){ }
-void AFGParachute::Server_Deploy_Implementation(){ }
-bool AFGParachute::Server_Deploy_Validate(){ return bool(); }
-FVector AFGParachute::ModifyVelocity_Implementation(float deltaTime, const FVector& oldVelocity){ return FVector(); }
+void AFGParachute::StopDeploy(){ }
 void AFGParachute::AddEquipmentActionBindings(){ }
-void AFGParachuteAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGParachuteAttachment, mIsDeployed);
-}
-void AFGParachuteAttachment::SetIsDeployed(bool newIsDeployed){ }
-void AFGParachuteAttachment::OnRep_IsDeployed(){ }
+float AFGParachute::GetCharacterUseDistanceOverride() const{ return float(); }
+void AFGParachute::Server_Deploy_Implementation(){ }
+void AFGParachute::Server_StopDeploy_Implementation(){ }
+void AFGParachute::Client_NotifyDeployFailed_Implementation(){ }
+bool AFGParachute::AttemptDeployLocal(){ return bool(); }
+void AFGParachute::StopDeployLocal(){ }
+void AFGParachute::Authority_SetDeployed(bool isDeployedNow){ }
+void AFGParachute::OnRep_IsDeployed(){ }

@@ -21,6 +21,11 @@ class FACTORYGAME_API UFGCreatureActionProjectileCharge : public UFGCreatureActi
 public:
 	UFGCreatureActionProjectileCharge( const FObjectInitializer& ObjectInitializer );
 
+	// Begin UObject Interface
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void BeginDestroy() override;
+	// End UObject interface
+	
 	// Begin UFGAction Interface
 	virtual bool InitializeAction( AController* controller, APawn* pawn ) override;
 	// End UFGAction Interface
@@ -73,7 +78,7 @@ protected:
 	float mActiveChargeFiringRate;
 	
 	/** Magazine object of our ammo type. */
-	UPROPERTY( BlueprintReadOnly, Category = "Charge|Projectile" )
+	UPROPERTY( BlueprintReadOnly, Replicated, Category = "Charge|Projectile" )
 	UFGAmmoType* mMagazineObject;
 
 private:

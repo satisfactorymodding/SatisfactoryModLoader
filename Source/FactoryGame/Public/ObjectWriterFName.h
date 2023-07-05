@@ -17,7 +17,8 @@ class FObjectWriterFName : public FObjectWriter
 public:
 	FObjectWriterFName( UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion );
 
-	virtual FObjectWriterFName& operator<<( class UObject*& Res ) override;
+	virtual FArchive& operator<<( class UObject*& Res ) override;
+	virtual FArchive& operator<<( FObjectPtr& Res ) override;
 	virtual FArchive& operator<<( class FName& N ) override;
 
 };

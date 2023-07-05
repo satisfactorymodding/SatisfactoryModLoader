@@ -34,11 +34,6 @@ public:
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_ConstructHologram( FNetConstructionID netConstructionID, FConstructHologramMessage message );
 
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_AnswerCall( TSubclassOf< class UFGAudioMessage > messageClass );
-
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_DeclineCall( TSubclassOf< class UFGAudioMessage > messageClass );
 protected:
 
 	/** Returns the cast outer as a FGPlayerControlelr */

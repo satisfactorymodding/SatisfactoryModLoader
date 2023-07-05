@@ -12,6 +12,6 @@ void AFGTradingPostHologram::GetLifetimeReplicatedProps(TArray< FLifetimePropert
 void AFGTradingPostHologram::CheckValidPlacement(){ }
 void AFGTradingPostHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 AActor* AFGTradingPostHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
-USceneComponent* AFGTradingPostHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
+USceneComponent* AFGTradingPostHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 void AFGTradingPostHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGTradingPostHologram::OnHologramTransformUpdated(){ }

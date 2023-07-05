@@ -24,7 +24,7 @@ public:
 	// Begin UObject interface
 	void PostLoad() override;
 #if WITH_EDITOR
-	virtual void PreSave( const class ITargetPlatform* targetPlatform ) override;
+	virtual void PreSave( FObjectPreSaveContext SaveContext ) override;
 	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
 #endif
 	// End UObject interface

@@ -26,9 +26,16 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mDefaultPipeConnectionFrameMesh = nullptr;
 	this->mDefaultPipeConnectionArrowMesh = nullptr;
 	this->mDefaultPowerConnectionMesh = nullptr;
+	this->mBlueprintDirectionIndicatorMesh = nullptr;
+	this->mBlueprintDirectionIndicatorMaterial = nullptr;
+	this->mBlueprintDirectionMeshScale = 0.0;
+	this->mBlueprintDirectionMeshForwardOffset = 0.0;
+	this->mBlueprintDirectionMeshHeightOffset = 0.0;
+	this->mBlueprintDirectionMeshRotation = 0.0;
+	this->mBlueprintDirectionMeshPlaceOnGround = true;
+	this->mBlueprintProxyMaterial = nullptr;
 	this->mClearanceMesh = nullptr;
 	this->mClearanceMaterial = nullptr;
-	this->mBlueprintProxyMaterial = nullptr;
 	this->mHologramLoopSound = nullptr;
 	this->mHologramSnapSound = nullptr;
 	this->mBuildGuideMesh = nullptr;
@@ -55,6 +62,7 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mNumPresetHotbars = 2;
 	this->mNumSlotsPerHotbar = 10;
 	this->mAddedPipeProductionPressure = 0.0;
+	this->mPaniniProjectionCollection = nullptr;
 }
 UAkAudioEvent* UFGFactorySettings::GetRandomConstructionSound(){ return nullptr; }
 UAkAudioEvent* UFGFactorySettings::GetRandomDismantleSound(){ return nullptr; }

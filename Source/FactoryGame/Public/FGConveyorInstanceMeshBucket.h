@@ -4,6 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Engine/InstancedStaticMesh.h"
+#include "StaticMeshResources.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "FGConveyorInstanceMeshBucket.generated.h"
 
@@ -74,6 +76,13 @@ struct FRawTransformData
 	}
 };
 
+enum class UpdateCommand : uint8
+{
+	UC_None,
+	UC_UploadToGPU,
+	UC_Hide
+};
+
 UCLASS(ClassGroup = Rendering, meta = (BlueprintSpawnableComponent), Blueprintable)
 class FACTORYGAME_API UFGConveyorInstanceMeshBucket : public UInstancedStaticMeshComponent
 {
@@ -87,32 +96,41 @@ public:
 	void Init();
 	
 	UFUNCTION(BlueprintCallable)
-	void SetNumInstances(int32 Count) { mNumInstances = Count; }
+	void SetNumInstances(int32 Count)
+	{
+		mNumInstances = Count;
+	}
 
-	virtual FBoxSphereBounds CalcBounds(const FTransform& LocalToWorld) const override;
+	void PrepareInstanceUpdateBuffer( int32 Count );
+	void UpdateInstanceData(const int32 Id, const FMatrix& M,const FMatrix& PrevM);
+	//void UpdateInstancesData();
 	
+	UpdateCommand UpdateCommand = UpdateCommand::UC_None;
+	
+	/* With the fast update version we are assuming the correct amount of instances are set and we are not adding or removing
+	 * nor updating per instance custom data.
+	 * All the safety checks, Add, Remove and cpu data updating has been stripped for performance sake. */
+	void UpdateInstancesFast();
+
+	void CheckNANs();
+	void SubmitToGPU();
+	
+	virtual FBoxSphereBounds CalcBounds(const FTransform& LocalToWorld) const override;
 protected:
-	// We need dynamic locations & buffers since we update them really often.
-	virtual bool ShouldHaveDynamicTransformAndLocationBuffers() const override { return true; }
 	virtual bool ShouldIgnoreOcclusionChecks() const override { return true; }
 public:
 	UPROPERTY( EditDefaultsOnly )
 	int32 mNumInstances;
 
-//private:
-	/* Transient location buffer to avoid memory allocation. */
-	TArray<FVector4> mTransientPositionBuffer;
-
-	/* Transient transform buffer to avoid memory allocation. */
-	TArray<FMatrixHalfFloat<FFloat16>> mTransientTransformBuffer;
+	TArray<FMatrix> NewInstanceMatrices;
+	TArray<FMatrix> OldInstanceMatrices;
 	
-	/* Transient Transforms set by the conveyor renderer */
-	//TArray<FTransform> mTransientTransforms;
-
-	/* Transient Transforms set by the conveyor renderer */
-	TArray<FRawTransformData> mRawTransientTransforms;
+	/* Ids for instances, needed for update transforms*/
+	TArray<int32> mIds;
 
 	bool bIsInitialized;
+	
+	FStaticMeshInstanceData NewRenderData;
 
 	friend class AFGConveyorItemSubsystem;
 	friend class FParallelUpdateGPUDatadateTask;

@@ -4,12 +4,6 @@
 
 bool FMessageDialogue::HasMoreSubtitlesToShow() const{ return bool(); }
 FMessageSubtitle FMessageDialogue::PopNextSubtitle(float subtitleTimeMultiplier){ return FMessageSubtitle(); }
-bool FPendingMessageQueue::HasUnplayedMessages(){ return bool(); }
-bool FPendingMessageQueue::ContainsAudioMessages(){ return bool(); }
-FPendingMessage FPendingMessageQueue::PopPendingMessage(){ return FPendingMessage(); }
-#if WITH_EDITOR
-void UFGAudioMessage::MigrateDialogueData(){ }
-#endif 
 UFGAudioMessage::UFGAudioMessage(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mAkAudioComponent = nullptr;
 	this->mCurrentDialogue.AudioEvent = nullptr;
@@ -17,9 +11,10 @@ UFGAudioMessage::UFGAudioMessage(const FObjectInitializer& ObjectInitializer) : 
 	this->mSubtitleTimeMultiplier = 0.065;
 	this->mOverrideText = INVTEXT("");
 	this->mShowOnlyOverrideText = false;
+	this->mMappingContext = nullptr;
 	this->mAudioMessageInputComponent = nullptr;
+	this->mMessage = nullptr;
 }
-void UFGAudioMessage::PostLoad(){ Super::PostLoad(); }
 void UFGAudioMessage::NativeConstruct(){ }
 void UFGAudioMessage::NativeDestruct(){ }
 void UFGAudioMessage::StartPlayback(){ }
@@ -31,3 +26,4 @@ void UFGAudioMessage::CancelPlayback(){ }
 void UFGAudioMessage::FinishPlayback(){ }
 FAudioSubtitlePair UFGAudioMessage::GetCurrentDialogue(){ return FAudioSubtitlePair(); }
 EMessagePriorityType UFGAudioMessage::GetMessagePriorityType(TSubclassOf< UFGAudioMessage > message, UObject* worldContext){ return EMessagePriorityType(); }
+void UFGAudioMessage::InitMessage( UFGMessage* message){ }

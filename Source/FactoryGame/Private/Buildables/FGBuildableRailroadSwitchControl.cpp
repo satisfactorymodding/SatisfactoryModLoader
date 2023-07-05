@@ -25,6 +25,7 @@ void AFGBuildableRailroadSwitchControl::GetLifetimeReplicatedProps(TArray<FLifet
 void AFGBuildableRailroadSwitchControl::BeginPlay(){ }
 void AFGBuildableRailroadSwitchControl::Destroyed(){ }
 void AFGBuildableRailroadSwitchControl::OnBuildEffectFinished(){ }
+void AFGBuildableRailroadSwitchControl::OnBuildEffectActorFinished(){ }
 bool AFGBuildableRailroadSwitchControl::CanDismantle_Implementation() const{ return bool(); }
 void AFGBuildableRailroadSwitchControl::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
 void AFGBuildableRailroadSwitchControl::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }

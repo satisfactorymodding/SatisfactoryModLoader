@@ -3,6 +3,10 @@
 #include "Server/FGServerObject.h"
 #include "Server/FGServerManager.h"
 
+UFGServerManager& UFGServerObject::GetOuterServerManager() const {
+  return * Cast<UFGServerManager>(GetOuter());
+}
+
 UFGServerObject::UFGServerObject() : Super() {
 	this->ServerName = TEXT("");
 	this->Address = TEXT("");
@@ -26,7 +30,7 @@ bool UFGServerObject::IsEnumeratingLocalSaves(){ return bool(); }
 bool UFGServerObject::IsSaveManagerAvailable(){ return bool(); }
 void UFGServerObject::DeleteSaveFile(const FSaveHeader& SaveGame, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate){ }
 void UFGServerObject::DeleteSaveSession(const FSessionSaveStruct& Session, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate){ }
-void UFGServerObject::LoadSaveFile(const FSaveHeader& SaveGame,   APlayerController* Player){ }
+void UFGServerObject::LoadSaveFile(const FSaveHeader& SaveGame, TMap<FString, FString> Options,  APlayerController* Player){ }
 void UFGServerObject::SaveGame(const FString& SaveName, FOnSaveMgrInterfaceSaveGameComplete CompleteDelegate){ }
 void UFGServerObject::UploadSave(const FSaveHeader& Save, FOnSaveManagerTransferCompleted CompleteDelegate, FOnSaveManagerTransferProgress ProgressDelegate){ }
 bool UFGServerObject::IsTransferInProgress(){ return bool(); }
@@ -50,9 +54,6 @@ void UFGServerObject::SetServerName(const FString& ServerName){ }
 void UFGServerObject::NotifyComplexStateChange(){ }
 void UFGServerObject::ProcessServerStatePollResponse(const  FServerStatePollResponse& Beat){ }
 void UFGServerObject::PollState(){ }
-UFGServerManager& UFGServerObject::GetOuterServerManager() const {
-  return *Cast<UFGServerManager>(GetOuter());
-}
 void UFGServerObject::ServerSavesUpdated() const{ }
 void UFGServerObject::BeginDestroy(){ Super::BeginDestroy(); }
 void UFGServerObject::SaveState() const{ }

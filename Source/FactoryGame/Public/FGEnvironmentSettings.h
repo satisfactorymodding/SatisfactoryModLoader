@@ -19,10 +19,17 @@ public:
 #endif
 	/** The material parameter collection that contains world bounds */
 	static UMaterialParameterCollection* GetWorldBoundsParameters();
+
+	/** The collection containing weather parameters like wind direction */
+	static UMaterialParameterCollection* GetWeatherParameters();
 public:
 	/** The collection containing the world bounds*/
 	UPROPERTY( EditDefaultsOnly )
 	class UMaterialParameterCollection* mWorldBoundsParameters;
+
+	/** The collection containing weather parameters like wind direction */
+	UPROPERTY( EditDefaultsOnly )
+	class UMaterialParameterCollection* mWeatherParameters;
 
 	/** The parameter name of Min of mWorldBoundsParameters */
 	static FName WorldBoundsMinName;

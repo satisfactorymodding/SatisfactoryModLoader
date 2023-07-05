@@ -110,12 +110,12 @@ struct FItemDescriptors
 	GENERATED_BODY()
 
 	FItemDescriptors(){}
-	FItemDescriptors( TArray< TSubclassOf< class UFGItemDescriptor> > itemDescriptors ) :
+	FItemDescriptors( TArray< TSoftClassPtr< class UFGItemDescriptor> > itemDescriptors ) :
 		ItemDescriptors( itemDescriptors )
 	{}
 	
 	UPROPERTY( EditDefaultsOnly )
-	TArray< TSubclassOf< class UFGItemDescriptor> > ItemDescriptors;
+	TArray< TSoftClassPtr< class UFGItemDescriptor> > ItemDescriptors;
 };
 
 /**
@@ -206,6 +206,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static void GetDescriptorStatBars( TSubclassOf< UFGItemDescriptor > inClass, TArray<FDescriptorStatBar>& out_DescriptorStatBars );
 
+	/** Return the inventory settings widget for this item descriptor*/
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	static void GetInventorySettingsWidget( TSubclassOf< UFGItemDescriptor > inClass, TSubclassOf<class UFGInventorySettingsWidget>& out_InventorySettingsWidget );
+
 	/** The static mesh we want for representing the resource when they are in the production line.
 	 * @return The items mesh; a default mesh if the item has no mesh specified, nullptr if inClass is nullptr. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
@@ -230,11 +234,6 @@ public:
 	/** Returns if we should store if this item ever has been picked up  */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static bool RememberPickUp( TSubclassOf< UFGItemDescriptor > inClass );
-
-	/** Returns the item category */
-	UE_DEPRECATED(4.26, "Use GetCategory instead")
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item",  meta = ( DeprecatedFunction, DeprecationMessage = "GetItemCategory is deprecated, use GetCategory instead" ) )
-	static TSubclassOf< class UFGItemCategory > GetItemCategory( TSubclassOf< UFGItemDescriptor > inClass );
 
 	/** Get the category for this descriptor. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Organization" )
@@ -304,6 +303,11 @@ public:
 	FORCEINLINE static void SetItemEncountered( TSubclassOf<UFGItemDescriptor> Class, int32 Index );
 	FORCEINLINE static int32 IsItemEncountered( TSubclassOf<UFGItemDescriptor> Class );
 
+	/** Returns true if this item descriptor can be picked up and stored in player inventory. i.e if its a solid and not a building or other non pickupable item
+	 *  If it's a non pickupable class we will return false in the overridden Internal_CanItemBePickedup */
+	static bool CanItemBePickedup( TSubclassOf< UFGItemDescriptor > inClass );
+	static bool CanItemBePickedup( UFGItemDescriptor* inClass );
+
 protected:
 	/** Internal function to get the display name. */
 	virtual FText GetItemNameInternal() const;
@@ -316,6 +320,8 @@ protected:
 	
 	virtual UTexture2D* Internal_GetSmallIcon() const;
 	virtual UTexture2D* Internal_GetBigIcon() const;
+	
+	FORCEINLINE virtual bool Internal_CanItemBePickedup() const { return mForm == EResourceForm::RF_SOLID; }
 
 public:
 	/**
@@ -377,11 +383,15 @@ protected:
 
 	/** The crosshair material used with this item */
 	UPROPERTY( EditDefaultsOnly, Category = "UI" )
-	TAssetPtr<UMaterialInterface> mCrosshairMaterial;
+	TSoftObjectPtr<UMaterialInterface> mCrosshairMaterial;
 
 	/** This is just enums mapped to arbitrary values meant to represent this item descriptors capabilities when we show it in the UI. This has no effect on game logic */
 	UPROPERTY( EditDefaultsOnly, Category="UI" )
 	TArray< FDescriptorStatBar > mDescriptorStatBars;
+
+	/** The inventory settings widget we want to show to modifying settings for an item in an equipment slot  */
+	UPROPERTY( EditDefaultsOnly, Category="UI" )
+	TSubclassOf<class UFGInventorySettingsWidget> mInventorySettingsWidget;
 
 	/** The static mesh we want for representing the resource when they are in the production line. */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
@@ -459,13 +469,16 @@ public:
 	FColor GasColor() const		{ return mGasColor; }
 	EResourceForm Form() const	{ return mForm; }
 
-private:
+	FORCEINLINE int32 GetConveyorRendererItemIndex() const { return mItemIndex;}
+
 	/**
-	 * Index used by the conveyor item subsystem.
-	 * Written onto the mutable default object.
-	 */
-	UPROPERTY( Transient )
-	int32 mItemIndex;
+     * Index used by the conveyor item subsystem.
+     * Written onto the mutable default object.
+     */
+    UPROPERTY( Transient )
+    int32 mItemIndex = INDEX_NONE;
+private:
+
 
 	friend class FItemDescriptorDetails;
 	friend class FFGItemDescriptorPropertyHandle;

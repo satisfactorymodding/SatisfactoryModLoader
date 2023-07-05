@@ -19,14 +19,11 @@ class FACTORYGAME_API AFGTimeOfDaySubsystem : public AFGSubsystem, public IFGSav
 {
 	GENERATED_BODY()
 public:
-	enum
-	{
-		SecondsPerMinute = 60,
-		MinutesPerHour = 60,
-		MinutesPerDay = 1440,
-		SecondsPerHour = 3600,
-		SecondsPerDay = 86400
-	};
+	static constexpr float SECONDS_PER_MINUTE = 60;
+	static constexpr float MINUTES_PER_HOUR = 60;
+	static constexpr float MINUTES_PER_DAY = 1440;
+	static constexpr float SECONDS_PER_HOUR = 3600;
+	static constexpr float SECONDS_PER_DAY = 86400;
 
 	AFGTimeOfDaySubsystem();
 	
