@@ -99,17 +99,20 @@ public static class AccessTransformers
                 accessTransformers.TryGetSection("AccessTransformers", out var section);
                 section!.Lines.ForEach((line) =>
                 {
-                    var data = StructParser.Parse(line.Value);
                     switch (line.Key)
                     {
-                        case "Friend":
+                        case "Friend": {
+							var data = StructParser.Parse(line.Value);
                             FriendAccessTransformers.Add(plugin.GetFileNameWithoutAnyExtensions(),
                                 new FriendAccessTransformer(data["Class"], data["FriendClass"], accessTransformersFile.FullName, section.Lines.IndexOf(line) + 1));
                             break;
-                        case "Accessor":
+						}
+                        case "Accessor": {
+							var data = StructParser.Parse(line.Value);
                             AccessorAccessTransformers.Add(plugin.GetFileNameWithoutAnyExtensions(),
                                 new AccessorAccessTransformer(data["Class"], data["Property"], accessTransformersFile.FullName, section.Lines.IndexOf(line) + 1));
                             break;
+						}
                     }
                 });
             }
