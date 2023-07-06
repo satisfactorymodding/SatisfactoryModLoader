@@ -19,6 +19,8 @@ public class SML : ModuleRules
             "Json",
             "Projects",
             "NetCore",
+            "EnhancedInput",
+            "GameplayTags"
         });
         
         PrivateDependencyModuleNames.AddRange(new[] {
