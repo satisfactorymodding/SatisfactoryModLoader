@@ -27,10 +27,9 @@ public class StructParser
         {
             var key = ReadSymbol();
             Required("=");
-            var quoted = Optional("\"");
-            var value = ReadSymbol();
-            if (quoted)
-                Required("\"");
+            Required("\"");
+            var value = ReadUntil('\"');
+            Required("\"");
             SkipSpace();
             result.Add(key, value);
             if(!Optional(","))
@@ -52,6 +51,23 @@ public class StructParser
         if (result == "")
         {
             throw new Exception("Expected symbol at " + _index);
+        }
+        SkipSpace();
+        return result;
+    }
+
+    private string ReadUntil(char ch)
+    {
+        SkipSpace();
+        var result = "";
+        while (_index < _text.Length && _text[_index] != ch)
+        {
+            result += _text[_index];
+            _index++;
+        }
+        if (_index >= _text.Length)
+        {
+            throw new Exception("Expected " + ch + " at " + _index);
         }
         SkipSpace();
         return result;
