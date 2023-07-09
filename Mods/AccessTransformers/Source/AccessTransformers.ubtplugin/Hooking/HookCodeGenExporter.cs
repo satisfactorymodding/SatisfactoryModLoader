@@ -1,7 +1,6 @@
 ﻿using System;
 using EpicGames.UHT.Utils;
 using HarmonyLib;
-using Microsoft.Extensions.Logging;
 
 namespace AccessTransformers.Hooking;
 
@@ -12,7 +11,7 @@ public static class HookCodeGenExporter
     // ReSharper disable once UnusedMember.Local
     private static bool Prefix(IUhtExportFactory factory)
     {
-        Types.AccessTransformers.Load(factory.Session.ProjectFile!);
+        Types.AccessTransformers.Load(factory.Session);
         return true;
     }
     

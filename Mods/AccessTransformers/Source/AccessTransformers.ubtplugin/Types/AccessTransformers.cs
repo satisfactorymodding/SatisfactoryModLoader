@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using EpicGames.Core;
 using EpicGames.UHT.Types;
+using EpicGames.UHT.Utils;
 using UnrealBuildBase;
 using UnrealBuildTool;
 
@@ -41,7 +43,7 @@ public static class AccessTransformers
         }
 
         public override string Class => _className;
-        public override List<string>? GetImplementation(UhtType type)
+        public override List<string> GetImplementation(UhtType type)
         {
             return new List<string> { "friend class " + _friendClassName + ";" };
         }
@@ -87,9 +89,9 @@ public static class AccessTransformers
     public static readonly AccessTransformerTable<FriendAccessTransformer> FriendAccessTransformers = new();
     public static readonly AccessTransformerTable<AccessorAccessTransformer> AccessorAccessTransformers = new();
 
-    public static void Load(string projectFile)
+    public static void Load(UhtSession session)
     {
-        var availablePlugins = PluginsBase.EnumeratePlugins(new FileReference(projectFile));
+        var availablePlugins = PluginsBase.EnumeratePlugins(new FileReference(session.ProjectFile!));
         foreach (var plugin in availablePlugins)
         {
             FileReference accessTransformersFile = new(Path.Combine(plugin.Directory.FullName, "Config", "AccessTransformers.ini"));
@@ -101,18 +103,44 @@ public static class AccessTransformers
                 {
                     switch (line.Key)
                     {
-                        case "Friend": {
-							var data = StructParser.Parse(line.Value);
-                            FriendAccessTransformers.Add(plugin.GetFileNameWithoutAnyExtensions(),
-                                new FriendAccessTransformer(data["Class"], data["FriendClass"], accessTransformersFile.FullName, section.Lines.IndexOf(line) + 1));
+                        case "Friend":
+                        {
+                            try
+                            {
+                                var data = StructParser.Parse(line.Value);
+                                FriendAccessTransformers.Add(plugin.GetFileNameWithoutAnyExtensions(),
+                                    new FriendAccessTransformer(data["Class"], data["FriendClass"],
+                                        accessTransformersFile.FullName, section.Lines.IndexOf(line) + 2));
+                            }
+                            catch (Exception e)
+                            {
+                                session.AddMessage(UhtMessage.MakeMessage(UhtMessageType.Error, null,
+                                    accessTransformersFile.FullName,
+                                    section.Lines.IndexOf(line) + 2,
+                                    $"Error parsing Friend \"{line.Value}\": {e.Message}"));
+                            }
+
                             break;
-						}
-                        case "Accessor": {
-							var data = StructParser.Parse(line.Value);
-                            AccessorAccessTransformers.Add(plugin.GetFileNameWithoutAnyExtensions(),
-                                new AccessorAccessTransformer(data["Class"], data["Property"], accessTransformersFile.FullName, section.Lines.IndexOf(line) + 1));
+                        }
+                        case "Accessor":
+                        {
+                            try
+                            {
+                                var data = StructParser.Parse(line.Value);
+                                AccessorAccessTransformers.Add(plugin.GetFileNameWithoutAnyExtensions(),
+                                    new AccessorAccessTransformer(data["Class"], data["Property"],
+                                        accessTransformersFile.FullName, section.Lines.IndexOf(line) + 2));
+                            }
+                            catch (Exception e)
+                            {
+                                session.AddMessage(UhtMessage.MakeMessage(UhtMessageType.Error, null,
+                                    accessTransformersFile.FullName,
+                                    section.Lines.IndexOf(line) + 2,
+                                    $"Error parsing Accessor \"{line.Value}\": {e.Message}"));
+                            }
+
                             break;
-						}
+                        }
                     }
                 });
             }
