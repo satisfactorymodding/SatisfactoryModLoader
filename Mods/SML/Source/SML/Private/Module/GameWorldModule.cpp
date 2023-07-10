@@ -33,26 +33,32 @@ void UGameWorldModule::RegisterDefaultContent() {
     AChatCommandSubsystem* ChatCommandSubsystem = AChatCommandSubsystem::Get(WorldObject);
 	check(ModContentRegistry);
 
+    auto ModReference = GetOwnerModReference();
+
     //Register schematics
     for (const TSubclassOf<UFGSchematic>& Schematic : mSchematics) {
-        ModContentRegistry->RegisterSchematic(GetOwnerModReference(), Schematic);
+        ModContentRegistry->RegisterSchematic(ModReference, Schematic);
     }
 
     //Register research trees
     for (const TSubclassOf<UFGResearchTree>& ResearchTree : mResearchTrees) {
-        ModContentRegistry->RegisterResearchTree(GetOwnerModReference(), ResearchTree);
+        ModContentRegistry->RegisterResearchTree(ModReference, ResearchTree);
     }
 
     //Register resource sink table points
     UDataTable* ModResourceSinkPointsTable = mResourceSinkItemPointsTable.LoadSynchronous();
     if (ModResourceSinkPointsTable != NULL) {
-        ModContentRegistry->RegisterResourceSinkItemPointTable(GetOwnerModReference(), ModResourceSinkPointsTable);
+        ModContentRegistry->RegisterResourceSinkItemPointTable(ModReference, ModResourceSinkPointsTable, EResourceSinkTrack::RST_Default);
+    }
+    UDataTable* ModExplorationResourceSinkPointsTable = mExplorationResourceSinkItemPointsTable.LoadSynchronous();
+    if (ModExplorationResourceSinkPointsTable != NULL) {
+        ModContentRegistry->RegisterResourceSinkItemPointTable(ModReference, ModExplorationResourceSinkPointsTable, EResourceSinkTrack::RST_Exploration);
     }
 
     //Register chat commands (on server side only)
     if (ChatCommandSubsystem != NULL) {
         for (const TSubclassOf<AChatCommandInstance>& ChatCommand : mChatCommands) {
-            ChatCommandSubsystem->RegisterCommand(GetOwnerModReference().ToString(), ChatCommand);
+            ChatCommandSubsystem->RegisterCommand(ModReference.ToString(), ChatCommand);
         }
     }
 }

@@ -487,14 +487,18 @@ void AModContentRegistry::RegisterRecipe(const FName ModReference, const TSubcla
     }
 }
 
-void AModContentRegistry::RegisterResourceSinkItemPointTable(FName ModReference, UDataTable* PointTable) {
-	CHECK_PROVIDED_OBJECT_VALID(PointTable, TEXT("Attempt to register NULL ResourceSinkPointTable. Mod Reference: %s"), *ModReference.ToString());
+void AModContentRegistry::RegisterResourceSinkItemPointTable(FName ModReference, UDataTable* PointTable, EResourceSinkTrack Track) {
+	CHECK_PROVIDED_OBJECT_VALID(PointTable, TEXT("Attempt to register NULL ResourceSinkPointTable on %s track. Mod Reference: %s"), *UEnum::GetValueAsString(Track), *ModReference.ToString());
 
 	checkf(PointTable->RowStruct != nullptr && PointTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct()),
             TEXT("Invalid AWESOME Sink item points table in mod %s (%s): Row Type should be Resource Sink Points Data"),
             *ModReference.ToString(), *PointTable->GetPathName());
 
-	this->PendingItemSinkPointsRegistrations.Add(PointTable, ModReference);
+    auto data = FItemSinkRegistrationStruct();
+    data.ModReference = ModReference;
+    data.Track = Track;
+    data.PointTable = PointTable;
+    this->PendingItemSinkPointsRegistrations.Add(data);
 	FlushPendingResourceSinkRegistrations();
 }
 
@@ -622,14 +626,14 @@ void AModContentRegistry::FlushPendingResourceSinkRegistrations() {
 	AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this);
 
 	if (ResourceSinkSubsystem != NULL) {
-		for (const TPair<UDataTable*, FName>& Pair : PendingItemSinkPointsRegistrations) {
-			UE_LOG(LogContentRegistry, Log, TEXT("Registering Resource Sink Points Table '%s' from Mod %s"), *Pair.Key->GetPathName(), *Pair.Value.ToString());;
+		for (const auto& entry : PendingItemSinkPointsRegistrations) {
+            UE_LOG(LogContentRegistry, Log, TEXT("Registering Resource Sink Points Table '%s' track type '%s' from Mod %s"), *entry.PointTable->GetPathName(), *UEnum::GetValueAsString(entry.Track), *entry.ModReference.ToString());
 
 			TArray<FResourceSinkPointsData*> OutModPointsData;
-			Pair.Key->GetAllRows(TEXT("ResourceSinkPointsData"), OutModPointsData);
+			entry.PointTable->GetAllRows(TEXT("ResourceSinkPointsData"), OutModPointsData);
 			for (FResourceSinkPointsData* ModItemRow : OutModPointsData) {
 				int32 Points = FMath::Max(ModItemRow->Points, ModItemRow->OverriddenResourceSinkPoints);
-				ResourceSinkSubsystem->mCachedResourceSinkPoints.Add(ModItemRow->ItemClass, FResourceSinkValuePair32(EResourceSinkTrack::RST_Default, Points));
+				ResourceSinkSubsystem->mCachedResourceSinkPoints.Add(ModItemRow->ItemClass, FResourceSinkValuePair32(entry.Track, Points));
 			}
 		}
 
@@ -643,10 +647,11 @@ void AModContentRegistry::FlushPendingResourceSinkRegistrations() {
 DEFINE_FUNCTION(AModContentRegistry::execRegisterResourceSinkItemPointTable) {
 	P_GET_PROPERTY(FNameProperty, ModReference);
 	P_GET_OBJECT(UDataTable, PointTable);
+	P_GET_ENUM(EResourceSinkTrack, Track);
 	P_FINISH;
 	P_NATIVE_BEGIN;
 	P_SET_ACTIVE_FRAME;
-	P_THIS->RegisterResourceSinkItemPointTable(ModReference, PointTable);
+	P_THIS->RegisterResourceSinkItemPointTable(ModReference, PointTable, Track);
 	P_RESET_ACTIVE_FRAME;
 	P_NATIVE_END;
 }

@@ -30,10 +30,21 @@ public:
 
     /**
     * Table to use for obtaining AWESOME resource sink item point values
-    * for items added by this mod
+    * for items added by this mod.
+    * 
+    * The "Default" track (most factory parts are on this)
     */
     UPROPERTY(EditDefaultsOnly, Category = Advanced)
     TSoftObjectPtr<class UDataTable> mResourceSinkItemPointsTable;
+
+    /**
+    * Table to use for obtaining AWESOME resource sink item point values
+    * for items added by this mod.
+    * 
+    * The "Exploration" track (only Alien DNA capsules are on this as of Update 7)
+    */
+    UPROPERTY(EditDefaultsOnly, Category = Advanced)
+    TSoftObjectPtr<class UDataTable> mExplorationResourceSinkItemPointsTable;
 
 	/** Mod subsystem actors to be registered automatically during construction phase */
 	UPROPERTY(EditDefaultsOnly, Category= Advanced)
