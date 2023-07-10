@@ -26,6 +26,22 @@ void AFGWorldSettings::BeginDestroy() {
 void AFGWorldSettings::Serialize(FArchive& ar) {
 	Super::Serialize(ar);
 	ar.UsingCustomVersion(FFactoryGameCustomVersion::GUID);
+	
+	if (ar.IsSaveGame()) {
+		return;	
+	}
+	if (!ar.IsSaving() && !ar.IsLoading()) {
+		return;
+	}
+	if (ar.CustomVer(FFactoryGameCustomVersion::GUID) >= FFactoryGameCustomVersion::CachedSaveActors
+		&& ar.CustomVer(FFactoryGameCustomVersion::GUID) < FFactoryGameCustomVersion::RemovedCachedSaveActors) {
+		TArray<AActor*> SaveActors;
+	
+		const FString LevelName = GetLevel()->GetFullName();
+		if (LevelName.Find(TEXT("_LOD"), ESearchCase::IgnoreCase, ESearchDir::FromEnd) == INDEX_NONE) {
+			ar << SaveActors;
+		}
+	}
 }
 void AFGWorldSettings::PostLoad() {
 	Super::PostLoad();
