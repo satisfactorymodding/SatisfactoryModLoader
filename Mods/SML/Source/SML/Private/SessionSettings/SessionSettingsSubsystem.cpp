@@ -61,11 +61,7 @@ void USMLSessionSettingsRemoteCallObject::Server_RequestSessionSettingUpdate_Imp
 }
 
 bool USMLSessionSettingsRemoteCallObject::Server_RequestSessionSettingUpdate_Validate(const FString& SessionSettingName, const FString& InNewSettingValueString) {
-	const AFGPlayerController* PlayerController = GetOuterFGPlayerController();
-
-	const AFGPlayerState* PlayerState = PlayerController->GetPlayerState<AFGPlayerState>();
 	const USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
 
-	return PlayerState != NULL && PlayerState->IsServerAdmin() &&
-		SessionSettingsManager != NULL && SessionSettingsManager->FindSessionSetting(SessionSettingName) != NULL;
+	return SessionSettingsManager != NULL && SessionSettingsManager->FindSessionSetting(SessionSettingName) != NULL;
 }
