@@ -2,11 +2,11 @@
 
 #include "AccessTransformers.h"
 
-UClass* FindClassBySourceName(const FString Name) {
-	if(UClass* EngineNameNoPackage = FindObject<UClass>(ANY_PACKAGE, *Name)) {
+UStruct* FindStructBySourceName(const FString Name) {
+	if(UStruct* EngineNameNoPackage = FindObject<UStruct>(ANY_PACKAGE, *Name)) {
 		return EngineNameNoPackage;
 	}
-	if(UClass* SourceNameNoPackage = FindObject<UClass>(ANY_PACKAGE, *Name.RightChop(1))) {
+	if(UStruct* SourceNameNoPackage = FindObject<UStruct>(ANY_PACKAGE, *Name.RightChop(1))) {
 		return SourceNameNoPackage;
 	}
 	return nullptr;
@@ -26,10 +26,10 @@ FPropertyReference FPropertyReference::FromConfigString(const FString& String) {
 }
 
 FProperty* FPropertyReference::Resolve(FString& OutError, FString& OutWarning) const {
-	UClass* ResolvedClass = FindObject<UClass>(nullptr, *Class);
+	UStruct* ResolvedClass = FindObject<UStruct>(nullptr, *Class);
 	if (!ResolvedClass) {
 		// Backwards compatibility for old structure (no package, allow source class name)
-		ResolvedClass = FindClassBySourceName(*Class);
+		ResolvedClass = FindStructBySourceName(*Class);
 		if (!ResolvedClass) {
 			OutError = FString::Printf(TEXT("Could not find class %s"), *Class);
 			return nullptr;
@@ -61,10 +61,10 @@ FFunctionReference FFunctionReference::FromConfigString(const FString& String) {
 }
 
 UFunction* FFunctionReference::Resolve(FString& OutError, FString& OutWarning) const {
-	UClass* ResolvedClass = FindObject<UClass>(nullptr, *Class);
+	UStruct* ResolvedClass = FindObject<UStruct>(nullptr, *Class);
 	if (!ResolvedClass) {
 		// Backwards compatibility for old structure (no package, allow source class name)
-		ResolvedClass = FindClassBySourceName(*Class);
+		ResolvedClass = FindStructBySourceName(*Class);
 		if (!ResolvedClass) {
 			OutError = FString::Printf(TEXT("Could not find class %s"), *Class);
 			return nullptr;
