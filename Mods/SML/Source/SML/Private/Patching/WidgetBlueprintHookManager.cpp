@@ -266,7 +266,7 @@ void UWidgetBlueprintHookManager::RegisterWidgetBlueprintHook(UWidgetBlueprintHo
 		return;
 	}
 	
-	UUserWidget* NewUserWidget = NewObject<UUserWidget>(WidgetTree, HookData->NewWidgetClass, HookData->NewWidgetName, RF_Transient);
+	UUserWidget* NewUserWidget = NewObject<UUserWidget>(WidgetTree, HookData->NewWidgetClass, HookData->NewWidgetName, RF_Transient, HookData->NewWidgetTemplate);
 
 	if (NewUserWidget == NULL) {
 		UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Failed to hook widget blueprint %s, failed to create new user widget %s"),
