@@ -30,13 +30,19 @@ void FModWizardDefinition::OnTemplateSelectionChanged(TSharedPtr<FPluginTemplate
 {
 	if (InSelectedItem.IsValid())
 	{
-		CurrentTemplateDefinition = *ModTemplateDefinitions.FindByPredicate([InSelectedItem](TSharedRef<FModTemplateDescription> Template)
+		TSharedRef<FModTemplateDescription>* Found = ModTemplateDefinitions.FindByPredicate([InSelectedItem](TSharedRef<FModTemplateDescription> Template)
 			{ return Template->TemplateDescription == InSelectedItem; });
+		if(Found) {
+			CurrentTemplateDefinition = *Found;
+		}
 	}
 }
 
 TSharedPtr<FPluginTemplateDescription> FModWizardDefinition::GetSelectedTemplate() const
 {
+	if(!CurrentTemplateDefinition.IsValid()) {
+		return nullptr;
+	}
 	return CurrentTemplateDefinition->TemplateDescription;
 }
 
@@ -59,7 +65,7 @@ bool FModWizardDefinition::HasModules() const
 
 bool FModWizardDefinition::IsMod() const
 {
-	return false; // TODO Update this when migrating to Mods
+	return true;
 }
 
 FText FModWizardDefinition::GetInstructions() const
@@ -69,6 +75,9 @@ FText FModWizardDefinition::GetInstructions() const
 
 bool FModWizardDefinition::GetPluginIconPath(FString& OutIconPath) const
 {
+	if(!CurrentTemplateDefinition.IsValid()) {
+		return false;
+	}
 	return GetTemplateIconPath(CurrentTemplateDefinition.ToSharedRef()->TemplateDescription, OutIconPath);
 }
 
@@ -261,16 +270,15 @@ TSharedPtr<FModTemplateDescription> FModTemplateDescription::Load(const TSharedP
 			Dependencies.Add(Dependency);
 		}
 	}
-	
-    return MakeShareable(new FModTemplateDescription(
-    	MakeShareable(new FPluginTemplateDescription(
-    		FText::FromString(TemplateName),
-    		FText::FromString(TemplateDescription),
-    		TemplatesPath / TemplateFolderName,
-    		true,
-    		EHostType::Runtime)),
-    	Dependencies
-    ));
+
+	TSharedRef<FPluginTemplateDescription> PluginTemplateDescription = MakeShareable(new FPluginTemplateDescription(
+			FText::FromString(TemplateName),
+			FText::FromString(TemplateDescription),
+			TemplatesPath / TemplateFolderName,
+			true,
+			EHostType::Runtime));
+	PluginTemplateDescription->bCanBePlacedInEngine = false;
+    return MakeShareable(new FModTemplateDescription(PluginTemplateDescription, Dependencies));
 }
 
 #undef LOCTEXT_NAMESPACE
