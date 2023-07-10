@@ -1,20 +1,12 @@
 #include "Patching/Patch/SaveMetadataPatch.h"
 
-#include "FGAdminInterface.h"
-#include "FGBlueprintFunctionLibrary.h"
 #include "FGPlayerController.h"
 #include "FGSaveManagerInterface.h"
 #include "SatisfactoryModLoader.h"
-#include "Patching/BlueprintHookHelper.h"
-#include "Patching/BlueprintHookManager.h"
-#include "Reflection/ReflectionHelper.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Engine/Engine.h"
 #include "ModLoading/ModLoadingLibrary.h"
-#include "Patching/NativeHookManager.h"
-#include "WebBrowser/Public/IWebBrowserDialog.h"
 
-bool FSaveMetadataPatch::IsCallback = false;
+#define LOCTEXT_NAMESPACE "SML"
 
 FModMetadata::FModMetadata(FString Reference, FString Name, FVersion Version) : Reference(Reference), Name(Name), Version(Version){}
 
@@ -34,8 +26,7 @@ FModMetadata FModMetadata::FromModInfo(FModInfo ModInfo)
 	return FModMetadata(ModInfo.Name, ModInfo.FriendlyName, ModInfo.Version);
 }
 
-FString FModMismatch::ToString()
-{
+FString FModMismatch::ToString() const {
 	if (this->IsMissing)
 	{
 		return FString::Printf(TEXT("%ls is missing"), *this->Was.Name);
@@ -44,65 +35,30 @@ FString FModMismatch::ToString()
 		*this->Is.FriendlyName,* this->Was.Version.ToString(), *this->Is.Version.ToString());
 }
 
+FText FModMismatch::ToText() const {
+	if (this->IsMissing)
+	{
+		return FText::Format(LOCTEXT("MOD_MISSING", "{0} is missing"), FText::FromString(this->Was.Name));
+	}
+	return FText::Format(LOCTEXT("MOD_DOWNGRADE", "{0} was {1}, is {2})"),
+		FText::FromString(this->Is.FriendlyName), FText::FromString(this->Was.Version.ToString()), FText::FromString(this->Is.Version.ToString()));
+}
+
 FModMismatch::FModMismatch(FModMetadata Was, FModInfo Is, bool IsMissing) : Was(Was), Is(Is), IsMissing(IsMissing) {}
 
-bool FSaveMetadataPatch::Patch(FSaveHeader Header, TMap<FString, FString> Options, APlayerController* PlayerController)
-{
-	if (IsCallback) {
-		return false;
-	}
-		
-	UFGSaveSystem* System = UFGSaveSystem::Get(PlayerController);
+void FSaveMetadataPatch::Register() {
+	UFGSaveSystem::CheckModdedSaveCompatibilityDelegate.BindStatic(CheckModdedSaveCompatibility);
+}
 
-	TArray<FModMismatch> ModMismatches = FindModMismatches(Header);
-
-	USaveMetadataCallback* CallbackObject = USaveMetadataCallback::New(System, Header, Options, PlayerController);
+ESaveModCheckResult FSaveMetadataPatch::CheckModdedSaveCompatibility(const FSaveHeader& SaveHeader, FText& OutMessage) {
+	TArray<FModMismatch> ModMismatches = FindModMismatches(SaveHeader);
 	if (ModMismatches.Num() > 0)
 	{
-#if !UE_SERVER
-		PopupWarning(ModMismatches, CallbackObject);
-#endif
+		OutMessage = BuildModMismatchesText(ModMismatches);
 		LogModMismatches(ModMismatches);
-		return true;
+		return ESaveModCheckResult::MCR_Volatile;
 	}
-	return false;
-}
-
-void FSaveMetadataPatch::RegisterPatch() {
-	UFGSaveSystem* Context = GetMutableDefault<UFGSaveSystem>();
-    void* ContextInterface = static_cast<IFGSaveManagerInterface*>(Context);
-	SUBSCRIBE_METHOD_VIRTUAL(UFGSaveSystem::LoadSaveFile, ContextInterface, [](auto& scope, UFGSaveSystem* self, const FSaveHeader& SaveGame, TMap<FString, FString> Options, APlayerController* Player)
-	{
-		bool bAbort = Patch(SaveGame, Options, Player);
-		if (bAbort)
-		{
-			scope.Cancel();
-		}
-	});
-	SUBSCRIBE_METHOD(AFGAdminInterface::LoadGame, [](auto& scope, AFGAdminInterface* self, bool locally, const FSaveHeader& save)
-	{
-		if (locally) {
-			return;
-		}
-		APlayerController* Player = self->GetWorld()->GetFirstPlayerController();
-		bool bAbort = Patch(save, {}, Player);
-		if (bAbort)
-		{
-			scope.Cancel();
-		}
-	});
-}
-
-void FSaveMetadataPatch::PopupWarning(TArray<FModMismatch> ModMismatches, USaveMetadataCallback* CallbackObject)
-{
-	FPopupClosed PopupClosedDelegate;
-	
-	PopupClosedDelegate.BindDynamic(CallbackObject, &USaveMetadataCallback::Callback);
-	FString Body = BuildModMismatchesString(ModMismatches);
-		
-	UFGBlueprintFunctionLibrary::AddPopupWithCloseDelegate(CallbackObject->Player,
-		FText::FromString(TEXT("Mod mismatch")), FText::FromString(Body),
-		PopupClosedDelegate, PID_OK_CANCEL);
+	return ESaveModCheckResult::MCR_Supported;
 }
 
 TArray<FModMismatch> FSaveMetadataPatch::FindModMismatches(FSaveHeader Header)
@@ -154,27 +110,8 @@ TArray<FModMismatch> FSaveMetadataPatch::FindModMismatches(FSaveHeader Header)
 	return ModMismatches;
 }
 
-inline FString FSaveMetadataPatch::BuildModMismatchesString(TArray<FModMismatch>& ModMismatches)
+inline FText FSaveMetadataPatch::BuildModMismatchesText(TArray<FModMismatch>& ModMismatches)
 {
-	FString ExplanationMessage =
-		"Missing mod content will disappear from your world.\n"
-		"This includes things like machines & items but not more generic effects like moving a foundation.\n\n"
-		"Press Confirm to load the save anyway or Cancel if you want to cancel";
-	
-	if (ModMismatches.Num() == 1)
-	{
-		FModMismatch ModMismatch = ModMismatches[0];
-		FString Header = ModMismatch.Was.Name + " was previously used in this save and ";
-		if (ModMismatch.IsMissing)
-		{
-			Header += "is missing";
-		} else
-		{
-			Header += FString::Printf(TEXT("has a lower version than the previous one (%ls -> %ls)"),
-				*ModMismatch.Was.Version.ToString(), *ModMismatch.Is.Version.ToString());
-		}
-		return FString::Printf(TEXT("%ls\n\n%ls"), *Header, *ExplanationMessage);
-	}
 	int NumMods = ModMismatches.Num();
 	int NumOverflowMods = 0;
 	if (NumMods > 20)
@@ -182,19 +119,27 @@ inline FString FSaveMetadataPatch::BuildModMismatchesString(TArray<FModMismatch>
 		NumOverflowMods = NumMods - 20;
 		NumMods = 20;
 	}
+
+	TArray<FText> Lines;
 	
-	FString Out = "Some mods previously used in this save are missing or have lower versions:\n";
+	Lines.Add(LOCTEXT("MOD_MISMATCHES", "Some mods previously used in this save are missing or have lower versions:"));
+	
+	TArray<FText> ModMismatchTexts;
 	for (int i = 0; i < NumMods; ++i)
 	{
-		Out += ModMismatches[i].ToString() + "\n";
+		ModMismatchTexts.Push(ModMismatches[i].ToText());
 	}
+	Lines.Add(FText::Join(INVTEXT("\n"), ModMismatchTexts));
 	if (NumOverflowMods)
 	{
-		Out += FString::Printf(TEXT("%d missing mods were not shown in this list but written to the log\n"), NumOverflowMods);
+		Lines.Add(FText::Format(LOCTEXT("MOD_MISMATCHES_OVERFLOW", "{0} missing mods were not shown in this list but written to the log"), NumOverflowMods));
 	}
-	Out += "\n" + ExplanationMessage;
+	Lines.Add(LOCTEXT("MOD_MISMATCH_EXPLANATION",
+		"Missing mod content will disappear from your world.\n"
+		"This includes things like machines & items but not more generic effects like moving a foundation.\n\n"
+		"Press Confirm to load the save anyway or Cancel if you want to cancel"));
 	
-	return Out;
+	return FText::Join(INVTEXT("\n"), Lines);
 }
 
 void FSaveMetadataPatch::LogModMismatches(TArray<FModMismatch>& ModMismatches)
@@ -206,24 +151,4 @@ void FSaveMetadataPatch::LogModMismatches(TArray<FModMismatch>& ModMismatches)
 	}
 }
 
-void USaveMetadataCallback::Callback(bool Continue) 
-{
-	if (Continue)
-	{
-		FSaveMetadataPatch::IsCallback = true;
-		System->LoadSaveFile(this->SaveGame, Options, Player);
-		FSaveMetadataPatch::IsCallback = false;
-	}
-	this->RemoveFromRoot();
-}
-
-USaveMetadataCallback* USaveMetadataCallback::New(UFGSaveSystem* System, FSaveHeader SaveGame, TMap<FString, FString> Options, APlayerController* Player)
-{
-	USaveMetadataCallback* CallbackObject = NewObject<USaveMetadataCallback>();
-	CallbackObject->AddToRoot();
-	CallbackObject->System = System;
-	CallbackObject->SaveGame = SaveGame;
-	CallbackObject->Options = Options;
-	CallbackObject->Player = Player;
-	return CallbackObject;
-}
+#undef LOCTEXT_NAMESPACE

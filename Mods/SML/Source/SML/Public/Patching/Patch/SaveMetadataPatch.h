@@ -1,10 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "FGPlayerController.h"
 #include "FGSaveSystem.h"
 #include "ModLoading/ModLoadingLibrary.h"
-#include "UI/FGPopupWidget.h"
-#include "SaveMetadataPatch.generated.h"
 
 struct FModMetadata
 {
@@ -25,38 +22,17 @@ struct FModMismatch
     FModInfo Is;
     bool IsMissing;
     
-    FString ToString();
+    FString ToString() const;
+    FText ToText() const;
 };
 
 class SML_API FSaveMetadataPatch {
-    friend class FSatisfactoryModLoader;
-    friend class USaveMetadataCallback;
-
-    static bool Patch(FSaveHeader Header, TMap<FString, FString> Options, APlayerController* PlayerController);
-    static void RegisterPatch();
-    static void PopupWarning(TArray<FModMismatch> ModMismatches, USaveMetadataCallback* CallbackObject);
-    static TArray<FModMismatch> FindModMismatches(FSaveHeader Header);
-    static FString BuildModMismatchesString(TArray<FModMismatch>&);
-    static void LogModMismatches(TArray<FModMismatch>&);
-
-    static bool IsCallback;
-};
-
-UCLASS()
-class USaveMetadataCallback : public UObject
-{
-    GENERATED_BODY()
-    friend class FSaveMetadataPatch;
 public:
-    UFUNCTION()
-    void Callback(bool Continue);
+    static void Register();
 
-    static USaveMetadataCallback* New(UFGSaveSystem* System, FSaveHeader SaveGame, TMap<FString, FString> Options, APlayerController* Player);
 private:
-    UPROPERTY()
-    UFGSaveSystem* System;
-    FSaveHeader SaveGame;
-    TMap<FString, FString> Options;
-    UPROPERTY()
-    APlayerController* Player;
+    static TArray<FModMismatch> FindModMismatches(FSaveHeader Header);
+    static FText BuildModMismatchesText(TArray<FModMismatch>&);
+    static void LogModMismatches(TArray<FModMismatch>&);
+    static ESaveModCheckResult CheckModdedSaveCompatibility(const FSaveHeader& SaveHeader, FText& OutMessage);
 };

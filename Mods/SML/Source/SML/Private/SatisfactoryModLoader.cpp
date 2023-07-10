@@ -115,7 +115,7 @@ void FSatisfactoryModLoader::RegisterSubsystemPatches() {
     UItemTooltipSubsystem::InitializePatches();
 
     //Register save metadata patch to enable storing a save's mod list and other mod-specified metadata
-    FSaveMetadataPatch::RegisterPatch();
+    FSaveMetadataPatch::Register();
 
     //Only register these patches in shipping, where bodies of the ACharacter::Cheat methods are stripped
 #if UE_BUILD_SHIPPING
