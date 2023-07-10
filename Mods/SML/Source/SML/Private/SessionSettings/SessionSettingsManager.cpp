@@ -2,6 +2,7 @@
 
 #include "FGGameMode.h"
 #include "FGOptionsLibrary.h"
+#include "SatisfactoryModLoader.h"
 #include "ModLoading/PluginModuleLoader.h"
 #include "Registry/SessionSettingsRegistry.h"
 #include "Settings/FGUserSettingApplyType.h"
@@ -72,9 +73,11 @@ FString USessionSettingsManager::SerializeSettingsToString() const {
 	
 	for (const TPair<FString, UFGUserSettingApplyType*>& Pair : SessionSettings) {
 		FString Name = Pair.Key;
-		FVariant PendingValue = Pair.Value->GetPendingValue();
+		FVariant Value = Pair.Value->GetPendingValue();
+		if (Value.IsEmpty())
+			Value = Pair.Value->GetAppliedValue();
 
-		OptionStrings.Add(Pair.Key + TEXT("=") + VariantToString(PendingValue));
+		OptionStrings.Add(Pair.Key + TEXT("=") + VariantToString(Value));
 	}
 	return FString::Join(OptionStrings, TEXT(","));
 }
@@ -83,10 +86,16 @@ void USessionSettingsManager::DeserializeSettingsFromString(const FString& Seria
 	TArray<FString> OptionStrings;
 	SerializedString.ParseIntoArray(OptionStrings, TEXT(","));
 	for (const FString& OptionString : OptionStrings) {
-		TArray<FString> OptionParts;
-		OptionString.ParseIntoArray(OptionParts, TEXT("="));
+		int32 EqualIdx;
+		if(!OptionString.FindChar(TEXT('='), EqualIdx)) {
+			UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Invalid option string: %s"), *OptionString);
+			continue;
+		}
 
-		ForceSetOptionValue(OptionParts[0], StringToVariant(OptionParts[1]), this);
+		FString Name = OptionString.Left(EqualIdx);
+		FVariant Value = StringToVariant(OptionString.RightChop(EqualIdx + 1));
+		if(!Value.IsEmpty())
+			ForceSetOptionValue(Name, Value, this);
 	}
 }
 
