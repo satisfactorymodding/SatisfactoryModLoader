@@ -73,6 +73,7 @@ Build/*/**
 Plugins/*/Saved/*
 Mods/*/Saved/*
 Saved/*
+Platforms/HoloLens/
 
 # Compiled source files for the engine to use
 Intermediate/*
@@ -106,3 +107,5 @@ Mods/*/Metadata/Crypto.json
 !Mods/SML/
 !Mods/SMLEditor/
 !Mods/ExampleMod/
+
+# Anything below this line should be categorized into a section above instead!
