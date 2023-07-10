@@ -2,7 +2,6 @@
 
 #include "FGBlueprintSubsystem.h"
 
-TAutoConsoleVariable<int32> CVarBlueprintDebug(TEXT("CVarBlueprintDebug"), 0, TEXT(""));
 void UFGBlueprintRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGBlueprintRemoteCallObject, mForceNetField_UFGSignDataRemoteCallObject);
@@ -13,8 +12,8 @@ void UFGBlueprintRemoteCallObject::Server_RequestFileData_Implementation(const F
 void UFGBlueprintRemoteCallObject::Client_RespondFileDataResponse_Implementation(const TArray< uint8 >& fileData){ }
 void UFGBlueprintRemoteCallObject::Client_RespondFinalFileDataResponse_Implementation(const TArray< uint8 >& fileData, FBlueprintRecord record){ }
 void UFGBlueprintRemoteCallObject::Client_RespondFileFailure_Implementation(const FString& fileName){ }
-void UFGBlueprintRemoteCallObject::Server_SaveBlueprintInDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, FBlueprintRecord record){ }
-bool UFGBlueprintRemoteCallObject::Server_SaveBlueprintInDesigner_Validate( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, FBlueprintRecord record){ return bool(); }
+void UFGBlueprintRemoteCallObject::Server_SaveBlueprintInDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, FBlueprintRecord record, FBlueprintCategoryRecord categoryRecord, FBlueprintSubCategoryRecord subCategoryRecord){ }
+bool UFGBlueprintRemoteCallObject::Server_SaveBlueprintInDesigner_Validate( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, FBlueprintRecord record, FBlueprintCategoryRecord categoryRecord, FBlueprintSubCategoryRecord subCategoryRecord){ return bool(); }
 void UFGBlueprintRemoteCallObject::Server_ClearBlueprintDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller){ }
 void UFGBlueprintRemoteCallObject::Server_LoadBlueprintInDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, const FString& blueprintName){ }
 void UFGBlueprintRemoteCallObject::Server_DeleteBlueprintDescriptor_Implementation(const FString& blueprintName){ }
@@ -62,7 +61,8 @@ void AFGBlueprintSubsystem::CreateBlueprintWorld(){ }
 FBlueprintHeader AFGBlueprintSubsystem::WriteBlueprintToArchive(FBlueprintRecord& record, const FTransform& blueprintOrigin,  AFGBuildableBlueprintDesigner* designer, TArray<  AFGBuildable* >& buildables, FIntVector dimensions){ return FBlueprintHeader(); }
 bool AFGBlueprintSubsystem::WriteBlueprintToDisk(FBlueprintRecord& record){ return bool(); }
 bool AFGBlueprintSubsystem::WriteBlueprintConfigToDisk(const FBlueprintRecord& record){ return bool(); }
-void AFGBlueprintSubsystem::CalculateBlueprintCost(TArray< AFGBuildable* >& buildables, TArray< FBlueprintItemAmount >& out_cost){ }
+void AFGBlueprintSubsystem::CalculateBlueprintCost(const TArray< AFGBuildable* >& buildables, TArray< FBlueprintItemAmount >& out_cost) const{ }
+void AFGBlueprintSubsystem::CalculateBlueprintCost(const TArray< AFGBuildable* >& buildables, TArray< FItemAmount >& out_cost) const{ }
 bool AFGBlueprintSubsystem::LoadFileFromDisk(const FString& fileName, const FString& extension, TArray< uint8 >& out_FileData){ return bool(); }
 bool AFGBlueprintSubsystem::WriteFileToDisk(const FString& fileName, const FString& extension, const TArray< uint8 >& dataToWrite){ return bool(); }
 bool AFGBlueprintSubsystem::ReadBlueprintFromDisc(const FString& blueprintName){ return bool(); }
@@ -100,6 +100,7 @@ void AFGBlueprintSubsystem::FindOrAddBlueprintRecordFromHeader(const FBlueprintH
 void AFGBlueprintSubsystem::NotifyBlueprintDescriptorUpdated(UFGBlueprintDescriptor* desc){ }
 FFileNameToRawFileData* AFGBlueprintSubsystem::FindOrAddRawDataForFile(const FString& fileName){ return nullptr; }
 void AFGBlueprintSubsystem::RemoveRawDataForFile(const FString& fileName){ }
+void AFGBlueprintSubsystem::CalculateBlueprintCustomizationCost(const TArray<AFGBuildable*>& buildables, TArray<FItemAmount>& out_cost) const{ }
 void AFGBlueprintSubsystem::OnRep_ServerManifest(){ }
 void AFGBlueprintSubsystem::Multicast_BroadcastBlueprintRecordChanges_Implementation(const TArray< FBlueprintRecord >& records){ }
 void AFGBlueprintSubsystem::Multicast_AddBlueprintBuildEffectData_Implementation(const FBlueprintBuildEffectData& buildeffectData){ }

@@ -41,6 +41,7 @@ struct FDrivingTargetListMapData
 	TArray< FWidgetTransform > ArrowTransforms;
 };
 
+DECLARE_MULTICAST_DELEGATE_OneParam( FOnPathVisibilityChanged, bool );
 
 /**
  * 
@@ -195,6 +196,8 @@ public:
 	static constexpr float MaxSegmentExtent = 3000.0f;
 
 	float mCollisionAvoidanceDistance = 0.0f;
+	
+	FOnPathVisibilityChanged OnPathVisibilityChanged;
 
 private:
 	friend class UFGSplinePathMovementComponent;

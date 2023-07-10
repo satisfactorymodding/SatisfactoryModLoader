@@ -9,6 +9,7 @@
 #include "FGGamePhaseManager.h"
 #include "FGResearchManager.h"
 #include "FGFactoryColoringTypes.h"
+#include "FGRemoteCallObject.h"
 #include "FGUnlockSubsystem.h"
 #include "FGSchematic.h"
 #include "FGSwatchGroup.h"
@@ -30,16 +31,35 @@ struct FMiniGameResult
 	GENERATED_BODY()
 	
 	UPROPERTY( SaveGame, BlueprintReadWrite )
-	FString LevelName;
+	FString LevelName = {};
 	
 	UPROPERTY( SaveGame, BlueprintReadWrite )
-	FString PlayerName;
+	FString PlayerName = {};
 	
 	UPROPERTY( SaveGame, BlueprintReadWrite )
-	int32 Points;
+	int32 Points = 0;
 };
 
 extern const TCHAR STARTUP_TEMP_ID_PREFIX[];
+
+// Handled RPC for game state. Previous RPCed Functions we're moved away from game state so this is empty now but leaving it here
+// since I plan to use it for other things -K2
+UCLASS()
+class FACTORYGAME_API UFGGameStateRemoteCallObject : public UFGRemoteCallObject
+{
+	GENERATED_BODY()
+public:
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+
+	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
+	bool mForceNetField_UFGGameStateRemoteCallObject = false;
+
+	static UFGGameStateRemoteCallObject* Get( UWorld* world );
+	
+	UFUNCTION( Server, Reliable )
+	void Server_SetCreativeModeEnabled();
+};
+
 /**
  * 
  */
@@ -155,6 +175,7 @@ public:
 	FORCEINLINE class AFGCreatureSubsystem* GetCreatureSubsystem() const { return mCreatureSubsystem; }
 	FORCEINLINE class AFGScannableSubsystem* GetScannableSubsystem() const { return mScannableSubsystem; }
 	FORCEINLINE class AFGBlueprintSubsystem* GetBlueprintSubsystem() const { return mBlueprintSubsystem; }
+	FORCEINLINE class AFGGameRulesSubsystem* GetGameRulesSubsystem() const { return mGameRulesSubsystem; }
 
 
 
@@ -213,7 +234,7 @@ public:
 	/** Setter for no fuel */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat" )
 	void SetCheatNoFuel( bool noFuel );
-
+	
 	UFUNCTION()
 	void NotifyPlayerAdded( class AFGCharacterPlayer* inPlayer );
 
@@ -339,6 +360,13 @@ public:
 	
 	void SetPublicTodoList( const FString& newTodoList ) { mPublicTodoList = newTodoList; }
 
+	UFUNCTION( BlueprintPure, Category = "Creative" )
+	bool IsCreativeModeEnabled() const { return mIsCreativeModeEnabled; }
+
+	// We only allow a one way transiton here. We can only go to creative mode from vanilla. Not the other way around. 
+	UFUNCTION( BlueprintCallable, Category = "Creative" )
+	void SetCreativeModeEnabled();
+
 private:
 	/** Check the restart time of server and restart it and notify clients of the countdown */
 	void CheckRestartTime();
@@ -347,9 +375,12 @@ private:
 	UFUNCTION()
 	void OnRep_PlannedRestartTime();
 
+	UFUNCTION()
+	void OnRep_CheatNoPower();
+
 	/** Helper to spawn subsystems. */
 	template< class C >
-	void SpawnSubsystem( C*& out_spawnedSubsystem, TSubclassOf< AFGSubsystem > spawnClass, FName spawnName )
+	void SpawnSubsystem( C*& out_spawnedSubsystem, TSoftClassPtr< AFGSubsystem > spawnClass, FName spawnName )
 	{
 		if( out_spawnedSubsystem )
 		{
@@ -357,7 +388,7 @@ private:
 			return;
 		}
 
-		if( !IsValid( spawnClass ) )
+		if( spawnClass.IsNull() )
 		{
 			UE_LOG( LogGame, Error, TEXT( "AFGGameState::SpawnSubsystem failed for '%s', no class given." ), *spawnName.ToString() );
 			return;
@@ -367,12 +398,14 @@ private:
 		spawnParams.Owner = this;
 		spawnParams.Name = spawnName;
 
-		out_spawnedSubsystem = GetWorld()->SpawnActor< C >( spawnClass, spawnParams );
+		out_spawnedSubsystem = GetWorld()->SpawnActor< C >( spawnClass.LoadSynchronous(), spawnParams );
 		fgcheck( out_spawnedSubsystem );
 	}
 
 	void SubmitNumPlayersTelemetry() const;
 	void SubmitCheatTelemetry() const;
+
+	void TryGiveStartingRecipes( class AFGCharacterPlayer* inPlayer );
 
 public:
 	//@todo When was this used last time? Cleanup?
@@ -457,6 +490,8 @@ private:
 	class AFGScannableSubsystem* mScannableSubsystem;
 	UPROPERTY( SaveGame, Replicated )
 	class AFGBlueprintSubsystem* mBlueprintSubsystem;
+	UPROPERTY( SaveGame, Replicated )
+	class AFGGameRulesSubsystem* mGameRulesSubsystem;
 
 	
 	
@@ -542,7 +577,7 @@ private:
 	bool mCheatNoCost;
 
 	/** Cheat bool for not requiring power */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_CheatNoPower )
 	bool mCheatNoPower;
 
 	/** Cheat bool for not requiring fuel */
@@ -573,5 +608,13 @@ private:
 	/** The public todo list. Only replicated on initial send. Then RPCed through FGPlayerState. */
 	UPROPERTY( SaveGame, Replicated )
 	FString mPublicTodoList;
+	
+	/** If we have given the first player that joins the starting recipes or not. Based on which tier you start on */
+	UPROPERTY( SaveGame )
+	bool mHasGivenStartingRecipes = false;
+
+	/** If the player have enabled creative mode for this game. This means they can change settings in advanced game settings menu */
+	UPROPERTY( SaveGame, Replicated )
+	bool mIsCreativeModeEnabled = false;
 	
 };

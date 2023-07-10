@@ -4,13 +4,14 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGDismantleInterface.h"
 #include "FGSaveInterface.h"
 #include "GameFramework/Actor.h"
 #include "FGBlueprintProxy.generated.h"
 
 /** Actor representing a spawned blueprint, with references to each building inside of it. Will automatically destroy when all buildings are gone. */
 UCLASS()
-class FACTORYGAME_API AFGBlueprintProxy : public AActor, public IFGSaveInterface
+class FACTORYGAME_API AFGBlueprintProxy : public AActor, public IFGSaveInterface, public IFGDismantleInterface
 {
 	GENERATED_BODY()
 	
@@ -20,7 +21,6 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual void Tick( float DeltaSeconds ) override;
 
 	/** Used by the buildables in postload to register themselves to their blueprint proxy, so we can reference them through the proxy. */
 	void RegisterBuildable( class AFGBuildable* buildable );
@@ -41,7 +41,11 @@ public:
 
 	/** Gets the blueprint descriptor which was used to construct this blueprint. */
 	UFUNCTION( BlueprintPure, Category = "BlueprintProxy" )
-	class UFGBlueprintDescriptor* GetBlueprintDescriptor() const { return mBlueprintDescriptor; }
+	FORCEINLINE class UFGBlueprintDescriptor* GetBlueprintDescriptor() const { return mBlueprintDescriptor; }
+
+	/** Gets the name of the descriptor this blueprint was built with. */
+	UFUNCTION( BlueprintPure, Category = "BlueprintProxy" )
+	const FText& GetBlueprintName() const { return mBlueprintName; }
 
 	// Begin IFGSaveInterface
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
@@ -53,6 +57,18 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
+	//~ Begin IFGDismantleInterface
+	virtual bool CanDismantle_Implementation() const override;
+	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
+	virtual FVector GetRefundSpawnLocationAndArea_Implementation( const FVector& aimHitLocation, float& out_radius ) const override;
+	virtual void PreUpgrade_Implementation() override;
+	virtual void Upgrade_Implementation( AActor* newActor ) override;
+	virtual void Dismantle_Implementation() override;
+	virtual void StartIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
+	virtual void StopIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
+	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
+	//~ End IFGDismantleInterface
+
 private:
 	UFUNCTION()
 	void OnRep_BlueprintName();
@@ -63,7 +79,7 @@ private:
 	void AssignBuildables( const TArray< class AFGBuildable* >& buildables );
 
 #if !UE_BUILD_SHIPPING
-	void DisplayDebugInfo() const;
+	virtual void DisplayDebug( UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos ) override;
 #endif
 
 private:

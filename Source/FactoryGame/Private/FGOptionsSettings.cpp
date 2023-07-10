@@ -2,6 +2,3 @@
 
 #include "FGOptionsSettings.h"
 
-#if WITH_EDITOR
-void UFGOptionsSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
-#endif 

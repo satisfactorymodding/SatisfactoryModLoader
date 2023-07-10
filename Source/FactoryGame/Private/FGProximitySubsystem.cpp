@@ -3,10 +3,13 @@
 #include "FGProximitySubsystem.h"
 #include "Components/SceneComponent.h"
 
+#if WITH_EDITOR
+#endif 
 AFGProximitySubsystem::AFGProximitySubsystem() : Super() {
 	this->mOwningController = nullptr;
 	this->mRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	this->mMaxNumDecals = 20;
+	this->mRegionSize = 25000.0;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -16,9 +19,15 @@ AFGProximitySubsystem::AFGProximitySubsystem() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.3;
 	this->RootComponent = mRootComponent;
 }
+void AFGProximitySubsystem::SetupPlayerBinds( AFGPlayerController* Player){ }
+AFGProximitySubsystem* AFGProximitySubsystem::GetProximitySubsystem(UWorld* World){ return nullptr; }
+void AFGProximitySubsystem::IsNearBase(const FVector& Location, float Range) const{ }
+void AFGProximitySubsystem::StaticRegisterFactoryBuildingToProximitySystem(AActor* Actor){ }
+void AFGProximitySubsystem::RegisterFactoryBuildingToProximitySystem(FVector Location){ }
 void AFGProximitySubsystem::OnEnteredMapArea_Implementation( AFGPlayerControllerBase* playerController, TSubclassOf<  UFGMapArea > newArea){ }
 void AFGProximitySubsystem::OnPawnChanged_Implementation( APawn* newPawn){ }
 UParticleSystem* AFGProximitySubsystem::GetParticleSystemFromMapArea(TSubclassOf<  UFGMapArea > inArea){ return nullptr; }
 void AFGProximitySubsystem::SpawnPooledDecal(const UObject* WorldContextObject,  UMaterialInterface* DecalMaterial, FVector DecalSize, FVector Location, FRotator Rotation , float LifeSpan){ }
 void AFGProximitySubsystem::BeginPlay(){ }
+void AFGProximitySubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGProximitySubsystem::Tick(float DeltaTime){ }

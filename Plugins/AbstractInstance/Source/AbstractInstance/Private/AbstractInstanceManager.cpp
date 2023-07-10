@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Ben de Hullu. All Rights Reserved.
 
 
 #include "AbstractInstanceManager.h"
@@ -301,11 +301,11 @@ void AAbstractInstanceManager::SetInstanced( AActor* OwnerActor, const FTransfor
 	{
 		FTransform ZeroScaleTransform = InstanceSpawnLocation;
 		ZeroScaleTransform.SetScale3D(FVector(0.01));
-		HandleID = InstanceEntry->InstancedStaticMeshComponent->AddInstanceWorldSpace( ZeroScaleTransform );		
+		HandleID = InstanceEntry->InstancedStaticMeshComponent->AddInstance( ZeroScaleTransform, true );		
 	}
 	else
 	{
-		HandleID = InstanceEntry->InstancedStaticMeshComponent->AddInstanceWorldSpace( InstanceSpawnLocation );
+		HandleID = InstanceEntry->InstancedStaticMeshComponent->AddInstance( InstanceSpawnLocation, true );
 	}
 
 	// Setup Collision
@@ -334,7 +334,7 @@ void AAbstractInstanceManager::SetInstanced( AActor* OwnerActor, const FTransfor
 		}
 
 		EditorCheck( BatchCollisionComponent );
-		CollisionID = BatchCollisionComponent->AddInstanceWorldSpace( InstanceSpawnLocation );
+		CollisionID = BatchCollisionComponent->AddInstance( InstanceSpawnLocation, true );
 	}
 
 	OutHandle->HandleID = HandleID;
@@ -497,7 +497,8 @@ bool AAbstractInstanceManager::ResolveHit( const FHitResult& Result, FInstanceHa
 
 			TArray<FInstanceHandle*>& HandleMapRef = *HandleMapPtr;
 			EditorCheck( HandleMapRef.IsValidIndex( HandleId ) );
-			
+
+			checkf(HandleMapRef.IsValidIndex( HandleId ),TEXT("handle id %d is out of bounds %d outer: %s "),HandleId, HandleMapRef.Num(), *HandleHash.ToString() );
 			FInstanceHandle* Handle = HandleMapRef[ HandleId ];
 			EditorCheck( Handle->IsInstanced() )
 
@@ -627,7 +628,7 @@ void AAbstractInstanceManager::BuildInstanceEntryData( const FName& Name, const 
 	ComponentData.InstancedCollisionComponents[ 0 ]->AttachToComponent( GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform );
 	ComponentData.InstancedCollisionComponents[ 0 ]->SetRelativeTransform( FTransform::Identity );
 	ComponentData.InstancedCollisionComponents[ 0 ]->SetVisibility( false );
-	ComponentData.InstancedCollisionComponents[ 0 ]->SetCollisionProfileName( "BuildingMesh" );
+	ComponentData.InstancedCollisionComponents[ 0 ]->SetCollisionProfileName( InstanceData.CollisionProfileName );
 	ComponentData.InstancedCollisionComponents[ 0 ]->ComponentTags.Add( FName("0") );
 	ComponentData.InstancedCollisionComponents[ 0 ]->bMultiBodyOverlap = true;
 	ComponentData.InstancedCollisionComponents[ 0 ]->RegisterComponent();
@@ -690,11 +691,11 @@ void AAbstractInstanceManager::StartDrawDebug( bool bEnabled )
 	}
 }
 
-void AAbstractInstanceManager::HideAllInstance( bool bHide )
+void AAbstractInstanceManager::HideAllInstance( bool bIsHidden )
 {
 	for( const TTuple< FName, FInstanceComponentData >& InstanceData: InstanceMap )
 	{
-		InstanceData.Value.InstancedStaticMeshComponent->SetVisibility( !bHide );
+		InstanceData.Value.InstancedStaticMeshComponent->SetVisibility( !bIsHidden );
 	}
 }
 

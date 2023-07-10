@@ -16,11 +16,13 @@ class FACTORYGAME_API FArchiveObjectDataProxy : public FArchiveProxy
 {
 public:
 	/** Ctor */
-	FArchiveObjectDataProxy( FArchive& inInnerArchive, class UWorld* world );
+	FArchiveObjectDataProxy( FArchive& inInnerArchive, class UWorld* world, bool objectRefsNeedMigration );
 
 	/** Write down reference names */
-	FArchive& operator<<( class UObject*& Res ) override;
+	virtual FArchive& operator<<( class UObject*& Res ) override;
+	virtual FArchive& operator<<( struct FObjectPtr& Value ) override;
 
 private:
 	class UWorld* mWorld;
+	bool mObjectRefsNeedMigration;
 };

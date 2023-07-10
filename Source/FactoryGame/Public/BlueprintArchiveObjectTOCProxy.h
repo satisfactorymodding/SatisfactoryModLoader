@@ -20,7 +20,7 @@ public:
 	virtual FArchive& operator<<( class UObject*& Res ) override;
 
 	void SetBuildablesBlueprintDesigner( class AFGBuildableBlueprintDesigner* designer) { mDesigner = designer; }
-	void SetSurpressSaveWarnings( bool surpress ) { mSurpressSaveWarnings = surpress; }
+	void SetSuppressSaveWarnings( const bool suppress ) { mSuppressSaveWarnings = suppress; }
 	
 private:
 	/** World to spawn new objects in if loading */
@@ -35,7 +35,7 @@ private:
 	/** Should newly spawned buildables belong to a blueprint designer */
 	class AFGBuildableBlueprintDesigner* mDesigner;
 
-	/** When loading to blueprint world save warnigns / errors are expected and that is fine */
-	bool mSurpressSaveWarnings = false;
+	/** When loading to blueprint world save warnings / errors are expected and that is fine */
+	bool mSuppressSaveWarnings = false;
 };
 

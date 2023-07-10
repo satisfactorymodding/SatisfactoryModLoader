@@ -93,25 +93,21 @@ public:
 	float LastFuseTriggeredTime;
 
 	/** How much power can be produced. */
-	UPROPERTY( BlueprintReadOnly, NotReplicated )
+	UPROPERTY( NotReplicated )
 	float PowerProductionCapacity;
-
 	/** How much power is produced. */
-	UPROPERTY( BlueprintReadOnly, NotReplicated )
+	UPROPERTY( NotReplicated )
 	float PowerProduced;
-
 	/** How much power is consumed. */
-	UPROPERTY( BlueprintReadOnly, NotReplicated )
+	UPROPERTY( NotReplicated )
 	float PowerConsumed;
-
 	/** How much power can hypothetically be consumed at once. */
-	UPROPERTY( BlueprintReadOnly, NotReplicated )
+	UPROPERTY( NotReplicated )
 	float MaximumPowerConsumption;
-
 	/** The sum of the power inputs to batteries. A negative value denotes power output. */
-	UPROPERTY( BlueprintReadOnly, NotReplicated )
+	UPROPERTY( NotReplicated )
 	float BatteryPowerInput;
-
+	
 	/** Freeze the stats until the next stat. */
 	bool HasPinnedGraphPoint;
 	FPowerGraphPoint PinnedGraphPoint;
@@ -336,7 +332,12 @@ private:
 };
 
 /**
- * @todo-power Comment me please, and move me to a separate file? :)
+ * A circuit group is a grouping of circuits connected by switches.
+ * When I switch is turned on the circuits on both sides are grouped together.
+ * This is to avoid traversing the circuit connections and rebuilding the circuits when a switch is flipped.
+ * Circuit groups are responsible for ticking the circuits in them.
+ * Some specialized circuit groups also cache some global data applicable to all circuits in the group.
+ * Groups only exist on the server, on the client you can compare group IDs on circuits to see if the belong to the same group.
  */
 UCLASS()
 class FACTORYGAME_API UFGPowerCircuitGroup : public UFGCircuitGroup
@@ -350,15 +351,13 @@ private:
 	// Begin UFGCircuitGroup interface
 	virtual void Reset() override { mCircuits.Reset(); }
 	virtual void PushCircuit( UFGCircuit* circuit ) override;
-	virtual bool PreTickCircuitGroup( float dt, bool hasAuthority ) override;
-	virtual void TickCircuitGroup( float dt, bool hasAuthority ) override;
+	virtual bool PreTickCircuitGroup( float dt ) override;
+	virtual void TickCircuitGroup( float dt ) override;
 	virtual void VisitCircuitBridge( class AFGBuildableCircuitBridge* circuitBridge ) override;
 	// End UFGCircuitGroup interface
 
-	/**
-	 * Ticks a group of power circuits, making calculations as to power produced, power consumed, and if the fuse is blown.
-	 */
-	void TickPowerCircuitGroup( float deltaTime, bool hasAuthority, bool isNoPowerCheatOn );
+	/** Ticks a group of power circuits, making calculations as to power produced, power consumed, and if the fuse is blown. */
+	void TickPowerCircuitGroup( float deltaTime );
 
 	/** Specifically ticks the batteries connected to the power-circuit group, calculating the power input, output and charge increment to the batteries. */
 	float TickBatteries( float deltaTime, const float netPowerProduction, bool isFuseTriggered );
@@ -369,6 +368,7 @@ private:
 	/** Called when the fuse is set/reset in the circuit. */
 	void OnFuseSet();
 	void OnFuseReset();
+	void OnPrioritySwitchesTurnedOff( int32 priority );
 
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent );
 
@@ -377,6 +377,18 @@ private:
 	UPROPERTY()
 	TArray< UFGPowerCircuit* > mCircuits;
 
+	/** Per frame data. */
+	float mConsumption;
+	float mMaximumPowerConsumption;
+	float mBaseProduction;
+	float mDynamicProductionCapacity;
+	float mMaximumProductionCapacity;
+	bool mHasBatteries;
+	float mTotalPowerStore;
+	float mTotalPowerStoreCapacity;
+	bool mAreAllFusesTriggered;
+	bool mIsAnyFuseTriggered;
+	
 	/** All the priority switches inside this circuit group. */
 	TSet< TWeakObjectPtr< class AFGBuildablePriorityPowerSwitch > > mPrioritySwitches;
 };

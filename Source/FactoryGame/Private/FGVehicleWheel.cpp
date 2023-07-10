@@ -2,14 +2,3 @@
 
 #include "FGVehicleWheel.h"
 
-UFGVehicleWheel::UFGVehicleWheel() : Super() {
-	this->mInvertSteering = false;
-	this->mAutoGenerateCollisionCylinder = false;
-	this->mCamberAtRest = 0.0;
-	this->mCamberAtMaxCompression = 0.0;
-	this->mCamberAtMaxDroop = 0.0;
-	this->mCamberStiffness = 5.72958;
-	this->SweepType = EWheelSweepType::Simple;
-}
-PxConvexMesh* UFGVehicleWheel::CreateWheelMesh(const PxF32 width, const PxF32 radius, PxPhysics& physics, PxCooking& cooking){ return nullptr; }
-UTireConfig* UFGVehicleWheel::GetDefaultTireConfig(){ return nullptr; }

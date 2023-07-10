@@ -17,6 +17,10 @@ public:
 	//~ Begin IInterface_PostProcessVolume Interface
 	virtual bool EncompassesPoint( FVector point, float sphereRadius = 0.f, float* out_distanceToPoint = nullptr ) override;
 	virtual FPostProcessVolumeProperties GetProperties() const override;
+#if DEBUG_POST_PROCESS_VOLUME_ENABLE
+	virtual FString GetDebugName() const override;
+#endif
+
 	//~ End IInterface_PostProcessVolume Interface
 
 	//~ Begin AActor Interface

@@ -31,4 +31,4 @@ void AFGResourceScanner::GenerateNodeClusters(){ }
 void AFGResourceScanner::GetNodesWithinDistance( AFGResourceNodeBase* node, float dist, TArray<  AFGResourceNodeBase* >& clusterNodes, TArray<  AFGResourceNodeBase* >& remainingNodes){ }
 void AFGResourceScanner::GetClosetClusters(TArray<FNodeClusterData>& closestClusters){ }
 void AFGResourceScanner::SplitNearbyClusters(TArray< FNodeClusterData >& clusters){ }
-void AFGResourceScanner::OnCheatBoardOpened(){ }
+void AFGResourceScanner::Input_Scan(const FInputActionValue& actionValue){ }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using AutomationTool;
-using Tools.DotNETCommon;
+using EpicGames.Core;
 using UnrealBuildTool;
+using AutomationScripts;
 
 namespace Alpakit.Automation
 {
@@ -96,8 +98,8 @@ namespace Alpakit.Automation
 				//Need this to allow engine content that wasn't cooked in the base game to be included in the PAK file 
 				DLCIncludeEngineContent: true,
 				DLCName: pluginName,
-				AdditionalCookerOptions: "-CookOnlyPluginAndEngineContent",
-				RunAssetNativization: false);
+				AdditionalCookerOptions: "-CookOnlyPluginAndEngineContent"
+			);
 
 			projectParameters.ValidateAndLog();
 			return projectParameters;
@@ -260,7 +262,7 @@ namespace Alpakit.Automation
 			foreach (var deploymentContext in deploymentContexts)
 			{
 				if (factoryGameParams.CopyToGameDirectory &&
-				    deploymentContext.FinalCookPlatform == "WindowsNoEditor")
+				    deploymentContext.FinalCookPlatform == "Windows")
 				{
 					var stageRootDirectory = deploymentContext.StageDirectory;
 					var relativePluginPath = GetPluginPathRelativeToStageRoot(projectParams, deploymentContext);
@@ -279,7 +281,7 @@ namespace Alpakit.Automation
 
 			if (factoryGameParams.StartGame)
 			{
-				System.Diagnostics.Process.Start(factoryGameParams.LaunchGameURL);
+				System.Diagnostics.Process.Start(new ProcessStartInfo(factoryGameParams.LaunchGameURL) { UseShellExecute = true });
 			}
 		}
 
@@ -335,8 +337,6 @@ namespace Alpakit.Automation
 				//Clean staging directories because they confuse cooking commandlet and UBT
 				CleanStagingDirectories(deploymentContexts);
 			}
-
-			LaunchGame(this);
 		}
 	}
 }

@@ -2,5 +2,8 @@
 
 #include "AvailabilityDependencies/FGItemPickedUpDependency.h"
 
+#if WITH_EDITOR
+void UFGItemPickedUpDependency::Init(TArray< TSubclassOf<  UFGItemDescriptor > > items, bool requireAllItemsToBePickedUp){ }
+#endif 
 bool UFGItemPickedUpDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }
 void UFGItemPickedUpDependency::GetItems(TArray< TSubclassOf<  UFGItemDescriptor > >& out_items) const{ }

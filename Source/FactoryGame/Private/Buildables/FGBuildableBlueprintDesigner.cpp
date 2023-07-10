@@ -31,6 +31,7 @@ AFGBuildableBlueprintDesigner::AFGBuildableBlueprintDesigner() : Super() {
 	this->mCurrentRecordData.Category = nullptr;
 	this->mCurrentRecordData.SubCategory = nullptr;
 	this->mCurrentBlueprintDescriptor = nullptr;
+	this->mIsDismantlingAll = false;
 	this->mHologramClass = AFGBlueprintDesignerHologram::StaticClass();
 	this->mCollisionComponent->SetupAttachment(RootComponent);
 	this->mDesignerBoxMesh->SetupAttachment(RootComponent);
@@ -49,17 +50,19 @@ void AFGBuildableBlueprintDesigner::GetLifetimeReplicatedProps(TArray<FLifetimeP
 void AFGBuildableBlueprintDesigner::BeginPlay(){ }
 void AFGBuildableBlueprintDesigner::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBuildableBlueprintDesigner::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGBuildableBlueprintDesigner::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }
+void AFGBuildableBlueprintDesigner::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }
 void AFGBuildableBlueprintDesigner::Dismantle_Implementation(){ }
 bool AFGBuildableBlueprintDesigner::CanDismantle_Implementation() const{ return bool(); }
+void AFGBuildableBlueprintDesigner::RegisterInteractingPlayer_Implementation(AFGCharacterPlayer* player){ }
 void AFGBuildableBlueprintDesigner::BuildTiledMeshes(UInstancedStaticMeshComponent* tiledMeshComp, const FIntVector& dims){ }
 void AFGBuildableBlueprintDesigner::GatherBuildables(TArray< AFGBuildable* >& out_Buildables){ }
 void AFGBuildableBlueprintDesigner::OnBuildableConstructedInsideDesigner(AFGBuildable* buildable){ }
 void AFGBuildableBlueprintDesigner::OnBuildableDismantledInsideDesigner(AFGBuildable* buildable){ }
-void AFGBuildableBlueprintDesigner::CalculateBlueprintCost(TArray<FItemAmount>& cost){ }
+void AFGBuildableBlueprintDesigner::OnBuildableChangedInsideDesigner(AFGBuildable* buildable){ }
+void AFGBuildableBlueprintDesigner::CalculateBlueprintCost(TArray<FItemAmount>& cost) const{ }
 void AFGBuildableBlueprintDesigner::SaveBlueprint(FBlueprintRecord blueprintRecord, AFGPlayerController* controller){ }
 void AFGBuildableBlueprintDesigner::DismantleCurrentBuildables(AFGPlayerController* controller){ }
-void AFGBuildableBlueprintDesigner::GetCurrentBuildablesDismantleRefund(TArray< FInventoryStack >& out_refund){ }
+void AFGBuildableBlueprintDesigner::GetCurrentBuildablesDismantleRefund(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled){ }
 EBlueprintDesignerLoadResult AFGBuildableBlueprintDesigner::LoadBlueprintIntoDesigner(UFGBlueprintDescriptor* blueprintDescriptor, AFGPlayerController* controller){ return EBlueprintDesignerLoadResult(); }
 FVector AFGBuildableBlueprintDesigner::GetBlueprintDesignerSize() const{ return FVector(); }
 bool AFGBuildableBlueprintDesigner::IsTransformOnPerimeterOfDesigner(const FTransform& trans) const{ return bool(); }
@@ -72,6 +75,7 @@ void AFGBuildableBlueprintDesigner::RemoveCostToLoad(UFGBlueprintDescriptor* blu
 void AFGBuildableBlueprintDesigner::OnBuildEffectFinished(){ }
 void AFGBuildableBlueprintDesigner::OnRep_Storage(){ }
 void AFGBuildableBlueprintDesigner::OnBuildingsChanged(){ }
+void AFGBuildableBlueprintDesigner::RecalculateBlueprintCost(){ }
 void AFGBuildableBlueprintDesigner::OnRep_Buildables(){ }
 void AFGBuildableBlueprintDesigner::OnRep_RecordData(){ }
 void AFGBuildableBlueprintDesigner::OnRep_CostChanged(){ }

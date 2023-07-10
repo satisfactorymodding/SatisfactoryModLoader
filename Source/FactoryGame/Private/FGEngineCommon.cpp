@@ -21,7 +21,5 @@ void FFGEngineCommon::Start(){ }
 void FFGEngineCommon::PreExit(){ }
 bool FFGEngineCommon::Exec( UWorld* inWorld, const TCHAR* cmd, FOutputDevice& ar){ return bool(); }
 void FFGEngineCommon::Tick(float dt){ }
-UWorld* FFGEngineCommon::CreateWorld(const FString& worldName){ return nullptr; }
-void FFGEngineCommon::DestroyWorld( UWorld* world){ }
 UFGAtmosphereUpdater* FFGEngineCommon::GetAtmosphereUpdater(){ return nullptr; }
 void FFGEngineCommon::HandleHiddenTextureStatsCommand(const TCHAR* cmd, FOutputDevice& ar){ }

@@ -81,7 +81,7 @@ void AFGWheeledVehicleInfo::BeginPlay(){ }
 void AFGWheeledVehicleInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGWheeledVehicleInfo::Tick(float dt){ }
 void AFGWheeledVehicleInfo::Init(AFGWheeledVehicle* vehicle){ }
-void AFGWheeledVehicleInfo::InitCollisionData( UFGVehicleCollisionBoxComponent* collisionBox){ }
+void AFGWheeledVehicleInfo::InitCollisionData(){ }
 AFGWheeledVehicle* AFGWheeledVehicleInfo::GetVehicle() const{ return nullptr; }
 void AFGWheeledVehicleInfo::SetVehicleStatus(EVehicleStatus status){ }
 void AFGWheeledVehicleInfo::SetIsFollowingPath(bool isFollowingPath){ }

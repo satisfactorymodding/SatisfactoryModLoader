@@ -21,7 +21,7 @@ UFGAction::UFGAction(const FObjectInitializer& ObjectInitializer) : Super(Object
 	this->mPostAction = nullptr;
 	this->mPawn = nullptr;
 	this->mController = nullptr;
-	this->mActionState = EFGActionState::Uninitialized;
+	this->mActionState = EFGActionState::EAS_Uninitialized;
 	this->mParentAction = nullptr;
 }
 void UFGAction::PostInitProperties(){ Super::PostInitProperties(); }

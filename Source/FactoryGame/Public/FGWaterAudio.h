@@ -12,11 +12,11 @@ struct FACTORYGAME_API FPawnImpactAudio
 
 	/** If we have at least this velocity (in Z) when entering the volume, we will post the specified event */
 	UPROPERTY( EditAnywhere, Category="Audio")
-	float MinImpactVelocity;
+	float MinImpactVelocity = 0.f;
 
 	/** Event to post if the pawn has the specified velocity */
 	UPROPERTY( EditAnywhere, Category = "Audio" )
-	class UAkAudioEvent* ImpactEvent;
+	class UAkAudioEvent* ImpactEvent = nullptr;
 };
 
 UCLASS(Abstract,Blueprintable)

@@ -2,4 +2,4 @@
 
 #include "DamageTypes/FGRadialDamageType.h"
 
-void UFGRadialDamageType::ProcessDamage(const FHitResult& hitResult, AController* instigator, AActor* damageCauser, float damageAmount, TArray<AActor*> ignoredActors){ }
+void UFGRadialDamageType::ProcessDamage(const  FHitResult& hitResult, AController* instigator, AActor* damageCauser, float damageAmount, TArray<AActor*> ignoredActors){ }

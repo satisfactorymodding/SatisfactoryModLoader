@@ -41,7 +41,7 @@ void AFGServerBeaconClient::EnumerateSaveSessions(FOnEnumerateSessionsComplete O
 void AFGServerBeaconClient::SaveGame(const FString& SaveName, FOnServerOperationCompleted OnCompletion){ }
 void AFGServerBeaconClient::DeleteSaveFile(const FSaveHeader& SaveGame, FOnDeleteSaveGameComplete CompleteDelegate, void* UserData){ }
 void AFGServerBeaconClient::DeleteSaveSession(const FSessionSaveStruct& Session, FOnDeleteSaveGameComplete CompleteDelegate, void* UserData){ }
-void AFGServerBeaconClient::LoadSaveFile_Implementation(const FSaveHeader& SaveGame){ }
+void AFGServerBeaconClient::LoadSaveFile_Implementation(const FSaveHeader& SaveGame, const TArray<FString>& OptionsKeys, const TArray<FString>& OptionsValues){ }
 void AFGServerBeaconClient::OnConnected(){ }
 void AFGServerBeaconClient::OnFailure(){ }
 void AFGServerBeaconClient::OnNetCleanup(UNetConnection* Connection){ }

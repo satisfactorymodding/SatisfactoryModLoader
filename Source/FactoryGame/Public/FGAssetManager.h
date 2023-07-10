@@ -25,6 +25,7 @@ public:
 	/** Let us exclude certain packages that we don't want to include */
 	virtual EPrimaryAssetCookRule GetPackageCookRule( FName PackageName ) const override;
 #endif
+	
 protected:
 #if WITH_EDITORONLY_DATA
 	/** Cached version of the max current tier */

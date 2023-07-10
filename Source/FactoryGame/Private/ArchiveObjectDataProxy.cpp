@@ -2,5 +2,6 @@
 
 #include "ArchiveObjectDataProxy.h"
 
-FArchiveObjectDataProxy::FArchiveObjectDataProxy(FArchive& inInnerArchive,  UWorld* world) : FArchiveProxy(inInnerArchive) { }
+FArchiveObjectDataProxy::FArchiveObjectDataProxy(FArchive& inInnerArchive,  UWorld* world, bool objectRefsNeedMigration) : FArchiveProxy(inInnerArchive) { }
 FArchive& FArchiveObjectDataProxy::operator<<( UObject*& Res){ return *(new FArchive); }
+FArchive& FArchiveObjectDataProxy::operator<<( FObjectPtr& Value){ return *(new FArchive); }

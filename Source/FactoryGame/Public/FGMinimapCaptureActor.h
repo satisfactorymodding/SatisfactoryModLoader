@@ -87,6 +87,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Minimap Height", meta = ( CallInEditor = "true" ) )
 	void ExportHeightData();
 
+	/** This function traces all over the level to find height info that can be used when we draw the minimap */
+	UFUNCTION( BlueprintCallable, Category = "Minimap Height", meta = ( CallInEditor = "true" ) )
+	void TestTrace();
+
 private:
 
 	void CalculateHeightData( FVector upperLeftWorld, const FVector xStepVect, const FVector yStepVect, const TArray< AActor* >& ignoreActors, FFGHeightData& out_terrainHeightData, FFGHeightData& out_waterHeightData, FFGHeightData& out_foliageHeightData );

@@ -7,7 +7,7 @@
 #include "FGRecipe.h"
 #include "Resources/FGItemDescriptor.h"
 #include "UObject/NoExportTypes.h"
-#include "AssetBundleData.h"
+#include "AssetRegistry/AssetBundleData.h"
 #include "IncludeInBuild.h"
 #include "FGResearchRecipe.generated.h"
 
@@ -81,7 +81,7 @@ public:
 
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 #if WITH_EDITOR
-	virtual void PreSave( const class ITargetPlatform* targetPlatform ) override;
+	virtual void PreSave( FObjectPreSaveContext saveContext ) override;
 	void UpdateAssetBundleData();
 #endif
 

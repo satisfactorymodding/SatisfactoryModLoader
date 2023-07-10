@@ -78,14 +78,23 @@ public:
 	// End IFGUseableInterface
 
 	// Begin IFGExtractableResourceInterface
+	UFUNCTION()
 	virtual void SetIsOccupied( bool occupied ) override;
+	UFUNCTION()
 	virtual bool IsOccupied() const override;
+	UFUNCTION()
 	virtual bool CanBecomeOccupied() const override;
+	UFUNCTION()
 	virtual TSubclassOf< UFGResourceDescriptor > GetResourceClass() const override;
+	UFUNCTION()
 	virtual FVector GetPlacementLocation( const FVector& hitLocation ) const override;
+	UFUNCTION()
 	virtual bool HasAnyResources() const override { return false; }
+	UFUNCTION()
 	virtual int32 ExtractResource( int32 amount ) override { return 0; }
+	UFUNCTION()
 	virtual float GetExtractionSpeedMultiplier() const override { return 0; }
+	UFUNCTION()
 	virtual bool CanPlaceResourceExtractor() const override { return false; }
 	// End IFGExtractableResourceInterface
 

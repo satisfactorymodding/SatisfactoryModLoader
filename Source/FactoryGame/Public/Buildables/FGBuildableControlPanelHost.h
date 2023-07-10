@@ -34,7 +34,7 @@ protected:
 	void ControlledBuildablesChanged();
 
 private:
-	virtual void OnCircuitsChanged() override;
+	virtual void OnCircuitsRebuilt() override;
 	
 	void SearchDownstreamCircuit();
 

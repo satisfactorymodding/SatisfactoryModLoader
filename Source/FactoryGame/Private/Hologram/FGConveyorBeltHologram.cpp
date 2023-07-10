@@ -3,11 +3,16 @@
 #include "Hologram/FGConveyorBeltHologram.h"
 
 AFGConveyorBeltHologram::AFGConveyorBeltHologram() : Super() {
-	this->mChildPoleHologram = nullptr;
-	this->mChildWallPoleHologram = nullptr;
-	this->mChildCeilingPoleHologram = nullptr;
-	this->mChildWallPoleSnapConnection = nullptr;
-	this->mChildCeilingPoleSnapConnection = nullptr;
+	this->mChildPoleHologram[0] = nullptr;
+	this->mChildPoleHologram[1] = nullptr;
+	this->mChildWallPoleHologram[0] = nullptr;
+	this->mChildWallPoleHologram[1] = nullptr;
+	this->mChildCeilingPoleHologram[0] = nullptr;
+	this->mChildCeilingPoleHologram[1] = nullptr;
+	this->mChildWallPoleSnapConnection[0] = nullptr;
+	this->mChildWallPoleSnapConnection[1] = nullptr;
+	this->mChildCeilingPoleSnapConnection[0] = nullptr;
+	this->mChildCeilingPoleSnapConnection[1] = nullptr;
 	this->mConnectionComponents[0] = nullptr;
 	this->mConnectionComponents[1] = nullptr;
 	this->mSnappedConnectionComponents[0] = nullptr;
@@ -47,14 +52,15 @@ void AFGConveyorBeltHologram::OnInvalidHitResult(){ }
 void AFGConveyorBeltHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 bool AFGConveyorBeltHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGConveyorBeltHologram::AdjustForGround(FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
-void AFGConveyorBeltHologram::PreHologramPlacement(){ }
-void AFGConveyorBeltHologram::PostHologramPlacement(){ }
+void AFGConveyorBeltHologram::PreHologramPlacement(const FHitResult& hitResult){ }
+void AFGConveyorBeltHologram::PostHologramPlacement(const FHitResult& hitResult){ }
 bool AFGConveyorBeltHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGConveyorBeltHologram::Scroll(int32 delta){ }
-void AFGConveyorBeltHologram::GetSupportedScrollModes(TArray<EHologramScrollMode>* out_modes) const{ }
 float AFGConveyorBeltHologram::GetHologramHoverHeight() const{ return float(); }
 void AFGConveyorBeltHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
 void AFGConveyorBeltHologram::CheckBlueprintCommingling(){ }
+AFGHologram* AFGConveyorBeltHologram::GetNudgeHologramTarget(){ return nullptr; }
+bool AFGConveyorBeltHologram::CanTakeNextBuildStep() const{ return bool(); }
 void AFGConveyorBeltHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGConveyorBeltHologram::ClientPreConstructMessageSerialization(){ }
 void AFGConveyorBeltHologram::ServerPostConstructMessageDeserialization(){ }

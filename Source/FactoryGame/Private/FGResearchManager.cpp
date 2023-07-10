@@ -39,6 +39,7 @@ void AFGResearchManager::GetPendingRewards(TSubclassOf<class UFGSchematic> schem
 void AFGResearchManager::UpdateUnlockedResearchTrees(){ }
 void AFGResearchManager::UnlockResearchTree(TSubclassOf<class UFGResearchTree> researchTree){ }
 bool AFGResearchManager::IsTreeFullyResearched(UObject* worldContextObject, TSubclassOf<class UFGResearchTree> reserachTree, TSubclassOf<  UFGSchematic > schematicToIgnore){ return bool(); }
+void AFGResearchManager::UnlockAllResearchTrees(){ }
 void AFGResearchManager::OnRep_OngoingResearch(){ }
 void AFGResearchManager::Multicast_ResearchCompleted_Implementation(TSubclassOf<  UFGSchematic > research){ }
 void AFGResearchManager::PopulateResearchTreeList(){ }

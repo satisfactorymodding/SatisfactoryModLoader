@@ -41,6 +41,8 @@ public:
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void Scroll( int32 delta ) override;
 	virtual void OnInvalidHitResult() override;
+	virtual AFGHologram* GetNudgeHologramTarget() override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
 	// End AFGHologram Interface
 	
 	// Begin AFGBuildableHologram Interface

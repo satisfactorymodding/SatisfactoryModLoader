@@ -55,6 +55,8 @@ protected:
 	virtual TSubclassOf< class AFGHologram > GetHologramClassInternal() const override;
 	virtual TSubclassOf< AActor > GetBuildClassInternal() const override;
 
+	FORCEINLINE virtual bool Internal_CanItemBePickedup() const override { return false; }
+
 #if WITH_EDITOR
 	/** Sets the class this building descriptor builds. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Descriptor|Building" )

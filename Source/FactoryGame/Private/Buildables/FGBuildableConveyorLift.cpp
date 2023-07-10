@@ -35,7 +35,9 @@ int32 AFGBuildableConveyorLift::GetDismantleRefundReturnsMultiplier() const{ ret
 void AFGBuildableConveyorLift::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildableConveyorLift::Dismantle_Implementation(){ }
 TArray<struct FInstanceData> AFGBuildableConveyorLift::GetActorLightweightInstanceData_Implementation(){ return TArray<struct FInstanceData>(); }
+void AFGBuildableConveyorLift::BuildStaticItemInstances(){ }
 float AFGBuildableConveyorLift::GetLastRenderTime() const{ return float(); }
+void AFGBuildableConveyorLift::SetupConnections(){ }
 void AFGBuildableConveyorLift::DestroyVisualItems(){ }
 void AFGBuildableConveyorLift::TickItemTransforms(float dt){ }
 void AFGBuildableConveyorLift::TickRadioactivity(){ }

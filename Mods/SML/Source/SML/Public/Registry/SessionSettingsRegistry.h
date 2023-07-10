@@ -15,10 +15,7 @@ struct SML_API FSMLSessionSettingInfo {
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Session Setting Info")
 	USMLSessionSetting* SessionSetting;
 
-	/** Console variable that was created as a part of this setting registration */
-	IConsoleVariable* ConsoleVariable;
-
-	FORCEINLINE FSMLSessionSettingInfo() : SessionSetting(NULL), ConsoleVariable(NULL) {
+	FORCEINLINE FSMLSessionSettingInfo() : SessionSetting(NULL) {
 	}
 };
 

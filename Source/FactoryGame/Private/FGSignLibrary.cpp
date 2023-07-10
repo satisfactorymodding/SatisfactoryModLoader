@@ -2,11 +2,6 @@
 
 #include "FGSignLibrary.h"
 
-void UFGSignLibrary::ParseStringDataIntoElement(const FString& rawString, FSignStringElement& out_Element){ }
-bool UFGSignLibrary::ParseAttributeValuePair(const FString& attr, const FString& value, FSignStringElement& out_Element){ return bool(); }
-bool UFGSignLibrary::ParseOutStringData(const TArray< FSignStringElement >& stringElements, TArray< FString >& out_ElementArray){ return bool(); }
-void UFGSignLibrary::ConvertCanvasPrefabToStringArray( UCanvasPanel* canvasRoot, TArray<FString>& out_elementStrings){ }
-void UFGSignLibrary::CombineSignTemplateAndUserElement(const FSignStringElement& templateElement, const FSignStringElement& userElement, FSignStringElement& out_combinedElement){ }
 void UFGSignLibrary::GetCanvasDimensionsFromSignDescriptor(const TSubclassOf<  UFGSignTypeDescriptor > signTypeClass, FVector2D& signDimensions){ }
 void UFGSignLibrary::GetDefaultColorsFromSignDescriptor(const TSubclassOf<  UFGSignTypeDescriptor > signTypeClass, FLinearColor& foregroundColor, FLinearColor& backgroundColor, FLinearColor& auxiliaryColor){ }
 void UFGSignLibrary::GetTextElementNameMapFromSignDescriptor(const TSubclassOf<  UFGSignTypeDescriptor > signTypeClass, TMap< FString, FString >& textElementMap){ }

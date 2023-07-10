@@ -74,8 +74,8 @@ void AFGTutorialIntroManager::CompleteTutorial(){ }
 void AFGTutorialIntroManager::IntroDone(){ }
 void AFGTutorialIntroManager::ResetHubTutorial(){ }
 void AFGTutorialIntroManager::SetCanSkipTutorialIntro(bool canSkip){ }
-void AFGTutorialIntroManager::GiveTutorialResources( AFGCharacterPlayer* inPlayer){ }
 void AFGTutorialIntroManager::OnCodexOpened(){ }
+void AFGTutorialIntroManager::SkipOnboarding(){ }
 void AFGTutorialIntroManager::BeginPlay(){ }
 void AFGTutorialIntroManager::OnBuildingBuiltGlobal( AFGBuildable* buildable){ }
 void AFGTutorialIntroManager::OnSchematicPurchased(TSubclassOf< UFGSchematic > newSchematic){ }
@@ -87,4 +87,6 @@ void AFGTutorialIntroManager::OnPlayerAddedItemToArmSlot(TSubclassOf<  UFGItemDe
 void AFGTutorialIntroManager::SetTradingpostBuilt(bool hasbuilt){ }
 void AFGTutorialIntroManager::OnIntroDone(){ }
 void AFGTutorialIntroManager::OnRep_TradingPostLevel(){ }
+void AFGTutorialIntroManager::OnRep_HasCompletedIntroTutorial(){ }
 bool AFGTutorialIntroManager::ShouldSkipOnboarding() const{ return bool(); }
+const int32 AFGTutorialIntroManager::MaxTradingPostLevel = int32();

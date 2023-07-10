@@ -186,17 +186,17 @@ public:
 	bool mCanTriggerExplodeBySameClass;
 
 	/** Time the projectile can live before actually being destroyed if not hitting anything */
-	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
+	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Projectile" )
 	float mProjectileLifespan;
 
 	/** Time the projectile sticks to target before going poof. */
-	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
+	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Projectile" )
 	float mProjectileStickspan;
 
-	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	UPROPERTY( SaveGame, EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "Projectile" )
 	FLinearColor mProjectileColor;
 
-	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	UPROPERTY( SaveGame, EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "Projectile" )
 	float mProjectileScale;
 	
 protected:
@@ -256,19 +256,19 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Damage" )
 	TArray< UFGDamageType* > mDamageTypesAtEndOfLife;
 
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	UPROPERTY( EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "Projectile" )
 	FRuntimeFloatCurve mGravityScaleOverLifespan;
 
 	UPROPERTY( EditDefaultsOnly, ReplicatedUsing = OnRep_MaxHomingAccelerationMagnitude, BlueprintReadOnly, Category = "Projectile" )
 	float mMaxHomingAccelerationMagnitude;
 	
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	UPROPERTY( EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "Projectile" )
 	FRuntimeFloatCurve mHomingStrengthOverLifespan;
 
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	UPROPERTY( EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "Projectile" )
 	FRuntimeFloatCurve mHomingStrengthOverDistanceToTarget;
 
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	UPROPERTY( EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "Projectile" )
 	float mProjectileStartingHealth;
 
 	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "Projectile" )

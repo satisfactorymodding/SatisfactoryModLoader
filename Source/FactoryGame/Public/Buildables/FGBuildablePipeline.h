@@ -74,6 +74,7 @@ public:
 	// Begin Significance
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
+	virtual float GetSignificanceRange() override;
 	// End Significance
 
 	// Begin AFGBuildablePipeBase Interface
@@ -171,8 +172,6 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Pipes|Pipeline" )
 	void GetRawValues( UPARAM( ref ) float& flowPct, UPARAM( ref ) float& contentPct ) const;
 
-	virtual void PostSerializedFromBlueprint() override;
-	
 protected:
 	/** Updates sounds depending on liquid in pipe */
 	UFUNCTION()

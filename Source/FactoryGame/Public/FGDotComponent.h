@@ -36,6 +36,9 @@ protected:
 	virtual void OnActorEndOverlap( AActor* overlappedActor, AActor* otherActor );
 
 	void RegisterDOTForActor( AActor* actor, bool shouldRegister ) const;
+
+	UFUNCTION()
+	void OnDOTReceiverCreated( class UFGDotReceiverComponent* dotReceiver );
 	
 protected:	
 	/** The dot we should apply to things in the primitive component we are attached to */

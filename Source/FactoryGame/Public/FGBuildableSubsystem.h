@@ -57,10 +57,10 @@ struct FDistanceBasedTickRate
 	GENERATED_BODY()
 
 	UPROPERTY( EditDefaultsOnly, Category = "Factory" )
-	float Distance;
+	float Distance = 0.f;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Factory" )
-	float TickRate;
+	float TickRate = 0.f;
 };
 
 USTRUCT()
@@ -76,12 +76,15 @@ struct FBuildableBucket
 };
 
 USTRUCT()
-struct FConveyorBucket
+struct FConveyorTickGroup
 {
 	GENERATED_BODY()
 
-	FConveyorBucket(){}
-
+	FConveyorTickGroup(){}
+	
+	UPROPERTY()
+	AFGBuildable* ForceIntoSharedByBuildable = nullptr; 
+	
 	UPROPERTY()
 	TArray< class AFGBuildableConveyorBase* > Conveyors;
 };
@@ -164,6 +167,9 @@ public:
 	 */
 	void OnDesignerBuildableSpawned( AFGBuildable* buildable );
 
+	/** Updates a conveyor bucket and all conveyors in it with their tick location (first, mid, last) */
+	void AssignConveyorTickOrder( int32 id );
+	
 	/** Adds a conveyor to the conveyor buckets */
 	void AddConveyor( AFGBuildableConveyorBase* conveyor );
 	
@@ -182,12 +188,13 @@ public:
 	/**
 	 *	Remove a conveyor from the bucket it's assigned to
 	 *	If it's the only conveyor in the bucket the bucket will be removed
+	 *	@return returns true if it removed the bucket
 	 */
-	void RemoveConveyorFromBucket( AFGBuildableConveyorBase* conveyorToRemove );
+	bool RemoveConveyorFromBucket( AFGBuildableConveyorBase* conveyorToRemove );
 
-	/** Rearrange the conveyor buckets after we emptied a bucket */
+	/** Rearrange the conveyor buckets after we emptied a bucket. returns true if a memory swap occurs */
 	void RearrangeConveyorBuckets( int32 emptiedBucketID );
-
+	
 	/**
 	*	Splits up a conveyor bucket into two buckets
 	*	Empties the current bucket and adds all conveyors again into two buckets
@@ -266,12 +273,7 @@ public:
 #endif
 		return TStatId(); // not doing stats at the moment, or ever
 	}
-
-	UMaterial* GetFactoryDefaultMaterial()
-	{
-		return mDefaultFactoryMaterial;
-	}
-
+	
 	/** Generates a new NetConstructionID for buildables. Can be used from client to identify buildings that were constructed from server. */
 	FNetConstructionID GetNewNetConstructionID();
 
@@ -429,7 +431,10 @@ private:
 	*	A bucket can contain a single conveyor belt, a section or a looped section
 	*	An exception exists for belts that connect to buildables with 2 outputs, those are added to a separate buckets
 	*/
-	TArray< FConveyorBucket* > mConveyorBuckets;
+	TArray< FConveyorTickGroup* > mConveyorTickGroup;
+
+	UPROPERTY()
+	TMap< AFGBuildable*, int32 > mBuildableToSharedBucketIndexMap;
 
 	/** All conveyors that are not safe to execute in parallel
 	*	At the time of writing this is used only for conveyors connecting to buildings with multiple outputs
@@ -437,7 +442,7 @@ private:
 	TArray< AFGBuildableConveyorBase* > mSerialConveyorGroup;
 
 	// Groupings of conveyor buckets
-	TArray< TArray < FConveyorBucket* > > mConveyorBucketGroups;
+	TArray< TArray < FConveyorTickGroup* > > mConveyorBucketGroups;
 
 	// Track whether or not we need to repopulate our conveyor groups
 	bool mConveyorBucketGroupsDirty;
@@ -559,10 +564,6 @@ private:
 
 	/** Array with all the buildings that should replay their effect */
 	TArray< AFGBuildable* > mReplayEffectArray;
-
-	/**used for comparing and finding materials of factory meshes*/
-	UPROPERTY( EditDefaultsOnly )
-	UMaterial* mDefaultFactoryMaterial;
 
 	/** Used to store different belt materials and their speeds so their materials can be shared */
 	UPROPERTY()

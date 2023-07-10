@@ -520,7 +520,14 @@ bool FCustomFastArraySerializer::FastArrayDeltaSerialize( TArray<Type> &Items, F
 			UE_LOG( LogNetFastTArray, Log, TEXT( "   Changed ElementID: %d" ), ID );
 
 			bool bHasUnmapped = false;
-			Parms.NetSerializeCB->NetSerializeStruct( InnerStruct, Writer, Parms.Map, ThisElement, bHasUnmapped );
+			FNetDeltaSerializeInfo deltaSerializeInfo;
+			deltaSerializeInfo.Struct = InnerStruct;
+			deltaSerializeInfo.Map = Parms.Map;
+			deltaSerializeInfo.Data = ThisElement;
+			deltaSerializeInfo.Writer = &Writer;
+
+			Parms.NetSerializeCB->NetSerializeStruct( deltaSerializeInfo );
+			bHasUnmapped = deltaSerializeInfo.bOutHasMoreUnmapped;
 		}
 	}
 	else

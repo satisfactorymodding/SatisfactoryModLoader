@@ -11,7 +11,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS( Blueprintable, abstract )
 class FACTORYGAME_API UFGConsumablesConsumedDependency : public UFGAvailabilityDependency
 {
 	GENERATED_BODY()

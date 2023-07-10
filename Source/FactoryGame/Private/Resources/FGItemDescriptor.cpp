@@ -4,6 +4,93 @@
 #include "FGCategory.h"
 #include "FGItemCategory.h"
 
+EResourceForm UFGItemDescriptor::GetForm(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mForm;
+	else
+		return EResourceForm();
+}
+float UFGItemDescriptor::GetEnergyValue(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mEnergyValue;
+	else
+		return float();
+}
+float UFGItemDescriptor::GetRadioactiveDecay(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mRadioactiveDecay;
+	else
+		return float();
+}
+FText UFGItemDescriptor::GetItemName(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (!inClass)
+		return FText();
+	if (inClass.GetDefaultObject()->mUseDisplayNameAndDescription)
+		return inClass.GetDefaultObject()->mDisplayName;
+	else
+		return FText::FromString(inClass->GetName());
+}
+FText UFGItemDescriptor::GetItemDescription(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mDescription;
+	else
+		return FText();
+}
+UTexture2D* UFGItemDescriptor::GetSmallIcon(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mSmallIcon;
+	else
+		return nullptr;
+}
+UTexture2D* UFGItemDescriptor::GetBigIcon(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mPersistentBigIcon;
+	else
+		return nullptr;
+}
+UStaticMesh* UFGItemDescriptor::GetItemMesh(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mConveyorMesh;
+	else
+		return nullptr;
+}
+int32 UFGItemDescriptor::GetStackSize(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return static_cast<int32>(inClass.GetDefaultObject()->mStackSize);
+	else
+		return int32();
+}
+bool UFGItemDescriptor::CanBeDiscarded(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mCanBeDiscarded;
+	else
+		return bool();
+}
+bool UFGItemDescriptor::RememberPickUp(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mRememberPickUp;
+	else
+		return bool();
+}
+TSubclassOf<class UFGCategory> UFGItemDescriptor::GetCategory(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mCategory;
+	else
+		return TSubclassOf<UFGCategory>();
+}
+FColor UFGItemDescriptor::GetFluidColor(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mFluidColor;
+	else
+		return FColor();
+}
+FLinearColor UFGItemDescriptor::GetFluidColorLinear(TSubclassOf<UFGItemDescriptor> inClass) {
+	if (inClass)
+		return inClass.GetDefaultObject()->mFluidColor.ReinterpretAsLinear();
+	else
+		return FLinearColor();
+}
+
 #if WITH_EDITOR
 void UFGItemDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 #endif 
@@ -23,6 +110,7 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 	this->mSmallIcon = nullptr;
 	this->mPersistentBigIcon = nullptr;
 	this->mCrosshairMaterial = nullptr;
+	this->mInventorySettingsWidget = nullptr;
 	this->mConveyorMesh = nullptr;
 	this->mCategory = nullptr;
 	this->mQuickSwitchGroup = nullptr;
@@ -40,103 +128,15 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 }
 void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGItemDescriptor::PostLoad(){ Super::PostLoad(); }
-EResourceForm UFGItemDescriptor::GetForm(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mForm;
-	else
-		return EResourceForm();
-}
-float UFGItemDescriptor::GetEnergyValue(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mEnergyValue;
-	else
-		return float();
-}
-float UFGItemDescriptor::GetRadioactiveDecay(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mRadioactiveDecay;
-	else
-		return float();
-}
-FText UFGItemDescriptor::GetItemName(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (!inClass)
-		return FText();
-	if (inClass.GetDefaultObject()->mUseDisplayNameAndDescription)
-		return inClass.GetDefaultObject()->mDisplayName;
-	else
-		return FText::FromString(inClass->GetName());
-}
-FText UFGItemDescriptor::GetItemDescription(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mDescription;
-	else
-		return FText();
-}
 FText UFGItemDescriptor::GetAbbreviatedDisplayName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
-UTexture2D* UFGItemDescriptor::GetSmallIcon(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mSmallIcon;
-	else
-		return nullptr;
-}
-UTexture2D* UFGItemDescriptor::GetBigIcon(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mPersistentBigIcon;
-	else
-		return nullptr;
-}
 UMaterialInterface* UFGItemDescriptor::GetCrosshairMaterial(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
 void UFGItemDescriptor::GetDescriptorStatBars(TSubclassOf< UFGItemDescriptor > inClass, TArray<FDescriptorStatBar>& out_DescriptorStatBars){ }
-UStaticMesh* UFGItemDescriptor::GetItemMesh(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mConveyorMesh;
-	else
-		return nullptr;
-}
-int32 UFGItemDescriptor::GetStackSize(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return static_cast<int32>(inClass.GetDefaultObject()->mStackSize);
-	else
-		return int32();
-}
+void UFGItemDescriptor::GetInventorySettingsWidget(TSubclassOf< UFGItemDescriptor > inClass, TSubclassOf<class UFGInventorySettingsWidget>& out_InventorySettingsWidget){ }
 float UFGItemDescriptor::GetStackSizeConverted(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
-bool UFGItemDescriptor::CanBeDiscarded(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mCanBeDiscarded;
-	else
-		return bool();
-}
-bool UFGItemDescriptor::RememberPickUp(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mRememberPickUp;
-	else
-		return bool();
-}
-TSubclassOf< class UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< UFGItemDescriptor > inClass) {
-	return TSubclassOf< UFGItemCategory >(UFGItemDescriptor::GetCategory(inClass));
-}
-TSubclassOf< class UFGCategory > UFGItemDescriptor::GetCategory(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mCategory;
-	else
-		return TSubclassOf< UFGCategory >();
-}
 void UFGItemDescriptor::GetSubCategories(TSubclassOf< UFGItemDescriptor > inClass, TArray< TSubclassOf<  UFGCategory > >& out_subCategories){ }
 TArray< TSubclassOf< class UFGCategory > > UFGItemDescriptor::GetSubCategoriesOfClass(TSubclassOf< UFGItemDescriptor > inClass, TSubclassOf<  UFGCategory > outputCategoryClass){ return TArray<TSubclassOf<class UFGCategory> >(); }
 TSubclassOf< class UFGQuickSwitchGroup > UFGItemDescriptor::GetQuickSwitchGroup(TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<class UFGQuickSwitchGroup>(); }
 float UFGItemDescriptor::GetMenuPriority(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
-FColor UFGItemDescriptor::GetFluidColor(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mFluidColor;
-	else
-		return FColor();
-}
-FLinearColor UFGItemDescriptor::GetFluidColorLinear(TSubclassOf< UFGItemDescriptor > inClass) {
-	if (inClass)
-		return inClass.GetDefaultObject()->mFluidColor.ReinterpretAsLinear();
-	else
-		return FLinearColor();
-}
 FColor UFGItemDescriptor::GetGasColor(TSubclassOf< UFGItemDescriptor > inClass){ return FColor(); }
 FLinearColor UFGItemDescriptor::GetGasColorLinear(TSubclassOf< UFGItemDescriptor > inClass){ return FLinearColor(); }
 TArray< FCompatibleItemDescriptors > UFGItemDescriptor::GetCompatibleItemDescriptors(TSubclassOf< UFGItemDescriptor > inClass){ return TArray<FCompatibleItemDescriptors>(); }
@@ -146,6 +146,8 @@ EScannableActorType UFGItemDescriptor::GetScannableActorType(TSubclassOf< UFGIte
 TSubclassOf<UFGSchematic> UFGItemDescriptor::GetRequiredSchematicToScan(TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<UFGSchematic>(); }
 FText UFGItemDescriptor::GetScannerDisplayText(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 FColor UFGItemDescriptor::GetScannerLightColor(TSubclassOf< UFGItemDescriptor > inClass){ return FColor(); }
+bool UFGItemDescriptor::CanItemBePickedup(TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
+bool UFGItemDescriptor::CanItemBePickedup(UFGItemDescriptor* inClass){ return bool(); }
 FText UFGItemDescriptor::GetItemNameInternal() const{ return FText(); }
 FString UFGItemDescriptor::GetItemNameInternalAsString() const{ return FString(); }
 FText UFGItemDescriptor::GetItemDescriptionInternal() const{ return FText(); }

@@ -34,87 +34,87 @@ public:
 
 	// Latest RTT
 	UPROPERTY( BlueprintReadOnly )
-	float LatestRoundTripTime;
+	float LatestRoundTripTime = 0.f;
 
 	// Latest incoming item amount
 	UPROPERTY( BlueprintReadOnly )
-	int32 LatestIncomingItemAmount;
+	int32 LatestIncomingItemAmount = 0;
 
 	// Latest outgoing item amount
 	UPROPERTY( BlueprintReadOnly )
-	int32 LatestOutgoingItemAmount;
+	int32 LatestOutgoingItemAmount = 0;
 
 	// Latest incoming item stacks
 	UPROPERTY( BlueprintReadOnly )
-	float LatestIncomingItemStacks;
+	float LatestIncomingItemStacks = 0.f;
 
 	// Latest outgoing item stacks
 	UPROPERTY( BlueprintReadOnly )
-	float LatestOutgoingItemStacks;
+	float LatestOutgoingItemStacks = 0.f;
 
 	// Latest incoming item stack rate
 	UPROPERTY( BlueprintReadOnly )
-	float LatestIncomingItemStackRate;
+	float LatestIncomingItemStackRate = 0.f;
 
 	// Latest outgoing item stack rate
 	UPROPERTY( BlueprintReadOnly )
-	float LatestOutgoingItemStackRate;
+	float LatestOutgoingItemStackRate = 0.f;
 
 	// Average RTT
 	UPROPERTY( BlueprintReadOnly )
-	float AverageRoundTripTime;
+	float AverageRoundTripTime = 0.f;
 
 	// Average incoming item amount
 	UPROPERTY( BlueprintReadOnly )
-	float AverageIncomingItemAmount;
+	float AverageIncomingItemAmount = 0.f;
 
 	// Average outgoing item amount
 	UPROPERTY( BlueprintReadOnly )
-	float AverageOutgoingItemAmount;
+	float AverageOutgoingItemAmount = 0.f;
 
 	// Average incoming item stacks
 	UPROPERTY( BlueprintReadOnly )
-	float AverageIncomingItemStacks;
+	float AverageIncomingItemStacks = 0.f;
 
 	// Average outgoing item stacks
 	UPROPERTY( BlueprintReadOnly )
-	float AverageOutgoingItemStacks;
+	float AverageOutgoingItemStacks = 0.f;
 
 	// Average incoming item rate
 	UPROPERTY( BlueprintReadOnly )
-	float AverageIncomingItemRate;
+	float AverageIncomingItemRate = 0.f;
 
 	// Average outgoing item rate
 	UPROPERTY( BlueprintReadOnly )
-	float AverageOutgoingItemRate;
+	float AverageOutgoingItemRate = 0.f;
 
 	// Average incoming item stack rate
 	UPROPERTY( BlueprintReadOnly )
-	float AverageIncomingItemStackRate;
+	float AverageIncomingItemStackRate = 0.f;
 
 	// Average outgoing item stack rate
 	UPROPERTY( BlueprintReadOnly )
-	float AverageOutgoingItemStackRate;
+	float AverageOutgoingItemStackRate = 0.f;
 
 	// Median RTT
 	UPROPERTY( BlueprintReadOnly )
-	float MedianRoundTripTime;
+	float MedianRoundTripTime = 0.f;
 
 	// Median incoming item amount
 	UPROPERTY( BlueprintReadOnly )
-	float MedianIncomingItemAmount;
+	float MedianIncomingItemAmount = 0.f;
 
 	// Median outgoing item amount
 	UPROPERTY( BlueprintReadOnly )
-	float MedianOutgoingItemAmount;
+	float MedianOutgoingItemAmount = 0.f;
 
 	// Median incoming item stacks
 	UPROPERTY( BlueprintReadOnly )
-	float MedianIncomingItemStacks;
+	float MedianIncomingItemStacks = 0.f;
 
 	// Median outgoing item stacks
 	UPROPERTY( BlueprintReadOnly )
-	float MedianOutgoingItemStacks;
+	float MedianOutgoingItemStacks = 0.f;
 };
 
 /**

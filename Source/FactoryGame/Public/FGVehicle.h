@@ -191,7 +191,7 @@ public:
 
 	//~ Begin IFGDismantleInterface
 	virtual bool CanDismantle_Implementation() const override;
-	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund ) const override;
+	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
 	virtual FVector GetRefundSpawnLocationAndArea_Implementation( const FVector& aimHitLocation, float& out_radius ) const override;
 	virtual void PreUpgrade_Implementation() override;
 	virtual void Upgrade_Implementation( AActor* newActor ) override;
@@ -211,8 +211,11 @@ public:
 
 	/** Called in Construct from the hologram. */
 	void SetBuiltWithRecipe( TSubclassOf< class UFGRecipe > recipe ) { mBuiltWithRecipe = recipe; }
+	
 	/** Getter for the built with recipe. */
 	FORCEINLINE TSubclassOf< class UFGRecipe > GetBuiltWithRecipe() const { return mBuiltWithRecipe; }
+	TSubclassOf< class UFGItemDescriptor > GetBuiltWithDescriptor() const;
+	template< class C > TSubclassOf< C > GetBuiltWithDescriptor() const { return *GetBuiltWithDescriptor(); }
 
 	/** Can this vehicle be sampled for the build gun */
 	virtual bool CanBeSampled();
@@ -307,7 +310,7 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Buildable|Customization" )
 	void OnSkinCustomizationApplied( TSubclassOf< class UFGFactoryCustomizationDescriptor_Skin > skin );
 
-	virtual FVector GetRealActorLocation() const;
+	virtual FVector GetVehicleRealActorLocation() const;
 
 protected:
 	/** Called when customization data is applied. Allows child vehicles to update their simulated vehicles to keep colors synced */
@@ -319,9 +322,6 @@ private:
 	void OnRep_IsSimulated();
 
 protected:
-	DECLARE_EVENT( AFGWheeledVechicle, FIsSimulatedChanged );
-	FIsSimulatedChanged IsSimulatedChangedEvent;
-
 	/** Updates the vehicles settings depending on if it should be simulated or "real" */
 	virtual void OnIsSimulatedChanged() {}
 
@@ -353,7 +353,9 @@ protected:
 	void UpdateSubmergedInWater( float deltaTime );
 	/** Our status of being submerged in water has updated */
 	void SubmergedInWaterUpdated( bool newIsSubmerged );
+	
 	/** Returns true if we are submerged in water */
+	UFUNCTION( BlueprintPure )
 	bool IsSubmergedInWater() const;
 
 	/** How much do we get back when selling this vehicle. Not consolidated. */
@@ -403,7 +405,7 @@ public:
 	/** Hologram to build this class with. */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	TSubclassOf< class AFGHologram > mHologramClass;
-
+	
 protected:
 	/** The main skeletal mesh associated with this Vehicle */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Vehicle", meta = ( AllowPrivateAccess = "true" ) )
@@ -440,7 +442,13 @@ protected:
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Vehicle" )
 	TSubclassOf< class UFGSwatchGroup > mSwatchGroup;
+	
+	UPROPERTY( BlueprintReadWrite )
+	USkeletalMeshComponent* mOptionalWorkBenchComponent = nullptr;
 
+	UPROPERTY( BlueprintReadWrite )
+	UBoxComponent* mOptionalWorkBenchBox = nullptr;
+	
 private:
 	/** Recipe this vehicle was built with, e.g. used for refunds and stats. */
 	UPROPERTY( SaveGame, Replicated )
@@ -476,6 +484,9 @@ private:
 	UPROPERTY( Replicated )
 	uint8 mIsSubmergedInWater:1;
 
+	/** Amount of time in seconds that have passed since this vehicle has been last submerged */
+	float timeBeforeCanStopBeingSubmerged = 0.0f;
+
 	/** base damping forces to revert to in case a vehicle is no longer submerged */
 	float mBaseAngularDamping;
 	float mBaseLinearDamping;
@@ -486,9 +497,6 @@ private:
 	/** increased linear damping when vehicle is under water */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	float mSubmergedLinearDamping;
-	/** upwards force applied to vehicles when underwater */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	float mSubmergedBouyantForce;
 
 	/** Damage types that should be redirected to the driver. Damages here act as damage multipliers (i.e setting it to gas damage with 0.5 damage will x0.5 the incoming damages */
 	UPROPERTY( EditDefaultsOnly, Category= "Vehicle" )
@@ -523,7 +531,7 @@ protected:
 	/** Range after we disable simulation (remove collision) */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	float mSimulationDistance;
-
+	
 public:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTexture;

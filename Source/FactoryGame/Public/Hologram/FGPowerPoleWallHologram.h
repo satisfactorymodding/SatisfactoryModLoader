@@ -4,14 +4,14 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGPowerPoleHologram.h"
+#include "Hologram/FGWallAttachmentHologram.h"
 #include "FGPowerPoleWallHologram.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FACTORYGAME_API AFGPowerPoleWallHologram : public AFGPowerPoleHologram
+class FACTORYGAME_API AFGPowerPoleWallHologram : public AFGWallAttachmentHologram
 {
 	GENERATED_BODY()
 public:
@@ -22,36 +22,26 @@ public:
 	// End AActor interface
 	
 	// Begin AFGHologram interface
-	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
-	virtual void CheckValidFloor() override;
-	virtual void CheckClearance( const FVector& locationOffset ) override;
+	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
+	virtual bool IsValidHitResult(const FHitResult& hitResult) const override;
+	virtual bool TryUpgrade(const FHitResult& hitResult) override;
+	virtual AActor* GetUpgradedActor() const override;
 	// End AFGHologram interface
 
+	/** Get the connections the wires snap to. */
+	FORCEINLINE UFGCircuitConnectionComponent* GetSnapConnection() const { return mSnapConnection; }
+
+protected:
+	UPROPERTY()
+	class UStaticMeshComponent* mPowerConnectionMesh;
+
 private:
-	/** Are you allowed to rotate this attachment on the walls surface. */
-	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
-	bool mIsRotationAllowed;
+	/** The connection wires snap to, used when placing a pole automatically. */
+	UPROPERTY()
+	class UFGCircuitConnectionComponent* mSnapConnection;
 
-	/** Whether or not it is possible to snap to the ceiling. */
-	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
-	bool mCanSnapToFoundationCeiling;
-
-	/** Whether or not it is possible to snap to the side of foundations. */
-	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
-	bool mCanSnapToFoundationSide;
-
-	/** Whether or not it is possible to snap to beams. */
-	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
-	bool mCanSnapToBeams;
-
-	/** Snapping offset of this attachment on the walls surface. */
-	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
-	FVector2D mSnapOffset;
-
-	/** Distance to inset the hologram when attaching to a foundation. */
-	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
-	float mFoundationSnappingInset;
-
-	/** Whether or not we are currently snapping to a ceiling, used to move the power connection mesh so it doesn't clip with the ceiling. */
-	bool mIsOnCeiling;
+	/** Power pole we are upgrading */
+	UPROPERTY()
+	class AFGBuildablePowerPole* mUpgradeTarget;
 };

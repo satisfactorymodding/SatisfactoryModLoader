@@ -1,5 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
-
+// Copyright Ben de Hullu. All Rights Reserved.
 
 #include "InstanceData.h"
 #include "Engine/InstancedStaticMesh.h"
@@ -16,17 +15,16 @@ UStaticMeshComponent* FInstanceData::CreateStaticMeshComponent( UObject* Outer )
 	return OutComponent;
 }
 
-static FVector SmallScale = FVector(KINDA_SMALL_NUMBER);
 
 void FInstanceHandle::HideInstance(bool bMarkRenderStateDirty )
 {
 	if ( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
 		FTransform T;
-		Hism->GetInstanceTransform(HandleID, T);
+		Hism->GetInstanceTransform(HandleID, T, false);
 		Scale = T.GetScale3D();
-		T.SetScale3D(SmallScale);
-		
+		T.SetScale3D(FVector(0.001));
+
 		Hism->UpdateInstanceTransform( HandleID, T,false, bMarkRenderStateDirty,false );
 	}
 }
@@ -36,8 +34,8 @@ void FInstanceHandle::HideInstance(UHierarchicalInstancedStaticMeshComponent* Hi
 	FTransform T;
 	Hism->GetInstanceTransform(HandleID, T);
 	Scale = T.GetScale3D();
-	T.SetScale3D(SmallScale);
-		
+	T.SetScale3D(FVector(0.001));
+
 	Hism->UpdateInstanceTransform( HandleID, T,false, bMarkRenderStateDirty,false );
 }
 
@@ -50,7 +48,6 @@ void FInstanceHandle::UnHideInstance( bool bMarkRenderStateDirty )
 		T.SetScale3D(Scale);
 		
 		Hism->UpdateInstanceTransform(HandleID, T, false, bMarkRenderStateDirty, false);
-		Hism->MarkRenderTransformDirty();
 	}
 }
 
@@ -58,12 +55,12 @@ void FInstanceHandle::UpdateTransform( const FTransform& T ) const
 {
 	if( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
-		Hism->UpdateInstanceTransform( HandleID,T,true,true,false );
+		Hism->UpdateInstanceTransform( HandleID,T,false,true,false );
 		Scale = T.GetScale3D();
 		
 		if(UInstancedStaticMeshComponent* CollisionComp = GetCollisionInstanceComponent())
 		{
-			CollisionComp->UpdateInstanceTransform( HandleID, T, true, false );
+			CollisionComp->UpdateInstanceTransform( CollisionHandleID, T, false, false );
 		}
 	}
 }
@@ -80,7 +77,7 @@ void FInstanceHandle::UpdateScale( const FVector& NewScale ) const
 		
 		if(UInstancedStaticMeshComponent* CollisionComp = GetCollisionInstanceComponent())
 		{
-			CollisionComp->UpdateInstanceTransform( HandleID, T, true, false );
+			CollisionComp->UpdateInstanceTransform( CollisionHandleID, T, false, true );
 		}
 	}
 }

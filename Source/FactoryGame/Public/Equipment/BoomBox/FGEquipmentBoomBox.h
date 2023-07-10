@@ -28,6 +28,12 @@ protected:
 
 	UFUNCTION( BlueprintImplementableEvent )
 	void PlayEquipEffects();
+
+	UFUNCTION( BlueprintImplementableEvent )
+	void OnBeginTurbobassSequence();
+
+	UFUNCTION( BlueprintImplementableEvent )
+	void OnMenuOpen();
 	
 	virtual void WasEquipped_Implementation() override;
 	virtual void WasUnEquipped_Implementation() override;
@@ -44,6 +50,15 @@ protected:
 		
 	UPROPERTY( BlueprintReadOnly, ReplicatedUsing=OnRep_BoomBoxPlayer, SaveGame )
 	class AFGBoomBoxPlayer* mBoomBoxPlayer = nullptr;
+
+	virtual void AddEquipmentActionBindings() override;
+
+	/** Input Actions */
+	void Input_PlayPause( const FInputActionValue& actionValue );
+	void Input_Turbobass( const FInputActionValue& actionValue );
+	void Input_ToggleMenu( const FInputActionValue& actionValue );
+	void Input_PutDown( const FInputActionValue& actionValue );
+
 private:
 	friend class AFGBoomBoxPlayer;
 

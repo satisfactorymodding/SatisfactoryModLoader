@@ -38,8 +38,8 @@ UFGAmmoType::UFGAmmoType() : Super() {
 	this->mAmmoTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->mAmmoTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->mAmmoTickFunction.bTickEvenWhenPaused = false;
-	this->mAmmoTickFunction.bCanEverTick = true;
-	this->mAmmoTickFunction.bStartWithTickEnabled = true;
+	this->mAmmoTickFunction.bCanEverTick = false;
+	this->mAmmoTickFunction.bStartWithTickEnabled = false;
 	this->mAmmoTickFunction.bAllowTickOnDedicatedServer = true;
 	this->mAmmoTickFunction.TickInterval = 0.0;
 }

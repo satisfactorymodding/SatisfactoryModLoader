@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Resources/FGEquipmentDescriptor.h"
+#include "Equipment/FGEquipment.h"
 #include "FGDecorationDescriptor.generated.h"
 
 /**
@@ -39,6 +40,9 @@ public:
 	/**  @return Scale of ground mesh actor */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static FVector GetGroundMeshScale( TSubclassOf< UFGItemDescriptor > inClass );
+
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Descriptor|Item" )
+	static TArray< UMaterialInstance* > GetFirstPersonMaterialInstances(TSubclassOf< UFGItemDescriptor > inClass);
 protected:
 	/** The static mesh we want for representing the decoration when placed on ground. */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
@@ -55,6 +59,10 @@ protected:
 	/** The static mesh we want for representing the decoration when equipped in 3p. */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	class UStaticMesh* mMesh3p;
+
+	/** Override Materials when equipped 1st person. Index order must match to that of the static mesh */
+	UPROPERTY( EditDefaultsOnly, Category = "Item" )
+	TArray< UMaterialInstance* > mFirstPersonMaterials;
 
 	/** The actor to spawn on primary fire press if we want one, can be null */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )

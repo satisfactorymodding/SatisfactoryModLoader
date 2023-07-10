@@ -7,6 +7,7 @@ void AFGHUDBase::ToggleDebugOverlayWidget(UWorld* world, EDebugOverlayType type)
 void AFGHUDBase::ToggleDebugOverlay(){ }
 void AFGHUDBase::ToggleStoryDebugOverlay(){ }
 void AFGHUDBase::ToggleOptionsDebugOverlay(){ }
+void AFGHUDBase::ToggleAdvancedGameSettingsDebugOverlay(){ }
 void AFGHUDBase::ToggleStatisticsDebugOverlay(){ }
 void AFGHUDBase::ToggleShoppingListDebugOverlay(){ }
 void AFGHUDBase::QuickSwitchLanguage(){ }

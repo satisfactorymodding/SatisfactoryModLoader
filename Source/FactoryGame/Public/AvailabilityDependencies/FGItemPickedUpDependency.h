@@ -22,6 +22,10 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Dependency" )
 	void GetItems( TArray< TSubclassOf< class UFGItemDescriptor > >& out_items ) const;
 
+#if WITH_EDITOR
+	void Init( TArray< TSubclassOf< class UFGItemDescriptor > > items, bool requireAllItemsToBePickedUp );
+#endif
+
 protected:
 	/** The items that should have been picked up for this dependency to be met */
 	UPROPERTY( EditDefaultsOnly )

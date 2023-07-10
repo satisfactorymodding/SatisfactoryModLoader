@@ -4,14 +4,15 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "InputActionValue.h"
+#include "UI/FGInteractWidget.h"
 #include "FGPhotoModeWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FACTORYGAME_API UFGPhotoModeWidget : public UUserWidget
+class FACTORYGAME_API UFGPhotoModeWidget : public UFGInteractWidget
 {
 	GENERATED_BODY()
 
@@ -39,8 +40,10 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Photo Mode")
 	void TakePhoto();
 
-private:
-	void ListenForInputActionHelper( FInputChord inputkeyChord, bool consume, FOnInputAction pressedCallback, FOnInputAction releasedCallback, FOnInputAction doubleClickCallback );
-	UFUNCTION()
-	void DiscardInput(){};
+	/** Input Actions */
+	void Input_ToggleAdvancedPhotoMode( const FInputActionValue& actionValue );
+	void Input_TogglePhotoModeDebug( const FInputActionValue& actionValue );
+	void Input_ToggleSequencer( const FInputActionValue& actionValue );
+	void Input_ToggleMouseControl( const FInputActionValue& actionValue );
+	void Input_TakePhoto( const FInputActionValue& actionValue );
 };

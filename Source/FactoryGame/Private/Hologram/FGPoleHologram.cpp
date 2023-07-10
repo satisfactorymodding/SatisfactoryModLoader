@@ -29,9 +29,10 @@ bool AFGPoleHologram::IsValidHitResult(const FHitResult& hitResult) const{ retur
 bool AFGPoleHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPoleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 AActor* AFGPoleHologram::Construct(TArray<AActor*>& out_children, FNetConstructionID constructionID){ return nullptr; }
-void AFGPoleHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes) const{ }
-void AFGPoleHologram::OnBuildModeChanged(){ }
+void AFGPoleHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
+void AFGPoleHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ }
 int32 AFGPoleHologram::GetBaseCostMultiplier() const{ return int32(); }
+bool AFGPoleHologram::CanNudgeHologram() const{ return bool(); }
 void AFGPoleHologram::ResetBuildSteps(){ }
 void AFGPoleHologram::SetPoleHeight(float height){ }
 void AFGPoleHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }

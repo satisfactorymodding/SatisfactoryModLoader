@@ -48,7 +48,7 @@ public:
 	virtual bool IsSaveManagerAvailable() override;
 	virtual void DeleteSaveFile(const FSaveHeader& SaveGame, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate) override;
 	virtual void DeleteSaveSession(const FSessionSaveStruct& Session, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate) override;
-	virtual void LoadSaveFile(const FSaveHeader& SaveGame,  class APlayerController* Player) override;
+	virtual void LoadSaveFile(const FSaveHeader& SaveGame, TMap<FString, FString> Options, class APlayerController* Player) override;
 	virtual void SaveGame(const FString& SaveName, FOnSaveMgrInterfaceSaveGameComplete CompleteDelegate) override;
 	virtual void UploadSave(const FSaveHeader& Save, FOnSaveManagerTransferCompleted CompleteDelegate, FOnSaveManagerTransferProgress ProgressDelegate) override;
 	virtual bool IsTransferInProgress() override;

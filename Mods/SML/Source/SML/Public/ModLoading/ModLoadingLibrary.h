@@ -32,8 +32,8 @@ struct SML_API FModInfo {
     FString FriendlyName;
     
     /**
-     * Version of the as it is declared in it's manifest
-     * If the mod does not declare SML metadata, it's
+     * Version of the as it is declared in its manifest
+     * If the mod does not declare SML metadata, its
      * semantic version is deduced from UE plugin version by using it as major
      */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -102,7 +102,7 @@ public:
     UFUNCTION(BlueprintPure, Category = "SML|Mod Loading", meta = (BlueprintThreadSafe))
     TArray<FModInfo> GetLoadedMods();
 
-    /** Retrieves information about one particular mod by it's codename */
+    /** Retrieves information about one particular mod by its codename */
     UFUNCTION(BlueprintPure, Category = "SML|Mod Loading", meta = (BlueprintThreadSafe))
     bool GetLoadedModInfo(const FString& Name, FModInfo& OutModInfo);
 

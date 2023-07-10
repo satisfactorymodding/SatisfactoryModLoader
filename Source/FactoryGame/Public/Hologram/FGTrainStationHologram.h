@@ -24,7 +24,7 @@ public:
 
 protected:
 	// Begin AFGHologram interface
-	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
+	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	// End AFGHologram interface
 };

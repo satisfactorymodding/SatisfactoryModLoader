@@ -58,11 +58,19 @@ AFGProjectile::AFGProjectile() : Super() {
 void AFGProjectile::Tick(float DeltaSeconds){ }
 void AFGProjectile::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGProjectile, mProjectileLifespan);
+	DOREPLIFETIME(AFGProjectile, mProjectileStickspan);
+	DOREPLIFETIME(AFGProjectile, mProjectileColor);
+	DOREPLIFETIME(AFGProjectile, mProjectileScale);
 	DOREPLIFETIME(AFGProjectile, mTargetActor);
 	DOREPLIFETIME(AFGProjectile, mTargetLocation);
 	DOREPLIFETIME(AFGProjectile, mIsHomingProjectile);
 	DOREPLIFETIME(AFGProjectile, mSourceAmmoDescriptor);
+	DOREPLIFETIME(AFGProjectile, mGravityScaleOverLifespan);
 	DOREPLIFETIME(AFGProjectile, mMaxHomingAccelerationMagnitude);
+	DOREPLIFETIME(AFGProjectile, mHomingStrengthOverLifespan);
+	DOREPLIFETIME(AFGProjectile, mHomingStrengthOverDistanceToTarget);
+	DOREPLIFETIME(AFGProjectile, mProjectileStartingHealth);
 	DOREPLIFETIME(AFGProjectile, mHasExploded);
 	DOREPLIFETIME(AFGProjectile, mInitialVelocity);
 }

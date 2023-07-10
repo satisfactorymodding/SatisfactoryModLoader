@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "Creature/FGCreature.h"
+#include "FGInventoryComponent.h"
 #include "FGSaveInterface.h"
 #include "FGCreatureSpawner.generated.h"
 
@@ -75,8 +76,24 @@ public:
 	// End IFSaveInterface
 
 	/** Get the creature that we will spawn */
-	UFUNCTION( BlueprintNativeEvent, Category = "Spawner ")
+	UFUNCTION( BlueprintPure, Category = "Spawner" )
 	TSubclassOf< class AFGCreature > GetCreatureToSpawn() const;
+
+	/** Gets the default creature class*/
+	UFUNCTION( BlueprintPure, Category = "Spawner" )
+	FORCEINLINE TSubclassOf< class AFGCreature > GetCreatureClass() const { return mCreatureClass; }
+
+	/** Gets the arachnid override creature class*/
+	UFUNCTION( BlueprintPure, Category = "Spawner" )
+	FORCEINLINE TSubclassOf< class AFGCreature > GetCreatureClassArachnidOverride() const { return mCreatureClassArachnidOverride; }
+
+	/** Gets the creatures that belong to this spawner. */
+	UFUNCTION( BlueprintPure, Category = "Spawner" )
+	TArray< AFGCreature* > GetCreatures() const;
+
+	/** Appends the creatures of this spawner to the specified array*/
+	UFUNCTION( BlueprintCallable, Category = "Spawner" )
+	TArray< AFGCreature* > AppendCreatures( TArray< AFGCreature* >& out_creatures );
 
 	FORCEINLINE float GetSpawnDistanceOverride() const { return mSpawnDistanceOverride; }
 	FORCEINLINE float GetDespawnDistanceOverride() const { return mDespawnDistanceOverride; }
@@ -102,12 +119,19 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Spawning" )
 	int32 GetNumUnspawnedCreatures() const;
 
+	/** Gets the total amount of creatures this spawner can spawn. */
+	UFUNCTION( BlueprintPure, Category = "Spawning" )
+	int32 GetTotalNumCreatures() const;
+
 	/** Whether or not this spawner is ready to spawn creatures. */
 	UFUNCTION( BlueprintPure, Category = "Spawning" )
 	bool IsReadyToSpawn();
 
 	/**  Server only - Handles logic for creating creatures when the spawners becomes active */
 	void SpawnCreatures();
+
+	/** Server only - Finishes creature spawning and sets spawner as inactive. */
+	void StopSpawning();
 
 	/**  Server only - Handles logic for actually spawning a single creature */
 	void SpawnSingleCreature();
@@ -129,7 +153,7 @@ public:
 	virtual void CreatureDied( AActor* thisActor );
 
 	/** Populates the spawndata array. */
-	void PopulateSpawnData();
+	bool PopulateSpawnData();
 
 	/** The distance at which this spawner will activate */
 	UFUNCTION( BlueprintPure, Category = "Spawning" )
@@ -152,9 +176,6 @@ public:
 #if !UE_BUILD_SHIPPING
 	void DrawDebugInformation( float duration );
 #endif
-	
-protected:
-	virtual void OnSpawningFinished();
 
 	/** Used to register the spawner as a navigation invoker to generate navmesh around it for the creature. */
 	void RegisterAsNavigationInvoker( bool shouldRegister );
@@ -173,6 +194,10 @@ protected:
 	/** The creature we should spawn */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Spawning" )
 	TSubclassOf< class AFGCreature > mCreatureClass;
+
+	/** The creature to spawn in case arachnid creatures are disabled, and our normal creature is considered arachnid */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Spawning" )
+	TSubclassOf< class AFGCreature > mCreatureClassArachnidOverride;
 
 	/** The number of enemies to spawn, used offline */
 	UPROPERTY( EditAnywhere, Category = "Spawning" )
@@ -201,6 +226,10 @@ protected:
 	/** Path splines that enemies in this spawner should set to follow */
 	UPROPERTY( EditAnywhere, Category = "Spawning" )
 	TArray< class AFGSplinePath* > mSplines;
+
+	/** For creatures with attached items, the item we attach to the creature will get chosen from this list at random. */
+	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	TArray< FInventoryStack > mAttachedItemLootTable;
 
 	/** cached value to see if spawner is near a base */
 	UPROPERTY( SaveGame )

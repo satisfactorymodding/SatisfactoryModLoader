@@ -76,7 +76,7 @@ void UConfigPropertyArray::Deserialize_Implementation(const URawFormatValue* Val
     if (SerializedArray != NULL) {
         //Empty array but reserve enough Slack space to keep all elements we are going to add
         Values.Empty(SerializedArray->Num());
-        //Just iterate raw format array and deserialize each of it's items
+        //Just iterate raw format array and deserialize each of its items
         for (URawFormatValue* RawFormatValue : SerializedArray->GetUnderlyingArrayRef()) {
             UConfigProperty* AllocatedValue = AddNewElement();
             AllocatedValue->Deserialize(RawFormatValue);

@@ -6,6 +6,7 @@ AFGBuildableManufacturerVariablePower::AFGBuildableManufacturerVariablePower() :
 	this->mEstimatedMininumPowerConsumption = 0.0;
 	this->mEstimatedMaximumPowerConsumption = 0.0;
 	this->mPowerConsumptionCurve = nullptr;
+	this->mPowerConsumption = 0.1;
 }
 void AFGBuildableManufacturerVariablePower::BeginPlay(){ }
 void AFGBuildableManufacturerVariablePower::Factory_StartProducing(){ }

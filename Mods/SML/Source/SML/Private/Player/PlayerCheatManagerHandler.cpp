@@ -1,6 +1,7 @@
 ﻿#include "Player/PlayerCheatManagerHandler.h"
 #include "GameFramework/PlayerController.h"
 #include "Patching/NativeHookManager.h"
+#include "SatisfactoryModLoader.h"
 
 static TAutoConsoleVariable CVarForceAllowCheats(
     TEXT("SML.ForceAllowCheats"),
@@ -12,7 +13,11 @@ void FPlayerCheatManagerHandler::RegisterHandler() {
     SUBSCRIBE_UOBJECT_METHOD(APlayerController, EnableCheats, [](auto& Scope, APlayerController* PlayerController) {
         if (CVarForceAllowCheats.GetValueOnGameThread()) {
             PlayerController->AddCheats(true);
-            Scope.Cancel();
+            UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Cheats enabled via EnableCheats console command"));
         }
+        else {
+            UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to enable cheats. Are you sure the Session Setting is enabled and that you are multiplayer host?"));
+        }
+        Scope.Cancel();
     });
 }

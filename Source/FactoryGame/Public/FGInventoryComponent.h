@@ -6,7 +6,6 @@
 #include "SharedInventoryStatePtr.h"
 #include "FGSaveInterface.h"
 #include "Resources/FGItemDescriptor.h"
-#include "ItemAmount.h"
 #include "FGInventoryComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FInventoryResized, int32, oldSize, int32, newSize );
@@ -61,7 +60,7 @@ public:
 	UPROPERTY()
 	FSharedInventoryStatePtr ItemState;
 };
-FORCEINLINE FString VarToFString( FInventoryItem var ){ return FString::Printf( TEXT( "%s: {%s}" ), *VarToFString(var.GetItemClass()), *VarToFString(var.ItemState) ); }
+FORCEINLINE FString VarToFString( const FInventoryItem &var ) { return FString::Printf( TEXT( "%s: {%s}" ), *VarToFString(var.GetItemClass()), *VarToFString(var.ItemState) ); }
 
 /** Enable custom serialization of FInventoryItem */
 template<>
@@ -124,11 +123,17 @@ DECLARE_DELEGATE_RetVal_TwoParams( bool, FItemFilter, TSubclassOf< UObject >, in
 
 DECLARE_DELEGATE_RetVal_TwoParams( bool, FFormFilter, TSubclassOf< UFGItemDescriptor >, int32 );
 
-DECLARE_DYNAMIC_DELEGATE_RetVal_TwoParams( FVector, FGetItemDropLocation, const UFGInventoryComponent*, component, FInventoryStack, stack );
+DECLARE_DYNAMIC_DELEGATE_RetVal_TwoParams( FVector, FGetItemDropLocation, const class UFGInventoryComponent*, component, FInventoryStack, stack );
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnItemAdded, TSubclassOf< UFGItemDescriptor >, itemClass, int32, numAdded );
 
+// Speedy Delegate to avoid dynamic or blueprint exposed calls for quick factory events
+DECLARE_DELEGATE_TwoParams( FOnItemAdded_Native, TSubclassOf< UFGItemDescriptor >, int32 );
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnItemRemoved, TSubclassOf< UFGItemDescriptor >, itemClass, int32, numRemoved );
+
+// Speedy Delegate to avoid dynamic or blueprint exposed calls for quick factory events
+DECLARE_DELEGATE_TwoParams( FOnItemRemoved_Native, TSubclassOf< UFGItemDescriptor >, int32 );
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSlotUpdated, int32, index );
 
@@ -170,14 +175,14 @@ public:
 	/**
 	* The default size of this inventory.
 	*
-	* @param defaultSize How many itemslots does this component have as default
+	* @param defaultSize How many item slots does this component have as default
 	*/
 	void SetDefaultSize( int32 defaultSize = 1 );
 
 	/**
 	 * Changes the size of the inventory to something else than 1
 	 *
-	 * @param newSize How many itemslots does this component have
+	 * @param newSize How many item slots does this component have
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
 	void Resize( int32 newSize = 1 );
@@ -200,13 +205,13 @@ public:
 	//@todoinventory REFACTOR we need to consider state here somehow.
 	/** @return true if the item is allowed in this inventory */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	bool IsItemAllowed( TSubclassOf< UFGItemDescriptor > item, const int32 idx = -1 ) const; //INDEX_NONE
+	bool IsItemAllowed( const TSubclassOf< UFGItemDescriptor > itemClass, const int32 idx = -1 ) const; //INDEX_NONE
 
 	/**
 	 * @return true if the index is a valid index.
 	 */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	FORCEINLINE bool IsValidIndex( int32 idx ) const
+	FORCEINLINE bool IsValidIndex( const int32 idx ) const
 	{
 		return idx >= 0 && idx < mInventoryStacks.Num();
 	}
@@ -221,8 +226,16 @@ public:
 	* Returns the first slot index that has any items on it
 	* If nothing exists in inventory -1 is returned
 	*/
+	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	int32 GetFirstIndexWithItem( int32 StartIndex = 0) const;
 
+	/**
+	 * Returns the first slot index that has an item of the specified type in it
+	 * If nothing is found it will return -1
+	 */
+	UFUNCTION( BlueprintPure, Category = "Inventory" )
+	int32 FindFirstIndexWithItemType( TSubclassOf<UFGItemDescriptor> itemDescriptor, int32 startIndex = 0 ) const;
+	
 	/**
 	 * Adds one item to the inventory.
 	 */
@@ -234,14 +247,14 @@ public:
 	/**
 	 * Tries to add an item to our inventory, stack it if possible.
 	 * @note Server only
-	 *
+	 * @param stack - The stack to be added.
 	 * @param allowPartialAdd - If true we add what we can and ignore the rest; otherwise it assumes everything fits and warns otherwise.
 	 *                          @note It is the callers responsibility to take care of the items that where not added.
 	 *
 	 * @return Number of items added, may be less than the input if partial adds are allowed.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
-	virtual int32 AddStack( const FInventoryStack& stack, bool allowPartialAdd = false );
+	virtual int32 AddStack( const FInventoryStack& stack, const bool allowPartialAdd = false );
 
 	/**
 	 * Add the given items to the inventory.
@@ -255,20 +268,20 @@ public:
 	void AddStacks( UPARAM( ref ) const TArray< FInventoryStack >& stacks );
 
 	/**
-	 * Tries to add an item to our inventory at a give index, stack it if possible.
+	 * Tries to add an Inventory Stack to our inventory at a given index, stack it if possible.
 	 * @note Server only
 	 *
 	 * @param idx - A valid index in mInventoryStacks.
-	 * @param item - The item to add.
+	 * @param stack - The stack to add.
 	 * @param allowPartialAdd - If true we add what we can and ignore the rest; otherwise it assumes everything fits and warns otherwise.
 	 *                          @note It is the callers responsibility to take care of the items that where not added.
 	 *
 	 * @return Number of items added, may be less than the input if partial adds are allowed.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
-	virtual int32 AddStackToIndex( int32 idx, const FInventoryStack& stack, bool allowPartial = false );
+	virtual int32 AddStackToIndex( const int32 idx, const FInventoryStack& stack, const bool allowPartialAdd = false );
 
-	FORCEINLINE int32 AddSingleItemToEmptyIndex_Unsafe( int32 idx, const FInventoryItem& item )
+	FORCEINLINE int32 AddSingleItemToEmptyIndex_Unsafe( const int32 idx, const FInventoryItem& item )
 	{
 		FInventoryStack& stackAtIdx = mInventoryStacks[ idx ];
 
@@ -281,16 +294,16 @@ public:
 	}
 
 	/**
-	 * Get the item of a slot.
-	 * @note true if valid index, it is the callers responsibility to check if the slot contains an item or not.
+	 * Get the stack of a slot.
+	 * @note true if valid index, it is the callers responsibility to check if the slot contains a stack or not.
 	 *
 	 * @param idx - A valid index in mInventoryStacks.
-	 * @param out_item - The item on the location. If not a valid index this is undefined.
+	 * @param out_stack - The stack on the location. If not a valid index this is undefined.
 	 *
 	 * @return true if valid index; false otherwise.
 	 */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Inventory" )
-	bool GetStackFromIndex( int32 idx, FInventoryStack& out_stack ) const;
+	bool GetStackFromIndex( const int32 idx, FInventoryStack& out_stack ) const;
 
 	/**
 	 * Removes the number of specified items from the inventory.
@@ -332,7 +345,7 @@ public:
 
 	/** Check if the given index is empty. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	FORCEINLINE bool IsIndexEmpty( int32 idx ) const
+	FORCEINLINE bool IsIndexEmpty( const int32 idx ) const
 	{
 		fgcheckf( mInventoryStacks.Num() > 0 , TEXT( "Inventory need to be initialized before use %s" ), SHOWVAR( mInventoryStacks.Num() ) );
 		
@@ -345,14 +358,14 @@ public:
 		return !mInventoryStacks[ idx ].HasItems();
 	}
 
-	FORCEINLINE bool IsIndexEmpty_Unsafe( int32 idx ) const
+	FORCEINLINE bool IsIndexEmpty_Unsafe( const int32 idx ) const
 	{
 		return !mInventoryStacks[ idx ].HasItems();
 	}
 	
 	/** Opposite of IsIndexEmpty */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	FORCEINLINE bool IsSomethingOnIndex( int32 idx ) const
+	FORCEINLINE bool IsSomethingOnIndex( const int32 idx ) const
 	{
 		return !IsIndexEmpty( idx );
 	}
@@ -385,7 +398,7 @@ public:
 	/**
 	 * Check if the inventory has enough space to store the given items.
 	 * @param stacks - Stacks to check enough space for.
-	 * @return - true if the items can be stored in the inventory; false if the inventory has insufficent space or the type for any of the items cannot be stored in this inventory.
+	 * @return - true if the items can be stored in the inventory; false if the inventory has insufficient space or the type for any of the items cannot be stored in this inventory.
 	 *
 	 * @note This can be slow for large inventories and item quantities as it need to check every grid location, try stacking and consider stacking limits etc.
 	 */
@@ -416,7 +429,7 @@ public:
 
 	/** Get all stacks that's in the players inventory */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	void GetInventoryStacks( TArray< FInventoryStack >& out_stacks ) const;
+	void GetInventoryStacks( TArray< FInventoryStack >& out_stacks, const bool getEmptyStacks = false ) const;
 
 	/** Returns the indexes of relevant stacks depending on the given items classes, 
 	indexes are sorted first by class and secondly in ascending stack size */ 
@@ -427,17 +440,23 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnInventoryResized" )
 	FInventoryResized ResizeInventoryDelegate;
 
-	/** Called when this inventory has something added to it, @note: Client doesn't garantuee order of Added/Remove delegate */
+	/** Called when this inventory has something added to it, @note: Client does not guarantee order of Added/Remove delegate */
 	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnItemAdded" )
 	FOnItemAdded OnItemAddedDelegate;
 	
-	/** Called when something has been removed from the inventory, @note: Client doesn't garantuee order of Added/Remove delegate */
+	/** Called when something has been removed from the inventory, @note: Client does not guarantee order of Added/Remove delegate */
 	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnItemRemoved" )
 	FOnItemRemoved OnItemRemovedDelegate;
 
-	/** Called when inventory slot for a specific index have been updated. Something was added/removed what items are allowed on slot. on @note: Client doesn't guarantee order of index updates */
+	/** Called when something is removed from the inventory (this is a quick version of the above to be used in performance critical areas) */
+	FOnItemRemoved_Native OnItemRemovedDelegate_Native;
+	
+	/** Called when inventory slot for a specific index have been updated. Something was added/removed what items are allowed on slot. on @note: Client does not guarantee order of index updates */
 	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnSlotUpdated" )
 	FOnSlotUpdated OnSlotUpdatedDelegate;
+
+	/** Called when something is added from the inventory (this is a quick version of the above to be used in performance critical areas) */
+	FOnItemAdded_Native OnItemAddedDelegate_Native;
 
 	/** Adds or replaces a arbitrary size for a slot. */
 	UFUNCTION( BlueprintCallable, Category = "Slot Size" )
@@ -488,23 +507,29 @@ public:
 	void CopyFromOtherComponent( UFGInventoryComponent* otherComponent );
 
 	/** Notify component its owning buildable is dismantled (or is dismantling), don't allow movement in or out of this inventory */
-	FORCEINLINE void SetLocked( bool isLocked ) { mIsLocked = isLocked; }
+	FORCEINLINE void SetLocked( const bool isLocked ) { mIsLocked = isLocked; }
 
 	UFUNCTION( BlueprintPure, Category = "Inventory ")
 	FORCEINLINE bool IsLocked() const { return mIsLocked; }
 
 	/** This should only be TRUE in special circumstance and should be set to false once those special circumstances are completed */
-	FORCEINLINE void SetSurpressOnItemAddedDelegate( bool surpress ) { mSurpressOnItemAddedDelegateCalls = surpress; }
+	FORCEINLINE void SetSuppressOnItemAddedDelegate( const bool suppress ) { mSuppressOnItemAddedDelegateCalls = suppress; }
 
 	/** This should only be TRUE in special circumstance and should be set to false once those special circumstances are completed */
-	FORCEINLINE void SetSurpressOnItemRemovedDelegate( bool surpress ) { mSurpressOnItemRemovedDelegateCalls = surpress; }
+	FORCEINLINE void SetSuppressOnItemRemovedDelegate( const bool suppress ) { mSuppressOnItemRemovedDelegateCalls = suppress; }
 
-	FORCEINLINE bool GetSurpressOnItmeAddedDelegate() const { return mSurpressOnItemAddedDelegateCalls; }
-	FORCEINLINE bool GetSurpressOnItemRemovedDelegate() const { return mSurpressOnItemRemovedDelegateCalls; }
-	
+	FORCEINLINE bool GetSuppressOnItemAddedDelegate() const { return mSuppressOnItemAddedDelegateCalls; }
+	FORCEINLINE bool GetSuppressOnItemRemovedDelegate() const { return mSuppressOnItemRemovedDelegateCalls; }
+
+	/** @return The actor for the equipment in the slot, null if the slot is empty or does not contain an equipment, null if an invalid index is passed. */
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
 	class AFGEquipment* GetStackEquipmentActorAtIdx( const int32 index ) const;
 
+	void CopyInTheseItemStacks( const TArray<FInventoryStack>& itemsStacks);
+
+	// Returns true if either the session wide cheat NoCost is enabled or if the individual game mode NoBuildCost is enabled 
+	bool GetNoBuildCost() const;
+	
 protected:
 	/** Used to call OnItemAdded/OnItemRemoved on clients */
 	UFUNCTION()
@@ -519,8 +544,8 @@ protected:
 	 *
 	 * @note Only called on the server.
 	 *
-	 * @param item - The index the item got added to.
-	 * @param item - The number of items that were added.
+	 * @param idx - The index the item got added to.
+	 * @param num - The number of items that were added.
 	 */
 	virtual void OnItemsAdded( int32 idx, int32 num );
 
@@ -539,6 +564,11 @@ protected:
 	 * @return The stack at idx.
 	 */
 	FInventoryStack& GetStackFromIndex( int32 idx );
+
+	/**
+	 * Same as the function above, but the returned reference is const
+	 */
+	const FInventoryStack& GetStackFromIndex( int32 idx ) const;
 private:
 	void UpdateRadioactivity( int32 idx, TSubclassOf<UFGItemDescriptor> itemClass );
 
@@ -559,10 +589,10 @@ protected:
 	int32 mAdjustedSizeDiff;
 
 	/** For special situations where many stacks may be added in a single frame and we don't to trigger OnItemAdded delegates every time */
-	bool mSurpressOnItemAddedDelegateCalls;
+	bool mSuppressOnItemAddedDelegateCalls;
 
 	/** For special situations where many stacks may be removed in a single frame and we don't to trigger OnItemRemoved delegates every time */
-	bool mSurpressOnItemRemovedDelegateCalls;
+	bool mSuppressOnItemRemovedDelegateCalls;
 	
 	/** Locks the inventory. Indicating that no items are allowed and you should not be able to drag stuff from it either */
 	bool mIsLocked;

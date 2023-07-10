@@ -11,6 +11,11 @@ UFGCreatureActionProjectileCharge::UFGCreatureActionProjectileCharge(const FObje
 	this->mActiveChargeFiringRate = 0.0;
 	this->mMagazineObject = nullptr;
 }
+void UFGCreatureActionProjectileCharge::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGCreatureActionProjectileCharge, mMagazineObject);
+}
+void UFGCreatureActionProjectileCharge::BeginDestroy(){ Super::BeginDestroy(); }
 bool UFGCreatureActionProjectileCharge::InitializeAction(AController* controller, APawn* pawn){ return bool(); }
 void UFGCreatureActionProjectileCharge::InternalActionCleanup(bool actionSuccess){ }
 void UFGCreatureActionProjectileCharge::BeginCharge_Implementation(){ }

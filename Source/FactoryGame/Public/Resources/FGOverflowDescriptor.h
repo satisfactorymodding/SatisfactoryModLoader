@@ -16,4 +16,6 @@ class FACTORYGAME_API UFGOverflowDescriptor : public UFGItemDescriptor
 	GENERATED_BODY()
 public:
 	UFGOverflowDescriptor();
+protected:
+	FORCEINLINE virtual bool Internal_CanItemBePickedup() const override { return false; }
 };

@@ -12,7 +12,8 @@
 #include "Equipment/FGBuildGun.h"
 #include "Creature/FGCreature.h"
 #include "FGInventoryComponentEquipment.h"
-
+#include "FGCharacterMovementComponent.h"
+#include "Buildables/FGBuildablePipeHyperJunction.h"
 #include "FGCharacterPlayer.generated.h"
 
 // Callbacks used by the replication graph to build dependency lists
@@ -26,12 +27,21 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnReviveEnded, bool, isReviveCompl
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPickupToCollectStateUpdated, bool, isActive );
 DECLARE_DELEGATE_OneParam( FOnEquipmentSpawned, class AFGEquipment* );
 
+//Callbacks used to expose various lifecycle events of the player character to the mods, since these very frequently are the subject of interest
+DECLARE_MULTICAST_DELEGATE_TwoParams( FOnPlayerInputInitializedDelegate, class AFGCharacterPlayer*, class UInputComponent* );
+DECLARE_MULTICAST_DELEGATE_OneParam( FSimpleCharacterPlayerDelegate, class AFGCharacterPlayer* );
+
 UENUM( BlueprintType )
-enum class ECameraMode : uint8
+enum class EPlayerKeepInventoryMode : uint8
 {
-	ECM_None,
-	ECM_FirstPerson,
-	ECM_ThirdPerson,
+	// Looses all items on death.
+	Keep_Nothing		UMETA( displayName = "Keep Nothing" ),
+	
+	// Keeps only Equipment on death.
+	Keep_Equipment		UMETA( displayName = "Keep Equipment" ),
+
+	// Looses Nothing on death.
+	Keep_Everything		UMETA( displayName = "Keep Everything" ),
 };
 
 /** structure that holds variables per input whether it's allowed or not. NOTE: True if input is disabled. */
@@ -44,7 +54,7 @@ public:
 	FDisabledInputGate() : FDisabledInputGate( false )
 	{}
 
-	FDisabledInputGate( bool disabled ) :
+	explicit FDisabledInputGate( const bool disabled ) :
 		mBuildGun( disabled ),
 		mDismantle( disabled ),
 		mFlashLight( disabled ),
@@ -101,7 +111,7 @@ public:
 * not dead, cant revive
 */
 UCLASS()
-class FACTORYGAME_API UFGUseState_ReviveInvalid_PlayerNotDead : public UFGUseState
+class FACTORYGAME_API UFGUseState_ReviveInvalid_PlayerNotDead final : public UFGUseState
 {
 	GENERATED_BODY()
 public:
@@ -112,7 +122,7 @@ public:
 * Revive valid
 */
 UCLASS()
-class FACTORYGAME_API UFGUseState_ReviveValid : public UFGUseState
+class FACTORYGAME_API UFGUseState_ReviveValid final : public UFGUseState
 {
 	GENERATED_BODY()
 public:
@@ -145,19 +155,60 @@ private:
 	bool HasCalledInfoAddedEvent;
 };
 
+class UFGPipeConnectionComponentBase;
+
+/** A single entry in the junction output choice history */
+USTRUCT( BlueprintType )
+struct FFGPipeHyperConnectionHistoryEntry
+{
+	GENERATED_BODY()
+
+	/** The connection the player is expected to enter through */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Pipe Hyper" )
+	UFGPipeConnectionComponentBase* ConnectionEnteredThrough{};
+
+	/** The connection the player is expected to transit to */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Pipe Hyper" )
+	UFGPipeConnectionComponentBase* PickedOutputConnection{};
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActorPerceptionInfoAdded, const FFGActorPlayerPerceptionInfo&, perceptionInfo );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActorPerceptionInfoRemoved, const FFGActorPlayerPerceptionInfo&, perceptionInfo );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnCreaturePerceptionStateChanged, const FFGActorPlayerPerceptionInfo&, perceptionInfo, ECreatureState, newState );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActiveEquipmentChangedInSlot, EEquipmentSlot, Slot );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPendingJunctionStateChanged, const FFGPendingHyperJunctionInfo&, newJunctionInfo );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPendingJunctionOutputChanged, const FFGPipeHyperConnectionHistoryEntry&, newOutputConnection );
+
+// Flags to what actions to bind when calling BindActions
+UENUM( meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
+enum class EActionsToBind : uint8
+{
+	None = 0,
+	
+	Movement = 0x1,
+	Camera = 0x2,
+	Actions = 0x4,
+	Cheats = 0x8,
+	
+	All = 0xFF
+};
+
+// Logic operators for the EActionsToBind enum
+inline EActionsToBind operator | ( EActionsToBind a, EActionsToBind b ) { return (EActionsToBind)( (uint8)a | (uint8)b ); }
+inline EActionsToBind operator & ( EActionsToBind a, EActionsToBind b ) { return (EActionsToBind)( (uint8)a & (uint8)b ); }
+
+inline EActionsToBind& operator |= ( EActionsToBind& a, EActionsToBind b ) { return (EActionsToBind&)( (uint8&)a |= (uint8)b ); }
+inline EActionsToBind& operator &= ( EActionsToBind& a, EActionsToBind b ) { return (EActionsToBind&)( (uint8&)a &= (uint8)b ); }
+
 /**
  * Base class for all player characters in the game.
  */
 UCLASS( config = Game )
-class FACTORYGAME_API AFGCharacterPlayer : public AFGCharacterBase, public IFGUseableInterface, public IFGRadiationInterface, public IFGActorRepresentationInterface
+class FACTORYGAME_API AFGCharacterPlayer final : public AFGCharacterBase, public IFGUseableInterface, public IFGRadiationInterface, public IFGActorRepresentationInterface
 {
 	GENERATED_BODY()
 public:
-	AFGCharacterPlayer( const FObjectInitializer& ObjectInitializer );
+	explicit AFGCharacterPlayer( const FObjectInitializer& ObjectInitializer );
 
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
@@ -181,8 +232,9 @@ public:
 	virtual void AddControllerPitchInput( float Val ) override;
 	virtual void Jump() override;
 	virtual void OnJumped_Implementation() override;
-
+	virtual FVector GetPawnViewLocation() const override;
 	virtual bool CanJumpInternal_Implementation() const override;
+	virtual bool ShouldTakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const override;
 	// End Pawn Interface
 
 	// Begin ACharacter Interface
@@ -198,6 +250,7 @@ public:
 
 	// Begin ACharacter interface
 	virtual void OnMovementModeChanged( EMovementMode PrevMovementMode, uint8 PreviousCustomMode = 0 ) override;
+	virtual bool CanCrouch() const override;
 	// End ACharacter interface
 
 	// Begin IFGUseableInterface
@@ -220,31 +273,39 @@ public:
 	//~Begin IFGSaveInterface
 	virtual bool ShouldSave_Implementation() const override;
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion) override;
 	//~End IFGSaveInterface
 
 	// Begin IFGActorRepresentationInterface
-	virtual bool AddAsRepresentation() override;
-	virtual bool UpdateRepresentation() override;
-	virtual bool RemoveAsRepresentation() override;
-	virtual bool IsActorStatic() override;
-	virtual FVector GetRealActorLocation() override;
-	virtual FRotator GetRealActorRotation() override;
-	virtual class UTexture2D* GetActorRepresentationTexture() override;
-	virtual FText GetActorRepresentationText() override;
-	virtual void SetActorRepresentationText( const FText& newText ) override;
-	virtual FLinearColor GetActorRepresentationColor() override;
-	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
-	virtual ERepresentationType GetActorRepresentationType() override;
-	virtual bool GetActorShouldShowInCompass() override;
-	virtual bool GetActorShouldShowOnMap() override;
-	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
-	virtual float GetActorFogOfWarRevealRadius() override;
-	virtual ECompassViewDistance GetActorCompassViewDistance() override;
-	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	UFUNCTION() virtual bool AddAsRepresentation() override;
+	UFUNCTION() virtual bool UpdateRepresentation() override;
+	UFUNCTION() virtual bool RemoveAsRepresentation() override;
+	UFUNCTION() virtual bool IsActorStatic() override;
+	UFUNCTION() virtual FVector GetRealActorLocation() override;
+	UFUNCTION() virtual FRotator GetRealActorRotation() override;
+	UFUNCTION() virtual class UTexture2D* GetActorRepresentationTexture() override;
+	UFUNCTION() virtual FText GetActorRepresentationText() override;
+	UFUNCTION() virtual void SetActorRepresentationText( const FText& newText ) override;
+	UFUNCTION() virtual FLinearColor GetActorRepresentationColor() override;
+	UFUNCTION() virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	UFUNCTION() virtual ERepresentationType GetActorRepresentationType() override;
+	UFUNCTION() virtual bool GetActorShouldShowInCompass() override;
+	UFUNCTION() virtual bool GetActorShouldShowOnMap() override;
+	UFUNCTION() virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	UFUNCTION() virtual float GetActorFogOfWarRevealRadius() override;
+	UFUNCTION() virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	// End IFGActorRepresentationInterface
 
 	// Setup run when this player have been possessed.
 	void OnPossessedSetup();
+
+	/** Called on both server and client when respawning has finished. */
+	void FinishRespawn();
+
+	/** Whether or not the player is currently inside the starting pod. */
+	UFUNCTION( BlueprintPure, Category = "Player" )
+	bool IsInStartingPod() const;
 
 	/** Blueprint function that ticks visual things not needed on dedicated server */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Character" )
@@ -310,7 +371,7 @@ public:
 	TArray< class AFGEquipmentAttachment* > GetActiveAttachments() const;
 
 	/** @return - The current desired state for the cross hair polled by the HUD. */
-	UFUNCTION( BlueprintNativeEvent, Category = "HUD" )
+	UFUNCTION( Category = "HUD" )
 	ECrosshairState GetActiveCrosshairState();
 
 	/** @return The inventory component for the given equipment slot. */
@@ -345,6 +406,10 @@ public:
 	/** Equips/unequips buildgun */ 
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	void ToggleBuildGun();
+	
+	/** Unequips buildgun */ 
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	bool UnequipBuildGun();
 
 	/** Equip the build gun and go into painting state */
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
@@ -381,7 +446,7 @@ public:
 
 	/** Switches between camera modes */
 	UFUNCTION()
-	void ToggleCameraMode();
+	void ToggleCameraMode( bool force = false );
 
 	/** Switches between "regular" camera and cinematic camera, enabled = true activates cinematic camera and deactivates regular camera and vice versa */
 	UFUNCTION()
@@ -397,14 +462,6 @@ public:
 	/** Stop focus aiming */
 	UFUNCTION( BlueprintNativeEvent, Category = "Camera" )
 	void StopFocusAim();
-
-	/** Start pressing jump */
-	UFUNCTION( BlueprintNativeEvent, Category = "Camera" )
-    void StartPressingJump();
-
-	/** Stop pressing jump */
-	UFUNCTION( BlueprintNativeEvent, Category = "Camera" )
-    void StopPressingJump();
 
 	/** Starts the free rotate mode */
 	UFUNCTION( BlueprintNativeEvent, Category = "Camera" )
@@ -436,7 +493,7 @@ public:
 
 	/** Set camera mode */
 	UFUNCTION( BlueprintCallable, Category = "Camera" )
-	void SetCameraMode( ECameraMode newCameraMode );
+	void SetCameraMode( const ECameraMode newCameraMode );
 
 	/** Set the camera mode to the one specified in mPlayerPreferredCameraMode */
 	UFUNCTION( BlueprintCallable, Category = "Camera" )
@@ -446,27 +503,8 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Camera" )
 	bool IsFirstPerson() const;
 
-	/** Start and stop sprinting, called when player presses/releases Left Shift, as standard. */
-	void SprintPressed();
-	void SprintReleased();
-
-	/** Start and stop crouch, called when player presses/releases Left Ctrl, as standard. */
-	UFUNCTION( BlueprintCallable, Category = "Crouch" )
-	void CrouchPressed();
-	UFUNCTION( BlueprintCallable, Category = "Crouch" )
-	void CrouchReleased();
-
-	void EmoteWheelPressed();
-	void EmoteWheelReleased();
-
 	/** Updates the camera with crouch settings */
 	void TickCameraOffset( float dt );
-
-	/** Cycles hand equipments in equipment slots */
-	void CycleHandEquipmentPressedUp();
-
-	/** Cycles hand equipments in equipment slots */
-	void CycleHandEquipmentPressedDown();
 
 	/** Cycles hand equipments in equipment slots */
 	UFUNCTION( Reliable, Server, WithValidation )
@@ -520,7 +558,7 @@ public:
 	void SetPickupToCollect( class AFGItemPickup* itemPickup );
 
 	FORCEINLINE class AFGFoliagePickup* GetFoliagePickupProxy() const { return mFoliagePickupProxy; }
-
+	
 	/** @return This players inventory. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	FORCEINLINE class UFGInventoryComponent* GetInventory() const { return mInventory; }
@@ -528,10 +566,6 @@ public:
 	/** @return This players trash inventory. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	FORCEINLINE class UFGInventoryComponent* GetTrashSlot() const { return mTrashSlot; }
-
-	/** @return This players belt inventory. */
-	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	FORCEINLINE class UFGInventoryComponentBeltSlot* GetBeltSlot() const { return mBeltSlot; }
 	
 	/** @return This players resource scanner. */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
@@ -562,22 +596,29 @@ public:
 
 	/** returns ladder we are currently on */
 	UFUNCTION( BlueprintCallable, Category = "Movement" )
-	class UFGLadderComponent* GetCurrentLadderComponent();
+	class UFGLadderComponent* GetCurrentLadderComponent() const;
 
 	/** Gets the camera bobbing animation we want to use when sprinting ( can vary with equipment ) */
 	UFUNCTION( BlueprintCallable, Category = "Movement" )
-	TSubclassOf< class UMatineeCameraShake > GetDesiredSprintHeadBobShake();
+	TSubclassOf< class ULegacyCameraShake > GetDesiredSprintHeadBobShake() const;
 
 	/** Gets the camera bobbing animation we want to use when walking ( can vary with equipment ) */
 	UFUNCTION( BlueprintCallable, Category = "Movement" )
-	TSubclassOf< class UMatineeCameraShake > GetDesiredWalkHeadBobShake();
+	TSubclassOf< class ULegacyCameraShake > GetDesiredWalkHeadBobShake() const;
 
 	/** Gets a PreCasted movement component. We should be able to optimize this by ensuring that this component is the right type when assigning it and then do a free cast here ans have it faster. So making this way of fetching it now. Even though it's not really faster atm, it can be optimized later.*/
-	class UFGCharacterMovementComponent* GetFGMovementComponent() const;
+	UFUNCTION( BlueprintPure )
+	UFGCharacterMovementComponent* GetFGMovementComponent() const;
+
+	UFUNCTION( BlueprintPure )
+	class AFGPlayerController* GetFGPlayerController() const;
+
+	/** Called whenever an interact widget gets added or removed. */
+    void OnInteractWidgetAddedOrRemoved( class UFGInteractWidget* widget, bool added );
 
 	/** Setter for mWantsSprintBobbing */
 	UFUNCTION( BlueprintCallable, Category = "Movement" ) 
-	void SetWantSprintBobbing( bool wantBobbing );
+	void SetWantSprintBobbing( const bool wantBobbing );
 
 	/** Getter for mWantsSprintBobbing */
 	UFUNCTION( BlueprintPure, Category = "Movement" ) 
@@ -594,30 +635,27 @@ public:
 
 	/** Adds or removes an amount of radiation */
 	UFUNCTION( BlueprintCallable, Category = "Radiation" )
-	void AddRadiationImmunity( float toAdd );
+	void AddRadiationImmunity( const float toAdd );
 
 	/** Sets an amount of radiation */
 	UFUNCTION( BlueprintCallable, Category = "Radiation" )
-	void SetRadiationImmunity( float newImmunity );
+	void SetRadiationImmunity( const float newImmunity );
 	
 	//Cheats
 	virtual void ClientCheatWalk_Implementation() override;
 	UFUNCTION( Server, Reliable )
-	virtual void Server_CheatWalk();
-	void SetupCheatFlyBindings();
+	void Server_CheatWalk();
 	virtual void ClientCheatFly_Implementation() override;
 	UFUNCTION( Server, Reliable )
-	virtual void Server_CheatFly();
-	virtual void CheatToggleGhostFly();
-	virtual void CheatSetGhostFly( bool ghostModeActive );
+	void Server_CheatFly();
+	void CheatSetGhostFly( bool ghostModeActive );
 	UFUNCTION( Server, Reliable )
-	virtual void Server_CheatSetGhostFly( bool ghostModeActive );
-	virtual bool CheatToggleGhostFlyIsActive();
-	virtual bool CheatToggleFlyModeIsActive();
-	virtual void CheatToggleFlyMode();
+	void Server_CheatSetGhostFly( bool ghostModeActive );
+	bool CheatToggleGhostFlyIsActive();
+	bool CheatToggleFlyModeIsActive();
 	UFUNCTION( Server, Reliable )
-	virtual void Server_CheatTeleport( FTransform newTransform );
-	virtual void CheatTeleport();
+	void Server_CheatTeleport( FTransform newTransform );
+	void CheatTeleport();
 	//End cheats
 
 	/** Called when a slide has started*/
@@ -651,11 +689,11 @@ public:
 
 
 	UFUNCTION( NetMulticast, Reliable, WithValidation, Category = "Hyper Tubes" )
-	void Client_HyperTubeStart( AActor* tubeStart, float startTime, float pipeVelocity, float pipeProgress );
+	void Client_HyperTubeStart( UFGPipeConnectionComponentBase* connectionEnteredThrough, float startTime, float pipeVelocity, float pipeProgress, float pipeAccumulatedTime );
 	UFUNCTION( NetMulticast, Reliable, WithValidation, Category = "Hyper Tubes" )
 	void Client_HyperTubeEnd( FVector point, FVector velocity, float startTime );
 
-	void ZiplineStart( AActor* ziplineActor, FVector actorForward );
+	void ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
 	void ZiplineEnd( const FVector &exitForce = FVector::ZeroVector ) const;
 
 	UFUNCTION( BlueprintCosmetic,BlueprintImplementableEvent, Category = "Zipline" )
@@ -665,17 +703,12 @@ public:
     void StopZiplineEffects();
 	
 	UFUNCTION( NetMulticast, Reliable, WithValidation, Category = "Zipline" )
-    void Multicast_ZiplineStart( AActor* ziplineActor, FVector actorForward );
+    void Multicast_ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
 	UFUNCTION( NetMulticast, Reliable, WithValidation, Category = "Zipline" )
     void Multicast_ZiplineEnd( FVector exitForce = FVector::ZeroVector );
 
 	/** Spawn particle for now */
 	void PlayZiplineEffects( const FVector &inLocation ) const;
-
-	// Cheat for all players to fly
-	UFUNCTION( NetMulticast, Reliable )
-	void NetMulticast_CheatFly();
-	virtual void NetMulticast_CheatFly_Implementation();
 
 	/** Returns the Cinematic Camera SubObject used in PhotoMode **/
 	UFUNCTION( BlueprintPure, Category = "Camera" )
@@ -692,26 +725,132 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Emote" )
 	class USkeletalMeshComponent* GetEmoteSkelMeshComp() const { return mEmoteSkelMeshComp; }
 	UFUNCTION( BlueprintCallable, Category = "Emote" )
-	void ClearEmoteSkelMeshComp( float delay );
+	void ClearEmoteSkelMeshComp( const float delay );
 	UFUNCTION( BlueprintPure, Category = "Emote" )
 	class UFGInteractWidget* GetEmoteMenu() const { return mEmoteMenuWidget; } 
 	// Finds all light sources in the desired radius around the player and toggles them after the desired delay.
 	UFUNCTION( Server, Reliable, BlueprintCallable, Category="Lights")
 	void Server_ToggleLightsInRadius( float inRadius, float inDelay );
 
-	void OnBuildSamplePressed();
+	/** Returns the info regarding the pending HyperTube junction */
+	UFUNCTION(BlueprintPure, Category = "Hyper Tube" )
+	FFGPendingHyperJunctionInfo GetPendingHyperJunctionInfo() const;
+
+	/** Returns a total distance the player has  travelled in a HyperTube */
+	UFUNCTION( BlueprintPure, Category = "Hyper Tube" )
+	float GetTotalHyperTubeTravelDistance() const;
 	
+	/** The connection that has been picked on the pending junction through Server_UpdateHyperJunctionPath */
+	UFUNCTION( BlueprintPure, Category = "Hyper Tube" )
+	FORCEINLINE FFGPipeHyperConnectionHistoryEntry GetPendingHyperJunctionOutputConnection() const { return mPendingHyperJunctionOutputConnection; };
+
+	/** Updates the output path on the next junction picked by the client */
+	UFUNCTION( BlueprintCallable, Server, Reliable, WithValidation, Category = "Hyper Tube" )
+	void Server_UpdateHyperJunctionOutputConnection( UFGPipeConnectionComponentBase* connectionEnteredThrough, UFGPipeConnectionComponentBase* newOutputConnection);
+
+	/** Returns the last history entry for the provided junction actor */
+	UFUNCTION( BlueprintPure, Category = "Hyper Tube" )
+	UFGPipeConnectionComponentBase* GetHyperTubeJunctionOutputConnectionFromHistory( UFGPipeConnectionComponentBase* connectionEnteredThrough ) const;
+	
+	/** Called when player switches the current REAL hyper tube being travelled, can be used for cosmetic effects */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Hyper Tube" )
+	void OnNewTravelPipeSection();
+
+	void SetIsFlyingToggleable( const bool canFlyingBeToggled );
+
+	void OnPhotoModeToggled( bool enabled );
+
+	UFUNCTION( BlueprintPure, Category = "Input" )
+	int32 GetMappingContextPriority() const;
+
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void SetMovementInputEnabled( bool enabled );
+	
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void SetActionInputEnabled( bool enabled );
+	
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+    void SetInterfaceActionInputEnabled( bool enabled );
+
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void SetEquipmentInputEnabled( bool enabled );
+
+	void ClipboardCopy();
+    void ClipboardPaste();
+
+	/** Input Actions **/
+	void Input_Jump( const FInputActionValue& actionValue );
+	void Input_Use( const FInputActionValue& actionValue );
+
+	void Input_CloseBuildGunMenu( const FInputActionValue& actionValue );
+	
+	void Input_ToggleBuildGunBuild( const FInputActionValue& actionValue );
+	void Input_ToggleBuildGunDismantle( const FInputActionValue& actionValue );
+	void Input_ToggleBuildGunPaint( const FInputActionValue& actionValue );
+	
+	void Input_MoveAxis( const FInputActionValue& actionValue );
+	void Input_LookAxis( const FInputActionValue& actionValue );
+	void Input_TurnAxis( const FInputActionValue& actionValue );
+
+	void Input_Sprint( const FInputActionValue& actionValue );
+
+	void Input_Crouch( const FInputActionValue& actionValue );
+
+	void Input_CycleEquipmentAxis( const FInputActionValue& actionValue );
+	void Input_Holster( const FInputActionValue& ActionValue );
+
+	void Input_EmoteWheel( const FInputActionValue& actionValue );
+
+	void Input_SampleBuilding( const FInputActionValue& actionValue );
+
+	void Input_ToggleInventory( const FInputActionValue& actionValue );
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "Player", meta = (DisplayName = "OnToggleInventory") )
+	void NotifyOnToggleInventory();
+
+	void Input_ToggleCodex( const FInputActionValue& actionValue );
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "Player", meta = (DisplayName = "OnToggleCodex") )
+	void NotifyOnToggleCodex();
+
+	void Input_ToggleQuickSearch( const FInputActionValue& actionValue );
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "Player", meta = (DisplayName = "OnToggleQuickSearch") )
+	void NotifyOnToggleQuickSearch();
+
+	void Input_ToggleFlashlight( const FInputActionValue& actionValue );
+	
+	UFUNCTION( BlueprintImplementableEvent, Category = "Player", meta = (DisplayName = "OnToggleFlashlight") )
+	void NotifyOnToggleFlashlight();
+	
+	void Input_ToggleFly( const FInputActionValue& actionValue );
+	void Cheat_ToggleFly();
+
+	void Input_ToggleGhostFly( const FInputActionValue& actionValue );
+
+	void Input_Teleport( const FInputActionValue& actionValue );
+
+	/**
+	 * Binds the input context to the input subsystem owned by this local player
+	 * Will also apply additional associated mapping contexts on top with lower priority
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void SetMappingContextBound( UInputMappingContext* context, bool bind, int32 priority = 0 );
+
+	/** Revives the current player with full health. Needs to be called on the authority side */
+	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Player" )
+	void RevivePlayerWithFullHealth();
 protected:
-	void CopyFactoryClipboard();
-	void PasteFactoryClipboard();
-#if !IS_PUBLIC_BUILD
-	void UndoPressed();
-#endif
 	
 	// APawn interface
-	virtual void SetupPlayerInputComponent( class UInputComponent* InputComponent ) override;
+	virtual void SetupPlayerInputComponent( class UInputComponent* inputComponent ) override;
 	virtual void DestroyPlayerInputComponent() override;
 	// End of APawn interface
+
+	void BindActions( EActionsToBind actionsToBindMask = EActionsToBind::All );
+	void UnbindActions();
+
+	virtual void Native_OnLocallyPossessedChanged( bool isPossessed ) override;
 
 	/** Called when we unlock more inventory slots */
 	UFUNCTION()
@@ -721,7 +860,8 @@ protected:
 	UFUNCTION()
 	void OnArmsSlotsUnlocked( int32 newUnlockedSlots );
 
-	void CheckAndAddPositionToSafeList( UWorld * world, FVector currentPos );
+	void CheckAndAddPositionToSafeList( FVector currentPos );
+	void CheckForWaterVolumeOverlaps();
 
 	// Begin AFGCharacterBase interface
 	virtual float AdjustDamage( AActor* damagedActor, float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser ) override;
@@ -730,7 +870,7 @@ protected:
 
 	/** Sets what mesh is visible on us ( 1p or 3p ) */
 	UFUNCTION( BlueprintCallable, Category = "Camera" )
-	void SetMeshVisibility( bool isFirstPerson );
+	void SetMeshVisibility( const bool isFirstPerson );
 
 	/** Blueprint accessor for when an item was picked up, called on client/server/remote */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, BlueprintCosmetic, Category = "Character" )
@@ -740,19 +880,19 @@ protected:
 	virtual class UAkAudioEvent* GetFootstepEvent( int32 footDown ) const override;
 
 	UFUNCTION( BlueprintNativeEvent, Category = "Input" )
-	void OnDisabledInputGateChanged(FDisabledInputGate newValue);
+	void OnDisabledInputGateChanged( const FDisabledInputGate newValue);
 
 	/** SERVER ONLY: Drops the contents of the player on the ground */
-	void SpawnDeathCrate();
+	struct FInventoryToRespawnWith SpawnDeathCrate( const EPlayerKeepInventoryMode& keepInventoryMode, UFGInventoryComponent* inventory );
 
 	/** Setup the players inventories, including equipment slots. */
 	void SetupInventory();
 
 	UFUNCTION()
-	void OnItemAddedToInventory( TSubclassOf<UFGItemDescriptor> itemClass, int32 numAdded );
+	void OnItemAddedToInventory( const TSubclassOf<UFGItemDescriptor> itemClass, int32 numAdded );
 
 	UFUNCTION()
-	void OnInventorySlotUpdated( int32 Index );
+	void OnInventorySlotUpdated( const int32 Index );
 
 	/** Hand out the starting resources. */
 	void AddDefaultInventoryItems();
@@ -766,12 +906,6 @@ protected:
 	/** Update which actor we can interact with at our location. */
 	void UpdateBestUsableActor();
 
-	/** Called when the use input action is triggered. */
-	void OnUsePressed();
-
-	/** Called when we release the use button */
-	void OnUseReleased();
-
 	/** Called on both server and client when we want to use something. */
 	void OnUse();
 
@@ -780,12 +914,6 @@ protected:
 
 	/** Checks if what we hit can be picked up */
 	bool CanBePickedUp( const FHitResult& hitResult ) const;
-
-	/** Handles moving forward/backward */
-	void MoveForward( float Val );
-
-	/** Handles strafing movement, left and right */
-	void MoveRight( float Val );
 
 	/**
 	 * Called via input to turn at a given rate.
@@ -900,7 +1028,7 @@ protected:
 	/** True if player is online. By online we mean this player or the driven vehicle has a player state and someone is controlling it */
 	UFUNCTION( BlueprintPure, Category = "Radiation" )
 	FORCEINLINE bool IsPlayerOnline() const { return mIsPlayerOnline.IsSet() ? mIsPlayerOnline.GetValue() : false; }
-
+	
 	/** Called when we update the best useable actor */
 	UPROPERTY( BlueprintAssignable, Category = "UI"  )
 	FOnBestUseableActorUpdated mOnBestUseableActorUpdated;
@@ -920,6 +1048,11 @@ protected:
 	UPROPERTY( BlueprintAssignable, Category = "Equipment" )
 	FOnActiveEquipmentChangedInSlot mOnActiveEquipmentChangedInSlot;
 
+	float mFlyToggleTimeStamp = 0.0f;
+	/* Time between pressing jump twice for the Flying Mode to toggle. */
+	UPROPERTY( EditDefaultsOnly, Category = "Character Movement: Flying" )
+	float mFlyToggleTime = 0.2f;
+	
 	void DebugBuildablesInFrustum() const;
 	
 public:
@@ -936,6 +1069,15 @@ public:
 	/** Event when the foliage pickup proxy has spawned */
 	static FOnFoliagePickupSpawned OnFoliagePickupSpawned;
 
+	/** Event when player character input controller has been set up and vanilla actions have been bound */
+	static FOnPlayerInputInitializedDelegate OnPlayerInputInitialized;
+	static FSimpleCharacterPlayerDelegate OnPlayerInputDestroyed;
+
+	/** Event when player has received the OnActorCreated call, which happens before save load and BeginPlay call */
+	static FSimpleCharacterPlayerDelegate OnPlayerCreated;
+	/** Event when player character has received the BeginPlay, which would be after construction and save load */
+	static FSimpleCharacterPlayerDelegate OnPlayerBegunPlay;
+
 	/** Called whenever an actor perception info is added. */
 	UPROPERTY( BlueprintAssignable, Category = "UI" )
 	FOnActorPerceptionInfoAdded mOnActorPerceptionInfoAdded;
@@ -947,6 +1089,14 @@ public:
 	/** Called whenever a creature which is perceiving us has a state change. */
 	UPROPERTY( BlueprintAssignable, Category = "UI" )
 	FOnCreaturePerceptionStateChanged mOnCreaturePerceptionStateChanged;
+
+	/** Called whenever a pending junction info changes */
+	UPROPERTY( BlueprintAssignable, Category = "UI" )
+	FOnPendingJunctionStateChanged mOnPendingJunctionStateChanged;
+
+	/** Called whenever a selected output connection on the pending junction changes */
+	UPROPERTY( BlueprintAssignable, Category = "UI" )
+	FOnPendingJunctionOutputChanged mOnPendingJunctionOutputChanged;
 
 	/** Called just after a new equipment actor has been spawned, before it eventually gets equipped. */
 	FOnEquipmentSpawned mOnEquipmentSpawned;
@@ -984,10 +1134,10 @@ private:
 	 * @param equipmentClass Class to spawn.
 	 * @param owner Optionally pass an owner, only use this in combination with persistent equipments.
 	 */
-	AFGEquipment* SpawnEquipment( TSubclassOf< AFGEquipment > equipmentClass, AActor* owner = nullptr ) const;
+	AFGEquipment* SpawnEquipment( const TSubclassOf< AFGEquipment > &equipmentClass, AActor* owner = nullptr ) const;
 
 	template< typename T >
-	T* SpawnEquipment( TSubclassOf< AFGEquipment > equipmentClass, AActor* owner = nullptr )
+	T* SpawnEquipment( const TSubclassOf< AFGEquipment > equipmentClass, AActor* owner = nullptr )
 	{
 		fgcheck( equipmentClass->IsChildOf( T::StaticClass() ) );
 		return Cast<T>( SpawnEquipment( equipmentClass, owner ) );
@@ -1077,6 +1227,8 @@ private:
 	void OnRep_BodyEquipmentSlot();
 	UFUNCTION()
 	void OnRep_PlayerInventory();
+	UFUNCTION()
+	void OnRep_PendingHyperJunctionOutputConnection();
 	
 	UFUNCTION()
 	void OnRep_ActorPerceptionInfo( const TArray< FFGActorPlayerPerceptionInfo >& OldValues );
@@ -1090,11 +1242,14 @@ private:
 	virtual void OnRep_IsPossessed() override;
 	virtual void OnRep_PlayerState() override;
 	
-	void SetOnlineState( bool isOnline );
+	void SetOnlineState( const bool isPlayerOnline );
 
 	/** Gets the players state for this player. Either from this character or the driven vehicle */
 	UFUNCTION( BlueprintPure, Category = "General" )
 	class AFGPlayerState* GetControllingPlayerState() const;
+
+	/** Checks the player state if flying is toggleable */
+	void UpdateFlyingIsToggleable();
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -1108,10 +1263,10 @@ public:
 	/** The default arms animation when we're idle. */
 	UPROPERTY( EditDefaultsOnly, Category = Mesh )
 	TSubclassOf< class UAnimInstance > mMesh1PAnimClass;
-
+	
 protected:
 	/** Pawn mesh: 3rd person view */
-	UPROPERTY( VisibleDefaultsOnly, Category = Mesh )
+	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = Mesh )
 	class USkeletalMeshComponent* mMesh3P;
 
 	/** The widget component used to show the players name */
@@ -1150,6 +1305,9 @@ protected:
 	UPROPERTY( BlueprintReadOnly )
 	FUseState mCachedUseState;
 
+	UPROPERTY( BlueprintReadOnly )
+	FUseState mOldCachedUseState;
+	
 	/** Anim instance class to use in third person */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Character" )
 	TSubclassOf< class UAnimInstance > mAnimInstanceClass;
@@ -1162,14 +1320,6 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Revive" )
 	float mReviveDuration;
 
-	/** The starting resources for the player */
-	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
-	TArray< FItemAmount > mStartingResources;
-
-	/** DEPRECATED Use ExtraItemsToStartWith in editor preferences -> Satisfactory Local Settings instead*/
-	UPROPERTY( VisibleDefaultsOnly, Category = "Inventory", meta = ( DeprecatedProperty, DeprecationMessage = "Use ExtraItemsToStartWith in editor preferences -> Satisfactory Local Settings", NoAutoJson = true ) )
-	TArray< FItemAmount > mStartingResourceForTesting;
-
 	/** @todo: This should not be specified for each pawn */
 	UPROPERTY(EditDefaultsOnly, Instanced, Category= "Swimming")
 	TArray< UFGDamageType* > mDrownDamageTypes;
@@ -1177,6 +1327,10 @@ protected:
 	/** Time between each application of drowning damage (in seconds) */
 	UPROPERTY( EditDefaultsOnly, Category = "Swimming" )
 	float mDrownDamageInterval;
+
+	/** The damagetypes we allow while god mode is on. e.g. world bounds should still damage player so they don't fly of the screen  */
+	UPROPERTY(EditDefaultsOnly, Category= "Damage")
+	TArray< TSoftClassPtr<UFGDamageType> > mGodModeDamageTypes;
 
 	/** The player that we are reviving */
 	UPROPERTY( BlueprintReadOnly, Category = "Revive" )
@@ -1215,9 +1369,33 @@ protected:
 	UPROPERTY( SaveGame )
 	int32 mLastSafeGroundPositionLoopHead = 0;
 
+	/** The Hazmat suit does not exist as a native class so this member is here to identify it in code. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Default" )
+	TSubclassOf< class UFGEquipmentDescriptor > mHazmatSuitClass;
+	
+	/** Mapping context for the movement of the player. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextMovement;
+	
+	/** Mapping context for the actions of the player. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextActions;
+
+	/** Mapping context for managing equipment. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextEquipment;
+
+	/** Mapping context for the interface actions of the player. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextInterfaceActions;
+
+	/** Mapping context for managing equipment. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextCheats;
+	
 	/** Checks if this player has any holstered equipment */
 	UFUNCTION( BlueprintCallable )
-	bool HasHolsteredEquipment();
+	bool HasHolsteredEquipment() const;
 
 	/** Will return the index of the equipment holstered in the hand slot, of any. INDEX_NONE(-1) otherwise */
 	UFUNCTION( BlueprintCallable )
@@ -1235,17 +1413,27 @@ private:
 
 	UFUNCTION()
 	void OnUserSettingsUpdated();
-
+	
+protected:
+		/** Player camera */
+    	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+    	class UCameraComponent* mCameraComponent;
+private:
 	UFUNCTION()
 	void OnActiveEquipmentChangedInSlot( EEquipmentSlot slot );
 	
 	friend class AFGPlayerController;
 	friend class UFGInventoryComponentEquipment;
 
-	/** Player camera */
-	UPROPERTY( EditAnywhere )
-	class UCameraComponent* mCameraComponent;
+	/** Keeps track of the Flying Mode Setting. If this is true thee player can toggle Flying Mode on/off. */
+	bool mFlyingIsToggleable = false;
 
+	/** Basically just stores movement components bCheatFlying when we save the game so it can be applied when loading a game.
+	 *	This is a pretty naive implementation but seems to work and has minimal effects on other systems.
+	 *	DON'T RELY ON THIS AT RUNTIME. I don't feel its worth tracking this state during the whole session -K2 */
+	UPROPERTY( SaveGame )
+	bool mIsCheatFlyingSaved = false;
+	
 	/** The cinematic camera used in photo mode */
 	UPROPERTY( Transient )
 	class UFGCineCameraComponent* mCinematicCameraComponent;
@@ -1311,11 +1499,7 @@ private:
 	UPROPERTY( EditDefaultsOnly )
 	TArray<EResourceForm> mAllowedResourceFormsInInventory;
 
-	/** The belt slot inventory. */
-	UPROPERTY( SaveGame, Replicated )
-	class UFGInventoryComponentBeltSlot* mBeltSlot;
-
-	/** The players inventory. */
+	/** The players trash slot inventory. */
 	UPROPERTY( Replicated )
 	class UFGInventoryComponent* mTrashSlot;
 
@@ -1345,15 +1529,15 @@ private:
 	bool mWantsSprintBobbing;
 
 	/** Reference to the current head bob shake we should use */
-	TSubclassOf< class UMatineeCameraShake > mCurrentHeadBobShake;
+	TSubclassOf< class ULegacyCameraShake > mCurrentHeadBobShake;
 
 	/** Reference to the default walk head bob shake */
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
-	TSubclassOf< class UMatineeCameraShake > mDefaultWalkHeadBobShake;
+	TSubclassOf< class ULegacyCameraShake > mDefaultWalkHeadBobShake;
 
 	/** Reference to the default sprint head bob shake */
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
-	TSubclassOf< class UMatineeCameraShake > mDefaultSprintHeadBobShake;
+	TSubclassOf< class ULegacyCameraShake > mDefaultSprintHeadBobShake;
 
 	/** Vehicle currently driven by pawn. */
 	UPROPERTY( ReplicatedUsing = OnRep_DrivenVehicle )
@@ -1506,12 +1690,14 @@ private:
 	class USkeletalMeshComponent* mEmoteSkelMeshComp;
 
 	FTimerHandle mEmoteSkelMeshTimer;
+	
+	EActionsToBind mBoundInputActionsMask;
 
-public:
-	UPROPERTY( BlueprintReadWrite, Category = "FactoryGame|Movement|Crouch" )
-	bool mNoUpdate;
+	/** Whenever we should skip the next camera offset update */
+	uint8 mSkipNextCameraOffsetUpdate : 1;
+	/** Whenever we are partially submerged into the water volume and should not be allowed to crouch */
+	uint8 mIsPartiallySubmergedInWater : 1;
 
-private:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTexture;
 
@@ -1536,4 +1722,10 @@ private:
 	 *	It does not care about platform logins */
 	TOptional<bool> mIsPlayerOnline;
 	
+	UPROPERTY( VisibleAnywhere, ReplicatedUsing=OnRep_PendingHyperJunctionOutputConnection, Category = "Hyper Tube" )
+	FFGPipeHyperConnectionHistoryEntry mPendingHyperJunctionOutputConnection;
+
+	/** The cache of all destinations picked by the player, used for network correction and movement simulation on other clients */
+	UPROPERTY()
+	TArray<FFGPipeHyperConnectionHistoryEntry> mPendingHyperJunctionOutputConnectionHistory;
 };

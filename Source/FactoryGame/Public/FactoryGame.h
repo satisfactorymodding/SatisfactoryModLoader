@@ -4,11 +4,9 @@
 #define __FACTORYGAME_H__
 
 #include "EngineMinimal.h"
-//#include "EngineUtils.h"
 
 #include "Net/UnrealNetwork.h"
 #include "Net/RepLayout.h"
-//#include "Net/DataReplication.h"
 #include "Engine/ActorChannel.h"
 #include "FGObjectReference.h"
 
@@ -64,12 +62,16 @@ static const FName SHOWDEBUG_SELF_DRIVING( TEXT( "SelfDriving" ) );
 static const FName SHOWDEBUG_FOG_OF_WAR( TEXT( "FogOfWar" ) );
 static const FName SHOWDEBUG_MAP_MARKERS( TEXT( "MapMarkers" ) );
 static const FName SHOWDEBUG_CENTRAL_STORAGE( TEXT( "CentralStorage" ) );
+static const FName SHOWDEBUG_BLUEPRINT_PROXY( TEXT( "BlueprintProxy" ) );
 
 /** Common show debug colors */
 static const FLinearColor DEBUG_TEXTWHITE( 0.9f, 0.9f, 0.9f );
 static const FLinearColor DEBUG_TEXTGREEN( 0.86f, 0.f, 0.f );
 static const FLinearColor DEBUG_TEXTYELLOW( 0.86f, 0.69f, 0.f );
 static const FLinearColor DEBUG_TEXTRED( 0.f, 0.69f, 0.f );
+
+/** User settings string Ids that are used globally. */
+static const FString GAME_RULE_NO_UNLOCK_COST = "FG.GameRules.NoUnlockCost";
 
 /** Colors for splitting up indexes into different colors. */
 const TArray< FColor > DEBUG_COLORS =
@@ -128,7 +130,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogInventory, Log, All );
 	{ \
 		fgcheck( ( (UObject*)(Obj) )->GetClass()->ImplementsInterface( U##Interface::StaticClass() ) ); \
 		VarName.SetObject( ( Obj ) ); \
-		VarName.SetInterface( ( (UObject*)(Obj) )->GetInterfaceAddress( U##Interface::StaticClass() ) ); \
+		VarName.SetInterface( static_cast<I##Interface*>( ( (UObject*)(Obj) )->GetInterfaceAddress( U##Interface::StaticClass() ) ) ); \
 	}
 
 #define SET_INTERFACE( Interface, VarName, Obj ) \
@@ -195,8 +197,6 @@ static const FName SecondaryFireAction( TEXT( "SecondaryFire" ) );
 static const FName ReloadAction( TEXT( "Reload" ) );
 static const FName BuildGunScrollDownAction( TEXT( "BuildGunScrollDown_PhotoModeFOVDown" ) );
 static const FName BuildGunScrollUpAction( TEXT( "BuildGunScrollUp_PhotoModeFOVUp" ) );
-static const FName BuildGunScrollModeAction( TEXT( "BuildGunScrollMode" ) );
-static const FName BuildGunNoSnapModeAction( TEXT( "ToggleMap_BuildGunNoSnapMode" ) );
 static const FName BuildGunSnapToGuideLinesAction( TEXT( "BuildGunSnapToGuideLines_ToggleMultiSelectDismantle" ) );
 static const FName BuildGunDismantleToggleMultiSelectStateAction( TEXT( "BuildGunSnapToGuideLines_ToggleMultiSelectDismantle" ) );
 static const FName BuildGunDismantleToggleSpecifiedSelectStateAction( TEXT( "ToggleSpecifiedMultiSelectDismantle" ) );
@@ -207,6 +207,8 @@ static const FName CycleToPreviousHotbarAction( TEXT( "CycleToPreviousHotbar" ) 
 static const FName PauseAction( TEXT( "PauseGame" ) );
 static const FName ChatAction( TEXT( "Chat" ) );
 static const FName CycleAmmunitionTypeAction( TEXT( "CycleAmmunitionType" ) );
+static const FName HolsterAction( TEXT( "HolsterEquipment" ) );
+
 
 /** Color Parameters */
 static const FName CanPaintPrimaryOrSecondary( TEXT( "CanBePainted" ) ); //Some - Not all - MaterialInterfaces have this property and it should override the "ability" to modify primary and secondary color
@@ -226,8 +228,8 @@ FORCEINLINE FString VarToFString( MyClass var ){ return FString::Printf( TEXT( "
 #define SHOWVAR( x ) *FString::Printf( TEXT( "%s = %s" ), TEXT( #x ), *VarToFString( x ) )
 
 // Show for enums. Note that you need to provide the enum's type name as we can't get that using code.
-#define SHOWENUM( name, x ) *FString::Printf( TEXT( "%s = %s" ), TEXT( #x ), *EnumToFString( FString( #name ), ( int32 )x ) )
-#define ENUM_TO_FSTRING( name, x ) EnumToFString( FString( #name ), ( uint32 )x )
+#define SHOWENUM( name, x ) *FString::Printf( TEXT( "%s = %s" ), TEXT( #x ), *EnumToFString< name >( ( int32 )x ) )
+#define ENUM_TO_FSTRING( name, x ) EnumToFString< name >( ( uint32 )x )
 
 // Show for container types.
 #define SHOWARRAY( x ) *FString::Printf( TEXT( "%s [%i]:\n%s" ), TEXT( #x ), x.Num(), *ArrayToFString< decltype( x ) >( x ) )
@@ -305,7 +307,7 @@ FORCEINLINE FString VarToFString( FLinearColor var ){ return FString::Printf( TE
 FORCEINLINE FString VarToFString( FColor var ){ return FString::Printf( TEXT( "(R=%i,G=%i,B=%i,A=%i)" ), var.R, var.G, var.B, var.A ); }
 FORCEINLINE FString VarToFString( const FUniqueNetId& var ){ return FString::Printf( TEXT( "%s" ), *var.ToString() ); }
 FORCEINLINE FString VarToFString( FUniqueNetIdRepl var ){ return FString::Printf( TEXT( "%s" ), *var.ToString() ); }
-FORCEINLINE FString VarToFString( FOverlapResult var ){ return FString::Printf( TEXT("%s"), var.Actor.IsValid() ? *var.Actor.Get()->GetName() : *VarToFString(var.Component.Get()) ); }
+FORCEINLINE FString VarToFString( FOverlapResult var ){ return FString::Printf( TEXT("%s"), IsValid(var.GetActor()) ? *var.GetActor()->GetName() : *VarToFString(var.Component.Get()) ); }
 FORCEINLINE FString VarToFString( void* var ){ return FString::Printf( TEXT( "0x%016I64X" ), ( SIZE_T )var ); }
 FORCEINLINE FString VarToFString( FPrimaryAssetId var ){ return var.ToString(); }
 FORCEINLINE FString VarToFString( FObjectReferenceDisc var ){ return FString::Printf( TEXT( "%s" ), *var.ToString() ); }
@@ -327,9 +329,10 @@ FORCEINLINE FString VarToFString( TArray< T > var )
 	return FString::Printf( TEXT( "[%i]{%s}" ), var.Num(), *elements );
 }
 
-FORCEINLINE FString EnumToFString( const FString& name, int32 var )
+template<typename EnumType>
+FORCEINLINE FString EnumToFString( int32 var )
 {
-	if( UEnum* EnumObject = FindObject< UEnum >( ANY_PACKAGE, *name, true ) )
+	if( UEnum* EnumObject = StaticEnum< EnumType >() )
 	{
 #if WITH_EDITOR
 		return EnumObject->GetDisplayNameTextByValue( var ).ToString();
@@ -341,9 +344,10 @@ FORCEINLINE FString EnumToFString( const FString& name, int32 var )
 	return TEXT( "Invalid Enum" );
 }
 
-FORCEINLINE bool IsValidEnumValue( const TCHAR* enumName, const FString& enumValue )
+template<typename EnumType>
+FORCEINLINE bool IsValidEnumValue( const FString& enumValue )
 {
-	if( UEnum* enumObject = FindObject< UEnum >( ANY_PACKAGE, enumName, true ) )
+	if( UEnum* enumObject = StaticEnum< EnumType >() )
 	{
 		return enumObject->IsValidEnumName( FName( *enumValue ) );
 	}
@@ -352,9 +356,9 @@ FORCEINLINE bool IsValidEnumValue( const TCHAR* enumName, const FString& enumVal
 }
 
 template<typename T>
-FORCEINLINE T StringToEnumChecked( const TCHAR* enumName, const FString& enumValue )
+FORCEINLINE T StringToEnumChecked( const FString& enumValue )
 {
-	UEnum* enumObject = FindObject< UEnum >( ANY_PACKAGE, enumName, true );
+	UEnum* enumObject = StaticEnum< T >();
 	check(enumObject);
 
 	int32 index = enumObject->GetIndexByName(FName(*enumValue));

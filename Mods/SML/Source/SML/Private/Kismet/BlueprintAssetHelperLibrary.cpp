@@ -21,7 +21,7 @@ void UBlueprintAssetHelperLibrary::FindBlueprintAssetsByTag(UClass* BaseClass, c
 
 	for (const FAssetData& AssetData : OutFoundAssets) {
 		//Make sure found asset is a blueprint
-		if (AssetData.AssetClass != TEXT("Blueprint")) {
+		if (AssetData.AssetClassPath != FTopLevelAssetPath(UBlueprint::StaticClass())) {
 			continue;
 		}
 

@@ -12,7 +12,7 @@ class FACTORYGAME_API UFGSoundSplineComponent : public UAkComponent
 {
 	GENERATED_BODY()
 public:
-	UFGSoundSplineComponent();
+	UFGSoundSplineComponent(const class FObjectInitializer& ObjectInitializer);
 
 	//~ Begin UActorComponent interface
 	virtual void Activate( bool reset ) override;

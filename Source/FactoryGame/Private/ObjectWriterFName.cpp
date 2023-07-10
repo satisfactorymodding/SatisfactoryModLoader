@@ -3,5 +3,6 @@
 #include "ObjectWriterFName.h"
 
 FObjectWriterFName::FObjectWriterFName(UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion) : FObjectWriter(Obj, InBytes) { }
-FObjectWriterFName& FObjectWriterFName::operator<<( UObject*& Res){ return *(this); }
+FArchive& FObjectWriterFName::operator<<( UObject*& Res){ return *(new FArchive); }
+FArchive& FObjectWriterFName::operator<<(FObjectPtr& Res){ return *(new FArchive); }
 FArchive& FObjectWriterFName::operator<<( FName& N){ return *(new FArchive); }

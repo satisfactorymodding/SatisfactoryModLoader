@@ -16,3 +16,4 @@ void UFGDotComponent::Deactivate(){ }
 void UFGDotComponent::OnActorBeginOverlap(AActor* overlappedActor, AActor* otherActor){ }
 void UFGDotComponent::OnActorEndOverlap(AActor* overlappedActor, AActor* otherActor){ }
 void UFGDotComponent::RegisterDOTForActor(AActor* actor, bool shouldRegister) const{ }
+void UFGDotComponent::OnDOTReceiverCreated( UFGDotReceiverComponent* dotReceiver){ }

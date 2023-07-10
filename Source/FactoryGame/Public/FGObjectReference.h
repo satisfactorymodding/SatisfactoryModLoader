@@ -30,7 +30,7 @@ struct FACTORYGAME_API FObjectReferenceDisc
 	FObjectReferenceDisc();
 
 	/** Setups reference from a object  */
-	FObjectReferenceDisc( UObject* obj );
+	FObjectReferenceDisc( const UObject* obj );
 
 	/** If returning true, then this is a nullptr */
 	bool IsNullptr() const;
@@ -73,8 +73,10 @@ struct FACTORYGAME_API FObjectReferenceDisc
 	*/
 	AActor* TryResolveActorWithNewLevel( UWorld* world, ULevel* newLevel );
 
+	FObjectReferenceDisc MigrateToNewLevel( const FString& levelName ) const;
+
 	/** Set the reference to a object */
-	void Set( UObject* obj );
+	void Set( const UObject* obj );
 
 	/** Parse out the name of the object from the relative path */
 	void ParseObjectName( FString& out_objName ) const;
@@ -82,11 +84,16 @@ struct FACTORYGAME_API FObjectReferenceDisc
 	/** Parse out the name of the object from the relative path */
 	void ParseObjectNameAndPath( FString& out_objPath, FString& out_objName ) const;
 
+	/** Returns the sub-object path within (eg if PathName==Persistent_Level:PersistentLevel.Actor1 then it returns PersistentLevel.Actor1 */
+	FString GetSubPathString() const;
+
 	/** Get the relative path between the level the object resides in */
-	static void GetRelativePath( UObject* obj, FString& out_pathName );
+	static void GetRelativePath( const UObject* obj, FString& out_pathName );
 
 	/** Find the level a object resides in */
-	static ULevel* FindOuterLevel( UObject* obj );
+	static const ULevel* FindOuterLevel( const UObject* obj );
+
+	static const class UWorldPartitionRuntimeCell* FindWorldPartitionCell( const UWorld* world, const FString& levelName );
 
 	/** Find the level this actor/object resides in with redirector support */
 	ULevel* FindLevel( UWorld* world ) const;

@@ -6,6 +6,8 @@
 #include "Components/SceneComponent.h"
 #include "FGDotReceiverComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDotReceiverCreated, class UFGDotReceiverComponent*, dotReceiver );
+
 /** An active dot is a non-stacking dot which can come from multiple sources at once. Such as multiple gas clouds. */
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FActiveDOT
@@ -46,6 +48,7 @@ class FACTORYGAME_API UFGDotReceiverComponent : public UActorComponent
 public:
 	UFGDotReceiverComponent();
 
+	virtual void BeginPlay() override;
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 	/** Gets all active DOTs which are currently applied to this receiver. */
@@ -63,6 +66,10 @@ public:
 	/** Removes all active DOTs. */
 	UFUNCTION( BlueprintCallable, Category = "Damage" )
 	void ClearAllDOTs();
+
+public:
+	/** Called whenever a new DotReceiver is spawned. */
+	static FOnDotReceiverCreated OnDOTReceiverCreated;
 	
 protected:	
 	/** List of active damage over time effects affecting our character. */

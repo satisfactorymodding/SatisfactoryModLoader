@@ -27,9 +27,11 @@ class FACTORYGAME_API IFGDismantleInterface
 
 	/**
 	 * How much do we get back when dismantling this.
+	 * @param noBuildCostEnabled If the player unique game rules NoBuildCost is enabled. This is needed here because we can't check this
+	 * in a global scope since it's per player. If noBuildCostEnabled is true we only want to return content of buildings (inventory, potential inventory etc.)
 	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
-	void GetDismantleRefund( UPARAM( ref ) TArray< FInventoryStack >& out_refund ) const;
+	void GetDismantleRefund( UPARAM( ref ) TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const;
 
 	/**
 	 * Returns the location where the refund should be spawned and the area

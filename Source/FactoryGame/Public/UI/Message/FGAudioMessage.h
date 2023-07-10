@@ -95,7 +95,7 @@ struct FMessageDialogue
 	UPROPERTY( EditDefaultsOnly, Category = "Audio Message" )
 	class UAkAudioEvent* AudioEvent;
 
-	UPROPERTY( EditDefaultsOnly, Category = "Audio Message" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Audio Message" )
 	TArray< FMessageSubtitle > MessageSubtitles;
 
 	/** How much should we overlap this dialogue with the next one. Useful when you want to overlap two conversations like one person interrupting another. 0 (default) means it will just play as usual */
@@ -112,63 +112,24 @@ struct FPendingMessage
 {
 	GENERATED_BODY()
 
-	FPendingMessage() : 
-        Message( nullptr ),
-        MessagePriorityType( EMessagePriorityType::MPT_DirectMessage ),
-        Delay( 0.0f )
+	FPendingMessage() :
+		MessageWidget ( nullptr),
+        Message( nullptr )
 	{}
 
-	FPendingMessage( TSubclassOf< class UFGMessageBase > message, EMessagePriorityType messagePriorityType, float delay ) : 
-        Message( message ),
-        MessagePriorityType( messagePriorityType ),
-        Delay( delay )
+	FPendingMessage( TSubclassOf< class UFGMessageBase > messageWidget ) : 
+        MessageWidget( messageWidget )
 	{}
 
-	FPendingMessage( TSubclassOf< class UFGMessageBase > message, EMessagePriorityType messagePriorityType ) : 
-    Message( message ),
-    MessagePriorityType( messagePriorityType )
+	FPendingMessage( class UFGMessage* message ) : 
+    Message( message )
 	{}
 
 	UPROPERTY( BlueprintReadOnly, Category = "Message" )
-	TSubclassOf< class UFGMessageBase > Message;
-
-	/** What priority type is this message. Only applicable for audio messages */
-	UPROPERTY(  BlueprintReadOnly, Category = "Message" )
-	EMessagePriorityType MessagePriorityType;
+	TSubclassOf< class UFGMessageBase > MessageWidget;
 	
-	/** The delay between this message and the previous pending message. Only applicable for messages in the same queue */
 	UPROPERTY( BlueprintReadOnly, Category = "Message" )
-	float Delay;
-};
-
-USTRUCT( BlueprintType )
-struct FPendingMessageQueue
-{
-	GENERATED_BODY()
-
-	FPendingMessageQueue( FPendingMessage pendingMessage ) :
-		PendingMessages( {pendingMessage} )
-	{}
-
-	FPendingMessageQueue( TArray<FPendingMessage> pendingMessages ) :
-		PendingMessages( pendingMessages )
-	{}
-
-	FPendingMessageQueue(  TSubclassOf< class UFGMessageBase > message ) :
-		PendingMessages( {FPendingMessage( message, EMessagePriorityType::MPT_DirectMessage )} )
-	{}
-
-	FPendingMessageQueue(){}
-
-	UPROPERTY( BlueprintReadOnly, Category = "Audio Message" )
-	TArray< FPendingMessage > PendingMessages;
-
-	bool HasUnplayedMessages();
-
-	bool ContainsAudioMessages();
-
-	FPendingMessage PopPendingMessage();
-
+	class UFGMessage* Message;
 };
 
 
@@ -182,10 +143,6 @@ class FACTORYGAME_API UFGAudioMessage : public UFGMessageBase
 public: 
 	/** ctor */
 	UFGAudioMessage( const FObjectInitializer& ObjectInitializer );
-
-	// Begin UObject interface
-	virtual void PostLoad() override;
-	// End UObject interface
 
 	// Begin Userwidget interface
 	virtual void NativeConstruct() override;
@@ -238,24 +195,17 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Audio Message" )
 	static EMessagePriorityType GetMessagePriorityType( TSubclassOf< UFGAudioMessage > message, UObject* worldContext );
+
+	void InitMessage( class UFGMessage* message );
 private:
 	/** Used to discard any input we want to consume but not use */
 	FORCEINLINE UFUNCTION()
 	void DiscardInput() { ; }
 
-#if WITH_EDITOR
-	/** This migrates the old audio events structs to the new message dialogue structs */
-	void MigrateDialogueData();
-#endif
-
 public:
 	/** The Ak component */
 	UPROPERTY()
 	class UAkComponent* mAkAudioComponent;
-
-	/** The AK audio to play when "showing" this message */
-	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = "Audio Message - DEPRECATED" )
-	TArray< FAudioSubtitlePair > mAudioEvents;
 
 	/** The Dialogue, Audio and subtitles, to play/show when "showing" this message */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Audio Message" )
@@ -293,8 +243,18 @@ public:
 	UPROPERTY( BlueprintAssignable )
 	FOnAudioMessageFinishedPlaying mOnAudioMessageFinishedPlayback;
 	
+protected:
+	/** Mapping context which is applied when opening this audio message */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
+	TObjectPtr< class UInputMappingContext > mMappingContext;
+	
 private:
 
-	UPROPERTY()
+	UPROPERTY( Transient )
 	class UInputComponent* mAudioMessageInputComponent;
+
+	/** This is the message data for this audio message. This is not always valid. Old message system used derived audio message classes
+	 *	and some of the is still around. In those cases the data is specified directly in the UFGAudioMessage class  */  
+	UPROPERTY( Transient )
+	class UFGMessage* mMessage;
 };

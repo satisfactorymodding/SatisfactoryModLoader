@@ -2,3 +2,9 @@
 
 #include "Narrative/FGMessage.h"
 
+#if WITH_EDITOR
+void UFGMessage::InitDependency(TSubclassOf<class UFGSchematic> schematicClass){ }
+void UFGMessage::InitDependency(TSubclassOf<class UFGItemDescriptor> itemDescriptorClass){ }
+void UFGMessage::InitDependency(TSubclassOf<class UFGResearchTree> researchTreeClass){ }
+#endif 
+void UFGMessage::UpdateMessage(const FString& inTitle, const FString& inTrigger, const FString& inMessage, TArray<FString>& out_Results){ }

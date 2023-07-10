@@ -27,7 +27,7 @@ public:
 	// End AActor interface
 
 	//~ Begin IFGDismantleInterface
-	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund ) const override;
+	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
 	//~ End IFGDismantleInterface
 
 	// Begin IFGReplicationDetailActorOwnerInterface
@@ -37,14 +37,25 @@ public:
 
 	/** Get the storage inventory from this storage box. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	FORCEINLINE class UFGInventoryComponent* GetStorageInventory() { return mStorageInventoryHandler->GetActiveInventoryComponent(); }
+	FORCEINLINE class UFGInventoryComponent* GetStorageInventory() { return mStorageInventoryHandlerData.GetActiveInventoryComponent(); }
 
 	/** Get the initial (non-repdetail) inventory. This is only available on Server */
 	FORCEINLINE class UFGInventoryComponent* GetInitialStorageInventory() { return mStorageInventory; }
 
 protected:
+	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
+	{
+		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
+		out_repDetailData.Add( &mStorageInventoryHandlerData );
+	}
+
+protected:
 	friend class AFGReplicationDetailActor_Storage;
 
+#if WITH_EDITOR // Virtual should only exist in editor builds since its used for testing item throughput
+	virtual void Factory_Tick(float dt) override;
+#endif
+	
 	// Begin Factory_ interface
 	virtual void Factory_CollectInput_Implementation() override;
 	// End Factory_ interface
@@ -79,10 +90,17 @@ private:
 	class UFGInventoryComponent* mStorageInventory;
 
 	/** Maintainer of the active storage component for this actor. Use this to get the active inventory component. */
-	class UFGReplicationDetailInventoryComponent* mStorageInventoryHandler;
+	FReplicationDetailData mStorageInventoryHandlerData;
 	
 	/** Cached input connections (No need for UPROPERTY as they are referenced in component array) */
 	TArray<class UFGFactoryConnectionComponent*> mCachedInputConnections;
+
+#if WITH_EDITOR
+	bool mHasResolvedBeltSpeed = 0.f;
+	TArray< float > mSpeedOfIncomingBelts;
+	float mTimeStartThroughputCheck = 0.f;
+	int32 mNumItemsThroughputCheck = 0;
+#endif
 
 private:
 	class AFGReplicationDetailActor_Storage* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_Storage>( mReplicationDetailActor ); };

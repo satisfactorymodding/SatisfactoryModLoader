@@ -2,4 +2,21 @@
 
 #include "FGPlayerInput.h"
 
+UFGPlayerInputPreProcessor::UFGPlayerInputPreProcessor( UFGPlayerInput* playerInput){ }
+UFGPlayerInputPreProcessor::~UFGPlayerInputPreProcessor(){ }
+void UFGPlayerInputPreProcessor::Tick(const float DeltaTime, FSlateApplication& SlateApp, TSharedRef<ICursor> Cursor){ }
+bool UFGPlayerInputPreProcessor::HandleMouseButtonDownEvent(FSlateApplication& SlateApp, const FPointerEvent& MouseEvent){ return bool(); }
+bool UFGPlayerInputPreProcessor::HandleMouseButtonUpEvent(FSlateApplication& SlateApp, const FPointerEvent& MouseEvent){ return bool(); }
+void UFGPlayerInput::PostInitProperties(){ Super::PostInitProperties(); }
+void UFGPlayerInput::BeginDestroy(){ Super::BeginDestroy(); }
 float UFGPlayerInput::SmoothMouse(float aMouse, uint8& SampleCount, int32 Index){ return float(); }
+void UFGPlayerInput::ProcessInputStack(const TArray<UInputComponent*>& InputComponentStack, const float DeltaTime, const bool bGamePaused){ }
+void UFGPlayerInput::GetActionMappings(APlayerController* playerController, TArray<FEnhancedActionKeyMapping>& out_KeyMappings){ }
+void UFGPlayerInput::Native_GetActionMappings(TArray<FEnhancedActionKeyMapping>& out_KeyMappings){ }
+bool UFGPlayerInput::GetOverlappingEnhancedKeyMappings(const FName& inActionName, const FKey& newKey, const TArray<FKey>& modifierKeys, TArray<FEnhancedActionKeyMapping>& out_HardConflicts, TArray<FEnhancedActionKeyMapping>& out_SoftConflicts){ return bool(); }
+bool UFGPlayerInput::GetCurrentMappingForAction(const FName& inActionName, FKey& out_primaryKey, TArray<FKey>& out_modifierKeys){ return bool(); }
+void UFGPlayerInput::HandleMouseButtonDownEvent(const FPointerEvent& MouseEvent){ }
+void UFGPlayerInput::HandleMouseButtonUpEvent(const FPointerEvent& MouseEvent){ }
+void UFGPlayerInput::DumpKeyStates(){ }
+void UFGPlayerInput::FlushMouseKeys(){ }
+void UFGPlayerInput::TryCacheDefaultKeyMappings(){ }

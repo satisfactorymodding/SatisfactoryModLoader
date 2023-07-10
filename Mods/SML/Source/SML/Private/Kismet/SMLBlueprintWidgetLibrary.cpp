@@ -22,7 +22,7 @@ UUserWidget* USMLBlueprintWidgetLibrary::FindParentWidgetOfClass(UUserWidget* Cu
 			TreeRootWidget = ParentWidget;
 		}
 		
-		//The resulting widget should have UWidgetTree as it's outer with RootWidget set to itself
+		//The resulting widget should have UWidgetTree as its outer with RootWidget set to itself
 		const UWidgetTree* WidgetTree = Cast<UWidgetTree>(TreeRootWidget->GetOuter());
 
 		//If root widget is somehow not owned by the widget tree,

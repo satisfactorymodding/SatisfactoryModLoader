@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class AFGBlueprintHologram : public AFGFactoryHologram
+class FACTORYGAME_API AFGBlueprintHologram : public AFGFactoryHologram
 {
 	GENERATED_BODY()
 
@@ -23,15 +23,15 @@ public:
 
 	/// Begin Hologram Interface
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID NetConstructionID );
-	virtual void PreHologramPlacement() override;
-	virtual void PostHologramPlacement() override;
+	virtual void PreHologramPlacement( const FHitResult& hitResult ) override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
 	virtual int32 GetRotationStep() const override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual void CheckCanAfford(UFGInventoryComponent* inventory) override;
 	virtual TArray< FItemAmount > GetCost(bool includeChildren) const override;
-	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes) const override;
+	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const override;
 	/// End Hologram Interface
 
 	// Begin AFGBuildableHologram Interface
@@ -44,9 +44,12 @@ public:
 	void LoadBlueprintToOtherWorld();
 	void DuplicateMeshComponentsFromBuildableArray( const TArray< AFGBuildable* >& buildables );
 	void GenerateCollisionObjects( const TArray< AFGBuildable* >& buildables );
+	void CreateConnectionRepresentations( const TArray<AFGBuildable*>& buildables );
+	void AlignBuildableRootWithBounds();
+	
 	void SetBlueprintDescriptor( class UFGBlueprintDescriptor* blueprintDesc ) { mBlueprintDescriptor = blueprintDesc; }
 	
-	USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName );
+	USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName );
 
 	// For use in the component duplicator for spline comp duplication when we need to have access the other components on the actor
 	UPROPERTY()
@@ -68,6 +71,14 @@ public:
 	UPROPERTY()
 	UFGBlueprintDescriptor* mBlueprintDescriptor;
 
+	DECLARE_DELEGATE_ThreeParams( FCreateBuildableVisualizationDelegate, AFGBlueprintHologram* /* blueprintHologram */, AFGBuildable* /* buildable */, USceneComponent* /* buildableRootComponent */ );
+
+	/**
+	 * Registers a custom visualizer for this buildable's hologram inside of the blueprint
+	 * The default behavior is that your buildable will get all of the relevant components copied and attached to the root component,
+	 * but if your hologram has some advanced logic it might need to do more setup based on the already built buildable
+	 */
+	static void RegisterCustomBuildableVisualization( TSubclassOf<AFGBuildable> inBuildable, const FCreateBuildableVisualizationDelegate& inDelegate );
 protected:
 	/** Build mode for snapping to blueprint proxies. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
@@ -81,5 +92,15 @@ protected:
 	UPROPERTY()
 	class UStaticMeshComponent* mBlueprintBoundsMesh;
 
+	/** Mesh representing the forward direction of our blueprint. */
+	UPROPERTY()
+	class UStaticMeshComponent* mBlueprintDirectionMesh;
+
 	FBox mLocalBounds;
+	
+	FVector mLocalBoundsOffset;
+
+	static TMap<FTopLevelAssetPath, FCreateBuildableVisualizationDelegate> RegisteredCustomVisualizers;
+
+	static bool FindCustomVisualizer( TSubclassOf<AFGBuildable> buildableClass, FCreateBuildableVisualizationDelegate& outVisualizer );
 };

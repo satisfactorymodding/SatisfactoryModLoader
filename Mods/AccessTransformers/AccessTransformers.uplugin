@@ -1,0 +1,14 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Access Transformers",
+	"Category": "Modding",
+	"Modules": [
+		{
+			"Name": "AccessTransformers",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	]
+}

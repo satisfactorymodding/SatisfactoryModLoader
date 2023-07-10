@@ -2,4 +2,4 @@
 
 #include "FGComponentHelpers.h"
 
-void FGComponentHelpers::DuplicateComponents(TSubclassOf<class AActor> actorClass,  USceneComponent* defaultRoot, FComponentDuplicator duplicator, TArray<UStaticMeshComponent*>* outLightweightComponents){ }
+void FGComponentHelpers::DuplicateComponents(TSubclassOf<class AActor> actorClass,  USceneComponent* defaultRoot, FComponentDuplicator duplicator, TArray<UStaticMeshComponent*>* outLightweightComponents , FName defaultRootSocketName){ }

@@ -21,4 +21,6 @@ bool AFGStandaloneSignHologram::TrySnapToActor(const FHitResult& hitResult){ ret
 void AFGStandaloneSignHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 void AFGStandaloneSignHologram::Scroll(int32 delta){ }
 void AFGStandaloneSignHologram::OnInvalidHitResult(){ }
+AFGHologram* AFGStandaloneSignHologram::GetNudgeHologramTarget(){ return nullptr; }
+void AFGStandaloneSignHologram::PostHologramPlacement(const FHitResult& hitResult){ }
 void AFGStandaloneSignHologram::CheckValidFloor(){ }

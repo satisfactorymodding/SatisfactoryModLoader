@@ -14,7 +14,7 @@ FLogCategoryBase* CreateOrFindLogCategory(const FName LogCategoryName, ELogVerbo
 	}
 
 	UE_LOG(LogSatisfactoryModLoader, Log, TEXT("Registering dynamic Blueprint logging category %s with default verbosity %s"),
-		*LogCategoryName.ToString(), FOutputDeviceHelper::VerbosityToString(DefaultVerbosity));
+		*LogCategoryName.ToString(), ToString(DefaultVerbosity));
 
 	const TSharedPtr<FLogCategoryBase> NewCategory = MakeShared<FLogCategoryBase>(LogCategoryName, DefaultVerbosity, ELogVerbosity::All);
 	RegisteredCategories.Add(LogCategoryName, NewCategory);
@@ -32,7 +32,7 @@ void UBlueprintLoggingLibrary::LogImpl(ELogVerbosity::Type Verbosity, UPackage* 
 		TargetLogCategory = &LogTemp;
 	}
 	else if (PluginName == TEXT("SML")) {
-		//SML is non-conforming because it's logging category does not match it's plugin name + Log prefix
+		//SML is non-conforming because its logging category does not match its plugin name + Log prefix
 		TargetLogCategory = &LogSatisfactoryModLoader;
 
 	}

@@ -11,19 +11,19 @@ public:
 	 * to find the first widget of the class that be casted to the provided one and returns it
 	 * Will break through outer widget trees to find the resulting widget
 	 * When traversing the hierarchy, it will always try to come down to the outermost UWidget (that would be UWidgetTree::RootWidget
-	 * of the containing UUserWidget) before attempting to retrieve it's UWidgetTree outer and consequentially
+	 * of the containing UUserWidget) before attempting to retrieve its UWidgetTree outer and consequentially
 	 * the owning UUserWidget. The reason for that behavior are named slots, which when used can result in a disparity
-	 * between logical location of the widget (inside of the child widget tree's named slot) and it's physical location
-	 * (it's outer is the owning parent widget tree). In that ambiguity, we follow the logical position,
+	 * between logical location of the widget (inside of the child widget tree's named slot) and its physical location
+	 * (its outer is the owning parent widget tree). In that ambiguity, we follow the logical position,
 	 * and the immediate owner of the widget would be a child widget tree (although we will still recurse into the parent tree later on)
 	 *
 	 * Keep in mind that normally widgets should make ZERO assumptions about their container
 	 * and use public properties, named slots and delegates instead to facillate interaction with their host,
 	 * but in some particular cases (read "widget blueprint hooking") interacting with host blueprint can be really tricky
-	 * because you have no access to it's bindings (since your injected widget has no backing FObjectProperty).
+	 * because you have no access to its bindings (since your injected widget has no backing FObjectProperty).
 	 *
 	 * But because in such cases you have a very clear knowledge of your supposed parent widget,
-	 * you can utilize it to retrieve it's data directly. Such operations should be carefully done
+	 * you can utilize it to retrieve its data directly. Such operations should be carefully done
 	 * and only used in the context of the widget blueprint hooking.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Widget | Advanced", meta = (DefaultToSelf = "CurrentWidget", DeterminesOutputType = "Class"))

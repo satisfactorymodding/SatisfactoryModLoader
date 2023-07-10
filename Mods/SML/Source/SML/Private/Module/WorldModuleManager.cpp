@@ -45,7 +45,7 @@ void UWorldModuleManager::InitializeModules(const UWorld::FActorsInitializedPara
 	SubsystemActorManager->MakeSureNativeSubsystemsRegistered();
 	
 	//We cannot construct modules earlier because before that moment world just lacks
-	//information about it's type and authority game mode object on host
+	//information about its type and authority game mode object on host
 	ConstructModules();
 
 	DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);

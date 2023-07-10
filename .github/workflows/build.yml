@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -16,15 +17,15 @@ jobs:
           path: SML
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.0.3
+        uses: microsoft/setup-msbuild@v1
 
-      - name: Create UE4 directory
-        run: mkdir ue4
+      - name: Create UE directory
+        run: mkdir ue
 
-      - name: Download, Extract and Setup UE4
-        working-directory: ue4
+      - name: Download, Extract and Setup UE
+        working-directory: ue
         run: |
-          gh release download --repo SatisfactoryModdingUE/UnrealEngine -p "*.7z.*"
+          gh release download --repo satisfactorymodding/UnrealEngine -p "UnrealEngine-CSS-Editor-Win64.7z.*"
           7z x UnrealEngine-CSS-Editor-Win64.7z.001
           rm UnrealEngine-CSS-Editor-Win64.7z*
           .\\SetupScripts\\Register.bat
@@ -39,13 +40,14 @@ jobs:
 
       - name: Build SML
         run: |
-          .\\ue4\\lb\\win\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe  -projectfiles -project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -game -rocket -progres
+          .\\ue\\Engine\\Build\\BatchFiles\\Build.bat -projectfiles -project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -game -rocket -progres
           MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Shipping" /p:Platform="Win64" /t:"Games\FactoryGame"
           MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Development Editor" /p:Platform="Win64" /t:"Games\FactoryGame"
-          .\\ue4\\lb\\win\\Engine\\Build\\BatchFiles\\RunUAT.bat -Compile -ScriptsForProject="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" PackagePlugin -Project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -PluginName="SML" -GameDir="%SF_GAME_DIR%"
+          .\\ue\\Engine\\Build\\BatchFiles\\RunUAT.bat -ScriptsForProject="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" PackagePlugin -Project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -PluginName="SML"
 
       - name: Archive SML artifact
         uses: actions/upload-artifact@v2
+        if: ${{ github.event_name == 'push' }}
         with:
           name: sml
-          path: SML\\Saved\\ArchivedPlugins\\WindowsNoEditor\\SML.zip
+          path: SML\\Saved\\ArchivedPlugins\\Windows\\SML.zip

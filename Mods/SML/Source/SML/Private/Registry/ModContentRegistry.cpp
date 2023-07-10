@@ -261,7 +261,7 @@ void AModContentRegistry::UnlockTutorialSchematics() {
 			//and other kinds of nasty stuff, so for now i'm leaving as it is while we're looking for a better solution
 			if (UFGSchematic::GetType(Schematic) == ESchematicType::EST_Tutorial &&
 					SchematicManager->mPurchasedSchematics.Find(Schematic) == INDEX_NONE) {
-				SchematicManager->GiveAccessToSchematic(Schematic);
+				SchematicManager->GiveAccessToSchematic(Schematic, nullptr);
 			}
 		}
     }
@@ -283,7 +283,7 @@ void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRec
 	for (const FItemAmount& ItemAmount : AllReferencedItems) {
 		const TSubclassOf<UFGItemDescriptor>& ItemDescriptor = ItemAmount.ItemClass;
 
-		CHECK_PROVIDED_OBJECT_VALID(ItemDescriptor, TEXT("Recipe '%s' registered by %s contains invalid NULL ItemDescriptor in it's Ingredients or Results"),
+		CHECK_PROVIDED_OBJECT_VALID(ItemDescriptor, TEXT("Recipe '%s' registered by %s contains invalid NULL ItemDescriptor in its Ingredients or Results"),
 				*Recipe->GetPathName(), *ModReference.ToString());
 
 		TSharedPtr<FItemRegistrationInfo> ItemRegistrationInfo = ItemRegistryState.FindObject(ItemDescriptor);
@@ -424,7 +424,7 @@ void AModContentRegistry::RegisterSchematic(const FName ModReference, const TSub
         ExtractRecipesFromSchematic(Schematic, OutReferencedRecipes);
 
     	for (const TSubclassOf<UFGRecipe>& Recipe : OutReferencedRecipes) {
-    		CHECK_PROVIDED_OBJECT_VALID(Recipe, TEXT("Schematic '%s' registered by %s references invalid NULL Recipe in it's Unlocks Array"),
+    		CHECK_PROVIDED_OBJECT_VALID(Recipe, TEXT("Schematic '%s' registered by %s references invalid NULL Recipe in its Unlocks Array"),
     			*Schematic->GetPathName(), *ModReference.ToString());
 
             RegisterRecipe(ModReference, Recipe);
@@ -453,7 +453,7 @@ void AModContentRegistry::RegisterResearchTree(const FName ModReference, const T
         ExtractSchematicsFromResearchTree(ResearchTree, OutReferencedSchematics);
 
         for (const TSubclassOf<UFGSchematic>& Schematic : OutReferencedSchematics) {
-        	CHECK_PROVIDED_OBJECT_VALID(Schematic, TEXT("ResearchTree '%s' registered by %s references invalid NULL Schematic in one of it's Nodes"),
+        	CHECK_PROVIDED_OBJECT_VALID(Schematic, TEXT("ResearchTree '%s' registered by %s references invalid NULL Schematic in one of its Nodes"),
         		*ResearchTree->GetPathName(), *ModReference.ToString());
 
             RegisterSchematic(ModReference, Schematic);

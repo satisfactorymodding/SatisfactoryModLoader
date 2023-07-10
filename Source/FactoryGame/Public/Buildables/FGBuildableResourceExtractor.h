@@ -40,7 +40,7 @@ public:
 
 	/** Get the inventory we output the extracted resources to */
 	UFUNCTION( BlueprintPure, Category = "Resource" )
-	class UFGInventoryComponent* GetOutputInventory() const{ return mInventoryOutputHandler->GetActiveInventoryComponent(); }
+	class UFGInventoryComponent* GetOutputInventory() const{ return mInventoryOutputHandlerData.GetActiveInventoryComponent(); }
 
 	/** Get the quantity of items mined each production cycle */
 	UFUNCTION( BlueprintPure, Category = "Extraction" )
@@ -84,13 +84,19 @@ protected:
 	virtual void OnRep_ExtractableResource() override;
 	// End AFGBuildableResourceExtractorBase Interface
 
+	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
+	{
+		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
+		out_repDetailData.Add( &mInventoryOutputHandlerData );
+	}
+
 private:
 	void CalculateProductionCycleTime();
 
 private:
 	friend class AFGRepDetailActor_Extractor;
 
-	class UFGReplicationDetailInventoryComponent* mInventoryOutputHandler;
+	FReplicationDetailData mInventoryOutputHandlerData;
 
 	/** Power up time for the extraction process, e.g. the time it takes for a drill to start spinning. */
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )

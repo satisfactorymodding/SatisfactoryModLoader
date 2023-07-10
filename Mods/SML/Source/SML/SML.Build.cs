@@ -5,7 +5,7 @@ using System.IO;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Tools.DotNETCommon;
+using EpicGames.Core;
 
 public class SML : ModuleRules
 {
@@ -17,7 +17,10 @@ public class SML : ModuleRules
         //SML transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
             "Json",
-            "Projects"
+            "Projects",
+            "NetCore",
+            "EnhancedInput",
+            "GameplayTags"
         });
         
         PrivateDependencyModuleNames.AddRange(new[] {
@@ -94,7 +97,7 @@ public class SML : ModuleRules
         try {
             var headFileContents = File.ReadAllText(gitHeadFile).Replace("\n", "");
 
-            //It is a normal HEAD ref, so it's name should equal to local branch name
+            //It is a normal HEAD ref, so its name should be equal to the local branch name
             if (headFileContents.StartsWith("ref: refs/heads/")) {
                 branchName = headFileContents.Substring(16);
                 //Try to resolve commit name directly from the ref file

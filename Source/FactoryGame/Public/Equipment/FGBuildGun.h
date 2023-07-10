@@ -9,6 +9,7 @@
 #include "Equipment/FGEquipmentAttachment.h"
 #include "Inventory.h"
 #include "FGFactoryColoringTypes.h"
+#include "FGBuildGunModeDescriptor.h"
 #include "FGBuildGun.generated.h"
 
  /**
@@ -17,27 +18,30 @@
 UENUM( BlueprintType )
 enum class EBuildGunState : uint8
 {
-	BGS_NONE		= 0		UMETA( DisplayName = "None" ),
-	BGS_MENU		= 1		UMETA( DisplayName = "Menu" ),
-	BGS_BUILD		= 2		UMETA( DisplayName = "Build" ),
-	BGS_DISMANTLE	= 3		UMETA( DisplayName = "Dismantle" ),
-	BGS_PAINT		= 4		UMETA( DisplayName = "Paint" ),
-	BGS_MAX			= 5		UMETA( Hidden )
+	BGS_NONE			UMETA( DisplayName = "None" ),
+	BGS_MENU			UMETA( DisplayName = "Menu" ),
+	BGS_BUILD			UMETA( DisplayName = "Build" ),
+	BGS_DISMANTLE		UMETA( DisplayName = "Dismantle" ),
+	BGS_PAINT			UMETA( DisplayName = "Paint" ),
+	
+	BGS_MAX				UMETA( Hidden )
 };
 
 UENUM( BlueprintType )
 enum class EMenuStateSection : uint8
 {
-	MSS_NONE		= 0,
-	MSS_BUILD		= 1,
-	MSS_CUSTOMIZE	= 2
+	MSS_NONE			UMETA( DisplayName = "None" ),
+	MSS_BUILD			UMETA( DisplayName = "Build" ),
+	MSS_CUSTOMIZE		UMETA( DisplayName = "Paint" ),
+	MSS_BLUEPRINT		UMETA( DisplayName = "Blueprint" ),
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildGunStateChanged, EBuildGunState, newState );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildGunMenuStateChanged, EMenuStateSection, newState );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildGunRecipeChanged, TSubclassOf< class UFGRecipe >, newRecipe );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRecipeSampled, TSubclassOf< class UFGRecipe >, newRecipe );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCustomizationsSampled, TArray< TSubclassOf< class UFGFactoryCustomizationDescriptor > >, newCustomizations );
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FBuildGunModeChanged, TSubclassOf< UFGBuildGunModeDescriptor >, newMode );
 
 /**
  * Represents a state in the build gun, e.g. build, dismantle etc.
@@ -49,10 +53,7 @@ class FACTORYGAME_API UFGBuildGunState : public UObject
 
 public:
 	UFGBuildGunState();
-
-	/** For replicating more complicated objects. */
-	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags );
-
+	
 	/** Mark this class as supported for networking */
 	virtual bool IsSupportedForNetworking() const override;
 
@@ -96,16 +97,7 @@ public:
 	/** Redirected from the build gun. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
 	void SecondaryFire();
-
-	/** Redirected from the build gun. */
-	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void ModeSelectPressed();
-
-		/** Redirected from the build gun. */
-	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void ModeSelectRelease();
-
-
+	
 	/** Redirected from the build gun. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
 	void BuildSamplePressed();
@@ -134,22 +126,27 @@ public:
 
 	/** Redirected from the build gun. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void ScrollDown();
+	void Scroll( int32 delta);
 
-	/** Redirected from the build gun. */
+	/** Called whenever the buildgun changes mode. Called on both server and client. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void ScrollUp();
+	void OnBuildGunModeChanged( TSubclassOf< UFGBuildGunModeDescriptor > newMode );
 
-	/** Redirected from the build gun. */
-	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void ChangeScrollMode();
+	/** Get a list of the currently supported build modes for the current hologram.*/
+	UFUNCTION( BlueprintNativeEvent, BlueprintPure, Category = "BuildModeSelect" )
+	void GetSupportedBuildModes( TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildModes ) const;
 
-	/** Redirected from the build gun. */
-	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void ChangeNoSnapMode();
+	/** What buildgun mode we want to start in when we enter this state. */
+	UFUNCTION( BlueprintNativeEvent, BlueprintPure, Category = "BuildModeSelect" )
+	TSubclassOf< UFGBuildGunModeDescriptor > GetInitialBuildGunMode() const;
 
+	/** Check if the buildgun's current mode is the one specified. */
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	bool IsCurrentBuildGunMode( TSubclassOf< UFGBuildGunModeDescriptor > buildMode ) const;
+
+	/** Used to override the range of the buildgun, results below 0 are ignored and default range will be used instead. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void ChangeGuideLinesSnapMode( bool enabled );
+	float GetBuildGunRangeOverride();
 
 	/**
 	 * Get the owning build gun.
@@ -195,12 +192,19 @@ public:
 	/** @return true if there is an delay on this state. */
 	UFUNCTION( Category = "BuildGunState" )
 	bool HasBuildGunDelay();
+
+	virtual void BindInputActions( class UFGEnhancedInputComponent* inputComponent );
+	void ClearInputActions( class UEnhancedInputComponent* inputComponent );
 protected:
 	/** If true, then we can sample buildings in this state */
 	bool mCanSampleBuildingsInState;
 
 	/** If true, the we can sample customizations in this state */
 	bool mCanSampleCustomizationsInState;
+
+	/** Mapping context of this build gun state. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContext;
 
 private:
 	/** Time (in seconds) it takes for the action (eg. Build, dismantle) */
@@ -230,7 +234,6 @@ public:
 	AFGBuildGun();
 
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags ) override;
 	virtual void BeginPlay() override;
 	virtual void Tick( float dt ) override;
 
@@ -238,6 +241,7 @@ public:
 	virtual bool ShouldSaveState() const override;
 	virtual void Equip( class AFGCharacterPlayer* character );
 	virtual void UnEquip();
+	virtual void OnInteractWidgetAddedOrRemoved( UFGInteractWidget* widget, bool added ) override;
 	// End AFGEquipment interface
 
 	void TraceForBuilding( APawn* owningPawn, FHitResult& hitresult );
@@ -287,6 +291,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
 	bool IsInState( EBuildGunState inState );
 
+	/** Gets the current state of the buildgun. */
+	UFUNCTION( BlueprintPure, Category = "BuildGun" )
+	FORCEINLINE UFGBuildGunState* GetCurrentState() const { return mCurrentState; }
+
 	/**
 	 * Only the server is allowed to build stuff so all the actions are executed on the server but may be simulated on the client.
 	 * Simulations may be sounds and the brrrrrrrring progress bar when selling.
@@ -297,18 +305,19 @@ public:
 	void OnSecondaryFireReleased();
 	void OnModeSelectPressed();
 	void OnModeSelectReleased();
-	void OnScrollDownPressed();
-	void OnScrollUpPressed();
-	void OnScrollModePressed();
-	void OnNoSnapModePressed();
-	void OnSnapToGuideLinesPressed();
-	void OnSnapToGuideLinesReleased();
-	void OnDismantleToggleMultiSelectStatePressed();
-	void OnDismantleToggleMultiSelectStateReleased();
-	void OnDismantleToggleSpecifedSelectStatePressed();
-	void OnDismantleToggleSpecifedSelectStateReleased();
 	void OnBuildSamplePressed();
 	void OnBuildSampleReleased();
+
+	UFUNCTION( Server, Reliable )
+	void Server_Scroll( int32 delta );
+	void Scroll( int32 delta );
+
+	/** Input Action Bindings */
+	void Input_PrimaryFire( const FInputActionValue& actionValue );
+	void Input_SecondaryFire( const FInputActionValue& actionValue );
+	void Input_ModeSelect( const FInputActionValue& actionValue );
+	void Input_ScrollAxis( const FInputActionValue& actionValue );
+	void Input_BuildSample( const FInputActionValue& actionValue );
 
 	/**
 	 * Only the client handles categories, recipes.
@@ -378,24 +387,57 @@ public:
 	bool IsRayClearanceHitAllowed() const { return mAllowCleranceRayHits; }
 	bool IsRayBlueprintProxyHitAllowed() const { return mAllowBlueprintProxyRayHits; }
 
+	/** Gets the default range of the build gun. **/
+	UFUNCTION( BlueprintPure, Category = "BuildGun" )
+	float GetDefaultBuildGunRange() const { return mBuildDistanceMax; }
+
 	/** Set the state to enter on the next equip */
 	void SetPendingEntryState( EBuildGunState state );
 
-	/** Set the desired menu section when opening the buildmenu (Build/Customize) */
+	/** Set the menu section for the build menu */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
-	void SetDesiredMenuStateSection( EMenuStateSection desiredSection ) { mDesiredMenuStateSection = desiredSection; }
+	void SetMenuStateSection( EMenuStateSection desiredSection, bool broadcastUpdate = true );
 
-	/** Gets the desired menu section to display when openinging the build men (Build/Customize) */
+	/** Gets the current menu state section. */
 	UFUNCTION( BlueprintPure, Category = "BuildGun" )
-	EMenuStateSection GetDesiredMenuStateSection() { return mDesiredMenuStateSection; }
+	EMenuStateSection GetMenuStateSection() { return mMenuStateSection; }
 
 	/** Updates cached hit result and simulate building sample pressed */
 	UFUNCTION()
 	void TryBuildSample();
+
+	/** Set the current mode on the build gun. */
+	UFUNCTION( BlueprintCallable, Category = "BuildGunModeSelect" )
+	void SetCurrentBuildGunMode( TSubclassOf< UFGBuildGunModeDescriptor > mode );
+
+	/** Gets the currently active buildgun mode. */
+	UFUNCTION( BlueprintPure, Category = "BuildGunModeSelect" )
+	FORCEINLINE TSubclassOf< UFGBuildGunModeDescriptor > GetCurrentBuildGunMode() const { return mCurrentBuildGunMode; }
+
+	/** Checks if the build gun's current mode is the one specified. */
+	UFUNCTION( BlueprintPure, Category = "BuildGunModeSelect" )
+	bool IsCurrentBuildGunMode( TSubclassOf< UFGBuildGunModeDescriptor > buildMode ) const;
+
+	UFUNCTION( BlueprintCallable, Category = "BuildGunModeSelect" )
+	FORCEINLINE bool IsWaitingForBuildGunModeSelectUI() const { return mIsWaitingForSelectionUI; }
+
+	UFUNCTION( BlueprintCallable, Category = "BuildGunModeSelect" )
+	void CycleBuildMode( int32 deltaIndex );
+	
+	UFUNCTION( BlueprintPure, Category = "BuildGun" )
+	float GetBuildGunRange() const;
 	
 protected:
 	/** Add custom bindings for this equipment */
 	virtual void AddEquipmentActionBindings() override;
+
+	/** Show the  mode selection UI */
+	UFUNCTION( BlueprintImplementableEvent, Category = "BuildModeSelect" )
+	void ShowBuildGunModeSelectUI();
+
+	/** Close the  mode selection UI */
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "BuildModeSelect" )
+	void CloseBuildGunModeSelectUI();
 private:
 	/** Lets the server handle the action. */
 	UFUNCTION( Server, Reliable, WithValidation )
@@ -404,22 +446,6 @@ private:
 	/** Lets the server handle the action. */
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_SecondaryFire();
-
-	/** Lets the server handle the action. */
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_ScrollDown();
-
-	/** Lets the server handle the action. */
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_ScrollUp();
-
-	/** Lets the server handle the action. */
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_ScrollMode();
-
-	/** Lets the server handle the action. */
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_NoSnapMode();
 
 	/** Lets the server switch to build state. */
 	UFUNCTION( Server, Reliable, WithValidation )
@@ -432,6 +458,9 @@ private:
 	/** Lets the server switch to paint state. */
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_GotoPaintState( TSubclassOf< class UFGCustomizationRecipe > customizationRecipe );
+
+	UFUNCTION( Server, Reliable )
+	void Server_SetCurrentBuildGunMode( TSubclassOf< UFGBuildGunModeDescriptor > mode );
 
 	/**
 	 * (Simulated)
@@ -448,14 +477,22 @@ private:
 	/** Switch the current state */
 	void GotoStateInternal( EBuildGunState state );
 
+	UFUNCTION()
+	void OnRep_CurrentBuildGunMode();
+
 private:
 	FORCEINLINE UFGBuildGunState* GetState( EBuildGunState state ) const { return mStates[ ( uint8 )state ]; }
 	template< class C > FORCEINLINE C* GetState( EBuildGunState state ) const { return CastChecked< C >( GetState( state ) ); }
 
+	void CreateBuildGunState( EBuildGunState state, FName StateName, TSubclassOf<UFGBuildGunState> stateClass );
 public:
 	/** Called when the build gun state changes. */
 	UPROPERTY( BlueprintAssignable, Category = "BuildGun|State" )
 	FOnBuildGunStateChanged mOnStateChanged;
+	
+	/** Called when the build gun menu state changes. */
+	UPROPERTY( BlueprintAssignable, Category = "BuildGun|State" )
+	FOnBuildGunMenuStateChanged mOnMenuStateChanged;
 
 	/** Called when the build gun build state receives a new recipe. This May be called prior to OnStateChanged. */
 	UPROPERTY( BlueprintAssignable, Category = "BuildGun|Recipe" )
@@ -468,6 +505,9 @@ public:
 	/** Called when the build gun have sampled customizations */
 	UPROPERTY( BlueprintAssignable, Category = "BuildGun|Paint" )
 	FOnCustomizationsSampled mOnCustomizationsSampled;
+
+	UPROPERTY( BlueprintAssignable, Category = "BuildGun|Mode", DisplayName = "OnBuildGunModeChanged" )
+	FBuildGunModeChanged mOnBuildGunModeChanged;
 
 protected:
 	/** Trace distance for this build gun when building and dismantling. */
@@ -497,13 +537,17 @@ protected:
 private:
 	/** All the states. */
 	UPROPERTY( Replicated )
-	UFGBuildGunState* mStates[ ( uint8 )EBuildGunState::BGS_MAX ];
+	UFGBuildGunState* mStates[ ( uint8 )EBuildGunState::BGS_MAX ] {};
+
+	/** Current mode on the buildgun. */
+	UPROPERTY( ReplicatedUsing = OnRep_CurrentBuildGunMode )
+	TSubclassOf< UFGBuildGunModeDescriptor > mCurrentBuildGunMode;
 
 	/** State to enter on the next equip. */
 	EBuildGunState mPendingEntryState;
 
-	/** Menu section to show when entering the menu */
-	EMenuStateSection mDesiredMenuStateSection;
+	/** Current menu section of the build gun. */
+	EMenuStateSection mMenuStateSection;
 
 	/** Result of the latest trace. */
 	UPROPERTY()
@@ -524,7 +568,18 @@ private:
 	/** wait for primary fire release event before re-initiating another build gun fire. Does not affect click+hold. */
 	bool mWaitingForPrimaryFireRelease;
 
-	bool mHasHookedUpBuildStateUserSettings = false; //[DavalliusA:Thu/23-01-2020] not happy with this, but didn't find a function that is only called once and where we know we have a local instagator or not 
+	bool mHasHookedUpBuildStateUserSettings = false; //[DavalliusA:Thu/23-01-2020] not happy with this, but didn't find a function that is only called once and where we know we have a local instagator or not
+
+	/** True if we are waiting for the selection UI */
+	UPROPERTY()
+	bool mIsWaitingForSelectionUI = false;
+	
+	/** stores a time we have held the mode select button for. Used so we can detect if it's a hold or tap, to show the menu or not*/
+	float mBuildModeSelectHoldTime = -1; //@TODO:[DavalliusA:Thu/28-11-2019] consider using a game time stamp instead so we don't have to rely on tick to update this
+
+	/** Time needed to hold down the key to show the selection UI */
+	UPROPERTY( EditDefaultsOnly, Category = "BuildModeSelect" )
+	float mBuildModeSelectHoldDownDurationForUI = 0.18f;
 };
 
 /**

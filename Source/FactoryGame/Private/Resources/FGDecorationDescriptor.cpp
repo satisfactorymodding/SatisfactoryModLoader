@@ -14,3 +14,4 @@ UStaticMesh* UFGDecorationDescriptor::GetMesh1p(TSubclassOf< UFGItemDescriptor >
 UStaticMesh* UFGDecorationDescriptor::GetMesh3p(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
 TSubclassOf< AActor > UFGDecorationDescriptor::GetDecorationActorClass(TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<AActor>(); }
 FVector UFGDecorationDescriptor::GetGroundMeshScale(TSubclassOf< UFGItemDescriptor > inClass){ return FVector(); }
+TArray< UMaterialInstance* > UFGDecorationDescriptor::GetFirstPersonMaterialInstances(TSubclassOf< UFGItemDescriptor > inClass){ return TArray<UMaterialInstance*>(); }

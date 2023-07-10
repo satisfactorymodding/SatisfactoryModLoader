@@ -38,6 +38,7 @@ void AFGEquipmentAttachment::OnDetach_Implementation(){ }
 void AFGEquipmentAttachment::SetAttachmentUseState(int newUseState){ }
 void AFGEquipmentAttachment::SetUseLocation(const FVector& newUseLocation){ }
 void AFGEquipmentAttachment::PlayUseEffect_Implementation(FVector useLocation){ }
+void AFGEquipmentAttachment::OnCameraModeChanged_Implementation(ECameraMode newCameraMode){ }
 void AFGEquipmentAttachment::OnRep_UseLocationUpdated(){ }
 void AFGEquipmentAttachment::OnRep_OnAnimationStateUpdated(){ }
 void AFGEquipmentAttachment::SetAttachmentTicks(bool inTick){ }

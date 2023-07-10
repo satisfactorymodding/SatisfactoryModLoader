@@ -49,7 +49,7 @@ void AFGBuildableTradingPost::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 void AFGBuildableTradingPost::BeginPlay(){ }
 void AFGBuildableTradingPost::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableTradingPost::Dismantle_Implementation(){ }
-void AFGBuildableTradingPost::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }
+void AFGBuildableTradingPost::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }
 void AFGBuildableTradingPost::StartIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildableTradingPost::StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildableTradingPost::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }
@@ -74,6 +74,7 @@ void AFGBuildableTradingPost::SetActorCompassViewDistance(ECompassViewDistance c
 void AFGBuildableTradingPost::OnTradingPostUpgraded_Implementation(int32 level, bool suppressBuildEffects){ }
 void AFGBuildableTradingPost::UpdateGeneratorVisibility(){ }
 void AFGBuildableTradingPost::UpdateStorageVisibility(){ }
+void AFGBuildableTradingPost::UpdateTerminalAndWorkbenchVisibility(){ }
 int32 AFGBuildableTradingPost::GetTradingPostLevel() const{ return int32(); }
 void AFGBuildableTradingPost::PlayBuildEffects(AActor* inInstigator){ }
 void AFGBuildableTradingPost::ExecutePlayBuildEffects(){ }

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGSettings.h"
 #include "Resources/FGItemDescriptor.h"
 #include "Resources/FGResourceNode.h"
 #include "FGResourceSettings.generated.h"
@@ -28,7 +27,7 @@ struct FItemSettings
 
 	/** The class (and it's subclasses) that we want to specify the resolution for */
 	UPROPERTY( EditDefaultsOnly, Category="Icon", meta = ( AllowAbstract = true ) )
-	TSubclassOf< class UFGItemDescriptor > ResourceClass;
+	TSoftClassPtr< class UFGItemDescriptor > ResourceClass;
 
 	/** The x and y resolution of the icon (must be power of 2), -1 means no icon */
 	UPROPERTY( EditDefaultsOnly, Category="Icon")
@@ -53,7 +52,7 @@ struct FACTORYGAME_API FResourceDepositPackage
 
 	/** What resource class to use */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "ResourceDepositPackage" )
-	TSubclassOf< class UFGResourceDescriptor > ResourceClass;
+	TSoftClassPtr< class UFGResourceDescriptor > ResourceClass;
 
 	/** Amount of resources in deposit as minimum */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "ResourceDepositPackage" )
@@ -68,18 +67,13 @@ struct FACTORYGAME_API FResourceDepositPackage
 	int32 MiningAmount;
 };
 
-/**
-*
-*/
-UCLASS(abstract)
-class FACTORYGAME_API UFGResourceSettings : public UFGSettings
+UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Resource Settings" ) )
+class FACTORYGAME_API UFGResourceSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 public:
-	UFGResourceSettings();
-
 	/** Helper to directly get the resource setting without going through UFGGlobalSettings */
-	static UFGResourceSettings* Get();
+	static const UFGResourceSettings* Get() { return GetDefault<UFGResourceSettings>(); }
 
 #if WITH_EDITORONLY_DATA && WITH_EDITOR
 	/** Get the size of the icon for this resource class */
@@ -88,7 +82,7 @@ public:
 
 	/** Get a random resource deposit package */
 	UFUNCTION( BlueprintPure, Category = "ResourceDepositPackage" )
-	static const FResourceDepositPackage& GetRandomResourceDepositData( int32& out_resourceDepositPackageIdx, AActor* worldContext );
+	static const FResourceDepositPackage& GetRandomResourceDepositData( int32& out_resourceDepositPackageIdx, const bool canBeRadioActive );
 
 	/** Gets deposit data with a specified resource class
 	 * returns false if no deposit data existed with that resource class */
@@ -100,42 +94,42 @@ public:
 	int32 GetStackSizeFromEnum( EStackSize stackSize ) const;
 
 	/** List of all available resource deposit packages */
-	UPROPERTY( EditAnywhere, Category = "ResourceDepositPackage" )
+	UPROPERTY( Config, EditAnywhere, Category = "ResourceDepositPackage" )
 	TArray< FResourceDepositPackage > mResourceDepositTable;
 	
 	/** Index 0 is poor amount, 1 is normal and 2 is rich */
-	UPROPERTY( EditDefaultsOnly, EditFixedSize, Category = "Resources" )
+	UPROPERTY( Config, EditDefaultsOnly, EditFixedSize, Category = "Resources" )
 	TArray< FInt32Interval > mResourceAmount;
 
 	/** Index 0 is poor amount, 1 is normal and 2 is rich */
-	UPROPERTY( EditDefaultsOnly, EditFixedSize, Category = "Resources" )
+	UPROPERTY( Config, EditDefaultsOnly, EditFixedSize, Category = "Resources" )
 	TArray< float > mPurityMultiplier;
 
-	UPROPERTY( EditDefaultsOnly, Category = "Resources" )
-	TSubclassOf< class UFGResourceDescriptor > mWaterResourceDescriptor; 
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Resources" )
+	TSoftClassPtr< class UFGResourceDescriptor > mWaterResourceDescriptor; 
 
 	/** Mesh used on items that do not have their own specified. */
-	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
-	class UStaticMesh* mDefaultItemMesh;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Buildable" )
+	TSoftObjectPtr<UStaticMesh> mDefaultItemMesh;
 
 	/** How many of diffrent items can be in the same stack */
-	UPROPERTY( EditDefaultsOnly, Category = "Items" )
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Items" )
 	TMap< int32, EStackSize > mStackSizes;
 
 	/** The class of item we want to drop when we drop something */
-	UPROPERTY( EditDefaultsOnly, Category = "Drops" )
-	TSubclassOf< class AFGItemPickup_Spawnable > mItemDropClass;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Drops" )
+	TSoftClassPtr< class AFGItemPickup_Spawnable > mItemDropClass;
 	
-	UPROPERTY( EditDefaultsOnly, Category = "Power" )
-	TMap< TEnumAsByte< EResourcePurity >, UCurveFloat* > mGeyserPowerOutputCurves;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Power" )
+	TMap< TEnumAsByte< EResourcePurity >, TSoftObjectPtr<UCurveFloat> > mGeyserPowerOutputCurves;
 
 #if WITH_EDITORONLY_DATA
 	/** The stage that should be used to make icons */
-	UPROPERTY( EditDefaultsOnly, Category = "Icon" )
-	TSubclassOf<class AFGRenderTargetStage> mStageClass;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Icon" )
+	TSoftClassPtr<class AFGRenderTargetStage> mStageClass;
 
 	/** Resolutions of different item classes */
-	UPROPERTY( EditDefaultsOnly, Category="Icon")
+	UPROPERTY( Config, EditDefaultsOnly, Category="Icon")
 	TArray< FItemSettings > mIconSettings;
 #endif
 };

@@ -23,7 +23,7 @@ protected:
 	// Begin AFGBuildableHologram interface
 	virtual void CheckValidPlacement() override;
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
-	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName );
+	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName );
 	// End AFGBuildableHologram interface
 
 protected:

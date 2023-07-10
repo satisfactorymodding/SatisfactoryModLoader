@@ -2,10 +2,14 @@
 
 #include "FGSaveSession.h"
 
+FPerStreamingLevelSaveData& UFGSaveSession::GetLevelSaveData(ULevel* level){ return mRuntimeLevelState; }
+FPerStreamingLevelSaveData& UFGSaveSession::GetLevelSaveData(const FString& levelName, bool isPersistent){ return mRuntimeLevelState; }
+
 #if STATS
-uint32 FPerLevelSaveData::GetMemoryConsumption() const{ return uint32(); }
+uint32 FPerBasicLevelSaveData::GetMemoryConsumption() const{ return uint32(); }
 #endif 
-void FPerLevelSaveData::PreAllocate(int32 initialBlobSize, int32 estimatedDestroyedActors){ }
+void FPerStreamingLevelSaveData::PreAllocate(int32 initialBlobSize, int32 estimatedDestroyedActors){ }
+void FPersistentAndRuntimeSaveData::ResetBlobData(){ }
 UFGSaveSession::UFGSaveSession() : Super() {
 	this->mAutosaveInterval = 0.0;
 	this->mNumRotatingAutosaves = 3;
@@ -24,6 +28,7 @@ bool UFGSaveSession::LoadGame(const FString& saveName){ return bool(); }
 bool UFGSaveSession::SerializeHeader(FArchive& Ar, FSaveHeader& saveHeader){ return bool(); }
 FString UFGSaveSession::SaveNameToFileName(const FString& saveName){ return FString(); }
 void UFGSaveSession::SharedInventoryPtrLoaded( FSharedInventoryStatePtr& ptr){ }
+FObjectReferenceDisc UFGSaveSession::FixupObjectReferenceForPartitionedWorld(const FObjectReferenceDisc& Reference, const  AFGWorldSettings& WorldSettings){ return FObjectReferenceDisc(); }
 void UFGSaveSession::Autosave(){ }
 void UFGSaveSession::SetAutosaveInterval(int32 newInterval){ }
 void UFGSaveSession::DumpUnresolvedDestroyedActors(){ }
@@ -36,8 +41,6 @@ void UFGSaveSession::OnRuntimeSpawnedActorDestroyed(AActor* destroyedActor){ }
 void UFGSaveSession::OnActorSpawned(AActor* spawnedActor){ }
 void UFGSaveSession::SaveLevelState(ULevel* forLevel, bool markAsUpToDate){ }
 void UFGSaveSession::CleanupPerLevelData(){ }
-FPerLevelSaveData& UFGSaveSession::GetLevelSaveData(ULevel* level){ return *(new FPerLevelSaveData); }
-FPerLevelSaveData& UFGSaveSession::GetLevelSaveData(const FString& levelName, bool isPersistent){ return *(new FPerLevelSaveData); }
 void UFGSaveSession::DeleteSave(FString sessionName, int32 autosaveNum){ }
 UWorld* UFGSaveSession::GetWorld() const{ return nullptr; }
 FString UFGSaveSession::GenerateAutosaveName(int32& out_autosaveNum, const FString& sessionName){ return FString(); }
@@ -54,9 +57,10 @@ void UFGSaveSession::PrepareLevelActors(ULevel* level, bool prepareForLoad){ }
 void UFGSaveSession::DeserializeStreamingLevelState(ULevel* level){ }
 void UFGSaveSession::DeserializePersistentAndRuntimeState(){ }
 void UFGSaveSession::MakeSureAllActorsAreSaved(){ }
+TArray< AActor* > UFGSaveSession::GatherSaveActors(ULevel* level){ return TArray<AActor*>(); }
 void UFGSaveSession::SaveWorldEndOfFrame( UWorld* world, ELevelTick, float){ }
 void UFGSaveSession::SaveWorldImplementation(const FString& gameName){ }
-bool UFGSaveSession::SaveToDiskWithCompression(const FString& fullFilePath, FBufferArchive& memArchive, FSaveHeader& saveHeader){ return bool(); }
+bool UFGSaveSession::SaveToDiskWithCompression(const FString& fullFilePath, FBufferArchive64& memArchive, FSaveHeader& saveHeader){ return bool(); }
 bool UFGSaveSession::LoadCompressedFileFromDisk(const FString& saveGameName){ return bool(); }
 bool UFGSaveSession::LoadDeprecatedFileFromDisk(const FString& saveGameName){ return bool(); }
 bool UFGSaveSession::PeekAtFileHeader(const FString& fullFilePath, FSaveHeader& out_fileHeader) const{ return bool(); }

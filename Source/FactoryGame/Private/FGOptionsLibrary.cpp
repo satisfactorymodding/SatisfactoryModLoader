@@ -2,7 +2,6 @@
 
 #include "FGOptionsLibrary.h"
 
-TArray<class UFGDynamicOptionsRow*> UFGOptionsLibrary::GetDynamicOptionsWidgets(UUserWidget* owningWidget, EOptionCategory category, TScriptInterface<  IFGOptionInterface > optionInterface){ return TArray<class UFGDynamicOptionsRow*>(); }
-void UFGOptionsLibrary::GetDynamicOptionData(TArray<FOptionRowData>& out_optionRowData){ }
-TArray<class UFGDynamicOptionsRow*> UFGOptionsLibrary::SetupOptionRows(UUserWidget* owningWidget, TArray<FOptionRowData> optionRows, EOptionCategory optionCategory, TSubclassOf<  UFGDynamicOptionsRow > optionsRowWidgetClass, TScriptInterface<  IFGOptionInterface > optionInterface){ return TArray<class UFGDynamicOptionsRow*>(); }
+void UFGOptionsLibrary::GatherUserSettings(UObject* manager, EUserSettingManagers managerType, TMap< FString,  UFGUserSettingApplyType* >& out_userSettings){ }
+TArray<FUserSettingCategoryMapping> UFGOptionsLibrary::GetCategorizedUserSettingsWidgets(UObject* worldContext, UUserWidget* owningWidget, TScriptInterface<class IFGOptionInterface> optionInterface, TMap< FString,  UFGUserSettingApplyType* > userSettings){ return TArray<FUserSettingCategoryMapping>(); }
 UFGDynamicOptionsRow* UFGOptionsLibrary::SetupUserSetting(UUserWidget* owningWidget,  UFGUserSetting* userSetting, TScriptInterface<  IFGOptionInterface > optionInterface){ return nullptr; }

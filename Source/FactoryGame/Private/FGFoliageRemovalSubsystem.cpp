@@ -2,40 +2,71 @@
 
 #include "FGFoliageRemovalSubsystem.h"
 
-FoliageInstanceData::FoliageInstanceData(int index, int id, FTransform transform,  UHierarchicalInstancedStaticMeshComponent* component){ }
+FBoxCenterAndExtent FFoliageOctreeSemantics::GetBoundingBox(const UHierarchicalInstancedStaticMeshComponent* Element){ return FBoxCenterAndExtent(); }
+bool FFoliageOctreeSemantics::AreElementsEqual(const UHierarchicalInstancedStaticMeshComponent* A, const UHierarchicalInstancedStaticMeshComponent* B){ return bool(); }
+void FFoliageOctreeSemantics::SetElementId(FOctree& Octree, const UHierarchicalInstancedStaticMeshComponent* Element, FOctreeElementId2 OctreeElementID){ }
+bool FFoliageRemovalSaveDataForFoliageType::Append(TArrayView< FVector > newRemovals){ return bool(); }
+bool FFoliageRemovalSaveDataForFoliageType::Add(const FVector& Location){ return bool(); }
+bool FFoliageRemovalSaveDataForFoliageType::Contains(const FVector& Location) const{ return bool(); }
+TSet< FHashableVectorWrapper > FFoliageRemovalSaveDataForFoliageType::GetRemovalLocations() const{ return TSet<FHashableVectorWrapper>(); }
+void FFoliageRemovalSaveDataForFoliageType::CollapseBuckets(int32 FirstBucket, int32 LastBucket){ }
+bool FFoliageRemovalSaveDataForFoliageType::PostSerialize(const FArchive& Ar){ return bool(); }
+#if WITH_EDITORONLY_DATA
+void AFGFoliageRemovalSubsystem::PostLoad(){ Super::PostLoad(); }
+#endif 
 AFGFoliageRemovalSubsystem::AFGFoliageRemovalSubsystem() : Super() {
 
 }
+void AFGFoliageRemovalSubsystem::BeginPlay(){ }
 void AFGFoliageRemovalSubsystem::Destroyed(){ }
+void AFGFoliageRemovalSubsystem::Serialize(FArchive& Ar){ Super::Serialize(Ar); }
+void AFGFoliageRemovalSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGFoliageRemovalSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGFoliageRemovalSubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGFoliageRemovalSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGFoliageRemovalSubsystem::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
+bool AFGFoliageRemovalSubsystem::NeedTransform_Implementation(){ return bool(); }
+bool AFGFoliageRemovalSubsystem::ShouldSave_Implementation() const{ return bool(); }
 void AFGFoliageRemovalSubsystem::Init(){ }
 AFGFoliageRemovalSubsystem* AFGFoliageRemovalSubsystem::Get(UWorld* world){ return nullptr; }
 AFGFoliageRemovalSubsystem* AFGFoliageRemovalSubsystem::GetFoliageRemovalSubsystem(UObject* worldContext){ return nullptr; }
-AFGFoliageRemoval* AFGFoliageRemovalSubsystem::FindFoliageRemovalActorByComponent( UHierarchicalInstancedStaticMeshComponent* component) const{ return nullptr; }
-AFGFoliageRemoval* AFGFoliageRemovalSubsystem::FindFoliageRemovalActor(const FName& levelName, const FName& foliageTypeName){ return nullptr; }
 bool AFGFoliageRemovalSubsystem::GetLookAtFoliage(const FVector& viewLocation, const FVector& endViewLocation, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier,  UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation){ return bool(); }
 bool AFGFoliageRemovalSubsystem::GetClosestFoliage(const FVector& location, float maxDistance, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier,  UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation, TEnumAsByte<EProximityEffectTypes> &out_Type){ return bool(); }
 bool AFGFoliageRemovalSubsystem::GetFoliageAroundLocationOfGivenTypes(const FVector& location, float maxDistance, TSubclassOf<  UFGFoliageIdentifier > foliageIdentifier, TArray< TEnumAsByte< EProximityEffectTypes > > desiredTypes,  UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation, TEnumAsByte< EProximityEffectTypes > &out_Type){ return bool(); }
-int32 AFGFoliageRemovalSubsystem::FindInstanceByTransform(const FTransform& foliageTransform, const  UHierarchicalInstancedStaticMeshComponent* component, const FName& levelName, const FName& foliageTypeName){ return int32(); }
-bool AFGFoliageRemovalSubsystem::IsFoliageComponentInACave(UHierarchicalInstancedStaticMeshComponent* TestComponent){ return bool(); }
+int32 AFGFoliageRemovalSubsystem::FindInstanceByTransform(const FTransform& foliageTransform, const  UHierarchicalInstancedStaticMeshComponent* component){ return int32(); }
 bool AFGFoliageRemovalSubsystem::GetFoliageWithinRadius(const FVector& location, float radius, TArray<int32>& out_instanceArray, TArray<FVector>& out_locationArray, TArray<class UHierarchicalInstancedStaticMeshComponent*>& out_componentArray, bool includeLocations){ return bool(); }
 bool AFGFoliageRemovalSubsystem::GetFoliageWithinRadius(const FVector& location, float radius, TMap<  UHierarchicalInstancedStaticMeshComponent*, TArray< int32 > >& result){ return bool(); }
 int32 AFGFoliageRemovalSubsystem::GetFoliageCountWithinRadius(const FVector& location, float radius){ return int32(); }
 bool AFGFoliageRemovalSubsystem::HasIdentifier(const  UHierarchicalInstancedStaticMeshComponent* component, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier){ return bool(); }
-void AFGFoliageRemovalSubsystem::Register( AFGFoliageRemoval* actor){ }
-void AFGFoliageRemovalSubsystem::UnRegister( AFGFoliageRemoval* actor){ }
-bool AFGFoliageRemovalSubsystem::IsRemovable(const  UFoliageType* foliageType) const{ return bool(); }
+bool AFGFoliageRemovalSubsystem::IsRemovable(const  UFoliageType* foliageType){ return bool(); }
 int32 AFGFoliageRemovalSubsystem::Stat_NumRemovedInstances() const{ return int32(); }
+bool AFGFoliageRemovalSubsystem::RemoveFoliageInstance(UHierarchicalInstancedStaticMeshComponent* component, int32 instanceId, FTransform* out_InstanceTransform){ return bool(); }
+bool AFGFoliageRemovalSubsystem::RemoveFoliageInstance(FFoliageInstanceStableId StableId){ return bool(); }
+bool AFGFoliageRemovalSubsystem::RemoveFoliageInstances(UHierarchicalInstancedStaticMeshComponent* hism, const TArray<int32>& instIds, TArray<FTransform> *outRemovedInstanceTransforms){ return bool(); }
+void AFGFoliageRemovalSubsystem::RemoveFoliageInstanceHashes(FIntVector cell, const UFoliageType* foliageType, const TSet<uint32>& instanceHashes){ }
+void AFGFoliageRemovalSubsystem::RecordUnregisteredRemovalLocations(const TSet<FVector> &locations, const FName& foliageTypeName){ }
+FFoliageInstanceStableId AFGFoliageRemovalSubsystem::GetStableInstanceId(UHierarchicalInstancedStaticMeshComponent* Component, int32 InstanceId){ return FFoliageInstanceStableId(); }
+FFoliageInstanceStableId AFGFoliageRemovalSubsystem::GetStableInstanceId(UHierarchicalInstancedStaticMeshComponent* Component, const FTransform &Transform){ return FFoliageInstanceStableId(); }
+uint32 AFGFoliageRemovalSubsystem::HashFoliageInstanceLocation(const FVector& Location){ return uint32(); }
+FIntVector AFGFoliageRemovalSubsystem::GetFoliageCellForIFA( AInstancedFoliageActor* IFA){ return FIntVector(); }
+FIntVector AFGFoliageRemovalSubsystem::GetFoliageCellForLocation(const FVector& Location, uint32 GridSize){ return FIntVector(); }
+uint32 AFGFoliageRemovalSubsystem::GetFoliageGridSize() const{ return uint32(); }
+const FFoliageRemovalSaveDataForFoliageType* AFGFoliageRemovalSubsystem::GetSaveDataForCellForFoliageType(const FIntVector& cell, const UFoliageType* foliageType) const{ return nullptr; }
+UHierarchicalInstancedStaticMeshComponent* AFGFoliageRemovalSubsystem::GetHISM(const FFoliageInstanceStableId& stableId){ return nullptr; }
+UHierarchicalInstancedStaticMeshComponent* AFGFoliageRemovalSubsystem::GetHISM(FIntVector cell, const UFoliageType* foliageType){ return nullptr; }
+UFoliageType* AFGFoliageRemovalSubsystem::GetFoliageType(const UHierarchicalInstancedStaticMeshComponent* hism){ return nullptr; }
+FFoliageRemovalSaveDataForFoliageType* AFGFoliageRemovalSubsystem::GetSaveDataForCellForFoliageType(const FIntVector& cell, const UFoliageType* foliageType){ return nullptr; }
+FFoliageRemovalSaveDataForFoliageType& AFGFoliageRemovalSubsystem::GetOrCreateSaveDataForCellForFoliageType(const FIntVector& cell, const UFoliageType* foliageType){ return *(new FFoliageRemovalSaveDataForFoliageType); }
+const FFoliageRemovalSaveDataForFoliageType* AFGFoliageRemovalSubsystem::GetUnresolvedSaveDataForCellForFoliageType(const FIntVector& cell, FName foliageTypeName) const{ return nullptr; }
+FFoliageRemovalSaveDataForFoliageType* AFGFoliageRemovalSubsystem::GetUnresolvedSaveDataForCellForFoliageType(const FIntVector& cell, FName foliageTypeName){ return nullptr; }
+FFoliageRemovalSaveDataForFoliageType& AFGFoliageRemovalSubsystem::GetOrCreateUnresolvedSaveDataForCellForFoliageType(const FIntVector& cell, FName foliageTypeName){ return *(new FFoliageRemovalSaveDataForFoliageType); }
+void AFGFoliageRemovalSubsystem::TryResolveRemovals(const TSet< FIntVector > &unresolvedCells){ }
+void AFGFoliageRemovalSubsystem::TryResolveRemovalHashes(const TSet< FIntVector > &unresolvedCells){ }
+TArray<int32> AFGFoliageRemovalSubsystem::FindInstanceIdsForHashes(const UHierarchicalInstancedStaticMeshComponent* hism, const TSet< uint32 > &instanceHashes){ return TArray<int32>(); }
 void AFGFoliageRemovalSubsystem::LevelFound(ULevel* level){ }
-void AFGFoliageRemovalSubsystem::BuildFoliageRemovalCache(ULevel* level,  LevelFoliageData& levelFoliageData){ }
-void AFGFoliageRemovalSubsystem::SetupFoliageRemovalsForLevel(ULevel* level,  LevelFoliageData& levelFoliageData, bool firstLoad){ }
-void AFGFoliageRemovalSubsystem::ApplyInitialRemovals_Server(const FName& levelName, bool firstLoad){ }
-void AFGFoliageRemovalSubsystem::MarkAsLevelAsWithoutRemovableFoliage(const FName& levelName){ }
-void AFGFoliageRemovalSubsystem::MarkAsLevelAsSpawnedRemovableFoliage(const FName& levelName){ }
-bool AFGFoliageRemovalSubsystem::HasSpawnedFoliageActor(const FName& levelName) const{ return bool(); }
-AFGFoliageRemoval* AFGFoliageRemovalSubsystem::SpawnFoliageRemovalActor(const FBox& levelBounds, const FName& levelName,  UFoliageType* foilageType,  UHierarchicalInstancedStaticMeshComponent* meshComponent, bool firstLoad){ return nullptr; }
+void AFGFoliageRemovalSubsystem::CacheFoliageHISMsForLevel(ULevel* level){ }
+void AFGFoliageRemovalSubsystem::ApplyInitialRemovals( AInstancedFoliageActor* IFA){ }
 void AFGFoliageRemovalSubsystem::OnLevelAddedToWorld(ULevel* inLevel, UWorld* inWorld){ }
-void AFGFoliageRemovalSubsystem::OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld){ }
+void AFGFoliageRemovalSubsystem::OnPreLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld){ }
 void AFGFoliageRemovalSubsystem::RemoveComponentsInLevel(ULevel* level){ }
-FName AFGFoliageRemovalSubsystem::GetLevelName(ULevel* level) const{ return FName(); }
-FVector AFGFoliageRemovalSubsystem::GetLevelCenter(ULevel* level) const{ return FVector(); }
-FBox AFGFoliageRemovalSubsystem::GetLevelBounds(ULevel* level) const{ return FBox(); }
+void AFGFoliageRemovalSubsystem::RebuildSaveData(int32 OldGridSize, int32 NewGridSize){ }

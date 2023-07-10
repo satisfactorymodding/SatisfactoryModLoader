@@ -2,4 +2,4 @@
 
 #include "FGAnimNotify.h"
 
-void UFGAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation){ }
+void UFGAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference){ }

@@ -6,15 +6,20 @@ AFGConveyorAttachmentHologram::AFGConveyorAttachmentHologram() : Super() {
 	this->mMaxValidTurnOffset = 240.0;
 	this->mMaxValidTurnAngle = 3.0;
 	this->mSnappedConveyor = nullptr;
+	this->mUpgradedConveyorAttachment = nullptr;
 	this->mSnappedConection = nullptr;
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
 void AFGConveyorAttachmentHologram::BeginPlay(){ }
+void AFGConveyorAttachmentHologram::PreHologramPlacement(const FHitResult& hitResult){ }
 void AFGConveyorAttachmentHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGConveyorAttachmentHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
+bool AFGConveyorAttachmentHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
+AActor* AFGConveyorAttachmentHologram::GetUpgradedActor() const{ return nullptr; }
 bool AFGConveyorAttachmentHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 float AFGConveyorAttachmentHologram::GetHologramHoverHeight() const{ return float(); }
 void AFGConveyorAttachmentHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+bool AFGConveyorAttachmentHologram::CanNudgeHologram() const{ return bool(); }
 bool AFGConveyorAttachmentHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
 int32 AFGConveyorAttachmentHologram::GetRotationStep() const{ return int32(); }
 void AFGConveyorAttachmentHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }

@@ -3,8 +3,7 @@
 #include "Resources/FGResourceNodeFrackingCore.h"
 
 AFGResourceNodeFrackingCore::AFGResourceNodeFrackingCore() : Super() {
-	this->bAlwaysRelevant = false;
-	this->NetCullDistanceSquared = 360000000000.0;
+
 }
 void AFGResourceNodeFrackingCore::BeginPlay(){ }
 void AFGResourceNodeFrackingCore::EndPlay(const EEndPlayReason::Type endPlayReason){ }

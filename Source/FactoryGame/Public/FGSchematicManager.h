@@ -13,6 +13,10 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FPurchasedSchematicDelegate, TSubclassOf< class UFGSchematic >, purchasedSchematic );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FPaidOffOnSchematicDelegate, AFGSchematicManager*, schematicManager );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActiveSchematicChanged, TSubclassOf< UFGSchematic >, activeSchematic );
+DECLARE_MULTICAST_DELEGATE_OneParam( FOnPopulateSchematicListDelegate, TArray< TSubclassOf< UFGSchematic > >&);
+
+// @todoK2 refactor FPurchasedSchematicDelegate to use this one instead
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FPurchasedSchematicInstigatorDelegate, TSubclassOf< class UFGSchematic >, purchasedSchematic, class AFGCharacterPlayer*, purchaseInstigator );
 
 /** Holds info about a schematic and How much has been paid of on it. */
 USTRUCT()
@@ -84,6 +88,12 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Events|Schematics", DisplayName = "OnPaidOffOnSchematic" )
 	FPaidOffOnSchematicDelegate PaidOffOnSchematicDelegate;
 
+	/** Called when a player is granted a schematic and which player instigated the purchase */
+	UPROPERTY( BlueprintAssignable, Category = "Events|Schematics", DisplayName = "OnPurchasedSchematic" )
+	FPurchasedSchematicInstigatorDelegate PurchasedSchematicInstigatorDelegate;
+
+	/** Called right after PopulateSchematicsList populated mAllSchematics with the vanilla content */
+	FOnPopulateSchematicListDelegate PopulateSchematicListDelegate;
 public:
 	/** Get the schematic manager, this should always return something unless you call it really early. */
 	static AFGSchematicManager* Get( UWorld* world );
@@ -150,13 +160,17 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
 	void GetAllVisibleSchematicsOfType( ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
 
-	/** returns true if the passed schematic has been purchased */
+	/** returns true if the passed schematic has been purchased,
+	 * @param owningPlayerController is only needed if checking for a player specific schematic so defaults to nullptr.
+	 * @ Note To check for a player-specific schematic, ensure the function is called with the correct player controller.
+	 * If this function is called from a widget, use GetOwningPlayer() to obtain the local player controller, as it will refer to the player who has the widget opened.
+	 * */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
-	bool IsSchematicPurchased( TSubclassOf< UFGSchematic > schematicClass ) const;
+	bool IsSchematicPurchased( TSubclassOf< UFGSchematic > schematicClass, APlayerController* owningPlayerController = nullptr ) const;
 
-	/** Give the player access to a schematic */
+	/** Give the player access to a schematic. accessInstigator can be nullptr. */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
-	void GiveAccessToSchematic( TSubclassOf< UFGSchematic > schematicClass, bool accessedViaCheats = false );
+	void GiveAccessToSchematic( TSubclassOf< UFGSchematic > schematicClass, class AFGCharacterPlayer* accessInstigator, bool blockTelemetry = false );
 
 	/** adds a schematic to available schematics */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
@@ -234,6 +248,11 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Organization" )
 	void GetVisibleSchematicCategoryData( ESchematicType schematicType, TArray< FSchematicCategoryData >& out_schematicCategoryData );
 
+	/** Unlocks all schematics of the given type */
+	void UnlockAllSchematicsOfType( ESchematicType schematicType, bool requireDependency = false );
+	/** Unlocks all schematics up to (not including) the given tier */ 
+	void UnlockSchematicsUpToTier( int32 tier );
+	
 private:
 	/** Populate list with all schematics */
 	void PopulateSchematicsLists();
@@ -261,6 +280,17 @@ private:
 
 	UFUNCTION()
 	void SubmitMilestoneTelemetry( TSubclassOf< UFGSchematic > activeSchematic );
+	
+	/** Tries to find if there are any new schematics of the given type that can now be unlocked
+	  * Used by game modes when we want to unlock all new alt recipes or shop schematics when their dependency schematics are unlocked
+	  * @param userSettingStrID we check if the setting connected to this id is true before trying to unlock new schematics of the given type
+	  * @param timerHandle the timer handle to check if we are already have a pending request. Will be assigned a handle if we start a new timer
+	  * @param schematicType the schematics type we try to unlock more schematics of
+	 */ 
+	void TryUnlockNewSchematicsOfType( const FString& userSettingStrID, FTimerHandle& timerHandle, ESchematicType schematicType );
+	/** Called by TryUnlockNewSchematicsOfType when time is  */
+	void Internal_TryUnlockNewSchematicsOfType( ESchematicType schematicType );
+
 
 protected:	
 	/** All schematic assets that have been sucked up in the PopulateSchematicsList function. Contains cheats and all sort of schematic. */
@@ -294,7 +324,10 @@ protected:
 	/** Used to save the ship land timestamp */
 	UPROPERTY( SaveGame )
 	float mShipLandTimeStampSave;
-
+	
+	FTimerHandle mTryUnlockInstantAltRecipeHandle;
+	FTimerHandle mTryUnlockNewResourceSinkSchematicsHandle;
+	
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
 	bool mHasTechTierLimit;
 

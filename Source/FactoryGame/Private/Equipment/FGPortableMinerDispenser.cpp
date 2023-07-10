@@ -7,11 +7,8 @@ AFGPortableMinerDispenser::AFGPortableMinerDispenser() : Super() {
 	this->mValidPlacementMaterial = nullptr;
 	this->mInvalidPlacementMaterial = nullptr;
 	this->mArmAnimation = EArmEquipment::AE_PortableMiner;
+	this->mDefaultEquipmentActions = 1;
 }
-void AFGPortableMinerDispenser::Tick(float DeltaSeconds){ }
 void AFGPortableMinerDispenser::BeginPlay(){ }
 void AFGPortableMinerDispenser::SetMaterial( UMaterialInterface* material){ }
-void AFGPortableMinerDispenser::OnPrimaryFirePressed(){ }
-void AFGPortableMinerDispenser::Server_PrimaryFire_Implementation(){ }
-bool AFGPortableMinerDispenser::Server_PrimaryFire_Validate(){ return bool(); }
-void AFGPortableMinerDispenser::AddEquipmentActionBindings(){ }
+void AFGPortableMinerDispenser::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }

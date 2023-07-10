@@ -4,6 +4,7 @@
 
 AFGGamePhaseManager* AFGGamePhaseManager::Get(UWorld* world){ return nullptr; }
 AFGGamePhaseManager* AFGGamePhaseManager::Get(UObject* worldContext){ return nullptr; }
+AFGGamePhaseManager* AFGGamePhaseManager::GetDefault(){ return nullptr; }
 AFGGamePhaseManager::AFGGamePhaseManager() : Super() {
 	this->mGamePhase = EGamePhase::EGP_EarlyGame;
 }
@@ -22,6 +23,8 @@ void AFGGamePhaseManager::GatherDependencies_Implementation(TArray< UObject* >& 
 bool AFGGamePhaseManager::NeedTransform_Implementation(){ return bool(); }
 bool AFGGamePhaseManager::ShouldSave_Implementation() const{ return bool(); }
 void AFGGamePhaseManager::SetGamePhase(EGamePhase newPhase){ }
+void AFGGamePhaseManager::SetGamePhaseForTier(int32 tier){ }
+void AFGGamePhaseManager::UnlockAllGamePhases(){ }
 FText AFGGamePhaseManager::GetGamePhaseName(EGamePhase gamePhase) const{ return FText(); }
 EGamePhase AFGGamePhaseManager::GetGamePhaseForSchematic(TSubclassOf< UFGSchematic > inSchematic){ return EGamePhase(); }
 EGamePhase AFGGamePhaseManager::GetGamePhaseForTechTier(int32 techTier){ return EGamePhase(); }
@@ -29,9 +32,10 @@ void AFGGamePhaseManager::GetTechTiersForGamePhase(EGamePhase gamePhase, TArray<
 void AFGGamePhaseManager::GetBaseCostForGamePhase(EGamePhase gamePhase, TArray< FItemAmount >& out_cost){ }
 void AFGGamePhaseManager::GetCostForGamePhase(EGamePhase gamePhase, TArray< FItemAmount >& out_cost){ }
 int32 AFGGamePhaseManager::PayOffOnGamePhase(FItemAmount payOff, EGamePhase gamePhase){ return int32(); }
+void AFGGamePhaseManager::GetCurrentAndRemainingGamePhases(TArray<TEnumAsByte<EGamePhase>>& out_gamePhases){ }
+int32 AFGGamePhaseManager::GetLastTechTierForGamePhase(EGamePhase phase) const{ return int32(); }
 void AFGGamePhaseManager::OnRep_GamePhase(){ }
 void AFGGamePhaseManager::OnRep_GamePhaseCosts(){ }
 void AFGGamePhaseManager::Debug_DumpStateToLog(){ }
 void AFGGamePhaseManager::ResetGamePhase(){ }
-int32 AFGGamePhaseManager::GetLastTechTierForGamePhase(EGamePhase phase) const{ return int32(); }
 void AFGGamePhaseManager::SubmitGamePhaseTelemetry(EGamePhase phase){ }

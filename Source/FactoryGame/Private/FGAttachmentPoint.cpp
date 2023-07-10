@@ -2,6 +2,6 @@
 
 #include "FGAttachmentPoint.h"
 
-bool UFGAttachmentPointType::CanAttach(const  FFGAttachmentPoint& point, const  FFGAttachmentPoint& targetPoint) const{ return bool(); }
 FFGAttachmentPoint::FFGAttachmentPoint(){ }
 bool FFGAttachmentPoint::CanAttachTo(const FFGAttachmentPoint* otherPoint) const{ return bool(); }
+bool UFGAttachmentPointType::CanAttach_Implementation(const FFGAttachmentPoint& point, const FFGAttachmentPoint& targetPoint) const{ return bool(); }

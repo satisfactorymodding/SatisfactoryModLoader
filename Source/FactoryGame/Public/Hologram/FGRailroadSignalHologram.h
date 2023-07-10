@@ -27,6 +27,7 @@ public:
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
+	virtual bool CanNudgeHologram() const override;
 	// End AFGHologram Interface
 
 protected:

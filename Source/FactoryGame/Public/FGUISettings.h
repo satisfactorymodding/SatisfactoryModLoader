@@ -15,11 +15,11 @@ public:
 public:
 	/** Widget used to show that the user is setting up a server */
 	UPROPERTY( EditAnywhere, config, Category = UI )
-	TAssetSubclassOf<UUserWidget> mSettingUpServerWidget;
+	TSoftClassPtr<UUserWidget> mSettingUpServerWidget;
 
 	/** Widget used to show the user when joining a session */
 	UPROPERTY( EditAnywhere, config, Category = UI )
-	TAssetSubclassOf<UUserWidget> mJoinSessionWidget;
+	TSoftClassPtr<UUserWidget> mJoinSessionWidget;
 
 	/** Widget used to show the user when linking accounts */
 	UPROPERTY( EditAnywhere, config, Category = UI )
@@ -40,6 +40,10 @@ public:
 	/** Widget used to customize and spawn a map marker in the world */
 	UPROPERTY( EditAnywhere, config, Category = UI )
 	TSubclassOf< class UFGInteractWidget > mAddMapMarkerWidget;
+
+	/** Widget used to hold audio messages that the player receives. This is populated with data from UFGMessage assets */
+	UPROPERTY( EditAnywhere, config, Category = Narrative )
+	TSoftClassPtr< class UFGAudioMessage > mDefaultAudioMessageWidget;
 
 	
 };

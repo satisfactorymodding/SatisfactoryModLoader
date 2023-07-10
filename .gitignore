@@ -43,6 +43,7 @@
 *.sdf
 *.VC.db
 *.VC.opendb
+.vsconfig
 
 # Precompiled Assets
 SourceArt/**/*.png
@@ -101,6 +102,7 @@ Configs/*
 Mods/*
 Mods/*/Metadata/Crypto.json
 !Mods/Alpakit/
+!Mods/AccessTransformers/
 !Mods/SML/
 !Mods/SMLEditor/
 !Mods/ExampleMod/

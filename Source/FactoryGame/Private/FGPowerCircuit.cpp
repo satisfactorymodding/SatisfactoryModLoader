@@ -54,12 +54,13 @@ void UFGPowerCircuit::SetHasPower(bool hasPower){ }
 void UFGPowerCircuitGroup::ResetFuses(){ }
 void UFGPowerCircuitGroup::RegisterPrioritySwitch( AFGBuildablePriorityPowerSwitch* circuitSwitch){ }
 void UFGPowerCircuitGroup::PushCircuit(UFGCircuit* circuit){ }
-bool UFGPowerCircuitGroup::PreTickCircuitGroup(float dt, bool hasAuthority){ return bool(); }
-void UFGPowerCircuitGroup::TickCircuitGroup(float dt, bool hasAuthority){ }
+bool UFGPowerCircuitGroup::PreTickCircuitGroup(float dt){ return bool(); }
+void UFGPowerCircuitGroup::TickCircuitGroup(float dt){ }
 void UFGPowerCircuitGroup::VisitCircuitBridge( AFGBuildableCircuitBridge* circuitBridge){ }
-void UFGPowerCircuitGroup::TickPowerCircuitGroup(float deltaTime, bool hasAuthority, bool isNoPowerCheatOn){ }
+void UFGPowerCircuitGroup::TickPowerCircuitGroup(float deltaTime){ }
 float UFGPowerCircuitGroup::TickBatteries(float deltaTime, const float netPowerProduction, bool isFuseTriggered){ return float(); }
 bool UFGPowerCircuitGroup::TryTurnOffPrioritySwitch(){ return bool(); }
 void UFGPowerCircuitGroup::OnFuseSet(){ }
 void UFGPowerCircuitGroup::OnFuseReset(){ }
+void UFGPowerCircuitGroup::OnPrioritySwitchesTurnedOff(int32 priority){ }
 void UFGPowerCircuitGroup::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }

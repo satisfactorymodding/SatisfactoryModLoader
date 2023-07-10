@@ -7,11 +7,8 @@ AFGGolfCartDispenser::AFGGolfCartDispenser() : Super() {
 	this->mValidPlacementMaterial = nullptr;
 	this->mInvalidPlacementMaterial = nullptr;
 	this->mArmAnimation = EArmEquipment::AE_PortableMiner;
+	this->mDefaultEquipmentActions = 1;
 }
-void AFGGolfCartDispenser::Tick(float DeltaSeconds){ }
 void AFGGolfCartDispenser::BeginPlay(){ }
 void AFGGolfCartDispenser::SetMaterial( UMaterialInterface* material){ }
-void AFGGolfCartDispenser::OnPrimaryFirePressed(){ }
-void AFGGolfCartDispenser::Server_PrimaryFire_Implementation(){ }
-bool AFGGolfCartDispenser::Server_PrimaryFire_Validate(){ return bool(); }
-void AFGGolfCartDispenser::AddEquipmentActionBindings(){ }
+void AFGGolfCartDispenser::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }

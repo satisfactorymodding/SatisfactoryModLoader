@@ -24,7 +24,6 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
 	// Begin AFGEquipment interface
-	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual bool ShouldSaveState() const override;
 	// End
 
@@ -56,9 +55,6 @@ protected:
 	UFUNCTION( Server, Reliable )
 	void Server_StartChargedProjectileSecondary();
 
-	UFUNCTION( NetMulticast, Reliable )
-	void Multicast_PrimaryFireStarted();
-
 	UFUNCTION( BlueprintNativeEvent, Category = "ChargedWeapon" )
 	void OnPrimaryFireStarted();
 
@@ -76,14 +72,8 @@ protected:
 	UFUNCTION( NetMulticast, Reliable )
 	void Multicast_ResetPressTimestamp();
 
-	UFUNCTION( Server, Reliable )
-	void Server_SecondaryFirePressed();
-
 	UFUNCTION( NetMulticast, Reliable )
 	void Multicast_SecondaryFirePressed();
-	
-	/** Called when the player presses secondary fire */
-	void SecondaryFirePressed();
 
 	/** Call animation from blueprint that will contain notify to trigger actual projectile secondary*/
 	UFUNCTION( BlueprintNativeEvent, Category = "ChargedWeapon" )
@@ -97,12 +87,8 @@ protected:
 	UFUNCTION( Server, Reliable )
 	void Server_ExecuteSecondaryFire();
 
-	/** Called from Hotbar status change, to indicate we have change SceneViewport Focus */
-	UFUNCTION()
-	void OnViewportFocusChanged( bool isOpen, TSubclassOf< class UUserWidget > interactionClass );
-
 	// Begin AFGEquipment interface
-	virtual void AddEquipmentActionBindings() override;
+	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
 	// End AFGEquipment interface
 
 	virtual void UpdateDispersion( float DeltaSeconds ) override;

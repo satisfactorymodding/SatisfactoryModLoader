@@ -44,7 +44,7 @@ struct FBoomBoxPlayerState
 	UPROPERTY( SaveGame )
 	float mVolume = 1.f;
 
-	UPROPERTY( SaveGame, meta = (Bitmask, BitmaskEnum = EBoomBoxPlaybackStateBitfield) )
+	UPROPERTY( SaveGame, meta = (Bitmask, BitmaskEnum = "/Script/FactoryGame.EBoomBoxPlaybackStateBitfield") )
 	int32 mPlaybackState = 0;
 };
 
@@ -159,7 +159,7 @@ public:
 	UFUNCTION( BlueprintCallable )
 	void BeginStopSequence( AFGCharacterPlayer* instigatorCharacter );
 
-	/**  Triggers turbo bass, if it is at all possible. */
+	/**  Triggers turbo bass, if it is at all possible. Returns true if turbobass was triggered. */
 	UFUNCTION( BlueprintCallable )
 	void BeginTurboBassSequence( AFGCharacterPlayer* instigatorCharacter );
 
@@ -300,6 +300,9 @@ public:
 
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic )
 	void PlayEquipEffects( AFGCharacterPlayer* character );
+
+	/** Updates materials based on the camera mode */
+	void UpdateMaterialsFromCameraMode();
 	
 protected:
 	void SetPlaybackStateFlag( EBoomBoxPlaybackStateBitfield flag, bool set );
@@ -391,8 +394,22 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Boombox" )
 	float mBoostJumpVelocityRange = 100.f;
 
+	UPROPERTY( EditDefaultsOnly, Category="Equipment" )
+	UMaterialInstance* mFirstPersonTapeMaterial;
+	
+	/** Each Mesh Component should have an entry here to remap its materials to the First person material (one with the panini switch enabled) */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment")
+	TMap< FName, FFirstPersonMaterialArray > mComponentNameToFirstPersonMaterials;
+
+	/** Backup of each material in the event that the boombox is dropped we can undo the panini projectiion materials*/
+	UPROPERTY()
+	TMap< FName, FFirstPersonMaterialArray > mOriginalMaterials;
+	
 	UPROPERTY()
 	class UMaterialInstanceDynamic* mCachedMaterialInstance = nullptr;
+
+	UPROPERTY()
+	class UMaterialInstanceDynamic* mCachedMaterialInstance1p = nullptr;
 	
 	/**
 	 * State listeners subscribed to this boombox. 
@@ -439,7 +456,7 @@ protected:
 	void PlayTurboBassSequence( AFGCharacterPlayer* instigatorPlayer );
 
 	UFUNCTION( BlueprintImplementableEvent )
-	void OnPlaybackStateChanged( UPARAM(meta = (Bitmask, BitmaskEnum = EBoomBoxPlaybackStateBitfield)) int32 PlaybackState );
+	void OnPlaybackStateChanged( UPARAM(meta = (Bitmask, BitmaskEnum = "/Script/FactoryGame.EBoomBoxPlaybackStateBitfield")) int32 PlaybackState );
 
 	void SetOwningCharacter( class AFGCharacterPlayer* character );
 	AFGCharacterPlayer* GetOwningCharacter() const { return mOwningCharacter; }

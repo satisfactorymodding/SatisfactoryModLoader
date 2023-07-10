@@ -29,15 +29,15 @@ struct FReplicatedRailroadVehicleState
 	GENERATED_USTRUCT_BODY()
 	
 	UPROPERTY()
-	int32 ReverserInput;
+	int32 ReverserInput = 0;
 	UPROPERTY()
-	float ThrottleInput;
+	float ThrottleInput = 0.f;
 	UPROPERTY()
-	float DynamicBrakeInput;
+	float DynamicBrakeInput = 0.f;
 	UPROPERTY()
-	float AirBrakeInput;
+	float AirBrakeInput = 0.f;
 	UPROPERTY()
-	bool HornInput;
+	bool HornInput = false;
 };
 
 USTRUCT()
@@ -176,19 +176,19 @@ protected:
 	/** Get dynamic braking force at the given speed. [N] [kg cm/s^2] */
 	FORCEINLINE float CalcDynamicBrakingEffort( float atSpeed ) const
 	{
-		return kNToN( MToCm( mDynamicBrakingEffortCurve.GetRichCurveConst()->Eval( CmSToKmH( atSpeed ) ) ) );
+		return kNToN( MToCm( mDynamicBrakingEffortCurve.GetRichCurveConst()->Eval( FUnits::CmSToKmH( atSpeed ) ) ) );
 	}
 
 	/** Get the tractive force at the given speed. [N] [kg cm/s^2] */
 	FORCEINLINE float CalcTractiveEffort( float atSpeed ) const
 	{
-		return kNToN( MToCm( mTractiveEffortCurve.GetRichCurveConst()->Eval( CmSToKmH( atSpeed ) ) ) );
+		return kNToN( MToCm( mTractiveEffortCurve.GetRichCurveConst()->Eval( FUnits::CmSToKmH( atSpeed ) ) ) );
 	}
 
 	/** Get dynamic braking force at the given speed. [N] [kg cm/s^2] */
 	FORCEINLINE float CalcRegenerativePowerFactor( float atSpeed ) const
 	{
-		return mRegenerativePowerCurve.GetRichCurveConst()->Eval( CmSToKmH( atSpeed ) );
+		return mRegenerativePowerCurve.GetRichCurveConst()->Eval( FUnits::CmSToKmH( atSpeed ) );
 	}
 
 	/** Compute dynamic brake input */
