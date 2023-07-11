@@ -15,4 +15,8 @@ public:
 	/** A whitelist of map assets on which this setting is relevant. If empty, it will be exposed on all available maps */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Session Setting", meta=( DisplayName="Level Whitelist" ))
 	TArray<TSoftObjectPtr<UWorld>> MapNameWhitelist;
+
+#if WITH_EDITOR
+	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+#endif
 };
