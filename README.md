@@ -1,6 +1,6 @@
 # SatisfactoryModLoader [![CI](https://github.com/satisfactorymodding/SatisfactoryModLoader/actions/workflows/build.yml/badge.svg)](https://github.com/satisfactorymodding/SatisfactoryModLoader/actions/workflows/build.yml)
 
-A tool used to load mods for the game Satisfactory. After Coffee Stain releases a proper Unreal modding API.
+A tool used to load mods for the game Satisfactory. After Coffee Stain releases a proper Unreal modding API the project will continue as a utilities library.
 
 This repository contains the SatisfactoryModLoader source code,
 an ExampleMod with demos of some of the SML utilities,
