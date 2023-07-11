@@ -12,7 +12,7 @@ public:
 
 	virtual void PostLoad() override;
 	
-	/** A whitelist of maps on which this setting is relevant. If empty, it will be exposed on all available maps */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Session Setting")
+	/** A whitelist of map assets on which this setting is relevant. If empty, it will be exposed on all available maps */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Session Setting", meta=( DisplayName="Level Whitelist" ))
 	TArray<TSoftObjectPtr<UWorld>> MapNameWhitelist;
 };
