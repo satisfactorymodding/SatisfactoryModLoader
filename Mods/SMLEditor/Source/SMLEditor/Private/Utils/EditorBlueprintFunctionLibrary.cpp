@@ -5,7 +5,7 @@
 
 UObject * UEditorBlueprintFunctionLibrary::CreateBlueprintOfClass(UClass * Class, FString Name, FString Path) {
 	if (Path.StartsWith("C:") || Path.StartsWith("D:")){
-		UE_LOG(LogTemp, Warning, TEXT("Absolute Path is not valid ! CreateBlueprintOfClass expects relative Path like '/Game/FactoryGame/Buildable/' !"));
+		UE_LOG(LogTemp, Warning, TEXT("Absolute Path is not valid! CreateBlueprintOfClass expects relative path like '/Game/FactoryGame/Buildable/'"));
 		return nullptr;
 	}
 	if (!Path.EndsWith("/")){
@@ -34,7 +34,7 @@ TArray<UObject *> UEditorBlueprintFunctionLibrary::GetBlueprintsFromPath(FString
 	}
 
 	if (Path == "/Game" || Path == "'\'Game") {
-		UE_LOG(LogTemp, Error, TEXT("You were about to Load everything in The Project ! This could potentially take Hours and lots of Computation.."));
+		UE_LOG(LogTemp, Error, TEXT("You were about to load everything in the project! This could potentially take hours and lots of Computation... Returning nothing instead."));
 		return TArray<UObject*>();
 	}
 
@@ -74,4 +74,15 @@ UClass * UEditorBlueprintFunctionLibrary::GetClassGeneratedByBlueprint(UObject *
 	}
 	UClass* InnerBPClass = LoadObject<UClass>(NULL, *PathName);
 	return InnerBPClass;
+}
+
+void UEditorBlueprintFunctionLibrary::Editor_MarkDefaultDirty(UClass* Class)
+{
+	if (IsValid(Class))
+	{
+		Class->MarkPackageDirty();
+		Class->GetDefaultObject()->MarkPackageDirty();
+		return;
+	}
+	UE_LOG(LogTemp, Error, TEXT("Tried to mark an invalid Class as Dirty!"));
 }
