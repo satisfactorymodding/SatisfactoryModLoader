@@ -1,8 +1,13 @@
 #include "Kismet/RuntimeBlueprintFunctionLibrary.h"
+#include "FGBlueprintFunctionLibrary.h"
+#include "FGGameMode.h"
 #include "Configuration/RootConfigValueHolder.h"
 #include "SatisfactoryModLoader.h"
 #include "Patching/BlueprintHookHelper.h"
 #include "Patching/BlueprintHookManager.h"
+#include "SessionSettings/SessionSettingsManager.h"
+#include "Settings/FGAdvancedGameSettings.h"
+#include "FGOnlineSessionSettings.h"
 
 UClass* URuntimeBlueprintFunctionLibrary::FindClassByName(FString ClassNameInput) {
 	// prevent crash from wrong user Input
@@ -292,4 +297,27 @@ void URuntimeBlueprintFunctionLibrary::BindOnBPFunction(const TSubclassOf<UObjec
 	HookManager->HookBlueprintFunction(Function, [Binding](const FBlueprintHookHelper& HookHelper) {
 		Binding.ExecuteIfBound(HookHelper.GetContext());
 	}, Offset);
+}
+
+void URuntimeBlueprintFunctionLibrary::CreateSessionAndTravelToMapWithStartingLocation(APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility, bool skipOnboarding) {
+	FString Options;
+	// Original behaviour from UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMap
+	if (startingLocation.Len() > 0) {
+		Options += FString::Printf(TEXT("?%s=%s"), AFGGameMode::StartLocationOption, *startingLocation);
+	}
+	if (skipOnboarding) {
+		Options += FString::Printf(TEXT("?%s"), AFGGameMode::SkipOnboarding); 
+	}
+	if (UFGAdvancedGameSettings* AGS = player->GetWorld()->GetSubsystem<UFGAdvancedGameSettings>()) {
+		// AGS already provide the argument name and '?' prefix 
+		Options += AGS->SerializeSettingsToString();
+	}
+
+	// SML additions
+	if (USessionSettingsManager* SessionSettings = player->GetWorld()->GetSubsystem<USessionSettingsManager>()) {
+		// We decided not to do that to keep the Serialize and Deserialize functions more similar
+		Options += FString::Printf(TEXT("?%s=%s"), USessionSettingsManager::SessionSettingsOption, *SessionSettings->SerializeSettingsToString());
+	}
+	
+	UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMap(player, mapName, Options, sessionName, sessionVisibility);
 }

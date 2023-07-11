@@ -74,3 +74,9 @@ void AFGGameMode::PartitionPlayerStartsByOccupancy(const TArray< APlayerStart* >
 		TArray< APlayerStart* >& out_unOccupied,
 		TArray< APlayerStart* >& out_occupied) const{ }
 bool AFGGameMode::CompareUniqueNetIdBetweenOSS(const FUniqueNetIdRepl& newID, const FUniqueNetIdRepl& savedID){ return bool(); }
+
+const TCHAR* AFGGameMode::StartLocationOption = TEXT("startloc");
+const TCHAR* AFGGameMode::LoadGameOption = TEXT("loadgame");
+const TCHAR* AFGGameMode::SkipOnboarding = TEXT("skiponboarding");
+const TCHAR* AFGGameMode::AdvancedGameSettingsOption = TEXT("advancedGameSettings");
+const TCHAR* AFGGameMode::EnableAdvancedGameSettingsOption = TEXT("enableAdvancedGameSettings");

@@ -7,6 +7,8 @@
 #include "Registry/SessionSettingsRegistry.h"
 #include "Settings/FGUserSettingApplyType.h"
 
+const TCHAR* USessionSettingsManager::SessionSettingsOption = TEXT("SessionSettings");
+
 void USessionSettingsManager::InitializeForMap(const TSoftObjectPtr<UWorld>& World, bool bAttemptPreserveValues) {
 	if(!bAttemptPreserveValues) {
 		SessionSettings.Empty();
@@ -49,7 +51,7 @@ void USessionSettingsManager::OnGameModeInitialized(AGameModeBase* GameModeBase)
 	if(!IsInMainMenu()) {
 		// This will only run on the server. Syncing the settings to the clients on join is handled in ASessionSettingsSubsystem
 		// If we're in a session, we can load the setting values
-		const FString SessionSettingsString = UGameplayStatics::ParseOption(GameModeBase->OptionsString, TEXT("SessionSettings"));
+		const FString SessionSettingsString = UGameplayStatics::ParseOption(GameModeBase->OptionsString, SessionSettingsOption);
 		if (!SessionSettingsString.IsEmpty()) {
 			DeserializeSettingsFromString(SessionSettingsString);
 		}
@@ -65,11 +67,11 @@ bool USessionSettingsManager::IsInMainMenu() const {
 void USessionSettingsManager::OnOptionUpdated(FString String, FVariant Value) const {
 	if(const AFGGameMode* GameMode = GetWorld()->GetAuthGameMode<AFGGameMode>()) {
 		FString& Options = const_cast<FString&>(GameMode->GetCurrentOptions());
-		if(UGameplayStatics::HasOption(Options, TEXT("SessionSettings"))) {
-			const FString CurrentValue = UGameplayStatics::ParseOption(Options, TEXT("SessionSettings"));
-			Options.ReplaceInline(*FString::Printf(TEXT("?SessionSettings=%s"), *CurrentValue), TEXT(""));
+		if(UGameplayStatics::HasOption(Options, SessionSettingsOption)) {
+			const FString CurrentValue = UGameplayStatics::ParseOption(Options, SessionSettingsOption);
+			Options.ReplaceInline(*FString::Printf(TEXT("?%s=%s"), SessionSettingsOption, *CurrentValue), TEXT(""));
 		}
-		Options.Append(*FString::Printf(TEXT("?SessionSettings=%s"), *SerializeSettingsToString()));
+		Options.Append(*FString::Printf(TEXT("?%s=%s"), SessionSettingsOption, *SerializeSettingsToString()));
 	}
 }
 

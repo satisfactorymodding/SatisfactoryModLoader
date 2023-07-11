@@ -58,12 +58,13 @@ public:
 	
 	UFGUserSettingApplyType* FindSessionSetting(const FString& strId) const;
 
-	UFUNCTION(BlueprintPure, Category = "Session Settings Manager")
 	FString SerializeSettingsToString() const;
 	void DeserializeSettingsFromString( const FString& SerializedString );
 
 	static FString VariantToString(FVariant& Variant);
 	static FVariant StringToVariant(const FString& String);
+
+	static const TCHAR* SessionSettingsOption;
 	
 private:
 	void OnGameModeInitialized(AGameModeBase* GameModeBase);
