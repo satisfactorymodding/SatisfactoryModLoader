@@ -25,7 +25,12 @@ void USessionSettingsManager::InitializeForMap(const TSoftObjectPtr<UWorld>& Wor
 			SessionSettings.Add(SettingId, UFGUserSettingApplyType::GetUserSettingApplyType(this, SettingInfo.SessionSetting));
 		}
 		if(!bAttemptPreserveValues) {
-			SessionSettings[SettingId]->ResetToDefaultValue();
+			if (const auto setting = SessionSettings[SettingId]) {
+				setting->ResetToDefaultValue();
+			}
+			else {
+				UE_LOG(LogSatisfactoryModLoader, Fatal, TEXT("Failed to add SessionSetting with StrId %s, it probably has an invalid Apply Type. Continuing would lead to a crash in base-game code."), *SettingId);
+			}
 		}
 		OptionNamesToRemove.Remove(SettingId);
 	}
