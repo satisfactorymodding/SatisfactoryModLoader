@@ -69,7 +69,14 @@ void USMLBlueprintArrayLibrary::GenericArray_Sort(const void* TargetArray, const
 	
 	//Swap values in the array to have the correct order
 	for (int32 i = 0; i < ArrayHelper.Num(); i++) {
-		ArrayHelper.SwapValues(i, ArrayIndices[i]);
+		// Swap until element at i is correct
+		// Each step ensures that element at ArrayIndices[i] is correct
+		// Each element will be swapped to its correct position once
+		// therefore the execution time of this for loop is still linear
+		while(ArrayIndices[i] != i) {
+			ArrayHelper.SwapValues(i, ArrayIndices[i]);
+			ArrayIndices.Swap(i, ArrayIndices[i]);
+		}
 	}
 }
 
