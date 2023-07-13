@@ -13,12 +13,20 @@
 #include "Util/DebuggerHelper.h"
 #include "funchook.h"
 
+#ifndef FACTORYGAME_VERSION
+#define FACTORYGAME_VERSION 0
+#error "FACTORYGAME_VERSION is not defined, check your build configuration"
+#endif
+#ifndef SML_VERSION
+#define SML_VERSION "v_unknown"
+#error "SML_VERSION is not defined, check your build configuration"
+#endif
 #ifndef SML_BUILD_METADATA
 #define SML_BUILD_METADATA "unknown"
 #endif
 
-extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("3.4.1+") TEXT(SML_BUILD_METADATA);
-extern "C" DLLEXPORT const long targetGameVersion = 211839;
+extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT(SML_VERSION) TEXT("+") TEXT(SML_BUILD_METADATA);
+extern "C" DLLEXPORT const long targetGameVersion = FACTORYGAME_VERSION;
 
 DEFINE_LOG_CATEGORY(LogSatisfactoryModLoader);
 
