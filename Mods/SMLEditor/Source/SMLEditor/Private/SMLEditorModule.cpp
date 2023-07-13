@@ -59,7 +59,7 @@ TSharedRef<FExtender> OnExtendContentBrowserAssetSelectionMenu(const TArray<FAss
 	//Only add additional handlers if we're dealing with blueprints
 	bool bHaveAnyBlueprints = false;
 	for (const FAssetData& AssetData : SelectedAssets) {
-		bHaveAnyBlueprints |= AssetData.AssetClass == UBlueprint::StaticClass()->GetFName();
+		bHaveAnyBlueprints |= AssetData.AssetClassPath == FTopLevelAssetPath(UBlueprint::StaticClass());
 	}
 	
 	if (bHaveAnyBlueprints) {
