@@ -66,16 +66,22 @@ void USMLBlueprintArrayLibrary::GenericArray_Sort(const void* TargetArray, const
 		Object->ProcessEvent(ComparatorFunction, ComparatorCallFrame);
 		return ReturnValueProperty->GetPropertyValue_InContainer(ComparatorCallFrame);
 	});
+
+	TArray<int32> TargetPositions;
+	TargetPositions.AddZeroed(ArrayIndices.Num());
+	for (int32 i = 0; i < ArrayIndices.Num(); i++) {
+		TargetPositions[ArrayIndices[i]] = i;
+	}
 	
 	//Swap values in the array to have the correct order
 	for (int32 i = 0; i < ArrayHelper.Num(); i++) {
 		// Swap until element at i is correct
-		// Each step ensures that element at ArrayIndices[i] is correct
+		// Each step ensures that the current element at i is moved to its correct position
 		// Each element will be swapped to its correct position once
 		// therefore the execution time of this for loop is still linear
-		while(ArrayIndices[i] != i) {
-			ArrayHelper.SwapValues(i, ArrayIndices[i]);
-			ArrayIndices.Swap(i, ArrayIndices[i]);
+		while(TargetPositions[i] != i) {
+			ArrayHelper.SwapValues(i, TargetPositions[i]);
+			TargetPositions.Swap(i, TargetPositions[i]);
 		}
 	}
 }
