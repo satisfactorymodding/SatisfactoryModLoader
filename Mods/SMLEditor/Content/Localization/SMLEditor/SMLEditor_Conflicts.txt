@@ -1,0 +1,8 @@
+SML - BlueprintConfigStructRegenerated 
+	/Engine/Binaries/Win64/Mods/SMLEditor/Source/SMLEditor/Private/CodeGeneration/UserDefinedStructCodeGenerator.cpp(35) - "Successfully regenerated Structs for Configuration \'{0}\' and saved them under \'{1}\'" 
+	/Engine/Binaries/Win64/Mods/SMLEditor/Source/SMLEditor/Private/CodeGeneration/NativeCodeGenerator.cpp(68) - "Successfully generated Native Struct for Configuration \'{0}\' and saved them at \'{1}\'" 
+
+SML - InvalidConfigClass 
+	/Engine/Binaries/Win64/Mods/SMLEditor/Source/SMLEditor/Private/Node/K2Node_GetModConfiguration.cpp(114) - "Node @@ does not reference a valid configuration class" 
+	/Engine/Binaries/Win64/Mods/SMLEditor/Source/SMLEditor/Private/Node/K2Node_GetModConfiguration.cpp(80) - "Node @@ does not reference a valid configuration struct" 
+
