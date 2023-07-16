@@ -32,7 +32,7 @@ void USMLWorldModule::WriteModMetadataToSave() {
 	ModMetadata.Write(Metadata);
 
 	FString Out;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Out);
+	auto Writer = TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Out);
 	FJsonSerializer::Serialize(Metadata, Writer);
 
 	UFGSaveSession* Session = UFGSaveSession::Get(this);
