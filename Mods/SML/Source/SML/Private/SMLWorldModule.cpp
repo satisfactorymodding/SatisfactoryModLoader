@@ -2,7 +2,6 @@
 
 #include "FGGameState.h"
 #include "FGSaveSession.h"
-#include "SatisfactoryModLoader.h"
 #include "ModLoading/ModLoadingLibrary.h"
 #include "Patching/Patch/SaveMetadataPatch.h"
 
@@ -18,19 +17,19 @@ void USMLWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
 }
 
 void USMLWorldModule::WriteModMetadataToSave() {
+	FModMetadata ModMetadata;
+	
 	TArray<FModInfo> LoadedMods = GEngine->GetEngineSubsystem<UModLoadingLibrary>()->GetLoadedMods();
-	TSharedRef<FJsonObject> Metadata = MakeShareable(new FJsonObject());
-	TArray<TSharedPtr<FJsonValue>> Versions;
-
-	for (int i = 0; i < LoadedMods.Num(); ++i) {
-		FModInfo Mod = LoadedMods[i];
+	for (const FModInfo& Mod : LoadedMods) {
 		if (IgnoredModReferences.Contains(Mod.Name)) {
 			continue;
 		}
-		FModMetadata VersionInfo = FModMetadata::FromModInfo(Mod);
-		Versions.Push(VersionInfo.ToJson());
+		ModMetadata.Mods.Add(FSavedModInfo::FromModInfo(Mod));
 	}
-	Metadata->SetArrayField("Mods", Versions);
+	ModMetadata.FullMapName = GetWorld()->GetPathName();
+
+	TSharedRef<FJsonObject> Metadata = MakeShared<FJsonObject>();
+	ModMetadata.Write(Metadata);
 
 	FString Out;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Out);
