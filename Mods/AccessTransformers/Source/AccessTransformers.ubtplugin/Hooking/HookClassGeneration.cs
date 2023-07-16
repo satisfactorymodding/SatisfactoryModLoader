@@ -45,7 +45,6 @@ public static class HookClassGeneration
 
         if (friends.Count > 0)
         {
-            builder.Append("private:").Append(_newLineSeparator);
             foreach (var friend in friends)
             {
                 var implementations = friend.GetImplementation(@class);
