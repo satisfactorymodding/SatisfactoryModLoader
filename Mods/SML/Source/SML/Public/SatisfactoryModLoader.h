@@ -27,7 +27,6 @@ public:
 private:
 	friend class FSMLModule;
 	
-	static TSharedPtr<FModHandler> ModHandlerPrivate;
 	static FSMLConfiguration SMLConfigurationPrivate;
 
 	/** Loads SML configuration from file and optionally saves it back */

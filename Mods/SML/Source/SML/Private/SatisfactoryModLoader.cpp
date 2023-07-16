@@ -30,7 +30,6 @@ extern "C" DLLEXPORT const long targetGameVersion = FACTORYGAME_VERSION;
 
 DEFINE_LOG_CATEGORY(LogSatisfactoryModLoader);
 
-TSharedPtr<FModHandler> FSatisfactoryModLoader::ModHandlerPrivate = NULL;
 FSMLConfiguration FSatisfactoryModLoader::SMLConfigurationPrivate;
 
 FVersion FSatisfactoryModLoader::GetModLoaderVersion() {
