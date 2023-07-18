@@ -8,6 +8,7 @@
 #include "KismetCompiler.h"
 #include "KismetCompilerMisc.h"
 #include "PackageTools.h"
+#include "Interfaces/IPluginManager.h"
 #include "Configuration/ConfigManager.h"
 #include "Engine/UserDefinedStruct.h"
 #include "Kismet2/BlueprintEditorUtils.h"
@@ -197,9 +198,19 @@ UScriptStruct* UK2Node_GetModConfiguration::ResolveConfigurationStruct(UClass* C
 	const FString BlueprintName = OwningBlueprint->GetName();
 	const FString RootConfigStructName = FString::Printf(TEXT("%sStruct"), *BlueprintName);
 	
-	//First try to resolve native struct with the same name in any package
-	if (UScriptStruct* NativeStruct = FindObject<UScriptStruct>(ANY_PACKAGE, *RootConfigStructName)) {
-		return NativeStruct;
+	//First try to resolve native struct with the same name in any package owned by the same plugin
+	FString PluginName = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(OwningBlueprint->GetPathName(), false);
+	IPluginManager& PluginManager = IPluginManager::Get();
+	TSharedPtr<IPlugin> Plugin = PluginManager.FindPlugin(PluginName);
+	if (!Plugin.IsValid()) {
+		return NULL;
+	}
+
+	for (const FModuleDescriptor& ModuleDescriptor : Plugin->GetDescriptor().Modules) {
+		FString RootConfigStructPath = FString::Printf(TEXT("/Script/%s.%s"), *ModuleDescriptor.Name.ToString(), *RootConfigStructName);
+		if (UScriptStruct* NativeStruct = FindObject<UScriptStruct>(nullptr, *RootConfigStructPath)) {
+			return NativeStruct;
+		}
 	}
 
 	//Otherwise try to resolve blueprint struct in the same package as the blueprint
