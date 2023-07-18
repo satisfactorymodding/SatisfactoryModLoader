@@ -315,6 +315,9 @@ public:
 	/** Called when research tree is registered into the registry */
 	UPROPERTY(BlueprintAssignable)
 	FOnResearchTreeRegistered OnResearchTreeRegistered;
+
+    static void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSubclassOf<UFGRecipe>>& OutRecipes);
+    static void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree, TArray<TSubclassOf<UFGSchematic>>& OutSchematics);
 protected:
 	/** Called early when subsystem is spawned */
 	virtual void Init() override;

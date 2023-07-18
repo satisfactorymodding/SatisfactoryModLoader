@@ -35,7 +35,7 @@ static bool GIsRegisteringVanillaContent = false;
 	}
 
 
-void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSubclassOf<UFGRecipe>>& OutRecipes) {
+void AModContentRegistry::ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSubclassOf<UFGRecipe>>& OutRecipes) {
     const TArray<UFGUnlock*> Unlocks = UFGSchematic::GetUnlocks(Schematic);
     for (UFGUnlock* Unlock : Unlocks) {
         if (UFGUnlockRecipe* UnlockRecipe = Cast<UFGUnlockRecipe>(Unlock)) {
@@ -44,7 +44,7 @@ void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSu
     }
 }
 
-void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree, TArray<TSubclassOf<UFGSchematic>>& OutSchematics) {
+void AModContentRegistry::ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree, TArray<TSubclassOf<UFGSchematic>>& OutSchematics) {
 
     static FStructProperty* NodeDataStructProperty = NULL;
     static FClassProperty* SchematicStructProperty = NULL;
