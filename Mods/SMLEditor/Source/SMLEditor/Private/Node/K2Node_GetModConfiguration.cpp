@@ -18,25 +18,30 @@
 static FName GetModConfiguration_OutputPinName(TEXT("Config"));
 
 void UK2Node_GetModConfiguration::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const {
-	//Only try to register when we are actually interested in our node type
-	//Because asset registry lookup is rather expensive, we want to skip doing it for no reason
-	UClass* ActionKey = GetClass();
-	if (ActionRegistrar.IsOpenForRegistration(ActionKey)) {
-		
+	auto CustomizeCallback = [](UEdGraphNode* Node, bool bIsTemplateNode, UClass* ConfigurationClass) {
+		UK2Node_GetModConfiguration* TypedNode = CastChecked<UK2Node_GetModConfiguration>(Node);
+		TypedNode->ModConfigurationClass = ConfigurationClass;
+	};
+	
+	// Do a first time registration using the node's class to pull in all existing config classes
+	if (ActionRegistrar.IsOpenForRegistration(GetClass())) {		
 		//Query asset registry for a list of valid native configuration classes
 		TArray<UClass*> ValidConfigurationClasses;
 		RetrieveAllConfigurationClasses(ValidConfigurationClasses);
 
-		auto CustomizeCallback = [](UEdGraphNode* Node, bool bIsTemplateNode, UClass* ConfigurationClass) {
-			UK2Node_GetModConfiguration* TypedNode = CastChecked<UK2Node_GetModConfiguration>(Node);
-			TypedNode->ModConfigurationClass = ConfigurationClass;
-		};
-
 		for (UClass* ValidConfigurationClass : ValidConfigurationClasses) {
-			UBlueprintNodeSpawner* Spawner = UBlueprintNodeSpawner::Create(ActionKey);
+			UBlueprintNodeSpawner* Spawner = UBlueprintNodeSpawner::Create(GetClass());
 			check(Spawner);
 			Spawner->CustomizeNodeDelegate = UBlueprintNodeSpawner::FCustomizeNodeDelegate::CreateStatic(CustomizeCallback, ValidConfigurationClass);
-			ActionRegistrar.AddBlueprintAction(ActionKey, Spawner);
+			ActionRegistrar.AddBlueprintAction(ValidConfigurationClass->ClassGeneratedBy, Spawner);
+		}
+	} else if (const UBlueprint* ActionKey = Cast<UBlueprint>(ActionRegistrar.GetActionKeyFilter())) {
+		UClass* Class = Cast<UClass>(ActionKey->GeneratedClass);
+		if (Class->IsChildOf(UModConfiguration::StaticClass())) {
+			UBlueprintNodeSpawner* Spawner = UBlueprintNodeSpawner::Create(GetClass());
+			check(Spawner);
+			Spawner->CustomizeNodeDelegate = UBlueprintNodeSpawner::FCustomizeNodeDelegate::CreateStatic(CustomizeCallback, Class);
+			ActionRegistrar.AddBlueprintAction(Class->ClassGeneratedBy, Spawner);
 		}
 	}
 }
