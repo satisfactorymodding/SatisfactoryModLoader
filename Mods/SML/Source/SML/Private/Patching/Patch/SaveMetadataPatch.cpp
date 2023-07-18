@@ -134,7 +134,7 @@ ESaveModCheckResult FSaveMetadataPatch::CheckSaveMap(const FModMetadata& ModMeta
 	const USMLGameMapRegistry* GameMapRegistry = GEngine->GetEngineSubsystem<USMLGameMapRegistry>();
 	TArray<FSMLGameMapRegistryEntry> GameMaps = GameMapRegistry->GetGameMaps();
 	const FSMLGameMapRegistryEntry* SaveMap = GameMaps.FindByPredicate([&ModMetadata](const FSMLGameMapRegistryEntry& Entry) {
-		return Entry.MapData->MapAsset->GetPathName() == ModMetadata.FullMapName;
+		return Entry.MapData->MapAsset.ToString() == ModMetadata.FullMapName;
 	});
 
 	if (!SaveMap) {
