@@ -1,5 +1,5 @@
 #include "Kismet/BlueprintAssetHelperLibrary.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "SatisfactoryModLoader.h"
 #include "Interfaces/IPluginManager.h"
 #include "ModLoading/ModLoadingLibrary.h"
