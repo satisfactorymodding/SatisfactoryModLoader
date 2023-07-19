@@ -149,7 +149,8 @@ ESaveModCheckResult FSaveMetadataPatch::CheckSaveMap(const FModMetadata& ModMeta
 			ModName = ModInfo->Name;
 		}
 		
-		OutMessage = FText::Format(LOCTEXT("SAVE_MAP_MISSING", "Save map was part of mod {0} which is missing"), FText::FromString(*ModName));
+		OutMessage = FText::Format(LOCTEXT("SAVE_MAP_MISSING", "This save file uses a custom map from mod '{0}' which could not be found. The save could not be loaded. Contact the mod developer for assistance. See the logs for more info."), FText::FromString(*ModName));
+		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Save file uses custom map '%s' of mod '%s' which could not be found"), *ModMetadata.FullMapName, *ModName)
 		return ESaveModCheckResult::MCR_Incompatible;
 	}
 
