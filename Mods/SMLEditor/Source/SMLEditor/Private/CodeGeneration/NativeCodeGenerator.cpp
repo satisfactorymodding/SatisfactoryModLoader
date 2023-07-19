@@ -76,7 +76,7 @@ bool FNativeCodeGenerator::CanGenerateNativeConfiguration(UConfigGenerationConte
 
         const FString StructName = GeneratedStruct->GetStructName();
         if (!IsValidCppIdentifierString(StructName)) {
-            OutFailureMessage = FString::Printf(TEXT("Generated Struct Name '%s' does not represent a valid C++ identifier. Make sure it contains only alphanumerical characters"), *StructName);
+            OutFailureMessage = FString::Printf(TEXT("Generated Struct Name '%s' does not represent a valid C++ identifier. Make sure it contains only alphanumerical characters and does not start with a digit"), *StructName);
             return false;
         }
         
@@ -86,7 +86,7 @@ bool FNativeCodeGenerator::CanGenerateNativeConfiguration(UConfigGenerationConte
 
             if (!IsValidCppIdentifierString(Pair.Key)) {
                 OutFailureMessage = FString::Printf(TEXT("Property '%s' inside of the generated struct named '%s' does not have a valid C++ identifier as it's name. "
-                    "Make sure it contains only alphanumerical characters"), *Pair.Key, *StructName);
+                    "Make sure it contains only alphanumerical characters and does not start with a digit"), *Pair.Key, *StructName);
                 return false;
             }
             
@@ -390,11 +390,20 @@ void FNativeCodeGenerator::AddReferencedVariable(const FConfigVariableDescriptor
 }
 
 bool FNativeCodeGenerator::IsValidCppIdentifierString(const FString& Identifier) {
+    if (Identifier.Len() == 0) {
+        // Must not be empty
+        return false;
+    }
+    if (FChar::IsDigit(Identifier[0])) {
+        // Must not start with a digit
+        return false;
+    }
     for (int32 i = 0; i < Identifier.Len(); i++) {
+        // Must only contain valid cpp identifier characters
         if (!IsValidCPPIdentifierChar(Identifier[i])) {
             return false;
         }
     }
-    return Identifier.Len() > 0;
+    return true;
 }
 
