@@ -38,12 +38,17 @@ jobs:
           7z x Wwise.7z -oSML\\Plugins\\
           rm Wwise.7z
 
-      - name: Build SML
-        run: |
-          .\\ue\\Engine\\Build\\BatchFiles\\Build.bat -projectfiles -project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -game -rocket -progres
-          MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Shipping" /p:Platform="Win64" /t:"Games\FactoryGame"
-          MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Development Editor" /p:Platform="Win64" /t:"Games\FactoryGame"
-          .\\ue\\Engine\\Build\\BatchFiles\\RunUAT.bat -ScriptsForProject="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" PackagePlugin -Project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -PluginName="SML"
+      - name: Generate VS project files
+        run: .\\ue\\Engine\\Build\\BatchFiles\\Build.bat -projectfiles -project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -game -rocket -progres
+
+      - name: Build for Shipping
+        run: MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Shipping" /p:Platform="Win64" /t:"Games\FactoryGame"
+
+      - name: Build for Development Editor
+        run: MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Development Editor" /p:Platform="Win64" /t:"Games\FactoryGame"
+
+      - name: Package SML Mod
+        run: .\\ue\\Engine\\Build\\BatchFiles\\RunUAT.bat -ScriptsForProject="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" PackagePlugin -Project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -PluginName="SML"
 
       - name: Archive SML artifact
         uses: actions/upload-artifact@v2
