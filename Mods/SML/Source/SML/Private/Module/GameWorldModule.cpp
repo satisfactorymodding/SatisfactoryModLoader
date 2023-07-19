@@ -4,6 +4,7 @@
 #include "Subsystem/SubsystemActorManager.h"
 #include "Unlocks/FGUnlockRecipe.h"
 
+#if WITH_EDITOR
 EDataValidationResult ValidateRecipe(TSubclassOf<UFGRecipe> Recipe, TArray<FText>& ValidationErrors) {
 	if (Recipe == nullptr) {
 		ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "NullRecipe", "Null recipe"));
@@ -98,6 +99,7 @@ EDataValidationResult UGameWorldModule::IsDataValid(TArray<FText>& ValidationErr
 	ValidationResult = FMath::Min(ValidationResult, Super::IsDataValid(ValidationErrors));
 	return ValidationResult;
 }
+#endif
 
 void UGameWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     //Register default content before calling blueprint event logic

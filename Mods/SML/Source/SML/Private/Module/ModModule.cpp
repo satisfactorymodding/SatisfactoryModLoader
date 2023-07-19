@@ -6,6 +6,7 @@
 #include "Module/GameWorldModule.h"
 #include "Module/MenuWorldModule.h"
 
+#if WITH_EDITOR
 EDataValidationResult UModModule::IsDataValid(TArray<FText>& ValidationErrors) {
     EDataValidationResult ValidationResult = EDataValidationResult::Valid;
     
@@ -53,6 +54,7 @@ EDataValidationResult UModModule::IsDataValid(TArray<FText>& ValidationErrors) {
     ValidationResult = FMath::Min(ValidationResult, Super::IsDataValid(ValidationErrors));
     return ValidationResult;
 }
+#endif
 
 UModModule* UModModule::SpawnChildModule(FName ModuleName, TSoftClassPtr<UModModule> ModuleClass) {
     //Make sure we are not attempting to spawn same module twice

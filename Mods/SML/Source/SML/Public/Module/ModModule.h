@@ -23,9 +23,9 @@ UCLASS(Blueprintable)
 class SML_API UModModule : public UObject {
     GENERATED_BODY()
 public:
-    #if WITH_EDITOR
-	    virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
-    #endif
+#if WITH_EDITOR
+	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+#endif
 private:
     /** Private field holding owner mod reference, accessible directly only by mod loader */
     FName OwnerModReference;
