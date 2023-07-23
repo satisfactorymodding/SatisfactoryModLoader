@@ -7,7 +7,7 @@
 #if WITH_EDITOR
 EDataValidationResult ValidateRecipe(TSubclassOf<UFGRecipe> Recipe, TArray<FText>& ValidationErrors) {
 	if (Recipe == nullptr) {
-		ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "NullRecipe", "Null recipe"));
+		ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "NullRecipe", "Null recipe entry. Was the content it previously referenced deleted or moved?"));
 		return EDataValidationResult::Invalid;
 	}
 	EDataValidationResult ValidationResult = EDataValidationResult::Valid;
@@ -17,7 +17,7 @@ EDataValidationResult ValidateRecipe(TSubclassOf<UFGRecipe> Recipe, TArray<FText
 
 	for (const FItemAmount& ItemAmount : AllReferencedItems) {
 		if (ItemAmount.ItemClass == nullptr) {
-			ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "NullSchematicItem", "Null recipe item"));
+			ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "NullRecipeItem", "Null item referenced by recipe. Was the content it previously referenced deleted or moved?"));
 			ValidationResult = EDataValidationResult::Invalid;
 		}
 	}
@@ -27,7 +27,7 @@ EDataValidationResult ValidateRecipe(TSubclassOf<UFGRecipe> Recipe, TArray<FText
 
 EDataValidationResult ValidateSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<FText>& ValidationErrors) {
 	if (Schematic == nullptr) {
-		ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "NullSchematic", "Null schematic"));
+		ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "NullSchematic", "Null schematic entry. Was the content it previously referenced deleted or moved?"));
 		return EDataValidationResult::Invalid;
 	}
 	EDataValidationResult ValidationResult = EDataValidationResult::Valid;
@@ -39,7 +39,7 @@ EDataValidationResult ValidateSchematic(TSubclassOf<UFGSchematic> Schematic, TAr
 		for (const FText& Error : RecipeValidationErrors) {
 			ValidationErrors.Add(
 				FText::Format(
-					NSLOCTEXT("GameWorldModule", "RecipeValidationError", "Recipe {0}: {1}"),
+					NSLOCTEXT("GameWorldModule", "SchematicRecipeValidationErrorDetail", "Error in Recipe {0}: {1}"),
 					FText::FromString(Recipe ? Recipe->GetPackage()->GetPathName() : TEXT("")),
 					Error));
 		}
@@ -49,7 +49,7 @@ EDataValidationResult ValidateSchematic(TSubclassOf<UFGSchematic> Schematic, TAr
 
 EDataValidationResult ValidateResearchTree(TSubclassOf<UFGResearchTree> ResearchTree, TArray<FText>& ValidationErrors) {
 	if (ResearchTree == nullptr) {
-		ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "NullResearchTree", "Null research tree"));
+		ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "NullResearchTree", "Null research tree entry. Was the content it previously referenced deleted or moved?"));
 		return EDataValidationResult::Invalid;
 	}
 	EDataValidationResult ValidationResult = EDataValidationResult::Valid;
@@ -61,7 +61,7 @@ EDataValidationResult ValidateResearchTree(TSubclassOf<UFGResearchTree> Research
 		for (const FText& Error : SchematicValidationErrors) {
 			ValidationErrors.Add(
 				FText::Format(
-					NSLOCTEXT("GameWorldModule", "SchematicValidationError", "Schematic {0}: {1}"), 
+					NSLOCTEXT("GameWorldModule", "ResearchTreeSchematicValidationErrorDetail", "Error in Schematic {0}: {1}"),
 					FText::FromString(Schematic ? Schematic->GetPackage()->GetPathName() : TEXT("")),
 					Error));
 		}
@@ -71,7 +71,7 @@ EDataValidationResult ValidateResearchTree(TSubclassOf<UFGResearchTree> Research
 
 EDataValidationResult UGameWorldModule::IsDataValid(TArray<FText>& ValidationErrors) {
 	EDataValidationResult ValidationResult = EDataValidationResult::Valid;
-    
+
 	//Check that we do not have any null schematics, research trees, recipes or items
 	for (const TSubclassOf<UFGSchematic>& Schematic : mSchematics) {
 		TArray<FText> SchematicValidationErrors;
@@ -79,7 +79,7 @@ EDataValidationResult UGameWorldModule::IsDataValid(TArray<FText>& ValidationErr
 		for (const FText& Error : SchematicValidationErrors) {
 			ValidationErrors.Add(
 				FText::Format(
-					NSLOCTEXT("GameWorldModule", "SchematicValidationError", "Schematic {0}: {1}"),
+					NSLOCTEXT("GameWorldModule", "SchematicValidationErrorDetail", "Error in Schematic {0}: {1}"),
 					FText::FromString(Schematic ? Schematic->GetPackage()->GetPathName() : TEXT("")),
 					Error));
 		}
@@ -90,7 +90,7 @@ EDataValidationResult UGameWorldModule::IsDataValid(TArray<FText>& ValidationErr
 		for (const FText& Error : ResearchTreeValidationErrors) {
 			ValidationErrors.Add(
 				FText::Format(
-					NSLOCTEXT("GameWorldModule", "ResearchTreeValidationError", "Research tree {0}: {1}"),
+					NSLOCTEXT("GameWorldModule", "ResearchTreeValidationErrorDetail", "Error in Research tree {0}: {1}"),
 					FText::FromString(ResearchTree ? ResearchTree->GetPackage()->GetPathName() : TEXT("")),
 					Error));
 		}

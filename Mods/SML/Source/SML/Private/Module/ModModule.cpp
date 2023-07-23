@@ -41,12 +41,12 @@ EDataValidationResult UModModule::IsDataValid(TArray<FText>& ValidationErrors) {
             for (const FDiscoveredModule& Module : ModulesInPlugin) {
                 ModuleNames.Add(FText::FromString(Module.ModuleClass->GetPackage()->GetPathName()));
             }
-            ValidationErrors.Add(FText::Format(NSLOCTEXT("ModModule", "RootModuleMultiple", "Multiple root modules of the same type in the same mod: {0}"), FText::Join(INVTEXT(", "), ModuleNames)));
+            ValidationErrors.Add(FText::Format(NSLOCTEXT("ModModule", "RootModuleMultiple", "Multiple root modules of the same type found in the same mod. Fix by having at maximum only one root module of each type. Detected modules: {0}"), FText::Join(INVTEXT(", "), ModuleNames)));
             ValidationResult = EDataValidationResult::Invalid;
         }
 
         if (ModulesInPlugin.Num() == 0) {
-            ValidationErrors.Add(NSLOCTEXT("ModModule", "RootModuleMultiple", "No module of this type marked as root in this mod"));
+            ValidationErrors.Add(NSLOCTEXT("ModModule", "RootModuleNone", "At least one module of this type was found in this mod, but none were marked as root. Fix by marking at least one as root."));
             ValidationResult = EDataValidationResult::Invalid;
         }
     }
