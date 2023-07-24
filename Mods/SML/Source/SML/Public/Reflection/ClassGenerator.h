@@ -6,7 +6,7 @@
  * It can be used for generating recipes, items, or schematics in runtime
  * Since Satisfactory handles these as default objects of class types, separate class for type is required
  * You can use it for other purposes, or look at implementation and try to
- * generate something moore advanced though
+ * generate something more advanced though
  */
 class SML_API FClassGenerator {
 public:
