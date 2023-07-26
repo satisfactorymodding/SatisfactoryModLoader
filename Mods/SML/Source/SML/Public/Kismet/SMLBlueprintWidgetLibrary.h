@@ -18,7 +18,7 @@ public:
 	 * and the immediate owner of the widget would be a child widget tree (although we will still recurse into the parent tree later on)
 	 *
 	 * Keep in mind that normally widgets should make ZERO assumptions about their container
-	 * and use public properties, named slots and delegates instead to facillate interaction with their host,
+	 * and use public properties, named slots and delegates instead to facilitate interaction with their host,
 	 * but in some particular cases (read "widget blueprint hooking") interacting with host blueprint can be really tricky
 	 * because you have no access to its bindings (since your injected widget has no backing FObjectProperty).
 	 *
@@ -31,7 +31,11 @@ public:
 
 	/**
 	 * Traverses all of the direct and potentially indirect widgets owned by the provided widget tree
-	 * and attempts to find all the widget matching the provided class
+	 * and attempts to find all the widgets matching the provided class.
+	 * 
+	 * Note that the search process can't break through the sandboxing of child user widgets,
+	 * so you must either chain calls to this function on those child widgets or pass the "closest" child if you have access to it.
+	 * Examples of this situation include content in named slots or widgets that use other User Widgets in their hierarchy.
 	 *
 	 * Keep in mind that normally widgets should just use bindings, named slots or manually read properties of the nested
 	 * widget trees to access and modify their content, but in some particular cases (read "widget blueprint hooking")
