@@ -254,8 +254,7 @@ void UK2Node_GetModConfiguration::RetrieveAllConfigurationClasses(TArray<UClass*
 	TArray<FString> PossibleTagValues;
 	for (UClass* ConfigClass : DerivedConfigClasses) {
 		if (Cast<UBlueprintGeneratedClass>(ConfigClass) == NULL) {
-			const FString NativeParentClassName = FString::Printf(TEXT("%s'%s'"), *ConfigClass->GetClass()->GetPathName(), *ConfigClass->GetPathName());
-			PossibleTagValues.Add(NativeParentClassName);
+			PossibleTagValues.Add(FObjectPropertyBase::GetExportPath(ConfigClass));
 		}
 	}
 
