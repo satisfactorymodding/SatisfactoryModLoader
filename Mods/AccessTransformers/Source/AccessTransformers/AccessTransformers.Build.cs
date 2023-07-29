@@ -16,6 +16,7 @@ public class AccessTransformers : ModuleRules
 			"Projects",
 			"EditorSubsystem",
 			"DirectoryWatcher",
+			"Slate",
 		});
 	}
 }

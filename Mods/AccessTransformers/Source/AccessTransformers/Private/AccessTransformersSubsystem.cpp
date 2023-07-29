@@ -3,6 +3,10 @@
 #include "AccessTransformers.h"
 #include "DirectoryWatcherModule.h"
 #include "IDirectoryWatcher.h"
+#include "Framework/Notifications/NotificationManager.h"
+#include "Widgets/Notifications/SNotificationList.h"
+
+#define LOCTEXT_NAMESPACE "AccessTransformers"
 
 UStruct* FindStructBySourceName(const FString Name) {
 	if(UStruct* EngineNameNoPackage = FindObject<UStruct>(ANY_PACKAGE, *Name)) {
@@ -154,6 +158,11 @@ void UAccessTransformersSubsystem::AccessTransformersChanged(const TArray<FFileC
 	if (HasChanges) {
 		UE_LOG(LogAccessTransformers, Display, TEXT("AccessTransformers changed, reloading"));
 		ApplyTransformers();
+		
+		FNotificationInfo Info( LOCTEXT("ReloadFinished", "Access Transformers reloaded!") );
+		Info.ExpireDuration = 2.0f;
+		TSharedPtr<SNotificationItem> NotificationItem = FSlateNotificationManager::Get().AddNotification(Info);
+		NotificationItem->SetCompletionState(SNotificationItem::CS_Success);
 	}
 }
 
@@ -270,3 +279,5 @@ void UAccessTransformersSubsystem::Reset() {
 }
 
 const TCHAR* UAccessTransformersSubsystem::AccessTransformersFileName = TEXT("AccessTransformers.ini");
+
+#undef LOCTEXT_NAMESPACE
