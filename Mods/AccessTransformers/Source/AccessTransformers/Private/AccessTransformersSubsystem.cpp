@@ -110,14 +110,25 @@ void UAccessTransformersSubsystem::Initialize(FSubsystemCollectionBase& Collecti
 	ApplyTransformers();
 }
 
-void UAccessTransformersSubsystem::RegisterFileWatcher(IPlugin& Plugin) {	
+void UAccessTransformersSubsystem::RegisterFileWatcher(IPlugin& Plugin) {
+	if (IsRunningCommandlet()) {
+		// Don't register file watchers when running commandlets
+		return;
+	}
+	
 	FDirectoryWatcherModule& DirectoryWatcherModule = FModuleManager::LoadModuleChecked<FDirectoryWatcherModule>(TEXT("DirectoryWatcher"));
 	IDirectoryWatcher* DirectoryWatcher = DirectoryWatcherModule.Get();
 	FString AccessTransformersPath = GetPluginAccessTransformersPath(Plugin);
+	FString AccessTransformersDir = FPaths::GetPath(AccessTransformersPath);
+
+	if (!FPaths::DirectoryExists(AccessTransformersDir)) {
+		UE_LOG(LogAccessTransformers, Warning, TEXT("Config folder missing for %s. You will need to reload AccessTransformers manually when changed."), *Plugin.GetName());
+		return;
+	}
 
 	FDelegateHandle Handle;
-	if (!DirectoryWatcher->RegisterDirectoryChangedCallback_Handle(FPaths::GetPath(AccessTransformersPath), OnAccessTransformersChanged, Handle)) {
-		UE_LOG(LogAccessTransformers, Error, TEXT("Failed to register directory watcher for %s. You will need to reload AccessTransformers manually when changed."), *AccessTransformersPath);
+	if (!DirectoryWatcher->RegisterDirectoryChangedCallback_Handle(AccessTransformersDir, OnAccessTransformersChanged, Handle)) {
+		UE_LOG(LogAccessTransformers, Warning, TEXT("Failed to register directory watcher for %s. You will need to reload AccessTransformers manually when changed."), *AccessTransformersPath);
 	}
 }
 
