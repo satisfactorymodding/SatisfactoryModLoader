@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Interfaces/IPluginManager.h"
 #include "EditorSubsystem.h"
+#include "IDirectoryWatcher.h"
 #include "AccessTransformersSubsystem.generated.h"
 
 USTRUCT()
@@ -61,16 +62,24 @@ class ACCESSTRANSFORMERS_API UAccessTransformersSubsystem : public UEditorSubsys
 
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	
-	void LoadAccessTransformers();
 
 	void ApplyTransformers();
 	void Reset();
+	
+	static const TCHAR* AccessTransformersFileName;
 private:
+	static FString GetPluginAccessTransformersPath(IPlugin& Plugin);
 	bool GetAccessTransformersForPlugin(IPlugin& Plugin, FPluginAccessTransformers& OutPluginAccessTransformers);
+
+	void OnPluginCreated(IPlugin& Plugin);
+	void RegisterFileWatcher(IPlugin& Plugin);
+	void AccessTransformersChanged(const TArray<FFileChangeData>& FileChangeData);
 	
 	TMap<FString, FPluginAccessTransformers> AccessTransformers;
 
 	TMap<FProperty*, EPropertyFlags> OriginalPropertyFlags;
+
 	TMap<UFunction*, EFunctionFlags> OriginalFunctionFlags;
+	
+	IDirectoryWatcher::FDirectoryChanged OnAccessTransformersChanged;
 };

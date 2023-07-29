@@ -15,6 +15,7 @@ public class AccessTransformers : ModuleRules
 			"Engine",
 			"Projects",
 			"EditorSubsystem",
+			"DirectoryWatcher",
 		});
 	}
 }

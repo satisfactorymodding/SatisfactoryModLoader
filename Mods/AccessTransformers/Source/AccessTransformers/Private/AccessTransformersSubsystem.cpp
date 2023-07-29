@@ -1,6 +1,8 @@
 #include "AccessTransformersSubsystem.h"
 
 #include "AccessTransformers.h"
+#include "DirectoryWatcherModule.h"
+#include "IDirectoryWatcher.h"
 
 UStruct* FindStructBySourceName(const FString Name) {
 	if(UStruct* EngineNameNoPackage = FindObject<UStruct>(ANY_PACKAGE, *Name)) {
@@ -86,27 +88,81 @@ UFunction* FFunctionReference::Resolve(FString& OutError, FString& OutWarning) c
 void UAccessTransformersSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
 
-	LoadAccessTransformers();
-	ApplyTransformers();
-}
-
-FString GetPluginAccessTransformersPath(IPlugin& Plugin) {
-	return Plugin.GetBaseDir() / TEXT("Config") / TEXT("AccessTransformers.ini");
-}
-
-void UAccessTransformersSubsystem::LoadAccessTransformers() {
-    const TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
-
+	OnAccessTransformersChanged = IDirectoryWatcher::FDirectoryChanged::CreateUObject(this, &UAccessTransformersSubsystem::AccessTransformersChanged);
+	
 	AccessTransformers.Empty();
+	
+	const TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
 
 	for (TSharedRef<IPlugin> Plugin : EnabledPlugins) {
+		if (Plugin->GetType() == EPluginType::Engine || Plugin->GetType() == EPluginType::Enterprise) {
+			continue;
+		}
 		FPluginAccessTransformers PluginAccessTransformers;
 		if (GetAccessTransformersForPlugin(Plugin.Get(), PluginAccessTransformers)) {
 			AccessTransformers.Add(Plugin->GetName(), PluginAccessTransformers);
 		}
+		RegisterFileWatcher(Plugin.Get());
+	}
+
+	IPluginManager::Get().OnNewPluginCreated().AddUObject(this, &UAccessTransformersSubsystem::OnPluginCreated);
+	
+	ApplyTransformers();
+}
+
+void UAccessTransformersSubsystem::RegisterFileWatcher(IPlugin& Plugin) {	
+	FDirectoryWatcherModule& DirectoryWatcherModule = FModuleManager::LoadModuleChecked<FDirectoryWatcherModule>(TEXT("DirectoryWatcher"));
+	IDirectoryWatcher* DirectoryWatcher = DirectoryWatcherModule.Get();
+	FString AccessTransformersPath = GetPluginAccessTransformersPath(Plugin);
+
+	FDelegateHandle Handle;
+	if (!DirectoryWatcher->RegisterDirectoryChangedCallback_Handle(FPaths::GetPath(AccessTransformersPath), OnAccessTransformersChanged, Handle)) {
+		UE_LOG(LogAccessTransformers, Error, TEXT("Failed to register directory watcher for %s. You will need to reload AccessTransformers manually when changed."), *AccessTransformersPath);
 	}
 }
 
+void UAccessTransformersSubsystem::AccessTransformersChanged(const TArray<FFileChangeData>& FileChangeData) {
+	bool HasChanges = false;
+	for (const FFileChangeData& FileChange : FileChangeData) {
+		if (FPaths::GetCleanFilename(FileChange.Filename) == AccessTransformersFileName) {
+			// File should be .../PluginDir/Config/AccessTransformers.ini
+			FString PluginDir = FPaths::GetPath(FPaths::GetPath(FileChange.Filename));
+			FString PluginName = FPaths::GetCleanFilename(PluginDir);
+			TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(PluginName);
+			if (!Plugin.IsValid()) {
+				UE_LOG(LogAccessTransformers, Error, TEXT("Failed to find plugin for %s"), *PluginName);
+				continue;
+			}
+			FPluginAccessTransformers PluginAccessTransformers;
+			if (GetAccessTransformersForPlugin(Plugin.ToSharedRef().Get(), PluginAccessTransformers)) {
+				AccessTransformers.Add(Plugin->GetName(), PluginAccessTransformers);
+				HasChanges = true;
+			}
+		}
+	}
+	if (HasChanges) {
+		UE_LOG(LogAccessTransformers, Display, TEXT("AccessTransformers changed, reloading"));
+		ApplyTransformers();
+	}
+}
+
+void UAccessTransformersSubsystem::OnPluginCreated(IPlugin& Plugin) {
+	if (Plugin.GetType() == EPluginType::Engine || Plugin.GetType() == EPluginType::Enterprise) {
+		return;
+	}
+	
+	FPluginAccessTransformers PluginAccessTransformers;
+	if (GetAccessTransformersForPlugin(Plugin, PluginAccessTransformers)) {
+		AccessTransformers.Add(Plugin.GetName(), PluginAccessTransformers);
+		ApplyTransformers();
+	}
+	
+	RegisterFileWatcher(Plugin);
+}
+
+FString UAccessTransformersSubsystem::GetPluginAccessTransformersPath(IPlugin& Plugin) {
+	return Plugin.GetBaseDir() / TEXT("Config") / AccessTransformersFileName;
+}
 
 bool UAccessTransformersSubsystem::GetAccessTransformersForPlugin(IPlugin& Plugin, FPluginAccessTransformers& OutPluginAccessTransformers) {
 	FString AccessTransformersPath = GetPluginAccessTransformersPath(Plugin);
@@ -201,3 +257,5 @@ void UAccessTransformersSubsystem::Reset() {
     }
 	OriginalFunctionFlags.Empty();
 }
+
+const TCHAR* UAccessTransformersSubsystem::AccessTransformersFileName = TEXT("AccessTransformers.ini");
