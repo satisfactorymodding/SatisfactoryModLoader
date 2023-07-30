@@ -158,6 +158,9 @@ void UAccessTransformersSubsystem::AccessTransformersChanged(const TArray<FFileC
 	if (HasChanges) {
 		UE_LOG(LogAccessTransformers, Display, TEXT("AccessTransformers changed, reloading"));
 		ApplyTransformers();
+
+		// This isn't very efficient, but at least it covers all things that would get updated when modifying the code
+		FCoreUObjectDelegates::ReloadCompleteDelegate.Broadcast(EReloadCompleteReason::None);
 		
 		FNotificationInfo Info( LOCTEXT("ReloadFinished", "Access Transformers reloaded!") );
 		Info.ExpireDuration = 2.0f;
