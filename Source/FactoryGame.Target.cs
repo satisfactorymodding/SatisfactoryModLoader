@@ -18,5 +18,8 @@ public class FactoryGameTarget : TargetRules
 
 		bUseChecksInShipping = true;
 		bUseLoggingInShipping = true;
+		
+		WindowsPlatform.bEnableRayTracing = false;
+		LinuxPlatform.bEnableRayTracing = false;
 	}
 }
