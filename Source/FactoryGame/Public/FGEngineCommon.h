@@ -3,7 +3,6 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGWorldCreationInterface.h"
 #include "FGEngineCommon.generated.h"
 
 
@@ -115,12 +114,6 @@ public:
 	 */
 	void Tick( float dt );
 
-	/** Implements IFGWorldCreationInterface::CreateWorld  */
-	class UWorld* CreateWorld( const FString& worldName );
-
-	/** Implements IFGWorldCreationInterface::DestroyWorld */
-	void DestroyWorld( class UWorld* world );
-
 	class UFGAtmosphereUpdater* GetAtmosphereUpdater();
 protected:
 #if WITH_EDITOR
@@ -164,10 +157,6 @@ private:
 protected:
 	UPROPERTY( transient )
 	class UEngine* Engine;
-	
-	/** The worlds created through IFGWorldCreationInterface */
-	UPROPERTY( transient )
-	TArray<UWorld*> CreatedWorlds;
 
 	/** Height fog properties that's controlled from camera */
 	UPROPERTY()

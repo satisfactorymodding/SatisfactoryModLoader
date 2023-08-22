@@ -6,6 +6,10 @@
 #include "Equipment/FGEquipmentAttachment.h"
 #include "FGJetPack.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnFuelAmountChanged, const int, newFuelAmount );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBurnPercentChanged, const float, newBurnPercent );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnFuelTypeChanged, const int, newFuelIndex );
+
 UCLASS()
 class FACTORYGAME_API AFGJetPack final : public AFGEquipment
 {
@@ -25,11 +29,6 @@ public:
 
 	/** This function calculates our new velocity when we are thrusting. */
 	float GetNewVelocityWhenThrusting( const float delta ) const;
-	
-	/** Player pressed thrust */
-	void JetPackThrust();
-	/** Player released thrust */
-	void JetPackStopThrust();
 	
 	virtual void GetSupportedConsumableTypes(TArray<TSubclassOf< UFGItemDescriptor >>& out_itemDescriptors) const override;
 	virtual int GetSelectedConsumableTypeIndex() const override;
@@ -54,9 +53,24 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent )
 	void OnStopThrusting();
 	
-	virtual void Equip( class AFGCharacterPlayer* character ) override;
+	virtual void Equip( AFGCharacterPlayer* character ) override;
 	virtual void UnEquip() override;
+
+	/** Input Actions */
+	void Input_Thrust( const FInputActionValue& actionValue );
+
+	/** Called when the amount of the selected fuel type in the players inventory changes. */
+	UPROPERTY( BlueprintAssignable )
+	FOnFuelAmountChanged mOnFuelAmountChanged;
 	
+	/** Called when the amount of fuel in the JetPack changes. */
+	UPROPERTY( BlueprintAssignable )
+	FOnBurnPercentChanged mOnBurnPercentChanged;
+
+	/** Called when active fuel type changes. */
+	UPROPERTY( BlueprintAssignable )
+	FOnFuelTypeChanged mOnFuelTypeChanged;
+
 private:
 	/** This function checks if the JetPack can thrust. */
 	bool CanThrust() const;
@@ -66,6 +80,10 @@ private:
 
 	bool CheckCurrentAvailableFuel();
 
+	/** Called from delegates when the players inventory changes. Here for UI purposes. */
+	UFUNCTION()
+	void OnInventoryChanged( TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded );
+	
 protected:
 	/** Default air control, used while not thrusting. */
 	UPROPERTY( BlueprintReadWrite )
@@ -88,9 +106,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "JetPack" )
 	TArray<TSubclassOf< class UFGJetPackFuelParameters >> mFuelTypes;
 
-	/** */
+	/** The fuel type selected to be default by the player. */
 	UPROPERTY( BlueprintReadOnly, SaveGame, Replicated, Category = "JetPack" )
 	int mSelectedFuelType = 0;
+	/** The actual fuel type currently being used. Can be different from mSelectedFuelType if the player can not afford it. */
 	UPROPERTY( BlueprintReadOnly, SaveGame, Replicated, Category = "JetPack" )
 	int mCurrentFuelType = 0;
 	
@@ -104,9 +123,21 @@ private:
 	/** A cached instance of the instigators MovementComponent */
 	UPROPERTY()
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
+
+	class UFGInventoryComponent* mCachedInventoryComponent;
 	
 	FTimerHandle mActiveNoiseTimerHandle;
 
+	int mCurrentFuelAmount;
+
+	/** The noise to make when the jetpack is active. */
+	UPROPERTY( EditDefaultsOnly, Category = "JetPack" )
+	TSubclassOf< class UFGNoise > mActiveNoise;
+	
+	/** How often to make the noise (in seconds) while the jetpack is active. */
+	UPROPERTY( EditDefaultsOnly, Category = "JetPack" )
+	float mActiveNoiseFrequency = 0.2f;
+	
 };
 
 UCLASS()

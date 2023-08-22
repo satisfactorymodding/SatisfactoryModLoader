@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
 using AutomationTool;
-using Tools.DotNETCommon;
+using EpicGames.Core;
 using UnrealBuildTool;
+using AutomationScripts;
 
 namespace Alpakit.Automation
 {
@@ -137,8 +139,7 @@ namespace Alpakit.Automation
 				//Need this to allow engine content that wasn't cooked in the base game to be included in the PAK file 
 				DLCIncludeEngineContent: true,
 				DLCName: pluginName,
-				AdditionalCookerOptions: "-CookOnlyPluginAndEngineContent",
-				RunAssetNativization: false
+				AdditionalCookerOptions: "-CookOnlyPluginAndEngineContent"
 			);
 
 			projectParameters.ValidateAndLog();
@@ -339,18 +340,18 @@ namespace Alpakit.Automation
 						if (factoryGameParams.GameDirectory == null)
 						{
 							throw new AutomationException(
-									"-{0}_CopyToGameDirectory was specified, but no game directory path has been provided", deploymentContext.FinalCookPlatform);
+								"-{0}_CopyToGameDirectory was specified, but no game directory path has been provided",
+								deploymentContext.FinalCookPlatform);
 						}
 
 						CopyPluginToTheGameDir(factoryGameParams.GameDirectory, projectParams.RawProjectPath,
-								projectParams.DLCFile, stagePluginDirectory);
+							projectParams.DLCFile, stagePluginDirectory);
 					}
 
 					if (factoryGameParams.StartGame)
 					{
-						System.Diagnostics.Process.Start(factoryGameParams.LaunchGameURL);
-						Thread.Sleep(5000);
-					}
+						System.Diagnostics.Process.Start(new ProcessStartInfo(factoryGameParams.LaunchGameURL) { UseShellExecute = true });
+                    }
 				}
 			}
 		}

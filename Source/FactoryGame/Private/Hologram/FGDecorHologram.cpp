@@ -9,5 +9,5 @@ void AFGDecorHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 void AFGDecorHologram::BeginPlay(){ }
 void AFGDecorHologram::CheckValidPlacement(){ }
 void AFGDecorHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
-USceneComponent* AFGDecorHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
+USceneComponent* AFGDecorHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 FName AFGDecorHologram::mDecorMeshComponentName = FName();

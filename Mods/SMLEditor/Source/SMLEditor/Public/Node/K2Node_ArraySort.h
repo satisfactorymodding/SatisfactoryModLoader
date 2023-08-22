@@ -24,6 +24,7 @@ public:
 	virtual void PinTypeChanged(UEdGraphPin* Pin) override;
 	virtual void NodeConnectionListChanged() override;
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual FText GetTooltipText() const override;
 	virtual UObject* GetJumpTargetForDoubleClick() const override;
 	virtual void AddSearchMetaDataInfo(TArray<struct FSearchTagDataPair>& OutTaggedMetaData) const override;
 	virtual TSharedPtr<SGraphNode> CreateVisualWidget() override;

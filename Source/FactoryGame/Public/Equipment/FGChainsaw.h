@@ -6,8 +6,11 @@
 #include "Equipment/FGEquipment.h"
 #include "FGInventoryComponent.h"
 #include "Equipment/FGEquipmentAttachment.h"
+#include "FGFoliageRemovalSubsystem.h"
 #include "FGChainsaw.generated.h"
 
+
+class IFGChainsawableInterface;
 
 USTRUCT()
 struct FACTORYGAME_API FPickedUpInstance
@@ -73,6 +76,8 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Chainsaw" )
 	void CreatePhysicsFromFoliage( UStaticMesh* inMesh, FTransform inTransform );
 protected:
+	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
+	
 	/**
 	 * Consumes fuel, returns false if we are out of fuel
 	 */
@@ -102,10 +107,14 @@ protected:
 	/** 
 	 * Removes the foliage we just cut down
 	 */
-	UFUNCTION( Reliable, Server, WithValidation )
-	void Server_RemoveChainsawedObject( class USceneComponent* sawingComponent, int foliageIndex, const FVector& effectLocation );
+	UFUNCTION( Reliable, Server )
+	void Server_RemoveFoliageInstance( const struct FFoliageInstanceStableId& stableId, const FVector& effectLocation, const FTransform& instanceTransform );
 
-	void RemoveChainsawedObject( class USceneComponent* sawingComponent, int foliageIndex, const FVector& effectLocation );
+	void RemoveFoliageInstance( const struct FFoliageInstanceStableId& stableId, const FVector& effectLocation, const FTransform& instanceTransform );
+
+	UFUNCTION( Reliable, Server )
+	void Server_RemoveChainsawableObject(const TScriptInterface<IFGChainsawableInterface> &chainsawableObject);
+	void RemoveChainsawableObject(TScriptInterface<IFGChainsawableInterface> chainsawableObject);
 
 	/**
 	 * Removes surrounding foliage around the chainsawedObject and picks it up the within the Collateral pick-up radius
@@ -129,10 +138,6 @@ protected:
 	UFUNCTION(BlueprintPure, Category = "Chainsaw")
 	FORCEINLINE TSubclassOf<class UFGItemDescriptor> GetFuelClass() { return mFuelClass; }
 
-	/** Called from input */
-	void OnPrimaryFirePressed();
-	void OnPrimaryFireReleased();
-
 	/** Start sawing on a new tree */
 	void StartNewSawing( class USceneComponent* sawingComponent, int32 newIndex );
 
@@ -144,7 +149,7 @@ protected:
 	/** Add foliage to player inventory from the component  */
 	void AddToPlayerInventory( class USceneComponent* sawingComponent );
 
-	bool CanPlayerPickupFoliageResource( class UHierarchicalInstancedStaticMeshComponent* meshComponent, bool excludeChainsawable, TArray<FInventoryStack>& out_validStacks );
+	bool CanPlayerPickupFoliageResourceForSeeds( class UHierarchicalInstancedStaticMeshComponent* meshComponent, bool excludeChainsawable, TArrayView< uint32 > seeds, TArray<FInventoryStack>& out_validStacks );
 
 	/** Play pickup effect */
 	void PlayEffect( FVector atLocation, USceneComponent* sawingComponent );
@@ -152,15 +157,11 @@ protected:
 	///** Hides the outline. Convenience function */
 	//void HideOutline();
 
-	//~ Begin AFGEquipment interface
-	virtual void AddEquipmentActionBindings() override;
-	//~ End AFGEquipment interface
-
 	/** returns the static mesh of whatever the hell it is this is i hate this */
 	UStaticMesh* GetStaticMesh( USceneComponent* sawingComponent );
 
 	/** returns true if actor is a chainsawable actor, duh */
-	bool IsChainsawableActor( AActor* actor ) const;
+	bool IsChainsawableObject(UObject* object) const;
 	
 protected:
 	/** The fuel we want to be able to use with the chainsaw */

@@ -23,7 +23,7 @@ class FACTORYGAME_API UFGSignAttachmentPoint : public UFGAttachmentPointType
 	GENERATED_BODY()
 public:
 	// Begin UFGAttachmentPointType interface
-	virtual bool CanAttach( const struct FFGAttachmentPoint& point, const struct FFGAttachmentPoint& targetPoint ) const override;
+	virtual bool CanAttach_Implementation( const struct FFGAttachmentPoint& point, const struct FFGAttachmentPoint& targetPoint ) const override;
 	// End UFGAttachmentPointType interface
 
 	// What the sign should snap with when snapping to this attachment point

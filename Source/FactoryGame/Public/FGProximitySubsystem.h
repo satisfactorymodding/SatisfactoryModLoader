@@ -5,7 +5,6 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "FGSubsystem.h"
 #include "FGProximitySubsystem.generated.h"
 
 USTRUCT( BlueprintType )
@@ -22,14 +21,39 @@ struct FMapAreaParticleCollection
 	class UParticleSystem* Particle;
 };
 
+/*Struct for future extend~ability.*/
+USTRUCT()
+struct FProximityEntry
+{
+	GENERATED_BODY()
+	
+	/*floating point for memory sake*/
+	FVector3f Location;
+};
+
 UCLASS( Blueprintable )
 class FACTORYGAME_API AFGProximitySubsystem : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
 	// Sets default values for this actor's properties
 	AFGProximitySubsystem();
+
+	void SetupPlayerBinds(class AFGPlayerController* Player);
+
+	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
+	static AFGProximitySubsystem* GetProximitySubsystem(UWorld* World);
+
+	/*Note this function has precision loss due to optimizations (double to float) .*/
+	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
+	void IsNearBase(const FVector& Location, float Range ) const;
+
+	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
+	static void StaticRegisterFactoryBuildingToProximitySystem( AActor* Actor );
+	
+	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
+	void RegisterFactoryBuildingToProximitySystem( FVector Location ); 
 
 	/** Player entered a new map area */
 	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Proximity" )
@@ -53,13 +77,53 @@ public:
 	 * @param LifeSpan - destroy decal component after time runs out (0 = infinite)
 	 */
 	void SpawnPooledDecal( const UObject* WorldContextObject, class UMaterialInterface* DecalMaterial, FVector DecalSize, FVector Location, FRotator Rotation = FRotator( 0, 0, 0 ), float LifeSpan = 0 );
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
 public:	
 	// Called every frame
 	virtual void Tick( float DeltaTime ) override;
+	
+private:
+	FORCEINLINE FIntVector LocationToGrid( FVector Location ) const
+	{
+		Location = Location.GridSnap(mRegionSize);
+		return FIntVector(Location.X,Location.Y,Location.Z);
+	}
+
+	FORCEINLINE TArray<FIntVector> FindRelevantCells( FVector Location, float Range ) const
+	{
+		TArray<FIntVector> Out;
+		
+		const int32 SearchLength = FMath::DivideAndRoundUp(Range / 2,mRegionSize);
+		
+		for (int32 y = -SearchLength; y < SearchLength; y++ )
+		{
+			for (int32 x = -SearchLength; x < SearchLength; x++ )
+			{
+				for (int32 z = -SearchLength; z < SearchLength; z++ )
+				{
+					const FVector TestLocation = FVector(
+						Location.X + (x * mRegionSize),
+						Location.Y + (y * mRegionSize), 
+						Location.Z + (z * mRegionSize) );
+
+					FIntVector IntVector = FIntVector(TestLocation.GridSnap(mRegionSize));
+					
+					if (mFactoryRegions.Contains(IntVector))
+					{
+						Out.Add(IntVector);
+					}
+				}
+			}
+		}
+		
+		return Out;
+	}
+	
 private:
 	UPROPERTY()
 	class AFGPlayerController* mOwningController;
@@ -75,7 +139,20 @@ private:
 	UPROPERTY()
 	TArray< UDecalComponent* > mPooledDecals;
 
-	/** How many decals we want to show */
+	/** How many decals we want to show */	
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Proximity" )
 	int32 mMaxNumDecals;
+
+	UPROPERTY(EditDefaultsOnly)
+	float mRegionSize = 25000;
+	
+	/* Locations of factory buildings that are considered for base. */
+	TMap<FIntVector,TArray<FProximityEntry>> mFactoryRegions;
+
+
+#if WITH_EDITOR
+	static TMap<UWorld*, AFGProximitySubsystem*> mPIESubsystemMap;
+#else
+	static AFGProximitySubsystem* SubsystemPtr;
+#endif
 };

@@ -2,8 +2,8 @@
 
 #include "FGBackgroundThread.h"
 
-
 DEFINE_LOG_CATEGORY(LogPoolSystem);
+
 bool FPoolInstanceBase::ResolveHitResults(const TArray<FHitResult>& inHits, const TArray<UClass*>& classesToCheckAgainst, FVector& outHitLocation, float& inNearestDistance){ return bool(); }
 void FPoolInstanceComponent::Claim(int32 EntryId){ }
 bool FPoolInstanceComponent::Update(const TArray<FPoolItem*>& entries){ return bool(); }

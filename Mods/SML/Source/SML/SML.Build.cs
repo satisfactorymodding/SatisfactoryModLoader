@@ -3,9 +3,7 @@
 using UnrealBuildTool;
 using System.IO;
 using System;
-using System.Runtime.InteropServices;
-using System.Text;
-using Tools.DotNETCommon;
+using EpicGames.Core;
 
 public class SML : ModuleRules
 {
@@ -17,7 +15,10 @@ public class SML : ModuleRules
         //SML transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
             "Json",
-            "Projects"
+            "Projects",
+            "NetCore",
+            "EnhancedInput",
+            "GameplayTags"
         });
         
         PrivateDependencyModuleNames.AddRange(new[] {
@@ -25,7 +26,7 @@ public class SML : ModuleRules
             "EngineSettings"
         });
         
-        PublicDependencyModuleNames.AddRange(new string[] {"FactoryGame"});
+        PublicDependencyModuleNames.AddRange(new[] {"FactoryGame"});
 
         //FactoryGame transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
@@ -40,88 +41,106 @@ public class SML : ModuleRules
             PrivateDependencyModuleNames.Add("MainFrame");
         }
 
-        var thirdPartyFolder = Path.Combine(ModuleDirectory, "../../ThirdParty");
-        PublicIncludePaths.Add(Path.Combine(thirdPartyFolder, "include"));
+        var ThirdPartyFolder = Path.Combine(ModuleDirectory, "../../ThirdParty");
+        PublicIncludePaths.Add(Path.Combine(ThirdPartyFolder, "include"));
 
-        var platformName = Target.Platform.ToString();
-        var libraryFolder = Path.Combine(thirdPartyFolder, platformName);
-        
-        if (UnrealTargetPlatform.Win32 == Target.Platform || UnrealTargetPlatform.Win64 == Target.Platform)
+        var PlatformName = Target.Platform.ToString();
+        var LibraryFolder = Path.Combine(ThirdPartyFolder, PlatformName);
+
+        if (Target.Platform == UnrealTargetPlatform.Win64)
         {
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "funchook.lib"));
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "AssemblyAnalyzer.lib"));
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zydis.lib"));
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zycore.lib"));
-        } else if (UnrealTargetPlatform.Linux == Target.Platform) {
+            PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "funchook.lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "AssemblyAnalyzer.lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zydis.lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zycore.lib"));
+        } else if (Target.Platform == UnrealTargetPlatform.Linux) {
             // git@github.com:kubo/funchook.git
             // cmake <toolchain> -DFUNCHOOK_DISASM=zydis
             // funchook will download and build Zydis as a dependency. Copy those static libs in along
             // with funchook.
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libfunchook.a"));
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libZydis.a"));
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libZycore.a"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "libfunchook.a"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "libZydis.a"));
+            PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "libZycore.a"));
 
             // https://github.com/satisfactorymodding/AssemblyAnalyzer
             // Used for SetDebugLoggingHook and DiscoverFunction
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libAssemblyAnalyzer.a"));
-        }
-        
-        //Collect build metadata from the environment and pass it to C++
-        var currentBranch = Environment.GetEnvironmentVariable("BRANCH_NAME");
-        var buildId = Environment.GetEnvironmentVariable("BUILD_NUMBER");
-
-        var githubActionsWorkflow = Environment.GetEnvironmentVariable("GITHUB_WORKFLOW");
-        if (githubActionsWorkflow != null && githubActionsWorkflow.Length > 0) {
-            currentBranch = Environment.GetEnvironmentVariable("GITHUB_REF_NAME");
-            buildId = Environment.GetEnvironmentVariable("GITHUB_RUN_NUMBER");
+            PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "libAssemblyAnalyzer.a"));
         }
 
-        if (currentBranch == null) {
-            RetrieveHeadBranchAndCommitFromGit(Target.ProjectFile.Directory, out currentBranch, out buildId);
-            if (buildId != null && buildId.Length > 8) {
-                buildId = buildId.Substring(0, 8);
-            }
-        }
-        Log.TraceInformation("Environment: Branch = {0} BuildId = {1}", currentBranch, buildId);
-        if (currentBranch != null && buildId != null) {
-            var buildMetadataString = currentBranch == "master" ? buildId : string.Format("{0}.{1}", currentBranch, buildId);
-            PrivateDefinitions.Add(string.Format("SML_BUILD_METADATA=\"{0}\"", buildMetadataString));
-        }
+        AddFactoryGameInfo();
+        AddSMLInfo();
     }
 
-    private static void RetrieveHeadBranchAndCommitFromGit(DirectoryReference RootDir, out string branchName, out string commitRef) {
-        branchName = null;
-        commitRef = null;
+    private void AddFactoryGameInfo()
+    {
+        const string factoryGameVersionRelativePath = "Source/FactoryGame/currentVersion.txt";
 
-        var gitRepository = Path.Combine(RootDir.FullName, ".git");
-        if (!Directory.Exists(gitRepository)) {
+        var FactoryGameVersionFile = FileReference.Combine(Target.ProjectFile!.Directory, factoryGameVersionRelativePath);
+        var FactoryGameVersion = File.ReadAllText(FactoryGameVersionFile.FullName);
+        PrivateDefinitions.Add($"FACTORYGAME_VERSION={FactoryGameVersion}");
+    }
+
+    private void AddSMLInfo()
+    {
+        // Get SML version from SML.uplugin
+        var SMLPluginFile = FileReference.Combine(new DirectoryReference(PluginDirectory!), "SML.uplugin");
+        var SMLPlugin = PluginDescriptor.FromFile(SMLPluginFile);
+        PrivateDefinitions.Add($"SML_VERSION=\"{SMLPlugin.SemVersion}\"");
+        
+        //Collect build metadata from the environment and pass it to C++
+        var CurrentBranch = Environment.GetEnvironmentVariable("BRANCH_NAME");
+        var BuildId = Environment.GetEnvironmentVariable("BUILD_NUMBER");
+
+        var GithubActionsWorkflow = Environment.GetEnvironmentVariable("GITHUB_WORKFLOW");
+        if (!string.IsNullOrEmpty(GithubActionsWorkflow)) {
+            CurrentBranch = Environment.GetEnvironmentVariable("GITHUB_REF_NAME");
+            BuildId = Environment.GetEnvironmentVariable("GITHUB_RUN_NUMBER");
+        }
+
+        if (CurrentBranch == null) {
+            RetrieveHeadBranchAndCommitFromGit(Target.ProjectFile!.Directory, out CurrentBranch, out BuildId);
+            if (BuildId is { Length: > 8 }) {
+                BuildId = BuildId[..8];
+            }
+        }
+        if (CurrentBranch == null || BuildId == null) return;
+        var BuildMetadataString = CurrentBranch == "master" ? BuildId : $"{CurrentBranch}.{BuildId}";
+        PrivateDefinitions.Add($"SML_BUILD_METADATA=\"{BuildMetadataString}\"");
+    }
+
+    private static void RetrieveHeadBranchAndCommitFromGit(DirectoryReference RootDir, out string BranchName, out string CommitRef) {
+        BranchName = null;
+        CommitRef = null;
+
+        var GitRepository = Path.Combine(RootDir.FullName, ".git");
+        if (!Directory.Exists(GitRepository)) {
             return;
         }
-        var gitHeadFile = Path.Combine(gitRepository, "HEAD");
-        if (!File.Exists(gitHeadFile)) {
+        var GitHeadFile = Path.Combine(GitRepository, "HEAD");
+        if (!File.Exists(GitHeadFile)) {
             return;
         }
 
         try {
-            var headFileContents = File.ReadAllText(gitHeadFile).Replace("\n", "");
+            var HeadFileContents = File.ReadAllText(GitHeadFile).Replace("\n", "");
 
-            //It is a normal HEAD ref, so it's name should equal to local branch name
-            if (headFileContents.StartsWith("ref: refs/heads/")) {
-                branchName = headFileContents.Substring(16);
+            //It is a normal HEAD ref, so its name should be equal to the local branch name
+            if (HeadFileContents.StartsWith("ref: refs/heads/")) {
+                BranchName = HeadFileContents.Substring(16);
                 //Try to resolve commit name directly from the ref file
-                var headRefFile = Path.Combine(gitRepository, "refs", "heads", branchName);
-                if (!File.Exists(headRefFile)) return;
+                var HeadRefFile = Path.Combine(GitRepository, "refs", "heads", BranchName);
+                if (!File.Exists(HeadRefFile)) return;
 
-                var headRefFileContents = File.ReadAllText(headRefFile).Replace("\n", "");
-                commitRef = headRefFileContents;
+                var HeadRefFileContents = File.ReadAllText(HeadRefFile).Replace("\n", "");
+                CommitRef = HeadRefFileContents;
                 return;
             }
-            Log.TraceWarning("Git HEAD does not refer to a branch, are we in a detached head state? HEAD: {0}", headFileContents);
-            branchName = "detached-head";
-            commitRef = headFileContents;
+            Log.TraceWarning("Git HEAD does not refer to a branch, are we in a detached head state? HEAD: {0}", HeadFileContents);
+            BranchName = "detached-head";
+            CommitRef = HeadFileContents;
         }
-        catch (Exception ex) {
-            Log.TraceWarning("Failed to handle git HEAD file at {0}: {1}", gitHeadFile, ex.Message);
+        catch (Exception Ex) {
+            Log.TraceWarning("Failed to handle git HEAD file at {0}: {1}", GitHeadFile, Ex.Message);
         }
     }
 }

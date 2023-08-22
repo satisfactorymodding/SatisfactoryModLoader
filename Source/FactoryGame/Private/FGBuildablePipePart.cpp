@@ -27,6 +27,3 @@ void AFGBuildablePipePart::BeginPlay(){ }
 void AFGBuildablePipePart::SetSupportLength(float length){ }
 void AFGBuildablePipePart::SetupConnectionComponent(){ }
 const FName AFGBuildablePipePart::SupportMeshName = FName();
-float AFGBuildablePipeHyperPart::GetPipeProgressOfConnection_Implementation(const UFGPipeConnectionComponentBase* connectionEnteredThrough){ return float(); }
-void AFGBuildablePipeHyperPart::OnPipeMove_Implementation(UFGCharacterMovementComponent* charMove, float deltaTime){ }
-bool AFGBuildablePipeHyperPart::OnPipeEnter_Implementation(UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough , const AActor* fromPipe){ return bool(); }

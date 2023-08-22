@@ -23,3 +23,11 @@ void FDebuggerHelper::DebugBreak() {
 	UE_DEBUG_BREAK();
 #endif
 }
+
+bool FDebuggerHelper::IsDebuggerHelperSupported() {
+#if PLATFORM_WINDOWS
+	return true;
+#else
+	return false;
+#endif
+}

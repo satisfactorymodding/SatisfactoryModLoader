@@ -20,7 +20,7 @@ UClass* FClassGenerator::GenerateSimpleClass(const TCHAR* PackageName, const TCH
         EObjectFlags(RF_Public | RF_Standalone | RF_Transient | RF_MarkAsNative | RF_MarkAsRootSet),
         ParentClass->ClassConstructor,
         ParentClass->ClassVTableHelperCtorCaller,
-        ParentClass->ClassAddReferencedObjects);
+        MoveTemp(ParentClass->CppClassStaticFunctions));
 
 	//Set super structure and ClassWithin (they are required prior to registering)
 	FCppClassTypeInfoStatic TypeInfoStatic = {false};

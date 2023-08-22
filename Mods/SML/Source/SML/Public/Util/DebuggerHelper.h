@@ -9,4 +9,5 @@ class SML_API FDebuggerHelper {
 public:
 	static bool IsDebuggerPresent();
 	static void DebugBreak();
+	static bool IsDebuggerHelperSupported();
 };

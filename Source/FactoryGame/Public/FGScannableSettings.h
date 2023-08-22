@@ -26,9 +26,9 @@ public:
 	
 	/** We might want to solve this in a different way maybe with an interface but this works for now */
 	UPROPERTY( EditAnywhere, config, Category = "Hostile Creatures", meta = ( ToolTip = "This is the additional hostile creature classes that doesn't inherit from FGCreature. This is so we are able to scan for them" ) )
-	TArray< TSubclassOf< AActor > > mAdditionalHostileCreatureClasses;
+	TArray< TSoftClassPtr< AActor > > mAdditionalHostileCreatureClasses;
 
 	// Objects of this class or derived from this class will be allowed to scan for the item descriptors in the value of that pair.
 	UPROPERTY( EditAnywhere, config, Category = "Scannable Objects", meta = ( ToolTip = "These are the scannable objects that should be unlocked from the start of the game" ) )
-	TMap< TSubclassOf< UObject>, FItemDescriptors > mStartingScannableObjects;
+	TMap< TSoftClassPtr< UObject>, FItemDescriptors > mStartingScannableObjects;
 };

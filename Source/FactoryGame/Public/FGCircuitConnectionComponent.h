@@ -49,6 +49,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Connection" )
 	FORCEINLINE int32 GetNumFreeConnections() const { return GetMaxNumConnections() - GetNumConnections(); }
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Connection" )
+	FORCEINLINE float GetConnectionDistanceBias() const { return mConnectionDistanceBias; }
+
 	/**
 	 * Get all the connections, excluding hidden connections. Use GetHiddenConnections for that.
 	 * @param out_connections Array to append all the connections.
@@ -123,6 +126,10 @@ public:
 	/** @return The type of circuit this connection can belong to. See mCircuitType for more detailed info. */
 	TSubclassOf< UFGCircuit > GetCircuitType() const { return mCircuitType; }
 
+	/** Gets the locations used for creating wire meshes between this connection and another one. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Connection" )
+	const TArray< FVector >& GetWireConnectionLocations() const { return mWireConnectionLocations; }
+	
 	/** Debug */
 	void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos );
 	FString GetDebugName() const;
@@ -162,6 +169,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	bool mIsHiddenConnection;
 
+	/** Used when selecting "closest" connection for wires. This bias will be added to the distance so certain connections can be favored. */
+	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
+	float mConnectionDistanceBias;
+
 private:
 	/** The wired connections to this. */
 	UPROPERTY( VisibleAnywhere, SaveGame, Replicated, Category = "Connection" )
@@ -174,6 +185,10 @@ private:
 	/** The non-wired (if this or the other is hidden) connections to this. */
 	UPROPERTY( VisibleAnywhere, SaveGame )
 	TArray< UFGCircuitConnectionComponent* > mHiddenConnections;
+
+	/** If any locations are added in here, they will be used when creating wire meshes between the connections. Otherwise component location will be used. */
+	UPROPERTY( EditDefaultsOnly, Category = "Connection", meta = ( MakeEditWidget = true ) )
+	TArray< FVector > mWireConnectionLocations;
 
 	/**
 	 * The circuit this connection is connected to. INDEX_NONE if not connected.

@@ -42,7 +42,7 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FString Description;
 
-    /** Root property of this configuration describing it's values */
+    /** Root property of this configuration describing its values */
     UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly)
     UConfigPropertySection* RootSection;
 

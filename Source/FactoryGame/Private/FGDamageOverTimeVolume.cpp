@@ -4,6 +4,9 @@
 #include "Components/BrushComponent.h"
 #include "FGDotComponent.h"
 
+#if DEBUG_POST_PROCESS_VOLUME_ENABLE
+FString AFGDamageOverTimeVolume::GetDebugName() const{ return FString(); }
+#endif 
 #if WITH_EDITOR
 void AFGDamageOverTimeVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 

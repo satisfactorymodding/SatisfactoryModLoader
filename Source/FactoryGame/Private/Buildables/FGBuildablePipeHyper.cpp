@@ -5,7 +5,6 @@
 #include "FGPipeConnectionComponentHyper.h"
 
 AFGBuildablePipeHyper::AFGBuildablePipeHyper() : Super() {
-	this->mExitOffset = FVector::ZeroVector;
 	this->mConnection0 = CreateDefaultSubobject<UFGPipeConnectionComponentHyper>(TEXT("PipeHyperConnection0"));
 	this->mConnection1 = CreateDefaultSubobject<UFGPipeConnectionComponentHyper>(TEXT("PipeHyperConnection1"));
 	this->NetDormancy = ENetDormancy::DORM_Initial;
@@ -13,9 +12,11 @@ AFGBuildablePipeHyper::AFGBuildablePipeHyper() : Super() {
 	this->mConnection1->SetupAttachment(RootComponent);
 }
 void AFGBuildablePipeHyper::BeginPlay(){ }
-float AFGBuildablePipeHyper::GetPipeProgressOfConnection_Implementation(const UFGPipeConnectionComponentBase* connectionEnteredThrough){ return float(); }
-void AFGBuildablePipeHyper::OnPipeMove_Implementation(UFGCharacterMovementComponent* charMove, float deltaTime){ }
-UFGPipeConnectionComponentBase* AFGBuildablePipeHyper::GetEndOfPipeInDirectionAndMaxDist(const UFGPipeConnectionComponentBase* enterFromConnection, float maxDist, float& distSoFar, bool& endIsConnectionOne) const{ return nullptr; }
-bool AFGBuildablePipeHyper::OnPipeEnter_Implementation(UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough , const AActor* fromPipe){ return bool(); }
+void AFGBuildablePipeHyper::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+TArray<TPair<UFGPipeConnectionComponentBase*, float>> AFGBuildablePipeHyper::GetPossibleConnectionsToTransitionThrough(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough) const{ return TArray<TPair<UFGPipeConnectionComponentBase*,float>>(); }
+EPipeHyperEnterResult AFGBuildablePipeHyper::OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, TStructOnScope<FFGPipeHyperBasePipeData>& outPipeData){ return EPipeHyperEnterResult(); }
+float AFGBuildablePipeHyper::GetLengthAlongPipe(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData){ return float(); }
+void AFGBuildablePipeHyper::GetLocationAndRotationAlongPipe(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData, float distance, FVector& outLocation, FVector& outDirection){ }
+UFGPipeConnectionComponentBase* AFGBuildablePipeHyper::GetConnectionToTransitThrough(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData, float distance, float& outExitOffset){ return nullptr; }
 const FName AFGBuildablePipeHyper::mConnectionName0 = FName();
 const FName AFGBuildablePipeHyper::mConnectionName1 = FName();

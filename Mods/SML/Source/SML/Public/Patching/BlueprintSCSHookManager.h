@@ -26,8 +26,8 @@ struct SML_API FBPSCSHookDescriptor {
 };
 
 /** Data required to hook into the SCS tree */
-UCLASS(BlueprintType, EditInlineNew)
-class SML_API UBlueprintSCSHookData : public UObject {
+UCLASS(NotBlueprintable, BlueprintType, EditInlineNew)
+class SML_API UBlueprintSCSHookData : public UDataAsset {
 	GENERATED_BODY()
 public:
 	/** Template of the actor component to add to the SCS */
@@ -39,7 +39,7 @@ public:
 	FName VariableName;
 
 	/** The component that will be added to the SCS */
-	UPROPERTY(Instanced, VisibleAnywhere, Category = "Default", BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, Category = "Default", BlueprintReadOnly, meta = (ShowInnerProperties))
 	UActorComponent* ActorComponentTemplate;
 	
 	/** Name of the socket to attach to on the parent component (leave empty if not needed) */

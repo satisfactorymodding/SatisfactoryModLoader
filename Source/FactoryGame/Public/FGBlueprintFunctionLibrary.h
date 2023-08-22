@@ -118,6 +118,14 @@ public:
 	/** Gets the Significance manager */
 	static class UFGSignificanceManager* GetSignificanceManager( UWorld* InWorld );
 
+	/* Add generic gain / loss significance to the accelerated significance manager.
+	**	@Param Object - Actor to add to the system */
+	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
+	static void AddStaticSignificance( UObject* WorldContextObject, UObject* Object);
+
+	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
+	static void RemoveStaticSignificance( UObject* WorldContextObject, UObject* Object );
+	
 	/** Adds a generic tickable object to be handled by significance manager */
 	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
 	static void AddGenericTickObjectToSignificanceManager( UObject* WorldContextObject, UObject* obj );
@@ -355,8 +363,12 @@ public:
 
 	/** Helper function that takes care of creating a session and travel to the map. If skipOnboarding is true we skip intro/onboarding/tutorial and go directly to tier 1 */
 	UFUNCTION( BlueprintCallable, Category="Online" )
-	static void CreateSessionAndTravelToMapWithStartingLocation( APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility, bool skipOnboarding );
+	static void CreateSessionAndTravelToMapWithStartingLocation( APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility, bool skipOnboarding);
 
+	/** Helper function that takes care of loading a session. If enableAdvancedGameSettings is true we will enable it when we load the game */
+	UFUNCTION( BlueprintCallable, Category="Online" )
+	static void LoadSaveFile( TScriptInterface<IFGSaveManagerInterface> saveManager, const FSaveHeader& saveGame, class APlayerController* player, bool enableAdvancedGameSettings );
+	
 	/** Travel gracefully to main menu, kicking clients if host, and tearing down the game session */
 	UFUNCTION( BlueprintCallable, Category="Utils", meta=(DefaultToSelf="worldContext") )
 	static void TravelToMainMenu( APlayerController* playerController );
@@ -516,6 +528,20 @@ public:
 	UFUNCTION( BlueprintCallable, Category="Utilities|FlowControl", meta=( Latent, WorldContext="WorldContextObject", LatentInfo="LatentInfo" ) )
 	static void WaitForCondition( const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo, const FLatentActionPredicate& Predicate, bool ExecuteOnDedicatedServer = true );
 
+	/** Gets all item descriptors in the game including unlocked ones */
+	UFUNCTION(BlueprintCallable, Category = "FactoryGame|Items")
+	static void GetAllPickupableItemDescriptors( UObject* WorldContextObject, TArray< TSubclassOf< class UFGItemDescriptor > >& out_itemDescriptors );
+
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static bool ShouldShowUnstableSaveVersionWarning();
+	
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static bool ShouldShowOfflineSessionWarning();
+
+	/** Returns the underlying source string for this text as it is defined in the editor */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static FString BuildSourceString( const FText& inText );
+	
 	//////////////////////////////////////////////////////////////////////////
 	/// Factory Customization
 
@@ -596,4 +622,17 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Water")
 	static void SetWaterCollisionSettings(UStaticMeshComponent* Target);
+
+	UFUNCTION(BlueprintCallable)
+	static bool SegmentIntersection(const FVector& SegmentBeginA, const FVector& SegmentEndA, const FVector& SegmentBeginB, const FVector& SegmentEndB );
+
+	/*Editor only.*/
+	UFUNCTION(BlueprintCallable)
+	static FString GetActorGridStringRuntTime(AActor* InActor);
+
+	UFUNCTION(BlueprintPure)
+	static FVector GetEditorCameraLocation();
+	
+	UFUNCTION(BlueprintCallable)
+	static void ED_SetMinDrawDistance(UStaticMeshComponent* Comp, float Distance);
 };

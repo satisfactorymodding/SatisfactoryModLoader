@@ -1,41 +1,55 @@
 #include "Patching/Patch/SaveMetadataPatch.h"
 
-#include "FGAdminInterface.h"
-#include "FGBlueprintFunctionLibrary.h"
 #include "FGPlayerController.h"
 #include "FGSaveManagerInterface.h"
 #include "SatisfactoryModLoader.h"
-#include "Patching/BlueprintHookHelper.h"
-#include "Patching/BlueprintHookManager.h"
-#include "Reflection/ReflectionHelper.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Engine/Engine.h"
 #include "ModLoading/ModLoadingLibrary.h"
-#include "Patching/NativeHookManager.h"
-#include "WebBrowser/Public/IWebBrowserDialog.h"
+#include "Registry/GameMapRegistry.h"
 
-bool FSaveMetadataPatch::IsCallback = false;
+#define LOCTEXT_NAMESPACE "SML"
 
-FModMetadata::FModMetadata(FString Reference, FString Name, FVersion Version) : Reference(Reference), Name(Name), Version(Version){}
+FSavedModInfo::FSavedModInfo(const FString& Reference, const FString& Name, const FVersion& Version) : Reference(Reference), Name(Name), Version(Version){}
 
-TSharedPtr<FJsonValue> FModMetadata::ToJson()
-{
-	TSharedPtr<FJsonObject> Object = MakeShareable(new FJsonObject());
+bool FSavedModInfo::Read(const TSharedRef<FJsonObject>& Object, FString& OutError) {
+	if(!Object->TryGetStringField("Reference", this->Reference))
+	{
+		OutError = TEXT("Missing Reference");
+		return false;
+	}
+	if(!Object->TryGetStringField("Name", this->Name))
+	{
+		OutError = TEXT("Missing Name");
+		return false;
+	}
+	FString VersionString;
+	if(!Object->TryGetStringField("Version", VersionString))
+	{
+		OutError = TEXT("Missing Version");
+		return false;
+	}
+	FString VersionError;
+	if(!Version.ParseVersion(VersionString, VersionError))
+	{
+		OutError = FString::Printf(TEXT("Invalid Version: %s"), *VersionError);
+		return false;
+	}
+	return true;
+}
 
+
+void FSavedModInfo::Write(const TSharedRef<FJsonObject>& Object) const {
 	Object->SetStringField("Reference", this->Reference);
 	Object->SetStringField("Name", this->Name);
 	Object->SetStringField("Version", this->Version.ToString());
-	
-	return MakeShareable(new FJsonValueObject(Object));
 }
 
-FModMetadata FModMetadata::FromModInfo(FModInfo ModInfo) 
+FSavedModInfo FSavedModInfo::FromModInfo(const FModInfo& ModInfo) 
 {
-	return FModMetadata(ModInfo.Name, ModInfo.FriendlyName, ModInfo.Version);
+	return FSavedModInfo(ModInfo.Name, ModInfo.FriendlyName, ModInfo.Version);
 }
 
-FString FModMismatch::ToString()
-{
+FString FModMismatch::ToString() const {
 	if (this->IsMissing)
 	{
 		return FString::Printf(TEXT("%ls is missing"), *this->Was.Name);
@@ -44,136 +58,110 @@ FString FModMismatch::ToString()
 		*this->Is.FriendlyName,* this->Was.Version.ToString(), *this->Is.Version.ToString());
 }
 
-FModMismatch::FModMismatch(FModMetadata Was, FModInfo Is, bool IsMissing) : Was(Was), Is(Is), IsMissing(IsMissing) {}
-
-bool FSaveMetadataPatch::Patch(FSaveHeader Header, APlayerController* PlayerController)
-{
-	if (IsCallback) {
-		return false;
+FText FModMismatch::ToText() const {
+	if (this->IsMissing)
+	{
+		return FText::Format(LOCTEXT("MOD_MISSING", "{0} is missing"), FText::FromString(this->Was.Name));
 	}
-		
-	UFGSaveSystem* System = UFGSaveSystem::Get(PlayerController);
+	return FText::Format(LOCTEXT("MOD_DOWNGRADE", "{0} was {1}, is {2})"),
+		FText::FromString(this->Is.FriendlyName), FText::FromString(this->Was.Version.ToString()), FText::FromString(this->Is.Version.ToString()));
+}
 
-	TArray<FModMismatch> ModMismatches = FindModMismatches(Header);
+FModMismatch::FModMismatch(const FSavedModInfo& Was, const FModInfo& Is, const bool IsMissing) : Was(Was), Is(Is), IsMissing(IsMissing) {}
 
-	USaveMetadataCallback* CallbackObject = USaveMetadataCallback::New(System, Header, PlayerController);
+void FSaveMetadataPatch::Register() {
+	UFGSaveSystem::CheckModdedSaveCompatibilityDelegate.BindStatic(CheckModdedSaveCompatibility);
+}
+
+ESaveModCheckResult FSaveMetadataPatch::CheckModdedSaveCompatibility(const FSaveHeader& SaveHeader, FText& OutMessage) {
+	if(!SaveHeader.IsModdedSave) {
+		return ESaveModCheckResult::MCR_Supported;
+	}
+
+	FModMetadata ModMetadata;
+	if (!GetModMetadataFromHeader(SaveHeader, ModMetadata)) {
+		OutMessage = LOCTEXT("MOD_METADATA_MISSING", "Could not read save mod metadata. Mod compatibility check was skipped.");
+		return ESaveModCheckResult::MCR_Volatile;
+	}
+
+	if (ModMetadata.Version >= EModMetadataVersion::AddFullMapName) {
+		// The save map must be present
+		const ESaveModCheckResult MapCheckResult = CheckSaveMap(ModMetadata, SaveHeader, OutMessage);
+		if (MapCheckResult != ESaveModCheckResult::MCR_Supported) {
+			return MapCheckResult;
+		}
+	}
+
+	// Warn about missing/downgraded mods
+	const ESaveModCheckResult ModMismatchesCheckResult = CheckModMismatches(ModMetadata, OutMessage);
+	if (ModMismatchesCheckResult != ESaveModCheckResult::MCR_Supported) {
+		return ModMismatchesCheckResult;
+	}
+
+	return ESaveModCheckResult::MCR_Supported;
+}
+
+ESaveModCheckResult FSaveMetadataPatch::CheckModMismatches(const FModMetadata& ModMetadata, FText& OutMessage) {
+	TArray<FModMismatch> ModMismatches = FindModMismatches(ModMetadata.Mods);
 	if (ModMismatches.Num() > 0)
 	{
-#if !UE_SERVER
-		PopupWarning(ModMismatches, CallbackObject);
-#endif
+		OutMessage = BuildModMismatchesText(ModMismatches);
 		LogModMismatches(ModMismatches);
-		return true;
+		return ESaveModCheckResult::MCR_Volatile;
 	}
-	return false;
+	return ESaveModCheckResult::MCR_Supported;
 }
 
-void FSaveMetadataPatch::RegisterPatch() {
-	UFGSaveSystem* Context = GetMutableDefault<UFGSaveSystem>();
-	SUBSCRIBE_METHOD_VIRTUAL(UFGSaveSystem::LoadSaveFile, Context, [](auto& scope, UFGSaveSystem* self, const FSaveHeader& SaveGame, APlayerController* Player)
-	{
-		bool bAbort = Patch(SaveGame, Player);
-		if (bAbort)
-		{
-			scope.Cancel();
-		}
-	});
-	SUBSCRIBE_METHOD(AFGAdminInterface::LoadGame, [](auto& scope, AFGAdminInterface* self, bool locally, const FSaveHeader& save)
-	{
-		if (locally) {
-			return;
-		}
-		APlayerController* Player = self->GetWorld()->GetFirstPlayerController();
-		bool bAbort = Patch(save, Player);
-		if (bAbort)
-		{
-			scope.Cancel();
-		}
-	});
-}
-
-void FSaveMetadataPatch::PopupWarning(TArray<FModMismatch> ModMismatches, USaveMetadataCallback* CallbackObject)
-{
-	FPopupClosed PopupClosedDelegate;
-	
-	PopupClosedDelegate.BindDynamic(CallbackObject, &USaveMetadataCallback::Callback);
-	FString Body = BuildModMismatchesString(ModMismatches);
-		
-	UFGBlueprintFunctionLibrary::AddPopupWithCloseDelegate(CallbackObject->Player,
-		FText::FromString(TEXT("Mod mismatch")), FText::FromString(Body),
-		PopupClosedDelegate, PID_OK_CANCEL);
-}
-
-TArray<FModMismatch> FSaveMetadataPatch::FindModMismatches(FSaveHeader Header)
+TArray<FModMismatch> FSaveMetadataPatch::FindModMismatches(const TArray<FSavedModInfo>& ModMetadata)
 {
 	TArray<FModMismatch> ModMismatches;
 	UModLoadingLibrary* ModLibrary = GEngine->GetEngineSubsystem<UModLoadingLibrary>();
-	TArray<FModInfo> LoadedMods = ModLibrary->GetLoadedMods();
 
-	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Header.ModMetadata);
-	TSharedPtr<FJsonObject> Metadata = nullptr;
-	FJsonSerializer::Deserialize(Reader, Metadata);
-	if (!(Metadata.IsValid() && Metadata->HasField("Mods"))) {
-		return ModMismatches;
-	}
-	
-	TArray<TSharedPtr<FJsonValue>> MetadataMods = Metadata->GetArrayField("Mods");
-	for (int i = 0; i < MetadataMods.Num(); ++i)
-	{
-		TSharedPtr<FJsonObject> MetadataMod = MetadataMods[i]->AsObject();
-		FString ModReference;
-		FString ModName;
-		FString ModVersionString;
-		bool bValidReference = MetadataMod->TryGetStringField("Reference", ModReference);
-		bool bValidName = MetadataMod->TryGetStringField("Name",ModName);
-		bool bValidVersion = MetadataMod->TryGetStringField("Version",ModVersionString);
-		if (!(bValidReference && bValidVersion && bValidName))
-		{
-			UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Invalid mod metadata format. Could not verify if there are missing mods."))
-			return ModMismatches;
+	for (const FSavedModInfo& OldMod : ModMetadata) {
+		FModInfo LoadedModInfo;
+		if (!ModLibrary->GetLoadedModInfo(OldMod.Reference, LoadedModInfo)) {
+			ModMismatches.Add(FModMismatch(OldMod, FModInfo(), true));
+			continue;
 		}
-		FVersion ModVersion;
-		FString VersionConversionError;
-		ModVersion.ParseVersion(ModVersionString, VersionConversionError);
-		if (VersionConversionError != "")
-		{
-			UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Invalid mod metadata version format. Could not verify if there are missing mods."))
-			return ModMismatches;
-		}
-		
-		FModInfo LoadedMod;
-		bool bIsModLoaded = ModLibrary->GetLoadedModInfo(ModReference,LoadedMod);
-		
-		if (!bIsModLoaded || LoadedMod.Version.Compare(ModVersion) < 0)
-		{
-			FModMetadata OldVersionInfo = FModMetadata(ModReference, ModName, ModVersion);
-			ModMismatches.Push(FModMismatch(OldVersionInfo, LoadedMod, !bIsModLoaded));
+		if (LoadedModInfo.Version.Compare(OldMod.Version) < 0) {
+			ModMismatches.Add(FModMismatch(OldMod, LoadedModInfo, false));
 		}
 	}
 	return ModMismatches;
 }
 
-inline FString FSaveMetadataPatch::BuildModMismatchesString(TArray<FModMismatch>& ModMismatches)
-{
-	FString ExplanationMessage =
-		"Missing mod content will disappear from your world.\n"
-		"This includes things like machines & items but not more generic effects like moving a foundation.\n\n"
-		"Press Confirm to load the save anyway or Cancel if you want to cancel";
-	
-	if (ModMismatches.Num() == 1)
-	{
-		FModMismatch ModMismatch = ModMismatches[0];
-		FString Header = ModMismatch.Was.Name + " was previously used in this save and ";
-		if (ModMismatch.IsMissing)
-		{
-			Header += "is missing";
-		} else
-		{
-			Header += FString::Printf(TEXT("has a lower version than the previous one (%ls -> %ls)"),
-				*ModMismatch.Was.Version.ToString(), *ModMismatch.Is.Version.ToString());
+ESaveModCheckResult FSaveMetadataPatch::CheckSaveMap(const FModMetadata& ModMetadata, const FSaveHeader& SaveHeader, FText& OutMessage) {
+	const USMLGameMapRegistry* GameMapRegistry = GEngine->GetEngineSubsystem<USMLGameMapRegistry>();
+	TArray<FSMLGameMapRegistryEntry> GameMaps = GameMapRegistry->GetGameMaps();
+	const FSMLGameMapRegistryEntry* SaveMap = GameMaps.FindByPredicate([&ModMetadata](const FSMLGameMapRegistryEntry& Entry) {
+		return Entry.MapData->MapAsset.ToString() == ModMetadata.FullMapName;
+	});
+
+	if (!SaveMap) {
+		TArray<FString> PathParts;
+		ModMetadata.FullMapName.ParseIntoArray(PathParts, TEXT("/"));
+		FString ModName = PathParts[0];
+		
+		const FSavedModInfo* ModInfo = ModMetadata.Mods.FindByPredicate([&ModName](const FSavedModInfo& Info) {
+			return Info.Reference == ModName;
+		});
+		if (ModInfo) {
+			ModName = ModInfo->Name;
 		}
-		return FString::Printf(TEXT("%ls\n\n%ls"), *Header, *ExplanationMessage);
+		
+		OutMessage = FText::Format(LOCTEXT("SAVE_MAP_MISSING", "This save file uses a custom map from mod '{0}' which could not be found. The save could not be loaded. Contact the mod developer for assistance. See the logs for more info."), FText::FromString(*ModName));
+		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Save file uses custom map '%s' of mod '%s' which could not be found"), *ModMetadata.FullMapName, *ModName)
+		return ESaveModCheckResult::MCR_Incompatible;
 	}
+
+	// Although we could check the version of the mod that the save map is part of,
+	// the mod version will be checked later for a downgrade
+	// and upgrading the mod version should be safe
+	return ESaveModCheckResult::MCR_Supported;
+}
+
+inline FText FSaveMetadataPatch::BuildModMismatchesText(TArray<FModMismatch>& ModMismatches)
+{
 	int NumMods = ModMismatches.Num();
 	int NumOverflowMods = 0;
 	if (NumMods > 20)
@@ -181,19 +169,27 @@ inline FString FSaveMetadataPatch::BuildModMismatchesString(TArray<FModMismatch>
 		NumOverflowMods = NumMods - 20;
 		NumMods = 20;
 	}
+
+	TArray<FText> Lines;
 	
-	FString Out = "Some mods previously used in this save are missing or have lower versions:\n";
+	Lines.Add(LOCTEXT("MOD_MISMATCHES", "Some mods previously used in this save are missing or have lower versions:"));
+	
+	TArray<FText> ModMismatchTexts;
 	for (int i = 0; i < NumMods; ++i)
 	{
-		Out += ModMismatches[i].ToString() + "\n";
+		ModMismatchTexts.Push(ModMismatches[i].ToText());
 	}
+	Lines.Add(FText::Join(INVTEXT("\n"), ModMismatchTexts));
 	if (NumOverflowMods)
 	{
-		Out += FString::Printf(TEXT("%d missing mods were not shown in this list but written to the log\n"), NumOverflowMods);
+		Lines.Add(FText::Format(LOCTEXT("MOD_MISMATCHES_OVERFLOW", "{0} missing mods were not shown in this list but written to the log"), NumOverflowMods));
 	}
-	Out += "\n" + ExplanationMessage;
+	Lines.Add(LOCTEXT("MOD_MISMATCH_EXPLANATION",
+		"Missing mod content will disappear from your world.\n"
+		"This includes things like machines & items but not more generic effects like moving a foundation.\n\n"
+		"Press Confirm to load the save anyway or Cancel if you want to cancel"));
 	
-	return Out;
+	return FText::Join(INVTEXT("\n"), Lines);
 }
 
 void FSaveMetadataPatch::LogModMismatches(TArray<FModMismatch>& ModMismatches)
@@ -205,23 +201,78 @@ void FSaveMetadataPatch::LogModMismatches(TArray<FModMismatch>& ModMismatches)
 	}
 }
 
-void USaveMetadataCallback::Callback(bool Continue) 
-{
-	if (Continue)
-	{
-		FSaveMetadataPatch::IsCallback = true;
-		System->LoadSaveFile(this->SaveGame, Player);
-		FSaveMetadataPatch::IsCallback = false;
+bool FSaveMetadataPatch::GetModMetadataFromHeader(const FSaveHeader& SaveHeader, FModMetadata& OutMetadata) {
+	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(SaveHeader.ModMetadata);
+	TSharedPtr<FJsonObject> Metadata = nullptr;
+	FJsonSerializer::Deserialize(Reader, Metadata);
+
+	if (!Metadata.IsValid()) {
+		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Invalid mod metadata format"));
+		return false;
 	}
-	this->RemoveFromRoot();
+
+	return OutMetadata.Read(Metadata.ToSharedRef());
 }
 
-USaveMetadataCallback* USaveMetadataCallback::New(UFGSaveSystem* System, FSaveHeader SaveGame, APlayerController* Player)
-{
-	USaveMetadataCallback* CallbackObject = NewObject<USaveMetadataCallback>();
-	CallbackObject->AddToRoot();
-	CallbackObject->System = System;
-	CallbackObject->SaveGame = SaveGame;
-	CallbackObject->Player = Player;
-	return CallbackObject;
+bool FModMetadata::Read(const TSharedRef<FJsonObject>& MetadataObject) {
+	uint8 RawVersion;
+	if (!MetadataObject->TryGetNumberField(TEXT("Version"), RawVersion)) {
+		// This is a save from before the version field was added
+		RawVersion = 0;
+	}
+
+	Version = static_cast<EModMetadataVersion>(RawVersion);
+
+	if (Version >= EModMetadataVersion::InitialVersion) {
+		if (!MetadataObject->HasField(TEXT("Mods"))) {
+			UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Mod metadata missing \"Mods\"."));
+			return false;
+		}
+	
+		TArray<TSharedPtr<FJsonValue>> MetadataMods = MetadataObject->GetArrayField(TEXT("Mods"));
+		for (int i = 0; i < MetadataMods.Num(); ++i)
+		{
+			const TSharedPtr<FJsonObject> MetadataMod = MetadataMods[i]->AsObject();
+			if(!MetadataMod.IsValid()) {
+				UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Mod metadata item %d is not an object."), i);
+				return false;
+			}
+			
+			FSavedModInfo ModInfo;
+			FString ModError;
+			if (!ModInfo.Read(MetadataMod.ToSharedRef(), ModError)) {
+				UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to read mod metadata item %d: %s"), i, *ModError);
+				return false;
+			}
+		
+			Mods.Push(ModInfo);
+		}
+	}
+
+	if (Version >= EModMetadataVersion::AddFullMapName) {
+		if (!MetadataObject->HasField(TEXT("FullMapName"))) {
+			UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Mod metadata missing \"FullMapName\"."));
+			return false;
+		}
+		FullMapName = MetadataObject->GetStringField(TEXT("FullMapName"));
+	}
+
+	return true;
 }
+
+void FModMetadata::Write(const TSharedRef<FJsonObject>& MetadataObject) const {
+	MetadataObject->SetNumberField(TEXT("Version"), static_cast<uint8>(EModMetadataVersion::LatestVersion));
+
+	TArray<TSharedPtr<FJsonValue>> MetadataMods;
+	for (const FSavedModInfo& ModInfo : Mods)
+	{
+		TSharedRef<FJsonObject> MetadataMod = MakeShared<FJsonObject>();
+		ModInfo.Write(MetadataMod);
+		MetadataMods.Push(MakeShared<FJsonValueObject>(MetadataMod));
+	}
+	MetadataObject->SetArrayField(TEXT("Mods"), MetadataMods);
+
+	MetadataObject->SetStringField(TEXT("FullMapName"), FullMapName);
+}
+
+#undef LOCTEXT_NAMESPACE

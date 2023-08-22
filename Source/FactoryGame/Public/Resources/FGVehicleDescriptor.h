@@ -32,6 +32,8 @@ protected:
 	virtual TSubclassOf< class AFGHologram > GetHologramClassInternal() const override;
 	virtual TSubclassOf< AActor > GetBuildClassInternal() const override;
 
+	FORCEINLINE virtual bool Internal_CanItemBePickedup() const override { return false; }
+
 public:
 	/** Value to display instead of display name and description. */
 	static FText mOverrideDisplayNameAndDescription;

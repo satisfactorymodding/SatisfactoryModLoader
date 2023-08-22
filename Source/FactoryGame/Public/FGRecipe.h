@@ -7,6 +7,30 @@
 #include "FGEventSubsystem.h"
 #include "FGRecipe.generated.h"
 
+// A simple struct to expose a recipe amount pair to blueprints
+USTRUCT( BlueprintType )
+struct FRecipeAmountPair
+{
+	GENERATED_BODY()
+
+	/** Recipe to give player */
+	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
+	TSoftClassPtr< class UFGRecipe > Recipe;
+
+	/** How many of given recipe */
+	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
+	int32 Amount;
+};
+
+// Exposes FRecipeAmount as an array
+USTRUCT( BlueprintType )
+struct FRecipeAmounts
+{
+	GENERATED_BODY()
+
+	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
+	TArray<FRecipeAmountPair> RecipeAmountPairs;
+};
 
 /**
  * This is a class describing a recipe, subclass this in blueprint to make a new recipe.

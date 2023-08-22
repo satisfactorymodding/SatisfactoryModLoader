@@ -3,19 +3,13 @@
 #include "FGCineCameraComponent.h"
 
 UFGCineCameraComponent::UFGCineCameraComponent() : Super() {
-	this->Filmback.SensorWidth = 23.76;
-	this->Filmback.SensorHeight = 13.365;
-	this->Filmback.SensorAspectRatio = 1.77778;
 	this->LensSettings.MinFocalLength = 4.0;
 	this->LensSettings.MaxFocalLength = 1000.0;
 	this->LensSettings.MinFStop = 0.0;
 	this->LensSettings.MaxFStop = 22.0;
 	this->LensSettings.MinimumFocusDistance = 15.0;
+	this->LensSettings.SqueezeFactor = 1.0;
 	this->LensSettings.DiaphragmBladeCount = 7;
-	this->CurrentFocalLength = 35.0;
-	this->CurrentAperture = 2.8;
-	this->FieldOfView = 37.4974;
-	this->AspectRatio = 1.77778;
 }
 void UFGCineCameraComponent::Photo_SetManualFocusDistance(float manualFocusDistance){ }
 void UFGCineCameraComponent::Photo_SetAperture(float aperture){ }

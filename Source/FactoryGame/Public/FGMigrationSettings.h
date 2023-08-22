@@ -29,8 +29,15 @@ class FACTORYGAME_API UFGMigrationSettings : public UDeveloperSettings
 	GENERATED_BODY()
 public:
 	static const UFGMigrationSettings* Get() { return GetDefault<UFGMigrationSettings>(); };
+
 public:
-	UPROPERTY( EditAnywhere, config, Category = "Dependency class for migrating to new dependency system" )
-	TSubclassOf< class UFGSchematicPurchasedDependency > mSchematicPurchasedDependencyClass;
+	UPROPERTY( EditAnywhere, config, Category = "Dependency class for schematic purchased" )
+	TSoftClassPtr< class UFGSchematicPurchasedDependency > mSchematicPurchasedDependencyClass;
+
+	UPROPERTY( EditAnywhere, config, Category = "Dependency class for item pickup" )
+	TSoftClassPtr< class UFGItemPickedUpDependency > mItemPickedUpDependencyClass;
+
+	UPROPERTY( EditAnywhere, config, Category = "Dependency class for research tree unlock" )
+	TSoftClassPtr< class UFGResearchTreeUnlockedDependency > mResearchTreeUnlockedDependencyClass;
 
 };

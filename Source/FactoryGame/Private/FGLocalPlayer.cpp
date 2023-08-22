@@ -17,7 +17,7 @@ FFGOnlineFriend::FFGOnlineFriend(TSharedRef<FOnlineFriend> onlineFriend){ }
 UFGLocalPlayer::UFGLocalPlayer() : Super() {
 
 }
-void UFGLocalPlayer::PlayerAdded( UGameViewportClient* inViewportClient, int32 inControllerID){ }
+void UFGLocalPlayer::PlayerAdded( UGameViewportClient* inViewportClient, FPlatformUserId inUserId){ }
 void UFGLocalPlayer::PlayerRemoved(){ }
 bool UFGLocalPlayer::Exec(UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& Ar){ return bool(); }
 void UFGLocalPlayer::SubscribeToOptionUpdates(){ }
@@ -58,6 +58,7 @@ void UFGLocalPlayer::LogoutEpicAccountAndContinue(){ }
 void UFGLocalPlayer::LoginEpicAccountPortal(){ }
 void UFGLocalPlayer::LogoutEpicAccountPortal(){ }
 void UFGLocalPlayer::ContinueWithoutMultiplayer(){ }
+void UFGLocalPlayer::FindChildMappingContexts(const UFGInputMappingContext* mainContext, TArray<UFGInputMappingContext*>& out_childContexts) const{ }
 void UFGLocalPlayer::OnLoginStatusChanged(int32 localUserNum, ELoginStatus::Type previous, ELoginStatus::Type current, const FUniqueNetId& userId){ }
 void UFGLocalPlayer::OnLoginStatusChangedSteam(int32 localUserNum, ELoginStatus::Type previous, ELoginStatus::Type current, const FUniqueNetId& userId){ }
 void UFGLocalPlayer::SteamTaskRetryWaiter(){ }

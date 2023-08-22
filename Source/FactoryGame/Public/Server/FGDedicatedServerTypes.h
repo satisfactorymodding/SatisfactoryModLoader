@@ -52,10 +52,10 @@ struct FServerAuthenticationToken
 	GENERATED_BODY()
 
 	UPROPERTY( BlueprintReadOnly )
-	EPrivilegeLevel PrivilegeLevel;
+	EPrivilegeLevel PrivilegeLevel = EPrivilegeLevel::NotAuthenticated;
 
 	UPROPERTY()
-	FString Fingerprint;
+	FString Fingerprint = {};
 };
 
 /**
@@ -67,13 +67,13 @@ struct FServerEntryToken
 	GENERATED_BODY()
 
 	UPROPERTY()
-	EPrivilegeLevel Privilege;
+	EPrivilegeLevel Privilege = EPrivilegeLevel::NotAuthenticated;
 
 	UPROPERTY()
-	FDateTime IssueDate;
+	FDateTime IssueDate = {};
 
 	UPROPERTY()
-	FString Fingerprint;
+	FString Fingerprint = {};
 };
 
 FArchive& operator<<( FArchive& AR, FServerEntryToken& GameToken );

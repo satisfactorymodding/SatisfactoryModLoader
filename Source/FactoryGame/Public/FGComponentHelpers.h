@@ -3,7 +3,7 @@
 #pragma once
 
 
-DECLARE_DELEGATE_RetVal_ThreeParams( class USceneComponent*, FComponentDuplicator, class USceneComponent*, class UActorComponent*, const FName& );
+DECLARE_DELEGATE_RetVal_FourParams( class USceneComponent*, FComponentDuplicator, class USceneComponent*, class UActorComponent*, const FName&, const FName& );
 
 class FACTORYGAME_API FGComponentHelpers
 {
@@ -17,6 +17,7 @@ public:
 	 * @param defaultRoot - when duplicating the native components, what should we attach the to
 	 * @param duplicator - the delegate to call for each component that can filter and create new components
 	 * @param outLightweightComponents - Target array for lightweight instances, optional
+	 * @param defaultRootSocketName - Name of the socket to attach to on the default root component, none by default
 	 */
-	static void DuplicateComponents( TSubclassOf<class AActor> actorClass, class USceneComponent* defaultRoot, FComponentDuplicator duplicator, TArray<UStaticMeshComponent*>* outLightweightComponents = nullptr);
+	static void DuplicateComponents( TSubclassOf<class AActor> actorClass, class USceneComponent* defaultRoot, FComponentDuplicator duplicator, TArray<UStaticMeshComponent*>* outLightweightComponents = nullptr, FName defaultRootSocketName = NAME_None );
 };

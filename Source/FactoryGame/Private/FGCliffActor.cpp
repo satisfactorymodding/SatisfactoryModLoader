@@ -17,6 +17,7 @@ void AFGCliffActorManager::Tick(float DeltaSeconds){ }
 void AFGCliffActorManager::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 #if WITH_EDITOR
 void AFGCliffActor::ConvertStaticMeshActorToOnTopMesh(AActor* SelectedActor, FString& ResultMsg){ }
+void AFGCliffActor::UpdateAssociatedCliffActorsAndReParent(){ }
 void AFGCliffActor::DebugSpawn(){ }
 void AFGCliffActor::ClearDebugSpawn(){ }
 void AFGCliffActor::ForceUpdateMeshCPUAccess(){ }

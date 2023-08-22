@@ -41,8 +41,6 @@ public:
 
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "UI" )
 	void SetInputMode();
-
-	void HandleEquipment();
 	
 	void PassThroughKeybindings();
 
@@ -185,6 +183,22 @@ public:
 	/** Decides if the widget should restore focus when it looses it. (e.g. when the user clicks outside of the widget) */
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
 	bool mRestoreFocusWhenLost = true;
+
+	/** Whether or not to we want to disable Player Actions while this widget is open. */
+	UPROPERTY( EditDefaultsOnly, Category = "Input" )
+	bool mDisablePlayerActions;
+
+	/** Whether or not to we want to disable BuildGun Actions while this widget is open. */
+	UPROPERTY( EditDefaultsOnly, Category = "Input" )
+	bool mDisableBuildGunActions;
+	
+	/** Whether or not to we want to disallow the player from managing their equipment while this widget is open. */
+	UPROPERTY( EditDefaultsOnly, Category = "Input" )
+	bool mDisablePlayerEquipmentManagement;
+
+	/** Whether or not to flush mouse button input when opening the widget. */
+	UPROPERTY( EditDefaultsOnly, Category = "Input" )
+	bool mFlushMouseKeysOnOpen;
 	
 	// Begin Deprecated Input
 	/** Decides if we should share input with game or capture it completely */

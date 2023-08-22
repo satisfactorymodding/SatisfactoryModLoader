@@ -79,6 +79,15 @@ struct FFactoryGameCustomVersion
 		// 2021-12-03: Add support for sublevel saving. World actors are now cached in FGWorldSettings
 		CachedSaveActors,
 
+		// 2022-12-07: Removed the afore-mentioned cached actors array
+		RemovedCachedSaveActors,
+
+		// 2023-01-09: Some attributes of Exponential Height Fog were renamed and changes were matched in UFGBiome
+		ExponentialHeightFogAttributesRenamed,
+
+		// 2023-01-10: Cyclic curves were converted to plain curves in UFGBiome to get rid of the custom UI for the former
+		CyclicCurveDeprecated,
+		
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1

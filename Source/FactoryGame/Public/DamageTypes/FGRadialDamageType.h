@@ -18,7 +18,7 @@ class FACTORYGAME_API UFGRadialDamageType : public UFGDamageType
 {
 	GENERATED_BODY()
 public:
-	virtual void ProcessDamage( const FHitResult& hitResult, AController* instigator, AActor* damageCauser, float damageAmount, TArray<AActor*> ignoredActors ) override;
+	virtual void ProcessDamage( const struct FHitResult& hitResult, AController* instigator, AActor* damageCauser, float damageAmount, TArray<AActor*> ignoredActors ) override;
 
 	/** radius in which the damage of this type will be dealt */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType" )

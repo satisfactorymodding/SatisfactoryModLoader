@@ -3,8 +3,10 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "Buildables/FGBuildableWire.h"
 #include "Hologram/FGBuildableHologram.h"
 #include "FGCircuitConnectionComponent.h"
+#include "FGPowerConnectionComponent.h"
 #include "FGWireHologram.generated.h"
 
 /**
@@ -20,7 +22,6 @@ public:
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
-	virtual void Tick( float dt ) override;
 	// End AActor interface
 
 	// Begin AFGHologram Interface
@@ -30,11 +31,14 @@ public:
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual void OnInvalidHitResult() override;
-	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	virtual void CheckBlueprintCommingling() override;
+	virtual float GetBuildGunRangeOverride_Implementation() const override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
+	virtual bool CanNudgeHologram() const override;
+	virtual AFGHologram* GetNudgeHologramTarget() override;
 	// End AFGHologram Interface
 
 	// Begin AFGBuildableHologram Interface
@@ -45,7 +49,11 @@ public:
 	void SetConnection( int32 ix, UFGCircuitConnectionComponent* connection );
 
 	UFUNCTION(BlueprintPure, Category = "Power Pole")
-	class AFGPowerPoleHologram* GetActiveAutomaticPoleHologram() const { return mActivePoleHologram; }
+	class AFGBuildableHologram* GetActiveAutomaticPoleHologram() const { return mActivePoleHologram; }
+
+	// Whether or not the wire is connected to two power towers
+	UFUNCTION( BlueprintPure, Category = "Power Pole")
+	bool IsPowerTowerWire() const;
 
 protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Hologram" )
@@ -63,7 +71,11 @@ private:
 	void CheckValidSnap();
 	void CheckLength();
 
-	void SetActiveAutomaticPoleHologram( class AFGPowerPoleHologram* poleHologram );
+	void SetActiveAutomaticPoleHologram( class AFGBuildableHologram* poleHologram );
+
+	UStaticMeshComponent* CreateNewWireMesh();
+
+	void UpdateWireMeshes();
 
 	/**
 	 * Check for connections near a point on a given actor.
@@ -72,6 +84,7 @@ private:
 	 * @param actor                        Actor to search for connections on.
 	 * @param ignoredConnectionComponent   Connection to ignore when searching.
 	 * @param compatibleCircuitType        Circuit type to look for, null is not compatible with anything.
+	 * @param powerConnectionType          In case of power connections, what power connection type to look for.
 	 *
 	 * @return Closest connection, with or without free connections left.
 	 */
@@ -79,7 +92,8 @@ private:
 		const FVector& location,
 		class AActor* actor,
 		class UFGCircuitConnectionComponent* ignoredConnectionComponent,
-		TSubclassOf< class UFGCircuit > compatibleCircuitType );
+		TSubclassOf< class UFGCircuit > compatibleCircuitType,
+		EPowerConnectionType powerConnectionType );
 
 	void StartLookAtBuilding( UFGCircuitConnectionComponent* overlappingComponent );
 	void StopLookAtBuilding();
@@ -92,6 +106,7 @@ private:
 
 private:
 	float mMaxLength;
+	float mMaxPowerTowerLength;
 	float mLengthPerCost;
 
 	/** The two connection components we connect. */
@@ -105,7 +120,11 @@ private:
 	UPROPERTY( Replicated )
 	class AFGPowerPoleWallHologram* mPowerPoleWall;
 
-	class AFGPowerPoleHologram* mActivePoleHologram;
+	UPROPERTY()
+	class AFGBuildableHologram* mActivePoleHologram;
+
+	UPROPERTY()
+	class UFGCircuitConnectionComponent* mActiveSnapConnection;
 
 	/** Recipe to use for the automatically spawned child pole, can be null. */
 	UPROPERTY( EditDefaultsOnly, Category = "Power pole" )
@@ -121,6 +140,9 @@ private:
 	/** Whether or not it's possible to place automatic power poles on the wall. */
 	bool mAutomaticWallPoleEnabled;
 
+	/** Whenever we have completed the tutorial and have poles unlocked */
+	bool mAutomaticPoleAvailable;
+
 	/** The start location of this wire */
 	UPROPERTY( Replicated )
 	FVector mStartLocation;
@@ -129,9 +151,8 @@ private:
 	UPROPERTY()
 	int32 mCurrentConnection;
 
-	/** The mesh we should stretch */
 	UPROPERTY()
-	UStaticMeshComponent* mWireMesh;
+	TArray< FWireInstance > mWireInstances;
 
 	UPROPERTY()
 	class AFGBuildableWire* mUpgradeTarget;

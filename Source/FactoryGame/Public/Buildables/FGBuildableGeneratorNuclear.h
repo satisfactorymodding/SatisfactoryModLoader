@@ -42,7 +42,6 @@ protected:
 	// End FGBuildableFactory interface
 	
 	// Begin AFGBuildableGenerator interface
-	virtual bool Factory_HasPower() const override;
 	virtual bool CanStartPowerProduction_Implementation() const override;
 	// End AFGBuildableGenerator interface
 
@@ -65,12 +64,17 @@ protected:
 
 	/** Returns the inventory for waste in the nuclear generator */
 	UFUNCTION( BlueprintPure, Category = "Nuclear" )
-	FORCEINLINE class UFGInventoryComponent* GetWasteInventory() const { return mOutputInventoryHandler->GetActiveInventoryComponent(); }
+	FORCEINLINE class UFGInventoryComponent* GetWasteInventory() const { return mOutputInventoryHandlerData.GetActiveInventoryComponent(); }
 
 	/** Returns the current active warning for this nuclear generator */
 	UFUNCTION( BlueprintPure, Category = "Nuclear" )
 	FORCEINLINE EGeneratorNuclearWarning GetCurrentGeneratorNuclearWarning() const { return mCurrentGeneratorNuclearWarning; }
-	
+
+	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
+	{
+		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
+		out_repDetailData.Add( &mOutputInventoryHandlerData );
+	}
 private:
 	/** Check if the waste inventory has space for the waste item of the fuel in the fuel inventory. */
 	bool CanFitWasteOfNextFuelClass() const;
@@ -83,7 +87,7 @@ private:
 	class UFGInventoryComponent* mOutputInventory;
 
 	UPROPERTY()
-	UFGReplicationDetailInventoryComponent* mOutputInventoryHandler;
+	FReplicationDetailData mOutputInventoryHandlerData;
 
 	/** Waste left to produce from the current fuel rod*/
 	UPROPERTY( SaveGame )

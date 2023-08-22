@@ -8,13 +8,13 @@
 
 AFGGameMode::AFGGameMode() : Super() {
 	this->mSaveSession = nullptr;
-	this->mLastAutosaveId = 255;
+	this->mLastAutoSaveId = 255;
 	this->mSaveSessionName = TEXT("");
 	this->mStartingPointTagName = TEXT("None");
 	this->mAllowPossessAny = false;
 	this->mDebugStartingPointTagName = TEXT("None");
-	this->mDefaultRemoteCallObjectsClassNames.Add(FSoftClassPath("/Game/FactoryGame/Character/Player/BP_RemoteCallObject.BP_RemoteCallObject_C"));
-	this->mDefaultRemoteCallObjectsClassNames.Add(FSoftClassPath("/Script/FactoryGame.FGBoomBoxRemoteCallObject"));
+	this->mDefaultRemoteCallObjectsClassNames.Add(FSoftClassPath(TEXT("/Game/FactoryGame/Character/Player/BP_RemoteCallObject.BP_RemoteCallObject_C")));
+	this->mDefaultRemoteCallObjectsClassNames.Add(FSoftClassPath(TEXT("/Script/FactoryGame.FGBoomBoxRemoteCallObject")));
 	this->mServerRestartTimeHours = 24.0;
 	this->mIsMainMenu = false;
 	this->InactivePlayerStateLifeSpan = 0.0;
@@ -54,23 +54,29 @@ void AFGGameMode::Logout(AController* exiting){ }
 bool AFGGameMode::FindInactivePlayer(APlayerController* PC){ return bool(); }
 void AFGGameMode::GenericPlayerInitialization(AController* C){ }
 void AFGGameMode::PostActorsInitialized(const UWorld::FActorsInitializedParams& inParams){ }
-uint8 AFGGameMode::GenerateNextAutosaveId(){ return uint8(); }
-void AFGGameMode::SetSaveSessionName(FString name){ }
+uint8 AFGGameMode::GenerateNextAutoSaveId(){ return uint8(); }
+void AFGGameMode::SetSaveSessionName(const FString& name){ }
 bool AFGGameMode::ShouldSetupSave() const{ return bool(); }
-bool AFGGameMode::GetDefaultPlayerCapsuleSize(UWorld* world, float& out_capsuleRadius, float& out_capsuleHalfHeight){ return bool(); }
-bool AFGGameMode::RegisterRemoteCallObjectClass(TSubclassOf< UFGRemoteCallObject > inClass){ return bool(); }
-void AFGGameMode::RegisterCallObjectOnAllCurrentPlayers(TSubclassOf<UFGRemoteCallObject> inClass){ }
+bool AFGGameMode::GetDefaultPlayerCapsuleSize(const UWorld* world, float& out_capsuleRadius, float& out_capsuleHalfHeight){ return bool(); }
+bool AFGGameMode::RegisterRemoteCallObjectClass(const TSubclassOf< UFGRemoteCallObject > inClass){ return bool(); }
+void AFGGameMode::RegisterCallObjectOnAllCurrentPlayers(const TSubclassOf<UFGRemoteCallObject> inClass){ }
 void AFGGameMode::RebootSession(){ }
 bool AFGGameMode::ShouldSkipOnboarding() const{ return bool(); }
-void AFGGameMode::SetServerRestartWorldTime(float worldTime){ }
-void AFGGameMode::TriggerWorldSave(FString saveGameName){ }
-void AFGGameMode::TriggerBundledWorldSave(FString saveGameName){ }
+void AFGGameMode::SetServerRestartWorldTime(const float worldTime){ }
+void AFGGameMode::TriggerWorldSave(const FString& saveGameName){ }
+void AFGGameMode::TriggerBundledWorldSave(const FString& saveGameName){ }
 bool AFGGameMode::IsValidPawnToReclaim(APawn* pawn) const{ return bool(); }
 void AFGGameMode::GetRestartSessionSaveName(FString& out_sessionName) const{ }
 void AFGGameMode::BuildRestartSessionURL(const FString& saveName, FString& out_sessionUrl) const{ }
-APlayerStart* AFGGameMode::CachePlayerStarts(TMap< FName, TArray<  APlayerStart* > >& out_playerStarts){ return nullptr; }
-void AFGGameMode::PartitionPlayerStartsByOccupancy(const TArray<  APlayerStart* >& playerStarts,
-		TSubclassOf<  APawn > pawnClassToFit,
-		TArray<  APlayerStart* >& out_unOccupied,
-		TArray<  APlayerStart* >& out_occupied){ }
+APlayerStart* AFGGameMode::CachePlayerStarts(TMap< FName, TArray< APlayerStart* > >& out_playerStarts){ return nullptr; }
+void AFGGameMode::PartitionPlayerStartsByOccupancy(const TArray< APlayerStart* >& playerStarts,
+		TSubclassOf< APawn > pawnClassToFit,
+		TArray< APlayerStart* >& out_unOccupied,
+		TArray< APlayerStart* >& out_occupied) const{ }
 bool AFGGameMode::CompareUniqueNetIdBetweenOSS(const FUniqueNetIdRepl& newID, const FUniqueNetIdRepl& savedID){ return bool(); }
+
+const TCHAR* AFGGameMode::StartLocationOption = TEXT("startloc");
+const TCHAR* AFGGameMode::LoadGameOption = TEXT("loadgame");
+const TCHAR* AFGGameMode::SkipOnboarding = TEXT("skiponboarding");
+const TCHAR* AFGGameMode::AdvancedGameSettingsOption = TEXT("advancedGameSettings");
+const TCHAR* AFGGameMode::EnableAdvancedGameSettingsOption = TEXT("enableAdvancedGameSettings");

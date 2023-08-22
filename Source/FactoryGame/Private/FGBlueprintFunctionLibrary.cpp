@@ -22,6 +22,8 @@ float UFGBlueprintFunctionLibrary::RoundFloatWithPrecision(float value, int32 Ma
 FName UFGBlueprintFunctionLibrary::GetComponentFlagSoftLanding(){ return FName(); }
 bool UFGBlueprintFunctionLibrary::IsInAlwaysLoadedLevel(AActor* actor){ return bool(); }
 UFGSignificanceManager* UFGBlueprintFunctionLibrary::GetSignificanceManager(UWorld* InWorld){ return nullptr; }
+void UFGBlueprintFunctionLibrary::AddStaticSignificance(UObject* WorldContextObject, UObject* Object){ }
+void UFGBlueprintFunctionLibrary::RemoveStaticSignificance(UObject* WorldContextObject, UObject* Object){ }
 void UFGBlueprintFunctionLibrary::AddGenericTickObjectToSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
 void UFGBlueprintFunctionLibrary::RemoveGenericTickObjectFromSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
 void UFGBlueprintFunctionLibrary::AddFactoryObjectToSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
@@ -73,6 +75,7 @@ bool UFGBlueprintFunctionLibrary::IsLocationNearABase(const UObject* worldContex
 bool UFGBlueprintFunctionLibrary::IsLocationNearABaseFromResult(const UObject* worldContext, FVector inLocation, float closeDistance, const TArray< FOverlapResult >& Results){ return bool(); }
 void UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMap(APlayerController* player, const FString& mapName, const FString& options, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility){ }
 void UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMapWithStartingLocation(APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility, bool skipOnboarding){ }
+void UFGBlueprintFunctionLibrary::LoadSaveFile(TScriptInterface<IFGSaveManagerInterface> saveManager, const FSaveHeader& saveGame,  APlayerController* player, bool enableAdvancedGameSettings){ }
 void UFGBlueprintFunctionLibrary::TravelToMainMenu(APlayerController* playerController){ }
 void UFGBlueprintFunctionLibrary::SendLocalPlayerToMainMenu(UWorld* world){ }
 FString UFGBlueprintFunctionLibrary::LinearColorToHex(FLinearColor inColor){ return FString(); }
@@ -110,6 +113,10 @@ void UFGBlueprintFunctionLibrary::WaitForValidSubsystems(const UObject* WorldCon
 void UFGBlueprintFunctionLibrary::WaitForFGHud(const UObject* WorldContextObject,  FLatentActionInfo LatentInfo,  AFGHUD*& out_HUD){ }
 void UFGBlueprintFunctionLibrary::WaitForGameUI(const UObject* WorldContextObject,  FLatentActionInfo LatentInfo,  UFGGameUI*& out_GameUI){ }
 void UFGBlueprintFunctionLibrary::WaitForCondition(const UObject* WorldContextObject,  FLatentActionInfo LatentInfo, const FLatentActionPredicate& Predicate, bool ExecuteOnDedicatedServer){ }
+void UFGBlueprintFunctionLibrary::GetAllPickupableItemDescriptors(UObject* WorldContextObject, TArray< TSubclassOf<  UFGItemDescriptor > >& out_itemDescriptors){ }
+bool UFGBlueprintFunctionLibrary::ShouldShowUnstableSaveVersionWarning(){ return bool(); }
+bool UFGBlueprintFunctionLibrary::ShouldShowOfflineSessionWarning(){ return bool(); }
+FString UFGBlueprintFunctionLibrary::BuildSourceString(const FText& inText){ return FString(); }
 void UFGBlueprintFunctionLibrary::BreakCustomizationColorSlot(const  FFactoryCustomizationColorSlot& customData, FLinearColor& primaryColor, FLinearColor& secondaryColor, float& metallic, float& roughness){ }
 FFactoryCustomizationColorSlot UFGBlueprintFunctionLibrary::MakeCustomizationColorSlot(FLinearColor primaryColor, FLinearColor secondaryColor, float metallic, float roughness){ return FFactoryCustomizationColorSlot(); }
 UTexture2D* UFGBlueprintFunctionLibrary::GetIconForCustomizationDesc(const TSubclassOf<  UFGFactoryCustomizationDescriptor > customizationDesc){ return nullptr; }
@@ -129,3 +136,7 @@ void UFGBlueprintFunctionLibrary::CSS_SetAnimationAsset(USkeletalMeshComponent* 
 int64 UFGBlueprintFunctionLibrary::GetFrameNumber(){ return int64(); }
 float UFGBlueprintFunctionLibrary::FindClosestPlayerSq(AActor* source){ return float(); }
 void UFGBlueprintFunctionLibrary::SetWaterCollisionSettings(UStaticMeshComponent* Target){ }
+bool UFGBlueprintFunctionLibrary::SegmentIntersection(const FVector& SegmentBeginA, const FVector& SegmentEndA, const FVector& SegmentBeginB, const FVector& SegmentEndB){ return bool(); }
+FString UFGBlueprintFunctionLibrary::GetActorGridStringRuntTime(AActor* InActor){ return FString(); }
+FVector UFGBlueprintFunctionLibrary::GetEditorCameraLocation(){ return FVector(); }
+void UFGBlueprintFunctionLibrary::ED_SetMinDrawDistance(UStaticMeshComponent* Comp, float Distance){ }

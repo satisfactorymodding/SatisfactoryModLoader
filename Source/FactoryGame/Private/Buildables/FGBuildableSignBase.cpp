@@ -4,7 +4,7 @@
 #include "Components/SceneComponent.h"
 #include "FGColoredInstanceMeshProxy.h"
 
-bool UFGSignAttachmentPoint::CanAttach(const  FFGAttachmentPoint& point, const  FFGAttachmentPoint& targetPoint) const{ return bool(); }
+bool UFGSignAttachmentPoint::CanAttach_Implementation(const  FFGAttachmentPoint& point, const  FFGAttachmentPoint& targetPoint) const{ return bool(); }
 AFGBuildableSignBase::AFGBuildableSignBase() : Super() {
 	this->mMeshComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("SignMeshProxy"));
 	this->mWorldDimensions = FVector2D::ZeroVector;

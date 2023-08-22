@@ -2,6 +2,12 @@
 
 #include "FGGameState.h"
 
+void UFGGameStateRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGGameStateRemoteCallObject, mForceNetField_UFGGameStateRemoteCallObject);
+}
+UFGGameStateRemoteCallObject* UFGGameStateRemoteCallObject::Get(UWorld* world){ return nullptr; }
+void UFGGameStateRemoteCallObject::Server_SetCreativeModeEnabled_Implementation(){ }
 AFGGameState::AFGGameState() : Super() {
 	this->mTurboModeMultiplier = 0.0;
 	this->mPowerCircuitFuseTriggeredMessage = nullptr;
@@ -31,6 +37,7 @@ AFGGameState::AFGGameState() : Super() {
 	this->mCreatureSubsystem = nullptr;
 	this->mScannableSubsystem = nullptr;
 	this->mBlueprintSubsystem = nullptr;
+	this->mGameRulesSubsystem = nullptr;
 	this->mReplicatedSessionName = TEXT("");
 	this->mUnlockCustomizerSchematic = nullptr;
 	this->mPlannedRestartTime = 24.0;
@@ -43,6 +50,8 @@ AFGGameState::AFGGameState() : Super() {
 	this->mHasInitalTradingPostLandAnimPlayed = false;
 	this->mIsSpaceElevatorBuilt = false;
 	this->mPublicTodoList = TEXT("");
+	this->mHasGivenStartingRecipes = false;
+	this->mIsCreativeModeEnabled = false;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = true;
@@ -76,6 +85,7 @@ void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGGameState, mCreatureSubsystem);
 	DOREPLIFETIME(AFGGameState, mScannableSubsystem);
 	DOREPLIFETIME(AFGGameState, mBlueprintSubsystem);
+	DOREPLIFETIME(AFGGameState, mGameRulesSubsystem);
 	DOREPLIFETIME(AFGGameState, mVisitedMapAreas);
 	DOREPLIFETIME(AFGGameState, mPickedUpItems);
 	DOREPLIFETIME(AFGGameState, mPlayDurationWhenLoaded);
@@ -95,6 +105,7 @@ void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGGameState, mServerLocalDateTimeTicksAtInit);
 	DOREPLIFETIME(AFGGameState, mTetrominoLeaderBoard);
 	DOREPLIFETIME(AFGGameState, mPublicTodoList);
+	DOREPLIFETIME(AFGGameState, mIsCreativeModeEnabled);
 }
 void AFGGameState::Tick(float delta){ }
 void AFGGameState::BeginPlay(){ }
@@ -152,7 +163,10 @@ void AFGGameState::SetDefaultSwatchForBuildableGroup(TSubclassOf<  UFGSwatchGrou
 void AFGGameState::AddTetrominoResult(const FMiniGameResult& newResult){ }
 void AFGGameState::OnRep_TetrominoLeaderBoard(){ }
 void AFGGameState::Server_SetPublicTodoList(const FString& newTodoList){ }
+void AFGGameState::SetCreativeModeEnabled(){ }
 void AFGGameState::CheckRestartTime(){ }
 void AFGGameState::OnRep_PlannedRestartTime(){ }
+void AFGGameState::OnRep_CheatNoPower(){ }
 void AFGGameState::SubmitNumPlayersTelemetry() const{ }
 void AFGGameState::SubmitCheatTelemetry() const{ }
+void AFGGameState::TryGiveStartingRecipes( AFGCharacterPlayer* inPlayer){ }

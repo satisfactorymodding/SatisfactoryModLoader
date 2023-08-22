@@ -65,12 +65,10 @@
 // Exponential height fog attributes
 
 EHF_FLOAT_CURVE_ATTRIB( FogDensity )
-EHF_COLOR_CURVE_ATTRIB( FogInscatteringColor )
 EHF_FLOAT_CURVE_ATTRIB( FullyDirectionalInscatteringColorDistance )
 EHF_FLOAT_CURVE_ATTRIB( NonDirectionalInscatteringColorDistance )
 EHF_FLOAT_CURVE_ATTRIB( DirectionalInscatteringExponent )
 EHF_FLOAT_CURVE_ATTRIB( DirectionalInscatteringStartDistance )
-EHF_COLOR_CURVE_ATTRIB( DirectionalInscatteringColor )
 EHF_FLOAT_CURVE_ATTRIB( FogHeightFalloff )
 EHF_FLOAT_CURVE_ATTRIB( FogMaxOpacity )
 EHF_FLOAT_CURVE_ATTRIB( StartDistance )

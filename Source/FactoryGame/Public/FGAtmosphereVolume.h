@@ -14,7 +14,7 @@
 
 
 USTRUCT()
-struct FExponentialFogSettings
+struct FACTORYGAME_API FExponentialFogSettings
 {
 	GENERATED_BODY()
 
@@ -30,7 +30,7 @@ struct FExponentialFogSettings
 	float FogDensity;
 
 	UPROPERTY( EditAnywhere, Category = "ExponentialHeightFog" )
-	FLinearColor FogInscatteringColor;
+	FLinearColor FogInscatteringLuminance;
 
 	/** Distance at which InscatteringColorCubemap should be used directly for the Inscattering Color. */
 	UPROPERTY( EditAnywhere, Category = "ExponentialHeightFog", meta = ( UIMin = "1000", UIMax = "1000000" ) )
@@ -59,7 +59,7 @@ struct FExponentialFogSettings
 	* Note: there must be a directional light with bUsedAsAtmosphereSunLight enabled for DirectionalInscattering to be used.
 	*/
 	UPROPERTY( EditAnywhere, Category = "ExponentialHeightFog" )
-	FLinearColor DirectionalInscatteringColor;
+	FLinearColor DirectionalInscatteringLuminance;
 
 	/**
 	* Height density factor, controls how the density increases as height decreases.
@@ -100,12 +100,12 @@ struct FExponentialFogSettings
 
 	uint8 EnableFogHeight : 1;
 	uint8 EnableFogDensity : 1;
-	uint8 EnableFogInscatteringColor : 1;
+	uint8 EnableFogInscatteringLuminance : 1;
 	uint8 EnableFullyDirectionalInscatteringColorDistance : 1;
 	uint8 EnableNonDirectionalInscatteringColorDistance : 1;
 	uint8 EnableDirectionalInscatteringExponent : 1;
 	uint8 EnableDirectionalInscatteringStartDistance : 1;
-	uint8 EnableDirectionalInscatteringColor : 1;
+	uint8 EnableDirectionalInscatteringLuminance : 1;
 	uint8 EnableFogHeightFalloff : 1;
 	uint8 EnableFogMaxOpacity : 1;
 	uint8 EnableStartDistance : 1;
@@ -116,7 +116,7 @@ struct FExponentialFogSettings
 };
 
 USTRUCT()
-struct FSkyAtmosphereSettings
+struct FACTORYGAME_API FSkyAtmosphereSettings
 {
 	GENERATED_BODY()
 
@@ -180,6 +180,9 @@ public:
 	//~ Begin IInterface_PostProcessVolume Interface
 	virtual bool EncompassesPoint( FVector point, float sphereRadius = 0.f, float* out_distanceToPoint = nullptr ) override;
 	virtual FPostProcessVolumeProperties GetProperties() const override;
+#if DEBUG_POST_PROCESS_VOLUME_ENABLE
+	virtual FString GetDebugName() const;
+#endif
 	//~ End IInterface_PostProcessVolume Interface
 
 	// Get the settings of this volume

@@ -2,6 +2,7 @@
 #include "FGGameMode.h"
 #include "Player/SMLRemoteCallObject.h"
 #include "GameFramework/GameModeBase.h"
+#include "SessionSettings/SessionSettingsSubsystem.h"
 
 void URemoteCallObjectRegistry::RegisterRemoteCallObject(TSubclassOf<UFGRemoteCallObject> RemoteCallObject) {
     check(RemoteCallObject);
@@ -10,6 +11,7 @@ void URemoteCallObjectRegistry::RegisterRemoteCallObject(TSubclassOf<UFGRemoteCa
 
 void URemoteCallObjectRegistry::Initialize(FSubsystemCollectionBase& Collection) {
     RegisterRemoteCallObject(USMLRemoteCallObject::StaticClass());
+    RegisterRemoteCallObject(USMLSessionSettingsRemoteCallObject::StaticClass());
 }
 
 void URemoteCallObjectRegistry::RegisterRCOsOnGameMode(AGameModeBase* GameMode) {

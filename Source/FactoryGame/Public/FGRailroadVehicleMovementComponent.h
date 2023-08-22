@@ -4,8 +4,9 @@
 
 #include "FactoryGame.h"
 #include "GameFramework/PawnMovementComponent.h"
-#include "WheeledVehicleMovementComponent.h"
+// #include "WheeledVehicleMovementComponent.h"
 #include "FGRailroadVehicle.h"
+#include "UnitHelpers.h"
 #include "FGRailroadVehicleMovementComponent.generated.h"
 
 /**
@@ -168,7 +169,7 @@ public:
 
 	/** Arbitrary maximum speed of this vehicle along the track. [cm/s] */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
-	FORCEINLINE float GetMaxForwardSpeed() const { return KmHToCmS( mMaxVelocity ); }
+	FORCEINLINE float GetMaxForwardSpeed() const { return FUnits::KmHToCmS( mMaxVelocity ); }
 
 	/** Update the speed of this vehicle to be used in calculations. [cm/s] */
 	FORCEINLINE void SetForwardSpeed( float velocity ) { mVelocity = velocity; }

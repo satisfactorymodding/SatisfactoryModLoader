@@ -4,13 +4,19 @@
 #include "ShoppingList/FGShoppingListComponent.h"
 
 FHotbar::FHotbar( AFGPlayerState* owningState, const FHotbar& hotbar){ }
-FHotbar::FHotbar(TArray<  UFGHotbarShortcut* > hotbarShortcuts){ }
+FHotbar::FHotbar(const TArray<  UFGHotbarShortcut* > hotbarShortcuts){ }
 FPresetHotbar::FPresetHotbar( AFGPlayerState* owningState, const FPresetHotbar& presetHotbar){ }
+void FPlayerRules::GetDebugOverlayData(TArray<FString>& out_debugOverlayData) const{ }
 AFGPlayerState::AFGPlayerState() : Super() {
 	this->mSlotNum = -1;
 	this->mPlayerColorData.PingColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mPlayerColorData.NametagColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
-	this->mPlayerRules.CreatureHostilityMode = EPlayerHostilityMode::PHM_Default;
+	this->mPlayerRules.HasInitialized = false;
+	this->mPlayerRules.NoBuildCost = false;
+	this->mPlayerRules.KeepInventoryMode = EPlayerKeepInventoryMode::Keep_Equipment;
+	this->mPlayerRules.FlightMode = false;
+	this->mPlayerRules.GodMode = false;
+	this->mCreatureHostilityMode = EPlayerHostilityMode::PHM_Passive;
 	this->mOwnedPawn = nullptr;
 	this->mHasReceivedInitialItems = false;
 	this->mIsServerAdmin = false;
@@ -36,6 +42,7 @@ AFGPlayerState::AFGPlayerState() : Super() {
 	this->PrimaryActorTick.bStartWithTickEnabled = false;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
+	this->bReplicateUsingRegisteredSubObjectList = true;
 	this->NetUpdateFrequency = 10.0;
 }
 void AFGPlayerState::Serialize(FArchive& ar){ Super::Serialize(ar); }
@@ -66,10 +73,11 @@ void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(AFGPlayerState, mPrivateTodoList);
 	DOREPLIFETIME(AFGPlayerState, mShoppingListComponent);
 	DOREPLIFETIME(AFGPlayerState, mOpenedWidgetsPersistent);
+	DOREPLIFETIME(AFGPlayerState, mPlayerSpecificSchematics);
 }
-bool AFGPlayerState::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGPlayerState::BeginPlay(){ }
 void AFGPlayerState::CopyProperties(APlayerState* playerState){ }
+void AFGPlayerState::ClientInitialize(AController* C){ }
 void AFGPlayerState::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGPlayerState::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGPlayerState::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -80,10 +88,11 @@ bool AFGPlayerState::ShouldSave_Implementation() const{ return bool(); }
 void AFGPlayerState::SetPlayerColorData(FPlayerColorData slotData){ }
 void AFGPlayerState::SetCreatureHostility(EPlayerHostilityMode hostility){ }
 void AFGPlayerState::Server_SetCreatureHostility_Implementation(EPlayerHostilityMode hostility){ }
-FString AFGPlayerState::GetUserName(){ return FString(); }
-FString AFGPlayerState::GetUserID(){ return FString(); }
-FUniqueNetIdRepl AFGPlayerState::GetUniqeNetId(){ return FUniqueNetIdRepl(); }
-FString AFGPlayerState::GetSteamID(){ return FString(); }
+void AFGPlayerState::SetKeepInventory(const EPlayerKeepInventoryMode keepInventoryMode){ }
+void AFGPlayerState::Server_SetKeepInventory_Implementation(const EPlayerKeepInventoryMode keepInventoryMode){ }
+FString AFGPlayerState::GetUserName() const{ return FString(); }
+FString AFGPlayerState::GetUserID() const{ return FString(); }
+FUniqueNetIdRepl AFGPlayerState::GetUniqueNetId() const{ return FUniqueNetIdRepl(); }
 void AFGPlayerState::CreateTutorialSubsystem(){ }
 TArray< TSubclassOf< class UFGMessageBase > > AFGPlayerState::GetAllMessages(EMessageType messageType){ return TArray<TSubclassOf<class UFGMessageBase> >(); }
 void AFGPlayerState::ReadMessage(TSubclassOf<  UFGMessageBase > inMessage){ }
@@ -91,6 +100,7 @@ void AFGPlayerState::AddMessage(TSubclassOf<  UFGMessageBase > inMessage){ }
 void AFGPlayerState::RemoveMessage(TSubclassOf<  UFGMessageBase > inMessage){ }
 void AFGPlayerState::SetupDefaultShortcuts(){ }
 UFGHotbarShortcut* AFGPlayerState::CreateShortcut(TSubclassOf<  UFGHotbarShortcut > shortcutClass){ return nullptr; }
+void AFGPlayerState::RemoveShortcutInstance(UFGHotbarShortcut* shortcutInstance){ }
 void AFGPlayerState::GetCurrentShortcuts(TArray<  UFGHotbarShortcut* >& out_shortcuts){ }
 UFGHotbarShortcut* AFGPlayerState::GetShortcutFromCurrentHotbar(int32 shortcutIndex){ return nullptr; }
 void AFGPlayerState::GetPresetShortcuts(int32 presetHotbarIndex, TArray<  UFGHotbarShortcut* >& out_shortcuts){ }
@@ -168,6 +178,12 @@ void AFGPlayerState::Native_OnBlueprintConstructed(const FString& blueprintName,
 void AFGPlayerState::Server_OnBlueprintRemoved_Implementation(const FString& blueprintName){ }
 void AFGPlayerState::Client_OnBlueprintRemoved_Implementation(const FString& blueprintName){ }
 bool AFGPlayerState::IsInPlayerArray(){ return bool(); }
+void AFGPlayerState::SetFlightMode(const bool flightMode){ }
+void AFGPlayerState::Server_SetFlightMode_Implementation(const bool flightMode){ }
+void AFGPlayerState::SetGodMode(const bool godMode){ }
+void AFGPlayerState::Server_SetGodMode_Implementation(const bool godMode){ }
+bool AFGPlayerState::IsPlayerSpecificSchematicPurchased(TSubclassOf<  UFGSchematic > schematic){ return bool(); }
+void AFGPlayerState::GiveAccessToPlayerSpecificSchematic(TSubclassOf<  UFGSchematic > schematic){ }
 void AFGPlayerState::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::OnRep_HotbarShortcuts(){ }
@@ -177,6 +193,14 @@ void AFGPlayerState::OnRep_PlayerRules(){ }
 void AFGPlayerState::Server_UpdateNumObservedInventorySlots_Implementation(){ }
 bool AFGPlayerState::Server_UpdateNumObservedInventorySlots_Validate(){ return bool(); }
 void AFGPlayerState::Native_OnPlayerColorDataUpdated(){ }
+void AFGPlayerState::SetupCreatureHostility(){ }
 void AFGPlayerState::SetupPlayerRules(){ }
-void AFGPlayerState::PushRulesToGameModesSubssytem(){ }
+void AFGPlayerState::PushPlayerRulesToAdvancedGameSettings(){ }
 void AFGPlayerState::OnCreatureHostilityModeUpdated(FString strId, FVariant value){ }
+void AFGPlayerState::OnNoBuildCostUpdated(FString strId, FVariant value){ }
+void AFGPlayerState::OnKeepInventoryUpdated(FString strId, FVariant value){ }
+void AFGPlayerState::OnFlightModeUpdated(FString strId, FVariant value){ }
+void AFGPlayerState::OnGodModeUpdated(FString strId, FVariant value){ }
+void AFGPlayerState::SetNoBuildCost(const bool noBuildCost){ }
+void AFGPlayerState::Server_SetNoBuildCost_Implementation(const bool noBuildCost){ }
+void AFGPlayerState::OnRep_PlayerSpecificSchematics(TArray< TSubclassOf< UFGSchematic > > previousPlayerSpecificSchematics){ }

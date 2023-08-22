@@ -39,6 +39,7 @@ public:
 
 	// Begin FGBuildable
 	virtual void OnBuildEffectFinished() override;
+	virtual void OnBuildEffectActorFinished() override;
 	// End FGBuildable
 
 	// Begin IFGDismantleInterface

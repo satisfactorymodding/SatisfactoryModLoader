@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Ben de Hullu. All Rights Reserved.
 
 using UnrealBuildTool;
 

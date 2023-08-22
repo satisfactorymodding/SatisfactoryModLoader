@@ -4,6 +4,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/SplineComponent.h"
 #include "Hologram/FGPipelineHologram.h"
+#include "InstancedSplineMeshComponent.h"
 
 AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
 	this->mMesh = nullptr;
@@ -11,9 +12,11 @@ AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
 	this->mConnection0 = nullptr;
 	this->mConnection1 = nullptr;
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
+	this->mInstancedSplineMeshComponent = CreateDefaultSubobject<UInstancedSplineMeshComponent>(TEXT("InstancedSplineMeshComponent"));
 	this->mHologramClass = AFGPipelineHologram::StaticClass();
 	this->NetDormancy = ENetDormancy::DORM_Awake;
 	this->mSplineComponent->SetupAttachment(RootComponent);
+	this->mInstancedSplineMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildablePipeBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -31,7 +34,12 @@ void AFGBuildablePipeBase::LostSignificance_Implementation(){ }
 void AFGBuildablePipeBase::GainedSignificance_Native(){ }
 void AFGBuildablePipeBase::LostSignificance_Native(){ }
 void AFGBuildablePipeBase::SetupForSignificance(){ }
+float AFGBuildablePipeBase::GetSignificanceRange(){ return float(); }
 float AFGBuildablePipeBase::FindOffsetClosestToLocation(const FVector& location) const{ return float(); }
 void AFGBuildablePipeBase::GetLocationAndDirectionAtOffset(float offset, FVector& out_location, FVector& out_direction) const{ }
+void AFGBuildablePipeBase::SetupConnections(){ }
+TArray<AFGBuildablePipeBase*> AFGBuildablePipeBase::Splice(AFGBuildablePipeBase* Pipe, float SpliceOffset, float SpliceLength){ return TArray<AFGBuildablePipeBase*>(); }
+void AFGBuildablePipeBase::PostSerializedFromBlueprint(bool isBlueprintWorld){ }
 TSubclassOf< class UFGPipeConnectionComponentBase > AFGBuildablePipeBase::GetConnectionType_Implementation(){ return TSubclassOf<class UFGPipeConnectionComponentBase>(); }
+void AFGBuildablePipeBase::UnrotateForBlueprintPlaced(){ }
 const float AFGBuildablePipeBase::PIPE_COST_LENGTH_MULTIPLIER = float();

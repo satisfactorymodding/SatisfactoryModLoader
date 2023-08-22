@@ -13,7 +13,7 @@ void AFGBuildableCircuitBridge::BeginPlay(){ }
 void AFGBuildableCircuitBridge::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGBuildableCircuitBridge::IsBridgeConnected() const{ return bool(); }
 void AFGBuildableCircuitBridge::CalculateBridgeConnected(){ }
-int32 AFGBuildableCircuitBridge::GetFirstCircuitID() const{ return int32(); }
-int32 AFGBuildableCircuitBridge::GetSecondCircuitID() const{ return int32(); }
+int32 AFGBuildableCircuitBridge::GetCircuitID0() const{ return int32(); }
+int32 AFGBuildableCircuitBridge::GetCircuitID1() const{ return int32(); }
 void AFGBuildableCircuitBridge::OnCircuitGroupCreated(){ }
-void AFGBuildableCircuitBridge::OnCircuitsChanged(){ }
+void AFGBuildableCircuitBridge::OnCircuitsRebuilt(){ }

@@ -78,6 +78,18 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Icon Data Settings" )
 	TArray< FIconData >& GetIconData() { return mIconData; }
 
+	UFUNCTION( BlueprintPure, Category = "Icon Data Settings" )
+	TArray< FIconData >& GetCustomIconData() { return mCustomIconData; }
+
+	UFUNCTION( BlueprintPure, Category = "Icon Data Settings" )
+	TArray< FIconData >& GetMaterialIconData() { return mMaterialIconData; }
+
+	UFUNCTION( BlueprintPure, Category = "Icon Data Settings" )
+	TArray< FIconData >& GetMapStampIconData() { return mMapStampIconData; }
+
+	UFUNCTION( BlueprintPure, Category = "Icon Data Settings" )
+	TArray< FIconData >& GetMonochromeIconData() { return mMonochromeIconData; }
+
 	/** Attempts to retrieve the index of an icon with the corresponding texture */
 	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings" )
 	int32 GetIconIDForTexture( class UObject* texture );

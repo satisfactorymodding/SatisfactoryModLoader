@@ -8,4 +8,5 @@ bool UFGFoliageResourceUserData::IdentifiesWith(TSubclassOf<  UFGFoliageIdentifi
 bool UFGFoliageResourceUserData::MeshHasIdentifier(UStaticMesh* mesh, TSubclassOf<  UFGFoliageIdentifier > identifier){ return bool(); }
 EProximityEffectTypes UFGFoliageResourceUserData::GetProximityEffectTypeByMesh(UStaticMesh* mesh){ return EProximityEffectTypes(); }
 TArray<int32> UFGFoliageResourceUserData::GetProximityEffectIdsByMesh(UStaticMesh* mesh){ return TArray<int32>(); }
+bool UFGFoliageResourceUserData::GetIsCaveTypeByMesh(UStaticMesh* mesh){ return bool(); }
 UParticleSystem* UFGFoliageResourceUserData::GetExplosionDestroyedEffect() const{ return nullptr; }

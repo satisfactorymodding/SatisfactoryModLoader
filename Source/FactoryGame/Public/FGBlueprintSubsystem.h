@@ -10,8 +10,6 @@
 #include "FGSubsystem.h"
 #include "FGBlueprintSubsystem.generated.h"
 
-extern TAutoConsoleVariable< int32 > CVarBlueprintDebug;
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBlueprintDescriptorUpdated, UFGBlueprintDescriptor*, blueprintDesc );
 
 USTRUCT()
@@ -115,7 +113,7 @@ public:
 	
 	// Server call from client to initiate a save of a designer
 	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_SaveBlueprintInDesigner( class AFGBuildableBlueprintDesigner* designer, class AFGPlayerController* controller, FBlueprintRecord record );
+	void Server_SaveBlueprintInDesigner( class AFGBuildableBlueprintDesigner* designer, class AFGPlayerController* controller, FBlueprintRecord record, FBlueprintCategoryRecord categoryRecord, FBlueprintSubCategoryRecord subCategoryRecord );
 
 	UFUNCTION( Server, Reliable )
 	void Server_ClearBlueprintDesigner( class AFGBuildableBlueprintDesigner* designer, class AFGPlayerController* controller );
@@ -214,8 +212,9 @@ public:
 	bool WriteBlueprintConfigToDisk( const FBlueprintRecord& record );
 
 	/** Gathers the total cost for a list of buildables */
-	void CalculateBlueprintCost( TArray< AFGBuildable* >& buildables, TArray< FBlueprintItemAmount >& out_cost );
-
+	void CalculateBlueprintCost( const TArray< AFGBuildable* >& buildables, TArray< FBlueprintItemAmount >& out_cost ) const;
+	void CalculateBlueprintCost( const TArray< AFGBuildable* >& buildables, TArray< FItemAmount >& out_cost ) const;
+	
 	/** Loads a file from the blueprint directory into the passed location */
 	bool LoadFileFromDisk( const FString& fileName, const FString& extension, TArray< uint8 >& out_FileData );
 
@@ -346,11 +345,11 @@ public:
 	
 	UFGBlueprintSubCategory* CreateBlueprintSubCategory( const FBlueprintSubCategoryRecord& record );
 
-	UFGBlueprintCategory* FindCategoryWithName(FText nameTxt )
+	UFGBlueprintCategory* FindCategoryWithNameAndPriority(FString nameStr, float menuPriority )
 	{
 		for( UFGBlueprintCategory* category : mAllBlueprintCategories )
 		{
-			if( AreNamesConsideredEqual( category->GetCategoryNameFromInstance(), nameTxt ) )
+			if( AreNamesConsideredEqual( category->GetCategoryNameFromInstanceAsString(), nameStr ) && category->GetMenuPriorityFromInstance() == menuPriority )
 			{
 				return category;
 			}
@@ -508,6 +507,7 @@ public:
 	void RemoveRawDataForFile( const FString& fileName );
 	
 private:
+	void CalculateBlueprintCustomizationCost( const TArray<AFGBuildable*>& buildables, TArray<FItemAmount>& out_cost ) const;
 	
 	UFUNCTION()
 	void OnRep_ServerManifest();

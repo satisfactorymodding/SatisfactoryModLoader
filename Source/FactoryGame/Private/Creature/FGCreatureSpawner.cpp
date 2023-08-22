@@ -15,6 +15,7 @@ AFGCreatureSpawner::AFGCreatureSpawner() : Super() {
 	this->mEditorSprite = nullptr;
 	this->mCapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
 	this->mCreatureClass = nullptr;
+	this->mCreatureClassArachnidOverride = nullptr;
 	this->mNumberOfCreatures = FInt32Interval(1, 1);
 	this->mCanSpawnDuringDay = true;
 	this->mCanSpawnDuringNight = true;
@@ -38,22 +39,25 @@ void AFGCreatureSpawner::PostLoadGame_Implementation(int32 saveVersion, int32 ga
 void AFGCreatureSpawner::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGCreatureSpawner::NeedTransform_Implementation(){ return bool(); }
 bool AFGCreatureSpawner::ShouldSave_Implementation() const{ return bool(); }
-TSubclassOf< class AFGCreature > AFGCreatureSpawner::GetCreatureToSpawn_Implementation() const{ return TSubclassOf<class AFGCreature>(); }
+TSubclassOf< class AFGCreature > AFGCreatureSpawner::GetCreatureToSpawn() const{ return TSubclassOf<class AFGCreature>(); }
+TArray< AFGCreature* > AFGCreatureSpawner::GetCreatures() const{ return TArray<AFGCreature*>(); }
+TArray< AFGCreature* > AFGCreatureSpawner::AppendCreatures(TArray< AFGCreature* >& out_creatures){ return TArray<AFGCreature*>(); }
 bool AFGCreatureSpawner::CanSpawnCreature(const FSpawnData& spawnData) const{ return bool(); }
 int32 AFGCreatureSpawner::GetNumUnspawnedCreatures() const{ return int32(); }
+int32 AFGCreatureSpawner::GetTotalNumCreatures() const{ return int32(); }
 bool AFGCreatureSpawner::IsReadyToSpawn(){ return bool(); }
 void AFGCreatureSpawner::SpawnCreatures(){ }
+void AFGCreatureSpawner::StopSpawning(){ }
 void AFGCreatureSpawner::SpawnSingleCreature(){ }
 void AFGCreatureSpawner::DestroyCreatures(){ }
 bool AFGCreatureSpawner::ShouldResetKillStatus(const FSpawnData& spawnData, int32 newDayNr){ return bool(); }
 void AFGCreatureSpawner::UpdateKillStatus(int32 newDayNr){ }
 bool AFGCreatureSpawner::IsTimeForCreature() const{ return bool(); }
 void AFGCreatureSpawner::CreatureDied(AActor* thisActor){ }
-void AFGCreatureSpawner::PopulateSpawnData(){ }
+bool AFGCreatureSpawner::PopulateSpawnData(){ return bool(); }
 float AFGCreatureSpawner::GetSpawnDistance() const{ return float(); }
 void AFGCreatureSpawner::UpdateScannableState(){ }
 void AFGCreatureSpawner::TryRecoupleCreatureAndSpawner(){ }
-void AFGCreatureSpawner::OnSpawningFinished(){ }
 void AFGCreatureSpawner::RegisterAsNavigationInvoker(bool shouldRegister){ }
 void AFGCreatureSpawner::ReceiveOnTraceCompleted(const TArray< FOverlapResult > & Results){ }
 void AFGCreatureSpawner::TraceForNearbyBase(){ }

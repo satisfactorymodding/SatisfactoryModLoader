@@ -24,8 +24,8 @@ bool AFGPillarHologram::DoMultiStepPlacement(bool isInputFromARelease){ return b
 AActor* AFGPillarHologram::Construct(TArray<AActor*>& out_children, FNetConstructionID constructionID){ return nullptr; }
 void AFGPillarHologram::SetMaterial( UMaterialInterface* material){ }
 int32 AFGPillarHologram::GetBaseCostMultiplier() const{ return int32(); }
-void AFGPillarHologram::GetSupportedBuildModes_Implementation(TArray<TSubclassOf<UFGHologramBuildModeDescriptor>>& out_buildmodes) const{ }
-void AFGPillarHologram::OnBuildModeChanged(){ }
+void AFGPillarHologram::GetSupportedBuildModes_Implementation(TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes) const{ }
+void AFGPillarHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ }
 bool AFGPillarHologram::CanBeZooped() const{ return bool(); }
 void AFGPillarHologram::AdjustForGround(FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
 void AFGPillarHologram::FilterAttachmentPoints(TArray< const FFGAttachmentPoint* >& Points, AFGBuildable* pBuildable, const FHitResult& HitResult) const{ }

@@ -10,7 +10,7 @@ class SML_API USMLItemDisplayInterface : public UInterface {
 };
 
 /**
-* Implement this on your item to be able to override it's display name,
+* Implement this on your item to be able to override its display name,
 * description text, and add custom description widget
 * in the item stack and player-aware manner
 */

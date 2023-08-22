@@ -8,6 +8,7 @@
 #include "KismetCompiler.h"
 #include "KismetCompilerMisc.h"
 #include "PackageTools.h"
+#include "Interfaces/IPluginManager.h"
 #include "Configuration/ConfigManager.h"
 #include "Engine/UserDefinedStruct.h"
 #include "Kismet2/BlueprintEditorUtils.h"
@@ -18,25 +19,30 @@
 static FName GetModConfiguration_OutputPinName(TEXT("Config"));
 
 void UK2Node_GetModConfiguration::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const {
-	//Only try to register when we are actually interested in our node type
-	//Because asset registry lookup is rather expensive, we want to skip doing it for no reason
-	UClass* ActionKey = GetClass();
-	if (ActionRegistrar.IsOpenForRegistration(ActionKey)) {
-		
+	auto CustomizeCallback = [](UEdGraphNode* Node, bool bIsTemplateNode, UClass* ConfigurationClass) {
+		UK2Node_GetModConfiguration* TypedNode = CastChecked<UK2Node_GetModConfiguration>(Node);
+		TypedNode->ModConfigurationClass = ConfigurationClass;
+	};
+	
+	// Do a first time registration using the node's class to pull in all existing config classes
+	if (ActionRegistrar.IsOpenForRegistration(GetClass())) {		
 		//Query asset registry for a list of valid native configuration classes
 		TArray<UClass*> ValidConfigurationClasses;
 		RetrieveAllConfigurationClasses(ValidConfigurationClasses);
 
-		auto CustomizeCallback = [](UEdGraphNode* Node, bool bIsTemplateNode, UClass* ConfigurationClass) {
-			UK2Node_GetModConfiguration* TypedNode = CastChecked<UK2Node_GetModConfiguration>(Node);
-			TypedNode->ModConfigurationClass = ConfigurationClass;
-		};
-
 		for (UClass* ValidConfigurationClass : ValidConfigurationClasses) {
-			UBlueprintNodeSpawner* Spawner = UBlueprintNodeSpawner::Create(ActionKey);
+			UBlueprintNodeSpawner* Spawner = UBlueprintNodeSpawner::Create(GetClass());
 			check(Spawner);
 			Spawner->CustomizeNodeDelegate = UBlueprintNodeSpawner::FCustomizeNodeDelegate::CreateStatic(CustomizeCallback, ValidConfigurationClass);
-			ActionRegistrar.AddBlueprintAction(ActionKey, Spawner);
+			ActionRegistrar.AddBlueprintAction(ValidConfigurationClass->ClassGeneratedBy, Spawner);
+		}
+	} else if (const UBlueprint* ActionKey = Cast<UBlueprint>(ActionRegistrar.GetActionKeyFilter())) {
+		UClass* Class = Cast<UClass>(ActionKey->GeneratedClass);
+		if (Class->IsChildOf(UModConfiguration::StaticClass())) {
+			UBlueprintNodeSpawner* Spawner = UBlueprintNodeSpawner::Create(GetClass());
+			check(Spawner);
+			Spawner->CustomizeNodeDelegate = UBlueprintNodeSpawner::FCustomizeNodeDelegate::CreateStatic(CustomizeCallback, Class);
+			ActionRegistrar.AddBlueprintAction(Class->ClassGeneratedBy, Spawner);
 		}
 	}
 }
@@ -192,9 +198,19 @@ UScriptStruct* UK2Node_GetModConfiguration::ResolveConfigurationStruct(UClass* C
 	const FString BlueprintName = OwningBlueprint->GetName();
 	const FString RootConfigStructName = FString::Printf(TEXT("%sStruct"), *BlueprintName);
 	
-	//First try to resolve native struct with the same name in any package
-	if (UScriptStruct* NativeStruct = FindObject<UScriptStruct>(ANY_PACKAGE, *RootConfigStructName)) {
-		return NativeStruct;
+	//First try to resolve native struct with the same name in any package owned by the same plugin
+	FString PluginName = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(OwningBlueprint->GetPathName(), false);
+	IPluginManager& PluginManager = IPluginManager::Get();
+	TSharedPtr<IPlugin> Plugin = PluginManager.FindPlugin(PluginName);
+	if (!Plugin.IsValid()) {
+		return NULL;
+	}
+
+	for (const FModuleDescriptor& ModuleDescriptor : Plugin->GetDescriptor().Modules) {
+		FString RootConfigStructPath = FString::Printf(TEXT("/Script/%s.%s"), *ModuleDescriptor.Name.ToString(), *RootConfigStructName);
+		if (UScriptStruct* NativeStruct = FindObject<UScriptStruct>(nullptr, *RootConfigStructPath)) {
+			return NativeStruct;
+		}
 	}
 
 	//Otherwise try to resolve blueprint struct in the same package as the blueprint
@@ -238,8 +254,7 @@ void UK2Node_GetModConfiguration::RetrieveAllConfigurationClasses(TArray<UClass*
 	TArray<FString> PossibleTagValues;
 	for (UClass* ConfigClass : DerivedConfigClasses) {
 		if (Cast<UBlueprintGeneratedClass>(ConfigClass) == NULL) {
-			const FString NativeParentClassName = FString::Printf(TEXT("%s'%s'"), *ConfigClass->GetClass()->GetName(), *ConfigClass->GetPathName());
-			PossibleTagValues.Add(NativeParentClassName);
+			PossibleTagValues.Add(FObjectPropertyBase::GetExportPath(ConfigClass));
 		}
 	}
 

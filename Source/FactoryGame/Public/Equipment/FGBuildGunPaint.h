@@ -19,6 +19,8 @@ enum class EPaintMode : uint8
 	EPM_Type	=	2
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnCustomizeFilterChanged, TSubclassOf< AActor >, newClassFilter, TSubclassOf< class UFGItemDescriptor >, itemDescriptor );
+
 
 /**
  * Build guns customization / painting state
@@ -42,16 +44,9 @@ public:
 	virtual void PrimaryFire_Implementation() override;
 	virtual void PrimaryFireRelease_Implementation() override;
 	virtual void SecondaryFire_Implementation() override;
-	virtual void ScrollDown_Implementation() override;
-	virtual void ScrollUp_Implementation() override;
+	virtual void Scroll_Implementation( int32 delta ) override;
+	virtual void BindInputActions( class UFGEnhancedInputComponent* inputComponent ) override;
 	// End UFGBuildGunState
-
-	UFUNCTION( BlueprintCallable, Category = "BuildGunState|Dismantle" )
-	void SetSingleApplicationState( bool isActive )
-	{
-		mIsSingleApplicationActive = isActive;
-		mSingleApplicationActor = nullptr;
-	}
 
 	// Stencil Previews
 	void CreateStencilProxy( AActor* selected );
@@ -89,6 +84,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|BuildGunPaint" )
 	void SetActiveRecipe( TSubclassOf< UFGCustomizationRecipe > customizationRecipe );
 
+	/** Sets the current class filters for customizing. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|BuildGunPaint" )
+	void SetCustomizeClassFilter( AActor* actorToFilter );
 
 	/** Return the currently active Color Descriptor */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|BuildGunPaint" )
@@ -142,7 +140,7 @@ public:
 	void SpawnPreviewForMaterial(AFGBuildable* aimedAtBuildable, TSubclassOf< UFGFactoryCustomizationDescriptor_Material >& targetMaterialDesc );
 	
 	/** Sets up components for the preview actor*/
-	USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName );
+	USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName );
 
 	//////////////////////////////////////////////////////////////////////////
 	/// Blueprint Events
@@ -172,6 +170,13 @@ public:
 	/** Give blueprint a chance to do effect when a customization failed to apply (the player clicked but requirements we not met) */
 	UFUNCTION( BlueprintImplementableEvent, Category = "BuildGunState" )
 	void OnApplyCustomizationFailed( );
+
+	/** Input Action Bindings */
+	void Input_SelectBuildingForCustomizeFilter( const FInputActionValue& actionValue );
+	
+public:
+	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|BuildGunPaint" )
+	FOnCustomizeFilterChanged OnCustomizeFilterChanged;
 
 private:
 	/** Duplicate component for preview actor */
@@ -205,6 +210,10 @@ private:
 	// UINT8_MAX  - denotes we are applying a custom color that doesn't belong to a slot index
 	UPROPERTY()
 	uint8 mActiveColorSlot;
+
+	/** The class currently selected for filtering when customizing. */
+    UPROPERTY()
+    TSubclassOf< AActor > mCurrentCustomizeClassFilter;
 
 	UPROPERTY()
 	TSubclassOf< class UFGCustomizationRecipe > mActiveRecipe;
@@ -241,15 +250,12 @@ private:
 	// Tracking for for refire
 	bool mFireIsHeld;
 	float mRefireTime;
-	
-	// Tracking for specified selection state
-	bool mIsSingleApplicationActive;
-
-	UPROPERTY()
-	TSubclassOf< AActor > mSingleApplicationActor;
 
 	UPROPERTY()
 	AActor* mCurrentCustomizationTarget;
+
+	UPROPERTY()
+	AActor* mCurrentlyAimedAtActor;
 
 	// Utilized by the Custom Color application so that we don't spam apply on the same building while holding down the fire key
 	UPROPERTY()

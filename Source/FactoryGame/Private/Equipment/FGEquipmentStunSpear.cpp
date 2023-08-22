@@ -11,12 +11,13 @@ AFGEquipmentStunSpear::AFGEquipmentStunSpear() : Super() {
 	this->mAttackDistance = 100.0;
 	this->mAttackSweepRadius = 10.0;
 	this->mArmAnimation = EArmEquipment::AE_StunSpear;
+	this->mOnlyVisibleToOwner = false;
+	this->mDefaultEquipmentActions = 1;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
-void AFGEquipmentStunSpear::AddEquipmentActionBindings(){ }
 void AFGEquipmentStunSpear::DoAttack(){ }
-void AFGEquipmentStunSpear::OnHitTarget_Implementation(){ }
-void AFGEquipmentStunSpear::Server_ShockEnemy_Implementation(FVector attackDirection){ }
-bool AFGEquipmentStunSpear::Server_ShockEnemy_Validate(FVector attackDirection){ return bool(); }
+void AFGEquipmentStunSpear::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
+void AFGEquipmentStunSpear::Server_ShockEnemy_Implementation(const FVector& attackDirection){ }
+void AFGEquipmentStunSpear::Server_PlayStunEffects_Implementation(bool secondSwing){ }
 void AFGEquipmentStunSpear::Multicast_PlayHitEffects_Implementation(const TArray<FHitResult> &hitResults){ }
-void AFGEquipmentStunSpear::OnFirePressed(){ }
+void AFGEquipmentStunSpear::Multicast_PlayStunEffects_Implementation(bool secondSwing){ }

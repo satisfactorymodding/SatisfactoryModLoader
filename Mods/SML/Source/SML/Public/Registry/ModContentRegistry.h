@@ -2,6 +2,7 @@
 #include "FGResearchTree.h"
 #include "FGSchematic.h"
 #include "FGRecipe.h"
+#include "FGResourceSinkSubsystem.h"
 #include "Engine/DataTable.h"
 #include "Subsystem/ModSubsystem.h"
 #include "ModContentRegistry.generated.h"
@@ -122,6 +123,15 @@ struct FMissingObjectStruct {
     FString ObjectPath;
 };
 
+USTRUCT()
+struct FItemSinkRegistrationStruct {
+    GENERATED_BODY()
+public:
+    FName ModReference;
+    EResourceSinkTrack Track;
+    UDataTable* PointTable;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSchematicRegistered, TSubclassOf<UFGSchematic>, Schematic, FSchematicRegistrationInfo, RegistrationInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResearchTreeRegistered, TSubclassOf<UFGResearchTree>, ResearchTree, FResearchTreeRegistrationInfo, RegistrationInfo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRecipeRegistered, TSubclassOf<UFGRecipe>, Recipe, FRecipeRegistrationInfo, RegistrationInfo);
@@ -185,7 +195,7 @@ public:
 
     /** Register resource sink item points for each item row in the passed table object */
     UFUNCTION(BlueprintCallable, CustomThunk)
-    void RegisterResourceSinkItemPointTable(const FName ModReference, UDataTable* PointTable);
+    void RegisterResourceSinkItemPointTable(const FName ModReference, UDataTable* PointTable, EResourceSinkTrack Track);
 
     /** Retrieves list of all currently loaded item descriptors */
     UFUNCTION(BlueprintPure)
@@ -305,6 +315,9 @@ public:
 	/** Called when research tree is registered into the registry */
 	UPROPERTY(BlueprintAssignable)
 	FOnResearchTreeRegistered OnResearchTreeRegistered;
+
+    static void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSubclassOf<UFGRecipe>>& OutRecipes);
+    static void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree, TArray<TSubclassOf<UFGSchematic>>& OutSchematics);
 protected:
 	/** Called early when subsystem is spawned */
 	virtual void Init() override;
@@ -323,8 +336,8 @@ private:
     bool bSubscribedToSchematicManager;
 
 	/** Pending registrations of item sink point tables */
-	UPROPERTY()
-	TMap<UDataTable*, FName> PendingItemSinkPointsRegistrations;
+    UPROPERTY()
+    TArray<FItemSinkRegistrationStruct> PendingItemSinkPointsRegistrations;
 
 	/** Pointer to the currently active script callstack frame, used for debugging purposes */
 	FFrame* ActiveScriptFramePtr;

@@ -30,9 +30,10 @@ public:
 	/** Handle the actual spawning */
 	UFUNCTION( BlueprintImplementableEvent )
 	void SpawnDecoration();
+
 protected:
-	/** Add custom bindings for this equipment */
-	virtual void AddEquipmentActionBindings() override;
+	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
+	
 public:
 	// Trace distance when building. * /
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Decoration" )

@@ -34,19 +34,7 @@ enum class EIntroTutorialSteps : uint8
 	ITS_DONE			UMETA( DisplayName = "Done with intro" )
 };
 
-USTRUCT( BlueprintType )
-struct FRecipeAmountPair
-{
-	GENERATED_BODY()
 
-	/** Recipe to give player */
-	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGRecipe > Recipe;
-
-	/** How many of given recipe */
-	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	int32 Amount;
-};
 
 USTRUCT( BlueprintType )
 struct FTutorialHintData
@@ -65,6 +53,7 @@ struct FTutorialHintData
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tutorial" )
 	TSubclassOf< class UFGMessageBase > Message;
 
+	// @todok2 float not used anymore. Can be converted to array
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tutorial" )
 	TMap< TSubclassOf< class UFGMessageBase >, float > AdditionalMessages;
 };
@@ -81,6 +70,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "TutorialIntroManager", DisplayName = "GetTutorialIntroManager", Meta = ( DefaultToSelf = "worldContext" ) )
 	static AFGTutorialIntroManager* Get( UObject* worldContext );
 
+	static const int32 MaxTradingPostLevel;
 public:	
 	AFGTutorialIntroManager();
 
@@ -163,16 +153,15 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Tutorial" )
 	FORCEINLINE bool GetCanSkipTutorial() const { return mCanIntroBeSkipped; }
 
-	/** Gives resoures to player that they need to build things they should have built playing the tutorial */
-	void GiveTutorialResources( class AFGCharacterPlayer* inPlayer );
-
 	/** Checks if a tradingpost has ever been built */
 	UFUNCTION(BlueprintPure, Category = "Tutorial")
 		FORCEINLINE bool HasTradingpostBeenBuilt() const { return mTradingPostBuilt; }
-
-
+	
 	UFUNCTION( BlueprintCallable, Category = "Tutorial" )
 	void OnCodexOpened();
+
+	// Skips the tutorial/onboarding. Finishes all tutorial steps. 
+	void SkipOnboarding();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -212,6 +201,8 @@ protected:
 
 	UFUNCTION()
 	void OnRep_TradingPostLevel();
+	UFUNCTION()
+	void OnRep_HasCompletedIntroTutorial();
 
 private:
 	/** Returns true if we should skip the onboarding/tutorial */
@@ -250,7 +241,7 @@ private:
 	EIntroTutorialSteps mCurrentLocalTutorial;
 
 	/** Indicates if the player has completed the introduction tutorial */
-	UPROPERTY( Replicated, EditDefaultsOnly, SaveGame, Category = "Tutorial" )
+	UPROPERTY( ReplicatedUsing=OnRep_HasCompletedIntroTutorial, EditDefaultsOnly, SaveGame, Category = "Tutorial" )
 	bool mHasCompletedIntroTutorial;
 
 	/** Indicates that the introduction sequence is done (right now, drop pod sequence) */
@@ -372,8 +363,9 @@ private:
 
 	uint8 mStartupFrameCounter = 0; //[DavalliusA:Wed/03-04-2019] a way to stop initilization of the start value to trigger effect from changes
 
-	/** List of recipes that player should get the items of if the player chooses to skip the tutorial */
-	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
+	// @todok2 remove after we know the new systems works
+	/** Deprecated: Use UFGPlayerSettings::mRecipesToGivePlayersPerTier instead */
+	UPROPERTY( VisibleDefaultsOnly, Category = "Tutorial" )
 	TArray< FRecipeAmountPair > mRecipesToGivePlayersSkippingTutorial;
 
 	/** Bool for when codex has been opened */

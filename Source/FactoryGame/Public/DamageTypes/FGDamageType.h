@@ -21,8 +21,8 @@ public:
 	UFUNCTION( BlueprintCallable )
 	virtual void ProcessDamage( const FHitResult& hitResult, class AController* instigator, AActor* damageCauser, float damageAmount, TArray<AActor*> ignoredActors );
 
-	UFUNCTION()
-	void SpawnEffects(const FHitResult& hitResult, AActor* outer);
+	UFUNCTION( BlueprintCallable )
+	virtual void SpawnEffects(const FHitResult& hitResult, AActor* outer);
 
 	/** When pawn take damage from a source, they play this take damage event */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SFX" )

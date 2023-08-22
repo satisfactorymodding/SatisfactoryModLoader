@@ -12,43 +12,60 @@
 DECLARE_DELEGATE_ThreeParams( FOnSaveGameComplete, bool, const FText&, void* );
 DECLARE_DELEGATE_OneParam( FOnLevelPlacedActorDestroyed, AActor* );
 
+struct FPerBasicLevelSaveData
+{
+	FPerBasicLevelSaveData() = default;
+	
+	// @return true if the blob is populated for the level
+	FORCEINLINE bool HasBlobData() const { return !TOCBlob.IsEmpty() || !TOCBlob64.IsEmpty(); }
+
+	// @return true if there is any destroyed actors for the level
+	FORCEINLINE bool HasDestroyedActors() const{ return DestroyedActors.Num() > 0; }
+
+#if STATS
+	// Track how much memory this level contains
+	uint32 GetMemoryConsumption() const;
+#endif
+
+	/** Blob data to hold the Table of Contents */
+	TArray<uint8, TSizedDefaultAllocator<64> > TOCBlob64;
+	
+	/** Save blob for the level */
+	TArray<uint8, TSizedDefaultAllocator<64> > DataBlob64;
+
+	/** Legacy TOC when coming from 32bit */
+	TArray<uint8 > TOCBlob;
+
+	/** Legacy Data when coming from 32bit */
+	TArray<uint8> DataBlob;
+
+	/** Destroyed actors in the level */
+	TArray<struct FObjectReferenceDisc> DestroyedActors;
+};
+
 /**
  * Members are pointer as this struct might be moved around in memory as it's in a TMap
  */
-struct FPerLevelSaveData
+struct FPerStreamingLevelSaveData: public FPerBasicLevelSaveData
 {
-	FPerLevelSaveData() :
-		IsUpToDate( false ),
-		IsPersistentLevelData( false ),
-		IsRuntimeData( false )
+	FPerStreamingLevelSaveData( int32 saveVersion )
+		: FPerBasicLevelSaveData()
+		, SaveVersion( saveVersion )
+		, IsUpToDate( false )
+		, IsPersistentLevelData( false )
+		, IsRuntimeData( false )
 	{
 	}
 
 	/** Initalize the save data */
 	void PreAllocate( int32 initialBlobSize, int32 estimatedDestroyedActors );
 
-	// @return true if the blob is populated for the level
-	FORCEINLINE bool HasBlobData() const { return TOCBlob.Num() > 0; }
-
-	// @return true if there is any destroyed actors for the level
-	FORCEINLINE bool HasDestroyedActors() const{ return DestroyedActors.Num() > 0; }
-
 	// @return true if we need to recalculate this when we save the game
 	FORCEINLINE bool IsDirty() const{ return !IsUpToDate || IsRuntimeData; }
 
-#if STATS
-	// Track how much memory this level contains
-	uint32 GetMemoryConsumption() const;
-#endif
-	/** Blob data to hold the Table of Contents */
-	TArray<uint8> TOCBlob;
-
-	/** Save blob for the level */
-	TArray<uint8> DataBlob;
+	/** The save version that this persistent level's TOC blob was serialized with. */
+	int32 SaveVersion;
 	
-	/** Destroyed actors in the level */
-	TArray<struct FObjectReferenceDisc> DestroyedActors;
-
 	/** If true, then this data is up to date and doesn't need to update before a save to disc */
 	uint8 IsUpToDate:1;
 
@@ -66,25 +83,16 @@ struct FPerLevelSaveData
 * and runtime data into one struct for serializing. This has to be done this way so that Runtime Spawned Actors can reference Persistent
 * world Actors in always loaded levels.
 */
-struct FPersistentAndRuntimeSaveData
+struct FPersistentAndRuntimeSaveData: public FPerBasicLevelSaveData
 {
 	FPersistentAndRuntimeSaveData() {}
 
-	void ResetAllData()
-	{
-		LevelToDestroyedActorsMap.Reset();
-		TOCBlob.Reset();
-		DataBlob.Reset();
-	}
+	void ResetBlobData();
 
-	/** Each Persistent (read: AlwaysLoaded) level will get its own entry using its name as the map key */
+	/** Each Persistent (read: AlwaysLoaded) level will get its own entry using its name as the map key.
+	 *	Only meaningful in the context of non partitioned worlds. For partitioned worlds, FPerBasicLevelSaveData::DestroyedActors is used instead
+	 */
 	TMap< FString, TArray< struct FObjectReferenceDisc> > LevelToDestroyedActorsMap;
-
-	/** Blob data to hold the Table of Contents */
-	TArray<uint8> TOCBlob;
-
-	/** Save blob for the level */
-	TArray<uint8> DataBlob;
 };
 
 /**
@@ -107,7 +115,7 @@ struct FUnresolvedWorldSaveData
 /**
 * << Overrides to handle the serialization of the custom perlevel and Unresolved Data structs
 */
-FArchive& operator<<( FArchive& ar, FPerLevelSaveData& saveData );
+FArchive& operator<<( FArchive& ar, FPerStreamingLevelSaveData& saveData );
 FArchive& operator<<( FArchive& ar, FPersistentAndRuntimeSaveData& saveData );
 FArchive& operator<<( FArchive& ar, FUnresolvedWorldSaveData& saveData );
 
@@ -190,6 +198,10 @@ public:
 	/** Returns whether or not this save has ever been saved with mods */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save Session" )
 	static FORCEINLINE bool GetIsModded( UPARAM( ref ) FSaveHeader& header ) { return header.IsModdedSave; }
+
+	/** Returns if creative mode is enabled for this save */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save Session" )
+	static FORCEINLINE bool GetIsCreativeModeEnabled( UPARAM( ref ) FSaveHeader& header ) { return header.IsCreativeModeEnabled; }
 
 
 	/** Returns the name of this session */
@@ -274,6 +286,8 @@ public:
 	 */
 	static void SharedInventoryPtrLoaded( struct FSharedInventoryStatePtr& ptr );
 
+	static FObjectReferenceDisc FixupObjectReferenceForPartitionedWorld( const FObjectReferenceDisc& Reference, const class AFGWorldSettings& WorldSettings );
+
 	/** Called every time by timer to trigger a autosave. Can be called manually if we want to trigger a autosave for key events */
 	UFUNCTION()
 	void Autosave();
@@ -306,7 +320,7 @@ public:
 
 	/** Exposed for scannable subssytem */
 	const FUnresolvedWorldSaveData& GetUnresolvedWorldSaveData() const { return mUnresolvedWorldSaveData; }
-	const TMap< FString, FPerLevelSaveData* >& GetPerLevelDataMap() const { return mPerLevelDataMap; }
+	const TMap< FString, TUniquePtr<FPerStreamingLevelSaveData> >& GetPerLevelDataMap() const { return mPerLevelDataMap; }
 
 protected:
 	friend class AFGBlueprintSubsystem;
@@ -349,20 +363,20 @@ protected:
 	/**
 	* A Helper function that returns a Map of only StreamingLevels and their PerLevelSaveData. Is used during SaveWorldImplementation() to filter out Always Loaded / Persistent level data
 	*/
-	FORCEINLINE void GetStearmingLevelDataMap( TMap< FString, FPerLevelSaveData* >& out_data );
+	FORCEINLINE void GetStearmingLevelDataMap( TMap< FString, FPerStreamingLevelSaveData* >& out_data );
 
 	/**
 	* A helper function that will call GetLevelSaveData( const FString& levelName, bool isPersistent )
 	* @param level - The level to retrive the FPerLevelSaveData for.
 	*/
-	FPerLevelSaveData& GetLevelSaveData( ULevel* level );
+	FPerStreamingLevelSaveData& GetLevelSaveData( ULevel* level );
 
 	/** 
 	* Will return the FPerLevelSaveData that matches the given the passed level name. If one is not found it will be created
 	* @param levelName - The full level name of the level to use as the key to look up in the mPerLevelSaveData map
 	* @param isPersistent - If this is a persistent level or and always loaded level. This is important for determining how the level data is serialized during a save
 	*/
-	FPerLevelSaveData& GetLevelSaveData( const FString& levelName, bool isPersistent );
+	FPerStreamingLevelSaveData& GetLevelSaveData( const FString& levelName, bool isPersistent );
 
 	/** 
 	 * Deletes a existing save of the session id that has that autosave number
@@ -445,18 +459,22 @@ public:
 	/** Used to optimize checking for redirects on GameMode and GameState to avoid casting checks after they have already been resolved */
 	inline static int32 mRedirectedSingletonCount = 0;
 
+	/** This static map is used to store temporary serialized versions of objects so that PostLoadGame can execute knowing the version the object was deserialized with */
+	inline static TMap< UObject*, int32 > mObjectToSerailizedVersion = TMap< UObject*, int32 >(); 
+
 	/** Delegate that listens for when level placed actor is destroyed */
 	FOnLevelPlacedActorDestroyed mOnLevelPlacedActorDestroyed;
 
+	static TArray< AActor* > GatherSaveActors( ULevel* level );
 protected:
 	// Map with unique data for each level
-	TMap< FString, FPerLevelSaveData* > mPerLevelDataMap;
+	TMap< FString, TUniquePtr<FPerStreamingLevelSaveData> > mPerLevelDataMap;
 
 	/** Data for the data spawned runtime - This represents the actors that are spawned at runtime and has no correlation to a streaming level 
 	 * @note - All other FPerLevelSaveData will have IsRuntimeData == false.
 	 * @todoNOW - After refactoring the way world / always loaded levels are handled I believe this is unused. Delete / Clean up if so.
 	 */
-	FPerLevelSaveData mRuntimeLevelState;
+	FPerStreamingLevelSaveData mRuntimeLevelState{ -1 };
 
 	/** Data used when saving the level state of the persistent worlds and runtime data. They get merged into one block of data */
 	FPersistentAndRuntimeSaveData mPersistentAndRuntimeData;
@@ -528,6 +546,8 @@ private:
 	friend class AFGGameMode;
 	// The map editor utility needs private access to avoid over exposing these functions
 	friend class UFGMapUtility;
+	//
+	friend class FWPSaveDataMigrationContext;
 
 	/** Called after actor ticking so we can save when all actors have been saved */
 	void SaveWorldEndOfFrame( class UWorld* world, ELevelTick, float );
@@ -547,7 +567,7 @@ private:
 	 * 
 	 * @return bool - Returns true if file was successfully compressed and saved.
 	 */
-	bool SaveToDiskWithCompression(const FString& fullFilePath, FBufferArchive& memArchive, FSaveHeader& saveHeader );
+	bool SaveToDiskWithCompression(const FString& fullFilePath, FBufferArchive64& memArchive, FSaveHeader& saveHeader );
 	
 	/** Loads a save file that has been compressed. This includes serializing the SaveHeader. */
 	bool LoadCompressedFileFromDisk( const FString& saveGameName );
@@ -577,13 +597,13 @@ private:
 
 };
 
-FORCEINLINE void UFGSaveSession::GetStearmingLevelDataMap( TMap< FString, FPerLevelSaveData* >& out_data )
+FORCEINLINE void UFGSaveSession::GetStearmingLevelDataMap( TMap< FString, FPerStreamingLevelSaveData* >& out_data )
 {
-	for( const TPair< FString, FPerLevelSaveData* >& data : mPerLevelDataMap )
+	for( TPair< FString, TUniquePtr<FPerStreamingLevelSaveData> >& data : mPerLevelDataMap )
 	{
 		if( ( data.Value )->IsPersistentLevelData == false )
 		{
-			out_data.Add( TPair< FString, FPerLevelSaveData* >( data.Key, data.Value ) );
+			out_data.Add( TPair< FString, FPerStreamingLevelSaveData* >( data.Key, data.Value.Get() ) );
 		}
-	}
+	} 
 }

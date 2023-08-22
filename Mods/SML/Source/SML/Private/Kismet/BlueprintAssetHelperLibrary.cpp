@@ -1,5 +1,5 @@
 #include "Kismet/BlueprintAssetHelperLibrary.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "SatisfactoryModLoader.h"
 #include "Interfaces/IPluginManager.h"
 #include "ModLoading/ModLoadingLibrary.h"
@@ -21,7 +21,7 @@ void UBlueprintAssetHelperLibrary::FindBlueprintAssetsByTag(UClass* BaseClass, c
 
 	for (const FAssetData& AssetData : OutFoundAssets) {
 		//Make sure found asset is a blueprint
-		if (AssetData.AssetClass != TEXT("Blueprint")) {
+		if (AssetData.AssetClassPath != FTopLevelAssetPath(UBlueprint::StaticClass())) {
 			continue;
 		}
 
@@ -68,7 +68,7 @@ FString FindOwnerPluginForModuleName(const FString& ModuleName, bool bTreatNonMo
 		}
 	}
 	
-	//If package is not owned by any of the mod modules, we assume it's game or engine native module
+	//If package is not owned by any of the mod modules, we assume it's a game or engine native module
 	//In that case, it belongs to satisfactory itself
 	return FApp::GetProjectName();
 }

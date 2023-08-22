@@ -24,7 +24,7 @@ public:
 	AFGWaterVolume();
 
 	//~ Begin UObject Interface
-	virtual void PostInitProperties() override;
+	virtual void OnConstruction( const FTransform& transform ) override;
 	//~ End UObject Interface
 
 	//~ Begin AActor Interface
@@ -53,6 +53,9 @@ public:
 	//~ Begin IInterface_PostProcessVolume Interface
 	virtual bool EncompassesPoint( FVector point, float sphereRadius = 0.f, float* out_distanceToPoint = nullptr ) override;
 	virtual FPostProcessVolumeProperties GetProperties() const override;
+#if DEBUG_POST_PROCESS_VOLUME_ENABLE
+	virtual FString GetDebugName() const override;
+#endif
 	//~ End IInterface_PostProcessVolume Interface
 
 	//~ Begin AActor Interface
@@ -71,21 +74,30 @@ public:
 	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
 
 	// Begin Extractable Resource Interface
+	UFUNCTION()
 	virtual void SetIsOccupied( bool occupied ) override;
+	UFUNCTION()
 	virtual bool IsOccupied() const override;
+	UFUNCTION()
 	virtual bool CanBecomeOccupied() const override;
+	UFUNCTION()
 	virtual bool HasAnyResources() const override;
+	UFUNCTION()
 	virtual TSubclassOf<class UFGResourceDescriptor> GetResourceClass() const override;
+	UFUNCTION()
 	virtual int32 ExtractResource( int32 amount ) override;
+	UFUNCTION()
 	virtual float GetExtractionSpeedMultiplier() const override;
+	UFUNCTION()
 	virtual FVector GetPlacementLocation( const FVector& hitLocation ) const override;
+	UFUNCTION()
 	virtual bool CanPlaceResourceExtractor() const override;
 	// End Extractable Resource Interface
 
 #if WITH_EDITOR
 	// Begin UObject interface
 	virtual void PostLoad() override;
-	virtual void PreSave( const class ITargetPlatform* targetPlatform ) override;
+	virtual void PreSave( FObjectPreSaveContext saveContext ) override;
 	virtual void PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent ) override;
 	// End UObject interface
 

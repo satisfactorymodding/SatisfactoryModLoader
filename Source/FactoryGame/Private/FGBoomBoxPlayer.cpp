@@ -52,7 +52,9 @@ AFGBoomBoxPlayer::AFGBoomBoxPlayer() : Super() {
 	this->mTurboBassNoise = nullptr;
 	this->mBoostJumpMultiplier = 5.0;
 	this->mBoostJumpVelocityRange = 100.0;
+	this->mFirstPersonTapeMaterial = nullptr;
 	this->mCachedMaterialInstance = nullptr;
+	this->mCachedMaterialInstance1p = nullptr;
 	this->mState.mCurrentTape = nullptr;
 	this->mState.mCurrentSongIx = -1;
 	this->mState.mVolume = 1.0;
@@ -127,6 +129,7 @@ void AFGBoomBoxPlayer::NextNow(AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::PrevNow(AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::FireTurboBassNow(AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::TogglePlaybackNow(AFGCharacterPlayer* character){ }
+void AFGBoomBoxPlayer::UpdateMaterialsFromCameraMode(){ }
 void AFGBoomBoxPlayer::SetPlaybackStateFlag(EBoomBoxPlaybackStateBitfield flag, bool set){ }
 void AFGBoomBoxPlayer::ApplyTurboBassGameplayEffects( AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::SetAudioVolumeLocally(float normalizedVolume, bool notifyListeners){ }

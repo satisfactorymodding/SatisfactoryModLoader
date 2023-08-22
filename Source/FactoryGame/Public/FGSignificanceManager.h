@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "SignificanceManager.h"
+#include "SignificanceManagerAccelerated.h"
 #include "FGSignificanceManager.generated.h"
 
 enum class EFGSignificanceType : uint8
@@ -37,7 +38,7 @@ struct FACTORYGAME_API FGainSignificanceData
  * 
  */
 UCLASS( Blueprintable )
-class FACTORYGAME_API UFGSignificanceManager : public USignificanceManager
+class FACTORYGAME_API UFGSignificanceManager : public USignificanceManagerAccelerated
 {
 	GENERATED_BODY()
 public:
@@ -51,6 +52,19 @@ public:
 	virtual void UnregisterObject(UObject* Object) override;
 
 	virtual void Update( TArrayView<const FTransform> Viewpoints ) override;
+
+	// Begin USignificanceManagerAccelerated interface
+	virtual void OnSignificanceLoss(UObject* Object, EPostSignificanceType InPostSignificanceType) override;
+	virtual void OnSignificanceGain(UObject* Object, EPostSignificanceType InPostSignificanceType) override;
+	virtual void OnSignificanceTickRateUpdate(UObject* Object, int32 TickLevel, int32 NumTickLevels) override;
+	
+	virtual float GetSignificanceRange(UObject* Object) const override;
+	virtual FVector GetObjectLocation(UObject* Object) const override;
+	virtual bool GetIsTickManaged(UObject* Object) const override;
+	virtual int32 GetNumTickLevels(UObject* Object) const override;
+	virtual float GetTickExponent(UObject* Object) const override;
+	virtual void SetIsSignificance(UObject* Object, bool bState) override;
+	// End USignificanceManagerAccelerated interface.
 
 	FGainSignificanceData GetClosestGainSignificanceData( UObject* inObject, float desiredDistance );
 
@@ -127,8 +141,8 @@ private:
 	static void TrainPostSignificance( FManagedObjectInfo* ObjectInfo, float OldSignificance, float NewSignificance, bool bFinal );
 
 	/** Helper functions for getting location and setting tick rates */
-	FORCEINLINE static FVector GetObjectLocation( FManagedObjectInfo* objInfo ){ return GetObjectLocation( objInfo->GetObject() ); }
-	static FVector GetObjectLocation( UObject* obj );
+	FORCEINLINE static FVector GetObjectLocation( FManagedObjectInfo* objInfo ){ return GetObjectLocation_Old( objInfo->GetObject() ); }
+	static FVector GetObjectLocation_Old( UObject* obj ); // TODO Deprecate.
 	FORCEINLINE static void SetObjectTickRate( FManagedObjectInfo* objInfo, float newTickRate ){ SetObjectTickRate( objInfo->GetObject(), newTickRate ); }
 	static void SetObjectTickRate( UObject* obj, float newTickRate );
 	FORCEINLINE static void SetObjectTicks( FManagedObjectInfo* objInfo, bool newTicks ){ SetObjectTicks( objInfo->GetObject(), newTicks ); }

@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "Module/ModModule.h"
 
-/** Describes a single discovered mod root module associated with it's owner plugin name */
+/** Describes a single discovered mod root module associated with its owner plugin name */
 struct SML_API FDiscoveredModule {
 	FString OwnerPluginName;
 	TSubclassOf<UModModule> ModuleClass;

@@ -221,7 +221,8 @@ bool IsCompatibleConfigurationClassChange(UClass* OldConfigurationClass, UClass*
     if (OldConfigurationClass == NewConfigurationClass) {
         return true;
     }
-    
+
+#if WITH_EDITORONLY_DATA
     //If never version of old configuration class exists, and it is new class, replace is compatible
     if (OldConfigurationClass->HasAnyClassFlags(EClassFlags::CLASS_NewerVersionExists)) {
         UBlueprint* GeneratedByBP = Cast<UBlueprint>(OldConfigurationClass->ClassGeneratedBy);
@@ -230,6 +231,7 @@ bool IsCompatibleConfigurationClassChange(UClass* OldConfigurationClass, UClass*
             return NewBlueprintClass == NewConfigurationClass;
         }
     }
+#endif
     
     //Otherwise, replace is not compatible
     return false;

@@ -5,9 +5,10 @@
 AFGEquipmentDecoration::AFGEquipmentDecoration() : Super() {
 	this->mPlaceDistanceMax = 1000.0;
 	this->mArmAnimation = EArmEquipment::AE_Generic1Hand;
+	this->mDefaultEquipmentActions = 1;
 }
 void AFGEquipmentDecoration::Tick(float DeltaSeconds){ }
 void AFGEquipmentDecoration::OnPrimaryFirePressed(){ }
 void AFGEquipmentDecoration::Server_PrimaryFire_Implementation(){ }
 bool AFGEquipmentDecoration::Server_PrimaryFire_Validate(){ return bool(); }
-void AFGEquipmentDecoration::AddEquipmentActionBindings(){ }
+void AFGEquipmentDecoration::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }

@@ -40,7 +40,7 @@ UTexture2D* FImageLoadingUtil::LoadImageFromByteArray(const TArray<uint8>& InByt
 	//Add texture to root set so it is not garbage collected
 	TextureObject->AddToRoot();
 	//Lock initial mip map, copy texture data, and then unlock it
-	FTexture2DMipMap& PrimaryMipMap = TextureObject->PlatformData->Mips[0];
+	FTexture2DMipMap& PrimaryMipMap = TextureObject->GetPlatformData()->Mips[0];
 	void* TextureDataPtr = PrimaryMipMap.BulkData.Lock(LOCK_READ_WRITE);
 	FMemory::Memcpy(TextureDataPtr, UncompressedBGRA.GetData(), UncompressedBGRA.Num());
 	PrimaryMipMap.BulkData.Unlock();

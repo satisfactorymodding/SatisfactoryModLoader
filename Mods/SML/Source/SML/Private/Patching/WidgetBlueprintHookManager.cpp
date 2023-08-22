@@ -132,7 +132,7 @@ void UWidgetBlueprintHookData::ReinitializeNewWidgetTemplate() {
 		}
 	}
 	
-	//Rename the component if it's name does not match the variable name
+	//Rename the component if its name does not match the variable name
 	if (NewWidgetTemplate != NULL) {
 		if (NewWidgetTemplate->GetFName() != NewWidgetName) {
 			NewWidgetTemplate->Rename(*NewWidgetName.ToString(), NULL, REN_DontCreateRedirectors | REN_ForceNoResetLoaders);
@@ -174,7 +174,7 @@ void UWidgetBlueprintHookData::ReinitializePanelSlotTemplate() {
 		}
 	}
 	
-	//Rename the component if it's name does not match the variable name
+	//Rename the component if its name does not match the variable name
 	if (PanelSlotTemplate != NULL) {
 		if (PanelSlotTemplate->GetName() != PanelSlotName) {
 			PanelSlotTemplate->Rename(*PanelSlotName, NULL, REN_DontCreateRedirectors | REN_ForceNoResetLoaders);
@@ -266,7 +266,7 @@ void UWidgetBlueprintHookManager::RegisterWidgetBlueprintHook(UWidgetBlueprintHo
 		return;
 	}
 	
-	UUserWidget* NewUserWidget = NewObject<UUserWidget>(WidgetTree, HookData->NewWidgetClass, HookData->NewWidgetName, RF_Transient);
+	UUserWidget* NewUserWidget = NewObject<UUserWidget>(WidgetTree, HookData->NewWidgetClass, HookData->NewWidgetName, RF_Transient, HookData->NewWidgetTemplate);
 
 	if (NewUserWidget == NULL) {
 		UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Failed to hook widget blueprint %s, failed to create new user widget %s"),

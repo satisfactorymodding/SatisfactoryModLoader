@@ -42,6 +42,8 @@ public:
 	void OnDropPodLooted( class AFGDropPod* dropPod );
 	
 	void OnCreatureSpawnerUpdated( class AFGCreatureSpawner* creatureSpawner, bool scannable );
+	void OnCreatureSpawnerAdded( class AFGCreatureSpawner* creatureSpawner );
+	void OnCreatureSpawnerRemoved( class AFGCreatureSpawner* creatureSpawner );
 
 	const TArray< class AFGDropPod* >& GetUnlootedDropPods() const { return mUnlootedDropPods; }
 

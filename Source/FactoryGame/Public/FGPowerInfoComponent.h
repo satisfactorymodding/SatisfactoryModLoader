@@ -100,9 +100,7 @@ public:
 	/** Get the target power consumption. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerInfo" )
 	float GetTargetConsumption() const;
-
-	//@todopower DO NOT EXPOSE TO BLUEPRINT
-	//           They need more work to function with power graph, client, etc. -G2
+	
 	/**
 	 * Set the maximum power we might want from the circuit under normal conditions, i.e. no potential set.
 	 * @note This is an informative value for the subsystem and is not used in any of the power calculations.

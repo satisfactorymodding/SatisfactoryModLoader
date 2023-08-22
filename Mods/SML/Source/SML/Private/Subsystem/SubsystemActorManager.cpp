@@ -5,6 +5,7 @@
 #include "ModLoading/PluginModuleLoader.h"
 #include "Registry/ModContentRegistry.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"
+#include "SessionSettings/SessionSettingsSubsystem.h"
 
 DEFINE_LOG_CATEGORY(LogSubsystemManager)
 
@@ -124,6 +125,7 @@ void USubsystemActorManager::MakeSureNativeSubsystemsRegistered() {
 		UE_LOG(LogSubsystemManager, Log, TEXT("Registering default SML subsystems"));
 		RegisterSubsystemActor(AModContentRegistry::StaticClass());
 		RegisterSubsystemActor(AChatCommandSubsystem::StaticClass());
+		RegisterSubsystemActor(ASessionSettingsSubsystem::StaticClass());
 		this->bNativeSubsystemsRegistered = true;
 	}
 }

@@ -67,11 +67,11 @@ public:
 
 	/** @return a valid pointer to the fuel inventory */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	FORCEINLINE class UFGInventoryComponent* GetFuelInventory() const{ return mFuelInventoryHandler->GetActiveInventoryComponent(); }
+	FORCEINLINE class UFGInventoryComponent* GetFuelInventory() const{ return mFuelInventoryHandlerData.GetActiveInventoryComponent(); }
 
 	/** Get the inventory the docked vehicle loads/unloads to  */
 	UFUNCTION( BlueprintPure, Category = "DockingStation" )
-	FORCEINLINE class UFGInventoryComponent* GetInventory() const{ return mInventoryHandler->GetActiveInventoryComponent(); }
+	FORCEINLINE class UFGInventoryComponent* GetInventory() const{ return mInventoryHandlerData.GetActiveInventoryComponent(); }
 
 	/** Get the docked actor if any. */
 	UFUNCTION( BlueprintPure, Category = "DockingStation" )
@@ -171,7 +171,7 @@ public:
 
 	virtual void PreSerializedToBlueprint() override;
 	virtual void PostSerializedToBlueprint() override;
-	virtual void PostSerializedFromBlueprint() override;
+	virtual void PostSerializedFromBlueprint( bool isBlueprintWorld ) override;
 	
 protected:
 	// Begin Factory_ interface
@@ -207,6 +207,13 @@ protected:
 	 */
 	UFUNCTION()
 	bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
+
+	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
+	{
+		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
+		out_repDetailData.Add( &mFuelInventoryHandlerData );
+		out_repDetailData.Add( &mInventoryHandlerData );
+	}
 	
 private:
 	void EnsureInfoCreated();
@@ -296,10 +303,10 @@ protected:
 	float mTransferProgress;
 
 	UPROPERTY()
-	class UFGReplicationDetailInventoryComponent* mFuelInventoryHandler;
+	FReplicationDetailData mFuelInventoryHandlerData;
 
 	UPROPERTY()
-	class UFGReplicationDetailInventoryComponent* mInventoryHandler;
+	FReplicationDetailData mInventoryHandlerData;
 
 	/** All connections that can pull in fuel to the docking station, (References hold by Components array, no need for UPROPERTY) */
 	TArray<class UFGFactoryConnectionComponent*> mFuelConnections;

@@ -3,16 +3,17 @@
 #include "FGInventoryComponent.h"
 #include "FactoryGameCustomVersion.h"
 
-FInventoryItem::FInventoryItem(){ }
-FInventoryItem::FInventoryItem(TSubclassOf<  UFGItemDescriptor > itemClass){ }
 bool FInventoryItem::Serialize(FArchive& ar) {
 	ar.UsingCustomVersion(FFactoryGameCustomVersion::GUID);
-	if (ar.CustomVer(FFactoryGameCustomVersion::GUID) >= 2) {
+	if (ar.CustomVer(FFactoryGameCustomVersion::GUID) >= FFactoryGameCustomVersion::InventoryItemGotPersistantSeralization) {
 		ar << ItemClass;
 		ar << ItemState;
 	}
 	return true;
 }
+
+FInventoryItem::FInventoryItem(){ }
+FInventoryItem::FInventoryItem(TSubclassOf<  UFGItemDescriptor > itemClass){ }
 void FInventoryItem::SetItemClass(TSubclassOf<  UFGItemDescriptor > NewItemClass){ }
 const FInventoryItem FInventoryItem::NullInventoryItem = FInventoryItem();
 FInventoryStack::FInventoryStack(){ }
@@ -46,13 +47,14 @@ void UFGInventoryComponent::SortInventory(){ }
 void UFGInventoryComponent::Server_SortInventory_Implementation(){ }
 bool UFGInventoryComponent::Server_SortInventory_Validate(){ return bool(); }
 bool UFGInventoryComponent::HasAuthority() const{ return bool(); }
-bool UFGInventoryComponent::IsItemAllowed(TSubclassOf< UFGItemDescriptor > item, const int32 idx) const{ return bool(); }
+bool UFGInventoryComponent::IsItemAllowed(const TSubclassOf< UFGItemDescriptor > itemClass, const int32 idx) const{ return bool(); }
 int32 UFGInventoryComponent::FindEmptyIndex() const{ return int32(); }
 int32 UFGInventoryComponent::GetFirstIndexWithItem(int32 StartIndex) const{ return int32(); }
-int32 UFGInventoryComponent::AddStack(const FInventoryStack& stack, bool allowPartialAdd){ return int32(); }
+int32 UFGInventoryComponent::FindFirstIndexWithItemType(TSubclassOf<UFGItemDescriptor> itemDescriptor, int32 startIndex) const{ return int32(); }
+int32 UFGInventoryComponent::AddStack(const FInventoryStack& stack, const bool allowPartialAdd){ return int32(); }
 void UFGInventoryComponent::AddStacks(const TArray< FInventoryStack >& stacks){ }
-int32 UFGInventoryComponent::AddStackToIndex(int32 idx, const FInventoryStack& stack, bool allowPartial){ return int32(); }
-bool UFGInventoryComponent::GetStackFromIndex(int32 idx, FInventoryStack& out_stack) const{ return bool(); }
+int32 UFGInventoryComponent::AddStackToIndex(const int32 idx, const FInventoryStack& stack, const bool allowPartialAdd){ return int32(); }
+bool UFGInventoryComponent::GetStackFromIndex(const int32 idx, FInventoryStack& out_stack) const{ return bool(); }
 void UFGInventoryComponent::Remove(TSubclassOf< UFGItemDescriptor > itemClass, int32 num){ }
 void UFGInventoryComponent::RemoveFromIndex(int32 idx, int32 num){ }
 void UFGInventoryComponent::RemoveAllFromIndex(int32 idx){ }
@@ -63,7 +65,7 @@ bool UFGInventoryComponent::HasEnoughSpaceForStacks(const TArray< FInventoryStac
 bool UFGInventoryComponent::HasEnoughSpaceForStack(const FInventoryStack& stack) const{ return bool(); }
 void UFGInventoryComponent::SetStateOnIndex(int32 index, const FSharedInventoryStatePtr& itemState){ }
 int32 UFGInventoryComponent::GetFullestStackIndex(){ return int32(); }
-void UFGInventoryComponent::GetInventoryStacks(TArray< FInventoryStack >& out_stacks) const{ }
+void UFGInventoryComponent::GetInventoryStacks(TArray< FInventoryStack >& out_stacks, const bool getEmptyStacks) const{ }
 TArray<int32> UFGInventoryComponent::GetRelevantStackIndexes(TArray< TSubclassOf<  UFGItemDescriptor > > relevantClasses, int32 stackLimit , bool sortResult){ return TArray<int32>(); }
 void UFGInventoryComponent::AddArbitrarySlotSize(int32 index, int32 arbitrarySlotSize){ }
 void UFGInventoryComponent::RemoveArbitrarySlotSize(int32 index){ }
@@ -76,9 +78,12 @@ void UFGInventoryComponent::SplitStackAtIdx(int32 idx, int32 numItemsToMove){ }
 void UFGInventoryComponent::SetCanBeRearranged(bool canBeRearranged){ }
 void UFGInventoryComponent::CopyFromOtherComponent(UFGInventoryComponent* otherComponent){ }
 AFGEquipment* UFGInventoryComponent::GetStackEquipmentActorAtIdx(const int32 index) const{ return nullptr; }
+void UFGInventoryComponent::CopyInTheseItemStacks(const TArray<FInventoryStack>& itemsStacks){ }
+bool UFGInventoryComponent::GetNoBuildCost() const{ return bool(); }
 void UFGInventoryComponent::OnRep_InventoryStacks(){ }
 void UFGInventoryComponent::OnRep_AllowedItemDescriptors(TArray< TSubclassOf < UFGItemDescriptor > > previousAllowedItems){ }
 void UFGInventoryComponent::OnItemsAdded(int32 idx, int32 num){ }
 void UFGInventoryComponent::OnItemsRemoved(int32 idx, int32 num, FInventoryItem item){ }
 FInventoryStack& UFGInventoryComponent::GetStackFromIndex(int32 idx){ return *(new FInventoryStack); }
+const FInventoryStack& UFGInventoryComponent::GetStackFromIndex(int32 idx) const{ return *(new FInventoryStack); }
 void UFGInventoryComponent::UpdateRadioactivity(int32 idx, TSubclassOf<UFGItemDescriptor> itemClass){ }

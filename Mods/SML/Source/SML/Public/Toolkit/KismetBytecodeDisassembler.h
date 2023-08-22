@@ -26,6 +26,7 @@ private:
 	FString ReadName(int32& ScriptIndex);
 	uint16 ReadWord(int32& ScriptIndex);
 	float ReadFloat(int32& ScriptIndex);
+	double ReadDouble(int32& ScriptIndex);
 	CodeSkipSizeType ReadSkipCount(int32& ScriptIndex);
 	FString ReadString8(int32& ScriptIndex);
 	FString ReadString16(int32& ScriptIndex);

@@ -2,21 +2,15 @@
 
 #include "FGInputLibrary.h"
 
-bool UFGInputLibrary::IsActionMappingUsingSameKeys(const FInputActionKeyMapping& mappingA, const FInputActionKeyMapping& mappingB){ return bool(); }
-bool UFGInputLibrary::IsAxisMappingUsingSameKeys(const FInputAxisKeyMapping& mappingA, const FInputAxisKeyMapping& mappingB){ return bool(); }
-bool UFGInputLibrary::IsActionAndAxisMappingUsingSameKeys(const FInputActionKeyMapping& actionMapping, const FInputAxisKeyMapping& axisMapping){ return bool(); }
-FFGKeyMapping UFGInputLibrary::CreateFGKeyMappingStruct(FName actionName, bool isAxisMapping, bool positiveAxisScale, FInputEvent inputEvent, FKey keyPressed){ return FFGKeyMapping(); }
-void UFGInputLibrary::NullKeyMappingWithSameKeyCombo(APlayerController* playerController, const FFGKeyMapping& keyMapping){ }
-bool UFGInputLibrary::IsFGKeyMappingAvailable(APlayerController* playerController, const FFGKeyMapping& keyMapping){ return bool(); }
-bool UFGInputLibrary::IsActionKeyMappingAvailable(APlayerController* playerController, const FFGKeyMapping& keyMapping){ return bool(); }
-bool UFGInputLibrary::IsAxisKeyMappingAvailable(APlayerController* playerController, const FFGKeyMapping& keyMapping){ return bool(); }
-FFGKeyMapping UFGInputLibrary::GetOverlappingKeyMapping(APlayerController* playerController, const FFGKeyMapping& keyMapping){ return FFGKeyMapping(); }
-bool UFGInputLibrary::RebindKey(APlayerController* playerController, const FFGKeyMapping& newKeyMapping){ return bool(); }
-void UFGInputLibrary::UpdateInputMappings(APlayerController* playerController){ }
 FInputActionKeyMapping UFGInputLibrary::GetKeyMappingForAction(APlayerController* playerController, FName inAction, bool getGamepadKey){ return FInputActionKeyMapping(); }
-FText UFGInputLibrary::GetKeyNameForAction(APlayerController* playerController, FName actionName, bool getGamepadKey, bool abbreviateKeyName){ return FText(); }
-FKey UFGInputLibrary::GetKeyForAxis(APlayerController* playerController, FName axisName, bool positiveAxisScale, bool getGamepadKey){ return FKey(); }
-FText UFGInputLibrary::GetKeyNameForAxis(APlayerController* playerController, FName axisName, bool positiveAxisScale, bool getGamepadKey){ return FText(); }
 FText UFGInputLibrary::GetAbbreviatedKeyName(FKey key){ return FText(); }
-FText UFGInputLibrary::FormatStringWithKeyNames(APlayerController* playerController, FText textToFormat, bool abbreviateKeyNames){ return FText(); }
-bool UFGInputLibrary::IsKeyMappingRelevant(FName keyMappingName){ return bool(); }
+FText UFGInputLibrary::FormatStringWithInputActionNames(APlayerController* playerController, FText textToFormat, bool abbreviateKeyNames){ return FText(); }
+FText UFGInputLibrary::GetInputActionNameAsText(APlayerController* playerController, const FName& inActionName, bool abbreviateKeyNames){ return FText(); }
+bool UFGInputLibrary::ShouldShowEnhancedRebindingMenu(){ return bool(); }
+void UFGInputLibrary::GetPlayerRebindableMappingContexts(TArray<class UFGInputMappingContext*>& out_MappingContexts){ }
+void UFGInputLibrary::FindAllChildMappingContexts(TMultiMap<TSoftObjectPtr<UFGInputMappingContext>, TSoftObjectPtr<UFGInputMappingContext>>& out_ParentToChildContexts){ }
+bool UFGInputLibrary::GetOverlappingEnhancedKeyMappings(APlayerController* playerController, const FName& inActionName, const FKey& primaryKey, const TArray<FKey>& modifierKeys, TArray<FEnhancedActionKeyMapping>& out_HardConflicts, TArray<FEnhancedActionKeyMapping>& out_SoftConflicts){ return bool(); }
+void UFGInputLibrary::RebindEnhancedKeyMapping(APlayerController* playerController, const FName& inActionName, const FKey& primaryKey, const TArray<FKey>& modifierKeys){ }
+void UFGInputLibrary::ResetAllEnhancedKeyBindings(APlayerController* playerController){ }
+bool UFGInputLibrary::GetCurrentMappingForAction(APlayerController* playerController, const FName& inActionName, FKey& out_primaryKey, TArray<FKey>& out_modifierKeys){ return bool(); }
+void UFGInputLibrary::ClearBindingsForWidget(UUserWidget* widget){ }

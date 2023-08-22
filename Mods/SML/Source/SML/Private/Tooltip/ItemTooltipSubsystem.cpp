@@ -26,7 +26,7 @@ void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, 
     ContextWidget->ItemTooltipSubsystem = this;
     ContextWidget->InventoryStack = InventoryStack;
     ContextWidget->PlayerController = OwningPlayer;
-    ContextWidget->Visibility = ESlateVisibility::Collapsed;
+    ContextWidget->SetVisibility(ESlateVisibility::Collapsed);
     ParentPanel->AddChild(ContextWidget);
     //Rebind text delegates to custom widget
     NameBlock->TextDelegate.BindUFunction(ContextWidget, TEXT("GetItemName"));

@@ -5,16 +5,19 @@
 UFGMusicManager* UFGMusicManager::CreateMusicManager( UFGGameInstance* gameInstance){ return nullptr; }
 UFGMusicManager* UFGMusicManager::Get(UWorld* world){ return nullptr; }
 UFGMusicManager* UFGMusicManager::Get(UObject* worldContext){ return nullptr; }
+void UFGMusicManager::BeginDestroy(){ Super::BeginDestroy(); }
 UWorld* UFGMusicManager::GetWorld() const{ return nullptr; }
 void UFGMusicManager::OnPlayerControllerBeginPlay( AFGPlayerControllerBase* pc){ }
 void UFGMusicManager::UpdateIncomingAttackers(int32 numAttackers){ }
 void UFGMusicManager::OnPlayerEnteredArea_Implementation(AFGPlayerControllerBase* playerController, TSubclassOf<  UFGMapArea > mapArea){ }
+void UFGMusicManager::PostEvent( UAkAudioEvent* akEvent,  const int32 callbackMask, const FOnAkPostEventCallback& postEventCallback){ }
+void UFGMusicManager::SetRTPCValue(const  UAkRtpc* rtpcValue, float value, int32 interpolationTimeMs, FString rtpc){ }
+void UFGMusicManager::SetSwitch(const  UAkSwitchValue* switchValue, FString switchGroup, FString switchState){ }
 UFGMusicManager::UFGMusicManager() : Super() {
 	this->mUpdateInterval = 5.0;
 	this->mFactoryCloseDistance = 10000.0;
-	this->mAkObject = nullptr;
 	this->mHasPlayerAlreadyVisitedArea = false;
-	this->mMusicManagerClassName = FSoftClassPath("/Game/FactoryGame/-Shared/Audio/Blueprints/BP_MusicManager.BP_MusicManager_C");
+	this->mMusicManagerClassName = FSoftClassPath(TEXT("/Game/FactoryGame/-Shared/Audio/Blueprints/BP_MusicManager.BP_MusicManager_C"));
 }
 void UFGMusicManager::Update(){ }
 void UFGMusicManager::Init(UWorld* inWorld){ }

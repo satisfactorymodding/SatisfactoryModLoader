@@ -25,28 +25,28 @@ struct FPopupData
 	GENERATED_BODY();
 public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
-	FText Title;
+	FText Title = {};
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
-	FText Body;
+	FText Body = {};
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
-	TEnumAsByte< EPopupId > ID;
+	TEnumAsByte< EPopupId > ID = EPopupId::PID_NONE;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
-	TSubclassOf< class UUserWidget > PopupClass;
+	TSubclassOf< class UUserWidget > PopupClass = {};
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
-	UObject* Instigator;
+	UObject* Instigator = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
 	class UFGPopupWidgetContent* PopupContent = nullptr;
 		
 	UPROPERTY()
-	FPopupConfirmClicked PopupConfirmClickedDelegate_DEPRECATED;
+	FPopupConfirmClicked PopupConfirmClickedDelegate_DEPRECATED = {};
 
 	UPROPERTY()
-	FPopupClosed PopupClosedDelegate;
+	FPopupClosed PopupClosedDelegate = {};
 
 };
 

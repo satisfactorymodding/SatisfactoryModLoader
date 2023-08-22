@@ -12,4 +12,8 @@ void UFGPhotoModeWidget::StopListeningForAllInputs(){ }
 void UFGPhotoModeWidget::ToggleMouseControl(){ }
 void UFGPhotoModeWidget::ToggleAdvancedPhotoMode(){ }
 void UFGPhotoModeWidget::TogglePhotoModeDebug(){ }
-void UFGPhotoModeWidget::ListenForInputActionHelper(FInputChord inputkeyChord, bool consume, FOnInputAction pressedCallback, FOnInputAction releasedCallback, FOnInputAction doubleClickCallback){ }
+void UFGPhotoModeWidget::Input_ToggleAdvancedPhotoMode(const FInputActionValue& actionValue){ }
+void UFGPhotoModeWidget::Input_TogglePhotoModeDebug(const FInputActionValue& actionValue){ }
+void UFGPhotoModeWidget::Input_ToggleSequencer(const FInputActionValue& actionValue){ }
+void UFGPhotoModeWidget::Input_ToggleMouseControl(const FInputActionValue& actionValue){ }
+void UFGPhotoModeWidget::Input_TakePhoto(const FInputActionValue& actionValue){ }

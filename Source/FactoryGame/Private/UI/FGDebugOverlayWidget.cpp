@@ -2,8 +2,9 @@
 
 #include "UI/FGDebugOverlayWidget.h"
 
-void UFGDebugOverlayWidget::AddToScreen(ULocalPlayer* LocalPlayer, int32 ZOrder){ }
-void UFGDebugOverlayWidget::RemoveFromParent(){ }
+void UFGDebugOverlayWidget::AddToViewport(int32 ZOrder){ }
+bool UFGDebugOverlayWidget::AddToPlayerScreen(int32 ZOrder){ return bool(); }
+void UFGDebugOverlayWidget::RemoveFromParent(){ Super::RemoveFromParent(); }
 void UFGDebugOverlayWidget::UpdateDebugOverlay(){ }
 void UFGDebugOverlayWidget::SetDebugOverlayType(EDebugOverlayType type){ }
 void UFGDebugOverlayWidget::GetDefaultOverlayData(TArray<FString>& out_debugOverlayData){ }
@@ -11,3 +12,5 @@ void UFGDebugOverlayWidget::GetStoryOverlayData(TArray<FString>& out_debugOverla
 void UFGDebugOverlayWidget::GetOptionsOverlayData(TArray<FString>& out_debugOverlayData){ }
 void UFGDebugOverlayWidget::GetStatisticsOverlayData(TArray<FString>& out_debugOverlayData){ }
 void UFGDebugOverlayWidget::GetShoppingListOverlayData(TArray<FString>& out_debugOverlayData){ }
+void UFGDebugOverlayWidget::GetAdvancedGameSettingsOverlayData(TArray<FString>& out_debugOverlayData){ }
+void UFGDebugOverlayWidget::KickOffUpdateTimer(){ }

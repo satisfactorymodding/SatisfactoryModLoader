@@ -1,61 +1,67 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "FGPlayerController.h"
 #include "FGSaveSystem.h"
 #include "ModLoading/ModLoadingLibrary.h"
-#include "UI/FGPopupWidget.h"
-#include "SaveMetadataPatch.generated.h"
 
-struct FModMetadata
+struct FSavedModInfo
 {
-    FModMetadata(FString Reference, FString Name, FVersion Version);
+    FSavedModInfo() {}
+    FSavedModInfo(const FString& Reference, const FString& Name, const FVersion& Version);
     
     FString Reference;
     FString Name;
     FVersion Version;
 
-    TSharedPtr<FJsonValue> ToJson();
-    static FModMetadata FromModInfo(FModInfo ModInfo);
+    bool Read(const TSharedRef<FJsonObject>& Object, FString& OutError);
+    void Write(const TSharedRef<FJsonObject>& Object) const;
+    static FSavedModInfo FromModInfo(const FModInfo& ModInfo);
 };
 
 struct FModMismatch
 {
-    FModMismatch(FModMetadata Was, FModInfo Is, bool IsMissing);
-    FModMetadata Was;
+    FModMismatch(const FSavedModInfo& Was, const FModInfo& Is, bool IsMissing);
+    FSavedModInfo Was;
     FModInfo Is;
     bool IsMissing;
     
-    FString ToString();
+    FString ToString() const;
+    FText ToText() const;
+};
+
+enum class EModMetadataVersion : uint8 {
+    // First version
+    InitialVersion = 0,
+
+    // @2023-07-16 Added FullMapName
+    AddFullMapName,
+
+    // -----<new versions can be added above this line>-----
+    VersionPlusOne,
+    LatestVersion = VersionPlusOne - 1 // Last version to use
+};
+
+struct FModMetadata {
+    EModMetadataVersion Version;
+    TArray<FSavedModInfo> Mods;
+    FString FullMapName;
+
+    bool Read(const TSharedRef<FJsonObject>& MetadataObject);
+    void Write(const TSharedRef<FJsonObject>& MetadataObject) const;
 };
 
 class SML_API FSaveMetadataPatch {
-    friend class FSatisfactoryModLoader;
-    friend class USaveMetadataCallback;
+public:
+    static void Register();
 
-    static bool Patch(FSaveHeader Header, APlayerController* PlayerController);
-    static void RegisterPatch();
-    static void PopupWarning(TArray<FModMismatch> ModMismatches, USaveMetadataCallback* CallbackObject);
-    static TArray<FModMismatch> FindModMismatches(FSaveHeader Header);
-    static FString BuildModMismatchesString(TArray<FModMismatch>&);
+private:
+    static ESaveModCheckResult CheckModdedSaveCompatibility(const FSaveHeader& SaveHeader, FText& OutMessage);
+
+    static ESaveModCheckResult CheckModMismatches(const FModMetadata& ModMetadata, FText& OutMessage);
+    static ESaveModCheckResult CheckSaveMap(const FModMetadata& ModMetadata, const FSaveHeader& SaveHeader, FText& OutMessage);
+    
+    static TArray<FModMismatch> FindModMismatches(const TArray<FSavedModInfo>& ModMetadata);
+    static FText BuildModMismatchesText(TArray<FModMismatch>&);
     static void LogModMismatches(TArray<FModMismatch>&);
 
-    static bool IsCallback;
-};
-
-UCLASS()
-class USaveMetadataCallback : public UObject
-{
-    GENERATED_BODY()
-    friend class FSaveMetadataPatch;
-public:
-    UFUNCTION()
-    void Callback(bool Continue);
-
-    static USaveMetadataCallback* New(UFGSaveSystem* System, FSaveHeader SaveGame, APlayerController* Player);
-private:
-    UPROPERTY()
-    UFGSaveSystem* System;
-    FSaveHeader SaveGame;
-    UPROPERTY()
-    APlayerController* Player;
+    static bool GetModMetadataFromHeader(const FSaveHeader& SaveHeader, FModMetadata& OutMetadata);
 };

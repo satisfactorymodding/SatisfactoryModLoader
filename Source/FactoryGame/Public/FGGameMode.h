@@ -10,7 +10,7 @@
 class UFGRemoteCallObject;
 
 UCLASS( config = Game )
-class FACTORYGAME_API AFGGameMode : public AGameMode, public IFGSaveInterface
+class FACTORYGAME_API AFGGameMode final : public AGameMode, public IFGSaveInterface
 {
 	GENERATED_BODY()
 public:
@@ -55,51 +55,50 @@ public:
 	void PostActorsInitialized( const UWorld::FActorsInitializedParams& inParams );
 
 	/** Get the current options we started the map with */
-	const FString& GetCurrentOptions() const{ return mOptions; }
+	const FString& GetCurrentOptions() const { return mOptions; }
 
-	/** Generate the next autosave id */
-	uint8 GenerateNextAutosaveId();
+	/** Generate the next AutoSave id */
+	uint8 GenerateNextAutoSaveId();
 
 	/** Get the session id of our current session */
-	FORCEINLINE FString GetSaveSessionName() const{ return mSaveSessionName; }
+	FORCEINLINE FString GetSaveSessionName() const { return mSaveSessionName; }
 
 	/** Set the session id of our current session */
-	void SetSaveSessionName( FString name );
+	void SetSaveSessionName( const FString& name );
 
 	/** Get the save system */
-	FORCEINLINE class UFGSaveSession* GetSaveSession() const{ return mSaveSession; }
+	FORCEINLINE class UFGSaveSession* GetSaveSession() const { return mSaveSession; }
 
 	/** Get the length of the day parsed from the game options */
-	FORCEINLINE float GetDayLength() const{ return mDayLength; }
+	FORCEINLINE float GetDayLength() const { return mDayLength; }
 
 	/** Get the length of the night parsed from the game options */
-	FORCEINLINE float GetNightLength() const{ return mNightLength; }
+	FORCEINLINE float GetNightLength() const { return mNightLength; }
 
 	/** Does this Game Mode function specifically as the main menu? */
 	UFUNCTION( BlueprintPure, Category = "Game Mode" )
 	FORCEINLINE bool IsMainMenuGameMode() const { return mIsMainMenu; }
 
-	/** Returns true if we should setup save for this gamemode */
-	virtual bool ShouldSetupSave() const;
+	/** Returns true if we should setup save for this GameMode */
+	bool ShouldSetupSave() const;
 
 	/**
 	 * Get the capsule size of the the default player pawn
 	 *
 	 * @param world - the world we want to get this default from
 	 * @param out_capsuleRadius - radius of capsule
-	 * @param out_capsuleRadius - half height capsule
+	 * @param out_capsuleHalfHeight - half height capsule
 	 * @return false if there is no default player class
 	 */
-	static bool GetDefaultPlayerCapsuleSize( UWorld* world, float& out_capsuleRadius, float& out_capsuleHalfHeight );
+	static bool GetDefaultPlayerCapsuleSize( const UWorld* world, float& out_capsuleRadius, float& out_capsuleHalfHeight );
 
 	/** Debugging stuffs */
-	void Debug_SetStartingPoint( FName startingPoint ) { mDebugStartingPointTagName = startingPoint; }
-
+	void Debug_SetStartingPoint( const FName startingPoint ) { mDebugStartingPointTagName = startingPoint; }
 
 	UFUNCTION( BlueprintPure, Category = "Remote Call Object" )
-	bool RegisterRemoteCallObjectClass( TSubclassOf< UFGRemoteCallObject > inClass );
+	bool RegisterRemoteCallObjectClass( const TSubclassOf< UFGRemoteCallObject > inClass );
 
-	void RegisterCallObjectOnAllCurrentPlayers( TSubclassOf<UFGRemoteCallObject> inClass );
+	void RegisterCallObjectOnAllCurrentPlayers( const TSubclassOf<UFGRemoteCallObject> inClass );
 
 	/** Saves the game, and then restarts from the load */
 	UFUNCTION()
@@ -117,23 +116,31 @@ public:
 
 	/** Name for the skip onboarding/tutorial/intro option */
 	static const TCHAR* SkipOnboarding;
+
+	/** Name for the advanced game settings (Game Modes) option when starting a new session */
+	static const TCHAR* AdvancedGameSettingsOption;
+
+	/** Name for the enabling advanced game settings (Game Modes) option when loading a save */
+	static const TCHAR* EnableAdvancedGameSettingsOption;
+	
 protected:
 	/** Set the desired world time we want to restart the server */
-	void SetServerRestartWorldTime( float worldTime );
+	void SetServerRestartWorldTime( const float worldTime );
 
 	/** Trigger a save to save the world */
 	UFUNCTION( exec )
-	void TriggerWorldSave( FString saveGameName );
+	void TriggerWorldSave( const FString& saveGameName );
 
 	/** Trigger a save to save the world */
 	UFUNCTION( exec )
-	void TriggerBundledWorldSave( FString saveGameName );
+	void TriggerBundledWorldSave( const FString& saveGameName );
 
 	/**
 	 * If return true, then this is a pawn that we can take control of during spawning, else it's not valid
 	 * for some reason (dead maybe)
 	 */
 	bool IsValidPawnToReclaim( APawn* pawn ) const;
+	
 private:
 	/**
 	 * Get the name of the save that we want to create when rebooting the session due to long server uptimes
@@ -147,13 +154,13 @@ private:
 	 * Caches the player starts by PlayerStartTag as the key.
 	 * @return Play from here player start, if found; otherwise nullptr.
 	 */
-	class APlayerStart* CachePlayerStarts( TMap< FName, TArray< class APlayerStart* > >& out_playerStarts );
+	class APlayerStart* CachePlayerStarts( TMap< FName, TArray< APlayerStart* > >& out_playerStarts );
 
 	void PartitionPlayerStartsByOccupancy(
-		const TArray< class APlayerStart* >& playerStarts,
-		TSubclassOf< class APawn > pawnClassToFit,
-		TArray< class APlayerStart* >& out_unOccupied,
-		TArray< class APlayerStart* >& out_occupied );
+		const TArray< APlayerStart* >& playerStarts,
+		TSubclassOf< APawn > pawnClassToFit,
+		TArray< APlayerStart* >& out_unOccupied,
+		TArray< APlayerStart* >& out_occupied ) const;
 
 	/** 
 	* Check if two unique net IDs are the same but on different OSS versions 
@@ -161,11 +168,12 @@ private:
 	* This is just a failsafe when loading a save file on a new platform. Otherwise this logic is handled by AGameMode::FindInactivePlayer
 	* Returns true for some special cases. Check implementation for more details
 	*/
-	bool CompareUniqueNetIdBetweenOSS( const FUniqueNetIdRepl& newID, const FUniqueNetIdRepl& savedID );
+	static bool CompareUniqueNetIdBetweenOSS( const FUniqueNetIdRepl& newID, const FUniqueNetIdRepl& savedID );
 
 protected:
 	UPROPERTY()
-	class UFGSaveSession* mSaveSession;
+	UFGSaveSession* mSaveSession;
+	
 private:
 	struct FLoadData
 	{
@@ -179,9 +187,9 @@ private:
 	/** Options this game was started with */
 	FString mOptions;
 
-	/** Last autosave was this id */
-	UPROPERTY(SaveGame)
-	uint8 mLastAutosaveId;
+	/** Last AutoSave was this id */
+	UPROPERTY( SaveGame )
+	uint8 mLastAutoSaveId;
 
 	/** The name of the session we are playing */
 	UPROPERTY( SaveGame )
@@ -221,4 +229,5 @@ private:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Default" )
 	bool mIsMainMenu;
+	
 };

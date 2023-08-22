@@ -3,6 +3,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Core.h"
 #include "Engine.h"
+#include "FGOnlineSessionSettings.h"
 #include "Components/Widget.h"
 #include "Blueprint/UserWidget.h" 
 #include "Configuration/ConfigProperty.h"
@@ -23,11 +24,11 @@ UCLASS()
 class SML_API URuntimeBlueprintFunctionLibrary : public UBlueprintFunctionLibrary {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintCallable, Category = "SML | Utilities", meta = (DeprecatedFunction))
+	UFUNCTION(BlueprintCallable, Category = "SML | Utilities", meta = (DeprecatedFunction, DeprecationMessage = "Use 'Load Class Asset Blocking' or 'Async Load Class Asset' from Unreal as needed instead", DisplayName = "Find Class By Name (Deprecated)"))
 	static UClass* FindClassByName(FString ClassNameInput);
-	
+
 	/** Returns true in Editor*/
-	UFUNCTION(BlueprintPure, Category = "SML | Utilities", meta = (DeprecatedFunction, DisplayName = "Is Editor (Deprecated)"))
+	UFUNCTION(BlueprintPure, Category = "SML | Utilities", meta = (DeprecatedFunction, DeprecationMessage = "Use 'IsGEditor' from SML Blueprint System Library instead", DisplayName = "Is Editor (Deprecated)"))
 	static bool IsEditor();
 
 	/** Retrieves FName from UConfigProperty */
@@ -123,5 +124,9 @@ public:
 	/** Allows Binding on BP Function. Function must be implemented in Blueprint */
 	UFUNCTION(BlueprintCallable, Category= "Widget | Advanced")
 	static void BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName, bool HookOffsetStart);
-};
 
+
+	/** Extension of UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMapWithStartingLocation that uses information from SML systems too */
+	UFUNCTION(BlueprintCallable, Category="SML | Online")
+	static void CreateSessionAndTravelToMapWithStartingLocation(APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility, bool skipOnboarding);
+};

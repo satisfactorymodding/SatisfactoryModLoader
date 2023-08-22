@@ -27,11 +27,14 @@ AFGLocomotive::AFGLocomotive() : Super() {
 	this->mHeadlightModes[2].ShowBeam = false;;
 	this->mHeadlightModes[2].Color = FLinearColor(0.0, 0.0, 0.0, 0.0);;
 	this->mHeadlightModes[2].Intensity = 0.0;;
+	this->mLocomotiveMenuWidgetClass = nullptr;
 }
 void AFGLocomotive::BeginPlay(){ }
 void AFGLocomotive::Tick(float dt){ }
 bool AFGLocomotive::DriverEnter( AFGCharacterPlayer* driver){ return bool(); }
 bool AFGLocomotive::DriverLeave(bool keepDriving){ return bool(); }
+void AFGLocomotive::AddInputBindings(UInputComponent* inputComponent){ }
+bool AFGLocomotive::CanLeaveVehicle(AFGCharacterPlayer* character){ return bool(); }
 void AFGLocomotive::UpdatePower(){ }
 void AFGLocomotive::GainedSignificance_Implementation(){ }
 EMultipleUnitControl AFGLocomotive::GetMultipleUnitRole() const{ return EMultipleUnitControl(); }
@@ -41,6 +44,14 @@ void AFGLocomotive::ClearMultipleUnitControlMaster(){ }
 void AFGLocomotive::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGLocomotive::GiveHumanDriverControl(){ }
 void AFGLocomotive::UpdateHeadlightsMode(){ }
+void AFGLocomotive::OpenLocomotiveMenu(){ }
+bool AFGLocomotive::IsInputEnabled() const{ return bool(); }
+void AFGLocomotive::Input_ThrottleAxis_Started(const FInputActionValue& actionValue){ }
+void AFGLocomotive::Input_ThrottleAxis(const FInputActionValue& actionValue){ }
+void AFGLocomotive::Input_SteerAxis(const FInputActionValue& actionValue){ }
+void AFGLocomotive::Input_Handbrake(const FInputActionValue& actionValue){ }
+void AFGLocomotive::Input_Honk(const FInputActionValue& actionValue){ }
+void AFGLocomotive::Input_OpenLocomotiveMenu(const FInputActionValue& actionValue){ }
 void AFGLocomotive::SetPowerConsumption(float pct){ }
 void AFGLocomotive::SetPowerRegeneration(float pct){ }
 void AFGLocomotive::OnHasPowerChanged(){ }

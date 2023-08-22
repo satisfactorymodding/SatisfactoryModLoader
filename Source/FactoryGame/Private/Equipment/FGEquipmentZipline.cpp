@@ -12,14 +12,10 @@ AFGEquipmentZipline::AFGEquipmentZipline() : Super() {
 	this->mActiveNoise = nullptr;
 	this->mActiveNoiseFrequency = 0.2;
 	this->mZiplineReattachCooldown = 1.0;
+	this->mDefaultEquipmentActions = 3;
 }
 void AFGEquipmentZipline::AddEquipmentActionBindings(){ }
-void AFGEquipmentZipline::DoDefaultPrimaryFire_Native(){ }
 void AFGEquipmentZipline::UnEquip(){ }
-void AFGEquipmentZipline::OnDefaultPrimaryFireReleased(){ }
-void AFGEquipmentZipline::Server_DefaultPrimaryFireReleased_Implementation(){ }
-bool AFGEquipmentZipline::Server_DefaultPrimaryFireReleased_Validate(){ return bool(); }
-void AFGEquipmentZipline::DoDefaultPrimaryFireReleased_Native(){ }
 void AFGEquipmentZipline::Tick(float delta){ }
 void AFGEquipmentZipline::ZiplineEnd(){ }
 void AFGEquipmentZipline::Server_DoDrop_Implementation(){ }
@@ -28,8 +24,10 @@ void AFGEquipmentZipline::DoDrop(){ }
 void AFGEquipmentZipline::Server_JumpExit_Implementation(){ }
 bool AFGEquipmentZipline::Server_JumpExit_Validate(){ return bool(); }
 void AFGEquipmentZipline::JumpExit(){ }
-void AFGEquipmentZipline::OnCrouchPressed(){ }
-void AFGEquipmentZipline::OnCrouchReleased(){ }
-void AFGEquipmentZipline::OnJumpPressed(){ }
+void AFGEquipmentZipline::Input_Crouch(const FInputActionValue& actionValue){ }
+void AFGEquipmentZipline::Input_Jump(const FInputActionValue& actionValue){ }
 void AFGEquipmentZipline::TryToGrab(){ }
+bool AFGEquipmentZipline::CanGrab(AActor* attachActor, const FVector& point1, const FVector& point2) const{ return bool(); }
+void AFGEquipmentZipline::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
+void AFGEquipmentZipline::SetWantsToGrab(bool wantToGrab){ }
 void AFGEquipmentZipline::MakeActiveNoise(){ }

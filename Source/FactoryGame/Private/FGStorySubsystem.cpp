@@ -2,54 +2,23 @@
 
 #include "FGStorySubsystem.h"
 
-void FActiveStoryQueue::ResetStoryQueue(){ }
-TSubclassOf< class UFGMessageBase > FActiveStoryQueue::PopMessage(){ return TSubclassOf<class UFGMessageBase>(); }
-bool FActiveStoryQueue::DeclineCall(TSubclassOf<  UFGAudioMessage > messageToDecline){ return bool(); }
-void FActiveStoryQueue::UpdateTimers(float dt){ }
-TArray< FEventTriggeredMessage > UFGEventTriggeredMessages::GetEventTriggeredMessages(TSubclassOf< UFGEventTriggeredMessages > inClass){ return TArray<FEventTriggeredMessage>(); }
+void UFGStorySubsystemRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGStorySubsystemRemoteCallObject, mForceNetField_UFGStorySubsystemRemoteCallObject);
+}
+void UFGStorySubsystemRemoteCallObject::Client_PlayMessages_Implementation(const TArray<class UFGMessage*>& newMessages){ }
 AFGStorySubsystem::AFGStorySubsystem() : Super() {
-	this->mResearchTimerCompleteMessage = nullptr;
-	this->mActivePrimaryStoryQueue.StoryQueueClass = nullptr;
-	this->mActivePrimaryStoryQueue.PendingMessageFromMilestone = false;
-	this->mActivePrimaryStoryQueue.PendingMessageFromMilestoneTimer = 0.0;
-	this->mActivePrimaryStoryQueue.TimeSinceLastQueueMessage = 0.0;
-	this->mTimeSinceLastGlobalMessage = 0.0;
-	this->mMinimumDelayBetweenStoryQueueMessages = 0.0;
-	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.bTickEvenWhenPaused = false;
-	this->PrimaryActorTick.bCanEverTick = true;
-	this->PrimaryActorTick.bStartWithTickEnabled = true;
-	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
-	this->PrimaryActorTick.TickInterval = 1.0;
+
 }
 AFGStorySubsystem* AFGStorySubsystem::Get(UWorld* world){ return nullptr; }
 AFGStorySubsystem* AFGStorySubsystem::Get(UObject* worldContext){ return nullptr; }
-void AFGStorySubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGStorySubsystem::BeginPlay(){ }
-void AFGStorySubsystem::Tick(float DeltaSeconds){ }
-float AFGStorySubsystem::GetMaximumDelayForCall(TSubclassOf<  UFGAudioMessage > messageClass) const{ return float(); }
-bool AFGStorySubsystem::IsPriorityCall(TSubclassOf<  UFGAudioMessage > messageClass) const{ return bool(); }
+void AFGStorySubsystem::OnPlayerAdded( AFGCharacterPlayer* inPlayer){ }
+void AFGStorySubsystem::OnItemAddedToPlayerInventory(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numAdded){ }
 void AFGStorySubsystem::OnSchematicPurchased(TSubclassOf< UFGSchematic > newSchematic){ }
-void AFGStorySubsystem::AddPlayer( AFGCharacterPlayer* inPlayer){ }
-void AFGStorySubsystem::OnPlayerAddedItemToInventory(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numAdded){ }
-void AFGStorySubsystem::OnResearchRecipeTimerComplete(TSubclassOf<class UFGSchematic> schematic){ }
 void AFGStorySubsystem::OnResearchTreeUnlocked(TSubclassOf<UFGResearchTree> researchTree){ }
-void AFGStorySubsystem::OnMapAreaVisited(TSubclassOf<  UFGMapArea > mapArea){ }
 void AFGStorySubsystem::OnAudioMessageFinishedPlaying(TSubclassOf<  UFGMessageBase > messageClass){ }
-void AFGStorySubsystem::DeclineCall(TSubclassOf<  UFGAudioMessage > messageToDecline){ }
-void AFGStorySubsystem::SendMessageToAllPlayers(TSubclassOf< UFGMessageBase > message){ }
-void AFGStorySubsystem::TriggerNextStoryMessageInQueue(FActiveStoryQueue& storyQueue){ }
-void AFGStorySubsystem::Cheat_TriggerNextPrimaryStoryMessageInQueue(){ }
-void AFGStorySubsystem::Cheat_TriggerNextSecondaryStoryMessageInQueue(int32 storyQueueIndex){ }
-void AFGStorySubsystem::Cheat_TriggerNextFloatingMessageInPrimaryQueue(){ }
-void AFGStorySubsystem::Cheat_TriggerRandomTriggeredBarksMessage(){ }
-void AFGStorySubsystem::Cheat_StartNextStoryQueue(){ }
-void AFGStorySubsystem::Cheat_ResetAllStoryQueues(){ }
-void AFGStorySubsystem::Cheat_ResetCurrentStoryQueue(){ }
+void AFGStorySubsystem::PlayMessages(TArray<class UFGMessage*> messages){ }
 void AFGStorySubsystem::GetStoryDebugData(TArray<FString>& out_debugData){ }
 void AFGStorySubsystem::SetupDelegates(){ }
-void AFGStorySubsystem::OnGamePhaseUpdated(EGamePhase gamePhase){ }
-void AFGStorySubsystem::UpdateStoryQueues(){ }
-void AFGStorySubsystem::UpdatePrimaryStoryQueue(){ }
-void AFGStorySubsystem::TickStoryQueues(float dt){ }
+void AFGStorySubsystem::TryPlayNewMessage(){ }

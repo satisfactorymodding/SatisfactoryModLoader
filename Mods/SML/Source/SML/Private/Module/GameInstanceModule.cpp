@@ -1,10 +1,13 @@
 #include "Module/GameInstanceModule.h"
+#include "FGInputSettings.h"
+#include "SatisfactoryModLoader.h"
 #include "Configuration/ConfigManager.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
-#include "Registry/ModKeyBindRegistry.h"
 #include "Engine/Engine.h"
 #include "Patching/BlueprintSCSHookManager.h"
 #include "Patching/WidgetBlueprintHookManager.h"
+#include "Registry/GameMapRegistry.h"
+#include "Registry/SessionSettingsRegistry.h"
 
 UGameInstance* UGameInstanceModule::GetGameInstance() const {
     //Game Instance module hierarchy is built on top of UGameInstanceSubsystem,
@@ -33,44 +36,6 @@ void UGameInstanceModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     Super::DispatchLifecycleEvent(Phase);
 }
 
-void UGameInstanceModule::PostLoad() {
-    Super::PostLoad();
-
-    //Migrate deprecated properties
-    for (const FModKeyBindingInfo& ModKeyBindingInfo : ModKeyBindings_DEPRECATED) {
-        FInputActionKeyMappingNamePair Pair;
-        Pair.ActionName = ModKeyBindingInfo.ActionName;
-        Pair.ActionKeyMapping = ModKeyBindingInfo.KeyMapping;
-        ModActionMappings.Add(Pair);
-
-        FActionMappingDisplayName ActionMappingDisplayName;
-        ActionMappingDisplayName.ActionMappingName = ModKeyBindingInfo.ActionName;
-        ActionMappingDisplayName.DisplayName = ModKeyBindingInfo.DisplayName;
-        ModActionMappingDisplayNames.Add(ActionMappingDisplayName);
-    }
-    ModKeyBindings_DEPRECATED.Empty();
-    
-    for (const FModAxisBindingInfo& ModAxisBindingInfo : ModAxisBindings_DEPRECATED) {
-        FInputAxisKeyMappingNamePair PositivePair;
-        PositivePair.AxisName = ModAxisBindingInfo.AxisName;
-        PositivePair.AxisKeyMapping = ModAxisBindingInfo.PositiveAxisMapping;
-
-        FInputAxisKeyMappingNamePair NegativePair;
-        NegativePair.AxisName = ModAxisBindingInfo.AxisName;
-        NegativePair.AxisKeyMapping = ModAxisBindingInfo.NegativeAxisMapping;
-        
-        ModAxisMappings.Add(PositivePair);
-        ModAxisMappings.Add(NegativePair);
-
-        FAxisMappingDisplayName AxisMappingDisplayName;
-        AxisMappingDisplayName.AxisMappingName = ModAxisBindingInfo.AxisName;
-        AxisMappingDisplayName.DisplayNamePositiveScale = ModAxisBindingInfo.PositiveAxisDisplayName;
-        AxisMappingDisplayName.DisplayNameNegativeScale = ModAxisBindingInfo.NegativeAxisDisplayName;
-        ModAxisMappingDisplayNames.Add(AxisMappingDisplayName);
-    }
-    ModAxisBindings_DEPRECATED.Empty();
-}
-
 void UGameInstanceModule::RegisterDefaultContent() {
     //Register default content
     UGameInstance* GameInstance = GetGameInstance();
@@ -88,33 +53,26 @@ void UGameInstanceModule::RegisterDefaultContent() {
         ItemTooltipSubsystem->RegisterGlobalTooltipProvider(OwnerModReferenceString, GlobalTooltipProvider->GetDefaultObject());
     }
     
-    //Key Bindings and Axis Bindings
-    UModKeyBindRegistry* ModKeyBindRegistry = GameInstance->GetEngine()->GetEngineSubsystem<UModKeyBindRegistry>();
-
-    //Register action key mappings
-    for (const FInputActionKeyMappingNamePair& ActionKeyMapping : ModActionMappings) {
-        FFGKeyMapping KeyMapping{};
-        KeyMapping.IsAxisMapping = false;
-        KeyMapping.ActionKeyMapping = ActionKeyMapping.ActionKeyMapping;
-        KeyMapping.ActionKeyMapping.ActionName = ActionKeyMapping.ActionName;
-        ModKeyBindRegistry->RegisterModKeyBind(OwnerModReferenceString, KeyMapping);
-    }
-
-    //Register axis key mappings
-    for (const FInputAxisKeyMappingNamePair& AxisKeyMapping : ModAxisMappings) {
-        FFGKeyMapping KeyMapping{};
-        KeyMapping.IsAxisMapping = true;
-        KeyMapping.AxisKeyMapping = AxisKeyMapping.AxisKeyMapping;
-        KeyMapping.AxisKeyMapping.AxisName = AxisKeyMapping.AxisName;
-        ModKeyBindRegistry->RegisterModKeyBind(OwnerModReferenceString, KeyMapping);
-    }
-    
-    //Register key mappings display names
-    for (const FActionMappingDisplayName& ActionMappingDisplayName : ModActionMappingDisplayNames) {
-        ModKeyBindRegistry->RegisterModActionKeyBindDisplayName(OwnerModReferenceString, ActionMappingDisplayName);
-    }
-    for (const FAxisMappingDisplayName& AxisMappingDisplayName : ModAxisMappingDisplayNames) {
-        ModKeyBindRegistry->RegisterModAxisKeyBindDisplayName(OwnerModReferenceString, AxisMappingDisplayName);
+    //InputAction GameplayTag bindings
+    UFGInputSettings* InputSettings = const_cast<UFGInputSettings*>(UFGInputSettings::Get());
+    for (const auto& InputActionTag : InputActionTagBindings) {
+        UInputAction* ExistingBinding = InputSettings->GetInputActionForTag(InputActionTag.Value);
+        checkf(ExistingBinding == nullptr, TEXT("GameplayTag %s is already bound to InputAction %s. %s requested binding to InputAction %s"), *InputActionTag.Value.ToString(), *ExistingBinding->GetPathName(), *OwnerModReferenceString, *InputActionTag.Key->GetPathName());
+        
+        FInputActionTagBinding* ActionBinding = InputSettings->mInputActionTagBindings.FindByPredicate([&](const FInputActionTagBinding& Binding) {
+            return Binding.ObjectPath == InputActionTag.Key;
+        });
+        if (!ActionBinding) {
+            // FGInputSettings might automatically add a new binding when an UInputAction asset is loaded
+            // But it seems like OnAssetAdded does not get triggered in-game
+            // So we handle both options, just in case
+            ActionBinding = &InputSettings->mInputActionTagBindings.Emplace_GetRef();
+            ActionBinding->ObjectPath = InputActionTag.Key;
+            ActionBinding->BindingName = *InputActionTag.Key->GetName();
+            ActionBinding->CachedInputAction = InputActionTag.Key;
+        }
+        checkf(ActionBinding->GameplayTag == FGameplayTag::EmptyTag, TEXT("InputAction %s is already bound to GameplayTag %s. %s requested binding to GameplayTag %s"), *InputActionTag.Key->GetName(), *ActionBinding->GameplayTag.ToString(), *OwnerModReferenceString, *InputActionTag.Value.ToString());
+        ActionBinding->GameplayTag = InputActionTag.Value;
     }
 
     UBlueprintSCSHookManager* HookManager = GetGameInstance()->GetEngine()->GetEngineSubsystem<UBlueprintSCSHookManager>();
@@ -125,5 +83,20 @@ void UGameInstanceModule::RegisterDefaultContent() {
     UWidgetBlueprintHookManager* WidgetHookManager = GetGameInstance()->GetEngine()->GetEngineSubsystem<UWidgetBlueprintHookManager>();
     for (UWidgetBlueprintHookData* HookData : WidgetBlueprintHooks) {
         WidgetHookManager->RegisterWidgetBlueprintHook(HookData);
+    }
+
+    USMLGameMapRegistry* GameMapRegistry = GetGameInstance()->GetEngine()->GetEngineSubsystem<USMLGameMapRegistry>();
+    for (USMLGameMapData* MapData : GameMaps) {
+        GameMapRegistry->RegisterGameMap(OwnerModReferenceString, MapData);
+    }
+
+    USMLSessionSettingsRegistry* SessionSettingsRegistry = GetGameInstance()->GetEngine()->GetEngineSubsystem<USMLSessionSettingsRegistry>();
+    for (USMLSessionSetting* SessionSetting : SessionSettings) {
+        SessionSettingsRegistry->RegisterSessionSetting(OwnerModReferenceString, SessionSetting);
+    }
+
+	URemoteCallObjectRegistry* RemoteCallObjectRegistry = GameInstance->GetSubsystem<URemoteCallObjectRegistry>();
+    for (TSubclassOf<UFGRemoteCallObject> RemoteCallObject: RemoteCallObjects) {
+        RemoteCallObjectRegistry->RegisterRemoteCallObject(RemoteCallObject);
     }
 }

@@ -7,10 +7,10 @@ FConfigVariableDescriptor::FConfigVariableDescriptor() {
 FConfigVariableDescriptor::FConfigVariableDescriptor(const FConfigVariableDescriptor& Descriptor) {
     switch (Descriptor.VariableType) {
         case EConfigVariableType::ECVT_Object:
-            this->SetupAsObject(BaseObjectClass);
+            this->SetupAsObject(Descriptor.BaseObjectClass);
             break;
         case EConfigVariableType::ECVT_Class:
-            this->SetupAsClass(BaseClassType);
+            this->SetupAsClass(Descriptor.BaseClassType);
             break;
         case EConfigVariableType::ECVT_CustomStruct:
             this->SetupAsCustomStruct(Descriptor.CustomStructType);

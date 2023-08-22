@@ -18,7 +18,7 @@ enum class EActorBuiltDependencyType : uint8
 /**
 * Dependency that's met if we have built the given amount of actors
 */
-UCLASS()
+UCLASS( Blueprintable, abstract )
 class FACTORYGAME_API UFGActorsBuiltDependency : public UFGAvailabilityDependency
 {
 	GENERATED_BODY()

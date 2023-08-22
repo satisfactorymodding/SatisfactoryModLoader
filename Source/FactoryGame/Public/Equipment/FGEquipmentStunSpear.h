@@ -17,18 +17,14 @@ class FACTORYGAME_API AFGEquipmentStunSpear : public AFGEquipment
 	GENERATED_BODY()
 
 public:
-
 	AFGEquipmentStunSpear();
-
-	/** Add custom bindings for this equipment */
-	virtual void AddEquipmentActionBindings() override;
-
+	
 	/** Called when the player clicks to "fire" */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Stun Spear" )
-	void PlayStunEffects();
+	void PlayStunEffects( bool secondSwing );
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "Stun Spear" )
-	void PlayHitEffects(const TArray<FHitResult> &hitResults);
+	void PlayHitEffects( const TArray<FHitResult>& hitResults );
 	
 	/** Getter for mShouldPlaySecondSwing */
 	UFUNCTION( BlueprintPure, Category = "Stun Spear" )
@@ -37,20 +33,21 @@ public:
 	/** Start the damage chain */
 	UFUNCTION( BlueprintCallable, Category = "Stun Spear" )
 	void DoAttack();
-	
-	UFUNCTION( BlueprintNativeEvent, Category = "Hit Response" )
-	void OnHitTarget();
-
 protected:
+	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
+	
 	/** server notified of hit from client to verify */
-	UFUNCTION( Reliable, Server, WithValidation )
-	void Server_ShockEnemy( FVector attackDirection );
+	UFUNCTION( Reliable, Server )
+	void Server_ShockEnemy( const FVector& attackDirection );
 
-	UFUNCTION( Reliable, NetMulticast )
+	UFUNCTION( Reliable, Server )
+	void Server_PlayStunEffects( bool secondSwing );
+
+	UFUNCTION( Unreliable, NetMulticast )
 	void Multicast_PlayHitEffects(const TArray<FHitResult> &hitResults);
-private:
-	/** Key binded functions */
-	virtual void OnFirePressed();
+
+	UFUNCTION( Unreliable, NetMulticast )
+	void Multicast_PlayStunEffects( bool secondSwing );
 private:
 	/** Sphere collision component */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Stun Spear" )

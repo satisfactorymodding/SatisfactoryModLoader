@@ -15,5 +15,7 @@ void AFGScannableSubsystem::UnRegisterRadarTower( AFGBuildableRadarTower* radarT
 void AFGScannableSubsystem::OnLevelPlacedActorDestroyed(AActor* destroyedActor){ }
 void AFGScannableSubsystem::OnDropPodLooted( AFGDropPod* dropPod){ }
 void AFGScannableSubsystem::OnCreatureSpawnerUpdated( AFGCreatureSpawner* creatureSpawner, bool scannable){ }
+void AFGScannableSubsystem::OnCreatureSpawnerAdded( AFGCreatureSpawner* creatureSpawner){ }
+void AFGScannableSubsystem::OnCreatureSpawnerRemoved( AFGCreatureSpawner* creatureSpawner){ }
 void AFGScannableSubsystem::CacheDestroyedActors(){ }
 void AFGScannableSubsystem::CacheDropPods(){ }

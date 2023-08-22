@@ -22,3 +22,7 @@ void AFGEquipmentChild::UnEquip(){ }
 void AFGEquipmentChild::OnEquip_Implementation( AFGCharacterPlayer* character){ }
 void AFGEquipmentChild::OnUnEquip_Implementation(){ }
 FTransform AFGEquipmentChild::GetAttachSocketTransform(){ return FTransform(); }
+void AFGEquipmentChild::UpdateMaterialsFromCameraMode(){ }
+void AFGEquipmentChild::OnCameraModeChanged_Implementation(ECameraMode newCameraMode){ }
+AFGCharacterPlayer* AFGEquipmentChild::GetInstigatorCharacter() const{ return nullptr; }
+ECameraMode AFGEquipmentChild::GetInstigatorCameraMode() const{ return ECameraMode(); }

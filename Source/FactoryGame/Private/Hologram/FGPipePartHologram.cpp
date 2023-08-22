@@ -16,6 +16,7 @@ bool AFGPipePartHologram::TrySnapToActor(const FHitResult& hitResult){ return bo
 void AFGPipePartHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGPipePartHologram::CheckValidFloor(){ }
 void AFGPipePartHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+bool AFGPipePartHologram::CanNudgeHologram() const{ return bool(); }
 void AFGPipePartHologram::SetSupportLength(float height){ }
 void AFGPipePartHologram::SnapToConnection(UFGPipeConnectionComponentBase* connection, FVector preSnapLocation){ }
 void AFGPipePartHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }

@@ -37,7 +37,7 @@ void SAVE_CLASS::PreSaveGame_Implementation( int32 saveVersion, int32 gameVersio
 void SAVE_CLASS::PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ){} \
 void SAVE_CLASS::PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ){} \
 void SAVE_CLASS::PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ){} \
-void SAVE_CLASS::GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ){} \
+void SAVE_CLASS::GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ){ check(false) } \
 bool SAVE_CLASS::NeedTransform_Implementation(){ return NeedTransform; } \
 bool SAVE_CLASS::ShouldSave_Implementation() const { return true; }
 

@@ -62,7 +62,7 @@ class FACTORYGAME_API IFGBoomboxListenerInterface
 
 public:
 	UFUNCTION( BlueprintImplementableEvent )
-	void PlaybackStateChanged( UPARAM(meta = (Bitmask, BitmaskEnum = EBoomBoxPlaybackStateBitfield)) int32 newState );
+	void PlaybackStateChanged( UPARAM(meta = (Bitmask, BitmaskEnum = "/Script/FactoryGame.EBoomBoxPlaybackStateBitfield")) int32 newState );
 
 	UFUNCTION( BlueprintImplementableEvent )
 	void CurrentSongChanged( const FSongData& currentSong, int32 index );

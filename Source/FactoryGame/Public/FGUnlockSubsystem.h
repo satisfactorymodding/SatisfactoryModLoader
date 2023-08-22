@@ -7,6 +7,7 @@
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "Resources/FGTapeData.h"
+#include "Unlocks/FGUnlockCheckmark.h"
 #include "Unlocks/FGUnlockScannableResource.h"
 #include "FGUnlockSubsystem.generated.h"
 
@@ -51,12 +52,17 @@ public:
 	void UnlockScannableResource( FScannableResourcePair newResource );
 	void UnlockScannableObject( FScannableObjectData newScannableObject );
 	void UnlockMap();
+	void UnlockBlueprints();
+	void UnlockCustomizer();
 	void UnlockBuildEfficiency();
 	void UnlockBuildOverclock();
 	void UnlockInventorySlots( int32 numSlotsToUnlock );
 	void UnlockArmEquipmentSlots( int32 numSlotsToUnlock );
 	void UnlockEmote( TSubclassOf< class UFGEmote > newEmote );
 	void UnlockTape( TSubclassOf< UFGTapeData > newTape );
+
+	UFUNCTION( BlueprintCallable, Category = "Unlocks" )
+	void UnlockCheckmark( FString playerName );
 
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	TArray<TSubclassOf<class UFGResourceDescriptor>> GetScannableResources() const;
@@ -73,6 +79,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	FORCEINLINE bool GetIsMapUnlocked() const { return mIsMapUnlocked; }
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
+	FORCEINLINE bool GetIsBlueprintsUnlocked() const { return mIsBlueprintsUnlocked; }
+	UFUNCTION( BlueprintPure, Category = "Unlocks" )
+	FORCEINLINE bool GetIsCustomizerUnlocked() const { return mIsCustomizerUnlocked; }
+	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	FORCEINLINE bool GetIsBuildingEfficiencyUnlocked() const { return mIsBuildingEfficiencyUnlocked; }
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	FORCEINLINE bool GetIsBuildingOverclockUnlocked() const { return mIsBuildingOverclockUnlocked; }
@@ -82,6 +92,9 @@ public:
 
 	UFUNCTION()
 	void OnSchematicPurchased( TSubclassOf< class UFGSchematic > newSchematic );
+
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = Unlocks )
+	void OnSchematicPurchasedByPlayer( TSubclassOf< class UFGSchematic > newSchematic, class AFGCharacterPlayer* player );
 
 	void SetTotalNumInventorySlots( int32 totalNumSlots );
 	void SetTotalNumArmEquipmentSlots( int32 totalNumSlots );
@@ -95,11 +108,29 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	void GetUnlockedTapes( TArray< TSubclassOf< class UFGTapeData > >& out_unlockedTapes ) const;
 
+	UFUNCTION( BlueprintPure, Category = "Unlocks" )
+	void GetPlayersWithCheckmarks( TArray< FGCheckmarkUnlockData >& out_playersWithCheckmarks ) const;
+
+	UFUNCTION( BlueprintPure, Category = "Unlocks" )
+	FORCEINLINE bool DoesPlayerHaveCheckmarkUnlocked( FString playerName ) const
+	{
+		const FGCheckmarkUnlockData* data = mPlayersWithCheckmark.FindByPredicate( [playerName] (FGCheckmarkUnlockData unlockData)
+		{
+			return unlockData.PlayerName.Equals( playerName );
+		} );
+		
+		return data != nullptr;
+	}
+
 private:
 	void SetNumOfAdditionalInventorySlots( int32 newNumSlots );
 	void SetNumAdditionalArmEquipmentSlots( int32 newNumSlots );
-	void SendMessageToAllPlayers( TSubclassOf< class UFGMessageBase > inMessage );
 
+	UFUNCTION()
+	void OnRep_PlayerCheckmarks();
+	
+	void UpdatePlayerWidgets();
+	
 public:
 	/** SERVER ONLY: Called when we unlocked more inventory slots */
 	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
@@ -114,28 +145,6 @@ public:
 
 	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
 	FOnNewScannableObjectUnlocked mOnNewScannableObjectUnlocked;
-	
-protected:
-
-	/** Message sent when the map is unlocked */
-	UPROPERTY( EditDefaultsOnly, Category = "Message" )
-	TSubclassOf< class UFGMessageBase > mMapUnlockedMessage;
-
-	/** Message sent when unlocking inventory slot */
-	UPROPERTY( EditDefaultsOnly, Category = "Message" )
-	TSubclassOf< class UFGMessageBase > mInventorySlotUnlockedMessage;
-
-	/** Message sent when unlocking building efficiency display */
-	UPROPERTY( EditDefaultsOnly, Category = "Message" )
-	TSubclassOf< class UFGMessageBase > mBuildingEfficiencyUnlockedMessage;
-
-	/** Message sent when unlocking overclocking of buildings */
-	UPROPERTY( EditDefaultsOnly, Category = "Message" )
-	TSubclassOf< class UFGMessageBase > mBuildingOverclockUnlockedMessage;
-
-	/** Message sent when unlocking arm equipment slot */
-	UPROPERTY( EditDefaultsOnly, Category = "Message" )
-	TSubclassOf< class UFGMessageBase > mArmEquipmentSlotUnlockedMessage;
 
 private:
 	/** These are the resources the players can use their scanner to find */
@@ -162,6 +171,12 @@ private:
 	/** Is the building overclocking unlocked */
 	UPROPERTY(Savegame, Replicated )
 	bool mIsBuildingOverclockUnlocked;
+	
+	UPROPERTY(Savegame, Replicated )
+	bool mIsBlueprintsUnlocked;
+	
+	UPROPERTY(Savegame, Replicated )
+	bool mIsCustomizerUnlocked;
 
 	/** How many additional inventory slots have been unlocked for the players */
 	int32 mNumAdditionalInventorySlots;
@@ -183,5 +198,8 @@ private:
 
 	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf< class UFGTapeData > > mUnlockedTapes;
-	
+
+	/** The names of the players that have unlocked the FICSIT Checkmark™ */
+	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_PlayerCheckmarks )
+	TArray< FGCheckmarkUnlockData > mPlayersWithCheckmark;
 };

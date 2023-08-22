@@ -54,18 +54,15 @@ bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunction
 }
 
 // This method is provided for backwards-compatibility with SML 3.3.0
-SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction) {
+SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction) {
 	// SML earlier than 3.3.0 only supported Windows mods, which have no Vtable adjustment information
 	// in the member function pointer, so we set that value to zero.
 	FMemberFunctionPointer MemberFunctionPointer = {OriginalFunctionPointer, static_cast<uint32>(ThisAdjustment), 0};
 	return FNativeHookManagerInternal::RegisterHookFunction(DebugSymbolName, MemberFunctionPointer, SampleObjectInstance, HookFunctionPointer, OutTrampolineFunction);
 }
 
-SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, const FMemberFunctionPointer& ConstMemberFunctionPointer, void* SampleObjectInstance, void* HookFunctionPointer, void** OutTrampolineFunction) {
+SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance, void* HookFunctionPointer, void** OutTrampolineFunction) {
 	SetDebugLoggingHook(&LogDebugAssemblyAnalyzer);
-
-	// Copy the member function pointer so we can modify it locally
-	FMemberFunctionPointer MemberFunctionPointer = ConstMemberFunctionPointer;
 
 #ifdef _WIN64
 	// On Windows, the OriginalFunctionPointer is a valid function pointer. We can simply check its info here.
@@ -117,4 +114,3 @@ SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& De
 	UE_LOG(LogNativeHookManager, Display, TEXT("Successfully hooked function %s at %p"), *DebugSymbolName, ResolvedHookingFunctionPointer);
 	return ResolvedHookingFunctionPointer;
 }
-

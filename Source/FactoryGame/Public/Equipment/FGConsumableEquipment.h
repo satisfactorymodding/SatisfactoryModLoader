@@ -19,27 +19,20 @@ public:
 	virtual bool ShouldSaveState() const override;
 	// End
 
-	/** Called on the owner, client or server but not both. */
+	UFUNCTION( Server, Reliable )
+	void Server_Consume();
+	
 	UFUNCTION( BlueprintCallable, Category = "Consumeable" )
-	void OnPrimaryFire();
-
-	/** Called on the owner, client or server but not both. */
-	UFUNCTION( BlueprintCallable, Category = "Consumeable" )
-	void OnConsumePressed();
+	void Consume();
 
 	/** Get the consumeable currently in hands */
 	UFUNCTION( BlueprintPure, Category = "Consumeable" )
 	void GetConsumeable( TSubclassOf< class UFGConsumableDescriptor >& out_consumeable, int32& out_numConsumeable ) const;
 
-	/** Only server implementation of primary fire */
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_PrimaryFire();
-
 	/** Plays effects when consuming stuff */
 	UFUNCTION( BlueprintNativeEvent, Category = "Consumeable" )
 	void PlayConsumeEffects( class UFGConsumableDescriptor* consumable );
+
 protected:
-	/** Add custom bindings for this equipment */
-	virtual void AddEquipmentActionBindings() override;
-protected:
+	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
 };

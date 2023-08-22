@@ -103,6 +103,15 @@ public:
 	 */
 	FORCEINLINE int32 GetSwitchPosition() const { return mSwitchPosition; }
 
+	/**
+	 * Look up at which position a given track is.
+	 * 
+	 * @param track The track we want to look up, must be connected directly to the switch.
+	 *
+	 * @return The switch position for the given track, INDEX_NONE if not connected to the switch.
+	 */
+	int32 GetSwitchPositionForTrack( class AFGBuildableRailroadTrack* track ) const;
+
 	/** @return true if the switch is clear of rolling stock, otherwise false. */
 	bool IsSwitchClear() const;
 	
@@ -113,14 +122,6 @@ public:
 	 * Note: On client use the switch control instead.
 	 */
 	void SetSwitchPosition( int32 position );
-
-	/**
-	 * Set the current switch position to match the given connections track.
-	 * @param track The track we want to go to, must be connected directly to the switch.
-	 * 
-	 * Note: On client use the switch control instead.
-	 */
-	void SetSwitchPosition( class AFGBuildableRailroadTrack* track );
 
 	/** @return The switch control, if any. Valid on client. */
 	class AFGBuildableRailroadSwitchControl* GetSwitchControl() const { return mSwitchControl; }

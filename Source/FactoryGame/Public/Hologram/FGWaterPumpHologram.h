@@ -24,7 +24,7 @@ public:
 	// Begin AFGHologram Interface
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual void CheckValidPlacement() override;
-	virtual void PostHologramPlacement() override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
 	// End AFGHologram Interface
 
 protected:

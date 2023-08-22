@@ -29,4 +29,8 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Explosive Destroy Interface" )
 	bool NotifyExploded();
 
+	/** Notify the destroyed actor where the destruction event originate (where did the boom come from) */
+	UFUNCTION( BlueprintNativeEvent, Category = "Explosive Destroy Interface" )
+	void SetDestructionInfo( AActor* dmgCauser, const FVector& location );
+
 };

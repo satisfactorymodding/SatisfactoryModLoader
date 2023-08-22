@@ -2,6 +2,9 @@
 
 #include "FGAudioVolumeSubsystem.h"
 
+#if WITH_AUDIO_DEBUG
+void AFGAudioVolumeSubsystem::AudioVolumeDebuggingChanged(IConsoleVariable* var){ }
+#endif 
 AFGAudioVolumeSubsystem::AFGAudioVolumeSubsystem() : Super() {
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -12,6 +15,8 @@ AFGAudioVolumeSubsystem::AFGAudioVolumeSubsystem() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGAudioVolumeSubsystem::Tick(float dt){ }
+void AFGAudioVolumeSubsystem::BeginPlay(){ }
+void AFGAudioVolumeSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGAudioVolumeSubsystem::ShouldUpdateWorld(UWorld* world) const{ return bool(); }
 void AFGAudioVolumeSubsystem::UpdateWorld(UWorld* world){ }
 float AFGAudioVolumeSubsystem::GetCloseDistance( AFGAmbientVolume* ambientVolume) const{ return float(); }

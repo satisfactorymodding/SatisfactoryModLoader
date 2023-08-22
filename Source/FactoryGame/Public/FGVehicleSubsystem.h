@@ -102,69 +102,7 @@ public:
 	static void SetDebugTextLevel( int level );
 	static int GetVehicleDeadlocksDebug();
 	static void SetVehicleDeadlocksDebug( int level );
-	static int GetVehicleLevelCacheDebug();
-	static void VehicleLevelCacheDebug( int level );
 #endif
-
-	struct TileLevelData;
-
-	/**
-	 * An entry into the level-data cache describing a cave level. The entries are always present, whether the cave is loaded or not.
-	 */
-	struct CaveLevelData
-	{
-		/**
-		 * The name of the cave.
-		 */
-		FString name;
-
-		/**
-		 * The bounds of the cave.
-		 */
-		FBox bounds = FBox( ForceInit );
-
-		/**
-		 * The level object. Non-null if the level is loaded.
-		 */
-		ULevel* level = nullptr;
-
-		/**
-		 * All tiles that this cave touches.
-		 */
-		TArray< TileLevelData* > tiles;
-
-		CaveLevelData( FString name, FBox bounds ) : name( name ), bounds( bounds ) {}
-
-		bool IsLoaded() const { return level && level->bIsVisible; }
-	};
-
-	/**
-	 * An entry into the level-data cache describing a tile level. The entries are always present, whether the tile is loaded or not.
-	 */
-	struct TileLevelData
-	{
-		/**
-		 * The name of the tile.
-		 */
-		FString name;
-
-		/**
-		 * The bounds of the tile.
-		 */
-		FBox bounds = FBox( ForceInit );
-
-		/**
-		 * The level object. Non-null if the level is loaded.
-		 */
-		ULevel* level = nullptr;
-
-		/**
-		 * All caves that touch this tile.
-		 */
-		TArray< CaveLevelData* > caves;
-
-		bool IsLoaded() const { return level && level->bIsVisible; }
-	};
 
 	AFGVehicleSubsystem();
 
@@ -274,17 +212,7 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Vehicle" )
 	void OnThereBeDeadlocks();
 
-	bool FindSurroundingLevels( const FVector& location, TArray< TileLevelData* >& surroundingTiles, TArray< CaveLevelData* >& surroundingCaves );
-
 private:
-	void BuildLevelCache();
-
-	void DrawLevelCacheDebug();
-	void DrawLevelDebug( const FString& name, const FBox& bounds, FColor color );
-
-	void OnLevelAddedToWorld( ULevel* level, UWorld* world );
-	void OnLevelRemovedFromWorld( ULevel* level, UWorld* world );
-
 	using WheeledVehicleDeadlock = TSet< TWeakObjectPtr< AFGWheeledVehicleInfo > >;
 	void AddHardDeadlock( int deadlockId, const WheeledVehicleDeadlock& deadlock );
 
@@ -339,12 +267,12 @@ private:
 	/**
 	 * All the paths that exist.
 	 */
-	TArray< class AFGDrivingTargetList* > mTargetLists;
+	TArray< AFGDrivingTargetList* > mTargetLists;
 
 	/**
 	 * All the target points placed in the world.
 	 */
-	TArray< class AFGTargetPoint* > mTargetPoints;
+	TArray< AFGTargetPoint* > mTargetPoints;
 
 	/**
 	 * This is one lucky guy who is allowed to drive with only a limited set of targets claimed.
@@ -354,7 +282,8 @@ private:
 	 * 
 	 * TODO: if we partition all the paths into non-overlapping path groups, we may have one chosen vehicle per path group
 	 */
-	class AFGWheeledVehicleInfo* mTheChosenWheeledVehicle;
+	UPROPERTY()
+	AFGWheeledVehicleInfo* mTheChosenWheeledVehicle;
 
 	using DeadlockMap = TMap< int, WheeledVehicleDeadlock >;
 	/**
@@ -383,23 +312,6 @@ private:
 	 * The earliest time when the next deadlock-warning message can be displayed. To avoid message spamming.
 	 */
 	float mEarliestDeadlockWarningTime = -BIG_NUMBER;
-
-	/**
-	 * The tile structure of the world.
-	 */
-	static constexpr int tileXCount = 7;
-	static constexpr int tileYCount = 6;
-
-	/**
-	 * A level-data cache for tiles. Built in BeginPlay, after which it contains entries for all tiles.
-	 */
-	TileLevelData mTileLevelCache[ tileXCount ][ tileYCount ];
-	
-	/**
-	 * A level-data cache for caves. Built in BeginPlay, after which it contains entries for all caves.
-	 */
-	using CaveLevelMap = TMap< FString, CaveLevelData >;
-	CaveLevelMap mCaveLevelCache;
 
 #if DEBUG_SELF_DRIVING
 	float mDebugSimulationDistance = 0.0f;

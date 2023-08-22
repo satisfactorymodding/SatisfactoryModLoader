@@ -7,27 +7,19 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 	TSharedPtr<FJsonObject> Result = MakeShareable(new FJsonObject());
 	
 	switch (Opcode) {
-		case EX_PrimitiveCast:
+	case EX_Cast:
 		{
-			Result->SetStringField(TEXT("Inst"), TEXT("PrimitiveCast"));
+			static const TCHAR* CastNameTable[CST_Max] = {
+				TEXT("ObjectToInterface"),
+				TEXT("ObjectToBool"),
+				TEXT("InterfaceToBool"),
+				TEXT("DoubleToFloat"),
+				TEXT("FloatToDouble"),
+			};
+			Result->SetStringField(TEXT("Inst"), TEXT("Cast"));
 			// A type conversion.
 			uint8 ConversionType = ReadByte(ScriptIndex);
-
-			if (ConversionType == ECastToken::CST_InterfaceToBool) {
-				Result->SetStringField(TEXT("CastType"), TEXT("InterfaceToBool"));
-			} else if (ConversionType == ECastToken::CST_ObjectToBool) {
-				Result->SetStringField(TEXT("CastType"), TEXT("ObjectToBool"));
-			} else if (ConversionType == ECastToken::CST_ObjectToInterface) {
-				//Only remaining conversion type is CST_ObjectToInterface, but it is never generated
-				//by Kismet backend and is phased out in favor of separate instruction
-				//We will support it regardless, because VM actually supports code with it (for now)
-				
-				Result->SetStringField(TEXT("CastType"), TEXT("ObjectToInterface"));
-				UClass* InterfaceClass = ReadPointer<UClass>(ScriptIndex);
-				Result->SetStringField(TEXT("InterfaceClass"), InterfaceClass->GetPathName());
-			} else {
-				checkf(0, TEXT("Unsupported primitive cast type %d"), ConversionType);
-			}
+			checkf(CastNameTable[ConversionType] != nullptr, TEXT("Unsupported cast type %d"), ConversionType);
 			
 			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
 			break;
@@ -106,7 +98,7 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 			TArray<TSharedPtr<FJsonValue>> Values;
 			ReadInt(ScriptIndex); //Skip element amount
 				
-			while (Script[ScriptIndex] != EX_EndMap) {
+			while (Script[ScriptIndex] != EX_EndMapConst) {
 				TSharedPtr<FJsonObject> KeyExpression = SerializeExpression(ScriptIndex);
 				TSharedPtr<FJsonObject> ValueExpression = SerializeExpression(ScriptIndex);
 				
@@ -317,6 +309,18 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 			Result->SetStringField(TEXT("VariableName"), Property->GetName());
 			break;
 		}
+	case EX_ClassSparseDataVariable:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("ClassSparseDataVariable"));
+			
+			FProperty* Property = ReadPointer<FProperty>(ScriptIndex);
+			FEdGraphPinType PropertyPinType;
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
+				
+			Result->SetObjectField(TEXT("VariableType"), FSMLPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
+			Result->SetStringField(TEXT("VariableName"), Property->GetName());
+			break;
+		}
 	case EX_InterfaceContext:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("InterfaceContext"));
@@ -495,6 +499,20 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 			Result->SetNumberField(TEXT("Value"), ConstValue);	
 			break;
 		}
+	case EX_Int64Const:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("Int64Const"));
+			int64 ConstValue = ReadQword(ScriptIndex);
+			Result->SetNumberField(TEXT("Value"), ConstValue);
+			break;
+		}
+	case EX_UInt64Const:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("UInt64Const"));
+			uint64 ConstValue = ReadQword(ScriptIndex);
+			Result->SetNumberField(TEXT("Value"), ConstValue);
+			break;
+		}
 	case EX_SkipOffsetConst:
 		{
 			CodeSkipSizeType ConstValue = ReadSkipCount(ScriptIndex);
@@ -507,6 +525,13 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 			float ConstValue = ReadFloat(ScriptIndex);
 			Result->SetStringField(TEXT("Inst"), TEXT("FloatConst"));
 			Result->SetNumberField(TEXT("Value"), ConstValue);	
+			break;
+		}
+	case EX_DoubleConst:
+		{
+			double ConstValue = ReadDouble(ScriptIndex);
+			Result->SetStringField(TEXT("Inst"), TEXT("DoubleConst"));
+			Result->SetNumberField(TEXT("Value"), ConstValue);
 			break;
 		}
 	case EX_StringConst:
@@ -579,6 +604,13 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 			}
 			break;
 		}
+	case EX_PropertyConst:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("PropertyConst"));
+			FProperty* Pointer = ReadPointer<FProperty>(ScriptIndex);
+			Result->SetStringField(TEXT("Property"), Pointer->GetPathName());
+			break;
+		}
 	case EX_ObjectConst:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("ObjectConst"));
@@ -592,6 +624,12 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 			Result->SetObjectField(TEXT("Value"), SerializeExpression(ScriptIndex));
 			break;
 		}
+	case EX_FieldPathConst:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("FieldPathConst"));
+			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
+			break;
+		}
 	case EX_NameConst:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("NameConst"));
@@ -602,9 +640,9 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 	case EX_RotationConst:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("RotationConst"));
-			float Pitch = ReadFloat(ScriptIndex);
-			float Yaw = ReadFloat(ScriptIndex);
-			float Roll = ReadFloat(ScriptIndex);
+			double Pitch = ReadDouble(ScriptIndex);
+			double Yaw = ReadDouble(ScriptIndex);
+			double Roll = ReadDouble(ScriptIndex);
 				
 			Result->SetNumberField(TEXT("Pitch"), Pitch);
 			Result->SetNumberField(TEXT("Yaw"), Yaw);
@@ -614,9 +652,21 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 	case EX_VectorConst:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("VectorConst"));
-			float X = ReadFloat(ScriptIndex);
-			float Y = ReadFloat(ScriptIndex);
-			float Z = ReadFloat(ScriptIndex);
+			double X = ReadDouble(ScriptIndex);
+			double Y = ReadDouble(ScriptIndex);
+			double Z = ReadDouble(ScriptIndex);
+
+			Result->SetNumberField(TEXT("X"), X);
+			Result->SetNumberField(TEXT("Y"), Y);
+			Result->SetNumberField(TEXT("Z"), Z);
+			break;
+		}
+	case EX_Vector3fConst:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("Vector3fConst"));
+			float X = ReadDouble(ScriptIndex);
+			float Y = ReadDouble(ScriptIndex);
+			float Z = ReadDouble(ScriptIndex);
 
 			Result->SetNumberField(TEXT("X"), X);
 			Result->SetNumberField(TEXT("Y"), Y);
@@ -627,18 +677,18 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("TransformConst"));
 				
-			float RotX = ReadFloat(ScriptIndex);
-			float RotY = ReadFloat(ScriptIndex);
-			float RotZ = ReadFloat(ScriptIndex);
-			float RotW = ReadFloat(ScriptIndex);
+			double RotX = ReadDouble(ScriptIndex);
+			double RotY = ReadDouble(ScriptIndex);
+			double RotZ = ReadDouble(ScriptIndex);
+			double RotW = ReadDouble(ScriptIndex);
 
-			float TransX = ReadFloat(ScriptIndex);
-			float TransY = ReadFloat(ScriptIndex);
-			float TransZ = ReadFloat(ScriptIndex);
+			double TransX = ReadDouble(ScriptIndex);
+			double TransY = ReadDouble(ScriptIndex);
+			double TransZ = ReadDouble(ScriptIndex);
 
-			float ScaleX = ReadFloat(ScriptIndex);
-			float ScaleY = ReadFloat(ScriptIndex);
-			float ScaleZ = ReadFloat(ScriptIndex);
+			double ScaleX = ReadDouble(ScriptIndex);
+			double ScaleY = ReadDouble(ScriptIndex);
+			double ScaleZ = ReadDouble(ScriptIndex);
 
 			TSharedPtr<FJsonObject> Rotation = MakeShareable(new FJsonObject());
 			Rotation->SetNumberField(TEXT("X"), RotX);
@@ -741,27 +791,6 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 			Result->SetNumberField(TEXT("Value"), ConstValue);
 			break;
 		}
-	case EX_Int64Const:
-		{
-			Result->SetStringField(TEXT("Inst"), TEXT("Int64Const"));
-			int64 ConstValue = ReadQword(ScriptIndex);
-			Result->SetNumberField(TEXT("Value"), ConstValue);
-			break;
-		}
-	case EX_UInt64Const:
-		{
-			Result->SetStringField(TEXT("Inst"), TEXT("UInt64Const"));
-			uint64 ConstValue = ReadQword(ScriptIndex);
-			Result->SetNumberField(TEXT("Value"), ConstValue);
-			break;
-		}
-	case EX_FieldPathConst:
-		{
-			Result->SetStringField(TEXT("Inst"), TEXT("FieldPathConst"));
-			const TSharedPtr<FJsonObject> InnerExpression = SerializeExpression(ScriptIndex);
-			Result->SetObjectField(TEXT("Expression"), InnerExpression);
-			break;
-		}
 	case EX_MetaCast:
 		{
 			//Cast of class object to another class object
@@ -799,6 +828,14 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 
 			Result->SetNumberField(TEXT("LineNumber"), LineNumber);
 			Result->SetBoolField(TEXT("Debug"), bool(InDebugMode));
+			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
+			break;
+		}
+	case EX_Skip:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("Skip"));
+			CodeSkipSizeType SkipCount = ReadSkipCount(ScriptIndex);
+			Result->SetNumberField(TEXT("Offset"), SkipCount);
 			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
 			break;
 		}
@@ -875,12 +912,8 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 			const uint8 EventType = ReadByte(ScriptIndex);
 			switch (EventType) {
 				case EScriptInstrumentation::InlineEvent:
-					{
-						const FString EventName = ReadName(ScriptIndex);
-						Result->SetStringField(TEXT("EventType"), TEXT("InlineEvent"));
-						Result->SetStringField(TEXT("EventName"), EventName);
-						break;
-					}
+					Result->SetStringField(TEXT("EventType"), TEXT("InlineEvent"));
+					break;
 				case EScriptInstrumentation::Stop:
 					Result->SetStringField(TEXT("EventType"), TEXT("Stop"));
 					break;
@@ -1072,6 +1105,12 @@ float FSMLKismetBytecodeDisassembler::ReadFloat(int32& ScriptIndex) {
 	union { float f; int32 i; } Result;
 	Result.i = ReadInt(ScriptIndex);
 	return Result.f;
+}
+
+double FSMLKismetBytecodeDisassembler::ReadDouble(int32& ScriptIndex) {
+	union { double d; int64 i; } Result;
+	Result.i = ReadQword(ScriptIndex);
+	return Result.d;
 }
 
 CodeSkipSizeType FSMLKismetBytecodeDisassembler::ReadSkipCount(int32& ScriptIndex) {

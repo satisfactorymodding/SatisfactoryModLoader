@@ -65,13 +65,10 @@ struct FACTORYGAME_API FAnimInstanceProxyFactory : public FAnimInstanceProxy
 	{}
 
 	FAnimInstanceProxyFactory( UAnimInstance* Instance ) : FAnimInstanceProxy( Instance ) 
-	{
-	}
+	{}
+	
 	virtual void PreUpdate( UAnimInstance* InAnimInstance, float DeltaSeconds ) override;
-
 	virtual void Update( float DeltaSeconds ) override;
-
-	/** Called when our anim instance is being initialized */
 	virtual void Initialize( UAnimInstance* InAnimInstance ) override;
 public:
 	/** saved DT */
@@ -186,41 +183,34 @@ class FACTORYGAME_API UFGFAnimInstanceFactory : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
-	/** Constructor */
 	UFGFAnimInstanceFactory();
 
 	virtual void NativeUpdateAnimation( float DeltaSeconds ) override;
-
 	virtual void NativeInitializeAnimation() override;
 
-	/** Function for updating a rtpc at intervals */
+	/** Function for updating a RTPC at intervals */
 	UFUNCTION( BlueprintCallable, Category = "Animation" )
 	virtual void UpdateSoundRTPC( float DeltaSeconds, bool forceUpdate = false );
 	
-	/* enable/disable animation updating and skeleton animation*/
+	/** enable/disable animation updating and skeleton animation */
 	UFUNCTION( BlueprintCallable, Category ="Animation" )
     static void EnableAnimationState( USkeletalMeshComponent* meshComponent, bool newState );
 
-	/// Handles AK_EndOfEvent so registered playing audio events may be unregistered
+	/** Handles AK_EndOfEvent so registered playing audio events may be unregistered */
 	UFUNCTION( )
 	void AudioEventCallback( EAkCallbackType cbType, UAkCallbackInfo *cbInfo );
 
-	/// Registers a playing audio event so it can later be stopped if the animation is paused and resumed if the animation is resumed
+	/** Registers a playing audio event so it can later be stopped if the animation is paused and resumed if the animation is resumed */
 	void RegisterPlayingAudioEvent( class UFGAnimNotify_AutoAkEvent* EventSource, const FPlayingAudioEventInfo& TrackingInfo );
 protected:
 	UPROPERTY( Transient, BlueprintReadOnly, Category = "Factory Anim", meta = ( AllowPrivateAccess = "true" ) )
 	FAnimInstanceProxyFactory mProxy;
 
-	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override
-	{
-		return &mProxy;
-	}
-
-	virtual void DestroyAnimInstanceProxy( FAnimInstanceProxy* InProxy ) override
-	{
-
-	}
-
+	// Begin UAnimInstance
+	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override { return &mProxy; }
+	virtual void DestroyAnimInstanceProxy( FAnimInstanceProxy* InProxy ) override {}
+	// End UAnimInstance
+	
 	friend struct FAnimInstanceProxyFactory;
 public:
 	/** If we should use the ramp up system */

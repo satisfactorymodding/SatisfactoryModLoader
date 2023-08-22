@@ -2,14 +2,18 @@
 
 #include "Hologram/HologramHelpers.h"
 
+FHologramAStarNode FHolgramAStarHelper::GetNeighbour(const FHologramAStarNode& nodeRef, const int32 neighbourIndex) const {
+  return FHologramAStarNode(0);
+}
+
 UStaticMeshComponent* FHologramHelpers::CreateClearanceMeshComponent( USceneComponent* attachTo,  UFGClearanceComponent* fromClearanceBox){ return nullptr; }
 UStaticMeshComponent* FHologramHelpers::CreateBlueprintBoundsMeshComponent( USceneComponent* attachTo, const FTransform& boundsRelativeTransform, const FVector& boundsExtent){ return nullptr; }
 void FHologramHelpers::SetScaledBoxMeshData( UStaticMeshComponent* clearanceMesh, const FTransform& relativeTransform, const FVector& extent){ }
 UStaticMeshComponent* FHologramHelpers::CreateConnectionRepresentation( UFGConnectionComponent* connectionComponent, bool isOutput, float heightOffset){ return nullptr; }
 UStaticMeshComponent* FHologramHelpers::CreateAttachmentPointRepresentation(const  FFGAttachmentPoint* attachmentPoint, const  AFGBuildable* buildable){ return nullptr; }
 void FHologramHelpers::ApplyClearanceExtentShrink( UFGClearanceComponent* clearanceComponent){ }
-float FHologramHelpers::CalcPoleHeight(const  FHitResult& aimResult, const  FVector& poleLocation){ return float(); }
-float FHologramHelpers::CalcPoleHeightAndHorisontalOffset(float& out_horisontalOffset, const  FHitResult& aimResult, const  FVector& poleLocation){ return float(); }
+float FHologramHelpers::CalcPoleHeight(const  FHitResult& aimResult, const FVector& poleLocation){ return float(); }
+float FHologramHelpers::CalcPoleHeightAndHorisontalOffset(float& out_horisontalOffset, const  FHitResult& aimResult, const FVector& poleLocation){ return float(); }
 float FHologramHelpers::FindRightAngleBetweenLocations(const FVector& location, const FVector& targetLocation, const FVector& direction){ return float(); }
 void FSplineUtils::FSplineSegmentPointData::InitializePoints(FVector startPos, FVector startForward, FVector startRight, FVector endPos, FVector endForward, FVector endRight, float startRadius, float endRadius){ }
 void FSplineUtils::FSplineSegmentPointData::AssignDebugObject( AActor* debugActor){ }
@@ -118,9 +122,6 @@ FHologramAStarNode::FHologramAStarNode(FHologramPathingPoint* pathingPoint){ }
 FHologramAStarNode::FHologramAStarNode(const FHologramAStarNode& pathingNode){ }
 int32 FHolgramAStarHelper::GetNeighbourCount(const FHologramAStarNode& nodeRef) const{ return int32(); }
 bool FHolgramAStarHelper::IsValidRef(const FHologramAStarNode& nodeRef) const{ return bool(); }
-FHologramAStarNode FHolgramAStarHelper::GetNeighbour(const FHologramAStarNode& nodeRef, const int32 neighbourIndex) const {
-  return FHologramAStarNode(0);
-}
 FVector FHolgramAStarHelper::GetDirectionNormal(const FHologramAStarNode& nodeA, const FHologramAStarNode& nodeB) const{ return FVector(); }
 FHologramAStarFilter::FHologramAStarFilter(){ }
 float FHologramAStarFilter::GetHeuristicScale() const{ return float(); }

@@ -38,6 +38,6 @@ bool AFGCrate::IsUseable_Implementation() const{ return bool(); }
 void AFGCrate::RegisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
 void AFGCrate::UnregisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
 bool AFGCrate::FilterInventoryClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
-void AFGCrate::SetupInventoryFilter(){ }
 void AFGCrate::SetIconType(EFGCrateIconType type){ }
+void AFGCrate::SetAllowAddingItems(bool newAllowAddingItems){ }
 void AFGCrate::OnInventoryItemRemoved(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numRemoved){ }

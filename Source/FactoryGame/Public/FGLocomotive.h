@@ -70,6 +70,8 @@ public:
 	// Begin ADriveablePawn/AFGVehicle interface
 	virtual bool DriverEnter( class AFGCharacterPlayer* driver ) override;
 	virtual bool DriverLeave( bool keepDriving = false ) override;
+	virtual void AddInputBindings( UInputComponent* inputComponent ) override;
+	virtual bool CanLeaveVehicle( AFGCharacterPlayer* character ) override;
 	// End ADriveablePawn/AFGVehicle interface
 		
 	// Begin ARailroadVehicle interface
@@ -149,6 +151,8 @@ public:
 	 * @return true if the headlights are on, otherwise false.
 	 */
 	ELocomotiveHeadlightsMode::Type GetHeadlightsMode() const { return mHeadlightMode; }
+
+	void OpenLocomotiveMenu();
 	
 protected:
 	/** Called from tick if train is significant. */
@@ -162,6 +166,28 @@ protected:
 	/** Called when the player releases the horn input. (Called on server and client) */
 	UFUNCTION( BlueprintImplementableEvent )
     void OnHonkEnd();
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Locomotive" )
+	bool IsInputEnabled() const;
+
+	/** Input Actions */
+	UFUNCTION()
+	void Input_ThrottleAxis_Started( const FInputActionValue& actionValue );
+	
+	UFUNCTION()
+	void Input_ThrottleAxis( const FInputActionValue& actionValue );
+
+	UFUNCTION()
+	void Input_SteerAxis( const FInputActionValue& actionValue );
+	
+	UFUNCTION()
+	void Input_Handbrake( const FInputActionValue& actionValue );
+
+	UFUNCTION()
+	void Input_Honk( const FInputActionValue& actionValue );
+	
+	UFUNCTION()
+	void Input_OpenLocomotiveMenu( const FInputActionValue& actionValue );
 	
 private:
 	/** Used by the movement component to control the power usage. */
@@ -211,4 +237,8 @@ private:
 	 */
 	UPROPERTY( EditDefaultsOnly, Category = Vehicle )
 	FHeadlightParams mHeadlightModes[ ELocomotiveHeadlightsMode::LHM_MAX ];
+
+	/** The widget that is shown when player interact with the locomotive from inside the locomotive, Train scheduler etc. */
+	UPROPERTY( EditDefaultsOnly, Category = Vehicle )
+	TSoftClassPtr<UFGInteractWidget> mLocomotiveMenuWidgetClass;
 };

@@ -9,7 +9,7 @@
 #include "ISettingsSection.h"
 #include "LevelEditor.h"
 #include "IPluginBrowser.h"
-#include "IUATHelperModule.h"
+#include "UATHelper/Public/IUATHelperModule.h"
 #include "ModWizardDefinition.h"
 #include "ModTargetsConfig.h"
 
@@ -52,7 +52,7 @@ void FAlpakitModule::StartupModule() {
     
     //Register Alpakit Settings in Editor's Toolbar
     TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
-    ToolbarExtender->AddToolBarExtension(TEXT("Settings"), EExtensionHook::After, PluginCommands,
+    ToolbarExtender->AddToolBarExtension(TEXT("Play"), EExtensionHook::After, PluginCommands,
         FToolBarExtensionDelegate::CreateLambda([](FToolBarBuilder& Builder) {
             Builder.AddToolBarButton(FAlpakitCommands::Get().OpenPluginWindow);
         }));
@@ -333,7 +333,7 @@ void FAlpakitModule::ProcessQueueItem(TSharedRef<IPlugin> Plugin, bool bIsLastIt
 
     UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\""), *Plugin->GetName());
 
-    const FString CommandLine = FString::Printf(TEXT("-Compile -ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" %s"),
+    const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" %s"),
                                                 *ProjectPath, *ProjectPath, *Plugin->GetName(), *AdditionalUATArguments);
     
     {
@@ -346,6 +346,7 @@ void FAlpakitModule::ProcessQueueItem(TSharedRef<IPlugin> Plugin, bool bIsLastIt
                 FText::Format(LOCTEXT("PackageModTaskName", "Packaging {0}"), FText::FromString(Plugin->GetName())),
                 FText::Format(LOCTEXT("PackageModTaskShortName", "Package {0}"), FText::FromString(Plugin->GetName())),
                 FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"),
+                nullptr,
                 [&Done](FString resultType, double runTime) {
                     Done.Trigger();
                 }

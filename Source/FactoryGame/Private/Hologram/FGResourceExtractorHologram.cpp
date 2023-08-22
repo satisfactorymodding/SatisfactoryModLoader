@@ -16,6 +16,7 @@ void AFGResourceExtractorHologram::SetHologramLocationAndRotation(const FHitResu
 bool AFGResourceExtractorHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 bool AFGResourceExtractorHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 AActor* AFGResourceExtractorHologram::GetUpgradedActor() const{ return nullptr; }
+bool AFGResourceExtractorHologram::CanNudgeHologram() const{ return bool(); }
 void AFGResourceExtractorHologram::CheckValidPlacement(){ }
 void AFGResourceExtractorHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGResourceExtractorHologram::CheckResourcesAvailable(){ }

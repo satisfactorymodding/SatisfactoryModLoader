@@ -69,6 +69,10 @@ public:
 	virtual bool IsComponentRelevantForNavigation( UActorComponent* component ) const override;
 	// End AActor interface
 
+	// UObject interface
+	// virtual void Serialize(FArchive& ar) override;
+	// end UObject inteface
+
 	// Begin IFGUseableInterface
 	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) const override;
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
@@ -82,8 +86,9 @@ public:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual	void SetupForSignificance() override;
-	virtual void UpdateMeshLodLevels(int32 newLodLevel) override;
+	virtual float GetSignificanceRange() override;
+	virtual	void SetupForSignificance() override;					// TODO deprecate
+	virtual void UpdateMeshLodLevels(int32 newLodLevel) override;	// TODO deprecate
 	// End IFGSignificanceInterface
 
 	// Begin Buildable interface
@@ -131,12 +136,13 @@ public:
 	FORCEINLINE UStaticMesh* GetSplineMesh() const { return mMesh; }
 
 	// Begin IFGSplineBuildableInterface
-	TArray< FSplinePointData > GetSplinePointData() { return mSplineData; };
+	const TArray< FSplinePointData >& GetSplinePointData() const { return mSplineData; };
 	float GetMeshLength() { return mMeshLength; }
 	FVector GetCollisionExtent() override { return COLLISION_EXTENT; }
 	float GetCollisionSpacing() override { return COLLISION_SPACING; }
 	FVector GetCollisionOffset() override { return COLLISION_OFFSET; }
 	UStaticMesh* GetUsedSplineMesh() override { return mMesh; }
+	void SetupConnections() override;
 	// End IFGSplineBuildableInterface
 
 	/** Returns the spline component */
@@ -150,7 +156,7 @@ public:
 	// Temp function will be removed.
 	void DestroyVisualItems();
 
-	void PostSerializedFromBlueprint() override;
+	virtual void PostSerializedFromBlueprint( bool isBlueprintWorld = false ) override;
 	
 protected:
 	// Begin AFGBuildableFactory interface
@@ -202,8 +208,8 @@ private:
 	class USplineComponent* mSplineComponent;
 
 	/** The spline meshes for this train track. */
-	UPROPERTY( VisibleAnywhere, Category = "Spline" )
-	class UFGInstancedSplineMeshComponent* mInstancedSplineComponent;
+	UPROPERTY( VisibleAnywhere, Category = "Spline", meta=(AllowPrivateAccess =true) )
+	class UFGConveyorInstancedSplineMeshComponent* mInstancedSplineComponent_;
 
 	/** Wwise multiple position playback for the conveyor spline. */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Audio" )

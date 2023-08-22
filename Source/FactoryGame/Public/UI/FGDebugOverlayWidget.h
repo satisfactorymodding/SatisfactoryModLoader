@@ -14,7 +14,8 @@ enum class EDebugOverlayType : uint8
     DOT_Story,
 	DOT_Options,
 	DOT_Statistics,
-	DOT_ShoppingList
+	DOT_ShoppingList,
+	DOT_AdvancedGameSettings
 };
 
 /**
@@ -28,7 +29,8 @@ class FACTORYGAME_API UFGDebugOverlayWidget : public UUserWidget
 public:
 
 	// Begin UUsserwidget interface 
-	virtual void AddToScreen(ULocalPlayer* LocalPlayer, int32 ZOrder) override;
+	void AddToViewport(int32 ZOrder);
+	bool AddToPlayerScreen(int32 ZOrder);
 	virtual void RemoveFromParent() override;
 	// End UUserwidget interface
 	
@@ -55,11 +57,16 @@ protected:
 	
 	UFUNCTION()
 	void GetShoppingListOverlayData( TArray<FString>& out_debugOverlayData );
+
+	UFUNCTION()
+	void GetAdvancedGameSettingsOverlayData( TArray<FString>& out_debugOverlayData );
 	
 	UFUNCTION( BlueprintImplementableEvent, Category = "Debug" )
 	void UpdateDebugOverlayData( const TArray<FString>& debugOverlayData );
 
 private:
+	void KickOffUpdateTimer();
+
 	FTimerHandle mUpdateDebugOverlayTimerHandle;
 
 	EDebugOverlayType mCurrentDebugOverlayType;

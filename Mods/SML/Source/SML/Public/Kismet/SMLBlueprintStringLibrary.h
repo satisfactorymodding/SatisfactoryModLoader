@@ -12,7 +12,7 @@ public:
 
 	/** Returns true if A is greater than B (A > B) */
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "string > string", CompactNodeTitle = ">", Keywords = "> greater"), Category = "Utilities | String")
-	static bool Greater_StringString(int32 A, int32 B);
+	static bool Greater_StringString(const FString& A, const FString& B);
 
 	/** Returns true if A is less than B (A < B) */
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "string <= string", CompactNodeTitle = "<=", Keywords = "< less"), Category = "Utilities | String")
@@ -20,5 +20,5 @@ public:
 
 	/** Returns true if A is greater than or equal to B (A >= B) */
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "string >= string", CompactNodeTitle = ">=", Keywords = ">= greater"), Category = "Utilities | String")
-	static bool GreaterEqual_StringString(int32 A, int32 B);
+	static bool GreaterEqual_StringString(const FString& A, const FString& B);
 };

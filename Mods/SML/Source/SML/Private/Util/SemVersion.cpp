@@ -115,7 +115,7 @@ bool FVersionComparator::ParseVersionComparator(const FString& String, FString& 
 				ErrorMessage = TEXT("Unexpected Wildcard inside normal version comparator");
 			}
 			//Replace unspecified version characters with zeros, which is standard behavior for all operations except tilde (~),
-			//Which uses first unspecified version number for determining it's behavior
+			//Which uses first unspecified version number for determining its behavior
 			if (ComparisonOp != EVersionComparisonOp::TILDE) {
 				ResultVersion = ResultVersion.RemoveSpecialNumbers(0);
 			}

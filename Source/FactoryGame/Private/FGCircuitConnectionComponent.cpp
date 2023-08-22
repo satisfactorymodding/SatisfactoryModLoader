@@ -6,6 +6,7 @@ UFGCircuitConnectionComponent::UFGCircuitConnectionComponent() : Super() {
 	this->mCircuitType = nullptr;
 	this->mMaxNumConnectionLinks = 1;
 	this->mIsHiddenConnection = false;
+	this->mConnectionDistanceBias = 0.0;
 	this->mNumWiresConnected = 0;
 	this->mCircuitID = -1;
 	this->bNetAddressable = true;

@@ -11,7 +11,8 @@ enum class EPowerPoleType : uint8
 {
 	PPT_POLE 			UMETA( DisplayName = "Pole" ),
 	PPT_WALL 			UMETA( DisplayName = "Wall Plug" ),
-	PPT_WALL_DOUBLE 	UMETA( DisplayName = "Wall Plug Double" )
+	PPT_WALL_DOUBLE 	UMETA( DisplayName = "Wall Plug Double" ),
+	PPT_TOWER			UMETA( DisplayName = "Power Tower" )
 };
 
 /**
@@ -64,6 +65,10 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "PowerPole" )
 	void OnHasPowerChanged( bool hasPower ) const;
 
+	/** Gets the max length a wire is allowed to be when connecting this power tower to another power tower. */
+	UFUNCTION( BlueprintPure, Category = "PowerPole" )
+	float GetPowerTowerWireMaxLength() const { return mPowerTowerWireMaxLength; }
+
 private:
 	void SetHasPower( bool hasPower );
 	void OnConnectionHasPowerChanged( bool hasPower );
@@ -90,6 +95,10 @@ private:
 	/** What kind of power pole this is. */
 	UPROPERTY( EditDefaultsOnly, Category = "PowerPole" )
 	EPowerPoleType mPowerPoleType;
+
+	/** When connecting a wire from this power tower to another power tower, this is the max length the wire is allowed to be. */
+	UPROPERTY( EditDefaultsOnly, Category = "PowerPole" )
+	float mPowerTowerWireMaxLength;
 
 	bool mIsDismantled;
 	bool mIsShowingDismantleOutline;

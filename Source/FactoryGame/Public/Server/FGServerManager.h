@@ -26,7 +26,7 @@ class FClientQuerySocket;
  * the dedicated server interface on clients
  */
 UCLASS( Config=ServerManager )
-class FACTORYGAME_API UFGServerManager : public ULocalPlayerSubsystem, public FTickerObjectBase
+class FACTORYGAME_API UFGServerManager : public ULocalPlayerSubsystem, public FTSTickerObjectBase
 {
 	GENERATED_BODY()
 public:

@@ -20,7 +20,7 @@ void AFGBuildableSplitterSmart::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 }
 void AFGBuildableSplitterSmart::BeginPlay(){ }
 void AFGBuildableSplitterSmart::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGBuildableSplitterSmart::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }
+void AFGBuildableSplitterSmart::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }
 void AFGBuildableSplitterSmart::Factory_Tick(float deltaTime){ }
 FSplitterSortRule AFGBuildableSplitterSmart::GetSortRuleAt(int32 index) const{ return FSplitterSortRule(); }
 void AFGBuildableSplitterSmart::AddSortRule(FSplitterSortRule rule){ }

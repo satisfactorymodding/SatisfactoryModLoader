@@ -200,13 +200,14 @@ private:
 	 * Keep track of active simulation spawned actors.
 	 * Cannot be UPROPERTY as it crashes on keep simulation changes.
 	 */
-	TArray< TWeakObjectPtr< AActor > > mSimulatedDebrisActors;
+	TArray< TSoftObjectPtr< AActor > > mSimulatedDebrisActors;
 
 	/** Actors spawned by this crash site. */
 	UPROPERTY( VisibleInstanceOnly, Category = "Saved Simulation" )
-	TArray< AActor* > mSavedSimulatedDebrisActors;
+	TArray< TSoftObjectPtr<AActor>> mSavedSimulatedDebrisActors;
+
 	UPROPERTY( VisibleInstanceOnly, Category = "Saved Simulation" )
-	TArray< AActor* > mSavedSimulatedItemDropActors;
+	TArray< TSoftObjectPtr<AActor> > mSavedSimulatedItemDropActors;
 
 	/** Transforms saved during physics simulation. */
 	UPROPERTY( VisibleInstanceOnly, Category = "Saved Simulation" )
