@@ -41,6 +41,7 @@ protected:
 public:
 	virtual bool ShouldCreateRenderState() const override;
 	// End AActorComponent interface
+	virtual bool ShouldBlockInstancing() const;
 
 private:
 	void InstantiateInternal();
@@ -50,6 +51,9 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	bool mBlockInstancing = false;
 
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	bool mBlockInstancingWithLumen = false;
+	
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	bool mBlockColoring = false;
 

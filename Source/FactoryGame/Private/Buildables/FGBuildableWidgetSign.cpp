@@ -40,11 +40,12 @@ void AFGBuildableWidgetSign::LostSignificance_Implementation(){ }
 UFGFactoryClipboardSettings* AFGBuildableWidgetSign::CopySettings_Implementation(){ return nullptr; }
 bool AFGBuildableWidgetSign::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
 void AFGBuildableWidgetSign::OnBuildEffectFinished(){ }
+void AFGBuildableWidgetSign::OnBuildEffectActorFinished(){ }
 void AFGBuildableWidgetSign::SetPrefabSignData(FPrefabSignData& signData){ }
 void AFGBuildableWidgetSign::GetSignPrefabData(FPrefabSignData& out_signData){ }
 void AFGBuildableWidgetSign::UpdateSignElements(FPrefabSignData& prefabSignData){ }
 float AFGBuildableWidgetSign::GetAdjustedEmissiveValue(int32 Level) const{ return float(); }
 void AFGBuildableWidgetSign::OnRep_SignDataDirty(){ }
-uint32 AFGBuildableWidgetSign::GenerateGUID(FPrefabSignData& signData){ return uint32(); }
+uint32 AFGBuildableWidgetSign::GenerateGUID(FPrefabSignData& signData, UClass* Prefab){ return uint32(); }
 void AFGBuildableWidgetSign::ConvertToEmissiveOnly(FPrefabSignData& prefabSignData) const{ }
 void AFGBuildableWidgetSign::SetupMaterialInstanceForProxyPlane(UMaterialInstanceDynamic* Instance, UTextureRenderTarget2D* RenderTarget){ }

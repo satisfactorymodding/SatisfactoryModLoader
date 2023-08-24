@@ -87,6 +87,9 @@ struct FFactoryGameCustomVersion
 
 		// 2023-01-10: Cyclic curves were converted to plain curves in UFGBiome to get rid of the custom UI for the former
 		CyclicCurveDeprecated,
+
+		// 2023-07-14: Migrated FGUserSetting assets to use the ManagerAvailability UClass*, changed the default to be None instead of Options
+		MigratedUserSettingsToManagerClass,
 		
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,

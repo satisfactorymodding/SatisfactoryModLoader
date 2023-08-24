@@ -47,6 +47,8 @@ public:
 	virtual void UnsubscribeToOptionUpdate( const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate ) = 0;
 	/** Is the default value applied or have we changed this option */
 	virtual bool IsDefaultValueApplied( const FString& strId ) const = 0;
+	/** Are we allowed to change this option */
+	virtual bool IsOptionEditable( const FString& strId ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	virtual void ApplyChanges() = 0;

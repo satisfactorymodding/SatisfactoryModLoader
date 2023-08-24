@@ -33,6 +33,8 @@ void UFGGameUserSettings::OnVideoQualityUpdated(FString strId, FVariant value){ 
 void UFGGameUserSettings::OnFOVScalingUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::InitVideoQualityValues(){ }
 void UFGGameUserSettings::UpdateVideoQualityCvars(const FString& cvar){ }
+void UFGGameUserSettings::OnUpScalingUpdated(FString strId, FVariant value){ }
+void UFGGameUserSettings::InitUpScalingMethod(){ }
 void UFGGameUserSettings::HandleCmdLineVideoQuality(){ }
 bool UFGGameUserSettings::GetCmdLineVideoQualityLevel(int32& out_value){ return bool(); }
 bool UFGGameUserSettings::HasVideoQualityCmdLineArg(){ return bool(); }
@@ -46,8 +48,8 @@ void UFGGameUserSettings::OnMotionBlurEnabledUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnPoolLightQualityUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnCloudQualityUpdated(FString updatedCVar){ }
 void UFGGameUserSettings::OnAntiAliasingMethodUpdated(FString strId, FVariant value, bool forceSet){ }
-void UFGGameUserSettings::InitTSRPresetValue(){ }
-void UFGGameUserSettings::OnTSRPresetUpdated(FString strId, FVariant value){ }
+void UFGGameUserSettings::InitUpscalingPresetValue(){ }
+void UFGGameUserSettings::OnUpscalingPresetUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::OnFoliageLoadDistanceUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::OnNetworkQualityUpdated(FString updatedCvar){ }
 int32 UFGGameUserSettings::GetDefaultPostProcessQualitySetting(FString settingName){ return int32(); }
@@ -66,6 +68,7 @@ void UFGGameUserSettings::ForceSetOptionValue(const FString& strId, const FVaria
 void UFGGameUserSettings::SubscribeToOptionUpdate(const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate){ }
 void UFGGameUserSettings::UnsubscribeToOptionUpdate(const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate){ }
 bool UFGGameUserSettings::IsDefaultValueApplied(const FString& strId) const{ return bool(); }
+bool UFGGameUserSettings::IsOptionEditable(const FString& strId) const{ return bool(); }
 void UFGGameUserSettings::ApplyChanges(){ }
 void UFGGameUserSettings::ResetAllSettingsToDefault(){ }
 void UFGGameUserSettings::ResetAllSettingsInCategory(TSubclassOf<  UFGUserSettingCategory > category, TSubclassOf<  UFGUserSettingCategory > subCategory){ }

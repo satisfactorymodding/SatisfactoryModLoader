@@ -70,6 +70,7 @@ public:
 	//~ End IFGFactoryClipboardInterface
 
 	virtual void OnBuildEffectFinished() override;
+	virtual void OnBuildEffectActorFinished() override;
 	
 	// When a text element is updated, this call will update that element and set the save data
 	UFUNCTION( BlueprintCallable, Category = "WidgetSign" )
@@ -91,7 +92,7 @@ protected:
 	void OnRep_SignDataDirty();
 
 	/* Generate GUID based on settings*/
-	static uint32 GenerateGUID(FPrefabSignData& signData);
+	static uint32 GenerateGUID(FPrefabSignData& signData, UClass* Prefab);
 
 	virtual void ConvertToEmissiveOnly(FPrefabSignData& prefabSignData) const;
 

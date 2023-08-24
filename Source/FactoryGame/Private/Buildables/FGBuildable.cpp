@@ -109,6 +109,7 @@ AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) : Super(
 	this->MaxRenderDistance = -1.0;
 	this->mDecoratorClass = nullptr;
 	this->mContainsComponents = true;
+	this->mIsConsideredForBaseWeightValue = 1.0;
 	this->mBuildableSparseDataCDO = nullptr;
 	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;

@@ -403,6 +403,13 @@ public:
 	/** This is externalized from the build gun state to allow for easier mod support */
 	UPROPERTY()
 	TArray< TSubclassOf< class AFGBuildable > > mPreviewSkinsOnBuildablesList;
+
+	UFUNCTION(BlueprintPure,Category = "BuildableSubsystem|Proximity")
+	int32 GetNumFactoriesNeededForCloseCheck() const { return mNumFactoriesNeededForCloseCheck; }
+
+	UFUNCTION(BlueprintPure,Category = "BuildableSubsystem|Proximity")
+	float GetDistanceConsideredClose() const { return mDistanceConsideredClose; }
+
 	
 private:
 

@@ -14,6 +14,7 @@ bool UFGColoredInstanceMeshProxy::ShouldCreateRenderState() const {
 
 UFGColoredInstanceMeshProxy::UFGColoredInstanceMeshProxy() : Super() {
 	this->mBlockInstancing = false;
+	this->mBlockInstancingWithLumen = false;
 	this->mBlockColoring = false;
 	this->mHasScalabilityMaterial = false;
 	this->mOptimizationCategory = EDistanceCullCategory::FGDDC_NEVERCULL;
@@ -34,5 +35,6 @@ void UFGColoredInstanceMeshProxy::SetHasPowerData(float newHasPower){ }
 void UFGColoredInstanceMeshProxy::SetUserDefinedData(TArray<float> userData){ }
 void UFGColoredInstanceMeshProxy::SetInstanced(bool setToInstanced){ }
 void UFGColoredInstanceMeshProxy::OnHiddenInGameChanged(){ }
+bool UFGColoredInstanceMeshProxy::ShouldBlockInstancing() const{ return bool(); }
 void UFGColoredInstanceMeshProxy::InstantiateInternal(){ }
 void UFGColoredInstanceMeshProxy::PostLoad(){ Super::PostLoad(); }
