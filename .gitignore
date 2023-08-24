@@ -111,4 +111,15 @@ Mods/*/Metadata/Crypto.json
 !Mods/SMLEditor/
 !Mods/ExampleMod/
 
+# VSCode
+**/.vscode/*
+**/*.code-workspace
+.ignore
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
 # Anything below this line should be categorized into a section above instead!
