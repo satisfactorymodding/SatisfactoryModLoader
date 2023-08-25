@@ -92,7 +92,7 @@ protected:
 	void OnRep_SignDataDirty();
 
 	/* Generate GUID based on settings*/
-	static uint32 GenerateGUID(FPrefabSignData& signData, UClass* Prefab);
+	static uint32 GenerateGUID(FPrefabSignData& signData, UClass* Prefab, FVector2D Size);
 
 	virtual void ConvertToEmissiveOnly(FPrefabSignData& prefabSignData) const;
 
