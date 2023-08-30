@@ -295,7 +295,7 @@ void FAlpakitModule::ProcessQueueItem(TSharedRef<IPlugin> Plugin, bool bIsLastIt
     TArray<FString> PlatformNames;
     if (bReleaseBuild) {        
         FModTargetsConfig TargetsConfig(Plugin);
-        if(TargetsConfig.bWindowsNoEditor) {
+        if(TargetsConfig.bWindows) {
             AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
             PlatformNames.Add(TEXT("Windows"));
         }
@@ -311,7 +311,7 @@ void FAlpakitModule::ProcessQueueItem(TSharedRef<IPlugin> Plugin, bool bIsLastIt
         if(Settings->WindowsGameTargetSettings.bEnabled)
         {
             AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
-            AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsGameTargetSettings, TEXT("WindowsNoEditor"), bIsLastItem));
+            AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsGameTargetSettings, TEXT("Windows"), bIsLastItem));
             PlatformNames.Add(TEXT("Windows"));
         }
 

@@ -9,15 +9,15 @@ FModTargetsConfig::FModTargetsConfig(TSharedRef<IPlugin> InMod) {
 
 	TArray<FString> Targets;
 	ConfigFile.GetArray(TEXT("ModTargets"), TEXT("Targets"), Targets);
-	bWindowsNoEditor = Targets.Contains(TEXT("WindowsNoEditor")) || Targets.Num() == 0;
+	bWindows = Targets.Contains(TEXT("Windows")) || Targets.Num() == 0;
 	bWindowsServer = Targets.Contains(TEXT("WindowsServer"));
 	bLinuxServer = Targets.Contains(TEXT("LinuxServer"));
 }
 
 void FModTargetsConfig::Save() {
 	TArray<FString> Targets;
-	if (bWindowsNoEditor)
-		Targets.Add(TEXT("WindowsNoEditor"));
+	if (bWindows)
+		Targets.Add(TEXT("Windows"));
 	if (bWindowsServer)
 		Targets.Add(TEXT("WindowsServer"));
 	if (bLinuxServer)

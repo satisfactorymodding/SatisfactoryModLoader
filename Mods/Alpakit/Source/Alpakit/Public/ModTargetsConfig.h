@@ -10,9 +10,9 @@ public:
 
 	void Save();
 
-	bool bWindowsNoEditor;
-	bool bWindowsServer;
-	bool bLinuxServer;
+	bool bWindows = false;
+	bool bWindowsServer = false;
+	bool bLinuxServer = false;
 private:
 	TSharedPtr<IPlugin> Mod;
 

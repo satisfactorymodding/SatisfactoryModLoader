@@ -54,9 +54,9 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
         ]
         + SHorizontalBox::Slot().AutoWidth().Padding(20, 0)[
             SNew(SCheckBox)
-            .IsChecked(ModTargetsConfig.bWindowsNoEditor ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
+            .IsChecked(ModTargetsConfig.bWindows ? ECheckBoxState::Checked : ECheckBoxState::Unchecked)
             .OnCheckStateChanged_Lambda([this](ECheckBoxState State) {
-                ModTargetsConfig.bWindowsNoEditor = State == ECheckBoxState::Checked;
+                ModTargetsConfig.bWindows = State == ECheckBoxState::Checked;
                 ModTargetsConfig.Save();
             })
         ]
