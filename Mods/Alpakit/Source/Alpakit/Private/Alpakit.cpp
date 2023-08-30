@@ -209,6 +209,8 @@ FString GetArgumentForLaunchType(EAlpakitStartGameType LaunchMode) {
         return TEXT("EpicExp");
     case EAlpakitStartGameType::EPIC_SERVER:
         return TEXT("EpicDS");
+    case EAlpakitStartGameType::EPIC_SERVER_EXPERIMENTAL:
+        return TEXT("EpicDSExp");
     case EAlpakitStartGameType::CUSTOM:
         return TEXT("Custom");
     default:

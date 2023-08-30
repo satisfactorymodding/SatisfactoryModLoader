@@ -11,6 +11,7 @@ enum class EAlpakitStartGameType : uint8 {
     EPIC_EARLY_ACCESS UMETA(DisplayName = "Epic: Early Access"),
     EPIC_EXPERIMENTAL UMETA(DisplayName = "Epic: Experimental"),
     EPIC_SERVER UMETA(DisplayName = "Epic: Dedicated Server"),
+    EPIC_SERVER_EXPERIMENTAL UMETA(DisplayName = "Epic: Dedicated Server Experimental"),
     CUSTOM UMETA(DisplayName = "Custom")
 };
 

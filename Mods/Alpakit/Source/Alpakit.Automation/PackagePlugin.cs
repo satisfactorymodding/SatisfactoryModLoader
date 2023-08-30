@@ -36,6 +36,9 @@ namespace Alpakit.Automation
 					return "com.epicgames.launcher://apps/CrabTest?action=launch&silent=true";
 				case "EpicDS":
 					return "com.epicgames.launcher://apps/CrabDedicatedServer?action=launch&silent=true";
+				case "EpicDSExp":
+					// No more nice names
+					return "com.epicgames.launcher://apps/c509233193024c5f8124467d3aa36199?action=launch&silent=true";
 				default:
 					throw new AutomationException("Invalid Launch Type {0}", launchType);
 			}
