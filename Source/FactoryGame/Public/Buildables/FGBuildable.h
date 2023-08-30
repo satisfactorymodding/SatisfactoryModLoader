@@ -388,6 +388,11 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Buildable" )
 	bool ShouldBeConsideredForBase();
 
+	/** Set on begin play.*/
+	UFUNCTION( BlueprintNativeEvent, Category = "Buildable" )
+	float GetConsideredForBaseWeight() const;
+	float GetConsideredForBaseWeight_Implementation() const { return mIsConsideredForBaseWeightValue; }
+
 #if WITH_EDITOR
 	/** Sets the display name for this buildable. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Buildable" )
@@ -657,6 +662,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Buildable")
 	bool mContainsComponents = true;
 
+	UPROPERTY(EditDefaultsOnly, Category="Proximity")
+	float mIsConsideredForBaseWeightValue = 1.f;
+	
 protected:
 	/* Begin css sparse data implementation */
 #if	WITH_EDITORONLY_DATA

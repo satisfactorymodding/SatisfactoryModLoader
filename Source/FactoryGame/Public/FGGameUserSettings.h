@@ -113,6 +113,8 @@ public:
 	void OnFOVScalingUpdated( FString strId, FVariant value );
 	void InitVideoQualityValues();
 	void UpdateVideoQualityCvars( const FString& cvar );
+	void OnUpScalingUpdated( FString strId, FVariant value );
+	void InitUpScalingMethod();
 	/** Checks if we want to apply some scalability settings based on cmd line arguments. No applied in shipping. Used for profiling.
 	 *	If a video quality argument is present we don't used saved values or save changed values.
 	 */
@@ -153,9 +155,9 @@ public:
 	void OnAntiAliasingMethodUpdated( FString strId, FVariant value, bool forceSet );
 
 	/** Make sure TSR preset is correct depending on AA method */
-	void InitTSRPresetValue();
+	void InitUpscalingPresetValue();
 	/** Triggered when TSR preset scalabilty cvar have changed */
-	void OnTSRPresetUpdated( FString strId, FVariant value );
+	void OnUpscalingPresetUpdated( FString strId, FVariant value );
 	
 	/** Triggered when Foliage loading distance preset scalabilty cvar have changed */
 	void OnFoliageLoadDistanceUpdated( FString strId, FVariant value );
@@ -199,7 +201,8 @@ public:
 	virtual void ForceSetOptionValue( const FString& strId, const FVariant& value, const UObject* instigator ) override;
 	virtual void SubscribeToOptionUpdate( const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate ) override;
 	virtual void UnsubscribeToOptionUpdate( const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate ) override;
-	virtual bool IsDefaultValueApplied(const FString& strId) const override;
+	virtual bool IsDefaultValueApplied( const FString& strId ) const override;
+	virtual bool IsOptionEditable( const FString& strId ) const override;
 	virtual void ApplyChanges() override;
 	virtual void ResetAllSettingsToDefault() override;
 	virtual void ResetAllSettingsInCategory( TSubclassOf< class UFGUserSettingCategory > category, TSubclassOf< class UFGUserSettingCategory > subCategory ) override;
@@ -421,6 +424,9 @@ private:
 	/** Current state if user setting. Used so we can know when we are taking actions like reset and apply so we can gate certain actions */ 
 	EGameUserSettingsState mCurrentState = EGameUserSettingsState::EGUSS_Default;
 
+	UPROPERTY()
+	bool bIsUsingThirdPartyUpScaler = false;
+	
 	/** const variables */
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;
 };

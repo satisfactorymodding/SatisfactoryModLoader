@@ -183,6 +183,9 @@ public:
 		mNameToIconWidget.Append( iconWidgetMap );
 	}
 
+	// Toggle background, assuming background is called mBackground.
+	void OnToggleBackground(bool NewVisibility) const;
+
 	// Getters
 	TMap< FString, class URichTextBlock* > GetNameToTextWidgetMap() { return mNameToTextWidget; }
 	TMap< FString, class UImage* > GetNameToIconWidgetMap() { return mNameToIconWidget; }
@@ -200,4 +203,5 @@ protected:
 
 	UPROPERTY( BlueprintReadWrite, Category = "Sign Data" )
 	TMap< FString, class UImage* > mNameToIconWidget;
+	
 };

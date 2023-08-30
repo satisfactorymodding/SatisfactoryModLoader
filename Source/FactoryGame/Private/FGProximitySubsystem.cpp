@@ -20,10 +20,12 @@ AFGProximitySubsystem::AFGProximitySubsystem() : Super() {
 	this->RootComponent = mRootComponent;
 }
 void AFGProximitySubsystem::SetupPlayerBinds( AFGPlayerController* Player){ }
-AFGProximitySubsystem* AFGProximitySubsystem::GetProximitySubsystem(UWorld* World){ return nullptr; }
-void AFGProximitySubsystem::IsNearBase(const FVector& Location, float Range) const{ }
-void AFGProximitySubsystem::StaticRegisterFactoryBuildingToProximitySystem(AActor* Actor){ }
-void AFGProximitySubsystem::RegisterFactoryBuildingToProximitySystem(FVector Location){ }
+AFGProximitySubsystem* AFGProximitySubsystem::GetProximitySubsystem(UObject* World){ return nullptr; }
+bool AFGProximitySubsystem::IsNearBase(const FVector& Location, float Range, int32 MinimumRequiredBuildables, bool bIgnoreWeight) const{ return bool(); }
+void AFGProximitySubsystem::StaticRegisterFactoryBuildingToProximitySystem(AActor* Actor, float Weight){ }
+void AFGProximitySubsystem::RegisterFactoryBuildingToProximitySystem(FVector Location, float Weight){ }
+void AFGProximitySubsystem::StaticRemoveFactoryBuildingToProximitySystem(AActor* Actor, float Weight){ }
+void AFGProximitySubsystem::RemoveFactoryBuildingToProximitySystem(FVector Location, float Weight){ }
 void AFGProximitySubsystem::OnEnteredMapArea_Implementation( AFGPlayerControllerBase* playerController, TSubclassOf<  UFGMapArea > newArea){ }
 void AFGProximitySubsystem::OnPawnChanged_Implementation( APawn* newPawn){ }
 UParticleSystem* AFGProximitySubsystem::GetParticleSystemFromMapArea(TSubclassOf<  UFGMapArea > inArea){ return nullptr; }

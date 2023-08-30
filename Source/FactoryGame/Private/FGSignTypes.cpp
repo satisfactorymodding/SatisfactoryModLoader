@@ -9,3 +9,4 @@ UFGSignTypeDescriptor::UFGSignTypeDescriptor() : Super() {
 	this->mDefaultAuxiliaryColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 }
 uint32 FPrefabSignData::GetGUID() const{ return uint32(); }
+void UFGSignPrefabWidget::OnToggleBackground(bool NewVisibility) const{ }

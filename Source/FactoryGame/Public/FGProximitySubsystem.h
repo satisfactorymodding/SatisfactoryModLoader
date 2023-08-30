@@ -27,8 +27,11 @@ struct FProximityEntry
 {
 	GENERATED_BODY()
 	
-	/*floating point for memory sake*/
+	/* floating point for memory sake */
 	FVector3f Location;
+	
+	/* Weight */
+	float Weight;
 };
 
 UCLASS( Blueprintable )
@@ -43,17 +46,23 @@ public:
 	void SetupPlayerBinds(class AFGPlayerController* Player);
 
 	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
-	static AFGProximitySubsystem* GetProximitySubsystem(UWorld* World);
+	static AFGProximitySubsystem* GetProximitySubsystem(UObject* World);
 
 	/*Note this function has precision loss due to optimizations (double to float) .*/
 	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
-	void IsNearBase(const FVector& Location, float Range ) const;
+	bool IsNearBase(const FVector& Location, float Range, int32 MinimumRequiredBuildables, bool bIgnoreWeight = false ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
-	static void StaticRegisterFactoryBuildingToProximitySystem( AActor* Actor );
+	static void StaticRegisterFactoryBuildingToProximitySystem( AActor* Actor, float Weight = 1.f );
 	
 	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
-	void RegisterFactoryBuildingToProximitySystem( FVector Location ); 
+	void RegisterFactoryBuildingToProximitySystem( FVector Location, float Weight ); 
+
+	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
+	static void StaticRemoveFactoryBuildingToProximitySystem( AActor* Actor, float Weight = 1.f);
+
+	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
+	void RemoveFactoryBuildingToProximitySystem( FVector Location, float Weight); 
 
 	/** Player entered a new map area */
 	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Proximity" )
@@ -151,7 +160,7 @@ private:
 
 
 #if WITH_EDITOR
-	static TMap<UWorld*, AFGProximitySubsystem*> mPIESubsystemMap;
+	static TMap<UObject*, AFGProximitySubsystem*> mPIESubsystemMap;
 #else
 	static AFGProximitySubsystem* SubsystemPtr;
 #endif

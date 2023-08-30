@@ -260,19 +260,7 @@ public:
 	/** How many days should pass before creatures start to respawn ( -1 means never ) */
 	UPROPERTY( EditInstanceOnly, Category = "Spawning" )
 	int32 mRespawnTimeIndays;
-
-	/** Async overlap check is done and result is passed in here */
-	UFUNCTION()
-	void ReceiveOnTraceCompleted( const TArray< FOverlapResult > & Results );
-
-	/** Does an async overlap in order to find a nearby base. */
+	
+	/** Does a call to the proximity system. */
 	void TraceForNearbyBase();
-
-	/** Function bound to mOverlapDelegate */
-	void OnTraceCompleted( const FTraceHandle& Handle, FOverlapDatum& Data );
-
-	FTraceHandle LastTraceHandle;
-
-	/** Delegate fired when we're done with the async check for overlapping actors */
-	FOverlapDelegate mOverlapDelegate;
 };

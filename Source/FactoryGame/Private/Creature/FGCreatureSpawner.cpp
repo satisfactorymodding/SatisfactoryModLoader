@@ -59,6 +59,4 @@ float AFGCreatureSpawner::GetSpawnDistance() const{ return float(); }
 void AFGCreatureSpawner::UpdateScannableState(){ }
 void AFGCreatureSpawner::TryRecoupleCreatureAndSpawner(){ }
 void AFGCreatureSpawner::RegisterAsNavigationInvoker(bool shouldRegister){ }
-void AFGCreatureSpawner::ReceiveOnTraceCompleted(const TArray< FOverlapResult > & Results){ }
 void AFGCreatureSpawner::TraceForNearbyBase(){ }
-void AFGCreatureSpawner::OnTraceCompleted(const FTraceHandle& Handle, FOverlapDatum& Data){ }
