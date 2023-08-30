@@ -222,7 +222,7 @@ FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetNa
     
     if(TargetSettings.bCopyModsToGame) {
         UATArguments.Append(FString::Printf(TEXT("-%s_CopyToGameDir "), *TargetName));
-        UATArguments.Append(FString::Printf(TEXT("-%s_GameDir=%s "), *TargetName, *TargetSettings.SatisfactoryGamePath.Path));
+        UATArguments.Append(FString::Printf(TEXT("-%s_GameDir=\"%s\" "), *TargetName, *TargetSettings.SatisfactoryGamePath.Path));
 
         if(TargetSettings.bLaunchGame && AllowGameLaunch) {
             UATArguments.Append(FString::Printf(TEXT("-%s_LaunchGame "), *TargetName));
