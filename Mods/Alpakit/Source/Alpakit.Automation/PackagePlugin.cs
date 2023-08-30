@@ -65,12 +65,10 @@ namespace Alpakit.Automation
 		private static ProjectParams GetParams(BuildCommand cmd)
 		{
 			var projectFileName = cmd.ParseRequiredStringParam("Project");
-			LogInformation(projectFileName);
 
 			var pluginName = cmd.ParseRequiredStringParam("PluginName");
 			
 			var targets = cmd.ParseParamValues("PluginTarget");
-			Console.WriteLine(targets);
 
 			var ClientTargetPlatforms = new List<TargetPlatformDescriptor>();
 			var ServerTargetPlatforms = new List<TargetPlatformDescriptor>();
