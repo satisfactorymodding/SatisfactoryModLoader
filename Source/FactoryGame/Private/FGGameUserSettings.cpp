@@ -50,6 +50,8 @@ void UFGGameUserSettings::OnCloudQualityUpdated(FString updatedCVar){ }
 void UFGGameUserSettings::OnAntiAliasingMethodUpdated(FString strId, FVariant value, bool forceSet){ }
 void UFGGameUserSettings::InitUpscalingPresetValue(){ }
 void UFGGameUserSettings::OnUpscalingPresetUpdated(FString strId, FVariant value){ }
+void UFGGameUserSettings::OnScreenPercentageUpdated(FString strId, FVariant value){ }
+bool UFGGameUserSettings::IsUsingCustomScreenPercentage() const{ return bool(); }
 void UFGGameUserSettings::OnFoliageLoadDistanceUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::OnNetworkQualityUpdated(FString updatedCvar){ }
 int32 UFGGameUserSettings::GetDefaultPostProcessQualitySetting(FString settingName){ return int32(); }

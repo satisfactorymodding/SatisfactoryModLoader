@@ -59,6 +59,7 @@ public:
 	// BEGIN AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	virtual void Tick(float DeltaSeconds) override;
 	#if WITH_EDITOR
 	/** Moved in the editor, on done, calculate spawn locations */
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

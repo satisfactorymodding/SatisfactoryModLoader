@@ -128,6 +128,7 @@ class FACTORYGAME_API UFGUserSettingApplyType_UpdateInstantly : public UFGUserSe
 {
 	GENERATED_BODY()
 
+	virtual bool OnApply( bool markDirty = true ) override;
 	virtual FVariant GetAppliedValue() const override { return GetDisplayValue(); }
 	virtual void SetValue(FVariant newValue) override;
 	virtual void ClearPendingChanges() override;
