@@ -3,6 +3,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Core.h"
 #include "Engine.h"
+#include "FGOnlineSessionSettings.h"
 #include "Components/Widget.h"
 #include "Blueprint/UserWidget.h" 
 #include "Configuration/ConfigProperty.h"
@@ -89,24 +90,24 @@ public:
 	static UUserWidget* Conv_ConfigPropertyToUserWidget(UConfigProperty* Property, UObject* ParentWidget);
 	
 	/** Retrieves root configuration section value Property for provided configuration ID */
-	UFUNCTION(BlueprintPure, Category = "SML | Configuration")
-	static UConfigProperty* GetModConfigurationProperty(const FConfigId& ConfigId);
+	UFUNCTION(BlueprintPure, Category = "SML | Configuration", meta = ( WorldContext = "WorldContext" ))
+	static UConfigProperty* GetModConfigurationProperty( const FConfigId& ConfigId, UObject* WorldContext );
 
 	/** Retrieves root configuration Property for provided configuration Class */
-	UFUNCTION(BlueprintPure, Category = "SML | Configuration")
-	static UConfigProperty* GetModConfigurationPropertyByClass(TSubclassOf<UModConfiguration> ConfigClass);
+	UFUNCTION(BlueprintPure, Category = "SML | Configuration", meta = ( WorldContext = "WorldContext" ))
+	static UConfigProperty* GetModConfigurationPropertyByClass(TSubclassOf<UModConfiguration> ConfigClass, UObject* WorldContext);
 
 	/** Converts ModConfigClass to Configuration Root Property */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "MC to ConfigProperty", CompactNodeTitle = "To Instance", BlueprintAutocast, WorldContext = "WorldContextObject"), Category = "SML | Configuration")
-	static UConfigProperty* Conv_ModConfigurationToConfigProperty(TSubclassOf<UModConfiguration> ConfigClass);
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "MC to ConfigProperty", CompactNodeTitle = "To Instance", BlueprintAutocast, WorldContext = "WorldContext"), Category = "SML | Configuration")
+	static UConfigProperty* Conv_ModConfigurationToConfigProperty(TSubclassOf<UModConfiguration> ConfigClass, UObject* WorldContext);
 	
 	/** Converts Config Id to Configuration Root Property */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "ConfigId to ConfigProperty", CompactNodeTitle = "To Instance", BlueprintAutocast, WorldContext = "WorldContextObject"), Category = "SML | Configuration")
-	static UConfigProperty* Conv_ConfigIdToConfigProperty(const FConfigId& ConfigId);
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "ConfigId to ConfigProperty", CompactNodeTitle = "To Instance", BlueprintAutocast, WorldContext = "WorldContext"), Category = "SML | Configuration")
+	static UConfigProperty* Conv_ConfigIdToConfigProperty(const FConfigId& ConfigId, UObject* WorldContext);
 
 	/** Converts Config Id to Configuration Class */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "ConfigId to Configuration Class", CompactNodeTitle = "To Config Class", BlueprintAutocast, WorldContext = "WorldContextObject"), Category = "SML | Configuration")
-	static TSubclassOf<UModConfiguration> Conv_ConfigIdToModConfigurationClass(const FConfigId& ConfigId);
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "ConfigId to Configuration Class", CompactNodeTitle = "To Config Class", BlueprintAutocast, WorldContext = "WorldContext"), Category = "SML | Configuration")
+	static TSubclassOf<UModConfiguration> Conv_ConfigIdToModConfigurationClass(const FConfigId& ConfigId, UObject* WorldContext);
 
 	/** Allows Widget creation from UObjects without (self)WorldContext. Widget as OwningObject required. */
 	UFUNCTION(BlueprintCallable, Category = "Widget | Advanced")
@@ -127,6 +128,6 @@ public:
 
 	/** Extension of UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMapWithStartingLocation that uses information from SML systems too */
 	UFUNCTION(BlueprintCallable, Category="SML | Online")
-	static void CreateSessionAndTravelToMapWithStartingLocation(APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<enum ESessionVisibility> sessionVisibility, bool skipOnboarding);
+	static void CreateSessionAndTravelToMapWithStartingLocation(APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, ESessionVisibility sessionVisibility, bool skipOnboarding);
 };
 

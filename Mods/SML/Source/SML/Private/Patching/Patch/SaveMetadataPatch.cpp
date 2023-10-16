@@ -3,11 +3,21 @@
 #include "FGPlayerController.h"
 #include "FGSaveManagerInterface.h"
 #include "SatisfactoryModLoader.h"
+#include "Dom/JsonObject.h"
 #include "Engine/Engine.h"
 #include "ModLoading/ModLoadingLibrary.h"
 #include "Registry/GameMapRegistry.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 
 #define LOCTEXT_NAMESPACE "SML"
+
+static TAutoConsoleVariable CVarSkipModCompatibilityCheck(
+	TEXT("SML.SkipModCompatibilityCheck"),
+	GIsEditor,
+	TEXT("1 to skip mod compatibility check, 0 to enable it. Mod compatibility checks are disabled by default in the editor."),
+	ECVF_Default
+);
 
 FSavedModInfo::FSavedModInfo(const FString& Reference, const FString& Name, const FVersion& Version) : Reference(Reference), Name(Name), Version(Version){}
 
@@ -74,6 +84,13 @@ void FSaveMetadataPatch::Register() {
 }
 
 ESaveModCheckResult FSaveMetadataPatch::CheckModdedSaveCompatibility(const FSaveHeader& SaveHeader, FText& OutMessage) {
+
+	// Bail out early if we are asked to skip compatibility checking
+	if ( CVarSkipModCompatibilityCheck.GetValueOnGameThread() )
+	{
+		return ESaveModCheckResult::MCR_Supported;
+	}
+	
 	if(!SaveHeader.IsModdedSave) {
 		return ESaveModCheckResult::MCR_Supported;
 	}
@@ -84,25 +101,36 @@ ESaveModCheckResult FSaveMetadataPatch::CheckModdedSaveCompatibility(const FSave
 		return ESaveModCheckResult::MCR_Volatile;
 	}
 
-	if (ModMetadata.Version >= EModMetadataVersion::AddFullMapName) {
-		// The save map must be present
-		const ESaveModCheckResult MapCheckResult = CheckSaveMap(ModMetadata, SaveHeader, OutMessage);
-		if (MapCheckResult != ESaveModCheckResult::MCR_Supported) {
-			return MapCheckResult;
+	// There is no game instance context here, so we have to use one for the first PIE/Game world currently available
+	UGameInstance* GameInstance = nullptr;
+	for ( const FWorldContext& WorldContext : GEngine->GetWorldContexts() )
+	{
+		if ( WorldContext.WorldType == EWorldType::PIE || WorldContext.WorldType == EWorldType::Game )
+		{
+			GameInstance = WorldContext.OwningGameInstance;
 		}
 	}
 
-	// Warn about missing/downgraded mods
-	const ESaveModCheckResult ModMismatchesCheckResult = CheckModMismatches(ModMetadata, OutMessage);
-	if (ModMismatchesCheckResult != ESaveModCheckResult::MCR_Supported) {
-		return ModMismatchesCheckResult;
-	}
+	if ( GameInstance )
+	{
+		// The save map must be present
+		const ESaveModCheckResult MapCheckResult = CheckSaveMap(GameInstance, ModMetadata, SaveHeader, OutMessage);
+		if (MapCheckResult != ESaveModCheckResult::MCR_Supported) {
+			return MapCheckResult;
+		}
 
+		// Warn about missing/downgraded mods
+		const ESaveModCheckResult ModMismatchesCheckResult = CheckModMismatches(GameInstance, ModMetadata, OutMessage);
+		if (ModMismatchesCheckResult != ESaveModCheckResult::MCR_Supported) {
+			return ModMismatchesCheckResult;
+		}
+	}
 	return ESaveModCheckResult::MCR_Supported;
 }
 
-ESaveModCheckResult FSaveMetadataPatch::CheckModMismatches(const FModMetadata& ModMetadata, FText& OutMessage) {
-	TArray<FModMismatch> ModMismatches = FindModMismatches(ModMetadata.Mods);
+ESaveModCheckResult FSaveMetadataPatch::CheckModMismatches(UGameInstance* GameInstance, const FModMetadata& ModMetadata, FText& OutMessage)
+{
+	TArray<FModMismatch> ModMismatches = FindModMismatches( GameInstance, ModMetadata.Mods );
 	if (ModMismatches.Num() > 0)
 	{
 		OutMessage = BuildModMismatchesText(ModMismatches);
@@ -112,10 +140,10 @@ ESaveModCheckResult FSaveMetadataPatch::CheckModMismatches(const FModMetadata& M
 	return ESaveModCheckResult::MCR_Supported;
 }
 
-TArray<FModMismatch> FSaveMetadataPatch::FindModMismatches(const TArray<FSavedModInfo>& ModMetadata)
+TArray<FModMismatch> FSaveMetadataPatch::FindModMismatches(UGameInstance* GameInstance, const TArray<FSavedModInfo>& ModMetadata)
 {
 	TArray<FModMismatch> ModMismatches;
-	UModLoadingLibrary* ModLibrary = GEngine->GetEngineSubsystem<UModLoadingLibrary>();
+	UModLoadingLibrary* ModLibrary = GameInstance->GetSubsystem<UModLoadingLibrary>();
 
 	for (const FSavedModInfo& OldMod : ModMetadata) {
 		FModInfo LoadedModInfo;
@@ -130,27 +158,33 @@ TArray<FModMismatch> FSaveMetadataPatch::FindModMismatches(const TArray<FSavedMo
 	return ModMismatches;
 }
 
-ESaveModCheckResult FSaveMetadataPatch::CheckSaveMap(const FModMetadata& ModMetadata, const FSaveHeader& SaveHeader, FText& OutMessage) {
-	const USMLGameMapRegistry* GameMapRegistry = GEngine->GetEngineSubsystem<USMLGameMapRegistry>();
-	TArray<FSMLGameMapRegistryEntry> GameMaps = GameMapRegistry->GetGameMaps();
-	const FSMLGameMapRegistryEntry* SaveMap = GameMaps.FindByPredicate([&ModMetadata](const FSMLGameMapRegistryEntry& Entry) {
-		return Entry.MapData->MapAsset.ToString() == ModMetadata.FullMapName;
-	});
+ESaveModCheckResult FSaveMetadataPatch::CheckSaveMap(UGameInstance* GameInstance, const FModMetadata& ModMetadata, const FSaveHeader& SaveHeader, FText& OutMessage)
+{
+	FString MapName = ModMetadata.FullMapName;
+	if ( MapName.IsEmpty() )
+	{
+		MapName = SaveHeader.MapName;
+		GEngine->MakeSureMapNameIsValid( MapName );
+	}
+	
+	if ( !FPackageName::DoesPackageExist( MapName ) )
+	{
+		FString MapMountPoint = MapName;
+		MapMountPoint.RemoveFromStart( TEXT("/") );
 
-	if (!SaveMap) {
-		TArray<FString> PathParts;
-		ModMetadata.FullMapName.ParseIntoArray(PathParts, TEXT("/"));
-		FString ModName = PathParts[0];
-		
-		const FSavedModInfo* ModInfo = ModMetadata.Mods.FindByPredicate([&ModName](const FSavedModInfo& Info) {
-			return Info.Reference == ModName;
-		});
-		if (ModInfo) {
-			ModName = ModInfo->Name;
+		int32 MountPointSeparatorIndex;
+		if ( MapMountPoint.FindChar( TEXT('/'), MountPointSeparatorIndex ) )
+		{
+			MapMountPoint.RemoveAt( MountPointSeparatorIndex, MapMountPoint.Len() - MountPointSeparatorIndex );
 		}
 		
-		OutMessage = FText::Format(LOCTEXT("SAVE_MAP_MISSING", "This save file uses a custom map from mod '{0}' which could not be found. The save could not be loaded. Contact the mod developer for assistance. See the logs for more info."), FText::FromString(*ModName));
-		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Save file uses custom map '%s' of mod '%s' which could not be found"), *ModMetadata.FullMapName, *ModName)
+		const FSavedModInfo* ModInfo = ModMetadata.Mods.FindByPredicate([&MapMountPoint](const FSavedModInfo& Info) {
+			return Info.Reference == MapMountPoint;
+		});
+		const FString ModName = ModInfo != nullptr ? ModInfo->Name : MapMountPoint;
+		
+		OutMessage = FText::Format(LOCTEXT("SAVE_MAP_MISSING", "This save file uses a custom map from mod '{0}' which could not be found. The save could not be loaded. Contact the mod developer for assistance. See the logs for more info."), FText::FromString( *ModName ));
+		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Save file uses custom map '%s' of mod '%s' which could not be found"), *ModMetadata.FullMapName, *ModName )
 		return ESaveModCheckResult::MCR_Incompatible;
 	}
 

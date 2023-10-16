@@ -26,6 +26,8 @@ public class Alpakit : ModuleRules
 			"ExternalImagePicker",
 			"EditorStyle",
 			"PluginBrowser",
+			"LauncherServices",
+			"TargetDeviceServices"
 		});
 	}
 }

@@ -1,5 +1,6 @@
 #include "AlpakitModEntry.h"
 #include "Alpakit.h"
+#include "AlpakitInstance.h"
 #include "AlpakitSettings.h"
 #include "AlpakitStyle.h"
 #include "ISourceControlModule.h"
@@ -8,7 +9,12 @@
 #include "ModMetadataObject.h"
 #include "SourceControlOperations.h"
 #include "Async/Async.h"
+#include "Framework/Notifications/NotificationManager.h"
+#include "LauncherServices/Public/ILauncherProfile.h"
+#include "LauncherServices/Public/ILauncherServicesModule.h"
+#include "TargetDeviceServices/Public/ITargetDeviceServicesModule.h"
 #include "UATHelper/Public/IUATHelperModule.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 #define LOCTEXT_NAMESPACE "AlpakitModListEntry"
 
@@ -186,6 +192,7 @@ FText GetCurrentPlatformName() {
 }
 
 void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& NextEntries) const {
+	
     UAlpakitSettings* Settings = UAlpakitSettings::Get();
     const FString PluginName = Mod->GetName();
     const FString GamePath = Settings->SatisfactoryGamePath.Path;
@@ -194,7 +201,41 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& Ne
         ? FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath())
         : FPaths::RootDir() / FApp::GetProjectName() / FApp::GetProjectName() + TEXT(".uproject");
 
-    FString AdditionalUATArguments;
+	ILauncherServicesModule& ProjectLauncherServicesModule = FModuleManager::LoadModuleChecked<ILauncherServicesModule>("LauncherServices");
+
+	// Create a temporary profile for packaging the mod
+    const ILauncherProfileRef ProfileRef = ProjectLauncherServicesModule.GetProfileManager()->CreateUnsavedProfile( FString::Printf( TEXT("Alpakit [%s]"), *PluginName ) );
+	ProfileRef->SetDescription( FString::Printf( TEXT("Packaging Mod %s"), *PluginName ) );
+	
+	ProfileRef->SetBuildMode( ELauncherProfileBuildModes::Auto );
+	ProfileRef->SetCookMode( ELauncherProfileCookModes::ByTheBook );
+	ProfileRef->SetLaunchMode( ELauncherProfileLaunchModes::DoNotLaunch );
+
+	ProfileRef->SetProjectPath( ProjectPath );
+	ProfileRef->SetCreateDLC( true );
+	ProfileRef->SetDLCName( PluginName );
+	ProfileRef->SetDLCIncludeEngineContent( false );
+
+	// TODO @SML: I would like to pass an empty based on release version, but the cooker checks against it
+	ProfileRef->SetBasedOnReleaseVersionName( TEXT("SMLNonExistentBasedOnReleaseVersion") );
+
+	ProfileRef->SetUnversionedCooking( true );
+	ProfileRef->SetCookOptions( TEXT("-AllowUncookedAssetReferences") );
+	
+	ProfileRef->SetDeployWithUnrealPak( true );
+	ProfileRef->SetUseIoStore( true );
+	ProfileRef->SetCompressed( true );
+
+	ProfileRef->SetPackagingMode( ELauncherProfilePackagingModes::Locally );
+	ProfileRef->SetDeploymentMode( ELauncherProfileDeploymentModes::DoNotDeploy );
+
+	ProfileRef->SetBuildConfiguration( Settings->GetBuildConfiguration() );
+	for ( const FString& PlatformName : Settings->CookPlatforms )
+	{
+		ProfileRef->AddCookedPlatform( PlatformName );
+	}
+	
+    /*FString AdditionalUATArguments;
     if (Settings->bCopyModsToGame) {
         AdditionalUATArguments.Append(TEXT("-CopyToGameDir "));
     }
@@ -202,34 +243,12 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& Ne
         AdditionalUATArguments.Append(TEXT("-LaunchGame "));
         AdditionalUATArguments.Append(GetArgumentForLaunchType(Settings->LaunchGameAfterPacking)).Append(TEXT(" "));
     }
-
-    const FString LaunchGameArgument = GetArgumentForLaunchType(Settings->LaunchGameAfterPacking);
+    const FString LaunchGameArgument = GetArgumentForLaunchType(Settings->LaunchGameAfterPacking);*/
 
     UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, NextEntries.Num());
 
-    const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" -GameDir=\"%s\" %s"),
-                                                *ProjectPath, *ProjectPath, *PluginName, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);
-
-    const FText PlatformName = GetCurrentPlatformName();
-    IUATHelperModule::Get().CreateUatTask(
-        CommandLine,
-        PlatformName,
-        LOCTEXT("PackageModTaskName", "Packaging Mod"),
-        LOCTEXT("PackageModTaskShortName", "Package Mod Task"),
-        FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"),
-        nullptr,
-        NextEntries.Num() == 0 ? (IUATHelperModule::UatTaskResultCallack)nullptr : [NextEntries](FString resultType, double runTime) {
-            AsyncTask(ENamedThreads::GameThread, [NextEntries]() {
-                TSharedPtr<SAlpakitModEntry> NextMod = NextEntries[0];
-
-                TArray<TSharedPtr<SAlpakitModEntry>> RemainingEntries = NextEntries.FilterByPredicate([NextMod](const TSharedPtr<SAlpakitModEntry>& X) {
-                    return X != NextMod;
-                });
-
-                NextMod->PackageMod(RemainingEntries);
-            });
-        }
-    );
+    const TSharedRef<FAlpakitInstance> AlpakitInstance = MakeShared<FAlpakitInstance>( PluginName, ProfileRef );
+	AlpakitInstance->Start();
 }
 
 void SAlpakitModEntry::OnEnableCheckboxChanged(ECheckBoxState NewState) {

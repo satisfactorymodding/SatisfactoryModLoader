@@ -26,7 +26,6 @@ class SAlpakitModEntry : public SCompoundWidget {
             Checkbox->SetIsChecked(bInSelected);
         }
     }
-
 private:
     TSharedPtr<IPlugin> Mod;
     TSharedPtr<SAlpakitModEntryList> Owner;

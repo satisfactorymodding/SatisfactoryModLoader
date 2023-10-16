@@ -15,10 +15,12 @@ public:
     
     /** ID name for the mod creator tab */
     static const FName ModCreatorTabName;
+	static const FName AlpakitLogTabName;
 private:
     TSharedPtr<class FUICommandList> PluginCommands;
 
     TSharedRef<SDockTab> HandleSpawnModCreatorTab(const FSpawnTabArgs& SpawnTabArgs);
+	TSharedRef<SDockTab> HandleSpawnAlpakitLogTab(const FSpawnTabArgs& SpawnTabArgs);
     
     void RegisterSettings() const;
     void UnregisterSettings() const;

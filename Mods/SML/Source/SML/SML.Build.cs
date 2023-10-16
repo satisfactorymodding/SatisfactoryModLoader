@@ -49,9 +49,6 @@ public class SML : ModuleRules
 
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "funchook.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "detex.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "libfbxsdk-md.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "libxml2-md.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "zlib-md.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "AssemblyAnalyzer.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zydis.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zycore.lib"));
@@ -65,8 +62,19 @@ public class SML : ModuleRules
         const string factoryGameVersionRelativePath = "Source/FactoryGame/currentVersion.txt";
 
         var FactoryGameVersionFile = FileReference.Combine(Target.ProjectFile!.Directory, factoryGameVersionRelativePath);
+
+        // Fallback for when there is no current version file
+        if (!File.Exists(FactoryGameVersionFile.FullName))
+        {
+	        PrivateDefinitions.Add("FACTORYGAME_VERSION=0");
+	        PrivateDefinitions.Add("SML_ALLOW_PATCHES_IN_EDITOR=1");
+	        PrivateDefinitions.Add("ENABLE_MOD_LOADING_IN_EDITOR=1");
+	        return;
+        }
+
         var FactoryGameVersion = File.ReadAllText(FactoryGameVersionFile.FullName);
         PrivateDefinitions.Add($"FACTORYGAME_VERSION={FactoryGameVersion}");
+        PrivateDefinitions.Add("SML_ALLOW_PATCHES_IN_EDITOR=0");
     }
 
     private void AddSMLInfo()
@@ -74,7 +82,7 @@ public class SML : ModuleRules
         // Get SML version from SML.uplugin
         var SMLPluginFile = FileReference.Combine(new DirectoryReference(PluginDirectory!), "SML.uplugin");
         var SMLPlugin = PluginDescriptor.FromFile(SMLPluginFile);
-        PrivateDefinitions.Add($"SML_VERSION=\"{SMLPlugin.SemVersion}\"");
+        PrivateDefinitions.Add($"SML_VERSION=\"{SMLPlugin.VersionName}\"");
         
         //Collect build metadata from the environment and pass it to C++
         var CurrentBranch = Environment.GetEnvironmentVariable("BRANCH_NAME");

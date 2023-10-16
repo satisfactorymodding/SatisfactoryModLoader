@@ -4,6 +4,10 @@
 
 DEFINE_LOG_CATEGORY(LogSessionSettingsRegistry);
 
+USMLSessionSettingsRegistry::USMLSessionSettingsRegistry()
+{
+}
+
 void USMLSessionSettingsRegistry::RegisterSessionSetting(const FString& PluginName, USMLSessionSetting* SessionSetting) {
 	if (SessionSetting == NULL) {
 		UE_LOG(LogSessionSettingsRegistry, Error, TEXT("Plugin %s attempted to register NULL session setting"), *PluginName);

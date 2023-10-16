@@ -22,6 +22,14 @@ public:
     /** Saves alpakit settings to configuration file */
     void SaveSettings();
 
+	// Name of the build configuration in which the mod should be built
+	UPROPERTY(EditAnywhere, config, Category = Config, meta = ( GetOptions = GetAllowedBuildConfigurations ))
+	FString BuildConfiguration;
+
+	// The configurations to cook the mods in (Windows, WindowsServer, and so on)
+	UPROPERTY(EditAnywhere, config, Category = Config)
+	TArray<FString> CookPlatforms;
+
     UPROPERTY(EditAnywhere, config, Category = Config)
     FDirectoryPath SatisfactoryGamePath;
 
@@ -33,4 +41,9 @@ public:
 
     UPROPERTY(BlueprintReadOnly, config, Category = Config)
     TMap<FString, bool> ModSelection;
+
+	UFUNCTION()
+	TArray<FString> GetAllowedBuildConfigurations() const;
+
+	EBuildConfiguration GetBuildConfiguration() const;
 };

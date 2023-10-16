@@ -1,7 +1,10 @@
 #include "Module/GameInstanceModuleManager.h"
 #include "SatisfactoryModLoader.h"
+#include "Configuration/ConfigManager.h"
 #include "ModLoading/PluginModuleLoader.h"
+#include "Registry/GameMapRegistry.h"
 #include "Registry/RemoteCallObjectRegistry.h"
+#include "Registry/SessionSettingsRegistry.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
 
 UGameInstanceModuleManager::UGameInstanceModuleManager() {
@@ -54,9 +57,13 @@ void UGameInstanceModuleManager::Initialize(FSubsystemCollectionBase& Collection
     this->CurrentSubsystemCollection = NULL;
 }
 
-void UGameInstanceModuleManager::EnsureSMLSubsystemsInitialized() {
-    EnsureSubsystemInitialized(URemoteCallObjectRegistry::StaticClass());
-    EnsureSubsystemInitialized(UItemTooltipSubsystem::StaticClass());
+void UGameInstanceModuleManager::EnsureSMLSubsystemsInitialized()
+{
+	EnsureSubsystemInitialized( UConfigManager::StaticClass() );
+    EnsureSubsystemInitialized( URemoteCallObjectRegistry::StaticClass() );
+    EnsureSubsystemInitialized( UItemTooltipSubsystem::StaticClass() );
+	EnsureSubsystemInitialized( USMLGameMapRegistry::StaticClass() );
+	EnsureSubsystemInitialized( USMLSessionSettingsRegistry::StaticClass() );
 }
 
 bool UGameInstanceModuleManager::ShouldCreateSubsystem(UObject* Outer) const {

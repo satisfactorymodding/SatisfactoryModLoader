@@ -4,6 +4,7 @@
 #include "FGOptionInterface.h"
 #include "FGPlayerState.h"
 #include "Settings/FGUserSetting.h"
+#include "Settings/FGUserSettingCategory.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "SessionSettingsManager.generated.h"
 
@@ -13,9 +14,10 @@ class SML_API USessionSettingsManager : public UWorldSubsystem, public IFGOption
 	GENERATED_BODY()
 
 public:
-	// Begin USubsystem
+	// Begin USubsystem interface
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	// End USubsystem
+	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
+	// End USubsystem interface
 	
 	// Begin IFGOptionInterface
 	virtual FVariant GetOptionValue( const FString& strId ) const override;
@@ -47,7 +49,8 @@ public:
 	virtual void SubscribeToDynamicOptionUpdate( const FString& cvar, const FOptionUpdated& optionUpdatedDelegate ) override;
 	virtual void UnsubscribeToDynamicOptionUpdate( const FString& cvar, const FOptionUpdated& optionUpdatedDelegate ) override;
 	virtual void UnsubscribeToAllDynamicOptionUpdate( UObject* boundObject ) override;
-	virtual TArray<FUserSettingCategoryMapping> GetCategorizedSettingWidgets( UObject* worldContext, UUserWidget* owningWidget ) override;
+	virtual TArray<FUserSettingCategoryMapping> GetCategorizedSettingWidgets(UObject* worldContext, UUserWidget* owningWidget) override;
+	virtual IFGOptionInterface* GetActiveOptionInterface() const override;
 	// End IFGOptionInterface
 
 	void SubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate);
@@ -65,7 +68,6 @@ public:
 	static FVariant StringToVariant(const FString& String);
 
 	static const TCHAR* SessionSettingsOption;
-	
 private:
 	void OnGameModeInitialized(AGameModeBase* GameModeBase);
 	

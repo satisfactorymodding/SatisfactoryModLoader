@@ -26,7 +26,7 @@ public:
 	 * Also waits until Factory Game client subsystems are fully replicated before returning
 	 */
 	UFUNCTION(BlueprintCallable, meta = (Latent, LatentInfo = "LatentInfo"))
-    static void WaitForGameState(struct FLatentActionInfo& LatentInfo);
+	void WaitForGameState(struct FLatentActionInfo& LatentInfo);
 
     virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -39,9 +39,6 @@ private:
 
     /** Called when world post initialization has been completed */
     void PostInitializeModules();
-
-	/** Notifies content registry that modded content registration has been finished */
-	void NotifyContentRegistry();
     
     /** Allocates root module object for instance and registers it */
     void CreateRootModule(const FName& ModReference, TSubclassOf<UWorldModule> ObjectClass);

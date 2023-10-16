@@ -10,6 +10,7 @@
 #include "LevelEditor.h"
 #include "IPluginBrowser.h"
 #include "ModWizardDefinition.h"
+#include "SAlpakitLogTabContent.h"
 
 static const FName AlpakitTabName("Alpakit");
 
@@ -18,6 +19,7 @@ static const FName AlpakitTabName("Alpakit");
 DEFINE_LOG_CATEGORY(LogAlpakit)
 
 const FName FAlpakitModule::ModCreatorTabName(TEXT("ModCreator"));
+const FName FAlpakitModule::AlpakitLogTabName(TEXT("AlpakitLog"));
 
 void FAlpakitModule::StartupModule() {
     //Register editor settings
@@ -74,6 +76,13 @@ void FAlpakitModule::StartupModule() {
         FOnSpawnTab::CreateRaw(this, &FAlpakitModule::HandleSpawnModCreatorTab))
         .SetDisplayName(LOCTEXT("NewPluginTabHeader", "New Mod"))
         .SetMenuType(ETabSpawnerMenuType::Hidden);
+
+	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
+		AlpakitLogTabName,
+		FOnSpawnTab::CreateRaw(this, &FAlpakitModule::HandleSpawnAlpakitLogTab))
+		.SetDisplayName(LOCTEXT("AlpakitLogHeader", "Alpakit Log"))
+		.SetIcon( FSlateIcon( FAlpakitStyle::Get().GetStyleSetName(), TEXT("Alpakit.OpenPluginWindow") ) )
+		.SetMenuType(ETabSpawnerMenuType::Hidden);
 }
 
 void FAlpakitModule::ShutdownModule() {
@@ -85,12 +94,24 @@ void FAlpakitModule::ShutdownModule() {
     FAlpakitCommands::Unregister();
 
     FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitTabName);
+	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(ModCreatorTabName);
+	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitLogTabName);
 }
 
 TSharedRef<SDockTab> FAlpakitModule::HandleSpawnModCreatorTab(const FSpawnTabArgs& SpawnTabArgs)
 {
     IPluginBrowser& PluginBrowser = FModuleManager::Get().GetModuleChecked<IPluginBrowser>(TEXT("PluginBrowser"));
     return PluginBrowser.SpawnPluginCreatorTab(SpawnTabArgs, MakeShared<FModWizardDefinition>());
+}
+
+TSharedRef<SDockTab> FAlpakitModule::HandleSpawnAlpakitLogTab( const FSpawnTabArgs& SpawnTabArgs )
+{
+	return SNew( SDockTab )
+		.Label( LOCTEXT("AlpakitLogLabel", "Alpakit Log") )
+		.TabRole( NomadTab )
+		[
+			SNew( SAlpakitLogTabContent )
+		];
 }
 
 void FAlpakitModule::RegisterSettings() const {

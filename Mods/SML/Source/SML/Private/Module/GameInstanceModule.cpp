@@ -39,7 +39,7 @@ void UGameInstanceModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
 void UGameInstanceModule::RegisterDefaultContent() {
     //Register default content
     UGameInstance* GameInstance = GetGameInstance();
-    UConfigManager* ConfigManager = GameInstance->GetEngine()->GetEngineSubsystem<UConfigManager>();
+    UConfigManager* ConfigManager = GameInstance->GetSubsystem<UConfigManager>();
     UItemTooltipSubsystem* ItemTooltipSubsystem = GameInstance->GetSubsystem<UItemTooltipSubsystem>();
 
     const FString OwnerModReferenceString = GetOwnerModReference().ToString();
@@ -49,54 +49,36 @@ void UGameInstanceModule::RegisterDefaultContent() {
         ConfigManager->RegisterModConfiguration(Configuration);
     }
 
-    for (UClass* GlobalTooltipProvider : GlobalItemTooltipProviders) {
+    for (const UClass* GlobalTooltipProvider : GlobalItemTooltipProviders) {
         ItemTooltipSubsystem->RegisterGlobalTooltipProvider(OwnerModReferenceString, GlobalTooltipProvider->GetDefaultObject());
     }
-    
-    //InputAction GameplayTag bindings
-    UFGInputSettings* InputSettings = const_cast<UFGInputSettings*>(UFGInputSettings::Get());
-    for (const auto& InputActionTag : InputActionTagBindings) {
-        UInputAction* ExistingBinding = InputSettings->GetInputActionForTag(InputActionTag.Value);
-        checkf(ExistingBinding == nullptr, TEXT("GameplayTag %s is already bound to InputAction %s. %s requested binding to InputAction %s"), *InputActionTag.Value.ToString(), *ExistingBinding->GetPathName(), *OwnerModReferenceString, *InputActionTag.Key->GetPathName());
-        
-        FInputActionTagBinding* ActionBinding = InputSettings->mInputActionTagBindings.FindByPredicate([&](const FInputActionTagBinding& Binding) {
-            return Binding.ObjectPath == InputActionTag.Key;
-        });
-        if (!ActionBinding) {
-            // FGInputSettings might automatically add a new binding when an UInputAction asset is loaded
-            // But it seems like OnAssetAdded does not get triggered in-game
-            // So we handle both options, just in case
-            ActionBinding = &InputSettings->mInputActionTagBindings.Emplace_GetRef();
-            ActionBinding->ObjectPath = InputActionTag.Key;
-            ActionBinding->BindingName = *InputActionTag.Key->GetName();
-            ActionBinding->CachedInputAction = InputActionTag.Key;
-        }
-        checkf(ActionBinding->GameplayTag == FGameplayTag::EmptyTag, TEXT("InputAction %s is already bound to GameplayTag %s. %s requested binding to GameplayTag %s"), *InputActionTag.Key->GetName(), *ActionBinding->GameplayTag.ToString(), *OwnerModReferenceString, *InputActionTag.Value.ToString());
-        ActionBinding->GameplayTag = InputActionTag.Value;
-    }
-
-    UBlueprintSCSHookManager* HookManager = GetGameInstance()->GetEngine()->GetEngineSubsystem<UBlueprintSCSHookManager>();
+	
+    UBlueprintSCSHookManager* HookManager = GameInstance->GetEngine()->GetEngineSubsystem<UBlueprintSCSHookManager>();
     for (URootBlueprintSCSHookData* HookData : BlueprintSCSHooks) {
         HookManager->RegisterBlueprintSCSHook(HookData);
     }
 
-    UWidgetBlueprintHookManager* WidgetHookManager = GetGameInstance()->GetEngine()->GetEngineSubsystem<UWidgetBlueprintHookManager>();
+    UWidgetBlueprintHookManager* WidgetHookManager = GameInstance->GetEngine()->GetEngineSubsystem<UWidgetBlueprintHookManager>();
     for (UWidgetBlueprintHookData* HookData : WidgetBlueprintHooks) {
         WidgetHookManager->RegisterWidgetBlueprintHook(HookData);
     }
 
-    USMLGameMapRegistry* GameMapRegistry = GetGameInstance()->GetEngine()->GetEngineSubsystem<USMLGameMapRegistry>();
+    USMLGameMapRegistry* GameMapRegistry = GameInstance->GetSubsystem<USMLGameMapRegistry>();
     for (USMLGameMapData* MapData : GameMaps) {
         GameMapRegistry->RegisterGameMap(OwnerModReferenceString, MapData);
     }
 
-    USMLSessionSettingsRegistry* SessionSettingsRegistry = GetGameInstance()->GetEngine()->GetEngineSubsystem<USMLSessionSettingsRegistry>();
-    for (USMLSessionSetting* SessionSetting : SessionSettings) {
-        SessionSettingsRegistry->RegisterSessionSetting(OwnerModReferenceString, SessionSetting);
+    USMLSessionSettingsRegistry* SessionSettingsRegistry = GameInstance->GetSubsystem<USMLSessionSettingsRegistry>();
+    if ( SessionSettingsRegistry )
+    {
+    	for (USMLSessionSetting* SessionSetting : SessionSettings) {
+    		SessionSettingsRegistry->RegisterSessionSetting(OwnerModReferenceString, SessionSetting);
+    	}
     }
 
 	URemoteCallObjectRegistry* RemoteCallObjectRegistry = GameInstance->GetSubsystem<URemoteCallObjectRegistry>();
-    for (TSubclassOf<UFGRemoteCallObject> RemoteCallObject: RemoteCallObjects) {
+    for (TSubclassOf<UFGRemoteCallObject> RemoteCallObject: RemoteCallObjects)
+    {
         RemoteCallObjectRegistry->RegisterRemoteCallObject(RemoteCallObject);
     }
 }

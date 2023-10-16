@@ -3,6 +3,7 @@
 #include "FGGameMode.h"
 #include "FGOptionsLibrary.h"
 #include "SatisfactoryModLoader.h"
+#include "Misc/Base64.h"
 #include "ModLoading/PluginModuleLoader.h"
 #include "Registry/SessionSettingsRegistry.h"
 #include "Settings/FGUserSettingApplyType.h"
@@ -10,11 +11,22 @@
 const TCHAR* USessionSettingsManager::SessionSettingsOption = TEXT("SessionSettings");
 
 void USessionSettingsManager::InitializeForMap(const TSoftObjectPtr<UWorld>& World, bool bAttemptPreserveValues) {
-	if(!bAttemptPreserveValues) {
+	if(!bAttemptPreserveValues)
+	{
 		SessionSettings.Empty();
 	}
+
+	// In the first dummy game world, we will have no game instance subsystems initialized, so do not attempt initialization here
+	if ( !GetWorld()->GetGameInstance() )
+	{
+		return;
+	}
+	USMLSessionSettingsRegistry* SessionSettingsRegistry = GetWorld()->GetGameInstance()->GetSubsystem<USMLSessionSettingsRegistry>();
+	if ( !SessionSettingsRegistry )
+	{
+		return;
+	}
 	
-	USMLSessionSettingsRegistry* SessionSettingsRegistry = GEngine->GetEngineSubsystem<USMLSessionSettingsRegistry>();
 	const TArray<FSMLSessionSettingInfo> SessionSettingsForMap = SessionSettingsRegistry->GetSettingsForMap(World);
 
 	TArray<FString> OptionNamesToRemove;
@@ -42,9 +54,16 @@ void USessionSettingsManager::InitializeForMap(const TSoftObjectPtr<UWorld>& Wor
 	}
 }
 
-void USessionSettingsManager::Initialize(FSubsystemCollectionBase& Collection) {
+void USessionSettingsManager::Initialize(FSubsystemCollectionBase& Collection)
+{
 	InitializeForMap(GetWorld(), false);
 	FGameModeEvents::GameModeInitializedEvent.AddUObject(this, &USessionSettingsManager::OnGameModeInitialized);
+}
+
+bool USessionSettingsManager::ShouldCreateSubsystem( UObject* Outer ) const
+{
+	UWorld* WorldOuter = CastChecked<UWorld>(Outer);
+	return FPluginModuleLoader::ShouldLoadModulesForWorld(WorldOuter);
 }
 
 void USessionSettingsManager::OnGameModeInitialized(AGameModeBase* GameModeBase) {
@@ -306,8 +325,26 @@ void USessionSettingsManager::UnsubscribeToAllDynamicOptionUpdate(UObject* bound
 	}
 }
 
-TArray<FUserSettingCategoryMapping> USessionSettingsManager::GetCategorizedSettingWidgets(UObject* worldContext,	UUserWidget* owningWidget) {
-	return UFGOptionsLibrary::GetCategorizedUserSettingsWidgets(worldContext, owningWidget, this, SessionSettings);
+TArray<FUserSettingCategoryMapping> USessionSettingsManager::GetCategorizedSettingWidgets( UObject* worldContext, UUserWidget* owningWidget )
+{
+	return UFGOptionsLibrary::GetCategorizedUserSettingsWidgets( worldContext, owningWidget, this, SessionSettings );
+}
+
+IFGOptionInterface* USessionSettingsManager::GetActiveOptionInterface() const
+{
+	// Only resort to the world context iteration if we are the CDO, otherwise we are the active manager for ourselves
+	if ( HasAnyFlags( RF_ClassDefaultObject ) )
+	{
+		for ( const FWorldContext& worldContext : GEngine->GetWorldContexts() )
+		{
+			if( worldContext.World() && ( worldContext.WorldType == EWorldType::Game || worldContext.WorldType == EWorldType::PIE ) )
+			{
+				return worldContext.World()->GetSubsystem<USessionSettingsManager>();
+			}
+		}
+		return nullptr;
+	}
+	return const_cast<USessionSettingsManager*>( this );
 }
 
 void USessionSettingsManager::SubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate) {
@@ -321,3 +358,4 @@ void USessionSettingsManager::UnsubscribeToAllOptionUpdates(const FOnOptionUpdat
 		Options.Value->RemoveSubscriber(onOptionUpdatedDelegate);
 	}
 }
+

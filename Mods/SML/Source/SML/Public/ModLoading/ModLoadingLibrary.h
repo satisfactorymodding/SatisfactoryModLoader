@@ -89,7 +89,7 @@ struct SML_API FSMLPluginDescriptorMetadata {
 
 /** Provides access to the mod loading functionality for blueprints and allows accessing loaded mods list in implementation-agnostic manner */
 UCLASS()
-class SML_API UModLoadingLibrary : public UEngineSubsystem {
+class SML_API UModLoadingLibrary : public UGameInstanceSubsystem {
     GENERATED_BODY()
 public:
     UModLoadingLibrary();

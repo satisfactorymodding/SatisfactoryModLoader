@@ -36,21 +36,12 @@ UCLASS()
 class SML_API UModNetworkHandler : public UEngineSubsystem {
     GENERATED_BODY()
 private:
-    UPROPERTY()
-    TMap<TWeakObjectPtr<class UNetConnection>, class UObjectMetadata*> Metadata;
     TMap<FString, TMap<int32, FMessageEntry>> MessageHandlers;
     FWelcomePlayer WelcomePlayerDelegate;
     FClientInitialJoin ClientLoginDelegate;
 private:
     void ReceiveMessage(class UNetConnection* Connection, const FString& ModId, int32 MessageId, const FString& Content) const;
 public:
-    /**
-     * Retrieves metadata object for given connection
-     * Metadata object can be used to store information related to given connection before
-     * player controller is initialized, and then move it to created player controller
-     */
-    class UObjectMetadata* GetMetadataForConnection(UNetConnection* Connection);
-
     /**
      * Delegate called on server when he received client join request and welcomed new player
      * You can send additional information to client here, or check information received by client
