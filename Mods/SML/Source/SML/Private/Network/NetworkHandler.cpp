@@ -31,6 +31,23 @@ void UModNetworkHandler::SendMessage(UNetConnection* Connection, FMessageType Me
     Connection->FlushNet(true);
 }
 
+UGameInstance* UModNetworkHandler::GetGameInstanceFromNetDriver( const UNetDriver* NetDriver )
+{
+	if ( NetDriver )
+	{
+		if ( NetDriver->World != nullptr && NetDriver->World->GetGameInstance() != nullptr )
+		{
+			return NetDriver->World->GetGameInstance();
+		}
+		const FWorldContext* Context = GEngine->GetWorldContextFromPendingNetGameNetDriver( NetDriver );
+		if ( Context != nullptr && Context->OwningGameInstance != nullptr )
+		{
+			return Context->OwningGameInstance;
+		}
+	}
+	return nullptr;
+}
+
 void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FString& ModId, int32 MessageId, const FString& Content) const {
     const TMap<int32, FMessageEntry>* Result = MessageHandlers.Find(ModId);
     if (Result != nullptr) {

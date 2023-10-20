@@ -1,6 +1,7 @@
 #include "Network/SMLConnection/SMLNetworkManager.h"
 #include "FGPlayerController.h"
 #include "Dom/JsonObject.h"
+#include "Engine/GameInstance.h"
 #include "Network/NetworkHandler.h"
 #include "Player/SMLRemoteCallObject.h"
 #include "GameFramework/GameModeBase.h"
@@ -8,6 +9,13 @@
 #include "Policies/CondensedJsonPrintPolicy.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
+
+static TAutoConsoleVariable CVarSkipRemoteModListCheck(
+	TEXT("SML.SkipRemoteModListCheck"),
+	GIsEditor,
+	TEXT("1 to skip remote mod list check, 0 to enable it. Remote mod list checks are disabled by default in the editor."),
+	ECVF_Default
+);
 
 static FUObjectAnnotationSparse<FConnectionMetadata, true> GModConnectionMetadata;
 
@@ -70,17 +78,23 @@ void FSMLNetworkManager::HandleGameModePostLogin(AGameModeBase* GameMode, APlaye
     }
 }
 
-FString FSMLNetworkManager::SerializeLocalModList(UNetConnection* Connection) {
-    TSharedRef<FJsonObject> ModListObject = MakeShareable(new FJsonObject());
-
-    UModLoadingLibrary* ModLoadingLibrary = Connection->GetWorld()->GetGameInstance()->GetSubsystem<UModLoadingLibrary>();
-    const TArray<FModInfo> Mods = ModLoadingLibrary->GetLoadedMods();
+FString FSMLNetworkManager::SerializeLocalModList(UNetConnection* Connection)
+{
+	const TSharedRef<FJsonObject> ModListObject = MakeShareable(new FJsonObject());
+	
+	if (const UGameInstance* GameInstance = UModNetworkHandler::GetGameInstanceFromNetDriver( Connection->GetDriver() ) )
+	{
+		if ( UModLoadingLibrary* ModLoadingLibrary = GameInstance->GetSubsystem<UModLoadingLibrary>() )
+		{
+			const TArray<FModInfo> Mods = ModLoadingLibrary->GetLoadedMods();
     
-    for (const FModInfo& ModInfo : Mods) {
-        ModListObject->SetStringField(ModInfo.Name, ModInfo.Version.ToString());
-    }
-
-    const TSharedRef<FJsonObject> MetadataObject = MakeShareable(new FJsonObject());
+			for (const FModInfo& ModInfo : Mods) {
+				ModListObject->SetStringField(ModInfo.Name, ModInfo.Version.ToString());
+			}
+		}	
+	}
+	
+	const TSharedRef<FJsonObject> MetadataObject = MakeShareable(new FJsonObject());
     MetadataObject->SetObjectField(TEXT("ModList"), ModListObject);
     
     FString ResultString;
@@ -117,41 +131,53 @@ bool FSMLNetworkManager::HandleModListObject( FConnectionMetadata& Metadata, con
     return true;
 }
 
-void FSMLNetworkManager::ValidateSMLConnectionData(UNetConnection* Connection) {
-    UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
+void FSMLNetworkManager::ValidateSMLConnectionData(UNetConnection* Connection)
+{
+	const bool bAllowMissingMods = CVarSkipRemoteModListCheck.GetValueOnGameThread();
 	const FConnectionMetadata SMLMetadata = GModConnectionMetadata.GetAnnotation( Connection );
-
     TArray<FString> ClientMissingMods;
     
-    if (!SMLMetadata.bIsInitialized) {
+    if (!SMLMetadata.bIsInitialized && !bAllowMissingMods ) {
         UModNetworkHandler::CloseWithFailureMessage(Connection, TEXT("This server is running Satisfactory Mod Loader, and your client doesn't have it installed."));
         return;
     }
 
-    UModLoadingLibrary* ModLoadingLibrary = Connection->GetWorld()->GetGameInstance()->GetSubsystem<UModLoadingLibrary>();
-    const TArray<FModInfo> Mods = ModLoadingLibrary->GetLoadedMods();
+	if (const UGameInstance* GameInstance = UModNetworkHandler::GetGameInstanceFromNetDriver( Connection->GetDriver() ) )
+	{
+		if ( UModLoadingLibrary* ModLoadingLibrary = GameInstance->GetSubsystem<UModLoadingLibrary>() )
+		{
+			const TArray<FModInfo> Mods = ModLoadingLibrary->GetLoadedMods();
+
+			for (const FModInfo& ModInfo : Mods)
+			{
+				if ( ModInfo.bAcceptsAnyRemoteVersion )
+				{
+					continue; //Server-side only mod
+				}
+
+				const FVersion* ClientVersion = SMLMetadata.InstalledClientMods.Find( ModInfo.Name );
+				const FString ModName = FString::Printf( TEXT("%s (%s)"), *ModInfo.FriendlyName, *ModInfo.Name );
+				if ( ClientVersion == nullptr )
+				{
+					ClientMissingMods.Add( ModName );
+					continue;
+				}
+				const FVersionRange& RemoteVersion = ModInfo.RemoteVersionRange;
+
+				if ( !RemoteVersion.Matches(*ClientVersion) )
+				{
+					const FString VersionText = FString::Printf( TEXT("required: %s, client: %s"), *RemoteVersion.ToString(), *ClientVersion->ToString() );
+					ClientMissingMods.Add( FString::Printf( TEXT("%s: %s"), *ModName, *VersionText ) );
+				}
+			}
+		}	
+	}
     
-    for (const FModInfo& ModInfo : Mods) {
-        if (ModInfo.bAcceptsAnyRemoteVersion) {
-            continue; //Server-side only mod
-        }
-        const FVersion* ClientVersion = SMLMetadata.InstalledClientMods.Find(ModInfo.Name);
-        const FString ModName = FString::Printf(TEXT("%s (%s)"), *ModInfo.FriendlyName, *ModInfo.Name);
-        if (ClientVersion == nullptr) {
-            ClientMissingMods.Add(ModName);
-            continue;
-        }
-        const FVersionRange& RemoteVersion = ModInfo.RemoteVersionRange;
-        if (!RemoteVersion.Matches(*ClientVersion)) {
-            const FString VersionText = FString::Printf(TEXT("required: %s, client: %s"), *RemoteVersion.ToString(), *ClientVersion->ToString());
-            ClientMissingMods.Add(FString::Printf(TEXT("%s: %s"), *ModName, *VersionText));
-        }
-    }
-    
-    if (ClientMissingMods.Num() > 0) {
-        const FString JoinedModList = FString::Join(ClientMissingMods, TEXT("\n"));
-        const FString Reason = FString::Printf(TEXT("Client missing mods: %s"), *JoinedModList);
-        UModNetworkHandler::CloseWithFailureMessage(Connection, Reason);
+    if ( ClientMissingMods.Num() > 0 && !bAllowMissingMods )
+    {
+        const FString JoinedModList = FString::Join( ClientMissingMods, TEXT("\n") );
+        const FString Reason = FString::Printf( TEXT("Client missing mods: %s"), *JoinedModList );
+        UModNetworkHandler::CloseWithFailureMessage( Connection, Reason );
     }
 }
 

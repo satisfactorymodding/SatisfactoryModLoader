@@ -1,9 +1,13 @@
 #pragma once
+
 #include "CoreMinimal.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "UObject/Object.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "NetworkHandler.generated.h"
+
+class UGameInstance;
+class UNetDriver;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogModNetworkHandler, Log, All);
 DECLARE_DELEGATE_TwoParams(FMessageReceived, class UNetConnection* /*Connection*/, FString /*Data*/);
@@ -67,6 +71,11 @@ public:
      * Send registered mod message to this connection to be processed on the remote side
      */
     static void SendMessage(class UNetConnection* Connection, FMessageType MessageType, FString Data);
+
+	/**
+	 * Retrieves the game instance owning the specified net driver
+	 */
+	static UGameInstance* GetGameInstanceFromNetDriver( const UNetDriver* NetDriver );
 private:
     friend class FSatisfactoryModLoader;
 
