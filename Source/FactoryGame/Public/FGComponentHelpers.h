@@ -2,8 +2,13 @@
 
 #pragma once
 
+#include "FactoryGame.h"
+#include "CoreMinimal.h"
+#include "Templates/SubclassOf.h"
 
-DECLARE_DELEGATE_RetVal_FourParams( class USceneComponent*, FComponentDuplicator, class USceneComponent*, class UActorComponent*, const FName&, const FName& );
+class UStaticMeshComponent;
+DECLARE_DELEGATE_RetVal_FourParams( class USceneComponent*, FComponentDuplicator, class USceneComponent*, class UActorComponent*,
+                                    const FName&, const FName& );
 
 class FACTORYGAME_API FGComponentHelpers
 {

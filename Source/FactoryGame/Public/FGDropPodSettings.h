@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "ItemDrop.h"
 #include "FGSettings.h"
+#include "Templates/SubclassOf.h"
 #include "FGDropPodSettings.generated.h"
 
 /** Describes a package of items you can get in a drop. */

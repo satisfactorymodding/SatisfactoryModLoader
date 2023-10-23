@@ -3,10 +3,10 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "AkGameplayTypes.h"
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "UObject/NoExportTypes.h"
-#include "AkAudio/Classes/AkGameplayTypes.h"
 #include "AkMetering.h" // MODDING EDIT: Wwise changes
 #include "FGAudioMeteringSubsystem.generated.h"
 

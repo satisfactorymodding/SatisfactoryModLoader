@@ -2,8 +2,6 @@
 
 #include "FGConveyorInstanceSplineMesh.h"
 
-void UFGConveyorInstanceSplineMesh::BeginPlay(){ }
-void UFGConveyorInstanceSplineMesh::ReportVisibility() const{ }
 void UFGConveyorInstancedSplineMeshComponent::BeginPlay(){ }
 void UFGConveyorInstancedSplineMeshComponent::ReportVisibility() const{ }
 void UFGConveyorLiftVisibilityMesh::BeginPlay(){ }

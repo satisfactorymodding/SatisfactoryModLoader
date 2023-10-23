@@ -2,6 +2,7 @@
 
 #include "Equipment/FGWeapon.h"
 #include "Equipment/FGEquipment.h"
+#include "Net/UnrealNetwork.h"
 
 TAutoConsoleVariable<int32> CVarWeaponDebug(TEXT("CVarWeaponDebug"), 0, TEXT(""));
 AFGWeapon::AFGWeapon() : Super() {

@@ -5,8 +5,8 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 
+#include "FGAmmoTypeHomingBase.h"
 #include "FGProjectile.h"
-#include "Equipment/FGAmmoTypeHomingBase.h"
 #include "FGAmmoTypeProjectile.generated.h"
 
 /**

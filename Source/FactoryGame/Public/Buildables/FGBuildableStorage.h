@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildableFactory.h"
-#include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "FGBuildableFactory.h"
 #include "Replication/FGReplicationDetailActor_Storage.h"
+#include "Replication/FGReplicationDetailInventoryComponent.h"
 #include "FGBuildableStorage.generated.h"
 
 /**

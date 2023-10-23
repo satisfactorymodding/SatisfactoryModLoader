@@ -2,6 +2,7 @@
 
 #include "FGDestructibleActor.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGDestructibleActor::AFGDestructibleActor() : Super() {
 	this->mStaticMeshProxy = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshProxy"));

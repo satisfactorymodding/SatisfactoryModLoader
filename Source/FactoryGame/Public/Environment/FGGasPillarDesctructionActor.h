@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "GameFramework/Actor.h"
+#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "FGGasPillarDesctructionActor.generated.h"
 
 UCLASS()

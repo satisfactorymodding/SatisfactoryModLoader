@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGEquipment.h"
 #include "Resources/FGResourceNodeBase.h"
-#include "Equipment/FGEquipment.h"
 #include "FGResourceScanner.generated.h"
 
 /** Holds information about resource node clusters. This could be saved in actors on the level for optimization. */

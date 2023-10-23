@@ -5,7 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 
-#include "Equipment/FGAmmoTypeHomingBase.h"
+#include "FGAmmoTypeHomingBase.h"
 
 #include "Engine/EngineTypes.h"
 

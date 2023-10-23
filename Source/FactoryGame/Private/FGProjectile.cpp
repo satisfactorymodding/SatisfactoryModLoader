@@ -3,6 +3,7 @@
 #include "FGProjectile.h"
 #include "Components/SphereComponent.h"
 #include "FGProjectileMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGProjectile::AFGProjectile() : Super() {
 	this->mCanTriggerExplodeBySameClass = false;
@@ -52,7 +53,9 @@ AFGProjectile::AFGProjectile() : Super() {
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
+	this->SetReplicatingMovement(true);
 	this->bReplicates = true;
+	this->bReplicateUsingRegisteredSubObjectList = true;
 	this->RootComponent = mCollisionComp;
 }
 void AFGProjectile::Tick(float DeltaSeconds){ }
@@ -78,12 +81,14 @@ void AFGProjectile::PostInitializeComponents(){ Super::PostInitializeComponents(
 void AFGProjectile::PostNetReceiveLocationAndRotation(){ }
 bool AFGProjectile::ShouldSave_Implementation() const{ return bool(); }
 bool AFGProjectile::NeedTransform_Implementation(){ return bool(); }
+void AFGProjectile::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 float AFGProjectile::TakeDamage(float DamageAmount, const  FDamageEvent& DamageEvent,  AController* EventInstigator,
 							AActor* DamageCauser){ return float(); }
 void AFGProjectile::LifeSpanExpired(){ }
 void AFGProjectile::OnImpact_Native(const FHitResult& hitResult){ }
 void AFGProjectile::Multicast_OnImpact_Implementation(const FHitResult& hitResult, bool wasAttached){ }
 void AFGProjectile::OnBounce_Native(const FHitResult& hitResult, const FVector& hitVelocity){ }
+void AFGProjectile::SetSourceAmmoDescriptor( UFGAmmoTypeProjectile* ammoDescriptor){ }
 void AFGProjectile::SetTargetLocation(const FVector& targetLocation){ }
 void AFGProjectile::SetTargetActor(AActor* actor){ }
 void AFGProjectile::SetIsHomingProjectile(bool isHoming){ }

@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "FactoryGame.h"
+#include "CoreMinimal.h"
+#include "CharacterAnimationTypes.generated.h"
+
 UENUM( BlueprintType )
 enum class EArmEquipment : uint8
 {

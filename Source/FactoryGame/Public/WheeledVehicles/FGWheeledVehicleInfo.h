@@ -5,9 +5,7 @@
 #include "FactoryGame.h"
 #include "FGActorRepresentationInterface.h"
 #include "Animation/SkeletalMeshActor.h"
-#include "WheeledVehicles/FGWheeledVehicle.h"
-#include "FGSaveInterface.h" // MODDING EDIT
-#include "WheeledVehicles/FGWheeledVehicle.h" // MODDING EDIT
+#include "FGWheeledVehicle.h"
 #include "FGWheeledVehicleInfo.generated.h"
 
 UENUM( BlueprintType )
@@ -152,7 +150,7 @@ public:
 
 	float GetWheelRadius() const { return mWheelRadius; }
 
-	class UStaticMeshComponent* GetStaticMeshComponent() const { return mStaticMeshComponent; }
+	TArray<class UStaticMeshComponent*> GetStaticMeshComponents() const { return mStaticMeshComponents; }
 
 	// End Accessors and change delegates
 
@@ -202,7 +200,7 @@ private:
 	virtual void OnRep_ReplicatedMesh() override;
 
 	UFUNCTION()
-	void OnRep_StaticMeshComponent();
+	void OnRep_StaticMeshComponents();
 
 	UFUNCTION()
 	void OnRep_ReplicatedVehicle();
@@ -339,6 +337,6 @@ private:
 	/**
 	 * The static mesh representing parts if this vehicle in simulated mode.
 	 */
-	UPROPERTY( ReplicatedUsing = OnRep_StaticMeshComponent )
-	class UStaticMeshComponent* mStaticMeshComponent = nullptr;
+	UPROPERTY( ReplicatedUsing = OnRep_StaticMeshComponents )
+	TArray<class UStaticMeshComponent*> mStaticMeshComponents;
 };

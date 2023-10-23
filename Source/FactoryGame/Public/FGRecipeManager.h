@@ -11,6 +11,8 @@
 
 class UFGRecipe;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnRecipeAvailableDelegate, TSubclassOf<UFGRecipe>, recipeClass );
+
 /**
  * Handles everything to do with recipes in the game.
  */
@@ -64,7 +66,11 @@ public:
 
 	/** Is the past recipe available? */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
-	bool IsRecipeAvailable( TSubclassOf< UFGRecipe > recipeClass );
+	bool IsRecipeAvailable( TSubclassOf< UFGRecipe > recipeClass ) const;
+
+	/** Is the provided customization recipe available? */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
+	bool IsCustomizationRecipeAvailable( TSubclassOf< UFGCustomizationRecipe > recipeClass ) const;
 
 	/** Is the given buildable available to build? */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
@@ -88,6 +94,11 @@ public:
 	/** Debug */
 	void Debug_DumpStateToLog() const;
 
+public:
+	/** Called when the provided recipe becomes available. Called for both normal recipes and customization recipes. */
+	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Recipe" )
+	FFGOnRecipeAvailableDelegate mOnRecipeAvailable;
+	
 private:
 	/** Filters recipes for a given producer. */
 	void FilterRecipesByProducer( const TArray< TSubclassOf< UFGRecipe > >& inRecipes, TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes );

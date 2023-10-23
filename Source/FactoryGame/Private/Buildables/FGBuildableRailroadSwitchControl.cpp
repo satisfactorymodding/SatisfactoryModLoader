@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildableRailroadSwitchControl.h"
 #include "Components/SceneComponent.h"
 #include "FGColoredInstanceMeshProxy.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableRailroadSwitchControl::AFGBuildableRailroadSwitchControl() : Super() {
 	this->mSwitchComponent = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("Switch Component"));
@@ -23,11 +24,11 @@ void AFGBuildableRailroadSwitchControl::GetLifetimeReplicatedProps(TArray<FLifet
 	DOREPLIFETIME(AFGBuildableRailroadSwitchControl, mVisualState);
 }
 void AFGBuildableRailroadSwitchControl::BeginPlay(){ }
-void AFGBuildableRailroadSwitchControl::Destroyed(){ }
 void AFGBuildableRailroadSwitchControl::OnBuildEffectFinished(){ }
 void AFGBuildableRailroadSwitchControl::OnBuildEffectActorFinished(){ }
 bool AFGBuildableRailroadSwitchControl::CanDismantle_Implementation() const{ return bool(); }
-void AFGBuildableRailroadSwitchControl::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
+void AFGBuildableRailroadSwitchControl::Dismantle_Implementation(){ }
+void AFGBuildableRailroadSwitchControl::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGBuildableRailroadSwitchControl::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGBuildableRailroadSwitchControl::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 bool AFGBuildableRailroadSwitchControl::IsUseable_Implementation() const{ return bool(); }

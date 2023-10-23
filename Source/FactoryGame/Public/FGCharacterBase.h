@@ -2,12 +2,12 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "GameFramework/Character.h"
-#include "FGSaveInterface.h"
-#include "AkAudioDevice.h"
 #include "DamageTypes/FGDamageType.h"
-
+#include "FGSaveInterface.h"
+#include "GameFramework/Character.h"
+#include "Chaos/ChaosEngineInterface.h"
 #include "FGCharacterBase.generated.h"
+
 
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FFootstepEffect
@@ -121,6 +121,10 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
+	// Begin ACharacter interface
+	virtual void LaunchCharacter( FVector LaunchVelocity, bool bXYOverride, bool bZOverride ) override;
+	// End ACharacter interface
+	
 	/** Called when we died, need to be UFUNCTION as it's bound as a delegate */
 	UFUNCTION()
 	virtual void Died( AActor* thisActor );
@@ -417,6 +421,9 @@ protected:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
 	class UFGDotReceiverComponent* mDOTReceiverComponent;
 
+	UPROPERTY( Replicated )
+	bool mIsInGas = false;
+	
 	/** How much damage to take falling with a given velocity */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
 	UCurveFloat* mFallDamageCurve;

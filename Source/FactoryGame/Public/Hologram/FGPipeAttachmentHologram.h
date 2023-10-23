@@ -2,7 +2,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGBuildableHologram.h"
-#include "Hologram/FGFactoryHologram.h"
+#include "FGFactoryHologram.h"
 #include "FGPipeAttachmentHologram.generated.h"
 
 class AFGBuildablePipeBase;

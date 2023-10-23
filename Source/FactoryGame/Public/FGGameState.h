@@ -511,8 +511,8 @@ private:
 	FString mReplicatedSessionName;
 	
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_OnlineSessionVisibility)
-	int8 mReplicadedOnlineNumPubliclConnections = 0; 
-
+	ESessionVisibility mSessionVisibility = ESessionVisibility::SV_Invalid;
+	
 	UPROPERTY( ReplicatedUsing = OnRep_BuildingColorSlot_Data, EditDefaultsOnly, Category = "Customization" )
 	TArray< FFactoryCustomizationColorSlot > mBuildingColorSlots_Data;
 

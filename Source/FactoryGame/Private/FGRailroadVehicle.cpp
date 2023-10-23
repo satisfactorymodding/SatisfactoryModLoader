@@ -2,6 +2,7 @@
 
 #include "FGRailroadVehicle.h"
 #include "Hologram/FGRailroadVehicleHologram.h"
+#include "Net/UnrealNetwork.h"
 
 AFGRailroadVehicle::AFGRailroadVehicle() : Super() {
 	this->mTrain = nullptr;
@@ -42,7 +43,7 @@ void AFGRailroadVehicle::Tick(float dt){ }
 bool AFGRailroadVehicle::CanDismantle_Implementation() const{ return bool(); }
 void AFGRailroadVehicle::GainedSignificance_Implementation(){ }
 void AFGRailroadVehicle::LostSignificance_Implementation(){ }
-void AFGRailroadVehicle::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
+void AFGRailroadVehicle::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGRailroadVehicle::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGRailroadVehicle::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 bool AFGRailroadVehicle::IsUseable_Implementation() const{ return bool(); }

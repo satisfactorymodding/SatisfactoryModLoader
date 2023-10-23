@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "ItemAmount.h"
 #include "Resources/FGItemDescriptor.h"
+#include "Engine/Texture2D.h"
 #include "FGFactoryColoringTypes.generated.h"
 
 static const uint8 BUILDABLE_COLORS_MAX_SLOTS_LEGACY = 18;

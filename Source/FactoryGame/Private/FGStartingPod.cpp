@@ -3,6 +3,7 @@
 #include "FGStartingPod.h"
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGStartingPod::AFGStartingPod() : Super() {
 	this->mCachedPlayer = nullptr;

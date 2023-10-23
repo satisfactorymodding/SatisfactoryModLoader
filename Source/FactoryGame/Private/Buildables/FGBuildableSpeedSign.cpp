@@ -2,7 +2,7 @@
 
 #include "Buildables/FGBuildableSpeedSign.h"
 
-void AFGBuildableSpeedSign::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
+void AFGBuildableSpeedSign::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGBuildableSpeedSign::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGBuildableSpeedSign::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 bool AFGBuildableSpeedSign::IsUseable_Implementation() const{ return bool(); }

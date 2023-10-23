@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Replication/FGReplicationDetailActor_BuildableFactory.h"
+#include "FGReplicationDetailActor_BuildableFactory.h"
 #include "FGRepDetailActor_Extractor.generated.h"
 
 /**

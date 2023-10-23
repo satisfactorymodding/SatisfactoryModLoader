@@ -95,7 +95,7 @@ protected:
 
 	/** Snapping offset of this attachment on the walls surface. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Snapping" )
-	FVector2D mWallSnapOffset;
+	FVector mWallSnapOffset;
 
 	/** What axis to snap with when snapping to foundations and walls. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Snapping" )

@@ -5,6 +5,7 @@
 #include "FGRoadConnectionComponent.h"
 #include "FGSplineComponent.h"
 #include "Hologram/FGRoadHologram.h"
+#include "Net/UnrealNetwork.h"
 
 void AFGBuildableRoad::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

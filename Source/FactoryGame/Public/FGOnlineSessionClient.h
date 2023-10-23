@@ -33,10 +33,6 @@ public:
 
 bool operator == ( const FPendingInvite& a, const FPendingInvite& b );
 
-#if !UE_BUILD_SHIPPING
-FORCEINLINE FString VarToFString( FPendingInvite var ){ return FString::Printf( TEXT( "%s" ), *var.ToDebugString() ); }
-#endif
-
 FORCEINLINE uint32 GetTypeHash( const FPendingInvite& invite )
 {
 	if( invite.IsValid() )

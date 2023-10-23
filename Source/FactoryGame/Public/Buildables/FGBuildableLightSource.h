@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 #include "FGBackgroundThread.h"
-#include "Buildables/FGBuildable.h"
+#include "FGBuildable.h"
 #include "FGBuildableLightSource.generated.h"
 
 /**

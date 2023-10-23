@@ -3,6 +3,7 @@
 #include "FGPillarHologram.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGPillarHologram::AFGPillarHologram() : Super() {
 	this->mMeshComponent = nullptr;
@@ -10,6 +11,7 @@ AFGPillarHologram::AFGPillarHologram() : Super() {
 	this->mForceVerticalSnapThreshold = 0.5;
 	this->mBuildStep = EPillarHologramBuildStep::PHBS_Placement;
 	this->mBuildModeZoop = nullptr;
+	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGPillarHologram::BeginPlay(){ }
@@ -34,5 +36,6 @@ void AFGPillarHologram::CreateAttachmentPointTransform(FTransform& out_transform
 void AFGPillarHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGPillarHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
 void AFGPillarHologram::CheckValidPlacement(){ }
+bool AFGPillarHologram::CanIntersectWithDesigner( AFGBuildableBlueprintDesigner* designer){ return bool(); }
 bool AFGPillarHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
 void AFGPillarHologram::OnRep_CurrentZoop(){ }

@@ -21,7 +21,7 @@ void AFGRailroadVehicleRerailHologram::PostLoadGame_Implementation(int32 saveVer
 void AFGRailroadVehicleRerailHologram::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGRailroadVehicleRerailHologram::NeedTransform_Implementation(){ return bool(); }
 bool AFGRailroadVehicleRerailHologram::ShouldSave_Implementation() const{ return bool(); }
-void AFGRailroadVehicleRerailHologram::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
+void AFGRailroadVehicleRerailHologram::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGRailroadVehicleRerailHologram::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGRailroadVehicleRerailHologram::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 bool AFGRailroadVehicleRerailHologram::IsUseable_Implementation() const{ return bool(); }

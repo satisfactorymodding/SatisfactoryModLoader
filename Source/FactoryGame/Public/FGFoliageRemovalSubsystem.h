@@ -3,12 +3,15 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGFoliageResourceUserData.h"
 #include "FGFoliageTypes.h"
 #include "FGSaveInterface.h"
+#include "GameFramework/Info.h"
 #include "IntVectorTypes.h"
-#include "FGFoliageResourceUserData.h"
+#include "Math/GenericOctree.h"
 #include "FGFoliageRemovalSubsystem.generated.h"
 
+class UHierarchicalInstancedStaticMeshComponent;
 DECLARE_STATS_GROUP( TEXT("FoliageRemovalSubsystem"), STATGROUP_FoliageRemovalSubsystem, STATCAT_Advanced );
 
 struct FFoliageOctreeSemantics

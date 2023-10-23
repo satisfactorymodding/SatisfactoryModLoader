@@ -5,6 +5,7 @@
 #include "Components/SplineComponent.h"
 #include "FGConveyorInstanceSplineMesh.h"
 #include "Hologram/FGConveyorBeltHologram.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableConveyorBelt::AFGBuildableConveyorBelt() : Super() {
 	this->mMesh = nullptr;
@@ -25,7 +26,7 @@ void AFGBuildableConveyorBelt::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 void AFGBuildableConveyorBelt::BeginPlay(){ }
 void AFGBuildableConveyorBelt::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGBuildableConveyorBelt::IsComponentRelevantForNavigation(UActorComponent* component) const{ return bool(); }
-void AFGBuildableConveyorBelt::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
+void AFGBuildableConveyorBelt::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGBuildableConveyorBelt::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGBuildableConveyorBelt::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 bool AFGBuildableConveyorBelt::IsUseable_Implementation() const{ return bool(); }

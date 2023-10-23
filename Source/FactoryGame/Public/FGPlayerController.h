@@ -4,15 +4,15 @@
 
 #include "FactoryGame.h"
 #include "CameraAnimationCameraModifier.h"
-#include "FGPlayerControllerBase.h"
-#include "FGChatManager.h"
+#include "Equipment/FGBuildGun.h"
 #include "FGCharacterPlayer.h"
+#include "FGChatManager.h"
+#include "FGMapMarker.h"
+#include "FGPlayerControllerBase.h"
 #include "FGPlayerState.h"
 #include "PlayerPresenceState.h"
-#include "UI/Message/FGAudioMessage.h"
 #include "Server/FGDedicatedServerTypes.h"
-#include "FGMapMarker.h"
-#include "Equipment/FGBuildGun.h"
+#include "UI/Message/FGAudioMessage.h"
 
 #include "FGPlayerController.generated.h"
 
@@ -21,16 +21,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FPlayerEnteredAreaDelegate, AFGPla
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FDisabledInputGateDelegate, FDisabledInputGate, newDisabledInputGate );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnToggleInventory, bool, isOpen );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnToggleInteractionUI, bool, isOpen, TSubclassOf< class UUserWidget >, interactionClass );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnShortcutsLayoutChanged );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnShortcutChanged );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnShortcutSet, int32, index );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPresetHotbarChanged, int32, presetHotbarIndex );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHotbarIndexChanged, int32, newHotbarIndex );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE( FRefreshHotbarShortcuts );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnFinishRespawn );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRespawnUIVisibilityChanged, bool, respawnUIVisibility );
 DECLARE_MULTICAST_DELEGATE_TwoParams( FOnChatMessageEnteredDelegate, FChatMessageStruct&, bool& );
 DECLARE_MULTICAST_DELEGATE_OneParam( FOnPlayerControllerBegunPlay, class AFGPlayerController* );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnPlayerRespawnWithInventory, const FInventoryToRespawnWith&, respawnInventory );
 
 UENUM()
 enum EHitFeedbackType
@@ -128,53 +123,15 @@ public:
 	/** Get all shortcuts in the current hotbar */
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
 	void GetCurrentShortcuts( TArray< class UFGHotbarShortcut* >& out_shortcuts );
-
-	/** Get all preset hotbar shortcuts that belongs to the hotbar with the given index */
-	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	void GetPresetShortcuts( int32 presetHotbarIndex, TArray< class UFGHotbarShortcut* >& out_shortcuts );
-
+	
 	/** Is a given material customization present as a shortcut on the active hotbar? */
 	UFUNCTION( BlueprintPure, Category = "Shortcut" )
 	bool DoesHotbarContainMaterialCustomization();
 
-	/** Get all preset hotbars */
+	/** Removes the shortcut at the specified index */
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	void GetAllPresetHotbars( TArray<FPresetHotbar>& out_presetHotbars );
-
-	/** Get preset hotbar at the given index */
-	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	void GetPresetHotbar( int32 presetHotbarIndex, FPresetHotbar& out_presetHotbar );
-
-	/** Copy the current hotbar shortcuts to a new preset hotbar
-	*	@return true if the copy was a success
-	*/
-	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	bool CreatePresetHotbarFromCurrentHotbar( const FText& presetName, int32 iconIndex );
-
-	/** Check if we can create a new preset */
-	UFUNCTION( BlueprintPure, Category = "Shortcut" )
-	bool CanCreateNewPresetHotbar() const;
-
-	/** Copy the current hotbar shortcuts to the preset hotbar with the given index */
-	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	bool CopyCurrentHotbarToPresetHotbar( int32 presetHotbarIndex );
-
-	/** Change the name of the preset hotbar at the given index */
-	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	void ChangeNameOfPresetHotbar( int32 presetHotbarIndex, const FText& newName );
-
-	/** Change the icon index of the preset hotbar at the given index */
-	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	void ChangeIconIndexOfPresetHotbar( int32 presetHotbarIndex, int32 iconIndex );
-
-	/** Remove the preset hotbar with the given index */
-	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	bool RemovePresetHotbar( int32 presetHotbarIndex );
-
-	/** Copy the shortcuts of the preset hotbar with the given index to the current hotbar */
-	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	void CopyPresetHotbarToCurrentHotbar( int32 presetHotbarIndex );
-
+	void RemoveShortcutAtIndex( int32 onIndex, int32 onHotbarIndex = -1 );
+	
 	/** Set the specified hotbar shortcut on the index if it's valid */
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
 	void SetRecipeShortcutOnIndex( TSubclassOf< class UFGRecipe > recipe, int32 onIndex, int32 onHotbarIndex = -1 );
@@ -216,58 +173,42 @@ public:
 	void SetHotbarIndex( int32 newIndex );
 
 	UFUNCTION( BlueprintPure, Category = "Shortcut" )
-	int32 GetCurrentHotbarIndex();
+	int32 GetCurrentHotbarIndex() const;
 
+	/** Returns the current hotbar object that player has. Might be null early on on the clients. */
 	UFUNCTION( BlueprintPure, Category = "Shortcut" )
-	int32 GetNumHotbars();
-
-	UFUNCTION( BlueprintPure, Category = "Shortcut Preset" )
-	int32 GetNumPresetHotbars() const;
-
-	UFUNCTION( BlueprintPure, Category = "Shortcut Preset" )
-	int32 GetMaxNumPresetHotbars();
-
+	class UFGPlayerHotbar* GetActiveHotbar() const;
+	
+	/** Returns the number of hotbars the players have. */
 	UFUNCTION( BlueprintPure, Category = "Shortcut" )
-	int32 GetNumSlotsPerHotbar();
+	int32 GetNumHotbars() const;
+
+	/** Returns the hotbar at the specified index. Might be null early on or when the index is invalid. */
+	UFUNCTION( BlueprintPure, Category = "Shortcut" )
+	class UFGPlayerHotbar* GetHotbarAtIndex( int32 hotbarIndex ) const;
+
+	/** Returns all hotbars that the player has */
+	UFUNCTION( BlueprintPure, Category = "Shortcut" )
+	void GetAllHotbars( TArray<UFGPlayerHotbar*>& out_hotbars ) const;
 
 	/** Get the shortcut index of a recipe, -1 if it doesn't have any shortcut index assigned */
 	UFUNCTION( BlueprintPure, Category = "Shortcut" )
 	int32 GetRecipeShortcutIndex( TSubclassOf< class UFGRecipe > recipe ) const;
 
 	/**
-		* Converts a keyEvent to what shortcut it's associated with
-		* @return -1 if not associated with any shortcut, else the shortcut index
+	* Converts a keyEvent to what shortcut it's associated with
+	* @return -1 if not associated with any shortcut, else the shortcut index
 	*/
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	int32 GetShortcutIndexFromKey( const FKeyEvent& key );
-
-	/** Called when the shortcuts layout have changed, e.g. shortcut added. */
-	UPROPERTY( BlueprintAssignable )
-	FOnShortcutsLayoutChanged OnShortcutsLayoutChanged;
-
-	/** Called when a shortcut has changed, e.g. activated or inactivated */
-	UPROPERTY( BlueprintAssignable )
-	FOnShortcutChanged OnShortcutChanged;
-
-	/** Called when a shortcut is set */
-	UPROPERTY( BlueprintAssignable )
-	FOnShortcutSet OnShortcutSet;
-
-	/** Notify that the hotbars should refresh. Uses a brute force approach but we only update the 10 visible ones so shouldn't be noticed */
-	UPROPERTY( BlueprintAssignable )
-	FRefreshHotbarShortcuts OnRefreshHotbarShortcuts;
-
-	/** Called when a shortcut has changed, e.g. activated or inactivated */
-	UPROPERTY( BlueprintAssignable )
-	FOnPresetHotbarChanged OnPresetHotbarChanged;
-
-	/** Called when we change hotbar index has changed */
-	UPROPERTY( BlueprintAssignable )
-	FOnHotbarIndexChanged OnHotbarIndexChanged;
+	int32 GetShortcutIndexFromKey( const FKeyEvent& key ) const;
 
 	/** Called on owning client when respawning starts */
 	UPROPERTY( BlueprintAssignable )
 	FOnFinishRespawn OnFinishRespawn;
+
+	/** Called when the player is respawned, accepts the data used for respawning as a parameter */
+	UPROPERTY( BlueprintAssignable, Category = "Inventory" )
+	FFGOnPlayerRespawnWithInventory OnRespawnWithInventory;
 
 	/** Called when the player opens or closes the inventory */
 	UPROPERTY( BlueprintAssignable, BlueprintCallable, Category = "Inventory" )
@@ -440,14 +381,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	void OnAreaEnteredServer(TSubclassOf< UFGMapArea > newArea);
 
-	/** Notified from the build gun that the build state has changed */
-	UFUNCTION()
-	void OnBuildGunStateChanged( EBuildGunState newState );
-
-	/** Notified from the build gun that the recipe has changed */
-	UFUNCTION()
-	void OnBuildGunRecipeChanged( TSubclassOf<class UFGRecipe> recipe );
-
 	/** Called whenever an interact widget gets added or removed. */
 	void OnInteractWidgetAddedOrRemoved( class UFGInteractWidget* widget, bool added );
 
@@ -466,13 +399,14 @@ public:
 	class UFGGameUI* GetGameUI() const;
 
 	UInputMappingContext* GetMappingContextChords() const { return mMappingContextChords; }
+
+	/** Get the character we are controlling (if we are in vehicles, this finds our pawn in the vehicle), can return null if we don't control any character */
+	UFUNCTION( BlueprintPure, Category = "Character" )
+	class AFGCharacterBase* GetControlledCharacter() const;
 	
 protected:
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
-
-	/** Get the character we are controlling (if we are in vehicles, this finds our pawn in the vehicle), can return null if we don't control any character */
-	class AFGCharacterBase* GetControlledCharacter() const;
 
 	/** Return false if we don't control anything */
 	bool ControlledCharacterIsAliveAndWell() const;
@@ -586,6 +520,8 @@ private:
 	/** Called when the server and client is done waiting for level streaming etc. */
 	void FinishRespawn();
 
+	UFUNCTION( Reliable, Server )
+	void Server_RemoveShortcutOnIndex( int32 onIndex, int32 onHotbarIndex );
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_SetRecipeShortcutOnIndex( TSubclassOf<class UFGRecipe> recipe, int32 onIndex, int32 onHotbarIndex = -1 );
 	UFUNCTION( Reliable, Server )
@@ -596,12 +532,6 @@ private:
 	void Server_SetBlueprintShortcutOnIndex( const FString& blueprintName, int32 onIndex );
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_SetHotbarIndex( int32 index );
-	UFUNCTION( Reliable, Server, WithValidation )
-	void Server_CreatePresetHotbarFromCurrentHotbar( const FText& presetName, int32 iconIndex );
-	UFUNCTION( Reliable, Server, WithValidation )
-	void Server_CopyCurrentHotbarToPresetHotbar( int32 presetHotbarIndex );
-	UFUNCTION( Reliable, Server, WithValidation )
-	void Server_CopyPresetHotbarToCurrentHotbar( int32 presetHotbarIndex );
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_SendChatMessage( const FChatMessageStruct& newMessage );
 	UFUNCTION( Reliable, Server, WithValidation )

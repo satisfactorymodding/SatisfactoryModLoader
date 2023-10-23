@@ -3,6 +3,7 @@
 #include "FGTrain.h"
 #include "Components/SceneComponent.h"
 #include "Internationalization/StringTableRegistry.h"
+#include "Net/UnrealNetwork.h"
 
 float TrainConstants::CATCH_DISTANCE = float();
 float TrainConstants::DOCK_STOP_OFFSET = float();

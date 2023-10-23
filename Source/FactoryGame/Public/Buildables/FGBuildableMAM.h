@@ -4,9 +4,9 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildable.h"
-#include "FGSignificanceInterface.h"
+#include "FGBuildable.h"
 #include "FGResearchManager.h"
+#include "FGSignificanceInterface.h"
 #include "FGBuildableMAM.generated.h"
 
 /**

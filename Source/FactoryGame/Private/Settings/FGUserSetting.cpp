@@ -10,18 +10,17 @@ EDataValidationResult UFGUserSetting::IsDataValid(TArray<FText>& ValidationError
 UFGUserSetting::UFGUserSetting() : Super() {
 	this->StrId = TEXT("");
 	this->UseCVar = false;
+	this->DocString = TEXT("");
 	this->DisplayName = INVTEXT("");
 	this->ToolTip = INVTEXT("");
-	this->Category = INVTEXT("");
 	this->CategoryClass = nullptr;
-	this->SubCategory = INVTEXT("");
 	this->SubCategoryClass = nullptr;
 	this->MenuPriority = 0.0;
 	this->IsSettingSessionWide = false;
 	this->ApplyType = FSoftClassPath("/Script/FactoryGame.FGUserSettingApplyType");
 	this->ValueSelector = nullptr;
 	this->CustomValueSelectorWidget = nullptr;
-	this->ManagerAvailability = EUserSettingManagers::USM_OptionsMenu;
+	this->ManagerTypeAvailability = nullptr;
 	this->VisibilityDisqualifiers = 0;
 	this->EditabilityDisqualifiers = 0;
 	this->SubOptionTo = nullptr;
@@ -32,6 +31,8 @@ bool UFGUserSetting::ShouldShowInCurrentConfig(UWorld* world) const{ return bool
 FVariant UFGUserSetting::GetDefaultValue() const{ return FVariant(); }
 IFGOptionInterface* UFGUserSetting::GetOptionInterface(){ return nullptr; }
 TSubclassOf< class UFGOptionsValueController > UFGUserSetting::GetValueSelectorWidgetClass() const{ return TSubclassOf<class UFGOptionsValueController>(); }
+void UFGUserSetting::PostLoad(){ Super::PostLoad(); }
+void UFGUserSetting::Serialize(FStructuredArchive::FRecord Record){ Super::Serialize(Record); }
 bool UFGUserSetting::HasVisibilityDisqualifier(ESettingVisiblityDisqualifier disqualifier) const{ return bool(); }
 bool UFGUserSetting::HasEditabilityDisqualifier(ESettingEditabilityDisqualifier disqualifier) const{ return bool(); }
 bool UFGUserSetting::ShouldShowInBuild() const{ return bool(); }

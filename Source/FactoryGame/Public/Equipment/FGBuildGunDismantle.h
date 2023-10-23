@@ -3,10 +3,13 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Equipment/FGBuildGun.h"
+#include "FGBuildGun.h"
 #include "FGInventoryComponent.h"
 #include "FGDismantleModeDescriptor.h"
+#include "Templates/SubclassOf.h"
 #include "FGBuildGunDismantle.generated.h"
+
+class USphereComponent;
 
 USTRUCT()
 struct FACTORYGAME_API FDismantleRefunds
@@ -50,6 +53,8 @@ public:
 	virtual TSubclassOf< UFGBuildGunModeDescriptor > GetInitialBuildGunMode_Implementation() const override;
 	virtual void OnBuildGunModeChanged_Implementation( TSubclassOf< UFGBuildGunModeDescriptor > newMode) override;
 	virtual void BindInputActions( class UFGEnhancedInputComponent* inputComponent ) override;
+	virtual bool CanSampleBuildings() const override;
+	virtual bool CanSampleBlueprints() const override;
 	// End UFGBuildGunState
 
 	/** Toggle between whether the multi select should be in effect as actors are being highlighted */
@@ -226,7 +231,7 @@ private:
 
 	/** Stencil meshes to mark dismantle with */
 	UPROPERTY(Transient)
-	TMap< UStaticMesh*, UInstancedStaticMeshComponent*> mPendingDismantleStencilMeshes;
+	TMap< UStaticMesh*, class UInstancedStaticMeshComponent*> mPendingDismantleStencilMeshes;
 	
 	/** Cached dismantle refunds on server that is replicated */
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_PeekDismantleRefund )
@@ -239,6 +244,9 @@ private:
 	/** Dismantle mode where we only try to dismantle blueprints. */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGunMode" )
 	TSubclassOf< UFGDismantleModeDescriptor > mBlueprintDismantleMode;
+
+	/** Most recently used dismantle mode. */
+	TSubclassOf< UFGDismantleModeDescriptor > mLastUsedDismantleMode;
 
 	/** Used to overlap with blueprint proxies to detect them. */
 	UPROPERTY()

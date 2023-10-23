@@ -3,7 +3,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGFactoryHologram.h"
+#include "FGFactoryHologram.h"
 #include "FGPipeConnectionComponent.h"
 #include "Resources/FGPoleDescriptor.h"
 #include "FGPipePartHologram.generated.h"

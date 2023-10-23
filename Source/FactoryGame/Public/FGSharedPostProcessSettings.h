@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "Settings/FGAdvancedGameSettings.h"
 #include "UObject/Object.h"
 #include "FGSharedPostProcessSettings.generated.h"
 

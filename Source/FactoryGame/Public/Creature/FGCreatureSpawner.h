@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "GameFramework/Actor.h"
-#include "Creature/FGCreature.h"
+#include "FGCreature.h"
 #include "FGInventoryComponent.h"
 #include "FGSaveInterface.h"
 #include "FGCreatureSpawner.generated.h"

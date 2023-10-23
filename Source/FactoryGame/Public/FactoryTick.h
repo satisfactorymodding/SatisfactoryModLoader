@@ -6,6 +6,8 @@
 #include "Engine/EngineBaseTypes.h"
 #include "FactoryTick.generated.h"
 
+DECLARE_STATS_GROUP( TEXT( "FactoryTick" ), STATGROUP_FactoryTick, STATCAT_Advanced );
+
 /**
  * Tick function that calls AFGBuildable::TickFactory
  */

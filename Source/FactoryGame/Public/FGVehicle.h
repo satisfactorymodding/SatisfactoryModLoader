@@ -67,6 +67,17 @@ public:
 	UFGUseState_VehicleOccupied() : Super() { mIsUsableState = false; }
 };
 
+/**
+ * UseState representing the WorkBench.
+ */
+UCLASS()
+class FACTORYGAME_API UFGUseState_WorkBench : public UFGUseState
+{
+	GENERATED_BODY()
+public:
+	UFGUseState_WorkBench() : Super() { mIsUsableState = true; }
+};
+
 USTRUCT()
 struct FACTORYGAME_API FVehicleSeat
 {
@@ -178,11 +189,10 @@ public:
 	//~ End IFGDockableInterface
 
 	//~ Begin IFGUseableInterface
-	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) const override;
+	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual bool IsUseable_Implementation() const override;
-	virtual void StartIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state  ) override;
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
 	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
@@ -312,15 +322,21 @@ public:
 
 	virtual FVector GetVehicleRealActorLocation() const;
 
+	/** Returns true if we are submerged in water */
+	UFUNCTION( BlueprintPure )
+	bool IsSubmergedInWater() const;
+	
 protected:
 	/** Called when customization data is applied. Allows child vehicles to update their simulated vehicles to keep colors synced */
 	virtual void OnCustomizationDataApplied( const FFactoryCustomizationData& customizationData );
-	
+
 private:
 	/** Rep notifies */
 	UFUNCTION()
 	void OnRep_IsSimulated();
 
+	void ToggleEntireVehicleOutline( const bool isOutlined, const EOutlineColor& outlineColor );
+	
 protected:
 	/** Updates the vehicles settings depending on if it should be simulated or "real" */
 	virtual void OnIsSimulatedChanged() {}
@@ -352,11 +368,7 @@ protected:
 	/** Update if we are submerged in water, SERVER ONLY */
 	void UpdateSubmergedInWater( float deltaTime );
 	/** Our status of being submerged in water has updated */
-	void SubmergedInWaterUpdated( bool newIsSubmerged );
-	
-	/** Returns true if we are submerged in water */
-	UFUNCTION( BlueprintPure )
-	bool IsSubmergedInWater() const;
+	virtual void SubmergedInWaterUpdated( bool newIsSubmerged );
 
 	/** How much do we get back when selling this vehicle. Not consolidated. */
 	void GetDismantleRefundReturns( TArray< FInventoryStack >& out_returns ) const;

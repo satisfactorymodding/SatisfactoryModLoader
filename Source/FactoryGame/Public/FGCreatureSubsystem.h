@@ -4,10 +4,10 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "FGSubsystem.h"
-#include "NavMesh/RecastNavMesh.h"
-#include "Misc/EnumRange.h"
 #include "Creature/FGCreature.h"
+#include "FGSubsystem.h"
+#include "Misc/EnumRange.h"
+#include "NavMesh/RecastNavMesh.h"
 #include "FGCreatureSubsystem.generated.h"
 
 extern TAutoConsoleVariable< int32 > CVarCreatureDisable;

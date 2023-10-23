@@ -2,6 +2,7 @@
 
 #include "Buildables/FGBuildableWire.h"
 #include "Hologram/FGWireHologram.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableWire::AFGBuildableWire() : Super() {
 	this->mMaxLength = 10000.0;

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Resources/FGItemDescriptor.h"
+#include "FGItemDescriptor.h"
 #include "FGAnyUndefinedDescriptor.generated.h"
 
 /**

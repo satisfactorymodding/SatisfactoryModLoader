@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "CoreMinimal.h"
 #include "FGOptionsSettings.h"
 #include "Settings/FGUserSetting.h"
 #include "FGDynamicOptionsRow.generated.h"

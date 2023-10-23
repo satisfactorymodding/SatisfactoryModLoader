@@ -2,15 +2,13 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGCheatManager.h"
-#include "SlateBasics.h"
-#include "Widgets/Views/STreeView.h"
+#include "Widgets/SCompoundWidget.h"
+#include "FactoryGame.h"
 
 #if WITH_CHEATS
 
-
-#include "FGCheatBoardMenuElements.h"
+#include "FactoryGame/Private/FGCheatBoardMenuElements.h"
 
 
 /**

@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGTrainPlatformHologram.h"
-#include "Hologram/FGFactoryBuildingHologram.h"
+#include "FGFactoryBuildingHologram.h"
+#include "FGTrainPlatformHologram.h"
 #include "FGTrainStationHologram.generated.h"
 
 

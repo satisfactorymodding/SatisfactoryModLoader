@@ -5,7 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Engine/World.h"
-#include "ShoppingList/FGShoppingListObject.h"
+#include "FGShoppingListObject.h"
 #include "FGShoppingListObjectBlueprint.generated.h"
 
 /**

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Hologram/FGHologram.h"
+#include "FGHologram.h"
 #include "FGVehicleHologram.generated.h"
 
 /**

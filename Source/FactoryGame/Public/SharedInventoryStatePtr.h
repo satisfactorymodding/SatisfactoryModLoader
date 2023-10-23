@@ -3,11 +3,12 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "Engine/NetConnection.h"
+#include "Engine/PackageMapClient.h"
 #include "FGSaveSession.h"
+#include "Async/TaskGraphInterfaces.h"
 #include "GameFramework/Actor.h"
 #include "Templates/SharedPointer.h"
-#include "Engine/PackageMapClient.h"
-#include "Engine/NetConnection.h"
 #include "SharedInventoryStatePtr.generated.h"
 
 USTRUCT()
@@ -242,7 +243,6 @@ private:
 	 */
 	SharedPointerInternals::FSharedReferencer< ESPMode::ThreadSafe > SharedReferenceCount;
 };
-FORCEINLINE FString VarToFString( FSharedInventoryStatePtr var ){ return FString::Printf( TEXT( "%s" ), *VarToFString(var.Get()) ); }
 
 template<> struct TIsZeroConstructType<FSharedInventoryStatePtr> { enum { Value = true }; };
 

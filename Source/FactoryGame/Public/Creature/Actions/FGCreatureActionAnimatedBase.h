@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "Creature/FGCreatureAction.h"
+#include "Templates/SubclassOf.h"
 #include "FGCreatureActionAnimatedBase.generated.h"
 
 /**

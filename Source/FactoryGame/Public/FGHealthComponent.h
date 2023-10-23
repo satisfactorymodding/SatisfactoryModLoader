@@ -5,8 +5,8 @@
 #include "FactoryGame.h"
 #include "DamageTypes/FGDamageType.h"
 #include "Components/ActorComponent.h"
+#include "Engine/HitResult.h"
 #include "FGSaveInterface.h"
-
 #include "FGHealthComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FDeathDelegate, AActor*, DeadActor );
@@ -61,7 +61,7 @@ public:
 	virtual void TakePointDamage( AActor* damagedActor, float damage, class AController* instigatedBy, FVector hitLocation, class UPrimitiveComponent* hitComponent, FName boneName, FVector shotFromDirection, const class UDamageType* damageType, AActor* damageCauser );
 
 	UFUNCTION()
-	virtual void TakeRadialDamage( AActor* damagedActor, float damage, const class UDamageType* damageType, FVector hitLocation, FHitResult hitInfo, class AController* instigatedBy, AActor* damageCauser );
+	virtual void TakeRadialDamage( AActor* damagedActor, float damage, const class UDamageType* damageType, FVector hitLocation, const FHitResult& hitInfo, class AController* instigatedBy, AActor* damageCauser );
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "Health")
 	FORCEINLINE TArray<FDamageModifier> GetDamageModifiers() const { return mDamageTypeModifiers; }

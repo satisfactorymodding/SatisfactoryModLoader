@@ -2,6 +2,7 @@
 
 #include "FGSignSubsystem.h"
 #include "Components/SceneComponent.h"
+#include "Net/UnrealNetwork.h"
 
 void UFGSignDataRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

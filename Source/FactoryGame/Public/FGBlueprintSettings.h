@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Templates/SubclassOf.h"
 #include "Engine/DeveloperSettings.h"
+#include "Templates/SubclassOf.h"
 #include "FGBlueprintSettings.generated.h"
 
 /**

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Hologram/FGFactoryHologram.h"
+#include "FGFactoryHologram.h"
 #include "Resources/FGPoleDescriptor.h"
 #include "FGPoleHologram.generated.h"
 
@@ -40,6 +40,7 @@ public:
 	virtual void OnBuildModeChanged( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual bool CanNudgeHologram() const override;
+	virtual void ReplaceHologram( AFGHologram* hologram, bool snapTransform ) override;
 
 	virtual void ResetBuildSteps();
 	// End AFGHologram interface
