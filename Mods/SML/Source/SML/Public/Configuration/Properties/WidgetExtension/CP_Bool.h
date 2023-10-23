@@ -3,7 +3,7 @@
 #include "CP_Bool.generated.h"
 
 
-UCLASS(EditInlineNew)
+UCLASS(EditInlineNew, Abstract)
 class SML_API UCP_Bool : public UConfigPropertyBool {
     GENERATED_BODY()
 public:
