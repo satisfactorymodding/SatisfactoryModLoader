@@ -236,9 +236,6 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode")
 	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeHorzToVert;
 
-	// Forced direction resulting from a snap to a passthrough
-	FVector mForcedNormalDirection;
-
 	UPROPERTY()
 	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 

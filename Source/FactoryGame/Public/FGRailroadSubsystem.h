@@ -401,8 +401,8 @@ public:
 	/***************************************************************************************************
 	 * Block visualization
 	 */
-	void EnableBlockVisualization();
-	void DisableBlockVisualization();
+	void EnableBlockVisualization( UObject* visualizationRequester );
+	void DisableBlockVisualization( UObject* visualizationRequester );
 	void ToggleBlockVisualizationAlways( bool enabled );
 	FLinearColor GetBlockVisualizationColor( int32 forSignalBlockID );
 
@@ -575,7 +575,9 @@ private:
 	UPROPERTY()
 	class AFGTrainScheduler* mTrainScheduler;
 	
-	/** When above zero, we are showing block visualization actively right now */
-	int32 mIsBlockVisualizationEnabled;
+	/** All the objects that require the track visualization right now */
+	UPROPERTY()
+	TArray<UObject*> mBlockVisualizationRequesters;
+	
 	bool mIsBlockVisualizationAlwaysEnabled;
 };

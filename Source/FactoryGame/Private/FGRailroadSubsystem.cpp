@@ -67,8 +67,8 @@ UFGPowerConnectionComponent* AFGRailroadSubsystem::GetThirdRailForTrackGraph(int
 void AFGRailroadSubsystem::AddSignal( AFGBuildableRailroadSignal* signal){ }
 void AFGRailroadSubsystem::RemoveSignal( AFGBuildableRailroadSignal* signal){ }
 AFGTrainScheduler* AFGRailroadSubsystem::GetTrainScheduler() const{ return nullptr; }
-void AFGRailroadSubsystem::EnableBlockVisualization(){ }
-void AFGRailroadSubsystem::DisableBlockVisualization(){ }
+void AFGRailroadSubsystem::EnableBlockVisualization(UObject* visualizationRequester){ }
+void AFGRailroadSubsystem::DisableBlockVisualization(UObject* visualizationRequester){ }
 void AFGRailroadSubsystem::ToggleBlockVisualizationAlways(bool enabled){ }
 FLinearColor AFGRailroadSubsystem::GetBlockVisualizationColor(int32 forSignalBlockID){ return FLinearColor(); }
 void AFGRailroadSubsystem::Debug_MarkAllGraphsAsChanged(){ }
