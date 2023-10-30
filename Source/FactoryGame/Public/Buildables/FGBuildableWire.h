@@ -62,6 +62,10 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Buildable|Wire" )
 	FORCEINLINE class UFGCircuitConnectionComponent* GetConnection( int32 index ) const { return index == 0 || index == 1 ? mConnections[ index ].Get() : nullptr; }
 
+	/** @return The cached and replicated location of the connection at the end of the wire. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Buildable|Wire" )
+	FORCEINLINE FVector GetConnectionLocation( int32 index ) const { return index == 0 || index == 1 ? mConnectionLocations[ index ] : GetActorLocation(); }
+	
 	/**
 	 * Get connection at the other end of the wire.
 	 * @param connection Connection at our end of the wire.
@@ -152,6 +156,10 @@ private:
 	 */
 	UPROPERTY( ReplicatedUsing = OnRep_Connections )
 	TWeakObjectPtr< class UFGCircuitConnectionComponent > mConnections[ 2 ];
+
+	/** The cached end locations of this wire. */
+	UPROPERTY( Replicated )
+	FVector mConnectionLocations[ 2 ];
 
 	/** The wires between the two connections. */
 	UPROPERTY( SaveGame )
