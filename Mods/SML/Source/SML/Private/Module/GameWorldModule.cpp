@@ -2,7 +2,28 @@
 #include "Command/ChatCommandLibrary.h"
 #include "Registry/ModContentRegistry.h"
 #include "Subsystem/SubsystemActorManager.h"
-#include "Unlocks/FGUnlockRecipe.h"
+
+#if WITH_EDITOR
+EDataValidationResult UGameWorldModule::IsDataValid(TArray<FText>& ValidationErrors) {
+	EDataValidationResult ValidationResult = Super::IsDataValid(ValidationErrors);
+
+	//Check that we do not have any null schematics, or research trees
+	for (const TSubclassOf<UFGSchematic>& Schematic : mSchematics) {
+		if (Schematic == nullptr) {
+			ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "Validation_NullSchematic", "Null Schematic found. Was the content it previously referenced deleted or moved?"));
+			ValidationResult = EDataValidationResult::Invalid;
+		}
+	}
+	for (const TSubclassOf<UFGResearchTree>& ResearchTree : mResearchTrees) {
+		if (ResearchTree == nullptr) {
+			ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "Validation_NullSResearchTree", "Null ResearchTree found. Was the content it previously referenced deleted or moved?"));
+			ValidationResult = EDataValidationResult::Invalid;
+		}
+	}
+
+	return ValidationResult;
+}
+#endif
 
 void UGameWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     //Register default content before calling blueprint event logic
