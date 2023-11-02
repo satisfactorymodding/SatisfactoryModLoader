@@ -13,6 +13,9 @@ static TMap<void*, void*> RegisteredListenerMap;
 //Map of the function implementation pointer to the trampoline function pointer. Used to ensure one hook per function installed
 static TMap<void*, void*> InstalledHookMap;
 
+//Store the funchook instance used to hook each function
+static TMap<void*, funchook_t*> FunchookMap;
+
 void* FNativeHookManagerInternal::GetHandlerListInternal( const void* RealFunctionAddress ) {
 	void** ExistingMapEntry = RegisteredListenerMap.Find(RealFunctionAddress);
 	return ExistingMapEntry ? *ExistingMapEntry : nullptr;
@@ -52,6 +55,7 @@ bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunction
 	CHECK_FUNCHOOK_ERR(funchook_prepare(funchook, OutTrampolineFunction, HookFunctionPointer));
 	CHECK_FUNCHOOK_ERR(funchook_install(funchook, 0));
 	InstalledHookMap.Add(OriginalFunctionPointer, *OutTrampolineFunction);
+	FunchookMap.Add(OriginalFunctionPointer, funchook);
 	return true;
 }
 
@@ -88,3 +92,16 @@ SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& De
 	return ResolvedHookingFunctionPointer;
 }
 
+void FNativeHookManagerInternal::UnregisterHookFunction(const FString& DebugSymbolName, const void* RealFunctionAddress) {
+	funchook_t** funchookPtr = FunchookMap.Find(RealFunctionAddress);
+	if (funchookPtr == nullptr) {
+		UE_LOG(LogNativeHookManager, Warning, TEXT("Attempt to unregister hook for function %s at %p which was not registered"), *DebugSymbolName, RealFunctionAddress);
+		return;
+	}
+	funchook_t* funchook = *funchookPtr;
+	CHECK_FUNCHOOK_ERR(funchook_uninstall(funchook, 0));
+	CHECK_FUNCHOOK_ERR(funchook_destroy(funchook));
+	FunchookMap.Remove(RealFunctionAddress);
+	InstalledHookMap.Remove(RealFunctionAddress);
+	UE_LOG(LogNativeHookManager, Display, TEXT("Successfully unregistered hook for function %s at %p"), *DebugSymbolName, RealFunctionAddress);
+}

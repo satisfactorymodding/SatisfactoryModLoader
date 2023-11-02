@@ -51,7 +51,7 @@ public:
 	static void* GetHandlerListInternal( const void* RealFunctionAddress);
 	static void SetHandlerListInstanceInternal(void* RealFunctionAddress, void* HandlerList);
 	static void* RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction);
-	static void UnregisterHookFunction( const void* RealFunctionAddress );
+	static void UnregisterHookFunction( const FString& DebugSymbolName, const void* RealFunctionAddress );
 };
 
 template <typename T, typename E>
@@ -272,11 +272,11 @@ public:
 	}
 
 	// Uninstalls the hook. Also frees the handler lists object.
-	static void UninstallHook()
+	static void UninstallHook(const FString& DebugSymbolName)
 	{
 		if (bHookInitialized)
 		{
-			FNativeHookManagerInternal::UnregisterHookFunction( RealFunctionAddress );
+			FNativeHookManagerInternal::UnregisterHookFunction( DebugSymbolName, RealFunctionAddress );
 			DestroyHandlerLists<Handler, HandlerAfter>( RealFunctionAddress );
 			bHookInitialized = false;
 			RealFunctionAddress = nullptr;
@@ -308,7 +308,7 @@ public:
 		return NewDelegateHandle;
 	}
 
-	static void RemoveHandler( FDelegateHandle InHandlerHandle )
+	static void RemoveHandler(const FString& DebugSymbolName, FDelegateHandle InHandlerHandle )
 	{
 		if ( HandlerBeforeReferences->Contains( InHandlerHandle ) )
 		{
@@ -323,7 +323,7 @@ public:
 
 		if ( HandlersAfter->IsEmpty() && HandlersBefore->IsEmpty() )
 		{
-			UninstallHook();
+			UninstallHook(DebugSymbolName);
 		}
 	}
 };
@@ -449,11 +449,11 @@ public:
 	}
 
 	// Uninstalls the hook. Also frees the handler lists object.
-	static void UninstallHook()
+	static void UninstallHook(const FString& DebugSymbolName)
 	{
 		if (bHookInitialized)
 		{
-			FNativeHookManagerInternal::UnregisterHookFunction( RealFunctionAddress );
+			FNativeHookManagerInternal::UnregisterHookFunction( DebugSymbolName, RealFunctionAddress );
 			DestroyHandlerLists<Handler, HandlerAfter>( RealFunctionAddress );
 			bHookInitialized = false;
 			RealFunctionAddress = nullptr;
@@ -485,7 +485,7 @@ public:
 		return NewDelegateHandle;
 	}
 
-	static void RemoveHandler( FDelegateHandle InHandlerHandle )
+	static void RemoveHandler(const FString& DebugSymbolName, FDelegateHandle InHandlerHandle )
 	{
 		if ( HandlerBeforeReferences->Contains( InHandlerHandle ) )
 		{
@@ -500,7 +500,7 @@ public:
 
 		if ( HandlersAfter->IsEmpty() && HandlersBefore->IsEmpty() )
 		{
-			UninstallHook();
+			UninstallHook(DebugSymbolName);
 		}
 	}
 };
@@ -568,7 +568,7 @@ using CallScope = TCallScope<T>;
 	} )
 
 #define UNSUBSCRIBE_METHOD(MethodReference, HandlerHandle) \
-	HookInvoker<decltype(&MethodReference), &MethodReference>::RemoveHandler( HandlerHandle )
+	HookInvoker<decltype(&MethodReference), &MethodReference>::RemoveHandler(TEXT(#MethodReference), HandlerHandle )
 
 #define UNSUBSCRIBE_UOBJECT_METHOD(ObjectClass, MethodName, HandlerHandle) \
-	HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::RemoveHandler( HandlerHandle )
+	HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::RemoveHandler(TEXT(#ObjectClass "::" #MethodName), HandlerHandle )
