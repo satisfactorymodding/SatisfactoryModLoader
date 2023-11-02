@@ -4,20 +4,22 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Engine/DataAsset.h"
 #include "FGOptionInterface.h"
 #include "FGOptionsSettings.h"
 #include "Misc/Variant.h"
-#include "Engine/DataAsset.h"
 #include "FGUserSetting.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN( LogUserSetting, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogUserSetting, Log, All );
 
-UENUM( BlueprintType )
+/** Old enum indicating what menu the option belongs to. Was used before switching to the manager subclass */
+UENUM()
 enum class EUserSettingManagers : uint8
 {
 	USM_OptionsMenu					UMETA( DisplayName = "Options Menu" ),
 	USM_Advanced					UMETA( DisplayName = "Advanced Game Settings" ),
-	USM_PhotoMode					UMETA( DisplayName = "Photo Mode" )
+	USM_PhotoMode					UMETA( DisplayName = "Photo Mode" ),
+	USM_None						UMETA( DisplayName = "None" )
 };
 
 // Disqualifiers if we should not show the setting at all
@@ -59,9 +61,15 @@ public:
 	
 	FVariant GetDefaultValue() const;
 
+	/** Returns the option interface actively handling this setting, or nullptr if not found */
 	class IFGOptionInterface* GetOptionInterface();
 
 	TSubclassOf< class UFGOptionsValueController > GetValueSelectorWidgetClass() const;
+
+	// Used to migrate legacy properties on the settings
+	virtual void PostLoad() override;
+	// @Nick: This function override will just migrate ManagerAvailability for old assets, it does not actually serialize anything by itself
+	virtual void Serialize( FStructuredArchive::FRecord Record ) override;
 
 #if WITH_EDITOR
 	virtual bool SetupValueFunction( class UK2Node_CallFunction* callFunction, bool isGetterFunction ) const;
@@ -84,23 +92,27 @@ public:
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Setting" )
 	bool UseCVar;
 
+	/** If this option is handled by a cvar this text will set as the help text, if this text is empty we will use ToolTip instead.
+	 * If the cvar already exists, then we don't override it's help text.
+	 * If changed in editor you need to restart the editor to see this take affect . This is because the name already been registered
+	 * and I don't feel it's worth trying to unregister/reregister settings in editor. Values will be updated each new PIE session but this text won't 
+	 */
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Setting" )
+	FString DocString;
+
 	/** The name that is showed for this setting in the UI  */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Setting" )
 	FText DisplayName;
 
-	/** The tooltip that is showed for this setting in the UI  */
+	/** The tooltip that is showed for this setting in the UI. Used for cvar help text as well, see DocString for more information about that  */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Setting" )
 	FText ToolTip;
 
-	/** The category this setting will be placed in when showed in the UI */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Setting" )
-	FText Category;
+	/** This is the main category class for this setting. It represents the broader category under which a specific setting falls */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Setting" )
 	TSubclassOf<class UFGUserSettingCategory> CategoryClass;
 
-	/** The sub category this setting will be placed in when showed in the UI */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Setting" )
-	FText SubCategory;
+	/** This is the sub category class for this setting. It represents a more specific category for a setting, which is shown when expanding the main category class */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Setting" )
 	TSubclassOf<class UFGUserSettingCategory> SubCategoryClass;
 
@@ -123,9 +135,10 @@ public:
 	/** Select a custom widget to override the value selctors default widget */ 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value Selector"  )
 	TSoftClassPtr< class UFGOptionsValueController > CustomValueSelectorWidget;
-	
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Availability"  )
-	EUserSettingManagers ManagerAvailability;
+
+	/** Specifies what manager this option should be displayed in, e.g. Options, AGS or Photo Mode. Must point to a native class to avoid loading assets unnecessarily. */
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Availability", meta = ( MustImplement = "/Script/FactoryGame.FGOptionInterface" )  )
+	UClass* ManagerTypeAvailability;
 
 	// When any of these are true in the current menu we don't show the setting
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Availability", meta=(Bitmask,BitmaskEnum="/Script/FactoryGame.ESettingVisiblityDisqualifier") )
@@ -146,7 +159,10 @@ private:
 	 */
 	UPROPERTY( EditDefaultsOnly, Category="Availability" )
 	EIncludeInBuilds ShowInBuilds = EIncludeInBuilds::IIB_Development;
-	
+
+	/** Deprecated property holding the availability for the manager type */
+	UPROPERTY()
+	EUserSettingManagers ManagerAvailability_DEPRECATED;
 };
 
 UCLASS( Blueprintable, abstract, editinlinenew )

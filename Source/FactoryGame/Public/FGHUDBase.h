@@ -47,6 +47,8 @@ public:
 	UFUNCTION( Exec )
 	void ToggleShoppingListDebugOverlay();
 	UFUNCTION( Exec )
+	void ToggleOnlineInfoDebugOverlay();
+	UFUNCTION( Exec )
 	void QuickSwitchLanguage();
 	
 private:

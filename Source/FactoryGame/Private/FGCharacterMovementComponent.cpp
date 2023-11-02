@@ -5,6 +5,7 @@
 FFGPipeHyperDynamicPipeData::FFGPipeHyperDynamicPipeData(){ }
 FFGPipeHyperDynamicPipeData::FFGPipeHyperDynamicPipeData(const FFGPipeHyperDynamicPipeData& Other){ }
 FFGPipeHyperDynamicPipeData::FFGPipeHyperDynamicPipeData(FFGPipeHyperDynamicPipeData&& Other) noexcept{ }
+FFGPipeHyperDynamicPipeData::FFGPipeHyperDynamicPipeData(const StructOnScopeType& InStructOnScope){ }
 FFGPipeHyperDynamicPipeData& FFGPipeHyperDynamicPipeData::operator=(const FFGPipeHyperDynamicPipeData& Other){ return *(this); }
 FFGPipeHyperDynamicPipeData& FFGPipeHyperDynamicPipeData::operator=(FFGPipeHyperDynamicPipeData&& Other) noexcept{ return *(this); }
 bool FFGPipeHyperDynamicPipeData::Serialize(FArchive& Ar){ return bool(); }
@@ -66,12 +67,13 @@ void UFGCharacterMovementComponent::SetDefaultMovementMode(){ }
 float UFGCharacterMovementComponent::GetMaxJumpZVelocity() const{ return float(); }
 bool UFGCharacterMovementComponent::CanCrouchInCurrentState() const{ return bool(); }
 void UFGCharacterMovementComponent::SmoothClientPosition(float DeltaSeconds){ }
+void UFGCharacterMovementComponent::SmoothCorrection(const FVector& OldLocation, const FQuat& OldRotation, const FVector& NewLocation, const FQuat& NewRotation){ }
 float UFGCharacterMovementComponent::ImmersionDepth() const{ return float(); }
 void UFGCharacterMovementComponent::ServerSetHookLocation_Implementation(const FVector& hookLocation){ }
 bool UFGCharacterMovementComponent::ServerSetHookLocation_Validate(const FVector& hookLocation){ return bool(); }
 void UFGCharacterMovementComponent::SetHookLocation(const FVector& hookLocation){ }
-void UFGCharacterMovementComponent::ToggleWantsToSprintAndSetHoldSprint(const bool isHoldSprintOn){ }
-void UFGCharacterMovementComponent::SetWantsToSprintAndHoldSprint(const bool wantsToSprint, const bool isHoldSprintOn){ }
+void UFGCharacterMovementComponent::ToggleWantsToSprintAndSetAutoRelease(bool holdToSprint, bool autoReleaseSprint){ }
+void UFGCharacterMovementComponent::SetWantsToSprintAndHoldSprint(bool wantsToSprint, bool holdToSprint, bool autoReleaseSprint){ }
 bool UFGCharacterMovementComponent::CanGrabLadder(const  UFGLadderComponent* ladder) const{ return bool(); }
 void UFGCharacterMovementComponent::StartClimbLadder( UFGLadderComponent* ladder){ }
 void UFGCharacterMovementComponent::StopClimbLadder(){ }
@@ -117,10 +119,11 @@ AFGJetPack* UFGCharacterMovementComponent::GetCachedJetPack(){ return nullptr; }
 AFGHookshot* UFGCharacterMovementComponent::GetCachedHookshot(){ return nullptr; }
 AFGJumpingStilts* UFGCharacterMovementComponent::GetCachedJumpingStilts(){ return nullptr; }
 AFGHoverPack* UFGCharacterMovementComponent::GetCachedHoverPack(){ return nullptr; }
-const AFGParachute* UFGCharacterMovementComponent::GetActiveParachute() const{ return nullptr; }
 void UFGCharacterMovementComponent::TickSlide(const float delta){ }
 bool UFGCharacterMovementComponent::StartLedgeClimb(const float duration, const float speed){ return bool(); }
 void UFGCharacterMovementComponent::StopLedgeClimb(const bool interrupt){ }
+AActor* UFGCharacterMovementComponent::FindClosestPipeHyper(const FVector& worldLocation, const FVector& velocity, float& out_distanceAlongSpline, TStructOnScope<FFGPipeHyperBasePipeData>& out_pipeData) const{ return nullptr; }
+void UFGCharacterMovementComponent::UpdatePipeMovementDataFromCorrectionResult(const FVector& newLocation, const FVector& newVelocity){ }
 void FSavedMove_FGMovement::Clear(){ }
 uint8 FSavedMove_FGMovement::GetCompressedFlags() const{ return uint8(); }
 bool FSavedMove_FGMovement::CanCombineWith(const FSavedMovePtr& newMove, ACharacter* character, float maxDelta) const{ return bool(); }

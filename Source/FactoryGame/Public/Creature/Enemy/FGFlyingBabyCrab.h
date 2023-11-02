@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 #include "DamageTypes/FGDamageType.h"
+#include "GameFramework/Actor.h"
 #include "FGFlyingBabyCrab.generated.h"
 
 UCLASS()
@@ -20,9 +20,12 @@ public:
 
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
+	UFUNCTION( BlueprintPure, Category = "Movement" )
+	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovementComp() const { return mProjectileMovementComponent; }
+	
 	/** Whether or not the specified actor is a valid target. */
-	UFUNCTION( BlueprintNativeEvent, Category = "Combat" )
-	bool IsValidTarget( AActor* target );
+	UFUNCTION( BlueprintPure, Category = "Combat" )
+	bool IsValidTarget( AActor* target ) const;
 	
 	/** Returns the current target of the baby crab. */
 	UFUNCTION( BlueprintPure, Category = "Combat" )
@@ -47,6 +50,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "BabyCrab" )
 	void Explode();
 
+	UFUNCTION( BlueprintCallable, Category = "BabyCrab" )
+	void RegisterHostilePlayer( class AFGCharacterPlayer* player );
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
@@ -56,6 +62,8 @@ protected:
 
 	UFUNCTION()
 	void OnClientSubsystemsValid();
+
+	void UpdateProjectileComponentSpeed();
 
 	/** Sets the current target of the baby crab. */
 	UFUNCTION( BlueprintCallable, Category = "Combat" )
@@ -85,6 +93,9 @@ private:
 	UFUNCTION()
 	void OnRep_CurrentTarget();
 
+	UFUNCTION()
+	void OnRep_MovementSpeed();
+
 	/** Movment functions. Called by the creature subsystem. Needs to be thread-safe. */
 	void TickMovement( float dt );
 
@@ -97,7 +108,15 @@ private:
 	void SteerAvoidFloor( FVector& out_acceleration );
 	void SteerErraticMovement( FVector& out_acceleration );
 
-protected:	
+protected:
+	/** Movement speed of the baby crab. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Movement" )
+	FFloatInterval mMovementSpeedRange;
+	
+	/** Movement speed of the baby crab while in combat. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Movement" )
+	FFloatInterval mMovementSpeedRangeCombat;
+	
 	/** Essentially the vision radius of the flying baby crab. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Combat" )
 	float mAggroRadius;
@@ -190,16 +209,28 @@ protected:
 	class UProjectileMovementComponent* mProjectileMovementComponent;
 
 private:
+	/** If spawned from a crab hatcher, this will be a reference to it. */
+	UPROPERTY()
+	class AFGCrabHatcher* mParentCrabHatcher;
+	
 	/** Our current target. */
 	UPROPERTY( ReplicatedUsing = OnRep_CurrentTarget )
 	AActor* mCurrentTarget;
+
+	TArray< AFGCharacterPlayer* > mHostilePlayers;
 
 	/** Used to offset the noise used for erratic movement. */
 	float mErraticMovementNoiseOffset;
 
 	/** Avoidance radius when flying with other baby crabs. */
 	float mCurrentAvoidanceRadius;
-	
+
+	UPROPERTY( ReplicatedUsing = OnRep_MovementSpeed )
+	float mMovementSpeed;
+
+	UPROPERTY( ReplicatedUsing = OnRep_MovementSpeed )
+	float mMovementSpeedCombat;
+
 	FTimerHandle mAggroTimerHandle;
 
 	bool bHasExploded;

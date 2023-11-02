@@ -1,9 +1,9 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGSaveSystem.h"
 #include "Misc/EngineVersion.h"
 #include "SaveCustomVersion.h"
-#include "FGSaveSystem.h"
 
 /*
 * Core save types that need to be accessible outside the save session 

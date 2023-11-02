@@ -5,6 +5,7 @@
 #include "FGColoredInstanceMeshProxy.h"
 #include "FGFactoryConnectionComponent.h"
 #include "Hologram/FGPoleHologram.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildablePole::AFGBuildablePole(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mHeight = 100.0;

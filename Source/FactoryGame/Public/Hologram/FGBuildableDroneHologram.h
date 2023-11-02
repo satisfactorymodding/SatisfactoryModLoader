@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 
-#include "Hologram/FGVehicleHologram.h"
+#include "FGVehicleHologram.h"
 #include "FGBuildableDroneHologram.generated.h"
 
 /**

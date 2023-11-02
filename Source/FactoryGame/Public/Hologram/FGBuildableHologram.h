@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Hologram/FGHologram.h"
 #include "Buildables/FGBuildable.h"
+#include "FGHologram.h"
 #include "FGBuildableHologram.generated.h"
 
 UENUM()

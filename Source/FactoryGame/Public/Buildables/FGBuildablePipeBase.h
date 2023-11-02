@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "CoreMinimal.h"
-#include "Buildables/FGBuildable.h"
 #include "Components/SplineComponent.h"
+#include "CoreMinimal.h"
+#include "FGBuildable.h"
 #include "FGSignificanceInterface.h"
 #include "FGSplineBuildableInterface.h"
 #include "FGBuildablePipeBase.generated.h"
@@ -95,7 +95,7 @@ public:
 	 * The returned pieces will always come in the order specified above, so you can make a safe assumption
 	 * on the fact that Connection1 of the first piece will be spliced, and Connection0 of the second one as well.
 	 */
-	static TArray<AFGBuildablePipeBase*> Splice(AFGBuildablePipeBase* Pipe, float SpliceOffset, float SpliceLength);
+	static TArray<AFGBuildablePipeBase*> Splice(AFGBuildablePipeBase* Pipe, float SpliceOffset, float SpliceLength, AActor* BuildEffectInstigator = nullptr);
 
 	virtual void PostSerializedFromBlueprint(bool isBlueprintWorld) override;
 	

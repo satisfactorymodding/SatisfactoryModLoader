@@ -43,7 +43,7 @@ void UFGServerSubsystem::SetAutoSaveOnDisconnect(bool AutoSaveOnDisconnect){ }
 bool UFGServerSubsystem::Tick(float DeltaTime){ return bool(); }
 void UFGServerSubsystem::OnPreLoadMap(const FString &MapName){ }
 void UFGServerSubsystem::OnPostLoadMap(UWorld* World){ }
-void UFGServerSubsystem::PlayerLeaving(AGameModeBase* , AController*) const{ }
+void UFGServerSubsystem::PlayerLeaving( AGameModeBase* ,  AController*) const{ }
 void UFGServerSubsystem::SaveSettings() const{ }
 void UFGServerSubsystem::LoadSettings(){ }
 FString UFGServerSubsystem::SeasonText(const FString& HashedText) const{ return FString(); }

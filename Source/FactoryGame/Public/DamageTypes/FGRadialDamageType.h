@@ -5,7 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 
-#include "DamageTypes/FGDamageType.h"
+#include "FGDamageType.h"
 #include "Engine/EngineTypes.h"
 
 #include "FGRadialDamageType.generated.h"

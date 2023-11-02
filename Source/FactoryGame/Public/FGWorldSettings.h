@@ -2,15 +2,16 @@
 
 #pragma once
 
-#if WITH_EDITOR
-#include "FactoryGame.h"
-#include "UnrealEdMisc.h"
-#endif
-
 #include "FGSaveInterface.h"
 #include "FGAtmosphereVolume.h"
 #include "GameFramework/WorldSettings.h"
 #include "FWPSaveDataMigrationContext.h"
+#include "FactoryGame.h"
+
+#if WITH_EDITOR
+#include "UnrealEdMisc.h"
+#endif
+
 #include "FGWorldSettings.generated.h"
 
 UCLASS()

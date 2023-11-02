@@ -2,6 +2,7 @@
 
 #include "Buildables/FGBuildablePipeReservoir.h"
 #include "Hologram/FGPipeReservoirHologram.h"
+#include "Net/UnrealNetwork.h"
 
 void FQuantizedReservoirIndicatorData::SetFlowFillPct(float pct){ }
 float FQuantizedReservoirIndicatorData::GetFlowFillPct() const{ return float(); }

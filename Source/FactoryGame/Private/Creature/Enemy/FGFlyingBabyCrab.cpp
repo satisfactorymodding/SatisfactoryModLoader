@@ -2,8 +2,11 @@
 
 #include "Creature/Enemy/FGFlyingBabyCrab.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGFlyingBabyCrab::AFGFlyingBabyCrab() : Super() {
+	this->mMovementSpeedRange = FFloatInterval(400.0, 700.0);
+	this->mMovementSpeedRangeCombat = FFloatInterval(1000.0, 2000.0);
 	this->mAggroRadius = 5000.0;
 	this->mAggroTickRate = 1.0;
 	this->mSwarmViewDistance = 1000.0;
@@ -25,7 +28,10 @@ AFGFlyingBabyCrab::AFGFlyingBabyCrab() : Super() {
 	this->mCohesionDirectionWeight = 0.1;
 	this->mHomeLocation = FVector::ZeroVector;
 	this->mProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
+	this->mParentCrabHatcher = nullptr;
 	this->mCurrentTarget = nullptr;
+	this->mMovementSpeed = 600.0;
+	this->mMovementSpeedCombat = 2000.0;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -37,15 +43,19 @@ AFGFlyingBabyCrab::AFGFlyingBabyCrab() : Super() {
 void AFGFlyingBabyCrab::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGFlyingBabyCrab, mCurrentTarget);
+	DOREPLIFETIME(AFGFlyingBabyCrab, mMovementSpeed);
+	DOREPLIFETIME(AFGFlyingBabyCrab, mMovementSpeedCombat);
 }
-bool AFGFlyingBabyCrab::IsValidTarget_Implementation(AActor* target){ return bool(); }
+bool AFGFlyingBabyCrab::IsValidTarget(AActor* target) const{ return bool(); }
 void AFGFlyingBabyCrab::SetHomeLocation(const FVector& Location){ }
 void AFGFlyingBabyCrab::Explode(){ }
+void AFGFlyingBabyCrab::RegisterHostilePlayer( AFGCharacterPlayer* player){ }
 void AFGFlyingBabyCrab::BeginPlay(){ }
 void AFGFlyingBabyCrab::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGFlyingBabyCrab::Destroyed(){ }
 void AFGFlyingBabyCrab::PostNetReceiveLocationAndRotation(){ }
 void AFGFlyingBabyCrab::OnClientSubsystemsValid(){ }
+void AFGFlyingBabyCrab::UpdateProjectileComponentSpeed(){ }
 void AFGFlyingBabyCrab::SetCurrentTarget(AActor* target){ }
 void AFGFlyingBabyCrab::OnCurrentTargetChanged_Implementation(AActor* newTarget){ }
 void AFGFlyingBabyCrab::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){ }
@@ -54,6 +64,7 @@ void AFGFlyingBabyCrab::RestartAggroTimer(bool initialStart){ }
 void AFGFlyingBabyCrab::UpdateAggro(){ }
 AActor* AFGFlyingBabyCrab::SelectAggroTarget(const TArray< AActor* >& TargetCandidates) const{ return nullptr; }
 void AFGFlyingBabyCrab::OnRep_CurrentTarget(){ }
+void AFGFlyingBabyCrab::OnRep_MovementSpeed(){ }
 void AFGFlyingBabyCrab::TickMovement(float dt){ }
 void AFGFlyingBabyCrab::SteerTowardsDirection(const FVector& Direction, float strength, FVector& out_acceleration){ }
 void AFGFlyingBabyCrab::SteerTowardsTarget(FVector& out_acceleration){ }

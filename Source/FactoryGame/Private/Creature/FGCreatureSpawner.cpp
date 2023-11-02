@@ -26,12 +26,20 @@ AFGCreatureSpawner::AFGCreatureSpawner() : Super() {
 	this->mDespawnDistanceOverride = -1.0;
 	this->mVisualizeSpawnDistance = false;
 	this->mRespawnTimeIndays = 3;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = false;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bCollideWhenPlacing = true;
 	this->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	this->RootComponent = mCapsuleComponent;
 }
 void AFGCreatureSpawner::BeginPlay(){ }
 void AFGCreatureSpawner::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGCreatureSpawner::Tick(float DeltaSeconds){ }
 void AFGCreatureSpawner::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGCreatureSpawner::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGCreatureSpawner::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

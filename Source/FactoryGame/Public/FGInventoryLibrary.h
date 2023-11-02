@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "FGInventoryComponent.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "FGInventoryLibrary.generated.h"
 
 

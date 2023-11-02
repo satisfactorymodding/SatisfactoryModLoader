@@ -3,6 +3,7 @@
 #include "Hologram/FGPipelineSupportHologram.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGPipelineSupportHologram::AFGPipelineSupportHologram() : Super() {
 	this->mSupportMesh.Mesh = nullptr;
@@ -31,6 +32,7 @@ AActor* AFGPipelineSupportHologram::Construct(TArray<AActor*>& out_children, FNe
 void AFGPipelineSupportHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
 void AFGPipelineSupportHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ }
 bool AFGPipelineSupportHologram::CanNudgeHologram() const{ return bool(); }
+void AFGPipelineSupportHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
 int32 AFGPipelineSupportHologram::GetBaseCostMultiplier() const{ return int32(); }
 void AFGPipelineSupportHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGPipelineSupportHologram::SetSupportLength(float height){ }

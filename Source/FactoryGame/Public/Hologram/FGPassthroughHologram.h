@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGFactoryHologram.h"
+#include "FGFactoryHologram.h"
 #include "FGPassthroughHologram.generated.h"
 
 
@@ -15,69 +15,43 @@ UCLASS()
 class FACTORYGAME_API AFGPassthroughHologram : public AFGFactoryHologram
 {
 	GENERATED_BODY()
-
 public:
-	
 	AFGPassthroughHologram();
 
 	// Begin Actory Interface
 	virtual void BeginPlay() override;
 	// End AActor Interface
-
-
+	
 	// Begin AFGHologram interface
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
+	virtual void GetIgnoredClearanceActors(TArray<AActor*>& ignoredActors) const override;
+	virtual int32 GetBaseCostMultiplier() const override;
 	// End AFGHologram interface
-
+	
 protected:
-	void BuildMeshes();
-	void UpdateClearance();
+	virtual void RebuildMeshesAndUpdateClearance();
+	void TryExtendInWorldDirection( const FVector& worldLocation, const FQuat& worldRotation, const FVector& worldDirection, AFGBuildableFoundation* snappedFoundation, float& out_extension, TArray<AFGBuildableFoundation*>& overlappingFoundations ) const;
+	void OverlapCheckFoundations( const FVector& worldLocation, const FQuat& worldRotation, const FVector& offsetDirection, TArray<AFGBuildableFoundation*>& out_foundations ) const;
 
-private:
-	UPROPERTY()
-	FVector mAlignDirection;
+	/** Maximum total length of the passthrough */
+	UPROPERTY( EditDefaultsOnly, Category = "Passthrough" )
+	float mMaxPassthroughLength;
 
-	// The foundation this passthrough has snapped to
-	UPROPERTY()
-	AFGBuildableFoundation* mSnappedFoundation;
-
-	// Depending on what we snap to this can be the wall thickness or foundation height
-	UPROPERTY()
+	/** Whenever we allow the pass through to span across multiple foundations */
+	UPROPERTY( EditDefaultsOnly, Category = "Passthrough" )
+	bool mAllowMultiFoundationPassThrough;
+	
+	/** Thickness of the building we are attaching to */
+	UPROPERTY( VisibleInstanceOnly, Category = "Passthrough" )
 	float mSnappedBuildingThickness;
-
-	// The length of the mesh used for tiling the mid section
-	UPROPERTY()
-	float mMidMeshLength;
-
-	UPROPERTY()
-	class UStaticMesh* mCapMesh;
-
-	UPROPERTY()
-	class UStaticMesh* mMidMesh;
-
-	UPROPERTY()
-	FRotator mEndCapRotation;
-
-	UPROPERTY()
-	FRotator mMidMeshRotation;
-
-	UPROPERTY()
-	FVector mEndCapTranslation;
-
-	UPROPERTY()
-	float mClearanceHeightMin;
-
-	UPROPERTY()
-	float mClearanceThickness;
-
-	UPROPERTY()
+	
+	/** Generated mesh components */
+	UPROPERTY( VisibleInstanceOnly, Category = "Passthrough" )
 	TArray< class UStaticMeshComponent* > mMeshComponents;
 
-	UPROPERTY()
-	TSubclassOf< class UFGConnectionComponent > mConnectionClass;
-
-	UPROPERTY()
-	float mMinHeight;
+	/** Snapped foundations that will be ignored for the clearance check */
+	UPROPERTY( VisibleInstanceOnly, Category = "Passthrough" )
+	TArray<AFGBuildableFoundation*> mSnappedFoundations;
 };

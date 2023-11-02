@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "GameFramework/Actor.h"
 #include "FGActorRepresentationInterface.h"
 #include "FGDeathMarker.generated.h"
 

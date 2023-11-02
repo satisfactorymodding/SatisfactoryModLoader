@@ -91,6 +91,7 @@ FLinearColor UFGItemDescriptor::GetFluidColorLinear(TSubclassOf<UFGItemDescripto
 		return FLinearColor();
 }
 
+TAutoConsoleVariable<int32> CVarStressTestRadioActivity(TEXT("CVarStressTestRadioActivity"), 0, TEXT(""));
 #if WITH_EDITOR
 void UFGItemDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 #endif 

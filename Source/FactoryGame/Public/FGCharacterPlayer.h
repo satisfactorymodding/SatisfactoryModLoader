@@ -1,19 +1,21 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "FactoryGame.h"
-#include "FGCharacterBase.h"
-#include "FGInventoryComponent.h"
-#include "FGUseableInterface.h"
-#include "FGRadiationInterface.h"
-#include "Equipment/FGEquipment.h"
-#include "FGHUD.h"
-#include "FGOutlineComponent.h"
-#include "FGActorRepresentationInterface.h"
-#include "Equipment/FGBuildGun.h"
-#include "Creature/FGCreature.h"
-#include "FGInventoryComponentEquipment.h"
-#include "FGCharacterMovementComponent.h"
+#include "CameraAnimationCameraModifier.h"
 #include "Buildables/FGBuildablePipeHyperJunction.h"
+#include "Creature/FGCreature.h"
+#include "Equipment/FGBuildGun.h"
+#include "Equipment/FGEquipment.h"
+#include "FGActorRepresentationInterface.h"
+#include "FGCharacterBase.h"
+#include "FGCharacterMovementComponent.h"
+#include "FGHUD.h"
+#include "FGInventoryComponent.h"
+#include "FGInventoryComponentEquipment.h"
+#include "FGInventoryToRespawnWith.h"
+#include "FGOutlineComponent.h"
+#include "FGRadiationInterface.h"
+#include "FGUseableInterface.h"
 #include "FGCharacterPlayer.generated.h"
 
 // Callbacks used by the replication graph to build dependency lists
@@ -178,6 +180,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnCreaturePerceptionStateChanged,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActiveEquipmentChangedInSlot, EEquipmentSlot, Slot );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPendingJunctionStateChanged, const FFGPendingHyperJunctionInfo&, newJunctionInfo );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPendingJunctionOutputChanged, const FFGPipeHyperConnectionHistoryEntry&, newOutputConnection );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams( FFGOnPlayerDeathCrateSpawned, EPlayerKeepInventoryMode, keepInventoryMode, FInventoryToRespawnWith&, inout_itemsToRespawnWith, TArray<FInventoryStack>&, inout_droppedItems  );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnCameraModeModeChanged, ECameraMode, newCameraMode );
 
 // Flags to what actions to bind when calling BindActions
 UENUM( meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
@@ -193,12 +197,41 @@ enum class EActionsToBind : uint8
 	All = 0xFF
 };
 
-// Logic operators for the EActionsToBind enum
-inline EActionsToBind operator | ( EActionsToBind a, EActionsToBind b ) { return (EActionsToBind)( (uint8)a | (uint8)b ); }
-inline EActionsToBind operator & ( EActionsToBind a, EActionsToBind b ) { return (EActionsToBind)( (uint8)a & (uint8)b ); }
+ENUM_CLASS_FLAGS( EActionsToBind )
 
-inline EActionsToBind& operator |= ( EActionsToBind& a, EActionsToBind b ) { return (EActionsToBind&)( (uint8&)a |= (uint8)b ); }
-inline EActionsToBind& operator &= ( EActionsToBind& a, EActionsToBind b ) { return (EActionsToBind&)( (uint8&)a &= (uint8)b ); }
+// Flags representing each type of mapping context on the player
+UENUM( meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
+enum class EPlayerMappingContextCategory : uint8
+{
+	None = 0,
+	
+	Movement = 0x1,
+	Actions = 0x2,
+	EquipmentHandling = 0x4,
+	EquipmentActions = 0x8,
+	Interface = 0x10,
+
+	Cheats = 0x20,
+
+	All = 0xFF
+};
+
+ENUM_CLASS_FLAGS( EPlayerMappingContextCategory )
+
+USTRUCT( BlueprintType )
+struct FPlayerMappingContext
+{
+	GENERATED_BODY()
+	
+	UPROPERTY( EditDefaultsOnly )
+	EPlayerMappingContextCategory ContextCategory;
+
+	UPROPERTY( EditDefaultsOnly )
+	TObjectPtr< UInputMappingContext > MappingContext;
+
+	UPROPERTY( EditDefaultsOnly )
+	int32 Priority;
+};
 
 /**
  * Base class for all player characters in the game.
@@ -254,7 +287,7 @@ public:
 	// End ACharacter interface
 
 	// Begin IFGUseableInterface
-	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) const override;
+	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual bool IsUseable_Implementation() const override;
@@ -300,9 +333,6 @@ public:
 	// Setup run when this player have been possessed.
 	void OnPossessedSetup();
 
-	/** Called on both server and client when respawning has finished. */
-	void FinishRespawn();
-
 	/** Whether or not the player is currently inside the starting pod. */
 	UFUNCTION( BlueprintPure, Category = "Player" )
 	bool IsInStartingPod() const;
@@ -311,7 +341,7 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Character" )
 	void TickVisuals( float dt );
 
-	/** Used by an actor to tell the player that they are being seen by it. */
+	/** Used by an actor to tell the player that they are being seen by it. Can be removed manually by calling Unregister, alternatively will be removed automatically if the actor is destroyed. */
 	UFUNCTION( BlueprintCallable, Category = "AI" )
 	void RegisterPerceivingActor( class AActor* actor );
 
@@ -571,9 +601,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
 	FORCEINLINE class AFGResourceScanner* GetResourceScanner() const { return mResourceScanner; }
 
-	/** @return This players resource miner. */
+	/** Returns the resource miner that can be used for mining resources by this player. */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
-	FORCEINLINE class AFGResourceMiner* GetResourceMiner() const { return mResourceMiner; }
+	class AFGResourceMiner* GetActiveResourceMiner() const;
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Character" )
 	FORCEINLINE class USkeletalMeshComponent* Get3PMesh() const{ return mMesh3P; }
@@ -600,11 +630,11 @@ public:
 
 	/** Gets the camera bobbing animation we want to use when sprinting ( can vary with equipment ) */
 	UFUNCTION( BlueprintCallable, Category = "Movement" )
-	TSubclassOf< class ULegacyCameraShake > GetDesiredSprintHeadBobShake() const;
+	UCameraAnimationSequence* GetDesiredSprintHeadBobShake() const;
 
 	/** Gets the camera bobbing animation we want to use when walking ( can vary with equipment ) */
 	UFUNCTION( BlueprintCallable, Category = "Movement" )
-	TSubclassOf< class ULegacyCameraShake > GetDesiredWalkHeadBobShake() const;
+	UCameraAnimationSequence* GetDesiredWalkHeadBobShake() const;
 
 	/** Gets a PreCasted movement component. We should be able to optimize this by ensuring that this component is the right type when assigning it and then do a free cast here ans have it faster. So making this way of fetching it now. Even though it's not really faster atm, it can be optimized later.*/
 	UFUNCTION( BlueprintPure )
@@ -613,6 +643,10 @@ public:
 	UFUNCTION( BlueprintPure )
 	class AFGPlayerController* GetFGPlayerController() const;
 
+	/** Whether or not an interact widget is open. */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	bool IsInteractWidgetOpen() const { return mIsInteractWidgetOpen; }
+	
 	/** Called whenever an interact widget gets added or removed. */
     void OnInteractWidgetAddedOrRemoved( class UFGInteractWidget* widget, bool added );
 
@@ -763,17 +797,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Input" )
 	int32 GetMappingContextPriority() const;
 
+	/** Enables / disables specified mapping contexts. Can change multiple at the same time. */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
-	void SetMovementInputEnabled( bool enabled );
-	
-	UFUNCTION( BlueprintCallable, Category = "Input" )
-	void SetActionInputEnabled( bool enabled );
-	
-	UFUNCTION( BlueprintCallable, Category = "Input" )
-    void SetInterfaceActionInputEnabled( bool enabled );
-
-	UFUNCTION( BlueprintCallable, Category = "Input" )
-	void SetEquipmentInputEnabled( bool enabled );
+	void SetMappingContextEnabled( EPlayerMappingContextCategory contextMask, bool enabled );
 
 	void ClipboardCopy();
     void ClipboardPaste();
@@ -840,8 +866,17 @@ public:
 	/** Revives the current player with full health. Needs to be called on the authority side */
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Player" )
 	void RevivePlayerWithFullHealth();
+
+	void SetPlayerFlyingOnSpawn();
+
+	/** Returns distance we want to be able to use stuff from */
+	UFUNCTION( BlueprintPure, Category = "Use" )
+	float GetUseDistance();
+
+	bool GetIsInGasCloud() const;
+	void SetIsInGasCloud( const bool isInGas );
+
 protected:
-	
 	// APawn interface
 	virtual void SetupPlayerInputComponent( class UInputComponent* inputComponent ) override;
 	virtual void DestroyPlayerInputComponent() override;
@@ -937,10 +972,6 @@ protected:
 
 	/** Set the best usable actor */
 	void SetBestUsableActor( class AActor* newBestUsableActor );
-
-	/** Returns distance we want to be able to use stuff from */
-	UFUNCTION( BlueprintPure, Category = "Use" )
-	float GetUseDistance();
 
 	/** snaps the camera spring arm to its desired location, so no interp */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Camera" )
@@ -1054,7 +1085,7 @@ protected:
 	float mFlyToggleTime = 0.2f;
 	
 	void DebugBuildablesInFrustum() const;
-	
+
 public:
 	// Callbacks used by the replication graph to build dependency lists
 	/** Event for when equipment that is should always be replicated on the player is spawned */
@@ -1098,6 +1129,14 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "UI" )
 	FOnPendingJunctionOutputChanged mOnPendingJunctionOutputChanged;
 
+	/** Called when the player's camera mode changes to the new value */
+	UPROPERTY( BlueprintAssignable, Category = "Camera" )
+	FFGOnCameraModeModeChanged mOnPlayerCameraModeChanged;
+
+	/** Event for when player death crate is about to be spawned. Gives you a chance to modify both dropped and retained items */
+	UPROPERTY( BlueprintAssignable, Category = "Death" )
+	FFGOnPlayerDeathCrateSpawned mOnDeathCrateSpawned;
+
 	/** Called just after a new equipment actor has been spawned, before it eventually gets equipped. */
 	FOnEquipmentSpawned mOnEquipmentSpawned;
 
@@ -1127,6 +1166,10 @@ public:
 
 	/** Update the status of the player s we can update appearances and UI */
 	void UpdatePlayerStatus();
+
+	/** Gets the players state for this player. Either from this character or the driven vehicle */
+    UFUNCTION( BlueprintPure, Category = "General" )
+    class AFGPlayerState* GetControllingPlayerState() const;
 	
 private:
 	/**
@@ -1244,10 +1287,6 @@ private:
 	
 	void SetOnlineState( const bool isPlayerOnline );
 
-	/** Gets the players state for this player. Either from this character or the driven vehicle */
-	UFUNCTION( BlueprintPure, Category = "General" )
-	class AFGPlayerState* GetControllingPlayerState() const;
-
 	/** Checks the player state if flying is toggleable */
 	void UpdateFlyingIsToggleable();
 
@@ -1306,6 +1345,9 @@ protected:
 	FUseState mCachedUseState;
 
 	UPROPERTY( BlueprintReadOnly )
+	FUseState mPreviousCachedUseState;
+	
+	UPROPERTY( BlueprintReadOnly )
 	FUseState mOldCachedUseState;
 	
 	/** Anim instance class to use in third person */
@@ -1331,6 +1373,14 @@ protected:
 	/** The damagetypes we allow while god mode is on. e.g. world bounds should still damage player so they don't fly of the screen  */
 	UPROPERTY(EditDefaultsOnly, Category= "Damage")
 	TArray< TSoftClassPtr<UFGDamageType> > mGodModeDamageTypes;
+
+	/** Cached god mode allowed damage types gathered from mGodModeDamageTypes on BeginPlay */
+	UPROPERTY()
+	TArray<TSubclassOf<UFGDamageType>> mCachedGodModeDamageTypes;
+
+	/** List of damage sources to prevent from damaging us during the time when the player is in the loading screen. */
+	UPROPERTY()
+	TArray<TSubclassOf<UFGDamageType>> mCachedDamageTypesToPreventDuringRespawn;
 
 	/** The player that we are reviving */
 	UPROPERTY( BlueprintReadOnly, Category = "Revive" )
@@ -1373,25 +1423,9 @@ protected:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Default" )
 	TSubclassOf< class UFGEquipmentDescriptor > mHazmatSuitClass;
 	
-	/** Mapping context for the movement of the player. */
+	/** Mapping contexts for the player. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
-	TObjectPtr< UInputMappingContext > mMappingContextMovement;
-	
-	/** Mapping context for the actions of the player. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
-	TObjectPtr< UInputMappingContext > mMappingContextActions;
-
-	/** Mapping context for managing equipment. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
-	TObjectPtr< UInputMappingContext > mMappingContextEquipment;
-
-	/** Mapping context for the interface actions of the player. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
-	TObjectPtr< UInputMappingContext > mMappingContextInterfaceActions;
-
-	/** Mapping context for managing equipment. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
-	TObjectPtr< UInputMappingContext > mMappingContextCheats;
+	TArray< FPlayerMappingContext > mMappingContexts;
 	
 	/** Checks if this player has any holstered equipment */
 	UFUNCTION( BlueprintCallable )
@@ -1433,6 +1467,9 @@ private:
 	 *	DON'T RELY ON THIS AT RUNTIME. I don't feel its worth tracking this state during the whole session -K2 */
 	UPROPERTY( SaveGame )
 	bool mIsCheatFlyingSaved = false;
+
+	/** Tracks whether or not an interact widget is open. */
+	bool mIsInteractWidgetOpen;
 	
 	/** The cinematic camera used in photo mode */
 	UPROPERTY( Transient )
@@ -1525,19 +1562,25 @@ private:
 	/** Revive timer handle, started locally on revived clients to show progress */
 	FTimerHandle mReviveTimerHandle;
 
+	/** Cached walk head bob camera anim reference from the FGPlayerSettings */
+	UPROPERTY( Transient )
+	UCameraAnimationSequence* mDefaultWalkHeadBobCameraAnim;
+
+	/** Cached sprint head bob camera anim reference from the FGPlayerSettings */
+	UPROPERTY( Transient )
+	UCameraAnimationSequence* mDefaultSprintHeadBobCameraAnim;
+
 	/** Indicates if the player is sprinting and wants to use the sprint bobbing */
 	bool mWantsSprintBobbing;
 
-	/** Reference to the current head bob shake we should use */
-	TSubclassOf< class ULegacyCameraShake > mCurrentHeadBobShake;
+	/** Reference to the current head bob camera animation we should use */
+	FCameraAnimationHandle mCurrentHeadBobCameraAnimHandle;
 
-	/** Reference to the default walk head bob shake */
-	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
-	TSubclassOf< class ULegacyCameraShake > mDefaultWalkHeadBobShake;
+	/** Currently cached scale of the head bobbing animation, we re-start the montage if it changes */
+	float mCurrentHeadBobScale{1.0f};
 
-	/** Reference to the default sprint head bob shake */
-	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
-	TSubclassOf< class ULegacyCameraShake > mDefaultSprintHeadBobShake;
+	/** Handle to the currently playing head bob animation */
+	TWeakObjectPtr<class UCameraAnimationSequence> mCurrentHeadBobCameraAnim;
 
 	/** Vehicle currently driven by pawn. */
 	UPROPERTY( ReplicatedUsing = OnRep_DrivenVehicle )

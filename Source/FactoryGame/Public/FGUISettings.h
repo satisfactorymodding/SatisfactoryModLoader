@@ -14,20 +14,23 @@ public:
 	static const UFGUISettings* Get() { return GetDefault<UFGUISettings>(); };
 public:
 	/** Widget used to show that the user is setting up a server */
-	UPROPERTY( EditAnywhere, config, Category = UI )
+	UPROPERTY( EditAnywhere, config, Category = Online )
 	TSoftClassPtr<UUserWidget> mSettingUpServerWidget;
 
 	/** Widget used to show the user when joining a session */
-	UPROPERTY( EditAnywhere, config, Category = UI )
+	UPROPERTY( EditAnywhere, config, Category = Online )
 	TSoftClassPtr<UUserWidget> mJoinSessionWidget;
 
 	/** Widget used to show the user when linking accounts */
-	UPROPERTY( EditAnywhere, config, Category = UI )
-	TSubclassOf<UUserWidget> mConnectAccountsWidget;
+	UPROPERTY( EditAnywhere, config, Category = Online )
+	TSoftClassPtr<UUserWidget> mConnectAccountsWidget;
 
 	/** Widget to show the user when unlinking account */
-	UPROPERTY( EditAnywhere, config, Category = UI )
+	UPROPERTY( EditAnywhere, config, Category = Online )
 	TSubclassOf<UUserWidget> mResetAccountLinkingWidget;
+
+	UPROPERTY( EditAnywhere, config, Category = Online )
+	TSoftClassPtr<class UFGOnlineStartupScreen> mOnlineStartupScreenClass;
 
 	/** Widget used to show the user when enabling the debug overlay */
 	UPROPERTY( EditAnywhere, config, Category = UI )

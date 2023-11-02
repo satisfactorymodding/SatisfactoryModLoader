@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Atmosphere/UFGBiome.h"
+#include "UFGBiome.h"
 
 
 inline float GetCurveValue( const FRuntimeFloatCurve& Curve, float Time )

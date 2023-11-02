@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGShoppingListObject.h"
 #include "Templates/SubclassOf.h"
-#include "ShoppingList/FGShoppingListObject.h"
 #include "FGShoppingListObjectRecipe.generated.h"
 
 /**

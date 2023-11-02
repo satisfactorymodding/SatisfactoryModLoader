@@ -168,6 +168,10 @@ public:
 	/** Get all trains. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Railroad" )
 	void GetAllTrains( TArray< class AFGTrain* >& out_trains ) const;
+	
+	/** Helper to sort a list of trains by their given name in ascending order. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Railroad" )
+	void SortTrains( UPARAM( ref ) TArray< class AFGTrain* >& trains ) const;
 
 
 
@@ -397,7 +401,8 @@ public:
 	/***************************************************************************************************
 	 * Block visualization
 	 */
-	void ToggleBlockVisualization( bool enabled );
+	void EnableBlockVisualization( UObject* visualizationRequester );
+	void DisableBlockVisualization( UObject* visualizationRequester );
 	void ToggleBlockVisualizationAlways( bool enabled );
 	FLinearColor GetBlockVisualizationColor( int32 forSignalBlockID );
 
@@ -570,7 +575,9 @@ private:
 	UPROPERTY()
 	class AFGTrainScheduler* mTrainScheduler;
 	
-	/** True if we are actively showing block visualization. */
-	bool mIsBlockVisualizationEnabled;
+	/** All the objects that require the track visualization right now */
+	UPROPERTY()
+	TArray<UObject*> mBlockVisualizationRequesters;
+	
 	bool mIsBlockVisualizationAlwaysEnabled;
 };

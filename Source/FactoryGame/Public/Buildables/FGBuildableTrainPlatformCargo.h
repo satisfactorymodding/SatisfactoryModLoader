@@ -4,11 +4,11 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableTrainPlatform.h"
-#include "Replication/FGReplicationDetailInventoryComponent.h"
-#include "Replication/FGReplicationDetailActor_CargoPlatform.h"
+#include "FGBuildableTrainPlatform.h"
 #include "FGFreightWagon.h"
 #include "FGTrainDockingRules.h"
+#include "Replication/FGReplicationDetailActor_CargoPlatform.h"
+#include "Replication/FGReplicationDetailInventoryComponent.h"
 #include "FGBuildableTrainPlatformCargo.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnItemTransferRateUpdated, int32, itemTransferRate );

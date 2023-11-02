@@ -3,24 +3,30 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "GameFramework/PlayerState.h"
-#include "FGCharacterPlayer.h"
-#include "FGFactoryColoringTypes.h"
-#include "UI/Message/FGMessageBase.h"
 #include "FGActorRepresentation.h"
-#include "FGHotbarShortcut.h"
+#include "FGCharacterPlayer.h"
 #include "FGCreatureSubsystem.h"
-#include "ShoppingList/FGShoppingListComponent.h"
+#include "FGFactoryColoringTypes.h"
+#include "FGHotbarShortcut.h"
 #include "FGInventoryToRespawnWith.h"
-
+#include "GameFramework/PlayerState.h"
+#include "Interfaces/Interface_ActorSubobject.h"
+#include "ShoppingList/FGShoppingListComponent.h"
+#include "UI/Message/FGMessageBase.h"
 #include "FGPlayerState.generated.h"
+
+#undef GetUserName // MODDING EDIT: Wwise includes Windows.h which defines GetUserName as a macro
+
+class UFGPlayerHotbar;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedNew, TSubclassOf< class UFGItemDescriptor >, itemDesc );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHotbarUpdatedForMaterialDescriptor, TSubclassOf< class UFGFactoryCustomizationDescriptor_Material >, materialDesc );
-DECLARE_DELEGATE( FOnHotbarReplicated );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnPublicTodoListUpdated );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSlotDataUpdated, class AFGPlayerState*, playerState  );
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FFGOnHotbarSlotUpdated, UFGPlayerHotbar*, hotbar, int32, index );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FFGOnActiveHotbarIndexChanged, UFGPlayerHotbar*, hotbar, int32, hotbarIndex );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FFGOnHotbarsAvailable );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnHotbarSlotUnbound, int32, slotIndex );
 
 /**
  * The color data for a player
@@ -66,48 +72,146 @@ struct FACTORYGAME_API FMessageData
 	TSubclassOf< class UFGMessageBase > MessageClass;
 };
 
-/**
-* A hotbar with a set of shortcuts that can be assigned and executed
-*/
-USTRUCT( BlueprintType )
+/** Represents the hotbar of the player, with various shortcuts attached to it's slots */
+UCLASS( BlueprintType, Within = FGPlayerState )
+class FACTORYGAME_API UFGPlayerHotbar : public UObject, public IFGSaveInterface
+{
+	GENERATED_BODY()
+public:
+	UFGPlayerHotbar();
+
+	// Begin UObject interface
+	virtual void PostInitProperties() override;
+	virtual bool IsSupportedForNetworking() const override { return true; }
+	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+	virtual UWorld* GetWorld() const override;
+	virtual int32 GetFunctionCallspace(UFunction* Function, FFrame* Stack) override;
+	virtual bool CallRemoteFunction(UFunction* Function, void* Parms, FOutParmRec* OutParms, FFrame* Stack) override;
+	// End UObject interface
+	
+	// Begin IFGSaveInterface
+	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override;
+	virtual bool NeedTransform_Implementation() override;
+	virtual bool ShouldSave_Implementation() const override;
+	// End IFSaveInterface
+
+	/** Returns the hotbar shortcut at the specified index */
+	UFUNCTION( BlueprintPure, Category = "Hotbar" )
+	UFGHotbarShortcut* GetShortcutAtIndex( int32 index ) const;
+
+	/** Creates the shortcut of the specified type and sets it to the provided index */
+	UFUNCTION( BlueprintCallable, Category = "Hotbar", DisplayName = "CreateShortcutAtIndex", meta = ( DeterminesOutputType = "inClass" ) )
+	UFGHotbarShortcut* K2_CreateShortcutAtIndex( int32 index, TSubclassOf<UFGHotbarShortcut> inClass, bool silent = false );
+
+	/** Removes the shortcut at the index, leaving a blank space */
+	UFUNCTION( BlueprintCallable, Category = "Hotbar" )
+	void RemoveShortcutAtIndex( int32 index, bool silent = false );
+
+	/** Collapses duplicate shortcuts into the specified shortcut index, leaving empty slots behind */
+	UFUNCTION( BlueprintCallable, Category = "Hotbar" )
+	void CollapseDuplicateShortcuts( int32 index );
+
+	/** Attempts to copy either the entire hotbar or the shortcut at the specified index into this hotbar */
+	UFUNCTION( BlueprintCallable, Category = "Hotbar" )
+	void CopyFromHotbar( const UFGPlayerHotbar* otherHotbar, int32 filterIndex = -1 );
+	
+	/**
+	 * Convenient accessor for CreateShortcutAtIndex that automatically casts to the correct type
+	 * Keep in mind that it is the shortcut implementation responsibility to notify the hotbar of it's changes via OnShortcutChanged
+	 */
+	template<typename T>
+	FORCEINLINE T* CreateShortcutAtIndex( int32 index, TSubclassOf<T> inClass = T::StaticClass(), bool silent = false )
+	{
+		return Cast<T>( K2_CreateShortcutAtIndex( index, inClass, silent ) );
+	}
+
+	template<typename T>
+	FORCEINLINE T* GetShortcutAtIndex( int32 index ) const
+	{
+		return Cast<T>( GetShortcutAtIndex( index ) );
+	}
+
+	/** @return the amount of shortcuts in the hotbar */
+	UFUNCTION( BlueprintPure, Category = "Hotbar" )
+	FORCEINLINE int32 GetNumShortcuts() const { return mShortcuts.Num(); }
+
+	/** Sets the recipe at the specified hotbar index. */
+	UFUNCTION( BlueprintCallable, Category = "Hotbar | Utility" )
+	void SetRecipeShortcutAtIndex( int32 index, TSubclassOf<UFGRecipe> recipe, bool silent = false );
+
+	/** Sets the factory customization at the specified hotbar index */
+	UFUNCTION( BlueprintCallable, Category = "Hotbar | Utility" )
+	void SetFactoryCustomizationShortcutAtIndex( int32 index, TSubclassOf<UFGCustomizationRecipe> customization, bool silent = false );
+
+	/** Sets the blueprint shortcut at the specified index */
+	UFUNCTION( BlueprintCallable, Category = "Hotbar | Utility" )
+	void SetBlueprintAtIndex( int32 index, const FString& blueprintName, bool silent = false );
+
+	/** Sets the emote shortcut at the specified index */
+	UFUNCTION( BlueprintCallable, Category = "Hotbar | Utility" )
+	void SetEmoteAtIndex( int32 index, TSubclassOf<UFGEmote> inEmote, bool silent = false );
+
+	/** Called each tick to update the active status of the shortcuts in the active hotbar */
+	void UpdateActiveHotbar( AFGPlayerController* owner );
+	
+	/** Loads data from the legacy hotbar */
+	void Internal_LoadFromLegacyData( const struct FHotbar& inLegacyHotbar );
+
+	/** Called when the state of the shortcut object changes */
+	void OnShortcutChanged( UFGHotbarShortcut* shortcut );
+
+	void GetAllShortcuts( TArray<UFGHotbarShortcut*>& out_shortcuts ) const;
+
+	FORCEINLINE TArray<UFGHotbarShortcut*> GetAllShortcuts() const { return mShortcuts; }
+
+protected:
+	UFUNCTION()
+	void OnRep_Shortcuts();
+
+	/** Called to notify the client that we have unbound the shortcut */
+	UFUNCTION( Client, Unreliable )
+	void Client_NotifyShortcutUnbound( int32 shortcutIndex );
+	
+	void Internal_DestroyShortcutAtIndex( int32 shortcutIndex, bool silent );
+	void Internal_InitializeShortcutAtIndex( int32 shortcutIndex, UFGHotbarShortcut* newShortcut, bool silent );
+public:
+	/** Called when the hotbar slot is updated */
+	UPROPERTY( BlueprintAssignable, Category = "Hotbar" )
+	FFGOnHotbarSlotUpdated mOnHotbarSlotUpdated;
+
+	/** Called when the shortcut has been unbound from the hotbar, e.g. when the hotbar slot becomes empty */
+	UPROPERTY( BlueprintAssignable, Category = "Hotbar" )
+	FFGOnHotbarSlotUnbound mOnHotbarSlotUnbound;
+
+	DECLARE_MULTICAST_DELEGATE_OneParam( FOnShortcutConstructed, UFGHotbarShortcut* shortcut );
+
+	FOnShortcutConstructed mOnShortcutConstructed;
+	FOnShortcutConstructed mOnShortcutDestroyed;
+	
+protected:
+	
+	/** Shortcuts that this hotbar has, fixed size and with potential null pointers. */
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_Shortcuts )
+	TArray< UFGHotbarShortcut* > mShortcuts;
+	
+private:
+	
+	/** Last shortcuts we had, for correctly distinguishing changes in RepNotify */
+	TArray<TWeakObjectPtr<UFGHotbarShortcut>> mLastShortcuts;
+};
+
+/** Legacy struct used to represent hotbars in the game */
+USTRUCT()
 struct FACTORYGAME_API FHotbar
 {
 	GENERATED_BODY();
-
-	FHotbar(){}
-	FHotbar( class AFGPlayerState* owningState, const FHotbar& hotbar );
-	explicit FHotbar( const TArray< class UFGHotbarShortcut* > hotbarShortcuts );
-
-	UPROPERTY( SaveGame, BlueprintReadOnly )
+	
+	UPROPERTY( SaveGame )
 	TArray< class UFGHotbarShortcut* > HotbarShortcuts;
-};
-
-/**
-* A preset represents a way for players to create pre made hotbars they can replace there current hotbar with
-*/
-USTRUCT( BlueprintType )
-struct FACTORYGAME_API FPresetHotbar
-{
-	GENERATED_BODY();
-
-	FPresetHotbar(){}
-	FPresetHotbar( class AFGPlayerState* owningState, const FPresetHotbar& presetHotbar );
-	FPresetHotbar( const FText &presetName, const uint8 iconIndex, const FHotbar &hotbar ) :
-		PresetName( presetName ),
-		IconIndex( iconIndex ),
-		Hotbar( hotbar )
-	{}
-
-	UPROPERTY( SaveGame, BlueprintReadOnly )
-	FText PresetName;
-
-	/** The shortcut in the hotbar with this index will decide the icon for the preset */
-	UPROPERTY( SaveGame, BlueprintReadOnly )
-	uint8 IconIndex = 0;
-
-	/** The hotbar shortcuts for this preset */
-	UPROPERTY( SaveGame, BlueprintReadOnly )
-	FHotbar Hotbar;
 };
 
 USTRUCT()
@@ -190,6 +294,8 @@ public:
 	// Begin APlayerState interface
 	virtual void CopyProperties( APlayerState* playerState ) override;
 	virtual void ClientInitialize(AController* C) override;
+	virtual void RegisterPlayerWithSession(bool bWasFromInvite) override;
+	virtual void UnregisterPlayerWithSession() override;
 	// End APlayerState interface
 
 	// Begin IFGSaveInterface
@@ -286,113 +392,39 @@ public:
 	/** Used primarily to reset tutorial flow, verifies it exists before attempting removal */
 	UFUNCTION()
 	void RemoveMessage( TSubclassOf< class UFGMessageBase > inMessage );
-
-	/** Setup our default shortcuts */
-	void SetupDefaultShortcuts();
-
-	/** Create a shortcut of a specified class, only valid on server */
-	UFUNCTION( BlueprintCallable, DisplayName = CreateShortcut, meta = ( DeterminesOutputType = shortcutClass ) )
-	class UFGHotbarShortcut* CreateShortcut( TSubclassOf< class UFGHotbarShortcut > shortcutClass );
-
-	/** Removes the shortcut instance created earlier with CreateShortcut */
-	UFUNCTION( BlueprintCallable, DisplayName = RemoveShortcutInstance )
-	void RemoveShortcutInstance( UFGHotbarShortcut* shortcutInstance );
-
-	/** Create a shortcut of a specified class and casts it to the specified class */
-	template< typename T >
-	T* CreateTypedShortcut( TSubclassOf<T> shortcutClass )
-	{
-		fgcheck( T::StaticClass()->IsChildOf( UFGHotbarShortcut::StaticClass() ) );
-		return Cast< T >( CreateShortcut( shortcutClass ) );
-	}
-
-	/** Gets or Creates, replacing what is there, for a given index in a hotbar */
-	template< typename T >
-	T* GetOrCreateShortcutOnHotbar( TSubclassOf<T> shortcutClass, FHotbar& hotbar, const int32 index ) 
-	{ 
-		fgcheck( T::StaticClass()->IsChildOf( UFGHotbarShortcut::StaticClass() ) ); 
-		if( hotbar.HotbarShortcuts.IsValidIndex( index ) )
-		{
-			if( hotbar.HotbarShortcuts[ index ]->GetClass()->IsChildOf( shortcutClass ) )
-			{
-				return Cast<T>( hotbar.HotbarShortcuts[ index ] );
-			}
-			else
-			{
-				// Remove old shortcut that currently occupies that index
-				if ( IsValid( hotbar.HotbarShortcuts[ index ] ) )
-				{
-					RemoveShortcutInstance( hotbar.HotbarShortcuts[ index ] );
-				}
-				hotbar.HotbarShortcuts[ index ] = CreateTypedShortcut( shortcutClass );
-				return Cast<T>( hotbar.HotbarShortcuts[ index ] );
-			}
-		}
-
-		return nullptr;
-	}
 	
-
-	/** Get current shortcuts */
-	void GetCurrentShortcuts( TArray< class UFGHotbarShortcut* >& out_shortcuts );
-
-	/** Get current shortcuts */
-	UFGHotbarShortcut* GetShortcutFromCurrentHotbar( int32 shortcutIndex );
-
-	/** Get preset shortcuts with the given index */
-	void GetPresetShortcuts( int32 presetHotbarIndex, TArray< class UFGHotbarShortcut* >& out_shortcuts );
-
-	/** Get all preset hotbars */
-	void GetAllPresetHotbars( TArray<FPresetHotbar>& out_presetHotbars );
-
-	int32 GetNumHotbars() const { return mHotbars.Num(); }
+	/**
+	 * Updates the index of the currently selected hotbar for this player
+	 * Will sync it back to the client and fire the change delegate to notify the listeners such as player controller
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame | Hotbar" )
+	void SetHotbarIndex( int32 newHotbarIndex );
 	
-	int32 GetNumPresetHotbars() const { return mPresetHotbars.Num(); }
+	/** Returns the currently selected hotbar */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Hotbar" )
+	UFGPlayerHotbar* GetActiveHotbar() const;
 
-	int32 GetCurrentHotbarIndex() const { return mCurrentHotbarIndex; }
+	/** Returns the currently selected hotbar index */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Hotbar" )
+	FORCEINLINE int32 GetActiveHotbarIndex() const { return mCurrentHotbarIndex; }
 
-	void SetHotbarIndex( int32 val );
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Hotbar" )
+	FORCEINLINE int32 GetNumHotbars() const { return mPlayerHotbars.Num(); }
 
-	/** Copy the current hotbar shortcuts to a new preset hotbar
-	*	@return true if the copy was a success 
-	*/
-	bool CreatePresetFromCurrentHotbar( const FText& presetName, int32 iconIndex );
+	/** Returns the hotbar at index */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Hotbar" )
+	UFGPlayerHotbar* GetHotbarAtIndex( int32 hotbarIndex ) const;
+
+	/** Returns the index matching the provided hotbar object, or INDEX_NONE if it does not belong to this player state */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Hotbar" )
+	int32 FindHotbarIndex( UFGPlayerHotbar* hotbar ) const;
+
+	/** Returns all hotbars that the player has. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Hotbar" )
+	void GetAllHotbars( TArray<UFGPlayerHotbar*>& out_hotbars ) const;
 	
-	/** Check if we can create a new preset */
-	bool CanCreateNewPresetHotbar() const;
-
-	/** Copy the current hotbar shortcuts to the preset hotbar with the given index */
-	bool CopyCurrentHotbarToPresetHotbar( int32 presetHotbarIndex );
-
-	/** Change the name of the preset hotbar at the given index */
-	void ChangeNameOfPresetHotbar( int32 presetHotbarIndex, const FText& newName );
-	
-	/** Change the icon index of the preset hotbar at the given index */
-	void ChangeIconIndexOfPresetHotbar( int32 presetHotbarIndex, int32 iconIndex );
-
-	/** Remove the preset hotbar with the given index */
-	bool RemovePresetHotbar( int32 presetHotbarIndex );
-
-	/** Copy the shortcuts of the preset hotbar with the given index to the current hotbar
-	*	@return true if the copy was a success 
-	*/
-	bool CopyPresetHotbarToCurrentHotbar( int32 presetHotbarIndex );
-
-	/** Set the specified hotbar shortcut on the index if it's valid. Optionally pass the hotbar index to set a specific index on a specific hotbar. */
-	void SetRecipeShortcutOnIndex( TSubclassOf< class UFGRecipe > recipe, int32 onIndex, int32 onHotbarIndex = -1 );
-
-	/** Set the customization desc shortcut on the index if valid */
-	void SetCustomizationShortcutOnIndex( TSubclassOf< class UFGCustomizationRecipe > customizationRecipe, int32 onIndex );
-
-	/** Set the emote shortcut on the index if valid */
-	void SetEmoteShortcutOnIndex( TSubclassOf< class UFGEmote > emote, int32 onIndex );
-
-	/** Set the blueprint shortcut on the index if it's valid */
-	void SetBlueprintShortcutOnIndex( const FString& blueprintName, int32 onIndex );
-
-	/** Get the current value of first time equipped and then sets the value to false. */
 	bool GetAndSetFirstTimeEquipped( class AFGEquipment* equipment );
-
+	
 	/** Get the controller owning this player state */
 	class AFGPlayerController* GetOwningController() const;
 
@@ -670,11 +702,9 @@ protected:
 	void Native_OnFactoryClipboardCopied( UObject* object, class UFGFactoryClipboardSettings* factoryClipboard );
 	void Native_OnFactoryClipboardPasted( UObject* object, class UFGFactoryClipboardSettings* factoryClipboard );
 	
-	// Client get notified that the hotbar has changed
 	UFUNCTION()
-	void OnRep_HotbarShortcuts();
+	void OnRep_PlayerHotbars();
 
-	// Client get notified that the hotbar index has changed
 	UFUNCTION()
 	void OnRep_CurrentHotbarIndex();
 	
@@ -683,7 +713,12 @@ protected:
 
 	UFUNCTION()
 	void OnRep_PlayerRules();
+	
+	void CreateDefaultHotbars();
 
+	/** Updates the recipe of the provided shortcut on the server side */
+	UFUNCTION( Server, Reliable )
+	void Server_UpdateRecipeShortcut( UFGPlayerHotbar* hotbar, int32 shortcutIndex, TSubclassOf<UFGRecipe> newRecipe );
 private:
 	/** Server function for updating number observed inventory slots */
 	UFUNCTION( Server, Reliable, WithValidation )
@@ -710,6 +745,15 @@ private:
 	UFUNCTION()
 	void OnRep_PlayerSpecificSchematics( TArray< TSubclassOf< UFGSchematic > > previousPlayerSpecificSchematics );
 
+	/** Called when either the active hotbar index or the object itself changes */
+	void UpdateActiveHotbarState();
+	
+	void SubscribeToHotbar( UFGPlayerHotbar* hotbar );
+	void UnsubscribeFromHotbar( UFGPlayerHotbar* hotbar );
+	void OnShortcutConstructed( UFGHotbarShortcut* shortcut );
+	void OnShortcutDestroyed( UFGHotbarShortcut* shortcut );
+	
+	friend class UFGPlayerHotbar;
 public:
 	/** Broadcast when a buildable or decor has been constructed. */
 	UPROPERTY( BlueprintAssignable, Category = "Build", DisplayName = "OnBuildableConstructed" )
@@ -718,10 +762,7 @@ public:
 	/** Broadcast when a player sets a default material customization desc */
 	UPROPERTY( BlueprintAssignable, Category = "Customization", DisplayName = "OnHotbarUpdatedForMaterialDescriptor" )
 	FOnHotbarUpdatedForMaterialDescriptor mOnHotbarUpdatedForMaterialDescriptor;
-
-	/** Broadcast if hotbar has been replicated */
-	FOnHotbarReplicated mOnHotbarReplicated;
-
+	
 	UPROPERTY( BlueprintAssignable, Category = "Todo List")
 	FOnPublicTodoListUpdated mOnPublicTodoListUpdated;
 
@@ -731,19 +772,30 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "ColorData")
 	FOnSlotDataUpdated mOnColorDataUpdated;
 
+	/** Called when the active hotbar index changes */
+	UPROPERTY( BlueprintAssignable, Category = "Hotbar" )
+	FFGOnActiveHotbarIndexChanged mOnActiveHotbarIndexChanged;
+
+	/** Called when the hotbars are populated on the server side (first join) or replicated to the client. Can be called multiple times on the client as subobjects replicate. */
+	UPROPERTY( BlueprintAssignable, Category = "Hotbar" )
+	FFGOnHotbarsAvailable mOnHotbarsAvailable;
+
 	/** Holds the item stacks that the player can get copied to their inventory on respawn. */
 	UPROPERTY( SaveGame )
 	FInventoryToRespawnWith mInventoryToRespawnWith;
-	
+private:
+	/** Legacy hotbars in the game */
+	UPROPERTY( SaveGame )
+	TArray< FHotbar > mHotbars_DEPRECATED;
+
+	/** Last hotbar that was considered active. Used for correctly dispatching the delegate on the client */
+	UPROPERTY()
+	TWeakObjectPtr<UFGPlayerHotbar> mLastActivePlayerHotbar;
 protected:
-	/** All hotbar actions assigned */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_HotbarShortcuts )
-	TArray< FHotbar > mHotbars;
-
-	/** All hotbar actions assigned to presets. A preset is a saved set of shortcuts that can be assigned to the hotbar */
-	UPROPERTY( SaveGame, Replicated )
-	TArray< FPresetHotbar > mPresetHotbars;
-
+	/** Hotbars that the player has, in the new format */
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_PlayerHotbars )
+	TArray< UFGPlayerHotbar* > mPlayerHotbars;
+	
 	/** The index of the current hotbar*/
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CurrentHotbarIndex )
 	int32 mCurrentHotbarIndex;
@@ -762,6 +814,9 @@ protected:
 	/** Default recipes to have shortcuts to */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	TArray< TSubclassOf< class UFGRecipe > > mDefaultRecipeShortcuts;
+	
+	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
+	TSubclassOf< class UFGEmote > mDefaultEmoteShortcut;
 
 	/** Recipes that are new to the player. This is only for UI feedback and does not affect the players ability to use the recipe  */
 	UPROPERTY( SaveGame, Replicated )
@@ -886,8 +941,4 @@ private:
 	/** The player specific schematics that this player have purchased */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_PlayerSpecificSchematics ) 
 	TArray< TSubclassOf< class UFGSchematic > > mPlayerSpecificSchematics;
-
-	/** A transient list holding to all of the shortcuts across all hotbars that are currently replicated as sub objects */
-	UPROPERTY()
-	TArray< UFGHotbarShortcut* > mReplicatedShortcuts;
 };

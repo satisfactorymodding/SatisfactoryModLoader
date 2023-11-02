@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Equipment/FGAmmoTypeInstantHit.h"
+#include "FGAmmoTypeInstantHit.h"
 #include "FGAmmoTypeLaser.generated.h"
 
 /**

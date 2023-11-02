@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Hologram/FGSplineHologram.h"
+#include "FGSplineHologram.h"
 #include "FGRoadHologram.generated.h"
 
 //@todonow Broke this when making the lifts

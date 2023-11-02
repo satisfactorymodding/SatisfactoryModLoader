@@ -37,12 +37,14 @@ public:
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
+	virtual void PreHologramPlacement( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void Scroll( int32 delta ) override;
 	virtual void OnInvalidHitResult() override;
 	virtual AFGHologram* GetNudgeHologramTarget() override;
 	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
+	virtual int32 GetRotationStep() const override;
 	// End AFGHologram Interface
 	
 	// Begin AFGBuildableHologram Interface

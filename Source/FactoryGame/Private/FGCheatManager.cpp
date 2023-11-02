@@ -61,6 +61,8 @@ void UFGCheatManager::Server_SetPlanetSpeedMultiplier_Implementation(float multi
 void UFGCheatManager::SetPlanetSpeedMultiplier(float multiplier){ }
 void UFGCheatManager::ForceSetWeatherType(TSubclassOf<class AFGWeatherReaction> Reaction){ }
 void UFGCheatManager::LockWeather(bool bState){ }
+void UFGCheatManager::HighlightPickupable(TSubclassOf< AFGItemPickup > pickupClass){ }
+void UFGCheatManager::Internal_HighlightPickupables(){ }
 void UFGCheatManager::Server_Creature_CanAttackEachother_Implementation(bool canAttack){ }
 void UFGCheatManager::Creature_CanAttackEachother(bool canAttack){ }
 void UFGCheatManager::Creature_SetStressEnabled(bool enable){ }
@@ -103,6 +105,15 @@ void UFGCheatManager::ReviveSelf(){ }
 void UFGCheatManager::Server_ReviveSelf_Implementation(){ }
 void UFGCheatManager::RagdollSelf(){ }
 void UFGCheatManager::Server_RagdollSelf_Implementation(){ }
+void UFGCheatManager::GodMode(bool enabled){ }
+void UFGCheatManager::Server_GodMode_Implementation(bool enabled){ }
+bool UFGCheatManager::GodMode_Get() const{ return bool(); }
+void UFGCheatManager::SetMaxHealth(float newMaxHealth){ }
+void UFGCheatManager::Server_SetMaxHealth_Implementation(float newMaxHealth){ }
+void UFGCheatManager::Heal(){ }
+void UFGCheatManager::Server_Heal_Implementation(){ }
+void UFGCheatManager::DamageSelf(float damage){ }
+void UFGCheatManager::Server_DamageSelf_Implementation(float damage){ }
 void UFGCheatManager::Foliage_RemoveOneByOne(int32 maxNumInstances){ }
 void UFGCheatManager::Server_Foliage_RemoveOneByOne_Implementation(int32 maxNumInstances){ }
 void UFGCheatManager::Foliage_RemoveInBulk(int32 maxNumInstances){ }
@@ -143,6 +154,18 @@ void UFGCheatManager::Server_CompleteResearch_Implementation(){ }
 void UFGCheatManager::CompleteResearch(){ }
 void UFGCheatManager::Server_SetTradingPostLevel_Implementation(int32 inLevel){ }
 void UFGCheatManager::SetTradingPostLevel(int32 inLevel){ }
+void UFGCheatManager::UnlockSpecificRecipe(TSubclassOf<class UFGRecipe> recipe){ }
+void UFGCheatManager::Server_UnlockSpecificRecipe_Implementation(TSubclassOf<class UFGRecipe> recipe){ }
+void UFGCheatManager::UnlockSpecificEmote(TSubclassOf<class UFGEmote> emote){ }
+void UFGCheatManager::Server_UnlockSpecificEmote_Implementation(TSubclassOf<class UFGEmote> emote){ }
+void UFGCheatManager::UnlockSpecificTape(TSubclassOf<class UFGTapeData> tapeData){ }
+void UFGCheatManager::Server_UnlockSpecificTape_Implementation(TSubclassOf<class UFGTapeData> tapeData){ }
+void UFGCheatManager::UnlockScannableResource(TSubclassOf<  UFGResourceDescriptor > resourceDescriptor){ }
+void UFGCheatManager::Server_UnlockScannableResource_Implementation(TSubclassOf<  UFGResourceDescriptor > resourceDescriptor){ }
+void UFGCheatManager::UnlockInventorySlots(int32 numSlots){ }
+void UFGCheatManager::Server_UnlockInventorySlots_Implementation(int32 numSlots){ }
+void UFGCheatManager::UnlockArmSlots(int32 numSlots){ }
+void UFGCheatManager::Server_UnlockArmSlots_Implementation(int32 numSlots){ }
 void UFGCheatManager::Map_RemoveMarker(int32 index){ }
 void UFGCheatManager::NetMulticast_Map_Reveal_Implementation(){ }
 void UFGCheatManager::Server_Map_Reveal_Implementation(){ }
@@ -245,15 +268,12 @@ void UFGCheatManager::EnableBuildableTick(bool enable){ }
 bool UFGCheatManager::EnableBuildableTick_Get(){ return bool(); }
 void UFGCheatManager::ReplayBuildingEffects(){ }
 void UFGCheatManager::DumpNonDormantActors(){ }
-void UFGCheatManager::DumpAttachedToSkelMesh(bool detailed){ }
-void UFGCheatManager::DumpTicking(bool detailed){ }
 void UFGCheatManager::DumpActiveGPUParticles(){ }
 void UFGCheatManager::DumpPlayerStates(){ }
 void UFGCheatManager::DumpHotbarShortcuts(){ }
 void UFGCheatManager::DumpActorRepresentations(){ }
 void UFGCheatManager::DumpSignificanceManagedObjects(){ }
 void UFGCheatManager::DumpItemPickups(){ }
-void UFGCheatManager::DumpStaticMeshesHierarchy(){ }
 void UFGCheatManager::DumpComponentCounts(){ }
 void UFGCheatManager::DumpSchematics(){ }
 void UFGCheatManager::DumpUnlockedRecipesAndSchematics(){ }

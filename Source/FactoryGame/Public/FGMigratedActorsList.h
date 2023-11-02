@@ -4,7 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "UObject/Object.h"
+#include "Templates/SubclassOf.h"
 #include "FGMigratedActorsList.generated.h"
 
 

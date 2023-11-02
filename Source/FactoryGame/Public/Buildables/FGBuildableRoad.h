@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildable.h"
 #include "Components/SplineComponent.h"
+#include "FGBuildable.h"
 #include "FGSplineComponent.h"
 #include "FGBuildableRoad.generated.h"
 

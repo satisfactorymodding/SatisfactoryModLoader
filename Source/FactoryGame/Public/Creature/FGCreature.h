@@ -4,15 +4,14 @@
 
 #include "FactoryGame.h"
 #include "FGCharacterBase.h"
-#include "Creature/FGAction.h"
+#include "FGAction.h"
 #include "BehaviorTree/BehaviorTree.h"
-
 #include "FGCreature.generated.h"
 
 class AFGCreature;
 class AFGCreatureController;
 
-DECLARE_LOG_CATEGORY_EXTERN( LogCreature, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogCreature, Log, All );
 
 extern TAutoConsoleVariable< int32 > CVarCreatureDebug;
 extern TAutoConsoleVariable< int32 > CVarCreatureVisionDebug;

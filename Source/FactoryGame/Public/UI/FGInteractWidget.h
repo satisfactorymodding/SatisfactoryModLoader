@@ -3,7 +3,6 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "UMG.h"
 #include "Blueprint/UserWidget.h"
 #include "FGInteractWidget.generated.h"
 
@@ -199,6 +198,10 @@ public:
 	/** Whether or not to flush mouse button input when opening the widget. */
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
 	bool mFlushMouseKeysOnOpen;
+
+	/** Whether or not to clear bindings on NativeDestruct. */
+	UPROPERTY( EditDefaultsOnly, Category = "Input" )
+	bool mClearBindingsOnDestruct;
 	
 	// Begin Deprecated Input
 	/** Decides if we should share input with game or capture it completely */

@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGBuildableFactory.h"
 #include "Replication/FGReplicationDetailActor_ResourceSink.h"
-#include "Buildables/FGBuildableFactory.h"
 #include "FGBuildableResourceSink.generated.h"
 
 /**

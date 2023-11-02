@@ -38,5 +38,16 @@ public:
 	
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources", meta = ( ToolTip = "The recipes you should be able to build when you start a new game. The integer key represents starting tier. 0 is tutorial and so on. The combined items from the specified recipes in the given tier is given once to the FIRST player joining a game" ) )
 	TMap< int32, FRecipeAmounts > mRecipesToGivePlayersPerTier;
-	
+
+	/** Reference to the default walk head bob shake */
+	UPROPERTY( EditDefaultsOnly, Config, Category = "Movement" )
+	TSoftObjectPtr<UCameraAnimationSequence> mDefaultWalkHeadBobCameraAnim;
+
+	/** Reference to the default sprint head bob shake */
+	UPROPERTY( EditDefaultsOnly, Config, Category = "Movement" )
+	TSoftObjectPtr<UCameraAnimationSequence> mDefaultSprintHeadBobCameraAnim;
+
+	/** A list of damage types that should be prevented while the player is respawning (or joining) */
+	UPROPERTY( EditDefaultsOnly, Config, Category = "Damage" )
+	TArray<TSoftClassPtr<class UFGDamageType>> mDamageTypesToPreventDuringRespawn;
 };

@@ -2,6 +2,7 @@
 
 #include "FGPlayerInput.h"
 
+FEnhancedActionKeyMapping FFGCachedActionMapping::FindMappingForActionName(FName actionName) const{ return FEnhancedActionKeyMapping(); }
 UFGPlayerInputPreProcessor::UFGPlayerInputPreProcessor( UFGPlayerInput* playerInput){ }
 UFGPlayerInputPreProcessor::~UFGPlayerInputPreProcessor(){ }
 void UFGPlayerInputPreProcessor::Tick(const float DeltaTime, FSlateApplication& SlateApp, TSharedRef<ICursor> Cursor){ }
@@ -12,11 +13,18 @@ void UFGPlayerInput::BeginDestroy(){ Super::BeginDestroy(); }
 float UFGPlayerInput::SmoothMouse(float aMouse, uint8& SampleCount, int32 Index){ return float(); }
 void UFGPlayerInput::ProcessInputStack(const TArray<UInputComponent*>& InputComponentStack, const float DeltaTime, const bool bGamePaused){ }
 void UFGPlayerInput::GetActionMappings(APlayerController* playerController, TArray<FEnhancedActionKeyMapping>& out_KeyMappings){ }
-void UFGPlayerInput::Native_GetActionMappings(TArray<FEnhancedActionKeyMapping>& out_KeyMappings){ }
-bool UFGPlayerInput::GetOverlappingEnhancedKeyMappings(const FName& inActionName, const FKey& newKey, const TArray<FKey>& modifierKeys, TArray<FEnhancedActionKeyMapping>& out_HardConflicts, TArray<FEnhancedActionKeyMapping>& out_SoftConflicts){ return bool(); }
-bool UFGPlayerInput::GetCurrentMappingForAction(const FName& inActionName, FKey& out_primaryKey, TArray<FKey>& out_modifierKeys){ return bool(); }
+void UFGPlayerInput::Native_GetActionMappings(TArray<FEnhancedActionKeyMapping>& out_KeyMappings) const{ }
+bool UFGPlayerInput::GetOverlappingEnhancedKeyMappings(const FName& inActionName, const FKey& newKey, const TArray<FKey>& modifierKeys, TArray<FEnhancedActionKeyMapping>& out_HardConflicts, TArray<FEnhancedActionKeyMapping>& out_SoftConflicts) const{ return bool(); }
+bool UFGPlayerInput::GetOverlappingEnhancedKeyMappings(const UInputAction* inputAction, const FKey& newKey, const TArray<FKey>& modifierKeys, TArray<FEnhancedActionKeyMapping>& out_HardConflicts, TArray<FEnhancedActionKeyMapping>& out_SoftConflicts) const{ return bool(); }
+void UFGPlayerInput::FindKeysMappedTo(const FKey& newKey, const TArray<FKey>& modifierKeys, TMap<const UInputMappingContext*, TArray<FEnhancedActionKeyMapping>>& out_mappedKeys) const{ }
+bool UFGPlayerInput::GetCurrentMappingForAction(const FName& inActionName, FKey& out_primaryKey, TArray<FKey>& out_modifierKeys) const{ return bool(); }
+bool UFGPlayerInput::GetCurrentMappingForInputAction(const UInputAction* inputAction, FKey& out_primaryKey, TArray<FKey>* out_modifierKeys, FName preferredActionName, const UInputMappingContext* preferredContext) const{ return bool(); }
 void UFGPlayerInput::HandleMouseButtonDownEvent(const FPointerEvent& MouseEvent){ }
 void UFGPlayerInput::HandleMouseButtonUpEvent(const FPointerEvent& MouseEvent){ }
 void UFGPlayerInput::DumpKeyStates(){ }
 void UFGPlayerInput::FlushMouseKeys(){ }
-void UFGPlayerInput::TryCacheDefaultKeyMappings(){ }
+const UInputAction* UFGPlayerInput::FindActionByMappableActionName(FName actionName) const{ return nullptr; }
+bool UFGPlayerInput::FindDefaultKeyMappingForInputAction(const UInputAction* inputAction, FName preferredActionName, const UInputMappingContext* preferredContext, bool allowOtherContexts, FEnhancedActionKeyMapping& out_keyMapping, const UInputMappingContext** out_mappingContext) const{ return bool(); }
+bool UFGPlayerInput::FindAllMappedContextsForInputAction(const UInputAction* inputAction, TArray<UInputMappingContext*>& out_mappedContexts) const{ return bool(); }
+void UFGPlayerInput::TryCacheDefaultKeyMappings() const{ }
+void UFGPlayerInput::GatherKeyMappingsFromInputContext(UInputMappingContext* mappingContext) const{ }

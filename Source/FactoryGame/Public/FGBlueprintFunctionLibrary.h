@@ -3,14 +3,14 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGUseableInterface.h"
+#include "FGFactoryColoringTypes.h"
 #include "FGInventoryComponent.h"
-#include "UI/FGPopupWidget.h"
+#include "FGMapMarker.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGRecipe.h"
-#include "FGFactoryColoringTypes.h"
-#include "FGMapMarker.h"
 #include "FGSchematic.h"
+#include "FGUseableInterface.h"
+#include "UI/FGPopupWidget.h"
 #include "FGBlueprintFunctionLibrary.generated.h"
 
 UENUM( BlueprintType )
@@ -357,17 +357,20 @@ public:
 
 	static bool IsLocationNearABaseFromResult( const UObject* worldContext, FVector inLocation, float closeDistance, const TArray< FOverlapResult >& Results );
 
+	/** Converts legacy short map name to TopLevelAssetPath object containing a full path to the UWorld object representing a map. Returns true if successful, false otherwise */
+	static bool TryConvertShortMapNameToTopLevelAssetPath( const FString& mapName, FTopLevelAssetPath& outAssetPath );
+
 	/** Helper function that takes care of creating a session and travel to the map */
 	UFUNCTION( BlueprintCallable, Category="Online" )
-	static void CreateSessionAndTravelToMap( APlayerController* player, const FString& mapName, const FString& options, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility );
+	static class USessionMigrationSequence* CreateSessionAndTravelToMap( APlayerController* player, const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility sessionVisibility );
 
 	/** Helper function that takes care of creating a session and travel to the map. If skipOnboarding is true we skip intro/onboarding/tutorial and go directly to tier 1 */
 	UFUNCTION( BlueprintCallable, Category="Online" )
-	static void CreateSessionAndTravelToMapWithStartingLocation( APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility, bool skipOnboarding);
+	static class USessionMigrationSequence* CreateSessionAndTravelToMapWithStartingLocation( APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, ESessionVisibility sessionVisibility, bool skipOnboarding);
 
 	/** Helper function that takes care of loading a session. If enableAdvancedGameSettings is true we will enable it when we load the game */
 	UFUNCTION( BlueprintCallable, Category="Online" )
-	static void LoadSaveFile( TScriptInterface<IFGSaveManagerInterface> saveManager, const FSaveHeader& saveGame, class APlayerController* player, bool enableAdvancedGameSettings );
+	static class USessionMigrationSequence* LoadSaveFile( TScriptInterface<IFGSaveManagerInterface> saveManager, const FSaveHeader& saveGame, class APlayerController* player, bool enableAdvancedGameSettings );
 	
 	/** Travel gracefully to main menu, kicking clients if host, and tearing down the game session */
 	UFUNCTION( BlueprintCallable, Category="Utils", meta=(DefaultToSelf="worldContext") )
@@ -512,6 +515,10 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category="Utilities|FlowControl", meta=( Latent, WorldContext="WorldContextObject", LatentInfo="LatentInfo" ) )
 	static void	WaitForValidSubsystems(const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo );
+
+	/** Waits until the player state has been assigned or replicated to the particular player controller */
+	UFUNCTION( BlueprintCallable, Category = "Utilities|FlowControl", meta = ( Latent, WorldContext = "WorldContextObject", LatentInfo = "LatentInfo" ) )
+	static void WaitForPlayerState(const UObject* WorldContextObject, AFGPlayerController* PlayerController, struct FLatentActionInfo LatentInfo, class AFGPlayerState*& out_playerState );
 
 	/**
 	 * Waits for the HUD actor to become available and then executes the connected nodes. Nothing will run on dedicated servers, since HUD is not available there. 

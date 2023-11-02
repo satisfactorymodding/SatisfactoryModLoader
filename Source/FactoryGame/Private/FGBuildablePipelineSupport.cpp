@@ -4,6 +4,7 @@
 #include "Components/SceneComponent.h"
 #include "FGColoredInstanceMeshProxy.h"
 #include "FGSwatchGroup.h"
+#include "Net/UnrealNetwork.h"
 
 #if WITH_EDITOR
 void AFGBuildablePipelineSupport::OnConstruction(const FTransform& transform){ }

@@ -3,4 +3,4 @@
 #include "FGBoundedTextRenderComponent.h"
 
 FPrimitiveSceneProxy* UFGBoundedTextRenderComponent::CreateSceneProxy(){ return nullptr; }
-void UFGBoundedTextRenderComponent::AssignBoundingBox(UBoxComponent* boxComponent){ }
+void UFGBoundedTextRenderComponent::AssignBoundingBox( UBoxComponent* boxComponent){ }

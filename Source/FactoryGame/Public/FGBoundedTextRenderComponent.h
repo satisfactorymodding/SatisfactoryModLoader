@@ -24,7 +24,7 @@ public:
 	
 	/** Assigns the box to use as bounds for this text */
 	UFUNCTION(BlueprintCallable, Category="BoundedTextRenderComponent")
-	void AssignBoundingBox( UBoxComponent* boxComponent );
+	void AssignBoundingBox( class UBoxComponent* boxComponent );
 
 	UPROPERTY( )
 	UBoxComponent* mBoundingBox;

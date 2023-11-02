@@ -30,6 +30,7 @@ void UFGBuildGunStatePaint::PrimaryFireRelease_Implementation(){ }
 void UFGBuildGunStatePaint::SecondaryFire_Implementation(){ }
 void UFGBuildGunStatePaint::Scroll_Implementation(int32 delta){ }
 void UFGBuildGunStatePaint::BindInputActions( UFGEnhancedInputComponent* inputComponent){ }
+bool UFGBuildGunStatePaint::CanSampleCustomizations() const{ return bool(); }
 void UFGBuildGunStatePaint::CreateStencilProxy(AActor* selected){ }
 void UFGBuildGunStatePaint::DestroyStencilProxies(bool destroyComponents){ }
 void UFGBuildGunStatePaint::Server_ExecutePrimaryFire_Implementation(){ }

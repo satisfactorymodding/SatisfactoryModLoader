@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGBuildablePipeBase.h"
 #include "FGFluidIntegrantInterface.h"
-#include "Buildables/FGBuildablePipeBase.h"
 #include "FGBuildablePipeline.generated.h"
 
 

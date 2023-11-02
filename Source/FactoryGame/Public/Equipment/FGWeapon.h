@@ -3,11 +3,11 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGAmmoType.h"
+#include "FGEquipment.h"
 #include "GameFramework/Actor.h"
-#include "Equipment/FGEquipment.h"
-#include "Equipment/FGAmmoType.h"
 
-#include "Equipment/FGWeaponState.h"
+#include "FGWeaponState.h"
 
 #include "FGWeapon.generated.h"
 

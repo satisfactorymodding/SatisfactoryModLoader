@@ -4,10 +4,10 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "FGActorSaveHeaderTypes.h"
 #include "Equipment/FGAmmoType.h"
-#include "UObject/Object.h"
+#include "FGActorSaveHeaderTypes.h"
 #include "SaveCustomVersion.h"
+#include "UObject/Object.h"
 #include "FWPSaveDataMigrationContext.generated.h"
 
 USTRUCT()

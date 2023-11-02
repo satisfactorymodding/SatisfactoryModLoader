@@ -3,10 +3,10 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGBaseUI.h"
 #include "FGSchematic.h"
 #include "FGTutorialIntroManager.h"
-#include "UI/FGBaseUI.h"
-#include "UI/Message/FGAudioMessage.h"
+#include "Message/FGAudioMessage.h"
 #include "FGGameUI.generated.h"
 
 class UFGInteractWidget;

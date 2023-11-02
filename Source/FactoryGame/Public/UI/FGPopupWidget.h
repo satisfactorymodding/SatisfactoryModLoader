@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGInteractWidget.h"
 #include "FGPopupInstigatorInterface.h"
-#include "UI/FGInteractWidget.h"
 #include "FGPopupWidget.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE( FPopupConfirmClicked );

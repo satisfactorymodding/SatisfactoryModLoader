@@ -84,7 +84,6 @@ UFGSchematic::UFGSchematic() : Super() {
 	this->mDependenciesBlocksSchematicAccess = false;
 	this->mHiddenUntilDependenciesMet = false;
 	this->mDependsOnSchematic = nullptr;
-	this->mSchematicCategoryDeprecated = ESchematicCategory::ESC_LOGISTICS;
 }
 void UFGSchematic::PostLoad(){ Super::PostLoad(); }
 void UFGSchematic::Serialize(FArchive& ar){ Super::Serialize(ar); }

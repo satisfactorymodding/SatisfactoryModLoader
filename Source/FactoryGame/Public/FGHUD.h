@@ -1,11 +1,10 @@
 //Copyright 2016 Coffee Stain Studios.All Rights Reserved.
-#pragma once 
-#include "FactoryGame.h"
-#include "Equipment/FGEquipment.h"
-#include "GameFramework/HUD.h"
-#include "Resources/FGItemDescriptor.h"
-#include "FGHUDBase.h"
+#pragma once
+
 #include "Blueprint/UserWidgetPool.h"
+#include "Equipment/FGEquipment.h"
+#include "FGHUDBase.h"
+#include "FactoryGame.h"
 
 #include "FGHUD.generated.h"
 
@@ -32,7 +31,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHUDVisibilityChanged, bool, hudV
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnPlayerHitFeedback, AFGCharacterBase*, hitCharacter, AActor*, damageCauser );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams( FOnCrosshairUpdated, bool, crosshairVisibility, UTexture2D*, crossHairTexture, FLinearColor, color );
 
-DECLARE_LOG_CATEGORY_EXTERN( LogHUD, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogHUD, Log, All );
 
 UCLASS()
 class FACTORYGAME_API AFGHUD : public AFGHUDBase

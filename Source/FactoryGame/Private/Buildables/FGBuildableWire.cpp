@@ -2,6 +2,7 @@
 
 #include "Buildables/FGBuildableWire.h"
 #include "Hologram/FGWireHologram.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableWire::AFGBuildableWire() : Super() {
 	this->mMaxLength = 10000.0;
@@ -11,6 +12,8 @@ AFGBuildableWire::AFGBuildableWire() : Super() {
 	this->mWireMesh = nullptr;
 	this->mConnections[0] = nullptr;
 	this->mConnections[1] = nullptr;
+	this->mConnectionLocations[0] = FVector::ZeroVector;
+	this->mConnectionLocations[1] = FVector::ZeroVector;
 	this->mCachedLength = 0.0;
 	this->mHologramClass = AFGWireHologram::StaticClass();
 	this->NetDormancy = ENetDormancy::DORM_DormantAll;
@@ -18,6 +21,7 @@ AFGBuildableWire::AFGBuildableWire() : Super() {
 void AFGBuildableWire::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableWire, mConnections);
+	DOREPLIFETIME(AFGBuildableWire, mConnectionLocations);
 }
 void AFGBuildableWire::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildableWire::BeginPlay(){ }

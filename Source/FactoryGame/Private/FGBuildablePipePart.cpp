@@ -3,6 +3,7 @@
 #include "FGBuildablePipePart.h"
 #include "Components/SceneComponent.h"
 #include "FGColoredInstanceMeshProxy.h"
+#include "Net/UnrealNetwork.h"
 
 #if WITH_EDITOR
 void AFGBuildablePipePart::OnConstruction(const FTransform& transform){ }

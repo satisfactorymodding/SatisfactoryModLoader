@@ -3,7 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "UObject/NoExportTypes.h"
+#include "UObject/Object.h"
+#include "Templates/SubclassOf.h"
 #include "FGLootSettings.generated.h"
 
 /**

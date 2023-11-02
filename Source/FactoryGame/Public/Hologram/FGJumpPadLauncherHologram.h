@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "CoreMinimal.h"
-#include "Hologram/FGJumpPadHologram.h"
 #include "Buildables/FGBuildableJumppad.h"
+#include "CoreMinimal.h"
+#include "FGJumpPadHologram.h"
 
 #include "FGJumpPadLauncherHologram.generated.h"
 
@@ -71,23 +71,23 @@ protected:
 	int32 mLaunchAngle;
 
 	/** The part of the jump pad that angles up and down. */
-	UPROPERTY( VisibleAnywhere, Category = "Jump Pad" )
+	UPROPERTY( EditDefaultsOnly, Category = "Jump Pad" )
 	class UStaticMeshComponent* mLauncherMeshComponent;
 
 	/** The spline component for the trajectory. */
-	UPROPERTY( VisibleAnywhere, Category = "Trajectory" )
+	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )
 	class USplineComponent* mSplineComponent;
 
 	/** The instanced spline meshes for the trajectory. */
-	UPROPERTY( VisibleAnywhere, Category = "Trajectory" )
-	class UFGInstancedSplineMeshComponent* mInstancedSplineMeshComponent;
+	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )
+	class UInstancedSplineMeshComponent* mTrajectorySplineMeshComponent;
 
 	/** The scale used for the instances in the spline mesh. */
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )
 	FVector mTrajectoryMeshScale;
 
 	/** The mesh that shows where launched objects will land. */
-	UPROPERTY( VisibleAnywhere, Category = "Trajectory" )
+	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )
 	class UStaticMeshComponent* mDestinationMeshComponent;
 
 	/** How high above the impact location the destination mesh will be. */

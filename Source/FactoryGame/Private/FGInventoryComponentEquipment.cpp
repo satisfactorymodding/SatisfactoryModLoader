@@ -2,6 +2,7 @@
 
 #include "FGInventoryComponentEquipment.h"
 #include "Equipment/FGEquipment.h"
+#include "Net/UnrealNetwork.h"
 
 UFGInventoryComponentEquipment::UFGInventoryComponentEquipment() : Super() {
 	this->mOverrideEquipmentInSlot = nullptr;
@@ -17,6 +18,7 @@ void UFGInventoryComponentEquipment::SetOverrideEquipment(AFGEquipment* equipmen
 void UFGInventoryComponentEquipment::CycleEquipment(int32 dir){ }
 bool UFGInventoryComponentEquipment::ContainsItemTypeAndHasEnoughSpaceForItem(FInventoryItem item){ return bool(); }
 FDelegateHandle UFGInventoryComponentEquipment::BindOnActiveEquipmentChanged(const FOnActiveEquipmentChanged::FDelegate &Delegate){ return FDelegateHandle(); }
+void UFGInventoryComponentEquipment::SetActiveEquipment(AFGEquipment* equipment){ }
 void UFGInventoryComponentEquipment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGInventoryComponentEquipment, mEquipmentInSlot);

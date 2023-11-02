@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "CoreMinimal.h"
 #include "Buildables/FGBuildable.h"
 #include "Buildables/FGBuildablePipeline.h"
+#include "CoreMinimal.h"
 #include "FGSignificanceInterface.h"
 #include "FGBuildablePipelineFlowIndicator.generated.h"
 

@@ -2,6 +2,7 @@
 
 #include "Equipment/FGChainsaw.h"
 #include "Components/SceneComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGChainsaw::AFGChainsaw() : Super() {
 	this->mFuelClass = nullptr;
@@ -11,23 +12,33 @@ AFGChainsaw::AFGChainsaw() : Super() {
 	this->mExcludeChainsawableFoliage = false;
 	this->mChainsawNoise = nullptr;
 	this->mEnergyStored = 0.0;
+	this->mSawingProgress = 0.0;
+	this->mSawingComponent = nullptr;
+	this->mChainsawState = EFGChainsawState::None;
 	this->mArmAnimation = EArmEquipment::AE_ChainSaw;
+	this->mOnlyVisibleToOwner = false;
 	this->mDefaultEquipmentActions = 1;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
 void AFGChainsaw::Tick(float dt){ }
 bool AFGChainsaw::ShouldSaveState() const{ return bool(); }
 void AFGChainsaw::DisableEquipment(){ }
+void AFGChainsaw::Equip(AFGCharacterPlayer* character){ }
 void AFGChainsaw::UnEquip(){ }
 void AFGChainsaw::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGChainsaw, mEnergyStored);
+	DOREPLIFETIME(AFGChainsaw, mChainsawState);
 }
+bool AFGChainsaw::IsSawEngaged() const{ return bool(); }
+bool AFGChainsaw::IsSawing() const{ return bool(); }
+bool AFGChainsaw::IsSpinningUp() const{ return bool(); }
 bool AFGChainsaw::DoesPlayerHaveChainsawEquipped( AFGCharacterPlayer* player){ return bool(); }
 void AFGChainsaw::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
+bool AFGChainsaw::IsSpinningUpTransitionFinished_Implementation() const{ return bool(); }
+void AFGChainsaw::OnChainsawStateTransition_Implementation(EFGChainsawState oldState){ }
 bool AFGChainsaw::ConsumeFuel(float dt){ return bool(); }
 void AFGChainsaw::StartSawing(){ }
-bool AFGChainsaw::CanStartSawing_Implementation(){ return bool(); }
 void AFGChainsaw::Server_StartSawing_Implementation(){ }
 bool AFGChainsaw::Server_StartSawing_Validate(){ return bool(); }
 void AFGChainsaw::StopSawing(){ }
@@ -42,14 +53,9 @@ bool AFGChainsaw::Server_StopSawing_Validate(){ return bool(); }
 bool AFGChainsaw::HasAnyFuel() const{ return bool(); }
 void AFGChainsaw::StartNewSawing( USceneComponent* sawingComponent, int32 newIndex){ }
 bool AFGChainsaw::IsValidSawing( USceneComponent* sawingComponent, int32 newIndex) const{ return bool(); }
-void AFGChainsaw::AddToPlayerInventory( USceneComponent* sawingComponent){ }
 bool AFGChainsaw::CanPlayerPickupFoliageResourceForSeeds( UHierarchicalInstancedStaticMeshComponent* meshComponent, bool excludeChainsawable, TArrayView< uint32 > seeds, TArray<FInventoryStack>& out_validStacks){ return bool(); }
-void AFGChainsaw::PlayEffect(FVector atLocation, USceneComponent* sawingComponent){ }
 UStaticMesh* AFGChainsaw::GetStaticMesh(USceneComponent* sawingComponent){ return nullptr; }
 bool AFGChainsaw::IsChainsawableObject(UObject* object) const{ return bool(); }
-void AFGChainsawAttachment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGChainsawAttachment, mHasAnyFuel);
-}
-void AFGChainsawAttachment::SetHasAnyFuel(bool newHasAnyFuel){ }
-void AFGChainsawAttachment::OnRep_HasAnyFuel(){ }
+void AFGChainsaw::TransitionToNewState(EFGChainsawState newState){ }
+void AFGChainsaw::Server_TransitionToNewState_Implementation(EFGChainsawState newState){ }
+void AFGChainsaw::OnRep_ChainsawState(EFGChainsawState oldState){ }

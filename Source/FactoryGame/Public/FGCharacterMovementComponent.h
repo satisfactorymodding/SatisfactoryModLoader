@@ -46,6 +46,7 @@ public:
 	FFGPipeHyperDynamicPipeData();
 	FFGPipeHyperDynamicPipeData(const FFGPipeHyperDynamicPipeData& Other);
 	FFGPipeHyperDynamicPipeData(FFGPipeHyperDynamicPipeData&& Other) noexcept;
+	FFGPipeHyperDynamicPipeData( const StructOnScopeType& InStructOnScope );
 
 	FFGPipeHyperDynamicPipeData& operator=(const FFGPipeHyperDynamicPipeData& Other);
 	FFGPipeHyperDynamicPipeData& operator=(FFGPipeHyperDynamicPipeData&& Other) noexcept;
@@ -55,9 +56,9 @@ public:
 
 	/** Convenient accessors with both const and non-const versions */
 	FORCEINLINE StructOnScopeType& operator*() { return Data; }
+	FORCEINLINE StructOnScopeType& operator->() { return Data; }
 	FORCEINLINE const StructOnScopeType& operator*() const { return Data; }
-	FORCEINLINE StructOnScopeType& Get() { return Data; }
-	FORCEINLINE const StructOnScopeType& Get() const { return Data; }
+	FORCEINLINE const StructOnScopeType& operator->() const { return Data; }
 };
 
 template<>
@@ -152,9 +153,10 @@ struct FACTORYGAME_API FPlayerPipeHyperData
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Hyper Tube" )
 	float mPipeCurveDumpingTime = 0.05f;
 
+	// @Nick: Changed this from 50 to 100 to hopefully fix the issues with people getting stuck inside of the poles at high velocity
 	/** Offset in the connector direction to use when ejecting the player out of the hypertube */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Hyper Tube" )
-	float mPipeEjectOffset = 50.0f;
+	float mPipeEjectOffset = 100.0f;
 
 	/** Amount of time the player is immune to being sucked into the same entrance they just exited from */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Hyper Tube" )
@@ -269,6 +271,7 @@ public:
 	virtual float GetMaxJumpZVelocity() const override;
 	virtual bool CanCrouchInCurrentState() const override;
 	virtual void SmoothClientPosition( float DeltaSeconds ) override;
+	virtual void SmoothCorrection(const FVector& OldLocation, const FQuat& OldRotation, const FVector& NewLocation, const FQuat& NewRotation) override;
 	virtual float ImmersionDepth() const override;
 	// End UCharacterMovementComponent
 
@@ -289,15 +292,15 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Sprint" )
 	FORCEINLINE bool GetWantsToSprint() const { return mWantsToSprint; }
 
-	/** Toggles mWantsToSprint and sets mHoldToSprint to isHoldSprintOn. */
-	void ToggleWantsToSprintAndSetHoldSprint( const bool isHoldSprintOn );
+	/** Toggles mWantsToSprint and sets mHoldToSprint to true. */
+	void ToggleWantsToSprintAndSetAutoRelease( bool holdToSprint, bool autoReleaseSprint );
 	
 	/** Get mBaseVelocity */
 	UFUNCTION( BlueprintPure, Category = "Movement" )
 	FORCEINLINE FVector GetBaseVelocity() const { return mBaseVelocity; }
 
 	/** Set if the player wants to sprint or not */
-	void SetWantsToSprintAndHoldSprint( const bool wantsToSprint, const bool isHoldSprintOn );
+	void SetWantsToSprintAndHoldSprint( bool wantsToSprint, bool holdToSprint, bool autoReleaseSprint );
 
 	/** Get mIsSliding */
 	FORCEINLINE bool IsSliding() const { return mIsSliding; }
@@ -500,10 +503,7 @@ private:
 
 	/** Returns or finds the Hoverpack */
 	class AFGHoverPack* GetCachedHoverPack();
-
-	/** Returns the active parachute class CDO */
-	const AFGParachute* GetActiveParachute() const;
-
+	
 	/** Ticks the slide timer so we know for how long the slide has been ongoing */
 	void TickSlide( const float delta );
 
@@ -512,7 +512,12 @@ private:
 
 	/** Used to stop ledge climbing. */
 	void StopLedgeClimb( const bool interrupt );
+
+	/** Attempts to find and enter the closest hypertube at the provided location. Used for movement replication on simulated proxies */
+	AActor* FindClosestPipeHyper( const FVector& worldLocation, const FVector& velocity, float& out_distanceAlongSpline, TStructOnScope<FFGPipeHyperBasePipeData>& out_pipeData ) const;
 	
+	/** Updates the hypertube movement data based on the movement information received as a part of network correction or smoothing */
+	void UpdatePipeMovementDataFromCorrectionResult( const FVector& newLocation, const FVector& newVelocity );
 public:
 	/** Timestamp of last time we jumped */
 	UPROPERTY( BlueprintReadOnly, Category = "Jump" )
@@ -563,6 +568,8 @@ private:
 
 	/** Holds if sprint toggle is on from FGCharacterPlayer. Updates every time SetWantsToSprint() is called.*/
 	bool mHoldToSprint;
+	/** True if sprint button should be auto released when the character stops moving */
+	bool mAutoReleaseSprint;
 	
 	/** A cached instance of the equipment that issued jet pack thrust */
 	UPROPERTY()
