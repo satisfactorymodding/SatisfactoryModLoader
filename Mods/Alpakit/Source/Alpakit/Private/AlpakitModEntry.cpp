@@ -206,8 +206,12 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& Ne
 	// Create a temporary profile for packaging the mod
     const ILauncherProfileRef ProfileRef = ProjectLauncherServicesModule.GetProfileManager()->CreateUnsavedProfile( FString::Printf( TEXT("Alpakit [%s]"), *PluginName ) );
 	ProfileRef->SetDescription( FString::Printf( TEXT("Packaging Mod %s"), *PluginName ) );
-	
-	ProfileRef->SetBuildMode( ELauncherProfileBuildModes::Auto );
+
+	if (Mod->GetDescriptor().Modules.Num() > 0) {
+		ProfileRef->SetBuildMode( ELauncherProfileBuildModes::Auto );
+	} else {
+		ProfileRef->SetBuildMode( ELauncherProfileBuildModes::DoNotBuild );
+	}
 	ProfileRef->SetCookMode( ELauncherProfileCookModes::ByTheBook );
 	ProfileRef->SetLaunchMode( ELauncherProfileLaunchModes::DoNotLaunch );
 
