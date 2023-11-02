@@ -223,7 +223,6 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& Ne
 	ProfileRef->SetCookOptions( TEXT("-AllowUncookedAssetReferences") );
 	
 	ProfileRef->SetDeployWithUnrealPak( true );
-	ProfileRef->SetUseIoStore( true );
 	ProfileRef->SetCompressed( true );
 
 	ProfileRef->SetPackagingMode( ELauncherProfilePackagingModes::Locally );
