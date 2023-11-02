@@ -3,6 +3,7 @@
 using UnrealBuildTool;
 using System.IO;
 using System;
+using System.Diagnostics;
 using EpicGames.Core;
 
 public class SML : ModuleRules
@@ -108,7 +109,35 @@ public class SML : ModuleRules
     private static void RetrieveHeadBranchAndCommitFromGit(DirectoryReference RootDir, out string BranchName, out string CommitRef) {
         BranchName = null;
         CommitRef = null;
+            
+        // First try running git
+        var branchNameProcess = Process.Start(new ProcessStartInfo("git", "rev-parse --abbrev-ref HEAD")
+        {
+            WorkingDirectory = RootDir.FullName,
+            RedirectStandardOutput = true,
+        });
+        if (branchNameProcess != null)
+        {
+            branchNameProcess.WaitForExit();
+            if (branchNameProcess.ExitCode == 0)
+                BranchName = branchNameProcess.StandardOutput.ReadToEnd().Trim();
+        }
 
+        var commitProcess = Process.Start(new ProcessStartInfo("git", "rev-parse HEAD")
+        {
+            WorkingDirectory = RootDir.FullName,
+            RedirectStandardOutput = true,
+        });
+        if (commitProcess != null)
+        {
+            commitProcess.WaitForExit();
+            if (commitProcess.ExitCode == 0)
+                CommitRef = commitProcess.StandardOutput.ReadToEnd().Trim();
+        }
+
+        if (CommitRef != null && BranchName != null) return;
+
+        // If either was not found, try parsing the HEAD file manually
         var GitRepository = Path.Combine(RootDir.FullName, ".git");
         if (!Directory.Exists(GitRepository)) {
             return;
