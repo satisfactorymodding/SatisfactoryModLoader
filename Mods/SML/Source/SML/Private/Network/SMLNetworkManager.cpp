@@ -180,22 +180,3 @@ void FSMLNetworkManager::ValidateSMLConnectionData(UNetConnection* Connection)
         UModNetworkHandler::CloseWithFailureMessage( Connection, Reason );
     }
 }
-
-bool HandleModInitData( FConnectionMetadata& Metadata, const FString& Data ) {
-    const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Data);
-    FJsonSerializer Serializer;
-    TSharedPtr<FJsonObject> MetadataObject;
-    if (!Serializer.Deserialize(Reader, MetadataObject)) {
-        return false;
-    }
-    const TSharedPtr<FJsonObject>& ModList = MetadataObject->GetObjectField(TEXT("ModList"));
-    for (const auto& Pair : ModList->Values) {
-        FVersion ModVersion = FVersion{};
-        FString ErrorMessage;
-        const bool bParseSuccess = ModVersion.ParseVersion(Pair.Value->AsString(), ErrorMessage);
-        if (bParseSuccess) {
-            Metadata.InstalledClientMods.Add(Pair.Key, ModVersion);
-        }
-    }
-    return true;
-}

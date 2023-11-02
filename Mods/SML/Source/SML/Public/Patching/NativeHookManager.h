@@ -520,31 +520,6 @@ template<typename R, typename... A, R(*Callable)(A...)>
 struct HookInvoker<R(*)(A...), Callable> : HookInvokerExecutorGlobalFunction<R(*)(A...), Callable, R, A...> {
 };
 
-/*template <typename TCallable, TCallable Callable, bool bIsConst, typename ReturnType, typename CallableType, typename... ArgumentTypes>
-typename HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::HookType* HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::functionPtr = nullptr;
-
-template <typename TCallable, TCallable Callable, bool bIsConst, typename ReturnType, typename CallableType, typename... ArgumentTypes>
-bool HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::bHookInitialized = false;
-
-template <typename TCallable, TCallable Callable, bool bIsConst, typename ReturnType, typename CallableType, typename... ArgumentTypes>
-TArray<typename HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::Handler>* HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::HandlersBefore = nullptr;
-
-template <typename TCallable, TCallable Callable, bool bIsConst, typename ReturnType, typename CallableType, typename... ArgumentTypes>
-TArray<typename HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::HandlerAfter>* HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::HandlersAfter = nullptr;
-
-
-template <typename TCallable, TCallable Callable, typename ReturnType, typename... ArgumentTypes>
-typename HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::HookType HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::functionPtr = nullptr;
-
-template <typename TCallable, TCallable Callable, typename ReturnType, typename... ArgumentTypes>
-bool HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::bHookInitialized = false;
-
-template <typename TCallable, TCallable Callable, typename ReturnType, typename... ArgumentTypes>
-TArray<typename HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::Handler>* HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::HandlersBefore = nullptr;
-
-template <typename TCallable, TCallable Callable, typename ReturnType, typename... ArgumentTypes>
-TArray<typename HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::HandlerAfter>* HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::HandlersAfter = nullptr;
-*/
 
 UE_DEPRECATED( 5.2, "CallScope type is deprecated. Please migrate your code to use TCallScope" );
 template<typename T>
