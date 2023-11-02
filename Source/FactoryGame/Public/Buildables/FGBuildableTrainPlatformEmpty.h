@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableTrainPlatform.h"
-#include "Buildables/FGBuildableFactory.h"
+#include "FGBuildableFactory.h"
+#include "FGBuildableTrainPlatform.h"
 #include "FGBuildableTrainPlatformEmpty.generated.h"
 
 /**

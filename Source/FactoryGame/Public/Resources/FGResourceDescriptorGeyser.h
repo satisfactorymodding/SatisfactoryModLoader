@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Resources/FGResourceDescriptor.h"
+#include "FGResourceDescriptor.h"
 #include "FGResourceDescriptorGeyser.generated.h"
 
 /**

@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildable.h"
-#include "Buildables/FGBuildableSignBase.h"
+#include "FGBuildable.h"
+#include "FGBuildableSignBase.h"
 #include "FGSignPixelInstanceManager.h"
 #include "FGBuildablePixelSign.generated.h"
 

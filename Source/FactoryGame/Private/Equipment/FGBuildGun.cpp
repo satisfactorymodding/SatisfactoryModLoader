@@ -3,6 +3,7 @@
 #include "Equipment/FGBuildGun.h"
 #include "Components/SceneComponent.h"
 #include "Equipment/FGEquipment.h"
+#include "Net/UnrealNetwork.h"
 
 UFGBuildGunState::UFGBuildGunState() : Super() {
 	this->mMappingContext = nullptr;
@@ -41,6 +42,9 @@ bool UFGBuildGunState::BuildGunDelayIsComplete(){ return bool(); }
 bool UFGBuildGunState::HasBuildGunDelay(){ return bool(); }
 void UFGBuildGunState::BindInputActions( UFGEnhancedInputComponent* inputComponent){ }
 void UFGBuildGunState::ClearInputActions( UEnhancedInputComponent* inputComponent){ }
+bool UFGBuildGunState::CanSampleBuildings() const{ return bool(); }
+bool UFGBuildGunState::CanSampleCustomizations() const{ return bool(); }
+bool UFGBuildGunState::CanSampleBlueprints() const{ return bool(); }
 AFGBuildGun::AFGBuildGun() : Super() {
 	this->mBuildDistanceMax = 10000.0;
 	this->mMenuStateClass = nullptr;
@@ -73,7 +77,8 @@ bool AFGBuildGun::ShouldSaveState() const{ return bool(); }
 void AFGBuildGun::Equip( AFGCharacterPlayer* character){ }
 void AFGBuildGun::UnEquip(){ }
 void AFGBuildGun::OnInteractWidgetAddedOrRemoved(UFGInteractWidget* widget, bool added){ }
-void AFGBuildGun::TraceForBuilding(APawn* owningPawn, FHitResult& hitresult){ }
+bool AFGBuildGun::OnShortcutPressed(int32 shortcutIndex){ return bool(); }
+void AFGBuildGun::TraceForBuilding(APawn* owningPawn, FHitResult& hitresult) const{ }
 void AFGBuildGun::GetAvailableRecipes(TArray< TSubclassOf<  UFGRecipe > >& out_recipes, TArray < TSubclassOf<  UFGCustomizationRecipe > >& out_customizationRecipes) const{ }
 TArray< FItemAmount > AFGBuildGun::GetCostForRecipe(TSubclassOf<  UFGRecipe > recipe) const{ return TArray<FItemAmount>(); }
 UFGInventoryComponent* AFGBuildGun::GetInventory() const{ return nullptr; }

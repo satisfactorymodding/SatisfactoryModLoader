@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
 #include "Templates/TypeHash.h"
 
 struct FACTORYGAME_API FObjectRedirect
@@ -71,7 +72,7 @@ struct FACTORYGAME_API FObjectReferenceDisc
 	* @param world - the world this object lives in
 	* @param level - the "new" level to test as the path
 	*/
-	AActor* TryResolveActorWithNewLevel( UWorld* world, ULevel* newLevel );
+	class AActor* TryResolveActorWithNewLevel( UWorld* world, class ULevel* newLevel );
 
 	FObjectReferenceDisc MigrateToNewLevel( const FString& levelName ) const;
 

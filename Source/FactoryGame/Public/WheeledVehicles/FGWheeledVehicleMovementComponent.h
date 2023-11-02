@@ -218,10 +218,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Vehicle)
 	void SetHasDriver( bool hasDriver, bool isLocalDriver );
 
-	/** Sets if the vehicle has fuel. Mostly used to drive audio */
-	UFUNCTION(BlueprintCallable, Category = Vehicle)
-	void SetHasFuel( bool hasFuel );
-
+	/** Used to drive audio. */
+	void HandleEngineSounds( const bool hasFuel );
+	
 	/** Is the vehicle in the air? */
 	UFUNCTION(BlueprintPure, Category = Vehicle)
 	FORCEINLINE bool IsInAir() const { return mNumWheelsOnGround == 0; }
@@ -262,6 +261,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category="Vehicle|Transmission")
 	void OnGearChangeEnd( int32 NewGear );
 
+	void SetClientInputsOnDriverLeave();
+	
 	UPROPERTY(BlueprintAssignable, Category = Vehicle)
 	FVehicleTransmissionEventDelegate mOnGearChangedImmediate;
 
@@ -270,18 +271,15 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = Vehicle)
 	FVehicleTransmissionEventDelegate mOnGearChangeEnd;
-	
+
 protected:
 	virtual void UpdateState(float DeltaTime) override;
 	virtual void ProcessSleeping(const FControlInputs& ControlInputs) override;
 	void UpdateAudioPositions( UAkComponent* audioComp );
-
-	virtual void ReCreateSoundComponents();
-	virtual void DeleteSoundComponents();
 	
- 	/** returns the current largest tire load of the vehicle */
- 	UFUNCTION(BlueprintPure, Category = Vehicle )
- 	float GetLargestTireLoadValue();
+	/** returns the current largest tire load of the vehicle */
+	UFUNCTION(BlueprintPure, Category = Vehicle )
+	float GetLargestTireLoadValue();
 
 	/** returns the current largest slip (burnout/longitudinal) magnitude lat slip of the vehicle */
 	UFUNCTION(BlueprintPure, Category = Vehicle )
@@ -291,12 +289,6 @@ protected:
 	UFUNCTION(BlueprintPure, Category = Vehicle)
 	float GetLargestSkidMagnitude();
 
-	void UpdateAirStatus();
-
-	void UpdateTireEffects();
-
-	void UpdateTireAudio();
-
 	// Side slip multiplier applied to wheel affected by handbrake while using the handbrake
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WheelSetup)
 	float mHandbrakeSideSlipMultiplier = 0.1f;
@@ -304,13 +296,6 @@ protected:
 	/** Allows overriding the force multiplier of wheels based on the surface they are driving on. (i.e: Make the golf cart a soapbox in general but make it stick like fly on a flytrap on foundations) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WheelSetup)
 	TArray<FSurfaceForceMultiplierOverride> mSurfaceWheelForceMultiplierOverrides;
-	
-	/** The setup of the wheel when starting the simulation.
-	 * Allows us to revert to stock settings when runtime modifications aren't needed anymore */
-	TArray<Chaos::FSimpleWheelConfig> mInitialWheelSetup;
-
-	/** How many of our wheels are on the ground */
-	int mNumWheelsOnGround;
 
 	/** Surface on which most wheels are */
 	UPROPERTY(BlueprintReadWrite, Category = Surface)
@@ -367,8 +352,6 @@ protected:
 	/** Map of the wheel index to ak component */
 	UPROPERTY(BlueprintReadOnly)
 	TMap<int, TObjectPtr<UAkComponent>> mVehicleWheelAudioComponents;
-
-	TMap<int, FWheelSoundSurfacePair*> mVehicleWheelAudioPairs;
 
 	/** Contains references to all current active particle systems on the tires */
 	UPROPERTY()
@@ -441,18 +424,38 @@ protected:
 	/** When we bounce of the rev limiter, we can affect the rev rate of the engine a bit: just noticed it does nothing under the hood actually... */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineSetup" )
 	float mRevLimiterRevRateBounceFactor = 0.f;
+
+private:
+	void ReCreateSoundComponents();
+	void DeleteSoundComponents();
+	
+	void UpdateAirStatus();
+
+	void UpdateTireEffects();
+
+	void UpdateTireAudio();
+	
+	/** The setup of the wheel when starting the simulation.
+	 * Allows us to revert to stock settings when runtime modifications aren't needed anymore */
+	TArray< Chaos::FSimpleWheelConfig > mInitialWheelSetup;
+	
+	TMap< int, FWheelSoundSurfacePair* > mVehicleWheelAudioPairs;
+	
+	/** How many of our wheels are on the ground */
+	int mNumWheelsOnGround;
 	
 	/** Vehicle sets if we're significant or not. */
 	bool mIsSignificant = false;
-
+	
 	/** Do we have a driver? */
 	bool mHasDriver = false;
-
-	bool mHasFuel = false;
-
+	
 	/** Is our driver the local player */
 	bool mHasLocalDriver = false;
 
 	/** Cached value of the sleep threshold that was setup with the vehicle */
 	float mInitialSleepThreshold = 0;
+
+	bool mIsEngineOn = false;
+	
 };

@@ -14,7 +14,7 @@
 
 #include "FGBackgroundThread.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogPoolSystem, Error, All);
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN(LogPoolSystem, Error, All);
 
 class AActor;
 class AFGPlayerControllerBase;

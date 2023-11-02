@@ -2,13 +2,12 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
-#include "FGInstancedSplineMeshComponent.h"
 #include "InstancedSplineMeshComponent.h"
+#include "FactoryGame.h"
 #include "FGSplineMeshGenerationLibrary.generated.h"
 
 /**
@@ -66,21 +65,6 @@ public:
 		float meshLength,
 		TArray< USplineMeshComponent* >& meshPool,
 		MeshConstructor meshConstructor );
-
-	/**
-	 * Given a spline, this creates an instanced spline mesh along the spline.
-	 *
-	 * For all parameters see BuildSplineMeshes.
-	 *
-	 * @param splineInstances    The instance component to fill up with spline instances.
-	 *                           This can be reused between calls to update an existing one.
-	 *                           If this have mobility Static, it must not be registered before calling this function, if it is then this function have no effect.
-	 */
-	static void BuildSplineMeshesInstanced(
-		class USplineComponent* spline,
-		UStaticMesh* mesh,
-		float meshLength,
-		class UFGConveyorInstanceSplineMesh* splineInstances );
 	
 	static void BuildSplineMeshesInstanced(USplineComponent* spline, float meshLength, class UInstancedSplineMeshComponent* splineInstances);
 
@@ -89,12 +73,6 @@ public:
 	 *
 	 * For all parameters see BuildSplineMeshesInstanced.
 	 */
-	static void BuildSplineMeshesPerSegmentInstanced(
-		class USplineComponent* spline,
-		UStaticMesh* mesh,
-		float meshLength,
-		UFGInstancedSplineMeshComponent* splineInstances );
-
 	static void BuildSplineMeshesPerSegmentInstanced(
 		USplineComponent* spline,
 		UStaticMesh* mesh,

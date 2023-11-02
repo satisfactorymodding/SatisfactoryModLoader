@@ -5,6 +5,8 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
+#include "Materials/MaterialInterface.h"
+#include "UObject/SoftObjectPtr.h"
 #include "FGOptimizationSettings.generated.h"
 
 

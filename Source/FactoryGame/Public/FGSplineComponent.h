@@ -40,18 +40,6 @@ public:
 	/** @return The mesh at index; returns nullptr if this is instanced. */
 	class USplineMeshComponent* GetMesh( int32 index ) const;
 
-	/** @return The instanced mesh at index; returns nullptr if this is not instanced. */
-	class UFGInstancedSplineMeshComponent* GetInstancedMesh() const;
-
-	/** Gives you the meshes in this spline */
-	void SetVectorParameterOnInstancedMeshMaterials( FName parameterName, FVector inVector );
-
-	/** @return true if this spline uses instanced spline meshes. */
-	FORCEINLINE bool UseInstancing() const { return mUseInstancing; }
-
-	/** If we should try to use instancing or not when using spline meshes */
-	void SetUseInstancing( bool useInstancing );
-
 	/** If we set this to true, then we render our spline in a addition pass with custom depth */
 	void SetAdditionalCustomDepthPass( bool enable );
 
@@ -64,9 +52,6 @@ private:
 
 	/** Place box collisions along the spline. */
 	void GenerateSplineCollisions();
-
-	/** Create a basic setup of a UFGInstancedSplineMeshComponent that's shared between custom depth mesh and normal mesh */
-	class UFGInstancedSplineMeshComponent* CreateInstancedSplineMeshComponent();
 
 	/** Create a basic setup of a spline mesh component that's shared between custom depth mesh and normal mesh */
 	class USplineMeshComponent* CreateSplineMeshComponent();
@@ -105,10 +90,6 @@ private:
 	UPROPERTY()
 	class UMaterialInterface* mOverrideMaterial;
 
-	/** Whether to use instancing or not. */
-	UPROPERTY()
-	bool mUseInstancing;
-
 	/** If true, then we will render custom depth but not in main pass */
 	bool mAdditionalCustomDepthPass;
 
@@ -119,14 +100,6 @@ private:
 	/** If we have enabled custom depth pass, then we store the custom depth spline meshes here */
 	UPROPERTY()
 	TArray< class USplineMeshComponent* > mCustomDepthSplineMeshComponents;
-
-	/** The meshes that make up the spline when instanced. */
-	UPROPERTY()
-	class UFGInstancedSplineMeshComponent* mSplineMeshInstances;
-
-	/** If we have enabled custom depth pass, this will be non-null */
-	UPROPERTY()
-	class UFGInstancedSplineMeshComponent* mCustomDepthSplineMeshInstances;
 
 	/** The collisions that make up the spline. */
 	UPROPERTY()

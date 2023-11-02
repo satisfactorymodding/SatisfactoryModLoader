@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableConveyorBase.h"
-#include "Buildables/FGBuildablePassthrough.h"
+#include "FGBuildableConveyorBase.h"
+#include "FGBuildablePassthrough.h"
 #include "FGBuildableConveyorLift.generated.h"
 
 class UStaticMesh;

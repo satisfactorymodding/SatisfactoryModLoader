@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGPipelineAttachmentHologram.h"
+#include "FGPipelineAttachmentHologram.h"
 #include "FGPipelineJunctionHologram.generated.h"
 
 /**

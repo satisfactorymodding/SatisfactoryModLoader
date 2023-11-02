@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "FGActorRepresentation.h"
 #include "Equipment/FGObjectScanner.h"
+#include "FGActorRepresentation.h"
 #include "FGRadarTowerRepresentation.generated.h"
 
 

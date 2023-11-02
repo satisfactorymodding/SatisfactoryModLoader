@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGBuildableHologram.h"
+#include "FGBuildableHologram.h"
 #include "FGFloodlightHologram.generated.h"
 
 
@@ -45,6 +45,7 @@ public:
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
+	virtual ENudgeFailReason NudgeHologram( const FVector& NudgeInput, const FHitResult& HitResult ) override;
 	// End AFGHologram Interface
 
 protected:

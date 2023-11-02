@@ -4,6 +4,7 @@
 #include "Components/SceneComponent.h"
 #include "FGLadderComponent.h"
 #include "Hologram/FGLadderHologram.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableLadder::AFGBuildableLadder() : Super() {
 	this->mWidth = 0.0;

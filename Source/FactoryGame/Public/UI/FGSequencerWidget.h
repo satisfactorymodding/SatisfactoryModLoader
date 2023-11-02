@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Misc/FrameTime.h"
 #include "Blueprint/UserWidget.h"
 #include "FGSequencerWidget.generated.h"
 

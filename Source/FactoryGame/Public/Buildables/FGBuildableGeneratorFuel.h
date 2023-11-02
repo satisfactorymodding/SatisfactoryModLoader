@@ -3,10 +3,10 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildableGenerator.h"
-#include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "FGBuildableGenerator.h"
 #include "Replication/FGReplicationDetailActorOwnerInterface.h"
 #include "Replication/FGReplicationDetailActor_GeneratorFuel.h"
+#include "Replication/FGReplicationDetailInventoryComponent.h"
 #include "FGBuildableGeneratorFuel.generated.h"
 
 /**

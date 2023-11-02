@@ -22,26 +22,26 @@ public:
 	
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats", meta = (
 		ToolTip = "Extra items we always give you on startup in PIE and standalone" ) )
-	TArray< FItemAmount > mExtraItemsToStartWith;
+	TMap< TSoftClassPtr< class UFGItemDescriptor >, int32 > mExtraItemsToStartWith;
 
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats", meta = (
 		ToolTip = "Recipes you want to start with in PIE and standalone" ) )
-	TArray< TSubclassOf<class UFGRecipe> > mRecipesToStartWith;
+	TArray< TSoftClassPtr<class UFGRecipe> > mRecipesToStartWith;
 
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats", meta = (
 		ToolTip = "Schematics you want to start with in PIE and standalone" ) )
-	TArray< TSubclassOf<class UFGSchematic> > mSchematicsToStartWith;
+	TArray< TSoftClassPtr<class UFGSchematic> > mSchematicsToStartWith;
 
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats", meta = (
 	ToolTip = "Schematics you don't want to get when you give all schematics in PIE and standalone. Works for both the cheat menu and the bool below" ) )
-	TArray< TSubclassOf<class UFGSchematic> > mSchematicsToFilterWithGiveAllSchematics;
+	TArray< TSoftClassPtr<class UFGSchematic> > mSchematicsToFilterWithGiveAllSchematics;
 
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats" )
 	bool mGodMode;
 
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats", meta = (
 		ToolTip = "Set fly enabled on all players if true" ) )
-	bool mEnableFly;
+	bool mEnableFly = true;
 
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats", meta = (
 	ToolTip = "Set auto landing off on all players if false. Does nothing if flying is off." ) )

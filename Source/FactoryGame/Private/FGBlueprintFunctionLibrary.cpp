@@ -73,9 +73,10 @@ TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > UFGBlueprintFunc
 void UFGBlueprintFunctionLibrary::UpdateHotbarShortcutsForSpecifiedMaterialDescriptor(APlayerController* playerController, TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > materialDesc){ }
 bool UFGBlueprintFunctionLibrary::IsLocationNearABase(const UObject* worldContext, FVector inLocation, float closeDistance){ return bool(); }
 bool UFGBlueprintFunctionLibrary::IsLocationNearABaseFromResult(const UObject* worldContext, FVector inLocation, float closeDistance, const TArray< FOverlapResult >& Results){ return bool(); }
-void UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMap(APlayerController* player, const FString& mapName, const FString& options, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility){ }
-void UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMapWithStartingLocation(APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility, bool skipOnboarding){ }
-void UFGBlueprintFunctionLibrary::LoadSaveFile(TScriptInterface<IFGSaveManagerInterface> saveManager, const FSaveHeader& saveGame,  APlayerController* player, bool enableAdvancedGameSettings){ }
+bool UFGBlueprintFunctionLibrary::TryConvertShortMapNameToTopLevelAssetPath(const FString& mapName, FTopLevelAssetPath& outAssetPath){ return bool(); }
+USessionMigrationSequence* UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMap(APlayerController* player, const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility sessionVisibility){ return nullptr; }
+USessionMigrationSequence* UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMapWithStartingLocation(APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, ESessionVisibility sessionVisibility, bool skipOnboarding){ return nullptr; }
+USessionMigrationSequence* UFGBlueprintFunctionLibrary::LoadSaveFile(TScriptInterface<IFGSaveManagerInterface> saveManager, const FSaveHeader& saveGame,  APlayerController* player, bool enableAdvancedGameSettings){ return nullptr; }
 void UFGBlueprintFunctionLibrary::TravelToMainMenu(APlayerController* playerController){ }
 void UFGBlueprintFunctionLibrary::SendLocalPlayerToMainMenu(UWorld* world){ }
 FString UFGBlueprintFunctionLibrary::LinearColorToHex(FLinearColor inColor){ return FString(); }
@@ -110,6 +111,7 @@ bool UFGBlueprintFunctionLibrary::IsWidgetUnderCursor( ULocalPlayer* localPlayer
 UObject* UFGBlueprintFunctionLibrary::Conv_SessionSaveStructToObject(FSessionSaveStruct inSessionSaveStruct){ return nullptr; }
 UObject* UFGBlueprintFunctionLibrary::Conv_SaveHeaderToObject(FSaveHeader inSaveHeader){ return nullptr; }
 void UFGBlueprintFunctionLibrary::WaitForValidSubsystems(const UObject* WorldContextObject,  FLatentActionInfo LatentInfo){ }
+void UFGBlueprintFunctionLibrary::WaitForPlayerState(const UObject* WorldContextObject, AFGPlayerController* PlayerController,  FLatentActionInfo LatentInfo,  AFGPlayerState*& out_playerState){ }
 void UFGBlueprintFunctionLibrary::WaitForFGHud(const UObject* WorldContextObject,  FLatentActionInfo LatentInfo,  AFGHUD*& out_HUD){ }
 void UFGBlueprintFunctionLibrary::WaitForGameUI(const UObject* WorldContextObject,  FLatentActionInfo LatentInfo,  UFGGameUI*& out_GameUI){ }
 void UFGBlueprintFunctionLibrary::WaitForCondition(const UObject* WorldContextObject,  FLatentActionInfo LatentInfo, const FLatentActionPredicate& Predicate, bool ExecuteOnDedicatedServer){ }

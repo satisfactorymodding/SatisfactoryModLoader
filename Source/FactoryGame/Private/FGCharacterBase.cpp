@@ -3,6 +3,7 @@
 #include "FGCharacterBase.h"
 #include "FGDotReceiverComponent.h"
 #include "FGHealthComponent.h"
+#include "Net/UnrealNetwork.h"
 
 void FFootstepEffect::Reset(){ }
 AFGCharacterBase::AFGCharacterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
@@ -17,6 +18,7 @@ AFGCharacterBase::AFGCharacterBase(const FObjectInitializer& ObjectInitializer) 
 	this->mFootstepLandingNoiseClass = nullptr;
 	this->mHealthComponent = CreateDefaultSubobject<UFGHealthComponent>(TEXT("HealthComponent"));
 	this->mDOTReceiverComponent = CreateDefaultSubobject<UFGDotReceiverComponent>(TEXT("DotReceiverComponent"));
+	this->mIsInGas = false;
 	this->mFallDamageCurve = nullptr;
 	this->mFallDamageCurveOverride = nullptr;
 	this->mFallDamageDamageType = nullptr;
@@ -44,6 +46,7 @@ AFGCharacterBase::AFGCharacterBase(const FObjectInitializer& ObjectInitializer) 
 void AFGCharacterBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGCharacterBase, mHealthComponent);
+	DOREPLIFETIME(AFGCharacterBase, mIsInGas);
 	DOREPLIFETIME(AFGCharacterBase, mIsRagdolled);
 	DOREPLIFETIME(AFGCharacterBase, mRagdollMeshLoc);
 	DOREPLIFETIME(AFGCharacterBase, mRagdollMeshVelocity);
@@ -64,6 +67,7 @@ void AFGCharacterBase::PostLoadGame_Implementation(int32 saveVersion, int32 game
 void AFGCharacterBase::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGCharacterBase::NeedTransform_Implementation(){ return bool(); }
 bool AFGCharacterBase::ShouldSave_Implementation() const{ return bool(); }
+void AFGCharacterBase::LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride){ }
 void AFGCharacterBase::Died(AActor* thisActor){ }
 void AFGCharacterBase::OnTakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }
 void AFGCharacterBase::OnTakePointDamage(AActor* damagedActor, float damage,  AController* instigatedBy, FVector hitLocation,  UPrimitiveComponent* hitComponent, FName boneName, FVector shotFromDirection, const  UDamageType* damageType, AActor* damageCauser){ }

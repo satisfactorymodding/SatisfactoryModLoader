@@ -18,9 +18,13 @@ float UFGGameUserSettings::GetEffectiveFrameRateLimit(){ return float(); }
 void UFGGameUserSettings::ConfirmVideoMode(){ }
 void UFGGameUserSettings::RunHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ }
 void UFGGameUserSettings::ApplyHardwareBenchmarkResults(){ }
+IFGOptionInterface* UFGGameUserSettings::GetActiveOptionInterface() const{ return nullptr; }
 FString UFGGameUserSettings::RunAndApplyHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ return FString(); }
 void UFGGameUserSettings::TryAutoDetectSettings(){ }
 void UFGGameUserSettings::SetDefaultValuesFromHardwareBenchmark(){ }
+EUpscalingMethod UFGGameUserSettings::ValidateUpscalingMethod(EUpscalingMethod upscalingMethod) const{ return EUpscalingMethod(); }
+FString UFGGameUserSettings::ValidateScalabilityValue(const FString& keyString, const FString& valueString) const{ return FString(); }
+int32 UFGGameUserSettings::GetVideoQualityLevelFromHardwareBenchmark(){ return int32(); }
 void UFGGameUserSettings::RevertUnsavedChanges(){ }
 void UFGGameUserSettings::SetupBindings(){ }
 bool UFGGameUserSettings::IsStableVideoModeDirty(){ return bool(); }
@@ -50,6 +54,8 @@ void UFGGameUserSettings::OnCloudQualityUpdated(FString updatedCVar){ }
 void UFGGameUserSettings::OnAntiAliasingMethodUpdated(FString strId, FVariant value, bool forceSet){ }
 void UFGGameUserSettings::InitUpscalingPresetValue(){ }
 void UFGGameUserSettings::OnUpscalingPresetUpdated(FString strId, FVariant value){ }
+void UFGGameUserSettings::OnScreenPercentageUpdated(FString strId, FVariant value){ }
+bool UFGGameUserSettings::IsUsingCustomScreenPercentage() const{ return bool(); }
 void UFGGameUserSettings::OnFoliageLoadDistanceUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::OnNetworkQualityUpdated(FString updatedCvar){ }
 int32 UFGGameUserSettings::GetDefaultPostProcessQualitySetting(FString settingName){ return int32(); }
@@ -113,8 +119,12 @@ void UFGGameUserSettings::ApplyHologramColoursToCollectionParameterInstance(UObj
 void UFGGameUserSettings::UpdateFoliageLoadingDistance(UObject* World){ }
 void UFGGameUserSettings::UpdatePaniniFOVScaling(){ }
 UMaterialParameterCollection* UFGGameUserSettings::GetHologramMaterialCollectionAsset() const{ return nullptr; }
+void UFGGameUserSettings::SetPreferredOnlineIntegrationMode(EOnlineIntegrationMode preferredOnlineIntegrationMode){ }
 void UFGGameUserSettings::DumpDynamicOptionsSettings(){ }
 void UFGGameUserSettings::GetOptionsDebugData(TArray<FString>& out_debugData){ }
+bool UFGGameUserSettings::AwaitModuleLoadIfNeeded(const FName& moduleName){ return bool(); }
+void UFGGameUserSettings::OnModuleChanged(FName name, EModuleChangeReason reason){ }
+void UFGGameUserSettings::TryInitUserSettings(){ }
 void UFGGameUserSettings::InitUserSettings(){ }
 void UFGGameUserSettings::SetCvarValue(FString cvar, int32 value){ }
 void UFGGameUserSettings::SetCvarValue(FString cvar, float value){ }
@@ -126,5 +136,4 @@ void UFGGameUserSettings::CVarSinkHandler(){ }
 void UFGGameUserSettings::UpdateCvars(){ }
 void UFGGameUserSettings::PreSetup(){ }
 bool UFGGameUserSettings::ValidateCVar(const FString& cvar){ return bool(); }
-void UFGGameUserSettings::CacheVideoQualitySettings(){ }
 void UFGGameUserSettings::TestSavedValues(){ }

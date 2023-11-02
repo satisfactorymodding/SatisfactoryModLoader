@@ -9,7 +9,7 @@
 #include "FGWorldScannableData.h"
 #include "FGScannableSubsystem.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN( LogScannableSubsystem, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogScannableSubsystem, Log, All );
 
 /**
  * 

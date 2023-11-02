@@ -13,7 +13,7 @@
 #define DEBUG_DRONES
 #endif
 
-DECLARE_LOG_CATEGORY_EXTERN( LogDrones, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogDrones, Log, All );
 
 DECLARE_STATS_GROUP( TEXT("Drones"), STATGROUP_Drones, STATCAT_Advanced );
 
@@ -182,7 +182,7 @@ public:
 
 	/** Gets the station this drone is currently traveling to. */
 	UFUNCTION( BlueprintPure, Category = "Drone" )
-    class AFGBuildableDroneStation* GetCurrentDestinationStation() const { return mCurrentTripDestinationStation; }
+    class AFGBuildableDroneStation* GetCurrentDestinationStation() const { return mCurrentDestinationStation; }
 
 	UFUNCTION( BlueprintPure, Category = "Drone" )
     float GetSpeedFlying() const { return mFlyingSpeed; }
@@ -376,6 +376,9 @@ private:
 
 	UPROPERTY( SaveGame )
 	FDroneTripInformation mCurrentTripInformation;
+
+	UPROPERTY( SaveGame )
+	bool mHasBegunTrip;
 	
 	UPROPERTY( ReplicatedUsing=OnRep_IsBraking )
 	bool mIsBraking;
@@ -403,9 +406,9 @@ private:
 
 	UPROPERTY( SaveGame )
 	class AFGBuildableDroneStation* mHomeStation;
-
+	
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mCurrentTripDestinationStation;
+	class AFGBuildableDroneStation* mCurrentDestinationStation;
 
 	// Actions (Legacy, only here for backwards compatibility with saves)
 	UPROPERTY( SaveGame )

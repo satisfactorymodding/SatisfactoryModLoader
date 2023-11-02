@@ -5,4 +5,3 @@
 DEFINE_LOG_CATEGORY(LogGame);
 DEFINE_LOG_CATEGORY(LogSigns);
 
-TAutoConsoleVariable<int32> CVarStressTestRadioActivity(TEXT("CVarStressTestRadioActivity"), 0, TEXT(""));

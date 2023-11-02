@@ -37,6 +37,7 @@ void UFGAdvancedGameSettings::SubscribeToDynamicOptionUpdate(const FString& cvar
 void UFGAdvancedGameSettings::UnsubscribeToDynamicOptionUpdate(const FString& cvar, const FOptionUpdated& optionUpdatedDelegate){ }
 void UFGAdvancedGameSettings::UnsubscribeToAllDynamicOptionUpdate(UObject* boundObject){ }
 TArray<FUserSettingCategoryMapping> UFGAdvancedGameSettings::GetCategorizedSettingWidgets(UObject* worldContext, UUserWidget* owningWidget){ return TArray<FUserSettingCategoryMapping>(); }
+IFGOptionInterface* UFGAdvancedGameSettings::GetActiveOptionInterface() const{ return nullptr; }
 bool UFGAdvancedGameSettings::HasChangesThatShouldEnableCreativeMode(){ return bool(); }
 void UFGAdvancedGameSettings::GetDebugData(TArray<FString>& out_debugData){ }
 void UFGAdvancedGameSettings::OnPreLoadMap(const FString &MapName){ }

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Hologram/FGSplineHologram.h"
+#include "FGSplineHologram.h"
 #include "Components/SplineComponent.h"
 #include "FGRailroadTrackHologram.generated.h"
 

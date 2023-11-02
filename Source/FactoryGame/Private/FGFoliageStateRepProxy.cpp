@@ -2,6 +2,7 @@
 
 #include "FGFoliageStateRepProxy.h"
 #include "Components/SceneComponent.h"
+#include "Net/UnrealNetwork.h"
 
 void FFoliageRemovalHashArray::PostReplicatedAdd(const TArrayView<int32>& AddedIndices, int32 FinalSize){ }
 void UFGFoliageRemovalBundle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

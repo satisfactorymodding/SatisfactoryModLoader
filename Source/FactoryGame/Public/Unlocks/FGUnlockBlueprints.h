@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Unlocks/FGUnlockRecipe.h"
-#include "Unlocks/FGUnlock.h"
+#include "FGUnlock.h"
+#include "FGUnlockRecipe.h"
 #include "FGUnlockBlueprints.generated.h"
 
 /**

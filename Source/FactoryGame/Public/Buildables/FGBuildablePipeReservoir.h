@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGBuildableFactory.h"
 #include "FGFluidIntegrantInterface.h"
-#include "Buildables/FGBuildableFactory.h"
 #include "FGSignificanceInterface.h"
 #include "FGBuildablePipeReservoir.generated.h"
 

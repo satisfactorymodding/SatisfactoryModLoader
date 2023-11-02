@@ -147,6 +147,8 @@ private:
 	UFUNCTION()
 	void OnRep_Driver( AFGCharacterPlayer* previousDriver );
 
+	virtual void LeavesVehicle() {}
+	
 public:
 	/** True if the driver should be attached, false if this is a "remote controlled" pawn. */
 	UPROPERTY( EditDefaultsOnly, Category = "Driveable" )
@@ -168,6 +170,8 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Driveable" )
 	FVector mDriverExitOffset;
 
+	bool mIsDriverDirty = false;
+	
 protected:
 	/** Mapping context which is applied when entering. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )

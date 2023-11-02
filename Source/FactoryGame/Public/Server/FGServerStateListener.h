@@ -4,9 +4,9 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "UObject/Interface.h"
+#include "FGDedicatedServerTypes.h"
 #include "OnlineBeaconClient.h"
-#include "Server/FGDedicatedServerTypes.h"
+#include "UObject/Interface.h"
 #include "FGServerStateListener.generated.h"
 
 /**

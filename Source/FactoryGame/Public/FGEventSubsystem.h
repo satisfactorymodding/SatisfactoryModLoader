@@ -4,11 +4,11 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "FGSubsystem.h"
-#include "UObject/ObjectMacros.h"
-#include "FGSaveInterface.h"
 #include "Engine/DeveloperSettings.h"
 #include "FGInventoryComponent.h"
+#include "FGSaveInterface.h"
+#include "FGSubsystem.h"
+#include "UObject/ObjectMacros.h"
 
 #include "FGEventSubsystem.generated.h"
 

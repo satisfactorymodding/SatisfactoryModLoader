@@ -104,7 +104,7 @@ void AFGBuildableSubsystem::UpdateBuildableCullDistances(float newFactor){ }
 UMaterialInstanceDynamic* AFGBuildableSubsystem::GetConveyorBelTrackMaterialFromSpeed(float speed, UMaterialInterface* currentMaterial){ return nullptr; }
 void AFGBuildableSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGBuildableSubsystem::DebugGetFactoryActors(TArray< AActor* >& out_actors){ }
-FName AFGBuildableSubsystem::GetMeshMapName(UStaticMesh* mesh, UMeshComponent* sourceComponent){ return FName(); }
+FName AFGBuildableSubsystem::GetMeshMapName(UStaticMesh* mesh,  UMeshComponent* sourceComponent){ return FName(); }
 FNetConstructionID AFGBuildableSubsystem::GetNewNetConstructionID(){ return FNetConstructionID(); }
 void AFGBuildableSubsystem::GetNewNetConstructionID(FNetConstructionID& clientConstructionID){ }
 void AFGBuildableSubsystem::SpawnPendingConstructionHologram(FNetConstructionID netConstructionID,  AFGHologram* templateHologram,  AFGBuildGun* instigatingBuildGun){ }
@@ -130,5 +130,6 @@ UFGColoredInstanceManager* AFGBuildableSubsystem::GetColoredInstanceManager( UFG
 UFGFactoryLegInstanceManager* AFGBuildableSubsystem::GetFactoryLegInstanceManager( UFGFactoryLegInstanceMeshProxy* proxy){ return nullptr; }
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGBuildableSubsystem::GetMigrationSwatchForSlot(int32 slotID){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Swatch>(); }
 bool AFGBuildableSubsystem::IsBasedOn(const UMaterialInterface* instance, const UMaterial* base){ return bool(); }
+const FName AFGBuildableSubsystem::MaterialParameter_ConveyorSpeed = FName();
 uint8 AFGBuildableSubsystem::mCurrentSubStep = uint8();
 uint8 AFGBuildableSubsystem::mCurrentSubStepMax = uint8();

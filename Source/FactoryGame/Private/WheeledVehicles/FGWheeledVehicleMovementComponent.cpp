@@ -17,19 +17,20 @@ void UFGWheeledVehicleMovementComponent::SetupVehicle(TUniquePtr<Chaos::FSimpleW
 void UFGWheeledVehicleMovementComponent::CreateWheels(){ }
 void UFGWheeledVehicleMovementComponent::UpdateSignificance(bool isSignificant){ }
 void UFGWheeledVehicleMovementComponent::SetHasDriver(bool hasDriver, bool isLocalDriver){ }
-void UFGWheeledVehicleMovementComponent::SetHasFuel(bool hasFuel){ }
+void UFGWheeledVehicleMovementComponent::HandleEngineSounds(const bool hasFuel){ }
 UParticleSystem* UFGWheeledVehicleMovementComponent::GetSurfaceParticleSystem(UPhysicalMaterial* PhysMat){ return nullptr; }
 void UFGWheeledVehicleMovementComponent::OnGearChangedImmediate_Implementation(int32 NewGear){ }
 void UFGWheeledVehicleMovementComponent::OnGearChangeBegin_Implementation(int32 NewGear){ }
 void UFGWheeledVehicleMovementComponent::OnGearChangeEnd_Implementation(int32 NewGear){ }
+void UFGWheeledVehicleMovementComponent::SetClientInputsOnDriverLeave(){ }
 void UFGWheeledVehicleMovementComponent::UpdateState(float DeltaTime){ }
 void UFGWheeledVehicleMovementComponent::ProcessSleeping(const FControlInputs& ControlInputs){ }
 void UFGWheeledVehicleMovementComponent::UpdateAudioPositions(UAkComponent* audioComp){ }
-void UFGWheeledVehicleMovementComponent::ReCreateSoundComponents(){ }
-void UFGWheeledVehicleMovementComponent::DeleteSoundComponents(){ }
 float UFGWheeledVehicleMovementComponent::GetLargestTireLoadValue(){ return float(); }
 float UFGWheeledVehicleMovementComponent::GetLargestSlipMagnitude(){ return float(); }
 float UFGWheeledVehicleMovementComponent::GetLargestSkidMagnitude(){ return float(); }
+void UFGWheeledVehicleMovementComponent::ReCreateSoundComponents(){ }
+void UFGWheeledVehicleMovementComponent::DeleteSoundComponents(){ }
 void UFGWheeledVehicleMovementComponent::UpdateAirStatus(){ }
 void UFGWheeledVehicleMovementComponent::UpdateTireEffects(){ }
 void UFGWheeledVehicleMovementComponent::UpdateTireAudio(){ }

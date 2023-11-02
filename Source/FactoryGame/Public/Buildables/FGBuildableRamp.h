@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableFoundation.h"
+#include "FGBuildableFoundation.h"
 #include "FGBuildableRamp.generated.h"
 
 /**

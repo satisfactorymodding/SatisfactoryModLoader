@@ -4,11 +4,11 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGBuildable.h"
+#include "FGBuildableSignBase.h"
 #include "FGSignInterface.h"
-#include "FGSignificanceInterface.h"
-#include "Buildables/FGBuildable.h"
 #include "FGSignTypes.h"
-#include "Buildables/FGBuildableSignBase.h"
+#include "FGSignificanceInterface.h"
 #include "FGBuildableWidgetSign.generated.h"
 
 UCLASS()

@@ -19,13 +19,14 @@ class FACTORYGAME_API UFGOptionsLibrary : public UBlueprintFunctionLibrary
 	
 public:
 
-	/** Returns all user settings available in the game that belongs in the given manager type. The settings are sorted by MenuPriority
-	 * Triggers a scan of user settings directory from PrimaryAssetTypesToScan to make sure we loaded all assets
-	 * @param manager The manager that will manage the found user settings
-	 * @param managerType The type of the manager @todok2 this could be fetched from the manager to avoid this extra variable.
+	/** Gathers and organizes all user settings belonging to the given manager. 
+	 * Parent settings are sorted by menu priority, display name, then by category and subcategory.
+	 * Sub settings are sorted by menu priority under their respective parent setting.
+	 * The function also ensures all setting assets are loaded.
+	 * @param manager The manager that will manage the found user settings.
 	 * @param out_userSettings Will be populated with the found settings
 	 */
-	static void GatherUserSettings( UObject* manager, EUserSettingManagers managerType, TMap< FString, class UFGUserSettingApplyType* >& out_userSettings );
+	static void GatherUserSettings( IFGOptionInterface* manager, TMap< FString, class UFGUserSettingApplyType* >& out_userSettings );
 
 	/** Returns categorized option row widgets as well as setting up suboption for these widgets
 	 * @param worldContext Needed so we can check if each setting should be shown in the current config 

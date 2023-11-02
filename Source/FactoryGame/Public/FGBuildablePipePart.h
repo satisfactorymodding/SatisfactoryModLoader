@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
 #include "Buildables/FGPipeHyperAttachmentSnapTargetInterface.h"
+#include "CoreMinimal.h"
 #include "FGPipeHyperInterface.h"
 #include "FGBuildablePipePart.generated.h"
 

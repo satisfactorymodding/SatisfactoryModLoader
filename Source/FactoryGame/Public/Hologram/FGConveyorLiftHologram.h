@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGSplineHologram.h"
 #include "FGFactoryConnectionComponent.h"
+#include "FGSplineHologram.h"
 #include "FGConveyorLiftHologram.generated.h"
 
 
@@ -36,6 +36,8 @@ public:
 	virtual void CheckClearance(const FVector& locationOffset) override;
 	virtual void CheckBlueprintCommingling() override;
 	virtual bool IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const override;
+	virtual void ReplaceHologram( AFGHologram* hologram, bool snapTransform ) override;
+	virtual bool CanNudgeHologram() const override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface

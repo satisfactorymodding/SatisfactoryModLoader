@@ -30,9 +30,6 @@ public:
 	{
 		return ( Products.Num() > 0 || ResearchRecipes.Num() > 0 || Schematics.Num() > 0 );
 	}
-
-	/** For debugging */
-	FString ToString() const;
 };
 
 

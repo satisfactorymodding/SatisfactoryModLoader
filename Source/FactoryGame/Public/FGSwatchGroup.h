@@ -67,7 +67,7 @@ class FACTORYGAME_API UFGSwatchGroup_FicsitFoundation : public UFGSwatchGroup
 public:
 	UFGSwatchGroup_FicsitFoundation()
 	{
-		mGroupName = LOCTEXT("UFGSwatchGroup_FicsitFoundation", "Ficsit Foundation" );
+		mGroupName = LOCTEXT("UFGSwatchGroup_FicsitFoundation", "FICSIT Foundation" );
 	}
 };
 

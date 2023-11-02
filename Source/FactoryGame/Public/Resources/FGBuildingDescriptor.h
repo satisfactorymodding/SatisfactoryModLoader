@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Resources/FGBuildDescriptor.h"
 #include "Buildables/FGBuildableManufacturerVariablePower.h"
+#include "FGBuildDescriptor.h"
 #include "FGBuildingDescriptor.generated.h"
 
 /**

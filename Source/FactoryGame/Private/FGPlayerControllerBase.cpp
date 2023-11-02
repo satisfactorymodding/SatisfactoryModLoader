@@ -2,6 +2,7 @@
 
 #include "FGPlayerControllerBase.h"
 #include "FGCheatManager.h"
+#include "Net/UnrealNetwork.h"
 
 AFGPlayerControllerBase::AFGPlayerControllerBase() : Super() {
 	this->mCurrentServer = nullptr;

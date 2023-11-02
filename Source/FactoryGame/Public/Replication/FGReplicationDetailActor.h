@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Replication/FGReplicationDependencyActorInterface.h"
+#include "FGReplicationDependencyActorInterface.h"
 #include "FGInventoryComponent.h"
 #include "FGReplicationDetailActor.generated.h"
 

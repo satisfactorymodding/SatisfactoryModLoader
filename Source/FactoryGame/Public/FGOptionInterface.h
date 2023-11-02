@@ -5,8 +5,8 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGOptionsSettings.h"
-#include "UObject/Interface.h"
 #include "Misc/Variant.h"
+#include "UObject/Interface.h"
 #include "FGOptionInterface.generated.h"
 
 /** Since FVariants isn't supported in blueprint we need two delegates. Both delegates are supported in native code. */
@@ -131,5 +131,7 @@ public:
 	/** Returns all setting widgets for all settings this interface owns */
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	virtual TArray<FUserSettingCategoryMapping> GetCategorizedSettingWidgets( UObject* worldContext, UUserWidget* owningWidget ) = 0;
-	
+
+	/** When called on the CDO, this will return the active option interface handling options of this type. */
+	virtual IFGOptionInterface* GetActiveOptionInterface() const = 0;
 };

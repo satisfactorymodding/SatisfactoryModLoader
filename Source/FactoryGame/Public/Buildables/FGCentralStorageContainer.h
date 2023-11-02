@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableStorage.h"
 #include "FGActorRepresentationInterface.h"
+#include "FGBuildableStorage.h"
 #include "FGCentralStorageContainer.generated.h"
 
 /**

@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Unlocks/FGUnlock.h"
+#include "FGUnlock.h"
 #include "FGUnlockInventorySlot.generated.h"
 
 /**

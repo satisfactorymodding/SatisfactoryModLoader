@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "CoreMinimal.h"
 #include "FGEngineCommon.generated.h"
 
 
@@ -156,11 +157,11 @@ private:
 	void HandleHiddenTextureStatsCommand( const TCHAR* cmd, FOutputDevice& ar );
 protected:
 	UPROPERTY( transient )
-	class UEngine* Engine;
+	class UEngine* Engine{};
 
 	/** Height fog properties that's controlled from camera */
 	UPROPERTY()
-	class UFGAtmosphereUpdater* AtmosphereUpdater;
+	class UFGAtmosphereUpdater* AtmosphereUpdater{};
 private:
 #if STATS
 	/** The current stats collectors, @note: Threadcontext StatsThread */
@@ -170,6 +171,6 @@ private:
 	FDelegateHandle CollectStatsDelegateHandle;
 
 	/** If true, then we are collecting stats */
-	bool mCollectStats;
+	bool mCollectStats{};
 #endif
 };

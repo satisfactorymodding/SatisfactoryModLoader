@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildableFactoryBuilding.h"
+#include "FGBuildableFactoryBuilding.h"
 #include "FGBuildableWall.generated.h"
 
 UENUM()

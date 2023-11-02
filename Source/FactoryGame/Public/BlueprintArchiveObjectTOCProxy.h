@@ -2,8 +2,6 @@
 
 #include "FactoryGame.h"
 #include "Serialization/ArchiveProxy.h"
-#include "EngineGlobals.h"
-#include "Engine.h"
 
 /**
  * Blueprint Implementation for the "TOC" of a object, that is it's name, class and path, transform and other relevant properties that is need for a object to be spawned.

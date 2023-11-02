@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "Buildables/FGBuildableWire.h"
-#include "Hologram/FGBuildableHologram.h"
+#include "FGBuildableHologram.h"
 #include "FGCircuitConnectionComponent.h"
 #include "FGPowerConnectionComponent.h"
 #include "FGWireHologram.generated.h"
@@ -47,6 +47,7 @@ public:
 	// End AFGBuildableHologram Interface
 
 	void SetConnection( int32 ix, UFGCircuitConnectionComponent* connection );
+	UFGCircuitConnectionComponent* GetConnection( int32 ix ) const;
 
 	UFUNCTION(BlueprintPure, Category = "Power Pole")
 	class AFGBuildableHologram* GetActiveAutomaticPoleHologram() const { return mActivePoleHologram; }

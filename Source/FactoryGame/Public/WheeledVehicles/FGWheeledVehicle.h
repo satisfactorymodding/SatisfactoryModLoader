@@ -4,9 +4,9 @@
 
 #include "FactoryGame.h"
 #include "FGVehicle.h"
-#include "WheeledVehicles/FGSplinePathMovementComponent.h"
+#include "FGSplinePathMovementComponent.h"
 #include "FGVehicleSubsystem.h"
-#include "WheeledVehicles/FGWheeledVehicleMovementComponent.h"
+#include "FGWheeledVehicleMovementComponent.h"
 #include "FGWheeledVehicle.generated.h"
 
 DECLARE_STATS_GROUP( TEXT( "Wheeled vehicles" ), STATGROUP_WheeledVehicles, STATCAT_Advanced );
@@ -70,7 +70,8 @@ public:
 	virtual bool DriverEnter( AFGCharacterPlayer* driver ) override;
 	virtual bool DriverLeave(bool keepDriving) override;
 	virtual void Server_DriverLeave_Implementation() override;
-	virtual bool CanLeaveVehicle( AFGCharacterPlayer* character ) override;
+	virtual void LeavesVehicle() override;
+	virtual void SubmergedInWaterUpdated(bool newIsSubmerged) override;
 	// End ADriveablePawn interface
 
 	// Begin IFGSignificanceInterface
@@ -265,6 +266,10 @@ protected:
 
 	/** Ticks foliage removal and character ragdoll */
 	virtual void TickPendingVehicleCollisions( float dt );
+
+	UFUNCTION( BlueprintCallable, BlueprintPure )
+	float ImpactForceForCollisionSFX( const UPrimitiveComponent* hitComponent, const AActor* otherActor, const UPrimitiveComponent* otherComponent );
+	
 private:
 	void EnsureInfoCreated();
 

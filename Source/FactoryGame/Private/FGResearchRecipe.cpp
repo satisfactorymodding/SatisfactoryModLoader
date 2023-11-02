@@ -7,7 +7,6 @@ FPrimaryAssetId UFGResearchRecipe::GetPrimaryAssetId() const {
   return FPrimaryAssetId(StaticClass()->GetFName(), FPackageName::GetShortFName(GetOutermost()->GetFName()));
 }
 
-FString FResearchRecipeReward::ToString() const{ return FString(); }
 #if WITH_EDITOR
 void UFGResearchRecipe::PreSave(FObjectPreSaveContext saveContext){ }
 void UFGResearchRecipe::UpdateAssetBundleData(){ }

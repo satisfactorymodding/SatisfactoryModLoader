@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "CoreMinimal.h"
-#include "Server/FGServerStateListener.h"
 #include "Blueprint/UserWidget.h"
+#include "CoreMinimal.h"
+#include "FGServerStateListener.h"
 #include "FGAbstractServerWidget.generated.h"
 
 /**

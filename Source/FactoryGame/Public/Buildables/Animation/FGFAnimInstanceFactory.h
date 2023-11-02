@@ -9,6 +9,8 @@
 #include "Animation/AnimInstanceProxy.h"
 #include "FGFAnimInstanceFactory.generated.h"
 
+DECLARE_STATS_GROUP( TEXT( "Sound Events auto-resume on animations" ), STATGROUP_SoundEventAutoResume, STATCAT_Advanced );
+
 /// Holds information about a currently playing audio event
 USTRUCT()
 struct FPlayingAudioEventInfo

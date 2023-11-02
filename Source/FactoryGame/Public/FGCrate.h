@@ -103,7 +103,11 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	FLinearColor GetDefaultRepresentationColor();
 
+	UFUNCTION( BlueprintCallable, Category = "Crate" )
 	void SetIconType( EFGCrateIconType type );
+
+	/** Make sure to call this if you want to add items into the crate, otherwise AddStacks will not add anything! */
+	UFUNCTION( BlueprintCallable, Category = "Crate" )
 	void SetAllowAddingItems( bool newAllowAddingItems );
 private:
 	UFUNCTION()

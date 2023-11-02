@@ -2,6 +2,7 @@
 
 #include "FGFreightWagon.h"
 #include "FGRailroadVehicleMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGFreightWagon::AFGFreightWagon() : Super() {
 	this->mInteractWidgetClass = nullptr;

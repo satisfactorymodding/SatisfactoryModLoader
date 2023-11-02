@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-
-#include "UObject/NoExportTypes.h"
+#include "Templates/SubclassOf.h"
+#include "UObject/Object.h"
 #include "FGStoryQueue.generated.h"
 
 USTRUCT()

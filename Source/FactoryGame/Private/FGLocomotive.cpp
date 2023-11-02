@@ -4,6 +4,7 @@
 #include "FGLocomotiveMovementComponent.h"
 #include "FGPowerConnectionComponent.h"
 #include "FGPowerInfoComponent.h"
+#include "Net/UnrealNetwork.h"
 
 void AFGLocomotive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

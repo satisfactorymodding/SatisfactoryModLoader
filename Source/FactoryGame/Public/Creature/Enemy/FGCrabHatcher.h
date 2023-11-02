@@ -27,9 +27,40 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 
+	virtual float TakeDamage( float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser ) override;
+
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
+	UFUNCTION( BlueprintCallable, Category = "FGCrabHatcher" )
+	void RegisterHostilePlayer( class AFGCharacterPlayer* player );
+
+	UFUNCTION( BlueprintCallable, Category = "FGCrabHatcher" )
+	class AFGFlyingBabyCrab* SpawnBabyCrab();
+
+private:
+	UFUNCTION()
+	void OnBabyCrabDestroyed( class AActor* babyCrabActor );
+	
+public:
+	UPROPERTY( EditAnywhere, Category = "FGCrabHatcher" )
+	TSubclassOf< class AFGFlyingBabyCrab > mBabyClass;
+	
+	UPROPERTY( EditAnywhere, Category = "FGCrabHatcher" )
+	FVector mBabySpawnCenterOffset;
+
+	UPROPERTY( EditAnywhere, Category = "FGCrabHatcher" )
+	FVector mBabySpawnExtent;
+
+	UPROPERTY( EditAnywhere, Category = "FGCrabHatcher ")
+	FFloatInterval mBabySpawnImpulse;
+	
 	UPROPERTY(SaveGame, Replicated, BlueprintReadWrite, Category="FGCrabHatcher|Runtime")
-	float mCurrentHealth = 20.f;
+	float mCurrentHealth;
+
+protected:
+	TArray< class AFGCharacterPlayer* > mHostilePlayers;
+
+private:
+	TArray< class AFGFlyingBabyCrab* > mSpawnedBabyCrabs;
 	
 };

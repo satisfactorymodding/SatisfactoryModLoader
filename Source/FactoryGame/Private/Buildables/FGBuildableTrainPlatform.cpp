@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildableTrainPlatform.h"
 #include "Components/SceneComponent.h"
 #include "FGTrainPlatformConnection.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableTrainPlatform::AFGBuildableTrainPlatform() : Super() {
 	this->mRailroadTrack = nullptr;

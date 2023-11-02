@@ -2,6 +2,7 @@
 
 #include "Resources/FGResourceDeposit.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGResourceDeposit::AFGResourceDeposit() : Super() {
 	this->mResourceDepositPackage.DropChance = 0.0;

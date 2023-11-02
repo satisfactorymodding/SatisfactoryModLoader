@@ -3,6 +3,7 @@
 #include "Hologram/FGSplineHologram.h"
 #include "Components/SceneComponent.h"
 #include "Components/SplineComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGSplineHologram::AFGSplineHologram() : Super() {
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("mSplineComponent"));

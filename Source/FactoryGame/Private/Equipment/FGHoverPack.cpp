@@ -5,6 +5,7 @@
 #include "Equipment/FGEquipment.h"
 #include "FGPowerConnectionComponent.h"
 #include "FGPowerInfoComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGHoverPack::AFGHoverPack() : Super() {
 	this->mHoverSpeed = 800.0;

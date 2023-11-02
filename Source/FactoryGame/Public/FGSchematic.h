@@ -3,23 +3,13 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "UObject/Object.h"
-#include "ItemAmount.h"
 #include "AssetRegistry/AssetBundleData.h"
-#include "IncludeInBuild.h"
-#include "Styling/SlateBrush.h"
 #include "FGEventSubsystem.h"
+#include "IncludeInBuild.h"
+#include "ItemAmount.h"
+#include "Styling/SlateBrush.h"
+#include "UObject/Object.h"
 #include "FGSchematic.generated.h"
-
-//@todo [MODSUPPORT] This should maybe be implemented the same way as UFGBuildCategories?
-UENUM( BlueprintType )
-enum class ESchematicCategory :uint8
-{
-	ESC_LOGISTICS		UMETA( DisplayName = "Logistics" ),
-	ESC_PRODUCTION		UMETA( DisplayName = "Production" ),
-	ESC_EQUIPMENT		UMETA( DisplayName = "Equipment" ),
-	ESC_ORGANISATION	UMETA( DisplayName = "Organisation" )
-};
 
 //@todo [MODSUPPORT] This should maybe be implemented the same way as UFGBuildCategories?
 UENUM( BlueprintType )
@@ -44,18 +34,6 @@ enum class ESchematicState :uint8
 	ESS_Purchased		UMETA( DisplayName = "Purchased" ),
 	ESS_Available		UMETA( DisplayName = "Available" ),
 	ESS_Hidden			UMETA( DisplayName = "Hidden" )
-};
-
-//@todo-cleanup Is this used? I cannot find any references to it
-/** Holds info about a schematic cost. */
-USTRUCT( BlueprintType )
-struct FMultipleItemStruct
-{
-	GENERATED_BODY()
-
-	/** Cost of schematic if there are more than once item in this array the true cost will be randomly selected. */
-	UPROPERTY( EditDefaultsOnly )
-	TArray< FItemAmount > ItemCost;
 };
 
 /**
@@ -274,9 +252,6 @@ protected:
 	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated - To be removed", meta = ( DeprecatedProperty, DeprecationMessage = "Use availability dependencies instead", NoAutoJson = true ) )
 	TArray< TSubclassOf< UFGSchematic > > mAdditionalSchematicDependencies;
 	
-	/** The category this schematic belongs to. */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated - To be removed", meta = ( DeprecatedProperty, DeprecationMessage = "Use new schematic category object instead", NoAutoJson = true ) )
-	ESchematicCategory mSchematicCategoryDeprecated;
 	// End Deprecated
 
 private:

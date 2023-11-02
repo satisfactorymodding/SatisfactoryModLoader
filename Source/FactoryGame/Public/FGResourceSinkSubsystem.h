@@ -6,9 +6,11 @@
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
+#include "Containers/Queue.h"
+#include "Misc/EnumRange.h"
 #include "FGResourceSinkSubsystem.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN( LogResourceSink, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogResourceSink, Log, All );
 
 UENUM( BlueprintType )
 enum class EResourceSinkTrack : uint8

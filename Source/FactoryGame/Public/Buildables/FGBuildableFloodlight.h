@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableLightSource.h"
+#include "FGBuildableLightSource.h"
 #include "FGBuildableFloodlight.generated.h"
 
 /**
