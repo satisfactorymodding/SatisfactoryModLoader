@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "LauncherServices/Public/ILauncherWorker.h"
+#include "AlpakitProfile.h"
+#include "AlpakitSettings.h"
+#include "Misc/MonitoredProcess.h"
 #include "Widgets/Notifications/SNotificationList.h"
 
 enum class EAlpakitInstanceState
@@ -35,15 +37,15 @@ class ALPAKIT_API FAlpakitInstance : public TSharedFromThis<FAlpakitInstance>
 	EAlpakitInstanceState InstanceState{EAlpakitInstanceState::None};
 	EAlpakitInstanceResult Result{EAlpakitInstanceResult::Undetermined};
 	FString PluginName;
-	ILauncherProfilePtr LauncherProfile;
+	TSharedRef<FAlpakitProfile> Profile;
 	TSharedPtr<SNotificationItem> NotificationItem;
-	ILauncherWorkerPtr LauncherWorker;
+	TSharedPtr<class FSerializedUATProcess> UATProcess;
 	FOnAlpakitProcessCompleted OnProcessCompletedDelegate;
 
 	TArray<FAlpakitInstanceMessageEntry> MessageList;
 	FOnAlpakitMessageReceived OnMessageReceivedDelegate;
 public:
-	FAlpakitInstance( const FString& InPluginName, ILauncherProfileRef InLauncherProfile );
+	FAlpakitInstance( const FString& InPluginName, TSharedRef<FAlpakitProfile> InProfile );
 
 	FORCEINLINE EAlpakitInstanceState GetInstanceState() const { return InstanceState; }
 	FORCEINLINE EAlpakitInstanceResult GetResult() const { return Result; }
@@ -64,9 +66,9 @@ private:
 	static FCriticalSection GlobalListCriticalSection;
 	static TArray<TSharedPtr<FAlpakitInstance>> GlobalList;
 	
-	void OnWorkerMessageReceived( const FString& Message );
-	void OnWorkerCancelled( double Time );
-	void OnWorkerCompleted( bool bSuccess, double Duration, int32 ExitCode );
+	void OnWorkerMessageReceived(FString Message);
+	void OnWorkerCancelled();
+	void OnWorkerCompleted(int32 ExitCode);
 	
 	void OnWorkerMessageReceived_GameThread( const FString& Message );
 	void OnWorkerCancelled_GameThread();

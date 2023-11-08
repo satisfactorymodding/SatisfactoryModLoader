@@ -166,19 +166,6 @@ FReply SAlpakitModEntry::OnEditModFinished(UModMetadataObject* MetadataObject)
 	return FReply::Handled();
 }
 
-FString GetArgumentForLaunchType(EAlpakitStartGameType LaunchMode) {
-    switch (LaunchMode) {
-    case EAlpakitStartGameType::STEAM:
-        return TEXT("-Steam");
-    case EAlpakitStartGameType::EPIC_EARLY_ACCESS:
-        return TEXT("-EpicEA");
-    case EAlpakitStartGameType::EPIC_EXPERIMENTAL:
-        return TEXT("-EpicExp");
-    default:
-        return TEXT("");
-    }
-}
-
 FText GetCurrentPlatformName() {
 #if PLATFORM_WINDOWS
     return LOCTEXT("PlatformName_Windows", "Windows");
@@ -204,49 +191,24 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& Ne
 	ILauncherServicesModule& ProjectLauncherServicesModule = FModuleManager::LoadModuleChecked<ILauncherServicesModule>("LauncherServices");
 
 	// Create a temporary profile for packaging the mod
-    const ILauncherProfileRef ProfileRef = ProjectLauncherServicesModule.GetProfileManager()->CreateUnsavedProfile( FString::Printf( TEXT("Alpakit [%s]"), *PluginName ) );
-	ProfileRef->SetDescription( FString::Printf( TEXT("Packaging Mod %s"), *PluginName ) );
+	const TSharedRef<FAlpakitProfile> ProfileRef = MakeShared<FAlpakitProfile>( PluginName );
 
-	if (Mod->GetDescriptor().Modules.Num() > 0) {
-		ProfileRef->SetBuildMode( ELauncherProfileBuildModes::Auto );
-	} else {
-		ProfileRef->SetBuildMode( ELauncherProfileBuildModes::DoNotBuild );
+	ProfileRef->bBuild = Mod->GetDescriptor().Modules.Num() > 0;
+
+	ProfileRef->BuildConfiguration = Settings->GetBuildConfiguration();
+	// ProfileRef->CookedPlatforms = Settings->CookPlatforms;
+	ProfileRef->CookedPlatforms = {TEXT("Windows")}; // Only Windows is allowed for now
+
+	if (Settings->bCopyModsToGame) {
+		FAlpakitProfileGameInfo& GameInfo = ProfileRef->PlatformGameInfo.FindOrAdd(TEXT("Windows"));
+		GameInfo.bCopyToGame = true;
+		GameInfo.GamePath = GamePath;
 	}
-	ProfileRef->SetCookMode( ELauncherProfileCookModes::ByTheBook );
-	ProfileRef->SetLaunchMode( ELauncherProfileLaunchModes::DoNotLaunch );
 
-	ProfileRef->SetProjectPath( ProjectPath );
-	ProfileRef->SetCreateDLC( true );
-	ProfileRef->SetDLCName( PluginName );
-	ProfileRef->SetDLCIncludeEngineContent( false );
-
-	// TODO @SML: I would like to pass an empty based on release version, but the cooker checks against it
-	ProfileRef->SetBasedOnReleaseVersionName( TEXT("SMLNonExistentBasedOnReleaseVersion") );
-
-	ProfileRef->SetUnversionedCooking( true );
-	ProfileRef->SetCookOptions( TEXT("-AllowUncookedAssetReferences") );
-	
-	ProfileRef->SetDeployWithUnrealPak( true );
-	ProfileRef->SetCompressed( true );
-
-	ProfileRef->SetPackagingMode( ELauncherProfilePackagingModes::Locally );
-	ProfileRef->SetDeploymentMode( ELauncherProfileDeploymentModes::DoNotDeploy );
-
-	ProfileRef->SetBuildConfiguration( Settings->GetBuildConfiguration() );
-	for ( const FString& PlatformName : Settings->CookPlatforms )
-	{
-		ProfileRef->AddCookedPlatform( PlatformName );
+	if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE && NextEntries.Num() == 0) {
+		FAlpakitProfileGameInfo& GameInfo = ProfileRef->PlatformGameInfo.FindOrAdd(TEXT("Windows"));
+		GameInfo.StartGameType = Settings->LaunchGameAfterPacking;
 	}
-	
-    /*FString AdditionalUATArguments;
-    if (Settings->bCopyModsToGame) {
-        AdditionalUATArguments.Append(TEXT("-CopyToGameDir "));
-    }
-    if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE && NextEntries.Num() == 0) {
-        AdditionalUATArguments.Append(TEXT("-LaunchGame "));
-        AdditionalUATArguments.Append(GetArgumentForLaunchType(Settings->LaunchGameAfterPacking)).Append(TEXT(" "));
-    }
-    const FString LaunchGameArgument = GetArgumentForLaunchType(Settings->LaunchGameAfterPacking);*/
 
     UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, NextEntries.Num());
 

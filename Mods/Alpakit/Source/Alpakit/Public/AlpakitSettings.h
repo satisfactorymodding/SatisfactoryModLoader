@@ -12,6 +12,8 @@ enum class EAlpakitStartGameType : uint8 {
     EPIC_EXPERIMENTAL UMETA(DisplayName = "Epic: Experimental")
 };
 
+ALPAKIT_API const TCHAR* LexToString(EAlpakitStartGameType StartGameType);
+
 UCLASS(config=Game)
 class ALPAKIT_API UAlpakitSettings : public UObject {
     GENERATED_BODY()
@@ -22,6 +24,8 @@ public:
     /** Saves alpakit settings to configuration file */
     void SaveSettings();
 
+	// Hide these fields for now, as only Windows Shipping is allowed
+	/*
 	// Name of the build configuration in which the mod should be built
 	UPROPERTY(EditAnywhere, config, Category = Config, meta = ( GetOptions = GetAllowedBuildConfigurations ))
 	FString BuildConfiguration;
@@ -29,6 +33,7 @@ public:
 	// The configurations to cook the mods in (Windows, WindowsServer, and so on)
 	UPROPERTY(EditAnywhere, config, Category = Config)
 	TArray<FString> CookPlatforms;
+	*/
 
     UPROPERTY(EditAnywhere, config, Category = Config)
     FDirectoryPath SatisfactoryGamePath;

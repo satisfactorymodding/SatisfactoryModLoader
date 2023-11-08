@@ -19,7 +19,7 @@ FOnAlpakitInstanceSpawned FAlpakitInstance::OnNewInstanceSpawned;
 FCriticalSection FAlpakitInstance::GlobalListCriticalSection;
 TArray<TSharedPtr<FAlpakitInstance>> FAlpakitInstance::GlobalList;
 
-FAlpakitInstance::FAlpakitInstance( const FString& InPluginName, ILauncherProfileRef InLauncherProfile ) : PluginName( InPluginName ), LauncherProfile( InLauncherProfile )
+FAlpakitInstance::FAlpakitInstance( const FString& InPluginName, TSharedRef<FAlpakitProfile> InProfile ) : PluginName( InPluginName ), Profile( InProfile )
 {
 }
 
@@ -28,20 +28,14 @@ bool FAlpakitInstance::Start()
 	check( IsInGameThread() );
 	check( InstanceState == EAlpakitInstanceState::None || InstanceState == EAlpakitInstanceState::Completed );
 
-	ILauncherServicesModule& ProjectLauncherServicesModule = FModuleManager::LoadModuleChecked<ILauncherServicesModule>("LauncherServices");
-	ITargetDeviceServicesModule& TargetDeviceServicesModule = FModuleManager::LoadModuleChecked<ITargetDeviceServicesModule>("TargetDeviceServices");
-
-	static ILauncherRef Launcher = ProjectLauncherServicesModule.CreateLauncher();
-	LauncherWorker = Launcher->Launch( TargetDeviceServicesModule.GetDeviceProxyManager(), LauncherProfile.ToSharedRef() );
+	UATProcess = MakeShareable(new FSerializedUATProcess(Profile->MakeUATCommandLine()));
 	
-	if ( !LauncherWorker.IsValid() )
-	{
-		return false;
-	}
-	LauncherWorker->OnOutputReceived().AddSP( this, &FAlpakitInstance::OnWorkerMessageReceived );
-	LauncherWorker->OnCanceled().AddSP( this, &FAlpakitInstance::OnWorkerCancelled );
-	LauncherWorker->OnCompleted().AddSP( this, &FAlpakitInstance::OnWorkerCompleted );
+	UATProcess->OnOutput().BindSP( this, &FAlpakitInstance::OnWorkerMessageReceived );
+	UATProcess->OnCanceled().BindSP( this, &FAlpakitInstance::OnWorkerCancelled );
+	UATProcess->OnCompleted().BindSP( this, &FAlpakitInstance::OnWorkerCompleted );
 
+	UATProcess->Launch();
+	
 	InstanceState = EAlpakitInstanceState::Running;
 	Result = EAlpakitInstanceResult::Undetermined;
 	MessageList.Empty();
@@ -58,13 +52,13 @@ void FAlpakitInstance::Cancel() const
 	check( IsInGameThread() || IsInSlateThread() );
 	check( InstanceState == EAlpakitInstanceState::Running );
 
-	if ( LauncherWorker.IsValid() )
+	if ( UATProcess.IsValid() )
 	{
-		LauncherWorker->Cancel();
+		UATProcess->Cancel();
 	}
 }
 
-void FAlpakitInstance::OnWorkerMessageReceived( const FString& Message )
+void FAlpakitInstance::OnWorkerMessageReceived( FString Message )
 {
 	const TSharedPtr<FAlpakitInstance> SharedSelf = AsShared();
 	AsyncTask( ENamedThreads::GameThread, [SharedSelf, Message]()
@@ -73,7 +67,7 @@ void FAlpakitInstance::OnWorkerMessageReceived( const FString& Message )
 	} );
 }
 
-void FAlpakitInstance::OnWorkerCancelled( double Time )
+void FAlpakitInstance::OnWorkerCancelled()
 {
 	const TSharedPtr<FAlpakitInstance> SharedSelf = AsShared();
 	AsyncTask( ENamedThreads::GameThread, [SharedSelf]()
@@ -82,9 +76,11 @@ void FAlpakitInstance::OnWorkerCancelled( double Time )
 	} );
 }
 
-void FAlpakitInstance::OnWorkerCompleted( bool bSuccess, double Duration, int32 ExitCode )
+void FAlpakitInstance::OnWorkerCompleted( int32 ExitCode )
 {
 	const TSharedPtr<FAlpakitInstance> SharedSelf = AsShared();
+	bool bSuccess = ExitCode == 0;
+	double Duration = UATProcess->GetDuration().GetTotalSeconds();
 	AsyncTask( ENamedThreads::GameThread, [SharedSelf, bSuccess, Duration, ExitCode]()
 	{
 		SharedSelf->OnWorkerCompleted_GameThread(bSuccess, Duration, ExitCode);
@@ -167,7 +163,7 @@ void FAlpakitInstance::HandleCancelButtonClicked()
 	{
 		if ( SharedSelf->InstanceState == EAlpakitInstanceState::Running )
 		{
-			SharedSelf->LauncherWorker->Cancel();
+			SharedSelf->UATProcess->Cancel();
 		}
 	} );
 }

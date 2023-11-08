@@ -11,6 +11,7 @@ public class Alpakit : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new[] {
 			"Core",
+			"DesktopPlatform",
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new[] {
