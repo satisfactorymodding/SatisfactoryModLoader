@@ -80,6 +80,9 @@ FString FAlpakitProfile::MakeUATCommandLine() {
 
 	CommandLine += MakeUATPlatformArgs();
 
+	CommandLine += GIsEditor || FApp::IsEngineInstalled() ? TEXT(" -nocompileeditor") : TEXT("");
+	CommandLine += FApp::IsEngineInstalled() ? TEXT(" -installed") : TEXT("");
+
 	for (auto [Platform, GameInfo] : PlatformGameInfo) {
 		if (GameInfo.bCopyToGame) {
 			CommandLine += FString::Printf(TEXT(" -CopyToGameDirectory_%s=\"%s\""), *Platform, *GameInfo.GamePath);
