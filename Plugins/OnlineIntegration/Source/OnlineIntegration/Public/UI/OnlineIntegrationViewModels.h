@@ -9,6 +9,45 @@
 #include "Styling/SlateBrush.h"
 #include "OnlineIntegrationViewModels.generated.h"
 
+UENUM(BlueprintType)
+enum class EOnlineSessionAttributeType: uint8
+{
+	None,
+	Bool,
+	Int64,
+	Double,
+	String
+};
+
+inline EOnlineSessionAttributeType MapAttributeType(UE::Online::ESchemaAttributeType Type)
+{
+	// Pretty risky move here but this should be a temporary solution until we figure out a proper API for sessions
+	static_assert(std::is_same_v<std::underlying_type_t<EOnlineSessionAttributeType>, std::underlying_type_t<UE::Online::ESchemaAttributeType>>);
+	return static_cast<EOnlineSessionAttributeType>(Type);
+}
+
+USTRUCT(BlueprintType)
+struct FOnlineSessionAttribute
+{
+	GENERATED_BODY()
+
+	// explicit FOnlineSessionAttribute(const UE::Online::FSchemaVariant InData)
+	// 	: Type(MapAttributeType(InData.GetType()))
+	// 	, Data(InData)
+	// {
+	// 	
+	// }
+	//
+	// FOnlineSessionAttribute() = default;
+	// FOnlineSessionAttribute(const FOnlineSessionAttribute&) = default;
+	// FOnlineSessionAttribute(FOnlineSessionAttribute&&) = default;
+	
+	UPROPERTY(BlueprintReadWrite)
+	EOnlineSessionAttributeType Type;
+
+	UE::Online::FSchemaVariant Data;
+};
+
 UCLASS(NotBlueprintable, BlueprintType)
 class ONLINEINTEGRATION_API UOnlineSessionInfoViewModel: public UMVVMViewModelBase
 {
@@ -30,11 +69,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, FieldNotify)
 	ECommonSessionJoinPolicy JoinPolicy = ECommonSessionJoinPolicy::InviteOnly;
 
-	// UPROPERTY(BlueprintReadOnly, FieldNotify)
-	// int32 OpenConnections = 0;
-
 	UPROPERTY(BlueprintReadOnly, FieldNotify)
 	bool IsOnlineSession = false;
+
+	UPROPERTY(BlueprintReadOnly, FieldNotify)
+	FString SessionIdString;
 
 private:
 	UPROPERTY()

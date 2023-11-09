@@ -31,7 +31,6 @@ public:
 	void SetAccountId(UE::Online::FAccountId InAccountId, FOnlineIntegrationInternalAccessKey&&);
 	void MarkBackendAsUsed(FOnlineIntegrationInternalAccessKey&&);
 	
-	TMap<ECommonUserPrivilege, ECommonUserPrivilegeResult> CachedPrivileges = {};
 	[[nodiscard]] FName GetServiceProvider() const;
 	[[nodiscard]] EOnlineIntegrationUnmappedContext GetContext() const;
 	[[nodiscard]] ECommonUserLoginStatus GetLoginStatus() const;
@@ -79,15 +78,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = UserInfo)
 	ECommonUserLoginStatus GetLoginStatus(EOnlineIntegrationUnmappedContext Context) const;
-
-	/** Returns the most recently queries result for a specific privilege, will return unknown if never queried */
-	UFUNCTION(BlueprintCallable, Category = UserInfo)
-	ECommonUserPrivilegeResult GetCachedPrivilegeResult(ECommonUserPrivilege Privilege,
-		EOnlineIntegrationMappedContext Context = EOnlineIntegrationMappedContext::Game) const;
-
-	/** Ask about the general availability of a feature, this combines cached results with state */
-	UFUNCTION(BlueprintCallable, Category = UserInfo)
-	ECommonUserAvailability GetPrivilegeAvailability(ECommonUserPrivilege Privilege) const;
 
 	/** Returns the net id for the given context */
 	UFUNCTION(BlueprintCallable, Category = UserInfo)
@@ -140,8 +130,7 @@ public:
 	virtual void HandleSessionUpdated(const UE::Online::FSessionUpdated& SessionUpdated, EOnlineIntegrationUnmappedContext Context);
 	virtual void HandleUISessionJoinRequested(const UE::Online::FUISessionJoinRequested& SessionJoinRequested, EOnlineIntegrationUnmappedContext Context);
 
-	// @todo: This function should be guarded by an access token that only sessions subsystem can create to prevent unwanted access
-	void SetPresenceJoinability(EOnlineUserPresenceJoinability Joinability) const;
+	void SetPresenceJoinability(EOnlineUserPresenceJoinability Joinability, FOnlineIntegrationInternalAccessKey&&) const;
 	void SetPresenceValue(const FString& Key, const FString& Value) const;
 	void ClearPresenceProperty(const FString& Key) const;
 	void SetPresenceString(const FString& InPresenceString) const;
@@ -163,7 +152,12 @@ public:
 	void SetNATType(const ECommonUserNATType InNATType, FOnlineIntegrationInternalAccessKey&&);
 	void SetCurrentAuthenticationSequence(class UOnlineAuthenticationSequence* AuthenticationSequence, FOnlineIntegrationInternalAccessKey&&);
 	void SetHasLinkedAccount(bool bHasLinkedAccount, FOnlineIntegrationInternalAccessKey&&);
-	
+	void SetCanPlayPrivilegeAvailability(const ECommonUserPrivilegeAvailability &Availability, FOnlineIntegrationInternalAccessKey&&);
+	void SetCanPlayOnlinePrivilegeAvailability(const ECommonUserPrivilegeAvailability &Availability, FOnlineIntegrationInternalAccessKey&&);
+
+	ECommonUserNATType GetNATType() const { return NATType; }
+	FCommonSession GetGameSession() const { return GameSession; }
+
 protected:
 	UPROPERTY(BlueprintReadOnly, FieldNotify)
 	TObjectPtr<ULocalUserInfoBackend> PrimaryBackend;
@@ -208,6 +202,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify)
 	FCommonSession GameSession;
+	
+	UPROPERTY(BlueprintReadOnly, FieldNotify)
+	ECommonUserPrivilegeAvailability CanPlayPrivilegeAvailability;
+
+	UPROPERTY(BlueprintReadOnly, FieldNotify)
+	ECommonUserPrivilegeAvailability CanPlayOnlinePrivilegeAvailability;
 
 	friend class UCommonUserSubsystem;
 	void OnLoginStatusChanged(TSharedRef<UE::Online::FAccountInfo> AccountInfo, EOnlineIntegrationUnmappedContext Context, FOnlineIntegrationInternalAccessKey&&);

@@ -49,13 +49,6 @@ struct ONLINEINTEGRATION_API FCommonUserTags
 DECLARE_DELEGATE_OneParam(FCommonUserOnInitializeComplete, const UE::Online::TOnlineResult<FInitializeLocalUser>& Result);
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnCommonUserInitializeComplete, ULocalUserInfo*, UserInfo, bool, bSuccess, FText, Error);
 
-/** Delegate when a system error message is sent, the game can choose to display it to the user using the type tag */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FCommonUserHandleSystemMessageDelegate, FGameplayTag, MessageType, FText, TitleText, FText, BodyText);
-
-/** Delegate when a privilege changes, this can be bound to see if online status/etc changes during gameplay */
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FCommonUserAvailabilityChangedDelegate, const ULocalUserInfo*, UserInfo, ECommonUserPrivilege, Privilege,
-	ECommonUserAvailability, OldAvailability, ECommonUserAvailability, NewAvailability);
-
 UENUM(BlueprintType)
 enum class ECommonUserLoginType: uint8
 {
@@ -116,6 +109,8 @@ struct ONLINEINTEGRATION_API FCommonUserInitializeParams
 	FCommonUserOnInitializeComplete OnUserInitializeComplete_Native;
 };
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLocalUserInfoCreated, ULocalUserInfo*, UserInfo);
+
 /**
  * Game subsystem that handles queries and changes to user identity and login status.
  * One subsystem is created for each game instance and can be accessed from blueprints or C++ code.
@@ -127,25 +122,16 @@ class ONLINEINTEGRATION_API UCommonUserSubsystem : public UOnlineIntegrationComp
 	GENERATED_BODY()
 
 public:
-	UCommonUserSubsystem()
-	{
-	}
-
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
 	/** Async future for when a local user info with a certain player index gets created. */
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnLocalUserInfoCreated, ULocalUserInfo*);
-	void WhenLocalUserInfoIsCreated(FOnLocalUserInfoCreated::FDelegate Delegate, int32 PlayerIndex);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnLocalUserInfoCreated_Native, ULocalUserInfo*);
 
-	/** BP delegate called when the system sends an error/warning message */
-	UPROPERTY(BlueprintAssignable, Category = CommonUser)
-	FCommonUserHandleSystemMessageDelegate OnHandleSystemMessage;
-
-	/** Send a system message via OnHandleSystemMessage */
-	UFUNCTION(BlueprintCallable, Category = CommonUser)
-	virtual void SendSystemMessage(FGameplayTag MessageType, FText TitleText, FText BodyText);
-
+	UFUNCTION(BlueprintCallable)
+	void WhenLocalUserInfoIsCreated(FOnLocalUserInfoCreated Delegate, int32 PlayerIndex);
+	void WhenLocalUserInfoIsCreated_Native(FOnLocalUserInfoCreated_Native::FDelegate Delegate, int32 PlayerIndex);
+	
 	/** Sets the maximum number of local players, will not destroy existing ones */
 	UFUNCTION(BlueprintCallable, Category = CommonUser)
 	virtual void SetMaxLocalPlayers(int32 InMaxLocalPLayers);
@@ -370,7 +356,7 @@ protected:
 	UPROPERTY()
 	TMap<int32, TObjectPtr<UOnlineAsyncOperation>> PendingAuthenticationSequences;
 
-	TMap<int32, FOnLocalUserInfoCreated> LocalUserInfoCreatedDelegates;
+	TMap<int32, FOnLocalUserInfoCreated_Native> LocalUserInfoCreatedDelegates;
 	FTimerHandle RefreshLoginForCrossplayTimerHandle;
 
 	friend ULocalUserInfo;

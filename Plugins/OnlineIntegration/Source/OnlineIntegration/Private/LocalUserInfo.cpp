@@ -5,9 +5,6 @@
 ULocalUserInfo::ULocalUserInfo(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
 bool ULocalUserInfo::IsLoggedIn(EOnlineIntegrationUnmappedContext Context) const{ return bool(); }
 ECommonUserLoginStatus ULocalUserInfo::GetLoginStatus(EOnlineIntegrationUnmappedContext Context) const{ return ECommonUserLoginStatus(); }
-ECommonUserPrivilegeResult ULocalUserInfo::GetCachedPrivilegeResult(ECommonUserPrivilege Privilege,
-		EOnlineIntegrationMappedContext Context) const{ return ECommonUserPrivilegeResult(); }
-ECommonUserAvailability ULocalUserInfo::GetPrivilegeAvailability(ECommonUserPrivilege Privilege) const{ return ECommonUserAvailability(); }
 FUniqueNetIdRepl ULocalUserInfo::GetNetId(EOnlineIntegrationMappedContext Context) const{ return FUniqueNetIdRepl(); }
 FUniqueNetIdRepl ULocalUserInfo::GetNetId(EOnlineIntegrationUnmappedContext Context) const{ return FUniqueNetIdRepl(); }
 FString ULocalUserInfo::GetMappedContextNickname(EOnlineIntegrationMappedContext Context) const{ return FString(); }
@@ -31,7 +28,7 @@ void ULocalUserInfo::HandleSessionJoined(const UE::Online::FSessionJoined& Sessi
 void ULocalUserInfo::HandleSessionLeft(const UE::Online::FSessionLeft& SessionLeft, EOnlineIntegrationUnmappedContext Context){ }
 void ULocalUserInfo::HandleSessionUpdated(const UE::Online::FSessionUpdated& SessionUpdated, EOnlineIntegrationUnmappedContext Context){ }
 void ULocalUserInfo::HandleUISessionJoinRequested(const UE::Online::FUISessionJoinRequested& SessionJoinRequested, EOnlineIntegrationUnmappedContext Context){ }
-void ULocalUserInfo::SetPresenceJoinability(EOnlineUserPresenceJoinability Joinability) const{ }
+void ULocalUserInfo::SetPresenceJoinability(EOnlineUserPresenceJoinability Joinability, FOnlineIntegrationInternalAccessKey&&) const{ }
 void ULocalUserInfo::SetPresenceValue(const FString& Key, const FString& Value) const{ }
 void ULocalUserInfo::ClearPresenceProperty(const FString& Key) const{ }
 void ULocalUserInfo::SetPresenceString(const FString& InPresenceString) const{ }
@@ -43,6 +40,8 @@ void ULocalUserInfo::SetGameSession(const FCommonSession &Session, FOnlineIntegr
 void ULocalUserInfo::SetNATType(const ECommonUserNATType InNATType, FOnlineIntegrationInternalAccessKey&&){ }
 void ULocalUserInfo::SetCurrentAuthenticationSequence( UOnlineAuthenticationSequence* AuthenticationSequence, FOnlineIntegrationInternalAccessKey&&){ }
 void ULocalUserInfo::SetHasLinkedAccount(bool bHasLinkedAccount, FOnlineIntegrationInternalAccessKey&&){ }
+void ULocalUserInfo::SetCanPlayPrivilegeAvailability(const ECommonUserPrivilegeAvailability& Availability, FOnlineIntegrationInternalAccessKey&&){ }
+void ULocalUserInfo::SetCanPlayOnlinePrivilegeAvailability(const ECommonUserPrivilegeAvailability& Availability, FOnlineIntegrationInternalAccessKey&&){ }
 void ULocalUserInfo::OnLoginStatusChanged(TSharedRef<UE::Online::FAccountInfo> AccountInfo, EOnlineIntegrationUnmappedContext Context, FOnlineIntegrationInternalAccessKey&&){ }
 void ULocalUserInfo::NotifyFriendPresenceUpdated(UOnlineFriend* OnlineFriend){ }
 void ULocalUserInfo::RelationshipUpdated(const UE::Online::FRelationshipUpdated& RelationshipUpdated, EOnlineIntegrationUnmappedContext Context){ }

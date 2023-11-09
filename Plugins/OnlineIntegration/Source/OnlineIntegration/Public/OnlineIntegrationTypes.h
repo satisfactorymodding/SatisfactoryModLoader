@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "Online/OnlineError.h"
+#include "Online/Connectivity.h"
 
 #include "OnlineIntegrationTypes.generated.h"
 
@@ -111,7 +112,7 @@ enum class ECommonUserPrivilege : uint8
 
 /** Enum specifying the general availability of a feature or privilege, this combines information from multiple sources */
 UENUM(BlueprintType)
-enum class ECommonUserAvailability : uint8
+enum class ECommonUserPrivilegeAvailability : uint8
 {
 	/** State is completely unknown and needs to be queried */
 	Unknown,

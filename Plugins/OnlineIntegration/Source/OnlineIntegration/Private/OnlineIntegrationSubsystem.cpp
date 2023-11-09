@@ -17,7 +17,8 @@ const FGameplayTagContainer& UOnlineIntegrationComponent::GetTraitTags() const{ 
 bool UOnlineIntegrationComponent::HasTraitTag(const FGameplayTag& Tag) const{ return bool(); }
 UOnlineIntegrationSubsystem* UOnlineIntegrationComponent::GetOnlineIntegration() const{ return nullptr; }
 bool UOnlineIntegrationSubsystem::ShouldWaitForStartInput() const{ return bool(); }
-UE::Online::EOnlineServices UOnlineIntegrationSubsystem::GetOnlineServicesProvider(EOnlineIntegrationMappedContext Context) const{ return UE::Online::EOnlineServices(); }
+UE::Online::EOnlineServices UOnlineIntegrationSubsystem::GetOnlineServicesProvider(EOnlineIntegrationUnmappedContext Context) const{ return UE::Online::EOnlineServices(); }
+EOnlineIntegrationUnmappedContext UOnlineIntegrationSubsystem::GetServiceProviderContext(UE::Online::EOnlineServices ServiceProvider) const{ return EOnlineIntegrationUnmappedContext(); }
 UE::Online::EOnlineServicesConnectionStatus UOnlineIntegrationSubsystem::GetConnectionStatus(EOnlineIntegrationMappedContext Context) const{ return UE::Online::EOnlineServicesConnectionStatus(); }
 bool UOnlineIntegrationSubsystem::HasOnlineConnection(EOnlineIntegrationMappedContext Context) const{ return bool(); }
 bool UOnlineIntegrationSubsystem::HasExternalServiceContext() const{ return bool(); }
@@ -31,6 +32,9 @@ FOnlineContextCache* UOnlineIntegrationSubsystem::GetUnmappedContextCache(EOnlin
 bool UOnlineIntegrationSubsystem::HasInitializedBackend() const{ return bool(); }
 bool UOnlineIntegrationSubsystem::CreateOnlineContexts(const FOnlineIntegrationPlatformSettings& Settings, FOnlineIntegrationInternalAccessKey&& AccessToken){ return bool(); }
 EOnlineIntegrationUnmappedContext UOnlineIntegrationSubsystem::ResolveOnlineContext(EOnlineIntegrationMappedContext Context) const{ return EOnlineIntegrationUnmappedContext(); }
+EOnlineIntegrationUnmappedContext UOnlineIntegrationSubsystem::GetComplementaryContext(EOnlineIntegrationUnmappedContext Context) const{ return EOnlineIntegrationUnmappedContext(); }
+void UOnlineIntegrationSubsystem::ShutdownProcess(){ }
+void UOnlineIntegrationSubsystem::RestartProcess(){ }
 void UOnlineIntegrationSubsystem::Initialize(FSubsystemCollectionBase& Collection){ }
 bool UOnlineIntegrationSubsystem::ShouldCreateSubsystem(UObject* Outer) const{ return bool(); }
 void UOnlineIntegrationSubsystem::Deinitialize(){ }

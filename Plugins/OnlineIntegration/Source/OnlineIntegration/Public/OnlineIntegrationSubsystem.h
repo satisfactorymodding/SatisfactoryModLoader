@@ -92,7 +92,8 @@ public:
 	}
 
 	/** Get the services provider type, or None if there isn't one. */
-	UE::Online::EOnlineServices GetOnlineServicesProvider(EOnlineIntegrationMappedContext Context = EOnlineIntegrationMappedContext::Game) const;
+	UE::Online::EOnlineServices GetOnlineServicesProvider(EOnlineIntegrationUnmappedContext Context) const;
+	EOnlineIntegrationUnmappedContext GetServiceProviderContext(UE::Online::EOnlineServices ServiceProvider) const;
 
 	/** Returns the current online connection status */
 	UE::Online::EOnlineServicesConnectionStatus GetConnectionStatus(EOnlineIntegrationMappedContext Context = EOnlineIntegrationMappedContext::Game) const;
@@ -128,6 +129,12 @@ public:
 
 	/** Resolves a context that has default behavior into a specific context */
 	EOnlineIntegrationUnmappedContext ResolveOnlineContext(EOnlineIntegrationMappedContext Context) const;
+	EOnlineIntegrationMode GetOnlineIntegrationMode() const { return OnlineIntegrationMode; }
+	EOnlineIntegrationUnmappedContext GetComplementaryContext(EOnlineIntegrationUnmappedContext Context) const;
+
+	/** Temporary utility functions that can restart the process. Don't use them unless you have a strong reason to.*/
+	void ShutdownProcess();
+	void RestartProcess();
 protected:
 	// UGameInstanceSubsystem interface
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
