@@ -247,6 +247,12 @@ void SAlpakitLogTabContent::OnAlpakitMessage( const FAlpakitInstanceMessageEntry
 {
 	MessageList.Add( MakeShared<FAlpakitInstanceMessageEntry>( Message ) );
 	MessageListView->RequestListRefresh();
+
+	// only scroll when at the end of the listview
+	if (FMath::IsNearlyEqual(MessageListView->GetScrollDistanceRemaining().Y, 0.0f, 1.e-7f))
+	{
+		MessageListView->RequestScrollIntoView(MessageList.Last());
+	}
 }
 
 void SAlpakitLogTabContent::ClearMessageList()
@@ -275,6 +281,9 @@ void SAlpakitLogTabContent::UpdateMessageListFromInstance()
 		}
 	}
 	MessageListView->RequestListRefresh();
+	if(MessageList.Num() > 0) {
+		MessageListView->RequestScrollIntoView(MessageList.Last());
+	}
 }
 
 #undef LOCTEXT_NAMESPACE
