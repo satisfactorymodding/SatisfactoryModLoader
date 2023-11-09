@@ -70,6 +70,8 @@ public class PackagePlugin : BuildCookRun
 			// TODO @SML: I would like to pass an empty based on release version, but the cooker checks against it
 			BasedOnReleaseVersion: "SMLNonExistentBasedOnReleaseVersion"
 		);
+		
+		Params.ValidateAndLog();
 
 		return Params;
 	}
