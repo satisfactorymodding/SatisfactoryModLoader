@@ -15,6 +15,7 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                 SNew(SButton)
                 .Text(LOCTEXT("PackageModAlpakitAll", "Alpakit Selected!"))
                 .OnClicked(this,& SAlpakitModEntryList::PackageAllMods)
+                .IsEnabled(this, &SAlpakitModEntryList::IsPackageButtonEnabled)
             ]
             + SHorizontalBox::Slot().AutoWidth()[
                 SNew(SButton)
@@ -159,8 +160,7 @@ void SAlpakitModEntryList::OnNewPluginCreated(IPlugin& Plugin)
 }
 
 FReply SAlpakitModEntryList::PackageAllMods() {
-    TSharedPtr<SAlpakitModEntry> First;
-    TArray<TSharedPtr<SAlpakitModEntry>> NextEntries;
+    TArray<TSharedRef<IPlugin>> ModsToPackage;
 
     UE_LOG(LogAlpakit, Display, TEXT("Alpakit Selected!"));
 
@@ -184,17 +184,15 @@ FReply SAlpakitModEntryList::PackageAllMods() {
             continue;
         }
 
-        if (!First) {
-            First = ModEntry.ToSharedRef();
-        } else {
-            NextEntries.Add(ModEntry.ToSharedRef());
-        }
+        ModsToPackage.Add(Mod);
     }
 
-    if (First) {
-        First->PackageMod(NextEntries);
+    if (ModsToPackage.Num() == 0) {
+        return FReply::Handled();
     }
 
+    FAlpakitModule::Get().PackageMods(ModsToPackage);
+    
     return FReply::Handled();
 }
 
@@ -239,6 +237,10 @@ FReply SAlpakitModEntryList::CreateMod()
 {
     FGlobalTabmanager::Get()->TryInvokeTab(FAlpakitModule::ModCreatorTabName);
     return FReply::Handled();
+}
+
+bool SAlpakitModEntryList::IsPackageButtonEnabled() const {
+	return !FAlpakitModule::Get().IsPackaging();
 }
 
 #undef LOCTEXT_NAMESPACE

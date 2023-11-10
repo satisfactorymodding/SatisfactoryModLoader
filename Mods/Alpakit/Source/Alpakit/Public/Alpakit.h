@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "AlpakitProfile.h"
 #include "ContentBrowserDelegates.h"
 #include "Interfaces/IPluginManager.h"
 
@@ -11,7 +12,13 @@ public:
     virtual void StartupModule() override;
     virtual void ShutdownModule() override;
 
+    static FAlpakitModule& Get() { return FModuleManager::GetModuleChecked<FAlpakitModule>("Alpakit"); }
+
     TArray<TSharedRef<struct FModTemplateDescription>> GetModTemplates() const { return ModTemplates; }
+
+	void PackageMods(TArray<TSharedRef<IPlugin>> Mods);
+	void PackageMods(TArray<TSharedRef<FAlpakitProfile>> ProfilesToPackage);
+    bool IsPackaging() const { return bIsPackaging; }
     
     /** ID name for the mod creator tab */
     static const FName ModCreatorTabName;
@@ -28,4 +35,8 @@ private:
     void RegisterModTemplates();
     void AddModTemplatesFromPlugin(IPlugin& Plugin);
     TArray<TSharedRef<struct FModTemplateDescription>> ModTemplates;
+
+	bool bIsPackaging = false;
+	TArray<TSharedRef<FAlpakitProfile>> ProfilePackageQueue; 
+	void ProcessQueueItem();
 };

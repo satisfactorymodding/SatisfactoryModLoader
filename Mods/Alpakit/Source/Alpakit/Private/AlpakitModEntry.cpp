@@ -38,12 +38,13 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
             SNew(SButton)
             .Text(LOCTEXT("PackageModAlpakit", "Alpakit!"))
             .OnClicked_Lambda([this](){
-                PackageMod(TArray<TSharedPtr<SAlpakitModEntry>>());
+                PackageMod();
                 return FReply::Handled();
             })
             .ToolTipText_Lambda([this](){
                 return FText::FromString(FString::Printf(TEXT("Alpakit %s"), *this->Mod->GetName()));
             })
+            .IsEnabled(this, &SAlpakitModEntry::IsPackageButtonEnabled)
         ]
         + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0).VAlign(VAlign_Center)[
             SNew(SButton)
@@ -178,42 +179,8 @@ FText GetCurrentPlatformName() {
 #endif
 }
 
-void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& NextEntries) const {
-	
-    UAlpakitSettings* Settings = UAlpakitSettings::Get();
-    const FString PluginName = Mod->GetName();
-    const FString GamePath = Settings->SatisfactoryGamePath.Path;
-
-    const FString ProjectPath = FPaths::IsProjectFilePathSet()
-        ? FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath())
-        : FPaths::RootDir() / FApp::GetProjectName() / FApp::GetProjectName() + TEXT(".uproject");
-
-	ILauncherServicesModule& ProjectLauncherServicesModule = FModuleManager::LoadModuleChecked<ILauncherServicesModule>("LauncherServices");
-
-	// Create a temporary profile for packaging the mod
-	const TSharedRef<FAlpakitProfile> ProfileRef = MakeShared<FAlpakitProfile>( PluginName );
-
-	ProfileRef->bBuild = Mod->GetDescriptor().Modules.Num() > 0;
-
-	ProfileRef->BuildConfiguration = Settings->GetBuildConfiguration();
-	// ProfileRef->CookedPlatforms = Settings->CookPlatforms;
-	ProfileRef->CookedPlatforms = {TEXT("Windows")}; // Only Windows is allowed for now
-
-	if (Settings->bCopyModsToGame) {
-		FAlpakitProfileGameInfo& GameInfo = ProfileRef->PlatformGameInfo.FindOrAdd(TEXT("Windows"));
-		GameInfo.bCopyToGame = true;
-		GameInfo.GamePath = GamePath;
-	}
-
-	if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE && NextEntries.Num() == 0) {
-		FAlpakitProfileGameInfo& GameInfo = ProfileRef->PlatformGameInfo.FindOrAdd(TEXT("Windows"));
-		GameInfo.StartGameType = Settings->LaunchGameAfterPacking;
-	}
-
-    UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, NextEntries.Num());
-
-    const TSharedRef<FAlpakitInstance> AlpakitInstance = MakeShared<FAlpakitInstance>( PluginName, ProfileRef );
-	AlpakitInstance->Start();
+void SAlpakitModEntry::PackageMod() {
+	FAlpakitModule::Get().PackageMods({Mod.ToSharedRef()});
 }
 
 void SAlpakitModEntry::OnEnableCheckboxChanged(ECheckBoxState NewState) {
@@ -224,6 +191,10 @@ void SAlpakitModEntry::OnEnableCheckboxChanged(ECheckBoxState NewState) {
     Settings->ModSelection.Add(PluginName, NewState == ECheckBoxState::Checked);
 
     Settings->SaveSettings();
+}
+
+bool SAlpakitModEntry::IsPackageButtonEnabled() const {
+	return !FAlpakitModule::Get().IsPackaging();
 }
 
 #undef LOCTEXT_NAMESPACE

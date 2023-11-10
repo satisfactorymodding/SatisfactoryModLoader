@@ -24,8 +24,24 @@ SAlpakitLogTabContent::~SAlpakitLogTabContent()
 void SAlpakitLogTabContent::Construct( const FArguments& InArgs )
 {
 	ChildSlot[
-		SNew( SVerticalBox )
+	SNew( SVerticalBox )
 		+SVerticalBox::Slot().HAlign( HAlign_Left ).Padding( 5.0f, 10.0f, 5.0f, 2.0f ).AutoHeight()
+		[
+			SNew( SHorizontalBox )
+			+SHorizontalBox::Slot().AutoWidth()
+			[
+				SNew( STextBlock )
+				.Font( FCoreStyle::GetDefaultFontStyle("Regular", 10 ) )
+				.Text( LOCTEXT("LogPluginName", "Mod: ") )
+			]
+			+SHorizontalBox::Slot().AutoWidth()
+			[
+				SNew( STextBlock )
+				.Font( FCoreStyle::GetDefaultFontStyle("Bold", 10 ) )
+				.Text( this, &SAlpakitLogTabContent::GetPluginNameText )
+			]
+		]
+		+SVerticalBox::Slot().HAlign( HAlign_Left ).Padding( 5.0f, 0.0f, 5.0f, 2.0f ).AutoHeight()
 		[
 			SNew( SHorizontalBox )
 			+SHorizontalBox::Slot().AutoWidth()
@@ -130,6 +146,14 @@ bool SAlpakitLogTabContent::IsCancelButtonEnabled() const
 bool SAlpakitLogTabContent::IsRetryButtonEnabled() const
 {
 	return AlpakitInstance.IsValid() && AlpakitInstance->GetInstanceState() == EAlpakitInstanceState::Completed;
+}
+
+FText SAlpakitLogTabContent::GetPluginNameText() const {
+	if ( !AlpakitInstance.IsValid() || AlpakitInstance->GetInstanceState() == EAlpakitInstanceState::None )
+	{
+		return LOCTEXT("PluginNameNA", "N/A");
+	}
+	return FText::FromString(AlpakitInstance->GetPluginName());
 }
 
 FText SAlpakitLogTabContent::GetStatusText() const
@@ -246,10 +270,13 @@ void SAlpakitLogTabContent::OnNewAlpakitInstanceSpawned( const TSharedPtr<FAlpak
 void SAlpakitLogTabContent::OnAlpakitMessage( const FAlpakitInstanceMessageEntry& Message )
 {
 	MessageList.Add( MakeShared<FAlpakitInstanceMessageEntry>( Message ) );
-	MessageListView->RequestListRefresh();
 
 	// only scroll when at the end of the listview
-	if (FMath::IsNearlyEqual(MessageListView->GetScrollDistanceRemaining().Y, 0.0f, 1.e-7f))
+	bool bShouldScroll = !MessageListView->IsScrollbarNeeded() || FMath::IsNearlyEqual(MessageListView->GetScrollDistanceRemaining().Y, 0.0f, 1.e-7f);
+
+	MessageListView->RequestListRefresh();
+
+	if (bShouldScroll)
 	{
 		MessageListView->RequestScrollIntoView(MessageList.Last());
 	}

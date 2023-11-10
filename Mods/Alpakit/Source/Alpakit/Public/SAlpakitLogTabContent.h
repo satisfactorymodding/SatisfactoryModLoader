@@ -25,6 +25,7 @@ protected:
 	FReply OnCancelButtonClicked();
 	FReply OnRetryButtonClicked();
 	
+	FText GetPluginNameText() const;
 	FText GetStatusText() const;
 	FSlateColor GetStatusColor() const;
 	FText GetStatusDescription() const;

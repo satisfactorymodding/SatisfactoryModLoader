@@ -98,6 +98,74 @@ void FAlpakitModule::ShutdownModule() {
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitLogTabName);
 }
 
+void FAlpakitModule::PackageMods(TArray<TSharedRef<IPlugin>> Mods) {
+    if (Mods.Num() == 0) {
+        return;
+    }
+    
+    TArray<TSharedRef<FAlpakitProfile>> ProfilesToPackage;
+    
+    UAlpakitSettings* Settings = UAlpakitSettings::Get();
+	    
+    for (TSharedRef<IPlugin> Mod : Mods) {
+        TSharedRef<FAlpakitProfile> Profile = MakeShared<FAlpakitProfile>(Mod->GetName());
+
+        Profile->bBuild = Mod->GetDescriptor().Modules.Num() > 0;
+
+        Profile->BuildConfiguration = Settings->GetBuildConfiguration();
+        // Profile->CookedPlatforms = Settings->CookPlatforms;
+        Profile->CookedPlatforms = {TEXT("Windows")}; // Only Windows is allowed for now
+
+        if (Settings->bCopyModsToGame) {
+            FAlpakitProfileGameInfo& GameInfo = Profile->PlatformGameInfo.FindOrAdd(TEXT("Windows"));
+            GameInfo.bCopyToGame = true;
+            GameInfo.GamePath = Settings->SatisfactoryGamePath.Path;
+        }
+        
+        ProfilesToPackage.Add(Profile);
+    }
+
+    TSharedRef<FAlpakitProfile> LastProfile = ProfilesToPackage.Last();
+
+    if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE) {
+        FAlpakitProfileGameInfo& GameInfo = LastProfile->PlatformGameInfo.FindOrAdd(TEXT("Windows"));
+        GameInfo.StartGameType = Settings->LaunchGameAfterPacking;
+    }
+
+    PackageMods(ProfilesToPackage);
+}
+
+void FAlpakitModule::PackageMods(TArray<TSharedRef<FAlpakitProfile>> ProfilesToPackage) {
+    if(!ensure(!bIsPackaging)) {
+        return;
+    }
+    bIsPackaging = true;
+
+    ProfilePackageQueue = ProfilesToPackage;
+
+    ProcessQueueItem();
+}
+
+void FAlpakitModule::ProcessQueueItem() {
+    if (ProfilePackageQueue.IsEmpty()) {
+        bIsPackaging = false;
+        return;
+    }
+    TSharedRef<FAlpakitProfile> Profile = ProfilePackageQueue[0];
+    ProfilePackageQueue.RemoveAt(0);
+
+    const TSharedRef<FAlpakitInstance> AlpakitInstance = MakeShared<FAlpakitInstance>( Profile->PluginName, Profile );
+    AlpakitInstance->OnProcessCompleted().AddLambda([&](EAlpakitInstanceResult Result) {
+        if (Result == EAlpakitInstanceResult::Success) {
+            ProcessQueueItem();
+        } else {
+            bIsPackaging = false;
+            ProfilePackageQueue.Empty();
+        }
+    });
+    AlpakitInstance->Start();
+}
+
 TSharedRef<SDockTab> FAlpakitModule::HandleSpawnModCreatorTab(const FSpawnTabArgs& SpawnTabArgs)
 {
     IPluginBrowser& PluginBrowser = FModuleManager::Get().GetModuleChecked<IPluginBrowser>(TEXT("PluginBrowser"));

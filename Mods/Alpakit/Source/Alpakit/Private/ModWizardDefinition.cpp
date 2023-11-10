@@ -14,7 +14,7 @@ FModWizardDefinition::FModWizardDefinition()
 {
 	PluginBaseDir = IPluginManager::Get().FindPlugin(TEXT("Alpakit"))->GetBaseDir();
 
-	ModTemplateDefinitions = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit")).GetModTemplates();
+	ModTemplateDefinitions = FAlpakitModule::Get().GetModTemplates();
 	for (TSharedRef<FModTemplateDescription> Template : ModTemplateDefinitions)
 	{
 		TemplateDefinitions.Add(Template->TemplateDescription);
