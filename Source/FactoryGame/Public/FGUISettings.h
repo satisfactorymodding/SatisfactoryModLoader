@@ -29,8 +29,9 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = Online )
 	TSubclassOf<UUserWidget> mResetAccountLinkingWidget;
 
-	UPROPERTY( EditAnywhere, config, Category = Online )
-	TSoftClassPtr<class UFGOnlineStartupScreen> mOnlineStartupScreenClass;
+	/** Popup that will be displayed when the user attempts to create an online session without being logged in to the relevant online services. */
+	UPROPERTY( EditAnywhere, Config, Category = Online )
+	TSoftClassPtr<class UFGCreateOfflineSessionPrompt> mCreateOfflineSessionPrompt;
 
 	/** Widget used to show the user when enabling the debug overlay */
 	UPROPERTY( EditAnywhere, config, Category = UI )

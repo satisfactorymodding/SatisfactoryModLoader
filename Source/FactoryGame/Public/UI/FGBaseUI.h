@@ -57,6 +57,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	void ClearPopupQueueOfClass( TSubclassOf< UUserWidget > widgetClass );
 
+	/** Clear the popup queue of all popups of the given class AND also clears the active popup if it's content is of this given class type */
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	void ClearPopupQueueAndPopupOfContentClass( TSubclassOf< UFGPopupWidgetContent > widgetClass );
+	
 protected:
 	/** Can a popup be displayed at this moment? */
 	bool mCanDisplayPopup;
@@ -66,5 +70,8 @@ protected:
 	class UFGPopupWidget* mActivePopup;
 
 	/** Queue with popups to show */
+	UPROPERTY()
 	TArray< FPopupData > mPopupDataQueue;
+
+	TOptional<FPopupData> mPendingPopup;
 };

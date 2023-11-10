@@ -15,4 +15,3 @@ void UFGFrontendStateComponent::AuthenticationSequenceComplete(){ }
 void UFGFrontendStateComponent::ProgressUpdate(const FText& Status){ }
 void UFGFrontendStateComponent::OnlineModeSelectionConfirmed(bool popupConfirmed){ }
 void UFGFrontendStateComponent::TryShowMainScreen(){ }
-void UFGFrontendStateComponent::SpawnOnlineStartupScreen(){ }
