@@ -111,28 +111,38 @@ public class SML : ModuleRules
         CommitRef = null;
             
         // First try running git
-        var branchNameProcess = Process.Start(new ProcessStartInfo("git", "rev-parse --abbrev-ref HEAD")
+        try
         {
-            WorkingDirectory = RootDir.FullName,
-            RedirectStandardOutput = true,
-        });
-        if (branchNameProcess != null)
-        {
-            branchNameProcess.WaitForExit();
-            if (branchNameProcess.ExitCode == 0)
-                BranchName = branchNameProcess.StandardOutput.ReadToEnd().Trim();
+            var BranchNameProcess = Process.Start(new ProcessStartInfo("git", "rev-parse --abbrev-ref HEAD")
+            {
+                WorkingDirectory = RootDir.FullName,
+                RedirectStandardOutput = true,
+            });
+            if (BranchNameProcess != null)
+            {
+                BranchNameProcess.WaitForExit();
+                if (BranchNameProcess.ExitCode == 0)
+                    BranchName = BranchNameProcess.StandardOutput.ReadToEnd().Trim();
+            }
+        } catch (Exception Ex) { 
+            Log.TraceWarning("Failed to run git to retrieve branch name: {0}. Falling back to checking .git folder", Ex.Message);
         }
 
-        var commitProcess = Process.Start(new ProcessStartInfo("git", "rev-parse HEAD")
+        try
         {
-            WorkingDirectory = RootDir.FullName,
-            RedirectStandardOutput = true,
-        });
-        if (commitProcess != null)
-        {
-            commitProcess.WaitForExit();
-            if (commitProcess.ExitCode == 0)
-                CommitRef = commitProcess.StandardOutput.ReadToEnd().Trim();
+            var CommitProcess = Process.Start(new ProcessStartInfo("git", "rev-parse HEAD")
+            {
+                WorkingDirectory = RootDir.FullName,
+                RedirectStandardOutput = true,
+            });
+            if (CommitProcess != null)
+            {
+                CommitProcess.WaitForExit();
+                if (CommitProcess.ExitCode == 0)
+                    CommitRef = CommitProcess.StandardOutput.ReadToEnd().Trim();
+            }
+        } catch (Exception Ex) {
+            Log.TraceWarning("Failed to run git to retrieve commit: {0}. Falling back to checking .git folder", Ex.Message);
         }
 
         if (CommitRef != null && BranchName != null) return;
