@@ -303,6 +303,25 @@ void UModContentRegistry::ModifySchematicList( TArray<TSubclassOf<UFGSchematic>>
 		}
 	}
 
+	TArray<TSubclassOf<UFGSchematic>>& mAvailableSchematics = AFGSchematicManager::Get(GetWorld())->mAvailableSchematics;
+	// Cleanup invalid or removed schematics from the available schematics list
+	for ( int32 SchematicIndex = mAvailableSchematics.Num() - 1; SchematicIndex >= 0; SchematicIndex-- )
+	{
+		if ( !IsValid( mAvailableSchematics[SchematicIndex] ) )
+		{
+			mAvailableSchematics.RemoveAt( SchematicIndex );
+			continue;
+		}
+
+		const FGameObjectRegistration* Registration = SchematicRegistryState.FindObjectRegistration( mAvailableSchematics[SchematicIndex] );
+		fgcheck( Registration );
+
+		if ( Registration->HasAnyFlags( EGameObjectRegistrationFlags::Removed ) )
+		{
+			mAvailableSchematics.RemoveAt( SchematicIndex );
+		}
+	}
+
 	// Append non-builtin objects to the resulting schematic list
 	for ( const FGameObjectRegistration* Registration : SchematicRegistryState.GetAllRegistrationsCopyFree() )
 	{
