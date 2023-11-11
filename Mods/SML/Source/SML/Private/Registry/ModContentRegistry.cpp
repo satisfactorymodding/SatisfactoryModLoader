@@ -43,7 +43,7 @@ static bool GIsRegisteringVanillaContent = false;
 	{ \
 		/* Attempt to use cached script frame pointer first, then fallback to global script callstack (which is not available in shipping by default) */ \
 		const FString ScriptCallstack = UModContentRegistry::GetCallStackContext(); \
-		UE_LOG(LogContentRegistry, Error, TEXT("Attempt to register invalid content: %s"), *Context); \
+		UE_LOG(LogContentRegistry, Error, TEXT("Attempt to register invalid content: %s"), Context); \
 		UE_LOG(LogContentRegistry, Error, TEXT("Script Callstack: %s"), *ScriptCallstack); \
 		ensureMsgf( false, TEXT("%s"), *Context ); \
 	} \
@@ -76,13 +76,13 @@ const FGameObjectRegistration* FGameObjectRegistryState::RegisterObject( FName I
 	if ( bRegistryFrozen )
 	{
 		const FString Context = FString::Printf( TEXT("Attempt to register object '%s' in frozen registry. Make sure your modded content registration is happening in the 'Initialization' Lifecycle Phase and not 'Post Initialization'"), *GetPathNameSafe( Object ) );
-		NOTIFY_INVALID_REGISTRATION( Context );
+		NOTIFY_INVALID_REGISTRATION( *Context );
 		return nullptr;
 	}
 	if ( !IsValid( Object ) )
 	{
 		const FString Context = FString::Printf( TEXT("Attempt to register an invalid object in the content registry.") );
-		NOTIFY_INVALID_REGISTRATION( Context );
+		NOTIFY_INVALID_REGISTRATION( *Context );
 		return nullptr;
 	}
 	FGameObjectRegistration* Registration = FindOrAddObject( Object );
@@ -92,7 +92,7 @@ const FGameObjectRegistration* FGameObjectRegistryState::RegisterObject( FName I
 	if ( !Registration->HasAnyFlags( EGameObjectRegistrationFlags::Unregistered | EGameObjectRegistrationFlags::Implicit ) && !EnumHasAnyFlags( ExtraFlags, EGameObjectRegistrationFlags::BuiltIn ) )
 	{
 		const FString Context = FString::Printf( TEXT("Object '%s' has already been registered!"), *GetPathNameSafe( Object ) );
-		NOTIFY_INVALID_REGISTRATION( Context );
+		NOTIFY_INVALID_REGISTRATION( *Context );
 		return Registration;
 	}
 
@@ -152,13 +152,13 @@ void FGameObjectRegistryState::MarkObjectAsRemoved( UObject* Object )
 	if ( bRegistryFrozen )
 	{
 		const FString Context = FString::Printf( TEXT("Attempt to remove object '%s' in frozen registry. Make sure your modded content registration is happening in the 'Initialization' Lifecycle Phase and not 'Post Initialization'"), *GetPathNameSafe( Object ) );
-		NOTIFY_INVALID_REGISTRATION( Context );
+		NOTIFY_INVALID_REGISTRATION( *Context );
 		return;
 	}
 	if ( !IsValid( Object ) )
 	{
 		const FString Context = FString::Printf( TEXT("Attempt to mark invalid object as Removed.") );
-		NOTIFY_INVALID_REGISTRATION( Context );
+		NOTIFY_INVALID_REGISTRATION( *Context );
 		return;
 	}
 	FGameObjectRegistration* ExistingRegistration = FindOrAddObject( Object );
@@ -176,13 +176,13 @@ void FGameObjectRegistryState::AddObjectReference( UObject* Object, UObject* Ref
 	if ( !IsValid( Object ) )
 	{
 		const FString Context = FString::Printf( TEXT("Attempt to add a Reference to an invalid object from %s"), *GetPathNameSafe( ReferencedBy ) );
-		NOTIFY_INVALID_REGISTRATION( Context );
+		NOTIFY_INVALID_REGISTRATION( *Context );
 		return;
 	}
 	if ( !IsValid( ReferencedBy ) )
 	{
 		const FString Context = FString::Printf( TEXT("Attempt to add a Reference to %s from invalid object"), *GetPathNameSafe( Object ) );
-		NOTIFY_INVALID_REGISTRATION( Context );
+		NOTIFY_INVALID_REGISTRATION( *Context );
 		return;
 	}
 	
@@ -361,7 +361,7 @@ void UModContentRegistry::RegisterSchematic(const FName ModReference, const TSub
 	if ( !IsValid( Schematic ) )
 	{
 		const FString Context = FString::Printf( TEXT("Attempt to register NULL Schematic. Mod Reference: %s"), *ModReference.ToString() );
-		NOTIFY_INVALID_REGISTRATION( Context );
+		NOTIFY_INVALID_REGISTRATION( *Context );
 		return;
 	}
 	SchematicRegistryState.RegisterObject( ModReference, Schematic );
@@ -371,7 +371,7 @@ void UModContentRegistry::RegisterResearchTree(const FName ModReference, const T
 	if ( !IsValid( ResearchTree ) )
 	{
 		const FString Context = FString::Printf( TEXT("Attempt to register NULL ResearchTree. Mod Reference: %s"), *ModReference.ToString() );
-		NOTIFY_INVALID_REGISTRATION( Context );
+		NOTIFY_INVALID_REGISTRATION( *Context );
 		return;
 	}
 	ResearchTreeRegistryState.RegisterObject( ModReference, ResearchTree );
@@ -381,7 +381,7 @@ void UModContentRegistry::RegisterRecipe(const FName ModReference, const TSubcla
 	if ( !IsValid( Recipe ) )
 	{
 		const FString Context = FString::Printf( TEXT("Attempt to register NULL Recipe. Mod Reference: %s"), *ModReference.ToString() );
-		NOTIFY_INVALID_REGISTRATION( Context );
+		NOTIFY_INVALID_REGISTRATION( *Context );
 		return;
 	}
 	RecipeRegistryState.RegisterObject( ModReference, Recipe );
@@ -536,7 +536,7 @@ void UModContentRegistry::RegisterResourceSinkItemPointTable(FName ModReference,
 	if ( !IsValid( PointTable ) )
 	{
 		const FString Context = FString::Printf( TEXT("Attempt to register NULL ResourceSinkPointTable on %s track. Mod Reference: %s"), *UEnum::GetValueAsString(Track), *ModReference.ToString() );
-		NOTIFY_INVALID_REGISTRATION(Context);
+		NOTIFY_INVALID_REGISTRATION(*Context);
 		return;
 	}
 
@@ -544,7 +544,7 @@ void UModContentRegistry::RegisterResourceSinkItemPointTable(FName ModReference,
 	{
 		const FString Context = FString::Printf( TEXT("Invalid AWESOME Sink item points table in mod %s (%s): Row Type should be Resource Sink Points Data"),
 			*ModReference.ToString(), *PointTable->GetPathName() );
-		NOTIFY_INVALID_REGISTRATION(Context);
+		NOTIFY_INVALID_REGISTRATION(*Context);
 		return;
 	}
 
