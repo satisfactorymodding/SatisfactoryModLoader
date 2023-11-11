@@ -671,7 +671,7 @@ void UModContentRegistry::OnActorPostSpawnInitialization( AActor* Actor )
 		PostSpawnInitializationStack++;
 	}
 
-	if ( PostSpawnInitializationStack >= 2 )
+	if ( PostSpawnInitializationStack >= 1 )
 	{
 		GetWorld()->RemoveOnActorSpawnedHandler( OnActorPostSpawnDelegateHandle );
 		OnActorPostSpawnDelegateHandle.Reset();
