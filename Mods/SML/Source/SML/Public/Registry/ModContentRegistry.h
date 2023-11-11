@@ -153,7 +153,7 @@ public:
     UModContentRegistry();
 
     /** Retrieves global mod content registry instance */
-	UFUNCTION(BlueprintPure, Category = "Mod Content Registry", DisplayName = "GetModContentRegistry", meta = (DefaultToSelf = "WorldContext"))
+	UFUNCTION(BlueprintPure, Category = "Mod Content Registry", DisplayName = "GetModContentRegistry", meta = (WorldContext = "WorldContext"))
     static UModContentRegistry* Get( const UObject* WorldContext);
 
     /**
