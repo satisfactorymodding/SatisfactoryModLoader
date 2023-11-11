@@ -183,7 +183,7 @@ void FNativeCodeGenerator::GenerateConfigStruct(UConfigGeneratedStruct* Struct, 
         const FString CppTypeForDescriptor = GenerateCppTypeForVariable(Pair.Value);
         //Mark variable as BlueprintReadWrite for it to be accessible via BP limited reflection
         OutputDevice.Logf(TEXT("    UPROPERTY(BlueprintReadWrite)"));
-        OutputDevice.Logf(TEXT("    %s %s;"), *CppTypeForDescriptor, *Pair.Key);
+        OutputDevice.Logf(TEXT("    %s %s{};"), *CppTypeForDescriptor, *Pair.Key);
     }
 
     //Append method for retrieving configuration value if we're working with root struct
