@@ -48,7 +48,10 @@ public class SML : ModuleRules
         var PlatformName = Target.Platform.ToString();
         var LibraryFolder = Path.Combine(ThirdPartyFolder, PlatformName);
 
+        // https://github.com/kubo/funchook/tree/7cb8819594f0d586454011ab691fab4edb625068
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "funchook.lib"));
+        
+        // https://github.com/satisfactorymodding/AssemblyAnalyzer/tree/e08ec4402b6e016a9b7aa59ab8c82dd0840e8f98
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "AssemblyAnalyzer.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zydis.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zycore.lib"));
