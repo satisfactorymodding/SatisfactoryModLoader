@@ -49,7 +49,6 @@ public class SML : ModuleRules
         var LibraryFolder = Path.Combine(ThirdPartyFolder, PlatformName);
 
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "funchook.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "detex.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "AssemblyAnalyzer.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zydis.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zycore.lib"));
