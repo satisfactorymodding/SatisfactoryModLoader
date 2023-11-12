@@ -208,40 +208,49 @@ UConfigProperty* URuntimeBlueprintFunctionLibrary::GetModConfigurationProperty( 
 
 	if ( const UWorld* World = GEngine->GetWorldFromContextObject( WorldContext, EGetWorldErrorMode::ReturnNull ) )
 	{
-		const UConfigManager* MySubsystem = World->GetGameInstance()->GetSubsystem<UConfigManager>();
-		const FRegisteredConfigurationData* ConfigurationData = MySubsystem->Configurations.Find(ConfigId);
-		if (!ConfigurationData) {
-			return nullptr;
+		if (const UGameInstance* GameInstance = World->GetGameInstance()) {
+			const UConfigManager* ConfigManager = GameInstance->GetSubsystem<UConfigManager>();
+			const FRegisteredConfigurationData* ConfigurationData = ConfigManager->Configurations.Find(ConfigId);
+			if (!ConfigurationData) {
+				return nullptr;
+			}
+			return ConfigurationData->RootValue->GetWrappedValue();
 		}
-		return ConfigurationData->RootValue->GetWrappedValue();
 	}
 	return nullptr;
 };
 
 UConfigProperty* URuntimeBlueprintFunctionLibrary::GetModConfigurationPropertyByClass(TSubclassOf<UModConfiguration> ConfigClass, UObject* WorldContext) {
+	if (ConfigClass == NULL) {
+		return nullptr;
+	}
 	if ( UWorld* World = GEngine->GetWorldFromContextObject( WorldContext, EGetWorldErrorMode::ReturnNull ) )
 	{
-		if (ConfigClass == NULL) {
-			return nullptr;
-		}
-		UConfigManager* ConfigManager = World->GetGameInstance()->GetSubsystem<UConfigManager>();
+		if (const UGameInstance* GameInstance = World->GetGameInstance()) {
+			UConfigManager* ConfigManager = GameInstance->GetSubsystem<UConfigManager>();
 #if WITH_EDITOR
-		// Assuming we have not registered in Editor World or similiar
-		// But also considering this might work in the Editor once someone emulates the Startup Registration on PIE Play
-		// we check only in Editor if Configurations are Empty. 
-		// Editor Widgets that are used while not in PIE dont have proper World Context.
-		// For this Function to work regardless on Play State in Editor
-		// This Function "Simulates" it being where it would be inGame
-		// This return is for Comsetic and visual pre-display only 
-		// while also allowing modification of Default Values.
-		if (ConfigManager->Configurations.Num() == 0) {
-			return ConfigClass.GetDefaultObject()->RootSection;
-		}
-#endif
-		for (auto i : ConfigManager->Configurations) {
-			if (i.Value.ConfigurationClass == ConfigClass) {
-				return i.Value.RootValue->GetWrappedValue();
+			// Assuming we have not registered in Editor World or similiar
+			// But also considering this might work in the Editor once someone emulates the Startup Registration on PIE Play
+			// we check only in Editor if Configurations are Empty. 
+			// Editor Widgets that are used while not in PIE dont have proper World Context.
+			// For this Function to work regardless on Play State in Editor
+			// This Function "Simulates" it being where it would be inGame
+			// This return is for Comsetic and visual pre-display only 
+			// while also allowing modification of Default Values.
+			if (ConfigManager->Configurations.Num() == 0) {
+				return ConfigClass.GetDefaultObject()->RootSection;
 			}
+#endif
+			for (auto i : ConfigManager->Configurations) {
+				if (i.Value.ConfigurationClass == ConfigClass) {
+					return i.Value.RootValue->GetWrappedValue();
+				}
+			}
+		} else {
+#if WITH_EDITOR
+			// Editor Widgets that are used while not in PIE don't have proper World Context.
+			return ConfigClass.GetDefaultObject()->RootSection;
+#endif
 		}
 	}
 	return NULL;
@@ -258,13 +267,15 @@ UConfigProperty* URuntimeBlueprintFunctionLibrary::Conv_ConfigIdToConfigProperty
 TSubclassOf<UModConfiguration> URuntimeBlueprintFunctionLibrary::Conv_ConfigIdToModConfigurationClass(const FConfigId& ConfigId, UObject* WorldContext) {
 	if ( UWorld* World = GEngine->GetWorldFromContextObject( WorldContext, EGetWorldErrorMode::ReturnNull ) )
 	{
-		const UConfigManager* MySubsystem = World->GetGameInstance()->GetSubsystem<UConfigManager>();
-		const FRegisteredConfigurationData* ConfigurationData = MySubsystem->Configurations.Find(ConfigId);
-		if (ConfigurationData == nullptr)
-		{
-			return nullptr;
+		if (const UGameInstance* GameInstance = World->GetGameInstance()) {
+			UConfigManager* ConfigManager = GameInstance->GetSubsystem<UConfigManager>();
+			const FRegisteredConfigurationData* ConfigurationData = ConfigManager->Configurations.Find(ConfigId);
+			if (ConfigurationData == nullptr)
+			{
+				return nullptr;
+			}
+			return ConfigurationData->ConfigurationClass;
 		}
-		return ConfigurationData->ConfigurationClass;
 	}
 	return nullptr;
 }
