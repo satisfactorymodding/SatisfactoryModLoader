@@ -55,9 +55,10 @@ public:
 	 * use the pipe data struct and save it there by yourself.
 	 *
 	 * @param outPipeData custom data that you can use to persist any state on the player, valid as long as the player is in the tube
+	 * @param predictionPipeData custom data that was derived from FindDistanceClosestToWorldLocation when we are simulating the movement for simulated proxies, empty otherwise
 	 * @return true if player is allowed to enter the pipe, false if he should be turned back
 	 */
-	virtual EPipeHyperEnterResult OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, TStructOnScope<FFGPipeHyperBasePipeData>& outPipeData) = 0;
+	virtual EPipeHyperEnterResult OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, TStructOnScope<FFGPipeHyperBasePipeData>& outPipeData, const TStructOnScope<FFGPipeHyperBasePipeData>& predictionPipeData ) = 0;
 
 	/**
 	 * Called when the pipe has been entered during the sub-step interpolation
@@ -81,6 +82,13 @@ public:
 	/** Retrieves location and rotation when travelling along the pipe at the particular distance (0 - <PipeLength>) */
 	virtual void GetLocationAndRotationAlongPipe(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData, float distance, FVector& outLocation, FVector& outDirection ) = 0;
 
+	/**
+	 * This function attempts to find the closest point inside of this pipe to the world location provided,
+	 * and also potentially synthesize the pipe data struct matching to the player moving inside of this pipe at the specified location with specified velocity
+	 * @return true if the approximation was successful
+	 */
+	virtual bool FindDistanceClosestToWorldLocation(AFGCharacterPlayer* charPlayer, const FVector& worldLocation, const FVector& velocity, TStructOnScope<FFGPipeHyperBasePipeData>& out_pipeData, float& out_distance) const = 0;
+	
 	/**
 	 * Returns the exit connection that the player must transit through when passing the provided distance.
 	 * Only called at the ends of the pipe, e.g. when travel distance exceeds pipe length of goes below zero

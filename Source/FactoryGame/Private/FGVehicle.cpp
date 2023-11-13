@@ -4,6 +4,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "FGHealthComponent.h"
 #include "FGSwatchGroup.h"
+#include "Net/UnrealNetwork.h"
 
 FVehicleSeat::FVehicleSeat(){ }
 void AFGVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -70,11 +71,10 @@ TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGVehicle::GetActiveSkin_
 TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGVehicle::GetActiveSkin_Implementation(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
 void AFGVehicle::StartIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter, bool isValid){ }
 void AFGVehicle::StopIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter){ }
-void AFGVehicle::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
+void AFGVehicle::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGVehicle::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGVehicle::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 bool AFGVehicle::IsUseable_Implementation() const{ return bool(); }
-void AFGVehicle::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGVehicle::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 FText AFGVehicle::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGVehicle::RegisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
@@ -106,14 +106,15 @@ void AFGVehicle::ApplySkinData(TSubclassOf< UFGFactoryCustomizationDescriptor_Sk
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGVehicle::GetDefaultSwatchCustomizationOverride(UObject* worldContext){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Swatch>(); }
 void AFGVehicle::OnSkinCustomizationApplied_Implementation(TSubclassOf<  UFGFactoryCustomizationDescriptor_Skin > skin){ }
 FVector AFGVehicle::GetVehicleRealActorLocation() const{ return FVector(); }
+bool AFGVehicle::IsSubmergedInWater() const{ return bool(); }
 void AFGVehicle::OnCustomizationDataApplied(const FFactoryCustomizationData& customizationData){ }
 void AFGVehicle::OnRep_IsSimulated(){ }
+void AFGVehicle::ToggleEntireVehicleOutline(const bool isOutlined, const EOutlineColor& outlineColor){ }
 void AFGVehicle::OnTakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }
 void AFGVehicle::Died(AActor* thisActor){ }
 void AFGVehicle::OnDrivingStatusChanged(){ }
 void AFGVehicle::UpdateSubmergedInWater(float deltaTime){ }
 void AFGVehicle::SubmergedInWaterUpdated(bool newIsSubmerged){ }
-bool AFGVehicle::IsSubmergedInWater() const{ return bool(); }
 void AFGVehicle::GetDismantleRefundReturns(TArray< FInventoryStack >& out_returns) const{ }
 void AFGVehicle::GetDismantleInventoryReturns(TArray< FInventoryStack >& out_returns) const{ }
 void AFGVehicle::DestroyVehicle(){ }

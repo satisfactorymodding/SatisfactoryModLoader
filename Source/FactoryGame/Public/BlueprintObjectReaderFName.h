@@ -3,9 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Serialization/ArchiveUObject.h"
-#include "EngineGlobals.h"
-#include "Engine.h"
+#include "Serialization/ObjectReader.h"
 
 /**
  * Our modded version of object reader but modified for blueprints. When this is used we have already spawned/created dummy object. We then use this class 

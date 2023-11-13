@@ -11,8 +11,8 @@
 void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
     //Gather UProperty exposed by tooltip widget
     UClass* TooltipWidgetClass = TooltipWidget->GetClass();
-    FObjectProperty* TitleWidgetProperty = Cast<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mTitle")));
-    FObjectProperty* DescriptionWidgetProperty = Cast<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mDescription")));
+    FObjectProperty* TitleWidgetProperty = CastField<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mTitle")));
+    FObjectProperty* DescriptionWidgetProperty = CastField<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mDescription")));
     check(TitleWidgetProperty && DescriptionWidgetProperty);
     
     //Retrieve references to some stuff
@@ -41,8 +41,8 @@ void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, 
 
 FInventoryStack GetStackFromSlot(UObject* SlotWidget) {
     //Retrieve fields relevant to owner inventory
-    FObjectProperty* InventoryProperty = Cast<FObjectProperty>(SlotWidget->GetClass()->FindPropertyByName(TEXT("mCachedInventoryComponent")));
-    FIntProperty* SlotIndexProperty = Cast<FIntProperty>(SlotWidget->GetClass()->FindPropertyByName(TEXT("mSlotIdx")));
+    FObjectProperty* InventoryProperty = CastField<FObjectProperty>(SlotWidget->GetClass()->FindPropertyByName(TEXT("mCachedInventoryComponent")));
+    FIntProperty* SlotIndexProperty = CastField<FIntProperty>(SlotWidget->GetClass()->FindPropertyByName(TEXT("mSlotIdx")));
     check(InventoryProperty && SlotIndexProperty);
     
     FInventoryStack ResultStack{};

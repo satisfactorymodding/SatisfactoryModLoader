@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildableFactory.h"
-#include "Buildables/FGBuildableGenerator.h"
 #include "FGActorRepresentationInterface.h"
+#include "FGBuildableFactory.h"
+#include "FGBuildableGenerator.h"
 #include "FGBuildableTradingPost.generated.h"
 
 UINTERFACE( Blueprintable )

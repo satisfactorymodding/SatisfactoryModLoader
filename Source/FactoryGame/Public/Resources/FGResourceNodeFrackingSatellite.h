@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Resources/FGResourceNode.h"
-#include "Resources/FGResourceNodeFrackingCore.h"
+#include "FGResourceNode.h"
+#include "FGResourceNodeFrackingCore.h"
 #include "UObject/WeakObjectPtrTemplates.h"
 #include "FGResourceNodeFrackingSatellite.generated.h"
 

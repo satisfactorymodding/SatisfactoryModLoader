@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Equipment/FGEquipment.h"
-#include "Equipment/FGEquipmentAttachment.h"
+#include "FGEquipment.h"
+#include "FGEquipmentAttachment.h"
 #include "LegacyCameraShake.h"
 #include "FGParachute.generated.h"
 

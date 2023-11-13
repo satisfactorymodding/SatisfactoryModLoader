@@ -2,8 +2,8 @@
 
 #pragma once
 #include "FactoryGame.h"
-#include "Equipment/FGEquipment.h"
-#include "Equipment/FGEquipmentAttachment.h"
+#include "FGEquipment.h"
+#include "FGEquipmentAttachment.h"
 #include "FGJetPack.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnFuelAmountChanged, const int, newFuelAmount );
@@ -59,6 +59,9 @@ protected:
 	/** Input Actions */
 	void Input_Thrust( const FInputActionValue& actionValue );
 
+	UFUNCTION()
+	void ConsumableTypeIndexChanged_OnRep();
+	
 	/** Called when the amount of the selected fuel type in the players inventory changes. */
 	UPROPERTY( BlueprintAssignable )
 	FOnFuelAmountChanged mOnFuelAmountChanged;
@@ -107,7 +110,7 @@ protected:
 	TArray<TSubclassOf< class UFGJetPackFuelParameters >> mFuelTypes;
 
 	/** The fuel type selected to be default by the player. */
-	UPROPERTY( BlueprintReadOnly, SaveGame, Replicated, Category = "JetPack" )
+	UPROPERTY( BlueprintReadOnly, SaveGame, replicatedUsing=ConsumableTypeIndexChanged_OnRep, Category = "JetPack" )
 	int mSelectedFuelType = 0;
 	/** The actual fuel type currently being used. Can be different from mSelectedFuelType if the player can not afford it. */
 	UPROPERTY( BlueprintReadOnly, SaveGame, Replicated, Category = "JetPack" )

@@ -71,6 +71,7 @@ bool AFGGameMode::ShouldSkipOnboarding() const{ return bool(); }
 void AFGGameMode::SetServerRestartWorldTime(const float worldTime){ }
 void AFGGameMode::TriggerWorldSave(const FString& saveGameName){ }
 void AFGGameMode::TriggerBundledWorldSave(const FString& saveGameName){ }
+void AFGGameMode::JoinSessionByIdD(const FString& sessionId){ }
 bool AFGGameMode::IsValidPawnToReclaim(APawn* pawn) const{ return bool(); }
 void AFGGameMode::GetRestartSessionSaveName(FString& out_sessionName) const{ }
 void AFGGameMode::BuildRestartSessionURL(const FString& saveName, FString& out_sessionUrl) const{ }

@@ -11,6 +11,7 @@ public:
 #if WITH_EDITOR
 	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
 #endif
+	
     /**
     * List of schematics that will be automatically registered
     * by the SML during the loading phase

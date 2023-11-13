@@ -44,4 +44,6 @@ private:
 	FReply CheckAllMods();
 	FReply UncheckAllMods();
 	FReply CreateMod();
+
+	bool IsPackageButtonEnabled() const;
 };

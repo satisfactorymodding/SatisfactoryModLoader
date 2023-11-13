@@ -1,5 +1,14 @@
 #pragma once
+
 #include "CoreMinimal.h"
+#include "Util/SemVersion.h"
+
+struct FConnectionMetadata {
+	bool bIsInitialized{false};
+	TMap<FString, FVersion> InstalledClientMods;
+
+	FORCEINLINE bool IsDefault() const { return !bIsInitialized; }
+};
 
 class SML_API FSMLNetworkManager {
 public:
@@ -16,10 +25,10 @@ public:
     static void HandleGameModePostLogin(class AGameModeBase* GameMode, class APlayerController* Controller);
 
     /** Serializes mod list into packed json string */
-    static FString SerializeLocalModList();
+    static FString SerializeLocalModList(UNetConnection* Connection);
 
     /** Parses packaged json mod list string and sets relevant information on connection */
-    static bool HandleModListObject(class USMLConnectionMetadata* Metadata, const FString& ModList);
+    static bool HandleModListObject( FConnectionMetadata& Metadata, const FString& ModList);
 
     /** Ensures that Connection has required SML initialization data and kicks player off if it doesn't */
     static void ValidateSMLConnectionData(class UNetConnection* Connection);

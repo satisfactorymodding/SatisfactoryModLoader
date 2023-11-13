@@ -1,8 +1,8 @@
 #pragma once
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableFactory.h"
-#include "Buildables/FGPipeHyperAttachmentSnapTargetInterface.h"
+#include "FGBuildableFactory.h"
+#include "FGPipeHyperAttachmentSnapTargetInterface.h"
 #include "FGBuildablePipeHyperAttachment.generated.h"
 
 class UFGPipeConnectionComponentBase;

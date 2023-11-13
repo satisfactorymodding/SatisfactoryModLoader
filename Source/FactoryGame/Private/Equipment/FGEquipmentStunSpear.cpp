@@ -15,9 +15,11 @@ AFGEquipmentStunSpear::AFGEquipmentStunSpear() : Super() {
 	this->mDefaultEquipmentActions = 1;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
-void AFGEquipmentStunSpear::DoAttack(){ }
+void AFGEquipmentStunSpear::Local_SwingWeapon(){ }
+void AFGEquipmentStunSpear::Local_Attack(){ }
 void AFGEquipmentStunSpear::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
-void AFGEquipmentStunSpear::Server_ShockEnemy_Implementation(const FVector& attackDirection){ }
-void AFGEquipmentStunSpear::Server_PlayStunEffects_Implementation(bool secondSwing){ }
+void AFGEquipmentStunSpear::PlayHitEffectsInternal(const TArray<FHitResult>& hitLocations){ }
+void AFGEquipmentStunSpear::Server_ProcessAttack_Implementation(const TArray<FHitResult>& hitResults){ }
+void AFGEquipmentStunSpear::Server_ProcessPlayerSwing_Implementation(bool secondSwing){ }
 void AFGEquipmentStunSpear::Multicast_PlayHitEffects_Implementation(const TArray<FHitResult> &hitResults){ }
-void AFGEquipmentStunSpear::Multicast_PlayStunEffects_Implementation(bool secondSwing){ }
+void AFGEquipmentStunSpear::Multicast_PlaySwingEffects_Implementation(bool secondSwing){ }

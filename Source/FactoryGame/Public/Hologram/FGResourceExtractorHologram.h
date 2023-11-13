@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "Resources/FGResourceDescriptor.h"
-#include "Hologram/FGFactoryHologram.h"
+#include "FGFactoryHologram.h"
 #include "FGResourceExtractorHologram.generated.h"
 
 /**

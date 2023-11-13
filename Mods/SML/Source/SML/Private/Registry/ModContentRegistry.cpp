@@ -1,9 +1,6 @@
 #include "Registry/ModContentRegistry.h"
-
-
 #include "FGGameMode.h"
 #include "FGGameState.h"
-#include "FGRecipeManager.h"
 #include "FGResearchManager.h"
 #include "FGResourceSinkSettings.h"
 #include "FGResourceSinkSubsystem.h"
@@ -12,679 +9,990 @@
 #include "Unlocks/FGUnlockRecipe.h"
 #include "FGCustomizationRecipe.h"
 #include "IPlatformFilePak.h"
+#include "AvailabilityDependencies/FGConsumablesConsumedDependency.h"
+#include "AvailabilityDependencies/FGItemPickedUpDependency.h"
+#include "AvailabilityDependencies/FGItemsManuallyCraftedDependency.h"
+#include "AvailabilityDependencies/FGRecipeUnlockedDependency.h"
+#include "AvailabilityDependencies/FGResearchTreeUnlockedDependency.h"
+#include "AvailabilityDependencies/FGSchematicPurchasedDependency.h"
+#include "Creature/FGCreatureDescriptor.h"
 #include "Patching/NativeHookManager.h"
 #include "Reflection/ReflectionHelper.h"
 #include "Engine/AssetManager.h"
-#include "ModLoading/ModLoadingLibrary.h"
-#include "Subsystem/SubsystemActorManager.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"
+#include "ModLoading/PluginModuleLoader.h"
+#include "Resources/FGAnyUndefinedDescriptor.h"
+#include "Resources/FGConsumableDescriptor.h"
+#include "Resources/FGNoneDescriptor.h"
+#include "Resources/FGOverflowDescriptor.h"
+#include "Resources/FGVehicleDescriptor.h"
+#include "Resources/FGWildCardDescriptor.h"
+#include "Resources/FGBuildingDescriptor.h"
+#include "Unlocks/FGUnlockGiveItem.h"
+#include "Unlocks/FGUnlockScannableObject.h"
+#include "Unlocks/FGUnlockSchematic.h"
 
-DEFINE_LOG_CATEGORY(LogContentRegistry);
+DEFINE_LOG_CATEGORY( LogContentRegistry );
+
+FFrame* UModContentRegistry::ActiveScriptFramePtr{};
 
 static bool GIsRegisteringVanillaContent = false;
 
 /** Makes sure provided object instance is valid, crashes with both script call stack and native stack trace if it's not */
-#define CHECK_PROVIDED_OBJECT_VALID(Object, Message, ...) \
-	if (!IsValid(Object)) { \
-		const FString Context = FString::Printf(Message, __VA_ARGS__); \
+#define NOTIFY_INVALID_REGISTRATION(Context) \
+	{ \
 		/* Attempt to use cached script frame pointer first, then fallback to global script callstack (which is not available in shipping by default) */ \
-		const FString ScriptCallstack = ActiveScriptFramePtr ? ActiveScriptFramePtr->GetStackTrace() : FFrame::GetScriptCallstack(); \
-		UE_LOG(LogContentRegistry, Error, TEXT("Attempt to register invalid content: %s"), *Context); \
+		const FString ScriptCallstack = UModContentRegistry::GetCallStackContext(); \
+		UE_LOG(LogContentRegistry, Error, TEXT("Attempt to register invalid content: %s"), Context); \
 		UE_LOG(LogContentRegistry, Error, TEXT("Script Callstack: %s"), *ScriptCallstack); \
-		UE_LOG(LogContentRegistry, Fatal, TEXT("Attempt to register invalid content in mod content registry: %s. Script callstack: %s"), *Context, *ScriptCallstack); \
+		ensureMsgf( false, TEXT("%s"), *Context ); \
+	} \
+
+UModContentRegistry::UModContentRegistry() {
+}
+
+UModContentRegistry* UModContentRegistry::Get( const UObject* WorldContext )
+{
+	if ( const UWorld* World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::ReturnNull) )
+	{
+		return World->GetSubsystem<UModContentRegistry>();
+	}
+	return nullptr;
+}
+
+FGameObjectRegistryState::~FGameObjectRegistryState()
+{
+	RegistrationMap.Empty();
+	for ( FGameObjectRegistration*& Registration : RegistrationList )
+	{
+		delete Registration;
+		Registration = nullptr;
+	}
+	RegistrationList.Empty();
+}
+
+const FGameObjectRegistration* FGameObjectRegistryState::RegisterObject( FName InRegistrationPluginName, UObject* Object, EGameObjectRegistrationFlags ExtraFlags )
+{
+	if ( bRegistryFrozen )
+	{
+		const FString Context = FString::Printf( TEXT("Attempt to register object '%s' in frozen registry. Make sure your modded content registration is happening in the 'Initialization' Lifecycle Phase and not 'Post Initialization'"), *GetPathNameSafe( Object ) );
+		NOTIFY_INVALID_REGISTRATION( *Context );
+		return nullptr;
+	}
+	if ( !IsValid( Object ) )
+	{
+		const FString Context = FString::Printf( TEXT("Attempt to register an invalid object in the content registry.") );
+		NOTIFY_INVALID_REGISTRATION( *Context );
+		return nullptr;
+	}
+	FGameObjectRegistration* Registration = FindOrAddObject( Object );
+
+	// Allow implicit registration clarification (e.g. re-registering implicit entries)
+	// Also allow re-registering if extra flags contains BuiltIn (e.g. vanilla registrations have priority over modded ones)
+	if ( !Registration->HasAnyFlags( EGameObjectRegistrationFlags::Unregistered | EGameObjectRegistrationFlags::Implicit ) && !EnumHasAnyFlags( ExtraFlags, EGameObjectRegistrationFlags::BuiltIn ) )
+	{
+		const FString Context = FString::Printf( TEXT("Object '%s' has already been registered!"), *GetPathNameSafe( Object ) );
+		NOTIFY_INVALID_REGISTRATION( *Context );
+		return Registration;
 	}
 
+	Registration->ClearFlags( EGameObjectRegistrationFlags::Unregistered | EGameObjectRegistrationFlags::Implicit );
+	Registration->AddFlags( ExtraFlags );
+	Registration->RegistrarModReference = InRegistrationPluginName;
 
-void AModContentRegistry::ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSubclassOf<UFGRecipe>>& OutRecipes) {
-    const TArray<UFGUnlock*> Unlocks = UFGSchematic::GetUnlocks(Schematic);
-    for (UFGUnlock* Unlock : Unlocks) {
-        if (UFGUnlockRecipe* UnlockRecipe = Cast<UFGUnlockRecipe>(Unlock)) {
-            OutRecipes.Append(UnlockRecipe->GetRecipesToUnlock());
-        }
-    }
+	const FString Context = UModContentRegistry::GetCallStackContext();
+	const bool bIsRegistrationImplicit = Registration->HasAnyFlags( EGameObjectRegistrationFlags::Implicit );
+
+	UE_LOG( LogContentRegistry, Verbose, TEXT("Registering Object '%s' (%s)%s [%s]"), *GetFullNameSafe( Object ), *InRegistrationPluginName.ToString(),
+		bIsRegistrationImplicit ? TEXT(" [implicit]") : TEXT(""), *Context );
+
+	OnObjectRegisteredDelegate.Broadcast( Registration );
+	return Registration;
 }
 
-void AModContentRegistry::ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree, TArray<TSubclassOf<UFGSchematic>>& OutSchematics) {
+FGameObjectRegistration* FGameObjectRegistryState::FindOrAddObject( UObject* Object )
+{
+	fgcheck( Object );
+	FGameObjectRegistration* ExistingRegistration = RegistrationMap.FindOrAdd( Object );
+	if ( !ExistingRegistration )
+	{
+		ExistingRegistration = new FGameObjectRegistration();
+		ExistingRegistration->RegisteredObject = Object;
+		ExistingRegistration->OwnedByModReference = UModContentRegistry::FindContentOwnerFast( Object );
+		ExistingRegistration->AddFlags( EGameObjectRegistrationFlags::Unregistered );
 
-    static FStructProperty* NodeDataStructProperty = NULL;
-    static FClassProperty* SchematicStructProperty = NULL;
-    static UClass* ResearchTreeNodeClass = NULL;
-
-    //Lazily initialize research tree node reflection properties for faster access
-    if (ResearchTreeNodeClass == NULL) {
-        ResearchTreeNodeClass = LoadClass<UFGResearchTreeNode>(NULL, TEXT("/Game/FactoryGame/Schematics/Research/BPD_ResearchTreeNode.BPD_ResearchTreeNode_C"));
-        check(ResearchTreeNodeClass);
-        //Make sure class is not garbage collected
-        ResearchTreeNodeClass->AddToRoot();
-
-        NodeDataStructProperty = FReflectionHelper::FindPropertyChecked<FStructProperty>(ResearchTreeNodeClass, TEXT("mNodeDataStruct"));
-        SchematicStructProperty = FReflectionHelper::FindPropertyByShortNameChecked<FClassProperty>(NodeDataStructProperty->Struct, TEXT("Schematic"));
-
-        check(SchematicStructProperty->MetaClass->IsChildOf(UFGSchematic::StaticClass()));
-    }
-
-    const TArray<UFGResearchTreeNode*> Nodes = UFGResearchTree::GetNodes(ResearchTree);
-    for (UFGResearchTreeNode* Node : Nodes) {
-        if (!Node->IsA(ResearchTreeNodeClass)) {
-            UE_LOG(LogContentRegistry, Warning,
-                TEXT("Unsupported node class %s for research tree %s"), *Node->GetClass()->GetPathName(),
-                *ResearchTree->GetPathName());
-            continue;
-        }
-        const void* NodeDataStructPtr = NodeDataStructProperty->ContainerPtrToValuePtr<void>(Node);
-        UClass* SchematicClass = Cast<UClass>(SchematicStructProperty->GetPropertyValue_InContainer(NodeDataStructPtr));
-        if (SchematicClass == NULL) {
-            UE_LOG(LogContentRegistry, Warning,
-                TEXT("Schematic not set on research tree %s, node %s"), *ResearchTree->GetPathName(),
-                *Node->GetClass()->GetPathName());
-            continue;
-        }
-        OutSchematics.Add(SchematicClass);
-    }
+		RegistrationList.Add( ExistingRegistration );
+		RegistrationMap.Add( Object, ExistingRegistration );
+	}
+	return ExistingRegistration;
 }
 
-template<typename T>
-TArray<TSubclassOf<T>> DiscoverVanillaContentOfType() {
-    UClass* PrimaryAssetClass = T::StaticClass();
-    UAssetManager& AssetManager = UAssetManager::Get();
+bool FGameObjectRegistryState::AttemptRegisterObject( FName InRegistrationPluginName, UObject* Object )
+{
+	if ( bRegistryFrozen )
+	{
+		return false;
+	}
+	if ( !IsValid( Object ) )
+	{
+		return false;
+	}
+	const FGameObjectRegistration* ExistingRegistration = FindOrAddObject( Object );
 
-    const FPrimaryAssetType AssetType = PrimaryAssetClass->GetFName();
-    TArray<FAssetData> FoundVanillaAssets;
-    AssetManager.GetPrimaryAssetDataList(AssetType, FoundVanillaAssets);
-    TArray<TSubclassOf<T>> OutVanillaContent;
-
-    for (const FAssetData& AssetData : FoundVanillaAssets) {
-        FAssetDataTagMapSharedView::FFindTagResult GeneratedClassTextPath = AssetData.TagsAndValues.FindTag(FBlueprintTags::GeneratedClassPath);
-        if (GeneratedClassTextPath.IsSet()) {
-            const FString BlueprintClassPath = FPackageName::ExportTextPathToObjectPath(GeneratedClassTextPath.GetValue());
-            UClass* LoadedClass = LoadClass<T>(NULL, *BlueprintClassPath);
-            if (LoadedClass != NULL) {
-                OutVanillaContent.Add(LoadedClass);
-            }
-        }
-    }
-    UE_LOG(LogContentRegistry, Display, TEXT("Discovered %d vanilla assets of type %s"), OutVanillaContent.Num(), *PrimaryAssetClass->GetName());
-    return OutVanillaContent;
+	if ( ExistingRegistration->HasAnyFlags( EGameObjectRegistrationFlags::Unregistered ) )
+	{
+		RegisterObject( InRegistrationPluginName, Object, EGameObjectRegistrationFlags::Implicit );
+		return true;
+	}
+	return false;
 }
 
-void AModContentRegistry::DisableVanillaContentRegistration() {
-    //Prevent unnecessary vanilla schematic list population -
-    //we are overriding it from content registry anyway, so let's save some processing time
-    SUBSCRIBE_METHOD(AFGSchematicManager::PopulateSchematicsLists,
-        [](auto& Call, AFGSchematicManager*) { Call.Cancel(); });
-    SUBSCRIBE_METHOD(AFGSchematicManager::PopulateAvailableSchematicsList,
-        [](auto& Call, AFGSchematicManager*) { Call.Cancel(); });
-    SUBSCRIBE_METHOD(AFGResearchManager::PopulateResearchTreeList,
-        [](auto& Call, AFGResearchManager*) { Call.Cancel(); });
+void FGameObjectRegistryState::MarkObjectAsRemoved( UObject* Object )
+{
+	if ( bRegistryFrozen )
+	{
+		const FString Context = FString::Printf( TEXT("Attempt to remove object '%s' in frozen registry. Make sure your modded content registration is happening in the 'Initialization' Lifecycle Phase and not 'Post Initialization'"), *GetPathNameSafe( Object ) );
+		NOTIFY_INVALID_REGISTRATION( *Context );
+		return;
+	}
+	if ( !IsValid( Object ) )
+	{
+		const FString Context = FString::Printf( TEXT("Attempt to mark invalid object as Removed.") );
+		NOTIFY_INVALID_REGISTRATION( *Context );
+		return;
+	}
+	FGameObjectRegistration* ExistingRegistration = FindOrAddObject( Object );
+	if ( !ExistingRegistration->HasAnyFlags( EGameObjectRegistrationFlags::Removed ) )
+	{
+		const FString Context = UModContentRegistry::GetCallStackContext();
+		UE_LOG( LogContentRegistry, Display, TEXT("Marking Object '%s' as Removed [%s]"), *GetPathNameSafe( Object ), *Context );
+
+		ExistingRegistration->AddFlags( EGameObjectRegistrationFlags::Removed );
+	}
 }
 
-FName AModContentRegistry::FindContentOwnerFast(UClass* ContentClass) {
-	checkf(ContentClass, TEXT("NULL ContentClass passed to FindContentOwnerFast"));
+void FGameObjectRegistryState::AddObjectReference( UObject* Object, UObject* ReferencedBy )
+{
+	if ( !IsValid( Object ) )
+	{
+		const FString Context = FString::Printf( TEXT("Attempt to add a Reference to an invalid object from %s"), *GetPathNameSafe( ReferencedBy ) );
+		NOTIFY_INVALID_REGISTRATION( *Context );
+		return;
+	}
+	if ( !IsValid( ReferencedBy ) )
+	{
+		const FString Context = FString::Printf( TEXT("Attempt to add a Reference to %s from invalid object"), *GetPathNameSafe( Object ) );
+		NOTIFY_INVALID_REGISTRATION( *Context );
+		return;
+	}
+	
+	FGameObjectRegistration* ExistingRegistration = FindOrAddObject( Object );
+	if ( !ExistingRegistration->ReferencedBy.Contains( ReferencedBy ) )
+	{
+		const FString Context = UModContentRegistry::GetCallStackContext();
+		UE_LOG( LogContentRegistry, Verbose, TEXT("Adding Reference to '%s' from '%s' [%s]"), *GetPathNameSafe( Object ), *GetPathNameSafe( ReferencedBy ), *Context );
+		
+		ExistingRegistration->ReferencedBy.Add( ReferencedBy );
+	}
+}
+
+void FGameObjectRegistryState::FreezeRegistry()
+{
+	bRegistryFrozen = true;
+}
+
+const TArray<const FGameObjectRegistration*>& FGameObjectRegistryState::GetAllRegistrationsCopyFree() const
+{
+	// This is a little bit unsafe but we 100% know that size and structure of const pointer is the same as the non-const one
+	return *reinterpret_cast<const TArray<const FGameObjectRegistration*>*>( &RegistrationList );
+}
+
+void FGameObjectRegistryState::GetAllRegistrations( TArray<FGameObjectRegistration>& OutRegistrations, bool bIncludeRemoved ) const
+{
+	for ( const FGameObjectRegistration* Registration : RegistrationList )
+	{
+		// TODO @SML: Should we actually include Unregistered objects into the list? Not so sure about that
+		if ( !Registration->HasAnyFlags( EGameObjectRegistrationFlags::Unregistered ) )
+		{
+			if ( bIncludeRemoved || !Registration->HasAnyFlags( EGameObjectRegistrationFlags::Removed ) )
+			{
+				OutRegistrations.Add( *Registration );
+			}
+		}
+	}
+}
+
+const FGameObjectRegistration* FGameObjectRegistryState::FindObjectRegistration( UObject* Object ) const
+{
+	if ( const FGameObjectRegistration* const* ExistingObject = RegistrationMap.Find( Object ) )
+	{
+		return *ExistingObject;
+	}
+	return nullptr;
+}
+
+void FGameObjectRegistryState::AddReferencedObjects( FReferenceCollector& ReferenceCollector )
+{
+	for ( FGameObjectRegistration* Registration : RegistrationList )
+	{
+		ReferenceCollector.AddPropertyReferences( FGameObjectRegistration::StaticStruct(), Registration );
+	}
+}
+
+FName UModContentRegistry::FindContentOwnerFast( const UObject* Object ) {
+	// Exit early on nullptr
+	if ( !Object )
+	{
+		return NAME_None;
+	}
+	static FName StaticProjectName = FApp::GetProjectName();
 
     //Shortcut used for quickly registering vanilla content
     if (GIsRegisteringVanillaContent) {
-        return FApp::GetProjectName();
+        return StaticProjectName;
     }
-
     //Use GetName on package instead of GetPathName() because it's faster and avoids string concat
-    const FString ContentOwnerName = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(ContentClass->GetOuterUPackage()->GetName());
-    if (ContentOwnerName.IsEmpty()) {
-        UE_LOG(LogContentRegistry, Error, TEXT("Failed to determine content owner for object %s. This is an error, report to mod author!"), *ContentClass->GetPathName());
-        return FApp::GetProjectName();
+    const FString ContentOwnerName = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(Object->GetPackage()->GetName());
+
+	if (ContentOwnerName.IsEmpty()) {
+        UE_LOG(LogContentRegistry, Error, TEXT("Failed to determine content owner for object %s. This is an error, report to mod author!"), *Object->GetPathName());
+        return StaticProjectName;
     }
     return *ContentOwnerName;
 }
 
-void AModContentRegistry::NotifyModuleRegistrationFinished() {
-	UE_LOG(LogContentRegistry, Log, TEXT("Module content registration finished notify received"));
-	FreezeRegistryState();
-}
-
-void AModContentRegistry::FlushStateToSchematicManager(AFGSchematicManager* SchematicManager) const {
-    const TArray<TSharedPtr<FSchematicRegistrationInfo>> RegisteredSchematics = SchematicRegistryState.GetAllObjects();
-
-    //Empty lists while maintaining enough capacity to re-populate it later
-    SchematicManager->mAllSchematics.Empty(RegisteredSchematics.Num());
-    SchematicManager->mAvailableSchematics.Empty(RegisteredSchematics.Num());
-
-    for (const TSharedPtr<FSchematicRegistrationInfo>& RegistrationInfo : RegisteredSchematics) {
-        TSubclassOf<UFGSchematic> Schematic = RegistrationInfo->RegisteredObject;
-        SchematicManager->mAllSchematics.Add(Schematic);
-
-        if ((UFGSchematic::GetType(Schematic) == ESchematicType::EST_Milestone ||
-            UFGSchematic::GetType(Schematic) == ESchematicType::EST_Tutorial ||
-            UFGSchematic::GetType(Schematic) == ESchematicType::EST_ResourceSink) &&
-            SchematicManager->CanGiveAccessToSchematic(Schematic)) {
-            SchematicManager->mAvailableSchematics.Add(Schematic);
-        }
-    }
-}
-
-void AModContentRegistry::FlushStateToResearchManager(AFGResearchManager* ResearchManager) const {
-    const TArray<TSharedPtr<FResearchTreeRegistrationInfo>> RegisteredResearchTrees = ResearchTreeRegistryState.GetAllObjects();
-
-    //Empty lists while maintaining enough capacity to re-populate it later
-    ResearchManager->mAvailableResearchTrees.Empty(RegisteredResearchTrees.Num());
-
-    for (const TSharedPtr<FResearchTreeRegistrationInfo>& RegistrationInfo : RegisteredResearchTrees) {
-        TSubclassOf<UFGResearchTree> ResearchTree = RegistrationInfo->RegisteredObject;
-        if (ResearchManager->CanAddToAvailableResearchTrees(ResearchTree)) {
-        	ResearchManager->mAvailableResearchTrees.Add(ResearchTree);
-        }
-    }
-    //Update unlocked research trees
-    ResearchManager->UpdateUnlockedResearchTrees();
-}
-
-void AModContentRegistry::SubscribeToSchematicManager(AFGSchematicManager* SchematicManager) {
-    FScriptDelegate ScriptDelegate;
-    ScriptDelegate.BindUFunction(this, GET_FUNCTION_NAME_STRING_CHECKED(AModContentRegistry, OnSchematicPurchased));
-    SchematicManager->PurchasedSchematicDelegate.AddUnique(ScriptDelegate);
-}
-
-void AModContentRegistry::Init() {
-    //Register vanilla content in the registry
-    const FName FactoryGame = FApp::GetProjectName();
-
-    UE_LOG(LogContentRegistry, Display, TEXT("Initializing mod content registry"));
-    const TArray<TSubclassOf<UFGSchematic>> AllSchematics = DiscoverVanillaContentOfType<UFGSchematic>();
-    const TArray<TSubclassOf<UFGResearchTree>> AllResearchTrees = DiscoverVanillaContentOfType<UFGResearchTree>();
-
-    //Start registering vanilla content now
-    GIsRegisteringVanillaContent = true;
-
-    for (const TSubclassOf<UFGSchematic>& Schematic : AllSchematics) {
-        RegisterSchematic(FactoryGame, Schematic);
-    }
-
-    for (const TSubclassOf<UFGResearchTree>& ResearchTree : AllResearchTrees) {
-        RegisterResearchTree(FactoryGame, ResearchTree);
-    }
-
-    //Stop registering vanilla content at this point
-    GIsRegisteringVanillaContent = false;
-}
-
-void AModContentRegistry::FreezeRegistryState() {
-    checkf(!bIsRegistryFrozen, TEXT("Attempt to re-freeze already frozen registry"));
-
-    UE_LOG(LogContentRegistry, Display, TEXT("Freezing content registry"));
-    this->bIsRegistryFrozen = true;
-}
-
-void AModContentRegistry::EnsureRegistryUnfrozen() const {
-    if (bIsRegistryFrozen) {
-        UE_LOG(LogContentRegistry, Fatal, TEXT("Attempt to register object in frozen mod content registry. "
-        	"Make sure your modded content registration is happening in the 'Initialization' Lifecycle Phase and not 'Post Initialization'"));
-    }
-}
-
-void AModContentRegistry::CheckSavedDataForMissingObjects() {
-	checkf(bIsRegistryFrozen, TEXT("CheckSavedDataForMissingObjects called before registry is frozen"));
-
-    AFGRecipeManager* RecipeManager = AFGRecipeManager::Get(this);
-    AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
-    AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
-
-    TArray<FMissingObjectStruct> MissingObjects;
-    TArray<FMissingObjectStruct> UnregisteredVanillaObjects;
-    if (ResearchManager != NULL) {
-        FindMissingResearchTrees(ResearchManager, MissingObjects, UnregisteredVanillaObjects);
-    }
-    if (SchematicManager != NULL) {
-        FindMissingSchematics(SchematicManager, MissingObjects, UnregisteredVanillaObjects);
-    }
-    if (RecipeManager != NULL) {
-        FindMissingRecipes(RecipeManager, MissingObjects, UnregisteredVanillaObjects);
-    }
-
-    if (MissingObjects.Num() > 0) {
-        WarnAboutMissingObjects(MissingObjects);
-    }
-    if (UnregisteredVanillaObjects.Num() > 0) {
-        WarnAboutUnregisteredVanillaObjects(UnregisteredVanillaObjects);
-    }
-}
-
-void AModContentRegistry::UnlockTutorialSchematics() {
-	AFGGameMode* GameMode = Cast<AFGGameMode>(GetWorld()->GetAuthGameMode());
-
-	AFGTutorialIntroManager* TutorialIntroManager = AFGTutorialIntroManager::Get(this);
-	AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
-
-	if (SchematicManager && (GameMode && GameMode->ShouldSkipOnboarding() || TutorialIntroManager && TutorialIntroManager->GetIsTutorialCompleted())) {
-		for (const TSharedPtr<FSchematicRegistrationInfo>& RegistrationInfo : SchematicRegistryState.GetAllObjects()) {
-			const TSubclassOf<UFGSchematic> Schematic = RegistrationInfo->RegisteredObject;
-
-			//TODO using GiveAccessToSchematic has some side effects, for example unwanted ADA messages
-			//We should probably look into modifying list directly, but that would essentially mean conflicts with AFGUnlockSystem
-			//and other kinds of nasty stuff, so for now i'm leaving as it is while we're looking for a better solution
-			if (UFGSchematic::GetType(Schematic) == ESchematicType::EST_Tutorial &&
-					SchematicManager->mPurchasedSchematics.Find(Schematic) == INDEX_NONE) {
-				SchematicManager->GiveAccessToSchematic(Schematic, nullptr);
-			}
-		}
-    }
-}
-
-void AModContentRegistry::OnSchematicPurchased(TSubclassOf<UFGSchematic> Schematic) {
+void UModContentRegistry::OnSchematicPurchased(TSubclassOf<UFGSchematic> Schematic)
+{
     //Update research trees in case they depend on schematic unlocked dependency
     AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
-    if (ResearchManager != NULL && ResearchManager->HasAuthority()) {
+    if (ResearchManager != NULL && ResearchManager->HasAuthority())
+    {
         ResearchManager->UpdateUnlockedResearchTrees();
     }
 }
 
-void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference) {
-	TArray<FItemAmount> AllReferencedItems;
-	AllReferencedItems.Append(UFGRecipe::GetIngredients(Recipe));
-	AllReferencedItems.Append(UFGRecipe::GetProducts(Recipe));
-
-	for (const FItemAmount& ItemAmount : AllReferencedItems) {
-		const TSubclassOf<UFGItemDescriptor>& ItemDescriptor = ItemAmount.ItemClass;
-
-		CHECK_PROVIDED_OBJECT_VALID(ItemDescriptor, TEXT("Recipe '%s' registered by %s contains invalid NULL ItemDescriptor in its Ingredients or Results"),
-				*Recipe->GetPathName(), *ModReference.ToString());
-
-		TSharedPtr<FItemRegistrationInfo> ItemRegistrationInfo = ItemRegistryState.FindObject(ItemDescriptor);
-		if (!ItemRegistrationInfo.IsValid()) {
-			const FName OwnerModReference = FindContentOwnerFast(ItemDescriptor);
-			ItemRegistrationInfo = RegisterItemDescriptor(OwnerModReference, ModReference, ItemDescriptor);
-		}
-		//Associate item registration info with this recipe
-		ItemRegistrationInfo->ReferencedBy.AddUnique(Recipe);
-	}
-}
-
-void AModContentRegistry::MarkCustomizationRecipeFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference) {
-	TSubclassOf<UFGCustomizationRecipe> CustomizationRecipe = UFGRecipe::GetMaterialCustomizationRecipe(Recipe);
-
-	if (IsValid(CustomizationRecipe)) {
-		RegisterRecipe(ModReference, CustomizationRecipe);
-	}
-}
-
-TSharedPtr<FItemRegistrationInfo> AModContentRegistry::RegisterItemDescriptor(const FName OwnerModReference, const FName RegistrarModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor) {
-	checkf(ItemDescriptor, TEXT("Attempt to register NULL ItemDescriptor, mod reference: %s"), *RegistrarModReference.ToString());
-	return ItemRegistryState.RegisterObject(MakeRegistrationInfo<FItemRegistrationInfo>(ItemDescriptor, OwnerModReference, RegistrarModReference));
-}
-
-void AModContentRegistry::FindMissingSchematics(AFGSchematicManager* SchematicManager,
-                                                TArray<FMissingObjectStruct>& MissingObjects,
-                                                TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const {
-    //Clear references to unlocked schematics if they are not registered
-    TArray<TSubclassOf<UFGSchematic>> PurchasedSchematics = SchematicManager->mPurchasedSchematics;
-    for (const TSubclassOf<UFGSchematic> Schematic : PurchasedSchematics) {
-        if (!IsSchematicRegistered(Schematic)) {
-            if (!IsSchematicVanilla(Schematic)) {
-                MissingObjects.Add(FMissingObjectStruct{ TEXT("schematic"), Schematic->GetPathName() });
-                SchematicManager->mPurchasedSchematics.Remove(Schematic);
-            }
-            else {
-                UnregisteredVanillaObjects.Add(FMissingObjectStruct{ TEXT("schematic"), Schematic->GetPathName() });
-            }
-        }
-    }
-    //Do same thing for incomplete schematic progress
-    SchematicManager->mPaidOffSchematic.RemoveAll([&](const FSchematicCost& SchematicCost) {
-        return !IsSchematicRegistered(SchematicCost.Schematic) && !IsSchematicVanilla(SchematicCost.Schematic);
-    });
-}
-
-void AModContentRegistry::FindMissingResearchTrees(AFGResearchManager* ResearchManager,
-                                                   TArray<FMissingObjectStruct>& MissingObjects,
-                                                   TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const {
-    //Clear unlocked research trees
-    TArray<TSubclassOf<UFGResearchTree>> UnlockedResearchTrees = ResearchManager->mUnlockedResearchTrees;
-    for (const TSubclassOf<UFGResearchTree>& ResearchTree : UnlockedResearchTrees) {
-        if (!IsResearchTreeRegistered(ResearchTree)) {
-            if (!IsResearchTreeVanilla(ResearchTree)) {
-                ResearchManager->mUnlockedResearchTrees.Remove(ResearchTree);
-                MissingObjects.Add(FMissingObjectStruct{ TEXT("research_tree"), ResearchTree->GetPathName() });
-            }
-            else {
-                UnregisteredVanillaObjects.Add(FMissingObjectStruct{ TEXT("research_tree"), ResearchTree->GetPathName() });
-            }
-        }
-    }
-
-    //Clear completed, but unclaimed researches
-    ResearchManager->mCompletedResearch.RemoveAll([&](const FResearchData& ResearchData) {
-        return !((ResearchData.InitiatingResearchTree == NULL || IsResearchTreeRegistered(ResearchData.InitiatingResearchTree)) ||
-            IsSchematicRegistered(ResearchData.Schematic));
-    });
-
-    //Clear ongoing research data
-    ResearchManager->mOngoingResearch.RemoveAll([&](const FResearchTime& ResearchTime){
-        return !((ResearchTime.ResearchData.InitiatingResearchTree == NULL || IsResearchTreeRegistered(ResearchTime.ResearchData.InitiatingResearchTree)) ||
-            IsSchematicRegistered(ResearchTime.ResearchData.Schematic));
-    });
-}
-
-void AModContentRegistry::FindMissingRecipes(AFGRecipeManager* RecipeManager,
-                                                   TArray<FMissingObjectStruct>& MissingObjects,
-                                                   TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const {
-    //Clear unlocked recipes
-    TArray<TSubclassOf<UFGRecipe>> UnlockedRecipes = RecipeManager->mAvailableRecipes;
-    for (const TSubclassOf<UFGRecipe>& Recipe : UnlockedRecipes) {
-        if (!IsRecipeRegistered(Recipe)) {
-            if (!IsRecipeVanilla(Recipe)) {
-                RecipeManager->mAvailableRecipes.Remove(Recipe);
-                MissingObjects.Add(FMissingObjectStruct{ TEXT("recipe"), Recipe->GetPathName() });
-            }
-            else {
-                UnregisteredVanillaObjects.Add(FMissingObjectStruct{ TEXT("recipe"), Recipe->GetPathName() });
-            }
-        }
-    }
-}
-
-void AModContentRegistry::WarnAboutMissingObjects(const TArray<FMissingObjectStruct>& MissingObjects) {
-    UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
-    UE_LOG(LogContentRegistry, Error, TEXT("Found unregistered objects referenced in savegame:"));
-    for (const FMissingObjectStruct& ObjectStruct : MissingObjects) {
-        UE_LOG(LogContentRegistry, Error, TEXT("%s: %s"), *ObjectStruct.ObjectType, *ObjectStruct.ObjectPath);
-    }
-    UE_LOG(LogContentRegistry, Error, TEXT("They will be cleared out"));
-    UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
-}
-
-void AModContentRegistry::WarnAboutUnregisteredVanillaObjects(const TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) {
-    UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
-    UE_LOG(LogContentRegistry, Error, TEXT("Found unregistered FactoryGame objects referenced in savegame:"));
-    for (const FMissingObjectStruct& ObjectStruct : UnregisteredVanillaObjects) {
-        UE_LOG(LogContentRegistry, Error, TEXT("%s: %s"), *ObjectStruct.ObjectType, *ObjectStruct.ObjectPath);
-    }
-    UE_LOG(LogContentRegistry, Error, TEXT("They will NOT be cleared out"));
-    UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
-}
-
-void AModContentRegistry::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector) {
-    AModContentRegistry* ModContentRegistry = Cast<AModContentRegistry>(InThis);
-    //Register all non-UPROPERTY referenced objects from registry states (registry states cannot be UPROPERTY() because they are templates!)
-    ModContentRegistry->ItemRegistryState.AddReferencedObjects(InThis, Collector);
-    ModContentRegistry->RecipeRegistryState.AddReferencedObjects(InThis, Collector);
-    ModContentRegistry->SchematicRegistryState.AddReferencedObjects(InThis, Collector);
-    ModContentRegistry->ResearchTreeRegistryState.AddReferencedObjects(InThis, Collector);
-}
-
-void AModContentRegistry::RegisterSchematic(const FName ModReference, const TSubclassOf<UFGSchematic> Schematic) {
-	CHECK_PROVIDED_OBJECT_VALID(Schematic, TEXT("Attempt to register NULL Schematic. Mod Reference: %s"), *ModReference.ToString());
-
-    if (!SchematicRegistryState.ContainsObject(Schematic)) {
-        EnsureRegistryUnfrozen();
-
-        //Create registration entry and register
-        const FName OwnerModReference = FindContentOwnerFast(Schematic);
-        const TSharedPtr<FSchematicRegistrationInfo> RegistrationInfo = SchematicRegistryState.RegisterObject(
-            MakeRegistrationInfo<FSchematicRegistrationInfo>(Schematic, OwnerModReference, ModReference));
-
-        //Register referenced recipes automatically and associate schematic with them
-        TArray<TSubclassOf<UFGRecipe>> OutReferencedRecipes;
-        ExtractRecipesFromSchematic(Schematic, OutReferencedRecipes);
-
-    	for (const TSubclassOf<UFGRecipe>& Recipe : OutReferencedRecipes) {
-    		CHECK_PROVIDED_OBJECT_VALID(Recipe, TEXT("Schematic '%s' registered by %s references invalid NULL Recipe in its Unlocks Array"),
-    			*Schematic->GetPathName(), *ModReference.ToString());
-
-            RegisterRecipe(ModReference, Recipe);
-            const TSharedPtr<FRecipeRegistrationInfo> RecipeRegistrationInfo = RecipeRegistryState.FindObject(Recipe);
-            RecipeRegistrationInfo->ReferencedBy.Add(Schematic);
-        }
-
-        //Process registration callback delegate
-        OnSchematicRegistered.Broadcast(Schematic, *RegistrationInfo);
-    }
-}
-
-void AModContentRegistry::RegisterResearchTree(const FName ModReference, const TSubclassOf<UFGResearchTree> ResearchTree) {
-	CHECK_PROVIDED_OBJECT_VALID(ResearchTree, TEXT("Attempt to register NULL ResearchTree. Mod Reference: %s"), *ModReference.ToString());
-
-    if (!ResearchTreeRegistryState.ContainsObject(ResearchTree)) {
-        EnsureRegistryUnfrozen();
-
-        //Create registration entry and register
-        const FName OwnerModReference = FindContentOwnerFast(ResearchTree);
-        const TSharedPtr<FResearchTreeRegistrationInfo> RegistrationInfo = ResearchTreeRegistryState.RegisterObject(
-            MakeRegistrationInfo<FResearchTreeRegistrationInfo>(ResearchTree, OwnerModReference, ModReference));
-
-        //Register referenced schematics automatically and associate research tree with them
-        TArray<TSubclassOf<UFGSchematic>> OutReferencedSchematics;
-        ExtractSchematicsFromResearchTree(ResearchTree, OutReferencedSchematics);
-
-        for (const TSubclassOf<UFGSchematic>& Schematic : OutReferencedSchematics) {
-        	CHECK_PROVIDED_OBJECT_VALID(Schematic, TEXT("ResearchTree '%s' registered by %s references invalid NULL Schematic in one of its Nodes"),
-        		*ResearchTree->GetPathName(), *ModReference.ToString());
-
-            RegisterSchematic(ModReference, Schematic);
-            const TSharedPtr<FSchematicRegistrationInfo> SchematicRegistrationInfo = SchematicRegistryState.FindObject(Schematic);
-            SchematicRegistrationInfo->ReferencedBy.Add(ResearchTree);
-        }
-
-        //Process registration callback
-        OnResearchTreeRegistered.Broadcast(ResearchTree, *RegistrationInfo);
-    }
-}
-
-void AModContentRegistry::RegisterRecipe(const FName ModReference, const TSubclassOf<UFGRecipe> Recipe) {
-	CHECK_PROVIDED_OBJECT_VALID(Recipe, TEXT("Attempt to register NULL Recipe. Mod Reference: %s"), *ModReference.ToString());
-
-    if (!RecipeRegistryState.ContainsObject(Recipe)) {
-        EnsureRegistryUnfrozen();
-        //Create registration entry and register
-        const FName OwnerModReference = FindContentOwnerFast(Recipe);
-        const TSharedPtr<FRecipeRegistrationInfo> RegistrationInfo = RecipeRegistryState.RegisterObject(
-            MakeRegistrationInfo<FRecipeRegistrationInfo>(Recipe, OwnerModReference, ModReference));
-
-        //Process registration callback
-    	OnRecipeRegistered.Broadcast(Recipe, *RegistrationInfo);
-
-    	//Associate referenced item descriptors with this recipe registrar
-    	MarkItemDescriptorsFromRecipe(Recipe, ModReference);
-
-    	//Associate referenced customization recipe with this recipe registrar
-    	MarkCustomizationRecipeFromRecipe(Recipe, ModReference);
-    }
-}
-
-void AModContentRegistry::RegisterResourceSinkItemPointTable(FName ModReference, UDataTable* PointTable, EResourceSinkTrack Track) {
-	CHECK_PROVIDED_OBJECT_VALID(PointTable, TEXT("Attempt to register NULL ResourceSinkPointTable on %s track. Mod Reference: %s"), *UEnum::GetValueAsString(Track), *ModReference.ToString());
-
-	checkf(PointTable->RowStruct != nullptr && PointTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct()),
-            TEXT("Invalid AWESOME Sink item points table in mod %s (%s): Row Type should be Resource Sink Points Data"),
-            *ModReference.ToString(), *PointTable->GetPathName());
-
-    auto data = FItemSinkRegistrationStruct();
-    data.ModReference = ModReference;
-    data.Track = Track;
-    data.PointTable = PointTable;
-    this->PendingItemSinkPointsRegistrations.Add(data);
-	FlushPendingResourceSinkRegistrations();
-}
-
-TArray<FItemRegistrationInfo> AModContentRegistry::GetLoadedItemDescriptors() {
-    //Since we don't have consistent registry, we have to iterate all loaded classes and generate information from them
-    //We also keep all referenced classes loaded, so they will be included there too
-    TArray<FItemRegistrationInfo> OutRegistrationInfo;
-
-    UClass* ItemDescriptorClass = UFGItemDescriptor::StaticClass();
-    ForEachObjectOfClass(UClass::StaticClass(), [&](UObject* LoadedClassObject) {
-        UClass* Class = Cast<UClass>(LoadedClassObject);
-        if (Class->IsChildOf(ItemDescriptorClass)) {
-            const TSubclassOf<UFGItemDescriptor> ItemDescriptor = Class;
-            OutRegistrationInfo.Add(GetItemDescriptorInfo(ItemDescriptor));
-        }
-    });
-    return OutRegistrationInfo;
-}
-
-TArray<FItemRegistrationInfo> AModContentRegistry::GetObtainableItemDescriptors() const {
-    //All obtainable item descriptors are guaranteed to be present in ItemDescriptorRegistrationList,
-    //So we can just iterate it and filter item descriptors without associated recipes out
-    TArray<FItemRegistrationInfo> OutRegistrationInfo;
-
-    for (const TSharedPtr<FItemRegistrationInfo>& RegistrationInfo : ItemRegistryState.GetAllObjects()) {
-        if (RegistrationInfo->ReferencedBy.Num() > 0) {
-            OutRegistrationInfo.Add(*RegistrationInfo);
-        }
-    }
-    return OutRegistrationInfo;
-}
-
-FItemRegistrationInfo AModContentRegistry::GetItemDescriptorInfo(const TSubclassOf<UFGItemDescriptor> ItemDescriptor) {
-	//Remove blank registration info if provided item descriptor is not valid
-	if (!IsValid(ItemDescriptor)) {
-		return FItemRegistrationInfo{};
-	}
-
-    //Use cached registration information if it's available
-    const TSharedPtr<FItemRegistrationInfo> CachedRegistrationInfo = ItemRegistryState.FindObject(ItemDescriptor);
-    if (CachedRegistrationInfo.IsValid()) {
-        return *CachedRegistrationInfo;
-    }
-
-    //Item descriptor was not referenced in any registered recipe, fallback to registrar name = owner name logic
-    const FName OwnerModReference = FindContentOwnerFast(ItemDescriptor);
-    return *RegisterItemDescriptor(OwnerModReference, OwnerModReference, ItemDescriptor);
-}
-
-AModContentRegistry::AModContentRegistry() {
-    bIsRegistryFrozen = false;
-    SchematicManagerInternalState = -1;
-    ResearchManagerInternalState = -1;
-    bSubscribedToSchematicManager = false;
-    PrimaryActorTick.bCanEverTick = true;
-	ActiveScriptFramePtr = NULL;
-
-	//Mod Content Registry is always Local and Spawned on both Client and Server separately
-	this->ReplicationPolicy = ESubsystemReplicationPolicy::SpawnLocal;
-}
-
-AModContentRegistry* AModContentRegistry::Get(UObject* WorldContext) {
-	UWorld* WorldObject = GEngine->GetWorldFromContextObjectChecked(WorldContext);
-    USubsystemActorManager* SubsystemActorManager = WorldObject->GetSubsystem<USubsystemActorManager>();
-	check(SubsystemActorManager);
-
-	return SubsystemActorManager->GetSubsystemActor<AModContentRegistry>();
-}
-
-void AModContentRegistry::BeginPlay() {
-	Super::BeginPlay();
-
-    //We should be frozen at this point already on host clients (freezing there happens before BeginPlay is dispatched to world actors)
-	//For remote clients we are not frozen yet most likely, but checking save data for remote clients is pointless anyway
-    if (HasAuthority()) {
-    	CheckSavedDataForMissingObjects();
-    }
-
-	//Give instant access to tutorial schematics if we have finished tutorial or have been asked to skip onboarding
-	//We have to do it here since SchematicManager does it in BeginPlay by iterating mAllSchematics, and since we overwrite vanilla
-	//function so all schematic is empty, it ends up not unlocking any tutorial schematics
-	if (HasAuthority()) {
-		UnlockTutorialSchematics();
-	}
-}
-
-void AModContentRegistry::Tick(float DeltaSeconds) {
-	// Make sure client subsystems are fully replicated
-	AFGGameState* GameState = Cast<AFGGameState>(GetWorld()->GetGameState());
-    if(GameState == NULL || !GameState->AreClientSubsystemsValid()) return;
-
-    //Make sure vanilla states are up to date with registry
-    AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
-    AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
-
-    if (SchematicManager != NULL) {
-        const int64 SchematicRegistryCounter = SchematicRegistryState.GetRegistrationCounter();
-
-        if (SchematicRegistryCounter > SchematicManagerInternalState) {
-            FlushStateToSchematicManager(SchematicManager);
-            SchematicManagerInternalState = SchematicRegistryCounter;
-        }
-
-        if (!bSubscribedToSchematicManager) {
-            SubscribeToSchematicManager(SchematicManager);
-            bSubscribedToSchematicManager = true;
-        }
-    }
-
-    if (ResearchManager != NULL) {
-        const int64 ResearchTreeRegistryCounter = ResearchTreeRegistryState.GetRegistrationCounter();
-
-        if (ResearchTreeRegistryCounter > ResearchManagerInternalState) {
-            FlushStateToResearchManager(ResearchManager);
-            ResearchManagerInternalState = ResearchTreeRegistryCounter;
-        }
-    }
-
-	if (PendingItemSinkPointsRegistrations.Num()) {
-		FlushPendingResourceSinkRegistrations();
-	}
-}
-
-void AModContentRegistry::FlushPendingResourceSinkRegistrations() {
-	AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this);
-
-	if (ResourceSinkSubsystem != NULL) {
-		for (const auto& entry : PendingItemSinkPointsRegistrations) {
-            UE_LOG(LogContentRegistry, Log, TEXT("Registering Resource Sink Points Table '%s' track type '%s' from Mod %s"), *entry.PointTable->GetPathName(), *UEnum::GetValueAsString(entry.Track), *entry.ModReference.ToString());
-
-			TArray<FResourceSinkPointsData*> OutModPointsData;
-			entry.PointTable->GetAllRows(TEXT("ResourceSinkPointsData"), OutModPointsData);
-			for (FResourceSinkPointsData* ModItemRow : OutModPointsData) {
-				int32 Points = FMath::Max(ModItemRow->Points, ModItemRow->OverriddenResourceSinkPoints);
-				ResourceSinkSubsystem->mCachedResourceSinkPoints.Add(ModItemRow->ItemClass, FResourceSinkValuePair32(entry.Track, Points));
+void UModContentRegistry::ModifySchematicList( TArray<TSubclassOf<UFGSchematic>>& RefSchematics )
+{
+	// Register vanilla schematics in the registry first
+	{
+		TGuardValue ScopedVanillaContent( GIsRegisteringVanillaContent, true );
+		for ( TSubclassOf<UFGSchematic>& Schematic : RefSchematics )
+		{
+			if ( IsValid( Schematic ) )
+			{
+				SchematicRegistryState.RegisterObject( NAME_None, Schematic, EGameObjectRegistrationFlags::BuiltIn );
 			}
 		}
+	}
 
-		PendingItemSinkPointsRegistrations.Empty();
+	// Cleanup invalid or removed schematics from the list
+	for ( int32 SchematicIndex = RefSchematics.Num() - 1; SchematicIndex >= 0; SchematicIndex-- )
+	{
+		if ( !IsValid( RefSchematics[SchematicIndex] ) )
+		{
+			RefSchematics.RemoveAt( SchematicIndex );
+			continue;
+		}
+
+		const FGameObjectRegistration* Registration = SchematicRegistryState.FindObjectRegistration( RefSchematics[SchematicIndex] );
+		fgcheck( Registration );
+
+		if ( Registration->HasAnyFlags( EGameObjectRegistrationFlags::Removed ) )
+		{
+			RefSchematics.RemoveAt( SchematicIndex );
+		}
+	}
+
+	TArray<TSubclassOf<UFGSchematic>>& mAvailableSchematics = AFGSchematicManager::Get(GetWorld())->mAvailableSchematics;
+	// Cleanup invalid or removed schematics from the available schematics list
+	for ( int32 SchematicIndex = mAvailableSchematics.Num() - 1; SchematicIndex >= 0; SchematicIndex-- )
+	{
+		if ( !IsValid( mAvailableSchematics[SchematicIndex] ) )
+		{
+			mAvailableSchematics.RemoveAt( SchematicIndex );
+			continue;
+		}
+
+		const FGameObjectRegistration* Registration = SchematicRegistryState.FindObjectRegistration( mAvailableSchematics[SchematicIndex] );
+		fgcheck( Registration );
+
+		if ( Registration->HasAnyFlags( EGameObjectRegistrationFlags::Removed ) )
+		{
+			mAvailableSchematics.RemoveAt( SchematicIndex );
+		}
+	}
+
+	// Append non-builtin objects to the resulting schematic list
+	for ( const FGameObjectRegistration* Registration : SchematicRegistryState.GetAllRegistrationsCopyFree() )
+	{
+		if ( !Registration->HasAnyFlags( EGameObjectRegistrationFlags::BuiltIn | EGameObjectRegistrationFlags::Removed | EGameObjectRegistrationFlags::Unregistered ) )
+		{
+			RefSchematics.AddUnique( CastChecked<UClass>( Registration->RegisteredObject ) );
+		}
+	}
+	SchematicRegistryState.FreezeRegistry();
+}
+
+void UModContentRegistry::ModifyResearchTreeList( TArray<TSubclassOf<UFGResearchTree>>& RefResearchTrees )
+{
+	// Register vanilla research trees in the registry first
+	{
+		TGuardValue ScopedVanillaContent( GIsRegisteringVanillaContent, true );
+		for ( TSubclassOf<UFGResearchTree>& ResearchTree : RefResearchTrees )
+		{
+			if ( IsValid( ResearchTree ) )
+			{
+				ResearchTreeRegistryState.RegisterObject( NAME_None, ResearchTree, EGameObjectRegistrationFlags::BuiltIn );
+			}
+		}
+	}
+
+	// Cleanup invalid or removed research trees from the list
+	for ( int32 ResearchTreeIndex = RefResearchTrees.Num() - 1; ResearchTreeIndex >= 0; ResearchTreeIndex-- )
+	{
+		if ( !IsValid( RefResearchTrees[ResearchTreeIndex] ) )
+		{
+			RefResearchTrees.RemoveAt( ResearchTreeIndex );
+			continue;
+		}
+
+		const FGameObjectRegistration* Registration = ResearchTreeRegistryState.FindObjectRegistration( RefResearchTrees[ResearchTreeIndex] );
+		fgcheck( Registration );
+
+		if ( Registration->HasAnyFlags( EGameObjectRegistrationFlags::Removed ) )
+		{
+			RefResearchTrees.RemoveAt( ResearchTreeIndex );
+		}
+	}
+
+	// Append non-builtin objects to the resulting research tree list
+	for ( const FGameObjectRegistration* Registration : ResearchTreeRegistryState.GetAllRegistrationsCopyFree() )
+	{
+		if ( !Registration->HasAnyFlags( EGameObjectRegistrationFlags::BuiltIn | EGameObjectRegistrationFlags::Removed | EGameObjectRegistrationFlags::Unregistered ) )
+		{
+			RefResearchTrees.AddUnique( CastChecked<UClass>( Registration->RegisteredObject ) );
+		}
+	}
+	ResearchTreeRegistryState.FreezeRegistry();
+}
+
+void UModContentRegistry::RegisterSchematic(const FName ModReference, const TSubclassOf<UFGSchematic> Schematic) {
+	if ( !IsValid( Schematic ) )
+	{
+		const FString Context = FString::Printf( TEXT("Attempt to register NULL Schematic. Mod Reference: %s"), *ModReference.ToString() );
+		NOTIFY_INVALID_REGISTRATION( *Context );
+		return;
+	}
+	SchematicRegistryState.RegisterObject( ModReference, Schematic );
+}
+
+void UModContentRegistry::RegisterResearchTree(const FName ModReference, const TSubclassOf<UFGResearchTree> ResearchTree) {
+	if ( !IsValid( ResearchTree ) )
+	{
+		const FString Context = FString::Printf( TEXT("Attempt to register NULL ResearchTree. Mod Reference: %s"), *ModReference.ToString() );
+		NOTIFY_INVALID_REGISTRATION( *Context );
+		return;
+	}
+	ResearchTreeRegistryState.RegisterObject( ModReference, ResearchTree );
+}
+
+void UModContentRegistry::RegisterRecipe(const FName ModReference, const TSubclassOf<UFGRecipe> Recipe) {
+	if ( !IsValid( Recipe ) )
+	{
+		const FString Context = FString::Printf( TEXT("Attempt to register NULL Recipe. Mod Reference: %s"), *ModReference.ToString() );
+		NOTIFY_INVALID_REGISTRATION( *Context );
+		return;
+	}
+	RecipeRegistryState.RegisterObject( ModReference, Recipe );
+}
+
+void UModContentRegistry::RemoveSchematic( TSubclassOf<UFGSchematic> Schematic )
+{
+	if ( !IsValid( Schematic ) )
+	{
+		NOTIFY_INVALID_REGISTRATION( TEXT("Attempt to Remove NULL Schematic") );
+		return;
+	}
+	SchematicRegistryState.MarkObjectAsRemoved( Schematic );
+}
+
+void UModContentRegistry::RemoveResearchTree( TSubclassOf<UFGResearchTree> ResearchTree )
+{
+	if ( !IsValid( ResearchTree ) )
+	{
+		NOTIFY_INVALID_REGISTRATION( TEXT("Attempt to Remove NULL ResearchTree") );
+		return;
+	}
+	ResearchTreeRegistryState.MarkObjectAsRemoved( ResearchTree );
+}
+
+TArray<FGameObjectRegistration> UModContentRegistry::GetLoadedItemDescriptors() const
+{
+	TArray<FGameObjectRegistration> Results;
+	ItemRegistryState.GetAllRegistrations( Results );
+	return Results;
+}
+
+void UModContentRegistry::GetObtainableItemDescriptors( TArray<FGameObjectRegistration>& OutItemDescriptors, EGetObtainableItemDescriptorsFlags Flags ) const
+{
+	for ( const FGameObjectRegistration* Registration : ItemRegistryState.GetAllRegistrationsCopyFree() )
+	{
+		if ( Registration->HasAnyFlags( EGameObjectRegistrationFlags::Unregistered | EGameObjectRegistrationFlags::Removed ) )
+		{
+			continue;
+		}
+		// We consider items that are used in Recipes or are Built-In (vanilla) obtainable (vanilla items that are not obtainable would not get into a packaged build)
+		if ( Registration->ReferencedBy.IsEmpty() && !Registration->HasAnyFlags( EGameObjectRegistrationFlags::BuiltIn ) )
+		{
+			continue;
+		}
+
+		// Apply filters specified by the user
+		if ( IsDescriptorFilteredOut( Registration->RegisteredObject, Flags ) )
+		{
+			continue;
+		}
+		OutItemDescriptors.Emplace( *Registration );
 	}
 }
 
-#define P_SET_ACTIVE_FRAME P_THIS->ActiveScriptFramePtr = &Stack;
-#define P_RESET_ACTIVE_FRAME P_THIS->ActiveScriptFramePtr = NULL;
+TArray<FGameObjectRegistration> UModContentRegistry::GetRegisteredSchematics() const
+{
+	TArray<FGameObjectRegistration> Results;
+	SchematicRegistryState.GetAllRegistrations( Results );
+	return Results;
+}
 
-DEFINE_FUNCTION(AModContentRegistry::execRegisterResourceSinkItemPointTable) {
+TArray<FGameObjectRegistration> UModContentRegistry::GetRegisteredResearchTrees() const
+{
+	TArray<FGameObjectRegistration> Results;
+	ResearchTreeRegistryState.GetAllRegistrations( Results );
+	return Results;
+}
+
+TArray<FGameObjectRegistration> UModContentRegistry::GetRegisteredRecipes() const
+{
+	TArray<FGameObjectRegistration> Results;
+	RecipeRegistryState.GetAllRegistrations( Results );
+	return Results;
+}
+
+bool UModContentRegistry::GetResearchTreeRegistrationInfo( TSubclassOf<UFGResearchTree> ResearchTree, FGameObjectRegistration& OutRegistration ) const
+{
+	if ( const FGameObjectRegistration* ResearchTreeRegistration = ResearchTreeRegistryState.FindObjectRegistration( ResearchTree ) )
+	{
+		OutRegistration = *ResearchTreeRegistration;
+		return true;
+	}
+	return false;
+}
+
+bool UModContentRegistry::GetSchematicRegistrationInfo( TSubclassOf<UFGSchematic> Schematic, FGameObjectRegistration& OutRegistration ) const
+{
+	if ( const FGameObjectRegistration* SchematicRegistration = SchematicRegistryState.FindObjectRegistration( Schematic ) )
+	{
+		OutRegistration = *SchematicRegistration;
+		return true;
+	}
+	return false;
+}
+
+bool UModContentRegistry::GetRecipeInfo( TSubclassOf<UFGRecipe> Recipe, FGameObjectRegistration& OutRegistration ) const
+{
+	if ( const FGameObjectRegistration* RecipeRegistration = RecipeRegistryState.FindObjectRegistration( Recipe ) )
+	{
+		OutRegistration = *RecipeRegistration;
+		return true;
+	}
+	return false;
+}
+
+FGameObjectRegistration UModContentRegistry::GetItemDescriptorInfo( TSubclassOf<UFGItemDescriptor> ItemDescriptor )
+{
+	ItemRegistryState.AttemptRegisterObject( NAME_None, ItemDescriptor );
+	return *ItemRegistryState.FindObjectRegistration( ItemDescriptor );
+}
+
+bool UModContentRegistry::IsItemDescriptorVanilla( TSubclassOf<UFGItemDescriptor> ItemDescriptor )
+{
+	ItemRegistryState.AttemptRegisterObject( NAME_None, ItemDescriptor );
+	if ( const FGameObjectRegistration* ItemRegistration = ItemRegistryState.FindObjectRegistration( ItemDescriptor ) )
+	{
+		return ItemRegistration->HasAnyFlags( EGameObjectRegistrationFlags::BuiltIn );
+	}
+	return false;
+}
+
+bool UModContentRegistry::IsRecipeVanilla( TSubclassOf<UFGRecipe> Recipe ) const
+{
+	if ( const FGameObjectRegistration* RecipeRegistration = RecipeRegistryState.FindObjectRegistration( Recipe ) )
+	{
+		return RecipeRegistration->HasAnyFlags( EGameObjectRegistrationFlags::BuiltIn );
+	}
+	return false;
+}
+
+bool UModContentRegistry::IsSchematicVanilla( TSubclassOf<UFGSchematic> Schematic ) const
+{
+	if ( const FGameObjectRegistration* SchematicRegistration = SchematicRegistryState.FindObjectRegistration( Schematic ) )
+	{
+		return SchematicRegistration->HasAnyFlags( EGameObjectRegistrationFlags::BuiltIn );
+	}
+	return false;
+}
+
+bool UModContentRegistry::IsResearchTreeVanilla( TSubclassOf<UFGResearchTree> ResearchTree ) const
+{
+	if ( const FGameObjectRegistration* ResearchTreeRegistration = ResearchTreeRegistryState.FindObjectRegistration( ResearchTree ) )
+	{
+		return ResearchTreeRegistration->HasAnyFlags( EGameObjectRegistrationFlags::BuiltIn );
+	}
+	return false;
+}
+
+void UModContentRegistry::RegisterResourceSinkItemPointTable(FName ModReference, UDataTable* PointTable, EResourceSinkTrack Track)
+{
+	if ( !IsValid( PointTable ) )
+	{
+		const FString Context = FString::Printf( TEXT("Attempt to register NULL ResourceSinkPointTable on %s track. Mod Reference: %s"), *UEnum::GetValueAsString(Track), *ModReference.ToString() );
+		NOTIFY_INVALID_REGISTRATION(*Context);
+		return;
+	}
+
+	if ( !IsValid( PointTable->RowStruct ) || !PointTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct()) )
+	{
+		const FString Context = FString::Printf( TEXT("Invalid AWESOME Sink item points table in mod %s (%s): Row Type should be Resource Sink Points Data"),
+			*ModReference.ToString(), *PointTable->GetPathName() );
+		NOTIFY_INVALID_REGISTRATION(*Context);
+		return;
+	}
+
+	FPendingResourceSinkRegistration Registration;
+	Registration.Track = Track;
+	Registration.ModReference = ModReference;
+	Registration.PointTable = PointTable;
+
+	PendingItemSinkPointsRegistrations.Add( Registration );
+	if ( AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get( GetWorld() ) )
+	{
+		FlushPendingResourceSinkRegistrations( ResourceSinkSubsystem );
+	}
+}
+
+void UModContentRegistry::FlushPendingResourceSinkRegistrations( AFGResourceSinkSubsystem* ResourceSinkSubsystem ) {
+
+	for (const FPendingResourceSinkRegistration& Registration : PendingItemSinkPointsRegistrations) {
+
+		UE_LOG(LogContentRegistry, Log, TEXT("Registering Resource Sink Points Table '%s' track type '%s' from Mod %s"),
+			*Registration.PointTable->GetPathName(), *UEnum::GetValueAsString(Registration.Track), *Registration.ModReference.ToString());
+
+		ResourceSinkSubsystem->SetupPointData( Registration.Track, Registration.PointTable );
+	}
+	PendingItemSinkPointsRegistrations.Empty();
+}
+
+bool UModContentRegistry::ShouldCreateSubsystem( UObject* Outer ) const
+{
+	UWorld* WorldOuter = CastChecked<UWorld>(Outer);
+	return FPluginModuleLoader::ShouldLoadModulesForWorld(WorldOuter);
+}
+
+void UModContentRegistry::Initialize( FSubsystemCollectionBase& Collection )
+{
+	Super::Initialize( Collection );
+
+	SchematicRegistryState.OnObjectRegistered().AddUObject( this, &UModContentRegistry::OnSchematicRegisteredCallback );
+	ResearchTreeRegistryState.OnObjectRegistered().AddUObject( this, &UModContentRegistry::OnResearchTreeRegisteredCallback );
+
+	// TODO @SML: I don't know if this is the most performant thing to do, it fires on every UWorld::SpawnActor call, which might be a bit heavy.
+	OnActorPreSpawnDelegateHandle = GetWorld()->AddOnActorPreSpawnInitialization( FOnActorSpawned::FDelegate::CreateUObject( this, &UModContentRegistry::OnActorPreSpawnInitialization ) );
+	OnActorPostSpawnDelegateHandle = GetWorld()->AddOnActorSpawnedHandler( FOnActorSpawned::FDelegate::CreateUObject( this, &UModContentRegistry::OnActorPostSpawnInitialization ) );
+}
+
+void UModContentRegistry::OnWorldBeginPlay(UWorld& InWorld) {
+	OnWorldBeginPlayDelegate.Broadcast();
+}
+
+void UModContentRegistry::OnSchematicRegisteredCallback( const FGameObjectRegistration* Schematic )
+{
+	OnSchematicRegistered.Broadcast( *Schematic );
+	AutoRegisterSchematicReferences( CastChecked<UClass>( Schematic->RegisteredObject ), Schematic->RegistrarModReference );
+}
+
+void UModContentRegistry::OnResearchTreeRegisteredCallback( const FGameObjectRegistration* ResearchTree )
+{
+	OnResearchTreeRegistered.Broadcast( *ResearchTree );
+	AutoRegisterResearchTreeReferences( CastChecked<UClass>( ResearchTree->RegisteredObject ), ResearchTree->RegistrarModReference );
+}
+
+void UModContentRegistry::OnActorPreSpawnInitialization( AActor* Actor )
+{
+	if ( AFGSchematicManager* SchematicManager = Cast<AFGSchematicManager>( Actor ) )
+	{
+		SchematicManager->PopulateSchematicListDelegate.AddWeakLambda( this, [&](TArray<TSubclassOf<UFGSchematic>>& RefSchematics) {
+			// PopulateSchematicList happens during PreInitializeComponents,
+			// while WorldModules get constructed during OnActorsInitialized
+			// Additionally, the schematic list is used to populate the available schematics during AFGSchematicManager::BeginPlay
+			// so we need to defer the registration until right before that.
+			// UWorldSubsystem::OnWorldBeginPlay is called before BeginPlay is dispatched to actors, and this subsystem
+			// just so happens to be a UWorldSubsystem, so we can use that to our advantage.
+			OnWorldBeginPlayDelegate.AddWeakLambda(this, [&]() {
+				ModifySchematicList(RefSchematics);
+			});
+		});
+		SchematicManager->PurchasedSchematicDelegate.AddUniqueDynamic( this, &UModContentRegistry::OnSchematicPurchased );
+		PreSpawnInitializationStack++;
+	}
+	if ( AFGResearchManager* ResearchManager = Cast<AFGResearchManager>( Actor ) )
+	{
+		ResearchManager->PopulateResearchTreeListDelegate.AddWeakLambda( this, [&](TArray<TSubclassOf<UFGResearchTree>>& RefResearchTrees) {
+			// Similarly to PopulateSchematicList, PopulateResearchTreeList happens during PreInitializeComponents.
+			// This research tree array is the final one, as opposed to mAvailableSchematics in the schematic manager,
+			// but BeginPlay is still a good time for this to be delayed to.
+			OnWorldBeginPlayDelegate.AddWeakLambda(this, [&]() {
+				ModifyResearchTreeList(RefResearchTrees);
+			});
+		});
+		PreSpawnInitializationStack++;
+	}
+	
+	if ( PreSpawnInitializationStack >= 2 )
+	{
+		GetWorld()->RemoveOnActorPreSpawnInitialization( OnActorPreSpawnDelegateHandle );
+		OnActorPreSpawnDelegateHandle.Reset();
+	}
+}
+
+void UModContentRegistry::OnActorPostSpawnInitialization( AActor* Actor )
+{
+	if ( AFGResourceSinkSubsystem* ResourceSinkSubsystem = Cast<AFGResourceSinkSubsystem>( Actor ) )
+	{
+		FlushPendingResourceSinkRegistrations( ResourceSinkSubsystem );
+		PostSpawnInitializationStack++;
+	}
+
+	if ( PostSpawnInitializationStack >= 1 )
+	{
+		GetWorld()->RemoveOnActorSpawnedHandler( OnActorPostSpawnDelegateHandle );
+		OnActorPostSpawnDelegateHandle.Reset();
+	}
+}
+
+void UModContentRegistry::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector)
+{
+	UModContentRegistry* ModContentRegistry = CastChecked<UModContentRegistry>(InThis);
+
+	//Register all referenced objects from registry states
+	ModContentRegistry->ItemRegistryState.AddReferencedObjects(Collector);
+	ModContentRegistry->RecipeRegistryState.AddReferencedObjects(Collector);
+	ModContentRegistry->SchematicRegistryState.AddReferencedObjects(Collector);
+	ModContentRegistry->ResearchTreeRegistryState.AddReferencedObjects(Collector);
+}
+
+FString UModContentRegistry::GetCallStackContext()
+{
+	// If we are registering vanilla content do not attempt to load symbols
+	if ( GIsRegisteringVanillaContent )
+	{
+		return TEXT("[ModContentRegistry internals]");
+	}
+	
+	// Prefer script callstack to the native one
+	if ( ActiveScriptFramePtr != nullptr )
+	{
+		return ActiveScriptFramePtr->Node->GetPathName();
+	}
+
+	// Attempt to capture stack trace
+	TArray<FProgramCounterSymbolInfo> NativeStackTrace = FPlatformStackWalk::GetStack(1, 10);
+	if ( NativeStackTrace.IsEmpty() )
+	{
+		FProgramCounterSymbolInfo& Info = NativeStackTrace.Emplace_GetRef();
+		TCString<ANSICHAR>::Strcpy(Info.Filename, FProgramCounterSymbolInfo::MAX_NAME_LENGTH, "Unknown");
+		Info.LineNumber = 1;
+	}
+
+	// Find first frame that does not contain internal logic of content registry
+	int32 FirstExternalFrameIndex = 0;
+	while ( FirstExternalFrameIndex + 1 < NativeStackTrace.Num() &&
+		FCStringAnsi::Strifind( NativeStackTrace[FirstExternalFrameIndex].Filename, __FILE__ ) != nullptr )
+	{
+		FirstExternalFrameIndex++;
+	}
+	return FString::Printf( TEXT("%hs:%d"), NativeStackTrace[FirstExternalFrameIndex].Filename, NativeStackTrace[FirstExternalFrameIndex].LineNumber );
+}
+
+void UModContentRegistry::AutoRegisterSchematicReferences(TSubclassOf<UFGSchematic> Schematic, FName RegistrarPluginName)
+{
+	for ( const FItemAmount& ItemAmount : UFGSchematic::GetCost( Schematic ) )
+	{
+		ItemRegistryState.AttemptRegisterObject( RegistrarPluginName, ItemAmount.ItemClass );
+		ItemRegistryState.AddObjectReference( ItemAmount.ItemClass, Schematic );
+	}
+
+	TArray<UFGAvailabilityDependency*> AvailabilityDependencies;
+	UFGSchematic::GetSchematicDependencies( Schematic, AvailabilityDependencies );
+	for ( UFGAvailabilityDependency* AvailabilityDependency : AvailabilityDependencies )
+	{
+		AutoRegisterAvailabilityDependencyReferences( AvailabilityDependency, Schematic, RegistrarPluginName );
+	}
+	
+    const TArray<UFGUnlock*> Unlocks = UFGSchematic::GetUnlocks(Schematic);
+    for ( UFGUnlock* Unlock : Unlocks )
+    {
+    	AutoRegisterUnlockReferences( Unlock, Schematic, RegistrarPluginName );
+    }
+
+	TArray<TSubclassOf<UFGSchematic>> RelevantShopSchematics;
+	UFGSchematic::GetRelevantShopSchematics( Schematic, RelevantShopSchematics );
+	for ( const TSubclassOf<UFGSchematic>& OtherSchematic : RelevantShopSchematics )
+	{
+		// FactoryGame itself has a None reference in one of it's schematics
+		if ( OtherSchematic )
+		{
+			SchematicRegistryState.AttemptRegisterObject( RegistrarPluginName, OtherSchematic );
+            SchematicRegistryState.AddObjectReference( OtherSchematic, Schematic );
+		}
+	}
+}
+
+void UModContentRegistry::AutoRegisterResearchTreeReferences( TSubclassOf<UFGResearchTree> ResearchTree, FName RegistrarPluginName ) {
+	
+    const TArray<UFGResearchTreeNode*> Nodes = UFGResearchTree::GetNodes( ResearchTree );
+    for ( const UFGResearchTreeNode* Node : Nodes)
+    {
+        if ( const TSubclassOf<UFGSchematic> NodeSchematic = Node->GetNodeSchematic() )
+        {
+	        SchematicRegistryState.AttemptRegisterObject( RegistrarPluginName, NodeSchematic );
+        	SchematicRegistryState.AddObjectReference( NodeSchematic, ResearchTree );
+        }
+    }
+
+	TArray<UFGAvailabilityDependency*> UnlockDependencies = UFGResearchTree::GetUnlockDependencies( ResearchTree );
+	for ( UFGAvailabilityDependency* Dependency : UnlockDependencies )
+	{
+		AutoRegisterAvailabilityDependencyReferences( Dependency, ResearchTree, RegistrarPluginName );
+	}
+}
+
+void UModContentRegistry::AutoRegisterRecipeReferences( TSubclassOf<UFGRecipe> Recipe, FName RegistrarPluginName )
+{
+	TArray<FItemAmount> AllItemReferences;
+	AllItemReferences.Append( UFGRecipe::GetProducts( Recipe ) );
+	AllItemReferences.Append( UFGRecipe::GetIngredients( Recipe ) );
+
+	for ( const FItemAmount& ItemAmount : AllItemReferences )
+	{
+		ItemRegistryState.AttemptRegisterObject( RegistrarPluginName, ItemAmount.ItemClass );
+		ItemRegistryState.AddObjectReference( ItemAmount.ItemClass, Recipe );
+	}
+	
+	if ( const TSubclassOf<UFGCustomizationRecipe> CustomizationRecipe = UFGRecipe::GetMaterialCustomizationRecipe( Recipe ) )
+	{
+		RecipeRegistryState.AttemptRegisterObject( RegistrarPluginName, CustomizationRecipe );
+		RecipeRegistryState.AddObjectReference( CustomizationRecipe, Recipe );
+	}
+}
+
+bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
+{
+	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeBuildings ) && ItemDescriptor->IsA<UFGBuildingDescriptor>() )
+	{
+		return true;
+	}
+	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeCustomizations ) && ItemDescriptor->IsA<UFGFactoryCustomizationDescriptor>() )
+	{
+		return true;
+	}
+	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeCreatures ) && ItemDescriptor->IsA<UFGCreatureDescriptor>() )
+	{
+		return true;
+	}
+	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeVehicles ) && ItemDescriptor->IsA<UFGVehicleDescriptor>() )
+	{
+		return true;
+	}
+	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial ) && ( ItemDescriptor->IsA<UFGWildCardDescriptor>() ||
+		ItemDescriptor->IsA<UFGAnyUndefinedDescriptor>() || ItemDescriptor->IsA<UFGOverflowDescriptor>() || ItemDescriptor->IsA<UFGNoneDescriptor>() ))
+	{
+		return true;
+	}
+	return false;
+}
+
+void UModContentRegistry::AutoRegisterUnlockReferences( UFGUnlock* Unlock, UObject* ReferencedBy, FName RegistrarPluginName )
+{
+	if ( const UFGUnlockRecipe* UnlockRecipe = Cast<UFGUnlockRecipe>( Unlock ) )
+	{
+		for ( TSubclassOf<UFGRecipe> Recipe : UnlockRecipe->GetRecipesToUnlock() )
+		{
+			RecipeRegistryState.AttemptRegisterObject( RegistrarPluginName, Recipe );
+			RecipeRegistryState.AddObjectReference( Recipe, ReferencedBy  );
+		}
+	}
+	if ( const UFGUnlockScannableResource* ResourceUnlock = Cast<UFGUnlockScannableResource>( Unlock ) )
+	{
+		for ( const FScannableResourcePair& ResourcePair : ResourceUnlock->GetResourcesToAddToScanner() )
+		{
+			ItemRegistryState.AttemptRegisterObject( RegistrarPluginName, ResourcePair.ResourceDescriptor );
+			ItemRegistryState.AddObjectReference( ResourcePair.ResourceDescriptor, ReferencedBy  );
+		}
+	}
+	if ( const UFGUnlockScannableObject* ObjectUnlock = Cast<UFGUnlockScannableObject>( Unlock ) )
+	{
+		for ( const FScannableObjectData& ObjectData : ObjectUnlock->GetScannableObjectsToUnlock() )
+		{
+			ItemRegistryState.AttemptRegisterObject( RegistrarPluginName, ObjectData.ItemDescriptor );
+			ItemRegistryState.AddObjectReference( ObjectData.ItemDescriptor, ReferencedBy  );
+		}
+	}
+	if ( const UFGUnlockSchematic* SchematicUnlock = Cast<UFGUnlockSchematic>( Unlock ) )
+	{
+		for ( TSubclassOf<UFGSchematic> InnerSchematic : SchematicUnlock->GetSchematicsToUnlock() )
+		{
+			SchematicRegistryState.AttemptRegisterObject( RegistrarPluginName, InnerSchematic );
+			SchematicRegistryState.AddObjectReference( InnerSchematic, ReferencedBy  );
+		}
+	}
+	if ( const UFGUnlockGiveItem* ItemUnlock = Cast<UFGUnlockGiveItem>( Unlock ) )
+	{
+		for ( const FItemAmount& ItemAmount : ItemUnlock->GetItemsToGive() )
+		{
+			ItemRegistryState.AttemptRegisterObject( RegistrarPluginName, ItemAmount.ItemClass );
+			ItemRegistryState.AddObjectReference( ItemAmount.ItemClass, ReferencedBy  );
+		}
+	}
+}
+
+void UModContentRegistry::AutoRegisterAvailabilityDependencyReferences( UFGAvailabilityDependency* Dependency, UObject* ReferencedBy, FName RegistrarPluginName )
+{
+	if ( const UFGConsumablesConsumedDependency* ConsumableDependency = Cast<UFGConsumablesConsumedDependency>( Dependency ) )
+	{
+		for ( const auto& Pair : ConsumableDependency->GetItemAmount() )
+		{
+			ItemRegistryState.AttemptRegisterObject( RegistrarPluginName, Pair.Key );
+			ItemRegistryState.AddObjectReference( Pair.Key, ReferencedBy  );
+		}
+	}
+	if ( const UFGItemPickedUpDependency* PickupDependency = Cast<UFGItemPickedUpDependency>( Dependency ) )
+	{
+		TArray<TSubclassOf<UFGItemDescriptor>> Items;
+		PickupDependency->GetItems( Items );
+		
+		for ( const TSubclassOf<UFGItemDescriptor>& ItemDescriptor : Items )
+		{
+			ItemRegistryState.AttemptRegisterObject( RegistrarPluginName, ItemDescriptor );
+			ItemRegistryState.AddObjectReference( ItemDescriptor, ReferencedBy  );
+		}
+	}
+	if ( const UFGItemsManuallyCraftedDependency* ManuallyCraftedDependency = Cast<UFGItemsManuallyCraftedDependency>( Dependency ) )
+	{
+		for ( const auto& Pair : ManuallyCraftedDependency->GetItemsManuallyCraftedCount() )
+		{
+			ItemRegistryState.AttemptRegisterObject( RegistrarPluginName, Pair.Key );
+			ItemRegistryState.AddObjectReference( Pair.Key, ReferencedBy  );
+		}
+	}
+	if ( const UFGRecipeUnlockedDependency* RecipeUnlockedDependency = Cast<UFGRecipeUnlockedDependency>( Dependency ) )
+	{
+		TArray<TSubclassOf<UFGRecipe>> Recipes;
+		RecipeUnlockedDependency->GetRecipes( Recipes );
+
+		for ( const TSubclassOf<UFGRecipe>& Recipe : Recipes )
+		{
+			RecipeRegistryState.AttemptRegisterObject( RegistrarPluginName, Recipe );
+			RecipeRegistryState.AddObjectReference( Recipe, ReferencedBy  );
+		}
+	}
+	if ( const UFGSchematicPurchasedDependency* SchematicUnlockedDependency = Cast<UFGSchematicPurchasedDependency>( Dependency ) )
+	{
+		TArray<TSubclassOf<UFGSchematic>> Schematics;
+		SchematicUnlockedDependency->GetSchematics( Schematics );
+
+		for ( const TSubclassOf<UFGSchematic>& Schematic : Schematics )
+		{
+			SchematicRegistryState.AttemptRegisterObject( RegistrarPluginName, Schematic );
+			SchematicRegistryState.AddObjectReference( Schematic, ReferencedBy  );
+		}
+	}
+	if ( const UFGResearchTreeUnlockedDependency* ResearchTreeUnlockDependency = Cast<UFGResearchTreeUnlockedDependency>( Dependency ) )
+	{
+		TArray<TSubclassOf<UFGResearchTree>> ResearchTrees;
+		ResearchTreeUnlockDependency->GetResearchTrees( ResearchTrees );
+
+		for ( const TSubclassOf<UFGResearchTree>& ResearchTree : ResearchTrees )
+		{
+			ResearchTreeRegistryState.AttemptRegisterObject( RegistrarPluginName, ResearchTree );
+			ResearchTreeRegistryState.AddObjectReference( ResearchTree, ReferencedBy );
+		}
+	}
+}
+
+DEFINE_FUNCTION( UModContentRegistry::execRegisterResourceSinkItemPointTable )
+{
 	P_GET_PROPERTY(FNameProperty, ModReference);
 	P_GET_OBJECT(UDataTable, PointTable);
 	P_GET_ENUM(EResourceSinkTrack, Track);
 	P_FINISH;
 	P_NATIVE_BEGIN;
-	P_SET_ACTIVE_FRAME;
+	TGuardValue ScopedFrameOverride( ActiveScriptFramePtr, &Stack );
 	P_THIS->RegisterResourceSinkItemPointTable(ModReference, PointTable, Track);
-	P_RESET_ACTIVE_FRAME;
 	P_NATIVE_END;
 }
 
-DEFINE_FUNCTION(AModContentRegistry::execRegisterRecipe) {
+DEFINE_FUNCTION(UModContentRegistry::execRegisterRecipe) {
 	P_GET_PROPERTY(FNameProperty,Z_Param_ModReference);
 	P_GET_OBJECT(UClass,Z_Param_Recipe);
 	P_FINISH;
 	P_NATIVE_BEGIN;
-	P_SET_ACTIVE_FRAME;
+	TGuardValue ScopedFrameOverride( ActiveScriptFramePtr, &Stack );
 	P_THIS->RegisterRecipe(Z_Param_ModReference,Z_Param_Recipe);
-	P_RESET_ACTIVE_FRAME;
 	P_NATIVE_END;
 }
 
-DEFINE_FUNCTION(AModContentRegistry::execRegisterResearchTree) {
+DEFINE_FUNCTION(UModContentRegistry::execRegisterResearchTree) {
 	P_GET_PROPERTY(FNameProperty, ModReference);
 	P_GET_OBJECT(UClass, ResearchTree);
 	P_FINISH;
 	P_NATIVE_BEGIN;
-	P_SET_ACTIVE_FRAME;
+	TGuardValue ScopedFrameOverride( ActiveScriptFramePtr, &Stack );
 	P_THIS->RegisterResearchTree(ModReference, ResearchTree);
-	P_RESET_ACTIVE_FRAME;
 	P_NATIVE_END;
 }
 
-DEFINE_FUNCTION(AModContentRegistry::execRegisterSchematic) {
+DEFINE_FUNCTION(UModContentRegistry::execRegisterSchematic) {
 	P_GET_PROPERTY(FNameProperty, ModReference);
 	P_GET_OBJECT(UClass, Schematic);
 	P_FINISH;
 	P_NATIVE_BEGIN;
-	P_SET_ACTIVE_FRAME;
+	TGuardValue ScopedFrameOverride( ActiveScriptFramePtr, &Stack );
 	P_THIS->RegisterSchematic(ModReference, Schematic);
-	P_RESET_ACTIVE_FRAME;
+	P_NATIVE_END;
+}
+
+DEFINE_FUNCTION(UModContentRegistry::execRemoveResearchTree) {
+	P_GET_OBJECT(UClass, ResearchTree);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	TGuardValue ScopedFrameOverride( ActiveScriptFramePtr, &Stack );
+	P_THIS->RemoveResearchTree( ResearchTree );
+	P_NATIVE_END;
+}
+
+DEFINE_FUNCTION(UModContentRegistry::execRemoveSchematic) {
+	P_GET_OBJECT(UClass, Schematic);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	TGuardValue ScopedFrameOverride( ActiveScriptFramePtr, &Stack );
+	P_THIS->RemoveSchematic( Schematic );
+	P_NATIVE_END;
+}
+
+DEFINE_FUNCTION(UModContentRegistry::execGetItemDescriptorInfo) {
+	P_GET_OBJECT(UClass, ItemDescriptor);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	TGuardValue ScopedFrameOverride( ActiveScriptFramePtr, &Stack );
+	*(FGameObjectRegistration*)RESULT_PARAM = P_THIS->GetItemDescriptorInfo( ItemDescriptor );
 	P_NATIVE_END;
 }

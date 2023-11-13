@@ -79,6 +79,7 @@ public:
 	void SetNoPower( bool enabled );
 	void SetArachnidCreaturesDisabled( bool disabled );
 	void SetGamePhase( int32 gamePhase );
+	void UnlockPreviouslyUnlockedContent();
 	
 	void GetDebugOverlayData( TArray<FString>& out_debugOverlayData ) const;
 

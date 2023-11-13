@@ -2,6 +2,7 @@
 
 #include "FGSchematic.h"
 #include "UObject/ObjectSaveContext.h"
+#include "Unlocks/FGUnlockRecipe.h"
 
 FPrimaryAssetId UFGSchematic::GetPrimaryAssetId() const {
 	return FPrimaryAssetId(StaticClass()->GetFName(), FPackageName::GetShortFName(GetOutermost()->GetFName()));
@@ -61,7 +62,22 @@ FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf<UFGSchematic> inClass) {
 
 #if WITH_EDITOR
 void UFGSchematic::PreSave(FObjectPreSaveContext saveContext){ }
-EDataValidationResult UFGSchematic::IsDataValid(TArray< FText >& ValidationErrors){ return EDataValidationResult::Valid; }
+EDataValidationResult UFGSchematic::IsDataValid(TArray< FText >& ValidationErrors) {
+	// MODDING IMPLEMENTATION
+	EDataValidationResult ValidationResult = Super::IsDataValid(ValidationErrors);
+
+	const TArray<UFGUnlock*> Unlocks = UFGSchematic::GetUnlocks(GetClass());
+	for (UFGUnlock* Unlock : Unlocks) {
+		if (const UFGUnlockRecipe* UnlockRecipe = Cast<UFGUnlockRecipe>(Unlock)) {
+			if (UnlockRecipe->GetRecipesToUnlock().Contains(nullptr)) {
+				ValidationErrors.Add(NSLOCTEXT("Schematic", "SchematicValidation_NullRecipe", "Null recipe entry found in schematic. Was the content it previously referenced deleted or moved?"));
+				ValidationResult = EDataValidationResult::Invalid;
+			}
+		}
+	}
+
+	return ValidationResult;
+}
 #endif 
 #if WITH_EDITOR
 void UFGSchematic::UpdateAssetBundleData(){ }
@@ -84,7 +100,6 @@ UFGSchematic::UFGSchematic() : Super() {
 	this->mDependenciesBlocksSchematicAccess = false;
 	this->mHiddenUntilDependenciesMet = false;
 	this->mDependsOnSchematic = nullptr;
-	this->mSchematicCategoryDeprecated = ESchematicCategory::ESC_LOGISTICS;
 }
 void UFGSchematic::PostLoad(){ Super::PostLoad(); }
 void UFGSchematic::Serialize(FArchive& ar){ Super::Serialize(ar); }

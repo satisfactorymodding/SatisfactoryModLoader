@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGOnlineSessionSettings.h"
+#include "OnlineIntegrationTypes.h"
 #include "GameFramework/GameSession.h"
 #include "FGGameSession.generated.h"
 
@@ -78,7 +79,11 @@ protected:
 	UFUNCTION()
 	void IntroSequenceUpdated();
 
-	virtual void OnUpdateSessionComplete( FName sessionName, bool wasSuccessful );
+public:
+	virtual void RegisterPlayer( APlayerController* newPlayer, const FUniqueNetIdRepl& uniqueNetId, bool wasFromInvite ) override;
+	virtual void UnregisterPlayer( FName InSessionName, const FUniqueNetIdRepl& uniqueNetId ) override;
+	virtual void UnregisterPlayers( FName InSessionName, const TArray<FUniqueNetIdRepl>& players ) override;
+
 private:
 	/** Visibility of current game session */
 	ESessionVisibility mSessionVisibility;

@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildableFactory.h"
-#include "Resources/FGResourceDescriptor.h"
+#include "FGBuildableFactory.h"
 #include "Resources/FGExtractableResourceInterface.h"
+#include "Resources/FGResourceDescriptor.h"
 #include "FGBuildableResourceExtractorBase.generated.h"
 
 #if UE_BUILD_SHIPPING == 0

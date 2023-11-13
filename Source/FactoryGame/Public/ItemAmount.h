@@ -35,5 +35,3 @@ struct FACTORYGAME_API FItemAmount
 	UPROPERTY( SaveGame, BlueprintReadWrite, EditAnywhere, Category = "Item", meta = ( ClampMin = 0 ) )
 	int32 Amount;
 };
-FORCEINLINE bool IsValidForLoad( const FItemAmount& element ){ return element.ItemClass != nullptr; }
-FORCEINLINE FString VarToFString( const FItemAmount& var ){ return FString::Printf( TEXT( "Num: %i [%s]" ), var.Amount, *VarToFString(var.ItemClass) ); }

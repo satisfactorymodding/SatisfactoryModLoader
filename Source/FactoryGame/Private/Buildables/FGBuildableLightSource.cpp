@@ -2,6 +2,7 @@
 
 #include "Buildables/FGBuildableLightSource.h"
 #include "FGPowerInfoComponent.h"
+#include "Net/UnrealNetwork.h"
 
 void UFGLightSourceClipboardRCO::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

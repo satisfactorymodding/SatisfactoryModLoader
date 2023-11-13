@@ -8,8 +8,8 @@
 #include "Creature/FGCreature.h"
 #include "FGCreatureSubsystem.h"
 
-#include "AI/FGStimulusAccumulator.h"
-#include "AI/FGDamageTypeAccumulator.h"
+#include "FGStimulusAccumulator.h"
+#include "FGDamageTypeAccumulator.h"
 
 #include "AI/Navigation/NavQueryFilter.h"
 

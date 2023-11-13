@@ -16,7 +16,7 @@
 DECLARE_STATS_GROUP( TEXT( "WorldGridStats" ), STATGROUP_WorldGrid, STATCAT_Advanced );
 DECLARE_MEMORY_STAT(TEXT( "World Grid Memory Size" ), Stat_WorldGridSize, STATGROUP_WorldGrid);
 
-DECLARE_LOG_CATEGORY_EXTERN( LogWorldGrid, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogWorldGrid, Log, All );
 
 /** Data contained by every cell in the world grid. */
 USTRUCT( BlueprintType )

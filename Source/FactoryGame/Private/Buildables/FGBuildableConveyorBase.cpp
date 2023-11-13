@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildableConveyorBase.h"
 #include "Components/SceneComponent.h"
 #include "FGFactoryConnectionComponent.h"
+#include "Net/UnrealNetwork.h"
 
 bool GIsConveyorFreezingEnabled = false;
 

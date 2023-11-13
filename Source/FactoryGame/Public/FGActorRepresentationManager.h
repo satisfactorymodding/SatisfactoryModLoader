@@ -6,6 +6,7 @@
 #include "FGSubsystem.h"
 #include "FGActorRepresentation.h"
 #include "FGRemoteCallObject.h"
+#include "Engine/Texture2D.h"
 #include "FGActorRepresentationManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActorRepresentationAdded, UFGActorRepresentation*, newRepresentation );

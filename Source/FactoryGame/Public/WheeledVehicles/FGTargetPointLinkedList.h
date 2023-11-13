@@ -3,12 +3,13 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "FGSaveInterface.h"
-#include "Slate/WidgetTransform.h"
 #include "Containers/Map.h"
+#include "CoreMinimal.h"
+#include "FGSaveInterface.h"
+#include "GameFramework/Info.h"
 #include "Math/TransformCalculus2D.h"
+#include "Slate/WidgetTransform.h"
+#include "UObject/NoExportTypes.h"
 #include "FGTargetPointLinkedList.generated.h"
 
 USTRUCT( BlueprintType )

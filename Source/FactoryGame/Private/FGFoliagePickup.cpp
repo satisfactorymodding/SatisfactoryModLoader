@@ -19,7 +19,7 @@ AFGFoliagePickup::AFGFoliagePickup() : Super() {
 }
 void AFGFoliagePickup::BeginPlay(){ }
 void AFGFoliagePickup::Tick(float DeltaSeconds){ }
-void AFGFoliagePickup::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
+void AFGFoliagePickup::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 bool AFGFoliagePickup::IsUseable_Implementation() const{ return bool(); }
 void AFGFoliagePickup::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 FText AFGFoliagePickup::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }

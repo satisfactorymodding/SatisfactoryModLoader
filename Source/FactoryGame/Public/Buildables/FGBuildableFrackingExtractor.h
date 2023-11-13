@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildableResourceExtractor.h"
+#include "FGBuildableResourceExtractor.h"
 #include "Resources/FGResourceNodeFrackingSatellite.h"
 #include "FGBuildableFrackingExtractor.generated.h"
 

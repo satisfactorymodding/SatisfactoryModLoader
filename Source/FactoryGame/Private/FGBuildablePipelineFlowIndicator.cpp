@@ -3,6 +3,7 @@
 #include "FGBuildablePipelineFlowIndicator.h"
 #include "Components/SceneComponent.h"
 #include "FGColoredInstanceMeshProxy.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildablePipelineFlowIndicator::AFGBuildablePipelineFlowIndicator() : Super() {
 	this->mIndicatorComponent = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("Indicator Component"));

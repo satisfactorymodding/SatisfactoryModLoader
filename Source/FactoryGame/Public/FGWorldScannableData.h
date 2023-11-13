@@ -4,6 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Engine/DataAsset.h"
+#include "GameFramework/Actor.h"
 #include "FGWorldScannableData.generated.h"
 
 

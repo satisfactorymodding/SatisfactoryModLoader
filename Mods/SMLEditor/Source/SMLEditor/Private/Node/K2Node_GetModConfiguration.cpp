@@ -17,6 +17,7 @@
 #define LOCTEXT_NAMESPACE "SML"
 
 static FName GetModConfiguration_OutputPinName(TEXT("Config"));
+static FName GetModConfiguration_WorldContextPinName(TEXT("WorldContext"));
 
 void UK2Node_GetModConfiguration::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const {
 	auto CustomizeCallback = [](UEdGraphNode* Node, bool bIsTemplateNode, UClass* ConfigurationClass) {
@@ -63,6 +64,10 @@ void UK2Node_GetModConfiguration::AllocateDefaultPins() {
 	//Allocate Exec input/outputs pins for this node
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute);
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
+	
+	if (GetBlueprint()->ParentClass->HasMetaData(FBlueprintMetadata::MD_ShowWorldContextPin)) {
+		CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Object, UObject::StaticClass(), GetModConfiguration_WorldContextPinName);
+	}
 
 	//Allocate struct output node when we have valid configuration struct resolved
 	UScriptStruct* ConfigStruct = GetConfigurationStruct();
@@ -79,6 +84,7 @@ void UK2Node_GetModConfiguration::ExpandNode(FKismetCompilerContext& CompilerCon
 	Super::ExpandNode(CompilerContext, SourceGraph);
 
 	UEdGraphPin* InputExecPin = FindPinChecked(UEdGraphSchema_K2::PN_Execute, EGPD_Input);
+	UEdGraphPin* InputWorldContext = FindPin(GetModConfiguration_WorldContextPinName, EGPD_Input);
 	UEdGraphPin* OutputThenExecPin = FindPinChecked(UEdGraphSchema_K2::PN_Then, EGPD_Output);
 	UEdGraphPin* StructOutputPin = GetOutputConfigStructPin();
 	
@@ -89,17 +95,23 @@ void UK2Node_GetModConfiguration::ExpandNode(FKismetCompilerContext& CompilerCon
 	
 	//Allocate node for obtaining engine subsystem of UConfigManager
 	UK2Node_CallFunction* GetConfigManagerNode = SourceGraph->CreateIntermediateNode<UK2Node_CallFunction>();
-	const FName GetEngineSubsystemFuncName = GET_FUNCTION_NAME_CHECKED(USubsystemBlueprintLibrary, GetEngineSubsystem);
+	const FName GetEngineSubsystemFuncName = GET_FUNCTION_NAME_CHECKED(USubsystemBlueprintLibrary, GetGameInstanceSubsystem);
 	GetConfigManagerNode->FunctionReference.SetExternalMember(GetEngineSubsystemFuncName, USubsystemBlueprintLibrary::StaticClass());
 	
 	GetConfigManagerNode->PostPlacedNewNode();
 	GetConfigManagerNode->AllocateDefaultPins();
 	CompilerContext.MessageLog.NotifyIntermediateObjectCreation(GetConfigManagerNode, this);
 
+	UEdGraphPin* CallCreateWorldContextPin = GetConfigManagerNode->FindPinChecked(TEXT("ContextObject"));
 	UEdGraphPin* CallCreateClassTypePin = GetConfigManagerNode->FindPinChecked(TEXT("Class"));
 	UEdGraphPin* SubsystemOutputPin = GetConfigManagerNode->GetReturnValuePin();
 
-	//Set engine subsystem class for the GetEngineSubsystem method call
+	// Copy the world context connection from the spawn node to 'USubsystemBlueprintLibrary::Get[something]Subsystem' if necessary
+	if (InputWorldContext) {
+		CompilerContext.MovePinLinksToIntermediate(*InputWorldContext, *CallCreateWorldContextPin);
+	}
+	
+	//Set engine subsystem class for the GetGameInstanceSubsystem method call
 	CallCreateClassTypePin->DefaultObject = UConfigManager::StaticClass();
 	
 	//Allocate node for making config id struct literal

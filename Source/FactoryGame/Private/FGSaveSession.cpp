@@ -60,7 +60,7 @@ void UFGSaveSession::MakeSureAllActorsAreSaved(){ }
 TArray< AActor* > UFGSaveSession::GatherSaveActors(ULevel* level){ return TArray<AActor*>(); }
 void UFGSaveSession::SaveWorldEndOfFrame( UWorld* world, ELevelTick, float){ }
 void UFGSaveSession::SaveWorldImplementation(const FString& gameName){ }
-bool UFGSaveSession::SaveToDiskWithCompression(const FString& fullFilePath, FBufferArchive64& memArchive, FSaveHeader& saveHeader){ return bool(); }
+bool UFGSaveSession::SaveToDiskWithCompression(const FString& fullFilePath,  FBufferArchive64& memArchive, FSaveHeader& saveHeader){ return bool(); }
 bool UFGSaveSession::LoadCompressedFileFromDisk(const FString& saveGameName){ return bool(); }
 bool UFGSaveSession::LoadDeprecatedFileFromDisk(const FString& saveGameName){ return bool(); }
 bool UFGSaveSession::PeekAtFileHeader(const FString& fullFilePath, FSaveHeader& out_fileHeader) const{ return bool(); }

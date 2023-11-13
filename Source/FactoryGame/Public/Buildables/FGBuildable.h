@@ -4,25 +4,30 @@
 
 #include "FactoryGame.h"
 #include "AbstractInstanceInterface.h"
-#include "GameFramework/Actor.h"
-#include "FGUseableInterface.h"
-#include "ItemAmount.h"
-#include "FGDismantleInterface.h"
-#include "FGBlueprintFunctionLibrary.h"
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Engine/SCS_Node.h"
-#include "FGSaveInterface.h"
-#include "FactoryTick.h"
-#include "FGColorInterface.h"
-#include "Replication/FGReplicationDetailActorOwnerInterface.h"
-#include "FGBuildableSubsystem.h"
 #include "FGAttachmentPoint.h"
-#include "FGFactoryClipboard.h"
+#include "FGBlueprintFunctionLibrary.h"
+#include "FGBuildableSubsystem.h"
+#include "FGColorInterface.h"
 #include "FGDecorationTemplate.h"
+#include "FGDismantleInterface.h"
+#include "FGFactoryClipboard.h"
 #include "FGRainOcclusionActor.h"
 #include "FGRemoteCallObject.h"
+#include "FGSaveInterface.h"
+#include "FGUseableInterface.h"
+#include "FactoryTick.h"
+#include "GameFramework/Actor.h"
+#include "ItemAmount.h"
+#include "Replication/FGReplicationDetailActorOwnerInterface.h"
 #include "Replication/FGReplicationDetailInventoryComponent.h"
 #include "FGBuildable.generated.h"
+
+DECLARE_STATS_GROUP( TEXT( "FactoryQuick" ), STATGROUP_FactoryQuick, STATCAT_Advanced );
+
+#define FACTORY_QUICK_SCOPE_CYCLE_COUNTER(Stat) \
+	DECLARE_SCOPE_CYCLE_COUNTER(TEXT(#Stat),Stat,STATGROUP_FactoryQuick)
 
 static const FString MAIN_MESH_NAME( TEXT( "MainMesh" ) );
 
@@ -174,7 +179,7 @@ public:
 	//~ End IFGColorInterface
 
 	//~ Begin IFGUseableInterface
-	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) const override;
+	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual bool IsUseable_Implementation() const override;
@@ -216,6 +221,14 @@ public:
 	virtual void StopIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
 	//~ End IFGDismantleInterface
+
+	/** Returns what actor should be dismantled when trying to dismantle this one, in case we want to redirect it. */
+	UFUNCTION( BlueprintPure, Category = "Dismantle" )
+	AActor* GetDismantleRedirectActor() const { return mDismantleRedirectActor; }
+
+	/** Use this to redirect what actor gets dismantled when trying to dismantle this actor with the buildgun. */
+	UFUNCTION( BlueprintCallable, Category = "Dismantle" )
+	void SetDismantleRedirectActor( AActor* actorToRedirectTo ) { mDismantleRedirectActor = actorToRedirectTo; }
 
 	virtual void StartIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter, class UFGCircuitConnectionComponent* overlappingConnection );
 	virtual void StopIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter );
@@ -302,6 +315,10 @@ public:
 	virtual void ExecutePlayBuildEffects();
 	virtual void OnBuildEffectFinished();
 
+	/** Called when the build effect is finished to notify the blueprints */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Buildable|Build Effect", DisplayName = "On Build Effect Finished" )
+	void K2_OnBuildEffectFinished();
+
 	UFUNCTION( BlueprintCallable, Category = "Buildable|Build Effect" )
 	virtual void PlayBuildEffectActor( AActor* inInstigator );
 
@@ -309,7 +326,7 @@ public:
 	virtual void ExecutePlayBuildActorEffects();
 	
 	UFUNCTION()
-	virtual void OnBuildEffectActorFinished( );
+	virtual void OnBuildEffectActorFinished();
 
 	/*Handles logic for blueprint / zooping build effect behaviour, returns true when it should be a part of the multi
 	 * build effect actor, false when it shouldn't */
@@ -329,6 +346,7 @@ public:
 	void SetIsPlayingBuildEffect( bool isPlaying ) { mBuildEffectIsPlaying = isPlaying; }
 
 	/** Returns whether or not the build effect is currently running */
+	UFUNCTION( BlueprintPure, Category = "Buildable|Build Effect" )
 	bool IsPlayingBuildEffect() const { return mBuildEffectIsPlaying; }
 	
 	/** Returns the cached bounds */
@@ -675,6 +693,8 @@ protected:
 	UPROPERTY()
 	UFGBuildableSparseDataObject* mBuildableSparseDataCDO;
 
+	UPROPERTY()
+	AActor* mDismantleRedirectActor;
 	
 	//@todorefactor With meta = ( ShowOnlyInnerProperties ) it does not show and PrimaryActorTick seems to be all custom properties, so I moved to another category but could not expand.
 	/** Controls if we should receive Factory_Tick and how frequent. */

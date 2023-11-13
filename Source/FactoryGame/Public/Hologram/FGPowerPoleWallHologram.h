@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGWallAttachmentHologram.h"
+#include "FGWallAttachmentHologram.h"
 #include "FGPowerPoleWallHologram.generated.h"
 
 /**

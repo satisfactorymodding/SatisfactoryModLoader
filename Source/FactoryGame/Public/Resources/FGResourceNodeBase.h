@@ -3,13 +3,13 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Replication/FGStaticReplicatedActor.h"
-#include "FGSaveInterface.h"
-#include "Resources/FGResourceDescriptor.h"
-#include "Resources/FGExtractableResourceInterface.h"
-#include "FGUseableInterface.h"
 #include "FGActorRepresentationInterface.h"
+#include "FGExtractableResourceInterface.h"
+#include "FGResourceDescriptor.h"
+#include "FGSaveInterface.h"
 #include "FGSignificanceInterface.h"
+#include "FGUseableInterface.h"
+#include "Replication/FGStaticReplicatedActor.h"
 #include "FGResourceNodeBase.generated.h"
 
 /** Enum that specifies what type of a resource node this is. Used mostly for simplify UI work and not having to look/cast specific classes. */
@@ -72,7 +72,7 @@ public:
 	// End IFSaveInterface
 
 	// Begin IFGUseableInterface
-	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) const override;
+	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
 	virtual bool IsUseable_Implementation() const override { return true; }
 	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
 	// End IFGUseableInterface
@@ -197,7 +197,7 @@ protected:
 
 	/** If we have no static mesh but a decal, then we use this for collision*/
 	UPROPERTY( BlueprintReadOnly, VisibleDefaultsOnly, Category = "Resources" )
-	UBoxComponent* mBoxComponent;
+	class UBoxComponent* mBoxComponent;
 
 	/** If true, then we are occupied by something // [Dylan 3/2/2020] - Removed savegame meta */
 	UPROPERTY( ReplicatedUsing = OnRep_IsOccupied, BlueprintReadOnly, Category = "Resources" )

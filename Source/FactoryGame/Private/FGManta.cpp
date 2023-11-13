@@ -2,6 +2,7 @@
 
 #include "FGManta.h"
 #include "Components/SceneComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGManta::AFGManta() : Super() {
 	this->mCachedSpline = nullptr;

@@ -2,9 +2,9 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "UObject/Interface.h"
 #include "FGOnlineSessionSettings.h"
 #include "Misc/SecureHash.h"
+#include "UObject/Interface.h"
 #include "FGSaveManagerInterface.generated.h"
 
 UENUM( BlueprintType )
@@ -159,7 +159,7 @@ struct FACTORYGAME_API FSaveHeader
 	FDateTime SaveDateTime;
 
 	/** What was the last visibility of the game when we played it */
-	TEnumAsByte<ESessionVisibility> SessionVisibility;
+	ESessionVisibility SessionVisibility;
 
 	/** Save the FEditorObjectVersion that this save file was written with */
 	int32 EditorObjectVersion;
@@ -326,7 +326,7 @@ public:
 	virtual void DeleteSaveFile( const FSaveHeader& SaveGame, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate ) = 0;
 
 	UFUNCTION( BlueprintCallable, Category=SaveManager )
-	virtual void LoadSaveFile( const FSaveHeader& SaveGame, TMap<FString, FString> Options, class APlayerController* Player  ) = 0;
+	virtual class USessionMigrationSequence* LoadSaveFile( const FSaveHeader& SaveGame, TMap<FString, FString> Options, class APlayerController* Player  ) = 0;
 
 	UFUNCTION( BlueprintCallable, Category=SaveManager )
 	virtual void SaveGame( const FString& SaveName, FOnSaveMgrInterfaceSaveGameComplete CompleteDelegate ) = 0;

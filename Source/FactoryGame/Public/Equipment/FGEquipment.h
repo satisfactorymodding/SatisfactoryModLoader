@@ -3,13 +3,14 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "GameFramework/Actor.h"
-#include "ItemAmount.h"
-#include "FGSaveInterface.h"
+#include "Blueprint/UserWidget.h"
 #include "CharacterAnimationTypes.h"
 #include "FGHealthComponent.h"
-#include "Replication/FGReplicationDependencyActorInterface.h"
+#include "FGSaveInterface.h"
+#include "GameFramework/Actor.h"
 #include "InputMappingContext.h"
+#include "ItemAmount.h"
+#include "Replication/FGReplicationDependencyActorInterface.h"
 #include "FGEquipment.generated.h"
 
 // [ZolotukhinN:14/03/2023] Moved here from FGCharacterPlayer.h because it's used here and FGCharacterPlayer.h includes this header, so we cannot include it here
@@ -47,12 +48,7 @@ enum class EDefaultEquipmentAction : uint8
 	ALL				= 0xFF		UMETA( Hidden )
 };
 
-// Logic operators for the EDefaultEquipmentAction enum
-inline EDefaultEquipmentAction operator | ( EDefaultEquipmentAction a, EDefaultEquipmentAction b ) { return (EDefaultEquipmentAction)( (uint8)a | (uint8)b ); }
-inline EDefaultEquipmentAction operator & ( EDefaultEquipmentAction a, EDefaultEquipmentAction b ) { return (EDefaultEquipmentAction)( (uint8)a & (uint8)b ); }
-
-inline EDefaultEquipmentAction& operator |= ( EDefaultEquipmentAction& a, EDefaultEquipmentAction b ) { return (EDefaultEquipmentAction&)( (uint8&)a |= (uint8)b ); }
-inline EDefaultEquipmentAction& operator &= ( EDefaultEquipmentAction& a, EDefaultEquipmentAction b ) { return (EDefaultEquipmentAction&)( (uint8&)a &= (uint8)b ); }
+ENUM_CLASS_FLAGS( EDefaultEquipmentAction )
 
 /** Events for the default equipment actions. */
 UENUM( BlueprintType )
@@ -276,7 +272,13 @@ public:
 
 	/** Called whenever an interact widget gets added or removed. */
     virtual void OnInteractWidgetAddedOrRemoved( class UFGInteractWidget* widget, bool added );
-	
+
+	/** Allows the equipment to intercept the shortcut pressed event. Return true if the event was handled by the equipment */
+	virtual bool OnShortcutPressed( int32 shortcutIndex ) { return false; }
+
+	/** Plays camera animation sequence for the local player in 1P, otherwise does nothing */
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	void PlayCameraAnimation( class UCameraAnimationSequence* cameraAnimationSequence );
 protected:
 	UFUNCTION( Server, Reliable )
 	void Server_TriggerDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent );
@@ -332,7 +334,7 @@ protected:
 
 	UFUNCTION()
 	void OnChildEquipmentReplicated();
-
+	
 	/** Used to apply / remove the mapping context for this equipment. */
 	void SetMappingContextApplied( bool applied );
 
@@ -355,7 +357,7 @@ public:
 
 	/** Camera shake to play when sprinting */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
-	TSubclassOf< class ULegacyCameraShake > mSprintHeadBobShake;
+	UCameraAnimationSequence* mSprintHeadBobCameraAnim;
 
 	//@todo Are these used by Joel or legacy?
 	/** Sound played when equipping */
@@ -392,6 +394,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	TSubclassOf< class AFGEquipmentChild > mChildEquipmentClass;
 
+	/** Whether or not this equipment needs the default equipment mapping context. */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
+	bool mNeedsDefaultEquipmentMappingContext;
+	
 	//@todo FIXUP Remove BlueprintReadOnly
 	/** The cost of using this equipment */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment" )

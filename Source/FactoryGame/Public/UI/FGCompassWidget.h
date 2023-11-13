@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanel.h"
+#include "CoreMinimal.h"
 #include "FGCompassWidget.generated.h"
 
 /**

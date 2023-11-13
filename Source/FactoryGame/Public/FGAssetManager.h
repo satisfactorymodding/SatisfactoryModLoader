@@ -24,8 +24,10 @@ public:
 	
 	/** Let us exclude certain packages that we don't want to include */
 	virtual EPrimaryAssetCookRule GetPackageCookRule( FName PackageName ) const override;
+
+	// [ZolotukhinN:21/07/2023] Added this to make world partition content bundle system aware of the cooking parameters
+	FORCEINLINE EIncludeInBuilds GetMinimumIncludeInBuildFlag() const { return mMinimumIncludeInBuildFlag; }
 #endif
-	
 protected:
 #if WITH_EDITORONLY_DATA
 	/** Cached version of the max current tier */

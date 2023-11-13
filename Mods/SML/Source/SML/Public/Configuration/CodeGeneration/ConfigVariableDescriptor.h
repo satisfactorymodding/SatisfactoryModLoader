@@ -78,7 +78,7 @@ private:
     UClass* BaseObjectClass;
     UClass* BaseClassType;
     class UConfigGeneratedStruct* ConfigGeneratedStructType;
-    TSharedPtr<FConfigVariableDescriptor> ArrayElementDescriptor;    
+    TSharedPtr<FConfigVariableDescriptor> ArrayElementDescriptor;
     TSharedPtr<FConfigVariableDescriptor> MapKeyDescriptor;
     TSharedPtr<FConfigVariableDescriptor> MapValueDescriptor;
 };

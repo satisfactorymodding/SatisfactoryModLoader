@@ -2,9 +2,8 @@
 #include "Command/ChatCommandLibrary.h"
 #include "FGChatManager.h"
 #include "FGPlayerController.h"
-#include "Patching/NativeHookManager.h"
+#include "SatisfactoryModLoader.h"
 #include "Net/UnrealNetwork.h"
-#include "Registry/RemoteCallObjectRegistry.h"
 
 USMLRemoteCallObject::USMLRemoteCallObject() {
 	CommandSender = CreateDefaultSubobject<UPlayerCommandSender>(TEXT("PlayerCommandSender"));
@@ -44,14 +43,20 @@ void USMLRemoteCallObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 }
 
 void USMLRemoteCallObject::RegisterChatCommandPatch() {
-	SUBSCRIBE_METHOD(AFGPlayerController::EnterChatMessage, [](auto& Scope, AFGPlayerController* PlayerController, const FString& Message) {
-    if (Message.StartsWith(TEXT("/"))) {
-        const FString CommandLine = Message.TrimStartAndEnd().RightChop(1);
-        USMLRemoteCallObject* RemoteCallObject = Cast<USMLRemoteCallObject>(PlayerController->GetRemoteCallObjectOfClass(USMLRemoteCallObject::StaticClass()));
-        if (RemoteCallObject != NULL) {
-            RemoteCallObject->HandleChatCommand(CommandLine);
-        }
-        Scope.Cancel();
-    }
-});
+	
+	AFGPlayerController::PlayerControllerBegunPlay.AddLambda( []( AFGPlayerController* PlayerController )
+	{
+		PlayerController->ChatMessageEntered.AddLambda( [=]( const FChatMessageStruct& ChatMessage, bool& bCancelChatMessage )
+		{
+			if (ChatMessage.MessageString.StartsWith(TEXT("/")))
+			{
+				const FString CommandLine = ChatMessage.MessageString.TrimStartAndEnd().RightChop(1);
+				if ( USMLRemoteCallObject* RemoteCallObject = PlayerController->GetRemoteCallObjectOfClass<USMLRemoteCallObject>() )
+				{
+				   RemoteCallObject->HandleChatCommand(CommandLine);
+				   bCancelChatMessage = true;
+				}
+			}
+		} );
+	} );
 }

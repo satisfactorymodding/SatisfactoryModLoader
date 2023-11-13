@@ -9,3 +9,4 @@ TSharedRef<STableViewBase> UFGListView::RebuildListWidget() {
 UFGListView::UFGListView(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mWidgetBarStyle.Thickness = 8.0;
 }
+UUserWidget* UFGListView::GetEntryWidgetForItem(UObject* item) const{ return nullptr; }

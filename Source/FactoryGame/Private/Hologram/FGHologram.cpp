@@ -3,6 +3,7 @@
 #include "Hologram/FGHologram.h"
 #include "AkAudio/Classes/AkComponent.h"
 #include "Components/SceneComponent.h"
+#include "Net/UnrealNetwork.h"
 
 TAutoConsoleVariable<int32> CVarHologramDebug(TEXT("CVarHologramDebug"), 0, TEXT(""));
 AFGHologram::AFGHologram() : Super() {
@@ -76,6 +77,7 @@ void AFGHologram::Scroll(int32 delta){ }
 void AFGHologram::ScrollRotate(int32 delta, int32 step){ }
 int32 AFGHologram::GetScrollRotateValue() const{ return int32(); }
 void AFGHologram::SetScrollRotateValue(int32 rotValue){ }
+void AFGHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
 void AFGHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
 bool AFGHologram::IsCurrentBuildMode(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode) const{ return bool(); }
 void AFGHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ }
@@ -110,6 +112,7 @@ bool AFGHologram::CanNudgeHologram() const{ return bool(); }
 void AFGHologram::LockHologramPosition(bool lock){ }
 void AFGHologram::SetNudgeOffset(const FVector& NewNudgeOffset){ }
 ENudgeFailReason AFGHologram::AddNudgeOffset(const FVector& Offset){ return ENudgeFailReason(); }
+float AFGHologram::GetNudgeDistance() const{ return float(); }
 ENudgeFailReason AFGHologram::NudgeTowardsWorldDirection(const FVector& Direction){ return ENudgeFailReason(); }
 ENudgeFailReason AFGHologram::NudgeHologram(const FVector& NudgeInput, const FHitResult& HitResult){ return ENudgeFailReason(); }
 AFGHologram* AFGHologram::GetNudgeHologramTarget(){ return nullptr; }

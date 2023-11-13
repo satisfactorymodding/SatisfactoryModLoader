@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Resources/FGResourceNodeBase.h"
+#include "FGResourceNodeBase.h"
 #include "FGUseableInterface.h"
-#include "Resources/FGExtractableResourceInterface.h"
+#include "FGExtractableResourceInterface.h"
 #include "FGResourceNode.generated.h"
 
 class UFGResourceDescriptor;
@@ -74,7 +74,7 @@ public:
 	// End AActor interface
 
 	//~ Begin IFGUseableInterface
-	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) const override;
+	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual bool IsUseable_Implementation() const override { return true; }

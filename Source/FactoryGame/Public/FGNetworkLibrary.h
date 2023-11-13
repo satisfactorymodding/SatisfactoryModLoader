@@ -9,11 +9,13 @@
  */
 
 #include "FactoryGame.h"
+#include "CommonSessionTypes.h"
 #include "FGLocalPlayer.h"
-#include "NAT.h"
-#include "FindSessionsCallbackProxy.h"
-#include "FGOnlineSessionSettings.h"
 #include "FGOnlineSessionClient.h"
+#include "FGOnlineSessionSettings.h"
+#include "FindSessionsCallbackProxy.h"
+#include "Online/FGNat.h"
+#include "Online/Sessions.h"
 #include "Server/FGServerBeaconClient.h"
 #include "FGNetworkLibrary.generated.h"
 
@@ -39,7 +41,7 @@ enum class ESessionLookupState: uint8
 	Done
 };
 
-DECLARE_DYNAMIC_DELEGATE_OneParam( FSearchQueryCompleteDelegate, FBlueprintSessionResult, result );
+DECLARE_DYNAMIC_DELEGATE_OneParam( FSearchQueryCompleteDelegate, FCommonSession, result );
 
 UINTERFACE( MinimalAPI, Blueprintable )
 class UFGSessionLookupClient : public UInterface
@@ -237,18 +239,18 @@ class UFGSessionLibrary : public UBlueprintFunctionLibrary
 public:
 	/** Get the settings from a session **/
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
-	static FFGOnlineSessionSettings GetSessionSettings( const FBlueprintSessionResult& session );
+	static FFGOnlineSessionSettings GetSessionSettingsForSession( UObject* worldContext, const FCommonSession& session );
 
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session")
-	static FString GetSessionId( const FBlueprintSessionResult& session );
+	static FString GetSessionId( UWorld* worldContext, const FCommonSession& session );
 
 	/** Get the settings from a session **/
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
-	static TEnumAsByte<ESessionVisibility> GetSessionVisibility( const FBlueprintSessionResult& session );
+	static ESessionVisibility GetSessionVisibility( UObject* worldContext, const FCommonSession& session );
 
 	/** Get the session information about my session */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
-	static FBlueprintSessionResult GetMySession( ULocalPlayer* localPlayer );
+	static FCommonSession GetMySession( ULocalPlayer* localPlayer );
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Online|Session" )
 	static void GetPlayersInMySession( ULocalPlayer* localPlayer, TArray< FUniqueNetIdRepl >& out_playersInSession );
@@ -259,14 +261,14 @@ public:
 	
 	/** return true if the session is valid */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session", meta=(DisplayName = "Valid (FBlueprintSessionResult)", CompactNodeTitle = "Is Valid", Keywords = "valid session") )
-	static bool IsSessionValid( FBlueprintSessionResult session );
+	static bool IsSessionValid( const FCommonSession& session );
 
 	UFUNCTION(BlueprintPure, Category = "FactoryGame|Online|Session")
-	static TEnumAsByte<ECantJoinReason> IsSessionJoinable(const FBlueprintSessionResult& session);
+	static TEnumAsByte<ECantJoinReason> IsSessionJoinable( UObject* worldContext, const FCommonSession& session );
 
 	/** Join a session gracefully */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online|Session", Meta = ( DefaultToSelf = "worldContext" )  )
-	static void JoinSession( UObject* worldContext, const FBlueprintSessionResult& session );
+	static void JoinSession( APlayerController *player, const FCommonSession& session );
 
 	///** Join a session by session ID */
 	//UFUNCTION( BlueprintCallable, Category = "FactoryGame|Online|Session", Meta = ( DefaultToSelf = "worldContext" ) )
@@ -274,24 +276,24 @@ public:
 
 	/** Get the max number of players in a session */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
-	static int32 GetMaxNumberOfPlayers( const FBlueprintSessionResult& session );
+	static int32 GetMaxNumberOfPlayers( UObject* worldContext, const FCommonSession& session );
 	
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Online|Session")
-	static bool QuerySessionByFriend(UObject* worldContext, const FUniqueNetIdRepl& playerId, const FFGOnlineFriend& targetFriend, FSearchQueryCompleteDelegate onComplete);
+	// UFUNCTION( BlueprintCallable, Category = "FactoryGame|Online|Session")
+	// static bool QuerySessionByFriend(UObject* worldContext, const FUniqueNetIdRepl& playerId, const FFGOnlineFriend& targetFriend, FSearchQueryCompleteDelegate onComplete);
 
 	///** Get the session ID in the form of a string */
 	//UFUNCTION( BlueprintPure, Category = "FactoryGame|Online|Session" )
 	//static FString GetSessionID( ULocalPlayer* localPlayer );
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Online|Session")
-	static bool QuerySessionByID(UObject* worldContext, const FUniqueNetIdRepl& playerId, FString sessionOnlineID, FSearchQueryCompleteDelegate onComplete);
+	static bool QuerySessionByID(ULocalPlayer* localPlayer, FString sessionOnlineID, FSearchQueryCompleteDelegate onComplete);
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Online" )
 	static bool CheckIsCompatibleVersion( const FFGOnlineSessionSettings& session );
 
 public:
 	// Native library functions
-	static void UpdateSessionFromSessionSettings( FOnlineSessionSettings& session, const FFGOnlineSessionSettings& sessionSettings );
-	static void SessionSettingsFromSession( const FOnlineSessionSettings& session, FFGOnlineSessionSettings& sessionSettings );
+	static UE::Online::FSessionSettingsUpdate CreateSessionSettingsUpdate( const TSharedRef<const UE::Online::ISession> session, const FFGOnlineSessionSettings& gameSessionSettings );
+	static FFGOnlineSessionSettings SessionSettingsFromSession( const TSharedRef<const UE::Online::ISession> session );
 
 private:
 	void OnFindCompleteDelicgateFunction(bool wasSucsessful);

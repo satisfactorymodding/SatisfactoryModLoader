@@ -2,6 +2,7 @@
 
 #include "Equipment/FGParachute.h"
 #include "Equipment/FGEquipment.h"
+#include "Net/UnrealNetwork.h"
 
 AFGParachute::AFGParachute() : Super() {
 	this->mParachuteSettings = nullptr;

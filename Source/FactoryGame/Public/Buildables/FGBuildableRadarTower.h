@@ -3,15 +3,15 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildableFactory.h"
 #include "FGActorRepresentationInterface.h"
+#include "FGBuildableFactory.h"
 #include "FGRadarTowerRepresentation.h"
 #include "FGScannableDetails.h"
 #include "FGBuildableRadarTower.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnObjectScanned, AActor*, newRepresentation );
 DECLARE_STATS_GROUP( TEXT( "RadarTower" ), STATGROUP_RadarTower, STATCAT_Advanced );
-DECLARE_LOG_CATEGORY_EXTERN( LogRadarTower, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogRadarTower, Log, All );
 
 /**
  * Radar Tower reveals nearby fog of war on the Map. Expanding over time until it reaches its max limit.

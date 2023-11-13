@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildableFactory.h"
+#include "FGBuildableFactory.h"
 #include "FGUseableInterface.h"
 #include "FGBuildableRailroadSwitchControl.generated.h"
 
@@ -34,7 +34,6 @@ public:
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
-	virtual void Destroyed() override;
 	// End AActor interface
 
 	// Begin FGBuildable
@@ -49,10 +48,11 @@ public:
 	//~ Begin AFGBuildable interface
 	virtual bool CanBeSampled_Implementation() const{ return false; }
 	virtual bool ShouldBeConsideredForBase_Implementation() override { return false; }
+	virtual void Dismantle_Implementation() override;
 	//~ End AFGBuildable interface
 
 	// Begin IFGUseableInterface
-	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) const override;
+	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual bool IsUseable_Implementation() const override;

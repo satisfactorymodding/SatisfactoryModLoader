@@ -17,7 +17,8 @@ public class FactoryGame : ModuleRules
 			"DeveloperSettings",
 			"PhysicsCore",
 			"InputCore",
-			"OnlineSubsystem", "OnlineSubsystemNull", "OnlineSubsystemUtils",
+			"OnlineSubsystem", "OnlineSubsystemNull", "OnlineSubsystemUtils", "OnlineServicesInterface",
+			"OnlineIntegration",
 			"SignificanceManager",
 			"GeometryCollectionEngine",
 			"ChaosVehiclesCore", "ChaosVehicles", "ChaosSolverEngine",
@@ -29,7 +30,6 @@ public class FactoryGame : ModuleRules
 			"AIModule",
 			"GameplayTasks",
 			"SlateCore", "Slate", "UMG",
-			"InstancedSplines",
 			"RenderCore",
 			"CinematicCamera",
 			"Foliage",
@@ -39,6 +39,7 @@ public class FactoryGame : ModuleRules
             "TemplateSequence",
             "NetCore",
             "GameplayTags",
+			"ModelViewViewModel",
 		});
         
 		if (Target.Platform == UnrealTargetPlatform.Win64) {

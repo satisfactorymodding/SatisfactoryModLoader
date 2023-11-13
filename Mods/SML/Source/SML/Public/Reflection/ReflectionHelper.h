@@ -41,7 +41,7 @@ public:
     
     template <typename T>
     static T* FindPropertyChecked(UStruct* Class, const TCHAR* PropertyName) {
-        T* Property = Cast<T>(Class->FindPropertyByName(PropertyName));
+        T* Property = CastField<T>(Class->FindPropertyByName(PropertyName));
         checkf(Property, TEXT("Property with given name not found in class: %s"), PropertyName);
         return Property;
     }
@@ -50,7 +50,7 @@ public:
     static T* FindPropertyByShortNameChecked(UStruct* Class, const TCHAR* PropertyName) {
         for(FProperty* Property = Class->PropertyLink; Property; Property = Property->PropertyLinkNext) {
             if (Property->GetName().StartsWith(PropertyName)) {
-                if (T* CastedProperty = Cast<T>(Property)) {
+                if (T* CastedProperty = CastField<T>(Property)) {
                     return CastedProperty;
                 }
             }
@@ -61,7 +61,7 @@ public:
     
     template<typename T>
     static typename T::TCppType GetPropertyValue(const UObject* Object, const TCHAR* PropertyName, int32 ArrayIndex = 0) {
-        T* Property = Cast<T>(Object->GetClass()->FindPropertyByName(PropertyName));
+        T* Property = CastField<T>(Object->GetClass()->FindPropertyByName(PropertyName));
         checkf(Property, TEXT("Property not found in class %s: %s"), *Object->GetClass()->GetPathName(), PropertyName);
         return Property->GetPropertyValue_InContainer(Object, ArrayIndex);
     }

@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "Engine/DeveloperSettings.h"
-#include "IncludeInBuild.h"
 #include "EngineMinimal.h"
+#include "IncludeInBuild.h"
 #include "Templates/SubclassOf.h"
 #include "FGOptionsSettings.generated.h"
 

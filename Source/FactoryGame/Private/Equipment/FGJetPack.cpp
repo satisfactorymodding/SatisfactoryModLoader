@@ -2,6 +2,7 @@
 
 #include "Equipment/FGJetPack.h"
 #include "Equipment/FGEquipment.h"
+#include "Net/UnrealNetwork.h"
 
 AFGJetPack::AFGJetPack() : Super() {
 	this->mDefaultAirControl = 0.0;
@@ -35,6 +36,7 @@ void AFGJetPack::RegenerateFuel(const float delta){ }
 void AFGJetPack::Equip(AFGCharacterPlayer* character){ }
 void AFGJetPack::UnEquip(){ }
 void AFGJetPack::Input_Thrust(const FInputActionValue& actionValue){ }
+void AFGJetPack::ConsumableTypeIndexChanged_OnRep(){ }
 bool AFGJetPack::CanThrust() const{ return bool(); }
 void AFGJetPack::MakeActiveNoise(){ }
 bool AFGJetPack::CheckCurrentAvailableFuel(){ return bool(); }

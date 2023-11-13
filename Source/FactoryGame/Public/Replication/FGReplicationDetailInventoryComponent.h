@@ -5,7 +5,6 @@
 #include "FactoryGame.h"
 #include "Components/ActorComponent.h"
 #include "FGInventoryComponent.h"
-#include "Replication/FGReplicationDetailActor.h" // MODDING EDIT: for mReplicationDetailActor
 #include "FGReplicationDetailInventoryComponent.generated.h"
 
 

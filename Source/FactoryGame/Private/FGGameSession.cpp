@@ -26,4 +26,6 @@ void AFGGameSession::ListenForIntroSequenceUpdated(){ }
 bool AFGGameSession::AllowsLoginAttempts(const  APlayerController* PC) const{ return bool(); }
 void AFGGameSession::ClearFailTracking(const  APlayerController* PC){ }
 void AFGGameSession::IntroSequenceUpdated(){ }
-void AFGGameSession::OnUpdateSessionComplete(FName sessionName, bool wasSuccessful){ }
+void AFGGameSession::RegisterPlayer(APlayerController* newPlayer, const FUniqueNetIdRepl& uniqueNetId, bool wasFromInvite){ }
+void AFGGameSession::UnregisterPlayer(FName InSessionName, const FUniqueNetIdRepl& uniqueNetId){ }
+void AFGGameSession::UnregisterPlayers(FName InSessionName, const TArray<FUniqueNetIdRepl>& players){ }

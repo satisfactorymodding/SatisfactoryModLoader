@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "UObject/Interface.h"
 #include "FGExtractableResourceInterface.generated.h"
 
 /**

@@ -10,6 +10,7 @@
 #include "LevelEditor.h"
 #include "IPluginBrowser.h"
 #include "ModWizardDefinition.h"
+#include "SAlpakitLogTabContent.h"
 
 static const FName AlpakitTabName("Alpakit");
 
@@ -18,6 +19,7 @@ static const FName AlpakitTabName("Alpakit");
 DEFINE_LOG_CATEGORY(LogAlpakit)
 
 const FName FAlpakitModule::ModCreatorTabName(TEXT("ModCreator"));
+const FName FAlpakitModule::AlpakitLogTabName(TEXT("AlpakitLog"));
 
 void FAlpakitModule::StartupModule() {
     //Register editor settings
@@ -74,6 +76,13 @@ void FAlpakitModule::StartupModule() {
         FOnSpawnTab::CreateRaw(this, &FAlpakitModule::HandleSpawnModCreatorTab))
         .SetDisplayName(LOCTEXT("NewPluginTabHeader", "New Mod"))
         .SetMenuType(ETabSpawnerMenuType::Hidden);
+
+	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
+		AlpakitLogTabName,
+		FOnSpawnTab::CreateRaw(this, &FAlpakitModule::HandleSpawnAlpakitLogTab))
+		.SetDisplayName(LOCTEXT("AlpakitLogHeader", "Alpakit Log"))
+		.SetIcon( FSlateIcon( FAlpakitStyle::Get().GetStyleSetName(), TEXT("Alpakit.OpenPluginWindow") ) )
+		.SetMenuType(ETabSpawnerMenuType::Hidden);
 }
 
 void FAlpakitModule::ShutdownModule() {
@@ -85,12 +94,92 @@ void FAlpakitModule::ShutdownModule() {
     FAlpakitCommands::Unregister();
 
     FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitTabName);
+	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(ModCreatorTabName);
+	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitLogTabName);
+}
+
+void FAlpakitModule::PackageMods(TArray<TSharedRef<IPlugin>> Mods) {
+    if (Mods.Num() == 0) {
+        return;
+    }
+    
+    TArray<TSharedRef<FAlpakitProfile>> ProfilesToPackage;
+    
+    UAlpakitSettings* Settings = UAlpakitSettings::Get();
+	    
+    for (TSharedRef<IPlugin> Mod : Mods) {
+        TSharedRef<FAlpakitProfile> Profile = MakeShared<FAlpakitProfile>(Mod->GetName());
+
+        Profile->bBuild = Mod->GetDescriptor().Modules.Num() > 0;
+
+        Profile->BuildConfiguration = Settings->GetBuildConfiguration();
+        // Profile->CookedPlatforms = Settings->CookPlatforms;
+        Profile->CookedPlatforms = {TEXT("Windows")}; // Only Windows is allowed for now
+
+        if (Settings->bCopyModsToGame) {
+            FAlpakitProfileGameInfo& GameInfo = Profile->PlatformGameInfo.FindOrAdd(TEXT("Windows"));
+            GameInfo.bCopyToGame = true;
+            GameInfo.GamePath = Settings->SatisfactoryGamePath.Path;
+        }
+        
+        ProfilesToPackage.Add(Profile);
+    }
+
+    TSharedRef<FAlpakitProfile> LastProfile = ProfilesToPackage.Last();
+
+    if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE) {
+        FAlpakitProfileGameInfo& GameInfo = LastProfile->PlatformGameInfo.FindOrAdd(TEXT("Windows"));
+        GameInfo.StartGameType = Settings->LaunchGameAfterPacking;
+    }
+
+    PackageMods(ProfilesToPackage);
+}
+
+void FAlpakitModule::PackageMods(TArray<TSharedRef<FAlpakitProfile>> ProfilesToPackage) {
+    if(!ensure(!bIsPackaging)) {
+        return;
+    }
+    bIsPackaging = true;
+
+    ProfilePackageQueue = ProfilesToPackage;
+
+    ProcessQueueItem();
+}
+
+void FAlpakitModule::ProcessQueueItem() {
+    if (ProfilePackageQueue.IsEmpty()) {
+        bIsPackaging = false;
+        return;
+    }
+    TSharedRef<FAlpakitProfile> Profile = ProfilePackageQueue[0];
+    ProfilePackageQueue.RemoveAt(0);
+
+    const TSharedRef<FAlpakitInstance> AlpakitInstance = MakeShared<FAlpakitInstance>( Profile->PluginName, Profile );
+    AlpakitInstance->OnProcessCompleted().AddLambda([&](EAlpakitInstanceResult Result) {
+        if (Result == EAlpakitInstanceResult::Success) {
+            ProcessQueueItem();
+        } else {
+            bIsPackaging = false;
+            ProfilePackageQueue.Empty();
+        }
+    });
+    AlpakitInstance->Start();
 }
 
 TSharedRef<SDockTab> FAlpakitModule::HandleSpawnModCreatorTab(const FSpawnTabArgs& SpawnTabArgs)
 {
     IPluginBrowser& PluginBrowser = FModuleManager::Get().GetModuleChecked<IPluginBrowser>(TEXT("PluginBrowser"));
     return PluginBrowser.SpawnPluginCreatorTab(SpawnTabArgs, MakeShared<FModWizardDefinition>());
+}
+
+TSharedRef<SDockTab> FAlpakitModule::HandleSpawnAlpakitLogTab( const FSpawnTabArgs& SpawnTabArgs )
+{
+	return SNew( SDockTab )
+		.Label( LOCTEXT("AlpakitLogLabel", "Alpakit Log") )
+		.TabRole( NomadTab )
+		[
+			SNew( SAlpakitLogTabContent )
+		];
 }
 
 void FAlpakitModule::RegisterSettings() const {

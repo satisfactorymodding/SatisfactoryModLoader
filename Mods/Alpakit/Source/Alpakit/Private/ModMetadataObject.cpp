@@ -11,6 +11,8 @@
 #include "DetailWidgetRow.h"
 #include "DetailCategoryBuilder.h"
 #include "SExternalImage.h"
+#include "Dom/JsonObject.h"
+#include "Dom/JsonValue.h"
 
 UModMetadataObject::UModMetadataObject(const FObjectInitializer& ObjectInitializer)
 {
@@ -21,10 +23,7 @@ void UModMetadataObject::PopulateFromDescriptor(const FPluginDescriptor& InDescr
 {
 	Version = InDescriptor.Version;
 	VersionName = InDescriptor.VersionName;
-	SemVersion = InDescriptor.SemVersion;
 	FriendlyName = InDescriptor.FriendlyName;
-	RemoteVersionRange = InDescriptor.RemoteVersionRange;
-	bAcceptsAnyRemoteVersion = InDescriptor.bAcceptsAnyRemoteVersion;
 	Description = InDescriptor.Description;
 	// Category = InDescriptor.Category; // Keep "Modding" as set in the ctor
 	CreatedBy = InDescriptor.CreatedBy;
@@ -37,16 +36,20 @@ void UModMetadataObject::PopulateFromDescriptor(const FPluginDescriptor& InDescr
 		ModDependency.PopulateFromDescriptor(ModReference);
 		Dependencies.Add(ModDependency);
 	}
+
+	if ( InDescriptor.CachedJson.IsValid() )
+	{
+		InDescriptor.CachedJson->TryGetStringField( TEXT("SemVersion"), SemVersion );
+		InDescriptor.CachedJson->TryGetStringField( TEXT("RemoteVersionRange"), RemoteVersionRange );
+		InDescriptor.CachedJson->TryGetBoolField( TEXT("AcceptsAnyRemoteVersion"), bAcceptsAnyRemoteVersion );
+	}
 }
 
 void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 {
 	OutDescriptor.Version = Version;
 	OutDescriptor.VersionName = VersionName;
-	OutDescriptor.SemVersion = SemVersion;
 	OutDescriptor.FriendlyName = FriendlyName;
-	OutDescriptor.RemoteVersionRange = RemoteVersionRange;
-	OutDescriptor.bAcceptsAnyRemoteVersion = bAcceptsAnyRemoteVersion;
 	OutDescriptor.Description = Description;
 	OutDescriptor.Category = Category;
 	OutDescriptor.CreatedBy = CreatedBy;
@@ -75,6 +78,10 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 		auto RemovedModLambda = [RemovedMod](FPluginReferenceDescriptor& ModReference){ return ModReference.Name == RemovedMod.Name; };
 		OutDescriptor.Plugins.RemoveAll(RemovedModLambda);
 	}
+
+	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
+	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RemoteVersionRange"), MakeShared<FJsonValueString>( RemoteVersionRange ) );
+	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("AcceptsAnyRemoteVersion"), MakeShared<FJsonValueBoolean>( bAcceptsAnyRemoteVersion ) );
 }
 
 #if WITH_EDITOR
@@ -107,19 +114,23 @@ FModDependencyDescriptorData::FModDependencyDescriptorData():
 void FModDependencyDescriptorData::PopulateFromDescriptor(const FPluginReferenceDescriptor& InDescriptor)
 {
 	Name = InDescriptor.Name;
-	SemVersion = InDescriptor.SemVersion;
 	bEnabled = InDescriptor.bEnabled;
 	bOptional = InDescriptor.bOptional;
-	bBasePlugin = InDescriptor.bBasePlugin;
+
+	if ( InDescriptor.CachedJson.IsValid() )
+	{
+		InDescriptor.CachedJson->TryGetStringField( TEXT("SemVersion"), SemVersion );
+		InDescriptor.CachedJson->TryGetBoolField( TEXT("BasePlugin"), bBasePlugin );
+	}
 }
 
 void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor& OutDescriptor)
 {
 	OutDescriptor.Name = Name;
-	OutDescriptor.SemVersion = SemVersion;
 	OutDescriptor.bEnabled = bEnabled;
 	OutDescriptor.bOptional = bOptional;
-	OutDescriptor.bBasePlugin = bBasePlugin;
+	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
+	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ) );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,7 +184,7 @@ void FModMetadataCustomization::CustomizeDetails(IDetailLayoutBuilder& DetailBui
 				[
 					SNew(SExternalImage, CurrentIconPath, ModMetadata->TargetIconPath)
 					.FileDescription(IconDesc)
-					.MaxDisplaySize(FIntPoint(128, 128))
+					.MaxDisplaySize(FVector2D(128, 128))
 					// .RequiredSize(FIntPoint(128, 128)) // UE wants the image to be 128x128, but that size is not enforced anywhere else
 				]
 			];

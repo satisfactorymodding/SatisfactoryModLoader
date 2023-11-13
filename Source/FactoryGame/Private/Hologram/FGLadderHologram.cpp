@@ -3,6 +3,7 @@
 #include "Hologram/FGLadderHologram.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGLadderHologram::AFGLadderHologram() : Super() {
 	this->mLadderBottomSnapThreshold = 0.4;

@@ -30,7 +30,7 @@ bool UFGServerObject::IsEnumeratingLocalSaves(){ return bool(); }
 bool UFGServerObject::IsSaveManagerAvailable(){ return bool(); }
 void UFGServerObject::DeleteSaveFile(const FSaveHeader& SaveGame, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate){ }
 void UFGServerObject::DeleteSaveSession(const FSessionSaveStruct& Session, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate){ }
-void UFGServerObject::LoadSaveFile(const FSaveHeader& SaveGame, TMap<FString, FString> Options,  APlayerController* Player){ }
+USessionMigrationSequence* UFGServerObject::LoadSaveFile(const FSaveHeader& SaveGame, TMap<FString, FString> Options,  APlayerController* Player){ return nullptr; }
 void UFGServerObject::SaveGame(const FString& SaveName, FOnSaveMgrInterfaceSaveGameComplete CompleteDelegate){ }
 void UFGServerObject::UploadSave(const FSaveHeader& Save, FOnSaveManagerTransferCompleted CompleteDelegate, FOnSaveManagerTransferProgress ProgressDelegate){ }
 bool UFGServerObject::IsTransferInProgress(){ return bool(); }

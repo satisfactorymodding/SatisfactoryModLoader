@@ -2,6 +2,7 @@
 
 #include "FGC4Explosive.h"
 #include "DamageTypes/FGDamageType.h"
+#include "Net/UnrealNetwork.h"
 
 AFGC4Explosive::AFGC4Explosive() : Super() {
 	this->mBaseDamage = 100.0;

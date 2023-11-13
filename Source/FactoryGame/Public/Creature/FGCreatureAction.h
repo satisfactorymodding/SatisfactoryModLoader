@@ -5,7 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 
-#include "Creature/FGAction.h"
+#include "FGAction.h"
 
 #include "AI/FGCreatureController.h"
 

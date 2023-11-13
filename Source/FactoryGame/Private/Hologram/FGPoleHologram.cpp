@@ -4,6 +4,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGPoleHologram::AFGPoleHologram() : Super() {
 	this->mPoleMesh.Mesh = nullptr;
@@ -34,6 +35,7 @@ void AFGPoleHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf<
 void AFGPoleHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ }
 int32 AFGPoleHologram::GetBaseCostMultiplier() const{ return int32(); }
 bool AFGPoleHologram::CanNudgeHologram() const{ return bool(); }
+void AFGPoleHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
 void AFGPoleHologram::ResetBuildSteps(){ }
 void AFGPoleHologram::SetPoleHeight(float height){ }
 void AFGPoleHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }

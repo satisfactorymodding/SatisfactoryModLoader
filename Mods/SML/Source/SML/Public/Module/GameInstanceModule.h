@@ -35,14 +35,6 @@ public:
     */
     UPROPERTY(EditDefaultsOnly, Category = "Advanced | Tooltips")
     TArray<UClass*> GlobalItemTooltipProviders;
-
-    /**
-     * Gameplay tag to be associated with the input action.
-     * The purpose of these bindings is to facilitate binding to input actions from c++ code, using UFGInputSettings::GetInputActionForTag
-     * You will probably not need this if you are not planning to use input actions from c++ code
-     */
-    UPROPERTY(EditDefaultsOnly, Category = "Advanced | Input")
-    TMap<UInputAction*, FGameplayTag> InputActionTagBindings;
     
     /**
      * Simple construction script hooks to install for this mod

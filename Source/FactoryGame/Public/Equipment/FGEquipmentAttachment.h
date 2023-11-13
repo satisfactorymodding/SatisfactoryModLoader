@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGEquipment.h"
 #include "GameFramework/Actor.h"
-#include "Equipment/FGEquipment.h"
 #include "FGEquipmentAttachment.generated.h"
 
 UCLASS()

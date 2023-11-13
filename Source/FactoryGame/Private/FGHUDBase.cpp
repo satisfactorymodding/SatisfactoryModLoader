@@ -10,4 +10,5 @@ void AFGHUDBase::ToggleOptionsDebugOverlay(){ }
 void AFGHUDBase::ToggleAdvancedGameSettingsDebugOverlay(){ }
 void AFGHUDBase::ToggleStatisticsDebugOverlay(){ }
 void AFGHUDBase::ToggleShoppingListDebugOverlay(){ }
+void AFGHUDBase::ToggleOnlineInfoDebugOverlay(){ }
 void AFGHUDBase::QuickSwitchLanguage(){ }

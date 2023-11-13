@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildableConveyorLift.h"
 #include "Components/SceneComponent.h"
 #include "FGConveyorInstanceSplineMesh.h"
+#include "Net/UnrealNetwork.h"
 
 #if WITH_EDITORONLY_DATA
 #endif 

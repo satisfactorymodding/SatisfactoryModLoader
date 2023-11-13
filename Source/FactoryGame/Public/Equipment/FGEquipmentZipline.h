@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Equipment/FGEquipment.h"
+#include "FGEquipment.h"
 #include "FGEquipmentZipline.generated.h"
 
 /**
@@ -23,6 +23,9 @@ public:
 	// End AFGEquipment interface
 	
 	virtual void Tick( float delta ) override;
+
+	UFUNCTION( BlueprintPure, Category = "Zipline" )
+	FORCEINLINE bool GetWantToGrab() const { return mWantToGrab; }
 
 	void ZiplineEnd();
 	

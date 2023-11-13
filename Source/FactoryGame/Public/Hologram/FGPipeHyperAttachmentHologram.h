@@ -1,7 +1,7 @@
 #pragma once
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGPipeAttachmentHologram.h"
+#include "FGPipeAttachmentHologram.h"
 #include "FGPipeHyperAttachmentHologram.generated.h"
 
 UCLASS()

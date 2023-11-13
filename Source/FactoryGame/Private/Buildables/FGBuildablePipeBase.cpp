@@ -5,6 +5,7 @@
 #include "Components/SplineComponent.h"
 #include "Hologram/FGPipelineHologram.h"
 #include "InstancedSplineMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
 	this->mMesh = nullptr;
@@ -38,7 +39,7 @@ float AFGBuildablePipeBase::GetSignificanceRange(){ return float(); }
 float AFGBuildablePipeBase::FindOffsetClosestToLocation(const FVector& location) const{ return float(); }
 void AFGBuildablePipeBase::GetLocationAndDirectionAtOffset(float offset, FVector& out_location, FVector& out_direction) const{ }
 void AFGBuildablePipeBase::SetupConnections(){ }
-TArray<AFGBuildablePipeBase*> AFGBuildablePipeBase::Splice(AFGBuildablePipeBase* Pipe, float SpliceOffset, float SpliceLength){ return TArray<AFGBuildablePipeBase*>(); }
+TArray<AFGBuildablePipeBase*> AFGBuildablePipeBase::Splice(AFGBuildablePipeBase* Pipe, float SpliceOffset, float SpliceLength, AActor* BuildEffectInstigator){ return TArray<AFGBuildablePipeBase*>(); }
 void AFGBuildablePipeBase::PostSerializedFromBlueprint(bool isBlueprintWorld){ }
 TSubclassOf< class UFGPipeConnectionComponentBase > AFGBuildablePipeBase::GetConnectionType_Implementation(){ return TSubclassOf<class UFGPipeConnectionComponentBase>(); }
 void AFGBuildablePipeBase::UnrotateForBlueprintPlaced(){ }

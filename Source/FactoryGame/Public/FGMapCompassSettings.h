@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "FGActorRepresentation.h"
+#include "Engine/DeveloperSettings.h"
 #include "FGMapCompassSettings.generated.h"
 
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Map and Compass" ) )

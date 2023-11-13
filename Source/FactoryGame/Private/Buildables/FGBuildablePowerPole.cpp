@@ -4,6 +4,7 @@
 #include "Components/SceneComponent.h"
 #include "FGColoredInstanceMeshProxy.h"
 #include "Hologram/FGBuildableHologram.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildablePowerPole::AFGBuildablePowerPole() : Super() {
 	this->mConnectionsWidgetComponent = nullptr;

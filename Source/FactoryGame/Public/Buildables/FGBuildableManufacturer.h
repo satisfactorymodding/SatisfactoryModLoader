@@ -3,11 +3,11 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildableFactory.h"
-#include "FGRecipeProducerInterface.h"
+#include "FGBuildableFactory.h"
 #include "FGFactoryClipboard.h"
-#include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "FGRecipeProducerInterface.h"
 #include "Replication/FGReplicationDetailActor_Manufacturing.h"
+#include "Replication/FGReplicationDetailInventoryComponent.h"
 #include "FGBuildableManufacturer.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewRecipeDelegate, TSubclassOf< class UFGRecipe >, newRecipe );

@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 #include "FGOptionInterface.h"
 #include "FGPlayerState.h"
-#include "Settings/FGUserSetting.h"
+#include "FGUserSetting.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "FGAdvancedGameSettings.generated.h"
 
@@ -54,6 +54,7 @@ public:
 	virtual void UnsubscribeToDynamicOptionUpdate( const FString& cvar, const FOptionUpdated& optionUpdatedDelegate ) override;
 	virtual void UnsubscribeToAllDynamicOptionUpdate( UObject* boundObject ) override;
 	virtual TArray<FUserSettingCategoryMapping> GetCategorizedSettingWidgets( UObject* worldContext, UUserWidget* owningWidget ) override;
+	virtual IFGOptionInterface* GetActiveOptionInterface() const override;
 	// End IFGOptionInterface
 
 	// Checks if we have any changes that should put us into creative mode. This is created for a very specific case in the main menu.

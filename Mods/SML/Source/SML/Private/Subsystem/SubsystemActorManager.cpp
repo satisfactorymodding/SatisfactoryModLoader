@@ -121,9 +121,10 @@ void USubsystemActorManager::Initialize(FSubsystemCollectionBase& Collection) {
 
 void USubsystemActorManager::MakeSureNativeSubsystemsRegistered() {
 	//Register native SML actor subsystems
-	if (!FPluginModuleLoader::IsMainMenuWorld(GetWorld()) && !bNativeSubsystemsRegistered) {
+	if (!FPluginModuleLoader::IsMainMenuWorld(GetWorld()) && !bNativeSubsystemsRegistered)
+	{
 		UE_LOG(LogSubsystemManager, Log, TEXT("Registering default SML subsystems"));
-		RegisterSubsystemActor(AModContentRegistry::StaticClass());
+	
 		RegisterSubsystemActor(AChatCommandSubsystem::StaticClass());
 		RegisterSubsystemActor(ASessionSettingsSubsystem::StaticClass());
 		this->bNativeSubsystemsRegistered = true;

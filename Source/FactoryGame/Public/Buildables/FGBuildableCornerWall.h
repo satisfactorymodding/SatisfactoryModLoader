@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableFactoryBuilding.h"
+#include "FGBuildableFactoryBuilding.h"
 #include "FGBuildableCornerWall.generated.h"
 
 /**

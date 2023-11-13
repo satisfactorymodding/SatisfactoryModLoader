@@ -56,10 +56,10 @@ public:
 private:
     static ESaveModCheckResult CheckModdedSaveCompatibility(const FSaveHeader& SaveHeader, FText& OutMessage);
 
-    static ESaveModCheckResult CheckModMismatches(const FModMetadata& ModMetadata, FText& OutMessage);
-    static ESaveModCheckResult CheckSaveMap(const FModMetadata& ModMetadata, const FSaveHeader& SaveHeader, FText& OutMessage);
+    static ESaveModCheckResult CheckModMismatches(UGameInstance* GameInstance, const FModMetadata& ModMetadata, FText& OutMessage);
+    static ESaveModCheckResult CheckSaveMap(UGameInstance* GameInstance, const FModMetadata& ModMetadata, const FSaveHeader& SaveHeader, FText& OutMessage);
     
-    static TArray<FModMismatch> FindModMismatches(const TArray<FSavedModInfo>& ModMetadata);
+    static TArray<FModMismatch> FindModMismatches(UGameInstance* GameInstance, const TArray<FSavedModInfo>& ModMetadata);
     static FText BuildModMismatchesText(TArray<FModMismatch>&);
     static void LogModMismatches(TArray<FModMismatch>&);
 

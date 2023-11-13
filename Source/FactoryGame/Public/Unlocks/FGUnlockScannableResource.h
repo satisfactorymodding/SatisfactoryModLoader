@@ -5,9 +5,9 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 
+#include "FGUnlock.h"
 #include "Resources/FGResourceDescriptorGeyser.h"
 #include "Resources/FGResourceNode.h"
-#include "Unlocks/FGUnlock.h"
 #include "FGUnlockScannableResource.generated.h"
 
 

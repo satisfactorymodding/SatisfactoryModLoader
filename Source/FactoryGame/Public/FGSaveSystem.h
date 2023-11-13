@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "UObject/Object.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGSaveManagerInterface.h"
+#include "UObject/Object.h"
 #include "FGSaveSystem.generated.h"
 
 
@@ -151,6 +151,9 @@ public:
 	 */
 	static FString CreateAbsolutePath( const UWorld* world, const FString& saveName, bool saveInCommonDir );
 
+	/** Removes the prefix of UEDPC from the mapname */
+	static FString RemoveStandalonePrefix( const FString& string );
+	
 	/** Sanitize the name of the map, used when saving */
 	static FString SanitizeMapName( const FString& mapName );
 
@@ -219,7 +222,7 @@ public:
 	virtual bool IsSaveManagerAvailable() override;
 	virtual void DeleteSaveFile(const FSaveHeader& SaveGame, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate) override;
 	virtual void DeleteSaveSession(const FSessionSaveStruct& Session, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate) override;
-	virtual void LoadSaveFile(const FSaveHeader& SaveGame, TMap<FString, FString> Options, class APlayerController* Player) override;
+	virtual class USessionMigrationSequence* LoadSaveFile(const FSaveHeader& SaveGame, TMap<FString, FString> Options, class APlayerController* Player) override;
 	virtual void SaveGame(const FString& SaveName, FOnSaveMgrInterfaceSaveGameComplete CompleteDelegate ) override;
 	// end IFGSaveManagerInterface overrides
 

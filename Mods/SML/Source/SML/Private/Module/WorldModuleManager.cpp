@@ -19,8 +19,15 @@ UWorldModule* UWorldModuleManager::FindModule(const FName& ModReference) const {
     return NULL;
 }
 
-void UWorldModuleManager::WaitForGameState(FLatentActionInfo& LatentInfo) {
+void UWorldModuleManager::WaitForGameState(FLatentActionInfo& LatentInfo)
+{
+	FLatentActionManager& LatentActionManager = GetWorld()->GetLatentActionManager();
 	
+	if (LatentActionManager.FindExistingAction<FWaitForGameStateLatentAction>(LatentInfo.CallbackTarget, LatentInfo.UUID) == NULL)
+	{
+		FWaitForGameStateLatentAction* ActionInfo = new FWaitForGameStateLatentAction( LatentInfo, GetWorld() );
+		LatentActionManager.AddNewAction( LatentInfo.CallbackTarget, LatentInfo.UUID, ActionInfo );
+	}
 }
 
 bool UWorldModuleManager::ShouldCreateSubsystem(UObject* Outer) const {
@@ -49,20 +56,10 @@ void UWorldModuleManager::InitializeModules(const UWorld::FActorsInitializedPara
 	ConstructModules();
 
 	DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
-	NotifyContentRegistry();
 }
 
 void UWorldModuleManager::PostInitializeModules() {
 	DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
-}
-
-void UWorldModuleManager::NotifyContentRegistry() {
-	AModContentRegistry* ContentRegistry = AModContentRegistry::Get(this);
-
-	//Notify content registry only if it's available (for example, it is not available in main menu)
-	if (ContentRegistry != NULL) {
-		ContentRegistry->NotifyModuleRegistrationFinished();
-	}
 }
 
 void UWorldModuleManager::ConstructModules() {

@@ -12,6 +12,7 @@ AFGResourceScanner::AFGResourceScanner() : Super() {
 	this->mDistBetweenNodesInCluster = 1000.0;
 	this->mUnclusterRange = 30000.0;
 	this->mRepresentationLifeSpan = 25.0;
+	this->mNeedsDefaultEquipmentMappingContext = false;
 	this->mArmAnimation = EArmEquipment::AE_ResourceScanner;
 }
 void AFGResourceScanner::BeginPlay(){ }

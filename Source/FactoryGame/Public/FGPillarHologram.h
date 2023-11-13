@@ -57,6 +57,7 @@ public:
 protected:
 	// Begin AFGHologram Interface
 	virtual void CheckValidPlacement() override;
+	virtual bool CanIntersectWithDesigner( class AFGBuildableBlueprintDesigner* designer ) override;
 	// End AFGHologram Interface
 	
 	// Begin AFGBuildableHologram interface

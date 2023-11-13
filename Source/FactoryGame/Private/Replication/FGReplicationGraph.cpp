@@ -10,7 +10,7 @@ void UFGReplicationGraph::RouteAddNetworkActorToNodes(const FNewReplicatedActorI
 void UFGReplicationGraph::RouteRemoveNetworkActorToNodes(const FNewReplicatedActorInfo& ActorInfo){ }
 int32 UFGReplicationGraph::ServerReplicateActors(float DeltaSeconds){ return int32(); }
 void UFGReplicationGraph::NotifyActorDormancyChange(AActor* Actor, ENetDormancy OldDormancyState){ }
-void UFGReplicationGraph::InitClassReplicationInfo(FClassReplicationInfo& classInfo, UClass* inClass, bool isSpatialized, int32 NetServerMaxTickRate){ }
+void UFGReplicationGraph::InitClassReplicationInfo( FClassReplicationInfo& classInfo, UClass* inClass, bool isSpatialized, int32 NetServerMaxTickRate){ }
 void UFGReplicationGraph::RegisterCustomClassRepPolicy(TSoftClassPtr<AActor> inActor, EClassRepPolicy inRepPolicy){ }
 void UFGReplicationGraph::AddPersistentDependencyActor( AFGCharacterPlayer* pawn,  IFGReplicationDependencyActorInterface* depedencyActor){ }
 void UFGReplicationGraph::AddReplicationDependencyActor( AActor* owner,  AFGReplicationDetailActor* replicationDetailActor){ }

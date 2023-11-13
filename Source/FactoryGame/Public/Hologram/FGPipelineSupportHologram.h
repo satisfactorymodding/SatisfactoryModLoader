@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGFactoryHologram.h"
+#include "FGFactoryHologram.h"
 #include "FGPipeConnectionComponent.h"
 #include "Resources/FGPoleDescriptor.h"
 #include "FGPipelineSupportHologram.generated.h"
@@ -40,6 +40,8 @@ public:
 	virtual void OnBuildModeChanged( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) override;
 	virtual bool CanNudgeHologram() const override;
 
+	virtual void ReplaceHologram( AFGHologram* hologram, bool snapTransform ) override;
+
 	virtual int32 GetBaseCostMultiplier() const override;
 	// End AFGHologram interface
 
@@ -49,6 +51,7 @@ public:
 
 	/** Set the height of the support */
 	void SetSupportLength( float height );
+	FORCEINLINE float GetSupportLength() const { return mSupportLength; }
 
 	/** Get the connections the pipeline snaps to */
 	FORCEINLINE UFGPipeConnectionComponentBase* GetSnapConnection() const { return mSnapConnection; }

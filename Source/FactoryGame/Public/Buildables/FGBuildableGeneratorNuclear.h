@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableGeneratorFuel.h"
+#include "FGBuildableGeneratorFuel.h"
 #include "Replication/FGReplicationDetailActor_GeneratorNuclear.h"
 #include "FGBuildableGeneratorNuclear.generated.h"
 

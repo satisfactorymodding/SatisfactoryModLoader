@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildableFactory.h"
 #include "FGPowerInfoComponent.h"
 #include "Hologram/FGFactoryHologram.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableFactory::AFGBuildableFactory() : Super() {
 	this->mPowerConsumption = 0.0;

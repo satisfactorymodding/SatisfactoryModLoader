@@ -11,7 +11,7 @@ enum class ECP_FloatWidgetType : uint8
 };
 
 
-UCLASS(EditInlineNew)
+UCLASS(EditInlineNew, Abstract)
 class SML_API UCP_Float : public UConfigPropertyFloat {
     GENERATED_BODY()
 

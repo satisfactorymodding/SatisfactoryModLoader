@@ -68,7 +68,7 @@ struct SML_API FSMLGameMapRegistryEntry {
 };
 
 UCLASS()
-class SML_API USMLGameMapRegistry : public UEngineSubsystem {
+class SML_API USMLGameMapRegistry : public UGameInstanceSubsystem {
 	GENERATED_BODY()
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Game Map Data Registry")

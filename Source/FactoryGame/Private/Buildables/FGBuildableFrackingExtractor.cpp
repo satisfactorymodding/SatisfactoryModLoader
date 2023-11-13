@@ -4,7 +4,7 @@
 #include "Resources/FGResourceNodeFrackingCore.h"
 
 AFGBuildableFrackingExtractor::AFGBuildableFrackingExtractor() : Super() {
-	this->mTryFindMissingResource = true;
+
 }
 void AFGBuildableFrackingExtractor::BeginPlay(){ }
 bool AFGBuildableFrackingExtractor::Factory_HasPower() const{ return bool(); }

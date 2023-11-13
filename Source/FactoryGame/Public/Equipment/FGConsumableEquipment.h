@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Equipment/FGEquipment.h"
+#include "FGEquipment.h"
 #include "FGConsumableEquipment.generated.h"
 
 /** Used to hold consumeables, so we can eat berries, and consume medpacks a.s.o */

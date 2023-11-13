@@ -2,6 +2,7 @@
 
 #include "Alpakit.h"
 #include "Dom/JsonObject.h"
+#include "Features/IPluginsEditorFeature.h"
 #include "GenericPlatform/GenericPlatformFile.h"
 #include "Interfaces/IPluginManager.h"
 #include "HAL/PlatformFilemanager.h"
@@ -13,7 +14,7 @@ FModWizardDefinition::FModWizardDefinition()
 {
 	PluginBaseDir = IPluginManager::Get().FindPlugin(TEXT("Alpakit"))->GetBaseDir();
 
-	ModTemplateDefinitions = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit")).GetModTemplates();
+	ModTemplateDefinitions = FAlpakitModule::Get().GetModTemplates();
 	for (TSharedRef<FModTemplateDescription> Template : ModTemplateDefinitions)
 	{
 		TemplateDefinitions.Add(Template->TemplateDescription);
@@ -151,7 +152,7 @@ void FModWizardDefinition::PluginCreated(const FString& PluginName, bool bWasSuc
 	if (Descriptor.FriendlyName.IsEmpty()) {
 		Descriptor.FriendlyName = PluginName;
 	}
-	Descriptor.SemVersion = TEXT("1.0.0");
+	Descriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( TEXT("1.0.0") ) );
 	Descriptor.VersionName = TEXT("1.0.0");
 	Descriptor.Version = 1;
 	Descriptor.Category = TEXT("Modding");
@@ -165,18 +166,18 @@ void FModWizardDefinition::PluginCreated(const FString& PluginName, bool bWasSuc
 	}
 	
 	FPluginReferenceDescriptor SMLDependency(TEXT("SML"), true);
-	SMLDependency.SemVersion = TEXT("^") + SMLPlugin->GetDescriptor().SemVersion;
+	SMLDependency.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( TEXT("^") + SMLPlugin->GetDescriptor().VersionName ) );
 	Descriptor.Plugins.Add(SMLDependency);
 
 	// Initialize extra dependencies
 	for (const TSharedPtr<FModTemplateDependency>& Dependency : CurrentTemplateDefinition->Dependencies) {
 		FPluginReferenceDescriptor DependencyDescriptor(Dependency->Name, true);
-		DependencyDescriptor.SemVersion = TEXT("^") + Dependency->Version;
+		DependencyDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( TEXT("^") + Dependency->Version ) );
 		if(Dependency->bOptional) {
 			DependencyDescriptor.bOptional = true;
 		}
 		if(Dependency->bBasePlugin) {
-			DependencyDescriptor.bBasePlugin = true;
+			DependencyDescriptor.AdditionalFieldsToWrite.Add( TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( true ) );
 		}
 		Descriptor.Plugins.Add(DependencyDescriptor);
 	}
@@ -216,7 +217,7 @@ TSharedPtr<FModTemplateDependency> FModTemplateDependency::Load(const TSharedPtr
 			Error = TEXT("\"version\" not in dependency and plugin not installed");
 			return nullptr;
 		}
-		DependencyVersion = Plugin->GetDescriptor().SemVersion;
+		DependencyVersion = Plugin->GetDescriptor().VersionName;
 	}
 
 	bool bOptional = false;

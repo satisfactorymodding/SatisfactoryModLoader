@@ -340,4 +340,10 @@ protected:
 	/** Message sent when trading post ship has returned */
 	UPROPERTY( EditDefaultsOnly, Category = "Message" )
 	TSubclassOf< class UFGMessageBase > mShipReturnedMessage;
+
+#if WITH_EDITORONLY_DATA
+	// Schematics we shouldn't give when we use the cheat give all schematics in PIE and standalone.
+	UPROPERTY(Transient)
+	TArray< TSubclassOf<class UFGSchematic> > mSchematicsToFilterWithGiveAllSchematics;
+#endif
 };

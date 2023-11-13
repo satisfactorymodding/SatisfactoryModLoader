@@ -5,6 +5,7 @@
 #include "FGSaveSystem.h"
 #include "GameFramework/GameMode.h"
 #include "FGSaveInterface.h"
+#include "Engine/World.h"
 #include "FGGameMode.generated.h"
 
 class UFGRemoteCallObject;
@@ -134,6 +135,9 @@ protected:
 	/** Trigger a save to save the world */
 	UFUNCTION( exec )
 	void TriggerBundledWorldSave( const FString& saveGameName );
+
+	UFUNCTION(Exec)
+	void JoinSessionByIdD(const FString& sessionId);
 
 	/**
 	 * If return true, then this is a pawn that we can take control of during spawning, else it's not valid
