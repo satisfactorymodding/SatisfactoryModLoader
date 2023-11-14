@@ -77,4 +77,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Popup" )
 	UObject* mInstigator;
 
+	/** The popup widget content if the popup was created with an instance of this type. So this may be null for simple popups */
+	UPROPERTY(Transient)
+	TObjectPtr<UFGPopupWidgetContent> mContent;
 };

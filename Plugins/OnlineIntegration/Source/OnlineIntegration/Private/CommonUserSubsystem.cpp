@@ -12,8 +12,8 @@ UE_DEFINE_GAMEPLAY_TAG(FCommonUserTags::Platform_Trait_SingleOnlineUser, TEXT("P
 
 void UCommonUserSubsystem::Initialize(FSubsystemCollectionBase& Collection){ }
 void UCommonUserSubsystem::Deinitialize(){ }
-void UCommonUserSubsystem::WhenLocalUserInfoIsCreated(FOnLocalUserInfoCreated::FDelegate Delegate, int32 PlayerIndex){ }
-void UCommonUserSubsystem::SendSystemMessage(FGameplayTag MessageType, FText TitleText, FText BodyText){ }
+void UCommonUserSubsystem::WhenLocalUserInfoIsCreated(FOnLocalUserInfoCreated Delegate, int32 PlayerIndex){ }
+void UCommonUserSubsystem::WhenLocalUserInfoIsCreated_Native(FOnLocalUserInfoCreated_Native::FDelegate Delegate, int32 PlayerIndex){ }
 void UCommonUserSubsystem::SetMaxLocalPlayers(int32 InMaxLocalPLayers){ }
 int32 UCommonUserSubsystem::GetMaxLocalPlayers() const{ return int32(); }
 int32 UCommonUserSubsystem::GetNumLocalPlayers() const{ return int32(); }

@@ -33,7 +33,6 @@ TArray<class UFGAvailabilityDependency*> UFGResearchTree::GetUnlockDependencies(
 }
 
 #if WITH_EDITOR
-void UFGResearchTree::PreSave(FObjectPreSaveContext SaveContext){ }
 EDataValidationResult UFGResearchTree::IsDataValid(TArray<FText>& ValidationErrors) {
 	// MODDING IMPLEMENTATION
 	EDataValidationResult ValidationResult = Super::IsDataValid(ValidationErrors);
@@ -81,6 +80,10 @@ EDataValidationResult UFGResearchTree::IsDataValid(TArray<FText>& ValidationErro
 	
 	return ValidationResult;
 }
+#endif
+
+#if WITH_EDITOR
+void UFGResearchTree::PreSave(FObjectPreSaveContext SaveContext){ }
 #endif 
 #if WITH_EDITOR
 void UFGResearchTree::UpdateAssetBundleData(){ }

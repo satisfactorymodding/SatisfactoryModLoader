@@ -120,7 +120,8 @@ public:
 	EUpscalingMethod ValidateUpscalingMethod( EUpscalingMethod upscalingMethod ) const;
 
 	/**
-	 * Validates a given scalability setting based on its key and value.
+	 * Validates a given scalability setting by ensuring the system/hardware can handle the specified value.
+	 * Otherwise returns a more fitting value
 	 * 
 	 * @param keyString The key that identifies the scalability setting to be validated.
 	 * @param valueString The value for the scalability setting represented as a string.

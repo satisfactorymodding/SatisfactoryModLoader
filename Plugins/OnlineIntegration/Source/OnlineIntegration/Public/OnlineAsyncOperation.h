@@ -2,18 +2,18 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "MVVMViewModelBase.h"
 #include "OnlineAsyncOperation.generated.h"
 
 
-DECLARE_MULTICAST_DELEGATE(FOnOnlineAsyncOperationCompleted);
+DECLARE_MULTICAST_DELEGATE(FOnOnlineAsyncOperationCompleted_Native);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOnlineAsyncOperationCompleted);
 
 /**
  * Abstract online asynchronous operation. Provides interested parties with all the necessary information to keep track of a long asynchronous operation
  * in case they want to eg display something in the UI
  */
-UCLASS(Abstract)
+UCLASS(BlueprintType, Abstract)
 class ONLINEINTEGRATION_API UOnlineAsyncOperation : public UMVVMViewModelBase
 {
 	GENERATED_BODY()
@@ -33,15 +33,29 @@ public:
 	/**
 	 * Binds to the finish delegate that will be triggered regardless of the outcome
 	 */
-	FDelegateHandle AddOperationFinishedDelegate(FOnOnlineAsyncOperationCompleted::FDelegate &&Delegate);
+	FDelegateHandle AddOperationFinishedDelegate(FOnOnlineAsyncOperationCompleted_Native::FDelegate &&Delegate);
 	
 protected:
-	UPROPERTY(BlueprintReadOnly, FieldNotify, meta=(AllowPrivateAccess))
+	virtual void NotifySequenceFinished();
+	
+	/**
+	 * The last meaningful status report. 
+	 */
+	UPROPERTY(BlueprintReadOnly, FieldNotify)
 	FText StatusText;
 
+private:
+	/**
+	 * Will be set when the sequence is finished, regardless of success or failure
+	 */
+	UPROPERTY(BlueprintReadOnly, FieldNotify, meta=(AllowPrivateAccess))
+	uint8 bIsFinished: 1 = false;
+	
 	/**
 	 * Native delegate triggered when the operation is finished, regardless of the outcome.
 	 * It is the responsibility of derived classes to broadcast this delegate
 	 */
-	FOnOnlineAsyncOperationCompleted OnOperationCompleted_Native;
+	FOnOnlineAsyncOperationCompleted_Native OnOperationCompleted_Native;
+	UPROPERTY(BlueprintAssignable)
+	FOnOnlineAsyncOperationCompleted OnOperationCompleted;
 };

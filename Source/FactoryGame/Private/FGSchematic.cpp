@@ -61,7 +61,6 @@ FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf<UFGSchematic> inClass) {
 }
 
 #if WITH_EDITOR
-void UFGSchematic::PreSave(FObjectPreSaveContext saveContext){ }
 EDataValidationResult UFGSchematic::IsDataValid(TArray< FText >& ValidationErrors) {
 	// MODDING IMPLEMENTATION
 	EDataValidationResult ValidationResult = Super::IsDataValid(ValidationErrors);
@@ -78,6 +77,10 @@ EDataValidationResult UFGSchematic::IsDataValid(TArray< FText >& ValidationError
 
 	return ValidationResult;
 }
+#endif
+
+#if WITH_EDITOR
+void UFGSchematic::PreSave(FObjectPreSaveContext saveContext){ }
 #endif 
 #if WITH_EDITOR
 void UFGSchematic::UpdateAssetBundleData(){ }

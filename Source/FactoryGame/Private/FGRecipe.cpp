@@ -80,6 +80,9 @@ EDataValidationResult UFGRecipe::IsDataValid(TArray<FText>& ValidationErrors) {
 
 	return ValidationResult;
 }
+#endif
+
+#if WITH_EDITOR
 #endif 
 #if WITH_EDITOR
 #endif 

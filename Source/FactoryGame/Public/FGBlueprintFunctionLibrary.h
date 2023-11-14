@@ -412,6 +412,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static void ClearPopupQueueOfClass( APlayerController* controller, TSubclassOf< UUserWidget > widgetClass );
 
+	/** Clear the popup queue of all popups of the given content class. Also removes the currently active popup if of the same content class */
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static void ClearPopupQueueOfContentClass( APlayerController* controller, TSubclassOf< UFGPopupWidgetContent > contentClass);
+
 	/** Copies the given text to the users clipboard */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static void CopyTextToClipboard( FText textToCopy );

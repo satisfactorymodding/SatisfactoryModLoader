@@ -86,6 +86,7 @@ void UFGBlueprintFunctionLibrary::AddPopupWithCloseDelegate(APlayerController* c
 void UFGBlueprintFunctionLibrary::AddPopupWithContent(APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate,  UFGPopupWidgetContent* Content, EPopupId PopupID , UObject* popupInstigator){ }
 void UFGBlueprintFunctionLibrary::ClosePopup(APlayerController* controller){ }
 void UFGBlueprintFunctionLibrary::ClearPopupQueueOfClass(APlayerController* controller, TSubclassOf< UUserWidget > widgetClass){ }
+void UFGBlueprintFunctionLibrary::ClearPopupQueueOfContentClass(APlayerController* controller, TSubclassOf< UFGPopupWidgetContent > contentClass){ }
 void UFGBlueprintFunctionLibrary::CopyTextToClipboard(FText textToCopy){ }
 FText UFGBlueprintFunctionLibrary::CopyTextFromClipboard(){ return FText(); }
 void UFGBlueprintFunctionLibrary::RemoveAndReleaseAllChildsFromPanel( AFGHUD* hud, UPanelWidget* panelWidget){ }

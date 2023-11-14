@@ -50,6 +50,7 @@ void AFGItemPickup::RespawnItems(){ }
 void AFGItemPickup::ClearPickup(){ }
 void AFGItemPickup::PlantPickup(){ }
 void AFGItemPickup::Grow(){ }
+void AFGItemPickup::RegisterToRegrowSystem(){ }
 void AFGItemPickup::SetNumItems(int32 numItems){ }
 void AFGItemPickup::OnCollectTimerComplete(){ }
 bool AFGItemPickup::IsEquipment() const{ return bool(); }

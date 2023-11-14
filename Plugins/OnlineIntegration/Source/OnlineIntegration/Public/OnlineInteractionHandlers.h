@@ -6,7 +6,7 @@
 #include "UObject/Interface.h"
 #include "OnlineIntegrationSettings.h"
 #include "OnlineIntegrationTypes.h"
-#include "OnlineAuthenticationHandler.generated.h"
+#include "OnlineInteractionHandlers.generated.h"
 
 
 UINTERFACE()
@@ -25,4 +25,28 @@ protected:
 	virtual void AuthenticationSequenceComplete() = 0;
 	
 	virtual void ProgressUpdate(const FText& Status);
+};
+
+UENUM(BlueprintType)
+enum class EOfflineSessionPromptResult
+{
+	CancelSessionCreation,
+	CreateOfflineSession
+};
+
+UINTERFACE()
+class ONLINEINTEGRATION_API USessionCreationInteractionHandler: public UInterface
+{
+	GENERATED_BODY()
+};
+
+DECLARE_DELEGATE_OneParam(FOnlineSessionPromptResultKnown, EOfflineSessionPromptResult);
+
+class ONLINEINTEGRATION_API ISessionCreationInteractionHandler
+{
+	GENERATED_BODY()
+	
+public:
+	virtual void ShowSessionCreationFailurePopup(FOnlineSessionPromptResultKnown Delegate) = 0;
+	virtual void HideSessionCreationFailurePopup() = 0;
 };

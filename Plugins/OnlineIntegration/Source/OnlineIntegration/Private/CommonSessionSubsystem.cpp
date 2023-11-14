@@ -4,17 +4,8 @@
 
 FString FCommonSessionCreationSettings::GetMapName() const{ return FString(); }
 FString FCommonSessionCreationSettings::ConstructTravelURL() const{ return FString(); }
-FString UCommonSession_SearchResult::GetDescription() const{ return FString(); }
-void UCommonSession_SearchResult::GetStringSetting(FName Key, FString& Value, bool& bFoundValue) const{ }
-void UCommonSession_SearchResult::GetIntSetting(FName Key, int32& Value, bool& bFoundValue) const{ }
-int32 UCommonSession_SearchResult::GetNumOpenPrivateConnections() const{ return int32(); }
-int32 UCommonSession_SearchResult::GetNumOpenPublicConnections() const{ return int32(); }
-int32 UCommonSession_SearchResult::GetMaxPublicConnections() const{ return int32(); }
-int32 UCommonSession_SearchResult::GetPingInMs() const{ return int32(); }
-void UCommonSession_SearchSessionRequest::NotifySearchFinished(bool bSucceeded, const FText& ErrorMessage){ }
-UOnlineAsyncOperation* UCommonSessionSubsystem::CreateSessionCreationSequence(const FCommonSessionCreationSettings &SessionSettings){ return nullptr; }
-UCommonSession_SearchSessionRequest* UCommonSessionSubsystem::CreateOnlineSearchSessionRequest(){ return nullptr; }
-void UCommonSessionSubsystem::JoinSession(APlayerController* JoiningPlayer, UCommonSession_SearchResult* Request){ }
+USessionMigrationSequence* UCommonSessionSubsystem::CreateSessionCreationSequence(const FCommonSessionCreationSettings &SessionSettings, TScriptInterface<ISessionCreationInteractionHandler> InteractionHandler){ return nullptr; }
+USessionMigrationSequence* UCommonSessionSubsystem::CreateSessionJoiningSequence(APlayerController* Player, FCommonSession Session){ return nullptr; }
 void UCommonSessionSubsystem::CleanUpSessions(){ }
 void UCommonSessionSubsystem::InviteFriendToGameSession(const UOnlineFriend* OnlineFriend){ }
 void UCommonSessionSubsystem::RespondToGameInvite(APlayerController* Player, UOnlineFriend* OnlineFriend, bool bAccept){ }
@@ -30,7 +21,8 @@ UE::Online::FOnlineSessionId UCommonSessionSubsystem::MakeOnlineSessionId(const 
 FString UCommonSessionSubsystem::OnlineSessionIdToString(UE::Online::FOnlineSessionId SessionId){ return FString(); }
 TFuture<UE::Online::TOnlineResult<UE::Online::FLeaveSession>> UCommonSessionSubsystem::DestroySession(ULocalUserInfo* LocalUserInfo, FName SessionName, EOnlineIntegrationUnmappedContext Context){ return TFuture<UE::Online::TOnlineResult<UE::Online::FLeaveSession>>(); }
 TFuture<UE::Online::TOnlineResult<UE::Online::FCreateSession>> UCommonSessionSubsystem::CreateSession(ULocalUserInfo* LocalUserInfo, FName SessionName, EOnlineIntegrationUnmappedContext Context, const FCommonSessionCreationSettings& Settings){ return TFuture<UE::Online::TOnlineResult<UE::Online::FCreateSession>>(); }
-TFuture<UE::Online::TOnlineResult<UE::Online::FAddSessionMember>> UCommonSessionSubsystem::AddSessionMember(UE::Online::FAccountId User, FName SessionName, EOnlineIntegrationUnmappedContext Context){ return TFuture<UE::Online::TOnlineResult<UE::Online::FAddSessionMember>>(); }
+TFuture<UE::Online::TOnlineResult<UE::Online::FAddSessionMember>> UCommonSessionSubsystem::AddSessionMember(UE::Online::FAccountId User, FName SessionName){ return TFuture<UE::Online::TOnlineResult<UE::Online::FAddSessionMember>>(); }
+TFuture<UE::Online::TOnlineResult<UE::Online::FRemoveSessionMember>> UCommonSessionSubsystem::RemoveSessionMember(UE::Online::FAccountId User, FName SessionName){ return TFuture<UE::Online::TOnlineResult<UE::Online::FRemoveSessionMember>>(); }
 FString UCommonSessionSubsystem::GetStringAttributeFromSession(const FCommonSession& Session, FName Key) const{ return FString(); }
 int64 UCommonSessionSubsystem::GetIntAttributeFromSession(const FCommonSession& Session, FName Key) const{ return int64(); }
 double UCommonSessionSubsystem::GetDoubleAttributeFromSession(const FCommonSession& Session, FName Key) const{ return double(); }
@@ -39,26 +31,15 @@ bool UCommonSessionSubsystem::IsValidSession(const FCommonSession& Session){ ret
 TSharedPtr<const UE::Online::ISession> UCommonSessionSubsystem::GetSession(const FCommonSession& SessionHandle) const{ return TSharedPtr<const UE::Online::ISession>(); }
 FDelegateHandle UCommonSessionSubsystem::AddOnSessionUpdateReceivedDelegate(const FOnCommonSessionUpdateReceived::FDelegate& Delegate){ return FDelegateHandle(); }
 void UCommonSessionSubsystem::RemoveSessionUpdateReceivedDelegate(FDelegateHandle Handle){ }
+void UCommonSessionSubsystem::JoinStartupSession(ULocalUserInfo* LocalUserInfo, FName SessionName){ }
 void UCommonSessionSubsystem::Initialize(FSubsystemCollectionBase& Collection){ }
 void UCommonSessionSubsystem::Deinitialize(){ }
 void UCommonSessionSubsystem::HandleSessionUpdated(const UE::Online::FSessionUpdated& SessionUpdated, EOnlineIntegrationUnmappedContext Context) const{ }
 void UCommonSessionSubsystem::TravelLocalSessionFailure(UWorld* World, ETravelFailure::Type FailureType, const FString& ReasonString){ }
 void UCommonSessionSubsystem::HandlePostLoadMap(UWorld* World){ }
 void UCommonSessionSubsystem::OnOnlineContextCreated(){ }
-void UCommonSessionSubsystem::FindSessionsInternal(APlayerController* SearchingPlayer, const TSharedRef<FCommonOnlineSearchSettings>& InSearchSettings){ }
-void UCommonSessionSubsystem::JoinSessionInternal(ULocalPlayer* LocalPlayer, UCommonSession_SearchResult* Request){ }
-void UCommonSessionSubsystem::InternalTravelToSession(const FName SessionName){ }
-void UCommonSessionSubsystem::NotifyUserRequestedSession(const FPlatformUserId& PlatformUserId, UCommonSession_SearchResult* RequestedSession,
-		const FOnlineResultInformation& RequestedSessionResult){ }
-void UCommonSessionSubsystem::NotifyJoinSessionComplete(const FOnlineResultInformation& Result){ }
-void UCommonSessionSubsystem::NotifyCreateSessionComplete(const FOnlineResultInformation& Result){ }
-void UCommonSessionSubsystem::FindSessionsInternalOSSv2(ULocalPlayer* LocalPlayer){ }
-void UCommonSessionSubsystem::JoinSessionInternalOSSv2(ULocalPlayer* LocalPlayer, UCommonSession_SearchResult* Request){ }
 UE::Online::ISessionsPtr UCommonSessionSubsystem::GetSessionsInterface(EOnlineIntegrationUnmappedContext Context) const{ return UE::Online::ISessionsPtr(); }
-void UCommonSessionSubsystem::CleanUpSessionsOSSv2(){ }
-void UCommonSessionSubsystem::OnSessionJoinRequested(const UE::Online::FUILobbyJoinRequested& EventParams){ }
 UE::Online::FAccountId UCommonSessionSubsystem::GetAccountId(APlayerController* PlayerController) const{ return UE::Online::FAccountId(); }
-UE::Online::FLobbyId UCommonSessionSubsystem::GetLobbyId(const FName SessionName) const{ return UE::Online::FLobbyId(); }
 void UCommonSessionSubsystem::UpdatePresencePostLoadMap(UWorld* World){ }
 void UCommonSessionStatics::FetchFriendSession( UOnlineFriend* Friend, const FOnFetchFriendSessionComplete& CompletionDelegate){ }
-void UCommonSessionStatics::JoinSession(APlayerController* PlayerController, const FCommonSession& Session){ }
+USessionMigrationSequence* UCommonSessionStatics::JoinSession(APlayerController* PlayerController, const FCommonSession& Session){ return nullptr; }

@@ -12,3 +12,4 @@ void UFGBaseUI::AddPopup(FText Title, FText Body, const FPopupConfirmClicked& Co
 void UFGBaseUI::PopPopupQueue(){ }
 void UFGBaseUI::ShowPopup(){ }
 void UFGBaseUI::ClearPopupQueueOfClass(TSubclassOf< UUserWidget > widgetClass){ }
+void UFGBaseUI::ClearPopupQueueAndPopupOfContentClass(TSubclassOf< UFGPopupWidgetContent > widgetClass){ }

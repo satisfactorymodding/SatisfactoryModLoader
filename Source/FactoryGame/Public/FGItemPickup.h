@@ -156,6 +156,11 @@ public:
 	/** Get the number of items the pickup have */
 	UFUNCTION( BlueprintPure, Category = "Pickup" )
 	FORCEINLINE int32 GetNumItems() const{ return mPickupItems.NumItems; }
+
+	/** Automatically re-tries once register failed due to missing regrow system.*/
+	UFUNCTION()
+	void RegisterToRegrowSystem();
+	
 protected:
 	/**
 	* SERVER and Client picking up: Called right after this item is added to the players inventory, for GameplayEffects.

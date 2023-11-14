@@ -4,4 +4,5 @@
 
 bool UOnlineAsyncOperation::Start(){ return bool(); }
 void UOnlineAsyncOperation::Cancel(){ }
-FDelegateHandle UOnlineAsyncOperation::AddOperationFinishedDelegate(FOnOnlineAsyncOperationCompleted::FDelegate &&Delegate){ return FDelegateHandle(); }
+FDelegateHandle UOnlineAsyncOperation::AddOperationFinishedDelegate(FOnOnlineAsyncOperationCompleted_Native::FDelegate &&Delegate){ return FDelegateHandle(); }
+void UOnlineAsyncOperation::NotifySequenceFinished(){ }
