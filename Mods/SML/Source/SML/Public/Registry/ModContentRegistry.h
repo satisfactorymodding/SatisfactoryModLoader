@@ -313,6 +313,7 @@ private:
 
 	void OnSchematicRegisteredCallback( const FGameObjectRegistration* Schematic );
 	void OnResearchTreeRegisteredCallback( const FGameObjectRegistration* ResearchTree );
+	void OnRecipeRegisteredCallback( const FGameObjectRegistration* Recipe );
 
 	void OnActorPreSpawnInitialization( AActor* Actor );
 	void OnActorPostSpawnInitialization( AActor* Actor );

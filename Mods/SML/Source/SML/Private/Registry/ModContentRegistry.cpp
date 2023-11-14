@@ -603,6 +603,7 @@ void UModContentRegistry::Initialize( FSubsystemCollectionBase& Collection )
 
 	SchematicRegistryState.OnObjectRegistered().AddUObject( this, &UModContentRegistry::OnSchematicRegisteredCallback );
 	ResearchTreeRegistryState.OnObjectRegistered().AddUObject( this, &UModContentRegistry::OnResearchTreeRegisteredCallback );
+	RecipeRegistryState.OnObjectRegistered().AddUObject( this, &UModContentRegistry::OnRecipeRegisteredCallback );
 
 	// TODO @SML: I don't know if this is the most performant thing to do, it fires on every UWorld::SpawnActor call, which might be a bit heavy.
 	OnActorPreSpawnDelegateHandle = GetWorld()->AddOnActorPreSpawnInitialization( FOnActorSpawned::FDelegate::CreateUObject( this, &UModContentRegistry::OnActorPreSpawnInitialization ) );
@@ -623,6 +624,11 @@ void UModContentRegistry::OnResearchTreeRegisteredCallback( const FGameObjectReg
 {
 	OnResearchTreeRegistered.Broadcast( *ResearchTree );
 	AutoRegisterResearchTreeReferences( CastChecked<UClass>( ResearchTree->RegisteredObject ), ResearchTree->RegistrarModReference );
+}
+
+void UModContentRegistry::OnRecipeRegisteredCallback(const FGameObjectRegistration* Recipe) {
+	OnRecipeRegistered.Broadcast(*Recipe);
+	AutoRegisterRecipeReferences(CastChecked<UClass>(Recipe->RegisteredObject), Recipe->RegistrarModReference);
 }
 
 void UModContentRegistry::OnActorPreSpawnInitialization( AActor* Actor )
