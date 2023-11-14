@@ -39,7 +39,7 @@ void UK2Node_GetModConfiguration::GetMenuActions(FBlueprintActionDatabaseRegistr
 		}
 	} else if (const UBlueprint* ActionKey = Cast<UBlueprint>(ActionRegistrar.GetActionKeyFilter())) {
 		UClass* Class = Cast<UClass>(ActionKey->GeneratedClass);
-		if (Class->IsChildOf(UModConfiguration::StaticClass())) {
+		if (Class && Class->IsChildOf(UModConfiguration::StaticClass())) {
 			UBlueprintNodeSpawner* Spawner = UBlueprintNodeSpawner::Create(GetClass());
 			check(Spawner);
 			Spawner->CustomizeNodeDelegate = UBlueprintNodeSpawner::FCustomizeNodeDelegate::CreateStatic(CustomizeCallback, Class);
