@@ -80,8 +80,12 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 	}
 
 	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
-	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RemoteVersionRange"), MakeShared<FJsonValueString>( RemoteVersionRange ) );
-	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("AcceptsAnyRemoteVersion"), MakeShared<FJsonValueBoolean>( bAcceptsAnyRemoteVersion ) );
+	if (RemoteVersionRange.Len() > 0) {
+		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RemoteVersionRange"), MakeShared<FJsonValueString>( RemoteVersionRange ) );
+	}
+	if (bAcceptsAnyRemoteVersion) {
+		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("AcceptsAnyRemoteVersion"), MakeShared<FJsonValueBoolean>( bAcceptsAnyRemoteVersion ) );
+	}
 }
 
 #if WITH_EDITOR
@@ -130,7 +134,9 @@ void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor
 	OutDescriptor.bEnabled = bEnabled;
 	OutDescriptor.bOptional = bOptional;
 	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
-	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ) );
+	if (bBasePlugin) {
+		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ) );
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

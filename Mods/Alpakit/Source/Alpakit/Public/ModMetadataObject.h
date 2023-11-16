@@ -69,7 +69,7 @@ public:
 
 	/** The default Unreal Engine Version field. This is set automatically to match the first section of SemVersion */
 	UPROPERTY(VisibleAnywhere, Category = "Version")
-	int32 Version;
+	int32 Version{};
 
 	/** Name of the version for this mod. Usually you want this to match SemVersion */
 	UPROPERTY(EditAnywhere, Category = "Version")
@@ -117,7 +117,7 @@ public:
 
 	/** Whether the remote version check is skipped */
 	UPROPERTY(EditAnywhere, Category = "Remote")
-	bool bAcceptsAnyRemoteVersion;
+	bool bAcceptsAnyRemoteVersion{};
 
 	/**
 	 * Populate the fields of this object from an existing descriptor.
