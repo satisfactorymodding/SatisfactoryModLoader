@@ -314,9 +314,14 @@ void UModContentRegistry::ModifySchematicList( TArray<TSubclassOf<UFGSchematic>>
 		}
 
 		const FGameObjectRegistration* Registration = SchematicRegistryState.FindObjectRegistration( mAvailableSchematics[SchematicIndex] );
-		fgcheck( Registration );
 
-		if ( Registration->HasAnyFlags( EGameObjectRegistrationFlags::Removed ) )
+		// Unlike the cleanup of mAllSchematics above, mAvailableSchematics is SaveGame,
+		// and might contain mod schematics that are now not registered
+		// (for example schematics registered based on settings or the presence of another mod).
+		// The class would still exist, therefore the IsValid check above does not apply.
+		// The intent of a schematic not being registered is for it not to be present in the game,
+		// so we remove it from the list in that case as well.
+		if ( !Registration || Registration->HasAnyFlags( EGameObjectRegistrationFlags::Removed ) )
 		{
 			mAvailableSchematics.RemoveAt( SchematicIndex );
 		}
