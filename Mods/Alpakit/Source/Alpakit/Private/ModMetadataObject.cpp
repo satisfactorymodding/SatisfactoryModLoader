@@ -85,10 +85,18 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 	if (RemoteVersionRange.Len() > 0) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RemoteVersionRange"), MakeShared<FJsonValueString>( RemoteVersionRange ) );
 		OutDescriptor.CachedJson->SetStringField( TEXT("RemoteVersionRange"), RemoteVersionRange );
+	} else {
+		// Remove field entirely when default value
+		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("RemoteVersionRange"));
+		OutDescriptor.CachedJson->RemoveField(TEXT("RemoteVersionRange"));
 	}
 	if (bAcceptsAnyRemoteVersion) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("AcceptsAnyRemoteVersion"), MakeShared<FJsonValueBoolean>( bAcceptsAnyRemoteVersion ) );
 		OutDescriptor.CachedJson->SetBoolField( TEXT("AcceptsAnyRemoteVersion"), bAcceptsAnyRemoteVersion );
+	} else {
+		// Remove field entirely when default value
+		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("AcceptsAnyRemoteVersion"));
+		OutDescriptor.CachedJson->RemoveField(TEXT("AcceptsAnyRemoteVersion"));
 	}
 }
 
@@ -144,6 +152,10 @@ void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor
 	if (bBasePlugin) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ) );
 		OutDescriptor.CachedJson->SetBoolField( TEXT("BasePlugin"), bBasePlugin );
+	} else {
+		// Remove field entirely when default value
+		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("BasePlugin"));
+		OutDescriptor.CachedJson->RemoveField(TEXT("BasePlugin"));
 	}
 }
 
