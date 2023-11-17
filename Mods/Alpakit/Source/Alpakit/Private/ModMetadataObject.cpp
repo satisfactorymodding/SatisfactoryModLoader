@@ -79,12 +79,16 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 		OutDescriptor.Plugins.RemoveAll(RemovedModLambda);
 	}
 
+	// CachedJson is not updated properly by UpdateDescriptor, so we update it manually here too
 	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
+	OutDescriptor.CachedJson->SetStringField( TEXT("SemVersion"), SemVersion );
 	if (RemoteVersionRange.Len() > 0) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RemoteVersionRange"), MakeShared<FJsonValueString>( RemoteVersionRange ) );
+		OutDescriptor.CachedJson->SetStringField( TEXT("RemoteVersionRange"), RemoteVersionRange );
 	}
 	if (bAcceptsAnyRemoteVersion) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("AcceptsAnyRemoteVersion"), MakeShared<FJsonValueBoolean>( bAcceptsAnyRemoteVersion ) );
+		OutDescriptor.CachedJson->SetBoolField( TEXT("AcceptsAnyRemoteVersion"), bAcceptsAnyRemoteVersion );
 	}
 }
 
@@ -133,9 +137,13 @@ void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor
 	OutDescriptor.Name = Name;
 	OutDescriptor.bEnabled = bEnabled;
 	OutDescriptor.bOptional = bOptional;
+
+	// CachedJson is not updated properly by UpdateDescriptor, so we update it manually here too
 	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
+	OutDescriptor.CachedJson->SetStringField( TEXT("SemVersion"), SemVersion );
 	if (bBasePlugin) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ) );
+		OutDescriptor.CachedJson->SetBoolField( TEXT("BasePlugin"), bBasePlugin );
 	}
 }
 

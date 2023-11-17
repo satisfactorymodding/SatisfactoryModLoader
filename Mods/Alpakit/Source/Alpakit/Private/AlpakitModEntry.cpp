@@ -136,33 +136,25 @@ FReply SAlpakitModEntry::OnEditModFinished(UModMetadataObject* MetadataObject)
 	// Close the properties window
 	PropertiesWindow->RequestDestroyWindow();
 
-	// Write both to strings
-	FString OldText;
-	OldDescriptor.Write(OldText);
-	FString NewText;
-	NewDescriptor.Write(NewText);
-	if(OldText.Compare(NewText, ESearchCase::CaseSensitive) != 0)
+	FString DescriptorFileName = Mod->GetDescriptorFileName();
+
+	// First attempt to check out the file if SCC is enabled
+	ISourceControlModule& SourceControlModule = ISourceControlModule::Get();
+	if(SourceControlModule.IsEnabled())
 	{
-		FString DescriptorFileName = Mod->GetDescriptorFileName();
-
-		// First attempt to check out the file if SCC is enabled
-		ISourceControlModule& SourceControlModule = ISourceControlModule::Get();
-		if(SourceControlModule.IsEnabled())
+		ISourceControlProvider& SourceControlProvider = SourceControlModule.GetProvider();
+		TSharedPtr<ISourceControlState, ESPMode::ThreadSafe> SourceControlState = SourceControlProvider.GetState(DescriptorFileName, EStateCacheUsage::ForceUpdate);
+		if(SourceControlState.IsValid() && SourceControlState->CanCheckout())
 		{
-			ISourceControlProvider& SourceControlProvider = SourceControlModule.GetProvider();
-			TSharedPtr<ISourceControlState, ESPMode::ThreadSafe> SourceControlState = SourceControlProvider.GetState(DescriptorFileName, EStateCacheUsage::ForceUpdate);
-			if(SourceControlState.IsValid() && SourceControlState->CanCheckout())
-			{
-				SourceControlProvider.Execute(ISourceControlOperation::Create<FCheckOut>(), DescriptorFileName);
-			}
+			SourceControlProvider.Execute(ISourceControlOperation::Create<FCheckOut>(), DescriptorFileName);
 		}
+	}
 
-		// Write to the file and update the in-memory metadata
-		FText FailReason;
-		if(!Mod->UpdateDescriptor(NewDescriptor, FailReason))
-		{
-			FMessageDialog::Open(EAppMsgType::Ok, FailReason);
-		}
+	// Write to the file and update the in-memory metadata
+	FText FailReason;
+	if(!Mod->UpdateDescriptor(NewDescriptor, FailReason))
+	{
+		FMessageDialog::Open(EAppMsgType::Ok, FailReason);
 	}
 	return FReply::Handled();
 }
