@@ -119,12 +119,19 @@ public class SML : ModuleRules
             {
                 WorkingDirectory = RootDir.FullName,
                 RedirectStandardOutput = true,
+                RedirectStandardError = true,
             });
             if (BranchNameProcess != null)
             {
                 BranchNameProcess.WaitForExit();
                 if (BranchNameProcess.ExitCode == 0)
                     BranchName = BranchNameProcess.StandardOutput.ReadToEnd().Trim();
+                else
+                    Log.TraceWarning("Failed to run git to retrieve branch name: exit code {0}. Falling back to checking .git folder", BranchNameProcess.ExitCode);
+            }
+            else
+            {
+                Log.TraceWarning("Failed to run git to retrieve branch name: Failed to create git process. Falling back to checking .git folder");
             }
         } catch (Exception Ex) { 
             Log.TraceWarning("Failed to run git to retrieve branch name: {0}. Falling back to checking .git folder", Ex.Message);
@@ -136,12 +143,19 @@ public class SML : ModuleRules
             {
                 WorkingDirectory = RootDir.FullName,
                 RedirectStandardOutput = true,
+                RedirectStandardError = true,
             });
             if (CommitProcess != null)
             {
                 CommitProcess.WaitForExit();
                 if (CommitProcess.ExitCode == 0)
                     CommitRef = CommitProcess.StandardOutput.ReadToEnd().Trim();
+                else
+                    Log.TraceWarning("Failed to run git to retrieve commit: exit code {0}. Falling back to checking .git folder", CommitProcess.ExitCode);
+            }
+            else
+            {
+                Log.TraceWarning("Failed to run git to retrieve commit: Failed to create git process. Falling back to checking .git folder");
             }
         } catch (Exception Ex) {
             Log.TraceWarning("Failed to run git to retrieve commit: {0}. Falling back to checking .git folder", Ex.Message);
