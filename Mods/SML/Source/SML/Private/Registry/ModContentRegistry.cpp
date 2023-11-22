@@ -100,11 +100,10 @@ const FGameObjectRegistration* FGameObjectRegistryState::RegisterObject( FName I
 	Registration->AddFlags( ExtraFlags );
 	Registration->RegistrarModReference = InRegistrationPluginName;
 
-	const FString Context = UModContentRegistry::GetCallStackContext();
 	const bool bIsRegistrationImplicit = Registration->HasAnyFlags( EGameObjectRegistrationFlags::Implicit );
 
 	UE_LOG( LogContentRegistry, Verbose, TEXT("Registering Object '%s' (%s)%s [%s]"), *GetFullNameSafe( Object ), *InRegistrationPluginName.ToString(),
-		bIsRegistrationImplicit ? TEXT(" [implicit]") : TEXT(""), *Context );
+		bIsRegistrationImplicit ? TEXT(" [implicit]") : TEXT(""), *UModContentRegistry::GetCallStackContext() );
 
 	OnObjectRegisteredDelegate.Broadcast( Registration );
 	return Registration;
@@ -164,8 +163,7 @@ void FGameObjectRegistryState::MarkObjectAsRemoved( UObject* Object )
 	FGameObjectRegistration* ExistingRegistration = FindOrAddObject( Object );
 	if ( !ExistingRegistration->HasAnyFlags( EGameObjectRegistrationFlags::Removed ) )
 	{
-		const FString Context = UModContentRegistry::GetCallStackContext();
-		UE_LOG( LogContentRegistry, Display, TEXT("Marking Object '%s' as Removed [%s]"), *GetPathNameSafe( Object ), *Context );
+		UE_LOG( LogContentRegistry, Display, TEXT("Marking Object '%s' as Removed [%s]"), *GetPathNameSafe( Object ), *UModContentRegistry::GetCallStackContext() );
 
 		ExistingRegistration->AddFlags( EGameObjectRegistrationFlags::Removed );
 	}
@@ -189,8 +187,7 @@ void FGameObjectRegistryState::AddObjectReference( UObject* Object, UObject* Ref
 	FGameObjectRegistration* ExistingRegistration = FindOrAddObject( Object );
 	if ( !ExistingRegistration->ReferencedBy.Contains( ReferencedBy ) )
 	{
-		const FString Context = UModContentRegistry::GetCallStackContext();
-		UE_LOG( LogContentRegistry, Verbose, TEXT("Adding Reference to '%s' from '%s' [%s]"), *GetPathNameSafe( Object ), *GetPathNameSafe( ReferencedBy ), *Context );
+		UE_LOG( LogContentRegistry, Verbose, TEXT("Adding Reference to '%s' from '%s' [%s]"), *GetPathNameSafe( Object ), *GetPathNameSafe( ReferencedBy ), *UModContentRegistry::GetCallStackContext() );
 		
 		ExistingRegistration->ReferencedBy.Add( ReferencedBy );
 	}
