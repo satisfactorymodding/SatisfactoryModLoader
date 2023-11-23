@@ -130,7 +130,6 @@ void FSatisfactoryModLoader::RegisterSubsystems() {
 
     //Only register these patches in shipping, where bodies of the ACharacter::Cheat methods are stripped
 #if UE_BUILD_SHIPPING
-    FCheatManagerPatch::RegisterPatch();
 	FPlayerCheatManagerHandler::RegisterHandler();
 #endif
 
