@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="Alpakit.Automation.csproj.props" Condition="Exists('Alpakit.Automation.csproj.props')"/>
     <Import Project="$(EngineDir)\Source\Programs\Shared\UnrealEngine.csproj.props" />
 
     <PropertyGroup>
@@ -7,6 +8,7 @@
     </PropertyGroup>
     
     <PropertyGroup>
+        <Configurations>Debug;Release;Development</Configurations>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <ProjectGuid>{A777BF44-017F-4E69-916A-A62D06D63556}</ProjectGuid>
