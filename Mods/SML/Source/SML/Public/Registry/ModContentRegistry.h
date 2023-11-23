@@ -54,6 +54,11 @@ public:
 		return EnumHasAnyFlags( Flags, InFlags );
 	}
 
+	FORCEINLINE bool HasAllFlags( EGameObjectRegistrationFlags InFlags ) const
+	{
+		return EnumHasAllFlags( Flags, InFlags );
+	}
+
 	FORCEINLINE void ClearFlags( EGameObjectRegistrationFlags InFlags )
 	{
 		Flags = Flags & (~InFlags);
@@ -79,7 +84,7 @@ public:
 	
 	// Registers the given object and associates it with the provided plugin
 	const FGameObjectRegistration* RegisterObject( FName InRegistrationPluginName, UObject* Object, EGameObjectRegistrationFlags ExtraFlags = EGameObjectRegistrationFlags::None );
-	bool AttemptRegisterObject( FName InRegistrationPluginName, UObject* Object );
+	bool AttemptRegisterObject( FName InRegistrationPluginName, UObject* Object, EGameObjectRegistrationFlags ExtraFlags = EGameObjectRegistrationFlags::None );
 	void MarkObjectAsRemoved( UObject* Object );
 
 	// Adds a reference from one object to another. The object the reference is being added to must be registered.
@@ -100,6 +105,8 @@ public:
 	void AddReferencedObjects( FReferenceCollector& ReferenceCollector );
 private:
 	FGameObjectRegistration* FindOrAddObject( UObject* Object );
+	bool CanRegisterObject( UObject* Object, EGameObjectRegistrationFlags ExtraFlags, FString& OutMessage );
+	EGameObjectRegistrationFlags GetAllowedNewFlags( UObject* Object ) const;
 };
 
 // Holds information about a pending registration of item points table to the resource sink subsystem
@@ -274,13 +281,6 @@ public:
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	// End USubsystem interface
 	static void AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector);
-	
-    void AutoRegisterSchematicReferences(TSubclassOf<UFGSchematic> Schematic, FName RegistrarPluginName);
-    void AutoRegisterResearchTreeReferences(TSubclassOf<UFGResearchTree> ResearchTree, FName RegistrarPluginName);
-	void AutoRegisterRecipeReferences(TSubclassOf<UFGRecipe> Recipe, FName RegistrarPluginName);
-
-	void AutoRegisterUnlockReferences(UFGUnlock* Unlock, UObject* ReferencedBy, FName RegistrarPluginName);
-	void AutoRegisterAvailabilityDependencyReferences(UFGAvailabilityDependency* Dependency, UObject* ReferencedBy, FName RegistrarPluginName);
 private:
 	friend class FGameObjectRegistryState;
 	
@@ -323,6 +323,13 @@ private:
 	
 	void ModifySchematicList( TArray<TSubclassOf<UFGSchematic>>& RefSchematics );
 	void ModifyResearchTreeList( TArray<TSubclassOf<UFGResearchTree>>& RefResearchTrees );
+	
+	void AutoRegisterSchematicReferences(TSubclassOf<UFGSchematic> Schematic, FName RegistrarPluginName);
+	void AutoRegisterResearchTreeReferences(TSubclassOf<UFGResearchTree> ResearchTree, FName RegistrarPluginName);
+	void AutoRegisterRecipeReferences(TSubclassOf<UFGRecipe> Recipe, FName RegistrarPluginName);
+
+	void AutoRegisterUnlockReferences(UFGUnlock* Unlock, UObject* ReferencedBy, FName RegistrarPluginName, EGameObjectRegistrationFlags PropagateFlags);
+	void AutoRegisterAvailabilityDependencyReferences(UFGAvailabilityDependency* Dependency, UObject* ReferencedBy, FName RegistrarPluginName, EGameObjectRegistrationFlags PropagateFlags);
 
 	static FString GetCallStackContext();
 
