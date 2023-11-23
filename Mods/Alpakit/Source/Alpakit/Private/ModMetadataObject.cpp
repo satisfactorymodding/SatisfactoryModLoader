@@ -37,12 +37,17 @@ void UModMetadataObject::PopulateFromDescriptor(const FPluginDescriptor& InDescr
 		Dependencies.Add(ModDependency);
 	}
 
-	if ( InDescriptor.CachedJson.IsValid() )
-	{
-		InDescriptor.CachedJson->TryGetStringField( TEXT("SemVersion"), SemVersion );
-		InDescriptor.CachedJson->TryGetStringField( TEXT("RemoteVersionRange"), RemoteVersionRange );
-		InDescriptor.CachedJson->TryGetBoolField( TEXT("AcceptsAnyRemoteVersion"), bAcceptsAnyRemoteVersion );
+	// Since InDescriptor.CachedJson might not contain the freshly written AdditionalFields,
+	// we need to read them from the AdditionalFieldsToWrite.
+	// We can easily do that by having the descriptor write its data to a temporary json object
+	const TSharedRef<FJsonObject> CachedJson = MakeShared<FJsonObject>();
+	if (InDescriptor.CachedJson.IsValid()) {
+		FJsonObject::Duplicate(InDescriptor.CachedJson, CachedJson);
 	}
+	InDescriptor.UpdateJson(CachedJson.Get());
+	CachedJson->TryGetStringField( TEXT("SemVersion"), SemVersion );
+	CachedJson->TryGetStringField( TEXT("RemoteVersionRange"), RemoteVersionRange );
+	CachedJson->TryGetBoolField( TEXT("AcceptsAnyRemoteVersion"), bAcceptsAnyRemoteVersion );
 }
 
 void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
@@ -81,22 +86,17 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 
 	// CachedJson is not updated properly by UpdateDescriptor, so we update it manually here too
 	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
-	OutDescriptor.CachedJson->SetStringField( TEXT("SemVersion"), SemVersion );
 	if (RemoteVersionRange.Len() > 0) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RemoteVersionRange"), MakeShared<FJsonValueString>( RemoteVersionRange ) );
-		OutDescriptor.CachedJson->SetStringField( TEXT("RemoteVersionRange"), RemoteVersionRange );
 	} else {
 		// Remove field entirely when default value
 		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("RemoteVersionRange"));
-		OutDescriptor.CachedJson->RemoveField(TEXT("RemoteVersionRange"));
 	}
 	if (bAcceptsAnyRemoteVersion) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("AcceptsAnyRemoteVersion"), MakeShared<FJsonValueBoolean>( bAcceptsAnyRemoteVersion ) );
-		OutDescriptor.CachedJson->SetBoolField( TEXT("AcceptsAnyRemoteVersion"), bAcceptsAnyRemoteVersion );
 	} else {
 		// Remove field entirely when default value
 		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("AcceptsAnyRemoteVersion"));
-		OutDescriptor.CachedJson->RemoveField(TEXT("AcceptsAnyRemoteVersion"));
 	}
 }
 
@@ -133,11 +133,16 @@ void FModDependencyDescriptorData::PopulateFromDescriptor(const FPluginReference
 	bEnabled = InDescriptor.bEnabled;
 	bOptional = InDescriptor.bOptional;
 
-	if ( InDescriptor.CachedJson.IsValid() )
-	{
-		InDescriptor.CachedJson->TryGetStringField( TEXT("SemVersion"), SemVersion );
-		InDescriptor.CachedJson->TryGetBoolField( TEXT("BasePlugin"), bBasePlugin );
+	// Since InDescriptor.CachedJson might not contain the freshly written AdditionalFields,
+	// we need to read them from the AdditionalFieldsToWrite.
+	// We can easily do that by having the descriptor write its data to a temporary json object
+	const TSharedRef<FJsonObject> CachedJson = MakeShared<FJsonObject>();
+	if (InDescriptor.CachedJson.IsValid()) {
+		FJsonObject::Duplicate(InDescriptor.CachedJson, CachedJson);
 	}
+	InDescriptor.UpdateJson(CachedJson.Get());
+	CachedJson->TryGetStringField( TEXT("SemVersion"), SemVersion );
+	CachedJson->TryGetBoolField( TEXT("BasePlugin"), bBasePlugin );
 }
 
 void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor& OutDescriptor)
@@ -148,14 +153,11 @@ void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor
 
 	// CachedJson is not updated properly by UpdateDescriptor, so we update it manually here too
 	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
-	OutDescriptor.CachedJson->SetStringField( TEXT("SemVersion"), SemVersion );
 	if (bBasePlugin) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ) );
-		OutDescriptor.CachedJson->SetBoolField( TEXT("BasePlugin"), bBasePlugin );
 	} else {
 		// Remove field entirely when default value
 		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("BasePlugin"));
-		OutDescriptor.CachedJson->RemoveField(TEXT("BasePlugin"));
 	}
 }
 
