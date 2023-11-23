@@ -48,7 +48,10 @@ public class SML : ModuleRules
         var PlatformName = Target.Platform.ToString();
         var LibraryFolder = Path.Combine(ThirdPartyFolder, PlatformName);
 
-        // https://github.com/kubo/funchook/tree/7cb8819594f0d586454011ab691fab4edb625068
+        // https://github.com/satisfactorymodding/funchook/tree/bb837813170aa7157a79f3145426084e50ff9a3f
+        // Built by generating the Visual Studio project
+        // and adding psapi.lib;Release\distorm.lib to AdditionalDependencies
+        // in order to have them embedded in the .lib, rather than adding them here
         PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "funchook.lib"));
         
         // https://github.com/satisfactorymodding/AssemblyAnalyzer/tree/e08ec4402b6e016a9b7aa59ab8c82dd0840e8f98
