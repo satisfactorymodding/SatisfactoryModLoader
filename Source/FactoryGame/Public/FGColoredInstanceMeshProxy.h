@@ -36,6 +36,10 @@ public:
 	FORCEINLINE uint8 GetNumCustomDataFloats() const { return mNumCustomDataFloats; }
 
 protected:
+	// Begin USceneComponent interface
+	virtual void OnUpdateTransform( EUpdateTransformFlags UpdateTransformFlags, ETeleportType Teleport ) override;
+	// End USceneComponent interface
+	
 	// Begin AActorComponent interface
 	virtual void OnHiddenInGameChanged() override;	
 public:

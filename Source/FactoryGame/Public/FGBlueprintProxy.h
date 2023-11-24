@@ -41,7 +41,7 @@ public:
 
 	/** Gets the blueprint descriptor which was used to construct this blueprint. */
 	UFUNCTION( BlueprintPure, Category = "BlueprintProxy" )
-	FORCEINLINE class UFGBlueprintDescriptor* GetBlueprintDescriptor() const { return mBlueprintDescriptor; }
+	class UFGBlueprintDescriptor* GetBlueprintDescriptor() const;
 
 	/** Gets the name of the descriptor this blueprint was built with. */
 	UFUNCTION( BlueprintPure, Category = "BlueprintProxy" )

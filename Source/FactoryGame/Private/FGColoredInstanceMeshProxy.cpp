@@ -34,6 +34,7 @@ void UFGColoredInstanceMeshProxy::SetCustomizationData(const FFactoryCustomizati
 void UFGColoredInstanceMeshProxy::SetHasPowerData(float newHasPower){ }
 void UFGColoredInstanceMeshProxy::SetUserDefinedData(TArray<float> userData){ }
 void UFGColoredInstanceMeshProxy::SetInstanced(bool setToInstanced){ }
+void UFGColoredInstanceMeshProxy::OnUpdateTransform(EUpdateTransformFlags UpdateTransformFlags, ETeleportType Teleport){ }
 void UFGColoredInstanceMeshProxy::OnHiddenInGameChanged(){ }
 bool UFGColoredInstanceMeshProxy::ShouldBlockInstancing() const{ return bool(); }
 void UFGColoredInstanceMeshProxy::InstantiateInternal(){ }

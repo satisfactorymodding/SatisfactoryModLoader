@@ -27,6 +27,7 @@ void AFGBlueprintProxy::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& 
 void AFGBlueprintProxy::RegisterBuildable( AFGBuildable* buildable){ }
 void AFGBlueprintProxy::UnregisterBuildable( AFGBuildable* buildable){ }
 int32 AFGBlueprintProxy::CollectBuildables(TArray<  AFGBuildable* >& out_buildables) const{ return int32(); }
+UFGBlueprintDescriptor* AFGBlueprintProxy::GetBlueprintDescriptor() const{ return nullptr; }
 void AFGBlueprintProxy::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBlueprintProxy::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBlueprintProxy::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
