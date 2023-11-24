@@ -201,7 +201,7 @@ void FAlpakitInstance::SpawnNotification()
 	NotificationInfo.ExpireDuration = 10.0f;
 
 	NotificationInfo.Hyperlink = FSimpleDelegate::CreateSP( AsShared(), &FAlpakitInstance::HandleOutputLogNavigate );
-	NotificationInfo.HyperlinkText = LOCTEXT("ShowOutputLogHyperlink", "Show Output Log");
+	NotificationInfo.HyperlinkText = LOCTEXT("ShowAlpakitLogHyperlink", "Show Alpakit Log");
 
 	NotificationInfo.ButtonDetails.Add(
 		FNotificationButtonInfo(
