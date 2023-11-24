@@ -40,6 +40,12 @@ void FAlpakitModule::StartupModule() {
             FGlobalTabmanager::Get()->TryInvokeTab(AlpakitTabName);
         }),
         FCanExecuteAction());
+    PluginCommands->MapAction(
+        FAlpakitCommands::Get().OpenLogWindow,
+        FExecuteAction::CreateLambda([](){
+            FGlobalTabmanager::Get()->TryInvokeTab(AlpakitLogTabName);
+        }),
+        FCanExecuteAction());
     FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));
     
     //Register Alpakit Settings in Editor's Project Menu
@@ -47,14 +53,34 @@ void FAlpakitModule::StartupModule() {
     MenuExtender->AddMenuExtension(TEXT("FileProject"), EExtensionHook::After, PluginCommands,
         FMenuExtensionDelegate::CreateLambda([](FMenuBuilder& Builder){
             Builder.AddMenuEntry(FAlpakitCommands::Get().OpenPluginWindow);
+            Builder.AddMenuEntry(FAlpakitCommands::Get().OpenLogWindow);
         }));
     LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
     
     //Register Alpakit Settings in Editor's Toolbar
     TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
     ToolbarExtender->AddToolBarExtension(TEXT("Play"), EExtensionHook::After, PluginCommands,
-        FToolBarExtensionDelegate::CreateLambda([](FToolBarBuilder& Builder) {
-            Builder.AddToolBarButton(FAlpakitCommands::Get().OpenPluginWindow);
+        FToolBarExtensionDelegate::CreateLambda([this](FToolBarBuilder& Builder) {
+            {
+                Builder.BeginStyleOverride(FName("Toolbar.BackplateLeft"));
+                
+                Builder.AddToolBarButton(FAlpakitCommands::Get().OpenPluginWindow);
+
+                Builder.EndStyleOverride();
+            }
+            {
+                Builder.BeginStyleOverride(FName("Toolbar.BackplateRightCombo"));
+
+                Builder.AddComboButton(FUIAction(), FOnGetContent::CreateLambda([this]() {                
+                    FMenuBuilder MenuBuilder(true, PluginCommands);
+
+                    MenuBuilder.AddMenuEntry(FAlpakitCommands::Get().OpenLogWindow);
+        
+                    return MenuBuilder.MakeWidget();
+                }));
+
+                Builder.EndStyleOverride();
+            }
         }));
     LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(ToolbarExtender);
 

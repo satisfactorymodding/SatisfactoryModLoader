@@ -11,6 +11,7 @@ FAlpakitCommands::FAlpakitCommands() : TCommands<FAlpakitCommands>(
 
 void FAlpakitCommands::RegisterCommands() {
     UI_COMMAND(OpenPluginWindow, "Alpakit", "Open the alpakit window", EUserInterfaceActionType::Button, FInputChord{});
+    UI_COMMAND(OpenLogWindow, "Alpakit Log", "Open the alpakit log window", EUserInterfaceActionType::Button, FInputChord{});
 }
 
 #undef LOCTEXT_NAMESPACE
