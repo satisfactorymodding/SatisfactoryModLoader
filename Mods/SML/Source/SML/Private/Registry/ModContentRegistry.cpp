@@ -875,7 +875,7 @@ bool UModContentRegistry::IsDescriptorFilteredOut( UObject* ItemDescriptor, EGet
 	{
 		return true;
 	}
-	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial)) {
+	if ( !EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial) ) {
 		if (ItemDescriptor->IsA<UFGWildCardDescriptor>() || ItemDescriptor->IsA<UFGAnyUndefinedDescriptor>() || ItemDescriptor->IsA<UFGOverflowDescriptor>() || ItemDescriptor->IsA<UFGNoneDescriptor>())
 		{
 			return true;
