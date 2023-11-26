@@ -1,4 +1,5 @@
 #include "Registry/ModContentRegistry.h"
+#include "Registry/SMLExtendedAttributeProvider.h"
 #include "FGGameMode.h"
 #include "FGGameState.h"
 #include "FGResearchManager.h"
@@ -19,6 +20,7 @@
 #include "Patching/NativeHookManager.h"
 #include "Reflection/ReflectionHelper.h"
 #include "Engine/AssetManager.h"
+#include "GameplayTagsModule.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"
 #include "ModLoading/PluginModuleLoader.h"
 #include "Resources/FGAnyUndefinedDescriptor.h"
@@ -855,7 +857,7 @@ void UModContentRegistry::AutoRegisterRecipeReferences( TSubclassOf<UFGRecipe> R
 	}
 }
 
-bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
+bool UModContentRegistry::IsDescriptorFilteredOut( UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
 {
 	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeBuildings ) && ItemDescriptor->IsA<UFGBuildingDescriptor>() )
 	{
@@ -873,10 +875,19 @@ bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor
 	{
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial ) && ( ItemDescriptor->IsA<UFGWildCardDescriptor>() ||
-		ItemDescriptor->IsA<UFGAnyUndefinedDescriptor>() || ItemDescriptor->IsA<UFGOverflowDescriptor>() || ItemDescriptor->IsA<UFGNoneDescriptor>() ))
-	{
-		return true;
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial)) {
+		if (ItemDescriptor->IsA<UFGWildCardDescriptor>() || ItemDescriptor->IsA<UFGAnyUndefinedDescriptor>() || ItemDescriptor->IsA<UFGOverflowDescriptor>() || ItemDescriptor->IsA<UFGNoneDescriptor>())
+		{
+			return true;
+		}
+		if (ItemDescriptor->Implements<USMLExtendedAttributeProvider>()) {
+			UE_LOG(LogTemp, Warning, TEXT("Yes it implements the interface"));
+			const auto ItemTags = ISMLExtendedAttributeProvider::Execute_GetGameplayTagsContainer(ItemDescriptor);
+			const auto SmlSpecialTag = FGameplayTag::RequestGameplayTag("SML.Registry.Item.SpecialItemDescriptor", true);
+			return ItemTags.HasTag(SmlSpecialTag);
+		}
+		UE_LOG(LogTemp, Warning, TEXT("No it doesn't implement the interface"));
+		return false;
 	}
 	return false;
 }
