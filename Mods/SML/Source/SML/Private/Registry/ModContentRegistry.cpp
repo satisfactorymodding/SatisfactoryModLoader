@@ -857,7 +857,7 @@ void UModContentRegistry::AutoRegisterRecipeReferences( TSubclassOf<UFGRecipe> R
 	}
 }
 
-bool UModContentRegistry::IsDescriptorFilteredOut( UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
+bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
 {
 	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeBuildings ) && ItemDescriptor->IsA<UFGBuildingDescriptor>() )
 	{
