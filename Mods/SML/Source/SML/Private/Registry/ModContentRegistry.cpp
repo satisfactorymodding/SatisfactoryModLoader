@@ -857,25 +857,25 @@ void UModContentRegistry::AutoRegisterRecipeReferences( TSubclassOf<UFGRecipe> R
 
 bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
 {
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeBuildings ) && ItemDescriptor->IsA<UFGBuildingDescriptor>() )
-	{
+	if (!ItemDescriptor) {
+		UE_LOG(LogContentRegistry, Warning, TEXT("IsDescriptorFilteredOut called with null ItemDescriptor, returning true (filtering out)"));
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeCustomizations ) && ItemDescriptor->IsA<UFGFactoryCustomizationDescriptor>() )
-	{
+	const auto descriptorClass = Cast<UClass>(ItemDescriptor);
+
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeBuildings) && descriptorClass->IsChildOf<UFGBuildingDescriptor>()) {
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeCreatures ) && ItemDescriptor->IsA<UFGCreatureDescriptor>() )
-	{
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeCustomizations) && descriptorClass->IsChildOf<UFGFactoryCustomizationDescriptor>()) {
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeVehicles ) && ItemDescriptor->IsA<UFGVehicleDescriptor>() )
-	{
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeCreatures) && descriptorClass->IsChildOf<UFGCreatureDescriptor>()) {
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial ) && ( ItemDescriptor->IsA<UFGWildCardDescriptor>() ||
-		ItemDescriptor->IsA<UFGAnyUndefinedDescriptor>() || ItemDescriptor->IsA<UFGOverflowDescriptor>() || ItemDescriptor->IsA<UFGNoneDescriptor>() ))
-	{
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeVehicles) && descriptorClass->IsChildOf<UFGVehicleDescriptor>()) {
+		return true;
+	}
+	if (descriptorClass->IsChildOf<UFGWildCardDescriptor>() || descriptorClass->IsChildOf<UFGAnyUndefinedDescriptor>() || descriptorClass->IsChildOf<UFGOverflowDescriptor>() || descriptorClass->IsChildOf<UFGNoneDescriptor>()) {
 		return true;
 	}
 	return false;
