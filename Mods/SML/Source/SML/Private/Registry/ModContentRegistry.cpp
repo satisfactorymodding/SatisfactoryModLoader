@@ -876,7 +876,8 @@ bool UModContentRegistry::IsDescriptorFilteredOut( UObject* ItemDescriptor, EGet
 		return true;
 	}
 	if ( !EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial) ) {
-		if (ItemDescriptor->IsA<UFGWildCardDescriptor>() || ItemDescriptor->IsA<UFGAnyUndefinedDescriptor>() || ItemDescriptor->IsA<UFGOverflowDescriptor>() || ItemDescriptor->IsA<UFGNoneDescriptor>())
+		const auto descriptorClass = Cast<UClass>(ItemDescriptor);
+		if (descriptorClass->IsChildOf<UFGWildCardDescriptor>() || descriptorClass->IsChildOf<UFGAnyUndefinedDescriptor>() || descriptorClass->IsChildOf<UFGOverflowDescriptor>() || descriptorClass->IsChildOf<UFGNoneDescriptor>())
 		{
 			return true;
 		}
