@@ -1,4 +1,5 @@
 #include "Registry/ModContentRegistry.h"
+#include "Registry/SMLExtendedAttributeProvider.h"
 #include "FGGameMode.h"
 #include "FGGameState.h"
 #include "FGResearchManager.h"
@@ -19,6 +20,7 @@
 #include "Patching/NativeHookManager.h"
 #include "Reflection/ReflectionHelper.h"
 #include "Engine/AssetManager.h"
+#include "GameplayTagsModule.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"
 #include "ModLoading/PluginModuleLoader.h"
 #include "Resources/FGAnyUndefinedDescriptor.h"
@@ -857,26 +859,45 @@ void UModContentRegistry::AutoRegisterRecipeReferences( TSubclassOf<UFGRecipe> R
 
 bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
 {
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeBuildings ) && ItemDescriptor->IsA<UFGBuildingDescriptor>() )
+	if (!ItemDescriptor) {
+		UE_LOG(LogContentRegistry, Warning, TEXT("IsDescriptorFilteredOut called with null ItemDescriptor, returning true (filtering out)"));
+		return true;
+	}
+	const auto descriptorClass = Cast<UClass>(ItemDescriptor);
+
+	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeBuildings ) && descriptorClass->IsChildOf<UFGBuildingDescriptor>() )
 	{
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeCustomizations ) && ItemDescriptor->IsA<UFGFactoryCustomizationDescriptor>() )
+	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeCustomizations ) && descriptorClass->IsChildOf<UFGFactoryCustomizationDescriptor>() )
 	{
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeCreatures ) && ItemDescriptor->IsA<UFGCreatureDescriptor>() )
+	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeCreatures ) && descriptorClass->IsChildOf<UFGCreatureDescriptor>() )
 	{
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeVehicles ) && ItemDescriptor->IsA<UFGVehicleDescriptor>() )
+	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeVehicles ) && descriptorClass->IsChildOf<UFGVehicleDescriptor>() )
 	{
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial ) && ( ItemDescriptor->IsA<UFGWildCardDescriptor>() ||
-		ItemDescriptor->IsA<UFGAnyUndefinedDescriptor>() || ItemDescriptor->IsA<UFGOverflowDescriptor>() || ItemDescriptor->IsA<UFGNoneDescriptor>() ))
-	{
-		return true;
+	if ( !EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial) ) {
+		
+		if (descriptorClass->IsChildOf<UFGWildCardDescriptor>() || descriptorClass->IsChildOf<UFGAnyUndefinedDescriptor>() || descriptorClass->IsChildOf<UFGOverflowDescriptor>() || descriptorClass->IsChildOf<UFGNoneDescriptor>())
+		{
+			return true;
+		}
+		if (descriptorClass->ImplementsInterface(USMLExtendedAttributeProvider::StaticClass())) {
+			UObject* ItemDescriptorCDO = descriptorClass->GetDefaultObject();
+			const auto ItemTags = ISMLExtendedAttributeProvider::Execute_GetGameplayTagsContainer(ItemDescriptorCDO);
+			// TODO until tags loaded at runtime, using this to work around RequestGameplayTag returning None without error upon tag lookup
+			// UE_LOG(LogTemp, Error, TEXT("The tags are: %s"), *ItemTags.ToStringSimple());
+			// const auto SmlSpecialTag = FGameplayTag::RequestGameplayTag("SML.Registry.Item.SpecialItemDescriptor", true);
+			// const auto hasTag = ItemTags.HasTag(SmlSpecialTag);
+			const auto hasTag = ItemTags.ToStringSimple().Contains("SML.Registry.Item.SpecialItemDescriptor");
+			return hasTag;
+		}
+		return false;
 	}
 	return false;
 }

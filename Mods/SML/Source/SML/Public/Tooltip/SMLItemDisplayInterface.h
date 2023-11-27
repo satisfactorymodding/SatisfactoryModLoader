@@ -17,12 +17,12 @@ class SML_API USMLItemDisplayInterface : public UInterface {
 class SML_API ISMLItemDisplayInterface {
     GENERATED_BODY()
 public:
-    UFUNCTION(BlueprintNativeEvent)
+    UFUNCTION(BlueprintNativeEvent, Category = "SML|Item")
     FText GetOverridenItemName(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
-    UFUNCTION(BlueprintNativeEvent)
+    UFUNCTION(BlueprintNativeEvent, Category = "SML|Item")
     FText GetOverridenItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
-    UFUNCTION(BlueprintNativeEvent)
+    UFUNCTION(BlueprintNativeEvent, Category = "SML|Item")
     UWidget* CreateDescriptionWidget(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 };
