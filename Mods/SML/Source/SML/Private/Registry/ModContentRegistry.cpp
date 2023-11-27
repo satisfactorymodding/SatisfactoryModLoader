@@ -881,13 +881,16 @@ bool UModContentRegistry::IsDescriptorFilteredOut( UObject* ItemDescriptor, EGet
 		{
 			return true;
 		}
-		if (ItemDescriptor->Implements<USMLExtendedAttributeProvider>()) {
-			UE_LOG(LogTemp, Warning, TEXT("Yes it implements the interface"));
-			const auto ItemTags = ISMLExtendedAttributeProvider::Execute_GetGameplayTagsContainer(ItemDescriptor);
-			const auto SmlSpecialTag = FGameplayTag::RequestGameplayTag("SML.Registry.Item.SpecialItemDescriptor", true);
-			return ItemTags.HasTag(SmlSpecialTag);
+		if (descriptorClass->ImplementsInterface(USMLExtendedAttributeProvider::StaticClass())) {
+			UObject* ItemDescriptorCDO = descriptorClass->GetDefaultObject();
+			const auto ItemTags = ISMLExtendedAttributeProvider::Execute_GetGameplayTagsContainer(ItemDescriptorCDO);
+			// TODO until tags loaded at runtime, using this to work around RequestGameplayTag returning None without error upon tag lookup
+			// UE_LOG(LogTemp, Error, TEXT("The tags are: %s"), *ItemTags.ToStringSimple());
+			// const auto SmlSpecialTag = FGameplayTag::RequestGameplayTag("SML.Registry.Item.SpecialItemDescriptor", true);
+			// const auto hasTag = ItemTags.HasTag(SmlSpecialTag);
+			const auto hasTag = ItemTags.ToStringSimple().Contains("SML.Registry.Item.SpecialItemDescriptor");
+			return hasTag;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("No it doesn't implement the interface"));
 		return false;
 	}
 	return false;
