@@ -11,11 +11,13 @@ AFGDriveablePawn::AFGDriveablePawn() : Super() {
 	this->mDriverExitOffset = FVector::ZeroVector;
 	this->mMappingContext = nullptr;
 	this->mDriver = nullptr;
+	this->mIsPossessed = false;
 	this->mIsDriving = false;
 }
 void AFGDriveablePawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGDriveablePawn, mDriver);
+	DOREPLIFETIME(AFGDriveablePawn, mIsPossessed);
 	DOREPLIFETIME(AFGDriveablePawn, mIsDriving);
 }
 void AFGDriveablePawn::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -29,6 +31,7 @@ void AFGDriveablePawn::PossessedBy(AController* newController){ }
 void AFGDriveablePawn::UnPossessed(){ }
 void AFGDriveablePawn::OnRep_PlayerState(){ }
 void AFGDriveablePawn::UpdatePlayerStatus(){ }
+bool AFGDriveablePawn::HasActiveDriver() const{ return bool(); }
 bool AFGDriveablePawn::CanDriverEnter( AFGCharacterPlayer* character){ return bool(); }
 bool AFGDriveablePawn::DriverEnter( AFGCharacterPlayer* driver){ return bool(); }
 bool AFGDriveablePawn::DriverLeave(bool keepDriving){ return bool(); }
