@@ -54,7 +54,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category= Advanced)
 	TArray<TSubclassOf<class AModSubsystem>> ModSubsystems;
 
-    /** Register content from properties here */
+    /** Register content from properties here.
+    Make sure to call super on the C++ side if you have both a C++ and Blueprint implementation. */
     virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
 protected:
 	/** Registers content at the construction phase */
