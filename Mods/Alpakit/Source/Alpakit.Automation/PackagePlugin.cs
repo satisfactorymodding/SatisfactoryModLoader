@@ -63,7 +63,6 @@ public class PackagePlugin : BuildCookRun
 			Cook: true,
 			AdditionalCookerOptions: "-AllowUncookedAssetReferences",
 			DLCIncludeEngineContent: false,
-			Compressed: true,
 			Pak: true,
 			Stage: true,
 			
