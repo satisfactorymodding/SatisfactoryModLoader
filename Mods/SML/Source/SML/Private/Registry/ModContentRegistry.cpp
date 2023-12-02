@@ -545,7 +545,12 @@ bool UModContentRegistry::GetRecipeInfo( TSubclassOf<UFGRecipe> Recipe, FGameObj
 FGameObjectRegistration UModContentRegistry::GetItemDescriptorInfo( TSubclassOf<UFGItemDescriptor> ItemDescriptor )
 {
 	ItemRegistryState.AttemptRegisterObject( NAME_None, ItemDescriptor );
-	return *ItemRegistryState.FindObjectRegistration( ItemDescriptor );
+	if (const FGameObjectRegistration* ItemRegistration = ItemRegistryState.FindObjectRegistration(ItemDescriptor))
+	{
+		return *ItemRegistration;
+	}
+	// Since the ItemRegistryState is never frozen, this will only be reached if the ItemDescriptor is invalid
+	return FGameObjectRegistration{};
 }
 
 bool UModContentRegistry::IsItemDescriptorVanilla( TSubclassOf<UFGItemDescriptor> ItemDescriptor )
