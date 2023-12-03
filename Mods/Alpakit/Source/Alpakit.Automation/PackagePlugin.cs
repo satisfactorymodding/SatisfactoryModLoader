@@ -43,11 +43,22 @@ public class PackagePlugin : BuildCookRun
 			var customLaunch = ParseOptionalStringParam($"CustomLaunch_{SC.FinalCookPlatform}");
 
 			if (copyToGameDirectory != null)
+			{
+				if (!IsValidGameDir(copyToGameDirectory))
+					throw new AutomationException("Invalid game directory specified for CopyToGameDirectory: {0}", copyToGameDirectory);
 				DeployStagedPlugin(projectParams, SC, copyToGameDirectory);
+			}
 
 			if (launchGameType != null)
 				LaunchGame.Launch(launchGameType.Value, customLaunch);
 		}
+	}
+
+	private bool IsValidGameDir(DirectoryReference GameDirectory)
+	{
+		var projectName = ProjectPath.GetFileNameWithoutAnyExtensions();
+		var gameModuleDir = DirectoryReference.Combine(GameDirectory, projectName);
+		return DirectoryReference.Exists(gameModuleDir);
 	}
 
 	protected ProjectParams SetupParams()
