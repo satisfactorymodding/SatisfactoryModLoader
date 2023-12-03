@@ -22,7 +22,7 @@ IFGOptionInterface* UFGGameUserSettings::GetActiveOptionInterface() const{ retur
 FString UFGGameUserSettings::RunAndApplyHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ return FString(); }
 void UFGGameUserSettings::TryAutoDetectSettings(){ }
 void UFGGameUserSettings::SetDefaultValuesFromHardwareBenchmark(){ }
-EUpscalingMethod UFGGameUserSettings::ValidateUpscalingMethod(EUpscalingMethod upscalingMethod) const{ return EUpscalingMethod(); }
+EUpscalingMethod UFGGameUserSettings::ValidateUpscalingMethod(EUpscalingMethod upscalingMethod, bool considerVRAM) const{ return EUpscalingMethod(); }
 FString UFGGameUserSettings::ValidateScalabilityValue(const FString& keyString, const FString& valueString) const{ return FString(); }
 int32 UFGGameUserSettings::GetVideoQualityLevelFromHardwareBenchmark(){ return int32(); }
 void UFGGameUserSettings::RevertUnsavedChanges(){ }
@@ -39,6 +39,7 @@ void UFGGameUserSettings::InitVideoQualityValues(){ }
 void UFGGameUserSettings::UpdateVideoQualityCvars(const FString& cvar){ }
 void UFGGameUserSettings::OnUpScalingUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::InitUpScalingMethod(){ }
+bool UFGGameUserSettings::IsUsingThirdPartyUpscaler() const{ return bool(); }
 void UFGGameUserSettings::HandleCmdLineVideoQuality(){ }
 bool UFGGameUserSettings::GetCmdLineVideoQualityLevel(int32& out_value){ return bool(); }
 bool UFGGameUserSettings::HasVideoQualityCmdLineArg(){ return bool(); }
@@ -137,3 +138,7 @@ void UFGGameUserSettings::UpdateCvars(){ }
 void UFGGameUserSettings::PreSetup(){ }
 bool UFGGameUserSettings::ValidateCVar(const FString& cvar){ return bool(); }
 void UFGGameUserSettings::TestSavedValues(){ }
+UWorld* UFGGameUserSettings::GetGameWorld(){ return nullptr; }
+void UFGGameUserSettings::FlushRenderingCommandsThenApplyUpscaler(EUpscalingMethod upscalingMethod){ }
+void UFGGameUserSettings::SetUpscalerCVars(EUpscalingMethod upscalingMethod){ }
+void UFGGameUserSettings::SetAAMethodFromUpscalingMethod(EUpscalingMethod upscalingMethod){ }
