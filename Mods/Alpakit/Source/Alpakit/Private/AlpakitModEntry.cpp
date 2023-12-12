@@ -28,7 +28,7 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
     const FString PluginName = Mod->GetName();
 
     Checkbox = SNew(SCheckBox)
-        .ToolTipText(LOCTEXT("AlpakitModEntryEnabled_Tooltip", "If enabled, this mod will be packaged when the Alpakit Dev or Alpakit Release buttons are pressed"))
+        .ToolTipText(LOCTEXT("AlpakitModEntryEnabled_Tooltip", "If enabled, this mod will be packaged when the 'Alpakit Dev' or 'Alpakit Release' buttons are pressed"))
         .OnCheckStateChanged(this, &SAlpakitModEntry::OnEnableCheckboxChanged)
         .IsChecked(Settings->ModSelection.FindOrAdd(PluginName, false) ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 
@@ -47,7 +47,8 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
                 return FReply::Handled();
             })
             .ToolTipText_Lambda([this](){
-                return FText::FromString(FString::Printf(TEXT("Alpakit %s"), *this->Mod->GetName()));
+                // TODO localize correctly
+                return FText::FromString(FString::Printf(TEXT("Alpakit Dev just %s\n\nPackage this mod for each of the targets you have Enabled in your Dev Packaging Settings (NOT Release Targets!), then run your after packaging tasks for each target.\nCan build Shipping C++ as required."), *this->Mod->GetName()));
             })
             .IsEnabled(this, &SAlpakitModEntry::IsPackageButtonEnabled)
         ]

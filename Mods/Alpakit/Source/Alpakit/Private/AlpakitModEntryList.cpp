@@ -76,7 +76,7 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                 SNew(SVerticalBox)
                     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0, 0, 0, 5)[
                         SNew(STextBlock)
-                        .ToolTipText(LOCTEXT("ReleaseTargets_Tooltip", "Select what target platforms this mod supports, which controls what will be built by the 'Alpakit Release' button"))
+                        .ToolTipText(LOCTEXT("ReleaseTargets_Tooltip", "Select what target platforms this mod supports, which controls what will be built by the 'Alpakit Release' button. The 'Alpakit Dev' and Alpakit! for one mod buttons ignore this and use the Dev Packaging Settings instead."))
                         .Text(LOCTEXT("ReleaseTargets", "Release Targets"))
                     ]
                     +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0, 5, 0, 0)[

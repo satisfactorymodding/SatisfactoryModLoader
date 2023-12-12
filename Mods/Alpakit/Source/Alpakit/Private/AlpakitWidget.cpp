@@ -41,7 +41,7 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
                 + SHorizontalBox::Slot().AutoWidth()[
                     SAssignNew(AlpakitAllDevButton, SButton)
                     .Text(LOCTEXT("PackageModAlpakitAllDev", "Alpakit Dev"))
-                    .ToolTipText(LOCTEXT("PackageModAlpakitAllDev_Tooltip", "For each selected mod, package the mod, then follow the after packing tasks after all packaging is complete"))
+                    .ToolTipText(LOCTEXT("PackageModAlpakitAllDev_Tooltip", "For each selected mod, package the mod for each of the targets you have Enabled in your Dev Packaging Settings (NOT Release Targets!).\nAfter all tasks complete, run your after packaging tasks for each target.\nCan build Shipping C++ as required."))
                     .OnClicked_Lambda([this] {
                         PackageAllMods(false);
                         return FReply::Handled();
@@ -51,7 +51,7 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
                 + SHorizontalBox::Slot().AutoWidth()[
                     SAssignNew(AlpakitAllReleaseButton, SButton)
                     .Text(LOCTEXT("PackageModAlpakitAllRelease", "Alpakit Release"))
-                    .ToolTipText(LOCTEXT("PackageModAlpakitAllRelease_Tooltip", "For each selected mod, prepare the multi-target zip for upload to the Mod Repository. Can build C++ as needed. Does not execute the after packing tasks"))
+                    .ToolTipText(LOCTEXT("PackageModAlpakitAllRelease_Tooltip", "For each selected mod, prepare the multi-target zip for upload to the Mod Repository. The targets included in the zip are controlled by what you have marked in Release Targets.\nDoes not execute the after packing tasks (those are only for dev).\nCan build Shipping C++ as required."))
                     .OnClicked_Lambda([this] {
                         PackageAllMods(true);
                         return FReply::Handled();
