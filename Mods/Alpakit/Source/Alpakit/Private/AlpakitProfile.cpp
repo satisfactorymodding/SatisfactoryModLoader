@@ -1,7 +1,7 @@
 ﻿#include "AlpakitProfile.h"
 #include "PlatformInfo.h"
 
-UE_DISABLE_OPTIMIZATION
+// UE_DISABLE_OPTIMIZATION
 
 FString FAlpakitProfile::MakeUATPlatformArgs() {
 	// Code below replicates the minimum configuration required from FLauncherWorker::CreateUATCommand
