@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGSplineHologram.h"
+#include "FGSplineHologram.h"
 #include "FGRailroadBridgeHologram.generated.h"
 
 

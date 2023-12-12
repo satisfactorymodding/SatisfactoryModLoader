@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Hologram/FGBuildableHologram.h"
 #include "Buildables/FGBuildableFactoryBuilding.h"
+#include "FGBuildableHologram.h"
 
 #include "FGFactoryBuildingHologram.generated.h"
 

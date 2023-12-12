@@ -2,6 +2,7 @@
 
 #include "Equipment/FGEquipmentAttachment.h"
 #include "Equipment/FGEquipment.h"
+#include "Net/UnrealNetwork.h"
 
 void AFGEquipmentAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

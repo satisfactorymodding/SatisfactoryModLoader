@@ -10,7 +10,7 @@ void FObjectReferenceDisc::Reset(){ }
 UObject* FObjectReferenceDisc::Resolve(UWorld* world) const{ return nullptr; }
 bool FObjectReferenceDisc::ResolveWithRedirect(UWorld* world, const FString& outerName, UObject*& out_object, UObject*& out_outer) const{ return bool(); }
 UObject* FObjectReferenceDisc::StaticFindOrLoad(UClass* ObjectClass, UObject* InObjectPackage, const TCHAR* OrigInName, bool isProbablyClass){ return nullptr; }
-AActor* FObjectReferenceDisc::TryResolveActorWithNewLevel(UWorld* world, ULevel* newLevel){ return nullptr; }
+AActor* FObjectReferenceDisc::TryResolveActorWithNewLevel(UWorld* world,  ULevel* newLevel){ return nullptr; }
 FObjectReferenceDisc FObjectReferenceDisc::MigrateToNewLevel(const FString& levelName) const{ return FObjectReferenceDisc(); }
 void FObjectReferenceDisc::Set(const UObject* obj){ }
 void FObjectReferenceDisc::ParseObjectName(FString& out_objName) const{ }

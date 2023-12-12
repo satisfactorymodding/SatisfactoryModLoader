@@ -3,13 +3,13 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "FGResearchTreeNode.h"
 #include "AvailabilityDependencies/FGAvailabilityDependency.h"
+#include "CoreMinimal.h"
+#include "FGEventSubsystem.h"
+#include "FGResearchTreeNode.h"
 #include "IncludeInBuild.h"
 #include "Styling/SlateBrush.h"
-#include "FGEventSubsystem.h"
+#include "UObject/NoExportTypes.h"
 #include "FGResearchTree.generated.h"
 
 /**

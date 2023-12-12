@@ -13,7 +13,7 @@ void AFGItemPickup_Spawnable::BeginPlay(){ }
 void AFGItemPickup_Spawnable::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGItemPickup_Spawnable::ShouldSave_Implementation() const{ return bool(); }
 bool AFGItemPickup_Spawnable::NeedTransform_Implementation(){ return bool(); }
-void AFGItemPickup_Spawnable::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
+void AFGItemPickup_Spawnable::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGItemPickup_Spawnable::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 AFGItemPickup_Spawnable* AFGItemPickup_Spawnable::CreateItemDrop( UWorld* world, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf<class AFGItemPickup_Spawnable> itemDropClass){ return nullptr; }
 void AFGItemPickup_Spawnable::OnColorUpdated(int32 index){ }

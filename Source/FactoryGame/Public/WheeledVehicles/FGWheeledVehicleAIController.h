@@ -6,11 +6,8 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "FGVehicleSubsystem.h"
+#include "SharedStats.h"
 #include "FGWheeledVehicleAIController.generated.h"
-
-// TODO: migrate from PhysX to Chaos; in the meantime, stfu
-#pragma warning( disable : 4996 )
-
 
 DECLARE_CYCLE_STAT( TEXT( "WheeledVehicle" ), STAT_ExecuteInterface_WheeledVehicle, STATGROUP_ExecuteInterface );
 

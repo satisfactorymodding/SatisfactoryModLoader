@@ -2,6 +2,7 @@
 
 #pragma once
 #include "FactoryGame.h"
+#include "Curves/CurveFloat.h"
 #include "DamageTypes/FGDamageType.h"
 #include "FGSaveInterface.h"
 #include "GameFramework/Actor.h"
@@ -29,6 +30,7 @@ public:
 	//** Save Game Interface. Default is to not save, but the save interface is implemented here to allow for enabling in children (eg. FGNobeliskExplosive) */
 	virtual bool ShouldSave_Implementation() const override;
 	virtual bool NeedTransform_Implementation() override;
+	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
 	//** End Save Game Interface */
 
 	// Start AActor interface
@@ -75,7 +77,7 @@ public:
 	const FRotator& GetThrowRotation() const { return mThrowRotation; }
 
 	UFUNCTION( BlueprintCallable, Category = "Projectile" )
-	void SetSourceAmmoDescriptor( class UFGAmmoTypeProjectile* ammoDescriptor ) { mSourceAmmoDescriptor = ammoDescriptor; }
+	void SetSourceAmmoDescriptor( class UFGAmmoTypeProjectile* ammoDescriptor );
 	
 	UFUNCTION( BlueprintCallable, Category = "Projectile" )
 	void SetImpactDamageTypes( TArray<UFGDamageType*> impactDamageTypes ) { mDamageTypesOnImpact = impactDamageTypes; }
@@ -247,7 +249,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, ReplicatedUsing = OnRep_IsHomingProjectile, Category = "Projectile" )
 	bool mIsHomingProjectile;
 
-	UPROPERTY( BlueprintReadOnly, Replicated, Category = "Projectile" )
+	UPROPERTY( BlueprintReadOnly, Replicated, SaveGame, Category = "Projectile" )
 	class UFGAmmoTypeProjectile* mSourceAmmoDescriptor;
 
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Damage" )

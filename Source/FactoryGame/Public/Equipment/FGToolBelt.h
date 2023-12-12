@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Equipment/FGEquipment.h"
+#include "FGEquipment.h"
 #include "FGToolBelt.generated.h"
 
 /**

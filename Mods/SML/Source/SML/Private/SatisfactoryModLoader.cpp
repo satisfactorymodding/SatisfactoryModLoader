@@ -6,12 +6,13 @@
 #include "Network/NetworkHandler.h"
 #include "Registry/RemoteCallObjectRegistry.h"
 #include "Network/SMLConnection/SMLNetworkManager.h"
-#include "Patching/Patch/CheatManagerPatch.h"
 #include "Player/SMLRemoteCallObject.h"
 #include "Patching/Patch/SaveMetadataPatch.h"
 #include "Player/PlayerCheatManagerHandler.h"
 #include "Util/DebuggerHelper.h"
 #include "funchook.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 
 #ifndef FACTORYGAME_VERSION
 #define FACTORYGAME_VERSION 0
@@ -23,6 +24,9 @@
 #endif
 #ifndef SML_BUILD_METADATA
 #define SML_BUILD_METADATA "unknown"
+#endif
+#ifndef SML_ALLOW_PATCHES_IN_EDITOR
+#define SML_ALLOW_PATCHES_IN_EDITOR 0
 #endif
 
 extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT(SML_VERSION) TEXT("+") TEXT(SML_BUILD_METADATA);
@@ -105,9 +109,7 @@ void FSatisfactoryModLoader::CheckGameVersion() {
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Version check passed successfully! Game Changelist: %d"), CurrentChangelist);
 }
 
-void FSatisfactoryModLoader::RegisterSubsystemPatches() {
-    //Disable vanilla content resolution by patching vanilla lookup methods
-    AModContentRegistry::DisableVanillaContentRegistration();
+void FSatisfactoryModLoader::RegisterSubsystems() {
 
     //Register remote call object registry hook
     URemoteCallObjectRegistry::InitializePatches();
@@ -118,24 +120,59 @@ void FSatisfactoryModLoader::RegisterSubsystemPatches() {
     //Initialize network manager handling mod packets
     UModNetworkHandler::InitializePatches();
 
-    //Initialize tooltip handler
-    UItemTooltipSubsystem::InitializePatches();
+    //Initialize tooltip handler (only in non-editor configurations though, because it involves blueprint hooking)
+	if ( !GIsEditor )
+	{
+		UItemTooltipSubsystem::InitializePatches();
+	}
 
     //Register save metadata patch to enable storing a save's mod list and other mod-specified metadata
     FSaveMetadataPatch::Register();
 
     //Only register these patches in shipping, where bodies of the ACharacter::Cheat methods are stripped
 #if UE_BUILD_SHIPPING
-    FCheatManagerPatch::RegisterPatch();
+	FPlayerCheatManagerHandler::RegisterHandler();
 #endif
+
+	//Register version checker for remote connections
+	FSMLNetworkManager::RegisterMessageTypeAndHandlers();
 }
 
-void FSatisfactoryModLoader::RegisterSubsystems() {
-    //Register cheat manager handling, allowing access to cheat commands if desired
-    FPlayerCheatManagerHandler::RegisterHandler();
+void FSatisfactoryModLoader::SetupShippingDebuggerSupport()
+{
+	if (FDebuggerHelper::IsDebuggerHelperSupported()) {
+		//Wait for the debugger if prompted
+		//We need to manually do that in shipping because the normal UE code is stripped
+		if (FParse::Param(FCommandLine::Get(), TEXT("WaitForDebugger"))) {
+			UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Waiting for the debugger to attach as prompted..."));
 
-    //Register version checker for remote connections
-    FSMLNetworkManager::RegisterMessageTypeAndHandlers();
+			FSlowHeartBeatScope SuspendHeartBeat(true);
+			while (!FDebuggerHelper::IsDebuggerPresent()) {
+				FPlatformProcess::Sleep(0.1f);
+			}
+			UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Debugger attached"));
+			FDebuggerHelper::DebugBreak();
+		}
+
+		//Make sure to break into the debugger on ensures and errors if we have a debugger attached
+		FCoreDelegates::OnHandleSystemEnsure.AddLambda([]() {
+			if (FDebuggerHelper::IsDebuggerPresent()) {
+				FDebuggerHelper::DebugBreak();
+			}
+		});
+		FCoreDelegates::OnHandleSystemError.AddLambda([]() {
+			if (FDebuggerHelper::IsDebuggerPresent()) {
+				FDebuggerHelper::DebugBreak();
+			}
+		});
+
+		//Warn if we are running guarded but with the debugger attached
+		if (GIsGuarded && FDebuggerHelper::IsDebuggerPresent()) {
+			UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Running in a Guarded mode with Debugger attached. Debugger will not be able to handle SEH exceptions (like Access Violation) in this mode. Run with -noexceptionhandler switch to disable SEH guard."));
+		}
+	} else {
+		UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("DebugHelper implementation not found for the platform, debugging support functionality in Shipping build will be inaccessible"));
+	}
 }
 
 void FSatisfactoryModLoader::PreInitializeModLoading() {
@@ -147,39 +184,8 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     LoadSMLConfiguration(bAllowSavingConfiguration);
 
 #if UE_BUILD_SHIPPING
-    if (FDebuggerHelper::IsDebuggerHelperSupported()) {
-        //Wait for the debugger if prompted
-        //We need to manually do that in shipping because the normal UE code is stripped
-        if (FParse::Param(FCommandLine::Get(), TEXT("WaitForDebugger"))) {
-            UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Waiting for the debugger to attach as prompted..."));
-
-            FSlowHeartBeatScope SuspendHeartBeat(true);
-            while (!FDebuggerHelper::IsDebuggerPresent()) {
-                FPlatformProcess::Sleep(0.1f);
-            }
-            UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Debugger attached"));
-            FDebuggerHelper::DebugBreak();
-        }
-
-        //Make sure to break into the debugger on ensures and errors if we have a debugger attached
-        FCoreDelegates::OnHandleSystemEnsure.AddLambda([]() {
-            if (FDebuggerHelper::IsDebuggerPresent()) {
-                FDebuggerHelper::DebugBreak();
-            }
-        });
-        FCoreDelegates::OnHandleSystemError.AddLambda([]() {
-            if (FDebuggerHelper::IsDebuggerPresent()) {
-                FDebuggerHelper::DebugBreak();
-            }
-        });
-
-        //Warn if we are running guarded but with the debugger attached
-        if (GIsGuarded && FDebuggerHelper::IsDebuggerPresent()) {
-            UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Running in a Guarded mode with Debugger attached. Debugger will not be able to handle SEH exceptions (like Access Violation) in this mode. Run with -noexceptionhandler switch to disable SEH guard."));
-        }
-    } else {
-        UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("DebugHelper implementation not found for the platform, debugging support functionality in Shipping build will be inaccessible"));
-    }
+	// Enable debugger support in shipping builds
+	SetupShippingDebuggerSupport();
 #endif
 
     //Check game version only on shipping platform, because in editor builds
@@ -200,14 +206,9 @@ void FSatisfactoryModLoader::InitializeModLoading() {
 
     //Install patches, but only do it in shipping for now because most of them involve FactoryGame code and
     //we currently do not have FG code available in the editor
-    if (FPlatformProperties::RequiresCookedData()) {
-        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Registering subsystem patches..."));
-        RegisterSubsystemPatches();
+    if ( !WITH_EDITOR || SML_ALLOW_PATCHES_IN_EDITOR )
+    {
+    	RegisterSubsystems();
     }
-    
-    //Setup SML subsystems and custom content registries
-    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Registering global subsystems..."));
-    RegisterSubsystems();
-
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Initialization finished!"));
 }

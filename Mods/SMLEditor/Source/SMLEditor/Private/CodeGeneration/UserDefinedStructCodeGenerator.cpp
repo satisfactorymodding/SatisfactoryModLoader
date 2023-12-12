@@ -162,14 +162,6 @@ FGuid GenerateRandomUniqueIdFromString(const FString& DisplayName) {
     return ResultGuid;
 }
 
-FName GenerateStructVariableName(const uint32 UniqueNameId, const FGuid Guid) {
-    const FString Result = TEXT("MemberVar");
-    const FString FriendlyName = FString::Printf(TEXT("%s_%u"), *Result, UniqueNameId);
-    const FName NameResult = *FString::Printf(TEXT("%s_%s"), *FriendlyName, *Guid.ToString(EGuidFormats::Digits));
-    check(NameResult.IsValidXName(INVALID_OBJECTNAME_CHARACTERS));
-    return NameResult;
-}
-
 bool FUserDefinedStructCodeGenerator::SpawnStructVariableWithFixedName(UUserDefinedStruct* Struct, const FEdGraphPinType& VariableType, const FString& DisplayName) {
     const FScopedTransaction Transaction( LOCTEXT("AddVariable", "Add Variable"));
     FStructureEditorUtils::ModifyStructData(Struct);
@@ -184,8 +176,7 @@ bool FUserDefinedStructCodeGenerator::SpawnStructVariableWithFixedName(UUserDefi
     }
 
     const FGuid Guid = GenerateRandomUniqueIdFromString(DisplayName);
-    const uint32 UniqueNameId = GetTypeHash(DisplayName);
-    const FName VarName = GenerateStructVariableName(UniqueNameId, Guid);
+    const FName VarName = *DisplayName;
     TArray<FStructVariableDescription>& VarDesc = FStructureEditorUtils::GetVarDesc(Struct);
     check(NULL == VarDesc.FindByPredicate(FStructureEditorUtils::FFindByNameHelper<FStructVariableDescription>(VarName)));
     check(FStructureEditorUtils::IsUniqueVariableFriendlyName(Struct, DisplayName));
@@ -221,7 +212,8 @@ FEdGraphPinType FUserDefinedStructCodeGenerator::CreatePinTypeForVariable(const 
         GraphPinType.PinCategory = UEdGraphSchema_K2::PC_Boolean;
     }
     else if (VariableType == EConfigVariableType::ECVT_Float) {
-        GraphPinType.PinCategory = UEdGraphSchema_K2::PC_Float;
+        GraphPinType.PinCategory = UEdGraphSchema_K2::PC_Real;
+        GraphPinType.PinSubCategory = UEdGraphSchema_K2::PC_Float;
     }
     else if (VariableType == EConfigVariableType::ECVT_Int32) {
         GraphPinType.PinCategory = UEdGraphSchema_K2::PC_Int;
@@ -231,9 +223,6 @@ FEdGraphPinType FUserDefinedStructCodeGenerator::CreatePinTypeForVariable(const 
     }
     else if (VariableType == EConfigVariableType::ECVT_String) {
         GraphPinType.PinCategory = UEdGraphSchema_K2::PC_String;
-    }
-    else if (VariableType == EConfigVariableType::ECVT_Float) {
-        GraphPinType.PinCategory = UEdGraphSchema_K2::PC_Float;
     }
     else if (VariableType == EConfigVariableType::ECVT_CustomStruct) {
         GraphPinType.PinCategory = UEdGraphSchema_K2::PC_Struct;

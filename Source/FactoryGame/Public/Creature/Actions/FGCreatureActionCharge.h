@@ -4,7 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Creature/Actions/FGCreatureActionAnimatedBase.h"
+#include "FGCreatureActionAnimatedBase.h"
+#include "Curves/CurveFloat.h"
 #include "FGCreatureActionCharge.generated.h"
 
 /**

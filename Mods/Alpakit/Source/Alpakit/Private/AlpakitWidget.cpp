@@ -6,13 +6,7 @@
 
 #define LOCTEXT_NAMESPACE "AlpakitWidget"
 
-void SAlpakitWidget::Construct(const FArguments& InArgs) {
-    FAlpakitModule& AlpakitModule = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit"));
-    
-    AlpakitModule.GetOnQueueStarted().AddSP(this, &SAlpakitWidget::QueueStarted);
-    AlpakitModule.GetOnQueueComplete().AddSP(this, &SAlpakitWidget::QueueComplete);
-    AlpakitModule.GetOnQueueChanged().AddSP(this, &SAlpakitWidget::QueueChanged);
-    
+void SAlpakitWidget::Construct(const FArguments& InArgs) {    
     FDetailsViewArgs DetailsViewArgs;
     DetailsViewArgs.bAllowSearch = true;
     DetailsViewArgs.bHideSelectionTip = true;
@@ -52,6 +46,7 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
                         PackageAllMods(false);
                         return FReply::Handled();
                     })
+                	.IsEnabled(this, &SAlpakitWidget::IsPackageButtonEnabled)
                 ]
                 + SHorizontalBox::Slot().AutoWidth()[
                     SAssignNew(AlpakitAllReleaseButton, SButton)
@@ -61,6 +56,7 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
                         PackageAllMods(true);
                         return FReply::Handled();
                     })
+                	.IsEnabled(this, &SAlpakitWidget::IsPackageButtonEnabled)
                 ]
                 + SHorizontalBox::Slot().FillWidth(1.0f)
                 + SHorizontalBox::Slot().AutoWidth()[
@@ -70,10 +66,6 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
                     .OnClicked(this, &SAlpakitWidget::CreateMod)
                 ]
             ]
-        ]
-        +SVerticalBox::Slot().AutoHeight()[
-            SAssignNew(QueueText, STextBlock)
-            .Text(LOCTEXT("QueuedPlaceholder", "Queued (0): "))
         ]
     ];
 }
@@ -89,7 +81,12 @@ FReply SAlpakitWidget::PackageAllMods(bool ReleaseBuild) {
             ModsToPackage.Add(Mod);
         }
     }
-    AlpakitModule.PackageMods(ModsToPackage, ReleaseBuild);
+
+    if (ReleaseBuild) {
+        AlpakitModule.PackageModsRelease(ModsToPackage);
+    } else {
+        AlpakitModule.PackageModsDevelopment(ModsToPackage);
+    }
 
     return FReply::Handled();
 }
@@ -100,23 +97,8 @@ FReply SAlpakitWidget::CreateMod()
     return FReply::Handled();
 }
 
-void SAlpakitWidget::QueueStarted() {
-    AlpakitAllDevButton->SetEnabled(false);
-    AlpakitAllReleaseButton->SetEnabled(false);
+bool SAlpakitWidget::IsPackageButtonEnabled() const {
+	return !FAlpakitModule::Get().IsPackaging();
 }
-
-void SAlpakitWidget::QueueComplete() {
-    AlpakitAllDevButton->SetEnabled(true);
-    AlpakitAllReleaseButton->SetEnabled(true);
-}
-
-void SAlpakitWidget::QueueChanged(TArray<TSharedRef<IPlugin>> NewQueue) {
-    TArray<FString> NewQueueNames;
-    for (auto Plugin : NewQueue) {
-        NewQueueNames.Add(Plugin->GetName());
-    }
-    QueueText->SetText(FText::FromString(FString::Printf(TEXT("Queued (%d): %s"), NewQueueNames.Num(), *FString::Join(NewQueueNames, TEXT(", ")))));
-}
-
 
 #undef LOCTEXT_NAMESPACE

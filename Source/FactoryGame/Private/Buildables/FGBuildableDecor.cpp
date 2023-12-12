@@ -2,6 +2,7 @@
 
 #include "Buildables/FGBuildableDecor.h"
 #include "Hologram/FGDecorHologram.h"
+#include "Net/UnrealNetwork.h"
 
 void AFGBuildableDecor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

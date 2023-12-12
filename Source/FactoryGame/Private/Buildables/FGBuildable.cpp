@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildable.h"
 #include "Components/SceneComponent.h"
 #include "FGSwatchGroup.h"
+#include "Net/UnrealNetwork.h"
 #include "AbstractInstanceManager.h"
 
 #if WITH_EDITOR
@@ -111,6 +112,7 @@ AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) : Super(
 	this->mContainsComponents = true;
 	this->mIsConsideredForBaseWeightValue = 1.0;
 	this->mBuildableSparseDataCDO = nullptr;
+	this->mDismantleRedirectActor = nullptr;
 	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.bTickEvenWhenPaused = false;
@@ -186,7 +188,7 @@ bool AFGBuildable::GetCanBeColored_Implementation(){ return bool(); }
 bool AFGBuildable::GetCanBePatterned_Implementation(){ return bool(); }
 void AFGBuildable::StartIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter, bool isValid){ }
 void AFGBuildable::StopIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter){ }
-void AFGBuildable::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
+void AFGBuildable::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGBuildable::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGBuildable::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 bool AFGBuildable::IsUseable_Implementation() const{ return bool(); }

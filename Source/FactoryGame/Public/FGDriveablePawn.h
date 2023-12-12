@@ -43,6 +43,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Driveable" )
 	FORCEINLINE class AFGCharacterPlayer* GetDriver() const { return mDriver; }
 
+	/** Whether or not the vehicle has an active driver, will return false if there's a driver with no controller (offline player). */
+	UFUNCTION( BlueprintPure, Category = "Driveable" )
+	bool HasActiveDriver() const;
+
 	/** Can we drive this. (server and locally controlled client) */
 	UFUNCTION( BlueprintPure, Category = "Driveable" )
 	virtual bool CanDriverEnter( class AFGCharacterPlayer* character );
@@ -147,6 +151,8 @@ private:
 	UFUNCTION()
 	void OnRep_Driver( AFGCharacterPlayer* previousDriver );
 
+	virtual void LeavesVehicle() {}
+	
 public:
 	/** True if the driver should be attached, false if this is a "remote controlled" pawn. */
 	UPROPERTY( EditDefaultsOnly, Category = "Driveable" )
@@ -168,6 +174,8 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Driveable" )
 	FVector mDriverExitOffset;
 
+	bool mIsDriverDirty = false;
+	
 protected:
 	/** Mapping context which is applied when entering. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
@@ -184,6 +192,10 @@ private:
 	/** The driver, not saved, pawns remember their last driven vehicle and enters it in begin play. */
 	UPROPERTY( ReplicatedUsing = OnRep_Driver )
 	class AFGCharacterPlayer* mDriver;
+
+	/** Whether or not this driveable pawn is possessed. */
+	UPROPERTY( Replicated )
+	bool mIsPossessed;
 
 	/** Is this vehicle being driven. */
 	UPROPERTY( ReplicatedUsing = OnRep_IsDriving )

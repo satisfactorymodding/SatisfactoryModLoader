@@ -20,25 +20,27 @@ struct ALPAKIT_API FAlpakitTargetSettings
 {
     GENERATED_BODY()
 public:
-
+	
     UPROPERTY(EditAnywhere, config, Category = Config, meta = (ToolTip = "Controls if this target will be built when pressing the 'Alpakit Dev' button, and what action will be taken for this target after a successful pack"))
     bool bEnabled = true;
 
-    UPROPERTY(config)
+    UPROPERTY(EditAnywhere, config, Category = Config, meta = (InlineEditConditionToggle))
     bool bCopyModsToGame = false;
-    
+	
     UPROPERTY(EditAnywhere, config, Category = Config, DisplayName = "Copy to Game Path", meta = (EditCondition = bCopyModsToGame, ToolTip = "If enabled, mods will be copied to this installation location after a successful pack"))
     FDirectoryPath SatisfactoryGamePath;
 
-    UPROPERTY(config)
+    UPROPERTY(EditAnywhere, config, Category = Config, meta = (InlineEditConditionToggle))
     bool bLaunchGame = false;
 
     UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = bLaunchGame, ToolTip = "If enabled, this approach will be used to launch this platform after a successful pack"))
-    EAlpakitStartGameType LaunchGameAfterPacking;
+    EAlpakitStartGameType LaunchGameType;
 
     UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = "LaunchGameAfterPacking == EAlpakitStartGameType::CUSTOM", EditConditionHides, ToolTip = "The Unreal Automation tool will execute this after a successful pack.\nCheck the 'Testing' page on the modding docs for example scripts to call with this feature.\n\nExample value:\nC:\\Git\\SF_ModProject\\RobWorkingDir\\Auto_Exp_LoadLatest.bat"))
     FString CustomLaunchPath;
 };
+
+ALPAKIT_API const TCHAR* LexToString(EAlpakitStartGameType StartGameType);
 
 UCLASS(config=Game)
 class ALPAKIT_API UAlpakitSettings : public UObject {
@@ -49,6 +51,13 @@ public:
 
     /** Saves alpakit settings to configuration file */
     void SaveSettings();
+	
+	// Hide this field for now, as the game is only built for Shipping
+	/*
+	// Name of the build configuration in which the mod should be built
+	UPROPERTY(EditAnywhere, config, Category = Config, meta = ( GetOptions = GetAllowedBuildConfigurations ))
+	FString BuildConfiguration;
+	*/
 
     UPROPERTY(EditAnywhere, config, Category = Config, DisplayName="Windows", meta = (ToolTip = "Packaging settings for 'Alpakit Dev' for the Windows target"))
     FAlpakitTargetSettings WindowsGameTargetSettings;
@@ -61,4 +70,11 @@ public:
     
     UPROPERTY(BlueprintReadOnly, config, Category = Config)
     TMap<FString, bool> ModSelection;
+
+	UFUNCTION()
+	TArray<FString> GetAllowedBuildConfigurations() const;
+
+	EBuildConfiguration GetBuildConfiguration() const;
+
+    const TMap<FString, FAlpakitTargetSettings> GetPlatformTargetSettings() const;
 };

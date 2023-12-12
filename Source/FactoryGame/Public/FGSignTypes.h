@@ -2,9 +2,8 @@
 
 #pragma once
 
-
 #include "FactoryGame.h"
-#include "UMG.h"
+#include "Blueprint/UserWidget.h"
 #include "FGSignTypes.generated.h"
 
 
@@ -182,7 +181,7 @@ public:
 		mNameToIconWidget.Empty();
 		mNameToIconWidget.Append( iconWidgetMap );
 	}
-
+	
 	// Toggle background, assuming background is called mBackground.
 	void OnToggleBackground(bool NewVisibility) const;
 

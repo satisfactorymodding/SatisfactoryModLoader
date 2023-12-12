@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Unlocks/FGUnlockInfoOnly.h"
+#include "FGUnlockInfoOnly.h"
 #include "FGUnlockCheckmark.generated.h"
 
 USTRUCT(BlueprintType)

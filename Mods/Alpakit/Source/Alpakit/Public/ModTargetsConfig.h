@@ -9,6 +9,7 @@ public:
 	FModTargetsConfig(TSharedRef<IPlugin> InMod);
 
 	void Save();
+	TArray<FString> GetCookedPlatforms();
 
 	bool bWindows = false;
 	bool bWindowsServer = false;

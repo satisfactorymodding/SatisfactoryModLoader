@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Equipment/FGEquipment.h"
+#include "FGEquipment.h"
 #include "FGHookshot.generated.h"
 
 UCLASS()

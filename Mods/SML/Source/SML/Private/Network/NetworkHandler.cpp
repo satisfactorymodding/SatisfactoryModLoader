@@ -5,7 +5,6 @@
 #include "Patching/NativeHookManager.h"
 #include "Engine/Engine.h"
 #include "Engine/NetConnection.h"
-#include "Util/ObjectMetadata.h"
 
 DEFINE_LOG_CATEGORY(LogModNetworkHandler);
 DEFINE_CONTROL_CHANNEL_MESSAGE_THREEPARAM(ModMessage, 40, FString, int32, FString);
@@ -32,6 +31,23 @@ void UModNetworkHandler::SendMessage(UNetConnection* Connection, FMessageType Me
     Connection->FlushNet(true);
 }
 
+UGameInstance* UModNetworkHandler::GetGameInstanceFromNetDriver( const UNetDriver* NetDriver )
+{
+	if ( NetDriver )
+	{
+		if ( NetDriver->World != nullptr && NetDriver->World->GetGameInstance() != nullptr )
+		{
+			return NetDriver->World->GetGameInstance();
+		}
+		const FWorldContext* Context = GEngine->GetWorldContextFromPendingNetGameNetDriver( NetDriver );
+		if ( Context != nullptr && Context->OwningGameInstance != nullptr )
+		{
+			return Context->OwningGameInstance;
+		}
+	}
+	return nullptr;
+}
+
 void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FString& ModId, int32 MessageId, const FString& Content) const {
     const TMap<int32, FMessageEntry>* Result = MessageHandlers.Find(ModId);
     if (Result != nullptr) {
@@ -46,28 +62,7 @@ void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FStrin
     }
 }
 
-UObjectMetadata* UModNetworkHandler::GetMetadataForConnection(UNetConnection* Connection) {
-    const TWeakObjectPtr<UNetConnection> Pointer = Connection;
-    UObjectMetadata** ObjectMetadata = Metadata.Find(Pointer);
-    if (ObjectMetadata == nullptr) {
-        UObjectMetadata* NewMetadata = NewObject<UObjectMetadata>(this);
-        Metadata.Add(Pointer, NewMetadata);
-        return NewMetadata;
-    }
-    return *ObjectMetadata;
-}
-
 void UModNetworkHandler::InitializePatches() {
-	
-    UNetConnection* NetConnectionInstance = GetMutableDefault<UNetConnection>();
-    SUBSCRIBE_METHOD_VIRTUAL_AFTER(UNetConnection::CleanUp, NetConnectionInstance, [=](UNetConnection* Connection) {
-    	//We need to check GEngine for NULL because this method will be called during final garbage purge
-    	//on engine shutdown, at this phase engine has pretty much exited and was destroyed already
-        if (GEngine != NULL) {
-        	UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
-        	NetworkHandler->Metadata.Remove(Connection);
-        }
-    });
 	
     UWorld* WorldObjectInstance = GetMutableDefault<UWorld>();
     SUBSCRIBE_METHOD_VIRTUAL_AFTER(UWorld::WelcomePlayer, WorldObjectInstance, [=](UWorld* ServerWorld, UNetConnection* Connection) {

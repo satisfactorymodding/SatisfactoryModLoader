@@ -157,13 +157,17 @@ public:
 	void PowerCircuit_RegisterPriorityPowerSwitchInfo( class AFGPriorityPowerSwitchInfo* info );
 	void PowerCircuit_UnregisterPriorityPowerSwitchInfo( class AFGPriorityPowerSwitchInfo* info );
 	
-	/** Get all the other power switch infos. Not only the ones belonging to this circuit. */
+	/** Get all the other power switch infos. Not only the ones belonging to this circuit. Can be called on Client and Server. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|Power" )
 	TArray< AFGPriorityPowerSwitchInfo* > PowerCircuit_GetPriorityPowerSwitchInfos() const;
 	
-	/** Helper to sort a list of infos by their given name in ascending order. */
+	/** Helper to sort a list of infos by their given name in ascending order. Can be called on Client and Server. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|Power" )
 	void PowerCircuit_SortPriorityPowerSwitchInfos( TArray< AFGPriorityPowerSwitchInfo* >& infos ) const;
+	
+	/** Switch all the priority switches in the given priority to on or off. Only valid to call on Server. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|Power" )
+	void PowerCircuit_SetPrioritySwitchGroupOn( int32 priority, bool on );
 	
 	/** Debugging function to dump stats of all circuits to the log */
 	void Debug_DumpCircuitsToLog();

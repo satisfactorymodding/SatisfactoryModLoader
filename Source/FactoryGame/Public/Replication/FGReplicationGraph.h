@@ -3,13 +3,18 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "CoreMinimal.h"
+#include "EngineGlobals.h"
+#include "UObject/Package.h"
+#include "Engine/ActorChannel.h"
+#include "Engine/LocalPlayer.h"
+#include "Engine/NetConnection.h"
+#include "Misc/ConfigCacheIni.h"
 #include "ReplicationGraph.h"
 #include "FGProductionIndicatorComponent.h"
 #include "FGReplicationGraph.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN( LogFactoryReplicationGraph, Display, All );
-DECLARE_LOG_CATEGORY_EXTERN( LogConveyorFrequencyNodes, Display, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogFactoryReplicationGraph, Display, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogConveyorFrequencyNodes, Display, All );
 
 enum class EClassRepPolicy : uint8
 {
@@ -63,7 +68,7 @@ public:
 	// ~ end UReplicationGraph implementation
 
 	/** Sets the class replication info for a class */
-	void InitClassReplicationInfo( FClassReplicationInfo& classInfo, UClass* inClass, bool isSpatialized, int32 NetServerMaxTickRate );
+	void InitClassReplicationInfo( struct FClassReplicationInfo& classInfo, UClass* inClass, bool isSpatialized, int32 NetServerMaxTickRate );
 
 	UPROPERTY()
 	TArray<UClass*> mSpatializedClasses;

@@ -7,6 +7,7 @@
 
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "GameFramework/Actor.h"
+#include "Engine/AssetUserData.h"
 #include "FGConveyorItemRenderTargetWriter.generated.h"
 
 UCLASS()

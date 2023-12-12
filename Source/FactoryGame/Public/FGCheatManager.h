@@ -148,6 +148,10 @@ public:
 	void ForceSetWeatherType( TSubclassOf<class AFGWeatherReaction> Reaction );
 	UFUNCTION( exec, CheatBoard, category = "World|Weather" )
 	void LockWeather(bool bState);
+	UFUNCTION( exec, CheatBoard, category = "World|Debug" )
+	void HighlightPickupable( TSubclassOf< AFGItemPickup > pickupClass );
+	UFUNCTION()
+	void Internal_HighlightPickupables();
 	
 	/****************************************************************
 	 * Creatures
@@ -205,9 +209,9 @@ public:
 	bool PlayerNoClipModeOnFly_Get();
 	UFUNCTION( exec, CheatBoard, category = "Player" )
 	void UpdatePlayerNametags();
-	UFUNCTION( exec, category = "Player" )
+	UFUNCTION( exec, CheatBoard, category = "Player" )
 	void EnablePlayerFOV( bool enable );
-	UFUNCTION( exec, category = "Player" )
+	UFUNCTION( exec, CheatBoard, category = "Player" )
 	bool EnablePlayerFOV_Get();
 	UFUNCTION( exec, category = "Player" )
 	void DestroyPawn();
@@ -249,6 +253,24 @@ public:
 	void RagdollSelf();
 	UFUNCTION( Server, Reliable )
 	void Server_RagdollSelf();
+	UFUNCTION( Exec, Category = "Player", CheatBoard )
+	void GodMode( bool enabled );
+	UFUNCTION( Server, Reliable )
+	void Server_GodMode( bool enabled );
+	UFUNCTION( Exec, CheatBoard )
+	bool GodMode_Get() const;
+	UFUNCTION( Exec, Category = "Player", CheatBoard )
+	void SetMaxHealth( float newMaxHealth );
+	UFUNCTION( Server, Reliable )
+	void Server_SetMaxHealth( float newMaxHealth );
+	UFUNCTION( Exec, Category = "Player", CheatBoard )
+	void Heal();
+	UFUNCTION( Server, Reliable )
+	void Server_Heal();
+	UFUNCTION( Exec, Category = "Player", CheatBoard )
+	void DamageSelf( float damage );
+	UFUNCTION( Server, Reliable )
+	void Server_DamageSelf( float damage );
 
 	/****************************************************************
 	 * Foliage
@@ -337,7 +359,31 @@ public:
 	void Server_SetTradingPostLevel( int32 inLevel );
 	UFUNCTION( exec, CheatBoard, category = "Research" )
 	void SetTradingPostLevel( int32 inLevel );
-
+	UFUNCTION( Exec, CheatBoard, Category = "Research" )
+	void UnlockSpecificRecipe( TSubclassOf<class UFGRecipe> recipe );
+	UFUNCTION( Server, Reliable )
+	void Server_UnlockSpecificRecipe( TSubclassOf<class UFGRecipe> recipe );
+	UFUNCTION( Exec, CheatBoard, Category = "Research" )
+	void UnlockSpecificEmote( TSubclassOf<class UFGEmote> emote );
+	UFUNCTION( Server, Reliable )
+	void Server_UnlockSpecificEmote( TSubclassOf<class UFGEmote> emote );
+	UFUNCTION( Exec, CheatBoard, Category = "Research" )
+	void UnlockSpecificTape( TSubclassOf<class UFGTapeData> tapeData );
+	UFUNCTION( Server, Reliable )
+	void Server_UnlockSpecificTape( TSubclassOf<class UFGTapeData> tapeData );
+	UFUNCTION( Exec, CheatBoard, Category = "Research" )
+	void UnlockScannableResource( TSubclassOf< class UFGResourceDescriptor > resourceDescriptor );
+	UFUNCTION( Server, Reliable )
+	void Server_UnlockScannableResource( TSubclassOf< class UFGResourceDescriptor > resourceDescriptor );
+	UFUNCTION( Exec, CheatBoard, Category = "Research" )
+	void UnlockInventorySlots( int32 numSlots );
+	UFUNCTION( Server, Reliable )
+	void Server_UnlockInventorySlots( int32 numSlots );
+	UFUNCTION( Exec, CheatBoard, Category = "Research" )
+	void UnlockArmSlots( int32 numSlots );
+	UFUNCTION( Server, Reliable )
+	void Server_UnlockArmSlots( int32 numSlots );
+	
 	/****************************************************************
 	 * Map
 	 ****************************************************************/
@@ -582,10 +628,6 @@ public:
 	UFUNCTION( exec, CheatBoard ,category = "Log" )
 	void DumpNonDormantActors();
 	UFUNCTION( exec, CheatBoard, category = "Log" )
-	void DumpAttachedToSkelMesh( bool detailed = false );
-	UFUNCTION( exec, CheatBoard, category = "Log" )
-	void DumpTicking( bool detailed = false );
-	UFUNCTION( exec, CheatBoard, category = "Log" )
 	void DumpActiveGPUParticles();
 	UFUNCTION( exec, CheatBoard, category = "Log" )
 	void DumpPlayerStates();
@@ -597,8 +639,6 @@ public:
 	void DumpSignificanceManagedObjects();
 	UFUNCTION( exec, CheatBoard, category = "Log" )
 	void DumpItemPickups();
-	UFUNCTION( exec, CheatBoard, category = "Log" )
-	void DumpStaticMeshesHierarchy();
 	UFUNCTION( exec, CheatBoard, category = "Log" )
 	void DumpComponentCounts();
 	UFUNCTION( exec, CheatBoard, category = "Log" )
@@ -665,4 +705,8 @@ public:
 
 	/** Used to check if we have applied the default cheats this game session. */ 
 	bool mDefaultCheatsApplied = false;
+
+	/** Tracks with item pickup classes we are tracking */ 
+	UPROPERTY()
+	TArray< TSubclassOf< class AFGItemPickup > > mHighlightedPickupClasses;
 };

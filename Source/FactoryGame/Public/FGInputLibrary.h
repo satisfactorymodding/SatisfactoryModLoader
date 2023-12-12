@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "EnhancedActionKeyMapping.h"
 #include "GameFramework/PlayerInput.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "FGInputLibrary.generated.h"
 
 

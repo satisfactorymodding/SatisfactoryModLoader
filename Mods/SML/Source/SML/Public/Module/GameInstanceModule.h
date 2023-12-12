@@ -35,14 +35,6 @@ public:
     */
     UPROPERTY(EditDefaultsOnly, Category = "Advanced | Tooltips")
     TArray<UClass*> GlobalItemTooltipProviders;
-
-    /**
-     * Gameplay tag to be associated with the input action.
-     * The purpose of these bindings is to facilitate binding to input actions from c++ code, using UFGInputSettings::GetInputActionForTag
-     * You will probably not need this if you are not planning to use input actions from c++ code
-     */
-    UPROPERTY(EditDefaultsOnly, Category = "Advanced | Input")
-    TMap<UInputAction*, FGameplayTag> InputActionTagBindings;
     
     /**
      * Simple construction script hooks to install for this mod
@@ -78,7 +70,8 @@ public:
     /** Game instance modules can access world context from game instance */
     virtual UWorld* GetWorld() const override;
 
-    /** Register content from properties here */
+    /** Register content from properties here.
+    Make sure to call super on the C++ side if you have both a C++ and Blueprint implementation. */
     virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
 protected:
     /** Allow SetOwnerModReference access to game instance module manager */

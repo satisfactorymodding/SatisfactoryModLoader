@@ -10,6 +10,8 @@ UFGDamageType::UFGDamageType(const FObjectInitializer& ObjectInitializer) : Supe
 	this->mShouldDamageDestructible = false;
 	this->mDamageAmount = 1.0;
 	this->mAlwaysCauseStun = false;
+	this->mIsGasPointType = false;
+	this->mIsGasRadialType = false;
 	this->DamageImpulse = 0.0;
 	this->DestructibleImpulse = 0.0;
 }

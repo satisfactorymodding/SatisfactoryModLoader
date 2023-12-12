@@ -75,7 +75,7 @@ public:
 	//End
 	
 	//~ Begin IFGUseableInterface
-	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) const override;
+	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual bool IsUseable_Implementation() const override;
@@ -156,6 +156,11 @@ public:
 	/** Get the number of items the pickup have */
 	UFUNCTION( BlueprintPure, Category = "Pickup" )
 	FORCEINLINE int32 GetNumItems() const{ return mPickupItems.NumItems; }
+
+	/** Automatically re-tries once register failed due to missing regrow system.*/
+	UFUNCTION()
+	void RegisterToRegrowSystem();
+	
 protected:
 	/**
 	* SERVER and Client picking up: Called right after this item is added to the players inventory, for GameplayEffects.

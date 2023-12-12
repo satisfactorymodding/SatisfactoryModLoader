@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "ItemAmount.h"
+#include "Containers/Queue.h"
 #include "FGRadioactivitySubsystem.generated.h"
 
 

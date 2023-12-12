@@ -17,10 +17,8 @@ private:
     TSharedPtr<SButton> AlpakitAllDevButton;
     TSharedPtr<SButton> AlpakitAllReleaseButton;
 
-    void QueueStarted();
-    void QueueComplete();
-    void QueueChanged(TArray<TSharedRef<IPlugin>> NewQueue);
-
     FReply PackageAllMods(bool ReleaseBuild);
-    FReply CreateMod();
+	FReply CreateMod();
+
+	bool IsPackageButtonEnabled() const;
 };

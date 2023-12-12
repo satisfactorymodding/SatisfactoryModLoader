@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "../Resources/FGItemDescriptor.h"
 #include "CoreMinimal.h"
 #include "Templates/SubclassOf.h"
-#include "../Resources/FGItemDescriptor.h"
 #include "FGCreatureDescriptor.generated.h"
 
 /**

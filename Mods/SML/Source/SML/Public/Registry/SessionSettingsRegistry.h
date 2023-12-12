@@ -20,12 +20,14 @@ struct SML_API FSMLSessionSettingInfo {
 };
 
 UCLASS()
-class SML_API USMLSessionSettingsRegistry : public UEngineSubsystem {
+class SML_API USMLSessionSettingsRegistry : public UGameInstanceSubsystem {
 	GENERATED_BODY()
-private:
+
 	UPROPERTY(VisibleAnywhere, Category = "Session Settings Registry")
 	TArray<FSMLSessionSettingInfo> AllSessionSettings;
 public:
+	USMLSessionSettingsRegistry();
+	
 	UFUNCTION(BlueprintCallable, Category = "Session Settings Registry")
 	void RegisterSessionSetting(const FString& PluginName, USMLSessionSetting* SessionSetting);
 

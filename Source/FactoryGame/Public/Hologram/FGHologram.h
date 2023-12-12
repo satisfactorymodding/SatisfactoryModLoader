@@ -49,6 +49,8 @@ enum class EHologramSoftClearanceResponse : uint8
 	HSCR_Block				UMETA( DisplayName = "Block" )
 };
 
+enum class ENudgeFailReason : uint8;
+
 extern TAutoConsoleVariable<int32> CVarHologramDebug;
 /**
  * The base class for all holograms.
@@ -204,6 +206,9 @@ public:
 	virtual void ScrollRotate( int32 delta, int32 step );
 	int32 GetScrollRotateValue() const;
 	void SetScrollRotateValue( int32 rotValue );
+
+	/** Called when we're replacing another hologram with this one. */
+	virtual void ReplaceHologram( AFGHologram* hologram, bool snapTransform );
 
 	/** Set additional clearance boxes to check for collision */
 	void SetAdditionalClearanceBoxes( TArray< class UFGClearanceComponent* >& clearanceComps ) { mAdditionalClearanceBoxes.Reset(); mAdditionalClearanceBoxes.Append( clearanceComps ); }
@@ -409,7 +414,7 @@ public:
 
 	/** The amount of distance to nudge the hologram. */
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
-	virtual float GetNudgeDistance() const { return mDefaultNudgeDistance; }
+	virtual float GetNudgeDistance() const;
 
 	/** Used to nudge the hologram location when locking it in place. */
 	UFUNCTION( BlueprintCallable, Category = "Hologram" )

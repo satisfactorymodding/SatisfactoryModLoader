@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Components/SceneComponent.h"
 #include "FGAttachmentPointComponent.generated.h"
 
 UENUM()

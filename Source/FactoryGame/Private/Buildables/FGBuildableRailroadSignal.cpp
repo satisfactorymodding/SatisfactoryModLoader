@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildableRailroadSignal.h"
 #include "Components/SceneComponent.h"
 #include "FGColoredInstanceMeshProxy.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableRailroadSignal::AFGBuildableRailroadSignal() : Super() {
 	this->mSignalComponent = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("Signal Component"));

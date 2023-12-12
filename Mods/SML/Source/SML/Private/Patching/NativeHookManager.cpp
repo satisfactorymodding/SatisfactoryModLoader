@@ -13,13 +13,24 @@ static TMap<void*, void*> RegisteredListenerMap;
 //Map of the function implementation pointer to the trampoline function pointer. Used to ensure one hook per function installed
 static TMap<void*, void*> InstalledHookMap;
 
-void* FNativeHookManagerInternal::GetHandlerListInternal(void* RealFunctionAddress) {
+//Store the funchook instance used to hook each function
+static TMap<void*, funchook_t*> FunchookMap;
+
+void* FNativeHookManagerInternal::GetHandlerListInternal( const void* RealFunctionAddress ) {
 	void** ExistingMapEntry = RegisteredListenerMap.Find(RealFunctionAddress);
 	return ExistingMapEntry ? *ExistingMapEntry : nullptr;
 }
 
-void FNativeHookManagerInternal::SetHandlerListInstanceInternal(void* RealFunctionAddress, void* HandlerList) {
-	RegisteredListenerMap.Add(RealFunctionAddress, HandlerList);
+void FNativeHookManagerInternal::SetHandlerListInstanceInternal(void* RealFunctionAddress, void* HandlerList)
+{
+	if ( HandlerList == nullptr )
+	{
+		RegisteredListenerMap.Remove( RealFunctionAddress );
+	}
+	else
+	{
+		RegisteredListenerMap.Add(RealFunctionAddress, HandlerList);
+	}
 }
 
 #define CHECK_FUNCHOOK_ERR(arg) \
@@ -50,12 +61,13 @@ bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunction
 	CHECK_FUNCHOOK_ERR(funchook_prepare(funchook, OutTrampolineFunction, HookFunctionPointer));
 	CHECK_FUNCHOOK_ERR(funchook_install(funchook, 0));
 	InstalledHookMap.Add(OriginalFunctionPointer, *OutTrampolineFunction);
+	FunchookMap.Add(OriginalFunctionPointer, funchook);
 	return true;
 }
 
-// This method is provided for backwards-compatibility with SML 3.3.0
+// This method is provided for backwards-compatibility
 SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction) {
-	// SML earlier than 3.3.0 only supported Windows mods, which have no Vtable adjustment information
+	// Previous SML versions only supported Windows mods, which have no Vtable adjustment information
 	// in the member function pointer, so we set that value to zero.
 	FMemberFunctionPointer MemberFunctionPointer = {OriginalFunctionPointer, static_cast<uint32>(ThisAdjustment), 0};
 	return FNativeHookManagerInternal::RegisterHookFunction(DebugSymbolName, MemberFunctionPointer, SampleObjectInstance, HookFunctionPointer, OutTrampolineFunction);
@@ -113,4 +125,18 @@ SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& De
 	HookStandardFunction(DebugSymbolName, ResolvedHookingFunctionPointer, HookFunctionPointer, OutTrampolineFunction);
 	UE_LOG(LogNativeHookManager, Display, TEXT("Successfully hooked function %s at %p"), *DebugSymbolName, ResolvedHookingFunctionPointer);
 	return ResolvedHookingFunctionPointer;
+}
+
+void FNativeHookManagerInternal::UnregisterHookFunction(const FString& DebugSymbolName, const void* RealFunctionAddress) {
+	funchook_t** funchookPtr = FunchookMap.Find(RealFunctionAddress);
+	if (funchookPtr == nullptr) {
+		UE_LOG(LogNativeHookManager, Warning, TEXT("Attempt to unregister hook for function %s at %p which was not registered"), *DebugSymbolName, RealFunctionAddress);
+		return;
+	}
+	funchook_t* funchook = *funchookPtr;
+	CHECK_FUNCHOOK_ERR(funchook_uninstall(funchook, 0));
+	CHECK_FUNCHOOK_ERR(funchook_destroy(funchook));
+	FunchookMap.Remove(RealFunctionAddress);
+	InstalledHookMap.Remove(RealFunctionAddress);
+	UE_LOG(LogNativeHookManager, Display, TEXT("Successfully unregistered hook for function %s at %p"), *DebugSymbolName, RealFunctionAddress);
 }

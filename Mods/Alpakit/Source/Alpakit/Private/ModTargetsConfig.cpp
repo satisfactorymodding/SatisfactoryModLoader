@@ -15,6 +15,11 @@ FModTargetsConfig::FModTargetsConfig(TSharedRef<IPlugin> InMod) {
 }
 
 void FModTargetsConfig::Save() {
+	ConfigFile.SetArray(TEXT("ModTargets"), TEXT("Targets"), GetCookedPlatforms());
+	ConfigFile.Write(GetConfigPath());
+}
+
+TArray<FString> FModTargetsConfig::GetCookedPlatforms() {
 	TArray<FString> Targets;
 	if (bWindows)
 		Targets.Add(TEXT("Windows"));
@@ -22,9 +27,7 @@ void FModTargetsConfig::Save() {
 		Targets.Add(TEXT("WindowsServer"));
 	if (bLinuxServer)
 		Targets.Add(TEXT("LinuxServer"));
-
-	ConfigFile.SetArray(TEXT("ModTargets"), TEXT("Targets"), Targets);
-	ConfigFile.Write(GetConfigPath());
+	return Targets;
 }
 
 FString FModTargetsConfig::GetConfigPath() const {

@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildableResourceExtractorBase.h"
 #include "FGConstructDisqualifier.h"
 #include "Hologram/FGResourceExtractorHologram.h"
+#include "Net/UnrealNetwork.h"
 
 int AFGBuildableResourceExtractorBase::GetDebugLevel(){ return int(); }
 void AFGBuildableResourceExtractorBase::SetDebugLevel(int level){ }

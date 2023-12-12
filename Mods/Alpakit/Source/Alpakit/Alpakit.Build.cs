@@ -11,7 +11,7 @@ public class Alpakit : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new[] {
 			"Core",
-			"UATHelper",
+			"DesktopPlatform",
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new[] {
@@ -27,6 +27,8 @@ public class Alpakit : ModuleRules
 			"ExternalImagePicker",
 			"EditorStyle",
 			"PluginBrowser",
+			"LauncherServices",
+			"TargetDeviceServices"
 		});
 	}
 }

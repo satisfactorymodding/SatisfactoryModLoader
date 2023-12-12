@@ -1,4 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="CSSUHTPlugin.ubtplugin.csproj.props" Condition="Exists('CSSUHTPlugin.ubtplugin.csproj.props')"/>
   <Import Project="$(EngineDir)\Source\Programs\Shared\UnrealEngine.csproj.props" />
   
   <PropertyGroup>

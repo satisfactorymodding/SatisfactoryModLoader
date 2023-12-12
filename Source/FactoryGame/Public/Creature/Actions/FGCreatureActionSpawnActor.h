@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Creature/Actions/FGCreatureActionAnimated.h"
+#include "FGCreatureActionAnimated.h"
 #include "FGCreatureActionSpawnActor.generated.h"
 
 USTRUCT( BlueprintType )

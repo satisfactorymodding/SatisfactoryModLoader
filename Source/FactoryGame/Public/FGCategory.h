@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Styling/SlateBrush.h"
 #include "Engine/Texture2D.h"
+#include "Styling/SlateBrush.h"
 #include "UObject/NoExportTypes.h"
 #include "FGCategory.generated.h"
 

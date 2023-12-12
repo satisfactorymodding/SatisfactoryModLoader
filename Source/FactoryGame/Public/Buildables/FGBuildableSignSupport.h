@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildablePoleBase.h"
+#include "FGBuildablePoleBase.h"
 #include "FGBuildableSignSupport.generated.h"
 
 /**

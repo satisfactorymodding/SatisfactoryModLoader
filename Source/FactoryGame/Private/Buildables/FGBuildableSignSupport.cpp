@@ -4,6 +4,7 @@
 #include "Components/SceneComponent.h"
 #include "FGColoredInstanceMeshProxy.h"
 #include "Hologram/FGSignPoleHologram.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableSignSupport::AFGBuildableSignSupport() : Super() {
 	this->mPoleComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("PoleComponentProxy"));

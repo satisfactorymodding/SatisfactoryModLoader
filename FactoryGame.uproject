@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.1.1-CSS",
+	"EngineAssociation": "5.2.1-CSS",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -19,8 +19,8 @@
 				"OnlineSubsystemUtils",
 				"UMG",
 				"DeveloperSettings",
-				"AbstractInstance",
-				"EnhancedInput"
+				"EnhancedInput",
+				"Foliage"
 			]
 		},
 		{
@@ -30,6 +30,30 @@
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "OnlineServices",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineServicesEOS",
+			"Enabled": true,
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux"
+			]
+		},
+		{
+			"Name": "OnlineServicesEOSGS",
+			"Enabled": true
+		},
+		{
+			"Name": "SocketSubsystemEOS",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineServicesOSSAdapter",
+			"Enabled": true
+		},
 		{
 			"Name": "ChaosVehiclesPlugin",
 			"Enabled": true
@@ -171,6 +195,30 @@
 			"Enabled": true
 		},
 		{
+			"Name": "EditorTests",
+			"Enabled": true
+		},
+		{
+			"Name": "FbxAutomationTestBuilder",
+			"Enabled": true
+		},
+		{
+			"Name": "FunctionalTestingEditor",
+			"Enabled": true
+		},
+		{
+			"Name": "RuntimeTests",
+			"Enabled": true
+		},
+		{
+			"Name": "MagicLeap",
+			"Enabled": false
+		},
+		{
+			"Name": "RenderDocPlugin",
+			"Enabled": false
+		},
+		{
 			"Name": "Landmass",
 			"Enabled": true
 		},
@@ -205,7 +253,27 @@
 		{
 			"Name": "MovieRenderPipeline",
 			"Enabled": true
+		},
+		{
+			"Name": "AppleProResMedia",
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win64"
+			]
+		},
+		{
+			"Name": "ControlFlows",
+			"Enabled": true
+		},
+		{
+			"Name": "ModelViewViewModel",
+			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Win64",
+		"Linux",
+		"Windows"
 	],
 	"PreBuildSteps": {
 		"Win64": [

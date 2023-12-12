@@ -19,21 +19,20 @@ FFGOnlineFriend UFGFriendsLibrary::GetFriendFromNetId(ULocalPlayer* friendOf, co
 bool UFGFriendsLibrary::GetFriendName(ULocalPlayer* friendOf,  const FFGOnlineFriend& onlineFriend, FString& out_displayName){ return bool(); }
 bool UFGFriendsLibrary::IsWaitingForData(ULocalPlayer* friendOf, const FFGOnlineFriend& onlineFriend){ return bool(); }
 bool UFGFriendsLibrary::IsValid_Friend(const FFGOnlineFriend& a){ return bool(); }
-FFGOnlineSessionSettings UFGSessionLibrary::GetSessionSettings(const FBlueprintSessionResult& session){ return FFGOnlineSessionSettings(); }
-FString UFGSessionLibrary::GetSessionId(const FBlueprintSessionResult& session){ return FString(); }
-TEnumAsByte<ESessionVisibility> UFGSessionLibrary::GetSessionVisibility(const FBlueprintSessionResult& session){ return TEnumAsByte<ESessionVisibility>(); }
-FBlueprintSessionResult UFGSessionLibrary::GetMySession(ULocalPlayer* localPlayer){ return FBlueprintSessionResult(); }
+FFGOnlineSessionSettings UFGSessionLibrary::GetSessionSettingsForSession(UObject* worldContext, const FCommonSession& session){ return FFGOnlineSessionSettings(); }
+FString UFGSessionLibrary::GetSessionId(UWorld* worldContext, const FCommonSession& session){ return FString(); }
+ESessionVisibility UFGSessionLibrary::GetSessionVisibility(UObject* worldContext, const FCommonSession& session){ return ESessionVisibility(); }
+FCommonSession UFGSessionLibrary::GetMySession(ULocalPlayer* localPlayer){ return FCommonSession(); }
 void UFGSessionLibrary::GetPlayersInMySession(ULocalPlayer* localPlayer, TArray< FUniqueNetIdRepl >& out_playersInSession){ }
 bool UFGSessionLibrary::IsInGameSession(ULocalPlayer* localPlayer){ return bool(); }
-bool UFGSessionLibrary::IsSessionValid(FBlueprintSessionResult session){ return bool(); }
-TEnumAsByte<ECantJoinReason> UFGSessionLibrary::IsSessionJoinable(const FBlueprintSessionResult& session){ return TEnumAsByte<ECantJoinReason>(); }
-void UFGSessionLibrary::JoinSession(UObject* worldContext, const FBlueprintSessionResult& session){ }
-int32 UFGSessionLibrary::GetMaxNumberOfPlayers(const FBlueprintSessionResult& session){ return int32(); }
-bool UFGSessionLibrary::QuerySessionByFriend(UObject* worldContext, const FUniqueNetIdRepl& playerId, const FFGOnlineFriend& targetFriend, FSearchQueryCompleteDelegate onComplete){ return bool(); }
-bool UFGSessionLibrary::QuerySessionByID(UObject* worldContext, const FUniqueNetIdRepl& playerId, FString sessionOnlineID, FSearchQueryCompleteDelegate onComplete){ return bool(); }
+bool UFGSessionLibrary::IsSessionValid(const FCommonSession& session){ return bool(); }
+TEnumAsByte<ECantJoinReason> UFGSessionLibrary::IsSessionJoinable(UObject* worldContext, const FCommonSession& session){ return TEnumAsByte<ECantJoinReason>(); }
+void UFGSessionLibrary::JoinSession(APlayerController *player, const FCommonSession& session){ }
+int32 UFGSessionLibrary::GetMaxNumberOfPlayers(UObject* worldContext, const FCommonSession& session){ return int32(); }
+bool UFGSessionLibrary::QuerySessionByID(ULocalPlayer* localPlayer, FString sessionOnlineID, FSearchQueryCompleteDelegate onComplete){ return bool(); }
 bool UFGSessionLibrary::CheckIsCompatibleVersion(const FFGOnlineSessionSettings& session){ return bool(); }
-void UFGSessionLibrary::UpdateSessionFromSessionSettings(FOnlineSessionSettings& session, const FFGOnlineSessionSettings& sessionSettings){ }
-void UFGSessionLibrary::SessionSettingsFromSession(const FOnlineSessionSettings& session, FFGOnlineSessionSettings& sessionSettings){ }
+UE::Online::FSessionSettingsUpdate UFGSessionLibrary::CreateSessionSettingsUpdate(const TSharedRef<const UE::Online::ISession> session, const FFGOnlineSessionSettings& gameSessionSettings){ return UE::Online::FSessionSettingsUpdate(); }
+FFGOnlineSessionSettings UFGSessionLibrary::SessionSettingsFromSession(const TSharedRef<const UE::Online::ISession> session){ return FFGOnlineSessionSettings(); }
 void UFGSessionLibrary::OnFindCompleteDelicgateFunction(bool wasSucsessful){ }
 FUniqueNetIdRepl UFGInviteLibrary::GetInviteSenderUniqueNetId(const FPendingInvite& invite){ return FUniqueNetIdRepl(); }
 FBlueprintSessionResult UFGInviteLibrary::GetSessionFromInvite(const FPendingInvite& invite){ return FBlueprintSessionResult(); }

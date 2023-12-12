@@ -277,11 +277,7 @@ public:
 	/** The number of hotbars */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	int32 mNumHotbars;
-
-	/** The max number of preset hotbars */
-	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
-	int32 mNumPresetHotbars;
-
+	
 	/** The number of starting hot bars */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	int32 mNumSlotsPerHotbar;

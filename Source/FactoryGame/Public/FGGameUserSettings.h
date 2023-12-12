@@ -8,6 +8,7 @@
 #include "FGInputLibrary.h"
 #include "FGOptionInterface.h"
 #include "FGOptionsSettings.h"
+#include "OnlineIntegrationSubsystem.h"
 #include "FGGameUserSettings.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FArachnophobiaModeChangedDelegate, bool, isArachnophobiaMode );
@@ -23,10 +24,25 @@ enum class EGraphicsAPI : uint8
 	EGR_Vulkan		UMETA( DisplayName = "Vulkan"  )
 };
 
+
+/**
+ * Enum for selecting the upscaling method to be used in-game.
+ */
+UENUM( BlueprintType )
+enum class EUpscalingMethod : uint8
+{
+	EUM_None = 0	UMETA(DisplayName = "None"),
+	EUM_TSR  = 1	UMETA(DisplayName = "EPIC Temporal Super-Resolution (TSR)"),
+	EUM_DLSS = 2	UMETA(DisplayName = "NVIDIA Deep learning super sampling (DLSS)"),
+	EUM_FSR  = 3	UMETA(DisplayName = "AMD FidelityFX Super Resolution (FSR)"),
+	EUM_XeSS = 4	UMETA(DisplayName = "INTEL Xe Super Sampling (XeSS)"),
+};
+
 UENUM( BlueprintType )
 enum class EGameUserSettingsState : uint8
 {
 	EGUSS_Default		UMETA( DisplayName = "Default" ),
+	EGUSS_Init			UMETA( DisplayName = "Init" ),
 	EGUSS_Applying		UMETA( DisplayName = "Applying" ),
 	EGUSS_Reset			UMETA( DisplayName = "Reset"  )
 };
@@ -80,12 +96,42 @@ public:
 	virtual void ConfirmVideoMode() override;
 	virtual void RunHardwareBenchmark(int32 WorkScale = 10, float CPUMultiplier = 1.0f, float GPUMultiplier = 1.0f) override;
 	virtual void ApplyHardwareBenchmarkResults() override;
+	virtual IFGOptionInterface* GetActiveOptionInterface() const override;
 	//~End GameUserSettings interfaces
 	
 	UFUNCTION(BlueprintCallable)
 	FString RunAndApplyHardwareBenchmark( int32 WorkScale = 10, float CPUMultiplier = 1.0f, float GPUMultiplier = 1.0f );
+
+	/** Auto-detects and applies default video settings based on hardware capabilities, skipping the process if in editor mode. */
 	void TryAutoDetectSettings();
+	
+	/** Sets default video settings based on hardware benchmarks and optional command-line overrides. */
 	void SetDefaultValuesFromHardwareBenchmark();
+
+	/**
+	 * Validates the given upscaling method based on hardware support.
+	 * Returns the best available upscaling method if the requested one is not supported.
+	 * if considerVRAM is true and VRAM is lower than UPSCALING_VRAM_MINIMUM we return EUpscalingMethod::EUM_None
+	 * For example, the preference hierarchy is DLSS > XeSS > TSR.
+	 * 
+	 * @param upscalingMethod The upscaling method to validate.
+	 * @param considerVRAM If we should take the VRAM of the hardware into consideration
+	 * @return The validated or preferred upscaling method.
+	 */
+	EUpscalingMethod ValidateUpscalingMethod( EUpscalingMethod upscalingMethod, bool considerVRAM = true ) const;
+
+	/**
+	 * Validates a given scalability setting by ensuring the system/hardware can handle the specified value.
+	 * Otherwise returns a more fitting value
+	 * 
+	 * @param keyString The key that identifies the scalability setting to be validated.
+	 * @param valueString The value for the scalability setting represented as a string.
+	 * @return The validated value as a string. If no validation is needed, the original value is returned.
+	 */
+	FString ValidateScalabilityValue( const FString& keyString, const FString& valueString ) const;
+
+	/** Returns the video quality level based on hardware benchmark results, falling back to a default value if no mappings are available. */
+	int32 GetVideoQualityLevelFromHardwareBenchmark();
 	
 	UFUNCTION( BlueprintCallable, Category = Settings )
 	void RevertUnsavedChanges();
@@ -115,6 +161,8 @@ public:
 	void UpdateVideoQualityCvars( const FString& cvar );
 	void OnUpScalingUpdated( FString strId, FVariant value );
 	void InitUpScalingMethod();
+	bool IsUsingThirdPartyUpscaler() const;
+	
 	/** Checks if we want to apply some scalability settings based on cmd line arguments. No applied in shipping. Used for profiling.
 	 *	If a video quality argument is present we don't used saved values or save changed values.
 	 */
@@ -158,6 +206,11 @@ public:
 	void InitUpscalingPresetValue();
 	/** Triggered when TSR preset scalabilty cvar have changed */
 	void OnUpscalingPresetUpdated( FString strId, FVariant value );
+
+	/** Triggered when Screen percentage setting is updated */
+	void OnScreenPercentageUpdated( FString strId, FVariant value );
+	UFUNCTION( BlueprintPure, Category = Settings )
+	bool IsUsingCustomScreenPercentage() const;
 	
 	/** Triggered when Foliage loading distance preset scalabilty cvar have changed */
 	void OnFoliageLoadDistanceUpdated( FString strId, FVariant value );
@@ -297,14 +350,32 @@ public:
 	
 	UMaterialParameterCollection* GetHologramMaterialCollectionAsset() const;
 
+	EOnlineIntegrationMode GetPreferredOnlineIntegrationMode() const { return mPreferredOnlineIntegrationMode; }
+	void SetPreferredOnlineIntegrationMode( EOnlineIntegrationMode preferredOnlineIntegrationMode );
+
 	/** Debug */
 	void DumpDynamicOptionsSettings();
 	void GetOptionsDebugData( TArray<FString>& out_debugData );
 	
 private:
 	friend class OptionValueContainer;
-	// Collects all user relevant options user settings that exists in the game
+	
+	/**
+	 * Checks if a given module is loaded and sets up a handler to initialize settings when the module is loaded.
+	 * @param moduleName - The name of the module to check.
+	 * @return True if the module is already loaded, false otherwise.
+	 */
+	bool AwaitModuleLoadIfNeeded( const FName& moduleName );
+	
+	/** Callback function that gets invoked when a module's status changes. Used to initialize settings when required modules are loaded. */
+	void OnModuleChanged( FName name, EModuleChangeReason reason );
+	
+	/** Attempts to initialize user settings, delaying the initialization if required modules are not yet loaded. */
+	void TryInitUserSettings();
+	
+	/** Collects and initializes all user-relevant settings in the game. Assumes required modules are loaded. */
 	void InitUserSettings();
+	
 #if WITH_EDITOR
 	void OnBeginPIE(const bool bIsSimulating);
 #endif
@@ -338,9 +409,15 @@ private:
 	/** Can we use this cvar? trims and checks for empty string */
 	bool ValidateCVar( const FString& cvar );
 	
-	void CacheVideoQualitySettings();
-
 	void TestSavedValues();
+
+	UWorld* GetGameWorld();
+	
+	void FlushRenderingCommandsThenApplyUpscaler( EUpscalingMethod upscalingMethod );
+
+	void SetUpscalerCVars( EUpscalingMethod upscalingMethod );
+	
+	void SetAAMethodFromUpscalingMethod( EUpscalingMethod upscalingMethod );
 
 public:
 	/** Called when arachnophobia mode is changed */
@@ -416,16 +493,13 @@ private:
 	UPROPERTY( Config )
 	FVector mSoftClearanceHologramColour;
 
-	TOptional<EGraphicsAPI> mDesiredGraphicsAPI;
+	UPROPERTY( Config )
+	EOnlineIntegrationMode mPreferredOnlineIntegrationMode = EOnlineIntegrationMode::Undefined;
 
-	/** All video quality cvars handled by the video quality. Cached so we can track when they change */ 
-	TArray<FString> mCachedVideoQualityCvars;
+	TOptional<EGraphicsAPI> mDesiredGraphicsAPI;
 
 	/** Current state if user setting. Used so we can know when we are taking actions like reset and apply so we can gate certain actions */ 
 	EGameUserSettingsState mCurrentState = EGameUserSettingsState::EGUSS_Default;
-
-	UPROPERTY()
-	bool bIsUsingThirdPartyUpScaler = false;
 	
 	/** const variables */
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;

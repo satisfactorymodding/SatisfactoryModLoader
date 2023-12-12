@@ -4,6 +4,7 @@
 #include "Components/SceneComponent.h"
 #include "FGPipeConnectionComponent.h"
 #include "FGSwatchGroup.h"
+#include "Net/UnrealNetwork.h"
 
 void FQuantizedPipelineIndicatorData::SetFlowPct(float pct){ }
 float FQuantizedPipelineIndicatorData::GetFlowPct() const{ return float(); }

@@ -58,7 +58,8 @@ public:
     UFUNCTION(BlueprintPure, meta = (DeterminesOutputType = "ModuleClass"))
     UModModule* GetChildModule(FName ModuleName, TSubclassOf<UModModule> ModuleClass);
 
-    /** Handles received lifecycle event and dispatches it to all modules */
+    /** Handles received lifecycle event and dispatches it to all modules.
+    Make sure to call super on the C++ side if you have both a C++ and Blueprint implementation. */
     virtual void DispatchLifecycleEvent(ELifecyclePhase Phase);
 
     static FString LifecyclePhaseToString(ELifecyclePhase Phase);

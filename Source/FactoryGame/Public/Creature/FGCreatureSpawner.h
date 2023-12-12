@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "GameFramework/Actor.h"
-#include "Creature/FGCreature.h"
+#include "FGCreature.h"
 #include "FGInventoryComponent.h"
 #include "FGSaveInterface.h"
 #include "FGCreatureSpawner.generated.h"
@@ -59,6 +59,7 @@ public:
 	// BEGIN AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	virtual void Tick(float DeltaSeconds) override;
 	#if WITH_EDITOR
 	/** Moved in the editor, on done, calculate spawn locations */
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

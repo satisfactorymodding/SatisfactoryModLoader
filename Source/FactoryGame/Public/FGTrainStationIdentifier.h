@@ -93,9 +93,11 @@ private:
 	UFUNCTION()
 	void OnRep_StationName();
 
+	UFUNCTION()
+	void OnRep_Station();
 public:
 	/** The station this info represents. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_Station )
 	class AFGBuildableRailroadStation* mStation;
 
 	/** The track this station is on. */

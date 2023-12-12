@@ -26,6 +26,7 @@ bool UFGUserSettingApplyType::IsDefaultValueApplied() const{ return bool(); }
 void UFGUserSettingApplyType::SetOptionRowWidget( UFGDynamicOptionsRow* inOptionRowWidget){ }
 void UFGUserSettingApplyType::GetDebugData(TArray<FString>& out_debugData){ }
 bool UFGUserSettingApplyType::IsInMainMenu() const{ return bool(); }
+bool UFGUserSettingApplyType_UpdateInstantly::OnApply(bool markDirty){ return bool(); }
 void UFGUserSettingApplyType_UpdateInstantly::SetValue(FVariant newValue){ }
 void UFGUserSettingApplyType_UpdateInstantly::ClearPendingChanges(){ }
 bool UFGUserSettingApplyType_RequireGameRestart::OnApply(bool markDirty){ return bool(); }

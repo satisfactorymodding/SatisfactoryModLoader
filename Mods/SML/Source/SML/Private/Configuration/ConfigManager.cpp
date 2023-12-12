@@ -35,7 +35,7 @@ void UConfigManager::SaveConfigurationInternal(const FConfigId& ConfigId) {
     
     //Record mod version so we can keep file system file schema up to date
     FModInfo ModInfo;
-    UModLoadingLibrary* ModLoadingLibrary = GEngine->GetEngineSubsystem<UModLoadingLibrary>();
+    UModLoadingLibrary* ModLoadingLibrary = GetGameInstance()->GetSubsystem<UModLoadingLibrary>();
     
     if (ModLoadingLibrary->GetLoadedModInfo(ConfigId.ModReference, ModInfo)) {
         const FString ModVersion = ModInfo.Version.ToString();
@@ -96,7 +96,7 @@ void UConfigManager::LoadConfigurationInternal(const FConfigId& ConfigId, URootC
 
     //Check that mod version matches if we are allowed to overwrite files
     FModInfo ModInfo;
-    UModLoadingLibrary* ModLoadingLibrary = GEngine->GetEngineSubsystem<UModLoadingLibrary>();
+    UModLoadingLibrary* ModLoadingLibrary = GetGameInstance()->GetSubsystem<UModLoadingLibrary>();
 
     if (ModLoadingLibrary->GetLoadedModInfo(ConfigId.ModReference, ModInfo)) {
         const FString ModVersion = ModInfo.Version.ToString();
@@ -280,6 +280,8 @@ UConfigPropertySection* UConfigManager::GetConfigurationRootSection(const FConfi
 }
 
 void UConfigManager::Initialize(FSubsystemCollectionBase& Collection) {
+	Collection.InitializeDependency<UModLoadingLibrary>();
+	
     //Subscribe to exit event so we make sure that pending saves are written to filesystem
     FCoreDelegates::OnPreExit.AddUObject(this, &UConfigManager::FlushPendingSaves);
     //Subscribe to timer manager availability delegate to be able to do periodic auto-saves

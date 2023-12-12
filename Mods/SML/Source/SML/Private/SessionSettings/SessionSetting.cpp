@@ -1,11 +1,13 @@
 ﻿#include "SessionSettings/SessionSetting.h"
+
+#include "SessionSettings/SessionSettingsManager.h"
 #include "Settings/FGUserSettingCategory.h"
 #include "Settings/FGUserSettingApplyType.h"
 #define LOCTEXT_NAMESPACE "SML"
 
 USMLSessionSetting::USMLSessionSetting() {
 	ShowInBuilds = EIncludeInBuilds::IIB_PublicBuilds;
-	ManagerAvailability = static_cast<EUserSettingManagers>(StaticEnum<EUserSettingManagers>()->GetMaxEnumValue());
+	ManagerTypeAvailability = USessionSettingsManager::StaticClass();
 	IsSettingSessionWide = true;
 }
 
@@ -13,8 +15,8 @@ void USMLSessionSetting::PostLoad() {
 	Super::PostLoad();
 	// Ensure at runtime that the setting is visible in the settings menu
 	ShowInBuilds = EIncludeInBuilds::IIB_PublicBuilds;
-	// Ensure at runtime that the setting is using an invalid manager so it is not loaded by the game
-	ManagerAvailability = static_cast<EUserSettingManagers>(StaticEnum<EUserSettingManagers>()->GetMaxEnumValue());
+	// Ensure at runtime that the setting is not managed by another options manager
+	ManagerTypeAvailability = USessionSettingsManager::StaticClass();
 	// Ensure at runtime that the setting is marked as session-wide
 	IsSettingSessionWide = true;
 }

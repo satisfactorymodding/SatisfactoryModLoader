@@ -5,9 +5,11 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGGamePhaseManager.h"
+#include "Containers/CircularQueue.h"
+#include "UObject/Interface.h"
 #include "FGDedicatedServerTypes.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN( LogServer, Log, Log );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogServer, Log, Log );
 
 UENUM()
 enum class EServerState : uint8

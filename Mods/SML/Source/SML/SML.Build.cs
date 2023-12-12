@@ -3,6 +3,7 @@
 using UnrealBuildTool;
 using System.IO;
 using System;
+using System.Diagnostics;
 using EpicGames.Core;
 
 public class SML : ModuleRules
@@ -49,7 +50,10 @@ public class SML : ModuleRules
 
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
+            // https://github.com/kubo/funchook/tree/7cb8819594f0d586454011ab691fab4edb625068
             PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "funchook.lib"));
+        
+            // https://github.com/satisfactorymodding/AssemblyAnalyzer/tree/e08ec4402b6e016a9b7aa59ab8c82dd0840e8f98
             PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "AssemblyAnalyzer.lib"));
             PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zydis.lib"));
             PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zycore.lib"));
@@ -76,8 +80,19 @@ public class SML : ModuleRules
         const string factoryGameVersionRelativePath = "Source/FactoryGame/currentVersion.txt";
 
         var FactoryGameVersionFile = FileReference.Combine(Target.ProjectFile!.Directory, factoryGameVersionRelativePath);
+
+        // Fallback for when there is no current version file
+        if (!File.Exists(FactoryGameVersionFile.FullName))
+        {
+	        PrivateDefinitions.Add("FACTORYGAME_VERSION=0");
+	        PrivateDefinitions.Add("SML_ALLOW_PATCHES_IN_EDITOR=1");
+	        PrivateDefinitions.Add("ENABLE_MOD_LOADING_IN_EDITOR=1");
+	        return;
+        }
+
         var FactoryGameVersion = File.ReadAllText(FactoryGameVersionFile.FullName);
         PrivateDefinitions.Add($"FACTORYGAME_VERSION={FactoryGameVersion}");
+        PrivateDefinitions.Add("SML_ALLOW_PATCHES_IN_EDITOR=0");
     }
 
     private void AddSMLInfo()
@@ -85,7 +100,7 @@ public class SML : ModuleRules
         // Get SML version from SML.uplugin
         var SMLPluginFile = FileReference.Combine(new DirectoryReference(PluginDirectory!), "SML.uplugin");
         var SMLPlugin = PluginDescriptor.FromFile(SMLPluginFile);
-        PrivateDefinitions.Add($"SML_VERSION=\"{SMLPlugin.SemVersion}\"");
+        PrivateDefinitions.Add($"SML_VERSION=\"{SMLPlugin.VersionName}\"");
         
         //Collect build metadata from the environment and pass it to C++
         var CurrentBranch = Environment.GetEnvironmentVariable("BRANCH_NAME");
@@ -111,7 +126,59 @@ public class SML : ModuleRules
     private static void RetrieveHeadBranchAndCommitFromGit(DirectoryReference RootDir, out string BranchName, out string CommitRef) {
         BranchName = null;
         CommitRef = null;
+            
+        // First try running git
+        try
+        {
+            var BranchNameProcess = Process.Start(new ProcessStartInfo("git", "rev-parse --abbrev-ref HEAD")
+            {
+                WorkingDirectory = RootDir.FullName,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            });
+            if (BranchNameProcess != null)
+            {
+                BranchNameProcess.WaitForExit();
+                if (BranchNameProcess.ExitCode == 0)
+                    BranchName = BranchNameProcess.StandardOutput.ReadToEnd().Trim();
+                else
+                    Log.TraceWarning("Failed to run git to retrieve branch name: exit code {0}. Falling back to checking .git folder", BranchNameProcess.ExitCode);
+            }
+            else
+            {
+                Log.TraceWarning("Failed to run git to retrieve branch name: Failed to create git process. Falling back to checking .git folder");
+            }
+        } catch (Exception Ex) { 
+            Log.TraceWarning("Failed to run git to retrieve branch name: {0}. Falling back to checking .git folder", Ex.Message);
+        }
 
+        try
+        {
+            var CommitProcess = Process.Start(new ProcessStartInfo("git", "rev-parse HEAD")
+            {
+                WorkingDirectory = RootDir.FullName,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            });
+            if (CommitProcess != null)
+            {
+                CommitProcess.WaitForExit();
+                if (CommitProcess.ExitCode == 0)
+                    CommitRef = CommitProcess.StandardOutput.ReadToEnd().Trim();
+                else
+                    Log.TraceWarning("Failed to run git to retrieve commit: exit code {0}. Falling back to checking .git folder", CommitProcess.ExitCode);
+            }
+            else
+            {
+                Log.TraceWarning("Failed to run git to retrieve commit: Failed to create git process. Falling back to checking .git folder");
+            }
+        } catch (Exception Ex) {
+            Log.TraceWarning("Failed to run git to retrieve commit: {0}. Falling back to checking .git folder", Ex.Message);
+        }
+
+        if (CommitRef != null && BranchName != null) return;
+
+        // If either was not found, try parsing the HEAD file manually
         var GitRepository = Path.Combine(RootDir.FullName, ".git");
         if (!Directory.Exists(GitRepository)) {
             return;

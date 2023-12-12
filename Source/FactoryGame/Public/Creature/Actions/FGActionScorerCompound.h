@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Creature/Actions/FGActionScorer.h"
+#include "FGActionScorer.h"
 #include "FGActionScorerCompound.generated.h"
 
 /**

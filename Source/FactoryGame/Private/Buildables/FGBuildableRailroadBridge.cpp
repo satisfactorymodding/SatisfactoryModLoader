@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildableRailroadBridge.h"
 #include "Components/SceneComponent.h"
 #include "FGSplineComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableRailroadBridge::AFGBuildableRailroadBridge() : Super() {
 	this->mSplineComponent = CreateDefaultSubobject<UFGSplineComponent>(TEXT("SplineComponent"));

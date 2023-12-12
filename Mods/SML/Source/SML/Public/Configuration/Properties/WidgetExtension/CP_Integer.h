@@ -12,7 +12,7 @@ enum class ECP_IntegerWidgetType : uint8
 };
 
 
-UCLASS(EditInlineNew)
+UCLASS(EditInlineNew, Abstract)
 class SML_API UCP_Integer : public UConfigPropertyInteger {
     GENERATED_BODY()
 public:

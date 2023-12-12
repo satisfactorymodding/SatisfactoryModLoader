@@ -4,8 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "UObject/Interface.h"
 #include "Templates/SubclassOf.h"
+#include "UObject/Interface.h"
 
 #include "FGUseableInterface.generated.h"
 
@@ -87,13 +87,13 @@ class FACTORYGAME_API IFGUseableInterface
 	GENERATED_IINTERFACE_BODY()
 
 	/**
-	 * Get the current use state for a object
+	 * Update and get the current use state for an object.
 	 * @param byCharacter	The character that want to use the object
 	 * @param atLocation	Location on the object where the use is triggered (simulated location on client).
 	 * @param componentHit	The component that the trace hit when looking at the object
 	 **/
 	UFUNCTION( BlueprintNativeEvent, Category = "Use" )
-	void UpdateUseState( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, UPARAM(ref) FUseState& out_useState ) const;
+	void UpdateUseState( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, UPARAM(ref) FUseState& out_useState );
 
 	/**
 	 * Called when a character tries to use this actor.

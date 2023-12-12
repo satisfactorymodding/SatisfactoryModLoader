@@ -3,9 +3,9 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Hologram/FGSplineHologram.h"
 #include "Components/SplineComponent.h"
 #include "FGFactoryConnectionComponent.h"
+#include "FGSplineHologram.h"
 #include "FGConveyorBeltHologram.generated.h"
 
 /**
@@ -42,6 +42,7 @@ public:
 	virtual void CheckBlueprintCommingling() override;
 	virtual AFGHologram* GetNudgeHologramTarget() override;
 	virtual bool CanTakeNextBuildStep() const override;
+	virtual void ReplaceHologram( AFGHologram* hologram, bool snapTransform ) override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface

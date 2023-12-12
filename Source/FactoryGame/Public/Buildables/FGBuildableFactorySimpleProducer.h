@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildableFactory.h"
+#include "FGBuildableFactory.h"
 #include "FGEventSubsystem.h"
 #include "FGBuildableFactorySimpleProducer.generated.h"
 

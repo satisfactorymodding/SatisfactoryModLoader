@@ -14,7 +14,7 @@ EExecutionStatus AInfoCommandInstance::ExecuteCommand_Implementation(UCommandSen
 	const FVersion Version = FSatisfactoryModLoader::GetModLoaderVersion();
 	Sender->SendChatMessage(FString::Printf(TEXT("Running SML v.%s"), *Version.ToString()));
 
- 	UModLoadingLibrary* ModLoadingLibrary = GEngine->GetEngineSubsystem<UModLoadingLibrary>();
+ 	UModLoadingLibrary* ModLoadingLibrary = Sender->GetWorld()->GetGameInstance()->GetSubsystem<UModLoadingLibrary>();
 	const TArray<FModInfo> LoadedMods = ModLoadingLibrary->GetLoadedMods();
  	const FString ModListString = FString::JoinBy(LoadedMods, TEXT(", "), [](const FModInfo& ModInfo) { return ModInfo.FriendlyName; });
  	Sender->SendChatMessage(FString::Printf(TEXT("Loaded Mods: %s"), *ModListString));

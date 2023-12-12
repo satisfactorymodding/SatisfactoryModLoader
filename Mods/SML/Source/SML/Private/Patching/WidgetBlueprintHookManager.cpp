@@ -1,4 +1,6 @@
 ﻿#include "Patching/WidgetBlueprintHookManager.h"
+
+#include "Blueprint/WidgetBlueprintGeneratedClass.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/PanelWidget.h"
 

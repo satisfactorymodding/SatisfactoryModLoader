@@ -3,9 +3,11 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "UObject/Object.h"
-#include "FGSaveSystem.h"
 #include "FGObjectReference.h"
+#include "FGSaveSystem.h"
+#include "UObject/Object.h"
+#include "Engine/EngineBaseTypes.h"
+#include "Engine/TimerHandle.h"
 #include "FGSaveSession.generated.h"
 
 // @todosave: Change the FText to a Enum, so server and client can have different localizations
@@ -189,7 +191,7 @@ public:
 
 	/** Returns saved visibility of the session */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save Session" )
-	static FORCEINLINE TEnumAsByte<ESessionVisibility> GetSaveSessionVisibility( UPARAM( ref ) FSaveHeader& header ) { return header.SessionVisibility; }
+	static FORCEINLINE ESessionVisibility GetSaveSessionVisibility( UPARAM( ref ) FSaveHeader& header ) { return header.SessionVisibility; }
 
 	/** Returns Metadata from save header */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save Session" )
@@ -454,14 +456,13 @@ protected:
 
 	// Debug function, makes sure that we are gathering all actors when saving
 	void MakeSureAllActorsAreSaved();
-
 public:
 	/** Used to optimize checking for redirects on GameMode and GameState to avoid casting checks after they have already been resolved */
 	inline static int32 mRedirectedSingletonCount = 0;
 
 	/** This static map is used to store temporary serialized versions of objects so that PostLoadGame can execute knowing the version the object was deserialized with */
-	inline static TMap< UObject*, int32 > mObjectToSerailizedVersion = TMap< UObject*, int32 >(); 
-
+	inline static TMap< UObject*, int32 > mObjectToSerailizedVersion = TMap< UObject*, int32 >();
+	
 	/** Delegate that listens for when level placed actor is destroyed */
 	FOnLevelPlacedActorDestroyed mOnLevelPlacedActorDestroyed;
 
@@ -567,7 +568,7 @@ private:
 	 * 
 	 * @return bool - Returns true if file was successfully compressed and saved.
 	 */
-	bool SaveToDiskWithCompression(const FString& fullFilePath, FBufferArchive64& memArchive, FSaveHeader& saveHeader );
+	bool SaveToDiskWithCompression(const FString& fullFilePath, class FBufferArchive64& memArchive, FSaveHeader& saveHeader );
 	
 	/** Loads a save file that has been compressed. This includes serializing the SaveHeader. */
 	bool LoadCompressedFileFromDisk( const FString& saveGameName );

@@ -10,7 +10,7 @@ enum class ECP_SectionWidgetType : uint8
 	CPS_Vertical UMETA(Displayname = "Vertical List", Tooltip = "Nested Properties will be Listed in a Vertical Layout"),
 };
 
-UCLASS(EditInlineNew)
+UCLASS(EditInlineNew, Abstract)
 class SML_API UCP_Section : public UConfigPropertySection {
     GENERATED_BODY()
 public:

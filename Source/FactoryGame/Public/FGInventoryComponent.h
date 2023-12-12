@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "SharedInventoryStatePtr.h"
 #include "FGSaveInterface.h"
 #include "Resources/FGItemDescriptor.h"
+#include "FactoryGame.h"
 #include "FGInventoryComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FInventoryResized, int32, oldSize, int32, newSize );
@@ -60,7 +60,6 @@ public:
 	UPROPERTY()
 	FSharedInventoryStatePtr ItemState;
 };
-FORCEINLINE FString VarToFString( const FInventoryItem &var ) { return FString::Printf( TEXT( "%s: {%s}" ), *VarToFString(var.GetItemClass()), *VarToFString(var.ItemState) ); }
 
 /** Enable custom serialization of FInventoryItem */
 template<>
@@ -347,7 +346,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	FORCEINLINE bool IsIndexEmpty( const int32 idx ) const
 	{
-		fgcheckf( mInventoryStacks.Num() > 0 , TEXT( "Inventory need to be initialized before use %s" ), SHOWVAR( mInventoryStacks.Num() ) );
+		fgcheckf( mInventoryStacks.Num() > 0 , TEXT( "Inventory need to be initialized before use %d" ), mInventoryStacks.Num() );
 		
 		if( UNLIKELY( !IsValidIndex( idx ) ) )
 		{

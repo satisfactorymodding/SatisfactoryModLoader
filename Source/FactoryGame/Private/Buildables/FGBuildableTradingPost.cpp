@@ -2,6 +2,7 @@
 
 #include "Buildables/FGBuildableTradingPost.h"
 #include "Components/SceneComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableTradingPost::AFGBuildableTradingPost() : Super() {
 	this->mDefaultGeneratorRecipe = nullptr;

@@ -34,7 +34,7 @@ UFGDebugOverlayWidget* UFGGameInstance::GetDebugOverlayWidget(){ return nullptr;
 UFGOnlineSessionClient* UFGGameInstance::GetOnlineSession(){ return nullptr; }
 void UFGGameInstance::LoadComplete(const float loadTime, const FString& mapName){ }
 void UFGGameInstance::OnDestroyOldSessionComplete_JoinSession(FName gameSessionName, bool wasSuccessful){ }
-void UFGGameInstance::OnQueryFriendProductIdCompleted_JoinSession(bool wasSuccessful, FString EpicId, EOS_ProductUserId ProductId){ }
+void UFGGameInstance::OnQueryFriendProductIdCompleted_JoinSession(bool wasSuccessful, FString EpicId,  EOS_ProductUserIdDetails* ProductId){ }
 void UFGGameInstance::PollHostProductUserId_JoinSession(){ }
 void UFGGameInstance::_OnNATUpdatedCallback(void* userData, ECachedNATType Data){ }
 void UFGGameInstance::OnNATUpdated(ECachedNATType Data){ }

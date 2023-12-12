@@ -4,8 +4,11 @@
 
 #include "FactoryGame.h"
 #include "FGScannableDetails.h"
+#include "HAL/IConsoleManager.h"
 #include "UObject/Object.h"
 #include "FGItemDescriptor.generated.h"
+
+extern TAutoConsoleVariable<int32> CVarStressTestRadioActivity; 
 
 /**
  * The form this item is in, i.e. does it require pipes or conveyors, can the player pick it up etc.

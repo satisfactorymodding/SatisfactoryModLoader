@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildableWidgetSign.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableWidgetSign::AFGBuildableWidgetSign() : Super() {
 	this->mSignProxyPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProxyMesh"));

@@ -59,7 +59,6 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mEmoteShortcutClass = UFGEmoteShortcut::StaticClass();
 	this->mBlueprintShortcutClass = UFGBlueprintShortcut::StaticClass();
 	this->mNumHotbars = 2;
-	this->mNumPresetHotbars = 2;
 	this->mNumSlotsPerHotbar = 10;
 	this->mAddedPipeProductionPressure = 0.0;
 	this->mPaniniProjectionCollection = nullptr;

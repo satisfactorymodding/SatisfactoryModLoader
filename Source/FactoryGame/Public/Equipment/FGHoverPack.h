@@ -5,8 +5,8 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 
-#include "Equipment/FGEquipment.h"
-#include "Equipment/FGEquipmentAttachment.h"
+#include "FGEquipment.h"
+#include "FGEquipmentAttachment.h"
 
 #include "FGHoverPack.generated.h"
 
@@ -32,7 +32,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnConnectionLocationUpdated, FVect
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHoverModeChanged, EHoverPackMode, newMode );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRangeWarningToggle, bool, status );
 
-DECLARE_LOG_CATEGORY_EXTERN( LogHoverPack, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogHoverPack, Log, All );
 
 DECLARE_STATS_GROUP( TEXT("HoverPack"), STATGROUP_HoverPack, STATCAT_Advanced );
 

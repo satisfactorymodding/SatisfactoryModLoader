@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "Engine/DeveloperSettings.h"
 #include "Resources/FGItemDescriptor.h"
 #include "Resources/FGResourceNode.h"
 #include "FGResourceSettings.generated.h"
@@ -121,7 +122,7 @@ public:
 	TSoftClassPtr< class AFGItemPickup_Spawnable > mItemDropClass;
 	
 	UPROPERTY( Config, EditDefaultsOnly, Category = "Power" )
-	TMap< TEnumAsByte< EResourcePurity >, TSoftObjectPtr<UCurveFloat> > mGeyserPowerOutputCurves;
+	TMap< TEnumAsByte< EResourcePurity >, TSoftObjectPtr<class UCurveFloat> > mGeyserPowerOutputCurves;
 
 #if WITH_EDITORONLY_DATA
 	/** The stage that should be used to make icons */

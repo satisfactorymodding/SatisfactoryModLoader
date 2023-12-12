@@ -8,10 +8,11 @@
 #include "FGActorRepresentationInterface.h"
 #include "FGMinimapCaptureActor.h"
 #include "FGMapMarker.h"
+#include "Async/AsyncWork.h"
 #include "FGMapManager.generated.h"
 
 DECLARE_STATS_GROUP( TEXT( "MapManager" ), STATGROUP_MapManager, STATCAT_Advanced );
-DECLARE_LOG_CATEGORY_EXTERN( LogMapManager, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogMapManager, Log, All );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnMapMarkerAdded, int32, markerIndex );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnMapMarkerRemoved, int32, markerIndex  );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams( FOnMarkerHighlightUpdated, UFGActorRepresentation*, actorRepresentation, bool, highlighted, class AFGPlayerState*, playerState );

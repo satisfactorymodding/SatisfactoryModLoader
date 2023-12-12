@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Buildables/FGBuildable.h"
+#include "FGBuildable.h"
 #include "FGBuildablePowerPole.generated.h"
 
 UENUM( BlueprintType )
@@ -51,6 +51,9 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "PowerPole" )
 	class UFGPowerConnectionComponent* GetPowerConnection(int32 index) const { return mPowerConnections[index]; }
+
+	UFUNCTION( BlueprintPure, Category = "PowerPole" )
+	const TArray< class UFGPowerConnectionComponent* >& GetPowerConnections() const { return mPowerConnections; }
 
 	void OnPowerConnectionChanged(class UFGCircuitConnectionComponent* connection);
 

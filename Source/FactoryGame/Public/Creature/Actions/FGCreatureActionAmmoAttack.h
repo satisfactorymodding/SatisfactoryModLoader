@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Creature/Actions/FGCreatureActionAnimated.h"
+#include "FGCreatureActionAnimated.h"
 
 #include "FGProjectile.h"
 #include "Curves/CurveFloat.h"
@@ -23,7 +23,6 @@ public:
 
 	// Begin UObject Interface
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void BeginDestroy() override;
 	// End UObject interface
 	
 	// Begin UFGAction Interface

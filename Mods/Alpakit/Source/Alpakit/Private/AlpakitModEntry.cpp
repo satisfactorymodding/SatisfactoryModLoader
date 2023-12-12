@@ -1,17 +1,26 @@
 #include "AlpakitModEntry.h"
 #include "Alpakit.h"
+#include "AlpakitInstance.h"
 #include "AlpakitEditModDialog.h"
 #include "AlpakitSettings.h"
-#include "ISourceControlModule.h"
+#include "AlpakitStyle.h"
 #include "ModTargetsConfig.h"
+#include "ISourceControlModule.h"
+#include "ISourceControlProvider.h"
+#include "ISourceControlOperation.h"
+#include "ModMetadataObject.h"
+#include "SourceControlOperations.h"
+#include "Async/Async.h"
+#include "Framework/Notifications/NotificationManager.h"
+#include "LauncherServices/Public/ILauncherProfile.h"
+#include "LauncherServices/Public/ILauncherServicesModule.h"
+#include "TargetDeviceServices/Public/ITargetDeviceServicesModule.h"
+#include "UATHelper/Public/IUATHelperModule.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 #define LOCTEXT_NAMESPACE "AlpakitModListEntry"
 
 void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InMod, TSharedRef<SAlpakitModEntryList> InOwner) {
-	FAlpakitModule& AlpakitModule = FModuleManager::GetModuleChecked<FAlpakitModule>("Alpakit");
-	AlpakitModule.GetOnQueueStarted().AddSP(this, &SAlpakitModEntry::QueueStarted);
-	AlpakitModule.GetOnQueueComplete().AddSP(this, &SAlpakitModEntry::QueueComplete);
-	
     Mod = InMod;
 	Owner = InOwner;
 
@@ -29,6 +38,18 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
         SNew(SHorizontalBox)
         + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0).VAlign(VAlign_Center)[
             Checkbox.ToSharedRef()
+        ]
+        + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0).VAlign(VAlign_Center)[
+            SNew(SButton)
+            .Text(LOCTEXT("PackageModAlpakit", "Alpakit!"))
+            .OnClicked_Lambda([this](){
+                PackageMod();
+                return FReply::Handled();
+            })
+            .ToolTipText_Lambda([this](){
+                return FText::FromString(FString::Printf(TEXT("Alpakit %s"), *this->Mod->GetName()));
+            })
+            .IsEnabled(this, &SAlpakitModEntry::IsPackageButtonEnabled)
         ]
         + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0).VAlign(VAlign_Center)[
             SAssignNew(EditButton, SButton)
@@ -79,12 +100,8 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
     ];
 }
 
-void SAlpakitModEntry::QueueStarted() {
-	EditButton->SetEnabled(false);
-}
-
-void SAlpakitModEntry::QueueComplete() {
-	EditButton->SetEnabled(true);
+void SAlpakitModEntry::PackageMod() {
+	FAlpakitModule::Get().PackageModsDevelopment({Mod.ToSharedRef()});
 }
 
 void SAlpakitModEntry::OnEnableCheckboxChanged(ECheckBoxState NewState) {
@@ -97,6 +114,10 @@ void SAlpakitModEntry::OnEnableCheckboxChanged(ECheckBoxState NewState) {
     Settings->SaveSettings();
 
 	Owner->UpdateAllCheckbox();
+}
+
+bool SAlpakitModEntry::IsPackageButtonEnabled() const {
+	return !FAlpakitModule::Get().IsPackaging();
 }
 
 #undef LOCTEXT_NAMESPACE

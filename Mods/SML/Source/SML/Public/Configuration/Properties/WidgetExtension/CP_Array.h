@@ -10,7 +10,7 @@ enum class ECP_ArrayWidgetType : uint8
 };
 
 
-UCLASS(EditInlineNew)
+UCLASS(EditInlineNew, Abstract)
 class SML_API UCP_Array : public UConfigPropertyArray {
     GENERATED_BODY()
 public:

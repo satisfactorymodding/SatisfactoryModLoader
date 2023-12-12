@@ -3,13 +3,13 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "CoreMinimal.h"
-#include "Buildables/FGBuildable.h"
-#include "Buildables/FGBuildableStorage.h"
+#include "FGBuildable.h"
+#include "FGBuildableStorage.h"
 #include "FGFactoryBlueprintTypes.h"
 #include "FGPlayerController.h"
 #include "ItemAmount.h"
-#include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "FGBuildableBlueprintDesigner.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRecordDataChanged, FBlueprintRecord, blueprintRecord );

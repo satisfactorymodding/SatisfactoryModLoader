@@ -183,7 +183,7 @@ void FNativeCodeGenerator::GenerateConfigStruct(UConfigGeneratedStruct* Struct, 
         const FString CppTypeForDescriptor = GenerateCppTypeForVariable(Pair.Value);
         //Mark variable as BlueprintReadWrite for it to be accessible via BP limited reflection
         OutputDevice.Logf(TEXT("    UPROPERTY(BlueprintReadWrite)"));
-        OutputDevice.Logf(TEXT("    %s %s;"), *CppTypeForDescriptor, *Pair.Key);
+        OutputDevice.Logf(TEXT("    %s %s{};"), *CppTypeForDescriptor, *Pair.Key);
     }
 
     //Append method for retrieving configuration value if we're working with root struct
@@ -193,11 +193,13 @@ void FNativeCodeGenerator::GenerateConfigStruct(UConfigGeneratedStruct* Struct, 
         
         OutputDevice.Log(TEXT(""));
         OutputDevice.Logf(TEXT("    /* Retrieves active configuration value and returns object of this struct containing it */"));
-        OutputDevice.Logf(TEXT("    static F%s GetActiveConfig() {"), *Struct->GetStructName());
+        OutputDevice.Logf(TEXT("    static F%s GetActiveConfig(UObject* WorldContext) {"), *Struct->GetStructName());
         OutputDevice.Logf(TEXT("        F%s ConfigStruct{};"), *Struct->GetStructName());
         OutputDevice.Logf(TEXT("        FConfigId ConfigId{\"%s\", \"%s\"};"), *ConfigId.ModReference.ReplaceQuotesWithEscapedQuotes(), *ConfigId.ConfigCategory.ReplaceQuotesWithEscapedQuotes());
-        OutputDevice.Logf(TEXT("        UConfigManager* ConfigManager = GEngine->GetEngineSubsystem<UConfigManager>();"));
-        OutputDevice.Logf(TEXT("        ConfigManager->FillConfigurationStruct(ConfigId, FDynamicStructInfo{F%s::StaticStruct(), &ConfigStruct});"), *Struct->GetStructName());
+        OutputDevice.Logf(TEXT("        if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::ReturnNull)) {"));
+        OutputDevice.Logf(TEXT("            UConfigManager* ConfigManager = World->GetGameInstance()->GetSubsystem<UConfigManager>();"));
+        OutputDevice.Logf(TEXT("            ConfigManager->FillConfigurationStruct(ConfigId, FDynamicStructInfo{F%s::StaticStruct(), &ConfigStruct});"), *Struct->GetStructName());
+        OutputDevice.Logf(TEXT("        }"));
         OutputDevice.Logf(TEXT("        return ConfigStruct;"));
         OutputDevice.Logf(TEXT("    }"));
     }

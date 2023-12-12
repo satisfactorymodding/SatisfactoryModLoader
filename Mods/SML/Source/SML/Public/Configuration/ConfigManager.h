@@ -38,7 +38,7 @@ public:
 
 /** Manages mod configuration states */
 UCLASS()
-class SML_API UConfigManager : public UEngineSubsystem {
+class SML_API UConfigManager : public UGameInstanceSubsystem {
     GENERATED_BODY()
 public:
     /** Reloads mod configurations from disk, optionally saving them back if schema changes */

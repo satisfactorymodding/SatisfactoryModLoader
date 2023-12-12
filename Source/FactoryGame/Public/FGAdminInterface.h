@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGSaveSystem.h"
+#include "GameFramework/Info.h"
 #include "FGAdminInterface.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams( FOnAdminEnumerateSaveGamesComplete, bool, success, const TArray<FSaveHeader>&, saveGames );
