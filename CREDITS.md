@@ -43,7 +43,7 @@ and/or were previously part of the core team but have moved to other ventures.
 
 <!-- cspell:disable -->
 - Markus Rännare
-- Ben DeHulu
+- Ben de Hullu
 - ... and the rest of the Satisfactory team at Coffee Stain :D
 <!-- cspell:enable -->
 
