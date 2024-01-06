@@ -5,6 +5,7 @@
 #include "FGRecipe.h"
 #include "FGResourceSinkSubsystem.h"
 #include "Engine/DataTable.h"
+#include "Misc/EnumClassFlags.h"
 #include "ModContentRegistry.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogContentRegistry, Log, All);
@@ -139,6 +140,8 @@ enum class EGetObtainableItemDescriptorsFlags : uint8
 	IncludeSpecial = 0x20 UMETA( DisplayName = "Include Special (WildCard, AnyUndefined, Overflow, None)" ),
 	Default = None,
 };
+
+ENUM_CLASS_FLAGS(EGetObtainableItemDescriptorsFlags);
 
 /**
  * Manages registration and lifetime of the modded content
