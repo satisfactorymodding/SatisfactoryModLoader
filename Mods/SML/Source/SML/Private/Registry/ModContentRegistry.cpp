@@ -860,13 +860,39 @@ void UModContentRegistry::AutoRegisterRecipeReferences( TSubclassOf<UFGRecipe> R
 	}
 }
 
+static bool IsResourceFormFilteredOut(EResourceForm ResourceForm, EGetObtainableItemDescriptorsFlags Flags)
+{
+	using enum EGetObtainableItemDescriptorsFlags;
+	using enum EResourceForm;
+
+	switch (ResourceForm) {
+	case RF_INVALID:
+		return !EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags(IncludeBuildings | IncludeCustomizations | IncludeVehicles | IncludeCreatures | IncludeSpecial));
+	case RF_SOLID:
+		return false;
+	case RF_LIQUID:
+	case RF_GAS:
+		return !EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags(IncludeNonSolid));
+	case RF_HEAT: /* FIXME: Could be omitted, so that the default case handles it */
+		return true;
+	default:
+		return true;
+	}
+}
+
 bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
 {
 	if (!ItemDescriptor) {
 		UE_LOG(LogContentRegistry, Warning, TEXT("IsDescriptorFilteredOut called with null ItemDescriptor, returning true (filtering out)"));
 		return true;
 	}
-	const auto descriptorClass = Cast<UClass>(ItemDescriptor);
+	const TSubclassOf<UFGItemDescriptor> descriptorClass = const_cast<UClass*>(Cast<UClass>(ItemDescriptor));
+	if (!descriptorClass) {
+		return true;
+	}
+	if (IsResourceFormFilteredOut(UFGItemDescriptor::GetForm(descriptorClass), Flags)) {
+		return true;
+	}
 
 	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeBuildings) && descriptorClass->IsChildOf<UFGBuildingDescriptor>()) {
 		return true;
