@@ -268,7 +268,7 @@ void USessionSettingsManager::SetFloatOptionValue(const FString& cvar, float new
 }
 
 bool USessionSettingsManager::HasAnyUnsavedOptionValueChanges() const {
-	for (const TTuple<FString, UFGUserSettingApplyType*> Options : SessionSettings) {
+	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
 		if (Options.Value->HasPendingChanges())
 			return true;
 	}
@@ -292,7 +292,7 @@ bool USessionSettingsManager::HasAnyPendingRestartOptionValue(const FString& cva
 }
 
 bool USessionSettingsManager::GetRequireSessionRestart() const {
-	for (const TTuple<FString, UFGUserSettingApplyType*> Options : SessionSettings) {
+	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
 		if (Options.Value->HasSessionRestartRequiredChanges())
 			return true;
 	}
@@ -300,7 +300,7 @@ bool USessionSettingsManager::GetRequireSessionRestart() const {
 }
 
 bool USessionSettingsManager::GetRequireGameRestart() const {
-	for (const TTuple<FString, UFGUserSettingApplyType*> Options : SessionSettings) {
+	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
 		if (Options.Value->HasGameRestartRequiredChanges())
 			return true;
 	}
@@ -320,7 +320,7 @@ void USessionSettingsManager::UnsubscribeToDynamicOptionUpdate(const FString& cv
 }
 
 void USessionSettingsManager::UnsubscribeToAllDynamicOptionUpdate(UObject* boundObject) {
-	for (const TTuple<FString, UFGUserSettingApplyType*> Options : SessionSettings) {
+	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
 		Options.Value->RemoveObjectAsSubscriber(boundObject);
 	}
 }
@@ -348,13 +348,13 @@ IFGOptionInterface* USessionSettingsManager::GetActiveOptionInterface() const
 }
 
 void USessionSettingsManager::SubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate) {
-	for (const TTuple<FString, UFGUserSettingApplyType*> Options : SessionSettings) {
+	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
 		Options.Value->AddSubscriber(onOptionUpdatedDelegate);
 	}
 }
 
 void USessionSettingsManager::UnsubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate) {
-	for (const TTuple<FString, UFGUserSettingApplyType*> Options : SessionSettings) {
+	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
 		Options.Value->RemoveSubscriber(onOptionUpdatedDelegate);
 	}
 }

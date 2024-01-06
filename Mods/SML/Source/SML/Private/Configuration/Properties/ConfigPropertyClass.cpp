@@ -3,6 +3,7 @@
 #include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
 #include "Configuration/RawFileFormat/RawFormatValueString.h"
 #include "Reflection/BlueprintReflectedObject.h"
+
 #define LOCTEXT_NAMESPACE "SML"
 
 UConfigPropertyClass::UConfigPropertyClass() {
@@ -69,3 +70,5 @@ FConfigVariableDescriptor UConfigPropertyClass::CreatePropertyDescriptor_Impleme
     UConfigGenerationContext* Context, const FString& OuterPath) const {
     return UConfigVariableLibrary::MakeConfigVariableClass(BaseClass);
 }
+
+#undef LOCTEXT_NAMESPACE

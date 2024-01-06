@@ -2,13 +2,14 @@
 #include "AlpakitSettings.h"
 
 struct FAlpakitProfileGameInfo {
-	FAlpakitProfileGameInfo(): bCopyToGame(false), StartGameType(EAlpakitStartGameType::NONE) {}
-	FAlpakitProfileGameInfo(bool bInCopyToGame, FString InGamePath, EAlpakitStartGameType InStartGameType):
-		bCopyToGame(bInCopyToGame), GamePath(InGamePath), StartGameType(InStartGameType) {}
+	FAlpakitProfileGameInfo() {}
+	FAlpakitProfileGameInfo(bool bInCopyToGame, FDirectoryPath InGamePath, bool bInStartGame, EAlpakitStartGameType InStartGameType):
+		bCopyToGame(bInCopyToGame), GamePath(InGamePath), bStartGame(bInStartGame), StartGameType(InStartGameType) {}
 	
-	bool bCopyToGame;
-	FString GamePath;
-	EAlpakitStartGameType StartGameType;
+	bool bCopyToGame{false};
+	FDirectoryPath GamePath;
+	bool bStartGame{false};
+	EAlpakitStartGameType StartGameType{};
 };
 
 struct FAlpakitProfile {
@@ -19,6 +20,7 @@ struct FAlpakitProfile {
 	TArray<FString> CookedPlatforms;
 	FString PluginName;
 	TMap<FString, FAlpakitProfileGameInfo> PlatformGameInfo;
+	bool bMergeArchive{false};
 
 	FString MakeUATCommandLine();
 private:

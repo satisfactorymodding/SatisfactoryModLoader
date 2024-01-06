@@ -71,7 +71,7 @@ bool FModWizardDefinition::IsMod() const
 
 FText FModWizardDefinition::GetInstructions() const
 {
-	return LOCTEXT("ChooseModTemplate", "Choose a template and then specify a name to create a new mod.");
+	return LOCTEXT("ChooseModTemplate", "Choose a template and then specify a name to create a new mod. Remember, your plugin name (mod reference) can no longer be changed after you release the mod! See the docs for more info.");
 }
 
 bool FModWizardDefinition::GetPluginIconPath(FString& OutIconPath) const

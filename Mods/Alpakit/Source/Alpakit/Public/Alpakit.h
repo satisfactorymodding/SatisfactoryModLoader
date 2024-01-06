@@ -16,7 +16,8 @@ public:
 
     TArray<TSharedRef<struct FModTemplateDescription>> GetModTemplates() const { return ModTemplates; }
 
-	void PackageMods(TArray<TSharedRef<IPlugin>> Mods);
+	void PackageModsDevelopment(TArray<TSharedRef<IPlugin>> Mods);
+	void PackageModsRelease(TArray<TSharedRef<IPlugin>> Mods);
 	void PackageMods(TArray<TSharedRef<FAlpakitProfile>> ProfilesToPackage);
     bool IsPackaging() const { return bIsPackaging; }
     

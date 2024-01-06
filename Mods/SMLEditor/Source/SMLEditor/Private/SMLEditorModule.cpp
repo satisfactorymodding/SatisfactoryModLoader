@@ -85,3 +85,4 @@ void FSMLEditorModule::ShutdownModule() {
 }
 
 IMPLEMENT_GAME_MODULE(FSMLEditorModule, SMLEditor);
+#undef LOCTEXT_NAMESPACE

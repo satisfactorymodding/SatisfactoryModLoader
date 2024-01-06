@@ -1,6 +1,7 @@
 #pragma once
 #include "AlpakitModEntryList.h"
 #include "AlpakitProfile.h"
+#include "ModTargetsConfig.h"
 #include "Interfaces/IPluginManager.h"
 
 /**
@@ -14,9 +15,6 @@ class SAlpakitModEntry : public SCompoundWidget {
 
     void OnEnableCheckboxChanged(ECheckBoxState NewState);
     bool IsPackageButtonEnabled() const;
-
-    void OnEditMod();
-    FReply OnEditModFinished(class UModMetadataObject* Metadata);
 
     FORCEINLINE bool IsSelected() {
         return Checkbox && Checkbox->IsChecked();
@@ -32,8 +30,15 @@ private:
     
     TSharedPtr<IPlugin> Mod;
     TSharedPtr<SAlpakitModEntryList> Owner;
-    TSharedPtr<class SCheckBox> Checkbox;
+    TSharedPtr<SCheckBox> Checkbox;
+    TSharedPtr<SButton> EditButton;
+    TSharedPtr<SButton> ConfigureReleaseButton;
     
     /** Dialog for editing mod properties */
     TSharedPtr<SWindow> PropertiesWindow;
+
+    FModTargetsConfig ModTargetsConfig;
+
+    void QueueStarted();
+    void QueueComplete();
 };

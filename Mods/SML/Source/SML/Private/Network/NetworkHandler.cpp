@@ -91,10 +91,9 @@ void UModNetworkHandler::InitializePatches() {
         }
     };
 
-    void* WorldNetworkNotifyInstance = static_cast<FNetworkNotify*>(WorldObjectInstance);
-    SUBSCRIBE_METHOD_VIRTUAL(UWorld::NotifyControlMessage, WorldNetworkNotifyInstance, MessageHandler);
+    SUBSCRIBE_METHOD_VIRTUAL(UWorld::NotifyControlMessage, WorldObjectInstance, MessageHandler);
 
-    UPendingNetGame* PendingNetGame = (UPendingNetGame*) FindObjectChecked<UClass>(NULL, TEXT("/Script/Engine.PendingNetGame"))->GetDefaultObject();
-    void* PendingGameNetworkNotifyInstance = static_cast<FNetworkNotify*>(PendingNetGame);
-    SUBSCRIBE_METHOD_VIRTUAL(UPendingNetGame::NotifyControlMessage, PendingGameNetworkNotifyInstance, MessageHandler);
+    // Same for UPendingNetGame
+    UPendingNetGame* PendingNetGame = static_cast<UPendingNetGame *>(FindObjectChecked<UClass>(NULL, TEXT("/Script/Engine.PendingNetGame"))->GetDefaultObject());
+    SUBSCRIBE_METHOD_VIRTUAL(UPendingNetGame::NotifyControlMessage, PendingNetGame, MessageHandler);
 }

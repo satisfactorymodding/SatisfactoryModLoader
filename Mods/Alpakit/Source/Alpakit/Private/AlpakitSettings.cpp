@@ -4,10 +4,17 @@ const TCHAR* LexToString(EAlpakitStartGameType StartGameType) {
 	switch (StartGameType) {
 	case EAlpakitStartGameType::STEAM:
 		return TEXT("Steam");
+	case EAlpakitStartGameType::STEAM_SERVER:
+		return TEXT("SteamDS");
 	case EAlpakitStartGameType::EPIC_EARLY_ACCESS:
 		return TEXT("EpicEA");
 	case EAlpakitStartGameType::EPIC_EXPERIMENTAL:
 		return TEXT("EpicExp");
+	case EAlpakitStartGameType::EPIC_SERVER:
+		return TEXT("EpicDS");
+	case EAlpakitStartGameType::EPIC_SERVER_EXPERIMENTAL:
+		return TEXT("EpicDSExp");
+	case EAlpakitStartGameType::CUSTOM:
 	default:
 		return TEXT("");
 	}
@@ -40,4 +47,12 @@ EBuildConfiguration UAlpakitSettings::GetBuildConfiguration() const
 	EBuildConfiguration ResultBuildConfiguration = EBuildConfiguration::Shipping;
 	// LexTryParseString( ResultBuildConfiguration, *BuildConfiguration );
 	return ResultBuildConfiguration;
+}
+
+const TMap<FString, FAlpakitTargetSettings> UAlpakitSettings::GetPlatformTargetSettings() const {
+	return {
+		        {TEXT("Windows"), WindowsGameTargetSettings},
+				{TEXT("WindowsServer"), WindowsServerTargetSettings},
+				{TEXT("LinuxServer"), LinuxServerTargetSettings},
+			};
 }

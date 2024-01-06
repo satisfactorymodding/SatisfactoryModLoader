@@ -408,3 +408,5 @@ bool FNativeCodeGenerator::IsValidCppIdentifierString(const FString& Identifier)
     }
     return true;
 }
+
+#undef LOCTEXT_NAMESPACE

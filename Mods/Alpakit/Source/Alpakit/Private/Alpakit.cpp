@@ -9,7 +9,9 @@
 #include "ISettingsSection.h"
 #include "LevelEditor.h"
 #include "IPluginBrowser.h"
+#include "UATHelper/Public/IUATHelperModule.h"
 #include "ModWizardDefinition.h"
+#include "ModTargetsConfig.h"
 #include "SAlpakitLogTabContent.h"
 
 static const FName AlpakitTabName("Alpakit");
@@ -124,7 +126,30 @@ void FAlpakitModule::ShutdownModule() {
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitLogTabName);
 }
 
-void FAlpakitModule::PackageMods(TArray<TSharedRef<IPlugin>> Mods) {
+TSharedRef<FAlpakitProfile> MakeDevelopmentProfileForMod(TSharedRef<IPlugin> Mod) {
+    TSharedRef<FAlpakitProfile> Profile = MakeShared<FAlpakitProfile>(Mod->GetName());
+
+    Profile->bBuild = Mod->GetDescriptor().Modules.Num() > 0;
+    
+    UAlpakitSettings* Settings = UAlpakitSettings::Get();
+
+    Profile->BuildConfiguration = Settings->GetBuildConfiguration();
+
+    for (auto [CookedPlatform, TargetSetting] : Settings->GetPlatformTargetSettings()) {
+        if (TargetSetting.bEnabled) {
+            Profile->CookedPlatforms.Add(CookedPlatform);
+            if (TargetSetting.bCopyModsToGame) {
+                FAlpakitProfileGameInfo& GameInfo = Profile->PlatformGameInfo.FindOrAdd(CookedPlatform);
+                GameInfo.bCopyToGame = true;
+                GameInfo.GamePath = TargetSetting.SatisfactoryGamePath;
+            }
+        }
+    }
+
+    return Profile;
+}
+
+void FAlpakitModule::PackageModsDevelopment(TArray<TSharedRef<IPlugin>> Mods) {
     if (Mods.Num() == 0) {
         return;
     }
@@ -134,28 +159,47 @@ void FAlpakitModule::PackageMods(TArray<TSharedRef<IPlugin>> Mods) {
     UAlpakitSettings* Settings = UAlpakitSettings::Get();
 	    
     for (TSharedRef<IPlugin> Mod : Mods) {
-        TSharedRef<FAlpakitProfile> Profile = MakeShared<FAlpakitProfile>(Mod->GetName());
-
-        Profile->bBuild = Mod->GetDescriptor().Modules.Num() > 0;
-
-        Profile->BuildConfiguration = Settings->GetBuildConfiguration();
-        // Profile->CookedPlatforms = Settings->CookPlatforms;
-        Profile->CookedPlatforms = {TEXT("Windows")}; // Only Windows is allowed for now
-
-        if (Settings->bCopyModsToGame) {
-            FAlpakitProfileGameInfo& GameInfo = Profile->PlatformGameInfo.FindOrAdd(TEXT("Windows"));
-            GameInfo.bCopyToGame = true;
-            GameInfo.GamePath = Settings->SatisfactoryGamePath.Path;
-        }
-        
-        ProfilesToPackage.Add(Profile);
+        ProfilesToPackage.Add(MakeDevelopmentProfileForMod(Mod));
     }
 
     TSharedRef<FAlpakitProfile> LastProfile = ProfilesToPackage.Last();
 
-    if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE) {
-        FAlpakitProfileGameInfo& GameInfo = LastProfile->PlatformGameInfo.FindOrAdd(TEXT("Windows"));
-        GameInfo.StartGameType = Settings->LaunchGameAfterPacking;
+    for (auto [CookedPlatform, TargetSetting] : Settings->GetPlatformTargetSettings()) {
+        if (TargetSetting.bEnabled) {
+            if (TargetSetting.bLaunchGame) {
+                FAlpakitProfileGameInfo& GameInfo = LastProfile->PlatformGameInfo.FindOrAdd(CookedPlatform);
+                GameInfo.bStartGame = true;
+                GameInfo.StartGameType = TargetSetting.LaunchGameType;
+            }
+        }
+    }
+
+    PackageMods(ProfilesToPackage);
+}
+
+TSharedRef<FAlpakitProfile> MakeReleaseProfileForMod(TSharedRef<IPlugin> Mod) {
+    TSharedRef<FAlpakitProfile> Profile = MakeShared<FAlpakitProfile>(Mod->GetName());
+
+    Profile->bBuild = Mod->GetDescriptor().Modules.Num() > 0;
+    Profile->BuildConfiguration = EBuildConfiguration::Shipping;
+
+    Profile->bMergeArchive = true;
+    
+    FModTargetsConfig TargetsConfig(Mod);
+    Profile->CookedPlatforms.Append(TargetsConfig.GetCookedPlatforms());
+
+    return Profile;
+}
+
+void FAlpakitModule::PackageModsRelease(TArray<TSharedRef<IPlugin>> Mods) {
+    if (Mods.Num() == 0) {
+        return;
+    }
+    
+    TArray<TSharedRef<FAlpakitProfile>> ProfilesToPackage;
+	    
+    for (TSharedRef<IPlugin> Mod : Mods) {
+        ProfilesToPackage.Add(MakeReleaseProfileForMod(Mod));
     }
 
     PackageMods(ProfilesToPackage);

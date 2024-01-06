@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include <type_traits>
 
-DECLARE_LOG_CATEGORY_EXTERN(LogNativeHookManager, Log, Log);
+SML_API DECLARE_LOG_CATEGORY_EXTERN(LogNativeHookManager, Log, Log);
 
 //NOTE: This struct does not actually fully represent member function pointer even on MSVC,
 //because it does not contain additional information for handling unknown inheritance
@@ -16,33 +16,76 @@ struct FMemberFunctionPointer {
 	uint32 VtableDisplacement;
 };
 
-template<typename T>
-struct TMemberFunctionPointer {
-	T MemberFunctionPointer;
+struct FLinuxMemberFunctionPointer {
+	union {
+		void *FunctionAddress; // For non-virtual members
+		ptrdiff_t VtableDisplacementPlusOne; // For virtual members
+		intptr_t IntPtr; // For determining whether this is virtual or not.
+	};
+	ptrdiff_t ThisAdjustment;
 };
 
 template<typename T>
-FORCEINLINE FMemberFunctionPointer ConvertFunctionPointer(const TMemberFunctionPointer<T>* SourcePointer) {
+FORCEINLINE FMemberFunctionPointer ConvertFunctionPointer(const T& SourcePointer) {
 	const SIZE_T FunctionPointerSize = sizeof(SourcePointer);
 	
+#ifdef _WIN64
 	//We only support non-virtual inheritance, so assert on virtual inheritance and unknown inheritance cases
 	//Note that it might also mean that we are dealing with "proper" compiler with static function pointer size
 	//(e.g anything different from Intel C++ and MSVC)
 	checkf(FunctionPointerSize == 8 || FunctionPointerSize == 16, TEXT("Unsupported function pointer size received: \
 		Hooking can only support non-virtual multiple inheritence. \
-		This might be also caused by unsupported compiler. Currently, only MSVC and Intel C++ are supported\
+		This might be also caused by unsupported compiler. Currently, only MSVC and Intel C++ are supported on Windows. \
 		Function pointer size: %d bytes."), FunctionPointerSize);
 
-	const FMemberFunctionPointer* RawFunctionPointer = (const FMemberFunctionPointer*) SourcePointer;
+	const FMemberFunctionPointer* RawFunctionPointer = (const FMemberFunctionPointer*)&SourcePointer;
+#else
+	checkf(FunctionPointerSize == sizeof(FLinuxMemberFunctionPointer), TEXT("Unsupported function pointer size received: %d bytes, expected %d bytes."), FunctionPointerSize, sizeof(FLinuxMemberFunctionPointer));
+	const FLinuxMemberFunctionPointer* RawFunctionPointer = (const FLinuxMemberFunctionPointer*)&SourcePointer;
+#endif
+
+	UE_LOG(LogNativeHookManager, Display, TEXT("Size of member pointer is %d"), FunctionPointerSize);
 
 	//TODO we  cannot really make sure there is no virtual inheritance involved, so we just assume it for now
 	FMemberFunctionPointer ResultPointer{};
+#ifdef _WIN64
 	ResultPointer.FunctionAddress = RawFunctionPointer->FunctionAddress;
 	if (FunctionPointerSize >= 16) {
 		ResultPointer.ThisAdjustment = RawFunctionPointer->ThisAdjustment;
+		// The vtable displacement here is only valid if the method is NOT virtual. If the method IS virtual,
+		// the vtable offset will be found in the thunk. See FNativeHookManagerInternal::RegisterHookFunction()
 		ResultPointer.VtableDisplacement = RawFunctionPointer->VtableDisplacement;
+	} else {
+		// The function pointer contains no information about a `this` adjustment or the vtable displacement.
+		// We can conclude that there is no `this` adjustment, but the vtable index MUST be calculated from
+		// the thunk at FunctionAddress. We set an intentionally bad value here to make that easier to identify.
+		ResultPointer.ThisAdjustment = 0;
+		ResultPointer.VtableDisplacement = 0xDEADBEEF;
 	}
-	
+#else
+	// On Linux, the first word is either the function pointer itself or the vtable offset in bytes depending on
+	// whether the function is virtual or not. I don't think we can depend on the usage of this function to
+	// determine whether the method is virtual or not. Instead, I assert that the vtable offset will be word-aligned,
+	// as will any function pointer. However, the first word on Linux is the vtable offset PLUS ONE, meaning the
+	// bottom 3 bits must be 0b001 for a virtual function and 0b000 for a direct pointer.
+	if ((RawFunctionPointer->IntPtr & 0x7) == 1) {
+		//UE_LOG(LogNativeHookManager, Display, TEXT("Member pointer looks like a Vtable offset: 0x%08x."), RawFunctionPointer->IntPtr);
+
+		// We mark this method as virtual by leaving the original function pointer null. This works in concert with
+		// RegisterHookFunction().
+		ResultPointer.VtableDisplacement = RawFunctionPointer->VtableDisplacementPlusOne - 1;
+	} else if ((RawFunctionPointer->IntPtr & 0x7) == 0) {
+		//UE_LOG(LogNativeHookManager, Display, TEXT("Member pointer looks like a function pointer: 0x%08x"), RawFunctionPointer->IntPtr);
+
+		ResultPointer.FunctionAddress = RawFunctionPointer->FunctionAddress;
+	} else {
+		UE_LOG(LogNativeHookManager, Fatal, TEXT("Unwilling to convert unaligned method pointer 0x%08x"), RawFunctionPointer->IntPtr);
+	}
+
+	// The offset to 'this' always has the same definition, whether this is a virtual method or not.
+	ResultPointer.ThisAdjustment = RawFunctionPointer->ThisAdjustment;
+#endif
+
 	return ResultPointer;
 }
 
@@ -50,8 +93,13 @@ class SML_API FNativeHookManagerInternal {
 public:
 	static void* GetHandlerListInternal( const void* RealFunctionAddress);
 	static void SetHandlerListInstanceInternal(void* RealFunctionAddress, void* HandlerList);
-	static void* RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction);
+	static void* RegisterHookFunction(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance, void*
+	                                  HookFunctionPointer, void** OutTrampolineFunction);
 	static void UnregisterHookFunction( const FString& DebugSymbolName, const void* RealFunctionAddress );
+
+	// A call to this function signature is inlined in mods
+	// Keep it for backwards compatibility
+	static void* RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction);
 };
 
 template <typename T, typename E>
@@ -261,7 +309,7 @@ public:
 		{
 			bHookInitialized = true;
 			void* HookFunctionPointer = static_cast<void*>( GetApplyCall() );
-			RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction( DebugSymbolName, Callable, NULL, 0, HookFunctionPointer, (void**) &FunctionPtr );
+			RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction( DebugSymbolName, {Callable, 0, 0}, NULL, HookFunctionPointer, (void**) &FunctionPtr );
 			THandlerLists<Handler, HandlerAfter>* HandlerLists = CreateHandlerLists<Handler, HandlerAfter>( RealFunctionAddress );
 
 			HandlersBefore = &HandlerLists->HandlersBefore;
@@ -429,14 +477,11 @@ public:
 		{
 			bHookInitialized = true;
 			void* HookFunctionPointer = GetApplyCall();
-			TMemberFunctionPointer<TCallable> RawFunctionPointer{};
-			RawFunctionPointer.MemberFunctionPointer = Callable;
-			const FMemberFunctionPointer MemberFunctionPointer = ConvertFunctionPointer( &RawFunctionPointer );
+			const FMemberFunctionPointer MemberFunctionPointer = ConvertFunctionPointer( Callable );
 			
 			RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction( DebugSymbolName,
-				MemberFunctionPointer.FunctionAddress,
+				MemberFunctionPointer,
 				SampleObjectInstance,
-				MemberFunctionPointer.ThisAdjustment,
 				HookFunctionPointer, (void**) &FunctionPtr );
 			
 			THandlerLists<Handler, HandlerAfter>* HandlerLists = CreateHandlerLists<Handler, HandlerAfter>( RealFunctionAddress );

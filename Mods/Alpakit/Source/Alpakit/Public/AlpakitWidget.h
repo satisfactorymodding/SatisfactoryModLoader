@@ -13,4 +13,12 @@ public:
 private:
     TSharedPtr<IDetailsView> DetailsView;
     TSharedPtr<SAlpakitModEntryList> ModList;
+    TSharedPtr<STextBlock> QueueText;
+    TSharedPtr<SButton> AlpakitAllDevButton;
+    TSharedPtr<SButton> AlpakitAllReleaseButton;
+
+    FReply PackageAllMods(bool ReleaseBuild);
+	FReply CreateMod();
+
+	bool IsPackageButtonEnabled() const;
 };

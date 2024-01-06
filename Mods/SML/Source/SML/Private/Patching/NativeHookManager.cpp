@@ -40,10 +40,13 @@ void LogDebugAssemblyAnalyzer(const ANSICHAR* Message) {
 	UE_LOG(LogNativeHookManager, Display, TEXT("AssemblyAnalyzer Debug: %hs"), Message);
 }
 
+// Installs a hook a the original function. Returns true if a new hook is installed or false on error or
+// a hook already exists and is reused.
 bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, void* HookFunctionPointer, void** OutTrampolineFunction) {
 	if (InstalledHookMap.Contains(OriginalFunctionPointer)) {
 		//Hook already installed, set trampoline function and return
 		*OutTrampolineFunction = InstalledHookMap.FindChecked(OriginalFunctionPointer);
+		UE_LOG(LogNativeHookManager, Display, TEXT("Hook already installed"));
 		return false;
 	}
 	funchook* funchook = funchook_create();
@@ -52,6 +55,9 @@ bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunction
 		return false;
 	}
 	*OutTrampolineFunction = OriginalFunctionPointer;
+
+	UE_LOG(LogNativeHookManager, Display, TEXT("Overriding %s at %p to %p"), *DebugSymbolName, OriginalFunctionPointer, HookFunctionPointer);
+
 	CHECK_FUNCHOOK_ERR(funchook_prepare(funchook, OutTrampolineFunction, HookFunctionPointer));
 	CHECK_FUNCHOOK_ERR(funchook_install(funchook, 0));
 	InstalledHookMap.Add(OriginalFunctionPointer, *OutTrampolineFunction);
@@ -59,33 +65,62 @@ bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunction
 	return true;
 }
 
+// This method is provided for backwards-compatibility
 SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction) {
-	SetDebugLoggingHook(&LogDebugAssemblyAnalyzer);
-	FunctionInfo FunctionInfo = DiscoverFunction((uint8*) OriginalFunctionPointer);
-	checkf(FunctionInfo.bIsValid, TEXT("Attempt to hook invalid function %s: Provided code pointer %p is not valid"), *DebugSymbolName, OriginalFunctionPointer);
+	// Previous SML versions only supported Windows mods, which have no Vtable adjustment information
+	// in the member function pointer, so we set that value to zero.
+	FMemberFunctionPointer MemberFunctionPointer = {OriginalFunctionPointer, static_cast<uint32>(ThisAdjustment), 0};
+	return FNativeHookManagerInternal::RegisterHookFunction(DebugSymbolName, MemberFunctionPointer, SampleObjectInstance, HookFunctionPointer, OutTrampolineFunction);
+}
 
-	if (FunctionInfo.bIsVirtualFunction) {
+SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance, void* HookFunctionPointer, void** OutTrampolineFunction) {
+	SetDebugLoggingHook(&LogDebugAssemblyAnalyzer);
+
+#ifdef _WIN64
+	// On Windows, the OriginalFunctionPointer is a valid function pointer. We can simply check its info here.
+	UE_LOG(LogNativeHookManager, Display, TEXT("Attempting to discover %s at %p"), *DebugSymbolName, MemberFunctionPointer.FunctionAddress);
+	FunctionInfo FunctionInfo = DiscoverFunction((uint8 *)MemberFunctionPointer.FunctionAddress);
+	checkf(FunctionInfo.bIsValid, TEXT("Attempt to hook invalid function %s: Provided code pointer %p is not valid"), *DebugSymbolName, MemberFunctionPointer.FunctionAddress);
+
+	// We assign the vtable offset from the FunctionInfo struct whether we found a vtable offset or not. If the
+	// method isn't virtual, this value isn't used.
+	MemberFunctionPointer.VtableDisplacement = FunctionInfo.VirtualTableFunctionOffset;
+	bool isVirtual = FunctionInfo.bIsVirtualFunction;
+#else
+	// On Linux, MemberFunctionPointer.FunctionAddress will not be a valid pointer if the method is virtual. See ConvertFunctionPointer
+	// for more info.
+	FunctionInfo FunctionInfo;
+
+	bool isVirtual = (MemberFunctionPointer.FunctionAddress == nullptr);
+
+	if (!isVirtual) {
+		FunctionInfo = DiscoverFunction((uint8*) MemberFunctionPointer.FunctionAddress);
+	}
+#endif
+
+	if (isVirtual) {
+		// The patched call is virtual. Calculate the actual address of the function being called.
 		checkf(SampleObjectInstance, TEXT("Attempt to hook virtual function override without providing object instance for implementation resolution"));
-		UE_LOG(LogNativeHookManager, Display, TEXT("Attempting to resolve virtual function %s. This adjustment: %d, virtual function table offset: %d"), *DebugSymbolName, ThisAdjustment, FunctionInfo.VirtualTableFunctionOffset);
+		UE_LOG(LogNativeHookManager, Display, TEXT("Attempting to resolve virtual function %s. This adjustment: 0x%x, virtual function table offset: 0x%x"), *DebugSymbolName, MemberFunctionPointer.ThisAdjustment, MemberFunctionPointer.VtableDisplacement);
 		
 		//Target Function Address = (this + ThisAdjustment)->vftable[VirtualFunctionOffset]
-		void* AdjustedThisPointer = ((uint8*) SampleObjectInstance) + ThisAdjustment;
+		void* AdjustedThisPointer = ((uint8*) SampleObjectInstance) + MemberFunctionPointer.ThisAdjustment;
 		uint8** VirtualFunctionTableBase = *((uint8***) AdjustedThisPointer);
 		//Offset is in bytes from the start of the virtual table, we need to convert it to pointer array index
-		uint8* FunctionImplementationPointer = VirtualFunctionTableBase[FunctionInfo.VirtualTableFunctionOffset / 8];
+		uint8* FunctionImplementationPointer = VirtualFunctionTableBase[MemberFunctionPointer.VtableDisplacement / 8];
 
 		FunctionInfo = DiscoverFunction(FunctionImplementationPointer);
 
 		//Perform basic checking to make sure calculation was correct, or at least seems to be so
-		checkf(FunctionInfo.bIsValid, TEXT("Failed to resolve virtual function for thunk %s at %p, reuslting address contains no executable code"), *DebugSymbolName, OriginalFunctionPointer);
-		checkf(!FunctionInfo.bIsVirtualFunction, TEXT("Failed to resolve virtual function for thunk %s at %p, resulting function still points to a thunk"), *DebugSymbolName, OriginalFunctionPointer);
+		checkf(FunctionInfo.bIsValid, TEXT("Failed to resolve virtual function for thunk %s at %p, resulting address contains no executable code"), *DebugSymbolName, MemberFunctionPointer.FunctionAddress);
+		checkf(!FunctionInfo.bIsVirtualFunction, TEXT("Failed to resolve virtual function for thunk %s at %p, resulting function still points to a thunk"), *DebugSymbolName, MemberFunctionPointer.FunctionAddress);
 
-		UE_LOG(LogNativeHookManager, Display, TEXT("Successfully resolved virtual function thunk %s at %p to function implementation at %p"), *DebugSymbolName, OriginalFunctionPointer, FunctionInfo.RealFunctionAddress);
+		UE_LOG(LogNativeHookManager, Display, TEXT("Successfully resolved virtual function thunk %s at %p to function implementation at %p"), *DebugSymbolName, MemberFunctionPointer.FunctionAddress, FunctionInfo.RealFunctionAddress);
 	}
 
 	//Log debugging information just in case
 	void* ResolvedHookingFunctionPointer = FunctionInfo.RealFunctionAddress;
-	UE_LOG(LogNativeHookManager, Display, TEXT("Hooking function %s: Provided address: %p, resolved address: %p"), *DebugSymbolName, OriginalFunctionPointer, ResolvedHookingFunctionPointer);
+	UE_LOG(LogNativeHookManager, Display, TEXT("Hooking function %s: Provided address: %p, resolved address: %p"), *DebugSymbolName, MemberFunctionPointer.FunctionAddress, ResolvedHookingFunctionPointer);
 	
 	HookStandardFunction(DebugSymbolName, ResolvedHookingFunctionPointer, HookFunctionPointer, OutTrampolineFunction);
 	UE_LOG(LogNativeHookManager, Display, TEXT("Successfully hooked function %s at %p"), *DebugSymbolName, ResolvedHookingFunctionPointer);

@@ -6,6 +6,7 @@
  */
 class SAlpakitModEntryList : public SCompoundWidget {
 	SLATE_BEGIN_ARGS(SAlpakitModEntryList) {}
+    SLATE_NAMED_SLOT(FArguments, BarSlot)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& Args);
@@ -31,19 +32,18 @@ class SAlpakitModEntryList : public SCompoundWidget {
 	void SetShowEngine(bool bInShowEngine);
 	void SetShowProject(bool bInShowProject);
 
+	TArray<TSharedRef<IPlugin>> GetFilteredMods() const { return FilteredMods; }
+
+	void UpdateAllCheckbox();
+
 	void OnNewPluginCreated(IPlugin& Plugin);
+	void SetAllMods(bool Checked);
 private:
 	TSharedPtr<SListView<TSharedRef<IPlugin>>> ModList;
+	TSharedPtr<SCheckBox> AllModsCheckbox;
 	TArray<TSharedRef<IPlugin>> Mods;
 	TArray<TSharedRef<IPlugin>> FilteredMods;
 	FString LastFilter;
 	bool bShowEngine = false;
 	bool bShowProject = false;
-
-	FReply PackageAllMods();
-	FReply CheckAllMods();
-	FReply UncheckAllMods();
-	FReply CreateMod();
-
-	bool IsPackageButtonEnabled() const;
 };

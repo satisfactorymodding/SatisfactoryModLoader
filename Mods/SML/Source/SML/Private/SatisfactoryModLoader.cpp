@@ -11,6 +11,8 @@
 #include "Player/PlayerCheatManagerHandler.h"
 #include "Util/DebuggerHelper.h"
 #include "funchook.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 
 #ifndef FACTORYGAME_VERSION
 #define FACTORYGAME_VERSION 0

@@ -274,5 +274,13 @@
 		"Win64",
 		"Linux",
 		"Windows"
-	]
+	],
+	"PreBuildSteps": {
+		"Win64": [
+			"powershell -Command \"$file = '$(ProjectDir)\\Plugins\\Wwise\\Source\\AkAudio\\Classes\\OcclusionObstructionService\\AkOcclusionObstructionService.h'; if (Test-Path $file) { if (!(Select-String -Path $file -Pattern 'class AKAUDIO_API AkOcclusionObstructionService' -SimpleMatch -Quiet)) { (Get-Content $file) -replace 'class AkOcclusionObstructionService', 'class AKAUDIO_API AkOcclusionObstructionService' | Out-File -encoding UTF8 $file } }\""
+		],
+		"Linux": [
+			"if ! grep -q 'class AKAUDIO_API AkOcclusionObstructionService' $(ProjectDir)/Plugins/Wwise/Source/AkAudio/Classes/OcclusionObstructionService/AkOcclusionObstructionService.h; then sed -i 's/class AkOcclusionObstructionService/class AKAUDIO_API AkOcclusionObstructionService/' $(ProjectDir)/Plugins/Wwise/Source/AkAudio/Classes/OcclusionObstructionService/AkOcclusionObstructionService.h; fi"
+		]
+	}
 }
