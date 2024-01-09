@@ -146,6 +146,7 @@ FVariant USessionSettingsManager::StringToVariant(const FString& String) {
 UFGUserSettingApplyType* USessionSettingsManager::FindSessionSetting(const FString& strId) const {
 	UFGUserSettingApplyType* const* SessionSetting = SessionSettings.Find(strId);
 	if (!SessionSetting) {
+		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Could not find session setting '%s'"), *strId);
 		return nullptr;
 	}
 	return *SessionSetting;
