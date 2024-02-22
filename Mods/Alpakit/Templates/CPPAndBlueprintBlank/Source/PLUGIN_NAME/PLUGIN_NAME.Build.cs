@@ -40,8 +40,7 @@ public class PLUGIN_NAME : ModuleRules
 			//"TemplateSequence",
 			"NetCore",
 			"GameplayTags",
-			"Json", "JsonUtilities",
-			"AssetRegistry"
+			"Json", "JsonUtilities"
 		});
 
 		// FactoryGame plugins
