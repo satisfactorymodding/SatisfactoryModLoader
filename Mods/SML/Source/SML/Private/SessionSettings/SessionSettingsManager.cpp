@@ -146,6 +146,7 @@ FVariant USessionSettingsManager::StringToVariant(const FString& String) {
 UFGUserSettingApplyType* USessionSettingsManager::FindSessionSetting(const FString& strId) const {
 	UFGUserSettingApplyType* const* SessionSetting = SessionSettings.Find(strId);
 	if (!SessionSetting) {
+		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Could not find session setting '%s'"), *strId);
 		return nullptr;
 	}
 	return *SessionSetting;
@@ -232,11 +233,11 @@ void USessionSettingsManager::ResetAllSettingsInCategory(TSubclassOf<UFGUserSett
 }
 
 bool USessionSettingsManager::GetBoolOptionValue(const FString& cvar) const {
-	return GetOptionValue(cvar, FVariant(false)).GetValue<bool>();
+	return GetOptionValue_Typed<bool>(cvar, false);
 }
 
 bool USessionSettingsManager::GetBoolUIDisplayValue(const FString& cvar) const {
-	return GetOptionDisplayValue(cvar, FVariant(false)).GetValue<bool>();
+	return GetOptionDisplayValue_Typed<bool>(cvar, false);
 }
 
 void USessionSettingsManager::SetBoolOptionValue(const FString& cvar, bool value) {
@@ -244,11 +245,11 @@ void USessionSettingsManager::SetBoolOptionValue(const FString& cvar, bool value
 }
 
 int32 USessionSettingsManager::GetIntOptionValue(const FString& cvar) const {
-	return GetOptionValue(cvar, FVariant(0)).GetValue<int32>();
+	return GetOptionValue_Typed<int32>(cvar, 0);
 }
 
 int32 USessionSettingsManager::GetIntUIDisplayValue(const FString& cvar) const {
-	return GetOptionDisplayValue(cvar, FVariant(0)).GetValue<int32>();
+	return GetOptionDisplayValue_Typed<int32>(cvar, 0);
 }
 
 void USessionSettingsManager::SetIntOptionValue(const FString& cvar, int32 newValue) {
@@ -256,11 +257,11 @@ void USessionSettingsManager::SetIntOptionValue(const FString& cvar, int32 newVa
 }
 
 float USessionSettingsManager::GetFloatOptionValue(const FString& cvar) const {
-	return GetOptionValue(cvar, FVariant(0)).GetValue<float>();
+	return GetOptionValue_Typed<float>(cvar, 0);
 }
 
 float USessionSettingsManager::GetFloatUIDisplayValue(const FString& cvar) const {
-	return GetOptionDisplayValue(cvar, FVariant(0)).GetValue<float>();
+	return GetOptionDisplayValue_Typed<float>(cvar, 0);
 }
 
 void USessionSettingsManager::SetFloatOptionValue(const FString& cvar, float newValue) {
