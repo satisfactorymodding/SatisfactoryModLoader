@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
+using System.IO;
+using System.Text.RegularExpressions;
 using AutomationTool;
+using Microsoft.Extensions.Logging;
 
 namespace Alpakit.Automation;
 
@@ -38,13 +41,30 @@ public class LaunchGame
         }
     }
 
-    public static void Launch(LaunchType Type, string? CustomLaunch)
+    public static void Launch(LaunchType Type, string? CustomLaunch, ILogger logger)
     {
         if (Type == LaunchType.Custom)
         {
             if (CustomLaunch == null)
                 throw new AutomationException("Custom Launch Type requested, but no program to launch was specified");
-            Process.Start(CustomLaunch);
+
+            ProcessStartInfo processInfo = new()
+            {
+                FileName = Path.GetFullPath(CustomLaunch),
+                WorkingDirectory = Path.GetDirectoryName(CustomLaunch),
+                UseShellExecute = true
+            };
+
+            // Use regular expression to extract executable path and arguments
+            // The path could have spaces in the file name portion so separating the arguments out isn't trivial
+            Match match = new Regex(@"^\""?(.*?)\""?\s(.*)$").Match(CustomLaunch);
+            if (match.Success)
+            {
+                processInfo.FileName = match.Groups[1].Value; // Path.GetFullPath includes the arguments too, split those off
+                processInfo.Arguments = match.Groups[2].Value;
+            }
+            logger.LogInformation($"Custom Launch starting process: `{processInfo.FileName}` in directory `{processInfo.WorkingDirectory}` with arguments `{processInfo.Arguments}`");
+            Process.Start(processInfo);
             return;
         }
 

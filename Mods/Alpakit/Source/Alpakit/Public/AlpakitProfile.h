@@ -10,6 +10,7 @@ struct FAlpakitProfileGameInfo {
 	FDirectoryPath GamePath;
 	bool bStartGame{false};
 	EAlpakitStartGameType StartGameType{};
+	FString CustomLaunchPath;
 };
 
 struct FAlpakitProfile {

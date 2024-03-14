@@ -7,7 +7,6 @@ using EpicGames.Core;
 using UnrealBuildTool;
 using AutomationScripts;
 using Microsoft.Extensions.Logging;
-using UnrealBuildBase;
 
 namespace Alpakit.Automation;
 
@@ -50,7 +49,7 @@ public class PackagePlugin : BuildCookRun
 		{
 			var copyToGameDirectory = ParseOptionalDirectoryReferenceParam($"CopyToGameDirectory_{SC.FinalCookPlatform}");
 			var launchGameType = ParseOptionalEnumParam<LaunchGame.LaunchType>($"LaunchGame_{SC.FinalCookPlatform}");
-			var customLaunch = ParseOptionalStringParam($"CustomLaunch_{SC.FinalCookPlatform}");
+			var customLaunch = ParseOptionalStringParam($"CustomLaunchPath_{SC.FinalCookPlatform}");
 
 			if (copyToGameDirectory != null)
 			{
@@ -60,7 +59,7 @@ public class PackagePlugin : BuildCookRun
 			}
 
 			if (launchGameType != null)
-				LaunchGame.Launch(launchGameType.Value, customLaunch);
+				LaunchGame.Launch(launchGameType.Value, customLaunch, Logger);
 		}
 	}
 
