@@ -140,7 +140,6 @@ TSharedRef<FAlpakitProfile> MakeDevelopmentProfileForMod(TSharedRef<IPlugin> Mod
             Profile->CookedPlatforms.Add(CookedPlatform);
             FAlpakitProfileGameInfo& GameInfo = Profile->PlatformGameInfo.FindOrAdd(CookedPlatform);
             GameInfo.CustomLaunchPath = TargetSetting.CustomLaunchPath;
-            UE_LOG(LogAlpakit, Log, TEXT("MakeDevelopmentProfileForMod CustomLaunchPath %s"), *GameInfo.CustomLaunchPath)
             if (TargetSetting.bCopyModsToGame) {
                 GameInfo.bCopyToGame = true;
                 GameInfo.GamePath = TargetSetting.SatisfactoryGamePath;

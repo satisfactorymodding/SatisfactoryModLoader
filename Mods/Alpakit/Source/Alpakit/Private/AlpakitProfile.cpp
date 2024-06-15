@@ -101,6 +101,5 @@ FString FAlpakitProfile::MakeUATCommandLine() {
 		}
 	}
 
-	UE_LOG(LogAlpakit, Display, TEXT("Final UAT Command Line: %s"), *CommandLine);
 	return CommandLine;
 }
