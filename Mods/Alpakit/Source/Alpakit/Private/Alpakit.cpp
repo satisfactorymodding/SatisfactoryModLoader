@@ -138,9 +138,8 @@ TSharedRef<FAlpakitProfile> MakeDevelopmentProfileForMod(TSharedRef<IPlugin> Mod
     for (auto& [CookedPlatform, TargetSetting] : Settings->GetPlatformTargetSettings()) {
         if (TargetSetting.bEnabled) {
             Profile->CookedPlatforms.Add(CookedPlatform);
-            FAlpakitProfileGameInfo& GameInfo = Profile->PlatformGameInfo.FindOrAdd(CookedPlatform);
-            GameInfo.CustomLaunchPath = TargetSetting.CustomLaunchPath;
             if (TargetSetting.bCopyModsToGame) {
+                FAlpakitProfileGameInfo& GameInfo = Profile->PlatformGameInfo.FindOrAdd(CookedPlatform);
                 GameInfo.bCopyToGame = true;
                 GameInfo.GamePath = TargetSetting.SatisfactoryGamePath;
             }
@@ -171,6 +170,7 @@ void FAlpakitModule::PackageModsDevelopment(TArray<TSharedRef<IPlugin>> Mods) {
                 FAlpakitProfileGameInfo& GameInfo = LastProfile->PlatformGameInfo.FindOrAdd(CookedPlatform);
                 GameInfo.bStartGame = true;
                 GameInfo.StartGameType = TargetSetting.LaunchGameType;
+                GameInfo.CustomLaunchPath = TargetSetting.CustomLaunchPath;
             }
         }
     }
