@@ -49,7 +49,8 @@ public class PackagePlugin : BuildCookRun
 		{
 			var copyToGameDirectory = ParseOptionalDirectoryReferenceParam($"CopyToGameDirectory_{SC.FinalCookPlatform}");
 			var launchGameType = ParseOptionalEnumParam<LaunchGame.LaunchType>($"LaunchGame_{SC.FinalCookPlatform}");
-			var customLaunch = ParseOptionalStringParam($"CustomLaunchPath_{SC.FinalCookPlatform}");
+			var customLaunchPath = ParseOptionalStringParam($"CustomLaunchPath_{SC.FinalCookPlatform}");
+			var customLaunchArgs = ParseOptionalStringParam($"CustomLaunchArgs_{SC.FinalCookPlatform}");
 
 			if (copyToGameDirectory != null)
 			{
@@ -59,7 +60,7 @@ public class PackagePlugin : BuildCookRun
 			}
 
 			if (launchGameType != null)
-				LaunchGame.Launch(launchGameType.Value, customLaunch, Logger);
+				LaunchGame.Launch(launchGameType.Value, customLaunchPath, customLaunchArgs, Logger);
 		}
 	}
 

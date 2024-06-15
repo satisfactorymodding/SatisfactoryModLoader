@@ -38,6 +38,9 @@ public:
 
     UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = "LaunchGameType == EAlpakitStartGameType::CUSTOM", EditConditionHides, ToolTip = "When 'Custom' is selected, the Unreal Automation tool will execute this after a successful pack.\nCheck the 'Testing' page on the modding docs for example scripts to call with this feature.\n\nExample value:\nC:\\Git\\SF_ModProject\\RobWorkingDir\\Auto_Exp_LoadLatest.bat"))
     FString CustomLaunchPath;
+
+    UPROPERTY(EditAnywhere, config, Category = Config, meta = ( EditCondition = "LaunchGameType == EAlpakitStartGameType::CUSTOM", EditConditionHides, ToolTip = "When 'Custom' is selected, these arguments will be used when executing the above after a successful pack.\nCheck the 'Testing' page on the modding docs for example scripts to call with this feature."))
+    FString CustomLaunchArgs;
 };
 
 ALPAKIT_API const TCHAR* LexToString(EAlpakitStartGameType StartGameType);

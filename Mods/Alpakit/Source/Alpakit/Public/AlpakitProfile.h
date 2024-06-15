@@ -11,6 +11,7 @@ struct FAlpakitProfileGameInfo {
 	bool bStartGame{false};
 	EAlpakitStartGameType StartGameType{};
 	FString CustomLaunchPath;
+	FString CustomLaunchArgs;
 };
 
 struct FAlpakitProfile {

@@ -171,6 +171,7 @@ void FAlpakitModule::PackageModsDevelopment(TArray<TSharedRef<IPlugin>> Mods) {
                 GameInfo.bStartGame = true;
                 GameInfo.StartGameType = TargetSetting.LaunchGameType;
                 GameInfo.CustomLaunchPath = TargetSetting.CustomLaunchPath;
+                GameInfo.CustomLaunchArgs = TargetSetting.CustomLaunchArgs;
             }
         }
     }

@@ -98,6 +98,7 @@ FString FAlpakitProfile::MakeUATCommandLine() {
 		}
 		if (GameInfo.StartGameType == EAlpakitStartGameType::CUSTOM) {
 			CommandLine += FString::Printf(TEXT(" -CustomLaunchPath_%s=\"%s\""), *Platform, *GameInfo.CustomLaunchPath);
+			CommandLine += FString::Printf(TEXT(" -CustomLaunchArgs_%s=\"%s\""), *Platform, *GameInfo.CustomLaunchArgs.ReplaceQuotesWithEscapedQuotes());
 		}
 	}
 
