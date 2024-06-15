@@ -1,13 +1,16 @@
 #include "AlpakitModEntryList.h"
 #include "Alpakit.h"
+#include "AlpakitEditModDialog.h"
 #include "AlpakitModEntry.h"
 #include "AlpakitSettings.h"
+#include "AlpakitStyle.h"
 #include "Interfaces/IPluginManager.h"
 #include "Slate.h"
 
 #define LOCTEXT_NAMESPACE "AlpakitModListEntry"
 
 void SAlpakitModEntryList::Construct(const FArguments& Args) {
+    
     ChildSlot[
     SNew(SVerticalBox)
         +SVerticalBox::Slot().AutoHeight().Padding(0, 5)[
@@ -26,17 +29,13 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                             SetAllMods(InState == ECheckBoxState::Checked);
                         })
                     ]
-                    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[
+                    +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center).Padding(0, 0, 10, 0)[
                         SNew(SEditableTextBox)
                         .ToolTipText(LOCTEXT("SearchHint_Tooltip", "Filter the list based on the text entered here. Friendly name and Mod Reference supported"))
                         .HintText(LOCTEXT("SearchHint", "Search Plugin..."))
                         .OnTextChanged_Lambda([this](const FText& InText) {
                             this->Filter(InText.ToString());
                         })
-                    ]
-                    +SHorizontalBox::Slot().AutoWidth()[
-                        SNew(SSpacer)
-                        .Size(FVector2D(20.0f, 10.0f))
                     ]
                     +SHorizontalBox::Slot().AutoWidth()[
                         SNew(SCheckBox)
@@ -66,36 +65,9 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                     ]
                 ]
             ]
-            
-            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Fill).Padding(5,0)[
-                SNew(SSeparator)
-                .Orientation(Orient_Vertical)
-            ]
-
-            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(5, 0, 15, 0)[
-                SNew(SVerticalBox)
-                    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0, 0, 0, 5)[
-                        SNew(STextBlock)
-                        .ToolTipText(LOCTEXT("ReleaseTargets_Tooltip", "Select what target platforms this mod supports, which controls what will be built by the 'Alpakit Release' button. The 'Alpakit Dev' and Alpakit! for one mod buttons ignore this and use the Dev Packaging Settings instead."))
-                        .Text(LOCTEXT("ReleaseTargets", "Release Targets"))
-                    ]
-                    +SVerticalBox::Slot().AutoHeight().HAlign(HAlign_Center).Padding(0, 5, 0, 0)[
-                        SNew(SHorizontalBox)
-                            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(5,0)[
-                                SNew(STextBlock)
-                                .Text(LOCTEXT("ReleaseWindows", "Windows"))
-                            ]
-                
-                            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(5,0)[
-                                SNew(STextBlock)
-                                .Text(LOCTEXT("ReleaseWindowsServer", "Windows Server"))
-                            ]
-                
-                            +SHorizontalBox::Slot().AutoWidth().VAlign(VAlign_Center).Padding(5,0)[
-                                SNew(STextBlock)
-                                .Text(LOCTEXT("ReleaseLinuxServer", "Linux Server"))
-                            ]
-                    ]
+            +SHorizontalBox::Slot().AutoWidth()
+            [
+                Args._SearchTrail.Widget
             ]
         ]
         + SVerticalBox::Slot().FillHeight(1.0f)[
@@ -107,9 +79,44 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                 .SelectionMode(ESelectionMode::None)
                 .ListItemsSource(&FilteredMods)
                 .OnGenerateRow_Lambda(
-                    [this](TSharedRef<IPlugin> Mod, const TSharedRef<STableViewBase>& List) {
-                        return SNew(STableRow<TSharedRef<IPlugin>>, List)[
-                            SNew(SAlpakitModEntry, Mod, SharedThis(this))
+                    [this, Args](TSharedRef<IPlugin> Mod, const TSharedRef<STableViewBase>& List) {
+                        UAlpakitSettings* Settings = UAlpakitSettings::Get();
+                        return SNew(STableRow<TSharedRef<IPlugin>>, List)
+			                .Style(&FAppStyle::Get().GetWidgetStyle<FTableRowStyle>("TableView.AlternatingRow"))
+                            [
+                                SNew(SAlpakitModEntry, Mod, SharedThis(this))
+                                .Lead()[
+                                    SNew(SHorizontalBox)
+                                    +SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0)
+                                    [
+                                        SNew(SCheckBox)
+                                            .ToolTipText(LOCTEXT("AlpakitModEntryEnabled_Tooltip", "If enabled, this mod will be packaged when the 'Alpakit Dev' or 'Alpakit Release' buttons are pressed"))
+                                            .OnCheckStateChanged_Lambda([this, Mod](ECheckBoxState CheckBoxState){
+                                                OnCheckboxChanged(Mod, CheckBoxState);
+                                            })
+                                            .IsChecked_Lambda([Settings, Mod] { return Settings->ModSelection.FindOrAdd(Mod->GetName(), false) ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; })
+                                    ]
+                                    +SHorizontalBox::Slot().AutoWidth()
+                                    [
+                                        Args._ModEntryLead.IsBound() ? Args._ModEntryLead.Execute(Mod) : SNullWidget::NullWidget
+                                    ]
+                                    + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0).VAlign(VAlign_Center)[
+                                        SNew(SButton)
+                                        .Text(LOCTEXT("EditModAlpakit", "Edit"))
+                                        .OnClicked_Lambda([this, Mod] {
+                                            const TSharedRef<SAlpakitEditModDialog> EditModDialog = SNew(SAlpakitEditModDialog, Mod);
+                                            FSlateApplication::Get().AddModalWindow(EditModDialog, SharedThis(this));
+                                            return FReply::Handled();
+                                        })
+                                        .ToolTipText_Lambda([Mod]{
+                                            return FText::FromString(FString::Printf(TEXT("Edit %s via the wizard"), *Mod->GetName()));
+                                        })
+                                    ]
+                                ]
+                                .Trail()
+                                [
+                                    Args._ModEntryTrail.IsBound() ? Args._ModEntryTrail.Execute(Mod) : SNullWidget::NullWidget
+                                ]
                         ];
                     })
             ]
@@ -141,16 +148,16 @@ bool DoesPluginHaveRuntime(const IPlugin& Plugin) {
     return false;
 }
 
+const TSet<FString> HiddenMods = { TEXT("SMLEditor") };
+
 void SAlpakitModEntryList::LoadMods() {
     Mods.Empty();
     const TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
     for (TSharedRef<IPlugin> Plugin : EnabledPlugins) {
-        //Skip SMLEditor, editor-only plugin
-        if (Plugin->GetName() == TEXT("SMLEditor")) {
+        if (HiddenMods.Contains(Plugin->GetName())) {
             continue;
         }
-        //Only include project plugins for now
-        //TODO make sure UAT task supports engine plugins
+        
         if ((bShowEngine && Plugin->GetType() == EPluginType::Engine) ||
             (bShowProject && Plugin->GetType() == EPluginType::Project) ||
             Plugin->GetType() == EPluginType::Mod) {
@@ -239,12 +246,23 @@ void SAlpakitModEntryList::SetAllMods(bool Checked) {
             UE_LOG(LogAlpakit, Display, TEXT("TableRow content is not valid!"));
             continue;
         }
-        ModEntry->SetSelected(Checked);
 
         Settings->ModSelection.Add(Mod->GetName(), Checked);
     }
 
     Settings->SaveSettings();
+}
+
+void SAlpakitModEntryList::OnCheckboxChanged(TSharedRef<IPlugin> Mod, ECheckBoxState NewState) {
+    // Save new checked state for the mod at the
+    UAlpakitSettings* Settings = UAlpakitSettings::Get();
+    const FString PluginName = Mod->GetName();
+
+    Settings->ModSelection.Add(PluginName, NewState == ECheckBoxState::Checked);
+
+    Settings->SaveSettings();
+
+    UpdateAllCheckbox();
 }
 
 void SAlpakitModEntryList::UpdateAllCheckbox() {

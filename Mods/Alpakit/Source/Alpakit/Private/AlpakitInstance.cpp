@@ -196,7 +196,7 @@ void FAlpakitInstance::SpawnNotification()
 	check( IsInGameThread() );
 	
 	FNotificationInfo NotificationInfo{ FText::Format( LOCTEXT("PackageModTaskName", "Packaging Mod {0}..."), FText::FromString( PluginName ) ) };
-	NotificationInfo.Image = FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow");
+	NotificationInfo.Image = FAlpakitStyle::Get().GetBrush("Alpakit.Icon");
 	NotificationInfo.bFireAndForget = false;
 	NotificationInfo.ExpireDuration = 10.0f;
 

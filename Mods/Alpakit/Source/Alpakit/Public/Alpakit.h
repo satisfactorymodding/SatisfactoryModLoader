@@ -20,8 +20,9 @@ public:
 	void PackageModsRelease(TArray<TSharedRef<IPlugin>> Mods);
 	void PackageMods(TArray<TSharedRef<FAlpakitProfile>> ProfilesToPackage);
     bool IsPackaging() const { return bIsPackaging; }
-    
-    /** ID name for the mod creator tab */
+
+	static const FName AlpakitDevTabName;
+	static const FName AlpakitReleaseTabName;
     static const FName ModCreatorTabName;
 	static const FName AlpakitLogTabName;
 private:
