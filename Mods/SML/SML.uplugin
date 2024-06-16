@@ -32,7 +32,8 @@
 	"Plugins": [
 		{
 			"Name": "EnhancedInput",
-			"Enabled": true
+			"Enabled": true,
+			"BasePlugin": true
 		}
 	]
 }
