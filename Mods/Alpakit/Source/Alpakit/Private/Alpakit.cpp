@@ -105,6 +105,7 @@ void FAlpakitModule::StartupModule() {
                 [ AlpakitWidget ];
         }))
         .SetDisplayName(LOCTEXT("FAlpakitDevTabTitle", "Alpakit Dev"))
+        .SetIcon(FSlateIcon(FAlpakitStyle::GetStyleSetName(), "Alpakit.AlpakitDevWindow"))
         .SetMenuType(ETabSpawnerMenuType::Hidden);
     
     FGlobalTabmanager::Get()->RegisterNomadTabSpawner(AlpakitReleaseTabName,
@@ -115,6 +116,7 @@ void FAlpakitModule::StartupModule() {
                 [ AlpakitWidget ];
         }))
         .SetDisplayName(LOCTEXT("FAlpakitReleaseTabTitle", "Alpakit Release"))
+        .SetIcon(FSlateIcon(FAlpakitStyle::GetStyleSetName(), "Alpakit.AlpakitReleaseWindow"))
         .SetMenuType(ETabSpawnerMenuType::Hidden);
     
     FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
