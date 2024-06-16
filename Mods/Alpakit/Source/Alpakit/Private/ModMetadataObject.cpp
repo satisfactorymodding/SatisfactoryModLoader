@@ -1,4 +1,6 @@
 #include "ModMetadataObject.h"
+
+#include "Alpakit.h"
 #include "PluginDescriptor.h"
 #include "PluginReferenceDescriptor.h"
 #include "Misc/Paths.h"
@@ -17,6 +19,7 @@
 UModMetadataObject::UModMetadataObject(const FObjectInitializer& ObjectInitializer)
 {
 	Category = TEXT("Modding"); // Group all mods in this category
+	GameVersion = FAlpakitModule::GetCurrentGameVersion();
 }
 
 void UModMetadataObject::PopulateFromDescriptor(const FPluginDescriptor& InDescriptor)
@@ -46,6 +49,7 @@ void UModMetadataObject::PopulateFromDescriptor(const FPluginDescriptor& InDescr
 	}
 	InDescriptor.UpdateJson(CachedJson.Get());
 	CachedJson->TryGetStringField( TEXT("SemVersion"), SemVersion );
+	CachedJson->TryGetStringField( TEXT("GameVersion"), GameVersion );
 	CachedJson->TryGetStringField( TEXT("RemoteVersionRange"), RemoteVersionRange );
 	CachedJson->TryGetBoolField( TEXT("AcceptsAnyRemoteVersion"), bAcceptsAnyRemoteVersion );
 }
@@ -85,6 +89,7 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 	}
 
 	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
+	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("GameVersion"), MakeShared<FJsonValueString>( GameVersion ) );
 	if (RemoteVersionRange.Len() > 0) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RemoteVersionRange"), MakeShared<FJsonValueString>( RemoteVersionRange ) );
 	} else {
