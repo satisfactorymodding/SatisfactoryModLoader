@@ -19,7 +19,10 @@ public:
 	void PackageModsDevelopment(TArray<TSharedRef<IPlugin>> Mods);
 	void PackageModsRelease(TArray<TSharedRef<IPlugin>> Mods);
 	void PackageMods(TArray<TSharedRef<FAlpakitProfile>> ProfilesToPackage);
-    bool IsPackaging() const { return bIsPackaging; }
+	bool IsPackaging() const { return bIsPackaging; }
+
+	static FString GetCurrentSMLVersion();
+	static FString GetCurrentGameVersion();
 
 	static const FName AlpakitDevTabName;
 	static const FName AlpakitReleaseTabName;

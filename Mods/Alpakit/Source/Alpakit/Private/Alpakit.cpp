@@ -145,6 +145,25 @@ void FAlpakitModule::ShutdownModule() {
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitLogTabName);
 }
 
+FString FAlpakitModule::GetCurrentSMLVersion()
+{
+    TSharedPtr<IPlugin> SMLPlugin = IPluginManager::Get().FindPlugin(TEXT("SML"));
+    if (SMLPlugin.IsValid())
+    {
+        FPluginDescriptor SMLDescriptor = SMLPlugin->GetDescriptor();
+        return SMLDescriptor.CachedJson->GetStringField(TEXT("SemVersion"));
+    }
+    return TEXT("");
+}
+
+FString FAlpakitModule::GetCurrentGameVersion()
+{
+    FString CurrentVersionFile = FPaths::ProjectDir() / TEXT("Source") / TEXT("FactoryGame") / TEXT("currentVersion.txt");
+    FString GameVersion;
+    FFileHelper::LoadFileToString(GameVersion, *CurrentVersionFile);
+    return GameVersion.TrimStartAndEnd();
+}
+
 TSharedRef<FAlpakitProfile> MakeDevelopmentProfileForMod(TSharedRef<IPlugin> Mod) {
     TSharedRef<FAlpakitProfile> Profile = MakeShared<FAlpakitProfile>(Mod->GetName());
 
