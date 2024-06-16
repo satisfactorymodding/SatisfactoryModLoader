@@ -84,7 +84,6 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 		OutDescriptor.Plugins.RemoveAll(RemovedModLambda);
 	}
 
-	// CachedJson is not updated properly by UpdateDescriptor, so we update it manually here too
 	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
 	if (RemoteVersionRange.Len() > 0) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RemoteVersionRange"), MakeShared<FJsonValueString>( RemoteVersionRange ) );
@@ -151,13 +150,18 @@ void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor
 	OutDescriptor.bEnabled = bEnabled;
 	OutDescriptor.bOptional = bOptional;
 
-	// CachedJson is not updated properly by UpdateDescriptor, so we update it manually here too
-	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
+	if (!bBasePlugin) {
+		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ));
+	} else if (OutDescriptor.CachedJson->HasField(TEXT("SemVersion"))) {
+		// We cannot remove the field when using UpdateDescriptor, because it will be copied from the existing descriptor
+		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("SemVersion"), MakeShared<FJsonValueString>( TEXT("") ));
+	}
+	
 	if (bBasePlugin) {
-		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ) );
-	} else {
-		// Remove field entirely when default value
-		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("BasePlugin"));
+		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ));
+	} else if (OutDescriptor.CachedJson->HasField(TEXT("BasePlugin"))) {
+		// We cannot remove the field when using UpdateDescriptor, because it will be copied from the existing descriptor
+		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( false ));
 	}
 }
 

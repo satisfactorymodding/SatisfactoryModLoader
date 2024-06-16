@@ -66,7 +66,7 @@ FReply SAlpakitEditModDialog::OnOkClicked() {
 	// Close the properties window
 	RequestDestroyWindow();
 
-	// Write both to strings
+	// Compare the old and new descriptor, so we don't write to the file if nothing changed
 	FString OldText;
 	OldDescriptor.Write(OldText);
 	FString NewText;
