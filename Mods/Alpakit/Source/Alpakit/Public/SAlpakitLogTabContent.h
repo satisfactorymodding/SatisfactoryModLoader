@@ -24,6 +24,9 @@ protected:
 	
 	FReply OnCancelButtonClicked();
 	FReply OnRetryButtonClicked();
+	FReply OnClearLogButtonClicked();
+	FReply OnCopyLogButtonClicked();
+	FReply OnSaveLogButtonClicked();
 	
 	FText GetPluginNameText() const;
 	FText GetStatusText() const;
@@ -46,4 +49,6 @@ protected:
 
 	FDelegateHandle OnInstanceMessageHandle;
 	FDelegateHandle OnNewInstanceSpawnedHandle;
+	
+	FString LastLogFileSaveDirectory;
 };
