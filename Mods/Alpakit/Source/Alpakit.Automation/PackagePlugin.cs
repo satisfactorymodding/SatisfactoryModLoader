@@ -27,40 +27,59 @@ public class PackagePlugin : BuildCookRun
 		{
 			ModifyModules(ProjectParams, SC);
 		};
-
-		DoBuildCookRun(projectParams);
-
-		var deploymentContexts = new List<DeploymentContext>();
-		if (!projectParams.NoClient)
-			deploymentContexts.AddRange(Project.CreateDeploymentContext(projectParams, false, false));
-		if (projectParams.DedicatedServer)
-			deploymentContexts.AddRange(Project.CreateDeploymentContext(projectParams, true, false));
-
-		foreach (var SC in deploymentContexts)
+		
+		try
 		{
-			ArchiveStagedPlugin(projectParams, SC);
-		}
+			DoBuildCookRun(projectParams);
 
-		if (mergeArchive)
-		{
-			ArchiveMergedStagedPlugin(projectParams, deploymentContexts);
-		}
+			var deploymentContexts = new List<DeploymentContext>();
+			if (!projectParams.NoClient)
+				deploymentContexts.AddRange(Project.CreateDeploymentContext(projectParams, false, false));
+			if (projectParams.DedicatedServer)
+				deploymentContexts.AddRange(Project.CreateDeploymentContext(projectParams, true, false));
 
-		foreach (var SC in deploymentContexts)
-		{
-			var copyToGameDirectory = ParseOptionalDirectoryReferenceParam($"CopyToGameDirectory_{SC.FinalCookPlatform}");
-			var launchGameType = ParseOptionalEnumParam<LaunchGame.LaunchType>($"LaunchGame_{SC.FinalCookPlatform}");
-			var customLaunch = ParseOptionalStringParam($"CustomLaunch_{SC.FinalCookPlatform}");
-
-			if (copyToGameDirectory != null)
+			foreach (var SC in deploymentContexts)
 			{
-				if (!IsValidGameDir(copyToGameDirectory))
-					throw new AutomationException("Invalid game directory specified for CopyToGameDirectory: {0}", copyToGameDirectory);
-				DeployStagedPlugin(projectParams, SC, copyToGameDirectory);
+				ArchiveStagedPlugin(projectParams, SC);
 			}
 
-			if (launchGameType != null)
-				LaunchGame.Launch(launchGameType.Value, customLaunch);
+			if (mergeArchive)
+			{
+				ArchiveMergedStagedPlugin(projectParams, deploymentContexts);
+			}
+
+			foreach (var SC in deploymentContexts)
+			{
+				var copyToGameDirectory = ParseOptionalDirectoryReferenceParam($"CopyToGameDirectory_{SC.FinalCookPlatform}");
+				var launchGameType = ParseOptionalEnumParam<LaunchGame.LaunchType>($"LaunchGame_{SC.FinalCookPlatform}");
+				var customLaunch = ParseOptionalStringParam($"CustomLaunch_{SC.FinalCookPlatform}");
+
+				if (copyToGameDirectory != null)
+				{
+					if (!IsValidGameDir(copyToGameDirectory))
+						throw new AutomationException("Invalid game directory specified for CopyToGameDirectory: {0}", copyToGameDirectory);
+					DeployStagedPlugin(projectParams, SC, copyToGameDirectory);
+				}
+
+				if (launchGameType != null)
+					LaunchGame.Launch(launchGameType.Value, customLaunch);
+			}
+		}
+		finally
+		{
+			if (!projectParams.NoClient)
+			{
+				var DeployContextList = Project.CreateDeploymentContext(projectParams, false, true);
+				foreach (var SC in DeployContextList)
+					Project.CleanStagingDirectory(projectParams, SC);
+			}
+
+			if (projectParams.DedicatedServer)
+			{
+				var DeployContextList = Project.CreateDeploymentContext(projectParams, true, true);
+				foreach (var SC in DeployContextList)
+					Project.CleanStagingDirectory(projectParams, SC);
+			}
 		}
 	}
 
