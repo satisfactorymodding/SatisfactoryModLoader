@@ -165,18 +165,25 @@ FText SAlpakitLogTabContent::GetStatusText() const
 	if ( AlpakitInstance->GetInstanceState() == EAlpakitInstanceState::Completed )
 	{
 		const EAlpakitInstanceResult Result = AlpakitInstance->GetResult();
+
+		FText ResultText;
+		
 		if ( Result == EAlpakitInstanceResult::Success )
 		{
-			return LOCTEXT("StatusCompleted", "Completed");
+			ResultText = LOCTEXT("StatusCompleted", "Completed");
 		}
 		if ( Result == EAlpakitInstanceResult::Fail )
 		{
-			return LOCTEXT("StatusFailed", "Failed");
+			ResultText = LOCTEXT("StatusFailed", "Failed");
 		}
 		if ( Result == EAlpakitInstanceResult::Cancelled )
 		{
-			return LOCTEXT("StatusCancelled", "Cancelled By User");
+			ResultText = LOCTEXT("StatusCancelled", "Cancelled By User");
 		}
+
+		FTimespan Delta = FDateTime::Now() - AlpakitInstance->GetEndTime();
+		
+		return FText::Format(LOCTEXT("StatusAt", "{0} at {1} ({2} ago)"), ResultText, FText::AsDateTime(AlpakitInstance->GetEndTime()), FText::AsTimespan(Delta));
 	}
 	return LOCTEXT("StatusRunning", "Running...");
 }
