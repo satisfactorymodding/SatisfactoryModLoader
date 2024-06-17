@@ -15,7 +15,6 @@ public class PackagePlugin : BuildCookRun
 	public override void ExecuteBuild()
 	{
 		var mergeArchive = ParseParam("merge");
-		Logger.LogWarning($"Merge archive: {mergeArchive}");
 		
 		var projectParams = SetupParams();
 		projectParams.PreModifyDeploymentContextCallback = (ProjectParams, SC) =>
