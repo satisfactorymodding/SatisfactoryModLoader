@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "FGOptionInterface.h"
-#include "FGPlayerState.h"
+#include "Templates/Identity.h"
 #include "Settings/FGUserSetting.h"
 #include "Settings/FGUserSettingCategory.h"
 #include "Subsystems/EngineSubsystem.h"
@@ -84,13 +84,13 @@ private:
 	 * function templates to explicitly specify the type argument T.
 	 */
 	template<typename T>
-	FORCEINLINE T GetOptionValue_Typed(const FString& cvar, typename TEnableIf<true, const T>::Type defaultValue) const
+	FORCEINLINE T GetOptionValue_Typed(const FString& cvar, TIdentity_T<const T> defaultValue) const
 	{
 		return GetOptionValue(cvar, FVariant(defaultValue)).GetValue<T>();
 	}
 
 	template<typename T>
-	FORCEINLINE T GetOptionDisplayValue_Typed(const FString& cvar, typename TEnableIf<true, const T>::Type defaultValue) const
+	FORCEINLINE T GetOptionDisplayValue_Typed(const FString& cvar, TIdentity_T<const T> defaultValue) const
 	{
 		return GetOptionDisplayValue(cvar, FVariant(defaultValue)).GetValue<T>();
 	}
