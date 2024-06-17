@@ -54,7 +54,7 @@ public class LaunchGame
                 UseShellExecute = true
             };
 
-            logger.LogInformation($"Custom Launch starting process: `{processInfo.FileName}` in directory `{processInfo.WorkingDirectory}` with arguments `{processInfo.Arguments}`");
+            logger.LogInformation($"Custom Launch starting process: `{processInfo.FileName}` with arguments `{processInfo.Arguments}`");
             Process.Start(processInfo);
             return;
         }
