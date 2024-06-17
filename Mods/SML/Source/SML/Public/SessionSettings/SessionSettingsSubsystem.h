@@ -25,6 +25,12 @@ private:
 	void Multicast_SessionSettingUpdated(const FString& StrID, const FString& ValueString);
 
 	FOnOptionUpdated OnOptionUpdatedDelegate;
+
+	UPROPERTY(ReplicatedUsing = OnRep_SerializedSettings)
+	FString SerializedSettings;
+
+	UFUNCTION()
+	void OnRep_SerializedSettings();
 };
 
 UCLASS(NotBlueprintable)

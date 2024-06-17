@@ -2,6 +2,7 @@
 #include "FGGameMode.h"
 #include "FGPlayerController.h"
 #include "Subsystem/SubsystemActorManager.h"
+#include "SessionSettingsSubsystem.h"
 
 ASessionSettingsSubsystem::ASessionSettingsSubsystem() {
 	ReplicationPolicy = ESubsystemReplicationPolicy::SpawnOnServer_Replicate;
@@ -13,6 +14,15 @@ void ASessionSettingsSubsystem::Init() {
 
 	OnOptionUpdatedDelegate = FOnOptionUpdated::CreateUObject(this, &ASessionSettingsSubsystem::OnSessionSettingUpdated);
 	SessionSettingsManager->SubscribeToAllOptionUpdates(OnOptionUpdatedDelegate);
+
+	if (HasAuthority())
+	{
+		SerializedSettings = SessionSettingsManager->SerializeSettingsToString();
+	}
+	else
+	{
+		SessionSettingsManager->DeserializeSettingsFromString(SerializedSettings);
+	}
 }
 
 ASessionSettingsSubsystem* ASessionSettingsSubsystem::Get(UWorld* World) {
@@ -38,6 +48,13 @@ void ASessionSettingsSubsystem::PushSettingToSessionSettings(const FString& StrI
 	check(SessionSettingsManager);
 
 	SessionSettingsManager->ForceSetOptionValue(StrID, value, this);
+}
+
+void ASessionSettingsSubsystem::OnRep_SerializedSettings()
+{
+	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
+	check(SessionSettingsManager);
+	SessionSettingsManager->DeserializeSettingsFromString(SerializedSettings);
 }
 
 void ASessionSettingsSubsystem::Multicast_SessionSettingUpdated_Implementation(const FString& StrID, const FString& value) {
