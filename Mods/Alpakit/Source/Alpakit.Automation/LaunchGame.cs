@@ -49,9 +49,8 @@ public class LaunchGame
 
             ProcessStartInfo processInfo = new()
             {
-                FileName = Path.GetFullPath(CustomLaunchPath),
+                FileName = CustomLaunchPath,
                 Arguments = CustomLaunchArgs,
-                WorkingDirectory = Path.GetDirectoryName(CustomLaunchPath),
                 UseShellExecute = true
             };
 
