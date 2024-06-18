@@ -49,6 +49,7 @@ TSharedRef<FSlateStyleSet> FAlpakitStyle::Create() {
     Style->Set(TEXT("Alpakit.Icon"), new IMAGE_BRUSH(DevIcon, Icon128x128));
     Style->Set(TEXT("Alpakit.AlpakitDevWindow"), new IMAGE_BRUSH(DevIcon, Icon128x128));
 	Style->Set(TEXT("Alpakit.AlpakitReleaseWindow"), new IMAGE_BRUSH(ReleaseIcon, Icon128x128));
+	Style->Set(TEXT("Alpakit.AlpakitLogWindow"), new IMAGE_BRUSH(TEXT("AlpakitLog128"), Icon128x128));
 
 	Style->SetContentRoot(FPaths::EngineContentDir() / TEXT("Editor/Slate"));
 	Style->SetCoreContentRoot(FPaths::EngineContentDir() / TEXT("Slate"));

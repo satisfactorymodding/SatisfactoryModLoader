@@ -10,5 +10,5 @@ public:
 public:
     TSharedPtr<FUICommandInfo> AlpakitDevWindow;
     TSharedPtr<FUICommandInfo> AlpakitReleaseWindow;
-    TSharedPtr<FUICommandInfo> OpenLogWindow;
+    TSharedPtr<FUICommandInfo> AlpakitLogWindow;
 };

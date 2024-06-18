@@ -51,7 +51,7 @@ void FAlpakitModule::StartupModule() {
         }),
         FCanExecuteAction());
     PluginCommands->MapAction(
-        FAlpakitCommands::Get().OpenLogWindow,
+        FAlpakitCommands::Get().AlpakitLogWindow,
         FExecuteAction::CreateLambda([](){
             FGlobalTabmanager::Get()->TryInvokeTab(AlpakitLogTabName);
         }),
@@ -63,7 +63,7 @@ void FAlpakitModule::StartupModule() {
     MenuExtender->AddMenuExtension(TEXT("FileProject"), EExtensionHook::After, PluginCommands,
         FMenuExtensionDelegate::CreateLambda([](FMenuBuilder& Builder){
             Builder.AddMenuEntry(FAlpakitCommands::Get().AlpakitDevWindow);
-            Builder.AddMenuEntry(FAlpakitCommands::Get().OpenLogWindow);
+            Builder.AddMenuEntry(FAlpakitCommands::Get().AlpakitLogWindow);
         }));
     LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
     
@@ -86,7 +86,7 @@ void FAlpakitModule::StartupModule() {
                 Builder.AddComboButton(FUIAction(), FOnGetContent::CreateLambda([this]() {                
                     FMenuBuilder MenuBuilder(true, PluginCommands);
 
-                    MenuBuilder.AddMenuEntry(FAlpakitCommands::Get().OpenLogWindow);
+                    MenuBuilder.AddMenuEntry(FAlpakitCommands::Get().AlpakitLogWindow);
         
                     return MenuBuilder.MakeWidget();
                 }));
@@ -129,7 +129,7 @@ void FAlpakitModule::StartupModule() {
 		AlpakitLogTabName,
 		FOnSpawnTab::CreateRaw(this, &FAlpakitModule::HandleSpawnAlpakitLogTab))
 		.SetDisplayName(LOCTEXT("AlpakitLogHeader", "Alpakit Log"))
-		.SetIcon( FSlateIcon( FAlpakitStyle::Get().GetStyleSetName(), TEXT("Alpakit.Icon") ) )
+		.SetIcon( FSlateIcon( FAlpakitStyle::Get().GetStyleSetName(), TEXT("Alpakit.AlpakitLogWindow") ) )
 		.SetMenuType(ETabSpawnerMenuType::Hidden);
 }
 
