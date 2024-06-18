@@ -15,6 +15,7 @@ const TCHAR* LexToString(EAlpakitStartGameType StartGameType) {
 	case EAlpakitStartGameType::EPIC_SERVER_EXPERIMENTAL:
 		return TEXT("EpicDSExp");
 	case EAlpakitStartGameType::CUSTOM:
+		return TEXT("Custom");
 	default:
 		return TEXT("");
 	}

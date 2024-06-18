@@ -7,7 +7,6 @@ using EpicGames.Core;
 using UnrealBuildTool;
 using AutomationScripts;
 using Microsoft.Extensions.Logging;
-using UnrealBuildBase;
 
 namespace Alpakit.Automation;
 
@@ -16,7 +15,6 @@ public class PackagePlugin : BuildCookRun
 	public override void ExecuteBuild()
 	{
 		var mergeArchive = ParseParam("merge");
-		Logger.LogWarning($"Merge archive: {mergeArchive}");
 		
 		var projectParams = SetupParams();
 		projectParams.PreModifyDeploymentContextCallback = (ProjectParams, SC) =>
@@ -52,7 +50,8 @@ public class PackagePlugin : BuildCookRun
 			{
 				var copyToGameDirectory = ParseOptionalDirectoryReferenceParam($"CopyToGameDirectory_{SC.FinalCookPlatform}");
 				var launchGameType = ParseOptionalEnumParam<LaunchGame.LaunchType>($"LaunchGame_{SC.FinalCookPlatform}");
-				var customLaunch = ParseOptionalStringParam($"CustomLaunch_{SC.FinalCookPlatform}");
+				var customLaunchPath = ParseOptionalStringParam($"CustomLaunchPath_{SC.FinalCookPlatform}");
+				var customLaunchArgs = ParseOptionalStringParam($"CustomLaunchArgs_{SC.FinalCookPlatform}");
 
 				if (copyToGameDirectory != null)
 				{
@@ -62,7 +61,7 @@ public class PackagePlugin : BuildCookRun
 				}
 
 				if (launchGameType != null)
-					LaunchGame.Launch(launchGameType.Value, customLaunch);
+					LaunchGame.Launch(launchGameType.Value, customLaunchPath, customLaunchArgs, Logger);
 			}
 		}
 		finally
