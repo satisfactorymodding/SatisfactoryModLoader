@@ -40,6 +40,9 @@ ASessionSettingsSubsystem* ASessionSettingsSubsystem::Get(UWorld* World) {
 void ASessionSettingsSubsystem::OnSessionSettingUpdated(const FString StrID, FVariant value) {
 	if(HasAuthority()) {
 		Multicast_SessionSettingUpdated(StrID, USessionSettingsManager::VariantToString(value));
+		USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
+		check(SessionSettingsManager);
+		SerializedSettings = SessionSettingsManager->SerializeSettingsToString();
 	} else {
 		// We're a client, so we only have our own player controller
 		AFGPlayerController* PlayerController = Cast<AFGPlayerController>(GetWorld()->GetFirstPlayerController());
