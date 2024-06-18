@@ -3,6 +3,7 @@
 	"Version": 3,
 	"VersionName": "3.7.0",
 	"SemVersion": "3.7.0",
+	"GameVersion": "269772",
 	"FriendlyName": "Satisfactory Mod Loader",
 	"Description": "Mod loading and compatibility API for Satisfactory",
 	"Category": "Modding",
@@ -31,7 +32,8 @@
 	"Plugins": [
 		{
 			"Name": "EnhancedInput",
-			"Enabled": true
+			"Enabled": true,
+			"BasePlugin": true
 		}
 	]
 }

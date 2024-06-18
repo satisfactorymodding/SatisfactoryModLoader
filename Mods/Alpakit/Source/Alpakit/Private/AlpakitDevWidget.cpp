@@ -1,12 +1,11 @@
-#include "AlpakitWidget.h"
+#include "AlpakitDevWidget.h"
 #include "Alpakit.h"
 #include "AlpakitModEntryList.h"
 #include "AlpakitSettings.h"
-#include "DesktopPlatform/Public/DesktopPlatformModule.h"
 
 #define LOCTEXT_NAMESPACE "AlpakitWidget"
 
-void SAlpakitWidget::Construct(const FArguments& InArgs) {    
+void SAlpakitDevWidget::Construct(const FArguments& InArgs) {    
     FDetailsViewArgs DetailsViewArgs;
     DetailsViewArgs.bAllowSearch = true;
     DetailsViewArgs.bHideSelectionTip = true;
@@ -15,7 +14,7 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
     DetailsViewArgs.bUpdatesFromSelection = false;
     DetailsViewArgs.bShowOptions = true;
     DetailsViewArgs.bShowModifiedPropertiesOption = true;
-    DetailsViewArgs.bShowActorLabel = false;
+    DetailsViewArgs.bShowObjectLabel = false;
     DetailsViewArgs.bCustomNameAreaLocation = true;
     DetailsViewArgs.bCustomFilterAreaLocation = true;
     DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
@@ -39,38 +38,43 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
             .BarSlot()[
                 SNew(SHorizontalBox)
                 + SHorizontalBox::Slot().AutoWidth()[
-                    SAssignNew(AlpakitAllDevButton, SButton)
-                    .Text(LOCTEXT("PackageModAlpakitAllDev", "Alpakit Dev"))
+                    SNew(SButton)
+                    .Text(LOCTEXT("PackageModAlpakitAllDev", "Alpakit Selected (Development)"))
                     .ToolTipText(LOCTEXT("PackageModAlpakitAllDev_Tooltip", "For each selected mod, package the mod for each of the targets you have Enabled in your Dev Packaging Settings (NOT Release Targets!).\nAfter all tasks complete, run your after packaging tasks for each target.\nCan build Shipping C++ as required."))
                     .OnClicked_Lambda([this] {
-                        PackageAllMods(false);
+                        PackageAllMods();
                         return FReply::Handled();
                     })
-                	.IsEnabled(this, &SAlpakitWidget::IsPackageButtonEnabled)
-                ]
-                + SHorizontalBox::Slot().AutoWidth()[
-                    SAssignNew(AlpakitAllReleaseButton, SButton)
-                    .Text(LOCTEXT("PackageModAlpakitAllRelease", "Alpakit Release"))
-                    .ToolTipText(LOCTEXT("PackageModAlpakitAllRelease_Tooltip", "For each selected mod, prepare the multi-target zip for upload to the Mod Repository. The targets included in the zip are controlled by what you have marked in Release Targets.\nDoes not execute the after packing tasks (those are only for dev).\nCan build Shipping C++ as required."))
-                    .OnClicked_Lambda([this] {
-                        PackageAllMods(true);
-                        return FReply::Handled();
-                    })
-                	.IsEnabled(this, &SAlpakitWidget::IsPackageButtonEnabled)
+                	.IsEnabled(this, &SAlpakitDevWidget::IsPackageButtonEnabled)
                 ]
                 + SHorizontalBox::Slot().FillWidth(1.0f)
                 + SHorizontalBox::Slot().AutoWidth()[
                     SNew(SButton)
                     .Text(LOCTEXT("CreateMod", "Create Mod"))
                     .ToolTipText(LOCTEXT("CreateMod_Tooltip", "Open the wizard to create a new mod from a template"))
-                    .OnClicked(this, &SAlpakitWidget::CreateMod)
+                    .OnClicked(this, &SAlpakitDevWidget::CreateMod)
                 ]
             ]
+            .ModEntryLead_Lambda([this] (const TSharedRef<IPlugin>& Mod) {
+                return SNew(SButton)
+                        .Text(LOCTEXT("PackageModAlpakit", "Alpakit!"))
+                        .OnClicked_Lambda([this, Mod]{
+	                        FAlpakitModule::Get().PackageModsDevelopment({Mod});
+                            return FReply::Handled();
+                        })
+                        .ToolTipText_Lambda([this, Mod]{
+                            // TODO localize correctly
+                            return FText::FromString(FString::Printf(TEXT("Alpakit Dev just %s\n\nPackage this mod for each of the targets you have Enabled in your Dev Packaging Settings (NOT Release Targets!), then run your after packaging tasks for each target.\nCan build Shipping C++ as required."), *Mod->GetName()));
+                        })
+                        .IsEnabled_Lambda([this]{
+                            return !FAlpakitModule::Get().IsPackaging();
+                        });
+            })
         ]
     ];
 }
 
-FReply SAlpakitWidget::PackageAllMods(bool ReleaseBuild) {
+FReply SAlpakitDevWidget::PackageAllMods() {
     FAlpakitModule& AlpakitModule = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit"));
 
     TArray<TSharedRef<IPlugin>> ModsToPackage;
@@ -82,22 +86,18 @@ FReply SAlpakitWidget::PackageAllMods(bool ReleaseBuild) {
         }
     }
 
-    if (ReleaseBuild) {
-        AlpakitModule.PackageModsRelease(ModsToPackage);
-    } else {
-        AlpakitModule.PackageModsDevelopment(ModsToPackage);
-    }
+    AlpakitModule.PackageModsDevelopment(ModsToPackage);
 
     return FReply::Handled();
 }
 
-FReply SAlpakitWidget::CreateMod()
+FReply SAlpakitDevWidget::CreateMod()
 {
     FGlobalTabmanager::Get()->TryInvokeTab(FAlpakitModule::ModCreatorTabName);
     return FReply::Handled();
 }
 
-bool SAlpakitWidget::IsPackageButtonEnabled() const {
+bool SAlpakitDevWidget::IsPackageButtonEnabled() const {
 	return !FAlpakitModule::Get().IsPackaging();
 }
 

@@ -270,9 +270,9 @@ public:
 		Scope(Args...);
 		for (const TSharedPtr<HandlerAfter>& Handler : *HandlersAfter)
 		{
-			(*Handler)(Scope.getResult(), Args...);
+			(*Handler)(Scope.GetResult(), Args...);
 		}
-		return Scope.getResult();
+		return Scope.GetResult();
 	}
 
 	static void ApplyCallVoid(ArgumentTypes... Args)

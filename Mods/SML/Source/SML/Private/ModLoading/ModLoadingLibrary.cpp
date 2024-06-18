@@ -14,6 +14,7 @@ void FSMLPluginDescriptorMetadata::SetupDefaults(const FPluginDescriptor& Plugin
     this->Version = FVersion(PluginDescriptor.Version, 0, 0);
     this->bAcceptsAnyRemoteVersion = false;
     this->RemoteVersionRange = FVersionRange::CreateRangeWithMinVersion(Version);
+    this->GameVersion = 0;
 }
 
 void FSMLPluginDescriptorMetadata::Load(const FString& PluginName, const TSharedPtr<FJsonObject> Source) {
@@ -56,6 +57,10 @@ void FSMLPluginDescriptorMetadata::Load(const FString& PluginName, const TShared
         if (bAcceptsAnyRemoteVersion) {
             UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Plugin %s specifies remote version range while also having acceptAnyRemoteVersion set"), *PluginName);
         }
+    }
+
+    if (!Source->TryGetNumberField(TEXT("GameVersion"), GameVersion)) {
+        UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Plugin %s does not specify 'GameVersion' field, unable to check for game compatibility"), *PluginName);
     }
 
     //Loop plugins specified in the plugin manifest and detect version predicate inside of them
@@ -233,6 +238,14 @@ void UModLoadingLibrary::VerifyPluginDependencies(IPlugin& Plugin, TArray<FStrin
                 *Plugin.GetName(), *DependencyPlugin->GetName(), *VersionRange->ToString(), *DependencyMetadata.Version.ToString());
             MismatchedDependencies.Add(Message);
         }
+    }
+
+    const uint32 CurrentChangelist = FEngineVersion::Current().GetChangelist();
+    
+    if (PluginDescriptorMetadata.GameVersion > CurrentChangelist) {
+        const FString Message = FString::Printf(TEXT("Plugin %s requires game version %d or higher (current: %d)"),
+            *Plugin.GetName(), PluginDescriptorMetadata.GameVersion, CurrentChangelist);
+        MismatchedDependencies.Add(Message);
     }
 }
 

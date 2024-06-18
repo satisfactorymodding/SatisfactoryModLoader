@@ -133,7 +133,8 @@ bool SExternalImage::HandleExternalImagePicked(const FString& InChosenImage, con
 
 	// Here the default SExternalImage would copy the file using source control, but we don't want that
 	// since plugins are .gitignored and that causes an error from the source control plugin.
-	if(!FPlatformFileManager::Get().GetPlatformFile().CopyFile(*NewTargetImage, *InChosenImage))
+	bool bSucceeded = (IFileManager::Get().Copy(*NewTargetImage, *InChosenImage, true, true) == COPY_OK);
+	if (!bSucceeded)
 	{
 		return false;
 	}

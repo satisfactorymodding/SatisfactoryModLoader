@@ -12,6 +12,9 @@ public:
 
 	void Construct(const FArguments& InArgs, TSharedRef<IPlugin> InMod);
 
+	FString GetSMLDependencyVersion() const;
+	void SetSMLDependencyVersion(FString Version) const;
+	FString GetGameVersion() const;
 private:
 	TSharedPtr<IPlugin> Mod;
 	UModMetadataObject* MetadataObject = nullptr;

@@ -5,8 +5,14 @@
  * Widget that lists all plugins that might be able to get packed as mods
  */
 class SAlpakitModEntryList : public SCompoundWidget {
+	DECLARE_DELEGATE_RetVal_OneParam(TSharedRef<SWidget>, FOnModEntryLead, const TSharedRef<IPlugin>&);
+	DECLARE_DELEGATE_RetVal_OneParam(TSharedRef<SWidget>, FOnModEntryTail, const TSharedRef<IPlugin>&);
+	
 	SLATE_BEGIN_ARGS(SAlpakitModEntryList) {}
-    SLATE_NAMED_SLOT(FArguments, BarSlot)
+	    SLATE_NAMED_SLOT(FArguments, BarSlot)
+		SLATE_NAMED_SLOT(FArguments, SearchTrail)
+		SLATE_EVENT(FOnModEntryLead, ModEntryLead)
+		SLATE_EVENT(FOnModEntryTail, ModEntryTrail)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& Args);
@@ -34,6 +40,7 @@ class SAlpakitModEntryList : public SCompoundWidget {
 
 	TArray<TSharedRef<IPlugin>> GetFilteredMods() const { return FilteredMods; }
 
+	void OnCheckboxChanged(TSharedRef<IPlugin> Mod, ECheckBoxState NewState);
 	void UpdateAllCheckbox();
 
 	void OnNewPluginCreated(IPlugin& Plugin);

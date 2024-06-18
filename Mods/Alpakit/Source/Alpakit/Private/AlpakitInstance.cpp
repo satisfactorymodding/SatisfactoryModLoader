@@ -113,6 +113,8 @@ void FAlpakitInstance::OnWorkerCancelled_GameThread()
 
 	InstanceState = EAlpakitInstanceState::Completed;
 
+	EndTime = FDateTime::Now();
+
 	Result = EAlpakitInstanceResult::Cancelled;
 	AddMessageToOutputLog( ELogVerbosity::Display, TEXT("Packaging cancelled by the user.") );
 	MarkNotificationCancelled();
@@ -139,6 +141,8 @@ void FAlpakitInstance::OnWorkerCompleted_GameThread( bool bSuccess, double Durat
 		AddMessageToOutputLog( ELogVerbosity::Error, FString::Printf( TEXT("Packaging failed with ExitCode=%d"), ExitCode ) );
 		MarkNotificationAsFail( Duration );
 	}
+
+	EndTime = FDateTime::Now();
 	
 	OnProcessCompletedDelegate.Broadcast( Result );
 	RemoveFromGlobalList();
@@ -196,7 +200,7 @@ void FAlpakitInstance::SpawnNotification()
 	check( IsInGameThread() );
 	
 	FNotificationInfo NotificationInfo{ FText::Format( LOCTEXT("PackageModTaskName", "Packaging Mod {0}..."), FText::FromString( PluginName ) ) };
-	NotificationInfo.Image = FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow");
+	NotificationInfo.Image = FAlpakitStyle::Get().GetBrush("Alpakit.Icon");
 	NotificationInfo.bFireAndForget = false;
 	NotificationInfo.ExpireDuration = 10.0f;
 
