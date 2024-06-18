@@ -2,10 +2,15 @@
 #include "FGGameMode.h"
 #include "FGPlayerController.h"
 #include "Subsystem/SubsystemActorManager.h"
-#include "SessionSettingsSubsystem.h"
+#include "Net/UnrealNetwork.h"
 
 ASessionSettingsSubsystem::ASessionSettingsSubsystem() {
 	ReplicationPolicy = ESubsystemReplicationPolicy::SpawnOnServer_Replicate;
+}
+
+void ASessionSettingsSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ThisClass, SerializedSettings);
 }
 
 void ASessionSettingsSubsystem::Init() {

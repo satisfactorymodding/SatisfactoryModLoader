@@ -10,6 +10,7 @@ class SML_API ASessionSettingsSubsystem : public AModSubsystem {
 	GENERATED_BODY()
 public:
 	ASessionSettingsSubsystem();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	virtual void Init() override;
 
