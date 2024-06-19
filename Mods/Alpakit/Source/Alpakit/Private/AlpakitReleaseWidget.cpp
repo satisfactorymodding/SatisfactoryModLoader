@@ -138,7 +138,11 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
                                 ]
                                 .ToolTipText_Lambda([Mod, TargetGameVersion]
                                 {
-                                    return FText::Format(LOCTEXT("UpdateGameVersionTooltip", "This mod uses game version {0}, but the project is {1}. Click to update"), FText::FromString(GetModGameVersion(Mod)), FText::FromString(TargetGameVersion));
+                                    FString CurrentGameVersion = GetModGameVersion(Mod);
+                                    if (CurrentGameVersion.IsEmpty()) {
+                                        CurrentGameVersion = "(unspecified)";
+                                    }
+                                    return FText::Format(LOCTEXT("UpdateGameVersionTooltip", "This mod uses game version {0}, but the project is {1}. Click to update"), FText::FromString(CurrentGameVersion), FText::FromString(TargetGameVersion));
                                 })
                                 .OnClicked_Lambda([this, Mod, TargetGameVersion]
                                 {
