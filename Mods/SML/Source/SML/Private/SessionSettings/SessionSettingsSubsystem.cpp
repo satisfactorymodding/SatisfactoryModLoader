@@ -2,32 +2,27 @@
 #include "FGGameMode.h"
 #include "FGPlayerController.h"
 #include "Subsystem/SubsystemActorManager.h"
+#include "Settings/FGUserSettingApplyType.h"
 #include "Net/UnrealNetwork.h"
 
 ASessionSettingsSubsystem::ASessionSettingsSubsystem() {
 	ReplicationPolicy = ESubsystemReplicationPolicy::SpawnOnServer_Replicate;
 }
 
-void ASessionSettingsSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ThisClass, SerializedSettings);
-}
-
 void ASessionSettingsSubsystem::Init() {
 	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
 	check(SessionSettingsManager);
 
+	if (!HasAuthority())
+	{
+		// We're a client, so we only have our own player controller
+		AFGPlayerController* PlayerController = Cast<AFGPlayerController>(GetWorld()->GetFirstPlayerController());
+		USMLSessionSettingsRemoteCallObject* RCO = PlayerController->GetRemoteCallObjectOfClass<USMLSessionSettingsRemoteCallObject>();
+		RCO->Server_RequestAllSessionSettings();
+	}
+
 	OnOptionUpdatedDelegate = FOnOptionUpdated::CreateUObject(this, &ASessionSettingsSubsystem::OnSessionSettingUpdated);
 	SessionSettingsManager->SubscribeToAllOptionUpdates(OnOptionUpdatedDelegate);
-
-	if (HasAuthority())
-	{
-		SerializedSettings = SessionSettingsManager->SerializeSettingsToString();
-	}
-	else
-	{
-		SessionSettingsManager->DeserializeSettingsFromString(SerializedSettings);
-	}
 }
 
 ASessionSettingsSubsystem* ASessionSettingsSubsystem::Get(UWorld* World) {
@@ -40,9 +35,6 @@ ASessionSettingsSubsystem* ASessionSettingsSubsystem::Get(UWorld* World) {
 void ASessionSettingsSubsystem::OnSessionSettingUpdated(const FString StrID, FVariant value) {
 	if(HasAuthority()) {
 		Multicast_SessionSettingUpdated(StrID, USessionSettingsManager::VariantToString(value));
-		USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
-		check(SessionSettingsManager);
-		SerializedSettings = SessionSettingsManager->SerializeSettingsToString();
 	} else {
 		// We're a client, so we only have our own player controller
 		AFGPlayerController* PlayerController = Cast<AFGPlayerController>(GetWorld()->GetFirstPlayerController());
@@ -56,13 +48,6 @@ void ASessionSettingsSubsystem::PushSettingToSessionSettings(const FString& StrI
 	check(SessionSettingsManager);
 
 	SessionSettingsManager->ForceSetOptionValue(StrID, value, this);
-}
-
-void ASessionSettingsSubsystem::OnRep_SerializedSettings()
-{
-	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
-	check(SessionSettingsManager);
-	SessionSettingsManager->DeserializeSettingsFromString(SerializedSettings);
 }
 
 void ASessionSettingsSubsystem::Multicast_SessionSettingUpdated_Implementation(const FString& StrID, const FString& value) {
@@ -89,4 +74,36 @@ bool USMLSessionSettingsRemoteCallObject::Server_RequestSessionSettingUpdate_Val
 	const USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
 
 	return SessionSettingsManager != NULL && SessionSettingsManager->FindSessionSetting(SessionSettingName) != NULL;
+}
+
+void USMLSessionSettingsRemoteCallObject::Server_RequestAllSessionSettings_Implementation()
+{
+	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
+	TMap<FString, UFGUserSettingApplyType*> Settings = SessionSettingsManager->GetAllSessionSettings();
+	for (TPair<FString, UFGUserSettingApplyType*> Setting : Settings)
+	{
+		FVariant AppliedValue = Setting.Value->GetAppliedValue();
+		FString ValueString = USessionSettingsManager::VariantToString(AppliedValue);
+		Client_SendSessionSetting(Setting.Key, ValueString);
+	}
+}
+
+bool USMLSessionSettingsRemoteCallObject::Server_RequestAllSessionSettings_Validate()
+{
+	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
+	return SessionSettingsManager != NULL;
+}
+
+void USMLSessionSettingsRemoteCallObject::Client_SendSessionSetting_Implementation(const FString& SessionSettingName, const FString& ValueString)
+{
+	ASessionSettingsSubsystem* SessionSettingsSubsystem = ASessionSettingsSubsystem::Get(GetWorld());
+	check(SessionSettingsSubsystem);
+
+	SessionSettingsSubsystem->PushSettingToSessionSettings(SessionSettingName, USessionSettingsManager::StringToVariant(ValueString));
+}
+
+bool USMLSessionSettingsRemoteCallObject::Client_SendSessionSetting_Validate(const FString& SessionSettingName, const FString& ValueString)
+{
+	const USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
+	return SessionSettingsManager != NULL && !SessionSettingName.IsEmpty() && !ValueString.IsEmpty();
 }

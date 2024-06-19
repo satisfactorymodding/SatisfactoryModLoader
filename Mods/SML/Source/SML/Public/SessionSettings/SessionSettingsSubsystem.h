@@ -10,11 +10,8 @@ class SML_API ASessionSettingsSubsystem : public AModSubsystem {
 	GENERATED_BODY()
 public:
 	ASessionSettingsSubsystem();
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	virtual void Init() override;
-
-	// TODO: Use this to sync the settings to the client on join
 
 	static ASessionSettingsSubsystem* Get(UWorld* World);
 
@@ -26,12 +23,6 @@ private:
 	void Multicast_SessionSettingUpdated(const FString& StrID, const FString& ValueString);
 
 	FOnOptionUpdated OnOptionUpdatedDelegate;
-
-	UPROPERTY(ReplicatedUsing = OnRep_SerializedSettings)
-	FString SerializedSettings;
-
-	UFUNCTION()
-	void OnRep_SerializedSettings();
 };
 
 UCLASS(NotBlueprintable)
@@ -43,6 +34,13 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RequestSessionSettingUpdate(const FString& SessionSettingName, const FString& ValueString);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_RequestAllSessionSettings();
+
+	UFUNCTION(Client, Reliable, WithValidation)
+	void Client_SendSessionSetting(const FString& SessionSettingName, const FString& ValueString);
+
 private:
 	UPROPERTY(Replicated)
 	bool mForceNetField_USMLSessionSettingsRemoteCallObject;
