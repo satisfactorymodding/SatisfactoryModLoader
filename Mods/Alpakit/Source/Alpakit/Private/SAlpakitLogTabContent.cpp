@@ -300,7 +300,7 @@ FText SAlpakitLogTabContent::GetStatusText() const
 			ResultText = LOCTEXT("StatusCancelled", "Cancelled By User");
 		}
 
-		FTimespan Delta = FDateTime::Now() - AlpakitInstance->GetEndTime();
+		FTimespan Delta = FDateTime::UtcNow() - AlpakitInstance->GetEndTime();
 		
 		return FText::Format(LOCTEXT("StatusAt", "{0} at {1} ({2} ago)"), ResultText, FText::AsDateTime(AlpakitInstance->GetEndTime()), FText::AsTimespan(Delta));
 	}

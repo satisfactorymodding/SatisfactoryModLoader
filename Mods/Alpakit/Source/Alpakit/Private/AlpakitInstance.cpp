@@ -113,7 +113,7 @@ void FAlpakitInstance::OnWorkerCancelled_GameThread()
 
 	InstanceState = EAlpakitInstanceState::Completed;
 
-	EndTime = FDateTime::Now();
+	EndTime = FDateTime::UtcNow();
 
 	Result = EAlpakitInstanceResult::Cancelled;
 	AddMessageToOutputLog( ELogVerbosity::Display, TEXT("Packaging cancelled by the user.") );
@@ -142,7 +142,7 @@ void FAlpakitInstance::OnWorkerCompleted_GameThread( bool bSuccess, double Durat
 		MarkNotificationAsFail( Duration );
 	}
 
-	EndTime = FDateTime::Now();
+	EndTime = FDateTime::UtcNow();
 	
 	OnProcessCompletedDelegate.Broadcast( Result );
 	RemoveFromGlobalList();
