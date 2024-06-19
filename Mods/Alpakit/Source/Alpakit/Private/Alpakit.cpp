@@ -63,6 +63,7 @@ void FAlpakitModule::StartupModule() {
     MenuExtender->AddMenuExtension(TEXT("FileProject"), EExtensionHook::After, PluginCommands,
         FMenuExtensionDelegate::CreateLambda([](FMenuBuilder& Builder){
             Builder.AddMenuEntry(FAlpakitCommands::Get().AlpakitDevWindow);
+            Builder.AddMenuEntry(FAlpakitCommands::Get().AlpakitReleaseWindow);
             Builder.AddMenuEntry(FAlpakitCommands::Get().AlpakitLogWindow);
         }));
     LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
