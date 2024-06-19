@@ -40,7 +40,7 @@ void SAlpakitDevWidget::Construct(const FArguments& InArgs) {
                 + SHorizontalBox::Slot().AutoWidth()[
                     SNew(SButton)
                     .Text(LOCTEXT("PackageModAlpakitAllDev", "Alpakit Selected (Development)"))
-                    .ToolTipText(LOCTEXT("PackageModAlpakitAllDev_Tooltip", "For each selected mod, package the mod for each of the targets you have Enabled in your Dev Packaging Settings (NOT Release Targets!).\nAfter all tasks complete, run your after packaging tasks for each target.\nCan build Shipping C++ as required."))
+                    .ToolTipText(LOCTEXT("PackageModAlpakitAllDev_Tooltip", "For each selected mod, package the mod for each of the targets you have Enabled in your Dev Packaging Settings.\nAfter all tasks complete, run your after packaging tasks for each target.\nCan build Shipping C++ as required."))
                     .OnClicked_Lambda([this] {
                         PackageAllMods();
                         return FReply::Handled();
@@ -64,7 +64,7 @@ void SAlpakitDevWidget::Construct(const FArguments& InArgs) {
                         })
                         .ToolTipText_Lambda([this, Mod]{
                             // TODO localize correctly
-                            return FText::FromString(FString::Printf(TEXT("Alpakit Dev just %s\n\nPackage this mod for each of the targets you have Enabled in your Dev Packaging Settings (NOT Release Targets!), then run your after packaging tasks for each target.\nCan build Shipping C++ as required."), *Mod->GetName()));
+                            return FText::FromString(FString::Printf(TEXT("Alpakit Dev just %s\n\nPackage this mod for each of the targets you have Enabled in your Dev Packaging Settings, then run your after packaging tasks for each target.\nCan build Shipping C++ as required."), *Mod->GetName()));
                         })
                         .IsEnabled_Lambda([this]{
                             return !FAlpakitModule::Get().IsPackaging();

@@ -52,7 +52,7 @@ void SAlpakitEditModDialog::Construct(const FArguments& InArgs, TSharedRef<IPlug
 					[
 						SNew(SButton)
 						.ButtonColorAndOpacity(FLinearColor::Red)
-						.Text(FText::Format(LOCTEXT("UpdateSMLVersionButtonLabel", "Update SML dependency to {0}"), FText::FromString(TargetSMLVersion)))
+						.Text(FText::Format(LOCTEXT("UpdateSMLVersionButtonLabel", "Click to update SML dependency to {0}"), FText::FromString(TargetSMLVersion)))
 						.HAlign(HAlign_Center)
 						.OnClicked_Lambda([this, TargetSMLVersion]
 						{

@@ -12,7 +12,7 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 
     FString TargetSMLVersion = TEXT("^") + FAlpakitModule::GetCurrentSMLVersion();
     FString TargetGameVersion = FAlpakitModule::GetCurrentGameVersion();
-    
+
     ChildSlot[
         SNew(SVerticalBox)
         +SVerticalBox::Slot().FillHeight(1).Padding(3)[
@@ -22,7 +22,7 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
                 + SHorizontalBox::Slot().AutoWidth()[
                     SNew(SButton)
                     .Text(LOCTEXT("PackageModAlpakitAllRelease", "Alpakit Selected (Release)"))
-                    .ToolTipText(LOCTEXT("PackageModAlpakitAllRelease_Tooltip", "For each selected mod, prepare the multi-target zip for upload to the Mod Repository. The targets included in the zip are controlled by what you have marked in Release Targets.\nCan build Shipping C++ as required."))
+                    .ToolTipText(LOCTEXT("PackageModAlpakitAllRelease_Tooltip", "For each selected mod, prepare the multi-target zip for upload to the Mod Repository.\nThe targets included in the zip are controlled by what you have marked in Release Targets.\nCan build Shipping C++ as required."))
                     .OnClicked_Lambda([this] {
                         PackageAllMods();
                         return FReply::Handled();
@@ -86,7 +86,7 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
             })
             .ModEntryTrail_Lambda([this, TargetColumnWidth, TargetSMLVersion, TargetGameVersion] (const TSharedRef<IPlugin>& Mod) {
                 TSharedRef<FModTargetsConfig> ModTargetsConfig = ModTargetsConfigs.FindOrAdd(Mod->GetName(), MakeShared<FModTargetsConfig>(Mod));
-                
+
                 return SNew(SBox)
                     .Padding(5, 0, 5, 0)
                     .Content()[
