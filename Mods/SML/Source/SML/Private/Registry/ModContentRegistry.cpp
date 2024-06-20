@@ -916,12 +916,8 @@ bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor
 		if (descriptorClass->ImplementsInterface(USMLExtendedAttributeProvider::StaticClass())) {
 			UObject* ItemDescriptorCDO = descriptorClass->GetDefaultObject();
 			const auto ItemTags = ISMLExtendedAttributeProvider::Execute_GetGameplayTagsContainer(ItemDescriptorCDO);
-			// TODO until tags loaded at runtime, using this to work around RequestGameplayTag returning None without error upon tag lookup
-			// UE_LOG(LogTemp, Error, TEXT("The tags are: %s"), *ItemTags.ToStringSimple());
-			// const auto SmlSpecialTag = FGameplayTag::RequestGameplayTag("SML.Registry.Item.SpecialItemDescriptor", true);
-			// const auto hasTag = ItemTags.HasTag(SmlSpecialTag);
-			const auto hasTag = ItemTags.ToStringSimple().Contains("SML.Registry.Item.SpecialItemDescriptor");
-			return hasTag;
+			const auto SmlSpecialTag = FGameplayTag::RequestGameplayTag("SML.Registry.Item.SpecialItemDescriptor", true);
+			return ItemTags.HasTag(SmlSpecialTag);
 		}
 	}
 	return false;
