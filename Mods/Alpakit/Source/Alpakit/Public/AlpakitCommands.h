@@ -8,6 +8,7 @@ public:
 
     virtual void RegisterCommands() override;
 public:
-    TSharedPtr<FUICommandInfo> OpenPluginWindow;
-    TSharedPtr<FUICommandInfo> OpenLogWindow;
+    TSharedPtr<FUICommandInfo> AlpakitDevWindow;
+    TSharedPtr<FUICommandInfo> AlpakitReleaseWindow;
+    TSharedPtr<FUICommandInfo> AlpakitLogWindow;
 };

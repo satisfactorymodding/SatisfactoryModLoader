@@ -77,6 +77,9 @@ struct SML_API FSMLPluginDescriptorMetadata {
     /** Range of the accepted remote versions, by default >=Version */
     FVersionRange RemoteVersionRange;
 
+    /** Game version this mod was built against */
+    uint32 GameVersion;
+
     /** Version constraints for dependencies as specified in plugin refs */
     TMap<FString, FVersionRange> DependenciesVersions;
 
@@ -178,4 +181,3 @@ private:
     /** Actually loads mod icon */
     static UTexture2D* LoadModIcon(const FString& PluginName);
 };
-

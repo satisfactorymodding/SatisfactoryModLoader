@@ -1,5 +1,8 @@
 ﻿#include "AlpakitProfile.h"
+#include "Alpakit.h"
 #include "PlatformInfo.h"
+
+// UE_DISABLE_OPTIMIZATION
 
 FString FAlpakitProfile::MakeUATPlatformArgs() {
 	// Code below replicates the minimum configuration required from FLauncherWorker::CreateUATCommand
@@ -53,6 +56,7 @@ FString FAlpakitProfile::MakeUATPlatformArgs() {
 	if (Platforms.Len() > 0)
 	{
 		PlatformCommand = TEXT(" -platform=") + Platforms.RightChop(1);
+		OptionalParams = OptionalParams.Replace(TEXT("-noclient"), TEXT(""));
 	}
 	
 	CommandLine += PlatformCommand;
@@ -83,12 +87,18 @@ FString FAlpakitProfile::MakeUATCommandLine() {
 	CommandLine += GIsEditor || FApp::IsEngineInstalled() ? TEXT(" -nocompileeditor") : TEXT("");
 	CommandLine += FApp::IsEngineInstalled() ? TEXT(" -installed") : TEXT("");
 
-	for (auto [Platform, GameInfo] : PlatformGameInfo) {
+	CommandLine += bMergeArchive ? TEXT(" -merge") : TEXT("");
+
+	for (auto& [Platform, GameInfo] : PlatformGameInfo) {
 		if (GameInfo.bCopyToGame) {
-			CommandLine += FString::Printf(TEXT(" -CopyToGameDirectory_%s=\"%s\""), *Platform, *GameInfo.GamePath);
+			CommandLine += FString::Printf(TEXT(" -CopyToGameDirectory_%s=\"%s\""), *Platform, *GameInfo.GamePath.Path);
 		}
-		if (GameInfo.StartGameType != EAlpakitStartGameType::NONE) {
+		if (GameInfo.bStartGame) {
 			CommandLine += FString::Printf(TEXT(" -LaunchGame_%s=%s"), *Platform, LexToString(GameInfo.StartGameType));
+		}
+		if (GameInfo.StartGameType == EAlpakitStartGameType::CUSTOM) {
+			CommandLine += FString::Printf(TEXT(" -CustomLaunchPath_%s=\"%s\""), *Platform, *GameInfo.CustomLaunchPath);
+			CommandLine += FString::Printf(TEXT(" -CustomLaunchArgs_%s=\"%s\""), *Platform, *GameInfo.CustomLaunchArgs.ReplaceQuotesWithEscapedQuotes());
 		}
 	}
 

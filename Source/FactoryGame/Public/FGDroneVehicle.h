@@ -2,6 +2,11 @@
 
 #pragma once
 
+#if defined(__clang__)
+#include "Clang/ClangPlatformCompilerPreSetup.h"
+PRAGMA_DISABLE_OVERLOADED_VIRTUAL_WARNINGS // TEMPORARY EDIT
+#endif
+
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 
@@ -776,3 +781,7 @@ private:
 };
 
 #undef ACTION_STATIC_STRUCT_IMPL
+
+#if defined(__clang__)
+PRAGMA_ENABLE_OVERLOADED_VIRTUAL_WARNINGS // TEMPORARY EDIT
+#endif

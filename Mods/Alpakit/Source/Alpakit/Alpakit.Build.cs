@@ -15,6 +15,7 @@ public class Alpakit : ModuleRules
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new[] {
+			"ApplicationCore",
 			"Json",
 			"Projects",
 			"InputCore",

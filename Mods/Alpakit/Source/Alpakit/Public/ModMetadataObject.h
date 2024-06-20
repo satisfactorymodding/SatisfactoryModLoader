@@ -79,6 +79,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Version")
 	FString SemVersion;
 
+	/** Version number of the game this mod was built (or was tested) against */
+	UPROPERTY(EditAnywhere, Category = "Version")
+	FString GameVersion;
+
 	/** Friendly name of the mod */
 	UPROPERTY(EditAnywhere, Category = "Details")
 	FString FriendlyName;

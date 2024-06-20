@@ -130,4 +130,3 @@ public:
 	UFUNCTION(BlueprintCallable, Category="SML | Online")
 	static void CreateSessionAndTravelToMapWithStartingLocation(APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, ESessionVisibility sessionVisibility, bool skipOnboarding);
 };
-

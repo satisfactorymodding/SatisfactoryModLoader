@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using AutomationTool;
+using Microsoft.Extensions.Logging;
 
 namespace Alpakit.Automation;
 
@@ -38,13 +40,22 @@ public class LaunchGame
         }
     }
 
-    public static void Launch(LaunchType Type, string? CustomLaunch)
+    public static void Launch(LaunchType Type, string? CustomLaunchPath, string? CustomLaunchArgs, ILogger logger)
     {
         if (Type == LaunchType.Custom)
         {
-            if (CustomLaunch == null)
+            if (CustomLaunchPath == null)
                 throw new AutomationException("Custom Launch Type requested, but no program to launch was specified");
-            Process.Start(CustomLaunch);
+
+            ProcessStartInfo processInfo = new()
+            {
+                FileName = CustomLaunchPath,
+                Arguments = CustomLaunchArgs,
+                UseShellExecute = true
+            };
+
+            logger.LogInformation($"Custom Launch starting process: `{processInfo.FileName}` with arguments `{processInfo.Arguments}`");
+            Process.Start(processInfo);
             return;
         }
 

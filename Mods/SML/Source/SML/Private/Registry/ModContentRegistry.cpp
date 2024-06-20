@@ -547,7 +547,12 @@ bool UModContentRegistry::GetRecipeInfo( TSubclassOf<UFGRecipe> Recipe, FGameObj
 FGameObjectRegistration UModContentRegistry::GetItemDescriptorInfo( TSubclassOf<UFGItemDescriptor> ItemDescriptor )
 {
 	ItemRegistryState.AttemptRegisterObject( NAME_None, ItemDescriptor );
-	return *ItemRegistryState.FindObjectRegistration( ItemDescriptor );
+	if (const FGameObjectRegistration* ItemRegistration = ItemRegistryState.FindObjectRegistration(ItemDescriptor))
+	{
+		return *ItemRegistration;
+	}
+	// Since the ItemRegistryState is never frozen, this will only be reached if the ItemDescriptor is invalid
+	return FGameObjectRegistration{};
 }
 
 bool UModContentRegistry::IsItemDescriptorVanilla( TSubclassOf<UFGItemDescriptor> ItemDescriptor )
@@ -857,34 +862,55 @@ void UModContentRegistry::AutoRegisterRecipeReferences( TSubclassOf<UFGRecipe> R
 	}
 }
 
+static bool IsResourceFormFilteredOut(EResourceForm ResourceForm, EGetObtainableItemDescriptorsFlags Flags)
+{
+	using enum EGetObtainableItemDescriptorsFlags;
+	using enum EResourceForm;
+
+	switch (ResourceForm) {
+	case RF_INVALID:
+		return !EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags(IncludeBuildings | IncludeCustomizations | IncludeVehicles | IncludeCreatures | IncludeSpecial));
+	case RF_SOLID:
+		return false;
+	case RF_LIQUID:
+	case RF_GAS:
+		return !EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags(IncludeNonSolid));
+	case RF_HEAT: /* FIXME: Could be omitted, so that the default case handles it */
+		return true;
+	default:
+		return true;
+	}
+}
+
 bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
 {
 	if (!ItemDescriptor) {
 		UE_LOG(LogContentRegistry, Warning, TEXT("IsDescriptorFilteredOut called with null ItemDescriptor, returning true (filtering out)"));
 		return true;
 	}
-	const auto descriptorClass = Cast<UClass>(ItemDescriptor);
+	const TSubclassOf<UFGItemDescriptor> descriptorClass = const_cast<UClass*>(Cast<UClass>(ItemDescriptor));
+	if (!descriptorClass) {
+		UE_LOG(LogContentRegistry, Warning, TEXT("IsDescriptorFilteredOut called with non-ItemDescriptor, returning true (filtering out)"));
+		return true;
+	}
+	if (IsResourceFormFilteredOut(UFGItemDescriptor::GetForm(descriptorClass), Flags)) {
+		return true;
+	}
 
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeBuildings ) && descriptorClass->IsChildOf<UFGBuildingDescriptor>() )
-	{
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeBuildings) && descriptorClass->IsChildOf<UFGBuildingDescriptor>()) {
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeCustomizations ) && descriptorClass->IsChildOf<UFGFactoryCustomizationDescriptor>() )
-	{
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeCustomizations) && descriptorClass->IsChildOf<UFGFactoryCustomizationDescriptor>()) {
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeCreatures ) && descriptorClass->IsChildOf<UFGCreatureDescriptor>() )
-	{
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeCreatures) && descriptorClass->IsChildOf<UFGCreatureDescriptor>()) {
 		return true;
 	}
-	if ( !EnumHasAnyFlags( Flags, EGetObtainableItemDescriptorsFlags::IncludeVehicles ) && descriptorClass->IsChildOf<UFGVehicleDescriptor>() )
-	{
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeVehicles) && descriptorClass->IsChildOf<UFGVehicleDescriptor>()) {
 		return true;
 	}
-	if ( !EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial) ) {
-		
-		if (descriptorClass->IsChildOf<UFGWildCardDescriptor>() || descriptorClass->IsChildOf<UFGAnyUndefinedDescriptor>() || descriptorClass->IsChildOf<UFGOverflowDescriptor>() || descriptorClass->IsChildOf<UFGNoneDescriptor>())
-		{
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial)) {
+		if (descriptorClass->IsChildOf<UFGWildCardDescriptor>() || descriptorClass->IsChildOf<UFGAnyUndefinedDescriptor>() || descriptorClass->IsChildOf<UFGOverflowDescriptor>() || descriptorClass->IsChildOf<UFGNoneDescriptor>()) {
 			return true;
 		}
 		if (descriptorClass->ImplementsInterface(USMLExtendedAttributeProvider::StaticClass())) {
@@ -897,7 +923,6 @@ bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor
 			const auto hasTag = ItemTags.ToStringSimple().Contains("SML.Registry.Item.SpecialItemDescriptor");
 			return hasTag;
 		}
-		return false;
 	}
 	return false;
 }

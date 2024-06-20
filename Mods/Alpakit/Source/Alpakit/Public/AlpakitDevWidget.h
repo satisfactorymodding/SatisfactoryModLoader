@@ -3,9 +3,9 @@
 #include "AlpakitModEntryList.h"
 #include "Slate.h"
 
-class SAlpakitWidget : public SCompoundWidget {
+class SAlpakitDevWidget : public SCompoundWidget {
 public:
-    SLATE_BEGIN_ARGS(SAlpakitWidget) {}
+    SLATE_BEGIN_ARGS(SAlpakitDevWidget) {}
     SLATE_END_ARGS()
 
     void Construct(const FArguments& InArgs);
@@ -13,4 +13,9 @@ public:
 private:
     TSharedPtr<IDetailsView> DetailsView;
     TSharedPtr<SAlpakitModEntryList> ModList;
+
+    FReply PackageAllMods();
+	FReply CreateMod();
+
+	bool IsPackageButtonEnabled() const;
 };

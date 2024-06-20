@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "FGOptionInterface.h"
-#include "FGPlayerState.h"
+#include "Templates/Identity.h"
 #include "Settings/FGUserSetting.h"
 #include "Settings/FGUserSettingCategory.h"
 #include "Subsystems/EngineSubsystem.h"
@@ -74,6 +74,26 @@ private:
 	bool IsInMainMenu() const;
 	
 	void OnOptionUpdated(FString String, FVariant Value) const;
+
+	/*
+	 * Using (integer) literals for template argument deduction is troublesome
+	 * because the deduced template type is not visible by default. Given that
+	 * requiring callers to cast literals is hideous and error-prone, use some
+	 * funny template shenanigans to prevent template argument deduction using
+	 * the values passed as function arguments. This requires callers of these
+	 * function templates to explicitly specify the type argument T.
+	 */
+	template<typename T>
+	FORCEINLINE T GetOptionValue_Typed(const FString& cvar, TIdentity_T<const T> defaultValue) const
+	{
+		return GetOptionValue(cvar, FVariant(defaultValue)).GetValue<T>();
+	}
+
+	template<typename T>
+	FORCEINLINE T GetOptionDisplayValue_Typed(const FString& cvar, TIdentity_T<const T> defaultValue) const
+	{
+		return GetOptionDisplayValue(cvar, FVariant(defaultValue)).GetValue<T>();
+	}
 private:
 	UPROPERTY(Transient)
 	TMap<FString, UFGUserSettingApplyType*> SessionSettings;

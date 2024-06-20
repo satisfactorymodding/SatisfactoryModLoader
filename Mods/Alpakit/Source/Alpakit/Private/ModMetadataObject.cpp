@@ -1,4 +1,6 @@
 #include "ModMetadataObject.h"
+
+#include "Alpakit.h"
 #include "PluginDescriptor.h"
 #include "PluginReferenceDescriptor.h"
 #include "Misc/Paths.h"
@@ -17,6 +19,7 @@
 UModMetadataObject::UModMetadataObject(const FObjectInitializer& ObjectInitializer)
 {
 	Category = TEXT("Modding"); // Group all mods in this category
+	GameVersion = FAlpakitModule::GetCurrentGameVersion();
 }
 
 void UModMetadataObject::PopulateFromDescriptor(const FPluginDescriptor& InDescriptor)
@@ -46,6 +49,7 @@ void UModMetadataObject::PopulateFromDescriptor(const FPluginDescriptor& InDescr
 	}
 	InDescriptor.UpdateJson(CachedJson.Get());
 	CachedJson->TryGetStringField( TEXT("SemVersion"), SemVersion );
+	CachedJson->TryGetStringField( TEXT("GameVersion"), GameVersion );
 	CachedJson->TryGetStringField( TEXT("RemoteVersionRange"), RemoteVersionRange );
 	CachedJson->TryGetBoolField( TEXT("AcceptsAnyRemoteVersion"), bAcceptsAnyRemoteVersion );
 }
@@ -84,8 +88,8 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 		OutDescriptor.Plugins.RemoveAll(RemovedModLambda);
 	}
 
-	// CachedJson is not updated properly by UpdateDescriptor, so we update it manually here too
 	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
+	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("GameVersion"), MakeShared<FJsonValueString>( GameVersion ) );
 	if (RemoteVersionRange.Len() > 0) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RemoteVersionRange"), MakeShared<FJsonValueString>( RemoteVersionRange ) );
 	} else {
@@ -151,13 +155,18 @@ void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor
 	OutDescriptor.bEnabled = bEnabled;
 	OutDescriptor.bOptional = bOptional;
 
-	// CachedJson is not updated properly by UpdateDescriptor, so we update it manually here too
-	OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ) );
+	if (!bBasePlugin) {
+		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ));
+	} else if (OutDescriptor.CachedJson->HasField(TEXT("SemVersion"))) {
+		// We cannot remove the field when using UpdateDescriptor, because it will be copied from the existing descriptor
+		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("SemVersion"), MakeShared<FJsonValueString>( TEXT("") ));
+	}
+	
 	if (bBasePlugin) {
-		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ) );
-	} else {
-		// Remove field entirely when default value
-		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("BasePlugin"));
+		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ));
+	} else if (OutDescriptor.CachedJson->HasField(TEXT("BasePlugin"))) {
+		// We cannot remove the field when using UpdateDescriptor, because it will be copied from the existing descriptor
+		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( false ));
 	}
 }
 

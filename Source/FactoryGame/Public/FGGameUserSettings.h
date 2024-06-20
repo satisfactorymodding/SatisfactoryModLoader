@@ -111,13 +111,14 @@ public:
 	/**
 	 * Validates the given upscaling method based on hardware support.
 	 * Returns the best available upscaling method if the requested one is not supported.
-	 * if VRAM is lower than UPSCALING_VRAM_MINIMUM we return EUpscalingMethod::EUM_None
+	 * if considerVRAM is true and VRAM is lower than UPSCALING_VRAM_MINIMUM we return EUpscalingMethod::EUM_None
 	 * For example, the preference hierarchy is DLSS > XeSS > TSR.
 	 * 
 	 * @param upscalingMethod The upscaling method to validate.
+	 * @param considerVRAM If we should take the VRAM of the hardware into consideration
 	 * @return The validated or preferred upscaling method.
 	 */
-	EUpscalingMethod ValidateUpscalingMethod( EUpscalingMethod upscalingMethod ) const;
+	EUpscalingMethod ValidateUpscalingMethod( EUpscalingMethod upscalingMethod, bool considerVRAM = true ) const;
 
 	/**
 	 * Validates a given scalability setting by ensuring the system/hardware can handle the specified value.
@@ -160,6 +161,8 @@ public:
 	void UpdateVideoQualityCvars( const FString& cvar );
 	void OnUpScalingUpdated( FString strId, FVariant value );
 	void InitUpScalingMethod();
+	bool IsUsingThirdPartyUpscaler() const;
+	
 	/** Checks if we want to apply some scalability settings based on cmd line arguments. No applied in shipping. Used for profiling.
 	 *	If a video quality argument is present we don't used saved values or save changed values.
 	 */
@@ -408,6 +411,14 @@ private:
 	
 	void TestSavedValues();
 
+	UWorld* GetGameWorld();
+	
+	void FlushRenderingCommandsThenApplyUpscaler( EUpscalingMethod upscalingMethod );
+
+	void SetUpscalerCVars( EUpscalingMethod upscalingMethod );
+	
+	void SetAAMethodFromUpscalingMethod( EUpscalingMethod upscalingMethod );
+
 public:
 	/** Called when arachnophobia mode is changed */
 	UPROPERTY( BlueprintAssignable, Category = "Arachnophobia", DisplayName = "OnArachnophobiaModeChanged" )
@@ -489,9 +500,6 @@ private:
 
 	/** Current state if user setting. Used so we can know when we are taking actions like reset and apply so we can gate certain actions */ 
 	EGameUserSettingsState mCurrentState = EGameUserSettingsState::EGUSS_Default;
-
-	UPROPERTY()
-	bool bIsUsingThirdPartyUpScaler = false;
 	
 	/** const variables */
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;

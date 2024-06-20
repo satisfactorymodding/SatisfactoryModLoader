@@ -1,26 +1,27 @@
-#pragma once
 #include "Util/SemVersion.h"
 #include <regex>
+#include "Containers/StringConv.h"
+#include "SatisfactoryModLoader.h"
 
 //Use stdlib regex here because UE Regex(which is ICU regex wrapper) requires initialized localization system, and our versioning can be called much earlier than that
-std::wregex VersionRegex(TEXT("^(~|v|=|<=|<|>|>=|\\^)?(X|x|\\*|0|[1-9]\\d*)(?:\\.(X|x|\\*|0|[1-9]\\d*)(?:\\.(X|x|\\*|0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)?)?$"), std::regex::ECMAScript | std::regex::optimize);
+std::wregex VersionRegex(L"^(~|v|=|<=|<|>|>=|\\^)?(X|x|\\*|0|[1-9]\\d*)(?:\\.(X|x|\\*|0|[1-9]\\d*)(?:\\.(X|x|\\*|0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)?)?$");
 
 FString ParseVersionTemplate(const FString& string, FVersion& version, EVersionComparisonOp& Comparison);
 
-EVersionComparisonOp ParseComparisonOp(const FString& type) {
-	if (type == TEXT("<="))
+EVersionComparisonOp ParseComparisonOp(const std::wstring& type) {
+	if (type.compare(L"<=") == 0)
 		return EVersionComparisonOp::LESS_EQUALS;
-	if (type == TEXT("<"))
+	if (type.compare(L"<") == 0)
 		return EVersionComparisonOp::LESS;
-	if (type == TEXT(">="))
+	if (type.compare(L">=") == 0)
 		return EVersionComparisonOp::GREATER_EQUALS;
-	if (type == TEXT(">"))
+	if (type.compare(L">") == 0)
 		return EVersionComparisonOp::GREATER;
-	if (type == TEXT("^"))
+	if (type.compare(L"^") == 0)
 		return EVersionComparisonOp::CARET;
-	if (type == TEXT("~"))
+	if (type.compare(L"~") == 0)
 		return EVersionComparisonOp::TILDE;
-	if (type == TEXT("=") || type == TEXT("v") || type == TEXT(""))
+	if (type.compare(L"=") == 0|| type.compare(L"v") == 0|| type.compare(L"") == 0)
 		return EVersionComparisonOp::EQUALS;
 	return EVersionComparisonOp::INVALID;
 }
@@ -490,15 +491,17 @@ bool FVersionRange::Matches(const FVersion& Version) const {
 }
 
 bool IsWildcardVersionNumber(const std::wstring& Number) {
-	return Number == TEXT("X") || Number == TEXT("x") || Number == TEXT("*");
+	return Number.compare(L"X") == 0 || Number.compare(L"x") == 0 || Number.compare(L"*") == 0;
 }
 
 //Parses version number, taking care of wildcard characters and empty string
 int64 ParseVersionNumber(const std::wstring& Number) {
 	if (IsWildcardVersionNumber(Number)) {
+		UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Version number %s is wildcard"), Number.c_str());
 		return SEMVER_VERSION_NUMBER_WILDCARD;
 	}
-	if (Number == TEXT("")) {
+	if (Number.length() == 0) {
+		UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Version number %s is empty"), Number.c_str());
 		return SEMVER_VERSION_NUMBER_UNSPECIFIED;
 	}
 	return std::stoul(Number);
@@ -506,12 +509,12 @@ int64 ParseVersionNumber(const std::wstring& Number) {
 
 FString ParseVersionTemplate(const FString& string, FVersion& version, EVersionComparisonOp& Comparison) {
 	std::wsmatch Match;
-	const std::wstring WideString(*string);
+	const std::wstring WideString(TCHAR_TO_WCHAR(*string));
 	if (!std::regex_match(WideString, Match, VersionRegex)) {
 		return TEXT("Version doesn't match SemVer pattern");
 	}
 	const std::wstring& FirstMatch = Match[1];
-	Comparison = ParseComparisonOp(FirstMatch.c_str());
+	Comparison = ParseComparisonOp(FirstMatch);
 	
 	if (Comparison == EVersionComparisonOp::INVALID) {
 		return TEXT("Invalid version comparator");
@@ -533,8 +536,8 @@ FString ParseVersionTemplate(const FString& string, FVersion& version, EVersionC
 			return TEXT("Wildcard cannot be followed by version number");
         }
 	}
-	version.PreRelease = Match[5].str().c_str();
-	version.BuildInfo = Match[6].str().c_str();
+	version.PreRelease = WCHAR_TO_TCHAR(Match[5].str().c_str());
+	version.BuildInfo = WCHAR_TO_TCHAR(Match[6].str().c_str());
 	return TEXT("");
 }
 

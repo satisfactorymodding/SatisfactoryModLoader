@@ -257,3 +257,5 @@ FEdGraphPinType FUserDefinedStructCodeGenerator::CreatePinTypeForVariable(const 
     }
     return GraphPinType;
 }
+
+#undef LOCTEXT_NAMESPACE

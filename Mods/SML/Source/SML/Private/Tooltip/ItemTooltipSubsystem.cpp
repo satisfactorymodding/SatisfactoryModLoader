@@ -9,7 +9,7 @@
 
 //Overwrites delegates bound to title & description widgets to use FTooltipHookHelper, add custom item widget
 void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
-    //Gather UProperty exposed by tooltip widget
+    //Gather FProperty exposed by tooltip widget
     UClass* TooltipWidgetClass = TooltipWidget->GetClass();
     FObjectProperty* TitleWidgetProperty = CastField<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mTitle")));
     FObjectProperty* DescriptionWidgetProperty = CastField<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mDescription")));

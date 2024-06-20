@@ -280,3 +280,5 @@ void UK2Node_GetModConfiguration::RetrieveAllConfigurationClasses(TArray<UClass*
 		}
 	}
 }
+
+#undef LOCTEXT_NAMESPACE

@@ -20,3 +20,5 @@ EDataValidationResult UModConfiguration::IsDataValid(TArray<FText>& ValidationEr
 	return ValidationResult;
 }
 #endif
+
+#undef LOCTEXT_NAMESPACE
