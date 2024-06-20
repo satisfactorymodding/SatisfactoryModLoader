@@ -137,7 +137,7 @@ enum class EGetObtainableItemDescriptorsFlags : uint8
 	IncludeCustomizations = 0x04 UMETA( DisplayName = "Include Customizations" ),
 	IncludeVehicles = 0x08 UMETA( DisplayName = "Include Vehicles" ),
 	IncludeCreatures = 0x10 UMETA( DisplayName = "Include Creatures" ),
-	IncludeSpecial = 0x20 UMETA( DisplayName = "Include Special (WildCard, AnyUndefined, Overflow, None)" ),
+	IncludeSpecial = 0x20 UMETA( DisplayName = "Include Special (WildCard, AnyUndefined, Overflow, None, SML.Registry.Item.SpecialItemDescriptor)" ),
 	Default = None,
 };
 
