@@ -13,8 +13,6 @@ public:
 	
 	virtual void Init() override;
 
-	// TODO: Use this to sync the settings to the client on join
-
 	static ASessionSettingsSubsystem* Get(UWorld* World);
 
 	void OnSessionSettingUpdated(const FString StrID, FVariant value);
@@ -36,6 +34,13 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RequestSessionSettingUpdate(const FString& SessionSettingName, const FString& ValueString);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_RequestAllSessionSettings();
+
+	UFUNCTION(Client, Reliable, WithValidation)
+	void Client_SendSessionSetting(const FString& SessionSettingName, const FString& ValueString);
+
 private:
 	UPROPERTY(Replicated)
 	bool mForceNetField_USMLSessionSettingsRemoteCallObject;
