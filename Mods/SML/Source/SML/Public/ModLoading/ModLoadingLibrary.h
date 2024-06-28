@@ -77,8 +77,8 @@ struct SML_API FSMLPluginDescriptorMetadata {
     /** Range of the accepted remote versions, by default >=Version */
     FVersionRange RemoteVersionRange;
 
-    /** Game version this mod was built against */
-    uint32 GameVersion;
+    /** Game version this mod is compatible with */
+    FVersionRange GameVersion;
 
     /** Version constraints for dependencies as specified in plugin refs */
     TMap<FString, FVersionRange> DependenciesVersions;

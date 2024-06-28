@@ -3,6 +3,7 @@
 #include "ModMetadataObject.h"
 #include "Slate.h"
 #include "Interfaces/IPluginManager.h"
+#include "Util/SemVersion.h"
 
 class SAlpakitEditModDialog : public SWindow
 {
@@ -14,10 +15,16 @@ public:
 
 	FString GetSMLDependencyVersion() const;
 	void SetSMLDependencyVersion(FString Version) const;
-	FString GetGameVersion() const;
+	void UpdateGameVersionTarget();
+
+	static FString FormatGameVersionRange(const FVersionRange& Range);
+
 private:
 	TSharedPtr<IPlugin> Mod;
 	UModMetadataObject* MetadataObject = nullptr;
+	FVersion GameVersion;
+	FVersionRange ModGameVersionRange;
+	FVersionRange TargetGameVersionRange;
 	
 	FReply OnOkClicked();
 };

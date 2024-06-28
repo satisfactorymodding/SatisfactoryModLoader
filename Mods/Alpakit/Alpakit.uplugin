@@ -25,6 +25,10 @@
 		{
 			"Name": "PluginBrowser",
 			"Enabled": true
+		},
+		{
+			"Name": "SML",
+			"Enabled": true
 		}
 	]
 }
