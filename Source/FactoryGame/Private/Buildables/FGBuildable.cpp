@@ -175,6 +175,7 @@ AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) : Super(
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 	this->NetCullDistanceSquared = 5625000000.0;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Static);
 }
 void AFGBuildable::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildable::PostLoad(){ Super::PostLoad(); }
