@@ -92,6 +92,8 @@ public:
 	static AAbstractInstanceManager* GetInstanceManager( UObject* WorldContext );
 	static AAbstractInstanceManager* GetInstanceManager();
 
+	virtual void Destroyed() override;
+
 	virtual void Tick(float DeltaSeconds) override;
 
 	static void SetInstancedStatic( AActor* OwnerActor, const FTransform& ActorTransform, const UAbstractInstanceDataObject* InstanceData, TArray<FInstanceHandle*>& OutHandle, bool bInitializeHidden = false );
@@ -170,9 +172,15 @@ private:
 #if !AI_PIE
 	static AAbstractInstanceManager* StaticManager;
 #else // PIE support
-	static TMap<UWorld*,AAbstractInstanceManager*> StaticManager_PIE;
+	static TMap<TObjectPtr<UWorld>, TObjectPtr<AAbstractInstanceManager>> StaticManager_PIE;
 #endif
 	
 	static FName BuildUniqueName( const FInstanceData& InstanceData );
 	static FName BuildUniqueName( const UInstancedStaticMeshComponent* MeshComponent );
+public:
+#if AI_PIE
+	static void OnWorldCleanup(UWorld* World, bool bSessionEnded, bool bCleanupResources);
+	static void BeginPIE(bool bIsSimulating);
+	static void PostPIEStarted(bool bIsSimulating);
+#endif
 };

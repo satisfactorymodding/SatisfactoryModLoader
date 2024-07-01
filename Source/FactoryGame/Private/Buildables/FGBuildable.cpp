@@ -6,6 +6,8 @@
 #include "Net/UnrealNetwork.h"
 #include "AbstractInstanceManager.h"
 
+DEFINE_LOG_CATEGORY(LogBuilding);
+
 #if WITH_EDITOR
 void AFGBuildable::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) {
     Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -44,25 +46,33 @@ TArray<struct FInstanceData> AFGBuildable::GetActorLightweightInstanceData_Imple
     return TArray<FInstanceData>();
 }
 void AFGBuildable::SetupInstances_Native(bool bInitializeHidden) {
-    if (this && GetWorld() && IsValid(mInstanceDataCDO)) {
+    if (GetWorld() && IsValid(mInstanceDataCDO)) {
         for (FInstanceData InstanceData : mInstanceDataCDO->GetInstanceData()) {
             if (IsValid(InstanceData.StaticMesh) && !InstanceData.OverridenMaterials.Contains(nullptr)) {
-                FInstanceHandle* Handle;
-                AAbstractInstanceManager::SetInstanceFromDataStatic(this, FTransform(), InstanceData, Handle, bInitializeHidden);
-                mInstanceHandles.Add(Handle);
+                FInstanceHandle* Handle = nullptr;
+                AAbstractInstanceManager::SetInstanceFromDataStatic(this, this->GetActorTransform(), InstanceData, Handle, bInitializeHidden);
+				if (Handle && Handle->IsValid()) {
+					mInstanceHandles.Add(Handle);
+				} else {
+					UE_LOG(LogBuilding, Warning, TEXT("[Th3] Invalid Handle for %s mesh %s at %s"),
+						   *this->GetPathName(),
+						   InstanceData.StaticMesh ? *InstanceData.StaticMesh->GetName() : TEXT("nullptr"),
+						   *InstanceData.RelativeTransform.ToString());
+				}
             }
         }
     }
 }
 void AFGBuildable::RemoveInstances_Native() {
-    if (this && GetWorld()) {
-        AAbstractInstanceManager* Manager = AAbstractInstanceManager::GetInstanceManager(GetWorld());
-        for (FInstanceHandle* InstanceHandle : mInstanceHandles) {
-            if (InstanceHandle->IsInstanced()) {
-                Manager->RemoveInstance(InstanceHandle);
-            }
-        }
-        mInstanceHandles.Empty();
+    if (UWorld* World = GetWorld()) {
+		if (AAbstractInstanceManager* Manager = AAbstractInstanceManager::GetInstanceManager(World)) {
+			for (FInstanceHandle* InstanceHandle : mInstanceHandles) {
+				if (InstanceHandle->IsInstanced()) {
+					Manager->RemoveInstance(InstanceHandle);
+				}
+			}
+		}
+		mInstanceHandles.Empty();
     }
 }
 
@@ -165,6 +175,7 @@ AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) : Super(
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 	this->NetCullDistanceSquared = 5625000000.0;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Static);
 }
 void AFGBuildable::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildable::PostLoad(){ Super::PostLoad(); }
