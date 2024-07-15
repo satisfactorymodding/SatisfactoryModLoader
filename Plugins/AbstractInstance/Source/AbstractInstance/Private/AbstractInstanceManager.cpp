@@ -10,6 +10,11 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 
+#if AI_PIE
+#include "EngineUtils.h"
+#include "Editor.h"
+#endif
+
 static TAutoConsoleVariable<int32> CVarAllowLazySpawning(
 	TEXT("lightweightinstances.AllowLazySpawn"),
 	0,
@@ -57,7 +62,8 @@ constexpr int32 NumCollisionInstances = 500;
 #if !AI_PIE
 AAbstractInstanceManager* AAbstractInstanceManager::StaticManager = nullptr;
 #else
-TMap<UWorld*,AAbstractInstanceManager*> AAbstractInstanceManager::StaticManager_PIE;
+TMap<TObjectPtr<UWorld>, TObjectPtr<AAbstractInstanceManager>> AAbstractInstanceManager::StaticManager_PIE;
+static FRWLock StaticRWLock;
 #endif
 
 // Sets default values
@@ -68,29 +74,90 @@ AAbstractInstanceManager::AAbstractInstanceManager()
 	
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent->SetMobility( EComponentMobility::Static );
+
+	if (!this->HasAnyFlags(RF_ClassDefaultObject | RF_ArchetypeObject)) {
+		this->SetFlags(RF_Transient | RF_NonPIEDuplicateTransient);
+	}
 }
+
+/* FIXME(Th3): this terribleness feels like paranoia, is it even needed? */
+void AAbstractInstanceManager::Destroyed()
+{
+	Super::Destroyed();
+#if AI_PIE
+	const UWorld* World = GetWorld();
+	EditorCheck(World);
+	FRWScopeLock Lock(StaticRWLock, FRWScopeLockType::SLT_Write);
+	if (StaticManager_PIE.Contains(World) && StaticManager_PIE[World] == this) {
+		StaticManager_PIE.Remove(World);
+	}
+#endif
+}
+
+#if AI_PIE
+void AAbstractInstanceManager::OnWorldCleanup(UWorld* World, bool bSessionEnded, bool bCleanupResources)
+{
+	StaticManager_PIE.Remove(World);
+}
+
+static AAbstractInstanceManager* GetEditorInstanceManager()
+{
+	UWorld* EditorWorld = GetValid(GEditor->EditorWorld);
+	if (!EditorWorld) {
+		EditorWorld = GetValid(GWorld.GetReference());
+	}
+	return EditorWorld ? AAbstractInstanceManager::GetInstanceManager(EditorWorld) : nullptr;
+}
+
+void AAbstractInstanceManager::PostPIEStarted(bool bIsSimulating)
+{
+	if (AAbstractInstanceManager* Manager = GetEditorInstanceManager()) {
+		Manager->SetFlags(RF_Transient | RF_NonPIEDuplicateTransient);
+	}
+}
+
+void AAbstractInstanceManager::BeginPIE(bool bIsSimulating)
+{
+	if (AAbstractInstanceManager* Manager = GetEditorInstanceManager()) {
+		Manager->ClearFlags(RF_Transient | RF_NonPIEDuplicateTransient);
+	}
+}
+
+static AAbstractInstanceManager* GetExistingInstanceManager(UWorld* World)
+{
+	for (TActorIterator<AAbstractInstanceManager> It(World, AAbstractInstanceManager::StaticClass(), EActorIteratorFlags::AllActors); It; ++It) {
+		return *It;
+	}
+	return nullptr;
+}
+#endif
 
 AAbstractInstanceManager* AAbstractInstanceManager::GetInstanceManager( UObject* WorldContext )
 {
+	UWorld* World = WorldContext->GetWorld();
 #if !AI_PIE
-	if(!AAbstractInstanceManager::StaticManager)
-	{
-		AAbstractInstanceManager::StaticManager = WorldContext->GetWorld()->SpawnActor< AAbstractInstanceManager >();
+	if (IsValid(AAbstractInstanceManager::StaticManager)) {
+		return AAbstractInstanceManager::StaticManager;
 	}
-
+	AAbstractInstanceManager::StaticManager = World->SpawnActor<AAbstractInstanceManager>();
 	return AAbstractInstanceManager::StaticManager;
 #else
-	if (StaticManager_PIE.Contains(WorldContext->GetWorld()))
-	{
-		return StaticManager_PIE[WorldContext->GetWorld()];
+	/* FIXME(Th3): why do we maintain a map if we're iterating over actors anyway */
+	if (AAbstractInstanceManager* ExistingManager = GetExistingInstanceManager(World)) {
+		return ExistingManager;
 	}
-	else
-	{
-		auto NewManager = WorldContext->GetWorld()->SpawnActor< AAbstractInstanceManager >();
-		StaticManager_PIE.Add(WorldContext->GetWorld(),NewManager);
-
+	FRWScopeLock Lock(StaticRWLock, FRWScopeLockType::SLT_Write);
+	if (StaticManager_PIE.Contains(World)) {
+		if (IsValid(StaticManager_PIE[World])) {
+			return StaticManager_PIE[World];
+		}
+		StaticManager_PIE.Remove(World);
+	}
+	if (AAbstractInstanceManager* NewManager = World->SpawnActor<AAbstractInstanceManager>()) {
+		StaticManager_PIE.Add(World, NewManager);
 		return NewManager;
 	}
+	return nullptr;
 #endif
 }
 
@@ -100,6 +167,7 @@ AAbstractInstanceManager* AAbstractInstanceManager::GetInstanceManager()
 	return AAbstractInstanceManager::StaticManager;
 #else
 	// TODO implement.
+	EditorCheck(false);
 	return nullptr;
 #endif
 }
@@ -592,7 +660,12 @@ void AAbstractInstanceManager::EndPlay( const EEndPlayReason::Type EndPlayReason
 #if !AI_PIE
 	AAbstractInstanceManager::StaticManager = nullptr;
 #else
-	AAbstractInstanceManager::StaticManager_PIE.Empty();
+	FRWScopeLock Lock(StaticRWLock, FRWScopeLockType::SLT_Write);
+	const UWorld* World = GetWorld();
+	EditorCheck(World);
+	if (StaticManager_PIE.Contains(World) && StaticManager_PIE[World] == this) {
+		StaticManager_PIE.Remove(World);
+	}
 #endif
 }
 

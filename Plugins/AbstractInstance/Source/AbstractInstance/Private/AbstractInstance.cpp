@@ -2,11 +2,20 @@
 
 #include "AbstractInstance.h"
 
+#if AI_PIE
+#include "AbstractInstanceManager.h"
+#include "Editor.h"
+#endif
+
 #define LOCTEXT_NAMESPACE "FAbstractInstanceModule"
 
 void FAbstractInstanceModule::StartupModule()
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+#if AI_PIE
+	FEditorDelegates::BeginPIE.AddStatic(&AAbstractInstanceManager::BeginPIE);
+	FEditorDelegates::PostPIEStarted.AddStatic(&AAbstractInstanceManager::PostPIEStarted);
+	FWorldDelegates::OnWorldCleanup.AddStatic(&AAbstractInstanceManager::OnWorldCleanup);
+#endif
 }
 
 void FAbstractInstanceModule::ShutdownModule()
