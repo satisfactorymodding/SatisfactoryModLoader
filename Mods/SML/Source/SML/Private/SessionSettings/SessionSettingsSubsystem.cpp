@@ -2,6 +2,8 @@
 #include "FGGameMode.h"
 #include "FGPlayerController.h"
 #include "Subsystem/SubsystemActorManager.h"
+#include "Settings/FGUserSettingApplyType.h"
+#include "Net/UnrealNetwork.h"
 
 ASessionSettingsSubsystem::ASessionSettingsSubsystem() {
 	ReplicationPolicy = ESubsystemReplicationPolicy::SpawnOnServer_Replicate;
@@ -10,6 +12,14 @@ ASessionSettingsSubsystem::ASessionSettingsSubsystem() {
 void ASessionSettingsSubsystem::Init() {
 	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
 	check(SessionSettingsManager);
+
+	if (!HasAuthority())
+	{
+		// We're a client, so we only have our own player controller
+		AFGPlayerController* PlayerController = Cast<AFGPlayerController>(GetWorld()->GetFirstPlayerController());
+		USMLSessionSettingsRemoteCallObject* RCO = PlayerController->GetRemoteCallObjectOfClass<USMLSessionSettingsRemoteCallObject>();
+		RCO->Server_RequestAllSessionSettings();
+	}
 
 	OnOptionUpdatedDelegate = FOnOptionUpdated::CreateUObject(this, &ASessionSettingsSubsystem::OnSessionSettingUpdated);
 	SessionSettingsManager->SubscribeToAllOptionUpdates(OnOptionUpdatedDelegate);
@@ -64,4 +74,36 @@ bool USMLSessionSettingsRemoteCallObject::Server_RequestSessionSettingUpdate_Val
 	const USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
 
 	return SessionSettingsManager != NULL && SessionSettingsManager->FindSessionSetting(SessionSettingName) != NULL;
+}
+
+void USMLSessionSettingsRemoteCallObject::Server_RequestAllSessionSettings_Implementation()
+{
+	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
+	TMap<FString, UFGUserSettingApplyType*> Settings = SessionSettingsManager->GetAllSessionSettings();
+	for (TPair<FString, UFGUserSettingApplyType*> Setting : Settings)
+	{
+		FVariant AppliedValue = Setting.Value->GetAppliedValue();
+		FString ValueString = USessionSettingsManager::VariantToString(AppliedValue);
+		Client_SendSessionSetting(Setting.Key, ValueString);
+	}
+}
+
+bool USMLSessionSettingsRemoteCallObject::Server_RequestAllSessionSettings_Validate()
+{
+	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
+	return SessionSettingsManager != NULL;
+}
+
+void USMLSessionSettingsRemoteCallObject::Client_SendSessionSetting_Implementation(const FString& SessionSettingName, const FString& ValueString)
+{
+	ASessionSettingsSubsystem* SessionSettingsSubsystem = ASessionSettingsSubsystem::Get(GetWorld());
+	check(SessionSettingsSubsystem);
+
+	SessionSettingsSubsystem->PushSettingToSessionSettings(SessionSettingName, USessionSettingsManager::StringToVariant(ValueString));
+}
+
+bool USMLSessionSettingsRemoteCallObject::Client_SendSessionSetting_Validate(const FString& SessionSettingName, const FString& ValueString)
+{
+	const USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
+	return SessionSettingsManager != NULL && !SessionSettingName.IsEmpty() && !ValueString.IsEmpty();
 }

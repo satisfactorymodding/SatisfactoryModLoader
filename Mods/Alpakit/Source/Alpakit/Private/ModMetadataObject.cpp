@@ -19,7 +19,7 @@
 UModMetadataObject::UModMetadataObject(const FObjectInitializer& ObjectInitializer)
 {
 	Category = TEXT("Modding"); // Group all mods in this category
-	GameVersion = FAlpakitModule::GetCurrentGameVersion();
+	GameVersion = FString::Printf(TEXT(">=%s"), *FAlpakitModule::GetCurrentGameVersion());
 }
 
 void UModMetadataObject::PopulateFromDescriptor(const FPluginDescriptor& InDescriptor)

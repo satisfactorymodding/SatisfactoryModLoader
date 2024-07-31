@@ -373,6 +373,8 @@ public:
 		{
 			UninstallHook(DebugSymbolName);
 		}
+
+		InHandlerHandle.Reset();
 	}
 };
 
@@ -547,6 +549,8 @@ public:
 		{
 			UninstallHook(DebugSymbolName);
 		}
+
+		InHandlerHandle.Reset();
 	}
 };
 

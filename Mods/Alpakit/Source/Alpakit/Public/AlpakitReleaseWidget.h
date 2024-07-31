@@ -3,6 +3,7 @@
 #include "AlpakitModEntryList.h"
 #include "ModTargetsConfig.h"
 #include "Slate.h"
+#include "Util/SemVersion.h"
 
 class SAlpakitReleaseWidget : public SCompoundWidget {
 public:
@@ -15,6 +16,9 @@ public:
     static void SetModSMLDependencyVersion(TSharedRef<IPlugin> Mod, FString Version);
     static FString GetModGameVersion(TSharedRef<IPlugin> Mod);
     static void SetModGameVersion(TSharedRef<IPlugin> Mod, FString Version);
+	static void GetModGameVersionFields(TSharedRef<IPlugin> Mod, FVersion& GameVersion, FVersionRange& ModGameVersionRange, FVersionRange& TargetGameVersionRange);
+    static FString FormatGameVersionRange(const FVersionRange& TargetGameVersionRange);
+
 private:
     TSharedPtr<SAlpakitModEntryList> ModList;
     TMap<FString, TSharedRef<FModTargetsConfig>> ModTargetsConfigs;

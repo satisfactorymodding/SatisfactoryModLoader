@@ -56,6 +56,8 @@ public:
 	void SubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate);
 	void UnsubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate);
 
+	TMap<FString, UFGUserSettingApplyType*> GetAllSessionSettings() { return SessionSettings; };
+
 	UFUNCTION(BlueprintCallable, Category = "Session Settings Manager")
 	void InitializeForMap(const TSoftObjectPtr<UWorld>& World, bool bAttemptPreserveValues);
 	

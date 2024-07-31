@@ -4,6 +4,7 @@
 #include "AlpakitSettings.h"
 #include "AlpakitStyle.h"
 #include "ModTargetsConfig.h"
+#include "Util/SemVersion.h"
 
 #define LOCTEXT_NAMESPACE "AlpakitWidget"
 
@@ -11,7 +12,6 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
     const float TargetColumnWidth = 90;
 
     FString TargetSMLVersion = TEXT("^") + FAlpakitModule::GetCurrentSMLVersion();
-    FString TargetGameVersion = FAlpakitModule::GetCurrentGameVersion();
 
     ChildSlot[
         SNew(SVerticalBox)
@@ -84,7 +84,7 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
                             return !FAlpakitModule::Get().IsPackaging();
                         });
             })
-            .ModEntryTrail_Lambda([this, TargetColumnWidth, TargetSMLVersion, TargetGameVersion] (const TSharedRef<IPlugin>& Mod) {
+            .ModEntryTrail_Lambda([this, TargetColumnWidth, TargetSMLVersion] (const TSharedRef<IPlugin>& Mod) {
                 TSharedRef<FModTargetsConfig> ModTargetsConfig = ModTargetsConfigs.FindOrAdd(Mod->GetName(), MakeShared<FModTargetsConfig>(Mod));
 
                 return SNew(SBox)
@@ -122,10 +122,12 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
                         + SHorizontalBox::Slot().AutoWidth().Padding(5,0)[
                             SNew(SBox)
                             .HAlign(HAlign_Center)
-                            .Visibility_Lambda([this, Mod, TargetGameVersion]
+                            .Visibility_Lambda([this, Mod]
                             {
-                                FString GameVersion = GetModGameVersion(Mod);
-                                if (GameVersion == TargetGameVersion)
+                                FVersion GameVersion;
+                                FVersionRange ModGameVersionRange, TargetGameVersionRange;
+                                GetModGameVersionFields(Mod, GameVersion, ModGameVersionRange, TargetGameVersionRange);
+                                if (FormatGameVersionRange(ModGameVersionRange) == FormatGameVersionRange(TargetGameVersionRange))
                                     return EVisibility::Hidden;
                                 return EVisibility::Visible;
                             })
@@ -136,17 +138,25 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
                                     SNew(SImage)
                                     .Image(FAlpakitStyle::Get().GetBrush("Alpakit.Warning"))
                                 ]
-                                .ToolTipText_Lambda([Mod, TargetGameVersion]
+                                .ToolTipText_Lambda([Mod]
                                 {
-                                    FString CurrentGameVersion = GetModGameVersion(Mod);
-                                    if (CurrentGameVersion.IsEmpty()) {
-                                        CurrentGameVersion = "(unspecified)";
+                                    FString GameVersionRaw = GetModGameVersion(Mod);
+                                    FVersion GameVersion;
+                                    FVersionRange ModGameVersionRange, TargetGameVersionRange;
+                                    GetModGameVersionFields(Mod, GameVersion, ModGameVersionRange, TargetGameVersionRange);
+                                    if (GameVersionRaw.IsEmpty()) {
+                                        GameVersionRaw = "(unspecified)";
+                                    } else {
+                                        GameVersionRaw = FormatGameVersionRange(ModGameVersionRange);
                                     }
-                                    return FText::Format(LOCTEXT("UpdateGameVersionTooltip", "This mod uses game version {0}, but the project is {1}. Click to update"), FText::FromString(CurrentGameVersion), FText::FromString(TargetGameVersion));
+                                    return FText::Format(LOCTEXT("UpdateGameVersionTooltip", "This mod uses game version {0}, but the project is {1}. Click to update"), FText::FromString(GameVersionRaw), FText::FromString(FormatGameVersionRange(TargetGameVersionRange)));
                                 })
-                                .OnClicked_Lambda([this, Mod, TargetGameVersion]
+                                .OnClicked_Lambda([this, Mod]
                                 {
-                                    SetModGameVersion(Mod, TargetGameVersion);
+                                    FVersion GameVersion;
+                                    FVersionRange ModGameVersionRange, TargetGameVersionRange;
+                                    GetModGameVersionFields(Mod, GameVersion, ModGameVersionRange, TargetGameVersionRange);
+                                    SetModGameVersion(Mod, FormatGameVersionRange(TargetGameVersionRange));
                                     return FReply::Handled();
                                 })
                             ]
@@ -240,6 +250,33 @@ FString SAlpakitReleaseWidget::GetModGameVersion(TSharedRef<IPlugin> Mod)
         Descriptor.CachedJson->TryGetStringField(TEXT("GameVersion"), GameVersion);
     return GameVersion;
 }
+
+void SAlpakitReleaseWidget::GetModGameVersionFields(TSharedRef<IPlugin> Mod, FVersion& GameVersion, FVersionRange& ModGameVersionRange, FVersionRange& TargetGameVersionRange) {    
+    FString ModGameVersion = GetModGameVersion(Mod);
+    
+    FString _;
+    GameVersion.ParseVersion(FString::Printf(TEXT("%s.0.0"), *FAlpakitModule::GetCurrentGameVersion()), _);
+    if (!ModGameVersion.IsEmpty()) {
+        ModGameVersionRange.ParseVersionRange(ModGameVersion, _);
+
+        TargetGameVersionRange.ParseVersionRange(ModGameVersion, _);
+        for (FVersionComparatorCollection& ComparatorCollection : TargetGameVersionRange.Collections) {
+            ComparatorCollection.Comparators.Add(FVersionComparator(EVersionComparisonOp::GREATER_EQUALS, GameVersion));
+        }
+
+        if (!TargetGameVersionRange.Matches(GameVersion)) {
+            TargetGameVersionRange = FVersionRange::CreateRangeWithMinVersion(GameVersion);
+        }
+    } else {
+        ModGameVersionRange = FVersionRange();
+        TargetGameVersionRange = FVersionRange::CreateRangeWithMinVersion(GameVersion);
+    }
+}
+
+FString SAlpakitReleaseWidget::FormatGameVersionRange(const FVersionRange& TargetGameVersionRange) {
+    return TargetGameVersionRange.ToString().Replace(TEXT(".0.0"), TEXT(""));
+}
+
 
 void SAlpakitReleaseWidget::SetModGameVersion(TSharedRef<IPlugin> Mod, FString Version)
 {

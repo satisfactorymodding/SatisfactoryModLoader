@@ -131,6 +131,88 @@ bool FVersionComparator::ParseVersionComparator(const FString& String, FString& 
 	return false;
 }
 
+bool CaretMaxVersion(FVersion Lower, FVersion& MaxVersion) {
+	MaxVersion = FVersion{};
+	//Check if we have any wildcards we need to handle
+	if (Lower.ContainsSpecialVersionNumbers()) {
+		//If major version is wildcard, there is no upper bound set
+		//Although i'm not sure if ^X is even legal semver comparator
+		if (Lower.Major == SEMVER_VERSION_NUMBER_WILDCARD) {
+			return false;
+		}
+		//If minor version is wildcard, upper bound is major + 1
+		if (Lower.Minor == SEMVER_VERSION_NUMBER_WILDCARD) {
+			MaxVersion.Major = Lower.Major + 1;
+		}
+		//If patch version is wildcard, upper bound is either major or minor, but patch can be any
+		if (Lower.Patch == SEMVER_VERSION_NUMBER_WILDCARD) {
+			if (Lower.Major == 0) {
+				MaxVersion.Minor = Lower.Minor + 1;
+			} else {
+				MaxVersion.Major = Lower.Major + 1;
+			}
+		}
+	} else {
+		//No special version numbers, fallback to normal first-non-zero handling
+		if (Lower.Major == 0) {
+			if(Lower.Minor == 0) {
+				//Minor is zero, allow up to next patch version
+				MaxVersion.Patch = Lower.Patch + 1;
+			} else {
+				//Major is zero, allow up to next minor version update
+				MaxVersion.Minor = Lower.Minor + 1;
+			}
+		} else {
+			//Major is not zero, allow up to next major version update
+			MaxVersion.Major = Lower.Major + 1;
+		}
+	}
+	return true;
+}
+
+bool TildeMaxVersion(FVersion Lower, FVersion& MaxVersion) {
+	MaxVersion = FVersion{};
+	//Major version number is not specified, no upper bounds
+	//Although it's impossible to encounter under normal conditions, let's handle it for sake of completeness
+	if (Lower.Major == SEMVER_VERSION_NUMBER_UNSPECIFIED) {
+		return false;
+	}
+	//Minor is unspecified, maximum version is Major + 1
+	if (Lower.Minor == SEMVER_VERSION_NUMBER_UNSPECIFIED) {
+		MaxVersion.Major = Lower.Major + 1;
+		//Patch version is unspecified, maximum version is Minor + 1 while keeping normal Major
+	} else if (Lower.Patch == SEMVER_VERSION_NUMBER_UNSPECIFIED) {
+		MaxVersion.Major = Lower.Major;
+		MaxVersion.Minor = Lower.Minor + 1;
+		//Version contains no unspecified numbers, so maximum version is Patch + 1 while keeping Major and Minor
+	} else {
+		MaxVersion.Major = Lower.Major;
+		MaxVersion.Minor = Lower.Minor;
+		MaxVersion.Patch = Lower.Patch + 1;
+	}
+	return true;
+}
+
+bool XRangeMaxVersion(FVersion Lower, FVersion& MaxVersion) {
+	MaxVersion = Lower;
+	//We have wildcards, so go from Major to Patch to compare them
+	//Major is wildcard, we accept any versions
+	if (Lower.Major == SEMVER_VERSION_NUMBER_WILDCARD) {
+		return false;
+	}
+	//Minor is wildcard, we accept everything as long as Major matches
+	if (Lower.Minor == SEMVER_VERSION_NUMBER_WILDCARD || Lower.Minor == SEMVER_VERSION_NUMBER_UNSPECIFIED) {
+		MaxVersion = FVersion(Lower.Major + 1, 0, 0);
+		return true;
+	}
+	//Patch is wildcard, we accept everything as long as Major and Minor match
+	if (Lower.Patch == SEMVER_VERSION_NUMBER_WILDCARD || Lower.Patch == SEMVER_VERSION_NUMBER_UNSPECIFIED) {
+		MaxVersion = FVersion(Lower.Major, Lower.Minor + 1, 0);
+		return true;
+	}
+	return true;
+}
+
 bool FVersionComparator::Matches(const FVersion& version) const {
 	//Clear version used for comparison purposes
 	const FVersion CleanVersion = MyVersion.RemoveSpecialNumbers();
@@ -149,39 +231,8 @@ bool FVersionComparator::Matches(const FVersion& version) const {
 				return false;
 			}
 			FVersion MaxVersion{};
-			//Check if we have any wildcards we need to handle
-			if (MyVersion.ContainsSpecialVersionNumbers()) {
-				//If major version is wildcard, there is no upper bound set
-				//Although i'm not sure if ^X is even legal semver comparator
-	            if (MyVersion.Major == SEMVER_VERSION_NUMBER_WILDCARD) {
-            		return true;
-	            }
-	            //If minor version is wildcard, upper bound is major + 1
-	            if (MyVersion.Minor == SEMVER_VERSION_NUMBER_WILDCARD) {
-            		MaxVersion.Major = MyVersion.Major + 1;
-	            }
-	            //If patch version is wildcard, upper bound is either major or minor, but patch can be any
-	            if (MyVersion.Patch == SEMVER_VERSION_NUMBER_WILDCARD) {
-            		if (MyVersion.Major == 0) {
-            			MaxVersion.Minor = MyVersion.Minor + 1;
-            		} else {
-            			MaxVersion.Major = MyVersion.Major + 1;
-            		}
-	            }
-			} else {
-				//No special version numbers, fallback to normal first-non-zero handling
-				if (MyVersion.Major == 0) {
-					if(MyVersion.Minor == 0) {
-						//Minor is zero, allow up to next patch version
-						MaxVersion.Patch = MyVersion.Patch + 1;
-					} else {
-						//Major is zero, allow up to next minor version update
-						MaxVersion.Minor = MyVersion.Minor + 1;
-					}
-				} else {
-					//Major is not zero, allow up to next major version update
-					MaxVersion.Major = MyVersion.Major + 1;
-				}
+			if(!CaretMaxVersion(MyVersion, MaxVersion)) {
+				return true;
 			}
 			//We pass if we are below max version required, exclusive
 			return version.Compare(MaxVersion) < 0;
@@ -194,22 +245,8 @@ bool FVersionComparator::Matches(const FVersion& version) const {
 				return false;
 			}
 			FVersion MaxVersion{};
-			//Major version number is not specified, no upper bounds
-			//Although it's impossible to encounter under normal conditions, let's handle it for sake of completeness
-			if (MyVersion.Major == SEMVER_VERSION_NUMBER_UNSPECIFIED) {
+			if (!TildeMaxVersion(MyVersion, MaxVersion)) {
 				return true;
-				//Minor is unspecified, maximum version is Major + 1
-			} else if (MyVersion.Minor == SEMVER_VERSION_NUMBER_UNSPECIFIED) {
-				MaxVersion.Major = MyVersion.Major + 1;
-			//Patch version is unspecified, maximum version is Minor + 1 while keeping normal Major
-			} else if (MyVersion.Patch == SEMVER_VERSION_NUMBER_UNSPECIFIED) {
-				MaxVersion.Major = MyVersion.Major;
-				MaxVersion.Minor = MyVersion.Minor + 1;
-			//Version contains no unspecified numbers, so maximum version is Patch + 1 while keeping Major and Minor
-			} else {
-				MaxVersion.Major = MyVersion.Major;
-				MaxVersion.Minor = MyVersion.Minor;
-				MaxVersion.Patch = MyVersion.Patch + 1;
 			}
 			//We pass if we are below max version required, exclusive
 			return version.Compare(MaxVersion) < 0;
@@ -217,21 +254,21 @@ bool FVersionComparator::Matches(const FVersion& version) const {
 
 		//Equals versions can represent X-Ranges, so we need to handle wildcards inside them
 		case EVersionComparisonOp::EQUALS: {
-			//We have wildcards, so go from Major to Patch to compare them
-			//Major is wildcard, we accept any versions
-			if (MyVersion.Major == SEMVER_VERSION_NUMBER_WILDCARD) {
+			if (!MyVersion.ContainsSpecialVersionNumbers()) {
+				return Result == 0;
+			}
+				
+			// Lower bound is zeroed version
+			if (Result < 0) {
+				return false;
+			}
+			FVersion MaxVersion{};
+			if (!XRangeMaxVersion(MyVersion, MaxVersion)) {
 				return true;
 			}
-			//Minor is wildcard, we accept everything as long as Major matches
-			if (MyVersion.Minor == SEMVER_VERSION_NUMBER_WILDCARD) {
-				return MyVersion.Major == version.Major;
-			}
-			//Patch is wildcard, we accept everything as long as Major and Minor match
-			if (MyVersion.Patch == SEMVER_VERSION_NUMBER_WILDCARD) {
-				return MyVersion.Major == version.Major && MyVersion.Minor == version.Minor;
-			}
-			//We represent fixed version number comparator, so just return true if versions are equal
-			return Result == 0;
+
+			// We pass if we are below max version required, exclusive
+			return version.Compare(MaxVersion) < 0;
 		}
 		
 		//Fallback default case to equals
@@ -290,11 +327,13 @@ bool ParseHyphenVersionRange(const FString& LeftSideString, const FString& Right
 	} else if (RightSideVersion.Minor == SEMVER_VERSION_NUMBER_UNSPECIFIED) {
 		//Minor in right side version is not specified, allow everything up to next major
 		ResultUpperBoundVersion.Major = RightSideVersion.Major + 1;
+		ResultUpperBoundVersion.PreRelease = TEXT("0");
 		bIncludeUpperBound = false;
 	} else if (RightSideVersion.Patch == SEMVER_VERSION_NUMBER_UNSPECIFIED) {
 		//Patch in right side version is not specified, allow everything up to next minor
 		ResultUpperBoundVersion.Major = RightSideVersion.Major;
 		ResultUpperBoundVersion.Minor = RightSideVersion.Minor + 1;
+		ResultUpperBoundVersion.PreRelease = TEXT("0");
 		bIncludeUpperBound = false;
 	} else {
 		//No unspecified version numbers, upper bound is inclusive
@@ -325,9 +364,8 @@ bool FVersionComparatorCollection::ParseVersionCollection(const FString& String,
 		if (CurrentChar == TEXT(' ')) {
 			//Current character is space. If we're inside string, reset flag
 			bIsCurrentlyInString = false;
-		} else if (CurrentChar == TEXT('-')) {
-			//Current character is hyphen. We are no longer inside string, but we have hyphen after last string
-			bIsCurrentlyInString = false;
+		} else if (CurrentChar == TEXT('-') && !bIsCurrentlyInString) {
+			// Hyphen ranges are only valid with spaces around the - (otherwise it's a prerelease marker)
 			//We shouldn't have hyphen at this point, only previous string
 			if (bHaveHyphenAfterLastString) {
 				OutErrorMessage = TEXT("Unexpected hyphen");
@@ -408,9 +446,128 @@ bool FVersionComparatorCollection::ParseVersionCollection(const FString& String,
 
 FString FVersionComparatorCollection::ToString() const {
 	TArray<FString> ResultString;
+	// Any and-range can be represented by a lower and upper bound
+	FVersionComparator Lower(EVersionComparisonOp::GREATER_EQUALS, FVersion(0, 0, 0));
+	FVersionComparator Upper(EVersionComparisonOp::LESS_EQUALS, FVersion(INT64_MAX, INT64_MAX, INT64_MAX));
+	
 	for (const FVersionComparator& Comparator : Comparators) {
-		ResultString.Add(Comparator.ToString());
+		switch (Comparator.Op)
+		{
+		case EVersionComparisonOp::EQUALS: {
+			if(!Comparator.MyVersion.ContainsSpecialVersionNumbers()) {
+				if (Lower.Matches(Comparator.MyVersion)) {
+					Lower = FVersionComparator(EVersionComparisonOp::GREATER_EQUALS, Comparator.MyVersion);
+				}
+				if (Upper.Matches(Comparator.MyVersion)) {
+					Lower = FVersionComparator(EVersionComparisonOp::LESS_EQUALS, Comparator.MyVersion);
+				}
+			} else {
+				FVersion CleanVersion = Comparator.MyVersion.RemoveSpecialNumbers();
+				if (Lower.Matches(CleanVersion)) {
+					Lower = FVersionComparator(EVersionComparisonOp::GREATER_EQUALS, CleanVersion);
+				}
+				FVersion MaxVersion{};
+				if (XRangeMaxVersion(Comparator.MyVersion, MaxVersion)) {
+					if (Upper.Matches(MaxVersion)) {
+						Upper = FVersionComparator(EVersionComparisonOp::LESS, MaxVersion);
+					}
+				}
+			}
+			break;
+		}
+		case EVersionComparisonOp::GREATER:
+		case EVersionComparisonOp::GREATER_EQUALS: {
+			if (Lower.Matches(Comparator.MyVersion)) {
+				Lower = Comparator;
+			}
+			break;
+		}
+		case EVersionComparisonOp::LESS:
+		case EVersionComparisonOp::LESS_EQUALS: {
+			if (Upper.Matches(Comparator.MyVersion)) {
+				Upper = Comparator;
+			}
+			break;
+		}
+		case EVersionComparisonOp::CARET: {
+			if (Lower.Matches(Comparator.MyVersion)) {
+				Lower = Comparator;
+			}
+			FVersion MaxVersion{};
+			if (CaretMaxVersion(Comparator.MyVersion, MaxVersion)) {
+				if (Upper.Matches(MaxVersion)) {
+					Upper = FVersionComparator(EVersionComparisonOp::LESS, MaxVersion);
+				}
+			}
+			break;
+		}
+		case EVersionComparisonOp::TILDE: {
+			if (Lower.Matches(Comparator.MyVersion)) {
+				Lower = Comparator;
+			}
+			FVersion MaxVersion{};
+			if (TildeMaxVersion(Comparator.MyVersion, MaxVersion)) {
+				if (Upper.Matches(MaxVersion)) {
+					Upper = FVersionComparator(EVersionComparisonOp::LESS, MaxVersion);
+				}
+			}
+			break;
+		}
+		default:
+			break;
+		}
 	}
+
+	bool bLowerIsSet = !Lower.Matches(FVersion(0, 0, 0));
+	bool bUpperIsSet = !Upper.Matches(FVersion(INT64_MAX, INT64_MAX, INT64_MAX));
+	
+	if (bLowerIsSet && bUpperIsSet) {
+		FVersion CaretMax, TildeMax;
+		CaretMaxVersion(Lower.MyVersion, CaretMax);
+		TildeMaxVersion(Lower.MyVersion, TildeMax);
+		if (Upper.MyVersion.Compare(CaretMax) == 0) {
+			ResultString.Add(FString::Printf(TEXT("^%s"), *Lower.MyVersion.RemoveSpecialNumbers().ToString()));
+		} else if (Upper.MyVersion.Compare(TildeMax) == 0) {
+			ResultString.Add(FString::Printf(TEXT("~%s"), *Lower.MyVersion.RemoveSpecialNumbers().ToString()));
+		} else if (Upper.MyVersion.Major == Lower.MyVersion.Major + 1
+			&& Lower.MyVersion.Minor <= 0 && Lower.MyVersion.Patch <= 0
+			&& Upper.MyVersion.Minor <= 0 && Upper.MyVersion.Patch <= 0
+			&& Lower.MyVersion.PreRelease.IsEmpty() && Upper.MyVersion.PreRelease.IsEmpty()) {
+			// x-range with major version only
+			ResultString.Add(FString::Printf(TEXT("%lld"), Lower.MyVersion.Major));
+		} else if (Upper.MyVersion.Major == Lower.MyVersion.Major && Upper.MyVersion.Minor == Lower.MyVersion.Minor + 1
+			&& Lower.MyVersion.Patch <= 0 && Upper.MyVersion.Patch <= 0
+			&& Lower.MyVersion.PreRelease.IsEmpty() && Upper.MyVersion.PreRelease.IsEmpty()) {
+			// x-range with major and minor version
+			ResultString.Add(FString::Printf(TEXT("%lld.%lld"), Lower.MyVersion.Major, Lower.MyVersion.Minor));
+		} else if (Upper.MyVersion.Compare(Lower.MyVersion) == 0) {
+			// Single version
+			ResultString.Add(Lower.ToString());
+		} else if (Upper.Op == EVersionComparisonOp::LESS && Upper.MyVersion.PreRelease == TEXT("0") && (Upper.MyVersion.Minor <= 0 || Upper.MyVersion.Patch <= 0)) {
+			// Hyphen range with unspecified parts
+			FString UpperString;
+			if (Upper.MyVersion.Minor <= 0) {
+				UpperString = FString::Printf(TEXT("%lld"), Upper.MyVersion.Major - 1);
+			} else {
+				UpperString = FString::Printf(TEXT("%lld.%lld"), Upper.MyVersion.Major, Upper.MyVersion.Minor - 1);
+			}
+			ResultString.Add(FString::Printf(TEXT("%s - %s"), *Lower.MyVersion.ToString(), *UpperString));
+		} else if (Upper.Op == EVersionComparisonOp::LESS_EQUALS && Upper.MyVersion.PreRelease.IsEmpty()) {
+			// Hyphen range
+			ResultString.Add(FString::Printf(TEXT("%s - %s"), *Lower.MyVersion.ToString(), *Upper.MyVersion.ToString()));
+		} else {
+			// Default case
+			ResultString.Add(Lower.ToString());
+			ResultString.Add(Upper.ToString());
+		}
+	} else if (bLowerIsSet) {
+		ResultString.Add(Lower.ToString());
+	} else if (bUpperIsSet) {
+		ResultString.Add(Upper.ToString());
+	} else {
+		ResultString.Add(TEXT("*"));
+	}
+
 	return FString::Join(ResultString, TEXT(" "));
 }
 
@@ -497,11 +654,9 @@ bool IsWildcardVersionNumber(const std::wstring& Number) {
 //Parses version number, taking care of wildcard characters and empty string
 int64 ParseVersionNumber(const std::wstring& Number) {
 	if (IsWildcardVersionNumber(Number)) {
-		UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Version number %s is wildcard"), Number.c_str());
 		return SEMVER_VERSION_NUMBER_WILDCARD;
 	}
 	if (Number.length() == 0) {
-		UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Version number %s is empty"), Number.c_str());
 		return SEMVER_VERSION_NUMBER_UNSPECIFIED;
 	}
 	return std::stoul(Number);

@@ -73,6 +73,11 @@ public:
     static void SendMessage(class UNetConnection* Connection, FMessageType MessageType, FString Data);
 
 	/**
+	 * Set the connection to support mod messages and send all pending messages
+	 */
+	static void SetConnectionSupportsModMessages(class UNetConnection* Connection);
+
+	/**
 	 * Retrieves the game instance owning the specified net driver
 	 */
 	static UGameInstance* GetGameInstanceFromNetDriver( const UNetDriver* NetDriver );

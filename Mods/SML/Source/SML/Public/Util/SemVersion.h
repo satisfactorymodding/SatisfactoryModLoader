@@ -147,8 +147,6 @@ public:
 	 *	Converts this version range to string.
 	 *  It can be parsed back into range matching same versions,
 	 *  but it will not always equal to string used to initialize this version range
-	 *  For example, output string will never contain hyphen version ranges
 	 */
 	FString ToString() const;
 };
-

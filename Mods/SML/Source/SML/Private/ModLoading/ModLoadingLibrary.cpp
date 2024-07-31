@@ -14,7 +14,7 @@ void FSMLPluginDescriptorMetadata::SetupDefaults(const FPluginDescriptor& Plugin
     this->Version = FVersion(PluginDescriptor.Version, 0, 0);
     this->bAcceptsAnyRemoteVersion = false;
     this->RemoteVersionRange = FVersionRange::CreateRangeWithMinVersion(Version);
-    this->GameVersion = 0;
+    this->GameVersion = FVersionRange::CreateAnyVersionRange();
 }
 
 void FSMLPluginDescriptorMetadata::Load(const FString& PluginName, const TSharedPtr<FJsonObject> Source) {
@@ -59,7 +59,17 @@ void FSMLPluginDescriptorMetadata::Load(const FString& PluginName, const TShared
         }
     }
 
-    if (!Source->TryGetNumberField(TEXT("GameVersion"), GameVersion)) {
+    FString GameVersionRangeString;
+    if (Source->TryGetStringField(TEXT("GameVersion"), GameVersionRangeString)) {
+        FVersionRange GameVersionRange;
+        FString GameVersionRangeError;
+        
+        if (GameVersionRange.ParseVersionRange(GameVersionRangeString, GameVersionRangeError)) {
+            this->GameVersion = GameVersionRange;
+        } else {
+            UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Plugin %s has invalid Game Version value: %s: %s"), *PluginName, *GameVersionRangeString, *GameVersionRangeError);
+        }
+    } else {
         UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Plugin %s does not specify 'GameVersion' field, unable to check for game compatibility"), *PluginName);
     }
 
@@ -242,9 +252,9 @@ void UModLoadingLibrary::VerifyPluginDependencies(IPlugin& Plugin, TArray<FStrin
 
     const uint32 CurrentChangelist = FEngineVersion::Current().GetChangelist();
     
-    if (PluginDescriptorMetadata.GameVersion > CurrentChangelist) {
-        const FString Message = FString::Printf(TEXT("Plugin %s requires game version %d or higher (current: %d)"),
-            *Plugin.GetName(), PluginDescriptorMetadata.GameVersion, CurrentChangelist);
+    if (!PluginDescriptorMetadata.GameVersion.Matches(FVersion(CurrentChangelist, 0, 0))) {
+        const FString Message = FString::Printf(TEXT("Plugin %s requires game version %s (current: %d)"),
+            *Plugin.GetName(), *PluginDescriptorMetadata.GameVersion.ToString().Replace(TEXT(".0.0"), TEXT("")), CurrentChangelist);
         MismatchedDependencies.Add(Message);
     }
 }
