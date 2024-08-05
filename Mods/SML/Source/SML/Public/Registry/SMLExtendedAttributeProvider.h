@@ -22,7 +22,8 @@ class SML_API ISMLExtendedAttributeProvider {
     GENERATED_BODY()
 public:
 
-    /** Get the Gameplay Tags container for this asset.
+    /**
+    * Get the Gameplay Tags container for this asset.
     * Remember, since it's a BlueprintNativeEvent, to call from C++ you must call via ISMLExtendedAttributeProvider::Execute_GetGameplayTagsContainer
     */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="SML|Tags")

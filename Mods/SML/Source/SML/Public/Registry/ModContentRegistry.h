@@ -283,6 +283,7 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	// End USubsystem interface
+
 	static void AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector);
 private:
 	friend class FGameObjectRegistryState;
