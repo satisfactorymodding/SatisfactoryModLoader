@@ -5,7 +5,7 @@
 #include "GameplayTagContainer.h"
 #include "ContentTagRegistry.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogContentTagRegistry, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogContentTagRegistry, All, All); // TODO set arg2 to Log once done with feature
 
 /**
  * Manages Gameplay Tag Containers for content classes.
@@ -30,8 +30,10 @@ public:
 	static UContentTagRegistry* Get(const UObject* WorldContext);
 
 	/**
-	 * Get Gameplay Tag container for the supplied class.
-	 * Could be empty if there were no tags registered.
+	 * Get the Gameplay Tag container for the supplied class.
+	 * Could be an empty container there were no tags registered.
+	 * 
+	 * Returned container cannot be modified, use the registry's functions for that
 	 * TODO outvar bool for found/not?
 	 */
 	UFUNCTION(BlueprintPure, Category = "Content Tag Registry")
@@ -39,14 +41,21 @@ public:
 
 	/**
 	 * Register gameplay tags from the passed container to the passed class
-	 * TODO FName InRegistrationPluginName?
+	 * TODO do we want arg FName InRegistrationPluginName?
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry")
-	void AddGameplayTagsTo(UObject* content, FGameplayTagContainer tags);
+	void AddGameplayTagsTo(UObject* content, const FGameplayTagContainer tags);
 
-	// TODO ability to remove tags
+	/**
+	 * Remove gameplay tags in passed container from the passed class if they were present
+	 * TODO do we want arg FName InRegistrationPluginName?
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry")
+	void RemoveGameplayTagsFrom(UObject* content, const FGameplayTagContainer tags);
 
-	// TODO auto register of stuff with ExtendedAttributeProvider being registered in mod content registry
+	// Used by the Mod Content Registry. Checks the passed content for tags offered via SML Extended Attribute Provider
+	// TODO actually call this during mod content registration
+	void AddTagsFromExtendedAttributeProvider(UObject* content);
 
 	// Freezes the registry. No new registrations are accepted past this point.
 	void FreezeRegistry();

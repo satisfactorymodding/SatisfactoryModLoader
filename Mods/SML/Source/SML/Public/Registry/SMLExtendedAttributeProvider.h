@@ -23,9 +23,11 @@ class SML_API ISMLExtendedAttributeProvider {
 public:
 
     /**
-    * Get the Gameplay Tags container for this asset.
-    * Remember, since it's a BlueprintNativeEvent, to call from C++ you must call via ISMLExtendedAttributeProvider::Execute_GetGameplayTagsContainer
-    */
+      * Gets the set of gameplay tags this class wishes to have in the Content Tag Registry.
+      * Content registered through the Mod Content Registry will automatically have them added.
+      * 
+      * Use UContentTagRegistry::GetGameplayTagContainerFor to get the final tag container.
+      */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="SML|Tags")
-    FGameplayTagContainer GetGameplayTagsContainer();
+    FGameplayTagContainer GetRequestedGameplayTags();
 };

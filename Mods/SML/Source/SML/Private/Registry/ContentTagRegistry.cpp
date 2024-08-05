@@ -1,4 +1,5 @@
 #include "Registry/ContentTagRegistry.h"
+#include "Registry/SMLExtendedAttributeProvider.h"
 
 #include "ModLoading/PluginModuleLoader.h"
 
@@ -53,6 +54,23 @@ void UContentTagRegistry::AddGameplayTagsTo(UObject* content, const FGameplayTag
 	auto& record = TagContainerRegistry.FindOrAdd(content);
 	UE_LOG(LogContentTagRegistry, Verbose, TEXT("Adding tags %s for class %s"), *tags.ToString(), *GetFullNameSafe(content));
 	record.AppendTags(tags);
+}
+
+void UContentTagRegistry::RemoveGameplayTagsFrom(UObject* content, const FGameplayTagContainer tags) {
+	FString Context;
+	if (!CanModifyTagsOf(content, Context)) {
+		NOTIFY_INVALID_REGISTRATION(*Context);
+		return;
+	}
+	auto& record = TagContainerRegistry.FindOrAdd(content);
+	UE_LOG(LogContentTagRegistry, Verbose, TEXT("Removing tags %s from class %s"), *tags.ToString(), *GetFullNameSafe(content));
+	record.RemoveTags(tags);
+}
+
+void UContentTagRegistry::AddTagsFromExtendedAttributeProvider(UObject* content) {
+	if (auto asInterface = Cast<ISMLExtendedAttributeProvider>(content)) {
+		AddGameplayTagsTo(content, asInterface->GetRequestedGameplayTags());
+	}
 }
 
 void UContentTagRegistry::FreezeRegistry() {

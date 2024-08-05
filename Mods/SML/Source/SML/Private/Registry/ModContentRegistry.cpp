@@ -1,5 +1,6 @@
 #include "Registry/ModContentRegistry.h"
 #include "Registry/SMLExtendedAttributeProvider.h"
+#include "Registry/ContentTagRegistry.h"
 #include "FGGameMode.h"
 #include "FGGameState.h"
 #include "FGResearchManager.h"
@@ -94,6 +95,9 @@ const FGameObjectRegistration* FGameObjectRegistryState::RegisterObject( FName I
 
 	UE_LOG( LogContentRegistry, Verbose, TEXT("Registering Object '%s' (%s)%s [%s]"), *GetFullNameSafe( Object ), *InRegistrationPluginName.ToString(),
 		bIsRegistrationImplicit ? TEXT(" [implicit]") : TEXT(""), *UModContentRegistry::GetCallStackContext() );
+
+	// TODO is this a safe/smart place to put this? probably cache the registry instance at least
+	UContentTagRegistry::Get(Object)->AddTagsFromExtendedAttributeProvider(Object);
 
 	OnObjectRegisteredDelegate.Broadcast( Registration );
 	return Registration;
@@ -915,7 +919,8 @@ bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor
 		}
 		if (descriptorClass->ImplementsInterface(USMLExtendedAttributeProvider::StaticClass())) {
 			UObject* ItemDescriptorCDO = descriptorClass->GetDefaultObject();
-			const auto ItemTags = ISMLExtendedAttributeProvider::Execute_GetGameplayTagsContainer(ItemDescriptorCDO);
+			// TODO switch over to Content Tag Registry 
+			const auto ItemTags = ISMLExtendedAttributeProvider::Execute_GetRequestedGameplayTags(ItemDescriptorCDO);
 			const auto SmlSpecialTag = FGameplayTag::RequestGameplayTag("SML.Registry.Item.SpecialItemDescriptor", true);
 			return ItemTags.HasTag(SmlSpecialTag);
 		}
