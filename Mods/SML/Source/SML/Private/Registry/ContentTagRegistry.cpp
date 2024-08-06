@@ -27,12 +27,18 @@ UContentTagRegistry* UContentTagRegistry::Get(const UObject* WorldContext) {
 	return nullptr;
 }
 
-const FGameplayTagContainer UContentTagRegistry::GetGameplayTagContainerFor(const UObject* content) {
-	const auto record = TagContainerRegistry.Find(content);
-	return (record == nullptr) ? FGameplayTagContainer() : *record;
+const FGameplayTagContainer UContentTagRegistry::GetGameplayTagContainerFor(UClass* content) {
+	// Return a copy because the container pointer returned by Find()
+	// is only valid until the next change to any map key.
+	FGameplayTagContainer toReturn;
+	const auto record = GetOrInitContainerFor(content);
+	if (record) {
+		toReturn.AppendTags(*record);
+	}
+	return toReturn;
 }
 
-bool UContentTagRegistry::CanModifyTagsOf(UObject* content, FString& OutMessage) {
+bool UContentTagRegistry::CanModifyTagsOf(const UClass* content, FString& OutMessage) {
 	if (bRegistryFrozen) {
 		OutMessage = FString::Printf(TEXT("Attempt to modify content tags of object '%s' in frozen registry. Make sure your tag changes are happening in the 'Initialization' Lifecycle Phase and not 'Post Initialization'. TODO update this message with the timing we decide on."), *GetPathNameSafe(content));
 		return false;
@@ -41,39 +47,57 @@ bool UContentTagRegistry::CanModifyTagsOf(UObject* content, FString& OutMessage)
 		OutMessage = FString::Printf(TEXT("Attempt to modify content tags of an invalid object."));
 		return false;
 	}
-	// TODO checking to make sure a UClass is being registered and not a joe schmoe arbitrary uobject instance
 	return true;
 }
 
-void UContentTagRegistry::AddGameplayTagsTo(UObject* content, const FGameplayTagContainer tags) {
-	FString Context;
-	if (!CanModifyTagsOf(content, Context)) {
-		NOTIFY_INVALID_REGISTRATION(*Context);
-		return;
-	}
-	auto& record = TagContainerRegistry.FindOrAdd(content);
+void UContentTagRegistry::InternalAddGameplayTagsTo(UClass* content, const FGameplayTagContainer tags) {
+	auto record = GetOrInitContainerFor(content);
 	UE_LOG(LogContentTagRegistry, Verbose, TEXT("Adding tags %s for class %s"), *tags.ToString(), *GetFullNameSafe(content));
-	record.AppendTags(tags);
+	record->AppendTags(tags);
 }
 
-void UContentTagRegistry::RemoveGameplayTagsFrom(UObject* content, const FGameplayTagContainer tags) {
+FGameplayTagContainer* UContentTagRegistry::GetOrInitContainerFor(UClass* content) {
+	// TODO refactor to avoid double lookup (contains then find?)
+	if (!TagContainerRegistry.Contains(content)) {
+		UE_LOG(LogContentTagRegistry, Verbose, TEXT("First access of tags for class %s so checking for Extended Attribute Provider tags"), *GetFullNameSafe(content));
+		auto tagsFromProvider = GetTagsFromExtendedAttributeProvider(content);
+		UE_LOG(LogContentTagRegistry, Verbose, TEXT("Adding tags from provider %s for class %s"), *tagsFromProvider.ToString(), *GetFullNameSafe(content));
+		FGameplayTagContainer freshContainer;
+		freshContainer.AppendTags(tagsFromProvider);
+		TagContainerRegistry.Add(content, freshContainer);
+	}
+	return TagContainerRegistry.Find(content);
+}
+
+void UContentTagRegistry::AddGameplayTagsTo(UClass* content, const FGameplayTagContainer tags) {
 	FString Context;
 	if (!CanModifyTagsOf(content, Context)) {
 		NOTIFY_INVALID_REGISTRATION(*Context);
 		return;
 	}
-	auto& record = TagContainerRegistry.FindOrAdd(content);
-	UE_LOG(LogContentTagRegistry, Verbose, TEXT("Removing tags %s from class %s"), *tags.ToString(), *GetFullNameSafe(content));
-	record.RemoveTags(tags);
+	InternalAddGameplayTagsTo(content, tags);
 }
 
-void UContentTagRegistry::AddTagsFromExtendedAttributeProvider(UObject* content) {
-	if (auto asInterface = Cast<ISMLExtendedAttributeProvider>(content)) {
-		AddGameplayTagsTo(content, asInterface->GetRequestedGameplayTags());
+void UContentTagRegistry::RemoveGameplayTagsFrom(UClass* content, const FGameplayTagContainer tags) {
+	FString Context;
+	if (!CanModifyTagsOf(content, Context)) {
+		NOTIFY_INVALID_REGISTRATION(*Context);
+		return;
 	}
+	auto record = GetOrInitContainerFor(content);
+	UE_LOG(LogContentTagRegistry, Verbose, TEXT("Removing tags %s from class %s"), *tags.ToString(), *GetFullNameSafe(content));
+	record->RemoveTags(tags);
+}
+
+FGameplayTagContainer UContentTagRegistry::GetTagsFromExtendedAttributeProvider(UClass* content) {
+	if (auto asInterface = Cast<ISMLExtendedAttributeProvider>(content)) {
+		return asInterface->GetRequestedGameplayTags();
+	}
+	return FGameplayTagContainer::EmptyContainer;
 }
 
 void UContentTagRegistry::FreezeRegistry() {
+	UE_LOG(LogContentTagRegistry, Verbose, TEXT("Freezing content tag registry"));
 	bRegistryFrozen = true;
 }
 

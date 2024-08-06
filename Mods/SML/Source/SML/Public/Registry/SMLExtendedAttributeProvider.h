@@ -23,8 +23,9 @@ class SML_API ISMLExtendedAttributeProvider {
 public:
 
     /**
-      * Gets the set of gameplay tags this class wishes to have in the Content Tag Registry.
-      * Content registered through the Mod Content Registry will automatically have them added.
+      * Gets the set of gameplay tags this UClass wishes to have in the Content Tag Registry.
+      * TODO can we say UClass here? since it can be implemented on anything?
+      * TODO should this be a const function? probably?
       * 
       * Use UContentTagRegistry::GetGameplayTagContainerFor to get the final tag container.
       */

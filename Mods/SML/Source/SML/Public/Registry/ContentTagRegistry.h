@@ -37,25 +37,21 @@ public:
 	 * TODO outvar bool for found/not?
 	 */
 	UFUNCTION(BlueprintPure, Category = "Content Tag Registry")
-	const FGameplayTagContainer GetGameplayTagContainerFor(const UObject* content);
+	const FGameplayTagContainer GetGameplayTagContainerFor(UClass* content);
 
 	/**
 	 * Register gameplay tags from the passed container to the passed class
 	 * TODO do we want arg FName InRegistrationPluginName?
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry")
-	void AddGameplayTagsTo(UObject* content, const FGameplayTagContainer tags);
+	void AddGameplayTagsTo(UClass* content, const FGameplayTagContainer tags);
 
 	/**
 	 * Remove gameplay tags in passed container from the passed class if they were present
 	 * TODO do we want arg FName InRegistrationPluginName?
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry")
-	void RemoveGameplayTagsFrom(UObject* content, const FGameplayTagContainer tags);
-
-	// Used by the Mod Content Registry. Checks the passed content for tags offered via SML Extended Attribute Provider
-	// TODO actually call this during mod content registration
-	void AddTagsFromExtendedAttributeProvider(UObject* content);
+	void RemoveGameplayTagsFrom(UClass* content, const FGameplayTagContainer tags);
 
 	// Freezes the registry. No new registrations are accepted past this point.
 	void FreezeRegistry();
@@ -70,7 +66,7 @@ public:
 
 private:
 	UPROPERTY()
-	TMap<UObject*, FGameplayTagContainer> TagContainerRegistry;
+	TMap<UClass*, FGameplayTagContainer> TagContainerRegistry;
 
 	bool bRegistryFrozen{ false };
 
@@ -82,6 +78,17 @@ private:
 	/** Pointer to the currently active script callstack frame, used for debugging purposes */
 	static FFrame* ActiveScriptFramePtr;
 
-	bool CanModifyTagsOf(UObject* content, FString& OutMessage);
+	bool CanModifyTagsOf(const UClass* content, FString& OutMessage);
+
+	/**
+	  * Since tags init is delayed until the first add/fetch operation on that class,
+	  * the registry itself must be able to add tags disregarding the freeze.
+	  */
+	void InternalAddGameplayTagsTo(UClass* content, const FGameplayTagContainer tags);
+	
+	FGameplayTagContainer* GetOrInitContainerFor(UClass* content);
+
+	// Gets tags offered via SML Extended Attribute Provider
+	FGameplayTagContainer GetTagsFromExtendedAttributeProvider(UClass* content);
 
 };

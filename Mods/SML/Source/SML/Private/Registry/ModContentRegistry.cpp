@@ -96,9 +96,6 @@ const FGameObjectRegistration* FGameObjectRegistryState::RegisterObject( FName I
 	UE_LOG( LogContentRegistry, Verbose, TEXT("Registering Object '%s' (%s)%s [%s]"), *GetFullNameSafe( Object ), *InRegistrationPluginName.ToString(),
 		bIsRegistrationImplicit ? TEXT(" [implicit]") : TEXT(""), *UModContentRegistry::GetCallStackContext() );
 
-	// TODO is this a safe/smart place to put this? probably cache the registry instance at least
-	UContentTagRegistry::Get(Object)->AddTagsFromExtendedAttributeProvider(Object);
-
 	OnObjectRegisteredDelegate.Broadcast( Registration );
 	return Registration;
 }
