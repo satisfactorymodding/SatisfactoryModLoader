@@ -5,7 +5,7 @@
 
 /**
 * Unreal reflection stub class of ISMLExtendedAttributeProvider.
-* Use this instead of ISMLExtendedAttributeProvider for UObject->Implements<ISMLExtendedAttributeProvider>()
+* Use this instead of ISMLExtendedAttributeProvider for checking Implements, ex. use UObject->Implements<USMLExtendedAttributeProvider>()
 */
 UINTERFACE(Blueprintable)
 class SML_API USMLExtendedAttributeProvider : public UInterface {
@@ -13,19 +13,17 @@ class SML_API USMLExtendedAttributeProvider : public UInterface {
 };
 
 /**
-* Implement this on an asset to enable it to provide Gameplay Tags to other systems.
-* 
-* Example: Implement on an FGItemDescriptor and provide the SML.Registry.Item.SpecialItemDescriptor tag
-* for the item to be considered "special" and filtered out by default by GetObtainableItemDescriptors
-*/
+ * Implement this on an asset to enable it to provide extra data to SML systems
+ */
 class SML_API ISMLExtendedAttributeProvider {
     GENERATED_BODY()
 public:
 
     /**
-      * Gets the set of gameplay tags this UClass wishes to have in the Content Tag Registry.
-      * TODO can we say UClass here? since it can be implemented on anything?
+      * Gets the set of gameplay tags the implementer wishes to have in the Content Tag Registry.
+      * Tags are stored at the class level.
       * TODO should this be a const function? probably?
+      * TODO should this be static to the class? probably?
       * 
       * Use UContentTagRegistry::GetGameplayTagContainerFor to get the final tag container.
       */

@@ -40,11 +40,11 @@ const FGameplayTagContainer UContentTagRegistry::GetGameplayTagContainerFor(UCla
 
 bool UContentTagRegistry::CanModifyTagsOf(const UClass* content, FString& OutMessage) {
 	if (bRegistryFrozen) {
-		OutMessage = FString::Printf(TEXT("Attempt to modify content tags of object '%s' in frozen registry. Make sure your tag changes are happening in the 'Initialization' Lifecycle Phase and not 'Post Initialization'. TODO update this message with the timing we decide on."), *GetPathNameSafe(content));
+		OutMessage = FString::Printf(TEXT("Attempt to modify content tags of class '%s' when registry is frozen. Make sure your tag changes are happening in the 'Initialization' Lifecycle Phase and not 'Post Initialization'. TODO update this message with the timing we decide on."), *GetPathNameSafe(content));
 		return false;
 	}
 	if (!IsValid(content)) {
-		OutMessage = FString::Printf(TEXT("Attempt to modify content tags of an invalid object."));
+		OutMessage = FString::Printf(TEXT("Attempt to modify content tags of an invalid class."));
 		return false;
 	}
 	return true;
@@ -90,10 +90,14 @@ void UContentTagRegistry::RemoveGameplayTagsFrom(UClass* content, const FGamepla
 }
 
 FGameplayTagContainer UContentTagRegistry::GetTagsFromExtendedAttributeProvider(UClass* content) {
-	if (auto asInterface = Cast<ISMLExtendedAttributeProvider>(content)) {
-		return asInterface->GetRequestedGameplayTags();
+	if (auto cdo = content->GetDefaultObject()) {
+		if (cdo->Implements<USMLExtendedAttributeProvider>()) {
+			return ISMLExtendedAttributeProvider::Execute_GetRequestedGameplayTags(cdo);
+		}
+		return FGameplayTagContainer::EmptyContainer;
 	}
-	return FGameplayTagContainer::EmptyContainer;
+	UE_LOG(LogContentTagRegistry, Warning, TEXT("CDO for class %s was invalid, can't check for USMLExtendedAttributeProvider"), *GetFullNameSafe(content));
+	return FGameplayTagContainer::EmptyContainer;	
 }
 
 void UContentTagRegistry::FreezeRegistry() {
@@ -107,12 +111,16 @@ bool UContentTagRegistry::ShouldCreateSubsystem(UObject* Outer) const {
 }
 
 void UContentTagRegistry::OnActorPreSpawnInitialization(AActor* Actor) {
+	UE_LOG(LogContentTagRegistry, Verbose, TEXT("TROUBLESHOOT OnActorPreSpawnInitialization"));
 	OnWorldBeginPlayDelegate.AddWeakLambda(this, [&]() {
+		// TODO this is not properly getting called
+		UE_LOG(LogContentTagRegistry, Verbose, TEXT("TROUBLESHOOT OnWorldBeginPlayDelegate Weak Lambda"));
 		FreezeRegistry();
 	});
 }
 
 void UContentTagRegistry::OnWorldBeginPlay(UWorld& InWorld) {
+	UE_LOG(LogContentTagRegistry, Verbose, TEXT("TROUBLESHOOT OnWorldBeginPlayDelegate Broadcast"));
 	OnWorldBeginPlayDelegate.Broadcast();
 }
 
