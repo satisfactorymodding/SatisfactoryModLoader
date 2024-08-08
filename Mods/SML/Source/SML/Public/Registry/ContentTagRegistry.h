@@ -8,6 +8,25 @@
 DECLARE_LOG_CATEGORY_EXTERN(LogContentTagRegistry, All, All); // TODO set arg2 to Log once done with feature
 
 /**
+  * Row struct for the data table tag assignment registration approach
+  */
+USTRUCT(BlueprintType)
+struct SML_API FContentTagRegistryAddition : public FTableRowBase {
+	GENERATED_BODY()
+
+	FContentTagRegistryAddition() :
+		ItemClass(nullptr),
+		TagContainer(FGameplayTagContainer::EmptyContainer)
+	{}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UObject> ItemClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTagContainer TagContainer;
+};
+
+/**
  * Manages Gameplay Tag Containers for content classes.
  * Enables any mod to apply Unreal Gameplay Tags to any mod's content,
  * or the base game's content, at the UClass level.
@@ -43,15 +62,18 @@ public:
 	 * Register gameplay tags from the passed container to the passed class
 	 * TODO do we want arg FName InRegistrationPluginName?
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry")
+	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry", CustomThunk)
 	void AddGameplayTagsTo(UClass* content, const FGameplayTagContainer tags);
 
 	/**
 	 * Remove gameplay tags in passed container from the passed class if they were present
 	 * TODO do we want arg FName InRegistrationPluginName?
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry")
+	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry", CustomThunk)
 	void RemoveGameplayTagsFrom(UClass* content, const FGameplayTagContainer tags);
+
+	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry", CustomThunk)
+	void RegisterTagAdditionTable(FName ModReference, UDataTable* TagTable);
 
 	// Freezes the registry. No new registrations are accepted past this point.
 	void FreezeRegistry();
@@ -91,4 +113,9 @@ private:
 	// Gets tags offered via SML Extended Attribute Provider
 	FGameplayTagContainer GetTagsFromExtendedAttributeProvider(UClass* content);
 
+	//Custom Thunks for calling Register functions through Reflection, primary point of which
+	//is providing FFrame callstack context to the registration methods for debugging in seamless manner
+	DECLARE_FUNCTION(execAddGameplayTagsTo);
+	DECLARE_FUNCTION(execRemoveGameplayTagsFrom);
+	DECLARE_FUNCTION(execRegisterTagAdditionTable);
 };

@@ -50,6 +50,14 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = Advanced)
     TSoftObjectPtr<class UDataTable> mExplorationResourceSinkItemPointsTable;
 
+    /**
+    * Table to use for Content Tag Registry additions.
+    * Useful for adding tags to content you don't control, for example,
+    * items from the base game and other mods.
+    */
+    UPROPERTY(EditDefaultsOnly, Category = Advanced)
+    TSoftObjectPtr<class UDataTable> mContentTagAdditionsTable;
+
 	/** Mod subsystem actors to be registered automatically during construction phase */
 	UPROPERTY(EditDefaultsOnly, Category= Advanced)
 	TArray<TSubclassOf<class AModSubsystem>> ModSubsystems;

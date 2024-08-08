@@ -5,8 +5,6 @@
 
 DEFINE_LOG_CATEGORY(LogContentTagRegistry);
 
-FFrame* UContentTagRegistry::ActiveScriptFramePtr{};
-
 /** Makes sure provided object instance is valid, crashes with both script call stack and native stack trace if it's not */
 #define NOTIFY_INVALID_REGISTRATION(Context) \
 	{ \
@@ -113,22 +111,14 @@ void UContentTagRegistry::RegisterTagAdditionTable(FName ModReference, UDataTabl
 		return;
 	}
 
-	if (!IsValid(PointTable->RowStruct) || !PointTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct())) {
-		const FString Context = FString::Printf(TEXT("Invalid AWESOME Sink item points table in mod %s (%s): Row Type should be Resource Sink Points Data"),
-			*ModReference.ToString(), *PointTable->GetPathName());
+	if (!IsValid(TagTable->RowStruct) || !TagTable->RowStruct->IsChildOf(FContentTagRegistryAddition::StaticStruct())) {
+		const FString Context = FString::Printf(TEXT("Invalid Content Tag Addition table in mod %s (%s): Row Type should be FContentTagRegistryAddition"),
+			*ModReference.ToString(), *TagTable->GetPathName());
 		NOTIFY_INVALID_REGISTRATION(*Context);
 		return;
 	}
 
-	FPendingResourceSinkRegistration Registration;
-	Registration.Track = Track;
-	Registration.ModReference = ModReference;
-	Registration.PointTable = PointTable;
-
-	PendingItemSinkPointsRegistrations.Add(Registration);
-	if (AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(GetWorld())) {
-		FlushPendingResourceSinkRegistrations(ResourceSinkSubsystem);
-	}
+	UE_LOG(LogContentTagRegistry, Verbose, TEXT("TODO Registering tag addition table '%s' from mod %s"), *TagTable->GetPathName(), *ModReference.ToString());
 }
 
 void UContentTagRegistry::FreezeRegistry() {
@@ -176,4 +166,36 @@ FString UContentTagRegistry::GetCallStackContext() {
 		FirstExternalFrameIndex++;
 	}
 	return FString::Printf(TEXT("%hs:%d"), NativeStackTrace[FirstExternalFrameIndex].Filename, NativeStackTrace[FirstExternalFrameIndex].LineNumber);
+}
+
+FFrame* UContentTagRegistry::ActiveScriptFramePtr{};
+
+DEFINE_FUNCTION(UContentTagRegistry::execAddGameplayTagsTo) {
+	P_GET_OBJECT(UClass, Z_Param_Content);
+	P_GET_STRUCT(FGameplayTagContainer, Z_Param_TagContainer)
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	TGuardValue ScopedFrameOverride(ActiveScriptFramePtr, &Stack);
+	P_THIS->AddGameplayTagsTo(Z_Param_Content, Z_Param_TagContainer);
+	P_NATIVE_END;
+}
+
+DEFINE_FUNCTION(UContentTagRegistry::execRemoveGameplayTagsFrom) {
+	P_GET_OBJECT(UClass, Z_Param_Content);
+	P_GET_STRUCT(FGameplayTagContainer, Z_Param_TagContainer)
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	TGuardValue ScopedFrameOverride(ActiveScriptFramePtr, &Stack);
+	P_THIS->RemoveGameplayTagsFrom(Z_Param_Content, Z_Param_TagContainer);
+	P_NATIVE_END;
+}
+
+DEFINE_FUNCTION(UContentTagRegistry::execRegisterTagAdditionTable) {
+	P_GET_PROPERTY(FNameProperty, ModReference);
+	P_GET_OBJECT(UDataTable, PointTable);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	TGuardValue ScopedFrameOverride(ActiveScriptFramePtr, &Stack);
+	P_THIS->RegisterTagAdditionTable(ModReference, PointTable);
+	P_NATIVE_END;
 }
