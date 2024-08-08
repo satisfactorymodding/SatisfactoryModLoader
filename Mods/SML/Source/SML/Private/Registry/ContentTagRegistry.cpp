@@ -31,6 +31,12 @@ const FGameplayTagContainer UContentTagRegistry::GetGameplayTagContainerFor(UCla
 	// Return a copy because the container pointer returned by Find()
 	// is only valid until the next change to any map key.
 	FGameplayTagContainer toReturn;
+
+	if (!IsValid(content)) {
+		UE_LOG(LogContentTagRegistry, Error, TEXT("Attempt to retrieve content tags of an invalid class."));
+		return toReturn;
+	}
+	
 	const auto record = GetOrInitContainerFor(content);
 	if (record) {
 		toReturn.AppendTags(*record);
@@ -98,6 +104,31 @@ FGameplayTagContainer UContentTagRegistry::GetTagsFromExtendedAttributeProvider(
 	}
 	UE_LOG(LogContentTagRegistry, Warning, TEXT("CDO for class %s was invalid, can't check for USMLExtendedAttributeProvider"), *GetFullNameSafe(content));
 	return FGameplayTagContainer::EmptyContainer;	
+}
+
+void UContentTagRegistry::RegisterTagAdditionTable(FName ModReference, UDataTable* TagTable) {
+	if (!IsValid(TagTable)) {
+		const FString Context = FString::Printf(TEXT("Attempt to register NULL TagTable. Mod Reference: %s"), *ModReference.ToString());
+		NOTIFY_INVALID_REGISTRATION(*Context);
+		return;
+	}
+
+	if (!IsValid(PointTable->RowStruct) || !PointTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct())) {
+		const FString Context = FString::Printf(TEXT("Invalid AWESOME Sink item points table in mod %s (%s): Row Type should be Resource Sink Points Data"),
+			*ModReference.ToString(), *PointTable->GetPathName());
+		NOTIFY_INVALID_REGISTRATION(*Context);
+		return;
+	}
+
+	FPendingResourceSinkRegistration Registration;
+	Registration.Track = Track;
+	Registration.ModReference = ModReference;
+	Registration.PointTable = PointTable;
+
+	PendingItemSinkPointsRegistrations.Add(Registration);
+	if (AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(GetWorld())) {
+		FlushPendingResourceSinkRegistrations(ResourceSinkSubsystem);
+	}
 }
 
 void UContentTagRegistry::FreezeRegistry() {
