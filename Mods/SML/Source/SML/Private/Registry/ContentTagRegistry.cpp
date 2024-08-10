@@ -118,7 +118,17 @@ void UContentTagRegistry::RegisterTagAdditionTable(FName ModReference, UDataTabl
 		return;
 	}
 
-	UE_LOG(LogContentTagRegistry, Verbose, TEXT("TODO Registering tag addition table '%s' from mod %s"), *TagTable->GetPathName(), *ModReference.ToString());
+	ApplyTagsFromTable(ModReference, TagTable);
+}
+
+void UContentTagRegistry::ApplyTagsFromTable(FName ModReference, UDataTable* TagTable) {
+	UE_LOG(LogContentTagRegistry, Verbose, TEXT("Registering tag addition table '%s' from mod %s"), *TagTable->GetPathName(), *ModReference.ToString());
+	TArray<FContentTagRegistryAddition*> rows;
+	TagTable->GetAllRows(TEXT("ContentTagRegistry"), rows);
+	for (auto row : rows) {
+		UE_LOG(LogContentTagRegistry, Verbose, TEXT("Processing row. Class '%s' value:  %s"), *GetFullNameSafe(row->Class), *row->TagContainer.ToString());
+		InternalAddGameplayTagsTo(row->Class, row->TagContainer);
+	}
 }
 
 void UContentTagRegistry::FreezeRegistry() {

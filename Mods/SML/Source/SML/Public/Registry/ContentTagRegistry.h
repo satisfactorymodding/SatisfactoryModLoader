@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "GameplayTagContainer.h"
+#include "Engine/DataTable.h"
 #include "ContentTagRegistry.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogContentTagRegistry, All, All); // TODO set arg2 to Log once done with feature
@@ -15,12 +16,12 @@ struct SML_API FContentTagRegistryAddition : public FTableRowBase {
 	GENERATED_BODY()
 
 	FContentTagRegistryAddition() :
-		ItemClass(nullptr),
+		Class(nullptr),
 		TagContainer(FGameplayTagContainer::EmptyContainer)
 	{}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UObject> ItemClass;
+	TSubclassOf<UObject> Class;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayTagContainer TagContainer;
@@ -101,6 +102,8 @@ private:
 	static FFrame* ActiveScriptFramePtr;
 
 	bool CanModifyTagsOf(const UClass* content, FString& OutMessage);
+
+	void ApplyTagsFromTable(FName ModReference, UDataTable* TagTable);
 
 	/**
 	  * Since tags init is delayed until the first add/fetch operation on that class,
