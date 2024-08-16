@@ -32,7 +32,7 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                     +SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center).Padding(0, 0, 10, 0)[
                         SNew(SEditableTextBox)
                         .ToolTipText(LOCTEXT("SearchHint_Tooltip", "Filter the list based on the text entered here. Friendly name and Mod Reference supported"))
-                        .HintText(LOCTEXT("SearchHint", "Search Plugin..."))
+                        .HintText(LOCTEXT("SearchHint", "Search Mod..."))
                         .OnTextChanged_Lambda([this](const FText& InText) {
                             this->Filter(InText.ToString());
                         })
