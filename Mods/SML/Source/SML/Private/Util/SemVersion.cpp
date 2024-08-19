@@ -525,16 +525,16 @@ FString FVersionComparatorCollection::ToString() const {
 		FVersion CaretMax, TildeMax;
 		CaretMaxVersion(Lower.MyVersion, CaretMax);
 		TildeMaxVersion(Lower.MyVersion, TildeMax);
-		if (Upper.MyVersion.Compare(CaretMax) == 0) {
-			ResultString.Add(FString::Printf(TEXT("^%s"), *Lower.MyVersion.RemoveSpecialNumbers().ToString()));
-		} else if (Upper.MyVersion.Compare(TildeMax) == 0) {
-			ResultString.Add(FString::Printf(TEXT("~%s"), *Lower.MyVersion.RemoveSpecialNumbers().ToString()));
-		} else if (Upper.MyVersion.Major == Lower.MyVersion.Major + 1
+		if (Upper.MyVersion.Major == Lower.MyVersion.Major + 1
 			&& Lower.MyVersion.Minor <= 0 && Lower.MyVersion.Patch <= 0
 			&& Upper.MyVersion.Minor <= 0 && Upper.MyVersion.Patch <= 0
 			&& Lower.MyVersion.PreRelease.IsEmpty() && Upper.MyVersion.PreRelease.IsEmpty()) {
 			// x-range with major version only
 			ResultString.Add(FString::Printf(TEXT("%lld"), Lower.MyVersion.Major));
+		} else if (Upper.MyVersion.Compare(CaretMax) == 0) {
+			ResultString.Add(FString::Printf(TEXT("^%s"), *Lower.MyVersion.RemoveSpecialNumbers().ToString()));
+		} else if (Upper.MyVersion.Compare(TildeMax) == 0) {
+			ResultString.Add(FString::Printf(TEXT("~%s"), *Lower.MyVersion.RemoveSpecialNumbers().ToString()));
 		} else if (Upper.MyVersion.Major == Lower.MyVersion.Major && Upper.MyVersion.Minor == Lower.MyVersion.Minor + 1
 			&& Lower.MyVersion.Patch <= 0 && Upper.MyVersion.Patch <= 0
 			&& Lower.MyVersion.PreRelease.IsEmpty() && Upper.MyVersion.PreRelease.IsEmpty()) {
