@@ -157,14 +157,14 @@ void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor
 
 	if (!bBasePlugin) {
 		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ));
-	} else if (OutDescriptor.CachedJson->HasField(TEXT("SemVersion"))) {
+	} else if (OutDescriptor.CachedJson.IsValid() && OutDescriptor.CachedJson->HasField(TEXT("SemVersion"))) {
 		// We cannot remove the field when using UpdateDescriptor, because it will be copied from the existing descriptor
 		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("SemVersion"), MakeShared<FJsonValueString>( TEXT("") ));
 	}
 	
 	if (bBasePlugin) {
 		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ));
-	} else if (OutDescriptor.CachedJson->HasField(TEXT("BasePlugin"))) {
+	} else if (OutDescriptor.CachedJson.IsValid() && OutDescriptor.CachedJson->HasField(TEXT("BasePlugin"))) {
 		// We cannot remove the field when using UpdateDescriptor, because it will be copied from the existing descriptor
 		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( false ));
 	}
