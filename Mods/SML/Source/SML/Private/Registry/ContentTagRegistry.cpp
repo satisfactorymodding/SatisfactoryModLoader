@@ -61,7 +61,7 @@ void UContentTagRegistry::InternalAddGameplayTagsTo(UClass* content, const FGame
 }
 
 FGameplayTagContainer* UContentTagRegistry::GetOrInitContainerFor(UClass* content) {
-	// TODO refactor to avoid double lookup (contains then find?)
+	// Can't use FindOrAdd because we only want to run GetTagsFromExtendedAttributeProvider on first creation, otherwise it would interfere with tag removal
 	if (!TagContainerRegistry.Contains(content)) {
 		UE_LOG(LogContentTagRegistry, Verbose, TEXT("First access of tags for class %s so checking for Extended Attribute Provider tags"), *GetFullNameSafe(content));
 		auto tagsFromProvider = GetTagsFromExtendedAttributeProvider(content);
@@ -94,7 +94,10 @@ void UContentTagRegistry::RemoveGameplayTagsFrom(UClass* content, const FGamepla
 }
 
 FGameplayTagContainer UContentTagRegistry::GetTagsFromExtendedAttributeProvider(UClass* content) {
-	if (auto cdo = content->GetDefaultObject()) {
+	if (!content) {
+		UE_LOG(LogContentTagRegistry, Warning, TEXT("Tried to call GetTagsFromExtendedAttributeProvider on invalid class"));
+		return FGameplayTagContainer::EmptyContainer;
+	} else if (auto cdo = content->GetDefaultObject()) {
 		if (cdo->Implements<USMLExtendedAttributeProvider>()) {
 			return ISMLExtendedAttributeProvider::Execute_GetRequestedGameplayTags(cdo);
 		}
@@ -126,8 +129,12 @@ void UContentTagRegistry::ApplyTagsFromTable(FName ModReference, UDataTable* Tag
 	TArray<FContentTagRegistryAddition*> rows;
 	TagTable->GetAllRows(TEXT("ContentTagRegistry"), rows);
 	for (auto row : rows) {
-		UE_LOG(LogContentTagRegistry, Verbose, TEXT("Processing row. Class '%s' value:  %s"), *GetFullNameSafe(row->Class), *row->TagContainer.ToString());
-		InternalAddGameplayTagsTo(row->Class, row->TagContainer);
+		if (row->Class) {
+			UE_LOG(LogContentTagRegistry, Verbose, TEXT("Processing row. Class '%s' tags:  %s"), *GetFullNameSafe(row->Class), *row->TagContainer.ToString());
+			InternalAddGameplayTagsTo(row->Class, row->TagContainer);
+		} else {
+			UE_LOG(LogContentTagRegistry, Warning, TEXT("Table row trying to apply tags to an invalid class. Is this asset not present? The tags are: %s"), *row->TagContainer.ToString());
+		}
 	}
 }
 
@@ -141,17 +148,23 @@ bool UContentTagRegistry::ShouldCreateSubsystem(UObject* Outer) const {
 	return FPluginModuleLoader::ShouldLoadModulesForWorld(WorldOuter);
 }
 
+void UContentTagRegistry::Initialize(FSubsystemCollectionBase& Collection) {
+	Super::Initialize(Collection);
+
+	// TODO @SML: Copied from ModContentRegistry: I don't know if this is the most performant thing to do, it fires on every UWorld::SpawnActor call, which might be a bit heavy.
+	OnActorPreSpawnDelegateHandle = GetWorld()->AddOnActorPreSpawnInitialization(FOnActorSpawned::FDelegate::CreateUObject(this, &UContentTagRegistry::OnActorPreSpawnInitialization));
+}
+
 void UContentTagRegistry::OnActorPreSpawnInitialization(AActor* Actor) {
-	UE_LOG(LogContentTagRegistry, Verbose, TEXT("TROUBLESHOOT OnActorPreSpawnInitialization"));
 	OnWorldBeginPlayDelegate.AddWeakLambda(this, [&]() {
-		// TODO this is not properly getting called
-		UE_LOG(LogContentTagRegistry, Verbose, TEXT("TROUBLESHOOT OnWorldBeginPlayDelegate Weak Lambda"));
 		FreezeRegistry();
 	});
+
+	GetWorld()->RemoveOnActorPreSpawnInitialization(OnActorPreSpawnDelegateHandle);
+	OnActorPreSpawnDelegateHandle.Reset();
 }
 
 void UContentTagRegistry::OnWorldBeginPlay(UWorld& InWorld) {
-	UE_LOG(LogContentTagRegistry, Verbose, TEXT("TROUBLESHOOT OnWorldBeginPlayDelegate Broadcast"));
 	OnWorldBeginPlayDelegate.Broadcast();
 }
 

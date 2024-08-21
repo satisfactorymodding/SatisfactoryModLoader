@@ -45,7 +45,7 @@ class SML_API UContentTagRegistry : public UWorldSubsystem
 public:
 	UContentTagRegistry();
 
-	/** Retrieves content tag registry instance */
+	/** Retrieves content tag registry instance. */
 	UFUNCTION(BlueprintPure, Category = "Content Tag Registry", DisplayName = "GetContentTagRegistry", meta = (WorldContext = "WorldContext"))
 	static UContentTagRegistry* Get(const UObject* WorldContext);
 
@@ -54,21 +54,18 @@ public:
 	 * Could be an empty container there were no tags registered.
 	 * 
 	 * Returned container cannot be modified, use the registry's functions for that
-	 * TODO outvar bool for found/not?
 	 */
 	UFUNCTION(BlueprintPure, Category = "Content Tag Registry")
 	const FGameplayTagContainer GetGameplayTagContainerFor(UClass* content);
 
 	/**
-	 * Register gameplay tags from the passed container to the passed class
-	 * TODO do we want arg FName InRegistrationPluginName?
+	 * Register gameplay tags from the passed container to the passed class.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry", CustomThunk)
 	void AddGameplayTagsTo(UClass* content, const FGameplayTagContainer tags);
 
 	/**
-	 * Remove gameplay tags in passed container from the passed class if they were present
-	 * TODO do we want arg FName InRegistrationPluginName?
+	 * Remove gameplay tags in passed container from the passed class if they were present.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Content Tag Registry", CustomThunk)
 	void RemoveGameplayTagsFrom(UClass* content, const FGameplayTagContainer tags);
@@ -83,7 +80,7 @@ public:
 
 	// Begin USubsystem interface
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
-	//virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	// End USubsystem interface
 
@@ -95,6 +92,8 @@ private:
 
 	DECLARE_MULTICAST_DELEGATE(FOnWorldBeginPlay);
 	FOnWorldBeginPlay OnWorldBeginPlayDelegate;
+
+	FDelegateHandle OnActorPreSpawnDelegateHandle;
 
 	static FString GetCallStackContext();
 
