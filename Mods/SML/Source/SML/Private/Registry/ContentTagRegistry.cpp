@@ -6,7 +6,7 @@
 DEFINE_LOG_CATEGORY(LogContentTagRegistry);
 
 /** Makes sure provided object instance is valid, crashes with both script call stack and native stack trace if it's not */
-#define NOTIFY_INVALID_REGISTRATION(Context) \
+#define NOTIFY_INVALID_TAG_REGISTRATION(Context) \
 	{ \
 		/* Attempt to use cached script frame pointer first, then fallback to global script callstack (which is not available in shipping by default) */ \
 		const FString ScriptCallstack = UContentTagRegistry::GetCallStackContext(); \
@@ -76,7 +76,7 @@ FGameplayTagContainer* UContentTagRegistry::GetOrInitContainerFor(UClass* conten
 void UContentTagRegistry::AddGameplayTagsTo(UClass* content, const FGameplayTagContainer tags) {
 	FString Context;
 	if (!CanModifyTagsOf(content, Context)) {
-		NOTIFY_INVALID_REGISTRATION(*Context);
+		NOTIFY_INVALID_TAG_REGISTRATION(*Context);
 		return;
 	}
 	InternalAddGameplayTagsTo(content, tags);
@@ -85,7 +85,7 @@ void UContentTagRegistry::AddGameplayTagsTo(UClass* content, const FGameplayTagC
 void UContentTagRegistry::RemoveGameplayTagsFrom(UClass* content, const FGameplayTagContainer tags) {
 	FString Context;
 	if (!CanModifyTagsOf(content, Context)) {
-		NOTIFY_INVALID_REGISTRATION(*Context);
+		NOTIFY_INVALID_TAG_REGISTRATION(*Context);
 		return;
 	}
 	auto record = GetOrInitContainerFor(content);
@@ -110,14 +110,14 @@ FGameplayTagContainer UContentTagRegistry::GetTagsFromExtendedAttributeProvider(
 void UContentTagRegistry::RegisterTagAdditionTable(FName ModReference, UDataTable* TagTable) {
 	if (!IsValid(TagTable)) {
 		const FString Context = FString::Printf(TEXT("Attempt to register NULL TagTable. Mod Reference: %s"), *ModReference.ToString());
-		NOTIFY_INVALID_REGISTRATION(*Context);
+		NOTIFY_INVALID_TAG_REGISTRATION(*Context);
 		return;
 	}
 
 	if (!IsValid(TagTable->RowStruct) || !TagTable->RowStruct->IsChildOf(FContentTagRegistryAddition::StaticStruct())) {
 		const FString Context = FString::Printf(TEXT("Invalid Content Tag Addition table in mod %s (%s): Row Type should be FContentTagRegistryAddition"),
 			*ModReference.ToString(), *TagTable->GetPathName());
-		NOTIFY_INVALID_REGISTRATION(*Context);
+		NOTIFY_INVALID_TAG_REGISTRATION(*Context);
 		return;
 	}
 
