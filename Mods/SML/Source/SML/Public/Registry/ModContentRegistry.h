@@ -220,7 +220,7 @@ public:
     UFUNCTION(BlueprintPure, Category = "Mod Content Registry")
     void GetObtainableItemDescriptors(TArray<FGameObjectRegistration>& OutItemDescriptors, UPARAM(meta = (Bitmask, BitmaskEnum = "/Script/SML.EGetObtainableItemDescriptorsFlags")) EGetObtainableItemDescriptorsFlags Flags = EGetObtainableItemDescriptorsFlags::Default) const;
 
-	static bool IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags );
+	bool IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags ) const;
 	
 	/** Retrieves list of all currently registered research trees */
 	UFUNCTION(BlueprintPure, Category = "Mod Content Registry")

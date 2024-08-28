@@ -883,7 +883,7 @@ static bool IsResourceFormFilteredOut(EResourceForm ResourceForm, EGetObtainable
 	}
 }
 
-bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
+bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags ) const
 {
 	if (!ItemDescriptor) {
 		UE_LOG(LogContentRegistry, Warning, TEXT("IsDescriptorFilteredOut called with null ItemDescriptor, returning true (filtering out)"));
@@ -914,13 +914,9 @@ bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor
 		if (descriptorClass->IsChildOf<UFGWildCardDescriptor>() || descriptorClass->IsChildOf<UFGAnyUndefinedDescriptor>() || descriptorClass->IsChildOf<UFGOverflowDescriptor>() || descriptorClass->IsChildOf<UFGNoneDescriptor>()) {
 			return true;
 		}
-		if (descriptorClass->ImplementsInterface(USMLExtendedAttributeProvider::StaticClass())) {
-			UObject* ItemDescriptorCDO = descriptorClass->GetDefaultObject();
-			// TODO switch over to Content Tag Registry 
-			const auto ItemTags = ISMLExtendedAttributeProvider::Execute_GetRequestedGameplayTags(ItemDescriptorCDO);
-			const auto SmlSpecialTag = FGameplayTag::RequestGameplayTag("SML.Registry.Item.SpecialItemDescriptor", true);
-			return ItemTags.HasTag(SmlSpecialTag);
-		}
+		const auto descriptorTags = UContentTagRegistry::Get(this)->GetGameplayTagContainerFor(descriptorClass);
+		const auto SmlSpecialTag = FGameplayTag::RequestGameplayTag("SML.Registry.Item.SpecialItemDescriptor", true);
+		return descriptorTags.HasTag(SmlSpecialTag);
 	}
 	return false;
 }
