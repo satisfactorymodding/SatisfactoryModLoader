@@ -6,7 +6,7 @@
 #include "Engine/DataTable.h"
 #include "ContentTagRegistry.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogContentTagRegistry, All, All); // TODO set arg2 to Log once done with feature
+DECLARE_LOG_CATEGORY_EXTERN(LogContentTagRegistry, Log, All);
 
 /**
   * Row struct for the data table tag assignment registration approach
@@ -35,7 +35,7 @@ struct SML_API FContentTagRegistryAddition : public FTableRowBase {
  * Add tags to content via this registry's provided avenues,
  * all returned tag containers are const.
  * 
- * Tag associations can only be made before save is loaded,
+ * Tag associations can only be modified before the subsystem's Begin Play,
  * after that moment the registry is frozen and no changes can be made after that.
  */
 UCLASS()

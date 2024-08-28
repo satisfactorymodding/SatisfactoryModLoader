@@ -44,7 +44,7 @@ const FGameplayTagContainer UContentTagRegistry::GetGameplayTagContainerFor(UCla
 
 bool UContentTagRegistry::CanModifyTagsOf(const UClass* content, FString& OutMessage) {
 	if (bRegistryFrozen) {
-		OutMessage = FString::Printf(TEXT("Attempt to modify content tags of class '%s' when registry is frozen. Make sure your tag changes are happening in the 'Initialization' Lifecycle Phase and not 'Post Initialization'. TODO update this message with the timing we decide on."), *GetPathNameSafe(content));
+		OutMessage = FString::Printf(TEXT("Attempt to modify content tags of class '%s' when registry is frozen."), *GetPathNameSafe(content));
 		return false;
 	}
 	if (!IsValid(content)) {
