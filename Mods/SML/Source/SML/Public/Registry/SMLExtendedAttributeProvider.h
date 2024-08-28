@@ -22,11 +22,10 @@ public:
     /**
       * Gets the set of gameplay tags the implementer wishes to have in the Content Tag Registry.
       * Tags are stored at the class level.
-      * TODO should this be a const function? probably?
-      * TODO should this be static to the class? probably?
       * 
+      * This should rarely be called directly.
       * Use UContentTagRegistry::GetGameplayTagContainerFor to get the final tag container.
       */
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="SML|Tags")
-    FGameplayTagContainer GetRequestedGameplayTags();
+    const FGameplayTagContainer GetRequestedGameplayTags() const;
 };
