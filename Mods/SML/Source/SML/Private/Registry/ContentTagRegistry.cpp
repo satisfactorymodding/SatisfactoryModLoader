@@ -114,8 +114,14 @@ void UContentTagRegistry::RegisterTagAdditionTable(FName ModReference, UDataTabl
 		return;
 	}
 
+	if (bRegistryFrozen) {
+		const FString Context = FString::Printf(TEXT("Attempt to register TagTable %s when registry is frozen."), *TagTable->GetPathName());
+		NOTIFY_INVALID_TAG_REGISTRATION(*Context);
+		return;
+	}
+
 	if (!IsValid(TagTable->RowStruct) || !TagTable->RowStruct->IsChildOf(FContentTagRegistryAddition::StaticStruct())) {
-		const FString Context = FString::Printf(TEXT("Invalid Content Tag Addition table in mod %s (%s): Row Type should be FContentTagRegistryAddition"),
+		const FString Context = FString::Printf(TEXT("Invalid Content Tag Addition Table in mod %s (%s): Row Type should be FContentTagRegistryAddition"),
 			*ModReference.ToString(), *TagTable->GetPathName());
 		NOTIFY_INVALID_TAG_REGISTRATION(*Context);
 		return;
@@ -148,24 +154,8 @@ bool UContentTagRegistry::ShouldCreateSubsystem(UObject* Outer) const {
 	return FPluginModuleLoader::ShouldLoadModulesForWorld(WorldOuter);
 }
 
-void UContentTagRegistry::Initialize(FSubsystemCollectionBase& Collection) {
-	Super::Initialize(Collection);
-
-	// TODO @SML: Copied from ModContentRegistry: I don't know if this is the most performant thing to do, it fires on every UWorld::SpawnActor call, which might be a bit heavy.
-	OnActorPreSpawnDelegateHandle = GetWorld()->AddOnActorPreSpawnInitialization(FOnActorSpawned::FDelegate::CreateUObject(this, &UContentTagRegistry::OnActorPreSpawnInitialization));
-}
-
-void UContentTagRegistry::OnActorPreSpawnInitialization(AActor* Actor) {
-	OnWorldBeginPlayDelegate.AddWeakLambda(this, [&]() {
-		FreezeRegistry();
-	});
-
-	GetWorld()->RemoveOnActorPreSpawnInitialization(OnActorPreSpawnDelegateHandle);
-	OnActorPreSpawnDelegateHandle.Reset();
-}
-
 void UContentTagRegistry::OnWorldBeginPlay(UWorld& InWorld) {
-	OnWorldBeginPlayDelegate.Broadcast();
+	FreezeRegistry();
 }
 
 FString UContentTagRegistry::GetCallStackContext() {

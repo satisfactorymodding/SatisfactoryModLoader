@@ -76,11 +76,9 @@ public:
 	// Freezes the registry. No new registrations are accepted past this point.
 	void FreezeRegistry();
 
-	void OnActorPreSpawnInitialization(AActor* Actor);
-
 	// Begin USubsystem interface
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	// virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	// End USubsystem interface
 
@@ -89,11 +87,6 @@ private:
 	TMap<UClass*, FGameplayTagContainer> TagContainerRegistry;
 
 	bool bRegistryFrozen{ false };
-
-	DECLARE_MULTICAST_DELEGATE(FOnWorldBeginPlay);
-	FOnWorldBeginPlay OnWorldBeginPlayDelegate;
-
-	FDelegateHandle OnActorPreSpawnDelegateHandle;
 
 	static FString GetCallStackContext();
 
