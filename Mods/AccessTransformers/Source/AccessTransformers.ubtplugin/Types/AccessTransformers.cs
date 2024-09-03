@@ -74,10 +74,12 @@ public static class AccessTransformers
 
 
             StringBuilder getterBuilder = new();
+            getterBuilder.Append("FORCEINLINE ");
             property.AppendText(getterBuilder, UhtPropertyTextType.GenericFunctionArgOrRetVal);
             getterBuilder.Append(' ').Append("Get").Append(property.SourceName).Append("() const { return ").Append(property.SourceName).Append("; }");
             
             StringBuilder setterBuilder = new();
+            setterBuilder.Append("FORCEINLINE ");
             setterBuilder.Append("void Set").Append(property.SourceName).Append($"(");
             property.AppendText(setterBuilder, UhtPropertyTextType.GenericFunctionArgOrRetVal);
             setterBuilder.Append(" value) { ").Append(property.SourceName).Append(" = value; }");
