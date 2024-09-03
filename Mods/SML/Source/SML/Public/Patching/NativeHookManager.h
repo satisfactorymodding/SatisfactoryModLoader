@@ -308,8 +308,8 @@ public:
 		if (!bHookInitialized)
 		{
 			bHookInitialized = true;
-			void* HookFunctionPointer = static_cast<void*>( GetApplyCall() );
-			RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction( DebugSymbolName, {Callable, 0, 0}, NULL, HookFunctionPointer, (void**) &FunctionPtr );
+			void* HookFunctionPointer = reinterpret_cast<void*>( GetApplyCall() );
+			RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction( DebugSymbolName, { reinterpret_cast<void*>(Callable), 0, 0}, NULL, HookFunctionPointer, (void**) &FunctionPtr );
 			THandlerLists<Handler, HandlerAfter>* HandlerLists = CreateHandlerLists<Handler, HandlerAfter>( RealFunctionAddress );
 
 			HandlersBefore = &HandlerLists->HandlersBefore;
