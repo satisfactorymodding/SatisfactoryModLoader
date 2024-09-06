@@ -1,4 +1,6 @@
 #include "Registry/ModContentRegistry.h"
+#include "Registry/SMLExtendedAttributeProvider.h"
+#include "Registry/ContentTagRegistry.h"
 #include "FGGameMode.h"
 #include "FGGameState.h"
 #include "FGResearchManager.h"
@@ -19,6 +21,7 @@
 #include "Patching/NativeHookManager.h"
 #include "Reflection/ReflectionHelper.h"
 #include "Engine/AssetManager.h"
+#include "GameplayTagsModule.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"
 #include "ModLoading/PluginModuleLoader.h"
 #include "Resources/FGAnyUndefinedDescriptor.h"
@@ -880,7 +883,7 @@ static bool IsResourceFormFilteredOut(EResourceForm ResourceForm, EGetObtainable
 	}
 }
 
-bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags )
+bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags ) const
 {
 	if (!ItemDescriptor) {
 		UE_LOG(LogContentRegistry, Warning, TEXT("IsDescriptorFilteredOut called with null ItemDescriptor, returning true (filtering out)"));
@@ -888,6 +891,7 @@ bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor
 	}
 	const TSubclassOf<UFGItemDescriptor> descriptorClass = const_cast<UClass*>(Cast<UClass>(ItemDescriptor));
 	if (!descriptorClass) {
+		UE_LOG(LogContentRegistry, Warning, TEXT("IsDescriptorFilteredOut called with non-ItemDescriptor, returning true (filtering out)"));
 		return true;
 	}
 	if (IsResourceFormFilteredOut(UFGItemDescriptor::GetForm(descriptorClass), Flags)) {
@@ -906,8 +910,13 @@ bool UModContentRegistry::IsDescriptorFilteredOut( const UObject* ItemDescriptor
 	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeVehicles) && descriptorClass->IsChildOf<UFGVehicleDescriptor>()) {
 		return true;
 	}
-	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial) && ( descriptorClass->IsChildOf<UFGWildCardDescriptor>() || descriptorClass->IsChildOf<UFGAnyUndefinedDescriptor>() || descriptorClass->IsChildOf<UFGOverflowDescriptor>() || descriptorClass->IsChildOf<UFGNoneDescriptor>() )) {
-		return true;
+	if (!EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags::IncludeSpecial)) {
+		if (descriptorClass->IsChildOf<UFGWildCardDescriptor>() || descriptorClass->IsChildOf<UFGAnyUndefinedDescriptor>() || descriptorClass->IsChildOf<UFGOverflowDescriptor>() || descriptorClass->IsChildOf<UFGNoneDescriptor>()) {
+			return true;
+		}
+		const auto descriptorTags = UContentTagRegistry::Get(this)->GetGameplayTagContainerFor(descriptorClass);
+		const auto SmlSpecialTag = FGameplayTag::RequestGameplayTag("SML.Registry.Item.SpecialItemDescriptor", true);
+		return descriptorTags.HasTag(SmlSpecialTag);
 	}
 	return false;
 }

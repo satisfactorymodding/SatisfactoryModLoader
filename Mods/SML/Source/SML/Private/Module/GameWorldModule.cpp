@@ -1,6 +1,7 @@
 #include "Module/GameWorldModule.h"
 #include "Command/ChatCommandLibrary.h"
 #include "Registry/ModContentRegistry.h"
+#include "Registry/ContentTagRegistry.h"
 #include "Subsystem/SubsystemActorManager.h"
 
 #if WITH_EDITOR
@@ -53,7 +54,9 @@ void UGameWorldModule::RegisterDefaultContent() {
     UWorld* WorldObject = GetWorld();
     UModContentRegistry* ModContentRegistry = UModContentRegistry::Get(WorldObject);
     AChatCommandSubsystem* ChatCommandSubsystem = AChatCommandSubsystem::Get(WorldObject);
+    UContentTagRegistry* ContentTagRegistry = UContentTagRegistry::Get(WorldObject);
 	check(ModContentRegistry);
+    check(ContentTagRegistry);
 
     auto ModReference = GetOwnerModReference();
 
@@ -75,6 +78,12 @@ void UGameWorldModule::RegisterDefaultContent() {
     UDataTable* ModExplorationResourceSinkPointsTable = mExplorationResourceSinkItemPointsTable.LoadSynchronous();
     if (ModExplorationResourceSinkPointsTable != NULL) {
         ModContentRegistry->RegisterResourceSinkItemPointTable(ModReference, ModExplorationResourceSinkPointsTable, EResourceSinkTrack::RST_Exploration);
+    }
+
+    //Register tag additions
+    UDataTable* ContentTagAdditionsTable = mContentTagAdditionsTable.LoadSynchronous();
+    if (ContentTagAdditionsTable != NULL) {
+        ContentTagRegistry->RegisterTagAdditionTable(ModReference, ContentTagAdditionsTable);
     }
 
     //Register chat commands (on server side only)

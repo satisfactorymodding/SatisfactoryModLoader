@@ -137,7 +137,7 @@ enum class EGetObtainableItemDescriptorsFlags : uint8
 	IncludeCustomizations = 0x04 UMETA( DisplayName = "Include Customizations" ),
 	IncludeVehicles = 0x08 UMETA( DisplayName = "Include Vehicles" ),
 	IncludeCreatures = 0x10 UMETA( DisplayName = "Include Creatures" ),
-	IncludeSpecial = 0x20 UMETA( DisplayName = "Include Special (WildCard, AnyUndefined, Overflow, None)" ),
+	IncludeSpecial = 0x20 UMETA( DisplayName = "Include Special (WildCard, AnyUndefined, Overflow, None, SML.Registry.Item.SpecialItemDescriptor)" ),
 	Default = None,
 };
 
@@ -220,7 +220,7 @@ public:
     UFUNCTION(BlueprintPure, Category = "Mod Content Registry")
     void GetObtainableItemDescriptors(TArray<FGameObjectRegistration>& OutItemDescriptors, UPARAM(meta = (Bitmask, BitmaskEnum = "/Script/SML.EGetObtainableItemDescriptorsFlags")) EGetObtainableItemDescriptorsFlags Flags = EGetObtainableItemDescriptorsFlags::Default) const;
 
-	static bool IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags );
+	bool IsDescriptorFilteredOut( const UObject* ItemDescriptor, EGetObtainableItemDescriptorsFlags Flags ) const;
 	
 	/** Retrieves list of all currently registered research trees */
 	UFUNCTION(BlueprintPure, Category = "Mod Content Registry")
@@ -283,6 +283,7 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	// End USubsystem interface
+
 	static void AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector);
 private:
 	friend class FGameObjectRegistryState;
