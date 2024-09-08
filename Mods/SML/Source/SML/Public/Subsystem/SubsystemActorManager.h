@@ -51,6 +51,24 @@ public:
 
 	/** Makes sure native SML subsystems are registered and ready for use */
 	void MakeSureNativeSubsystemsRegistered();
+
+	/** Retrieves subsystem actor manager instance from provided world context */
+	static USubsystemActorManager* Get(UObject* WorldContext) { // TODO: Make Checked version of this function?
+		UWorld* WorldObject = GEngine->GetWorldFromContextObjectChecked(WorldContext);
+		USubsystemActorManager* SubsystemActorManager = WorldObject->GetSubsystem<USubsystemActorManager>();
+		check(SubsystemActorManager); // TODO: Keep as-is, use fgcheck or remove? Use IsValid or not?
+		return SubsystemActorManager;
+	}
+
+	/** Retrieves subsystem actor of the provided class in the provided context, or NULL if it does not exist */
+	template<typename T>
+	static FORCEINLINE T* GetSubsystemActor(UObject* WorldContext) { // TODO: Make Checked version of this function?
+		USubsystemActorManager* SubsystemActorManager = USubsystemActorManager::Get(WorldContext);
+		// TODO: Check if SubsystemActorManager is valid?
+		T* SubsystemActor = SubsystemActorManager->GetSubsystemActor<T>();
+		fgcheck(IsValid(SubsystemActor)); // TODO: Remove? Use in Checked version of this function?
+		return SubsystemActor;
+	}
 private:
 	friend AModSubsystem;
 
