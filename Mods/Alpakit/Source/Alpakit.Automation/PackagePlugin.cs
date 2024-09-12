@@ -117,7 +117,7 @@ public class PackagePlugin : BuildCookRun
 	private static void DeployStagedPlugin(ProjectParams ProjectParams, DeploymentContext SC, DirectoryReference GameDir)
 	{
 		// We only want to archive the staged files of the plugin, not the entire stage directory
-		var stagedPluginDirectory = Project.ApplyDirectoryRemap(SC, SC.GetStagedFileLocation(ProjectParams.DLCFile));
+		var stagedPluginDirectory = DeploymentContext.ApplyDirectoryRemap(SC, SC.GetStagedFileLocation(ProjectParams.DLCFile));
 		var fullStagedPluginDirectory = DirectoryReference.Combine(SC.StageDirectory, stagedPluginDirectory.Directory.Name);
 
 		var projectName = ProjectParams.RawProjectPath.GetFileNameWithoutAnyExtensions();
@@ -142,7 +142,7 @@ public class PackagePlugin : BuildCookRun
 		var zipFileName = $"{dlcName}-{SC.FinalCookPlatform}.zip";
 
 		// We only want to archive the staged files of the plugin, not the entire stage directory
-		var stagedPluginDirectory = Project.ApplyDirectoryRemap(SC, SC.GetStagedFileLocation(ProjectParams.DLCFile));
+		var stagedPluginDirectory = DeploymentContext.ApplyDirectoryRemap(SC, SC.GetStagedFileLocation(ProjectParams.DLCFile));
 		var fullStagedPluginDirectory = DirectoryReference.Combine(SC.StageDirectory, stagedPluginDirectory.Directory.Name);
 
 		CreateZipFromDirectory(fullStagedPluginDirectory, FileReference.Combine(archiveDirectory, zipFileName));
@@ -166,7 +166,7 @@ public class PackagePlugin : BuildCookRun
 			foreach (var SC in DeploymentContexts)
 			{
 				var stagedPluginDirectory =
-					Project.ApplyDirectoryRemap(SC, SC.GetStagedFileLocation(ProjectParams.DLCFile));
+					DeploymentContext.ApplyDirectoryRemap(SC, SC.GetStagedFileLocation(ProjectParams.DLCFile));
 				var fullStagedPluginDirectory =
 					DirectoryReference.Combine(SC.StageDirectory, stagedPluginDirectory.Directory.Name);
 				CopyDirectory_NoExceptions(fullStagedPluginDirectory, DirectoryReference.Combine(mergedTempDir, SC.FinalCookPlatform));
