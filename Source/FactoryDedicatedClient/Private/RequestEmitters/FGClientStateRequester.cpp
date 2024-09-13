@@ -2,15 +2,9 @@
 
 #include "RequestEmitters/FGClientStateRequester.h"
 
-FFGPendingClientRequest UFGClientStateRequester::Request_QueryServerState() const { return FFGPendingClientRequest(); }
 void UFGClientStateRequester::Response_QueryServerState(const FFGServerErrorResponse& ServerResponse, const FServerGameState& ServerGameState) const {}
-FFGPendingClientRequest UFGClientStateRequester::Request_JoinGameRequest() const { return FFGPendingClientRequest(); }
 void UFGClientStateRequester::Response_JoinGameRequest(const FFGServerErrorResponse& ErrorResponse, const FFGServerJoinDataResponse& ServerJoinData) const {}
-FFGPendingClientRequest UFGClientStateRequester::Request_GetServerOptions() const { return FFGPendingClientRequest(); }
 void UFGClientStateRequester::Response_GetServerOptions(const FFGServerErrorResponse& ServerResponse, const TMap<FString, FString>& ServerOptions, const TMap<FString, FString>& PendingServerOptions) const {}
-FFGPendingClientRequest UFGClientStateRequester::Request_GetAdvancedGameSettings() const { return FFGPendingClientRequest(); }
 void UFGClientStateRequester::Response_GetAdvancedGameSettings(const FFGServerErrorResponse& ServerResponse, bool creativeModeEnabled, const TMap<FString, FString>& advancedGameSettings) const {}
-FFGPendingClientRequest UFGClientStateRequester::Request_ApplyAdvancedGameSettings(const TMap<FString, FString>& AppliedAdvancedGameSettings) const { return FFGPendingClientRequest(); }
 void UFGClientStateRequester::Response_ApplyAdvancedGameSettings(const FFGServerErrorResponse& ErrorResponse) const {}
-FFGPendingClientRequest UFGClientStateRequester::Request_HealthCheck(const FString& ClientCustomData) const { return FFGPendingClientRequest(); }
 void UFGClientStateRequester::Response_HealthCheck(FFGServerErrorResponse& HealthCheckResult, const FString& ServerCustomData) const {}

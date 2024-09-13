@@ -4,20 +4,11 @@
 
 #include "Networking/FGClientAPIManager.h"
 
-FFGPendingClientRequest UFGClientSaveGameRequester::Request_CreateNewGame(const FFGServerNewGameData& NewGameData) const { return FFGPendingClientRequest(); }
 void UFGClientSaveGameRequester::Response_CreateNewGame(const FFGServerErrorResponse& ErrorResponse) const {}
-FFGPendingClientRequest UFGClientSaveGameRequester::Request_SaveGame(const FString& SaveName, const FOnSaveMgrInterfaceSaveGameComplete& CompleteDelegate) const { return FFGPendingClientRequest(); }
 void UFGClientSaveGameRequester::Response_SaveGame(FFGServerErrorResponse& ErrorResponse, const FOnSaveMgrInterfaceSaveGameComplete& CompleteDelegate) {}
-FFGPendingClientRequest UFGClientSaveGameRequester::Request_DeleteSaveFile(const FString& SaveName, const FOnSaveMgrInterfaceDeleteSaveGameComplete& CompleteDelegate) const { return FFGPendingClientRequest(); }
 void UFGClientSaveGameRequester::Response_DeleteSaveFile(FFGServerErrorResponse& ErrorResponse,	const FOnSaveMgrInterfaceDeleteSaveGameComplete& CompleteDelegate) {}
-FFGPendingClientRequest UFGClientSaveGameRequester::Request_DeleteSaveSession(const FString& SessionName, const FOnSaveMgrInterfaceDeleteSaveGameComplete& CompleteDelegate) const { return FFGPendingClientRequest(); }
 void UFGClientSaveGameRequester::Response_DeleteSaveSession(FFGServerErrorResponse& ErrorResponse, const FOnSaveMgrInterfaceDeleteSaveGameComplete& CompleteDelegate) {}
-FFGPendingClientRequest UFGClientSaveGameRequester::Request_EnumerateSessions() { return FFGPendingClientRequest(); }
 void UFGClientSaveGameRequester::Response_EnumerateSessions(const FFGServerErrorResponse& ErrorResponse, const TArray<FSessionSaveStruct>& Sessions, int32 CurrentSessionIndex) {}
-FFGPendingClientRequest UFGClientSaveGameRequester::Request_LoadGame(const FString& SaveName, bool bEnableAdvancedGameSettings) const { return FFGPendingClientRequest(); }
 void UFGClientSaveGameRequester::Response_LoadGame(const FFGServerErrorResponse& ErrorResponse) const {}
-FFGPendingClientRequest UFGClientSaveGameRequester::Request_UploadSaveGame(const FString& SaveName,	const FFGMultipartDataWrapper& SaveGameFile, bool bLoadSaveGame, bool bEnableAdvancedGameSettings, const FOnSaveManagerTransferCompleted& CompleteDelegate) const { return FFGPendingClientRequest(); }
 void UFGClientSaveGameRequester::Response_UploadSaveGame(FFGServerErrorResponse& ErrorResponse,	const FOnSaveManagerTransferCompleted& CompleteDelegate) const {}
-FFGPendingClientRequest UFGClientSaveGameRequester::Request_DownloadSaveGame(const FString& SaveName, const FOnSaveManagerTransferCompleted& CompleteDelegate) const { return FFGPendingClientRequest(); }
-void UFGClientSaveGameRequester::Response_DownloadSaveGame(FFGServerErrorResponse& ErrorResponse, const FFGFileResponseWrapper& FileResponse, const FOnSaveManagerTransferCompleted& CompleteDelegate) const {
-}
+void UFGClientSaveGameRequester::Response_DownloadSaveGame(FFGServerErrorResponse& ErrorResponse, const FFGFileResponseWrapper& FileResponse, const FOnSaveManagerTransferCompleted& CompleteDelegate) const {}

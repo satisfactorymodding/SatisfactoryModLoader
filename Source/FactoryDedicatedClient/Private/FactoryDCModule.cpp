@@ -2,7 +2,11 @@
 
 #include "FactoryDCModule.h"
 
+#include "Networking/FGClientAPIManager.h"
+
 void FFactoryDedicatedClientModule::StartupModule(){ }
 void FFactoryDedicatedClientModule::ShutdownModule(){ }
 
 IMPLEMENT_GAME_MODULE(FFactoryDedicatedClientModule, FactoryDedicatedClient);
+
+void InternalProcessServerAPIRequest(UObject* Context, UFunction* Function, void* Params) {}

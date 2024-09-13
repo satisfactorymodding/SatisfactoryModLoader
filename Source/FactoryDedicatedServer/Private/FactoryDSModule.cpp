@@ -2,7 +2,11 @@
 
 #include "FactoryDSModule.h"
 
+#include "Networking/FGServerAPIManager.h"
+
 void FFactoryDSModule::StartupModule(){ }
 void FFactoryDSModule::ShutdownModule(){ }
 
 IMPLEMENT_GAME_MODULE(FFactoryDSModule, FactoryDedicatedServer);
+
+void InternalCompleteAPIRequest(UObject* Context, UFunction* Function, void* Params) {}
