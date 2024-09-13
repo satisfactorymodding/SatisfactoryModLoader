@@ -12,6 +12,15 @@
 #include "UObject/NoExportTypes.h"
 #include "FGResearchTree.generated.h"
 
+UENUM( BlueprintType )
+enum EResearchTreeStatus
+{
+	ERTS_Locked					= 0 UMETA( DisplayName = "Locked" ),
+	ERTS_Unlocked				= 1 UMETA( DisplayName = "Unlocked" ),
+	ERTS_StartedResearch		= 2 UMETA( DisplayName = "Started Research" ),
+	ERTS_FinishedAllResearch	= 3 UMETA( DisplayName = "Finished All Research" ),
+};
+
 /**
  * 
  */
@@ -69,6 +78,8 @@ public:
 	/** Returns the relevant events this schematic is present in. */
 	UFUNCTION( BlueprintPure, Category = "Research Tree" )
     static TArray< EEvents > GetRelevantEvents( TSubclassOf< UFGResearchTree > inClass );
+
+	static EResearchTreeStatus GetResearchTreeStatus( TSubclassOf< UFGResearchTree > inClass, UObject* worldContext );
 
 protected:
 	/** The name to be displayed to the player before the tree is unlocked */

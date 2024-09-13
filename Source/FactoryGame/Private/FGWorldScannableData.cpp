@@ -12,3 +12,4 @@ void AFGWorldScannableDataGenerator::GenerateWorldScannableData(){ }
 AFGWorldScannableDataGenerator::AFGWorldScannableDataGenerator() : Super() {
 
 }
+void AFGWorldScannableDataGenerator::BeginPlay(){ }

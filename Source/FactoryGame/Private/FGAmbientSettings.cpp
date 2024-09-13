@@ -6,6 +6,8 @@
 void UFGAmbientSettings::CheckForErrors(){ }
 #endif 
 UFGAmbientSettings::UFGAmbientSettings() : Super() {
+	this->mCaveRTPC = nullptr;
+	this->mCaveRTPCValue = 0.0;
 	this->mOnEnterOuterVolumeEvent = nullptr;
 	this->mOnExitOuterVolumeEvent = nullptr;
 	this->mOnEnterInnerVolumeEvent = nullptr;

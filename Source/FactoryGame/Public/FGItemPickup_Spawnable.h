@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "FGItemPickup.h"
+#include "FGCrate.h"
 #include "FGItemPickup_Spawnable.generated.h"
 
 UCLASS( NotPlaceable )
@@ -29,23 +30,44 @@ public:
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	//~ End IFGUseableInterface
 
+	//~ Begin AFGItemPickup interface
+	virtual bool ShouldBeRegisteredForPickup() const override;
+	//~ End AFGItemPickup interface
+	
 	/**
-	 * @copydoc AFGItemPickup_Spawnable::CreateItemDrop
-	 */
-	static class AFGItemPickup_Spawnable* CreateItemDrop( class UWorld* world, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf<class AFGItemPickup_Spawnable> itemDropClass = nullptr );
+	* Creates a item drop in the world
+	* NOTE: Server only
+	*
+	* @param world - the world we try to spawn the item drop in
+	* @param item - the item stack we want to drop
+	* @param spawnLocation - the location where we want to spawn the item drop in
+	* @param spawnRotation - the rotation where we want to spawn the item drop with
+	* @param itemDropClass - what class of item drop do we want to spawn, nullptr means default class that's specified in FGResourceSettings
+	*
+	* @return a valid item drop if everything went well
+	*/
+	static AFGItemPickup_Spawnable* CreateItemDrop( UWorld* world, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None )
+	{
+		return CreateItemDrop( nullptr, world, item, spawnLocation, spawnRotation, itemDropClass, spawnLevelOverride, spawnNameOverride );
+	}
+	UFUNCTION( BlueprintCallable, Category = "ItemDrop", meta = ( DefaultToSelf = "worldContext" ) )
+	static AFGItemPickup_Spawnable* CreateItemDrop( UFGInventoryComponent* inventoryComponent, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None )
+	{
+		return CreateItemDrop( inventoryComponent, inventoryComponent->GetWorld(), item, spawnLocation, spawnRotation, itemDropClass, spawnLevelOverride, spawnNameOverride );
+	}
+	/**
+	* @copydoc AFGItemPickup_Spawnable::CreateItemDrop
+	*/
+	static AFGItemPickup_Spawnable* CreateItemDrop( UFGInventoryComponent* inventoryComponent, UWorld* world, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None );
 
 	UFUNCTION()
 	void OnColorUpdated( int32 index );
 
 	/**
-	*will drop item at location if there are no stack fonud on location that have enough space available
+	* Will drop item at location if there are no stack found on location that have enough space available.
 	*/
-	static class AFGItemPickup_Spawnable* AddItemToWorldStackAtLocation( class UWorld* world, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf<class AFGItemPickup_Spawnable> itemDropClass = nullptr );
 	UFUNCTION( BlueprintCallable, Category = "ItemDrop", meta = ( DefaultToSelf = "worldContext" ) )
-	static class AFGItemPickup_Spawnable* AddItemToWorldStackAtLocation( class UObject* worldContext, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf<class AFGItemPickup_Spawnable> itemDropClass = nullptr )
-	{
-		return AddItemToWorldStackAtLocation( worldContext->GetWorld(), item, spawnLocation, spawnRotation, itemDropClass );
-	}
+	static AFGItemPickup_Spawnable* AddItemToWorldStackAtLocation( UFGInventoryComponent* inventoryComponent, const FInventoryStack& item, const FVector& spawnLocation, const FRotator& spawnRotation, TSubclassOf< AFGItemPickup_Spawnable > itemDropClass = nullptr );
 
 	/**
 	 * @copydoc AFGItemPickup_Spawnable::CreateItemDropsInCylinder
@@ -60,26 +82,8 @@ public:
 	* @param spawnLocation - the location where we want to spawn the item drop in
 	* @param crateClass - crate class to use, if null then we take the default one in FactorySettings.
 	*/
-	static void SpawnInventoryCrate( class UWorld* world, const TArray< FInventoryStack >& items, FVector spawnLocation, const TArray<class AActor*>& actorsToIgnore, class AFGCrate*& out_Crate, TSubclassOf< AFGCrate > crateClass = nullptr );
-
-	/**
-	 * Creates a item drop in the world
-	 * NOTE: Server only
-	 *
-	 * @param world - the world we try to spawn the item drop in
-	 * @param item - the item stack we want to drop
-	 * @param spawnLocation - the location where we want to spawn the item drop in
-	 * @param spawnRotation - the rotation where we want to spawn the item drop with
-	 * @param itemDropClass - what class of item drop do we want to spawn, nullptr means default class that's specified in FGResourceSettings
-	 *
-	 * @return a valid item drop if everything went well
-	 */
-	UFUNCTION( BlueprintCallable, Category = "ItemDrop", meta = ( DefaultToSelf = "worldContext" ) )
-	static class AFGItemPickup_Spawnable* CreateItemDrop( class UObject* worldContext, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf<class AFGItemPickup_Spawnable> itemDropClass = nullptr )
-	{
-		return AFGItemPickup_Spawnable::CreateItemDrop( worldContext->GetWorld(), item, spawnLocation, spawnRotation, itemDropClass );
-	}
-
+	static void SpawnInventoryCrate( class UWorld* world, const TArray< FInventoryStack >& items, FVector spawnLocation, const TArray<class AActor*>& actorsToIgnore, class AFGCrate*& out_Crate, EFGCrateType crateType = EFGCrateType::CT_DismantleCrate, TSubclassOf< AFGCrate > crateClass = nullptr );
+	
 	/**
 	 * Creates item drops in a sphere in the world around a location
 	 * NOTE: Server only
@@ -137,13 +141,24 @@ public:
 	/** Place to play spawn effect */
 	UFUNCTION( BlueprintImplementableEvent, Category = "ItemDrop" )
 	void PlaySpawnEffect();
+
+	/** Audio event to spawn on pickup */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	class UAkAudioEvent* mPickupSound;
+
+	virtual void PlayPickupEffectImpl() override;
+
 protected:
 	/** Generates spheres in a capsule around the radius */
 	static bool GenerateSpheresInCapsule( FVector center, float radius, float innerRadius, TArray<FVector>& out_result );
 protected:
 	/** The mesh to represent the item */
-	UPROPERTY()
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	class UStaticMeshComponent* mMeshComponent;
+
+	/** Marker on the map associated with this pickup */
+	UPROPERTY( SaveGame )
+	class AFGItemPickupMarker* mPickupMarker;
 private:
 	/** Should we play a spawn effect? */
 	UPROPERTY( SaveGame )

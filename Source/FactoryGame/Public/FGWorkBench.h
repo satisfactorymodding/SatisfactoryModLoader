@@ -24,6 +24,10 @@ public:
 	virtual void TickComponent( float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction ) override;
 	// End ActorComponent
 
+	// Begin IFGRecipeProducerInterface
+	virtual TSubclassOf<UFGItemDescriptor> GetRecipeProducerItemDescriptor_Implementation(UObject* WorldContext) const override;
+	// End IFGRecipeProducerInterface
+
 	void TickProducing( float dt );
 
 	/** Set the active recipe to produce. */
@@ -161,6 +165,10 @@ private:
 	/** at what interval should the fatigue multiplier be applied? */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Workbench" )
 	int32 mFatigueUpdaterInterval;
+
+	/** Item descriptor to use for showing in which buildings/items this workbench recipes can be produced in */
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Workbench" )
+	TSoftClassPtr<UFGItemDescriptor> mRecipeProducerItemDescriptor;
 
 	/** Indicates how many times the fatigue has been multiplied */
 	int32 mCounter;

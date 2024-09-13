@@ -6,6 +6,7 @@
 #include "FGCharacterBase.h"
 #include "FGAction.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "NavMesh/RecastNavMesh.h"
 #include "FGCreature.generated.h"
 
 class AFGCreature;
@@ -234,6 +235,7 @@ public:
 	// Required for Actions/UObject replication
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void PreInitializeComponents() override;
 	virtual void PostInitializeComponents() override;
 	virtual void OnConstruction( const FTransform& Transform ) override;
@@ -241,6 +243,7 @@ public:
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override;
 	virtual bool IsSelectedInEditor() const override;
+	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const;
 #endif
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void UnPossessed() override;
@@ -325,12 +328,12 @@ public:
 	void OnArachnophobiaModeChanged( bool isArachnophobiaMode );
 
 	/** Notify when creature consumes a item*/
-	UFUNCTION( NetMulticast, BlueprintCallable, Unreliable, Category = "Consume" )
-	void Multicast_ConsumeItem( TSubclassOf< class UFGItemDescriptor > itemDescriptor, int32 amount = 1 );
+	UFUNCTION( NetMulticast, BlueprintCallable, Reliable, Category = "Consume" )
+	void Multicast_ConsumeItem( TSubclassOf< class UFGItemDescriptor > itemDescriptor, const class AFGPlayerController* playerController );
 
 	/** Play effects when creature consumes a item*/
 	UFUNCTION( BlueprintImplementableEvent, Category = "Consume" )
-	void PlayConsumeItemEffect( TSubclassOf< class UFGItemDescriptor > itemDescriptor, int32 amount );
+	void PlayConsumeItemEffect( TSubclassOf< UFGItemDescriptor > itemDescriptor, const AFGPlayerController* playerController );
 
 	/** Updates the movement speed ( server side ) */
 	UFUNCTION( BlueprintCallable, Category = "Movement" )
@@ -424,6 +427,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "AI" )
 	TSubclassOf< class UFGCreatureFamily > GetCreatureFamily() const { return mCreatureFamily; }
 
+	UFUNCTION( BlueprintPure, Category = "AI" )
+	ANavigationData* GetCreatureNavData() const;
+	
 	UFUNCTION( BlueprintPure, Category = "Creature" )
 	TArray< TSubclassOf<UFGItemDescriptor> > GetCreatureFood() const { return mCreatureFood; }
 
@@ -476,6 +482,9 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Creature" )
 	bool IsTamed();
 
+	UFUNCTION( BlueprintCallable, BlueprintPure )
+	int GetAmountToEatWhenTamed() const { return mAmountToEatWhenTamed; }
+	
 protected:
 	UFUNCTION()
     void OnRep_IsEnabled();
@@ -718,8 +727,18 @@ private:
 
 	/** Timer responsible for ending the stun. */
 	FTimerHandle mStunTimerHandle;
+	
+	UPROPERTY( EditDefaultsOnly )
+	int mAmountToEatWhenTamed = 0;
+	
+	UPROPERTY( EditDefaultsOnly )
+	float mDefaultRotationRate = 90;
 
+	UPROPERTY( EditDefaultsOnly )
+	float mCombatRotationRate = 360;
+	
 #ifdef WITH_EDITOR
 	mutable bool mPreviousSelected;
-#endif	
+#endif
+	int32 mCachedAgentIndex;
 };

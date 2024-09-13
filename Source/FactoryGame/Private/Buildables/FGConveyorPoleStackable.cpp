@@ -3,6 +3,10 @@
 #include "Buildables/FGConveyorPoleStackable.h"
 
 AFGConveyorPoleStackable::AFGConveyorPoleStackable() : Super() {
-	this->mCreateClearanceMeshRepresentation = false;
+
+}
+void AFGConveyorPoleStackable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
 }
 void AFGConveyorPoleStackable::SetupConnectionComponent(){ }

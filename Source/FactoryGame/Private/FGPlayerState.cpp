@@ -47,21 +47,27 @@ AFGPlayerState::AFGPlayerState() : Super() {
 	this->mPlayerColorData.PingColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mPlayerColorData.NametagColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mCreatureHostilityMode = EPlayerHostilityMode::PHM_Passive;
+	this->mKeepInventoryMode = EPlayerKeepInventoryMode::Keep_Equipment;
 	this->mOwnedPawn = nullptr;
 	this->mHasReceivedInitialItems = false;
 	this->mIsServerAdmin = false;
 	this->mCustomColorData.PrimaryColor = FLinearColor(0.0, 0.0, 0.0, 1.0);
 	this->mCustomColorData.SecondaryColor = FLinearColor(0.0, 0.0, 0.0, 1.0);
-	this->mCustomColorData.Metallic = 0.0;
-	this->mCustomColorData.Roughness = 0.0;
+	this->mCustomColorData.PaintFinish = nullptr;
 	this->mShoppingListSettings.PublicTodoListVisibilty = false;
 	this->mShoppingListSettings.PrivateTodoListVisibilty = false;
 	this->mShoppingListSettings.RecipeListVisibilty = false;
 	this->mShoppingListSettings.Size = 0.0;
-	this->mTutorialSubsystem = nullptr;
-	this->mTutorialSubsystemClass = nullptr;
+	this->mPlayerCustomizationData.PrimaryColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mPlayerCustomizationData.SecondaryColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mPlayerCustomizationData.DetailColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mPlayerCustomizationData.HelmetCustomizationDesc = nullptr;
+	this->mPlayerCustomizationData.TrinketCustomizationDesc = nullptr;
+	this->mClientIdentityInfo.OfflineId = TEXT("");
 	this->mNumArmSlots = 1;
 	this->mOnlyShowAffordableRecipes = false;
+	this->mTakeFromInventoryBeforeCentralStorage = false;
+	this->mCentralStorageInventoryWidgetExpanded = true;
 	this->mLastSelectedResourceSinkShopCategory = nullptr;
 	this->mPrivateTodoList = TEXT("");
 	this->mShoppingListComponent = CreateDefaultSubobject<UFGShoppingListComponent>(TEXT("ShoppingListComponent"));
@@ -90,19 +96,25 @@ void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(AFGPlayerState, mVisitedAreas);
 	DOREPLIFETIME(AFGPlayerState, mCustomColorData);
 	DOREPLIFETIME(AFGPlayerState, mShoppingListSettings);
+	DOREPLIFETIME(AFGPlayerState, mPlayerCustomizationData);
+	DOREPLIFETIME(AFGPlayerState, mPlayedMessages);
 	DOREPLIFETIME(AFGPlayerState, mRememberedFirstTimeEquipmentClasses);
 	DOREPLIFETIME(AFGPlayerState, mNumArmSlots);
 	DOREPLIFETIME(AFGPlayerState, mOnlyShowAffordableRecipes);
+	DOREPLIFETIME(AFGPlayerState, mTakeFromInventoryBeforeCentralStorage);
+	DOREPLIFETIME(AFGPlayerState, mCentralStorageInventoryWidgetExpanded);
 	DOREPLIFETIME(AFGPlayerState, mCollapsedItemCategories);
 	DOREPLIFETIME(AFGPlayerState, mFilteredOutMapTypes);
 	DOREPLIFETIME(AFGPlayerState, mFilteredOutCompassTypes);
 	DOREPLIFETIME(AFGPlayerState, mCollapsedMapCategories);
+	DOREPLIFETIME(AFGPlayerState, mCollapsedCustomMapCategories);
 	DOREPLIFETIME(AFGPlayerState, mNumObservedInventorySlots);
 	DOREPLIFETIME(AFGPlayerState, mFavoriteShopSchematics);
 	DOREPLIFETIME(AFGPlayerState, mPrivateTodoList);
 	DOREPLIFETIME(AFGPlayerState, mShoppingListComponent);
 	DOREPLIFETIME(AFGPlayerState, mOpenedWidgetsPersistent);
 	DOREPLIFETIME(AFGPlayerState, mPlayerSpecificSchematics);
+	DOREPLIFETIME(AFGPlayerState, mCentralStoragePinnedItems);
 }
 void AFGPlayerState::BeginPlay(){ }
 void AFGPlayerState::CopyProperties(APlayerState* playerState){ }
@@ -124,11 +136,10 @@ void AFGPlayerState::Server_SetKeepInventory_Implementation(const EPlayerKeepInv
 FString AFGPlayerState::GetUserName() const{ return FString(); }
 FString AFGPlayerState::GetUserID() const{ return FString(); }
 FUniqueNetIdRepl AFGPlayerState::GetUniqueNetId() const{ return FUniqueNetIdRepl(); }
-void AFGPlayerState::CreateTutorialSubsystem(){ }
-TArray< TSubclassOf< class UFGMessageBase > > AFGPlayerState::GetAllMessages(EMessageType messageType){ return TArray<TSubclassOf<class UFGMessageBase> >(); }
-void AFGPlayerState::ReadMessage(TSubclassOf<  UFGMessageBase > inMessage){ }
-void AFGPlayerState::AddMessage(TSubclassOf<  UFGMessageBase > inMessage){ }
-void AFGPlayerState::RemoveMessage(TSubclassOf<  UFGMessageBase > inMessage){ }
+bool AFGPlayerState::HasMessageBeenPlayed( UFGMessage* message) const{ return bool(); }
+void AFGPlayerState::MarkMessageAsPlayed( UFGMessage* message){ }
+void AFGPlayerState::Server_MarkMessageAsPlayed_Implementation( UFGMessage* message){ }
+void AFGPlayerState::FetchImportantMessages(){ }
 void AFGPlayerState::SetHotbarIndex(int32 newHotbarIndex){ }
 UFGPlayerHotbar* AFGPlayerState::GetActiveHotbar() const{ return nullptr; }
 UFGPlayerHotbar* AFGPlayerState::GetHotbarAtIndex(int32 hotbarIndex) const{ return nullptr; }
@@ -146,6 +157,10 @@ void AFGPlayerState::AddArmSlots(int32 slotsToAdd){ }
 void AFGPlayerState::SetOnlyShowAffordableRecipes(bool enabled){ }
 void AFGPlayerState::Server_SetOnlyShowAffordableRecipes_Implementation(bool enabled){ }
 bool AFGPlayerState::Server_SetOnlyShowAffordableRecipes_Validate(bool enabled){ return bool(); }
+void AFGPlayerState::SetTakeFromInventoryBeforeCentralStorage(bool takeFromInventoryBeforeCentralStorage){ }
+void AFGPlayerState::Server_SetTakeFromInventoryBeforeCentralStorage_Implementation(bool takeFromInventoryBeforeCentralStorage){ }
+void AFGPlayerState::SetCentralStorageInventoryWidgetExpanded(bool centralStorageInventoryWidgetExpanded){ }
+void AFGPlayerState::Server_SetCentralStorageInventoryWidgetExpanded_Implementation(bool centralStorageInventoryWidgetExpanded){ }
 void AFGPlayerState::SetItemCategoryCollapsed(TSubclassOf<  UFGItemCategory > itemCategory, bool collapsed){ }
 void AFGPlayerState::Server_SetItemCategoryCollapsed_Implementation(TSubclassOf<  UFGItemCategory > itemCategory, bool collapsed){ }
 bool AFGPlayerState::Server_SetItemCategoryCollapsed_Validate(TSubclassOf<  UFGItemCategory > itemCategory, bool collapsed){ return bool(); }
@@ -157,6 +172,8 @@ void AFGPlayerState::Server_SetCompassFilter_Implementation(ERepresentationType 
 bool AFGPlayerState::Server_SetCompassFilter_Validate(ERepresentationType representationType, bool visible){ return bool(); }
 void AFGPlayerState::SetMapCategoryCollapsed(ERepresentationType mapCategory, bool collapsed){ }
 void AFGPlayerState::Server_SetMapCategoryCollapsed_Implementation(ERepresentationType mapCategory, bool collapsed){ }
+void AFGPlayerState::SetCustomMapCategoryCollapsed(const FString& customMapCategory, bool collapsed){ }
+void AFGPlayerState::Server_SetCustomMapCategoryCollapsed_Implementation(const FString& customMapCategory, bool collapsed){ }
 void AFGPlayerState::UpdateOwningPawnActorRepresentation() const{ }
 void AFGPlayerState::DumpHotbars(){ }
 void AFGPlayerState::UpdateNumObservedInventorySlots(){ }
@@ -169,6 +186,9 @@ TMap< TSubclassOf< class UFGSchematic >, int32 > AFGPlayerState::GetShoppingCart
 void AFGPlayerState::SetShoppingCart(TMap< TSubclassOf<  UFGSchematic >, int32 > shoppingCart){ }
 void AFGPlayerState::SetPlayerCustomizationSlotData(FFactoryCustomizationColorSlot customColorData){ }
 void AFGPlayerState::Server_SetPlayerCustomizationSlotData_Implementation(FFactoryCustomizationColorSlot customColorData){ }
+void AFGPlayerState::SetPlayerCustomizationData(const FPlayerCustomizationData& NewCustomizationData){ }
+void AFGPlayerState::SetPlayerEquipmentCustomizationData(TSubclassOf<AFGEquipment> EquipmentType,TSubclassOf<UFGPlayerEquipmentSkinCustomizationDesc> NewSkin){ }
+TSubclassOf<UFGPlayerEquipmentSkinCustomizationDesc> AFGPlayerState::GetCurrentSkinDescForEquipment(TSubclassOf<AFGEquipment> EquipmentType) const{ return TSubclassOf<UFGPlayerEquipmentSkinCustomizationDesc>(); }
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > AFGPlayerState::GetSavedMatDescForBuildableCategory(TSubclassOf<  UFGCategory > category, TSubclassOf<  UFGCategory > subCategory){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Material>(); }
 void AFGPlayerState::SetSavedMatDescForBuildableCategory(TSubclassOf<  UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc, bool skipRep){ }
 void AFGPlayerState::Server_SetSavedMatDescForBuildableCategory_Implementation(TSubclassOf<  UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc){ }
@@ -192,6 +212,10 @@ void AFGPlayerState::Server_SetWidgetHasBeenOpened_Implementation(TSubclassOf<  
 void AFGPlayerState::Client_OnRecipeConstructed_Implementation(TSubclassOf<  UFGRecipe > recipe, int32 numConstructed){ }
 void AFGPlayerState::Native_OnRecipeConstructed(TSubclassOf<  UFGRecipe > recipe, int32 numConstructed){ }
 void AFGPlayerState::Native_OnBlueprintConstructed(const FString& blueprintName, int32 numConstructed){ }
+void AFGPlayerState::Native_OnSchematicPurchased(TSubclassOf<  UFGSchematic > schematic){ }
+bool AFGPlayerState::IsCentralStorageItemPinned(TSubclassOf< UFGItemDescriptor > itemDescriptor) const{ return bool(); }
+void AFGPlayerState::SetCentralStorageItemPinned(TSubclassOf< UFGItemDescriptor > itemDescriptor, bool pinned){ }
+void AFGPlayerState::Server_SetCentralStorageItemPinned_Implementation(TSubclassOf< UFGItemDescriptor > itemDescriptor, bool pinned){ }
 void AFGPlayerState::Server_OnBlueprintRemoved_Implementation(const FString& blueprintName){ }
 void AFGPlayerState::Client_OnBlueprintRemoved_Implementation(const FString& blueprintName){ }
 bool AFGPlayerState::IsInPlayerArray(){ return bool(); }
@@ -201,18 +225,23 @@ void AFGPlayerState::SetGodMode(const bool godMode){ }
 void AFGPlayerState::Server_SetGodMode_Implementation(const bool godMode){ }
 bool AFGPlayerState::IsPlayerSpecificSchematicPurchased(TSubclassOf<  UFGSchematic > schematic){ return bool(); }
 void AFGPlayerState::GiveAccessToPlayerSpecificSchematic(TSubclassOf<  UFGSchematic > schematic){ }
+void AFGPlayerState::SetClientIdentity(const FClientIdentityInfo& clientIdentity){ }
+const FClientIdentityInfo& AFGPlayerState::GetClientIdentity() const{ return *(new FClientIdentityInfo); }
 void AFGPlayerState::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::OnRep_PlayerHotbars(){ }
 void AFGPlayerState::OnRep_CurrentHotbarIndex(){ }
 void AFGPlayerState::OnRep_PlayerColorData(){ }
 void AFGPlayerState::OnRep_PlayerRules(){ }
+void AFGPlayerState::OnRep_PlayerCustomizationData(){ }
+void AFGPlayerState::OnRep_IsServerAdmin(){ }
 void AFGPlayerState::CreateDefaultHotbars(){ }
 void AFGPlayerState::Server_UpdateRecipeShortcut_Implementation(UFGPlayerHotbar* hotbar, int32 shortcutIndex, TSubclassOf<UFGRecipe> newRecipe){ }
+void AFGPlayerState::Server_SetPlayerCustomizationData_Implementation(const FPlayerCustomizationData& NewCustomizationData){ }
 void AFGPlayerState::Server_UpdateNumObservedInventorySlots_Implementation(){ }
 bool AFGPlayerState::Server_UpdateNumObservedInventorySlots_Validate(){ return bool(); }
 void AFGPlayerState::Native_OnPlayerColorDataUpdated(){ }
-void AFGPlayerState::SetupCreatureHostility(){ }
+void AFGPlayerState::SetupPlayerSettings(){ }
 void AFGPlayerState::SetupPlayerRules(){ }
 void AFGPlayerState::PushPlayerRulesToAdvancedGameSettings(){ }
 void AFGPlayerState::OnCreatureHostilityModeUpdated(FString strId, FVariant value){ }
@@ -223,6 +252,7 @@ void AFGPlayerState::OnGodModeUpdated(FString strId, FVariant value){ }
 void AFGPlayerState::SetNoBuildCost(const bool noBuildCost){ }
 void AFGPlayerState::Server_SetNoBuildCost_Implementation(const bool noBuildCost){ }
 void AFGPlayerState::OnRep_PlayerSpecificSchematics(TArray< TSubclassOf< UFGSchematic > > previousPlayerSpecificSchematics){ }
+void AFGPlayerState::ListenForSchematicPurchased(){ }
 void AFGPlayerState::UpdateActiveHotbarState(){ }
 void AFGPlayerState::SubscribeToHotbar(UFGPlayerHotbar* hotbar){ }
 void AFGPlayerState::UnsubscribeFromHotbar(UFGPlayerHotbar* hotbar){ }

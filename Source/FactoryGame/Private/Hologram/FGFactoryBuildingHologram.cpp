@@ -8,7 +8,6 @@ AFGFactoryBuildingHologram::AFGFactoryBuildingHologram() : Super() {
 	this->mDefaultBlockedZoopDirections = 0;
 	this->mBuildStep = EFactoryBuildingHologramBuildStep::FBHBS_PlacementAndRotation;
 	this->mBuildModeZoop = nullptr;
-	this->mShouldCreateClearanceMeshVisual = false;
 	this->mBuildModeCategory = EHologramBuildModeCategory::HBMC_Architecture;
 }
 void AFGFactoryBuildingHologram::BeginPlay(){ }
@@ -26,8 +25,7 @@ void AFGFactoryBuildingHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuild
 USceneComponent* AFGFactoryBuildingHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 bool AFGFactoryBuildingHologram::CanBeZooped() const{ return bool(); }
 void AFGFactoryBuildingHologram::CheckClearance(const FVector& locationOffset){ }
-void AFGFactoryBuildingHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
-void AFGFactoryBuildingHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
+void AFGFactoryBuildingHologram::CheckValidPlacement(){ }
 void AFGFactoryBuildingHologram::CheckValidFloor(){ }
 FVector AFGFactoryBuildingHologram::GetFloorEdgeDirection(const FVector& floorLoc, const FRotator& floorRot, const FVector& testLoc, FFoundationSideSelectionFlags excludeEdges) const{ return FVector(); }
 FVector AFGFactoryBuildingHologram::GetFloorEdgeOffset(const FVector& floorLoc, const FRotator& floorRot, float floorSize, const FVector& testLoc, float testSize, FFoundationSideSelectionFlags excludeEdges) const{ return FVector(); }

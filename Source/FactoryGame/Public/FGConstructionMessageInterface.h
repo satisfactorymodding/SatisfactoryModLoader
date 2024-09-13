@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "FGBuildableSubsystem.h"
+#include "Engine/NetDriver.h"
 #include "FGConstructionMessageInterface.generated.h"
 
 /**
@@ -42,28 +43,19 @@ struct FConstructHologramMessage
 	}
 };
 
-/**
- * @todo Please comment me
- */
-UINTERFACE(Blueprintable)
+
+UINTERFACE( NotBlueprintable )
 class FACTORYGAME_API UFGConstructionMessageInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-//@todo Why is this only on one hologram and not all holograms that do construction messages?
+/** Implemented on holograms to support custom Client -> Server construction messages */
 class FACTORYGAME_API IFGConstructionMessageInterface
 {
 	GENERATED_BODY()
 public:
+	virtual void PreConstructMessageSerialization() {};
 	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) = 0;
-
-	virtual void ClientPreConstructMessageSerialization() {};
-	virtual void ClientPostConstructMessageSerialization() {};
-	virtual void ServerPreConstructMessageDeserialization() {};
-	virtual void ServerPostConstructMessageDeserialization() {};
-
-	/** This is called on server when a hologram has been created from a construct message */
-	UFUNCTION( BlueprintNativeEvent )
-	void OnConstructMessagedDeserialized();
+	virtual void PostConstructMessageDeserialization() {};
 };

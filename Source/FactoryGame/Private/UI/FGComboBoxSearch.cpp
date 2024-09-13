@@ -47,7 +47,7 @@ UFGComboBoxSearch::UFGComboBoxSearch(const FObjectInitializer& ObjectInitializer
 	this->Font.OutlineSettings.OutlineMaterial = nullptr;
 	this->Font.OutlineSettings.OutlineColor = FLinearColor(0.0, 0.0, 0.0, 1.0);
 	this->Font.TypefaceFontName = TEXT("Bold");
-	this->Font.Size = 16;
+	this->Font.Size = 16.0;
 	this->Font.SkewAmount = 0.0;
 	this->bIsFocusable = true;
 }

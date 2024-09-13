@@ -14,17 +14,10 @@ class FACTORYGAME_API AFGBuildableGenerator : public AFGBuildableFactory
 {
 	GENERATED_BODY()
 public:
-	/** Decide on what properties to replicate */
-	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
-
-	/** Constructor */
 	AFGBuildableGenerator();
-
-	// Begin AActor interface
-	virtual void BeginPlay() override;
-	virtual void SetActorHiddenInGame( bool bNewHidden ) override;
-	// End AACtor interface
+	
+	/** Decide on what properties to replicate */
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
 
 	// Begin AFGBuildableFactory interface
 	virtual bool CanProduce_Implementation() const override;
@@ -81,7 +74,7 @@ protected:
 
 private:
 	/** Current load of this generator in the range [0,1]. */
-	UPROPERTY( Replicated )
+	UPROPERTY( meta = ( FGReplicated ) )
 	float mLoadPercentage;
 
 	/* if true these functions have a blueprint implemented version, otherwise call native. */

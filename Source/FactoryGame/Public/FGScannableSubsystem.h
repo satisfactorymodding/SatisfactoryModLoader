@@ -15,9 +15,11 @@ FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogScannableSubsystem, Log, All );
  * 
  */
 UCLASS()
-class FACTORYGAME_API AFGScannableSubsystem : public AFGSubsystem
+class FACTORYGAME_API AFGScannableSubsystem : public AFGSubsystem, public IFGSaveInterface
 {
 	GENERATED_BODY()
+
+	friend class AFGWorldScannableDataGenerator;
 
 public:
 	/** Get the representation manager, this should always return something unless you call it really early. */
@@ -26,6 +28,16 @@ public:
 	/** Get the representation manager from a world context, this should always return something unless you call it really early. */
 	UFUNCTION( BlueprintPure, Category = "Scanner", DisplayName = "GetScannableSubsystem", Meta = ( DefaultToSelf = "worldContext" ) )
 	static AFGScannableSubsystem* Get( UObject* worldContext );
+
+	// Begin IFGSaveInterface
+    virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
+    virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
+    virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
+    virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
+    virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override {}
+    virtual bool NeedTransform_Implementation() override { return false; }
+    virtual bool ShouldSave_Implementation() const override { return true; }
+    // End IFSaveInterface
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
@@ -47,9 +59,14 @@ public:
 
 	const TArray< class AFGDropPod* >& GetUnlootedDropPods() const { return mUnlootedDropPods; }
 
+	/** Whether or not the specified item pickup exists. */
+	bool DoesPickupExist( const FGuid& PickupGuid ) const;
+
 private:
-	void CacheDestroyedActors();
 	void CacheDropPods();
+
+	// Called by AFGWorldScannableDataGenerator
+	void AssignAvailableItemPickups( const TArray< FWorldScannableData >& ItemPickups );
 
 	friend class AFGBuildableRadarTower;
 
@@ -58,6 +75,10 @@ private:
 	
 	UPROPERTY( Transient )
 	TArray<FWorldScannableData> mAvailableItemPickups;
+
+	/** List of destroyed pickups. */
+	UPROPERTY( SaveGame )
+	TSet< FGuid > mDestroyedPickups;
 
 	/* For now since these are net culled we replicate which ones arent looted so we can filter out the looted ones in object scanner */
 	UPROPERTY( Transient, Replicated )

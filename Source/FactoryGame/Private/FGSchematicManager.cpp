@@ -11,11 +11,11 @@ int32 AFGSchematicManager::GetTechTier(const FAssetData& schematicAsset){ return
 EIncludeInBuilds AFGSchematicManager::GetIncludedInBuild(const FAssetData& schematicAsset){ return EIncludeInBuilds(); }
 AFGSchematicManager::AFGSchematicManager() : Super() {
 	this->mActiveSchematic = nullptr;
+	this->mLastActiveSchematic = nullptr;
 	this->mShipLandTimeStamp = -1.0;
 	this->mShipLandTimeStampSave = 0.0;
 	this->mHasTechTierLimit = false;
 	this->mMaxAllowedTechTier = 6;
-	this->mShipReturnedMessage = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -26,7 +26,6 @@ AFGSchematicManager::AFGSchematicManager() : Super() {
 }
 void AFGSchematicManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGSchematicManager, mAvailableSchematics);
 	DOREPLIFETIME(AFGSchematicManager, mPurchasedSchematics);
 	DOREPLIFETIME(AFGSchematicManager, mPaidOffSchematic);
 	DOREPLIFETIME(AFGSchematicManager, mActiveSchematic);
@@ -43,17 +42,18 @@ void AFGSchematicManager::PostLoadGame_Implementation(int32 saveVersion, int32 g
 void AFGSchematicManager::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGSchematicManager::NeedTransform_Implementation(){ return bool(); }
 bool AFGSchematicManager::ShouldSave_Implementation() const{ return bool(); }
-void AFGSchematicManager::GetAvailableSchematics(TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAvailableSchematicsOfTypes(TArray<ESchematicType> types, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
+void AFGSchematicManager::GetAvailableNonPurchasedSchematicsOfTypes(TArray<ESchematicType> types, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetPurchasedSchematicsOfTypes(TArray<ESchematicType> types, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllPurchasedSchematics(TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllSchematics(TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllSchematicsOfType(ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllSchematicsOfTypeFilteredOnDependency(ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllVisibleSchematicsOfType(ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
+void AFGSchematicManager::GetHubSchematicsForTier(int32 tier, TArray<TSubclassOf<UFGSchematic>>& out_schematics) const{ }
 bool AFGSchematicManager::IsSchematicPurchased(TSubclassOf< UFGSchematic > schematicClass, APlayerController* owningPlayerController) const{ return bool(); }
-void AFGSchematicManager::GiveAccessToSchematic(TSubclassOf< UFGSchematic > schematicClass,  AFGCharacterPlayer* accessInstigator, bool blockTelemetry){ }
-void AFGSchematicManager::AddAvailableSchematic(TSubclassOf< UFGSchematic > schematicClassToAdd){ }
+void AFGSchematicManager::GiveAccessToSchematic(TSubclassOf< UFGSchematic > schematicClass,  AFGCharacterPlayer* accessInstigator, bool blockTelemetry , bool bBypassAccessChecks){ }
+void AFGSchematicManager::GiveAccessToSchematics(const TArray< TSubclassOf< UFGSchematic > >& schematicClasses,  AFGCharacterPlayer* accessInstigator, bool blockTelemetry , bool bBypassAccessChecks){ }
 TArray< FItemAmount > AFGSchematicManager::GetCostFor(TSubclassOf< UFGSchematic > schematic){ return TArray<FItemAmount>(); }
 TArray< FItemAmount > AFGSchematicManager::GetRemainingCostFor(TSubclassOf< UFGSchematic > schematic){ return TArray<FItemAmount>(); }
 TArray< FItemAmount > AFGSchematicManager::GetPaidOffCostFor(TSubclassOf< UFGSchematic > schematic){ return TArray<FItemAmount>(); }
@@ -61,9 +61,10 @@ bool AFGSchematicManager::IsSchematicPaidOff(TSubclassOf< UFGSchematic > schemat
 bool AFGSchematicManager::PayOffOnSchematic(TSubclassOf< UFGSchematic > schematic,  TArray< FItemAmount >& amount){ return bool(); }
 bool AFGSchematicManager::SetActiveSchematic(TSubclassOf<  UFGSchematic > newActiveSchematic){ return bool(); }
 bool AFGSchematicManager::CanSetAsActiveSchematic(TSubclassOf< UFGSchematic > inSchematic){ return bool(); }
-void AFGSchematicManager::LaunchShip(){ }
+void AFGSchematicManager::LaunchShip( AFGCharacterPlayer* accessInstigator){ }
 bool AFGSchematicManager::IsShipAtTradingPost(){ return bool(); }
 float AFGSchematicManager::GetTimeUntilShipReturn(){ return float(); }
+void AFGSchematicManager::Multicast_OnShipReturned_Implementation(){ }
 int32 AFGSchematicManager::GetHighestAvailableTechTier(){ return int32(); }
 int32 AFGSchematicManager::GetDefaultMaxAllowedTechTier(){ return int32(); }
 int32 AFGSchematicManager::GetMaxAllowedTechTier() const{ return int32(); }
@@ -76,8 +77,8 @@ bool AFGSchematicManager::CanGiveAccessToSchematic(TSubclassOf< UFGSchematic > s
 void AFGSchematicManager::GetVisibleSchematicCategoryData(ESchematicType schematicType, TArray< FSchematicCategoryData >& out_schematicCategoryData){ }
 void AFGSchematicManager::UnlockAllSchematicsOfType(ESchematicType schematicType, bool requireDependency){ }
 void AFGSchematicManager::UnlockSchematicsUpToTier(int32 tier){ }
+ETechTierState AFGSchematicManager::GetTechTierState(int32 tier) const{ return ETechTierState(); }
 void AFGSchematicManager::PopulateSchematicsLists(){ }
-void AFGSchematicManager::PopulateAvailableSchematicsList(){ }
 void AFGSchematicManager::OnRep_ActiveSchematic(){ }
 void AFGSchematicManager::OnRep_PurchasedSchematic(TArray< TSubclassOf< UFGSchematic > > lastPurchasedSchematics){ }
 void AFGSchematicManager::OnRep_PaidOffOnSchematic(){ }

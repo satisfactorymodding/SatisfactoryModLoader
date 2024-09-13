@@ -19,7 +19,10 @@ class FACTORYGAME_API AFGBlueprintHologram : public AFGFactoryHologram
 public:
 	AFGBlueprintHologram();
 	
-	void BeginPlay() override; 
+	void BeginPlay() override;
+	
+	/** Replication */
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
 	/// Begin Hologram Interface
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID NetConstructionID );
@@ -32,6 +35,7 @@ public:
 	virtual void CheckCanAfford(UFGInventoryComponent* inventory) override;
 	virtual TArray< FItemAmount > GetCost(bool includeChildren) const override;
 	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const override;
+	virtual bool ShouldSetupPendingConstructionHologram() const override { return false; }
 	/// End Hologram Interface
 
 	// Begin AFGBuildableHologram Interface
@@ -43,21 +47,19 @@ public:
 
 	void LoadBlueprintToOtherWorld();
 	void DuplicateMeshComponentsFromBuildableArray( const TArray< AFGBuildable* >& buildables );
-	void GenerateCollisionObjects( const TArray< AFGBuildable* >& buildables );
 	void CreateConnectionRepresentations( const TArray<AFGBuildable*>& buildables );
 	void AlignBuildableRootWithBounds();
 	
-	void SetBlueprintDescriptor( class UFGBlueprintDescriptor* blueprintDesc ) { mBlueprintDescriptor = blueprintDesc; }
+	void SetBlueprintDescriptor( class UFGBlueprintDescriptor* blueprintDesc );
+
+	UFUNCTION()
+	void OnRep_BlueprintDescName();
 	
 	USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName );
 
 	// For use in the component duplicator for spline comp duplication when we need to have access the other components on the actor
 	UPROPERTY()
 	class AFGBuildable* mCurrentDuplicatingBuildable;
-
-	// An array of all FGClearanceComponents that are created to act as cleareance objects
-	UPROPERTY()
-	TArray< UFGClearanceComponent* > mClearanceComponents;
 
 	// A map containing the buildable (which is instantiated in the blueprint world) to the new root component that represents it visually
 	// in the game world. This is used so we can place our collision components at a separate time onto the correct local space
@@ -71,6 +73,9 @@ public:
 	UPROPERTY()
 	UFGBlueprintDescriptor* mBlueprintDescriptor;
 
+	UPROPERTY( ReplicatedUsing=OnRep_BlueprintDescName )
+	FString mBlueprintDescName;
+	
 	DECLARE_DELEGATE_ThreeParams( FCreateBuildableVisualizationDelegate, AFGBlueprintHologram* /* blueprintHologram */, AFGBuildable* /* buildable */, USceneComponent* /* buildableRootComponent */ );
 
 	/**

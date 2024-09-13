@@ -9,15 +9,18 @@ AFGDriveablePawn::AFGDriveablePawn() : Super() {
 	this->mDriverSeatSocket = TEXT("None");
 	this->mDriverSeatAnimation = nullptr;
 	this->mDriverExitOffset = FVector::ZeroVector;
-	this->mMappingContext = nullptr;
-	this->mDriver = nullptr;
 	this->mIsPossessed = false;
+	this->mMappingContext = nullptr;
+	this->mSpringArmComponent = nullptr;
+	this->mCameraComponent = nullptr;
+	this->mDriver = nullptr;
 	this->mIsDriving = false;
 }
 void AFGDriveablePawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGDriveablePawn, mDriver);
 	DOREPLIFETIME(AFGDriveablePawn, mIsPossessed);
+	DOREPLIFETIME(AFGDriveablePawn, mPropertyReplicator);
+	DOREPLIFETIME(AFGDriveablePawn, mDriver);
 	DOREPLIFETIME(AFGDriveablePawn, mIsDriving);
 }
 void AFGDriveablePawn::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -27,9 +30,13 @@ void AFGDriveablePawn::PostLoadGame_Implementation(int32 saveVersion, int32 game
 void AFGDriveablePawn::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGDriveablePawn::NeedTransform_Implementation(){ return bool(); }
 bool AFGDriveablePawn::ShouldSave_Implementation() const{ return bool(); }
+void AFGDriveablePawn::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
+bool AFGDriveablePawn::IsPropertyRelevantForConnection(UNetConnection* netConnection, const FProperty* property) const{ return bool(); }
 void AFGDriveablePawn::PossessedBy(AController* newController){ }
 void AFGDriveablePawn::UnPossessed(){ }
 void AFGDriveablePawn::OnRep_PlayerState(){ }
+void AFGDriveablePawn::CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult){ }
+void AFGDriveablePawn::PreInitializeComponents(){ Super::PreInitializeComponents(); }
 void AFGDriveablePawn::UpdatePlayerStatus(){ }
 bool AFGDriveablePawn::HasActiveDriver() const{ return bool(); }
 bool AFGDriveablePawn::CanDriverEnter( AFGCharacterPlayer* character){ return bool(); }
@@ -49,3 +56,5 @@ void AFGDriveablePawn::Input_LeaveVehicle(const FInputActionValue& actionValue){
 UFGGameUI* AFGDriveablePawn::GetGameUI() const{ return nullptr; }
 void AFGDriveablePawn::OnRep_IsDriving(){ }
 void AFGDriveablePawn::OnRep_Driver(AFGCharacterPlayer* previousDriver){ }
+void AFGDriveablePawn::ActivateCameraComponents(){ }
+void AFGDriveablePawn::DeactivateCameraComponents(){ }

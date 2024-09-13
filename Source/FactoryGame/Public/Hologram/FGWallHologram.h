@@ -6,25 +6,6 @@
 #include "FGFactoryBuildingHologram.h"
 #include "FGWallHologram.generated.h"
 
-
-struct FWallClearanceParams
-{
-	FWallClearanceParams() {}
-	FWallClearanceParams( float width, float height, float elevation, FVector verticalSnapOffset, FVector clearanceShrink ) :
-		Width( width ),
-		Height( height ),
-		Elevation( elevation ),
-		VerticalSnapOffset( verticalSnapOffset ),
-		ClearanceShrink( clearanceShrink )
-	{}
-
-	float Width = 0.f;
-	float Height = 0.f;
-	float Elevation = 0.f;
-	FVector VerticalSnapOffset = FVector::ZeroVector;
-	FVector ClearanceShrink = FVector::ZeroVector;
-};
-
 /**
  * 
  */
@@ -37,6 +18,7 @@ public:
 
 	// Begin AActor Interface
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	// End AActor Interface
 
 	// Begin AFGHologram interface
@@ -46,9 +28,8 @@ public:
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	virtual void ConfigureActor( AFGBuildable* inBuildable ) const override;
+	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	// End AFGHologram interface
-
-	static void CalculateClearanceInformation( const FWallClearanceParams& params, FVector& newRelativeLocation, FRotator& newRelativeRotation, FVector& newExtents );
 
 protected:
 	// Begin AFGHologram interface
@@ -70,7 +51,9 @@ protected:
 	void SelectWallVariantForElevation( float NewAngle );
 
 private:
-	
+	void ApplyFoundationFloorSnapping( const FTransform& floorTransform, const FHitResult& hitResult, const FVector& floorSize, const FVector& foundationSize, FVector& out_Location, FRotator& inout_Rotation );
+
+private:	
 	/** Width of the wall, from the default buildable. */
 	float mWidth;
 
@@ -95,16 +78,15 @@ private:
 	/** Whether or not we should use 180 degrees for our rotation step. */
 	bool mUse180RotationStep;
 
+	/** Index used to scroll between angled variants of a wall. */
+	int32 mAngledVariantIndex;
+
 	TSubclassOf<class AFGBuildableWall> mOriginalWallBuildClass;
 
-	UPROPERTY()
+	UPROPERTY( CustomSerialization, Replicated )
 	class AFGBuildableWall* mUpgradeTarget;
 
 	/** Limits zooping to only lines */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	bool mOnlyAllowLineZoop;
-
-	/** How much to shrink the clearance extent in each axis. Used to fine tune clearance to avoid clipping. */
-	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
-	FVector mClearanceShrink;
 };

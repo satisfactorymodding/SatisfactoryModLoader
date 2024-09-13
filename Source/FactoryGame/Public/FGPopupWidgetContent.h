@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "UI/FGUserWidget.h"
 #include "FGPopupWidgetContent.generated.h"
 
 
@@ -13,7 +14,7 @@
  *
  */
 UCLASS()
-class FACTORYGAME_API UFGPopupWidgetContent : public UUserWidget
+class FACTORYGAME_API UFGPopupWidgetContent : public UFGUserWidget
 {
 	GENERATED_BODY()
 

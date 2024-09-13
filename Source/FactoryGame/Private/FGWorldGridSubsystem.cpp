@@ -7,10 +7,9 @@ FFGWorldGridCell::FFGWorldGridCell(){ }
 FFGWorldGridCell::FFGWorldGridCell(const FFGWorldGridCellData& Data, const FVector& WorldLocation, int32 CellIndex, float DefaultElevation){ }
 float FFGWorldGridCell::GetElevation() const{ return float(); }
 void FFGWorldGridCell::OnTraceCompleted(const FTraceHandle& Handle, FTraceDatum& Data){ }
-void UFGWorldGridDataAsset::AssignWorldCells(TArray<FFGWorldGridCellData>&& Cells, const FVector2D& GridMin, const FVector2D& GridMax, int32 Divisions){ }
-void UFGWorldGridDataAsset::DebugDraw(){ }
 AFGWorldGridSubsystem::AFGWorldGridSubsystem() : Super() {
-	this->mDefaultWorldGridData = nullptr;
+	this->mWorldGridMin = FVector2D::ZeroVector;
+	this->mWorldGridMax = FVector2D::ZeroVector;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -21,16 +20,18 @@ AFGWorldGridSubsystem::AFGWorldGridSubsystem() : Super() {
 }
 AFGWorldGridSubsystem* AFGWorldGridSubsystem::Get(UWorld* world){ return nullptr; }
 AFGWorldGridSubsystem* AFGWorldGridSubsystem::Get(UObject* worldContext){ return nullptr; }
+void AFGWorldGridSubsystem::CreateRuntimeWorldGrid(const TArray< FFGWorldGridCellData >& CellData, const FVector2D& WorldGridMin, const FVector2D& WorldGridMax, int32 NumGridDivisions){ }
+bool AFGWorldGridSubsystem::HasValidGrid() const{ return bool(); }
 void AFGWorldGridSubsystem::UpdateCellContainingBuildable( AFGBuildable* pBuildable){ }
 void AFGWorldGridSubsystem::UpdateCellContainingLocation(const FVector& location){ }
 FFGWorldGridCell* AFGWorldGridSubsystem::GetCellContainingWorldLocation(const FVector& WorldLocation){ return nullptr; }
 FFGWorldGridCell* AFGWorldGridSubsystem::GetClosestCellToWorldLocation(const FVector& WorldLocation){ return nullptr; }
 float AFGWorldGridSubsystem::GetCellElevationFromWorldLocation(const FVector& WorldLocation) const{ return float(); }
 float AFGWorldGridSubsystem::GetCellElevationFromGridCoordinates(const FIntPoint& Coords) const{ return float(); }
-TArray<const FFGWorldGridCell*> AFGWorldGridSubsystem::GetCellNeighbours(const FFGWorldGridCell* Cell) const{ return TArray<const FFGWorldGridCell*>(); }
-TArray<const FFGWorldGridCell*> AFGWorldGridSubsystem::GetCellNeighboursFromIndex(int32 Index) const{ return TArray<const FFGWorldGridCell*>(); }
-TArray<int32> AFGWorldGridSubsystem::GetCellNeighbourIndicesFromIndex(int32 Index) const{ return TArray<int32>(); }
+TArray< const FFGWorldGridCell* > AFGWorldGridSubsystem::GetCellNeighbours(const FFGWorldGridCell* Cell) const{ return TArray<const FFGWorldGridCell*>(); }
+TArray< const FFGWorldGridCell* > AFGWorldGridSubsystem::GetCellNeighboursFromIndex(int32 Index) const{ return TArray<const FFGWorldGridCell*>(); }
+TArray< int32 > AFGWorldGridSubsystem::GetCellNeighbourIndicesFromIndex(int32 Index) const{ return TArray<int32>(); }
+FVector2D AFGWorldGridSubsystem::GetWorldGridSize() const{ return FVector2D(); }
 FVector2D AFGWorldGridSubsystem::GetCellSize() const{ return FVector2D(); }
-void AFGWorldGridSubsystem::BeginPlay(){ }
 void AFGWorldGridSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGWorldGridSubsystem::Tick(float DeltaSeconds){ }

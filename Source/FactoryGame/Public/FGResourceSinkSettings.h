@@ -136,13 +136,7 @@ public:
 
 	UPROPERTY( EditAnywhere, config, Category = "History", meta = ( ToolTip = "The number of history points we save for the global resource sink history" ) )
 	int32 mNumGlobalHistoryPoints;
-
-	UPROPERTY( EditAnywhere, config, Category = "Failed sink messages", meta = ( ToolTip = "Play message when these items fail to sink" ) )
-	TMap<TSubclassOf<class UFGItemDescriptor>, TSubclassOf<class UFGMessageBase>> mFailedSinkMessages;
-
-	UPROPERTY( EditAnywhere, config, Category = "Failed sink messages", meta = ( ToolTip = "Play this message when items fail to sink that are not mapped to a message in FailedSinkMessages" ) )
-	TSubclassOf<class UFGMessageBase> mGenericFailedSinkMessage;
-
+	
 	UPROPERTY( EditAnywhere, config, Category = "Cyber coupon", meta = ( ToolTip = "The schematic to unlock when sinking a coupon" ) )
 	TSubclassOf<class UFGSchematic> mCyberCouponSchematic;
 

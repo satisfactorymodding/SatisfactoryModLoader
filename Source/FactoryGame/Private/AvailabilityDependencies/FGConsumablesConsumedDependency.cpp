@@ -2,4 +2,8 @@
 
 #include "AvailabilityDependencies/FGConsumablesConsumedDependency.h"
 
+#if WITH_EDITOR
+FString UFGConsumablesConsumedDependency::ToString() const{ return FString(); }
+void UFGConsumablesConsumedDependency::FromString(const FString& inString){ }
+#endif 
 bool UFGConsumablesConsumedDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }

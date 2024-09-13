@@ -3,28 +3,40 @@
 #include "FGStartingPod.h"
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "FGCameraModifierLimitFOV.h"
+#include "FGCameraModifierLimitLook.h"
 #include "Net/UnrealNetwork.h"
 
 AFGStartingPod::AFGStartingPod() : Super() {
-	this->mCachedPlayer = nullptr;
-	this->mDropPodMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("DropPod Mesh"));
+	this->mIntroSequencePlayerCameraFOV = 90.0;
+	this->mDropPodAttachmentRelativeLocation = FVector((0, 0, 95));
+	this->mIntroLevelSequence = nullptr;
+	this->mCameraLockLookRotator = FRotator::ZeroRotator;
+	this->mPlanetFallOnboardingStep = nullptr;
+	this->mSkipIntroForwardDistance = 0.0;
+	this->mLimitLookModifierClass = UFGCameraModifierLimitLook::StaticClass();
+	this->mLimitFOVModifierClass = UFGCameraModifierLimitFOV::StaticClass();
+	this->mDisplayName = INVTEXT("");
 	this->mActorRepresentationTexture = nullptr;
-	this->mMapText = INVTEXT("");
-	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.bTickEvenWhenPaused = false;
-	this->PrimaryActorTick.bCanEverTick = true;
-	this->PrimaryActorTick.bStartWithTickEnabled = true;
-	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
-	this->PrimaryActorTick.TickInterval = 0.0;
+	this->mActorRepresentationColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mDropPodMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("DropPod Mesh"));
+	this->mDropModSkeletalMesh = nullptr;
+	this->mLocalIntroSequenceState = EIntroSequencePlayState::None;
+	this->mCameraModifierLimitFOV = nullptr;
+	this->mCameraModifierLimitLook = nullptr;
+	this->mLevelSequenceActor = nullptr;
+	this->mPreviousOwner = nullptr;
+	this->mDropPodSpawnLocation = FVector::ZeroVector;
+	this->mCompassMaterialInstance = nullptr;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
-	this->mDropPodMesh->SetupAttachment(RootComponent);
+	this->mDropPodMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGStartingPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGStartingPod, mCachedPlayer);
-	DOREPLIFETIME(AFGStartingPod, mMapText);
+	DOREPLIFETIME(AFGStartingPod, mDropPodSpawnLocation);
 }
+void AFGStartingPod::BeginPlay(){ }
+void AFGStartingPod::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 FVector AFGStartingPod::GetRefundSpawnLocationAndArea_Implementation(const FVector& aimHitLocation, float& out_radius) const{ return FVector(); }
 bool AFGStartingPod::CanDismantle_Implementation() const{ return bool(); }
 void AFGStartingPod::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }
@@ -34,6 +46,7 @@ void AFGStartingPod::Dismantle_Implementation(){ }
 void AFGStartingPod::StartIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGStartingPod::StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGStartingPod::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }
+FText AFGStartingPod::GetDismantleDisplayName_Implementation(AFGCharacterPlayer* byCharacter) const{ return FText(); }
 bool AFGStartingPod::AddAsRepresentation(){ return bool(); }
 bool AFGStartingPod::UpdateRepresentation(){ return bool(); }
 bool AFGStartingPod::RemoveAsRepresentation(){ return bool(); }
@@ -52,4 +65,25 @@ EFogOfWarRevealType AFGStartingPod::GetActorFogOfWarRevealType(){ return EFogOfW
 float AFGStartingPod::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGStartingPod::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGStartingPod::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
-void AFGStartingPod::BeginPlay(){ }
+UMaterialInterface* AFGStartingPod::GetActorRepresentationCompassMaterial(){ return nullptr; }
+bool AFGStartingPod::NeedTransform_Implementation(){ return bool(); }
+bool AFGStartingPod::ShouldSave_Implementation() const{ return bool(); }
+AFGCharacterPlayer* AFGStartingPod::GetOwnerPlayer() const{ return nullptr; }
+void AFGStartingPod::RequestSkipIntroSequence(){ }
+void AFGStartingPod::RequestDropPodExit(){ }
+void AFGStartingPod::AllowSkippingOnboarding(bool bAllowSkippingOnboarding){ }
+void AFGStartingPod::RequestAllowLookAround(){ }
+bool AFGStartingPod::IsIntroSequencePlaying() const{ return bool(); }
+void AFGStartingPod::Local_SetupIntroSequence_Implementation(){ }
+void AFGStartingPod::Local_ExitDropPod_Implementation(){ }
+void AFGStartingPod::Local_AllowLookAround_Implementation(){ }
+void AFGStartingPod::Local_EndIntroSequence_Implementation(){ }
+void AFGStartingPod::Local_SkipIntroSequence_Implementation(){ }
+void AFGStartingPod::Local_PostSkipIntroSequence_Implementation(AFGCharacterPlayer* CharacterPlayer){ }
+void AFGStartingPod::Server_RequestSkipIntroSequence_Implementation(){ }
+void AFGStartingPod::Multicast_SkipIntroSequence_Implementation(){ }
+void AFGStartingPod::OnRep_Owner(){ }
+void AFGStartingPod::RequestSetupIntroSequence(){ }
+void AFGStartingPod::StopIntroSequence(bool bStopSequencer){ }
+void AFGStartingPod::Local_RequestSkipIntroSequence(){ }
+void AFGStartingPod::OnIntroSequenceEnded(){ }

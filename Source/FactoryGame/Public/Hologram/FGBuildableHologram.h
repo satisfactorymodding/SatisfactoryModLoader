@@ -15,28 +15,48 @@ enum class EGuideLineType : uint8
 	GLT_Pipe			UMETA( DisplayName = "Pipe" )
 };
 
+UENUM()
+enum class EGuideLineConnectionType : uint8
+{
+	GLCT_None			UMETA( DisplayName = "None" ),
+	GLCT_Input			UMETA( DisplayName = "Input" ),
+	GLCT_Output			UMETA( DisplayName = "Output" ),
+	GLCT_Any			UMETA( DisplayName = "Any" )
+};
+
+
 USTRUCT()
 struct FFGHologramGuidelineData
 {
 	GENERATED_BODY()
 
 	FFGHologramGuidelineData()
-		: mGuidelineObject( nullptr )
+		: mGuidelineStartObject( nullptr )
+		, mGuidelineEndObject( nullptr )
 		, mGuidelineLocationOffset( 0.0f )
 		, mGuidelineType( EGuideLineType::GLT_Default )
+		, mGuidelineConnectionTypeStart( EGuideLineConnectionType::GLCT_None )
+		, mGuidelineConnectionTypeEnd( EGuideLineConnectionType::GLCT_None )
 	{}
 	
-	FFGHologramGuidelineData( class UObject* guidelineObject, const FTransform& transform, const FVector& guidelineLocationOffset, EGuideLineType type )
-		: mGuidelineObject( guidelineObject )
+	FFGHologramGuidelineData( class UObject* guidelineStartObject, class UObject* guidelineEndObject, const FTransform& transform, const FVector& guidelineLocationOffset, EGuideLineType type, EGuideLineConnectionType connectionTypeStart = EGuideLineConnectionType::GLCT_None, EGuideLineConnectionType connectionTypeEnd = EGuideLineConnectionType::GLCT_None )
+		: mGuidelineStartObject( guidelineStartObject )
+		, mGuidelineEndObject( guidelineEndObject )
 		, mTransform( transform )
 		, mGuidelineLocationOffset( guidelineLocationOffset )
 		, mGuidelineType( type )
+		, mGuidelineConnectionTypeStart( connectionTypeStart )
+		, mGuidelineConnectionTypeEnd( connectionTypeEnd )
 	{	
 	}
 
 	// The object this guideline was created from
 	UPROPERTY()
-	class UObject* mGuidelineObject;
+	class UObject* mGuidelineStartObject;
+
+	// The object this guideline was created for
+	UPROPERTY()
+	class UObject* mGuidelineEndObject;
 
 	// Transform of the object the guideline was created for
 	FTransform mTransform;
@@ -46,6 +66,12 @@ struct FFGHologramGuidelineData
 
 	// What type of guideline this is
 	EGuideLineType mGuidelineType;
+
+	// In case of connection guidelines, this is the connection type for the "start" connection
+	EGuideLineConnectionType mGuidelineConnectionTypeStart;
+
+	// In case of connection guidelines, this is the connection type for the "end" connection
+	EGuideLineConnectionType mGuidelineConnectionTypeEnd;
 };
 
 USTRUCT()
@@ -99,9 +125,6 @@ public:
 	void SetBuildableClass( TSubclassOf< class AFGBuildable > buildableClass );
 
 	// AFGHologram interface
-	/** Net Construction Messages */
-	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
-	
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
@@ -113,6 +136,7 @@ public:
 	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
 	virtual bool CanNudgeHologram() const override;
 	virtual ENudgeFailReason NudgeTowardsWorldDirection( const FVector& Direction ) override;
+	virtual FTransform GetNudgeSpaceTransform() const override;
 	// End AFGHologram interface
 
 	class AFGBuildable* GetSnappedBuilding() { return mSnappedBuilding; }
@@ -132,22 +156,31 @@ public:
 	/** Whether or not the specified actor should be considered for our guideline alignments. */
 	virtual bool ShouldActorBeConsideredForGuidelines( class AActor* actor ) const;
 
+	virtual TArray< class UFGFactoryConnectionComponent* > GetRelevantFactoryConnectionsForGuidelines() const;
+	virtual TArray< class UFGPipeConnectionComponent* > GetRelevantPipeConnectionsForGuidelines() const;
+
 	/** Checks if connections face the same direction and are in line with eachother in order for guidelines to be used. */
-	bool AreConnectionsAlignedForGuidelines( class UFGConnectionComponent* connection, class UFGConnectionComponent* otherConnection, const FVector& connectionOffset, float allowedAngleDeviation ) const;
+	bool AreConnectionsAlignedForGuidelines( class UFGConnectionComponent* connection, class UFGConnectionComponent* otherConnection, const FVector& connectionOffset, float perpDistanceThreshold, float allowedAngleDeviation ) const;
 
 	/** Checks whether there's anything obstructing guidelines between start and end. */
-	bool IsClearPathForGuidelines( const FVector& start, const FVector& end, TSet< class AActor* > excludedActors ) const;
+	bool IsClearPathForGuidelines( const FVector& start, const FVector& end, const TArray< class AActor* >& excludedActors ) const;
 
 	/** Sweep for nearby guideline sources the hologram can snap to. */
-	void SweepForNearbyGuidelines( const FVector& hologramLocation, TArray< FFGHologramGuidelineData >& out_guidelineData, float allowedAngleDeviation = 10.0f ) const;
+	void GatherNearbyGuidelines( const FVector& hologramLocation, TArray< FFGHologramGuidelineData >& out_guidelineData, float perpDistanceThreshold, float allowedAngleDeviation = 10.0f, const struct FRuntimeFloatCurve* perpDistanceThresholdCurve = nullptr ) const;
 	
 	/** Used to snap to nearby guidelines of other actors. */
-	FFGHologramGuidelineSnapResult SnapHologramLocationToGuidelines( const FVector& hologramLocation );
+	FFGHologramGuidelineSnapResult SnapLocationToGuidelines( const FVector& location );
+
+	/** Generic guideline snapping functionality. */
+	void SnapHologramToGuidelines();
 
 	/** Updates the visual representation for our snapped guideline. */
 	void UpdateGuidelineVisuals( const TArray< FFGHologramGuidelineData >& guidelineData );
 
 	void ClearGuidelineVisuals();
+
+	FORCEINLINE void SetHideGuidelineVisuals( bool hide ) { mHideGuidelineVisuals = hide; }
+	FORCEINLINE bool GetHideGuidelineVisuals() const { return mHideGuidelineVisuals; }
 
 	void SetNeedsValidFloor( bool needsValidFloor ) { mNeedsValidFloor = needsValidFloor; }
 	bool GetNeedsValidFloor() const { return mNeedsValidFloor; }
@@ -163,12 +196,14 @@ public:
 	FORCEINLINE bool ShouldUsePipeConnectionFrameMesh() const { return mUsePipeConnectionFrameMesh; }
 	FORCEINLINE bool ShouldUsePipeConnectionArrowMesh() const { return mUsePipeConnectionArrowMesh; }
 
+	FORCEINLINE void SetSuppressBuildEffect( bool bNewSuppressBuildEffect ) { mSuppressBuildEffect = bNewSuppressBuildEffect; }
 protected:
 	// Begin AFGHologram interface
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual void CheckValidPlacement() override;
 	virtual int32 GetRotationStep() const override;
 	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
+	virtual void SerializeConstructMessage(FArchive& ar, FNetConstructionID id) override;
 	// End AFGHologram interface	
 
 	/** Helper function to snap to the factory building grid. */
@@ -214,7 +249,7 @@ protected:
 	/**
 	 * Snaps the hologram to the target clearance box.
 	 */
-	void SnapToClearanceBox( const UFGClearanceComponent* targetSnapClearanceComponent, FVector& newLocation, FRotator& newRotation );
+	void SnapToClearanceBox( const AActor* clearanceOwner, const FVector& testLocation, FVector& newLocation, FRotator& newRotation );
 
 	/**
 	 * Function to allow any pre-initialization on the actor before the configuration occurs. This is to allow for
@@ -281,13 +316,8 @@ protected:
 	void ConfigureBuildEffect( class AFGBuildable* inBuildable );
 
 	// Begin AFGHologram interface
-	virtual void SetupClearance( class UFGClearanceComponent* clearanceComponent ) override;
 	virtual void SetMaterial( class UMaterialInterface* material ) override;
-	virtual class UPrimitiveComponent* GetClearanceOverlapCheckComponent() const override;
 	// End AFGHologram interface
-
-	/** Call this to replace the transform and extent of the hologram clearance instead of setting it directly. */
-	void SetHologramClearanceTransformAndExtent( const FVector& newRelativeLocation, const FRotator& newRelativeRotation, const FVector& newExtent );
 
 	/** Setup the mesh for visualizing connections. */
 	void SetupFactoryConnectionMesh( class UFGFactoryConnectionComponent* connectionComponent, bool bUseFrameMesh, bool bUseArrowMesh, class USceneComponent* attachParent = nullptr );
@@ -354,6 +384,9 @@ protected:
 	/** If the arrow should be used to highlight the pipe connections in hologram */
 	uint32 mUsePipeConnectionArrowMesh : 1;
 
+	/** True if the build effect should be suppressed for the buildable constructed from this hologram */
+	uint32 mSuppressBuildEffect : 1;
+
 	/** Cached array of all our factory connection components. */
 	TArray< class UFGFactoryConnectionComponent* > mCachedFactoryConnectionComponents;
 
@@ -362,13 +395,6 @@ protected:
 
 	/** Cached array of all our factory connection components. */
 	TArray< class UFGPipeConnectionComponent* > mCachedPipeConnectionComponents;
-
-	/** Real clearance box extents. We save this because we shrink the clearance box a little bit to avoid rounding errors. */
-	FVector mRealClearanceBoxExtent;
-
-	/** Component used to check for clearance overlaps instead of the clearance box, if available. More closely matches the shape of the buildable. */
-	UPROPERTY()
-	class UFGComplexClearanceComponent* mComplexClearanceComponent;
 	
 	/** Mesh component used to display the active guideline */
 	UPROPERTY()
@@ -378,11 +404,8 @@ protected:
 	FFGHologramGuidelineSnapResult mGuidelineSnapResult;
 
 	/** If we have snapped to another buildable, i.e. foundation, floor etc, this is it. */
-	UPROPERTY( CustomSerialization )
+	UPROPERTY( CustomSerialization, Replicated )
 	class AFGBuildable* mSnappedBuilding;
-
-	UPROPERTY( Transient )
-	class UFGClearanceComponent* mSnappedClearanceBox;
 
 	UPROPERTY()
 	class AFGBuildable* mSnappedFloor;
@@ -420,6 +443,9 @@ protected:
 	/** How far away an attachment point is allowed to be in order to be valid for snapping. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	float mAttachmentPointSnapDistanceThreshold;
+
+	/** Whether or not to hide guideline visuals for this hologram. */
+	bool mHideGuidelineVisuals;
 
 	UPROPERTY()
 	FFactoryCustomizationData mCustomizationData;

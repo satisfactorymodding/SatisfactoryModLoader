@@ -7,19 +7,28 @@ void UFGStorySubsystemRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGStorySubsystemRemoteCallObject, mForceNetField_UFGStorySubsystemRemoteCallObject);
 }
-void UFGStorySubsystemRemoteCallObject::Client_PlayMessages_Implementation(const TArray<class UFGMessage*>& newMessages){ }
+void UFGStorySubsystemRemoteCallObject::Client_ForwardMessagesToGameUI_Implementation(const TArray<class UFGMessage*>& newMessages){ }
+void UFGStorySubsystemRemoteCallObject::Server_MessageFinishedForPlayer_Implementation( AFGPlayerController* player,  UFGMessage* message){ }
 AFGStorySubsystem::AFGStorySubsystem() : Super() {
 
 }
 AFGStorySubsystem* AFGStorySubsystem::Get(UWorld* world){ return nullptr; }
 AFGStorySubsystem* AFGStorySubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGStorySubsystem::BeginPlay(){ }
-void AFGStorySubsystem::OnPlayerAdded( AFGCharacterPlayer* inPlayer){ }
-void AFGStorySubsystem::OnItemAddedToPlayerInventory(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numAdded){ }
-void AFGStorySubsystem::OnSchematicPurchased(TSubclassOf< UFGSchematic > newSchematic){ }
-void AFGStorySubsystem::OnResearchTreeUnlocked(TSubclassOf<UFGResearchTree> researchTree){ }
-void AFGStorySubsystem::OnAudioMessageFinishedPlaying(TSubclassOf<  UFGMessageBase > messageClass){ }
-void AFGStorySubsystem::PlayMessages(TArray<class UFGMessage*> messages){ }
+void AFGStorySubsystem::OnOnboardingStepUpdated( UFGOnboardingStep* newOnboardingStep){ }
+void AFGStorySubsystem::OnSchematicsPurchased(TArray< TSubclassOf< UFGSchematic > > newSchematics,  AFGCharacterPlayer* purchaseInstigator){ }
+void AFGStorySubsystem::OnGamePhaseChanged(UFGGamePhase* currentGamePhase){ }
+void AFGStorySubsystem::OnGameCompleted(){ }
+void AFGStorySubsystem::OnLocalPlayerMessageFinished( UFGMessage* message){ }
+void AFGStorySubsystem::OnItemPickuped(AFGPlayerState* playerState, const FItemAmount& totalAmountPickuped){ }
+void AFGStorySubsystem::OnItemManuallyCrafted(AFGPlayerState* playerState, const FItemAmount& totalAmountCrafted){ }
+void AFGStorySubsystem::OnBuildingBuilt(AFGPlayerState* playerState, TSubclassOf<  AActor > builtActor, int64 totalBuildCount){ }
+void AFGStorySubsystem::OnBuildingDismantled(AFGPlayerState* playerState, TSubclassOf<  AActor > builtActor, int64 totalDismantledCount){ }
+void AFGStorySubsystem::OnFirstItemSinkFailure(TSubclassOf<UFGItemDescriptor> itemFailedToSink){ }
+void AFGStorySubsystem::OnSpaceElevatorShipmentLockedIn(AFGPlayerState* playerState,  UFGGamePhase* gamePhase){ }
+void AFGStorySubsystem::OnSpaceElevatorFullyBuilt(){ }
+void AFGStorySubsystem::ForwardMessagesToGameUI(const TArray<class UFGMessage*>& messages){ }
+UFGMessage* AFGStorySubsystem::GetPlayableInterruptMessage(AFGPlayerState* instigatingPlayerState) const{ return nullptr; }
 void AFGStorySubsystem::GetStoryDebugData(TArray<FString>& out_debugData){ }
 void AFGStorySubsystem::SetupDelegates(){ }
-void AFGStorySubsystem::TryPlayNewMessage(){ }
+void AFGStorySubsystem::TryPlayMessages(const TArray<  UFGMessage*>& messages, const AFGPlayerState* instigatingPlayerState){ }

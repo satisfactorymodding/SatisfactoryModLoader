@@ -26,7 +26,10 @@ public:
 	virtual void Notify( USkeletalMeshComponent* meshComp, UAnimSequenceBase* animation ) final override;
 	//~ End UAnimNotify interface
 
-	FORCEINLINE class UAkAudioEvent* GetAudioEvent() { return AudioEvent; }
+	FORCEINLINE class UAkAudioEvent* GetAudioEvent() const { return AudioEvent; }
+	FORCEINLINE FName GetSocketName() const { return SocketName; }
+	FORCEINLINE bool ShouldFollow() const { return bFollow; }
+	
 protected:
 	// The socket or bone name we want to attach the event to
 	UPROPERTY( EditAnywhere, Category = "Audio" )

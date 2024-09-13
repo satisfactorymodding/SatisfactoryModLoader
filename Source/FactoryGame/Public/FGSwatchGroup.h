@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "FGFactoryColoringTypes.h"
 #include "UObject/NoExportTypes.h"
+#include "Internationalization/StringTableRegistry.h"
 #include "FGSwatchGroup.generated.h"
 
 #define LOCTEXT_NAMESPACE "Swatch Groups"
@@ -56,7 +57,7 @@ class FACTORYGAME_API UFGSwatchGroup_Standard : public UFGSwatchGroup
 public:
 	UFGSwatchGroup_Standard()
 	{
-		mGroupName = LOCTEXT("UFGSwatchGroup_Standard", "Standard" );
+		mGroupName = LOCTABLE( "Customization_Data", "Categories/Standard" );
 	}
 };
 
@@ -67,7 +68,7 @@ class FACTORYGAME_API UFGSwatchGroup_FicsitFoundation : public UFGSwatchGroup
 public:
 	UFGSwatchGroup_FicsitFoundation()
 	{
-		mGroupName = LOCTEXT("UFGSwatchGroup_FicsitFoundation", "FICSIT Foundation" );
+		mGroupName = LOCTABLE( "Customization_Data", "Materials/Foundations/FICSIT" );
 	}
 };
 
@@ -78,7 +79,7 @@ class FACTORYGAME_API UFGSwatchGroup_ConcreteFoundation : public UFGSwatchGroup
 public:
 	UFGSwatchGroup_ConcreteFoundation()
 	{
-		mGroupName = LOCTEXT("UFGSwatchGroup_ConcreteFoundation", "Concrete Foundation" );
+		mGroupName = LOCTABLE( "Customization_Data", "Materials/Foundations/Concrete" );
 	}
 };
 
@@ -89,7 +90,7 @@ class FACTORYGAME_API UFGSwatchGroup_CoatedConcreteFoundation : public UFGSwatch
 public:
 	UFGSwatchGroup_CoatedConcreteFoundation()
 	{
-		mGroupName = LOCTEXT( "UFGSwatchGroup_CoatedConcreteFoundation", "Coated Concrete Foundation" );
+		mGroupName = LOCTABLE( "Customization_Data", "Materials/Foundations/CoatedConcrete" );
 	}
 };
 
@@ -100,7 +101,7 @@ class FACTORYGAME_API UFGSwatchGroup_ConcreteWall : public UFGSwatchGroup
 public:
 	UFGSwatchGroup_ConcreteWall()
 	{ 
-		mGroupName = LOCTEXT( "UFGSwatchGroup_ConcreteWall", "Concrete Wall" );
+		mGroupName = LOCTABLE( "Customization_Data", "Materials/Walls/Concrete" );
 	}
 };
 
@@ -111,7 +112,7 @@ class FACTORYGAME_API UFGSwatchGroup_Pipeline : public UFGSwatchGroup
 public:
 	UFGSwatchGroup_Pipeline()
 	{
-		mGroupName = LOCTEXT("UFGSwatchGroup_Pipeline", "Pipes" );
+		mGroupName = LOCTABLE( "Customization_Data", "Categories/Pipes" );
 	}
 };
 
@@ -122,7 +123,7 @@ class FACTORYGAME_API UFGSwatchGroup_Vehicle : public UFGSwatchGroup
 public:
 	UFGSwatchGroup_Vehicle()
 	{
-		mGroupName = LOCTEXT("UFGSwatchGroup_Vehicle", "Vehicles" );
+		mGroupName = LOCTABLE( "Customization_Data", "Categories/Vehicles" );
 	}
 };
 

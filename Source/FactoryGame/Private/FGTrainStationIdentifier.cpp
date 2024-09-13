@@ -7,6 +7,7 @@ AFGTrainStationIdentifier::AFGTrainStationIdentifier() : Super() {
 	this->mStation = nullptr;
 	this->mTrackGraphID = -1;
 	this->mStationName = INVTEXT("");
+	this->mCompassMaterialInstance = nullptr;
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
 }
@@ -43,6 +44,7 @@ EFogOfWarRevealType AFGTrainStationIdentifier::GetActorFogOfWarRevealType(){ ret
 float AFGTrainStationIdentifier::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGTrainStationIdentifier::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGTrainStationIdentifier::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+UMaterialInterface* AFGTrainStationIdentifier::GetActorRepresentationCompassMaterial(){ return nullptr; }
 void AFGTrainStationIdentifier::SetStationName(const FText& text){ }
 void AFGTrainStationIdentifier::OnRep_StationName(){ }
 void AFGTrainStationIdentifier::OnRep_Station(){ }

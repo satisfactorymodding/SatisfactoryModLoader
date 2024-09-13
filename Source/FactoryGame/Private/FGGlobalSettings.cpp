@@ -6,5 +6,3 @@ UFGFactorySettings* UFGGlobalSettings::GetFactorySettingsCDO(){ return nullptr; 
 UFGDropPodSettings* UFGGlobalSettings::GetDropPodSettingsCDO(){ return nullptr; }
 UFGHardDriveSettings* UFGGlobalSettings::GetHardDriveSettingsCDO(){ return nullptr; }
 UFGEnvironmentSettings* UFGGlobalSettings::GetEnvironmentSettingsCDO(){ return nullptr; }
-UFGIconLibrary* UFGGlobalSettings::GetIconLibraryCDO(){ return nullptr; }
-UFGServerManagerSettings* UFGGlobalSettings::GetServerManagerSettingsCDO(){ return nullptr; }

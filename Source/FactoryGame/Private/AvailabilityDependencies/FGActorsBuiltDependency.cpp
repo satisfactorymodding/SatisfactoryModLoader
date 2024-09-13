@@ -2,4 +2,8 @@
 
 #include "AvailabilityDependencies/FGActorsBuiltDependency.h"
 
+#if WITH_EDITOR
+FString UFGActorsBuiltDependency::ToString() const{ return FString(); }
+void UFGActorsBuiltDependency::FromString(const FString& inString){ }
+#endif 
 bool UFGActorsBuiltDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }

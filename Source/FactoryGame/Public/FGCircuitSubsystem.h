@@ -3,27 +3,26 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGPowerCircuit.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "Buildables/FGBuildableCircuitBridge.h"
 #include "UI/Message/FGMessageBase.h"
 #include "FGCircuitSubsystem.generated.h"
 
-/**
- * Message to be displayed when the sum stored battery power of a circuit has had a certain share depleted
- */
-UCLASS( Blueprintable )
-class FACTORYGAME_API UFGCriticalBatteryDepletionMessage : public UFGMessageBase
+DECLARE_STATS_GROUP( TEXT( "CircuitSubsystem" ), STATGROUP_CircuitSubsystem, STATCAT_Advanced );
+
+USTRUCT()
+struct FPowerCircuitFuseStabilityData
 {
 	GENERATED_BODY()
-public:
-	UFGCriticalBatteryDepletionMessage();
 
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Power" )
-	float GetCriticalBatteryDepletionPercent() const { return mCriticalBatteryDepletionPercent; }
-
-private:
-	float mCriticalBatteryDepletionPercent = 0.0f;
+	UPROPERTY()
+	TObjectPtr< AFGPlayerController > FuseResetInstigator = nullptr;
+	
+	int32 CircuitID;
+		
+	FTimerHandle TimerHandle;
 };
 
 /**
@@ -39,7 +38,6 @@ public:
 	/** Replication. */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
-	virtual void CallPreReplication(UNetDriver* NetDriver) override;
 
 	/** Get the circuit subsystem. */
 	static AFGCircuitSubsystem* Get( UWorld* world );
@@ -60,6 +58,7 @@ public:
 
 	// Begin AActor interface
 	virtual void Serialize( FArchive& ar ) override;
+	static void AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector);
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaSeconds ) override;
 	// End AActor interface
@@ -138,12 +137,12 @@ public:
 	class UFGCircuitGroup* GetCircuitGroup( int32 circuitGroupId ) { return mCircuitGroups[ circuitGroupId ]; }
 
 	/** Called when a power circuit lost power. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Circuits|Power" )
-	void PowerCircuit_OnFuseSet();
+	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Circuits|Power" )
+	void PowerCircuit_OnFuseSet( const TArray< class UFGPowerCircuit* >& circuits );
 
 	/** Called when a power circuit had it's power restored. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Circuits|Power" )
-	void PowerCircuit_OnFuseReset();
+	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Circuits|Power" )
+	void PowerCircuit_OnFuseReset( const TArray< class UFGPowerCircuit* >& circuits, class AFGPlayerController* fuseResetInstigator = nullptr );
 
 	/** Called when a power circuit had it's power restored. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Circuits|Power" )
@@ -200,6 +199,11 @@ private:
 	/** Removes a connection component from it's circuit. If the connection component does not have a valid circuit ID this does nothing. */
 	void RemoveComponentFromCircuit( class UFGCircuitConnectionComponent* component );
 
+	/** Called when a power circuit is considered stable. */
+	void OnPowerCircuitStable( class UFGPowerCircuit* circuit, class AFGPlayerController* fuseResetInstigator );
+
+	void RemovePowerCircuitStabilityData( int32 circuitID );
+
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPowerPrioritySwitchAdded, class AFGPriorityPowerSwitchInfo*, info );
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnStructuralChange );
@@ -228,6 +232,7 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Circuit" )
 	FOnStructuralChange mOnCircuitsRebuiltDelegate;
 	/**
+	 * Called when structural changes occured in the circuit groups. Server and Client.
 	 * Called when structural changes occured in the circuit groups. Server and Client.
 	 * This can happen when a circuit is rebuilt or when a switch is flipped.
 	 */
@@ -269,4 +274,12 @@ private:
 	/** Power circuits: all the priority switches in the world. */
 	UPROPERTY( Replicated )
 	TArray< class AFGPriorityPowerSwitchInfo* > mPriorityPowerSwitchInfos;
+
+	/** Power circuits: Fuse stability timer data. Key is Circuit ID */
+	UPROPERTY()
+	TMap< int32, FPowerCircuitFuseStabilityData > mPowerCircuitStabilityData;
+
+	/** The amount of time to wait before a power circuit is considered "stable" after resetting the fuse. */
+	UPROPERTY( EditDefaultsOnly, Category = "Power Circuit" )
+	float mPowerCircuitStabilityTimeRequirement;
 };

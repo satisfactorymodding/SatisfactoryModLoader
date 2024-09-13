@@ -6,153 +6,38 @@
 #include "CoreMinimal.h"
 #include "Engine/LocalPlayer.h"
 #include "FGErrorMessage.h"
-#include "FGOnlineSessionClient.h"
-#include "FGOnlineSessionSettings.h"
-#include "FindSessionsCallbackProxy.h"
+#include "NativeGameplayTags.h"
 #include "Online/CoreOnline.h"
 #include "Online/FGOnlineHelpers.h"
+#include "OnlineIntegrationTypes.h"
 #include "OnlineSubsystemTypes.h"
 #include "PlayerPresenceState.h"
-#include "OnlineIntegrationTypes.h"
+#include "Runtime/Online/HTTP/Public/Http.h"
 #include "FGLocalPlayer.generated.h"
 
+class UAddOnEntitlement;
+class UFGJoinableGamesViewModel;
+class UOnlineIntegrationBackend;
+class IFGSessionSettingsInterface;
 class UFGInputMappingContext;
-
-UCLASS()
-class UFGEM_LoggedOutFromOnlineService : public UFGErrorMessage
-{
-	GENERATED_BODY()
-public:
-	UFGEM_LoggedOutFromOnlineService();
-};
-
-UCLASS()
-class UFGEM_LostConnectionWithOnlineService : public UFGErrorMessage
-{
-	GENERATED_BODY()
-public:
-	UFGEM_LostConnectionWithOnlineService();
-};
-
-UCLASS()
-class UFGEM_FailedToLoginToOnlineService : public UFGErrorMessage
-{
-	GENERATED_BODY()
-public:
-	UFGEM_FailedToLoginToOnlineService();
-};
-
-enum EFrindsListState
-{
-	FLS_Invalid,
-	FLS_Querying,
-	FLS_Valid
-};
-
-UENUM(BlueprintType)
-enum ELoginState
-{
-	LS_NotLoggedIn		UMETA(DisplayName = "NotLoggedIn"), 
-	LS_FailedToLogin	UMETA(DisplayName = "FailedToLogin"),
-	LS_LoggingIn		UMETA(DisplayName="LoggingIn"),
-	LS_LoggedIn			UMETA(DisplayName="LoggedIn")
-};
+class ISessionCreationInteractionHandler;
+class ULocalUserInfo;
 
 namespace UE::Online
 {
 struct FAccountInfo;
 };
 
-USTRUCT(BlueprintType)
-struct FFGOnlineFriend
-{
-	GENERATED_BODY()
-
-	FFGOnlineFriend();
-	FFGOnlineFriend( TSharedRef<FOnlineFriend> onlineFriend );
-
-	FORCEINLINE bool IsValid() const{ return Friend.IsValid(); }
-
-	FORCEINLINE bool operator==( const FFGOnlineFriend& other ) const
-	{
-		// If their valid check differs, then we know they are different
-		if( IsValid() != other.IsValid() )
-		{
-			return false;
-		}
-
-		// If both are invalid, then we are equal
-		if( !IsValid() && !other.IsValid() )
-		{
-			return true;
-		}
-
-		return Friend->GetUserId() == other.Friend->GetUserId();
-	} 
-
-	/** Internal friend data */
-	TSharedPtr<FOnlineFriend> Friend;
-};
-
-FORCEINLINE uint32 GetTypeHash( const FFGOnlineFriend& onlineFriend )
-{
-	// WTF! WHY DOES THIS FAIL?
-	if( onlineFriend.IsValid() )
-	{
-		return GetTypeHash( onlineFriend.Friend->GetUserId() );
-	}	
-
-	return 0;
-}
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnMultiplayerStatusUpdated );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnAccountConnectionComplete, const FName, currentPlatform, EEosAccountConnectionResult, result );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnAccountUnlinkComplete, bool, result );
 
-
-// Workaround as it seems like you can't have a TArray<FFGOnlineFriends> exposed to a Dynamic multicast delegate
-USTRUCT(BlueprintType)
-struct FUpdatedFriends
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite)
-	TArray<FFGOnlineFriend> Friends;
-};
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnPublicAddressUpdated );
 
 /** Called when the friends list is done with it's initial query */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFriendsListQueried);
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFriendsListUpdated);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFriendsListUpdated, FUpdatedFriends, updatedFriends);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFriendPresenceUpdated, const FUniqueNetIdRepl&, updatedId);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameInviteReceived, const FPendingInvite&, receivedInvite);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnLoginStateChanged, ELoginState, oldState, ELoginState, newState );
-
-// @todosession: Listen for session updates
- 
 /**
- * @OSS: Responsibility:
- * - Login to OSS
- * EpicGameLauncher passes a access token, artifact started and a few other parameters required to be able to login. AutoLogin checks if these a valid and
- * logs in to EGS automatically when main menu starts. Note that this isn't blocking. So the user might try to start a game before he has managed
- * to properly login.
- * - UserInterface
- * This is fetching information from the backend about a online user
- * - Presence
- * Updating our presence based on what we are doing. A timer is called regurlarly, where we can update our current "PresenceString" (See UFGLocalPlayer::UpdatePresence)
- * @todo: We should most likely update this in the chain where we are trying to setup a game
- * - Copy host presence to clients
- * Whenever a client receives a presence update, it will check if it's the host of the current game, if yes, then it will copy information about that
- * game to it's own presence
- * - Friends
- * - MapTravel and Sessions:
- * (SetupServerAndTravelToMap) Tears down current session and ensures that we are in a good state for map travel. Also ensures that we are properly logged in and that all data is
- * properly propagated to the backend servers.
  * @IMPORTANT that loading games should always be done through AFGAdminInterface::LoadGame, as that handles travel on dedicated servers.
  */
 UCLASS(BlueprintType)
@@ -165,6 +50,10 @@ public:
 	//~Begin ULocalPlayer interface
 	virtual void PlayerAdded( class UGameViewportClient* inViewportClient, FPlatformUserId inUserId ) override;
 	virtual void PlayerRemoved() override;
+	virtual void SwitchController(class APlayerController* PC) override;
+	virtual void ReceivedPlayerController(APlayerController* NewController) override;
+	virtual FString GetNickname() const override;
+	virtual void CleanupViewState(FStringView MidParentRootPath) override;
 	//~End ULocalPlayer interface
 	
 	//~Begin FExec Interface
@@ -177,317 +66,89 @@ public:
 	/** Triggered when Maintain Y Axis FOV option have changed */
 	UFUNCTION()
     void OnMaintainYAxisFOVUpdated( FString updatedCvar );
-
-	/** Get in what state our login is */
-	UFUNCTION(BlueprintPure,Category="Online")
-	TEnumAsByte<ELoginState> GetLoginState() const;
 	
-	/** Get in what state our epic login is */
-	UFUNCTION( BlueprintPure, Category = "Online" )
-	FORCEINLINE TEnumAsByte<ELoginState> GetLoginStateEpic() const{ return mLoginStateEpic; }
-	
-	/** Get in what state our Steam login is */
-	UFUNCTION( BlueprintPure, Category = "Online" )
-	FORCEINLINE TEnumAsByte<ELoginState> GetLoginStateSteam() const{ return mLoginStateSteam; }
-
-	/** Get the username of the current user (from the first logged in platform)*/
-	UFUNCTION(BlueprintPure,Category="Online")
-	FString GetUsername() const;
-
-	/** Get the username of the current user for the specified platform (empty string if not logged in)*/
-	UFUNCTION(BlueprintPure, Category = "Online")
-	FString GetUsernameEpic() const;
-
-	/** Get the username of the current user for the specified platform (empty string if not logged in)*/
-	UFUNCTION(BlueprintPure, Category = "Online")
-	FString GetUsernameSteam() const;
-
-	/** Are we waiting for an response from EOS connect login */
-	UFUNCTION(BlueprintPure, Category = "Online")
-    bool IsWaitingForEOSConnectLoginResponse() const { return mIsWaitingForEOSConnectLogin; }
-
-	/** Did we press continue without multiplayer in the connection popup? */
-	UFUNCTION(BlueprintPure, Category = "Online")
-    bool GetContinueWithoutMultiplayer() const { return mContinueWithoutMultiplayer; }
-
-	void SetupServerAndTravelToMap( const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility visibility );
-
-	/**
-	 * Get the list of friends of the current user
-	 * @param out_friends - the list of the friends if this returns true
-	 * @return true if we have access to the list of friends, if false, then the list will be empty, then wait for mOnFriendListQueried to trigger and it will be populated
-	 */
-	UFUNCTION(BlueprintCallable)
-	bool GetFriendList( TArray<FFGOnlineFriend>& out_friends );
-
-	/** Try to autologin to online service, don't try again if we have failed */
-	UFUNCTION(BlueprintCallable,Category="Online")
-	void AutoLogin();
-
-	/** Make sure our session presence patches the specified presence */
-	void CopyPresenceDataToLocalPresenceAndPushToServer( const TSharedRef<FOnlineUserPresence>& presence );
+	/** Returns information about the user embedded into the watermark */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "User" )
+	void GetUserWatermarkInformation( TArray<FString>& OutWatermarkData ) const;
 
 	/** Called regularly to update the users presence, can also be called to force update presence and delays the next presence update */
 	UFUNCTION()
 	void UpdatePresence();
 
-	UFUNCTION()
-	void CheckForStartupArguments();
-
-	void TestSteamCommandLineArgs(FString &sessionId);
-
-	/** Called regularly to update the users presence, can also be called to force update presence and delays the next presence update */
-	UFUNCTION()
-	void SetNextUpdatePresenceTime(float timeTillNextUpdate);
-
-	/** Called when we have received a invite and gotten full information about it */
-	void OnInviteReceived( const FPendingInvite& invite );
-
 	/** Checks if last logged in user id matches the current logged in user and if not updates the cached value */
 	void RefreshRecentRegisteredSocialAccountID();
 
-	// Return true if we have received the Product User Id needed for hosting the game
-	bool HasReceivedProductUserId() const;
-
 	// Get the unique net id of the current local player
 	TSharedPtr<const FUniqueNetId> GetPlayerId() const;
-	TSharedPtr<const FUniqueNetId> GetPlayerIdEpic() const;
-	TSharedPtr<const FUniqueNetId> GetPlayerIdSteam() const;
 
+	void PopulateEnhancedInputUserSettingsWithContexts( class UEnhancedInputUserSettings* inputUserSettings );
+	void PopulateChildMappingContexts( const UFGInputMappingContext* mainContext, TArray<UFGInputMappingContext*>& out_childContexts );
 
-	//~ Begin Account Connection Functions //
-	/** Connect two logged in accounts */
-	void ConnectAccount( const FName currentPlatform );
-
-	//Log out epic, then wait till the logout compelts and use the contiue token to create a new connection.
-	void LogOutEpicAndCreateNewAccountConnection(const FName currentPlatform);
-
-	/** Create a new account connection without connection to an existing account */
-	void CreateNewAccountConnection( const FName currentPlatform );
-
-	void BroadcastAccountConnectionStepResult(const FName currentPlatform, EEosAccountConnectionResult result);
-
-	/** Prompt the user to login and link that account */
-	void LoginAndConnectAccount( const FName currentPlatform );
-
-	/** Continue without linking an account to our current one */
-	void ContinueWithoutConnectingAccount( const FName currentPlatform );
-
-	/** Triggered when we want to wait for steam connect and then reset account linking */
-	UFUNCTION()
-	void ResetAccountLinkingAfterConnect( FName currentPlatform, EEosAccountConnectionResult result );
-
-	/** Triggered when we want to wait for epic logout and then reset account linking */
-	UFUNCTION()
-	void ResetAccountLinkingAfterEpicLogout( FName currentPlatform, EEosAccountConnectionResult result );
-
-	/** Try to unlink current logged in account.*/
-	UFUNCTION( BlueprintCallable, Category="Online" )
-	void TryResetAccountLinking();
-
-	/** Unlinks the current logged in account. Assumes we have only one account logged in */
-	void UnlinkAccount();
-
-	/** Called after unlinking. Lets the player redo account connecection */
-	UFUNCTION()
-	void LinkAccount();
-
-	virtual void SwitchController(class APlayerController* PC) override;
-	virtual FString GetNickname() const override;
-
-	/** Logout current account and login to a epic account and connect */
-	void LoginAndConnectOtherEpicAccount();
-
-	/** Logout current account and login to a epic account and connect */
-	void ContinueWithAndHookUpSteamToEOSAfterEpicLogout();
-
-	/** Logout current account and continue */
-	void LogoutEpicAccountAndContinue();
-
-	//~ End Account Connection Functions //
-
-	UFUNCTION( BlueprintCallable )
-	void LoginEpicAccountPortal();
-
-	UFUNCTION( BlueprintCallable )
-	void LogoutEpicAccountPortal();
-
-	void ContinueWithoutMultiplayer();
-
-	void FindChildMappingContexts( const UFGInputMappingContext* mainContext, TArray<UFGInputMappingContext*>& out_childContexts ) const;
+	/** Forcefully hides the early loading screen if it is visible */
+	void ForceHideEarlyLoadingScreen();
 protected:
-	//~Begin Online Delegates
 	//~Begin OnlineIdentity delegates
-	void OnLoginStatusChanged( int32 localUserNum, ELoginStatus::Type previous, ELoginStatus::Type current, const FUniqueNetId& userId );
-	void OnLoginStatusChangedSteam(int32 localUserNum, ELoginStatus::Type previous, ELoginStatus::Type current, const FUniqueNetId& userId);
-	void OnLoginStatusChanged( TSharedRef<UE::Online::FAccountInfo> AccountInfo, EOnlineIntegrationUnmappedContext Context );
-	
-	void SteamTaskRetryWaiter();
-	void StartSteamEOSConnect();
-
-	void OnLoginComplete(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error);
-	void OnLoginCompleteSteam(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error);
-	void OnAutoLoginComplete(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error);
-	void OnAutoLoginCompleteSteam(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error);
-	void OnConnectionStatusChanged(const FString& serviceName, EOnlineServerConnectionStatus::Type lastConnectionState, EOnlineServerConnectionStatus::Type connectionState);
-	void OnConnectionStatusChangedSteam(const FString& serviceName, EOnlineServerConnectionStatus::Type lastConnectionState, EOnlineServerConnectionStatus::Type connectionState);
+	void OnLoginStatusChanged( ULocalUserInfo* userInfo, TSharedRef<UE::Online::FAccountInfo> accountInfo, UOnlineIntegrationBackend* backend );
 	//~End OnlineIdentity delegates
 
-	//~Begin OnlineFriends delegates
-	void OnReadFriendsListComplete( int32 localUserNum, bool wasSuccessful, const FString& listName, const FString& errorStr );
-	void OnReadFriendsListCompleteSteam(int32 localUserNum, bool wasSuccessful, const FString& listName, const FString& errorStr);
-	void OnFriendsChange();
-	void OnFriendsChangeSteam();
-	//~End OnlineFriends delegates
-
-	//~Begin OnlineUser delegates
-	//void OnQueryUserInfoComplete( int32 localUSerNum, bool wasSuccessful, const TArray< TSharedRef<const FUniqueNetId> >& userIds, const FString& errorString );
-	void OnQueryUserInfoForFriendListComplete( int32 localUSerNum, bool wasSuccessful, const TArray< TSharedRef<const FUniqueNetId> >& userIds, const FString& errorString );
-	//~End OnlineUnser delegates
-
-	//~Begin OnlinePresence delegates
-	void OnPresenceReceived( const class FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence );
-	void OnPresenceReceivedSteam(const class FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence);
-	//~End OnlinePresence deleages
-
-	void UpdateLoginState();
-
-	//~End Online Delegates
-
-	// @return true if we are able to autologin
-	bool CanAutoLoginEpic() const;
-
-	bool CanAutoLoginSteam() const;
 	/** Get the presence string we should show to other users */
 	virtual FString GetPresenceString() const;
 
+	void OnAboutToTravel( ULocalUserInfo* UserInfo, TMap<FString ,FString> &ExtraOptions );
+
 	void GetPresenceState(FPlayerPresenceState& outState) const;
-
-	/** Convert a login status to a login state */
-	ELoginState FromLoginStatus( ELoginStatus::Type from ) const;
-
-	// Called whenever we get logged in
-	void OnLoggedIn();
-	
-	// Set the login state of the local player and broadcast it
-	void SetLoginStateEpic( ELoginState newLoginState );
-
-	void SetLoginStateSteam(ELoginState newLoginState);
-	// Get friends that we don't have any presence data or similar for
-	void GetFriendsWithNoData( TArray<TSharedRef<const FUniqueNetId>>& out_usersWithNoData );
 private:
 
 	/** Push error and autosave the game */
 	void PushErrorAndAutosave( TSubclassOf<class UFGErrorMessage> errorMessage );
 
-	/** Set waiting variable and broadcast changes with delegate */
-	void SetIsWaitingForEOSConnectLogin( bool waiting );
+	/** Called when the map is loaded */
+	void OnMapLoadedWithWorld( UWorld* InWorld );
 
+	/** Checks whenever the early loading screen should still be visible for the current player controller */
+	void CheckEarlyLoadingScreenVisibility();
+
+	/** Sends an http request to ipify.org to get the players public IP address used in the watermark */
+	void RequestPublicPlayerAddress();
+
+	/** Handles response for the public IP address used in the watermark */
+	void OnPublicPlayerAddressResponse(FHttpRequestPtr request, FHttpResponsePtr response, bool wasSuccesful);
+	
+	FString mCachedPublicAddress;
 public:
-	/** Called when the when we have a result from connection accounts */
-	FOnAccountConnectionComplete mOnAccountConnectionComplete;
 
-	/** Called when the when we have a result from unlink accounts */
-	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
-	FOnAccountUnlinkComplete mOnAccountUnlinkComplete;
+	/** Notify UI that the public address used in the watermark information has been updated */
+	UPROPERTY(BlueprintAssignable, Category = "Watermark")
+	FOnPublicAddressUpdated mOnPublicAddressUpdated;
 
-	/** Called when the state of waiting for EOS connect login response changed or we continued playing without multiplayer*/
-	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
-	FOnMultiplayerStatusUpdated mOnMultiplayerStatusUpdated;
-
-	UFUNCTION()
-	void OnComandlineInviteSearchComplete(FBlueprintSessionResult result);
 protected:
 	friend class UFGCheatManager;
-
-	//~Begin OnlineFriends delegates
-	FDelegateHandle mOnFriendsChangeHandle;
-	FDelegateHandle mOnFriendsChangeHandleSteam;
-	//~End OnlineFriends delegates
-	//~Begin OnlineIdentity delegates
-	FDelegateHandle mOnLoginStatusChangeHandle;
-	FDelegateHandle mOnLoginCompleteHandle;
-	FDelegateHandle mOnLoginStatusChangeHandleSteam;
-	FDelegateHandle mOnLoginCompleteHandleSteam;
-	// Special delegate that is just setup during autologin
-	FDelegateHandle mOnAutoLoginCompleteHandle;
-	FDelegateHandle mOnAutoLoginCompleteHandleSteam;
-	//~End OnlineIdentity delegates
-	//~Begin OnlineUser delegates
-	FDelegateHandle mOnQueryUserInfoForFriendListCompleteHandle;
-	FDelegateHandle mOnPresenceReceived;
-	FDelegateHandle mOnQueryUserInfoForFriendListCompleteHandleSteam;
-	FDelegateHandle mOnPresenceReceivedSteam;
-
-	//~~End OnlineUser delegates
-
+	
 	// Handle for updating presence info
 	FTimerHandle mPresenceUpdateHandle;
-	FTimerHandle mPresenceUpdateHandleSteam;
-	FTimerHandle mSteamConnectyAccountDelayHandle;
 
 	FTimerHandle mCheckStartupArgumentsHanlde;
 
-	// For detecting player disconnects from services
-	FDelegateHandle mOnConnectionStatusChangedHandle;
-	FDelegateHandle mOnConnectionStatusChangedHandleSteam;
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr< UFGJoinableGamesViewModel > mJoinableGamesModel;
 
-	// The status of our logins
-	ELoginState mLoginStateEpic;
-	// The status of our logins
-	ELoginState mLoginStateSteam;
-
-	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
-	FOnLoginStateChanged mOnLoginStateChanged;
-
-	/** Called when the friendslist has been updated (that is, a user is has added/removed you as a friend) */
-	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
-	FOnFriendsListUpdated mOnFriendsListUpdated;
-	
-	/** Called a friends presence is updated */
-	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
-	FOnFriendPresenceUpdated mOnFriendsPresenceUpdated;
-
-	/** Called a friends presence is updated */
-	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
-	FOnGameInviteReceived mOnInviteReceived;
-
-	/** Current state of the friends list */
-	EFrindsListState mFriendsListState;
-
-	TArray<FFGOnlineFriend> mCachedFriends;
-
-	//Used while setting up account linking with EOS. Need to be kept from a result and used with potential continuance actions.
-	EOS_ContinuanceToken mCurrentContinuanceToken = nullptr;
-
-	/** If true, then we have failed to autologin, and won't try to autologin again */
-	bool mFailedAutologinEpic;
-
-	/** If true, then we have failed to autologin, and won't try to autologin again */
-	bool mFailedAutologinSteam;
-
-	enum class ESteamTaskRetryState: uint8
-	{
-		STRS_StopTimer,
-		STRS_Continue,
-		STRS_TriggerRetry
-	};
-	ESteamTaskRetryState mSteamRetryState;
-	bool mContinueWithoutMultiplayer = false;
-	bool mIsWaitingToConnectSteamAccount = false;
-	bool mIsWaitingForEOSConnectLogin = false;
-	bool mIsWaitingForEpicLogout = false;
-	bool mIsWaitingForEpicAccountSwap = false;
-	bool mHasTriedConnectingSteam = false;
-	bool mStartedAccountConnectionProcess = false;
-	bool mHastTriedLoggingIn = false;
-	bool mAutoSignedOutEpicDueToIncompatibility = false;
-	bool mResetAccountLinkingIsWaitingForEpicLogout = false;
+	/** A list of all mapping contexts that can be re-bound. Used for pre-populating input user settings with correct values */
+	UPROPERTY()
+	TArray<UFGInputMappingContext*> mAllRebindableMappingContexts;
 
 	/**
 	 * A cache of the parent to children mapping contexts, built when the player is added
 	 * Used to avoid frequently looking up asset registry when we are re-binding the input contexts on the player
-	 * TODO @Nick: FGLocalPlayer doesn't seem like the best place for this, but making a local player subsystem for this sounds a bit excessive
 	 */
 	TMultiMap<TSoftObjectPtr<UFGInputMappingContext>, TSoftObjectPtr<UFGInputMappingContext>> mParentToChildMappingContexts;
+	bool mInitializedParentToChildInputMappings{false};
+
+	/** Widget used as an early loading screen after movie player has finished but until we have a valid HUD */
+	TSharedPtr<class SWidget> mEarlyLoadingScreenWidget;
+
+	/**
+	 * Just a place to store the entitlement pointers after loading them they do not get garbage collected
+	 */
+	UPROPERTY()
+	TArray<TObjectPtr<UAddOnEntitlement>> mAddOnEntitlements;
 };

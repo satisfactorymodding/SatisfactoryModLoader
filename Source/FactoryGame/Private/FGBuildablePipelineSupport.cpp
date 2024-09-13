@@ -19,7 +19,6 @@ AFGBuildablePipelineSupport::AFGBuildablePipelineSupport() : Super() {
 	this->mUseStaticHeight = false;
 	this->mHologramClass = AFGBuildablePipelineSupport::StaticClass();
 	this->mSwatchGroup = UFGSwatchGroup_Pipeline::StaticClass();
-	this->mCreateClearanceMeshRepresentation = false;
 	this->mSupportComponentDefaultMesh->SetupAttachment(RootComponent);
 }
 void AFGBuildablePipelineSupport::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
@@ -29,6 +28,7 @@ void AFGBuildablePipelineSupport::GetLifetimeReplicatedProps(TArray< FLifetimePr
 	DOREPLIFETIME(AFGBuildablePipelineSupport, mSupportMesh);
 }
 void AFGBuildablePipelineSupport::BeginPlay(){ }
+TArray<struct FInstanceData> AFGBuildablePipelineSupport::GetActorLightweightInstanceData_Implementation(){ return TArray<struct FInstanceData>(); }
 void AFGBuildablePipelineSupport::SetSupportLength(float length){ }
 void AFGBuildablePipelineSupport::SetVerticalAngle(float angle){ }
 void AFGBuildablePipelineSupport::SetupConnectionComponent(){ }

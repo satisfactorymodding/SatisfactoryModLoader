@@ -35,9 +35,6 @@ public:
 
 	/** Returns the thickness of the passthrough */
 	FORCEINLINE float GetSnappedBuildingThickness() const { return mSnappedBuildingThickness; }
-	
-	/** Returns true if the passthrough is using a soft clearance. Safe to call on the CDO. */
-	bool GetIsSoftClearance() const;
 
 	/** When performing clearance checks, ignore these buildables as they are relevant to the passthrough and shouldn't impact clearance */
 	virtual void GetIgnoredBuildablesForClearance( TArray< AFGBuildable* >& out_ignoredBuildables );
@@ -58,10 +55,7 @@ public:
 		ensureMsgf( !HasActorBegunPlay(), TEXT("SetSnappedBuildingThickness_BeforeBeginPlay called after BeginPlay") );
 		mSnappedBuildingThickness = newThickness;
 	}
-protected:
-	UPROPERTY( EditDefaultsOnly, Category = "Passthrough" )
-	UFGClearanceComponent* mClearanceBox;
-	
+protected:	
 	/** The thickness of the building we are snapped to */
 	UPROPERTY( VisibleInstanceOnly, SaveGame, Replicated, Category = "Passthrough" )
 	float mSnappedBuildingThickness;

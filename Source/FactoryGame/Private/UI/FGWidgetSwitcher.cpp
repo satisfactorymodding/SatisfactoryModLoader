@@ -24,4 +24,5 @@ bool UFGWidgetSwitcher::IsDoingWidgetAnimation() const{ return bool(); }
 void UFGWidgetSwitcher::EnterAnimationTookToLong(){ }
 void UFGWidgetSwitcher::ExitAnimationTookToLong(){ }
 void UFGWidgetSwitcher::FadeOut(){ }
+bool UFGWidgetSwitcher::IsFadingOut() const{ return bool(); }
 FTimerManager* UFGWidgetSwitcher::GetTimerManager() const{ return nullptr; }

@@ -4,14 +4,14 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/FGUserWidget.h"
 #include "FGWindow.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FACTORYGAME_API UFGWindow : public UUserWidget
+class FACTORYGAME_API UFGWindow : public UFGUserWidget
 {
 	GENERATED_BODY()
 public:

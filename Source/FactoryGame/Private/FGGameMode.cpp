@@ -2,6 +2,7 @@
 
 #include "FGGameMode.h"
 #include "FGCharacterPlayer.h"
+#include "FGGameSessionOnline.h"
 #include "FGGameState.h"
 #include "FGHUD.h"
 #include "FGPlayerState.h"
@@ -12,32 +13,34 @@ const TCHAR* AFGGameMode::SkipOnboarding = TEXT("skiponboarding");
 const TCHAR* AFGGameMode::AdvancedGameSettingsOption = TEXT("advancedGameSettings");
 const TCHAR* AFGGameMode::EnableAdvancedGameSettingsOption = TEXT("enableAdvancedGameSettings");
 
+UWorld* UFGDedicatedServerGameModeComponentInterface::GetWorld() const{ return nullptr; }
+AFGGameMode* UFGDedicatedServerGameModeComponentInterface::GetOwnerGameMode() const{ return nullptr; }
 AFGGameMode::AFGGameMode() : Super() {
 	this->mSaveSession = nullptr;
-	this->mLastAutoSaveId = 255;
 	this->mSaveSessionName = TEXT("");
+	this->mLastAutoSaveId = 255;
 	this->mStartingPointTagName = TEXT("None");
 	this->mAllowPossessAny = false;
 	this->mDebugStartingPointTagName = TEXT("None");
-	this->mDefaultRemoteCallObjectsClassNames.Add(FSoftClassPath(TEXT("/Game/FactoryGame/Character/Player/BP_RemoteCallObject.BP_RemoteCallObject_C")));
-	this->mDefaultRemoteCallObjectsClassNames.Add(FSoftClassPath(TEXT("/Script/FactoryGame.FGBoomBoxRemoteCallObject")));
-	this->mServerRestartTimeHours = 24.0;
 	this->mIsMainMenu = false;
+	this->mDedicatedServerInterface = nullptr;
 	this->InactivePlayerStateLifeSpan = 0.0;
+	this->GameSessionClass = AFGGameSessionOnline::StaticClass();
 	this->GameStateClass = AFGGameState::StaticClass();
 	this->PlayerStateClass = AFGPlayerState::StaticClass();
 	this->HUDClass = AFGHUD::StaticClass();
 	this->DefaultPawnClass = AFGCharacterPlayer::StaticClass();
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.bTickEvenWhenPaused = false;
-	this->PrimaryActorTick.bCanEverTick = false;
+	this->PrimaryActorTick.bTickEvenWhenPaused = true;
+	this->PrimaryActorTick.bCanEverTick = true;
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGGameMode::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGGameMode::BeginPlay(){ }
+void AFGGameMode::Tick(float DeltaSeconds){ }
 void AFGGameMode::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGGameMode::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameMode::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -53,12 +56,13 @@ void AFGGameMode::InitGameState(){ }
 bool AFGGameMode::AllowCheats(APlayerController* p){ return bool(); }
 AActor* AFGGameMode::ChoosePlayerStart_Implementation(AController* player){ return nullptr; }
 void AFGGameMode::RestartPlayer(AController* newPlayer){ }
-APlayerController* AFGGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage){ return nullptr; }
-bool AFGGameMode::IsPaused() const{ return bool(); }
 void AFGGameMode::PostLogin(APlayerController* newPlayer){ }
+APlayerController* AFGGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage){ return nullptr; }
 void AFGGameMode::Logout(AController* exiting){ }
 bool AFGGameMode::FindInactivePlayer(APlayerController* PC){ return bool(); }
 void AFGGameMode::GenericPlayerInitialization(AController* C){ }
+bool AFGGameMode::IsPaused() const{ return bool(); }
+void AFGGameMode::InitStartSpot_Implementation(AActor* StartSpot, AController* NewPlayer){ }
 void AFGGameMode::PostActorsInitialized(const UWorld::FActorsInitializedParams& inParams){ }
 uint8 AFGGameMode::GenerateNextAutoSaveId(){ return uint8(); }
 void AFGGameMode::SetSaveSessionName(const FString& name){ }
@@ -68,11 +72,13 @@ bool AFGGameMode::RegisterRemoteCallObjectClass(const TSubclassOf< UFGRemoteCall
 void AFGGameMode::RegisterCallObjectOnAllCurrentPlayers(const TSubclassOf<UFGRemoteCallObject> inClass){ }
 void AFGGameMode::RebootSession(){ }
 bool AFGGameMode::ShouldSkipOnboarding() const{ return bool(); }
-void AFGGameMode::SetServerRestartWorldTime(const float worldTime){ }
 void AFGGameMode::TriggerWorldSave(const FString& saveGameName){ }
 void AFGGameMode::TriggerBundledWorldSave(const FString& saveGameName){ }
-void AFGGameMode::JoinSessionByIdD(const FString& sessionId){ }
+void AFGGameMode::BuildFoundationsBro(int32 howMany){ }
+void AFGGameMode::ShowInviteUI(){ }
+void AFGGameMode::PrintSessionId(){ }
 bool AFGGameMode::IsValidPawnToReclaim(APawn* pawn) const{ return bool(); }
+void AFGGameMode::OnSessionRestartTimeSlotUpdated(FString OptionName, FVariant OptionValue){ }
 void AFGGameMode::GetRestartSessionSaveName(FString& out_sessionName) const{ }
 void AFGGameMode::BuildRestartSessionURL(const FString& saveName, FString& out_sessionUrl) const{ }
 APlayerStart* AFGGameMode::CachePlayerStarts(TMap< FName, TArray< APlayerStart* > >& out_playerStarts){ return nullptr; }
@@ -80,4 +86,9 @@ void AFGGameMode::PartitionPlayerStartsByOccupancy(const TArray< APlayerStart* >
 		TSubclassOf< APawn > pawnClassToFit,
 		TArray< APlayerStart* >& out_unOccupied,
 		TArray< APlayerStart* >& out_occupied) const{ }
-bool AFGGameMode::CompareUniqueNetIdBetweenOSS(const FUniqueNetIdRepl& newID, const FUniqueNetIdRepl& savedID){ return bool(); }
+void AFGGameMode::DiscoverDefaultRemoteCallObjects(){ }
+void AFGGameMode::RecalculateSessionRestartTime(){ }
+void AFGGameMode::TickSessionRebootTimer(){ }
+FName UFGGameModeStatics::GetStartingAreaNameFromOptions(const TMap<FString, FString> &Options){ return FName(); }
+bool UFGGameModeStatics::HasSkipOnboardingOption(const TMap<FString, FString> &Options){ return bool(); }
+bool UFGGameModeStatics::HasAdvancedGameSettings(const TMap<FString, FString> &Options){ return bool(); }

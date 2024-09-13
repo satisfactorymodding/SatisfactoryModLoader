@@ -3,14 +3,14 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/FGUserWidget.h" // <FL> [WuttkeP] Changed base type to FGUserWidget to allow customizing key bindings.
 #include "FGButtonWidget.generated.h"
 
 /**
  * Base class for a widget that should be a button ( regular button, checkbox etc )
  */
 UCLASS()
-class FACTORYGAME_API UFGButtonWidget : public UUserWidget
+class FACTORYGAME_API UFGButtonWidget : public UFGUserWidget // <FL> [WuttkeP] Changed base type to FGUserWidget to allow customizing key bindings.
 {
 	GENERATED_BODY()
 public:

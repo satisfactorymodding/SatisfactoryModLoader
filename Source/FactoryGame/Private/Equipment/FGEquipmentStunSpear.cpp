@@ -6,12 +6,12 @@
 AFGEquipmentStunSpear::AFGEquipmentStunSpear() : Super() {
 	this->mCollisionComp = nullptr;
 	this->mAttackNoise = nullptr;
-	this->mSecondSwingMaxTime = 0.7;
-	this->mSecondSwingCooldDownTime = 1.0;
+	this->mSecondSwingMinDelay = 0.3;
+	this->mSecondSwingMaxDelay = 0.7;
+	this->mSecondSwingUseCoolDown = 0.7;
 	this->mAttackDistance = 100.0;
 	this->mAttackSweepRadius = 10.0;
 	this->mArmAnimation = EArmEquipment::AE_StunSpear;
-	this->mOnlyVisibleToOwner = false;
 	this->mDefaultEquipmentActions = 1;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }

@@ -6,12 +6,12 @@ FHologramAStarNode FHolgramAStarHelper::GetNeighbour(const FHologramAStarNode& n
   return FHologramAStarNode(0);
 }
 
-UStaticMeshComponent* FHologramHelpers::CreateClearanceMeshComponent( USceneComponent* attachTo,  UFGClearanceComponent* fromClearanceBox){ return nullptr; }
-UStaticMeshComponent* FHologramHelpers::CreateBlueprintBoundsMeshComponent( USceneComponent* attachTo, const FTransform& boundsRelativeTransform, const FVector& boundsExtent){ return nullptr; }
-void FHologramHelpers::SetScaledBoxMeshData( UStaticMeshComponent* clearanceMesh, const FTransform& relativeTransform, const FVector& extent){ }
+UStaticMeshComponent* FHologramHelpers::CreateBoxMeshComponent( USceneComponent* attachTo, const FTransform& relativeTransform, const FVector& extent){ return nullptr; }
+void FHologramHelpers::SetScaledBoxMeshData( UStaticMeshComponent* boxMesh, const FTransform& relativeTransform, const FVector& extent){ }
 UStaticMeshComponent* FHologramHelpers::CreateConnectionRepresentation( UFGConnectionComponent* connectionComponent, bool isOutput, float heightOffset){ return nullptr; }
 UStaticMeshComponent* FHologramHelpers::CreateAttachmentPointRepresentation(const  FFGAttachmentPoint* attachmentPoint, const  AFGBuildable* buildable){ return nullptr; }
-void FHologramHelpers::ApplyClearanceExtentShrink( UFGClearanceComponent* clearanceComponent){ }
+FBox FHologramHelpers::CreateBoxFromCombinedClearanceData(const TArray< FFGClearanceData >& clearanceData, bool onlySnapping){ return FBox(); }
+FBox FHologramHelpers::CreateBoxFromCombinedClearanceData(const TArray< const FFGClearanceData* >& clearanceData, bool onlySnapping){ return FBox(); }
 float FHologramHelpers::CalcPoleHeight(const  FHitResult& aimResult, const FVector& poleLocation){ return float(); }
 float FHologramHelpers::CalcPoleHeightAndHorisontalOffset(float& out_horisontalOffset, const  FHitResult& aimResult, const FVector& poleLocation){ return float(); }
 float FHologramHelpers::FindRightAngleBetweenLocations(const FVector& location, const FVector& targetLocation, const FVector& direction){ return float(); }
@@ -39,6 +39,11 @@ bool FSplineUtils::BuildBendStraightBendSpline3D( FSplineBuilder& builder,
 		const FVector& endPos,
 		const FVector& endForward, UWorld* debugWorld , FVector debugACtorLocation){ return bool(); }
 bool FSplineUtils::BuildBendStraightBendSpline2D( FSplineBuilder& builder,
+		float startRadius,
+		float endRadius,
+		const FVector& endPos,
+		const FVector& endForward){ return bool(); }
+bool FSplineUtils::Build90DegreeSpline2D( FSplineBuilder& builder,
 		float startRadius,
 		float endRadius,
 		const FVector& endPos,

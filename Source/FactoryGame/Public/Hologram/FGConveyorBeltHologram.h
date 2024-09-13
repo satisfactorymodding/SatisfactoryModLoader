@@ -43,13 +43,12 @@ public:
 	virtual AFGHologram* GetNudgeHologramTarget() override;
 	virtual bool CanTakeNextBuildStep() const override;
 	virtual void ReplaceHologram( AFGHologram* hologram, bool snapTransform ) override;
+	virtual void GetSupportedBuildModes_Implementation( TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes ) const override;
 	// End AFGHologram Interface
 
-	// Begin FGConstructionMessageInterface
-	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
-	virtual void ClientPreConstructMessageSerialization() override;
-	virtual void ServerPostConstructMessageDeserialization() override;
-	// End FGConstructionMessageInterface
+	// Begin AFGBuildableHologram Interface
+	virtual TArray< class UFGFactoryConnectionComponent* > GetRelevantFactoryConnectionsForGuidelines() const override;
+	// End AFGBuildableHologram Interface
 
 	/** Get the active connections direction, may be any. */
 	EFactoryConnectionDirection GetActiveConnectionDirection() const;
@@ -66,16 +65,18 @@ protected:
 	// End AFGBuildableHologram Interface
 
 	// Begin AFGHologram interface
-	virtual void CheckClearance( const FVector& locationOffset ) override;
+	virtual void PostConstructMessageDeserialization() override;
 	// End AFGHologram interface
 
 	/** Creates the clearance detector used with conveyor belts */
-	void SetupConveyorClearanceDetector();
+	void SetupSnappedConnectionDirections() const;
+	virtual void OnRep_SplineData() override;
 
-private:
 	// Begin FGSplineHologram
 	virtual void UpdateSplineComponent() override;
+	virtual void UpdateClearanceData() override;
 	// End FGSplineHologram
+private:
 
 	/** Create connection arrow component on the client. */
 	UFUNCTION()
@@ -124,12 +125,11 @@ private:
 	class UFGFactoryConnectionComponent* mConnectionComponents[ 2 ];
 
 	/** The connections we've made. */
-	UPROPERTY( CustomSerialization )
+	UPROPERTY( Replicated, CustomSerialization )
 	class UFGFactoryConnectionComponent* mSnappedConnectionComponents[ 2 ];
 
-
 	/** If we upgrade another conveyor belt this is the belt we replaces. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class AFGBuildableConveyorBelt* mUpgradedConveyorBelt;
 
 	/** Class of conveyor pole to place at the end. */
@@ -156,6 +156,10 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
 	float mMaxIncline;
 
+	/** Straight spline build mode. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode")
+    TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeStraight;
+
 	/** Used to replicate the direction arrow. */
 	UPROPERTY( ReplicatedUsing = OnRep_ConnectionArrowComponentDirection )
 	EFactoryConnectionDirection mConnectionArrowComponentDirection;
@@ -163,13 +167,7 @@ private:
 	/** Arrow to indicate the direction of the conveyor while placing it. */
 	UPROPERTY()
 	class UStaticMeshComponent* mConnectionArrowComponent;
-
-	UPROPERTY( CustomSerialization )
-	FVector mConstructionPoleLocations[ 2 ];
-
-	UPROPERTY(CustomSerialization)
-	FRotator mConstructionPoleRotations[ 2 ];
-
+	
 	/** All the generated spline meshes. */
 	UPROPERTY()
 	TArray< class USplineMeshComponent* > mSplineMeshes;

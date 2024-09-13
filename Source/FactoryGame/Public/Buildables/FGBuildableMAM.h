@@ -34,6 +34,9 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "MAM" )
 	void ResearchStateChanged( EResearchState researchState );
 
+	UFUNCTION( BlueprintImplementableEvent, Category = "MAM" )
+	void OnResearchClaimed( TSubclassOf<class UFGSchematic> schematic );
+
 	UFUNCTION( BlueprintCallable, Category = "MAM" )
 	bool IsSignificant() const { return mIsSignificant; }
 

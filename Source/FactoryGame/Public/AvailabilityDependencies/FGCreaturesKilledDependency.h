@@ -21,8 +21,13 @@ public:
 
 	TMap< TSubclassOf< class AFGCreature >, int32 > GetCreaturesKilledCount() const { return mCreaturesKilledCount; }
 
+#if WITH_EDITOR
+	virtual FString ToString() const override;
+	virtual void FromString( const FString& inString ) override;
+#endif
+
 protected:
 	/** The amount of the given creatures that should have been killed for this dependency to be met */
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category="Dependency" )
 	TMap< TSubclassOf< class AFGCreature >, int32 > mCreaturesKilledCount;
 };

@@ -6,33 +6,80 @@
 #include "FGFactoryColoringTypes.h"
 #include "FGInventoryComponent.h"
 #include "FGMapMarker.h"
-#include "FGOnlineSessionSettings.h"
-#include "FGRecipe.h"
-#include "FGSchematic.h"
+#include "FGRecipe.h" 
+#include "FGSchematic.h" 
 #include "FGUseableInterface.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "UI/FGPopupWidget.h"
 #include "FGBlueprintFunctionLibrary.generated.h"
 
+class UDirectionalLightComponent;
+class UFXSystemAsset;
 UENUM( BlueprintType )
 enum class EOutlineColor : uint8
 {
-	OC_NONE				= 0		UMETA( DisplayName = "None" ),
-	OC_HOLOGRAMLINE		= 248	UMETA( DisplayName = "Hologram Line" ),
-	OC_SOFTCLEARANCE	= 249	UMETA( DisplayName = "Soft Clearance" ),
-	OC_DISMANTLE		= 250	UMETA( DisplayName = "Dismantle" ),
-	OC_USABLE			= 251	UMETA( DisplayName = "Usable" ),
-	OC_HOLOGRAM			= 252	UMETA( DisplayName = "Hologram" ),
-	OC_INVALIDHOLOGRAM  = 253	UMETA( DisplayName = "Invalid Hologram" ),
-	OC_RED				= 254	UMETA( DisplayName = "Disabled" )
+	OC_NONE							= 0		UMETA( DisplayName = "None" ),
+	OC_INPUTOUTPUT					= 1		UMETA( DisplayName = "InputOutputShape" ),
+	OC_HOLOGRAMLINE					= 2		UMETA( DisplayName = "Hologram Line" ),
+	OC_SOFTCLEARANCE				= 3		UMETA( DisplayName = "Soft Clearance" ),
+	OC_USABLE						= 4		UMETA( DisplayName = "Usable" ),
+	OC_HOLOGRAM						= 5		UMETA( DisplayName = "Hologram" ),
+	OC_INVALIDHOLOGRAM  			= 6		UMETA( DisplayName = "Invalid Hologram" ),
+	OC_RED							= 7		UMETA( DisplayName = "Red" ),
+	OC_DISMANTLE					= 8		UMETA( DisplayName = "Dismantle" ),
+	OC_SOFTCLEARANCEOVERLAP			= 9		UMETA( DisplayName = "Soft Clearance Overlap" ),
+};
+
+// Information about an attachment for a given component
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFGComponentParentAttachmentInfo
+{
+	GENERATED_BODY()
+	
+	// Parent component this component attaches to
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Scene Component" )
+	USceneComponent* ParentComponent{};
+
+	// Name of the socket this component attaches to
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Scene Component" )
+	FName AttachToSocketName{};
 };
 
 DECLARE_DYNAMIC_DELEGATE_RetVal( bool, FLatentActionPredicate );
+
+// <FL> [WuttkeP] Interface to allow widgets to influence which child should be focused when using FindWidgetToFocus().
+UENUM(BlueprintType)
+enum class EFGFocusReason : uint8
+{
+	Navigation,
+	Explicit
+};
+
+UINTERFACE( Blueprintable )
+class FACTORYGAME_API UFGFocusableWidget : public UInterface
+{
+	GENERATED_BODY()
+};
+
+class FACTORYGAME_API IFGFocusableWidget
+{
+	GENERATED_BODY()
+
+public:
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent )
+	UWidget* GetWidgetToFocus(EFGFocusReason FocusReason);
+};
+// </FL>
 
 UCLASS()
 class FACTORYGAME_API UFGBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
+	/** Returns true if the given actor had BeginPlay dispatched */
+	UFUNCTION( BlueprintPure, Category = "Actor" )
+	static bool HasActorBegunPlay( const AActor* InActor );
+	
 	/** Helper function to try to fetch the owning actor of a object */
 	UFUNCTION( BlueprintPure, Category="Object")
 	static AActor* GetOuterActor( const UObject* obj );
@@ -62,7 +109,7 @@ public:
 
 	/** Static Helper to apply common customization data to mesh primitives ( does not work for Instances ) */
 	UFUNCTION( BlueprintCallable, Category = "Factory|Customization" )
-	static void ApplyCustomizationPrimitiveData( class AActor* actor, const FFactoryCustomizationData& customizationData, int32 colorSlotFallback = 0, class UMeshComponent* onlyApplyToComponent = nullptr  );
+	static void ApplyCustomizationPrimitiveData( class AActor* actor, const FFactoryCustomizationData& customizationData, int32 colorSlotFallback = 0, class UMeshComponent* onlyApplyToComponent = nullptr, bool isLightweightTemporary = false  );
 
 	/** Static Helper to apply default factory color data to actors that use the default factory material */
 	UFUNCTION( BlueprintCallable, Category = "Factory|Customization" )
@@ -71,6 +118,10 @@ public:
 	/** Fills a given array with all mesh components residing on a class. Including any blueprint added components */
 	UFUNCTION( BlueprintCallable, Category = "Factory|Customization" )
 	static void GetAllMeshComponentsInClass( const TSubclassOf< AActor > inClass, TArray< UMeshComponent* >& out_components );
+
+	/** Fills a given array with all components residing on a class. Including any blueprint added components */
+	UFUNCTION( BlueprintCallable, Category = "Factory|Customization" )
+	static void GetAllComponentsInClass( const TSubclassOf<AActor> inClass, const TSubclassOf<UActorComponent> inActorComponentClass, TArray<UActorComponent*>& out_components, TMap<USceneComponent*, FFGComponentParentAttachmentInfo>& out_parentComponentMap );
 
 	/**
 	 * Does what Cheat_GetAllDescriptors does, but tries to do in in a more reliable way,
@@ -190,6 +241,11 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Trains|Optimization", meta = ( WorldContext = "WorldContextObject" ) )
 	static void RemoveTrainFromSignificanceManager( UObject* WorldContextObject, UObject* obj );
 
+	UFUNCTION( BlueprintCallable, Category="Game", meta = ( WorldContext = "WorldContextObject" ))
+	static void AddToServerSideSignificanceOctTree(UObject* obj);
+	
+	UFUNCTION( BlueprintCallable, Category="Game", meta = ( WorldContext = "WorldContextObject" ))
+	static void RemoveFromServerSideSignificanceOctTree(UObject* obj);
 	/**
 	 * Checks if a impact effect is relevant for any local player
 	 *
@@ -286,7 +342,29 @@ public:
 	/** Finds a widget of a certain class in the hierarchy of the passed widget. Does a breadth-first search of the tree.*/
 	UFUNCTION( BlueprintCallable, meta = ( DefaultToSelf = "hierarchyContext", DeterminesOutputType = "widgetClass", DynamicOutputParam = "foundWidgets" ), Category = "Widget" )
 	static void GetAllWidgetsOfClassInHierarchy( UWidget* hierarchyContext, TSubclassOf< UWidget > widgetClass, TArray< UWidget* >& foundWidgets );
-	
+
+	// <FL> [WuttkeP] Added utility function to find all child widgets of a class.
+	/** Finds all child widgets below the root widget of the specified class (recursively). */
+	UFUNCTION( BlueprintCallable, meta = ( DefaultToSelf = "rootWidget", DeterminesOutputType = "widgetClass", DynamicOutputParam = "foundWidgets" ), Category = "Widget" )
+	static void GetAllChildWidgetsOfClass( UWidget* rootWidget, TSubclassOf< UWidget > widgetClass, TArray< UWidget* >& foundWidgets );
+
+	/** Finds all visible child widgets below the root widget of the specified class (recursively). */
+	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "rootWidget", DeterminesOutputType = "widgetClass", DynamicOutputParam = "foundWidgets"), Category = "Widget")
+	static void GetVisibleChildWidgetsOfClass( UWidget* rootWidget, TSubclassOf< UWidget > widgetClass, bool bUseIsReallyVisible, TArray< UWidget* >& foundWidgets );
+
+	/** Finds all child widgets below the root widget of any of the specified classes (recursively). */
+	UFUNCTION( BlueprintCallable, meta = ( DefaultToSelf = "rootWidget", DeterminesOutputType = "widgetClass", DynamicOutputParam = "foundWidgets" ), Category = "Widget" )
+	static void GetAllChildWidgetsOfAnyClass( UWidget* rootWidget, TArray< TSubclassOf< UWidget > > widgetClasses, TArray< UWidget* >& foundWidgets );
+
+	/** Finds the first child widget below the root widget of the specified class (recursively). */
+	UFUNCTION( BlueprintCallable, meta = ( DefaultToSelf = "rootWidget", DeterminesOutputType = "widgetClass" ), Category = "Widget" )
+	static UWidget* GetFirstChildWidgetOfClass( UWidget* rootWidget, TSubclassOf< UWidget > widgetClass );
+
+	/** Finds the first parent widget of the provided child widget that is of the specified class. */
+	UFUNCTION( BlueprintCallable, meta = ( DefaultToSelf = "childWidget", DeterminesOutputType = "widgetClass" ), Category = "Widget" )
+	static UWidget* GetFirstParentWidgetOfClass( UWidget* childWidget, TSubclassOf< UWidget > widgetClass );
+	// </FL>	
+
 	/** Returns all items in a item category */
 	UFUNCTION( BlueprintCallable, Category = "Item Category" )
 	static TArray< TSubclassOf< class UFGItemDescriptor > > GetAllItemsInCategory( UObject* worldContext, TSubclassOf< UFGItemCategory > itemCategory);
@@ -360,18 +438,6 @@ public:
 	/** Converts legacy short map name to TopLevelAssetPath object containing a full path to the UWorld object representing a map. Returns true if successful, false otherwise */
 	static bool TryConvertShortMapNameToTopLevelAssetPath( const FString& mapName, FTopLevelAssetPath& outAssetPath );
 
-	/** Helper function that takes care of creating a session and travel to the map */
-	UFUNCTION( BlueprintCallable, Category="Online" )
-	static class USessionMigrationSequence* CreateSessionAndTravelToMap( APlayerController* player, const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility sessionVisibility );
-
-	/** Helper function that takes care of creating a session and travel to the map. If skipOnboarding is true we skip intro/onboarding/tutorial and go directly to tier 1 */
-	UFUNCTION( BlueprintCallable, Category="Online" )
-	static class USessionMigrationSequence* CreateSessionAndTravelToMapWithStartingLocation( APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, ESessionVisibility sessionVisibility, bool skipOnboarding);
-
-	/** Helper function that takes care of loading a session. If enableAdvancedGameSettings is true we will enable it when we load the game */
-	UFUNCTION( BlueprintCallable, Category="Online" )
-	static class USessionMigrationSequence* LoadSaveFile( TScriptInterface<IFGSaveManagerInterface> saveManager, const FSaveHeader& saveGame, class APlayerController* player, bool enableAdvancedGameSettings );
-	
 	/** Travel gracefully to main menu, kicking clients if host, and tearing down the game session */
 	UFUNCTION( BlueprintCallable, Category="Utils", meta=(DefaultToSelf="worldContext") )
 	static void TravelToMainMenu( APlayerController* playerController );
@@ -398,11 +464,11 @@ public:
 
 	/** Adds a popup to the queue */
 	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( AutoCreateRefTerm = "CloseDelegate" ) )
-	static void AddPopupWithCloseDelegate( APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, EPopupId PopupID = PID_OK, TSubclassOf< UUserWidget > popupClass = nullptr, UObject* popupInstigator = nullptr );
+	static void AddPopupWithCloseDelegate( APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, EPopupId PopupID = PID_OK, TSubclassOf< UUserWidget > popupClass = nullptr, UObject* popupInstigator = nullptr, bool restoreFocusOnClose = false ); // <FL> [WuttkeP] Added restoreFocusOnClose parameter.
 
 	/** Adds a popup to the queue. Allows the caller handle popup content creation. */
 	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( AutoCreateRefTerm = "CloseDelegate" ) )
-	static void AddPopupWithContent( APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, class UFGPopupWidgetContent* Content, EPopupId PopupID = PID_OK, UObject* popupInstigator = nullptr );
+	static void AddPopupWithContent( APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, class UFGPopupWidgetContent* Content, EPopupId PopupID = PID_OK, UObject* popupInstigator = nullptr, bool restoreFocusOnClose = false ); // <FL> [WuttkeP] Added restoreFocusOnClose parameter.
 
 	/** Close the popup that is currently showing. If no popup is showing, don't do anything */	
 	UFUNCTION( BlueprintCallable, Category = "UI" )
@@ -549,29 +615,123 @@ public:
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	static bool ShouldShowOfflineSessionWarning();
 
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static bool ShouldShowControllerUI();
+
+	// <FL> [ZimmermannA] Utility function to check if we are using controller
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static bool IsUsingController( const UObject* WorldContextObject );
+	// </FL>
+
+	/** Get the FGGameInstance */
+	UFUNCTION( BlueprintPure, Category="Game", meta=(WorldContext="WorldContextObject") )
+	static UFGGameInstance* GetFGGameInstance( const UObject* WorldContextObject );
+
+	// <FL> [WuttkeP] Utility function to find a widget that supports focus.
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static UWidget* FindWidgetToFocus( UWidget* Widget, EFGFocusReason FocusReason = EFGFocusReason::Navigation );
+	// </FL>	
+
+	// <FL> [WuttkeP] Utility function to check actual widget visibility.
+	/** Checks if a widget is really visible by iterating through its parents and checking the visibility of each of them. */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static bool IsReallyVisible( UWidget* Widget );
+
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static bool HasAnyVisibleChildren( UPanelWidget* Parent );
+	// </FL>
+
+	// <FL> [WuttkeP] More Utility functions.
+	/** Find the previous child of a widget inside a UPanelWidget. */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static UWidget* GetPreviousChild( UWidget* widget );
+
+	/** Find the next child of a widget inside a UPanelWidget. */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static UWidget* GetNextChild( UWidget* widget );
+
+	/** Retrives the geometry of the currently focused widget. */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static const FGeometry& GetFocusedWidgetGeometry();
+
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static UUserWidget* GetFocusedUserWidget();
+
+	/** Finds the first focused (latest in the focus path) widget of the specified class. */
+	UFUNCTION( BlueprintPure, meta = ( DeterminesOutputType = "widgetClass" ), Category = "UI" )
+	static UUserWidget* GetFirstFocusedUserWidgetOfClass( TSubclassOf< UUserWidget > widgetClass );
+
+	/** Finds the first focused (latest in the focus path) widget of any of the specified classes. */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static UUserWidget* GetFirstFocusedUserWidgetOfAnyClass( TArray< TSubclassOf< UUserWidget > > widgetClasses );
+
+	UFUNCTION( BlueprintPure, Category = "UI" ) // I'd love to use DeterminesOutputType, but Unreal won't let me :/
+	static UUserWidget* GetFirstFocusedUserWidgetOfInterface( UClass* widgetInterface );
+
+	/** Computes the shortest distance between two geometries. */
+	UFUNCTION( BlueprintPure, Category = "User Interface|Geometry" )
+	static FVector2D GetShortestDistance( const FGeometry& fromGeometry, const FGeometry& toGeometry );
+
+	/** Computes the longest distance between two geometries. */
+	UFUNCTION( BlueprintPure, Category = "User Interface|Geometry" )
+	static FVector2D GetLongestDistance( const FGeometry& fromGeometry, const FGeometry& toGeometry );
+
+	/** Finds the widget closest to a given geometry. */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static UWidget* FindClosestWidget( const FGeometry& geometry, const TArray<UWidget*>& widgets, bool bOnlyVisible = true, bool bOnlyFocusable = false );
+
+	/** Finds the child inside a UPanelWidget that is the closest to a given geometry. */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static UWidget* FindClosestChild( const FGeometry& geometry, UPanelWidget* parentWidget );
+
+	/** Finds the widget furthest in Y direction, then closest in X direction. For wrapping navigation. */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static UWidget* FindOppositeWidgetY( const FGeometry& geometry, const TArray<UWidget*>& widgets, bool bOnlyVisible = true, bool bOnlyFocusable = false );
+
+	/** Simulates a key down event */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	static void SimulateKeyDownEvent( const FKeyEvent& keyEvent );
+
+	/** Simulates a key up event */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	static void SimulateKeyUpEvent( const FKeyEvent& keyEvent );
+
+	UFUNCTION( BlueprintPure, Category = "Input", meta = ( WorldContext = "WorldContextObject" ) )
+	static bool GetKeyState(UObject* WorldContextObject, FKey Key);
+	// </FL>
+
+	// <FL> [WuttkeP] Added function to notify button hint widgets of key hint changes.
+	/** Sends a notification to update button hint widgets when a key hint changed without the focused widget changing. */
+	UFUNCTION( BlueprintCallable, Category = "Input", meta = ( WorldContext = "WorldContextObject" ) )
+	static void NotifyKeyHintsChanged( UObject* WorldContextObject );
+	// </FL>
+
 	/** Returns the underlying source string for this text as it is defined in the editor */
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	static FString BuildSourceString( const FText& inText );
+
+	/** Sort an array of strings alphabetically */
+	UFUNCTION(BlueprintCallable, Category="Utilities|String", meta=(Keywords = "alphabetically, array"))
+	static void SortStrings( UPARAM( ref ) TArray< FString >& strings, bool sortAscending = true );
 	
 	//////////////////////////////////////////////////////////////////////////
 	/// Factory Customization
 
 	UFUNCTION( BlueprintCallable, Category = "Buildable Color" )
-	static void SetCusomizationColorSlot( FFactoryCustomizationColorSlot& colorData, FLinearColor primaryColor, FLinearColor secondaryColor, float metallic = 1.f, float roughness = 1.f )
+	static void SetCusomizationColorSlot( FFactoryCustomizationColorSlot& colorData, FLinearColor primaryColor, FLinearColor secondaryColor, TSubclassOf<UFGFactoryCustomizationDescriptor_PaintFinish> PaintFinish )
 	{
 		colorData.PrimaryColor = primaryColor;
 		colorData.SecondaryColor = secondaryColor;
-		colorData.Metallic = metallic;
-		colorData.Roughness = roughness;
+		colorData.PaintFinish = PaintFinish;
 	}
 
 	/** Extracts data from a CustomUserColor */
 	UFUNCTION( BlueprintPure, Category = "Buildable Color", meta = ( NativeBreakFunc, AdvancedDisplay = "3" ) )
-	static void BreakCustomizationColorSlot( const struct FFactoryCustomizationColorSlot& customData, FLinearColor& primaryColor, FLinearColor& secondaryColor, float& metallic, float& roughness );
+	static void BreakCustomizationColorSlot( const struct FFactoryCustomizationColorSlot& customData, FLinearColor& primaryColor, FLinearColor& secondaryColor, TSubclassOf<UFGFactoryCustomizationDescriptor_PaintFinish>& Finish );
 
 	/** Create CustomUserColorData from params */
 	UFUNCTION( BlueprintPure, Category = "Buildable Color", meta = ( NativeMakeFunc, AdvancedDisplay = "2", Normal = "0,0,1", ImpactNormal = "0,0,1" ) )
-	static FFactoryCustomizationColorSlot MakeCustomizationColorSlot( FLinearColor primaryColor, FLinearColor secondaryColor, float metallic, float roughness );
+	static FFactoryCustomizationColorSlot MakeCustomizationColorSlot( FLinearColor primaryColor, FLinearColor secondaryColor, TSubclassOf<UFGFactoryCustomizationDescriptor_PaintFinish> Finish );
 	
 	/** Gets the icon for a customization class*/
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Customization" )
@@ -611,7 +771,12 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
 	static void ApplySkinDataToMeshArray( TArray< UMeshComponent* >& compArr, FFactorySkinComponentGroup& groupData );
+	
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame" )
+	static UFXSystemAsset* SpawnParticleSystemAtLocationFromFXSystem( UObject* WorldContext, UFXSystemAsset* Asset, FVector Location, FRotator Rotation, FVector Scale = FVector(1));
 
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame" )
+	static void SetTraceDistance(UDirectionalLightComponent* DirectionalLight,float Value);
 	/////////////////////////////////////////////////////////////////
 	// Begin specific functions for cinematic tools.
 	
@@ -640,10 +805,36 @@ public:
 	/*Editor only.*/
 	UFUNCTION(BlueprintCallable)
 	static FString GetActorGridStringRuntTime(AActor* InActor);
-
+	
 	UFUNCTION(BlueprintPure)
 	static FVector GetEditorCameraLocation();
 	
 	UFUNCTION(BlueprintCallable)
 	static void ED_SetMinDrawDistance(UStaticMeshComponent* Comp, float Distance);
+
+	UFUNCTION( BlueprintPure, CustomThunk, Category = "Utilities|Dynamic Struct", meta = (NativeMakeFun, CustomStructureParam = "structureValue" ) )
+	static FFGDynamicStruct MakeDynamicStruct( const int32& structureValue );
+
+	UFUNCTION( BlueprintPure, CustomThunk, Category = "Utilities|Dynamic Struct", meta = (NativeBreakFunc, CustomStructureParam = "out_structureValue" ) )
+	static bool BreakDynamicStruct( const FFGDynamicStruct& inDynamicStruct, int32& out_structureValue );
+
+	DECLARE_FUNCTION(execMakeDynamicStruct);
+	DECLARE_FUNCTION(execBreakDynamicStruct);
+
+	/** Blueprint wrapper around AVolume::EncompassesVolume. Returns true if the given point is inside of the volume */
+	UFUNCTION( BlueprintPure, Category = "Utilities" )
+	static bool VolumeEncompassesPoint( AVolume* volume, const FVector& inPoint, float& outDistanceToPoint, float sphereRadius = 0.0f );
+
+	UFUNCTION(BlueprintCallable,Category="Editor", meta = ( DevelopmentOnly ))
+	static void ForceReRunConstructionScript(AActor* Actor);
+
+	/** Attempts to look up an item descriptor associated with the given recipe producer */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe", meta = ( WorldContext = "worldContext" ) )
+	static TSubclassOf<UFGItemDescriptor> GetRecipeProducerItemDescriptor( UPARAM( meta = ( MustImplement = "/Script/FactoryGame.FGRecipeProducerInterface" ) ) TSubclassOf<UObject> recipeProducer, UObject* worldContext );
+
+	UFUNCTION( BlueprintPure, BlueprintCallable )
+	static TArray< AFGPlayerController* > GetAllPlayerControllersInSession( const UObject* worldContextObject );
+	
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static bool IsNavigationEvent( UPARAM( ref ) FFocusEvent& inEvent);
 };

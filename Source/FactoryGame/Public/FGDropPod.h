@@ -3,17 +3,71 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGDismantleInterface.h"
 #include "FGDropPodSettings.h"
 #include "FGSaveInterface.h"
 #include "FGUseableInterface.h"
 #include "GameFramework/Actor.h"
 #include "FGSchematic.h"
 #include "FGSignificanceInterface.h"
+#include "UObject/SoftObjectPtr.h"
 #include "FGDropPod.generated.h"
 
+class AFGBuildableWire;
+class AFGItemPickup_Spawnable;
+class UFGPowerInfoComponent;
+class UFGPowerConnectionComponent;
+class UFGMaterialEffect_Build;
+class UFGInteractWidget;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FFGOnDropPodOpenedDelegate );
+
+/** Possible types of the unlock cost */
+UENUM( BlueprintType )
+enum class EFGDropPodUnlockCostType : uint8
+{
+	/** Drop pod can be unlocked without any cost */
+	None,
+	/** Unlocking the drop pod requires the provided item in the provided amounts */
+	Item,
+	/** Unlocking the drop pod requires a constantly supply of power */
+	Power
+};
+
+/** A single unlock cost entry for the drop pod */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFGDropPodUnlockCost
+{
+	GENERATED_BODY()
+
+	/** Type of the unlock cost */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Unlock Cost" )
+	EFGDropPodUnlockCostType CostType;
+
+	/** Item cost of unlocking the drop pod */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Unlock Cost", meta = ( EditCondition = "CostType == EFGDropPodUnlockCostType::Item", EditConditionHides ) )
+	FItemAmount ItemCost;
+
+	/** Power consumption of the drop pod */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Unlock Cost", meta = ( EditCondition = "CostType == EFGDropPodUnlockCostType::Power", EditConditionHides ) )
+	float PowerConsumption{};
+};
+
+/** Used to cache wires connected to the drop pod so it can be unloaded when it is no longer significant */
+USTRUCT()
+struct FACTORYGAME_API FFGCachedConnectedWire
+{
+	GENERATED_BODY()
+	
+	UPROPERTY( EditAnywhere, Category = "Wire", SaveGame )
+	class AFGBuildableWire* mConnectedWire{};
+
+	UPROPERTY( EditAnywhere, Category = "Wire", SaveGame )
+	class UFGCircuitConnectionComponent* mOtherConnection{};
+};
 
 UCLASS()
-class FACTORYGAME_API AFGDropPod : public AActor, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface
+class FACTORYGAME_API AFGDropPod : public AActor, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface, public IFGConditionalReplicationInterface
 {
 	GENERATED_BODY()
 public:
@@ -25,10 +79,24 @@ public:
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	// End AActor interface
 
-	//Begin IFGSignificanceInterface
+#if WITH_EDITOR
+	// Begin UObject interface
+	virtual void PostLoad() override;
+	virtual void PreEditChange(FProperty* PropertyAboutToChange) override;
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	// End UObject interface
+#endif
+
+	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	//End IFGSignificanceInterface
+	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	// End IFGSignificanceInterface
+
+	// Begin IFGConditionalReplicationInterface
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
+	virtual bool IsPropertyRelevantForConnection(UNetConnection* netConnection, const FProperty* property) const override;
+	// End IFGConditionalReplicationInterface
 
 	// Begin IFGSaveInterface
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
@@ -41,8 +109,8 @@ public:
 	// End IFSaveInterface
 
 	// Begin IFGUseableInterface
-	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {};
-	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {};
+	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
+	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
 	// End IFGUseableInterface
 
 	// Begin IFGUseableInterface
@@ -59,75 +127,139 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
 	FORCEINLINE bool HasBeenOpened() const { return mHasBeenOpened; }
 
-	/** @return true if this has not been opened and looted (it's hard drive have been removed) */
+	/** Returns true if this has been opened and also looted (e.g. it's reward has been removed from the inventory) */
+	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
 	bool HasBeenLooted() const;
 	
-	/** @return The inventory containing possible loot */
+	/** Returns the inventory containing possible loot */
 	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
-	FORCEINLINE class UFGInventoryComponent* GetLootInventory() const { return mInventory; }
+	FORCEINLINE UFGInventoryComponent* GetLootInventory() const { return mInventoryComponent; }
 
-	UFUNCTION( BlueprintPure, Category = "Drop Pod")
-	FORCEINLINE bool GetHasPower() const { return mHasPower; }
+	/** Returns the power info for this drop pod. */
+	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
+	FORCEINLINE UFGPowerInfoComponent* GetPowerInfo() const { return mPowerInfoComponent; }
+
+	/** Returns true if the drop pod has a power connected to it */
+	UFUNCTION( BlueprintPure, Category = "Drop Pod", meta = ( DeprecatedFunction, DeprecationMessage = "Use GetPowerInfo and then check HasPower instead" ) )
+	bool GetHasPower() const;
+
+	/** Returns true if the provided player can unlock this drop pod. If the drop pod is already unlocked, returns false. */
+	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
+	bool CanPlayerOpen( const AFGCharacterPlayer* player ) const;
+
+	/** Attempts to open the drop pod using the resources from the inventory of the provided player */
+	UFUNCTION( BlueprintCallable, Category = "Drop Pod" )
+	bool OpenDropPod( AFGCharacterPlayer* player );
+
+	/** Returns unlock cost for this drop pod */
+	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
+	FORCEINLINE FFGDropPodUnlockCost GetUnlockCost() const { return mUnlockCost; }
+
+	/** Returns the crash site debris actor linked with this drop pod */
+	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
+	class AFGCrashSiteDebris* GetCrashSiteDebrisActor() const;
+
+	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
+	FORCEINLINE TSubclassOf<UFGItemDescriptor> GetUnlockRewardClass() const { return mUnlockRewardClass; }
+
+	UPROPERTY(EditDefaultsOnly,Category="Significance")
+	float mSignificanceRange = 15000;
 	
 protected:
-	/** Open the drop pod. */
-	UFUNCTION( BlueprintCallable, Category = "Drop Pod" )
-	void Open();
-
-	/** Called on server, rolls the loot for the drop pod. */
-	UFUNCTION( BlueprintNativeEvent, Category = "Drop Pod" )
-	void OnOpened();
-
-	/** Called on server, rolls the loot for the drop pod. */
-	UFUNCTION( BlueprintNativeEvent, Category = "Drop Pod" )
-	void RollLoot();
-
-	/** Event called when player tries to repair the drop-pod.*/
-	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Drop Pod")
-	void OnRepair(class AFGCharacterPlayer* InteractingCharacter);
-
-	/** Necessary to add for optimization reasons. We don't want to tick drop pods that don't require power but this is only set in blueprint. */
-	UFUNCTION(BlueprintImplementableEvent, Category = "Drop Pod")
-	bool RequiresPowerToOpen() const;
-
-	//[Snutt:Thu/20-02-2020] I added this because setting up a new connection component caused issues when loading
-	/** Gets the power connection that's been assigned to the drop pod via blueprint */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Drop Pod" )
-	class UFGPowerConnectionComponent* GetPowerConnection();
-
-	/** Roll a package to drop and adds the items to the loot inventory. Call this on server only. */
-	UFUNCTION( BlueprintCallable, Category = "Drop Pod" )
-	FDropPackage RollDropPackage( /*bool excludeItems, */ TArray<TSubclassOf<class UFGItemDescriptor>> includedItems );
-
-	UFUNCTION( BlueprintCallable, Category = "Drop Pod" )
-	void GenerateDropPodInventory( TArray<TSubclassOf<class UFGItemDescriptor>> includedItems, int32 numItemsCreated );
-
 	UFUNCTION()
-	void OnInventoryItemRemoved( TSubclassOf< UFGItemDescriptor > itemClass, int32 numRemoved );
-
-	/** The amount of available inventory slots for the drop pod */
-	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
-	int32 mAmountOfInventorySlots;
-
-protected:
-	UPROPERTY( Replicated, BlueprintReadOnly )
-	class UFGPowerInfoComponent* mPowerInfo;
-
-	UPROPERTY( Replicated, BlueprintReadOnly )
-	bool mHasPower;
-
-private:
-	void OnHasPowerChanged( class UFGPowerInfoComponent* info );
+	void OnInventoryItemRemoved( TSubclassOf< UFGItemDescriptor > itemClass, const int32 numRemoved, UFGInventoryComponent* targetInventory = nullptr );
 	
+	/** Spawn the debris around the drop pod at the pre-specified locations */
+	void SpawnDebrisAroundDropPod();
+
+	void CacheAndDisconnectWires();
+
+	void ReconnectCachedWires();
+
+	/** Consumes the resources required to open the drop pod from the player inventory */
+	void ConsumeOpenCost( AFGCharacterPlayer* player ) const;
+
+	/** Returns a total number of players currently interacting with the drop pod and preventing it from being dismantled */
+	int32 GetNumInteractingPlayers() const;
+public:
+	/** Called on the authority and replicated side when the drop pod has been opened */
+	UPROPERTY( BlueprintAssignable, Category = "Drop Pod" )
+	FFGOnDropPodOpenedDelegate mOnDropPodOpened;
+
+	/** Crash site debris actor linked to this crash site */
+	UPROPERTY( EditInstanceOnly, Category = "Drop Pod" )
+	TSoftObjectPtr<class AFGCrashSiteDebris> mLinkedCrashSiteDebris;
+	
+protected:
+	/** Name of the drop pod as visible when dismantling it */
+	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
+	FText mDisplayName;
+	
+	/** Reward to give the player upon unlocking the drop pod */
+	UPROPERTY( EditAnywhere, Category = "Drop Pod" )
+	TSubclassOf<UFGItemDescriptor> mUnlockRewardClass;
+
+	/** Tier of the debris to spawn around the drop pod. */
+	UPROPERTY( EditAnywhere, Category = "Drop Pod", DisplayName = "Item Tier" )
+	int32 mDebrisTier;
+
+	/** Allows overriding the amount of items of the provided rarity for this drop pod */
+	UPROPERTY( EditAnywhere, Category = "Drop Pod", DisplayName = "Item Count Per Rarity Override" )
+	TMap<EFGDropPodDebrisRarity, int32> mDebrisRarityOverrides;
+
+	/** Cost of unlocking this drop pod */
+	UPROPERTY( EditAnywhere, Category = "Drop Pod" )
+	FFGDropPodUnlockCost mUnlockCost;
+
+	/** Build effect to play on the actor when dismantling it */
+	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
+	TSoftClassPtr<UFGMaterialEffect_Build> mDismantleBuildEffect;
+
+	/** The UI that will be open when interacting with a drop pod */
+	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
+	TSoftClassPtr<UFGInteractWidget> mInteractWidgetClass;
+
 	UFUNCTION()
 	void OnRep_HasBeenOpened();
+	
+	/** Power connection for this drop pod */
+	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
+	UFGPowerConnectionComponent* mPowerConnectionComponent;
 
-private:
-	/** True when this has been opened */
+	/** Power info for this drop pod */
+	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
+	UFGPowerInfoComponent* mPowerInfoComponent;
+
+	/** Inventory component containing the reward */
+	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
+	UFGInventoryComponent* mInventoryComponent;
+
+	/** True if we have already spawned the debris around the drop pod, false otherwise */
+	UPROPERTY( VisibleInstanceOnly, Category = "Drop Pod", SaveGame )
+	bool mSpawnedDebris;
+
+	UPROPERTY( Replicated, Transient, meta = ( FGPropertyReplicator ) )
+	FFGConditionalPropertyReplicator mPropertyReplicator;
+
+	/** True if this crash site has been opened, e.g. the loot inventory has been populated with a reward. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_HasBeenOpened )
 	bool mHasBeenOpened;
 
-	/** Contains the loot if any */
-	UPROPERTY( SaveGame, Replicated )
-	class UFGInventoryComponent* mInventory;
+	/** Players currently interacting with the drop pod */
+	UPROPERTY( VisibleInstanceOnly, Category = "Drop Pod" )
+	TArray<AFGCharacterPlayer*> mInteractingPlayers;
+
+	UPROPERTY( VisibleInstanceOnly, Category = "Drop Pod", SaveGame )
+	TArray<AFGItemPickup_Spawnable*> mSpawnedPickups;
+
+	/** Cached on lost significance when we disconnect the cables from the drop pod */
+	UPROPERTY( VisibleInstanceOnly, Category = "Drop Pod", SaveGame )
+	TArray<FFGCachedConnectedWire> mCachedConnectedWires;
+
+	/** True if we have been dismantled and should be removed after finishing the dismantle effect */
+	UPROPERTY( SaveGame )
+	bool mIsDismantled;
+	
+	UPROPERTY( SaveGame )
+	bool mHasBeenLooted = false;
 };

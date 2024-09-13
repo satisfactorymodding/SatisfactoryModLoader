@@ -38,6 +38,7 @@ public:
 	// Begin IFGExtractableResourceInterface
 	virtual void SetIsOccupied( bool occupied ) override;
 	virtual bool CanPlaceResourceExtractor() const override;
+	virtual void OnRep_IsOccupied() override;
 	// End IFGExtractableResourceInterface
 
 	/** Will dispatch a call of SetActive on the game thread */

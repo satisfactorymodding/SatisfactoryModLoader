@@ -27,6 +27,10 @@ public:
 	virtual void Dismantle_Implementation() override;
 	// End IFGDismantleInferface
 
+	// Begin AFGBuildable interface
+	virtual bool ShouldShowCenterGuidelinesForHologram( const AFGHologram* hologram ) const override;
+	// End AFGBuildable interface
+
 	// Begin Fluid Integrant Interface
 	virtual FFluidBox* GetFluidBox() override;
 	virtual TArray< class UFGPipeConnectionComponent* > GetPipeConnections() override;

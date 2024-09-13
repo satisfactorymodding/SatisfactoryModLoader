@@ -45,7 +45,6 @@ public:
 	// End AActor interface
 
 	// Begin IFGDismantleInterface
-	virtual bool CanDismantle_Implementation() const override { return false; }
 	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
 	// End IFGDismantleInterface
 
@@ -77,15 +76,19 @@ public:
     int32 GetNumberOfSlotsInCalendar() const { return mNumberOfSlotsInCalendar; }
 
 	UFUNCTION()
-	void OnInventoryItemRemoved( TSubclassOf< UFGItemDescriptor > itemClass, int32 numRemoved );
+	void OnInventoryItemRemoved( TSubclassOf< UFGItemDescriptor > itemClass, const int32 numRemoved, UFGInventoryComponent* targetInventory );
 
 	void StoreDataToEventSubsystem();
 
 protected:
 	/** The inventory for the christmas calendar. Each slot is one slot in the calendar */
-	UPROPERTY( Replicated )
+	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mInventory;
 
+	/** True if we have populated the calendar inventory with the initial rewards */
+	UPROPERTY( SaveGame )
+	bool mPopulatedInitialInventory;
+	
 	/** How many slots it should be in the calendar */
 	UPROPERTY( EditDefaultsOnly, Category = "Calendar" )
 	int32 mNumberOfSlotsInCalendar;

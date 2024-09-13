@@ -10,7 +10,7 @@
 #include "GameFramework/PlayerInput.h"
 #include "FGPlayerInput.generated.h"
 
-USTRUCT()
+USTRUCT( BlueprintType )
 struct FACTORYGAME_API FFGCachedActionMapping
 {
 	GENERATED_BODY()
@@ -37,6 +37,24 @@ struct FACTORYGAME_API FFGCachedActionMappingContextMap
 	TMap<UInputMappingContext*, FFGCachedActionMapping> Mappings;
 };
 
+UINTERFACE( Blueprintable )
+class FACTORYGAME_API UFGBlueprintInputPreprocessor : public UInterface
+{
+	GENERATED_BODY()
+};
+
+class FACTORYGAME_API IFGBlueprintInputPreprocessor
+{
+	GENERATED_BODY()
+
+public:
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent )
+	bool HandleKeyDownEvent(const FKeyEvent& InKeyEvent);
+
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent )
+	bool HandleKeyUpEvent(const FKeyEvent& InKeyEvent);
+};
+
 /**
  * UFGPlayerInputPreProcessor is a custom input pre-processor class that intercepts and processes input events
  * before they reach slate. It is designed to resolve a bug where the game receives a pressed
@@ -48,10 +66,14 @@ class UFGPlayerInputPreProcessor : public IInputProcessor
 public:
 	UFGPlayerInputPreProcessor( class UFGPlayerInput* playerInput );
 	virtual ~UFGPlayerInputPreProcessor() override;
+	
 	//~ Begin IInputProcessor Interface
 	virtual void Tick( const float DeltaTime, FSlateApplication& SlateApp, TSharedRef<ICursor> Cursor ) override;
 	virtual bool HandleMouseButtonDownEvent( FSlateApplication& SlateApp, const FPointerEvent& MouseEvent ) override;
 	virtual bool HandleMouseButtonUpEvent( FSlateApplication& SlateApp, const FPointerEvent& MouseEvent ) override;
+	virtual bool HandleKeyDownEvent( FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent ) override;
+	virtual bool HandleKeyUpEvent( FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent ) override;
+	virtual bool HandleAnalogInputEvent( FSlateApplication& SlateApp, const FAnalogInputEvent& InAnalogInputEvent ) override; // <FL> [ZimmermannA] Used to disable gamepad on PC
 	//~ End IInputProcessor Interface
 
 private:
@@ -74,7 +96,7 @@ public:
 	
 	UFUNCTION( BlueprintCallable, Category = "Input", Meta = (DisplayName = "GetEnhancedActionMappings") )
 	static void GetActionMappings( APlayerController* playerController, TArray<FEnhancedActionKeyMapping>& out_KeyMappings );
-
+	
 	void Native_GetActionMappings( TArray<FEnhancedActionKeyMapping>& out_KeyMappings ) const;
 
 	/* Get overlapping key bindings that is remappable */
@@ -96,6 +118,8 @@ public:
 	/** Functions to receive mouse up and down events so we can process them and make sure we don't miss any events */
 	void HandleMouseButtonDownEvent( const FPointerEvent& MouseEvent );
 	void HandleMouseButtonUpEvent( const FPointerEvent& MouseEvent );
+	bool HandleKeyDownEvent( const FKeyEvent& InKeyEvent );
+	bool HandleKeyUpEvent( const FKeyEvent& InKeyEvent );
 
 	/* Dumps all states in UPlayerInput::KeyStateMap to the log  */
 	void DumpKeyStates();
@@ -106,6 +130,12 @@ public:
 	/** Attempts to resolve action using it's mappable name */
 	UFUNCTION( BlueprintPure, Category = "Input" )
 	const UInputAction* FindActionByMappableActionName( FName actionName ) const;
+	
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	static void AddBlueprintInputPreprocessor( APlayerController* playerController, TScriptInterface<UFGBlueprintInputPreprocessor> preprocessor );
+
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	static void RemoveBlueprintInputPreprocessor( APlayerController* playerController, TScriptInterface<UFGBlueprintInputPreprocessor> preprocessor );
 	
 	/**
 	 * Attempts to find a mapping for the provided action in the preferred mapping context, or in any context whatsoever if allowed.
@@ -131,6 +161,9 @@ private:
 	/** An instance of the input processor used to catch and handle specific input events early, before they reach slate. */
 	TSharedPtr<UFGPlayerInputPreProcessor> mInputPreprocessor = nullptr;
 
-	/** The released mouse buttons that have not been processed yet. Populated by calls from UFGPlayerInputPreProcessor and then handled in ProcessInputStack */
-	TArray<FKey> mReleasedMouseButtons;
+	/** The released buttons that have not been processed yet. Populated by calls from UFGPlayerInputPreProcessor and then handled in ProcessInputStack */
+	TArray<FKey> ReleasedButtons;
+
+	UPROPERTY()
+	TArray<UObject*> mBlueprintPreprocessors;
 };

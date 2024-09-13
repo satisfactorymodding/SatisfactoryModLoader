@@ -77,6 +77,9 @@ protected:
 	UFUNCTION()
 	void FadeOut();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsFadingOut() const;
+
 	class FTimerManager* GetTimerManager() const;
 protected:
 	UPROPERTY(EditDefaultsOnly)

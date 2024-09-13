@@ -4,6 +4,6 @@
 #include "Internationalization/StringTableRegistry.h"
 
 UFGOverflowDescriptor::UFGOverflowDescriptor() : Super() {
-	this->mDisplayName = NSLOCTEXT("OverflowDescriptor", "DisplayName", "Overflow");
-	this->mDescription = NSLOCTEXT("OverflowDescriptor", "Description", "Overflow Output");
+	this->mDisplayName = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/Overflow");
+	this->mDescription = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/Overflow/Description");
 }

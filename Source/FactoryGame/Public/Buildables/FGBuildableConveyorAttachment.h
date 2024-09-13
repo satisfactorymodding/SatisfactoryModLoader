@@ -65,6 +65,10 @@ public:
 	virtual void BeginPlay() override;
 	// End AActor interface
 
+	// Begin AFGBuildable interface
+	virtual bool ShouldShowCenterGuidelinesForHologram( const AFGHologram* hologram ) const override;
+	// End AFGBuildable interface
+
 	//~ Begin IFGDismantleInterface
 	virtual void Dismantle_Implementation() override;
 	//~ End IFGDismantleInterface
@@ -72,14 +76,11 @@ public:
 	/** @return The buffer inventory for this attachment, always valid, server only. */
 	FORCEINLINE class UFGInventoryComponent* GetBufferInventory() const { return mBufferInventory; }
 
-public:
-	/** The size of the inventory for this attachment. Used to hold a buffer of incoming items */
-	int32 mInventorySizeX;
-
-	/** The size of the inventory for this storage. Used to hold a buffer of incoming items*/
-	int32 mInventorySizeY;
-
 protected:
+	/** The size of the inventory for this attachment. Used to hold a buffer of incoming items */
+	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Attachment" )
+	int32 mInventorySize;
+	
 	/** The buffer inventory to store the items in transit. */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mBufferInventory;

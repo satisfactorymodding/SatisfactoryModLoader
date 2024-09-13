@@ -3,9 +3,12 @@
 #include "FGWorldGridGeneratorActor.h"
 
 #if WITH_EDITOR
-void AFGWorldGridGeneratorActor::ExportWorldGridData(){ }
-void AFGWorldGridGeneratorActor::GenerateWorldGrid(TArray<FFGWorldGridCellData>& CellData, FVector2D& GridMin, FVector2D& GridMax) const{ }
+void AFGWorldGridGeneratorActor::UpdateWorldGrid(){ }
 #endif 
 AFGWorldGridGeneratorActor::AFGWorldGridGeneratorActor() : Super() {
-
+	this->mNumGridDivisions = 64;
+	this->mWorldGridMin = FVector2D::ZeroVector;
+	this->mWorldGridMax = FVector2D::ZeroVector;
 }
+void AFGWorldGridGeneratorActor::BeginPlay(){ }
+void AFGWorldGridGeneratorActor::GenerateWorldGrid(TArray< FFGWorldGridCellData >& CellData, FVector2D& GridMin, FVector2D& GridMax) const{ }

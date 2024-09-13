@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGSharedPostProcessSettings.h"
 #include "Interfaces/Interface_PostProcessVolume.h"
 #include "Curves/CurveFloat.h"
 #include "Curves/CurveLinearColor.h"
@@ -588,7 +589,7 @@ protected:
 private:
 	// The base settings for our post process
 	// @todo: Remove mutable
-	mutable struct FPostProcessSettings mPostProcessSettings;
+	mutable FPostProcessSettings mPostProcessSettings;
 
 #if WITH_EDITORONLY_DATA
 	/** A preview of all the settings in the current fog-volume*/

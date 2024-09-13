@@ -2,25 +2,32 @@
 
 #include "FGRailroadSignalBlock.h"
 
-void FFGRailroadBlockReservation::Update(){ }
 void FFGRailroadBlockReservation::Approve(){ }
 void FFGRailroadBlockReservation::Cancel(){ }
-void FFGRailroadBlockReservation::NotifyEntered(){ }
-void FFGRailroadBlockReservation::NotifyExitCondition(bool isClear){ }
-bool FFGRailroadBlockReservation::HasExitedReservation( AFGTrain* train){ return bool(); }
+void FFGRailroadBlockReservation::UpdateSignalAspects(){ }
+void FFGRailroadBlockReservation::UpdateRemainingTracks(){ }
+const TSet< class AFGBuildableRailroadTrack* >& FFGRailroadBlockReservation::Tracks() const{ return *(new TSet< class AFGBuildableRailroadTrack* >); }
+const TSet< class AFGBuildableRailroadTrack* >& FFGRailroadBlockReservation::OverlappingTracks() const{ return *(new TSet< class AFGBuildableRailroadTrack* >); }
+void FFGRailroadBlockReservation::InvalidateTrackCache(){ }
+void FFGRailroadBlockReservation::FillTrackCache() const{ }
 void FFGRailroadSignalBlock::BlockEntered( AFGRailroadVehicle* byVehicle){ }
 void FFGRailroadSignalBlock::BlockExited( AFGRailroadVehicle* byVehicle){ }
 ERailroadSignalAspect FFGRailroadSignalBlock::GetAspectFor( AFGBuildableRailroadSignal* signal) const{ return ERailroadSignalAspect(); }
 bool FFGRailroadSignalBlock::IsOccupied() const{ return bool(); }
 bool FFGRailroadSignalBlock::IsOccupiedBy( AFGTrain* train) const{ return bool(); }
-TWeakPtr< FFGRailroadBlockReservation > FFGRailroadSignalBlock::CreateReservation( AFGTrain* train, AFGBuildableRailroadSignal* entrySignal, int32 entryPathSegment, FRailroadPathSharedPtr trainPath){ return TWeakPtr<FFGRailroadBlockReservation>(); }
-TWeakPtr< FFGRailroadBlockReservation > FFGRailroadSignalBlock::CreateReservation( AFGTrain* train, AFGBuildableRailroadSignal* entrySignal, int32 entryPathSegment){ return TWeakPtr<FFGRailroadBlockReservation>(); }
+TWeakPtr< FFGRailroadBlockReservation > FFGRailroadSignalBlock::CreatePathReservation( AFGTrain* train, AFGBuildableRailroadSignal* entrySignal, int32 entryPathSegment, FRailroadPathSharedPtr trainPath){ return TWeakPtr<FFGRailroadBlockReservation>(); }
+TWeakPtr< FFGRailroadBlockReservation > FFGRailroadSignalBlock::CreatePathReservationFromInside( AFGTrain* train, int32 currentPathSegment, FRailroadPathSharedPtr trainPath){ return TWeakPtr<FFGRailroadBlockReservation>(); }
+TWeakPtr< FFGRailroadBlockReservation > FFGRailroadSignalBlock::CreateExclusiveReservation( AFGTrain* train, AFGBuildableRailroadSignal* entrySignal, int32 entryPathSegment){ return TWeakPtr<FFGRailroadBlockReservation>(); }
+void FFGRailroadSignalBlock::FindOverlappingTrains(FFGRailroadBlockReservation* reservation, TSet< AFGTrain* >& out_overlaps) const{ }
+bool FFGRailroadSignalBlock::HasOverlappingTrains(FFGRailroadBlockReservation* reservation) const{ return bool(); }
+void FFGRailroadSignalBlock::FindOverlappingApprovedReservations(FFGRailroadBlockReservation* reservation, TSet< AFGTrain* >& out_overlaps) const{ }
+bool FFGRailroadSignalBlock::HasOverlappingApprovedReservations(FFGRailroadBlockReservation* reservation) const{ return bool(); }
+bool FFGRailroadSignalBlock::HasOverlappingPendingReservationsForDependencies(FFGRailroadBlockReservation* reservation, const TSet< TWeakObjectPtr< AFGTrain > >& dependencies) const{ return bool(); }
 void FFGRailroadSignalBlock::SetIsPathBlock(bool isPathBlock){ }
 ERailroadBlockValidation FFGRailroadSignalBlock::GetBlockValidation() const{ return ERailroadBlockValidation(); }
 void FFGRailroadSignalBlock::UpdateOccupancy(){ }
 void FFGRailroadSignalBlock::OnReservationsUpdated(){ }
-void FFGRailroadSignalBlock::UpdateReservation(FFGRailroadBlockReservation* reservation){ }
 void FFGRailroadSignalBlock::ApproveReservation(FFGRailroadBlockReservation* reservation){ }
 void FFGRailroadSignalBlock::CancelReservation(FFGRailroadBlockReservation* reservation){ }
-void FFGRailroadSignalBlock::NotifyEnteredReservation(FFGRailroadBlockReservation* reservation){ }
-bool FFGRailroadSignalBlock::HasApprovedReservation(const  AFGTrain* train) const{ return bool(); }
+bool FFGRailroadSignalBlock::AreReservationsOverlapping(const FFGRailroadBlockReservation* approved, const FFGRailroadBlockReservation* unapproved) const{ return bool(); }
+TArray< class AFGBuildableRailroadTrack* > FFGRailroadSignalBlock::GetTracksThroughBlock(int32 startSegment, FRailroadPathSharedPtr path, TWeakObjectPtr<  AFGBuildableRailroadSignal >& out_exitSignal, int32& out_exitSegment){ return TArray<class AFGBuildableRailroadTrack*>(); }

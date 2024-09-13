@@ -48,6 +48,8 @@ public:
 	UPROPERTY()
 	FPopupClosed PopupClosedDelegate = {};
 
+	TWeakPtr<SWidget> FocusOnClose; // <FL> [WuttkeP] Allow restoring focused widget when a popup is closed.
+
 };
 
 /**
@@ -80,4 +82,7 @@ public:
 	/** The popup widget content if the popup was created with an instance of this type. So this may be null for simple popups */
 	UPROPERTY(Transient)
 	TObjectPtr<UFGPopupWidgetContent> mContent;
+
+	TWeakPtr<SWidget> mFocusOnClose; // <FL> [WuttkeP] Allow restoring focused widget when a popup is closed.
+
 };

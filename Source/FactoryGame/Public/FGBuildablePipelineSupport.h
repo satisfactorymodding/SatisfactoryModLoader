@@ -24,6 +24,9 @@ public:
 	virtual void BeginPlay() override;
 	// End AActor interface
 
+	/* We only have to check mCanContainLightweightInstances for poles, the instance data is made dynamically. */
+	bool virtual DoesContainLightweightInstances_Native() const override { return mCanContainLightweightInstances; }
+	virtual TArray<struct FInstanceData> GetActorLightweightInstanceData_Implementation() override;
 
 	virtual float GetStackHeight() const override
 	{
@@ -75,7 +78,9 @@ public:
 	UPROPERTY( VisibleAnywhere, BlueprintReadWrite, Category = "Pipe Support" )
 	UFGPipeConnectionComponentBase* mSnapOnly0;
 
-
+	// Instance data set on begin play read during setup instances.
+	FInstanceData InstanceData;
+	
 	/** The scene component for adjusting the length of the support. */
 	UPROPERTY()
 	class USceneComponent* mSupportLengthComponent;

@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "FGOptionsSettings.h"
+#include "UI/FGUserWidget.h" // <FL> [WuttkeP] Added callbacks for updating FFGKeyHints.
 #include "FGOptionsValueController.generated.h"
 
 /**
@@ -45,6 +46,32 @@ public:
 
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
 	void OnOptionClicked();
+
+	// <FL> [WuttkeP] Added more callbacks for supporting several events with a controller.
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	void OnOptionIncreased();
+
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	void OnOptionDecreased();
+
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	void OnOptionValueReset();
+
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	void OnOptionAnalogValueUpdated( float AnalogValue );
+
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	void OnRowFocused();
+
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	void OnRowUnfocused();
+
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable )
+	bool HandleResetValueDetails( UPARAM(ref) FFGKeyHint& KeyHint );
+
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable )
+	bool HandleActivateDetails( UPARAM(ref) FFGKeyHint& KeyHint );
+	// </FL>
 
 	// Called before an option is applied. So we can take action before option is applied 
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Meta = ( DisplayName=OnOptionPreApplied ) )

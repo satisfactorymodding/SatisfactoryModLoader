@@ -76,14 +76,14 @@ public:
 	/** Returns true if the shortcut is active. Uses the cached value only computed for the current hotbar */
 	FORCEINLINE bool IsActiveShortcutCached() const { return mIsShortcutActiveCached; }
 
+	/** Notifies the owning hotbar that the shortcut has been changed and needs to be updated */
+	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
+	void NotifyShortcutChanged();
 private:
 	void Internal_TryInitializeShortcut();
 	void Internal_ConditionalDestroyShortcut();
 	
 protected:
-	/** Notifies the owning hotbar that the shortcut has been changed and needs to be updated */
-	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	void NotifyShortcutChanged();
 	
 	/** Initialize this shortcut by binding to the relevant delegates or using data available in the world. */
 	UFUNCTION( BlueprintNativeEvent, Category = "Shortcut" )

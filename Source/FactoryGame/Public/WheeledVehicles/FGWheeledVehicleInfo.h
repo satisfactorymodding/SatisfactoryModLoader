@@ -44,6 +44,7 @@ public:
 	virtual bool AddAsRepresentation() override;
 	UFUNCTION()
 	virtual bool UpdateRepresentation() override;
+	bool UpdateRepresentation_Local();
 	UFUNCTION()
 	virtual bool RemoveAsRepresentation() override;
 	UFUNCTION()
@@ -76,6 +77,8 @@ public:
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION()
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	UFUNCTION()
+	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	// End IFGActorRepresentationInterface
 
 	// Begin AActor interface
@@ -97,10 +100,14 @@ public:
 	// Accessors and change delegates
 
 	AFGWheeledVehicle* GetVehicle() const;
+	AFGWheeledVehicle* GetVehicleOnClient_MayReturnNull() const;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FStatusChanged, EVehicleStatus, status );
 	UPROPERTY( BlueprintAssignable, Category = "Vehicle", DisplayName = "OnVehicleStatusChanged" )
 	FStatusChanged VehicleStatusChangedDelegate;
+
+	UPROPERTY()
+	UMaterialInterface* mCompassMaterialInstance;
 
 	/**
 	 * Set deadlocked/out-of-fuel status

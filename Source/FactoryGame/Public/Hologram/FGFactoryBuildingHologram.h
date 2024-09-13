@@ -57,14 +57,9 @@ public:
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual bool CanBeZooped() const override;
 	virtual void CheckClearance(const FVector& locationOffset) override;
+	virtual void CheckValidPlacement() override;
 	// End AFGHologram interface
 	
-	// Begin FGConstructionMessageInterface
-	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
-	// End FGConstructionMessageInterface
-
-	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
-
 protected:
 	// Begin AFGBuildableHologram interface
 	virtual void CheckValidFloor() override;
@@ -140,7 +135,7 @@ protected:
 	EFactoryBuildingPlacementRequirements mPlacementRequirements;
 	
 	/** Zoop amount. In what local space directions to extend the building and by how much. */
-	UPROPERTY( ReplicatedUsing = OnRep_DesiredZoop )
+	UPROPERTY( ReplicatedUsing = OnRep_DesiredZoop, CustomSerialization )
 	FIntVector mDesiredZoop;
 
 	/** Max zoop amount in each local space direction. */

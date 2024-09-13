@@ -3,12 +3,10 @@
 #include "FGCircuitSubsystem.h"
 #include "Net/UnrealNetwork.h"
 
-UFGCriticalBatteryDepletionMessage::UFGCriticalBatteryDepletionMessage() : Super() {
-
-}
 AFGCircuitSubsystem::AFGCircuitSubsystem() : Super() {
 	this->mCriticalBatteryDepletionPercent = 0.25;
 	this->mMinimumBatteryWarningInterval = 10.0;
+	this->mPowerCircuitStabilityTimeRequirement = 3.0;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -24,7 +22,6 @@ void AFGCircuitSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	DOREPLIFETIME(AFGCircuitSubsystem, mPriorityPowerSwitchInfos);
 }
 void AFGCircuitSubsystem::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
-void AFGCircuitSubsystem::CallPreReplication(UNetDriver* NetDriver){ }
 AFGCircuitSubsystem* AFGCircuitSubsystem::Get(UWorld* world){ return nullptr; }
 AFGCircuitSubsystem* AFGCircuitSubsystem::GetCircuitSubsystem(UObject* worldContext){ return nullptr; }
 void AFGCircuitSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -35,6 +32,7 @@ void AFGCircuitSubsystem::GatherDependencies_Implementation(TArray< UObject* >& 
 bool AFGCircuitSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGCircuitSubsystem::ShouldSave_Implementation() const{ return bool(); }
 void AFGCircuitSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGCircuitSubsystem::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector){ }
 void AFGCircuitSubsystem::BeginPlay(){ }
 void AFGCircuitSubsystem::Tick(float DeltaSeconds){ }
 void AFGCircuitSubsystem::DebugRebuildAll(){ }
@@ -45,6 +43,8 @@ void AFGCircuitSubsystem::RemoveComponent( UFGCircuitConnectionComponent* compon
 void AFGCircuitSubsystem::SetCircuitBridgesModified(){ }
 void AFGCircuitSubsystem::AddCircuitBridge(TWeakObjectPtr< AFGBuildableCircuitBridge > circuitBridge){ }
 void AFGCircuitSubsystem::RemoveCircuitBridge(TWeakObjectPtr< AFGBuildableCircuitBridge > circuitBridge){ }
+void AFGCircuitSubsystem::PowerCircuit_OnFuseSet_Implementation(const TArray<  UFGPowerCircuit* >& circuits){ }
+void AFGCircuitSubsystem::PowerCircuit_OnFuseReset_Implementation(const TArray<  UFGPowerCircuit* >& circuits,  AFGPlayerController* fuseResetInstigator){ }
 void AFGCircuitSubsystem::PowerCircuit_RegisterPriorityPowerSwitchInfo( AFGPriorityPowerSwitchInfo* info){ }
 void AFGCircuitSubsystem::PowerCircuit_UnregisterPriorityPowerSwitchInfo( AFGPriorityPowerSwitchInfo* info){ }
 TArray< AFGPriorityPowerSwitchInfo* > AFGCircuitSubsystem::PowerCircuit_GetPriorityPowerSwitchInfos() const{ return TArray<AFGPriorityPowerSwitchInfo*>(); }
@@ -61,3 +61,5 @@ void AFGCircuitSubsystem::RebuildCircuitGroups(){ }
 void AFGCircuitSubsystem::RebuildCircuit(int32 circuitID){ }
 void AFGCircuitSubsystem::AddComponentToCircuit( UFGCircuitConnectionComponent* component, int32 circuitID, bool rebuildTrivialCircuits){ }
 void AFGCircuitSubsystem::RemoveComponentFromCircuit( UFGCircuitConnectionComponent* component){ }
+void AFGCircuitSubsystem::OnPowerCircuitStable( UFGPowerCircuit* circuit,  AFGPlayerController* fuseResetInstigator){ }
+void AFGCircuitSubsystem::RemovePowerCircuitStabilityData(int32 circuitID){ }

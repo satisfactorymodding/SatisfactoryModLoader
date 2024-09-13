@@ -7,43 +7,52 @@
 AFGJetPack::AFGJetPack() : Super() {
 	this->mDefaultAirControl = 0.0;
 	this->mRTPCInterval = 0.0;
-	this->mThrustCooldown = 0.0;
 	this->mCurrentFuel = 0.0;
 	this->mIsThrusting = false;
-	this->mCachedMovementComponent = nullptr;
 	this->mActiveNoise = nullptr;
 	this->mActiveNoiseFrequency = 0.2;
 	this->mEquipmentSlot = EEquipmentSlot::ES_BACK;
 	this->mBackAnimation = EBackEquipment::BE_Jetpack;
 }
-void AFGJetPack::Tick(const float deltaTime){ }
-bool AFGJetPack::ShouldSaveState() const{ return bool(); }
-void AFGJetPack::DisableEquipment(){ }
-void AFGJetPack::SetIsThrusting(const bool newIsThrusting){ }
-float AFGJetPack::GetNewVelocityWhenThrusting(const float delta) const{ return float(); }
-void AFGJetPack::GetSupportedConsumableTypes(TArray<TSubclassOf< UFGItemDescriptor >>& out_itemDescriptors) const{ }
-int AFGJetPack::GetSelectedConsumableTypeIndex() const{ return int(); }
-void AFGJetPack::SetSelectedConsumableTypeIndex(const int selectedIndex){ }
-void AFGJetPack::AddEquipmentActionBindings(){ }
 void AFGJetPack::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGJetPack, mCurrentFuel);
+	DOREPLIFETIME(AFGJetPack, mIsThrusting);
 	DOREPLIFETIME(AFGJetPack, mSelectedFuelType);
 	DOREPLIFETIME(AFGJetPack, mCurrentFuelType);
 }
-void AFGJetPack::ConsumeFuel(const float delta){ }
-void AFGJetPack::RegenerateFuel(const float delta){ }
+void AFGJetPack::Tick(const float deltaTime){ }
+void AFGJetPack::LoadFromItemState_Implementation(const FFGDynamicStruct& itemState){ }
+FFGDynamicStruct AFGJetPack::SaveToItemState_Implementation() const{ return FFGDynamicStruct(); }
+void AFGJetPack::DisableEquipment(){ }
+void AFGJetPack::AddEquipmentActionBindings(){ }
 void AFGJetPack::Equip(AFGCharacterPlayer* character){ }
 void AFGJetPack::UnEquip(){ }
+void AFGJetPack::GetSupportedConsumableTypes(TArray<TSubclassOf< UFGItemDescriptor >>& out_itemDescriptors) const{ }
+TSubclassOf<UFGItemDescriptor> AFGJetPack::GetSelectedConsumableType() const{ return TSubclassOf<UFGItemDescriptor>(); }
+void AFGJetPack::SetSelectedConsumableType(const TSubclassOf<UFGItemDescriptor> selectedConsumableType){ }
+void AFGJetPack::CalculateVelocityWhenThrusting(FVector& ref_velocity, float deltaTime) const{ }
+float AFGJetPack::BoostAirControl(float deltaTime, float tickAirControl, const FVector& fallAcceleration) const{ return float(); }
+void AFGJetPack::SetIsThrusting(bool newIsThrusting){ }
+void AFGJetPack::Server_SetIsThrusting_Implementation(bool newIsThrusting){ }
+void AFGJetPack::ConsumeFuel(float delta){ }
+void AFGJetPack::RegenerateFuel(const float delta){ }
 void AFGJetPack::Input_Thrust(const FInputActionValue& actionValue){ }
-void AFGJetPack::ConsumableTypeIndexChanged_OnRep(){ }
-bool AFGJetPack::CanThrust() const{ return bool(); }
-void AFGJetPack::MakeActiveNoise(){ }
-bool AFGJetPack::CheckCurrentAvailableFuel(){ return bool(); }
-void AFGJetPack::OnInventoryChanged(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded){ }
-void AFGJetPackAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGJetPackAttachment, mIsThrusting);
-}
-void AFGJetPackAttachment::OnRep_IsThrusting(){ }
-void AFGJetPackAttachment::SetIsThrusting(const bool newIsThrusting){ }
+void AFGJetPack::SetCurrentFuelType(int32 newCurrentFuelType, bool bForce){ }
+void AFGJetPack::SetSelectedFuelType(int32 newSelectedFuelType){ }
+void AFGJetPack::SetCurrentFuel(float newCurrentFuel){ }
+void AFGJetPack::Server_SetSelectedFuelType_Implementation(int32 newSelectedFuelType){ }
+void AFGJetPack::UpdateThrustingNoiseTimer(){ }
+bool AFGJetPack::CheckCanThrust() const{ return bool(); }
+void AFGJetPack::PickPreferredFuelTypeFromInventory(bool bForce){ }
+int32 AFGJetPack::FindPreferredFuelTypeFromInventory(){ return int32(); }
+bool AFGJetPack::HasEnoughFuelInInventory(TSubclassOf<UFGItemDescriptor> itemClass) const{ return bool(); }
+void AFGJetPack::UpdateCurrentFuelAmount(){ }
+void AFGJetPack::SubscribeToRecipeManagerUpdates(){ }
+void AFGJetPack::UpdateUnlockedFuelTypes(){ }
+void AFGJetPack::OnRecipeUnlocked(TSubclassOf<class UFGRecipe> recipeClass){ }
+void AFGJetPack::OnInventoryChanged(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded, UFGInventoryComponent* targetInventory){ }
+void AFGJetPack::OnRep_CurrentFuelType(){ }
+void AFGJetPack::OnRep_IsThrusting(){ }
+void AFGJetPack::OnRep_CurrentFuel(){ }
+void AFGJetPack::UpdateAvailableFuelTypes(){ }

@@ -31,6 +31,53 @@ struct FACTORYGAME_API FInputActionTagBinding
 	TObjectPtr< class UInputAction > CachedInputAction;
 };
 
+// <FL> [WuttkeP] Added key/texture bindings for displaying in button hints.
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFGKeyTextureBinding
+{
+	GENERATED_BODY()
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	FKey Key;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Primary Controller Icon" ) )
+	class UTexture* TexturePrimary;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Secondary Controller Icon" ) )
+	class UTexture* TextureSecondary;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	FMargin InternalPaddingPrimary;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	FMargin InternalPaddingSecondary;
+};
+// </FL>
+
+// <FL> [VilagosD] for displaying custom button hints that dont match single key
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFGTagTextureBinding
+{
+	GENERATED_BODY()
+
+	//for displaying custom button hints that dont match single key
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	FGameplayTag Tag;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Primary Controller Icon" ) )
+	class UTexture* TexturePrimary;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Secondary Controller Icon" ) )
+	class UTexture* TextureSecondary;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	FMargin InternalPaddingPrimary;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	FMargin InternalPaddingSecondary;
+};
+// </FL>
+
 /**
  * Input settings for Satisfactory.
  */
@@ -49,9 +96,22 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	class UInputAction* GetInputActionForTag( const FGameplayTag& Tag ) const;
 	
+	// <FL> [WuttkeP] Added key/texture bindings for displaying in button hints.
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	bool GetKeyTextureBinding( const FKey& Key, FFGKeyTextureBinding& out_Binding ) const;
+
+	// <FL> [VilagosD] for displaying custom button hints that dont match single key
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	bool GetTagTextureBinding( const FGameplayTag& Key, FFGTagTextureBinding& out_Binding ) const;
+
+	FMargin GetVariantTexturePadding() const { return mVariantTexturePadding; }
+	// </FL>
 #if WITH_EDITOR
 	virtual EDataValidationResult IsDataValid( class FDataValidationContext& Context ) override;
 	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override;
+
+	UFUNCTION( BlueprintCallable )
+	static void CalcKeyImagePaddings( UTexture* VariantTexture );
 #endif
 	
 protected:
@@ -85,4 +145,13 @@ protected:
 	/** List of input actions and whatever tag they should be mapped to. */
 	UPROPERTY( config, EditAnywhere, meta = (TitleProperty = "BindingName") )
 	TArray< FInputActionTagBinding > mInputActionTagBindings;
+	// <FL> [WuttkeP] Added key/texture bindings for displaying in button hints.
+	UPROPERTY( config, EditAnywhere )
+	TArray< FFGKeyTextureBinding > mKeyTextureBindings;
+	// <FL> [VilagosD] Added key/texture bindings for displaying in button hints.
+	UPROPERTY( config, EditAnywhere )
+	TArray< FFGTagTextureBinding > mTagTextureBindings;
+	UPROPERTY( config, EditAnywhere )
+	FMargin mVariantTexturePadding;
+	// </FL>
 };

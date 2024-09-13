@@ -7,6 +7,7 @@
 void AFGWheeledVehicleInfo::DrawDebug(int debugLevel){ }
 #endif 
 AFGWheeledVehicleInfo::AFGWheeledVehicleInfo() : Super() {
+	this->mCompassMaterialInstance = nullptr;
 	this->mVehicle = nullptr;
 	this->mReplicatedVehicle = nullptr;
 	this->mStatus = EVehicleStatus::VS_Operational;
@@ -61,6 +62,7 @@ void AFGWheeledVehicleInfo::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 void AFGWheeledVehicleInfo::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGWheeledVehicleInfo::AddAsRepresentation(){ return bool(); }
 bool AFGWheeledVehicleInfo::UpdateRepresentation(){ return bool(); }
+bool AFGWheeledVehicleInfo::UpdateRepresentation_Local(){ return bool(); }
 bool AFGWheeledVehicleInfo::RemoveAsRepresentation(){ return bool(); }
 bool AFGWheeledVehicleInfo::IsActorStatic(){ return bool(); }
 FVector AFGWheeledVehicleInfo::GetRealActorLocation(){ return FVector(); }
@@ -77,12 +79,14 @@ EFogOfWarRevealType AFGWheeledVehicleInfo::GetActorFogOfWarRevealType(){ return 
 float AFGWheeledVehicleInfo::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGWheeledVehicleInfo::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGWheeledVehicleInfo::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+UMaterialInterface* AFGWheeledVehicleInfo::GetActorRepresentationCompassMaterial(){ return nullptr; }
 void AFGWheeledVehicleInfo::BeginPlay(){ }
 void AFGWheeledVehicleInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGWheeledVehicleInfo::Tick(float dt){ }
 void AFGWheeledVehicleInfo::Init(AFGWheeledVehicle* vehicle){ }
 void AFGWheeledVehicleInfo::InitCollisionData(){ }
 AFGWheeledVehicle* AFGWheeledVehicleInfo::GetVehicle() const{ return nullptr; }
+AFGWheeledVehicle* AFGWheeledVehicleInfo::GetVehicleOnClient_MayReturnNull() const{ return nullptr; }
 void AFGWheeledVehicleInfo::SetVehicleStatus(EVehicleStatus status){ }
 void AFGWheeledVehicleInfo::SetIsFollowingPath(bool isFollowingPath){ }
 void AFGWheeledVehicleInfo::SetIsPossessed(bool isPossessed){ }

@@ -4,6 +4,9 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGHardDrive.h"
+#include "FGPlayerController.h"
+#include "FGRemoteCallObject.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGResearchRecipe.h"
@@ -24,6 +27,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FResearchCompletedDelegate, TSubcla
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FResearchStateChangedDelegate, EResearchState, researchState );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FResearchResultsClaimed, TSubclassOf<class UFGSchematic>, schematic );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FResearchTreeUnlocked, TSubclassOf<class UFGResearchTree>, researchTree );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnUnclaimedHardDrivesUpdated );
 DECLARE_MULTICAST_DELEGATE_OneParam( FOnPopulateResearchTreeListDelegate, TArray< TSubclassOf<class UFGResearchTree> >&);
 
 /**
@@ -60,6 +64,10 @@ struct FACTORYGAME_API FResearchData
 	UPROPERTY( SaveGame )
 	TArray<TSubclassOf<class UFGSchematic>> PendingRewards;
 
+	/** How many rerolls have we executed for this research data. Only applicable to hard drives */
+	UPROPERTY( SaveGame )
+	int32 PendingRewardsRerollsExecuted = 0;
+	
 };
 FORCEINLINE bool IsValidForLoad( const FResearchData& element );
 
@@ -100,6 +108,68 @@ struct FACTORYGAME_API FResearchTime
 FORCEINLINE bool IsValidForLoad( const FResearchTime& element );
 
 /**
+* Contains data about a researched hard drive. Represented in game by UFGHardDrive
+*/
+USTRUCT()
+struct FACTORYGAME_API FHardDriveData
+{
+	GENERATED_BODY()
+
+	FHardDriveData(){}
+
+	FHardDriveData( int32 inHardDriveID, TArray<TSubclassOf<class UFGSchematic>> inPendingRewards ) :
+		HardDriveID( inHardDriveID ),
+		PendingRewards( inPendingRewards )
+	{}
+
+	/** The identifier for this hard drive so we can know which one is represented by a UFGHardDrive */
+	UPROPERTY( SaveGame )
+	int32 HardDriveID = INDEX_NONE;
+
+	/** 
+	* The rewards that have been generated for this schematic. 
+	* This is used for example to store randomized alternate recipe schematics when analyzing a hard drive 
+	* This array can be empty since most schematics use the unlock system except hard drives that generate rewards when research is initialized
+	*/
+	UPROPERTY( SaveGame )
+	TArray<TSubclassOf<class UFGSchematic>> PendingRewards;
+
+	/** How many rerolls have we executed for this research data. Only applicable to hard drives */
+	UPROPERTY( SaveGame )
+	int32 PendingRewardsRerollsExecuted = 0;
+
+	/** The hard drive connected to this hard drive data. This is just for UI and is only created when hard drive list is requested  */
+	UPROPERTY( Transient, NotReplicated )
+	class UFGHardDrive* HardDrive = nullptr;
+
+	bool operator==(const FHardDriveData& other) const;
+};
+
+UCLASS()
+class FACTORYGAME_API UFGResearchManagerRemoteCallObject : public UFGRemoteCallObject
+{
+	GENERATED_BODY()
+public:
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+
+	UFUNCTION( Reliable, Server )
+	void Server_InitiateResearch( AFGPlayerController* controller, TSubclassOf<class UFGSchematic> schematic,
+		TSubclassOf<class UFGResearchTree> initiatingResearchTree );
+	
+	UFUNCTION( Reliable, Server )
+	void Server_ClaimResearchResults( class AFGPlayerController* controller, TSubclassOf<class UFGSchematic> schematic );
+	
+	UFUNCTION( Reliable, Server )
+	void Server_RerollHardDriveRewards( class AFGPlayerController* controller, int32 hardDriveID );
+	
+	UFUNCTION( Reliable, Server )
+	void Server_ClaimHardDrive( class AFGPlayerController* controller, int32 hardDriveID, const TArray< TSubclassOf< UFGSchematic > >& schematics, TSubclassOf<class UFGSchematic> chosenSchematic );
+	
+	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
+	bool mForceNetField_UFGResearchManagerRemoteCallObject = false;
+};
+
+/**
  * The research manager handles everything research related 
  */
 UCLASS( Blueprintable, abstract, HideCategories = ( "Actor Tick", Rendering, Replication, Input, Actor ) )
@@ -128,13 +198,20 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Events|Research", DisplayName = "OnResearchTreeUnlocked" )
 	FResearchTreeUnlocked ResearchTreeUnlockedDelegate;
 
+	/** Called when the list of unclaimed hard drives is updated */
+	UPROPERTY( BlueprintAssignable, Category = "Events|Research" )
+	FOnUnclaimedHardDrivesUpdated OnUnclaimedHardDrivesUpdated;
+
 	/** Called after PopulateResearchTreeList has been called and vanilla content has been registered */
 	FOnPopulateResearchTreeListDelegate PopulateResearchTreeListDelegate;
 public:
 	AFGResearchManager();
 
+	// Begin Actor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void PreInitializeComponents() override;
+	virtual void BeginPlay() override;
+	// End Actor interface
 
 	static AFGResearchManager* Get( class UWorld* world );
 
@@ -157,6 +234,8 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Research" )
 	bool IsResesearchTreeUnlocked( TSubclassOf<class UFGResearchTree> researchTree ) const;
+	/** Returns true if any research of this tree is being conducted or have finished */
+	bool IsResesearchTreeStarted( TSubclassOf<class UFGResearchTree> researchTree ) const;
 
 	/**
 	* Initiates research if given player inventory has enough items to cover the cost and research are allowed to start
@@ -164,10 +243,10 @@ public:
 	* @param playerInventory The inventory where we grab the cost of research from
 	* @param initiatingResearchTree The research tree that triggered this schematic research
 	* @param schematic The schematic we want to research
-
 	*/
 	UFUNCTION( BlueprintCallable, Category = "Research" )
-	bool InitiateResearch( UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic, TSubclassOf<class UFGResearchTree> initiatingResearchTree );
+	void InitiateResearch( class AFGPlayerController* controller, TSubclassOf<class UFGSchematic> schematic,
+		TSubclassOf<class UFGResearchTree> initiatingResearchTree );
 
 	UFUNCTION( BlueprintCallable, Category = "Research" )
 	bool CanResearchBeInitiated( TSubclassOf<class UFGSchematic> schematic ) const;
@@ -195,10 +274,23 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Research" )
 	TSubclassOf< class UFGSchematic > GetResearchBeingConducted() const;
 
-	/** Tries to claim rewards from completed research. If rewards have already been claimed then no results will be returned. Returns true if research could be claimed. */
+	/**
+	 * Claims research results for a given schematic.
+	 * Special handling for hard drive schematics that calls ProcessCompletedHardDriveResearch.
+	 * For other schematics, grants access if research is complete and not yet purchased.
+	 */
 	UFUNCTION( BlueprintCallable, Category = "Research" )
-	bool ClaimResearchResults( class AFGCharacterPlayer* instigatorPlayer, TSubclassOf<class UFGSchematic> schematic, int32 selectedRewardIndex );
+	void ClaimResearchResults( class AFGPlayerController* controller, TSubclassOf<class UFGSchematic> schematic );
 
+	UFUNCTION( Reliable, NetMulticast )
+	void NetMulticast_OnResearchResultClaimed( TSubclassOf<class UFGSchematic> schematic );
+	
+	/** Creates a new hard drive data struct with the completed research and then removes it. */
+	void ProcessCompletedHardDriveResearch();
+	UFUNCTION( Reliable, NetMulticast )
+	void NetMulticast_AddHardDrive( int32 hardDriveID, const TArray< TSubclassOf< UFGSchematic > >& schematics );
+	UFGHardDrive* AddHardDriveObject( int32 hardDriveID );
+	
 	UFUNCTION( BlueprintPure, Category = "Research" )
 	FORCEINLINE bool IsAnyResearchBeingConducted() const { return mOngoingResearch.Num() > 0; }
 
@@ -218,6 +310,38 @@ public:
 	/** Returns all schematics that have been researched and are ready to be claimed. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Research" )
 	void GetPendingRewards( TSubclassOf<class UFGSchematic> schematic, TArray< TSubclassOf< UFGSchematic > >& out_rewards ) const;
+	
+	void GetPendingRewardsForHardDrive( int32 hardDriveID, TArray< TSubclassOf< UFGSchematic > >& out_rewards ) const;
+	
+	/** Returns true if the number of executed rerolls for the hard drive is less than the maximum allowed rerolls per hard drive. */
+	bool HasRerollsLeftForHardDrive( int32 hardDriveID ) const;
+
+	/** Returns true if rerolling of hard drives is currently possible based on a cached value indicating the availability of alternate recipes */
+	bool CanRerollHardDrive() const { return mCanRerollHardDrives; }
+	
+	void RerollHardDriveRewards( class AFGPlayerController* controller, int32 hardDriveID );
+	UFUNCTION( Reliable, NetMulticast )
+	void NetMulticast_RerollHardDrive( int32 hardDriveID, const TArray< TSubclassOf< UFGSchematic > >& newSchematics );
+	
+	/**
+	 * This function returns an array of alternative schematics. It compiles a list of available, non-purchased alternate schematics,
+	 * excluding ongoing/completed research rewards, unclaimed hard drive rewards and the ones specified in excludedSchematics.
+	 * out_schematics array is populated with a random selection of these filtered schematics. If the required number isn't met,
+	 * we fall back to to excludedSchematics to fill up the list. But we will not fill up the array with just excluded schematics
+	 *
+	 * @param excludedSchematics List of schematics to be excluded.
+	 * @param numSchematics Desired number of schematics to obtain.
+	 * @param out_schematics Output array for the selected schematics.
+	 * @return true if at least one "new" schematic is obtained, false if none are available.
+	 */
+	bool GetAvailableAlternateSchematics( TArray< TSubclassOf< UFGSchematic > > excludedSchematics, int32 numSchematics, TArray<TSubclassOf<UFGSchematic>>& out_schematics ) const;
+	
+	void ClaimHardDrive( class AFGPlayerController* controller, class UFGHardDrive* hardDrive, TSubclassOf<class UFGSchematic> schematic );
+	UFUNCTION( Reliable, NetMulticast )
+	void NetMulticast_ClaimHardDrive( int32 hardDriveID, TSubclassOf<class UFGSchematic> schematic );
+
+	UFUNCTION( BlueprintCallable, Category = "Research" )
+	void GetUnclaimedHardDrives( TArray<UFGHardDrive*>& out_HardDrives );
 
 	/** Check if any new trees have been unlocked */
 	void UpdateUnlockedResearchTrees();
@@ -227,7 +351,7 @@ public:
 
 	/** Returns if all nodes in the given research tree are researched */
 	UFUNCTION( BlueprintPure, Category = "Research" )
-	static bool IsTreeFullyResearched( UObject* worldContextObject, TSubclassOf<class UFGResearchTree> reserachTree, TSubclassOf< class UFGSchematic > schematicToIgnore );
+	static bool IsTreeFullyResearched( UObject* worldContextObject, TSubclassOf<class UFGResearchTree> researchTree, TSubclassOf< class UFGSchematic > schematicToIgnore );
 
 	/** Checks if the system has activated yet */
 	UFUNCTION( BlueprintPure, Category = "Research" )
@@ -251,10 +375,10 @@ protected:
 	void PopulateResearchTreeList();
 
 	/** Handles research timers internally and inits research. If research is already started will do nothing. */
-	void StartResearch( TSubclassOf<class UFGSchematic> schematic, TSubclassOf< class UFGResearchTree> initiatingResearchTree );
+	void StartResearch( class AFGPlayerController* controller, TSubclassOf<class UFGSchematic> schematic, TSubclassOf< class UFGResearchTree> initiatingResearchTree );
 
-	/** Generates pending research for any completed research */
-	void GeneratePendingReward( FResearchData& researchData );
+	/** Generates pending research for any completed research. */
+	void GeneratePendingReward( class AFGPlayerController* controller, FResearchData& researchData );
 
 	/** Sets up delegate for building built so that we can check for activation */
 	void SetupActivation();
@@ -294,12 +418,18 @@ private:
 
 	bool PayForResearch( UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic ) const;
 
-	/** Claim pending rewards. One alternate recipe or give back one hard drive */
-	void ClaimPendingRewards( AFGCharacterPlayer* instigatorPlayer, TSubclassOf<UFGSchematic> schematic, int32 selectedRewardIndex );
+	/** Returns a hard drive to the given player. Not used at the moment but kept functionality since it might be good to have */
+	void GiveHardDriveToPlayer( AFGCharacterPlayer* instigatorPlayer );
 
 	bool AreResearchTreeUnlockDependeciesMet( TSubclassOf <UFGResearchTree> inClass );
 
 	void SubmitResearchCompletedTelemetry( const TArray< TSubclassOf< class UFGSchematic > >& allSchematics, TSubclassOf< UFGSchematic > chosenSchematic ) const;
+
+	/** Checks if we have any available alternative schematics and updates mCanRerollHardDrive */
+	UFUNCTION()
+    void UpdateCanRerollHardDrive( TSubclassOf< class UFGSchematic > dummySchematic );
+
+	void Internal_ClaimHardDrive( class AFGPlayerController* controller, int32 hardDriveID, const TArray<TSubclassOf<class UFGSchematic>>& schematics , TSubclassOf<class UFGSchematic> chosenSchematic );
 	
 	UPROPERTY( SaveGame, Replicated )
 	bool mIsActivated;
@@ -307,7 +437,23 @@ private:
 	/** What class the MAM is */
 	UPROPERTY( EditDefaultsOnly, Category = "Research" )
 	TSubclassOf< class AFGBuildable > mMAMClass;
+
+	/** The stored hard drives that we have researched */
+	UPROPERTY( SaveGame, Replicated )
+	TArray<FHardDriveData> mUnclaimedHardDriveData;
+
+	/** We increment this with one each time we store a hard drive. We could probably reuse indexes when a hard drive is claimed but
+	 * this will never grow that big so this felt safer */
+	UPROPERTY( SaveGame )
+	int32 mLastUsedHardDriveID = 0;
+
+	/** Cached value if we can reroll hard drives. Basically this is true if we have any available alternate recipes that isn't stored
+	 * in any hard drive or current/completed research. Replicated since we might not have all relevant data on client to decide this. */
+	UPROPERTY( Transient, Replicated )
+	bool mCanRerollHardDrives;
+	
 private:
+	friend class UFGResearchManagerRemoteCallObject;
 	friend class UFGCheatManager;
 
 };

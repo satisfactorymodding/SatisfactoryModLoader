@@ -28,6 +28,8 @@ void AFGResourceDeposit::BeginPlay(){ }
 void AFGResourceDeposit::RollResourceType(){ }
 void AFGResourceDeposit::TrySetDesiredResourceType(){ }
 void AFGResourceDeposit::SetupResourceInfo(){ }
+void AFGResourceDeposit::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
+void AFGResourceDeposit::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGResourceDeposit::ExtractResourceAndGiveToPlayer(AFGCharacterPlayer* toPlayer, int32 amount){ }
 void AFGResourceDeposit::OnRep_ResourceDepositTableIndex(){ }
 void AFGResourceDeposit::OnRep_ResourceDepositEmptied(){ }

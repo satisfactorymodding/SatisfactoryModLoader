@@ -8,6 +8,7 @@
 #include "FGSaveInterface.h"
 #include "FGInventoryComponent.h"
 #include "FGSignificanceInterface.h"
+#include "GameplayTagContainer.h"
 #include "Replication/FGStaticReplicatedActor.h"
 #include "FGItemPickup.generated.h"
 
@@ -49,6 +50,9 @@ UCLASS(abstract)
 class FACTORYGAME_API AFGItemPickup : public AFGStaticReplicatedActor, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface
 {
 	GENERATED_BODY()
+
+	friend class AFGWorldScannableDataGenerator;
+	
 public:
 	AFGItemPickup();
 
@@ -72,6 +76,7 @@ public:
 	//IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
+	virtual float GetSignificanceRange() override { return mSignificanceRange; }
 	//End
 	
 	//~ Begin IFGUseableInterface
@@ -87,15 +92,11 @@ public:
 	//~ End IFGUseableInterface
 
 	/** SERVER and CLIENT picking up: Handles regular pick up logic. Only to be called from the Character when they are picking up the item from PickUpItem(). */
+	void PickUpByCharacter( AFGCharacterPlayer* byCharacter );
+	
+	/** Removes one item from stack and returns the player who dropped the item */
 	UFUNCTION( BlueprintCallable )
-	void PickUpByCharacter( class AFGCharacterPlayer* byCharacter );
-
-	/** Pickup functionality so that we can pickup x amount of items and can be used by other than character 
-	 * 
-	 * @return true if there was enough items for pickup
-	 */
-	UFUNCTION( BlueprintCallable )
-	bool PickupByAmount( int32 amount = 1 );
+	const class AFGPlayerController* EatenByCreature( const int32 amount );
 	
 	/** Multicast to everyone so picking up clients can see effects */
 	UFUNCTION( BlueprintImplementableEvent,BlueprintCosmetic )
@@ -160,6 +161,23 @@ public:
 	/** Automatically re-tries once register failed due to missing regrow system.*/
 	UFUNCTION()
 	void RegisterToRegrowSystem();
+
+	/** Direct setter for mPickupItems, only to be used in cases when the actor is not in a valid state */
+	FORCEINLINE void SetPickupItems_Direct( const FInventoryStack& newPickupItems ) { mPickupItems = newPickupItems; }
+
+	virtual bool ShouldBeRegisteredForPickup() const { return true; }
+
+	virtual void PlayPickupEffectImpl();
+
+	const FGameplayTag& GetPickupItemTag() const { return mPickupItemTag; }
+
+	const FGuid& GetItemPickupGuid() const { return mItemPickupGuid; }
+
+	UPROPERTY(EditDefaultsOnly, Category = "Significance")
+	float mSignificanceRange = 5000;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Significance")
+	bool bShouldAddToSignificanceManager = false;
 	
 protected:
 	/**
@@ -178,6 +196,9 @@ protected:
 
 	UFUNCTION(BlueprintPure)
 	bool IsEquipment() const;
+
+	void SetLastPlayerToHoldThisItem( AFGPlayerState* player ) { mLastPlayerToHoldThisItem = player; }
+
 private:
 	/** Stack the item onto the player equipment slot, or as many as we can stack onto there. */
 	void AddToPlayerEquipmentSlots( AFGCharacterPlayer* byCharacter );
@@ -223,6 +244,10 @@ protected:
 	/** The ak event to post for the sound  */
 	UPROPERTY( EditDefaultsOnly, Category = "AkComponent" )
 	class UAkAudioEvent* mAudioEvent;
+
+	UPROPERTY( EditDefaultsOnly )
+	FGameplayTag mPickupItemTag;
+	
 private:
 	/** How many days before item can respawn */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
@@ -255,4 +280,13 @@ private:
 	/** Should this item be tracked by telemetry. */
 	UPROPERTY( EditDefaultsOnly, Category = "Telemetry" )
 	bool mSendTelemetryOnPickup;
+
+	/** This is here so we know who to give the taming achievement to. */
+	UPROPERTY( SaveGame )
+	TObjectPtr< AFGPlayerState > mLastPlayerToHoldThisItem;
+
+	/** GUID of this pickup. */
+	UPROPERTY()
+	FGuid mItemPickupGuid;
+	
 };

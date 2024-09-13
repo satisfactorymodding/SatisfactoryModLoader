@@ -21,6 +21,7 @@ void AFGCliffActor::UpdateAssociatedCliffActorsAndReParent(){ }
 void AFGCliffActor::DebugSpawn(){ }
 void AFGCliffActor::ClearDebugSpawn(){ }
 void AFGCliffActor::ForceUpdateMeshCPUAccess(){ }
+void AFGCliffActor::DebugDrawSignificanceRange(){ }
 void AFGCliffActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 #endif 
 AFGCliffActor::AFGCliffActor() : Super() {
@@ -35,7 +36,7 @@ void AFGCliffActor::OnConstruction(const FTransform& Transform){ }
 void AFGCliffActor::GainedSignificance_Implementation(){ }
 void AFGCliffActor::LostSignificance_Implementation(){ }
 float AFGCliffActor::GetSignificanceRange(){ return float(); }
-FFGCliffGrassWorker::FFGCliffGrassWorker(AFGCliffActor* inCliffActor, UFoliageType* inType,float inMultiplier, UHierarchicalInstancedStaticMeshComponent* inHISMComponent){ }
+FFGCliffGrassWorker::FFGCliffGrassWorker(AFGCliffActor* inCliffActor, UFoliageType* inType,float inMultiplier, UGrassInstancedStaticMeshComponent* inHISMComponent){ }
 void FFGCliffGrassWorker::DoWork(){ }
 void FFGAsyncCliffGrassBuilderTask::DoWork(){ }
 FFGAsyncCliffGrassBuilderTask::~FFGAsyncCliffGrassBuilderTask(){ }

@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "FGActorRepresentationInterface.h"
+#include "FGClearanceInterface.h"
 #include "FGExtractableResourceInterface.h"
 #include "FGResourceDescriptor.h"
 #include "FGSaveInterface.h"
@@ -34,7 +35,7 @@ class FACTORYGAME_API UFGUseState_NonConveyorResource : public UFGUseState
 };
 
 UCLASS( Abstract )
-class FACTORYGAME_API AFGResourceNodeBase : public AFGStaticReplicatedActor, public IFGExtractableResourceInterface, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface /*, public IFGActorRepresentationInterface*/
+class FACTORYGAME_API AFGResourceNodeBase : public AFGStaticReplicatedActor, public IFGExtractableResourceInterface, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface, public IFGClearanceInterface /*, public IFGActorRepresentationInterface*/
 {
 	GENERATED_BODY()
 	
@@ -98,6 +99,10 @@ public:
 	virtual bool CanPlaceResourceExtractor() const override { return false; }
 	// End IFGExtractableResourceInterface
 
+	// Begin IFGClearanceInterface
+	virtual void GetClearanceData_Implementation( TArray< FFGClearanceData >& out_data ) const override;
+	// End IFGClearanceInterface
+
 	// Begin IFGActorRepresentationInterface
 	// virtual bool AddAsRepresentation() override;
 	// virtual bool UpdateRepresentation() override;
@@ -132,11 +137,7 @@ public:
 
 	/** Let the client know when we changed. mIsOccupied */
 	UFUNCTION()
-	void OnRep_IsOccupied();
-
-	/** Used to update representation state depending on if node is revealed by radar tower and scanner */
-	UFUNCTION()
-	void OnRep_MapReveals();
+	virtual void OnRep_IsOccupied();
 
 	/** Let's blueprint know that we have changed occupied states */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Resources" )
@@ -158,15 +159,13 @@ public:
 	
 	/** Used by the descriptor, so that all meshes in the world can get their mesh updated */
 	void UpdateMeshFromDescriptor( bool needRegister = true );
-
-	void ScanResourceNode_Replicated();
+	
 	void ScanResourceNode_Local( float lifeSpan );
-
-	UFUNCTION()
-	void RemoveResourceNodeScan_Replicated();
 	UFUNCTION()
 	void RemoveResourceNodeScan_Local();
-	
+
+	void ScanResourceNodeScan_Server();
+	void RemoveResourceNodeScan_Server();
 protected:
 	/** @returns the actor that contains the mesh for this node */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
@@ -183,6 +182,8 @@ protected:
 
 	void UpdateHighlightParticleSystem();
 
+	UFUNCTION()
+	void OnRep_ServerMapReveals();
 private:
 	void UpdateNodeRepresentation();
 
@@ -203,16 +204,12 @@ protected:
 	UPROPERTY( ReplicatedUsing = OnRep_IsOccupied, BlueprintReadOnly, Category = "Resources" )
 	bool mIsOccupied;
 
-	/** Objects that scanned this resource node. Used to keep track of when to add/remove node from map */
-	UPROPERTY( Transient )
-	TArray< UObject* > mRevealedOnMapBy;
-
-	/** Number of times this node is revealed on server by radar towers. Used to keep track of when to add/remove node from map */
-	UPROPERTY( Transient, ReplicatedUsing = OnRep_MapReveals )
-	uint8 mReplicatedMapReveals;
-
 	/** Number of times this node is revealed locally by resource scanner. Used to keep track of when to add/remove node from map */
 	int32 mLocalMapReveals;
+
+	/** Number of times this node is revealed by the radar towers. Also forces the node to replicate it's data regardless of distance to the player */
+	UPROPERTY( ReplicatedUsing = OnRep_ServerMapReveals )
+	int32 mServerMapReveals;
 
 	UPROPERTY( Transient )
 	class UFGResourceNodeRepresentation* mResourceNodeRepresentation;
@@ -238,6 +235,10 @@ public:
 	bool mDoSpawnParticle;
 
 private:
+	/** Clearance data of this resource */
+	UPROPERTY( EditDefaultsOnly, Category = "Resources" )
+	TArray< FFGClearanceData > mClearanceData;
+	
 	/** The actor that contains the mesh for this node */
 	UPROPERTY( EditInstanceOnly, Category = "Resources" )
 	TSoftObjectPtr< class AActor > mMeshActor;

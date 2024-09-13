@@ -49,6 +49,10 @@ class FACTORYGAME_API IFGActorRepresentationInterface
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
 	virtual class UTexture2D* GetActorRepresentationTexture() = 0;
 
+	/** Fetches the material to use for this actors representation */
+	UFUNCTION( BlueprintCallable, Category = "Representation" )
+	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() = 0;
+	
 	/** Fetches the text to use for this actors representation */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
 	virtual FText GetActorRepresentationText() = 0;

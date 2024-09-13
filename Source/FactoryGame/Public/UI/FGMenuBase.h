@@ -3,11 +3,11 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "Blueprint/UserWidget.h"
+#include "FGUserWidget.h" // <FL> [AZimmermann] Changed to UFGUserWidget
 #include "FGMenuBase.generated.h"
 
 UCLASS(meta=(DisableNativeTick))
-class FACTORYGAME_API UFGMenuBase : public UUserWidget
+class FACTORYGAME_API UFGMenuBase : public UFGUserWidget	// <FL> [AZimmermann] Changed to UFGUserWidget
 {
 	GENERATED_BODY()
 public:

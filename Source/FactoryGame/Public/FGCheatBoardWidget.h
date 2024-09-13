@@ -5,170 +5,169 @@
 #include "FGCheatManager.h"
 #include "Widgets/SCompoundWidget.h"
 #include "FactoryGame.h"
+#include "FGCheatBoardMenuElements.h"
 
-#if WITH_CHEATS
+DECLARE_MULTICAST_DELEGATE_TwoParams( FFGCheatBoardGetCheatObjects, UFGCheatManager* /** CheatManager */, TArray<UObject*>& /** OutCheatObjects */ );
 
-#include "FactoryGame/Private/FGCheatBoardMenuElements.h"
-
-
-/**
-*
-*/
-
-class FACTORYGAME_API SFGCheatBoardWidget : public SCompoundWidget
+class FACTORYGAME_API SFGCheatBoardWidget : public SCompoundWidget, public FGCObject
 {
 	/** Cache the cheat manager */
-	SLATE_BEGIN_ARGS( SFGCheatBoardWidget ) : _mCachedCheatManager(){}
-	SLATE_ARGUMENT( TWeakObjectPtr< UFGCheatManager >, mCachedCheatManager )
+	SLATE_BEGIN_ARGS( SFGCheatBoardWidget ) {}
+	SLATE_ARGUMENT( TObjectPtr<UFGCheatManager>, mOwnerCheatManager )
 	SLATE_END_ARGS()
-
 public:
-
+	/** Called when initializing cheat menu to collect additional objects willing to be represented in the cheat board */
+	static FFGCheatBoardGetCheatObjects GetCheatObjects;
+	
 	/** Constructs the base Slate UI */
 	void Construct( const FArguments& InArgs );
-
-	/** Catch input in this widget */
-	virtual FReply OnKeyDown( const FGeometry& myGeometry, const FKeyEvent& inKeyEvent );
-
-	/** Overloaded to be able to take keyboard focus */
-	virtual bool SupportsKeyboardFocus() const;
 
 	/** Shut it down */
 	void CloseCheatBoard();
 
+	// Begin SCompoundWidget interface
+	virtual FReply OnKeyDown( const FGeometry& myGeometry, const FKeyEvent& inKeyEvent );
+	virtual bool SupportsKeyboardFocus() const;
 	virtual FReply OnFocusReceived( const FGeometry& MyGeometry, const FFocusEvent& InFocusEvent ) override;
+	// End SCompoundWidget interface
 
+	// Begin FGCObject interface
+	virtual FString GetReferencerName() const override;
+	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+	// End FGCObject interface
 public:
-
-	/** This is just the base, that is supposed to show propts for the user to input data.
-	 * this is overloaded per property type */
-	void ShowInputWindowFor( FProperty* prop );
-
-	/** Propmts the user with true and false inputs */
-	void ShowInputWindowFor( FBoolProperty* prop );
-
-	/** Propmts the user with true and false inputs */
-	void ShowInputWindowFor( FNumericProperty* prop );
+	static FCheatBoardParamSelectionData GetRootCheatMenuSelectionData();
+	static void SetRootCheatMenuSelectionData( const FCheatBoardParamSelectionData& NewSelectionData );
 	
-	/** Propmts the user to input a resource class */
-	void ShowInputWindowFor( UClass* inClass );
+	/** Combines GotoNextParameterProperty and ShowInputWindowForProperty */
+	void ShowInputWindowForNextCheatParameter();
+	
+	/** Shows the input window for a specific property type */
+	void ShowInputWindowForProperty( FProperty* Property, const FCheatBoardParamSelectionData& CurrentSelectionData );
 
-	/** Propmts the user to input a text, FString or UText. (No FName yet) */
-	void ShowInputWindowFor( FStrProperty* prop );
+	/** Prompts the user with true and false inputs */
+	void ShowInputWindowForBoolProperty( const FCheatBoardParamSelectionData& CurrentSelectionData );
 
-	/** Propmts the user to input a color */
-	void ShowInputWindowFor( FLinearColor color );	
+	/** Prompts the user with the number input field */
+	void ShowInputWindowForNumber( const FCheatBoardParamSelectionData& CurrentSelectionData );
 
-	/** Propmts the user to select an enum vlaue */
-	void ShowInputWindowFor( UEnum* enumProp );
+	TSharedPtr<IFGCheatBoardParameterFilter> ResolveGlobalParameterFilterForClass( const UClass* ClassType ) const;
+	TSharedPtr<IFGCheatBoardParameterFilter> ResolveGlobalParameterFilterForAsset( const UClass* AssetType ) const;
+	
+	/** Prompts the user to input a class */
+	void ShowInputForClass( const UClass* SuperClass, TSharedPtr<IFGCheatBoardParameterFilter> ParameterFilter, const FCheatBoardParamSelectionData& CurrentSelectionData );
 
-	void SetFilterTextboxFocus() const;
+	/** Prompts the user to pick an asset of the given class from the asset registry */
+	void ShowInputForAsset( const UClass* AssetClass, TSharedPtr<IFGCheatBoardParameterFilter> ParameterFilter, const FCheatBoardParamSelectionData& CurrentSelectionData );
+
+	/** Prompts the user to input a text (FString, FText or FName) */
+	void ShowInputWindowForText( const FProperty* Property, const FCheatBoardParamSelectionData& CurrentSelectionData );
+
+	/** Prompts the user to select an enum value */
+	void ShowInputWindowForEnum( const UEnum* Enum, const FCheatBoardParamSelectionData& CurrentSelectionData );
+
 	void ResetMenu();
+	void ShowMenu( const TSharedPtr<FCheatMenuCategory>& InMenu, const FString& InMenuTitle, const FCheatBoardParamSelectionData& CurrentSelectionData );
 
-	void ShowMenu( CheatMenuCategory* newMenu, FString title, FString filtervalue );
-	/** This finds all the functions in UFGCheatManager */
-	TArray< UFunction* > GetAllCheats();
-
-	/** When we click on a cheat in the list this get triggered
-	 *
-	 * @ param func - The cheat function the player clicked
-	 */
-	FReply OnCheatClicked( CheatMenuElementPtr cheat );
-
-	FReply OnCheatFavoriteToggle( CheatMenuElementPtr cheat );
-
+	/** When we click on a cheat in the list this get triggered */
+	FReply OnCheatClicked( TSharedRef<FCheatMenuElement> Cheat );
 	/** Called when the players commits text in the input window */
-	void OnInputTextCommited( const FText& InText, ETextCommit::Type InCommitType );
-
-	FReply OnInputFilterKeyDown( const FGeometry&, const FKeyEvent& InKeyEv );
+	void OnInputTextCommitted( const FText& InText, ETextCommit::Type InCommitType );
+	FReply OnInputFilterKeyDown( const FGeometry& Geometry, const FKeyEvent& KeyEvent );
 
 	void OnInputFilterChanged( const FText& InText );
 	/** Called when the players commits text in the input window */
-	void OnInputFilterCommited( const FText& InText, ETextCommit::Type InCommitType );
+	void OnInputFilterCommitted( const FText& InText, ETextCommit::Type InCommitType );
 
 	FReply OnClearFilter();
-	void OnHoverClearFilter();
-	void applyFilterWithFilterString( bool selectTypItemIfNoSelection, bool handleAndPreserveSelection = true );
 
+	/** Applies filter string to the current tree widget to filter out the unwanted results */
+	void ApplyFilterWithFilterString( bool bAutoSelectFirstElement );
+
+	/** Creates the value picker widget for the bool parameter */
+	TSharedRef<SWidget> CreateWidgetForBoolParamProperty( const FCheatMenuParam& CheatMenuParam );
 	/** If the user presses on true or false, this triggers and gives us the value */
-	FReply OnBoolParm( bool value );
-
+	FReply OnBoolParamPicked( bool bValue );
+	/** Creates the value picker for the object property param */
+	TSharedRef<SWidget> CreateWidgetForObjectParamProperty( const FCheatMenuParam& CheatMenuParam );
 	/** If the user presses on a resource, this triggers and gives us the value */
-	FReply OnClassParm( UClass* inClass );
-
+	FReply OnObjectParamPicked( TObjectPtr<UObject> InObject );
+	/** Creates the value picker for the number (or enum) based property param */
+	TSharedRef<SWidget> CreateWidgetForNumberParamProperty( const FCheatMenuParam& CheatMenuParam );
 	/** If the user presses on true or false, this triggers and gives us the value */
-	FReply OnNumInputClicked( int32 value );
+	FReply OnNumberParamPicked( int64 NumberValue );
+	/** Creates widget for a simple text param property */
+	TSharedPtr<SWidget> CreateWidgetForTextParamProperty( const FCheatMenuParam& CheatMenuParam ) const;
 
-	void OnClassParmAction( UClass* inClass );
-	/** Result from the colorpicker */
-	void OnSetColorFromColorPicker( FLinearColor newColor );
+	/** Creates a widget for the toggle cheat object */
+	TSharedPtr<SWidget> CreateWidgetForToggleCheat( TSharedRef<FCheatMenuCheatToggle> CheatToggle );
+	/** Creates a widget for the exec cheat object */
+	TSharedPtr<SWidget> CreateWidgetForExecCheat( TSharedRef<FCheatMenuObject> CheatObject );
+	/** Creates a widget for the cheat parameter */
+	TSharedPtr<SWidget> CreateWidgetForParameterSelection( TSharedRef<FCheatMenuParam> CheatParam );
 
-	/** Get the next property for mFunctionWaitingForParms, where the current is mPropertyWaitingForInput*/
-	FProperty* GetNextProperty();
+	/** Get the next parameter for the currently active cheat */
+	FProperty* GotoNextParameterProperty( FCheatBoardParamSelectionData& OutLastSelectionData );
 
-public:
-
-	/** Our cached cheat manager */
-	TWeakObjectPtr< UFGCheatManager > mCachedCheatManager;
-	
+	/** Changes the user focus to be on the Button Slot content */
+	void SetFocusOnButtonSlot() const;
+	/** Changes the user focus to be on the Filter Text Box */
+	void SetFocusOnFilterTextBox() const;
 private:
-	
+	/** Our owner cheat manager */
+	TObjectPtr<UFGCheatManager> mOwnerCheatManager;
+
 	/** Cached slot for the list of cheat buttons */
-	SVerticalBox::FSlot* mCheatButtonSlot;
+	SVerticalBox::FSlot* mCheatButtonSlot{nullptr};
 
 	/** Cached slot for the possible input buttons */
-	SOverlay::FOverlaySlot* mInputSlot;
-
-	/** This function is waiting for input from the user */
-	UFunction* mFunctionWaitingForParms;
-
-	SVerticalBox::FSlot* mTileTextSlot;
+	SOverlay::FOverlaySlot* mInputSlot{nullptr};
+	SVerticalBox::FSlot* mTileTextSlot{nullptr};
 	TSharedPtr<STextBlock> mTitleTextBox;
 
-	SVerticalBox::FSlot* mFilterTextSlot;
+	SVerticalBox::FSlot* mFilterTextSlot{nullptr};
 	TSharedPtr<SEditableTextBox> mFilterTextBox;
 	TSharedPtr<SButton> mFilterClearButton;
 
-	/** The parameters that should be proccessed by the function
-	  * I tried to get this board to support multiple parameters,
-	  * but it isn't working. The data in mParameters get jumbled up when
-	  * trying to write more properties to it */
-	uint8* mParameters;
-	uint8 mCurrentParameterIndex = 0;
-	CheatMenuObject* mCurrentCheat = nullptr;
+	/** Top level cheat menu */
+	TSharedPtr<FCheatMenuCategory> mRootCheatMenu;
+	/** Cheat menu that is currently active */
+	TSharedPtr<FCheatMenuCategory> mActiveCheatMenu;
+	/** Item source array for the currently active menu */
+	TArray<TSharedPtr<FCheatMenuElement>> mActiveCheatMenuItemSource;
+	/** Fallback parameter filters */
+	TMap<UClass*, FFGCheatBoardParameterFilter> mGlobalClassParameterFilters;
+	/** Fallback parameter filters for assets */
+	TMap<UClass*, FFGCheatBoardParameterFilter> mGlobalAssetParameterFilters;
+
+	/** The parameters that should be processed by the function */
+	TSharedPtr<FCheatMenuObject> mCurrentCheat;
+	/** Current parameter we are inputting for the current cheat */
+	FProperty* mCurrentCheatParameter{nullptr};
 
 	/** This is the property we asked for input about */
-	FProperty* mPropertyWaitingForInput;
+	FProperty* mPropertyWaitingForInput{nullptr};
 
-	/** The textstyle used in this widget */
-	FTextBlockStyle* mButtonTextStyle;
-	FTextBlockStyle* mButtonToggleTextStyle;
-	FTextBlockStyle* mCategoryTextStyle;
+	/** The text style used in this widget */
+	TUniquePtr<FTextBlockStyle> mButtonTextStyle;
+	TUniquePtr<FTextBlockStyle> mButtonToggleTextStyle;
+	TUniquePtr<FTextBlockStyle> mCategoryTextStyle;
+	TUniquePtr<FButtonStyle> mCheatButtonStyle;
+	TUniquePtr<FTableRowStyle> mCheatRowStyle;
 
 	/** The text style in the box where the user inputs shit */
-	FEditableTextBoxStyle* mEditableTextStyle;
+	TUniquePtr<FEditableTextBoxStyle> mEditableTextStyle{nullptr};
 
-	TArray< TSharedRef< SWidget > > mButtons;
-
-
-	TSharedPtr< CheatMenuTreeView> mTreeMenu;
-
-
-
-
+	TSharedPtr<SCheatTreeView> mTreeMenu;
+	
 	/** Called to generate a widget for the specified tree item */
-	TSharedRef<ITableRow> CheatMenu_OnGenerateRow( CheatMenuElementPtr Item, const TSharedRef<STableViewBase>& OwnerTable );
+	TSharedRef<ITableRow> CheatMenu_OnGenerateRow( TSharedPtr<FCheatMenuElement> Item, const TSharedRef<STableViewBase>& OwnerTable );
 
-	void GetVisibleChildren( CheatMenuElement* Item, TArray< CheatMenuElementPtr >& OutChildren );
 	/** Given a tree item, fills an array of child items */
-	void CheatMenu_OnGetChildren( CheatMenuElementPtr Item, TArray< CheatMenuElementPtr >& OutChildren );
+	void CheatMenu_OnGetChildren( TSharedPtr<FCheatMenuElement> Item, TArray<TSharedPtr<FCheatMenuElement>>& OutChildren );
+	void CheatMenu_OnMouseClick( TSharedPtr<FCheatMenuElement> Item );
 
-	/** Called when the user clicks on an  item, or when selection changes by some other means */
-	void CheatMenu_OnSelectionChanged( CheatMenuElementPtr Item, ESelectInfo::Type SelectInfo );
-
-	void CheatMenu_OnMouseClick( CheatMenuElementPtr Item );
-	/*UPROPERTY( Config )
-	TArray< UClass* > mPopularUClassChoices;*/
-
+	/** Populates the cheat menu from the cached cheat manager */
+	void PopulateCheatMenu();
+	void PopulateCheatMenuFromObject( UObject* Object, TArray<TSharedPtr<FCheatMenuElement>>& AllCheatMenuElements, TMap<TSharedPtr<FCheatMenuElement>, FString>& CheatMenuCategories );
 };
-#endif

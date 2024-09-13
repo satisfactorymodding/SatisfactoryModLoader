@@ -12,6 +12,7 @@
 #include "FGTrain.generated.h"
 
 
+class AFGTrainReplicationActor;
 class UFGRailroadTrackConnectionComponent;
 
 
@@ -297,29 +298,27 @@ struct FACTORYGAME_API FTrainSimulationData
 {
 	GENERATED_BODY()
 public:
-	/**
-	 * Server: Cached vehicles in the direction of travel.
-	 * Client: Cached relevant vehicles, unordered.
-	 */
+	/** Cached vehicles for faster iterations when updating physics. */
 	UPROPERTY()
 	TArray< class AFGRailroadVehicle* > SimulatedVehicles;
 
-	/**
-	 * Server: Cached movements in the same order as the vehicles.
-	 * Client: Empty.
-	 */
+	/** Cached movements in the same order as the vehicles. */
 	UPROPERTY()
 	TArray< class UFGRailroadVehicleMovementComponent* > SimulatedMovements;
 
-	/** The approximated location and bounds for the vehicles combined. (Server and Client) */
+	/** The approximated location and bounds for the vehicles combined. */
 	FVector TrainLocation = FVector::ZeroVector;
 	float TrainBound = 0.f;
 
-	/** Cached master locomotive. (Server and Client) */
+	/** Cached master locomotive. */
 	UPROPERTY()
 	class UFGLocomotiveMovementComponent* MasterMovement = nullptr;
 
-	// Real-time measurements from the simulation. (Server Only)
+	/** First vehicle in the direction of travel when we did ticked the movement. */
+	UPROPERTY()
+	AFGRailroadVehicle* FirstVehicle = nullptr;
+	
+	// Real-time measurements from the simulation.
 	float GravitationalForce = 0.f;
 	float TractiveForce = 0.f;
 	float GradientForce = 0.f;
@@ -327,7 +326,7 @@ public:
 	float AirBrakingForce = 0.f;
 	float DynamicBrakingForce = 0.f;
 	
-	// Velocity of this train [directional] [cm/s] (Server Only)
+	// Velocity of this train [directional] [cm/s]
 	UPROPERTY( SaveGame )
 	float Velocity = 0.f;
 	
@@ -337,6 +336,7 @@ public:
 
 /**
  * Struct containing quantized train stats for the client.
+ * @todo-trains-client [OPTIMIZATION] This could be consolidated into the new simulation on client, this is only used for animations and sounds right now. Though make sure client compensations are not affecting it to much.
  */
 USTRUCT()
 struct FClientTrainData
@@ -423,48 +423,33 @@ public:
 	virtual void LostSignificance_Native() override;
 	virtual float GetSignificanceRange() override;
 	// Significance helpers
+	//@todo-trains Look over the significance calculation on the trains, I was a bit confused how it all works.
 	FORCEINLINE bool IsSignificant() const { return mIsSignificant; }
 	FVector GetSignificanceLocation() const { return mSignificanceLocation; }
 	float GetSignificanceRadius() const { return mSignificanceRadius; }
 	// End IFGSignificanceInterface
 
 	// Begin IFGActorRepresentationInterface
-	UFUNCTION()
 	virtual bool AddAsRepresentation() override;
-	UFUNCTION()
 	virtual bool UpdateRepresentation() override;
-	UFUNCTION()
+	bool UpdateRepresentation_Local();
 	virtual bool RemoveAsRepresentation() override;
-	UFUNCTION()
 	virtual bool IsActorStatic() override;
-	UFUNCTION()
 	virtual FVector GetRealActorLocation() override;
-	UFUNCTION()
 	virtual FRotator GetRealActorRotation() override;
-	UFUNCTION()
 	virtual class UTexture2D* GetActorRepresentationTexture() override;
-	UFUNCTION()
 	virtual FText GetActorRepresentationText() override;
-	UFUNCTION()
 	virtual void SetActorRepresentationText( const FText& newText ) override;
-	UFUNCTION()
 	virtual FLinearColor GetActorRepresentationColor() override;
-	UFUNCTION()
 	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
-	UFUNCTION()
 	virtual ERepresentationType GetActorRepresentationType() override;
-	UFUNCTION()
 	virtual bool GetActorShouldShowInCompass() override;
-	UFUNCTION()
 	virtual bool GetActorShouldShowOnMap() override;
-	UFUNCTION()
 	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
-	UFUNCTION()
 	virtual float GetActorFogOfWarRevealRadius() override;
-	UFUNCTION()
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
-	UFUNCTION()
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	// End IFGActorRepresentationInterface
 
 	/** Get the name of this train. */
@@ -569,11 +554,20 @@ public:
 	void ConnectToThirdRail();
 	void DisconnectFromThirdRail();
 	
-	/** Called when the vehicles in the train are changed so it can reconnect to the third rail etc. */
+	/**
+	 * Called when the vehicles in the train are changed, this so it can reconnect to the third rail etc.
+	 * Note: Only valid to call on the server.
+	 */
 	void OnVehiclesChanged();
 
-	/** Called when the train consist changes so constants can be recalculated. */
-	void OnConsistChanged();
+	/** Rebuilds the vehicle list in and updates the constants in the consist. */
+	void RebuildConsist_Server();
+	/** Rebuilds the vehicle list in and updates the constants in the consist. */
+	void RebuildConsist_Client();
+	/** Recalculates the constants in the consist. */
+	void RecalculateConsistData();
+	/** Recalculates only the constants dependent on the payload in the consist. */
+	void RecalculateConsistPayloadData();
 
 	/** Gets the rules for docking from this trains time table for its current stop */
 	void GetDockingRuleSetForCurrentStop( FTrainDockingRuleSet& out_ruleSet ) const;
@@ -581,8 +575,13 @@ public:
 	/** Called when we collide with some other train. */
 	void OnCollided( AFGRailroadVehicle* ourVehicle, float ourVelocity, AFGRailroadVehicle* otherVehicle, float otherVelocity, bool shouldDerail );
 	
-	/** Called when this train is derailed as a consequence of a collision. */
-	void OnDerail( float velocity );
+	/**
+	 * Called when this train is derailed as a consequence of a collision.
+	 *
+	 * @param impactVelocity What velocity did we have on impact.
+	 */
+	UFUNCTION( NetMulticast, Reliable )
+	void NetMulticast_OnDerail( float impactVelocity );
 	
 	/** @return true if the train is derailed and cannot move, otherwise false. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Train" )
@@ -591,6 +590,14 @@ public:
 	/** @return true if the train has a pending collision. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Train" )
 	bool HasPendingCollision() const { return mHasPendingCollision; }
+
+	/**
+	 * Set and clear pending collision status for this train.
+	 *
+	 * Used by the railroad subsystem to delay the physical derailment of trains that are far away until the world is loaded in.
+	 */
+	void SetPendingCollision();
+	void ClearPendingCollision();
 
 	/** Put the train back on track, if the train is not derailed, this does nothing. */
 	void Rerail();
@@ -603,9 +610,12 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Train" )
 	FORCEINLINE ETrainStatus GetTrainStatus() const { return mTrainStatus; }
 
-	/** Add or remove a vehicle locally, used on client to know about the vehicles in the train. */
-	void AddLocalVehicle( class AFGRailroadVehicle* vehicle );
-	void RemoveLocalVehicle( class AFGRailroadVehicle* vehicle );
+	/**
+	 * @return The actor responsible for replicating this train.
+	 *         Always valid on the server.
+	 *         Only valid on the client when the train is relevant.
+	 */
+	AFGTrainReplicationActor* GetTrainReplicationActor();
 
 protected:
 	/** Get the icon to show for this train on the map and compass. */
@@ -641,9 +651,6 @@ private:
 	void TickSelfDriving_Docking( ESelfDrivingLocomotiveError& out_error );
 	void TickSelfDriving_DockingCompleted( ESelfDrivingLocomotiveError& out_error );
 
-	/** Atc tick handlers. */
-	void TickAtc_BlockReservations();
-
 	/** Help functions for speed related calculations. */
 	float CalcBrakeDistance( float currentSpeed, float targetSpeed, float deceleration ) const;
 	float CalcTargetSpeed( float targetSpeed, float distance, float deceleration ) const;
@@ -661,15 +668,13 @@ private:
 	UFUNCTION()
 	void OnRep_SelfDrivingError();
 	UFUNCTION()
-	void OnRep_IsDerailed();
-	UFUNCTION()
 	void OnRep_TrainStatus();
 	UFUNCTION()
 	void OnRep_MultipleUnitMaster();
-	
-#if WITH_CHEATS
+	UFUNCTION()
+	void OnRep_TrainReplicationActor();
+
 	void Cheat_Teleport( class AFGBuildableRailroadStation* station );
-#endif
 
 public:
 	/** Called when the self driving is turn on or off. */
@@ -717,7 +722,7 @@ public:
 
 public: //@todo-trains private
 	/** The name of this train. */
-	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Train" )
+	UPROPERTY( SaveGame, Replicated, EditAnywhere, Category = "Train" )
 	FText mTrainName;
 
 	/** The track this train is on. */
@@ -763,13 +768,19 @@ public: //@todo-trains private
 	class AFGBuildableRailroadStation* mDockedAtStation;
 
 	/** True if this train is derailed and needs player attention. */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsDerailed, VisibleAnywhere, Category = "Train" )
+	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Train" )
 	bool mIsDerailed;
 
-	//@todo-trains Apply from pending collisions in subsystem on load.
-	bool mHasPendingCollision;
+	UPROPERTY( EditDefaultsOnly )
+	UMaterialInterface* mCompassMaterialInstance;
 
 private:
+	/** If this train has any pending collisions that needs to be handled this frame. */
+	bool mHasPendingCollision;
+	
+	UPROPERTY( ReplicatedUsing = OnRep_TrainReplicationActor )
+	AFGTrainReplicationActor* mTrainReplicationActor;
+	
 	/** Sound component controlling all the moving/idle sounds for the train */
 	UPROPERTY()
 	class UFGTrainSoundComponent* mSoundComponent;

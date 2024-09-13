@@ -3,39 +3,224 @@
 #include "FGCheatBoardWidget.h"
 
 #if WITH_CHEATS
+void SFGCheatBoardWidget::Construct(const FArguments& InArgs){ }
+void SFGCheatBoardWidget::CloseCheatBoard(){ }
 FReply SFGCheatBoardWidget::OnKeyDown(const FGeometry& myGeometry, const FKeyEvent& inKeyEvent){ return FReply::Unhandled(); }
 bool SFGCheatBoardWidget::SupportsKeyboardFocus() const{ return bool(); }
-void SFGCheatBoardWidget::CloseCheatBoard(){ }
 FReply SFGCheatBoardWidget::OnFocusReceived(const FGeometry& MyGeometry, const FFocusEvent& InFocusEvent){ return FReply::Unhandled(); }
-void SFGCheatBoardWidget::ShowInputWindowFor(FProperty* prop){ }
-void SFGCheatBoardWidget::ShowInputWindowFor(FBoolProperty* prop){ }
-void SFGCheatBoardWidget::ShowInputWindowFor(FNumericProperty* prop){ }
-void SFGCheatBoardWidget::ShowInputWindowFor(UClass* inClass){ }
-void SFGCheatBoardWidget::ShowInputWindowFor(FStrProperty* prop){ }
-void SFGCheatBoardWidget::ShowInputWindowFor(FLinearColor color){ }
-void SFGCheatBoardWidget::ShowInputWindowFor(UEnum* enumProp){ }
-void SFGCheatBoardWidget::SetFilterTextboxFocus() const{ }
+FString SFGCheatBoardWidget::GetReferencerName() const{ return FString(); }
+void SFGCheatBoardWidget::AddReferencedObjects(FReferenceCollector& Collector){ }
+FCheatBoardParamSelectionData SFGCheatBoardWidget::GetRootCheatMenuSelectionData(){ return FCheatBoardParamSelectionData(); }
+void SFGCheatBoardWidget::SetRootCheatMenuSelectionData(const FCheatBoardParamSelectionData& NewSelectionData){ }
+void SFGCheatBoardWidget::ShowInputWindowForNextCheatParameter(){ }
+void SFGCheatBoardWidget::ShowInputWindowForProperty(FProperty* Property, const FCheatBoardParamSelectionData& CurrentSelectionData){ }
+void SFGCheatBoardWidget::ShowInputWindowForBoolProperty(const FCheatBoardParamSelectionData& CurrentSelectionData){ }
+void SFGCheatBoardWidget::ShowInputWindowForNumber(const FCheatBoardParamSelectionData& CurrentSelectionData){ }
+TSharedPtr<IFGCheatBoardParameterFilter> SFGCheatBoardWidget::ResolveGlobalParameterFilterForClass(const UClass* ClassType) const{ return TSharedPtr<IFGCheatBoardParameterFilter>(); }
+TSharedPtr<IFGCheatBoardParameterFilter> SFGCheatBoardWidget::ResolveGlobalParameterFilterForAsset(const UClass* AssetType) const{ return TSharedPtr<IFGCheatBoardParameterFilter>(); }
+void SFGCheatBoardWidget::ShowInputForClass(const UClass* SuperClass, TSharedPtr<IFGCheatBoardParameterFilter> ParameterFilter, const FCheatBoardParamSelectionData& CurrentSelectionData){ }
+void SFGCheatBoardWidget::ShowInputForAsset(const UClass* AssetClass, TSharedPtr<IFGCheatBoardParameterFilter> ParameterFilter, const FCheatBoardParamSelectionData& CurrentSelectionData){ }
+void SFGCheatBoardWidget::ShowInputWindowForText(const FProperty* Property, const FCheatBoardParamSelectionData& CurrentSelectionData){ }
+void SFGCheatBoardWidget::ShowInputWindowForEnum(const UEnum* Enum, const FCheatBoardParamSelectionData& CurrentSelectionData){ }
 void SFGCheatBoardWidget::ResetMenu(){ }
-void SFGCheatBoardWidget::ShowMenu(CheatMenuCategory* newMenu, FString title, FString filtervalue){ }
-TArray< UFunction* > SFGCheatBoardWidget::GetAllCheats(){ return TArray<UFunction*>(); }
-FReply SFGCheatBoardWidget::OnCheatClicked(CheatMenuElementPtr cheat){ return FReply::Unhandled(); }
-FReply SFGCheatBoardWidget::OnCheatFavoriteToggle(CheatMenuElementPtr cheat){ return FReply::Unhandled(); }
-void SFGCheatBoardWidget::OnInputTextCommited(const FText& InText, ETextCommit::Type InCommitType){ }
-FReply SFGCheatBoardWidget::OnInputFilterKeyDown(const FGeometry&, const FKeyEvent& InKeyEv){ return FReply::Unhandled(); }
+void SFGCheatBoardWidget::ShowMenu(const TSharedPtr<FCheatMenuCategory>& InMenu, const FString& InMenuTitle, const FCheatBoardParamSelectionData& CurrentSelectionData){ }
+FReply SFGCheatBoardWidget::OnCheatClicked(TSharedRef<FCheatMenuElement> Cheat){ return FReply::Unhandled(); }
+void SFGCheatBoardWidget::OnInputTextCommitted(const FText& InText, ETextCommit::Type InCommitType){ }
+FReply SFGCheatBoardWidget::OnInputFilterKeyDown(const FGeometry& Geometry, const FKeyEvent& KeyEvent){ return FReply::Unhandled(); }
 void SFGCheatBoardWidget::OnInputFilterChanged(const FText& InText){ }
-void SFGCheatBoardWidget::OnInputFilterCommited(const FText& InText, ETextCommit::Type InCommitType){ }
+void SFGCheatBoardWidget::OnInputFilterCommitted(const FText& InText, ETextCommit::Type InCommitType){ }
 FReply SFGCheatBoardWidget::OnClearFilter(){ return FReply::Unhandled(); }
-void SFGCheatBoardWidget::OnHoverClearFilter(){ }
-void SFGCheatBoardWidget::applyFilterWithFilterString(bool selectTypItemIfNoSelection, bool handleAndPreserveSelection){ }
-FReply SFGCheatBoardWidget::OnBoolParm(bool value){ return FReply::Unhandled(); }
-FReply SFGCheatBoardWidget::OnClassParm(UClass* inClass){ return FReply::Unhandled(); }
-FReply SFGCheatBoardWidget::OnNumInputClicked(int32 value){ return FReply::Unhandled(); }
-void SFGCheatBoardWidget::OnClassParmAction(UClass* inClass){ }
-void SFGCheatBoardWidget::OnSetColorFromColorPicker(FLinearColor newColor){ }
-FProperty* SFGCheatBoardWidget::GetNextProperty(){ return nullptr; }
-TSharedRef<ITableRow> SFGCheatBoardWidget::CheatMenu_OnGenerateRow(CheatMenuElementPtr Item, const TSharedRef<STableViewBase>& OwnerTable){ return TSharedRef<ITableRow>(); }
-void SFGCheatBoardWidget::GetVisibleChildren(CheatMenuElement* Item, TArray< CheatMenuElementPtr >& OutChildren){ }
-void SFGCheatBoardWidget::CheatMenu_OnGetChildren(CheatMenuElementPtr Item, TArray< CheatMenuElementPtr >& OutChildren){ }
-void SFGCheatBoardWidget::CheatMenu_OnSelectionChanged(CheatMenuElementPtr Item, ESelectInfo::Type SelectInfo){ }
-void SFGCheatBoardWidget::CheatMenu_OnMouseClick(CheatMenuElementPtr Item){ }
+void SFGCheatBoardWidget::ApplyFilterWithFilterString(bool bAutoSelectFirstElement){ }
+TSharedRef<SWidget> SFGCheatBoardWidget::CreateWidgetForBoolParamProperty(const FCheatMenuParam& CheatMenuParam){ return Super::RebuildWidget(); }
+FReply SFGCheatBoardWidget::OnBoolParamPicked(bool bValue){ return FReply::Unhandled(); }
+TSharedRef<SWidget> SFGCheatBoardWidget::CreateWidgetForObjectParamProperty(const FCheatMenuParam& CheatMenuParam){ return Super::RebuildWidget(); }
+FReply SFGCheatBoardWidget::OnObjectParamPicked(TObjectPtr<UObject> InObject){ return FReply::Unhandled(); }
+TSharedRef<SWidget> SFGCheatBoardWidget::CreateWidgetForNumberParamProperty(const FCheatMenuParam& CheatMenuParam){ return Super::RebuildWidget(); }
+FReply SFGCheatBoardWidget::OnNumberParamPicked(int64 NumberValue){ return FReply::Unhandled(); }
+TSharedPtr<SWidget> SFGCheatBoardWidget::CreateWidgetForTextParamProperty(const FCheatMenuParam& CheatMenuParam) const{ return TSharedPtr<SWidget>(); }
+TSharedPtr<SWidget> SFGCheatBoardWidget::CreateWidgetForToggleCheat(TSharedRef<FCheatMenuCheatToggle> CheatToggle){ return TSharedPtr<SWidget>(); }
+TSharedPtr<SWidget> SFGCheatBoardWidget::CreateWidgetForExecCheat(TSharedRef<FCheatMenuObject> CheatObject){ return TSharedPtr<SWidget>(); }
+TSharedPtr<SWidget> SFGCheatBoardWidget::CreateWidgetForParameterSelection(TSharedRef<FCheatMenuParam> CheatParam){ return TSharedPtr<SWidget>(); }
+FProperty* SFGCheatBoardWidget::GotoNextParameterProperty(FCheatBoardParamSelectionData& OutLastSelectionData){ return nullptr; }
+void SFGCheatBoardWidget::SetFocusOnButtonSlot() const{ }
+void SFGCheatBoardWidget::SetFocusOnFilterTextBox() const{ }
+TSharedRef<ITableRow> SFGCheatBoardWidget::CheatMenu_OnGenerateRow(TSharedPtr<FCheatMenuElement> Item, const TSharedRef<STableViewBase>& OwnerTable){ return TSharedRef<ITableRow>(); }
+void SFGCheatBoardWidget::CheatMenu_OnGetChildren(TSharedPtr<FCheatMenuElement> Item, TArray<TSharedPtr<FCheatMenuElement>>& OutChildren){ }
+void SFGCheatBoardWidget::CheatMenu_OnMouseClick(TSharedPtr<FCheatMenuElement> Item){ }
+void SFGCheatBoardWidget::PopulateCheatMenu(){ }
+void SFGCheatBoardWidget::PopulateCheatMenuFromObject(UObject* Object, TArray<TSharedPtr<FCheatMenuElement>>& AllCheatMenuElements, TMap<TSharedPtr<FCheatMenuElement>, FString>& CheatMenuCategories){ }
+FFGCheatBoardGetCheatObjects SFGCheatBoardWidget::GetCheatObjects = FFGCheatBoardGetCheatObjects();
 #endif
+void SFGCheatBoardWidget::Construct(const FArguments& InArgs) {
+}
+
+void SFGCheatBoardWidget::CloseCheatBoard() {
+}
+
+FReply SFGCheatBoardWidget::OnKeyDown(const FGeometry& myGeometry, const FKeyEvent& inKeyEvent) {
+	return SCompoundWidget::OnKeyDown(myGeometry, inKeyEvent);
+}
+
+bool SFGCheatBoardWidget::SupportsKeyboardFocus() const {
+	return SCompoundWidget::SupportsKeyboardFocus();
+}
+
+FReply SFGCheatBoardWidget::OnFocusReceived(const FGeometry& MyGeometry, const FFocusEvent& InFocusEvent) {
+	return SCompoundWidget::OnFocusReceived(MyGeometry, InFocusEvent);
+}
+
+FString SFGCheatBoardWidget::GetReferencerName() const {
+	return TEXT("");
+}
+
+void SFGCheatBoardWidget::AddReferencedObjects(FReferenceCollector& Collector) {
+}
+
+FCheatBoardParamSelectionData SFGCheatBoardWidget::GetRootCheatMenuSelectionData() {
+	return FCheatBoardParamSelectionData{};
+}
+
+void SFGCheatBoardWidget::SetRootCheatMenuSelectionData(const FCheatBoardParamSelectionData& NewSelectionData) {
+}
+
+void SFGCheatBoardWidget::ShowInputWindowForNextCheatParameter() {
+}
+
+void SFGCheatBoardWidget::ShowInputWindowForProperty(FProperty* Property,
+	const FCheatBoardParamSelectionData& CurrentSelectionData) {
+}
+
+void SFGCheatBoardWidget::ShowInputWindowForBoolProperty(const FCheatBoardParamSelectionData& CurrentSelectionData) {
+}
+
+void SFGCheatBoardWidget::ShowInputWindowForNumber(const FCheatBoardParamSelectionData& CurrentSelectionData) {
+}
+
+TSharedPtr<IFGCheatBoardParameterFilter> SFGCheatBoardWidget::ResolveGlobalParameterFilterForClass(
+	const UClass* ClassType) const {
+	return nullptr;
+}
+
+TSharedPtr<IFGCheatBoardParameterFilter> SFGCheatBoardWidget::ResolveGlobalParameterFilterForAsset(
+	const UClass* AssetType) const {
+	return nullptr;
+}
+
+void SFGCheatBoardWidget::ShowInputForClass(const UClass* SuperClass,
+	TSharedPtr<IFGCheatBoardParameterFilter> ParameterFilter,
+	const FCheatBoardParamSelectionData& CurrentSelectionData) {
+}
+
+void SFGCheatBoardWidget::ShowInputForAsset(const UClass* AssetClass,
+	TSharedPtr<IFGCheatBoardParameterFilter> ParameterFilter,
+	const FCheatBoardParamSelectionData& CurrentSelectionData) {
+}
+
+void SFGCheatBoardWidget::ShowInputWindowForText(const FProperty* Property,
+	const FCheatBoardParamSelectionData& CurrentSelectionData) {
+}
+
+void SFGCheatBoardWidget::ShowInputWindowForEnum(const UEnum* Enum,
+	const FCheatBoardParamSelectionData& CurrentSelectionData) {
+}
+
+void SFGCheatBoardWidget::ResetMenu() {
+}
+
+void SFGCheatBoardWidget::ShowMenu(const TSharedPtr<FCheatMenuCategory>& InMenu, const FString& InMenuTitle,
+	const FCheatBoardParamSelectionData& CurrentSelectionData) {
+}
+
+FReply SFGCheatBoardWidget::OnCheatClicked(TSharedRef<FCheatMenuElement> Cheat) {
+	return FReply::Handled();
+}
+
+void SFGCheatBoardWidget::OnInputTextCommitted(const FText& InText, ETextCommit::Type InCommitType) {
+}
+
+FReply SFGCheatBoardWidget::OnInputFilterKeyDown(const FGeometry& Geometry, const FKeyEvent& KeyEvent) {
+	return FReply::Handled();	
+}
+
+void SFGCheatBoardWidget::OnInputFilterChanged(const FText& InText) {
+}
+
+void SFGCheatBoardWidget::OnInputFilterCommitted(const FText& InText, ETextCommit::Type InCommitType) {
+}
+
+FReply SFGCheatBoardWidget::OnClearFilter() {
+	return FReply::Handled();
+}
+
+void SFGCheatBoardWidget::ApplyFilterWithFilterString(bool bAutoSelectFirstElement) {
+}
+
+TSharedRef<SWidget> SFGCheatBoardWidget::CreateWidgetForBoolParamProperty(const FCheatMenuParam& CheatMenuParam) {
+	return MakeShared<STextBlock>();
+}
+
+FReply SFGCheatBoardWidget::OnBoolParamPicked(bool bValue) {
+	return FReply::Handled();
+}
+
+TSharedRef<SWidget> SFGCheatBoardWidget::CreateWidgetForObjectParamProperty(const FCheatMenuParam& CheatMenuParam) {
+	return MakeShared<STextBlock>();
+}
+
+FReply SFGCheatBoardWidget::OnObjectParamPicked(TObjectPtr<UObject> InObject) {
+	return FReply::Handled();
+}
+
+TSharedRef<SWidget> SFGCheatBoardWidget::CreateWidgetForNumberParamProperty(const FCheatMenuParam& CheatMenuParam) {
+	return MakeShared<STextBlock>();
+}
+
+FReply SFGCheatBoardWidget::OnNumberParamPicked(int64 NumberValue) {
+	return FReply::Handled();
+}
+
+TSharedPtr<SWidget> SFGCheatBoardWidget::CreateWidgetForTextParamProperty(const FCheatMenuParam& CheatMenuParam) const {
+	return nullptr;
+}
+
+TSharedPtr<SWidget> SFGCheatBoardWidget::CreateWidgetForToggleCheat(TSharedRef<FCheatMenuCheatToggle> CheatToggle) {
+	return nullptr;
+}
+
+TSharedPtr<SWidget> SFGCheatBoardWidget::CreateWidgetForExecCheat(TSharedRef<FCheatMenuObject> CheatObject) {
+	return nullptr;
+}
+
+TSharedPtr<SWidget> SFGCheatBoardWidget::CreateWidgetForParameterSelection(TSharedRef<FCheatMenuParam> CheatParam) {
+	return nullptr;
+}
+
+FProperty* SFGCheatBoardWidget::GotoNextParameterProperty(FCheatBoardParamSelectionData& OutLastSelectionData) {
+	return nullptr;
+}
+
+void SFGCheatBoardWidget::SetFocusOnButtonSlot() const {
+}
+
+void SFGCheatBoardWidget::SetFocusOnFilterTextBox() const {
+}
+
+TSharedRef<ITableRow> SFGCheatBoardWidget::CheatMenu_OnGenerateRow(TSharedPtr<FCheatMenuElement> Item,
+	const TSharedRef<STableViewBase>& OwnerTable) {
+	return MakeShared<STableRow<UObject*>>();
+}
+
+void SFGCheatBoardWidget::CheatMenu_OnGetChildren(TSharedPtr<FCheatMenuElement> Item,
+	TArray<TSharedPtr<FCheatMenuElement>>& OutChildren) {
+}
+
+void SFGCheatBoardWidget::CheatMenu_OnMouseClick(TSharedPtr<FCheatMenuElement> Item) {
+}
+
+void SFGCheatBoardWidget::PopulateCheatMenu() {
+}
+
+void SFGCheatBoardWidget::PopulateCheatMenuFromObject(UObject* Object,
+	TArray<TSharedPtr<FCheatMenuElement>>& AllCheatMenuElements,
+	TMap<TSharedPtr<FCheatMenuElement>, FString>& CheatMenuCategories) {
+}

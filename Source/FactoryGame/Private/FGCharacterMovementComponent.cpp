@@ -10,6 +10,9 @@ FFGPipeHyperDynamicPipeData& FFGPipeHyperDynamicPipeData::operator=(const FFGPip
 FFGPipeHyperDynamicPipeData& FFGPipeHyperDynamicPipeData::operator=(FFGPipeHyperDynamicPipeData&& Other) noexcept{ return *(this); }
 bool FFGPipeHyperDynamicPipeData::Serialize(FArchive& Ar){ return bool(); }
 void FFGPipeHyperDynamicPipeData::AddStructReferencedObjects( FReferenceCollector& Collector){ }
+#if WITH_EDITOR
+bool UFGCharacterMovementComponent::MoveUpdatedComponentImpl(const FVector& Delta, const FQuat& NewRotation, bool bSweep, FHitResult* OutHit, ETeleportType Teleport){ return bool(); }
+#endif 
 UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
 	this->mLastJumpTimeStamp = 0.0;
 	this->mClimbSpeed = 500.0;
@@ -69,6 +72,8 @@ bool UFGCharacterMovementComponent::CanCrouchInCurrentState() const{ return bool
 void UFGCharacterMovementComponent::SmoothClientPosition(float DeltaSeconds){ }
 void UFGCharacterMovementComponent::SmoothCorrection(const FVector& OldLocation, const FQuat& OldRotation, const FVector& NewLocation, const FQuat& NewRotation){ }
 float UFGCharacterMovementComponent::ImmersionDepth() const{ return float(); }
+float UFGCharacterMovementComponent::BoostAirControl(float DeltaTime, float TickAirControl, const FVector& FallAcceleration){ return float(); }
+FRotator UFGCharacterMovementComponent::ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const{ return FRotator(); }
 void UFGCharacterMovementComponent::ServerSetHookLocation_Implementation(const FVector& hookLocation){ }
 bool UFGCharacterMovementComponent::ServerSetHookLocation_Validate(const FVector& hookLocation){ return bool(); }
 void UFGCharacterMovementComponent::SetHookLocation(const FVector& hookLocation){ }
@@ -109,6 +114,7 @@ void UFGCharacterMovementComponent::PhysPipe(const float deltaTime){ }
 void UFGCharacterMovementComponent::PhysZipline(const float deltaTime){ }
 void UFGCharacterMovementComponent::PhysHover(const float deltaTime){ }
 void UFGCharacterMovementComponent::PhysParachute(const float deltaTime, int32 iterations){ }
+void UFGCharacterMovementComponent::PhysCinematic(const float deltaTime, int32 iterations){ }
 void UFGCharacterMovementComponent::UpdateJetPack(float deltaSeconds){ }
 void UFGCharacterMovementComponent::UpdateHookshot(const float deltaSeconds, const FVector& oldLocation){ }
 void UFGCharacterMovementComponent::UpdateSprintStatus(){ }

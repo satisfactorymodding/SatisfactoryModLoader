@@ -7,6 +7,9 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FGUserSettingLibrary.generated.h"
 
+class UFGUserSetting;
+class IFGOptionInterface;
+
 /**
  * Blueprintlibrary with BlueprintInternalUseOnly getter functions for settings.
  * These are used by custom node UFGK2Node_GetSettingValue.
@@ -18,16 +21,16 @@ class FACTORYGAME_API UFGUserSettingLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true" ) )
-	static bool GetBoolValue( class UFGUserSetting* setting, bool& out_displayValue );
-	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true" ) )
-	static int32 GetInt32Value( class UFGUserSetting* setting, int32& out_displayValue );
-	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true" ) )
-	static float GetFloatValue( class UFGUserSetting* setting, float& out_displayValue );
-	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true" ) )
-	static void SetBoolValue( class UFGUserSetting* setting, bool value, bool forceSet );
-	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true" ) )
-	static void SetInt32Value( class UFGUserSetting* setting, int32 value, bool forceSet );
-	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true" ) )
-	static void SetFloatValue( class UFGUserSetting* setting, float value, bool forceSet );
+	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
+	static bool GetBoolValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, bool& out_displayValue, UObject* worldContext );
+	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
+	static int32 GetInt32Value( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, int32& out_displayValue, UObject* worldContext );
+	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
+	static float GetFloatValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, float& out_displayValue, UObject* worldContext );
+	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
+	static void SetBoolValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, bool value, bool forceSet, UObject* worldContext );
+	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
+	static void SetInt32Value( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, int32 value, bool forceSet, UObject* worldContext );
+	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
+	static void SetFloatValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, float value, bool forceSet, UObject* worldContext );
 };

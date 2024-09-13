@@ -7,6 +7,7 @@ AFGBuildableCircuitSwitch::AFGBuildableCircuitSwitch() : Super() {
 	this->mIsSwitchOn = false;
 	this->mHasBuildingTag = false;
 	this->mBuildingTag = TEXT("");
+	this->mInteractionRegisterPlayerWithCircuit = true;
 }
 void AFGBuildableCircuitSwitch::BeginPlay(){ }
 void AFGBuildableCircuitSwitch::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {

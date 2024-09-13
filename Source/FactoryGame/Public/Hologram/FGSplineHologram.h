@@ -30,17 +30,8 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	// End AActor Interface
-
-	// Begin FGConstructionMessageInterface
-	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
-	virtual void ClientPreConstructMessageSerialization() override;
-	virtual void ServerPostConstructMessageDeserialization() override;
-	// End FGConstructionMessageInterface
-
+	
 	virtual bool CanNudgeHologram() const override;
-
-	// Handles the pending hologram state copy
-	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
 
 	/** Checks if we have snapped to any connection */
 	virtual bool IsConnectionSnapped( bool lastConnection );
@@ -51,19 +42,22 @@ public:
 	virtual void ResetBuildSteps();
 
 	FORCEINLINE ESplineHologramBuildStep GetCurrentBuildStep() { return mBuildStep; }
-
-	//shape test used for spline hologram clerance tests
-	bool CheckClearanceForShapeIgnoreStructure( FCollisionShape& shape, FTransform transform, ECollisionChannel chanel, const FComponentQueryParams& params /*= FComponentQueryParams::DefaultComponentQueryParams */ );
 protected:
 	FORCEINLINE TArray<FSplinePointData> GetSplineData() const { return mSplineData; }
 
+	// Begin AFGHologram Interface
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
+	// End AFGHologram Interface
+	
 	/** Update the spline on the client. */
 	UFUNCTION()
-	void OnRep_SplineData();
+	virtual void OnRep_SplineData();
 
 
 	/** Let children update their spline. */
 	virtual void UpdateSplineComponent();
+
+	virtual void UpdateClearanceData();
 
 protected:
 	/** The spline component we're placing. */
@@ -73,10 +67,6 @@ protected:
 	/** This is the data needed to create the spline component (local space). */
 	UPROPERTY( ReplicatedUsing = OnRep_SplineData, CustomSerialization )
 	TArray< FSplinePointData > mSplineData;
-
-	/** Used in the construction message to determine if this has snapped to an existing connection or not */
-	UPROPERTY( CustomSerialization )
-	uint8 mIsConnectionSnappedOnConstruction;
 
 	UPROPERTY( Replicated )
 	ESplineHologramBuildStep mBuildStep = ESplineHologramBuildStep::SHBS_FindStart;

@@ -67,6 +67,9 @@ public:
 	bool mGiveCheatSchematics;
 
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats" )
+	bool mNoNarrativeMessages;
+
+	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats" )
 	EPlayerHostilityMode mSetCreatureHostility;
 	
 };
@@ -77,47 +80,35 @@ class FACTORYGAME_API UFGLocalDevSettings : public UDeveloperSettings
 	GENERATED_BODY()
 public:
 	static const UFGLocalDevSettings* Get() { return GetDefault<UFGLocalDevSettings>(); };
-
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override
-	{
-		Super::PostEditChangeProperty( PropertyChangedEvent );
-
-		const FName propertyName = PropertyChangedEvent.Property ? PropertyChangedEvent.Property->GetFName() : NAME_None;
-		if( propertyName == GET_MEMBER_NAME_CHECKED( UFGLocalDevSettings, mEnableTabAndKeyNavigation ) )
-		{
-			FFGNavigationConfig::EnableTabAndNavKeys( mEnableTabAndKeyNavigation );
-		}
-	}
-#endif
 	
-	UPROPERTY( EditAnywhere, config, Category = Game, meta = (
-		ToolTip = "Skips the tutorial step if we play in PIE" ) )
+	UPROPERTY( EditAnywhere, config, Category = Tutorial, meta = (
+		ToolTip = "Skips the tutorial/onboarding steps if we play in PIE" ) )
 	bool mSkipTutoialInPIE = true;
 
-	UPROPERTY( EditAnywhere, config, Category = Game, meta = (
+	UPROPERTY( EditAnywhere, config, Category = Game, meta = ( 
 		ToolTip = "If enabled we will autosave when playing in PIE" ) )
 	bool mEnableAutoSaveInPIE;
-
-	UPROPERTY( EditAnywhere, config, Category = Game, meta = (
-		ToolTip = "Disables HUD, playerFOV" ) )
-	bool mTrailerMode;
-
+	
 	UPROPERTY( EditAnywhere, config, Category = Game, meta = ( ToolTip = "Enable this if you want the welcome pioneer logo to show when starting a game in editor" ) )
 	bool mShowFicsitSplashWidget;
 	
 	UPROPERTY( EditAnywhere, config, Category = Game, meta = ( ToolTip = "When true it doesn't show the Unstable Save Version and Offline Session popups in editor and standalone" ) )
 	bool mDisableSaveVersionAndOfflineWarnings;
-	
-	UPROPERTY( EditAnywhere, config, Category = Focus, meta = (
-		ToolTip = "Should widgets grab focus back on focus lost in PIE. Default is off to avoid intrusive behaviour when trying to work. This is a local change only" ) )
-	bool mLocalGreedyFocusInPIE;
 
-	UPROPERTY( EditAnywhere, config, Category = Navigation, meta = (
-		ToolTip = "Enable Tab and Key navigation locally so we can test it without impact for rest of dev team or players. When this is true FFGNavigationConfig::EnableTabAndNavKeys will always set navigation to true" ) )
-	bool mEnableTabAndKeyNavigation;
+	// Couldn't use InlineEditConditionToggle for this because it wouldn't save the new value to the config so it was always reset on startup
+	UPROPERTY( EditAnywhere, config, Category = Game, meta = (
+		ToolTip = "When true we speed up research, dropship delivery etc in editor. See mReducedWaitTime to set the time" ) )
+	bool mEnableReducedWaitTime = true;
 
-	UPROPERTY( EditAnywhere, config, Category = Input, meta = (
-		ToolTip = "For debug purposes. If true we show the enhanced input mappings in the options rebinding menu instead of the legacy system" ) )
-	bool mShowEnhancedInputInOptionsMenu;
+	UPROPERTY( EditAnywhere, config, Category = Game, meta = ( EditCondition="mEnableReducedWaitTime", ClampMin = 0.2,
+		ToolTip = "When mEnableReducedWaitTime is true we replace the UFGSchematic::GetTimeToComplete time with this float value. This affects research and dropship delivery etc in PIE and standalone" ) )
+	float mReducedWaitTime = 1;
+
+	UPROPERTY( EditAnywhere, config, Category = Trailer, meta = (
+    	ToolTip = "Disables HUD, playerFOV" ) )
+    bool mTrailerMode;
+
+	UPROPERTY( EditAnywhere, config, Category = Input, meta = ( 
+		ToolTip = "Enable input for all devices (keyboard, mouse & gamepad) and activate adaptive UI when switching between them." ) )
+	bool mEnableAdaptiveInputUI = false;
 };

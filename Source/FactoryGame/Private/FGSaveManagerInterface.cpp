@@ -5,6 +5,7 @@
 FSaveHeader::FSaveHeader(){ }
 bool FSaveHeader::NetSerialize(FArchive& ar,  UPackageMap* map, bool& out_success){ return bool(); }
 void IFGSaveManagerInterface::UploadSave(const FSaveHeader& Save, FOnSaveManagerTransferCompleted CompleteDelegate, FOnSaveManagerTransferProgress ProgressDelegate){ }
-bool IFGSaveManagerInterface::IsTransferInProgress(){ return bool(); }
+void IFGSaveManagerInterface::DownloadSave(const FSaveHeader& SaveGame, FOnSaveManagerTransferCompleted CompleteDelegate, FOnSaveManagerTransferProgress ProgressDelegate){ }
+bool IFGSaveManagerInterface::IsTransferInProgress() const{ return bool(); }
 void IFGSaveManagerInterface::BindOnSavesChanged(const FOnSaveManagerRefreshSaves& OnRefreshSaves){ }
 void IFGSaveManagerInterface::UnbindOnSavesChanged(const FOnSaveManagerRefreshSaves& OnRefreshSaves){ }

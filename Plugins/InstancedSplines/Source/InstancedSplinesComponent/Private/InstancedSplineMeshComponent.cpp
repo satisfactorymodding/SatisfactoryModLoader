@@ -1,7 +1,9 @@
 // Copyright Ben de Hullu & Coffee Stain Studios 2022. All Rights Reserved.
 
 #include "InstancedSplineMeshComponent.h"
+#include "SceneInterface.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/World.h"
 
 FSplineInstancedStaticMeshSceneProxy::FSplineInstancedStaticMeshSceneProxy(UInstancedStaticMeshComponent* InComponent, ERHIFeatureLevel::Type InFeatureLevel)
 	: FInstancedStaticMeshSceneProxy(InComponent,InFeatureLevel)
@@ -275,24 +277,6 @@ FTransform UInstancedSplineMeshComponent::CalcTransformInstance( const float Alp
 	// Find base frenet frame
 	const FVector BaseXVec = (SplineUpDirection ^ SplineDir).GetSafeNormal();
 	const FVector BaseYVec = (SplineDir ^ BaseXVec).GetSafeNormal();
-
-	// We do NOT support Roll, Scale and offset right now
-#if 0
-	// Offset the spline by the desired amount
-	const FVector2D SliceOffset = FMath::Lerp<FVector2D>(StartOffset, EndOffset, Alpha);
-	SplinePos += SliceOffset.X * BaseXVec;
-	SplinePos += SliceOffset.Y * BaseYVec;
-
-	// Apply roll to frame around spline
-	const float UseRoll = FMath::Lerp(StartRoll, EndRoll, Alpha);
-	const float CosAng = FMath::Cos(UseRoll);
-	const float SinAng = FMath::Sin(UseRoll);
-	const FVector XVec = (CosAng * BaseXVec) - (SinAng * BaseYVec);
-	const FVector YVec = (CosAng * BaseYVec) + (SinAng * BaseXVec);
-
-	// Find scale at this point along spline
-	const FVector2D UseScale = FMath::Lerp(SplineParams.StartScale, SplineParams.EndScale, HermiteAlpha);
-#endif
 	
 	// Build overall transform
 	FTransform SliceTransform;
@@ -442,28 +426,3 @@ FVector UInstancedSplineMeshComponent::GetAxisMask(ESplineMeshAxis::Type InAxis)
 		return FVector::ZeroVector;
 	}
 }
-
-#if 0
-FPerInstanceSplineEntryRenderData::FPerInstanceSplineEntryRenderData(FStaticMeshInstanceData& Other, ERHIFeatureLevel::Type InFeaureLevel, bool InRequireCPUAccess, FBox InBounds, bool bTrack, bool bDeferGPUUploadIn)
-	: ResourceSize(InRequireCPUAccess ? Other.GetResourceSize() : 0)
-	, InstanceBuffer(InFeaureLevel, InRequireCPUAccess, bDeferGPUUploadIn)
-	, InstanceLocalBounds(InBounds)
-	, bTrackBounds(bTrack)
-	, bBoundsTransformsDirty(true)
-{
-	InstanceBuffer.InitFromPreallocatedData(Other);
-	InstanceBuffer_GameThread = InstanceBuffer.InstanceData;
-	if (!InstanceBuffer.CondSetFlushToGPUPending())
-	{
-		BeginInitResource(&InstanceBuffer);
-	}
-	UpdateBoundsTransforms_Concurrent();
-}
-
-FPerInstanceSplineEntryRenderData::~FPerInstanceSplineEntryRenderData()
-{
-	InstanceBuffer_GameThread.Reset();
-	// Should be always destructed on rendering thread
-	InstanceBuffer.ReleaseResource();
-}
-#endif

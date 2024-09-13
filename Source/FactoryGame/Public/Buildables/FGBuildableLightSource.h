@@ -98,9 +98,13 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "FactoryGame|Buildable|Light" )
     void SetLightControlData( FLightSourceControlData data );
 
-	/** Is this light on or off, valid on client. */
+	/** Is this light on or off, ignores time of day awareness, valid on client. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Buildable|Light" )
     bool IsLightEnabled() const;
+
+	/** Should this light be on right now, accounts for day time of day awareness, valid on client. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Buildable|Light" )
+	bool ShouldLightBeOn() const;
 
 	/** Get the control data of this light, valid on client. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Buildable|Light" )
@@ -134,6 +138,9 @@ protected:
 	/** Called when state goes from on to off or other way around.*/
 	UFUNCTION( BlueprintImplementableEvent )
     void OnUpdateMeshInfo( bool isEnabled );
+
+	UFUNCTION( BlueprintPure )
+	bool HasSufficientPowerConnection() const;
 	
 private:
 	// External delegates.

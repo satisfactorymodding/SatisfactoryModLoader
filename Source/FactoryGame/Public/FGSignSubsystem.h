@@ -11,6 +11,7 @@
 #include "Buildables/FGBuildablePixelSign.h"
 #include "FGSignSubsystem.generated.h"
 
+class UTextureRenderTarget2D;
 
 /**
 *	This Struct handles serializing net requests from clients for X number of signs and their data as well
@@ -26,233 +27,11 @@ struct FSignRPC_Data
 {
 	GENERATED_BODY()
 
-public:
-	FSignRPC_Data() {}
-	FSignRPC_Data( bool isServer ) : 
-	IsServer( isServer ) {}
+	FSignRPC_Data() = default;
+	FSignRPC_Data( bool isServer ) : IsServer( isServer ) {}
 
-	static const int32 REP_NUM_MAX = 2048;
-
-	bool NetSerialize( FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess )
-	{
-		bOutSuccess = true;
-		if( Ar.IsSaving() )
-		{
-			// If this is coming from the server to client?
-			Ar << IsServer;
-			// The number of Signs included in this payload
-			uint32 numSigns = (uint32)Signs.Num();
-			Ar << numSigns;
-
-			if( IsServer )
-			{
-				/**
-				* Per Sign ->
-				*	NETGUID : Used to identify the Sign Buildable across the network
-				*	TSubclass< UUserWidget > : The prefab layout to use
-				*	FString TextKey
-				*		FString TextData ... ( Num Keys / Num Elements)
-				*	FString IconKey
-				*		int32 IconData ... ( Num Keys / Num Elements)
-				*	Int32 Foreground_R
-				*	Int32 Foregroudn_G
-				*	Int32 Foreground_B
-				*	Int32 Background_R
-				*	Int32 Background_G
-				*	Int32 Background_B	
-				*	float Emissive
-				*	float Glossiness
-				*/
-				for( uint32 i = 0; i < numSigns; ++i )
-				{
-					// NET Guid that defines this sign buildable
-					FNetworkGUID netGuid( Map->GetNetGUIDFromObject( Signs[ i ] ) );
-					Ar << netGuid;
-
-					FPrefabSignData data; 
-					Signs[i]->GetSignPrefabData( data );
-					
-					// Send the prefab layout class
-					Ar << data.PrefabLayout;
-
-					// All Text Elements
-					TArray< FString > textElementKeys;
-					data.TextElementData.GetKeys( textElementKeys );
-					uint32 numTextElements = (uint32)textElementKeys.Num();
-
-					Ar << numTextElements;
-
-					for( FString key : textElementKeys )
-					{
-						FString textData = data.TextElementData[ key ];
-						Ar << key;
-						Ar << textData;
-					}
-
-					// All Icon Elements
-					TArray< FString > iconElementKeys;
-					data.IconElementData.GetKeys( iconElementKeys );
-					uint32 numIconElements = (uint32)iconElementKeys.Num();
-
-					Ar << numIconElements;
-
-					for( FString key: iconElementKeys )
-					{
-						int32 iconData = data.IconElementData[ key ];
-						Ar << key;
-						Ar << iconData;
-					}
-
-					// Foreground 
-					FLinearColor color = data.ForegroundColor;
-					Ar << color.R;
-					Ar << color.G;
-					Ar << color.B;
-					// Background
-					color = data.BackgroundColor;
-					Ar << color.R;
-					Ar << color.G;
-					Ar << color.B;
-					// Auxilary
-					color = data.AuxiliaryColor;
-					Ar << color.R;
-					Ar << color.G;
-					Ar << color.B;
-
-					// Emissive
-					Ar << data.Emissive;
-					// Glossiness
-					Ar << data.Glossiness;
-				}
-			}
-			else
-			{
-				// On Client we only ever send an array of NET GUIDS representing the Sign Buildables we are seeking the data to
-				for( uint32 i = 0; i < numSigns; ++i )
-				{
-					FNetworkGUID netGuid = Map->GetNetGUIDFromObject( Signs[ i ] );
-					Ar << netGuid;
-				}
-			}
-		}
-		else
-		{
-			// LOADING (Reading)
-			Ar << IsServer;
-
-			uint32 numSigns = 0;
-			Ar << numSigns;
-
-			if( IsServer == false )
-			{
-				// On server we want to take the array of NETGUIDS passed from the client and resolve them so this data payload has a valid array of sign buildables
-
-				// Safety make sure its empty
-				Signs.Empty();
-				for( uint32 i = 0; i < numSigns; ++i )
-				{
-					FNetworkGUID netGuid;
-					Ar << netGuid;
-					AFGBuildableWidgetSign* sign = Cast< AFGBuildableWidgetSign >( Map->GetObjectFromNetGUID( netGuid, true ) );
-
-					if( sign )
-					{
-						Signs.Add( sign );
-					}
-				}
-			}
-			else
-			{
-				// On client we want to turn the payload into a TMap with resolved netGuids pointing to their PrefabSignData
-
-				// Safety to make sure theres no stale data
-				SignToDataMap.Empty();
-				for( uint32 i = 0; i < numSigns; ++i )
-				{
-					// Filled as we deserialize the incoming payload
-					FPrefabSignData data;
-					
-					FNetworkGUID netGuid;
-					Ar << netGuid;
-					AFGBuildableWidgetSign* sign = Cast< AFGBuildableWidgetSign >( Map->GetObjectFromNetGUID( netGuid, true ) );
-
-					TSubclassOf< UUserWidget > prefabClass;
-					Ar << prefabClass;
-
-					data.PrefabLayout = prefabClass;
-
-					uint32 numTextElements = 0;
-					Ar << numTextElements;
-
-					for( uint32 count = 0; count < numTextElements; ++count )
-					{
-						FString textName;
-						FString textData;
-
-						Ar << textName;
-						Ar << textData;
-
-						data.TextElementData.Add( TTuple< FString, FString >( textName, textData ) );
-					}
-
-					uint32 numIconElements = 0;
-					Ar << numIconElements;
-
-					for( uint32 count = 0; count < numIconElements; ++count )
-					{
-						FString iconName;
-						int32 iconData;
-
-						Ar << iconName;
-						Ar << iconData;
-
-						data.IconElementData.Add( TTuple< FString, int32 >( iconName, iconData ) );
-					}
-
-					float R,G,B;
-					Ar << R;
-					Ar << G;
-					Ar << B;
-					data.ForegroundColor = FLinearColor( R, G, B, 1.f );
-
-					Ar << R;
-					Ar << G;
-					Ar << B;
-					data.BackgroundColor = FLinearColor( R, G, B, 1.f);
-
-					Ar << R;
-					Ar << G;
-					Ar << B;
-					data.AuxiliaryColor = FLinearColor( R, G, B, 1.f );
-
-					float val = 0.f;
-					// Emissive
-					Ar << val;
-					data.Emissive = val;
-
-					// Glossiness
-					Ar << val;
-					data.Glossiness = val;
-
-					// Flag this as coming from replication so the client doesn't trigger a SetSignData RPC on the server
-					data.IsFromReplication = true;
-
-					SignToDataMap.Add( TTuple< AFGBuildableWidgetSign*, FPrefabSignData >( sign, data ) );
-
-				}
-
-			}
-		}
-
-		return bOutSuccess;
-	}
-
-	void AddPendingSign( AFGBuildableWidgetSign* sign ) 
-	{
-		Signs.AddUnique( sign );
-	}
-
-public:
+	bool NetSerialize( FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess );
+	void AddPendingSign( AFGBuildableWidgetSign* sign );
 
 	// When receiving on Server this array will be filled by NetSerialize
 	UPROPERTY()
@@ -262,7 +41,7 @@ public:
 	UPROPERTY( NotReplicated )
 	TMap< AFGBuildableWidgetSign*, FPrefabSignData > SignToDataMap;
 
-	bool IsServer;
+	bool IsServer{false};
 };
 
 template<>
@@ -285,141 +64,13 @@ struct FClientSetSignData
 	GENERATED_BODY()
 
 public:
-
-	bool NetSerialize( FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess )
-	{
-		bOutSuccess = true;
-
-		if( Ar.IsSaving() )
-		{
-			FNetworkGUID netGuid = Map->GetNetGUIDFromObject( Sign );
-			Ar << netGuid;
-			Ar << SignData.PrefabLayout;
-
-			// All Text Elements
-			TArray< FString > textElementKeys;
-			SignData.TextElementData.GetKeys( textElementKeys );
-			uint32 numTextElements = (uint32)textElementKeys.Num();
-
-			Ar << numTextElements;
-
-			for( FString key: textElementKeys )
-			{
-				FString textData = SignData.TextElementData[ key ];
-				Ar << key;
-				Ar << textData;
-			}
-
-			// All Icon Elements
-			TArray< FString > iconElementKeys;
-			SignData.IconElementData.GetKeys( iconElementKeys );
-			uint32 numIconElements = (uint32)iconElementKeys.Num();
-
-			Ar << numIconElements;
-
-			for( FString key: iconElementKeys )
-			{
-				int32 iconData = SignData.IconElementData[ key ];
-				Ar << key;
-				Ar << iconData;
-			}
-
-			// Foreground
-			FLinearColor color = SignData.ForegroundColor;
-			Ar << color.R;
-			Ar << color.G;
-			Ar << color.B;
-			// Background
-			color = SignData.BackgroundColor;
-			Ar << color.R;
-			Ar << color.G;
-			Ar << color.B;
-			// Auxilary
-			color = SignData.AuxiliaryColor;
-			Ar << color.R;
-			Ar << color.G;
-			Ar << color.B;
-
-			// Emissive
-			Ar << SignData.Emissive;
-			// Glossiness
-			Ar << SignData.Glossiness;
-		}
-		else
-		{
-			FNetworkGUID netGuid;
-			Ar << netGuid;
-			Sign = Cast< AFGBuildableWidgetSign >( Map->GetObjectFromNetGUID( netGuid, true ) );
-
-			TSubclassOf< UUserWidget > prefabClass;
-			Ar << prefabClass;
-
-			SignData.PrefabLayout = prefabClass;
-
-			uint32 numTextElements = 0;
-			Ar << numTextElements;
-
-			for( uint32 count = 0; count < numTextElements; ++count )
-			{
-				FString textName;
-				FString textData;
-
-				Ar << textName;
-				Ar << textData;
-
-				SignData.TextElementData.Add( TTuple< FString, FString >( textName, textData ) );
-			}
-
-			uint32 numIconElements = 0;
-			Ar << numIconElements;
-
-			for( uint32 count = 0; count < numIconElements; ++count )
-			{
-				FString iconName;
-				int32 iconData;
-
-				Ar << iconName;
-				Ar << iconData;
-
-				SignData.IconElementData.Add( TTuple< FString, int32 >( iconName, iconData ) );
-			}
-
-			float R, G, B;
-			Ar << R;
-			Ar << G;
-			Ar << B;
-			SignData.ForegroundColor = FLinearColor( R, G, B, 1.f );
-
-			Ar << R;
-			Ar << G;
-			Ar << B;
-			SignData.BackgroundColor = FLinearColor( R, G, B, 1.f );
-
-			Ar << R;
-			Ar << G;
-			Ar << B;
-			SignData.AuxiliaryColor = FLinearColor( R, G, B, 1.f );
-
-			float val = 0.f;
-			// Emissive
-			Ar << val;
-			SignData.Emissive = val;
-
-			// Glossiness
-			Ar << val;
-			SignData.Glossiness = val;
-			
-		}
-
-		return bOutSuccess;
-	};
+	bool NetSerialize( FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess );
 
 	UPROPERTY()
 	AFGBuildableWidgetSign* Sign;
 
 	UPROPERTY()
 	FPrefabSignData SignData;
-
 };
 
 template<>
@@ -561,8 +212,6 @@ public:
 
 	UWidgetComponent* GetWidgetByGUID(uint32 GUID);
 private:
-	
-
 	/** Tracks whether the subsystem is waiting for a sign data request is pending from the server. If so, no new requests will be issued */
 	bool mHasPendingClientRequest;
 
@@ -588,6 +237,4 @@ private:
 	TMap< int32, UFGSignPixelInstanceManager* > mPixelInstanceManagerMap;
 
 	TArray< AFGBuildablePixelSign* > mAllPixelSigns;
-
-
 };

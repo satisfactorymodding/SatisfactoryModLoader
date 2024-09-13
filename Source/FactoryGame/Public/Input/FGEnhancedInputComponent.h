@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "FGInputSettings.h"
 #include "GameplayTagContainer.h"
+#include "Engine/Engine.h"
 #include "FGEnhancedInputComponent.generated.h"
 
 /**

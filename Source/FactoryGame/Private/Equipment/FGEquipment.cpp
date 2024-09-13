@@ -4,31 +4,41 @@
 #include "Net/UnrealNetwork.h"
 
 AFGEquipment::AFGEquipment() : Super() {
-	this->mAttachmentClass = nullptr;
-	this->mSecondaryAttachmentClass = nullptr;
 	this->mEquipmentSlot = EEquipmentSlot::ES_NONE;
 	this->mSprintHeadBobCameraAnim = nullptr;
-	this->mEquipSound = nullptr;
-	this->mUnequipSound = nullptr;
-	this->mEquipmentWidget = nullptr;
+	this->mHasStingerMontage = false;
+	this->mUnEquipMontage.AudioEvent = nullptr;
+	this->mUnEquipMontage.bSeparate3PAudioEvent = false;
+	this->mUnEquipMontage.AudioEvent3P = nullptr;
 	this->mChildEquipment = nullptr;
+	this->mMontageBlendOutTime = 0.0;
 	this->m1PAnimClass = nullptr;
 	this->mAttachSocket = TEXT("None");
 	this->mChildEquipmentClass = nullptr;
 	this->mNeedsDefaultEquipmentMappingContext = true;
 	this->mArmAnimation = EArmEquipment::AE_None;
 	this->mBackAnimation = EBackEquipment::BE_None;
-	this->mHasPersistentOwner = false;
-	this->mOnlyVisibleToOwner = true;
 	this->mMappingContext = nullptr;
 	this->mDefaultEquipmentActions = 0;
-	this->mAttachment = nullptr;
-	this->mSecondaryAttachment = nullptr;
+	this->mPickedEquipMontage.Weight = 1.0;
+	this->mPickedEquipMontage.Filter = false;
+	this->mPickedEquipMontage.FilterMontageTag = TEXT("None");
+	this->mPickedEquipMontage.InvertFilter = false;
+	this->mPickedEquipMontage.Exclusive = false;
+	this->mPickedEquipMontage.Montage_1P = nullptr;
+	this->mPickedEquipMontage.Montage_3P = nullptr;
+	this->mPickedEquipMontage.Montage_Equipment = nullptr;
+	this->mPickedEquipMontage.AudioEvent = nullptr;
+	this->mPickedEquipMontage.bSeparate3PAudioEvent = false;
+	this->mPickedEquipMontage.AudioEvent3P = nullptr;
+	this->mPickedEquipMontage.CameraAnim = nullptr;
 	this->mIdlePoseAnimation = nullptr;
 	this->mIdlePoseAnimation3p = nullptr;
 	this->mCrouchPoseAnimation3p = nullptr;
 	this->mSlidePoseAnimation3p = nullptr;
 	this->mAttachmentIdleAO = nullptr;
+	this->mPlayerCharacter = nullptr;
+	this->mEquipmentLookAtDescOverride = INVTEXT("");
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -42,8 +52,6 @@ AFGEquipment::AFGEquipment() : Super() {
 void AFGEquipment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGEquipment, mChildEquipment);
-	DOREPLIFETIME(AFGEquipment, mAttachment);
-	DOREPLIFETIME(AFGEquipment, mSecondaryAttachment);
 }
 void AFGEquipment::PreReplication(IRepChangedPropertyTracker & ChangedPropertyTracker){ }
 void AFGEquipment::OnRep_AttachmentReplication(){ }
@@ -56,41 +64,55 @@ void AFGEquipment::PostLoadGame_Implementation(int32 saveVersion, int32 gameVers
 void AFGEquipment::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGEquipment::NeedTransform_Implementation(){ return bool(); }
 bool AFGEquipment::ShouldSave_Implementation() const{ return bool(); }
+FFGDynamicStruct AFGEquipment::ConvertToItemState(TSubclassOf<UFGItemDescriptor> itemDescriptor) const{ return FFGDynamicStruct(); }
 void AFGEquipment::Equip( AFGCharacterPlayer* character){ }
 void AFGEquipment::UnEquip(){ }
 void AFGEquipment::OnCharacterMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode, EMovementMode NewMovementMode, uint8 NewCustomMode){ }
-void AFGEquipment::UpdatePrimitiveColors(){ }
+void AFGEquipment::UpdatePrimitiveColors(FLinearColor Primary, FLinearColor Secondary, FLinearColor Detail){ }
 void AFGEquipment::UpdateMaterialsFromCameraMode(){ }
 void AFGEquipment::DisableEquipment(){ }
+void AFGEquipment::SetupTrinketMeshes_Implementation(bool bIsLocalInstigator, USkeletalMesh* TrinketChainMesh, FName TrinketChainSocketName, UStaticMesh* TrinketMesh, FName TrinketSocketName){ }
 AFGCharacterPlayer* AFGEquipment::GetInstigatorCharacter() const{ return nullptr; }
-void AFGEquipment::OnColorUpdate(int32 index){ }
+void AFGEquipment::ApplyPlayerCustomizationData(const FPlayerCustomizationData& NewCustomizationData){ }
 bool AFGEquipment::IsLocalInstigator() const{ return bool(); }
-bool AFGEquipment::ShouldSaveState() const{ return bool(); }
-void AFGEquipment::SetAttachment( AFGEquipmentAttachment* newAttachment){ }
-void AFGEquipment::SetSecondaryAttachment( AFGEquipmentAttachment* newAttachment){ }
-void AFGEquipment::Server_UpdateAttachmentUseState_Implementation(int newUseState){ }
-bool AFGEquipment::Server_UpdateAttachmentUseState_Validate(int newUseState){ return bool(); }
+void AFGEquipment::LoadFromItemState_Implementation(const FFGDynamicStruct& itemState){ }
+FFGDynamicStruct AFGEquipment::SaveToItemState_Implementation() const{ return FFGDynamicStruct(); }
+void AFGEquipment::FlushItemState(){ }
 float AFGEquipment::AdjustDamage_Implementation(const float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ return float(); }
+bool AFGEquipment::CanPickBestUsableActor_Implementation() const{ return bool(); }
 EEquipmentSlot AFGEquipment::GetEquipmentSlot(TSubclassOf< AFGEquipment > inClass){ return EEquipmentSlot(); }
 void AFGEquipment::SpawnChildEquipment(){ }
 bool AFGEquipment::ShouldShowStinger() const{ return bool(); }
 void AFGEquipment::WasRemovedFromSlot_Implementation(){ }
 void AFGEquipment::WasSlottedIn_Implementation( AFGCharacterPlayer* holder){ }
-void AFGEquipment::GetSupportedConsumableTypes(TArray<TSubclassOf< UFGItemDescriptor >>& out_itemDescriptors) const{ }
-int AFGEquipment::GetSelectedConsumableTypeIndex() const{ return int(); }
-void AFGEquipment::SetSelectedConsumableTypeIndex(const int selectedIndex){ }
+void AFGEquipment::GetSupportedConsumableTypes(TArray<TSubclassOf<UFGItemDescriptor>>& out_itemDescriptors) const{ }
+TSubclassOf<UFGItemDescriptor> AFGEquipment::GetSelectedConsumableType() const{ return TSubclassOf<UFGItemDescriptor>(); }
+void AFGEquipment::SetSelectedConsumableType(const TSubclassOf<UFGItemDescriptor> selectedConsumableType){ }
 int32 AFGEquipment::GetMappingContextPriority() const{ return int32(); }
 ECameraMode AFGEquipment::GetInstigatorCameraMode() const{ return ECameraMode(); }
 void AFGEquipment::OnCameraModeChanged_Implementation(ECameraMode newCameraMode){ }
+void AFGEquipment::SetEquipmentVisibility_Implementation(bool bNewEquipmentVisible){ }
+void AFGEquipment::OnPostCameraModeChanged_Implementation(ECameraMode newCameraMode){ }
 void AFGEquipment::OnInteractWidgetAddedOrRemoved( UFGInteractWidget* widget, bool added){ }
+void AFGEquipment::PlayEquipmentMontage(const FFGEquipmentMontage& equipmentMontage){ }
+UAnimMontage* AFGEquipment::GetActiveCharacterAnimMontage(const FFGEquipmentMontage& equipmentMontage) const{ return nullptr; }
+UAnimMontage* AFGEquipment::GetActiveCharacterAnimMontageWeighted(const FFGWeightedEquipmentMontage& equipmentMontage) const{ return nullptr; }
+bool AFGEquipment::IsEquipmentMontageAllowed(const FFGWeightedEquipmentMontage& montage) const{ return bool(); }
+bool AFGEquipment::IsEquipmentMontageTagAllowed_Implementation(FName montageTag) const{ return bool(); }
+TArray<FString> AFGEquipment::GetAvailableMontageTags_Implementation() const{ return TArray<FString>(); }
+void AFGEquipment::PlayWeightedEquipmentMontage(const FFGWeightedEquipmentMontageArray& montageArray, FFGWeightedEquipmentMontage& out_pickedMontage){ }
 void AFGEquipment::PlayCameraAnimation( UCameraAnimationSequence* cameraAnimationSequence){ }
-void AFGEquipment::Server_TriggerDefaultEquipmentActionEvent_Implementation(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
+void AFGEquipment::PlayUnEquipMontage() const{ }
+EArmEquipment AFGEquipment::GetCurrentArmEquipmentAnimation() const{ return EArmEquipment(); }
+FFGWeightedEquipmentMontage AFGEquipment::GetPlayedEquipMontage() const{ return FFGWeightedEquipmentMontage(); }
+void AFGEquipment::StopCurrentEquipmentMontage(bool bStopSounds){ }
 void AFGEquipment::TriggerDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
+void AFGEquipment::OnEquipmentSpawned(AFGCharacterPlayer* equipmentOwner){ }
+void AFGEquipment::Server_TriggerDefaultEquipmentActionEvent_Implementation(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
 void AFGEquipment::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
 void AFGEquipment::WasEquipped_Implementation(){ }
 void AFGEquipment::WasUnEquipped_Implementation(){ }
-void AFGEquipment::AddEquipmentHUD() const{ }
-void AFGEquipment::RemoveEquipmentHUD() const{ }
+void AFGEquipment::OnCharacterRagdollStateChanged(bool isRagdolled){ }
 void AFGEquipment::SetEquipmentTicks(bool inTick){ }
 void AFGEquipment::AddEquipmentActionBindings(){ }
 void AFGEquipment::ClearEquipmentActionBindings(){ }
@@ -104,3 +126,4 @@ void AFGEquipment::OnChildEquipmentReplicated(){ }
 void AFGEquipment::SetMappingContextApplied(bool applied){ }
 void AFGEquipment::Input_DefaultPrimaryFire(const FInputActionValue& actionValue){ }
 void AFGEquipment::Input_DefaultSecondaryFire(const FInputActionValue& actionValue){ }
+void AFGEquipment::AddFirstPersonComponentAndMaterialsEntry(FName compName, TArray<  UMaterialInterface* > firstPersonMaterials){ }

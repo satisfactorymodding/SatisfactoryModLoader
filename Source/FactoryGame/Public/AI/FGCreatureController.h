@@ -156,6 +156,7 @@ public:
 	virtual void OnPossess( APawn* InPawn ) override;
 	virtual void OnUnPossess() override;
 	virtual FPathFollowingRequestResult MoveTo( const FAIMoveRequest& MoveRequest, FNavPathSharedPtr* OutPath = nullptr ) override;
+	virtual void UpdateControlRotation( float DeltaTime, bool bUpdatePawn = true ) override;
 	// End AIController Interface
 
 	// Begin AActor Interface
@@ -323,6 +324,7 @@ public:
     UFUNCTION()
     void OnCreatureMovementModeChanged( EMovementMode PrevMovementMode, uint8 PreviousCustomMode );
 
+	bool GetAlignRotationToFloor() const { return mAlignRotationToFloor; }
 protected:
 	/** Used to update the state of the creature. */
 	void UpdateCreatureState();
@@ -468,6 +470,10 @@ protected:
 	/** Will be alerted by noise which is within this distance. */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
 	float mNoiseAlertDistance;
+
+	/** Tilt controller rotation toward the floor normal. Don't forget to set rotation rates in movement component to use this vales! Only pitch is supported for now */
+	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	bool mAlignRotationToFloor;
 	
 	UPROPERTY()
 	TArray< FFGCreatureAggroData > mAggroTargets;

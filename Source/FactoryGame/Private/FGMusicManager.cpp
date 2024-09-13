@@ -21,3 +21,4 @@ UFGMusicManager::UFGMusicManager() : Super() {
 }
 void UFGMusicManager::Update(){ }
 void UFGMusicManager::Init(UWorld* inWorld){ }
+AkGameObjectID UFGMusicManager::GetAkGameObjectID() const{ return AkGameObjectID(); }

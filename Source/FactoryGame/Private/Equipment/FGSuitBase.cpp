@@ -8,5 +8,3 @@ AFGSuitBase::AFGSuitBase() : Super() {
 }
 void AFGSuitBase::WasEquipped_Implementation(){ }
 void AFGSuitBase::WasUnEquipped_Implementation(){ }
-void AFGSuitBaseAttachment::OnAttach_Implementation(){ }
-void AFGSuitBaseAttachment::OnDetach_Implementation(){ }

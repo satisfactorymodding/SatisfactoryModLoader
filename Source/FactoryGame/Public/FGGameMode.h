@@ -2,18 +2,85 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGSaveSystem.h"
-#include "GameFramework/GameMode.h"
-#include "FGSaveInterface.h"
 #include "Engine/World.h"
+#include "FGSaveInterface.h"
+#include "GameFramework/GameMode.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "FGGameMode.generated.h"
 
+class AFGGameSession;
 class UFGRemoteCallObject;
+class AFGAdminInterface;
+class AFGGameMode;
+class FVariant;
 
-UCLASS( config = Game )
-class FACTORYGAME_API AFGGameMode final : public AGameMode, public IFGSaveInterface
+/** Struct holding a data about the save game data is pending to be loaded */
+struct FACTORYGAME_API FGameModeLoadData
+{
+	/** True if we will load a save game */
+	bool IsValidLoad{false};
+	/** Name of the save game to load */
+	FString LoadName;
+};
+
+class FACTORYGAME_API FDedicatedServerGameModeComponentPreLoginDataInterface
+{
+public:
+	virtual ~FDedicatedServerGameModeComponentPreLoginDataInterface() = default;
+};
+
+/** Interface the implementation of which the dedicated server subsystem can provide to implement dedicated server specific logic in the game mode */
+UCLASS( Abstract, Within = "FGGameMode" )
+class FACTORYGAME_API UFGDedicatedServerGameModeComponentInterface : public UObject
 {
 	GENERATED_BODY()
+public:
+	// Begin UObject interface
+	virtual UWorld* GetWorld() const override;
+	// End UObject interface
+
+	AFGGameMode* GetOwnerGameMode() const;
+	
+	/** Notifies the dedicated server game mode component that the owner's FGGameMode has received BeginPlay */
+	virtual void NotifyBeginPlay() {}
+
+	/** Notifies the dedicated server game mode component that the owner's FGGameMode has received EndPlay */
+	virtual void NotifyEndPlay( EEndPlayReason::Type ) {}
+
+	/** Gives the server component a chance to tick with the game mode */
+	virtual void Tick( float DeltaTime ) {}
+
+	/** Allows the DS game mode component to be notified when the game mode's game is initialized, and potentially abort it */
+	virtual void NotifyInitGame( const FString& MapName, const FString& Options, FString& ErrorMessage ) {}
+
+	/** Called as a validation step during the AGameMode::Login to make sure the dedicated servers allows the player to log in */
+	virtual bool PreLogin( UPlayer* NewPlayer, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage, TSharedPtr<FDedicatedServerGameModeComponentPreLoginDataInterface>& OutPreLoginData ) { return true; }
+
+	/** Called after the PreLogin has been processed and the player created */
+	virtual void PostLogin( APlayerController* PlayerController, const TSharedPtr<FDedicatedServerGameModeComponentPreLoginDataInterface>& PreLoginData ) {}
+
+	/** Notifies the DS game mode component that the player is leaving the game */
+	virtual void NotifyPlayerLogout( AController* ExitingController ) {}
+
+	/** Allows the dedicated server to determine whenever the game mode in question should skip onboarding. */
+	virtual bool ShouldSkipOnboarding( bool bGameModeSkipOnboarding ) const { return bGameModeSkipOnboarding; };
+
+	/** Allows the dedicated server to determine whenever the game mode in question should currently be paused. */
+	virtual bool IsPaused( bool bGameModePaused ) const { return bGameModePaused; }
+
+	/** Allows the dedicated server to determine whenever the player in question is allowed to cheat. */
+	virtual bool AllowCheats( APlayerController* PlayerController ) const { return false; }
+
+	/** Allows the dedicated server to override the default game mode class */
+	virtual TSubclassOf<AFGGameSession> OverrideGameSessionClass( TSubclassOf<AFGGameSession> InGameSessionClass ) const { return InGameSessionClass; }
+};
+
+/** Base class for the FactoryGame GameModes, both in main menu and in game */
+UCLASS( Config = "Game" )
+class FACTORYGAME_API AFGGameMode : public AGameMode, public IFGSaveInterface
+{
+	GENERATED_BODY()
+	friend class UFGGameModeStatics;
 public:
 	AFGGameMode();
 
@@ -23,6 +90,7 @@ public:
 
 	// Begin AActor
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	// End AActor
 
@@ -44,12 +112,13 @@ public:
 	virtual bool AllowCheats( APlayerController* p ) override;
 	virtual AActor* ChoosePlayerStart_Implementation( AController* player ) override;
 	virtual void RestartPlayer( AController* newPlayer ) override;
-	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
-	virtual bool IsPaused() const override;
 	virtual void PostLogin( APlayerController* newPlayer ) override;
+	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout( AController* exiting ) override;
 	virtual bool FindInactivePlayer( APlayerController* PC ) override;
 	virtual void GenericPlayerInitialization(AController* C) override;
+	virtual bool IsPaused() const override;
+	virtual void InitStartSpot_Implementation(AActor* StartSpot, AController* NewPlayer) override;
 	// End AGameModeBase interface
 
 	/** All actors initialized, notify the save system */
@@ -65,6 +134,7 @@ public:
 	FORCEINLINE FString GetSaveSessionName() const { return mSaveSessionName; }
 
 	/** Set the session id of our current session */
+	UFUNCTION( BlueprintCallable )
 	void SetSaveSessionName( const FString& name );
 
 	/** Get the save system */
@@ -106,14 +176,21 @@ public:
 	void RebootSession();
 
 	/** Check if we should skip onboarding/tutorial. Safe to call after AGameModeBase::InitGame */
-	bool ShouldSkipOnboarding() const;
+	virtual bool ShouldSkipOnboarding() const;
 
+	/** Returns the data about the pending save game load. Only useful in a very limited amount of cases. */
+	FORCEINLINE FGameModeLoadData GetLoadData() const { return mLoadData; }
+
+	FORCEINLINE UFGDedicatedServerGameModeComponentInterface* GetDedicatedServerInterface() const { return mDedicatedServerInterface; }
 public:
 	/** Name of the start location option that is parsed */
 	static const TCHAR* StartLocationOption;
 
 	/** Name of the load game option that is parsed */
 	static const TCHAR* LoadGameOption;
+
+	/** Name of the session name option that is parsed */
+	static const TCHAR* SessionNameOption;
 
 	/** Name for the skip onboarding/tutorial/intro option */
 	static const TCHAR* SkipOnboarding;
@@ -123,11 +200,13 @@ public:
 
 	/** Name for the enabling advanced game settings (Game Modes) option when loading a save */
 	static const TCHAR* EnableAdvancedGameSettingsOption;
-	
-protected:
-	/** Set the desired world time we want to restart the server */
-	void SetServerRestartWorldTime( const float worldTime );
 
+	/** Name for the option enabling possessing any player pawn on the map */
+	static const TCHAR* AllowPossessAnyOption;
+
+	/** List of map options that should never be saved into the save files. This includes options that are saved in the different places, for example, or one-time options like ?listen */
+	static TSet<FString> MapOptionsToNeverSave;
+protected:
 	/** Trigger a save to save the world */
 	UFUNCTION( exec )
 	void TriggerWorldSave( const FString& saveGameName );
@@ -136,8 +215,15 @@ protected:
 	UFUNCTION( exec )
 	void TriggerBundledWorldSave( const FString& saveGameName );
 
-	UFUNCTION(Exec)
-	void JoinSessionByIdD(const FString& sessionId);
+	/** Just a test function, do not use in real code */
+	UFUNCTION( exec )
+	void BuildFoundationsBro( int32 howMany );
+
+	UFUNCTION( exec )
+	void ShowInviteUI();
+
+	UFUNCTION( exec )
+	void PrintSessionId();
 
 	/**
 	 * If return true, then this is a pawn that we can take control of during spawning, else it's not valid
@@ -146,11 +232,14 @@ protected:
 	bool IsValidPawnToReclaim( APawn* pawn ) const;
 	
 private:
+	/** Called by the option manager when the session restart interval has changed */
+	void OnSessionRestartTimeSlotUpdated( FString OptionName, FVariant OptionValue );
+public:
 	/**
 	 * Get the name of the save that we want to create when rebooting the session due to long server uptimes
 	 */
 	void GetRestartSessionSaveName( FString& out_sessionName ) const;
-
+private:
 	/** Build the URL for restarting the session */
 	void BuildRestartSessionURL( const FString& saveName, FString& out_sessionUrl ) const;
 
@@ -166,24 +255,20 @@ private:
 		TArray< APlayerStart* >& out_unOccupied,
 		TArray< APlayerStart* >& out_occupied ) const;
 
-	/** 
-	* Check if two unique net IDs are the same but on different OSS versions 
-	* Used when going from MCP -> EOS. Can also be modified to cover moves from MCP -> STEAM or EOS -> STEAM
-	* This is just a failsafe when loading a save file on a new platform. Otherwise this logic is handled by AGameMode::FindInactivePlayer
-	* Returns true for some special cases. Check implementation for more details
-	*/
-	static bool CompareUniqueNetIdBetweenOSS( const FUniqueNetIdRepl& newID, const FUniqueNetIdRepl& savedID );
-
+	void DiscoverDefaultRemoteCallObjects();
+	void RecalculateSessionRestartTime();
+	void TickSessionRebootTimer();
 protected:
 	UPROPERTY()
 	UFGSaveSession* mSaveSession;
-	
+
+	/** Data about the save game we will load */
+	FGameModeLoadData mLoadData;
+
+	/** The name of the session we are playing */
+	UPROPERTY( SaveGame )
+	FString mSaveSessionName;
 private:
-	struct FLoadData
-	{
-		bool IsValidLoad;
-		FString LoadName;
-	} mLoadData;
 
 	/** If true, then this game should be started from a load game */
 	bool mFromLoadGame;
@@ -194,10 +279,6 @@ private:
 	/** Last AutoSave was this id */
 	UPROPERTY( SaveGame )
 	uint8 mLastAutoSaveId;
-
-	/** The name of the session we are playing */
-	UPROPERTY( SaveGame )
-	FString mSaveSessionName;
 
 	/** In minutes, how long is the daytime */
 	float mDayLength;
@@ -217,21 +298,35 @@ private:
 	UPROPERTY()
 	FName mDebugStartingPointTagName;
 
-	/** Config property to reference remote call objects for player controllers */
-	UPROPERTY( Config )
-	TArray< FSoftClassPath > mDefaultRemoteCallObjectsClassNames;
-
 	/** These are the default Remote Call Objects for this PlayerController */
+	UPROPERTY( Transient )
 	TArray< TSubclassOf< UFGRemoteCallObject > > mRemoteCallObjectsClassNames;
 
-	/** After how many hours should the server restart itself */
-	UPROPERTY( Config )
-	float mServerRestartTimeHours;
-
-	/** Handle to server restart timer */
-	FTimerHandle mServerRestartHandle;
+	bool bWantsSessionReboot{false};
+	FDateTime SessionStartTime;
+	FDateTime SessionRestartTime;
+	int32 LastSessionRestartTimerNotificationIndex{100};
+	bool bSessionRestartScheduled{false};
 
 	UPROPERTY( EditDefaultsOnly, Category = "Default" )
 	bool mIsMainMenu;
-	
+
+	/** Dedicated server component interface */
+	UPROPERTY( Transient )
+	UFGDedicatedServerGameModeComponentInterface* mDedicatedServerInterface;
+};
+
+UCLASS(BlueprintType)
+class FACTORYGAME_API UFGGameModeStatics: public UBlueprintFunctionLibrary
+{
+	GENERATED_BODY()
+public:
+	UFUNCTION(BlueprintPure)
+	static FName GetStartingAreaNameFromOptions(const TMap<FString, FString> &Options);
+
+	UFUNCTION(BlueprintPure)
+	static bool HasSkipOnboardingOption(const TMap<FString, FString> &Options);
+
+	UFUNCTION(BlueprintPure)
+	static bool HasAdvancedGameSettings(const TMap<FString, FString> &Options);
 };

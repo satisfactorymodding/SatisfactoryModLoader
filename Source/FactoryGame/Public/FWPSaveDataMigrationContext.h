@@ -101,6 +101,15 @@ struct FObjectSaveData
 			Ar << saveData.SaveVersion;
 			Ar << saveData.ShouldMigrateObjectRefsToPersistent;	
 		}
+		else
+		{
+			// [Dylan 11/06/2024] Before we introduce actor custom version we should just use the archives custom version as a best approximation. The lack of this was causing migration issues from older saves
+			if( Ar.IsLoading() )
+			{
+				int32 saveCustomVersion = Ar.CustomVer(  FSaveCustomVersion::GUID  );
+				saveData.SaveVersion = saveCustomVersion;
+			}
+		}
 		Ar << saveData.Data;
 		return Ar;
 	}
@@ -230,7 +239,7 @@ public:
 	
 	static void SaveValidationData( FArchive& WriteAr, class UFGSaveSession& SaveSession );
 #if WITH_EDITOR
-	static void CollectSaveGameValidationData(const class UWorldPartitionRuntimeLevelStreamingCell& Cell, class AFGWorldSettings& WorldSettings);
+	static void CollectSaveGameValidationData(const struct FSpatialHashStreamingGrid& Grid, const class UWorldPartitionRuntimeLevelStreamingCell& Cell, class AFGWorldSettings& WorldSettings);
 	static void CollectSaveGameValidationDataForPersistentLevel(const ULevel& Level, class AFGWorldSettings& WorldSettings);
 #endif
 	

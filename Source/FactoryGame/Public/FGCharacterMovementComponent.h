@@ -19,16 +19,16 @@ struct FACTORYGAME_API FFGPendingHyperJunctionInfo
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper")
-	AFGBuildablePipeHyperJunction* mJunction;
+	AFGBuildablePipeHyperJunction* mJunction = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper")
-	UFGPipeConnectionComponentBase* mConnectionEnteredThrough;
+	UFGPipeConnectionComponentBase* mConnectionEnteredThrough = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper")
-	float mDistanceToJunction;
+	float mDistanceToJunction = 0.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hyper Tube")
-	float mLastJunctionCheckDistance;
+	float mLastJunctionCheckDistance = 0.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hyper Tube")
 	TArray<FFGPipeHyperJunctionConnectionInfo> mAvailableOutputConnections;
@@ -234,11 +234,10 @@ enum class ECustomMovementMode : uint8
 	CMM_Ladder				UMETA( DisplayName = "Ladder" ),
 	CMM_PipeHyper			UMETA( DisplayName = "Hyper Pipe" ),
 	CMM_Zipline				UMETA( DisplayName = "Zipline" ),
-
-	// Three hover modes to better represent the "current" hover state with the SavedMove system
 	CMM_Hover				UMETA( DisplayName = "Hover" ),
 	CMM_HoverSlowFall		UMETA( DisplayName = "Hover Slow Fall" ),
-	CMM_Parachute			UMETA( DisplayName = "Parachute" )
+	CMM_Parachute			UMETA( DisplayName = "Parachute" ),
+	CMM_Cinematic			UMETA( DisplayName = "Cinematic (Root Motion/Intro Sequence)" )
 };
 inline bool operator==(const uint8 a, const ECustomMovementMode b)
 {
@@ -273,6 +272,8 @@ public:
 	virtual void SmoothClientPosition( float DeltaSeconds ) override;
 	virtual void SmoothCorrection(const FVector& OldLocation, const FQuat& OldRotation, const FVector& NewLocation, const FQuat& NewRotation) override;
 	virtual float ImmersionDepth() const override;
+	virtual float BoostAirControl(float DeltaTime, float TickAirControl, const FVector& FallAcceleration) override;
+	virtual FRotator ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const override;
 	// End UCharacterMovementComponent
 
 	UFUNCTION( Reliable, Server, WithValidation )
@@ -445,7 +446,9 @@ protected:
 	virtual void OnMovementUpdated(float deltaSeconds, const FVector & oldLocation, const FVector & oldVelocity) override;
 	virtual void OnMovementModeChanged( EMovementMode PreviousMovementMode, uint8 PreviousCustomMode ) override;
 	virtual void PhysCustom( float deltaTime, int32 Iterations ) override;
-
+#if WITH_EDITOR
+	virtual bool MoveUpdatedComponentImpl(const FVector& Delta, const FQuat& NewRotation, bool bSweep, FHitResult* OutHit, ETeleportType Teleport) override;
+#endif
 	void ExecuteDeferredCollisionChange();
 	// End UCharacterMovementComponent
 
@@ -473,6 +476,9 @@ private:
 
 	/** Apply parachute physics */
 	void PhysParachute( const float deltaTime, int32 iterations );
+
+	/** Applies cinematic root motion physics, and nothing else */
+	void PhysCinematic( const float deltaTime, int32 iterations );
 
 	/** Updates everything that has to do with JetPack */
 	void UpdateJetPack( float deltaSeconds );
@@ -539,9 +545,6 @@ public:
 	
 	/** Keeps is the player sprinting this update or not? */
 	bool mIsSliding;
-
-	/** Keep track of what status was for mIsSliding */
-	bool mLastIsSliding; 
 
 	/** True if the player is pressing jump */
 	bool mIsPressingJump;
@@ -762,15 +765,16 @@ public:
 	uint8 mSavedIsPressingJump : 1;
 
 	uint8 mSavedWantsToSprintOnZipline : 1;
+
+	float mSavedSlideTime;
+
+	float mSavedLastSlideTime;
 	
 	FVector mSavedHookLocation;
 
-	float mPipeMoveProgress;
-	float mPipeMoveVel;
-	float mPipeMoveTime;
-	AActor* mPipeMovePipe = nullptr;
-	FFGPipeHyperDynamicPipeData mPipeMovePipeData;
 	TSoftObjectPtr<UFGParachuteSettings> mParachuteSettings;
+
+	// TODO @Nick: We should probably remember pipe data here to make sure the player takes the same junction path if their movement is rolled back, but this is not important enough right now to look into
 };
 
 class FNetworkPredictionData_Client_FGMovement final : public FNetworkPredictionData_Client_Character

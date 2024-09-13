@@ -7,9 +7,9 @@ UFGProductionIndicatorComponent::UFGProductionIndicatorComponent() : Super() {
 	this->PrimaryComponentTick.TickGroup = ETickingGroup::TG_DuringPhysics;
 	this->PrimaryComponentTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryComponentTick.bTickEvenWhenPaused = false;
-	this->PrimaryComponentTick.bCanEverTick = true;
-	this->PrimaryComponentTick.bStartWithTickEnabled = true;
-	this->PrimaryComponentTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryComponentTick.bCanEverTick = false;
+	this->PrimaryComponentTick.bStartWithTickEnabled = false;
+	this->PrimaryComponentTick.bAllowTickOnDedicatedServer = false;
 	this->PrimaryComponentTick.TickInterval = 0.0;
 }
 void UFGProductionIndicatorComponent::OnUnregister(){ Super::OnUnregister(); }

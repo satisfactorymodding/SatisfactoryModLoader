@@ -24,8 +24,8 @@ bool UFGPipeConnectionComponentBase::CanSnapTo(UFGPipeConnectionComponentBase* o
 bool UFGPipeConnectionComponentBase::CanConnectTo(UFGPipeConnectionComponentBase* otherConnection) const{ return bool(); }
 bool UFGPipeConnectionComponentBase::CheckCompatibility(UFGPipeConnectionComponentBase* otherConnection,  AFGHologram* buildStepOwner){ return bool(); }
 FVector UFGPipeConnectionComponentBase::GetConnectorLocation(bool withClearance) const{ return FVector(); }
-UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindCompatibleOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection){ return nullptr; }
-UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection){ return nullptr; }
+UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindCompatibleOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, const AActor* priorityActor, float radius){ return nullptr; }
+UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, const AActor* priorityActor, float radius){ return nullptr; }
 void UFGPipeConnectionComponentBase::UpdateClientCachedConnection(){ }
 UFGPipeConnectionComponent::UFGPipeConnectionComponent() : Super() {
 	this->mConnectionInventory = nullptr;

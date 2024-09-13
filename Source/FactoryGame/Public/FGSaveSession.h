@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGSaveManagerInterface.h"
 #include "FGObjectReference.h"
-#include "FGSaveSystem.h"
 #include "UObject/Object.h"
 #include "Engine/EngineBaseTypes.h"
 #include "Engine/TimerHandle.h"
@@ -13,6 +13,8 @@
 // @todosave: Change the FText to a Enum, so server and client can have different localizations
 DECLARE_DELEGATE_ThreeParams( FOnSaveGameComplete, bool, const FText&, void* );
 DECLARE_DELEGATE_OneParam( FOnLevelPlacedActorDestroyed, AActor* );
+
+FArchive& DeserializeObjectData( FArchive& Ar, TArray<UObject*> &A );
 
 struct FPerBasicLevelSaveData
 {
@@ -170,7 +172,7 @@ public:
 
 	/** The name of the save game */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
-	static FORCEINLINE FString GetName( UPARAM( ref ) FSaveHeader& header ) { return header.SaveName; }
+	static FORCEINLINE FString GetName( const FSaveHeader& header ) { return header.SaveName; } // <FL> [WuttkeP] Removed UPARAM(ref) so the function can be called with const instances.
 
 	/** The session ID of the save game */
 	UE_DEPRECATED( 4.20, "Use GetSessionName instead" )
@@ -181,17 +183,13 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static FORCEINLINE FString GetSessionName( UPARAM( ref ) FSaveHeader& header ) { return header.SessionName; }
 
-	/** The name of the save game */
+	/** The play duration */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static FORCEINLINE int32 GetPlayDurationSeconds( UPARAM( ref ) FSaveHeader& header ) { return header.PlayDurationSeconds; }
 
 	/** The time this was saved */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static FORCEINLINE FDateTime GetSaveDateTime( UPARAM( ref ) FSaveHeader& header ) { return header.SaveDateTime; }
-
-	/** Returns saved visibility of the session */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save Session" )
-	static FORCEINLINE ESessionVisibility GetSaveSessionVisibility( UPARAM( ref ) FSaveHeader& header ) { return header.SessionVisibility; }
 
 	/** Returns Metadata from save header */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save Session" )
@@ -278,16 +276,13 @@ public:
 	 */
 	static bool SerializeHeader( FArchive& Ar, FSaveHeader& saveHeader );
 
+	/** Retrieves just the header for any valid save file. Returns true/false if it manages to read the header. */
+	static bool PeekAtFileHeader( const FString& fullFilePath, FSaveHeader& out_fileHeader ); // <FL> [WuttkeP] Made this function static.
+
 
 	/** Converts a saveName to a file name */
 	static FString SaveNameToFileName( const FString& saveName );
-
-	/**
-	 * Called by shared inventory code to report that a shared inventory pointer has been loaded.
-	 * Used to verify that no actor has several references.
-	 */
-	static void SharedInventoryPtrLoaded( struct FSharedInventoryStatePtr& ptr );
-
+	
 	static FObjectReferenceDisc FixupObjectReferenceForPartitionedWorld( const FObjectReferenceDisc& Reference, const class AFGWorldSettings& WorldSettings );
 
 	/** Called every time by timer to trigger a autosave. Can be called manually if we want to trigger a autosave for key events */
@@ -300,8 +295,11 @@ public:
 	/** Updates the autosave interval */
 	void SetAutosaveInterval( int32 newInterval );
 
-	/** Returns true if we have called SaveGame this frame */
-	FORCEINLINE bool HasTriggedSaveThisFrame() const { return mPendingSaveWorldHandle.IsValid(); }
+	UFUNCTION( BlueprintCallable, Category = "Factory Game|Save")
+	void SetAutoSaveEnabled( bool enabled );
+
+	/** Returns true if we have a save game operation pending (e.g. we are about to perform a save on game thread, or we are waiting for the background compression/file system write to be done) */
+	FORCEINLINE bool HasSaveGameOperationPending() const { return mSaveOperationIsPending; }
 
 	/** Set the ModMetadata. This does not append. If you wish to append, use the getter and manually append whatever data you desire to the existing */
 	UFUNCTION( BlueprintCallable, Category="Factory Game|SaveSession" )
@@ -387,9 +385,6 @@ protected:
 	 */
 	void DeleteSave( FString sessionName, int32 autosaveNum );
 
-	/** Make sure we can get a world easily */
-	class UWorld* GetWorld() const override;
-
 	/** Generate the next autosave name, calling this twice will give you different results */
 	FString GenerateAutosaveName( int32& out_autosaveNum, const FString& sessionName );
 
@@ -412,10 +407,11 @@ protected:
 	/**
 	 * Traces from a rootobjects and finds all children from that root that implements the FGSaveInterface
 	 *
+	 * @param level - the level objects in which we are collecting. References to objects outside of that level will be ignored. If null, persistent level is assumed
 	 * @param rootSet - the base objects
 	 * @param out_objectsToSerialize - A reference to the array that holds all the objects we want to serialize
 	 */
-	void CollectObjects( TArray<UObject*>& rootSet, TArray< UObject* >& out_objectsToSerialize );
+	void CollectObjects( UWorld* world, ULevel* level, TArray<UObject*>& rootSet, TArray< UObject* >& out_objectsToSerialize );
 
 	/**
 	 * Generate root set of objects to be saved for a level
@@ -524,6 +520,10 @@ protected:
 	UPROPERTY( Transient )
 	float mAutosaveInterval;
 
+	/** Whether or not auto save is enabled. */
+	UPROPERTY( Transient )
+	bool mAutosaveEnabled;
+
 	/** The number of autosaves to rotate */
 	UPROPERTY( Config )
 	int32 mNumRotatingAutosaves;
@@ -531,9 +531,10 @@ protected:
 	/** Name of the save that will be saved at end of frame */
 	FString mPendingSaveName;
 
-	/** Is pending save an autosave? */
-	bool mPendingSaveIsAuto;
-	
+	/** True if there is currently a save operation pending, either in background or in game thread at the end of the world tick */
+	bool mSaveOperationIsPending{false};
+	/** Is pending save an auto save? */
+	bool mPendingSaveIsAuto{false};
 	/** Callback to end of frame to be removed after save */
 	FDelegateHandle mPendingSaveWorldHandle;
 
@@ -547,12 +548,15 @@ private:
 	friend class AFGGameMode;
 	// The map editor utility needs private access to avoid over exposing these functions
 	friend class UFGMapUtility;
-	//
 	friend class FWPSaveDataMigrationContext;
+	friend class FFGSaveSystemBackgroundSaveGameAsyncTask;
 
 	/** Called after actor ticking so we can save when all actors have been saved */
 	void SaveWorldEndOfFrame( class UWorld* world, ELevelTick, float );
 	void SaveWorldImplementation( const FString& gameName );
+
+	/** Called to initiate the background save compression and file system write operation. */
+	void StartBackgroundSave( const FString& fullFilePath, class FBufferArchive64&& memArchive, const FSaveHeader& saveHeader );
 
 	/** SaveToDiskWithCompression
 	 * Saves the current session at the given absolute file location. The file's contents will be compressed
@@ -562,22 +566,23 @@ private:
 	 * Binary File structure is as follows:
 	 * [[FSaveHeader(uncompressed)], [SaveWorld(compressed)]]
 	 *
+	 * @param saveSession - save session that owns this background save operation
 	 * @param fullFilePath - The absolute file path to the file location to save.
 	 * @param memArchive - The SaveWorld archive containing data to be compressed.
 	 * @param saveHeader - The FSaveHeader containing header data for the save file, will not be compressed.
-	 * 
-	 * @return bool - Returns true if file was successfully compressed and saved.
 	 */
-	bool SaveToDiskWithCompression(const FString& fullFilePath, class FBufferArchive64& memArchive, FSaveHeader& saveHeader );
+	static void SaveToDiskWithCompressionInBackground( const TWeakObjectPtr<UFGSaveSession>& saveSession, const FString& fullFilePath, class FBufferArchive64& memArchive, FSaveHeader& saveHeader, bool bIsAutoSave, bool bAllowSaveBackups );
+
+	/** Called when background save operation is completed to finish the work on the main thread. This function will be called on background thread and should schedule it's own execution on main thread itself */
+	static void CompleteBackgroundSave( const TWeakObjectPtr<UFGSaveSession>& saveSession, bool bResult, const FText& ErrorMessage );
+	/** Called on game thread to complete the background saving operation */
+	void CompleteBackgroundSaveOnGameThread( bool bResult, const FText& ErrorMessage );
 	
 	/** Loads a save file that has been compressed. This includes serializing the SaveHeader. */
 	bool LoadCompressedFileFromDisk( const FString& saveGameName );
 
 	/** Loads a save file prior to compressed save versions. This includes serializing the SaveHeader. */
 	bool LoadDeprecatedFileFromDisk( const FString& saveGameName );
-
-	/** Retrieves just the header for any valid save file. Returns true/false if it manages to read the header. */
-	bool PeekAtFileHeader( const FString& fullFilePath, FSaveHeader& out_fileHeader ) const;
 
 	/**
 	* Serializes the Save Session from a loaded and decompressed archive.

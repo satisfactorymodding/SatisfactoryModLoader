@@ -9,8 +9,10 @@ AFGUnlockSubsystem::AFGUnlockSubsystem() : Super() {
 	this->mIsBuildingOverclockUnlocked = false;
 	this->mIsBlueprintsUnlocked = false;
 	this->mIsCustomizerUnlocked = false;
+	this->mIsBuildingProductionBoostUnlocked = false;
 	this->mNumTotalInventorySlots = 18;
 	this->mNumTotalArmEquipmentSlots = 1;
+	this->mUnlockedCentralStorageTimeToUploadDecrease = 0.0;
 }
 void AFGUnlockSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -21,11 +23,15 @@ void AFGUnlockSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	DOREPLIFETIME(AFGUnlockSubsystem, mIsBuildingOverclockUnlocked);
 	DOREPLIFETIME(AFGUnlockSubsystem, mIsBlueprintsUnlocked);
 	DOREPLIFETIME(AFGUnlockSubsystem, mIsCustomizerUnlocked);
+	DOREPLIFETIME(AFGUnlockSubsystem, mIsBuildingProductionBoostUnlocked);
 	DOREPLIFETIME(AFGUnlockSubsystem, mNumTotalInventorySlots);
 	DOREPLIFETIME(AFGUnlockSubsystem, mNumTotalArmEquipmentSlots);
 	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedEmotes);
 	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedTapes);
+	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedPlayerCustomizations);
+	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedCentralStorageTimeToUploadDecrease);
 	DOREPLIFETIME(AFGUnlockSubsystem, mPlayersWithCheckmark);
+	DOREPLIFETIME(AFGUnlockSubsystem, mSAMIntensity);
 }
 void AFGUnlockSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 AFGUnlockSubsystem* AFGUnlockSubsystem::Get(UWorld* world){ return nullptr; }
@@ -39,22 +45,36 @@ void AFGUnlockSubsystem::UnlockBlueprints(){ }
 void AFGUnlockSubsystem::UnlockCustomizer(){ }
 void AFGUnlockSubsystem::UnlockBuildEfficiency(){ }
 void AFGUnlockSubsystem::UnlockBuildOverclock(){ }
+void AFGUnlockSubsystem::UnlockBuildProductionBoost(){ }
 void AFGUnlockSubsystem::UnlockInventorySlots(int32 numSlotsToUnlock){ }
 void AFGUnlockSubsystem::UnlockArmEquipmentSlots(int32 numSlotsToUnlock){ }
 void AFGUnlockSubsystem::UnlockEmote(TSubclassOf<  UFGEmote > newEmote){ }
 void AFGUnlockSubsystem::UnlockTape(TSubclassOf< UFGTapeData > newTape){ }
+void AFGUnlockSubsystem::UnlockPlayerCustomization(TSubclassOf< UFGPlayerCustomizationDesc > newCustomizaton){ }
+void AFGUnlockSubsystem::UnlockCentralStorageItemStackLimit(int32 itemStackLimitIncrease){ }
+void AFGUnlockSubsystem::Cheat_SetCentralStorageUploadSpeed(float seconds){ }
+void AFGUnlockSubsystem::UnlockCentralStorageUploadSpeed(float uploadSpeedPercentageDecrease){ }
+void AFGUnlockSubsystem::UnlockCentralStorageUploadSlots(int32 numSlotsToUnlock){ }
+void AFGUnlockSubsystem::UnlockSAMIntensity(int32 newSamIntensity, bool forceSet){ }
 void AFGUnlockSubsystem::UnlockCheckmark(FString playerName){ }
 TArray<TSubclassOf<class UFGResourceDescriptor>> AFGUnlockSubsystem::GetScannableResources() const{ return TArray<TSubclassOf<class UFGResourceDescriptor>>(); }
 TArray<TSubclassOf<class UFGItemDescriptor>> AFGUnlockSubsystem::GetScannableObjects(const UObject* scannerObject) const{ return TArray<TSubclassOf<class UFGItemDescriptor>>(); }
 bool AFGUnlockSubsystem::IsNodeScannable(FScannableResourcePair scannableResourcePair){ return bool(); }
+TArray< TSubclassOf< UFGPlayerCustomizationDesc > > AFGUnlockSubsystem::GetAllCustomizationsAvailable() const{ return TArray<TSubclassOf<UFGPlayerCustomizationDesc> >(); }
+bool AFGUnlockSubsystem::IsCustomizationUnlockedForPlayer(TSubclassOf< UFGPlayerCustomizationDesc > customizationDesc, AFGPlayerController* player) const{ return bool(); }
 void AFGUnlockSubsystem::OnSchematicPurchased(TSubclassOf<  UFGSchematic > newSchematic){ }
 void AFGUnlockSubsystem::OnSchematicPurchasedByPlayer_Implementation(TSubclassOf<  UFGSchematic > newSchematic,  AFGCharacterPlayer* player){ }
 void AFGUnlockSubsystem::SetTotalNumInventorySlots(int32 totalNumSlots){ }
 void AFGUnlockSubsystem::SetTotalNumArmEquipmentSlots(int32 totalNumSlots){ }
 void AFGUnlockSubsystem::GetUnlockedEmotes(TArray< TSubclassOf<class UFGEmote> >& out_unlockedEmotes) const{ }
 void AFGUnlockSubsystem::GetUnlockedTapes(TArray< TSubclassOf<  UFGTapeData > >& out_unlockedTapes) const{ }
+int32 AFGUnlockSubsystem::GetCentralStorageItemStackLimit() const{ return int32(); }
+float AFGUnlockSubsystem::GetCentralStorageTimeToUpload() const{ return float(); }
+int32 AFGUnlockSubsystem::GetCentralStorageNumUploadSlots() const{ return int32(); }
 void AFGUnlockSubsystem::GetPlayersWithCheckmarks(TArray< FGCheckmarkUnlockData >& out_playersWithCheckmarks) const{ }
 void AFGUnlockSubsystem::SetNumOfAdditionalInventorySlots(int32 newNumSlots){ }
 void AFGUnlockSubsystem::SetNumAdditionalArmEquipmentSlots(int32 newNumSlots){ }
 void AFGUnlockSubsystem::OnRep_PlayerCheckmarks(){ }
+void AFGUnlockSubsystem::OnRep_CustomizerUnlocked(){ }
+void AFGUnlockSubsystem::OnRep_MapUnlocked(){ }
 void AFGUnlockSubsystem::UpdatePlayerWidgets(){ }

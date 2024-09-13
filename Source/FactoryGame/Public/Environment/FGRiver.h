@@ -4,11 +4,12 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGSignificanceInterface.h"
 #include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "GameFramework/Actor.h"
-
+#include "Engine/World.h"
 #include "FGRiver.generated.h"
 
 class ACharacter;
@@ -16,7 +17,7 @@ class USplineMeshComponent;
 class UMaterialInterface;
 
 UCLASS(HideCategories ="Input, Collision, LOD, Cooking, Actor")
-class FACTORYGAME_API AFGRiver : public AActor
+class FACTORYGAME_API AFGRiver : public AActor, public IFGSignificanceInterface
 {
 	GENERATED_BODY()
 	
@@ -28,12 +29,18 @@ public:
 	float GetVolumePrecision() const 			{ return mVolumePrecision; }
 	float GetVolumeHeightOffset() const 		{ return mVolumeHeightOffset; }
 	float GetRiverDepth() const 				{ return 1000; }
+
+	// Begin IFGSignificanceInterface
+	virtual float GetSignificanceRange() override { return 20000; }
+	// End
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void OnConstruction(const FTransform & Transform) override;
-	
+
+	void FixupSplinePoints();
     void ConstructMesh();
 	void ConstructVolumes();
 
@@ -82,8 +89,8 @@ protected:
 	float mSegmentLengthMultiplier;
 
 	/* how many units should be in between every volume.*/
-	UPROPERTY(EditDefaultsOnly)
-    float mVolumePrecision;
+	UPROPERTY(EditAnywhere)
+    float mVolumePrecision = 1000;
 	
 	/* Height offset for water volume.*/
 	UPROPERTY(EditDefaultsOnly)
@@ -112,8 +119,17 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UMaterialParameterCollection* mDataCollection;
 	
-	//UPROPERTY(EditDefaultsOnly)
-	//class UAKAudioEvent* mRiverSound;
+	UPROPERTY(EditInstanceOnly,Category="Visuals")
+	bool bFadeIn = false;
+
+	UPROPERTY(EditInstanceOnly,Category="Visuals")
+	bool bSideFadeIn = false;
+	
+	UPROPERTY(EditInstanceOnly,Category="Visuals")
+	bool bFadeOut = false;
+	
+	UPROPERTY(EditInstanceOnly,Category="Visuals")
+	bool bSideFadeOut = false;
 
 	
 public:
@@ -136,6 +152,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool ED_HideSpline;
 	/* end */
+
+	float DesiredSplineLength = 2000;
 	
 #endif
 #if WITH_EDITOR
@@ -152,6 +170,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "CSS Editor tools", meta = (DevelopmentOnly))
 	static void UpdateRiverFromData( AFGRiver* River, USplineComponent* SourceSpline );
 
+	UFUNCTION(BlueprintCallable, Category = "CSS Editor tools", meta = (DevelopmentOnly))
+	static void BuildRiverFromSplineMeshActor(const AActor* SourceActor,TSubclassOf<AFGRiver> RiverClass, bool bAutoResample = false, float WidthUpscale = 2);
+	
+	UFUNCTION(CallInEditor)
+	void ResampleSpline();
 #endif
 	
 };

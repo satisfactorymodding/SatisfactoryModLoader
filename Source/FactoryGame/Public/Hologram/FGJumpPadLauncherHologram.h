@@ -41,10 +41,7 @@ public:
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	// End AFGHologram Interface
-
-	/** Net Construction Messages */
-	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
-
+	
 protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "JumpPad" )
 	void OnLaunchAngleAdjusted();
@@ -67,7 +64,7 @@ protected:
 	UPROPERTY()
 	EJumpPadHologramBuildStep mBuildStep = EJumpPadHologramBuildStep::JPHBS_PlacementAndRotation;
 
-	UPROPERTY( VisibleAnywhere, ReplicatedUsing = OnRep_LaunchAngle )
+	UPROPERTY( VisibleAnywhere, ReplicatedUsing = OnRep_LaunchAngle, CustomSerialization )
 	int32 mLaunchAngle;
 
 	/** The part of the jump pad that angles up and down. */
@@ -78,10 +75,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )
 	class USplineComponent* mSplineComponent;
 
-	/** The instanced spline meshes for the trajectory. */
-	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )
-	class UInstancedSplineMeshComponent* mTrajectorySplineMeshComponent;
-
+	/** The spline meshes for the trajectory. */
+	UPROPERTY( Transient )
+	TArray<USplineMeshComponent*> mTrajectorySplineMeshComponents;
+	
 	/** The scale used for the instances in the spline mesh. */
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )
 	FVector mTrajectoryMeshScale;

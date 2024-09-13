@@ -5,7 +5,7 @@
 
 AFGRailroadTrackHologram::AFGRailroadTrackHologram() : Super() {
 	this->mDefaultSwitchControlRecipe = nullptr;
-	this->mMinLength = 1200.0;
+	this->mMinLength = 0.0;
 	this->mMaxLength = 10000.0;
 	this->mMinBendRadius = 3000.0;
 	this->mMaxGrade = 25.0;
@@ -29,13 +29,14 @@ int32 AFGRailroadTrackHologram::GetBaseCostMultiplier() const{ return int32(); }
 void AFGRailroadTrackHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 bool AFGRailroadTrackHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 void AFGRailroadTrackHologram::CheckBlueprintCommingling(){ }
+void AFGRailroadTrackHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
 void AFGRailroadTrackHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGRailroadTrackHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGRailroadTrackHologram::SetLocationAndRotationFromPlatformConnections( UFGTrainPlatformConnection* connectionOne,  UFGTrainPlatformConnection* connectionTwo){ }
 TArray< class UFGRailroadTrackConnectionComponent* > AFGRailroadTrackHologram::GetSnappedConnectionComponents(){ return TArray<class UFGRailroadTrackConnectionComponent*>(); }
 void AFGRailroadTrackHologram::CheckValidPlacement(){ }
 void AFGRailroadTrackHologram::CheckValidFloor(){ }
-void AFGRailroadTrackHologram::CheckClearance(const FVector& locationOffset){ }
+void AFGRailroadTrackHologram::UpdateClearanceData(){ }
 void AFGRailroadTrackHologram::UpdateSplineComponent(){ }
 void AFGRailroadTrackHologram::TryFindAndSnapToOverlappingConnection(int32 forConnectionIndex, FVector& inout_newLocation, FVector& inout_newTangent){ }
 void AFGRailroadTrackHologram::TryPlaceSwitchControl(int32 forConnectionIndex){ }

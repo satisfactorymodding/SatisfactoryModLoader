@@ -8,13 +8,14 @@
 #include "FGCharacterPlayer.h"
 #include "FGChatManager.h"
 #include "FGMapMarker.h"
+#include "FGOnboardingStep.h"
 #include "FGPlayerControllerBase.h"
 #include "FGPlayerState.h"
 #include "PlayerPresenceState.h"
-#include "Server/FGDedicatedServerTypes.h"
 #include "UI/Message/FGAudioMessage.h"
-
 #include "FGPlayerController.generated.h"
+
+enum class EPrivilegeLevel : uint8;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FPawnChangedDelegate, APawn*, newPawn );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FPlayerEnteredAreaDelegate, AFGPlayerControllerBase*, playerController, TSubclassOf< class UFGMapArea >, mapArea );
@@ -22,10 +23,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FDisabledInputGateDelegate, FDisabl
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnToggleInventory, bool, isOpen );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnToggleInteractionUI, bool, isOpen, TSubclassOf< class UUserWidget >, interactionClass );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnFinishRespawn );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRespawnUIVisibilityChanged, bool, respawnUIVisibility );
 DECLARE_MULTICAST_DELEGATE_TwoParams( FOnChatMessageEnteredDelegate, FChatMessageStruct&, bool& );
 DECLARE_MULTICAST_DELEGATE_OneParam( FOnPlayerControllerBegunPlay, class AFGPlayerController* );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnPlayerRespawnWithInventory, const FInventoryToRespawnWith&, respawnInventory );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnInputActionRemapped, const FName&, inActionName );
+DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnPlayerControllerPawnChanged, class APlayerController*, APawn*, APawn* );
+
+DECLARE_DYNAMIC_DELEGATE( FFGRuntimeInputActionDelegate );
 
 UENUM()
 enum EHitFeedbackType
@@ -34,6 +38,9 @@ enum EHitFeedbackType
 	WeakSpot,
 	Armor
 };
+
+class UFGRecipe;
+class UFGBlueprintDescriptor;
 
 UCLASS( Config=Game)
 class FACTORYGAME_API AFGPlayerController : public AFGPlayerControllerBase
@@ -52,6 +59,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	virtual void Destroyed() override;
+	virtual void PostRenderFor( APlayerController* PC, UCanvas* Canvas, FVector CameraPosition, FVector CameraDir ) override;
 	// End AActor interface
 
 	// Begin AController interface
@@ -67,6 +75,7 @@ public:
 	virtual void PlayerTick( float DeltaTime ) override;
 	virtual void PreClientTravel( const FString& pendingURL, ETravelType travelType, bool isSeamlessTravel ) override;
 	virtual void NotifyLoadedWorld( FName worldPackageName, bool isFinalDest ) override;
+	virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos) override;
 	// End APlayerController interface
 
 	/** Get the RCO of the given class. */
@@ -82,8 +91,10 @@ public:
 	* @param character - the character that died
 	**/
 	virtual void OnControlledCharacterDied( class AFGCharacterBase* character ) override;
-
 	virtual void OnControlledCharacterRevived( AFGCharacterBase* character ) override;
+
+	/** Called when the controlled character inputs/exits the portal */
+	void OnControlledCharacterPortalStateChanged( AFGCharacterPlayer* character, bool isInPortalNow );
 
 	//@todonow I do not think respawn works entirely correct for vehicles.
 	/** Begin respawning this controllers pawn, call Respawn when done playing any respawn effects. */
@@ -106,6 +117,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Respawn" )
 	bool IsRespawning() const { return mIsRespawning; }
 
+	/** @return true if we are currently waiting for the client to acknowledge the respawn sequence */
+	bool IsClientRespawnGracePeriodActive() const { return mPlayerRespawnGracePeriodActive; }
+
 	/** Set our suicide status */
 	void SetRespawningFromDeath( bool respawningFromDeath );
 
@@ -116,6 +130,9 @@ public:
 	UFUNCTION()
 	void OnFOVUpdated( FString cvar );
 
+	/** Updates default FOV of the camera manager from either photo mode FOV or */
+	void UpdateCameraManagerDefaultFOV();
+
 	/** Execute the hotbar shortcut with the specified index */
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
 	void ExecuteShortcut( int32 shortcutIndex );
@@ -123,6 +140,11 @@ public:
 	/** Get all shortcuts in the current hotbar */
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
 	void GetCurrentShortcuts( TArray< class UFGHotbarShortcut* >& out_shortcuts );
+
+	// <FL> [KajtaziT] actually returns ALL shortcuts, not just valid shortcuts	
+	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
+	void GetCurrentShortcutsInSlots( TArray< class UFGHotbarShortcut* >& out_shortcuts );
+	// </FL>
 	
 	/** Is a given material customization present as a shortcut on the active hotbar? */
 	UFUNCTION( BlueprintPure, Category = "Shortcut" )
@@ -202,6 +224,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
 	int32 GetShortcutIndexFromKey( const FKeyEvent& key ) const;
 
+	/** Returns true if the intro sequence is currently playing on the pawn controlled by this player controller*/
+	UFUNCTION( BlueprintPure, Category = "Intro Sequence" )
+	bool IsPlayingIntroSequence() const;
+
 	/** Called on owning client when respawning starts */
 	UPROPERTY( BlueprintAssignable )
 	FOnFinishRespawn OnFinishRespawn;
@@ -225,16 +251,19 @@ public:
 	/** Called when the pawn this controller is controlling changes to other than nullPeter */
 	UPROPERTY( BlueprintAssignable, Category = "Pawn", DisplayName = "OnPawnChanged" )
 	FPawnChangedDelegate PawnChanged;
-
-	/** Called when the visbility of respawn UI should change */
-	UPROPERTY( BlueprintAssignable, Category = "UI"  )
-	FOnRespawnUIVisibilityChanged mOnRespawnUIVisibilityChanged;
+	
+	/** Triggered when a input action was remapped */
+	UPROPERTY( BlueprintAssignable, Category = "Input" )
+	FOnInputActionRemapped mOnInputActionRemapped;
 
 	/** Called when chat message has been entered by the player but before it has been processed by anything, gives the opportunity to process or cancel it */
 	FOnChatMessageEnteredDelegate ChatMessageEntered;
 
 	/** Called when player controller has received a BeginPlay event and after vanilla logic has been run */
 	static FOnPlayerControllerBegunPlay PlayerControllerBegunPlay;
+
+	/** Called when controlled pawn changes on the player controller */
+	static FOnPlayerControllerPawnChanged StaticOnControlledPawnChanged;
 
 	// Begin AFGMapManager RPCs
 	// @todok2 should me move these to a RCO of its own in map manager instead?
@@ -288,15 +317,7 @@ public:
 
 	/** Gets the object radius for a given actor in order to align with a desired screen space radius */
 	UFUNCTION( BlueprintPure, Category = "HUD" )
-	float GetScreenBasedObjectRadius( AActor* actor, float screenRadius );
-
-	/** Gets called on the client */
-	UFUNCTION( Reliable, Client, BlueprintCallable )
-	void Client_AddMessage( TSubclassOf<class UFGMessageBase> newMessage );
-
-	/** Gets called on the client */
-	UFUNCTION( BlueprintCallable, Category = "Message" )
-	bool GetPlayerHasMessage( TSubclassOf< class UFGMessageBase > newMessage );
+	float GetScreenBasedObjectRadius( AActor* actor, float screenRadius ); 
 
 	FORCEINLINE class UFGMapAreaTexture* GetMapAreaTexture() const { return mCachedMapAreaTexture; }
 
@@ -392,18 +413,48 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Input" )
 	int32 GetMappingContextPriority() const;
-	
-	/** Used to distinguish admin players from simple clients on dedicated servers. Will only hold a useful value on dedicated servers */
-	FServerEntryToken mServerEntryTicket;
 
 	class UFGGameUI* GetGameUI() const;
+	bool IsPauseMenuOpen() const;
 
 	UInputMappingContext* GetMappingContextChords() const { return mMappingContextChords; }
 
 	/** Get the character we are controlling (if we are in vehicles, this finds our pawn in the vehicle), can return null if we don't control any character */
 	UFUNCTION( BlueprintPure, Category = "Character" )
 	class AFGCharacterBase* GetControlledCharacter() const;
-	
+
+	/** Return the location of the controlled pawn. If no pawn is controlled it returns an empty FVector */
+	FVector GetPawnLocation() const;
+
+	FORCEINLINE class UFGConsoleCommandManager* GetConsoleCommandManager() const { return mConsoleCommandManager; }
+
+	/** Updates player's privilege level on the dedicated server */
+	void SetDSPrivilegeLevel( EPrivilegeLevel newPrivilegeLevel );
+
+	/** Returns the privilege level of the player when playing on a dedicated server. None if not playing on Dedicated Server */
+	UFUNCTION( BlueprintPure, Category = "Dedicated Server" )
+	FORCEINLINE EPrivilegeLevel GetDSPrivilegeLevel() const { return mDedicatedServerPrivilegeLevel; }
+
+	/** Returns true if the player is playing as a Client connected to a Dedicated Server */
+	UFUNCTION( BlueprintPure, Category = "Dedicated Server" )
+	bool IsConnectedToDedicatedServer() const;
+
+	// <FL> radial menus
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void SetShortcut( int ShortcutIndex, TSubclassOf< UFGRecipe > Recipe, UFGBlueprintDescriptor* Blueprint );
+
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame" )
+	TSubclassOf< class UFGInteractWidget > mHotbarRadialMenuWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FactoryGame")
+	TSubclassOf< class UFGInteractWidget > mShortcutRadialMenuWidgetClass;
+
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame" )
+	TSubclassOf< class UFGInteractWidget > mHandheldRadialMenuWidgetClass;
+	// </FL>
+
+	void OnSystemUIOverlayStateChanged(bool bOverlayShown);
+
 protected:
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
@@ -509,13 +560,16 @@ protected:
 	UFUNCTION( Reliable, Server )
 	void Server_GiveItemSingle( TSubclassOf< class UFGItemDescriptor > itemDescriptor, int32 numberOfItems );
 
-#if WITH_CHEATS
 	void ToggleCheatBoard();
-#endif
+
+	/** Returns true if level streaming has been completed in the proximity of this player */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Level Streaming" )
+	bool IsLevelStreamingComplete() const;
 	
 private:
-	/** Begins the setup of the tutorial subsystem */
-	void SetupTutorial();
+	void ListenForOnOnboardingStepUpdated();
+	UFUNCTION()
+	void Native_OnOnboardingStepUpdated( UFGOnboardingStep* currentOnboardingStep );
 
 	/** Called when the server and client is done waiting for level streaming etc. */
 	void FinishRespawn();
@@ -547,23 +601,22 @@ private:
 	void Server_WaitForLevelStreaming();
 	UFUNCTION( Reliable, Client )
 	void Client_WaitForLevelStreaming();
-
+	UFUNCTION( Reliable, Server )
+	void Server_ClientDoneRespawning();
 	UFUNCTION()
 	void OnRep_IsRespawning();
-
-	void DisablePawnMovement( bool isDisabled );
-
-	void SetRespawnUIVisibility( bool respawnUIVisibility );
+	/** Called by the server when the client grace period during respawn has elapsed */
+	void OnClientGracePeriodElapsed();
 
 	static void testAndProcesAdaMessages( AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds, class APlayerState* PlayerState, class AFGGameState* fgGameState );
 	
 	/** Gets the saved mappings from game user settings and applies them to the enhanced input subsystem */
-	void SetupSavedKeyMappings( class UEnhancedInputLocalPlayerSubsystem* inputSubsystem );
+	void SetupSavedKeyMappings( class UEnhancedInputLocalPlayerSubsystem* inputSubsystem );	
 
 	/** Input Actions */
 	virtual void Input_Respawn( const FInputActionValue& ActionValue );
 
-	// Tried to merge all these down into the same binding (1D Axis, round the value to int), but couldn't get it to work with the pressed trigger for some reason, so we're doing it this way ¯\_(ツ)_/¯
+	// Tried to merge all these down into the same binding (1D Axis, round the value to int), but couldn't get it to work with the pressed trigger for some reason, so we're doing it this way ?\_(?)_/?
 	virtual void Input_HotbarShortcut1( const FInputActionValue& ActionValue );
 	virtual void Input_HotbarShortcut2( const FInputActionValue& ActionValue );
 	virtual void Input_HotbarShortcut3( const FInputActionValue& ActionValue );
@@ -574,6 +627,24 @@ private:
 	virtual void Input_HotbarShortcut8( const FInputActionValue& ActionValue );
 	virtual void Input_HotbarShortcut9( const FInputActionValue& ActionValue );
 	virtual void Input_HotbarShortcut10( const FInputActionValue& ActionValue );
+
+	// <FL> hotbar and handheld radial menus
+	virtual void Input_HandheldRadialMenu_Started  ( const FInputActionInstance& ActionInstance );
+	virtual void Input_HandheldRadialMenu_Completed( const FInputActionInstance& ActionInstance );
+	virtual void Input_HotbarRadialMenu_Started    ( const FInputActionInstance& ActionInstance );
+	virtual void Input_HotbarRadialMenu_Completed  ( const FInputActionInstance& ActionInstance );
+	virtual void Input_HotbarRadialMenuPageDown	   ( const FInputActionInstance& ActionInstance );
+	virtual void Input_HotbarRadialMenuPageUp      ( const FInputActionInstance& ActionInstance );
+
+	void UpdateHotbarRadialMenuPage();
+
+	void OnRadialMenuWidgetCreate(	TSubclassOf< class UFGInteractWidget > WidgetClass, TObjectPtr< UInputMappingContext > MappingContext, bool UnequipBuildGun);
+	void OnRadialMenuWidgetDestroy( TSubclassOf< class UFGInteractWidget > WidgetClass, TObjectPtr< UInputMappingContext > MappingContext, const FInputActionInstance& ActionInstance );
+
+	void AddMappingContextImmediately(TObjectPtr< UInputMappingContext > MappingContext);
+	void RemoveMappingContextImmediately(TObjectPtr< UInputMappingContext > MappingContext);
+
+	// </FL>
 	
 	virtual void Input_Chat( const FInputActionValue& ActionValue );
 	
@@ -581,6 +652,8 @@ private:
 	
 	virtual void Input_CheatMenu( const FInputActionValue& ActionValue );
 	
+	virtual void Input_DebugMenu(const FInputActionValue& ActionValue);
+
 	virtual void Input_CycleHotbarAxis( const FInputActionValue& ActionValue );
 	
 	virtual void Input_AttentionPing( const FInputActionValue& ActionValue );
@@ -597,7 +670,7 @@ private:
 	
 	virtual void Input_ClipboardCopy( const FInputActionValue& actionValue );
     virtual void Input_ClipboardPaste( const FInputActionValue& actionValue );
-	
+
 public:
 	/**
 	 * Binds the input context to the input subsystem owned by this local player
@@ -605,6 +678,14 @@ public:
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	void SetMappingContextBound( UInputMappingContext* context, bool bind, int32 priority = 0 );
+
+	/** Binds a specified delegate to an input action. Exists so actions can be bound in runtime for blueprints. */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void BindToAction( const class UInputAction* action, ETriggerEvent triggerEvent, const FFGRuntimeInputActionDelegate& delegate );
+
+	/** Unbinds delegates for input associated with this object. */
+	UFUNCTION( BlueprintCallable, Category = "Input", meta = ( DefaultToSelf = "object") )
+	void ClearActionBindingsForObject( UObject* object );
 	
 	/** Indicates if this playercontroller should trigger sound volumes */
 	UPROPERTY( EditDefaultsOnly, Category = "Sound" )
@@ -614,6 +695,15 @@ public:
 
 	UPROPERTY( Replicated )
 	TObjectPtr<class AFGFoliageStateRepProxy> mFoliageStateRepProxy;
+	
+	UFUNCTION( BlueprintCallable, Category = "Shortcut Radial" )
+	void CreateShortcutRadialMenu(TSubclassOf< UFGRecipe > RecipeClass, UFGBlueprintDescriptor* Blueprint);
+
+	UFUNCTION(BlueprintCallable, Category = "Shortcut Radial")
+	void DestroyShortcutRadialMenu();
+
+	UPROPERTY( Replicated )
+	TObjectPtr<class AFGLightweightBuildableRepProxy> mLightweightBuildableRepProxy;
 	
 protected:
 	/** Object that manages non-cheat commands. Instantiated in shipping builds. */
@@ -644,9 +734,25 @@ protected:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
 	TObjectPtr< UInputMappingContext > mMappingContextMapMarkerMode;
 
+	/** Mapping context for when the character is in the portal */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextInPortal;
+
 	/** The class of the attention ping actor we want to use */
 	UPROPERTY( EditDefaultsOnly, Category = "Attention Ping" )
 	TSubclassOf< class AFGAttentionPingActor > mAttentionPingActorClass;
+
+	// <FL> mapping context for the hotbar radial menu
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextHotbarRadialMenu;
+
+	// <FL> mapping context for the shortcut radial menu
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr< UInputMappingContext > mMappingContextShortcutRadialMenu;
+
+	// <FL> mapping context for the handheld radial menu
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr< UInputMappingContext > mMappingContextHandheldRadialMenu;
 
 	/** How often should we check which map area the pawn is in? */
 	UPROPERTY( EditDefaultsOnly )
@@ -667,13 +773,27 @@ protected:
 	float mMovementWindInAirTimer;
 	float mMovementSpeedSoft; //Used to detect changes in movement speed
 
+	float mLastFrameVelocityLength;
+	
+	float mNoMovementTime; //Used to detect if player has been idling for a long time. ideally we should check for input too, but this should be good enough for now
 
-	float mNoMovementTime; //Used to detect if player has been idling for a long time.. idealy we should cehck for input too, but this should be good enough for now
+	// Defaulted to 150 km/h.
+	UPROPERTY( EditDefaultsOnly )
+	float mSpeedToReachForAchievement = 4166.667f;
+	
+public:
+	float GetLookInputDelayTime(); // Full time in seconds until look input is fully activated again after closing the Handheld or Hotbar radial menu
+	float GetLookInputFadeFactor(); // Returns a factor to smoothly scale the looking input after closing the Handheld or Hotbar radial menu
+
+	float mLookInputDelay = 0.0f; // Remaining time in seconds until look input is fully activated again after closing the Handheld or Hotbar radial menu
 
 private:
 	/** If we're currently in the state of respawning */
 	UPROPERTY( ReplicatedUsing = OnRep_IsRespawning )
 	bool mIsRespawning;
+
+	/** True if we just finished respawning and are waiting for the client to confirm that */
+	bool mPlayerRespawnGracePeriodActive{false};
 
 	/** Handler for the timer that checks which map area the pawn is in */
 	FTimerHandle mAreaCheckTimerHandle;
@@ -721,13 +841,14 @@ private:
 	/** Time left until next tick */
 	float mMusicPlayerTickInterval;
 
-	/** If we should show the UI for respawning prompt or not */
-	bool mRespawnUIVisibility;
-
 	/** List of music player to keep track of  */
 	UPROPERTY()
 	TArray< UObject* > mMusicPlayerList;
 
 	bool mMapMarkerModeActive;
 	bool mMapMarkerModeButtonPressed;
+
+	/** Privilege level of this player when playing on the dedicated server. None if not playing on Dedicated Server */
+	UPROPERTY( Replicated, Transient )
+	EPrivilegeLevel mDedicatedServerPrivilegeLevel;
 };

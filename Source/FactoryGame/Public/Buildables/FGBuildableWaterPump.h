@@ -13,9 +13,7 @@ UCLASS( Abstract )
 class FACTORYGAME_API AFGBuildableWaterPump : public AFGBuildableResourceExtractor
 {
 	GENERATED_BODY()
-
 public:
-	/** Ctor */
 	AFGBuildableWaterPump();
 
 protected:	

@@ -34,8 +34,8 @@ public:
 	UFUNCTION()
 	void OnProductionStatusChanged( EProductionStatus newStatus );
 
-	/** This sets the cached status to IS_NONE so that an update is forced next frame */
-	void ResetIndicatorStatus();
+	/** Forcefully applies the current state of the indicator to the mesh */
+	void ForceUpdateVisuals();
 
 	void SetVisuals( EProductionStatus newStatus );
 

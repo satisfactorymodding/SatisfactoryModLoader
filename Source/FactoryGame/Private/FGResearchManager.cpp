@@ -3,10 +3,22 @@
 #include "FGResearchManager.h"
 #include "Net/UnrealNetwork.h"
 
+bool FHardDriveData::operator==(const FHardDriveData& other) const{ return bool(); }
+void UFGResearchManagerRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGResearchManagerRemoteCallObject, mForceNetField_UFGResearchManagerRemoteCallObject);
+}
+void UFGResearchManagerRemoteCallObject::Server_InitiateResearch_Implementation(AFGPlayerController* controller, TSubclassOf<class UFGSchematic> schematic,
+		TSubclassOf<class UFGResearchTree> initiatingResearchTree){ }
+void UFGResearchManagerRemoteCallObject::Server_ClaimResearchResults_Implementation( AFGPlayerController* controller, TSubclassOf<class UFGSchematic> schematic){ }
+void UFGResearchManagerRemoteCallObject::Server_RerollHardDriveRewards_Implementation( AFGPlayerController* controller, int32 hardDriveID){ }
+void UFGResearchManagerRemoteCallObject::Server_ClaimHardDrive_Implementation( AFGPlayerController* controller, int32 hardDriveID, const TArray< TSubclassOf< UFGSchematic > >& schematics, TSubclassOf<class UFGSchematic> chosenSchematic){ }
 AFGResearchManager::AFGResearchManager() : Super() {
 	this->mCanConductMultipleResearch = false;
 	this->mIsActivated = false;
 	this->mMAMClass = nullptr;
+	this->mCanRerollHardDrives = false;
+	this->bReplicateUsingRegisteredSubObjectList = true;
 }
 void AFGResearchManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -15,8 +27,11 @@ void AFGResearchManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AFGResearchManager, mCompletedResearch);
 	DOREPLIFETIME(AFGResearchManager, mOngoingResearch);
 	DOREPLIFETIME(AFGResearchManager, mIsActivated);
+	DOREPLIFETIME(AFGResearchManager, mUnclaimedHardDriveData);
+	DOREPLIFETIME(AFGResearchManager, mCanRerollHardDrives);
 }
 void AFGResearchManager::PreInitializeComponents(){ Super::PreInitializeComponents(); }
+void AFGResearchManager::BeginPlay(){ }
 AFGResearchManager* AFGResearchManager::Get( UWorld* world){ return nullptr; }
 AFGResearchManager* AFGResearchManager::Get( UObject* worldContext){ return nullptr; }
 void AFGResearchManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -25,7 +40,9 @@ bool AFGResearchManager::NeedTransform_Implementation(){ return bool(); }
 bool AFGResearchManager::ShouldSave_Implementation() const{ return bool(); }
 void AFGResearchManager::GetAllResearchTrees(TArray<TSubclassOf<class UFGResearchTree>>& out_ResearchTrees) const{ }
 bool AFGResearchManager::IsResesearchTreeUnlocked(TSubclassOf<class UFGResearchTree> researchTree) const{ return bool(); }
-bool AFGResearchManager::InitiateResearch(UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic, TSubclassOf<class UFGResearchTree> initiatingResearchTree){ return bool(); }
+bool AFGResearchManager::IsResesearchTreeStarted(TSubclassOf<class UFGResearchTree> researchTree) const{ return bool(); }
+void AFGResearchManager::InitiateResearch( AFGPlayerController* controller, TSubclassOf<class UFGSchematic> schematic,
+		TSubclassOf<class UFGResearchTree> initiatingResearchTree){ }
 bool AFGResearchManager::CanResearchBeInitiated(TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
 bool AFGResearchManager::IsResearchBeingConducted(TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
 bool AFGResearchManager::IsResearchComplete(TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
@@ -33,24 +50,38 @@ bool AFGResearchManager::ContainsAnyCompletedResearch() const{ return bool(); }
 void AFGResearchManager::GetAllCompletedResearch(TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 float AFGResearchManager::GetOngoingResearchTimeLeft(TSubclassOf<class UFGSchematic> schematic) const{ return float(); }
 TSubclassOf< class UFGSchematic > AFGResearchManager::GetResearchBeingConducted() const{ return TSubclassOf<class UFGSchematic>(); }
-bool AFGResearchManager::ClaimResearchResults( AFGCharacterPlayer* instigatorPlayer, TSubclassOf<class UFGSchematic> schematic, int32 selectedRewardIndex){ return bool(); }
+void AFGResearchManager::ClaimResearchResults( AFGPlayerController* controller, TSubclassOf<class UFGSchematic> schematic){ }
+void AFGResearchManager::NetMulticast_OnResearchResultClaimed_Implementation(TSubclassOf<class UFGSchematic> schematic){ }
+void AFGResearchManager::ProcessCompletedHardDriveResearch(){ }
+void AFGResearchManager::NetMulticast_AddHardDrive_Implementation(int32 hardDriveID, const TArray< TSubclassOf< UFGSchematic > >& schematics){ }
+UFGHardDrive* AFGResearchManager::AddHardDriveObject(int32 hardDriveID){ return nullptr; }
 bool AFGResearchManager::CanAffordResearch(UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
 TSubclassOf<class UFGResearchTree> AFGResearchManager::GetInitiatingResearchTree(TSubclassOf<class UFGSchematic> schematic) const{ return TSubclassOf<class UFGResearchTree>(); }
 void AFGResearchManager::GetPendingRewards(TSubclassOf<class UFGSchematic> schematic, TArray< TSubclassOf< UFGSchematic > >& out_rewards) const{ }
+void AFGResearchManager::GetPendingRewardsForHardDrive(int32 hardDriveID, TArray< TSubclassOf< UFGSchematic > >& out_rewards) const{ }
+bool AFGResearchManager::HasRerollsLeftForHardDrive(int32 hardDriveID) const{ return bool(); }
+void AFGResearchManager::RerollHardDriveRewards( AFGPlayerController* controller, int32 hardDriveID){ }
+void AFGResearchManager::NetMulticast_RerollHardDrive_Implementation(int32 hardDriveID, const TArray< TSubclassOf< UFGSchematic > >& newSchematics){ }
+bool AFGResearchManager::GetAvailableAlternateSchematics(TArray< TSubclassOf< UFGSchematic > > excludedSchematics, int32 numSchematics, TArray<TSubclassOf<UFGSchematic>>& out_schematics) const{ return bool(); }
+void AFGResearchManager::ClaimHardDrive( AFGPlayerController* controller,  UFGHardDrive* hardDrive, TSubclassOf<class UFGSchematic> schematic){ }
+void AFGResearchManager::NetMulticast_ClaimHardDrive_Implementation(int32 hardDriveID, TSubclassOf<class UFGSchematic> schematic){ }
+void AFGResearchManager::GetUnclaimedHardDrives(TArray<UFGHardDrive*>& out_HardDrives){ }
 void AFGResearchManager::UpdateUnlockedResearchTrees(){ }
 void AFGResearchManager::UnlockResearchTree(TSubclassOf<class UFGResearchTree> researchTree){ }
-bool AFGResearchManager::IsTreeFullyResearched(UObject* worldContextObject, TSubclassOf<class UFGResearchTree> reserachTree, TSubclassOf<  UFGSchematic > schematicToIgnore){ return bool(); }
+bool AFGResearchManager::IsTreeFullyResearched(UObject* worldContextObject, TSubclassOf<class UFGResearchTree> researchTree, TSubclassOf<  UFGSchematic > schematicToIgnore){ return bool(); }
 void AFGResearchManager::UnlockAllResearchTrees(){ }
 void AFGResearchManager::OnRep_OngoingResearch(){ }
 void AFGResearchManager::Multicast_ResearchCompleted_Implementation(TSubclassOf<  UFGSchematic > research){ }
 void AFGResearchManager::PopulateResearchTreeList(){ }
-void AFGResearchManager::StartResearch(TSubclassOf<class UFGSchematic> schematic, TSubclassOf<  UFGResearchTree> initiatingResearchTree){ }
-void AFGResearchManager::GeneratePendingReward(FResearchData& researchData){ }
+void AFGResearchManager::StartResearch( AFGPlayerController* controller, TSubclassOf<class UFGSchematic> schematic, TSubclassOf<  UFGResearchTree> initiatingResearchTree){ }
+void AFGResearchManager::GeneratePendingReward( AFGPlayerController* controller, FResearchData& researchData){ }
 void AFGResearchManager::SetupActivation(){ }
 void AFGResearchManager::OnBuildingBuiltGlobal( AFGBuildable* buildable){ }
 bool AFGResearchManager::CanAddToAvailableResearchTrees(TSubclassOf< UFGResearchTree > researchTree) const{ return bool(); }
 void AFGResearchManager::OnResearchTimerComplete(TSubclassOf<class UFGSchematic> schematic){ }
 bool AFGResearchManager::PayForResearch(UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
-void AFGResearchManager::ClaimPendingRewards(AFGCharacterPlayer* instigatorPlayer, TSubclassOf<UFGSchematic> schematic, int32 selectedRewardIndex){ }
+void AFGResearchManager::GiveHardDriveToPlayer(AFGCharacterPlayer* instigatorPlayer){ }
 bool AFGResearchManager::AreResearchTreeUnlockDependeciesMet(TSubclassOf <UFGResearchTree> inClass){ return bool(); }
 void AFGResearchManager::SubmitResearchCompletedTelemetry(const TArray< TSubclassOf<  UFGSchematic > >& allSchematics, TSubclassOf< UFGSchematic > chosenSchematic) const{ }
+void AFGResearchManager::UpdateCanRerollHardDrive(TSubclassOf<  UFGSchematic > dummySchematic){ }
+void AFGResearchManager::Internal_ClaimHardDrive( AFGPlayerController* controller, int32 hardDriveID, const TArray<TSubclassOf<class UFGSchematic>>& schematics , TSubclassOf<class UFGSchematic> chosenSchematic){ }

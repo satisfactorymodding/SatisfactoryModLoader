@@ -9,6 +9,8 @@
 #include "UObject/NoExportTypes.h"
 #include "FGUserSettingApplyType.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_TwoParams( FOnPendingAppliedOptionValueChangedDelegate, FString, FVariant );
+
 /**
  * This class and it's derived classes handle the current and pending value of a user setting. It also handles what happens when you apply
  * or reset a setting. It stores a pointer to the setting widget to delegate events to that widget.
@@ -21,7 +23,13 @@ class FACTORYGAME_API UFGUserSettingApplyType : public UObject
 
 public:
 	/** Static function to get the UserSettingApplyType for a given owner and a user setting */
-	static UFGUserSettingApplyType* GetUserSettingApplyType( UObject* owner, class UFGUserSetting* inUserSetting );
+	static UFGUserSettingApplyType* GetUserSettingApplyType( IFGOptionInterface* owner, class UFGUserSetting* inUserSetting );
+
+	/** Converts FVariant to it's string representation */
+	static FString VariantAsString( const FVariant& Variant );
+
+	/** Converts string to a FVariant using the specified value type */
+	static bool StringAsVariant( const FString& String, EVariantTypes VariantType, FVariant& OutVariant );
 
 	/** Initial setup of values and registration of cvar values */
 	virtual void Init( class UFGUserSetting* inUserSetting );
@@ -44,7 +52,14 @@ public:
 	 *	trigger updates. This is the preferred approach to change settings */ 
 	virtual void SetValue(FVariant newValue);
 	/** Force set a value. This function will bypass apply cycles and apply the value directly. USE WITH CAUTION */ 
-	virtual void ForceSetValue(FVariant newValue);
+	virtual void ForceSetValue(FVariant newValue, bool bClearPendingValue = true);
+	/**
+	 * Forcefully updates the current "pending applied" value of this setting
+	 * The meaning is specific to the setting implementation:
+	 *  - Normal and instantly applied settings will return false and do nothing as their values are applied unconditionally
+	 *  - Settings requiring session/game restart will update their internal cached applied value
+	 */
+	virtual bool ForceSetPendingAppliedValue(FVariant newValue);
 	/** Set the default value. Useful when we want to set a new default value to reset to. */ 
 	void OverrideDefaultValue(FVariant newDefaultValue);
 	/** Called when we want to restore default values. When the player presses reset in the UI */
@@ -56,6 +71,8 @@ public:
 	
 	/** Broadcast updates so subscriber knows values have been changed */
 	void NotifySubscribers();
+	/** Purges subscribers that are no longer valid from the list */
+	void PurgeDeadSubscribers();
 	/** Listen for updates when the user setting changes applied value */
 	void AddSubscriber(const FOnOptionUpdated& onOptionUpdatedDelegate);
 	void AddSubscriber(const FOptionUpdated& onOptionUpdatedDelegate);
@@ -66,6 +83,8 @@ public:
 	void RemoveObjectAsSubscriber( UObject* boundObject );
 	/** Clear out subscribers. Triggers no updates */ 
 	void ClearSubscribers(){ Subscribers.Empty(); }
+	/** Called when the "pending applied" (applied, but pending game/session restart) value changes for this setting */
+	FOnPendingAppliedOptionValueChangedDelegate& OnPendingAppliedOptionValueChanged() { return PendingAppliedOptionValueChanged; }
 
 	/** This is the applied value for the user setting */
 	virtual FVariant GetAppliedValue() const { return AppliedValue; }
@@ -77,6 +96,13 @@ public:
 	virtual FVariant GetDefaultValue() const { return DefaultValue; }
 	/** Returns a non empty FVariant if we have a value to actually save i.e the value is different from the default value and marked as dirty */
 	virtual FVariant GetValueToSave() const;
+	/**
+	 * Returns a value that is currently "Applied" but is different from the actual "Applied" value.
+	 * For example, for settings requiring session/game restart, that would return a value that is pending application and will be applied
+	 * once the session has been restarted, or once the game has been restarted
+	 * If no such value exists, it will return the applied value instead
+	 */
+	virtual FVariant GetPendingAppliedValue() const;
 	/** Returns true if we have pending changes that haven't been applied yet. */
 	virtual bool HasPendingChanges() const;
 	virtual bool HasSessionRestartRequiredChanges() const { return false; }
@@ -97,10 +123,12 @@ public:
 
 	/** Populates debug data with current values (Applied, Pending, Default) */
 	virtual void GetDebugData( TArray<FString>& out_debugData );
-	
-protected:
+
+	/** Returns the option interface owning this object */
+	TScriptInterface<IFGOptionInterface> GetOwnerOptionInterface() const;
+
+	/** Returns true if we are currently in the main menu, as much as the setting application logic is concerned */
 	bool IsInMainMenu() const;
-	
 protected:
 	/** The underlying user setting that this apply type handles */
 	UPROPERTY(Transient)
@@ -119,10 +147,11 @@ protected:
 	TArray<FOnOptionUpdated> Subscribers;
 	/** Called legacy for now since this is the old system. We might end up needing this since FOnOptionUpdated with its FVariant isn't supported by blueprints */
 	TArray<FOptionUpdated> LegacySubscribers;
+	/** Called when a pending applied option value changes for the given option. */
+	FOnPendingAppliedOptionValueChangedDelegate PendingAppliedOptionValueChanged;
 	/** Defines it this setting should be saved. Only dirtied when applying values. This means indirect changes won't be saved
 	 *	We can't rely on if default value is NOT applied since default value of some settings might sometime depends on other settings */
 	bool IsDirty;
-	
 };
 
 UCLASS()
@@ -143,11 +172,13 @@ class FACTORYGAME_API UFGUserSettingApplyType_RequireGameRestart : public UFGUse
 public:
 	virtual bool OnApply( bool markDirty = true ) override;
 	virtual void OnPreRestartGame() override;
-	virtual void ForceSetValue(FVariant newValue) override;
+	virtual void ForceSetValue(FVariant newValue, bool bClearPendingValue) override;
+	virtual bool ForceSetPendingAppliedValue(FVariant newValue) override;
 	virtual void ResetToDefaultValue() override;
 	virtual FVariant GetDisplayValue() const override;
 	virtual bool HasGameRestartRequiredChanges() const override;
 	virtual FVariant GetValueToSave() const override;
+	virtual FVariant GetPendingAppliedValue() const override;
 	virtual void GetDebugData( TArray<FString>& out_debugData ) override;
 	
 	FVariant ValueWaitingForGameRestart = FVariant();
@@ -161,14 +192,14 @@ class FACTORYGAME_API UFGUserSettingApplyType_RequireSessionRestart : public UFG
 public:
 	virtual bool OnApply( bool markDirty = true ) override;
 	virtual void OnPreSessionRestart() override;
-	virtual void ForceSetValue(FVariant newValue) override;
+	virtual void ForceSetValue(FVariant newValue, bool bClearPendingValue) override;
+	virtual bool ForceSetPendingAppliedValue(FVariant newValue) override;
 	virtual void ResetToDefaultValue() override;
 	virtual FVariant GetDisplayValue() const override;
 	virtual bool HasSessionRestartRequiredChanges() const override;
 	virtual FVariant GetValueToSave() const override;
+	virtual FVariant GetPendingAppliedValue() const override;
 	virtual void GetDebugData( TArray<FString>& out_debugData ) override;
 	
 	FVariant ValueWaitingForSessionRestart = FVariant();
 };
-
-

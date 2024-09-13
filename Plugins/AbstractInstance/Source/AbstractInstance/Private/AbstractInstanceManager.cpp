@@ -1,4 +1,4 @@
-// Copyright Ben de Hullu. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 
 #include "AbstractInstanceManager.h"
@@ -8,6 +8,7 @@
 #include "InstanceData.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
+#include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 
 static TAutoConsoleVariable<int32> CVarAllowLazySpawning(
@@ -50,6 +51,12 @@ static TAutoConsoleVariable<float> CVarDisplayLightWeightInstanceDebugRange(
 	TEXT("lightweightinstances.DrawDebugRange"),
 	1000,
 	TEXT(""),
+	ECVF_RenderThreadSafe);
+
+static TAutoConsoleVariable<float> CVarDrawDistanceModifier(
+	TEXT("lightweightinstances.DrawDistanceModifier"),
+	1,
+	TEXT("Modifier value applied to the draw dinstance,TODO needs reinistance to apply "),
 	ECVF_RenderThreadSafe);
 
 constexpr int32 NumCollisionInstances = 500;
@@ -180,7 +187,7 @@ void AAbstractInstanceManager::Tick( float DeltaSeconds )
 #endif
 }
 
-void AAbstractInstanceManager::SetInstancedStatic( AActor* OwnerActor, const FTransform& ActorTransform, const UAbstractInstanceDataObject* InstanceDataArray, TArray<FInstanceHandle*>& OutHandles, bool bInitializeHidden )
+void AAbstractInstanceManager::SetInstancedStatic( AActor* OwnerActor, const FTransform& ActorTransform, const UAbstractInstanceDataObject* InstanceDataArray, TArray<FInstanceHandle*>& OutHandles, bool bInitializeHidden,TSubclassOf< class AActor > buildableClass )
 {
 	QUICK_SCOPE_CYCLE_COUNTER( AAbstractInstanceManager_SetInstancedStatic )
 	
@@ -192,6 +199,9 @@ void AAbstractInstanceManager::SetInstancedStatic( AActor* OwnerActor, const FTr
 			{
 				// create handle, if we are dealing with lazy load we reduce this one, since the owning actor will have this handle too.
 				FInstanceHandle* Handle = new FInstanceHandle();
+
+				// Assign buildable class if its used (LightWeightBuildableSubsystem)
+				Handle->BuildableClass = buildableClass;
 
 				if( InstanceDataEntry.bAllowLazyInstance && Manager->CanLazyLoad() )
 				{
@@ -268,9 +278,6 @@ void AAbstractInstanceManager::SetInstanceFromDataStatic( AActor* OwnerActor, co
 
 void AAbstractInstanceManager::SetInstanced( AActor* OwnerActor, const FTransform& ActorTransform, const FInstanceData& InstanceData, FInstanceHandle* &OutHandle, bool bInitializeHidden )
 {
-	// Debug
-	//DrawDebugSphere(GetWorld(),OwnerActor->GetTransform().GetLocation(),30.f,8,FColor::Red,false,30.f,3,10.f);
-	
 	// Generate unique name.
 	const FName Name = BuildUniqueName( InstanceData );
 	FInstanceComponentData* InstanceEntry = InstanceMap.Find( Name );
@@ -279,10 +286,16 @@ void AAbstractInstanceManager::SetInstanced( AActor* OwnerActor, const FTransfor
 	{
 		// create instance.
 		BuildInstanceEntryData( Name, InstanceData, InstanceEntry );
+
+#if WITH_EDITOR
+		if(InstanceEntry->bUsesBucketCollision )
+		{
+			EditorCheck( InstanceEntry->InstancedCollisionComponents.IsValidIndex( 0 )  );	
+		}
 		
 		EditorCheck( InstanceEntry );
-		EditorCheck( InstanceEntry->InstancedCollisionComponents[0] );
 		EditorCheck( InstanceEntry->InstancedStaticMeshComponent );
+#endif
 	}
 	
 	int32 HandleID = INDEX_NONE;
@@ -301,19 +314,27 @@ void AAbstractInstanceManager::SetInstanced( AActor* OwnerActor, const FTransfor
 	{
 		FTransform ZeroScaleTransform = InstanceSpawnLocation;
 		ZeroScaleTransform.SetScale3D(FVector(0.01));
-		HandleID = InstanceEntry->InstancedStaticMeshComponent->AddInstance( ZeroScaleTransform, true );		
+		ZeroScaleTransform.AddToTranslation( -FVector(0,0,AIM_BigOffset) );
+		HandleID = InstanceEntry->InstancedStaticMeshComponent->AddInstance( ZeroScaleTransform, true );
 	}
 	else
 	{
 		HandleID = InstanceEntry->InstancedStaticMeshComponent->AddInstance( InstanceSpawnLocation, true );
 	}
-
+	
+	// Add custom primitive data.
+	if(InstanceData.DefaultPerInstanceCustomData.Num() > 0)
+	{
+		InstanceEntry->InstancedStaticMeshComponent->SetCustomData( HandleID,InstanceData.DefaultPerInstanceCustomData,true );
+		OutHandle->CustomData = InstanceData.DefaultPerInstanceCustomData;
+	}
+	
 	// Setup Collision
-	UInstancedStaticMeshComponent* BatchCollisionComponent = nullptr;
+	ULightweightCollisionComponent* BatchCollisionComponent = nullptr;
 	int32 CollisionID = INDEX_NONE;
 	if( InstanceData.bUseBatchedCollision )
 	{
-		TArray<UInstancedStaticMeshComponent*>& InstanceCollisionComponent = InstanceEntry->InstancedCollisionComponents;
+		TArray<ULightweightCollisionComponent*>& InstanceCollisionComponent = InstanceEntry->InstancedCollisionComponents;
 		const int32 InstanceMapId = HandleID == 0 ? 0 : ( HandleID / NumCollisionInstances );
 		
 		if ( !InstanceCollisionComponent.IsValidIndex( InstanceMapId ) )
@@ -343,10 +364,15 @@ void AAbstractInstanceManager::SetInstanced( AActor* OwnerActor, const FTransfor
 	OutHandle->InstancedStaticMeshComponent = InstanceEntry->InstancedStaticMeshComponent;
 	OutHandle->BatchCollisionMeshComponent = BatchCollisionComponent;
 	OutHandle->Scale = Scale;	// cache scale for hiding.
+	OutHandle->SetIsBigOffsetHidden( bInitializeHidden ); 
 	
 	//OutHandle = new FInstanceHandle( HandleID, CollisionID, Owner, InstanceEntry->InstancedStaticMeshComponent, BatchCollisionComponent );
 	// UE_LOG(LogTemp,Warning,TEXT("Added new handle[%d] collisionid[%d]"),HandleID,CollisionID);
 
+	
+	// Cache num before flushing
+	OutHandle->NumPrimitiveFloatData = OutHandle->CustomData.Num();
+		
 	// Add handle to the list.
 	const int32 AddedIndex = InstanceEntry->InstanceHandles.Add( OutHandle );
 	
@@ -412,6 +438,7 @@ void AAbstractInstanceManager::RemoveInstance( FInstanceHandle* Handle )
 		}
 	}
 
+	if(InstanceEntry.bUsesBucketCollision)
 	{	// Solve collision pieces.
 		if( InstanceEntry.InstanceHandles.Num() > ( int32 )HandleID )
 		{
@@ -422,7 +449,7 @@ void AAbstractInstanceManager::RemoveInstance( FInstanceHandle* Handle )
 		FTransform Transform;
 
 		// Get the last bucket that contains instance.
-		UInstancedStaticMeshComponent* LastBucketComponent = nullptr;
+		ULightweightCollisionComponent* LastBucketComponent = nullptr;
 		for( int32 i = InstanceEntry.InstancedCollisionComponents.Num() - 1; i >= 0; --i )
 		{
 			if ( InstanceEntry.InstancedCollisionComponents[ i ]->GetInstanceCount() != 0 )
@@ -480,7 +507,7 @@ bool AAbstractInstanceManager::ResolveHit( const FHitResult& Result, FInstanceHa
 {
 	if ( Result.GetActor() == this )
 	{
-		if ( UInstancedStaticMeshComponent* HitCollision = Cast<UInstancedStaticMeshComponent>(Result.GetComponent() ) )
+		if ( ULightweightCollisionComponent* HitCollision = Cast<ULightweightCollisionComponent>(Result.GetComponent() ) )
 		{
 			const FName BucketID = HitCollision->ComponentTags.IsValidIndex( 0 ) ? HitCollision->ComponentTags[ 0 ] : FName();
 			const FName HandleHash = BuildUniqueName( HitCollision );
@@ -498,7 +525,12 @@ bool AAbstractInstanceManager::ResolveHit( const FHitResult& Result, FInstanceHa
 			TArray<FInstanceHandle*>& HandleMapRef = *HandleMapPtr;
 			EditorCheck( HandleMapRef.IsValidIndex( HandleId ) );
 
-			checkf(HandleMapRef.IsValidIndex( HandleId ),TEXT("handle id %d is out of bounds %d outer: %s "),HandleId, HandleMapRef.Num(), *HandleHash.ToString() );
+			if( !HandleMapRef.IsValidIndex( HandleId ) )
+			{
+				UE_LOG( LogTemp, Warning, TEXT("handle id %d is out of bounds %d outer: %s "),HandleId, HandleMapRef.Num(), *HandleHash.ToString() );
+				return false;
+			}
+			
 			FInstanceHandle* Handle = HandleMapRef[ HandleId ];
 			EditorCheck( Handle->IsInstanced() )
 
@@ -514,7 +546,7 @@ bool AAbstractInstanceManager::ResolveOverlap( const FOverlapResult& Result, FIn
 {
 	if( Result.GetActor() == this )
 	{
-		if( UInstancedStaticMeshComponent* HitCollision = Cast< UInstancedStaticMeshComponent >( Result.GetComponent() ) )
+		if( ULightweightCollisionComponent* HitCollision = Cast< ULightweightCollisionComponent >( Result.GetComponent() ) )
 		{
 			// Fence against hims, they are not allowed.
 			if( HitCollision->IsA(UHierarchicalInstancedStaticMeshComponent::StaticClass() ) )
@@ -603,9 +635,10 @@ void AAbstractInstanceManager::BuildInstanceEntryData( const FName& Name, const 
 	
 	FInstanceComponentData ComponentData;
 	ComponentData.bCastDistanceFieldShadows = InstanceData.bCastDistanceFieldShadows;
+	ComponentData.bUsesBucketCollision = InstanceData.bUseBatchedCollision;
 	
 	// Setup visual comp.
-	ComponentData.InstancedStaticMeshComponent = NewObject<UHierarchicalInstancedStaticMeshComponent>(this);
+	ComponentData.InstancedStaticMeshComponent = NewObject<ULightweightHierarchicalInstancedStaticMeshComponent>(this);
 	ComponentData.InstancedStaticMeshComponent->SetStaticMesh( InstanceData.StaticMesh );
 	ComponentData.InstancedStaticMeshComponent->OverrideMaterials = InstanceData.OverridenMaterials;
 	ComponentData.InstancedStaticMeshComponent->SetCollisionEnabled( ECollisionEnabled::NoCollision );
@@ -617,22 +650,34 @@ void AAbstractInstanceManager::BuildInstanceEntryData( const FName& Name, const 
 	ComponentData.InstancedStaticMeshComponent->NumCustomDataFloats = InstanceData.NumCustomDataFloats;
 	ComponentData.InstancedStaticMeshComponent->SetCastShadow( InstanceData.bCastShadows ); 
 	ComponentData.InstancedStaticMeshComponent->bAffectDistanceFieldLighting = bEnableDistanceFieldShadows; // distance fields are enabled after lazy loading.
-	
 	ComponentData.InstancedStaticMeshComponent->RegisterComponent();
-
+	ComponentData.InstancedStaticMeshComponent->bSelectable = false; // If there are too many instances the editor will freeze when selected so its better to just not allow that to happen (until a proper fix has time allocated)
+	ComponentData.InstancedStaticMeshComponent->WorldPositionOffsetDisableDistance = InstanceData.MaxWPODistance;
+	ComponentData.InstancedStaticMeshComponent->bWorldPositionOffsetWritesVelocity = InstanceData.bWorldPositionOffsetWritesVelocity;
+	
+	// Setup draw distance.
+	if(InstanceData.MaxDrawDistance > 0)
+	{
+		const float Modifier = CVarDrawDistanceModifier.GetValueOnGameThread();
+		ComponentData.InstancedStaticMeshComponent->SetCullDistances( InstanceData.MaxDrawDistance * Modifier * 0.95, InstanceData.MaxDrawDistance * Modifier);
+	}
+	
 	// Setup collision comp
-	ComponentData.InstancedCollisionComponents.Add( NewObject<UInstancedStaticMeshComponent>(this) );
-	ComponentData.InstancedCollisionComponents[ 0 ]->SetStaticMesh( InstanceData.StaticMesh );
-	ComponentData.InstancedCollisionComponents[ 0 ]->OverrideMaterials = InstanceData.OverridenMaterials;
-	ComponentData.InstancedCollisionComponents[ 0 ]->SetMobility( InstanceData.Mobility );
-	ComponentData.InstancedCollisionComponents[ 0 ]->AttachToComponent( GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform );
-	ComponentData.InstancedCollisionComponents[ 0 ]->SetRelativeTransform( FTransform::Identity );
-	ComponentData.InstancedCollisionComponents[ 0 ]->SetVisibility( false );
-	ComponentData.InstancedCollisionComponents[ 0 ]->SetCollisionProfileName( InstanceData.CollisionProfileName );
-	ComponentData.InstancedCollisionComponents[ 0 ]->ComponentTags.Add( FName("0") );
-	ComponentData.InstancedCollisionComponents[ 0 ]->bMultiBodyOverlap = true;
-	ComponentData.InstancedCollisionComponents[ 0 ]->RegisterComponent();
-
+	if(InstanceData.bUseBatchedCollision)
+	{
+		ComponentData.InstancedCollisionComponents.Add( NewObject<ULightweightCollisionComponent>(this) );
+		ComponentData.InstancedCollisionComponents[ 0 ]->SetStaticMesh( InstanceData.StaticMesh );
+		ComponentData.InstancedCollisionComponents[ 0 ]->OverrideMaterials = InstanceData.OverridenMaterials;
+		ComponentData.InstancedCollisionComponents[ 0 ]->SetMobility( InstanceData.Mobility );
+		ComponentData.InstancedCollisionComponents[ 0 ]->AttachToComponent( GetRootComponent(),FAttachmentTransformRules::KeepRelativeTransform );
+		ComponentData.InstancedCollisionComponents[ 0 ]->SetRelativeTransform( FTransform::Identity );
+		ComponentData.InstancedCollisionComponents[ 0 ]->SetVisibility( false );
+		ComponentData.InstancedCollisionComponents[ 0 ]->SetCollisionProfileName( InstanceData.CollisionProfileName );
+		ComponentData.InstancedCollisionComponents[ 0 ]->ComponentTags.Add( FName("0") );
+		ComponentData.InstancedCollisionComponents[ 0 ]->bMultiBodyOverlap = true;
+		ComponentData.InstancedCollisionComponents[ 0 ]->RegisterComponent();
+	}
+	
 	OutInstanceData = &InstanceMap.Add( Name, ComponentData );
 }
 

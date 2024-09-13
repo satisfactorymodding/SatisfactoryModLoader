@@ -12,6 +12,7 @@ AFGBuildableDoor::AFGBuildableDoor() : Super() {
 	this->EasingFunction = EEasingFunc::Linear;
 	this->BlendExp = 2.0;
 	this->Steps = 2;
+	this->mManagedByLightweightBuildableSubsystem = false;
 }
 void AFGBuildableDoor::BeginPlay(){ }
 void AFGBuildableDoor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }

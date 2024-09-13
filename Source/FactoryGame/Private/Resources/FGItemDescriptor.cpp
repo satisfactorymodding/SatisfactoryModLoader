@@ -108,16 +108,18 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 	this->mEnergyValue = 0.0;
 	this->mRadioactiveDecay = 0.0;
 	this->mForm = EResourceForm::RF_SOLID;
+	this->mGasType = EGasType::GT_NORMAL;
 	this->mSmallIcon = nullptr;
 	this->mPersistentBigIcon = nullptr;
 	this->mCrosshairMaterial = nullptr;
+	this->mIsAlienItem = false;
 	this->mInventorySettingsWidget = nullptr;
 	this->mConveyorMesh = nullptr;
 	this->mCategory = nullptr;
 	this->mQuickSwitchGroup = nullptr;
 	this->mMenuPriority = 0.0;
-	this->mFluidColor = FColor(0, 0, 0, 0);
-	this->mGasColor = FColor(0, 0, 0, 0);
+	this->mFluidColor = FColor(255, 255, 255, 0);
+	this->mGasColor = FColor(255, 255, 255, 0);
 	this->mClassToScanFor = nullptr;
 	this->mCustomScannableDetails = nullptr;
 	this->mScannableType = EScannableActorType::RTWOT_Default;
@@ -125,13 +127,17 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 	this->mShouldOverrideScannerDisplayText = false;
 	this->mScannerDisplayText = INVTEXT("");
 	this->mScannerLightColor = FColor(0, 0, 0, 0);
+	this->mNeedsPickUpMarker = false;
 	this->mItemIndex = -1;
 }
 void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGItemDescriptor::PostLoad(){ Super::PostLoad(); }
+void UFGItemDescriptor::BeginDestroy(){ Super::BeginDestroy(); }
+EGasType UFGItemDescriptor::GetGasType(TSubclassOf< UFGItemDescriptor > inClass){ return EGasType(); }
 FText UFGItemDescriptor::GetAbbreviatedDisplayName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 UMaterialInterface* UFGItemDescriptor::GetCrosshairMaterial(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
 void UFGItemDescriptor::GetDescriptorStatBars(TSubclassOf< UFGItemDescriptor > inClass, TArray<FDescriptorStatBar>& out_DescriptorStatBars){ }
+bool UFGItemDescriptor::IsAlienItem(TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
 void UFGItemDescriptor::GetInventorySettingsWidget(TSubclassOf< UFGItemDescriptor > inClass, TSubclassOf<class UFGInventorySettingsWidget>& out_InventorySettingsWidget){ }
 float UFGItemDescriptor::GetStackSizeConverted(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
 void UFGItemDescriptor::GetSubCategories(TSubclassOf< UFGItemDescriptor > inClass, TArray< TSubclassOf<  UFGCategory > >& out_subCategories){ }
@@ -147,6 +153,7 @@ EScannableActorType UFGItemDescriptor::GetScannableActorType(TSubclassOf< UFGIte
 TSubclassOf<UFGSchematic> UFGItemDescriptor::GetRequiredSchematicToScan(TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<UFGSchematic>(); }
 FText UFGItemDescriptor::GetScannerDisplayText(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 FColor UFGItemDescriptor::GetScannerLightColor(TSubclassOf< UFGItemDescriptor > inClass){ return FColor(); }
+bool UFGItemDescriptor::NeedsPickupMapMarker(TSubclassOf<UFGItemDescriptor> inClass){ return bool(); }
 bool UFGItemDescriptor::CanItemBePickedup(TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
 bool UFGItemDescriptor::CanItemBePickedup(UFGItemDescriptor* inClass){ return bool(); }
 FText UFGItemDescriptor::GetItemNameInternal() const{ return FText(); }

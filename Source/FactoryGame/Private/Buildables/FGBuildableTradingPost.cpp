@@ -9,12 +9,18 @@ AFGBuildableTradingPost::AFGBuildableTradingPost() : Super() {
 	this->mDefaultStorageRecipe = nullptr;
 	this->mDefaultHubTerminalRecipe = nullptr;
 	this->mDefaultWorkBenchRecipe = nullptr;
+	this->mLockerBuildableClass = nullptr;
+	this->mPioneerPottyClass = nullptr;
 	this->mStorage = nullptr;
 	this->mHubTerminal = nullptr;
 	this->mWorkBench = nullptr;
+	this->mLocker = nullptr;
+	this->mPioneerPotty = nullptr;
 	this->mCalendar = nullptr;
 	this->mMiniGame = nullptr;
-	this->mInputInventory = nullptr;
+	this->mLockerVisibilityLevel = 3;
+	this->mMiniGameAndCalendarVisibilityLevel = 4;
+	this->mCompassMaterialInstance = nullptr;
 	this->mSpawningGroundZOffset = 5.0;
 	this->mGroundSearchZDistance = 250.0;
 	this->mSchematicManager = nullptr;
@@ -25,7 +31,8 @@ AFGBuildableTradingPost::AFGBuildableTradingPost() : Super() {
 	this->mWorkBenchLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WorkBenchLocation"));
 	this->mCalendarLocation = CreateDefaultSubobject<USceneComponent>(TEXT("CalendarLocation"));
 	this->mMiniGameLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MiniGameLocation"));
-	this->mNeedPlayingBuildEffectNotification = false;
+	this->mCharacterCustomizationLocation = CreateDefaultSubobject<USceneComponent>(TEXT("CharacterCustomizationLocation"));
+	this->mPioneerPottyLocation = CreateDefaultSubobject<USceneComponent>(TEXT("Potty"));
 	this->mActorRepresentationTexture = nullptr;
 	this->mRepresentationText = INVTEXT("");
 	this->mGenerator1Location->SetupAttachment(RootComponent);
@@ -35,6 +42,8 @@ AFGBuildableTradingPost::AFGBuildableTradingPost() : Super() {
 	this->mWorkBenchLocation->SetupAttachment(RootComponent);
 	this->mCalendarLocation->SetupAttachment(RootComponent);
 	this->mMiniGameLocation->SetupAttachment(RootComponent);
+	this->mCharacterCustomizationLocation->SetupAttachment(RootComponent);
+	this->mPioneerPottyLocation->SetupAttachment(RootComponent);
 }
 void AFGBuildableTradingPost::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -42,17 +51,13 @@ void AFGBuildableTradingPost::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(AFGBuildableTradingPost, mStorage);
 	DOREPLIFETIME(AFGBuildableTradingPost, mHubTerminal);
 	DOREPLIFETIME(AFGBuildableTradingPost, mWorkBench);
+	DOREPLIFETIME(AFGBuildableTradingPost, mLocker);
+	DOREPLIFETIME(AFGBuildableTradingPost, mPioneerPotty);
 	DOREPLIFETIME(AFGBuildableTradingPost, mCalendar);
 	DOREPLIFETIME(AFGBuildableTradingPost, mMiniGame);
-	DOREPLIFETIME(AFGBuildableTradingPost, mInputInventory);
-	DOREPLIFETIME(AFGBuildableTradingPost, mNeedPlayingBuildEffectNotification);
 }
 void AFGBuildableTradingPost::BeginPlay(){ }
-void AFGBuildableTradingPost::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGBuildableTradingPost::Dismantle_Implementation(){ }
-void AFGBuildableTradingPost::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }
-void AFGBuildableTradingPost::StartIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
-void AFGBuildableTradingPost::StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
+void AFGBuildableTradingPost::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBuildableTradingPost::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }
 bool AFGBuildableTradingPost::AddAsRepresentation(){ return bool(); }
 bool AFGBuildableTradingPost::UpdateRepresentation(){ return bool(); }
@@ -72,21 +77,31 @@ EFogOfWarRevealType AFGBuildableTradingPost::GetActorFogOfWarRevealType(){ retur
 float AFGBuildableTradingPost::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGBuildableTradingPost::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGBuildableTradingPost::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+UMaterialInterface* AFGBuildableTradingPost::GetActorRepresentationCompassMaterial(){ return nullptr; }
 void AFGBuildableTradingPost::OnTradingPostUpgraded_Implementation(int32 level, bool suppressBuildEffects){ }
+bool AFGBuildableTradingPost::IsTradingPostComplete() const{ return bool(); }
+void AFGBuildableTradingPost::UpdateSubBuildingsVisibility(){ }
+void AFGBuildableTradingPost::SetupSubBuildingsDismantleRedirect(){ }
+bool AFGBuildableTradingPost::GetStorageVisibility() const{ return bool(); }
+bool AFGBuildableTradingPost::GetLockerVisibility() const{ return bool(); }
+bool AFGBuildableTradingPost::GetMiniGameAndCalendarVisibility() const{ return bool(); }
+bool AFGBuildableTradingPost::GetGeneratorVisibility(int32 generatorIndex) const{ return bool(); }
+bool AFGBuildableTradingPost::GetPottyVisibility() const{ return bool(); }
+int32 AFGBuildableTradingPost::GetTradingPostLevel() const{ return int32(); }
 void AFGBuildableTradingPost::UpdateGeneratorVisibility(){ }
 void AFGBuildableTradingPost::UpdateStorageVisibility(){ }
 void AFGBuildableTradingPost::UpdateTerminalAndWorkbenchVisibility(){ }
-int32 AFGBuildableTradingPost::GetTradingPostLevel() const{ return int32(); }
-void AFGBuildableTradingPost::PlayBuildEffects(AActor* inInstigator){ }
-void AFGBuildableTradingPost::ExecutePlayBuildEffects(){ }
-void AFGBuildableTradingPost::PlayBuildEffectsOnAllClients(AActor* instigator){ }
-bool AFGBuildableTradingPost::AreChildBuildingsLoaded(){ return bool(); }
-void AFGBuildableTradingPost::ValidateSubBuildings(){ }
-TArray<AActor*> AFGBuildableTradingPost::GetAllActiveSubBuildings() const{ return TArray<AActor*>(); }
-void AFGBuildableTradingPost::OnBuildEffectFinished(){ }
-void AFGBuildableTradingPost::TogglePendingDismantleMaterial(bool enabled){ }
-void AFGBuildableTradingPost::OnRep_HAXX_SubbuildingReplicated(){ }
-void AFGBuildableTradingPost::AdjustPlayerSpawnsToGround(){ }
+void AFGBuildableTradingPost::UpdateLockerVisibility(){ }
+void AFGBuildableTradingPost::UpdateMiniGameAndCalendarVisibility(){ }
+void AFGBuildableTradingPost::UpdatePottyVisibility(){ }
+void AFGBuildableTradingPost::OnRep_HubTerminalOrWorkBench(){ }
+void AFGBuildableTradingPost::OnRep_Storage(){ }
+void AFGBuildableTradingPost::OnRep_Generators(){ }
+void AFGBuildableTradingPost::OnRep_Locker(){ }
+void AFGBuildableTradingPost::OnRep_Calendar(){ }
+void AFGBuildableTradingPost::OnRep_MiniGame(){ }
+void AFGBuildableTradingPost::OnRep_Potty(){ }
 AFGSchematicManager* AFGBuildableTradingPost::GetSchematicManager(){ return nullptr; }
-void AFGBuildableTradingPost::OnRep_NeedPlayingBuildEffect(){ }
+void AFGBuildableTradingPost::OnSubsystemsAvailable(){ }
 void AFGBuildableTradingPost::TryAddEventSubBuildings(){ }
+void AFGBuildableTradingPost::SpawnTransientSubBuildings(){ }

@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_SevenParams( FTakeRadialDamageDelegate, AActo
 
 DECLARE_DYNAMIC_DELEGATE_RetVal_FiveParams( float, FAdjustDamageDelegate, AActor*, damagedActor, float, damageAmount, const class UDamageType*, damageType, class AController*, instigatedBy, AActor*, damageCauser );
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FHealDelegate, float, amount );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FHealthChangeDelegate, float, amount );
 
 UCLASS( Blueprintable )
 class FACTORYGAME_API UFGHealthComponent : public UActorComponent, public IFGSaveInterface
@@ -87,19 +87,16 @@ public:
 	float GetMaxHealth() const;
 
 	UFUNCTION( Reliable, NetMulticast )
-	void Client_TakeDamage( AActor* damagedActor, float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser );
+	void Multicast_TakeDamage( AActor* damagedActor, float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser );
 
 	UFUNCTION( Reliable, NetMulticast )
-	void Client_TakePointDamage( AActor* damagedActor, float damage, class AController* instigatedBy, FVector hitLocation, class UPrimitiveComponent* hitComponent, FName boneName, FVector shotFromDirection, const class UDamageType* damageType, AActor* damageCauser );
+	void Multicast_TakePointDamage( AActor* damagedActor, float damage, class AController* instigatedBy, FVector hitLocation, class UPrimitiveComponent* hitComponent, FName boneName, FVector shotFromDirection, const class UDamageType* damageType, AActor* damageCauser );
 
 	UFUNCTION( Reliable, NetMulticast )
-	void Client_TakeRadialDamage( AActor* damagedActor, float damage, const class UDamageType* damageType, FVector hitLocation, FHitResult hitInfo, class AController* instigatedBy, AActor* damageCauser );
+	void Multicast_TakeRadialDamage( AActor* damagedActor, float damage, const class UDamageType* damageType, FVector hitLocation, FHitResult hitInfo, class AController* instigatedBy, AActor* damageCauser );
 
 	UFUNCTION( Reliable, NetMulticast )
-	void Client_Died( AActor* deadActor );
-
-	UFUNCTION( Reliable, NetMulticast )
-	void Client_Heal( float amount );
+	void Multicast_Heal( float amount );
 
 	UPROPERTY( BlueprintAssignable, Category = "Events|Health" )
 	FTakeAnyDamageDelegate OnTakeAnyDamageDelegate;
@@ -115,7 +112,10 @@ public:
 	FDeathDelegate DeathDelegate;
 
 	UPROPERTY( BlueprintAssignable, Category = "Events|Health", DisplayName = "OnHeal" )
-	FHealDelegate HealDelegate;
+	FHealthChangeDelegate OnHealDelegate;
+	
+	UPROPERTY( BlueprintAssignable, Category = "Events|Health", DisplayName = "OnHealthChanged" )
+	FHealthChangeDelegate OnHealthChangedDelegate;
 
 	UFUNCTION( BlueprintCallable, Category = "Health" )
 	void Heal( float healAmount, bool notifyClient = true );
@@ -125,9 +125,6 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "Health" )
 	void ResetHealthFromDeath();
-
-	UFUNCTION( BlueprintCallable, Category = "Health" )
-	void ReviveResetHealth();
 
 	/**
 	 * Instantly kill, bypass AdjustDamage event. Will trigger DeathDelegate
@@ -152,12 +149,6 @@ public:
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Health" )
 	void RemoveAdjustDamageListener( FAdjustDamageDelegate adjustDamage );
-
-	/** Setter for this var */
-	void SetReplicateDamageEvents( bool setReplicates );
-
-	/** Setter for this var */
-	void SetReplicateDeathEvents( bool setReplicates );
 protected:
 	/**
 	 * Adjust incoming damage
@@ -168,10 +159,15 @@ protected:
 	
 	/**
 	 * Called when we died, used to prevent double notifications on DeathDelegate
-	 *
-	 * @param forceNotifies Forces our notifies to be sent anyway
 	 */
-	void Died( bool forceNotifies = false );
+	void Died();
+
+private:
+	UFUNCTION()
+	void OnRep_IsDead();
+
+	UFUNCTION()
+	void OnRep_CurrentHealth();
 protected:
 	// Interested listeners for the adjust damage delegates
 	UPROPERTY()
@@ -185,7 +181,7 @@ protected:
 	float mMaxHealth;
 
 	/** Our current health */
-	UPROPERTY( SaveGame, Replicated)
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CurrentHealth )
 	float mCurrentHealth;
 
 	/** Scale of max health to use when respawning */
@@ -193,14 +189,6 @@ protected:
 	float mRespawnHealthFactor;
 
 	/** If true, then we are dead. This is replicated to clients and they get the death event based on this. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsDead )
 	uint8 mIsDead:1;
-
-	/** If true, then the client will trigger the following events: OnTakeAnyDamageDelegate, OnTakePointDamageDelegate, OnTakeRadialDamageDelegate */
-	UPROPERTY()
-	uint8 mReplicateDamageEvents:1;
-
-	/** If true, then the client will trigger the following event: DeathDelegate */
-	UPROPERTY()
-	uint8 mReplicateDeathEvents:1;
 };

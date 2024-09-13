@@ -6,6 +6,8 @@
 #include "FGInventoryComponent.h"
 #include "FGDismantleInterface.generated.h"
 
+class UFGConstructDisqualifier;
+
 /**
  * Interface for actors that can be dismantled by the buildgun.
  */
@@ -66,7 +68,7 @@ class FACTORYGAME_API IFGDismantleInterface
 	/**
 	 * Dismantle this.
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Dismantle" )
 	void Dismantle();
 
 	/**
@@ -80,6 +82,33 @@ class FACTORYGAME_API IFGDismantleInterface
 	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
 	void StopIsLookedAtForDismantle( AFGCharacterPlayer* byCharacter );
+
+	/**
+	 * Returns true if the dismantle mode should ignore this buildable and disallow sampling it in dismantle
+	 * The original function name was CanDismantleSample, but unfortunately UHT is dumb and does not allow having a default implementation of interface BP NativeEvent functions
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
+	bool ShouldBlockDismantleSample() const;
+
+	/** Returns the display name of the actor when it is looked at for dismantle */
+	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
+	FText GetDismantleDisplayName( AFGCharacterPlayer* byCharacter ) const;
+
+	/**
+	 * Returns the dependencies that need to be dismantled first to successfully dismantle this buildable
+	 * For example, tracks require trains that are occupying them to be dismantled first before they can be dismantled
+	 * When cycles are present, the dismantle order is undefined.
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
+	void GetDismantleDependencies( TArray<AActor*>& out_dismantleDependencies ) const;
+
+	/** Returns true if this dismantle-able actor is willing to have GetDismantleDisqualifiers called on it. Used to prevent a fairly expensive call to GetDismantleDisqualifiers which copies the selected buildables array */
+	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
+	bool SupportsDismantleDisqualifiers() const;
+
+	/** Allows providing dismantle disqualifiers to the build gun to give visual feedback as to why the given buildable cannot be dismantled. Keep in mind that this is only used for the visual feedback. */
+	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
+	void GetDismantleDisqualifiers( TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors ) const;
 };
 
 /**
@@ -93,4 +122,11 @@ struct FACTORYGAME_API FDismantleHelpers
 	 * @param refund			The refund to drop.
 	 */
 	static void DropRefundOnGround( class AActor* dismantledActor, const FVector& aimHitLocation, const TArray< FInventoryStack >& refund );
+	
+	/**
+	 * @param world				World To Place Refund.
+	 * @param aimHitLocation	Where the object was dismantled, i.e. where on the actor did the player initiate the dismantle action (but for lightweights we dont have an actor so this will be a lightweight location).
+	 * @param refund			The refund to drop.
+	 */
+	static void DropRefundOnGroundNoActor( class UWorld* world, const FVector& lightweightLocation, AActor* ignoreActor, const TArray< FInventoryStack >& refund );
 };

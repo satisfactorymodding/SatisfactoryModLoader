@@ -4,6 +4,7 @@
 #include "GameFramework/Pawn.h"
 
 UFGDamageOverTime::UFGDamageOverTime() : Super() {
+	this->mIsRelevantToPeakGameplayAchievement = false;
 	this->mDamageInterval = 1.0;
 	this->mActorFilter.Add(APawn::StaticClass());
 }

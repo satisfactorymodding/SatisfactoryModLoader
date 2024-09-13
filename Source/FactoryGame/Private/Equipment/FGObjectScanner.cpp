@@ -25,7 +25,6 @@ AFGObjectScanner::AFGObjectScanner() : Super() {
 	this->mCurrentScannableDescriptor = nullptr;
 	this->mEquipmentSlot = EEquipmentSlot::ES_ARMS;
 	this->mArmAnimation = EArmEquipment::AE_ObjectScanner;
-	this->mOnlyVisibleToOwner = false;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	this->mScannerSkeletalMesh->SetupAttachment(RootComponent);
 }
@@ -39,19 +38,20 @@ void AFGObjectScanner::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & 
 void AFGObjectScanner::Equip(AFGCharacterPlayer* character){ }
 void AFGObjectScanner::UnEquip(){ }
 void AFGObjectScanner::OnCameraModeChanged_Implementation(ECameraMode newCameraMode){ }
-bool AFGObjectScanner::ShouldSaveState() const{ return bool(); }
+void AFGObjectScanner::LoadFromItemState_Implementation(const FFGDynamicStruct& itemState){ }
+FFGDynamicStruct AFGObjectScanner::SaveToItemState_Implementation() const{ return FFGDynamicStruct(); }
 void AFGObjectScanner::AddEquipmentActionBindings(){ }
 bool AFGObjectScanner::CycleForward(){ return bool(); }
 bool AFGObjectScanner::CycleBackward(){ return bool(); }
 bool AFGObjectScanner::HasValidCurrentDetails() const{ return bool(); }
 void AFGObjectScanner::GetAvailableScannableDescriptors(TArray < TSubclassOf<UFGItemDescriptor> >& out_availableDescriptors){ }
-void AFGObjectScanner::SetScannableDescriptor(TSubclassOf<UFGItemDescriptor> newScannableDescriptor, EFGScannerCycleDirection cycleDirection){ }
+void AFGObjectScanner::SetScannableDescriptor(TSubclassOf<UFGItemDescriptor> newScannableDescriptor, EFGScannerCycleDirection cycleDirection , bool shouldPlayAnimation){ }
 void AFGObjectScanner::OnScannableResourceChanged(){ }
 void AFGObjectScanner::OpenScannerInteractUI(){ }
 void AFGObjectScanner::ForceCloseScannerInteractUI(){ }
 void AFGObjectScanner::Input_OpenMenu(const FInputActionValue& actionValue){ }
 void AFGObjectScanner::Input_Cycle(const FInputActionValue& actionValue){ }
-void AFGObjectScanner::Server_SetScannableDescriptor_Implementation(TSubclassOf<UFGItemDescriptor> newScannableDescriptor, EFGScannerCycleDirection cycleDirection){ }
+void AFGObjectScanner::Server_SetScannableDescriptor_Implementation(TSubclassOf<UFGItemDescriptor> newScannableDescriptor, EFGScannerCycleDirection cycleDirection, bool shouldPlayAnimation){ }
 void AFGObjectScanner::Multicast_PlayCycleAnimation_Implementation(EFGScannerCycleDirection cycleDirection){ }
 void AFGObjectScanner::Multicast_PlayBeepAnimation_Implementation(){ }
 void AFGObjectScanner::OnRep_CurrentScannableDescriptor(){ }

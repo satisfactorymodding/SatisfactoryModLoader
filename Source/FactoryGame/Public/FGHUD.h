@@ -5,6 +5,8 @@
 #include "Equipment/FGEquipment.h"
 #include "FGHUDBase.h"
 #include "FactoryGame.h"
+#include "FGActorRepresentation.h"
+#include "Widgets/SWeakWidget.h"
 
 #include "FGHUD.generated.h"
 
@@ -23,6 +25,62 @@ enum class ECrosshairState : uint8
 		ECS_Custom			UMETA( DisplayName = "Custom" ),
 		ECS_Hidden			UMETA( DisplayName = "Hidden" )
 };
+
+USTRUCT(BlueprintType)
+struct FCompassEntry
+{
+	GENERATED_BODY()
+
+	/** Offset on the compass */
+	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
+	float Offset{0.0f};
+	/** Current alpha value based on how close the entry is to the edge. */
+	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
+	float Alpha{0.0f};
+	/** Vertical alignment of the compass entry, 0 being below the compass line, -0.5 being centered on the compass line, and -1 being above the compass line */
+	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
+	float HeightAlignment{0.0f};
+	/** Scale of the compass entry. Default is 1.0, but it can be overriden by the representation */
+	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
+	float Scale{1.0f};
+	/** Text to display when centered. */
+	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
+	FText Text;
+
+	/** Brush to use for drawing the object. Usually a material based brush, but can also be a texture */
+	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
+	FSlateBrush Brush;
+
+	/** Brush to use for drawing the special effect on the object (like scanner ping). Visual effects are not restricted to compass object size boundaries */
+	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
+	FSlateBrush EffectBrush;
+
+	bool bEnabled{true};
+	bool bCanShowName{true};
+	bool bDynamicScale{false};
+	bool bHasSpecialEffect{false};
+	bool bHasDynamicText{false};
+	bool bImportantEntry{false};
+	/** True if special effect is visible, special effect will be set to false if time left expires */
+	bool bSpecialEffectVisible{true};
+	float SpecialEffectTime{0.0f};
+	bool bHasCachedTextDimensions{false};
+	FVector2f CachedTextDimensions{ForceInit};
+	float CachedDistanceToCamera{0.0f};
+
+	float MaxDrawRange{-1.0f};
+	FVector2f StaticDirection{ForceInit};
+	float StaticDistanceToCamera{0.0f};
+		
+	// Should it display the name?
+	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
+	bool bShouldShowName{false};
+
+	/** The representation this compass entry is bound to. Can be NULL in some cases */
+	UPROPERTY()
+	UFGActorRepresentation* RepresentingActor{};
+};
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPumpiModeChanged, bool, hideHUD );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPartialPumpiModeChanged, bool, partialHideHUD );
@@ -43,7 +101,8 @@ public:
 	//~ Begin AActor interface
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
-	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
+	virtual void Tick(float DeltaSeconds) override;
 	//~ End AActor interface
 
 	/** Adds a HUD of the widget class for the provided pawn. Needs a valid pawn */
@@ -61,15 +120,23 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|UI" )
 	void OpenInteractUI( TSubclassOf< class UFGInteractWidget > widgetClass, UObject* interactObject );
 
+	/**
+	 * Requests an interaction widget of the specified class, either retrieving it from cache if the widget supports that
+	 * or creating a new one if necessary. The widget is initialized with the provided interactable object.
+	 * @param widgetClass The subclass of UFGInteractWidget to request.
+	 * @param interactObject The UObject to interact with using the widget.
+	 * @return Pointer to the requested UFGInteractWidget instance.
+	 */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
 	class UFGInteractWidget* RequestInteractWidget( TSubclassOf< class UFGInteractWidget > widgetClass, UObject* interactObject );
+	/** Request and release functions for UFGGameUI::mUserWidgetPool. Kept this as well as the UFGGameUI functions for easier access */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI", meta = (DeterminesOutputType = "widgetClass") )
 	UUserWidget* RequestWidget( TSubclassOf< UUserWidget > widgetClass );
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
 	void ReleaseWidget( UUserWidget* widgetToRelease );
 
 	/** Pointer to the cheat board widget */
-	TSharedPtr<class SFGCheatBoardWidget> mCheatBoardWidget; 
+	TSharedPtr<class SFGCheatBoardWidget> mCheatBoardWidget;
 
 	bool IsCheatBoardOpen() const { return mCheatBoardWidget.IsValid(); }
 
@@ -97,13 +164,13 @@ public:
 
 	/** HUD visibility */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
-	bool GetPartialPumpiMode() { return mPartialForceHideHUD; }
+	bool GetPartialPumpiMode() const { return mPartialForceHideHUD; }
 
 	/** Hides all HUD including crosshair */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
 	void SetPumpiMode( bool hideHUD );
 
-	/** Hides all HUD including crosshair */
+	/** Hides all HUD including crosshair. Unlike SetPumpiMode, this does NOT hide the Pause Menu. Used by the Intro Sequence. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
 	void SetPartialPumpiMode( bool hideHUD );
 
@@ -175,14 +242,35 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|HUD|Damage")
 	void NotifyNotifyHitFeedbackArmor(AFGCharacterBase* hitCharacter, AActor* damageCauser);
 
-#if WITH_CHEATS
 	void ToggleCheatBoard();
-#endif
+
+	UFUNCTION()
+	void OnActorRepresentationAdded( UFGActorRepresentation* actorRepresentation );
+
+	UFUNCTION()
+	void OnActorRepresentationRemoved( UFGActorRepresentation* actorRepresentation );
+
+	UFUNCTION()
+	void OnActorRepresentationUpdated( UFGActorRepresentation* actorRepresentation );
+
+	UFUNCTION()
+	void OnActorRepresentationFiltered( ERepresentationType type, bool visible );
+
+	void SetCompassEntryVisibility(UFGActorRepresentation* actorRepresentation, bool visible);
+	void RegisterCardinalCompassDirections();
 	
+	UFUNCTION()
+	void OnSetupBinds();
+	//void ShowCompass();
+
+	UFUNCTION( BlueprintNativeEvent, Category = "Game UI", DisplayName = "OnViewportResized" )
+	void OnViewportResizedEvent();
+
 private:
 	/** Updates the crosshair by sending a delegate with current state */
 	void UpdateCrosshair();
 
+	void OnViewportResized( class FViewport* Viewport, uint32 Unused );
 public:
 	/** Called when the pumpi mode changes. */
 	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
@@ -215,13 +303,14 @@ public:
 	/** Called when cross hair is updated */
 	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
 	FOnCrosshairUpdated mOnCrosshairUpdated;
-	
+
+	TArray<FCompassEntry>& GetCompassEntries() { return mCompassEntries; }
 protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Game UI" )
-	TSubclassOf< UUserWidget > mGameUIClass;
+	TSoftClassPtr< UUserWidget > mGameUIClass;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Game UI" )
-	TSubclassOf< UUserWidget > mRespawnUIClass;
+	TSoftClassPtr< UUserWidget > mRespawnUIClass;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Crosshair" )
 	class UTexture2D* mDefaultCrosshair;
@@ -249,6 +338,16 @@ protected:
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Crosshair" )
 	class UTexture2D* mGeneralCrosshair;
+
+	// Entries in the compass.
+	UPROPERTY()
+	TArray<FCompassEntry> mCompassEntries;
+
+	void UpdateCompassData( float deltaTime );
+
+	UPROPERTY(EditDefaultsOnly)
+	TMap<ERepresentationType,UTexture2D*> mCompassTextureOverrides;
+
 private:
 
 	/** Current state of crosshair */
@@ -288,12 +387,7 @@ private:
 	UPROPERTY()
 	UUserWidget* mPawnHUD;
 
-	UPROPERTY()
+	/** Widgets we cached to avoid recreating all the time. Legacy implementation. Could/should be replaced by UFGGameUI::mUserWidgetPool */
+	UPROPERTY( Transient )
 	TMap< TSubclassOf< UUserWidget >, UUserWidget* > mCachedWidgets;
-
-	FUserWidgetPool mUserWidgetPool;
-
-	/** Runtime set crosshair to keep track of when we should trigger delegate updates */
-	//UPROPERTY( Transient )
-	//TPair<bool, UTexture2D*> mCachedCrosshairState;
 };

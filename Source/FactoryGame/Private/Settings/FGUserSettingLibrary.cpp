@@ -2,9 +2,9 @@
 
 #include "Settings/FGUserSettingLibrary.h"
 
-bool UFGUserSettingLibrary::GetBoolValue( UFGUserSetting* setting, bool& out_displayValue){ return bool(); }
-int32 UFGUserSettingLibrary::GetInt32Value( UFGUserSetting* setting, int32& out_displayValue){ return int32(); }
-float UFGUserSettingLibrary::GetFloatValue( UFGUserSetting* setting, float& out_displayValue){ return float(); }
-void UFGUserSettingLibrary::SetBoolValue( UFGUserSetting* setting, bool value, bool forceSet){ }
-void UFGUserSettingLibrary::SetInt32Value( UFGUserSetting* setting, int32 value, bool forceSet){ }
-void UFGUserSettingLibrary::SetFloatValue( UFGUserSetting* setting, float value, bool forceSet){ }
+bool UFGUserSettingLibrary::GetBoolValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, bool& out_displayValue, UObject* worldContext){ return bool(); }
+int32 UFGUserSettingLibrary::GetInt32Value(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, int32& out_displayValue, UObject* worldContext){ return int32(); }
+float UFGUserSettingLibrary::GetFloatValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, float& out_displayValue, UObject* worldContext){ return float(); }
+void UFGUserSettingLibrary::SetBoolValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, bool value, bool forceSet, UObject* worldContext){ }
+void UFGUserSettingLibrary::SetInt32Value(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, int32 value, bool forceSet, UObject* worldContext){ }
+void UFGUserSettingLibrary::SetFloatValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, float value, bool forceSet, UObject* worldContext){ }

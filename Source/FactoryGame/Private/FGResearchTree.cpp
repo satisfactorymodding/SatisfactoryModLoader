@@ -92,3 +92,4 @@ void UFGResearchTree::UpdateAssetBundleData(){ }
 #endif 
 void UFGResearchTree::PostLoad(){ Super::PostLoad(); }
 TArray< EEvents > UFGResearchTree::GetRelevantEvents(TSubclassOf< UFGResearchTree > inClass){ return TArray<EEvents>(); }
+EResearchTreeStatus UFGResearchTree::GetResearchTreeStatus(TSubclassOf< UFGResearchTree > inClass, UObject* worldContext){ return EResearchTreeStatus(); }

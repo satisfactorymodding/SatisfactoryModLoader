@@ -180,9 +180,13 @@ protected:
 	TSubclassOf< AFGCreature > OverrideSpawnedCreatureClass( TSubclassOf< AFGCreature > creatureClassToSpawn ) const;
 	
 private:
+	/** Called whenever a level is added to the world */
+	UFUNCTION()
+	void OnLevelAddedToWorld( ULevel* inLevel, UWorld* inWorld );
+	
 	/** Called whenever a level is removed from the world */
 	UFUNCTION()
-	void OnPreLevelRemovedFromWorld( ULevel* inLevel, UWorld* inWorld );
+	void OnLevelRemovedFromWorld( ULevel* inLevel, UWorld* inWorld );
 
 	void DespawnCreaturesInlevel( ULevel* inLevel );
 	
@@ -239,6 +243,10 @@ protected:
 	/** All the creatures which currently exist. */
 	UPROPERTY( Transient, BlueprintReadOnly )
 	TArray< class AFGCreature* > mAllCreatures;
+
+	/** List of creatures with pending reactivation, waiting for level streaming. */
+	UPROPERTY( Transient )
+	TArray< class AFGCreature* > mPersistentCreaturesPendingReactivation;
 	
 	/** All the flying baby crabs which currently exist. */
 	UPROPERTY( Transient, BlueprintReadOnly )

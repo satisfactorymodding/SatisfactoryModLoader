@@ -69,7 +69,7 @@ public:
 	// End AActorComponent interface
 
 	// Setup the necessary instance lists on our outer. Component must be registered before this is called.
-	void SetupInstanceList( UStaticMeshComponent* sourceStaticMeshComponent, uint8 numCustomDataFloats, bool useAsOccluder = false, EDistanceCullCategory CullCategory = EDistanceCullCategory::FGDDC_NEVERCULL );
+	void SetupInstanceList( UStaticMeshComponent* sourceStaticMeshComponent, uint8 numCustomDataFloats, bool useAsOccluder = false, float MaxDrawDistance = -1.f, float MaxWPODistance = 0);
 
 	// Functions to manage the instances handled by this class, setup must be called prior to using these.
 	void ClearInstances();
@@ -103,7 +103,7 @@ public:
 private:
 
 	//class UHierarchicalInstancedStaticMeshComponent* CreateHierarchicalInstancingComponent( class UStaticMesh* staticMesh, uint8 numCustomData, bool useAsOccluder, FVector2D& minMaxCullDistance );
-	class UHierarchicalInstancedStaticMeshComponent* CreateHierarchicalInstancingComponent( class UStaticMesh* staticMesh,TArray<class UMaterialInterface*> overridenMaterials, uint8 numCustomData, bool useAsOccluder, FVector2D& minMaxCullDistance );
+	class UHierarchicalInstancedStaticMeshComponent* CreateHierarchicalInstancingComponent( class UStaticMesh* staticMesh,TArray<class UMaterialInterface*> overridenMaterials, uint8 numCustomData, bool useAsOccluder, const FVector2D& minMaxCullDistance );
 private:
 	UPROPERTY( EditAnywhere, Category = "UFGColoredInstanceManager")
 	class UHierarchicalInstancedStaticMeshComponent* mInstanceComponent;

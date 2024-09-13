@@ -3,8 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGBuildableFactory.h"
-#include "Replication/FGReplicationDetailActor_PowerStorage.h"
+#include "Buildables/FGBuildableFactory.h"
 #include "FGBuildablePowerStorage.generated.h"
 
 UENUM( BlueprintType )
@@ -27,14 +26,11 @@ class FACTORYGAME_API AFGBuildablePowerStorage : public AFGBuildableFactory
 	GENERATED_BODY()
 public:
 	AFGBuildablePowerStorage();
-
-	// Begin IFGReplicationDetailActorOwnerInterface
-	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_PowerStorage::StaticClass(); };
-	// End IFGReplicationDetailActorOwnerInterface
-
+	
 	//~ Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
 	//~ End AActor interface
 
 	//~ Begin AFGBuildableFactory interface
@@ -95,17 +91,22 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Power" )
 	void IndicatorLevelChanged( uint8 indicatorLevel );
 
-private:
-	friend AFGReplicationDetailActor_PowerStorage;
+	UPROPERTY(EditDefaultsOnly)
+	int32 mStatusPrimitiveID = 13;
 
+	UPROPERTY(EditDefaultsOnly)
+	int32 mChargePrimitiveID = 14;
+
+	UPROPERTY(EditDefaultsOnly)
+	UFGColoredInstanceMeshProxy* mMeshMesh;
+	
+private:
 	float GetNetPowerInput() const;
 
 	uint8 CalculateIndicatorLevel() const;
 
 	void UpdatePropertiesOnGameThread( EBatteryStatus status, uint8 indicatorLevel );
 	void UpdateProperties( EBatteryStatus status, uint8 indicatorLevel );
-
-	AFGReplicationDetailActor_PowerStorage* GetCastReplicationDetail() const;
 	
 	UFUNCTION()
 	void OnRep_Status();
@@ -124,7 +125,7 @@ private:
 	/**
 	 * The current amount of power stored in this battery in MWh.
 	 */
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, meta = ( FGReplicated ) )
 	float mPowerStore;
 
 	/**
@@ -136,6 +137,7 @@ private:
 	/**
 	 * The current power input to this battery, in MW. Negative values denote power output.
 	 */
+	UPROPERTY( meta = ( FGReplicated ) )
 	float mPowerInput = 0.0f;
 
 	/**

@@ -15,7 +15,7 @@ class FACTORYGAME_API AFGBuildableRamp : public AFGBuildableFoundation
 {
 	GENERATED_BODY()
 public:
-	AFGBuildableRamp();
+	AFGBuildableRamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	// Begin IFGSaveInterface
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
@@ -33,4 +33,15 @@ public:
 	/** Whether or not this is a roof. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Ramp" )
 	bool mIsRoof;
+
+	/** Whether or not this ramp is inverted. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Ramp" )
+	bool mIsInverted;
+};
+
+UCLASS( Abstract )
+class FACTORYGAME_API AFGBuildableRampLightweight : public AFGBuildableRamp
+{
+	GENERATED_BODY()
+	AFGBuildableRampLightweight( const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 };

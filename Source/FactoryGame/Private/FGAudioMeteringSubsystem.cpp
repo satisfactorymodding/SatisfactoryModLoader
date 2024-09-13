@@ -2,7 +2,7 @@
 
 #include "FGAudioMeteringSubsystem.h"
 
-void UFGAudioBusMonitor::SetMeteringFlags(EAkMeteringFlags MeteringFlags){ }
+void UFGAudioBusMonitor::SetMeteringFlags(EAkMeteringFlags MeteringFlags1){ }
 void UFGAudioBusMonitor::BusMeteringInfoUpdate(const FAkBusMeteringInfo& meteringInfo){ }
 void UFGAudioBusMonitor::Register(){ }
 UFGAudioBusMonitor* UFGAudioMeteringSubsystem::GetAudioBusMonitor(const FString& BusName){ return nullptr; }

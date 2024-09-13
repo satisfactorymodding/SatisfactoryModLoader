@@ -4,6 +4,9 @@
 #include "Components/SceneComponent.h"
 #include "Net/UnrealNetwork.h"
 
+bool FSignRPC_Data::NetSerialize(FArchive& Ar,  UPackageMap* Map, bool& bOutSuccess){ return bool(); }
+void FSignRPC_Data::AddPendingSign(AFGBuildableWidgetSign* sign){ }
+bool FClientSetSignData::NetSerialize(FArchive& Ar,  UPackageMap* Map, bool& bOutSuccess){ return bool(); }
 void UFGSignDataRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGSignDataRemoteCallObject, mForceNetField_UFGSignDataRemoteCallObject);

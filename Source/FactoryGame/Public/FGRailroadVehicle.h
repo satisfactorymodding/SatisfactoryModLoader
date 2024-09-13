@@ -49,6 +49,8 @@ public:
 
 	//~ Begin IFGDismantleInterface
 	virtual bool CanDismantle_Implementation() const override;
+	virtual bool SupportsDismantleDisqualifiers_Implementation() const override { return true; }
+	virtual void GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const override;
 	//~ End IFGDismantleInterface
 
 	//Begin IFGSignificanceInterface
@@ -121,7 +123,7 @@ public:
 	 * Get the track position for this vehicle.
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Vehicle" )
-	FORCEINLINE FRailroadTrackPosition GetTrackPosition() const { return mTrackPosition; }
+	FORCEINLINE FRailroadTrackPosition const& GetTrackPosition() const { return mTrackPosition; }
 
 	/** 
 	 * Get the track id this vehicle is on; -1 if the track is invalid.
@@ -162,6 +164,7 @@ protected:
 
 	/**
 	 * Called on all clients when the trains collide, only called if the vehicle is significant.
+	 * This event is unreliable and should only be used for effects.
 	 * 
 	 * @param withVehicle Vehicle we collided with.
 	 * @param impactVelocity Our vehicles velocity.
@@ -181,32 +184,26 @@ protected:
 	void DisableDerailPhysics();
 	
 private:
-	/** Tick the locally simulated client movement. */
-	void TickClientSimulation( float dt );
-	
 	/** Updates the vehicles settings depending on if it should be simulated or "real" */
 	virtual void OnIsSimulatedChanged();
 
-	/** @param at Coupler to connect to. */
+	/** Couple a vehicle at the given coupler, the new vehicle must be valid. */
 	void CoupleVehicleAt( AFGRailroadVehicle* vehicle, ERailroadVehicleCoupler coupler );
 
-	/** @param at Coupler to connect to. */
+	/** Decouple the vehicle at the given coupler. */
 	void DecoupleVehicleAt( ERailroadVehicleCoupler coupler );
 
 	/** On reps */
 	UFUNCTION()
 	void OnRep_IsOrientationReversed();
 	UFUNCTION()
-	void OnRep_Train();
-	UFUNCTION()
 	void OnRep_IsDerailed();
-	
 protected:
 	// About 1/5 of the distance to the world bounds and about the same as distance to the KillZ in the sky from sea level.
 	static constexpr float MAX_DERAIL_DISTANCE = 200000.f;
 	
 	/** The train this vehicle is part of, updated from the railroad subsystem */
-	UPROPERTY( ReplicatedUsing = OnRep_Train, VisibleAnywhere, Category = "Vehicle" )
+	UPROPERTY( Replicated, VisibleAnywhere, Category = "Vehicle" )
 	class AFGTrain* mTrain;
 
 	/** How long is this vehicle. */
@@ -237,7 +234,7 @@ private:
 	bool mIsOrientationReversed;
 
 	/** Where along the track is the train. */
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, Replicated )
 	FRailroadTrackPosition mTrackPosition;
 
 	/** If this vehicle is derailed, handles the derailment on client. */
@@ -248,16 +245,4 @@ private:
 
 	/** If we have derailed and are far enough from the location of the derailing, this is the hologram shown in place of the train. */
 	TWeakObjectPtr< class AFGRailroadVehicleRerailHologram > mDerailHologram;
-
-	// @todo-trains Comment these when we have optimized.
-	UPROPERTY( Replicated )
-	float mLastServerTime;
-	UPROPERTY( Replicated )
-	class AFGBuildableRailroadTrack* mServerTrack;
-	UPROPERTY( Replicated )
-	float mServerOffset;
-	UPROPERTY( Replicated )
-	float mServerForward;
-	UPROPERTY( Replicated )
-	float mServerSpeed;
 };

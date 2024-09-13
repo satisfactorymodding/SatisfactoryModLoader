@@ -24,6 +24,12 @@ AFGPipelineSupportHologram::AFGPipelineSupportHologram() : Super() {
 	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGPipelineSupportHologram::BeginPlay(){ }
+void AFGPipelineSupportHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPipelineSupportHologram, mVerticalAngle);
+	DOREPLIFETIME(AFGPipelineSupportHologram, mSupportLength);
+}
+bool AFGPipelineSupportHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
 bool AFGPipelineSupportHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 bool AFGPipelineSupportHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGPipelineSupportHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
@@ -32,19 +38,17 @@ AActor* AFGPipelineSupportHologram::Construct(TArray<AActor*>& out_children, FNe
 void AFGPipelineSupportHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
 void AFGPipelineSupportHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ }
 bool AFGPipelineSupportHologram::CanNudgeHologram() const{ return bool(); }
+void AFGPipelineSupportHologram::GetClearanceData(TArray< const FFGClearanceData* >& out_ClearanceData) const{ }
 void AFGPipelineSupportHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
 int32 AFGPipelineSupportHologram::GetBaseCostMultiplier() const{ return int32(); }
-void AFGPipelineSupportHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGPipelineSupportHologram::SetSupportLength(float height){ }
 void AFGPipelineSupportHologram::SnapToConnection(UFGPipeConnectionComponentBase* connection,  AFGPipelineHologram* parentPipeline){ }
 void AFGPipelineSupportHologram::ResetBuildSteps(){ }
 void AFGPipelineSupportHologram::ResetVerticalRotation(){ }
 void AFGPipelineSupportHologram::UpdateSupportLengthRelativeLoc(){ }
+void AFGPipelineSupportHologram::UpdateSupportMesh(){ }
 void AFGPipelineSupportHologram::Scroll(int32 delta){ }
 void AFGPipelineSupportHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGPipelineSupportHologram::CheckValidPlacement(){ }
-void AFGPipelineSupportHologram::OnRep_SupportMesh(){ }
-void AFGPipelineSupportHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGPipelineSupportHologram, mSupportMesh);
-}
+void AFGPipelineSupportHologram::OnRep_VerticalAngle(){ }
+void AFGPipelineSupportHologram::OnRep_SupportLength(){ }

@@ -2,14 +2,14 @@
 
 #include "FGConveyorInstanceMeshBucket.h"
 
+FConveyorBucketSceneProxy::FConveyorBucketSceneProxy(UInstancedStaticMeshComponent* InComponent, ERHIFeatureLevel::Type InFeatureLevel):FInstancedStaticMeshSceneProxy(InComponent, InFeatureLevel){ }
+void FConveyorBucketSceneProxy::UpdateInstanceData(const TArray<FRenderTransform>& CurrentFrame,const TArray<FRenderTransform>& PreviousFrame,int32 Offset, int32 Count){ }
 UFGConveyorInstanceMeshBucket::UFGConveyorInstanceMeshBucket() : Super() {
 	this->mNumInstances = 32;
 	this->bCanEverAffectNavigation = false;
 }
-void UFGConveyorInstanceMeshBucket::Init(){ }
-void UFGConveyorInstanceMeshBucket::PrepareInstanceUpdateBuffer(int32 Count){ }
-void UFGConveyorInstanceMeshBucket::UpdateInstanceData(const int32 Id, const FMatrix& M,const FMatrix& PrevM){ }
-void UFGConveyorInstanceMeshBucket::UpdateInstancesFast(){ }
+FPrimitiveSceneProxy* UFGConveyorInstanceMeshBucket::CreateStaticMeshSceneProxy(Nanite::FMaterialAudit& NaniteMaterials, bool bCreateNanite){ return nullptr; }
+void UFGConveyorInstanceMeshBucket::Init(int32 Count){ }
 void UFGConveyorInstanceMeshBucket::CheckNANs(){ }
-void UFGConveyorInstanceMeshBucket::SubmitToGPU(){ }
+void UFGConveyorInstanceMeshBucket::SubmitToGPU(int32 StartID, int32 Count,const TArray<FRenderTransform>& CurrentPos,const TArray<FRenderTransform>& PrevPos){ }
 FBoxSphereBounds UFGConveyorInstanceMeshBucket::CalcBounds(const FTransform& LocalToWorld) const{ return FBoxSphereBounds(); }

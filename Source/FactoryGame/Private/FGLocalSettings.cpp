@@ -2,5 +2,3 @@
 
 #include "FGLocalSettings.h"
 
-#if WITH_EDITOR
-#endif 

@@ -33,12 +33,23 @@ struct FACTORYGAME_API FInventoryToRespawnWith final
 				out_RadioActiveItemStackIndices.Push( i );
 			}
 		}
+		for( int i = 0; i < mCentralStoragePendingInventoryStacks.Num(); i++ )
+		{
+			if( UFGItemDescriptor::GetRadioactiveDecay( mCentralStoragePendingInventoryStacks[i].Item.GetItemClass() ) > 0.0f )
+			{
+				out_RadioActiveItemStackIndices.Push( i );
+			}
+		}
+		
 		return !out_RadioActiveItemStackIndices.IsEmpty();
 	}
 	
 	// Inventory
 	UPROPERTY( SaveGame )
 	TArray< FInventoryStack > mInventoryStacks;
+	// Inventory to upload to Central Storage.
+	UPROPERTY( SaveGame )
+	TArray< FInventoryStack > mCentralStoragePendingInventoryStacks;
 	// Equipment
 	UPROPERTY( SaveGame )
 	TMap< EEquipmentSlot, FArrayOfInventoryStacksHolder > mEquipmentPairs;

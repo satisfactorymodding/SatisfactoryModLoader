@@ -18,17 +18,17 @@ class FACTORYGAME_API UFGUnlock : public UObject
 public:
 	/** Unlock is only called when you unlock this unlock the first time */
 	UFUNCTION( BlueprintImplementableEvent, Category = Unlocks )
-	void OnUnlock( class AFGUnlockSubsystem* unlockSubssytem );
+	void OnUnlock( class AFGUnlockSubsystem* unlockSubsystem );
 
 	/** Unlock is only called when you unlock this unlock the first time */
-	virtual void Unlock( class AFGUnlockSubsystem* unlockSubssytem );
+	virtual void Unlock( class AFGUnlockSubsystem* unlockSubsystem );
 
 	/** Apply is called when you unlock this unlock the first time and every time the unlock is reapplied when a game is loaded */
 	UFUNCTION( BlueprintImplementableEvent, Category = Unlocks )
-	void OnApply( class AFGUnlockSubsystem* unlockSubssytem );
+	void OnApply( class AFGUnlockSubsystem* unlockSubsystem );
 
 	/** Apply is called when you unlock this unlock the first time and every time the unlock is reapplied when a game is loaded */
-	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem );
+	virtual void Apply( class AFGUnlockSubsystem* unlockSubsystem );
 
 	/** Returns true if this unlock is allowed to be purchased more than once */
 	UFUNCTION( BlueprintNativeEvent, Category = Unlocks )
@@ -39,5 +39,5 @@ public:
 	*	We use a provided worldcontext in blueprints to spawn widgets in these objects 
 	*/
 	virtual class UWorld* GetWorld() const override;
-
+	
 };

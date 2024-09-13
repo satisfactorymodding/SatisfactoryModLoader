@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "FGInventoryComponent.h"
+#include "ItemAmount.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FGInventoryLibrary.generated.h"
 
@@ -27,10 +28,12 @@ public:
 	}
 
 	/** Dynamically create a default inventory component with a given size. */
+	UE_DEPRECATED(5.1, "UFGInventoryComponent objects should be created in the Object Constructor as Default Subobjects instead. For dynamic creation, just use NewObject<UFGInventoryComponent>(Outer) and RegisterComponent()")
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
 	static class UFGInventoryComponent* CreateInventoryComponent( class AActor* owner, FName name );
 
 	/** Dynamically create an inventory component of a given class with a given size. */
+	UE_DEPRECATED(5.1, "UFGInventoryComponent objects should be created in the Object Constructor as Default Subobjects instead. For dynamic creation, just use NewObject<UFGInventoryComponent>(Outer) and RegisterComponent()")
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
 	static class UFGInventoryComponent* CreateInventoryComponentOfClass( class AActor* owner,
 																		 UPARAM( DisplayName = "Class" ) TSubclassOf< class UFGInventoryComponent > inClass,
@@ -46,7 +49,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	static void BreakInventoryItem( UPARAM( ref ) const FInventoryItem& item,
 									UPARAM( DisplayName = "Class" ) TSubclassOf< class UFGItemDescriptor >& out_itemClass,
-									UPARAM( DisplayName = "State" ) class AActor*& out_itemState );
+									UPARAM( DisplayName = "State" ) FFGDynamicStruct& out_itemState );
 
 	/** Manual make for inventory item. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
@@ -123,7 +126,7 @@ public:
 	 */
 	//@todoinventory RENAME Stack
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
-	static bool MoveInventoryItem( class UFGInventoryComponent* sourceComponent, int32 sourceIdx, class UFGInventoryComponent* destinationComponent, int32 destinationIdx );
+	static bool MoveInventoryItem( UFGInventoryComponent* sourceComponent, const int32 sourceIdx, UFGInventoryComponent* destinationComponent, const int32 destinationIdx );
 
 	/**
 	* Tries to grab all items in the source and add them to the dest. I can't decide what optimal grabbing is, so this is just the easiest implementation.
@@ -184,4 +187,35 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
 	static void RemoveAllItemsNotOfResourceForm( UPARAM( ref ) TArray< FInventoryStack >& items, EResourceForm validForm = EResourceForm::RF_SOLID );
 
+	/** 
+	* Removes the number of items of the given item class from the inventory component and the central storage subsystem.
+	* @param inventoryComponent - The inventory to grab from
+	* @param centralStorageSubsystem - The central storage to grab from
+	* @param takeFromInventoryBeforeCentralStorage - Decides from where to take items first
+	* @param itemClass - The item class to remove
+	* @param numItemsToRemove - Number of items of item class to remove
+	*/
+	static void GrabItemsFromInventoryAndCentralStorage( class UFGInventoryComponent* inventoryComponent, class AFGCentralStorageSubsystem* centralStorageSubsystem,
+		bool takeFromInventoryBeforeCentralStorage, TSubclassOf< class UFGItemDescriptor> itemClass, int32 numItemsToRemove );
+
+	/**
+	 * Grabs the given amount of the specified item from the central storage and moves it to the specific inventory's slot
+	 * If there is not enough item in the central storage, or the slot cannot fit all of the items, it will grab as many as possible up to the specified amount
+	 * @param itemAmount type and amount of item to grab
+	 * @param destinationComponent inventory component to move the item into
+	 * @param destinationIdx index of the destination inventory slot
+	 * @return number of items actually grabbed into the slot
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Inventory" )
+	static int32 GrabItemFromCentralStorage( const FItemAmount& itemAmount, UFGInventoryComponent* destinationComponent, const int32 destinationIdx );
+
+	/**
+	 * Moves the given amount of item from the central storage into the given inventory component.
+	 * If there is not enough items in the central storage, or the inventory cannot fit all of the items, it will move as many items as possible
+	 * @param itemAmount type and amount of item to move
+	 * @param destinationComponent inventory component to move the item into
+	 * @return number of items actually moved into the inventory
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Inventory" )
+	static int32 MoveItemFromCentralStorage( const FItemAmount& itemAmount, UFGInventoryComponent* destinationComponent );
 };

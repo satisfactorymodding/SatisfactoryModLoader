@@ -23,7 +23,7 @@ AFGPoleHologram::AFGPoleHologram() : Super() {
 }
 void AFGPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGPoleHologram, mPoleMesh);
+	DOREPLIFETIME(AFGPoleHologram, mPoleHeight);
 }
 void AFGPoleHologram::BeginPlay(){ }
 bool AFGPoleHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
@@ -36,14 +36,12 @@ void AFGPoleHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescrip
 int32 AFGPoleHologram::GetBaseCostMultiplier() const{ return int32(); }
 bool AFGPoleHologram::CanNudgeHologram() const{ return bool(); }
 void AFGPoleHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
+void AFGPoleHologram::GetClearanceData(TArray< const FFGClearanceData* >& out_ClearanceData) const{ }
 void AFGPoleHologram::ResetBuildSteps(){ }
 void AFGPoleHologram::SetPoleHeight(float height){ }
-void AFGPoleHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
-void AFGPoleHologram::ServerPostConstructMessageDeserialization(){ }
-void AFGPoleHologram::OnConstructMessagedDeserialized_Implementation(){ }
-void AFGPoleHologram::OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram){ }
 float AFGPoleHologram::GetActiveMeshHeight() const{ return float(); }
+void AFGPoleHologram::UpdatePoleMesh(){ }
 void AFGPoleHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGPoleHologram::CheckValidPlacement(){ }
-void AFGPoleHologram::OnRep_PoleMesh(){ }
+void AFGPoleHologram::OnRep_PoleHeight(){ }
 void AFGPoleHologram::UpdatePoleHeightRelativeLoc(){ }

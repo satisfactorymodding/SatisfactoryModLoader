@@ -6,7 +6,7 @@ bool FBlueprintItemAmount::Serialize(FArchive& ar){ return bool(); }
 void UFGBlueprintDescriptor::UpdateData(const FBlueprintRecord& blueprintRecord){ }
 void UFGBlueprintDescriptor::InitializeData(const FBlueprintRecord& blueprintRecord){ }
 void UFGBlueprintDescriptor::InitializeHeaderInfo(const FBlueprintHeader& header){ }
-FBlueprintRecord UFGBlueprintDescriptor::GetDescriptorAsRecord(){ return FBlueprintRecord(); }
+FBlueprintRecord UFGBlueprintDescriptor::GetDescriptorAsRecord() const{ return FBlueprintRecord(); }
 #if !UE_BUILD_SHIPPING
 #endif 
 #if !UE_BUILD_SHIPPING

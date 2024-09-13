@@ -5,7 +5,7 @@
 #include "FactoryGame.h"
 #include "FGActorRepresentationInterface.h"
 #include "FGBuildableFactory.h"
-#include "FGRadarTowerRepresentation.h"
+#include "Representation/FGRadarTowerRepresentation.h"
 #include "FGScannableDetails.h"
 #include "FGBuildableRadarTower.generated.h"
 
@@ -25,7 +25,6 @@ class FACTORYGAME_API AFGBuildableRadarTower : public AFGBuildableFactory, publi
 	
 public:
 	// Begin AActor interface
-	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 	// End AActor interface
@@ -49,6 +48,8 @@ public:
 	UFUNCTION() virtual float GetActorFogOfWarRevealRadius() override;
 	UFUNCTION() virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	UFUNCTION() virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+
 	// End IFGActorRepresentationInterface
 
 	// Begin Save Interface
@@ -73,13 +74,21 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	FText GetRepresentationText();
 
-	/** Fetches the color to use for this actors representation */
+	/** Gets the height of the radar tower. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	float GetTowerHeight();
 
-	/** Gets the representation for this radar tower */
-	UFUNCTION( BlueprintPure, Category = "Representation" )
-	FORCEINLINE UFGRadarTowerRepresentation* GetRadarTowerRepresentation() const { return mRadarTowerRepresentation; } 
+	/** Finds the representation for the radar tower. This method can iterate over the representations on the client, so it is recommended to avoid calling it too frequently. */
+	UFUNCTION( BlueprintCallable, Category = "Representation" )
+	UFGRadarTowerRepresentation* FindRadarTowerRepresentation();
+
+	/** Gets the reveal radius of this radar tower. */
+	UFUNCTION( BlueprintPure, Category = "Radar Tower" )
+	FORCEINLINE float GetRevealRadius() const { return mRevealRadius; }
+
+	/** Whether or not the specified location is within the radar tower's reveal radius. */
+	UFUNCTION( BlueprintPure, Category = "Radar Tower" )
+	bool IsLocationWithinRevealRadius( const FVector& Location ) const; 
 
 	void ScanForResources();
 	void AddResourceNodes( const TArray< class AFGResourceNodeBase* >& resourceNodes );
@@ -94,12 +103,9 @@ public:
 	/** Called when unlock subsystem unlocks a new scannable object. Triggers a scan for objects */
 	UFUNCTION()
 	void OnNewScannableObjectUnlocked( TSubclassOf< class UFGItemDescriptor > itemDescriptor );
-
 private:
 	TArray<TSubclassOf<UFGItemDescriptor>> GetAvailableScannableDescriptors() const;
-	bool IsInRadarTowerRange( const FVector& location ) const;
 	void UpdateRepresentationValues();
-
 
 protected:	
 	/** The reveal radius of this radar tower */
@@ -111,6 +117,9 @@ protected:
 	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated" )
 	TArray< TSubclassOf< class UFGItemDescriptor > > mScannableDescriptors;
 
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* mCompassMaterialInstance;
+
 private:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTexture;
@@ -118,7 +127,7 @@ private:
 	UPROPERTY( Transient )
 	TArray< class AFGResourceNodeBase* > mScannedResourceNodes;
 
-	UPROPERTY( Transient, Replicated ) // replicated for now can probably be moved to not be replicated after we get client simulation
+	UPROPERTY( Transient )
 	UFGRadarTowerRepresentation* mRadarTowerRepresentation;
 
 	TMap<TSubclassOf<UFGItemDescriptor>, int32> mFoundDescriptors;

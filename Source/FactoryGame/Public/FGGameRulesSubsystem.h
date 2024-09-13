@@ -9,6 +9,8 @@
 #include "FGSubsystem.h"
 #include "FGGameRulesSubsystem.generated.h"
 
+class FVariant;
+
 UCLASS()
 class FACTORYGAME_API UFGGameRulesRemoteCallObject : public UFGRemoteCallObject
 {

@@ -23,6 +23,10 @@ void UFGWheeledVehicleMovementComponent::OnGearChangedImmediate_Implementation(i
 void UFGWheeledVehicleMovementComponent::OnGearChangeBegin_Implementation(int32 NewGear){ }
 void UFGWheeledVehicleMovementComponent::OnGearChangeEnd_Implementation(int32 NewGear){ }
 void UFGWheeledVehicleMovementComponent::SetClientInputsOnDriverLeave(){ }
+void UFGWheeledVehicleMovementComponent::PlayStartupEngineAudio(){ }
+void UFGWheeledVehicleMovementComponent::PlayShutDownEngineAudio(const bool isOutOfFuel){ }
+void UFGWheeledVehicleMovementComponent::Server_PlayShutDownEngineAudio_Implementation(const bool isOutOfFuel){ }
+void UFGWheeledVehicleMovementComponent::Server_PlayStartupEngineAudio_Implementation(){ }
 void UFGWheeledVehicleMovementComponent::UpdateState(float DeltaTime){ }
 void UFGWheeledVehicleMovementComponent::ProcessSleeping(const FControlInputs& ControlInputs){ }
 void UFGWheeledVehicleMovementComponent::UpdateAudioPositions(UAkComponent* audioComp){ }

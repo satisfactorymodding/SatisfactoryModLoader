@@ -4,6 +4,13 @@
 #include "Net/UnrealNetwork.h"
 
 void AFGPowerPoleHologram::BeginPlay(){ }
+void AFGPowerPoleHologram::Destroyed(){ }
+void AFGPowerPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPowerPoleHologram, mSnapWire);
+	DOREPLIFETIME(AFGPowerPoleHologram, mWireHologramIn);
+	DOREPLIFETIME(AFGPowerPoleHologram, mWireHologramOut);
+}
 void AFGPowerPoleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGPowerPoleHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPowerPoleHologram::PostHologramPlacement(const FHitResult& hitResult){ }
@@ -13,16 +20,10 @@ bool AFGPowerPoleHologram::IsValidHitResult(const FHitResult& hitResult) const{ 
 AActor* AFGPowerPoleHologram::GetUpgradedActor() const{ return nullptr; }
 bool AFGPowerPoleHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 bool AFGPowerPoleHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
-AActor* AFGPowerPoleHologram::Construct(TArray<AActor*>& out_children, FNetConstructionID constructionID){ return nullptr; }
+AActor* AFGPowerPoleHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID constructionID){ return nullptr; }
 void AFGPowerPoleHologram::OnInvalidHitResult(){ }
 void AFGPowerPoleHologram::CheckValidPlacement(){ }
 float AFGPowerPoleHologram::GetBuildGunRangeOverride_Implementation() const{ return float(); }
-void AFGPowerPoleHologram::Destroyed(){ }
-void AFGPowerPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGPowerPoleHologram, mWireHologramIn);
-	DOREPLIFETIME(AFGPowerPoleHologram, mWireHologramOut);
-	DOREPLIFETIME(AFGPowerPoleHologram, mDefaultPowerLineRecipe);
-}
+bool AFGPowerPoleHologram::ShouldBuildGunHitWireMeshes() const{ return bool(); }
 bool AFGPowerPoleHologram::AlignWithWire(const  AFGBuildableWire* wire, FVector& locationToAlign, FRotator& out_rotation) const{ return bool(); }
 void AFGPowerPoleHologram::ResetByproductHolograms(){ }

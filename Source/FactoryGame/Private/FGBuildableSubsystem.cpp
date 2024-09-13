@@ -2,13 +2,24 @@
 
 #include "FGBuildableSubsystem.h"
 
+FBoxCenterAndExtent FBuildableOctreeSemantics::GetBoundingBox(const AFGBuildable* Element){ return FBoxCenterAndExtent(); }
+bool FBuildableOctreeSemantics::AreElementsEqual(const AFGBuildable* A, const AFGBuildable* B){ return bool(); }
+void FBuildableOctreeSemantics::SetElementId(FOctree& Octree, const AFGBuildable* Element, FOctreeElementId2 OctreeElementID){ }
 #if STATS
+#endif 
+#if WITH_EDITOR
+TArray<AFGBuildable*> AFGBuildableSubsystem::CollectBuildablesInTimelapseBucket(int32 bucketId) const{ return TArray<AFGBuildable*>(); }
+void AFGBuildableSubsystem::TickTimelapseTool(float dt){ }
+#endif 
+#if WITH_EDITORONLY_DATA
 #endif 
 AFGBuildableSubsystem::AFGBuildableSubsystem() : Super() {
 	this->mDistanceConsideredClose = 15000.0;
 	this->mNumFactoriesNeededForCloseCheck = 5;
+	this->mDefaultBuildEffect = nullptr;
+	this->mDefaultPotentialShardSlots = 3;
+	this->mDefaultProductionShardSlotSize = 4;
 	this->mBuildableInstancesActor = nullptr;
-	this->mFactoryLegInstancesActor = nullptr;
 	this->mProductionIndicatorInstanceManager = nullptr;
 	this->mColorSlotsPrimary[0] = FColor(255, 112, 39);
 	this->mColorSlotsPrimary[1] = FColor(38, 100, 167);
@@ -47,8 +58,6 @@ AFGBuildableSubsystem::AFGBuildableSubsystem() : Super() {
 	this->mColorSlotsSecondary[16] = FColor(0, 0, 0, 0);
 	this->mColorSlotsSecondary[17] = FColor(0, 0, 0, 0);
 	this->mFactoryOptimizationEnabled = true;
-	this->mReplayEffecTimeDilation = 0.1;
-	this->mReplayEffectTimerDefault = 0.5;
 	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.bTickEvenWhenPaused = false;
@@ -56,8 +65,8 @@ AFGBuildableSubsystem::AFGBuildableSubsystem() : Super() {
 	this->mFactoryTickFunction.bStartWithTickEnabled = false;
 	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
 	this->mFactoryTickFunction.TickInterval = 0.0;
-	this->mTimeUntilRepDetailCheck = 1.0;
 	this->mSqDistanceForDetailCleanup = 10000000.0;
+	this->mProjectAssemblyActor = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_DuringPhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -65,6 +74,7 @@ AFGBuildableSubsystem::AFGBuildableSubsystem() : Super() {
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
+	this->bReplicates = false;
 }
 void AFGBuildableSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -83,17 +93,24 @@ AFGBuildable* AFGBuildableSubsystem::BeginSpawnBuildable(TSubclassOf<  AFGBuilda
 void AFGBuildableSubsystem::AddBuildable( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::OnDesignerBuildableSpawned(AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::AssignConveyorTickOrder(int32 id){ }
+void AFGBuildableSubsystem::MigrateConveyorGroupToChainActor(FConveyorTickGroup* tickGroup){ }
+void AFGBuildableSubsystem::RemoveChainActorFromConveyorGroup(FConveyorTickGroup* tickGroup){ }
 void AFGBuildableSubsystem::AddConveyor(AFGBuildableConveyorBase* conveyor){ }
 AFGBuildableConveyorBase* AFGBuildableSubsystem::GetConnectedConveyorBelt( UFGFactoryConnectionComponent* connection){ return nullptr; }
+void AFGBuildableSubsystem::AddConveyorChainActor( AFGConveyorChainActor* chainActor){ }
+void AFGBuildableSubsystem::RemoveConveyorChainActor( AFGConveyorChainActor* ChainActor){ }
 void AFGBuildableSubsystem::RemoveBuildable( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::RemoveConveyor(AFGBuildableConveyorBase* conveyor){ }
+void AFGBuildableSubsystem::SplitConveyorGroupFromAttachment(AFGBuildableConveyorBase* conveyor){ }
 bool AFGBuildableSubsystem::RemoveConveyorFromBucket(AFGBuildableConveyorBase* conveyorToRemove){ return bool(); }
 void AFGBuildableSubsystem::RearrangeConveyorBuckets(int32 emptiedBucketID){ }
 void AFGBuildableSubsystem::RemoveAndSplitConveyorBucket(AFGBuildableConveyorBase* conveyorToRemove){ }
 bool AFGBuildableSubsystem::IsServerSubSystem() const{ return bool(); }
 void AFGBuildableSubsystem::GetTypedBuildable(TSubclassOf<  AFGBuildable > inClass, TArray<  AFGBuildable* >& out_buildables) const{ }
 void AFGBuildableSubsystem::GetOcclusionAffectingBuildebles(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range, bool bParallel) const{ }
-void AFGBuildableSubsystem::ReplayBuildingEffects(){ }
+void AFGBuildableSubsystem::GetNearestBuildables(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range) const{ }
+void AFGBuildableSubsystem::PlayTimelapseEffect(int32 bucketId, bool playBuildEffect){ }
+void AFGBuildableSubsystem::SetTimelapseBucketHidden(int32 bucketId, bool hidden){ }
 const FFactoryCustomizationColorSlot& AFGBuildableSubsystem::GetColorSlot_Data(uint8 index) const{ return *(new FFactoryCustomizationColorSlot); }
 void AFGBuildableSubsystem::SetColorSlot_Data(uint8 index, FFactoryCustomizationColorSlot color){ }
 TSubclassOf< class UFGFactoryCustomizationCollection > AFGBuildableSubsystem::GetCollectionForCustomizationClass(TSubclassOf<  UFGFactoryCustomizationDescriptor > collectionClassType) const{ return TSubclassOf<class UFGFactoryCustomizationCollection>(); }
@@ -110,24 +127,22 @@ void AFGBuildableSubsystem::GetNewNetConstructionID(FNetConstructionID& clientCo
 void AFGBuildableSubsystem::SpawnPendingConstructionHologram(FNetConstructionID netConstructionID,  AFGHologram* templateHologram,  AFGBuildGun* instigatingBuildGun){ }
 void AFGBuildableSubsystem::AddPendingConstructionHologram(FNetConstructionID netConstructionID,  AFGHologram* hologram){ }
 void AFGBuildableSubsystem::RemovePendingConstructionHologram(FNetConstructionID netConstructionID){ }
+void AFGBuildableSubsystem::RemovePendingConstructionHologramForLightweight(uint16 clientId){ }
 void AFGBuildableSubsystem::ApplyCustomizationPreview( IFGColorInterface* colorInterface, const FFactoryCustomizationData& previewData){ }
 void AFGBuildableSubsystem::ClearCustomizationPreview( IFGColorInterface* colorInterface){ }
 void AFGBuildableSubsystem::ClearAllCustomizationPreviews(){ }
-void AFGBuildableSubsystem::TryRemovePendingDetailActor( AFGReplicationDetailActor* detailActor){ }
-void AFGBuildableSubsystem::AddPendingRemovalDetailActor( AFGReplicationDetailActor* detailActor){ }
 AFGPlayerController* AFGBuildableSubsystem::GetLocalPlayerController() const{ return nullptr; }
 float AFGBuildableSubsystem::GetDistanceSqToBoundingBox(const FVector& point,  AFGBuildable* buildable) const{ return float(); }
 void AFGBuildableSubsystem::RegisterFactoryTickFunction(bool shouldRegister){ }
 void AFGBuildableSubsystem::CreateFactoryStatID() const{ }
-void AFGBuildableSubsystem::UpdateReplayEffects(float dt){ }
 void AFGBuildableSubsystem::AddToTickGroup(AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::RemoveFromTickGroup(AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::SetupColoredMeshInstances(AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::SetupProductionIndicatorInstancing( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::TickFactoryActors(float dt){ }
 void AFGBuildableSubsystem::UpdateConveyorRenderType(FString cvar){ }
+void AFGBuildableSubsystem::RequestBuildEffectActor(UObject* WorldContext, AFGBuildEffectActor*& BuildEffectActor, TSubclassOf< AFGBuildEffectActor > TemplateClass, FTransform Transform, AActor* instigator, bool bForceSolo){ }
 UFGColoredInstanceManager* AFGBuildableSubsystem::GetColoredInstanceManager( UFGColoredInstanceMeshProxy* proxy){ return nullptr; }
-UFGFactoryLegInstanceManager* AFGBuildableSubsystem::GetFactoryLegInstanceManager( UFGFactoryLegInstanceMeshProxy* proxy){ return nullptr; }
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGBuildableSubsystem::GetMigrationSwatchForSlot(int32 slotID){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Swatch>(); }
 bool AFGBuildableSubsystem::IsBasedOn(const UMaterialInterface* instance, const UMaterial* base){ return bool(); }
 const FName AFGBuildableSubsystem::MaterialParameter_ConveyorSpeed = FName();

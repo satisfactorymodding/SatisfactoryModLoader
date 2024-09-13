@@ -19,17 +19,17 @@ class FACTORYGAME_API AFGTradingPostHologram : public AFGFactoryHologram
 	// Begin AFGHologram interface
 	virtual void CheckValidPlacement() override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
+	virtual void PreConfigureActor(AFGBuildable* inBuildable) override;
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
 protected:
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-
 	virtual void OnHologramTransformUpdated() override;
+	// End AFGHologram interface
 
-		// End AFGHologram interface
-
-	// Moved GetBuildableClassFromRecipe to a static helper in AFGBuildable
-
+	/** Called by the blueprint once the main mesh has been loaded and initialized. Used to spawn factory legs */
+	UFUNCTION( BlueprintCallable, Category = "Trading Post Hologram" )
+	void ConfigureMainMeshComponent( UStaticMeshComponent* MainMeshComponent );
 private:
 	/** The generator holograms */
 	UPROPERTY( Replicated )

@@ -1,6 +1,8 @@
 // Copyright Ben de Hullu. All Rights Reserved.
 
 #include "InstanceData.h"
+
+#include "AbstractInstance.h"
 #include "Engine/InstancedStaticMesh.h"
 #include "Components/InstancedStaticMeshComponent.h"
 
@@ -18,37 +20,63 @@ UStaticMeshComponent* FInstanceData::CreateStaticMeshComponent( UObject* Outer )
 
 void FInstanceHandle::HideInstance(bool bMarkRenderStateDirty )
 {
+	// This is already "hidden" Dont offset.
+	if( IsBigOffsetHidden )
+	{
+		return;
+	}
+	
 	if ( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
 		FTransform T;
 		Hism->GetInstanceTransform(HandleID, T, false);
 		Scale = T.GetScale3D();
 		T.SetScale3D(FVector(0.001));
+		T.AddToTranslation( -FVector(0,0,AIM_BigOffset) );
 
 		Hism->UpdateInstanceTransform( HandleID, T,false, bMarkRenderStateDirty,false );
+
+		SetIsBigOffsetHidden( true );
 	}
 }
 
-void FInstanceHandle::HideInstance(UHierarchicalInstancedStaticMeshComponent* Hism, int32 Id, bool bMarkRenderStateDirty) const
+void FInstanceHandle::HideInstance(UHierarchicalInstancedStaticMeshComponent* Hism, int32 Id, bool bMarkRenderStateDirty)
 {
+	// This is already "hidden" Dont offset.
+	if( IsBigOffsetHidden )
+	{
+		return;
+	}
+	
 	FTransform T;
 	Hism->GetInstanceTransform(HandleID, T);
 	Scale = T.GetScale3D();
 	T.SetScale3D(FVector(0.001));
+	T.AddToTranslation( -FVector(0,0,AIM_BigOffset) );
 
 	Hism->UpdateInstanceTransform( HandleID, T,false, bMarkRenderStateDirty,false );
+
+	SetIsBigOffsetHidden( true );
 }
 
 void FInstanceHandle::UnHideInstance( bool bMarkRenderStateDirty )
 {
+	// This isn't "hidden" Dont offset.
+	if( !IsBigOffsetHidden )
+	{
+		return;
+	}
+	
 	if ( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
 		FTransform T;
 		Hism->GetInstanceTransform( HandleID, T );
 		T.SetScale3D(Scale);
-		
+		T.AddToTranslation( FVector(0,0,AIM_BigOffset) );
 		Hism->UpdateInstanceTransform(HandleID, T, false, bMarkRenderStateDirty, false);
 	}
+
+	SetIsBigOffsetHidden( false );
 }
 
 void FInstanceHandle::UpdateTransform( const FTransform& T ) const

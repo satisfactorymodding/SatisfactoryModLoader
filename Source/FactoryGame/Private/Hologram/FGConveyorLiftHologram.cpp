@@ -16,6 +16,8 @@ AFGConveyorLiftHologram::AFGConveyorLiftHologram() : Super() {
 	this->mTopMesh = nullptr;
 	this->mJointMesh = nullptr;
 	this->mPassthroughBottomMesh = nullptr;
+	this->mFlipOnReverse = false;
+	this->mIsReversed = false;
 	this->mPassthroughTopMesh = nullptr;
 	this->mArrowDirection = EFactoryConnectionDirection::FCD_ANY;
 	this->mArrowComponent = nullptr;
@@ -25,6 +27,8 @@ AFGConveyorLiftHologram::AFGConveyorLiftHologram() : Super() {
 }
 void AFGConveyorLiftHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGConveyorLiftHologram, mSnappedConnectionComponents);
+	DOREPLIFETIME(AFGConveyorLiftHologram, mUpgradedConveyorLift);
 	DOREPLIFETIME(AFGConveyorLiftHologram, mTopTransform);
 	DOREPLIFETIME(AFGConveyorLiftHologram, mSnappedPassthroughs);
 	DOREPLIFETIME(AFGConveyorLiftHologram, mArrowDirection);
@@ -41,18 +45,15 @@ float AFGConveyorLiftHologram::GetHologramHoverHeight() const{ return float(); }
 void AFGConveyorLiftHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
 void AFGConveyorLiftHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
 void AFGConveyorLiftHologram::PostHologramPlacement(const FHitResult& hitResult){ }
-void AFGConveyorLiftHologram::CheckClearance(const FVector& locationOffset){ }
 void AFGConveyorLiftHologram::CheckBlueprintCommingling(){ }
-bool AFGConveyorLiftHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
 void AFGConveyorLiftHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
 bool AFGConveyorLiftHologram::CanNudgeHologram() const{ return bool(); }
-void AFGConveyorLiftHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
-void AFGConveyorLiftHologram::ServerPostConstructMessageDeserialization(){ }
-void AFGConveyorLiftHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
+void AFGConveyorLiftHologram::GetClearanceData(TArray<const FFGClearanceData*>& out_ClearanceData) const{ }
 void AFGConveyorLiftHologram::CheckValidFloor(){ }
 void AFGConveyorLiftHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGConveyorLiftHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 int32 AFGConveyorLiftHologram::GetRotationStep() const{ return int32(); }
+void AFGConveyorLiftHologram::PostConstructMessageDeserialization(){ }
 void AFGConveyorLiftHologram::UpdateConnectionDirections(){ }
 void AFGConveyorLiftHologram::CheckValidPlacement(){ }
 void AFGConveyorLiftHologram::UpdateTopTransform(const FHitResult& hitResult, FRotator rotation){ }

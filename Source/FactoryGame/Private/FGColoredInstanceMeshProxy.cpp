@@ -19,6 +19,7 @@ UFGColoredInstanceMeshProxy::UFGColoredInstanceMeshProxy() : Super() {
 	this->mHasScalabilityMaterial = false;
 	this->mOptimizationCategory = EDistanceCullCategory::FGDDC_NEVERCULL;
 	this->mNumCustomDataFloats = 20;
+	this->WorldPositionOffsetDisableDistance = 5000;
 	this->PrimaryComponentTick.TickGroup = ETickingGroup::TG_DuringPhysics;
 	this->PrimaryComponentTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryComponentTick.bTickEvenWhenPaused = false;

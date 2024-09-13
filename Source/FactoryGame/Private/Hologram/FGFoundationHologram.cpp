@@ -9,6 +9,7 @@ AFGFoundationHologram::AFGFoundationHologram() : Super() {
 	this->mAllowCornerRotationMode = false;
 	this->mBuildModeVerticalZoop = nullptr;
 	this->mMaxPlacementFloorAngle = 85.0;
+	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 }
 void AFGFoundationHologram::BeginPlay(){ }
 void AFGFoundationHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

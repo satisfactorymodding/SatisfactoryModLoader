@@ -5,6 +5,7 @@
 AFGWalkwayHologram::AFGWalkwayHologram() : Super() {
 	this->mOnlyAllowLineZoop = false;
 	this->mPlacementRequirements = EFactoryBuildingPlacementRequirements::FBPR_MustSnap;
+	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 }
 bool AFGWalkwayHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGWalkwayHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

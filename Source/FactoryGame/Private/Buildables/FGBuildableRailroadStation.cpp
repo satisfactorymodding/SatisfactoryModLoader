@@ -13,6 +13,8 @@ AFGBuildableRailroadStation::AFGBuildableRailroadStation() : Super() {
 	this->mDockingLocomotive = nullptr;
 	this->mCurrentDockForDuration = 0.0;
 	this->mActorRepresentationTexture = nullptr;
+	this->mCompassMaterial = nullptr;
+	this->mInteractionRegisterPlayerWithCircuit = true;
 	this->mPlatformConnections.Add(mPlatformConnection0);
 	this->mPlatformConnections.Add(mPlatformConnection1);
 }
@@ -24,8 +26,10 @@ void AFGBuildableRailroadStation::BeginPlay(){ }
 void AFGBuildableRailroadStation::Destroyed(){ }
 void AFGBuildableRailroadStation::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGBuildableRailroadStation::CanDismantle_Implementation() const{ return bool(); }
+void AFGBuildableRailroadStation::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ }
 void AFGBuildableRailroadStation::Factory_Tick(float dt){ }
 bool AFGBuildableRailroadStation::CanProduce_Implementation() const{ return bool(); }
+EProductionStatus AFGBuildableRailroadStation::GetProductionIndicatorStatus() const{ return EProductionStatus(); }
 UFGTrainPlatformConnection* AFGBuildableRailroadStation::GetStationOutputConnection(){ return nullptr; }
 bool AFGBuildableRailroadStation::CanDock( AFGLocomotive* locomotive){ return bool(); }
 bool AFGBuildableRailroadStation::StartDocking( AFGLocomotive* locomotive, float offset){ return bool(); }

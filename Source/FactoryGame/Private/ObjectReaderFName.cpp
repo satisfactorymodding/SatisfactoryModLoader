@@ -6,3 +6,5 @@ FObjectReaderFName::FObjectReaderFName(UObject* Obj, TArray<uint8>& InBytes, int
 FArchive& FObjectReaderFName::operator<<( UObject*& Res){ return *(new FArchive); }
 FArchive& FObjectReaderFName::operator<<(FObjectPtr& Res){ return *(new FArchive); }
 FArchive& FObjectReaderFName::operator<<( FName& N){ return *(new FArchive); }
+void FObjectReaderFName::SerializeObjectWithoutLoading(FArchive& Ar, FSoftObjectPath& OutObjectPath){ }
+UObject* FObjectReaderFName::ResolveObjectWithRedirect(FObjectReferenceDisc& ObjectReference){ return nullptr; }

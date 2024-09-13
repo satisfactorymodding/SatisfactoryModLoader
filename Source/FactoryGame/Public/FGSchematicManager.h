@@ -17,6 +17,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam( FOnPopulateSchematicListDelegate, TArray< T
 
 // @todoK2 refactor FPurchasedSchematicDelegate to use this one instead
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FPurchasedSchematicInstigatorDelegate, TSubclassOf< class UFGSchematic >, purchasedSchematic, class AFGCharacterPlayer*, purchaseInstigator );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FPurchasedSchematicsInstigatorDelegate, TArray< TSubclassOf< class UFGSchematic > >, purchasedSchematic, class AFGCharacterPlayer*, purchaseInstigator );
 
 /** Holds info about a schematic and How much has been paid of on it. */
 USTRUCT()
@@ -88,9 +89,16 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Events|Schematics", DisplayName = "OnPaidOffOnSchematic" )
 	FPaidOffOnSchematicDelegate PaidOffOnSchematicDelegate;
 
-	/** Called when a player is granted a schematic and which player instigated the purchase */
+	/** Called when a player is granted a schematic and which player instigated the purchase, instigator is only valid on server */
 	UPROPERTY( BlueprintAssignable, Category = "Events|Schematics", DisplayName = "OnPurchasedSchematic" )
 	FPurchasedSchematicInstigatorDelegate PurchasedSchematicInstigatorDelegate;
+	/** Called when a player is granted schematics and which player instigated the purchase, instigator is only valid on server */
+	UPROPERTY( BlueprintAssignable, Category = "Events|Schematics", DisplayName = "OnPurchasedSchematics" )
+	FPurchasedSchematicsInstigatorDelegate PurchasedSchematicsInstigatorDelegate;
+
+	/** Called when we the schematic has been changed . */
+	UPROPERTY( BlueprintAssignable, Category = "Events|Schematics", DisplayName = "OnActiveSchematicChanged" )
+	FOnActiveSchematicChanged mOnActiveSchematicChanged;
 
 	/** Called right after PopulateSchematicsList populated mAllSchematics with the vanilla content */
 	FOnPopulateSchematicListDelegate PopulateSchematicListDelegate;
@@ -127,14 +135,16 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
-
-	/** Returns the available schematics in the game that have meet their dependencies. */
-	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
-	void GetAvailableSchematics( TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
-
-	/** Returns the available schematics in the game of the given types that have meet their dependencies. */
+	
+	/** Returns the available schematics in the game of the given types that have meet their dependencies.
+	 * Available schematics means all schematics that the player can interact with in the current state of the game. 
+	 */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
 	void GetAvailableSchematicsOfTypes( TArray<ESchematicType> types, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
+
+	/** Returns the available schematics in the game of the given types that have meet their dependencies but isn't purchased. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
+	void GetAvailableNonPurchasedSchematicsOfTypes( TArray<ESchematicType> types, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
 
 	/** Returns the schematics the players have purchased of the given types. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
@@ -160,6 +170,10 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
 	void GetAllVisibleSchematicsOfType( ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
 
+	/** Returns all milestone and tutorial schematics that is in the given tier. */
+	UFUNCTION( BlueprintCallable, Category = "Organization", BlueprintPure = false )
+	void GetHubSchematicsForTier( int32 tier, TArray<TSubclassOf<UFGSchematic>>& out_schematics ) const;
+
 	/** returns true if the passed schematic has been purchased,
 	 * @param owningPlayerController is only needed if checking for a player specific schematic so defaults to nullptr.
 	 * @ Note To check for a player-specific schematic, ensure the function is called with the correct player controller.
@@ -168,13 +182,12 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
 	bool IsSchematicPurchased( TSubclassOf< UFGSchematic > schematicClass, APlayerController* owningPlayerController = nullptr ) const;
 
-	/** Give the player access to a schematic. accessInstigator can be nullptr. */
+	/** Give the player access to one or more schematics. accessInstigator can be nullptr. */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
-	void GiveAccessToSchematic( TSubclassOf< UFGSchematic > schematicClass, class AFGCharacterPlayer* accessInstigator, bool blockTelemetry = false );
+	void GiveAccessToSchematic( TSubclassOf< UFGSchematic > schematicClass, class AFGCharacterPlayer* accessInstigator, bool blockTelemetry = false, bool bBypassAccessChecks = false );
 
-	/** adds a schematic to available schematics */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
-	void AddAvailableSchematic( TSubclassOf< UFGSchematic > schematicClassToAdd );
+	void GiveAccessToSchematics( const TArray< TSubclassOf< UFGSchematic > >& schematicClasses, class AFGCharacterPlayer* accessInstigator, bool blockTelemetry = false, bool bBypassAccessChecks = false );
 	
 	/** Gives you the base cost, after random, for a schematic */
 	UFUNCTION( BlueprintPure, DisplayName = "GetCostFor_Deprecated", Category = "Schematic", meta = ( DeprecatedFunction, DeprecationMessage = "Get the cost from the Schematic directly" ) )
@@ -206,11 +219,16 @@ public:
 
 	/** Get active Schematic. */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	FORCEINLINE TSubclassOf< UFGSchematic > GetActiveSchematic() { return mActiveSchematic; }
+	FORCEINLINE TSubclassOf< UFGSchematic > GetActiveSchematic() const { return mActiveSchematic; }
 
-	/** Player initiated launch of the ship */
+	/** Get the last active Schematic. */
+    UFUNCTION( BlueprintPure, Category = "Schematic" )
+    FORCEINLINE TSubclassOf< UFGSchematic > GetLastActiveSchematic() const { return mLastActiveSchematic; }
+
+	/** Player initiated launch of the ship
+	  * @param instigator The player that pressed the launch button */
 	UFUNCTION( BlueprintCallable, Category = "Ship" )
-	void LaunchShip();
+	void LaunchShip( class AFGCharacterPlayer* accessInstigator );
 
 	/** Returns true if the ship is at the trading post */
 	UFUNCTION( BlueprintPure, Category = "Ship" )
@@ -219,6 +237,12 @@ public:
 	/** Returns the time until the ship is back */
 	UFUNCTION( BlueprintPure, Category = "Ship" )
 	float GetTimeUntilShipReturn();
+
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_OnShipReturned();
+	/** Called when the FICSIT freighter returns after delivering goods when completing milestone. Not called on dedicated server */
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCosmetic, Category = "Ship" )
+	void OnShipReturned();
 
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
 	int32 GetHighestAvailableTechTier();
@@ -252,13 +276,17 @@ public:
 	void UnlockAllSchematicsOfType( ESchematicType schematicType, bool requireDependency = false );
 	/** Unlocks all schematics up to (not including) the given tier */ 
 	void UnlockSchematicsUpToTier( int32 tier );
+
+	/**
+	 * Return the state of the give tech tier. If the tier is within the current game phase, it checks if there are any
+	 * schematics in the tier that have not been purchased and returns the appropriate state. Otherwise return locked
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Organization" )
+	ETechTierState GetTechTierState( int32 tier ) const;
 	
 private:
 	/** Populate list with all schematics */
 	void PopulateSchematicsLists();
-
-	/** Populate list with the default available schematics. */
-	void PopulateAvailableSchematicsList();
 
 	UFUNCTION()
 	void OnRep_ActiveSchematic();
@@ -288,17 +316,19 @@ private:
 	  * @param schematicType the schematics type we try to unlock more schematics of
 	 */ 
 	void TryUnlockNewSchematicsOfType( const FString& userSettingStrID, FTimerHandle& timerHandle, ESchematicType schematicType );
-	/** Called by TryUnlockNewSchematicsOfType when time is  */
+	/** Called next tick after a call to TryUnlockNewSchematicsOfType to avoid spamming of this function when unlocking alot of things at the same time*/
 	void Internal_TryUnlockNewSchematicsOfType( ESchematicType schematicType );
 
 
 protected:	
-	/** All schematic assets that have been sucked up in the PopulateSchematicsList function. Contains cheats and all sort of schematic. */
+	/** All schematics in the game. Populated early on both server and clients. */
 	UPROPERTY()
 	TArray< TSubclassOf< UFGSchematic > > mAllSchematics;
 
-	/** All schematics that are available to the player */
-	UPROPERTY( SaveGame, Replicated )
+	/** [FreiholtzK:Tue/11-07-2023] I don't think we need to have this. Feels unnecessary to save and replicate this. I kept the save specifier until I know it works without it.
+	  * We should be able to find the correct schematics with mAllSchematics/mPurchasedSchematics */
+	UE_DEPRECATED( 5.1, "Don't use this. We should be able to find all we need with mAllSchematics/mPurchasedSchematics" )
+	UPROPERTY( SaveGame )
 	TArray< TSubclassOf< UFGSchematic > > mAvailableSchematics;
 
 	/** Once schematic is purchased it ends up here */
@@ -313,9 +343,9 @@ protected:
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ActiveSchematic )
 	TSubclassOf< UFGSchematic > mActiveSchematic;
 
-	/** Called when we the schematic has been changed . */
-	UPROPERTY( BlueprintAssignable, Category = "Schematics" )
-	FOnActiveSchematicChanged mOnActiveSchematicChanged;
+	/** The most recent active schematic. */
+	UPROPERTY( SaveGame )
+	TSubclassOf< UFGSchematic > mLastActiveSchematic;
 	
 	/* Time stamp for when the ship is gonna land back at the Trading Post. */
 	UPROPERTY( Replicated )
@@ -336,10 +366,6 @@ protected:
 
 	/** Internal bool to keep track of the state of the ship  */
 	bool mIsShipAtTradingPost; 
-
-	/** Message sent when trading post ship has returned */
-	UPROPERTY( EditDefaultsOnly, Category = "Message" )
-	TSubclassOf< class UFGMessageBase > mShipReturnedMessage;
 
 #if WITH_EDITORONLY_DATA
 	// Schematics we shouldn't give when we use the cheat give all schematics in PIE and standalone.

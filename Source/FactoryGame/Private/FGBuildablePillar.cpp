@@ -6,6 +6,7 @@ AFGBuildablePillar::AFGBuildablePillar(const FObjectInitializer& ObjectInitializ
 	this->mSize = FVector::ZeroVector;
 	this->mIsSupport = false;
 	this->mLegacySwatch = nullptr;
+	this->mManagedByLightweightBuildableSubsystem = true;
 }
 void AFGBuildablePillar::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 AFGBuildablePillarLightweight::AFGBuildablePillarLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {

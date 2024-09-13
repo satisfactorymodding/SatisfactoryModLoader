@@ -5,7 +5,6 @@
 #include "Net/UnrealNetwork.h"
 
 AFGPlayerControllerBase::AFGPlayerControllerBase() : Super() {
-	this->mCurrentServer = nullptr;
 	this->mAdminInterface = nullptr;
 	this->mReplicatedCheatManager = nullptr;
 	this->CheatClass = UFGCheatManager::StaticClass();
@@ -42,7 +41,6 @@ void AFGPlayerControllerBase::OnAdminRightsGranted(){ }
 void AFGPlayerControllerBase::OnAdminRightsRevoked(){ }
 void AFGPlayerControllerBase::Admin(const FString& command){ }
 void AFGPlayerControllerBase::Server_Admin_Implementation(const FString& command){ }
-bool AFGPlayerControllerBase::ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor){ return bool(); }
 TScriptInterface<class IFGSaveManagerInterface> AFGPlayerControllerBase::GetMostRelevantSaveManager(){ return TScriptInterface<class IFGSaveManagerInterface>(); }
 TScriptInterface<class IFGSaveManagerInterface> AFGPlayerControllerBase::GetLocalSaveManager(){ return TScriptInterface<class IFGSaveManagerInterface>(); }
 void AFGPlayerControllerBase::DiscardInput(){ }

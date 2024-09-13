@@ -38,6 +38,9 @@ public:
 	/** Sets up all the data for this node */
 	void SetupResourceInfo();
 
+	virtual void StartIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
+	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
+
 	/** Gives one resource to a player */
 	virtual void ExtractResourceAndGiveToPlayer( AFGCharacterPlayer* toPlayer, int32 amount = 1 ) override;
 

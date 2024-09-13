@@ -48,6 +48,33 @@ struct FBoomBoxPlayerState
 	int32 mPlaybackState = 0;
 };
 
+/** Item state for the boombox. Shared by the equipment and the actor itself. */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFGBoomBoxItemState
+{
+	GENERATED_BODY()
+
+	/** The tape currently loaded into the boombox */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "BoomBox" )
+	TSubclassOf<UFGTapeData> CurrentTape;
+
+	/** Index of the current song on the tape */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "BoomBox" )
+	int32 CurrentSongIndex = -1;
+
+	/** Current offset of the song in the milliseconds */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "BoomBox" )
+	int32 SongOffsetMS = 0;
+
+	/** Volume of the boombox */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "BoomBox" )
+	float Volume = 1.0f;
+
+	/** The currently selected repeat mode on the boombox */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "BoomBox" )
+	EBoomBoxRepeatMode RepeatMode = EBoomBoxRepeatMode::RepeatTape;
+};
+
 UCLASS()
 class FACTORYGAME_API UFGBoomBoxRemoteCallObject: public UFGRemoteCallObject
 {
@@ -138,7 +165,11 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
-
+	
+	void LoadFromItemState( const FFGDynamicStruct& itemState );
+	FFGDynamicStruct SaveToItemState() const;
+	void FlushItemState() const;
+	
 	/** Changes the active tape in this boombox. May be called from client or server. */
 	UFUNCTION( BlueprintCallable )
 	void BeginChangeTapeSequence( TSubclassOf< class UFGTapeData > newTape, AFGCharacterPlayer* instigatorCharacter );

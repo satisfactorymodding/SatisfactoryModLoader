@@ -4,14 +4,19 @@
 
 #include "FactoryGame.h"
 #include "GameFramework/GameUserSettings.h"
-#include "GameFramework/PlayerInput.h"
-#include "FGInputLibrary.h"
 #include "FGOptionInterface.h"
-#include "FGOptionsSettings.h"
-#include "OnlineIntegrationSubsystem.h"
+
+// <FL> [PfaffN] Cleaned up includes
+#include "OnlineIntegrationTypes.h"
+#include "FGInputLibrary.h"
+#include "FGOptionInterfaceImpl.h"
 #include "FGGameUserSettings.generated.h"
+// </FL>
+
+class UFGUserSettingApplyType;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FArachnophobiaModeChangedDelegate, bool, isArachnophobiaMode );
+DECLARE_MULTICAST_DELEGATE( FOnFGGameUserSettingsInitialized );
 
 /** Our representation of the graphics RHI. Used in options menu to select which RHI they want to use.
  * We call it API because I believe that concept is more known than RHI.
@@ -63,6 +68,16 @@ struct FAudioVolumeMap
 	
 };
 
+UENUM( BlueprintType )
+enum class EOnlineIntegrationMode: uint8
+{
+	Undefined,
+	PlatformOnly,
+	CrossPlay
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnlineIntegrationModeChangedDelegate, EOnlineIntegrationMode, mode);
+
 /** Holds delegates to be called when a specific option is changed */
 USTRUCT()
 struct FOptionUpdateDelegateData
@@ -75,7 +90,7 @@ public:
 };
 
 UCLASS(BlueprintType)
-class FACTORYGAME_API UFGGameUserSettings : public UGameUserSettings, public IFGOptionInterface
+class FACTORYGAME_API UFGGameUserSettings : public UGameUserSettings, public IFGOptionInterfaceImpl
 {
 	GENERATED_BODY()
 public:
@@ -96,7 +111,6 @@ public:
 	virtual void ConfirmVideoMode() override;
 	virtual void RunHardwareBenchmark(int32 WorkScale = 10, float CPUMultiplier = 1.0f, float GPUMultiplier = 1.0f) override;
 	virtual void ApplyHardwareBenchmarkResults() override;
-	virtual IFGOptionInterface* GetActiveOptionInterface() const override;
 	//~End GameUserSettings interfaces
 	
 	UFUNCTION(BlueprintCallable)
@@ -132,9 +146,6 @@ public:
 
 	/** Returns the video quality level based on hardware benchmark results, falling back to a default value if no mappings are available. */
 	int32 GetVideoQualityLevelFromHardwareBenchmark();
-	
-	UFUNCTION( BlueprintCallable, Category = Settings )
-	void RevertUnsavedChanges();
 
 	void SetupBindings();
 
@@ -153,6 +164,9 @@ public:
 	/** Switch between fullscreen and windowed mode */
 	void ToggleFullscreenMode();
 
+	/** Updates applied FOV scaling for the given world. Takes applied camera modifiers on the local player into account */
+	void UpdateFOVScalingForWorld( UWorld* world );
+
 	UFUNCTION( BlueprintCallable, Category = Settings )
 	void UpdateVideoQuality();
 	void OnVideoQualityUpdated( FString strId, FVariant value );
@@ -162,6 +176,10 @@ public:
 	void OnUpScalingUpdated( FString strId, FVariant value );
 	void InitUpScalingMethod();
 	bool IsUsingThirdPartyUpscaler() const;
+	UFUNCTION(BlueprintPure, Category = "Satisfactory|Settings|Upscaler" )
+	static bool IsXeSSSupported();
+	UFUNCTION(BlueprintPure, Category = "Satisfactory|Settings|Upscaler" )
+	static bool IsDLSSSupported();
 	
 	/** Checks if we want to apply some scalability settings based on cmd line arguments. No applied in shipping. Used for profiling.
 	 *	If a video quality argument is present we don't used saved values or save changed values.
@@ -186,6 +204,9 @@ public:
 	/** Triggered when foliage quality option have changed */
 	UFUNCTION()
 	void OnFoliageQualityUpdated( FString updatedCvar );
+
+	UFUNCTION()
+	void OnOnlineIntegrationModeUpdated();
 
 	/** Triggered when motion blur option have changed */
 	UFUNCTION()
@@ -226,58 +247,33 @@ public:
 	/** Update network values in config files */
 	void RefreshNetworkQualityValues();
 
-	/** Get custom bindings @todok2 remove when new enhanced system is up and running */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	FORCEINLINE TArray< struct FFGKeyMapping > GetKeyMappings() { return mCustomKeyMappings; }
-
 	/** Get custom enhanced bindings */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	FORCEINLINE TArray< FFGCustomInputActionMapping >GetPlayerMappedKeys() { return mPlayerMappedKeys; }
 
 	bool GetPlayerMappedKey(const FName& inActionName, FFGCustomInputActionMapping& out_FoundMapping) const;
-
-	/** Add a new custom mapping @todok2 remove when new enhanced system is up and running */
-	void AddCustomActionMapping( FFGKeyMapping newMapping );
 	
 	void AddPlayerMappedKey( const FFGCustomInputActionMapping& newMapping );
 
-	/** Clears array of custom mappings @todok2 remove when new enhanced system is up and running */
-	void RemoveAllCustomActionMappings();
+	/** Remove all player mapped keys that the player have rebound */
 	void RemoveAllPlayerMappedKeys();
 
 	// Begin IFGOptionInterface
-	virtual FVariant GetOptionValue( const FString& strId ) const override;
-	virtual FVariant GetOptionValue( const FString& strId, const FVariant& defaultValue ) const override;
-	virtual FVariant GetOptionDisplayValue( const FString& strId ) const override;
-	virtual FVariant GetOptionDisplayValue( const FString& strId, const FVariant& defaultValue ) const override;
+	virtual void GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const;
+	virtual UFGUserSettingApplyType* FindUserSetting(const FString& SettingId) const override;
 	virtual void SetOptionValue(const FString& strId, const FVariant& value) override;
-	virtual void ForceSetOptionValue( const FString& strId, const FVariant& value, const UObject* instigator ) override;
-	virtual void SubscribeToOptionUpdate( const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate ) override;
-	virtual void UnsubscribeToOptionUpdate( const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate ) override;
-	virtual bool IsDefaultValueApplied( const FString& strId ) const override;
-	virtual bool IsOptionEditable( const FString& strId ) const override;
 	virtual void ApplyChanges() override;
 	virtual void ResetAllSettingsToDefault() override;
 	virtual void ResetAllSettingsInCategory( TSubclassOf< class UFGUserSettingCategory > category, TSubclassOf< class UFGUserSettingCategory > subCategory ) override;
-	virtual bool GetBoolOptionValue( const FString& cvar ) const override;
-	virtual bool GetBoolUIDisplayValue( const FString& cvar ) const override;
-	virtual void SetBoolOptionValue( const FString& cvar, bool value ) override;
-	virtual int32 GetIntOptionValue( const FString& cvar ) const override;
-	virtual int32 GetIntUIDisplayValue( const FString& cvar ) const override;
-	virtual void SetIntOptionValue( const FString& cvar, int32 newValue ) override;
-	virtual float GetFloatOptionValue( const FString& cvar ) const override;
-	virtual float GetFloatUIDisplayValue( const FString& cvar ) const override;
-	virtual void SetFloatOptionValue( const FString& cvar, float newValue ) override;
-	virtual bool HasAnyUnsavedOptionValueChanges() const override;
-	virtual bool HasPendingApplyOptionValue( const FString& cvar ) const override;
-	virtual bool HasAnyPendingRestartOptionValue( const FString& cvar ) const override;
-    virtual bool GetRequireSessionRestart() const override;
-    virtual bool GetRequireGameRestart() const override;
-	virtual void SubscribeToDynamicOptionUpdate( const FString& cvar, const FOptionUpdated& optionUpdatedDelegate ) override;
-	virtual void UnsubscribeToDynamicOptionUpdate( const FString& cvar, const FOptionUpdated& optionUpdatedDelegate ) override;
-	virtual void UnsubscribeToAllDynamicOptionUpdate( UObject* boundObject ) override;
-	virtual TArray<FUserSettingCategoryMapping> GetCategorizedSettingWidgets( UObject* worldContext, UUserWidget* owningWidget ) override;
+	virtual bool IsGlobalManager() const override;
+	virtual bool IsInMainMenu() const override;
+	virtual IFGOptionInterface* GetPrimaryOptionInterface(UWorld* world) const override;
 	// End IFGOptionInterface
+
+	FORCEINLINE const FVector& GetHologramBuildColor() const { return mBuildHologramColour; }
+	FORCEINLINE const FVector& GetHologramDismantleColor() const { return mDismantleHologramColour; }
+	FORCEINLINE const FVector& GetHologramInvalidColor() const { return mInvalidPlacementHologramColour; }
+	FORCEINLINE const FVector& GetHologramSoftClearanceColor() const { return mSoftClearanceHologramColour; }
 	
 	void InitSavedValues();
 	void SetupAudioSettingBindings();
@@ -347,16 +343,25 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
 	void UpdatePaniniFOVScaling();
+
+	/** Returns true if first launch pop-up screen should be shown to the user */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	bool ShouldShowFirstLaunchPopUpScreen();
+
+	/** Marks the first launch pop-up screen as accepted by the user. It will not be shown again */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
+	void MarkFirstLaunchPopUpScreenAccepted();
 	
 	UMaterialParameterCollection* GetHologramMaterialCollectionAsset() const;
 
 	EOnlineIntegrationMode GetPreferredOnlineIntegrationMode() const { return mPreferredOnlineIntegrationMode; }
+
+	UFUNCTION( BlueprintCallable )
 	void SetPreferredOnlineIntegrationMode( EOnlineIntegrationMode preferredOnlineIntegrationMode );
 
 	/** Debug */
 	void DumpDynamicOptionsSettings();
 	void GetOptionsDebugData( TArray<FString>& out_debugData );
-	
 private:
 	friend class OptionValueContainer;
 	
@@ -377,8 +382,10 @@ private:
 	void InitUserSettings();
 	
 #if WITH_EDITOR
-	void OnBeginPIE(const bool bIsSimulating);
+	void OnBeginPIE( const bool bIsSimulating );
+	void OnEndPIE( const bool bIsSimulating );
 #endif
+	void OnPreMapLoad( const FString& MapName ); 
 	
 	/** Update the console variable with a new int value */
 	void SetCvarValue( FString cvar, int32 value );
@@ -388,9 +395,6 @@ private:
 	
 	/** Bind up events for changing RTPC audio volume when audio cvar is changed */
 	void SetupAudioOption( const FString& strId  );
-	
-	/** Apply settings that have been changed and are pending */
-	void ApplyPendingChanges();
 
 	/** Check if any cvar should be checked and applied */
 	void CheckForCvarOverrides();
@@ -410,7 +414,6 @@ private:
 	bool ValidateCVar( const FString& cvar );
 	
 	void TestSavedValues();
-
 	UWorld* GetGameWorld();
 	
 	void FlushRenderingCommandsThenApplyUpscaler( EUpscalingMethod upscalingMethod );
@@ -424,14 +427,15 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Arachnophobia", DisplayName = "OnArachnophobiaModeChanged" )
 	FArachnophobiaModeChangedDelegate OnArachnophobiaModeChangedDelegate;
 
+	UPROPERTY( BlueprintAssignable, Category = "Online", DisplayName = "OnOnlineIntegrationModeChanged" )
+	FOnlineIntegrationModeChangedDelegate OnOnlineIntegrationModeChangedDelegate;
+
+	/** Called when user settings are initialized. By that point HasInitialized will return true */
+	FOnFGGameUserSettingsInitialized mOnUserSettingsInitialized;
 protected:
 
 	UPROPERTY( Transient )
 	TMap< FString, class UFGUserSettingApplyType* > mUserSettings;
-	
-	/** List of remapped key Mappings. @todok2 remove when new enhanced system is up and running */
-	UPROPERTY( config, EditAnywhere, Category = "Bindings" )
-	TArray< FFGKeyMapping > mCustomKeyMappings;
 
 	/** List of remapped enhanced key mappings */
 	UPROPERTY( config, EditAnywhere, Category = "Bindings" )
@@ -492,6 +496,10 @@ private:
 
 	UPROPERTY( Config )
 	FVector mSoftClearanceHologramColour;
+
+	/** True if first launch pop-up screen has been dismissed by the user */
+	UPROPERTY( Config )
+	bool mDismissedFirstLaunchPopupScreen;
 
 	UPROPERTY( Config )
 	EOnlineIntegrationMode mPreferredOnlineIntegrationMode = EOnlineIntegrationMode::Undefined;

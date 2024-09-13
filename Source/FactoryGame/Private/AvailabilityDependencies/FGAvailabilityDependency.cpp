@@ -2,4 +2,8 @@
 
 #include "AvailabilityDependencies/FGAvailabilityDependency.h"
 
+#if WITH_EDITOR
+#endif 
 bool UFGAvailabilityDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }
+bool UFGAvailabilityDependency::ArePlayerSpecificDependenciesMet(const  AFGPlayerState* playerState) const{ return bool(); }
+bool UFGAvailabilityDependency::AreLocalDependenciesMet(UObject* worldContext) const{ return bool(); }

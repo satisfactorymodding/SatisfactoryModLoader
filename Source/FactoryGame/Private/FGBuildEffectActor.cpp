@@ -2,9 +2,15 @@
 
 #include "FGBuildEffectActor.h"
 #include "Components/SceneComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "ItemAmount.h"
 
 AFGBuildEffectActor::AFGBuildEffectActor() : Super() {
+	this->mDecalMaterial = nullptr;
+	this->mDecalBuildEffectMaterial = nullptr;
+	this->mMaskedColorDecalMaterial = nullptr;
+	this->mMaskedColorDecalEffectMaterial = nullptr;
+	this->mBuildEffectFallback = nullptr;
 	this->mCurrentMaterializeAmount = 0.0;
 	this->mMaterializeAmountPerThrow = 0.0;
 	this->mEndStageSpeed = 1.0;
@@ -29,9 +35,9 @@ AFGBuildEffectActor::AFGBuildEffectActor() : Super() {
 	this->mSplineDelayOffset = -0.2;
 	this->mThumbSoundPlayTime = 1.0;
 	this->mBounds = FBox(FVector::ZeroVector, FVector::ZeroVector);
-	this->mBuildEffectMaterial = nullptr;
-	this->mBuildEffectSplineMaterial = nullptr;
-	this->mIsSpline = false;
+	this->mActorBounds = FBox(FVector::ZeroVector, FVector::ZeroVector);
+	this->mSlicePlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Slice plane"));
+	this->mIsBlueprint = false;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -40,22 +46,30 @@ AFGBuildEffectActor::AFGBuildEffectActor() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	this->mSlicePlane->SetupAttachment(RootComponent);
 }
 void AFGBuildEffectActor::Tick(float DeltaTime){ }
-void AFGBuildEffectActor::CreateVisuals(){ }
-TArray<UMeshComponent*> AFGBuildEffectActor::CreateStaticMesh(UMeshComponent* SourceComponent, const FTransform& sourceActorTransform){ return TArray<UMeshComponent*>(); }
-void AFGBuildEffectActor::SetupThrowQueue(){ }
+void AFGBuildEffectActor::BeginPlay(){ }
+void AFGBuildEffectActor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildEffectActor::SetDismantle(bool State){ }
+void AFGBuildEffectActor::AddAbstractDataEntry(TSubclassOf< AFGBuildable > buildableClass, const FRuntimeBuildableInstanceData& runtimeData, UAbstractInstanceDataObject* InstanceData, int32 Index){ }
+void AFGBuildEffectActor::RemoveAbstractDataEntry(TSubclassOf< AFGBuildable > buildableClass, int32 index){ }
 void AFGBuildEffectActor::SetRecipe(TSubclassOf<UFGRecipe> inRecipe, AFGBuildable* buildable){ }
-float AFGBuildEffectActor::GetTotalSplineLength() const{ return float(); }
-FTransform AFGBuildEffectActor::GetTransformOnSplines(bool bWorldSpace) const{ return FTransform(); }
 FBuildEffectEnded& AFGBuildEffectActor::GetBind(UClass* actorClass){ return *(new FBuildEffectEnded); }
-void AFGBuildEffectActor::UpdateCostQueue(){ }
-void AFGBuildEffectActor::OnCostActorReachedTarget(){ }
 void AFGBuildEffectActor::Start(){ }
 void AFGBuildEffectActor::Stop(){ }
+void AFGBuildEffectActor::CreateVisuals(){ }
+void AFGBuildEffectActor::ResolveMaterial(UMeshComponent* Mesh, const TArray<UMaterialInterface*>& Overrides){ }
+void AFGBuildEffectActor::SetupThrowQueue(){ }
+float AFGBuildEffectActor::GetTotalSplineLength() const{ return float(); }
+void AFGBuildEffectActor::TryPlayThumbSound(){ }
+FTransform AFGBuildEffectActor::GetTransformOnSplines(bool bWorldSpace) const{ return FTransform(); }
+void AFGBuildEffectActor::UpdateCostQueue(){ }
+void AFGBuildEffectActor::OnCostActorReachedTarget(){ }
+void AFGBuildEffectActor::CleanupRemovedBuildables(){ }
 void AFGBuildEffectActor::UpdateSplineBuildables(float Dt){ }
 void AFGBuildEffectActor::UpdateGenericBuildables(float Dt){ }
 void AFGBuildEffectActor::UpdateWires(){ }
 void AFGBuildEffectActor::CalculateBuildEffectBounds(){ }
-TArray<class USplineComponent*> AFGBuildEffectActor::GetBeltSourceSplinesOrdered(const TArray<class AFGBuildableConveyorBelt*>& inBelts, TArray<AActor*>& orderedActors) const{ return TArray<class USplineComponent*>(); }
-TArray<class USplineComponent*> AFGBuildEffectActor::GetPipeSourceSplineOrdered(const TArray<class AFGBuildablePipeBase*>& inPipes, TArray<AActor*>& orderedActors) const{ return TArray<class USplineComponent*>(); }
+TArray<USplineComponent*> AFGBuildEffectActor::GetBeltSourceSplinesOrdered(const TArray<class AFGBuildableConveyorBelt*>& inBelts, TArray<AActor*>& orderedActors) const{ return TArray<USplineComponent*>(); }
+TArray<USplineComponent*> AFGBuildEffectActor::GetPipeSourceSplineOrdered(const TArray<class AFGBuildablePipeBase*>& inPipes, TArray<AActor*>& orderedActors) const{ return TArray<USplineComponent*>(); }

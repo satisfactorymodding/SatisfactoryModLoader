@@ -6,12 +6,41 @@
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
+#include "FGRemoteCallObject.h"
 #include "FGGamePhaseManager.h"
 #include "FGRecipeManager.generated.h"
 
 class UFGRecipe;
+class UFGCustomizationRecipe;
+class UFGBuildingDescriptor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnRecipeAvailableDelegate, TSubclassOf<UFGRecipe>, recipeClass );
+
+
+UCLASS()
+class FACTORYGAME_API UFGRecipeRCO : public UFGRemoteCallObject
+{
+	GENERATED_BODY()
+public:
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+
+	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
+	bool mForceNetField_UFGRecipeRemoteCallObject = false;
+
+	UFUNCTION( Server, Reliable )
+	void Server_RequestAvailableRecipeUpdate( const int32& currentIndex );
+
+	UFUNCTION( Client, Reliable )
+	void Client_RespondAvailableRecipeUpdate( const TArray< TSubclassOf< UFGRecipe > >& recipes );
+	
+	UFUNCTION( Server, Reliable )
+	void Server_RequestAllRecipeUpdate( const int32& currentIndex );
+
+	UFUNCTION( Client, Reliable )
+	void Client_RespondAllRecipeUpdate( const TArray< TSubclassOf< UFGRecipe > >& recipes );
+	
+};
+
 
 /**
  * Handles everything to do with recipes in the game.
@@ -52,6 +81,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	void GetAllAvailableRecipes( TArray< TSubclassOf< UFGRecipe > >& out_recipes );
 
+	/** Gets all recipes in the game, including recipes yet to be unlocked. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
+	FORCEINLINE TArray< TSubclassOf< UFGRecipe > > const& GetAllRecipes() const { return mAllRecipes; }
+	
 	/** Gets all available Customization Recipes. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	void GetAllAvailableCustomizationRecipes( TArray< TSubclassOf< UFGCustomizationRecipe > >& out_recipes );
@@ -78,15 +111,19 @@ public:
 
 	/** Gets a list of available buildings inheriting from a certain buildable class. */
 	template< typename BuildingType >
-	TArray< TSubclassOf< BuildingType > > GetAvailableBuildingsOfType( ) const;
+	TArray< TSubclassOf< BuildingType > > GetAvailableBuildingsOfType() const;
+
+	/** Attempts to find the descriptor for the given building class */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
+	TSubclassOf< UFGBuildingDescriptor > FindBuildingDescriptorByClass( TSubclassOf< AFGBuildable > buildable ) const;
 
 	/** Find all recipes using the given item as an ingredient. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Recipe" )
-	TArray< TSubclassOf< UFGRecipe > > FindRecipesByIngredient( TSubclassOf< UFGItemDescriptor > ingredient ) const;
+	TArray< TSubclassOf< UFGRecipe > > FindRecipesByIngredient( TSubclassOf< UFGItemDescriptor > ingredient, bool onlyAvailableRecipes = true, bool availableFirst = true ) const;
 
 	/** Find all recipes having the given item as an product. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Recipe" )
-	TArray< TSubclassOf< UFGRecipe > > FindRecipesByProduct( TSubclassOf< UFGItemDescriptor > product ) const;
+	TArray< TSubclassOf< UFGRecipe > > FindRecipesByProduct( TSubclassOf< UFGItemDescriptor > product, bool onlyAvailableRecipes = true, bool availableFirst = true ) const;
 
 	/** Resets recipes to their defaults, also cleans up pre alpha save state. */
 	void ResetAllRecipes();
@@ -94,12 +131,18 @@ public:
 	/** Debug */
 	void Debug_DumpStateToLog() const;
 
+	
+	UFUNCTION()
+	void NotifyGameStateReadyOnClient();
+
 public:
 	/** Called when the provided recipe becomes available. Called for both normal recipes and customization recipes. */
 	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Recipe" )
 	FFGOnRecipeAvailableDelegate mOnRecipeAvailable;
 	
 private:
+	void OnSubsystemsValid();
+	
 	/** Filters recipes for a given producer. */
 	void FilterRecipesByProducer( const TArray< TSubclassOf< UFGRecipe > >& inRecipes, TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes );
 
@@ -112,14 +155,37 @@ private:
 	/** Steps through mAvailableRecipes and looks for buildings that we can build to add to mAvailableBuildings */
 	void PopulateAvailableBuildings();
 
-	/** Called when mAvailableRecipes have been replicated. used to generate mAvailableBuildings on client */
+	/** Finds every recipe available in the game and stores it in mAllRecipes. */
+	void PopulateAllRecipesList();
+
+	void Internal_FindRecipesByIngredient( TSubclassOf< UFGItemDescriptor > ingredient, const TArray< TSubclassOf< UFGRecipe > >& recipeList, TArray< TSubclassOf< UFGRecipe > >& out_recipes, bool ignoreUniqueCheck = true ) const;
+	void Internal_FindRecipesByProduct( TSubclassOf< UFGItemDescriptor > product, const TArray< TSubclassOf< UFGRecipe > >& recipeList, TArray< TSubclassOf< UFGRecipe > >& out_recipes, bool ignoreUniqueCheck = true ) const;
+
 	UFUNCTION()
-    void OnRep_AvailableRecipes();
+	void OnRep_NumAvailableRecipes();
+
+	UFUNCTION()
+	void OnRep_NumTotalRecipes();
+
 	
 private:
+	friend class UFGRecipeRCO;
+	
 	/** All recipes that are available to the producers, i.e. build gun, workbench, manufacturers etc. */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_AvailableRecipes )
+	UPROPERTY( SaveGame )
 	TArray< TSubclassOf< UFGRecipe > > mAvailableRecipes;
+
+	/** Property to track whether a client should request an update of available recipes */
+	UPROPERTY(ReplicatedUsing=OnRep_NumAvailableRecipes )
+	int32 mNumAvailableRecipes;
+	
+	/** Every single recipe in the game. */
+	UPROPERTY( Transient )
+	TArray< TSubclassOf< UFGRecipe > > mAllRecipes;
+
+	/** Property to track whether a client should request an update of available recipes */
+	UPROPERTY(ReplicatedUsing=OnRep_NumTotalRecipes )
+	int32 mNumAllRecipes;
 
 	/** All customization Recipes. A subset of all recipes for quicker customization look ups */
 	UPROPERTY( SaveGame, Replicated )
@@ -128,6 +194,13 @@ private:
 	/** All buildings that are available to produce in build gun. Generated from mAvailableRecipes. */
 	UPROPERTY( Transient )
 	TArray< TSubclassOf< class AFGBuildable > > mAvailableBuildings;
+
+	/** Mapping of buildings to their descriptors. Generated from mAvailableRecipes */
+	UPROPERTY( Transient )
+	TMap< TSubclassOf< class AFGBuildable >, TSubclassOf< class UFGBuildingDescriptor > > mBuildingToDescriptorLookup;
+
+	bool mHasPendingAvailableRecipeRequest = false;
+	bool mHasPendingTotalRecipeRequest = false;
 };
 
 template< typename BuildingType >

@@ -7,5 +7,4 @@ UMaterialInterface* UFGMapCompassSettings::GetMapMarkerDefaultMaterial() const{ 
 UStaticMesh* UFGMapCompassSettings::GetHighlightedMarkerMesh() const{ return nullptr; }
 UMaterialInterface* UFGMapCompassSettings::GetHighlightedMarkerMaterial() const{ return nullptr; }
 UNiagaraSystem* UFGMapCompassSettings::GetHighlightedMarkerNiagaraSystem() const{ return nullptr; }
-UFGWorldScannableData* UFGMapCompassSettings::GetWorldScannableData() const{ return nullptr; }
 UFGWorldHeightData* UFGMapCompassSettings::GetWorldHeightData() const{ return nullptr; }

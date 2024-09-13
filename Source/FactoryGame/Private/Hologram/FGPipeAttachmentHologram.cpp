@@ -15,11 +15,15 @@ AFGPipeAttachmentHologram::AFGPipeAttachmentHologram() : Super() {
 	this->mHasPipeRotationBuildStep = true;
 	this->mSnappedPipe = nullptr;
 	this->mSnappedConnectionComponent = nullptr;
+	this->mSnappedPipeOffset = 0.0;
 	this->mNeedsValidFloor = false;
 }
 void AFGPipeAttachmentHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPipeAttachmentHologram, mSnappedPipe);
+	DOREPLIFETIME(AFGPipeAttachmentHologram, mSnapConnectionIndex);
+	DOREPLIFETIME(AFGPipeAttachmentHologram, mSnappedConnectionComponent);
+	DOREPLIFETIME(AFGPipeAttachmentHologram, mSnappedPipeOffset);
 }
 void AFGPipeAttachmentHologram::BeginPlay(){ }
 bool AFGPipeAttachmentHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }

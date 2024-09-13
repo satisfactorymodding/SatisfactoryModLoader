@@ -3,8 +3,21 @@
 #include "Narrative/FGMessage.h"
 
 #if WITH_EDITOR
-void UFGMessage::InitDependency(TSubclassOf<class UFGSchematic> schematicClass){ }
-void UFGMessage::InitDependency(TSubclassOf<class UFGItemDescriptor> itemDescriptorClass){ }
-void UFGMessage::InitDependency(TSubclassOf<class UFGResearchTree> researchTreeClass){ }
+void UFGMessage::MarkMessageAssetDirty(){ }
+void UFGMessage::SaveAsset(){ }
+void UFGMessage::SetSubtitles(const TArray<FMessageSubtitle>& subtitles){ }
+void UFGMessage::SetMessage(FText message){ }
+UFGAudioMessage* UFGMessage::GetTestAudioWidget(UUserWidget* owningWidget, int32 startOnSubtitleIndex , bool skipIncomingAnimation){ return nullptr; }
+void UFGMessage::GetAllMessageAssetsData(TArray<FAssetData>& out_messageAssets, bool FilterLegacyMessages){ }
+bool UFGMessage::GenerateSubtitlesForTool(const FString& locaNamespace, const FString& locaKeyRoot){ return bool(); }
+bool UFGMessage::FindAudioEventForMessage(){ return bool(); }
 #endif 
-void UFGMessage::UpdateMessage(const FString& inTitle, const FString& inTrigger, const FString& inMessage, TArray<FString>& out_Results){ }
+TArray<UFGMessage*> UFGMessage::GetAllMessageAssets(){ return TArray<UFGMessage*>(); }
+bool UFGMessage::operator<(const UFGMessage& otherMessage) const{ return bool(); }
+TArray<FMessageSubtitle> UFGMessage::GetSubtitles(){ return TArray<FMessageSubtitle>(); }
+bool UFGMessage::DoesMessageContainPresentation() const{ return bool(); }
+float UFGMessage::GetSharingDistance() const{ return float(); }
+bool UFGMessage::IsMessageConsideredImportant() const{ return bool(); }
+bool UFGMessage::AreConditionsMet(UWorld* world) const{ return bool(); }
+bool UFGMessage::ArePlayerSpecificConditionssMet( AFGPlayerState* playerState) const{ return bool(); }
+bool UFGMessage::AreLocalConditionsMet(UWorld* world) const{ return bool(); }

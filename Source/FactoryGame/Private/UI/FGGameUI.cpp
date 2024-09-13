@@ -3,37 +3,36 @@
 #include "UI/FGGameUI.h"
 
 UFGGameUI::UFGGameUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-	this->mActiveTutorialHintData.ID = EIntroTutorialSteps::ITS_NONE;
-	this->mActiveTutorialHintData.Title = INVTEXT("");
-	this->mActiveTutorialHintData.Message = nullptr;
+	this->mPendingInterruptMessage = nullptr;
 	this->mActiveAudioMessage = nullptr;
-	this->mMinTimeBetweenAudioMessage = 0.0;
+	this->mControllerDragWidget = nullptr;
 }
+void UFGGameUI::NativeConstruct(){ }
+void UFGGameUI::ReleaseSlateResources(bool bReleaseChildren){ Super::ReleaseSlateResources(bReleaseChildren); }
 void UFGGameUI::PopAllWidgets_Implementation(){ }
 void UFGGameUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ }
 UFGInteractWidget* UFGGameUI::GetInteractWidgetOfClass(TSubclassOf< UFGInteractWidget > interactWidgetClass) const{ return nullptr; }
+void UFGGameUI::GetInteractWidgetsOfInteractObject(const UObject* InteractObject, TArray<UFGInteractWidget*>& OutInteractWidgets) const{ }
 bool UFGGameUI::ContainsInteractWidgetOfClass(TSubclassOf< UFGInteractWidget > interactWidgetClass) const{ return bool(); }
 void UFGGameUI::RemoveInteractWidget(UFGInteractWidget* widgetToRemove){ }
 void UFGGameUI::AddInteractWidget_Implementation(UFGInteractWidget* widgetToAdd){ }
-void UFGGameUI::AddPendingMessage(UFGMessageBase* message){ }
-void UFGGameUI::AddPendingMessage(UFGMessage* message){ }
-void UFGGameUI::AddPendingMessage(TSubclassOf<UFGMessageBase> messageClass){ }
+void UFGGameUI::AddPendingMessages(const TArray< UFGMessage* >& newMessages){ }
 void UFGGameUI::HandlePendingMessages(float InDeltaTime){ }
-bool UFGGameUI::CanReceiveMessageQueue(){ return bool(); }
-bool UFGGameUI::CanReceiveMessage(TSubclassOf<  UFGMessageBase > inMessage){ return bool(); }
 void UFGGameUI::Native_HandlePauseGamePressed(){ }
 void UFGGameUI::SetPauseMenuOpen(bool isOpen){ }
 void UFGGameUI::AudioMessageFinishedPlayback(){ }
-void UFGGameUI::RemoveAudioMessage_Implementation(){ }
 AFGCharacterPlayer* UFGGameUI::GetFGCharacter(){ return nullptr; }
-void UFGGameUI::AddIntroTutorialInfo(FTutorialHintData tutorialHintData){ }
-void UFGGameUI::ClearHintOnTutorialStepCompleted(){ }
-void UFGGameUI::PlayAudioMessage(TSubclassOf<UFGAudioMessage> messageClass){ }
+void UFGGameUI::PlayAudioMessage(UFGMessage* message, TSubclassOf<UFGAudioMessage> messageClass){ }
 void UFGGameUI::Internal_PlayAudioMessage( UFGAudioMessage* audioMessage){ }
 UFGInteractWidget* UFGGameUI::FindWidgetByClass(TSubclassOf<UFGInteractWidget> widgetClass){ return nullptr; }
 void UFGGameUI::ResumeGame(){ }
 void UFGGameUI::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboardSettings){ }
 void UFGGameUI::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboardSettings){ }
+UUserWidget* UFGGameUI::RequestWidget(TSubclassOf< UUserWidget > widgetClass){ return nullptr; }
+void UFGGameUI::ReleaseWidget(UUserWidget* widgetToRelease){ }
+void UFGGameUI::SetControllerDragWidget( UFGControllerDragWidget* widget){ }
 FReply UFGGameUI::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent){ return FReply::Unhandled(); }
-void UFGGameUI::ShowTutorialHint(){ }
+void UFGGameUI::Native_OnOnboardingStepUpdated(UFGOnboardingStep* currentOnboardingStep){ }
 bool UFGGameUI::ShouldShowFicsitSplashWidget() const{ return bool(); }
+bool UFGGameUI::ShouldSuppressMessage( UFGMessage* message) const{ return bool(); }
+void UFGGameUI::SetupDelegates(){ }

@@ -29,7 +29,7 @@ bool AFGBuildableResourceExtractorBase::DisconnectExtractableResource(){ return 
 void AFGBuildableResourceExtractorBase::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableResourceExtractorBase::SetExtractableResource(TScriptInterface< IFGExtractableResourceInterface > extractableInterface){ }
 void AFGBuildableResourceExtractorBase::SetResourceNode( AFGResourceNode* resourceNode){ }
-UParticleSystem* AFGBuildableResourceExtractorBase::GetMiningParticle(){ return nullptr; }
+UFXSystemAsset* AFGBuildableResourceExtractorBase::GetMiningParticle(){ return nullptr; }
 bool AFGBuildableResourceExtractorBase::CanOccupyResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }
 bool AFGBuildableResourceExtractorBase::IsAllowedOnResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }
 AActor* AFGBuildableResourceExtractorBase::TryFindMissingResource(){ return nullptr; }

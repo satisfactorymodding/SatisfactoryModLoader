@@ -69,7 +69,7 @@ struct FResourceSinkValuePair32
 	int32 Value;
 };
 
-
+DECLARE_MULTICAST_DELEGATE_OneParam( FOnFirstItemSinkFailure, TSubclassOf<class UFGItemDescriptor> );
 
 /**
  * Subsystem to handle the resource sink and the rewards from sinked items
@@ -175,6 +175,9 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|ResourceSink" )
 	bool FindResourceSinkPointsForItem( TSubclassOf< class UFGItemDescriptor > itemDescriptor, int32& out_numPoints, EResourceSinkTrack& out_itemTrack );
+
+	// Called when we fail to sink an item the first time. Can be called once per item descriptor
+	FOnFirstItemSinkFailure mOnFirstItemSinkFailure;
 private:
 	/** Handle the points added to the point queue and adds them to the system */
 	void HandleQueuedPoints();
@@ -270,18 +273,10 @@ private:
 	
 	/** The number of points we need to reach to unlock a new coupon after we have reached the defined reward levels */
 	TMap< EResourceSinkTrack, int64 > mOverflowDeltaPoints;
-
-	/** The messages that should play if the player tries to sink a item that you can't sink */
-	UPROPERTY( Transient )
-	TMap<TSubclassOf<class UFGItemDescriptor>, TSubclassOf<class UFGMessageBase>> mFailedItemSinkMessages;
 	
-	/** The items that the player tried to sink that you can't sink that is also present in mFailedItemSinkMessages */
+	/** Items attempted to be sunk by the player but are unsinkable */
 	UPROPERTY( SaveGame )
 	TArray<TSubclassOf<class UFGItemDescriptor>> mItemsFailedToSink;
-
-	/** Have we ever tried to sink any item that you can't sink that is not present in mFailedItemSinkMessages */
-	UPROPERTY( SaveGame )
-	bool mAnyGenericItemsFailedToSink;
 
 	/** Have we sunken a item of the coupon class, Used to give a schematic */
 	UPROPERTY( SaveGame )

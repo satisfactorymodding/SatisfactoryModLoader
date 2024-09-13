@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "AbstractInstanceInterface.h"
+#include "AkSwitchValue.h"
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Engine/SCS_Node.h"
 #include "FGAttachmentPoint.h"
@@ -18,11 +19,18 @@
 #include "FGSaveInterface.h"
 #include "FGUseableInterface.h"
 #include "FactoryTick.h"
+#include "FGClearanceData.h"
+#include "FGClearanceInterface.h"
 #include "GameFramework/Actor.h"
 #include "ItemAmount.h"
-#include "Replication/FGReplicationDetailActorOwnerInterface.h"
-#include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "GameplayTagContainer.h"
 #include "FGBuildable.generated.h"
+
+// Begin forward declaration
+class UAkComponent;
+class AFGBuildEffectActor;
+class UAkAudioEvent;
+// End
 
 DECLARE_STATS_GROUP( TEXT( "FactoryQuick" ), STATGROUP_FactoryQuick, STATCAT_Advanced );
 
@@ -33,13 +41,9 @@ static const FString MAIN_MESH_NAME( TEXT( "MainMesh" ) );
 
 #define GetLWActorTransform( inputActor ) IAbstractInstanceInterface::Execute_GetLightweightInstanceActorTransform( inputActor )
 
-class AFGBuildEffectActor;
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE( FBuildableDismantledSignature );
-
 // Replication graph related delegates
 DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnRegisteredPlayerChanged, class AFGBuildable*, class AFGCharacterPlayer* /* registered player */, bool /* bIsUseStateActive */ );
-DECLARE_MULTICAST_DELEGATE_TwoParams( FOnReplicationDetailActorStateChange, class IFGReplicationDetailActorOwnerInterface*, bool );
+
 
 /**
  * Production status of the factory, i.e. displayed on the indicator.
@@ -58,7 +62,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam( FProductionStatusChanged, EProductionStatus
 
 
 /**
- *	Rco for all Signifigance based network logic.
+ *	Rco for all Significance based network logic.
  *	main motivation for this is to reduce the number of objects per unique instance in the world like ladders & trigger boxes.
  *	This should improve scalability for the game to later phases and reduce memory overhead. */
 UCLASS()
@@ -95,9 +99,62 @@ class FACTORYGAME_API UFGBuildableSparseDataObject : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly)
+	/** Class of the build effect actor for this buildable */
+	UPROPERTY( EditDefaultsOnly, Category = "Build Effect" )
 	TSubclassOf<AFGBuildEffectActor> mSparseBuildEffectActorTemplate;
 	
+	/* Array of particle effects used for alien overclocking, Expected usage:
+	 * For lookup AO_#ArrayIndex_01, AO_#ArrayIndex_02 etc.  */
+	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
+	TArray<class UNiagaraSystem*> AlienOverClockingParticles;
+
+	/** Audio event to start the alien overclocking loop SFX */
+	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
+	UAkAudioEvent* AlienOverClockingLayeredLoopingEvent;
+
+	/** Audio event to stop the alien overclocking loop SFX */
+	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
+	UAkAudioEvent* AlienOverClockingLayeredLoopingStopEvent;
+
+	/** Audio switch to pass th the alien overclocking loop event, for customizing it */
+	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
+	UAkSwitchValue* AlienOverclockingSweetenerValue;
+
+	/** Offset on the Z axis from the actor location on which the alien overclocking audio component should be spawned, in world units */
+	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
+	float AlienOverClockingZOffset;
+	
+	/** Attenuation scaling factor for the alien overclocking audio */
+	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
+	float AlienOverClockingAttenuationScalingFactor{12.0f};
+
+	/** Volume of the alien overclocking audio to be passed to the audio as RTPC parameter */
+	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
+	float AlienOverClockingVolumeDB_RTPC;
+
+	/** Highpass RTPC to be passed to the overclocking audio */
+	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
+	float AlienOverClockingHighpass_RTPC;
+
+	/** Pitch of the overclocking audio to be passed to the event as RTPC parameter */
+	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
+	float AlienOverClockingPitch_RTPC;
+
+	/** Tag of the buildable to account for the total amount of it for granting certain achievements */
+	UPROPERTY( EditDefaultsOnly, Category = "Achievement")
+	FGameplayTag mBuildableTag;
+
+	UPROPERTY( EditDefaultsOnly,Category = "Visuals|FogPlanes" )
+	TArray<FTransform> mFogPlaneLocations;
+
+	UPROPERTY( EditDefaultsOnly,Category = "Visuals|FogPlanes" )
+	UStaticMesh* FogPlaneMesh;
+
+#if WITH_EDITORONLY_DATA
+	/** True if we migrated old data for alien overclocking from buildable to the Sparse Data Object */
+	UPROPERTY()
+	bool bMigratedOldAlienOverclockingData{false};
+#endif
 };
 
 
@@ -109,13 +166,12 @@ public:
  * FactoryTick is always enabled (as long as bCanEverTick is true) so that the factory part of buildings always can simulate.
  */
 UCLASS( Abstract, Meta=(AutoJson=true) )
-class FACTORYGAME_API AFGBuildable : public AActor, public IFGDismantleInterface, public IFGSaveInterface, public IFGColorInterface, public IFGUseableInterface, public IFGFactoryClipboardInterface, public IAbstractInstanceInterface
+class FACTORYGAME_API AFGBuildable : public AActor, public IFGDismantleInterface, public IFGSaveInterface, public IFGColorInterface, public IFGUseableInterface, public IFGFactoryClipboardInterface, public IAbstractInstanceInterface, public IFGClearanceInterface
 {
 	GENERATED_BODY()
 public:	
 	/** Decide on what properties to replicate */
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
 
 	AFGBuildable(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
@@ -153,6 +209,23 @@ public:
 	virtual void PostLazySpawnInstances_Implementation() override;
 	// End IAbstractInstanceInterface
 
+	// Begin IFGClearanceInterface
+	virtual void GetClearanceData_Implementation( TArray< FFGClearanceData >& out_data ) const override;
+	// End IFGClearanceInterface
+
+#if WITH_EDITOR
+	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const;
+#endif
+
+	/** Add clearance data to this buildable. */
+	void AddClearanceData( const FFGClearanceData& newData );
+	void AddClearanceData( const TArray< FFGClearanceData >& newData );
+	void ResetClearanceData();
+
+	/** Returns a box created by combining all clearence boxes on this buildable. */
+	UFUNCTION( BlueprintPure, Category = "Clearance" )
+	FBox GetCombinedClearanceBox() const;
+
 	FORCEINLINE FTransform GetActorLightweightInstanceTransform() const { return GetActorTransform(); }
 	
 	/* Object containing default variables shared for all of the same class. */
@@ -160,7 +233,7 @@ public:
 
 	//~ Begin IFGColorInterface
 	void SetCustomizationData_Implementation( const FFactoryCustomizationData& customizationData );
-	void SetCustomizationData_Native( const FFactoryCustomizationData& customizationData );
+	void SetCustomizationData_Native( const FFactoryCustomizationData& customizationData, bool skipCombine = false );
 	void ApplyCustomizationData_Implementation( const FFactoryCustomizationData& customizationData );
 	void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData );
 	FFactoryCustomizationData GetCustomizationData_Implementation() { return mCustomizationData; }
@@ -220,15 +293,17 @@ public:
 	virtual void StartIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	virtual void StopIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
+	virtual FText GetDismantleDisplayName_Implementation(AFGCharacterPlayer* byCharacter) const override;
+	virtual void GetDismantleDependencies_Implementation(TArray<AActor*>& out_dismantleDependencies) const override;
 	//~ End IFGDismantleInterface
 
-	/** Returns what actor should be dismantled when trying to dismantle this one, in case we want to redirect it. */
+	/** Gets the parent actor that this buildable belongs to, if any. */
 	UFUNCTION( BlueprintPure, Category = "Dismantle" )
-	AActor* GetDismantleRedirectActor() const { return mDismantleRedirectActor; }
+	AActor* GetParentBuildableActor() const { return mParentBuildableActor; }
 
-	/** Use this to redirect what actor gets dismantled when trying to dismantle this actor with the buildgun. */
+	/** Sets the parent actor that this buildable belongs to. Used when redirecting dismantling, sampling, etc. */
 	UFUNCTION( BlueprintCallable, Category = "Dismantle" )
-	void SetDismantleRedirectActor( AActor* actorToRedirectTo ) { mDismantleRedirectActor = actorToRedirectTo; }
+	void SetParentBuildableActor( AActor* parentActor ) { mParentBuildableActor = parentActor; }
 
 	virtual void StartIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter, class UFGCircuitConnectionComponent* overlappingConnection );
 	virtual void StopIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter );
@@ -267,13 +342,7 @@ public:
 	/** Finds, caches and returns the MainMesh of this buildable */
 	UFUNCTION( BlueprintCallable, Category = "Buildable" )
 	const TArray< class UMeshComponent* >& GetMainMeshes();
-
-	/** Returns the timestamp for when this building was built */
-	FORCEINLINE float GetBuildTime() { return mBuildTimeStamp; }
-
-	/** Sets the timestamp for when this building was built */
-	FORCEINLINE void SetBuildTime( float inTime ) { mBuildTimeStamp = inTime; }
-
+	
 	UFUNCTION()
 	void ApplyHasPowerCustomData();
 	
@@ -333,6 +402,8 @@ public:
 	virtual bool HandleBlueprintSpawnedBuildEffect( AFGBuildEffectActor* inBuildEffectActor );
 
 	UFUNCTION( Reliable, NetMulticast )
+	virtual void NetMulticast_Dismantle();
+	void CloseAllInteractUIsWithBuildable() const;
 	void PlayDismantleEffects();
 	virtual void OnDismantleEffectFinished();
 
@@ -345,6 +416,9 @@ public:
 	/** Used by the blueprint subsystem to notify a buildable a build effect is playing (before the build effect starts so that begin play can expect it) */
 	void SetIsPlayingBuildEffect( bool isPlaying ) { mBuildEffectIsPlaying = isPlaying; }
 
+	/** Used by the blueprint subsystem that a Lightweight Buildable is playing a blueprint build effect*/
+	void SetIsPlayingBlueprintBuildEffect( bool isPlaying ) { mBlueprintBuildEffectIsPlaying = isPlaying; }
+
 	/** Returns whether or not the build effect is currently running */
 	UFUNCTION( BlueprintPure, Category = "Buildable|Build Effect" )
 	bool IsPlayingBuildEffect() const { return mBuildEffectIsPlaying; }
@@ -355,35 +429,25 @@ public:
 	/** Returns list of players currently interacting with building. */
 	FORCEINLINE TArray< class AFGCharacterPlayer* > GetInteractingPlayers() const { return mInteractingPlayers; }
 
-	/** Only used for cheats. Hides/Unhides the actor, and makes sure the instanced meshes hide as well*/
-	void SetHiddenIngameAndHideInstancedMeshes( bool hide = false );
+	/**
+	 * Hides the buildable and disables the collision. Will hide instanced meshes and static instances as well
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Buildable" )
+	void SetBuildableHiddenInGame( bool hide = false );
 
 	/** Helper function for getting buildable classes from recipes
 	*	@note Useful when generating child holograms based off their recipe
 	*/
 	static TSubclassOf< AFGBuildable > GetBuildableClassFromRecipe( TSubclassOf< class UFGRecipe > inRecipe );
 
-	/** Event on when buildable's replication detail actor changes state */
-	static FOnReplicationDetailActorStateChange OnBuildableReplicationDetailActorStateChange;
-
-	UFUNCTION( BlueprintPure, Category = "Buildable" )
-	class UFGClearanceComponent* GetClearanceComponent();
-
-	UFUNCTION( BlueprintPure, Category = "Buildable" )
-	class UFGComplexClearanceComponent* GetComplexClearanceComponent() const { return mComplexClearanceComponent; }
-
-	/** Spawns the complex clearance component if one can be found on the decorator class. Returns it if successful. */
-	UFGComplexClearanceComponent* SpawnComplexClearanceComponent();
-	void DestroyComplexClearanceComponent();
-
-	/**Function to get info about participation in clearance overlap feedback for the local machines hologram placement*/
-	uint8 GetParticipatedInCleranceEncroachFrameCountDown(){ return mParticipatedInCleranceEncroachFrameCountDown; }
-	void SetParticipatedInCleranceEncroachFrameCountDown( uint8 value ){ mParticipatedInCleranceEncroachFrameCountDown = FMath::Min( value, (uint8 )3 ); }
-
-	bool ShouldCreateClearanceMeshRepresentation() const { return mCreateClearanceMeshRepresentation; }
+	/** Whether or not this building should block guidelines "clear path" traces for the specified hologram. */
+	virtual bool ShouldBlockGuidelinePathForHologram( const class AFGHologram* hologram ) const;
+	/** Whether or not this building should show center guidelines for the specified hologram. */
+	virtual bool ShouldShowCenterGuidelinesForHologram( const class AFGHologram* hologram ) const;
 
 	/** Get the number of connections components on this buildable, may not be the same as the number of usable connections. */
 	uint8 GetNumPowerConnections() const;
+	uint8 GetNumPowerConnectionsCached() const;
 	uint8 GetNumFactoryConnections() const;
 	uint8 GetNumFactoryOuputConnections() const;
 
@@ -411,11 +475,9 @@ public:
 	float GetConsideredForBaseWeight() const;
 	float GetConsideredForBaseWeight_Implementation() const { return mIsConsideredForBaseWeightValue; }
 
-#if WITH_EDITOR
 	/** Sets the display name for this buildable. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Buildable" )
 	static void SetBuildableDisplayName( TSubclassOf< AFGBuildable > inClass, FText displayName );
-#endif
 
 	/** Called when materials are updated by the buildable subsystem material sharing or when a new color is set */
 	virtual void Native_OnMaterialInstancesUpdated();
@@ -449,7 +511,7 @@ public:
 
 	/** Specify that this buildable is inside of a blueprint designer. */
 	void SetInsideBlueprintDesigner( class AFGBuildableBlueprintDesigner* designer );
-	class AFGBuildableBlueprintDesigner* GetBlueprintDesigner();
+	class AFGBuildableBlueprintDesigner* GetBlueprintDesigner() const;
 
 	/** Gets the blueprint proxy this buildable belongs to. */
 	FORCEINLINE class AFGBlueprintProxy* GetBlueprintProxy() const { return mBlueprintProxy; }
@@ -473,14 +535,70 @@ public:
 	
 	/** Assign a blueprint build effect id. The blueprint subsystem uses this to sync and then spawn build effects for blueprint buildings on clients*/
 	void SetBlueprintBuildEffectID( int32 buildEffectID ) { mBlueprintBuildEffectID = buildEffectID; }
+	int32 GetBlueprintBuildEffectID() const { return mBlueprintBuildEffectID; }
 
 	/** @return the build effect used by this buildable */
 	UFUNCTION( BlueprintNativeEvent, Category = "Buildable|Build Effect" )
 	TSoftClassPtr< UFGMaterialEffect_Build > GetBuildEffectTemplate() const;
+
+	/** Set from deferred spawn for special buildables that are just temporaries spawned by the lightweightBuildableSubsystem */
+	void SetIsLightweightTemporary( TArray< FInstanceHandle* >& instanceHandles, int32 indexOfRuntimeData );
+	FORCEINLINE bool GetIsLightweightTemporary() const { return mIsLightweightTemporary; }
+	
+	/** When a lightweight temporary this index will be set to avoid having to search for the runtime data when its modified */
+	FORCEINLINE int32 GetRuntimeDataIndex() const { return mRuntimeDataIndex; }
+	
+	/** Sets that this buildable has been requested for dismantle. Clients use this to track locally */
+	FORCEINLINE void SetIsPendingDismantleRemoval( bool isPending ) { mIsPendingDismantleRemoval = isPending; }
+	FORCEINLINE bool GetIsPendingDismantleRemoval() const { return mIsPendingDismantleRemoval; }
+	
+
+	/**
+	 * Set via the lightweight subsystem when its clearing up stale lightweight temps. This "informs" the buildable that its destruction is just
+	 * It being converted back into an instance and thus it shouldn't notify the subsystem of its destruction (in the even of dismantle)
+	 */
+	FORCEINLINE void SetIsStaleLightweightTemporary() { mIsStaleLightweightTemporary = true; }
+
+	/** Called by paint state to notify a temporary contains updated customization data */
+	void SetTemporaryHasModifiedCustomizationData() { mHasTemporaryModifiedItsCustomiazationData = true; }
+
+	FORCEINLINE void SetBlockCleanupOfTemporary(bool blockCleanUp ) { mBlockCleanupForStaleTemporary = blockCleanUp; }
+	FORCEINLINE bool GetBlockCleanupOfTemporary() const { return mBlockCleanupForStaleTemporary; }
 	
 	/** @return the dismantle effect used by this buildable */
 	UFUNCTION( BlueprintNativeEvent, Category = "Buildable|Build Effect" )
 	TSoftClassPtr< UFGMaterialEffect_Build > GetDismantleEffectTemplate() const;
+
+#if WITH_EDITOR
+	/** Returns the ID of the timelapse bucket this buildable is in */
+	UFUNCTION( BlueprintPure, Category = "Cinematic | Timelapse" )
+	FORCEINLINE int32 GetTimelapseBucketId() const { return mTimelapseBucketId; }
+
+	/** Returns the delay from the start of the timelapse until this buildable plays it's build effect */
+	UFUNCTION( BlueprintPure, Category = "Cinematic | Timelapse" )
+	FORCEINLINE float GetTimelapseDelay() const { return mTimelapseDelay; }
+
+	/** Updates the Timelapse Bucket ID of the buildable */
+	UFUNCTION( BlueprintCallable, Category = "Cinematic | Timelapse" )
+	FORCEINLINE void SetTimelapseBucketId( int32 bucketId ) { mTimelapseBucketId = bucketId; }
+
+	/** Updates the timelapse delay of the buildable */
+	UFUNCTION( BlueprintCallable, Category = "Cinematic | Timelapse" )
+	FORCEINLINE void SetTimelapseDelay( float delay ) { mTimelapseDelay = delay; }
+#endif
+
+	/** For lightweight temporaries we need a way of manually setting the blueprint proxy */
+	void SetBlueprintProxy( class AFGBlueprintProxy* blueprintProxy ) { mBlueprintProxy = blueprintProxy; }
+
+	/** Most common check for determining if this buildable is to become a lightweight instance or has already been considered */
+	FORCEINLINE bool ShouldConvertToLightweight() const { return HasAuthority() && GetLightweightInstanceData() && ManagedByLightweightBuildableSubsystem() && mBlueprintDesigner == nullptr; };
+
+	/** If true, this buildable will be Destroyed and migrated to the LightweightBuildableSubsystem */
+	virtual bool ManagedByLightweightBuildableSubsystem() const;
+
+	void SetBuildEffectActor(AFGBuildEffectActor* BuildEffectActor) { mBuildEffectActor = BuildEffectActor; }
+	AFGBuildEffectActor* GetBuildEffectActor() const { return mBuildEffectActor; }
+	
 protected:
 	/** Blueprint event for when materials are updated by the buildable subsystem*/
 	UFUNCTION( BlueprintImplementableEvent, Category = "Buildable|Build Effect" )
@@ -500,15 +618,6 @@ protected:
 	/** Ugly haxx to remove replication of graph unless any player is looking at it */
 	void RegisterInteractingPlayerWithCircuit( class AFGCharacterPlayer* player );
 	void UnregisterInteractingPlayerWithCircuit( class AFGCharacterPlayer* player );
-
-	/** Called whenever mIsReplicatingDetails has changed, used to enable disable replication of subobjects. */
-	virtual void OnReplicatingDetailsChanged();
-
-	/**
-	 *	Must be overloaded by children that contain additional FReplicationDetailData and add the to the out_ data
-	 *	Failing to add may open the possibility for item duping if clients are preset
-	 */
-	virtual void GetAllReplicationDetailDataMembers( TArray< FReplicationDetailData* >& out_repDetailData ) {}
 
 	/**
 	 * For custom connections, if we want a custom implementation for
@@ -557,12 +666,13 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Buildable|Dismantle" )
 	void GetDismantleBlueprintReturns( TArray< FInventoryStack >& out_returns ) const;
 
+	/* Returns the mesh that contains all sockets for the alien over clocking. Needs to be in FGBuildable because there are blueprints overriding this function already and UE is too dumb to convert them to override for a child class */
+	UFUNCTION( BlueprintNativeEvent, Category = "Alien Overclocking" )
+	void GetAlienOverClockingSourceMesh(UStaticMesh*& SourceMesh, FTransform& Transform);
+
 	/** Get the widget used to interact with this buildable. */
 	UFUNCTION( BlueprintPure, Category = "Buildable|Interaction" )
 	FORCEINLINE class TSubclassOf< class UFGInteractWidget > GetInteractWidgetClass() const { return mInteractWidgetClass; }
-
-	/** @return true if this building is replicating detailed information about it; false otherwise. */
-	bool IsReplicatingDetails() const { return mReplicateDetails; }
 
 	/** Toggles the pending dismantle material on buildable */
 	virtual void TogglePendingDismantleMaterial( bool enabled );
@@ -600,22 +710,27 @@ protected:
 	/* Tries to call the most efficient route for setting up instances. */
 	FORCEINLINE void CallSetupInstances( bool bInitializeHidden = false )
 	{
-		/* Only call native to avoid blueprint VM */
-		if( !mHasSetupInstances )
+		if ( !mLightweightInstancesRegistered )
 		{
-			SetupInstances_Native( bInitializeHidden );
+			mLightweightInstancesRegistered = true;
+			
+			/* Only call native to avoid blueprint VM */
+			if( !mHasSetupInstances )
+			{
+				SetupInstances_Native( bInitializeHidden );
+				return;
+			}
 
-			return;
+			SetupInstances( bInitializeHidden );
 		}
-
-		SetupInstances( bInitializeHidden );
 	}
-
 	
 	/* Removes all instances in the lightweight instance system associated by this buildable. */
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable,Category ="Buildable|Instancing")
 	void RemoveInstances();
 	virtual void RemoveInstances_Native();
+	/** When a buildable needs to be converted into a lightweight instance this is the way */
+	bool HandleLightweightAddition();
 
 private:
 	// TODO @Ben modding support make this available in runtime.
@@ -624,23 +739,17 @@ private:
 	
 	/** Create a stat for the buildable */
 	void CreateFactoryStatID() const;
-
 	
-	/**
-	 * Set if we should replicate details.
-	 * This is private because this is handled by the buildables use implementation.
-	 */
-	void SetReplicateDetails( bool replicateDetails );
-
 	/** Helper to verify the connection naming. */
 	bool CheckFactoryConnectionComponents( FString& out_message );
 	
 	UFUNCTION()
 	void OnRep_LightweightTransform();
-	
-public:
-	FORCEINLINE bool virtual DoesContainLightweightInstances_Native() const { return mCanContainLightweightInstances && mInstanceDataCDO != nullptr ;}
 
+	/** Registers with background thread if it has not been done already */
+	void RegisterWithBackgroundThread();
+public:
+	bool virtual DoesContainLightweightInstances_Native() const;
 	class UAbstractInstanceDataObject* GetLightweightInstanceData() const { return mInstanceDataCDO; }
 	
 	//@todoGC Move to the descriptor maybe?
@@ -669,9 +778,6 @@ public:
 	/** Callback for when the production indicator state changes. Called locally on both server and client. */
 	FProductionStatusChanged mOnProductionStatusChanged;
 
-	/** Delegate will trigger whenever the actor's use state has changed (Start, End) */
-	static FOnRegisteredPlayerChanged OnRegisterPlayerChange;
-
 //#if WITH_EDITORONLY_DATA
 	UPROPERTY(EditDefaultsOnly, Category = "Customization Editor only")
 	TArray<FCustomizationDescToRecipeData> mAlternativeMaterialRecipes;
@@ -694,7 +800,7 @@ protected:
 	UFGBuildableSparseDataObject* mBuildableSparseDataCDO;
 
 	UPROPERTY()
-	AActor* mDismantleRedirectActor;
+	AActor* mParentBuildableActor;
 	
 	//@todorefactor With meta = ( ShowOnlyInnerProperties ) it does not show and PrimaryActorTick seems to be all custom properties, so I moved to another category but could not expand.
 	/** Controls if we should receive Factory_Tick and how frequent. */
@@ -717,6 +823,13 @@ protected:
 	
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	TSubclassOf< class UFGFactorySkinActorData > mFactorySkinClass;
+
+	/* Force the ancient build effect, mainly used for space elevator. */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	bool bForceLegacyBuildEffect = false;
+	
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	bool bForceBuildEffectSolo = false;
 	
 	/** Store the active effect so we can cancel an old one if we need to start a new. */
 	UPROPERTY()
@@ -726,8 +839,11 @@ protected:
 	 * Used to sync and start build effect on buildings when created, but not after creation.
 	 * This is sett to null in default. If it's non null, we expect the build effects need to play.
 	 */
-	UPROPERTY( Replicated, meta = ( NoAutoJson = true ) )
+	UPROPERTY(BlueprintReadOnly, Replicated, meta = ( NoAutoJson = true ) )
 	AActor* mBuildEffectInstignator;
+
+	UPROPERTY()
+	class AFGBuildEffectActor* mBuildEffectActor;
 	
 	/** Build effect speed, a constant speed (distance over time) that the build effect should have, so bigger buildings take longer */
 	UPROPERTY( EditDefaultsOnly, Category = "Build Effect" )
@@ -741,7 +857,8 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	uint8 mAllowPatterning:1;
 
-	/** HAXX FLAG! Buildings set this to start replicating power graph if they are interacted with */
+	/** True if buildable should register the interacting player with a circuit and thus replicate power circuit details (e.g. power graph) to the interacting players */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable", DisplayName = "Replicate Power Graph To Interacting Players" )
 	uint8 mInteractionRegisterPlayerWithCircuit:1;
 
 	/** Skip the build effect. */
@@ -763,25 +880,44 @@ protected:
 	/** Flag for whether the build effect is active */
 	uint8 mBuildEffectIsPlaying : 1;
 
+	/** Flag specifically that this is a blueprint build effect */
+	uint8 mBlueprintBuildEffectIsPlaying : 1;
+
 	/** Flag for whether this buildable is being dismantled */
 	uint8 mIsDismantled : 1;
+	
+	/** Local Only. This Buildable has had a dismantle request issued for it. If we are a client this could take some time during which we may wish to know its soon to be invalid */
+	uint8 mIsPendingDismantleRemoval:1;
 
 	/** Flag to indicate whether the dismantle material should be active. Used to being able to activate the material when other effects end (like the build effect) */
 	uint8 mPendingDismantleHighlighted : 1;
 
 	/** Flag for if the buildable undergoes mesh changes and needs to update its shared material instances ( Tex. When a mesh component is added or changed after Native Begin Play */
 	uint8 mReevaluateMaterialsWithSubsystem : 1;
+
+	/** True if the building has been already registered with the background thread */
+	uint8 mRegisteredWithBackgroundThread: 1;
+
+	/** True if the building already had it lightweight instances registered */
+	uint8 mLightweightInstancesRegistered: 1;
 	
 	/** Whether or not we should create the visual mesh representation for attachment points. */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	uint8 mShouldShowAttachmentPointVisuals:1;
 
-	/** Whether or not we should create a clearance mesh representation for this buildable. */
-	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
-	uint8 mCreateClearanceMeshRepresentation:1;
-
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Instances" )
 	uint8 mCanContainLightweightInstances:1;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Instances" )
+	uint8 mManagedByLightweightBuildableSubsystem:1;
+	
+	/** For certain buildables we may want immediate removal from the buildable subsystem on Dismantle rather than waiting for endplay */
+	UPROPERTY()
+	uint8 mRemoveBuildableFromSubsystemOnDismantle:1;
+
+	/** Set to true on dismantle so that we know not to remove in endplay if this buildable has already been removed */
+	UPROPERTY()
+	uint8 mHasBeenRemovedFromSubsystem:1;
 
 #if WITH_EDITORONLY_DATA
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Buildable|Instances" )
@@ -794,6 +930,8 @@ protected:
 protected:
 	/* Handle data */
 	TArray< struct FInstanceHandle* > mInstanceHandles;
+
+	
 	
 protected:
 	/** Should affect the occlusion system .*/
@@ -838,10 +976,14 @@ protected:
 	/** If the buildable is inside of a blueprint designer, this will be the reference to the designer. */
 	UPROPERTY( SaveGame, Replicated )
 	class AFGBuildableBlueprintDesigner* mBlueprintDesigner;
-	
+
+	/** True if this building was built inside of the blueprint designer. Used to make decisions early in BeginPlay on the clients when blueprint designer is not yet replicated. Not saved, derived from mBlueprintDesigner on load and on begin play on authority */
+	UPROPERTY( Replicated )
+	bool mReplicatedBuiltInsideBlueprintDesigner{false};
 private:
 	friend class UFGFactoryConnectionComponent;
 	friend class AFGBuildableSubsystem;
+	friend class AFGBuildableBlueprintDesigner;
 
 	/** Factory Stat id of this object, 0 if nobody asked for it yet */
 	STAT( mutable TStatId mFactoryStatID; )
@@ -858,20 +1000,16 @@ private:
 
 	/** Caches the number of power components for sanity checking */
 	uint8 mNumPowerConnections;
+	/** Cached actual number of power components **/
+	uint8 mNumPowerConnectionsOnPlay;
 
 	/** Players interacting with this building */
 	UPROPERTY()
 	TArray< class AFGCharacterPlayer* > mInteractingPlayers;
 
-	/** Used to indicate a recent clearance overlap for feedback. Only handled and accessed by the build gun on the local machine */
-	uint8 mParticipatedInCleranceEncroachFrameCountDown : 2;
-
 	/** If you can interact with this buildable. */
 	UPROPERTY( EditDefaultsOnly, Category = "Interaction" )
 	uint8 mIsUseable:1;
-
-	/** If this buildable is replicating details, i.e. for the UI. */
-	uint8 mReplicateDetails:1;
 
 	/** if true, then blueprint has implemented Factory_ReceiveTick */
 	uint8 mHasBlueprintFactoryTick:1;
@@ -884,6 +1022,21 @@ private:
 
 	/** if true, then blueprint has implemented SetupInstances */
 	uint8 mHasSetupInstances:1;
+
+	/** if true, this buildable is just a temporary created by the lightweight instance subsystem */
+	uint8 mIsLightweightTemporary:1;
+
+	/** if true, this buildable is a stale lightweight temporary, as such its destruction should trigger no further action ie. its not really being dismantled */
+	uint8 mIsStaleLightweightTemporary:1;
+
+	/** Block Cleanup of stale temporary (for instance, if the temporary was multi selected for dismantle just because no instigator is near them doesnt mean we can remove it)*/
+	uint8 mBlockCleanupForStaleTemporary:1;
+
+	/** This temporary has had its customization data change */
+	uint8 mHasTemporaryModifiedItsCustomiazationData:1;
+
+	/** If this is a lightweight temporary this value indicates its index in the runtime data array to avoid having to look this up again (noteably when dismantled) */
+	int32 mRuntimeDataIndex = INDEX_NONE;
 	
 	/** ID given from server when constructed. Has not been assigned a value by server if 0. */
 	UPROPERTY(transient, replicated)
@@ -898,20 +1051,9 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	TSubclassOf< class AFGBuildable > mOriginalBuildableVariant;
 
-	/** Time when this building was built */
-	UPROPERTY( SaveGame, meta = (NoAutoJson = true) )
-	float mBuildTimeStamp;
-
-	/** Clearance component of the buildable. */
-	UPROPERTY()
-	class UFGClearanceComponent* mClearanceComponent;
-	
-	/** Complex clearance component of the buildable. */
-	UPROPERTY()
-	class UFGComplexClearanceComponent* mComplexClearanceComponent;
-
-	/** Counter used to keep track of how many requests we have for spawning the complex clearance. We only destroy it if the requests counter hits 0. */
-	int32 mComplexClearanceSpawnRequestCounter;
+	/** Clearance data of this buildable */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	TArray< FFGClearanceData > mClearanceData;
 
 	/** Has this buildable created its material dynamic material instances for shared coloring? */
 	bool mHasInitializedMaterialManagers;
@@ -926,7 +1068,7 @@ private:
 
 	/** True if this building is about to be dismantled. */
 	bool mIsAboutToBeDismantled;
-
+	
 	UPROPERTY( Transient )
 	TArray< UStaticMeshComponent* > mProxyBuildEffectComponents;
 
@@ -936,6 +1078,30 @@ private:
 	UPROPERTY( Transient, VisibleAnywhere )
 	TArray< USceneComponent* > mGeneratedSignificantComponents;
 
+#if WITH_EDITORONLY_DATA
+	/** ID of the Timelapse bucket this building belongs to. When replaying the build effect using the Timelapse tool, the bucket ID specifies which buildings should have the replayed */
+	UPROPERTY( EditInstanceOnly, SaveGame, Category = "Cinematic | Timelapse", meta = (ClampMin = 0, UIMin = 0) )
+	int32 mTimelapseBucketId;
+
+	/** Delay from the start of the timelapse until this buildable will start playing it's build effect */
+	UPROPERTY( EditInstanceOnly, SaveGame, Category = "Cinematic | Timelapse", meta = (ClampMin = "0.0", UIMin = "0.0") )
+	float mTimelapseDelay;
+#endif
+
+#if WITH_EDITORONLY_DATA
+	// Deprecated properties for the alien overclocking data that got moved into the sparse data object
+	UPROPERTY()
+	float mAlienOverClockingZOffset_DEPRECATED;
+	UPROPERTY()
+	float mAlienOverClockingAttenuationScalingFactor_DEPRECATED{12.0f};
+	UPROPERTY()
+	float mAlienOverClockingVolumeDB_RTPC_DEPRECATED;
+	UPROPERTY()
+	float mAlienOverClockingHighpass_RTPC_DEPRECATED;
+	UPROPERTY()
+	float mAlienOverClockingPitch_RTPC_DEPRECATED;
+#endif
+	
 	// Editor tools
 #if WITH_EDITOR
 	friend class UFGLightweightInstanceTools;

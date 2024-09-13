@@ -19,7 +19,6 @@ public:
 	AFGWallAttachmentHologram();
 
 	// Begin AFGHologram interface
-	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
-	virtual void CheckValidFloor() override;
+	virtual void CheckValidPlacement() override;
 	// End AFGHologram interface
 };

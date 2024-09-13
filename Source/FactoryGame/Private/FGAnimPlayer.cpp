@@ -7,3 +7,4 @@ void UFGAnimPlayer::NativeUninitializeAnimation(){ }
 void UFGAnimPlayer::CacheArmSlotData(){ }
 void UFGAnimPlayer::CacheBackSlotData(){ }
 FVector UFGAnimPlayer::GetCharacterVelocity() const{ return FVector(); }
+void UFGAnimPlayer1p::NativeUpdateAnimation(float DeltaSeconds){ }

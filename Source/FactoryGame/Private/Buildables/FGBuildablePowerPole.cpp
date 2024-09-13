@@ -14,6 +14,7 @@ AFGBuildablePowerPole::AFGBuildablePowerPole() : Super() {
 	this->mPowerTowerWireMaxLength = 100000.0;
 	this->mHasPower = false;
 	this->mHologramClass = AFGBuildableHologram::StaticClass();
+	this->mInteractionRegisterPlayerWithCircuit = true;
 	this->mMeshComponentProxy->SetupAttachment(RootComponent);
 }
 void AFGBuildablePowerPole::BeginPlay(){ }

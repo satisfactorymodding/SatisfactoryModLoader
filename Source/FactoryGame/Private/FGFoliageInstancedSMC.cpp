@@ -4,7 +4,7 @@
 
 void UFGFoliageInstancedSMC::OnRegister(){ Super::OnRegister(); }
 void UFGFoliageInstancedSMC::OnUnregister(){ Super::OnUnregister(); }
-void UFGFoliageInstancedSMC::GainedSignificance_Implementation(){ }
-void UFGFoliageInstancedSMC::LostSignificance_Implementation(){ }
-float UFGFoliageInstancedSMC::GetSignificanceRange(){ return float(); }
+void UFGFoliageInstancedSMC::GainedNetSignificance_Implementation(){ }
+void UFGFoliageInstancedSMC::LostNetSignificance_Implementation(){ }
 bool UFGFoliageInstancedSMC::ShouldCreatePhysicsState() const{ return bool(); }
+bool UFGFoliageInstancedSMC::ShouldRegisterToSignificanceManager() const{ return bool(); }

@@ -14,3 +14,18 @@ void AFGTrainScheduler::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo&
 void AFGTrainScheduler::AddTrain( AFGTrain* train){ }
 void AFGTrainScheduler::RemoveTrain( AFGTrain* train){ }
 void AFGTrainScheduler::TickScheduler(){ }
+void AFGTrainScheduler::Debug_EnableBlackBox(bool isEnabled, int32 numRecordsToKeep){ }
+void AFGTrainScheduler::Debug_DumpBlackBox(){ }
+void AFGTrainScheduler::UpdateReservations(){ }
+void AFGTrainScheduler::MakeNewReservations(){ }
+void AFGTrainScheduler::UpdateDependencies(){ }
+void AFGTrainScheduler::UpdatePrioritiesAndSort(){ }
+void AFGTrainScheduler::ApproveReservations(){ }
+void AFGTrainScheduler::ApproveReservation(FFGRailroadBlockReservation* reservation){ }
+void AFGTrainScheduler::ApproveReservation(FFGRailroadBlockReservation* reservation, const TSet< TWeakObjectPtr< AFGTrain > >& dependencies){ }
+void AFGTrainScheduler::UpdateApprovedReservation(FFGRailroadBlockReservation* reservation){ }
+uint32 AFGTrainScheduler::GetReservationNumber() const{ return uint32(); }
+uint32 AFGTrainScheduler::GetNextReservationNumber(){ return uint32(); }
+void AFGTrainScheduler::Debug_UpdateBlackBox(){ }
+TTuple< class AFGTrain*, class AFGTrain* > AFGTrainScheduler::Debug_CheckForDeadlock() const{ return TTuple<class AFGTrain*,class AFGTrain*>(); }
+TArray< class AFGTrain* > AFGTrainScheduler::Debug_CheckForDerailments() const{ return TArray<class AFGTrain*>(); }

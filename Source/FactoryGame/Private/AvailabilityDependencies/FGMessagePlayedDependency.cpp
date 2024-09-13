@@ -2,5 +2,10 @@
 
 #include "AvailabilityDependencies/FGMessagePlayedDependency.h"
 
-bool UFGMessagePlayedDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }
-void UFGMessagePlayedDependency::GetMessages(TArray< TSubclassOf<  UFGMessageBase > >& out_messages) const{ }
+#if WITH_EDITOR
+FString UFGMessagePlayedDependency::ToString() const{ return FString(); }
+void UFGMessagePlayedDependency::FromString(const FString& inString){ }
+#endif 
+bool UFGMessagePlayedDependency::ArePlayerSpecificDependenciesMet(const  AFGPlayerState* playerState) const{ return bool(); }
+void UFGMessagePlayedDependency::GetMessages(TArray<  UFGMessage* >& out_messages) const{ }
+bool UFGMessageNotPlayedDependency::ArePlayerSpecificDependenciesMet(const  AFGPlayerState* playerState) const{ return bool(); }

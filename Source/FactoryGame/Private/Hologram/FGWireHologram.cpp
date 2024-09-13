@@ -20,9 +20,11 @@ AFGWireHologram::AFGWireHologram() : Super() {
 }
 void AFGWireHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGWireHologram, mConnections);
 	DOREPLIFETIME(AFGWireHologram, mPowerPole);
 	DOREPLIFETIME(AFGWireHologram, mPowerPoleWall);
 	DOREPLIFETIME(AFGWireHologram, mStartLocation);
+	DOREPLIFETIME(AFGWireHologram, mCurrentConnection);
 }
 void AFGWireHologram::BeginPlay(){ }
 AActor* AFGWireHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }

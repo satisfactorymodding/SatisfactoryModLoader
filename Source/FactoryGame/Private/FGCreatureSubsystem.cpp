@@ -7,7 +7,7 @@ AFGCreatureSubsystem::AFGCreatureSubsystem() : Super() {
 	this->mMaxNumCreatures = 20;
 	this->mCreaturesCanAttackEachother = false;
 	this->mArachnidCreaturesDisabled = false;
-	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_EndPhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
 	this->PrimaryActorTick.bCanEverTick = true;
@@ -37,7 +37,8 @@ AFGCreature* AFGCreatureSubsystem::BeginSpawningCreature(TSubclassOf< AFGCreatur
 void AFGCreatureSubsystem::SetArachnidCreaturesDisabled(bool disabled, ECreatureReplaceAction replaceAction){ }
 TSubclassOf< AFGCreature > AFGCreatureSubsystem::GetOverriddenCreatureClass(TSubclassOf< AFGCreature > creatureClass) const{ return TSubclassOf<AFGCreature>(); }
 TSubclassOf< AFGCreature > AFGCreatureSubsystem::OverrideSpawnedCreatureClass_Implementation(TSubclassOf< AFGCreature > creatureClassToSpawn) const{ return TSubclassOf<AFGCreature>(); }
-void AFGCreatureSubsystem::OnPreLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld){ }
+void AFGCreatureSubsystem::OnLevelAddedToWorld(ULevel* inLevel, UWorld* inWorld){ }
+void AFGCreatureSubsystem::OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld){ }
 void AFGCreatureSubsystem::DespawnCreaturesInlevel(ULevel* inLevel){ }
 void AFGCreatureSubsystem::OnCreaturePersistenceUpdated( AFGCreature* creature, bool isPersistent){ }
 void AFGCreatureSubsystem::UpdateSpawners(){ }

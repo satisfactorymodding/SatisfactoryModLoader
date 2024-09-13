@@ -13,6 +13,16 @@ AFGBuildablePipelinePump::AFGBuildablePipelinePump() : Super() {
 	this->mDefaultFlowLimit = 10.0;
 	this->mUserFlowLimit = -1.0;
 	this->mMinimumFlowPercentForStandby = 0.05;
+	this->mPipelinePistonSound = nullptr;
+	this->mStopPipelinePistonSound = nullptr;
+	this->mHeadLiftSound = nullptr;
+	this->mStopHeadLiftSound = nullptr;
+	this->mPipelineEngineSound = nullptr;
+	this->mStopPipelineEngineSound = nullptr;
+	this->mUpdateAudioFlowTime = 0.1;
+	this->mPlayPumpEngineComponent = nullptr;
+	this->mPlayHeadLiftComponent = nullptr;
+	this->mPlayPipePistonsComponent = nullptr;
 	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.bTickEvenWhenPaused = false;
@@ -35,6 +45,8 @@ void AFGBuildablePipelinePump::OnBuildEffectFinished(){ }
 EProductionStatus AFGBuildablePipelinePump::GetProductionIndicatorStatus() const{ return EProductionStatus(); }
 void AFGBuildablePipelinePump::OnFluidDescriptorSet(){ }
 void AFGBuildablePipelinePump::StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
+void AFGBuildablePipelinePump::GainedSignificance_Implementation(){ }
+void AFGBuildablePipelinePump::LostSignificance_Implementation(){ }
 void AFGBuildablePipelinePump::SetMaxHeadLift(float design, float max){ }
 float AFGBuildablePipelinePump::GetMaxHeadLift() const{ return float(); }
 float AFGBuildablePipelinePump::GetDesignHeadLift() const{ return float(); }
@@ -47,3 +59,8 @@ float AFGBuildablePipelinePump::GetIndicatorHeadLiftPct() const{ return float();
 float AFGBuildablePipelinePump::GetIndicatorHeadLift() const{ return float(); }
 void AFGBuildablePipelinePump::UpdateDefaultFlowLimit(){ }
 void AFGBuildablePipelinePump::UpdateFlowLimitOnFluidBox(){ }
+void AFGBuildablePipelinePump::CheckHeadliftDifferenceSounds(){ }
+void AFGBuildablePipelinePump::ResetHeadliftSound(){ }
+void AFGBuildablePipelinePump::PlayPipelinePumpSound(){ }
+void AFGBuildablePipelinePump::StopPipelinePumpSound(){ }
+void AFGBuildablePipelinePump::SetHeadliftRTPC(const float headlift) const{ }

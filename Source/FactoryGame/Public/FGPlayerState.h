@@ -11,6 +11,8 @@
 #include "FGInventoryToRespawnWith.h"
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/Interface_ActorSubobject.h"
+#include "Online/ClientIdentification.h"
+#include "PlayerCustomizationData.h"
 #include "ShoppingList/FGShoppingListComponent.h"
 #include "UI/Message/FGMessageBase.h"
 #include "FGPlayerState.generated.h"
@@ -27,6 +29,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FFGOnHotbarSlotUpdated, UFGPlayerH
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FFGOnActiveHotbarIndexChanged, UFGPlayerHotbar*, hotbar, int32, hotbarIndex );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FFGOnHotbarsAvailable );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnHotbarSlotUnbound, int32, slotIndex );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnAdminStateChanged, AFGPlayerState*, playerState, bool, isAdmin );
 
 /**
  * The color data for a player
@@ -49,28 +52,8 @@ struct FACTORYGAME_API FPlayerColorData
 	}
 };
 
-/**
-* Data associated with a message
-*/
-USTRUCT( BlueprintType )
-struct FACTORYGAME_API FMessageData
-{
-	GENERATED_BODY();
 
-	FMessageData() : 
-		WasRead( false ), 
-		MessageClass( nullptr )
-	{
-	}
-
-	/** Has message been read */
-	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
-	bool WasRead;
-
-	/** What class is the message */
-	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
-	TSubclassOf< class UFGMessageBase > MessageClass;
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPlayerCustomizationDataChanged, const FPlayerCustomizationData&, CustomizationData );
 
 /** Represents the hotbar of the player, with various shortcuts attached to it's slots */
 UCLASS( BlueprintType, Within = FGPlayerState )
@@ -193,7 +176,6 @@ public:
 	FOnShortcutConstructed mOnShortcutDestroyed;
 	
 protected:
-	
 	/** Shortcuts that this hotbar has, fixed size and with potential null pointers. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_Shortcuts )
 	TArray< UFGHotbarShortcut* > mShortcuts;
@@ -262,10 +244,6 @@ struct FPlayerRules
 	UPROPERTY( SaveGame )
 	bool NoBuildCost = false;
 
-	/** Decides what items should be kept after death. */
-	UPROPERTY( SaveGame, BlueprintReadOnly )
-	EPlayerKeepInventoryMode KeepInventoryMode = EPlayerKeepInventoryMode::Keep_Equipment;
-
 	UPROPERTY( SaveGame )
 	bool FlightMode = false;
 
@@ -319,6 +297,7 @@ public:
 
 	/** Mark this character as it has received its initial items */
 	FORCEINLINE void MarkAsReceivedInitialItems(){ mHasReceivedInitialItems = true; }
+	FORCEINLINE void UnmarkAsReceivedInitialItems(){ mHasReceivedInitialItems = false; }
 
 	/** Get the slot the player has claimed */
 	UFUNCTION(BlueprintPure, Category = "FactoryGame|Slots" )
@@ -336,13 +315,17 @@ public:
 	/** Gets the player rules for this player. */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Rules" )
 	const FPlayerRules& GetPlayerRules() const { return mPlayerRules; }
+	
+	/** Used to get the creature hostility against this player. */
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Rules" )
+	EPlayerKeepInventoryMode GetKeepInventoryMode() const { return mKeepInventoryMode; }
 
 	/** Used to get the creature hostility against this player. */
-	UFUNCTION( BlueprintPure, Category="FactoryGame|CreatureHostility" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Rules" )
 	EPlayerHostilityMode GetCreatureHostility() const { return mCreatureHostilityMode; }
 	
 	/** Used to set the creature hostility against this player. */
-	UFUNCTION( BlueprintCallable, Category="FactoryGame|CreatureHostility" )
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Rules" )
 	void SetCreatureHostility( EPlayerHostilityMode hostility );
 
 	UFUNCTION( Server, Reliable )
@@ -367,32 +350,15 @@ public:
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Networking" )
 	FUniqueNetIdRepl GetUniqueNetId() const;
 
-	/** Creates the tutorial system. */
-	void CreateTutorialSubsystem();
-
-	/** Gets the subsystem for BP usage */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Tutorial" )
-	FORCEINLINE class UFGTutorialSubsystem* GetTutorialSubsystem() const { return mTutorialSubsystem; }
-
-	/** Gets all messages we have received */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Message" )
-	TArray< TSubclassOf< class UFGMessageBase > > GetAllMessages( EMessageType messageType = EMessageType::MT_UNDEFINED );
-
-	/** Gets all messagedata from messages we have received */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Message" )
-	FORCEINLINE TArray< FMessageData > GetAllMessageData() { return mMessageData; }
-
-	/** Change read status of a message */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Message" )
-	void ReadMessage( TSubclassOf< class UFGMessageBase > inMessage );
+	TArray< class UFGMessage* > GetPlayedMessages() const { return mPlayedMessages; }
+	bool HasMessageBeenPlayed( class UFGMessage* message ) const;
+	void MarkMessageAsPlayed( class UFGMessage* message );
+	UFUNCTION( Server, Reliable )
+	void Server_MarkMessageAsPlayed( class UFGMessage* message );
+	/** Retrieves all important messages played so far and marks them as played. Useful for players who join mid-game */
+	void FetchImportantMessages();
 
-	UFUNCTION()
-	void AddMessage( TSubclassOf< class UFGMessageBase > inMessage );
-
-	/** Used primarily to reset tutorial flow, verifies it exists before attempting removal */
-	UFUNCTION()
-	void RemoveMessage( TSubclassOf< class UFGMessageBase > inMessage );
-	
 	/**
 	 * Updates the index of the currently selected hotbar for this player
 	 * Will sync it back to the client and fire the change delegate to notify the listeners such as player controller
@@ -471,7 +437,27 @@ public:
 
 	/** Get if we should we try to take items from inventory before central storage when building or crafting */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|CentralStorage" )
-	FORCEINLINE bool GetTakeFromInventoryBeforeCentralStorage() { return true; }
+	FORCEINLINE bool GetTakeFromInventoryBeforeCentralStorage() const { return mTakeFromInventoryBeforeCentralStorage; }
+
+	/** Set if we should we try to take items from inventory before central storage when building or crafting */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|CentralStorage" )
+	void SetTakeFromInventoryBeforeCentralStorage( bool takeFromInventoryBeforeCentralStorage );
+
+	/** Let server set if we should we try to take items from inventory before central storage when building or crafting  */
+	UFUNCTION( Server, Reliable, Category = "FactoryGame|CentralStorage" )
+	void Server_SetTakeFromInventoryBeforeCentralStorage( bool takeFromInventoryBeforeCentralStorage );
+	
+	/** Get if the central storage widget is expanded in the player inventory widget */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|CentralStorage" )
+	FORCEINLINE bool IsCentralStorageInventoryWidgetExpanded() { return mCentralStorageInventoryWidgetExpanded; }
+
+	/** Set if the central storage widget is expanded in the player inventory widget */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|CentralStorage" )
+	void SetCentralStorageInventoryWidgetExpanded( bool centralStorageInventoryWidgetExpanded );
+
+	/** Let server set if the central storage widget is expanded in the player inventory widget   */
+	UFUNCTION( Server, Reliable, Category = "FactoryGame|CentralStorage" )
+	void Server_SetCentralStorageInventoryWidgetExpanded( bool centralStorageInventoryWidgetExpanded );
 
 	/** Get the item categories that the user have collapsed in manufacturing widgets  */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|ItemCategory" )
@@ -516,10 +502,26 @@ public:
 	/** Set if a map category is collapsed in the map widget */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Representation" )
 	void SetMapCategoryCollapsed( ERepresentationType mapCategory, bool collapsed );
-
+	
 	/** Let server set if a map category is collapsed in the map widget */
 	UFUNCTION( Server, Reliable, Category = "FactoryGame|Representation" )
 	void Server_SetMapCategoryCollapsed( ERepresentationType mapCategory, bool collapsed );
+	
+	/** Get the custom map categories that the user have collapsed in map widget */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Representation" )
+	FORCEINLINE TArray< FString > GetCollapsedCustomMapCategories() const { return mCollapsedCustomMapCategories; }
+	
+	/** Get if a custom map category is collapsed in the map widget */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Representation" )
+	FORCEINLINE bool GetCustomMapCategoryCollapsed( const FString& customMapCategory ) const { return mCollapsedCustomMapCategories.Contains( customMapCategory ); }
+
+	/** Set if a map category is collapsed in the map widget */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Representation" )
+	void SetCustomMapCategoryCollapsed( const FString& customMapCategory, bool collapsed );
+
+	/** Let server set if a map category is collapsed in the map widget */
+	UFUNCTION( Server, Reliable, Category = "FactoryGame|Representation" )
+	void Server_SetCustomMapCategoryCollapsed( const FString& customMapCategory, bool collapsed );
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Color" )
 	FORCEINLINE FLinearColor GetPingColor() const { return mPlayerColorData.PingColor; }
@@ -529,8 +531,9 @@ public:
 
 	void UpdateOwningPawnActorRepresentation() const;
 
-	FORCEINLINE void SetIsServerAdmin( const bool isAdmin ){ mIsServerAdmin = isAdmin; }
+	FORCEINLINE void SetIsServerAdmin( const bool isAdmin );
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Admin" )
+	
 	FORCEINLINE bool IsServerAdmin() const{ return mIsServerAdmin; }
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Schematic" )
@@ -594,6 +597,21 @@ public:
 	/** Sets the user color data on the server. The server in turn will use this to color a building with the correct data when the player paints with their custom color */
 	UFUNCTION( Server, Reliable, Category = "FactoryGame|Custom Color" )
 	void Server_SetPlayerCustomizationSlotData( FFactoryCustomizationColorSlot customColorData );
+	
+	/** Returns the current customization data for the player */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Player Customization" )
+	FORCEINLINE FPlayerCustomizationData const& GetPlayerCustomizationData() const { return mPlayerCustomizationData; }
+
+	/** Updates the customization data for the player. Safe to call on the owning client. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Player Customization" )
+	void SetPlayerCustomizationData( const FPlayerCustomizationData& NewCustomizationData );
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Player Customization" )
+	void SetPlayerEquipmentCustomizationData(TSubclassOf<AFGEquipment> EquipmentType,TSubclassOf<UFGPlayerEquipmentSkinCustomizationDesc> NewSkin );
+
+	/* Can be null!*/
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Player Customization" )
+	TSubclassOf<UFGPlayerEquipmentSkinCustomizationDesc> GetCurrentSkinDescForEquipment(TSubclassOf<AFGEquipment> EquipmentType) const;
 
 	/** Get the Users saved default material desc for a given category (can return null) */
 	UFUNCTION()
@@ -616,7 +634,6 @@ public:
 
 	UFUNCTION( Server, Reliable )
 	void Server_SetSavedMatDescForMaterialCategory( TSubclassOf< class UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc );
-
 
 	UFUNCTION()
 	void UpdateHotbarShortcutsForMaterialDesc( TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > newDefaultMaterialDesc );
@@ -672,6 +689,18 @@ public:
 	void Native_OnRecipeConstructed( TSubclassOf< class UFGRecipe > recipe, int32 numConstructed );
 	void Native_OnBlueprintConstructed( const FString& blueprintName, int32 numConstructed );
 
+	UFUNCTION()
+	void Native_OnSchematicPurchased( TSubclassOf< class UFGSchematic > schematic );
+
+	/** Get if an item are pinned for central storage UI */
+	UFUNCTION( BlueprintPure, Category = "Central Storage" )
+	bool IsCentralStorageItemPinned( TSubclassOf< UFGItemDescriptor > itemDescriptor ) const;
+	/** Set if an item are pinned for central storage UI */
+	UFUNCTION( BlueprintCallable, Category = "Central Storage" )
+	void SetCentralStorageItemPinned( TSubclassOf< UFGItemDescriptor > itemDescriptor, bool pinned );
+	UFUNCTION( Server, Reliable )
+	void Server_SetCentralStorageItemPinned( TSubclassOf< UFGItemDescriptor > itemDescriptor, bool pinned );
+
 	// Not the prettiest solution but handles when blueprints are removed. We should have an event in blueprint subsystem instead
 	UFUNCTION( Server, Reliable, BlueprintCallable )
 	void Server_OnBlueprintRemoved( const FString& blueprintName );
@@ -697,7 +726,10 @@ public:
 
 	bool IsPlayerSpecificSchematicPurchased( TSubclassOf< class UFGSchematic > schematic );
 	void GiveAccessToPlayerSpecificSchematic( TSubclassOf< class UFGSchematic > schematic );
-	
+
+	void SetClientIdentity(const FClientIdentityInfo& clientIdentity);
+	const FClientIdentityInfo& GetClientIdentity() const;
+
 protected:
 	void Native_OnFactoryClipboardCopied( UObject* object, class UFGFactoryClipboardSettings* factoryClipboard );
 	void Native_OnFactoryClipboardPasted( UObject* object, class UFGFactoryClipboardSettings* factoryClipboard );
@@ -713,12 +745,22 @@ protected:
 
 	UFUNCTION()
 	void OnRep_PlayerRules();
+
+	UFUNCTION()
+	void OnRep_PlayerCustomizationData();
+
+	UFUNCTION()
+	void OnRep_IsServerAdmin();
 	
 	void CreateDefaultHotbars();
 
 	/** Updates the recipe of the provided shortcut on the server side */
 	UFUNCTION( Server, Reliable )
 	void Server_UpdateRecipeShortcut( UFGPlayerHotbar* hotbar, int32 shortcutIndex, TSubclassOf<UFGRecipe> newRecipe );
+
+	/** Called to propagate the customization data change to the server */
+	UFUNCTION( Server, Reliable )
+	void Server_SetPlayerCustomizationData( const FPlayerCustomizationData& NewCustomizationData );
 private:
 	/** Server function for updating number observed inventory slots */
 	UFUNCTION( Server, Reliable, WithValidation )
@@ -726,7 +768,7 @@ private:
 
 	void Native_OnPlayerColorDataUpdated();
 
-	void SetupCreatureHostility();
+	void SetupPlayerSettings();
 
 	void SetupPlayerRules();
 
@@ -744,6 +786,7 @@ private:
 
 	UFUNCTION()
 	void OnRep_PlayerSpecificSchematics( TArray< TSubclassOf< UFGSchematic > > previousPlayerSpecificSchematics );
+	void ListenForSchematicPurchased();
 
 	/** Called when either the active hotbar index or the object itself changes */
 	void UpdateActiveHotbarState();
@@ -779,6 +822,14 @@ public:
 	/** Called when the hotbars are populated on the server side (first join) or replicated to the client. Can be called multiple times on the client as subobjects replicate. */
 	UPROPERTY( BlueprintAssignable, Category = "Hotbar" )
 	FFGOnHotbarsAvailable mOnHotbarsAvailable;
+
+	/** Called when the player customization data is updated */
+	UPROPERTY( BlueprintAssignable, Category = "Player Customization" )
+	FOnPlayerCustomizationDataChanged mOnPlayerCustomizationDataChanged;
+
+	/** Called when the player is made admin */
+	UPROPERTY( BlueprintAssignable, Category = "Player" )
+	FOnAdminStateChanged mOnAdminStateChanged;
 
 	/** Holds the item stacks that the player can get copied to their inventory on respawn. */
 	UPROPERTY( SaveGame )
@@ -842,6 +893,10 @@ protected:
 	UPROPERTY( Transient )
 	EPlayerHostilityMode mCreatureHostilityMode = EPlayerHostilityMode::PHM_Passive;
 
+	/** Decides what items should be kept after death. */
+	UPROPERTY( Transient )
+	EPlayerKeepInventoryMode mKeepInventoryMode = EPlayerKeepInventoryMode::Keep_Equipment;
+
 	/** Pawn we should take control of when rejoining game/loading game */
 	UPROPERTY( SaveGame )
 	class APawn* mOwnedPawn;
@@ -851,7 +906,7 @@ protected:
 	uint8 mHasReceivedInitialItems:1;
 
 	/** If true, then we are server admin */
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing=OnRep_IsServerAdmin )
 	uint8 mIsServerAdmin : 1;
 
 	UPROPERTY(SaveGame, Replicated)
@@ -863,19 +918,18 @@ protected:
 	/** The settings for the players shopping list. Only replicated on initial send. Then RPCed back to server for saving. */
 	UPROPERTY( EditDefaultsOnly, SaveGame, Replicated, Category = "Shopping List")
 	FShoppingListSettings mShoppingListSettings;
+
+	/** Data about the selected player customization */
+	UPROPERTY( EditDefaultsOnly, SaveGame, ReplicatedUsing = OnRep_PlayerCustomizationData, Category = "Player Customization" )
+	FPlayerCustomizationData mPlayerCustomizationData;
+
+	UPROPERTY( SaveGame )
+	FClientIdentityInfo mClientIdentityInfo;
 	
 private:
-	/** Each local player has their own tutorial subsystem */
-	UPROPERTY( SaveGame )
-	class UFGTutorialSubsystem* mTutorialSubsystem;
-
-	/** Class of tutorial subsystem to spawn */
-	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGTutorialSubsystem > mTutorialSubsystemClass;
-
-	/** Data about all messages that can be displayed in the codex */
-	UPROPERTY( SaveGame )
-	TArray< FMessageData > mMessageData;
+	/** All messages that have been played for this player */
+	UPROPERTY( SaveGame, Replicated )
+	TArray< class UFGMessage* > mPlayedMessages;
 
 	/** List of equipment classes that have been equipped at least once. */
 	UPROPERTY( SaveGame, Replicated )
@@ -888,7 +942,15 @@ private:
 	/** True if we only should show affordable recipes in manufacturing widgets  */
 	UPROPERTY( SaveGame, Replicated )
 	bool mOnlyShowAffordableRecipes;
-	
+
+	/** Should we try to take items from inventory before central storage when building or crafting */ 
+	UPROPERTY( SaveGame, Replicated )
+	bool mTakeFromInventoryBeforeCentralStorage;
+
+	/** Is the central storage widget expanded in the player inventory widget */ 
+	UPROPERTY( SaveGame, Replicated )
+	bool mCentralStorageInventoryWidgetExpanded;
+
 	/** The item categories that the user have collapsed in manufacturing widgets  */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf< class UFGItemCategory > > mCollapsedItemCategories;
@@ -902,6 +964,8 @@ private:
 	/** The map categories that the user have collapsed in the map widget */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< ERepresentationType > mCollapsedMapCategories;
+	UPROPERTY( SaveGame, Replicated )
+	TArray< FString > mCollapsedCustomMapCategories;
 
 	/** The last selected category in the resource sink shop so we can open the shop at the same category later */
 	UPROPERTY( Transient )
@@ -941,4 +1005,8 @@ private:
 	/** The player specific schematics that this player have purchased */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_PlayerSpecificSchematics ) 
 	TArray< TSubclassOf< class UFGSchematic > > mPlayerSpecificSchematics;
+
+	/** Track if items are pinned for central storage UI. If they are in the array it means they are pinned */ 
+	UPROPERTY( SaveGame, Replicated ) 
+	TArray< TSubclassOf< UFGItemDescriptor > > mCentralStoragePinnedItems;
 };

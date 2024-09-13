@@ -37,7 +37,4 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = "Dependency class for item pickup" )
 	TSoftClassPtr< class UFGItemPickedUpDependency > mItemPickedUpDependencyClass;
 
-	UPROPERTY( EditAnywhere, config, Category = "Dependency class for research tree unlock" )
-	TSoftClassPtr< class UFGResearchTreeUnlockedDependency > mResearchTreeUnlockedDependencyClass;
-
 };

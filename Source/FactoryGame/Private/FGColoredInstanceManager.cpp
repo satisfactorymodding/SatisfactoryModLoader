@@ -2,7 +2,7 @@
 
 #include "FGColoredInstanceManager.h"
 
-void UFGColoredInstanceManager::SetupInstanceList(UStaticMeshComponent* sourceStaticMeshComponent, uint8 numCustomDataFloats, bool useAsOccluder , EDistanceCullCategory CullCategory){ }
+void UFGColoredInstanceManager::SetupInstanceList(UStaticMeshComponent* sourceStaticMeshComponent, uint8 numCustomDataFloats, bool useAsOccluder , float MaxDrawDistance , float MaxWPODistance){ }
 void UFGColoredInstanceManager::ClearInstances(){ }
 void UFGColoredInstanceManager::AddInstance(const FTransform& transform, FInstanceHandle& handle, uint8 colorIndex, int32 numCustomDataFloats){ }
 void UFGColoredInstanceManager::RemoveInstance(FInstanceHandle& handle){ }
@@ -14,4 +14,4 @@ void UFGColoredInstanceManager::SetHasPowerData(float newHasPower, FInstanceHand
 void UFGColoredInstanceManager::UpdateColorForInstanceFromDataArray(FInstanceHandle& handle){ }
 void UFGColoredInstanceManager::UpdateMaterialColors(){ }
 void UFGColoredInstanceManager::UpdateScalabilityMaterials(bool bEnableLightweightMaterials){ }
-UHierarchicalInstancedStaticMeshComponent* UFGColoredInstanceManager::CreateHierarchicalInstancingComponent( UStaticMesh* staticMesh,TArray<class UMaterialInterface*> overridenMaterials, uint8 numCustomData, bool useAsOccluder, FVector2D& minMaxCullDistance){ return nullptr; }
+UHierarchicalInstancedStaticMeshComponent* UFGColoredInstanceManager::CreateHierarchicalInstancingComponent( UStaticMesh* staticMesh,TArray<class UMaterialInterface*> overridenMaterials, uint8 numCustomData, bool useAsOccluder, const FVector2D& minMaxCullDistance){ return nullptr; }

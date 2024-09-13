@@ -34,6 +34,8 @@ public:
 	void IncreaseAmount( int32 amountToAdd );
 	UFUNCTION( BlueprintCallable )
 	void DecreaseAmount( int32 amountToRemove );
+	UFUNCTION( BlueprintCallable )
+	void ClearAmount();
 
 	virtual void Native_OnAmountUpdated();
 

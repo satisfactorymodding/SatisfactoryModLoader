@@ -17,6 +17,7 @@ UFGBuildGunStatePaint::UFGBuildGunStatePaint() : Super() {
 	this->mCurrentlyAimedAtActor = nullptr;
 	this->mLastAppliedActor = nullptr;
 	this->mPreviewActor = nullptr;
+	this->mInstanceConverterInstigator = nullptr;
 }
 void UFGBuildGunStatePaint::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

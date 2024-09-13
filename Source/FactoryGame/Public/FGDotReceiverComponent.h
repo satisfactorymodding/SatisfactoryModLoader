@@ -75,4 +75,7 @@ protected:
 	/** List of active damage over time effects affecting our character. */
 	UPROPERTY( VisibleAnywhere, Category = "Damage" )
 	TArray< FActiveDOT > mActiveDOTs;
+
+private:
+	void UpdateTickState();
 };

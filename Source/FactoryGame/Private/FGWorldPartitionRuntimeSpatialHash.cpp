@@ -9,4 +9,5 @@ bool UFGWorldPartitionRuntimeSpatialHash::PopulateGeneratorPackageForCook(const 
 bool UFGWorldPartitionRuntimeSpatialHash::InjectExternalStreamingObject(URuntimeHashExternalStreamingObjectBase* ExternalStreamingObject){ return bool(); }
 bool UFGWorldPartitionRuntimeSpatialHash::RemoveExternalStreamingObject(URuntimeHashExternalStreamingObjectBase* ExternalStreamingObject){ return bool(); }
 UWorldPartitionRuntimeCell* UFGWorldPartitionRuntimeSpatialHash::FindCellByName(FName cellName) const{ return nullptr; }
+bool UFGWorldPartitionRuntimeSpatialHash::IsCellContainingWorldLocationLoaded(const FName& GridName, const FVector& Location) const{ return bool(); }
 void UFGWorldPartitionRuntimeSpatialHash::RebuildNameToCellMap() const{ }

@@ -8,7 +8,6 @@
 
 void AFGLocomotive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGLocomotive, mPowerInfo);
 	DOREPLIFETIME(AFGLocomotive, mHasPower);
 	DOREPLIFETIME(AFGLocomotive, mHeadlightMode);
 }
@@ -32,10 +31,13 @@ AFGLocomotive::AFGLocomotive() : Super() {
 }
 void AFGLocomotive::BeginPlay(){ }
 void AFGLocomotive::Tick(float dt){ }
+void AFGLocomotive::PossessedBy(AController* newController){ }
+void AFGLocomotive::UnPossessed(){ }
 bool AFGLocomotive::DriverEnter( AFGCharacterPlayer* driver){ return bool(); }
 bool AFGLocomotive::DriverLeave(bool keepDriving){ return bool(); }
 void AFGLocomotive::AddInputBindings(UInputComponent* inputComponent){ }
 bool AFGLocomotive::CanLeaveVehicle(AFGCharacterPlayer* character){ return bool(); }
+void AFGLocomotive::UpdatePlayerStatus(){ }
 void AFGLocomotive::UpdatePower(){ }
 void AFGLocomotive::GainedSignificance_Implementation(){ }
 EMultipleUnitControl AFGLocomotive::GetMultipleUnitRole() const{ return EMultipleUnitControl(); }
@@ -58,3 +60,5 @@ void AFGLocomotive::SetPowerRegeneration(float pct){ }
 void AFGLocomotive::OnHasPowerChanged(){ }
 void AFGLocomotive::OnRep_HeadlightMode(){ }
 FName AFGLocomotive::VehicleMovementComponentName = FName();
+AFGLocomotive::FOnLocomotivePossessedBy AFGLocomotive::OnPossessedBy = FOnLocomotivePossessedBy();
+AFGLocomotive::FOnLocomotiveUnPossessed AFGLocomotive::OnUnPossessed = FOnLocomotiveUnPossessed();

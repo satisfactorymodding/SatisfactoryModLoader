@@ -88,10 +88,10 @@ public:
 	void SpawnPooledDecal( const UObject* WorldContextObject, class UMaterialInterface* DecalMaterial, FVector DecalSize, FVector Location, FRotator Rotation = FRotator( 0, 0, 0 ), float LifeSpan = 0 );
 
 protected:
-	// Called when the game starts or when spawned
+	// Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	
+	// End AActor interface
 public:	
 	// Called every frame
 	virtual void Tick( float DeltaTime ) override;

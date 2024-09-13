@@ -110,7 +110,7 @@ protected:
 	FVector mBuildStepUpVector;
 	
 	/** The pipeline we snapped to. */
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	class AFGBuildablePipeBase* mSnappedPipe;
 
 	/** Cached list of all connections in this attachment hologram */
@@ -118,14 +118,16 @@ protected:
 	TArray< class UFGPipeConnectionComponentBase* > mPipeConnectionComponents;
 
 	/** Index of the connection component we wish to snap */
+	UPROPERTY( Replicated, CustomSerialization )
 	int32 mSnapConnectionIndex;
 
 	/** The pipeline connection Component we have snapped to. Can be NULL
 	 *  Used when attempting to place the attachment at the end of a pipe that is not connected
 	 */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class UFGPipeConnectionComponentBase* mSnappedConnectionComponent;
 
 	/** The offset we snapped on the pipe. */
+	UPROPERTY( Replicated, CustomSerialization )
 	float mSnappedPipeOffset;
 };

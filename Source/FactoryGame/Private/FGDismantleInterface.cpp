@@ -6,3 +6,4 @@ UFGDismantleInterface::UFGDismantleInterface(const FObjectInitializer& ObjectIni
 
 }
 void FDismantleHelpers::DropRefundOnGround( AActor* dismantledActor, const FVector& aimHitLocation, const TArray< FInventoryStack >& refund){ }
+void FDismantleHelpers::DropRefundOnGroundNoActor( UWorld* world, const FVector& lightweightLocation, AActor* ignoreActor, const TArray< FInventoryStack >& refund){ }

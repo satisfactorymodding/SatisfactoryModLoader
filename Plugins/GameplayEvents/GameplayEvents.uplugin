@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "GameplayEvents",
+	"Description": "",
+	"Category": "Other",
+	"CreatedBy": "Coffee Stain Studios",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "GameplayEvents",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}

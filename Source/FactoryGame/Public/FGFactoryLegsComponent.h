@@ -6,6 +6,7 @@
 #include "Components/SceneComponent.h"
 #include "FGSaveInterface.h"
 #include "Misc/DefaultValueHelper.h"
+#include "AbstractInstanceManager.h"
 #include "FGFactoryLegsComponent.generated.h"
 
 /**
@@ -78,12 +79,6 @@ public:
 
 	//~ Begin UActorComponent interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-#if WITH_EDITOR
-	virtual void OnRegister() override;
-	virtual void OnUnregister() override;
-#endif
-	virtual void BeginPlay() override;
-	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	//~ End UActorComponent interface
 
 	// Begin IFGSaveInterface
@@ -95,13 +90,6 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
-
-	/** Get all the leg meshes. */
-	UFUNCTION( BlueprintCallable, Category = "Legs" )
-	TArray< class UStaticMeshComponent* > GetLegMeshComponents() const { return mLegMeshComponents; }
-	/** Get all the foot meshes. */
-	UFUNCTION( BlueprintCallable, Category = "Legs" )
-	TArray< class UStaticMeshComponent* > GetFootMeshComponents() const { return mFootMeshComponents; }
 
 	/**
 	 * Trace for the feet offsets and return the results.
@@ -121,24 +109,18 @@ public:
 	/** Get the maximum length for these legs. */
 	float GetMaxLegLength() const;
 
-	/** Only here for the cheat manager. */
-	void RecreateLegs()
-	{
-		RemoveLegs();
-		CreateLegs();
-	}
+	/** Returns true if we have valid legs */
+	bool HasValidLegs() const;
 
+	/** Called by the buildable to create factory leg instances */
+	void CreateLegInstances( TArray<FInstanceData>& out_legInstanceData );
 private:
 	FFeetOffset TraceFootOffset( FName socket, const FTransform& actorTransform, AActor* ignoreActor = nullptr ) const;
 
 	class UStaticMesh* GetLegMesh() const;
 	class UStaticMesh* GetFootMesh() const;
 
-	void CreateLegs();
-	void RemoveLegs();
-
-	void CreateFoot( const FFeetOffset& offset );
-
+	void CreateFootInstanced( const FFeetOffset& offsetData, TArray<FInstanceData>& out_legInstanceData ) const;
 protected:
 	/** Socket names on the parent mesh */
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
@@ -152,6 +134,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
 	class UStaticMesh* mFootMeshOverride;
 
+	/** Scale of the factory leg mesh */
+	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
+	FVector mLegScale;
+
 	/** The maximum length the legs can be. */
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
 	float mMaxLegLengthOverride;
@@ -161,14 +147,6 @@ protected:
 	float mMinimumLegLength;
 
 private:
-	/** The created leg components for this building */
-	UPROPERTY( Transient )
-	TArray< UStaticMeshComponent* > mLegMeshComponents;
-
-	/** The created foot components for this building */
-	UPROPERTY( Transient )
-	TArray< UStaticMeshComponent* > mFootMeshComponents;
-
 	/** Stored so that we know the offset of the feet */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< FFeetOffset > mCachedFeetOffset;

@@ -59,4 +59,20 @@ public:
 	
 	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "The data table for languages that populates the options menu dropdown for selecting language" ) )
 	TSoftObjectPtr< class UDataTable > mOptionsMenuLanugagesDataTable;
+
+	UPROPERTY( EditAnywhere, config, Category = "Patch Table"
+		, meta = ( RelativeToGameContentDir, ToolTip = "The expected destination folder housing string tables." ) )
+	FDirectoryPath StringTablesFolder;
+
+	UPROPERTY( EditAnywhere, config, Category = "Patch Table"
+		, meta = ( FilePathFilter = "csv", RelativeToGameDir = True, ToolTip = "The path to the Patch Table used to specify text that needs to be moved to String Tables." ) );
+	FFilePath PatchTable;
+
+	UPROPERTY( EditAnywhere, config, Category = "Patch Table"
+		, meta = ( ToolTip = "The names of the metadata columns that should be picked up from the patch table as a comma separated list e.g.: Context,VariableDescription" ) );
+	FString MetaDataColumns;
+
+	UPROPERTY( EditAnywhere, config, Category = "Patch Table"
+		, meta = ( ToolTip = "Should processing stop on first error?" ) );
+	bool bStopOnError = false;
 };

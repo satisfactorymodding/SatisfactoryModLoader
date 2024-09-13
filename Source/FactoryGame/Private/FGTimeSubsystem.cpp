@@ -31,6 +31,7 @@ AFGTimeOfDaySubsystem::AFGTimeOfDaySubsystem() : Super() {
 }
 void AFGTimeOfDaySubsystem::BeginPlay(){ }
 void AFGTimeOfDaySubsystem::Tick(float dt){ }
+void AFGTimeOfDaySubsystem::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos){ }
 void AFGTimeOfDaySubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTimeOfDaySubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTimeOfDaySubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -55,14 +56,18 @@ bool AFGTimeOfDaySubsystem::IsDay() const{ return bool(); }
 bool AFGTimeOfDaySubsystem::IsNight() const{ return bool(); }
 float AFGTimeOfDaySubsystem::GetDaytimeSeconds() const{ return float(); }
 float AFGTimeOfDaySubsystem::GetNighttimeSeconds() const{ return float(); }
+int32 AFGTimeOfDaySubsystem::GetNumberOfDaysSinceLastDeath() const{ return int32(); }
 void AFGTimeOfDaySubsystem::ForceReplicateTimeToClients(){ }
 void AFGTimeOfDaySubsystem::SetTimeSpeedMultiplier(float multiplier){ }
+void AFGTimeOfDaySubsystem::ResetNumberOfDaysSinceLastDeath(){ }
 float AFGTimeOfDaySubsystem::GetDaytimeSpeed() const{ return float(); }
 float AFGTimeOfDaySubsystem::GetNighttimeSpeed() const{ return float(); }
 void AFGTimeOfDaySubsystem::OnRep_ReplicatedDaySeconds(){ }
+void AFGTimeOfDaySubsystem::OnRep_NumberOfDaysSinceLastDeath(){ }
 void AFGTimeOfDaySubsystem::UpdateServerDaySeconds(){ }
 float AFGTimeOfDaySubsystem::GetAdjustedDaySeconds() const{ return float(); }
 float AFGTimeOfDaySubsystem::GetGameDeltaTime(float dt) const{ return float(); }
+void AFGTimeOfDaySubsystem::SetNumberOfDaysSinceLastDeath(int32 newNumberOfDaysSinceLastDeath){ }
 void AFGTimeOfDaySubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGTimeOfDaySubsystem, mDayLengthMinutes);
@@ -73,5 +78,6 @@ void AFGTimeOfDaySubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(AFGTimeOfDaySubsystem, mReplicatedDaySeconds);
 	DOREPLIFETIME(AFGTimeOfDaySubsystem, mNumberOfPassedDays);
 	DOREPLIFETIME(AFGTimeOfDaySubsystem, mRTPCInterval);
+	DOREPLIFETIME(AFGTimeOfDaySubsystem, mNumberOfDaysSinceLastDeath);
 	DOREPLIFETIME(AFGTimeOfDaySubsystem, mUpdateTime);
 }

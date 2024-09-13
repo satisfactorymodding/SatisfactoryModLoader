@@ -1,4 +1,4 @@
-// Copyright Ben de Hullu. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -43,10 +43,10 @@ struct ABSTRACTINSTANCE_API FInstanceComponentData
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleInstanceOnly)
-	UHierarchicalInstancedStaticMeshComponent* InstancedStaticMeshComponent;
+	ULightweightHierarchicalInstancedStaticMeshComponent* InstancedStaticMeshComponent;
 
 	UPROPERTY(VisibleInstanceOnly)
-	TArray<UInstancedStaticMeshComponent*> InstancedCollisionComponents;
+	TArray<ULightweightCollisionComponent*> InstancedCollisionComponents;
 
 	TArray<FInstanceHandle*> InstanceHandles;
 
@@ -55,6 +55,8 @@ struct ABSTRACTINSTANCE_API FInstanceComponentData
 
 	/* Cached version when initially made. */
 	FFloatRange DrawDistance;
+	
+	bool bUsesBucketCollision;
 };
 
 USTRUCT()
@@ -94,7 +96,7 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	static void SetInstancedStatic( AActor* OwnerActor, const FTransform& ActorTransform, const UAbstractInstanceDataObject* InstanceData, TArray<FInstanceHandle*>& OutHandle, bool bInitializeHidden = false );
+	static void SetInstancedStatic( AActor* OwnerActor, const FTransform& ActorTransform, const UAbstractInstanceDataObject* InstanceData, TArray<FInstanceHandle*>& OutHandle, bool bInitializeHidden = false, TSubclassOf< class AActor > buildableClass = nullptr );
 	static void SetInstanceFromDataStatic( AActor* OwnerActor, const FTransform& ActorTransform, const FInstanceData& InstanceData, FInstanceHandle* &OutHandle, bool bInitializeHidden = false );
 	void SetInstanced( AActor* OwnerActor, const FTransform& ActorTransform, const FInstanceData& InstanceData, FInstanceHandle* &OutHandle, bool bInitializeHidden = false );
 
@@ -175,4 +177,24 @@ private:
 	
 	static FName BuildUniqueName( const FInstanceData& InstanceData );
 	static FName BuildUniqueName( const UInstancedStaticMeshComponent* MeshComponent );
+};
+
+UCLASS()
+class ABSTRACTINSTANCE_API ULightweightCollisionComponent : public UInstancedStaticMeshComponent
+{
+	GENERATED_BODY()
+
+public:
+	// renderstate is handled by ULightweightCollisionComponent
+	virtual bool ShouldCreateRenderState() const override { return false; }
+};
+
+UCLASS()
+class ABSTRACTINSTANCE_API ULightweightHierarchicalInstancedStaticMeshComponent : public UHierarchicalInstancedStaticMeshComponent
+{
+	GENERATED_BODY()
+
+public:
+	// Physicstate is handled by ULightweightCollisionComponent
+	virtual bool ShouldCreatePhysicsState() const override { return false; }
 };

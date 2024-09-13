@@ -2,6 +2,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGClearanceInterface.h"
 #include "DamageTypes/FGDamageType.h"
 #include "FGSaveInterface.h"
 #include "GameFramework/Character.h"
@@ -84,8 +85,10 @@ struct FBoneDamageModifier
 	TArray<TSubclassOf<UFGDamageType>> DamageTypesWhiteList;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRagdollStateChangedDelegate, const bool, IsRagdolled );
+
 UCLASS()
-class FACTORYGAME_API AFGCharacterBase : public ACharacter, public IFGSaveInterface
+class FACTORYGAME_API AFGCharacterBase : public ACharacter, public IFGSaveInterface, public IFGClearanceInterface
 {
 	GENERATED_BODY()
 public:
@@ -97,6 +100,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 	virtual void Tick( float deltaTime ) override;
+	virtual void CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult) override;
 
 	virtual float TakeDamage( float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser ) override;
 	// End AActor interface
@@ -120,6 +124,10 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
+
+	// Begin IFGClearanceInterface
+	virtual void GetClearanceData_Implementation( TArray< FFGClearanceData >& out_data ) const override;
+	// End IFGClearanceInterface
 
 	// Begin ACharacter interface
 	virtual void LaunchCharacter( FVector LaunchVelocity, bool bXYOverride, bool bZOverride ) override;
@@ -271,6 +279,10 @@ public:
 	/**Is this player possessed yet */
 	UFUNCTION( BlueprintPure, Category = "Character" )
 	FORCEINLINE bool IsPossessed() const{ return mIsPossessed; }
+
+	/** Gets the bone used for ragdole based movement */
+	FName GetRagdollPhysicsBoneName() { return mRagdollMeshPhysicsBoneName; }
+	
 protected:
 	/** Event called when a locally controlled pawn gets possessed/unpossessed */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Character" )
@@ -367,6 +379,9 @@ private:
 	void OnRep_IsRagdolled();
 	
 	FVector FindSafePlaceToGetUp();
+public:
+	UPROPERTY( BlueprintAssignable )
+	FOnRagdollStateChangedDelegate mOnRagdollStateChanged;
 
 protected:
 	/** When receiving FootDown on index 2, then we will trace from mFeetNames[2] socket for ground */
@@ -541,6 +556,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
 	float mNormalDamageMultiplier;
 private:
+	/** Clearance data of this character. */
+	UPROPERTY( EditDefaultsOnly, Category = "Character" )
+	TArray< FFGClearanceData > mClearanceData;
+	
 	/** Used to keep track if we are locally possessed */
 	bool mIsLocallyPossessed;
 

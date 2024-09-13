@@ -21,6 +21,7 @@ public:
 	AFGPipePartHologram();
 
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
 	// Begin AFGHologram interface
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease )  override;
@@ -31,8 +32,6 @@ public:
 	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
 	virtual bool CanNudgeHologram() const override;
 	// End AFGHologram interface
-
-
 
 	/** Set the height of the support */
 	void SetSupportLength( float height );
@@ -72,8 +71,9 @@ private:
 	bool mIsAdjustingLength;
 	bool mCanAdjustLength;
 
-	/*Compoent stapped to on another actor during placement*/
-	class UFGPipeConnectionComponentBase* mSnappedConnectionComponent = nullptr;
+	/* Component snapped to on another actor during placement */
+	UPROPERTY( CustomSerialization, Replicated )
+	class UFGPipeConnectionComponentBase* mSnappedConnectionComponent;
 
 	/** Can this support be stacked. */
 	bool mCanStack;

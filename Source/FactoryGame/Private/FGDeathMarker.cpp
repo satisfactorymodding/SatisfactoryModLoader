@@ -6,6 +6,7 @@
 AFGDeathMarker::AFGDeathMarker() : Super() {
 	this->mActorRepresentationTexture = nullptr;
 	this->mMapText = INVTEXT("");
+	this->mCompassMaterialInstance = nullptr;
 }
 void AFGDeathMarker::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -29,3 +30,4 @@ EFogOfWarRevealType AFGDeathMarker::GetActorFogOfWarRevealType(){ return EFogOfW
 float AFGDeathMarker::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGDeathMarker::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGDeathMarker::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+UMaterialInterface* AFGDeathMarker::GetActorRepresentationCompassMaterial(){ return nullptr; }

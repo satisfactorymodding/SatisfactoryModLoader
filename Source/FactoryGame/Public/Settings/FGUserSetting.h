@@ -23,16 +23,19 @@ enum class EUserSettingManagers : uint8
 };
 
 // Disqualifiers if we should not show the setting at all
-UENUM( BlueprintType, Meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
-enum class ESettingVisiblityDisqualifier : uint8
+UENUM( Meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
+enum class ESettingVisiblityDisqualifier : uint64
 {
-	USAD_None			= 0			UMETA(Hidden),
-	USAD_NotOnServer	= 1 << 0	UMETA( DisplayName = "Don't show on server" ),
-	USAD_NotOnClient	= 1 << 1	UMETA( DisplayName = "Don't show on client" ),
-	USAD_NotInMainMenu	= 1 << 2	UMETA( DisplayName = "Don't show in main menu" ),
-	USAD_NotInGame		= 1 << 3	UMETA( DisplayName = "Don't show in game" ),
-	USAD_NotForVulkan	= 1 << 4	UMETA( DisplayName = "Don't show when RHI is Vulkan" ),
+	USAD_None				   = 0		UMETA(Hidden),
+	USAD_NotOnServer		   = 1 << 0	UMETA( DisplayName = "Don't show on server" ),
+	USAD_NotOnClient		   = 1 << 1	UMETA( DisplayName = "Don't show on client" ),
+	USAD_NotInMainMenu		   = 1 << 2	UMETA( DisplayName = "Don't show in main menu" ),
+	USAD_NotInGame			   = 1 << 3	UMETA( DisplayName = "Don't show in game" ),
+	USAD_NotForVulkan		   = 1 << 4	UMETA( DisplayName = "Don't show when RHI is Vulkan" ),
+	USAD_DedicatedServerOnly   = 1 << 5	UMETA( DisplayName = "Only show on Dedicated Server" ),
+	USAD_DedicatedServerUIOnly = 1 << 6   UMETA( DisplayName = "Only show in the Dedicated Server Options UI" )
 };
+ENUM_CLASS_FLAGS( ESettingVisiblityDisqualifier );
 
 // Disqualifiers if we should allow editing of the setting
 UENUM( BlueprintType, Meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
@@ -56,13 +59,22 @@ public:
 	// Used for legacy support until all settings are migrated
 	FOptionRowData ToOptionRowData() const;
 
+	/** Returns a set of visibility disqualifiers for the given world. That means, the setting will not be shown if any of them are set on the option */
+	static ESettingVisiblityDisqualifier GetVisibilityDisqualifiers( UWorld* world );
+
 	// Should this option be showed in the current config. Takes into account various things like build config, graphics api, net mode and game mode
-	bool ShouldShowInCurrentConfig( UWorld* world ) const;
-	
+	bool ShouldShowInCurrentConfig( ESettingVisiblityDisqualifier visibilityDisqualifiers ) const;
+
+	// Should this option be showed in the current config. Takes into account various things like build config, graphics api, net mode and game mode
+	FORCEINLINE bool ShouldShowInCurrentConfig( UWorld* world ) const
+	{
+		return ShouldShowInCurrentConfig( GetVisibilityDisqualifiers( world ) );
+	}
+
 	FVariant GetDefaultValue() const;
 
 	/** Returns the option interface actively handling this setting, or nullptr if not found */
-	class IFGOptionInterface* GetOptionInterface();
+	IFGOptionInterface* GetPrimaryOptionInterface( UWorld* world ) const;
 
 	TSubclassOf< class UFGOptionsValueController > GetValueSelectorWidgetClass() const;
 
@@ -79,6 +91,11 @@ public:
 	bool HasVisibilityDisqualifier( ESettingVisiblityDisqualifier disqualifier ) const;
 	bool HasEditabilityDisqualifier( ESettingEditabilityDisqualifier disqualifier ) const;
 
+	/** Returns true if this variable should create and use a Console Variable */
+	bool ShouldUseCVar() const;
+
+	/** Returns true if this setting is relevant for the dedicated server */
+	bool IsDedicatedServerRelevant() const;
 private:
 	// Should we show this setting in the current build
 	bool ShouldShowInBuild() const;
@@ -91,6 +108,10 @@ public:
 	// Should we manage and if needed create a cvar for this setting based on StrId. Not needed for any functionality so leave it empty if you don't know you want it.
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Setting" )
 	bool UseCVar;
+
+	// True if this setting is relevant for the dedicated server and changing it's value has an effect on the server or the players
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Setting" )
+	bool bRelevantForDedicatedServer;
 
 	/** If this option is handled by a cvar this text will set as the help text, if this text is empty we will use ToolTip instead.
 	 * If the cvar already exists, then we don't override it's help text.
@@ -141,7 +162,7 @@ public:
 	UClass* ManagerTypeAvailability;
 
 	// When any of these are true in the current menu we don't show the setting
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Availability", meta=(Bitmask,BitmaskEnum="/Script/FactoryGame.ESettingVisiblityDisqualifier") )
+	UPROPERTY( EditDefaultsOnly, Category="Availability", meta=(Bitmask,BitmaskEnum="/Script/FactoryGame.ESettingVisiblityDisqualifier") )
 	uint8 VisibilityDisqualifiers;
 
 	// When any of these are true in the current menu we don't allow the user to edit the setting
@@ -194,7 +215,7 @@ public:
 
 	virtual EOptionType GetOptionType() const override { return EOptionType::OT_Checkbox; }
 	
-	virtual FVariant GetDefaultValue() const override { return FVariant(DefaultCheckBoxValue); }
+	virtual FVariant GetDefaultValue() const override;
 
 #if WITH_EDITOR
 	virtual FName GetGraphSchemaName() const override;
@@ -204,6 +225,10 @@ public:
 	
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Value" )
 	bool DefaultCheckBoxValue;
+
+	// <FL> [TranN] Default values for different platforms
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Value" )
+	TMap<FString, bool> PlatformDefaultCheckBoxValues;
 
 };
 

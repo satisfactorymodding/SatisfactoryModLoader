@@ -124,12 +124,16 @@ public:
 	/** Delegates */
 	DECLARE_DELEGATE( FMaterialEffectStarted );
 	DECLARE_DELEGATE( FMaterialEffectEnded );
+	DECLARE_DELEGATE_OneParam( FMaterialEffectEndedWithEffectPtr, UFGMaterialEffectComponent* );
 
 	/** Called when material effect has finished. */
 	FMaterialEffectStarted mOnStarted;
 
 	/** Called when material effect has finished. */
 	FMaterialEffectEnded mOnEnded;
+
+	/** Additional Ended Call for systems that track multiple build effects (lightweight buildable subsystem) so we know which one has ended and can be removed */
+	FMaterialEffectEndedWithEffectPtr mOnEndedWithPointer;
 
 protected:
 	/** Meshes affected by the material effect. */

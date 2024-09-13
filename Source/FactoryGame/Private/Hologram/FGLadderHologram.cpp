@@ -28,8 +28,7 @@ bool AFGLadderHologram::DoMultiStepPlacement(bool isInputFromARelease){ return b
 bool AFGLadderHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGLadderHologram::SetMaterial( UMaterialInterface* material){ }
 int32 AFGLadderHologram::GetBaseCostMultiplier() const{ return int32(); }
-void AFGLadderHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
-void AFGLadderHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
+void AFGLadderHologram::GetClearanceData(TArray< const FFGClearanceData* >& out_ClearanceData) const{ }
 void AFGLadderHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGLadderHologram::CheckValidFloor(){ }
 void AFGLadderHologram::OnRep_TargetSegmentHeight(){ }

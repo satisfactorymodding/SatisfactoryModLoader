@@ -17,13 +17,12 @@ AFGResourceScanner::AFGResourceScanner() : Super() {
 }
 void AFGResourceScanner::BeginPlay(){ }
 void AFGResourceScanner::Tick(float dt){ }
-bool AFGResourceScanner::ShouldSaveState() const{ return bool(); }
 void AFGResourceScanner::CreateResourceNodeRepresentations(const FNodeClusterData& cluster){ }
 TArray< TSubclassOf< UFGResourceDescriptor > > AFGResourceScanner::GetScannableResources() const{ return TArray<TSubclassOf<UFGResourceDescriptor> >(); }
 void AFGResourceScanner::SetResourceDescriptorToScanFor(TSubclassOf< UFGResourceDescriptor > inClass){ }
 void AFGResourceScanner::UnEquip(){ }
 void AFGResourceScanner::Server_ScanReleased_Implementation(){ }
-bool AFGResourceScanner::Server_ScanReleased_Validate(){ return bool(); }
+void AFGResourceScanner::Multicast_ScanReleased_Implementation(){ }
 void AFGResourceScanner::ScanReleased(){ }
 void AFGResourceScanner::AddEquipmentActionBindings(){ }
 void AFGResourceScanner::OnScanPressed(){ }

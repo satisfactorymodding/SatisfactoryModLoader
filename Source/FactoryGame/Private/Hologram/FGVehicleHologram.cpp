@@ -4,7 +4,6 @@
 
 AFGVehicleHologram::AFGVehicleHologram() : Super() {
 	this->mDefaultSwatch = nullptr;
-	this->mSoftClearanceOverlapResponse = EHologramSoftClearanceResponse::HSCR_Block;
 }
 void AFGVehicleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

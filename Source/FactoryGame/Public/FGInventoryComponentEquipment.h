@@ -44,8 +44,21 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
 	FORCEINLINE int32 GetActiveIndex() { return mActiveEquipmentIndex; }
 
+	/** Returns the actor for the equipment in the slot, null if the slot is empty or does not contain an equipment, null if an invalid index is passed. */
+	UFUNCTION( BlueprintPure, Category = "Inventory" )
+	class AFGEquipment* GetStackEquipmentActorAtIdx( const int32 index ) const;
+
+	/** Returns the slot in which slotted in equipment is located, or INDEX_NONE */
+	UFUNCTION( BlueprintPure, Category = "Inventory" )
+	int32 FindSlotForSlottedInEquipment( const AFGEquipment* equipment ) const;
+
 	/** Loop de loop */
 	void CycleEquipment( int32 dir );
+
+	// <FL> [KajtaziT] handheldselection radial menu can set the active equipment directly
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	void SetActiveIndexWithDefaultItem( int32 index );
+	// </FL>
 
 	/** Sets @index to be active if it is a valid index. If @itemAtCurrentIndex is set, it is assumed to be the item currently active in this
 	 * equipment slot. This is useful when this function is called in response to the active item already having been removed from slot. 
@@ -64,14 +77,21 @@ protected:
 	/** Decide on what properties to replicate */
 	void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
+	// Begin IFGSaveInterface
+	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
+	// End IFGSaveInterface
+	
 	// Begin UFGInventoryComponent interface
-	virtual void OnItemsAdded( int32 idx, int32 num ) override;
-	virtual void OnItemsRemoved( int32 index, int32 num, FInventoryItem item ) override;
+	virtual void OnItemsAdded( const int32 idx, const int32 num, UFGInventoryComponent* sourceInventory = nullptr ) override;
+	virtual void OnItemsRemoved( int32 idx, int32 num, const FInventoryItem& item, UFGInventoryComponent* targetInventory = nullptr ) override;
 	// End UFGInventoryComponent interface
-
 	
 	void ActivateEquipment();
-	void RemoveEquipment( FInventoryItem item );
+	void RemoveActiveEquipment();
+	
+	void AdjustSlottedInEquipmentsSize();
+	bool AttemptSpawnEquipmentForSlot( int32 slotIndex );
+	bool AttemptRemoveEquipmentFromSlot( int32 slotIndex );
 private:
 	/** @copydoc UFGInventoryComponent::FilterEquipmentClasses */
 	bool FilterEquipmentClasses( TSubclassOf< UObject > object, int32 idx ) const;
@@ -84,8 +104,18 @@ private:
 
 	UFUNCTION()
 	void OnRep_ActiveEquipment();
+
+	UFUNCTION()
+	void OnRep_SlottedInEquipments();
 private:
 	friend class AFGCharacterPlayer;
+
+	/** Equipments that are slotted into the actual inventory slots. */
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_SlottedInEquipments )
+	TArray<AFGEquipment*> mSlottedInEquipments;
+
+	/** Local cache of slotted in equipments to be able to correctly dispatch WasSlottedIn/WasRemovedFromSlot on client */
+	TArray<TWeakObjectPtr<AFGEquipment>> mLastSlottedInEquipments;
 
 	/**
 	 * If the equipment in the slot has been overridden, this is the equipment.

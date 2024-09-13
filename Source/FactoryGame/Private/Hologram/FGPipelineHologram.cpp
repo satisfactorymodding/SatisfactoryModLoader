@@ -27,16 +27,21 @@ AFGPipelineHologram::AFGPipelineHologram() : Super() {
 	this->mBuildModeNoodle = nullptr;
 	this->mBuildModeHorzToVert = nullptr;
 	this->mPassthroughOverrideStartLocation = FVector::ZeroVector;
+	this->mPassthroughSnapDirection = FVector::ZeroVector;
 	this->mMesh = nullptr;
+	this->mMeshMaterial = nullptr;
 	this->mBuildModeCategory = EHologramBuildModeCategory::HBMC_Pipe;
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
+void AFGPipelineHologram::BeginPlay(){ }
 void AFGPipelineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPipelineHologram, mChildPoleHologram);
 	DOREPLIFETIME(AFGPipelineHologram, mChildWallPoleHologram);
+	DOREPLIFETIME(AFGPipelineHologram, mSnappedConnectionComponents);
+	DOREPLIFETIME(AFGPipelineHologram, mUpgradedPipeline);
+	DOREPLIFETIME(AFGPipelineHologram, mSnappedPassthroughs);
 }
-void AFGPipelineHologram::BeginPlay(){ }
 bool AFGPipelineHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 void AFGPipelineHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGPipelineHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
@@ -51,7 +56,6 @@ void AFGPipelineHologram::PostHologramPlacement(const FHitResult& hitResult){ }
 bool AFGPipelineHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPipelineHologram::OnInvalidHitResult(){ }
 void AFGPipelineHologram::Scroll(int32 delta){ }
-void AFGPipelineHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
 void AFGPipelineHologram::SetSnapToGuideLines(bool isEnabled){ }
 float AFGPipelineHologram::GetHologramHoverHeight() const{ return float(); }
 void AFGPipelineHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
@@ -59,23 +63,19 @@ void AFGPipelineHologram::CheckBlueprintCommingling(){ }
 AFGHologram* AFGPipelineHologram::GetNudgeHologramTarget(){ return nullptr; }
 bool AFGPipelineHologram::CanTakeNextBuildStep() const{ return bool(); }
 void AFGPipelineHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
-void AFGPipelineHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
-void AFGPipelineHologram::ClientPreConstructMessageSerialization(){ }
-void AFGPipelineHologram::ServerPostConstructMessageDeserialization(){ }
+TArray< class UFGPipeConnectionComponent* > AFGPipelineHologram::GetRelevantPipeConnectionsForGuidelines() const{ return TArray<class UFGPipeConnectionComponent*>(); }
 void AFGPipelineHologram::ResetBuildSteps(){ }
 bool AFGPipelineHologram::IsConnectionSnapped(bool lastConnection){ return bool(); }
-void AFGPipelineHologram::GetLastSplineData(FSplinePointData &data){ }
 void AFGPipelineHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGPipelineHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGPipelineHologram::CheckValidFloor(){ }
 void AFGPipelineHologram::CheckValidPlacement(){ }
-void AFGPipelineHologram::CheckClearance(const FVector& locationOffset){ }
-void AFGPipelineHologram::SetupPipeClearanceDetector(){ }
+void AFGPipelineHologram::OnRep_SplineData(){ }
 void AFGPipelineHologram::RouteSelectedSplineMode(FVector startLocation, FVector startNormal, FVector endLocation, FVector endNormal){ }
 void AFGPipelineHologram::UpdateSplineComponent(){ }
+void AFGPipelineHologram::UpdateClearanceData(){ }
 float AFGPipelineHologram::GetSplineLength(){ return float(); }
 void AFGPipelineHologram::UpdateConnectionComponentsFromSplineData(){ }
-void AFGPipelineHologram::UpdateSplineCompFromSplineData(){ }
 void AFGPipelineHologram::AutoRouteSpline(const FVector& startConnectionPos,
 		const FVector& startConnectionNormal,
 		const FVector& endConnectionPos,

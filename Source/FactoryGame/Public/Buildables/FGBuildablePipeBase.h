@@ -8,8 +8,8 @@
 #include "FGBuildable.h"
 #include "FGSignificanceInterface.h"
 #include "FGSplineBuildableInterface.h"
+#include "Templates/SubclassOf.h"
 #include "FGBuildablePipeBase.generated.h"
-
 
 class UFGPipeConnectionComponentBase;
 /**
@@ -31,6 +31,8 @@ public:
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
 	virtual bool ShouldBeConsideredForBase_Implementation() override;
+	virtual void GetClearanceData_Implementation( TArray< FFGClearanceData >& out_data ) const override;
+	virtual bool ShouldBlockGuidelinePathForHologram( const class AFGHologram* hologram ) const override;
 	// End Buildable interface
 
 	// Begin IFGDismantleInterface
@@ -38,6 +40,11 @@ public:
 	virtual void Dismantle_Implementation() override;
 	// End IFGDismantleInterface
 
+	// Begin abstract instance interface.
+	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() override;
+	virtual bool DoesContainLightweightInstances_Native() const override { return true; }
+	// End
+	
 	// Begin IFGSignificance Interface
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
@@ -55,15 +62,6 @@ public:
 	FORCEINLINE UFGPipeConnectionComponentBase* GetConnection0() const { return mConnection0; }
 	FORCEINLINE UFGPipeConnectionComponentBase* GetConnection1() const { return mConnection1; }
 
-	/** Get the mesh used for this conveyor. */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|PipeBase" )
-	FORCEINLINE UStaticMesh* GetSplineMesh() const { return mMesh; }
-
-	/** Returns the spline component */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|PipeBase" )
-	FORCEINLINE class USplineComponent* GetSplineComponent() { return mSplineComponent; }
-	FORCEINLINE const class USplineComponent* GetSplineComponent() const { return mSplineComponent; }
-
 	/* Get the length of the spline in world space */
 	FORCEINLINE float GetLength() const { return mLength; }
 
@@ -72,17 +70,21 @@ public:
 	virtual void GetLocationAndDirectionAtOffset( float offset, FVector& out_location, FVector& out_direction ) const;
 
 	// Begin IFGSplineBuildableInterface
-	const TArray< FSplinePointData >& GetSplinePointData() const { return mSplineData; };
-	float GetMeshLength() { return mMeshLength; }
-	FVector GetCollisionExtent() override { return COLLISION_EXTENT; }
-	float GetCollisionSpacing() override { return COLLISION_SPACING; }
-	FVector GetCollisionOffset() override { return COLLISION_OFFSET; }
-	UStaticMesh* GetUsedSplineMesh() override { return mMesh; }
-	void SetupConnections() override;
+	virtual UFGConnectionComponent* GetSplineConnection0() const override;
+	virtual UFGConnectionComponent* GetSplineConnection1() const override;
+	virtual const TArray< FSplinePointData >& GetSplinePointData() const override { return mSplineData; };
+	virtual TArray<FSplinePointData>* GetMutableSplinePointData() override { return &mSplineData; }
+	virtual float GetMeshLength() const override { return mMeshLength; }
+	virtual UStaticMesh* GetSplineMesh() const override { return mMesh; }
+	virtual USplineComponent* GetSplineComponent() const override { return mSplineComponent; }
 	// End IFGSplineBuildableInterface
 	
 	FORCEINLINE TArray< class AFGBuildablePassthrough* > GetSnappedPassthroughs() { return mSnappedPassthroughs; }
 
+	static void CreateClearanceData( class USplineComponent* splineComponent, const TArray< FSplinePointData >& splineData, const FTransform& pipeTransform, TArray< FFGClearanceData >& out_clearanceData, float maxDistance = -1.0f );
+
+	UPROPERTY(EditDefaultsOnly,Category="Visuals")
+	UMaterialInterface* mSplineMeshMaterial = nullptr;
 	/**
 	 * Splices the provided pipeline into two pieces.
 	 * Unlike splitting, splicing does decrease the size of the pipeline and leads an empty area in the middle,
@@ -108,6 +110,13 @@ protected:
 	TSubclassOf< class UFGPipeConnectionComponentBase > GetConnectionType();
 
 	void UnrotateForBlueprintPlaced();
+	void SetupConnections();
+
+	/** Function used to generate cached clearance data for this pipe. */
+	virtual void GenerateCachedClearanceData( TArray< FFGClearanceData >& out_clearanceData );
+
+	/** Populates spline component from spline points data on the buildable */
+	void PopulateSplineComponentFromSplinePointsData();
 public:
 	/** Default height above ground level for pipes */
 	static constexpr float DEFAULT_PIPE_HEIGHT = 175.f;
@@ -155,8 +164,15 @@ protected:
 	UPROPERTY( SaveGame, Replicated )
 	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 
+	/* Material assigned to the collision box proxies. */
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	UPhysicalMaterial* PhysicalMaterial;
+
 private:
 	friend class AFGPipelineHologram;
+	
+	/** Clearance data generated upon request for this conveyor. */
+	TArray< FFGClearanceData > mCachedClearanceData;
 
 	/** Is this buildable significant, i.e. is within significance range */
 	bool mIsSignificant;

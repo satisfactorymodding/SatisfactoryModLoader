@@ -7,47 +7,11 @@
 #include "FGBuildableConveyorBase.h"
 #include "FGSplineBuildableInterface.h"
 #include "FGUseableInterface.h"
+#include "Components/SplineMeshComponent.h"
 #include "FGBuildableConveyorBelt.generated.h"
 
-/**
- * Valid state for picking up conveyor belt items.
- */
-UCLASS()
-class FACTORYGAME_API UFGUseState_ConveyorBeltValid : public UFGUseState
-{
-	GENERATED_BODY()
-public:
-	UFGUseState_ConveyorBeltValid() { mIsUsableState = true; mWantAdditonalData = true; }
 
-public:
-	/** index for the looked at item in mItems */
-	int32 mItemIndex;
 
-	int8 mRepVersion;
-};
-
-UCLASS()
-class FACTORYGAME_API UFGUseState_ConveyorBeltFullInventory : public UFGUseState
-{
-	GENERATED_BODY()
-public:
-	UFGUseState_ConveyorBeltFullInventory() { mIsUsableState = false; mWantAdditonalData = true; }
-
-public:
-	/** index for the looked at item in mItems */
-	int32 mItemIndex;
-};
-
-/**
- * State for when the belt is empty.
- */
-UCLASS()
-class FACTORYGAME_API UFGUseState_ConveyorBeltEmpty : public UFGUseState
-{
-	GENERATED_BODY()
-public:
-	UFGUseState_ConveyorBeltEmpty() { mIsUsableState = false; mWantAdditonalData = false; }
-};
 
 /**
  * Base for conveyor belts.
@@ -66,22 +30,7 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	virtual bool IsComponentRelevantForNavigation( UActorComponent* component ) const override;
 	// End AActor interface
-
-	// UObject interface
-	// virtual void Serialize(FArchive& ar) override;
-	// end UObject inteface
-
-	// Begin IFGUseableInterface
-	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
-	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
-	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
-	virtual bool IsUseable_Implementation() const override;
-	virtual void StartIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state  ) override;
-	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
-	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
-	// End IFGUseableInterface
 
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
@@ -91,6 +40,11 @@ public:
 	virtual void UpdateMeshLodLevels(int32 newLodLevel) override;	// TODO deprecate
 	// End IFGSignificanceInterface
 
+	// Begin abstract instance interface.
+	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() override;
+	virtual bool DoesContainLightweightInstances_Native() const override { return true; }
+	// End abstract instance interface
+	
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
 	virtual void OnBuildEffectFinished() override;
@@ -109,6 +63,14 @@ public:
 	virtual void Upgrade_Implementation( AActor* newActor ) override;
 	//~ End IFGDismantleInterface
 
+	static void CreateClearanceData( class USplineComponent* splineComponent, const TArray< FSplinePointData >& splineData, const FTransform& conveyorTransform, TArray< FFGClearanceData >& out_clearanceData, float maxDistance = -1.0f );
+
+
+	virtual float GetLastRenderTime() const override;
+	
+	/*Update bounds of the vis mesh.*/
+	void UpdateVisibilityMesh();
+	
 	/**
 	 * Split this conveyor in two.
 	 * First part [0,offset] and second part [offset,length].
@@ -131,32 +93,24 @@ public:
 	 */
 	static AFGBuildableConveyorBelt* Respline( AFGBuildableConveyorBelt* conveyor, const TArray< FSplinePointData >& newSplineData );
 
-	/** Get the mesh used for this conveyor. */
-	UFUNCTION( BlueprintPure, Category = "Conveyor" )
-	FORCEINLINE UStaticMesh* GetSplineMesh() const { return mMesh; }
-
 	// Begin IFGSplineBuildableInterface
-	const TArray< FSplinePointData >& GetSplinePointData() const { return mSplineData; };
-	float GetMeshLength() { return mMeshLength; }
-	FVector GetCollisionExtent() override { return COLLISION_EXTENT; }
-	float GetCollisionSpacing() override { return COLLISION_SPACING; }
-	FVector GetCollisionOffset() override { return COLLISION_OFFSET; }
-	UStaticMesh* GetUsedSplineMesh() override { return mMesh; }
-	void SetupConnections() override;
+	virtual UFGConnectionComponent* GetSplineConnection0() const override;
+	virtual UFGConnectionComponent* GetSplineConnection1() const override;
+	virtual const TArray< FSplinePointData >& GetSplinePointData() const override { return mSplineData; };
+	virtual TArray<FSplinePointData>* GetMutableSplinePointData() override { return &mSplineData; }
+	virtual float GetMeshLength() const override { return mMeshLength; }
+	virtual UStaticMesh* GetSplineMesh() const override { return mMesh; }
+	virtual USplineComponent* GetSplineComponent() const override { return mSplineComponent; }
+
 	// End IFGSplineBuildableInterface
-
-	/** Returns the spline component */
-	UFUNCTION( BlueprintPure, Category = "Build" )
-	FORCEINLINE class USplineComponent* GetSplineComponent() { return mSplineComponent; }
-
-	void OnUseServerRepInput( class AFGCharacterPlayer* byCharacter, uint32 itemRepID, float itemOffset);
-
-	void SetShadowCasting( bool inStateBelt, bool inStateItems );
 
 	// Temp function will be removed.
 	void DestroyVisualItems();
 
 	virtual void PostSerializedFromBlueprint( bool isBlueprintWorld = false ) override;
+	void ClearLUT();
+	
+
 	
 protected:
 	// Begin AFGBuildableFactory interface
@@ -167,8 +121,10 @@ protected:
 	virtual void TickItemTransforms( float dt ) override;
 	virtual void TickRadioactivity() override;
 	virtual void Factory_UpdateRadioactivity( class AFGRadioactivitySubsystem* subsystem ) override;
+	virtual void GenerateCachedClearanceData( TArray< FFGClearanceData >& out_clearanceData ) override;
 	// End AFGBuildableConveyorBase interface
 
+	void SetupConnections();
 private:
 	/**
 	 * Updates the transform of a single item only.
@@ -176,9 +132,8 @@ private:
 	 */
 	void TickSingleItemTransform( const FConveyorBeltItem& item, TMap< FName, int32 >& instanceCounts, class AFGRadioactivitySubsystem* radioactiveSubsystem );
 
-	/** Get the that have the "moving conveyor material" in it */
-	void GetConveyorMaterials( TArray<UMaterialInterface*, TInlineAllocator<4>>& out_materials );
-
+	/** Populates spline component from spline points data on the buildable */
+	void PopulateSplineComponentFromSplinePointsData();
 protected:
 	/** Mesh to use for his conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
@@ -207,10 +162,6 @@ private:
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
 	class USplineComponent* mSplineComponent;
 
-	/** The spline meshes for this train track. */
-	UPROPERTY( VisibleAnywhere, Category = "Spline", meta=(AllowPrivateAccess =true) )
-	class UFGConveyorInstancedSplineMeshComponent* mInstancedSplineComponent_;
-
 	/** Wwise multiple position playback for the conveyor spline. */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Audio" )
 	class UFGSoundSplineComponent* mSoundSplineComponent;
@@ -218,13 +169,17 @@ private:
 	/** The ak event to post for the sound spline */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
 	class UAkAudioEvent* mSplineAudioEvent;
+
+	/* Mesh used to determine visibility of the belt, since we moved to HISM's we have no clue if they are visible or not without this.*/
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> mVisibilityMeshComponent;
+
+	/* Material assigned to the collision box proxies. */
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	UPhysicalMaterial* PhysicalMaterial;
 	
 	// Collision Constants. These used to be magic numbers in the .cpp but were moved here so they could be accessed via the SplineBuildableInterface
 	static inline const FVector COLLISION_EXTENT = FVector( 80.f, 80.f, 15.f );
 	static inline const float COLLISION_SPACING =  160.f;
 	static inline const FVector COLLISION_OFFSET = FVector( 0.f, 0.f, 0.f );
-
-	bool mShouldCastBeltShadows;
-
-	bool mShouldCastItemShadows;
 };

@@ -201,19 +201,19 @@ protected:
 	TSubclassOf< class AFGCreature > mCreatureClassArachnidOverride;
 
 	/** The number of enemies to spawn, used offline */
-	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Spawning" )
 	FInt32Interval mNumberOfCreatures;
 
 	/** Can creatures spawn during day? */
-	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Spawning" )
 	bool mCanSpawnDuringDay;
 
 	/** Can creatures spawn during night? */
-	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Spawning" )
 	bool mCanSpawnDuringNight;
 
 	/** Within what radius do you want to spawn the enemies (the won't go outside of this radius) */
-	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Spawning" )
 	float mSpawnRadius;
 
 	/** Whether or not we are actively spawning. */
@@ -237,11 +237,11 @@ protected:
 	bool mCachedIsNearBase;
 
 	/** Used to override the spawn distance of the creature. */
-	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Spawning" )
 	float mSpawnDistanceOverride;
 
 	/** Used to override the despawn distance of the creature. */
-	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Spawning" )
 	float mDespawnDistanceOverride;
 	
 private:

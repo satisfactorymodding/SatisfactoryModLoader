@@ -11,6 +11,7 @@ FPowerGraphPoint& FPowerCircuitStats::MakeAndAddGraphPoint(){ return *(new FPowe
 FPowerGraphPoint& FPowerCircuitStats::AdvanceToNextGraphPoint(){ return *(new FPowerGraphPoint); }
 void UFGPowerCircuit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGPowerCircuit, mBoostProduced);
 	DOREPLIFETIME(UFGPowerCircuit, mMaximumPowerConsumption);
 	DOREPLIFETIME(UFGPowerCircuit, mHasPower);
 	DOREPLIFETIME(UFGPowerCircuit, mHasBatteries);
@@ -20,13 +21,14 @@ void UFGPowerCircuit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Ou
 	DOREPLIFETIME(UFGPowerCircuit, mTimeToBatteriesEmpty);
 	DOREPLIFETIME(UFGPowerCircuit, mTimeToBatteriesFull);
 	DOREPLIFETIME(UFGPowerCircuit, mIsFuseTriggered);
-	DOREPLIFETIME(UFGPowerCircuit, mPowerStats);
+	DOREPLIFETIME(UFGPowerCircuit, mProductionBoostFactor);
 }
-void UFGPowerCircuit::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
+void UFGPowerCircuit::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
 UFGPowerCircuit::UFGPowerCircuit() : Super() {
 	this->mPowerProductionCapacity = 0.0;
 	this->mPowerProduced = 0.0;
 	this->mPowerConsumed = 0.0;
+	this->mBoostProduced = 0.0;
 	this->mMaximumPowerConsumption = 0.0;
 	this->mHasPower = false;
 	this->mHasBatteries = false;
@@ -36,10 +38,11 @@ UFGPowerCircuit::UFGPowerCircuit() : Super() {
 	this->mTimeToBatteriesEmpty = 0.0;
 	this->mTimeToBatteriesFull = 0.0;
 	this->mIsFuseTriggered = false;
+	this->mProductionBoostFactor = 0.0;
 	this->mPowerStoreAtBatteryDepletionStart = 0.0;
 	this->mTimeSinceLastWarning = 0.0;
 }
-void UFGPowerCircuit::ResetFuse(){ }
+void UFGPowerCircuit::ResetFuse( AFGPlayerController* instigator){ }
 void UFGPowerCircuit::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }
 bool UFGPowerCircuit::IsNoPowerCheatOn() const{ return bool(); }
 void UFGPowerCircuit::OnCircuitChanged(){ }
@@ -52,7 +55,7 @@ void UFGPowerCircuit::StatFuseTriggered(){ }
 UFGCircuit* UFGPowerCircuit::SplitCircuit(AFGCircuitSubsystem* subsystem) const{ return nullptr; }
 UFGCircuitGroup* UFGPowerCircuit::CreateCircuitGroup(AFGCircuitSubsystem* subsystem) const{ return nullptr; }
 void UFGPowerCircuit::SetHasPower(bool hasPower){ }
-void UFGPowerCircuitGroup::ResetFuses(){ }
+void UFGPowerCircuitGroup::ResetFuses( AFGPlayerController* instigator){ }
 void UFGPowerCircuitGroup::RegisterPrioritySwitch( AFGBuildablePriorityPowerSwitch* circuitSwitch){ }
 void UFGPowerCircuitGroup::PushCircuit(UFGCircuit* circuit){ }
 bool UFGPowerCircuitGroup::PreTickCircuitGroup(float dt){ return bool(); }
@@ -62,6 +65,6 @@ void UFGPowerCircuitGroup::TickPowerCircuitGroup(float deltaTime){ }
 float UFGPowerCircuitGroup::TickBatteries(float deltaTime, const float netPowerProduction, bool isFuseTriggered){ return float(); }
 bool UFGPowerCircuitGroup::TryTurnOffPrioritySwitch(){ return bool(); }
 void UFGPowerCircuitGroup::OnFuseSet(){ }
-void UFGPowerCircuitGroup::OnFuseReset(){ }
+void UFGPowerCircuitGroup::OnFuseReset( AFGPlayerController* instigator){ }
 void UFGPowerCircuitGroup::OnPrioritySwitchesTurnedOff(int32 priority){ }
 void UFGPowerCircuitGroup::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }

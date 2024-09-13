@@ -5,7 +5,10 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGSettings.h"
+#include "Engine/DataAsset.h"
 #include "FGIconLibrary.generated.h"
+
+class UFGItemDescriptor;
 
 UENUM( BlueprintType )
 enum class EIconType : uint8
@@ -16,15 +19,40 @@ enum class EIconType : uint8
 	ESIT_Monochrome,
 	ESIT_Material,
 	ESIT_Custom,
-	ESIT_MapStamp
+	ESIT_MapStamp,
+	ESIT_None
 };
 
-USTRUCT( Blueprintable )
+/** IconID that is persistent and globally unique, meaning that it can be safely transferred between SaveGames in, f.e., blueprints */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FPersistentGlobalIconId
+{
+	GENERATED_BODY()
+
+	FORCEINLINE FPersistentGlobalIconId() : IconID( INDEX_NONE )
+	{
+	}
+
+	/** The path to the Icon Library owning this Icon. If not set, Default is assumed (e.g. FG's own icon library) */
+	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "Icon Data" )
+	FTopLevelAssetPath IconLibrary;
+
+	/** ID of the Icon within it's owner Icon Library asset. Not a global IconID! */
+	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "Icon Data" )
+	int32 IconID;
+};
+
+USTRUCT( BlueprintType )
 struct FACTORYGAME_API FIconData
 {
 	GENERATED_BODY()
 
-	FIconData() : ID( INDEX_NONE ), Hidden( false ), SearchOnly( false ), Animated( false ) { Texture = nullptr; }
+	FIconData() :
+		ID( INDEX_NONE ),
+		IconType( EIconType::ESIT_None ),
+		Hidden( false ),
+		SearchOnly( false ),
+		Animated( false ) { Texture = nullptr; }
 
 	// ID's must be unique! They are assign when generating sign data and will never be modified after being used. Do not manually assign
 	// this.
@@ -36,6 +64,14 @@ struct FACTORYGAME_API FIconData
 	UPROPERTY( EditDefaultsOnly, Category = "Icon Data" )
 	TSoftObjectPtr< UObject > Texture;
 
+	// A reference to the Icons Desc it pulled from (if there is one)
+	UPROPERTY( VisibleDefaultsOnly, Category = "Icon Data" )
+	TSoftClassPtr< UFGItemDescriptor > ItemDescriptor;
+
+	/** If we override the display name or get it from the first products item name. This is true for images that have no descriptor */
+	UPROPERTY( VisibleDefaultsOnly, meta=(NoAutoJson = true) )
+	bool DisplayNameOverride = false;
+	
 	// The name of this icon, generally pulled from the descriptor this icon resides in. For Monochrome Icons, set the desired name here
 	UPROPERTY( EditDefaultsOnly, Category = "Icon Data" )
 	FText IconName;
@@ -63,40 +99,14 @@ struct FACTORYGAME_API FIconData
 /**
  * Icon Library = Holds database of all icon data available to players for use on signs (maybe beacons?). As well as helper functions for accessing the data via bp
  */
-UCLASS( BlueprintType, Blueprintable, abstract )
-class FACTORYGAME_API UFGIconLibrary : public UObject
+UCLASS()
+class FACTORYGAME_API UFGIconLibrary : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 	
 public:
 	UFGIconLibrary();
-
-	/** Helper to get icon library without going through UFGGlobalSettings */
-	static UFGIconLibrary* Get();
-
-	/** Returns the full array of all icons available */
-	UFUNCTION( BlueprintPure, Category = "Icon Data Settings" )
-	TArray< FIconData >& GetIconData() { return mIconData; }
-
-	UFUNCTION( BlueprintPure, Category = "Icon Data Settings" )
-	TArray< FIconData >& GetCustomIconData() { return mCustomIconData; }
-
-	UFUNCTION( BlueprintPure, Category = "Icon Data Settings" )
-	TArray< FIconData >& GetMaterialIconData() { return mMaterialIconData; }
-
-	UFUNCTION( BlueprintPure, Category = "Icon Data Settings" )
-	TArray< FIconData >& GetMapStampIconData() { return mMapStampIconData; }
-
-	UFUNCTION( BlueprintPure, Category = "Icon Data Settings" )
-	TArray< FIconData >& GetMonochromeIconData() { return mMonochromeIconData; }
-
-	/** Attempts to retrieve the index of an icon with the corresponding texture */
-	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings" )
-	int32 GetIconIDForTexture( class UObject* texture );
-
-	/** Get the texture from the IconData with the given ID. Will sync load if needed */
-	UObject* GetTextureFromIconID( int32 iconID );
-
+	
 	// Get the texture from a IconData element. Will sync load if needed
 	UFUNCTION( BlueprintCallable, Category = "IconLibrary|Icon Settings" )
 	static UObject* GetTextureFromIconData( UPARAM( ref ) const FIconData& iconData );
@@ -117,30 +127,29 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "IconLibrary|Icon Settings" )
 	static EIconType GetIconTypeFromIconData( UPARAM( ref ) const FIconData& iconData );
 
-
 	/*	Loop through all schematics and their recipes, add all icons encountered. Adds any manually added elements from the MonochromeData array. 
 	*	Icon types are determined from the item descriptor types. ID's are assigned and ensured unique (never manually set an elements ID)
 	*	Will not add duplicates. Will not remove any elements that already exist (non-destructive).
 	*	If you wish to make an element not exist for the player, use the "Hidden" bool on the element you wish to hide.
+	*
+	*	Note that this will also only handle recipes and schematics from your own mount point
 	*/
-	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings" )
-	static FString CompileIconDatabase( TSubclassOf< UFGIconLibrary > iconLibraryClass );
+	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings", CallInEditor )
+	FString CompileIconDatabase();
 
 	// This is just for developement and should not be used once the icon data goes live. Hence, a password field to ensure this isn't accidentally called (just to drive home the point of not calling this)
-	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings" )
-	static FString ClearIconDatabase( TSubclassOf< UFGIconLibrary > iconLibraryClass, FString password );
+	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings", CallInEditor )
+	FString ClearIconDatabase( FString password );
 
-	/* Get all the icon data from Icon Settings for a given icon type type. If includeHidden is not true, this will filter out those elements */
-	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings" )
-	static void GetAllIconDataForType( TSubclassOf< UFGIconLibrary > iconLibraryClass, EIconType iconType, bool includeHidden,
-									   TArray< FIconData >& out_iconData );
+	/* Deprecated functions, now located in FGIconDatabaseSubsystem */
+	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings | Deprecated", meta = ( DeprecatedFunction, DeprecationMessage = "Use FGIconDatabaseSubsystem::GetAllIconDataForType instead", WorldContext = "worldContext" ) )
+	static void GetAllIconDataForType( UObject* worldContext, EIconType iconType, bool includeHidden, TArray< FIconData >& out_iconData );
 
 	/** Get the icon data for a specific icon ID */
-	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings" )
-	static void GetIconDataForIconID( TSubclassOf< UFGIconLibrary > iconLibraryClass, int32 iconID, FIconData& out_iconData );
+	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings | Deprecated", meta = ( DeprecatedFunction, DeprecationMessage = "Use FGIconDatabaseSubsystem::GetIconDataForIconID instead", WorldContext = "worldContext" ) )
+	static void GetIconDataForIconID( UObject* worldContext, int32 iconID, FIconData& out_iconData );
 
 public:
-
 	/*	List of all Icon Elements and their data to be used as icons (for signs and maybe beacons?).
 	*	WARNING! Do not add/remove directly from this list unless you REALLY need to (this is likely not the case, and if it is, then talk to programming for support )
 	*	The only property that should ever be manually set in this array is "Hidden"! Do not set the texture directly.

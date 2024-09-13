@@ -15,7 +15,6 @@ AFGSplineHologram::AFGSplineHologram() : Super() {
 	this->mSplineData[1].Location = FVector::ZeroVector;
 	this->mSplineData[1].ArriveTangent = FVector((1, 0, 0));
 	this->mSplineData[1].LeaveTangent = FVector((1, 0, 0));
-	this->mIsConnectionSnappedOnConstruction = 0;
 	this->mBuildStep = ESplineHologramBuildStep::SHBS_FindStart;
 	this->mSplineComponent->SetupAttachment(RootComponent);
 }
@@ -25,14 +24,11 @@ void AFGSplineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& 
 	DOREPLIFETIME(AFGSplineHologram, mBuildStep);
 }
 void AFGSplineHologram::BeginPlay(){ }
-void AFGSplineHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
-void AFGSplineHologram::ClientPreConstructMessageSerialization(){ }
-void AFGSplineHologram::ServerPostConstructMessageDeserialization(){ }
 bool AFGSplineHologram::CanNudgeHologram() const{ return bool(); }
-void AFGSplineHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
 bool AFGSplineHologram::IsConnectionSnapped(bool lastConnection){ return bool(); }
 void AFGSplineHologram::GetLastSplineData(FSplinePointData& data){ }
 void AFGSplineHologram::ResetBuildSteps(){ }
-bool AFGSplineHologram::CheckClearanceForShapeIgnoreStructure(FCollisionShape& shape, FTransform transform, ECollisionChannel chanel, const FComponentQueryParams& params){ return bool(); }
+bool AFGSplineHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
 void AFGSplineHologram::OnRep_SplineData(){ }
 void AFGSplineHologram::UpdateSplineComponent(){ }
+void AFGSplineHologram::UpdateClearanceData(){ }

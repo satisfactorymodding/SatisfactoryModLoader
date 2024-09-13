@@ -3,14 +3,14 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "UObject/NoExportTypes.h"
-#include "FGConstructionMessageInterface.h"
+#include "CoreMinimal.h"
+#include "UObject/Object.h"
 #include "FGRemoteCallObject.generated.h"
 
 /**
  * 
  */
-UCLASS( Abstract )
+UCLASS( Blueprintable, Abstract, Within = FGPlayerController )
 class FACTORYGAME_API UFGRemoteCallObject : public UObject
 {
 	GENERATED_BODY()
@@ -18,6 +18,7 @@ class FACTORYGAME_API UFGRemoteCallObject : public UObject
 public:
 	/** Mark this class as supported for networking */
 	virtual bool IsSupportedForNetworking() const override;
+	virtual UWorld* GetWorld() const override;
 
 	/** This is overloaded so that we can call Server/Client functions in this object by using the Callspace of the outer PlayerController. */
 	int32 GetFunctionCallspace( UFunction* Function, FFrame* Stack ) override;
@@ -26,16 +27,19 @@ public:
 	bool CallRemoteFunction( UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack ) override;
 
 	/** Helper function to get the game state. Can't be done in BluePrint since the GetGameState function hides it world context pin */
-	UFUNCTION( BlueprintPure, Category = "Game State" )
-	class AFGGameState* GetGameState();
+	UFUNCTION( BlueprintPure, Category = "Remote Call Object" )
+	class AFGGameState* GetGameState() const;
 
-	void SendHologramConstructMessage( class AFGBuildGun* buildGun, class AFGHologram* hologram, AActor* upgradedActor = nullptr );
+	/** Returns the FGPlayerController owning this RCO */
+	UFUNCTION( BlueprintPure, Category = "Remote Call Object" )
+	class AFGPlayerController* GetOwnerPlayerController() const;
 
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_ConstructHologram( FNetConstructionID netConstructionID, FConstructHologramMessage message );
+	/** Returns the player character owning this RCO */
+	UFUNCTION( BlueprintPure, Category = "Remote Call Object" )
+	class AFGCharacterPlayer* GetOwnerPlayerCharacter() const;
 
-protected:
-
-	/** Returns the cast outer as a FGPlayerControlelr */
-	class AFGPlayerController* GetOuterFGPlayerController();
+	/** Whenever RCO of this class should be registered */
+	virtual bool ShouldRegisterRemoteCallObject( const class AFGGameMode* gameMode ) const;
+	
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 };

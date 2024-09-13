@@ -11,6 +11,7 @@ void UFGFactoryCustomizationDescriptor_Material::Purge(TSubclassOf<UFGFactoryCus
 #endif 
 bool UFGFactoryCustomizationDescriptor_Material::BuildableRecipeIsMappedTo(TSubclassOf<  UFGRecipe > recipe){ return bool(); }
 bool UFGFactoryCustomizationDescriptor_Material::AddType(TSubclassOf<  AFGBuildable > inBuildable, TSubclassOf<UFGRecipe> inRecipe){ return bool(); }
+void UFGFactoryCustomizationDescriptor_PaintFinish::GetPaintFinishSettings(TSubclassOf<UFGFactoryCustomizationDescriptor_PaintFinish> Class, float& Roughness, float& Metallic, bool& HasForcedColor, FLinearColor& ForcedColor){ }
 void UFGFactorySkinActorData::GetSkinComponentDataForSkinActorData(TSubclassOf< UFGFactorySkinActorData > skinClass, TMap< TSubclassOf< UFGFactoryCustomizationDescriptor_Skin >, FFactorySkinComponentGroup >& out_componentGroupData){ }
 #if WITH_EDITOR
 EDataValidationResult UFGFactoryCustomizationCollection::IsDataValid(TArray< FText >& ValidationErrors){ return EDataValidationResult::Valid; }
@@ -18,7 +19,7 @@ EDataValidationResult UFGFactoryCustomizationCollection::IsDataValid(TArray< FTe
 UFGFactoryCustomizationCollection::UFGFactoryCustomizationCollection() : Super() {
 	this->mCustomizationClass = nullptr;
 }
-void FFactoryCustomizationData::Initialize( AFGGameState* gameState){ }
+void FFactoryCustomizationData::Initialize( AFGGameState* gameState, int32 forceDataSize){ }
 void FFactoryCustomizationData::InlineCombine(const FFactoryCustomizationData& other){ }
 void FFactoryCustomizationData::UpdateHasPowerData(){ }
 void FFactoryCustomizationData::GetCustomizationArray(TArray< TSubclassOf <  UFGFactoryCustomizationDescriptor > >& out_customizations){ }

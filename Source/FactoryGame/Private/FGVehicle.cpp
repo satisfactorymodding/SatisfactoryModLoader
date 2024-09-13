@@ -13,12 +13,15 @@ void AFGVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	DOREPLIFETIME(AFGVehicle, mNetConstructionID);
 	DOREPLIFETIME(AFGVehicle, mCustomizationData);
 	DOREPLIFETIME(AFGVehicle, mBuiltWithRecipe);
+	DOREPLIFETIME(AFGVehicle, mBuildEffectInstigator);
+	DOREPLIFETIME(AFGVehicle, mOwningPlayerState);
+	DOREPLIFETIME(AFGVehicle, mMatchCustomizationDataWithPlayerState);
 	DOREPLIFETIME(AFGVehicle, mIsSelfDriving);
 	DOREPLIFETIME(AFGVehicle, mIsSubmergedInWater);
 	DOREPLIFETIME(AFGVehicle, mIsSimulated);
 	DOREPLIFETIME(AFGVehicle, mMapText);
 }
-bool AFGVehicle::IsRelevancyOwnerFor(const AActor* Actor, const AActor* Owner, const AActor* ConnectionActor) const{ return bool(); }
+bool AFGVehicle::IsRelevancyOwnerFor(const AActor* Actor, const AActor* Owner1, const AActor* ConnectionActor) const{ return bool(); }
 AFGVehicle::AFGVehicle() : Super() {
 	this->mDisplayName = INVTEXT("");
 	this->mDescription = INVTEXT("");
@@ -32,6 +35,9 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mOptionalWorkBenchComponent = nullptr;
 	this->mOptionalWorkBenchBox = nullptr;
 	this->mBuiltWithRecipe = nullptr;
+	this->mBuildEffectInstigator = nullptr;
+	this->mOwningPlayerState = nullptr;
+	this->mMatchCustomizationDataWithPlayerState = false;
 	this->mIsSelfDriving = false;
 	this->mSelfDrivingController = nullptr;
 	this->mConstructSound = nullptr;
@@ -40,11 +46,13 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mSubmergedAngularDamping = 6.0;
 	this->mSubmergedLinearDamping = 15.0;
 	this->mJumpPadForceMultiplier = 1.0;
+	this->mActiveBuildEffect = nullptr;
 	this->mIsSimulated = false;
 	this->mAddToSignificanceManager = true;
 	this->mSignificanceRange = 20000.0;
 	this->mSimulationDistance = 20000.0;
 	this->mActorRepresentationTexture = nullptr;
+	this->mActorRepresentationCompassMaterial = nullptr;
 	this->mMapText = INVTEXT("");
 	this->AutoPossessAI = EAutoPossessAI::Disabled;
 	this->AIControllerClass = nullptr;
@@ -64,7 +72,13 @@ void AFGVehicle::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersio
 void AFGVehicle::GainedSignificance_Implementation(){ }
 void AFGVehicle::LostSignificance_Implementation(){ }
 float AFGVehicle::GetSignificanceRange(){ return float(); }
-void AFGVehicle::SetCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
+void AFGVehicle::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
+void AFGVehicle::OnBuildEffectFinished(){ }
+void AFGVehicle::OnDismantleEffectFinished(){ }
+void AFGVehicle::ExecuteBuildEffect(){ }
+void AFGVehicle::TurnOffAndDestroy(){ }
+void AFGVehicle::PlayDismantleEffects(){ }
+void AFGVehicle::SetCustomizationData_Native(const FFactoryCustomizationData& customizationData, bool skipCombine){ }
 void AFGVehicle::SetCustomizationData_Implementation(const FFactoryCustomizationData& colorData){ }
 void AFGVehicle::ApplyCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
 TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGVehicle::GetActiveSkin_Native(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
@@ -88,6 +102,9 @@ void AFGVehicle::Dismantle_Implementation(){ }
 void AFGVehicle::StartIsLookedAtForDismantle_Implementation(AFGCharacterPlayer* byCharacter){ }
 void AFGVehicle::StopIsLookedAtForDismantle_Implementation(AFGCharacterPlayer* byCharacter){ }
 void AFGVehicle::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }
+FText AFGVehicle::GetDismantleDisplayName_Implementation(AFGCharacterPlayer* byCharacter) const{ return FText(); }
+void AFGVehicle::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ }
+void AFGVehicle::NetMulticast_Dismantle_Implementation(){ }
 TSubclassOf< class UFGItemDescriptor > AFGVehicle::GetBuiltWithDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 bool AFGVehicle::CanBeSampled(){ return bool(); }
 USkeletalMeshComponent* AFGVehicle::GetMesh() const{ return nullptr; }
@@ -107,7 +124,10 @@ TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGVehicle::GetDef
 void AFGVehicle::OnSkinCustomizationApplied_Implementation(TSubclassOf<  UFGFactoryCustomizationDescriptor_Skin > skin){ }
 FVector AFGVehicle::GetVehicleRealActorLocation() const{ return FVector(); }
 bool AFGVehicle::IsSubmergedInWater() const{ return bool(); }
+void AFGVehicle::SetOwningPlayerState( AFGPlayerState* playerState){ }
+void AFGVehicle::SetMatchCustomizationWithPlayerState(bool shouldMatch){ }
 void AFGVehicle::OnCustomizationDataApplied(const FFactoryCustomizationData& customizationData){ }
+void AFGVehicle::OnCustomizationDataSet(const FFactoryCustomizationData& previousData){ }
 void AFGVehicle::OnRep_IsSimulated(){ }
 void AFGVehicle::ToggleEntireVehicleOutline(const bool isOutlined, const EOutlineColor& outlineColor){ }
 void AFGVehicle::OnTakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }
@@ -123,4 +143,7 @@ void AFGVehicle::HideOutline(){ }
 void AFGVehicle::SetSelfDriving(bool newSelfDriving){ }
 void AFGVehicle::UpdatePhysicsVolume(APhysicsVolume* physicsVolume){ }
 void AFGVehicle::OnRep_CustomColorData(){ }
+void AFGVehicle::OnRep_OwningPlayerState( AFGPlayerState* previousPlayerState){ }
+void AFGVehicle::OnPlayerCustomizationDataChanged(const  FPlayerCustomizationData& newCustomizationData){ }
+void AFGVehicle::UpdateCustomizationDataFromPlayerState(){ }
 FName AFGVehicle::VehicleMeshComponentName = FName();

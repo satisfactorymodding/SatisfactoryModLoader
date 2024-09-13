@@ -4,12 +4,17 @@
 #include "Net/UnrealNetwork.h"
 
 UFGBuildGunStateBuild::UFGBuildGunStateBuild() : Super() {
+	this->mMappingContextHologram = nullptr;
+	this->mLastFocusedCategory = nullptr;
 	this->mIsUsingPressAndReleaseAsBuildSteps = true;
 	this->mPendingRecipe = nullptr;
 	this->mActiveRecipe = nullptr;
+	this->mLastRecipe = nullptr;
 	this->mHologram = nullptr;
 	this->mUpgradedActor = nullptr;
+	this->mInstanceConverterInstigator = nullptr;
 	this->mActiveBlueprintDescriptor = nullptr;
+	this->mLastBlueprintDescriptor = nullptr;
 }
 void UFGBuildGunStateBuild::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -28,6 +33,7 @@ bool UFGBuildGunStateBuild::IsValidVehicleSample( AFGVehicle* vehicle) const{ re
 void UFGBuildGunStateBuild::OnRecipeSampled_Implementation(TSubclassOf<class UFGRecipe> recipe){ }
 void UFGBuildGunStateBuild::OnBuildGunModeChanged_Implementation(TSubclassOf< UFGBuildGunModeDescriptor > newMode){ }
 void UFGBuildGunStateBuild::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildModes) const{ }
+TSubclassOf< UFGBuildGunModeDescriptor > UFGBuildGunStateBuild::GetInitialBuildGunMode_Implementation() const{ return TSubclassOf<UFGBuildGunModeDescriptor>(); }
 float UFGBuildGunStateBuild::GetBuildGunRangeOverride_Implementation(){ return float(); }
 void UFGBuildGunStateBuild::BindInputActions( UFGEnhancedInputComponent* inputComponent){ }
 bool UFGBuildGunStateBuild::CanSampleBuildings() const{ return bool(); }
@@ -44,12 +50,15 @@ void UFGBuildGunStateBuild::Server_ChangeGuideLinesSnapMode_Implementation(bool 
 void UFGBuildGunStateBuild::ChangeGuidelineSnapMode(bool enabled){ }
 void UFGBuildGunStateBuild::Server_ToggleHologramPositionLock_Implementation(){ }
 void UFGBuildGunStateBuild::ToggleHologramPositionLock(){ }
-TSubclassOf<class UFGHologramBuildModeDescriptor> UFGBuildGunStateBuild::GetLastBuildModeForCategory(uint8 category, TSubclassOf<  AActor > actorClass){ return TSubclassOf<class UFGHologramBuildModeDescriptor>(); }
+TSubclassOf<class UFGHologramBuildModeDescriptor> UFGBuildGunStateBuild::GetLastBuildModeForCategory(uint8 category, TSubclassOf<  AActor > actorClass) const{ return TSubclassOf<class UFGHologramBuildModeDescriptor>(); }
 void UFGBuildGunStateBuild::OnZoopUpdated_Implementation(float currentZoop, float maxZoop, const FVector& zoopLocation){ }
 void UFGBuildGunStateBuild::OnHologramLockStateChanged( AFGHologram* hologram, bool isLocked){ }
 void UFGBuildGunStateBuild::OnHologramNudgeOffsetChanged( AFGHologram* hologram, const FVector& newOffset){ }
 void UFGBuildGunStateBuild::HookUpUserSettings(){ }
 void UFGBuildGunStateBuild::OnClearanceDetectorAdded(UBoxComponent* clearanceDetector){ }
+void UFGBuildGunStateBuild::OnDelayedConstructHologram(FNetConstructionID localId, FConstructHologramMessage message){ }
+UPackageMap* UFGBuildGunStateBuild::FindPackageMapForPlayerController(const APlayerController* playerController){ return nullptr; }
+const FActorClearanceData* UFGBuildGunStateBuild::GetClearanceDataForActor(const AActor* actor) const{ return nullptr; }
 void UFGBuildGunStateBuild::InternalExecuteDuBuildStepInput(bool isInputFromARelease){ }
 void UFGBuildGunStateBuild::ResetHologram(){ }
 void UFGBuildGunStateBuild::Client_OnBuildableConstructed_Implementation(TSubclassOf< UFGItemDescriptor > desc){ }
@@ -57,16 +66,19 @@ void UFGBuildGunStateBuild::Client_OnRecipeBuilt_Implementation(TSubclassOf<  UF
 void UFGBuildGunStateBuild::Client_OnBlueprintConstructed_Implementation(const FString& blueprintName, int32 numConstructed){ }
 void UFGBuildGunStateBuild::Client_OnBuildableFailedConstruction_Implementation(FNetConstructionID netConstructionID){ }
 void UFGBuildGunStateBuild::SpawnHologram(){ }
-void UFGBuildGunStateBuild::RemoveHologram( AFGHologram* hologram, bool cleanupClearanceDetection){ }
+void UFGBuildGunStateBuild::RemoveHologram( AFGHologram*& hologram, bool cleanupClearanceDetection){ }
 void UFGBuildGunStateBuild::CleanupHologramClearanceDetection(){ }
 AFGHologram* UFGBuildGunStateBuild::InternalSpawnHologram(){ return nullptr; }
+void UFGBuildGunStateBuild::ApplyPlayerRelativeRotation(AFGHologram* hologram, int32 minRotationMode){ }
 void UFGBuildGunStateBuild::BeginClearanceDetectorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult){ }
 void UFGBuildGunStateBuild::EndClearanceDetectorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex){ }
 void UFGBuildGunStateBuild::OnUserSettingsUpdated(){ }
 void UFGBuildGunStateBuild::Server_SetUseAutomaticClearanceSnapping_Implementation(bool useAutomaticSnapping){ }
 void UFGBuildGunStateBuild::Server_UpdateNudgeOffset_Implementation(const FVector& newNudgeOffset){ }
+void UFGBuildGunStateBuild::NudgeTimerTick(){ }
 void UFGBuildGunStateBuild::Input_HologramLock(const FInputActionValue& actionValue){ }
 void UFGBuildGunStateBuild::Input_HologramNudgeAxis(const FInputActionValue& actionValue){ }
 void UFGBuildGunStateBuild::Input_SnapToGuideLines(const FInputActionValue& actionValue){ }
 void UFGBuildGunStateBuild::Input_HotbarSample(const FInputActionValue& actionValue){ }
+void UFGBuildGunStateBuild::HandleBuildableAchievementTags(const AFGBuildable* buildable) const{ }
 void UFGBuildGunStateBuild::UpdateClearanceData(){ }

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "UndefinedBool.h"
 #include "GameFramework/Volume.h"
 #include "FGSignificanceInterface.h"
 #include "FGAmbientVolume.generated.h"
@@ -35,8 +34,8 @@ public:
 	/** Set from the FGAmbientVolumeSubsystem */
 	void SetCameraIsClose( bool close );
 	void SetCameraIsInside( bool inside );
-	bool IsCameraClose() const { return mIsCameraClose == EUndefinedBool::UB_True; }
-	bool IsCameraInside() const { return mIsCameraInside == EUndefinedBool::UB_True; }
+	bool IsCameraClose() const { return mIsCameraClose; }
+	bool IsCameraInside() const { return mIsCameraInside; }
 
 	/** Extra distance to start playing audio outside the attenuation radius */
 	FORCEINLINE float GetAdditionalAttunationDistance() const{ return mAdditionalAttenuationDistance; }

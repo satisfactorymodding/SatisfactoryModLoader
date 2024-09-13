@@ -22,8 +22,12 @@ class FACTORYGAME_API AFGPowerPoleHologram : public AFGBuildableHologram
 {
 	GENERATED_BODY()
 public:
+	// Begin AActor interface
 	virtual void BeginPlay() override;
-
+	virtual void Destroyed() override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	// End AActor interface
+	
 	//Begin AFGHologram interface
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
@@ -34,16 +38,13 @@ public:
 	virtual AActor* GetUpgradedActor() const override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
-	virtual AActor* Construct(TArray<AActor*>& out_children, FNetConstructionID constructionID) override;
+	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID constructionID ) override;
 	virtual void OnInvalidHitResult() override;
 	virtual void CheckValidPlacement() override;
 	virtual float GetBuildGunRangeOverride_Implementation() const override;
+	virtual bool ShouldBuildGunHitWireMeshes() const override;
 	//End AFGHologram interface
 
-	virtual void Destroyed() override;
-	/** Replication */
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	
 	/** Get the connections the wires snap to. */
 	FORCEINLINE UFGCircuitConnectionComponent* GetSnapConnection() const { return mSnapConnection; }
 
@@ -65,7 +66,7 @@ private:
 	UPROPERTY()
 	class UFGCircuitConnectionComponent* mPowerTowerSnapConnection;
 
-	UPROPERTY()
+	UPROPERTY( CustomSerialization, Replicated )
 	class AFGBuildableWire* mSnapWire = nullptr;
 
 	UPROPERTY( Replicated )
@@ -75,7 +76,7 @@ private:
 	class AFGWireHologram* mWireHologramOut = nullptr;
 
 	/** Recipe to use for the automatically spawned wires, can be null. */
-	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Wire" )
+	UPROPERTY( EditDefaultsOnly, Category = "Wire" )
 	TSubclassOf< class UFGRecipe > mDefaultPowerLineRecipe;
 
 	UPROPERTY()

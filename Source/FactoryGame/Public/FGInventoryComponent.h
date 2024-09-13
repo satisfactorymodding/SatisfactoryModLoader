@@ -2,10 +2,14 @@
 
 #pragma once
 
-#include "SharedInventoryStatePtr.h"
+#include "Components/ActorComponent.h"
+#include "Replication/FGConditionalPropertyReplicator.h"
+#include "Replication/FGConditionalReplicationInterface.h"
 #include "FGSaveInterface.h"
 #include "Resources/FGItemDescriptor.h"
 #include "FactoryGame.h"
+#include "FGDynamicStruct.h"
+#include "Templates/SubclassOfField.h"
 #include "FGInventoryComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FInventoryResized, int32, oldSize, int32, newSize );
@@ -39,10 +43,17 @@ public:
 	FORCEINLINE bool HasState() const { return ItemState.IsValid(); }
 
 	FORCEINLINE TSubclassOf< class UFGItemDescriptor > GetItemClass() const { return ItemClass; }
+	FORCEINLINE const FFGDynamicStruct& GetItemState() const { return ItemState; }
 
 	void SetItemClass(TSubclassOf< class UFGItemDescriptor > NewItemClass );
+	void SetItemState( const FFGDynamicStruct& NewItemState );
 
 	FORCEINLINE int32 GetItemStackSize() const { return CachedStackSize; }
+
+	// Used to convert a legacy ItemStateActor to the new format.
+	// Should only be called on the Authority side in cases where the Item is not stored in the Inventory. The FGInventoryComponent
+	// handles the conversion automatically
+	void Internal_ConvertLegacyItemState();
 
 	// TODO make private later.
 	/** Cached size of the item */
@@ -53,12 +64,13 @@ private:
 	UPROPERTY( EditAnywhere )
 	TSubclassOf< class UFGItemDescriptor > ItemClass;
 
-
-	
-public:
 	/** Optionally store an actor, e.g. an equipment, so we can remember it's state. */
-	UPROPERTY()
-	FSharedInventoryStatePtr ItemState;
+	UPROPERTY( EditAnywhere )
+	FFGDynamicStruct ItemState;
+public:
+	/** Legacy actor for the item state. We have to store it upon laod because killing actors during Serialize is risky */
+	UPROPERTY( Transient )
+	AActor* LegacyItemStateActor{};
 };
 
 /** Enable custom serialization of FInventoryItem */
@@ -124,15 +136,15 @@ DECLARE_DELEGATE_RetVal_TwoParams( bool, FFormFilter, TSubclassOf< UFGItemDescri
 
 DECLARE_DYNAMIC_DELEGATE_RetVal_TwoParams( FVector, FGetItemDropLocation, const class UFGInventoryComponent*, component, FInventoryStack, stack );
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnItemAdded, TSubclassOf< UFGItemDescriptor >, itemClass, int32, numAdded );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams( FOnItemAdded, TSubclassOf< UFGItemDescriptor >, itemClass, int32, numAdded, UFGInventoryComponent*, sourceInventory );
 
 // Speedy Delegate to avoid dynamic or blueprint exposed calls for quick factory events
-DECLARE_DELEGATE_TwoParams( FOnItemAdded_Native, TSubclassOf< UFGItemDescriptor >, int32 );
+DECLARE_DELEGATE_ThreeParams( FOnItemAdded_Native, TSubclassOf< UFGItemDescriptor >, int32, UFGInventoryComponent* );
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnItemRemoved, TSubclassOf< UFGItemDescriptor >, itemClass, int32, numRemoved );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams( FOnItemRemoved, TSubclassOf< UFGItemDescriptor >, itemClass, int32, numRemoved, UFGInventoryComponent*, targetInventory );
 
 // Speedy Delegate to avoid dynamic or blueprint exposed calls for quick factory events
-DECLARE_DELEGATE_TwoParams( FOnItemRemoved_Native, TSubclassOf< UFGItemDescriptor >, int32 );
+DECLARE_DELEGATE_ThreeParams( FOnItemRemoved_Native, TSubclassOf< UFGItemDescriptor >, int32, UFGInventoryComponent* );
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSlotUpdated, int32, index );
 
@@ -143,18 +155,17 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSlotUpdated, int32, index );
  * The outer object of this object needs to implement GetWorld
  */
 UCLASS( BlueprintType, ClassGroup = ( Custom ), meta = ( BlueprintSpawnableComponent ) )
-class FACTORYGAME_API UFGInventoryComponent : public UActorComponent, public IFGSaveInterface
+class FACTORYGAME_API UFGInventoryComponent : public UActorComponent, public IFGSaveInterface, public IFGConditionalReplicationInterface
 {
 	GENERATED_BODY()
 public:
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
-	virtual void PreNetReceive() override;
 
 	UFGInventoryComponent();
 
 	//~ Begin UObject interface
 	virtual void Serialize( FArchive& ar ) override;
+	virtual void PostLoad() override;
 	//~ End UObject interface
 
 	// Begin IFGSaveInterface
@@ -166,6 +177,11 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
+
+	// Begin IFGConditionalReplicationInterface
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
+	virtual bool IsPropertyRelevantForConnection(UNetConnection* netConnection, const FProperty* property) const override;
+	// End IFGConditionalReplicationInterface
 
 	// Begin UActorComponent interface
 	virtual void BeginPlay() override;
@@ -274,22 +290,27 @@ public:
 	 * @param stack - The stack to add.
 	 * @param allowPartialAdd - If true we add what we can and ignore the rest; otherwise it assumes everything fits and warns otherwise.
 	 *                          @note It is the callers responsibility to take care of the items that where not added.
+	 * @param sourceInventory - The origin of the added stack, if applicable.
 	 *
 	 * @return Number of items added, may be less than the input if partial adds are allowed.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
-	virtual int32 AddStackToIndex( const int32 idx, const FInventoryStack& stack, const bool allowPartialAdd = false );
+	virtual int32 AddStackToIndex( const int32 idx, const FInventoryStack& stack, const bool allowPartialAdd = false, UFGInventoryComponent* sourceInventory = nullptr );
 
 	FORCEINLINE int32 AddSingleItemToEmptyIndex_Unsafe( const int32 idx, const FInventoryItem& item )
 	{
-		FInventoryStack& stackAtIdx = mInventoryStacks[ idx ];
+		if ( item.IsValid() )
+		{
+			FInventoryStack& stackAtIdx = mInventoryStacks[ idx ];
 
-		stackAtIdx.Item = item;
-		stackAtIdx.NumItems = 1;
+			stackAtIdx.Item = item;
+			stackAtIdx.NumItems = 1;
 
-		OnItemsAdded( idx, 1 );
+			OnItemsAdded( idx, 1 );
 	
-		return 1;
+			return 1;
+		}
+		return 0;
 	}
 
 	/**
@@ -320,13 +341,14 @@ public:
 	 *
 	 * @param idx - A valid index in mInventoryStacks.
 	 * @param num - Number of items to remove. Must be >= 0. If count is more than the items available, nothing is removed.
+	 * @param targetInventory - The destination for the removed items, if applicable.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
-	void RemoveFromIndex( int32 idx, int32 num );
+	void RemoveFromIndex( const int32 idx, const int32 num, UFGInventoryComponent* targetInventory = nullptr );
 
 	/** Clears the index, ALL items will be forever gone! */
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
-	void RemoveAllFromIndex( int32 idx );
+	void RemoveAllFromIndex( const int32 idx, UFGInventoryComponent* targetInventory = nullptr );
 
 	/** Check if the entire inventory is empty. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
@@ -346,8 +368,6 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	FORCEINLINE bool IsIndexEmpty( const int32 idx ) const
 	{
-		fgcheckf( mInventoryStacks.Num() > 0 , TEXT( "Inventory need to be initialized before use %d" ), mInventoryStacks.Num() );
-		
 		if( UNLIKELY( !IsValidIndex( idx ) ) )
 		{
 			UE_LOG( LogGame, Warning, TEXT( "RemoveFromIndex failed cause invalid index (%i) in component '%s'" ), idx, *GetName() );
@@ -416,7 +436,7 @@ public:
 	}
 
 	/** Set the state for items at slot. */
-	void SetStateOnIndex( int32 index, const FSharedInventoryStatePtr& itemState );
+	void SetStateOnIndex( int32 index, const FFGDynamicStruct& itemState );
 
 	/** The total size of the inventory, when accessing inventory linearly using indices. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
@@ -436,22 +456,22 @@ public:
 	TArray<int32> GetRelevantStackIndexes( TArray< TSubclassOf< class UFGItemDescriptor > > relevantClasses, int32 stackLimit = -1, bool sortResult = false );
 
 	/** Called when this inventory has been resized */
-	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnInventoryResized" )
+	UPROPERTY( BlueprintAssignable, Transient, Category = "Inventory", DisplayName = "OnInventoryResized" )
 	FInventoryResized ResizeInventoryDelegate;
 
 	/** Called when this inventory has something added to it, @note: Client does not guarantee order of Added/Remove delegate */
-	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnItemAdded" )
+	UPROPERTY( BlueprintAssignable, Transient, Category = "Inventory", DisplayName = "OnItemAdded" )
 	FOnItemAdded OnItemAddedDelegate;
 	
 	/** Called when something has been removed from the inventory, @note: Client does not guarantee order of Added/Remove delegate */
-	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnItemRemoved" )
+	UPROPERTY( BlueprintAssignable, Transient, Category = "Inventory", DisplayName = "OnItemRemoved" )
 	FOnItemRemoved OnItemRemovedDelegate;
 
 	/** Called when something is removed from the inventory (this is a quick version of the above to be used in performance critical areas) */
 	FOnItemRemoved_Native OnItemRemovedDelegate_Native;
 	
 	/** Called when inventory slot for a specific index have been updated. Something was added/removed what items are allowed on slot. on @note: Client does not guarantee order of index updates */
-	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnSlotUpdated" )
+	UPROPERTY( BlueprintAssignable, Transient, Category = "Inventory", DisplayName = "OnSlotUpdated" )
 	FOnSlotUpdated OnSlotUpdatedDelegate;
 
 	/** Called when something is added from the inventory (this is a quick version of the above to be used in performance critical areas) */
@@ -508,7 +528,7 @@ public:
 	/** Notify component its owning buildable is dismantled (or is dismantling), don't allow movement in or out of this inventory */
 	FORCEINLINE void SetLocked( const bool isLocked ) { mIsLocked = isLocked; }
 
-	UFUNCTION( BlueprintPure, Category = "Inventory ")
+	UFUNCTION( BlueprintPure, Category = "Inventory")
 	FORCEINLINE bool IsLocked() const { return mIsLocked; }
 
 	/** This should only be TRUE in special circumstance and should be set to false once those special circumstances are completed */
@@ -520,23 +540,34 @@ public:
 	FORCEINLINE bool GetSuppressOnItemAddedDelegate() const { return mSuppressOnItemAddedDelegateCalls; }
 	FORCEINLINE bool GetSuppressOnItemRemovedDelegate() const { return mSuppressOnItemRemovedDelegateCalls; }
 
-	/** @return The actor for the equipment in the slot, null if the slot is empty or does not contain an equipment, null if an invalid index is passed. */
-	UFUNCTION( BlueprintCallable, Category = "Inventory" )
-	class AFGEquipment* GetStackEquipmentActorAtIdx( const int32 index ) const;
-
 	void CopyInTheseItemStacks( const TArray<FInventoryStack>& itemsStacks);
+
+	/** Returns the player state from the outer player character */
+	class AFGPlayerState* GetOwningPlayerState() const;
 
 	// Returns true if either the session wide cheat NoCost is enabled or if the individual game mode NoBuildCost is enabled 
 	bool GetNoBuildCost() const;
-	
+
+	/** Updates the relevancy owner for this item. This component will only replicate it's data when the relevancy owner allows it to */
+	void SetReplicationRelevancyOwner( UObject* relevancyOwner );
+
+	/** Marks inventory contents dirty for replication and schedules their re-sync */
+	UFUNCTION( BlueprintCallable, Category = "Inventory" )
+	void MarkInventoryContentsDirty();
 protected:
+	void OnRelevancyOwnerInvalidatedRelevantPropertiesCache();
+	
 	/** Used to call OnItemAdded/OnItemRemoved on clients */
 	UFUNCTION()
-	void OnRep_InventoryStacks();
+	void OnRep_InventoryStacks( const TArray<FInventoryStack>& oldStacks );
 
 	/** Used to broadcast slot updated events on clients */
 	UFUNCTION()
 	void OnRep_AllowedItemDescriptors( TArray< TSubclassOf < UFGItemDescriptor > > previousAllowedItems );
+
+	/** Used to broadcast slot updated delegates when arbitrary slot sizes are replicated */
+	UFUNCTION()
+	void OnRep_ArbitrarySlotSizes( TArray<int32> previousArbitrarySlotSizes );
 
 	/**
 	 * Called when something gets added.
@@ -545,8 +576,9 @@ protected:
 	 *
 	 * @param idx - The index the item got added to.
 	 * @param num - The number of items that were added.
+	 * @param sourceInventory - The inventory component the items originate from, if applicable.
 	 */
-	virtual void OnItemsAdded( int32 idx, int32 num );
+	virtual void OnItemsAdded( const int32 idx, const int32 num, UFGInventoryComponent* sourceInventory = nullptr );
 
 	/**
 	 * Called when something gets removed
@@ -554,8 +586,9 @@ protected:
 	 * @param idx - The index the item was removed from.
 	 * @param num - The number of items removed.
 	 * @param item - The item that was removed, if not all items where removed this is the same as the item at the index.
+	 * @param targetInventory - The inventory component that the removed item is being moved to, if applicable.
 	 */
-	virtual void OnItemsRemoved( int32 idx, int32 num, FInventoryItem item );
+	virtual void OnItemsRemoved( int32 idx, int32 num, const FInventoryItem& item, UFGInventoryComponent* targetInventory = nullptr );
 
 	/**
 	 * Get a non-const reference to a stack.
@@ -603,22 +636,31 @@ protected:
 	bool mDoRepArbitrarySlotSizes;
 
 private:
+	/** The owner of this component that dictates when it becomes relevant */
+	UPROPERTY( Transient )
+	TScriptInterface<IFGConditionalReplicationInterface> mReplicationRelevancyOwner;
+	
+	UPROPERTY( Replicated, Transient, meta = ( FGPropertyReplicator ) )
+	FFGConditionalPropertyReplicator mPropertyReplicator;
+	
 	/** All items in the inventory */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_InventoryStacks )
+	UPROPERTY( SaveGame, meta = ( FGReplicatedUsing = OnRep_InventoryStacks ) )
 	TArray< FInventoryStack > mInventoryStacks;
 
-	/** Stored last frames data in PreNetReceive, so that we can derive what has happened since last inventory state we received */
-	TArray< FInventoryStack > mClientLastFrameStacks;
-
 	/** In some rare cases we don't want to use the StackSize to limit the slot, so this way we can have larger or smaller slots */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, meta = ( FGReplicatedUsing = OnRep_ArbitrarySlotSizes ) )
 	TArray< int32 > mArbitrarySlotSizes;
 
 	/** This are the allowed inventory items, this we we can "filter" in BluePrint as well. */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_AllowedItemDescriptors )
+	UPROPERTY( SaveGame, meta = ( FGReplicatedUsing = OnRep_AllowedItemDescriptors ) )
 	TArray< TSubclassOf < UFGItemDescriptor > > mAllowedItemDescriptors;
 
 	/** Can stuff in this inventory be rearranged, that is moved from one slot to the other? */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, meta = ( FGReplicated ) )
 	bool mCanBeRearrange;
+
+	FName mCachedStackNameProperty = NAME_None;
+
+	/** Fast serializer for mInventoryStacks that will attempt to fast & efficiently serialize item stacks */
+	static bool NetDeltaSerializeInventoryStacksFast( FProperty* inventoryStacksProp, void* inventoryStacksPtr, FNetDeltaSerializeInfo& deltaParams );
 };

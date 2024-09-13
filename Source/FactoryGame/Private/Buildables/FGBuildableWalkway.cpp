@@ -13,6 +13,7 @@ AFGBuildableWalkway::AFGBuildableWalkway(const FObjectInitializer& ObjectInitial
 	this->mDisableSnapOn.Top = true;
 	this->mDisableSnapOn.Bottom = true;
 	this->mHologramClass = AFGWalkwayHologram::StaticClass();
+	this->mManagedByLightweightBuildableSubsystem = true;
 }
 AFGBuildableWalkwayLightweight::AFGBuildableWalkwayLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mMeshComponentProxy = nullptr;

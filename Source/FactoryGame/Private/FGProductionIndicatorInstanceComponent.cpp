@@ -10,8 +10,9 @@ UFGProductionIndicatorInstanceComponent::UFGProductionIndicatorInstanceComponent
 	this->mStateStandbyData.mColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mBlockColoring = true;
 	this->mNumCustomDataFloats = 4;
+	this->CachedMaxDrawDistance = 150000.0;
 	this->bAffectDistanceFieldLighting = false;
 }
 void UFGProductionIndicatorInstanceComponent::OnProductionStatusChanged(EProductionStatus newStatus){ }
-void UFGProductionIndicatorInstanceComponent::ResetIndicatorStatus(){ }
+void UFGProductionIndicatorInstanceComponent::ForceUpdateVisuals(){ }
 void UFGProductionIndicatorInstanceComponent::SetVisuals(EProductionStatus newStatus){ }

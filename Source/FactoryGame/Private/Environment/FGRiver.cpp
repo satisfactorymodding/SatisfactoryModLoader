@@ -16,6 +16,8 @@ void AFGRiver::UpdateFlowIntensity(){ }
 void AFGRiver::PopulateMaterialSettings(){ }
 void AFGRiver::BuildRiverFromData(const UObject* WorldContext, TSubclassOf<AFGRiver> BaseClass, TArray<FVector> WorldLocations, TArray<FVector> PointScales, TArray<FRotator> PointRotations, TArray<FVector> ArriaveTangets, TArray<FVector> LeaveTangents){ }
 void AFGRiver::UpdateRiverFromData(AFGRiver* River, USplineComponent* SourceSpline){ }
+void AFGRiver::BuildRiverFromSplineMeshActor(const AActor* SourceActor,TSubclassOf<AFGRiver> RiverClass, bool bAutoResample , float WidthUpscale){ }
+void AFGRiver::ResampleSpline(){ }
 #endif 
 AFGRiver::AFGRiver() : Super() {
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("RiverSpline"));
@@ -28,6 +30,10 @@ AFGRiver::AFGRiver() : Super() {
 	this->BuoyancyScale = FVector2D::ZeroVector;
 	this->BuoyancyMaxIntensity = 0.0;
 	this->mDataCollection = nullptr;
+	this->bFadeIn = false;
+	this->bSideFadeIn = false;
+	this->bFadeOut = false;
+	this->bSideFadeOut = false;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -38,7 +44,9 @@ AFGRiver::AFGRiver() : Super() {
 	this->RootComponent = mSplineComponent;
 }
 void AFGRiver::BeginPlay(){ }
+void AFGRiver::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGRiver::OnConstruction(const FTransform & Transform){ }
+void AFGRiver::FixupSplinePoints(){ }
 void AFGRiver::ConstructMesh(){ }
 void AFGRiver::ConstructVolumes(){ }
 void AFGRiver::SetupMaterialValues(UMaterialInstanceDynamic* Material){ }

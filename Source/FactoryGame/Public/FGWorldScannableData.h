@@ -17,9 +17,8 @@ struct FWorldScannableData
 	FWorldScannableData(){}
 	FWorldScannableData( AActor* actor );
 
-	/* FObjectReferenceDisc isn't a UStruct and thereby can't be a UProperty so let's save it as a string to avoid custom serializing. */
 	UPROPERTY( VisibleAnywhere )
-	FString ObjectReferenceDiscAsString;
+	FGuid ActorGuid;
 
 	UPROPERTY( VisibleAnywhere )
 	TSubclassOf< class AActor > ActorClass;
@@ -51,10 +50,14 @@ class FACTORYGAME_API AFGWorldScannableDataGenerator : public AActor
 public:	
 	AFGWorldScannableDataGenerator();
 
+	virtual void BeginPlay() override;
+
 private:
 #if WITH_EDITOR
 	UFUNCTION( BlueprintCallable, Category = "World Grid", meta = ( CallInEditor = "true" ) )
 	void GenerateWorldScannableData();
 #endif
 
+	UPROPERTY( VisibleAnywhere )
+	TArray<FWorldScannableData> mItemPickups;
 };

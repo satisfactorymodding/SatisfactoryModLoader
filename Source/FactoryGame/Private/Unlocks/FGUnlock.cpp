@@ -2,7 +2,7 @@
 
 #include "Unlocks/FGUnlock.h"
 
-void UFGUnlock::Unlock( AFGUnlockSubsystem* unlockSubssytem){ }
-void UFGUnlock::Apply( AFGUnlockSubsystem* unlockSubssytem){ }
+void UFGUnlock::Unlock( AFGUnlockSubsystem* unlockSubsystem){ }
+void UFGUnlock::Apply( AFGUnlockSubsystem* unlockSubsystem){ }
 bool UFGUnlock::IsRepeatPurchasesAllowed_Implementation() const{ return bool(); }
 UWorld* UFGUnlock::GetWorld() const{ return nullptr; }

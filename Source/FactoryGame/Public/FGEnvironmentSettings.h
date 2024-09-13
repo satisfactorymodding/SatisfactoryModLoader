@@ -6,6 +6,8 @@
 #include "FGSettings.h"
 #include "FGEnvironmentSettings.generated.h"
 
+class UMaterialParameterCollection;
+
 /**
  * Settings for the environment
  */

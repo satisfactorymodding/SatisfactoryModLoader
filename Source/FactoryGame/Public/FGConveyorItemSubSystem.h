@@ -20,230 +20,58 @@ class AFGBuildableConveyorBase;
 constexpr int32 NumTasks = 16;
 
 #define WITH_PIE_SUPPORT 0 //WITH_EDITOR
+#define NUM_LANES 16
+#define DEBUG_CONVEYOR_RENDERER 0
+#define LUT_STEPSIZE 30
 
 DECLARE_STATS_GROUP( TEXT("Conveyor Renderer"), STATGROUP_ConveyorRenderer, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT("Conveyor Renderer - Thread"), STATGROUP_ConveyorRenderer_Thread, STATCAT_Advanced );
 
-/* Simple struct to subdivide instance component into buckets.*/
-USTRUCT()
-struct FInstanceLODs
+class UFGConveyorInstanceMeshBucket;
+
+struct FItemContainer
 {
-	GENERATED_BODY()
-
-	UPROPERTY( VisibleAnywhere )
-	UStaticMesh* mMesh = nullptr;
-
-	UPROPERTY( VisibleAnywhere )
-	TArray< class UFGConveyorInstanceMeshBucket* > mInstanceBucket = {};
-
-	UPROPERTY( VisibleAnywhere )
-	int32 mBucketSize = 0;
-
-	UPROPERTY()
-	int32 mLodLevel = 0;
+	TArray<UFGConveyorInstanceMeshBucket*> MeshBuckets;
+	TArray<struct FConveyorItemData*> ItemData[NUM_LANES];
 	
-	void UpdateVisibility( int32 NumInstances );
-
-private:
-	void AddInstance_Internal( AActor* Outer );
-
-public:
-	FInstanceLODs()
-	{
-	}
+	UFGConveyorInstanceMeshBucket* CreateComponent(AActor* Outer, UStaticMesh* Mesh);
 };
 
-USTRUCT()
-struct FConveyorItemArray
+struct FConveyorItemData
 {
-	GENERATED_BODY()
-	
-	/** Cleared at the end of the frame
-	* 	[ Lod Level ][ Instance locations ]*/
-	TArray< TArray< FTransform > > mTransformsPerLodLevel = {};
-	TArray< TArray< FTransform > > mPrevTransformsPerLodLevel = {};
+	float Offset = 0.f;
+	uint32 ItemID = 0;
+	uint32 LUTSize = 0;
+	TArray<FVector3f>* LUTPosPtr = nullptr;
+	TArray<FQuat4f>* LUTQuat = nullptr;
+	float DistanceMoved = 0.f;
+			
+	// Created later.
+	FRenderTransform RenderTransform;
+	FRenderTransform PrevRenderTransform;
 
-	TArray<int32> mCount = {};
-
-	int32 mCachedCount = 0;
-	
-	/** Per lod level a FInstanceLODs struct is made which contains an array of pointers
-	 *	instance groups, the instances are subdivided in smaller buckets so they can be
-	 *	toggled on and off and reduces the rendering overhead of drawing them when un-used */
-	UPROPERTY( VisibleAnywhere )
-	TArray< FInstanceLODs > mItemLodBucket = {};
-
-	FORCEINLINE void UpdateCount()
+	FConveyorItemData(float InOffset,int32 InItemID, TArray<FVector3f>* InLUTPos,TArray<FQuat4f>* InLUTQuat,int32 InLUTSize, float InDistanceMoved)
 	{
-		// Setup if we have too.
-		if( UNLIKELY(mCount.Num() != mTransformsPerLodLevel.Num()))
-		{
-			mCount.SetNum( mTransformsPerLodLevel.Num() );
-		}
-		
-		for	(int32 i = 0; i < mTransformsPerLodLevel.Num(); i++)
-		{
-			mCount[ i ] =  mTransformsPerLodLevel[ i ].Num();
-		}
-
-		int32 Count = 0;
-		
-		for	(int32 i = 0; i < mCount.Num(); i++)
-		{
-			Count = FMath::Max( Count, mCount[i] );
-		}
-
-		mCachedCount = Count;
+		Offset = InOffset;
+		ItemID = InItemID;
+		LUTPosPtr = InLUTPos;
+		LUTQuat = InLUTQuat;
+		LUTSize = InLUTSize;
+		DistanceMoved = InDistanceMoved;
 	}
-
-	FORCEINLINE int32 GetMaxCount()
+	
+	FConveyorItemData(float InOffset,int32 InItemID,const FRenderTransform& InTransform, const FRenderTransform& InPrevTransform):
+		LUTSize( 0 ),
+		LUTPosPtr( nullptr ),
+		LUTQuat( nullptr )
 	{
-		return mCachedCount;
-	}
-
-	FConveyorItemArray() : mCachedCount(0)
-	{
+		Offset = InOffset;
+		ItemID = InItemID;
+		RenderTransform = InTransform;
+		PrevRenderTransform = InPrevTransform;
 	}
 };
 
-struct FConveyorInstanceLodData
-{	
-	/* 2D array containing transform data per lod */
-	TArray< TArray< FTransform > > LodData = {};
-	TArray< TArray< FTransform > > PrevLodData = {};
-
-	FORCEINLINE void Push( int32 LodLevel, const FTransform& t,const FTransform& PrevT )
-	{
-		LodData[ LodLevel ].Add(t);
-		PrevLodData[ LodLevel ].Add(PrevT);
-	}
-	
-	FORCEINLINE void Empty()
-	{
-		for ( auto& LOD : LodData )
-		{
-			LOD.Empty();
-		}
-		
-		for ( auto& LOD : PrevLodData )
-		{
-			LOD.Empty();
-		}
-	}
-
-	FORCEINLINE void Init( int32 NumLods )
-	{
-		LodData.AddZeroed( NumLods );
-		PrevLodData.AddZeroed( NumLods );
-	}
-};
-
-USTRUCT()
-struct FConveyorLodData
-{
-	GENERATED_BODY()
-	
-	UPROPERTY()
-	TArray<UFGConveyorInstanceMeshBucket*> Buckets;
-};
-
-USTRUCT()
-struct FConveyorBucketData
-{
-	GENERATED_BODY()
-	
-	/*Cached CDO for debugging.*/
-	UPROPERTY()
-	TSubclassOf<UFGItemDescriptor> Desc = nullptr;
-	
-	UPROPERTY()
-	TArray<FConveyorLodData> LodBuckets;
-
-	void CreateComponent(AActor* Outer);
-};
-
-template< class Type >
-struct FConveyorActorContainer
-{
-	TArray< TArray< Type > > Actors;
-	
-public:
-	/* Push actor to lod level array.*/
-	FORCEINLINE void Push( Type Actor, int32 LodLevel )
-	{
-		Actors[ LodLevel ].Push( Actor );	
-	}
-
-	/* Remove data without deallocating data. */
-	FORCEINLINE void Reset()
-	{
-		for ( auto& LOD : Actors )
-		{
-			LOD.Reset();
-		}
-	}
-
-	FORCEINLINE void Init( int32 NumLods )
-	{
-		Actors.AddZeroed( NumLods );
-	}
-
-	FORCEINLINE int32 Num( TArray< bool > UpdateList ) const
-	{
-		int32 Count = 0;
-
-		for	(int32 i = 0; i < Actors.Num(); i++)
-		{
-			Count = UpdateList[i] ? Actors[i].Num() : 0;
-		}
-
-		return Count;
-	}
-
-	FConveyorActorContainer()
-	{}
-};
-
-USTRUCT( BlueprintType )
-struct FLODDataEntry
-{
-	GENERATED_BODY()
-
-	UPROPERTY( EditDefaultsOnly )
-	float Distance;
-
-	UPROPERTY( EditDefaultsOnly )
-	float TargetFPS;
-
-	/* Should we check if the player can see the top of the conveyor belts or not?
-	 * Recommended to only do this on the first lod. */
-	UPROPERTY( EditDefaultsOnly )
-	bool bViewCheck;
-	
-	UPROPERTY( EditDefaultsOnly )
-	bool bRotate;
-
-	// Shadows
-	UPROPERTY( EditDefaultsOnly )
-	bool bCastShadows;
-	
-	FLODDataEntry()
-	{
-		Distance = 0;
-		TargetFPS = -1;
-		bRotate = true;
-		bCastShadows = true;
-	}
-};
-
-struct FPrepEntry
-{
-	float Offset;
-	FInterpCurvePoint<float>* ReparamTableCurve;
-	FInterpCurvePoint<FVector>* PositionCurve;
-	int32 NumReparamPoints;
-	int32 NumPositionPoints;
-};
 
 // TODO make buckets.
 UCLASS( Blueprintable )
@@ -262,7 +90,7 @@ public:
 	static AFGConveyorItemSubsystem* mGlobalSystemPtr;
 #endif
 
-	FORCEINLINE void ReportVisibleBelt( const UFGConveyorInstancedSplineMeshComponent* Component )
+	FORCEINLINE void ReportVisibleBelt( const UFGConveyorBeltVisibilityMesh* Component )
 	{
 		mVisibleConveyors.Enqueue( Component );
 		Component->SetRelevant( true );
@@ -273,7 +101,9 @@ public:
 		mVisibleLifts.Enqueue( Component );
 		Component->SetRelevant( true );
 	}
-	
+
+	bool IsKnown(UClass* Descriptor) const { return mKnownItems.Contains( Descriptor ); }
+	void LazyAddConveyorItemOfClass(UClass* Descriptor);
 private:
 	// Begin AActor interface
 	virtual void Tick(float DeltaSeconds) override;
@@ -282,89 +112,41 @@ private:
 	// End AActor interface
 
 	void InitializeConveyorItems();
-	void GatherTransformData_ISPC( const TArray<bool> DistancesToUpdate, FConveyorActorContainer< AFGBuildableConveyorBelt* >* Belt, FConveyorActorContainer< AFGBuildableConveyorLift* >* Lifts);
+	void Update();
 	
 	/* Called in the beginning of the frame to ensure we are working with clean buffers. */
-	void Cleanup( TArray< bool > LodsToUpdate );
-
-	TArray< bool > UpdateTimers( float DeltaTime );
-	
 	static bool mIsConveyorRendererActive;
 
 private:
-	// Update counters
-	TArray< float > Timers;
-	
-	/* Named map of the instance mesh components. */
-	UPROPERTY( VisibleInstanceOnly, Transient)
-	TMap< FName, FConveyorItemArray > mItemType;
 
-	// Deprecated.
-	TArray<FName> mCachedKeys;
-	
-	/* Frame result of the current conveyor states, no need to make this a UPROPERTY() since it re-computed every frame.*/
-	TArray< FConveyorActorContainer< AFGBuildableConveyorBelt* > > mBeltTaskResults;
-	TArray< FConveyorActorContainer< AFGBuildableConveyorLift* > > mLiftTaskResults;
-	
-	/* Combined result of the current conveyor states, no need to make this a UPROPERTY() since it re-computed every frame.*/
-	FConveyorActorContainer< AFGBuildableConveyorBelt* > mBeltTaskLODResults;
-	FConveyorActorContainer< AFGBuildableConveyorLift* > mLiftTaskLODResults;
-	
-	/* End task data members. */
-	////////////////////////////
-	
-	TQueue< const class UFGConveyorInstancedSplineMeshComponent*, EQueueMode::Mpsc > mVisibleConveyors;
+	// Queued up by custom code in the unreal's visibility logic.
+	TQueue< const class UFGConveyorBeltVisibilityMesh*, EQueueMode::Mpsc > mVisibleConveyors;
 	TQueue< const class UFGConveyorLiftVisibilityMesh*, EQueueMode::Mpsc > mVisibleLifts;
 	
 	UPROPERTY()
-	TArray< const UFGConveyorInstancedSplineMeshComponent* > mActiveConveyorBelts;
+	TArray< const UFGConveyorBeltVisibilityMesh* > mActiveConveyorBelts;
 	
 	UPROPERTY()
 	TArray< const class UFGConveyorLiftVisibilityMesh* > mActiveConveyorLifts;
-	
-	/* Active conveyor belts. */
-	UPROPERTY()
-	TArray<FConveyorBucketData> ItemRenderMeshData;
 
-	/* Idiling conveyor belts. */
-	UPROPERTY()
-	TArray<UHierarchicalInstancedStaticMeshComponent*> ItemIdleRenderMeshData;
-
-	TQueue<TSubclassOf<UFGItemDescriptor>,EQueueMode::Mpsc> mUnsetTypes;
-	
-	int32 ItemTypeCounter = 0;
-
-protected:
-	UPROPERTY( EditDefaultsOnly, Category = "Performance")
-	TArray< FLODDataEntry > mLodData;
-	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UFGItemDescriptor> mLiftHandleItemDesc;
 
-	/* Conveyor handle item dummy.*/
-	UPROPERTY()
-	FConveyorBeltItem mHandleDummy;
-
-private:
-	// Cache data.
-	TArray<FVector3f>	mTaskDataStartPositions[NumTasks] =				{};	
-	TArray<FVector3f> 	mTaskDataStartTangents[NumTasks] =				{};	
-	TArray<FVector3f> 	mTaskDataEndPositions[NumTasks] =				{};		
-	TArray<FVector3f> 	mTaskDataEndTangents[NumTasks] =				{};
-	
-	/* Cached array for item alphas to compute the offset, should never be emptied only reset! */
-	TArray<float>		mTaskDataAlphas[NumTasks] =						{};
-	
-	/* Cached array for item transforms, should never be emptied only reset! */
-	TArray<FTransform3f> mTaskDataBeltTransforms[NumTasks] =			{};
-	TArray<FConveyorBeltItem*> mTaskDataItems[NumTasks] =				{};
-	TArray<FPrepEntry> mEntryData[NumTasks] =							{};
-	TArray<FMatrix> mMatrixTaskData[NumTasks] =							{};
-	TArray<FPreviousFrameLocationData*> mTaskHandles[NumTasks] =		{};
-	
-	// [static: TaskID] [Lod] [Item id]
-	TArray<TArray<TArray<FPreviousFrameLocationData*>>> mSortedItem[NumTasks] =	{};
-	
 	UPROPERTY()
 	TArray<TSubclassOf<UFGItemDescriptor>> mKnownItems;
+
+	/* Array of conveyor items where array id is identical with the item "id" in the desc cdo. */
+	TArray<FItemContainer> RenderBuckets;
+
+	/* Render data per lane, used per task.*/
+	TArray<FConveyorItemData> DataPerLane[NUM_LANES];
+
+	/* Buckets of item ID requested this frame. */
+	TQueue<int32,EQueueMode::Mpsc> BucketRequests;
+	
+	// Transient data.
+	TArray<AFGBuildableConveyorBelt*> ActiveBelts;
+	TArray<AFGBuildableConveyorLift*> ActiveLifts;
+
+	bool bAreItemsInitialized = false;
 };

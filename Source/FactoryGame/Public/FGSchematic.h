@@ -9,6 +9,7 @@
 #include "ItemAmount.h"
 #include "Styling/SlateBrush.h"
 #include "UObject/Object.h"
+#include "GameplayTagContainer.h"
 #include "FGSchematic.generated.h"
 
 //@todo [MODSUPPORT] This should maybe be implemented the same way as UFGBuildCategories?
@@ -24,7 +25,8 @@ enum class ESchematicType :uint8
 	EST_MAM					UMETA( DisplayName = "MAM" ),
 	EST_ResourceSink		UMETA( DisplayName = "Resource Sink" ),
 	EST_HardDrive			UMETA( DisplayName = "Hard Drive" ),
-	EST_Prototype			UMETA( DisplayName = "Prototype" )
+	EST_Prototype			UMETA( DisplayName = "Prototype" ),
+	EST_Customization		UMETA( DisplayName = "Customization" )
 };
 
 UENUM( BlueprintType )
@@ -34,6 +36,14 @@ enum class ESchematicState :uint8
 	ESS_Purchased		UMETA( DisplayName = "Purchased" ),
 	ESS_Available		UMETA( DisplayName = "Available" ),
 	ESS_Hidden			UMETA( DisplayName = "Hidden" )
+};
+
+UENUM( BlueprintType )
+enum class ETechTierState :uint8
+{
+	ETTS_Locked				UMETA( DisplayName = "Locked" ),
+	ETTS_Available			UMETA( DisplayName = "Available" ),
+	ETTS_FullyPurchased		UMETA( DisplayName = "Fully Purchased" )
 };
 
 /**
@@ -75,6 +85,10 @@ public:
 	/** Returns the description of this schematic */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static FText GetSchematicDescription( TSubclassOf< UFGSchematic > inClass );
+
+	/** Gets the online statistic gameplay tag of this schematic. */
+    UFUNCTION( BlueprintPure, Category = "Schematic" )
+    static FGameplayTag GetStatisticGameplayTag( TSubclassOf< UFGSchematic > inClass );
 
 	/** Returns the category of this schematic */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
@@ -160,6 +174,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static bool IsIncludedInBuild( TSubclassOf< UFGSchematic > inClass );
 	
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+	static FGameplayTag GetSchematicUnlockTag( TSubclassOf< UFGSchematic > inClass );
+	
 #if WITH_EDITOR
 	/** Add a recipe to this schematic. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Schematic" )
@@ -181,6 +198,10 @@ protected:
 	/** Readable description of the schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic", meta = ( MultiLine = true ) )
 	FText mDescription;
+
+	/** If assigned to an online stat gameplay tag, it will be incremented whenever this schematic is unlocked. */
+	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
+	FGameplayTag mStatisticGameplayTag;
 
 	/** The category this schematic belongs to. */
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
@@ -254,6 +275,9 @@ protected:
 	
 	// End Deprecated
 
+	UPROPERTY( EditDefaultsOnly )
+	FGameplayTag mSchematicUnlockTag;
+	
 private:
 	/** Asset Bundle data computed at save time. In cooked builds this is accessible from AssetRegistry */
 	UPROPERTY( meta = ( NoAutoJson = true ) )

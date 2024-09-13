@@ -8,7 +8,6 @@
 
 #include "FGDecorationTemplate.generated.h"
 
-class UBoxComponent;
 UCLASS( Blueprintable )
 class FACTORYGAME_API AFGDecorationTemplate : public AActor
 {

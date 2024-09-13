@@ -7,6 +7,7 @@
 #include "FGSaveInterface.h"
 #include "FGRailroadVehicle.h"
 #include "FGRailroadSignalBlock.h"
+#include "UnitHelpers.h"
 #include "FGRailroadSubsystem.generated.h"
 
 
@@ -180,10 +181,10 @@ public:
 	 */
 
 	/** Generates a new name for a train station. */
-	FText GenerateTrainStationName() const;
+	FText GenerateStationName() const;
 
 	/** @return If the station name is available; false if another station with this name already exists. */
-	bool IsTrainStationNameAvailable( const FString& name ) const;
+	bool IsStationNameAvailable( const FString& name ) const;
 
 	/** Add, update and remove train stations for use in time tables. */
 	void AddTrainStation( class AFGBuildableRailroadStation* station );
@@ -419,7 +420,7 @@ protected:
 	
 private:
 	void TickTrackGraphs( float dt );
-	void TickPendingCollisions( float dt );
+	void TickPendingCollisions();
 	void TickBlockVisualization();
 
 	void PurgeInvalidStationsFromTimeTables();
@@ -490,11 +491,14 @@ private:
 	/** Reconnects all vehicles in this train to the third rail. */
 	void ReconnectTrainToThirdRail( AFGTrain* train );
 
-	/** The physics is driven by the physics scene. */
-	void PreTickPhysics( FPhysScene* physScene, float dt );
-	void UpdatePhysics( FPhysScene* physScene, float dt );
+	/** Called before the train movement is substepped. */
+	void PreTickTrainMovement( float dt );
+	/** Called when the train movement is substepped, can be called more than once. */
+	void TickTrainMovement( float dt );
+	/** Called after the train movement is substepped. */
+	void PostTickTrainMovement( float dt );
 
-	void UpdateSimulationData( class AFGTrain* train, struct FTrainSimulationData& simData );
+	void UpdateSimulationData( class AFGTrain* train );
 
 	/** Merge two track graphs to one. */
 	void MergeTrackGraphs( int32 first, int32 second );
@@ -540,10 +544,15 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Signal Block Visualization" )
 	TArray< FLinearColor > mBlockVisualizationColors;
 
-private:
-	FDelegateHandle OnPhysScenePreTickHandle;
-	FDelegateHandle OnPhysSceneStepHandle;
+	/** Error tolerance before resetting to the server's state. [cm] */
+	UPROPERTY( EditDefaultsOnly, Category = "Client Simulation" )
+	float mClientSimulationResetDistance = FUnits::MToCm( 30 );
+	/** How much to blend in the server's velocity per second. [0, 1] */
+	float mClientSimulationServerVelocityBlend = 0.5f;
+	/** How much corrective velocity to blend in per second. [0, 1] */
+	float mClientSimulationCorrectionVelocityBlend = 0.8f;
 
+private:
 	/** Counters for generating UIDs. */
 	int32 mTrackGraphIDCounter;
 
@@ -562,7 +571,6 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	TArray< class AFGTrainStationIdentifier* > mTrainStationIdentifiers;
 
-	//@todoG2 does this need to be saved? HannaS 28/4 -19
 	/** All the trains in the world. */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< class AFGTrain* > mTrains;

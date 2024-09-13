@@ -8,6 +8,9 @@ UFGPlayerInputPreProcessor::~UFGPlayerInputPreProcessor(){ }
 void UFGPlayerInputPreProcessor::Tick(const float DeltaTime, FSlateApplication& SlateApp, TSharedRef<ICursor> Cursor){ }
 bool UFGPlayerInputPreProcessor::HandleMouseButtonDownEvent(FSlateApplication& SlateApp, const FPointerEvent& MouseEvent){ return bool(); }
 bool UFGPlayerInputPreProcessor::HandleMouseButtonUpEvent(FSlateApplication& SlateApp, const FPointerEvent& MouseEvent){ return bool(); }
+bool UFGPlayerInputPreProcessor::HandleKeyDownEvent(FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent){ return bool(); }
+bool UFGPlayerInputPreProcessor::HandleKeyUpEvent(FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent){ return bool(); }
+bool UFGPlayerInputPreProcessor::HandleAnalogInputEvent(FSlateApplication& SlateApp, const FAnalogInputEvent& InAnalogInputEvent){ return bool(); }
 void UFGPlayerInput::PostInitProperties(){ Super::PostInitProperties(); }
 void UFGPlayerInput::BeginDestroy(){ Super::BeginDestroy(); }
 float UFGPlayerInput::SmoothMouse(float aMouse, uint8& SampleCount, int32 Index){ return float(); }
@@ -21,9 +24,13 @@ bool UFGPlayerInput::GetCurrentMappingForAction(const FName& inActionName, FKey&
 bool UFGPlayerInput::GetCurrentMappingForInputAction(const UInputAction* inputAction, FKey& out_primaryKey, TArray<FKey>* out_modifierKeys, FName preferredActionName, const UInputMappingContext* preferredContext) const{ return bool(); }
 void UFGPlayerInput::HandleMouseButtonDownEvent(const FPointerEvent& MouseEvent){ }
 void UFGPlayerInput::HandleMouseButtonUpEvent(const FPointerEvent& MouseEvent){ }
+bool UFGPlayerInput::HandleKeyDownEvent(const FKeyEvent& InKeyEvent){ return bool(); }
+bool UFGPlayerInput::HandleKeyUpEvent(const FKeyEvent& InKeyEvent){ return bool(); }
 void UFGPlayerInput::DumpKeyStates(){ }
 void UFGPlayerInput::FlushMouseKeys(){ }
 const UInputAction* UFGPlayerInput::FindActionByMappableActionName(FName actionName) const{ return nullptr; }
+void UFGPlayerInput::AddBlueprintInputPreprocessor(APlayerController* playerController, TScriptInterface<UFGBlueprintInputPreprocessor> preprocessor){ }
+void UFGPlayerInput::RemoveBlueprintInputPreprocessor(APlayerController* playerController, TScriptInterface<UFGBlueprintInputPreprocessor> preprocessor){ }
 bool UFGPlayerInput::FindDefaultKeyMappingForInputAction(const UInputAction* inputAction, FName preferredActionName, const UInputMappingContext* preferredContext, bool allowOtherContexts, FEnhancedActionKeyMapping& out_keyMapping, const UInputMappingContext** out_mappingContext) const{ return bool(); }
 bool UFGPlayerInput::FindAllMappedContextsForInputAction(const UInputAction* inputAction, TArray<UInputMappingContext*>& out_mappedContexts) const{ return bool(); }
 void UFGPlayerInput::TryCacheDefaultKeyMappings() const{ }

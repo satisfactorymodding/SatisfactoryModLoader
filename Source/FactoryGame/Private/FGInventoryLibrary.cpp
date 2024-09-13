@@ -11,7 +11,7 @@ void UFGInventoryLibrary::BreakInventoryStack(const FInventoryStack& stack,
 									  FInventoryItem& out_item){ }
 void UFGInventoryLibrary::BreakInventoryItem(const FInventoryItem& item,
 									 TSubclassOf<  UFGItemDescriptor >& out_itemClass,
-									  AActor*& out_itemState){ }
+									 FFGDynamicStruct& out_itemState){ }
 FInventoryItem UFGInventoryLibrary::MakeInventoryItem(TSubclassOf<  UFGItemDescriptor > itemClass){ return FInventoryItem(); }
 FInventoryStack UFGInventoryLibrary::MakeInventoryStack(int32 numItems, FInventoryItem item){ return FInventoryStack(); }
 float UFGInventoryLibrary::GetAmountConvertedByForm(int32 amount, EResourceForm form){ return float(); }
@@ -20,10 +20,14 @@ float UFGInventoryLibrary::GetConversionScalarByForm(EResourceForm form){ return
 void UFGInventoryLibrary::GetAmountConvertedFromItemAmount(const FItemAmount& itemAmount, TSubclassOf<  UFGItemDescriptor >& itemClass, float& amountConverted){ }
 void UFGInventoryLibrary::GetUIDataPartialForInventoryStack(const FInventoryStack& inventoryStack, const TSubclassOf<  AFGBuildableFactory > buildableFactory, TSubclassOf<  UFGItemDescriptor>& itemClass, float& numItemsConverted, float& maxItemsConverted){ }
 void UFGInventoryLibrary::GetUIDataFullForInventoryStack(const FInventoryStack& inventoryStack, const TSubclassOf<  AFGBuildableFactory > buildableFactory, TSubclassOf<  UFGItemDescriptor>& itemClass, float& numItemsConverted, float& maxItemsConverted, FText& suffix, EResourceForm& form){ }
-bool UFGInventoryLibrary::MoveInventoryItem( UFGInventoryComponent* sourceComponent, int32 sourceIdx,  UFGInventoryComponent* destinationComponent, int32 destinationIdx){ return bool(); }
+bool UFGInventoryLibrary::MoveInventoryItem(UFGInventoryComponent* sourceComponent, const int32 sourceIdx, UFGInventoryComponent* destinationComponent, const int32 destinationIdx){ return bool(); }
 bool UFGInventoryLibrary::GrabAllItemsFromInventory(UFGInventoryComponent* sourceComponent, UFGInventoryComponent* destinationComponent, TSubclassOf< UFGItemDescriptor > onlyGrabOfDesc){ return bool(); }
 void UFGInventoryLibrary::ConsolidateInventoryItems(TArray< FInventoryStack >& items){ }
 int32 UFGInventoryLibrary::GetMinNumSlotsForItems(TArray< FInventoryStack >& items){ return int32(); }
 void UFGInventoryLibrary::MergeInventoryItem(TArray< FInventoryStack >& items, const FInventoryStack& item){ }
 void UFGInventoryLibrary::ConsolidateItemsAmount(TArray< FItemAmount >& items){ }
 void UFGInventoryLibrary::RemoveAllItemsNotOfResourceForm(TArray< FInventoryStack >& items, EResourceForm validForm){ }
+void UFGInventoryLibrary::GrabItemsFromInventoryAndCentralStorage( UFGInventoryComponent* inventoryComponent,  AFGCentralStorageSubsystem* centralStorageSubsystem,
+		bool takeFromInventoryBeforeCentralStorage, TSubclassOf<  UFGItemDescriptor> itemClass, int32 numItemsToRemove){ }
+int32 UFGInventoryLibrary::GrabItemFromCentralStorage(const FItemAmount& itemAmount, UFGInventoryComponent* destinationComponent, const int32 destinationIdx){ return int32(); }
+int32 UFGInventoryLibrary::MoveItemFromCentralStorage(const FItemAmount& itemAmount, UFGInventoryComponent* destinationComponent){ return int32(); }

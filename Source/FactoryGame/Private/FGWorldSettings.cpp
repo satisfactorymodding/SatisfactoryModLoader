@@ -142,10 +142,12 @@ AFGWorldSettings::AFGWorldSettings() : Super() {
 	this->mSkyAtmosphere = nullptr;
 	this->mSkySphere = nullptr;
 	this->mMinimapCaptureActor = nullptr;
+	this->mTimeOfDaySubsystem = nullptr;
 	this->mLevelStartedEvent = nullptr;
 	this->mDefaultLoadSave = TEXT("");
 	this->mStartTimeOfDay = 12.0;
 	this->mBuildableSubsystem = nullptr;
+	this->mLightweightBuildableSubsystem = nullptr;
 	this->mAudioVolumeSubsystem = nullptr;
 	this->mFoliageRemovalSubsystem = nullptr;
 	this->mConveyorItemSubsystem = nullptr;
@@ -158,3 +160,4 @@ void AFGWorldSettings::PostLoadGame_Implementation(int32 saveVersion, int32 game
 void AFGWorldSettings::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGWorldSettings::NeedTransform_Implementation(){ return bool(); }
 bool AFGWorldSettings::ShouldSave_Implementation() const{ return bool(); }
+void AFGWorldSettings::RenameTimeSubsystem(){ }

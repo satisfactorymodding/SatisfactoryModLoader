@@ -63,8 +63,8 @@ public:
 	virtual void InitGlobalGraphNodes() override;
 	virtual void RouteAddNetworkActorToNodes( const FNewReplicatedActorInfo& ActorInfo, FGlobalActorReplicationInfo& GlobalInfo ) override;
 	virtual void RouteRemoveNetworkActorToNodes( const FNewReplicatedActorInfo& ActorInfo ) override;
-	virtual int32 ServerReplicateActors( float DeltaSeconds ) override;
 	virtual void NotifyActorDormancyChange( AActor* Actor, ENetDormancy OldDormancyState ) override;
+	virtual void AddNetworkActor(AActor* Actor) override;
 	// ~ end UReplicationGraph implementation
 
 	/** Sets the class replication info for a class */
@@ -93,10 +93,10 @@ public:
 
 	/** Node that holds a list of actors that are always Net Relevant. */
 	UPROPERTY()
-	UReplicationGraphNode_ActorList* mAlwaysRelevantNode;
+	UFGReplicationGraphNode_AlwaysRelevantWithDormancy* mAlwaysRelevantNode;
 
 	UPROPERTY()
-	UFGReplicationGraphNode_ConditionallyAlwaysRelevant* mConditionalRelevancyNode;
+	class UFGReplicationGraphNode_ConditionallyAlwaysRelevant* mConditionalRelevancyNode;
 
 	/** Node holds all player states and cycles through them so they do not all attempt replication every frame */
 	UPROPERTY()
@@ -121,14 +121,20 @@ protected:
 	UPROPERTY()
 	TSet<UClass*> mPersistentDependencyClasses;
 
-	// Actor Dependencies 
+	// Actor Dependencies
+	/** Callback on when a train replication actor is added to the game so we can add the vehicles in the consist as dependencies. */
+	void OnTrainReplicationActorAdded( class AFGTrainReplicationActor* replicationActor );
+	void OnTrainReplicationActorRemoved( class AFGTrainReplicationActor* replicationActor );
+
+	/**
+	 * Callback for when a locomotive is possessed or unpossessed by a player controller so we can add a dependency.
+	 * Note: Locomotive nor controller can be null.
+	 */
+	void OnLocomotivePossessedBy( class AFGLocomotive* locomotive, AController* controller );
+	void OnLocomotiveUnPossessed( class AFGLocomotive* locomotive, AController* controller );
+	
 	/** Callback on when actor dependencies for character players that should always exist for the pawn is spawned */
 	void AddPersistentDependencyActor( class AFGCharacterPlayer* pawn, class IFGReplicationDependencyActorInterface* depedencyActor );
-
-	/** Callbacks for handling replication detail actors for manufacturers */
-	void AddReplicationDependencyActor( class AActor* owner, class AFGReplicationDetailActor* replicationDetailActor );
-	void RemoveReplicationDependencyActor( class AActor* owner, class AFGReplicationDetailActor* replicationDetailActor );
-	void OnReplicationDetailActorStateChange( class IFGReplicationDetailActorOwnerInterface* owner, bool newState );
 
 	/** Callback to handle when a player equips any equipment and add it to the pawns dependency list */
 	void OnCharacterPlayerEquip( class AFGCharacterPlayer* pawn, class AFGEquipment* equipment );
@@ -139,8 +145,8 @@ protected:
 	/** Callback on when the foliage pickup proxy has spawned for a player */
 	void OnCharacterPlayerFoliagePickupSpawned( class AFGCharacterPlayer* pawn, class AFGFoliagePickup* foliagePickup );
 
-	/** Callback to when a building registers (or unregisters) a player. Handles dormancy state changes for buildables in these cases. */
-	void OnBuildableRegistedPlayerChanged( class AFGBuildable* buildable, class AFGCharacterPlayer* player, bool isInUse );
+	/** Called when the pawn controlled by the given player controller changes */
+	void OnPlayerControllerPawnChanged( class APlayerController* playerController, APawn* oldPawn, APawn* newPawn );
 
 	/** Whether the given mapping is spatialized in any way */
 	FORCEINLINE bool IsSpatialized( EClassRepPolicy mapping ) { return mapping >= EClassRepPolicy::CRP_Spatialize_Static; }
@@ -175,6 +181,27 @@ private:
 	void LogCurrentActorDependencyList( FGlobalActorReplicationInfo& actorInfo, FString& logMarker );
 
 	UReplicationGraphNode_AlwaysRelevant_ForConnection* GetAlwaysRelevantNodeForConnection( UNetConnection* Connection );
+};
+
+UCLASS()
+class FACTORYGAME_API UFGReplicationGraphNode_AlwaysRelevantWithDormancy : public UReplicationGraphNode_ActorList
+{
+	GENERATED_BODY()
+public:
+	// Begin UReplicationGraphNode_ActorList interface
+	virtual void NotifyAddNetworkActor( const FNewReplicatedActorInfo& ActorInfo ) override;
+	virtual bool NotifyRemoveNetworkActor( const FNewReplicatedActorInfo& ActorInfo, bool bWarnIfNotFound = true ) override;
+	// End UReplicationGraphNode_ActorList interface
+
+	void AddActor(const FNewReplicatedActorInfo& ActorInfo, FGlobalActorReplicationInfo& ActorRepInfo);
+	void RemoveActor(const FNewReplicatedActorInfo& ActorInfo);
+protected:
+	UPROPERTY()
+	UReplicationGraphNode_DormancyNode* mDormancyNode;
+	
+	void OnActorDormancyChanged(AActor* Actor, FGlobalActorReplicationInfo& GlobalInfo, ENetDormancy NewValue, ENetDormancy OldValue);
+	
+	UReplicationGraphNode_DormancyNode* GetDormancyNode();
 };
 
 UCLASS()
@@ -610,13 +637,12 @@ protected:
 
 			float halfSubdivisions = Subdivisions / 2.f;
 			HalfCellSize = CellSize / 2.f;
-
-			FVector newCellOrigin = FVector();
+			
 			for( int32 i = 0; i < Subdivisions; ++i )
 			{
 				for( int32 j = 0; j < Subdivisions; ++j )
 				{
-					newCellOrigin = FVector( Origin.X - ( ( j - halfSubdivisions ) * CellSize.X ) + HalfCellSize.X, Origin.Y - ( ( i - halfSubdivisions ) * CellSize.Y ) + HalfCellSize.Y, 0.f );
+					FVector newCellOrigin = FVector( Origin.X - ( ( j - halfSubdivisions ) * CellSize.X ) + HalfCellSize.X, Origin.Y - ( ( i - halfSubdivisions ) * CellSize.Y ) + HalfCellSize.Y, 0.f );
 					FrequencyCells.Add( new FFrequencyGrid2D_Cell( newCellOrigin ) );
 					if( world )
 					{

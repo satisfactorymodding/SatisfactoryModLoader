@@ -3,6 +3,25 @@
 #include "FGActorRepresentation.h"
 #include "Net/UnrealNetwork.h"
 
+UFGActorRepresentation::UFGActorRepresentation() : Super() {
+	this->mRealActor = nullptr;
+	this->mActorLocation = FVector::ZeroVector;
+	this->mActorRotation = FRotator::ZeroRotator;
+	this->mIsStatic = false;
+	this->mRepresentationTexture = nullptr;
+	this->mRepresentationCompassMaterial = nullptr;
+	this->mRepresentationText = INVTEXT("");
+	this->mRepresentationColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mRepresentationType = ERepresentationType::RT_Default;
+	this->mFogOfWarRevealType = EFogOfWarRevealType::FOWRT_None;
+	this->mFogOfWarRevealRadius = 0.0;
+	this->mShouldShowInCompass = false;
+	this->mShouldShowOnMap = false;
+	this->mIsHidden = false;
+	this->mCompassViewDistance = ECompassViewDistance::CVD_Off;
+	this->mBackgroundIsPrimaryColor = true;
+	this->mAllowRealActorLocationOnClient = true;
+}
 bool UFGActorRepresentation::IsSupportedForNetworking() const{ return bool(); }
 void UFGActorRepresentation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -11,6 +30,7 @@ void UFGActorRepresentation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(UFGActorRepresentation, mActorRotation);
 	DOREPLIFETIME(UFGActorRepresentation, mIsStatic);
 	DOREPLIFETIME(UFGActorRepresentation, mRepresentationTexture);
+	DOREPLIFETIME(UFGActorRepresentation, mRepresentationCompassMaterial);
 	DOREPLIFETIME(UFGActorRepresentation, mRepresentationText);
 	DOREPLIFETIME(UFGActorRepresentation, mRepresentationColor);
 	DOREPLIFETIME(UFGActorRepresentation, mRepresentationType);
@@ -24,10 +44,16 @@ void UFGActorRepresentation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 void UFGActorRepresentation::SetupActorRepresentation(AActor* realActor, bool isLocal, float lifeSpan){ }
 void UFGActorRepresentation::TrySetupDestroyTimer(float lifeSpan){ }
 void UFGActorRepresentation::RemoveActorRepresentation(){ }
+AActor* UFGActorRepresentation::GetRealActor() const{ return nullptr; }
+bool UFGActorRepresentation::IsSameRealActor(const AActor* realActor, const FNetworkGUID& realActorNetworkId) const{ return bool(); }
 FVector UFGActorRepresentation::GetActorLocation() const{ return FVector(); }
 FRotator UFGActorRepresentation::GetActorRotation() const{ return FRotator(); }
 UTexture2D* UFGActorRepresentation::GetRepresentationTexture() const{ return nullptr; }
+UMaterialInterface* UFGActorRepresentation::GetRepresentationCompassMaterial() const{ return nullptr; }
+void UFGActorRepresentation::UpdateRepresentationCompassMaterial( UMaterialInstanceDynamic* compassMaterialInstance, APlayerController* ownerPlayerController) const{ }
+float UFGActorRepresentation::GetCompassHeightAlignment() const{ return float(); }
 FText UFGActorRepresentation::GetRepresentationText() const{ return FText(); }
+FText UFGActorRepresentation::GetDynamicCompassRepresentationText(APlayerController* ownerPlayerController, float distanceToPlayer) const{ return FText(); }
 FLinearColor UFGActorRepresentation::GetRepresentationColor() const{ return FLinearColor(); }
 ERepresentationType UFGActorRepresentation::GetRepresentationType() const{ return ERepresentationType(); }
 bool UFGActorRepresentation::GetShouldShowInCompass() const{ return bool(); }
@@ -35,6 +61,7 @@ bool UFGActorRepresentation::GetShouldShowOnMap() const{ return bool(); }
 EFogOfWarRevealType UFGActorRepresentation::GetFogOfWarRevealType() const{ return EFogOfWarRevealType(); }
 float UFGActorRepresentation::GetFogOfWarRevealRadius() const{ return float(); }
 void UFGActorRepresentation::SetIsOnClient(bool onClient){ }
+void UFGActorRepresentation::SetRepresentationID(const FGuid& NewRepresentationID){ }
 ECompassViewDistance UFGActorRepresentation::GetCompassViewDistance() const{ return ECompassViewDistance(); }
 bool UFGActorRepresentation::GetScaleWithMap() const{ return bool(); }
 float UFGActorRepresentation::GetScaleOnMap() const{ return float(); }
@@ -44,18 +71,13 @@ void UFGActorRepresentation::SetHighlighted(bool highlighted){ }
 bool UFGActorRepresentation::IsHighlighted() const{ return bool(); }
 bool UFGActorRepresentation::IsHighlighted(FLinearColor& out_highlightColor, bool& out_HighlightByLocalPlayer) const{ return bool(); }
 UFGHighlightedMarker* UFGActorRepresentation::CreateHighlightedMarker(UObject* owner){ return nullptr; }
+FVector2f UFGActorRepresentation::GetRepresentationCompassEffectSize() const{ return FVector2f(); }
 void UFGActorRepresentation::SetHidden(bool isHidden){ }
-AFGActorRepresentationManager* UFGActorRepresentation::GetActorRepresentationManager(){ return nullptr; }
-void UFGActorRepresentation::UpdateLocation(){ }
-void UFGActorRepresentation::UpdateRotation(){ }
-void UFGActorRepresentation::UpdateRepresentationText(){ }
-void UFGActorRepresentation::UpdateRepresentationTexture(){ }
-void UFGActorRepresentation::UpdateRepresentationColor(){ }
-void UFGActorRepresentation::UpdateShouldShowInCompass(){ }
-void UFGActorRepresentation::UpdateShouldShowOnMap(){ }
-void UFGActorRepresentation::UpdateFogOfWarRevealType(){ }
-void UFGActorRepresentation::UpdateFogOfWarRevealRadius(){ }
-void UFGActorRepresentation::UpdateCompassViewDistance(){ }
-void UFGActorRepresentation::OnRep_ShouldShowInCompass(){ }
-void UFGActorRepresentation::OnRep_ShouldShowOnMap(){ }
-void UFGActorRepresentation::OnRep_ActorRepresentationUpdated(){ }
+AFGActorRepresentationManager* UFGActorRepresentation::GetActorRepresentationManager() const{ return nullptr; }
+void UFGActorRepresentation::PreRepresentationReplication(){ }
+void UFGActorRepresentation::NotifyRepresentationUnmappedObjectReference(const TDoubleLinkedList<FProperty*>& PropertyChain, const FNetworkGUID& ObjectGUID){ }
+void UFGActorRepresentation::PostRepresentationReplication(){ }
+void UFGActorRepresentation::UpdateActorRepresentationFromInterface( IFGActorRepresentationInterface* representation, bool bFireDelegates){ }
+void UFGActorRepresentation::UpdateActorRepresentation(){ }
+void UFGActorRepresentation::UpdateActorLocationAndRotation(){ }
+void UFGActorRepresentation::UpdateActorLocationAndRotationFromReplication(const FVector& newActorLocation, const FRotator& newActorRotation){ }

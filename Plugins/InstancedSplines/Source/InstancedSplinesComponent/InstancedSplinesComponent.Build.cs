@@ -27,7 +27,8 @@ public class InstancedSplinesComponent : ModuleRules
 			{
 				"Core", 
 				"CoreUObject",
-				"Engine"
+				"Engine",
+				"Renderer"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -4,6 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Replication/FGConditionalPropertyReplicator.h"
+#include "Replication/FGConditionalReplicationInterface.h"
 #include "Components/ActorComponent.h"
 #include "FGSaveInterface.h"
 #include "FGPowerInfoComponent.generated.h"
@@ -13,11 +15,14 @@ class FACTORYGAME_API UFGBatteryInfo : public UObject
 {
 	GENERATED_BODY()
 public:
-	void SetActive( bool isActive ) { mIsActive = isActive; }
-	bool IsActive() const { return mIsActive; }
-	float GetPowerStore() const { return mPowerStore; }
-	void SetPowerStore( float powerStore ) { mPowerStore = powerStore; }
-	float GetPowerInput() const { return mPowerInput; }
+	FORCEINLINE void SetActive( bool isActive ) { mIsActive = isActive; }
+	FORCEINLINE bool IsActive() const { return mIsActive; }
+	FORCEINLINE float GetPowerStore() const { return mPowerStore; }
+	FORCEINLINE void SetPowerStore( float powerStore ) { mPowerStore = powerStore; }
+	FORCEINLINE float GetPowerInput() const { return mPowerInput; }
+	
+	FORCEINLINE float GetPowerStoreCapacity() const { return mPowerStoreCapacity; }
+	FORCEINLINE float GetPowerInputCapacity() const { return mPowerInputCapacity; }
 
 private:
 	friend class UFGPowerInfoComponent;
@@ -43,19 +48,15 @@ private:
  *   See that status of the fuse.
  */
 UCLASS( ClassGroup = ( Custom ), meta = ( BlueprintSpawnableComponent ) )
-class FACTORYGAME_API UFGPowerInfoComponent : public UActorComponent, public IFGSaveInterface
+class FACTORYGAME_API UFGPowerInfoComponent : public UActorComponent, public IFGSaveInterface, public IFGConditionalReplicationInterface
 {
 	GENERATED_BODY()
 public:
-	/** Replication */
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
-
-	/** If we should replicate detailed information, use this to optimize replication of inventories not actively used by client. */
-	FORCEINLINE void SetReplicateDetails( bool replicateDetails ) { mReplicateDetails = replicateDetails; }
-
 	UFGPowerInfoComponent();
 
+	/** Replication */
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	
 	// Begin IFGSaveInterface
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
@@ -65,6 +66,11 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
+
+	// Begin IFGConditionalReplicationInterface
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
+	virtual bool IsPropertyRelevantForConnection(UNetConnection* netConnection, const FProperty* property) const override;
+	// End IFGConditionalReplicationInterface
 
 	/**
 	 * @return The power circuit this is connected to; nullptr if not connected.
@@ -105,8 +111,11 @@ public:
 	 * Set the maximum power we might want from the circuit under normal conditions, i.e. no potential set.
 	 * @note This is an informative value for the subsystem and is not used in any of the power calculations.
 	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|PowerInfo" )
 	void SetMaximumTargetConsumption( float maxConsumption );
+	
 	/** Get the maximum target power consumption under normal conditions, i.e. no potential set. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerInfo" )
 	float GetMaximumTargetConsumption() const;
 
 	/**
@@ -149,6 +158,17 @@ public:
 	/** Get the dynamic power production we provide to the circuit. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerInfo" )
 	float GetRegulatedDynamicProduction() const;
+
+	/** Set production boost factor. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|PowerInfo" )
+	void SetProductionBoostFactor( float newFactor );
+
+	/** Get the production boost factor. [%] */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerInfo" )
+	float GetProductionBoostFactor() const;
+	/** Get the actual production boost provided by this building. [MW] */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerInfo" )
+	float GetActualProductionBoost() const;
 	
 	/**
 	 * @param isFullBlast set to true if the generator should always produce at full capacity; to false if it should only produce on-demand
@@ -177,24 +197,32 @@ public:
 	/** Debug */
 	void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos );
 
-private:
-	void SetHasPower( bool hasPower );
-	
-	/** If we should replicate detailed information. */
-	bool IsReplicatingDetails() const { return mReplicateDetails; }
+	/** Updates the relevancy owner for this item. This component will only replicate it's data when the relevancy owner allows it to */
+	void SetReplicationRelevancyOwner( UObject* relevancyOwner );
+
+protected:
+	/** Updates simulation data on this component. Called from the power circuit ticking logic directly. */
+	virtual void UpdateSimulationData( float dynamicProductionDemandFactor, float actualConsumption, bool isFuseTriggered, bool hasPower, float actualProductionBoost );
 
 public:
 	/** Delegate that will fire whenever mHasPower has changed */
 	DECLARE_DELEGATE_OneParam( FOnHasPowerChanged, UFGPowerInfoComponent* )
     FOnHasPowerChanged OnHasPowerChanged;
 
+protected:
+	/** The owner of this component that dictates when it becomes relevant */
+	UPROPERTY()
+	TScriptInterface<IFGConditionalReplicationInterface> mReplicationRelevancyOwner;
+	
+	/** Property replicator for conditionally replicating details */
+	UPROPERTY( Replicated, Transient, meta = ( FGPropertyReplicator ) )
+	FFGConditionalPropertyReplicator mPropertyReplicator;
 private:
 	friend class UFGPowerCircuit;
 	friend class UFGPowerCircuitGroup;
 
-	/** If we should replicate detailed information, use this to optimize replication of power info not actively used by client. */
-	bool mReplicateDetails;
-
+	void OnRelevancyOwnerInvalidatedRelevantPropertiesCache();
+	
 	/**
 	 * The circuit we're connected to.
 	 * @note - This ID may change at any time when changes occurs in the circuitry. Do not save copies of it!
@@ -203,38 +231,48 @@ private:
 	int32 mCircuitID;
 
 	/** Power to draw from the circuit. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, meta = ( FGReplicated ) )
 	float mTargetConsumption;
 
 	/** Maximum power consumption under normal conditions. */
+	UPROPERTY( meta = ( FGReplicated ) )
 	float mMaximumTargetConsumption;
 
 	/** The actual power we got from the circuit (updated each frame). */
-	UPROPERTY( Replicated )
+	UPROPERTY( meta = ( FGReplicated ) )
 	float mActualConsumption;
 
 	/** Power to always provide to the circuit. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, meta = ( FGReplicated ) )
 	float mBaseProduction;
 
 	/** Power to optionally provide to the circuit. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, meta = ( FGReplicated ) )
 	float mDynamicProductionCapacity;
 
 	/** The demand for dynamic power (updated each frame). */
-	UPROPERTY( Replicated )
+	UPROPERTY( meta = ( FGReplicated ) )
 	float mDynamicProductionDemandFactor;
+
+	/** How much is this producer boosting the power production. [%] */
+	UPROPERTY( meta = ( FGReplicated ) )
+	float mProductionBoostFactor;
+
+	/** How much did we produce. [MW] */
+	UPROPERTY( meta = ( FGReplicated ) );
+	float mActualProductionBoost;
 
 	UPROPERTY()
 	UFGBatteryInfo* mBatteryInfo;
 
 	/** Do we have enough of the requested power. Do not set this directly, use SetHasPower. */
+	UPROPERTY( meta = ( FGReplicated ) )
 	uint8 mHasPower:1;
 
 	/** true if the circuit is overloaded and the fuse has been triggered. */
-	UPROPERTY( Replicated )
+	UPROPERTY( meta = ( FGReplicated ) )
 	uint8 mIsFuseTriggered:1;
 
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, meta = ( FGReplicated ) )
 	uint8 mIsFullBlast:1;
 };

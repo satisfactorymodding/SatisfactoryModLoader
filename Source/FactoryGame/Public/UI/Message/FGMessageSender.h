@@ -36,4 +36,8 @@ public:
 	/** Color of the sender */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
 	FLinearColor mSenderColor = FLinearColor::White;
+
+	/** The tag used when importing messages. Case-insensitive. */
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Import" )
+	FName mImportTag;
 };

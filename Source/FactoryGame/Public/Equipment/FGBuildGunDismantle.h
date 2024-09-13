@@ -23,6 +23,25 @@ public:
 	TArray< FInventoryStack > PeekDismantleRefund;
 };
 
+USTRUCT()
+struct FACTORYGAME_API FDismantleLightweightBundle
+{
+	GENERATED_BODY()
+
+	FDismantleLightweightBundle() {}
+	FDismantleLightweightBundle( TSubclassOf< class AFGBuildable >  buildableClass ) :
+		BuildableClass( buildableClass )
+	{}
+	
+public:
+	UPROPERTY()
+	TSubclassOf< class AFGBuildable > BuildableClass;
+
+	// Indices into the Lightweight subsystem that correspond to the building being removed
+	UPROPERTY()
+	TArray< int32 > RemovalIndices;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDismantleRefundsChanged, class UFGBuildGunStateDismantle*, dismantleGun );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnPendingDismantleActorListChanged );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnMultiDismantleStateChanged, bool, newState );
@@ -75,6 +94,18 @@ public:
 	UFUNCTION( BlueprintPure, Category = "BuildGunState|Dismantle" )
 	class AActor* GetSelectedActor() const;
 
+	/** Returns the display name of the selected actor, or empty text */
+	UFUNCTION( BlueprintPure, Category = "BuildGunState|Dismantle" )
+	FText GetSelectedActorDisplayName() const;
+
+	/** Returns the currently active dismantle disqualifiers on the selected actors */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Hologram" )
+	void GetDismantleDisqualifiers( TArray< TSubclassOf< class UFGConstructDisqualifier > >& out_dismantleResults ) const;
+
+	/** Returns a list of all actors pending the dismantle. */
+	UFUNCTION( BlueprintPure, Category = "BuildGunState|Dismantle" )
+	TArray<AActor*> GetPendingDismantleActors() const;
+
 	/** Returns the number of actors that are pending for dismantle */
 	UFUNCTION( BlueprintPure, Category = "BuildGunState|Dismantle" )
 	FORCEINLINE int32 GetNumPendingDismantleActors( bool includeAimedAtActor ) const { return mCurrentlySelectedActor != nullptr && includeAimedAtActor ? mPendingDismantleActors.Num() + 1 : mPendingDismantleActors.Num(); }
@@ -93,10 +124,6 @@ public:
 	/** Can the selected actor be dismantled (Only call this on the server). */
 	UFUNCTION( BlueprintPure, Category = "BuildGunState|Dismantle" )
 	bool CanDismantle() const;
-
-	/** What do we get by dismantling the actor (Only call this on the server). */
-	UFUNCTION( BlueprintCallable, Category = "BuildGunState|Dismantle" )
-	TArray< FInventoryStack > GetDismantleRefund( bool noBuildCostEnabled ) const;
 
 	/** returns true if build gun delay is ok to start */
 	virtual bool CanBeginBuildGunDelay() const override;
@@ -127,30 +154,38 @@ public:
 
 	UPROPERTY( BlueprintAssignable, Category = "BuildGunState|Dismantle" )
 	FOnDismantleFilterChanged OnDismantleFilterChanged;
-
-	/** Material used on stencil proxies, needed to overwrite decal material domain shaders.
-	 * otherwise the depth is incorrect in the stencil buffer. */
-	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mHoverProxyMaterial;
 	
 protected:
 	void Internal_OnMultiDismantleStateChanged(bool newValue);
 
-	void UpdateHighlightedActors();
+	void SanitizeLightweightRemovalBundle( FDismantleLightweightBundle& removalBundle);
 
 private:
 	/** Client selects actor, then tells the server what to dismantle. This function does that! */
 	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_DismantleActors( const TArray<class AActor*>& selectedActors );
+	void Server_DismantleActors( const TArray<class AActor*>& selectedActors, const TArray< FDismantleLightweightBundle >& lightweightBundles );
 
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_PeekAtDismantleRefund( const TArray<class AActor*>& selectedActors, bool noBuildCostEnabled );
 
+	/**
+	 * Clients dont know if a request to dismantle will actually succeed since there may be dismantle failures from CanDismantle on the server.
+	 *  This function calls back to the client so they can clear the "IsPendingDismantleRemoval" so that the buildable can be selected again
+	 */
+	UFUNCTION( Client, Reliable )
+	void Client_NotifyActorsFailedDismantle( const TArray< AActor* >& failedToDismantle );
+	
+	UFUNCTION()
+	void CalculateLightweightRefunds();
+
+	UFUNCTION()
+	void CompileTotalRefunds();
+	
 	UFUNCTION()
 	virtual void OnRep_PeekDismantleRefund();
 
-	/** Dismantle a given actor. Refunds that couldn't fit in inventory from dismantled actor will be appended to out_overflowRefunds. Will place overflow refunds on ground if dropRefundsOnDismantle is true. **/
-	void Internal_DismantleActor( class AActor* actorToDismantle );
+	/** Dismantle a given actor **/
+	void Internal_DismantleActor( class AActor* actorToDismantle, TArray< AActor* >& out_couldNotDismantle, TArray<FInventoryStack>& out_dismantleRefunds, bool bNoBuildCostEnabled );
 
 	/** Set the selected actor (Simulated on client). Deselects the actor is selected param is nullptr */
 	void SetAimedAtActor( class AActor* selected );
@@ -169,16 +204,6 @@ private:
 
 	/** Validates the list of pending dismantle actors and removes any stale pointers */
 	void ClearStaleDismantleActors();
-
-	/** Adds instances to the proxy component( s ) */
-	void CreateStencilProxy( AActor* selected );
-
-	void DestroySingleStencilProxy( AActor* actor );
-	
-	void DestroyStencilProxies(bool destroyComponents = true);
-
-	/** Reset stencil value on every mesh component that has a render state. */
-	void ResetStencilValues( AActor* actor );
 
 	/** Whether or not we can dismantle the specified actor. */
 	bool CanDismantleActor( AActor* actor ) const;
@@ -228,15 +253,19 @@ private:
 	/** The actor to dismantle (simulated locally on client). */
 	UPROPERTY(Transient)
 	TArray<class AActor*> mPendingDismantleActors;
-
-	/** Stencil meshes to mark dismantle with */
-	UPROPERTY(Transient)
-	TMap< UStaticMesh*, class UInstancedStaticMeshComponent*> mPendingDismantleStencilMeshes;
 	
-	/** Cached dismantle refunds on server that is replicated */
+	/** Cached dismantle refunds on server that is replicated. This value does not include local lightweight refunds */
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_PeekDismantleRefund )
 	FDismantleRefunds mPeekDismantleRefund;
 
+	/** Cached Refund from lightweight buildables. This is calculated locally */
+	UPROPERTY(Transient)
+	FDismantleRefunds mLightweightDismantleRefund;
+
+	/** Cached Total refund from Replicated value and Local Lightweight total */
+	UPROPERTY(Transient)
+	FDismantleRefunds mTotalDismantleRefund;
+	
 	/** Default mode of the dismantle state. */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGunMode" )
 	TSubclassOf< UFGDismantleModeDescriptor > mDefaultDismantleMode;
@@ -255,4 +284,8 @@ private:
 	/** Blueprint proxies and their visual representations. */
 	UPROPERTY()
 	TMap< class AFGBlueprintProxy*, UStaticMeshComponent* > mBlueprintProxyVisualMeshes;
+
+	/** Track the instance converter so we know which one to remove from the subsystem */
+	UPROPERTY()
+	AActor* mInstanceConverterInstigator;
 };

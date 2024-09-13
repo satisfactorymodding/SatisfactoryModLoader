@@ -55,9 +55,11 @@ public:
 	// End IFGSaveInterface
 
 	// Begin Dismantle Interface
-	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
-	virtual void Dismantle_Implementation() override;
 	virtual bool CanDismantle_Implementation() const override;
+	virtual void GetChildDismantleActors_Implementation(TArray<AActor*>& out_ChildDismantleActors) const override;
+	virtual void GetDismantleDependencies_Implementation(TArray<AActor*>& out_dismantleDependencies) const override;
+	virtual bool SupportsDismantleDisqualifiers_Implementation() const override { return true; }
+	virtual void GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const override;
 	// end Dismantle interface
 
 	// Begin AFGBuildable interface
@@ -106,6 +108,9 @@ public:
 	FORCEINLINE UFGBlueprintDescriptor* GetCurrentDescriptor() { return mCurrentBlueprintDescriptor; }
 
 	UFUNCTION( BlueprintPure, Category="Blueprint Designer" )
+	FORCEINLINE class UBoxComponent* GetCollisionComponent() { return mCollisionComponent; }
+
+	UFUNCTION( BlueprintPure, Category="Blueprint Designer" )
 	FORCEINLINE FIntVector GetBlueprintDimensions() const { return mDimensions; }
 
 	FVector GetBlueprintDesignerSize() const;
@@ -127,7 +132,7 @@ public:
 	bool CanAffordToLoad( UFGBlueprintDescriptor* blueprintDesc, UFGInventoryComponent* playerInv );
 
 	/** A blueprint was loaded, remove the items from the inventories. Should only be done if we already determined it was able to be afforded */
-	void RemoveCostToLoad( UFGBlueprintDescriptor* blueprintDescriptor, UFGInventoryComponent* playerInv );
+	void RemoveCostToLoad( UFGBlueprintDescriptor* blueprintDescriptor, AFGCharacterPlayer* character );
 	
 	virtual void OnBuildEffectFinished() override;
 
@@ -143,6 +148,8 @@ public:
 
 	void RecalculateBlueprintCost();
 private:
+	void GenerateIntersectionBoxes();
+	
 	UFUNCTION()
 	void OnRep_Buildables();
 
@@ -156,7 +163,7 @@ public:
 	
 	/** Collision Box */
 	UPROPERTY( EditAnywhere, Category="Blueprint Designer")
-	UBoxComponent* mCollisionComponent;
+	class UBoxComponent* mCollisionComponent;
 
 	/** Design area box mesh. Should be a 1x1 cube, code will scale to match tile dimensions */
 	UPROPERTY( EditAnywhere, Category="Blueprint Designer")
@@ -216,9 +223,6 @@ private:
 	/** Actors active in the designer (buildings present in the designer) */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_Buildables )
 	TArray< class AFGBuildable* > mBuildables;
-
-	UPROPERTY()
-	TArray< UFGClearanceComponent* > mIntersectComponents;
 
 	/** The header data loaded or set on this designer */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_RecordData )

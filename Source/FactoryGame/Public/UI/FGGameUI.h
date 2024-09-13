@@ -6,7 +6,9 @@
 #include "FGBaseUI.h"
 #include "FGSchematic.h"
 #include "FGTutorialIntroManager.h"
+#include "Blueprint/UserWidgetPool.h"
 #include "Message/FGAudioMessage.h"
+#include "Narrative/FGMessage.h"
 #include "FGGameUI.generated.h"
 
 class UFGInteractWidget;
@@ -16,6 +18,30 @@ class UFGInteractWidget;
  * This should be handle by a proper focus/UI system and this is a temporary workaround.
  */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnMouseButtonDown, const FGeometry&, InGeometry, const FPointerEvent&, InMouseEvent );
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnMessageFinished, class UFGMessage*, message );
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnControllerDragWidgetChanged, class UFGControllerDragWidget*, slot );
+
+USTRUCT()
+struct FQueuedMessage
+{
+	GENERATED_BODY()
+	
+	FQueuedMessage( UFGMessage* inMessage ):
+	Message( inMessage ),
+	TriggerDelay( inMessage->mTriggerDelay )
+	{}
+
+	FQueuedMessage(){}
+
+	UPROPERTY( Transient )
+	class UFGMessage* Message = nullptr;
+	
+	UPROPERTY( Transient )
+	float TriggerDelay = 0;
+	
+};
 
 /**
  * Base class for the game UI located in the HUD.
@@ -31,6 +57,11 @@ class FACTORYGAME_API UFGGameUI : public UFGBaseUI
 	GENERATED_BODY()
 public:
 	UFGGameUI( const FObjectInitializer& ObjectInitializer );
+
+	// Begin UUserWidget interface
+	virtual void NativeConstruct() override;
+	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
+	// End UUserWidget interface
 	
 	/** Closes down all interact widgets */
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "UI" )
@@ -57,8 +88,12 @@ public:
 	FORCEINLINE bool HasActiveInteractWidget() { return mInteractWidgetStack.Num() > 0; }
 
 	/** Returns the first widget of the given class in the interact stack */
-	UFUNCTION( BlueprintPure, Category = "UI" )
+	UFUNCTION( BlueprintPure, Category = "UI", meta = ( DeterminesOutputType = "interactWidgetClass" ) )
 	UFGInteractWidget* GetInteractWidgetOfClass( TSubclassOf< UFGInteractWidget > interactWidgetClass ) const;
+
+	/** Returns all widgets on the stack belonging to the given interact object */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	void GetInteractWidgetsOfInteractObject( const UObject* InteractObject, TArray<UFGInteractWidget*>& OutInteractWidgets ) const;
 
 	/** Returns true if we have a widget of the given class in the interact stack */
 	UFUNCTION( BlueprintPure, Category = "UI" )
@@ -88,29 +123,23 @@ public:
 
 	/* Removes widget */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable , Category = "UI")
-	bool PopWidget(UFGInteractWidget* WidgetToRemove );
+	bool PopWidget( UFGInteractWidget* WidgetToRemove );
 
-	/** Adds a new message to the pending message array */
-	void AddPendingMessage( UFGMessageBase* message );
-	void AddPendingMessage( UFGMessage* message );
-	void AddPendingMessage( TSubclassOf<UFGMessageBase> messageClass );
-
-	/** Handle message. Usually grabbed from the pending message list at appropriate time */
-	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
-	void ReceivedMessage( TSubclassOf< class UFGMessageBase > inMessage );
+	/**
+	 * Adds new UFGMessages to the pending queue for playback.
+	 * 
+	 * - Validates player state and new message validity before adding.
+	 * - If globally suppressed, marks the message as played and doesn't queue.
+	 * - Discards the message if it doesn't meet local conditions or if it's blocked by cooldown.
+	 * - Interruption and queue management based on message priority and queue limits.
+	 * - Messages that cannot be queued or exceed the queue limit are discarded.
+	 * 
+	 * @param newMessages The new UFGMessages to add to the pending queue.
+	 */
+	void AddPendingMessages( const TArray< UFGMessage* >& newMessages );
 
 	/** Handle pending messages and push them at appropriate time */
 	void HandlePendingMessages( float InDeltaTime );
-
-	/**  Is this a good time to start the given message queue? */
-	bool CanReceiveMessageQueue();
-
-	/**  Is this a good time to play the given message? */
-	bool CanReceiveMessage( TSubclassOf< class UFGMessageBase > inMessage );
-
-	/** Sets the active audio message being played */
-	UFUNCTION( BlueprintCallable, Category = "UI" )
-    void SetActiveAudioMessage( class UFGAudioMessage* newMessage ){ mActiveAudioMessage = newMessage; }
 
 	/** Gets the active audio message being played ( can be null ) */
 	UFUNCTION( BlueprintPure, Category = "UI" )
@@ -139,18 +168,8 @@ public:
 	UFUNCTION()
     void AudioMessageFinishedPlayback();
 
-	/** Removes the audio message */
-	UFUNCTION( BlueprintNativeEvent, Category = "UI" )
-	void RemoveAudioMessage();
-
 	/** Returns the owning pawn by looking at owner and vehicle driver */
 	class AFGCharacterPlayer* GetFGCharacter();
-
-	/** Adds new tutorial info to be displayed */
-    void AddIntroTutorialInfo( FTutorialHintData tutorialHintData );
-
-	/** Called when we update our current objective but are waiting to show the next */
-	void ClearHintOnTutorialStepCompleted();
 
 	/** Setter for show inventory */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
@@ -200,9 +219,12 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|HUD|HoverPack" )
     void OnHoverPackConnectionStatusUpdated( const bool HasConnection );
 
-	/** Play a audio message in the UI */
+	/** Play a audio message in the UI
+	 * @param message The message to play
+	 * @param messageClass Optional audio message class to use. Will use Default Audio Message Widget in UI Settings if unspecified.
+	 */
 	UFUNCTION( BlueprintCallable, Category ="FactoryGame|Message")
-	void PlayAudioMessage( TSubclassOf<UFGAudioMessage> messageClass );
+	void PlayAudioMessage( UFGMessage* message, TSubclassOf<UFGAudioMessage> messageClass = nullptr );
 
 	// @todok2 Temporary until we cleaned up system
 	void Internal_PlayAudioMessage( class UFGAudioMessage* audioMessage );
@@ -246,20 +268,38 @@ public:
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
 	bool OnShortcutPressed( int32 shortcutIndex );
+
+	TMap< UFGMessage*, double > GetPlayedMessages() const { return mPlayedMessages; }
+
+	FORCEINLINE float GetMessageCooldown() const { return mMessageCooldown; }
+	FORCEINLINE void ClearMessageCooldown() { mMessageCooldown = 0.f; }
+
+	/** Request and release functions for the user widget pool */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI", meta = (DeterminesOutputType = "widgetClass") )
+	UUserWidget* RequestWidget( TSubclassOf< UUserWidget > widgetClass );
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
+	void ReleaseWidget( UUserWidget* widgetToRelease );
+	
+	UFUNCTION( BlueprintPure )
+	class UFGControllerDragWidget* GetControllerDragWidget() { return mControllerDragWidget; }
+
+	UFUNCTION( BlueprintCallable )
+	void SetControllerDragWidget( class UFGControllerDragWidget* widget );
+
+	UPROPERTY( BlueprintAssignable )
+	FFGOnControllerDragWidgetChanged mControllerDragWidgetChanged;
+
 protected:
 	// Begin UUserWidget interface
 	virtual FReply NativeOnPreviewMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent ) override;
 	// End UUserWidget interface
 
-	/** Event triggered when we have updated the current tutorial info */
+	UFUNCTION()
+	void Native_OnOnboardingStepUpdated( UFGOnboardingStep* currentOnboardingStep );
+
+	/* previousOnboardingStep is valid when a transition from one step to another happens. Invalid if we load a game or init the first onboarding step */
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
-    void OnUpdateTutorialInfo();
-
-	/** Event triggered when we want to show tutorial hint */
-	void ShowTutorialHint();
-
-	UFUNCTION( BlueprintImplementableEvent, Category = "UI", meta = (DisplayName = "ShowTutorialHint") )
-	void ReceiveShowTutorialHint();
+	void OnOnboardingStepUpdated( UFGOnboardingStep* newOnboardingStep );
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
 	UNamedSlot* GetTutorialInfoSlot();
@@ -270,15 +310,28 @@ protected:
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	bool ShouldShowFicsitSplashWidget() const;
 
+	virtual bool ShouldSuppressMessage( class UFGMessage* message ) const;
+
+private:
+	void SetupDelegates();
+
 public:
-	/** Array with messages that the player has stocked up and are awaiting to be played */
+	/** This is the interrupt message we want to play in between if a message was interrupted by a higher prio message. Populated when message is interrupted */
 	UPROPERTY( Transient )
-	TArray< class UFGMessageBase* > mPendingMessages;
+	class UFGMessage* mPendingInterruptMessage;
+	/** Queue of messages pending playback. The trigger delay of the queued messages does not matter for the order of the queue. The first message
+	 * can be waiting for it's delay while the second isn't and that is fine. The trigger delay is just a way to make sure we don't trigger messages to early. */
+	UPROPERTY(Transient)
+	TArray<FQueuedMessage> mMessageQueue;
 
 	/** Delegate for when mouse button is pressed. The event will not be handled 
 	so if you already are listening for mouse input you might get this and your own event */
 	UPROPERTY( BlueprintAssignable, Category = "Mouse Event" )
 	FOnMouseButtonDown mOnMouseButtonDown;
+
+	/** Called whenever a message finishes playing. */
+	UPROPERTY( BlueprintAssignable, Category = "Message" )
+	FOnMessageFinished mOnMessageFinishedDelegate;
 
 protected:
 	/** Do we want the inventory to be shown? */
@@ -286,9 +339,6 @@ protected:
 
 	/** Do we want a player inventory to be created */
 	bool mWindowWantInventoryAddon;
-
-	UPROPERTY( BlueprintReadOnly )
-	FTutorialHintData mActiveTutorialHintData;
 private:
 	/** A stack with widgets that are currently open */
 	UPROPERTY()
@@ -296,15 +346,23 @@ private:
 
 	/** Message that is being played now ( can be null ) */
 	UPROPERTY()
-	class UFGAudioMessage* mActiveAudioMessage;
+	class UFGAudioMessage* mActiveAudioMessage = nullptr;
 
-	/** How much time must pass between receiving audio messages at least? */
-	UPROPERTY( EditDefaultsOnly, Category = "UI" )
-	float mMinTimeBetweenAudioMessage;
+	/** Array with messages that have been played this session mapped to the world time */
+	UPROPERTY( Transient )
+	TMap< UFGMessage*, double > mPlayedMessages;
 
-	/** Timer value used so that we don't push audio message direct after another */
-	float mAudioMessageCooldown;
+	/* Every time a message is triggered a cooldown will start running. Some message will not be played if triggered while this cooldown is active. */
+	float mMessageCooldown = 0.f;
 
 	/** Whether or not the pause menu is open. */
 	bool mPauseMenuOpen;
+
+	/** Pooled widgets that we don't want to recreate */
+	UPROPERTY( Transient )
+	FUserWidgetPool mUserWidgetPool;
+
+	/** Floating inventory slot used when dragging an item with the controller. */
+	UPROPERTY()
+	class UFGControllerDragWidget* mControllerDragWidget;
 };

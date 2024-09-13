@@ -4,7 +4,6 @@
 
 #include "FactoryGame.h"
 #include "Engine/DeveloperSettings.h"
-#include "EngineMinimal.h"
 #include "IncludeInBuild.h"
 #include "Templates/SubclassOf.h"
 #include "FGOptionsSettings.generated.h"
@@ -241,13 +240,13 @@ public:
 
 public:
 	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "" ) )
-	TMap<EOptionType, TSubclassOf< class UFGOptionsValueController >> mOptionTypeWidgetsClasses;
+	TMap<EOptionType, TSoftClassPtr< class UFGOptionsValueController >> mOptionTypeWidgetsClasses;
 	
 	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "The widget class used when option type is integer selection and we want to show it as a dropdown menu" ) )
-	TSubclassOf< class UFGOptionsValueController > mDropDownWidgetClass; 
+	TSoftClassPtr< class UFGOptionsValueController > mDropDownWidgetClass; 
 
 	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "" ) )
-	TSubclassOf< class UFGDynamicOptionsRow > mOptionRowWidgetClass;
+	TSoftClassPtr< class UFGDynamicOptionsRow > mOptionRowWidgetClass;
 
 	UPROPERTY( EditAnywhere, config, Category = "Hologram", meta = ( ToolTip = "" ) )
 	TSoftObjectPtr<class UMaterialParameterCollection> mHologramColourParameterCollection;

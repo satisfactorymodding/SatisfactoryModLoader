@@ -7,6 +7,7 @@ FAutoConsoleVariableSink UFGGameUserSettings::mCVarSink = FConsoleCommandDelegat
 
 #if WITH_EDITOR
 void UFGGameUserSettings::OnBeginPIE(const bool bIsSimulating){ }
+void UFGGameUserSettings::OnEndPIE(const bool bIsSimulating){ }
 #endif 
 UFGGameUserSettings* UFGGameUserSettings::GetFGGameUserSettings(){ return nullptr; }
 void UFGGameUserSettings::LoadSettings(bool bForceReload){ }
@@ -18,20 +19,19 @@ float UFGGameUserSettings::GetEffectiveFrameRateLimit(){ return float(); }
 void UFGGameUserSettings::ConfirmVideoMode(){ }
 void UFGGameUserSettings::RunHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ }
 void UFGGameUserSettings::ApplyHardwareBenchmarkResults(){ }
-IFGOptionInterface* UFGGameUserSettings::GetActiveOptionInterface() const{ return nullptr; }
 FString UFGGameUserSettings::RunAndApplyHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ return FString(); }
 void UFGGameUserSettings::TryAutoDetectSettings(){ }
 void UFGGameUserSettings::SetDefaultValuesFromHardwareBenchmark(){ }
 EUpscalingMethod UFGGameUserSettings::ValidateUpscalingMethod(EUpscalingMethod upscalingMethod, bool considerVRAM) const{ return EUpscalingMethod(); }
 FString UFGGameUserSettings::ValidateScalabilityValue(const FString& keyString, const FString& valueString) const{ return FString(); }
 int32 UFGGameUserSettings::GetVideoQualityLevelFromHardwareBenchmark(){ return int32(); }
-void UFGGameUserSettings::RevertUnsavedChanges(){ }
 void UFGGameUserSettings::SetupBindings(){ }
 bool UFGGameUserSettings::IsStableVideoModeDirty(){ return bool(); }
 void UFGGameUserSettings::ResetVideoModeToLatestStable(){ }
 void UFGGameUserSettings::ConfirmStableVideoMode(){ }
 void UFGGameUserSettings::SanitizeResolution(){ }
 void UFGGameUserSettings::ToggleFullscreenMode(){ }
+void UFGGameUserSettings::UpdateFOVScalingForWorld(UWorld* world){ }
 void UFGGameUserSettings::UpdateVideoQuality(){ }
 void UFGGameUserSettings::OnVideoQualityUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::OnFOVScalingUpdated(FString strId, FVariant value){ }
@@ -40,6 +40,8 @@ void UFGGameUserSettings::UpdateVideoQualityCvars(const FString& cvar){ }
 void UFGGameUserSettings::OnUpScalingUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::InitUpScalingMethod(){ }
 bool UFGGameUserSettings::IsUsingThirdPartyUpscaler() const{ return bool(); }
+bool UFGGameUserSettings::IsXeSSSupported(){ return bool(); }
+bool UFGGameUserSettings::IsDLSSSupported(){ return bool(); }
 void UFGGameUserSettings::HandleCmdLineVideoQuality(){ }
 bool UFGGameUserSettings::GetCmdLineVideoQualityLevel(int32& out_value){ return bool(); }
 bool UFGGameUserSettings::HasVideoQualityCmdLineArg(){ return bool(); }
@@ -49,6 +51,7 @@ UFGOptionInterface* UFGGameUserSettings::GetOptionInterface(){ return nullptr; }
 void UFGGameUserSettings::UpdateAudioOption(FString updatedCvar){ }
 void UFGGameUserSettings::OnArachnophobiaModeUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnFoliageQualityUpdated(FString updatedCvar){ }
+void UFGGameUserSettings::OnOnlineIntegrationModeUpdated(){ }
 void UFGGameUserSettings::OnMotionBlurEnabledUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnPoolLightQualityUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnCloudQualityUpdated(FString updatedCVar){ }
@@ -62,41 +65,17 @@ void UFGGameUserSettings::OnNetworkQualityUpdated(FString updatedCvar){ }
 int32 UFGGameUserSettings::GetDefaultPostProcessQualitySetting(FString settingName){ return int32(); }
 void UFGGameUserSettings::RefreshNetworkQualityValues(){ }
 bool UFGGameUserSettings::GetPlayerMappedKey(const FName& inActionName, FFGCustomInputActionMapping& out_FoundMapping) const{ return bool(); }
-void UFGGameUserSettings::AddCustomActionMapping(FFGKeyMapping newMapping){ }
 void UFGGameUserSettings::AddPlayerMappedKey(const FFGCustomInputActionMapping& newMapping){ }
-void UFGGameUserSettings::RemoveAllCustomActionMappings(){ }
 void UFGGameUserSettings::RemoveAllPlayerMappedKeys(){ }
-FVariant UFGGameUserSettings::GetOptionValue(const FString& strId) const{ return FVariant(); }
-FVariant UFGGameUserSettings::GetOptionValue(const FString& strId, const FVariant& defaultValue) const{ return FVariant(); }
-FVariant UFGGameUserSettings::GetOptionDisplayValue(const FString& strId) const{ return FVariant(); }
-FVariant UFGGameUserSettings::GetOptionDisplayValue(const FString& strId, const FVariant& defaultValue) const{ return FVariant(); }
+void UFGGameUserSettings::GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const{ }
+UFGUserSettingApplyType* UFGGameUserSettings::FindUserSetting(const FString& SettingId) const{ return nullptr; }
 void UFGGameUserSettings::SetOptionValue(const FString& strId, const FVariant& value){ }
-void UFGGameUserSettings::ForceSetOptionValue(const FString& strId, const FVariant& value, const UObject* instigator){ }
-void UFGGameUserSettings::SubscribeToOptionUpdate(const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate){ }
-void UFGGameUserSettings::UnsubscribeToOptionUpdate(const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate){ }
-bool UFGGameUserSettings::IsDefaultValueApplied(const FString& strId) const{ return bool(); }
-bool UFGGameUserSettings::IsOptionEditable(const FString& strId) const{ return bool(); }
 void UFGGameUserSettings::ApplyChanges(){ }
 void UFGGameUserSettings::ResetAllSettingsToDefault(){ }
 void UFGGameUserSettings::ResetAllSettingsInCategory(TSubclassOf<  UFGUserSettingCategory > category, TSubclassOf<  UFGUserSettingCategory > subCategory){ }
-bool UFGGameUserSettings::GetBoolOptionValue(const FString& cvar) const{ return bool(); }
-bool UFGGameUserSettings::GetBoolUIDisplayValue(const FString& cvar) const{ return bool(); }
-void UFGGameUserSettings::SetBoolOptionValue(const FString& cvar, bool value){ }
-int32 UFGGameUserSettings::GetIntOptionValue(const FString& cvar) const{ return int32(); }
-int32 UFGGameUserSettings::GetIntUIDisplayValue(const FString& cvar) const{ return int32(); }
-void UFGGameUserSettings::SetIntOptionValue(const FString& cvar, int32 newValue){ }
-float UFGGameUserSettings::GetFloatOptionValue(const FString& cvar) const{ return float(); }
-float UFGGameUserSettings::GetFloatUIDisplayValue(const FString& cvar) const{ return float(); }
-void UFGGameUserSettings::SetFloatOptionValue(const FString& cvar, float newValue){ }
-bool UFGGameUserSettings::HasAnyUnsavedOptionValueChanges() const{ return bool(); }
-bool UFGGameUserSettings::HasPendingApplyOptionValue(const FString& cvar) const{ return bool(); }
-bool UFGGameUserSettings::HasAnyPendingRestartOptionValue(const FString& cvar) const{ return bool(); }
-bool UFGGameUserSettings::GetRequireSessionRestart() const{ return bool(); }
-bool UFGGameUserSettings::GetRequireGameRestart() const{ return bool(); }
-void UFGGameUserSettings::SubscribeToDynamicOptionUpdate(const FString& cvar, const FOptionUpdated& optionUpdatedDelegate){ }
-void UFGGameUserSettings::UnsubscribeToDynamicOptionUpdate(const FString& cvar, const FOptionUpdated& optionUpdatedDelegate){ }
-void UFGGameUserSettings::UnsubscribeToAllDynamicOptionUpdate(UObject* boundObject){ }
-TArray<FUserSettingCategoryMapping> UFGGameUserSettings::GetCategorizedSettingWidgets(UObject* worldContext, UUserWidget* owningWidget){ return TArray<FUserSettingCategoryMapping>(); }
+bool UFGGameUserSettings::IsGlobalManager() const{ return bool(); }
+bool UFGGameUserSettings::IsInMainMenu() const{ return bool(); }
+IFGOptionInterface* UFGGameUserSettings::GetPrimaryOptionInterface(UWorld* world) const{ return nullptr; }
 void UFGGameUserSettings::InitSavedValues(){ }
 void UFGGameUserSettings::SetupAudioSettingBindings(){ }
 void UFGGameUserSettings::OnExitToMainMenu(){ }
@@ -119,6 +98,8 @@ void UFGGameUserSettings::SetSoftClearanceHologramColour(FVector inColour){ }
 void UFGGameUserSettings::ApplyHologramColoursToCollectionParameterInstance(UObject* World){ }
 void UFGGameUserSettings::UpdateFoliageLoadingDistance(UObject* World){ }
 void UFGGameUserSettings::UpdatePaniniFOVScaling(){ }
+bool UFGGameUserSettings::ShouldShowFirstLaunchPopUpScreen(){ return bool(); }
+void UFGGameUserSettings::MarkFirstLaunchPopUpScreenAccepted(){ }
 UMaterialParameterCollection* UFGGameUserSettings::GetHologramMaterialCollectionAsset() const{ return nullptr; }
 void UFGGameUserSettings::SetPreferredOnlineIntegrationMode(EOnlineIntegrationMode preferredOnlineIntegrationMode){ }
 void UFGGameUserSettings::DumpDynamicOptionsSettings(){ }
@@ -127,10 +108,10 @@ bool UFGGameUserSettings::AwaitModuleLoadIfNeeded(const FName& moduleName){ retu
 void UFGGameUserSettings::OnModuleChanged(FName name, EModuleChangeReason reason){ }
 void UFGGameUserSettings::TryInitUserSettings(){ }
 void UFGGameUserSettings::InitUserSettings(){ }
+void UFGGameUserSettings::OnPreMapLoad(const FString& MapName){ }
 void UFGGameUserSettings::SetCvarValue(FString cvar, int32 value){ }
 void UFGGameUserSettings::SetCvarValue(FString cvar, float value){ }
 void UFGGameUserSettings::SetupAudioOption(const FString& strId){ }
-void UFGGameUserSettings::ApplyPendingChanges(){ }
 void UFGGameUserSettings::CheckForCvarOverrides(){ }
 void UFGGameUserSettings::CheckForVideoCvarOverrides(){ }
 void UFGGameUserSettings::CVarSinkHandler(){ }

@@ -12,3 +12,4 @@ void AFGResourceNodeFrackingCore::Factory_SetSatellitesActive(bool isActive){ }
 void AFGResourceNodeFrackingCore::GetSatellites(TArray<  AFGResourceNodeFrackingSatellite* >& out_Satellites) const{ }
 int32 AFGResourceNodeFrackingCore::GetNumOccupiedSatellites(int32& numSatellites) const{ return int32(); }
 bool AFGResourceNodeFrackingCore::IsAllSatellitesOccupied() const{ return bool(); }
+void AFGResourceNodeFrackingCore::OnSatelliteIsOccupiedChanged(const AFGResourceNodeFrackingSatellite* satellite){ }

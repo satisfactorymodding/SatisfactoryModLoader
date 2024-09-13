@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "FGBuildableConveyorBase.h"
 #include "FGBuildablePassthrough.h"
+#include "Math/GenericOctree.h"
 #include "FGBuildableConveyorLift.generated.h"
 
 class UStaticMesh;
@@ -66,6 +67,7 @@ public:
 
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
+	virtual bool ShouldShowCenterGuidelinesForHologram( const AFGHologram* hologram ) const override;
 	// End Buildable interface
 	
 	// Begin IFGDismantleInterface
@@ -83,6 +85,14 @@ public:
 
 	/** Get the height for this lift. */
 	float GetHeight() const { return FMath::Abs( mTopTransform.GetTranslation().Z ); }
+
+	/** Returns whether this lift is reversed or not */
+	FORCEINLINE bool GetIsReversed() const { return mIsReversed; }
+
+	/** Overriden to account for reversal */
+	virtual float GetDistanceBetweenFirstConnection() override;
+	/** Overriden to account for reversal */
+	virtual float GetDistanceBetweenLastConnection() override;
 
 	virtual void BuildStaticItemInstances() override;
 
@@ -134,10 +144,12 @@ private:
 		UStaticMesh* topMesh,
 		float stepHeight,
 		TArray< AFGBuildablePassthrough* > snappedPassthroughs,
+		bool isConnectionReversed,
+		bool shouldFlipOnReverse,
 		TArray< UStaticMeshComponent* >& meshPool,
 		MeshConstructor meshConstructor );
 
-	static FBoxCenterAndExtent FitClearance(
+	static FBox FitClearance(
 		float transformZ,
 		float stepHeight,
 		const FVector2D& extend2D,
@@ -191,19 +203,33 @@ private:
 	UFUNCTION()
 	void OnRep_TopTransform();
 
+	/**
+	 * We need the passthrough information to correctly build the lift mesh so when they replicate clients will rebuild their instances
+	 */
+	UFUNCTION()
+	void OnRep_SnappedPassthroughs();
+	
 	UPROPERTY( SaveGame, ReplicatedUsing= OnRep_TopTransform )
 	FTransform mTopTransform;
 
 	UPROPERTY( SaveGame, Replicated )
 	bool mIsReversed;
 
+	/** Used by mk6 lifts because they are enclosed and have a directional arrow on them */
+	UPROPERTY( EditDefaultsOnly )
+	bool mFlipMeshOnReverse;
+
 	/* DEPRECATED */
 	/** Meshes for items. */
 	UPROPERTY( Meta = ( NoAutoJson ) )
 	TMap< FName, class UInstancedStaticMeshComponent* > mItemMeshMap;
 
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_SnappedPassthroughs )
 	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
+
+	/** Tobias 2024-05-20: We need this data replicated in order to scale the bellows on client, because clients can't access the opposing connections. */
+	UPROPERTY( Replicated )
+	float mOpposingConnectionClearance[2];
 
 	UPROPERTY( EditDefaultsOnly, meta = (AllowPrivateAccess = "true") )
 	UStaticMeshComponent* mVisibilityComponent;
@@ -211,6 +237,10 @@ private:
 	/** The names of the fog plane components so they can be referenced */
 	inline static const FName FOG_PLANE_0 = FName( TEXT( "FogPlane0" ) );
 	inline static const FName FOG_PLANE_1 = FName( TEXT( "FogPlane1" ) );
+
+	/** Cached values for conveyor renderer. */
+	FRenderTransform PreCachedBaseRenderTransform;
+	FVector3f ItemDirection;
 };
 
 inline void AFGBuildableConveyorLift::PostSerializedFromBlueprint( bool isBlueprintWorld )
@@ -228,7 +258,7 @@ inline void AFGBuildableConveyorLift::PostSerializedFromBlueprint( bool isBluepr
  */
 template< typename MeshConstructor >
 void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const FTransform& endTransform, UStaticMesh* bottomMesh, UStaticMesh* midMesh, UStaticMesh* halfMidMesh, UStaticMesh* topMesh,
-												 float stepHeight, TArray< AFGBuildablePassthrough* > snappedPassthroughs, TArray< UStaticMeshComponent* >& meshPool, MeshConstructor meshConstructor )
+												 float stepHeight, TArray< AFGBuildablePassthrough* > snappedPassthroughs, bool isConnectionReversed, bool shouldFlipOnReverse, TArray< UStaticMeshComponent* >& meshPool, MeshConstructor meshConstructor )
 {
 	fgcheck( parent );
 	const bool bHasPassthrough = snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ];
@@ -240,8 +270,11 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 	const float height = FMath::Abs( endTransform.GetTranslation().Z ) - ( totalPassthroughHeight / 2.f );
 	const float stepDir = FMath::FloatSelect( endTransform.GetTranslation().Z, 1., -1. );
 	const bool isReversed = stepDir < 0.f;
-	int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( height / stepHeight ) + (bHasPassthrough ? 0 : 1) );
 
+	const bool bShouldFlipMesh = isConnectionReversed ? (!isReversed && shouldFlipOnReverse) : (isReversed && shouldFlipOnReverse);
+	
+	int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( height / stepHeight ) + (bHasPassthrough ? 0 : 1) );
+	
 	// When snapping to two passthroughs it is sometimes neccesary to use a half segment at the end to ensure the mesh doesn't clip through thin foundations
 	bool useHalfMeshEnd =	( snappedPassthroughs[ 0 ] && isReversed ) &&
 							( snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ] && 
@@ -256,12 +289,6 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 		numMeshes = 1;
 	}
 	
-	// One less mesh is needed when snapping to two passthroughs
-	if( ( snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ] ) || snappedPassthroughs[ 1 ] )
-	{
-		--numMeshes;
-	}
-
 	// If we end up with 0 meshes, usually if our height is 0, then we'll force it to 1 and use a half mesh end
 	if( numMeshes <= 0 )
 	{
@@ -317,7 +344,14 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 				}
 				else
 				{
-					STEP_ALIGNMENT += (useHalfMeshEnd && i == meshPool.Num() - 1 ) ? stepHeight / 2.f : stepHeight;
+					if( bShouldFlipMesh )
+					{
+						STEP_ALIGNMENT += stepHeight / 2.f;
+					}
+					else
+					{
+						STEP_ALIGNMENT += (useHalfMeshEnd && i == meshPool.Num() - 1 ) ? stepHeight / 2.f : stepHeight;
+					}
 				}
 			}
 		}
@@ -336,7 +370,7 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 			mesh->SetStaticMesh( midMesh );
 		}
 	}
-
+	
 	// Update the last and first piece.
 	if( auto mesh = meshPool.Last() )
 	{
@@ -366,6 +400,23 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 				// When the first snap is to a passthrough, replace the bottom mesh with a mid mesh segment
 				mesh->SetStaticMesh( midMesh );
 			}
+		}
+	}
+
+	if( bShouldFlipMesh )
+	{
+		FTransform flipTransform = FTransform();
+		float zOffset = ( snappedPassthroughs[0] || (snappedPassthroughs[0] == nullptr && snappedPassthroughs[1] == nullptr) ) ? -50.f : 0.f; // This is a bit hacky to account for different spacing behaviour. Again, with all the special cases this code should perhaps be rewritten entirely
+		flipTransform.SetLocation( endTransform.GetLocation() - FVector( 0.f, 0.f, zOffset ) );
+		flipTransform.SetRotation( FRotator( 180.f, 0.f, 0.f).Quaternion() );
+		int32 startAt = snappedPassthroughs[0] == nullptr ? 1 : 0;
+		int32 endAt = snappedPassthroughs[1] == nullptr ? numMeshes - 1 : numMeshes;
+		for( int32 i = startAt; i < endAt; ++i)
+		{
+			auto& mesh = meshPool[ i ];
+			FTransform meshRelative = mesh->GetRelativeTransform();
+			meshRelative *= flipTransform;
+			mesh->SetRelativeTransform( meshRelative );
 		}
 	}
 

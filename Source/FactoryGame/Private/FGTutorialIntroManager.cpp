@@ -7,14 +7,14 @@ AFGTutorialIntroManager* AFGTutorialIntroManager::Get(UWorld* world){ return nul
 AFGTutorialIntroManager* AFGTutorialIntroManager::Get(UObject* worldContext){ return nullptr; }
 AFGTutorialIntroManager::AFGTutorialIntroManager() : Super() {
 	this->mTradingPostBuilt = false;
-	this->mPendingTutorial = EIntroTutorialSteps::ITS_NONE;
+	this->mPendingTutorial = EIntroTutorialSteps::ITS_DEPRECATED;
+	this->mCurrentOnboardingStep = nullptr;
 	this->mHasCompletedIntroTutorial = false;
 	this->mHasCompletedIntroSequence = false;
+	this->mLandingOnboardingMessage = nullptr;
 	this->mTradingPostDescriptor = nullptr;
 	this->mTradingPost = nullptr;
 	this->mIronOreDescriptor = nullptr;
-	this->mDidPickUpIronOre = false;
-	this->mDropPodItemClass = nullptr;
 	this->mDidDismantleDropPod = false;
 	this->mStunSpearItemClass = nullptr;
 	this->mDidEquipStunSpear = false;
@@ -46,7 +46,7 @@ AFGTutorialIntroManager::AFGTutorialIntroManager() : Super() {
 }
 void AFGTutorialIntroManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGTutorialIntroManager, mPendingTutorial);
+	DOREPLIFETIME(AFGTutorialIntroManager, mCurrentOnboardingStep);
 	DOREPLIFETIME(AFGTutorialIntroManager, mHasCompletedIntroTutorial);
 	DOREPLIFETIME(AFGTutorialIntroManager, mHasCompletedIntroSequence);
 	DOREPLIFETIME(AFGTutorialIntroManager, mTradingPost);
@@ -54,6 +54,7 @@ void AFGTutorialIntroManager::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(AFGTutorialIntroManager, mTradingPostLevel);
 }
 void AFGTutorialIntroManager::Tick(float DeltaTime){ }
+void AFGTutorialIntroManager::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGTutorialIntroManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTutorialIntroManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTutorialIntroManager::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -63,6 +64,9 @@ bool AFGTutorialIntroManager::NeedTransform_Implementation(){ return bool(); }
 bool AFGTutorialIntroManager::ShouldSave_Implementation() const{ return bool(); }
 void AFGTutorialIntroManager::AddPlayer( AFGCharacterPlayer* inPlayer){ }
 void AFGTutorialIntroManager::OnDismantleDropPod(){ }
+void AFGTutorialIntroManager::CompleteOnboardingStep( UFGOnboardingStep* completedOnboardingStep){ }
+void AFGTutorialIntroManager::CompleteOnboardingStepByTag(FGameplayTag completedOnboardingStepTag){ }
+UFGOnboardingStep* AFGTutorialIntroManager::GetOnboardingStepFromTag(FGameplayTag OnboardingStepTag) const{ return nullptr; }
 void AFGTutorialIntroManager::SetTradingPostLevel(int32 newLevel){ }
 void AFGTutorialIntroManager::SetInputGatesFromTutorialLevel( AFGPlayerController* playerController){ }
 void AFGTutorialIntroManager::SetupDropPod( AFGCharacterPlayer* forPlayer){ }
@@ -80,14 +84,16 @@ void AFGTutorialIntroManager::SkipOnboarding(){ }
 void AFGTutorialIntroManager::BeginPlay(){ }
 void AFGTutorialIntroManager::OnBuildingBuiltGlobal( AFGBuildable* buildable){ }
 void AFGTutorialIntroManager::OnSchematicPurchased(TSubclassOf< UFGSchematic > newSchematic){ }
+void AFGTutorialIntroManager::OnItemPickuped(AFGPlayerState* playerState, const FItemAmount& totalAmountPickuped){ }
 void AFGTutorialIntroManager::UpdateTutorial(EIntroTutorialSteps nextTutorialStep){ }
-void AFGTutorialIntroManager::HandlePendingTutorials(){ }
-void AFGTutorialIntroManager::ClearActiveTutorialHint(){ }
-void AFGTutorialIntroManager::OnPlayerAddedItemToInventory(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numAdded){ }
-void AFGTutorialIntroManager::OnPlayerAddedItemToArmSlot(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numAdded){ }
+void AFGTutorialIntroManager::SetCurrentOnboardingStep(UFGOnboardingStep* inOnboardingStep){ }
+void AFGTutorialIntroManager::SetCurrentOnboardingStep(FGameplayTag inOnboardingStep){ }
+void AFGTutorialIntroManager::OnPlayerAddedItemToArmSlot(TSubclassOf< UFGItemDescriptor > itemClass, const int32 numAdded, UFGInventoryComponent* targetInventory){ }
+void AFGTutorialIntroManager::OnMessageFinishedPlayingForPlayer( AFGPlayerController* player,  UFGMessage* message){ }
 void AFGTutorialIntroManager::SetTradingpostBuilt(bool hasbuilt){ }
 void AFGTutorialIntroManager::OnIntroDone(){ }
 void AFGTutorialIntroManager::OnRep_TradingPostLevel(){ }
 void AFGTutorialIntroManager::OnRep_HasCompletedIntroTutorial(){ }
+void AFGTutorialIntroManager::OnRep_CurrentOnboardingStep(){ }
 bool AFGTutorialIntroManager::ShouldSkipOnboarding() const{ return bool(); }
 const int32 AFGTutorialIntroManager::MaxTradingPostLevel = int32();

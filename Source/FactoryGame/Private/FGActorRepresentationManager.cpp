@@ -3,10 +3,16 @@
 #include "FGActorRepresentationManager.h"
 #include "Net/UnrealNetwork.h"
 
-void UFGActorRepresentationRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UFGActorRepresentationRemoteCallObject, mForceNetField_UFGActorRepresentationRemoteCallObject);
-}
+bool FFGActorRepresentationReplicatorDeltaState::IsStateEqual(INetDeltaBaseState* OtherState){ return bool(); }
+void FFGActorRepresentationReplicatorDeltaState::CountBytes(FArchive& Ar) const{ }
+void FFGActorRepresentationReplicatorDeltaState::UpdateReplicatedRepresentationList(const AFGActorRepresentationManager* representationManager){ }
+void FFGActorRepresentationReplicatorDeltaState::UpdateReplicatedMovementData(){ }
+bool FFGActorRepresentationReplicatorDeltaState::HasPendingReplicationData() const{ return bool(); }
+bool FFGActorRepresentationReplicator::NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams){ return bool(); }
+bool FFGActorRepresentationReplicator::NetDeltaSerialize_Write(const AFGActorRepresentationManager* representationManager, FNetDeltaSerializeInfo& deltaParams) const{ return bool(); }
+bool FFGActorRepresentationReplicator::NetDeltaSerialize_Read(AFGActorRepresentationManager* representationManager, FNetDeltaSerializeInfo& deltaParams){ return bool(); }
+void FFGActorRepresentationReplicator::NetSerializeProperty_Write(FBitWriter& Ar, FProperty* Property, void* PropertyValuePtr, UPackageMap* PackageMap, INetSerializeCB& Callbacks){ }
+void FFGActorRepresentationReplicator::NetSerializeProperty_Read(FBitReader& Ar, FProperty* Property, void* PropertyValuePtr, UPackageMap* PackageMap, INetSerializeCB& Callbacks, TDoubleLinkedList<FProperty*>& PropertyChain, UFGActorRepresentation* rootRepresentation){ }
 AFGActorRepresentationManager* AFGActorRepresentationManager::Get(UWorld* world){ return nullptr; }
 AFGActorRepresentationManager* AFGActorRepresentationManager::Get(UObject* worldContext){ return nullptr; }
 AFGActorRepresentationManager::AFGActorRepresentationManager() : Super() {
@@ -17,25 +23,22 @@ AFGActorRepresentationManager::AFGActorRepresentationManager() : Super() {
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
-	this->bReplicateUsingRegisteredSubObjectList = true;
-	this->NetUpdateFrequency = 2.0;
 }
 void AFGActorRepresentationManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGActorRepresentationManager, mReplicatedRepresentations);
+	DOREPLIFETIME(AFGActorRepresentationManager, mActorRepresentationReplicator);
 }
-void AFGActorRepresentationManager::PreReplication(IRepChangedPropertyTracker& changedPropertyTracker){ }
-void AFGActorRepresentationManager::OnSubobjectCreatedFromReplication(UObject* newSubobject){ }
-void AFGActorRepresentationManager::OnSubobjectDestroyFromReplication(UObject* subobject){ }
 void AFGActorRepresentationManager::BeginPlay(){ }
+void AFGActorRepresentationManager::Tick(float DeltaSeconds){ }
 UFGActorRepresentation* AFGActorRepresentationManager::CreateAndAddNewRepresentation(AActor* realActor, const bool isLocal , TSubclassOf<UFGActorRepresentation> representationClass){ return nullptr; }
 UFGActorRepresentation* AFGActorRepresentationManager::CreateNewRepresentationNoActor(FVector location,  UTexture2D* compassTexture, FLinearColor compassColor, float lifeSpan, bool shouldShowInCompass, bool shouldShowOnMap, ERepresentationType representationType , TSubclassOf<UFGActorRepresentation> representationClass){ return nullptr; }
 UFGActorRepresentation* AFGActorRepresentationManager::CreateAndAddNewRepresentationNoActor(FVector location,  UTexture2D* compassTexture, FLinearColor compassColor, float lifeSpan, bool shouldShowInCompass, bool shouldShowOnMap, ERepresentationType representationType , TSubclassOf<UFGActorRepresentation> representationClass){ return nullptr; }
 void AFGActorRepresentationManager::AddRepresentation( UFGActorRepresentation* actorRepresentation){ }
 bool AFGActorRepresentationManager::UpdateRepresentationOfActor(AActor* realActor){ return bool(); }
-bool AFGActorRepresentationManager::UpdateRepresentation(UFGActorRepresentation* actorRepresentation) const{ return bool(); }
+bool AFGActorRepresentationManager::UpdateRepresentation(UFGActorRepresentation* actorRepresentation){ return bool(); }
 bool AFGActorRepresentationManager::RemoveRepresentationOfActor(AActor* realActor){ return bool(); }
 void AFGActorRepresentationManager::RemoveRepresentation( UFGActorRepresentation* actorRepresentation){ }
+UFGActorRepresentation* AFGActorRepresentationManager::FindActorRepresentation(const AActor* realActor){ return nullptr; }
 UFGResourceNodeRepresentation* AFGActorRepresentationManager::FindResourceNodeRepresentation( AFGResourceNodeBase* resourceNode){ return nullptr; }
 void AFGActorRepresentationManager::GetAllActorRepresentations(TArray<  UFGActorRepresentation* >& out_AllRepresentations){ }
 void AFGActorRepresentationManager::DumpActorRepresentations(){ }
@@ -46,4 +49,8 @@ bool AFGActorRepresentationManager::GetCompassRepresentationTypeFilter( APawn* o
 void AFGActorRepresentationManager::SetCompassViewDistanceForActorRepresentation(UFGActorRepresentation* actorRepresentation, ECompassViewDistance viewDistance){ }
 AActor* AFGActorRepresentationManager::GetRealActorFromActorRepresentation(UFGActorRepresentation* actorRepresentation){ return nullptr; }
 float AFGActorRepresentationManager::GetDistanceValueFromCompassViewDistance(ECompassViewDistance compassViewDistance){ return float(); }
-void AFGActorRepresentationManager::OnRep_ReplicatedRepresentations(TArray<  UFGActorRepresentation* > previousReplicatedRepresentations){ }
+void AFGActorRepresentationManager::AddReplicatedRepresentation(UFGActorRepresentation* representation){ }
+void AFGActorRepresentationManager::RemoveReplicatedRepresentation(UFGActorRepresentation* representation){ }
+void AFGActorRepresentationManager::UpdateReplicatedRepresentation(UFGActorRepresentation* representation){ }
+UFGActorRepresentation* AFGActorRepresentationManager::CreateReplicatedRepresentation(const UClass* representationClass, const FGuid& representationId){ return nullptr; }
+FNetworkGUID AFGActorRepresentationManager::FindNetworkGUIDForActor(const AActor* actor) const{ return FNetworkGUID(); }

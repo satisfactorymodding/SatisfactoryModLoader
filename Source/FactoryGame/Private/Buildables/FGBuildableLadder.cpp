@@ -11,7 +11,6 @@ AFGBuildableLadder::AFGBuildableLadder() : Super() {
 	this->mMeshHeight = 0.0;
 	this->mLadderSegmentMesh = nullptr;
 	this->mMaxSegmentCount = 1;
-	this->mClearanceBox = nullptr;
 	this->mFrontLadderComponent = CreateDefaultSubobject<UFGLadderComponent>(TEXT("Front Ladder Component"));
 	this->mBackLadderComponent = CreateDefaultSubobject<UFGLadderComponent>(TEXT("Back Ladder Component"));
 	this->mHologramClass = AFGLadderHologram::StaticClass();
@@ -24,6 +23,7 @@ void AFGBuildableLadder::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	DOREPLIFETIME(AFGBuildableLadder, mNumSegments);
 }
 int32 AFGBuildableLadder::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
+void AFGBuildableLadder::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 void AFGBuildableLadder::SetNumSegments(int32 Num, bool ForceUpdate){ }
 void AFGBuildableLadder::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableLadder::OnRep_NumSegments(){ }

@@ -1,11 +1,19 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "FGOnlineSessionSettings.h"
 #include "Misc/SecureHash.h"
 #include "UObject/Interface.h"
+#include "SessionInformation.h"
 #include "FGSaveManagerInterface.generated.h"
+
+class USessionMigrationSequence;
+class APlayerController;
+class IFGAdvancedGameSettingsInterface;
+
+enum class ESessionVisibility: uint8;
 
 UENUM( BlueprintType )
 enum class ESaveExists : uint8
@@ -107,7 +115,6 @@ struct FACTORYGAME_API FSaveHeader
 		FString sessionName,
 		int32 playDurationSeconds,
 		FDateTime saveDateTime,
-		ESessionVisibility sessionVisibility,
 		int32 editorObjectVersion,
 		FString metaData,
 		bool isModdedSave,
@@ -121,7 +128,6 @@ struct FACTORYGAME_API FSaveHeader
 		SessionName( sessionName ),
 		PlayDurationSeconds( playDurationSeconds ),
 		SaveDateTime( saveDateTime ),
-		SessionVisibility( sessionVisibility ),
 		EditorObjectVersion( editorObjectVersion ),
 		ModMetadata( metaData ),
 		IsModdedSave( isModdedSave ),
@@ -132,34 +138,40 @@ struct FACTORYGAME_API FSaveHeader
 	}
 
 	/** Version of the save game */
+	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	int32 SaveVersion;
 
 	/** CL the game was on when this was stored */
+	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	int32 BuildVersion;
 
 	/** Name of the save game, not store to disc */
+	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	FString SaveName;
 
 	/** Descriptor for the save game location on the disc at the time of read (not saved to disc) */
+	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	ESaveLocationInfo SaveLocationInfo;
 
 	/** The map this save is valid on  */
+	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	FString MapName;
 
 	/** Options we want to pass to the game mode */
+	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	FString MapOptions;
 
 	/** A unique id for each session, used for generating autosaves that's unique */
+	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	FString SessionName;
 
 	/** How long play time has this save been going on for */
+	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	int32 PlayDurationSeconds;
 
 	/** The time we saved this save */
+	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	FDateTime SaveDateTime;
-
-	/** What was the last visibility of the game when we played it */
-	ESessionVisibility SessionVisibility;
 
 	/** Save the FEditorObjectVersion that this save file was written with */
 	int32 EditorObjectVersion;
@@ -168,6 +180,7 @@ struct FACTORYGAME_API FSaveHeader
 	FString ModMetadata;
 
 	/** Was this save ever saved with mods enabled? */
+	UPROPERTY()
 	bool IsModdedSave;
 
 	/**
@@ -181,6 +194,7 @@ struct FACTORYGAME_API FSaveHeader
 	 * Was this save modified by an external application?
 	 * This is set at load when comparing the hash of the loaded data and the stored hash.
 	 */
+	UPROPERTY()
 	bool IsEditedSave;
 
 	/** A save identifier for analytics. */
@@ -190,6 +204,7 @@ struct FACTORYGAME_API FSaveHeader
 	bool IsPartitionedWorld;
 
 	/** Is creative mode enabled for this save */
+	UPROPERTY()
 	bool IsCreativeModeEnabled;
 
 	// @todosave: Add LastPlayDate as uint64 (Timestamp)
@@ -299,10 +314,48 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams( FOnSaveManagerTransferProgress, int32, Progr
 DECLARE_DYNAMIC_DELEGATE( FOnSaveManagerRefreshSaves );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnSaveManagerRefreshSavesMulti );
 
+/** Parameters struct for IFGSaveManagerInterface::CreateNewGame */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FCreateNewGameParameters
+{
+	GENERATED_BODY()
+
+	/** Name of the starting location on the map to spawn at */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "New Game Parameters" )
+	FString StartingLocation;
+
+	/** True if we should skip onboarding for this game */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "New Game Parameters" )
+	bool bSkipOnboarding{false};
+
+	/** Advanced game settings values provider */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "New Game Parameters" )
+	TScriptInterface<IFGAdvancedGameSettingsInterface> AdvancedGameSettings;
+
+	// Additional options to be passed as map options for creating a new game
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "New Game Parameters" )
+	TMap<FString, FString> ExtraOptions;
+
+	// Custom session settings (session metadata) that should be set immediately on session creation
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "New Game Parameters" )
+	TArray< FCustomOnlineSessionSetting > InitialCustomSessionSettings;
+};
+
+/** Parameters struct for IFGSaveManagerInterface::LoadSaveFile */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FLoadSaveFileParameters
+{
+	GENERATED_BODY()
+
+	/** True if we should load this save game with advanced game settings enabled */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Load Save File Parameters" )
+	bool bEnableAdvancedGameSettings{false};
+};
+
 /**
- * 
+ * Common entry point to the save system functionality
  */
-UINTERFACE( BlueprintType, meta=(CannotImplementInterfaceInBlueprint) )
+UINTERFACE( BlueprintType, meta = ( CannotImplementInterfaceInBlueprint ) )
 class FACTORYGAME_API UFGSaveManagerInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -313,37 +366,49 @@ class FACTORYGAME_API IFGSaveManagerInterface
 	GENERATED_BODY()
 
 public:
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
 	virtual void EnumerateSessions( const FOnSaveManagerEnumerateSessionsComplete& CompleteDelegate ) = 0;
 
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
-	virtual bool IsEnumeratingLocalSaves()  = 0;
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
+	virtual bool IsEnumeratingLocalSaves() const = 0;
 
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
 	virtual void DeleteSaveSession( const FSessionSaveStruct& Session, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate ) = 0;
 
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
 	virtual void DeleteSaveFile( const FSaveHeader& SaveGame, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate ) = 0;
 
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
-	virtual class USessionMigrationSequence* LoadSaveFile( const FSaveHeader& SaveGame, TMap<FString, FString> Options, class APlayerController* Player  ) = 0;
+	/** Creates a new Game with the provided setting values. The implementation might require a player controller to be supplied to allow online travel. */
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
+	virtual USessionMigrationSequence* CreateNewGame( const FString& SessionName, const FSoftObjectPath& MapAssetName, const FCreateNewGameParameters& CreateNewGameParameters, APlayerController* Player ) = 0;
 
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
+	/** Loads a save file with the provided setting values. The implementation might require a player controller to be supplied to allow online travel. */
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
+	virtual USessionMigrationSequence* LoadSaveFile( const FSaveHeader& SaveGame, const FLoadSaveFileParameters& LoadSaveFileParameters, APlayerController* Player ) = 0;
+
+	/** True if this save manager supports online session creation settings (dedicated servers do not support the online functionality, for example) */
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
+	virtual bool SupportsOnlineSettings() const = 0;
+
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
 	virtual void SaveGame( const FString& SaveName, FOnSaveMgrInterfaceSaveGameComplete CompleteDelegate ) = 0;
 
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
-	virtual bool IsSaveManagerAvailable() = 0;
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
+	virtual bool IsSaveManagerAvailable() const = 0;
 
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
 	virtual void UploadSave( const FSaveHeader& Save, FOnSaveManagerTransferCompleted CompleteDelegate, FOnSaveManagerTransferProgress ProgressDelegate );
 
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
-	virtual bool IsTransferInProgress();
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
+	virtual void DownloadSave( const FSaveHeader& SaveGame, FOnSaveManagerTransferCompleted CompleteDelegate, FOnSaveManagerTransferProgress ProgressDelegate );
 
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
+	virtual bool IsTransferInProgress() const;
+
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
 	virtual void BindOnSavesChanged( const FOnSaveManagerRefreshSaves& OnRefreshSaves );
 
-	UFUNCTION( BlueprintCallable, Category=SaveManager )
+	UFUNCTION( BlueprintCallable, Category = "Save Manager" )
 	virtual void UnbindOnSavesChanged( const FOnSaveManagerRefreshSaves& OnRefreshSaves );
 
 protected:

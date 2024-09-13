@@ -44,8 +44,8 @@ public:
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
-	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
 	virtual ENudgeFailReason NudgeHologram( const FVector& NudgeInput, const FHitResult& HitResult ) override;
+	virtual void CheckValidPlacement() override;
 	// End AFGHologram Interface
 
 protected:
@@ -71,7 +71,7 @@ private:
 	EFloodlightHologramBuildStep mBuildStep = EFloodlightHologramBuildStep::FHBS_PlacementAndRotation;
 	
 	/** Current angle of the fixture. */
-	UPROPERTY( ReplicatedUsing = OnRep_FixtureAngle )
+	UPROPERTY( ReplicatedUsing = OnRep_FixtureAngle, CustomSerialization )
 	int32 mFixtureAngle;
 
 	/** Scene component. */

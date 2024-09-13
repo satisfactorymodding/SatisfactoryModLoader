@@ -2,25 +2,19 @@
 
 #pragma once
 
-#if defined(__clang__)
-#include "Clang/ClangPlatformCompilerPreSetup.h"
-PRAGMA_DISABLE_OVERLOADED_VIRTUAL_WARNINGS // TEMPORARY EDIT
-#endif
-
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 
 #include "FGVehicle.h"
 #include "FGInventoryComponent.h"
+#include "FGDroneMovementComponent.h"
 #include "FGDroneVehicle.generated.h"
-
-#ifdef WITH_EDITOR
-#define DEBUG_DRONES
-#endif
 
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogDrones, Log, All );
 
 DECLARE_STATS_GROUP( TEXT("Drones"), STATGROUP_Drones, STATCAT_Advanced );
+
+extern TAutoConsoleVariable< int32 > CVarDronesDebug;
 
 UENUM( BlueprintType )
 enum class EDroneActionEvent : uint8
@@ -28,16 +22,7 @@ enum class EDroneActionEvent : uint8
 	DAE_None							UMETA(displayName = "None"),
 	DAE_BeginDocking					UMETA(displayName = "Begin Docking"),
 	DAE_UpdateQueuePosition				UMETA(displayName = "Update Queue Position"),
-	DAE_ReachedDestination				UMETA(displayName = "Reached Destination"),
 	DAE_NotifyPairedStationUpdate		UMETA(displayName = "Notify Paired Station Update")
-};
-
-UENUM( BlueprintType )
-enum class EDroneFlyingMode : uint8
-{
-	DFM_None		UMETA(displayName = "None"),
-	DFM_Flying		UMETA(displayName = "Flying"),
-    DFM_Travel		UMETA(displayName = "Travel")
 };
 
 UENUM( BlueprintType )
@@ -87,6 +72,50 @@ struct FDroneTripInformation
 	float OutgoingItemStacks = 0.f;
 };
 
+USTRUCT( BlueprintType )
+struct FFGDroneFuelType
+{
+	GENERATED_BODY()
+
+	FName GetFuelName() const { return Item ? Item->GetFName() : FName(); }
+	
+	/** What type of item is used as fuel. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	TSubclassOf< UFGItemDescriptor > Item = nullptr;
+
+	/** What color the thruster should have when using this fuel type. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	FColor ThrusterColor = FColor::White;
+	
+	/** What color the thruster should have when using this fuel type. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	FColor ThrusterEndColor = FColor::White;
+
+	/** Flight speed of the drone while using this fuel. Will use Default Drone Speed if <= 0. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	float FlightSpeed = 1000.0f;
+
+	/** Traveling speed of the drone while using this fuel. Will use Default Drone Speed if <= 0. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	float TravelSpeed = 7000.0f;
+};
+
+USTRUCT( BlueprintType )
+struct FFGDroneFuelRuntimeData
+{
+	GENERATED_BODY()
+
+	/** Name of the fuel type this runtime data belongs to. */
+	UPROPERTY( SaveGame, BlueprintReadOnly )
+	FName FuelTypeName;
+
+	/** Current energy level of this fuel type. */
+	UPROPERTY( SaveGame, BlueprintReadOnly )
+	float EnergyLevel;
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDroneActiveFuelTypeChanged, const FFGDroneFuelType&, newFuelType );
+
 /** Drone Vehicle */
 
 UCLASS()
@@ -108,6 +137,7 @@ public:
 	virtual void Tick( float DeltaTime ) override;
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
+	virtual void PostNetReceiveLocationAndRotation() override;
 	// End AActor interface
 
 	// Begin IFGUseableInterface
@@ -150,6 +180,7 @@ public:
 	UFUNCTION() virtual float GetActorFogOfWarRevealRadius() override;
 	UFUNCTION() virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	UFUNCTION() virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	// End IFGActorRepresentationInterface
 
 	void NotifyPairedStationUpdated( class AFGBuildableDroneStation* NewPairedStation );
@@ -166,12 +197,32 @@ public:
 
 	static TArray<FVector> GeneratePathToDestination( const FVector& CurrentLocation, const FVector& Destination, UWorld* World );
 
-	void SetCurrentDestination( const FVector& NewDestination, EDroneFlyingMode FlyingMode, bool StopAtDestination = true );
-	void StopMoving();
-
 	// Action Events
 	void BeginDocking( class AFGBuildableDroneStation* station );
 	void UpdateDockingQueuePosition( int NewPosition );
+
+	/** Gets the action the drone is currently executing. */
+	FORCEINLINE struct FDroneAction* GetActiveAction() const { return mActiveAction; }
+
+	/** Whether or not this drone is currently idle. Meaning it has no Active Action and no pending actions in queue. */
+	UFUNCTION( BlueprintPure, Category = "Drone" )
+	FORCEINLINE bool IsDroneIdle() const { return !mActiveAction && mActionQueue.Num() == 0; }
+
+	/** Returns the drone movement component. */
+	UFUNCTION( BlueprintPure, Category = "Drone" )
+	FORCEINLINE class UFGDroneMovementComponent* GetDroneMovementComponent() const { return mMovementComponent; }
+
+	/** Returns the drone movement component. */
+	UFUNCTION( BlueprintPure, Category = "Drone" )
+	FORCEINLINE int32 GetDroneInventorySize() const { return mInventorySize; }
+
+	/** Fuel types the drone can use. */
+	UFUNCTION( BlueprintPure, Category = "Inventory" )
+	FORCEINLINE TArray< FFGDroneFuelType > const& GetDroneFuelTypes() const { return mFuelTypes; }
+
+	/** Gets the active fuel type. */
+	UFUNCTION( BlueprintPure, Category = "Inventory" )
+	FFGDroneFuelType const& GetActiveFuelType() const;
 
 	/** Get the storage inventory. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
@@ -190,7 +241,10 @@ public:
     class AFGBuildableDroneStation* GetCurrentDestinationStation() const { return mCurrentDestinationStation; }
 
 	UFUNCTION( BlueprintPure, Category = "Drone" )
-    float GetSpeedFlying() const { return mFlyingSpeed; }
+    float GetSpeedFlying() const;
+
+	UFUNCTION( BlueprintPure, Category = "Drone" )
+	float GetSpeedTraveling() const;
 
 	UFUNCTION( BlueprintPure, Category = "Drone" )
     float GetDockingSequenceDuration() const { return mDockingSequenceDuration; }
@@ -200,67 +254,36 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Drone" )
     float GetTravelStartSequenceDuration() const { return mTravelStartSequenceDuration; }
-    
-	UFUNCTION( BlueprintPure, Category = "Drone" )
-    float GetSpeedTraveling() const { return mTravelingSpeed; }
-
-	UFUNCTION( BlueprintPure, Category = "Drone" )
-    float GetStoppingDistanceFlying() const { return mFlyingStoppingDistance; }
-    
-	UFUNCTION( BlueprintPure, Category = "Drone" )
-    float GetStoppingDistanceTraveling() const { return mTravelingStoppingDistance; }
-
-	UFUNCTION( BlueprintPure, Category = "Drone" )
-    float GetSpeedForFlyingMode( EDroneFlyingMode Mode ) const;
-
-	UFUNCTION( BlueprintPure, Category = "Drone" )
-    float GetStoppingDistanceForFlyingMode( EDroneFlyingMode Mode ) const;
-
-	UFUNCTION( BlueprintPure, Category = "Drone" )
-	const FVector& GetCurrentDestination() const { return mCurrentDestination; }
-
-	UFUNCTION( BlueprintPure, Category = "Drone" )
-    const FVector& GetCurrentVelocity() const { return mCurrentVelocity; }
-
-	UFUNCTION( BlueprintPure, Category = "Drone" )
-	EDroneFlyingMode GetCurrentFlyingMode() const { return mCurrentFlyingMode; }
 
 	UFUNCTION( BlueprintPure, Category = "Drone" )
     const FDroneDockingStateInfo& GetCurrentDockingState() const { return mCurrentDockingState; }
 
 	UFUNCTION( BlueprintPure, Category = "Drone" )
     float GetTimeSinceDockingStateChanged() const;
-	
-	UFUNCTION( BlueprintPure, Category = "Drone" )
-    bool GetIsBraking() const { return mIsBraking; }
 
-	/** Gets the current power level of the drone, which is power gained from consuming batteries. */
+	/** Whether or not the specified item class is a valid fuel item for this drone. */
 	UFUNCTION( BlueprintPure, Category = "Drone" )
-    float GetCurrentPowerLevel() const { return mCurrentPowerLevel; }
-
-	/** Gets the power level of all batteries in the inventory, this power isn't usable until batteries have been consumed. */
-	UFUNCTION( BlueprintPure, Category = "Drone" )
-    float GetInventoryPotentialPowerLevel() const { return mInventoryPotentialPower; }
+	bool IsValidFuelItem( TSubclassOf< class UFGItemDescriptor > item ) const;
 
 	// Intended to only be called when the drone is created, since we also set it to be docked to the station here
     void SetHomeStation( class AFGBuildableDroneStation* station );
 
-	bool GrabRequiredBatteriesForTrip( class AFGBuildableDroneStation* FromStation, class AFGBuildableDroneStation* ToStation, bool AllowTravelWithoutCost );
+	bool PrepareTripFromDockedStation( const class AFGBuildableDroneStation* ToStation );
+	void RefuelFromDockedStation( float amount );
 	
 	bool TravelToStation( class AFGBuildableDroneStation* station, bool ShouldTransferItems );
+	bool TravelToLocation( const FVector& Location );
 
 	void BeginNewTrip( class AFGBuildableDroneStation* Station );
 	void EndCurrentTrip( bool Completed );
 
-	void SetFacingDirection( const FVector& Direction );
+#if !UE_BUILD_SHIPPING
+	virtual void ShowDebug();
+#endif
 
 protected:
 	UFUNCTION( BlueprintImplementableEvent )
     void TickVFX();
-	
-	/** Called when the drone changes flying mode. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Drone" )
-    void OnFlyingModeChanged( EDroneFlyingMode NewMode );
 
 	/** Called when the drone changes docking state. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Drone" )
@@ -290,15 +313,17 @@ protected:
 	UFUNCTION( BlueprintNativeEvent, Category = "Drone" )
     void EndTravelStartSequence();
 
-	/** Called when the drone changes whether or not it is braking. */
+	/** Called when the drone selects a new fuel type. Called on both Server and Client. */
+	UFUNCTION( BlueprintNativeEvent, Category = "Drone" )
+	void OnActiveFuelTypeChanged( const FFGDroneFuelType& FuelType );
+
+	/** Called when the drone changes flying mode. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Drone" )
-    void OnBrakingStateChanged( bool IsBraking );
+	void OnFlyingModeChanged( EDroneFlyingMode NewFlyingMode );
 
-	UFUNCTION()
-	void OnRep_IsBraking();
-
-	UFUNCTION()
-    void OnRep_FlyingMode();
+	/** Called when the drone starts / stops braking. */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Drone" )
+	void OnBrakingStateChanged( bool IsBraking );
 
 	UFUNCTION()
     void OnRep_DockingState();
@@ -306,38 +331,71 @@ protected:
 	UFUNCTION()
     void OnRep_DockedStation();
 
+	UFUNCTION()
+	void OnRep_ActiveFuel();
+
 	void OnSignificanceUpdate();
+
+	/** Finds a fuel type by name. Fuel name is tied to Item Descriptor FName. */
+	const FFGDroneFuelType* GetFuelTypeFromName( FName fuelName ) const;
+
+	/** Finds a fuel runtime data by name. Fuel name is tied to Item Descriptor FName.*/
+	const FFGDroneFuelRuntimeData* GetFuelDataFromName( FName fuelName ) const;
+	FFGDroneFuelRuntimeData* GetFuelDataFromName( FName fuelName );
 
 private:
 	void ClearAllActions( bool KeepCurrentAction = false );
 
-	void SetNewFlyingMode( EDroneFlyingMode Mode );
-
 	void SetDockingState( EDroneDockingState State );
 
-	bool ConsumeBatteriesForPower( float PowerRequirement );
+	/** Helper function to consume fuel from any type available. Returns true if successfully selected and consumed a fuel type. */
+	bool SelectAndConsumeAnyFuel( float fuelAmount );
 
-	void CalculateInventoryPotentialPower();
+	/** Helper function to consume fuel from any type available.  Returns true if successfully selected and consumed a fuel type. */
+	bool SelectAndConsumeFastestFuel( float fuelAmount );
+	
+	void SwitchToFuelType( const FFGDroneFuelType& fuelType );
+
+	/** Function used to setup the fuel data array. Will clear out invalid entries and create new entries so it matches Fuel Type array. */
+	void SetupFuelData();
 
 	// Helper function to migrate from old legacy action to the refactored non-uobject system
 	FDroneAction* MigrateLegacyAction( class UFGDroneAction* action );
 
-private:	
+	UFUNCTION()
+	void OnMovementFlyingModeChanged( EDroneFlyingMode NewFlyingMode );
+	
+	UFUNCTION()
+	void OnMovementBrakingStateChanged( bool IsBraking );
+
+public:
+	/** Invoked when the active fuel type of the drone changes */
+	UPROPERTY( BlueprintAssignable, Category = "Drone" )
+	FOnDroneActiveFuelTypeChanged DroneFuelTypeChangedDelegate;
+
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* mCompassMaterialInstance;
+
+private:
+	/** The drone's movement component. */
+	UPROPERTY( Replicated )
+	class UFGDroneMovementComponent* mMovementComponent;
+	
+	/** Default fuel type of the drone. Backup for when no fuel exists. The item property is not used. */
+	UPROPERTY( EditDefaultsOnly, Category = "Drone" )
+	FFGDroneFuelType mDefaultFuelType;
+	
+	/** Fuel types that the drone can use. */
+	UPROPERTY( EditDefaultsOnly, Category = "Drone" )
+	TArray< FFGDroneFuelType > mFuelTypes;
+	
 	/** Inventory for storage. */
 	UPROPERTY( VisibleDefaultsOnly, SaveGame )
 	class UFGInventoryComponent* mStorageInventory;
 
-	/** Inventory where batteries are stored. */
-	UPROPERTY( VisibleDefaultsOnly, SaveGame )
-	class UFGInventoryComponent* mBatteryInventory;
-
 	/** Size of the drone's inventory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone", meta = ( AddAutoJSON = true ) )
 	int32 mInventorySize;
-
-	/** Size of battery inventory. */
-	UPROPERTY( EditDefaultsOnly, Category = "Drone" )
-	int8 mBatteryStorageSize;
 
 	/** How long the docking sequence is. */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone" )
@@ -350,31 +408,12 @@ private:
 	/** How long the travel start sequence is. */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone" )
 	float mTravelStartSequenceDuration;
-
-	/** How fast the drone moves when flying. */
-	UPROPERTY( EditDefaultsOnly, Category = "Drone" )
-	float mFlyingSpeed;
-
-	/** How fast the drone moves when traveling. */
-	UPROPERTY( EditDefaultsOnly, Category = "Drone" )
-	float mTravelingSpeed;
-
-	/** How far away from the destination the drone should start slowing down at when flying. */
-	UPROPERTY( EditDefaultsOnly, Category = "Drone" )
-	float mFlyingStoppingDistance;
-
-	/** How far away from the destination the drone should start slowing down at when traveling. */
-	UPROPERTY( EditDefaultsOnly, Category = "Drone" )
-	float mTravelingStoppingDistance;
-
-	/** How fast the drone is able to turn. */
-	UPROPERTY( EditDefaultsOnly, Category = "Drone", meta = (ClampMin = "0.0", UIMin = "0.0") )
-	float mTurningStrength;
 	
-	float mInventoryPotentialPower;
-	
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ActiveFuel )
+	FName mActiveFuelName;
+
 	UPROPERTY( SaveGame )
-	float mCurrentPowerLevel;
+	TArray< FFGDroneFuelRuntimeData > mFuelData;
 
 	UPROPERTY( SaveGame )
 	float mCurrentTripPowerCost;
@@ -384,27 +423,9 @@ private:
 
 	UPROPERTY( SaveGame )
 	bool mHasBegunTrip;
-	
-	UPROPERTY( ReplicatedUsing=OnRep_IsBraking )
-	bool mIsBraking;
-
-	UPROPERTY( SaveGame, Replicated )
-	FVector mCurrentVelocity;
-
-	UPROPERTY( SaveGame )
-	FVector mCurrentDestination;
-
-	UPROPERTY( SaveGame, Replicated )
-	FVector mDesiredFacingDirection;
-
-	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_FlyingMode )
-	EDroneFlyingMode mCurrentFlyingMode;
 
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_DockingState )
 	FDroneDockingStateInfo mCurrentDockingState;
-
-	UPROPERTY( SaveGame )
-	bool mStopAtDestination;
 	
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_DockedStation )
 	class AFGBuildableDroneStation* mDockedStation;
@@ -561,7 +582,7 @@ public:
 	
 	virtual ~FDroneAction() {}
 	
-	virtual void Begin() {}
+	virtual void Begin();
 	virtual void End() {}
 	virtual void Tick( float dt ) {}
 
@@ -570,8 +591,8 @@ public:
 	
 	virtual void ReceiveActionEvent( EDroneActionEvent ActionEvent, void* EventData = nullptr ) {}
 
-#ifdef DEBUG_DRONES
-	virtual void DisplayDebugInformation();
+#if !UE_BUILD_SHIPPING
+	virtual void ShowDebug( FString& out_concatDebugString );
 #endif
 	
 	virtual bool IsDone() const { return true; }
@@ -582,6 +603,7 @@ protected:
 
 protected:
 	TWeakObjectPtr< AFGDroneVehicle > mDrone;
+	TWeakObjectPtr< UFGDroneMovementComponent > mDroneMovement;
 };
 
 // Timed Action
@@ -600,8 +622,8 @@ public:
 
 	virtual float GetActionDuration() const { return 0.0f; }
 
-#ifdef DEBUG_DRONES
-	virtual void DisplayDebugInformation() override;
+#if !UE_BUILD_SHIPPING
+	virtual void ShowDebug( FString& out_concatDebugString ) override;
 #endif
 
 protected:
@@ -623,18 +645,14 @@ public:
 	virtual FString GetActionName() const override { return "Traverse Path"; }
 
 	virtual void Begin() override;
-	virtual void Tick( float dt ) override;
+	virtual void End() override;
 	
 	virtual void ReceiveActionEvent( EDroneActionEvent ActionEvent, void* EventData ) override;
-
-#ifdef DEBUG_DRONES
-	virtual void DisplayDebugInformation() override;
-#endif
 
 	virtual bool IsDone() const override;
 
 private:
-	void GotoNextDestination();
+	void OnDestinationReached();
 
 private:
 	UPROPERTY( SaveGame )
@@ -645,6 +663,45 @@ private:
 
 	UPROPERTY( SaveGame )
 	bool mStopAtDestination;
+
+	bool mHasArrived;
+};
+
+// Move to location
+USTRUCT()
+struct FACTORYGAME_API FDroneAction_MoveToLocation : public FDroneAction
+{
+	GENERATED_BODY()
+public:
+	FDroneAction_MoveToLocation();
+	FDroneAction_MoveToLocation( AFGDroneVehicle* drone, const FVector& location, EDroneFlyingMode flyingMode, const FVector& directionToFace = FVector::ZeroVector, EDroneDirectionFacingIstruction directionFacingInstruction = EDroneDirectionFacingIstruction::DFI_None );
+
+	ACTION_STATIC_STRUCT_IMPL
+	
+	virtual FString GetActionName() const override { return "Move to Location"; }
+
+	virtual void Begin() override;
+	virtual void End() override;
+	
+	virtual void ReceiveActionEvent( EDroneActionEvent ActionEvent, void* EventData ) override;
+
+	virtual bool IsDone() const override;
+
+private:
+	void OnDestinationReached();
+
+private:
+	UPROPERTY( SaveGame )
+	FVector mLocation;
+
+	UPROPERTY( SaveGame )
+	EDroneFlyingMode mFlyingMode;
+	
+	UPROPERTY( SaveGame )
+	FVector mDirectionToFace;
+
+	UPROPERTY( SaveGame )
+	EDroneDirectionFacingIstruction mDirectionFacingInstruction;
 
 	bool mHasArrived;
 };
@@ -674,9 +731,14 @@ public:
 	
 	virtual bool IsDone() const override;
 
-#ifdef DEBUG_DRONES
-	virtual void DisplayDebugInformation() override;
+#if !UE_BUILD_SHIPPING
+	virtual void ShowDebug( FString& out_concatDebugString ) override;
 #endif
+	
+private:
+	void OnDestinationReached();
+
+	void MoveToStationAirLocation( EDroneFlyingMode flyingMode );
 
 private:
 	UPROPERTY( SaveGame )
@@ -781,7 +843,3 @@ private:
 };
 
 #undef ACTION_STATIC_STRUCT_IMPL
-
-#if defined(__clang__)
-PRAGMA_ENABLE_OVERLOADED_VIRTUAL_WARNINGS // TEMPORARY EDIT
-#endif

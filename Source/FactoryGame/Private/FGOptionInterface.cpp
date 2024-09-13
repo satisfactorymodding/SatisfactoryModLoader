@@ -2,4 +2,3 @@
 
 #include "FGOptionInterface.h"
 
-bool IFGOptionInterface::IsOptionEditable(const FString& strId) const{ return bool(); }

@@ -3,11 +3,20 @@
 #include "FGRecipeManager.h"
 #include "Net/UnrealNetwork.h"
 
+void UFGRecipeRCO::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGRecipeRCO, mForceNetField_UFGRecipeRemoteCallObject);
+}
+void UFGRecipeRCO::Server_RequestAvailableRecipeUpdate_Implementation(const int32& currentIndex){ }
+void UFGRecipeRCO::Client_RespondAvailableRecipeUpdate_Implementation(const TArray< TSubclassOf< UFGRecipe > >& recipes){ }
+void UFGRecipeRCO::Server_RequestAllRecipeUpdate_Implementation(const int32& currentIndex){ }
+void UFGRecipeRCO::Client_RespondAllRecipeUpdate_Implementation(const TArray< TSubclassOf< UFGRecipe > >& recipes){ }
 AFGRecipeManager* AFGRecipeManager::Get(UWorld* world){ return nullptr; }
 AFGRecipeManager* AFGRecipeManager::Get(UObject* worldContext){ return nullptr; }
 void AFGRecipeManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGRecipeManager, mAvailableRecipes);
+	DOREPLIFETIME(AFGRecipeManager, mNumAvailableRecipes);
+	DOREPLIFETIME(AFGRecipeManager, mNumAllRecipes);
 	DOREPLIFETIME(AFGRecipeManager, mAvailableCustomizationRecipes);
 }
 void AFGRecipeManager::BeginPlay(){ }
@@ -26,12 +35,19 @@ void AFGRecipeManager::GetAffordableRecipesForProducer( AFGCharacterPlayer* play
 bool AFGRecipeManager::IsRecipeAvailable(TSubclassOf< UFGRecipe > recipeClass) const{ return bool(); }
 bool AFGRecipeManager::IsCustomizationRecipeAvailable(TSubclassOf< UFGCustomizationRecipe > recipeClass) const{ return bool(); }
 bool AFGRecipeManager::IsBuildingAvailable(const TSubclassOf<  AFGBuildable > buildableClass) const{ return bool(); }
-TArray< TSubclassOf< UFGRecipe > > AFGRecipeManager::FindRecipesByIngredient(TSubclassOf< UFGItemDescriptor > ingredient) const{ return TArray<TSubclassOf<UFGRecipe> >(); }
-TArray< TSubclassOf< UFGRecipe > > AFGRecipeManager::FindRecipesByProduct(TSubclassOf< UFGItemDescriptor > product) const{ return TArray<TSubclassOf<UFGRecipe> >(); }
+TSubclassOf< UFGBuildingDescriptor > AFGRecipeManager::FindBuildingDescriptorByClass(TSubclassOf< AFGBuildable > buildable) const{ return TSubclassOf<UFGBuildingDescriptor>(); }
+TArray< TSubclassOf< UFGRecipe > > AFGRecipeManager::FindRecipesByIngredient(TSubclassOf< UFGItemDescriptor > ingredient, bool onlyAvailableRecipes , bool availableFirst) const{ return TArray<TSubclassOf<UFGRecipe> >(); }
+TArray< TSubclassOf< UFGRecipe > > AFGRecipeManager::FindRecipesByProduct(TSubclassOf< UFGItemDescriptor > product, bool onlyAvailableRecipes , bool availableFirst) const{ return TArray<TSubclassOf<UFGRecipe> >(); }
 void AFGRecipeManager::ResetAllRecipes(){ }
 void AFGRecipeManager::Debug_DumpStateToLog() const{ }
+void AFGRecipeManager::NotifyGameStateReadyOnClient(){ }
+void AFGRecipeManager::OnSubsystemsValid(){ }
 void AFGRecipeManager::FilterRecipesByProducer(const TArray< TSubclassOf< UFGRecipe > >& inRecipes, TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes){ }
 bool AFGRecipeManager::CanAddToAvailableRecipes(TSubclassOf< UFGRecipe > recipe) const{ return bool(); }
 bool AFGRecipeManager::ShouldAddRecipeByEvent(TSubclassOf< UFGRecipe > recipe) const{ return bool(); }
 void AFGRecipeManager::PopulateAvailableBuildings(){ }
-void AFGRecipeManager::OnRep_AvailableRecipes(){ }
+void AFGRecipeManager::PopulateAllRecipesList(){ }
+void AFGRecipeManager::Internal_FindRecipesByIngredient(TSubclassOf< UFGItemDescriptor > ingredient, const TArray< TSubclassOf< UFGRecipe > >& recipeList, TArray< TSubclassOf< UFGRecipe > >& out_recipes, bool ignoreUniqueCheck) const{ }
+void AFGRecipeManager::Internal_FindRecipesByProduct(TSubclassOf< UFGItemDescriptor > product, const TArray< TSubclassOf< UFGRecipe > >& recipeList, TArray< TSubclassOf< UFGRecipe > >& out_recipes, bool ignoreUniqueCheck) const{ }
+void AFGRecipeManager::OnRep_NumAvailableRecipes(){ }
+void AFGRecipeManager::OnRep_NumTotalRecipes(){ }

@@ -21,12 +21,6 @@ class FACTORYGAME_API AFGChargedWeapon : public AFGWeapon
 public:
 	AFGChargedWeapon();
 
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-
-	// Begin AFGEquipment interface
-	virtual bool ShouldSaveState() const override;
-	// End
-
 	/** Called on both client and server */
 	virtual void Multicast_BeginPrimaryFire_Implementation() override;
 
@@ -65,10 +59,6 @@ protected:
 	UFUNCTION( BlueprintCallable, Category = "ChargedWeapon" )
 	void ExecutePrimaryFire( FVector spawnLocation );
 
-	/** Called by client to start throw on server. */
-	UFUNCTION( Server, Reliable )
-	void Server_ExecutePrimaryFire( FVector spawnLocation );
-
 	UFUNCTION( NetMulticast, Reliable )
 	void Multicast_ResetPressTimestamp();
 
@@ -89,6 +79,7 @@ protected:
 
 	// Begin AFGEquipment interface
 	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
+	virtual bool IsEquipmentMontageTagAllowed_Implementation(FName montageTag) const override;
 	// End AFGEquipment interface
 
 	virtual void UpdateDispersion( float DeltaSeconds ) override;
@@ -99,13 +90,13 @@ protected:
 	UPROPERTY( SaveGame )
 	TArray< AFGProjectile* > mDispensedProjectiles;
 
-	/** Tracks waiting for execute fire */
-	UPROPERTY( Replicated, BlueprintReadOnly, Category ="ChargedWeapon" )
-	bool mIsPendingExecuteFire;
-
 	/** If we charge the throw for this amount of time we will get max throw velocity */
 	UPROPERTY( EditDefaultsOnly, Category = "ChargedWeapon" )
 	float mMaxChargeTime;
+
+	/** Amount of time after release that we would not be able to perform primary or secondary fire, or reload */
+	UPROPERTY( EditDefaultsOnly, Category = "ChargedWeapon" )
+	float mReleaseCooldown;
 
 	/** If we charge the throw to the max we will throw with this force*/
 	UPROPERTY( EditDefaultsOnly, Category = "ChargedWeapon" )
@@ -127,4 +118,6 @@ protected:
 private:
 	/** The time when we press the fire button */
 	float mPressTimestamp;
+	/** The time when we have released the fire button. Used to prevent the player from resetting the throw animation. */
+	float mReleaseTimestamp;
 };

@@ -7,12 +7,15 @@
 #include "GameFramework/WorldSettings.h"
 #include "FWPSaveDataMigrationContext.h"
 #include "FactoryGame.h"
+#include "Engine/Level.h"
 
 #if WITH_EDITOR
 #include "UnrealEdMisc.h"
 #endif
 
 #include "FGWorldSettings.generated.h"
+
+class AFGTimeOfDaySubsystem;
 
 UCLASS()
 class FACTORYGAME_API AFGWorldSettings : public AWorldSettings, public IFGSaveInterface
@@ -24,9 +27,11 @@ public:
 
 	/** Getters for the subsystems */
 	FORCEINLINE class AFGBuildableSubsystem* GetBuildableSubsystem() const { return mBuildableSubsystem; }
+	FORCEINLINE class AFGLightweightBuildableSubsystem* GetLightweightBuildableSubsystem() const { return mLightweightBuildableSubsystem; }
 	FORCEINLINE class AFGFoliageRemovalSubsystem* GetFoliageRemovalSubsystem() const { return mFoliageRemovalSubsystem; }
 	FORCEINLINE class AFGConveyorItemSubsystem* GetConveyorItemSubsystem() const { return mConveyorItemSubsystem; }
 	FORCEINLINE class AFGPhotoModeManager* GetPhotoModeManager() const { return mPhotoModeManager; }
+	FORCEINLINE AFGTimeOfDaySubsystem* GetTimeOfDaySubsystem() const { return mTimeOfDaySubsystem; }
 
 	// Begin UObject interface
 	virtual void BeginDestroy() override;
@@ -84,6 +89,9 @@ public:
 	UFUNCTION( Category="FactoryGame|Level", meta=(CallInEditor="true") )
 	void UpdateWorldBounds();
 
+	/** Renames the time subsystem to have a correct name (TimeSubsystem) */
+	UFUNCTION( Category="FactoryGame|Level", meta=(CallInEditor="true") )
+	void RenameTimeSubsystem();
 protected:
 
 #if WITH_EDITOR
@@ -176,6 +184,10 @@ protected:
 	UPROPERTY( EditInstanceOnly, Category = "Minimap" )
 	class AFGMinimapCaptureActor* mMinimapCaptureActor;
 
+	/** Time of day subsystem that should be placed into the map */
+	UPROPERTY( EditInstanceOnly, Category = "Time" )
+	AFGTimeOfDaySubsystem* mTimeOfDaySubsystem;
+
 	/** Different events for different levels, so they can start different playlists */
 	UPROPERTY( EditInstanceOnly, Category = "Audio" )
 	class UAkAudioEvent* mLevelStartedEvent;
@@ -193,6 +205,9 @@ private:
 	UPROPERTY( SaveGame )
 	class AFGBuildableSubsystem* mBuildableSubsystem;
 
+	UPROPERTY( SaveGame )
+	class AFGLightweightBuildableSubsystem* mLightweightBuildableSubsystem;
+
 	UPROPERTY()
 	class AFGAudioVolumeSubsystem* mAudioVolumeSubsystem;
 	UPROPERTY()
@@ -200,10 +215,8 @@ private:
 
 	UPROPERTY()
 	class AFGConveyorItemSubsystem* mConveyorItemSubsystem;
-
 	UPROPERTY()
 	class AFGPhotoModeManager* mPhotoModeManager;
-
 
 #if WITH_EDITORONLY_DATA
 	/** Set the hour you want to preview here, 16.25 means 16h 15min */

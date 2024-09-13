@@ -2,3 +2,4 @@
 
 #include "FGSplineBuildableInterface.h"
 
+FBox IFGSplineBuildableInterface::GetSplineBoundingBox() const{ return FBox(); }

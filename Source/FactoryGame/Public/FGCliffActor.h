@@ -80,7 +80,7 @@ private:
 protected:
 	/* Components generated on gain significance. */
 	UPROPERTY( Transient, VisibleAnywhere )
-	TArray< class UHierarchicalInstancedStaticMeshComponent* > mGeneratedMeshComponent;
+	TArray< class UGrassInstancedStaticMeshComponent* > mGeneratedMeshComponent;
 
 public:
 	UPROPERTY( EditInstanceOnly, Category = "Setting" )
@@ -111,6 +111,9 @@ public:
 
 	UFUNCTION( CallInEditor, Category = "Debug")
 	void ForceUpdateMeshCPUAccess();	
+
+	UFUNCTION( CallInEditor,Category = "Debug")
+	void DebugDrawSignificanceRange();
 	
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif	
@@ -123,12 +126,12 @@ struct FFGCliffGrassWorker
 		
 	}
 	
-	FFGCliffGrassWorker(AFGCliffActor* inCliffActor, UFoliageType* inType,float inMultiplier, UHierarchicalInstancedStaticMeshComponent* inHISMComponent );
+	FFGCliffGrassWorker(AFGCliffActor* inCliffActor, UFoliageType* inType,float inMultiplier, UGrassInstancedStaticMeshComponent* inHISMComponent );
 
 	/* Input */
 	TWeakObjectPtr<AFGCliffActor> mCliffActor;
 	UFoliageType* mFoliageType;
-	TWeakObjectPtr<class UHierarchicalInstancedStaticMeshComponent> mInstanceComponent;
+	TWeakObjectPtr<class UGrassInstancedStaticMeshComponent> mInstanceComponent;
 	TArray<uint32> mCachedIndices;
 	TArray<FVector3f> mCachedVerts;
 	float mFoliageTypesDensityMultiplier;
@@ -148,7 +151,6 @@ class FFGAsyncCliffGrassBuilderTask : public FNonAbandonableTask
 public:
 	FFGAsyncCliffGrassBuilderTask( FFGCliffGrassWorker* InWorker )
 	{
-		UE_LOG(LogTemp,Warning,TEXT("[%p] Constructing "), this);
 		Builder = InWorker;
 	}
 	

@@ -26,7 +26,7 @@ float UFGResourceDescriptor::GetDecalSize(TSubclassOf< UFGResourceDescriptor > i
 FLinearColor UFGResourceDescriptor::GetPingColor(TSubclassOf< UFGResourceDescriptor > inClass){ return FLinearColor(); }
 float UFGResourceDescriptor::GetCollectSpeedMultiplier(TSubclassOf< UFGResourceDescriptor > inClass){ return float(); }
 UTexture2D* UFGResourceDescriptor::GetCompasTexture(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
-UParticleSystem* UFGResourceDescriptor::GetManualMiningParticle(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
-UParticleSystem* UFGResourceDescriptor::GetDestroyedParticle(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
+UFXSystemAsset* UFGResourceDescriptor::GetManualMiningParticle(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
+UFXSystemAsset* UFGResourceDescriptor::GetDestroyedParticle(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
 FName UFGResourceDescriptor::GetManualMiningAudioName(TSubclassOf< UFGResourceDescriptor > inClass){ return FName(); }
-UParticleSystem* UFGResourceDescriptor::GetFactoryMiningParticle(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
+UFXSystemAsset* UFGResourceDescriptor::GetFactoryMiningParticle(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }

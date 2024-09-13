@@ -20,6 +20,7 @@ public:
 
 	// Begin Actory Interface
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	// End AActor Interface
 	
 	// Begin AFGHologram interface
@@ -28,7 +29,12 @@ public:
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	virtual void GetIgnoredClearanceActors(TArray<AActor*>& ignoredActors) const override;
 	virtual int32 GetBaseCostMultiplier() const override;
+	virtual void GetClearanceData( TArray< const FFGClearanceData* >& out_ClearanceData ) const override;
+	virtual void CheckValidPlacement() override;
 	// End AFGHologram interface
+private:
+	UFUNCTION()
+	void OnRep_SnappedBuildingThickness();
 	
 protected:
 	virtual void RebuildMeshesAndUpdateClearance();
@@ -44,7 +50,7 @@ protected:
 	bool mAllowMultiFoundationPassThrough;
 	
 	/** Thickness of the building we are attaching to */
-	UPROPERTY( VisibleInstanceOnly, Category = "Passthrough" )
+	UPROPERTY( ReplicatedUsing = OnRep_SnappedBuildingThickness, CustomSerialization, VisibleInstanceOnly, Category = "Passthrough" )
 	float mSnappedBuildingThickness;
 	
 	/** Generated mesh components */
@@ -54,4 +60,7 @@ protected:
 	/** Snapped foundations that will be ignored for the clearance check */
 	UPROPERTY( VisibleInstanceOnly, Category = "Passthrough" )
 	TArray<AFGBuildableFoundation*> mSnappedFoundations;
+
+private:
+	FFGClearanceData mClearance;
 };

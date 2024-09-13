@@ -3,14 +3,15 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGClearanceInterface.h"
 #include "GameFramework/Actor.h"
 #include "FGUseableInterface.h"
 #include "FGSaveInterface.h"
 #include "FGInventoryComponent.h"
-#include "FGPortableMiner.generated.h" 
+#include "FGPortableMiner.generated.h"
 
 UCLASS( meta = (AutoJson = true) )
-class FACTORYGAME_API AFGPortableMiner : public AActor, public IFGUseableInterface, public IFGSaveInterface
+class FACTORYGAME_API AFGPortableMiner : public AActor, public IFGUseableInterface, public IFGSaveInterface, public IFGClearanceInterface
 {
 	GENERATED_BODY()
 public:
@@ -21,9 +22,8 @@ public:
 	AFGPortableMiner();
 
 	// Begin AActor interface
-	virtual void Tick( float dt ) override;
-	virtual void Destroyed() override;
 	virtual void BeginPlay() override;
+	virtual void Tick( float dt ) override;
 	// End AActor interface
 
 	//@optimize Are the portable miners optimized and turned of at a distance?
@@ -51,6 +51,10 @@ public:
 	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {};
 	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {};
 	//~ End IFGUseableInterface
+
+	// Begin IFGClearanceInterface
+	virtual void GetClearanceData_Implementation(TArray<FFGClearanceData>& out_data) const override;
+	// End IFGClearanceInterface
 
 	/**
 	 * Are we producing?
@@ -94,10 +98,20 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Production" )
     FORCEINLINE float GetExtractCycleTime() const { return mExtractCycleTime; }
 
+	void SetOwningPlayerState( class AFGPlayerState* playerState );
+
 private:
 	/** Calls Start/Stop Producing on client */
 	UFUNCTION()
 	void OnRep_IsProducing();
+
+	UFUNCTION()
+	void OnRep_OwningPlayerState( class AFGPlayerState* previousPlayerState );
+
+	UFUNCTION()
+	void OnPlayerCustomizationDataChanged( const struct FPlayerCustomizationData& newCustomizationData );
+	
+	void UpdateCustomizationData();
 
 public:
 	/** How fast we mine expressed as 1.0f / ( mExtractCycleTime * resourceSpeedMultiplier ) * dt. */
@@ -105,11 +119,11 @@ public:
 	float mExtractCycleTime;
 
 	/** The resource node we want to extract from */
-	UPROPERTY( SaveGame, Replicated, BlueprintReadWrite, Category = "Resource" )
+	UPROPERTY( SaveGame, Replicated, BlueprintReadOnly, Category = "Resource" )
 	class AFGResourceNode* mExtractResourceNode;
 
 	/** The inventory of the factory node */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mOutputInventory;
 
 	/** Current extract progress in the range [0, 1] */
@@ -123,10 +137,16 @@ public:
 	/** How many slots is the inventory */
 	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
 	int32 mInventorySize;
+
+	/** The player state that "owns" this miner. */
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_OwningPlayerState )
+	class AFGPlayerState* mOwningPlayerState;
 private:
 	/** Are we producing? */
 	UPROPERTY( ReplicatedUsing = OnRep_IsProducing, meta = (NoAutoJson = true) )
 	bool mIsProducing;
 
-
+	/** Clearance box information for the portable miner */
+	UPROPERTY( EditDefaultsOnly, Category = "Clearance" )
+	FFGClearanceData mClearanceData;
 };

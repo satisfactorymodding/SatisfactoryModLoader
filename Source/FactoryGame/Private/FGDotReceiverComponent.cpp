@@ -7,7 +7,7 @@ UFGDotReceiverComponent::UFGDotReceiverComponent() : Super() {
 	this->PrimaryComponentTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryComponentTick.bTickEvenWhenPaused = false;
 	this->PrimaryComponentTick.bCanEverTick = true;
-	this->PrimaryComponentTick.bStartWithTickEnabled = true;
+	this->PrimaryComponentTick.bStartWithTickEnabled = false;
 	this->PrimaryComponentTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryComponentTick.TickInterval = 0.0;
 }
@@ -16,4 +16,5 @@ void UFGDotReceiverComponent::TickComponent(float DeltaTime, ELevelTick TickType
 void UFGDotReceiverComponent::RegisterActiveDOT(TSubclassOf<  UFGDamageOverTime > DotClass, AActor* SourceActor){ }
 void UFGDotReceiverComponent::UnregisterActiveDOT(TSubclassOf<  UFGDamageOverTime > DotClass, AActor* SourceActor){ }
 void UFGDotReceiverComponent::ClearAllDOTs(){ }
+void UFGDotReceiverComponent::UpdateTickState(){ }
 FOnDotReceiverCreated UFGDotReceiverComponent::OnDOTReceiverCreated = FOnDotReceiverCreated();

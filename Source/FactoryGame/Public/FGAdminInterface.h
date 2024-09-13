@@ -3,12 +3,12 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGOnlineSessionSettings.h"
 #include "FGSaveSystem.h"
 #include "GameFramework/Info.h"
 #include "FGAdminInterface.generated.h"
 
-DECLARE_DYNAMIC_DELEGATE_TwoParams( FOnAdminEnumerateSaveGamesComplete, bool, success, const TArray<FSaveHeader>&, saveGames );
+class AFGPlayerState;
+DECLARE_DYNAMIC_DELEGATE_TwoParams( FOnAdminEnumerateSaveGamesComplete, bool, success, const TArray< FSaveHeader >&, saveGames );
 DECLARE_DYNAMIC_DELEGATE_OneParam( FOnAdminDeleteSaveGameComplete, bool, success );
 DECLARE_DYNAMIC_DELEGATE_TwoParams( FOnAdminSaveGameComplete, bool, success, const FText&, errorMessage );
 
@@ -29,13 +29,12 @@ public:
 	UFUNCTION( BlueprintCallable, Server, Reliable, WithValidation )
 	void KickPlayer( class APlayerState* playerState );
 
-	/** Set the visibility of the session */
-	UFUNCTION( BlueprintCallable, Server, Reliable, WithValidation )
-	void SetSessionVisibility( ESessionVisibility visibility );
-
 	/** Save a game on this or host machine */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Admin" )
 	void SaveGame( bool locally, const FString& saveName, FOnAdminSaveGameComplete completeDelegate );
+
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Admin" )
+	void MakeAdmin( AFGPlayerState* playerState );
 
 	/** Load a game on this or host machine */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Admin" )
@@ -63,6 +62,9 @@ public:
 protected:
 	/** Internal implementation of save enumeration */
 	void Internal_EnumerateSaveGames( RequestIdType requestId );
+
+	/** <FL> [n.tran] Callback for Internal_EnumerateSaveGames */
+	void Internal_EnumerateSaveGamesCallback( bool success, const TArray<FSaveHeader>& saveGames, RequestIdType requestId );
 
 	/** Server call of save enumeration */
 	UFUNCTION( Server, Reliable, WithValidation )
@@ -97,6 +99,12 @@ protected:
 
 	/** Internal implementation of save game */
 	void Internal_SaveGame( RequestIdType requestId, const FString& saveGame );
+
+	UFUNCTION( Server, Reliable )
+	void Server_MakeAdmin( AFGPlayerState* playerState );
+
+	/** <FL> [n.tran] Callback for LoadGameByName */
+	void LoadGameByNameCallback( bool success, const TArray<FSaveHeader>& saveGames, FString saveGameName );
 
 	/** Counter to create a id of server/client requests to keep track of results */
 	static RequestIdType RequestIdCounter;

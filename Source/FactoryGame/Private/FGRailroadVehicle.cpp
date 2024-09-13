@@ -15,11 +15,6 @@ AFGRailroadVehicle::AFGRailroadVehicle() : Super() {
 	this->mTrackPosition.Forward = 0.0;
 	this->mIsDerailed = false;
 	this->mIsMaxDerailDistanceReached = false;
-	this->mLastServerTime = 0.0;
-	this->mServerTrack = nullptr;
-	this->mServerOffset = 0.0;
-	this->mServerForward = 0.0;
-	this->mServerSpeed = 0.0;
 	this->mHologramClass = AFGRailroadVehicleHologram::StaticClass();
 	this->SetReplicatingMovement(false);
 }
@@ -29,18 +24,15 @@ void AFGRailroadVehicle::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	DOREPLIFETIME(AFGRailroadVehicle, mCoupledVehicleFront);
 	DOREPLIFETIME(AFGRailroadVehicle, mCoupledVehicleBack);
 	DOREPLIFETIME(AFGRailroadVehicle, mIsOrientationReversed);
+	DOREPLIFETIME(AFGRailroadVehicle, mTrackPosition);
 	DOREPLIFETIME(AFGRailroadVehicle, mIsDerailed);
-	DOREPLIFETIME(AFGRailroadVehicle, mLastServerTime);
-	DOREPLIFETIME(AFGRailroadVehicle, mServerTrack);
-	DOREPLIFETIME(AFGRailroadVehicle, mServerOffset);
-	DOREPLIFETIME(AFGRailroadVehicle, mServerForward);
-	DOREPLIFETIME(AFGRailroadVehicle, mServerSpeed);
 }
 void AFGRailroadVehicle::BeginPlay(){ }
 void AFGRailroadVehicle::Destroyed(){ }
 void AFGRailroadVehicle::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGRailroadVehicle::Tick(float dt){ }
 bool AFGRailroadVehicle::CanDismantle_Implementation() const{ return bool(); }
+void AFGRailroadVehicle::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ }
 void AFGRailroadVehicle::GainedSignificance_Implementation(){ }
 void AFGRailroadVehicle::LostSignificance_Implementation(){ }
 void AFGRailroadVehicle::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
@@ -65,10 +57,8 @@ void AFGRailroadVehicle::OnCollided_Implementation(AFGRailroadVehicle* withVehic
 void AFGRailroadVehicle::EnableDerailPhysics(const FVector& velocity){ }
 void AFGRailroadVehicle::FreezeDerailPhysics(){ }
 void AFGRailroadVehicle::DisableDerailPhysics(){ }
-void AFGRailroadVehicle::TickClientSimulation(float dt){ }
 void AFGRailroadVehicle::OnIsSimulatedChanged(){ }
 void AFGRailroadVehicle::CoupleVehicleAt(AFGRailroadVehicle* vehicle, ERailroadVehicleCoupler coupler){ }
 void AFGRailroadVehicle::DecoupleVehicleAt(ERailroadVehicleCoupler coupler){ }
 void AFGRailroadVehicle::OnRep_IsOrientationReversed(){ }
-void AFGRailroadVehicle::OnRep_Train(){ }
 void AFGRailroadVehicle::OnRep_IsDerailed(){ }

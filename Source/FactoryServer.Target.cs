@@ -1,26 +1,21 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
-using System;
 using UnrealBuildTool;
+using System.Collections.Generic;
 
-public class FactoryServerTarget : TargetRules
+public class FactoryServerTarget : FactorySharedTarget
 {
-	public FactoryServerTarget(TargetInfo Target) : base(Target)
-	{
-		Type = TargetType.Server;
-		BuildEnvironment = TargetBuildEnvironment.Shared;
-		LinkType = TargetLinkType.Modular;
-		CppStandard = CppStandardVersion.Cpp20;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
-		
-		ExtraModuleNames.AddRange(new[] {"FactoryGame"});
-		
-		// bOverrideAppNameForSharedBuild = true;
+    public FactoryServerTarget(TargetInfo Target) : base(Target)
+    {
+	    Type = TargetType.Server;
 
-		bUseChecksInShipping = true;
-		bUseLoggingInShipping = true;
-		
-		WindowsPlatform.bEnableRayTracing = false;
-		LinuxPlatform.bEnableRayTracing = false;
-	}
+	    // Build additional console application so that the server can be launched from command line on windows
+	    bBuildAdditionalConsoleApp = true;
+	    // Use custom config override to provide some platform overrides for the dedicated server
+	    CustomConfig = "FactoryServer";
+
+	    ExtraModuleNames.AddRange(new[] {
+		    "FactoryDedicatedServer"
+	    });
+    }
 }

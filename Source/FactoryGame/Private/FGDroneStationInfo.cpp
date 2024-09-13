@@ -11,8 +11,8 @@ AFGDroneStationInfo::AFGDroneStationInfo() : Super() {
 	this->mPairedStation = nullptr;
 	this->mBuildingTag = TEXT("");
 	this->mDroneStatus = EDroneStatus::EDS_NO_DRONE;
-	this->mEstimatedRoundTripTime = 0.0;
-	this->mEstimatedTransportRate = 0.0;
+	this->mActiveDroneFuelType = nullptr;
+	this->mLastInsertedFuelType = nullptr;
 	this->mDroneTripStatistics.LatestRoundTripTime = 0.0;
 	this->mDroneTripStatistics.LatestIncomingItemStacks = 0.0;
 	this->mDroneTripStatistics.LatestOutgoingItemStacks = 0.0;
@@ -43,8 +43,9 @@ void AFGDroneStationInfo::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	DOREPLIFETIME(AFGDroneStationInfo, mConnectedStations);
 	DOREPLIFETIME(AFGDroneStationInfo, mBuildingTag);
 	DOREPLIFETIME(AFGDroneStationInfo, mDroneStatus);
-	DOREPLIFETIME(AFGDroneStationInfo, mEstimatedRoundTripTime);
-	DOREPLIFETIME(AFGDroneStationInfo, mEstimatedTransportRate);
+	DOREPLIFETIME(AFGDroneStationInfo, mDroneFuelInformation);
+	DOREPLIFETIME(AFGDroneStationInfo, mActiveDroneFuelType);
+	DOREPLIFETIME(AFGDroneStationInfo, mLastInsertedFuelType);
 	DOREPLIFETIME(AFGDroneStationInfo, mDroneTripStatistics);
 }
 void AFGDroneStationInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
@@ -58,8 +59,9 @@ bool AFGDroneStationInfo::ShouldSave_Implementation() const{ return bool(); }
 void AFGDroneStationInfo::SetBuildingTag_Implementation(const FString& buildingTag){ }
 void AFGDroneStationInfo::PairStation(AFGDroneStationInfo* otherStation){ }
 void AFGDroneStationInfo::ClearLatestDroneTrips(){ }
-float AFGDroneStationInfo::GetEstimatedBatteryRequirementRate() const{ return float(); }
-int32 AFGDroneStationInfo::GetTripCostInBatteries() const{ return int32(); }
+TArray< FFGDroneFuelType > AFGDroneStationInfo::GetDroneFuelTypes() const{ return TArray<FFGDroneFuelType>(); }
+const FFGDroneFuelInformation* AFGDroneStationInfo::Native_GetActiveFuelInfo() const{ return nullptr; }
+FFGDroneFuelInformation AFGDroneStationInfo::GetActiveFuelInfo() const{ return FFGDroneFuelInformation(); }
 void AFGDroneStationInfo::SetDroneStatus(EDroneStatus droneStatus){ }
 float AFGDroneStationInfo::CalculateStationTripPowerCost(AFGDroneStationInfo* ToStation) const{ return float(); }
 void AFGDroneStationInfo::RegisterDroneTripInformation(const FDroneTripInformation& TripInfo){ }
@@ -73,11 +75,11 @@ float AFGDroneStationInfo::GetEstimatedTotalTransportRate() const{ return float(
 void AFGDroneStationInfo::OnPairedStationUpdate_Implementation(){ }
 void AFGDroneStationInfo::OnPairedStationDestroyed(AActor* destroyedActor){ }
 void AFGDroneStationInfo::OnRep_DroneStatus(){ }
-void AFGDroneStationInfo::OnRep_EstimatedRoundTripTime(){ }
-void AFGDroneStationInfo::OnRep_EstimatedTransportRate(){ }
+void AFGDroneStationInfo::OnRep_DroneFuelInformation(){ }
 void AFGDroneStationInfo::OnRep_DroneTripStatistics(){ }
-void AFGDroneStationInfo::CalculateEstimatedRoundTripTime(){ }
-void AFGDroneStationInfo::CalculateEstimatedTransportRate(){ }
+void AFGDroneStationInfo::OnRep_ActiveDroneFuelType(){ }
+void AFGDroneStationInfo::UpdateDroneFuelInformation(){ }
 void AFGDroneStationInfo::UpdateDroneTripStatistics(){ }
+void AFGDroneStationInfo::UpdateActiveDroneFuelType(TSubclassOf< UFGItemDescriptor > fuelItem){ }
 void AFGDroneStationInfo::AddConnectedStation(AFGDroneStationInfo* otherStation){ }
 void AFGDroneStationInfo::RemoveConnectedStation(AFGDroneStationInfo* otherStation){ }

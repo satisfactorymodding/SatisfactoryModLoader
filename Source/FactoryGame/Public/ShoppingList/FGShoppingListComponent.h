@@ -34,6 +34,7 @@ struct FACTORYGAME_API FShoppingListBlueprintEntry
 	int32 Amount = 0;
 };
 
+/* Replaced by FShoppingListClassEntry. Kept it for save migration purposes */
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FShoppingListRecipeEntry
 {
@@ -48,6 +49,25 @@ struct FACTORYGAME_API FShoppingListRecipeEntry
 	
 	UPROPERTY( SaveGame, BlueprintReadWrite )
 	TSubclassOf<class UFGRecipe> RecipeClass = nullptr;
+	
+	UPROPERTY( SaveGame, BlueprintReadWrite )
+	int32 Amount = 0;
+};
+
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FShoppingListClassEntry
+{
+	GENERATED_BODY()
+
+	FShoppingListClassEntry( TSubclassOf<UObject> inObjectClass, int32 inAmount ) :
+		ObjectClass( inObjectClass ),
+		Amount( inAmount )
+	{}
+
+	FShoppingListClassEntry(){}
+	
+	UPROPERTY( SaveGame, BlueprintReadWrite )
+	TSubclassOf<class UObject> ObjectClass = nullptr;
 	
 	UPROPERTY( SaveGame, BlueprintReadWrite )
 	int32 Amount = 0;
@@ -70,7 +90,6 @@ public:
 	
 	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
 	void GetShoppingListObjects( TArray<class UFGShoppingListObject*>& out_ShoppingListObjects );
-	TArray<class UFGShoppingListObject*> GetShoppingListObjects_Slow();
 	
 	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
 	UFGShoppingListObject* GetShoppingListObjectFromClass( TSubclassOf<UObject> objectClass, bool& out_result );
@@ -80,9 +99,9 @@ public:
 	
 	UFUNCTION( BlueprintCallable )
 	TArray< FItemAmount > GetShoppingListCost() const;
-	TArray< FItemAmount > GetShoppingListCost_Slow() const;
 	
-	void RemoveRecipeFromShoppingList( TSubclassOf< class UFGRecipe > recipeClass, int32 amountToRemove );
+	void RemoveFromShoppingList( TSubclassOf< UObject > inClass );
+	void RemoveAmountFromShoppingList( TSubclassOf< UObject > inClass, int32 amountToRemove );
 	void RemoveBlueprintFromShoppingList( const FString& blueprintName, int32 amountToRemove );
 	
 	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
@@ -90,12 +109,11 @@ public:
 
 	// Use only for migration
 	void MigrateShoppingList( TArray< FShoppingListRecipeEntry > recipeEntries );
-
-	void OnShoppingListObjectUpdated( UFGShoppingListObject* shoppingListObject );
+	
 	void OnBlueprintRemoved( const FString& blueprintName );
 
 	void UpdateShoppingListObjectBlueprint( class UFGShoppingListObject_Object* shoppingListObject_Object );
-	void UpdateShoppingListObjectRecipe( class UFGShoppingListObject_Class* shoppingListObject_Class  );
+	void UpdateShoppingListObjectClass( class UFGShoppingListObject_Class* shoppingListObject_Class  );
 
 	void UpdateShoppingList();
 
@@ -108,20 +126,20 @@ protected:
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
 	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
 	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
-	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override {}
 	virtual bool NeedTransform_Implementation() override { return false; }
 	virtual bool ShouldSave_Implementation() const override { return true; }
 	// End IFSaveInterface
 
 private:
-	void UpdateShoppingListObjectBlueprint( class UFGShoppingListObjectBlueprint* shoppingListObjectBlueprint );
+//void UpdateShoppingListObjectBlueprint( class UFGShoppingListObjectBlueprint* shoppingListObjectBlueprint );
 	UFUNCTION( Server, Reliable )
 	void Server_SetNumBlueprintsInShoppingList( const FString& blueprintName, int32 totalAmount );
 	
-	void UpdateShoppingListObjectRecipe( class UFGShoppingListObjectRecipe* shoppingListObjectRecipe );
+	//void UpdateShoppingListObjectRecipe( class UFGShoppingListObjectRecipe* shoppingListObjectRecipe );
 	UFUNCTION( Server, Reliable )
-	void Server_SetNumRecipeClassInShoppingList( TSubclassOf< class UFGRecipe > recipeClass, int32 totalAmount );
+	void Server_SetNumForClassInShoppingList( TSubclassOf< class UObject > inClass, int32 totalAmount );
 	
 	UFUNCTION( Server, Reliable )
 	void Server_ClearShoppingList();
@@ -133,11 +151,15 @@ private:
 	
 	UFUNCTION()
 	void OnRep_ShoppingListBlueprints();
+	UFUNCTION()
+	void OnBlueprintAvailable( class UFGBlueprintDescriptor* blueprintDescriptor );
+
 	void SetupInitialShoppingListObjectForBlueprints();
+	void SetupBlueprintFromBlueprintEntry( class UFGBlueprintDescriptor* blueprintDescriptor, int32 amount );
 	
 	UFUNCTION()
-	void OnRep_ShoppingListRecipes();
-	void SetupInitialShoppingListObjectForRecipes();
+	void OnRep_ShoppingListClassEntries();
+	void SetupInitialShoppingListObjectForClassEntries();
 
 public:
 	UPROPERTY( BlueprintAssignable, BlueprintCallable, Category = "Shopping List")
@@ -160,11 +182,11 @@ private:
 	// We could look into saving and replicating mShoppingListObjects as subobjects but this feels cheaper network wise
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_ShoppingListBlueprints )
 	TArray< FShoppingListBlueprintEntry > mShoppingListBlueprints;
-	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_ShoppingListRecipes )
+	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_ShoppingListClassEntries )
+	TArray< FShoppingListClassEntry > mShoppingListClassEntries;
+	/** Deprecated. Only kept for save compatability */
+	UPROPERTY( SaveGame )
 	TArray< FShoppingListRecipeEntry > mShoppingListRecipes;
-
-	// Silly quickfix for not knowing when blueprints are replicated.
-	int32 mRetryCount = 0;
 
 	FTimerHandle mUpdateShoppingListHandle;
 };

@@ -7,6 +7,8 @@ void UFGOptionsValueController::InitValueController( UFGUserSetting* userSetting
 bool UFGOptionsValueController::IsPendingApply_Implementation(){ return bool(); }
 bool UFGOptionsValueController::IsPendingRestart_Implementation(){ return bool(); }
 bool UFGOptionsValueController::ShouldBeClickable_Implementation(){ return bool(); }
+bool UFGOptionsValueController::HandleResetValueDetails_Implementation(FFGKeyHint& KeyHint){ return bool(); }
+bool UFGOptionsValueController::HandleActivateDetails_Implementation(FFGKeyHint& KeyHint){ return bool(); }
 void UFGOptionsValueController::OnOptionReverted_Implementation(){ }
 FText UFGOptionsValueController::GetCurrentSelectionText(){ return FText(); }
 bool UFGOptionsValueController::IsOptionEditable() const{ return bool(); }

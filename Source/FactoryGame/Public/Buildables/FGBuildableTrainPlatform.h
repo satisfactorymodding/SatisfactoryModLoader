@@ -44,8 +44,9 @@ public:
 
 	// Begin IFGDismantlableInterface
 	virtual bool CanDismantle_Implementation() const override;
+	virtual void GetChildDismantleActors_Implementation(TArray<AActor*>& out_ChildDismantleActors) const override;
 	virtual void Dismantle_Implementation() override;
-	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
+	virtual bool SupportsDismantleDisqualifiers_Implementation() const override { return true; }
 	// End IFGDismantlableInterface
 
 	//~ Begin IFGUseableInterface
@@ -90,9 +91,12 @@ protected:
 	/** Call to clear all docking related properties, overrides should always call super */
 	virtual void FinishDockingSequence();
 
-	/** Update the docking status of Clients */
+	UFUNCTION()
+	virtual void OnRep_RailroadTrack();
 	UFUNCTION()
 	virtual void OnRep_UpdateDockingStatus();
+	UFUNCTION()
+	virtual void OnRep_DockedRailroadVehicle();
 
 private:
 	/** Used by the hologram to configure this platform. */
@@ -100,7 +104,7 @@ private:
 	void AssignRailroadTrack( class AFGBuildableRailroadTrack* track );
 
 protected:
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_RailroadTrack )
 	class AFGBuildableRailroadTrack* mRailroadTrack;
 
 	/** Each platform should have exactly 2 FGTrainPlatformConnectionComponents (Not a uproperty as it just holds refs to the below connections)
@@ -116,7 +120,7 @@ protected:
 	UPROPERTY( EditAnywhere )
 	class UFGTrainPlatformConnection* mPlatformConnection1;
 
-	UPROPERTY( Replicated, SaveGame )
+	UPROPERTY( ReplicatedUsing = OnRep_DockedRailroadVehicle, SaveGame )
 	class AFGRailroadVehicle* mDockedRailroadVehicle;
 
 	/** Stores a reference to the station that initiated a docking sequence. Used to notify the station that we have completed */

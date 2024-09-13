@@ -8,4 +8,5 @@ AFGBuildableStair::AFGBuildableStair() : Super() {
 	this->mHeight = 0.0;
 	this->mSize = 0.0;
 	this->mHologramClass = AFGStairHologram::StaticClass();
+	this->mManagedByLightweightBuildableSubsystem = true;
 }

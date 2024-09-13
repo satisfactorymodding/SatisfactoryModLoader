@@ -23,9 +23,13 @@ void AFGBlueprintProxy::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& 
 	DOREPLIFETIME(AFGBlueprintProxy, mBlueprintName);
 	DOREPLIFETIME(AFGBlueprintProxy, mLocalBounds);
 	DOREPLIFETIME(AFGBlueprintProxy, mBuildables);
+	DOREPLIFETIME(AFGBlueprintProxy, mLightweightClassAndIndices);
 }
+void AFGBlueprintProxy::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBlueprintProxy::RegisterBuildable( AFGBuildable* buildable){ }
+void AFGBlueprintProxy::RegisterLightweightInstance(TSubclassOf<  AFGBuildable > buildableClass, int32 index){ }
 void AFGBlueprintProxy::UnregisterBuildable( AFGBuildable* buildable){ }
+void AFGBlueprintProxy::UnregisterLightweightInstance(TSubclassOf<  AFGBuildable > buildableClass, int32 index){ }
 int32 AFGBlueprintProxy::CollectBuildables(TArray<  AFGBuildable* >& out_buildables) const{ return int32(); }
 UFGBlueprintDescriptor* AFGBlueprintProxy::GetBlueprintDescriptor() const{ return nullptr; }
 void AFGBlueprintProxy::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -36,7 +40,9 @@ void AFGBlueprintProxy::GatherDependencies_Implementation(TArray< UObject* >& ou
 bool AFGBlueprintProxy::NeedTransform_Implementation(){ return bool(); }
 bool AFGBlueprintProxy::ShouldSave_Implementation() const{ return bool(); }
 bool AFGBlueprintProxy::CanDismantle_Implementation() const{ return bool(); }
+void AFGBlueprintProxy::GetDismantleDependencies_Implementation(TArray<AActor*>& out_dismantleDependencies) const{ }
 void AFGBlueprintProxy::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }
+void AFGBlueprintProxy::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ }
 FVector AFGBlueprintProxy::GetRefundSpawnLocationAndArea_Implementation(const FVector& aimHitLocation, float& out_radius) const{ return FVector(); }
 void AFGBlueprintProxy::PreUpgrade_Implementation(){ }
 void AFGBlueprintProxy::Upgrade_Implementation(AActor* newActor){ }
@@ -44,6 +50,10 @@ void AFGBlueprintProxy::Dismantle_Implementation(){ }
 void AFGBlueprintProxy::StartIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBlueprintProxy::StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBlueprintProxy::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }
+FText AFGBlueprintProxy::GetDismantleDisplayName_Implementation(AFGCharacterPlayer* byCharacter) const{ return FText(); }
 void AFGBlueprintProxy::OnRep_BlueprintName(){ }
 void AFGBlueprintProxy::OnRep_LocalBounds(){ }
+void AFGBlueprintProxy::OnRep_LightweightIndices(){ }
 void AFGBlueprintProxy::AssignBuildables(const TArray<  AFGBuildable* >& buildables){ }
+bool AFGBlueprintProxy::HasAnyLightweightInstances() const{ return bool(); }
+FBuildableClassLightweightIndices& AFGBlueprintProxy::FindOrAddLightweightIndiceEntry(TSubclassOf< AFGBuildable > buildableClass){ return *(new FBuildableClassLightweightIndices); }

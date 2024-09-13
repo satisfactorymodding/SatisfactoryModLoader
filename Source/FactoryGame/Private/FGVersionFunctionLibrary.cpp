@@ -4,4 +4,6 @@
 
 FString UFGVersionFunctionLibrary::GetVersionString(){ return FString(); }
 bool UFGVersionFunctionLibrary::IsPublicBuild(){ return bool(); }
+bool UFGVersionFunctionLibrary::IsClosedBetaBuild(){ return bool(); }
+bool UFGVersionFunctionLibrary::IsWatermarkVisible(){ return bool(); }
 EGameVersion UFGVersionFunctionLibrary::GetGameVersion(){ return EGameVersion(); }

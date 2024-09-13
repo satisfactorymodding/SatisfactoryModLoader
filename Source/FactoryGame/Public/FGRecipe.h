@@ -57,9 +57,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
 	static TArray< FItemAmount > GetIngredients( TSubclassOf< UFGRecipe > inClass );
 
-	/** Get the products for this recipe. @todo remove unused allowChildRecipes. */
+	/** Get the products for this recipe. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
-	static TArray< FItemAmount > GetProducts( TSubclassOf< UFGRecipe > inClass, bool allowChildRecipes = false );
+	static TArray< FItemAmount > GetProducts( TSubclassOf< UFGRecipe > inClass );
 
 	/** Returns this recipe item category. Either overridden or fetched from the produced item */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )

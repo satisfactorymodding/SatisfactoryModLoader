@@ -35,6 +35,7 @@ public:
 	
 private:
 #if WITH_EDITOR
+	friend class AFGWorldSettings;
 	/** Setup so that we get calls to UpdatePreview whenever time of day is updated in the editor */
 	void SetupPreviewDelegate();
 #endif

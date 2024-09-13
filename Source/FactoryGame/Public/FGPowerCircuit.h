@@ -34,6 +34,9 @@ public:
 
 	UPROPERTY( BlueprintReadOnly )
 	float BatteryPowerInput;
+
+	UPROPERTY( BlueprintReadOnly )
+	float BoostProduced;
 };
 
 template<>
@@ -107,6 +110,9 @@ public:
 	/** The sum of the power inputs to batteries. A negative value denotes power output. */
 	UPROPERTY( NotReplicated )
 	float BatteryPowerInput;
+	/** How much power was produced by power boosters. */
+	UPROPERTY( NotReplicated )
+	float BoostProduced;
 	
 	/** Freeze the stats until the next stat. */
 	bool HasPinnedGraphPoint;
@@ -143,13 +149,13 @@ class FACTORYGAME_API UFGPowerCircuit : public UFGCircuit
 	GENERATED_BODY()
 public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
 
 	UFGPowerCircuit();
 
 	/** Resets the fuse. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|PowerCircuit" )
-	void ResetFuse();
+	void ResetFuse( class AFGPlayerController* instigator = nullptr );
 
 	/** @return true if the fuse is triggered; false otherwise. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
@@ -195,6 +201,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	static void GetBatteryPowerOutputPoints( const FPowerCircuitStats& stats, TArray< float >& out_points ) { stats.GetPoints< &FPowerGraphPoint::BatteryPowerInput >( out_points, true, true ); }
 
+	/** Get boost produced points from stats */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
+	static void GetBoostProducedPoints( const FPowerCircuitStats& stats, TArray< float >& out_points ) { stats.GetPoints< &FPowerGraphPoint::BoostProduced >( out_points ); }
+	
 	/** @return true if there are any batteries connected to this circuit. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	bool HasBatteries() const { return mHasBatteries; }
@@ -207,7 +217,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	float GetBatterySumPowerStoreCapacity() const { return mBatterySumPowerStoreCapacity; }
 
-	/** @return the combined power store as percentage of the combined power-store capacity of all the active batteries connected to this circuit. In the range [0.0, 1.0]. */
+	/** @return the combined power store as percentage of the combined power-store capacity of all the active batteries connected to this circuit. In the range [0, 1]. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	float GetBatterySumPowerStorePercent() const { return mBatterySumPowerStore / mBatterySumPowerStoreCapacity; }
 	
@@ -219,13 +229,21 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	float GetBatterySumPowerOutput() const { return FMath::Max( -mBatterySumPowerInput, 0.0f ); }
 
-	/** @returns the time in seconds to when all batteries are empty if GetBatterySumPowerOutput() returns > 0, otherwise returns 0. */
+	/** @return the time in seconds to when all batteries are empty if GetBatterySumPowerOutput() returns > 0, otherwise returns 0. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	float GetTimeToBatteriesEmpty() const { return mBatterySumPowerInput < 0.0f ? mTimeToBatteriesEmpty : 0.0f; }
 
-	/** @returns the time in seconds to when all batteries are full if GetBatterySumPowerInput() returns > 0, otherwise returns 0. */
+	/** @return the time in seconds to when all batteries are full if GetBatterySumPowerInput() returns > 0, otherwise returns 0. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	float GetTimeToBatteriesFull() const { return mBatterySumPowerInput > 0.0f ? mTimeToBatteriesFull : 0.0f; }
+
+	/** @return the amount of boost applied to this circuit in MW. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
+	float GetProductionBoost() const { return mBoostProduced; }
+	
+	/** @return the amount of boost applied to this circuit in percent. In the range [0, 1] */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
+	float GetProductionBoostPercent() const { return mProductionBoostFactor; }
 
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent ) override;
@@ -240,6 +258,9 @@ public:
 	DECLARE_EVENT_OneParam( UFGPowerCircuit, FOnHasPowerChanged, bool )
 	FOnHasPowerChanged OnHasPowerChanged;
 
+	UFUNCTION( BlueprintCallable, BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
+	float GetMaximumPowerConsumption() const { return mMaximumPowerConsumption; }
+	
 protected:
 	// Begin UFGCircuit interface
 	virtual void OnCircuitChanged() override;
@@ -265,6 +286,7 @@ private:
 
 private:
 	/** All power infos in this circuit, in the order they should be updated. */
+	UPROPERTY()
 	TArray< class UFGPowerInfoComponent* > mPowerInfos;
 
 	/** Total amount of power that can be produced in the circuit. Used for stats. */
@@ -278,6 +300,10 @@ private:
 	/** Total amount of power consumed in the circuit. */
 	UPROPERTY()
 	float mPowerConsumed;
+	
+	/** Total amount of power produced from power boosters in the circuit. */
+	UPROPERTY( Replicated )
+	float mBoostProduced;
 
 	/** The maximum power that can be demanded by all connected infos. */
 	UPROPERTY( Replicated )
@@ -316,8 +342,12 @@ private:
 	UPROPERTY( Replicated )
 	bool mIsFuseTriggered;
 
-	/** The power consumption/production over time. Used for feedback. */
+	/** How much is the production boosted in this circuit. [%] */
 	UPROPERTY( Replicated )
+	float mProductionBoostFactor;
+
+	/** The power consumption/production over time. Used for feedback. */
+	UPROPERTY( meta = ( FGReplicated ) )
 	FPowerCircuitStats mPowerStats;
 
 	/** The sum battery power store at the time when the latest non-stop depletion of batteries started. 0.0f when uninitialized. */
@@ -344,7 +374,7 @@ class FACTORYGAME_API UFGPowerCircuitGroup : public UFGCircuitGroup
 {
 	GENERATED_BODY()
 public:
-	void ResetFuses();
+	void ResetFuses( class AFGPlayerController* instigator = nullptr );
 	void RegisterPrioritySwitch( class AFGBuildablePriorityPowerSwitch* circuitSwitch );
 
 private:
@@ -367,7 +397,7 @@ private:
 
 	/** Called when the fuse is set/reset in the circuit. */
 	void OnFuseSet();
-	void OnFuseReset();
+	void OnFuseReset( class AFGPlayerController* instigator = nullptr );
 	void OnPrioritySwitchesTurnedOff( int32 priority );
 
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent );
@@ -380,14 +410,18 @@ private:
 	/** Per frame data. */
 	float mConsumption;
 	float mMaximumPowerConsumption;
+	float mTotalProductionBoostFactor;
 	float mBaseProduction;
 	float mDynamicProductionCapacity;
+	float mBoostProductionCapacity;
 	float mMaximumProductionCapacity;
 	bool mHasBatteries;
 	float mTotalPowerStore;
 	float mTotalPowerStoreCapacity;
 	bool mAreAllFusesTriggered;
 	bool mIsAnyFuseTriggered;
+
+	float mPreviousPowerProduction { 0.0f };
 	
 	/** All the priority switches inside this circuit group. */
 	TSet< TWeakObjectPtr< class AFGBuildablePriorityPowerSwitch > > mPrioritySwitches;
@@ -400,6 +434,7 @@ void FPowerCircuitStats::MakeGraphPoint( FPowerGraphPoint& out_newGraphPoint ) c
 	out_newGraphPoint.ProductionCapacity = PowerProductionCapacity;
 	out_newGraphPoint.MaximumConsumption = MaximumPowerConsumption;
 	out_newGraphPoint.BatteryPowerInput = BatteryPowerInput;
+	out_newGraphPoint.BoostProduced = BoostProduced;
 }
 
 bool FPowerCircuitStats::GetGraphPointAtIndex( int32 idx, FPowerGraphPoint& out_graphPoint ) const
@@ -411,6 +446,7 @@ bool FPowerCircuitStats::GetGraphPointAtIndex( int32 idx, FPowerGraphPoint& out_
 		out_graphPoint.ProductionCapacity = 0.0f;
 		out_graphPoint.MaximumConsumption = 0.0f;
 		out_graphPoint.BatteryPowerInput = 0.0f;
+		out_graphPoint.BoostProduced = 0.0f;
 
 		return false;
 	}

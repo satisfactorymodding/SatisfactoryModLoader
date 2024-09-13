@@ -1,15 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.Collections.Generic;
 
 public class FactoryEditorTarget : TargetRules
 {
-	public FactoryEditorTarget(TargetInfo Target) : base(Target)
+	public FactoryEditorTarget( TargetInfo Target ) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
-		CppStandard = CppStandardVersion.Cpp20;
-        
-		ExtraModuleNames.Add("FactoryGame");
+		
+		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+
+		ExtraModuleNames.AddRange(new string[] {
+			"FactoryPreEarlyLoadingScreen",
+            "FactoryGame",
+            //"FactoryEditor",
+			//"FactoryUncookedOnly",
+			"FactoryDedicatedServer",
+			"FactoryDedicatedClient"
+		});
 	}
 }

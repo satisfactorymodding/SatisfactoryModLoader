@@ -19,7 +19,7 @@ AFGGasPillar::AFGGasPillar() : Super() {
 	this->mDotComponent = CreateDefaultSubobject<UFGDotComponent>(TEXT("DotComponent"));
 	this->mDotComponent->SetupAttachment(mOverlapCollision);
 	this->mPostProcessSettings = nullptr;
-	this->mSignificanceRange = 150000.0;
+	this->mSignificanceRange = 15000.0;
 	this->mBindChaosPhysicsCollisionEvent = true;
 	this->RootComponent = mMesh;
 }
@@ -40,5 +40,7 @@ void AFGGasPillar::RemoveGasComponents(){ }
 void AFGGasPillar::NotifyGasCloudOfRemoval(){ }
 void AFGGasPillar::OnDestructibleFractured(){ }
 void AFGGasPillar::OnDesctructibleDestroyed(){ }
+void AFGGasPillar::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){ }
+void AFGGasPillar::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex){ }
 bool AFGGasPillar::EncompassesPoint(FVector point, float sphereRadius , float* out_distanceToPoint){ return bool(); }
 FPostProcessVolumeProperties AFGGasPillar::GetProperties() const{ return FPostProcessVolumeProperties(); }

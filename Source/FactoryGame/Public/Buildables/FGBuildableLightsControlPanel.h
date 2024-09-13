@@ -61,5 +61,6 @@ private:
 
 	/** Are the lights on or off. */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_IsEnabled )
-	bool mIsEnabled;
+	bool mIsEnabled = true;
+	
 };

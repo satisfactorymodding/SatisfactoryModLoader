@@ -3,6 +3,10 @@
 #include "FGCheatManager.h"
 #include "UObject/ObjectSaveContext.h"
 
+FString IFGCheatBoardParameterFilter::GetPrettifiedClassName(UClass* InClass) const{ return FString(); }
+FString IFGCheatBoardParameterFilter::GetPrettifiedAssetName(UObject* InAsset) const{ return FString(); }
+FString FFGCheatBoardParameterFilter_ItemDescriptor::GetPrettifiedClassName(UClass* InClass) const{ return FString(); }
+bool FFGCheatBoardParameterFilter_ItemDescriptor::IsClassFilteredOut(UClass* InClass) const{ return bool(); }
 void UFGCheatManager::InitCheatManager(){ }
 bool UFGCheatManager::IsSupportedForNetworking() const{ return bool(); }
 int32 UFGCheatManager::GetFunctionCallspace(UFunction* Function, FFrame* Stack){ return int32(); }
@@ -29,12 +33,15 @@ void UFGCheatManager::Server_GiveItemStacks_Implementation( AFGCharacterPlayer* 
 void UFGCheatManager::GiveItemStacks(TSubclassOf<  UFGItemDescriptor > resource, int32 numberOfStacks){ }
 void UFGCheatManager::Server_GiveItemsSingle_Implementation( AFGCharacterPlayer* character, TSubclassOf<  UFGItemDescriptor > resource, int32 numberOfItems){ }
 void UFGCheatManager::GiveItemsSingle(TSubclassOf<  UFGItemDescriptor > resource, int32 numberOfItems){ }
-void UFGCheatManager::ClearGiveItemPopularList(){ }
+void UFGCheatManager::GiveUploadItemStack(TSubclassOf<  UFGItemDescriptor > resource){ }
+void UFGCheatManager::Server_GiveUploadItemStack_Implementation( AFGCharacterPlayer* character, TSubclassOf<  UFGItemDescriptor > resource){ }
 void UFGCheatManager::ClearInventory(){ }
 void UFGCheatManager::Server_ClearInventory_Implementation(){ }
 void UFGCheatManager::Server_GiveResourceSinkCoupons_Implementation(int32 numCoupons){ }
 void UFGCheatManager::GiveResourceSinkCoupons(int32 numCoupons){ }
 void UFGCheatManager::EnableCreativeMode(){ }
+void UFGCheatManager::Server_SetCentralStorageUploadSpeed_Implementation(float seconds){ }
+void UFGCheatManager::SetCentralStorageUploadSpeed(float seconds){ }
 void UFGCheatManager::NoMessages(bool enabled){ }
 bool UFGCheatManager::NoMessages_Get(){ return bool(); }
 void UFGCheatManager::PumpiMode(bool enable){ }
@@ -51,6 +58,8 @@ int32 UFGCheatManager::SetTimeOfDay_hour_Get(){ return int32(); }
 int32 UFGCheatManager::SetTimeOfDay_minute_Get(){ return int32(); }
 void UFGCheatManager::Server_SetSlomo_Implementation(float slomo){ }
 void UFGCheatManager::SetSlomo(float slomo){ }
+void UFGCheatManager::SetNumberOfDaysSinceLastDeath(int32 newNumberOfDaysSinceLastDeath){ }
+void UFGCheatManager::Server_SetNumberOfDaysSinceLastDeath_Implementation(int32 newNumberOfDaysSinceLastDeath){ }
 void UFGCheatManager::Server_SetPlanetPosition_Implementation(float value){ }
 void UFGCheatManager::SetPlanetPosition(float value){ }
 void UFGCheatManager::Server_SetPlanetPositionDeg_Implementation(int32 value){ }
@@ -62,7 +71,15 @@ void UFGCheatManager::SetPlanetSpeedMultiplier(float multiplier){ }
 void UFGCheatManager::ForceSetWeatherType(TSubclassOf<class AFGWeatherReaction> Reaction){ }
 void UFGCheatManager::LockWeather(bool bState){ }
 void UFGCheatManager::HighlightPickupable(TSubclassOf< AFGItemPickup > pickupClass){ }
+void UFGCheatManager::HighlightCrashSites(){ }
+void UFGCheatManager::ClearHighlightedActors(){ }
 void UFGCheatManager::Internal_HighlightPickupables(){ }
+void UFGCheatManager::Server_TriggerRandomWorldEvent_Implementation(){ }
+void UFGCheatManager::TriggerRandomWorldEvent(){ }
+void UFGCheatManager::RunGameplayTest(TSubclassOf<class UFGGameplayTest> gameplayTest){ }
+void UFGCheatManager::Server_RunGameplayTest_Implementation(TSubclassOf<class UFGGameplayTest> gameplayTest){ }
+void UFGCheatManager::Server_SetSAMIntensity_Implementation(int32 newSAMIntensity){ }
+void UFGCheatManager::SetSAMIntensity(int32 newSAMIntensity){ }
 void UFGCheatManager::Server_Creature_CanAttackEachother_Implementation(bool canAttack){ }
 void UFGCheatManager::Creature_CanAttackEachother(bool canAttack){ }
 void UFGCheatManager::Creature_SetStressEnabled(bool enable){ }
@@ -78,6 +95,10 @@ void UFGCheatManager::Server_Creature_AddCreatureOverride_Implementation(TSubcla
 void UFGCheatManager::Creature_AddCreatureOverride(TSubclassOf<  AFGCreature > creatureClassToReplace, TSubclassOf<  AFGCreature > creatureClassOverride){ }
 void UFGCheatManager::Server_Creature_SetArachnidCreaturesDisabled_Implementation(bool disabled){ }
 void UFGCheatManager::Creature_SetArachnidCreaturesDisabled(bool disabled){ }
+void UFGCheatManager::Server_Vehicle_SpawnNew_Implementation(TSubclassOf<  AFGVehicle > vehicleClass, int32 numToSpawn){ }
+void UFGCheatManager::Vehicle_SpawnNew(TSubclassOf<  AFGVehicle > vehicleClass, int32 numToSpawn){ }
+void UFGCheatManager::Server_Vehicle_BringIdleDrones_Implementation(){ }
+void UFGCheatManager::Vehicle_BringIdleDrones(){ }
 void UFGCheatManager::PlayerFly(bool flyModeEnabled){ }
 bool UFGCheatManager::PlayerFly_Get(){ return bool(); }
 void UFGCheatManager::Server_PlayerAllFly_Implementation(bool flyModeEnabled){ }
@@ -86,8 +107,6 @@ bool UFGCheatManager::PlayerAllFly_Get(){ return bool(); }
 void UFGCheatManager::PlayerNoClipModeOnFly(bool ghostMode){ }
 bool UFGCheatManager::PlayerNoClipModeOnFly_Get(){ return bool(); }
 void UFGCheatManager::UpdatePlayerNametags(){ }
-void UFGCheatManager::EnablePlayerFOV(bool enable){ }
-bool UFGCheatManager::EnablePlayerFOV_Get(){ return bool(); }
 void UFGCheatManager::DestroyPawn(){ }
 void UFGCheatManager::ToggleCameraMode(){ }
 void UFGCheatManager::ListDebugStartingPoint(){ }
@@ -101,6 +120,8 @@ void UFGCheatManager::CollectAllCrates(){ }
 void UFGCheatManager::Server_CollectAllCrates_Implementation(){ }
 void UFGCheatManager::BringAllUnpossessedPawnsHere(){ }
 void UFGCheatManager::Server_BringAllUnpossessedPawnsHere_Implementation(){ }
+void UFGCheatManager::Die(){ }
+void UFGCheatManager::Server_Die_Implementation(){ }
 void UFGCheatManager::ReviveSelf(){ }
 void UFGCheatManager::Server_ReviveSelf_Implementation(){ }
 void UFGCheatManager::RagdollSelf(){ }
@@ -114,6 +135,15 @@ void UFGCheatManager::Heal(){ }
 void UFGCheatManager::Server_Heal_Implementation(){ }
 void UFGCheatManager::DamageSelf(float damage){ }
 void UFGCheatManager::Server_DamageSelf_Implementation(float damage){ }
+void UFGCheatManager::StopPossessingCharacter(){ }
+void UFGCheatManager::Server_StopPossessingCharacter_Implementation(){ }
+void UFGCheatManager::PossessCharacterAtIndex(int32 characterIndex){ }
+void UFGCheatManager::Server_PossessCharacterAtIndex_Implementation(int32 characterIndex){ }
+void UFGCheatManager::SetPlayerPrimaryCustomizationColor(const FString& NewColorHex){ }
+void UFGCheatManager::SetPlayerSecondaryCustomizationColor(const FString& NewColorHex){ }
+void UFGCheatManager::SetPlayerDetailCustomizationColor(const FString& NewColorHex){ }
+void UFGCheatManager::SetPlayerCustomizationHelmetDesc(TSubclassOf<UFGPlayerHelmetCustomizationDesc> NewHelmetDesc){ }
+void UFGCheatManager::FastForwardIntroSequence(float SecondsToFastForward){ }
 void UFGCheatManager::Foliage_RemoveOneByOne(int32 maxNumInstances){ }
 void UFGCheatManager::Server_Foliage_RemoveOneByOne_Implementation(int32 maxNumInstances){ }
 void UFGCheatManager::Foliage_RemoveInBulk(int32 maxNumInstances){ }
@@ -138,14 +168,18 @@ void UFGCheatManager::Server_GiveAllResearchTrees_Implementation(){ }
 void UFGCheatManager::GiveAllResearchTrees(){ }
 void UFGCheatManager::Server_GiveSchematicsOfTier_Implementation(int32 tier){ }
 void UFGCheatManager::GiveSchematicsOfTier(int32 tier){ }
-void UFGCheatManager::Server_SetGamePhase_Implementation(EGamePhase phase){ }
-void UFGCheatManager::SetGamePhase(EGamePhase phase){ }
+void UFGCheatManager::Server_SetGamePhase_Implementation(UFGGamePhase* gamePhase){ }
+void UFGCheatManager::SetGamePhase(UFGGamePhase* gamePhase){ }
 void UFGCheatManager::Server_SetNextGamePhase_Implementation(){ }
 void UFGCheatManager::SetNextGamePhase(){ }
 void UFGCheatManager::Server_ResetGamePhases_Implementation(){ }
 void UFGCheatManager::ResetGamePhases(){ }
 void UFGCheatManager::Server_ResetHubTutorial_Implementation(){ }
 void UFGCheatManager::ResetHubTutorial(){ }
+void UFGCheatManager::Server_SkipOnboarding_Implementation(){ }
+void UFGCheatManager::SkipOnboarding(){ }
+void UFGCheatManager::Server_GoToNextOnboardingStep_Implementation(){ }
+void UFGCheatManager::GoToNextOnboardingStep(){ }
 void UFGCheatManager::Server_ResetSchematics_Implementation(){ }
 void UFGCheatManager::ResetSchematics(){ }
 void UFGCheatManager::Server_ResetRecipes_Implementation(){ }
@@ -166,6 +200,8 @@ void UFGCheatManager::UnlockInventorySlots(int32 numSlots){ }
 void UFGCheatManager::Server_UnlockInventorySlots_Implementation(int32 numSlots){ }
 void UFGCheatManager::UnlockArmSlots(int32 numSlots){ }
 void UFGCheatManager::Server_UnlockArmSlots_Implementation(int32 numSlots){ }
+void UFGCheatManager::UnlockSpecificSchematic(TSubclassOf<UFGSchematic> Schematic){ }
+void UFGCheatManager::Server_UnlockSpecificSchematic_Implementation(TSubclassOf<UFGSchematic> Schematic){ }
 void UFGCheatManager::Map_RemoveMarker(int32 index){ }
 void UFGCheatManager::NetMulticast_Map_Reveal_Implementation(){ }
 void UFGCheatManager::Server_Map_Reveal_Implementation(){ }
@@ -182,15 +218,7 @@ void UFGCheatManager::Photo_ResetToDefault(){ }
 void UFGCheatManager::Photo_AddCurrentPlayerPosAndRot(){ }
 void UFGCheatManager::Photo_PlaySequence(){ }
 void UFGCheatManager::Photo_ToggleSequencer(){ }
-void UFGCheatManager::Online_EpicLogin(FString username, FString password){ }
-void UFGCheatManager::Online_EpicLogout(){ }
-void UFGCheatManager::Online_GetOnlineStatus(int32 localPlayerNum){ }
-void UFGCheatManager::Online_UpdatePresence(FString key, FString value){ }
-void UFGCheatManager::Online_UpdatePresenceString(FString string){ }
-void UFGCheatManager::Online_LogPresence(){ }
-void UFGCheatManager::Online_GetFriends(){ }
 void UFGCheatManager::Online_TriggerPresenceUpdate(){ }
-void UFGCheatManager::Online_SendInviteToFriend(FString friendName){ }
 void UFGCheatManager::Online_UpdateGameSession(){ }
 void UFGCheatManager::Online_DumpConnectionString(){ }
 void UFGCheatManager::Server_Vehicle_FlipDrivenVehicle_Implementation( AFGWheeledVehicle* vehicle){ }
@@ -200,7 +228,9 @@ void UFGCheatManager::Vehicle_ResetDeadlocks(){ }
 void UFGCheatManager::Server_Vehicle_ResetTheChosenVehicle_Implementation(){ }
 void UFGCheatManager::Vehicle_ResetTheChosenVehicle(){ }
 void UFGCheatManager::Vehicle_DumpInfoAboutLookedAtVehicle(){ }
-void UFGCheatManager::Trains_ToggleSelfDriving(){ }
+void UFGCheatManager::Trains_EnableSelfDriving(bool requireValidTimeTable){ }
+void UFGCheatManager::Trains_EnableSelfDrivingForTestCase(FString trainNameTag){ }
+void UFGCheatManager::Trains_DisableSelfDriving(){ }
 void UFGCheatManager::Server_Trains_FillAllFreightCars_Implementation(float pct){ }
 void UFGCheatManager::Trains_FillAllFreightCars(float pct){ }
 void UFGCheatManager::Server_Trains_EmptyAllFreightCars_Implementation(){ }
@@ -240,6 +270,7 @@ void UFGCheatManager::Server_Circuit_ResetFuses_Implementation(){ }
 void UFGCheatManager::Circuit_ResetFuses(){ }
 void UFGCheatManager::Circuit_Bug_InsertDupeComponentIntoCircuit(int32 target){ }
 void UFGCheatManager::Circuit_Bug_InsertDupeComponentIntoAnotherCircuit(int32 source, int32 target){ }
+void UFGCheatManager::ClearMessageCooldown(){ }
 void UFGCheatManager::Server_PurgeInactiveClientsFromSave_Implementation( AFGCharacterPlayer* characterToReceiveInventories, bool fetchInventories){ }
 void UFGCheatManager::PurgeInactiveClientsFromSave(bool fetchInventories){ }
 void UFGCheatManager::Server_PurgeAllBeaconsFromSave_Implementation(){ }
@@ -248,8 +279,6 @@ void UFGCheatManager::Server_PurgeDeathMarkersFromSave_Implementation(){ }
 void UFGCheatManager::PurgeDeathMarkersFromSave(){ }
 void UFGCheatManager::Server_PurgeAllTrainState_Implementation(){ }
 void UFGCheatManager::PurgeAllTrainState(){ }
-void UFGCheatManager::ResetAllFactoryLegsToZero(bool repopulateEmptyLegs){ }
-void UFGCheatManager::RebuildFactoryLegsOneTileAroundPlayer(){ }
 void UFGCheatManager::Server_ShowFactoryOnly_Implementation(bool environmentHidden){ }
 void UFGCheatManager::ShowFactoryOnly(bool environmentHidden){ }
 bool UFGCheatManager::ShowFactoryOnly_Get(){ return bool(); }
@@ -262,11 +291,12 @@ void UFGCheatManager::SetFactoryDetailReplication(bool enable){ }
 bool UFGCheatManager::SetFactoryDetailReplication_Get(){ return bool(); }
 void UFGCheatManager::Server_HideAllBuildings_Implementation(bool inVisibility){ }
 void UFGCheatManager::HideAllBuildings(bool inVisibility){ }
-bool UFGCheatManager::HideAllBuildings_Get(){ return bool(); }
+bool UFGCheatManager::HideAllBuildings_Get() const{ return bool(); }
 void UFGCheatManager::Server_EnableBuildableTick_Implementation(bool enable){ }
 void UFGCheatManager::EnableBuildableTick(bool enable){ }
 bool UFGCheatManager::EnableBuildableTick_Get(){ return bool(); }
-void UFGCheatManager::ReplayBuildingEffects(){ }
+void UFGCheatManager::ReplayBuildingEffects(int32 bucketId, bool playBuildEffect){ }
+void UFGCheatManager::SetBuildingBucketHidden(int32 bucketId, bool hidden){ }
 void UFGCheatManager::DumpNonDormantActors(){ }
 void UFGCheatManager::DumpActiveGPUParticles(){ }
 void UFGCheatManager::DumpPlayerStates(){ }
@@ -279,15 +309,25 @@ void UFGCheatManager::DumpSchematics(){ }
 void UFGCheatManager::DumpUnlockedRecipesAndSchematics(){ }
 void UFGCheatManager::DumpAllAvailableRecipes(){ }
 void UFGCheatManager::DumpGamePhases(){ }
+void UFGCheatManager::DumpPlayerCustomizationData(){ }
 void UFGCheatManager::Audio_ToggleLandingDebug(){ }
 void UFGCheatManager::RunHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ }
-void UFGCheatManager::TestSharedInventoryPtr(){ }
 void UFGCheatManager::RandomizeBuildingsColorSlot(uint8 slotIndex){ }
 void UFGCheatManager::ShowSequenceList(){ }
-void UFGCheatManager::SetServerAdminPassword(const FString& inNewAdminPassword){ }
-void UFGCheatManager::SetServerPlayerPassword(const FString& inNewPlayerPassword){ }
-void UFGCheatManager::Server_SetAdminPassword_Implementation(const FString& inNewAdminPassword){ }
-void UFGCheatManager::Server_SetPlayerPassword_Implementation(const FString& inNewPlayerPassword){ }
+void UFGCheatManager::HitchNow(float ms){ }
+
+FFGCheatBoardGlobalParameterFilter UFGCheatManager::GlobalParameterFilter_ItemDescriptor() const {
+	return FFGCheatBoardGlobalParameterFilter();
+}
+
+FFGCheatBoardGlobalParameterFilter UFGCheatManager::GlobalParameterFilter_GameplayTest() const {
+	return FFGCheatBoardGlobalParameterFilter();
+}
+
+FFGCheatBoardGlobalParameterFilter UFGCheatManager::GlobalParameterFilter_GamePhase() const {
+	return FFGCheatBoardGlobalParameterFilter();
+}
+
 void UFGCheatManager::CacheFunctionCategoryMapping(){ }
 bool UFGCheatManager::IsClient() const{ return bool(); }
 UActorComponent* UFGCheatManager::GetOuterPlayersUseComponent() const{ return nullptr; }

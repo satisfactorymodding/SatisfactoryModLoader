@@ -4,7 +4,6 @@
 
 #include "FactoryGame.h"
 #include "FGEquipment.h"
-#include "FGEquipmentAttachment.h"
 #include "FGFactoryColoringTypes.h"
 #include "FGRecipeProducerInterface.h"
 #include "GameFramework/Actor.h"
@@ -242,14 +241,19 @@ public:
 	virtual void Tick( float dt ) override;
 
 	// Begin AFGEquipment interface
-	virtual bool ShouldSaveState() const override;
 	virtual void Equip( class AFGCharacterPlayer* character );
 	virtual void UnEquip();
 	virtual void OnInteractWidgetAddedOrRemoved( UFGInteractWidget* widget, bool added ) override;
 	virtual bool OnShortcutPressed(int32 shortcutIndex) override;
+	virtual bool CanPickBestUsableActor_Implementation() const override;
 	// End AFGEquipment interface
 
+	// Begin IFGRecipeProducerInterface
+	virtual TSubclassOf<UFGItemDescriptor> GetRecipeProducerItemDescriptor_Implementation(UObject* WorldContext) const override;
+	// End IFGRecipeProducerInterface
+
 	void TraceForBuilding( APawn* owningPawn, FHitResult& hitresult ) const;
+	void TraceForBuildingSample( APawn* owningPawn, FHitResult& hitresult );
 	
 	/** @return The FHitResult of this build gun. */
 	FORCEINLINE FHitResult& GetHitResult(){ return mHitResult; }
@@ -300,6 +304,11 @@ public:
 	UFUNCTION( BlueprintPure, Category = "BuildGun" )
 	FORCEINLINE UFGBuildGunState* GetCurrentState() const { return mCurrentState; }
 
+	// <FL> [PuschkeN] keeping track of the previous build gun state allows us to detect e.g. when returning to the build menu directly from building, in which case we want to set the focus on that recipe
+	UFUNCTION( BlueprintPure, Category = "BuildGun" )
+	FORCEINLINE EBuildGunState GetPreviousStateEnum() const { return mPreviousStateEnum; }
+	// </FL>
+
 	/**
 	 * Only the server is allowed to build stuff so all the actions are executed on the server but may be simulated on the client.
 	 * Simulations may be sounds and the brrrrrrrring progress bar when selling.
@@ -333,7 +342,7 @@ public:
 
 	/**
 	 * (Simulated)
-	 * Set the build gun in dismantling mode.
+	 * Set the build gun in menu mode.
 	 * @note Must be called on the local player.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
@@ -388,9 +397,11 @@ public:
 
 	void SetAllowRayClearanceHit( bool allow );
 	void SetAllowRayBlueprintProxyHit( bool allow );
+	void SetAllowRayWireMeshHit( bool allow );
 
 	bool IsRayClearanceHitAllowed() const { return mAllowCleranceRayHits; }
 	bool IsRayBlueprintProxyHitAllowed() const { return mAllowBlueprintProxyRayHits; }
+	bool IsRayWireMeshHitAllowed() const { return mAllowWireMeshRayHits; }
 
 	/** Gets the default range of the build gun. **/
 	UFUNCTION( BlueprintPure, Category = "BuildGun" )
@@ -431,7 +442,9 @@ public:
 	
 	UFUNCTION( BlueprintPure, Category = "BuildGun" )
 	float GetBuildGunRange() const;
-	
+
+	void GotoNoneState() { GotoState(EBuildGunState::BGS_NONE); } // i am not feeling good about this :( but it seems necessary in order to switch back to the build menu state after shortcut radial menu closes
+
 protected:
 	/** Add custom bindings for this equipment */
 	virtual void AddEquipmentActionBindings() override;
@@ -538,6 +551,8 @@ protected:
 	bool mAllowCleranceRayHits = false;
 
 	bool mAllowBlueprintProxyRayHits = false;
+	
+	bool mAllowWireMeshRayHits = false;
 
 private:
 	/** All the states. */
@@ -566,6 +581,11 @@ private:
 	UPROPERTY()
 	EBuildGunState mCurrentStateEnum;
 
+	// <FL> [PuschkeN] keeping track of the previous build gun state allows us to detect e.g. when returning to the build menu directly from building, in which case we want to set the focus on that recipe
+	UPROPERTY()
+	EBuildGunState mPreviousStateEnum;
+	// </FL>
+
 	/** @see mCurrentStateIndex. */
 	UPROPERTY()
 	UFGBuildGunState* mCurrentState;
@@ -585,13 +605,8 @@ private:
 	/** Time needed to hold down the key to show the selection UI */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildModeSelect" )
 	float mBuildModeSelectHoldDownDurationForUI = 0.18f;
-};
 
-/**
- * Attachment for the build gun.
- */
-UCLASS()
-class FACTORYGAME_API AFGBuildGunAttachment : public AFGEquipmentAttachment
-{
-	GENERATED_BODY()
+	/** Build gun item descriptor to use for looking up build gun as a recipe producer */
+    UPROPERTY( EditDefaultsOnly, Category = "BuildGun" )
+    TSoftClassPtr<UFGItemDescriptor> mBuildGunEquipmentDescriptor;
 };

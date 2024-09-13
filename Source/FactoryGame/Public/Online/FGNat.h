@@ -3,6 +3,7 @@
 
 #include "FactoryGame.h"
 #include "OnlineIntegrationTypes.h"
+#include "CommonUserNATType.h"
 #include "FGNat.generated.h"
 
 UENUM( BlueprintType )

@@ -3,21 +3,20 @@
 #include "FGOutlineComponent.h"
 
 UFGOutlineComponent::UFGOutlineComponent() : Super() {
-	this->mOutlineProxy = nullptr;
-	this->mActiveOutlineActor = nullptr;
+
 }
-void UFGOutlineComponent::BeginPlay(){ }
 UFGOutlineComponent* UFGOutlineComponent::Get(const UWorld* world){ return nullptr; }
-void UFGOutlineComponent::ShowOutline(AActor* actorToOutline, const EOutlineColor color){ }
-void UFGOutlineComponent::ShowProxyOutline( UStaticMesh* outlineMesh, const FTransform &transform, const EOutlineColor color){ }
-void UFGOutlineComponent::ShowMultiActorOutline(TArray< AActor* > actorsToOutline, const EOutlineColor color){ }
-void UFGOutlineComponent::UpdateProxyOutlineMesh( UStaticMesh* newOutlineMesh) const{ }
-void UFGOutlineComponent::UpdateProxyOutlineLocationAndRotation(const FVector& newLocation, const FRotator& newRotation) const{ }
-void UFGOutlineComponent::HideOutline(){ }
-void UFGOutlineComponent::SetUpOutlineProxy(){ }
-void UFGOutlineComponent::ShowActorOutline( AActor* actorToOutline, const EOutlineColor color) const{ }
-void UFGOutlineComponent::HideActorOutline(const AActor* actorToDisableOutlineOn){ }
-void UFGOutlineComponent::ShowDismantlePendingMaterial(TArray< AActor* > actorsPendingDismantle){ }
-void UFGOutlineComponent::ShowDismantlePendingMaterial(AActor* actorPendingDismantle){ }
-void UFGOutlineComponent::ShowDismantlePendingMaterialOnActor(AActor* actorPendingForDismantle){ }
+void UFGOutlineComponent::ShowOutline(AActor* actorToOutline, const EOutlineColor color, bool createDefaultProxies , bool onlyHighlightProxies){ }
+const FActorOutlineState* UFGOutlineComponent::GetOutlineStateForActor(const AActor* actor) const{ return nullptr; }
+UStaticMeshComponent* UFGOutlineComponent::FindOrAddOutlineProxy(const AActor* actor, const FName& identifier){ return nullptr; }
+UInstancedStaticMeshComponent* UFGOutlineComponent::FindOrAddInstancedOutlineProxy(const AActor* actor, const FName& identifier){ return nullptr; }
+void UFGOutlineComponent::RemoveOutlineProxy(const AActor* actor, const FName& identifier){ }
+void UFGOutlineComponent::RemoveInstancedOutlineProxy(const AActor* actor, const FName& identifier){ }
+void UFGOutlineComponent::HideOutline(AActor* actor){ }
+void UFGOutlineComponent::UpdateOutlineState(const FActorOutlineState& outlineState){ }
+void UFGOutlineComponent::BuildEffectFinished(){ }
+FActorOutlineState* UFGOutlineComponent::GetOutlineStateForActor(const AActor* actor){ return nullptr; }
+UStaticMeshComponent* UFGOutlineComponent::CreateOutlineProxy(FActorOutlineState& outlineState, const FName& identifier){ return nullptr; }
+UInstancedStaticMeshComponent* UFGOutlineComponent::CreateInstancedOutlineProxy(FActorOutlineState& outlineState, const FName& identifier){ return nullptr; }
+void UFGOutlineComponent::SetupOutlineProxyComponent(const FActorOutlineState& outlineState, UStaticMeshComponent* comp){ }
 bool UFGOutlineComponent::IsOwnedByLocalPlayer() const{ return bool(); }

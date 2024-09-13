@@ -3,6 +3,7 @@
 #include "WheeledVehicles/FGWheeledVehicle.h"
 #include "Components/BoxComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "FGInventoryComponent.h"
 #include "Hologram/FGWheeledVehicleHologram.h"
 #include "Net/UnrealNetwork.h"
 #include "WheeledVehicles/FGWheeledVehicleMovementComponent.h"
@@ -10,14 +11,15 @@
 TAutoConsoleVariable<int32> CVarVehicleDebug(TEXT("CVarVehicleDebug"), 0, TEXT(""));
 void AFGWheeledVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGWheeledVehicle, mIsEngineOn);
 	DOREPLIFETIME(AFGWheeledVehicle, mAirDampingStrength);
 	DOREPLIFETIME(AFGWheeledVehicle, mCurrentFuelAmount);
 	DOREPLIFETIME(AFGWheeledVehicle, mIsLoadingVehicle);
 	DOREPLIFETIME(AFGWheeledVehicle, mIsUnloadingVehicle);
 	DOREPLIFETIME(AFGWheeledVehicle, mVehicleLightsOn);
 	DOREPLIFETIME(AFGWheeledVehicle, mVehicleHonkOn);
-	DOREPLIFETIME(AFGWheeledVehicle, mFuelInventory);
-	DOREPLIFETIME(AFGWheeledVehicle, mStorageInventory);
+	DOREPLIFETIME(AFGWheeledVehicle, mTrunkUser);
+	DOREPLIFETIME(AFGWheeledVehicle, mIsTrunkOpen);
 	DOREPLIFETIME(AFGWheeledVehicle, mInfo);
 	DOREPLIFETIME(AFGWheeledVehicle, mTargetList);
 	DOREPLIFETIME(AFGWheeledVehicle, mSpeedLimit);
@@ -27,6 +29,7 @@ void AFGWheeledVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 }
 AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mWorkBench = nullptr;
+	this->mIsEngineOn = false;
 	this->mAirDampingStrength = 2.5;
 	this->mRunOverDamageTypeClass = nullptr;
 	this->mDamageAtSpeed.EditorCurveData.DefaultValue = 3.40282e+38;
@@ -43,10 +46,11 @@ AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mFoliageCollideBox = CreateDefaultSubobject<UBoxComponent>(TEXT("FoliageBox"));
 	this->mVehicleLightsOn = true;
 	this->mVehicleHonkOn = false;
-	this->mSpringArmComponent = nullptr;
 	this->mDefaultLockedSprintArmRotation = FRotator::ZeroRotator;
-	this->mFuelInventory = nullptr;
-	this->mStorageInventory = nullptr;
+	this->mTrunkUser = nullptr;
+	this->mIsTrunkOpen = false;
+	this->mFuelInventory = CreateDefaultSubobject<UFGInventoryComponent>(TEXT("FuelInventory"));
+	this->mStorageInventory = CreateDefaultSubobject<UFGInventoryComponent>(TEXT("StorageInventory"));
 	this->mTargetNodeLinkedList = nullptr;
 	this->mNeedsFuelToDrive = true;
 	this->mTargetPointClass = nullptr;
@@ -94,12 +98,16 @@ void AFGWheeledVehicle::OnBeginUnloadVehicle_Implementation(){ }
 void AFGWheeledVehicle::OnTransferComplete_Implementation(){ }
 void AFGWheeledVehicle::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGWheeledVehicle::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGWheeledVehicle::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation, UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGWheeledVehicle::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGWheeledVehicle::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGWheeledVehicle::OnVehicleLanded(){ }
 void AFGWheeledVehicle::AddInputBindings(UInputComponent* enhancedInput){ }
-void AFGWheeledVehicle::Multicast_OnVehicleEntered_Implementation(){ }
+void AFGWheeledVehicle::Multicast_OnVehicleEntered_Implementation(AFGCharacterPlayer* driver){ }
 void AFGWheeledVehicle::Input_ThrottleSteer(const FInputActionValue& actionValue){ }
+void AFGWheeledVehicle::Input_GamepadThrottle(const FInputActionValue& actionValue){ }
+void AFGWheeledVehicle::Input_GamepadBrake(const FInputActionValue& actionValue){ }
+void AFGWheeledVehicle::Input_GamepadSteer(const FInputActionValue& actionValue){ }
 void AFGWheeledVehicle::Input_LookAxis(const FInputActionValue& actionValue){ }
 void AFGWheeledVehicle::Input_Handbrake(const FInputActionValue& actionValue){ }
 void AFGWheeledVehicle::Input_Honk(const FInputActionValue& actionValue){ }
@@ -113,7 +121,7 @@ bool AFGWheeledVehicle::HasFuel() const{ return bool(); }
 float AFGWheeledVehicle::GetForwardSpeed() const{ return float(); }
 bool AFGWheeledVehicle::IsValidFuel(TSubclassOf< UFGItemDescriptor > resource) const{ return bool(); }
 bool AFGWheeledVehicle::FilterFuelClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
-bool AFGWheeledVehicle::ConsumesFuel(){ return bool(); }
+bool AFGWheeledVehicle::ShouldConsumeFuel() const{ return bool(); }
 float AFGWheeledVehicle::GetFuelBurnRatio(){ return float(); }
 AFGDrivingTargetList* AFGWheeledVehicle::GetTargetList(bool createIfNeeded){ return nullptr; }
 bool AFGWheeledVehicle::GetPathVisibility() const{ return bool(); }
@@ -140,10 +148,12 @@ void AFGWheeledVehicle::ReplicateMovementClientToServer_Implementation(FVector A
 void AFGWheeledVehicle::OnCustomizationDataApplied(const FFactoryCustomizationData& customizationData){ }
 void AFGWheeledVehicle::TickPendingVehicleCollisions(float dt){ }
 float AFGWheeledVehicle::ImpactForceForCollisionSFX(const UPrimitiveComponent* hitComponent, const AActor* otherActor, const UPrimitiveComponent* otherComponent){ return float(); }
+void AFGWheeledVehicle::OnRepTrunkUser(){ }
+void AFGWheeledVehicle::UpdateVehicleStatus(){ }
 void AFGWheeledVehicle::EnsureInfoCreated(){ }
-void AFGWheeledVehicle::BurnFuel(float dt){ }
+void AFGWheeledVehicle::BurnFuel(const float dt){ }
 void AFGWheeledVehicle::SetRecordingStatus(ERecordingStatus recordingStatus){ }
-void AFGWheeledVehicle::OnFuelAdded(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded){ }
+void AFGWheeledVehicle::OnFuelAdded(TSubclassOf< UFGItemDescriptor > itemClass, const int32 numAdded, UFGInventoryComponent* sourceInventory){ }
 void AFGWheeledVehicle::OnRep_TransferStatusChanged(){ }
 void AFGWheeledVehicle::StopVehicle(){ }
 float AFGWheeledVehicle::AdjustThrottle(float throttle) const{ return float(); }
@@ -191,7 +201,9 @@ void AFGWheeledVehicle::TryLeaveSimulatedMode(){ }
 bool AFGWheeledVehicle::IsAboveSolidGround(const FTransform& transform) const{ return bool(); }
 AActor* AFGWheeledVehicle::IsOverlappingOther(const FTransform& transform) const{ return nullptr; }
 void AFGWheeledVehicle::OnPathVisibilityChanged(bool pathVisibility){ }
+void AFGWheeledVehicle::OnRep_EngineAudioChanged(const bool oldEngineState){ }
 float AFGWheeledVehicle::CalculateAutomatedFuelToConsume(float deltaTime){ return float(); }
 void AFGWheeledVehicle::SetTargetList(AFGDrivingTargetList* targetList){ }
+void AFGWheeledVehicle::UpdateVehicleMeshVisibility(bool bNewVisibility){ }
 FName AFGWheeledVehicle::VehicleMeshComponentName = FName();
 FName AFGWheeledVehicle::VehicleMovementComponentName = FName();

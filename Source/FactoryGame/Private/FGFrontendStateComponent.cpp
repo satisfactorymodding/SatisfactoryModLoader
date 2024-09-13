@@ -3,15 +3,12 @@
 #include "FGFrontendStateComponent.h"
 
 UFGFrontendStateComponent::UFGFrontendStateComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-	this->mOnlineStartupScreen = nullptr;
 	this->mAuthenticationSequence = nullptr;
 	this->mOnlineIntegrationModeModel = nullptr;
 }
 void UFGFrontendStateComponent::BeginPlay(){ }
 void UFGFrontendStateComponent::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void UFGFrontendStateComponent::ConfigureOnlineIntegration(TPromise<FOnlineIntegrationPlatformSettings> &&promise){ }
-void UFGFrontendStateComponent::QueryOnlineIntegrationModePreference(TPromise<EOnlineIntegrationMode>&& Promise){ }
-void UFGFrontendStateComponent::AuthenticationSequenceComplete(){ }
-void UFGFrontendStateComponent::ProgressUpdate(const FText& Status){ }
+void UFGFrontendStateComponent::OnOnlineIntegrationModeChanged(EOnlineIntegrationMode mode){ }
+void UFGFrontendStateComponent::AuthenticationSequenceComplete(UOnlineAsyncOperation* InAsyncOp){ }
 void UFGFrontendStateComponent::OnlineModeSelectionConfirmed(bool popupConfirmed){ }
 void UFGFrontendStateComponent::TryShowMainScreen(){ }

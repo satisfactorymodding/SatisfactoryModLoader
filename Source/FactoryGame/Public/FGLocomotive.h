@@ -65,6 +65,8 @@ public:
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void Tick( float dt ) override;
+	virtual void PossessedBy( AController* newController ) override;
+	virtual void UnPossessed() override;
 	// End AActor interface
 
 	// Begin ADriveablePawn/AFGVehicle interface
@@ -72,6 +74,7 @@ public:
 	virtual bool DriverLeave( bool keepDriving = false ) override;
 	virtual void AddInputBindings( UInputComponent* inputComponent ) override;
 	virtual bool CanLeaveVehicle( AFGCharacterPlayer* character ) override;
+	virtual void UpdatePlayerStatus() override;
 	// End ADriveablePawn/AFGVehicle interface
 		
 	// Begin ARailroadVehicle interface
@@ -203,6 +206,13 @@ private:
 public:
 	/** Name of the VehicleMovement. Use this name if you want to use a different class (with ObjectInitializer.SetDefaultSubobjectClass). */
 	static FName VehicleMovementComponentName;
+	
+	/** Delegates for the replication graph so it can setup dependencies. Only called on the server. */
+	DECLARE_MULTICAST_DELEGATE_TwoParams( FOnLocomotivePossessedBy, AFGLocomotive*, AController* );
+	DECLARE_MULTICAST_DELEGATE_TwoParams( FOnLocomotiveUnPossessed, AFGLocomotive*, AController* );
+	
+	static FOnLocomotivePossessedBy OnPossessedBy;
+	static FOnLocomotiveUnPossessed OnUnPossessed;
 
 private:
 	/** The power consumption of this electric locomotive, min is idle power consumption and max is power consumption at maximum torque. */
@@ -214,7 +224,7 @@ private:
 	class UFGPowerConnectionComponent* mSlidingShoe;
 
 	/** The power info for this train, draw power from the circuit. */
-	UPROPERTY( Replicated )
+	UPROPERTY()
 	class UFGPowerInfoComponent* mPowerInfo;
 
 	/** Has power. Used to keep clients in sync with circuit power state */

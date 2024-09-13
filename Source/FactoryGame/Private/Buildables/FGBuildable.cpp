@@ -72,13 +72,17 @@ void UFGSignificantNetworkRCO::GetLifetimeReplicatedProps(::TArray<FLifetimeProp
 }
 void UFGSignificantNetworkRCO::Server_RequestDecoratorSignificantComponents_Implementation(AFGBuildable* actor, AFGPlayerController* controller){ }
 void UFGSignificantNetworkRCO::Server_RemoveDecoratorSignificantComponents_Implementation(AFGBuildable* actor, AFGPlayerController* controller){ }
+#if WITH_EDITORONLY_DATA
+#endif 
 #if WITH_EDITOR
 void AFGBuildable::CheckForErrors(){ Super::CheckForErrors(); }
+#endif 
+#if WITH_EDITOR
+EDataValidationResult AFGBuildable::IsDataValid(FDataValidationContext& Context) const{ return EDataValidationResult::Valid; }
 #endif 
 #if STATS
 #endif 
 #if WITH_EDITOR
-void AFGBuildable::SetBuildableDisplayName(TSubclassOf< AFGBuildable > inClass, FText displayName){ }
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
@@ -86,6 +90,10 @@ void AFGBuildable::SetBuildableDisplayName(TSubclassOf< AFGBuildable > inClass, 
 #endif 
 #if WITH_EDITOR
 void AFGBuildable::DebugDrawOcclusionBoxes(){ }
+#endif 
+#if WITH_EDITORONLY_DATA
+#endif 
+#if WITH_EDITORONLY_DATA
 #endif 
 #if WITH_EDITOR
 #endif 
@@ -96,13 +104,13 @@ void AFGBuildable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGBuildable, mBuildEffectInstignator);
 	DOREPLIFETIME(AFGBuildable, mIsMultiSpawnedBuildable);
 	DOREPLIFETIME(AFGBuildable, mBlueprintDesigner);
+	DOREPLIFETIME(AFGBuildable, mReplicatedBuiltInsideBlueprintDesigner);
 	DOREPLIFETIME(AFGBuildable, mNetConstructionID);
 	DOREPLIFETIME(AFGBuildable, mBuiltWithRecipe);
 	DOREPLIFETIME(AFGBuildable, mOriginalBuildableVariant);
 	DOREPLIFETIME(AFGBuildable, mBlueprintProxy);
 	DOREPLIFETIME(AFGBuildable, mBlueprintBuildEffectID);
 }
-void AFGBuildable::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mHologramClass = nullptr;
 	this->mDisplayName = INVTEXT("");
@@ -112,7 +120,7 @@ AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) : Super(
 	this->mContainsComponents = true;
 	this->mIsConsideredForBaseWeightValue = 1.0;
 	this->mBuildableSparseDataCDO = nullptr;
-	this->mDismantleRedirectActor = nullptr;
+	this->mParentBuildableActor = nullptr;
 	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.bTickEvenWhenPaused = false;
@@ -124,18 +132,24 @@ AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) : Super(
 	this->mDefaultSwatchCustomizationOverride = nullptr;
 	this->mSwatchGroup = UFGSwatchGroup_Standard::StaticClass();
 	this->mFactorySkinClass = nullptr;
+	this->bForceLegacyBuildEffect = false;
+	this->bForceBuildEffectSolo = false;
 	this->mActiveBuildEffect = nullptr;
 	this->mBuildEffectInstignator = nullptr;
+	this->mBuildEffectActor = nullptr;
 	this->mBuildEffectSpeed = 0.0;
 	this->mAllowColoring = true;
 	this->mAllowPatterning = true;
+	this->mInteractionRegisterPlayerWithCircuit = false;
 	this->mSkipBuildEffect = false;
 	this->mForceNetUpdateOnRegisterPlayer = false;
 	this->mToggleDormancyOnInteraction = false;
 	this->mIsMultiSpawnedBuildable = false;
 	this->mShouldShowAttachmentPointVisuals = false;
-	this->mCreateClearanceMeshRepresentation = true;
 	this->mCanContainLightweightInstances = false;
+	this->mManagedByLightweightBuildableSubsystem = false;
+	this->mRemoveBuildableFromSubsystemOnDismantle = false;
+	this->mHasBeenRemovedFromSubsystem = false;
 	this->mInstanceDataCDO = nullptr;
 	this->mAffectsOcclusion = false;
 	this->mOcclusionShape = EFGRainOcclusionShape::ROCS_Box;
@@ -143,13 +157,11 @@ AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) : Super(
 	this->mScaleCustomOffset = 1.0;
 	this->mCustomScaleType = EFGRainOcclusionShapeScaling::ROCSS_Center;
 	this->mBlueprintDesigner = nullptr;
+	this->mReplicatedBuiltInsideBlueprintDesigner = false;
 	this->mInteractWidgetClass = nullptr;
 	this->mIsUseable = false;
 	this->mBuiltWithRecipe = nullptr;
 	this->mOriginalBuildableVariant = nullptr;
-	this->mBuildTimeStamp = 0.0;
-	this->mClearanceComponent = nullptr;
-	this->mComplexClearanceComponent = nullptr;
 	this->mHideOnBuildEffectStart = false;
 	this->mShouldModifyWorldGrid = true;
 	this->mBlueprintProxy = nullptr;
@@ -178,8 +190,13 @@ void AFGBuildable::GatherDependencies_Implementation(TArray< UObject* >& out_dep
 bool AFGBuildable::NeedTransform_Implementation(){ return bool(); }
 bool AFGBuildable::ShouldSave_Implementation() const{ return bool(); }
 void AFGBuildable::PostLazySpawnInstances_Implementation(){ }
+void AFGBuildable::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
+void AFGBuildable::AddClearanceData(const FFGClearanceData& newData){ }
+void AFGBuildable::AddClearanceData(const TArray< FFGClearanceData >& newData){ }
+void AFGBuildable::ResetClearanceData(){ }
+FBox AFGBuildable::GetCombinedClearanceBox() const{ return FBox(); }
 void AFGBuildable::SetCustomizationData_Implementation(const FFactoryCustomizationData& customizationData){ }
-void AFGBuildable::SetCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
+void AFGBuildable::SetCustomizationData_Native(const FFactoryCustomizationData& customizationData, bool skipCombine){ }
 void AFGBuildable::ApplyCustomizationData_Implementation(const FFactoryCustomizationData& customizationData){ }
 void AFGBuildable::ApplyCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
 TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGBuildable::GetActiveSkin_Native(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
@@ -209,6 +226,8 @@ void AFGBuildable::Dismantle_Implementation(){ }
 void AFGBuildable::StartIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildable::StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildable::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }
+FText AFGBuildable::GetDismantleDisplayName_Implementation(AFGCharacterPlayer* byCharacter) const{ return FText(); }
+void AFGBuildable::GetDismantleDependencies_Implementation(TArray<AActor*>& out_dismantleDependencies) const{ }
 void AFGBuildable::StartIsLookedAtForConnection( AFGCharacterPlayer* byCharacter,  UFGCircuitConnectionComponent* overlappingConnection){ }
 void AFGBuildable::StopIsLookedAtForConnection( AFGCharacterPlayer* byCharacter){ }
 TSubclassOf< class UFGItemDescriptor > AFGBuildable::GetBuiltWithDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
@@ -230,38 +249,42 @@ void AFGBuildable::PlayBuildEffectActor(AActor* inInstigator){ }
 void AFGBuildable::ExecutePlayBuildActorEffects(){ }
 void AFGBuildable::OnBuildEffectActorFinished(){ }
 bool AFGBuildable::HandleBlueprintSpawnedBuildEffect(AFGBuildEffectActor* inBuildEffectActor){ return bool(); }
-void AFGBuildable::PlayDismantleEffects_Implementation(){ }
+void AFGBuildable::NetMulticast_Dismantle_Implementation(){ }
+void AFGBuildable::CloseAllInteractUIsWithBuildable() const{ }
+void AFGBuildable::PlayDismantleEffects(){ }
 void AFGBuildable::OnDismantleEffectFinished(){ }
 UFGMaterialEffect_Build* AFGBuildable::GetActiveBuildEffect(){ return nullptr; }
 bool AFGBuildable::CanBeSampled_Implementation() const{ return bool(); }
-void AFGBuildable::SetHiddenIngameAndHideInstancedMeshes(bool hide){ }
+void AFGBuildable::SetBuildableHiddenInGame(bool hide){ }
 TSubclassOf< AFGBuildable > AFGBuildable::GetBuildableClassFromRecipe(TSubclassOf<  UFGRecipe > inRecipe){ return TSubclassOf<AFGBuildable>(); }
-UFGClearanceComponent* AFGBuildable::GetClearanceComponent(){ return nullptr; }
-UFGComplexClearanceComponent* AFGBuildable::SpawnComplexClearanceComponent(){ return nullptr; }
-void AFGBuildable::DestroyComplexClearanceComponent(){ }
+bool AFGBuildable::ShouldBlockGuidelinePathForHologram(const  AFGHologram* hologram) const{ return bool(); }
+bool AFGBuildable::ShouldShowCenterGuidelinesForHologram(const  AFGHologram* hologram) const{ return bool(); }
 uint8 AFGBuildable::GetNumPowerConnections() const{ return uint8(); }
+uint8 AFGBuildable::GetNumPowerConnectionsCached() const{ return uint8(); }
 uint8 AFGBuildable::GetNumFactoryConnections() const{ return uint8(); }
 uint8 AFGBuildable::GetNumFactoryOuputConnections() const{ return uint8(); }
 void AFGBuildable::GetAttachmentPoints(TArray< const FFGAttachmentPoint* >& out_points) const{ }
 void AFGBuildable::CreateAttachmentPointsFromComponents(TArray< FFGAttachmentPoint >& out_points, AActor* owner) const{ }
 bool AFGBuildable::ShouldBeConsideredForBase_Implementation(){ return bool(); }
+void AFGBuildable::SetBuildableDisplayName(TSubclassOf< AFGBuildable > inClass, FText displayName){ }
 void AFGBuildable::Native_OnMaterialInstancesUpdated(){ }
 int32 AFGBuildable::GetCostMultiplierForLength(float totalLength, float costSegmentLength){ return int32(); }
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGBuildable::GetDefaultSwatchCustomizationOverride(UObject* worldContext){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Swatch>(); }
 void AFGBuildable::ToggleInstanceVisibility(bool bNewState){ }
 void AFGBuildable::SetInsideBlueprintDesigner( AFGBuildableBlueprintDesigner* designer){ }
-AFGBuildableBlueprintDesigner* AFGBuildable::GetBlueprintDesigner(){ return nullptr; }
+AFGBuildableBlueprintDesigner* AFGBuildable::GetBlueprintDesigner() const{ return nullptr; }
 void AFGBuildable::PreSerializedToBlueprint(){ }
 void AFGBuildable::PostSerializedToBlueprint(){ }
 void AFGBuildable::PostSerializedFromBlueprint(bool isBlueprintWorld){ }
 TSoftClassPtr< UFGMaterialEffect_Build > AFGBuildable::GetBuildEffectTemplate_Implementation() const{ return TSoftClassPtr<UFGMaterialEffect_Build>(); }
+void AFGBuildable::SetIsLightweightTemporary(TArray< FInstanceHandle* >& instanceHandles, int32 indexOfRuntimeData){ }
 TSoftClassPtr< UFGMaterialEffect_Build > AFGBuildable::GetDismantleEffectTemplate_Implementation() const{ return TSoftClassPtr<UFGMaterialEffect_Build>(); }
+bool AFGBuildable::ManagedByLightweightBuildableSubsystem() const{ return bool(); }
 void AFGBuildable::OnSkinCustomizationApplied_Implementation(TSubclassOf<  UFGFactoryCustomizationDescriptor_Skin > skin){ }
 void AFGBuildable::PlayConstructSound_Implementation(){ }
 void AFGBuildable::PlayDismantleSound_Implementation(){ }
 void AFGBuildable::RegisterInteractingPlayerWithCircuit( AFGCharacterPlayer* player){ }
 void AFGBuildable::UnregisterInteractingPlayerWithCircuit( AFGCharacterPlayer* player){ }
-void AFGBuildable::OnReplicatingDetailsChanged(){ }
 bool AFGBuildable::Factory_PeekOutput_Implementation(const  UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type) const{ return bool(); }
 bool AFGBuildable::Factory_GrabOutput_Implementation( UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type){ return bool(); }
 uint8 AFGBuildable::MaxNumGrab(float delta) const{ return uint8(); }
@@ -270,6 +293,7 @@ bool AFGBuildable::VerifyDefaults(FString& out_message){ return bool(); }
 void AFGBuildable::GetDismantleRefundReturns(TArray< FInventoryStack >& out_returns) const{ }
 int32 AFGBuildable::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildable::GetDismantleInventoryReturns(TArray< FInventoryStack >& out_returns) const{ }
+void AFGBuildable::GetAlienOverClockingSourceMesh_Implementation(UStaticMesh*& SourceMesh, FTransform& Transform){ }
 void AFGBuildable::TogglePendingDismantleMaterial(bool enabled){ }
 void AFGBuildable::ApplySkinData(TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > newSkinDesc){ }
 void AFGBuildable::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
@@ -278,10 +302,10 @@ void AFGBuildable::DestroyBuildEffectProxyComponents(){ }
 void AFGBuildable::OnRep_CustomizationData(){ }
 void AFGBuildable::SetupInstances_Implementation(bool bInitializeHidden){ }
 void AFGBuildable::RemoveInstances_Implementation(){ }
+bool AFGBuildable::HandleLightweightAddition(){ return bool(); }
 void AFGBuildable::ForceUpdateCustomizerMaterialToRecipeMapping(bool bTryToSave){ }
 void AFGBuildable::CreateFactoryStatID() const{ }
-void AFGBuildable::SetReplicateDetails(bool replicateDetails){ }
 bool AFGBuildable::CheckFactoryConnectionComponents(FString& out_message){ return bool(); }
 void AFGBuildable::OnRep_LightweightTransform(){ }
-FOnReplicationDetailActorStateChange AFGBuildable::OnBuildableReplicationDetailActorStateChange = FOnReplicationDetailActorStateChange();
-FOnRegisteredPlayerChanged AFGBuildable::OnRegisterPlayerChange = FOnRegisteredPlayerChanged();
+void AFGBuildable::RegisterWithBackgroundThread(){ }
+bool AFGBuildable::DoesContainLightweightInstances_Native() const { return false; }

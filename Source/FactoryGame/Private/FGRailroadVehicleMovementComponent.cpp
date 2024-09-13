@@ -9,7 +9,6 @@ UFGRailroadVehicleMovementComponent::UFGRailroadVehicleMovementComponent() : Sup
 	this->mMass = 100000.0;
 	this->mMaxVelocity = 200.0;
 	this->mMaxPayloadMass = 0.0;
-	this->mPayloadMass = 0.0;
 	this->mDragCoefficient = 0.7;
 	this->mChassisWidth = 300.0;
 	this->mChassisHeight = 500.0;

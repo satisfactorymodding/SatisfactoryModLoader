@@ -7,6 +7,26 @@
 #include "Engine/DeveloperSettings.h"
 #include "FGMapCompassSettings.generated.h"
 
+USTRUCT()
+struct FCompassCardinalDirection
+{
+	GENERATED_BODY()
+
+	/** The cardinal direction for this icon */
+	UPROPERTY( EditAnywhere, Config, Category = "Cardinal Direction" )
+	FVector2f CardinalDirection{ForceInit};
+
+	/** Texture to use for displaying this cardinal direction */
+	UPROPERTY( EditAnywhere, Config, Category = "Cardinal Direction" )
+	TSoftObjectPtr<UTexture2D> CardinalDirectionTexture{};
+
+	UPROPERTY( EditAnywhere, Config, Category = "Cardinal Direction" )
+	float CompassHeightOffset{0.0f};
+
+	UPROPERTY( EditAnywhere, Config, Category = "Cardinal Direction" )
+	FVector2f ImageSize{};
+};
+
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Map and Compass" ) )
 class FACTORYGAME_API UFGMapCompassSettings : public UDeveloperSettings
 {
@@ -27,8 +47,6 @@ public:
 	UMaterialInterface* GetHighlightedMarkerMaterial() const;
 	
 	class UNiagaraSystem* GetHighlightedMarkerNiagaraSystem() const;
-	
-	class UFGWorldScannableData* GetWorldScannableData() const;
 	
 	class UFGWorldHeightData* GetWorldHeightData() const;
 
@@ -93,9 +111,13 @@ public:
 	bool mForceSingleThreadedCalculations;
 
 	UPROPERTY( EditAnywhere, config, Category = "World", meta = ( ToolTip = "" ) )
-	TSoftObjectPtr<class UFGWorldScannableData> mWorldScannableData;
-
-	UPROPERTY( EditAnywhere, config, Category = "World", meta = ( ToolTip = "" ) )
 	TSoftObjectPtr<class UFGWorldHeightData> mWorldHeightData;
 
+	/** Cardinal direction indicators to show on compass */
+	UPROPERTY( EditAnywhere, Config, Category = "Compass" )
+	TArray<FCompassCardinalDirection> mCompassCardinalDirections;
+
+	/** Size of the single icon on the compass, in slate units. */
+	UPROPERTY( EditAnywhere, Config, Category = "Compass" )
+	FVector2f mCompassIconSize{ForceInit};
 };

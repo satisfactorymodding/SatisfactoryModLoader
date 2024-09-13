@@ -8,12 +8,14 @@
 #include "Net/UnrealNetwork.h"
 
 AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
+	this->mSplineMeshMaterial = nullptr;
 	this->mMesh = nullptr;
 	this->mMeshLength = 0.0;
 	this->mConnection0 = nullptr;
 	this->mConnection1 = nullptr;
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	this->mInstancedSplineMeshComponent = CreateDefaultSubobject<UInstancedSplineMeshComponent>(TEXT("InstancedSplineMeshComponent"));
+	this->PhysicalMaterial = nullptr;
 	this->mHologramClass = AFGPipelineHologram::StaticClass();
 	this->NetDormancy = ENetDormancy::DORM_Awake;
 	this->mSplineComponent->SetupAttachment(RootComponent);
@@ -28,8 +30,11 @@ void AFGBuildablePipeBase::BeginPlay(){ }
 void AFGBuildablePipeBase::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 int32 AFGBuildablePipeBase::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 bool AFGBuildablePipeBase::ShouldBeConsideredForBase_Implementation(){ return bool(); }
+void AFGBuildablePipeBase::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
+bool AFGBuildablePipeBase::ShouldBlockGuidelinePathForHologram(const  AFGHologram* hologram) const{ return bool(); }
 void AFGBuildablePipeBase::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildablePipeBase::Dismantle_Implementation(){ }
+TArray<FInstanceData> AFGBuildablePipeBase::GetActorLightweightInstanceData_Implementation(){ return TArray<FInstanceData>(); }
 void AFGBuildablePipeBase::GainedSignificance_Implementation(){ }
 void AFGBuildablePipeBase::LostSignificance_Implementation(){ }
 void AFGBuildablePipeBase::GainedSignificance_Native(){ }
@@ -38,9 +43,14 @@ void AFGBuildablePipeBase::SetupForSignificance(){ }
 float AFGBuildablePipeBase::GetSignificanceRange(){ return float(); }
 float AFGBuildablePipeBase::FindOffsetClosestToLocation(const FVector& location) const{ return float(); }
 void AFGBuildablePipeBase::GetLocationAndDirectionAtOffset(float offset, FVector& out_location, FVector& out_direction) const{ }
-void AFGBuildablePipeBase::SetupConnections(){ }
+UFGConnectionComponent* AFGBuildablePipeBase::GetSplineConnection0() const{ return nullptr; }
+UFGConnectionComponent* AFGBuildablePipeBase::GetSplineConnection1() const{ return nullptr; }
+void AFGBuildablePipeBase::CreateClearanceData( USplineComponent* splineComponent, const TArray< FSplinePointData >& splineData, const FTransform& pipeTransform, TArray< FFGClearanceData >& out_clearanceData, float maxDistance){ }
 TArray<AFGBuildablePipeBase*> AFGBuildablePipeBase::Splice(AFGBuildablePipeBase* Pipe, float SpliceOffset, float SpliceLength, AActor* BuildEffectInstigator){ return TArray<AFGBuildablePipeBase*>(); }
 void AFGBuildablePipeBase::PostSerializedFromBlueprint(bool isBlueprintWorld){ }
 TSubclassOf< class UFGPipeConnectionComponentBase > AFGBuildablePipeBase::GetConnectionType_Implementation(){ return TSubclassOf<class UFGPipeConnectionComponentBase>(); }
 void AFGBuildablePipeBase::UnrotateForBlueprintPlaced(){ }
+void AFGBuildablePipeBase::SetupConnections(){ }
+void AFGBuildablePipeBase::GenerateCachedClearanceData(TArray< FFGClearanceData >& out_clearanceData){ }
+void AFGBuildablePipeBase::PopulateSplineComponentFromSplinePointsData(){ }
 const float AFGBuildablePipeBase::PIPE_COST_LENGTH_MULTIPLIER = float();

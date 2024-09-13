@@ -4,6 +4,7 @@
 #include "Net/UnrealNetwork.h"
 
 AFGDockingStationInfo::AFGDockingStationInfo() : Super() {
+	this->mCompassMaterialInstance = nullptr;
 	this->mStatus = EDockingStationStatus::DSS_Operational;
 	this->mStation = nullptr;
 	this->mLocation = FVector::ZeroVector;
@@ -40,6 +41,7 @@ EFogOfWarRevealType AFGDockingStationInfo::GetActorFogOfWarRevealType(){ return 
 float AFGDockingStationInfo::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGDockingStationInfo::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGDockingStationInfo::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+UMaterialInterface* AFGDockingStationInfo::GetActorRepresentationCompassMaterial(){ return nullptr; }
 void AFGDockingStationInfo::SetBuildingTag_Implementation(const FString& buildingTag){ }
 void AFGDockingStationInfo::BeginPlay(){ }
 void AFGDockingStationInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ }

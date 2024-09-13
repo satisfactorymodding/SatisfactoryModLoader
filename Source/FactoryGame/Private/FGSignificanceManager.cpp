@@ -2,16 +2,21 @@
 
 #include "FGSignificanceManager.h"
 
+FBoxCenterAndExtent FSignificanceOctreeSemantics::GetBoundingBox(const UObject* Element){ return FBoxCenterAndExtent(); }
+void FSignificanceOctreeSemantics::SetElementId(FOctree& Octree, UObject* Element, FOctreeElementId2 OctreeElementID){ }
 UFGSignificanceManager::UFGSignificanceManager() : Super() {
 	this->mIsEnabled = true;
 }
 void UFGSignificanceManager::RegisterSignificanceObject(UObject* Object, EFGSignificanceType SignificanceType){ }
 void UFGSignificanceManager::RegisterObject(UObject* Object, FName Tag, FManagedObjectSignificanceFunction SignificanceFunction, EPostSignificanceType InPostSignificanceType , FManagedObjectPostSignificanceFunction InPostSignificanceFunction){ }
 void UFGSignificanceManager::UnregisterObject(UObject* Object){ }
-void UFGSignificanceManager::Update(TArrayView<const FTransform> Viewpoints){ }
+void UFGSignificanceManager::Update(TArrayView<const FTransform> Viewpoints1){ }
 void UFGSignificanceManager::OnSignificanceLoss(UObject* Object, EPostSignificanceType InPostSignificanceType){ }
 void UFGSignificanceManager::OnSignificanceGain(UObject* Object, EPostSignificanceType InPostSignificanceType){ }
 void UFGSignificanceManager::OnSignificanceTickRateUpdate(UObject* Object, int32 TickLevel, int32 NumTickLevels){ }
+void UFGSignificanceManager::OnServerSignificanceGain(UObject* Object, EPostSignificanceType InPostSignificanceType){ }
+void UFGSignificanceManager::OnServerSignificanceLoss(UObject* Object, EPostSignificanceType InPostSignificanceType){ }
+float UFGSignificanceManager::GetServerSignificanceNetworkRange(UObject* Object) const{ return float(); }
 float UFGSignificanceManager::GetSignificanceRange(UObject* Object) const{ return float(); }
 FVector UFGSignificanceManager::GetObjectLocation(UObject* Object) const{ return FVector(); }
 bool UFGSignificanceManager::GetIsTickManaged(UObject* Object) const{ return bool(); }
@@ -20,6 +25,10 @@ float UFGSignificanceManager::GetTickExponent(UObject* Object) const{ return flo
 void UFGSignificanceManager::SetIsSignificance(UObject* Object, bool bState){ }
 FGainSignificanceData UFGSignificanceManager::GetClosestGainSignificanceData(UObject* inObject, float desiredDistance){ return FGainSignificanceData(); }
 void UFGSignificanceManager::DumpSignificanceManagedObjects(){ }
+void UFGSignificanceManager::AddObjectToSignificanceOctTree(UObject* Object){ }
+void UFGSignificanceManager::RemoveObjectFromSignificanceOctTree(UObject* Object){ }
+void UFGSignificanceManager::RegisterNetObject(){ }
+void UFGSignificanceManager::RemoveNetObject(){ }
 void UFGSignificanceManager::UpdateConveyorBelts(){ }
 void UFGSignificanceManager::UpdateFactories(){ }
 void UFGSignificanceManager::UpdatePipelines(){ }
@@ -51,3 +60,5 @@ FVector UFGSignificanceManager::GetObjectLocation_Old(UObject* obj){ return FVec
 void UFGSignificanceManager::SetObjectTickRate(UObject* obj, float newTickRate){ }
 void UFGSignificanceManager::SetObjectTicks(UObject* obj, bool newTicks){ }
 void UFGSignificanceManager::SetObjectLOD(FManagedObjectInfo* objInfo, int32 newLod){ }
+void UFGSignificanceServerManager::Tick(float DeltaTime){ }
+void UFGSignificanceServerManager::Initialize(FSubsystemCollectionBase& Collection){ Super::Initialize(Collection); }

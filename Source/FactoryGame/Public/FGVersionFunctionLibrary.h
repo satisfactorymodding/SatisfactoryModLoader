@@ -11,6 +11,7 @@ enum class EGameVersion : uint8
 {
 	GV_Main					UMETA( DisplayName = "Main" ),
 	GV_Experimental			UMETA( DisplayName = "Experimental" ),
+	GV_ClosedBeta			UMETA( DisplayName = "Closed Beta" ),
 	GV_Other				UMETA( DisplayName = "Other" )
 };
 
@@ -30,6 +31,16 @@ public:
 	 */
 	UFUNCTION( BlueprintPure, Category = "Version" )
 	static bool IsPublicBuild();
+
+	/**
+	 * Returns true if this build is a closed beta build (with additional protections in place)
+	 */
+	UFUNCTION( BlueprintPure, Category = "Development" )
+	static bool IsClosedBetaBuild();
+
+	/** Returns true if the watermark should be visible */
+	UFUNCTION( BlueprintPure, Category = "Development" )
+	static bool IsWatermarkVisible();
 
 	/** Get what version of the game we are running */
 	UFUNCTION( BlueprintPure, Category = "Development" )

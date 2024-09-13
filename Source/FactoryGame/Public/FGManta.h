@@ -1,7 +1,6 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -40,6 +39,7 @@ protected:
 
 	/** Updates the mantas location based on values being ticked */
 	void UpdateManta();
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

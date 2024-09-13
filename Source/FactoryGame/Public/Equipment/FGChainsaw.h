@@ -4,7 +4,6 @@
 
 #include "FactoryGame.h"
 #include "FGEquipment.h"
-#include "FGEquipmentAttachment.h"
 #include "FGFoliageRemovalSubsystem.h"
 #include "FGInventoryComponent.h"
 #include "FGChainsaw.generated.h"
@@ -46,6 +45,17 @@ enum class EFGChainsawState : uint8
 	Sawing
 };
 
+/** Item state struct for the chainsaw */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFGChainsawItemState
+{
+	GENERATED_BODY()
+	
+	/** How much energy do we have stored left in the chainsaw **/
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "ItemState|Chainsaw" )
+	float EnergyStored{};
+};
+
 UCLASS()
 class FACTORYGAME_API AFGChainsaw : public AFGEquipment
 {
@@ -59,10 +69,12 @@ public:
 	//~ End AActor interface
 
 	// Begin AFGEquipment interface
-	virtual bool ShouldSaveState() const override;
+	virtual void LoadFromItemState_Implementation(const FFGDynamicStruct& itemState) override;
+	virtual FFGDynamicStruct SaveToItemState_Implementation() const override;
 	virtual void DisableEquipment() override;
 	virtual void Equip(AFGCharacterPlayer* character) override;
 	virtual void UnEquip() override;
+	virtual void AddEquipmentActionBindings() override;
 	// End
 
 	// Replication
@@ -94,6 +106,10 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Chainsaw" )
 	void CreatePhysicsFromFoliage( UStaticMesh* inMesh, FTransform inTransform );
 	
+	/** Return true we have any energy stored or if our owner has any fuel */
+	UFUNCTION( BlueprintPure,  Category = "Chainsaw" )
+	bool HasAnyFuel() const;
+	
 protected:
 	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
 
@@ -103,7 +119,7 @@ protected:
 
 	/** Called to notify the blueprint of the chainsaw state transition */
 	UFUNCTION( BlueprintNativeEvent, Category = "Chainsaw" )
-	void OnChainsawStateTransition( EFGChainsawState oldState );
+	void OnChainsawStateTransition( const EFGChainsawState oldState );
 	
 	/**
 	 * Consumes fuel, returns false if we are out of fuel
@@ -121,7 +137,13 @@ protected:
 	 */
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_StartSawing();
-
+	
+	/**
+	 * Calls ToggleAOE on server
+	 */
+	UFUNCTION( BlueprintCallable, Reliable, Server )
+	void Server_ToggleAOE( const bool isAOEOn );
+	
 	/**
 	 * Stops sawing, does no logic check if it's valid, caller is assumed to do so
 	 * If client, calls server
@@ -153,10 +175,7 @@ protected:
 	 */
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_StopSawing();
-
-	/** Return true we have any energy stored or if our owner has any fuel */
-	UFUNCTION( BlueprintPure,  Category = "Chainsaw" )
-	bool HasAnyFuel() const;
+	
 
 	/** Returns the current fuel class used for the chainsaw */
 	UFUNCTION(BlueprintPure, Category = "Chainsaw")
@@ -170,7 +189,7 @@ protected:
 	 */
 	bool IsValidSawing( class USceneComponent* sawingComponent, int32 newIndex ) const;
 	
-	bool CanPlayerPickupFoliageResourceForSeeds( class UHierarchicalInstancedStaticMeshComponent* meshComponent, bool excludeChainsawable, TArrayView< uint32 > seeds, TArray<FInventoryStack>& out_validStacks );
+	bool CanPlayerPickupFoliageResourceForSeeds( class UHierarchicalInstancedStaticMeshComponent* meshComponent, const TArrayView< uint32 > seeds, TArray<FInventoryStack>& out_validStacks );
 
 	/** returns the static mesh of whatever the hell it is this is i hate this */
 	UStaticMesh* GetStaticMesh( USceneComponent* sawingComponent );
@@ -179,7 +198,7 @@ protected:
 	bool IsChainsawableObject(UObject* object) const;
 
 	/** Transitions the chainsaw to the new state */
-	void TransitionToNewState( EFGChainsawState newState );
+	void TransitionToNewState( const EFGChainsawState newState );
 
 	/** Asks the server to transition to the new state */
 	UFUNCTION( Server, Reliable )
@@ -187,6 +206,9 @@ protected:
 
 	UFUNCTION()
 	void OnRep_ChainsawState( EFGChainsawState oldState );
+
+	void Input_Toggle( const FInputActionValue& actionValue );
+
 protected:
 	/** The fuel we want to be able to use with the chainsaw */
 	UPROPERTY( EditDefaultsOnly, Category="Chainsaw|Fuel" )
@@ -205,8 +227,8 @@ protected:
 	float mCollateralPickupRadius;
 
 	/** If collateral pickups should exclude chainsawable foliage when using chainsaw */
-	UPROPERTY( EditDefaultsOnly, Category = "Chainsaw|Collateral" )
-	bool mExcludeChainsawableFoliage;
+	UPROPERTY( Replicated, SaveGame, BlueprintReadWrite, Category = "Chainsaw|Collateral" )
+	bool mIsAOEOn = false;
 
 	/** The noise to make when using the chainsaw. */
 	UPROPERTY( EditDefaultsOnly, Category = "Chainsaw" )
@@ -233,4 +255,4 @@ protected:
 	/** Current state of the chainsaw, server controlled */
 	UPROPERTY( ReplicatedUsing = OnRep_ChainsawState )
 	EFGChainsawState mChainsawState;
-};
+}; 

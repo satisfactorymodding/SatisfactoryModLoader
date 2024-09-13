@@ -6,10 +6,10 @@
 void UFGCircuit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGCircuit, mCircuitID);
+	DOREPLIFETIME(UFGCircuit, mPropertyReplicator);
 }
 bool UFGCircuit::IsSupportedForNetworking() const{ return bool(); }
 bool UFGCircuit::IsNameStableForNetworking() const{ return bool(); }
-void UFGCircuit::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 UFGCircuit::UFGCircuit() : Super() {
 	this->mCircuitID = -1;
 	this->mNeedFullRebuild = true;
@@ -23,6 +23,8 @@ void UFGCircuit::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersio
 void UFGCircuit::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool UFGCircuit::NeedTransform_Implementation(){ return bool(); }
 bool UFGCircuit::ShouldSave_Implementation() const{ return bool(); }
+bool UFGCircuit::IsPropertyRelevantForConnection(UNetConnection* netConnection, const FProperty* property) const{ return bool(); }
+void UFGCircuit::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
 UWorld* UFGCircuit::GetWorld() const{ return nullptr; }
 void UFGCircuit::MarkAsChanged(){ }
 void UFGCircuit::MarkForFullRebuild(){ }
@@ -35,4 +37,3 @@ AFGCircuitSubsystem* UFGCircuit::GetOwningCircuitSubsystem() const{ return nullp
 void UFGCircuit::TickCircuit(float dt){ }
 void UFGCircuit::OnCircuitChanged(){ }
 void UFGCircuit::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }
-void UFGCircuit::SetReplicateDetails(bool replicateDetails){ }

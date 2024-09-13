@@ -13,6 +13,7 @@ DECLARE_MULTICAST_DELEGATE( FTimeOfDayUpdated );
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FNewDayDelegate, int32, newDayNr );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FDayStateDelegate, bool, isDayTime );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNumberOfDaysSinceLastDeathChanged, int32, newDaysSinceLastDeath );
 
 UCLASS( Blueprintable, abstract )
 class FACTORYGAME_API AFGTimeOfDaySubsystem : public AFGSubsystem, public IFGSaveInterface
@@ -30,6 +31,7 @@ public:
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void Tick( float dt ) override;
+	virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos) override;
 	// End AActor interface
 
 	// Begin IFGSaveInterface
@@ -113,6 +115,10 @@ public:
 	/** Get how many real seconds the nighttime consists of */
 	UFUNCTION( BlueprintPure, Category = "Time" )
 	float GetNighttimeSeconds() const;
+
+	/** Returns the number of days that have passed since the last time player died */
+	UFUNCTION( BlueprintPure, Category = "Time" )
+	int32 GetNumberOfDaysSinceLastDeath() const;
 	
 	/** Force a net update to clients */
 	void ForceReplicateTimeToClients();
@@ -125,11 +131,15 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Time" )
     void SetTimeSpeedMultiplierResetTime( int32 resetTime );
 
+	/** Resets the number of days that have passed since last player death */
+	void ResetNumberOfDaysSinceLastDeath();
 #if WITH_EDITOR
 	/** Accessor so we can hook ourself up on editor preview thingies */
 	FTimeOfDayUpdated& GetTimeOfDayUpdatedDelegate(){ return mTimeOfDayUpdated; }
 #endif
 protected:
+	friend class UFGCheatManager;
+
 	/** Get the daytime speed multiplier used to calculate delta seconds */
 	float GetDaytimeSpeed() const;
 
@@ -140,6 +150,10 @@ protected:
 	UFUNCTION()
 	void OnRep_ReplicatedDaySeconds();
 
+	/** Called on the client when days since last death changed */
+	UFUNCTION()
+	void OnRep_NumberOfDaysSinceLastDeath();
+
 	/** Update the current time of day to be replicated to clients */
 	UFUNCTION()
 	void UpdateServerDaySeconds();
@@ -149,6 +163,9 @@ protected:
 
 	/** Convert a "real" dt to a "game" dt */
 	float GetGameDeltaTime( float dt ) const;
+
+	/** Updates number of days since last death. Sends net update and triggers a delegate */
+	void SetNumberOfDaysSinceLastDeath( int32 newNumberOfDaysSinceLastDeath );
 protected:
 	/** How often (in seconds) we should synchronize the time of day with the server */
 	UPROPERTY( EditDefaultsOnly, Category="Time Replication")
@@ -211,6 +228,10 @@ protected:
 	UPROPERTY(Transient)
 	class UMaterialParameterCollectionInstance* mCachedTimeOfDayMaterialParameterCollection;
 
+	/** Number of days that have passed since the last time any player character died */
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_NumberOfDaysSinceLastDeath )
+	int32 mNumberOfDaysSinceLastDeath;
+
 #if WITH_EDITORONLY_DATA
 	// Notify so that other can hook up themself on it to be notified in the editor if the time of day is updated
 	FTimeOfDayUpdated mTimeOfDayUpdated;
@@ -231,4 +252,7 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Events|Time", DisplayName = "OnDayStateChanged" )
 	FDayStateDelegate mOnDayStateDelegate;
 
+	/** Called when amount of days passed since the last time player died changes */
+	UPROPERTY( BlueprintAssignable, Category = "Events|Time" )
+	FOnNumberOfDaysSinceLastDeathChanged mOnNumberOfDaysSinceLastDeathChanged;
 };

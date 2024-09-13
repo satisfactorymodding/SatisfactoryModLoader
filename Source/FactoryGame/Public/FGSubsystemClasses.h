@@ -3,9 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGSettings.h"
 #include "FGSubsystem.h"
-
+#include "Engine/DeveloperSettings.h"
 #include "FGSubsystemClasses.generated.h"
 
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Subsystem Classes" ) )
@@ -48,12 +47,18 @@ public:
 	/** Subsystem that handles the chat messages. */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGChatManager > mChatManagerClass;
+	/** Subsystem that handles the central storage. */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSoftClassPtr< class AFGCentralStorageSubsystem > mCentralStorageSubsystemClass;
 	/** Subsystem that handles the map */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGMapManager > mMapManagerClass;
 	/** Subsystem to manage all the buildables in the game. */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGBuildableSubsystem > mBuildableSubsystemClass;
+	/** Subsystem to manage all the lightweight buildables in the game (Foundations, Walls). */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGLightweightBuildableSubsystem > mLightweightBuildableSubsystemClass;
 	/** Subsystem used to remove foliage on the map. */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGFoliageRemovalSubsystem > mFoliageRemovalSubsystemClass;
@@ -104,5 +109,9 @@ public:
 	/** Responsible for Blueprint related functionality (in game blueprints, ie. templated buildings )*/
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGBlueprintSubsystem > mBlueprintSubsystem;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Subsystem" )
+	TSoftClassPtr< class AFGIconDatabaseSubsystem > mIconDatabaseSubsystem;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Subsystem" )
+	TSoftClassPtr< class AFGWorldEventSubsystem > mWorldEventSubsystem;
 };
 

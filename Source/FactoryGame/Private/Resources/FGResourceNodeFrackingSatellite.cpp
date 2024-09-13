@@ -17,6 +17,7 @@ void AFGResourceNodeFrackingSatellite::OnConstruction(const FTransform& Transfor
 void AFGResourceNodeFrackingSatellite::BeginPlay(){ }
 void AFGResourceNodeFrackingSatellite::SetIsOccupied(bool occupied){ }
 bool AFGResourceNodeFrackingSatellite::CanPlaceResourceExtractor() const{ return bool(); }
+void AFGResourceNodeFrackingSatellite::OnRep_IsOccupied(){ }
 void AFGResourceNodeFrackingSatellite::Factory_SetActive(bool isActive){ }
 void AFGResourceNodeFrackingSatellite::SetActive(bool isActive){ }
 void AFGResourceNodeFrackingSatellite::SetExtractor(TWeakObjectPtr<  AFGBuildableFrackingExtractor > extractor){ }

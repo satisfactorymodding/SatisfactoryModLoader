@@ -58,9 +58,11 @@ AFGBuildGun::AFGBuildGun() : Super() {
 	this->mStates[4] = nullptr;
 	this->mCurrentBuildGunMode = nullptr;
 	this->mCurrentStateEnum = EBuildGunState::BGS_NONE;
+	this->mPreviousStateEnum = EBuildGunState::BGS_NONE;
 	this->mCurrentState = nullptr;
 	this->mIsWaitingForSelectionUI = false;
 	this->mBuildModeSelectHoldDownDurationForUI = 0.18;
+	this->mBuildGunEquipmentDescriptor = nullptr;
 	this->mEquipmentSlot = EEquipmentSlot::ES_ARMS;
 	this->mArmAnimation = EArmEquipment::AE_BuildGun;
 	this->bReplicateUsingRegisteredSubObjectList = true;
@@ -73,12 +75,14 @@ void AFGBuildGun::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 }
 void AFGBuildGun::BeginPlay(){ }
 void AFGBuildGun::Tick(float dt){ }
-bool AFGBuildGun::ShouldSaveState() const{ return bool(); }
 void AFGBuildGun::Equip( AFGCharacterPlayer* character){ }
 void AFGBuildGun::UnEquip(){ }
 void AFGBuildGun::OnInteractWidgetAddedOrRemoved(UFGInteractWidget* widget, bool added){ }
 bool AFGBuildGun::OnShortcutPressed(int32 shortcutIndex){ return bool(); }
+bool AFGBuildGun::CanPickBestUsableActor_Implementation() const{ return bool(); }
+TSubclassOf<UFGItemDescriptor> AFGBuildGun::GetRecipeProducerItemDescriptor_Implementation(UObject* WorldContext) const{ return TSubclassOf<UFGItemDescriptor>(); }
 void AFGBuildGun::TraceForBuilding(APawn* owningPawn, FHitResult& hitresult) const{ }
+void AFGBuildGun::TraceForBuildingSample(APawn* owningPawn, FHitResult& hitresult){ }
 void AFGBuildGun::GetAvailableRecipes(TArray< TSubclassOf<  UFGRecipe > >& out_recipes, TArray < TSubclassOf<  UFGCustomizationRecipe > >& out_customizationRecipes) const{ }
 TArray< FItemAmount > AFGBuildGun::GetCostForRecipe(TSubclassOf<  UFGRecipe > recipe) const{ return TArray<FItemAmount>(); }
 UFGInventoryComponent* AFGBuildGun::GetInventory() const{ return nullptr; }
@@ -112,6 +116,7 @@ void AFGBuildGun::SetCustomizationDataForSlot(uint8 slotIndex, FFactoryCustomiza
 void AFGBuildGun::Server_SetCustomizationDataForSlot_Implementation(uint8 slotIndex, FFactoryCustomizationColorSlot slotData){ }
 void AFGBuildGun::SetAllowRayClearanceHit(bool allow){ }
 void AFGBuildGun::SetAllowRayBlueprintProxyHit(bool allow){ }
+void AFGBuildGun::SetAllowRayWireMeshHit(bool allow){ }
 void AFGBuildGun::SetPendingEntryState(EBuildGunState state){ }
 void AFGBuildGun::SetMenuStateSection(EMenuStateSection desiredSection, bool broadcastUpdate){ }
 void AFGBuildGun::TryBuildSample(){ }

@@ -19,4 +19,8 @@ public:
 public:
 	UPROPERTY( EditAnywhere, config, Category = "Timings", meta = ( ToolTip = "If the autosave interval is longer than the timing each of these timings will trigger a autosave notifications when there is that amount of time left on the auto save timer " ) )
 	TArray<float> mAutoSaveNotificationTimings;
+
+	// The behavior is identical to the save notification timings, the notifications will be sent at the given intervals about the session restarting
+	UPROPERTY( EditAnywhere, Config, Category = "Timings" )
+	TArray<float> mServerRestartNotificationTimings;
 };

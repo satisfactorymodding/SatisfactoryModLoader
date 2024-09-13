@@ -54,6 +54,8 @@ public:
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION()
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	UFUNCTION()
+	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	// End IFGActorRepresentationInterface
 
 	/** Fetches the color to use for this actors representation */
@@ -66,4 +68,7 @@ private:
 
 	UPROPERTY( Replicated )
 	FText mMapText;
+	
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* mCompassMaterialInstance;
 };

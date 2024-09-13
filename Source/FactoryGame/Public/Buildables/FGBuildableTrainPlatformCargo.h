@@ -7,8 +7,6 @@
 #include "FGBuildableTrainPlatform.h"
 #include "FGFreightWagon.h"
 #include "FGTrainDockingRules.h"
-#include "Replication/FGReplicationDetailActor_CargoPlatform.h"
-#include "Replication/FGReplicationDetailInventoryComponent.h"
 #include "FGBuildableTrainPlatformCargo.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnItemTransferRateUpdated, int32, itemTransferRate );
@@ -22,12 +20,11 @@ class FACTORYGAME_API AFGBuildableTrainPlatformCargo : public AFGBuildableTrainP
 	GENERATED_BODY()
 	
 public:
-	//ctor
 	AFGBuildableTrainPlatformCargo();
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 	// End AActor interface
@@ -37,7 +34,7 @@ public:
 
 	/** Get the inventory the docked vehicle loads/unloads to  */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
-	FORCEINLINE class UFGInventoryComponent* GetInventory() const{ return mCargoInventoryHandlerData.GetActiveInventoryComponent(); }
+	FORCEINLINE class UFGInventoryComponent* GetInventory() const{ return mInventory; }
 
 	/** Get the docked actor if any. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
@@ -88,12 +85,7 @@ public:
 	/** Get the smoothed Inflow rate in m^3/s. Only valid for Liquid Freight Platforms*/
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
 	float GetInflowRate() const { return mReplicatedInflowRate; }
-
-	// Begin IFGReplicationDetailActorOwnerInterface
-	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_CargoPlatform::StaticClass(); };
-	virtual void OnReplicationDetailActorRemoved() override;
-	// End IFGReplicationDetailActorOwnerInterface
-
+	
 	// Begin BuildableTrainPlatform Implementation
 	virtual void NotifyTrainDocked( class AFGRailroadVehicle* railroadVehicle, class AFGBuildableRailroadStation* initiatedByStation ) override;
 	virtual void UpdateDockingSequence() override;
@@ -112,7 +104,6 @@ public:
 	FORCEINLINE uint8 IsFullUnload() const{ return mIsFullUnload; }
 
 protected:
-	friend class AFGReplicationDetailActor_CargoPlatform;
 
 	// Begin Factory_ interface
 	virtual void Factory_Tick( float dt ) override;
@@ -123,21 +114,14 @@ protected:
 
 	// Begin AFGBuildableFactory interface
 	virtual bool CanProduce_Implementation() const override;
-	virtual void OnRep_ReplicationDetailActor() override;
 	// End AFGBuildableFactory interface
 
 	// Begin FGBuildableTrainPlatform interface
 	virtual void OnRep_UpdateDockingStatus() override;
+	virtual void OnRep_DockedRailroadVehicle() override;
 	// End FGBuildableTrainPlatform interface
-
-	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
-	{
-		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
-		out_repDetailData.Add( &mCargoInventoryHandlerData );
-	}
-
+	
 private:
-
 	/** Filter items that are not valid for this type of cargo platform */
 	UFUNCTION()
 	bool FilterResourceForms( TSubclassOf< UFGItemDescriptor > itemDesc, int32 idx ) const;
@@ -172,6 +156,9 @@ private:
 	/** Explicitly show the cargo container for the platform (called from a next tick timer to allow the anim blueprint to catch up) */
 	void ShowPlatformCargoContainer();
 
+	/** Make sure the container we load on matches the trains color etc. */
+	void MatchVisualsOfCargoContainerToTrain();
+
 	/** Forces an update of the animation instance. Neccesary to get the anim instance to correctly transition states before going offline */
 	void ForceUpdateAnimInstance();
 
@@ -197,9 +184,7 @@ private:
 
 	/** Can this station currently pull/push input (becomes disabled while docking anim is in progress) */
 	FORCEINLINE bool ShouldLockIncomingOutgoing() const;
-
-	class AFGReplicationDetailActor_CargoPlatform* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_CargoPlatform>( mReplicationDetailActor ); };
-
+	
 	UFUNCTION()
 	void OnRep_SmoothedLoadRate();
 	UFUNCTION()
@@ -235,9 +220,6 @@ protected:
 	/** Cargo container mesh component. Shown / Hidden during full load and unload sequences */
 	UPROPERTY()
 	class UStaticMeshComponent* mCargoMeshComponent;
-
-	/** Maintainer of the active storage component for this actor. Use this to get the active inventory component. Never call mInventory directly. */
-	FReplicationDetailData mCargoInventoryHandlerData;
 
 	/** Set during a dock sequence, indicating if any items can be moved from the train to the platform */
 	UPROPERTY( Replicated, BlueprintReadOnly, Category = "FactoryGame|Railroad|CargoPlatform" )
@@ -380,10 +362,10 @@ private:
 	UPROPERTY( SaveGame )
 	float mTimeSinceLastUnloadTransferUpdate;
 
-	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_SmoothedLoadRate )
+	UPROPERTY( SaveGame, meta = ( FGReplicatedUsing = OnRep_SmoothedLoadRate ) )
 	float mSmoothedLoadRate;
 
-	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_SmoothedUnloadRate )
+	UPROPERTY( SaveGame, meta = ( FGReplicatedUsing = OnRep_SmoothedUnloadRate ) )
 	float mSmoothedUnloadRate;
 
 	/// End Load/Unload Transfer rate properties
@@ -411,11 +393,11 @@ private:
 	float mTimeSinceLastFlowUpdate;
 
 	/** Replicated smoothed outflow rate */
-	UPROPERTY( Replicated )
+	UPROPERTY( meta = ( FGReplicated ) )
 	float mReplicatedOutflowRate;
 
 	/** Replicated smoothed inflow rate */
-	UPROPERTY( Replicated )
+	UPROPERTY( meta = ( FGReplicated ) )
 	float mReplicatedInflowRate;
 
 	/// End pipeflow params

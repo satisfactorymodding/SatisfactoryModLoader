@@ -52,6 +52,12 @@ public:
 	virtual void OnDestructibleFractured() override;
 	virtual void OnDesctructibleDestroyed() override;
 
+	UFUNCTION()
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION()
+	void OnEndOverlap( UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex );
+	
 	//~ Begin IInterface_PostProcessVolume Interface
 	virtual bool EncompassesPoint( FVector point, float sphereRadius = 0.f, float* out_distanceToPoint = nullptr ) override;
 	virtual FPostProcessVolumeProperties GetProperties() const override;
@@ -108,5 +114,7 @@ protected:
 
 	/** If weve been destroyed when dont need to manage our removed significance */
 	bool mNeedRemoveSignificance = true;
+
+	bool mPostIsEnabled = false;
 
 };

@@ -50,6 +50,10 @@ public:
 	* @return false if actor is nullptr
 	*/
 	bool ShouldBeAppliedToActor( class AActor* actor ) const;
+
+	UPROPERTY( EditDefaultsOnly )
+	bool mIsRelevantToPeakGameplayAchievement = false;
+	
 protected:
 	/** How often should we damage actors inside of this cloud (in seconds) */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
@@ -61,4 +65,5 @@ protected:
 	/** Only deal damage to subclasses of these actor classes */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
 	TArray< TSubclassOf< class AActor > > mActorFilter;
+	
 };

@@ -75,16 +75,20 @@ public:
 	/** Number of attacks that we are allowed to make since last swing. */
 	int32 mAttacksSinceLastSwing;
 	
-	/** The max amount of time between the first swing that will still trigger the second swing */
+	/** The minimum amount of time after the first swing the player has to wait to trigger a second swing */
 	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
-	float mSecondSwingMaxTime;
+	float mSecondSwingMinDelay;
 
+	/** The maximum amount of time after the first swing the player can wait while they can still make a second swing */
+	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
+	float mSecondSwingMaxDelay;
+
+	/** Cooldown after using the second swing, before the player can swing the spear again */
+	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
+	float mSecondSwingUseCoolDown;
+	
 	/** Indicates if we should do the second swing */
 	bool mShouldPlaySecondSwing;
-
-	/** The max amount of time between the first swing that will still trigger the second swing */
-	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
-	float mSecondSwingCooldDownTime;
 
 	/** How much inf ront of character the attack is */
 	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )

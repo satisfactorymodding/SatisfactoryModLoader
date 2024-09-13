@@ -49,7 +49,7 @@ struct FACTORYGAME_API FResourceDepositPackage
 
 	/** Chance in roulette selection to get the package */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "ResourceDepositPackage" )
-	float DropChance;
+	float DropChance = 0.f;
 
 	/** What resource class to use */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "ResourceDepositPackage" )
@@ -57,15 +57,15 @@ struct FACTORYGAME_API FResourceDepositPackage
 
 	/** Amount of resources in deposit as minimum */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "ResourceDepositPackage" )
-	int32 MinAmount;
+	int32 MinAmount = 0;
 
 	/** Amount of resources in deposit as max */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "ResourceDepositPackage" )
-	int32 MaxAmount;
+	int32 MaxAmount = 0;
 
 	/** How much to get per "mine cycle" */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "ResourceDepositPackage" )
-	int32 MiningAmount;
+	int32 MiningAmount = 0;
 };
 
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Resource Settings" ) )

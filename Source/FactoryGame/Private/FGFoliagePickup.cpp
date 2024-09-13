@@ -4,6 +4,7 @@
 
 AFGFoliagePickup::AFGFoliagePickup() : Super() {
 	this->mPickupRepeatInterval = 0.5;
+	this->mAutoPickUpToggleDelay = 0.5;
 	this->mPickupMesh = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -26,8 +27,15 @@ FText AFGFoliagePickup::GetLookAtDecription_Implementation( AFGCharacterPlayer* 
 void AFGFoliagePickup::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGFoliagePickup::BroadcastPickup_Implementation( UStaticMesh* fromStaticMesh, FVector atLocation){ }
 void AFGFoliagePickup::SetPickupData( UHierarchicalInstancedStaticMeshComponent* component, int32 instanceId, AFGCharacterPlayer* byCharacter){ }
+AFGCharacterPlayer* AFGFoliagePickup::GetOwnerCharacter() const{ return nullptr; }
+bool AFGFoliagePickup::CanPickUpFoliageCurrently() const{ return bool(); }
 void AFGFoliagePickup::DoPickup(){ }
 void AFGFoliagePickup::Input_Use(const  FInputActionValue& actionValue){ }
+void AFGFoliagePickup::Input_ToggleAutoPickup_Started(){ }
+void AFGFoliagePickup::Input_ToggleAutoPickup_Triggered(){ }
+void AFGFoliagePickup::Input_ToggleAutoPickup_Canceled(){ }
+void AFGFoliagePickup::ToggleAutoPickUp(){ }
+void AFGFoliagePickup::OnAutoPickUpToggleDelayCompleted(){ }
 void AFGFoliagePickup::Server_PickUpFoliage_Implementation( AFGCharacterPlayer* byCharacter, FFoliageInstanceStableId StableId, const FVector& instanceLocation){ }
 bool AFGFoliagePickup::AddToPlayerInventory( AFGCharacterPlayer* character,  UHierarchicalInstancedStaticMeshComponent* meshComponent, uint32 seed){ return bool(); }
 bool AFGFoliagePickup::HasPlayerSpaceFor( AFGCharacterPlayer* character,  UHierarchicalInstancedStaticMeshComponent* meshComponent, uint32 seed){ return bool(); }

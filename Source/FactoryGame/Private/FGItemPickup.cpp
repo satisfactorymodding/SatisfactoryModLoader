@@ -4,6 +4,8 @@
 #include "Net/UnrealNetwork.h"
 
 AFGItemPickup::AFGItemPickup() : Super() {
+	this->mSignificanceRange = 5000.0;
+	this->bShouldAddToSignificanceManager = false;
 	this->mTimeToPickUp = 0.0;
 	this->mCollector = nullptr;
 	this->mDestroyOnPickup = true;
@@ -16,6 +18,7 @@ AFGItemPickup::AFGItemPickup() : Super() {
 	this->mSavedNumItems = -1;
 	this->mMaxRespawns = -1;
 	this->mSendTelemetryOnPickup = false;
+	this->mLastPlayerToHoldThisItem = nullptr;
 }
 void AFGItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -42,8 +45,8 @@ bool AFGItemPickup::IsUseable_Implementation() const{ return bool(); }
 void AFGItemPickup::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 FText AFGItemPickup::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGItemPickup::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
-void AFGItemPickup::PickUpByCharacter( AFGCharacterPlayer* byCharacter){ }
-bool AFGItemPickup::PickupByAmount(int32 amount){ return bool(); }
+void AFGItemPickup::PickUpByCharacter(AFGCharacterPlayer* byCharacter){ }
+const AFGPlayerController* AFGItemPickup::EatenByCreature(const int32 amount){ return nullptr; }
 void AFGItemPickup::Multicast_PlayPickupEffect_Implementation(){ }
 float AFGItemPickup::GetNormalizedCollectionProgress(){ return float(); }
 void AFGItemPickup::RespawnItems(){ }
@@ -51,6 +54,7 @@ void AFGItemPickup::ClearPickup(){ }
 void AFGItemPickup::PlantPickup(){ }
 void AFGItemPickup::Grow(){ }
 void AFGItemPickup::RegisterToRegrowSystem(){ }
+void AFGItemPickup::PlayPickupEffectImpl(){ }
 void AFGItemPickup::SetNumItems(int32 numItems){ }
 void AFGItemPickup::OnCollectTimerComplete(){ }
 bool AFGItemPickup::IsEquipment() const{ return bool(); }

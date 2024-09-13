@@ -66,7 +66,7 @@ AFGSkySphere::AFGSkySphere() : Super() {
 	this->mDayTickRate = 0.1;
 	this->mNightTickRate = 0.05;
 	this->mCachedTimeOfDaySubSystem = nullptr;
-	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_EndPhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
 	this->PrimaryActorTick.bCanEverTick = true;

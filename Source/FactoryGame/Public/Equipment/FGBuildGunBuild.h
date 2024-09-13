@@ -81,35 +81,48 @@ struct FActorClearanceData
 {
 	GENERATED_BODY()
 
+	struct DetectorOverlapData
+	{
+		class UBoxComponent* ClearanceDetector;
+		TSet< class USceneComponent* > OverlappingComponents;
+	};
+	
 	FActorClearanceData() :
 		Actor( nullptr ),
+		SnappingBoxMeshVisualization( nullptr ),
 		BlueprintProxyMesh( nullptr )
 	{
 	}
 
 	FActorClearanceData( class AActor* inActor ) :
 		Actor( inActor ),
+		SnappingBoxMeshVisualization( nullptr ),
 		BlueprintProxyMesh( nullptr )
 	{
 	}
 
+	/** The actor the clearance detector overlapped. */
 	UPROPERTY()
 	class AActor* Actor;
 
+	/** Snapping box visualization. */
 	UPROPERTY()
-	TArray< class UStaticMeshComponent* > ClearanceMeshComponents;
+	class UStaticMeshComponent* SnappingBoxMeshVisualization;
 
+	/** Blueprint proxy mesh representation. */
 	UPROPERTY()
 	class UStaticMeshComponent* BlueprintProxyMesh;
 
+	/** Connection representations. */
 	UPROPERTY()
 	TArray< FConnectionRepresentation > mConnectionComponents;
 
+	/** Attachment point representations. */
 	UPROPERTY()
 	TArray< FAttachmentPointRepresentation > mAttachmentPointMeshes;
 
-	UPROPERTY()
-	TArray< class UBoxComponent* > OverlappingClearanceDetectors;
+	/** The clearance detectors overlapping with the actor. */
+	TArray< DetectorOverlapData > OverlapData;
 };
 
 /**
@@ -141,6 +154,7 @@ public:
 	virtual void OnRecipeSampled_Implementation( TSubclassOf<class UFGRecipe> recipe ) override;
 	virtual void OnBuildGunModeChanged_Implementation( TSubclassOf< UFGBuildGunModeDescriptor > newMode ) override;
 	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildModes) const override;
+	virtual TSubclassOf< UFGBuildGunModeDescriptor > GetInitialBuildGunMode_Implementation() const override;
 	virtual float GetBuildGunRangeOverride_Implementation() override;
 	virtual void BindInputActions( class UFGEnhancedInputComponent* inputComponent ) override;
 	virtual bool CanSampleBuildings() const override;
@@ -153,6 +167,14 @@ public:
 	 */
 	void SetActiveRecipe( TSubclassOf< class UFGRecipe > recipe );
 	TSubclassOf< class UFGRecipe > GetActiveRecipe() const { return mActiveRecipe; }
+
+	// <FL> [PuschkeN] 
+	UFUNCTION( BlueprintPure, Category = "BuildGunState|Build" )
+	TSubclassOf< class UFGRecipe > GetLastRecipe() const { return mLastRecipe; }
+
+	UFUNCTION( BlueprintPure, Category = "BuildGunState|Build")
+	UFGBlueprintDescriptor* GetLastBlueprintDescriptor() const { return mLastBlueprintDescriptor; }
+	// </FL>
 
 	/**
 	 * Set active blueprint descriptor. This will be used when a blueprint hologram recipe is set
@@ -189,7 +211,7 @@ public:
 	void ToggleHologramPositionLock();
 
 	UFUNCTION( BlueprintPure, Category = "BuildModeSelect" )
-	TSubclassOf<class UFGHologramBuildModeDescriptor> GetLastBuildModeForCategory( uint8 category, TSubclassOf< class AActor > actorClass );
+	TSubclassOf<class UFGHologramBuildModeDescriptor> GetLastBuildModeForCategory( uint8 category, TSubclassOf< class AActor > actorClass ) const;
 
 	/** Called whenever a hologram updates its zoop.
 	 * @param currentZoop - How far we have zooped, value depends on hologram implementation. Beams use meters, cosmetic buildables use number of instances.
@@ -205,6 +227,10 @@ public:
 
 	void OnHologramLockStateChanged( class AFGHologram* hologram, bool isLocked );
 
+	/** additional Mapping Context for the hologram lock mode. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Hologram")
+	TObjectPtr< UInputMappingContext > mMappingContextHologram;
+
 	UPROPERTY( BlueprintAssignable, Category = "Hologram", DisplayName = "OnHologramLockStateChanged" )
 	FHologramLockStateChanged OnHologramLockStateChangedDelegate;
 
@@ -216,10 +242,18 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Hologram", DisplayName = "OnHologramNudgeFailed" )
 	FHologramNudgeFailed OnHologramNudgeFailedDelegate;
 
+	/** The last focused category in the build menu. */
+	UPROPERTY( BlueprintReadWrite )
+	TSubclassOf< class UFGBuildCategory > mLastFocusedCategory;
+
 	void HookUpUserSettings();
 
 	void OnClearanceDetectorAdded( UBoxComponent* clearanceDetector );
+	void OnDelayedConstructHologram( FNetConstructionID localId, FConstructHologramMessage message );
 
+	static UPackageMap* FindPackageMapForPlayerController( const APlayerController* playerController );
+
+	const FActorClearanceData* GetClearanceDataForActor( const AActor* actor ) const;
 protected:
 	
 	/** InternalExecuteDuBuildStepInput
@@ -275,12 +309,14 @@ private:
 	void SpawnHologram();
 
 	/** Remove the specified hologram. */
-	void RemoveHologram( class AFGHologram* hologram, bool cleanupClearanceDetection = true );
+	void RemoveHologram( class AFGHologram*& hologram, bool cleanupClearanceDetection = true );
 
 	/** Remove the clearance from our current hologram */
 	void CleanupHologramClearanceDetection();
 
 	AFGHologram* InternalSpawnHologram();
+
+	void ApplyPlayerRelativeRotation( AFGHologram* hologram, int32 minRotationMode );
 
 	UFUNCTION()
 	void BeginClearanceDetectorOverlap( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult );
@@ -297,11 +333,17 @@ private:
 	UFUNCTION( Server, Reliable )
 	void Server_UpdateNudgeOffset( const FVector& newNudgeOffset );
 
+	UFUNCTION()
+	void NudgeTimerTick();
+
 	/** Input Action Bindings */
 	void Input_HologramLock( const FInputActionValue& actionValue );
 	void Input_HologramNudgeAxis( const FInputActionValue& actionValue );
 	void Input_SnapToGuideLines( const FInputActionValue& actionValue );
 	void Input_HotbarSample( const FInputActionValue& actionValue );
+
+	void HandleBuildableAchievementTags( const AFGBuildable* buildable ) const;
+	
 private:
 	/** stores a time we have held the primary fire button for. Used so we can detect if it's a hold or tap or similar*/
 	float mPrimaryFireHoldTime = -1;
@@ -321,6 +363,8 @@ private:
 
 	int32 mPreviousScrollRotation;
 	
+	int32 mPlayerRelativeScrollRotation;
+	
 	/** Recipe to activate when state is entered. */
 	UPROPERTY()
 	TSubclassOf< class UFGRecipe > mPendingRecipe;
@@ -331,6 +375,14 @@ private:
 	 */
 	UPROPERTY()
 	TSubclassOf< class UFGRecipe > mActiveRecipe;
+
+	// <FL> [PuschkeN]
+	/**
+	 * The last active recipe, will be equal to mActiveRecipe when that is not null.
+	 */
+	UPROPERTY()
+	TSubclassOf< class UFGRecipe > mLastRecipe;
+	// </FL>
 
 	/** Map used to cache the last used build modes for different categories (keys). */
 	TMap< uint8, TSubclassOf< class UFGHologramBuildModeDescriptor > > mLastUsedCategoryBuildmodes;
@@ -347,6 +399,10 @@ private:
 	/** The actor to replace (dismantle) when upgrading. */
 	UPROPERTY()
 	class AActor* mUpgradedActor;
+
+	// Instance Converter Instigator
+	UPROPERTY()
+	AActor* mInstanceConverterInstigator;
 
 	/** Moves the clearance box collision to where we are aiming */
 	void UpdateClearanceData();
@@ -367,6 +423,12 @@ private:
 	UPROPERTY()
 	UFGBlueprintDescriptor* mActiveBlueprintDescriptor;
 
+	UPROPERTY()
+	UFGBlueprintDescriptor* mLastBlueprintDescriptor;
+
 	/** Whenever we're in a hotbar sample mode, where clicking a shortcut key would overwrite the shortcut at that index instead */
 	bool mHotbarSampleMode;
+
+	FTimerHandle mNudgeTimerHandle;
+	FVector mNudgeAxisInput;
 };

@@ -19,6 +19,7 @@ class FACTORYGAME_API UFGWorldPartitionRuntimeSpatialHash : public UWorldPartiti
 #if WITH_EDITOR
 public:
 	uint32 GetGridCellSize(FName GridName);
+	
 protected:
 	/**
 	 * Called once on cook before @PopulateGeneratedPackageForCook gets called for every generated level (WP Cell). In this context, we use it to
@@ -34,6 +35,9 @@ protected:
 public:
 	/** Finds the cell by it's name using a fast lookup map */
 	UWorldPartitionRuntimeCell* FindCellByName( FName cellName ) const;
+	
+	bool IsCellContainingWorldLocationLoaded( const FName& GridName, const FVector& Location ) const;
+	
 private:
 	/** Rebuilds the mapping of cell names to their objects */
 	void RebuildNameToCellMap() const;

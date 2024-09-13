@@ -6,14 +6,11 @@
 #include "CoreMinimal.h"
 #include "AkAudioEvent.h"
 #include "FGSaveInterface.h"
-
+#include "Engine/SkinnedAssetCommon.h"
 #include "Curves/CurveFloat.h"
 #include "Resources/FGItemDescriptor.h"
-
 #include "Engine/EngineTypes.h"
-
 #include "FGWeaponState.h"
-
 #include "FGAmmoType.generated.h"
 
 class AFGWeapon;

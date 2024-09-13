@@ -1,15 +1,15 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "MVVMViewModelBase.h"
-#include "OnlineInteractionHandlers.h"
-#include "OnlineIntegrationSubsystem.h"
-#include "OnlineIntegrationTypes.h"
 #include "Async/Future.h"
 #include "Components/ActorComponent.h"
+#include "FGGameUserSettings.h"
 #include "GameFramework/GameStateBase.h"
+#include "MVVMViewModelBase.h"
+#include "OnlineIntegrationSubsystem.h"
 #include "FGFrontendStateComponent.generated.h"
 
+class UOnlineAsyncOperation;
 using FControlFlowNodeRef = TSharedRef<class FControlFlowNode>;
 
 UCLASS(BlueprintType)
@@ -18,11 +18,11 @@ class UFGOnlineModePreferenceViewModel: public UMVVMViewModelBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadWrite)
-	EOnlineIntegrationMode mMode = EOnlineIntegrationMode::LimitedCrossPlay;
+	EOnlineIntegrationMode mMode = EOnlineIntegrationMode::Undefined;
 };
 
 UCLASS()
-class UFGFrontendStateComponent: public UActorComponent, public IOnlineAuthenticationHandler
+class UFGFrontendStateComponent: public UActorComponent
 {
 	GENERATED_BODY()
 public:
@@ -34,12 +34,9 @@ public:
 	//~End of UActorComponent interface
 
 protected:
-	// IOnlineAuthenticationHandler interface
-	virtual void ConfigureOnlineIntegration(TPromise<FOnlineIntegrationPlatformSettings> &&promise) override;
-	virtual void QueryOnlineIntegrationModePreference(TPromise<EOnlineIntegrationMode>&& Promise) override;
-	virtual void AuthenticationSequenceComplete() override;
-	virtual void ProgressUpdate(const FText& Status) override;
-	// End of IOnlineAuthenticationHandler interface
+	UFUNCTION()
+	void OnOnlineIntegrationModeChanged(EOnlineIntegrationMode mode);
+	void AuthenticationSequenceComplete(UOnlineAsyncOperation* InAsyncOp);
 	
 	/** Gets the game state that owns the component, this will always be valid during gameplay but can return null in the editor */
 	template <class T>
@@ -74,13 +71,12 @@ private:
 	
 	void TryShowMainScreen();
 
-	UPROPERTY( Transient )
-	TObjectPtr<class UFGOnlineStartupScreen> mOnlineStartupScreen;
-
 	UPROPERTY()
 	TObjectPtr<class UOnlineAsyncOperation> mAuthenticationSequence;
 
 	TOptional< TPromise< EOnlineIntegrationMode > > mOnlineIntegrationModePromise;
+
+	bool mUserInitiatedCrossPlayLogin = false;
 
 	UPROPERTY()
 	TObjectPtr< UFGOnlineModePreferenceViewModel > mOnlineIntegrationModeModel;

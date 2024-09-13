@@ -40,6 +40,10 @@ UFGLocomotiveMovementComponent::UFGLocomotiveMovementComponent() : Super() {
 	this->PrimaryComponentTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryComponentTick.TickInterval = 0.0;
 }
+void UFGLocomotiveMovementComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGLocomotiveMovementComponent, mReplicatedState);
+}
 void UFGLocomotiveMovementComponent::TickComponent(float dt, enum ELevelTick tickType, FActorComponentTickFunction *thisTickFunction){ }
 void UFGLocomotiveMovementComponent::ComputeConstants(){ }
 void UFGLocomotiveMovementComponent::TickSlaveInput(float dt, const UFGLocomotiveMovementComponent* master){ }
@@ -60,9 +64,7 @@ void UFGLocomotiveMovementComponent::ClearInput(){ }
 void UFGLocomotiveMovementComponent::UpdateState(float dt, const UFGLocomotiveMovementComponent* master){ }
 void UFGLocomotiveMovementComponent::ServerUpdateState_Implementation(int32 inReverserInput, int32 inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput, bool inHornInput){ }
 bool UFGLocomotiveMovementComponent::ServerUpdateState_Validate(int32 inReverserInput, int32 inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput, bool inHornInput){ return bool(); }
+void UFGLocomotiveMovementComponent::ServerUpdateAutomatedDrivingState_Implementation(bool inHornInput){ }
+bool UFGLocomotiveMovementComponent::ServerUpdateAutomatedDrivingState_Validate(bool inHornInput){ return bool(); }
 void UFGLocomotiveMovementComponent::UseReplicatedState(){ }
 void UFGLocomotiveMovementComponent::UseMultipleUnitMasterState(const UFGLocomotiveMovementComponent* master){ }
-void UFGLocomotiveMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UFGLocomotiveMovementComponent, mReplicatedState);
-}

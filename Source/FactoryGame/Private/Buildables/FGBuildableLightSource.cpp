@@ -37,9 +37,11 @@ void AFGBuildableLightSource::OnBuildEffectFinished(){ }
 void AFGBuildableLightSource::SetLightEnabled(bool isEnabled){ }
 void AFGBuildableLightSource::SetLightControlData(FLightSourceControlData data){ }
 bool AFGBuildableLightSource::IsLightEnabled() const{ return bool(); }
+bool AFGBuildableLightSource::ShouldLightBeOn() const{ return bool(); }
 FLightSourceControlData AFGBuildableLightSource::GetLightControlData() const{ return FLightSourceControlData(); }
 void AFGBuildableLightSource::OnLightColorSlotsUpdated(const TArray< FLinearColor >& colors){ }
 float AFGBuildableLightSource::GetEmissivePower(){ return float(); }
+bool AFGBuildableLightSource::HasSufficientPowerConnection() const{ return bool(); }
 void AFGBuildableLightSource::OnTimeOfDayChanged(bool isDay){ }
 void AFGBuildableLightSource::OnHasPowerChanged( UFGPowerInfoComponent* info){ }
 void AFGBuildableLightSource::OnRep_IsEnabled(){ }

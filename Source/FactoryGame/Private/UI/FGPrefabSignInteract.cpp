@@ -2,7 +2,7 @@
 
 #include "UI/FGPrefabSignInteract.h"
 
-void UFGPrefabSignInteract::SetPrefabLayout(TSubclassOf< UUserWidget > prefabLayout){ }
-void UFGPrefabSignInteract::GetAvailablePrefabLayouts(TArray< TSubclassOf< UUserWidget > >& out_prefabLayouts){ }
+void UFGPrefabSignInteract::SetPrefabLayout(TSoftClassPtr<UUserWidget> prefabLayout){ }
+void UFGPrefabSignInteract::GetAvailablePrefabLayouts(TArray< TSoftClassPtr<UUserWidget> >& out_prefabLayouts){ }
 void UFGPrefabSignInteract::SetElementText(FString& elementName, FString newText){ }
 void UFGPrefabSignInteract::SetElementIconID(FString& elementName, int32 iconID){ }

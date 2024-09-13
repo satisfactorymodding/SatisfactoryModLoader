@@ -22,6 +22,7 @@ public:
 	//~ Begin UObject interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	//~ End UObject interface
 
 	virtual float TakeDamage( float damage, struct FDamageEvent const& damageEvent, AController* eventInstigator, AActor* damageCauser ) override;
@@ -29,6 +30,7 @@ public:
 	//IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
+	virtual float GetSignificanceRange() override { return mSignificanceRange; }
 	//End
 
 	// Begin IFGSaveInterface
@@ -41,6 +43,9 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
+	/* Called on getting damage. */
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDied();
 
 protected:
 	/** Test if an actor should trigger spore flower to rise */
@@ -56,4 +61,9 @@ protected:
 	UPROPERTY( )
 	TArray<AActor*> mTriggerActors;
 
+	UPROPERTY(EditDefaultsOnly)
+	float mDeathTime = 10;
+
+	UPROPERTY(EditDefaultsOnly)
+	float mSignificanceRange = 8000.f;
 };

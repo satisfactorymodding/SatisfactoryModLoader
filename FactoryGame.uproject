@@ -1,13 +1,13 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.2.1-CSS",
+	"EngineAssociation": "5.3.2-CSS",
 	"Category": "",
 	"Description": "",
 	"Modules": [
 		{
 			"Name": "FactoryGame",
 			"Type": "Runtime",
-			"LoadingPhase": "PostConfigInit",
+			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
 				"CoreUObject",
@@ -19,8 +19,33 @@
 				"OnlineSubsystemUtils",
 				"UMG",
 				"DeveloperSettings",
+				"AbstractInstance",
 				"EnhancedInput",
 				"Foliage"
+			]
+		},
+		{
+			"Name": "FactoryPreEarlyLoadingScreen",
+			"Type": "Runtime",
+			"LoadingPhase": "PreEarlyLoadingScreen"
+		},
+		{
+			"Name": "FactoryDedicatedServer",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"TargetAllowList": [
+				"Server",
+				"Editor"
+			]
+		},
+		{
+			"Name": "FactoryDedicatedClient",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"TargetAllowList": [
+				"Editor",
+				"Client",
+				"Game"
 			]
 		},
 		{
@@ -31,30 +56,6 @@
 	],
 	"Plugins": [
 		{
-			"Name": "OnlineServices",
-			"Enabled": true
-		},
-		{
-			"Name": "OnlineServicesEOS",
-			"Enabled": true,
-			"WhitelistPlatforms": [
-				"Win64",
-				"Linux"
-			]
-		},
-		{
-			"Name": "OnlineServicesEOSGS",
-			"Enabled": true
-		},
-		{
-			"Name": "SocketSubsystemEOS",
-			"Enabled": true
-		},
-		{
-			"Name": "OnlineServicesOSSAdapter",
-			"Enabled": true
-		},
-		{
 			"Name": "ChaosVehiclesPlugin",
 			"Enabled": true
 		},
@@ -64,6 +65,10 @@
 		},
 		{
 			"Name": "DTLSHandlerComponent",
+			"Enabled": true
+		},
+		{
+			"Name": "Wwise",
 			"Enabled": true
 		},
 		{
@@ -87,6 +92,10 @@
 			"Enabled": false
 		},
 		{
+			"Name": "HTML5Networking",
+			"Enabled": false
+		},
+		{
 			"Name": "MobileLauncherProfileWizard",
 			"Enabled": false
 		},
@@ -100,6 +109,14 @@
 		},
 		{
 			"Name": "OnlineSubsystemIOS",
+			"Enabled": false
+		},
+		{
+			"Name": "GitSourceControl",
+			"Enabled": false
+		},
+		{
+			"Name": "SubversionSourceControl",
 			"Enabled": false
 		},
 		{
@@ -119,10 +136,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "OculusVR",
-			"Enabled": false
-		},
-		{
 			"Name": "SteamVR",
 			"Enabled": false
 		},
@@ -136,6 +149,10 @@
 		},
 		{
 			"Name": "MobilePatchingUtils",
+			"Enabled": false
+		},
+		{
+			"Name": "SlateRemote",
 			"Enabled": false
 		},
 		{
@@ -155,7 +172,15 @@
 			"Enabled": false
 		},
 		{
+			"Name": "Dataflow",
+			"Enabled": false
+		},
+		{
 			"Name": "IOSDeviceProfileSelector",
+			"Enabled": false
+		},
+		{
+			"Name": "AudioCapture",
 			"Enabled": false
 		},
 		{
@@ -164,7 +189,10 @@
 		},
 		{
 			"Name": "SteamController",
-			"Enabled": true
+			"Enabled": false,
+			"TargetDenyList": [
+				"Server"
+			]
 		},
 		{
 			"Name": "RawInput",
@@ -175,12 +203,45 @@
 			"Enabled": true
 		},
 		{
-			"Name": "OnlineSubsystemSteam",
+			"Name": "Takes",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor",
+				"Program"
+			]
+		},
+		{
+			"Name": "OnlineSubsystemMcp",
+			"Enabled": false
+		},
+		{
+			"Name": "SocketSubsystemEpic",
+			"Enabled": false,
+			"PlatformAllowList": [
+				"Win64"
+			],
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Win32",
+				"Mac",
+				"Linux"
+			]
+		},
+		{
+			"Name": "OnlineServicesNull",
 			"Enabled": true
 		},
 		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": false
+		},
+		{
 			"Name": "OnlineSubsystemEOS",
-			"Enabled": true
+			"Enabled": false
+		},
+		{
+			"Name": "OculusVR",
+			"Enabled": false
 		},
 		{
 			"Name": "SignificanceManager",
@@ -243,6 +304,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "AbstractInstance",
+			"Enabled": true
+		},
+		{
 			"Name": "GeometryScripting",
 			"Enabled": true
 		},
@@ -252,7 +317,10 @@
 		},
 		{
 			"Name": "MovieRenderPipeline",
-			"Enabled": true
+			"Enabled": true,
+			"TargetDenyList": [
+				"Server"
+			]
 		},
 		{
 			"Name": "AppleProResMedia",
@@ -268,19 +336,23 @@
 		{
 			"Name": "ModelViewViewModel",
 			"Enabled": true
+		},
+		{
+			"Name": "HairStrands",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayEvents",
+			"Enabled": true
+		},
+		{
+			"Name": "WwiseNiagara",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
 		"Win64",
 		"Linux",
 		"Windows"
-	],
-	"PreBuildSteps": {
-		"Win64": [
-			"powershell -Command \"$file = '$(ProjectDir)\\Plugins\\Wwise\\Source\\AkAudio\\Classes\\OcclusionObstructionService\\AkOcclusionObstructionService.h'; if (Test-Path $file) { if (!(Select-String -Path $file -Pattern 'class AKAUDIO_API AkOcclusionObstructionService' -SimpleMatch -Quiet)) { (Get-Content $file) -replace 'class AkOcclusionObstructionService', 'class AKAUDIO_API AkOcclusionObstructionService' | Out-File -encoding UTF8 $file } }\""
-		],
-		"Linux": [
-			"if ! grep -q 'class AKAUDIO_API AkOcclusionObstructionService' $(ProjectDir)/Plugins/Wwise/Source/AkAudio/Classes/OcclusionObstructionService/AkOcclusionObstructionService.h; then sed -i 's/class AkOcclusionObstructionService/class AKAUDIO_API AkOcclusionObstructionService/' $(ProjectDir)/Plugins/Wwise/Source/AkAudio/Classes/OcclusionObstructionService/AkOcclusionObstructionService.h; fi"
-		]
-	}
+	]
 }

@@ -268,6 +268,10 @@ private:
 	UPROPERTY( Transient )
 	TMap< UStaticMesh*, UInstancedStaticMeshComponent* > mPendingPreviewMeshes;
 
+	/** Track the instance converter so we know which one to remove from the subsystem */
+	UPROPERTY()
+	AActor* mInstanceConverterInstigator;
+
 };
 
 

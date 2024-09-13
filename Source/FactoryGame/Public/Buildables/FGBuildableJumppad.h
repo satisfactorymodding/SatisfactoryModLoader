@@ -83,7 +83,7 @@ public:
 	bool HasPowerForLaunch() const { return mHasPowerForLaunch; }
 
 	UFUNCTION( BlueprintPure, Category = "JumpPad" )
-	FVector GetLaunchDirection();
+	FVector GetLaunchDirection() const;
 
 	UFUNCTION( BlueprintPure, Category = "JumpPad" )
 	bool ShouldDisplayTrajectory() const { return mShowTrajectoryCounter > 0; }
@@ -105,7 +105,7 @@ public:
 
 	// Calculates launch velocity for an object in order to land at the designated landing location for this jumppad.
 	UFUNCTION( BlueprintPure, Category = "JumpPad" )
-	FVector CalculateLaunchVelocity( const FVector& StartLocation, float Gravity ) const;
+	FVector CalculateLaunchVelocity( const FVector& startLocation, const float gravity ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "JumpPad" )
 	const FTrajectoryData& ResimulateTrajectory();

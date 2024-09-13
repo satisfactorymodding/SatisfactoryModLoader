@@ -4,6 +4,6 @@
 #include "Internationalization/StringTableRegistry.h"
 
 UFGNoneDescriptor::UFGNoneDescriptor() : Super() {
-	this->mDisplayName = NSLOCTEXT("NoneDescriptor", "DisplayName", "None");
-	this->mDescription = NSLOCTEXT("NoneDescriptor", "Description", "Nothing");
+	this->mDisplayName = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/None");
+	this->mDescription = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/None/Description");
 }

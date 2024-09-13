@@ -1,8 +1,9 @@
-// Copyright Ben de Hullu. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 
 #include "AbstractInstanceExampleActor.h"
 #include "AbstractInstanceManager.h"
+#include "Engine/World.h"
 
 // Sets default values
 AAbstractInstanceExampleActor::AAbstractInstanceExampleActor()

@@ -20,8 +20,8 @@ public:
 	AFGPipelineHologram();
 
 	// Begin AActor Interface
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	// End AActor Interface
 
 	// Begin AFGHologram Interface
@@ -39,7 +39,6 @@ public:
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void OnInvalidHitResult() override;
 	virtual void Scroll( int32 delta ) override;
-	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
 	virtual void SetSnapToGuideLines( bool isEnabled ) override;
 	virtual float GetHologramHoverHeight() const override;
 	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
@@ -49,20 +48,14 @@ public:
 	virtual void ReplaceHologram( AFGHologram* hologram, bool snapTransform ) override;
 	// End AFGHologram Interface
 
-	// Begin FGConstructionMessageInterface
-	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
-	virtual void ClientPreConstructMessageSerialization() override;
-	virtual void ServerPostConstructMessageDeserialization() override;
-	// End FGConstructionMessageInterface
+	// Begin AFGBuildableHologram Interface
+	virtual TArray< class UFGPipeConnectionComponent* > GetRelevantPipeConnectionsForGuidelines() const override;
+	// End AFGBuildableHologram Interface
 
 	// Begin FGSplineHologram Interface
 	virtual void ResetBuildSteps() override;
 	virtual bool IsConnectionSnapped( bool lastConnection ) override;
 	// End FGSplineHologram Interface
-
-	/** Returns reference to spline point data */
-	void GetLastSplineData( FSplinePointData &data );
-
 protected:
 	// Begin AFGBuildableHologram Interface
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
@@ -71,25 +64,18 @@ protected:
 	virtual void CheckValidPlacement() override;
 	// End AFGBuildableHologram Interface
 
-	// Begin AFGHologram Interface
-	virtual void CheckClearance( const FVector& locationOffset ) override;
-	// End AFGHologram Interface
-
 	/** Creates the clearance detector used with Pipelines */
-	void SetupPipeClearanceDetector();
-
+	virtual void OnRep_SplineData() override;
 private:
 	void RouteSelectedSplineMode( FVector startLocation, FVector startNormal, FVector endLocation, FVector endNormal );
 
 	/** Update the spline on the client. */
-	UFUNCTION()
-	void UpdateSplineComponent();
+	virtual void UpdateSplineComponent() override;
+
+	virtual void UpdateClearanceData() override;
 
 	float GetSplineLength();
-
 	void UpdateConnectionComponentsFromSplineData();
-
-	void UpdateSplineCompFromSplineData();
 
 	/**
 	* This routes the spline to the new location. Inserting bends and straights.
@@ -157,11 +143,7 @@ public:
 	static constexpr float MINIMUM_PIPE_CLEARANCE = FHologramPathingGrid::PATH_GRID_CELL_SIZE;
 	static constexpr float MINIMUM_HOLOGRAM_LENGTH = FHologramPathingGrid::PATH_GRID_CELL_SIZE * 2.f;
 
-
 private:
-
-
-
 	bool mUsingCutstomPoleRotation = false;
 
 	/**Used to redirect input and construct poles when needed*/
@@ -181,11 +163,11 @@ private:
 	class UFGPipeConnectionComponentBase* mConnectionComponents[ 2 ];
 
 	/** The connections we've made. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class UFGPipeConnectionComponentBase* mSnappedConnectionComponents[ 2 ];
 
 	/** If we upgrade another pipeline this is the pipeline we replace. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class AFGBuildablePipeline* mUpgradedPipeline;
 	
 	/** Class of pipe pole to place at the end. */
@@ -236,14 +218,24 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode")
 	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeHorzToVert;
 
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 
 	UPROPERTY()
 	FVector mPassthroughOverrideStartLocation;
 
+	UPROPERTY()
+	FVector mPassthroughSnapDirection;
+
 	/** Cached from the default buildable. */
 	UPROPERTY()
 	class UStaticMesh* mMesh;
+	
+	UPROPERTY()
+	class UMaterialInterface* mMeshMaterial;
+	
 	float mMeshLength;
+
+	TSubclassOf< UFGBuildGunModeDescriptor > mPrevBuildGunMode;
+	FVector mCachedSnapNormal;
 };

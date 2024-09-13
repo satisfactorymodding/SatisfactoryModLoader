@@ -136,8 +136,6 @@ public:
 	// This is valid on both server and client if cheats are allowed
 	FORCEINLINE class UFGCheatManager* GetCheatManager() const { return mReplicatedCheatManager; }
 
-	virtual bool ProcessConsoleExec( const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor ) override;
-
 	/** Returns the most relevant save manager. This will be the local save manager in the main menu, the server save manager when playing on a server and authenticated as admin, or null when playing on a server without admin privilege */
 	UFUNCTION( BlueprintCallable, Category = "Utility")
 	TScriptInterface<class IFGSaveManagerInterface> GetMostRelevantSaveManager();
@@ -153,8 +151,8 @@ protected:
 	virtual void SetPlayer(UPlayer* InPlayer);
 	virtual void OnNetCleanup(class UNetConnection* Connection) override;
 
-	UPROPERTY( BlueprintReadOnly )
-	class UFGServerObject* mCurrentServer = nullptr;
+	// UPROPERTY( BlueprintReadOnly )
+	// class UFGServerObject* mCurrentServer = nullptr;
 private:
 	/** 
 	 * Enables or disables the input for all ActionBindings except for the ones specified in mAllowedInputWhenDead.

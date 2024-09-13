@@ -19,6 +19,7 @@ public:
 
 	// Begin AActor Interface
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	// End AActor Interface
 
 	// Begin AFGHologram Interface
@@ -67,19 +68,23 @@ private:
 	float mMaxValidTurnAngle;
 
 	/** The conveyor we snapped to. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class AFGBuildableConveyorBelt* mSnappedConveyor;
 
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class AFGBuildableConveyorAttachment* mUpgradedConveyorAttachment;
 
 	/** The connection we snapped to. */
-	UPROPERTY()
-	class UFGFactoryConnectionComponent* mSnappedConection = nullptr;
+	UPROPERTY( CustomSerialization )
+	class UFGFactoryConnectionComponent* mSnappedConnection = nullptr;
 
 	TArray<class UFGFactoryConnectionComponent* > mConnections;
+
+	/** The connection we are snapped by */
+	UPROPERTY( Replicated, CustomSerialization )
 	int8 mSnappingConnectionIndex = -1;
 
 	/** The offset we snapped on the conveyor. */
+	UPROPERTY( Replicated, CustomSerialization )
 	float mSnappedConveyorOffset;
 };

@@ -2,4 +2,8 @@
 
 #include "AvailabilityDependencies/FGCreaturesKilledDependency.h"
 
+#if WITH_EDITOR
+FString UFGCreaturesKilledDependency::ToString() const{ return FString(); }
+void UFGCreaturesKilledDependency::FromString(const FString& inString){ }
+#endif 
 bool UFGCreaturesKilledDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }

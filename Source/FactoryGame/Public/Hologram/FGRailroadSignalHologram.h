@@ -20,10 +20,13 @@ public:
 	// Begin AActor Interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	// End AActor Interface
 
 	// Begin AFGHologram Interface
-	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual void ScrollRotate( int32 delta, int32 step ) override;
+	virtual void PreHologramPlacement( const FHitResult& hitResult ) override;
+	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
@@ -40,10 +43,20 @@ protected:
 
 private:
 	/** The track connection we snapped to. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class UFGRailroadTrackConnectionComponent* mSnappedConnection;
 
+	/** The track we snapped to. */
+	UPROPERTY( Replicated, CustomSerialization )
+	class AFGBuildableRailroadTrack* mSnappedRailroadTrack;
+
+	/** The distance at which we snapped to the railroad track. */
+	float mSnappedDistance;
+
+	/** Whether or not to flip the snapped direction. */
+	bool mFlipSnappedDirection;
+
 	/** If we upgrade a signal to another type of signal, this is the signal we are replacing. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class AFGBuildableRailroadSignal* mUpgradeTarget;
 };

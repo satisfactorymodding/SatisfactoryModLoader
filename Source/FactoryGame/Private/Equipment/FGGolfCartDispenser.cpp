@@ -3,7 +3,9 @@
 #include "Equipment/FGGolfCartDispenser.h"
 
 AFGGolfCartDispenser::AFGGolfCartDispenser() : Super() {
-	this->mPlaceDistanceMax = 1000.0;
+	this->mCartPlacementClearance = FVector((120, 80, 100));
+	this->mCartPlacementDistance = 500.0;
+	this->mGolfCartClass = nullptr;
 	this->mValidPlacementMaterial = nullptr;
 	this->mInvalidPlacementMaterial = nullptr;
 	this->mArmAnimation = EArmEquipment::AE_PortableMiner;
@@ -11,4 +13,10 @@ AFGGolfCartDispenser::AFGGolfCartDispenser() : Super() {
 }
 void AFGGolfCartDispenser::BeginPlay(){ }
 void AFGGolfCartDispenser::SetMaterial( UMaterialInterface* material){ }
+void AFGGolfCartDispenser::SpawnGolfCart(){ }
 void AFGGolfCartDispenser::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
+bool AFGGolfCartDispenser::TraceForPlacementLocation(FVector& out_Location, FRotator& out_Rotation) const{ return bool(); }
+void AFGGolfCartDispenser::ConfigureSpawnedGolfCart_Implementation(AActor* golfCartActor){ }
+void AFGGolfCartDispenser::OnFailedPlacement_Implementation(EGolfCartPlacementError reason){ }
+void AFGGolfCartDispenser::Server_SpawnGolfCart_Implementation(const FVector& spawnLocation, const FRotator& spawnRotation){ }
+void AFGGolfCartDispenser::Client_OnFailedPlacement_Implementation(EGolfCartPlacementError reason){ }

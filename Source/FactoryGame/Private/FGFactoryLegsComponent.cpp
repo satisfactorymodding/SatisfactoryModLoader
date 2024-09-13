@@ -7,13 +7,10 @@ uint8 FFeetOffset::GetFeetIndexFromSocketName(const FName socket){ return uint8(
 FFeetOffset::FFeetOffset(){ }
 FFeetOffset::FFeetOffset(const FName socket){ }
 FName FFeetOffset::GetSocket() const{ return FName(); }
-#if WITH_EDITOR
-void UFGFactoryLegsComponent::OnRegister(){ Super::OnRegister(); }
-void UFGFactoryLegsComponent::OnUnregister(){ Super::OnUnregister(); }
-#endif 
 UFGFactoryLegsComponent::UFGFactoryLegsComponent() : Super() {
 	this->mLegMeshOverride = nullptr;
 	this->mFootMeshOverride = nullptr;
+	this->mLegScale = FVector::OneVector;
 	this->mMaxLegLengthOverride = 0.0;
 	this->mMinimumLegLength = 40.0;
 	this->SetIsReplicatedByDefault(true);
@@ -22,8 +19,6 @@ void UFGFactoryLegsComponent::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGFactoryLegsComponent, mCachedFeetOffset);
 }
-void UFGFactoryLegsComponent::BeginPlay(){ }
-void UFGFactoryLegsComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void UFGFactoryLegsComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGFactoryLegsComponent::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGFactoryLegsComponent::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -36,9 +31,9 @@ void UFGFactoryLegsComponent::SetFeetOffsets(const TArray< FFeetOffset >& offset
 void UFGFactoryLegsComponent::ClearFeetOffsets(){ }
 void UFGFactoryLegsComponent::SetFeetOffsetsToZero(){ }
 float UFGFactoryLegsComponent::GetMaxLegLength() const{ return float(); }
+bool UFGFactoryLegsComponent::HasValidLegs() const{ return bool(); }
+void UFGFactoryLegsComponent::CreateLegInstances(TArray<FInstanceData>& out_legInstanceData){ }
 FFeetOffset UFGFactoryLegsComponent::TraceFootOffset(FName socket, const FTransform& actorTransform, AActor* ignoreActor) const{ return FFeetOffset(); }
 UStaticMesh* UFGFactoryLegsComponent::GetLegMesh() const{ return nullptr; }
 UStaticMesh* UFGFactoryLegsComponent::GetFootMesh() const{ return nullptr; }
-void UFGFactoryLegsComponent::CreateLegs(){ }
-void UFGFactoryLegsComponent::RemoveLegs(){ }
-void UFGFactoryLegsComponent::CreateFoot(const FFeetOffset& offset){ }
+void UFGFactoryLegsComponent::CreateFootInstanced(const FFeetOffset& offsetData, TArray<FInstanceData>& out_legInstanceData) const{ }

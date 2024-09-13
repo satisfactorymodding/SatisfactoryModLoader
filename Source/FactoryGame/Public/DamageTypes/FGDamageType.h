@@ -53,7 +53,10 @@ public:
 	bool mIsGasPointType = false;
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
 	bool mIsGasRadialType = false;
-	
+
+	/** If this is checked, this damage type cannot be negated by anything on the player side, such as driving vehicles, having a god mode on, and so on. */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType" )
+	bool mPlayerIsAlwaysVulnerable;
 };
 
 UENUM()

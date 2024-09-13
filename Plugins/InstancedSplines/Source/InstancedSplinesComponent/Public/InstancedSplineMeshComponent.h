@@ -23,19 +23,19 @@ struct INSTANCEDSPLINESCOMPONENT_API FSplineDataSettings
 
 public:
 	UPROPERTY( EditDefaultsOnly )
-	int32 StartPositionPrimitiveDataStartIndex;
+	int32 StartPositionPrimitiveDataStartIndex = 0;
 	
 	UPROPERTY( EditDefaultsOnly )
-	int32 StartTangentPrimitiveDataStartIndex;
+	int32 StartTangentPrimitiveDataStartIndex = 0;
 
 	UPROPERTY( EditDefaultsOnly )
-	int32 EndPositionPrimitiveDataStartIndex;
+	int32 EndPositionPrimitiveDataStartIndex = 0;
 	
 	UPROPERTY( EditDefaultsOnly )
-	int32 EndTangentPrimitiveDataStartIndex;
+	int32 EndTangentPrimitiveDataStartIndex = 0;
 
 	UPROPERTY( EditDefaultsOnly )
-	int32 InstanceScaleIndex;
+	int32 InstanceScaleIndex = 0;
 };
 
 USTRUCT()
@@ -163,8 +163,7 @@ public:
 	/* Array of the instances. */
 	UPROPERTY(EditAnywhere, Category="Instances")
 	TArray<FSplineMeshInstanceEntry> SplineInstances;
-
-protected:
+	
 	/* The start offset value for the per instance primitive data, use full for when dealing with other per instance primitive data entries.*/
 	UPROPERTY(EditDefaultsOnly)
 	int32 NumPerInstancePrimitiveDataCountOffset = 0;

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "AkRtpc.h"
 #include "UObject/Object.h"
 #include "FGAmbientSettings.generated.h"
 
@@ -41,6 +42,12 @@ public:
 	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_ShouldIgnoreListenerRotation, Category = "Audio" )
 	bool ShouldIgnoreListenerRotation() const;
 
+	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
+	UAkRtpc* mCaveRTPC = nullptr ;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Audio")
+	float mCaveRTPCValue = 0;
+	
 #if WITH_EDITOR
 	// Check for errors in the settings
 	virtual void CheckForErrors();

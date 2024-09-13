@@ -60,6 +60,11 @@ public:
 	virtual void StopIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	// End IFGDismantleInterface
 
+	// Begin Significance
+	virtual void GainedSignificance_Implementation() override;
+	virtual void LostSignificance_Implementation() override;
+	// End Significance
+
 	/**
 	 * ---- DISCLAIMER ----
 	 * So here is the tricky part, in our fluid model, pump pressure is measured in meters.
@@ -125,11 +130,26 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Pipes|Pipeline" )
 	void FluidDescriptorSetNotify( TSubclassOf< class UFGItemDescriptor > fluidDesc );
 
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Pipes|Pipeline" )
+	void OnPumpEngineStopped();
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Pipes|Pipeline" )
+	void OnPumpEngineStarted(float headLiftPct);
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Pipes|Pipeline" )
+	void OnPumpEngineUpdated(float headLiftPct);
+	
 private:
 	/** Updates the maximum flow limit from the neighbouring pipes. */
 	void UpdateDefaultFlowLimit();
 	/** Updates the flow limit on the fluid box. */
 	void UpdateFlowLimitOnFluidBox();
+	
+	void CheckHeadliftDifferenceSounds();
+	void ResetHeadliftSound();
+	void PlayPipelinePumpSound();
+	void StopPipelinePumpSound();
+	void SetHeadliftRTPC(const float headlift) const;
 	
 private:
 	/** Maximum pressure this pump applies. [meters] */
@@ -154,7 +174,51 @@ private:
 	UPROPERTY( Replicated )
 	FQuantizedPumpIndicatorData mIndicatorData;
 
+	/* AK Sound for playing pipeline pistons */
+	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
+	class UAkAudioEvent* mPipelinePistonSound;
+
+	/* AK sound for stop playing pipeline pistons */
+	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
+	class UAkAudioEvent* mStopPipelinePistonSound;
+	
+	/* Ak sound for playing headlift sound */
+	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
+	class UAkAudioEvent* mHeadLiftSound;
+
+	/* Ak sound for stop playing headlift sound */
+	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
+	class UAkAudioEvent* mStopHeadLiftSound;
+
+	/* AK sound for playing pipeline pump sound */
+	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
+	class UAkAudioEvent* mPipelineEngineSound;
+
+	/* AK sound for stop playing pipeline pump sound */
+	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
+	class UAkAudioEvent* mStopPipelineEngineSound;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
+	float mUpdateAudioFlowTime;
+
+	UPROPERTY()
+	UAkComponent* mPlayPumpEngineComponent;
+	UPROPERTY()
+	UAkComponent* mPlayHeadLiftComponent;
+	UPROPERTY()
+	UAkComponent* mPlayPipePistonsComponent;
+
+	float mLastFlowUpdate;
+	float mCurrentAudioHeadlift;
+
 	/** Smoothed values used by the indicators/UI. */
 	float mIndicatorFlowPct;
 	float mIndicatorPressurePct;
+
+	float mTargetAnimationAudioValue;
+	float mCurrentSmoothedAnimationAudioValue;
+
+	bool mIsPipelinePumpSoundPlaying;
+	bool mIsExceedingHeadLift;
+	bool mIsPipelineEngineWorking;
 };

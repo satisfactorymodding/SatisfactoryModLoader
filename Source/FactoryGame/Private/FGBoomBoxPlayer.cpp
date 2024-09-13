@@ -78,6 +78,9 @@ AFGBoomBoxPlayer::AFGBoomBoxPlayer() : Super() {
 void AFGBoomBoxPlayer::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGBoomBoxPlayer::NeedTransform_Implementation(){ return bool(); }
 bool AFGBoomBoxPlayer::ShouldSave_Implementation() const{ return bool(); }
+void AFGBoomBoxPlayer::LoadFromItemState(const FFGDynamicStruct& itemState){ }
+FFGDynamicStruct AFGBoomBoxPlayer::SaveToItemState() const{ return FFGDynamicStruct(); }
+void AFGBoomBoxPlayer::FlushItemState() const{ }
 void AFGBoomBoxPlayer::BeginChangeTapeSequence(TSubclassOf<  UFGTapeData > newTape, AFGCharacterPlayer* instigatorCharacter){ }
 void AFGBoomBoxPlayer::BeginNextSongSequence(AFGCharacterPlayer* instigatorCharacter){ }
 void AFGBoomBoxPlayer::BeginPreviousSongSequence(AFGCharacterPlayer* instigatorCharacter){ }

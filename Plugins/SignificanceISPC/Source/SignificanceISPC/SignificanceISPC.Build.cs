@@ -7,7 +7,6 @@ public class SignificanceISPC : ModuleRules
 	public SignificanceISPC(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		bLegacyPublicIncludePaths = true;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {

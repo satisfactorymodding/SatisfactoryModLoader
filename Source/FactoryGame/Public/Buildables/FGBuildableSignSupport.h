@@ -25,11 +25,17 @@ public:
 	virtual void BeginPlay() override;
 	// End AActor interface
 
+
 	/** Set the poles height */
 	FORCEINLINE void SetPoleHeight( float height ) { mHeight = height; }
 
 	/** Sets an optional scale to scale the x/y values of the pole by */
 	virtual void SetPoleScale( FVector2D poleScale );
+	virtual void OnBuildEffectActorFinished() override;
+	
+	/* We only have to check mCanContainLightweightInstances for poles, the instance data is made dynamically. */
+	bool virtual DoesContainLightweightInstances_Native() const override { return mCanContainLightweightInstances; }
+	virtual TArray<struct FInstanceData> GetActorLightweightInstanceData_Implementation() override;
 
 public:
 	static const FName PoleMeshName;
@@ -38,6 +44,9 @@ public:
 	UPROPERTY( VisibleAnywhere, Category = "Pole" )
 	class UFGColoredInstanceMeshProxy* mPoleComponentProxy;
 
+	// Instance data set on begin play read during setup instances.
+	FInstanceData InstanceData;
+	
 	/** This poles height. */
 	UPROPERTY( SaveGame, Replicated )
 	float mHeight;

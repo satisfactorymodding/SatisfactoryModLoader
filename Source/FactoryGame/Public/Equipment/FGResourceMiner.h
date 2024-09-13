@@ -22,7 +22,6 @@ public:
 	// Begin AFGEquipment interface
 	virtual void UnEquip() override;
 	virtual void HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent) override;
-	virtual bool ShouldSaveState() const override;
 	// End AFGEquipment interface
 
 	/** Returns true if we are currently actively mining */

@@ -26,6 +26,7 @@ public:
 
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
+	virtual void GetClearanceData_Implementation( TArray< FFGClearanceData >& out_data ) const override;
 	// End Buildable interface
 
 	/** Gets the height of the ladder. */
@@ -61,7 +62,8 @@ private:
 	void OnRep_NumSegments();
 
 protected:
-
+	FFGClearanceData mClearance;
+	
 	/** Width of the ladder */
 	UPROPERTY( EditDefaultsOnly, Category = "Ladder" )
 	float mWidth;
@@ -85,10 +87,6 @@ protected:
 	/** Instanced Mesh Component. */
 	UPROPERTY( VisibleAnywhere )
 	TArray< UStaticMeshComponent* > mLadderMeshes;
-
-	/** Clearance Box */
-	UPROPERTY( VisibleAnywhere )
-	class UFGClearanceComponent* mClearanceBox;
 
 	/** Ladder component on the front. */
 	UPROPERTY( VisibleAnywhere )

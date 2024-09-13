@@ -111,7 +111,7 @@ private:
 	float mLengthPerCost;
 
 	/** The two connection components we connect. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class UFGCircuitConnectionComponent* mConnections[ 2 ];
 
 	/** Automatically spawned child pole, can be null. */
@@ -149,7 +149,7 @@ private:
 	FVector mStartLocation;
 
 	/** Keeps track of what connection we are working with */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	int32 mCurrentConnection;
 
 	UPROPERTY()

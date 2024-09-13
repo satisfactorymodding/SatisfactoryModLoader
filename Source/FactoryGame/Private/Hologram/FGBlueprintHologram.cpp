@@ -3,18 +3,23 @@
 #include "Hologram/FGBlueprintHologram.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBlueprintHologram::AFGBlueprintHologram() : Super() {
 	this->mCurrentDuplicatingBuildable = nullptr;
 	this->mBlueprintDescriptor = nullptr;
+	this->mBlueprintDescName = TEXT("");
 	this->mBlueprintSnapBuildMode = nullptr;
 	this->mSnappedProxy = nullptr;
 	this->mBlueprintBoundsMesh = nullptr;
 	this->mBlueprintDirectionMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Blueprint Direction Mesh"));
-	this->mShouldCreateClearanceMeshVisual = false;
 	this->mBlueprintDirectionMesh->SetupAttachment(RootComponent);
 }
 void AFGBlueprintHologram::BeginPlay(){ }
+void AFGBlueprintHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBlueprintHologram, mBlueprintDescName);
+}
 AActor* AFGBlueprintHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID NetConstructionID){ return nullptr; }
 void AFGBlueprintHologram::PreHologramPlacement(const FHitResult& hitResult){ }
 void AFGBlueprintHologram::PostHologramPlacement(const FHitResult& hitResult){ }
@@ -29,9 +34,10 @@ bool AFGBlueprintHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) 
 bool AFGBlueprintHologram::ShouldBuildGunHitProxies() const{ return bool(); }
 void AFGBlueprintHologram::LoadBlueprintToOtherWorld(){ }
 void AFGBlueprintHologram::DuplicateMeshComponentsFromBuildableArray(const TArray< AFGBuildable* >& buildables){ }
-void AFGBlueprintHologram::GenerateCollisionObjects(const TArray< AFGBuildable* >& buildables){ }
 void AFGBlueprintHologram::CreateConnectionRepresentations(const TArray<AFGBuildable*>& buildables){ }
 void AFGBlueprintHologram::AlignBuildableRootWithBounds(){ }
+void AFGBlueprintHologram::SetBlueprintDescriptor( UFGBlueprintDescriptor* blueprintDesc){ }
+void AFGBlueprintHologram::OnRep_BlueprintDescName(){ }
 USceneComponent* AFGBlueprintHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 void AFGBlueprintHologram::RegisterCustomBuildableVisualization(TSubclassOf<AFGBuildable> inBuildable, const FCreateBuildableVisualizationDelegate& inDelegate){ }
 bool AFGBlueprintHologram::FindCustomVisualizer(TSubclassOf<AFGBuildable> buildableClass, FCreateBuildableVisualizationDelegate& outVisualizer){ return bool(); }

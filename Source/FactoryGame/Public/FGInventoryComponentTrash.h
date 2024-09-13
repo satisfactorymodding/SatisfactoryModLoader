@@ -15,7 +15,7 @@ public:
 	/** Constructor */
 	UFGInventoryComponentTrash();
 	// Begin UFGInventoryComponent interface
-	virtual void OnItemsAdded( int32 idx, int32 num ) override;
+	virtual void OnItemsAdded( const int32 idx, const int32 num, UFGInventoryComponent* sourceInventory = nullptr ) override;
 	// End UFGInventoryComponent interface
 private:
 private:

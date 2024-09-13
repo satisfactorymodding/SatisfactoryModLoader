@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGMaterialEffectComponent.h"
+#include "InstanceData.h"
 #include "ItemAmount.h"
 #include "FGMaterialEffect_Build.generated.h"
 
@@ -26,7 +27,8 @@ public:
 	void SetCost( TArray< FItemAmount > cost );
 	void SetSpeed( float speed );
 	void SetTransform( const FTransform& transform ) { mTransform = transform; }
-
+	FORCEINLINE void SetUsingInstanceData() { mIsUsingInstanceData = true; }
+	
 	/** Who build the thing. */
 	UFUNCTION( BlueprintPure )
 	FORCEINLINE AActor* GetInstigator() const { return mInstigator; }
@@ -42,6 +44,9 @@ public:
 	UFUNCTION( BlueprintPure )
 	FORCEINLINE FTransform GetTransform() const { return mTransform; }
 
+	UFUNCTION( BlueprintPure )
+	FORCEINLINE bool IsUsingInstanceData() const { return mIsUsingInstanceData; }
+	
 private:
 	/** Who built this */
 	UPROPERTY(  )
@@ -52,6 +57,9 @@ private:
 	/** The speed of this effect. */
 	UPROPERTY()
 	float mSpeed;
+
+	UPROPERTY()
+	bool mIsUsingInstanceData;
 
 	/* Transform, in case we are using a lightweight instance.*/
 	UPROPERTY()

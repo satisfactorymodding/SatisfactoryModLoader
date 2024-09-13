@@ -14,12 +14,12 @@ void UFGBlueprintRemoteCallObject::Client_RespondFileDataResponse_Implementation
 void UFGBlueprintRemoteCallObject::Client_RespondFinalFileDataResponse_Implementation(const TArray< uint8 >& fileData, FBlueprintRecord record){ }
 void UFGBlueprintRemoteCallObject::Client_RespondFileFailure_Implementation(const FString& fileName){ }
 void UFGBlueprintRemoteCallObject::Server_SaveBlueprintInDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, FBlueprintRecord record, FBlueprintCategoryRecord categoryRecord, FBlueprintSubCategoryRecord subCategoryRecord){ }
-bool UFGBlueprintRemoteCallObject::Server_SaveBlueprintInDesigner_Validate( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, FBlueprintRecord record, FBlueprintCategoryRecord categoryRecord, FBlueprintSubCategoryRecord subCategoryRecord){ return bool(); }
 void UFGBlueprintRemoteCallObject::Server_ClearBlueprintDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller){ }
 void UFGBlueprintRemoteCallObject::Server_LoadBlueprintInDesigner_Implementation( AFGBuildableBlueprintDesigner* designer,  AFGPlayerController* controller, const FString& blueprintName){ }
 void UFGBlueprintRemoteCallObject::Server_DeleteBlueprintDescriptor_Implementation(const FString& blueprintName){ }
 AFGBlueprintSubsystem::AFGBlueprintSubsystem() : Super() {
 	this->mDefaultBuildEffectActor = nullptr;
+	this->mUndefinedCategoryDefaultName = INVTEXT("");
 	this->mTimeSinceLastBlueprintRecordMulticast = 0.0;
 	this->mTimeSinceLastRecipeCheck = 0.0;
 	this->mRecordDataIsDirty = false;
@@ -59,8 +59,8 @@ void AFGBlueprintSubsystem::SetActiveBlueprintHologramDescriptor(UFGBlueprintDes
 bool AFGBlueprintSubsystem::SerializeBlueprintHeader(FArchive& ar, FBlueprintHeader& blueprintHeader){ return bool(); }
 bool AFGBlueprintSubsystem::SerializeBlueprintConfig(FArchive& ar, FBlueprintRecord& blueprintRecord){ return bool(); }
 void AFGBlueprintSubsystem::CreateBlueprintWorld(){ }
-FBlueprintHeader AFGBlueprintSubsystem::WriteBlueprintToArchive(FBlueprintRecord& record, const FTransform& blueprintOrigin,  AFGBuildableBlueprintDesigner* designer, TArray<  AFGBuildable* >& buildables, FIntVector dimensions){ return FBlueprintHeader(); }
-bool AFGBlueprintSubsystem::WriteBlueprintToDisk(FBlueprintRecord& record){ return bool(); }
+FBlueprintHeader AFGBlueprintSubsystem::WriteBlueprintToArchive(const FBlueprintRecord& record, const FTransform& blueprintOrigin, const TArray<  AFGBuildable* >& buildables, FIntVector dimensions){ return FBlueprintHeader(); }
+bool AFGBlueprintSubsystem::WriteBlueprintToDisk(const FBlueprintRecord& record){ return bool(); }
 bool AFGBlueprintSubsystem::WriteBlueprintConfigToDisk(const FBlueprintRecord& record){ return bool(); }
 void AFGBlueprintSubsystem::CalculateBlueprintCost(const TArray< AFGBuildable* >& buildables, TArray< FBlueprintItemAmount >& out_cost) const{ }
 void AFGBlueprintSubsystem::CalculateBlueprintCost(const TArray< AFGBuildable* >& buildables, TArray< FItemAmount >& out_cost) const{ }
@@ -71,13 +71,14 @@ void AFGBlueprintSubsystem::EnumerateBlueprints(){ }
 void AFGBlueprintSubsystem::EnumerateBlueprintConfigs(){ }
 void AFGBlueprintSubsystem::FindBlueprintHeaders(FString blueprintDir, TArray< FBlueprintHeader >& out_Headers){ }
 void AFGBlueprintSubsystem::LoadStoredBlueprint(UFGBlueprintDescriptor* blueprintDesc, const FTransform& blueprintOrigin, TArray<  AFGBuildable* >& out_spawnedBuildables, bool useBlueprintWorld , 
-	                         AFGBuildableBlueprintDesigner* , APawn* instigator){ }
+	                         AFGBuildableBlueprintDesigner* , APawn* instigator , const TFunction<void(AFGBuildable*)>& buildablePreBeginPlayDelegate ,  AFGBlueprintProxy* blueprintProxy){ }
 void AFGBlueprintSubsystem::CollectObjects(TArray<  AFGBuildable* >& buildables, TArray< UObject* >& out_objectsToSerialize){ }
 FString AFGBlueprintSubsystem::GetSessionBlueprintPath(){ return FString(); }
-bool AFGBlueprintSubsystem::SanitizeBlueprintSessionOrFileName(FString& out_santizedString){ return bool(); }
+FString AFGBlueprintSubsystem::SanitizeBlueprintFileName(const FString& blueprintName){ return FString(); }
 void AFGBlueprintSubsystem::GatherRecipeObjectRefsForBuildableArray(const TArray< AFGBuildable* >& buildables, TArray< FObjectReferenceDisc >& out_recipeRefs){ }
 AFGBuildableBlueprintDesigner* AFGBlueprintSubsystem::IsLocationInsideABlueprintDesigner(const FVector& hitLocation){ return nullptr; }
 void AFGBlueprintSubsystem::NotifyBuildableWithBlueprintBuildIDSet( AFGBuildable* buildable, int32 id){ }
+void AFGBlueprintSubsystem::NotifyRuntimeInstanceWithBlueprintBuildIDSet(int32 buildEffectId, int32 runtimeIndex, TSubclassOf<  AFGBuildable > buildableClass, UAbstractInstanceDataObject* abstractData){ }
 void AFGBlueprintSubsystem::OnRep_BlueprintCategoryRecords(){ }
 bool AFGBlueprintSubsystem::AreRecipeRequirementsMetForBlueprint(const FBlueprintHeader& header){ return bool(); }
 void AFGBlueprintSubsystem::SetBlueprintCategories(TArray< UFGBlueprintCategory* > blueprintCategories){ }

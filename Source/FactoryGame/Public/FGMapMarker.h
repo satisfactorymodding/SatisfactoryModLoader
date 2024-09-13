@@ -38,6 +38,9 @@ struct FACTORYGAME_API FMapMarker
 	FString Name;
 
 	UPROPERTY( SaveGame, BlueprintReadWrite )
+	FString CategoryName;
+
+	UPROPERTY( SaveGame, BlueprintReadWrite )
 	ERepresentationType MapMarkerType;
 
 	UPROPERTY( SaveGame, BlueprintReadWrite )

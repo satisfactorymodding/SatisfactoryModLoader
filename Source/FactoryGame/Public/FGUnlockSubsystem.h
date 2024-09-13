@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGPlayerController.h"
 #include "FGSaveInterface.h"
 #include "FGSubsystem.h"
 #include "Resources/FGTapeData.h"
@@ -11,9 +12,16 @@
 #include "Unlocks/FGUnlockScannableResource.h"
 #include "FGUnlockSubsystem.generated.h"
 
+class UFGPlayerCustomizationDesc;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FUnlockMoreInventorySlots, int32, newUnlockedSlots );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewTapeUnlocked, TSubclassOf< UFGTapeData >, newTape );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewScannableObjectUnlocked, TSubclassOf< class UFGItemDescriptor >, newItemDescriptor );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewPlayerCustomizationUnlocked, TSubclassOf< class UFGPlayerCustomizationDesc >, customizationDesc );
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnCentralStorageUploadSlotsUnlocked );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnCentralStorageItemStackLimitUnlocked );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnCentralStorageUploadSpeedUnlocked );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnFeatureUnlockedDelegate );
 
 /**
  * Subsystem responsible for handling unlocks that you get when purchasing/research a schematic
@@ -56,10 +64,18 @@ public:
 	void UnlockCustomizer();
 	void UnlockBuildEfficiency();
 	void UnlockBuildOverclock();
+	void UnlockBuildProductionBoost();
 	void UnlockInventorySlots( int32 numSlotsToUnlock );
 	void UnlockArmEquipmentSlots( int32 numSlotsToUnlock );
 	void UnlockEmote( TSubclassOf< class UFGEmote > newEmote );
 	void UnlockTape( TSubclassOf< UFGTapeData > newTape );
+	void UnlockPlayerCustomization( TSubclassOf< UFGPlayerCustomizationDesc > newCustomizaton );
+	void UnlockCentralStorageItemStackLimit( int32 itemStackLimitIncrease );
+	// This will not save the value. Just for runtime debugging
+	void Cheat_SetCentralStorageUploadSpeed( float seconds );
+	void UnlockCentralStorageUploadSpeed( float uploadSpeedPercentageDecrease );
+	void UnlockCentralStorageUploadSlots( int32 numSlotsToUnlock );
+	void UnlockSAMIntensity( int32 newSamIntensity, bool forceSet = false );
 
 	UFUNCTION( BlueprintCallable, Category = "Unlocks" )
 	void UnlockCheckmark( FString playerName );
@@ -86,7 +102,23 @@ public:
 	FORCEINLINE bool GetIsBuildingEfficiencyUnlocked() const { return mIsBuildingEfficiencyUnlocked; }
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	FORCEINLINE bool GetIsBuildingOverclockUnlocked() const { return mIsBuildingOverclockUnlocked; }
+	UFUNCTION( BlueprintPure, Category = "Unlocks" )
+	FORCEINLINE bool GetIsBuildingProductionBoostUnlocked() const { return mIsBuildingProductionBoostUnlocked; }
 	
+
+	/**
+	 * This returns ALL customizations available, including ones that are not unlocked.
+	 */
+	UFUNCTION( BlueprintCallable )
+	TArray< TSubclassOf< UFGPlayerCustomizationDesc > > GetAllCustomizationsAvailable() const;
+
+	/**
+	 * This lets us know if a customization is unlocked for the player. In addition to checking it from a game
+	 * progression perspective, it also checks if the player has the entitlement for it, if the customization is backed by a DLC.
+	 */
+	UFUNCTION( BlueprintCallable )
+	bool IsCustomizationUnlockedForPlayer( TSubclassOf< UFGPlayerCustomizationDesc > customizationDesc, AFGPlayerController* player ) const;
+
 	UFUNCTION( BlueprintCallable, Category = "Resource Scanner" )
 	void RemoveAllScannableResources() { mScannableResources.Empty(); }
 
@@ -108,6 +140,13 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	void GetUnlockedTapes( TArray< TSubclassOf< class UFGTapeData > >& out_unlockedTapes ) const;
 
+	/** Get the central storage item limit with unlock modifiers applied */
+	int32 GetCentralStorageItemStackLimit() const;
+	/** Get the central storage upload time with unlock modifiers applied */
+	float GetCentralStorageTimeToUpload() const;
+	/** Get the number of central storage upload slots for the player with unlock modifiers applied */
+	int32 GetCentralStorageNumUploadSlots() const;
+
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	void GetPlayersWithCheckmarks( TArray< FGCheckmarkUnlockData >& out_playersWithCheckmarks ) const;
 
@@ -121,6 +160,9 @@ public:
 		
 		return data != nullptr;
 	}
+	
+	UFUNCTION( BlueprintPure, Category = "Narrative" )
+	FORCEINLINE int32 GetSAMIntensity() const { return mSAMIntensity; } 
 
 private:
 	void SetNumOfAdditionalInventorySlots( int32 newNumSlots );
@@ -128,6 +170,10 @@ private:
 
 	UFUNCTION()
 	void OnRep_PlayerCheckmarks();
+	UFUNCTION()
+	void OnRep_CustomizerUnlocked();
+	UFUNCTION()
+	void OnRep_MapUnlocked();
 	
 	void UpdatePlayerWidgets();
 	
@@ -144,62 +190,103 @@ public:
 	FOnNewTapeUnlocked mOnNewTapeUnlocked;
 
 	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
-	FOnNewScannableObjectUnlocked mOnNewScannableObjectUnlocked;
+	FOnNewPlayerCustomizationUnlocked mOnNewPlayerCustomizationUnlocked;
 
+	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
+	FOnNewScannableObjectUnlocked mOnNewScannableObjectUnlocked;
+	
+	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
+	FOnCentralStorageUploadSlotsUnlocked mOnCentralStorageUploadSlotsUnlocked;
+	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
+	FOnCentralStorageItemStackLimitUnlocked mOnCentralStorageItemStackLimitUnlocked;
+	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
+	FOnCentralStorageUploadSpeedUnlocked mOnCentralStorageUploadSpeedUnlocked;
+
+	/** Called when the customizer is unlocked */
+	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
+	FOnFeatureUnlockedDelegate OnCustomizerUnlocked;
+
+	/** Called when the map is unlocked */
+	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
+	FOnFeatureUnlockedDelegate OnMapUnlocked;
 private:
 	/** These are the resources the players can use their scanner to find */
 	//@todok2 Deprecated Look into if we can remove this. Do we really need to save this or can we get away with removing it?
-	UPROPERTY( Savegame )
+	UPROPERTY( SaveGame )
 	TArray< TSubclassOf< class UFGResourceDescriptor > > mScannableResources;
 
 	/** These are the resources the players can use their resource scanner to find */
-	UPROPERTY( Savegame, Replicated )
+	UPROPERTY( SaveGame, Replicated )
 	TArray< FScannableResourcePair > mScannableResourcesPairs;
 
 	/** These are the items the players can use their hand scanner or radar tower to find */
-	UPROPERTY( Savegame, Replicated )
+	UPROPERTY( SaveGame, Replicated )
 	TArray< FScannableObjectData > mScannableObjectData;
 
 	/** Did the player unlock the minimap? */
-	UPROPERTY( Savegame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_MapUnlocked )
 	bool mIsMapUnlocked;
 
 	/** Is the building efficiency display unlocked */
-	UPROPERTY(Savegame, Replicated )
+	UPROPERTY( SaveGame, Replicated )
 	bool mIsBuildingEfficiencyUnlocked;
 
 	/** Is the building overclocking unlocked */
-	UPROPERTY(Savegame, Replicated )
+	UPROPERTY( SaveGame, Replicated )
 	bool mIsBuildingOverclockUnlocked;
 	
-	UPROPERTY(Savegame, Replicated )
+	UPROPERTY( SaveGame, Replicated )
 	bool mIsBlueprintsUnlocked;
 	
-	UPROPERTY(Savegame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CustomizerUnlocked )
 	bool mIsCustomizerUnlocked;
+
+	UPROPERTY( SaveGame, Replicated )
+	bool mIsBuildingProductionBoostUnlocked;
 
 	/** How many additional inventory slots have been unlocked for the players */
 	int32 mNumAdditionalInventorySlots;
 
 	/** The highest total number of inventory slots that any player have ever had, saved for save compatibility and rebalancing */
-	UPROPERTY( Savegame, Replicated )
+	UPROPERTY( SaveGame, Replicated )
 	int32 mNumTotalInventorySlots;
 
 	/** How many additional arm equipment slots have been unlocked for the players */
 	int32 mNumAdditionalArmEquipmentSlots;
 
 	/** The highest total number of arm equipment slots that any player have ever had, saved for save compatibility and rebalancing */
-	UPROPERTY( Savegame, Replicated )
+	UPROPERTY( SaveGame, Replicated )
 	int32 mNumTotalArmEquipmentSlots;
 
 	/** The emotes that we have unlocked */
-	UPROPERTY( Savegame, Replicated )
+	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf<class UFGEmote> > mUnlockedEmotes;
 
 	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf< class UFGTapeData > > mUnlockedTapes;
 
+	UPROPERTY( SaveGame, Replicated )
+	TArray< TSubclassOf< class UFGPlayerCustomizationDesc > > mUnlockedPlayerCustomizations;
+
+	/** Increases the limit for how many item stacks we can store in the central storage. Added on top of UFGCentralStorageSettings::mDefaultItemLimit */
+	int32 mUnlockedCentralStorageItemStackLimit;
+
+	/**
+	 * This will be a value between 0-100 and represent a percentage.
+	 * We will then decrease UFGCentralStorageSettings::mDefaultTimeToUpload with that percentage.
+	 * The maximum decrease will be limited by UFGCentralStorageSettings::mMaxTimeToUploadPercentageDecrease.
+	 */
+	UPROPERTY( Replicated )
+	float mUnlockedCentralStorageTimeToUploadDecrease;
+
+	/** How many extra upload slots the player will have where they can queue up uploads for central storage. Added on top of UFGPlayerSettings::mDefaultUploadSlots  */
+	int32 mUnlockedCentralStorageUploadSlots;
+
 	/** The names of the players that have unlocked the FICSIT Checkmark™ */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_PlayerCheckmarks )
 	TArray< FGCheckmarkUnlockData > mPlayersWithCheckmark;
+
+	/** How intense the effects like VO on the SAM nodes should be. Starts at 0 */ 
+	UPROPERTY( SaveGame, Replicated )
+	int32 mSAMIntensity = 0;
 };

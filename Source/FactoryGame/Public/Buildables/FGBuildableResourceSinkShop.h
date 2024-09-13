@@ -19,14 +19,9 @@ public:
 	AFGBuildableResourceSinkShop();
 
 	// Begin AActor interface
-	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	// End AActor interface
-
-	// Rep detail actor interface. At present this building doesn't utilize its detail actor and thus needs to override the locking behaviour on its inv comp
-	virtual void OnReplicationDetailActorCreated() override;
-	virtual void OnReplicationDetailActorRemoved() override;
-
+	
 	/** Get the inventory that holds the purchases we made in the resource sink shop */
 	UFUNCTION( BlueprintPure, Category = "Resource Sink Shop" )
 	FORCEINLINE class UFGInventoryComponent* GetShopInventory() const { return mShopInventory; }
@@ -43,7 +38,7 @@ public:
 
 private:
 	/** The inventory that holds the purchases we made in the resource sink shop */
-	UPROPERTY( VisibleDefaultsOnly, SaveGame, Replicated, Category = "Resource Sink Shop" )
+	UPROPERTY( VisibleDefaultsOnly, SaveGame, Category = "Resource Sink Shop" )
 	class UFGInventoryComponent* mShopInventory;
 
 	/** The size of the inventory that holds the purchases we made in the resource sink shop */

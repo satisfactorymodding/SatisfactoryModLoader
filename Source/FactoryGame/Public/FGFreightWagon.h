@@ -76,17 +76,11 @@ public:
 
 private:
 	UFUNCTION()
-	void OnItemAddedToFreight( TSubclassOf< class UFGItemDescriptor > itemClass, int32 numAdded );
+	void OnItemAddedToFreight( TSubclassOf< UFGItemDescriptor > itemClass, const int32 numAdded, UFGInventoryComponent* sourceInventory = nullptr );
 
 	UFUNCTION()
-	void OnItemRemovedFromFreight( TSubclassOf< class UFGItemDescriptor > itemClass, int32 numRemoved );
-
-	UFUNCTION()
-	void InitializeInventoryComponent();
-
-	UFUNCTION()
-	void OnRep_StorageInventory();
-
+	void OnItemRemovedFromFreight( TSubclassOf< UFGItemDescriptor > itemClass, const int32 numRemoved, UFGInventoryComponent* targetInventory = nullptr );
+	
 	/** Returns a UStaticMesh pointer ( loaded if necessary ) that matches the inventory housed in our inventory component */
 	UStaticMesh* GetCargoStaticMesh();
 
@@ -109,6 +103,10 @@ private:
 	UPROPERTY()
 	EFreightCargoType mFreightCargoType;
 
+	/** The damage type used when the cargo crate is placed */
+	UPROPERTY( EditDefaultsOnly )
+	TSubclassOf< UFGDamageType > mFreightDropDamageClass;
+
 	/** 
 	 * When docking with a platform a freight may not have a defined type, however the inventory will transfer after the need to swap container visibility ( it may show the wrong mesh )
 	 * This temporary type does not carry any influence when updating mFreightCargoType but will be used as an override to specify container type when getting the needed static mesh if mFreightCargoType is FCT_None
@@ -122,7 +120,7 @@ private:
 	class UFGRailroadVehicleMovementComponent* mVehicleMovement;
 
 	/** Responsible for handling our inventory */
-	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_StorageInventory )
+	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mStorageInventory;
 
 	/** Static mesh to use when freight is holding standard inventory ( factory items ) */

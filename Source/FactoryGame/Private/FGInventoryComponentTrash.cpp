@@ -5,6 +5,6 @@
 UFGInventoryComponentTrash::UFGInventoryComponentTrash() : Super() {
 
 }
-void UFGInventoryComponentTrash::OnItemsAdded(int32 idx, int32 num){ }
+void UFGInventoryComponentTrash::OnItemsAdded(const int32 idx, const int32 num, UFGInventoryComponent* sourceInventory){ }
 bool UFGInventoryComponentTrash::FilterExcludedItems(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
 bool UFGInventoryComponentTrash::IsValidItem(TSubclassOf<  UFGItemDescriptor > resource) const{ return bool(); }

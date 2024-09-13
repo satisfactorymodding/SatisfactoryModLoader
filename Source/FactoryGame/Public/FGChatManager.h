@@ -39,7 +39,7 @@ public:
 	float ServerTimeStamp;
 
 	/** The player who sent the message */
-	UPROPERTY()
+	UPROPERTY( BlueprintReadWrite )
 	class AFGPlayerState* Sender;
 
 	/** The name of the player */

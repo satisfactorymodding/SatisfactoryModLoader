@@ -17,8 +17,10 @@ class FACTORYGAME_API AFGResourceExtractorHologram : public AFGFactoryHologram
 	
 public:
 	AFGResourceExtractorHologram();
+	
 	// Begin AActor Interface
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	// End AActor Interface
 
 	// Begin AFGHologram Interface
@@ -55,13 +57,13 @@ protected:
 
 protected:
 	UPROPERTY()
-	const class AFGBuildableResourceExtractorBase* mDefaultExtractor = nullptr;
+	const class AFGBuildableResourceExtractorBase* mDefaultExtractor;
 
 	/** The resource node we snapped to. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	TScriptInterface< class IFGExtractableResourceInterface > mSnappedExtractableResource;
 
-	UPROPERTY( )
-	class AFGBuildableResourceExtractorBase* mUpgradeTarget = nullptr;
+	UPROPERTY( Replicated, CustomSerialization )
+	class AFGBuildableResourceExtractorBase* mUpgradeTarget;
 
 };

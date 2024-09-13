@@ -4,12 +4,26 @@
 
 #include "FactoryGame.h"
 #include "Engine/GameInstance.h"
-#include "Online/FGNat.h"
 #include "Online/FGOnlineHelpers.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Framework/Application/IInputProcessor.h" // <FL> [WuttkeP] Added input pre-processor for automatically updating the last used input device type.
 #include "FGGameInstance.generated.h"
 
+// <FL> ZimmermannA For usage outside of game instance
+extern TAutoConsoleVariable< bool > CVarForceMouseAndKeyboardDeviceType;
+extern TAutoConsoleVariable< bool > CVarForceGamepadDeviceType;
+
+UENUM(BlueprintType)
+enum class EInputDeviceMode : uint8
+{
+	InputDeviceMode_MouseAndKeyboardAndGamepad,
+	InputDeviceMode_MouseAndKeyboard,
+	InputDeviceMode_Gamepad
+};
+// </FL>
+
+class IFGDedicatedServerInterface;
 
 UENUM(BlueprintType)
 enum class EJoinSessionState : uint8
@@ -21,7 +35,19 @@ enum class EJoinSessionState : uint8
 	JSS_ConnectingToHost
 };
 
+// <FL> [WuttkeP] Added types for input device type detection and switching.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnActiveInputDeviceTypeChanged, EInputDeviceType, newDeviceType );
+DECLARE_DYNAMIC_DELEGATE_OneParam( FFGInputDeviceTypeChangedDelegate, EInputDeviceType, newDeviceType);
+// </FL>
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnJoinSessionStateChanged, EJoinSessionState, newState );
+
+// <FL> [WuttkeP] Added callback for updating key hints.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FFGKeyHintsChanged );
+// </FL>
+
+// Used for reaching through the SlateApplication focus changed event to blueprints.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FFGOnFocusChanged );
 
 USTRUCT()
 struct FOnJoinSessionData
@@ -107,6 +133,14 @@ struct FFGGameNetworkErrorMsg
 	FString errorMsg;
 };
 
+/** Used to store the encryption data for the outgoing connection from the client to the dedicated server */
+struct FFGPendingConnectionEncryptionData
+{
+	/** Encryption token that is associated to this encryption data. Used to make sure we do not use a wrong token. */
+	FString EncryptionToken;
+	/** Encryption data to use for encrypting the connection */
+	FEncryptionData EncryptionData;
+};
 
 // Don't pass the error here, as we want the user to specify how it want to handle the error itself (peek or get)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnNewError );
@@ -114,9 +148,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnNewError );
 /** Delegate when a network error has occured, like mismatching version, timeouts and so on */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnNetworkErrorRecieved, ENetworkFailure::Type, errorType, FString, errorMsg );
 
-// Called if/when the NAT-type is updated
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNatTypeUpdated, ECachedNATType, natType );
-/**
+class UFGLocalPersistenceStore;
+	/**
  * @OSS: Responsibilities:
  * - QueryNATType:
  * This queries the backend systems what kind of NAT they think we have. Doesn't always succeed
@@ -129,13 +162,16 @@ class FACTORYGAME_API UFGGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 public:
-	UFGGameInstance();
-	~UFGGameInstance();
-
 	// Begin UGameInstance interface
 	virtual void Init() override;
 	virtual void StartGameInstance() override;
 	virtual bool JoinSession( ULocalPlayer* localPlayer, const FOnlineSessionSearchResult& searchResult ) override;
+	virtual void ReceivedNetworkEncryptionAck(const FOnEncryptionKeyResponse& Delegate) override;
+	virtual void ReceivedNetworkEncryptionToken(const FString& EncryptionToken, const FOnEncryptionKeyResponse& Delegate) override;
+	virtual EEncryptionFailureAction ReceivedNetworkEncryptionFailure(UNetConnection* Connection) override;
+#if WITH_EDITOR
+	virtual FGameInstancePIEResult InitializeForPlayInEditor(int32 PIEInstanceIndex, const FGameInstancePIEParameters& Params) override;
+#endif
 	// End UGameInstance interface
 
 	/** Get the music manager */
@@ -172,13 +208,13 @@ public:
 	UFUNCTION( BlueprintPure, Category="FactoryGame|ErrorHandling", meta=(DefaultToSelf = "worldContext"))
 	static class UFGErrorMessage* PeekNextError( UObject* worldContext );
 
-	/** Set if the player has seen alpha info screen */
-	UFUNCTION( BlueprintCallable )
-	void SetHasSeenAlphaInfoScreen( bool hasSeen );
+	/** Marks that the player has seen alpha info screen */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	void SetHasSeenAlphaInfoScreen();
 
 	/** Has the player seen the alpha info screen? */
-	UFUNCTION( BlueprintCallable )
-	FORCEINLINE bool HasPlayerSeenAlphaInfoScreen() const { return mHasSeenAlphaInfo; }
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	bool ShouldShowAlphaInfoScreen() const;
 
 	// Finds non-original content and populates ModPackages
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Modding" )
@@ -190,14 +226,6 @@ public:
 
 	// Called when exiting to desktop/shutting down
 	virtual void Shutdown() override;
-
-	//[Gafgar:Tue/07-04-2020] moved to be done automatically now
-	///** Query our current NAT-type */
-	void QueryNATType();
-
-	/** Get cached NAT-type */
-	FORCEINLINE ECachedNATType GetCachedNATType() const{ return mCachedNATType; }
-
 
 	/* returns true if there were an error, and fills in the enum and string. If there were no error the type and msg will be undefined, and the function returns false. To get the next message or reset the error state, call PopLatestNetworkError function*/
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|ErrorHandling" )
@@ -213,8 +241,22 @@ public:
 	/** Get the instance of the debug overlay widget. Will create one if it doesn't exists. Might return null if we don't have a specificed debug overlay widget class */
 	class UFGDebugOverlayWidget* GetDebugOverlayWidget();
 
-	UFUNCTION( BlueprintCallable )
-	class UFGOnlineSessionClient* GetOnlineSession();
+	/** Returns the interface to the dedicated server specific functionality on the game instance level */
+	IFGDedicatedServerInterface* GetDedicatedServerInterface() const;
+
+	/** Updates the encryption data set for the pending client connection */
+	void SetPendingConnectionEncryptionData( const FFGPendingConnectionEncryptionData& NewEncryptionData );
+
+	// <FL> [WuttkeP] Added functions for input device type detection and switching.
+	UFUNCTION( BlueprintPure )
+	EInputDeviceType GetActiveInputDeviceType();
+	// </FL>
+
+	
+	/** Listener delegate is called by the SlateApplication. The OnFocusChanged delegate can be bound to in blueprint. */
+	UPROPERTY( BlueprintAssignable, Category = "UI" )
+	FFGOnFocusChanged mOnFocusChangedDelegate;
+	FDelegateHandle mOnFocusChangedListenerDelegate;
 
 protected:
 	// Called when a map has loaded properly in Standalone
@@ -230,16 +272,16 @@ protected:
 	UFUNCTION()
 	virtual void PollHostProductUserId_JoinSession();
 
-	/** Forward function when nat query is completed */
-	static void _OnNATUpdatedCallback( void* userData, ECachedNATType Data);
-
-	/** Called when we receive a callback about our current NAT-type  */
-	void OnNATUpdated( ECachedNATType Data);
-
 	/** Called after we have joined a session, makes sure we copy the session settings from the host */
 	void OnJoinSessionComplete( FName sessionName, EOnJoinSessionCompleteResult::Type joinResult );
 
 	void SendRecievedNetworkErrorOnDelegate( UWorld* world, UNetDriver* driver, ENetworkFailure::Type errorType, const FString& errorMsg );
+
+	void OnLastInputDeviceTypeChanged(EInputDeviceType deviceType);
+
+	/** Add a callback to the input device type changed event and immediately call it, for convenience. */
+	UFUNCTION( BlueprintCallable )
+	void AddAndCallDeviceTypeChangedCallback( UPARAM(DisplayName="Event") FFGInputDeviceTypeChangedDelegate Delegate);
 
 private:
 	void OnPreLoadMap( const FString& levelName );
@@ -256,10 +298,6 @@ private:
 	void SubmitNetModeTelemetry( UWorld* world ) const;
 	void SubmitModTelemetry() const;
 
-	/** EOS metrics */
-	void InitEpicOnlineServicesMetrics();
-	void ShutdownEpicOnlineServicesMetrics();
-	
 	void JoinSession_Internal();
 
 protected:
@@ -277,13 +315,12 @@ protected:
 	UPROPERTY( BlueprintAssignable )
 	FOnNetworkErrorRecieved mOnNetworkErrorRecieved;
 	
-	/** Main telemetry instance, nullptr if telemetry is turned off by the player, class not defined if telemetry is disabled for a build. */
-	UPROPERTY( Transient )
+	///** Main telemetry instance, nullptr if telemetry is turned off by the player, class not defined if telemetry is disabled for a build. */
 	class UDSTelemetry* mTelemetryInstance;
-	
-	/** The Epic Online Services Metrics handle used to send start/stop session events. */
-	class UEOSMetrics* mEOSMetricsHandle;
 
+	UPROPERTY( Transient )
+	UObject* mTelemetryInstanceObject;
+	
 	/** List of errors that we should pop */
 	UPROPERTY()
 	TArray<class UFGErrorMessage*> mErrorList;
@@ -299,17 +336,22 @@ protected:
 	/** Join session complete handle */
 	FDelegateHandle mOnJoinSessionCompleteHandle;
 	
-	/** Called when nat-type is updated */
-	UPROPERTY(BlueprintAssignable)
-	FOnNatTypeUpdated mOnNatTypeUpdated;
-
 	/** Used to query NAT type, nothing more */
 	EOS_HP2P mP2PHandle = nullptr;
 
-	/** Our last seen NAT-type */
-	ECachedNATType mCachedNATType;
+	/** Encryption data for our pending connection to the DS */
+	FFGPendingConnectionEncryptionData mPendingConnectionEncryptionData;
+
+	EInputDeviceMode mInputDeviceMode = EInputDeviceMode::InputDeviceMode_MouseAndKeyboard;
 
 public:
+
+	void SetInputDeviceMode(EInputDeviceMode InputDeviceMode);
+	bool GetConsoleVariableBool(const char* Variable);
+	void SetConsoleVariable(const char* Variable, bool Active);
+
+	EInputDeviceMode GetInputDeviceMode() { return mInputDeviceMode; }
+
 	// Mod packages found - valid or invalid
 	UPROPERTY( BlueprintReadOnly, Category = "Modding" )
 	TArray< FFGModPackage > ModPackages;
@@ -320,8 +362,38 @@ public:
 
 	/** Has the player seen the alpha info screen, used to only show it once per session */
 	bool mHasSeenAlphaInfo;
+
+	// <FL> [WuttkeP] Added callback for updating key hints.
+	/** Fired when a key hint changes without the focused widget changing. */
+	UPROPERTY( BlueprintAssignable, Category = "Input" )
+	FFGKeyHintsChanged mOnKeyHintsChanged;
+	// </FL>
+
+	// <FL> [WuttkeP] Added callback for input device type switching.
+	UPROPERTY( BlueprintAssignable, Category = "Input" )
+	FFGOnActiveInputDeviceTypeChanged mOnActiveInputDeviceTypeChanged;
+	// </FL>
+
+	// <FL> [KonradA] Getter For Local Persistence store
+	UFUNCTION(BlueprintCallable)
+	UFGLocalPersistenceStore* GetLocalPersistenceStore();
+	// </FL>
 	
+#if WITH_EDITOR
+	/** If this game instance was started as a part of Play In Editor, this will cache the Server Port it is using */
+	int32 mCachedPIEServerPort;
+#endif
 private:
 	UPROPERTY()
 	class UFGDebugOverlayWidget* mDebugOverlayWidget;
+
+	//<FL>[KonradA] Helper store for key value pairs so that users can locally store data that does not need to be replicated
+	UPROPERTY()
+	UFGLocalPersistenceStore* mLocalPersistenceStore;
+	//</FL>
+
+	/** Is called by the SlateApplication */
+	void OnFocusChanged( const FFocusEvent& FocusEvent, const FWeakWidgetPath& OldFocusedWidgetPath,
+						 const TSharedPtr< SWidget >& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath,
+						 const TSharedPtr< SWidget >& NewFocusedWidget );
 };

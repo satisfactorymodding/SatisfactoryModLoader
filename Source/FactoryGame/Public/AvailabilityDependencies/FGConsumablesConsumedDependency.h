@@ -21,9 +21,14 @@ public:
 
     TMap< TSubclassOf< class UFGConsumableDescriptor >, int32 > GetItemAmount() const { return mConsumablesConsumedCount; }
 
+#if WITH_EDITOR
+	virtual FString ToString() const override;
+	virtual void FromString( const FString& inString ) override;
+#endif
+
 protected:
 	/** The amount of the given consumables that should have been consumed up for this dependency to be met */
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category="Dependency" )
 	TMap< TSubclassOf< class UFGConsumableDescriptor >, int32 > mConsumablesConsumedCount;
 	
 };

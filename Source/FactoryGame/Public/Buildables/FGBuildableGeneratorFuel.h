@@ -3,10 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGBuildableGenerator.h"
-#include "Replication/FGReplicationDetailActorOwnerInterface.h"
-#include "Replication/FGReplicationDetailActor_GeneratorFuel.h"
-#include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "Buildables/FGBuildableGenerator.h"
 #include "FGBuildableGeneratorFuel.generated.h"
 
 /**
@@ -21,7 +18,7 @@ public:
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
 	virtual void BeginPlay() override;
 	// End AACtor interface
 
@@ -32,16 +29,7 @@ public:
 	// Begin Factory_ interface
 	virtual void Factory_Tick( float dt ) override;
 	// End Factory_ interface
-
-	// Begin IFGReplicationDetailActorOwnerInterface
-	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_GeneratorFuel::StaticClass(); };
-	virtual void OnReplicationDetailActorRemoved() override;
-	// End IFGReplicationDetailActorOwnerInterface
-
-	// Begin IFGDismantleInterface
-	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
-	// End IFGDismantleInterface
-
+	
 	/**
 	 * Check if a resource is valid as fuel for this generator.
 	 * @param resource - Resource class to check.
@@ -62,7 +50,7 @@ public:
 	 * @return a valid pointer to the inventory if this machine runs on fuel. Can be nullptr on client.
 	 */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	FORCEINLINE class UFGInventoryComponent* GetFuelInventory() const { return mFuelInventoryHandlerData.GetActiveInventoryComponent(); };
+	FORCEINLINE class UFGInventoryComponent* GetFuelInventory() const { return mFuelInventory; };
 
 	/**
 	 * Check if this generator has fuel.
@@ -70,12 +58,6 @@ public:
 	 */
 	UFUNCTION( BlueprintPure, Category = "Power" )
 	bool HasFuel() const;
-
-	/**
-	 * Get the specified resource form for Fuel allowed to be used in this generator.
-	 */
-	UFUNCTION( BlueprintPure, Category = "Power" )
-	FORCEINLINE EResourceForm GetFuelResourceForm() const { return mFuelResourceForm; }
 
 	/**
 	* Check if this generator has the required supplemental resource available
@@ -120,8 +102,8 @@ public:
 	FORCEINLINE TSubclassOf< class UFGItemDescriptor > GetCurrentFuelClass() const { return mCurrentFuelClass; }
 
 	/** Returns all fuel classes this generator can use */
-	UFUNCTION( BlueprintPure, Category = "Power" )
-	FORCEINLINE TArray< TSubclassOf< class UFGItemDescriptor > > GetAvailableFuelClasses() const { return mAvailableFuelClasses; }
+	UFUNCTION( BlueprintCallable, Category = "Power" )
+	TArray< TSubclassOf< UFGItemDescriptor > > GetAvailableFuelClasses( const UFGInventoryComponent* instigatorInventory );
 
 	/** Returns the class of the supplemental resource required (can be null) */
 	UFUNCTION( BlueprintPure, Category = "Power" )
@@ -130,11 +112,9 @@ public:
 	/** Returns all fuel classes this generator can run on. Exposed for AutoJSonExportCommandlet */
 	FORCEINLINE TArray< TSoftClassPtr< class UFGItemDescriptor > > GetDefaultFuelClasses() const { return mDefaultFuelClasses; }
 
+	FORCEINLINE int32 GetFuelInventoryIndex() const { return mFuelInventoryIndex; }
+	FORCEINLINE int32 GetSupplementalResourceInventoryIndex() const { return mSupplementalInventoryIndex; }
 protected:
-	// Begin FGBuildableFactory interface
-	virtual void OnRep_ReplicationDetailActor() override;
-	// End FGBuildableFactory interface
-	
 	// Begin AFGBuildableGenerator interface
     virtual bool CanStartPowerProduction_Implementation() const override;
     virtual void Factory_StartPowerProduction_Implementation() override;
@@ -157,12 +137,6 @@ protected:
 	/** Can we load supplemental resources into the generator. Only call this on server. */
 	virtual bool CanLoadSupplemental() const;
 
-	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
-	{
-		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
-		out_repDetailData.Add( &mFuelInventoryHandlerData );
-	}
-
 private:
 	/**
 	 * Filter out what we consider as fuel for our fuel inventory.
@@ -170,35 +144,29 @@ private:
 	 */
 	UFUNCTION()
 	bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
-
-	/** Set up the fuel inventory when replicated */
-	UFUNCTION()
-	void OnRep_FuelInventory();
 	
-	class AFGReplicationDetailActor_GeneratorFuel* GetCastRepDetailsActor() const;
+	void UpdateInInventoryFuelTypes( const UFGInventoryComponent* instigatorInventory );
+	void UpdateUnlockedFuelTypes();
 
 protected:
-	friend class AFGReplicationDetailActor_GeneratorFuel;
-
-	/** Maintainer of the active storage component for this actor. Use this to get the active inventory component. */
-	UPROPERTY()
-	FReplicationDetailData mFuelInventoryHandlerData;
-
 	/** Kept for save game compatibility. @see mDefaultFuelClasses */
 	UPROPERTY()
 	TArray< TSubclassOf< class UFGItemDescriptor > > mFuelClasses_DEPRECATED;
 
 	/** Fuel classes this machine can run on. */
 	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( MustImplement = "FGInventoryInterface" ) )
-	TArray< TSoftClassPtr< class UFGItemDescriptor > > mDefaultFuelClasses;
+	TArray< TSoftClassPtr< UFGItemDescriptor > > mDefaultFuelClasses;
 
 	/** Current fuel classes of the generator, useful for runtime adding of fuel classes */
 	UPROPERTY( Replicated )
-	TArray< TSubclassOf< class UFGItemDescriptor > > mAvailableFuelClasses;
+	TArray< TSubclassOf< UFGItemDescriptor > > mAvailableFuelClasses;
 
-	/** The form of resource this generator is allowed to accept. ie. SOLID or LIQUID */
-	UPROPERTY( EditDefaultsOnly, Category = "Power" )
-	EResourceForm mFuelResourceForm;
+	/** Fuel types we can use because they are in our inventory. */
+	UPROPERTY( Replicated )
+	TArray< TSubclassOf< UFGItemDescriptor > > mFuelClassesInInventory;
+	
+	/** True if this class runs on fluids, i.e. liquids or gases. False if it runs on solids. */
+	bool mUsesFluidsAsFuel;
 
 	/** 
 	*	The quantity of inventory to be loaded for use during generation.
@@ -252,11 +220,11 @@ protected:
 	int32 mSupplementalInventoryIndex;
 
 	/** Amount left of the currently burned piece of fuel. In megawatt seconds (MWs). */
-	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
+	UPROPERTY( SaveGame, Meta = ( NoAutoJson = true, FGReplicated ) )
 	float mCurrentFuelAmount;
 
 	/** Amount left of the currently loaded supplemental resource. In Liters ( 1 Liquid inventory item = 1 Liter ) */
-	UPROPERTY( SaveGame, Replicated, Meta = ( NoAutoJson = true ) )
+	UPROPERTY( SaveGame, Meta = ( NoAutoJson = true, FGReplicated ) )
 	float mCurrentSupplementalAmount;
 
 	/** Used so clients know how if they have available fuel or not. Could be removed later if we start syncing the production indicator state */

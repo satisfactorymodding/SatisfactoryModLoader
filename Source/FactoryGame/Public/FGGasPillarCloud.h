@@ -19,7 +19,7 @@ class FACTORYGAME_API AFGGasPillarCloud : public AFGStaticReplicatedActor, publi
 public:
 	virtual  void GainedSignificance_Implementation() override;
 	virtual  void LostSignificance_Implementation() override;
-
+	virtual float GetSignificanceRange() override { return mSignificanceRange; }
 private:
 	GENERATED_BODY()
 
@@ -94,7 +94,7 @@ protected:
 
 private:
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Significance" )
-	float mSignificanceRange;
+	float mSignificanceRange = 8000;
 	
 	UPROPERTY()
 	bool mIsSignificant = false;

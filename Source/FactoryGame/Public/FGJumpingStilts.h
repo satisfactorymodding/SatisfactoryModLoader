@@ -5,7 +5,6 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Equipment/FGEquipment.h"
-#include "Equipment/FGEquipmentAttachment.h"
 #include "FGJumpingStilts.generated.h"
 
 /**
@@ -61,13 +60,4 @@ private:
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
 
 	float mMaxFallSpeedBeforeDamage;
-};
-
-
-UCLASS()
-class FACTORYGAME_API AFGJumpingStiltsAttachment : public AFGEquipmentAttachment
-{
-	GENERATED_BODY()
-
-
 };

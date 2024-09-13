@@ -17,22 +17,19 @@ enum class EMessageType : uint8
 };
 
 /**
- * 
+ * An old legacy class from when we had both pure text messages and audio messages. Now, we only have audio messages, and text messages have
+ * been replaced with notifications. The relevant parts of this class could be moved to UFGAudioMessage, after which this class could be deleted.
  */
 UCLASS( BlueprintType, Blueprintable )
 class FACTORYGAME_API UFGMessageBase : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	/** Returns the owning fgpawn by looking at ower and vehicle driver */
-	class AFGCharacterPlayer* GetFGCharacter();
-
 	/** Gets the default object of the message class */
 	UFUNCTION( BlueprintPure, Category = "Message|Utilities", meta = ( DeterminesOutputType = "inClass" ) )
 	static UObject* GetMessageDefaultObject( TSubclassOf< UFGMessageBase > inClass );
 
-	/** Gets if this message should trigger a call */
-    static bool GetShouldTriggerCall( TSubclassOf< UFGMessageBase > inClass );
+	virtual int32 GetMessagePriority() const { return 0; }
 
 public:
 	/** I think this may be the title */
@@ -46,10 +43,6 @@ public:
 	/** Should the message be displayed in a popup? */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
 	bool mIsPopup;
-
-	/** Should this message trigger a call? */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
-	bool mShouldTriggerCall;
 
 	/** Who sent the message */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )

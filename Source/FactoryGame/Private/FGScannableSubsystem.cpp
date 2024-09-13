@@ -18,5 +18,6 @@ void AFGScannableSubsystem::OnDropPodLooted( AFGDropPod* dropPod){ }
 void AFGScannableSubsystem::OnCreatureSpawnerUpdated( AFGCreatureSpawner* creatureSpawner, bool scannable){ }
 void AFGScannableSubsystem::OnCreatureSpawnerAdded( AFGCreatureSpawner* creatureSpawner){ }
 void AFGScannableSubsystem::OnCreatureSpawnerRemoved( AFGCreatureSpawner* creatureSpawner){ }
-void AFGScannableSubsystem::CacheDestroyedActors(){ }
+bool AFGScannableSubsystem::DoesPickupExist(const FGuid& PickupGuid) const{ return bool(); }
 void AFGScannableSubsystem::CacheDropPods(){ }
+void AFGScannableSubsystem::AssignAvailableItemPickups(const TArray< FWorldScannableData >& ItemPickups){ }

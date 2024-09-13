@@ -75,6 +75,9 @@ public:
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION()
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	UFUNCTION()
+	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+
 	// End IFGActorRepresentationInterface
 	
 	//~ Begin IFGBuildingTagInterface
@@ -103,6 +106,9 @@ public:
 	/** Broadcast when the operation status has changed */
 	UPROPERTY( BlueprintAssignable, Category = "DockingStation", DisplayName = "OnStationStatusChanged" )
 	FStationStatusChanged StationStatusChangedDelegate;
+
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* mCompassMaterialInstance;
 
 private:
 	UFUNCTION()

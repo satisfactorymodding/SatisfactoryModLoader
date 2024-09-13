@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGClearanceInterface.h"
 #include "FGSaveInterface.h"
 #include "GeometryCollection/GeometryCollectionActor.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
@@ -27,7 +28,7 @@ enum class EDestructibleActorState : uint8
  * If you make a new rock that should be destructible, then you should make a data only blueprint of this
  */
 UCLASS(abstract)
-class FACTORYGAME_API AFGDestructibleActor : public AActor, public IFGSaveInterface
+class FACTORYGAME_API AFGDestructibleActor : public AActor, public IFGSaveInterface, public IFGClearanceInterface
 {
 	GENERATED_BODY()
 
@@ -48,6 +49,10 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
+	// Begin IFGClearanceInterface
+	virtual void GetClearanceData_Implementation( TArray< FFGClearanceData >& out_data ) const override;
+	// End IFGClearanceInterface
+
 	/** Called on server and client when we destruct this actor */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Destructible" )
 	void PlayDestructEffects();
@@ -59,9 +64,13 @@ public:
 	void OnChaosPhysicsCollision(const FChaosPhysicsCollisionInfo& CollisionInfo );
 
 	virtual UStaticMeshComponent* GetStaticMeshComponent() { return mStaticMeshProxy; }
-	
+
+	UFUNCTION(BlueprintCallable)
+	bool IsMeshChainSawable(UStaticMesh* Mesh) const;
+
 protected:
 	/** Updates the state, flushes net dormancy */
+	UFUNCTION(BlueprintCallable)
 	void SetDestructibleActorState(EDestructibleActorState newState);
 	
 	/** Applies destructible actor state to the meshes */
@@ -81,7 +90,7 @@ protected:
 	void OnRep_DestructibleActorState();
 	
 	/** The mesh that should be rendered before we start going destructible. Used for optimization as it has less triangles */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Destructible" )
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Destructible" )
 	UStaticMeshComponent* mStaticMeshProxy;
 
 	/** Geometry collection to use for when this actor is being fractured */
@@ -96,7 +105,7 @@ protected:
 	UPROPERTY( EditAnywhere, SaveGame, ReplicatedUsing=OnRep_DestructibleActorState, Category = "Destructible" )
 	EDestructibleActorState mDestructibleActorState;
 
-	UPROPERTY( VisibleAnywhere, Transient, Category = "Destructible" )
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Transient, Category = "Destructible" )
 	UGeometryCollectionComponent* mGeometryCollectionComponent;
 
 	UPROPERTY( VisibleAnywhere, Transient, Category = "Destructible" )
@@ -122,6 +131,10 @@ protected:
 	AActor* mDestroyedByActor;
 	
 private:
+	/** Clearance data of this destructible */
+	UPROPERTY( EditDefaultsOnly, Category = "Destructible" )
+	TArray< FFGClearanceData > mClearanceData;
+	
 	/** Deprecated, left for savegame compatibility */
 	UPROPERTY( SaveGame )
 	bool mHasBeenFractured;

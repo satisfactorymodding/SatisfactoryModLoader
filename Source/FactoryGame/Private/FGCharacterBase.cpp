@@ -56,6 +56,7 @@ void AFGCharacterBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 void AFGCharacterBase::BeginPlay(){ }
 void AFGCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGCharacterBase::Tick(float deltaTime){ }
+void AFGCharacterBase::CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult){ }
 float AFGCharacterBase::TakeDamage(float DamageAmount,  FDamageEvent const& DamageEvent,  AController* EventInstigator, AActor* DamageCauser){ return float(); }
 void AFGCharacterBase::ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser){ }
 void AFGCharacterBase::PossessedBy(AController* NewController){ }
@@ -67,6 +68,7 @@ void AFGCharacterBase::PostLoadGame_Implementation(int32 saveVersion, int32 game
 void AFGCharacterBase::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGCharacterBase::NeedTransform_Implementation(){ return bool(); }
 bool AFGCharacterBase::ShouldSave_Implementation() const{ return bool(); }
+void AFGCharacterBase::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 void AFGCharacterBase::LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride){ }
 void AFGCharacterBase::Died(AActor* thisActor){ }
 void AFGCharacterBase::OnTakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }

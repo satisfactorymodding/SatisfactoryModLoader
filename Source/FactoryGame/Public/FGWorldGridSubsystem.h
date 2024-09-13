@@ -60,41 +60,6 @@ struct FACTORYGAME_API FFGWorldGridCell
 	FTraceDelegate mTraceDelegate;
 };
 
-/** Data asset for storing world grid. Used to pre-calculate the world grid in editor so it's available in runtime. */
-UCLASS()
-class FACTORYGAME_API UFGWorldGridDataAsset : public UDataAsset
-{
-	GENERATED_BODY()
-
-public:
-	void AssignWorldCells( TArray<FFGWorldGridCellData>&& Cells, const FVector2D& GridMin, const FVector2D& GridMax, int32 Divisions );
-
-	FORCEINLINE  const TArray<FFGWorldGridCellData>& GetWorldGridCells() const { return mWorldCells; }
-	
-	FORCEINLINE int32 GetNumWorldGridDivisions() const { return mGridDivisions; }
-
-	FORCEINLINE  const FVector2D& GetGridMin() const { return mWorldGridMin; }
-	FORCEINLINE  const FVector2D& GetGridMax() const { return mWorldGridMax; }
-	
-	FORCEINLINE  FVector2D GetGridSize() const { return mWorldGridMax - mWorldGridMin; }
-
-	UFUNCTION( BlueprintCallable, Category = "World Grid", meta = ( CallInEditor = "true" ) )
-    void DebugDraw();
-	
-private:
-	UPROPERTY( VisibleAnywhere )
-	int32 mGridDivisions;
-
-	UPROPERTY( VisibleAnywhere )
-	FVector2D mWorldGridMin;
-
-	UPROPERTY( VisibleAnywhere )
-	FVector2D mWorldGridMax;
-	
-	UPROPERTY( VisibleAnywhere )
-	TArray<FFGWorldGridCellData> mWorldCells;
-};
-
 /**
  * World grid subsystem. Creates a grid of cells covering the entire world with data in each cell, such as height.
  */
@@ -102,6 +67,7 @@ UCLASS( config = Game, Blueprintable, defaultconfig, meta = ( DisplayName = "Wor
 class FACTORYGAME_API AFGWorldGridSubsystem : public AFGSubsystem, public IFGSaveInterface
 {
 	GENERATED_BODY()
+
 public:
 	AFGWorldGridSubsystem();
 
@@ -111,6 +77,11 @@ public:
 	/** Get the subsystem from a world context, this should always return something unless you call it really early. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|WorldGrid", DisplayName = "GetWorldGridSubsystem", Meta = (DefaultToSelf = "worldContext") )
     static AFGWorldGridSubsystem* Get( UObject* worldContext );
+
+	/** Creates a runtime version of the specified world grid information. */
+	void CreateRuntimeWorldGrid( const TArray< FFGWorldGridCellData >& CellData, const FVector2D& WorldGridMin, const FVector2D& WorldGridMax, int32 NumGridDivisions );
+
+	bool HasValidGrid() const;
 
 	void UpdateCellContainingBuildable( class AFGBuildable* pBuildable );
 	void UpdateCellContainingLocation( const FVector& location );
@@ -135,27 +106,33 @@ public:
 	float GetCellElevationFromWorldLocation( const FVector& WorldLocation ) const;
 	float GetCellElevationFromGridCoordinates( const FIntPoint& Coords ) const;
 	
-	TArray<const FFGWorldGridCell*> GetCellNeighbours( const FFGWorldGridCell* Cell ) const;
-	TArray<const FFGWorldGridCell*> GetCellNeighboursFromIndex( int32 Index ) const;
+	TArray< const FFGWorldGridCell* > GetCellNeighbours( const FFGWorldGridCell* Cell ) const;
+	TArray< const FFGWorldGridCell* > GetCellNeighboursFromIndex( int32 Index ) const;
 
-	TArray<int32> GetCellNeighbourIndicesFromIndex( int32 Index ) const;
+	TArray< int32 > GetCellNeighbourIndicesFromIndex( int32 Index ) const;
 
-	 FVector2D GetCellSize() const;
+	FVector2D GetWorldGridSize() const;
+	FVector2D GetCellSize() const;
 
 	// Begin AActor interface
-	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Tick( float DeltaSeconds ) override;
 	// End AActor interface
 
 private:
-	UPROPERTY( EditDefaultsOnly )
-	UFGWorldGridDataAsset* mDefaultWorldGridData;
-
 	UPROPERTY( VisibleAnywhere )
-	TArray<FFGWorldGridCell> mWorldGrid;
+	TArray< FFGWorldGridCell > mWorldGrid;
 
-	TArray<FFGWorldGridCell*> mDirtyCells;
+	UPROPERTY( VisibleAnywhere, Category = "World Grid" )
+	int32 mNumGridDivisions;
+
+	UPROPERTY( VisibleAnywhere, Category = "World Grid" )
+	FVector2D mWorldGridMin;
+
+	UPROPERTY( VisibleAnywhere, Category = "World Grid" )
+	FVector2D mWorldGridMax;
+
+	TArray< FFGWorldGridCell* > mDirtyCells;
 };
 
 /** Settings for world grid generation. */

@@ -9,7 +9,6 @@
 #include "Interfaces/Interface_PostProcessVolume.h"
 #include "NavAreas/NavArea.h"
 #include "Resources/FGExtractableResourceInterface.h"
-#include "UndefinedBool.h"
 #include "FGWaterVolume.generated.h"
 
 /**

@@ -19,14 +19,14 @@ class FACTORYGAME_API UFGFoliageInstancedSMC : public UFoliageInstancedStaticMes
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
 
-	/*Begin IFGSignificanceInterface*/
-	virtual void GainedSignificance_Implementation() override;
-	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
+	/* Begin IFGSignificanceInterface*/
+	virtual void GainedNetSignificance_Implementation() override;
+	virtual void LostNetSignificance_Implementation() override;
 	/* end IFGSignificanceInterface*/
 
 	virtual bool ShouldCreatePhysicsState() const override;
-	virtual bool ShouldRegisterToSignificanceManager() const { return !bDisableCollision; }
-
+	virtual bool ShouldRegisterToSignificanceManager() const;
+	
+	
 	bool mIsSignificant = false;
 };

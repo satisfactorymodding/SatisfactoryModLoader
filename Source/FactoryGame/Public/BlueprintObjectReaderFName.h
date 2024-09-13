@@ -16,6 +16,7 @@ public:
 
 	FBlueprintObjectReaderFName& operator<<( class UObject*& Res );
 	virtual FArchive& operator<<( class FName& N ) override;
+	FArchive& operator<<( FObjectPtr& Res );
 private:
 	class UWorld* mWorld;
 

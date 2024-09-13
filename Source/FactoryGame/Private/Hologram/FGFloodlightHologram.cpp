@@ -18,8 +18,8 @@ void AFGFloodlightHologram::SetHologramLocationAndRotation(const FHitResult& hit
 void AFGFloodlightHologram::ScrollRotate(int32 delta, int32 step){ }
 bool AFGFloodlightHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGFloodlightHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
-void AFGFloodlightHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 ENudgeFailReason AFGFloodlightHologram::NudgeHologram(const FVector& NudgeInput, const FHitResult& HitResult){ return ENudgeFailReason(); }
+void AFGFloodlightHologram::CheckValidPlacement(){ }
 int32 AFGFloodlightHologram::GetRotationStep() const{ return int32(); }
 void AFGFloodlightHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGFloodlightHologram::OnRep_FixtureAngle(){ }

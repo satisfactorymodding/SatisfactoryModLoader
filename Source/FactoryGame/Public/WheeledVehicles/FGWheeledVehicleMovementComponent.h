@@ -272,6 +272,15 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = Vehicle)
 	FVehicleTransmissionEventDelegate mOnGearChangeEnd;
 
+	void PlayStartupEngineAudio();
+	void PlayShutDownEngineAudio( const bool isOutOfFuel );
+
+	UFUNCTION( Server, Reliable )
+	void Server_PlayShutDownEngineAudio( const bool isOutOfFuel );
+
+	UFUNCTION( Server, Reliable )
+	void Server_PlayStartupEngineAudio();
+	
 protected:
 	virtual void UpdateState(float DeltaTime) override;
 	virtual void ProcessSleeping(const FControlInputs& ControlInputs) override;
@@ -380,9 +389,6 @@ protected:
 	TObjectPtr<UAkAudioEvent> mEngineAudioStopEvent;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
-	TObjectPtr<UAkAudioEvent> mEngineStartSoundEvent;
-
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
 	TObjectPtr<UAkAudioEvent> mEngineShutdownSoundEvent;
 
 	/** Socket for where the engine sounds come from (or exhaust in our case mostly) */
@@ -399,7 +405,7 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UAkComponent> mEngineAudioComponent;
-
+	
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|TransmissionAudio" )
 	TObjectPtr<UAkAudioEvent> mTransmissionAudioEventGearChangeBegin;
 
@@ -424,7 +430,7 @@ protected:
 	/** When we bounce of the rev limiter, we can affect the rev rate of the engine a bit: just noticed it does nothing under the hood actually... */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineSetup" )
 	float mRevLimiterRevRateBounceFactor = 0.f;
-
+	
 private:
 	void ReCreateSoundComponents();
 	void DeleteSoundComponents();
@@ -446,7 +452,7 @@ private:
 	
 	/** Vehicle sets if we're significant or not. */
 	bool mIsSignificant = false;
-	
+
 	/** Do we have a driver? */
 	bool mHasDriver = false;
 	
@@ -455,7 +461,5 @@ private:
 
 	/** Cached value of the sleep threshold that was setup with the vehicle */
 	float mInitialSleepThreshold = 0;
-
-	bool mIsEngineOn = false;
 	
 };

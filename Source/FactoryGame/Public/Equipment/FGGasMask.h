@@ -1,10 +1,21 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+
 #include "FactoryGame.h"
 #include "FGEquipment.h"
-#include "FGEquipmentAttachment.h"
 #include "FGGasMask.generated.h"
+
+/** Item state struct for the gas mask */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFGGasMaskItemState
+{
+	GENERATED_BODY()
+
+	/** How much filter charges are left in the currently loaded filter */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "ItemState|GasMask" )
+	float FilterCountdown{};
+};
 
 UCLASS()
 class FACTORYGAME_API AFGGasMask : public AFGEquipment
@@ -12,11 +23,14 @@ class FACTORYGAME_API AFGGasMask : public AFGEquipment
 	GENERATED_BODY()
 public:
 	AFGGasMask();
-	virtual void Tick( const float deltaTime ) override;
 
-	// Start FGEquipment interface
+	// Begin AFGEquipment Interface
+	virtual void UnEquip() override;
+	virtual FFGDynamicStruct SaveToItemState_Implementation() const override;
+	virtual void LoadFromItemState_Implementation(const FFGDynamicStruct& itemState) override;
+	virtual void Tick( const float deltaTime ) override;
 	virtual float AdjustDamage_Implementation( const float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser ) override;
-	// End FGEquipment interface
+	// End AFGEquipment Interface
 
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
 	void EnablePostProcessing( const bool isEnabled );
@@ -34,7 +48,7 @@ protected:
 	UPROPERTY( Replicated )
 	bool mPostProcessEnabled = false;
 
-	UPROPERTY( Replicated, BlueprintReadOnly )
+	UPROPERTY( Replicated, BlueprintReadOnly, SaveGame )
 	float mFilterCountdown = 0.0f;
 	
 	UPROPERTY( BlueprintReadOnly )
@@ -54,10 +68,4 @@ private:
 	float mDamageNegated = 0.0f;
 	float mTimer = 0.0f;
 	
-};
-
-UCLASS()
-class FACTORYGAME_API AFGGasMaskAttachment : public AFGEquipmentAttachment
-{
-	GENERATED_BODY()
 };

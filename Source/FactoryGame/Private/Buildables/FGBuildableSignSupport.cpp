@@ -21,4 +21,6 @@ void AFGBuildableSignSupport::GetLifetimeReplicatedProps(TArray< FLifetimeProper
 }
 void AFGBuildableSignSupport::BeginPlay(){ }
 void AFGBuildableSignSupport::SetPoleScale(FVector2D poleScale){ }
+void AFGBuildableSignSupport::OnBuildEffectActorFinished(){ }
+TArray<struct FInstanceData> AFGBuildableSignSupport::GetActorLightweightInstanceData_Implementation(){ return TArray<struct FInstanceData>(); }
 const FName AFGBuildableSignSupport::PoleMeshName = FName();

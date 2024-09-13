@@ -3,6 +3,7 @@
 #include "FGUnlockPickup.h"
 #include "Net/UnrealNetwork.h"
 
+UE_DEFINE_GAMEPLAY_TAG(FPickupTags::PickedUpBoomboxTape, "Test.Test");
 AFGUnlockPickup::AFGUnlockPickup() : Super() {
 	this->mSchematic = nullptr;
 	this->mPickupState = ESchematicPickupState::Unknown;
@@ -13,12 +14,14 @@ void AFGUnlockPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 }
 void AFGUnlockPickup::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGUnlockPickup::BeginPlay(){ }
+void AFGUnlockPickup::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGUnlockPickup::ShouldSave_Implementation() const{ return bool(); }
 void AFGUnlockPickup::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGUnlockPickup::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 bool AFGUnlockPickup::IsUseable_Implementation() const{ return bool(); }
 FText AFGUnlockPickup::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGUnlockPickup::PickUpByCharacter( AFGCharacterPlayer* byCharacter){ }
+void AFGUnlockPickup::UpdateVisuals_Implementation(){ }
 void AFGUnlockPickup::OnRep_PickedUp(){ }
 void AFGUnlockPickup::SomeSchematicPurchased(TSubclassOf<  UFGSchematic > schematic){ }
 void AFGUnlockPickup::Multicast_PlayPickupEffect_Implementation( AFGCharacterPlayer* byCharacter){ }

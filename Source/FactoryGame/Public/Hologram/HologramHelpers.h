@@ -6,6 +6,7 @@
 #include "FGHologramGraphAStar.h"
 #include "Components/SplineComponent.h"
 #include "CoreMinimal.h"
+#include "FGClearanceData.h"
 
 DECLARE_STATS_GROUP( TEXT( "Hologram Helpers" ), STATGROUP_HologramHelpers, STATCAT_Advanced );
 
@@ -14,18 +15,10 @@ DECLARE_STATS_GROUP( TEXT( "Hologram Helpers" ), STATGROUP_HologramHelpers, STAT
  */
 struct FACTORYGAME_API FHologramHelpers
 {
-	/**
-	 * Creates a clearance component
-	 *
-	 * @param attachTo			Root that we want to attach the created component to
-	 * @param fromBox			Box used for setting size of clearance component
-	 */
-	static class UStaticMeshComponent* CreateClearanceMeshComponent( class USceneComponent* attachTo, class UFGClearanceComponent* fromClearanceBox );
+	static class UStaticMeshComponent* CreateBoxMeshComponent( class USceneComponent* attachTo, const FTransform& relativeTransform, const FVector& extent );
 
-	static class UStaticMeshComponent* CreateBlueprintBoundsMeshComponent( class USceneComponent* attachTo, const FTransform& boundsRelativeTransform, const FVector& boundsExtent );
-
-	/** Sets extents and relative location on the clearance mesh to match the specified clearance box. */
-	static void SetScaledBoxMeshData( class UStaticMeshComponent* clearanceMesh, const FTransform& relativeTransform, const FVector& extent );
+	/** Sets extents and relative location on the box mesh to match the specified extent. */
+	static void SetScaledBoxMeshData( class UStaticMeshComponent* boxMesh, const FTransform& relativeTransform, const FVector& extent );
 
 	/** Creates the representation mesh for a connection component */
 	static class UStaticMeshComponent* CreateConnectionRepresentation( class UFGConnectionComponent* connectionComponent, bool isOutput, float heightOffset );
@@ -33,8 +26,8 @@ struct FACTORYGAME_API FHologramHelpers
 	/** Creates the representation mesh for an attachment point */
 	static class UStaticMeshComponent* CreateAttachmentPointRepresentation( const struct FFGAttachmentPoint* attachmentPoint, const class AFGBuildable* buildable );
 
-	/** Shrink the clearance component extent a bit to avoid overlapping with floating point inaccuracies. */
-	static void ApplyClearanceExtentShrink( class UFGClearanceComponent* clearanceComponent );
+	static FBox CreateBoxFromCombinedClearanceData( const TArray< FFGClearanceData >& clearanceData, bool onlySnapping );
+	static FBox CreateBoxFromCombinedClearanceData( const TArray< const FFGClearanceData* >& clearanceData, bool onlySnapping );
 
 	/**
 	 * Calculate a poles height given a hit result and the poles location.
@@ -159,17 +152,9 @@ struct FACTORYGAME_API FSplineUtils
 	 */
 	static float CalcArcTangentMagnitude( float angle, float radius )
 	{
-		// Calculate a magic magnitude number for the tangents.
-		// Found through manually testing angles using a spline in the editor
-		// and then finding the polynomial expression by plotting the points in a graph calculator.
-		// Angle  Tangent
-		// 0:     0.0
-		// 45:    0.76
-		// 90:    1.65
-		// 120:   2.7
-		// 180:   4.0
-		const float clampedAngle = FMath::Clamp( angle, 0.0f, PI * 1.1f ); //[DavalliusA:Thu/30-01-2020] increased the max a little here. We should really leave the responsibility to the ones calling.
-		const float magicMultiplier = 0.14f * clampedAngle * clampedAngle + 0.81f * clampedAngle + 0.01f;
+		// [ZolotukhinN:27/07/2023] I figured out the math! Thanks to LongerWarrior.
+		const float clampedAngle = FMath::Clamp( angle, 0.0f, PI * 1.1f );
+		const float magicMultiplier = 4.0f * FMath::Tan( clampedAngle / 4.0f );
 		return radius * magicMultiplier;
 	}
 
@@ -231,6 +216,13 @@ struct FACTORYGAME_API FSplineUtils
 
 
 	static bool BuildBendStraightBendSpline2D(
+		struct FSplineBuilder& builder,
+		float startRadius,
+		float endRadius,
+		const FVector& endPos,
+		const FVector& endForward );
+
+	static bool Build90DegreeSpline2D(
 		struct FSplineBuilder& builder,
 		float startRadius,
 		float endRadius,

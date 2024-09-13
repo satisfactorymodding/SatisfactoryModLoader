@@ -7,9 +7,9 @@ void AFGBlueprintDesignerHologram::GetLifetimeReplicatedProps(TArray< FLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBlueprintDesignerHologram, mStorageHologram);
 }
-void AFGBlueprintDesignerHologram::HandleClearanceOverlap(const FOverlapResult& overlap, const FVector& locationOffset, bool HologramHasSoftClearance){ }
 void AFGBlueprintDesignerHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 AActor* AFGBlueprintDesignerHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
+void AFGBlueprintDesignerHologram::InitializeClearanceData(){ }
 USceneComponent* AFGBlueprintDesignerHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 void AFGBlueprintDesignerHologram::OnHologramTransformUpdated(){ }
 void AFGBlueprintDesignerHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

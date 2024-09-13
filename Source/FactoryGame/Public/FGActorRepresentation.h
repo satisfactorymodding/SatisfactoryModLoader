@@ -27,7 +27,10 @@ enum class ERepresentationType : uint8
 	RT_DronePort				UMETA( DisplayName = "DronePort" ),
 	RT_Drone					UMETA( DisplayName = "Drone" ),
 	RT_MapMarker				UMETA( DisplayName = "MapMarker" ),
-	RT_Stamp					UMETA( DisplayName = "Stamp" )
+	RT_Stamp					UMETA( DisplayName = "Stamp" ),
+	RT_Portal					UMETA( DisplayName = "Portal" ),
+	RT_DeathCrate				UMETA( DisplayName = "Death Crate" ),
+	RT_DismantleCrate			UMETA( DisplayName = "Dismantle Crate" ),
 };
 
 UENUM( BlueprintType )
@@ -49,72 +52,6 @@ enum class ECompassViewDistance : uint8
 	CVD_Always			UMETA( DisplayName = "Always" )
 };
 
-// Optimized struct for representation locations. Z Location is not needed nor is the higher precision of 32bit floats
-// Net_QuantizedVector is also a nice way to do this but this is even smaller (44bits vs. 60bits)
-USTRUCT()
-struct FACTORYGAME_API FRepresentationVector2D
-{
-	GENERATED_BODY()
-
-	// Default Construct No initialization
-	FORCEINLINE FRepresentationVector2D() {}
-
-	// Construct from 2 floats
-	FRepresentationVector2D( float inX, float inY ) :
-		X(inX), 
-		Y(inY)
-	{ }
-
-
-	FORCEINLINE FRepresentationVector2D& operator=( const FRepresentationVector2D& other )
-	{
-		this->X = other.X;
-		this->Y = other.Y;
-
-		return *this;
-	}
-
-	FORCEINLINE FRepresentationVector2D& operator=( const FVector& other )
-	{
-		this->X = other.X;
-		this->Y = other.Y;
-
-		return *this;
-	}
-
-	bool NetSerialize( FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess )
-	{
-		bOutSuccess = true;
-		if( Ar.IsSaving() )
-		{
-			WriteFixedCompressedFloat<1048576, 22>( X, Ar );
-			WriteFixedCompressedFloat<1048576, 22>( Y, Ar );
-		}
-		else
-		{
-			ReadFixedCompressedFloat<1048576, 22>( X, Ar );
-			ReadFixedCompressedFloat<1048576, 22>( Y, Ar );
-		}
-
-		return true;
-	}
-
-	// Components
-	UPROPERTY()
-	float X = 0.f;
-	UPROPERTY()
-	float Y = 0.f;
-};
-
-template<>
-struct TStructOpsTypeTraits<FRepresentationVector2D> : public TStructOpsTypeTraitsBase2<FRepresentationVector2D>
-{
-	enum
-	{
-		WithNetSerializer = true,
-	};
-};
-
 /**
  * This object represents an actor in the world. Used in the compass and the minimap.
  */
@@ -124,6 +61,8 @@ class FACTORYGAME_API UFGActorRepresentation : public UObject
 	GENERATED_BODY()
 	
 public:
+	UFGActorRepresentation();
+	
 	/** Mark this class as supported for networking */
 	virtual bool IsSupportedForNetworking() const override;
 	
@@ -138,7 +77,10 @@ public:
 
 	/** Get the Real actor we represent, might not be relevant on client */
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	FORCEINLINE AActor* GetRealActor() const { return mRealActor; }
+	AActor* GetRealActor() const;
+
+	/** Checks if the real actor is the same. On the client, it will also check the Network GUID. This is considerably faster than comparing GetRealActor with actor pointer */
+	bool IsSameRealActor( const AActor* realActor, const FNetworkGUID& realActorNetworkId) const;
 	
 	/** Is this the represented actor static or not */
 	UFUNCTION( BlueprintPure, Category = "Representation" )
@@ -150,22 +92,54 @@ public:
 
 	/** Get the rotation of the represented actor */
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	FRotator GetActorRotation() const;
+	virtual FRotator GetActorRotation() const;
 
 	/** This is the image to render in the compass */
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	class UTexture2D* GetRepresentationTexture() const;
+	virtual class UTexture2D* GetRepresentationTexture() const;
+
+	/** Returns the material that should be used to create the compass material instance for this representation */
+	UFUNCTION( BlueprintPure, Category = "Representation" )
+	virtual class UMaterialInterface* GetRepresentationCompassMaterial() const;
+
+	/** Called to update the compass material instance for this representation */
+	UFUNCTION( BlueprintCallable, Category = "Representation")
+	virtual void UpdateRepresentationCompassMaterial( class UMaterialInstanceDynamic* compassMaterialInstance, APlayerController* ownerPlayerController ) const;
+
+	/** Returns the compass height alignment for this representation. 0 means exactly below the compass line, -0.5 means centered on the line, and -1 means above the line */
+	UFUNCTION( BlueprintPure, Category = "Representation" )
+	virtual float GetCompassHeightAlignment() const;
+
+	/** Returns true if this representation has dynamic scaling rules for the compass. If this returns true, CalculateCompassRepresentationScale will be called each tick to update the scaling */
+	UFUNCTION( BlueprintPure, Category = "Representation" )
+	virtual bool NeedsDynamicCompassRepresentationScale() const { return false; }
+
+	/** Calculates the icon scale for this compass representation given the distance from the player and owning player controller */
+	UFUNCTION( BlueprintCallable, Category = "Representation" )
+	virtual float CalculateCompassRepresentationScale( APlayerController* ownerPlayerController, float distanceToPlayer ) const { return 1.0f; }
 
 	/** This is the text to render in the compass */
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	FText GetRepresentationText() const;
+	virtual FText GetRepresentationText() const;
+
+	/** Returns true if this representation needs it's name to be dynamically calculated on update instead of being statically cached once. This costs performance. */
+	UFUNCTION( BlueprintPure, Category = "Representation" )
+	virtual bool NeedsDynamicCompassRepresentationText() const { return false; }
+
+	/** Returns true if this representation is considered "important" in compass. Important representations in compass are always visible, even when outside of view direction */
+	UFUNCTION( BlueprintPure, Category = "Representation" )
+	virtual bool IsImportantCompassRepresentation() const { return false; }
+
+	/** Called if NeedsDynamicCompassRepresentationText to override the return value of GetRepresentationText for compass names */
+	UFUNCTION( BlueprintCallable, Category = "Representation" )
+	virtual FText GetDynamicCompassRepresentationText( APlayerController* ownerPlayerController, float distanceToPlayer ) const;
 
 	/** This is the color to render in the compass */
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	FLinearColor GetRepresentationColor() const;
+	virtual FLinearColor GetRepresentationColor() const;
 
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	ERepresentationType GetRepresentationType() const;
+	virtual ERepresentationType GetRepresentationType() const;
 
 	/** If this should be shown in the compass or not*/
 	UFUNCTION( BlueprintPure, Category = "Representation" )
@@ -173,15 +147,16 @@ public:
 
 	/** If this should be shown on the map or not*/
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	bool GetShouldShowOnMap() const;
+	virtual bool GetShouldShowOnMap() const;
 
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	EFogOfWarRevealType GetFogOfWarRevealType() const;
+	virtual EFogOfWarRevealType GetFogOfWarRevealType() const;
 
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	float GetFogOfWarRevealRadius() const;
+	virtual float GetFogOfWarRevealRadius() const;
 
 	void SetIsOnClient( bool onClient );
+	void SetRepresentationID( const FGuid& NewRepresentationID );
 
 	UFUNCTION( BlueprintPure, Category = "Representation" )
 	virtual ECompassViewDistance GetCompassViewDistance() const;
@@ -204,56 +179,50 @@ public:
 
 	virtual class UFGHighlightedMarker* CreateHighlightedMarker( UObject* owner );
 
+	/** Returns the material to use to play the compass visual effect animation for this representation. Nullptr means no visual effect */
+	UFUNCTION(BlueprintCallable, Category = "Representation")
+	virtual UMaterialInterface* GetRepresentationCompassEffectMaterial() const { return nullptr; }
+
+	/** Returns the size of the compass effect in screen space units */
+	UFUNCTION(BlueprintCallable, Category = "Representation")
+	virtual FVector2f GetRepresentationCompassEffectSize() const;
+	
+	/**
+	 * Called each tick to update the visual effect material for this representation on the compass, if visual effect material is set for this representation
+	 * Return true to allow the special effect to be visible, return false to hide it until next tick
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Representation")
+	virtual bool UpdateRepresentationCompassEffectMaterial( class UMaterialInstanceDynamic* compassMaterialInstance, APlayerController* ownerPlayerController, float distanceToPlayer, float totalTime ) { return true; }
+
 	UFUNCTION( BlueprintPure, Category = "Representation" )
 	bool IsHidden() const { return mIsHidden; }
 	void SetHidden( bool isHidden );
 
-protected:
+	FORCEINLINE FGuid GetRepresentationID() const { return mRepresentationID; }
+	FORCEINLINE uint64 GetRepresentationChangelist() const { return mRepresentationChangelist; }
 
 	/** Returns a cast of outer */
-	class AFGActorRepresentationManager* GetActorRepresentationManager();
+	class AFGActorRepresentationManager* GetActorRepresentationManager() const;
+protected:
 
-	/** This updates the location for this actor representation */
-	void UpdateLocation();
-
-	/** This updates the rotation for this actor representation */
-	void UpdateRotation();
-
-	/** Updates the representation text for this actor */
-	void UpdateRepresentationText();
-
-	/** Updates the representation texture for this actor */
-	void UpdateRepresentationTexture();
-
-	/** Updates the color of the representation for this actor */
-	void UpdateRepresentationColor();
-
-	/** Updates if this should be shown in the compass or not */
-	void UpdateShouldShowInCompass();
-
-	/** Updates if this should be shown on the map or not */
-	void UpdateShouldShowOnMap();
-
-	/** Updates the fog of war reveal type */
-	void UpdateFogOfWarRevealType();
-
-	/** Updates the fog of war reveal radius */
-	void UpdateFogOfWarRevealRadius();
-
-	/** Updates the view distance for this actor on the compass */
-	void UpdateCompassViewDistance();
-
-	/** Repnotifies */
-	UFUNCTION()
-	void OnRep_ShouldShowInCompass();
-
-	UFUNCTION()
-	void OnRep_ShouldShowOnMap();
-
-	UFUNCTION()
-	void OnRep_ActorRepresentationUpdated();
+	/** Called before the representation properties are updated by the representation manager replication pass */
+	virtual void PreRepresentationReplication();
+	/** Called to notify the representation that one of it's object properties failed to deserialize because the referenced object has not been replicated to the client yet. */
+	virtual void NotifyRepresentationUnmappedObjectReference( const TDoubleLinkedList<FProperty*>& PropertyChain, const FNetworkGUID& ObjectGUID );
+	/** Called after the representation properties are updated by the representation manager replication pass */
+	virtual void PostRepresentationReplication();
+	
+	/** Updates properties of this actor representation by polling the real actor properties. Should only be called on server */
+	virtual void UpdateActorRepresentationFromInterface( class IFGActorRepresentationInterface* representation, bool bFireDelegates );
+	/** Called when any of the properties relevant to this representation are updated, or when the update is explicitly requested by calling UFGActorRepresentationManager::UpdateRepresentationOfActor */
+	virtual void UpdateActorRepresentation();
+	/** Updates representation's actor location and rotation from the actor */
+	virtual void UpdateActorLocationAndRotation();
+	/** Called to update the location from the replication data */
+	virtual void UpdateActorLocationAndRotationFromReplication( const FVector& newActorLocation, const FRotator& newActorRotation );
 	
 	friend AFGActorRepresentationManager;
+	friend struct FFGActorRepresentationReplicator;
 
 	/** This actor representation is locally created */
 	bool mIsLocal;
@@ -268,7 +237,7 @@ protected:
 
 	/** This is the actor location */
 	UPROPERTY( Replicated )
-	FRepresentationVector2D mActorLocation;
+	FVector mActorLocation;
 
 	/** This is the actor location for local representations which uses a regular FVector to get the Z value as well. Used for resource nodes. For Local Use Only */
 	FVector mLocalActorLocation;
@@ -282,40 +251,67 @@ protected:
 	bool mIsStatic;
 
 	/** This is the texture to show for this actor representation */
-	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
+	UPROPERTY( Replicated )
 	UTexture2D* mRepresentationTexture;
 
+	/** This is the texture to show for this actor representation */
+	UPROPERTY( Replicated )
+	UMaterialInterface* mRepresentationCompassMaterial;
+	
 	/** This is the text to show for this actor representation */
-	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
+	UPROPERTY( Replicated )
 	FText mRepresentationText;
 
 	/** This is the color used for the representation of this actor */
-	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
+	UPROPERTY( Replicated )
 	FLinearColor mRepresentationColor;	
 
 	/** This helps define how this actor representation should be presented */
 	UPROPERTY( Replicated )
 	ERepresentationType mRepresentationType;
 
-	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
+	UPROPERTY( Replicated )
 	EFogOfWarRevealType mFogOfWarRevealType;
 
-	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
+	UPROPERTY( Replicated )
 	float mFogOfWarRevealRadius;
 	
 	/** If this should be shown in the compass or not*/
-	UPROPERTY( ReplicatedUsing = OnRep_ShouldShowInCompass )
+	UPROPERTY( Replicated )
 	bool mShouldShowInCompass;
 
 	/** If this should be shown on the map or not*/
-	UPROPERTY( ReplicatedUsing = OnRep_ShouldShowOnMap )
+	UPROPERTY( Replicated )
 	bool mShouldShowOnMap;
 
 	/** If this should be hidden in the map and compass. Still showned in object list in map. Used for pawns that are in a vehicle/train */
-	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
+	UPROPERTY( Replicated )
 	bool mIsHidden;
 
 	/** How far away this representation should be shown in the compass */
-	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
+	UPROPERTY( Replicated )
 	ECompassViewDistance mCompassViewDistance;
+
+	/** True if background color is considered to be primary color, false if it should be secondary color */
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	bool mBackgroundIsPrimaryColor{true};
+
+	/** True if GetRealActorLocation is allowed to be called on the client when mRealActor is available. In some cases even if the real actor is available, it's location information might not be available on the client */
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	bool mAllowRealActorLocationOnClient{true};
+	
+	bool mIsLocallyControlledPawn;
+
+	/** Unique ID of this representation. Assigned when the representation is replicated on the server, and when it is created from replicated data on the client. */
+	FGuid mRepresentationID{};
+	/** Current version of this representation. Incremented each time representation changes. Only relevant on server. */
+	uint64 mRepresentationChangelist{0};
+
+	FNetworkGUID mRealActorNetworkGUID;
+	bool mCachedShouldShowInCompass;
+	bool mCachedShouldShowOnMap;
+
+	/** Last time we updated world location/rotation. Used for smoothing location updates on the client */
+	float mLastLocationRotationUpdateWorldTime{0.0f};
+	FVector mLastActorLocation;
 };

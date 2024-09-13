@@ -15,7 +15,6 @@ struct FHashableVectorWrapper
 		: Location(InLoc) {}
 
 	FHashableVectorWrapper() = default;
-	FHashableVectorWrapper(const FHashableVectorWrapper&) = default;
 	
 	UPROPERTY(VisibleAnywhere, SaveGame)
 	FVector Location = FVector::ZeroVector;

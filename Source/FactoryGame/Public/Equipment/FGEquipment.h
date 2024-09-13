@@ -3,15 +3,23 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "CameraAnimationCameraModifier.h"
 #include "Blueprint/UserWidget.h"
 #include "CharacterAnimationTypes.h"
+#include "FGDynamicStruct.h"
 #include "FGHealthComponent.h"
+#include "FGLegacyItemStateActorInterface.h"
 #include "FGSaveInterface.h"
 #include "GameFramework/Actor.h"
 #include "InputMappingContext.h"
 #include "ItemAmount.h"
 #include "Replication/FGReplicationDependencyActorInterface.h"
+#include "PlayerCustomizationData.h"
 #include "FGEquipment.generated.h"
+
+class UCameraAnimationSequence;
+class UAnimMontage;
+class UAkAudioEvent;
 
 // [ZolotukhinN:14/03/2023] Moved here from FGCharacterPlayer.h because it's used here and FGCharacterPlayer.h includes this header, so we cannot include it here
 UENUM( BlueprintType )
@@ -72,11 +80,107 @@ struct FFirstPersonMaterialArray
 	TArray< class UMaterialInterface* > FirstPersonMaterials;
 };
 
+/** Montage that plays when you un-equip the equipment */
+USTRUCT()
+struct FEquipmentUnEquipMontage
+{
+	GENERATED_BODY()
+	
+	/** Audio event to play *on the character* when un-equipping */
+	UPROPERTY( EditAnywhere, Category = "Audio" )
+	UAkAudioEvent* AudioEvent{};
+
+	/** Whenever there is a separate 3P audio event that should be used instead of the main one */
+	UPROPERTY( EditAnywhere, Category = "Audio" )
+	bool bSeparate3PAudioEvent{false};
+
+	/** Audio event to be used when the character is in third person, instead of the main audio event. */
+	UPROPERTY( EditAnywhere, Category = "Audio", meta = ( EditCondition = "bSeparate3PAudioEvent", EditConditionHides ) )
+	UAkAudioEvent* AudioEvent3P{};
+};
+
+/**
+ * Equipment montage combines a perspective aware montage on the character with the equipment montage
+ */
+USTRUCT( BlueprintType )
+struct FFGEquipmentMontage
+{
+	GENERATED_BODY()
+
+	/** Montage to play on the character in 1P */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Character" )
+	UAnimMontage* Montage_1P{};
+
+	/** Montage to play on the character in 3P */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Character" )
+	UAnimMontage* Montage_3P{};
+
+	/** Montage to play on the equipment mesh */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Equipment" )
+	UAnimMontage* Montage_Equipment;
+
+	/** Audio event to play when playing the montage. Will be played on the equipment location. */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Equipment" )
+	UAkAudioEvent* AudioEvent{};
+
+	/** Whenever there is a separate 3P audio event that should be used instead of the main one */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Equipment" )
+	bool bSeparate3PAudioEvent{false};
+	
+	/** Audio event to be used when the character is in third person, instead of the main audio event. */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Equipment", meta = ( EditCondition = "bSeparate3PAudioEvent", EditConditionHides ) )
+	UAkAudioEvent* AudioEvent3P{};
+
+	/** Camera animation to play in first person. */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Character" )
+	UCameraAnimationSequence* CameraAnim{};
+};
+
+/**
+ * Equipment montage with a weight attached to it, used for randomizing the animations
+ */
+USTRUCT( BlueprintType )
+struct FFGWeightedEquipmentMontage : public FFGEquipmentMontage
+{
+	GENERATED_BODY()
+
+	/** Weight of this montage among other montages */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Weight" )
+	float Weight{1.0f};
+
+	/** When true, this montage will be filtered based on the tag */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Weight" )
+	bool Filter{false};
+
+	/** Tag use as a filter for this montage. Owner equipment defines the available options. */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Weight", meta = ( EditCondition = "Filter", EditConditionHides, GetOptions = "GetAvailableMontageTags" ) )
+	FName FilterMontageTag;
+
+	/** When true, the filter montage tag condition is inverted */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Weight", meta = ( EditCondition = "Filter", EditConditionHides ) )
+	bool InvertFilter{false};
+
+	/** When true and this montage is not filtered out, it will have higher priority over other non-exclusive montages */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Weight", meta = ( EditCondition = "Filter", EditConditionHides ) )
+	bool Exclusive{false};
+};
+
+/** Array of equipment montages with specified weights */
+USTRUCT( BlueprintType )
+struct FFGWeightedEquipmentMontageArray
+{
+	GENERATED_BODY()
+
+	/** A collection of all montages */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Equipment Montages", meta = ( ShowOnlyInnerProperties ) )
+	TArray<FFGWeightedEquipmentMontage> Montages;
+};
+
 /**
  * Base class for all kinds of equipment in the game.
  */
 UCLASS( meta = (AutoJson = true) )
-class FACTORYGAME_API AFGEquipment : public AActor, public IFGSaveInterface, public IFGReplicationDependencyActorInterface
+class FACTORYGAME_API AFGEquipment : public AActor, public IFGSaveInterface, public IFGReplicationDependencyActorInterface, public IFGLegacyItemStateActorInterface
 {
 	GENERATED_BODY()
 public:
@@ -99,6 +203,10 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
+	
+	// Begin IFGLegacyItemStateActorInterface
+	virtual FFGDynamicStruct ConvertToItemState( TSubclassOf<UFGItemDescriptor> itemDescriptor ) const override;
+	// End IFGLegacyItemStateActorInterface
 
 	/** Equips the equipment. */
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
@@ -111,20 +219,24 @@ public:
 	virtual void OnCharacterMovementModeChanged( EMovementMode PreviousMovementMode, uint8 PreviousCustomMode, EMovementMode NewMovementMode, uint8 NewCustomMode );
 
 	/* Updates primitive values on all UPrimitive components.*/
-	void UpdatePrimitiveColors();
+	void UpdatePrimitiveColors(FLinearColor Primary, FLinearColor Secondary, FLinearColor Detail);
 
 	/** Updates materials based on the camera mode */
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	void UpdateMaterialsFromCameraMode();
 
 	UFUNCTION( BlueprintCallable, Category= "Equipment" )
 	virtual void DisableEquipment();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SetupTrinketMeshes(bool bIsLocalInstigator, USkeletalMesh* TrinketChainMesh, FName TrinketChainSocketName, UStaticMesh* TrinketMesh, FName TrinketSocketName);
 	
 	/**
 	 * Is this equipment equipped.
 	 * @return - true if equipped; otherwise false.
 	 */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
-	FORCEINLINE bool IsEquipped() const { return GetInstigator() != nullptr; }
+	FORCEINLINE bool IsEquipped() const { return mPlayerCharacter != nullptr; }
 
 	/**
 	 * Convenience blueprint function to return Instigator as a FGCharacterPlayer
@@ -133,62 +245,33 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
 	class AFGCharacterPlayer* GetInstigatorCharacter() const;
 
-	UFUNCTION()
-	void OnColorUpdate(int32 index);
+	/** Applies player customization data to this piece of equipment. Automatically called when our customization data updates for equipped equipments. */
+	void ApplyPlayerCustomizationData( const FPlayerCustomizationData& NewCustomizationData );
+	
 	/** 
 	 * @return Is the instigator locally controlled; false if no instigator.
 	 */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
 	bool IsLocalInstigator() const;
 
-	/**
-	 * If this equipment has a state that should be saved when unequipped.
-	 * @todo Refine this for equipments that could have a null state, i.e. unloaded weapons can be discarded but loaded weapons need to be saved.
-	 * @todo Expose to blurre for mods.
-	 */
-	virtual bool ShouldSaveState() const;
+	/** Attempts to load the state of this equipment from the item state */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	void LoadFromItemState( const FFGDynamicStruct& itemState );
 
-	/** Sets the current attachment for this weapon */
-	void SetAttachment( class AFGEquipmentAttachment* newAttachment );
+	/** Saves the state of this equipment to the item state */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	FFGDynamicStruct SaveToItemState() const;
 
-	/** Sets the current attachment for this weapon */
-	void SetSecondaryAttachment( class AFGEquipmentAttachment* newAttachment );
-
+	/** Flushes the current equipment state to the item associated with it */
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	void FlushItemState();
+	
 	/** Get the arms animation to play on the player */
 	FORCEINLINE EArmEquipment GetArmsAnimation() const{ return mArmAnimation; }
 
 	/** Get the back animation to play on the player */
 	FORCEINLINE EBackEquipment GetBackAnimation() const{ return mBackAnimation; }
-
-	/**
-	 * Get the attachment for this equipment.
-	 */
-	UFUNCTION( BlueprintCallable, Category = "Equipment" )
-	FORCEINLINE class AFGEquipmentAttachment* GetAttachment() const { return mAttachment; }
-
-	UFUNCTION( BlueprintCallable, Category = "Equipment" )
-	FORCEINLINE class AFGEquipmentAttachment* GetSecondaryAttachment() const { return mSecondaryAttachment; }
-
-	/**
-	 * Get the attachment for this equipment.
-	 * @return - The attachment; nullptr if attachment is not a child of class C.
-	 */
-	template< class C >
-	FORCEINLINE C* GetAttachment() const { return Cast< C >( mAttachment ); }
 	
-	/**
-	* Get the secondary attachment for this equipment.
-	* @return - The attachment; nullptr if attachment is not a child of class C.
-	*/
-	template< class C >
-	FORCEINLINE C* GetSecondaryAttachment() const { return Cast< C >( mSecondaryAttachment ); }
-
-	/**
-	 * This is called to update the relevant attachments' use state so that animations can be played etc.
-	 */
-	UFUNCTION( BlueprintCallable, Server, Reliable, WithValidation, Category = "Equipment" )
-	void Server_UpdateAttachmentUseState( int newUseState );
-
 	/**
 	 * Called whenever our owner is damaged and gives us a chance to adjust it
 	 * SERVER ONLY
@@ -205,6 +288,10 @@ public:
 	/** When using this equipment, the character use distance will be increased to this amount. */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
     virtual float GetCharacterUseDistanceOverride() const { return 0.0f; }
+
+	/** When using this equipment, checks if the character is allowed to use things */
+	UFUNCTION( BlueprintPure, BlueprintNativeEvent, Category = "Equipment" )
+	bool CanPickBestUsableActor() const;
 
 	/** Returns the enum for the equipment slot, ARMS, BACK etc. */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
@@ -249,26 +336,44 @@ public:
 	void WasSlottedIn( class AFGCharacterPlayer* holder );
 
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
-	virtual void GetSupportedConsumableTypes(TArray<TSubclassOf< UFGItemDescriptor >>& out_itemDescriptors) const;
+	virtual void GetSupportedConsumableTypes(TArray<TSubclassOf<UFGItemDescriptor>>& out_itemDescriptors) const;
 	
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
-	virtual int GetSelectedConsumableTypeIndex() const;
+	virtual TSubclassOf<UFGItemDescriptor> GetSelectedConsumableType() const;
 	
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
-	virtual void SetSelectedConsumableTypeIndex( const int selectedIndex );
+	virtual void SetSelectedConsumableType( const TSubclassOf<UFGItemDescriptor> selectedConsumableType );
 
 	FORCEINLINE UInputMappingContext* GetMappingContext() const { return mMappingContext; }
 	int32 GetMappingContextPriority() const;
+
+	FORCEINLINE bool IsMappingContextApplied() const { return mIsMappingContextApplied; }
 
 	/** Returns the current camera mode of the player the equipment is attached to. Will return ECM_None if not equipped */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
 	ECameraMode GetInstigatorCameraMode() const;
 
-	/** Called when the camera mode of the player having the equipment changes to third or first person */
+	/**
+	 * Called when the camera mode of the player having the equipment changes to third or first person
+	 * This is called before the character mesh visibility changes, so the anim instance of the old camera mode is still active.
+	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
 	void OnCameraModeChanged( ECameraMode newCameraMode );
 
+	/** Called to update the equipment visibility based on the external conditions such as player visibility and/or status (e.g. hand equipments are hidden inside of the hyper tube) */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	void SetEquipmentVisibility( bool bNewEquipmentVisible );
+
+	/**
+	 * Called after the camera mode has changed and the mesh visibility changes have been handled.
+	 * Good place to re-apply data harvested from the old character mesh to the new character mesh.
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	void OnPostCameraModeChanged( ECameraMode newCameraMode );
+
 	const TArray< FItemAmount >& GetCostToUse() const { return mCostToUse; }
+
+	FORCEINLINE FText GetEquipmentLookAtDescOverride() const { return mEquipmentLookAtDescOverride; }
 
 	/** Called whenever an interact widget gets added or removed. */
     virtual void OnInteractWidgetAddedOrRemoved( class UFGInteractWidget* widget, bool added );
@@ -276,16 +381,62 @@ public:
 	/** Allows the equipment to intercept the shortcut pressed event. Return true if the event was handled by the equipment */
 	virtual bool OnShortcutPressed( int32 shortcutIndex ) { return false; }
 
+	/** Plays the specified montage on this equipment. Returns the length of the first played equipment montage */
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	void PlayEquipmentMontage( const FFGEquipmentMontage& equipmentMontage );
+
+	/** Returns the character animation montage active for the current camera mode inside of the provided equipment montage */
+	UFUNCTION( BlueprintPure, Category = "Equipment" )
+	UAnimMontage* GetActiveCharacterAnimMontage( const FFGEquipmentMontage& equipmentMontage ) const;
+
+	/** Returns the active character animation montage for the weighted montage provided */
+	UFUNCTION( BlueprintPure, Category = "Equipment" )
+	UAnimMontage* GetActiveCharacterAnimMontageWeighted( const FFGWeightedEquipmentMontage& equipmentMontage ) const;
+
+	/** Returns true if the filters for the provided montage match the current state of the equipment */
+	UFUNCTION( BlueprintPure, Category = "Equipment" )
+	bool IsEquipmentMontageAllowed( const FFGWeightedEquipmentMontage& montage ) const;
+
+	/** Gives the equipment an opportunity to filter the weighted montages based on their tag */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	bool IsEquipmentMontageTagAllowed( FName montageTag ) const;
+
+	/** Functions used to get a list of available montage tags for filtering */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	TArray<FString> GetAvailableMontageTags() const;
+	
+	/** Plays one of the montages from the weighted montages collection, returns the montage length and the tag of the montage that was played */
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	void PlayWeightedEquipmentMontage( const FFGWeightedEquipmentMontageArray& montageArray, FFGWeightedEquipmentMontage& out_pickedMontage );
+	
 	/** Plays camera animation sequence for the local player in 1P, otherwise does nothing */
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	void PlayCameraAnimation( class UCameraAnimationSequence* cameraAnimationSequence );
-protected:
-	UFUNCTION( Server, Reliable )
-	void Server_TriggerDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent );
+	
+	/** Plays the un-equip montage and sound */
+	void PlayUnEquipMontage() const;
+
+	/** Returns the currently active arm equipment animation */
+	UFUNCTION( BlueprintPure, Category = "Equipment" )
+	EArmEquipment GetCurrentArmEquipmentAnimation() const;
+
+	/** Returns the equip montage that we played when the equipment was equipped */
+	UFUNCTION( BlueprintPure, Category = "Equipment" )
+	FFGWeightedEquipmentMontage GetPlayedEquipMontage() const;
+
+	/** Stops the currently running equipment montage (both on the equipment and on the player character), and also stops all currently playing equipment sounds */
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	void StopCurrentEquipmentMontage( bool bStopSounds = true );
 
 	/** Used to trigger a default equipment action. */
 	void TriggerDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent );
 
+	/** Called when the equipment is spawned to initialize it with the owner */
+	void OnEquipmentSpawned( AFGCharacterPlayer* equipmentOwner );
+protected:
+	UFUNCTION( Server, Reliable )
+	void Server_TriggerDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent );
+	
 	/** Native handler for a default action event for an equipment. Gets called on both Server and Client. */
 	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent );
 
@@ -300,11 +451,9 @@ protected:
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
 	void WasUnEquipped();
 
-	/** Add HUD that this equipment needs */
-	void AddEquipmentHUD() const;
-	/** Removes HUD for the equipment */
-	void RemoveEquipmentHUD() const;
-
+	UFUNCTION()
+    virtual void OnCharacterRagdollStateChanged( bool isRagdolled );
+	
 	/** Sets tick status for actor and all components */
 	void SetEquipmentTicks( bool inTick );
 
@@ -342,15 +491,11 @@ protected:
 	void Input_DefaultPrimaryFire( const FInputActionValue& actionValue );
 	void Input_DefaultSecondaryFire( const FInputActionValue& actionValue );
 
+	/** Adds an entry into the first person component to material map. This is used for equipments (decorations) that don't know there mesh until runtime */
+	UFUNCTION( BlueprintCallable, Category="Equipment" )
+	void AddFirstPersonComponentAndMaterialsEntry( FName compName, TArray< class UMaterialInterface* > firstPersonMaterials );
+
 public:
-	/** This is the attachment for this class */
-	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
-	TSubclassOf< class AFGEquipmentAttachment > mAttachmentClass;
-
-	/** This is the secondary attachment for this class */
-	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
-	TSubclassOf< class AFGEquipmentAttachment > mSecondaryAttachmentClass;
-
 	/** To what slot is this limited to? */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	EEquipmentSlot mEquipmentSlot;
@@ -359,26 +504,35 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	UCameraAnimationSequence* mSprintHeadBobCameraAnim;
 
-	//@todo Are these used by Joel or legacy?
-	/** Sound played when equipping */
-	UPROPERTY( EditDefaultsOnly, Category = "Sound" )
-	class UAkAudioEvent* mEquipSound;
+	/** Montages to play when the equipment is equipped */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment|Animation" )
+	FFGWeightedEquipmentMontageArray mEquipMontage;
 
-	/** Sound played when unequipping */
-	UPROPERTY( EditDefaultsOnly, Category = "Sound" )
-	class UAkAudioEvent* mUnequipSound;
-
-	/** Class of widget to add when equipping this equipment */
-	UPROPERTY( EditDefaultsOnly, Category = "UI" )
-	TSubclassOf< UUserWidget > mEquipmentWidget;
-
+	/** True if this equipment has a separate stinger montage that can be played */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
+	bool mHasStingerMontage{false};
+	
+	/** Montage to play when equipping the equipment for the first time */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation", meta = ( EditCondition = "mHasStingerMontage", EditConditionHides ) )
+	FFGWeightedEquipmentMontageArray mStingerMontage;
+	
+	/** Montages to play when the equipment is un-equipped. Will also stop all other montages started before. */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
+	FEquipmentUnEquipMontage mUnEquipMontage;
+	
 	/** Holds a reference to the child equipment that may be spawned with this */
 	UPROPERTY( Replicated, ReplicatedUsing=OnChildEquipmentReplicated )
 	class AFGEquipmentChild* mChildEquipment;
 
+	UPROPERTY(EditDefaultsOnly)
+	float mMontageBlendOutTime = 0.f;
+
 protected:
+	/** Needed for validating the data */
+	friend class UFGEquipmentValidator;
+
 	/** The AnimBlueprint class to use for the 1p anim for our pawn, specifying none here means that the pawn default 1p anim will be used */
-	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation|Pose" )
 	TSubclassOf< class UAnimInstance > m1PAnimClass;
 
 	/** If this equipment should attach to a socket, this is the socket. */
@@ -404,19 +558,12 @@ protected:
 	TArray< FItemAmount > mCostToUse;
 
 	/** Arms animation this should play on the when the equipment is equipped (only used if mEquipmentSlot == ES_ARMS) */
-	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment", meta = ( EditCondition = "mEquipmentSlot == EEquipmentSlot::ES_ARMS", EditConditionHides, DisplayPriority = 1 ) )
 	EArmEquipment mArmAnimation;
 
 	/** Arms animation this should play on the when the equipment is equipped (only used if mEquipmentSlot == ES_BACK) */
-	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment", meta = ( EditCondition = "mEquipmentSlot == EEquipmentSlot::ES_BACK", EditConditionHides, DisplayPriority = 1 ) )
 	EBackEquipment mBackAnimation;
-
-	/** If the owner is persistent throughout the lifetime of this equipment */
-	UPROPERTY( EditDefaultsOnly, Category = "Equipment", AdvancedDisplay )
-	bool mHasPersistentOwner;
-
-	UPROPERTY( EditDefaultsOnly, Category = "Equipment", AdvancedDisplay )
-	bool mOnlyVisibleToOwner;
 	
 	/** The equipment's input mapping context which gets applied when equipping it. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
@@ -426,15 +573,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, meta = ( Bitmask, BitmaskEnum = "EDefaultEquipmentAction" ), Category = "Equipment" )
 	uint8 mDefaultEquipmentActions;
 
+	/** The equip montage that was played when the equipment was equipped */
+	UPROPERTY( VisibleInstanceOnly, Category = "Equipment", Transient )
+	FFGWeightedEquipmentMontage mPickedEquipMontage;
 private:
-	/** This is the attachment of this equipment */
-	UPROPERTY( Replicated )
-	class AFGEquipmentAttachment* mAttachment;
-
-	/** This is a potential secondary attachment */
-	UPROPERTY( Replicated )
-	class AFGEquipmentAttachment* mSecondaryAttachment;
-
 	/** True if we have a blueprint version of some functions */
 	uint8 mHave_AdjustDamage : 1;
 
@@ -469,4 +611,18 @@ private:
 	/** Materials that were swapped out during the change of the POV to first person */
 	UPROPERTY( VisibleInstanceOnly, Category = "Equipment" )
 	TMap<FName, FFirstPersonMaterialArray> mSwappedOutThirdPersonMaterials;
+
+	/** The character that equipped us. */
+	UPROPERTY()
+	AFGCharacterPlayer* mPlayerCharacter;
+
+	FCameraAnimationHandle CameraAnimationHandle;
+	
+	/** Used if we want to override the GetLookAtDescription for resource nodes with this equipment. Added for the AFGPortableMinerDispenser
+	 * but figured we could use it for other equipment as well so put it here. {Ore}. {Purity} are relevant format specifiers for this text */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
+	FText mEquipmentLookAtDescOverride;
+	
+	/** Whether or not the mapping contexts for this equipment are applied. */
+	bool mIsMappingContextApplied;
 };

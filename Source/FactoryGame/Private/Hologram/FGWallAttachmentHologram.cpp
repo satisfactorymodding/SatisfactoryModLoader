@@ -6,6 +6,6 @@ AFGWallAttachmentHologram::AFGWallAttachmentHologram() : Super() {
 	this->mCanSnapToFoundationFloor = false;
 	this->mCanSnapToWalls = true;
 	this->mSnapAxis = EAxis::X;
+	this->mNeedsValidFloor = false;
 }
-bool AFGWallAttachmentHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
-void AFGWallAttachmentHologram::CheckValidFloor(){ }
+void AFGWallAttachmentHologram::CheckValidPlacement(){ }

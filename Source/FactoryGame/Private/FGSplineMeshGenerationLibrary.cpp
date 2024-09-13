@@ -2,6 +2,7 @@
 
 #include "FGSplineMeshGenerationLibrary.h"
 
+void UFGSplineMeshGenerationLibrary::BuildNaniteSplineMeshes(USplineComponent* spline,UStaticMesh* Mesh, float meshLength, TArray<USplineMeshComponent*>& outMeshes){ }
 void UFGSplineMeshGenerationLibrary::BuildSplineMeshesInstanced(USplineComponent* spline, float meshLength,  UInstancedSplineMeshComponent* splineInstances){ }
 void UFGSplineMeshGenerationLibrary::BuildSplineMeshesPerSegmentInstanced(USplineComponent* spline,
 		UStaticMesh* mesh,

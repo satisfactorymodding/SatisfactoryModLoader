@@ -25,9 +25,9 @@ UTexture2D* UFGHotbarShortcut::GetDisplayImage_Implementation() const{ return nu
 bool UFGHotbarShortcut::IsActive_Implementation( AFGPlayerController* owner) const{ return bool(); }
 bool UFGHotbarShortcut::IsSame_Implementation(UFGHotbarShortcut* shortcut) const{ return bool(); }
 FString UFGHotbarShortcut::DescribeShortcut_Implementation() const{ return FString(); }
+void UFGHotbarShortcut::NotifyShortcutChanged(){ }
 void UFGHotbarShortcut::Internal_TryInitializeShortcut(){ }
 void UFGHotbarShortcut::Internal_ConditionalDestroyShortcut(){ }
-void UFGHotbarShortcut::NotifyShortcutChanged(){ }
 void UFGHotbarShortcut::InitializeShortcut_Implementation(){ }
 void UFGHotbarShortcut::DestroyShortcut_Implementation(){ }
 void UFGHotbarShortcut::OnClientSubsystemsValid(){ }

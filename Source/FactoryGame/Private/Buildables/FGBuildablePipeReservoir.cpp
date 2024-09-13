@@ -14,6 +14,13 @@ AFGBuildablePipeReservoir::AFGBuildablePipeReservoir() : Super() {
 	this->mStackingHeight = 400.0;
 	this->mStorageCapacity = 500.0;
 	this->mHologramClass = AFGPipeReservoirHologram::StaticClass();
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGBuildablePipeReservoir::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

@@ -3,6 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "CoreMinimal.h"
+#include "Templates/SubclassOf.h"
 #include "UObject/Interface.h"
 #include "FGRadiationInterface.generated.h"
 

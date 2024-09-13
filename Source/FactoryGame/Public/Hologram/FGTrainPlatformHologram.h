@@ -65,7 +65,7 @@ protected:
 	class UFGTrainPlatformConnection* mPlatformConnectionComponents[ 2 ]; 
 
 	/** Stores a reference to the other platforms this hologram is connecting to */
-	UPROPERTY()
+	UPROPERTY( CustomSerialization )
 	class UFGTrainPlatformConnection* mConnectedPlatformComponents[ 2 ];
 
 private:

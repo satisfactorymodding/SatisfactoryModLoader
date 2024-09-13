@@ -5,5 +5,6 @@
 void UFGSignLibrary::GetCanvasDimensionsFromSignDescriptor(const TSubclassOf<  UFGSignTypeDescriptor > signTypeClass, FVector2D& signDimensions){ }
 void UFGSignLibrary::GetDefaultColorsFromSignDescriptor(const TSubclassOf<  UFGSignTypeDescriptor > signTypeClass, FLinearColor& foregroundColor, FLinearColor& backgroundColor, FLinearColor& auxiliaryColor){ }
 void UFGSignLibrary::GetTextElementNameMapFromSignDescriptor(const TSubclassOf<  UFGSignTypeDescriptor > signTypeClass, TMap< FString, FString >& textElementMap){ }
+void UFGSignLibrary::GetTextElementLocMapFromSignDescriptor(const TSubclassOf<  UFGSignTypeDescriptor > signTypeClass, TMap< FString, FText >& LocTextElementMap){ }
 void UFGSignLibrary::GetIconElementNameMapFromSignDescriptor(const TSubclassOf<  UFGSignTypeDescriptor > signTypeClass, TMap< FString,  UObject* >& iconElementMap){ }
-void UFGSignLibrary::GetPrefabLayoutsFromSignDescriptor(const TSubclassOf<  UFGSignTypeDescriptor > signTypeClass, TArray< TSubclassOf< UFGSignPrefabWidget > >& prefabArray){ }
+void UFGSignLibrary::GetPrefabLayoutsFromSignDescriptor(const TSubclassOf<  UFGSignTypeDescriptor > signTypeClass, TArray< TSoftClassPtr< UFGSignPrefabWidget > >& prefabArray){ }

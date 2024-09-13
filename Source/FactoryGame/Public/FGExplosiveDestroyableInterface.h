@@ -23,7 +23,7 @@ class FACTORYGAME_API IFGExplosiveDestroyableInterface
 public:
 	/** Particle System to be played when destroyed */
 	UFUNCTION( BlueprintNativeEvent, Category = "Explosive Destroy Interface" )
-	class UParticleSystem* GetDestroyEffect();
+	class UParticleSystem* GetExplosiveDestroyEffect();
 
 	/** Blueprint event for modifying BP objects when they are exploded */
 	UFUNCTION( BlueprintNativeEvent, Category = "Explosive Destroy Interface" )

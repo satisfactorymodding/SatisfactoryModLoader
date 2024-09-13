@@ -2,6 +2,4 @@
 
 #include "UI/Message/FGMessageBase.h"
 
-AFGCharacterPlayer* UFGMessageBase::GetFGCharacter(){ return nullptr; }
 UObject* UFGMessageBase::GetMessageDefaultObject(TSubclassOf< UFGMessageBase > inClass){ return nullptr; }
-bool UFGMessageBase::GetShouldTriggerCall(TSubclassOf< UFGMessageBase > inClass){ return bool(); }

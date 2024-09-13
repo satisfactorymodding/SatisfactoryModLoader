@@ -15,6 +15,7 @@ AFGRailroadSubsystem::AFGRailroadSubsystem() : Super() {
 	this->mSwitchControlClass = nullptr;
 	this->mTrainClass = nullptr;
 	this->mBlockVisualizationDistance = 30000.0;
+	this->mClientSimulationResetDistance = 3000.0;
 	this->mTrainScheduler = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -51,8 +52,8 @@ void AFGRailroadSubsystem::DecoupleTrains(AFGRailroadVehicle* firstVehicle, AFGR
 void AFGRailroadSubsystem::GetTrains(int32 trackID, TArray<  AFGTrain* >& out_trains) const{ }
 void AFGRailroadSubsystem::GetAllTrains(TArray<  AFGTrain* >& out_trains) const{ }
 void AFGRailroadSubsystem::SortTrains(TArray<  AFGTrain* >& trains) const{ }
-FText AFGRailroadSubsystem::GenerateTrainStationName() const{ return FText(); }
-bool AFGRailroadSubsystem::IsTrainStationNameAvailable(const FString& name) const{ return bool(); }
+FText AFGRailroadSubsystem::GenerateStationName() const{ return FText(); }
+bool AFGRailroadSubsystem::IsStationNameAvailable(const FString& name) const{ return bool(); }
 void AFGRailroadSubsystem::AddTrainStation( AFGBuildableRailroadStation* station){ }
 void AFGRailroadSubsystem::UpdateTrainStation( AFGBuildableRailroadStation* station){ }
 void AFGRailroadSubsystem::RemoveTrainStation( AFGBuildableRailroadStation* station){ }
@@ -74,7 +75,7 @@ FLinearColor AFGRailroadSubsystem::GetBlockVisualizationColor(int32 forSignalBlo
 void AFGRailroadSubsystem::Debug_MarkAllGraphsAsChanged(){ }
 void AFGRailroadSubsystem::Debug_MarkAllGraphsForFullRebuild(){ }
 void AFGRailroadSubsystem::TickTrackGraphs(float dt){ }
-void AFGRailroadSubsystem::TickPendingCollisions(float dt){ }
+void AFGRailroadSubsystem::TickPendingCollisions(){ }
 void AFGRailroadSubsystem::TickBlockVisualization(){ }
 void AFGRailroadSubsystem::PurgeInvalidStationsFromTimeTables(){ }
 AFGRailroadSubsystem::FRailroadHitResult AFGRailroadSubsystem::SolveVehicleCollisions( AFGTrain* forTrain,
@@ -95,9 +96,10 @@ void AFGRailroadSubsystem::InitializeStationNames(){ }
 AFGTrain* AFGRailroadSubsystem::CreateTrain(AFGRailroadVehicle* vehicle) const{ return nullptr; }
 void AFGRailroadSubsystem::RemoveTrain( AFGTrain* train){ }
 void AFGRailroadSubsystem::ReconnectTrainToThirdRail(AFGTrain* train){ }
-void AFGRailroadSubsystem::PreTickPhysics(FPhysScene* physScene, float dt){ }
-void AFGRailroadSubsystem::UpdatePhysics(FPhysScene* physScene, float dt){ }
-void AFGRailroadSubsystem::UpdateSimulationData( AFGTrain* train,  FTrainSimulationData& simData){ }
+void AFGRailroadSubsystem::PreTickTrainMovement(float dt){ }
+void AFGRailroadSubsystem::TickTrainMovement(float dt){ }
+void AFGRailroadSubsystem::PostTickTrainMovement(float dt){ }
+void AFGRailroadSubsystem::UpdateSimulationData( AFGTrain* train){ }
 void AFGRailroadSubsystem::MergeTrackGraphs(int32 first, int32 second){ }
 int32 AFGRailroadSubsystem::CreateTrackGraph(){ return int32(); }
 void AFGRailroadSubsystem::RemoveTrackGraph(int32 graphID){ }

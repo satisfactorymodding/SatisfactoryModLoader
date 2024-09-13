@@ -28,13 +28,19 @@ public:
 	bool AreDependenciesMet( UObject* worldContext ) const override;
 
 	TMap< TSubclassOf< class AActor >, int32 > GetActorsBuiltCount() const { return mActorsBuiltCount; }
+	EActorBuiltDependencyType GetType() const { return mType; }
+
+#if WITH_EDITOR
+	virtual FString ToString() const override;
+	virtual void FromString( const FString& inString ) override;
+#endif
 
 protected:
 	/** The amount of the given actors that should have been built for this dependency to be met */
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category="Dependency" )
 	TMap< TSubclassOf< class AActor >, int32 > mActorsBuiltCount;
 
 	/** The type of build action this dependency cares about */
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category="Dependency" )
 	EActorBuiltDependencyType mType;
 };

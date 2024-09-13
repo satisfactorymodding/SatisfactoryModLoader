@@ -2,6 +2,7 @@
 
 #include "AI/FGCreatureController.h"
 #include "AI/FGAIPerceptionComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 
 #if !UE_BUILD_SHIPPING
 void AFGCreatureController::DisplayDebugInformation(){ }
@@ -9,6 +10,7 @@ void AFGCreatureController::DisplayDebugInformation(){ }
 AFGCreatureController::AFGCreatureController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mCurrentAction = nullptr;
 	this->mNoiseAlertDistance = 1000.0;
+	this->mAlignRotationToFloor = false;
 	this->mCurrentTarget = nullptr;
 	this->mRecentDamageMaxAge = 5.0;
 	this->mStressLevel = 0.0;
@@ -22,6 +24,7 @@ AFGCreatureController::AFGCreatureController(const FObjectInitializer& ObjectIni
 void AFGCreatureController::OnPossess(APawn* InPawn){ }
 void AFGCreatureController::OnUnPossess(){ }
 FPathFollowingRequestResult AFGCreatureController::MoveTo(const FAIMoveRequest& MoveRequest, FNavPathSharedPtr* OutPath){ return FPathFollowingRequestResult(); }
+void AFGCreatureController::UpdateControlRotation(float DeltaTime, bool bUpdatePawn){ }
 void AFGCreatureController::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGCreatureController::Tick(float DeltaSeconds){ }
 void AFGCreatureController::SetEnabled(bool enabled){ }

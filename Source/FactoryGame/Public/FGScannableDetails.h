@@ -172,7 +172,7 @@ class FACTORYGAME_API UFGScannableDetails : public UObject
 {
 	GENERATED_BODY()
 public:
-	virtual AActor* FindClosestRelevantActor( class UWorld* world, const FVector scanLocation, const float maxRangeSquare, TSubclassOf<AActor> actorClassToScanFor ) const;
+	virtual AActor* FindClosestRelevantActor( class UWorld* world, const FVector& scanLocation, const float maxRangeSquare, TSubclassOf<AActor> actorClassToScanFor ) const;
 };
 
 UCLASS()
@@ -180,7 +180,7 @@ class FACTORYGAME_API UFGScannableDetailsHostileCreature : public UFGScannableDe
 {
 	GENERATED_BODY()
 public:
-	virtual AActor* FindClosestRelevantActor(UWorld* world, const FVector scanLocation, const float maxRangeSquared, TSubclassOf<AActor> actorClassToScanFor) const override;
+	virtual AActor* FindClosestRelevantActor(UWorld* world, const FVector& scanLocation, const float maxRangeSquared, TSubclassOf<AActor> actorClassToScanFor) const override;
 };
 
 UCLASS()
@@ -188,7 +188,7 @@ class FACTORYGAME_API UFGScannableDetailsRegrowingPickups : public UFGScannableD
 {
 	GENERATED_BODY()
 public:
-	virtual AActor* FindClosestRelevantActor(UWorld* world, const FVector scanLocation, const float maxRangeSquared, TSubclassOf<AActor> actorClassToScanFor) const override;
+	virtual AActor* FindClosestRelevantActor(UWorld* world, const FVector& scanLocation, const float maxRangeSquared, TSubclassOf<AActor> actorClassToScanFor) const override;
 };
 
 UCLASS()
@@ -196,7 +196,7 @@ class FACTORYGAME_API UFGScannableDetailsHarddrive : public UFGScannableDetails
 {
 	GENERATED_BODY()
 public:
-	virtual AActor* FindClosestRelevantActor(UWorld* world, const FVector scanLocation, const float maxRangeSquared, TSubclassOf<AActor> actorClassToScanFor) const override;
+	virtual AActor* FindClosestRelevantActor(UWorld* world, const FVector& scanLocation, const float maxRangeSquared, TSubclassOf<AActor> actorClassToScanFor) const override;
 };
 
 

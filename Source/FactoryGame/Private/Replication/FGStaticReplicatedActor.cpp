@@ -11,5 +11,5 @@ AFGStaticReplicatedActor::AFGStaticReplicatedActor() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bReplicates = true;
-	this->NetDormancy = ENetDormancy::DORM_Initial;
+	this->NetDormancy = ENetDormancy::DORM_DormantAll;
 }

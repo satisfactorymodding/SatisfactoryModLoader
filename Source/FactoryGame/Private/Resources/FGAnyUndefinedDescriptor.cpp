@@ -4,6 +4,6 @@
 #include "Internationalization/StringTableRegistry.h"
 
 UFGAnyUndefinedDescriptor::UFGAnyUndefinedDescriptor() : Super() {
-	this->mDisplayName = NSLOCTEXT("AnyUndefinedDescriptor", "DisplayName", "Any Undefined");
-	this->mDescription = NSLOCTEXT("AnyUndefinedDescriptor", "Description", "Any item not specified elsewhere");
+	this->mDisplayName = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/AnyUndefined");
+	this->mDescription = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/AnyUndefined/Description");
 }

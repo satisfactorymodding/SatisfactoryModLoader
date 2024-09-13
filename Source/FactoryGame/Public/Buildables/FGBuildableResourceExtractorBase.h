@@ -58,7 +58,7 @@ public:
 
 	/** Gets particle for mining */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
-	class UParticleSystem* GetMiningParticle();
+	class UFXSystemAsset* GetMiningParticle();
 
 	 //type names are used to match types for upgrades and such
 	FName GetExtractorTypeName() const { return mExtractorTypeName; }

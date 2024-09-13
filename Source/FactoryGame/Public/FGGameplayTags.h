@@ -21,6 +21,7 @@ public:
 	{
 		FGameplayTag Pause;
 		FGameplayTag CheatMenu;
+		FGameplayTag DebugMenu;
 
 		// Cheats
 		struct FCheats
@@ -42,7 +43,19 @@ public:
 
 			FGameplayTag Sprint;
 			FGameplayTag Crouch;
+			
+			FGameplayTag RadialMenuDirectionAxis;
+			FGameplayTag RadialMenuDirectionCursor;
 		} PlayerMovement;
+
+		
+		// <FL> ZimmermannA
+		// Menus via gamepad
+		struct FGamepadMenuTags
+		{
+			FGameplayTag CancelMenu;
+		} GamepadMenu;
+		// </FL> 
 		
 		// Photo Mode
 		struct FPhotoModeTags
@@ -73,6 +86,9 @@ public:
 				FGameplayTag Shortcut8;
 				FGameplayTag Shortcut9;
 				FGameplayTag Shortcut10;
+				FGameplayTag RadialMenu;
+				FGameplayTag RadialMenuPageDown;
+				FGameplayTag RadialMenuPageUp;
 			} Hotbar;
 			
 			FGameplayTag Use;
@@ -100,6 +116,9 @@ public:
 			FGameplayTag ToggleQuickSearch;
 			FGameplayTag ToggleMap;
 			FGameplayTag TogglePhotoMode;
+			// <FL> PuschkeN Toggling auto pickup on/off
+			FGameplayTag ToggleAutoPickup;
+			// </FL>
 
 			FGameplayTag ToggleFlashlight;
 
@@ -117,6 +136,8 @@ public:
 				FGameplayTag Dismantle;
 				FGameplayTag Paint;
 			} BuildGun;
+
+			FGameplayTag HandheldSelectionRadialMenu;	 // <FL> [KajtaziT]
 			
 		} PlayerActions;
 
@@ -124,6 +145,7 @@ public:
 		struct FEquipmentTags
 		{
 			FGameplayTag Cycle;
+			FGameplayTag CycleNext;
 			FGameplayTag Holster;
 			FGameplayTag Reload;
 			
@@ -200,6 +222,9 @@ public:
         	{
         		FGameplayTag OpenRecorder;
         		FGameplayTag ThrottleSteerAxis;
+				FGameplayTag GamepadThrottle;
+				FGameplayTag GamepadBrake;
+				FGameplayTag GamepadSteer;
         	} WheeledVehicle;
 
         	// Trains
@@ -211,7 +236,7 @@ public:
         	} Train;
         	
         } Vehicle;
-
+		
 		// UI
 		struct FUITags
 		{
@@ -221,8 +246,25 @@ public:
 			} AudioMessage;
 		} UI;
 		
-		
 	} static Input;
+
+	/** Onboarding Step Tags **/
+	struct FOnboardingStepTags
+	{
+		FGameplayTag PlanetFall;
+		FGameplayTag Landed;
+		FGameplayTag EquipXenoZapper;
+		FGameplayTag DismantleDropPod;
+		FGameplayTag PickupIronOre;
+		FGameplayTag BuildHub;
+		FGameplayTag HubUpgrade1;
+		FGameplayTag HubUpgrade2;
+		FGameplayTag HubUpgrade3;
+		FGameplayTag HubUpgrade4;
+		FGameplayTag HubUpgrade5;
+		FGameplayTag HubUpgrade6;
+		FGameplayTag OnboardingComplete;
+	} static OnboardingStep;
 
 protected:
 	/** Adds all native tags to the manager. */
@@ -245,4 +287,7 @@ protected:
 	static void AddInputVehicleTags( UGameplayTagsManager& Manager );
 	
 	static void AddInputUITags( UGameplayTagsManager& Manager );
+
+	// Onboarding tags
+	static void AddOnboardingStepTags( UGameplayTagsManager& Manager );
 };

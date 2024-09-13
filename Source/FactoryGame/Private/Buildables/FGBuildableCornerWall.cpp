@@ -2,8 +2,12 @@
 
 #include "Buildables/FGBuildableCornerWall.h"
 
-AFGBuildableCornerWall::AFGBuildableCornerWall() : Super() {
+AFGBuildableCornerWall::AFGBuildableCornerWall(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mSize = 0.0;
 	this->mHeight = 0.0;
 	this->mIsInverted = false;
+}
+AFGBuildableCornerWallLightweight::AFGBuildableCornerWallLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mMeshComponentProxy = nullptr;
+	this->mManagedByLightweightBuildableSubsystem = true;
 }

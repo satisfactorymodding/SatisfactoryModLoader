@@ -14,25 +14,24 @@ class FACTORYGAME_API AFGConsumableEquipment : public AFGEquipment
 public:
 	/** ctor */
 	AFGConsumableEquipment();
-
-	// Begin AFGEquipment interface
-	virtual bool ShouldSaveState() const override;
-	// End
-
-	UFUNCTION( Server, Reliable )
-	void Server_Consume();
 	
-	UFUNCTION( BlueprintCallable, Category = "Consumeable" )
+	UFUNCTION( BlueprintCallable, Category = "Consumeable", DisplayName = "Consume Equipment" )
 	void Consume();
 
 	/** Get the consumeable currently in hands */
-	UFUNCTION( BlueprintPure, Category = "Consumeable" )
+	UFUNCTION( BlueprintPure, Category = "Consumeable", DisplayName = "Get Consumable Type and Amount" )
 	void GetConsumeable( TSubclassOf< class UFGConsumableDescriptor >& out_consumeable, int32& out_numConsumeable ) const;
 
+protected:
 	/** Plays effects when consuming stuff */
 	UFUNCTION( BlueprintNativeEvent, Category = "Consumeable" )
 	void PlayConsumeEffects( class UFGConsumableDescriptor* consumable );
 
-protected:
+	UFUNCTION( Server, Reliable )
+	void Server_Consume();
+	
+	UFUNCTION( NetMulticast, Unreliable )
+	void Multicast_PlayConsumeEffects( TSubclassOf<UFGConsumableDescriptor> consumableClass );
+	
 	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
 };

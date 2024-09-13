@@ -9,7 +9,6 @@ AFGParachute::AFGParachute() : Super() {
 	this->mUseDistanceOverride = 2000.0;
 	this->mIsDeployed = false;
 	this->mEquipmentSlot = EEquipmentSlot::ES_BACK;
-	this->mOnlyVisibleToOwner = false;
 }
 void AFGParachute::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

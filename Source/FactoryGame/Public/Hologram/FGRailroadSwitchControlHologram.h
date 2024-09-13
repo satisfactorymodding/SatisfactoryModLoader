@@ -37,6 +37,6 @@ protected:
 	// End AFGHologram
 
 private:
-	UPROPERTY()
+	UPROPERTY( CustomSerialization )
 	class UFGRailroadTrackConnectionComponent* mControlledConnection;
 };

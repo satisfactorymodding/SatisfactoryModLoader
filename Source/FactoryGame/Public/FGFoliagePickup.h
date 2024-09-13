@@ -8,6 +8,23 @@
 #include "GameFramework/Actor.h"
 #include "FGFoliagePickup.generated.h"
 
+// <FL> [PuschkeN] UI state for toggling auto pickup on/off
+UENUM(BlueprintType)
+enum class EAutoPickupToggleUIState : uint8
+{
+	Idle,
+	TogglingOnPossible,		// "hold [button] to toggle on" UI is shown
+	TogglingOn,				// player is holding the button to toggle on, progress bar is shown
+	TogglingOffPossible,	// "hold [button] to toggle off" UI is shown
+	TogglingOff,			// player is holding the button to toggle off, progress bar is shown
+};
+// </FL>
+// 
+// <FL> [PuschkeN] Delegate for blueprint events for toggling auto pickup on/off
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FAutoPickupToggleDelegate, bool, AutoPickupActive );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FAutoPickupToggleUIStateDelegate, EAutoPickupToggleUIState, UIState );
+// </FL>
+
 UCLASS(abstract,notplaceable,transient)
 class FACTORYGAME_API AFGFoliagePickup : public AActor, public IFGUseableInterface
 {
@@ -34,25 +51,52 @@ public:
 	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {}
 	//~ End IFGUseableInterface
 
-	UFUNCTION(NetMulticast,Unreliable)
+	UFUNCTION( NetMulticast, Unreliable )
 	void BroadcastPickup( class UStaticMesh* fromStaticMesh, FVector atLocation );
 
-	UFUNCTION(BlueprintCosmetic,BlueprintImplementableEvent)
+	UFUNCTION( BlueprintCosmetic, BlueprintImplementableEvent, Category = "Foliage" )
 	void PlayPickupEffect( class UFGFoliageResourceUserData* foliageUserData, FVector atLocation );
 
 	/** Set the mesh and it's translation */
 	void SetPickupData( class UHierarchicalInstancedStaticMeshComponent* component, int32 instanceId, AFGCharacterPlayer* byCharacter );
 
 	/** gets the pickup component, duhh */
-	TWeakObjectPtr< class UHierarchicalInstancedStaticMeshComponent > GetPickupComponent() { return mPickupComponent; }
+	FORCEINLINE TWeakObjectPtr< class UHierarchicalInstancedStaticMeshComponent > GetPickupComponent() const { return mPickupComponent; }
 
 	/** gets the pickup component's instance, duhh */
-	int32 GetPickupInstance() { return mInstanceId; }
+	FORCEINLINE int32 GetPickupInstance() const { return mInstanceId; }
+
+	/** Returns the character owning this pick up */
+	UFUNCTION( BlueprintPure, Category = "Foliage" )
+	class AFGCharacterPlayer* GetOwnerCharacter() const;
+
+	/** Returns true if we are currently capable of picking up foliage */
+	UFUNCTION( BlueprintPure, Category = "Foliage" )
+	bool CanPickUpFoliageCurrently() const;
+
+	// <FL> PuschkeN Toggling auto pickup on/off
+
+	/** Broadcast when auto pickup is toggled on/off */
+	UPROPERTY( BlueprintAssignable )
+	FAutoPickupToggleDelegate mOnAutoPickupToggled;
+
+	/** Broadcast when the state of the auto pickup toggle UI changes */
+	UPROPERTY( BlueprintAssignable )
+	FAutoPickupToggleUIStateDelegate mOnAutoPickupToggleUIStateChanged;
+
+	// </FL>
 
 private:
 	void DoPickup();
 
 	void Input_Use( const struct FInputActionValue& actionValue );
+	// <FL> PuschkeN Toggling foliage auto pickup on/off
+	void Input_ToggleAutoPickup_Started();
+	void Input_ToggleAutoPickup_Triggered();
+	void Input_ToggleAutoPickup_Canceled();
+	void ToggleAutoPickUp();
+	void OnAutoPickUpToggleDelayCompleted();
+	// </FL>
 
 protected:
 	/** Sends to the server that something should be removed up at a specific location */
@@ -71,6 +115,12 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	float mPickupRepeatInterval = 0.5f;
 
+	/**
+	 * The number of seconds until the 'hold to toggle auto pickup' widget appears.
+	 */
+	UPROPERTY( EditDefaultsOnly )
+	float mAutoPickUpToggleDelay = 0.5f;
+
 protected:
 	/** The mesh that should be outlining */
 	UPROPERTY()
@@ -81,8 +131,14 @@ protected:
 
 	/** The component we want to pickup from */
 	TWeakObjectPtr< class UHierarchicalInstancedStaticMeshComponent > mPickupComponent;
-
-	bool mIsLookingAtFoliage = false;
+	
 	bool mIsPickupActive = false;
 	float mEarliestNextPickupTime = 0.0;
+
+	// <FL> ZimmermannA, PuschkeN foliage auto pickup
+	EAutoPickupToggleUIState mAutoPickupToggleUIState = EAutoPickupToggleUIState::Idle;
+	bool mCurrentAutoPickupToggleInputPossible = false;
+	bool mIsAutoPickupActive = false;
+	FTimerHandle mAutoPickupToggleDelayTimerHandle;
+	// </FL>
 };

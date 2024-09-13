@@ -26,6 +26,7 @@ AFGBuildableFoundation::AFGBuildableFoundation(const FObjectInitializer& ObjectI
 	this->mIsConsideredForBaseWeightValue = 0.1;
 	this->mColorSlot = 16;
 	this->mSwatchGroup = UFGSwatchGroup_FicsitFoundation::StaticClass();
+	this->mManagedByLightweightBuildableSubsystem = true;
 	this->mAffectsOcclusion = true;
 }
 AFGBuildableFoundationLightweight::AFGBuildableFoundationLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {

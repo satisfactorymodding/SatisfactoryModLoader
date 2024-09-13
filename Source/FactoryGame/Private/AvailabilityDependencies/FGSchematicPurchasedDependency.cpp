@@ -13,5 +13,8 @@ void UFGSchematicPurchasedDependency::GetSchematics(TArray<TSubclassOf<UFGSchema
 }
 
 #if WITH_EDITOR
+FString UFGSchematicPurchasedDependency::ToString() const{ return FString(); }
+void UFGSchematicPurchasedDependency::FromString(const FString& inString){ }
 #endif 
 bool UFGSchematicPurchasedDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }
+bool UFGSchematicNotPurchasedDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }

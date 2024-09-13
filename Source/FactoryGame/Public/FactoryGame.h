@@ -10,10 +10,12 @@
 enum ENetMode;
 enum ECollisionChannel : int32;
 
-// Useful for removing stuff that shouldn't be in public versions
-#ifndef IS_PUBLIC_BUILD
-#define IS_PUBLIC_BUILD 0
-#endif
+// Defines for custom Ak GameObject IDs, kept in one place for organization purposes
+// Any IDs below CUSTOM_GAMEOBJ_MAX (0x400 currently) are valid to be used here
+#define AK_CUSTOM_GAME_OBJECT_MUSIC_MANAGER ((AkGameObjectID) 0x10)
+
+// Allows using the name of the current function in the UE_LOG macro as it automatically converts it to TCHARs
+#define FUNCTION_STRING ANSI_TO_TCHAR( __FUNCTION__ )
 
 /** Debug flags */
 #define DEBUG_SPLINE_HOLOGRAM_AUTO_ROUTER 0
@@ -27,6 +29,7 @@ static const FName SHOWDEBUG_POWER( TEXT( "Power" ) );
 static const FName SHOWDEBUG_TRAINS( TEXT( "Trains" ) );
 static const FName SHOWDEBUG_TRAIN_SIGNALS( TEXT( "TrainSignals" ) );
 static const FName SHOWDEBUG_TRAIN_SCHEDULER( TEXT( "TrainScheduler" ) );
+static const FName SHOWDEBUG_TRAIN_RESERVATIONS( TEXT( "TrainReservations" ) );
 static const FName SHOWDEBUG_TRACKS( TEXT( "Tracks" ) );
 static const FName SHOWDEBUG_STATIONS( TEXT( "Stations" ) );
 static const FName SHOWDEBUG_TRAINCOUPLERS( TEXT( "TrainCouplers" ) );
@@ -50,6 +53,8 @@ static const FName SHOWDEBUG_FOG_OF_WAR( TEXT( "FogOfWar" ) );
 static const FName SHOWDEBUG_MAP_MARKERS( TEXT( "MapMarkers" ) );
 static const FName SHOWDEBUG_CENTRAL_STORAGE( TEXT( "CentralStorage" ) );
 static const FName SHOWDEBUG_BLUEPRINT_PROXY( TEXT( "BlueprintProxy" ) );
+static const FName SHOWDEBUG_TEST_MANAGER( TEXT( "TestManager" ) );
+static const FName SHOWDEBUG_TIME_OF_DAY( TEXT( "TimeOfDay" ) );
 
 /** User settings string Ids that are used globally. */
 static const FString GAME_RULE_NO_UNLOCK_COST = "FG.GameRules.NoUnlockCost";
@@ -69,19 +74,14 @@ FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogSave, Display, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogWidget, Warning, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogEquipment, Warning, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogBuilding, Warning, All );
-#if IS_PUBLIC_BUILD
-FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, NoLogging, Warning );
-FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, NoLogging, Warning );
-#else
-FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, NoLogging, All );
-FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, NoLogging, All );
-#endif
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogPipes, Warning, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogSeasonalEvents, Log, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogSigns, Log, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogAnimInstanceFactory, Log, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogFactoryBlueprint, Warning, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogInventory, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogBlackBox, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogConveyorChain, Log, All );
 
 // Helper macro for detecting if the class has a function implemented in blueprint (Only usable for BlueprintNativeEvent)
 // TODO @Nick: this is such a slow and unnecessary way of looking up whenever UFunction has a script implementation, instead we could just check if it's Script array is not empty
@@ -92,8 +92,6 @@ FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogInventory, Log, All );
 /** Custom collision channels and profiles. */
 static const FName CollisionProfileHologram( TEXT( "Hologram" ) );
 static const FName CollisionProfileClearance( TEXT( "Clearance" ) );
-static const FName CollisionProfileHologramClearance( TEXT( "HologramClearance" ) );
-static const FName CollisionProfileWireHologramClearance( TEXT( "WireHologramClearance" ) );
 static const FName CollisionProfileResource( TEXT( "Resource" ) );
 static const FName CollisionProfileResourceNoCollision( TEXT( "ResourceNoCollision" ) );
 static const FName CollisionProfileWireMesh( TEXT( "WireMesh" ) );
@@ -104,7 +102,7 @@ static const FName CollisionProfileClearanceDetector( TEXT( "ClearanceDetector" 
 static const FName CollisionProfileRailroadVehicle( TEXT( "RailroadVehicle" ) );
 static const FName CollisionProfileDerailedRailroadVehicle( TEXT( "DerailedRailroadVehicle" ) );
 static const FName CollisionProfileDerailedRailroadVehicleHologram( TEXT( "DerailedRailroadVehicleHologram" ) );
-static const FName CollisionProfileBlueprintDesigner( TEXT( "BlueprintDesigner" ) );
+static const FName CollisionProfilePortableMinerDispenser( TEXT("PortableMinerDispenser") );
 
 extern const ECollisionChannel TC_BuildGun;
 extern const ECollisionChannel TC_WeaponInstantHit;
@@ -116,13 +114,12 @@ extern const ECollisionChannel OC_Hologram;
 extern const ECollisionChannel OC_Resource;
 extern const ECollisionChannel OC_Clearance;
 extern const ECollisionChannel OC_VehicleWheelQuery;
-extern const ECollisionChannel OC_HologramClearance;
 extern const ECollisionChannel OC_WorldGrid;
 extern const ECollisionChannel OC_ClearanceDetector;
 extern const ECollisionChannel OC_RailroadVehicle;
 extern const ECollisionChannel OC_MapGeneration;
 extern const ECollisionChannel OC_BlueprintProxy;
-extern const ECollisionChannel OC_BlueprintDesigner;
+extern const ECollisionChannel OC_WireMesh;
 
 FACTORYGAME_API const TCHAR* NetModeToString( ENetMode netMode );
 FACTORYGAME_API FString EnumToStringInternal( const class UEnum* enumClass, int64 enumValue );
@@ -159,5 +156,3 @@ T StringToEnum( const FString& enumNameString, T fallbackValue )
 	#define checkDev(expr)								{ CA_ASSUME(expr); }
 	#define checkfDev(expr, format,  ...)				{ CA_ASSUME(expr); }
 #endif
-
-#define WITH_CHEATS	(!IS_PUBLIC_BUILD)

@@ -8,6 +8,7 @@ AFGBuildablePipelineAttachment::AFGBuildablePipelineAttachment() : Super() {
 	this->mRadius = 75.0;
 	this->mFluidBoxVolume = 5.0;
 	this->mCachedFluidDescriptor = nullptr;
+	this->mHasInventoryPotential = false;
 	this->mAddToSignificanceManager = false;
 	this->mHologramClass = AFGPipelineAttachmentHologram::StaticClass();
 	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
@@ -18,9 +19,17 @@ AFGBuildablePipelineAttachment::AFGBuildablePipelineAttachment() : Super() {
 	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
 	this->mFactoryTickFunction.TickInterval = 0.0;
 	this->mSwatchGroup = UFGSwatchGroup_Pipeline::StaticClass();
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGBuildablePipelineAttachment::BeginPlay(){ }
 void AFGBuildablePipelineAttachment::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGBuildablePipelineAttachment::Dismantle_Implementation(){ }
+bool AFGBuildablePipelineAttachment::ShouldShowCenterGuidelinesForHologram(const AFGHologram* hologram) const{ return bool(); }
 FFluidBox* AFGBuildablePipelineAttachment::GetFluidBox(){ return nullptr; }
 TArray< class UFGPipeConnectionComponent* > AFGBuildablePipelineAttachment::GetPipeConnections(){ return TArray<class UFGPipeConnectionComponent*>(); }

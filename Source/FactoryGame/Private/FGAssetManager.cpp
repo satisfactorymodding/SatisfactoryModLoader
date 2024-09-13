@@ -4,7 +4,7 @@
 
 #if WITH_EDITOR
 void UFGAssetManager::SetCookParameters(const FString& commandlineValues){ }
-void UFGAssetManager::ModifyCook(TArray<FName>& out_packagesToCook, TArray<FName>& out_packagesToNeverCook){ }
+void UFGAssetManager::ModifyCook(TConstArrayView<const ITargetPlatform*> TargetPlatforms, TArray<FName>& out_packagesToCook, TArray<FName>& out_packagesToNeverCook){ }
 EPrimaryAssetCookRule UFGAssetManager::GetPackageCookRule(FName PackageName) const{ return EPrimaryAssetCookRule(); }
 #endif 
 #if WITH_EDITORONLY_DATA

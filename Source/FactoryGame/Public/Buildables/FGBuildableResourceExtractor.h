@@ -4,7 +4,6 @@
 
 #include "FactoryGame.h"
 #include "FGBuildableResourceExtractorBase.h"
-#include "Replication/FGRepDetailActor_Extractor.h"
 #include "FGBuildableResourceExtractor.generated.h"
 
 /**
@@ -14,19 +13,13 @@ UCLASS( Abstract )
 class FACTORYGAME_API AFGBuildableResourceExtractor : public AFGBuildableResourceExtractorBase
 {
 	GENERATED_BODY()
-
 public:
-	/** Decide on what properties to replicate */
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
-	
 	AFGBuildableResourceExtractor();
 
-	// Begin IFGReplicationDetailActorOwnerInterface
-	virtual UClass* GetReplicationDetailActorClass() const override { return AFGRepDetailActor_Extractor::StaticClass(); };
-	virtual void OnReplicationDetailActorRemoved() override;
-	// End IFGReplicationDetailActorOwnerInterface
-
+	/** Decide on what properties to replicate */
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
+	
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	// End AActor interface
@@ -40,7 +33,7 @@ public:
 
 	/** Get the inventory we output the extracted resources to */
 	UFUNCTION( BlueprintPure, Category = "Resource" )
-	class UFGInventoryComponent* GetOutputInventory() const{ return mInventoryOutputHandlerData.GetActiveInventoryComponent(); }
+	class UFGInventoryComponent* GetOutputInventory() const{ return mOutputInventory; }
 
 	/** Get the quantity of items mined each production cycle */
 	UFUNCTION( BlueprintPure, Category = "Extraction" )
@@ -57,6 +50,10 @@ public:
 	/** Are we done with startup animation */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
 	bool IsStartupComplete();
+
+	/** Returns how much time we have left of the start up time for the extraction process (mExtractStartupTime) */
+	UFUNCTION( BlueprintPure, Category = "Extraction" )
+	float GetExtractStartupTimer() const { return mExtractStartupTimer; }
 
 	/** Get the smoothed flow rate out of the extractor in m^3/s. Only valid for Liquid or Gas extractors */
 	UFUNCTION( BlueprintPure, Category = "Pipes" )
@@ -75,7 +72,6 @@ protected:
 	// End Factory_ Interface
 
 	// Begin AFGBuildableFactory Interface
-	virtual void OnRep_ReplicationDetailActor() override;
 	virtual void OnRep_CurrentPotential() override;
 	// End AFGBuildableFactory Interface
 
@@ -83,21 +79,12 @@ protected:
 	virtual void OnExtractableResourceSet() override;
 	virtual void OnRep_ExtractableResource() override;
 	// End AFGBuildableResourceExtractorBase Interface
-
-	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
-	{
-		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
-		out_repDetailData.Add( &mInventoryOutputHandlerData );
-	}
-
 private:
 	void CalculateProductionCycleTime();
 
 private:
 	friend class AFGRepDetailActor_Extractor;
-
-	FReplicationDetailData mInventoryOutputHandlerData;
-
+	
 	/** Power up time for the extraction process, e.g. the time it takes for a drill to start spinning. */
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
 	float mExtractStartupTime;
@@ -118,7 +105,7 @@ private:
 	bool mIsLiquidOrGasType;
 
 	/** Current extract progress in the range [0, 1] */
-	UPROPERTY( Replicated, SaveGame, Meta = (NoAutoJson = true) )
+	UPROPERTY( SaveGame, Meta = ( NoAutoJson = true, FGReplicated ) )
 	float mCurrentExtractProgress;
 
 	/** Cached pipe output connections */
@@ -144,7 +131,7 @@ private:
 	float mTimeSinceLastFlowUpdate;
 
 	/** Replicated smoothed flow rate */
-	UPROPERTY( Replicated )
+	UPROPERTY( meta = ( NoAutoJson = true, FGReplicated ) )
 	float mReplicatedFlowRate;
 
 	float mProductionCycleTime = 0.0f;

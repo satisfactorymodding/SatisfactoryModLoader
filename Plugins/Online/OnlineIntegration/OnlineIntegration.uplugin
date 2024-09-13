@@ -1,0 +1,106 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "OnlineIntegration",
+	"Description": "Utility plugin that can be used to enable Online Services Integration",
+	"Category": "Other",
+	"CreatedBy": "Coffee Stain Studios",
+	"CreatedByURL": "https://www.coffeestainstudios.com/",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "OnlineIntegration",
+			"Type": "Runtime",
+			"LoadingPhase": "PostConfigInit"
+		},
+		{
+			"Name": "OnlineIntegrationEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "OnlineIntegrationEOSExtensions",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"BlacklistTargets": [
+				"Server"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "OnlineServices",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineServicesEOS",
+			"Enabled": true,
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux"
+			],
+			"BlacklistTargets": [
+				"Server"
+			]
+		},
+		{
+			"Name": "OnlineServicesEOSGS",
+			"Enabled": true,
+			"BlacklistTargets": [
+				"Server"
+			]
+		},
+		{
+			"Name": "SocketSubsystemEOS",
+			"Enabled": true,
+			"BlacklistTargets": [
+				"Server"
+			]
+		},
+		{
+			"Name": "OnlineServicesOSSAdapter",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": true,
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux"
+			],
+			"BlacklistTargets": [
+				"Server"
+			]
+		},
+		{
+			"Name": "ModelViewViewModel",
+			"Enabled": true
+		},
+		{
+			"Name": "ControlFlows",
+			"Enabled": true
+		},
+		{
+			"Name": "SteamSockets",
+			"Enabled": true,
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux"
+			],
+			"TargetDenyList": [
+				"Server"
+			]
+		},
+		{
+			"Name": "GameplayEvents",
+			"Enabled": true
+		}
+	]
+}

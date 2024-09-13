@@ -100,6 +100,7 @@ public:
 	// End IFSaveInterface
 
 	//~ Begin IFGUseableInterface
+	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
 	virtual void StartIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	//~ End IFGUseableInterface
@@ -111,11 +112,22 @@ public:
 	virtual void AddInputBindings( UInputComponent* enhancedInput ) override;
 
 	UFUNCTION( Reliable, NetMulticast )
-	virtual void Multicast_OnVehicleEntered();
+	virtual void Multicast_OnVehicleEntered( AFGCharacterPlayer* driver );
 
 	/** Input Actions */
 	UFUNCTION()
-    void Input_ThrottleSteer( const FInputActionValue& actionValue );
+	void Input_ThrottleSteer( const FInputActionValue& actionValue );
+
+// <FL> [ZimmermannA] Gamepad Related vehicle controlling
+	UFUNCTION()
+	void Input_GamepadThrottle( const FInputActionValue& actionValue );
+
+	UFUNCTION()
+	void Input_GamepadBrake( const FInputActionValue& actionValue );
+
+	UFUNCTION()
+	void Input_GamepadSteer( const FInputActionValue& actionValue );
+// </FL>
 	
 	UFUNCTION()
 	void Input_LookAxis( const FInputActionValue& actionValue );
@@ -180,7 +192,7 @@ public:
 
 	/** Indicates if the vehicle is gasing or wants to move in simulated state */
 	UFUNCTION( BlueprintPure, Category = "Movement" ) 
-	bool ConsumesFuel();
+	bool ShouldConsumeFuel() const;
 
 	/** returns the ratio ( 0 to 1.0 ) for how much fuel we want to burn. Ussually a reflection of throttle value except during simulation */
 	float GetFuelBurnRatio();
@@ -201,7 +213,7 @@ public:
 	void Client_PlayFoliageDestroyedEffect( UParticleSystem* destroyEffect, UAkAudioEvent* destroyAudioEvent, FVector location );
 	
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "Vehicle" )
-	void CloseVehicleTrunk( AFGCharacterPlayer* player );
+	void CloseVehicleTrunk();
 
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "Vehicle" )
 	void OpenVehicleTrunk( AFGCharacterPlayer* player );
@@ -269,17 +281,22 @@ protected:
 
 	UFUNCTION( BlueprintCallable, BlueprintPure )
 	float ImpactForceForCollisionSFX( const UPrimitiveComponent* hitComponent, const AActor* otherActor, const UPrimitiveComponent* otherComponent );
-	
+
+	UFUNCTION()
+	void OnRepTrunkUser();
+
+	/** Updates current status of the vehicle, such as whenever it has fuel, whenever it is a part of a deadlock, etc */
+	void UpdateVehicleStatus();
 private:
 	void EnsureInfoCreated();
 
 	/** Tick helpers */
-	void BurnFuel( float dt );
+	void BurnFuel( const float dt );
 
 	void SetRecordingStatus( ERecordingStatus recordingStatus );
 
 	UFUNCTION()
-	void OnFuelAdded( TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded );
+	void OnFuelAdded( TSubclassOf< UFGItemDescriptor > itemClass, const int32 numAdded, UFGInventoryComponent* sourceInventory = nullptr );
 
 	UFUNCTION()
 	void OnRep_TransferStatusChanged();
@@ -431,12 +448,17 @@ public:
 	UFUNCTION()
 	void OnPathVisibilityChanged( bool pathVisibility );
 
+	UFUNCTION()
+	void OnRep_EngineAudioChanged( const bool oldEngineState );
+	
 private:
 	float CalculateAutomatedFuelToConsume( float deltaTime );
 
 	// Used so we can know when target list changed and listen for path visibility updates from the targetlist. 
 	void SetTargetList( AFGDrivingTargetList* targetList );
 
+	/** Updates the visibility of the vehicle mesh, but does not touch the driver's pawn to not mess with it's visibility settings */
+	void UpdateVehicleMeshVisibility(bool bNewVisibility);
 public:
 	/** Name of the MeshComponent. Use this name if you want to prevent creation of the component (with ObjectInitializer.DoNotCreateDefaultSubobject). */
 	static FName VehicleMeshComponentName;
@@ -463,7 +485,11 @@ public:
 
 	UPROPERTY( BlueprintAssignable, Category = "Vehicle" )
 	FOnVehiclePathVisibilityChanged mOnVehiclePathVisibilityChanged;
-
+	
+	/** Tells audio functionality if engine should be making noises. */
+	UPROPERTY( ReplicatedUsing = OnRep_EngineAudioChanged )
+	bool mIsEngineOn = false;
+	
 protected:
 	friend class AFGWheeledVehicleAIController;
 	friend class UFGSplinePathMovementComponent;
@@ -535,23 +561,29 @@ protected:
 	UPROPERTY( BlueprintReadOnly, ReplicatedUsing=OnHonkStatusChanged )
 	bool mVehicleHonkOn;
 
-	UPROPERTY( BlueprintReadOnly )
-	TSoftObjectPtr<USpringArmComponent> mSpringArmComponent;
-
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input")
 	FRotator mDefaultLockedSprintArmRotation;
 
 	bool mCameraLocked;
+
+	UPROPERTY( BlueprintReadWrite, ReplicatedUsing=OnRepTrunkUser )
+	TObjectPtr<AFGCharacterPlayer> mTrunkUser;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	FGameplayTag mEnteredVehicleTag;
+
+	UPROPERTY( BlueprintReadWrite, Replicated )
+	bool mIsTrunkOpen;
 	
 private:
 	bool mIsServer = false;
 	
 	/** Inventory for fuel */
-	UPROPERTY( VisibleDefaultsOnly, SaveGame, Replicated )
+	UPROPERTY( VisibleDefaultsOnly, SaveGame )
 	TObjectPtr<UFGInventoryComponent> mFuelInventory;
 
 	/** Inventory for storage */
-	UPROPERTY( VisibleDefaultsOnly, SaveGame, Replicated )
+	UPROPERTY( VisibleDefaultsOnly, SaveGame )
 	TObjectPtr<UFGInventoryComponent> mStorageInventory;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle", meta = ( AddAutoJSON = true ) )
@@ -567,7 +599,7 @@ private:
 
 	ETransferAnimationState mLastTransferAnimationState = ETransferAnimationState::TS_None;
 	float mLastTransferAnimationStartTime = -BIG_NUMBER;
-
+	
 public:
 	// self-driving
 

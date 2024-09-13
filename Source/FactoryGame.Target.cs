@@ -1,25 +1,24 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.Collections.Generic;
 
-public class FactoryGameTarget : TargetRules
+public class FactoryGameTarget : FactorySharedTarget
 {
-	public FactoryGameTarget(TargetInfo Target) : base(Target)
-	{
-		Type = TargetType.Game;
-		BuildEnvironment = TargetBuildEnvironment.Shared;
-		LinkType = TargetLinkType.Modular;
-		CppStandard = CppStandardVersion.Cpp20;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
-        
-		ExtraModuleNames.Add("FactoryGame");
-		
-		bOverrideAppNameForSharedBuild = true;
+    public FactoryGameTarget(TargetInfo Target) : base(Target)
+    {
+	    Type = TargetType.Game;
 
-		bUseChecksInShipping = true;
-		bUseLoggingInShipping = true;
-		
-		WindowsPlatform.bEnableRayTracing = false;
-		LinuxPlatform.bEnableRayTracing = false;
-	}
+	    // Compile automation tests for the test game builds
+	    if (Configuration == UnrealTargetConfiguration.Test)
+	    {
+		    bForceCompilePerformanceAutomationTests = true;
+	    }
+
+	    // Additional client modules to compile for the game
+	    ExtraModuleNames.AddRange( new[] {
+		    "FactoryPreEarlyLoadingScreen",
+		    "FactoryDedicatedClient"
+	    });
+    }
 }

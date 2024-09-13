@@ -299,6 +299,7 @@ protected:
 	UPROPERTY( SaveGame )
 	FTimerHandle mSecondaryTriggerDelayTimer;
 
+	bool mShouldAttachOnImpact = false;
 	
 private:
 	

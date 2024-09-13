@@ -5,5 +5,5 @@
 
 UFGWildCardDescriptor::UFGWildCardDescriptor() : Super() {
 	this->mDisplayName = NSLOCTEXT("WildCardDescriptor", "DisplayName", "*");
-	this->mDescription = NSLOCTEXT("WildCardDescriptor", "Description", "Anything");
+	this->mDescription = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/Any/Description");
 }

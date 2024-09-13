@@ -15,3 +15,4 @@ void FFGGameplayTags::AddInputResourceScannerTags(UGameplayTagsManager& Manager)
 void FFGGameplayTags::AddInputBoomBoxTags(UGameplayTagsManager& Manager){ }
 void FFGGameplayTags::AddInputVehicleTags(UGameplayTagsManager& Manager){ }
 void FFGGameplayTags::AddInputUITags(UGameplayTagsManager& Manager){ }
+void FFGGameplayTags::AddOnboardingStepTags(UGameplayTagsManager& Manager){ }

@@ -4,8 +4,6 @@
 
 #include "FactoryGame.h"
 #include "FGEquipment.h"
-#include "FGEquipmentAttachment.h"
-#include "LegacyCameraShake.h"
 #include "FGParachute.generated.h"
 
 class UFGCharacterMovementComponent;

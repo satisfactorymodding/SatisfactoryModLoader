@@ -37,6 +37,7 @@ public:
 	 * Add a connected component.
 	 * @note Sets both ends of the connection.
 	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Track" )
 	void AddConnection( UFGRailroadTrackConnectionComponent* toComponent );
 
 	/**
@@ -51,9 +52,13 @@ public:
 	 */
 	FORCEINLINE UFGRailroadTrackConnectionComponent* GetConnection() const { return GetConnection( mSwitchPosition ); }
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Track" )
+	FORCEINLINE UFGRailroadTrackConnectionComponent* GetConnectionAtSwitchPosition() const { return GetConnection( mSwitchPosition ); }
+
 	/**
 	 * @return All connections; empty if not connected. If more than one this is a switch.
 	 */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Track" )
 	FORCEINLINE TArray< UFGRailroadTrackConnectionComponent* > GetConnections() const { return mConnectedComponents; }
 
 	/**
@@ -62,18 +67,22 @@ public:
 	 * If nothing is connected this does nothing.
 	 * @note This resets the switch's position to 0 or INDEX_NONE.
 	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Track" )
 	void RemoveConnection( UFGRailroadTrackConnectionComponent* toComponent );
 
 	/**
 	 * Is this connection connected to anything.
 	 * @return - true if connected; otherwise false. Always false if attached to hologram.
 	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Track" )
 	FORCEINLINE bool IsConnected() const { return mConnectedComponents.Num() > 0; }
 
 	/** @return The track position of this connection. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Track" )
 	FORCEINLINE FRailroadTrackPosition GetTrackPosition() const { return mTrackPosition; }
 
 	/** @return Owning track for this connection. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Track" )
 	FORCEINLINE class AFGBuildableRailroadTrack* GetTrack() const { return mTrackPosition.Track.Get(); }
 
 	/** @return true if this connection is occupied by rolling stock. */
@@ -97,9 +106,7 @@ public:
 	FORCEINLINE int32 GetNumSwitchPositions() const { return mConnectedComponents.Num(); }
 
 	/**
-	 * @return The current switch position [0,n]; 0 if not a switch. Not valid on client.
-	 *
-	 * Note: On client use the switch control instead.
+	 * @return The current switch position [0,n]; 0 if not a switch, INDEX_NONE if track is not connected.
 	 */
 	FORCEINLINE int32 GetSwitchPosition() const { return mSwitchPosition; }
 
@@ -150,6 +157,10 @@ public:
 		float radius,
 		bool allowPlatformTracks,
 		TArray< UFGRailroadTrackConnectionComponent* >* out_additionalSwitchConnections = nullptr );
+	
+	/** Find probable client connection. */
+	static UFGRailroadTrackConnectionComponent* FindProbableClientConnection(
+		class UFGRailroadTrackConnectionComponent* connection );
 
 	/**
 	 * Functions used by buildings that are built on a track, do not call them unless you know what you're doing.

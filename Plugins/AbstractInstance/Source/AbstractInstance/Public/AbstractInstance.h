@@ -1,9 +1,11 @@
-// Copyright Ben de Hullu. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
+
+static float AIM_BigOffset = 200000; 
 
 class FAbstractInstanceModule : public IModuleInterface
 {

@@ -14,7 +14,9 @@
 UENUM( BlueprintType )
 enum class EDockStationType : uint8
 {
-	DST_NONE			UMETA( DisplayName = "None" ),
+	// <FL> [PfaffN] DST_NONE is already defined elsewhere
+	DST_INVALID			UMETA( DisplayName = "None" ),
+	// </FL>
 	DST_TRUCK			UMETA( DisplayName = "Truck" ),
 	DST_TRAIN			UMETA( DisplayName = "Train" ),
 	DST_DRONE			UMETA( DisplayName = "Drone" ),

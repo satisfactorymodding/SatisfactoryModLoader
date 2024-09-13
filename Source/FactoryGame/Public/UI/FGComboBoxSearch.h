@@ -16,6 +16,9 @@
 #include "Widgets/Text/STextBlock.h"
 #include "FGComboBoxSearch.generated.h"
 
+class SBox;
+class STextBlock;
+
 /**
 * The combobox allows you to display a list of options to the user in a dropdown menu for them to select one and search.
 * [FreiholtzK:Wed/24-02-2021] this is basically a copy of UComboBoxString(v 4.25.3) but the underlaying slate widget have been replaced with FGSSearchableComboBox and some minor changes.

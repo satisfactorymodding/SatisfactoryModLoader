@@ -12,7 +12,6 @@ AFGResourceMiner::AFGResourceMiner() : Super() {
 	this->mActiveResourceNode = nullptr;
 	this->mEquipmentSlot = EEquipmentSlot::ES_ARMS;
 	this->mArmAnimation = EArmEquipment::AE_ResourceCollector;
-	this->mOnlyVisibleToOwner = false;
 	this->mDefaultEquipmentActions = 1;
 }
 void AFGResourceMiner::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
@@ -22,7 +21,6 @@ void AFGResourceMiner::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 void AFGResourceMiner::Tick(float DeltaSeconds){ }
 void AFGResourceMiner::UnEquip(){ }
 void AFGResourceMiner::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
-bool AFGResourceMiner::ShouldSaveState() const{ return bool(); }
 void AFGResourceMiner::ForceStopMining(){ }
 void AFGResourceMiner::StopMiningIfNotToggleBased(){ }
 void AFGResourceMiner::AttemptAutoEquipAndStartMining(AFGResourceNode* resourceNode){ }

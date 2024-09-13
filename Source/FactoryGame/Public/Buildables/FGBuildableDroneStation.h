@@ -4,15 +4,10 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-
 #include "FGBuildableFactory.h"
-
 #include "FGDroneVehicle.h"
-
 #include "FGDroneStationInfo.h"
-
 #include "FGActorRepresentationInterface.h"
-#include "Replication/FGReplicationDetailActor_DroneStation.h"
 #include "FGBuildableDroneStation.generated.h"
 
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogDroneStation, Log, All );
@@ -65,6 +60,7 @@ public:
 	UFUNCTION() virtual float GetActorFogOfWarRevealRadius() override;
 	UFUNCTION() virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	UFUNCTION() virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	// End IFGActorRepresentationInterface
 
 	// Begin AActor interface
@@ -83,11 +79,6 @@ public:
 	virtual void Dismantle_Implementation() override;
 	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
 	//~ End IFGDismantleInferface
-	
-	// Begin IFGReplicationDetailActorOwnerInterface
-	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_DroneStation::StaticClass(); };
-	virtual void OnReplicationDetailActorRemoved() override;
-	// End IFGReplicationDetailActorOwnerInterface
 
 	// Begin IFGSaveInterface
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
@@ -142,15 +133,15 @@ public:
 	
 	/** Get the inventory that the docked drone unloads into */
 	UFUNCTION( BlueprintPure, Category = "Drone Station" )
-	class UFGInventoryComponent* GetInputInventory() const { return mInputInventoryHandler.GetActiveInventoryComponent(); }
+	class UFGInventoryComponent* GetInputInventory() const { return mInputInventory; }
 
 	/** Get the inventory that the docked drone loads from */
 	UFUNCTION( BlueprintPure, Category = "Drone Station" )
-	class UFGInventoryComponent* GetOutputInventory() const { return mOutputInventoryHandler.GetActiveInventoryComponent(); }
+	class UFGInventoryComponent* GetOutputInventory() const { return mOutputInventory; }
 
-	/** Get the inventory that the docked drone loads from */
+	/** Get the inventory that the docked drone grabs fuel from. */
 	UFUNCTION( BlueprintPure, Category = "Drone Station" )
-	class UFGInventoryComponent* GetBatteryInventory() const { return mBatteryInventoryHandler.GetActiveInventoryComponent(); }
+	class UFGInventoryComponent* GetFuelInventory() const { return mFuelInventory; }
 
 	/** @returns the info that is always present on both client and server */
 	UFUNCTION( BlueprintPure, Category = "Drone Station" )
@@ -192,24 +183,15 @@ public:
 	virtual void PostSerializedFromBlueprint( bool isBlueprintWorld ) override;
 
 protected:
-	// Begin FGBuildableFactory interface
-	virtual void OnRep_ReplicationDetailActor() override;
-	// End FGBuildableFactory interface
-
-	class AFGReplicationDetailActor_DroneStation* GetCastRepDetailsActor() const;
+	/** Get the text that should be shown in the map and compass. */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	FText GetRepresentationText();
+	
+	UFUNCTION()
+    bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
 
 	UFUNCTION()
-    bool FilterBatteryClasses( TSubclassOf< UObject > object, int32 idx ) const;
-
-	bool IsValidFuel( TSubclassOf< class UFGItemDescriptor > resource ) const;
-
-	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
-	{
-		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
-		out_repDetailData.Add( &mBatteryInventoryHandler );
-		out_repDetailData.Add( &mInputInventoryHandler );
-		out_repDetailData.Add( &mOutputInventoryHandler );
-	}
+	void OnFuelItemAdded( TSubclassOf< UFGItemDescriptor > item, const int32 amount, UFGInventoryComponent* sourceInventory = nullptr );
 	
 private:
 	UFUNCTION()
@@ -228,14 +210,16 @@ private:
 
 	/** One tick of item transferring. Returns true when done transferring. */
 	EItemTransferTickResult ItemTransferTick( class UFGInventoryComponent* FromInventory, class UFGInventoryComponent* ToInventory, bool MustTransferEverything );
+
+	UFUNCTION()
+	void OnDroneFuelTypeChanged( const FFGDroneFuelType& newFuelType );
 	
 private:
-	friend class AFGReplicationDetailActor_DroneStation;
 	friend class AFGDroneStationInfo;
 	friend class AFGDroneSubsystem;
 
-	/** All connection components tagged with this is considered battery components */
-	static FName sBatteriesTag;
+	/** All connection components tagged with this is considered fuel components */
+	static FName sFuelTag;
 	
 	/** Where the drones should fly to before starting docking procedure. Local Space. */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone Station" )
@@ -248,14 +232,6 @@ private:
 	/** Class of the drone actor to spawn. */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone Station" )
 	TSubclassOf<class AFGDroneVehicle> mDroneClass;
-
-	/** Valid Battery item class */
-	UPROPERTY( EditDefaultsOnly, Category = "Drone Station" )
-	TArray<TSubclassOf<UFGItemDescriptor>> mBatteryClasses;
-
-	/** Item class used for calculating energy costs in batteries. */
-	UPROPERTY( EditDefaultsOnly, Category = "Drone Station" )
-	TSubclassOf<UFGItemDescriptor> mUIBatteryCostItemClass;
 	
 	/** Drones waiting to dock. */
 	UPROPERTY( SaveGame )
@@ -325,23 +301,14 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Drone Station" )
 	int8 mStorageSizeY;
 
-	/** SizeX of battery inventory. */
+	/** SizeX of fuel inventory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone Station" )
-	int8 mBatteryStorageSizeX;
+	int8 mFuelStorageSizeX;
 
-	/** SizeY of battery inventory. */
+	/** SizeY of fuel inventory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone Station" )
-	int8 mBatteryStorageSizeY;
+	int8 mFuelStorageSizeY;
 	
-	UPROPERTY()
-	FReplicationDetailData mInputInventoryHandler;
-	
-	UPROPERTY()
-	FReplicationDetailData mOutputInventoryHandler;
-	
-	UPROPERTY()
-	FReplicationDetailData mBatteryInventoryHandler;
-
 	/** Inventory where we transfer items from when loading a drone.  */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mInputInventory;
@@ -350,9 +317,9 @@ private:
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mOutputInventory;
 	
-	/** Inventory where batteries are stored. */
+	/** Inventory where fuel is stored. */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mBatteryInventory;
+	class UFGInventoryComponent* mFuelInventory;
 
 	/** All connections that can pull to data to our storage, (References hold by Components array, no need for UPROPERTY) */
 	TArray<class UFGFactoryConnectionComponent*> mStorageInputConnections;
@@ -367,6 +334,9 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTexture;
 
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	UMaterialInterface* mActorRepresentationCompassMaterial;
+	
 	UPROPERTY( Replicated )
 	FText mMapText;
 };

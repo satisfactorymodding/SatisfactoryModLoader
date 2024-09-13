@@ -17,6 +17,7 @@ class FACTORYGAME_API AFGRailroadVehicleHologram : public AFGVehicleHologram
 public:
 	// Begin AActor interface
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	// End AActor interface
 
 	// Begin AFGHologram interface
@@ -24,11 +25,7 @@ public:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	// End of AFGHologram interface
-
-	// Begin Net Construction Messages
-	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
-	// End of Net Construction Messages 
-
+	
 protected:
 	// Begin AFGHologram interface
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
@@ -52,10 +49,10 @@ private:
 	float mLength;
 
 	/** The track position for this hologram. If valid this vehicle has snapped to a track. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	FRailroadTrackPosition mTrackPosition;
 
 	/** The snapped vehicle. */
-	UPROPERTY()
+	UPROPERTY( CustomSerialization )
 	class AFGRailroadVehicle* mSnappedVehicle;
 };

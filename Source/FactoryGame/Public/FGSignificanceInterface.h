@@ -45,6 +45,12 @@ public:
 
 	virtual float GetTickExponent() const { return 1.f; }
 
+	UFUNCTION(BlueprintNativeEvent, Category="Significance")
+	void GainedNetSignificance();
+	
+	UFUNCTION(BlueprintNativeEvent, Category="Significance")
+	void LostNetSignificance();
+	
 	UFUNCTION()
 	virtual void UpdateMeshLodLevels(int32 newLodLevel);
 

@@ -36,6 +36,9 @@ struct FFoliageOctreeSemantics
 
 struct FFoliageComponentsOctree : public TOctree2<UHierarchicalInstancedStaticMeshComponent*, FFoliageOctreeSemantics>
 {
+	FFoliageComponentsOctree(const FVector& InOrigin,FVector::FReal InExtent) : TOctree2(InOrigin, InExtent)  {}
+	FFoliageComponentsOctree() = default;
+	
 	TMap<const UHierarchicalInstancedStaticMeshComponent*, FOctreeElementId2> mElementIdMap;
 };
 
@@ -129,11 +132,13 @@ public:
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void Destroyed() override;
 	virtual void Serialize(FArchive& Ar) override;
 #if WITH_EDITORONLY_DATA
 	virtual void PostLoad() override;
 #endif
+	static void AddReferencedObjects( UObject* InThis, FReferenceCollector& Collector );
 	// End AActor interface
 
 	// Begin IFGSaveInterface
@@ -169,22 +174,28 @@ public:
 	 * @param out_instanceLocation - the location of the instance, only valid if we return true
 	 * @return true if we looked at any foliage
 	 **/
-	bool GetLookAtFoliage( const FVector& viewLocation, const FVector& endViewLocation, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier, class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation );
+	bool GetLookAtFoliage( const FVector& viewLocation, const FVector& endViewLocation,
+						   TSubclassOf< class UFGFoliageIdentifier > foliageIdentifier,
+						   class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId,
+						   FVector& out_instanceLocation );
 
 	/**
-	* Finds the closest foliage instance to a location
-	*
-	* @network: Server and Client
-	*
-	* @param location - the location you want to look around
-	* @param maxDistance - max distance from the location that the foliage needs to exist (note, looks at the root location of the foliage, not the bounds)
-	* @param foliageIdentifier - find foliage that matches this tag
-	* @param out_component - the closest component of foliage, only valid if we return true
-	* @param out_instanceId - id of the foliage we want to remove, only valid if we return true
-	* @param out_instanceLocation - the location of the instance, only valid if we return true
-	* @return true if there was any foliage close by
-	**/
-	bool GetClosestFoliage( const FVector& location, float maxDistance, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier, class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation, TEnumAsByte<EProximityEffectTypes> &out_Type );
+	 * Finds the closest foliage instance to a location
+	 *
+	 * @network: Server and Client
+	 *
+	 * @param location - the location you want to look around
+	 * @param maxDistance - max distance from the location that the foliage needs to exist (note, looks at the root location of the foliage,
+	 *not the bounds)
+	 * @param foliageIdentifier - find foliage that matches this tag
+	 * @param out_component - the closest component of foliage, only valid if we return true
+	 * @param out_instanceId - id of the foliage we want to remove, only valid if we return true
+	 * @param out_instanceLocation - the location of the instance, only valid if we return true
+	 * @return true if there was any foliage close by
+	 **/
+	bool GetClosestFoliage( const FVector& location, float maxDistance, TSubclassOf< class UFGFoliageIdentifier > foliageIdentifier,
+							class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId,
+							FVector& out_instanceLocation, TEnumAsByte< EProximityEffectTypes >& out_Type );
 
 	/**
 	* Finds the closest foliage instance to a location
@@ -202,7 +213,11 @@ public:
 	* @return true if there was any foliage close by
 	**/
 	UFUNCTION( BlueprintCallable, Category = "Foliage" )
-	bool GetFoliageAroundLocationOfGivenTypes( const FVector& location, float maxDistance, TSubclassOf< class UFGFoliageIdentifier > foliageIdentifier, TArray< TEnumAsByte< EProximityEffectTypes > > desiredTypes, class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation, TEnumAsByte< EProximityEffectTypes > &out_Type);
+	bool GetFoliageAroundLocationOfGivenTypes( const FVector& location, float maxDistance,
+											   TSubclassOf< class UFGFoliageIdentifier > foliageIdentifier,
+											   TArray< TEnumAsByte< EProximityEffectTypes > > desiredTypes,
+											   class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId,
+											   FVector& out_instanceLocation, TEnumAsByte< EProximityEffectTypes >& out_Type );
 
 	/**
 	 * @return true if at least one instance was found
@@ -215,9 +230,12 @@ public:
 	 * 
 	*/
 	UFUNCTION( BlueprintCallable, Category = "Foliage" )
-	bool GetFoliageWithinRadius( const FVector& location, float radius, TArray<int32>& out_instanceArray, TArray<FVector>& out_locationArray, TArray<class UHierarchicalInstancedStaticMeshComponent*>& out_componentArray, bool includeLocations );
+	bool GetFoliageWithinRadius( const FVector& location, float radius, TArray< int32 >& out_instanceArray,
+								 TArray< FVector >& out_locationArray,
+								 TArray< class UHierarchicalInstancedStaticMeshComponent* >& out_componentArray, bool includeLocations );
 
-	bool GetFoliageWithinRadius( const FVector& location, float radius, TMap< class UHierarchicalInstancedStaticMeshComponent*, TArray< int32 > >& result );
+	bool GetFoliageWithinRadius( const FVector& location, float radius,
+								 TMap< class UHierarchicalInstancedStaticMeshComponent*, TArray< int32 > >& result );
 
 	/**
 	* Finds foliage count within a provided radius to a specified location.
@@ -248,35 +266,38 @@ public:
 	 *						UInstancedStaticMeshComponent::PerInstanceSMData. It needs to be a valid index at the time of this call
 	 *						(not to be confused with persistent instance id's that are defined by the foliage data cache).
 	 */
-	bool RemoveFoliageInstance(UHierarchicalInstancedStaticMeshComponent* component, int32 instanceId, FTransform* out_InstanceTransform = nullptr);
+	bool RemoveFoliageInstance( UHierarchicalInstancedStaticMeshComponent* component, int32 instanceId,
+								FTransform* out_InstanceTransform = nullptr );
+	
 	/**
-	 * Tries to remove a foliage instance hash (which could resolve to more than one foliage instances). This will work even if the cell that
-	 * the hash belongs to isn't loaded, as the actual resolving of the instance id is delayed until the cell gets loaded.
+	 * Tries to remove a foliage instance hash (which could resolve to more than one foliage instances). This will work even if the cell
+	 * that the hash belongs to isn't loaded, as the actual resolving of the instance id is delayed until the cell gets loaded.
 	 */
-	bool RemoveFoliageInstance(FFoliageInstanceStableId StableId);
+	bool RemoveFoliageInstance( APlayerController* instigator, FFoliageInstanceStableId StableId );
 	
 	/**
 	 * Removes all instances specified by @InstanceIds from @Component
 	 * Handles replication. Every provided id is assumed to be a valid instance id in the context of @Component.
 	 * Not meeting this assumption will have undefined behavior.
 	 * @outRemovedInstanceTransforms will be reset and will contain the transforms of all the removed instances
-	 */ 
-	bool RemoveFoliageInstances(UHierarchicalInstancedStaticMeshComponent* hism, const TArray<int32>& instIds, TArray<FTransform> *outRemovedInstanceTransforms = nullptr);
+	 */
+	bool RemoveFoliageInstances( APlayerController* instigator, UHierarchicalInstancedStaticMeshComponent* hism,
+								 const TArray< int32 >& instIds, TArray< FTransform >* outRemovedInstanceTransforms = nullptr );
 
-	void RemoveFoliageInstanceHashes( FIntVector cell, const UFoliageType* foliageType, const TSet<uint32>& instanceHashes );
+	void RemoveFoliageInstanceHashes( APlayerController* instigator, FIntVector cell, const UFoliageType* foliageType, const TSet< uint32 >& instanceHashes );
 	
 	/**
 	 * Removes foliage instances by their foliage type. Only useful for legacy foliage removals, as they migrate their legacy save data.
 	 */
 	UE_DEPRECATED( 5.1, "This function should only be used by legacy AFGFoliageRemoval actors, as they migrate their old save data" )
-	void RecordUnregisteredRemovalLocations(const TSet<FVector> &locations, const FName& foliageTypeName);
+	void RecordUnregisteredRemovalLocations( const TSet< FVector >& locations, const FName& foliageTypeName );
 	
 	/**
 	 *	Asynchronously looks up the stable instance id of a foliage instance in the foliage data cache.
 	 *	A stable id can be reliably replicated and is going to represent the same actual instance on clients and servers.
 	 */
-	FFoliageInstanceStableId GetStableInstanceId(UHierarchicalInstancedStaticMeshComponent* Component, int32 InstanceId);
-	FFoliageInstanceStableId GetStableInstanceId(UHierarchicalInstancedStaticMeshComponent* Component, const FTransform &Transform);
+	FFoliageInstanceStableId GetStableInstanceId( UHierarchicalInstancedStaticMeshComponent* Component, int32 InstanceId );
+	FFoliageInstanceStableId GetStableInstanceId( UHierarchicalInstancedStaticMeshComponent* Component, const FTransform& Transform );
 	
 	static uint32 HashFoliageInstanceLocation( const FVector& Location );
 	FIntVector GetFoliageCellForIFA( class AInstancedFoliageActor* IFA );
@@ -288,7 +309,8 @@ public:
 		return mSaveData;
 	}
 
-	const FFoliageRemovalSaveDataForFoliageType* GetSaveDataForCellForFoliageType(const FIntVector& cell, const UFoliageType* foliageType) const;
+	const FFoliageRemovalSaveDataForFoliageType* GetSaveDataForCellForFoliageType( const FIntVector& cell,
+																				   const UFoliageType* foliageType ) const;
 	FOnNewFoliageBucketRemoved OnNewFoliageBucketRemoved;
 
 	/**
@@ -298,16 +320,20 @@ public:
 	UHierarchicalInstancedStaticMeshComponent* GetHISM( FIntVector cell, const UFoliageType* foliageType );
 	class UFoliageType* GetFoliageType( const UHierarchicalInstancedStaticMeshComponent* hism );
 protected:
-	FFoliageRemovalSaveDataForFoliageType* GetSaveDataForCellForFoliageType(const FIntVector& cell, const UFoliageType* foliageType);
-	FFoliageRemovalSaveDataForFoliageType& GetOrCreateSaveDataForCellForFoliageType(const FIntVector& cell, const UFoliageType* foliageType);
+	FFoliageRemovalSaveDataForFoliageType* GetSaveDataForCellForFoliageType( const FIntVector& cell, const UFoliageType* foliageType );
+	FFoliageRemovalSaveDataForFoliageType& GetOrCreateSaveDataForCellForFoliageType( const FIntVector& cell,
+																					 const UFoliageType* foliageType );
 
-	const FFoliageRemovalSaveDataForFoliageType* GetUnresolvedSaveDataForCellForFoliageType(const FIntVector& cell, FName foliageTypeName) const;
-	FFoliageRemovalSaveDataForFoliageType* GetUnresolvedSaveDataForCellForFoliageType(const FIntVector& cell, FName foliageTypeName);
-	FFoliageRemovalSaveDataForFoliageType& GetOrCreateUnresolvedSaveDataForCellForFoliageType(const FIntVector& cell, FName foliageTypeName);
+	const FFoliageRemovalSaveDataForFoliageType* GetUnresolvedSaveDataForCellForFoliageType( const FIntVector& cell,
+																							 FName foliageTypeName ) const;
+	FFoliageRemovalSaveDataForFoliageType* GetUnresolvedSaveDataForCellForFoliageType( const FIntVector& cell, FName foliageTypeName );
+	FFoliageRemovalSaveDataForFoliageType& GetOrCreateUnresolvedSaveDataForCellForFoliageType( const FIntVector& cell,
+																							   FName foliageTypeName );
 
-	void TryResolveRemovals( const TSet< FIntVector > &unresolvedCells );
-	void TryResolveRemovalHashes( const TSet< FIntVector > &unresolvedCells );
-	TArray<int32> FindInstanceIdsForHashes( const UHierarchicalInstancedStaticMeshComponent* hism, const TSet< uint32 > &instanceHashes );
+	void TryResolveOldSavedRemovals( const TSet< FIntVector >& unresolvedCells );
+	void TryResolveDeprecatedTypesInSaves( const TSet< FIntVector >& unresolvedCells );
+	void TryResolveRemovalHashes( APlayerController* instigator, const TSet< FIntVector >& unresolvedCells );
+	TArray< int32 > FindInstanceIdsForHashes( const UHierarchicalInstancedStaticMeshComponent* hism, const TSet< uint32 >& instanceHashes );
 	/**
 	 * Called when a new level was found
 	 *

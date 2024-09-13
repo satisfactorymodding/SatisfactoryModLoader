@@ -59,6 +59,7 @@ public:
 	 * @note Sets both ends of the connection.
 	 * If there already a connection made we assert.
 	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Pipes|Connection" )
 	virtual void SetConnection( class UFGPipeConnectionComponentBase* toComponent );
 
 	/**
@@ -82,9 +83,9 @@ public:
 	 * @note Clears both ends of the connection.
 	 * If nothing is connected this does nothing.
 	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Pipes|Connection" )
 	virtual void ClearConnection();
-
-
+	
 	/**
 	 * Is this connection connected to anything.
 	 * @return - true if connected; otherwise false. Always false if attached to hologram, snap only or bad index configuration.
@@ -130,12 +131,12 @@ public:
 	/**
 	 * Find overlapping connections that are compatible with this one.
 	 */
-	static UFGPipeConnectionComponentBase* FindCompatibleOverlappingConnection( class UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection = nullptr);
+	static UFGPipeConnectionComponentBase* FindCompatibleOverlappingConnection( class UFGPipeConnectionComponentBase* component, const FVector& location, const AActor* priorityActor, float radius );
 
 	/**
 	 * Returns an overlapped pipe connection. Does not take into account if it is a valid connection only if the connection is in the radius of the one passed in
 	 */
-	static UFGPipeConnectionComponentBase* FindOverlappingConnection( class UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection = nullptr );
+	static UFGPipeConnectionComponentBase* FindOverlappingConnection( class UFGPipeConnectionComponentBase* component, const FVector& location, const AActor* priorityActor, float radius );
 
 	void UpdateClientCachedConnection();
 protected:

@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "GameFramework/Pawn.h"
 #include "FGSaveInterface.h"
+#include "Replication/FGConditionalReplicationInterface.h"
 #include "FGDriveablePawn.generated.h"
 
 
@@ -12,7 +13,7 @@
  * Base class for pawns that can be driven by a player character, this includes vehicles, remote drones and passenger seats.
  */
 UCLASS()
-class FACTORYGAME_API AFGDriveablePawn : public APawn, public IFGSaveInterface
+class FACTORYGAME_API AFGDriveablePawn : public APawn, public IFGSaveInterface, public IFGConditionalReplicationInterface
 {
 	GENERATED_BODY()
 public:
@@ -31,11 +32,21 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
+	// Begin IFGConditionalReplicationInterface
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
+	virtual bool IsPropertyRelevantForConnection(UNetConnection* netConnection, const FProperty* property) const override;
+	// End IFGConditionalReplicationInterface
+
 	// Begin APawn interface
 	virtual void PossessedBy( AController* newController ) override;
 	virtual void UnPossessed() override;
 	virtual void OnRep_PlayerState() override;
+	virtual void CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult) override;
 	// End APawn interface
+
+	// Begin AActor interface
+	virtual void PreInitializeComponents()  override;
+	// End AActor interface
 
 	virtual void UpdatePlayerStatus();
 
@@ -121,10 +132,6 @@ protected:
 	/** Clear input bindings for the driveable pawn. */
 	void ClearInputBindings( class AFGPlayerController* playerController );
 
-	/** Called when the driver has entered (human or ai) */
-	UFUNCTION( BlueprintImplementableEvent, meta = ( DisplayName = "OnDriverEnter" ) )
-	void ReceiveOnDriverEnter();
-
 	/** Called when the driver is about to leave (human or ai) */
 	UFUNCTION( BlueprintImplementableEvent, meta = ( DisplayName = "OnDriverLeave" ) )
 	void ReceiveOnDriverLeave();
@@ -175,8 +182,16 @@ public:
 	FVector mDriverExitOffset;
 
 	bool mIsDriverDirty = false;
+
+	/** Whether or not this driveable pawn is possessed. */
+	UPROPERTY( Replicated )
+	bool mIsPossessed;
 	
 protected:
+	/** Property replicator handling conditional replication of properties on this vehicle */
+	UPROPERTY( Replicated, Transient, meta = ( FGPropertyReplicator ) )
+	FFGConditionalPropertyReplicator mPropertyReplicator;
+	
 	/** Mapping context which is applied when entering. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
 	TObjectPtr< class UInputMappingContext > mMappingContext;
@@ -184,6 +199,16 @@ protected:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
 	int32 mMappingContextPriority = 0;
 
+	/** Spring arm and camera components for the driver. */
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Driveable" )
+	TSoftObjectPtr<class USpringArmComponent> mSpringArmComponent;
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Driveable" )
+	TSoftObjectPtr<class UCameraComponent> mCameraComponent;
+
+	void ActivateCameraComponents();
+	void DeactivateCameraComponents();
+	
 private:
 	/** If another driver is about to enter this vehicle. Used to not shutdown/startup the */
 	bool mHasPendingDriver;
@@ -193,11 +218,8 @@ private:
 	UPROPERTY( ReplicatedUsing = OnRep_Driver )
 	class AFGCharacterPlayer* mDriver;
 
-	/** Whether or not this driveable pawn is possessed. */
-	UPROPERTY( Replicated )
-	bool mIsPossessed;
-
 	/** Is this vehicle being driven. */
 	UPROPERTY( ReplicatedUsing = OnRep_IsDriving )
 	bool mIsDriving;
+	
 };

@@ -55,14 +55,52 @@ public:
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION()
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	UFUNCTION()
+	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	// End IFGActorRepresentationInterface
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	virtual void Tick(float DeltaSeconds) override;
 	// End AActor interface
-	private:
-	// Recalled if the storage subsystem isn't created
+
+	// Begin Factory_ interface
+	virtual void Factory_Tick( float dt ) override;
+	// End Factory_ interface
+
+	// Begin IFGSaveInterface
+	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
+	// End IFGSaveInterface
+
+	UFUNCTION( BlueprintPure, Category = "CentralStorage" )
+	bool IsUploadingToCentralStorage();
+	UFUNCTION( BlueprintPure, Category = "CentralStorage" )
+	float GetCentralStorageUploadProgress() const;
+	UFUNCTION( BlueprintPure, Category = "CentralStorage" )
+	bool IsUploadInventoryEmpty();
+
 	UFUNCTION()
-	void AddToCentralStorageSubsystem();
+	void UpdateTimeToUpload();
+	
+private:
+	bool CanUploadItem();
+	
+	UFUNCTION()
+	void TryUploadItem();
+
+	UPROPERTY( Transient )
+	class AFGCentralStorageSubsystem* mCentralStorageSubsystem;
+
+	/** The timer we use to track upload of an item to central storage */
+	UPROPERTY( SaveGame, Replicated )
+	float mUploadTimer;
+
+	/** How long does it take to upload an item to central storage */
+	UPROPERTY( Replicated )
+	float mTimeToUpload = 1.f;
+
+	UPROPERTY( EditDefaultsOnly )
+	UMaterialInterface* mCompassMaterialInstance;
 };

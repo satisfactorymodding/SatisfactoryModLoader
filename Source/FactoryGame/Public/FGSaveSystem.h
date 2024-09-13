@@ -3,14 +3,14 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGOnlineSessionSettings.h"
 #include "FGSaveManagerInterface.h"
 #include "UObject/Object.h"
 #include "FGSaveSystem.generated.h"
 
-
-DECLARE_DELEGATE_ThreeParams( FOnEnumerateSaveGamesComplete, bool, const TArray<FSaveHeader>&, void* );
-DECLARE_DELEGATE_FourParams( FOnEnumerateSessionsComplete, bool Success, const TArray<struct FSessionSaveStruct>& Sessions, int32 CurrentSession, void* UserData );
+// <FL> [n.tran] Removed void* UserData, we can just pass them along in Delegate::Create*, which also handles lifetime
+DECLARE_MULTICAST_DELEGATE_TwoParams( FOnEnumerateSaveGamesComplete, bool, const TArray<FSaveHeader>& );
+DECLARE_DELEGATE_ThreeParams( FOnEnumerateSessionsComplete, bool Success, const TArray<struct FSessionSaveStruct>& Sessions, int32 CurrentSession );
+// </FL>
 DECLARE_DELEGATE_TwoParams( FOnDeleteSaveGameComplete, bool, void* );
 DECLARE_MULTICAST_DELEGATE( FOnSaveCollectionChanged );
 DECLARE_DELEGATE_RetVal_TwoParams( ESaveModCheckResult, FCheckModdedSaveCompatibility, const FSaveHeader&, FText& );
@@ -36,12 +36,6 @@ public:
 	/** Get the path to the save folder */
 	static FString GetSaveDirectoryPath();
 
-	/** Get the path to the save folder for EPIC user ID, will return path to common directory if it fails to get EPIC user ID */
-	static bool GetUserSaveDirectoryPath( const UWorld* world, FString& out_dirPath );
-
-	/** Get the path to the save folder for saves not connected to an EPIC user ID (offline play, PIE, etc) */
-	static FString GetCommonSaveDirectoryPath();
-
 	/** Get the path to save backup folder. This is for storing files outside the Cloud Sync location */
 	static FString GetBackupSaveDirectoryPath();
 
@@ -57,20 +51,20 @@ public:
 
 	/**
 	 * Find all available save games from disc
-	 *
-	 * @param out_saveGames a list with the available save games
+	 * <FL> [n.tran] modified to support async
+	 * mOnEnumerateSaveGamesCompleteDelegate will be called when the async operation is finished
+	 * mOnEnumerateSaveGamesCompleteDelegate will be cleared after finishing
 	 */
-	void NativeEnumerateSaveGames( FOnEnumerateSaveGamesComplete onCompleteDelegate, void* userData );
+	void NativeEnumerateSaveGamesAsync() const;
+
+	/** [ZolotukhinN] Added back the synchronous version needed for the Dedicated Server "Most Recent Save" loading option */
+	TArray<FSaveHeader> NativeEnumerateSaveGamesSync() const;
 
 	/**
+	 * <FL> [n.tran] modified to support async
 	 * Find all available save games from disc and groups them into sessions. Also determines which session is the one that is currently loaded in game
 	 */
-	void NativeEnumerateSessions( FOnEnumerateSessionsComplete onCompleteDelegate, void* userData );
-
-	/**
-	 * Synchronous value-returning version of the above
-	 **/ 
-	TArray<FSaveHeader> NativeEnumerateSaveGames();
+	void NativeEnumerateSessionsAsync( FOnEnumerateSessionsComplete onCompleteDelegate );
 
 	/**
 	 * Groups a save list by their corresponding session
@@ -112,11 +106,20 @@ public:
 	static bool IsValidSaveName( FString saveName );
 
 	/** Checks on file system if the save file exists */
-	bool SaveGameExistsSync( FString saveName );
+	bool SaveGameExistsSync( FString saveName ) const;
+
+	/** Checks if the save with the given filename exists in the filesystem, and loads it's header into the provided struct */
+	bool LoadSaveGameHeaderSync( const FString& saveName, FSaveHeader& out_saveHeader ) const;
+
+	/** Attempts to parse the given byte array as a valid save game header */
+	static bool ParseSaveGameHeader( const FString& saveName, const TArray<uint8>& saveGamePayload, FSaveHeader& out_saveHeader );
+
+	/** Sanitizes the save name by removing the characters that are invalid in the filename */
+	static FString SanitizeSaveName( const FString& saveName );
 
 	/** Check if a save game exists in the list of saves. if you don't care about session name, pass in empty currentSessionName and check != ESaveExists::SE_DoesntExist */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
-	static ESaveExists GetCachedSaveExists( const TArray<FSaveHeader>& cachedSaves, const FString& saveName, const FString& currentSessionName );
+	static ESaveExists GetCachedSaveExists( const TArray<FSaveHeader>& cachedSaves, const FString& saveName, const FString& currentSessionName, FString& out_sessionName );
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static ESaveExists GetCachedSaveExistsInSessions( const TArray<FSessionSaveStruct>& sessions, const FString& saveName, int32 CurrentSession );
@@ -124,6 +127,10 @@ public:
 	/** Get the last result of EnumerateSaves */
 	//UFUNCTION( BlueprintPure, Category="FactoryGame|Save")
 	FORCEINLINE const TArray<FSaveHeader>& GetCachedSaves() const { return mCachedSaves; }
+
+	/** Gets the most recent version number from all found savegames. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
+	FORCEINLINE int32 GetLatestSaveGameVersion() const { return mMostRecentVersionSaveGame; }
 
 	/**
 	 * Deletes a list of saves, just calls DeleteSaveFile
@@ -158,7 +165,7 @@ public:
 	static FString SanitizeMapName( const FString& mapName );
 
 	/** Generate a new session id and then marks it as used */
-	FString GenerateNewSessionName();
+	FString GenerateNewSessionName( const UWorld* world );
 
 	/**
 	 * Look for a new mapname
@@ -199,7 +206,7 @@ public:
 	/** Moves a save file present in /common/ to the currently logged in player's epic ID folder */
 	static bool MoveSaveFileFromCommonToEpicLocation( const UWorld* world, const FString& saveName );
 
-	static bool SaveFileExistsInCommonSaveDirectory( const FString& saveName );
+	static bool SaveFileExistsInCommonSaveDirectory( const UWorld* world, const FString& saveName );
 
 	/** Set so that we use our internal saves */
 	static FORCEINLINE void SetUseBundledSaves( bool useInternal ){ mIsUsingBundledSaves = useInternal; }
@@ -218,17 +225,22 @@ public:
 
 	// IFGSaveManagerInterface overrides
 	virtual void EnumerateSessions(const FOnSaveManagerEnumerateSessionsComplete& CompleteDelegate) override;
-	virtual bool IsEnumeratingLocalSaves() override;
-	virtual bool IsSaveManagerAvailable() override;
+	virtual bool IsEnumeratingLocalSaves() const override;
+	virtual bool IsSaveManagerAvailable() const override;
 	virtual void DeleteSaveFile(const FSaveHeader& SaveGame, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate) override;
 	virtual void DeleteSaveSession(const FSessionSaveStruct& Session, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate) override;
-	virtual class USessionMigrationSequence* LoadSaveFile(const FSaveHeader& SaveGame, TMap<FString, FString> Options, class APlayerController* Player) override;
+	virtual USessionMigrationSequence* LoadSaveFile(const FSaveHeader& SaveGame, const FLoadSaveFileParameters& LoadSaveFileParameters, APlayerController* Player) override;
+	virtual USessionMigrationSequence* CreateNewGame(const FString& SessionName, const FSoftObjectPath& MapAssetName, const FCreateNewGameParameters& CreateNewGameParameters, APlayerController* Player) override;
 	virtual void SaveGame(const FString& SaveName, FOnSaveMgrInterfaceSaveGameComplete CompleteDelegate ) override;
+	virtual bool SupportsOnlineSettings() const override;
 	// end IFGSaveManagerInterface overrides
 
 	//*** Special Redirects for Blueprint subsystem for redirecting between different maps ***/
 	static bool AddBlueprintMapRedirector( FString oldName, FString newName );
 	static void RemoveBlueprintMapRedirector( FString redirectorName );
+
+	/** <FL> [n.tran] Callbacks for NativeEnumerateSaveGamesAsync */
+	FOnEnumerateSaveGamesComplete& OnEnumerateSaveGamesCompleteDelegate() { return *mOnEnumerateSaveGamesCompleteDelegate; }
 	
 	static FOnSaveCollectionChanged OnSaveCollectionChanged;
 
@@ -237,25 +249,36 @@ public:
 	/** Temporary Redirects for blueprint world **/
 	static inline TArray<FMapRedirector> mBlueprintMapRedirectors = TArray<FMapRedirector>();
 protected:
+	/** Common path for traveling to the sessions via the online flow */
+	USessionMigrationSequence* CreateSessionAndTravelToMap( const FString& SessionName, const FSoftObjectPath& MapAssetName, const FCreateNewGameParameters& CreateNewGameParameters, APlayerController* Player ) const;
+
 	/** 
 	* Checks the local backup directory for saves and if their are too many it deletes the oldest ones
 	*/
 	void BackupSaveCleanup();
 
 	/** Migrate saves to new save location */
-	void MigrateSavesToNewLocation( const FString& oldSaveLocation );
-
-	/** Does the actual searching, searches on SaveLocation for save games */
-	void FindSaveGames_Internal( const FString& saveDirectory, TArray<FSaveHeader>& out_saveGames );
-
-	/** Convert a filename with a save directory to a filename */
-	static FString SaveNameToFileName( const FString& directory, const FString& saveName );
+	void MigrateSavesToNewLocation( const UWorld* world, const FString& oldSaveLocation );
 
 	/** Make sure we can get a world easily */
 	class UWorld* GetWorld() const override;
 	
-	/** Gather up used id's from saves */
-	void GatherUsedSaveIds();
+	// <FL> [n.tran] modified to support async
+	/** Gather up used id's from saves*/
+	void GatherUsedSaveIdsAsync();
+
+	/** Callback for GatherUsedSaveIdsAsync */
+	void GatherUsedSaveIdsCallback( bool success, const TArray< FSaveHeader >& saveGames );
+
+	/** Callback for NativeEnumerateSessionsAsync */
+	void NativeEnumerateSessionsCallback( bool success, const TArray< FSaveHeader >& saveGames, FOnEnumerateSessionsComplete onCompleteDelegate );
+
+	/** Callback for EnumerateSessions */
+	void EnumerateSessionsCallback( bool success, const TArray< FSessionSaveStruct >& sessions, int32 currentSessionIx, FOnSaveManagerEnumerateSessionsComplete completeDelegate );
+
+	/** Import test save files on console */
+	void ImportTestSaves();
+	// </FL>
 protected:
 	/** The session id's that used */
 	TSet<FString> mUsedSessionNames;
@@ -271,6 +294,9 @@ protected:
 	UPROPERTY( Config )
 	int32 mMaxNumBackupSaves;
 
+	/** The most recent version number of all found savegames. */
+	int32 mMostRecentVersionSaveGame;
+
 	/** We are currently running verification tests on the save system */
 	static bool mIsVerifyingSaveSystem;
 
@@ -279,4 +305,8 @@ protected:
 
 	/** A delegate handle from UFGSaveSystem::FOnSaveCollectionChanged that we need for cleanup purposes */
 	FDelegateHandle mOnSaveCollectionUpdatedDelegateHandle;
+
+	/** <FL> [n.tran] Callbacks for NativeEnumerateSaveGamesAsync
+	 * will be cleared after the operation finishes */
+	TSharedPtr< FOnEnumerateSaveGamesComplete > mOnEnumerateSaveGamesCompleteDelegate;
 };

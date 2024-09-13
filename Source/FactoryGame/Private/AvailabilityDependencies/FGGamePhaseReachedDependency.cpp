@@ -2,4 +2,8 @@
 
 #include "AvailabilityDependencies/FGGamePhaseReachedDependency.h"
 
+#if WITH_EDITOR
+FString UFGGamePhaseReachedDependency::ToString() const{ return FString(); }
+void UFGGamePhaseReachedDependency::FromString(const FString& inString){ }
+#endif 
 bool UFGGamePhaseReachedDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }

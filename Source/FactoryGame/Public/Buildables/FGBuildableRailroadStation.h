@@ -31,6 +31,8 @@ public:
 
 	// Begin IFGDismantlableInterface
 	virtual bool CanDismantle_Implementation() const override;
+	virtual bool SupportsDismantleDisqualifiers_Implementation() const override { return true; }
+	virtual void GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const override;
 	// End IFGDismantlableInterface
 
 	// Begin Factory_ interface
@@ -39,6 +41,7 @@ public:
 
 	// Begin AFGBuildableFactory interface
 	virtual bool CanProduce_Implementation() const override;
+	virtual EProductionStatus GetProductionIndicatorStatus() const override;
 	// End AFGBuildableFactory interface
 
 	/** Get the station identifier for this station. Shared between server, client and used in time tables. */
@@ -100,6 +103,11 @@ public:
 
 	/** Cancel the current dock. This will notify all platforms in the docked platform list */
 	virtual void CancelDockingSequence() override;
+	
+	UMaterialInterface* GetDefaultCompassMaterial() const
+	{
+		return mCompassMaterial;
+	}
 
 protected:
 	// Begin AFGBuildableTrainPlatform
@@ -146,4 +154,7 @@ private:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTexture;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Representation")
+	UMaterialInterface* mCompassMaterial;
 };

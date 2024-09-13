@@ -41,14 +41,8 @@ void UFGFactoryConnectionComponent::SortComponentList(TInlineComponentArray< UFG
 uint8 UFGFactoryConnectionComponent::MaxNumGrab(float delta) const{ return uint8(); }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindCompatibleOverlappingConnections( UFGFactoryConnectionComponent* component,
 		const FVector& location,
-		float radius,
-		UFGFactoryConnectionComponent* lowPrioConnection){ return nullptr; }
-UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindOverlappingConnections(UWorld* world,
-		const FVector& location,
-		float radius,
-		EFactoryConnectionConnector connector,
-		EFactoryConnectionDirection direction,
-		UFGFactoryConnectionComponent* lowPrioConnection){ return nullptr; }
+		const AActor* priorityActor,
+		float radius){ return nullptr; }
 int32 UFGFactoryConnectionComponent::FindAllOverlappingConnections(TArray< UFGFactoryConnectionComponent* > out_Connection,
 		UWorld* world,
 		const FVector& location,
@@ -56,4 +50,4 @@ int32 UFGFactoryConnectionComponent::FindAllOverlappingConnections(TArray< UFGFa
 		EFactoryConnectionConnector connector,
 		EFactoryConnectionDirection direction){ return int32(); }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::CheckIfSnapOnlyIsBlockedByOtherConnection(UFGFactoryConnectionComponent* connectionToCheck,
-		TArray< FOverlapResult > potentialBlockers){ return nullptr; }
+		const TArray< FOverlapResult >& potentialBlockers){ return nullptr; }

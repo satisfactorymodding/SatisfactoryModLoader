@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SignificanceManagerAccelerated.h"
-#include "ParallelFor.h"
+
+#include "Queue.h"
+#include "Async/ParallelFor.h"
+#include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 
 #if INTEL_ISPC
@@ -17,12 +20,16 @@ DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("Num Managed Objects"), STAT_AccSignificance
 
 void USignificanceManagerAccelerated::Update(TArrayView<const FTransform> InViewpoints)
 {
-	const bool IsHostOrDedicatedServer = GetWorld()->GetNetMode() != ENetMode::NM_Client;
+	const bool IsDediServer = GetWorld()->GetNetMode() == ENetMode::NM_DedicatedServer;
 
 	// Call super for the default entries.
 	{
 		SCOPE_CYCLE_COUNTER(STAT_SuperUpdate)
 		Super::Update(InViewpoints);
+	}
+	if(IsDediServer)
+	{
+		return;
 	}
 	
 	// ISPC accelerated types
@@ -160,12 +167,6 @@ void USignificanceManagerAccelerated::Update(TArrayView<const FTransform> InView
 			LastHandledItem = (LastHandledItem + NumToHandleThisFrame) % NumObjectsToHandle;
 		}
 	}
-
-	if ( IsHostOrDedicatedServer )
-	{
-		
-	}
-	
 }
 
 bool USignificanceManagerAccelerated::IsEntrySignificant( FVector Location, float Range ) const
@@ -189,8 +190,6 @@ void USignificanceManagerAccelerated::RegisterObject(UObject* Object, FName Tag,
 {
 	if (IsRunningDedicatedServer())
 	{
-		// Server side significance only.s
-		
 		return;
 	}
 	
@@ -231,8 +230,6 @@ void USignificanceManagerAccelerated::RemoveStaticObject(UObject* Object)
 {
 	if (IsRunningDedicatedServer())
 	{
-		// Server side significance only
-		
 		return;
 	}
 
@@ -254,14 +251,6 @@ void USignificanceManagerAccelerated::RemoveStaticObject(UObject* Object)
 
 	StaticEntries.Shrink();
 	StaticEntriesObjects.Shrink();	
-}
-
-void USignificanceManagerAccelerated::RegisterStaticNetworkObject(UObject* Object, FName Tag, EPostSignificanceType InPostSignificanceType, FManagedObjectPostSignificanceFunction InPostSignificanceFunction)
-{
-}
-
-void USignificanceManagerAccelerated::RemoveStaticNetworkObject(UObject* Object)
-{
 }
 
 void USignificanceManagerAccelerated::DumpSignificanceDebugData()

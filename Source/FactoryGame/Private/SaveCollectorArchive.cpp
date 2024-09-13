@@ -2,8 +2,6 @@
 
 #include "SaveCollectorArchive.h"
 
-FSaveCollectorArchive::FSaveCollectorArchive(TArray<class UObject*> &toFill) : mObjectsToSave(toFill) {}
-
-FArchive& FSaveCollectorArchive::operator<<( UObject*& Obj){ return *(new FArchive); }
-FArchive& FSaveCollectorArchive::operator<<(FObjectPtr& Value){ return *(new FArchive); }
-void FSaveCollectorArchive::GenerateSaveObjects(const TArray<class UObject*>& rootSet){ }
+FFastSaveReferenceCollector::FFastSaveReferenceCollector(UWorld* world, ULevel* level, TArray<class UObject*>& toFill) : mObjectsToSave(toFill) { }
+void FFastSaveReferenceCollector::GenerateSaveObjects(const TArray<class UObject*>& rootSet){ }
+void FFastSaveReferenceCollector::HandleObjectReference(UObject*& InObject, const UObject* InReferencingObject, const FProperty* InReferencingProperty){ }

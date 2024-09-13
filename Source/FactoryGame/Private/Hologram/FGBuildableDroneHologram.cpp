@@ -14,4 +14,5 @@ void AFGBuildableDroneHologram::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 }
 bool AFGBuildableDroneHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGBuildableDroneHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+void AFGBuildableDroneHologram::CheckValidPlacement(){ }
 AFGVehicle* AFGBuildableDroneHologram::ConstructVehicle(FNetConstructionID netConstructionID) const{ return nullptr; }

@@ -5,40 +5,41 @@
 #include "FactoryGame.h"
 #include "FGBuildable.h"
 #include "FGSignificanceInterface.h"
-#include "Replication/FGReplicationDetailActor_BuildableFactory.h"
-#include "Replication/FGReplicationDetailInventoryComponent.h"
 #include "FGBuildableFactory.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnReplicationDetailActorCreated, class AActor*, replicationDetailActorOwner );
+enum class EPowerShardType : uint8;
+enum class EVisibilityBasedAnimTickOption : uint8;
+struct FInstanceHandle;
 
 /** Delegate for when some binary state has changed */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FBuildingStateChanged, bool, state );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildingProductionBoostChanged, float, newProductionBoost );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildingPotentialChanged, float, newProductionBoost );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildingProductivityChanged, float, newProductivity );
+DECLARE_MULTICAST_DELEGATE_OneParam( FBuildingCurrentPotentialChanged, float );
 
 /**
  * Base class for factory machines like miners, conveyors, assemblers, storages etc.
  * @todorefactor Comments about the Factory_ and non factory code.
  */
 UCLASS( Abstract )
-class FACTORYGAME_API AFGBuildableFactory : public AFGBuildable, public IFGSignificanceInterface, public IFGReplicationDetailActorOwnerInterface
+class FACTORYGAME_API AFGBuildableFactory : public AFGBuildable, public IFGSignificanceInterface, public IFGConditionalReplicationInterface
 {
 	GENERATED_BODY()
 public:
 	AFGBuildableFactory();
 
-	/** Replication */
+	// Begin UObject interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
-	virtual bool GetNetDormancy( const FVector& ViewPos, const FVector& ViewDir, class AActor* Viewer, AActor* ViewTarget, UActorChannel* InChannel, float Time, bool bLowBandwidth ) override;
-
+	// End UObject interface
+	
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason );
 	virtual void Tick( float dt ) override;
-	virtual void Destroyed() override;
 	// End AActor interface
 
 	// Begin IFGSaveInterface
-	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
 	// End IFGSaveInterface
 
@@ -56,43 +57,24 @@ public:
 	virtual float GetTickExponent() const override { return mTickExponent; }
 	//End IFGSignificanceInterface
 
+	//~ Begin IFGUseableInterface
+	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
+	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
+	//~ End IFGUseableInterface
+
+	// Begin IFGConditionalReplicationInterface
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
+	virtual bool IsPropertyRelevantForConnection(UNetConnection* netConnection, const FProperty* property) const override;
+	// End IFGConditionalReplicationInterface
+
 	// Begin Factory_ interface
 	virtual void Factory_Tick( float dt ) override;
 	// End Factory_ interface
-
-	// Begin IFGUseableInterface
-	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
-	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
-	// End IFGUseableInterface
-
-	// Begin IFGDismantleInterface
-	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
-	// End IFGDismantleInterface
-
-	// Begin IFGReplicationDetailActorOwnerInterface
-	virtual AFGReplicationDetailActor* GetReplicationDetailActor( bool tryCreate = false ) override 
-	{
-		if( tryCreate )
-		{
-			return GetOrCreateReplicationDetailActor(); 
-		}
-		else
-		{
-			return mReplicationDetailActor;
-		}
-	};
-	virtual void OnBuildableReplicationDetailStateChange( bool newStateIsActive ) override;
-	virtual void OnReplicationDetailActorCreated() override;
-	virtual void OnReplicationDetailActorRemoved() override;
-	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_BuildableFactory::StaticClass(); };
-	// End IFGReplicationDetailActorOwnerInterface
-
-	/** Returns true if caller is server ( no replication detail actor is required ) or if the detail actor has been replicated to the client */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Replication" )
-	FORCEINLINE bool HasValidReplicationDetailActor() const { return HasAuthority() || IsValid( mReplicationDetailActor ); }
-
+	
 	// Begin FGBuildable
-	virtual bool ShouldSkipBuildEffect() override;
+	virtual void OnBuildEffectFinished() override;
+	virtual void OnBuildEffectActorFinished() override;
+	virtual void Dismantle_Implementation() override;
 	// End FGBuildable
 
 	/** Get the connections to this factory. */
@@ -104,13 +86,17 @@ public:
 	 */
 	virtual float GetEmissivePower() override;
 
+	virtual bool ShouldShowCenterGuidelinesForHologram( const AFGHologram* hologram ) const override;
+
 	/**
 	 * Check if we have power.
 	 * @return true if we have power; false if we do not have power or does not run on power.
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Power" )
 	bool HasPower() const { return mHasPower; }
-	
+
+	UFUNCTION(BlueprintPure,Category="FactoryGame|Factory")
+	bool CanChangeProductionBoost() const { return mCanChangeProductionBoost; }
 	/**
 	 * Check if this machine runs on power.
 	 * @return - true if this machine runs on power; false if it does not.
@@ -126,7 +112,7 @@ public:
 	FORCEINLINE class UFGPowerInfoComponent* GetPowerInfo() const { return mPowerInfo; }
 
 	/** Get the power consumption for production. */
-	float GetIdlePowerConsumption() const;
+	virtual float GetIdlePowerConsumption() const;
 
 	/** Get the current producing consumption before overclocking is applied. */
 	virtual float GetProducingPowerConsumptionBase() const { return mPowerConsumption; }
@@ -139,8 +125,12 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Power" )
 	float GetDefaultProducingPowerConsumption() const;
 
-	static float CalcPowerConsumption( float power, float overclock, float exponent );
+	/** Calculates power consumption for overclocking */
+	static float CalcOverclockPowerConsumption( float power, float overclock, float exponent );
 
+	/** Calculates power consumption for production boost */
+	static float CalcProductionBoostPowerConsumption( float power, float productionBoost, float exponent );
+	
 	/** Helper to get the power consumption for production at a certain potential. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Power" )
 	float CalcProducingPowerConsumptionForPotential( float potential ) const;
@@ -168,6 +158,14 @@ public:
 		return mIsProducing;
 	}
 
+	/** Returns true if this building is alien overclocked (has production boost > 100%). Returns correct value on the client even if the UI is not open */
+	UFUNCTION( BlueprintPure, Category = "Alien Overclocking" )
+	FORCEINLINE bool IsAlienOverclocked() const { return mIsAlienOverclocked; }
+
+	/** Returns true if this building is overclocked (has potential > 100%). Returns correct value on the client even if the UI is not open */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Productivity" )
+	FORCEINLINE bool IsOverclocked() const { return mIsOverclocked; }
+
 	/**
 	 * Can we start production i.e. do we have the items needed for assembly etc.
 	 *
@@ -193,11 +191,11 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Production" )
 	virtual float GetProductionProgress() const;
 
-	/** The current production cycle time for the current recipe with modifiers. */
+	/** The current production cycle time for the current recipe, with potential multiplier applied */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Production" )
 	virtual float GetProductionCycleTime() const;
 
-	/** The unmodified production cycle time for the current recipe. */
+	/** The production cycle time for the recipe, not including the current potential multiplier */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Production" )
 	virtual float GetDefaultProductionCycleTime() const;
 
@@ -211,7 +209,7 @@ public:
 	
 	/** A measure of how productive this factory is. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Productivity" )
-	float GetProductivity() const;
+	virtual float GetProductivity() const;
 
 	/** How long is the measurement for the buildings productivity. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Productivity" )
@@ -219,7 +217,7 @@ public:
 
 	/** Get the inventory that we place crystal in to unlock the slider of potential */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Productivity" )
-	FORCEINLINE UFGInventoryComponent* GetPotentialInventory() const { return mInventoryPotentialHandlerData.GetActiveInventoryComponent(); }
+	FORCEINLINE UFGInventoryComponent* GetPotentialInventory() const { return mInventoryPotential; }
 
 	/** Gets you the current potential */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
@@ -232,19 +230,19 @@ public:
 	/** Set a new pending potential, the current one will be changed to this when we finish a production cycle */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
 	virtual void SetPendingPotential( float newPendingPotential );
-
+	
 	/** Get the minimum potential possible */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
-	FORCEINLINE float GetMinPotential() const { return mMinPotential; }
+	virtual float GetCurrentMinPotential() const;
+	
+	/** Get the default maximum potential possible */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
+	FORCEINLINE float GetMaxPotential() const { return mMaxPotential; }
 
 	/** Get the maximum potential possible depending on the num crystals in inventories */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
-	float GetCurrentMaxPotential() const;
-
-	/** Get the max potential, as if you had all slots filled with crystals */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
-	float GetMaxPossiblePotential() const;
-
+	virtual float GetCurrentMaxPotential() const;
+	
 	/** Get mCanChangePotential */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
 	FORCEINLINE bool GetCanChangePotential() const { return mCanChangePotential; }
@@ -310,7 +308,48 @@ public:
 
 	/** Updates  EVisibilityBasedAnimTickOption on all cached skel meshes */
 	void UpdateAnimTickOption( EVisibilityBasedAnimTickOption newOption );
+
+	/** Gets you the current production boost multiplier */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
+	FORCEINLINE float GetCurrentProductionBoost() const { return mCurrentProductionBoost; }
+
+	/** Gets you the pending production boost */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
+	FORCEINLINE float GetPendingProductionBoost() const { return mPendingProductionBoost; }
+
+	/** Set a new pending production boost multiplier, the current one will be changed to this when we finish a production cycle */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
+	virtual void SetPendingProductionBoost( float newPendingProductionBoost );
+
+	/** Get the minimum production boost multiplier possible, e.g. the base one */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
+	FORCEINLINE float GetMinProductionBoost() const { return mBaseProductionBoost; }
+
+	/** Get the maximum production boost multiplier possible without using the shards, e.g. the base one */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
+	FORCEINLINE float GetMaxProductionBoost() const { return mBaseProductionBoost; }
+
+	/** Get the maximum production boost multiplier depending on the amount of shards in the inventory */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
+	float GetCurrentMaxProductionBoost() const;
+	
+	/** Tries to fill up the potential inventory from the given players inventory so we can use the target potential. Doesn't apply target potential
+	 *	Returns the pair of potential and production boost we were able to apply based on the amount of shards we have by type
+	 */
+	virtual bool TryFillPotentialInventory( AFGCharacterPlayer* player, const TMap<EPowerShardType, TPair<TSubclassOf<class UFGPowerShardDescriptor>, float>>& potentialValues, TMap<EPowerShardType, float>& out_reachedPotentialValues, bool simulate = false);
+
+	/**
+	 * Attempts to move all items out of the inventory to the player inventory, if it cannot it drops them
+	 * on the ground instead around the player
+	 */
+	static void MoveOrDropInventory( UFGInventoryComponent* inventory, AFGCharacterPlayer* player );
 protected:
+	/** Helper function to fill the potential inventory slots from the player inventory with the shards of the particular type, aiming to reach a target amount of shards in slots. Once this function returns, the ref parameter contains amount of slots the inventory was unable to accomodate */
+	void FillPotentialSlotsInternal( UFGInventoryComponent* playerInventory, EPowerShardType powerShardType, TSubclassOf<UFGPowerShardDescriptor> shardItemDescriptor, int32& ref_targetAmountOfShardsInSlots, TArray<FInventoryStack>& out_itemsToDrop ) const;
+	
+	/** Helper function to calculate maximum production, can be used for Custom shard types */
+	float GetCurrentMaxPotentialForType(EPowerShardType powerShardType, float minValue, float maxValue, float boostPerShardMultiplier = 1.0f) const;
+	
 	/** Called whenever HasPower has changed, exposed here for cleaner/more optimized ways of changing state when the factory has power */
 	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasOnHasPowerChanged, Category="FactoryGame|Factory|Power")
 	void OnHasPowerChanged( bool newHasPower );
@@ -334,9 +373,12 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Productivity" )
     void OnCurrentPotentialChanged( float newCurrentPotential );
 
-	// Begin AFGBuildable interface
-	virtual void OnReplicatingDetailsChanged() override;
-	// End AFGBuildable interface
+	/** Set a new value of the current production boost and fire the event */
+	virtual void SetCurrentProductionBoost( float newProductionBoost );
+
+	/** Event for when current potential is changed */
+	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Factory|Productivity" )
+	void OnCurrentProductionBoostChanged( float newCurrentProductionBoost );
 
 	/** Called to check if this building has power, result is cached in Factory_Tick, use HasPower() instead. */
 	virtual bool Factory_HasPower() const;
@@ -364,7 +406,7 @@ protected:
 	virtual void Factory_StartProducing();
 
 	/** Calls blueprint when we start producing. */
-	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing=mHasFactory_StartProducing, Category = "FactoryGame|Factory|Production", meta = (DisplayName = "Factory_StartProducing") )
+	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing=mHasFactory_StartProducing, Category = "FactoryGame|Factory|Production", meta = (DisplayName = "Factory_StartProducingAuthorative") )
 	void Factory_ReceiveStartProducing();
 
 	/** Tick the production. */
@@ -374,14 +416,14 @@ protected:
 	void Factory_TickProductivity( float dt );
 
 	/** Calls blueprint when we tick production. */
-	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasFactory_TickProducing, Category = "FactoryGame|Factory|Production", meta=(DisplayName="Factory_TickProducing") )
+	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasFactory_TickProducing, Category = "FactoryGame|Factory|Production", meta=(DisplayName="Factory_TickProducingAuthorative") )
 	void Factory_ReceiveTickProducing( float deltaTime );
 
 	/** Stops the production, client get this call replicated after the server. You must call Super if overriding this. */
 	virtual void Factory_StopProducing();
 
 	/** Calls blueprint when we stop producing. */
-	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasFactory_StopProducing, Category = "FactoryGame|Factory|Production", meta = (DisplayName = "Factory_StopProducing") )
+	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasFactory_StopProducing, Category = "FactoryGame|Factory|Production", meta = (DisplayName = "Factory_StopProducingAuthorative") )
 	void Factory_ReceiveStopProducing();
 
 	/** Function for updating sfx/vfx at intervals */
@@ -391,42 +433,54 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasUpdateEffects, Category = "FactoryGame|Factory|Effects", meta = ( DisplayName = "UpdateEffects" ) )
 	void ReceiveUpdateEffects( float DeltaSeconds );
 
-	UFUNCTION()
-	virtual void OnRep_ReplicationDetailActor();
+	/* Spawns all particles found through GetAlienOverClockingEffectLocations(). */
+	UFUNCTION( BlueprintNativeEvent, Category = "Alien Overclocking" )
+	void TrySpawnAlienOverClockingEffects( const TArray<UNiagaraSystem*>& ParticlesToSpawn, const TArray<FTransform>& LocationsForParticlesToSpawn );
 
-	virtual class AFGReplicationDetailActor* GetOrCreateReplicationDetailActor();
+	/* Destroys all particle and sound effects that are spawned through TrySpawnAlienOverClockingEffects*/
+	UFUNCTION( BlueprintNativeEvent, Category = "Alien Overclocking" )
+	void TryCleanupAlienOverClockingEffects();
+
+	void GetAlienOverClockingEffectLocations(UStaticMesh* SourceMesh, FTransform SourceTransform, TArray<UNiagaraSystem*>& ParticlesToSpawn, TArray<FTransform>& LocationsForParticlesToSpawn);
+
+	/** Utility function for scheduling a task to run on the next tick of the main thread */
+	void ScheduleTaskOnMainThread( const TDelegate<void()>& inDelegate ) const;
 
 	UFUNCTION()
 	virtual void OnRep_CurrentPotential();
-
 	UFUNCTION()
 	virtual void OnRep_IsProductionPaused();
-
-	virtual void GetAllReplicationDetailDataMembers(TArray<FReplicationDetailData*>& out_repDetailData) override
-	{
-		Super::GetAllReplicationDetailDataMembers( out_repDetailData );
-		out_repDetailData.Add( &mInventoryPotentialHandlerData );
-	}
-
+	UFUNCTION()
+	virtual void OnRep_CurrentProductionBoost();
+	UFUNCTION()
+	virtual void OnRep_PendingPotential();
+	UFUNCTION()
+	virtual void OnRep_PendingProductionBoost();
+	UFUNCTION()
+	virtual void OnRep_CurrentProductivity();
 private:
 	/** Calls Start/Stop Producing on client */
 	UFUNCTION()
 	virtual void OnRep_IsProducing();
+	UFUNCTION()
+	virtual void OnRep_IsAlienOverclocked();
 
 	UFUNCTION()
-	void OnPotentialInventoryItemRemoved( TSubclassOf< class UFGItemDescriptor > itemClass, int32 numRemoved );
-
-	class AFGReplicationDetailActor_BuildableFactory* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_BuildableFactory>( mReplicationDetailActor ); } // @todo: make this a static function instead
-
+	virtual void OnPotentialInventoryItemChanged( TSubclassOf< UFGItemDescriptor > itemClass, const int32 numChanged, UFGInventoryComponent* sourceOrTargetInventory = nullptr );
+	
 	/** Filters what item can be used in the potential inventory slots. We use it to check if overclock have been unlocked */
 	UFUNCTION()
-	bool FilterPotentialInventoryClasses( TSubclassOf< UObject > object, int32 idx ) const;
+	virtual bool FilterPotentialInventoryClasses( TSubclassOf< UObject > object, int32 idx ) const;
+
+	virtual bool IsPowerShardTypeAllowed(EPowerShardType PowerShardType) const;
 
 	//////////////////////////////////////////////////////////////////////////
 	/// Push Model Replication Setters
 	void SetIsProducing( uint8 isProducing );
 	void SetHasPower( uint8 hasPower );
 	void SetCurrentProductivity( uint8 productivity );
+	void SetIsAlienOverclocked( bool isAlienOverclocked );
+	void SetIsOverclocked( bool isOverclocked );
 
 	/**
 	 * Toggle productivity monitoring.
@@ -434,6 +488,20 @@ private:
 	 */
 	void SetProductivityMonitorEnabled( bool enabled );
 
+	/** Handles the migration of the potential inventory when it has been loaded with the smaller capacity */
+	static void MigratePotentialInventorySlots( UFGInventoryComponent* inventory, int32 oldSize, int32 newSize );
+
+	/** Determines whenever the alien overclocking effects should be visible now, and depending on that calls Start/Stop alien overclocking effects */
+	void UpdateAlienOverclockingEffects();
+	
+	void StopAlienOverclockingEffects();
+	void StartAlienOverclockingEffects();
+protected:
+	void GetSlotsForPowerShardType( EPowerShardType powerShardType, TArray< int32 >& out_slotIndices ) const;
+	EPowerShardType GetPowerShardTypeForSlot( int32 slotIdx ) const;
+
+	void RecalculateProducingPowerConsumption();
+	
 public:
 	/** Power consumption of this factory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = "0.0" ) )
@@ -448,20 +516,14 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = "1.0", ClampMax = 2 ) )
 	float mPowerConsumptionExponent;
 
-	/** Class to use for the power simulation on this factory, this is only used if the building has any FGPowerConnectionComponent attached. */
-	UPROPERTY( EditDefaultsOnly, Category = "Power" )
-	TSubclassOf< class UFGPowerInfoComponent > mPowerInfoClass;
+	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = "1.0", ClampMax = 4 ) )
+	float mProductionBoostPowerConsumptionExponent;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Animation" )
 	bool mDoesHaveShutdownAnimation;
 
-protected:
-	friend class AFGReplicationDetailActor_BuildableFactory;
-
-	/** Power simulation info */
-	UPROPERTY( SaveGame, Replicated )
-	class UFGPowerInfoComponent* mPowerInfo;
-
+	FORCEINLINE EProductionStatus GetCachedProductionState() const { return mCachedProductionStatus; }
+	
 	/** So that you can listen for when power has changed */
 	UPROPERTY(BlueprintAssignable)
 	FBuildingStateChanged mOnHasPowerChanged;
@@ -474,6 +536,29 @@ protected:
 	UPROPERTY( BlueprintAssignable )
 	FBuildingStateChanged mOnHasStandbyChanged;
 
+	/** So that you can listen for when current potential is changed. */
+	FBuildingCurrentPotentialChanged mOnCurrentPotentialChanged;
+
+	/** Called when the pending potential value on this buildable changes. Called on the client as well. */
+	UPROPERTY( BlueprintAssignable )
+	FOnBuildingPotentialChanged mOnPendingPotentialChanged;
+
+	/** Called when the pending production boost value on this buildable changes. Called on the client as well. */
+	UPROPERTY( BlueprintAssignable )
+	FOnBuildingProductionBoostChanged mOnPendingProductionBoostChanged;
+
+	/** Called when the productivity of the buildable changes. This is to be used in conjunction with GetProductivity */
+	UPROPERTY( BlueprintAssignable )
+	FOnBuildingProductivityChanged mOnCurrentProductivityChanged;
+protected:
+	/** Transient struct handling the conditional replication of the buildable properties */
+	UPROPERTY( Replicated, Transient, meta = ( FGPropertyReplicator ) )
+	FFGConditionalPropertyReplicator mPropertyReplicator;
+
+	/** Power simulation info */
+	UPROPERTY( SaveGame )
+	class UFGPowerInfoComponent* mPowerInfo;
+		
 	/**
 	 * The minimum time one production cycle must take.
 	 * If the part is finished earlier the machine remains in the producing state until the minimum time has passed.
@@ -506,23 +591,43 @@ protected:
 	/** Set this to true if we want this building to be able to change the production rate potential with the "Slider of Potential" */
 	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
 	bool mCanChangePotential;
+	
+	/** True if we allow changing the production boost multiplier and inserting production boost shards */
+	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
+	bool mCanChangeProductionBoost;
 
 	/** When ever a production cycle is completed we set the current potential to this value */
-	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
+	UPROPERTY( SaveGame, Meta = ( NoAutoJson = true, FGReplicatedUsing = OnRep_PendingPotential ) )
 	float mPendingPotential;
+
+	/** When ever a production cycle is completed we set the current production boost to this value */
+	UPROPERTY( SaveGame, Meta = ( NoAutoJson = true, FGReplicatedUsing = OnRep_PendingProductionBoost ) )
+	float mPendingProductionBoost;
 
 	/** You can never set the potential to less than this when playing */
 	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
 	float mMinPotential;
 	
-	/** You can never set the potential to more than this when playing */
+	/** Default maximum potential on the buildable, not accounting for the installed power shards */
 	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
 	float mMaxPotential;
 
-	/** When the player adds another crystal in the inventory we unlock even more potential*/
+	/** Default max production boost multiplier on a buildable, normally 1.0 */
 	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
-	float mMaxPotentialIncreasePerCrystal;
+	float mBaseProductionBoost;
+	
+	/** Number of slots used for potential/overclocking shards */
+	UPROPERTY( EditDefaultsOnly, Category = "Productivity", meta = (EditCondition = "mOverridePotentialShardSlots", EditConditionHides) )
+	int32 mPotentialShardSlots;
+	
+	/** Slot size for the production boost power shards */
+	UPROPERTY( EditDefaultsOnly, Category = "Productivity", meta = (EditCondition = "mOverrideProductionShardSlotSize", EditConditionHides) )
+	int32 mProductionShardSlotSize;
 
+	/** Multiplier to apply to the production boost value from the production boost shards in this buildable */
+	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
+	float mProductionShardBoostMultiplier;
+	
 	/** Item stack size Enum to use as base for how much fluid a Liquid / Gas Item descriptor can be stored on an index in an inventory */
 	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
 	EStackSize mFluidStackSizeDefault;
@@ -531,30 +636,30 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
 	int32 mFluidStackSizeMultiplier;
 
+	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
+	bool mHasInventoryPotential;
+	
 	/** The player is able to toggle if production should be paused or not */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsProductionPaused, Meta = (NoAutoJson = true) )
 	bool mIsProductionPaused;
 
-	UPROPERTY( Replicated, Transient, ReplicatedUsing = OnRep_ReplicationDetailActor )
-	class AFGReplicationDetailActor* mReplicationDetailActor;
-
-	/** Event for when ReplicationDetailActors are created. Will only be dispatched if this buildable inherits from the ReplicationDetailActorOwnerInterface. */
-	UPROPERTY( BlueprintAssignable, Category = "Replication Detail Actor Owner Interface" )
-	FOnReplicationDetailActorCreated OnReplicationDetailActorCreatedEvent;
-
+	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
+	bool mIsTickRateManaged = true;
+	
 private:
 	/** The input we place a crystal in to unlock the potential */
-	UPROPERTY( SaveGame )
+	UPROPERTY( EditDefaultsOnly, SaveGame, Category = "Productivity" )
 	class UFGInventoryComponent* mInventoryPotential;
-
-	UPROPERTY()
-	FReplicationDetailData mInventoryPotentialHandlerData;
-
+	
 	/** This is the current potential (overclock, overcharge) of this factory [0..N]
 	* [FreiholtzK:Fri/4-12-2020]  encapsulated to make sure we catch changes of this value and can broadcast them
 	*/
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CurrentPotential, Meta = (NoAutoJson = true) )
+	UPROPERTY( SaveGame, Meta = ( NoAutoJson = true, FGReplicatedUsing = OnRep_CurrentPotential ) )
 	float mCurrentPotential;
+
+	/** The current production boost multiplier set on the buildable */
+	UPROPERTY( SaveGame, Meta = ( NoAutoJson = true, FGReplicatedUsing = OnRep_CurrentProductionBoost ) )
+	float mCurrentProductionBoost;
 
 	/** How often effect update should update */
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
@@ -590,7 +695,7 @@ private:
 	float mCurrentProductivityMeasurementDuration;
 	
 	/** A replicated compressed version of the productivity, where a value of 0-255 is 0-100 percent. */
-	UPROPERTY( Replicated, Meta = (NoAutoJson = true) )
+	UPROPERTY( Meta = ( NoAutoJson = true, FGReplicatedUsing = OnRep_CurrentProductivity ) )
 	uint8 mCurrentProductivity;
 	
 	/** Should this building calculate its productivity, buildings do not tick productivity when newly built or in standby. */
@@ -650,6 +755,15 @@ private:
 	/** Indicates if we have already started the production effects effects */
 	uint8 mDidStartProductionEffects : 1;
 
+	/** True if the building is currently overclocked. Updated on BeginPlay and when overclocking potential changes */
+	UPROPERTY( Replicated, Meta = (NoAutoJson = true) )
+	uint8 mIsOverclocked : 1;
+	/** True if the building is currently alien overclocked. Updated on BeginPlay and when alien overclocking potential changes */
+	UPROPERTY( ReplicatedUsing = OnRep_IsAlienOverclocked, Meta = (NoAutoJson = true) )
+	uint8 mIsAlienOverclocked : 1;
+
+	/** True if we are currently playing alien overclocking effects */
+	uint8 mIsPlayingAlienOverclockingEffects : 1;
 protected:
 	/* Determines if we should Factory_PullPipeInput in factory tick.*/
 	uint8 mHasPipeInput : 1;
@@ -658,17 +772,32 @@ protected:
 	uint8 mHasPipeOutput : 1;
 
 	/* Determines if we should collect inputs in factory tick.*/
-	uint8 mHasSolidInput : 1 ;
+	uint8 mHasSolidInput : 1;
+
+	/** Whenever this buildable has a custom value for Potential Shard Slots */
+	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
+	uint8 mOverridePotentialShardSlots : 1;
+
+	/** Whenever this buildable has a custom value for Production Shard Slot Size */
+	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
+	uint8 mOverrideProductionShardSlotSize : 1;
 	
+	/** Indicates if the factory should be handled by significance manager */
+	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
+	uint8 mAddToSignificanceManager : 1;
+	
+	/** Particle effects currently playing for the alien overclocking */
+	UPROPERTY( BlueprintReadWrite, Category = "Alien Overclocking" )
+	TArray<UNiagaraComponent*> mAlienOverClockingParticleEffects;
+
+	/** Audio component playing the alien overclocking audio */
+	UPROPERTY( BlueprintReadWrite, Category = "Alien Overclocking" )
+	UAkComponent* mAlienOverClockingLayerSFXComponent;
 private:	
 	/** Caching all skeletal meshes so that we can set tick optimizations later from significance manager */
 	UPROPERTY()
 	TArray< USkeletalMeshComponent* > mCachedSkeletalMeshes;
 protected:
-	/** Indicates if the factory should be handled by significance manager */
-	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
-	uint8 mAddToSignificanceManager : 1;
-
 	/** The range to keep the factory in significance */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
 	float mSignificanceRange;

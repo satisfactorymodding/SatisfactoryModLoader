@@ -8,7 +8,6 @@
 #include "FGSignTypes.h"
 #include "FGSignLibrary.generated.h"
 
-
 /**
  * Function library to provide support for Signs
  */
@@ -17,8 +16,6 @@ class FACTORYGAME_API UFGSignLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
-
-
 	//////////////////////////////////////////////////////////////////////////
 	/// Sign Type Descriptor Getters for UI to access from Class Type
 	
@@ -34,13 +31,15 @@ public:
 	UFUNCTION( BlueprintPure, Category = "SignLibrary|Sign Data" )
 	static void GetTextElementNameMapFromSignDescriptor( const TSubclassOf< class UFGSignTypeDescriptor > signTypeClass, TMap< FString, FString >& textElementMap );
 
+	// From a SignTypeDescriptor class get the map of all text element names to their localized default text
+	UFUNCTION( BlueprintPure, Category = "SignLibrary|Sign Data" )
+	static void GetTextElementLocMapFromSignDescriptor( const TSubclassOf< class UFGSignTypeDescriptor > signTypeClass, TMap< FString, FText >& LocTextElementMap );
+
 	// From a SignTypeDescriptor class get the map of all icon element names to their default Texture2D data
 	UFUNCTION( BlueprintPure, Category = "SignLibrary|Sign Data" )
 	static void GetIconElementNameMapFromSignDescriptor( const TSubclassOf< class UFGSignTypeDescriptor > signTypeClass, TMap< FString, class UObject* >& iconElementMap );
 
 	// From a SignTypeDescriptor class get array of all prefab layout classes
 	UFUNCTION( BlueprintPure, Category = "SignLibrary|Sign Data" )
-	static void GetPrefabLayoutsFromSignDescriptor( const TSubclassOf< class UFGSignTypeDescriptor > signTypeClass, TArray< TSubclassOf< UFGSignPrefabWidget > >& prefabArray );
-
-
+	static void GetPrefabLayoutsFromSignDescriptor( const TSubclassOf< class UFGSignTypeDescriptor > signTypeClass, TArray< TSoftClassPtr< UFGSignPrefabWidget > >& prefabArray );
 };

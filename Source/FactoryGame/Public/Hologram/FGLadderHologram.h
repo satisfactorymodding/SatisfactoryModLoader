@@ -36,14 +36,8 @@ public:
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetMaterial( class UMaterialInterface* material ) override;
 	virtual int32 GetBaseCostMultiplier() const override;
+	virtual void GetClearanceData( TArray< const FFGClearanceData* >& out_ClearanceData ) const override;
 	// End AFGHologram interface
-
-	// Begin FGConstructionMessageInterface
-	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
-	//virtual void ClientPreConstructMessageSerialization() override;
-
-	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
-
 protected:
 	// Begin AFGBuildableHologram Interface
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
@@ -56,6 +50,8 @@ protected:
 	void UpdateClearance();
 
 private:
+	FFGClearanceData mClearance;
+	
 	UPROPERTY( EditDefaultsOnly, Category = "Ladder" )
 	float mLadderBottomSnapThreshold;
 
@@ -71,7 +67,7 @@ private:
 	UPROPERTY( VisibleAnywhere, Category = "Ladder" )
 	int32 mMaxSegmentCount;
 
-	UPROPERTY( VisibleAnywhere, ReplicatedUsing = OnRep_TargetSegmentHeight, Category = "Ladder" )
+	UPROPERTY( VisibleAnywhere, ReplicatedUsing = OnRep_TargetSegmentHeight, CustomSerialization, Category = "Ladder" )
 	int32 mTargetSegmentHeight;
 
 	UPROPERTY( VisibleAnywhere, Category = "Ladder" )

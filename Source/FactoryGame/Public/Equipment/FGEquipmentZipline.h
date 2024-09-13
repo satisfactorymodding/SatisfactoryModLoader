@@ -11,69 +11,101 @@
  * 
  */
 UCLASS()
-class FACTORYGAME_API AFGEquipmentZipline final: public AFGEquipment
+class FACTORYGAME_API AFGEquipmentZipline : public AFGEquipment
 {
 	GENERATED_BODY()
 public:
 	AFGEquipmentZipline();
 	
 	// Begin AFGEquipment interface
+	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+	virtual void Tick( float delta ) override;
     virtual void AddEquipmentActionBindings() override;
 	virtual void UnEquip() override;
 	// End AFGEquipment interface
 	
-	virtual void Tick( float delta ) override;
+	/** Drop down from zipline */
+	void DoDrop();
+	/** Jump exit the zipline */
+    void JumpExit();
 
 	UFUNCTION( BlueprintPure, Category = "Zipline" )
 	FORCEINLINE bool GetWantToGrab() const { return mWantToGrab; }
-
-	void ZiplineEnd();
-	
-	/** Same as DoDrop but on server */
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_DoDrop();
-
-	/** Drop down from zipline */
-	UFUNCTION()
-	void DoDrop();
-
-	/** Same as JumpExit but on server */
-	UFUNCTION( Server, Reliable, WithValidation )
-    void Server_JumpExit();
-	
-	/** Jump exit the zipline */
-	UFUNCTION()
-    void JumpExit();
-
-	/** Input actions */
-	void Input_Crouch( const FInputActionValue& actionValue );
-	void Input_Jump( const FInputActionValue& actionValue );
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "Zipline" )
 	void OnZiplineSprintStatusChanged( bool sprint );
 
 	/** Called during tick, tries to grab onto a wire if mWantToGrab is set  */
 	void TryToGrab();
-
 	bool CanGrab( AActor* attachActor, const FVector& point1, const FVector& point2 ) const;
-
 protected:
 	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
+	
+	/** Input actions */
+	void Input_Crouch( const FInputActionValue& actionValue );
+	void Input_Jump( const FInputActionValue& actionValue );
+	
+	/** Called to start the ziplining effects */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Zipline" )
+	void StartZiplineEffects();
 
+	/** Called to stop the ziplining effects */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Zipline" )
+	void StopZiplineEffects();
+
+	/** Called from the movement component every frame we update the movement to update the Zipline VFX */
+	UFUNCTION( BlueprintNativeEvent, Category = "Zipline" )
+	void PlayZiplineEffects( const FVector &inLocation );
+	
 	/** Called whenever our "Want to grab" value changes. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Zipline" )
 	void OnWantToGrabChanged( bool newWantToGrab );
-	
-	void SetWantsToGrab( bool wantToGrab );
 
+	/** Called to re-apply the current state of the "wants to grab" when we end the zipline movement. Used to restart the animation if we are still wanting to grab the wire */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Zipline" )
+	void ReapplyWantsToGrabAfterZiplineEnd( bool bWantsToGrab );
+
+	void ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
+	void Local_ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
+
+	void ZiplineEnd( const FVector& exitForce );
+	void Local_ZiplineEnd( const FVector& exitForce );
 private:
+	friend class UFGCharacterMovementComponent;
+	
+	void StartActiveNoise();
+	void StopActiveNoise();
+	
 	/** Used to make noise for when the zipline is active. */
 	UFUNCTION()
 	void MakeActiveNoise();
+
+	UFUNCTION( NetMulticast, Reliable, Category = "Zipline" )
+	void Multicast_ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
 	
+	UFUNCTION( NetMulticast, Reliable, Category = "Zipline" )
+	void Multicast_ZiplineEnd( FVector exitForce );
+
+	/** Same as DoDrop but on server */
+	UFUNCTION( Server, Reliable )
+	void Server_DoDrop();
+
+	/** Same as JumpExit but on server */
+	UFUNCTION( Server, Reliable )
+	void Server_JumpExit();
+
+	void SetWantsToGrab( bool wantsToGrab, bool jumpExit = true );
+
+	UFUNCTION()
+	void OnRep_WantToGrab();
 private:
 	/** Set if we should try to grab a zipline */
+	UPROPERTY( ReplicatedUsing = OnRep_WantToGrab )
 	bool mWantToGrab;
+
+	/* Particle associated with zipline */
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame" )
+	class UParticleSystem* mZiplineParticle;
 
 	/** How much upwards velocity is applied when jumping on the zipline. */
 	UPROPERTY( EditDefaultsOnly, Category = "Zipline" )

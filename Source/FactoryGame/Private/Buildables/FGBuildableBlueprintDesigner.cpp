@@ -29,7 +29,7 @@ AFGBuildableBlueprintDesigner::AFGBuildableBlueprintDesigner() : Super() {
 	this->mStorageLocation = CreateDefaultSubobject<USceneComponent>(TEXT("StorageLocation"));
 	this->mCurrentRecordData.BlueprintName = TEXT("");
 	this->mCurrentRecordData.BlueprintDescription = TEXT("");
-	this->mCurrentRecordData.IconID = -1;
+	this->mCurrentRecordData.IconID.IconID = -1;
 	this->mCurrentRecordData.Color = FLinearColor(0.0, 0.0, 0.0, 1.0);
 	this->mCurrentRecordData.Category = nullptr;
 	this->mCurrentRecordData.SubCategory = nullptr;
@@ -53,9 +53,10 @@ void AFGBuildableBlueprintDesigner::GetLifetimeReplicatedProps(TArray<FLifetimeP
 void AFGBuildableBlueprintDesigner::BeginPlay(){ }
 void AFGBuildableBlueprintDesigner::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBuildableBlueprintDesigner::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGBuildableBlueprintDesigner::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }
-void AFGBuildableBlueprintDesigner::Dismantle_Implementation(){ }
 bool AFGBuildableBlueprintDesigner::CanDismantle_Implementation() const{ return bool(); }
+void AFGBuildableBlueprintDesigner::GetChildDismantleActors_Implementation(TArray<AActor*>& out_ChildDismantleActors) const{ }
+void AFGBuildableBlueprintDesigner::GetDismantleDependencies_Implementation(TArray<AActor*>& out_dismantleDependencies) const{ }
+void AFGBuildableBlueprintDesigner::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ }
 void AFGBuildableBlueprintDesigner::RegisterInteractingPlayer_Implementation(AFGCharacterPlayer* player){ }
 void AFGBuildableBlueprintDesigner::BuildTiledMeshes(UInstancedStaticMeshComponent* tiledMeshComp, const FIntVector& dims){ }
 void AFGBuildableBlueprintDesigner::GatherBuildables(TArray< AFGBuildable* >& out_Buildables){ }
@@ -74,11 +75,12 @@ bool AFGBuildableBlueprintDesigner::IsLocationInsideDesigner(const FVector& loca
 void AFGBuildableBlueprintDesigner::GetOffsetTransform(FTransform& out_transform) const{ }
 UFGInventoryComponent* AFGBuildableBlueprintDesigner::GetInteractingPlayerInventory(){ return nullptr; }
 bool AFGBuildableBlueprintDesigner::CanAffordToLoad(UFGBlueprintDescriptor* blueprintDesc, UFGInventoryComponent* playerInv){ return bool(); }
-void AFGBuildableBlueprintDesigner::RemoveCostToLoad(UFGBlueprintDescriptor* blueprintDescriptor, UFGInventoryComponent* playerInv){ }
+void AFGBuildableBlueprintDesigner::RemoveCostToLoad(UFGBlueprintDescriptor* blueprintDescriptor, AFGCharacterPlayer* character){ }
 void AFGBuildableBlueprintDesigner::OnBuildEffectFinished(){ }
 void AFGBuildableBlueprintDesigner::OnRep_Storage(){ }
 void AFGBuildableBlueprintDesigner::OnBuildingsChanged(){ }
 void AFGBuildableBlueprintDesigner::RecalculateBlueprintCost(){ }
+void AFGBuildableBlueprintDesigner::GenerateIntersectionBoxes(){ }
 void AFGBuildableBlueprintDesigner::OnRep_Buildables(){ }
 void AFGBuildableBlueprintDesigner::OnRep_RecordData(){ }
 void AFGBuildableBlueprintDesigner::OnRep_CostChanged(){ }

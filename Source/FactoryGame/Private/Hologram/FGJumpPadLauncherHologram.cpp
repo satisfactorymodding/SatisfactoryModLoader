@@ -4,7 +4,6 @@
 #include "Components/SceneComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "InstancedSplineMeshComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AFGJumpPadLauncherHologram::AFGJumpPadLauncherHologram() : Super() {
@@ -12,7 +11,6 @@ AFGJumpPadLauncherHologram::AFGJumpPadLauncherHologram() : Super() {
 	this->mLaunchAngle = 45;
 	this->mLauncherMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LauncherMeshComponent"));
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
-	this->mTrajectorySplineMeshComponent = CreateDefaultSubobject<UInstancedSplineMeshComponent>(TEXT("TrajectorySplineMesh"));
 	this->mTrajectoryMeshScale = FVector::ZeroVector;
 	this->mDestinationMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DestinationMeshComponent"));
 	this->mDestinationMeshHeightOffset = 400.0;
@@ -21,7 +19,6 @@ AFGJumpPadLauncherHologram::AFGJumpPadLauncherHologram() : Super() {
 	this->mNumArrows = 5;
 	this->mLauncherMeshComponent->SetupAttachment(RootComponent);
 	this->mSplineComponent->SetupAttachment(RootComponent);
-	this->mTrajectorySplineMeshComponent->SetupAttachment(RootComponent);
 	this->mDestinationMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGJumpPadLauncherHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -34,7 +31,6 @@ void AFGJumpPadLauncherHologram::SetHologramLocationAndRotation(const FHitResult
 void AFGJumpPadLauncherHologram::ScrollRotate(int32 delta, int32 step){ }
 bool AFGJumpPadLauncherHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGJumpPadLauncherHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
-void AFGJumpPadLauncherHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 int32 AFGJumpPadLauncherHologram::GetRotationStep() const{ return int32(); }
 void AFGJumpPadLauncherHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGJumpPadLauncherHologram::SimulateTrajectory(){ }

@@ -51,11 +51,11 @@ public:
 
 	/** Gets particle for manual mining*/
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
-	static class UParticleSystem* GetManualMiningParticle( TSubclassOf< UFGResourceDescriptor > inClass );
+	static class UFXSystemAsset* GetManualMiningParticle( TSubclassOf< UFGResourceDescriptor > inClass );
 
 	/** Gets particle for when node gets destroyed */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
-	static class UParticleSystem* GetDestroyedParticle( TSubclassOf< UFGResourceDescriptor > inClass );
+	static class UFXSystemAsset* GetDestroyedParticle( TSubclassOf< UFGResourceDescriptor > inClass );
 
 	/** Gets name used in audio event for mining manually*/
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
@@ -63,7 +63,7 @@ public:
 
 	/** Gets particle for factory mining */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
-	static class UParticleSystem* GetFactoryMiningParticle( TSubclassOf< UFGResourceDescriptor > inClass );
+	static class UFXSystemAsset* GetFactoryMiningParticle( TSubclassOf< UFGResourceDescriptor > inClass );
 
 #if WITH_EDITOR
 	/** When this is changed in the editor, propagate the changes to the preview window */
@@ -102,15 +102,15 @@ protected:
 
 	/** Particle to show when mining by hand */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|FX" )
-	class UParticleSystem* mManualMiningParticle;
+	class UFXSystemAsset* mManualMiningParticle;
 
 	/** Particle to show when mining with machine */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|FX" )
-	class UParticleSystem* mFactoryMiningParticle;
+	class UFXSystemAsset* mFactoryMiningParticle;
 
 	/** Particle to show when mining with machine */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|FX" )
-	class UParticleSystem* mDestroyedParticle;
+	class UFXSystemAsset* mDestroyedParticle;
 
 	/** name of sound to play when mining by hand */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|FX" )

@@ -90,6 +90,12 @@ struct FFactoryGameCustomVersion
 
 		// 2023-07-14: Migrated FGUserSetting assets to use the ManagerAvailability UClass*, changed the default to be None instead of Options
 		MigratedUserSettingsToManagerClass,
+
+		// 2023-07-18: Always serialize FGRailroadTrackPosition, as opposed to only doing it for SaveGames. Fixes it not being serialized in hologram construction message
+		AlwaysSerializeRailroadTrackPositions,
+
+		// 2023-09-15: Same as MisplacedVersion, meant to place it into the save custom version, but now assets are saved with it.
+		MisplacedVersion2,
 		
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
@@ -97,7 +103,7 @@ struct FFactoryGameCustomVersion
 	};
 
 	// The GUID for this custom version number
-	const static FGuid GUID;
+	FACTORYGAME_API static const FGuid GUID;
 
 private:
 	FFactoryGameCustomVersion() {}

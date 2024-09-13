@@ -11,6 +11,8 @@
 #include "FGSignificanceInterface.h"
 #include "FGBuildableWidgetSign.generated.h"
 
+class UTextureRenderTarget2D;
+
 UCLASS()
 class FACTORYGAME_API UFGSignClipboardSettings : public UFGFactoryClipboardSettings
 {
@@ -19,7 +21,28 @@ public:
 	
 	UPROPERTY( BlueprintReadWrite )
 	FPrefabSignData mPrefabSignData;
-	
+};
+
+/** Helper to convert legacy save data into the new format without having to load the widget class object */
+USTRUCT()
+struct FACTORYGAME_API FFGSignPrefabLayoutWidgetConversionHelper
+{
+	GENERATED_BODY()
+
+	/** Converted prefab layout widget. */
+	UPROPERTY( SaveGame )
+	TSoftClassPtr<UFGSignPrefabWidget> PrefabLayoutWidget;
+
+	bool SerializeFromMismatchedTag(const FPropertyTag& PropertyTag, FArchive& Ar);
+};
+
+template<>
+struct TStructOpsTypeTraits<FFGSignPrefabLayoutWidgetConversionHelper> : TStructOpsTypeTraitsBase2<FFGSignPrefabLayoutWidgetConversionHelper>
+{
+	enum 
+	{
+		WithSerializeFromMismatchedTag = true
+	};
 };
 
 /**
@@ -78,7 +101,7 @@ public:
 
 	// When a text element is updated, this call will update that element and set the save data
 	UFUNCTION( BlueprintPure, Category = "WidgetSign" )
-	void GetSignPrefabData( FPrefabSignData& out_signData );
+	void GetSignPrefabData( FPrefabSignData& out_signData ) const;
 
 	/** Updates all sign elements with currently set sign data */
 	void UpdateSignElements( FPrefabSignData& prefabSignData );
@@ -98,6 +121,16 @@ protected:
 
 	virtual void SetupMaterialInstanceForProxyPlane(UMaterialInstanceDynamic* Instance, UTextureRenderTarget2D* RenderTarget);
 
+	static bool IsEmissiveOnly( FPrefabSignData& prefabSignData, const TSubclassOf<UFGSignPrefabWidget>& activePrefabLayout );
+	bool ShouldPrefabSignTick( FPrefabSignData& prefabSignData ) const;
+	UMaterialInterface* GetBackground( FPrefabSignData& prefabSignData ) const;
+
+	void WaitForClientSubsystemsToInitializeSignPrefabData();
+	void InitializeSignPrefabData();
+
+	virtual void PreSerializedToBlueprint() override;
+	virtual void PostSerializedToBlueprint() override;
+	virtual void PostSerializedFromBlueprint(bool isBlueprintWorld) override;
 protected:
 	friend class UFGSignBuildingWidget;
 	friend class AFGSignSubsystem;
@@ -126,6 +159,10 @@ protected:
 	UPROPERTY()
 	TMap< FString, FString > mTextElementToDataMap;
 
+	/** Map of text element name to the string data stored */
+	UPROPERTY()
+	TMap< FString, FText > mTextElementToLocDataMap;
+
 	/** Map of icon element name to the icon data index */
 	UPROPERTY()
 	TMap< FString, int32 > mIconElementToDataMap;
@@ -148,15 +185,23 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 	/// Saved Properties
 
-	/** Currently Active Sign Prefab Class */
+	/** A path to the currently active sign prefab widget class. Stored as a soft pointer to avoid having to load it on the dedicated server. */
 	UPROPERTY( SaveGame )
-	TSubclassOf< UFGSignPrefabWidget > mActivePrefabLayout;
+	TSoftClassPtr<UFGSignPrefabWidget> mSoftActivePrefabLayout;
+
+	/** Helper for reading legacy save data for signs */
+	UPROPERTY( SaveGame )
+	FFGSignPrefabLayoutWidgetConversionHelper mActivePrefabLayout_DEPRECATED;
 
 	UPROPERTY( SaveGame )
-	TArray< FPrefabTextElementSaveData > mPrefabTextElementSaveData;
+	TArray<FPrefabTextElementSaveData> mPrefabTextElementSaveData;
 
 	UPROPERTY( SaveGame )
-	TArray< FPrefabIconElementSaveData > mPrefabIconElementSaveData;
+	TArray<FPrefabIconElementSaveData> mPrefabIconElementSaveData;
+
+	/** Used instead of mPrefabIconElementSaveData to save Icon ID globally for blueprints */
+	UPROPERTY( SaveGame )
+	TArray<FGlobalPrefabIconElementSaveData> mGlobalPrefabIconElementSaveData;
 
 	UPROPERTY( SaveGame )
 	FLinearColor mForegroundColor;

@@ -20,7 +20,7 @@ class FACTORYGAME_API IFGColorInterface
 	GENERATED_IINTERFACE_BODY()
 
 	/** Set the active/saved customization. This in turn should call ApplyCustomizationData. They are split to allow for previewing without fully setting */
-	virtual void SetCustomizationData_Native( const FFactoryCustomizationData& customizationData ) = 0;
+	virtual void SetCustomizationData_Native( const FFactoryCustomizationData& customizationData, bool skipCombine = false  ) = 0;
 	
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Factory Customization" )
 	void SetCustomizationData( const FFactoryCustomizationData& customizationData );

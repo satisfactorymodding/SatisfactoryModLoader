@@ -71,6 +71,9 @@ public:
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION()
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	UFUNCTION()
+	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+
 	// End IFGActorRepresentationInterface
 
 	/** Get the station actor, only valid on server. */
@@ -107,4 +110,7 @@ public:
 	/** Cached here for clients. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_StationName )
 	FText mStationName;
+	
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* mCompassMaterialInstance;
 };

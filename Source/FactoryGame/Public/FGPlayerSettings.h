@@ -46,8 +46,4 @@ public:
 	/** Reference to the default sprint head bob shake */
 	UPROPERTY( EditDefaultsOnly, Config, Category = "Movement" )
 	TSoftObjectPtr<UCameraAnimationSequence> mDefaultSprintHeadBobCameraAnim;
-
-	/** A list of damage types that should be prevented while the player is respawning (or joining) */
-	UPROPERTY( EditDefaultsOnly, Config, Category = "Damage" )
-	TArray<TSoftClassPtr<class UFGDamageType>> mDamageTypesToPreventDuringRespawn;
 };

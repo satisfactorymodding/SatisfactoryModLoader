@@ -20,8 +20,43 @@ enum class EDroneStatus : uint8
 	EDS_EN_ROUTE				UMETA( displayName = "En Route" ),
 	EDS_DOCKING					UMETA( displayName = "Docking" ),
 	EDS_UNLOADING				UMETA( displayName = "Unloading" ),
-	EDS_NOT_ENOUGH_BATTERIES	UMETA( displayName = "Not Enough Batteries" ),
+	EDS_NOT_ENOUGH_FUEL			UMETA( displayName = "Not Enough Fuel" ),
 	EDS_CANNOT_UNLOAD			UMETA( displayName = "Cannot Unload" )
+};
+
+/** Struct containing information about a fuel type, such as estimated roundtrip time. */
+USTRUCT( BlueprintType )
+struct FFGDroneFuelInformation
+{
+	GENERATED_BODY()
+
+	FFGDroneFuelInformation()
+		: FuelItemDescriptor( nullptr )
+		, SingleTripFuelCost( 0.0f )
+		, EstimatedFuelCostRate( 0.0f )
+		, EstimatedRoundTripTime( 0.0f )
+		, EstimatedTransportRate( 0.0f )
+	{}
+
+	/** The type of fuel. */
+	UPROPERTY( BlueprintReadOnly )
+	TSubclassOf< class UFGItemDescriptor > FuelItemDescriptor;
+
+	/** How many items a single trip is gonna cost. */
+	UPROPERTY( BlueprintReadOnly )
+	float SingleTripFuelCost;
+
+	/** Roughly how many items need to be supplied per minute in order for the drone to not have to ever wait for fuel. The actual cost will be lower than this. */
+	UPROPERTY( BlueprintReadOnly )
+	float EstimatedFuelCostRate;
+
+	/** Roughly how long time a single trip will take in seconds. */
+	UPROPERTY( BlueprintReadOnly )
+	float EstimatedRoundTripTime;
+
+	/** Roughly how many items per minute can be delivered with this fuel type. */
+	UPROPERTY( BlueprintReadOnly )
+	float EstimatedTransportRate;
 };
 
 USTRUCT( BlueprintType )
@@ -127,8 +162,8 @@ class FACTORYGAME_API AFGDroneStationInfo : public AInfo, public IFGSaveInterfac
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDroneStatusChanged, EDroneStatus, droneStatus );
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnEstimatedRoundTripTimeChanged, float, estimatedRoundTripTime );
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnEstimatedTransportRateChanged, int32, estimatedTransportRate );
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FDroneFuelInformationChanged, const TArray< FFGDroneFuelInformation >&, fuelInformation );
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FDroneActiveFuelChanged, TSubclassOf< class UFGItemDescriptor>, newFuelType );
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDroneTripStatisticsChanged, FFGDroneTripStatistics, droneTripStatistics );
 
 public:
@@ -176,25 +211,36 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Drone Station|Info" )
 	void ClearLatestDroneTrips();
 
-	/** @returns the estimated number of batteries required per minute in order to cover the roundtrips without stalling. Actual requirement will be lower than this. */
+	/** Gets the fuel types the drone belonging to the station can use. */
 	UFUNCTION( BlueprintPure, Category = "Drone Station|Info" )
-    float GetEstimatedBatteryRequirementRate() const;
+	TArray< FFGDroneFuelType > GetDroneFuelTypes() const;
+
+	/** Gets the fuel type currently in use by the drone. */
+	UFUNCTION( BlueprintPure, Category = "Drone Station|Info" )
+	FORCEINLINE TSubclassOf< class UFGItemDescriptor > GetDroneActiveFuelType() const { return mActiveDroneFuelType; }
 	
-	/** @returns the number of batteries a trip between this station and the paired station will cost. */
+	/** Gets the fuel type that was last inserted into the station. */
 	UFUNCTION( BlueprintPure, Category = "Drone Station|Info" )
-	int32 GetTripCostInBatteries() const;
+	FORCEINLINE TSubclassOf< class UFGItemDescriptor > GetLastInsertedFuelType() const { return mLastInsertedFuelType; }
+
+	/** Gets the fuel information of the currently active fuel of the drone. */
+	const FFGDroneFuelInformation* Native_GetActiveFuelInfo() const;
+
+	/** Gets the fuel information of the currently active fuel of the drone. Can contain invalid information if there's no active fuel. */
+	UFUNCTION( BlueprintPure, Category = "Drone Station|Info" )
+	FFGDroneFuelInformation GetActiveFuelInfo() const;
 
 	/** Invoked when the status of the drone attached to this station has changed */
 	UPROPERTY( BlueprintAssignable, Category = "Drone Station|Info" )
 	FOnDroneStatusChanged DroneStatusChangedDelegate;
 
-	/** Invoked when the estimated round-trip time of the drone attached to this station has changed */
+	/** Invoked when the information about drone fuel has changed. */
 	UPROPERTY( BlueprintAssignable, Category = "Drone Station|Info" )
-	FOnEstimatedRoundTripTimeChanged EstimatedRoundTripTimeChangedDelegate;
+	FDroneFuelInformationChanged DroneFuelInformationChangedDelegate;
 
-	/** Invoked when the estimated round-trip time of the drone attached to this station has changed */
+	/** Invoked when the drone of this station has changed its active fuel type. */
 	UPROPERTY( BlueprintAssignable, Category = "Drone Station|Info" )
-	FOnEstimatedTransportRateChanged EstimatedTransportRateChangedDelegate;
+	FDroneActiveFuelChanged DroneActiveFuelChangedDelegate;
 
 	/** Invoked when the drone trip statistics have changed. */
 	UPROPERTY( BlueprintAssignable, Category = "Drone Station|Info" )
@@ -240,13 +286,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Drone Station|Info|Statistics" )
     float GetEstimatedTotalTransportRate() const;
 	
-	/** @returns the estimated number of stacks the drone attached to this station can carry per minute */
+	/** @returns information related to each fuel type of the drone, such as estimated roundtrip time for that fuel type. */
 	UFUNCTION( BlueprintPure, Category = "Drone Station|Info|Statistics" )
-	FORCEINLINE float GetEstimatedTransportRate() const { return mEstimatedTransportRate; }
-	
-	/** @returns the estimated round-trip time of the drone attached to this station */
-	UFUNCTION( BlueprintPure, Category = "Drone Station|Info|Statistics" )
-	FORCEINLINE float GetEstimatedRoundTripTime() const { return mEstimatedRoundTripTime; }
+	FORCEINLINE TArray< FFGDroneFuelInformation > const& GetDroneFuelInformation() const { return mDroneFuelInformation; }
 
 	/** @returns the latest round-trip time of the drone attached to this station */
 	UFUNCTION( BlueprintPure, Category = "Drone Station|Info|Statistics" )
@@ -323,18 +365,19 @@ private:
 	void OnRep_DroneStatus();
 
 	UFUNCTION()
-	void OnRep_EstimatedRoundTripTime();
-
-	UFUNCTION()
-	void OnRep_EstimatedTransportRate();
-
+	void OnRep_DroneFuelInformation();
+	
 	UFUNCTION()
     void OnRep_DroneTripStatistics();
 
-	void CalculateEstimatedRoundTripTime();
-	void CalculateEstimatedTransportRate();
+	UFUNCTION()
+	void OnRep_ActiveDroneFuelType();
+
+	void UpdateDroneFuelInformation();
 	
 	void UpdateDroneTripStatistics();
+
+	void UpdateActiveDroneFuelType( TSubclassOf< UFGItemDescriptor > fuelItem );
 
 	/** Called when a station pairs up with this one. */
 	void AddConnectedStation( AFGDroneStationInfo* otherStation );
@@ -368,11 +411,17 @@ private:
 	UPROPERTY( ReplicatedUsing = OnRep_DroneStatus )
 	EDroneStatus mDroneStatus;
 
-	UPROPERTY( ReplicatedUsing = OnRep_EstimatedRoundTripTime )
-	float mEstimatedRoundTripTime;
+	/** Information related to each fuel type of the drone. */
+	UPROPERTY( ReplicatedUsing = OnRep_DroneFuelInformation )
+	TArray< FFGDroneFuelInformation > mDroneFuelInformation;
 
-	UPROPERTY( ReplicatedUsing = OnRep_EstimatedTransportRate )
-	float mEstimatedTransportRate;
+	/** The current fuel type used by the drone of this station. */
+	UPROPERTY( ReplicatedUsing = OnRep_ActiveDroneFuelType )
+	TSubclassOf< class UFGItemDescriptor > mActiveDroneFuelType;
+
+	/** The last fuel type inserted into the station. */
+	UPROPERTY( Replicated, SaveGame )
+	TSubclassOf< class UFGItemDescriptor > mLastInsertedFuelType;
 
 	UPROPERTY( SaveGame )
 	TArray<FDroneTripInformation> mLatestDroneTrips;

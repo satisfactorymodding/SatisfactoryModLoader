@@ -3,10 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGEquipment.h"
-#include "FGEquipmentAttachment.h"
-#include "FGScannableDetails.h"
-#include "FGSchematic.h"
+#include "Equipment/FGEquipment.h"
 #include "FGObjectScanner.generated.h"
 
 /** Cycle direction for the object scanner */
@@ -17,6 +14,17 @@ enum class EFGScannerCycleDirection : uint8
 	CD_Forward,
 	CD_Backward,
 	CD_Automatic
+};
+
+/** Item state struct for the object scanner */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFGObjectScannerItemState
+{
+	GENERATED_BODY()
+	
+	/** The currently descriptor we would like to scan for */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "ItemState|ObjectScanner" )
+	TSubclassOf<class UFGItemDescriptor> CurrentScanDescriptor;
 };
 
 /**
@@ -40,7 +48,8 @@ public:
 	virtual void Equip(AFGCharacterPlayer* character) override;
 	virtual void UnEquip() override;
 	virtual void OnCameraModeChanged_Implementation(ECameraMode newCameraMode) override;
-	virtual bool ShouldSaveState() const override;
+	virtual void LoadFromItemState_Implementation(const FFGDynamicStruct& itemState) override;
+	virtual FFGDynamicStruct SaveToItemState_Implementation() const override;
 	virtual void AddEquipmentActionBindings() override;
 	// End AFGEquipment interface
 	
@@ -72,7 +81,8 @@ public:
 
 	/** Sets which descriptor that we want to search for */
 	UFUNCTION( BlueprintCallable, Category = "Scanner" ) 
-	void SetScannableDescriptor( TSubclassOf<UFGItemDescriptor> newScannableDescriptor, EFGScannerCycleDirection cycleDirection = EFGScannerCycleDirection::CD_Forward );
+	void SetScannableDescriptor( TSubclassOf<UFGItemDescriptor> newScannableDescriptor, EFGScannerCycleDirection cycleDirection = EFGScannerCycleDirection::CD_Forward, bool shouldPlayAnimation = true );
+	
 protected:
 	void OnScannableResourceChanged();
 	
@@ -84,7 +94,7 @@ protected:
 	void Input_Cycle( const FInputActionValue& actionValue );
 
 	UFUNCTION( Server, Reliable )
-	void Server_SetScannableDescriptor( TSubclassOf<UFGItemDescriptor> newScannableDescriptor, EFGScannerCycleDirection cycleDirection );
+	void Server_SetScannableDescriptor( TSubclassOf<UFGItemDescriptor> newScannableDescriptor, EFGScannerCycleDirection cycleDirection, bool shouldPlayAnimation = true );
 	
 	/** A multicast to play a cycle animation */
 	UFUNCTION( NetMulticast, Reliable )
@@ -211,4 +221,7 @@ private:
 	float mCurrentBeepDelay;
 	/** Delta time accumulated across multiple ticks for screen interpolation */
 	float mScreenInterpolationTime;
+
+	bool mHasBeenUpdatedOnce = false;
+	
 };

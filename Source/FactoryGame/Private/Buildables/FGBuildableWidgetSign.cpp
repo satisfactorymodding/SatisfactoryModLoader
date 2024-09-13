@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Net/UnrealNetwork.h"
 
+bool FFGSignPrefabLayoutWidgetConversionHelper::SerializeFromMismatchedTag(const FPropertyTag& PropertyTag, FArchive& Ar){ return bool(); }
 AFGBuildableWidgetSign::AFGBuildableWidgetSign() : Super() {
 	this->mSignProxyPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProxyMesh"));
 	this->mSignTypeDescriptor = nullptr;
@@ -14,13 +15,14 @@ AFGBuildableWidgetSign::AFGBuildableWidgetSign() : Super() {
 	this->mEmissiveOnlySignMaterial = nullptr;
 	this->mDefaultSignMaterial = nullptr;
 	this->mWidgetClass = nullptr;
-	this->mActivePrefabLayout = nullptr;
+	this->mSoftActivePrefabLayout = nullptr;
 	this->mForegroundColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mBackgroundColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mAuxilaryColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mEmissive = 1.0;
 	this->mGlossiness = 0.0;
 	this->mDataVersion = 0;
+	this->bForceBuildEffectSolo = true;
 	this->mAllowColoring = false;
 	this->mSignProxyPlane->SetupAttachment(RootComponent);
 }
@@ -43,10 +45,18 @@ bool AFGBuildableWidgetSign::PasteSettings_Implementation(UFGFactoryClipboardSet
 void AFGBuildableWidgetSign::OnBuildEffectFinished(){ }
 void AFGBuildableWidgetSign::OnBuildEffectActorFinished(){ }
 void AFGBuildableWidgetSign::SetPrefabSignData(FPrefabSignData& signData){ }
-void AFGBuildableWidgetSign::GetSignPrefabData(FPrefabSignData& out_signData){ }
+void AFGBuildableWidgetSign::GetSignPrefabData(FPrefabSignData& out_signData) const{ }
 void AFGBuildableWidgetSign::UpdateSignElements(FPrefabSignData& prefabSignData){ }
 float AFGBuildableWidgetSign::GetAdjustedEmissiveValue(int32 Level) const{ return float(); }
 void AFGBuildableWidgetSign::OnRep_SignDataDirty(){ }
 uint32 AFGBuildableWidgetSign::GenerateGUID(FPrefabSignData& signData, UClass* Prefab, FVector2D Size){ return uint32(); }
 void AFGBuildableWidgetSign::ConvertToEmissiveOnly(FPrefabSignData& prefabSignData) const{ }
 void AFGBuildableWidgetSign::SetupMaterialInstanceForProxyPlane(UMaterialInstanceDynamic* Instance, UTextureRenderTarget2D* RenderTarget){ }
+bool AFGBuildableWidgetSign::IsEmissiveOnly(FPrefabSignData& prefabSignData, const TSubclassOf<UFGSignPrefabWidget>& activePrefabLayout){ return bool(); }
+bool AFGBuildableWidgetSign::ShouldPrefabSignTick(FPrefabSignData& prefabSignData) const{ return bool(); }
+UMaterialInterface* AFGBuildableWidgetSign::GetBackground(FPrefabSignData& prefabSignData) const{ return nullptr; }
+void AFGBuildableWidgetSign::WaitForClientSubsystemsToInitializeSignPrefabData(){ }
+void AFGBuildableWidgetSign::InitializeSignPrefabData(){ }
+void AFGBuildableWidgetSign::PreSerializedToBlueprint(){ }
+void AFGBuildableWidgetSign::PostSerializedToBlueprint(){ }
+void AFGBuildableWidgetSign::PostSerializedFromBlueprint(bool isBlueprintWorld){ }

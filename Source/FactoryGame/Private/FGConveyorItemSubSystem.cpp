@@ -3,16 +3,13 @@
 #include "FGConveyorItemSubSystem.h"
 #include "Components/SceneComponent.h"
 
-void FInstanceLODs::UpdateVisibility(int32 NumInstances){ }
-void FInstanceLODs::AddInstance_Internal(AActor* Outer){ }
-void FConveyorBucketData::CreateComponent(AActor* Outer){ }
+UFGConveyorInstanceMeshBucket* FItemContainer::CreateComponent(AActor* Outer, UStaticMesh* Mesh){ return nullptr; }
 #if WITH_PIE_SUPPORT
 #endif 
 AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
 	this->mLiftHandleItemDesc = nullptr;
-	this->mHandleDummy.Offset = 0.0;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_LastDemotable;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_DuringPhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
 	this->PrimaryActorTick.bCanEverTick = true;
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
@@ -24,11 +21,10 @@ AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 }
 AFGConveyorItemSubsystem* AFGConveyorItemSubsystem::Get(UWorld* world){ return nullptr; }
+void AFGConveyorItemSubsystem::LazyAddConveyorItemOfClass(UClass* Descriptor){ }
 void AFGConveyorItemSubsystem::Tick(float DeltaSeconds){ }
 void AFGConveyorItemSubsystem::BeginPlay(){ }
 void AFGConveyorItemSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGConveyorItemSubsystem::InitializeConveyorItems(){ }
-void AFGConveyorItemSubsystem::GatherTransformData_ISPC(const TArray<bool> DistancesToUpdate, FConveyorActorContainer< AFGBuildableConveyorBelt* >* Belt, FConveyorActorContainer< AFGBuildableConveyorLift* >* Lifts){ }
-void AFGConveyorItemSubsystem::Cleanup(TArray< bool > LodsToUpdate){ }
-TArray< bool > AFGConveyorItemSubsystem::UpdateTimers(float DeltaTime){ return TArray<bool>(); }
+void AFGConveyorItemSubsystem::Update(){ }
 bool AFGConveyorItemSubsystem::mIsConveyorRendererActive = bool();

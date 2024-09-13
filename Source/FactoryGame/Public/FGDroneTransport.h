@@ -19,5 +19,4 @@ class FACTORYGAME_API AFGDroneTransport : public AFGDroneVehicle
 	virtual ERepresentationType GetActorRepresentationType() override;
 	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
 	// End IFGActorRepresentationInterface
-
 };

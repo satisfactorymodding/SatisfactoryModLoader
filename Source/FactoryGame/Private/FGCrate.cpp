@@ -4,13 +4,19 @@
 #include "Net/UnrealNetwork.h"
 
 AFGCrate::AFGCrate() : Super() {
-	this->mIconType = EFGCrateIconType::CIT_DeathIcon;
-	this->mInventory = nullptr;
-	this->mActorRepresentationTexture = nullptr;
+	this->mCrateType = EFGCrateType::CT_None;
+	this->mCompassMaterial = nullptr;
 	this->mMapText = INVTEXT("");
+	this->mDismantleCrateText = INVTEXT("");
+	this->mDeathCrateText = INVTEXT("");
+	this->mCrateIcon = nullptr;
+	this->mDismantleCrateIcon = nullptr;
+	this->mDeathCrateIcon = nullptr;
+	this->mInventory = nullptr;
 }
 void AFGCrate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGCrate, mCrateType);
 	DOREPLIFETIME(AFGCrate, mInventory);
 }
 void AFGCrate::PostActorCreated(){ Super::PostActorCreated(); }
@@ -35,10 +41,11 @@ EFogOfWarRevealType AFGCrate::GetActorFogOfWarRevealType(){ return EFogOfWarReve
 float AFGCrate::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGCrate::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGCrate::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+UMaterialInterface* AFGCrate::GetActorRepresentationCompassMaterial(){ return nullptr; }
 bool AFGCrate::IsUseable_Implementation() const{ return bool(); }
 void AFGCrate::RegisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
 void AFGCrate::UnregisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
 bool AFGCrate::FilterInventoryClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
-void AFGCrate::SetIconType(EFGCrateIconType type){ }
+void AFGCrate::SetCrateType(EFGCrateType newCrateType){ }
 void AFGCrate::SetAllowAddingItems(bool newAllowAddingItems){ }
-void AFGCrate::OnInventoryItemRemoved(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numRemoved){ }
+void AFGCrate::OnInventoryItemRemoved(TSubclassOf< UFGItemDescriptor > itemClass, const int32 numRemoved, UFGInventoryComponent* targetInventory){ }

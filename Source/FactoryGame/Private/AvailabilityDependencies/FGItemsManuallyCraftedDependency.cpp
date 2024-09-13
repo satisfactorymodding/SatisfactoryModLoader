@@ -2,4 +2,8 @@
 
 #include "AvailabilityDependencies/FGItemsManuallyCraftedDependency.h"
 
+#if WITH_EDITOR
+FString UFGItemsManuallyCraftedDependency::ToString() const{ return FString(); }
+void UFGItemsManuallyCraftedDependency::FromString(const FString& inString){ }
+#endif 
 bool UFGItemsManuallyCraftedDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }

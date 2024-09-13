@@ -2,6 +2,7 @@
 
 #include "FGOptionsLibrary.h"
 
-void UFGOptionsLibrary::GatherUserSettings(IFGOptionInterface* manager, TMap< FString,  UFGUserSettingApplyType* >& out_userSettings){ }
+void UFGOptionsLibrary::GatherUserSettings(IFGOptionInterface* manager, TMap< FString,  UFGUserSettingApplyType* >& out_userSettings, UClass* managerAvailabilityOverride , bool bDedicatedServerRelevantOnly){ }
+TArray<FUserSettingCategoryMapping> UFGOptionsLibrary::GetCategorizedUserSettingsWidgets(ESettingVisiblityDisqualifier visibilityDisqualifiers, UUserWidget* owningWidget, TScriptInterface<class IFGOptionInterface> optionInterface, TMap< FString,  UFGUserSettingApplyType* > userSettings){ return TArray<FUserSettingCategoryMapping>(); }
 TArray<FUserSettingCategoryMapping> UFGOptionsLibrary::GetCategorizedUserSettingsWidgets(UObject* worldContext, UUserWidget* owningWidget, TScriptInterface<class IFGOptionInterface> optionInterface, TMap< FString,  UFGUserSettingApplyType* > userSettings){ return TArray<FUserSettingCategoryMapping>(); }
 UFGDynamicOptionsRow* UFGOptionsLibrary::SetupUserSetting(UUserWidget* owningWidget,  UFGUserSetting* userSetting, TScriptInterface<  IFGOptionInterface > optionInterface){ return nullptr; }

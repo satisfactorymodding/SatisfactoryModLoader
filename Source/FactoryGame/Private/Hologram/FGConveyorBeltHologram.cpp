@@ -25,12 +25,9 @@ AFGConveyorBeltHologram::AFGConveyorBeltHologram() : Super() {
 	this->mBendRadius = 199.0;
 	this->mMaxSplineLength = 5600.1;
 	this->mMaxIncline = 35.0;
+	this->mBuildModeStraight = nullptr;
 	this->mConnectionArrowComponentDirection = EFactoryConnectionDirection::FCD_ANY;
 	this->mConnectionArrowComponent = nullptr;
-	this->mConstructionPoleLocations[0] = FVector::ZeroVector;
-	this->mConstructionPoleLocations[1] = FVector::ZeroVector;
-	this->mConstructionPoleRotations[0] = FRotator::ZeroRotator;
-	this->mConstructionPoleRotations[1] = FRotator::ZeroRotator;
 	this->mMesh = nullptr;
 	this->mNeedsValidFloor = false;
 	this->mUseBuildClearanceOverlapSnapp = false;
@@ -41,6 +38,8 @@ void AFGConveyorBeltHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProper
 	DOREPLIFETIME(AFGConveyorBeltHologram, mChildPoleHologram);
 	DOREPLIFETIME(AFGConveyorBeltHologram, mChildWallPoleHologram);
 	DOREPLIFETIME(AFGConveyorBeltHologram, mChildCeilingPoleHologram);
+	DOREPLIFETIME(AFGConveyorBeltHologram, mSnappedConnectionComponents);
+	DOREPLIFETIME(AFGConveyorBeltHologram, mUpgradedConveyorBelt);
 	DOREPLIFETIME(AFGConveyorBeltHologram, mConnectionArrowComponentDirection);
 }
 void AFGConveyorBeltHologram::BeginPlay(){ }
@@ -63,18 +62,19 @@ void AFGConveyorBeltHologram::CheckBlueprintCommingling(){ }
 AFGHologram* AFGConveyorBeltHologram::GetNudgeHologramTarget(){ return nullptr; }
 bool AFGConveyorBeltHologram::CanTakeNextBuildStep() const{ return bool(); }
 void AFGConveyorBeltHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
-void AFGConveyorBeltHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
-void AFGConveyorBeltHologram::ClientPreConstructMessageSerialization(){ }
-void AFGConveyorBeltHologram::ServerPostConstructMessageDeserialization(){ }
+void AFGConveyorBeltHologram::GetSupportedBuildModes_Implementation(TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes) const{ }
+TArray< class UFGFactoryConnectionComponent* > AFGConveyorBeltHologram::GetRelevantFactoryConnectionsForGuidelines() const{ return TArray<class UFGFactoryConnectionComponent*>(); }
 EFactoryConnectionDirection AFGConveyorBeltHologram::GetActiveConnectionDirection() const{ return EFactoryConnectionDirection(); }
 TArray<AFGBuildable*> AFGConveyorBeltHologram::GetAnyConnectedBuildables(){ return TArray<AFGBuildable*>(); }
 void AFGConveyorBeltHologram::CheckValidFloor(){ }
 void AFGConveyorBeltHologram::CheckValidPlacement(){ }
 void AFGConveyorBeltHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGConveyorBeltHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
-void AFGConveyorBeltHologram::CheckClearance(const FVector& locationOffset){ }
-void AFGConveyorBeltHologram::SetupConveyorClearanceDetector(){ }
+void AFGConveyorBeltHologram::PostConstructMessageDeserialization(){ }
+void AFGConveyorBeltHologram::SetupSnappedConnectionDirections() const{ }
+void AFGConveyorBeltHologram::OnRep_SplineData(){ }
 void AFGConveyorBeltHologram::UpdateSplineComponent(){ }
+void AFGConveyorBeltHologram::UpdateClearanceData(){ }
 void AFGConveyorBeltHologram::OnRep_ConnectionArrowComponentDirection(){ }
 void AFGConveyorBeltHologram::AutoRouteSpline(const FVector& startConnectionPos,
 		const FVector& startConnectionNormal,

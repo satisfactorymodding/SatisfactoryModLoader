@@ -49,6 +49,8 @@ public:
 
 	bool IsAllSatellitesOccupied() const;
 
+	/** Called when satellite node's occupied status changes */
+	void OnSatelliteIsOccupiedChanged( const AFGResourceNodeFrackingSatellite* satellite );
 private:
 	TArray< TWeakObjectPtr< class AFGResourceNodeFrackingSatellite > > mSatellites;
 

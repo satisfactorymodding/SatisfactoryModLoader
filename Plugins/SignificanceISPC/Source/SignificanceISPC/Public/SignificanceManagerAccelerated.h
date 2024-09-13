@@ -65,6 +65,24 @@ struct SIGNIFICANCEISPC_API FStaticAcceleratedManagedObjectInfo
 	}
 };
 
+struct SIGNIFICANCEISPC_API FServerSideAcceleratedManagedSignificanceInfo
+{
+	FVector3f CachedLocation;
+	float SignificanceDistanceSquare;
+	uint8 NumSignificance;
+	SignificanceState bWasSignificant;
+
+	FServerSideAcceleratedManagedSignificanceInfo(const FVector& InLocation, float InSignificanceDistance) :
+		CachedLocation( FVector3f(InLocation) ),
+		SignificanceDistanceSquare( FMath::Square(InSignificanceDistance) ),
+		NumSignificance( 0 ),
+		bWasSignificant(SignificanceState::Unknown)
+	{
+		
+	}
+};
+
+
 /**
  * 
  */
@@ -100,22 +118,36 @@ protected:
 	/* Tick rate dilation only for client side until there is a good case for server side too.*/
 	virtual void OnSignificanceTickRateUpdate(UObject* Object, int32 TickLevel, int32 NumTickLevels);
 
-	//////////////////////
-	/* Networked version*/
-	//////////////////////
+	////////////////////////////////////////////
+	// Begin Networked version
+	////////////////////////////////////////////
 	
-	virtual float GetSignificanceNetworkRange(UObject* Object) const	{ /* Implement in sub class*/ return 0;}
-	virtual void OnSignificanceNetworkLoss(UObject* Object, EPostSignificanceType InPostSignificanceType) { return;}
-	virtual void OnSignificanceNetworkGain(UObject* Object, EPostSignificanceType InPostSignificanceType) { return;}
+	virtual float GetServerSignificanceNetworkRange(UObject* Object) const
+	{ /* Implement in sub class*/
+		return 0;
+	}
+	
+	/* host AND client on significance gain, expecting a project based interface call to be implemented in subclass.*/
+	virtual void OnServerSignificanceGain(UObject* Object, EPostSignificanceType InPostSignificanceType)
+	{
+		return;
+	}
+	
+	/* host AND client on significance loss, expecting a project based interface call to be implemented in subclass.*/
+	virtual void OnServerSignificanceLoss(UObject* Object, EPostSignificanceType InPostSignificanceType)
+	{
+		return;
+	}
+	
+	////////////////////////////////////////////
+	// End Networked version
+	////////////////////////////////////////////
 
 	void AddStaticEntryToArrays(const FVector& Location, const float& SignificanceRange );
 	
 public:
 	virtual void RegisterStaticObject(UObject* Object, FName Tag, EPostSignificanceType InPostSignificanceType, FManagedObjectPostSignificanceFunction InPostSignificanceFunction);
 	virtual void RemoveStaticObject(UObject* Object);
-
-	virtual void RegisterStaticNetworkObject(UObject* Object, FName Tag, EPostSignificanceType InPostSignificanceType, FManagedObjectPostSignificanceFunction InPostSignificanceFunction);
-	virtual void RemoveStaticNetworkObject(UObject* Object);
 
 	/////////////////
 	/* Client side.*/
@@ -127,12 +159,9 @@ public:
 
 	//////////////////////
 	/* Networked version*/
-	//////////////////////
-	/* Server side only significance*/
-	TArray<FStaticAcceleratedManagedSignificanceInfo> StaticNetworkedEntries;
-	TArray<FStaticAcceleratedManagedObjectInfo*> StaticNetworkedEntriesObjects;
 
 	TArray<FVector3f> CachedViewPoints;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	int32 NumFramesForFullCycle = 10;

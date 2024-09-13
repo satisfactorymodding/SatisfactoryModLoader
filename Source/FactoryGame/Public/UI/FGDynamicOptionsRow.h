@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "Blueprint/UserWidget.h"
 #include "CoreMinimal.h"
+#include "FGUserWidget.h" // <FL> [AZimmermann] Changed to UFGUserWidget
 #include "FGOptionsSettings.h"
 #include "Settings/FGUserSetting.h"
 #include "FGDynamicOptionsRow.generated.h"
@@ -16,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOptionRowUnhovered, UFGDynamicOp
  * 
  */
 UCLASS()
-class FACTORYGAME_API UFGDynamicOptionsRow : public UUserWidget
+class FACTORYGAME_API UFGDynamicOptionsRow : public UFGUserWidget // <FL> [AZimmermann] Changed to UFGUserWidget
 {
 	GENERATED_BODY()
 

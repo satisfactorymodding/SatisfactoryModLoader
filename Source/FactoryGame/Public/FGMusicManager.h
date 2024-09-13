@@ -87,7 +87,7 @@ private:
 	void Init( UWorld* inWorld );
 
 	/** Shared between all instances, but in our game there is only one instance so... it's ok I think. */
-	AkGameObjectID GetAkGameObjectID() { return DUMMY_GAMEOBJ; }
+	virtual AkGameObjectID GetAkGameObjectID() const;
 	
 protected:
 	/** How often (in seconds) we want to check if we are close to a factory */

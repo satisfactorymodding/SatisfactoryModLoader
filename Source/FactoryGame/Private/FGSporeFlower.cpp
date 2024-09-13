@@ -3,13 +3,15 @@
 #include "FGSporeFlower.h"
 
 AFGSporeFlower::AFGSporeFlower() : Super() {
-
+	this->mDeathTime = 10.0;
+	this->mSignificanceRange = 8000.0;
 }
 void AFGSporeFlower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 }
 void AFGSporeFlower::BeginPlay(){ }
+void AFGSporeFlower::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 float AFGSporeFlower::TakeDamage(float damage,  FDamageEvent const& damageEvent, AController* eventInstigator, AActor* damageCauser){ return float(); }
 void AFGSporeFlower::GainedSignificance_Implementation(){ }
 void AFGSporeFlower::LostSignificance_Implementation(){ }

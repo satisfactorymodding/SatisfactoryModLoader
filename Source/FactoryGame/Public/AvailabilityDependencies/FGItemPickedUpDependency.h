@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGAvailabilityDependency.h"
+#include "ItemAmount.h"
 #include "FGItemPickedUpDependency.generated.h"
 
 /**
@@ -18,21 +19,29 @@ class FACTORYGAME_API UFGItemPickedUpDependency : public UFGAvailabilityDependen
 	
 public:
 	bool AreDependenciesMet( UObject* worldContext ) const override;
+	
+	bool DoesItemAmountMatchDependency( const FItemAmount& totalAmountPickuped ) const;
 
+	// Get the items needed to be pickuped
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Dependency" )
 	void GetItems( TArray< TSubclassOf< class UFGItemDescriptor > >& out_items ) const;
+	// Get the items and amounts needed to be pickuped
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Dependency" )
+	void GetItemAmounts( TMap< TSubclassOf< class UFGItemDescriptor >, int32 >& out_items ) const;
 
 #if WITH_EDITOR
 	void Init( TArray< TSubclassOf< class UFGItemDescriptor > > items, bool requireAllItemsToBePickedUp );
+	virtual FString ToString() const override;
+	virtual void FromString( const FString& inString ) override;
 #endif
 
 protected:
-	/** The items that should have been picked up for this dependency to be met */
-	UPROPERTY( EditDefaultsOnly )
-	TArray< TSubclassOf< class UFGItemDescriptor > > mItems;
+	/** The items that should have been picked up for this dependency to be met, maps item class to amount */
+	UPROPERTY( EditDefaultsOnly, Category="Dependency" )
+	TMap< TSubclassOf< class UFGItemDescriptor >, int32 > mItems;
 
-	/** Do we need to have picked up all of the items to or is it enough with just one of them */
-	UPROPERTY( EditDefaultsOnly )
+	/** Do we need to have picked up all of the item classes or is it enough with just one of them */
+	UPROPERTY( EditDefaultsOnly, Category="Dependency" )
 	bool mRequireAllItemsToBePickedUp;
 
 };

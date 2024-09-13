@@ -13,6 +13,7 @@
 #include "FGDockableInterface.h"
 #include "FGColorInterface.h"
 #include "FGBuildableSubsystem.h"
+#include "FGClearanceInterface.h"
 #include "FGVehicle.generated.h"
 
 class UFGDamageType;
@@ -120,7 +121,7 @@ struct FACTORYGAME_API FVehicleSeat
  * Base class for all vehicles in the game, cars, train etc.
  */
 UCLASS()
-class FACTORYGAME_API AFGVehicle : public AFGDriveablePawn, public IFGUseableInterface, public IFGDismantleInterface, public IFGDockableInterface, public IFGColorInterface, public IFGSignificanceInterface
+class FACTORYGAME_API AFGVehicle : public AFGDriveablePawn, public IFGUseableInterface, public IFGDismantleInterface, public IFGDockableInterface, public IFGColorInterface, public IFGSignificanceInterface, public IFGClearanceInterface
 {
 	GENERATED_BODY()
 public:
@@ -157,10 +158,20 @@ public:
 	virtual float GetSignificanceRange() override;
 	//End IFGSignificanceInterface
 
-	float GetJumpPadForceMultiplier() const { return mJumpPadForceMultiplier; }
+	// Begin IFGClearanceInterface
+    virtual void GetClearanceData_Implementation( TArray< FFGClearanceData >& out_data ) const override;
+    // End IFGClearanceInterface
 
+	float GetJumpPadForceMultiplier() const { return mJumpPadForceMultiplier; }
+	
+	virtual void OnBuildEffectFinished();
+	virtual void OnDismantleEffectFinished();
+	virtual void ExecuteBuildEffect();
+	void TurnOffAndDestroy();
+	void PlayDismantleEffects();
+	
 	//~ Begin IFGColorInterface
-	void SetCustomizationData_Native( const FFactoryCustomizationData& customizationData );
+	void SetCustomizationData_Native( const FFactoryCustomizationData& customizationData, bool skipCombine = false );
 	void SetCustomizationData_Implementation( const FFactoryCustomizationData& colorData );
 	void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData );
 	FFactoryCustomizationData& GetCustomizationData_Native() { return mCustomizationData; }
@@ -209,8 +220,16 @@ public:
 	virtual void StartIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter ) override;
 	virtual void StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter ) override;
 	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
+	virtual FText GetDismantleDisplayName_Implementation(AFGCharacterPlayer* byCharacter) const override;
+	virtual bool SupportsDismantleDisqualifiers_Implementation() const override { return true; }
+	virtual void GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const override;
 	//~ End IFGDismantleInferface
 
+	void SetBuildEffectInstigator(AActor* Actor) { mBuildEffectInstigator = Actor; }
+	
+	UFUNCTION( Reliable, NetMulticast )
+	virtual void NetMulticast_Dismantle();
+	
 	/** Getter for simulation distance */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Vehicle" )
 	FORCEINLINE float GetSimulationDistance() const { return mSimulationDistance; }
@@ -325,10 +344,17 @@ public:
 	/** Returns true if we are submerged in water */
 	UFUNCTION( BlueprintPure )
 	bool IsSubmergedInWater() const;
+
+	void SetOwningPlayerState( class AFGPlayerState* playerState );
+
+	void SetMatchCustomizationWithPlayerState( bool shouldMatch );
 	
 protected:
 	/** Called when customization data is applied. Allows child vehicles to update their simulated vehicles to keep colors synced */
 	virtual void OnCustomizationDataApplied( const FFactoryCustomizationData& customizationData );
+
+	/** Called when customization data gets set. */
+	virtual void OnCustomizationDataSet( const FFactoryCustomizationData& previousData );
 
 private:
 	/** Rep notifies */
@@ -402,6 +428,14 @@ private:
 	UFUNCTION()
 	void OnRep_CustomColorData();
 
+	UFUNCTION()
+	void OnRep_OwningPlayerState( class AFGPlayerState* previousPlayerState );
+
+	UFUNCTION()
+	void OnPlayerCustomizationDataChanged( const struct FPlayerCustomizationData& newCustomizationData );
+
+	void UpdateCustomizationDataFromPlayerState();
+
 public:
 	/** Name of the MeshComponent. Use this name if you want to prevent creation of the component (with ObjectInitializer.DoNotCreateDefaultSubobject). */
 	static FName VehicleMeshComponentName;
@@ -459,12 +493,27 @@ protected:
 	USkeletalMeshComponent* mOptionalWorkBenchComponent = nullptr;
 
 	UPROPERTY( BlueprintReadWrite )
-	UBoxComponent* mOptionalWorkBenchBox = nullptr;
-	
-private:
+	class UBoxComponent* mOptionalWorkBenchBox = nullptr;
+
 	/** Recipe this vehicle was built with, e.g. used for refunds and stats. */
 	UPROPERTY( SaveGame, Replicated )
 	TSubclassOf< class UFGRecipe > mBuiltWithRecipe;
+
+	UPROPERTY( Replicated, meta = ( NoAutoJson = true ) )
+	AActor* mBuildEffectInstigator;
+
+	/** The player state that "owns" this vehicle. */
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_OwningPlayerState )
+	class AFGPlayerState* mOwningPlayerState;
+
+	/** Whether or not to match customization data with the player that "owns" the vehicle.  */
+	UPROPERTY( EditDefaultsOnly, SaveGame, Replicated, Category = "Vehicle" )
+	bool mMatchCustomizationDataWithPlayerState;
+
+private:
+	/** Clearance data of this vehicle. */
+	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
+	TArray< FFGClearanceData > mClearanceData;
 
 	/** If this vehicle is self driving. */
 	UPROPERTY( Replicated )
@@ -526,7 +575,13 @@ private:
 
 	/* Forces vehicle to be in real mode */
 	bool mForceRealMode;
-
+	
+	UPROPERTY()
+	class UFGMaterialEffect_Build* mActiveBuildEffect;
+	
+	/** Flag for whether the build effect is active */
+	uint8 mBuildEffectIsPlaying : 1;
+	
 protected:
 	/** Is the movement being simulated? */
 	UPROPERTY( ReplicatedUsing = OnRep_IsSimulated, SaveGame )
@@ -548,6 +603,11 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTexture;
 
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	UMaterialInterface* mActorRepresentationCompassMaterial;
+
 	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Representation" )
 	FText mMapText;
+
+	bool IsPlayingBuildEffect() const { return mBuildEffectIsPlaying; }
 };

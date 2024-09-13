@@ -5,12 +5,12 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGFactoryConnectionComponent.h"
-#include "FGSplineHologram.h"
+#include "FGBuildableHologram.h"
 #include "FGConveyorLiftHologram.generated.h"
 
 
 UCLASS()
-class FACTORYGAME_API AFGConveyorLiftHologram : public AFGSplineHologram
+class FACTORYGAME_API AFGConveyorLiftHologram : public AFGBuildableHologram
 {
 	GENERATED_BODY()
 public:
@@ -33,21 +33,12 @@ public:
 	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
 	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes ) const override;
 	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
-	virtual void CheckClearance(const FVector& locationOffset) override;
 	virtual void CheckBlueprintCommingling() override;
-	virtual bool IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const override;
 	virtual void ReplaceHologram( AFGHologram* hologram, bool snapTransform ) override;
 	virtual bool CanNudgeHologram() const override;
+	virtual void GetClearanceData( TArray<const FFGClearanceData*>& out_ClearanceData ) const override;
 	// End AFGHologram Interface
-
-	// Begin FGConstructionMessageInterface
-	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
-	//virtual void ClientPreConstructMessageSerialization() override;
-	virtual void ServerPostConstructMessageDeserialization() override;
-	// End FGConstructionMessageInterface
-
-	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
-
+	
 	/** Get the current height for this lift hologram. */
 	float GetHeight() const { return FMath::Abs( mTopTransform.GetTranslation().Z ); }
 
@@ -61,6 +52,7 @@ protected:
 
 	// Begin AFGHologram interface
 	virtual int32 GetRotationStep() const override;
+	virtual void PostConstructMessageDeserialization() override;
 	// End of AFGHologram interface
 
 	FTransform GetTopTransform() const { return mTopTransform; }
@@ -90,16 +82,18 @@ protected:
 	FVector mForcedNormalDirection;
 
 private:
+	FFGClearanceData mClearance;
+	
 	/** The two connection components for this conveyor. */
 	UPROPERTY()
 	class UFGFactoryConnectionComponent* mConnectionComponents[ 2 ];
 
 	/** The connections we've made. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class UFGFactoryConnectionComponent* mSnappedConnectionComponents[ 2 ];
 
 	/** If we upgrade another conveyor lift this is the belt we replace. */
-	UPROPERTY()
+	UPROPERTY( Replicated, CustomSerialization )
 	class AFGBuildableConveyorLift* mUpgradedConveyorLift;
 
 	/** Transform of the top part of the lift, in actor local space. */
@@ -126,6 +120,11 @@ private:
 	class UStaticMesh* mJointMesh;
 	UPROPERTY( EditDefaultsOnly )
 	class UStaticMesh* mPassthroughBottomMesh;
+	UPROPERTY()
+	bool mFlipOnReverse;
+
+	UPROPERTY()
+	bool mIsReversed;
 
 	UPROPERTY( EditDefaultsOnly )
 	class UStaticMesh* mPassthroughTopMesh;
@@ -137,7 +136,7 @@ private:
 	UStaticMeshComponent* mFogPlaneComp0;
 	UStaticMeshComponent* mFogPlaneComp1;
 
-	UPROPERTY( ReplicatedUsing = OnRep_SnappedPassthroughs )
+	UPROPERTY( ReplicatedUsing = OnRep_SnappedPassthroughs, CustomSerialization )
 	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 
 	/** Used to replicate the direction arrow. */
@@ -153,5 +152,7 @@ private:
 
 	UPROPERTY()
 	float mFirstStepYaw;
+
+	int32 mActivePointIdx;
 };
 

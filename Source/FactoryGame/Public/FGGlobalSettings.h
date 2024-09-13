@@ -27,12 +27,6 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Settings" )
 	static class UFGEnvironmentSettings* GetEnvironmentSettingsCDO();
 
-	UFUNCTION( BlueprintPure, Category = "Settings" )
-	static class UFGIconLibrary* GetIconLibraryCDO();
-
-	UFUNCTION( BlueprintPure, Category = "Settings" )
-	static class UFGServerManagerSettings* GetServerManagerSettingsCDO();
-
 	/** Settings for resources */
 	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
 	TSoftClassPtr< class UFGFactorySettings > mFactorySettings;
@@ -48,11 +42,4 @@ public:
 	/** Settings for drop pods */
 	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
 	TSoftClassPtr< class UFGEnvironmentSettings > mEnvironmentSettings;
-
-	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
-	TSoftClassPtr< class UFGIconLibrary > mIconLibrary;
-
-	/** Settings for the server manager, which lives on the client */
-	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
-	TSoftClassPtr< class UFGServerManagerSettings > mServerManagerSettings;
 };

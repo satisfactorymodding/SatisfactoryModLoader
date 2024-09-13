@@ -24,7 +24,7 @@ public:
 	// Begin AFGHologram interface
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-	virtual void CheckValidFloor() override;
+	virtual void CheckValidPlacement() override;
 	virtual void CheckClearance( const FVector& locationOffset ) override;
 	// End AFGHologram interface
 };

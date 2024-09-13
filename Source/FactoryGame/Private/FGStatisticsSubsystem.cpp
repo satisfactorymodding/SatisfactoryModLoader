@@ -8,13 +8,19 @@ void AFGStatisticsSubsystem::Stat_ConsumableConsumed(TSubclassOf<  UFGConsumable
 int32 AFGStatisticsSubsystem::Stat_GetNumConsumableConsumed(TSubclassOf<  UFGConsumableDescriptor > consumable){ return int32(); }
 void AFGStatisticsSubsystem::Stat_CreatureKilled(TSubclassOf<  AFGCreature > creature, int32 numKilled){ }
 int32 AFGStatisticsSubsystem::Stat_GetNumCreatureKilled(TSubclassOf<  AFGCreature > creature){ return int32(); }
-void AFGStatisticsSubsystem::Stat_ItemsManuallyCrafted(TSubclassOf<  UFGItemDescriptor > itemDescriptor, int32 numCrafted){ }
+void AFGStatisticsSubsystem::Stat_ItemsManuallyCrafted(TSubclassOf<  UFGItemDescriptor > itemDescriptor,  AFGPlayerState* playerState, int32 numCrafted){ }
+int32 AFGStatisticsSubsystem::Stat_GetNumItemsManuallyCrafted(TSubclassOf<  UFGItemDescriptor > itemDescriptor,  AFGPlayerState* playerState){ return int32(); }
 int32 AFGStatisticsSubsystem::Stat_GetNumItemsManuallyCrafted(TSubclassOf<  UFGItemDescriptor > itemDescriptor){ return int32(); }
-void AFGStatisticsSubsystem::Stat_ActorBuilt(TSubclassOf<  AActor > actor, int32 numBuilt){ }
-void AFGStatisticsSubsystem::Stat_ActorDismantled(TSubclassOf<  AActor > actor, int32 numDismantled){ }
+void AFGStatisticsSubsystem::Stat_ActorBuilt(TSubclassOf<  AActor > actor,  AFGPlayerState* playerState, int32 numBuilt){ }
+void AFGStatisticsSubsystem::Stat_ActorDismantled(TSubclassOf<  AActor > actor,  AFGPlayerState* playerState, int32 numDismantled){ }
 int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_Current(TSubclassOf<  AActor > actor){ return int32(); }
 int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_CurrentMax(TSubclassOf<  AActor > actor){ return int32(); }
 int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_Total(TSubclassOf<  AActor > actor){ return int32(); }
 int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_TotalDismantled(TSubclassOf<  AActor > actor){ return int32(); }
+int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_BuiltPerPlayer(TSubclassOf<  AActor > actor,  AFGPlayerState* playerState){ return int32(); }
+int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_DismantledPerPlayer(TSubclassOf<  AActor > actor,  AFGPlayerState* playerState){ return int32(); }
+void AFGStatisticsSubsystem::Stat_ItemsPickedUp(TSubclassOf<  UFGItemDescriptor > itemDescriptor,  AFGPlayerState* playerState, int32 numPickedup){ }
+void AFGStatisticsSubsystem::Stat_ItemsPickedUp(const TArray< FInventoryStack >& inventoryStacks,  AFGPlayerState* playerState){ }
+int32 AFGStatisticsSubsystem::Stat_GetNumItemsPickedUp(TSubclassOf<  UFGItemDescriptor > itemDescriptor,  AFGPlayerState* playerState){ return int32(); }
 void AFGStatisticsSubsystem::GetStatisticsDebugData(TArray<FString>& out_debugData){ }
 void AFGStatisticsSubsystem::UpdateProducedItems(const TMap< TSubclassOf< UFGItemDescriptor >, uint64 >& ProducedItems){ }

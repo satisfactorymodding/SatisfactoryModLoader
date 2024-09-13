@@ -155,6 +155,28 @@ public:
 #endif
 };
 
+/* Simple class containing default values for paint finish overrides.*/
+UCLASS( Blueprintable, BlueprintType )
+class FACTORYGAME_API UFGFactoryCustomizationDescriptor_PaintFinish : public UFGFactoryCustomizationDescriptor_Swatch
+{
+	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable)
+	static void GetPaintFinishSettings(TSubclassOf<UFGFactoryCustomizationDescriptor_PaintFinish> Class, float& Roughness, float& Metallic, bool& HasForcedColor, FLinearColor& ForcedColor);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Paint Finish")
+	float RoughnessValue;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Paint Finish")
+	float MetallicValue;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Paint Finish")
+	FLinearColor mForcedColor;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Paint Finish")
+	bool mHasForcedColor = false;
+};
 
 //////////////////////////////////////////////////////////////////////////
 /// Begin Skin Types
@@ -245,10 +267,7 @@ public:
 
 /// End Skin Types
 //////////////////////////////////////////////////////////////////////////
-
-
-
-
+///
 
 UCLASS( Blueprintable, BlueprintType )
 class FACTORYGAME_API UFGFactoryCustomizationCollection : public UObject
@@ -294,21 +313,17 @@ public:
 
 	FFactoryCustomizationColorSlot() : 
 		PrimaryColor( FLinearColor( 0.f, 0.f, 0.f, 1.f ) ), 
-		SecondaryColor( FLinearColor( 0.f, 0.f, 0.f, 1.f ) ),
-		Metallic( 0.f ),
-		Roughness( 0.f )
+		SecondaryColor( FLinearColor( 0.f, 0.f, 0.f, 1.f ) )
 	{}
 
 	FFactoryCustomizationColorSlot( FLinearColor primary, FLinearColor secondary ) : 
 		PrimaryColor( primary ), 
-		SecondaryColor( secondary ),
-		Metallic( 0.f ),
-		Roughness( 0.f )
+		SecondaryColor( secondary )
 	{}
 
 	FORCEINLINE bool operator==( const FFactoryCustomizationColorSlot& other ) const 
 	{
-		return this->PrimaryColor == other.PrimaryColor && this->SecondaryColor == other.SecondaryColor && this->Metallic == other.Metallic && this->Roughness == other.Roughness;
+		return this->PrimaryColor == other.PrimaryColor && this->SecondaryColor == other.SecondaryColor && this->PaintFinish == other.PaintFinish;
 	}
 
 	FORCEINLINE bool operator!=( const FFactoryCustomizationColorSlot& other ) const 
@@ -321,7 +336,6 @@ public:
 		bOutSuccess = true;
 		if( Ar.IsSaving() )
 		{
-			// Write color data minus the alpha as that is guarenteed to be 1.f
 			Ar << PrimaryColor.R;
 			Ar << PrimaryColor.G;
 			Ar << PrimaryColor.B;
@@ -330,9 +344,8 @@ public:
 			Ar << SecondaryColor.G;
 			Ar << SecondaryColor.B;
 
-			// @todoCustomization - Compress these if we're going to use them (preferably before BU5)
-			Ar << Metallic;
-			Ar << Roughness;
+			
+			Ar << PaintFinish;
 		}
 		else
 		{
@@ -345,10 +358,9 @@ public:
 			Ar << SecondaryColor.G;
 			Ar << SecondaryColor.B;
 			SecondaryColor.A = 1.f;
-
-			// @todoCustomization - Uncompress these if we're going to use them (preferably before BU5)
-			Ar << Metallic;
-			Ar << Roughness;
+			
+			
+			Ar << PaintFinish;
 		}
 
 		return bOutSuccess;
@@ -360,11 +372,9 @@ public:
 	UPROPERTY( SaveGame, EditAnywhere, NotReplicated )
 	FLinearColor SecondaryColor;
 
-	UPROPERTY( SaveGame, EditAnywhere, NotReplicated )
-	float Metallic;
-
-	UPROPERTY( SaveGame, EditAnywhere, NotReplicated )
-	float Roughness;
+	
+	UPROPERTY( SaveGame, EditAnywhere, NotReplicated)
+	TSubclassOf<UFGFactoryCustomizationDescriptor_PaintFinish> PaintFinish;
 };
 
 template<>
@@ -388,7 +398,7 @@ struct FACTORYGAME_API FFactoryCustomizationData
 		PatternDesc( nullptr ),
 		MaterialDesc( nullptr ),
 		PatternRotation( 0.f ),
-		ColorSlot( 0 ),
+		ColorSlot( INDEX_NONE ),
 		NeedsSkinUpdate( false ),
 		HasPower( false )
 	{}
@@ -396,7 +406,7 @@ struct FACTORYGAME_API FFactoryCustomizationData
 	/**
 	 * Call from buildable after fully "setup". This shouldn't be done on creation, but only once we know the data is complete. Ie. from the buildable not say, the BuildGun
 	 */
-	void Initialize( class AFGGameState* gameState );
+	void Initialize( class AFGGameState* gameState, int32 forceDataSize = INDEX_NONE );
 	
 	/**
 	 * Combine the data from this CustomizationData with another. This will correctly apply data so that nullptrs don't override existing data
@@ -421,7 +431,13 @@ struct FACTORYGAME_API FFactoryCustomizationData
 
 	FORCEINLINE bool operator==( const FFactoryCustomizationData& other ) const
 	{
-		return this->SwatchDesc == other.SwatchDesc && this->PatternDesc == other.PatternDesc && this->MaterialDesc == other.MaterialDesc;
+		return this->SwatchDesc == other.SwatchDesc
+		&& this->PatternDesc == other.PatternDesc
+		&& this->MaterialDesc == other.MaterialDesc
+		&& this->SkinDesc == other.SkinDesc
+		&& this->OverrideColorData == other.OverrideColorData
+		&& this->PatternRotation == other.PatternRotation
+		;
 	}
 
 	FORCEINLINE bool operator!=( const FFactoryCustomizationData& other ) const
@@ -477,4 +493,6 @@ struct FACTORYGAME_API FFactoryCustomizationData
 	UPROPERTY( NotReplicated )
 	uint8 HasPower;
 };
+
+
 

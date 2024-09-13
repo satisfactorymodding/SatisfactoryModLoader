@@ -39,6 +39,7 @@ protected:
 
 	// Begin AFGBuildableFactory interface
 	virtual void OnRep_CurrentPotential() override;
+	virtual void OnRep_CurrentProductionBoost() override;
 	virtual void OnRep_IsProducing() override;
 	// End AFGBuildableFactory interface
 

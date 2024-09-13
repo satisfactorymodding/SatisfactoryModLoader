@@ -5,7 +5,6 @@
 
 AFGEquipmentBoomBox::AFGEquipmentBoomBox() : Super() {
 	this->mBoomBoxPlayer = nullptr;
-	this->mOnlyVisibleToOwner = false;
 }
 void AFGEquipmentBoomBox::SetBoomBoxPlayer( AFGBoomBoxPlayer* player){ }
 void AFGEquipmentBoomBox::WasEquipped_Implementation(){ }
@@ -18,7 +17,8 @@ void AFGEquipmentBoomBox::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGEquipmentBoomBox, mBoomBoxPlayer);
 }
-bool AFGEquipmentBoomBox::ShouldSaveState() const{ return bool(); }
+FFGDynamicStruct AFGEquipmentBoomBox::SaveToItemState_Implementation() const{ return FFGDynamicStruct(); }
+void AFGEquipmentBoomBox::LoadFromItemState_Implementation(const FFGDynamicStruct& itemState){ }
 void AFGEquipmentBoomBox::OnRep_BoomBoxPlayer( AFGBoomBoxPlayer* oldPlayer){ }
 void AFGEquipmentBoomBox::AddEquipmentActionBindings(){ }
 void AFGEquipmentBoomBox::Input_PlayPause(const FInputActionValue& actionValue){ }

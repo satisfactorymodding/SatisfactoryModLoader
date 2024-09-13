@@ -12,6 +12,7 @@ void UFGCreatureInterruptTest::Initialize(AFGCreature* creature, AFGCreatureCont
 #if WITH_EDITOR
 void AFGCreature::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 bool AFGCreature::IsSelectedInEditor() const{ return bool(); }
+EDataValidationResult AFGCreature::IsDataValid(FDataValidationContext& Context) const{ return EDataValidationResult::Valid; }
 #endif 
 #ifdef WITH_EDITOR
 #endif 
@@ -63,6 +64,8 @@ AFGCreature::AFGCreature(const FObjectInitializer& ObjectInitializer) : Super(Ob
 	this->mStunDamageCooldownDuration = 5.0;
 	this->mStunDamageReductionRate = 1.0;
 	this->mIsStunned = false;
+	this->mDefaultRotationRate = 90.0;
+	this->mCombatRotationRate = 360.0;
 	this->bUseControllerRotationYaw = false;
 	this->AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	this->mEyeLocationComponent->SetupAttachment(GetCapsuleComponent());
@@ -74,6 +77,7 @@ void AFGCreature::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 	DOREPLIFETIME(AFGCreature, mIsStunned);
 }
 void AFGCreature::BeginPlay(){ }
+void AFGCreature::Tick(float DeltaSeconds){ }
 void AFGCreature::PreInitializeComponents(){ Super::PreInitializeComponents(); }
 void AFGCreature::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGCreature::OnConstruction(const FTransform& Transform){ }
@@ -93,7 +97,7 @@ UFGCreatureMovementComponent* AFGCreature::GetCreatureCharacterMovement() const{
 bool AFGCreature::GetAdjustedNavAgentProps(FNavAgentProperties& out_navAgentProps, UWorld* worldContext) const{ return bool(); }
 void AFGCreature::ConfigureArachnophobiaMode_Implementation(bool isArachnophobiaMode){ }
 void AFGCreature::OnArachnophobiaModeChanged(bool isArachnophobiaMode){ }
-void AFGCreature::Multicast_ConsumeItem_Implementation(TSubclassOf<  UFGItemDescriptor > itemDescriptor, int32 amount){ }
+void AFGCreature::Multicast_ConsumeItem_Implementation(TSubclassOf<  UFGItemDescriptor > itemDescriptor, const  AFGPlayerController* playerController){ }
 void AFGCreature::SetMoveSpeed(EMoveSpeed newMoveSpeedType){ }
 void AFGCreature::SpawnDeathItem_Implementation(){ }
 UBehaviorTree* AFGCreature::GetOverrideBehaviorTreeForState(ECreatureState state) const{ return nullptr; }
@@ -102,6 +106,7 @@ bool AFGCreature::IsCreatureStateEnabled(ECreatureState State) const{ return boo
 float AFGCreature::GetRandomRoamingWaitTime() const{ return float(); }
 TArray<UFGAction*> AFGCreature::GetAvailableActionsForState(ECreatureState state){ return TArray<UFGAction*>(); }
 TArray<UFGAction*> AFGCreature::GetAllCreatureActions() const{ return TArray<UFGAction*>(); }
+ANavigationData* AFGCreature::GetCreatureNavData() const{ return nullptr; }
 void AFGCreature::ClearKillOrphanTimer(){ }
 bool AFGCreature::CanBeStunned() const{ return bool(); }
 bool AFGCreature::CanBeStunnedByDamage() const{ return bool(); }

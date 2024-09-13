@@ -6,7 +6,9 @@
 #include "CoreMinimal.h"
 #include "Resources/FGBuildDescriptor.h"
 #include "FGCategory.h"
+#include "FGIconLibrary.h"
 #include "FGInventoryComponent.h"
+#include "FGObjectReference.h"
 #include "Resources/FGItemDescriptor.h"
 #include "ItemAmount.h"
 #include "FGFactoryBlueprintTypes.generated.h"
@@ -18,6 +20,7 @@ struct FACTORYGAME_API FBlueprintConfigVersion
 		InitialVersion,
 		AddedMD5Hash,
 		RemovedMD5Hash,
+		AddedIconLibraryPath,
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1
 	};
@@ -35,10 +38,10 @@ public:
 	FString SubCategoryName;
 
 	UPROPERTY( SaveGame )
-	float MenuPriority;
+	float MenuPriority = 0.f;
 
 	UPROPERTY( SaveGame )
-	uint8 IsUndefined;
+	uint8 IsUndefined = false;
 
 	UPROPERTY( SaveGame )
 	TArray< FString > BlueprintNames;
@@ -73,7 +76,6 @@ public:
 	FBlueprintRecord() :
 		BlueprintName( "" ),
 		BlueprintDescription( "" ),
-		IconID( -1 ),
 		Color( FLinearColor::Black ),
 		Category( nullptr ),
 		SubCategory( nullptr ),
@@ -90,7 +92,7 @@ public:
 	FString BlueprintDescription;
 
 	UPROPERTY(  SaveGame, BlueprintReadWrite, Category="Blueprint Record")
-	int32 IconID;
+	FPersistentGlobalIconId IconID;
 
 	UPROPERTY(  SaveGame, BlueprintReadWrite, Category="Blueprint Record")
 	FLinearColor Color;
@@ -281,7 +283,7 @@ public:
 	FIntVector GetDimensionsOnInstance() { return mDimensions; }
 
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Descriptor|Blueprint" )
-	FBlueprintRecord GetDescriptorAsRecord();
+	FBlueprintRecord GetDescriptorAsRecord() const;
 	
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Category|Blueprint")
 	int32 GetIconID() const { return mIconID; }

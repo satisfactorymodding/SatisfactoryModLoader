@@ -47,6 +47,10 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
 	void OnCameraModeChanged( ECameraMode newCameraMode );
 
+	/** Called to update the equipment visibility based on the external conditions such as player visibility and/or status (e.g. hand equipments are hidden inside of the hyper tube) */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	void SetEquipmentVisibility( bool bNewEquipmentVisible );
+
 	/**
 	 * Convenience blueprint function to return Instigator as a FGCharacterPlayer
 	 * @return The instigator for this equipment; nullptr if not equipped or Instigator is not an FGCharacterPlayer.

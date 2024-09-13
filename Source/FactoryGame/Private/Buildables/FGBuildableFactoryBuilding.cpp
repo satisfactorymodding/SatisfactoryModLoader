@@ -20,4 +20,5 @@ AFGBuildableFactoryBuilding::AFGBuildableFactoryBuilding(const FObjectInitialize
 FName AFGBuildableFactoryBuilding::MeshComponentFName = FName();
 AFGBuildableFactoryBuildingLightweight::AFGBuildableFactoryBuildingLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mMeshComponentProxy = nullptr;
+	this->mManagedByLightweightBuildableSubsystem = true;
 }

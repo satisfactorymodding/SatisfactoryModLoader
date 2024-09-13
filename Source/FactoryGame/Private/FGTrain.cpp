@@ -34,15 +34,13 @@ void FClientTrainData::SetAirBrakePct(float pct){ }
 float FClientTrainData::GetAirBrakePct(){ return float(); }
 void FClientTrainData::SetDynamicBrakePct(float pct){ }
 float FClientTrainData::GetDynamicBrakePct(){ return float(); }
-#if WITH_CHEATS
-void AFGTrain::Cheat_Teleport( AFGBuildableRailroadStation* station){ }
-#endif 
 AFGTrain::AFGTrain() : Super() {
 	this->mSoundComponentClass = nullptr;
 	this->mConsistData.Length = 0.0;
 	this->mConsistData.Mass = 0.0;
 	this->mConsistData.MaxSpeed = 0.0;
 	this->mSimulationData.MasterMovement = nullptr;
+	this->mSimulationData.FirstVehicle = nullptr;
 	this->mSimulationData.Velocity = 0.0;
 	this->mTrainName = INVTEXT("Train");
 	this->mTrackGraphID = -1;
@@ -57,6 +55,8 @@ AFGTrain::AFGTrain() : Super() {
 	this->mDockingState = ETrainDockingState::TDS_None;
 	this->mDockedAtStation = nullptr;
 	this->mIsDerailed = false;
+	this->mCompassMaterialInstance = nullptr;
+	this->mTrainReplicationActor = nullptr;
 	this->mSoundComponent = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -83,6 +83,7 @@ void AFGTrain::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 	DOREPLIFETIME(AFGTrain, mDockingState);
 	DOREPLIFETIME(AFGTrain, mDockedAtStation);
 	DOREPLIFETIME(AFGTrain, mIsDerailed);
+	DOREPLIFETIME(AFGTrain, mTrainReplicationActor);
 }
 void AFGTrain::Tick(float dt){ }
 void AFGTrain::BeginPlay(){ }
@@ -106,6 +107,7 @@ void AFGTrain::LostSignificance_Native(){ }
 float AFGTrain::GetSignificanceRange(){ return float(); }
 bool AFGTrain::AddAsRepresentation(){ return bool(); }
 bool AFGTrain::UpdateRepresentation(){ return bool(); }
+bool AFGTrain::UpdateRepresentation_Local(){ return bool(); }
 bool AFGTrain::RemoveAsRepresentation(){ return bool(); }
 bool AFGTrain::IsActorStatic(){ return bool(); }
 FVector AFGTrain::GetRealActorLocation(){ return FVector(); }
@@ -122,6 +124,7 @@ EFogOfWarRevealType AFGTrain::GetActorFogOfWarRevealType(){ return EFogOfWarReve
 float AFGTrain::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGTrain::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGTrain::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+UMaterialInterface* AFGTrain::GetActorRepresentationCompassMaterial(){ return nullptr; }
 void AFGTrain::SetTrainName(const FText& name){ }
 void AFGTrain::SetTrackGraphID(int32 newID){ }
 bool AFGTrain::IsPlayerDriven() const{ return bool(); }
@@ -144,15 +147,19 @@ void AFGTrain::OnDockingComplete(){ }
 void AFGTrain::ConnectToThirdRail(){ }
 void AFGTrain::DisconnectFromThirdRail(){ }
 void AFGTrain::OnVehiclesChanged(){ }
-void AFGTrain::OnConsistChanged(){ }
+void AFGTrain::RebuildConsist_Server(){ }
+void AFGTrain::RebuildConsist_Client(){ }
+void AFGTrain::RecalculateConsistData(){ }
+void AFGTrain::RecalculateConsistPayloadData(){ }
 void AFGTrain::GetDockingRuleSetForCurrentStop(FTrainDockingRuleSet& out_ruleSet) const{ }
 void AFGTrain::OnCollided(AFGRailroadVehicle* ourVehicle, float ourVelocity, AFGRailroadVehicle* otherVehicle, float otherVelocity, bool shouldDerail){ }
-void AFGTrain::OnDerail(float velocity){ }
+void AFGTrain::NetMulticast_OnDerail_Implementation(float impactVelocity){ }
+void AFGTrain::SetPendingCollision(){ }
+void AFGTrain::ClearPendingCollision(){ }
 void AFGTrain::Rerail(){ }
 void AFGTrain::OnDriverEntered(){ }
 void AFGTrain::OnDriverLeft(){ }
-void AFGTrain::AddLocalVehicle( AFGRailroadVehicle* vehicle){ }
-void AFGTrain::RemoveLocalVehicle( AFGRailroadVehicle* vehicle){ }
+AFGTrainReplicationActor* AFGTrain::GetTrainReplicationActor(){ return nullptr; }
 void AFGTrain::UpdateTrainStatus(){ }
 void AFGTrain::ReportSelfDrivingError(ESelfDrivingLocomotiveError error){ }
 void AFGTrain::ClearSelfDrivingError(){ }
@@ -164,7 +171,6 @@ void AFGTrain::TickSelfDriving_Idle(ESelfDrivingLocomotiveError& out_error){ }
 void AFGTrain::TickSelfDriving_FollowPath(ESelfDrivingLocomotiveError& out_error){ }
 void AFGTrain::TickSelfDriving_Docking(ESelfDrivingLocomotiveError& out_error){ }
 void AFGTrain::TickSelfDriving_DockingCompleted(ESelfDrivingLocomotiveError& out_error){ }
-void AFGTrain::TickAtc_BlockReservations(){ }
 float AFGTrain::CalcBrakeDistance(float currentSpeed, float targetSpeed, float deceleration) const{ return float(); }
 float AFGTrain::CalcTargetSpeed(float targetSpeed, float distance, float deceleration) const{ return float(); }
 float AFGTrain::CalcTargetAcceleration(float currentSpeed, float targetSpeed, float distance) const{ return float(); }
@@ -173,6 +179,7 @@ void AFGTrain::OnMultipleUnitMasterChanged(){ }
 void AFGTrain::OnRep_DockingState(){ }
 void AFGTrain::OnRep_IsSelfDrivingEnabled(){ }
 void AFGTrain::OnRep_SelfDrivingError(){ }
-void AFGTrain::OnRep_IsDerailed(){ }
 void AFGTrain::OnRep_TrainStatus(){ }
 void AFGTrain::OnRep_MultipleUnitMaster(){ }
+void AFGTrain::OnRep_TrainReplicationActor(){ }
+void AFGTrain::Cheat_Teleport( AFGBuildableRailroadStation* station){ }
