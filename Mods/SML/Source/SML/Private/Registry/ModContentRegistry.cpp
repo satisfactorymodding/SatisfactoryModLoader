@@ -15,7 +15,7 @@
 #include "AvailabilityDependencies/FGItemPickedUpDependency.h"
 #include "AvailabilityDependencies/FGItemsManuallyCraftedDependency.h"
 #include "AvailabilityDependencies/FGRecipeUnlockedDependency.h"
-#include "AvailabilityDependencies/FGResearchTreeUnlockedDependency.h"
+#include "AvailabilityDependencies/FGResearchTreeProgressionDependency.h"
 #include "AvailabilityDependencies/FGSchematicPurchasedDependency.h"
 #include "Creature/FGCreatureDescriptor.h"
 #include "Patching/NativeHookManager.h"
@@ -1022,10 +1022,10 @@ void UModContentRegistry::AutoRegisterAvailabilityDependencyReferences( UFGAvail
 			SchematicRegistryState.AddObjectReference( Schematic, ReferencedBy  );
 		}
 	}
-	if ( const UFGResearchTreeUnlockedDependency* ResearchTreeUnlockDependency = Cast<UFGResearchTreeUnlockedDependency>( Dependency ) )
+	if ( const UFGResearchTreeProgressionDependency* ResearchTreeProgressionDependency = Cast<UFGResearchTreeProgressionDependency>( Dependency ) )
 	{
 		TArray<TSubclassOf<UFGResearchTree>> ResearchTrees;
-		ResearchTreeUnlockDependency->GetResearchTrees( ResearchTrees );
+		ResearchTreeProgressionDependency->mResearchTrees.GetKeys( ResearchTrees );
 
 		for ( const TSubclassOf<UFGResearchTree>& ResearchTree : ResearchTrees )
 		{

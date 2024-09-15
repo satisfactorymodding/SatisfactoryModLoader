@@ -1,9 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "Core.h"
-#include "Engine.h"
-#include "FGOnlineSessionSettings.h"
 #include "Components/Widget.h"
 #include "Blueprint/UserWidget.h" 
 #include "Configuration/ConfigProperty.h"
@@ -124,9 +121,4 @@ public:
 	/** Allows Binding on BP Function. Function must be implemented in Blueprint */
 	UFUNCTION(BlueprintCallable, Category= "Widget | Advanced")
 	static void BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName, bool HookOffsetStart);
-
-
-	/** Extension of UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMapWithStartingLocation that uses information from SML systems too */
-	UFUNCTION(BlueprintCallable, Category="SML | Online")
-	static void CreateSessionAndTravelToMapWithStartingLocation(APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, ESessionVisibility sessionVisibility, bool skipOnboarding);
 };

@@ -10,6 +10,7 @@ public class SML : ModuleRules
 {
     public SML(ReadOnlyTargetRules Target) : base(Target)
     {
+        CppStandard = CppStandardVersion.Cpp20;
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         bLegacyPublicIncludePaths = false;
 

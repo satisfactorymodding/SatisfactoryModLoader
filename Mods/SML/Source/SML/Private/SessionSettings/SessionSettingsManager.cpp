@@ -3,6 +3,7 @@
 #include "FGGameMode.h"
 #include "FGOptionsLibrary.h"
 #include "SatisfactoryModLoader.h"
+#include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
 #include "ModLoading/PluginModuleLoader.h"
 #include "Registry/SessionSettingsRegistry.h"
@@ -64,6 +65,14 @@ bool USessionSettingsManager::ShouldCreateSubsystem( UObject* Outer ) const
 {
 	UWorld* WorldOuter = CastChecked<UWorld>(Outer);
 	return FPluginModuleLoader::ShouldLoadModulesForWorld(WorldOuter);
+}
+
+void USessionSettingsManager::GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const {
+	return SessionSettings.GenerateValueArray(OutUserSettings);
+}
+
+UFGUserSettingApplyType* USessionSettingsManager::FindUserSetting(const FString& SettingId) const {
+	return SessionSettings.FindRef(SettingId);
 }
 
 void USessionSettingsManager::OnGameModeInitialized(AGameModeBase* GameModeBase) {
@@ -152,187 +161,7 @@ UFGUserSettingApplyType* USessionSettingsManager::FindSessionSetting(const FStri
 	return *SessionSetting;
 }
 
-FVariant USessionSettingsManager::GetOptionValue(const FString& strId) const {
-	return GetOptionValue(strId, FVariant());
-}
-
-FVariant USessionSettingsManager::GetOptionValue(const FString& strId, const FVariant& defaultValue) const {
-	const UFGUserSettingApplyType* SessionSetting = FindSessionSetting(strId);
-	if (!SessionSetting) {
-		return defaultValue;
-	}
-	FVariant AppliedValue = SessionSetting->GetAppliedValue();
-	if (AppliedValue.IsEmpty()) {
-		return defaultValue;
-	}
-	return AppliedValue;
-}
-
-FVariant USessionSettingsManager::GetOptionDisplayValue(const FString& strId) const {
-	return GetOptionDisplayValue(strId, FVariant());
-}
-
-FVariant USessionSettingsManager::GetOptionDisplayValue(const FString& strId, const FVariant& defaultValue) const {
-	const UFGUserSettingApplyType* SessionSetting = FindSessionSetting(strId);
-	if (!SessionSetting) {
-		return defaultValue;
-	}
-	return SessionSetting->GetDisplayValue();
-}
-
-void USessionSettingsManager::SetOptionValue(const FString& strId, const FVariant& value) {
-	if (UFGUserSettingApplyType* SessionSetting = FindSessionSetting(strId)) {
-		SessionSetting->SetValue(value);
-	}
-}
-
-
-void USessionSettingsManager::ForceSetOptionValue(const FString& strId, const FVariant& variant, const UObject* instigator) {
-	if (UFGUserSettingApplyType* SessionSetting = FindSessionSetting(strId)) {
-		SessionSetting->ForceSetValue(variant);
-	}
-}
-
-void USessionSettingsManager::SubscribeToOptionUpdate(const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate) {
-	if (UFGUserSettingApplyType* SessionSetting = FindSessionSetting(strId)) {
-		SessionSetting->AddSubscriber(onOptionUpdatedDelegate);
-	}
-}
-
-void USessionSettingsManager::UnsubscribeToOptionUpdate(const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate) {
-	if (UFGUserSettingApplyType* SessionSetting = FindSessionSetting(strId)) {
-		SessionSetting->RemoveSubscriber(onOptionUpdatedDelegate);
-	}
-}
-
-bool USessionSettingsManager::IsDefaultValueApplied(const FString& strId) const {
-	if (const UFGUserSettingApplyType* SessionSetting = FindSessionSetting(strId)) {
-		return SessionSetting->IsDefaultValueApplied();
-	}
-	return false;
-}
-
-void USessionSettingsManager::ApplyChanges() {
-	for (const TTuple<FString, UFGUserSettingApplyType*>& Option : SessionSettings) {
-		Option.Value->OnApply();
-	}
-}
-
-void USessionSettingsManager::ResetAllSettingsToDefault() {
-	for (const TTuple<FString, UFGUserSettingApplyType*>& Option : SessionSettings) {
-		Option.Value->ResetToDefaultValue();
-	}
-}
-
-void USessionSettingsManager::ResetAllSettingsInCategory(TSubclassOf<UFGUserSettingCategory> category, TSubclassOf<UFGUserSettingCategory> subCategory) {
-	for (const TTuple<FString, UFGUserSettingApplyType*>& Option : SessionSettings) {
-		if(Option.Value->GetUserSetting()->CategoryClass == category && Option.Value->GetUserSetting()->SubCategoryClass == subCategory) {
-			Option.Value->ResetToDefaultValue();
-		}
-	}
-}
-
-bool USessionSettingsManager::GetBoolOptionValue(const FString& cvar) const {
-	return GetOptionValue_Typed<bool>(cvar, false);
-}
-
-bool USessionSettingsManager::GetBoolUIDisplayValue(const FString& cvar) const {
-	return GetOptionDisplayValue_Typed<bool>(cvar, false);
-}
-
-void USessionSettingsManager::SetBoolOptionValue(const FString& cvar, bool value) {
-	SetOptionValue(cvar, FVariant(value));
-}
-
-int32 USessionSettingsManager::GetIntOptionValue(const FString& cvar) const {
-	return GetOptionValue_Typed<int32>(cvar, 0);
-}
-
-int32 USessionSettingsManager::GetIntUIDisplayValue(const FString& cvar) const {
-	return GetOptionDisplayValue_Typed<int32>(cvar, 0);
-}
-
-void USessionSettingsManager::SetIntOptionValue(const FString& cvar, int32 newValue) {
-	SetOptionValue(cvar, FVariant(newValue));
-}
-
-float USessionSettingsManager::GetFloatOptionValue(const FString& cvar) const {
-	return GetOptionValue_Typed<float>(cvar, 0);
-}
-
-float USessionSettingsManager::GetFloatUIDisplayValue(const FString& cvar) const {
-	return GetOptionDisplayValue_Typed<float>(cvar, 0);
-}
-
-void USessionSettingsManager::SetFloatOptionValue(const FString& cvar, float newValue) {
-	SetOptionValue(cvar, FVariant(newValue));
-}
-
-bool USessionSettingsManager::HasAnyUnsavedOptionValueChanges() const {
-	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
-		if (Options.Value->HasPendingChanges())
-			return true;
-	}
-	return false;
-}
-
-bool USessionSettingsManager::HasPendingApplyOptionValue(const FString& cvar) const {
-	const UFGUserSettingApplyType* SessionSetting = FindSessionSetting(cvar);
-	if (!SessionSetting) {
-		return false;
-	}
-	return SessionSetting->HasPendingChanges();
-}
-
-bool USessionSettingsManager::HasAnyPendingRestartOptionValue(const FString& cvar) const {
-	const UFGUserSettingApplyType* SessionSetting = FindSessionSetting(cvar);
-	if (!SessionSetting) {
-		return false;
-	}
-	return SessionSetting->HasGameRestartRequiredChanges() || SessionSetting->HasSessionRestartRequiredChanges();
-}
-
-bool USessionSettingsManager::GetRequireSessionRestart() const {
-	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
-		if (Options.Value->HasSessionRestartRequiredChanges())
-			return true;
-	}
-	return false;
-}
-
-bool USessionSettingsManager::GetRequireGameRestart() const {
-	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
-		if (Options.Value->HasGameRestartRequiredChanges())
-			return true;
-	}
-	return false;
-}
-
-void USessionSettingsManager::SubscribeToDynamicOptionUpdate(const FString& cvar, const FOptionUpdated& optionUpdatedDelegate) {
-	if (UFGUserSettingApplyType* SessionSetting = FindSessionSetting(cvar)) {
-		SessionSetting->AddSubscriber(optionUpdatedDelegate);
-	}
-}
-
-void USessionSettingsManager::UnsubscribeToDynamicOptionUpdate(const FString& cvar, const FOptionUpdated& optionUpdatedDelegate) {
-	if (UFGUserSettingApplyType* SessionSetting = FindSessionSetting(cvar)) {
-		SessionSetting->RemoveSubscriber(optionUpdatedDelegate);
-	}
-}
-
-void USessionSettingsManager::UnsubscribeToAllDynamicOptionUpdate(UObject* boundObject) {
-	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
-		Options.Value->RemoveObjectAsSubscriber(boundObject);
-	}
-}
-
-TArray<FUserSettingCategoryMapping> USessionSettingsManager::GetCategorizedSettingWidgets( UObject* worldContext, UUserWidget* owningWidget )
-{
-	return UFGOptionsLibrary::GetCategorizedUserSettingsWidgets( worldContext, owningWidget, this, SessionSettings );
-}
-
-IFGOptionInterface* USessionSettingsManager::GetActiveOptionInterface() const
-{
+IFGOptionInterface* USessionSettingsManager::GetPrimaryOptionInterface(UWorld* world) const {
 	// Only resort to the world context iteration if we are the CDO, otherwise we are the active manager for ourselves
 	if ( HasAnyFlags( RF_ClassDefaultObject ) )
 	{
@@ -359,4 +188,3 @@ void USessionSettingsManager::UnsubscribeToAllOptionUpdates(const FOnOptionUpdat
 		Options.Value->RemoveSubscriber(onOptionUpdatedDelegate);
 	}
 }
-

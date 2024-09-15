@@ -11,6 +11,7 @@
 #include "Player/PlayerCheatManagerHandler.h"
 #include "Util/DebuggerHelper.h"
 #include "funchook.h"
+#include "HAL/ThreadHeartBeat.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 

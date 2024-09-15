@@ -135,7 +135,7 @@ void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FStrin
  * 
  */
 void UModNetworkHandler::InitializePatches() {
-	
+#if !WITH_EDITOR
     UWorld* WorldObjectInstance = GetMutableDefault<UWorld>();
     SUBSCRIBE_METHOD_VIRTUAL_AFTER(UWorld::WelcomePlayer, WorldObjectInstance, [=](UWorld* ServerWorld, UNetConnection* Connection) {
         UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
@@ -194,4 +194,5 @@ void UModNetworkHandler::InitializePatches() {
     // Same for UPendingNetGame
     UPendingNetGame* PendingNetGame = static_cast<UPendingNetGame *>(FindObjectChecked<UClass>(NULL, TEXT("/Script/Engine.PendingNetGame"))->GetDefaultObject());
     SUBSCRIBE_METHOD_VIRTUAL(UPendingNetGame::NotifyControlMessage, PendingNetGame, MessageHandler);
+#endif
 }
