@@ -244,6 +244,11 @@ void UWidgetBlueprintHookManager::RegisterWidgetBlueprintHook(UWidgetBlueprintHo
 	if (!FPlatformProperties::RequiresCookedData()) {
 		return;
 	}
+	
+	// Widgets are not included on servers
+	if (!FPlatformProperties::IsServerOnly()) {
+		return;
+	}
 
 	if (!HookData->NewWidgetClass || HookData->NewWidgetName.IsNone()) {
 		UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Failed to hook widget blueprint %s, new widget class %s or name %s are invalid"),
