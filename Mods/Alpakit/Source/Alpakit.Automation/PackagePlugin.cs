@@ -99,6 +99,7 @@ public class PackagePlugin : BuildCookRun
 			RawProjectPath: ProjectPath,
 			
 			// Alpakit shared configuration
+			ClientCookedTargets: new ParamList<string>("FactoryGameEGS", "FactoryGameSteam"),
 			Cook: true,
 			AdditionalCookerOptions: "-AllowUncookedAssetReferences",
 			DLCIncludeEngineContent: false,
