@@ -41,9 +41,6 @@ jobs:
       - name: Generate VS project files
         run: .\\ue\\Engine\\Build\\BatchFiles\\Build.bat -projectfiles -project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -game -rocket -progres
 
-      - name: Build for Shipping
-        run: MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Shipping" /p:Platform="Win64" /t:"Games\FactoryGame"
-
       - name: Build for Development Editor
         run: MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Development Editor" /p:Platform="Win64" /t:"Games\FactoryGame"
 
