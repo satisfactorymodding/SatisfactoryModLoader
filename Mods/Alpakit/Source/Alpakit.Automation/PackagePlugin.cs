@@ -99,7 +99,7 @@ public class PackagePlugin : BuildCookRun
 			RawProjectPath: ProjectPath,
 			
 			// Alpakit shared configuration
-			ClientCookedTargets: new ParamList<string>("FactoryGameEGS", "FactoryGameSteam"),
+			ClientCookedTargets: GetClientTargetsToCook(),
 			Cook: true,
 			AdditionalCookerOptions: "-AllowUncookedAssetReferences",
 			DLCIncludeEngineContent: false,
@@ -113,6 +113,34 @@ public class PackagePlugin : BuildCookRun
 		Params.ValidateAndLog();
 
 		return Params;
+	}
+
+	private ParamList<string> GetClientTargetsToCook()
+	{
+		if (!ParseParam("merge"))
+		{
+			// Only build minimal targets in development mode
+			// I don't particularly like hardcoding the FinalCookPlatform here, but there's no other way to get it
+			// and there's no native linux client at the moment
+			var gameDir = ParseOptionalDirectoryReferenceParam($"CopyToGameDirectory_Windows");
+			if (gameDir != null)
+			{
+				var FactoryGameEGS = FileReference.Combine(gameDir, "FactoryGameEGS.exe");
+				var FactoryGameSteam = FileReference.Combine(gameDir, "FactoryGameSteam.exe");
+				if (FileReference.Exists(FactoryGameEGS))
+				{
+					return new ParamList<string>("FactoryGameEGS");
+				}
+
+				if (FileReference.Exists(FactoryGameSteam))
+				{
+					return new ParamList<string>("FactoryGameSteam");
+				}
+				
+				Logger.LogWarning("No game executable found in game directory, building all targets");
+			}
+		}
+		return new ParamList<string>("FactoryGameEGS", "FactoryGameSteam");
 	}
 
 	private static void DeployStagedPlugin(ProjectParams ProjectParams, DeploymentContext SC, DirectoryReference GameDir)
