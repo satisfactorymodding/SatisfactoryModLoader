@@ -246,7 +246,7 @@ void UWidgetBlueprintHookManager::RegisterWidgetBlueprintHook(UWidgetBlueprintHo
 	}
 	
 	// Widgets are not included on servers
-	if (!FPlatformProperties::IsServerOnly()) {
+	if (FPlatformProperties::IsServerOnly()) {
 		return;
 	}
 

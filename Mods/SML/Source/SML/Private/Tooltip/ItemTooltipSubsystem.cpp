@@ -57,7 +57,7 @@ FInventoryStack GetStackFromSlot(UObject* SlotWidget) {
 
 void UItemTooltipSubsystem::InitializePatches() {
     // Widgets are not included on servers
-    if (!FPlatformProperties::IsServerOnly()) {
+    if (FPlatformProperties::IsServerOnly()) {
         return;
     }
     
