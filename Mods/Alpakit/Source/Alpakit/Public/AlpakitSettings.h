@@ -8,7 +8,7 @@ UENUM()
 enum class EAlpakitStartGameType : uint8 {
     STEAM UMETA(DisplayName = "Steam"),
     STEAM_SERVER UMETA(DisplayName = "Steam: Dedicated Server"),
-    EPIC_EARLY_ACCESS UMETA(DisplayName = "Epic: Early Access"),
+    EPIC_STABLE UMETA(DisplayName = "Epic: Stable"),
     EPIC_EXPERIMENTAL UMETA(DisplayName = "Epic: Experimental"),
     EPIC_SERVER UMETA(DisplayName = "Epic: Dedicated Server"),
     EPIC_SERVER_EXPERIMENTAL UMETA(DisplayName = "Epic: Dedicated Server Experimental"),

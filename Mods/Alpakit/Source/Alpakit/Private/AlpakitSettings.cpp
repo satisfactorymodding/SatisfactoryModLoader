@@ -6,7 +6,7 @@ const TCHAR* LexToString(EAlpakitStartGameType StartGameType) {
 		return TEXT("Steam");
 	case EAlpakitStartGameType::STEAM_SERVER:
 		return TEXT("SteamDS");
-	case EAlpakitStartGameType::EPIC_EARLY_ACCESS:
+	case EAlpakitStartGameType::EPIC_STABLE:
 		return TEXT("EpicEA");
 	case EAlpakitStartGameType::EPIC_EXPERIMENTAL:
 		return TEXT("EpicExp");
