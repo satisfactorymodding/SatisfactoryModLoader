@@ -112,10 +112,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "GitSourceControl",
-			"Enabled": false
-		},
-		{
 			"Name": "SubversionSourceControl",
 			"Enabled": false
 		},
@@ -355,7 +351,8 @@
 		"Linux",
 		"Windows"
 	],
-	"PreBuildSteps": {
+	"PreBuildSteps":
+	{
 		"Win64": [
 			"powershell -Command \"$file = '$(ProjectDir)\\Plugins\\Wwise\\Source\\AudiokineticTools\\Private\\WwiseProject\\AcousticTextureParamLookup.cpp'; if (Test-Path $file) { if (!(Select-String -Path $file -Pattern 'UE_LOG(LogAudiokineticTools, Warning,' -SimpleMatch -Quiet)) { (Get-Content $file) -replace 'UE_LOG\\(LogAudiokineticTools, Error,', 'UE_LOG(LogAudiokineticTools, Warning,' | Out-File -encoding UTF8 $file } }\""
 		],
