@@ -3,6 +3,7 @@
 #include "Resources/FGItemDescriptor.h"
 #include "FGCategory.h"
 #include "FGItemCategory.h"
+#include "FGResourceSettings.h"
 
 EResourceForm UFGItemDescriptor::GetForm(TSubclassOf<UFGItemDescriptor> inClass) {
 	if (inClass)
@@ -54,11 +55,29 @@ UStaticMesh* UFGItemDescriptor::GetItemMesh(TSubclassOf<UFGItemDescriptor> inCla
 	else
 		return nullptr;
 }
-int32 UFGItemDescriptor::GetStackSize(TSubclassOf<UFGItemDescriptor> inClass) {
-	if (inClass)
-		return static_cast<int32>(inClass.GetDefaultObject()->mStackSize);
-	else
-		return int32();
+int32 UFGItemDescriptor::GetStackSize( TSubclassOf< UFGItemDescriptor > inClass )
+{
+	QUICK_SCOPE_CYCLE_COUNTER( STAT_UFGItemDescriptor_GetStackSize )
+
+	if( inClass )
+	{
+		const int32 stackSize = inClass->GetDefaultObject< UFGItemDescriptor >()->mCachedStackSize;
+        
+		if( stackSize != INDEX_NONE )
+		{
+			return stackSize;
+		}
+
+		// get the data if not set.
+		if( const int32* stackSizePtr = UFGResourceSettings::Get()->mStackSizes.FindKey( inClass->GetDefaultObject< UFGItemDescriptor >()->mStackSize ) )
+		{
+			GetMutableDefault<UFGItemDescriptor>( inClass )->mCachedStackSize = *stackSizePtr;
+			return *stackSizePtr;
+		}
+	}
+    
+	UE_LOG( LogGame, VeryVerbose, TEXT( "FGItemDescriptor::GetStackSize: class was nullpeter." ) );
+	return -1;
 }
 bool UFGItemDescriptor::CanBeDiscarded(TSubclassOf<UFGItemDescriptor> inClass) {
 	if (inClass)
@@ -90,11 +109,31 @@ FLinearColor UFGItemDescriptor::GetFluidColorLinear(TSubclassOf<UFGItemDescripto
 	else
 		return FLinearColor();
 }
+#if WITH_EDITOR
+void UFGItemDescriptor::PostEditChangeProperty( struct FPropertyChangedEvent& propertyChangedEvent )
+{
+	Super::PostEditChangeProperty( propertyChangedEvent );
+	const FName propertyName = propertyChangedEvent.Property ? propertyChangedEvent.Property->GetFName() : NAME_None;
+	if( propertyName == GET_MEMBER_NAME_CHECKED( UFGItemDescriptor, mAbbreviatedDisplayName ) )
+	{
+		mAbbreviatedDisplayName = FText::ChangeKey( FTextKey( "AbbreviatedDisplayName" ), FTextKey( mDisplayName.ToString() ), mAbbreviatedDisplayName );
+	}
+
+	if( propertyName == GET_MEMBER_NAME_CHECKED( UFGItemDescriptor, mStackSize ) )
+	{
+		if( const int32* stackSizePtr = UFGResourceSettings::Get()->mStackSizes.FindKey( mStackSize ) )
+		{
+			mCachedStackSize = *stackSizePtr;
+		}
+		else
+		{
+			mCachedStackSize = INDEX_NONE;
+		}
+	}
+}
+#endif
 
 TAutoConsoleVariable<int32> CVarStressTestRadioActivity(TEXT("CVarStressTestRadioActivity"), 0, TEXT(""));
-#if WITH_EDITOR
-void UFGItemDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
-#endif 
 #if !UE_BUILD_SHIPPING
 #endif 
 UFGItemDescriptor::UFGItemDescriptor() : Super() {
