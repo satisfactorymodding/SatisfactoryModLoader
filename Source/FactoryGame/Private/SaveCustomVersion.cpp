@@ -2,3 +2,7 @@
 
 #include "SaveCustomVersion.h"
 
+// Unlike FactoryGameCustomVersion, we don't need to define a GUID here, as it's already defined in the header file
+
+// Stuff to register custom version for UE4 tracking
+FCustomVersionRegistration GRegisterSaveCustomVersion{FSaveCustomVersion::GUID, FSaveCustomVersion::Type::LatestVersion, TEXT("SaveVersion")};

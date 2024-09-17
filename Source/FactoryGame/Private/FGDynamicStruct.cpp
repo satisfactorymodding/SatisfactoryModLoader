@@ -2,6 +2,80 @@
 
 #include "FGDynamicStruct.h"
 
+bool FFGDynamicStruct::Serialize( FArchive& Ar )
+{
+    if ( Ar.IsLoading() )
+    {
+        bool bHasValidStruct = false;
+        Ar << bHasValidStruct;
+        Destroy();
+
+        // Only attempt to serialize if this dynamic struct is not empty
+        if ( bHasValidStruct )
+        {
+            UScriptStruct* loadedStruct = nullptr;
+            Ar << loadedStruct;
+        
+            int32 savedPayloadSize = INDEX_NONE;
+            Ar << savedPayloadSize;
+
+            // Ask the struct to deserialize the item
+            if ( loadedStruct )
+            {
+                InitializeAsRaw( loadedStruct );
+                loadedStruct->SerializeItem( Ar, GetStructValueRaw(), nullptr );
+            }
+            // If we do not have a valid struct, attempt to recover by seeking to the end of the payload
+            else if ( savedPayloadSize >= 0 && Ar.Tell() != INDEX_NONE )
+            {
+                UE_LOG( LogSerialization, Warning, TEXT("Skipping over unknown FGDynamicStruct (serialized size: 0x%x)"), savedPayloadSize );
+                Ar.Seek( Ar.Tell() + savedPayloadSize );
+            }
+            // Otherwise this is not a recoverable situation as we do not know how to skip over the data we do not understand
+            else
+            {
+                UE_LOG( LogSerialization, Error, TEXT("Failed to deserialize unknown FGDynamicStruct. Archive '%s' does not support Seeking, so recovery is not possible"), *Ar.GetArchiveName() );
+                Ar.SetError();
+                return false;
+            }
+        }
+    }
+    else if ( Ar.IsSaving() )
+    {
+        bool bHasValidStruct = IsValid();
+        Ar << bHasValidStruct;
+
+        if ( bHasValidStruct )
+        {
+            UScriptStruct* savedStruct = GetStruct();
+            Ar << savedStruct;
+
+            // Serialize the empty offset and remember it's position, we will Seek there to overwrite it with an actual data size later
+            const int32 offsetBeforeSavedPayloadSize = Ar.Tell();
+            
+            int32 savedPayloadSize = INDEX_NONE;
+            Ar << savedPayloadSize;
+
+            const int32 offsetBeforeStructPayload = Ar.Tell();
+            savedStruct->SerializeItem( Ar, GetStructValueRaw(), nullptr );
+
+            // Patch up the serialized payload size now, if we support seeking
+            if ( offsetBeforeSavedPayloadSize != INDEX_NONE && offsetBeforeStructPayload != INDEX_NONE )
+            {
+                savedPayloadSize = Ar.Tell() - offsetBeforeStructPayload;
+                const int32 currentArchiveOffset = Ar.Tell();
+
+                // Seek back to the saved payload size and overwrite it with a correct value
+                Ar.Seek( offsetBeforeSavedPayloadSize );
+                Ar << savedPayloadSize;
+
+                Ar.Seek( currentArchiveOffset );
+            }
+        }
+    }
+    return true;
+}
+
 FFGDynamicStruct::FFGDynamicStruct(){ }
 FFGDynamicStruct::FFGDynamicStruct(const FFGDynamicStruct& other){ }
 FFGDynamicStruct::FFGDynamicStruct(FFGDynamicStruct&& other) noexcept{ }
@@ -13,4 +87,3 @@ void FFGDynamicStruct::Destroy(){ }
 FString FFGDynamicStruct::ToString() const{ return FString(); }
 bool FFGDynamicStruct::Identical(const FFGDynamicStruct& otherStruct, uint32 portFlags) const{ return bool(); }
 void FFGDynamicStruct::AddStructReferencedObjects( FReferenceCollector& Collector){ }
-bool FFGDynamicStruct::Serialize(FArchive& Ar){ return bool(); }

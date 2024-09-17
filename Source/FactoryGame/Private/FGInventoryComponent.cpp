@@ -3,12 +3,18 @@
 #include "FGInventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "FactoryGameCustomVersion.h"
+#include "SaveCustomVersion.h"
 
 bool FInventoryItem::Serialize(FArchive& ar) {
 	ar.UsingCustomVersion(FFactoryGameCustomVersion::GUID);
+	ar.UsingCustomVersion(FSaveCustomVersion::GUID);
 	if (ar.CustomVer(FFactoryGameCustomVersion::GUID) >= FFactoryGameCustomVersion::InventoryItemGotPersistantSeralization) {
 		ar << ItemClass;
-		ar << ItemState;
+		if (ar.CustomVer(FSaveCustomVersion::GUID) >= FSaveCustomVersion::RefactoredInventoryItemState) {
+			ItemState.Serialize(ar);
+		} else {
+			ar << LegacyItemStateActor;
+		}
 	}
 	return true;
 }
