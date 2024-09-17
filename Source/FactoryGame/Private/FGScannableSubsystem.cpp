@@ -3,6 +3,8 @@
 #include "FGScannableSubsystem.h"
 #include "Net/UnrealNetwork.h"
 
+DEFINE_LOG_CATEGORY(LogScannableSubsystem);
+
 AFGScannableSubsystem* AFGScannableSubsystem::Get(UWorld* world){ return nullptr; }
 AFGScannableSubsystem* AFGScannableSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGScannableSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

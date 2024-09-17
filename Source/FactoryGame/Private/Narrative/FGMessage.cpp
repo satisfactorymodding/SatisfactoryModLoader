@@ -2,6 +2,8 @@
 
 #include "Narrative/FGMessage.h"
 
+DEFINE_LOG_CATEGORY(LogNarrative);
+
 #if WITH_EDITOR
 void UFGMessage::MarkMessageAssetDirty(){ }
 void UFGMessage::SaveAsset(){ }

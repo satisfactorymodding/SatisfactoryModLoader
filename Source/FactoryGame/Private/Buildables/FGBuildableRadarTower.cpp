@@ -2,6 +2,8 @@
 
 #include "Buildables/FGBuildableRadarTower.h"
 
+DEFINE_LOG_CATEGORY(LogRadarTower);
+
 AFGBuildableRadarTower::AFGBuildableRadarTower() : Super() {
 	this->mRevealRadius = 100000.0;
 	this->mCompassMaterialInstance = nullptr;

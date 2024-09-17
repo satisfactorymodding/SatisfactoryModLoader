@@ -5,6 +5,8 @@
 #include "FGPowerConnectionComponent.h"
 #include "FGPowerInfoComponent.h"
 
+DEFINE_LOG_CATEGORY(LogFGTestManager);
+
 AFGTestManager::AFGTestManager() : Super() {
 	this->mDefaultTestMap = FSoftObjectPath("/Game/FactoryGame/Map/TestMapFactoryGame.TestMapFactoryGame");
 	this->mDefaultTestMapOptions = TEXT("?skipOnboarding?allowPossessAny");

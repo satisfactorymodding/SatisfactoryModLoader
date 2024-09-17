@@ -2,6 +2,9 @@
 
 #include "Replication/FGReplicationGraph.h"
 
+DEFINE_LOG_CATEGORY(LogFactoryReplicationGraph);
+DEFINE_LOG_CATEGORY(LogConveyorFrequencyNodes);
+
 void UFGReplicationGraph::ResetGameWorldState(){ }
 void UFGReplicationGraph::InitConnectionGraphNodes(UNetReplicationGraphConnection* connectionManager){ }
 void UFGReplicationGraph::InitGlobalActorClassSettings(){ }

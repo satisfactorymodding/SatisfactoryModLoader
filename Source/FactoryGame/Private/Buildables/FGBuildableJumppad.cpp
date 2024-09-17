@@ -6,6 +6,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Net/UnrealNetwork.h"
 
+DEFINE_LOG_CATEGORY(LogJumpPad);
+
 AFGBuildableJumppad::AFGBuildableJumppad() : Super() {
 	this->mPowerBankCapacity = 0.0;
 	this->mLaunchPowerCost = 0.0;

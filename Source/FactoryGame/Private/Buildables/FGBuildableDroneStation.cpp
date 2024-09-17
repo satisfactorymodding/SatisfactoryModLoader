@@ -4,6 +4,8 @@
 #include "FGInventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 
+DEFINE_LOG_CATEGORY(LogDroneStation);
+
 AFGBuildableDroneStation::AFGBuildableDroneStation() : Super() {
 	this->mDroneDockingStartLocationLocal = FVector::ZeroVector;
 	this->mDroneDockingLocationLocal = FVector::ZeroVector;

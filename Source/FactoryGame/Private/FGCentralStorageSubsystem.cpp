@@ -3,6 +3,8 @@
 #include "FGCentralStorageSubsystem.h"
 #include "Net/UnrealNetwork.h"
 
+DEFINE_LOG_CATEGORY(LogCentralStorage);
+
 AFGCentralStorageSubsystem::AFGCentralStorageSubsystem() : Super() {
 
 }

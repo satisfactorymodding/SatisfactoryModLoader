@@ -4,6 +4,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Resources/FGItemDescriptor.h"
 
+DEFINE_LOG_CATEGORY(LogResourceSink);
+
 AFGResourceSinkSubsystem::AFGResourceSinkSubsystem() : Super() {
 	this->mCouponClass = nullptr;
 	this->mTotalPoints.Emplace();

@@ -7,6 +7,8 @@
 #include "FGPowerInfoComponent.h"
 #include "Net/UnrealNetwork.h"
 
+DEFINE_LOG_CATEGORY(LogHoverPack);
+
 AFGHoverPack::AFGHoverPack() : Super() {
 	this->mHoverSpeed = 800.0;
 	this->mHoverAccelerationSpeed = 2000.0;

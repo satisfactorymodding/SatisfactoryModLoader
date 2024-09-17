@@ -3,6 +3,8 @@
 #include "FGWorldEventSubsystem.h"
 #include "Net/UnrealNetwork.h"
 
+DEFINE_LOG_CATEGORY(LogWorldEvent);
+
 TAutoConsoleVariable<int32> CVarWorldEventDebug(TEXT("CVarWorldEventDebug"), 0, TEXT(""));
 AFGWorldEventSubsystem* AFGWorldEventSubsystem::Get(UWorld* world){ return nullptr; }
 AFGWorldEventSubsystem* AFGWorldEventSubsystem::Get(UObject* worldContext){ return nullptr; }

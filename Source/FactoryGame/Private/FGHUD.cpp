@@ -2,6 +2,8 @@
 
 #include "FGHUD.h"
 
+DEFINE_LOG_CATEGORY(LogHUD);
+
 AFGHUD::AFGHUD() : Super() {
 	this->mGameUIClass = nullptr;
 	this->mRespawnUIClass = nullptr;

@@ -5,6 +5,8 @@
 #include "Components/SceneComponent.h"
 #include "Net/UnrealNetwork.h"
 
+DEFINE_LOG_CATEGORY(LogCreature);
+
 TAutoConsoleVariable<int32> CVarCreatureDebug(TEXT("CVarCreatureDebug"), 0, TEXT(""));
 TAutoConsoleVariable<int32> CVarCreatureVisionDebug(TEXT("CVarCreatureVisionDebug"), 0, TEXT(""));
 void UFGCreatureInterruptTest::Initialize(APawn* pawn, AController* controller, UFGAction* ownerAction){ }

@@ -2,6 +2,8 @@
 
 #include "FGWorldGridSubsystem.h"
 
+DEFINE_LOG_CATEGORY(LogWorldGrid);
+
 FFGWorldGridCellData::FFGWorldGridCellData(){ }
 FFGWorldGridCell::FFGWorldGridCell(){ }
 FFGWorldGridCell::FFGWorldGridCell(const FFGWorldGridCellData& Data, const FVector& WorldLocation, int32 CellIndex, float DefaultElevation){ }

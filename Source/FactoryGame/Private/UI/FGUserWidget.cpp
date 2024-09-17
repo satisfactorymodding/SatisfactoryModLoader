@@ -2,6 +2,8 @@
 
 #include "UI/FGUserWidget.h"
 
+DEFINE_LOG_CATEGORY(LogUI);
+
 #if WITH_EDITOR
 void UFGUserWidget::ValidateCompiledWidgetTree(const UWidgetTree& BlueprintWidgetTree,  IWidgetCompilerLog& CompileLog) const{ }
 #endif 

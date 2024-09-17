@@ -4,6 +4,8 @@
 
 #include "Networking/FGServerAPIManager.h"
 
+DEFINE_LOG_CATEGORY(LogServer);
+
 void FFactoryDSModule::StartupModule(){ }
 void FFactoryDSModule::ShutdownModule(){ }
 

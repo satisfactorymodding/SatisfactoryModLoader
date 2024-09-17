@@ -2,6 +2,8 @@
 
 #include "FGServerManager.h"
 
+DEFINE_LOG_CATEGORY(LogServerManager);
+
 FServerManagerSaveHeader::FServerManagerSaveHeader(){ }
 void FServerManagerSaveHeader::Serialize(FArchive& Ar){ }
 #if WITH_EDITOR

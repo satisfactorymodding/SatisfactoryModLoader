@@ -5,6 +5,8 @@
 #include "FGInventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 
+DEFINE_LOG_CATEGORY(LogDrones);
+
 TAutoConsoleVariable<int32> CVarDronesDebug(TEXT("CVarDronesDebug"), 0, TEXT(""));
 #if !UE_BUILD_SHIPPING
 void AFGDroneVehicle::ShowDebug(){ }

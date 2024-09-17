@@ -3,6 +3,8 @@
 #include "Settings/FGUserSetting.h"
 #include "Internationalization/StringTableRegistry.h"
 
+DEFINE_LOG_CATEGORY(LogUserSetting);
+
 #if WITH_EDITOR
 bool UFGUserSetting::SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction) const{ return bool(); }
 EDataValidationResult UFGUserSetting::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult::Valid; }

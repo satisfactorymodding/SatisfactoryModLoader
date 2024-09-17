@@ -4,6 +4,8 @@
 #include "Components/SceneComponent.h"
 #include "Net/UnrealNetwork.h"
 
+DEFINE_LOG_CATEGORY(LogFoliageReplication);
+
 void FFoliageRemovalHashArray::PostReplicatedAdd(const TArrayView<int32>& AddedIndices, int32 FinalSize){ }
 void UFGFoliageRemovalBundle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

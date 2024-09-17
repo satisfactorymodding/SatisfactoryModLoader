@@ -2,6 +2,8 @@
 
 #include "Creature/FGAction.h"
 
+DEFINE_LOG_CATEGORY(LogAction);
+
 TAutoConsoleVariable<int32> CVarActionDebug(TEXT("CVarActionDebug"), 0, TEXT(""));
 UFGAction::UFGAction(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mActionDescription = TEXT("");
