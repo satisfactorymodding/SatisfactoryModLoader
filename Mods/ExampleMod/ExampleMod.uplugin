@@ -20,5 +20,6 @@
 			"Name": "ExampleMod",
 			"LoadingPolicy": "Always"
 		}
-	]
+	],
+	"GameVersion": ">=365306"
 }
