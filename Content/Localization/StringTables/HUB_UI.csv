@@ -1,0 +1,268 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"HUB/ActiveMilestone/Info/SelectMilestoneNotice","NOTICE:
+Please select a Milestone","","","UI","#interface
+#hub
+#milestone"
+"HUB/ActiveMilestone/Info/SelectTierNotice","NOTICE:
+Please select a Tier ","","","UI","#interface
+#hub
+#tier"
+"HUB/ActiveMilestone/LaunchPod/Button","LAUNCH POD","","","UI","#interface
+#hub
+#milestone"
+"HUB/ActiveMilestone/Locked","Locked","","","UI","#interface
+#hub
+#milestone"
+"HUB/ActiveMilestone/StartResearch/Button","Start Research","","","UI","#interface
+#hub
+#milestone"
+"HUB/ActiveMilestone/Unlocked","Already Unlocked","","","UI","#interface
+#hub
+#milestone"
+"HUB/ActiveMilestone/Upgrade/Button","UPGRADE HUB","","","UI","#interface
+#hub
+#milestone"
+"HUB/ActiveMilestone/Upgrade/MilestoneCost","Milestone Cost","","","UI","#interface
+#hub
+#milestone"
+"HUB/ActiveMilestone/Upgrade/Rewards","Rewards","","","UI","#interface
+#hub
+#milestone"
+"HUB/CurrentMilestone/Info/Current","Current Milestone:","","","UI","#interface
+#hub
+#milestone"
+"HUB/CurrentMilestone/Info/Current/None","No Milestone Selected","","","UI","#interface
+#hub
+#milestone"
+"HUB/CurrentMilestone/Info/CurrentResearch","Current MAM Research:","","","UI","#interface
+#hub
+#milestone"
+"HUB/CurrentMilestone/Info/Time/Pattern","{min}:{sec}","","{min} = number
+{sec} = number","UI","#interface"
+"HUB/Info/Button","Select Milestone","","","UI","#interface
+#hub
+#milestone"
+"HUB/Info/Description","Description","","","UI","#interface
+#hub"
+"HUB/Info/PodReturnTime","Pod will return in:","","","UI","#interface
+#hub"
+"HUB/Info/Tab/ActiveMilestone","Active Milestone","","","UI","#interface
+#hub
+#milestone"
+"HUB/Name","The HUB","","","UI","#interface
+#hub"
+"HUB/Rewards/HandEquipmentSlots/1","+1 Hand Equipment Slot","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/HandEquipmentSlots/Pattern","+{numslots} Hand Equipment Slots","","{numslots} = number","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/InventorySlot","Inventory Slot","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/InventorySlot/Description","This reward grants the pioneer an additional inventory slot","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/InventorySlots/Pattern","+{numslots} Inventory Slots","","{numslots} = number","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/Map","Map","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/Map/Description","This reward provides the pioneer with a map that can be accessed at any time","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/NewBuilding","New Buildings","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/NewDecor","New Decor","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/NewEquipmet","New Equipment","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/NewParts","New Parts","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/NewResources","New Resources","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/NewScannableResources","New Scannable Resources","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/NewVehicles","New Vehicles","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/OverclockBuildings","Overclock Buildings","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/OverclockBuildings/Description","This upgrade unlocks new functionality that lets the pioneer overclock factory buildings.","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/PlayerUpgraded","Player Upgraded","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/ProductivityDisplay","Productivity Display","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Rewards/ProductivityDisplay/Description","This upgrade allows the pioneer to view the efficiency of each building.","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/Schematics/CurrentMilestone","CURRENT MILESTONE","","","UI","#buildable
+#schematic
+#interface
+#hub
+#milestone"
+"HUB/Schematics/PopUp/FinishedResearch","RESEARCH FINISHED","","","UI","#buildable
+#schematic
+#interface
+#hub
+#milestone"
+"HUB/Schematics/PopUp/NewAlternateRecipe","ALTERNATE RECIPE UNLOCKED","","","UI","#buildable
+#schematic
+#interface
+#hub
+#milestone"
+"HUB/Schematics/PopUp/NewMilestone","MILESTONE UNLOCKED","","","UI","#buildable
+#schematic
+#interface
+#hub
+#milestone"
+"HUB/Schematics/PopUp/PurchasedSchematic","SCHEMATIC PURCHASED","","","UI","#buildable
+#schematic
+#interface
+#hub
+#milestone"
+"HUB/Schematics/PopUp/UnlockedWithNoCost","Unlocked with No Cost","","","UI","#buildable
+#schematic
+#interface
+#hub
+#milestone"
+"HUB/Schematics/Rewards/Blueprints","Build Gun Upgrade: Blueprints","","","UI","#buildable
+#interface
+#hub
+#reward"
+"HUB/SelectMilestone/Button","Select Milestone","","","UI","#buildable
+#schematic
+#interface
+#hub
+#milestone"
+"HUB/SelectMilestone/Info/Cost","Cost","","","UI","#interface
+#hub"
+"HUB/SelectMilestone/Rewards","Rewards","","","UI","#interface
+#hub
+#reward"
+"HUB/SelectMilestone/TierNumber","Tier","","","UI","#buildable
+#interface
+#hub
+#tier"
+"HUB/SpaceElevator/CompletePhase1","Complete Space Elevator Phase 1","","","UI","#buildable
+#space_elevator"
+"HUB/SpaceElevator/CompletePhase2","Complete Space Elevator Phase 2","","","UI","#buildable
+#space_elevator"
+"HUB/SpaceElevator/CompletePhase3","Complete Space Elevator Phase 3","","","UI","#buildable
+#space_elevator"
+"HUB/SpaceElevator/CompletePhase4","Complete Space Elevator Phase 4","","","UI","#buildable
+#space_elevator"
+"HUB/SpaceElevator/CompletePhase5","Complete Space Elevator Phase 5","","","UI","#buildable
+#space_elevator"
+"HUB/Tabs/SelectMilestone","Select Milestone","","","UI","#interface
+#hub
+#milestone"
+"HUB/Terminal/ActiveMilestone/NotSelected","No Milestone Selected!","","","UI","#buildable
+#interface
+#hub
+#milestone"
+"HUB/Terminal/DropPod/MilestoneManager","Motivational Milestone Manager","","","UI","#buildable
+#interface
+#hub
+#drop_pod"
+"HUB/Terminal/DropPod/ReturnTime/Pattern","Pod will return in: {Time}","","{Time} = text, time (min:sec)","UI","#buildable
+#interface
+#hub
+#drop_pod"
+"HUB/Terminal/DropPod/Status/Launched","Pod Launched!","","","UI","#buildable
+#interface
+#hub
+#drop_pod"
+"HUB/Terminal/DropPod/Status/ReadyForLaunch","Ready for Launch!","","","UI","#buildable
+#interface
+#hub
+#drop_pod"
+"HUB/Terminal/ProductionModule/NoUnlockCost","""No Unlock Cost"" Active","","","UI","#buildable
+#interface
+#hub"
+"HUB/Terminal/SelectMilestone/TextBoxHint","Select Milestone...","","","UI","#buildable
+#interface
+#hub
+#milestone"
+"HUB/Terminal/Tabs/ActiveMilestone","Active Milestone","","","UI","#buildable
+#interface
+#hub
+#milestone"
+"HUB/Terminal/Tabs/SelectMilestone","Select Milestone","","","UI","#buildable
+#interface
+#hub
+#milestone"
+"HUB/Terminal/Tier/CompleteTheHUB","Complete
+The HUB","","","UI","#buildable
+#interface
+#hub
+#tier"
+"HUB/Terminal/Title","The Hub","","","UI","#buildable
+#interface
+#hub
+#milestone"
+"HUB/Terminal/Upgrade/ReadyForUpgrade","Ready to Upgrade the HUB!","","","UI","#buildable
+#interface
+#hub"
+"HUB/Terminal/Upgrade/TierInfo/Pattern","{Title} - {Info}","","{Title} = text, schematic name
+{Info} = one of `HUB/Terminal/DropPod/Status/ReadyForLaunch`, `HUB/Terminal/Upgrade/ReadyForUpgrade`, `HUB/Terminal/Upgrade/WaitingForResources`","UI",""
+"HUB/Terminal/Upgrade/WaitingForResources","Waiting for Resources...","","","UI","#buildable
+#interface
+#hub"
+"HUB/Tier/Phase/Pattern","Phase {PhaseNum}","","{PhaseNum} = number","UI","#buildable
+#interface
+#hub
+#tier"
+"HUB/Tier/Status/Locked/Tooltip","Tier Locked","","","UI","#buildable
+#interface
+#hub
+#tier"
+"HUB/Tier/Status/Locked/Tooltip/Description/Pattern","Complete Space Elevator Phase {PhaseNum} to unlock Tier","","{PhaseNum} = number","UI","#buildable
+#interface
+#hub
+#tier"
+"HUB/TimeLeft","Time Left:","","","UI","#interface
+#hub"
+"HUB/Toilet/LookAtName","Toilet","","","",""
+"HUB/Toilet/Name","The Toilet","The HUB now has a flushable toilet. Players can interact with it which opens an inventory, where players can flush items.","","",""
+"Special/HUB","The HUB","","","UI","HUB"
+"Special/HUB/Flush/Button","Press {BUTTON} to flush","","{PlayerActions_Use} = text, key name","UI","HUB"
+"Special/HUB/LookAtDescription","Press {BUTTON} to interact with {NAME}","","{BUTTON} = text, key name
+{NAME} = text, localized building name (HUB)","UI","#common
+#look_at_description"
+"Special/HUB/OpenStorage/Button","Open Storage","","","UI","HUB"
+"Special/HUB/UseCraftBench/Button","Use Crafting Bench","","","UI","HUB"
+"Special/HUB/UseCraftBench/Occupied","Crafting Bench occupied","","","UI","HUB"
+"Special/HUB/UseMAM/Button","Use the MAM","","","UI","HUB"
+"Special/HUB/UseMAM/Occupied","The MAM is occupied","","","UI","HUB"

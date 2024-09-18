@@ -1,0 +1,661 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"Drones/Drone/MapText/Name/Pattern","Drone {StationName}","","{StationName} = text","UI",""
+"Drones/DronePort/AllPortsTab","All Ports","","","UI","#interface
+#transportation"
+"Drones/DronePort/AllPortsTab/AllPorts","All Ports:","","","UI","#interface
+#transportation"
+"Drones/DronePort/AllPortsTab/FoundPorts/None","<White>No Ports</>","","","UI","#interface
+#transportation"
+"Drones/DronePort/AllPortsTab/FoundPorts/One/Pattern","<Orange>+1</> other Port","Drone Port screen, used for +1 port only (not ICU one)","","UI","#interface
+#transportation"
+"Drones/DronePort/AllPortsTab/FoundPorts/Pattern","<Orange>{number} Ports found</>","Drone Port screen, supports plurals","{number} = number","UI","#interface
+#transportation"
+"Drones/DronePort/AllPortsTab/FoundPorts/Plural/Pattern","<Orange>+{number}</> other Ports","Drone Port screen, supports plurals","{number} = number","UI","#interface
+#transportation"
+"Drones/DronePort/AllPortsTab/FoundPorts/PluralWithLimit/Pattern","<Orange>{number} Ports found.</> Only the {displayLimit} farthest are displayed. Please narrow your search.","Drone Port screen, supports plurals, used when over display limit","{number} = number
+{displayLimit} = number","UI","#interface
+#transportation"
+"Drones/DronePort/AllPortsTab/FoundPortsOne/Pattern","<Orange>1 Port found</>","Drone Port screen, used for 1 port only","","UI","#interface
+#transportation"
+"Drones/DronePort/AllPortsTab/NoPorts/Description","No Drone Ports found.","","","UI","#interface
+#transportation"
+"Drones/DronePort/AllPortsTab/Search/Match","Exact match!","","","UI","#interface
+#transportation"
+"Drones/DronePort/AllPortsTab/Search/TextBoxHint","Search for a port...","","","UI","#interface
+#transportation"
+"Drones/DronePort/LookAtDescription/Pattern","Press {Use} to interact with {Name}","","{Use} = text, key name
+{Name} = text, localized building name (Drone Port)","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/BatteriesPerMin/NA","N/A","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/BatteriesPerMin/Pattern","{batteries_used_per_minute} per min","","{batteries_used_per_minute} = number","UI","#buildable
+#transportation"
+"Drones/DronePort/MainTab/Destination/NoPort","No Port - Select a destination...","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Destination/NoPort/TextBoxHint","Select a destination...","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Destination/Route/Pattern","{ThisStation} - {StationName}","","{ThisStation} = text, port name
+{StationName} = text, another port name","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/DroneStatus","DRONE STATUS:","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Fuel/Label","Fuel","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Fuel/Tooltip","The amount of Fuel required by a single Drone per round trip.","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/FuelPerMinute","Fuel per Minute","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/FuelPerMinute/Tooltip","The Fuel throughput required to meet the round trip requirements for a single Drone.","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Items/Incoming","Incoming:","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Items/Outgoing","Outgoing:","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/LastFuelType","Last Fuel Type","","","UI",""
+"Drones/DronePort/MainTab/Name/TextBoxHint","Enter name here...","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Power/NA","N/A","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/PowerConsumption","Power Consumption","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/PowerConsumption/Tooltip","The amount of power the Drone Port is currently consuming.","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/RoundtripTime","Round Trip Time","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/RoundtripTime/Tooltip","The time it takes for a Drone to travel from this Port to the connected Port, and back.","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Status/CannotUnload","Cannot Unload","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Status/Charging","Charging","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Status/Docked","Docked","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Status/Docking","Docking","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Status/EnRoute","En Route","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Status/Loading","Loading","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Status/NoDrone","No Drone","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Status/NoFuel","Not Enough Fuel","","","UI",""
+"Drones/DronePort/MainTab/Status/NotEnoughFuel","Insufficient Fuel","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Status/Takeoff","Takeoff","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Status/Unloading","Unloading","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Target","TARGET:","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Target/NoDestinationSet","No Destination Set","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Time/NA","N/A","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Transfer/IncomingOutgoingTransferRate","Incoming/Outgoing Transfer Rate","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Transfer/IncomingOutgoingTransferRate/Tooltip","The number of items transported from and to this Port, based on the most recent Drone activity.","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Transfer/IncomingTransferRate/Pattern","<WhiteSmall>Incoming Transfer Rate:</>
+<OrangeSmall>{StackSize} items per minute</>","","{StackSize} = number, number of items","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Transfer/MaxTransferRate","Maximum Transfer Rate","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Transfer/MaxTransferRate/Pattern","<WhiteSmall>Maximum Transfer Rate:</>
+<OrangeSmall>{StackSize} stacks per minute</>","","{StackSize} = number, number of items","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Transfer/MaxTransferRate/Tooltip","The maximum Incoming and Outgoing throughput this Port can currently achieve, based on all the Drones transporting from and to this Port.","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/Transfer/OutgoingTransferRate/Pattern","<WhiteSmall>Outgoing Transfer Rate:</>
+<OrangeSmall>{StackSize} items per minute</>","","{StackSize} = number, number of items","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/TripCost","Trip Cost","","","UI",""
+"Drones/DronePort/MainTab/TripCost/NA","N/A","","","UI","#interface
+#transportation"
+"Drones/DronePort/MainTab/TripCost/Pattern","{trip_cost_in_fuel} per trip","","{trip_cost_in_fuel} = number, battery consumption","UI","#interface
+#transportation"
+"Drones/DronePort/MapText/BatteryConsumption/Pattern","Battery Consumption: <OrangeSmall>{amount} per minute</>","","{amount} = number, battery consumption","UI","#interface
+#transportation"
+"Drones/DronePort/MapText/BatteryConsumption/Unknown","Battery Consumption: <OrangeSmall>N/A</>","","","UI","#interface
+#transportation"
+"Drones/DronePort/MapText/DroneStatus/Pattern","Drone Status: <OrangeSmall>{Status}</>","Drone screen","{Status} = text","UI","#interface
+#transportation"
+"Drones/DronePort/MapText/MaxTransferRate/Pattern","Maximum Transfer Rate: <OrangeSmall>{StackSize} stacks per minute</>","","{StackSize} = text, formatted number of stacks","UI","#interface
+#transportation"
+"Drones/DronePort/PlusOnePort/Pattern","+{Num} other Port...","Drone Port screen, used for 1 port only (not ICU `one`)","{Num} = number","UI","#interface
+#transportation"
+"Drones/DronePort/PlusPluralPorts/Pattern","+{Num} other Ports...","Drone Port screen, supports plurlals","{Num} = number","UI","#interface
+#transportation"
+"Drones/DronePort/ThisPortTab","This Port","","","UI","#interface
+#transportation"
+"Drones/DronePort/ThisPortTab/Destination/Distance/Pattern","{A} m","","{A} = number, distance","UI","#buildable
+#transportation"
+"Drones/DronePort/ThisPortTab/RelevantPorts","Relevant Ports:","","","UI","#interface
+#transportation"
+"Drones/DronePort/ThisPortTab/ThisPort","This Port:","","","UI","#interface
+#transportation"
+"Drones/DronePort/ThisPortTab/ThisPort/Destination","Destination","","","UI","#interface
+#transportation"
+"Drones/DronePort/ThisPortTab/ThisPort/Destination/Route/ThisPort","(This Port)","","","UI","#interface
+#transportation"
+"Drones/DronePort/ThisPortTab/ThisPort/Distance","Distance","","","UI","#interface
+#transportation"
+"Drones/DronePort/ThisPortTab/ThisPort/Name","Port Name","","","UI","#interface
+#transportation"
+"Drones/DronePort/ThisPortTab/ThisPort/Status","Status","","","UI","#interface
+#transportation"
+"Drones/DronePort/ThisPortTab/Tooltip/BatteryConsumption","Battery Consumption:","","","UI","#interface
+#transportation"
+"Drones/DronePort/ThisPortTab/Tooltip/BatteryConsumption/Pattern","{float_number_of_batteries} per minute","","{float_number_of_batteries} = number, number of batteries","UI","#buildable
+#transportation"
+"Drones/DronePort/ThisPortTab/Tooltip/MaxTransferRate/Pattern","{float_number_of_stacks} stacks per minute","","{float_number_of_stacks} = number","UI","#buildable
+#transportation"
+"Drones/DronePort/Tooltip/DroneStatus","Drone Status:","Drone Port screen","","UI","#interface
+#transportation"
+"Drones/DronePort/Tooltip/MaxTransferRate","Maximum Transfer Rate:","Drone Port screen","","UI","#interface
+#transportation"
+"Drones/DronePort/Warning/NoPower","NO POWER","","","UI","#interface
+#transportation"
+"Drones/DronePort/Warning/ProductionPaused","Production Paused","","","UI","#interface
+#transportation"
+"Equipment/FactoryCart/FunnyName","Puny Vroom","","","UI",""
+"Equipment/FactoryCart/Inventory","Factory Cart™ Inventory","","","UI","#interface
+#transportation"
+"Equipment/FactoryCart/Inventory/NotEnoughSpace","Not enough space in inventory.","","","UI","#interface
+#transportation"
+"Equipment/FactoryCart/LookAtDescription/Enter/Pattern","Press {BUTTON} to enter Factory Cart™","","{BUTTON} = text, key name","UI","#interface
+#transportation"
+"Equipment/FactoryCart/LookAtDescription/PickUp","Pick Up Factory Cart™","","","UI","#interface
+#transportation"
+"Equipment/FactoryCart/WorkBench/LookAtDescription/Open/Pattern","Press [{BUTTON}] to open Crafting Bench","","{BUTTON} = text, key name","UI","#interface
+#transportation"
+"Portals/ChangeLinkedPortal/Button","Change Linked Portal","","","UI","Portal"
+"Portals/DefaultName","Portal","","","UI","Portal"
+"Portals/DisconnectLink/Button","Disconnect Link","","","UI","Portal"
+"Portals/LinkLocation","Portal Link Location","","","UI","Portal"
+"Portals/Name/Pattern","{Building}: {Name}","","{Building} = text, localizaed building name (Portal)
+{Name} = text, Portal name","UI","Portal"
+"Portals/Name/TextBoxHint","Enter Name...","","","UI","Portal"
+"Portals/Portals/Available","Available Portals","","","UI","Portal"
+"Portals/Portals/Current","This Portal","","","UI","Portal"
+"Portals/Portals/List/CurrentLiked","Current Linked Portal","","","UI","Portal"
+"Portals/Portals/List/Invalid","Invalid","","","UI","Portal"
+"Portals/Portals/List/LinkedWithDifferentPortal","Linked with different Portal","","","UI","Portal"
+"Portals/Portals/List/NotMasterPortal","Not a Master Portal","","","UI","Portal"
+"Portals/Portals/List/NotPowered","Not powered","","","UI","Portal"
+"Portals/Portals/List/NotSatellitePortal","Not a Satellite Portal","","","UI","Portal"
+"Portals/Portals/Unavailable","Unavailable Portals","","","UI","Portal"
+"Portals/ProductionStats/HeatingUp","Heating up...","","","UI","Portal"
+"Portals/ProductionStats/MaintainingConnection","Maintaining connection...","","","UI","Portal"
+"Portals/Select/Button","Select Linked Portal","","","UI","Portal"
+"Portals/Select/WindowName","Select Linked Portal","","","",""
+"Portals/SelectLink/Button","Select Link","","","UI","Portal"
+"Portals/Status/NotLinked","This Portal has not been linked.","","","UI","Portal"
+"Shared/Fuel/FuelInfo/BurnRate/Label","Burn rate","","","UI",""
+"Shared/Fuel/FuelInfo/BurnRate/Pattern","{label}: {rate} per min","","{label} = text, label
+{rate} = number","UI","#interface
+#common
+Fuel Info"
+"Shared/Fuel/FuelInfo/BurnRateSuffix/Pattern","{label}: {rate} {Suffix} per min","","{label} = text, label
+{rate} = number
+{Suffix} = text, units","UI","#interface
+#common
+Fuel Info"
+"Shared/Fuel/FuelMenu/FuelTypes/Label","Supported Fuel Types","","","UI","#interface
+#common
+Fuel Info"
+"TrainStation/RepresentationText/Pattern","{A}: {B}","","{A} = text, `map text` (localized building name, Train Station, etc.?)
+{B} = text, station name","UI","#interface
+#transportation"
+"Trains/DockingStation/Fluid/OutgoingTransferRateMetersCubic/Pattern","<WhiteSmall>Outgoing Transfer Rate:</>
+<OrangeSmall>{TransferRateText} m³ per minute</>","","{TransferRateText} = number","UI","#interface
+#transportation"
+"Trains/DockingStation/Fluid/Platform","Platform","","","UI","#buildable
+#transportation
+#item"
+"Trains/DockingStation/IncomingTransferRate/Pattern","<WhiteSmall>Incoming Transfer Rate:</>
+<OrangeSmall>{TransferRateText}</>","Train Station screen","{TransferRateText} = number","UI","#interface
+#transportation"
+"Trains/DockingStation/IncomingTransferRateItemsPerMinute/Fluid/Pattern","<WhiteSmall>Incoming Transfer Rate:</>
+<OrangeSmall>{TransferRateText} items per minute</>","","{TransferRateText} = number","UI","#interface
+#transportation"
+"Trains/DockingStation/IncomingTransferRateItemsPerMinute/Pattern","<WhiteSmall>Incoming Transfer Rate:</>
+<OrangeSmall>{TransferRateText} items per minute</>","Train Station screen","{TransferRateText} = number","UI","#interface
+#transportation"
+"Trains/DockingStation/OutgoingTransferRate/Pattern","<WhiteSmall>Outgoing Transfer Rate:</>
+<OrangeSmall>{TransferRateText}</>","Train Station screen","{TransferRateText} = number","UI","#interface
+#transportation"
+"Trains/DockingStation/Storage/Label","STORAGE","","","UI","#interface
+#transportation"
+"Trains/DockingStation/Storage/OutgoingTransferRatePerMinute/Pattern","<WhiteSmall>Outgoing Transfer Rate:</>
+<OrangeSmall>{TransferRateText} items per minute</>","","{TransferRateText} = number","UI","#interface
+#transportation"
+"Trains/DockingStation/TrainSettings","TRAIN SETTINGS:","","","UI","#interface
+#transportation"
+"Trains/FeightWagon/Fluid/None","None","","","UI","#interface
+#transportation"
+"Trains/FeightWagon/LookAtDescription/Interact/Pattern","Press {Use} to interact with {Name}","","{Use} = text, key name
+{Name} = text, localized name (Freight Wagon)","UI","#interface
+#transportation"
+"Trains/FeightWagon/StoreAll/Button","STORE ALL","","","UI","#interface
+#transportation"
+"Trains/FeightWagon/TakeAll/Button","TAKE ALL","","","UI","#interface
+#transportation"
+"Trains/FreightCar/LookAtDescription/Open/Pattern","Press [{0}] to open inventory","","{0} = text, key name","UI","#common
+#look_at_description"
+"Trains/Locomotive/HUD/Brake","BRAKE","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/Docking","DOCKING","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/Keybindings/Break","Brake","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/Keybindings/ForwardReverse","Forward/Reverse","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/Keybindings/LeaveLocomotive","Leave Locomotive","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/Keybindings/OpenTrainMenu","Open Train Menu","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/Keybindings/SwitchIntersectionPath","Switch Intersection Path","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/NextStation","Next Station","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/NoPower","No Power","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/Speed","Speed","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/Speed/KMH","KM/H","","","UI","#interface
+#transportation"
+"Trains/Locomotive/HUD/TimeTable","Timetable","","","UI","#interface
+#transportation"
+"Trains/Locomotive/LookAtDescription/Dock/Pattern","Press [{Trains_Dock}] to Dock","","{Trains_Dock} = text, key name","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/CancelDocking/Button","Cancel Docking","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/CancelingDocking","Canceling Docking...","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/EditTimeTable/Button","Edit Timetable","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/Info","Info","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/Info/Name","Train Name:","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/Info/Stats","Train Stats:","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/SelfDrivingOff/Button","Turn off Self Driving","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/SelfDrivingOn/Button","Turn on Self Driving","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/SpeedUnits","KM/H","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/Status","Status","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/TimeTable","Timetable","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/TimeTable/ActivateSelfDrivingHint","Turn on Self Driving to activate Timetable","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/TimeTable/NoStops","No Stops in Timetable","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Menu/WindowTitle","Locomotive","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Stats/AutopilotOff/Button","Autopilot Off","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Stats/AutopilotOn/Button","Autopilot On","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Stats/CargoFilled","Amount of Cargo Filled:","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Stats/Dock/Button","Dock","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Stats/Name/FunnyTextBoxHint","Insert Choo Choo Name","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Stats/PowerConsumption","Power Consumption:","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Stats/Speed","Speed:","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/Derailed","Train Derailed","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/Docking","Docking...","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/InvalidPlacement","Invalid Locomotive placement.","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/InvalidStop","Next Stop is invalid.","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/NoDriving","Manual Driving","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/NoPower","No Power","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/NoTimeTable","Locomotive has no Timetable.","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/Operational","Operational","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/Parked","Parked","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/PathInvalid","Path is invalid.","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/SignalError","Train is waiting unusually long at a signal. A signal error may have occured.","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/Unreachable","Next Stop is unreachable.","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Status/UnreachableDueToSignals","Signals are making the next Stop unreachable.","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/Discard/Button","Discard","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/LoadOnly/Label","Load Only","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/LocomotiveStaysUntil","Locomotive should stay at the station until...","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/LocomotiveStaysUntil/Logic/And","and","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/LocomotiveStaysUntil/Logic/Or","or","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/LocomotiveStaysUntil/Rules/01","Freight Wagon is fully loaded/unloaded","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/LocomotiveStaysUntil/Rules/02","One load/unload has been completed","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/LocomotiveStaysUntil/WaitTime","wait for (seconds):","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/SaveChanges/Button","Save","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/UnloadOnly/Label","Unload Only","","","UI","#interface
+#transportation"
+"Trains/Locomotive/StopSettings/WindowTitle","Stop Settings","","","UI","#interface
+#transportation"
+"Trains/Locomotive/TimeTable/Edit/NextStation","Next Station","","","UI","#interface
+#transportation"
+"Trains/Locomotive/TimeTable/Setup/AvailableStation","Available Stations","","","UI","#interface
+#transportation"
+"Trains/Locomotive/TimeTable/Setup/AvailableStation/Search/TextBoxHint","Search for a station...","","","UI","#interface
+#transportation"
+"Trains/Locomotive/TimeTable/Setup/Current","Current Timetable","","","UI","#interface
+#transportation"
+"Trains/Locomotive/TimeTable/Setup/Discard/Button","Discard Changes","","","UI","#interface
+#transportation"
+"Trains/Locomotive/TimeTable/Setup/Save/Button","Save Changes","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Warning/CannotDock","Cannot Dock outside of Station","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Warnings/DiscardChanges/Body","Are you sure you want to discard the changes?","","","UI",""
+"Trains/Locomotive/Warnings/DiscardChanges/aTitle","Warning","","","UI",""
+"Trains/Locomotive/Warnings/InvalidNextStop","Invalid Next Stop","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Warnings/InvalidPlacement","Invalid Locomotive Placement","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Warnings/NoPath","No Path","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Warnings/NoPower","No Power","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Warnings/NoTimetable","No Timetable","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Warnings/SignalingProblem","Signaling Problem","","","UI","#interface
+#transportation"
+"Trains/Locomotive/Warnings/StationUnreachable","Station Unreachable","","","UI","#interface
+#transportation"
+"Trains/LookAtDescription/Rerail/Pattern","Press [{0}] to re-rail train","","{0} = text, key name","UI","#common
+#look_at_description"
+"Trains/RailroadSwitch/LookAtDescription/Toggle/Pattern","Press [{0}] to toggle switch","","{0} = text, key name","UI","#common
+#look_at_description"
+"Trains/RailwaySignal/Status","Current State","","","UI","#interface
+#transportation"
+"Trains/RailwaySignal/Status/BlockClear","Block Clear","","","UI","#interface
+#transportation"
+"Trains/RailwaySignal/Status/BlockOccupied","Block Occupied","","","UI","#interface
+#transportation"
+"Trains/RailwaySignal/Status/ConflictingSignal","Block has conflicting entry signal types.","","","UI","#interface
+#transportation"
+"Trains/RailwaySignal/Status/InvalidSignal","Invalid Signal","","","UI","#interface
+#transportation"
+"Trains/RailwaySignal/Status/Loop","Signal loops into itself.","","","UI","#interface
+#transportation"
+"Trains/RailwaySignal/Status/MissingConnections","Signal has missing connections.","","","UI","#interface
+#transportation"
+"Trains/RailwaySignal/Status/NoExitSignal","Block has no exit signal.","","","UI","#interface
+#transportation"
+"Trains/RailwaySignal/Status/PathApproved","Path Approved","","","UI","#interface
+#transportation"
+"Trains/RailwaySignal/Status/PathBlockContainsStations","Path block cannot contain stations.","","","UI","#interface
+#transportation"
+"Trains/RailwaySignal/Status/WaitingForPathReservation","Waiting for Path Reservation","","","UI","#interface
+#transportation"
+"Trains/RepresentationText","Train","Default name for a train until it is renamed.","","",""
+"Trains/TrainStation/InvalidIdentifier","INVALID IDENTIFIER","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Locomotive","Locomotive","","","UI","Train Station"
+"Trains/TrainStation/MapText/Connected","Connected","","","UI","#interface
+#transportation"
+"Trains/TrainStation/MapText/Disconnected","Disconnected","","","UI","#interface
+#transportation"
+"Trains/TrainStation/MapText/PowerConsumption","Power Consumption:","","","UI","#interface
+#transportation"
+"Trains/TrainStation/MapText/PowerStatus","Power Status:","","","UI","#interface
+#transportation"
+"Trains/TrainStation/MapText/Storage","Storage:","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Name/TextBoxHint","Enter Name...","","","UI","#interface
+#transportation"
+"Trains/TrainStation/NextStop","Next Stop: ","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Notifications/01","Please mind the gap between the train and the platform.","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Notifications/02","Do not leave any unattended crates on the platform.","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Notifications/03","Have an efficient day!","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Notifications/04","FICSIT and its affiliates are not responsible for any delays caused by any reason, including but not limited to: hog attacks, biomass on track, oncoming trains, collisions, nuclear meltdowns, or general situational derailment.","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Notifications/05","Be sure to have your FICSIT badge ready at all times.","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Status/InvalidIdentifier","Invalid Train Station Identifier","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Status/NoPower/AllCaps","NO POWER","","","UI","#interface
+#transportation"
+"Trains/TrainStation/TimeTable","Timetable","","","UI","#interface
+#transportation"
+"Trains/TrainStation/TimeTable/StationsList","Stations","","","UI","#interface
+#transportation"
+"Trains/TrainStation/TimeTable/TrainsList","Trains","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Timetable/AvailableStations","Available Stations","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Timetable/Header","Timetable","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Timetable/NextStop","Next Stop","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Timetable/Note","You have made changes to this Timetable. Close this window to apply the changes.","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Timetable/Search/TextBoxHint","Search for an item...","","","UI","#interface
+#transportation"
+"Trains/TrainStation/Timetable/SetAsNextStop/Button","Set as Next Stop","","","UI","#interface
+#transportation"
+"Vehicles/CraftBench/Fuel/Label","FUEL","The trunk is called ""Craft Bench""","","UI","#interface
+#transportation"
+"Vehicles/CraftBench/LookAtDescription/Occupied","Crafting Bench is occupied!","Look-at description tooltip","","",""
+"Vehicles/CraftBench/LookAtDescription/Open/Pattern","Press [{BUTTON}] to open Crafting Bench","Look-at description tooltip","{BUTTON} = text, key name","UI","#interface
+Common Vehicles Tooltips"
+"Vehicles/CraftBench/Storage/WindowTitle","Vehicle Storage","The trunk is called ""Craft Bench""","","UI","#interface
+#transportation"
+"Vehicles/CraftBench/StoreAll/Button","STORE ALL","The trunk is called ""Craft Bench""","","UI","#interface
+#transportation"
+"Vehicles/CraftBench/TakeAll/Button","TAKE ALL","The trunk is called ""Craft Bench""","","UI","#interface
+#transportation"
+"Vehicles/CraftBench/WindowTitle","Crafting Bench","The trunk is called ""Craft Bench""","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/FuelConsumption","Fuel Consumption","","","UI","#buildable
+#transportation
+#item"
+"Vehicles/DockingStation/FuelConsumption/Description","The amount of fuel required for a Vehicle to finish its route.","","","UI","#buildable
+#transportation
+#item"
+"Vehicles/DockingStation/Info/Data","VEHICLE STATION DATA:","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/Fuel/Label","FUEL","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/FuelPerMin/Pattern","{fuel} per min","","{fuel} = number, fuel consumption","UI","#buildable
+#transportation"
+"Vehicles/DockingStation/Info/IncomingTransferRate/Pattern","<WhiteSmall>Incoming Transfer Rate:</>
+<OrangeSmall>{IncomingTransferRate} items per minute</>","","{IncomingTransferRate} = number","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/MaxTransferRate","Maximum Transfer Rate","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/MaxTransferRate/Pattern","<WhiteSmall>Maximum Transfer Rate:</>
+<OrangeSmall>{MaxTransferRate} stacks per minute</>","","{MaxTransferRate} = number","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/MaximumTransferRate/Description","The maximum Incoming and Outgoing throughput this Truck Station can currently achieve, based on all the Vehicles transporting from and to this Truck Station.","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/Name","Station Name","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/Name/TextBoxHint","Enter name here...","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/None","N/A","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/OutgoingTransferRate/Pattern","<WhiteSmall>Outgoing Transfer Rate:</>
+<OrangeSmall>{OutgoingTransferRate} items per minute</>","","{OutgoingTransferRate} = number","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/PowerConsumption","Power Consumption","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/PowerConsumption/Description","The amount of power the Truck Station is currently consuming.","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/Status/Load","LOAD","Should the docking station load its inventory from the vehicle?","","",""
+"Vehicles/DockingStation/Info/Status/Unload","UNLOAD","Should the docking station unload its inventory into the vehicle?","","",""
+"Vehicles/DockingStation/Info/TransferRate","Incoming/Outgoing Transfer Rate","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/TransferRate/Description","The amount of items transported from and to this Truck Station, based on the most recent Vehicle activity.","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/VehicleSettings","VEHICLE SETTINGS:","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/RouteStatus/Operational","Routes are operational.","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/RouteStatus/Roundtrips","All vehicles can complete their round trips.","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/RouteStatus/WrongFuelType","Inadequate Fuel Type","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Storage/Label","STORAGE","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/VehicleStatus/WrongFuel/Description","Please use a more efficient type of fuel. One of the vehicles passing through this station can't make a round trip on a full stack of the current fuel used in this station.","","","UI","#interface
+#transportation"
+"Vehicles/LookAtDescription/Drive/Pattern","Press [{0}] to drive {1}","","{0} = text, key name
+{1} = text, vehicle name","UI","#common
+#look_at_description"
+"Vehicles/LookAtDescription/Enter/Pattern","Press [{0}] to enter {1}","","{0} = text, key name
+{1} = text, vehicle name","UI","#common
+#look_at_description"
+"Vehicles/RecordMenu/AutopilotOff/Button","Disable Autopilot","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/RecordMenu/AutopilotOn/Button","Enable Autopilot","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/RecordMenu/HUD/Autopilot","Autopilot: ","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/HUD/Speed","Speed","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/HUD/Speed/Variable","KM/H","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/HUD/VehiclePath","Vehicle Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/HUD/VehiclePath/Autopilot/Disabled","Disabled","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/HUDVehiclePath/Autopilot/Enabled","Enabled","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Keybindings/ChangeCamera","Change Camera","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Keybindings/LoadPath","Load Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Keybindings/OpenRecordMenu","Open Record Menu","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Keybindings/PathShowHide","Show/Hide Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Keybindings/SavePath","Save Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Keybindings/ToggleHeadlights","Toggle Headlights","Record menu that the player see when you enter a vehicle","","UI",""
+"Vehicles/RecordMenu/Keybindings/ToggleLockCamera","Toggle Lock Camera","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/DeletePath/Button","Delete Path","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/RecordMenu/Path/DeleteRecorded/Title","Delete Recorded Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Distance","Distance","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Distance/Pattern","{distance_to_vehicle} m","Record menu that the player see when you enter a vehicle","{distance_to_vehicle} = number, distance","UI","#buildable
+#transportation"
+"Vehicles/RecordMenu/Path/FuelInfo/None","None","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/FuelInfo/Pattern","{fuel_amount} {fuel_name}","Record menu that the player see when you enter a vehicle","{fuel_amount} = number, fuel volume
+{fuel_name} = text, fuel type","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/FuelPerTrip","Fuel per Trip","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/FuelPerTrip/NoFuel","No Fuel","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Legnth","Path Length","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Length/Pattern","{path_length} m","Record menu that the player see when you enter a vehicle","{path_length} = number, path length","UI","#buildable
+#transportation"
+"Vehicles/RecordMenu/Path/Load/Delete/Body","Are you sure you want to delete this vehicle path? You will have to record a new path.","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Load/NoPaths","<Bold> Path Loading </>
+There are no paths to load.","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Load/Successfull","<Bold>Path loaded!</>","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Load/TooFar","Too Far Away","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/LoadPath/AllPaths","All Vehicle Paths","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/LoadPath/Button","Load Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/LoadVehiclePath/WindowTitle","Load Vehicle Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Name","Path Name","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Save/Name/TextBoxHint","Enter a name for your path...","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Save/Name/TooShortOrExists","Invalid Path name. Check if this name already exists or if it is too short.","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Save/PathSelected/Notification","<Bold>Path saved and selected!</>
+Path has now been selected as this vehicle's current path.","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Save/SavePath/Button","Save","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Save/WindowTitle","Save Vehicle Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Search/TextBoxHint","Search for a path...","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/VehicleType","Vehicle Type","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/Vehicles","Vehicles","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/PathNodesHide/Button","Hide Path Nodes","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/RecordMenu/PathNodesShow/Button","Show Path Nodes","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/RecordMenu/RecordingStart/Button","Start Recording","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/RecordMenu/RecordingStop/Button","Stop Recording","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/RecordMenu/StartRecording/Completed","<Bold>Path recording completed!</>
+You can now save your path and load it into other vehicles.","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/StartRecording/Finish","Close the loop to finish recording...","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/StartRecording/NoFuelWarning","<Bold>No Fuel</>
+Please insert fuel before recording a path.","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/RecordMenu/VehicleControls/LogoText","VEHICLE CONTROLS","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/Status","Truck Station Loading Status","","","UI","Common Vehicles Tooltips"
+"Vehicles/Status/Loading","Loading...","","","UI","Common Vehicles Tooltips"
+"Vehicles/Status/LoadingUnloading","Loading/Unloading...","","","UI","Common Vehicles Tooltips"
+"Vehicles/Status/Unloading","Unloading...","","","UI","Common Vehicles Tooltips"
+"Vehicles/TargetPoint/DeleteNode/Body","Do you want to delete this node?","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/DeleteNode/Button","Delete Node","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/DeleteNode/Note","Delete the node to edit the path of the vehicle.","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/DeleteNode/Title","Delete node?","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/LookAtDescription/Edit/Pattern","Press {BUTTON} to edit this node","Look-at description tooltip","{BUTTON} = text, key name","UI","#interface
+Common Vehicles Tooltips"
+"Vehicles/TargetPoint/Node/VehicleNode","Vehicle Node","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/Node/VehiclePathNode","Vehicle Path Node","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/Node/VehicleWaitingNode","Vehicle Waiting Node","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/Node/WaitingTime","Wait Time","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/WaitTime/Set/Button","Set Wait Time","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/WaitTime/TextBoxHint","Enter wait time in seconds.","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/WaitTime/Time/Pattern","{WaitTime} {WaitTime}|plural(one=second,other=seconds)","Record menu that the player see when you enter a vehicle","{WaitTime} = number","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/WaitTime/Warnings/CannotBeZero","Wait time must be longer than 0 seconds.","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TargetPoint/WaitTime/Warnings/ConfirmingUpdatesTime","Confirming will update the wait time for this node.","Record menu that the player see when you enter a vehicle","","UI","#interface
+#transportation"
+"Vehicles/TruckStation/Settings/Loading","Current Setting:
+Loading Cargo","","","UI","#interface
+#transportation"
+"Vehicles/TruckStation/Settings/Unloading","Current Setting:
+Unloading Cargo","","","UI","#interface
+#transportation"
+"Vehicles/TruckStation/VehicleStatus/Deadlocked","Deadlocked","","","UI","#interface
+#transportation"
+"Vehicles/TruckStation/VehicleStatus/Driving","Driving","","","UI","#interface
+#transportation"
+"Vehicles/TruckStation/VehicleStatus/NoFuel","Out of Fuel","","","UI","#interface
+#transportation"
+"Vehicles/TruckStation/VehicleStatus/NoPower","No Power","","","UI","#interface
+#transportation"
+"Vehicles/TruckStation/VehicleStatus/Operational","Operational","","","UI","#interface
+#transportation"
+"Vehicles/TruckStation/VehicleStatus/WrongFuel","Please use a more efficient type of fuel.","","","UI","#interface
+#transportation"
+"Vehicles/TruckStation/VehicleStatus/WrongFuel/Description","Please use a more efficient type of fuel. One of the vehicles passing through this station can't make a round trip on a full stack of the current fuel used in this station.","","","UI","#interface
+#transportation"
+"Vehicles/Vehicle/LookAtDescription/LoadCargo/Pattern","Press [{Vehicles_Dock_Key}] to load cargo into {VehicleType}","","{Vehicles_Dock_Key} = text, key name
+{VehicleType} = text, localized vehicle type","UI","Common Vehicles Tooltips"
+"Vehicles/Vehicle/LookAtDescription/UnloadCargo/Pattern","Press [{Vehicles_Dock_Key}] to unload cargo from {VehicleType}","","{Vehicles_Dock_Key} = text, key name
+{VehicleType} = text, localized vehicle type","UI","Common Vehicles Tooltips"
+"Vehicles/Warnings/Enter/Full","{0} is already full, can't enter!","","{0} = text, vehicle name","UI",""
+"Vehicles/Warnings/Enter/InWater","{0} is submerged in water, can't enter or use!","","{0} = text, buildable","UI",""

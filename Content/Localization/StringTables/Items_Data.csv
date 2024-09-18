@@ -1,0 +1,1162 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"Categories/AdvancedRefinement","Advanced Refinement","Items category","","Game","#item"
+"Categories/AlienRemains","Alien Remains","Items category","","Game","#item"
+"Categories/Ammunition","Ammunition","Items category","","Game","#item"
+"Categories/Biomass","Biomass","Items category","","Game","#item"
+"Categories/BodyEquipment","Body Equipment","Items category","","Game","#item"
+"Categories/Communications","Communications","Items category","","Game","#item"
+"Categories/Compounds","Compounds","Items category","","Game","#item"
+"Categories/Consumables","Consumables","Items category","","Game","#item"
+"Categories/Containers","Containers","Items category","","Game","#item"
+"Categories/Electronics","Electronics","Items category","","Game","#item"
+"Categories/Equipment","Equipment","Items category","","Game","#item"
+"Categories/FICSMAS","FICSMAS","Items category","","Game","#item"
+"Categories/Fuel","Fuel","Items category","","Game","#item"
+"Categories/IndustrialParts","Industrial Parts","Items category","","Game","#item"
+"Categories/Ingots","Ingots","Items category","","Game","#item"
+"Categories/Nuclear","Nuclear","Items category","","Game","#item"
+"Categories/Oil","Oil","Items category","","Game","#item"
+"Categories/OilProducts","Oil Products","Items category","","Game","#item"
+"Categories/Other","Other","Items category","","Game","#item"
+"Categories/Packaging","Packaging","Items category","","Game","#item"
+"Categories/Plastic","Plastic","Items category","","Game","#item"
+"Categories/PowerShards","Power Shards","Items category","","Game","#item"
+"Categories/QuantumTechnology","Quantum Technology","Items category","","Game","#item"
+"Categories/RawMaterials","Raw Materials","Items category","","Game","#item"
+"Categories/RawResourceConversion","Raw Resource Conversion","Items category","","Game","#item"
+"Categories/Rubber","Rubber","Items category","","Game","#item"
+"Categories/SpaceElevator","Space Elevator","Items category","","Game","#item"
+"Categories/StandardParts","Standard Parts","Items category","","Game","#item"
+"Categories/Tools","Tools","Items category","","Game","#item"
+"Categories/Unpackaging","Unpackaging","Items category","","Game","#item"
+"Categories/Water","Water","Items category","","Game","#item"
+"Categories/Weapon","Weapons","Items category","","Game","#item"
+"Enviroment/HardDrive","Hard Drive","","","Game","#resources
+#item"
+"Enviroment/HardDrive/Description","Contains FICSIT data. Analyze it in the MAM to salvage its contents.","","","Game","#resources
+#item"
+"Enviroment/PowerShard","Power Shard","","","Game","#resource #item"
+"Enviroment/PowerShard/Description","Power Slug mucus compressed into a solid crystal-like shard. 
+It radiates a strange power.","","","Game","#resource #item"
+"Enviroment/PowerShard/Synthetic","Synthetic Power Shard","","","Game","#recipe
+#item"
+"Enviroment/PowerShardAlien","Alien Power Shard","","","Game","#resource #item"
+"Enviroment/PowerShardAlien/Description","Boosts production at the cost of increased energy consumption.","","","Game","#resource #item"
+"Enviroment/PowerSlug/Blue","Blue Power Slug","A collectible used to craft Power Shards, which enable overclocking of buildings. They appear as glowing immobile slugs and can found around the world.","","Game","#resources"
+"Enviroment/PowerSlug/Blue/Description","A strange slug radiating an unknown weak power.","A collectible used to craft Power Shards, which enable overclocking of buildings. They appear as glowing immobile slugs and can found around the world.","","Game","#resources"
+"Enviroment/PowerSlug/NameForScanner","Power Slugs","Collectibles used to craft Power Shards, which enable overclocking of buildings. They appear as glowing immobile slugs and can found around the world.","","Game","#resources"
+"Enviroment/PowerSlug/Purple","Purple Power Slug","A collectible used to craft Power Shards, which enable overclocking of buildings. They appear as glowing immobile slugs and can found around the world.","","Game","#resources"
+"Enviroment/PowerSlug/Purple/Description","A strange slug radiating a powerful unknown power.","A collectible used to craft Power Shards, which enable overclocking of buildings. They appear as glowing immobile slugs and can found around the world.","","Game","#resources"
+"Enviroment/PowerSlug/Yellow","Yellow Power Slug","A collectible used to craft Power Shards, which enable overclocking of buildings. They appear as glowing immobile slugs and can found around the world.","","Game","#resources"
+"Enviroment/PowerSlug/Yellow/Description","A strange slug radiating an unknown power.","A collectible used to craft Power Shards, which enable overclocking of buildings. They appear as glowing immobile slugs and can found around the world.","","Game","#resources"
+"Environment/CrashDebris","Crash Debris","","","Game",""
+"Environment/Geyser","Geyser","","","Game","#resource #item"
+"Environment/Geyser/Description","Turns the Geothermal Generator turbines.","","","Game","#resource #item"
+"Environment/HatcherRemains","Hatcher Remains","","","Game","#resource
+#item"
+"Environment/HatcherRemains/Description","The shell-like remains of an alien... thing.
+Used for MAM research.","","","Game","#resource
+#item"
+"Environment/MercerSphere","Mercer Sphere","","","Game","#prototype
+#item"
+"Environment/MercerSphere/Description","A weird alien phenomenon. While the sphere appears liquid, it behaves like a solid and does not have any detectable mass. It seems to somehow interact with and have awareness of its environment.","","","Game","#prototype
+#item"
+"Environment/Somersloop","Somersloop","","","Game","#prototype
+#item"
+"Environment/Somersloop/Description","An odd alien object with a mind-bending, yet somehow familiar shape. It emits an unsettling energy.","","","Game","#prototype
+#item"
+"Materials/AluminaSolution","Alumina Solution","","","Game","#resource
+#item"
+"Materials/AluminaSolution/Abbreviation","AL","","","",""
+"Materials/AluminaSolution/Description","Dissolved Alumina, extracted from Bauxite. Can be further refined into Aluminum Scrap for Aluminum Ingot production.","","","Game","#resource
+#item"
+"Materials/AluminaSolutionPackaged","Packaged Alumina Solution","","","Game","#resource
+#item"
+"Materials/AluminaSolutionPackaged/Abbreviation","AL","","","Game","#resource
+#item"
+"Materials/AluminaSolutionPackaged/Description","Alumina Solution, packaged for alternative transport.","","","Game","#resource
+#item"
+"Materials/AluminaSolutionSloppy","Alternate: Sloppy Alumina","","","Game","#alternate
+#schematic
+#item"
+"Materials/AluminaSolutionUnpackaged","Unpackage Alumina Solution","","","Game","#recipe
+#item"
+"Materials/Bauxite","Bauxite","","","Game","#resource
+#raw
+#item"
+"Materials/Bauxite/Abbreviation","Baux","","","Game","#resource
+#raw
+#item"
+"Materials/Bauxite/Caterium","Bauxite (Caterium)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/Bauxite/Copper","Bauxite (Copper)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/Bauxite/Description","Used to produce Alumina, which can be further refined into the Aluminum Scrap required to produce Aluminum Ingots.","","","Game","#resource
+#raw
+#item"
+"Materials/BiofuelLiquidPackaged","Packaged Liquid Biofuel","","","Game","#resource
+#item"
+"Materials/BiofuelLiquidPackaged/Abbreviation","Bio","","","Game","#resource
+#item"
+"Materials/BiofuelLiquidPackaged/Description","Liquid Biofuel, packaged for alternative transport. Can be used as fuel for vehicles and the Jetpack.","","","Game","#resource
+#item"
+"Materials/BiofuelSolid","Solid Biofuel","","","Game","#resource
+#item"
+"Materials/BiofuelSolid/Description","The most energy-efficient form of solid Biomass. Can be used as fuel for the Chainsaw.","","","Game","#resource
+#item"
+"Materials/Biomass","Biomass","","","Game","#resource
+#item"
+"Materials/Biomass/AlienCarapace","Biomass (Alien Carapace)","Constructor option","","Game","#recipe
+#item"
+"Materials/Biomass/AlienOrgans","Biomass (Alien Organs)","Constructor option","","Game","#recipe
+#item"
+"Materials/Biomass/AlienProtein","Biomass (Alien Protein)","Constructor option","","Game","#recipe
+#item"
+"Materials/Biomass/Description","Primarily used as fuel.
+Biomass Burners and vehicles can use it for power.
+Biomass is much more energy-efficient than raw biological matter.","","","Game","#resource
+#item"
+"Materials/Biomass/Leaves","Biomass (Leaves)","Constructor option","","Game","#recipe
+#item"
+"Materials/Biomass/Mycelia","Biomass (Mycelia)","Constructor option","","Game","#recipe
+#item"
+"Materials/Biomass/Wood","Biomass (Wood)","Constructor option","","Game","#recipe
+#item"
+"Materials/BlackPowder","Black Powder","","","Game","#resource
+#item"
+"Materials/BlackPowder/Description","An explosive powder that is commonly used to produce simple explosives.","","","Game","#resource
+#item"
+"Materials/BlackPowderFine","Alternate: Fine Black Powder","","","Game","#alternate
+#schematic
+#item"
+"Materials/BlackPowderSmokeless","Smokeless Powder","","","Game","#resource
+#item"
+"Materials/BlackPowderSmokeless/Description","An explosive powder that is commonly used to produce modern firearms.","","","Game","#resource
+#item"
+"Materials/CateriumOre","Caterium Ore","","","Game","#resource
+#raw
+#item"
+"Materials/CateriumOre/Abbreviation","Cat","","","Game","#resource
+#raw
+#item"
+"Materials/CateriumOre/Copper","Caterium Ore (Copper)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/CateriumOre/Description","Smelted into Caterium Ingots, which are primarily used for advanced electronics.","","","Game","#resource
+#raw
+#item"
+"Materials/CateriumOre/Quartz","Caterium Ore (Quartz)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/Coal","Coal","","","Game","#resource
+#raw
+#item"
+"Materials/Coal/Description","Mainly used as fuel for vehicles & Coal-Powered Generators, or in Steel production.","","","Game","#resource
+#raw
+#item"
+"Materials/Coal/FunnyName","cOaL","","","Game","#resource
+#raw
+#item"
+"Materials/Coal/Iron","Coal (Iron)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/Coal/Limestone","Coal (Limestone)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/CoalBio","Alternate: Biocoal","","","Game","#alternate
+#schematic
+#item"
+"Materials/CoalCharcoal","Alternate: Charcoal","","","Game","#alternate
+#schematic
+#item"
+"Materials/CompactedCoal","Compacted Coal","","","Game","#resource
+#item"
+"Materials/CompactedCoal/Abbreviation","Comp","","","Game","#resource
+#item"
+"Materials/CompactedCoal/Description","A much more efficient alternative to Coal. Used as fuel for vehicles and Coal-Powered Generators.","","","Game","#resource
+#item"
+"Materials/CompactedCoalAlt","Alternate: Compacted Coal","","","Game","#alternate
+#schematic
+#item"
+"Materials/Concrete","Concrete","","","Game","#resource
+#item"
+"Materials/Concrete/Abbreviation","Con","","","Game","#resource
+#item"
+"Materials/Concrete/Description","Used for building.
+Good for stable Foundations.","","","Game","#resource
+#item"
+"Materials/ConcreteFine","Alternate: Fine Concrete","","","Game","#alternate
+#schematic
+#item"
+"Materials/ConcreteRubber","Alternate: Rubber Concrete","","","Game","#alternate
+#schematic
+#item"
+"Materials/ConcreteWet","Alternate: Wet Concrete","","","Game","#alternate
+#schematic
+#item"
+"Materials/CopperOre","Copper Ore","","","Game","#resource
+#raw
+#item"
+"Materials/CopperOre/Abbreviation","Cop","","","Game","#resource
+#raw
+#item"
+"Materials/CopperOre/Description","Used for crafting.
+A basic resource primarily used for electricity.","","","Game","#resource
+#raw
+#item"
+"Materials/CopperOre/Quartz","Copper Ore (Quartz)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/CopperOre/Sulfur","Copper Ore (Sulfur)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/CopperPowder","Copper Powder","","","Game","#resource
+#item"
+"Materials/CopperPowder/Abbreviation","Cop","","","Game","#resource
+#item"
+"Materials/CopperPowder/Description","Ground-up Copper Ingots.
+The high natural density of Copper, combined with the granularity of the powder, makes this part perfect for producing Nuclear Pasta in the Particle Accelerator.","","","Game","#resource
+#item"
+"Materials/CrudeOil","Crude Oil","","","Game","#resource
+#raw
+#item"
+"Materials/CrudeOil/Abbreviation","Oil","","","Game","#resource
+#raw
+#item"
+"Materials/CrudeOil/Description","Refined into all kinds of Oil-based resources, like Fuel and Plastic.","","","Game","#resource
+#raw
+#item"
+"Materials/CrudeOilPackaged","Packaged Oil","","","Game","#resource
+#raw
+#item"
+"Materials/CrudeOilPackaged/Abbreviation","Oil","","","Game","#resource
+#raw
+#item"
+"Materials/CrudeOilPackaged/Description","Crude Oil, packaged for alternative transport. Can be used as fuel for vehicles.","","","Game","#resource
+#raw
+#item"
+"Materials/CrudeOilUnpackaged","Unpackage Oil","","","Game","#recipe
+#item"
+"Materials/DarkEnergy","Dark Matter Residue","","","Game","#resource
+#item"
+"Materials/DarkEnergy/Abbreviation","DMR","","","Game","#resource
+#item"
+"Materials/DarkEnergy/Description","Produced as a by-product of Quantum Encoding processes and alternatively generated in the Converter.
+
+Various fields of science are still debating the nature and properties of Dark Matter. Meanwhile, FICSIT has found several applications for it in space-time manipulation.","","","Game","#resource
+#item"
+"Materials/DarkMatter","Dark Matter Crystal","","","Game","#resource
+#item"
+"Materials/DarkMatter/Description","Concentrated Dark Matter Residue that is isolated within a crystalline vessel. This form of containment allows for utilising Dark Matter reliably in other production processes.
+
+Power Usage: 500-1500 MW (1000 MW average).","","","Game","#resource
+#item"
+"Materials/DarkMatterALTCrystallization","Alternate: Dark Matter Crystallization","","","",""
+"Materials/DarkMatterALTTrap","Alternate: Dark Matter Trap","","","",""
+"Materials/Diamonds","Diamonds","","","Game","#resource
+#item"
+"Materials/Diamonds/Description","Synthetic Diamonds produced by exposing Coal to extreme heat and pressure.
+
+Used in the production of Time Crystals and Dark Matter Crystals.
+
+Power Usage: 250-750 MW (500 MW average).","","","Game","#resource
+#item"
+"Materials/DiamondsALTCloudy","Alternate: Cloudy Diamonds","","","",""
+"Materials/DiamondsALTOilBased","Alternate: Oil-Based Diamonds","","","",""
+"Materials/DiamondsALTPetroleumBased","Alternate: Petroleum Diamonds","","","",""
+"Materials/DiamondsALTPink","Alternate: Pink Diamonds","","","",""
+"Materials/DiamondsALTTurbo","Alternate: Turbo Diamonds","","","",""
+"Materials/DissolvedSilica","Dissolved Silica","","","Game",""
+"Materials/DissolvedSilica/Abbreviation","DS","","","",""
+"Materials/DissolvedSilica/Description","Silica dissolved in Water, produced as part of the alternative refinement of Raw Quartz.
+The Silica can be extracted from the Water to complete the refinement process.","","","Game",""
+"Materials/ExoticMatter","Quark Conductor","","","Game","#resource
+#item"
+"Materials/ExoticMatter/Description","PENDING DESCRIPTION.
+
+Produced by channeling Quark Matter through a Diamond at high energies.","","","Game","#resource
+#item"
+"Materials/FicsiteIngot/Aluminum","Ficsite Ingot (Aluminum)","","","Game","#recipe
+#item"
+"Materials/FicsiteIngot/Caterium","Ficsite Ingot (Caterium)","","","Game","#recipe
+#item"
+"Materials/FicsiteIngot/Iron","Ficsite Ingot (Iron)","","","Game","#recipe
+#item"
+"Materials/Fuel","Fuel","","","Game","#resource
+#item"
+"Materials/Fuel/Abbreviation","Fuel","","","Game","#resource
+#item"
+"Materials/Fuel/Description","Can be used as-is to generate power, or packaged to be used as fuel for vehicles or the Jetpack.","","","Game","#resource
+#item"
+"Materials/FuelALTDarkIon","Alternate: Dark-Ion Fuel","","","",""
+"Materials/FuelAResidual","Residual Fuel","","","Game","#recipe
+#item"
+"Materials/FuelDiluted","Alternate: Diluted Fuel","","","Game","#alternate
+#schematic
+#item"
+"Materials/FuelPackaged","Packaged Fuel","","","Game","#resource
+#item"
+"Materials/FuelPackaged/Abbreviation","Fuel","","","Game","#resource
+#item"
+"Materials/FuelPackaged/Description","Fuel, packaged for alternative transport. Can be used as fuel for vehicles and the Jetpack.","","","Game","#resource
+#item"
+"Materials/FuelPackagedDiluted","Alternate: Diluted Packaged Fuel","","","Game","#alternate
+#schematic
+#item"
+"Materials/FuelTurbo","Turbofuel","","","Game","#recipes"
+"Materials/FuelTurbo/Abbreviation","Turbo","","","Game","#resource
+#item"
+"Materials/FuelTurbo/Description","A more efficient alternative to Fuel. Can be used as-is to generate power, or packaged to be used as fuel for vehicles.","","","Game","#resource
+#item"
+"Materials/FuelTurboAlt","Alternate: Turbofuel","","","Game","#alternate
+#schematic
+#item"
+"Materials/FuelTurboBlend","Alternate: Turbo Blend Fuel","","","Game","#alternate
+#schematic
+#item"
+"Materials/FuelTurboHeavy","Alternate: Turbo Heavy Fuel","","","Game","#alternate
+#schematic
+#item"
+"Materials/FuelTurboPackaged","Packaged Turbofuel","","","Game","#resource
+#item"
+"Materials/FuelTurboPackaged/Abbreviation","Turbo","","","Game","#resource
+#item"
+"Materials/FuelTurboPackaged/Description","Turbofuel, packaged for alternative transport. Can be used as fuel for vehicles and the Jetpack.","","","Game","#resource
+#item"
+"Materials/FuelTurboUnpackaged","Unpackage Turbofuel","","","Game","#recipe
+#item"
+"Materials/FuelUnpackaged","Unpackage Fuel","","","Game","#recipe
+#item"
+"Materials/HeavyOilResidue","Heavy Oil Residue","","","Game","#resource
+#item"
+"Materials/HeavyOilResidue/Abbreviation","HOR","","","Game","#resource
+#item"
+"Materials/HeavyOilResidue/Description","A by-product of Plastic and Rubber production. Can be further refined into Fuel and Petroleum Coke.","","","Game","#resource
+#item"
+"Materials/HeavyOilResidueAlternate","Alternate: Heavy Oil Residue","","","Game","#alternate
+#schematic
+#item"
+"Materials/HeavyOilResiduePackaged","Packaged Heavy Oil Residue","","","Game","#resource
+#item"
+"Materials/HeavyOilResiduePackaged/Abbreviation","HOR","","","Game","#resource
+#item"
+"Materials/HeavyOilResiduePackaged/Description","Heavy Oil Residue, packaged for alternative transport. Can be used as fuel for vehicles.","","","Game","#resource
+#item"
+"Materials/HeavyOilResidueUnpackaged","Unpackage Heavy Oil Residue","","","Game","#recipe
+#item"
+"Materials/IonizedFuel","Ionized Fuel","","","Game","#resource
+#item"
+"Materials/IonizedFuel/Abbreviation","Ion","","","Game","#resource
+#item"
+"Materials/IonizedFuel/Description","Fuel that has been ionized, allowing it to deliver incredible output.
+Can be used as-is to power Fuel-Powered Generators, or packaged to be used as fuel for vehicles or the Jetpack.","","","Game","#resource
+#item"
+"Materials/IonizedFuelPackaged","Packaged Ionized Fuel","","","Game","#resource
+#item"
+"Materials/IonizedFuelPackaged/Abbreviation","Ion","","","Game","#resource
+#item"
+"Materials/IonizedFuelPackaged/Description","Ionized Fuel, packaged for alternative transport. Can be used as fuel for vehicles and the Jetpack.","","","Game","#resource
+#item"
+"Materials/IonizedFuelUnpackaged","Unpackage Ionized Fuel","","","Game","#recipe
+#item"
+"Materials/IronOre","Iron Ore","","","Game","#resource
+#raw
+#item"
+"Materials/IronOre/Abbreviation","Iron","","","Game","#resource
+#raw
+#item"
+"Materials/IronOre/Description","Used for crafting.
+The most essential basic resource.","","","Game","#resource
+#raw
+#item"
+"Materials/IronOre/Limestone","Iron Ore (Limestone)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/IronOre/PlutoniumWaste","Iron Ore (Plutonium Waste)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/Limestone","Limestone","","","Game","#resource
+#raw
+#item"
+"Materials/Limestone/Abbreviation","Stone","","","Game","#resource
+#raw
+#item"
+"Materials/Limestone/Description","Used for crafting.
+A basic resource primarily used for stable Foundations.","","","Game","#resource
+#raw
+#item"
+"Materials/Limestone/Sulfur","Limestone (Sulfur)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/Limestone/UraniumWaste","Limestone (Uranium Waste)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/LiquidBiofuel","Liquid Biofuel","","","Game","#resource
+#item"
+"Materials/LiquidBiofuel/Abbreviation","Bio","","","Game","#resource
+#item"
+"Materials/LiquidBiofuel/Description","Liquid Biofuel can be used as-is to generate power, or packaged to be used as fuel for vehicles.","","","Game","#resource
+#item"
+"Materials/LiquidBiofuelUnpackaged","Unpackage Liquid Biofuel","","","Game","#recipe
+#item"
+"Materials/Mycelia","Mycelia","","","Game","#resource
+#item"
+"Materials/Mycelia/Description","Used for crafting.
+Biomass Burners and vehicles can also use Mycelia for power.","","","Game","#resource
+#item"
+"Materials/NitricAcid","Nitric Acid","","","Game","#resource
+#item"
+"Materials/NitricAcid/Abbreviation","NA","","","Game","#resource
+#item"
+"Materials/NitricAcid/Description","Produced when Nitrogen Gas reacts with Water. Its high corrosiveness and oxidizing properties make it an excellent choice for refinement and fuel production processes.","","","Game","#resource
+#item"
+"Materials/NitricAcidPackaged","Packaged Nitric Acid","","","Game","#resource
+#item"
+"Materials/NitricAcidPackaged/Abbreviation","NA","","","Game","#resource
+#item"
+"Materials/NitricAcidPackaged/Description","Nitric Acid, packaged for alternative transport.","","","Game","#resource
+#item"
+"Materials/NitricAcidUnpackaged","Unpackage Nitric Acid","","","Game","#recipe
+#item"
+"Materials/NitrogenGas","Nitrogen Gas","","","Game","#resource
+#raw
+#item"
+"Materials/NitrogenGas/Abbreviation","N","","","Game","#resource
+#raw
+#item"
+"Materials/NitrogenGas/Bauxite","Nitrogen Gas (Bauxite)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/NitrogenGas/Caterium","Nitrogen Gas (Caterium)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/NitrogenGas/Description","Has a variety of uses, including metallurgy, cooling, and Nitric Acid production. On MASSAGE-2 (AB)b, it can be extracted from underground gas wells.","","","Game","#resource
+#raw
+#item"
+"Materials/NitrogenGasPackaged","Packaged Nitrogen Gas","","","Game","#resource
+#item"
+"Materials/NitrogenGasPackaged/Abbreviation","N","","","Game","#resource
+#item"
+"Materials/NitrogenGasPackaged/Description","Nitrogen Gas, packaged for alternative transport.","","","Game","#resource
+#item"
+"Materials/NitrogenGasUnpackaged","Unpackage Nitrogen Gas","","","Game","#recipe
+#item"
+"Materials/PetroleumCoke","Petroleum Coke","","","Game","#resource
+#item"
+"Materials/PetroleumCoke/Abbreviation","Coke","","","Game","#resource
+#item"
+"Materials/PetroleumCoke/Description","Used for crafting.
+A carbon-rich material distilled from Heavy Oil Residue. 
+Used as a less efficient Coal replacement.","","","Game","#resource
+#item"
+"Materials/Pigment","Pigment","","","Game","#resource
+#item"
+"Materials/Pigment/Description","Used for crafting.
+The color is brilliant and clear.","","","Game","#resource
+#item"
+"Materials/Plastic","Plastic","","","Game","#resource
+#item"
+"Materials/Plastic/Description","Versatile and easy to manufacture, this material has a wide range of uses.","","","Game","#resource
+#item"
+"Materials/PlasticRecycled","Alternate: Recycled Plastic","","","Game","#alternate
+#schematic
+#item"
+"Materials/PlasticResidual","Residual Plastic","","","Game","#recipe
+#item"
+"Materials/PlutoniumWaste","Plutonium Waste","","","Game","#resource
+#item"
+"Materials/PlutoniumWaste/Description","The by-product of consuming Plutonium Fuel Rods in a Nuclear Power Plant.
+Must be stored in a safe location. Handle with caution.
+
+Caution: EXTREMELY Radioactive.","","","Game","#resource
+#item"
+"Materials/PolymerResin","Polymer Resin","","","Game","#resource
+#item"
+"Materials/PolymerResin/Description","A by-product of Crude Oil refinement into Fuel. Commonly used to manufacture Plastic and Rubber.","","","Game","#resource
+#item"
+"Materials/PolymerResinAlt","Alternate: Polymer Resin","","","Game","#alternate
+#schematic
+#item"
+"Materials/QuantumEnergy","Excited Photonic Matter","","","Game","#resource
+#item"
+"Materials/QuantumEnergy/Abbreviation","EPM","","","",""
+"Materials/QuantumEnergy/Description","Excited Photonic Matter is essential for all production processes in the Quantum Encoder.
+
+Formed in the Converter by inducing intense photon interactions through exposure to SAM in a high-energy environment.","","","Game","#resource
+#item"
+"Materials/QuartzCrystal","Quartz Crystal","","","Game","#resource
+#item"
+"Materials/QuartzCrystal/Description","Derived from Raw Quartz. Used in the production of advanced radar technology and high-quality display screens.","","","Game","#resource
+#item"
+"Materials/QuartzCrystalALTFused","Alternate: Fused Quartz Crystal","","","",""
+"Materials/QuartzCrystalALTPurification","Alternate: Quartz Purification","","","",""
+"Materials/QuartzCrystalPure","Alternate: Pure Quartz Crystal","","","Game","#alternate
+#schematic
+#item"
+"Materials/RawQuartz","Raw Quartz","","","Game","#resource
+#raw
+#item"
+"Materials/RawQuartz/Bauxite","Raw Quartz (Bauxite)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/RawQuartz/Coal","Raw Quartz (Coal)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/RawQuartz/Description","Can be processed into Quartz Crystals and Silica, which both offer a variety of applications.","","","Game","#resource
+#raw
+#item"
+"Materials/RocketFuel","Rocket Fuel","","","Game","#resource
+#item"
+"Materials/RocketFuel/Abbreviation","Rocket","","","Game","#resource
+#item"
+"Materials/RocketFuel/Description","A high-impulse compressed gas fuel.
+Can be used as-is to power Fuel-Powered Generators, or packaged to be used as fuel for vehicles or the Jetpack.","","","Game","#resource
+#item"
+"Materials/RocketFuelALTNitro","Alternate: Nitro Rocket Fuel","","","",""
+"Materials/RocketFuelPackaged","Packaged Rocket Fuel","","","Game","#resource
+#item"
+"Materials/RocketFuelPackaged/Abbreviation","Rocket","","","Game","#resource
+#item"
+"Materials/RocketFuelPackaged/Description","Rocket Fuel, packaged for alternative transport. Can be used as fuel for vehicles and the Jetpack.","","","Game","#resource
+#item"
+"Materials/RocketFuelUnpackaged","Unpackage Rocket Fuel","","","Game","#recipe
+#item"
+"Materials/Rubber","Rubber","","","Game","#resource
+#item"
+"Materials/Rubber/Description","A very flexible material that has a lot of friction.","","","Game","#resource
+#item"
+"Materials/RubberRecycled","Alternate: Recycled Rubber","","","Game","#alternate
+#schematic
+#item"
+"Materials/RubberResidual","Residual Rubber","","","Game","#recipe
+#item"
+"Materials/SAM","SAM","","","Game","#resource
+#raw
+#item"
+"Materials/SAM/Description","Strange Alien Matter, commonly referred to as SAM, doesn't seem to follow the known laws of physics. It whispers of new possibilities.","","","Game","#resource
+#raw
+#item"
+"Materials/Silica","Silica","","","Game","#resource
+#item"
+"Materials/Silica/Abbreviation","Silica","","","Game","#resource
+#item"
+"Materials/Silica/Description","Derived from Raw Quartz. Commonly used to create glass structures, in advanced refinement processes, and for alternative production of electronics.","","","Game","#resource
+#item"
+"Materials/SilicaALTDistilled","Alternate: Distilled Silica","","","",""
+"Materials/SilicaCheap","Alternate: Cheap Silica","","","Game","#alternate
+#schematic
+#item"
+"Materials/Sulfur","Sulfur","","","Game","#resource
+#raw
+#item"
+"Materials/Sulfur/Abbreviation","S","","","Game","#resource
+#raw
+#item"
+"Materials/Sulfur/Coal","Sulfur (Coal)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/Sulfur/Description","Primarily used to produce Black Powder.","","","Game","#resource
+#raw
+#item"
+"Materials/Sulfur/Iron","Sulfur (Iron)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/SulfuricAcid","Sulfuric Acid","","","Game","#resource
+#item"
+"Materials/SulfuricAcid/Abbreviation","SA","","","Game","#resource
+#item"
+"Materials/SulfuricAcid/Description","Produced by combining Sulfur and Water in a complex reaction. Primarily used in refinement processes and Battery production.","","","Game","#resource
+#item"
+"Materials/SulfuricAcidPackaged","Packaged Sulfuric Acid","","","Game","#resource
+#item"
+"Materials/SulfuricAcidPackaged/Abbreviation","SA","","","Game","#resource
+#item"
+"Materials/SulfuricAcidPackaged/Description","Sulfuric Acid, packaged for alternative transport.","","","Game","#resource
+#item"
+"Materials/SulfuricAcidUnpackaged","Unpackage Sulfuric Acid","","","Game","#recipe
+#item"
+"Materials/UraniumNonFissible","Non-Fissile Uranium","","","Game","#resource
+#item"
+"Materials/UraniumNonFissible/Description","The Uranium-238 isotope is non-fissile, meaning it cannot be used for nuclear fission. It can, however, be converted into fissile Plutonium in the Particle Accelerator.
+
+Caution: Mildly Radioactive.","","","Game","#resource
+#item"
+"Materials/UraniumNonFissileFertile","Alternate: Fertile Uranium","","","Game","#alternate
+#schematic
+#item"
+"Materials/UraniumOre","Uranium","","","Game","#resource
+#raw
+#item"
+"Materials/UraniumOre/Abbreviation","U","","","Game","#resource
+#raw
+#item"
+"Materials/UraniumOre/Bauxite","Uranium Ore (Bauxite)","Resource conversion option","","Game","#recipe
+#item"
+"Materials/UraniumOre/Description","A radioactive element. 
+Used to produce Encased Uranium Cells for Uranium Fuel Rods.
+
+Caution: Moderately Radioactive.","","","Game","#resource
+#raw
+#item"
+"Materials/UraniumWaste","Uranium Waste","","","Game","#resource
+#item"
+"Materials/UraniumWaste/Description","The by-product of consuming Uranium Fuel Rods in a Nuclear Power Plant.
+Non-Fissile Uranium can be extracted. Handle with caution.
+
+Caution: HIGHLY Radioactive.","","","Game","#resource
+#item"
+"Materials/Water","Water","","","Game","#resource
+#raw
+#item"
+"Materials/Water/Abbreviation","H₂O","","","Game","#resource
+#raw
+#item"
+"Materials/Water/Description","It's water.","","","Game","#resource
+#raw
+#item"
+"Materials/WaterPackaged","Packaged Water","","","Game","#resource
+#raw
+#item"
+"Materials/WaterPackaged/Abbreviation","H₂O","","","Game","#resource
+#raw
+#item"
+"Materials/WaterPackaged/Description","Water, packaged for alternative transport.","","","Game","#resource
+#raw
+#item"
+"Materials/WaterUnpackaged","Unpackage Water","","","Game","#recipe
+#item"
+"Materials/Wood","Wood","","","Game","#resource
+#item"
+"Materials/Wood/Description","Primarily used as fuel.
+Biomass Burners and vehicles can use Wood for power.","","","Game","#resource
+#item"
+"Parts/AILimiter","AI Limiter","","","Game","#resource
+#item"
+"Parts/AILimiter/Description","Controls AIs and keeps them from evolving in malicious ways. Super advanced electronics.","","","Game","#resource
+#item"
+"Parts/AILimiterALTPlastic","Alternate: Plastic AI Limiter","","","",""
+"Parts/AlienDNACapsule","Alien DNA Capsule","","","Game","#resource
+#item"
+"Parts/AlienDNACapsule/Description","Translates organic chemicals into readable alien genetic information.
+Used for researching alien organisms.
+
+Go the extra kilometer! Knowledge is power, and power is just efficiency with fewer steps. Depositing Alien DNA Capsules in the AWESOME Sink provides FICSIT with knowledge, and pioneers with Coupons.","","","Game","#resource
+#item"
+"Parts/AlienPowerMatrix","Alien Power Matrix","","","Game","#resource
+#item"
+"Parts/AlienPowerMatrix/Description","This intricate condensed-matter matrix is used to enhance the output of the Alien Power Augmenter. 
+
+Initially developed in efforts to create a human-made Somersloop, the Alien Power Matrix cannot sustain the extra-dimensional energy connection on its own. However, it can effectively stabilize the energy stream of the Somersloop.","","","Game","#resource
+#item"
+"Parts/AlienProtein","Alien Protein","","","Game","#resource
+#item"
+"Parts/AlienProtein/Description","Ground-up Alien Remains in a neat little package.
+Used for medical purposes and to research alien organisms.","","","Game","#resource
+#item"
+"Parts/AluminumCasing/Description","A versatile container cast from Aluminum Ingots.","","","Game","#resource #item"
+"Parts/AluminumIngot","Aluminum Ingot","","","Game","#resource
+#item"
+"Parts/AluminumIngot/Abbreviation","AL","","","Game","#resource
+#item"
+"Parts/AluminumIngot/Description","Smelted from Aluminum Scrap, which is refined from Alumina Solution.
+Used to produce specialized aluminum-based parts.","","","Game","#resource
+#item"
+"Parts/AluminumIngotPure","Alternate: Pure Aluminum Ingot","","","Game","#alternative
+#schematic
+#item"
+"Parts/AluminumScrap","Aluminum Scrap","","","Game","#resource
+#item"
+"Parts/AluminumScrap/Description","Refined from Alumina. Can be smelted into Aluminum Ingots for industrial usage.","","","Game","#resource
+#item"
+"Parts/AluminumScrapElectrode","Alternate: Electrode Aluminum Scrap","","","Game","#alternative
+#recipe
+#item"
+"Parts/AluminumScrapInstant","Alternate: Instant Scrap","","","Game","#alternative
+#schematic
+#item"
+"Parts/AluminumSheetAlclad","Alclad Aluminum Sheet","","","Game","#resource
+#item"
+"Parts/AluminumSheetAlclad/Description","Used to make products that require high heat conduction or a high specific strength. Thin, lightweight, and highly durable.","","","Game","#resource
+#item"
+"Parts/Battery","Battery","","","Game","#resource #item"
+"Parts/Battery/Description","Primarily used as fuel for Drones and vehicles.","","","Game","#resource #item"
+"Parts/BatteryClassic","Alternate: Classic Battery","","","Game","#alternative
+#schematic
+#item"
+"Parts/BeamIndustrialEncased","Encased Industrial Beam","","","Game","#resource
+#item"
+"Parts/BeamIndustrialEncased/Description","Simultaneously utilizes the compressive strength of concrete and the tensile strength of steel.
+Mostly used as a stable base for constructing buildings.","","","Game","#resource
+#item"
+"Parts/BeamIndustrialEncasedPipe","Alternate: Encased Industrial Pipe","","","Game","#alternative
+#schematic
+#item"
+"Parts/BeamSteel","Steel Beam","","","Game","#resource
+#item"
+"Parts/BeamSteel/Description","Primarily used when constructing slightly more advanced buildings.","","","Game","#resource
+#item"
+"Parts/BeamSteelALTAluminum","Alternate: Aluminum Beam","","","",""
+"Parts/BeamSteelALTMolded","Alternate: Molded Beam","","","",""
+"Parts/Cable","Cable","","","Game","#resource #item"
+"Parts/Cable/Description","Used for crafting.
+Primarily used to build Power Lines.","","","Game","#resource #item"
+"Parts/CableCoated","Alternate: Coated Cable","","","Game","#alternative
+#schematic
+#item"
+"Parts/CableInsulated","Alternate: Insulated Cable","","","Game","#alternative
+#schematic
+#item"
+"Parts/CableQuickwire","Alternate: Quickwire Cable","","","Game","#alternative
+#schematic
+#item"
+"Parts/CanisterEmpty","Empty Canister","","","Game","#resource #item"
+"Parts/CanisterEmpty/Description","Used to package fluids for transportation.","","","Game","#resource #item"
+"Parts/CanisterEmptyIronCoated","Alternate: Coated Iron Canister","","","Game","#alternative
+#schematic
+#item"
+"Parts/CanisterSteel","Alternate: Steel Canister","","","Game","#alternative
+#schematic
+#item"
+"Parts/CasingAluminum","Aluminum Casing","","","Game","#resource
+#item"
+"Parts/CasingAluminumAlclad","Alternate: Alclad Casing","","","Game","#alternative
+#schematic
+#item"
+"Parts/CateriumIngot","Caterium Ingot","","","Game","#resource
+#item"
+"Parts/CateriumIngot/Abbreviation","Cat","","","Game","#resource
+#item"
+"Parts/CateriumIngot/Description","Smelted from Caterium Ore. Primarily used for advanced electronics.","","","Game","#resource
+#item"
+"Parts/CateriumIngotALTLeached","Alternate: Leached Caterium Ingot","","","",""
+"Parts/CateriumIngotALTTempered","Alternate: Tempered Caterium Ingot","","","",""
+"Parts/CateriumIngotPure","Alternate: Pure Caterium Ingot","","","Game","#alternative
+#schematic
+#item"
+"Parts/CircuitBoard","Circuit Board","","","Game","#resource
+#item"
+"Parts/CircuitBoard/Description","Advanced electronics that have a plethora of different uses.","","","Game","#resource
+#item"
+"Parts/CircuitBoardCaterium","Alternate: Caterium Circuit Board","","","Game","#alternative
+#schematic
+#item"
+"Parts/CircuitBoardElectrode","Alternate: Electrode Circuit Board","","","Game","#alternative
+#schematic
+#item"
+"Parts/CircuitBoardSilicon","Alternate: Silicon Circuit Board","","","Game","#alternative
+#schematic
+#item"
+"Parts/ColorCartridge/Description","Applies Patterns to structures when used with the Customizer.
+
+(Patterns can be purchased in the AWESOME Shop.)","","","Game","#resource
+#item"
+"Parts/Computer","Computer","","","Game","#resource #item"
+"Parts/Computer/Description","A complex logic machine that is used to control advanced behavior in other machines.","","","Game","#resource #item"
+"Parts/ComputerCaterium","Alternate: Caterium Computer","","","Game","#alternative
+#schematic
+#item"
+"Parts/ComputerCrystal","Alternate: Crystal Computer","","","Game","#alternative
+#schematic
+#item"
+"Parts/ComputerSuper","Supercomputer","","","Game","#resource #item"
+"Parts/ComputerSuper/Description","The next-gen version of a Computer.","","","Game","#resource #item"
+"Parts/ComputerSuperOC","Alternate: OC Supercomputer","","","Game","#alternative
+#schematic
+#item"
+"Parts/ComputerSuperstate","Alternate: Super-State Computer","","","Game","#alternative
+#schematic
+#item"
+"Parts/CoolingSystem","Cooling System","","","Game","#resource #item"
+"Parts/CoolingSystem/Description","Keeps advanced parts and buildings from exceeding efficient temperature levels.","","","Game","#resource #item"
+"Parts/CoolingSystemDevice","Alternate: Cooling Device","","","Game","#alternative
+#schematic
+#item"
+"Parts/CopperIngot","Copper Ingot","","","Game","#resource
+#item"
+"Parts/CopperIngot/Abbreviation","Cop","","","Game","#resource
+#item"
+"Parts/CopperIngot/Description","Used for crafting the most basic parts.","","","Game","#resource
+#item"
+"Parts/CopperIngotALTLeached","Alternate: Leached Copper Ingot","","","",""
+"Parts/CopperIngotALTTempered","Alternate: Tempered Copper Ingot","","","",""
+"Parts/CopperIngotAlloy","Alternate: Copper Alloy Ingot","","","Game","#alternative
+#schematic
+#item"
+"Parts/CopperIngotPure","Alternate: Pure Copper Ingot","","","Game","#alternative
+#schematic
+#item"
+"Parts/CopperSheet","Copper Sheet","","","Game","#resource #item"
+"Parts/CopperSheet/Description","Used for crafting.
+Primarily used for Pipelines due to its high corrosion resistance.","","","Game","#resource #item"
+"Parts/CopperSheetSteamed","Alternate: Steamed Copper Sheet","","","Game","#alternative
+#schematic
+#item"
+"Parts/Coupon","FICSIT Coupon","","","Game","#resource
+#item"
+"Parts/Coupon/Description","A special FICSIT bonus program Coupon, obtained through the AWESOME Sink.
+Can be redeemed in the AWESOME Shop for bonus milestones and rewards.","","","Game","#resource
+#item"
+"Parts/CrystalOscillator","Crystal Oscillator","","","Game","#resource #item"
+"Parts/CrystalOscillator/Description","An electronic oscillator circuit that uses the mechanical resonance of a vibrating crystal to create an electrical signal with a precise frequency.","","","Game","#resource #item"
+"Parts/CrystalOscillatorInsulated","Alternate: Insulated Crystal Oscillator","","","Game","#alternative
+#schematic
+#item"
+"Parts/ElectromagneticControlRod","Electromagnetic Control Rod","","","Game","#resource #item"
+"Parts/ElectromagneticControlRod/Description","Regulates power output via electromagnetism.","","","Game","#resource #item"
+"Parts/ElectromagneticControlRodConnectionRod","Alternate: Electromagnetic Connection Rod","","","Game","#alternative
+#schematic
+#item"
+"Parts/FICSITIngot","Ficsite Ingot","","","Game","#resource
+#item"
+"Parts/FICSITIngot/Abbreviation","Fics","","","Game","#resource #item"
+"Parts/FICSITIngot/Description","Produced by reconstructing other metals on a molecular level using Strange Alien Matter.
+
+Synthesized by FICSIT to be the perfect construction material, and used in the most high-end processes.","","","Game","#resource
+#item"
+"Parts/FICSITMesh","Ficsite Trigon","","","Game","#resource
+#item"
+"Parts/FICSITMesh/Description","The Ficsite Trigon, made from Ficsite Ingots, is perfectly shaped for all construction challenges. It's performance is so exceptional, it basically solved structural engineering.","","","Game","#resource
+#item"
+"Parts/Fabric","Fabric","","","Game","#resource #item"
+"Parts/Fabric/Description","Used to craft equipment.
+Flexible but durable fabric.","","","Game","#resource #item"
+"Parts/Ficsomium","Ficsonium","","","Game","#resource
+#item"
+"Parts/Ficsomium/Description","Usage and production of this material is strictly prohibited. On Earth, that is. There are no rules in space, only efficiency. 
+
+Power Usage: 500-1500 MW (1000 MW average).","","","Game","#resource
+#item"
+"Parts/FicsomiumFuelRod","Ficsonium Fuel Rod","","","Game","#resource
+#item"
+"Parts/FicsomiumFuelRod/Description","Used as fuel for Nuclear Power Plants.
+The power source that put FICSIT on the map. Literally. The crater is still there.
+
+Caution: Moderately Radioactive.","","","Game","#resource
+#item"
+"Parts/FluidTankEmpty","Empty Fluid Tank","","","Game","#resource
+#item"
+"Parts/FluidTankEmpty/Description","Used to package gases and volatile liquids for transportation.","","","Game","#resource #item"
+"Parts/FuelRodSuper","Super Fuel Rod","","","Game","#resource
+#item"
+"Parts/FuelRodSuper/Description","A crazy sci-fi part that allows pioneers to create even more power.","","","Game","#resource
+#item"
+"Parts/GenericDescription","Used for crafting.
+One of the most basic parts.","","","Game","#resource #item"
+"Parts/HUBParts","HUB Parts","","","Game",""
+"Parts/HUBParts/Description","The parts required to build the basic structure of the HUB.","","","Game","#resource #item"
+"Parts/HeatSink","Heat Sink","","","Game","#resource #item"
+"Parts/HeatSink/Description","Used to dissipate heat faster.","","","Game","#resource #item"
+"Parts/HeatSinkExchanger","Alternate: Heat Exchanger","","","Game","#alternative
+#schematic
+#item"
+"Parts/HighSpeedConnector","High-Speed Connector","","","Game","#resource #item"
+"Parts/HighSpeedConnector/Description","Connects multiple cables and wires in a very efficient way. Uses a standard pattern, so it has many varied applications.","","","Game","#resource #item"
+"Parts/HighspeedConnectorSilicon","Alternate: Silicon High-Speed Connector","","","Game","#alternative
+#schematic
+#item"
+"Parts/HogRemains","Hog Remains","","","Game","#resource
+#item"
+"Parts/HogRemains/Description","The carapace of an alien Hog creature.
+Used for MAM research.","","","Game","#resource
+#item"
+"Parts/InflatedPocketDimension","Inflated Pocket Dimension","","","Game","#schematic
+#item"
+"Parts/IronIngot","Iron Ingot","","","Game","#resource
+#item"
+"Parts/IronIngot/Abbreviation","Iron","","","Game","#resource
+#item"
+"Parts/IronIngot/Description","Used for crafting the most basic parts.","","","Game","#resource
+#item"
+"Parts/IronIngotALTBasic","Alternate: Basic Iron Ingot","","","",""
+"Parts/IronIngotALTLeached","Alternate: Leached Iron ingot","","","",""
+"Parts/IronIngotAlloy","Alternate: Iron Alloy Ingot","","","Game","#alternative
+#schematic
+#item"
+"Parts/IronIngotPure","Alternate: Pure Iron Ingot","","","Game","#alternative
+#schematic
+#item"
+"Parts/IronPlate","Iron Plate","","","Game","#resource #item"
+"Parts/IronPlateAdhered","Alternate: Adhered Iron Plate","","","Game","#alternative
+#schematic
+#item"
+"Parts/IronPlateBolted","Alternate: Bolted Iron Plate","","","Game","#alternative
+#schematic
+#item"
+"Parts/IronPlateCoated","Alternate: Coated Iron Plate","","","Game","#alternative
+#schematic
+#item"
+"Parts/IronPlateReinforced","Reinforced Iron Plate","","","Game","#resource #item"
+"Parts/IronPlateReinforced/Description","Used for crafting.
+A sturdier and more durable Iron Plate.","","","Game","#resource #item"
+"Parts/IronPlateStitched","Alternate: Stitched Iron Plate","","","Game","#alternative
+#schematic
+#item"
+"Parts/IronRebar","Iron Rebar","","","Game","#resource #item"
+"Parts/IronRebar/Abbreviation","IR","","","Game","#resource #item"
+"Parts/IronRebar/Description","Can be shot using the Rebar Gun for self-defense purposes.","","","Game","#resource #item"
+"Parts/IronRod","Iron Rod","","","Game","#resource #item"
+"Parts/IronRodALTAluminum","Alternate: Aluminum Rod","","","",""
+"Parts/IronRodSteel","Alternate: Steel Rod","","","Game","#alternative
+#schematic
+#item"
+"Parts/Leaves","Leaves","","","Game","#resource
+#item"
+"Parts/Leaves/Description","Primarily used as fuel.
+Biomass Burners and vehicles can use Leaves for power.","","","Game","#resource
+#item"
+"Parts/MetacellIngot","Metacell Ingot","","","Game","#resource #item"
+"Parts/MetacellIngot/Abbreviation","FICSIT","","","Game",""
+"Parts/MetacellIngot/Description","Organic Metal
+
+Synthesized by FICSIT to be the perfect construction material, and used in the most high-end processes.","","","Game","#resource #item"
+"Parts/MetacellMesh","Metacell Mesh","","","Game","#resource #item"
+"Parts/MetacellMesh/Description","Organic Metal Mesh.","","","Game","#resource #item"
+"Parts/MinerAutomated","Alternate: Automated Miner","Alternate recipe to create a portable miner","","Game","#alternative
+#schematic
+#item"
+"Parts/ModularFrame","Modular Frame","","","Game","#resource #item"
+"Parts/ModularFrame/Description","Used for crafting.
+A multipurpose building block.","","","Game","#resource #item"
+"Parts/ModularFrameBolted","Alternate: Bolted Frame","","","Game","#alternative
+#schematic
+#item"
+"Parts/ModularFrameSteeled","Alternate: Steeled Frame","","","Game","#alternative
+#schematic
+#item"
+"Parts/ModularFrameYFused","Fused Modular Frame","","","Game","#resource #item"
+"Parts/ModularFrameYFused/Description","A corrosion-resistant, nitride-hardened, highly-robust-yet-lightweight modular frame.","","","Game","#resource #item"
+"Parts/ModularFrameYFusedHeat","Alternate: Heat-Fused Frame","","","Game","#alternative
+#schematic
+#item"
+"Parts/ModularFrameYHeavy","Heavy Modular Frame","","","Game","#resource #item"
+"Parts/ModularFrameYHeavy/Description","A more robust multipurpose frame.","","","Game","#resource #item"
+"Parts/ModularFrameYHeavyEncased","Alternate: Heavy Encased Frame","","","Game","#alternative
+#schematic
+#item"
+"Parts/ModularFrameYHeavyFlexible","Alternate: Heavy Flexible Frame","","","Game","#alternative
+#schematic
+#item"
+"Parts/Motor","Motor","","","Game","#resource #item"
+"Parts/Motor/Description","Creates a mechanical force that is used to move things from machines to vehicles.","","","Game","#resource #item"
+"Parts/MotorElectric","Alternate: Electric Motor","","","Game","#alternative
+#schematic
+#item"
+"Parts/MotorRigor","Alternate: Rigor Motor","","","Game","#alternative
+#schematic
+#item"
+"Parts/MotorTurbo","Turbo Motor","","","Game","#resource #item"
+"Parts/MotorTurbo/Description","A more complex and powerful version of the regular Motor.","","","Game","#resource #item"
+"Parts/MotorTurboElectric","Alternate: Turbo Electric Motor","","","Game","#alternative
+#schematic
+#item"
+"Parts/MotorTurboPressure","Alternate: Turbo Pressure Motor","","","Game","#alternative
+#schematic
+#item"
+"Parts/Nobelisk","Nobelisk","Explosive. When detonated, each Nobelisk blows up in a 7.5 meters radius, dealing up to 50 damage at the center. Damage quickly falls off farther from the center of the explosion, making it almost impossible to deal full 50 points of damage due to the collision box between it and the target.","","Game","#item"
+"Parts/Nobelisk/Description","A simple explosive, useful for clearing boulders, vegetation, and other obstacles.","Explosive that detonates into multiple smaller explosions. Practical when clearing out large areas of vegetation and other inconveniences.","","Game","#item"
+"Parts/OscillatorSuperposition","Superposition Oscillator","","","Game","#resource #item"
+"Parts/OscillatorSuperposition/Description","An oscillator circuit that uses the mechanical resonance of a vibrating crystal to create a string vibration with a precise frequency. Often used in teleportation technology and dimensional manipulation.","","","Game","#resource #item"
+"Parts/PipeSteel","Steel Pipe","","","Game","#resource #item"
+"Parts/PipeSteel/Description","Primarily used when constructing slightly more advanced buildings.","","","Game","#resource #item"
+"Parts/PipeSteelALTIron","Alternate: Iron Pipe","","","",""
+"Parts/PipeSteelALTMolded","Alternate: Molded Steel Pipe","","","",""
+"Parts/PlateSteelALTCasted","Alternate: Steel Cast Plate","","","",""
+"Parts/PlateSteelCoated","Alternate: Steel-Coated Plate","","","Game","#alternative
+#schematic
+#item"
+"Parts/PlutoniumCell","Encased Plutonium Cell","","","Game","#resource
+#item"
+"Parts/PlutoniumCell/Description","Plutonium Pellets encased in concrete.
+Used to produce Plutonium Fuel Rods for Nuclear Power production.
+
+Caution: Moderately Radioactive.","","","Game","#resource
+#item"
+"Parts/PlutoniumCellInstant","Alternate: Instant Plutonium Cell","","","Game","#alternative
+#schematic
+#item"
+"Parts/PlutoniumFuelRod","Plutonium Fuel Rod","","","Game","#resource
+#item"
+"Parts/PlutoniumFuelRod/Description","Used as fuel for Nuclear Power Plants.
+
+Caution: Produces radioactive Plutonium Waste when consumed.
+Caution: HIGHLY Radioactive.","","","Game","#resource
+#item"
+"Parts/PlutoniumFuelRodUnit","Alternate: Plutonium Fuel Unit","","","Game","#alternative
+#schematic
+#item"
+"Parts/PlutoniumPellet","Plutonium Pellet","","","Game","#resource
+#item"
+"Parts/PlutoniumPellet/Description","Produced in the Particle Accelerator through conversion of Non-fissile Uranium.
+Used to produce Encased Plutonium Cells for Plutonium Fuel Rods.
+
+Power Usage: 250-750 MW (500 MW average).
+Caution: Moderately Radioactive.","","","Game","#resource
+#item"
+"Parts/PowerShard1_Title","Power Shard (1)","","","",""
+"Parts/PowerShard2_Title","Power Shard (2)","","","Game","#recipes"
+"Parts/PowerShard5_Title","Power Shard (5)","","","Game","#recipes"
+"Parts/PressureConversionCube","Pressure Conversion Cube","","","Game","#resource #item"
+"Parts/PressureConversionCube/Description","Converts outgoing force into internal pressure. Required to contain unstable, high-energy matter.","","","Game","#resource #item"
+"Parts/ProteinHatcher","Hatcher Protein","","","Game","#recipe
+#item"
+"Parts/ProteinHog","Hog Protein","","","Game","#recipe
+#item"
+"Parts/ProteinSpitter","Spitter Protein","","","Game","#recipe
+#item"
+"Parts/ProteinStinger","Stinger Protein","","","Game","#recipe
+#item"
+"Parts/Quickwire","Quickwire","","","Game","#resource #item"
+"Parts/Quickwire/Description","Caterium's high conductivity and resistance to corrosion make it ideal for small, advanced electronics.","","","Game","#resource #item"
+"Parts/QuickwireFused","Alternate: Fused Quickwire","","","Game","#alternative
+#schematic
+#item"
+"Parts/RadioControlUnit","Radio Control Unit","","","Game","#resource #item"
+"Parts/RadioControlUnit/Description","Enhances and directs radio signals.","","","Game","#resource #item"
+"Parts/RadioControlUnitConnection","Alternate: Radio Connection Unit","","","Game","#alternative
+#schematic
+#item"
+"Parts/RadioControlUnitSystem","Alternate: Radio Control System","","","Game","#alternative
+#schematic
+#item"
+"Parts/Rotor","Rotor","","","Game","#resource #item"
+"Parts/Rotor/Description","Used for crafting.
+The moving parts of a motor.","","","Game","#resource #item"
+"Parts/RotorCopper","Alternate: Copper Rotor","","","Game","#alternative
+#schematic
+#item"
+"Parts/RotorSteel","Alternate: Steel Rotor","","","Game","#alternative
+#schematic
+#item"
+"Parts/SAMAwakened","Reanimated SAM","","","Game","#resource
+#item"
+"Parts/SAMAwakened/Description","The active and contained form of the Strange Alien Matter.
+
+Proper electromagnetic containment is required, as it appears to be able to manipulate the atomic bonds of any matter it comes into contact with.","","","Game","#resource
+#item"
+"Parts/SAMFluctuator","SAM Fluctuator","","","Game","#resource
+#item"
+"Parts/SAMFluctuator/Description","The SAM Fluctuator is able to regulate and direct the behaviour of Reanimated SAM through the application of electric charges with varying frequencies.
+This control facilitates technologies such as matter-to-energy conversion and spatiotemporal matter manipulation.","","","Game","#resource
+#item"
+"Parts/Screw","Screw","","","Game","#resource #item"
+"Parts/ScrewCast","Alternate: Cast Screw","","","Game","#alternative
+#schematic
+#item"
+"Parts/ScrewSteel","Alternate: Steel Screw","","","Game","#alternative
+#schematic
+#item"
+"Parts/SingularityCell","Singularity Cell","","","Game","#resource
+#item"
+"Parts/SingularityCell/Description","Used to break down space and time. Required to power Portals.","","","Game","#resource
+#item"
+"Parts/Snowball","Snowball","","","Game","#recipe
+#item"
+"Parts/SpitterRemains","Spitter Remains","","","Game","#resource
+#item"
+"Parts/SplitterRemain/Description","The remains of a plasma-spitting alien creature.
+Used for MAM research.","","","Game","#resource
+#item"
+"Parts/Stator","Stator","","","Game","#resource #item"
+"Parts/Stator/Description","Used for crafting.
+The static parts of a motor.","","","Game","#resource #item"
+"Parts/StatorQuickwire","Alternate: Quickwire Stator","","","Game","#alternative
+#schematic
+#item"
+"Parts/SteelIngot","Steel Ingot","","","Game","#resource
+#item"
+"Parts/SteelIngot/Abbreviation","Steel","","","Game","#resource
+#item"
+"Parts/SteelIngot/Description","Smelted from a combination of Iron Ore and Coal. Can be made into several parts used in building construction.","","","Game","#resource
+#item"
+"Parts/SteelIngotCoke","Alternate: Coke Steel Ingot","","","Game","#alternative
+#schematic
+#item"
+"Parts/SteelIngotCompacted","Alternate: Compacted Steel Ingot","","","Game","#alternative
+#schematic
+#item"
+"Parts/SteelIngotSolid","Alternate: Solid Steel Ingot","","","Game","#alternative
+#schematic
+#item"
+"Parts/StingerRemains","Stinger Remains","","","Game","#resource
+#item"
+"Parts/StingerRemains/Description","The remains of whatever that creepy thing was.
+Used for MAM research.","","","Game","#resource
+#item"
+"Parts/TemporalProcessor","Neural-Quantum Processor","","","Game","#resource
+#item"
+"Parts/TemporalProcessor/Description","The Neural-Quantum Processor utilizes a combination of neural network architecture and quantum computing techniques to achieve unprecedented performance. This technology has enabled some of FICSIT's biggest advancements in artificial intelligence and relativistic engineering.","","","Game","#resource
+#item"
+"Parts/TimeCrystal","Time Crystal","","","Game","#resource
+#item"
+"Parts/TimeCrystal/Description","Time Crystals are Diamonds that have been reconfigured on a sub-atomic level in the Converter to retain a time-periodic self-organizing structure. This allows them to be used in the development of quantum processing and storage technologies.","","","Game","#resource
+#item"
+"Parts/UraniumCell/Encased","Encased Uranium Cell","","","Game","#resource
+#item"
+"Parts/UraniumCell/Encased/Description","Used to produce Uranium Fuel Rods for Nuclear Power production. Made from Uranium Ore.
+
+Caution: Mildly Radioactive.","","","Game","#resource
+#item"
+"Parts/UraniumCellInfused","Alternate: Infused Uranium Cell","","","Game","#alternative
+#schematic
+#item"
+"Parts/UraniumFuelRod","Uranium Fuel Rod","","","Game","#resource
+#item"
+"Parts/UraniumFuelRod/Description","Used as fuel for Nuclear Power Plants.
+
+Caution: Produces radioactive Uranium Waste when consumed.
+Caution: Moderately Radioactive.","","","Game","#resource
+#item"
+"Parts/UraniumFuelRodUnit","Alternate: Uranium Fuel Unit","","","Game","#alternative
+#schematic
+#item"
+"Parts/UraniumPellet","Uranium Pellet","","","Game","#resource
+#item"
+"Parts/UraniumPellet/Description","Produced in the Refinery, Uranium Pellets are purified and cast from Uranium Ore. 
+Primarily used to make Uranium Cells.
+
+Caution: Moderately radioactive.","","","Game","#resource
+#item"
+"Parts/Wire","Wire","","","Game","#resource #item"
+"Parts/WireCaterium","Alternate: Caterium Wire","","","Game","#alternative
+#schematic
+#item"
+"Parts/WireFused","Alternate: Fused Wire","","","Game","#alternative
+#schematic
+#item"
+"Parts/WireIron","Alternate: Iron Wire","","","Game","#alternative
+#schematic
+#item"
+"SpaceElevator/Part01","Smart Plating","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part01/Description","Project Part #1. Ship via the Space Elevator to complete phases of Project Assembly.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part01Plastic","Alternate: Plastic Smart Plating","","","Game","#alternative
+#schematic
+#item"
+"SpaceElevator/Part02","Versatile Framework","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part02/Description","Project Part #2. Ship via the Space Elevator to complete phases of Project Assembly.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part02Flexible","Alternate: Flexible Framework","","","Game","#alternative
+#schematic
+#item"
+"SpaceElevator/Part03","Automated Wiring","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part03/Description","Project Part #3. Ship via the Space Elevator to complete phases of Project Assembly.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part03Speed","Alternate: Automated Speed Wiring","","","Game","#alternative
+#schematic
+#item"
+"SpaceElevator/Part04","Modular Engine","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part04/Description","Project Part #4. Ship via the Space Elevator to complete phases of Project Assembly.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part05","Adaptive Control Unit","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part05/Description","Project Part #5. Ship via the Space Elevator to complete phases of Project Assembly.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part06","Magnetic Field Generator","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part06/Description","Project Part #7. Ship via the Space Elevator to complete phases of Project Assembly.
+
+These modular generators use superconducting magnets and vast amounts of electricity to produce a powerful and easily expandable magnetic field.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part07","Assembly Director System","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part07/Description","Project Part #6. Ship via the Space Elevator to complete phases of Project Assembly.
+
+This extremely fast and precise computing system is specifically designed to direct the Project Assembly: Assembly Phase.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part08","Thermal Propulsion Rocket","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part08/Description","Project Part #8. Ship via the Space Elevator to complete phases of Project Assembly.
+
+Uses extreme heat to produce the high-pressure plasma required to get Project Assembly into motion.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part09","Nuclear Pasta","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part09/Description","Project Part #9. Ship via the Space Elevator to complete phases of Project Assembly.
+Power Usage: 500-1500 MW (1000 MW average).
+
+Nuclear Pasta is extremely dense degenerate matter, formed when extreme pressure forces protons and electrons together into neutrons. It is theorized to exist naturally within the crust of neutron stars.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part10","Biochemical Sculptor","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part10/Description","Project Part #10. Ship via the Space Elevator to complete phases of Project Assembly.
+
+Years ahead of the competition, this top-of-the-line 3D printer is used for the production of synthetic biological resources.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part11","Ballistic Warp Drive","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part11/Description","Project Part #11. Ship via the Space Elevator to complete phases of Project Assembly.
+Power Usage: 1000-2000 MW (1500 MW average).
+
+A large amount of force is required for the Warp Drives to activate, so sticking them to rockets was the logical next step. Additionally, results improved immensely when the observers were further removed from the Warp Drives upon activation.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part12","AI Expansion Server","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+"SpaceElevator/Part12/Description","Project Part #12. Ship via the Space Elevator to complete phases of Project Assembly.
+Power Usage: 1500-2500 MW (2000 MW average).
+
+Growth is the metric by which we measure success.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"

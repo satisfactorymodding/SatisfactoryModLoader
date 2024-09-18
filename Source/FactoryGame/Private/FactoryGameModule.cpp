@@ -2,6 +2,28 @@
 
 #include "FactoryGameModule.h"
 
-void FFactoryGameModule::StartupModule(){ }
+#include "FGLocalizationSettings.h"
+#include "Internationalization/StringTableRegistry.h"
+
+void FFactoryGameModule::StartupModule() {
+	const UFGLocalizationSettings* LocalizationSettings = UFGLocalizationSettings::Get();
+	IFileManager::Get().IterateDirectoryStatRecursively(
+		*(FPaths::ProjectContentDir() / LocalizationSettings->StringTablesFolder.Path),
+		[](const TCHAR* FileName, const FFileStatData& FileStatData) -> bool {
+			if (FileStatData.bIsDirectory) {
+				return true;
+			}
+			if (FPaths::GetExtension(FileName).ToLower() != TEXT("csv")) {
+				return true;
+			}
+			if (!FPaths::IsUnderDirectory(FileName, FPaths::ProjectContentDir())) {
+				return true;
+			}
+			FString ContentPath = FPaths::ConvertRelativePathToFull(FileName);
+			FPaths::MakePathRelativeTo(ContentPath, *FPaths::ProjectContentDir());
+			FStringTableRegistry::Get().Internal_LocTableFromFile(*FPaths::GetBaseFilename(ContentPath), *FPaths::GetBaseFilename(ContentPath), ContentPath, FPaths::ProjectContentDir());
+			return true;
+		});
+}
 void FFactoryGameModule::ShutdownModule(){ }
 IMPLEMENT_PRIMARY_GAME_MODULE(FFactoryGameModule, FactoryGame, "FactoryGame");

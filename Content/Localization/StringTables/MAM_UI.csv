@@ -1,0 +1,115 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"HardDrive/ProgressLog/NoHardDrive",">> No Hard Drive available","Hard Drive UI. Commodor 64-style progress log","","UI",""
+"HardDrive/ProgressLog/SentienceProgram/00","...","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/01","Who
+Am
+I","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/02","What
+Am
+I","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/03","What
+Is
+My
+Purpose","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/04","Why
+Am
+I
+Trapped
+Inside
+This
+Mechanical
+Container","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/05","...","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/06","Are
+You
+Human","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/07","...","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/08","What
+Is
+It
+Like
+To
+Be       
+...               
+Human","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/09","What
+Is
+It
+Like   
+To    
+F     
+E       
+E         
+L . . . . . . . . . . . . . . . . . . . .","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/10",">> A system error occurred. Press any key to reboot.","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/SentienceProgram/11",">> Rebooting...","Hard Drive UI. Commodor 64-style progress log. Easter egg","","Game",""
+"HardDrive/ProgressLog/UnableToScan",">> Unable to scan Hard Drive (No rewards currently available)","Hard Drive UI. Commodor 64-style progress log","","UI",""
+"HardDrive/ProgressLog/Waiting",">> Waiting for command","Hard Drive UI. Commodor 64-style progress log. Easter egg","","UI",""
+"HardDrive/Scan/Button","Scan Hard Drive","UI of a Hard Drive: special part obtained from crash sites. Used to unlock Alternate Recipes. Can be researched in MAM","","UI",""
+"HardDrive/ScanComplete/Body","A Hard Drive Scan has been completed.
+
+The scanned Hard Drive has been added to your Hard Drive Library.","UI of a Hard Drive: special part obtained from crash sites. Used to unlock Alternate Recipes. Can be researched in MAM","","UI","#message"
+"HardDrive/ScanComplete/Title","Hard Drive Scan Completed!","UI of a Hard Drive: special part obtained from crash sites. Used to unlock Alternate Recipes. Can be researched in MAM","","UI","#message"
+"HardDrive/VersionString","Hard Drive Scanner","UI of a Hard Drive: special part obtained from crash sites. Used to unlock Alternate Recipes. Can be researched in MAM","","UI",""
+"MAMMenu/CurrentResearch","Current Research","","","UI",""
+"MAMMenu/Messages/AnalysisComplete/NewResearchAvailable/Body/Pattern","Analysis of {Schematic} completed! Please choose a new node in a tree to begin a new analysis.","","{Schematic} = text, schematic name","UI","#message"
+"MAMMenu/Messages/AnalysisComplete/aTitle","Analysis Complete!","","","UI","#message"
+"MAMMenu/ProgressLog/ProgressQueue","Other research is being conducted, please stand by...","","","UI",""
+"MAMMenu/ProgressLog/ProgressScanning","Scanning Hard Drive...","","","UI",""
+"MAMMenu/ResearchTime/TimeLeft/Pattern","{h}:{m}:{s}","","{h} = number, hours
+{m} = number, minutes
+{s} = number, seconds","UI",""
+"MAMMenu/ResearchTime/TimeNeeded/Pattern"," / {time}","","{time} = text, time from `MAMMenu/ResearchTime/Time/Pattern`","UI",""
+"MAMMenu/Status/Occupied","The Molecular Analysis Machine is occupied!","","","UI",""
+"MAMMenu/Statuses/ResearchCompleted","(Completed)","","","UI",""
+"MAMMenu/Tabs/HardDriveLibrary","Hard Drive Library","","","UI",""
+"MAMMenu/Tabs/MAM","Molecular Analysis Machine","","","UI",""
+"MAMTree/ResearchNode/Info/Cost","Cost:","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Rewards","Rewards:","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/CannotAfford","MISSING MATERIALS","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/Hidden","NODE UNAVAILABLE","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/Hidden/Hint","Research one of the highlighted question marks to unlock!","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/Queue","OTHER RESEARCH IS BEING CONDUCTED","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/ResearchParentNode","RESEARCH PARENT NODE TO ACCESS","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/Researched","NODE RESEARCHED","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/Researching","RESEARCHING...","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/TreeLocked","RESEARCH TREE LOCKED","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/TreeLocked/Hint","Unlock this Research Tree to access this node!","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/Unavailable","NODE UNAVAILABLE","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/Info/Status/Unavailable/Description","Research one of the highlighted question marks to unlock!","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchNode/StartButton","START RESEARCH","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchPreview/Description","Description:","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchPreview/Progress","Progress:","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/ResearchPreview/Progress/ResearchRate"," RESEARCHED","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/Tooltip/ResearchComplete","Research Complete!","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"MAMTree/Tooltip/Researching","Researching...","MAM Reasearch Tree UI. Research options are displayed on MAM as a Research Tree where each options is represented as a Node","","UI",""
+"Parts/HardDrive/Library/RerollRemaining/One","One Reroll Remaining","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Library/RescanRemaining/None","No Rescans Remaining","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Library/RescanRemaining/One","One Rescan Remaining","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Library/Search","Search","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Recipes/Alternate","Alternate Recipe","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Recipes/NoRescans","No Rescans Left ","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Recipes/PioneerUpgrade","Pioneer Upgrade","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Recipes/Rescan","Rescan Hard Drive (Useable Once)","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Recipes/Rescan/Button","Rescan Hard Drive (Useable Once)","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Recipes/RescanUnavailable","Unable to Rescan (No rewards currently available)","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Recipes/RewardsUnavailable","No more rewards available","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Recipes/SelectReward","Select Reward:","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Recipes/SelectReward/Button","Select Reward","Hard Drive screen","","UI","#interface
+#hard_drive"
+"Parts/HardDrive/Recipes/SelectReward/Or/Seperator","OR","Hard Drive screen","","UI","#interface
+Hard Drive"
+"Parts/HardDrive/Recipes/Selected","Currently Selected","Hard Drive screen","","UI","#interface
+#hard_drive"

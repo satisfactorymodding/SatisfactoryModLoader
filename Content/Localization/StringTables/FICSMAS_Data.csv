@@ -1,0 +1,67 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"ActualSnow","Actual Snow","Christmas factory decoration","","Game","#item"
+"ActualSnow/Description","It's snow. Not the nice, thick, crunchy kind, though... more the disgustingly wet, slushy kind... Guess we can make stuff from it.","Christmas factory decoration","","Game","#item"
+"CandyCane","Candy Cane","Christmas equipment","","Game","#item"
+"CandyCane/Description","A delicious Candy Cane to be enjoyed during the FICSMAS Holidays. 
+*Disclaimer: Not for consumption...","Christmas equipment","","Game","#item"
+"CandyCaneBasher","Candy Cane Basher","Christmas version of Xeno-Basher","","Game","#item"
+"CandyCaneBasher/Description","A heavy, delicious self-defense weapon for use at melee range.","Christmas version of Xeno-Basher","","Game","#item"
+"CandyCaneDecor/Description","A giant, delicious Candy Cane.
+
+*Warning: Not actually delicious... or edible, for that matter.","Christmas decor","","Game","#item"
+"Emotes/FingerGuns","Emote: Finger Guns!","Exclusive Christmas emote","","Game","#customization"
+"FICSMASBow","FICSMAS Bow","Christmas factory decoration","","Game","#item"
+"FICSMASBow/Description","A fancy Bow. Maybe someone could wear this? You certainly can't! What you can do is make parts and decorations from it. Probably.","Christmas factory decoration","","Game","#item"
+"FICSMASDecoration","FICSMAS Decoration","Christmas factory decoration","","Game","#item"
+"FICSMASDecoration/Description","A decoration used to make decorations. Its use cases are questionable.","Christmas factory decoration","","Game","#item"
+"FICSMASGift","FICSMAS Gift","Christmas factory decoration","","Game","#item"
+"FICSMASGift/Description","Special FICSMAS buildings and parts can be obtained and produced from this FICSIT Holiday present.
+
+*Watch the sky for deliveries from orbit!","Christmas factory decoration","","Game","#item"
+"FICSMASLights","FICSMAS Lights","Christmas factory decoration","","Game","#item"
+"FICSMASOrnament/Blue","Blue FICSMAS Ornament","Christmas factory decoration","","Game","#item"
+"FICSMASOrnament/Blue/Description","Again, used for making FICSMAS Decorations.","Christmas factory decoration","","Game","#item"
+"FICSMASOrnament/Bundle","FICSMAS Ornament Bundle","Christmas factory decoration","","Game","#item"
+"FICSMASOrnament/Bundle/Description","All the FICSMAS Ornaments smashed together to make even more FICSMAS Decorations!","Christmas factory decoration","","Game","#item"
+"FICSMASOrnament/Copper","Copper FICSMAS Ornament","Christmas factory decoration","","Game","#item"
+"FICSMASOrnament/Copper/Description","Still used for making FICSMAS Decorations.","Christmas factory decoration","","Game","#item"
+"FICSMASOrnament/Iron","Iron FICSMAS Ornament","Christmas factory decoration","","Game","#item"
+"FICSMASOrnament/Iron/Description","A super special- Nope! Still just used for making FICSMAS Decorations.","Christmas factory decoration","","Game","#item"
+"FICSMASOrnament/Red","Red FICSMAS Ornament","Christmas factory decoration","","Game","#item"
+"FICSMASOrnament/Red/Description","Used for making FICSMAS Decorations.","Christmas factory decoration","","Game","#item"
+"FICSMASTreeBranch","FICSMAS Tree Branch","Christmas factory decoration","","Game","#item"
+"FICSMASTreeBranch/Description","A special Tree Branch used to produce parts and buildings during the FICSMAS Event.","Christmas factory decoration","","Game","#item"
+"FICSMASWonderStar","FICSMAS Wonder Star","Christmas factory decoration","","Game","#item"
+"FICSMASWonderStar/Description","This special FICSMAS Star signifies FICSIT's productivity all across the universe. It also signifies the fact that you have nearly completed the Holiday Event, so it's time to get back to work.","Christmas factory decoration","","Game","#item"
+"Fireworks","Equipment: Fireworks","Christmas factory decoration","","Game","#item"
+"Fireworks/Fancy","Fancy Fireworks","Christmas factory decoration","","Game","#item"
+"Fireworks/Fancy/Description","Fireworks are produced from random ingredients. Primarily used for having a good time.","Christmas factory decoration","","Game","#item"
+"Fireworks/Sparkly","Sparkly Fireworks","Christmas factory decoration","","Game","#item"
+"Fireworks/Sparkly/Description","Goes Pfffeeeeew... BOOM! *Sparkle*","Christmas factory decoration","","Game","#item"
+"Fireworks/Sweet","Sweet Fireworks","Christmas factory decoration","","Game","#item"
+"Fireworks/Sweet/Description","Merry FICSMAS and a Happy New Year!","Christmas factory decoration","","Game","#item"
+"GiantTree","Giant FICSMAS Tree","Christmas factory decoration","","Game","#item"
+"GiantTree/Description","This special-delivery gigantic FICSMAS Tree can be decorated by progressing through the FICSMAS Holiday Event Tree in the MAM.","Christmas factory decoration","","Game","#item"
+"GiftTree","FICSMAS Gift Tree","Christmas factory decoration","","Game","#item"
+"GiftTree/Description","It comes bearing gifts.
+Produces 15 Gifts per minute.","Christmas factory decoration","","Game","#item"
+"LightsLine","FICSMAS Power Light","Christmas version of Power Light","","Game","#item"
+"LightsLine/Description","Used to connect Power Poles, Power Generators and factory buildings. Has pretty lights to boot!","Christmas version of Power Light","","Game","#item"
+"Skins/BasicFICSMAS","Customizer: Basic FICSMAS Skin","Christmas factory decoration","","Game","#customization"
+"Skins/PremiumFICSMAS","Customizer: Premium FICSMAS Skin","Christmas factory decoration","","Game","#customization"
+"SnowDispenser","FICSMAS Snow Dispenser","Christmas factory decoration","","Game","#item"
+"SnowDispenser/Description","Makes it snow!
+Attaches to Walls and ceilings.","Christmas factory decoration","","Game","#item"
+"Snowball","Snowball","Christmas factory decoration","","Game","#item"
+"Snowball/Description","Compressed dihydrogen monoxide crystals.","Christmas factory decoration","","Game","#item"
+"SnowballPile","Snowball Pile","Christmas factory decoration","","Game","#item"
+"SnowballPile/Description","Ammo: Snowball
+
+*Disclaimer: Snowballs in pile not included in ammo reserve.","Christmas factory decoration","","Game","#item"
+"Snowman","Snowman","Christmas factory decoration","","Game","#item"
+"Snowman/Description","Do you wanna build it?
+You will finally have a friend!
+
+*Disclaimer: It is not actually your friend.","Christmas factory decoration","","Game","#item"
+"Wreath","FICSMAS Wreath","Christmas factory decoration","","Game","#item"
+"Wreath/Description","Can be attached to Walls. Pretty.","Christmas factory decoration","","Game","#item"

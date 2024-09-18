@@ -1,0 +1,92 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"Onboarding/Container/Objective","Onboarding Objective {number}:","","{number} = number, objective number","UI","interface
+#onboarding"
+"Onboarding/Container/Objective/BuildHUB","Build the HUB","","","UI","interface
+#onboarding"
+"Onboarding/Container/Objective/Introduction","Objective-Based Introduction","Replaces the Onboarding/Container/Objective string during Landing objective","","UI","interface
+#onboarding"
+"Onboarding/Container/POOP","Pioneer Obligatory Onboarding Program","","","UI","interface
+#onboarding"
+"Onboarding/Container/POOP/Congratulation/Body","You are now a certified Pioneer Obligatory Onboarding Program finisher.
+
+Well done.","","","UI","interface
+#onboarding"
+"Onboarding/Container/POOP/Congratulation/Title","Congratulations.","","","UI","interface
+#onboarding"
+"Onboarding/Container/Tips","Tips:","","","UI","interface
+#onboarding"
+"Onboarding/Movement/Look.GamepadControls","Use <img id=""IA_LookAxis""/> to look","","","UI","#gamepads"
+"Onboarding/Movement/Look/Shortcut/Pattern","Use {PlayerMovement_LookAxisX} to look around.","","{PlayerMovement_LookAxisX} = text, key name","UI","interface
+#onboarding"
+"Onboarding/Movement/Move.GamepadControls","Use <img id=""IA_MovementAxis""/> to move","","","UI","#gamepads"
+"Onboarding/Movement/Move/Shortcut/Pattern","Use {PlayerMovement_Forward} {PlayerMovement_Left} {PlayerMovement_Back} {PlayerMovement_Right} to move.","","{PlayerMovement_Forward} = text, key name
+{PlayerMovement_Left} = text, key name
+{PlayerMovement_Back} = text, key name
+{PlayerMovement_Right} = text, key name","UI","interface
+#onboarding"
+"OnboardingSteps/DismantleDropPod","Dismantle the Drop Pod","","","UI",""
+"OnboardingSteps/DismantleDropPod/Objectives/0","Press {PlayerInterfaceActions_Dismantle} to enter Dismantle Mode.","","{PlayerInterfaceActions_Dismantle} = text, key name","UI","#onboarding
+#drop_pod"
+"OnboardingSteps/DismantleDropPod/Objectives/0.GamepadControls","Press <img id=""IA_ToggleBuildGunDismantle""/> to enter Dismantle Mode.","","","UI","#gamepads"
+"OnboardingSteps/DismantleDropPod/Objectives/1","While in Dismantle Mode, hold {PlayerActions_PrimaryFire} to Dismantle.","","{PlayerActions_PrimaryFire} = text, key name","UI","#onboarding
+#drop_pod"
+"OnboardingSteps/DismantleDropPod/Objectives/1.GamepadControls","While in Dismantle Mode, hold <img id=""IA_PrimaryFire""/> to Dismantle.","","","UI","#gamepads"
+"OnboardingSteps/EquipXenoZapper","Equip the Xeno-Zapper","","","UI","#onboarding
+#xeno_zapper"
+"OnboardingSteps/EquipXenoZapper/Objectives/0","Press {PlayerInterfaceActions_ToggleInventory} to open the Inventory.","","{PlayerInterfaceActions_ToggleInventory} = text, key name","UI","#onboarding
+#xeno_zapper"
+"OnboardingSteps/EquipXenoZapper/Objectives/0.GamepadControls","Press <img id=""IA_ToggleInventory""/> to open the Inventory.","","","UI","#gamepads"
+"OnboardingSteps/EquipXenoZapper/Objectives/1","Drag and drop Equipment to a Hands slot to equip it.","","","UI","#onboarding
+#xeno_zapper"
+"OnboardingSteps/EquipXenoZapper/Objectives/1.GamepadControls","Press <img id=""Gamepad_FaceButton_Bottom""/> on Equipment to equip it.","","","UI","#gamepads"
+"OnboardingSteps/HUB","Build the HUB","","","UI",""
+"OnboardingSteps/HUB/Hints/0","An efficient pioneer would build the HUB near Iron Nodes.","Previously: To improve efficiency, the HUB should initially be built near Iron Nodes.","","UI",""
+"OnboardingSteps/HUB/Hints/1","Further instructions on how to use the Build Menu can be found below the menu.","","","UI",""
+"OnboardingSteps/HUB/Objectives/0","Press {PlayerInterfaceActions_BuildMenu} to open the Build Menu.","","{PlayerInterfaceActions_BuildMenu} = text, key name","UI","#onboarding
+#hub"
+"OnboardingSteps/HUB/Objectives/0.GamepadControls","Press <img id=""IA_ToggleBuildGunBuild""/> to open the Build Menu.","","","UI","#gamepads"
+"OnboardingSteps/HUBUpgrade1","Complete HUB Upgrade 1","","","UI","#onboarding
+#hub"
+"OnboardingSteps/HUBUpgrade1/Hints/0","HUB Upgrades and their costs can be found and activated in the HUB Terminal.","Used as an Objective #1 now","","UI",""
+"OnboardingSteps/HUBUpgrade1/Objectives/0","Parts, like Iron Rods, can be crafted at the Crafting Bench in the HUB.","Objective #2","","UI",""
+"OnboardingSteps/HUBUpgrade2","Complete HUB Upgrade 2","","","UI","#onboarding
+#hub"
+"OnboardingSteps/HUBUpgrade2/Hints/0","The Equipment Workshop is used to craft Equipment, like the Portable Miner.","","","UI",""
+"OnboardingSteps/HUBUpgrade2/Hints/1","Press {PlayerInterfaceActions_Dismantle} to enter Dismantle Mode. Buildings can be Dismantled without any loss of resources.","Only used in HUB Upgrade 3 now…","{PlayerInterfaceActions_Dismantle} = text, key name","",""
+"OnboardingSteps/HUBUpgrade2/Hints/3","Use {PlayerActions_CycleEquipmentNext}/{PlayerActions_CycleEquipmentPrevious} to swap between Hand Equipment. ","","{PlayerActions_CycleEquipmentNext} = text, key name
+{PlayerActions_CycleEquipmentPrevious} = text, key name","",""
+"OnboardingSteps/HUBUpgrade2/Objectives/1.GamepadControls","Hold <img id=""IA_Player_HandheldSelectionRadialMenu""/> to swap between Hand Equipment.","","","UI","#gamepads"
+"OnboardingSteps/HUBUpgrade3","Complete HUB Upgrade 3","","","UI","#onboarding
+#hub"
+"OnboardingSteps/HUBUpgrade3/Hints/0.GamepadControls","Hold <img id=""IA_ResourceScanner_Scan""/> to bring up the Resource Scanner.","","","UI","#gamepads"
+"OnboardingSteps/HUBUpgrade3/Hints/1","Production Buildings like the Smelter will only function when connected to a power source with a Power Line.","","","UI",""
+"OnboardingSteps/HUBUpgrade3/Hints/1.GamepadControls","Press <img id=""IA_ToggleBuildGunDismantle""/> to enter Dismantle Mode. Buildings can be Dismantled without any loss of resources.","","","UI","#gamepads"
+"OnboardingSteps/HUBUpgrade3/Hints/2","The Biomass Burner located in the HUB generates power by consuming biomass, such as Wood and Leaves.","","","UI",""
+"OnboardingSteps/HUBUpgrade4","Complete HUB Upgrade 4","","","UI","#onboarding
+#hub"
+"OnboardingSteps/HUBUpgrade4/Hints/0","Production Buildings like the Constructor will only function when connected to a power source with a Power Line.","","","UI",""
+"OnboardingSteps/HUBUpgrade4/Hints/0.GamepadControls","All data on Recipes, Buildings, and Messages is stored in the Codex. The Codex can be accessed via the menu <img id=""IA_ToggleMap""/>","","","UI","#gamepads"
+"OnboardingSteps/HUBUpgrade4/Hints/1","Power Poles can be used to connect multiple buildings to the same power grid.","","","UI",""
+"OnboardingSteps/HUBUpgrade4/Hints/2","All data on Recipes, Buildings, and Messages is stored in the Codex. To open the Codex press {PlayerInterfaceActions_ToggleCodex}.","","{PlayerInterfaceActions_ToggleCodex} = text, key name","UI",""
+"OnboardingSteps/HUBUpgrade5","Complete HUB Upgrade 5","","","UI","#onboarding
+#hub"
+"OnboardingSteps/HUBUpgrade5/Hints/0","Conveyor Belts are used to fully automate resource transportation between buildings.","","","UI",""
+"OnboardingSteps/HUBUpgrade5/Hints/1","Buildings have specific input and output ports to connect Conveyor Belts.","","","UI",""
+"OnboardingSteps/HUBUpgrade5/Hints/2","Conveyor Belts cannot be connected to Portable Miners.","","","UI",""
+"OnboardingSteps/HUBUpgrade6","Complete HUB Upgrade 6","","","UI","#onboarding
+#hub"
+"OnboardingSteps/HUBUpgrade6/Hints/0","Ensure Resource Nodes are clear of clutter before placing a Miner Mk.1.","","","UI",""
+"OnboardingSteps/HUBUpgrade6/Hints/1","Multiple Biomass Burners can be connected to the same power grid to increase capacity.","","","UI",""
+"OnboardingSteps/HUBUpgrade6/Hints/2","Some Buildings, like the Storage Container, don't need power to function.","","","UI",""
+"OnboardingSteps/Landed/Initializing","Initializing...","","","UI","#onboarding"
+"OnboardingSteps/OnboardingComplete","Onboarding Complete","","","UI","#onboarding"
+"OnboardingSteps/PickUpIronOre","Gather Iron Ore","","","UI",""
+"OnboardingSteps/PickUpIronOre/Hints/0","The locations of scanned Resource Nodes will appear on the HUD compass.","","","UI",""
+"OnboardingSteps/PickUpIronOre/Hints/1","Press {ResourceScanner_Scan} to quickly scan again.","Previously: Press {ResourceScanner_Scan} to quickly rescan the previously selected resource.","{ResourceScanner_Scan} = text, key name","UI",""
+"OnboardingSteps/PickUpIronOre/Hints/1.GamepadControls","Press <img id=""IA_ResourceScanner_Scan""/> to quickly scan again.","","","UI","#gamepads"
+"OnboardingSteps/PickUpIronOre/Objectives/0","Hold {ResourceScanner_Scan} to bring up the Resource Scanner.","","{ResourceScanner_Scan} = text, key name","UI","#onboarding
+#resource"
+"OnboardingSteps/PickUpIronOre/Objectives/0.GamepadControls","Hold <img id=""IA_ResourceScanner_Scan""/> to bring up the Resource Scanner.","","","UI","#gamepads"
+"OnboardingSteps/PickUpIronOre/Objectives/1","Select Iron and release {ResourceScanner_Scan} to scan for Iron Nodes.","","{ResourceScanner_Scan} = text, key name","UI","#onboarding
+#resource"
+"OnboardingSteps/PickUpIronOre/Objectives/1.GamepadControls","Select Iron and release <img id=""IA_ResourceScanner_Scan""/> to scan for Iron Nodes.","","","UI","#gamepads"

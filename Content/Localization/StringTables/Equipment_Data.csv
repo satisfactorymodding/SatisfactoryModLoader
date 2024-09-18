@@ -1,0 +1,203 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"Boombox","Boombox","","","Game","#equipment
+#item
+#decor"
+"Boombox/Description","Plays the hottest music tapes on the planet.
+
+Tapes are automatically added to the Boombox when obtained.","","","Game","#equipment
+#item
+#decorr"
+"Boombox/Tapes/AbsoluteFICSIT","Absolute FICSIT Boombox Tape","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/AbsoluteFICSIT/Description","The most efficient music in the universe.
+
+Boombox Tapes are automatically added to the Boombox when obtained.","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/AbsoluteFICSIT/TapeDescription","Dream Thing","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/AbsoluteFICSIT/Title","Absolute FICSIT","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/AbsoluteHits94","Absolute Hits 94","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/ChildPlayingPiano","Child Playing Piano","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/DeepRockGalactic","Deep Rock Galactic Boombox Tape","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/DeepRockGalactic/Description","Sophus Alf Agerbaek-Larsen; Troels Rohde Joergensen","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/DeepRockGalactic/Title","Deep Rock Galactic","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/GenericDescription","Boombox Tapes are automatically added to the Boombox when obtained.","Boombox tape. Can be purchased at AWESOME Shop","","",""
+"Boombox/Tapes/GoatMusic","Goat Music Boombox Tape","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/GoatMusic/Description","22 minutes and 47 seconds of goat-fi beats to chill/eat grass to.
+
+By goats, for goats.
+
+Boombox Tapes are automatically added to the Boombox when obtained.","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/Huntdown","Huntdown Boombox Tape","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/Huntdown/Description","Tommy Gustafsson","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/Huntdown/Title","Huntdown","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/JoelSyntholm","Joel Syntholm Boombox Tape","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/JoelSyntholm/Description","The only music that can legally be listened to while driving around in a FICSIT Factory Cart™.
+Anything else is in direct violation of FICSIT Code of Conduct section J-0 paragraph 3-L and will result in eventual extinguishment.
+
+Boombox Tapes are automatically added to the Boombox when obtained.","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/JoelSyntholm/TapeDescription","Me And My Golf Cart","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/JoelSyntholm/Title","Joel Syntholm","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/LasseStefans","Lasse Stefans","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/LasseStefans/Description","Mix tape of lasse stefans bästa ballader","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/LeMichael","Le Michael Boombox Tape","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/LeMichael/Description","The tape that doesn't need an introduction.
+
+Boombox Tapes are automatically added to the Boombox when obtained.","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/LeMichael/TapeDescription","LeMichael","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/LeMichael/Title","Le Michael","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/LostPromotionalMusic","Lost Promotional Music","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/LostPromotionalMusic/Description","Three spicy promotional tracks, dating all the way back to the Project Assembly recruitment era.
+
+Boombox Tapes are automatically added to the Boombox when obtained.","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/LostPromotionalMusic/TapeDescription","Ghostwood Empire","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/LostPromotionalMusic/Title","Lost Promotional Music","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/ModularMethodology","Modular Methodology Boombox Tape","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/ModularMethodology/Description","Doecter P. Haytsh-Dhiegh","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/ModularMethodology/Title","Modular Methodology","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/Sanctum","Sanctum Boombox Tape","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/Sanctum/Description","GSTFS","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/Sanctum/Title","Sanctum","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/Sanctum2","Sanctum 2 Boombox Tape","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/Sanctum2/Description","Leonard Hummer","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/Sanctum2/Title","Sanctum 2","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/SongsOfConquest","Songs of Conquest Boombox Tape","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/SongsOfConquest/Description","Reynir Helgason","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/SongsOfConquest/Title","Songs of Conquest","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/WorstOfTheGoat/Description","GSTFS","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Boombox/Tapes/WorstOfTheGoat/Title","Worst of Goat Simulator","Boombox tape. Can be purchased at AWESOME Shop","","Game","#item #boombox"
+"Decor/CoffeeCup","Cup","Solely cosmetic piece of hand equipment","","Game","#item"
+"Decor/CoffeeCup/Description","A standard-issue Cup. Melee range.","Solely cosmetic piece of hand equipment","","Game","#item"
+"Decor/EmployeeOfThePlanetCup","'Employee of the Planet' Cup","Golden variant of the Cup. Can be purchased after the 4th delivery in the Space Elevator","","Game","#item"
+"Decor/EmployeeOfThePlanetCup/Description","A shiny little cup that allows extra hard-working pioneers to enjoy some well-deserved coffee while they wait for what the future will bring.","Golden variant of the Cup. Can be purchased after the 4th delivery in the Space Elevator","","Game","#item"
+"Health/GasFilter","Gas Filter","Used in gas masks to filter out pollutants in the air","","Game","#item"
+"Health/GasFilter/Description","Filters out toxins and pollutants from the air when used with a Gas Mask.","Used in gas masks to filter out pollutants in the air","","Game","#item"
+"Health/GasMask","Gas Mask","Protects the Pioneer from taking poison damage from Poison Gas. Consumes Gas Filters","","Game","#item"
+"Health/GasMask/Description","Allows pioneers to breathe normally in toxic gas-filled areas.
+Consumes Gas Filters from the pioneer's inventory when in use.","Protects the Pioneer from taking poison damage from Poison Gas. Consumes Gas Filters","","Game","#item"
+"Health/HazmatSuit","Hazmat Suit","Protects Pioneer from taking radiation damage but does not protect against Poison Gas damage","","Game","#item"
+"Health/HazmatSuit/Description","Shields pioneers from the adverse effects of radiation. 
+Consumes Iodine-Infused Filters from the pioneer's inventory when worn in radioactive areas.","Protects Pioneer from taking radiation damage but does not protect against Poison Gas damage","","Game","#item"
+"Health/Inhaler/Nutritional","Nutritional Inhaler","","","Game","#item"
+"Health/Inhaler/Protein","Protein Inhaler","","","Game","#item"
+"Health/Inhaler/Therapeutic","Therapeutic Inhaler","","","Game","#item"
+"Health/Inhaler/Vitamin","Vitamin Inhaler","","","Game","#item"
+"Health/IodineInfusedFilter","Iodine-Infused Filter","","","Game","#item"
+"Health/IodineInfusedFilter/Description","Absorbs radioactive particles when used with the Hazmat Suit.","","","Game","#item"
+"Health/MedicalInhaler","Medicinal Inhaler","Restores the Pioneer to full health","","Game","#item"
+"Health/MedicalInhaler/Description","Fully restores health when used.
+
+The FICSIT Medicinal Inhaler can be produced from a variety of different ingredients.","Restores the Pioneer to full health","","Game","#item"
+"Statues/AdequatePioneering","Adequate pioneering Statue","","","Game","#resource #item"
+"Statues/AdequatePioneering/Description","A statue of the Running Character.","","","Game","#resource #item"
+"Statues/ConfusingCreature","Confusing Creature Statue","","","Game","#resource #item"
+"Statues/ConfusingCreature/Description","A beautiful shiny statue of a weird creature... For real though, what is that thing?","","","Game","#resource #item"
+"Statues/GoldenNut","Golden Nut Statue","","","Game","#resource #item"
+"Statues/GoldenNut/Description","A statue of the Golden Nut.","","","Game","#resource #item"
+"Statues/LizardDoggo","Lizard Doggo Statue","","","Game","#resource #item"
+"Statues/LizardDoggo/Description","A statue of the Lizard Doggo.","","","Game","#resource #item"
+"Statues/PrettyGoodPioneering","Pretty Good pioneering Statue","","","Game","#resource #item"
+"Statues/PrettyGoodPioneering/Description","A statue of the Clapping Character.","","","Game","#resource #item"
+"Statues/SatisfactoryPioneering","Satisfactory pioneering Statue","","","Game","#resource #item"
+"Statues/SatisfactoryPioneering/Description","A statue of the Character Twirling the Build Gun.","","","Game","#resource #item"
+"Statues/SilverHog","Silver Hog Statue","","","Game","#resource #item"
+"Statues/SilverHog/Description","A statue of the Silver Pouncing Hog. Perfect as a hood ornament.","","","Game","#resource #item"
+"Tools/BuildGun","Build Gun","Tool Pioneers use to place, dismantle and customize buildings and vehicles. Projects a hologram showing where the buildable structure will be placed","","Game","#item"
+"Tools/Chainsaw","Chainsaw","Cuts down flora in a target area, allows Pioneer to harvest things that can't be harvested by hand, such as trees, some shrubs, and small rocks, or to clear an area","","Game","#item"
+"Tools/Chainsaw/Description","Clears an area of flora that is too difficult to remove by hand.
+
+Fuel: Biofuel","Cuts down flora in a target area, allows Pioneer to harvest things that can't be harvested by hand, such as trees, some shrubs, and small rocks, or to clear an area","","Game","#item"
+"Tools/Nobelisk/Cluster","Cluster Nobelisk","Explosive that detonates into multiple smaller explosions. Practical when clearing out large areas of vegetation and other inconveniences.","","Game","#item"
+"Tools/Nobelisk/Cluster/Description","Detonates into multiple smaller explosions. Practical for clearing out large areas of vegetation and other inconveniences.","Explosive that detonates into multiple smaller explosions. Practical when clearing out large areas of vegetation and other inconveniences.","","Game","#item"
+"Tools/Nobelisk/Gas","Gas Nobelisk","Explosive that creates a deadly gas cloud","","Game","#item"
+"Tools/Nobelisk/Gas/Description","Creates a deadly gas cloud instead of a regular explosion.","Explosive that creates a deadly gas cloud","","Game","#item"
+"Tools/Nobelisk/Nuke","Nuke Nobelisk","Explosive that generates a massive explosion by nuclear fission reaction","","Game","#item"
+"Tools/Nobelisk/Nuke/Description","Uses a nuclear fission reaction to generate a massive explosion.
+WARNING: Ensure all FICSIT property is clear of the blast zone before detonation.
+","Explosive that generates a massive explosion by nuclear fission reaction","","Game","#item"
+"Tools/Nobelisk/Pulse","Pulse Nobelisk","Explosives that generates a powerful shockwave","","Game","#item"
+"Tools/Nobelisk/Pulse/Description","Generates a powerful shockwave instead of a regular explosion.","Explosives that generates a powerful shockwave","","Game","#item"
+"Tools/NobeliskDetonator","Nobelisk Detonator","A piece of equipment used to detonate Nobelisks. Creates explosions, which can be used to remove cracked boulders, Flora and Fauna","","Game","#item"
+"Tools/NobeliskDetonator/Description","A remote-control device used to handle and detonate Nobelisks.","A piece of equipment used to detonate Nobelisks. Creates explosions, which can be used to remove cracked boulders, Flora and Fauna","","Game","#item"
+"Tools/ObjectScanner","Object Scanner","Scans objects of interest within a 250-meter radius. Scans the area for a set item. Beeps at a rate proportional to proximity and direction","","Game","#item"
+"Tools/ObjectScanner/Description","Scans the area for a selected item. Beeps at a rate proportional to proximity and direction.","Scans objects of interest within a 250-meter radius. Scans the area for a set item. Beeps at a rate proportional to proximity and direction","","Game","#item"
+"Tools/PortableMiner","Portable Miner","Small, portable version of Miner. As the first available mining machine, it is used to semi-automate the mining process in the early-game","","Game","#item"
+"Tools/PortableMiner/Description","Automatically extracts a resource when placed on a resource node.
+Note: Has limited storage space.","Small, portable version of Miner. As the first available mining machine, it is used to semi-automate the mining process in the early-game","","Game","#item"
+"Transportation/BladeRunners","Blade Runners","Increases the Pioneer's running speed by 50% and jump height by 100%, while also dampening fall damage","","Game","#item"
+"Transportation/BladeRunners/Description","An exoskeleton for the lower legs that assists movement, allowing pioneers to sprint faster and jump higher.
+Also dampens the impact of landing.","Increases the Pioneer's running speed by 50% and jump height by 100%, while also dampening fall damage","","Game","#item"
+"Transportation/FactoryCart","Factory Cart™","","","Game","#resource #item #transportation"
+"Transportation/FactoryCart/Description","The one and only FICSIT Factory Cart™.
+Now with special FICSIT-Foundation-only Grip Wheels, for an even smoother and faster factory floor experience!","","","Game","#resource #item #transportation"
+"Transportation/FactoryCartGolden","Golden Factory Cart™","","","Game","#resource #item #transportation"
+"Transportation/FactoryCartGolden/Description","The one and only Golden FICSIT Factory Cart™
+
+You have now officially ascended. 
+Go forth now, Master of Spaghetti, God of the Factory, Sinker of Cups, Employee of the Planet... travel in STYLE!","","","Game","#resource #item #transportation"
+"Transportation/HookShot","Hookshot","","","Game","#item"
+"Transportation/HookShot/Description","A grappling hook.","","","Game","#item"
+"Transportation/HoverPack","Hoverpack","Feeds on nearby Power Line connectors and Railways. Allows pioneers to hover endlessly, as long as they are within range of a powered structure. Can be used to gain elevation and increase the interaction range to make factory building easier","","Game","#item #transportation"
+"Transportation/HoverPack/Description","Power Consumption: 100 MW
+
+Allows pioneers to move vertically and hover in mid-air to improve building efficiency and factory traversal. Wirelessly connects to nearby power connections, such as Power Poles and Buildings, for power consumption.
+
+Slow-Fall: Hold {PlayerMovement_Jump} after losing connection mid-air.
+Disable Hoverpack: Double tap {PlayerMovement_Crouch} while hovering.","Feeds on nearby Power Line connectors and Railways. Allows pioneers to hover endlessly, as long as they are within range of a powered structure. Can be used to gain elevation and increase the interaction range to make factory building easier","{PlayerMovement_Jump} = text, key name
+{PlayerMovement_Crouch} = text, key name","Game","#item #transportation"
+"Transportation/Jetpack","Jetpack","Gains elevation and avoid fall damage","","Game","#item #transportation"
+"Transportation/Jetpack/Description","Allows pioneers to travel through the air with increased control.
+
+Fuel is automatically consumed from the pioneer's inventory to refill the Jetpack while on the ground.
+Different fuel types can be used and provide different levels of Jetpack efficiency. The preferred fuel type will be used if available, and can be set in the equipment inventory.","Gains elevation and avoid fall damage","","Game","#item #transportation"
+"Transportation/Parachute","Parachute","","","Game","#item #transportation"
+"Transportation/Parachute/Description","Slows down your fall when activated in mid-air.","","","Game","#item #transportation"
+"Transportation/Zipline","Zipline","Used for navigating along Power Lines. Effectively used for exploration or crossing gaps","","Game","#item #transportation"
+"Transportation/Zipline/Description","Provides faster traversal of factories by allowing pioneers to zip along Power lines.
+Activate the Zipline and aim at a nearby Power Line to connect to it.","Used for navigating along Power Lines. Effectively used for exploration or crossing gaps","","Game","#item #transportation"
+"Weapons/Ammo/Rebar/Aluminum","Aluminum Rebar","","","Game","#item"
+"Weapons/Ammo/Rebar/Aluminum/Description","Ammo for the Rebar Gun.
+
+Impact Damage: 45","","","Game","#item"
+"Weapons/Ammo/Rebar/Explosive","Explosive Rebar","Ammo for Rebar Gun. Explodes on impact, dealing heavy damage","","Game","#item"
+"Weapons/Ammo/Rebar/Explosive/Abbreviation","ER","Ammo for Rebar Gun. Explodes on impact, dealing heavy damage","","Game","#item"
+"Weapons/Ammo/Rebar/Explosive/Description","Explodes on impact, dealing heavy damage.","Ammo for Rebar Gun. Explodes on impact, dealing heavy damage","","Game","#item"
+"Weapons/Ammo/Rebar/Shatter","Shatter Rebar","Ammo for Rebar Gun. Fractures when shot, launching deadly debris in a wide spread but with limited range","","Game","#item"
+"Weapons/Ammo/Rebar/Shatter/Abbreviation","ShR","Ammo for Rebar Gun. Fractures when shot, launching deadly debris in a wide spread but with limited range","","Game","#item"
+"Weapons/Ammo/Rebar/Shatter/Description","Fractures when shot, launching deadly debris with wide spread but limited range.","Ammo for Rebar Gun. Fractures when shot, launching deadly debris in a wide spread but with limited range","","Game","#item"
+"Weapons/Ammo/Rebar/Steel","Steel Rebar","","","Game","#item"
+"Weapons/Ammo/Rebar/Steel/Description","Improved ammo for the Rebar Gun.
+
+Impact Damage: 30","","","Game","#item"
+"Weapons/Ammo/Rebar/Stun","Stun Rebar","Ammo for Rebar Gun. Electrocutes the target on impact, stunning it for a short time","","Game","#item"
+"Weapons/Ammo/Rebar/Stun/Abbreviation","StR","Ammo for Rebar Gun. Electrocutes the target on impact, stunning it for a short time","","Game","#item"
+"Weapons/Ammo/Rebar/Stun/Description","Electrocutes the target on impact, stunning it for a short time.
+
+Stun Duration: 5 seconds","Ammo for Rebar Gun. Electrocutes the target on impact, stunning it for a short time","","Game","#item"
+"Weapons/Ammo/RebarHookshot","Rebar Hookshot","","","Game","#item"
+"Weapons/Ammo/RebarHookshot/Description","Spiderman around.","","","Game","#item"
+"Weapons/Ammo/RebarSyringe","Rebar Syringe","","","Game","#item"
+"Weapons/Ammo/RebarSyringe/Description","Injects a chemical compound on impact, disabling some alien creatures for a short time and healing pioneers.
+
+Impact Damage: 1
+Health restored: 50%","","","Game","#item"
+"Weapons/Ammo/Rifle/Homing","Homing Rifle Ammo","Ammo for Rifle. The bullet guidance system, build into this ammunition, allows it to accurately hit any target within the reticle area.","","Game","#item"
+"Weapons/Ammo/Rifle/Homing/Abbreviation","HA","Ammo for Rifle. The bullet guidance system, build into this ammunition, allows it to accurately hit any target within the reticle area.","","Game","#item"
+"Weapons/Ammo/Rifle/Homing/Description","The bullet guidance system built into this ammunition allows it to accurately hit any target within the reticle area.
+Especially useful when dealing with agile threats, or for pioneers who can't be bothered to aim properly.","Ammo for Rifle. The bullet guidance system, build into this ammunition, allows it to accurately hit any target within the reticle area.","","Game","#item"
+"Weapons/Ammo/Rifle/Plasmidge","Rifle Plasmidge","","","Game","#item"
+"Weapons/Ammo/Rifle/Plasmidge/Description","Ammo for the Rifle.","","","Game","#item"
+"Weapons/Ammo/Rifle/Smartridge","Rifle Smartridge","","","Game","#item"
+"Weapons/Ammo/Rifle/Standard","Rifle Ammo","Ammo for Rifle. Standard issue Rifle ammunition, useful for establishing dominance","","Game","#item"
+"Weapons/Ammo/Rifle/Standard/Abbreviation","RA","Ammo for Rifle. Standard issue Rifle ammunition, useful for establishing dominance","","Game","#item"
+"Weapons/Ammo/Rifle/Standard/Description","Standard issue Rifle ammunition, useful for establishing dominance.","Ammo for Rifle. Standard issue Rifle ammunition, useful for establishing dominance","","Game","#item"
+"Weapons/Ammo/Rifle/Turbo","Turbo Rifle Ammo","Ammo for Rifle. Lightweight, compact, and volatile. Provides extreme capacity and fire rates, at the cost of accuracy","","Game","#item"
+"Weapons/Ammo/Rifle/Turbo/Abbreviation","TA","Ammo for Rifle. Lightweight, compact, and volatile. Provides extreme capacity and fire rates, at the cost of accuracy","","Game","#item"
+"Weapons/Ammo/Rifle/Turbo/Ammo/Description","Lightweight, compact, and volatile. These rounds provide extreme capacity and rate of fire at the cost of accuracy.","Ammo for Rifle. Lightweight, compact, and volatile. Provides extreme capacity and fire rates, at the cost of accuracy","","Game","#item"
+"Weapons/MachineGun","Machine Gun","","","Game","#item"
+"Weapons/MachineGun/Description","A deadly machine gun made for one purpose: effective disposal of irritating wildlife.","","","Game","#item"
+"Weapons/Rebar","Rebar Gun","","","Game","#item"
+"Weapons/Rebar/Description","An improvised ranged weapon for self-defense. Has to be reloaded after each use.","","","Game","#item"
+"Weapons/Rifle","Rifle","Ranged weapon which fires one of the dedicated ammo types. Can hold 15 rounds and has a semi-automatic firecap of five rounds per second when firing normal ammunition","","Game","#item"
+"Weapons/Rifle/Description","A long-range, rapid-fire weapon. Specifically designed to deliver adequate performance within the designated work area.","Ranged weapon which fires one of the dedicated ammo types. Can hold 15 rounds and has a semi-automatic firecap of five rounds per second when firing normal ammunition","","Game","#item"
+"Weapons/XenoBasher","Xeno-Basher","Melee weapon that shocks enemies, dealing 9 damage. A direct upgrade of Xeno-Zapper, with greater range and damage","","Game","#item"
+"Weapons/XenoBasher/Description","A heavy self-defense electroshock melee weapon.","Melee weapon that shocks enemies, dealing 9 damage. A direct upgrade of Xeno-Zapper, with greater range and damage","","Game","#item"
+"Weapons/XenoZapper","Xeno-Zapper","Short-range melee weapon that shocks enemies, dealing five damage","","Game","#item"
+"Weapons/XenoZapper/Description","A standard issue self-defense electroshock melee weapon.","Short-range melee weapon that shocks enemies, dealing five damage","","Game","#item"

@@ -1,0 +1,624 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"AudioMessages/CompactView/Button/Pattern","Minimize View ({ExpandPresentationMessage}/{PlayerController_Pause})","","{ExpandPresentationMessage} = text, key name
+{PlayerController_Pause} = text, key name","UI",""
+"AudioMessages/FullView/Button/Pattern","Full View ({ExpandPresentationMessage})","","{ExpandPresentationMessage} = text, key name","UI",""
+"AudioMessages/Skip/Button/Pattern","Skip ({SkipAudioMessage})","","{SkipAudioMessage} = text, key name","UI",""
+"BuildGun/Status/Building","Building...","","","UI",""
+"BuildGun/Status/CustomizerMode","Customizer Mode...","Build Gun action message","","UI","#interface
+#equipment
+#build_gun
+#build_mode"
+"BuildGun/Status/Dismantling","Dismantling...","Build Gun action message","","UI","#interface
+#equipment
+#build_gun
+#build_mode"
+"BuildMenu/BlueprintButton/DirectoryText","NEW","","","UI","#interface
+#build_menu"
+"BuildMenu/Browser/Search/TextBoxHint","Search for Building...","","","UI","#prototype
+interface
+#build_menu"
+"BuildMenu/BuildMenu/CurrentlyBuilding/Info/Pattern","<White12Bold>Currently Building:</>
+{BuildingInfo}","","{BuildingInfo} = text, buulding name or building name and Zoop stats","",""
+"BuildMenu/BuildMenu/CurrentlyBuilding/Name/Pattern","<White12Bold>Currently Building:</>
+<White20Reg>{BuildingName}</>","","{BuildingName} = text, localized buildable name","",""
+"BuildMenu/Category/NoFilter","No Filter","","","UI","#prototype
+interface
+#build_menu"
+"BuildMenu/Info/ByProduct","Byproduct","","","UI","#interface
+#build_menu
+#prototype"
+"BuildMenu/Info/Cost","Cost","","","UI","#interface
+#build_menu
+#prototype"
+"BuildMenu/Info/Info","Info","","","UI","#interface
+#build_menu
+#prototype"
+"BuildMenu/Info/Stats","Stats","","","UI","#interface
+#build_menu
+#prototype"
+"BuildMenu/Item/NewText","NEW","","","UI","#prototype
+interface
+#build_menu"
+"BuildMenu/Keybindings/BindToHotbar","Bind to Hotbar","","","",""
+"BuildMenu/Keybindings/CycleHotbar","Cycle Hotbar","","","",""
+"BuildMenu/Keybindings/Dismantle","Dismantle","","","UI","#interface
+#build_menu"
+"BuildMenu/Keybindings/Dismantle/Shortcut/Pattern","Hold {PlayerActions_PrimaryFire}","","{PlayerActions_PrimaryFire} = text, key name","UI","#interface
+#build_menu"
+"BuildMenu/Keybindings/DismantleFilter","Dismantle Filter","","","UI","#interface
+#build_menu"
+"BuildMenu/Keybindings/HideHUD","Hide HUD","","","",""
+"BuildMenu/Keybindings/LockHologram","Lock Hologram","","","",""
+"BuildMenu/Keybindings/MassDismantle","Mass Dismantle","","","UI","#interface
+#build_menu"
+"BuildMenu/Keybindings/MassDismantle/Shortcut/Pattern","Hold {BuildGunDismantle_MultiSelect}","","{BuildGunDismantle_MultiSelect} = text, key name","UI","#interface
+#build_menu"
+"BuildMenu/Keybindings/RotateHologram","Rotate Hologram","","","",""
+"BuildMenu/Keybindings/SampleBlueprint","Sample Blueprint","","","",""
+"BuildMenu/Keybindings/SaveHologramToHotbar","Save Hologram To Hotbar","","","",""
+"BuildMenu/Keybindings/SaveHologramToHotbar/Hotkey/Pattern","{PlayerActions_SaveHologramToHotbar} + Shortcut","","{PlayerActions_SaveHologramToHotbar} = text, key name","",""
+"BuildMenu/Keybindings/Search","Search","","","",""
+"BuildMenu/Keybindings/SnapToGuidelines/Hotkey/Pattern","Hold {BuildGunBuild_SnapToGuidelines}","","{BuildGunBuild_SnapToGuidelines} = text, key name","",""
+"BuildMenu/Keybindings/Tabs/Shortcut/Pattern","Hover + {PlayerController_Shortcut10}-{PlayerController_Shortcut9}","","{PlayerController_Shortcut10} = text, key name
+{PlayerController_Shortcut9} = text, key name","UI","#prototype
+interface
+#build_menu"
+"BuildMenu/ModeText/Build/Pattern","Build Mode: {CurrentBuildMode}","","{CurrentBuildMode} = text, build mode name","",""
+"BuildMenu/ModeText/Dismantle/Pattern","Dismantle Mode: {CurrentBuildMode}","","{CurrentBuildMode} = text, build mode name","",""
+"BuildMenu/ModeText/None","N/A","","","",""
+"BuildMenu/Modes/BuildMode/Build","Build","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/BuildMenu","Build Menu","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/Close","Close","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/Close/Shortcut/Pattern","{ToggleBuildGun} / ESC","","{ToggleBuildGun} = text, key name","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/HideBuildHUD","Hide Build HUD","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/Nudge","Nudge","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/QuickSwitch","Quick Switch","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/Rotate","Rotate","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/SampleBuilding","Sample Building","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/ShowBuildHUD","Show HUD","","","",""
+"BuildMenu/Modes/BuildMode/SnapToGuidelines","Snap Mode","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/SnapToGuidelines/Shortcut/Pattern","Hold {BuildGunSnapToGuideLines_ToggleMultiSelectDismantle}","","{BuildGunSnapToGuideLines_ToggleMultiSelectDismantle} = text, key name","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/ToggleBuildMode","Toggle Build Mode","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/ToggleDismantleMode","Toggle Dismantle Mode","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/UnlockHologram","Unlock Hologram","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/ZoopAmount/Pattern","<White20Reg>{BuildingName}</><Orange20Reg> (x{ZoopAmount})</>","","{BuildingName} = text, localized buildable name
+{ZoopAmount} = number, multiplication","UI","interface
+#build_menu"
+"BuildMenu/Modes/BuildMode/ZoopAmountM/Pattern","<White20Reg>{BuildingName}</><Orange20Reg> ({ZoopAmount} m)</>","","{BuildingName} = text, localized buildable name
+{ZoopAmount} = number, multiplication","UI","interface
+#build_menu"
+"BuildMenu/Modes/DismantleMode/Dismantle/Limit","Maximum Dismantle Limit:","","","UI","#interface
+#build_menu"
+"BuildMenu/Modes/DismantleMode/Status/CurrentlyDismantling/Pattern","<White12Bold>Currently Dismantling:</>
+<White20Reg>{BuildingName}</>","","{BuildingName} = text, buildable name","UI","#interface
+#build_menu"
+"BuildMenu/QuickSwitch/Blueprint","Select Blueprint","","","UI","#interface
+#build_menu"
+"BuildMenu/QuickSwitch/Building","Select Building","","","UI","#interface
+#build_menu"
+"BuildMenu/QuickSwitch/Material","Select Material","","","UI","#interface
+#build_menu"
+"BuildMenu/QuickSwitch/Mode","Select Build Mode","","","UI","#interface
+#build_menu"
+"BuildMenu/QuickSwitch/Next","Next","","","UI","#interface
+#build_menu"
+"BuildMenu/QuickSwitch/NextMaterial","Next Material","","","UI","#interface
+#build_menu"
+"BuildMenu/QuickSwitch/Pattern","Select Pattern","","","UI","#interface
+#build_menu"
+"BuildMenu/QuickSwitch/Previous","Previous","","","UI","#interface
+#build_menu"
+"BuildMenu/QuickSwitch/PreviousMaterial","Previous Material","","","UI","#interface
+#build_menu"
+"BuildMenu/QuickSwitch/Swatch","Select Swatch","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Architecture","Architecture","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Architecture/Attachments","Attachments","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Architecture/Beams","Beams","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Architecture/Catwalks","Catwalks","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Architecture/Frames","Frames","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Architecture/Pillars","Pillars","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Architecture/Roofs","Roofs","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Architecture/Walkways","Walkways","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Blueprints","Blueprints","","","UI","#prototype
+interface
+#build_menu"
+"BuildMenu/Tabs/Builder","Builder","","","UI","#prototype
+interface
+#build_menu"
+"BuildMenu/Tabs/Cheats","Cheats","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Customizer","Customizer","","","UI","#prototype
+interface
+#build_menu"
+"BuildMenu/Tabs/FICSMAS","FICSMAS","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/FICSMAS/Event","Event","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Foundations","Foundations","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Foundations/InvertedRamps","Inverted Ramps","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Foundations/QuarterPipes","Quarter Pipes","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Foundations/Ramps","Ramps","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Logistics","Logistics","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Logistics/ConveyorBelts","Conveyor Belts","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Logistics/ConveyorLifts","Conveyor Lifts","","","",""
+"BuildMenu/Tabs/Logistics/ConveyorSupports","Conveyor Supports","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Logistics/PipelineSupports","Pipeline Supports","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Logistics/Pipelines","Pipelines","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Logistics/Sorting","Sorting","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Organization","Organization","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Organization/Lights","Lights","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Organization/Signs","Signs","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Organization/Storage","Storage","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Organization/Towers","Towers","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Power","Power","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Power/Generators","Generators","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Power/Poles","Power Distribution","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Power/WallOutlets","Wall Outlets","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Production","Production","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Production/FluidExtractors","Fluid Extractors","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Production/Manufacturers","Manufacturers","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Production/Miners","Miners","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Production/Smelters","Smelters","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Production/WorkStations","Workstations","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Special","Special","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Special/BlueprintDesigner","FICSIT Blueprint Designers","","","",""
+"BuildMenu/Tabs/Special/BonusProgram","AWESOME Bonus Program","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Special/Progression","Progression","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Transport","Transport","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Transport/Hypertubes","Hypertubes","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Transport/JumpPads","Jump Pads","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Transport/Portal","Portal","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Transport/Railway","Railway Transport","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Transport/Vehicles","Vehicle Transport","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Walls","Walls","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Walls/Basic","Basic Walls","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Walls/ConveyorConnections","Conveyor Connections","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Walls/Doors","Doors","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Walls/InvertedRamp","Inverted Ramp Walls","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Walls/Ramp","Ramp Walls","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Walls/Tilted","Tilted Walls","","","UI","#interface
+#build_menu"
+"BuildMenu/Tabs/Walls/WindowFrames","Framed Windows","","","",""
+"BuildMenu/Tabs/Walls/Windows","Window Walls","","","UI","#interface
+#build_menu"
+"BuildMenu/Warnings/CannotBeNudged","Building cannot be nudged","","","",""
+"BuildMenu/Warnings/HologramInvalid","Hologram Invalid","","","",""
+"BuildMenu/Warnings/MissingItem/OneMoreMissing","<DarkMissing>1 more missing resource</>","Used only when there's 1 resource missing","","",""
+"BuildMenu/Warnings/MissingItem/Pattern","Missing <DisqDesc>{item_name} x {quantity}</>","","{item_name} = text
+{quantity} = number","",""
+"BuildMenu/Warnings/MissingItem/PluralMoreMissing/Pattern","<DarkMissing>{NumMissing} more missing resources</>","Supports plurals","{NumMissing} = number","",""
+"BuildMenu/Warnings/NotEnoughResources","Not Enough Resources!","","","UI","interface
+#build_menu"
+"BuildMenu/Warnings/NudgeExceedsMaxDistance","Nudge exceeds max distance","","","",""
+"BuildMenu/Warnings/UnableToNudgeToLocation","Unable to nudge to location","","","",""
+"BuildMode/BuildFilter/DismanlteFilter","Dismantle Filter:","","","UI","#interface
+#build_mode
+#build_filter"
+"BuildMode/BuildFilter/DismantleFilter/Cleared","Dismantle Filter Cleared!","","","UI","#interface
+#build_mode
+#build_filter"
+"BuildModes/Auto","Auto","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/Auto2D","Auto 2D","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/Blueprint","Blueprint","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/Default","Default","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/Diagonal","Diagonal","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/Freedom","Freeform","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/HorizontalToVertical","Horizontal to Vertical","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/Noodle","Noodle","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/Reversed","Reversed","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/Straight","Straight","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/Vertical","Vertical","","","UI","#interface
+#build_mode
+#build_gun"
+"BuildModes/Zoop","Zoop","","","UI","#interface
+#build_mode
+#build_gun"
+"Distance/m/Pattern","{Distance} m","","{Distance} = number","UI","#interface"
+"Equipment/Ammo/SelectAmmoType","Selecting Ammunition Type","","","UI",""
+"Equipment/Boombox/Close/Button","Close","Close button","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Controls/OpenMenu/Button","Open Menu","Boombox key binding hint","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Controls/TriggerTurboBass/Button","Trigger Turbo Bass","Boombox key binding hint","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/LookAtDescription/Interact/Pattern","Press {BUTTON} to interact with the {Name}.","Boombox look-at description tooltip","{BUTTON} = text, key name
+{Name} = text, localized name (Boombox)","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/NoSpaceInInventory","Not Enough Space In Inventory!","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Palyer/NoTape/Description","No tape in the Boombox!","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/PickUp/Pickup/Button","Pick Up Boombox","Boombox key binding hint","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Pickup/Equip/Button","Equip Boombox","Boombox key binding hint","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Pickup/PutDown/Button","Put Down Boombox","Boombox key binding hint","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/Album","Album Name","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/Artist","Artist Name","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/ChangeTape/Button","Change Tape","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/CurrentSong","{index}. {name}","Boombox screen","{index} = number, song number
+{name} = text, song name","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/LogoText","BOOMBOX","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/NoTape","No Tape","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/NoTapeLoaded","No Tape Loaded!","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/PlayPause/Button","Play/Pause","","","",""
+"Equipment/Boombox/Player/PlayPause/Description","Boombox is paused!","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/Repeat","Repeat Song","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/Repeat/Description","Click to repeat the current song.","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/Song","Song Name","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/StopRepeating","Stop Repeating Song","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/StopRepeating/Description","Click to stop repeating the current song.","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/Tape","Tape Name","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/Tape/Ads","<Orange16Bold>Looking for new Tapes?</>
+
+<White12Reg>Go to the FICSIT AWESOME Shop, the pioneer-approved* one-stop-shop for all the latest hits**, fashionable*** classics and everything**** in between!</>
+
+<Grey10Reg>*According to FICSIT Mandatory Appreciation Survey Systems.</>
+<Grey10Reg>**Provided that the song is owned by the FICSIT Media Group.</>
+<Grey10Reg>***""Fashionable"" is a subjective term. FICSIT takes no responsibility if a pioneer finds any material unfashionable.</>
+<Grey10Reg>****""Everything"" in this context should be seen as hyperbole. As it is physically, logistically, and philosophically impossible to fit everything between two vague concepts in a store, FICSIT cannot be held accountable for any pioneers acting on any literal interpretation of this statement.</>","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/Tape/BackToPlayer/Button","Back to Player","Boombox screen","","UI","#interface
+#equipment
+#boombox"
+"Equipment/Boombox/Player/TimeHoursMinSec/Pattern","{hour}:{min}:{sec}","","{hour} = number
+{min} = number
+{sec} = number","UI","#equipment
+#boombox"
+"Equipment/Boombox/Player/TimeMinSec/Pattern","{min}:{sec}","","{min} = number
+{sec} = number","UI","#equipment
+#boombox"
+"Equipment/Chainsaw/Keybidings/SwitchToAreaMode","Switch to Area Mode","","","UI",""
+"Equipment/Chainsaw/Keybidings/SwitchToSingleMode","Switch to Single Mode","","","UI",""
+"Equipment/Chainsaw/Mode","Chainsaw Mode","Chainsaw Mode","","UI","#interface
+#equipment
+#chainsaw"
+"Equipment/Chainsaw/Mode/Area","Area","Chainsaw Mode","","UI","#interface
+#equipment
+#chainsaw"
+"Equipment/Chainsaw/Mode/Area/Extended","Chainsaw Mode:
+<Bold>Area</>","Chainsaw Mode","","UI","#interface
+#equipment
+#chainsaw"
+"Equipment/Chainsaw/Mode/Single","Single","Chainsaw Mode","","UI","#interface
+#equipment
+#chainsaw"
+"Equipment/Chainsaw/Mode/Single/Extended","Chainsaw Mode:
+<Bold>Single</>","Chainsaw Mode","","UI","#interface
+#equipment
+#chainsaw"
+"Equipment/ObjectScanner/RecordingMenu","Recording Menu","Object Scanner screen","","UI","#interface
+#equipment
+#object_scanner"
+"Equipment/PortableMinerDispenser/LookAtDescription","Press [{PlayerActions_PrimaryFire}] to place Miner on {Ore} node {Purity}","","{PlayerActions_PrimaryFire} = text, key name
+{Ore} = text, ore type
+{Purity} = text, purity level","UI",""
+"Game/PhotoMode/ExitPhotoMode/Button","Exit Photo Mode","Photo Mode key binding hint","","UI","#interface"
+"Game/PhotoMode/FOV","Field of View","Photo Mode screen","","UI","#interface"
+"Game/PhotoMode/Instructions/Description","(This window will not appear in the photo.)","Photo Mode screen","","UI","#interface"
+"Game/PhotoMode/Instructions/Header","Photo Mode","Photo Mode screen","","UI","#interface"
+"Game/PhotoMode/PhotoSaved/Tooltip","Photo Saved!","Photo Mode screen","","UI","#interface"
+"Game/PhotoMode/Popups/SaveError/GenericError","There was an error saving the photo.","Popup shown when the platform screenshot functionality fails","","",""
+"Game/PhotoMode/Popups/SaveError/NoSpace","There is no more space available to save the photo.","Popup shown when the platform screenshot functionality fails","","",""
+"Game/PhotoMode/Popups/SaveError/aTitle","Error Saving Photo!","Popup shown when the platform screenshot functionality fails","","",""
+"Game/PhotoMode/ToggleHiRes/Button","Toggle Hi-Res","Photo Mode screen","","UI","#interface"
+"Game/PhotoMode/ToggleUI","Show/Hide UI","Photo Mode screen","","UI","#interface"
+"Game/PhotoMode/Visibility/On","On","Photo Mode screen","","UI","#interface"
+"HUD/ActiveSchematic/DropPodReturn","Pod will return in: {Time}","","{Time} = number","UI","interface"
+"HUD/ActiveSchematic/Milestone","Milestone:","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"HUD/AutoPickupLeavesActive","Auto-Pickup (Leaves) Active","","","UI",""
+"HUD/Box/Ammo/LoadedAmmo","Loaded Ammo","","","","interface
+hud_box"
+"HUD/Box/Ammo/NoAmmo","No Ammo","","","","interface
+hud_box"
+"HUD/Box/Consumables/Amount","Amount:","","","UI","interface
+hud_box"
+"HUD/Hotbar/BoundToHotbar","Bound to Hotbar","","","UI","interface
+hotbar"
+"HUD/Hotbar/UnboundFromHotbar","Unbound from Hotbar","","","UI","interface
+hotbar"
+"HUD/Messages/BreakNotification","You have been playing for {A} hour(s)","","{A} = number","",""
+"HUD/Messages/BreakNotification/Messages/01","FICSIT would like to remind you that while resting is not an activity valued by FICSIT, being unable to work due to fatigue is heavily frowned upon.","","","",""
+"HUD/Messages/BreakNotification/Messages/02","No harm in having a fresh sip of FICSIT Bottled Water!","","","",""
+"HUD/Messages/BreakNotification/Messages/03","Don't forget to have a FICSIT Protein Bar. Now with 10% more natural ingredients!","","","",""
+"HUD/Messages/BreakNotification/Messages/04","FICSIT Pioneer Benefits include 15 minutes of rest per day!","","","",""
+"HUD/Messages/BreakNotification/Messages/05","Exhaustion is not covered by the FICSIT Pioneer Health Plan. Nor is Pioneer Health!","","","",""
+"HUD/Messages/MAMResearchComplete/Body","Go to the MAM to see analysis results.","","","",""
+"HUD/Messages/MAMResearchComplete/aTitle","MAM Research Complete","","","",""
+"HUD/Messages/PressToReload.Gamepad","Press <img id=""IA_Reload""/> to Reload","","","UI","#gamepads"
+"HUD/Messages/PressToReload/Pattern","Press [{PlayerActions_Reload}] to Reload","","{PlayerActions_Reload} = text, key name","",""
+"HUD/Messages/PressToRespawn/Pattern","Press [{PlayerActions_SecondaryFire}] to Respawn","","{PlayerActions_SecondaryFire} = text, key name","",""
+"HUD/Messages/Reloading","Reloading...","","","",""
+"HUD/Messages/SettingsCopied","Setting Copied!","","","",""
+"HUD/Messages/SettingsPasted","Setting Pasted!","","","",""
+"HUD/PressKeyToInteract.Gamepad","Press <img id=""IA_Reload""/> to Interact","","","UI","#gamepads"
+"HUD/Warnings/AbuseOfFICSITProperty","Abuse of FICSIT property detected. User has been temporarily locked out. Report sent to HR. Recommended solutions: anger management, dishonorable discharge, therapy, or accidental exposure to dangerous substances.","","","UI","interface
+color_picker"
+"HUD/Warnings/Attack","UNAUTHORIZED HOSTILITY
+TOWARDS PIONEER DETECTED","","","UI","#interface"
+"HUD/Warnings/Damage","DAMAGE TO FICSIT
+PROPERTY DETECTED","","","UI","#interface"
+"HUD/Warnings/Destruction","IMMINENT DESTRUCTION OF
+FICSIT PROPERTY DETECTED","","","UI","#interface"
+"HUD/Warnings/Radiation","RADIATION LEVEL","","","UI","#interface"
+"Inventory/Character/BackSlot","BACK","Inventory screen","","UI",""
+"Inventory/Character/BodySlot","BODY","Inventory screen","","UI",""
+"Inventory/Character/HandsSlot","HANDS","Inventory screen","","UI",""
+"Inventory/Character/HeadSlot","HEAD","Inventory screen","","UI",""
+"Inventory/Character/LegsSlot","LEGS","Inventory screen","","UI",""
+"Inventory/Character/WindowTitle","Pioneer","Inventory screen","","UI",""
+"Inventory/EquipmentShortcuts","Equipment Shortcuts:","Inventory screen","","UI",""
+"Inventory/HandSlotUnlock","Hand Slot","Inventory screen","","UI",""
+"Inventory/HandSlotUnlock/Description","Upgrades the Toolbelt with an extra Hand Equipment Slot, providing easier access to multiple tools and weapons.","Inventory screen","","UI",""
+"Inventory/HandSlotUnlock/PlusOneSlot","+1 Hand Equipment Slot","Inventory screen","","UI",""
+"Inventory/HandSlotUnlock/PlusSeveralSlots","+{numslots} Hand Equipment Slots","Inventory screen","{numslots} = number","UI",""
+"Inventory/Info/AllItems","All Items:","Inventory screen","","UI",""
+"Inventory/Info/CompatibleParts/AmmoTypes","Ammo Types:","Inventory screen","","UI",""
+"Inventory/Info/CompatibleParts/FilterTypes","Filter Types:","Inventory screen","","UI",""
+"Inventory/Info/CompatibleParts/FuelTypes","Fuel Types:","Inventory screen","","UI",""
+"Inventory/Info/CompatibleParts/Uses","Uses:","Inventory screen","","UI",""
+"Inventory/Info/CompatibleParts/Weapons","Compatible Weapons:","Inventory screen","","UI",""
+"Inventory/Info/Damage","Damage","Inventory screen","","UI",""
+"Inventory/Info/EnergyEfficiency","Energy Value","Inventory screen","","UI",""
+"Inventory/Info/RelevantItems","Relevant Items:","Inventory screen","","UI",""
+"Inventory/InventorySlotsUnlock","Inventory Slots","Inventory screen","","UI",""
+"Inventory/InventorySlotsUnlock/Description","Upgrades the Pocket Dimension with extra Inventory Slots.","Inventory screen","","UI",""
+"Inventory/InventorySlotsUnlock/PlusOneSlot","+1 Inventory Slot","Inventory screen","","UI",""
+"Inventory/InventorySlotsUnlock/PlusSeveralSlots","+{numslots} Inventory Slots","Inventory screen","{numslots} = number","UI",""
+"Inventory/ItemNotification/PickedUpItems/Pattern","<Default>+ {NumItemsPickedup} {ItemName}</>","Notification about adding item to the inventory","{NumItemsPickedup} = number of picked up items
+{ItemName} = text, item name","UI","#message"
+"Inventory/ItemNotification/TotalNumber/Pattern","<Bold>({TotalNumItems})</>","Notification about adding item to the inventory","{TotalNumItems} = number","UI","#message"
+"Inventory/ItemTooltip/Back/Button","Back","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/RecipeList/Pattern","{AllNames}, {Name}","Inventory item screen
+Used to create a comma-separated list of recipes, the only thing to change here is the punctuation you'd like to have between items in a list","{AllNames} = text, comma-separated list built using this pattern
+{Name} = text, another name to add to the list","UI",""
+"Inventory/ItemTooltip/Recipes/AddToDo/Button/Pattern","Add {X} to To-Do List","Inventory item screen","{X} = text, item name","UI",""
+"Inventory/ItemTooltip/Recipes/Alternate/Pattern","Alternate Recipe {num}:","Inventory item screen","{num} = number","UI",""
+"Inventory/ItemTooltip/Recipes/ClickToCollapseDescription/Button","(Click to Collapse)","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Recipes/ClickToExpandDescription/Button","(Click to Expand)","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Recipes/CycleTime/Pattern","<White10Reg>Cycle Time: </><Orange10SemiB>{Time}</>","Inventory item screen","{Time} = text, time","UI",""
+"Inventory/ItemTooltip/Recipes/More","More recipes in Codex...","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Recipes/Name","Recipe Name:","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Recipes/PressToCollapse.Gamepad","(Press <img id=""Gamepad_LeftThumbstick""/> to collapse)","","","UI","#gamepads"
+"Inventory/ItemTooltip/Recipes/PressToExpand.Gamepad","(Press <img id=""Gamepad_LeftThumbstick""/> to expand)","","","UI","#gamepads"
+"Inventory/ItemTooltip/Recipes/ProducedIn/Pattern","<White10Reg>Produced in: </><Orange10SemiB>{ProductionBuilding}</>","Inventory item screen","{ProductionBuilding} = text, buildable name","UI",""
+"Inventory/ItemTooltip/Recipes/ProductionRate/Pattern","<White10Reg>Production Rate: </><Orange10SemiB>{ProductionRate}</>","Inventory item screen","{ProductionRate} = text","UI",""
+"Inventory/ItemTooltip/Recipes/ProductionRate/PerMin/Pattern","{time} per min","Inventory item screen","{time} = number, number of items produced per minute","UI",""
+"Inventory/ItemTooltip/Recipes/ProductionRate/PerMinOverclocked/Pattern","{time} per min (Overclocked)","Inventory item screen","{time} = number, number of items produced per minute","UI",""
+"Inventory/ItemTooltip/Recipes/ProductionRate/PerSecOverclocked/Pattern","{time} sec (Overclocked)","Inventory item screen","{time} = number, time it takes to produce","UI",""
+"Inventory/ItemTooltip/Recipes/ProductionTimeSec/Pattern","{time} sec","Inventory item screen","{time} = number, time it takes to produce","UI",""
+"Inventory/ItemTooltip/Recipes/SaveIngredients","Save the required components for this recipe.","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Recipes/Standard","Standard Recipe:","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Slot","Equipment Slot:","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Slot/Pattern","<White10Bold>Equipment Slot: </><Orange10Reg> {Slot} </>","Inventory item screen","{Slot} = text, type of slot: hands, legs, head, body","UI",""
+"Inventory/ItemTooltip/Slots/Body","Body","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Slots/Hand","Hand","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Slots/Head","Head","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Slots/Legs","Legs","Inventory item screen","","UI",""
+"Inventory/ItemTooltip/Slots/None","None","Inventory item screen","","UI",""
+"Inventory/Keybindings/Equip","Equip","Inventory key binding hint","","UI",""
+"Inventory/Keybindings/Equip/Shortcut","Shift + LMB / Double Click on Equipment","Inventory key binding hint","","UI",""
+"Inventory/WindowTitle","Inventory","Inventory screen","","UI",""
+"InventorySlot/NuclearWasteWarning/Body","Nuclear Waste cannot be destroyed.
+FICSIT does not waste.","Inventory screen","","UI",""
+"InventorySlot/NuclearWasteWarning/aTitle","Nuclear Waste cannot be destroyed.","Inventory screen","","UI",""
+"InventorySlot/Settings/Fuel","Preferred Fuel","Inventory screen","","UI",""
+"InventorySlot/Settings/Name","Name","Inventory screen","","UI",""
+"PhotoMode/Keybindings/Close/Pattern","{PlayerController_PhotoMode} or ESC","Photo Mode key binding hint","{PlayerController_PhotoMode} = text, key name","UI","#interface"
+"PhotoMode/TakePhoto/Button","Take Photo","Photo Mode screen","","UI","#interface"
+"PhotoMode/ToggleHiRes/Off","(Off)","Photo Mode screen","","UI","#interface"
+"PhotoMode/ToggleHiRes/On","(On)","Photo Mode screen","","UI","#interface"
+"Player/LookAtDescription/Revive","Hold [{0}] to Revive","Look-at description tooltip","{0} = text, key name","UI","#common
+#look_at_description"
+"QuickSearch/LogoText","QUICK SEARCH","Quick search screen","","UI","#interface
+#common"
+"QuickSearch/TextBoxHint","Search","Quick search screen","","UI","#interface
+#common"
+"RadialMenu/None/Button","None","Radial menu appears when the Pioneer use Object Scanner. It displays scanning options.","","UI","#buildable
+#interface"
+"RadialMenus/Empty/EmptyCustomizerSlot","Empty","Shows ""Empty"" string if nothing is placed in the radial slot.","","UI",""
+"RadialMenus/Empty/EmptyHotbarSlot","Empty","Shows ""Empty"" string if nothing is placed in the radial slot.","","UI",""
+"RadialMenus/Empty/EmptyMenu","Empty","When all the slots in the radial menu are empty, this will be the only button","","UI",""
+"RadialMenus/Empty/EmptyShortcutSlot","Empty","Shows ""Empty"" string if nothing is placed in the radial slot.","","UI",""
+"RadialMenus/Empty/NoActiveEquipment","Empty","When we can't get active equipment, this is what we return as active equipment","","UI",""
+"ResourceScanner/ScanningFor","Scanning for","","","UI","Scanning"
+"Respawn/Status/PulseMotivator/LogoText","PULSE MOTIVATOR","FICSIT Pulse Motivator","","UI","interface"
+"Scanner/ScannableObject/Scanning/Pattern","Scannable Object: {item name}","","{item name} = text, item name","UI","#interface
+#scannables"
+"Scanner/ScannableResource/ScannerUpgrade/Pattern","Scanner Upgrade: {Item}","","{Item} = text, resource name","UI","#interface
+#scannables"
+"Scanner/ScannableResource/ScannerUpgrade/Well/Pattern","Scanner Upgrade: {Item} Well","","{Item} = text, resource name","UI","#interface
+#scannables"
+"Scanner/ScannableResource/Scanning/Pattern","Scannable Resource: {item}","","{item} = text, resource name","UI","#interface
+#scannables"
+"Scanner/ScannableResource/Unlock/Description/Pattern","Allows you to scan for {Item} with the Resource Scanner.","","{Item} = text, resource name","UI","#interface
+#scannables"
+"Scanner/ScannableResource/Unlock/Well/Description/Pattern","Allows you to scan for {Item} Wells with the Resource Scanner.","","{Item} = text, resource name","UI","#interface
+#scannables"
+"SchematicsUnlockTitle/AlternativeRecipe","Alternative Recipe Unlocked","","","UI",""
+"SchematicsUnlockTitle/Cheats","Cheats Unlocked","","","UI",""
+"SchematicsUnlockTitle/Milestone","Milestone Unlocked","","","UI",""
+"SchematicsUnlockTitle/Research","Research Completed","","","UI",""
+"SchematicsUnlockTitle/Schematic","Schematic Purchased","","","UI",""
+"SchematicsUnlockTitle/TutorialCompleted","Tutorial Completed","","","UI",""
+"SlipStackSlider/SplitStack","SPLIT STACK","","","UI","interface"
+"SplitStackSlider/Split","Split","","","UI","interface"
+"ToDoList/AddRecipes/TextBoxHint","No recipes added.
+You can add recipes by going to the Build Menu or the Codex.","","","UI",""
+"ToDoList/Blueprint","Blueprint:","To-Do List tooltip","","UI","interface"
+"ToDoList/Clear/Button","Clear List","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/CommandsForNotes","<h>Commands for Notes:</>
+<default><b>Your Text</></> = <b>Your Text</>
+<default><o>Your Text</></> = <o>Your Text</>
+<default><ob>Your Text</></> = <ob>Your Text</>
+<default><h>Your Text</></> = <h>Your Text</>
+[] = <ob>[  ]</>
+[x] = <ob>[</><b>x</><ob>]</>","If unsure, translate only `Commands for Notes:` and `Your Text` :)","","UI",""
+"ToDoList/Edit/Button","Edit To-Do List","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/MAMResearch","MAM Research:","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/Name","Name","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/PrivateNotes","Private Notes","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/PrivateNotes/TextBoxHint","Add Private Notes...","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/PublicNotes","Public Notes","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/PublicNotes/TextBoxHint","Add Public Notes...","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/Recipe","Recipe:","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/Recipes","Recipes","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/Recipes/ChosenItem/Pattern","Recipe: {RecipeName}","To-Do List tooltip","{RecipeName} = text","UI","#interface
+#tutorial
+#game"
+"ToDoList/Title","To-Do List","","","",""
+"ToDoList/Tutorial/InputNumber","Input a number to set the amount in your To-Do List.","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/Tutorial/InputNumber/TextBoxHint","Amount...","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"ToDoList/Tutorial/SaveIngredients","Save the required components to your To-Do List.","To-Do List tooltip","","UI","#interface
+#tutorial
+#game"
+"Tutorial/Hints","HINTS:","","","UI","interface"
+"WelcomeMessage/WelcomeBack","WELCOME BACK, <Orange>PIONEER</>","","","UI","interface"

@@ -1,0 +1,870 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"Logistics/ConveyorBeltMk1","Conveyor Belt Mk.1","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk1/Description","Transports up to 60 resources per minute. Used to move resources between buildings.","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk2","Conveyor Belt Mk.2","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk2/Description","Transports up to 120 resources per minute. Used to move resources between buildings.","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk3","Conveyor Belt Mk.3","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk3/Description","Transports up to 270 resources per minute. Used to move resources between buildings.","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk4","Conveyor Belt Mk.4","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk4/Description","Transports up to 480 resources per minute. Used to move resources between buildings.","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk5","Conveyor Belt Mk.5","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk5/Description","Transports up to 780 resources per minute. Used to move resources between buildings.","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk6","Conveyor Belt Mk.6","","","Game","#buildable
+#item"
+"Logistics/ConveyorBeltMk6/Description","Transports up to 1200 resources per minute. Used to move resources between buildings.","","","Game","#buildable
+#item"
+"Logistics/ConveyorCeilingMount","Conveyor Ceiling Mount","","","Game","#buildable
+#item"
+"Logistics/ConveyorCeilingMount/Description","Attaches to ceilings and other ceiling mounts.
+Useful for routing Conveyor Belts more precisely and over long distances.","","","Game","#buildable
+#item"
+"Logistics/ConveyorLift/Mk1","Conveyor Lift Mk.1","","","Game","#buildable
+#item"
+"Logistics/ConveyorLift/Mk2","Conveyor Lift Mk.2","","","Game","#buildable
+#item"
+"Logistics/ConveyorLift/Mk3","Conveyor Lift Mk.3","","","Game","#buildable
+#item"
+"Logistics/ConveyorLift/Mk4","Conveyor Lift Mk.4","","","Game","#buildable
+#item"
+"Logistics/ConveyorLift/Mk5","Conveyor Lift Mk.5","","","Game","#buildable
+#item"
+"Logistics/ConveyorLift/Mk6","Conveyor Lift Mk.6","","","Game","#buildable
+#item"
+"Logistics/ConveyorLiftFloorHole","Conveyor Lift Floor Hole","","","Game","#buildable
+#item"
+"Logistics/ConveyorLiftFloorHole/Description","Attaches to Foundations, allowing Conveyor Lifts to pass through.","","","Game","#buildable
+#item"
+"Logistics/ConveyorLiftMk1/Description","Transports up to 60 resources per minute. Used to move resources between floors.","","","Game","#buildable
+#item"
+"Logistics/ConveyorLiftMk2/Description","Transports up to 120 resources per minute. Used to move resources between floors.","","","Game","#buildable
+#item"
+"Logistics/ConveyorLiftMk3/Description","Transports up to 270 resources per minute. Used to move resources between floors.","","","Game","#buildable
+#item"
+"Logistics/ConveyorLiftMk4/Description","Transports up to 480 resources per minute. Used to move resources between floors.","","","Game","#buildable
+#item"
+"Logistics/ConveyorLiftMk5/Description","Transports up to 780 resources per minute. Used to move resources between floors.","","","Game","#buildable
+#item"
+"Logistics/ConveyorLiftMk6/Description","Transports up to 1200 resources per minute. Used to move resources between floors.","","","Game","#buildable
+#item"
+"Logistics/ConveyorMerger","Conveyor Merger","","","Game","#buildable
+#item"
+"Logistics/ConveyorMerger/Description","Merges up to three Conveyor Belts into one.","","","Game","#buildable
+#item"
+"Logistics/ConveyorPole","Conveyor Pole","","","Game","#buildable
+#item"
+"Logistics/ConveyorPole/Description","Connects Conveyor Belt segments. Pole height can be adjusted.
+Useful for routing Conveyor Belts more precisely and across long distances.","","","Game","#buildable
+#item"
+"Logistics/ConveyorPole/Stackable","Stackable Conveyor Pole","","","Game","#buildable
+#item"
+"Logistics/ConveyorPole/Stackable/Description","Supports Conveyor Belts. Can be stacked on other stackable supports.","","","Game","#buildable
+#item"
+"Logistics/ConveyorSpitter","Conveyor Splitter","","","Game","#buildable
+#item"
+"Logistics/ConveyorSpitter/Description","Splits one Conveyor Belt into two or three. 
+Useful for diverting parts and resources away from backlogged Conveyor Belts.","","","Game","#buildable
+#item"
+"Logistics/ConveyorSpitterProgrammable","Programmable Splitter","","","Game","#buildable
+#item"
+"Logistics/ConveyorSpitterProgrammable/Description","Splits one Conveyor Belt into two or three. 
+Multiple filters can be set for each output to allow specific parts to pass through.","","","Game","#buildable
+#item"
+"Logistics/ConveyorSpitterSmart","Smart Splitter","","","Game","#buildable
+#item"
+"Logistics/ConveyorSpitterSmart/Description","Splits one Conveyor Belt into two or three.
+A filter can be set for each output to allow a specific part to pass through.","","","Game","#buildable
+#item"
+"Logistics/ConveyorWallMount","Conveyor Wall Mount","","","Game","#buildable
+#item"
+"Logistics/ConveyorWallMount/Description","Attaches to Walls.
+Useful for routing Conveyor Belts more precisely and over long distances.","","","Game","#buildable
+#item"
+"Logistics/PipelineFloorHole","Pipeline Floor Hole","","","Game","#buildable
+#item"
+"Logistics/PipelineFloorHole/Description","Attaches to Foundations, allowing Pipelines to pass through.","","","Game","#buildable
+#item"
+"Logistics/PipelineJunctionCross","Pipeline Junction","","","Game","#buildable
+#item"
+"Logistics/PipelineJunctionCross/Description","Attaches to a Pipeline, allowing it to be split up to 4 ways.","","","Game","#buildable
+#item"
+"Logistics/PipelineMk1","Pipeline Mk.1","","","Game","#buildable
+#item"
+"Logistics/PipelineMk1/Description","Transports fluids.
+External indicators show flow rate, direction, and volume.
+Capacity: 300 m³ of fluid per minute.","","","Game","#buildable
+#item"
+"Logistics/PipelineMk1NoIndicator","Clean Pipeline Mk.1","","","Game","#buildable
+#item"
+"Logistics/PipelineMk1NoIndicator/Description","Transports fluids.
+Capacity: 300 m³ of fluid per minute.
+
+Caution: This version of the Pipeline does not feature an external indicator.","","","Game","#buildable
+#item"
+"Logistics/PipelineMk2","Pipeline Mk.2","","","Game","#buildable
+#item"
+"Logistics/PipelineMk2/Description","Transports fluids.
+External indicators show flow rate, direction, and volume.
+Capacity: 600 m³ of fluid per minute.","","","Game","#buildable
+#item"
+"Logistics/PipelineMk2NoIndicator","Clean Pipeline Mk.2","","","Game","#buildable
+#item"
+"Logistics/PipelineMk2NoIndicator/Description","Transports fluids.
+Capacity: 600 m³ of fluid per minute.
+
+Caution: This version of the Pipeline does not feature an external indicator.","","","Game","#buildable
+#item"
+"Logistics/PipelinePumpMk1","Pipeline Pump Mk.1","","","Game","#interface
+#pipe"
+"Logistics/PipelinePumpMk1/Description","Attaches to a Pipeline to apply Head Lift.
+Maximum Head Lift: 20 m
+(Allows fluids to be transported 20 m upwards.)
+
+NOTE: Arrows and holograms when building indicate Head Lift direction.
+NOTE: Head Lift does not stack, so space between Pumps is recommended.","","","Game","#buildable
+#item"
+"Logistics/PipelinePumpMk2","Pipeline Pump Mk.2","","","Game","#buildable
+#item"
+"Logistics/PipelinePumpMk2/Description","Can be attached to a Pipeline to apply Head Lift.
+Maximum Head Lift: 50 m
+(Allows fluids to be transported 50 meters upwards.)
+
+NOTE: Arrows and holograms when building indicate Head Lift direction.
+NOTE: Head Lift does not stack, so space between Pumps is recommended.","","","Game","#buildable
+#item"
+"Logistics/PipelineSupport","Pipeline Support","","","Game","#buildable
+#item"
+"Logistics/PipelineSupport/Description","Connects Pipeline segments. Support height can be adjusted.
+Useful for routing Pipelines more precisely and across long distances.","","","Game","#buildable
+#item"
+"Logistics/PipelineSupportStackable","Stackable Pipeline Support","","","Game","#buildable
+#item"
+"Logistics/PipelineSupportStackable/Description","Supports Pipelines. Can be stacked on other stackable supports.","","","Game","#buildable
+#item"
+"Logistics/PipelineValve","Valve","","","Game","#buildable
+#item"
+"Logistics/PipelineValve/Description","Limits Pipeline flow rates.
+Can be attached to a Pipeline.
+
+NOTE: Has an in- and output direction.","","","Game","#buildable
+#item"
+"Logistics/PipelineWallHole","Pipeline Wall Hole","","","Game","#buildable
+#item"
+"Logistics/PipelineWallHole/Description","Attaches to Walls, allowing Pipelines to pass through.","","","Game","#buildable
+#item"
+"Logistics/PipelineWallSupport","Pipeline Wall Support","","","Game","#buildable
+#item"
+"Logistics/PipelineWallSupport/Description","Attaches to Walls.
+Used to connect Pipelines over longer distances.","","","Game","#buildable
+#item"
+"Organization/DimensionalDepot","Dimensional Depot Uploader","","","",""
+"Organization/DimensionalDepot/Description","The Dimensional Depot Uploader is used to upload resources to a dimensional storage deposit.
+From here resources can be used by the Build Gun and Crafting Stations, as if they were in the pioneer Inventory.","","","",""
+"Organization/FluidBuffer","Fluid Buffer","","","Game","#buildable
+#item"
+"Organization/FluidBuffer/Description","Holds up to 400 m³ of fluid.
+Has Pipeline input and output ports.","","","Game","#buildable
+#item"
+"Organization/FluidBufferIndustrial","Industrial Fluid Buffer","","","Game","#buildable
+#item"
+"Organization/FluidBufferIndustrial/Description","Holds up to 2400 m³ of fluid.
+Has Pipeline input and output ports.","","","Game","#buildable
+#item"
+"Organization/Lighting/CeilingLight","Ceiling Light","","","Game","#buildable
+#item"
+"Organization/Lighting/CeilingLight/Description","Lights up indoor factory spaces when placed on ceilings.
+
+Light color and intensity can be adjusted via a Light Control Panel.
+Allows for up to 2 Power Line connections.","","","Game","#buildable
+#item"
+"Organization/Lighting/FloodLightTower","Flood Light Tower","","","Game","#buildable
+#item"
+"Organization/Lighting/FloodLightTower/Description","Illuminates large or outdoor spaces.
+
+Light color and intensity can be adjusted.
+Allows for up to 2 Power Line connections.","","","Game","#buildable
+#item"
+"Organization/Lighting/LightsControlPanel","Light Control Panel","","","Game","#buildable
+#item"
+"Organization/Lighting/LightsControlPanel/Description","Sections off a series of lights, allowing them to be adjusted as a group.
+
+Controls all lights connected to the power grid via the Light Connector (yellow label).
+Note: Other Control Panels and Power Switches interrupt the connection.","","","Game","#buildable
+#item"
+"Organization/Lighting/StreetLight","Street Light","","","Game","#buildable
+#item"
+"Organization/Lighting/StreetLight/Description","Lights up factory areas and roads.
+
+Light color and intensity can be adjusted.
+Allows for up to 2 Power Line connections.","","","Game","#buildable
+#item"
+"Organization/Lighting/WallMountedFloodLight","Wall-Mounted Flood Light","","","Game","#buildable
+#item"
+"Organization/Lighting/WallMountedFloodLight/Description","Attaches to Walls and Foundations to illuminate large spaces.
+
+Light color and intensity can be modified via a Light Control Panel.
+Allows for up to 2 Power Line connections.","","","Game","#buildable
+#item"
+"Organization/LookoutTower","Lookout Tower","","","Game","#buildable
+#item"
+"Organization/LookoutTower/Description","Provides a good vantage point to facilitate factory construction.","","","Game","#buildable
+#item"
+"Organization/RadarTower","Radar Tower","","","Game","#buildable
+#item"
+"Organization/RadarTower/Description","Scans the surrounding area to display additional information on the Map.
+
+Information revealed on the Map includes:
+- Resource node locations
+- Terrain data
+- Flora & fauna information
+- Notable signal readings","","","Game","#buildable
+#item"
+"Organization/Signs/BillboardLarge","Large Billboard","","","Game","#buildable
+#item"
+"Organization/Signs/BillboardLarge/Description","Improves factory organization. The colors, icons, background, and text are customizable.
+
+Can be freestanding, placed on Walls, or attached to most buildings, including Storage Containers.
+
+Size: 16 m x 8 m","","","Game","#buildable
+#item"
+"Organization/Signs/BillboardSmall","Small Billboard","","","Game","#buildable
+#item"
+"Organization/Signs/BillboardSmall/Description","Improves factory organization. The colors, icons, background, and text are customizable.
+
+Can be freestanding, placed on Walls, or attached to most buildings, including Storage Containers.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Organization/Signs/DisplaySign","Display Sign","","","Game","#buildable
+#item"
+"Organization/Signs/DisplaySign/Description","Improves factory organization. The colors, icons, background, and text are customizable.
+
+Can be freestanding, placed on Walls, or attached to most buildings, including Storage Containers.
+
+Size: 2 m x 1 m","","","Game","#buildable
+#item"
+"Organization/Signs/LabelSign2m","Label Sign (2 m)","","","Game","#buildable
+#item"
+"Organization/Signs/LabelSign2m/Description","Improves factory organization. The colors, icons, background, and text are customizable.
+
+Can be freestanding, placed on Walls, or attached to most buildings, including Storage Containers.
+
+Size: 2 m x 0.5 m","","","Game","#buildable
+#item"
+"Organization/Signs/LabelSign3m","Label Sign (3 m)","","","Game","#buildable
+#item"
+"Organization/Signs/LabelSign3m/Description","Improves factory organization. The colors, icons, background, and text are customizable.
+
+Can be freestanding, placed on Walls, or attached to most buildings, including Storage Containers.
+
+Size: 3 m x 0.5 m","","","Game","#buildable
+#item"
+"Organization/Signs/LabelSign4m","Label Sign (4 m)","","","Game","#buildable
+#item"
+"Organization/Signs/LabelSign4m/Description","Improves factory organization. The colors, icons, background, and text are customizable.
+
+Can be freestanding, placed on Walls, or attached to most buildings, including Storage Containers.
+
+Size: 4 m x 0.5 m","","","Game","#buildable
+#item"
+"Organization/Signs/PortraitSign","Portrait Sign","","","Game","#buildable
+#item"
+"Organization/Signs/PortraitSign/Description","Improves factory organization. The colors, icons, background, and text are customizable.
+
+Can be freestanding, placed on Walls, or attached to most buildings, including Storage Containers.
+
+Size: 2 m x 3 m","","","Game","#buildable
+#item"
+"Organization/Signs/SquareSign05m","Square Sign (0.5 m)","","","Game","#buildable
+#item"
+"Organization/Signs/SquareSign05m/Description","Improves factory organization. The colors, icons, background, and text are customizable.
+
+Can be freestanding, placed on Walls, or attached to most buildings, including Storage Containers.
+
+Size: 0.5 m x 0.5 m","","","Game","#buildable
+#item"
+"Organization/Signs/SquareSign1m","Square Sign (1 m)","","","Game","#buildable
+#item"
+"Organization/Signs/SquareSign1m/Description","Improves factory organization. The colors, icons, background, and text are customizable.
+
+Can be freestanding, placed on Walls, or attached to most buildings, including Storage Containers.
+
+Size: 1 m x 1 m","","","Game","#buildable
+#item"
+"Organization/Signs/SquareSign2m","Square Sign (2 m)","","","Game","#buildable
+#item"
+"Organization/Signs/SquareSign2m/Description","Improves factory organization. The colors, icons, background, and text are customizable.
+
+Can be freestanding, placed on Walls, or attached to most buildings, including Storage Containers.
+
+Size: 2 m x 2 m","","","Game","#buildable
+#item"
+"Organization/StorageBoxHazard","Hazard Storage Box","Small container for storing hazardous items. 100 times smaller than a Storage Container","","Game","#item"
+"Organization/StorageBoxHazard/Description","Contains 25 slots for storing large amounts of items.","Small container for storing hazardous items. 100 times smaller than a Storage Container","","Game","#item"
+"Organization/StorageBoxMedical","Medical Storage Box","","","Game","#buildable
+#item"
+"Organization/StorageBoxMedical/Description","Contains 25 slots for storing large amounts of items.","","","Game","#buildable
+#item"
+"Organization/StorageBoxPersonal","Personal Storage Box","Small container for storing personal items.","","Game","#item"
+"Organization/StorageBoxPersonal/Description","Contains 25 slots for storing large amounts of items.","Small container for storing personal items.","","Game","#buildable
+#item"
+"Organization/StorageContainer","Storage Container","Building for storing large quantities of items. Allows storing automation and large storage buffers","","Game","#item"
+"Organization/StorageContainer/Description","Contains 24 slots for storing large amounts of items.
+Has 1 Conveyor Belt input port and 1 Conveyor Belt output port.","Building for storing large quantities of items. Allows storing automation and large storage buffers","","Game","#item"
+"Organization/StorageContainerIndustrial","Industrial Storage Container","Larger variant of the Storage Container with double the size and double the storage capacity","","Game","#item"
+"Organization/StorageContainerIndustrial/Description","Contains 48 slots for storing large amounts of items.
+Has 2 Conveyor Belt input ports and 2 Conveyor Belt output ports.","Larger variant of the Storage Container with double the size and double the storage capacity","","Game","#item"
+"Power/AlienPowerAugmenter","Alien Power Augmenter","","","Game","#buildable
+#item"
+"Power/AlienPowerAugmenter/Description","Generates power based on the total amount of power on the attached power grid.
+
+This experimental technology is somehow able to extract power from the Somersloop by blasting it with energy.","","","Game","#buildable
+#item"
+"Power/BiomassBurner","Biomass Burner","","","Game","#buildable
+#item"
+"Power/BiomassBurner/Description","Burns various forms of Biomass to generate electricity for the power grid.
+Has a Conveyor Belt input port that allows the Biomass supply to be automated.
+
+Resource consumption will automatically be lowered to meet power demands.","","","Game","#buildable
+#item"
+"Power/BiomassBurner/Description/Integrated","Burns Biomass to produce power. Biomass must be loaded manually and can be obtained by picking up flora in the world.
+
+Produces up to 20 MW of power while operating.","","","Game","#buildable
+#item"
+"Power/CoalGenerator","Coal-Powered Generator","","","Game","#buildable
+#item"
+"Power/CoalGenrator/Description","Burns Coal to boil Water. The steam produced rotates turbines that generate electricity for the power grid.
+Has Conveyor Belt and Pipeline input ports that allow the Coal and Water supply to be automated.
+
+Caution: Always generates power at the set clock speed. Shuts down if fuel requirements are not met.","","","Game","#buildable
+#item"
+"Power/FuelGenerator","Fuel-Powered Generator","","","Game","#buildable
+#item"
+"Power/FuelGenerator/Description","Consumes Fuel to generate electricity for the power grid.
+Has a Pipeline input port that allows the Fuel supply to be automated.
+
+Caution: Always generates power at the set clock speed. Shuts down if fuel requirements are not met.","","","Game","#buildable
+#item"
+"Power/GeothermalGenerator","Geothermal Generator","","","Game","#buildable
+#item"
+"Power/GeothermalGenerator/Description","Harnesses geothermal energy to generate power. Must be built on a Geyser.
+
+Caution: Power production fluctuates.
+
+Power Production:
+Impure Geyser: 50-150 MW (100 MW average)
+Normal Geyser: 100-300 MW (200 MW average)
+Pure Geyser: 200-600 MW (400 MW average)","","","Game","#buildable
+#item"
+"Power/NuclearPowerPlant","Nuclear Power Plant","","","Game","#buildable
+#item"
+"Power/NuclearPowerPlant/Description","Consumes Nuclear Fuel Rods and Water to produce electricity for the power grid.
+
+Produces Nuclear Waste, which is extracted via the Conveyor Belt output.
+
+Caution: Always generates power at the set clock speed. Shuts down if fuel requirements are not met.","","","Game","#buildable
+#item"
+"Power/PowerLine","Power Line","","","Game","#buildable
+#item"
+"Power/PowerLine/Description","Connects Power Poles, Power Generators, and factory buildings.","","","Game","#buildable
+#item"
+"Power/PowerPoleMk1","Power Pole Mk.1","","","Game","#buildable
+#item"
+"Power/PowerPoleMk1/Description","Allows for up to 4 Power Line connections.
+
+Connect Power Poles, Power Generators, and factory buildings with Power Lines to create a power grid. The power grid supplies all connected buildings with power.","","","Game","#buildable
+#item"
+"Power/PowerPoleMk2","Power Pole Mk.2","","","Game","#buildable
+#item"
+"Power/PowerPoleMk2/Description","Allows for up to 7 Power Line connections.
+
+Connect Power Poles, Power Generators, and factory buildings with Power Lines to create a power grid. The power grid supplies all connected buildings with power.","","","Game","#buildable
+#item"
+"Power/PowerPoleMk3","Power Pole Mk.3","","","Game","#buildable
+#item"
+"Power/PowerPoleMk3/Description","Allows for up to 10 Power Line connections.
+
+Connect Power Poles, Power Generators, and factory buildings with Power Lines to create a power grid. The power grid supplies all connected buildings with power.","","","Game","#buildable
+#item"
+"Power/PowerStorage","Power Storage","","","Game","#interface
+#power
+#storage"
+"Power/PowerStorage/Description","Connects to a power grid to store excess power produced. The stored power can be harnessed if power grid consumption exceeds production.
+
+Storage Capacity: 100 MWh (100 MW for 1 hour)
+Maximum Charge Rate: 100 MW
+Maximum Discharge Rate: Unlimited","","","Game","#buildable
+#item"
+"Power/PowerSwitch","Power Switch","","","Game","#power"
+"Power/PowerSwitch/Description","Enables/disables the connection between 2 power grids when switched ON/OFF.
+
+Note the A and B connector labels.","","","Game","#buildable
+#item"
+"Power/PowerSwitchPriority","Priority Power Switch","","","Game","#buildable
+#item"
+"Power/PowerSwitchPriority/Description","Priority Power Switches can be ranked by priority. When power production is too low, Switches will start turning off automatically until the power stabilizes, starting with Priority Group 8.","","","Game","#buildable
+#item"
+"Power/PowerTower","Power Tower","","","Game","#buildable
+#item"
+"Power/PowerTower/Description","Helps span Power Lines across greater distances.
+There is an additional power connector at the bottom of the Power Tower to connect it to other buildings, such as Power Poles.","","","Game","#buildable
+#item"
+"Power/PowerTowerPlatform","Power Tower Platform","","","Game","#buildable
+#item"
+"Power/PowerTowerPlatform/Description","Helps span Power Lines across greater distances.
+There is an additional power connector at the bottom of the Power Tower to connect it to other buildings, such as Power Poles.
+
+Note: This Power Tower variant includes a ladder and platform for improved utility.","","","Game","#buildable
+#item"
+"Power/WallOutletDoubleMk1","Double Wall Outlet Mk.1","","","Game","#buildable
+#item"
+"Power/WallOutletDoubleMk1/Description","Functions like a Power Pole, but attaches to a wall. Has one connector on each side of the wall.
+
+Allows for up to 4 Power Line connections per side.
+
+Connect Power Poles, Power Generators and factory buildings with Power Lines to create a power grid. The power grid supplies all connected buildings with power.","","","Game","#buildable
+#item"
+"Power/WallOutletDoubleMk2","Double Wall Outlet Mk.2","","","Game","#buildable
+#item"
+"Power/WallOutletDoubleMk2/Description","Functions like a Power Pole, but attaches to a wall. Has one connector on each side of the wall.
+
+Allows for up to 7 Power Line connections per side.
+
+Connect Power Poles, Power Generators and factory buildings with Power Lines to create a power grid. The power grid supplies all connected buildings with power.","","","Game","#buildable
+#item"
+"Power/WallOutletDoubleMk3","Double Wall Outlet Mk.3","","","Game","#buildable
+#item"
+"Power/WallOutletDoubleMk3/Description","Functions like a Power Pole, but attaches to a wall. Has one connector on each side of the wall.
+
+Allows for up to 10 Power Line connections per side.
+
+Connect Power Poles, Power Generators and factory buildings with Power Lines to create a power grid. The power grid supplies all connected buildings with power.","","","Game","#buildable
+#item"
+"Power/WallOutletMk1","Wall Outlet Mk.1","","","Game","#buildable
+#item"
+"Power/WallOutletMk1/Description","Functions like a Power Pole, but attaches to a wall.
+
+Allows for up to 4 Power Line connections.
+
+Connect Power Poles, Power Generators and factory buildings with Power Lines to create a power grid. The power grid supplies all connected buildings with power.","","","Game","#buildable
+#item"
+"Power/WallOutletMk2","Wall Outlet Mk.2","","","Game","#buildable
+#item"
+"Power/WallOutletMk2/Description","Functions like a Power Pole, but attaches to a wall.
+
+Allows for up to 7 Power Line connections.
+
+Connect Power Poles, Power Generators and factory buildings with Power Lines to create a power grid. The power grid supplies all connected buildings with power.","","","Game","#buildable
+#item"
+"Power/WallOutletMk3","Wall Outlet Mk.3","","","Game","#buildable
+#item"
+"Power/WallOutletMk3/Description","Functions like a Power Pole, but attaches to a wall.
+
+Allows for up to 10 Power Line connections.
+
+Connect Power Poles, Power Generators and factory buildings with Power Lines to create a power grid. The power grid supplies all connected buildings with power.","","","Game","#buildable
+#item"
+"Production/Assembler","Assembler","","","Game","#buildable
+#item"
+"Production/Assembler/Description","Crafts 2 parts into another part.
+
+Can be automated by feeding component parts in via Conveyor Belts connected to the input ports. The resulting parts can be automatically extracted by connecting a Conveyor Belt to the output port.","","","Game","#buildable
+#item"
+"Production/Blender","Blender","","","Game","#buildable
+#item"
+"Production/Blender/Description","Blends fluids together or combines them with solid parts in a wide variety of processes.
+Head Lift: 10 m
+(Allows fluids to be transported 10 meters upwards.)
+
+Has both Conveyor Belt and Pipeline input and output ports.","","","Game","#buildable
+#item"
+"Production/Constructor","Constructor","","","Game","#buildable
+#item"
+"Production/Constructor/Description","Crafts 1 part into another part.
+
+Can be automated by feeding component parts in via a Conveyor Belt connected to the input port. The resulting parts can be automatically extracted by connecting a Conveyor Belt to the output port.","","","Game","#buildable
+#item"
+"Production/Converter","Converter","","","Game","#buildable
+#item"
+"Production/Converter/Description","The Converter harnesses Reanimated SAM to enable precise matter and energy transmutation.
+
+Warning: Power usage is very high and unstable.","","","Game","#buildable
+#item"
+"Production/Foundry","Foundry","","","Game","#buildable
+#item"
+"Production/Foundry/Description","Smelts 2 resources into alloy ingots.
+
+Can be automated by feeding ore in via Conveyor Belts connected to the input ports. The resulting ingots can be automatically extracted by connecting a Conveyor Belt to the output port.","","","Game","Buildable"
+"Production/Manufacturer","Manufacturer","","","Game","#buildable
+#item"
+"Production/Manufacturer/Description","Crafts 3 or 4 parts into another part.
+
+Can be automated by feeding component parts in via Conveyor Belts connected to the input ports. The resulting parts can be automatically extracted by connecting a Conveyor Belt to the output port.","","","Game","#buildable
+#item"
+"Production/MinerMk.1","Miner Mk.1","","","Game","#buildable
+#item"
+"Production/MinerMk.1/Description","Extracts solid resources from the resource node it is built on. 
+Default extraction rate is 60 resources per minute. 
+Extraction rate varies based on resource node purity. Outputs all extracted resources onto connected Conveyor Belts.","","","Game","#buildable
+#item"
+"Production/MinerMk.2","Miner Mk.2","","","Game","#buildable
+#item"
+"Production/MinerMk.2/Description","Extracts solid resources from the resource node it is built on. 
+Default extraction rate is 120 resources per minute. 
+Extraction rate varies based on resource node purity. Outputs all extracted resources onto connected Conveyor Belts.","","","Game","#buildable
+#item"
+"Production/MinerMk.3","Miner Mk.3","","","Game","#buildable
+#item"
+"Production/MinerMk.3/Description","Extracts solid resources from the resource node it is built on. 
+Default extraction rate is 240 resources per minute. 
+Extraction rate varies based on resource node purity. Outputs all extracted resources onto connected Conveyor Belts.","","","Game","#buildable
+#item"
+"Production/OilExtractor","Oil Extractor","","","Game","#buildable
+#item"
+"Production/OilExtractor/Description","Extracts Crude Oil when built on an oil node. Extraction rates vary based on node purity.
+
+Default Extraction Rate: 120 m³ of oil per minute.
+Head Lift: 10 m
+(Allows fluids to be transported 10 meters upwards.)","","","Game","#buildable
+#item"
+"Production/Packager","Packager","","","Game","#buildable
+#item"
+"Production/Packager/Description","Packages and unpackages fluids.
+Head Lift: 10 m
+(Allows fluids to be transported 10 meters upwards.)
+
+Contains both Conveyor Belt and Pipeline input and output ports so that a wide range of recipes can be automated.","","","Game","#buildable
+#item"
+"Production/ParticleAccelerator","Particle Accelerator","","","Game","#buildable
+#item"
+"Production/ParticleAccelerator/Description","Uses electromagnetic fields to propel particles to very high speeds and energies. The specific design allows for a variety of processes, including matter generation and conversion.
+
+Warning: Power usage is extremely high and unstable, and varies per recipe.","","","Game","#buildable
+#item"
+"Production/QuantumEncoder","Quantum Encoder","","","",""
+"Production/QuantumEncoder/Description","The Quantum Encoder uses Excited Photonic Matter to produce the most complex of parts, controlling development up to the quantum level.
+
+Warning: Power usage is extremely high and unstable.","","","",""
+"Production/Refinery","Refinery","","","Game","#buildable
+#item"
+"Production/Refinery/Description","Refines fluid and/or solid parts into other parts.
+Head Lift: 10 m
+(Allows fluids to be transported 10 meters upwards.)
+
+Contains both Conveyor Belt and Pipeline input and output ports so that a wide range of recipes can be automated.","","","Game","#buildable
+#item"
+"Production/ResourceWellExtractor","Resource Well Extractor","","","Game",""
+"Production/ResourceWellExtractor/Description","Collects pressurized resources when placed on the activated sub-nodes of a Resource Well. Does not require power.
+
+Default Extraction Rate: 60 m³ of fluid per minute.
+Head Lift: 10 m
+(Allows fluids to be transported 10 meters upwards.)","","","Game","#buildable
+#item"
+"Production/ResourceWellPressurizer","Resource Well Pressurizer","","","Game","#buildable
+#item"
+"Production/ResourceWellPressurizer/Description","Activates a Resource Well by pressurizing the underground resource. Must be placed on a Resource Well.
+Once activated, Resource Well Extractors can be placed on the surrounding sub-nodes to extract the resource.
+Requires power. Overclocking increases the output potential of the entire Resource Well.","","","Game","#buildable
+#item"
+"Production/Smelter","Smelter","","","Game","#buildable
+#item"
+"Production/Smelter/Description","Smelts ore into ingots.
+
+Can be automated by feeding ore in via a Conveyor Belt connected to the input port. The resulting ingots can be automatically extracted by connecting a Conveyor Belt to the output port.","","","Game","#buildable
+#item"
+"Production/WaterExtractor","Water Extractor","","","Game","#interface
+#water_extractor"
+"Production/WaterExtractor/Description","Extracts water from the body of water it is built on.
+Note: the water needs to be sufficiently deep, and rivers are generally not deep enough.
+
+Default Extraction Rate: 120 m³ of water per minute.
+Head Lift: 10 m
+(Allows fluids to be transported 10 meters upwards.)","","","Game","#buildable
+#item"
+"Special/AWESOMEShop","AWESOME Shop","","","UI",""
+"Special/AWESOMEShop/Description","Redeem your FICSIT Coupons here! 
+For those employees going the extra kilometer we have set aside special bonus milestones and rewards! Get your Coupons in the AWESOME Sink program now!
+
+*No refunds possible.","","","UI",""
+"Special/AWESOMESink","AWESOME Sink","","","Game","#buildable
+#item"
+"Special/AWESOMESink/Description","Got excess resources? Fear not, for FICSIT does not waste! The newly developed AWESOME Sink turns any and all useful parts into research data just as fast as you can supply them! 
+Participating pioneers will be compensated with Coupons that can be spent at the AWESOME Shop.","","","Game","#buildable
+#item"
+"Special/BlueprintDesigner","Blueprint Designer Mk.1","A special building used to create custom factory designs and save them as Blueprints.","","Game","#interface
+#buildable"
+"Special/BlueprintDesigner/Description","The Blueprint Designer is used to create custom factory designs and save them as Blueprints.
+Blueprints can be accessed from the Blueprint tab of the Build Menu.
+
+Note that buildings can only be placed in the Blueprint Designer if they are fully within the boundary frame.
+
+Dimensions: 32 m x 32 m x 32 m","","","Game","#buildable
+#item"
+"Special/BlueprintDesignerMk2","Blueprint Designer Mk.2","","","Game",""
+"Special/BlueprintDesignerMk2/Description","The Blueprint Designer is used to create custom factory designs and save them as Blueprints.
+Blueprints can be accessed from the Blueprint tab of the Build Menu.
+
+Note that buildings can only be placed in the Blueprint Designer if they are fully within the boundary frame.
+
+Dimensions: 40 m x 40 m x 40 m","","","Game",""
+"Special/BlueprintDesignerMk3","Blueprint Designer Mk.3","","","Game","#buildable
+#item"
+"Special/BlueprintDesignerMk3/Description","The Blueprint Designer is used to create custom factory designs and save them as Blueprints.
+Blueprints can be accessed from the Blueprint tab of the Build Menu.
+
+Note that buildings can only be placed in the Blueprint Designer if they are fully within the boundary frame.
+
+Dimensions: 48 m x 48 m x 48 m","","","Game","#buildable
+#item"
+"Special/BlueprintDesignerStorageBox","Blueprint Storage Box","Integrated storage box in the Blueprint Designer","","",""
+"Special/CraftBench","Crafting Bench","","","Game","#buildable
+#item"
+"Special/CraftBench/Description","Allows you to manually craft a wide range of different parts. 
+These parts can then be used to construct various factory buildings, vehicles, and equipment.","","","Game","#buildable
+#item"
+"Special/CraftBenchIntegrated/Description","Allows you to manually craft a wide range of different parts. 
+These parts can then be used to construct various factory buildings, vehicles, and equipment.","A manual crafting station, allowing to craft unlocked components.","","Game","Craft Bench"
+"Special/DropPod","Drop Pod","","","Game","#buildable
+#item"
+"Special/EquipmentWorkshop","Equipment Workshop","A station where engineers can manually craft non-crafting components such as tools, ammunition and consumables.","","UI","#interface
+#workshop"
+"Special/EquipmentWorkshop/Description","Used to manually craft equipment.","Equipment Workshop is a station where engineers can manually craft non-crafting components such as tools, ammunition and consumables.","","UI","#interface
+#workshop"
+"Special/HUB","The HUB","","","Game","#buildable
+#item"
+"Special/HUB/Description","The heart of your factory. This is where you complete FICSIT milestones to unlock additional schematics for buildings, vehicles, parts, equipment, etc.","","","Game","#buildable
+#item"
+"Special/HUBTerminal","HUB Terminal","","","Game","#buildable
+#item"
+"Special/MAM","MAM","","","Game","#buildable
+#item"
+"Special/MAM/Description/Integrated","The Molecular Analysis Machine is used to break down matter for analysis and send the data back to Earth.
+R&D is interested in this data, so they will compensate you for what you send.","","","Game","#buildable
+#item"
+"Special/MAM/Description/Standalone","The Molecular Analysis Machine is used to analyze new and exotic materials found on alien planets.
+Through the MAM, R&D will assist pioneers in turning any valuable data into usable research options and new technologies.","","","Game","#buildable
+#item"
+"Special/SpaceElevator","Space Elevator","","","Game","#buildable
+#item"
+"Special/SpaceElevator/Description","Requires deliveries of special Project Parts to complete Project Assembly Phases.
+Completing these Phases will unlock new Tiers in the HUB Terminal.","","","Game","#buildable
+#item"
+"Transport/Drones/Drone","Drone","","","Game","#buildable
+#item
+#transportation"
+"Transport/Drones/Drone/Description","Transports available input back and forth between its home Port and destination Ports. Drone Status and other details can be viewed at a Drone's home Port.
+Must be built on a Drone Port.
+
+Has 9 inventory slots.
+
+Can use any fuel type.
+Refuels at any of its connected Ports if possible.","This description was updated to reflect that Drones are now able to use any fuel type (no longer just Batteries).","","Game","#buildable
+#item
+#transportation"
+"Transport/Drones/DronePort","Drone Port","","","Game","#interface
+#transportation"
+"Transport/Drones/DronePort/Description","Functions as home Port to a single Drone, which transports available input back and forth between its home Port and destination Ports.
+Drone Ports can have one other Port assigned as their transport destination.
+
+The Drone Port interface provides delivery details and allows management of Port connections.","","","Game","#buildable
+#item
+#transportation"
+"Transport/Hyper/Hypertube","Hypertube","","","Game","#buildable
+#item"
+"Transport/Hyper/Hypertube/Description","Transports FICSIT employees.
+A Hypertube system cannot be powered up or used until a Hypertube Entrance is attached.","","","Game","#buildable
+#item"
+"Transport/Hyper/HypertubeBooster","Hypertube Booster","","","Game","#prototype
+#item"
+"Transport/Hyper/HypertubeBooster/Description","Grants a quick speed boost when traversing it at the cost of increased energy consumption.","","","Game","#prototype
+#item"
+"Transport/Hyper/HypertubeEntrance","Hypertube Entrance","","","Game","#buildable
+#item"
+"Transport/Hyper/HypertubeEntrance/Description","Powers up a Hypertube system and allows it to be entered.","","","Game","#buildable
+#item"
+"Transport/Hyper/HypertubeSupport","Hypertube Support","","","Game","#buildable
+#item"
+"Transport/Hyper/HypertubeSupport/Description","Supports Hypertubes, allowing them to stretch over longer distances.","","","Game","#buildable
+#item"
+"Transport/Hyper/HypertubeWallHole","Hypertube Wall Hole","","","Game","#buildable
+#item"
+"Transport/Hyper/HypertubeWallHole/Description","Attaches to Walls, allowing Hypertubes to pass through.","","","Game","#buildable
+#item"
+"Transport/Hyper/HypertubeWallSupport","Hypertube Wall Support","","","Game","#buildable
+#item"
+"Transport/Hyper/HypertubeWallSupport/Description","Attaches to Walls.
+Supports Hypertubes, allowing them to stretch over longer distances.","","","Game","#buildable
+#item"
+"Transport/Hyper/StackableHypertubeSupport","Stackable Hypertube Support","","","Game","#buildable
+#item"
+"Transport/Hyper/StackableHypertubeSupport/Description","Supports Hypertubes. Can be stacked on other stackable supports.","","","Game","#buildable
+#item"
+"Transport/HypertubeFloorHole","Hypertube Floor Hole","","","Game","#buildable
+#item"
+"Transport/HypertubeFloorHole/Description","Attaches to Foundations, allowing Hypertubes to pass through.","","","Game","#buildable
+#item"
+"Transport/Jump/JumpPad","Jump Pad","","","Game","#buildable
+#item"
+"Transport/Jump/JumpPad/Description","Launches pioneers for quick, vertical traversal.
+The launch angle can be adjusted while building.
+Caution: Be sure to land safely!","","","Game","#buildable
+#item"
+"Transport/Jump/UJellyLandingPad","U-Jelly Landing Pad","","","Game","#buildable
+#item"
+"Transport/Jump/UJellyLandingPad/Description","Generates a speed-dampening jelly.
+Guarantees a safe landing.","","","Game","#buildable
+#item"
+"Transport/Portal/Description","Enables pioneer teleportation between two linked Portals.
+
+Each Portal can only have a single link. 
+A link can only be made between a Main and Satellite Portal.
+
+Singularity Cells need to be supplied to the Main Portal and will be consumed to establish and maintain the Portal link.
+
+WARNINGS:
+- Massive power draw will occur during start-up and usage.
+- Power draw on use increases with travel distance.
+- Link start-up will take time. Letting the connection expire is not recommended.
+- Failure to deliver sufficient Singularity Cells will cause the link to expire.
+- FICSIT does not condone the use of wormhole technology. Any usage of wormhole technology is at the user's own risk.","","","Game","Portal"
+"Transport/Portal/Main","Main Portal","","","Game","Portal"
+"Transport/Portal/Satellite","Satellite Portal","","","Game","Portal"
+"Transport/RoadVehicles/CyberWagon","Cyber Wagon","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/CyberWagon/Description","Absolutely indestructible.
+Needs no further introduction.","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/Explorer","Explorer","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/Explorer/Description","Traverses rough terrain, including near-vertical surfaces. A fast and nimble exploration vehicle.
+
+Has 12 inventory slots and a built-in Crafting Bench.
+
+Fuel: Any fuel type","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/Infrastructure/TruckStation","Truck Station","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/Infrastructure/TruckStation/Description","Sends or receives resources to/from vehicles.
+
+Has 48 inventory slots.
+
+Transfers up to 120 stacks per minute to/from docked vehicles. 
+Always refuels vehicles if it has access to a matching fuel type.","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/Tractor","Tractor","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/Tractor/Description","Picks up and delivers resources at Truck Stations. This process can be automated. Nicknamed 'Sugarcube' by FICSIT pioneers with the justification “It’s pretty sweet, y’know”.
+
+Has 25 inventory slots and a built-in Crafting Bench.
+
+Fuel: Any fuel type","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/Truck","Truck","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/Truck/Description","Picks up and delivers resources at Truck Stations. This process can be automated. Nicknamed 'The Unit' by FICSIT pioneers because of its massive frame.
+
+Has 48 inventory slots and a built-in Crafting Bench.
+
+Fuel: Any fuel type","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/PlaftformIntegratedTrack","Integrated Platform Track","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/Platform/GenericDescription","Loads and unloads Freight Cars that stop at the Freight Platform.
+Loading and unloading options can be set by configuring the building.
+Snaps to other Platforms and Stations.
+Needs to be connected to a powered Railway to function.","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/PlatformEmpty","Empty Platform","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/PlatformEmpty/Description","Creates empty space where necessary.","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/PlatformEmptyWithCatwalk","Empty Platform With Catwalk","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/PlatformEmptyWithCatwalk/Description","Creates empty space where necessary.","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/PlatformFreight","Freight Platform","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/PlatformFreightFluid","Fluid Freight Platform","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/Railway","Railway","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/Railway/Description","Carries trains reliably and quickly.
+Has a wide turn angle, so make sure to plan it out properly.","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/RailwaySignal/Block","Block Signal","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/RailwaySignalBlock/Description","Directs the movement of trains to avoid collisions and bottlenecks.
+
+Block Signals can be placed on Railways to create 'Blocks' between them. When a train is occupying one of these Blocks, other trains will be unable to enter it.
+
+Caution: Signals are directional! Trains are unable to move against this direction, so be sure to set up Signals in both directions for bi-directional Railways.","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/RailwaySignalPath","Path Signal","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/RailwaySignalPath/Description","Directs the movement of trains to avoid collisions and bottlenecks.
+
+Path Signals are advanced signals that are especially useful for bi-directional Railways and complex intersections. They function similarly to Block Signals, but rather than occupying the entire Block, trains can reserve a specific path through it and will only enter the Block if their path allows them to fully pass through.
+
+Caution: Signals are directional! Trains are unable to move against this direction, so be sure to set up Signals in both directions for bi-directional Railways.","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/RailwaySwitchControl","Railroad Switch Control","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/TrainStation","Train Station","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Infrastructure/TrainStation/Description","Serves as a hub for Locomotives, which can be set to navigate to and stop at a Train Station.
+You can connect power to a Train Station to power up the trains on the Railway as well as feed power to other stations.","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Vehicles/FreightCar","Freight Car","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Vehicles/FreightCar/Desctiption","Attaches to an Electric Locomotive or other Freight Car to transport resources. Must be built on a Railway.
+Resources are loaded and unloaded at Freight Platforms.
+Has a 1600 m³ or 32-slot capacity, depending on whether resources are liquid or solid.","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Vehicles/Locomotive","Electric Locomotive","","","Game","#buildable
+#item
+#transportation"
+"Transport/Trains/Vehicles/Locomotive/Description","Moves Freight Cars from station to station.
+Requires between 25-110 MW of power to move. 
+Must be built on a Railway.
+
+Nicknamed 'Leif' by FICSIT pioneers because of its reliability.","","","Game","#buildable
+#item
+#transportation"

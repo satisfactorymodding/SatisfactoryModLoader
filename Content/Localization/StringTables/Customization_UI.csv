@@ -1,0 +1,41 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"Customizer/Character/Camera","<BoldCamText>CAM 03</><RegCamText> (HUB Interior - MASSAGE-2 (AB)b)</>","","","UI","#customization"
+"Customizer/Character/Categories/ColorOveralls","Overalls Color","","","UI",""
+"Customizer/Character/Categories/ColorPrimary","Primary Color","","","UI",""
+"Customizer/Character/Categories/ColorSecondary","Secondary Color","","","UI",""
+"Customizer/Character/Categories/Helmet","Helmet","","","UI",""
+"Customizer/Character/Categories/KeyChain","Trinket","","","UI",""
+"Customizer/Character/Close/Button","Close","","","UI","#customization"
+"Customizer/Character/GotToStore","Go to Store","","","UI","#customization"
+"Customizer/Character/Movement/RotateLeft","Rotate Left","","","UI","#customization"
+"Customizer/Character/Movement/RotateRight","Rotate Right","","","UI","#customization"
+"Customizer/Character/Movement/ZoomIn","Zoom In","","","UI","#customization"
+"Customizer/Character/Movement/ZoomOut","Zoom Out","","","UI","#customization"
+"Customizer/Character/Recording","REC","","","UI","#customization"
+"Customizer/Character/RevertChanges/Button","Revert Changes","","","UI","#customization"
+"Customizer/Character/WindowTitle","Customize Pioneer","","","UI","#customization"
+"Customizer/Colors/Multiple/SelectColor/Button","Select Color","","","UI","#interface
+#color_picker
+#customization"
+"Customizer/Colors/Multiple/WindowTitle","Select Color","","","UI","#interface
+#color_picker
+#customization"
+"Customizer/Colors/Single/SelectColor/Button","Select Color","","","UI","#interface
+#color_picker
+#customization"
+"Customizer/Colors/Single/WindowTitle","Select Color","","","UI","#customization"
+"Customizer/HUD/CurrentCustomization/Pattern","<White12Bold>Current Customization:</>
+<White20Reg>{CustomiserName}</>","","{CustomiserName} = text, currently used swatch","UI","#customization"
+"Customizer/HUD/CustomizerFilter","Customizer Filter:","","","UI","#customization"
+"Customizer/HUD/Keybindings/Apply","Apply","","","UI","#customization"
+"Customizer/HUD/Keybindings/ApplyCustomization","Apply Customization","","","UI","#customization"
+"Customizer/HUD/Keybindings/CustomizerFilter","Customizer Filter","","","UI","#customization"
+"Customizer/HUD/Keybindings/CustomizerMenu","Customizer Menu","","","UI","#customization"
+"Customizer/HUD/Keybindings/HideHUD","Hide HUD","","","UI","#customization"
+"Customizer/HUD/Keybindings/QuickSwitch","Quick Switch","","","UI","#customization"
+"Customizer/HUD/MaterialAppliedToHotbar/Pattern","<Bold>{material_name}</>
+applied to Hotbar Buildings","","{material_name} = text, material name","UI","Inventory"
+"CustomizerMenu/SearchIn/TextBoxHint","Search in Customizer...","","","UI","#customization"
+"CustomizerMenu/SelectActiveSwatch","Select Active Swatch:","","","UI","#customization"
+"CustomizerMenu/Settings/ApplyToHotbarBuildings/Button","Apply Material to Hotbar Buildings","","","UI","#customization"
+"CustomizerMenu/Settings/Edit/Button","Edit","","","UI","#customization"

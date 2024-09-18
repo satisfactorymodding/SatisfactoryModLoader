@@ -1,0 +1,93 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"ProductivePacker/GameStats/HighestPackagePoints","Highest Package Points","Game stats window of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/GameStats/MostFilledPackage","Most Filled Package","Game stats window of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/GameStats/NewHighscore","NEW HIGH SCORE!","Game stats window of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/GameStats/PackagesSent","Packages Sent","Game stats window of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/GameStats/PlacedBlocks","Blocks Placed","Game stats window of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/GameStats/PointsForSentPackage","POINTS FOR SENT PACKAGE:","Game stats window of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/Amount/Pattern","x{amount}","Game inferface of the minigame FICSIT Productive Packer Deluxe","{amount} = number","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/Bonus/Pattern","+{amount}","Game inferface of the minigame FICSIT Productive Packer Deluxe","{amount} = number, bonus","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/FillBonus","FILL BONUS:","Game inferface of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/Multiplier/Pattern","x{multiplier}","Game inferface of the minigame FICSIT Productive Packer Deluxe","{multiplier} = number, multiplier","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/PackagePoints","PACKAGE POINTS:","Game inferface of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/Send/Button","SEND","Game inferface of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/Stats/Name/Pattern","{name}:","","{name} = text","UI",""
+"ProductivePacker/InGame/Time","TIME:","Game inferface of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/Time/Pattern","{time}s","Game inferface of the minigame FICSIT Productive Packer Deluxe","{time} = number, seconds","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/Total/Pattern","={total}","Game inferface of the minigame FICSIT Productive Packer Deluxe","{total} = number, total sum","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/TotalPoints","TOTAL POINTS:","Game inferface of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/InGame/TotalPointsForDelivery","TOTAL POINTS FOR DELIVERY:","Game inferface of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/LookAtDescription/Play/Pattern","Press {Use} to play {Name}","Look-at description tooltip","{Use} = text, key name
+{Name} = text, localized name (Productive Packer)","UI","#common
+#prototype
+#look_at_description"
+"ProductivePacker/MainMenu/Start","Start Game","Main menu of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/MainMenu/Tutorial","How to Play","Main menu of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Start/HighScore","HIGH SCORE:","Main menu of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Start/Level1","Level 1","Main menu of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Start/Level2","Level 2","Main menu of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Start/Level3","Level 3","Main menu of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Start/Level4","Level 4","Main menu of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Start/Level5","Level 5","Main menu of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Start/Level6","Level 6","Main menu of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Start/NoScore","None","Main menu of the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Start/PlayerScore/Pattern","{name}: {Points}","Main menu of the minigame FICSIT Productive Packer Deluxe","{name} = text, player name
+{Points} = number, score","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/1","You are one of the lucky FICSIT employees given the opportunity to work as one of our esteemed Package Filling Architects. Congratulations!
+
+As a Package Filling Architect, your assignment is to send as many well-packed packages as possible during your allotted time.","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/1/Header","Welcome to FICSIT Productive Packer!","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/2","Place blocks on the board to start filling the package. Each block you put in the package will add to your Package Points. The number in the bottom right corner of each block is the number of points that block gives.","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/2/Header","How to Play","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/2/Title","Blocks","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/3","The fuller your package is, the bigger your Fill Bonus grows! Your Fill Bonus will be applied as a multiplier on the Package Points when you send the package.","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/3/Title","Fill Bonus","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/4","When you find that you can't fit any more pieces in your Package, press the Send button in the bottom right corner. The Package Points will be multiplied by the Fill Bonus, and then added to your Total Points.
+
+Remember that you can send as many packages as you want during your allotted time frame!","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/4/Title","Sending a Package","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/5","Occasionally a bonus tile will spawn in your Package. Dropping a block on this tile before it disappears will give that block 4 times its regular points!","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/5/Title","Bonus Tile","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/Tutorial/Back/Button","Back to Menu","Tutorial page for the minigame FICSIT Productive Packer Deluxe","","UI","#prototype
+#minigame"
+"ProductivePacker/WindowTitle","Productive Packer Deluxe","FICSIT Productive Packer Deluxe is a tetris-based minigame available at HUB. Presented as a work task for the pioneer interpreted as a fun game. The box uses a grid system when placing pieces, and at various points certain squares will also highlight as bonuses if a block is placed over them before they time out. When the box is completed, the player clicks the ""Send"" button to get a new box.","","UI","#prototype
+#minigame"

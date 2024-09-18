@@ -1,0 +1,226 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"Game/ColorPicker/Preset/NameUsed","Color Preset name already in use","","","UI","interface
+color_picker"
+"Game/ColorPicker/Preset/NameUsed/Description","This name is already in use. Saving will overwrite the Color Preset that's currently using this name.
+
+Do you wish to continue?","","","UI","interface
+color_picker"
+"Game/ColorPicker/Preset/NameUsed/Warning/Description","This name is already in use. Saving will overwrite the Color Preset that's currently using this name.","","","UI","interface
+color_picker"
+"Game/ColorPicker/Preset/Save/Button","Save Preset","","","UI","interface
+color_picker"
+"Game/Progression/ProjectAssembly","PROJECT ASSEMBLY","","","UI","#interface
+#game
+#project_assembly
+#progression"
+"Game/Progression/ProjectAssembly/PhaseUnlock/Completed","COMPLETED","","","UI","#interface
+#game
+#project_assembly
+#progression"
+"Game/Progression/ProjectAssembly/PhaseUnlock/IndexAndName/Pattern","Phase {number}: {name}","","{number} = number, phase number
+{name} = text, phase name","UI","#interface
+#game
+#project_assembly
+#progression"
+"Game/Progression/ProjectAssembly/PhaseUnlock/NoCost","Completed with No Cost","","","UI","#interface
+#game
+#project_assembly
+#progression"
+"Game/Progression/ProjectAssembly/PhaseUnlock/Tiers/Pattern","Unlocks Tiers {A}","","{A} = text, comma and ampersand-separated list of Tiers","UI","#interface
+#game
+#project_assembly
+#progression"
+"Game/Progression/ProjectAssembly/PhaseUnlock/TiersTexts/AddingLastTierInList/Pattern","{OldText} & {NewText}","Used to add the last tier to the comma-separated list, <> are texts that would come in here as variables:
+<Tier 1, Tier 2> & <Tier 3>
+(if it's the last tier in the list)","{OldText} = text, one Tier or a comma-separated list of Tiers combined via `Game/Progression/ProjectAssembly/PhaseUnlock/TiersTexts/CombiningTierList/Pattern`
+{NewText} = text, last Tier in a list to add","UI","#interface
+#game
+#project_assembly
+#progression"
+"Game/Progression/ProjectAssembly/PhaseUnlock/TiersTexts/CombiningTierList/Pattern","{OldText}, {NewText}","Used to combine tiers into a comma-separated list, <> are texts that would come in here as variables:
+<Tier 1, Tier 2>, <Tier 3>
+(if there's more Tiers in the list)","{OldText} = text, one Tier or a comma-separated list of Tiers combined via this pattern
+{NewText} = text, another Tier to be added to the comma-esparated list of Tiers","UI","#interface
+#game
+#project_assembly
+#progression"
+"Game/ToDoList/BuildHUB","Build the HUB","","","UI","#interface
+#hub"
+"Game/ToDoList/BuildSpaceElelvator","Build the Space Elevator","","","UI","#interface"
+"Game/ToDoList/CompleteOnboarding","Complete the Onboarding Process","","","UI","#interface"
+"Game/ToDoList/CompletePhase/Objective","Objective:","","","UI","#interface"
+"Game/ToDoList/CompletePhase1","Complete Phase 1","","","UI","#interface"
+"Game/ToDoList/CompletePhase2","Complete Phase 2","","","UI","#interface"
+"Game/ToDoList/CompletePhase3","Complete Phase 3","","","UI","#interface"
+"Game/ToDoList/CompletePhase4","Complete Phase 4","","","UI","#interface"
+"Game/ToDoList/CompletePhase5","Complete Phase 5","","","UI","#interface"
+"Game/ToDoList/LaunchProjectAssembly","Launch Project Assembly","","","UI","#interface"
+"GenericUIStrings/Cancel/Button","Cancel","Standard popup used around the game with different title and body","","UI","#common
+#interface"
+"GenericUIStrings/Confirm/Button","Confirm","Standard popup used around the game with different title and body","","UI","#common
+#interface"
+"GenericUIStrings/Keybindings/Close","Close","","","UI",""
+"GenericUIStrings/Keybindings/CopySettings","Copy Settings","","","UI","#interface
+#common
+#manufacturing"
+"GenericUIStrings/Keybindings/PasteSettings","Paste Settings","","","UI","#interface
+#common
+#manufacturing"
+"GenericUIStrings/Keybindings/Select","Select","","","UI","#prototype
+interface
+#build_menu"
+"GenericUIStrings/Keybindings/Shortcuts/CtrlC","CTRL + C","","","UI","#interface
+#common
+#manufacturing"
+"GenericUIStrings/Keybindings/Shortcuts/CtrlDragOrCtrlClick","CTRL + Drag / CTRL + Click","","","UI",""
+"GenericUIStrings/Keybindings/Shortcuts/CtrlV","CTRL + V","","","UI","#interface
+#common
+#manufacturing"
+"GenericUIStrings/Keybindings/Shortcuts/Esc","ESC","","","UI","#interface
+#craft_bench"
+"GenericUIStrings/Keybindings/Shortcuts/LMB","LMB","","","UI","#interface
+#craft_bench"
+"GenericUIStrings/Keybindings/Shortcuts/RMB","RMB","","","UI",""
+"GenericUIStrings/Keybindings/Shortcuts/ShiftClick","SHIFT + Click","","","UI",""
+"GenericUIStrings/Keybindings/SplitStack","Split Stack","","","UI",""
+"GenericUIStrings/Keybindings/ToDoList/AddItem","Add to To-Do List","","","UI","#prototype
+interface
+#build_menu"
+"GenericUIStrings/Keybindings/ToDoList/RemoveItem","Remove from To-Do List","","","UI","#prototype
+interface
+#build_menu"
+"GenericUIStrings/Keybindings/TransferAllStacksOfType","Transfer All Stacks of Type","","","UI",""
+"GenericUIStrings/Keybindings/TransferStack","Transfer Stack","","","UI",""
+"GenericUIStrings/Sort/Button","Sort","","","UI",""
+"GenericUIStrings/Textbox/Search/TextboxHint","Search...","","","UI",""
+"Shared/ColorPicker/Preset/Name","Enter a name for the new preset","","","UI","interface
+color_picker"
+"Shared/ColorPicker/Preset/Name/TextBoxHint","Preset Name...","","","UI","interface
+color_picker"
+"Shared/ColorPicker/Preset/NameUsedByStaticPreset/Body","This name is already in use by a Static Preset and cannot be overwritten.","","","UI","interface
+color_picker"
+"Shared/ColorPicker/Preset/NameUsedByStaticPreset/aTitle","Preset Name in use by a Static Preset","","","UI","interface
+color_picker"
+"Shared/ColorPicker/Preset/PresetSavedNotification/Pattern","Color Preset ""{name}"" saved!","","{name} = text, name of color preset","UI","interface
+color_picker"
+"Shared/Combobox/Results/MoreOptionsAvailable","More results available...","","","UI","#interface
+#combobox"
+"Shared/Combobox/Search/PlusMoreOptions/Pattern","{Num} more options...","Supports plurals","{Num} = number","UI","#interface
+#combobox"
+"Shared/Combobox/Search/PlusOneOption/Pattern","{Num} more option...","Only ever used for {Num} = 1, variable can be omited","{Num} = number","UI","#interface
+#combobox"
+"Shared/Combobox/SelectColor/LoadPreset","Load Preset","","","UI","#interface
+#combobox"
+"Shared/Combobox/SelectColor/RemoveConfirmation","Remove?","","","UI",""
+"Shared/Delay/Button/Pattern","{ButtonText} ({SecondsLeft} sec)","","{ButtonText} = text, button text
+{SecondsLeft} = number, countdown until action","UI","#interface"
+"Shared/ImageBrowser/Categories/Backgrounds","Backgrounds","","","UI","#interface
+Image Browser"
+"Shared/ImageBrowser/Categories/Buildings","Buildings","","","UI","#interface
+Image Browser"
+"Shared/ImageBrowser/Categories/Equipment","Equipment","","","UI","#interface
+Image Browser"
+"Shared/ImageBrowser/Categories/Monochrome","Monochrome","","","UI","#interface
+Image Browser"
+"Shared/ImageBrowser/Categories/Other","Other","","","UI","#interface
+Image Browser"
+"Shared/ImageBrowser/Categories/Parts","Parts","","","UI","#interface
+Image Browser"
+"Shared/ImageBrowser/Categories/Stamps","Stamps","","","UI","#interface
+Image Browser"
+"Shared/ImageBrowser/SelectImage/Button","Select Icon","","","UI","#interface
+Image Browser"
+"Shared/ImageBrowser/WindowTitle","Icon Browser","","","UI","#interface
+Image Browser"
+"Shared/InputTextWarning/NameInUse/Body","Saving with this name will overwrite a previously saved entity with the same name.","","","UI","#interface
+#input
+#warning"
+"Shared/InputTextWarning/NameInUse/aTitle","Name is already in use","","","UI","#interface
+#input
+#warning"
+"Shared/InputTextWarning/NameNotAllowed/Body","You are not allowed to save using this name.","","","UI","#interface
+#input
+#warning"
+"Shared/InputTextWarning/NameNotAllowed/aTitle","Name is not allowed","","","UI","#interface
+#input
+#warning"
+"Shared/Item/LookAtDescription/PickUp/Pattern","Press [{0}] to pick up {1} ({2})","","{0} = text, key name
+{1} = text, Item name
+{2} = number, number of items","UI","#common
+#look_at_description"
+"Shared/OpenInCodex/Button","Open in Codex","","","UI","#interface
+#common"
+"Shared/RecipeInfo/RecipeUnavailable/RecipeLocked/Body","This recipe has not yet been unlocked.
+
+New recipes can be unlocked by completing Milestones, researching things in the MAM, or scanning Hard Drives you've found.","","","UI",""
+"Shared/RecipeInfo/RecipeUnavailable/UnavailableParts/Body","This recipe uses parts that are not yet available to you.","","","UI",""
+"Shared/RecipeInfo/RecipeUnavailable/aTitle","Recipe Unavailable","","","UI",""
+"Shared/Standby/Label","STANDBY","","","UI","#interface
+#common"
+"World/CollectableItems/LookAtDescription","Collecting... {0}","","{0} = number, number of collected items","UI","#common
+#look_at_description"
+"World/DecorationActor/LookAtDescription/Pattern","Press [{0}] to pick up {1}","","{0} = text, key name
+{1} = text, decor item name","UI",""
+"World/DecorationActor/NotEnoughSpaceForDecoration/Pattern","Not enough space for {0}","","{0} = text, decor item","UI",""
+"World/DropPod/LookAtDescription/Open/Pattern","Press [{0}] to open drop pod","","{0} = text, key name","UI","#common
+#look_at_description"
+"World/Foliage/LookAtDescription/Pattern","{0} & {1}","","{0} = text, list of foliage names generated via this pattern
+{1} = text, another foliage name to add to the list","UI","#common
+#look_at_description"
+"World/Foliage/LookAtDescription/PickUp/Pattern","Press [{0}] to pick up {1}","","{0} = text, key name
+{1} = text, foliage name","UI","#common
+#look_at_description"
+"World/Foliage/NoSpaceForFoliage/Pattern","Not enough space to pick up {0}","","{0} = text, foliage name","UI",""
+"World/LizardDoggo/FunnyName","Lizardious Doggo","","","UI",""
+"World/LizardDoggo/FunnyName2","Lizardius Doggo","","","UI",""
+"World/LizardDoggo/GivenName","Name:","","","UI","#interface
+#creature
+#inventory"
+"World/LizardDoggo/GivenName/TextBoxHint","Name here...","","","UI","#interface
+#creature
+#inventory"
+"World/LizardDoggo/Inventory","Inventory:","","","UI","#interface
+#creature
+#inventory"
+"World/LizardDoggo/LookAtDescription/Interact/Pattern","Press [{PlayerActions_Use}] to see if the Lizard Doggo has found anything","","{PlayerActions_Use} = text, key name","UI","Lizard Doggo"
+"World/LizardDoggo/LookAtDescription/Pet/Pattern","Press [{PlayerActions_Use}] to pet the Lizard Doggo","","{PlayerActions_Use} = text, key name","UI","#interface
+#creature"
+"World/LizardDoggo/NonUGCName","...","","","UI","#console"
+"World/Manta/LookAtDescription/Pet/Pattern","Press [{UseKey}] to pet","","{UseKey} = text, key name","UI","#interface
+#creature"
+"World/ResourceNode/Amount/Infinite","Infinite","","","UI",""
+"World/ResourceNode/LookAtDescription/Mine/Pattern","Press <Key>{Key}</> to start mining {Ore} {Purity}","","{Key} = text, key name
+{Ore} = text, type of ore
+{Purity} = text, purity level","UI","#common
+#look_at_description"
+"World/ResourceNode/LookAtDescription/Pattern","{Ore} {Purity}","","{Ore} = text, type of ore
+{Purity} = text, purity level","UI","#common
+#look_at_description"
+"World/ResourceNode/NotEnoughSpace/Pattern","Not enough space to pick up {Ore} ({Purity})!","Warning message related to resources","{Ore} = text, ore type
+{Purity} = text, purity level","UI","#message #transportation"
+"World/Resources/NodesClaimed","Claimed Nodes:","","","UI","#interface
+#resource"
+"World/Resources/NodesClaimedAll","All Nodes Claimed!","","","UI","#interface
+#resource"
+"World/Resources/PurityLevel/Pattern","<White16Reg>Purity: </><Orange16Bold>{Purity}</>","","{Purity} = text, purity level","UI","#interface
+#resource"
+"World/Resources/PurityLevels/Impure","Impure","","","UI","#interface
+#resource"
+"World/Resources/PurityLevels/Normal","Normal","","","UI","#interface
+#resource"
+"World/Resources/PurityLevels/Pure","Pure","","","UI","#interface
+#resource"
+"World/Resources/PurityLevels/WithBoldTag/Impure","<Bold>(Impure)</>","No longer used for BP_ResourceDeposit","","UI","#interface
+#resource"
+"World/Resources/PurityLevels/WithBoldTag/Normal","<Bold>(Normal)</>","No longer used for BP_ResourceDeposit","","UI","#interface
+#resource"
+"World/Resources/PurityLevels/WithBoldTag/Pure","<Bold>(Pure)</>","No longer used for BP_ResourceDeposit","","UI","#interface
+#resource"
+"World/Resources/Status/Claimed","Claimed!","","","UI","#interface
+#resource"
+"World/Resources/Well/NodeInfo/Impure","Impure:","","","UI","#interface
+#resource"
+"World/Resources/Well/NodeInfo/Normal","Normal:","","","UI","#interface
+#resource"
+"World/Resources/Well/NodeInfo/Pure","Pure:","","","UI","#interface
+#resource"

@@ -1,0 +1,494 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"Architecture/BarrierLow","Low Barrier","","","Game","#buildable
+#item"
+"Architecture/BarrierTall","High Barrier","","","Game","#buildable
+#item"
+"Architecture/Beam/GenericDescription","Snaps to other Beams and various other structural buildings.
+Beams support multiple build modes for different use cases.","","","Game","#prototype
+#item"
+"Architecture/BeamConnector","Beam Connector","","","Game","#prototype
+#item"
+"Architecture/BeamConnector/GenericDescription","Hides seams and makes Beam connections more visually pleasing.","","","Game","#prototype
+#item"
+"Architecture/BeamConnectorDouble","Double Beam Connector","","","Game","#prototype
+#item"
+"Architecture/BeamMetal","Metal Beam","","","Game","#prototype
+#item"
+"Architecture/BeamPainted","Painted Beam","","","Game","#prototype
+#item"
+"Architecture/BeamSupport","Beam Support","","","Game","#prototype
+#item"
+"Architecture/BeamSupport/Description","Snaps to Beams and various other structural buildings.
+Used to aesthetically connect beams to surfaces.","","","Game","#prototype
+#item"
+"Architecture/Catwalk/GenericDescription","Snaps to Foundations and other Walkways.
+Specifically designed for humans to walk on.","","","Game","#buildable
+#item"
+"Architecture/CatwalkCorner","Catwalk Corner","","","Game","#buildable
+#item"
+"Architecture/CatwalkCrossing","Catwalk Intersection","","","Game","#buildable
+#item"
+"Architecture/CatwalkRamp","Catwalk Ramp","","","Game","#buildable
+#item"
+"Architecture/CatwalkStraight","Straight Catwalk","","","Game","#buildable
+#item"
+"Architecture/CatwalkStrairs","Catwalk Stairs","","","Game","#buildable
+#item"
+"Architecture/CatwalkTCrossing","Catwalk T-Junction","","","Game","#buildable
+#item"
+"Architecture/ConstructionFence","Construction Fence","","","",""
+"Architecture/ConstructionFenceTarp","Tarp Construction Fence","","","",""
+"Architecture/FenceBarrier/GenericDescription","Creates a safer and more efficient working environment.","Generic description used for barriers and construction fences.","","",""
+"Architecture/Ladder","Ladder","","","Game","#buildable
+#item"
+"Architecture/Ladder/Description","Snaps to Walls and Foundations. Default height is 2 m, but it can be extended while building.","","","Game","#buildable
+#item"
+"Architecture/RailingIndustrial","Industrial Railing","","","Game","#buildable
+#item"
+"Architecture/RailingIndustrial/Description","Creates a safer working environment when built on the edge of Foundations.","","","Game","#buildable
+#item"
+"Architecture/Stairs/GenericDescription","Snaps to Foundations.
+Simplifies access between floors of your structures.","","","Game","#buildable
+#item"
+"Architecture/StairsLeft","Stairs Left","","","Game","#buildable
+#item"
+"Architecture/StairsRight","Stairs Right","","","Game","#buildable
+#item"
+"Architecture/WalkwayCorner","Walkway Corner","","","Game","#buildable
+#item"
+"Architecture/WalkwayCrossing","Walkway Intersection","","","Game","#buildable
+#item"
+"Architecture/WalkwayRamp","Walkway Ramp","","","Game","#buildable
+#item"
+"Architecture/WalkwayStraight","Straight Walkway","","","Game","#buildable
+#item"
+"Architecture/WalkwayTCrossing","Walkway T-Junction","","","Game","#buildable
+#item"
+"Architetcure/BarrierRoad","Road Barrier","","","Game","#buildable
+#item"
+"Architetcure/RailingModern","Modern Railing","","","Game","#buildable
+#item"
+"Architetcure/RailingModern/Description","Creates a safer working environment when built on the edge of Foundations.
+
+This Railing is 4 m long and automatically angles itself when built on Ramps.","","","Game","#buildable
+#item"
+"Foundations/8x1m/GenericDescription","Provides a flat floor to build your factory on.
+
+Buildings on top of the Foundation snap to a grid, making it easier to line them up with each other.
+
+Size: 8 m x 1 m","","","Game","#buildable
+#item"
+"Foundations/8x2m/GenericDescription","Provides a flat floor to build your factory on.
+
+Buildings on top of the Foundation snap to a grid, making it easier to line them up with each other.
+
+Size: 8 m x 2 m","","","Game","#buildable
+#item"
+"Foundations/8x4m/GenericDescription","Provides a flat floor to build your factory on.
+
+Buildings on top of the Foundation snap to a grid, making it easier to line them up with each other.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Foundations/Foundation1m","Foundation (1 m)","","","Game","#buildable
+#item"
+"Foundations/Foundation2m","Foundation (2 m)","","","Game","#buildable
+#item"
+"Foundations/Foundation4m","Foundation (4 m)","","","Game","#buildable
+#item"
+"Foundations/FoundationRound","Round Foundation","","","Game","#buildable
+#item"
+"Foundations/FoundationStairs1m","Foundation Stairs (1 m)","","","",""
+"Foundations/FoundationStairs1m/Description","Snaps to Foundations and makes it easier to get onto them.
+
+Foundation Stairs are just Ramps with extra steps.
+
+Size: 8 m x 1 m","","","",""
+"Foundations/FoundationStairs2m","Foundation Stairs (2 m)","","","",""
+"Foundations/FoundationStairs2m/Description","Snaps to Foundations and makes it easier to get onto them.
+
+Foundation Stairs are just Ramps with extra steps.
+
+Size: 8 m x 2 m","","","",""
+"Foundations/FoundationStairs4m","Foundation Stairs (4 m)","","","",""
+"Foundations/FoundationStairs4m/Description","Snaps to Foundations and makes it easier to get onto them.
+
+Foundation Stairs are just Ramps with extra steps.
+
+Size: 8 m x 4 m","","","",""
+"Foundations/Frame8x4m/GenericDescription","Snaps to other structural buildings.
+Frames provide a more open factory aesthetic.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Foundations/FrameFloor","Frame Floor","","","Game","#buildable
+#item"
+"Foundations/FrameFloor/Description","Snaps to other structural buildings.
+Frames provide a more open factory aesthetic.
+
+Size: 8 m x 0.5 m","","","Game","#buildable
+#item"
+"Foundations/FrameFoundation","Frame Foundation","","","Game","#buildable
+#item"
+"Foundations/FrameGlassFoundation","Glass Frame Foundation","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/4x1m/GenericDescription","Provides an optional factory look that is smoother and offers possibilities for recreational activities. 
+Still utilizes the standard Foundation building grid for improved building placement.
+
+Size: 4 m x 1 m","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/4x2m/GenericDescription","Provides an optional factory look that is smoother and offers possibilities for recreational activities. 
+Still utilizes the standard Foundation building grid for improved building placement.
+
+Size: 4 m x 2 m","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/4x4m/GenericDescription","Provides an optional factory look that is smoother and offers possibilities for recreational activities. 
+Still utilizes the standard Foundation building grid for improved building placement.
+
+Size: 4 m x 4 m","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/8x1m/GenericDescription","Provides an optional factory look that is smoother and offers possibilities for recreational activities. 
+Still utilizes the standard Foundation building grid for improved building placement.
+
+Size: 8 m x 1 m","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/8x2m/GenericDescription","Provides an optional factory look that is smoother and offers possibilities for recreational activities. 
+Still utilizes the standard Foundation building grid for improved building placement.
+
+Size: 8 m x 2 m","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/8x4m/GenericDescription","Provides an optional factory look that is smoother and offers possibilities for recreational activities. 
+Still utilizes the standard Foundation building grid for improved building placement.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/CornerInnerInvertedQuarterPipe","Inverted Inner Corner Quarter Pipe","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/CornerInnerQuarterPipe","Inner Corner Quarter Pipe","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/CornerOuterInvertedQuarterPipe","Inverted Outer Corner Quarter Pipe","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/CornerOuterQuarterPipe","Outer Corner Quarter Pipe","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/ExtensionCormerInner1m","Inner Corner Extension (1 m)","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/ExtensionCormerInner2m","Inner Corner Extension (2 m)","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/ExtensionCormerInner4m","Inner Corner Extension (4 m)","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/ExtensionCormerOuter1m","Outer Corner Extension (1 m)","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/ExtensionCormerOuter2m","Outer Corner Extension (2 m)","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/ExtensionCormerOuter4m","Outer Corner Extension (4 m)","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/Half1mFoundation","Half Foundation (1 m)","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/Half2mFoundation","Half Foundation (2 m)","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/Half4mFoundation","Half Foundation (4 m)","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/QuarterPipe","Quarter Pipe","","","Game","#buildable
+#item"
+"Foundations/QuarterPipes/QuarterPipeInverted","Inverted Quarter Pipe","","","Game","#buildable
+#item"
+"Foundations/Ramp1m","Ramp (1 m)","","","Game","#buildable
+#item"
+"Foundations/Ramp1m/Description","Connects to other Walls and Floors. Use these to make buildings with multiple floors.
+Height: 1 m","","","Game","#buildable
+#item"
+"Foundations/Ramp2m","Ramp (2 m)","","","Game","#buildable
+#item"
+"Foundations/Ramp2m/Description","Connects to other Walls and Floors. Use these to make buildings with multiple floors.
+Height: 2 m","","","Game","#buildable
+#item"
+"Foundations/Ramp4m","Ramp (4 m)","","","Game","#buildable
+#item"
+"Foundations/Ramp4m/Description","Connects to other Walls and Floors. Use these to make buildings with multiple floors.
+Height: 4 m","","","Game","#buildable
+#item"
+"Foundations/Ramp8x4m","Ramp (8 m x 4 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerDown1m","Down Corner Ramp (1 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerDown2m","Down Corner Ramp (2 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerDown4m","Down Corner Ramp (4 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerDownInverted1m","Inverted Down Corner (1 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerDownInverted2m","Inverted Down Corner (2 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerDownInverted4m","Inverted Down Corner (4 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerUp1m","Up Corner Ramp (1 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerUp2m","Up Corner Ramp (2 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerUp4m","Up Corner Ramp (4 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerUpInverted1m","Inverted Up Corner (1 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerUpInverted2m","Inverted Up Corner (2 m)","","","Game","#buildable
+#item"
+"Foundations/RampCornerUpInverted4m","Inverted Up Corner (4 m)","","","Game","#buildable
+#item"
+"Foundations/RampDouble2m","Double Ramp (2 m)","","","Game","#buildable
+#item"
+"Foundations/RampDouble4m","Double Ramp (4 m)","","","Game","#buildable
+#item"
+"Foundations/RampDouble8m","Double Ramp (8 m)","","","Game","#buildable
+#item"
+"Foundations/RampFrame","Frame Ramp","","","Game","#buildable
+#item"
+"Foundations/RampFrameInverted","Inverted Frame Ramp","","","Game","#buildable
+#item"
+"Foundations/RampInverted1m","Inverted Ramp (1 m)","","","Game","#buildable
+#item"
+"Foundations/RampInverted2m","Inverted Ramp (2 m)","","","Game","#buildable
+#item"
+"Foundations/RampInverted4m","Inverted Ramp (4 m)","","","Game","#buildable
+#item"
+"Foundations/Ramps/8x1m/GenericDescription","Snaps to Foundations and makes it easier to get onto them.
+
+Buildings on top of the Ramp snap to a grid, making it easier to line them up with each other.
+
+Size: 8 m x 1 m","","","Game","#buildable
+#item"
+"Foundations/Ramps/8x2m/GenericDescription","Snaps to Foundations and makes it easier to get onto them.
+
+Buildings on top of the Ramp snap to a grid, making it easier to line them up with each other.
+
+Size: 8 m x 2 m","","","Game","#buildable
+#item"
+"Foundations/Ramps/8x4m/GenericDescription","Snaps to Foundations and makes it easier to get onto them.
+
+Buildings on top of the Ramp snap to a grid, making it easier to line them up with each other.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Foundations/Ramps/8x8m/GenericDescription","Snaps to Foundations and makes it easier to get onto them.
+
+Buildings on top of the Ramp snap to a grid, making it easier to line them up with each other.
+
+Size: 8 m x 8 m","","","Game","#buildable
+#item"
+"Pillars/ConcreteBigPillar","Big Concrete Pillar","","","Game","#buildable
+#item"
+"Pillars/ConcreteBigPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
+
+Size: 4 m x 4 m","","","Game","#buildable
+#item"
+"Pillars/ConcreteSmallPillar","Small Concrete Pillar","","","Game","#buildable
+#item"
+"Pillars/ConcreteSmallPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
+
+Size: 2 m x 4 m","","","Game","#buildable
+#item"
+"Pillars/FrameBigPillar","Big Frame Pillar","","","Game","#prototype
+#item"
+"Pillars/FrameBigPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
+
+Size: 4 m x 4 m","","","Game","#prototype
+#item"
+"Pillars/FrameSmallPillar","Small Frame Pillar","","","Game","#buildable
+#item"
+"Pillars/FrameSmallPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
+
+Size: 2 m x 4 m","","","Game","#buildable
+#item"
+"Pillars/MetalBigPillar","Big Metal Pillar","","","Game","#buildable
+#item"
+"Pillars/MetalBigPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
+
+Size: 4 m x 4 m","","","Game","#prototype
+#item"
+"Pillars/MetalSmallPillar","Small Metal Pillar","","","Game","#buildable
+#item"
+"Pillars/MetalSmallPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
+
+Size: 2 m x 4 m","","","Game","#buildable
+#item"
+"Pillars/PillarSupportBig","Big Pillar Support","","","Game","#buildable
+#item"
+"Pillars/PillarSupportBig/Description","Snaps to Pillars. Can be placed on surfaces like Foundations and Walls.","","","Game","#buildable
+#item"
+"Pillars/PillarSupportSmall","Small Pillar Support","","","Game","#buildable
+#item"
+"Pillars/PillarSupportSmall/Description","Snaps to Pillars. Can be placed on surfaces like Foundations and Walls.","","","Game","#buildable
+#item"
+"Roofs/8x051/GenericDescription","Snaps to Foundations, Walls, and other Roofs.
+
+Size: 8 m x 0.5 m","","","Game","#buildable
+#item"
+"Roofs/8x1/GenericDescription","Snaps to Foundations, Walls, and other Roofs.
+
+Size: 8 m x 1 m","","","Game","#buildable
+#item"
+"Roofs/8x2/GenericDescription","Snaps to Foundations, Walls, and other Roofs.
+
+Size: 8 m x 2 m","","","Game","#buildable
+#item"
+"Roofs/8x4/GenericDescription","Snaps to Foundations, Walls, and other Roofs.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Roofs/8xFlat/GenericDescription","Snaps to Foundations, Walls, and other Roofs.
+
+Size: 8 m x flat","","","Game","#buildable
+#item"
+"Roofs/Corners/Inner1m","Inner Corner Roof (1 m)","","","Game","#buildable
+#item"
+"Roofs/Corners/Inner2m","Inner Corner Roof (2 m)","","","Game","#buildable
+#item"
+"Roofs/Corners/Inner4m","Inner Corner Roof (4 m)","","","Game","#buildable
+#item"
+"Roofs/Corners/Outer1m","Outer Corner Roof (1 m)","","","Game","#buildable
+#item"
+"Roofs/Corners/Outer2m","Outer Corner Roof (2 m)","","","Game","#buildable
+#item"
+"Roofs/Corners/Outer4m","Outer Corner Roof (4 m)","","","Game","#buildable
+#item"
+"Roofs/Flat","Flat Roof","","","Game","#buildable
+#item"
+"Roofs/Roof1m","Roof (1 m)","","","Game","#buildable
+#item"
+"Roofs/Roof2m","Roof (2 m)","","","Game","#buildable
+#item"
+"Roofs/Roof4m","Roof (4 m)","","","Game","#buildable
+#item"
+"Walls/8x1m/GenericDescription","Snaps to Foundations and other Walls.
+Useful for building multi-floor structures.
+
+Size: 8 m x 1 m","","","Game","#buildable
+#item"
+"Walls/8x2m/GenericDescription","Snaps to Foundations and other Walls.
+Useful for building multi-floor structures.
+
+Size: 8 m x 2 m","","","Game","#buildable
+#item"
+"Walls/8x4m/1xConveyor/GenericDescription","Has 1 Conveyor Belt connection.
+Snaps to Foundations and other Walls.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Walls/8x4m/2xConveyor/GenericDescription","Has 2 Conveyor Belt connections.
+Snaps to Foundations and other Walls.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Walls/8x4m/3xConveyor/GenericDescription","Has 3 Conveyor Belt connections.
+Snaps to Foundations and other Walls.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Walls/8x4m/GenericDescription","Snaps to Foundations and other Walls.
+Useful for building multi-floor structures.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Walls/8x8m/GenericDescription","Snaps to Foundations and other Walls.
+Useful for building multi-floor structures.
+
+Size: 8 m x 8 m","","","Game","#buildable
+#item"
+"Walls/BasicWall1m","Basic Wall (1 m)","","","Game","#buildable
+#item"
+"Walls/BasicWall4m","Basic Wall (4 m)","","","Game","#buildable
+#item"
+"Walls/ConveyorWallx1","Conveyor Wall x 1","","","Game","#buildable
+#item"
+"Walls/ConveyorWallx2","Conveyor Wall x 2","","","Game","#buildable
+#item"
+"Walls/ConveyorWallx3","Conveyor Wall x 3","","","Game","#buildable
+#item"
+"Walls/FrameWall","Frame Wall","","","Game","#buildable
+#item"
+"Walls/Gates/8x4m/GenericDescription","Allows pioneers to pass through a Wall.
+Snaps to Foundations and other Walls.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Walls/Gates/Automated","Automated Gate","","","Game","#buildable
+#item"
+"Walls/Gates/Automated/Description","Automatically opens when living beings or vehicles approach it.
+Gate settings can be configured.
+Snaps to Foundations and Walls.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Walls/Gates/HoleWall","Gate Hole Wall","","","Game","#buildable
+#item"
+"Walls/HaflHence","Half Fence","","","Game","#prototype
+#item"
+"Walls/HaflHence/Description","Prevents pioneers from falling when built on the edges of floors.","","","Game","#prototype
+#item"
+"Walls/RampInvertedWall1m","Inverted Ramp Wall (1 m)","","","Game","#buildable
+#item"
+"Walls/RampInvertedWall2m","Inverted Ramp Wall (2 m)","","","Game","#buildable
+#item"
+"Walls/RampInvertedWall4m","Inverted Ramp Wall (4 m)","","","Game","#buildable
+#item"
+"Walls/RampInvertedWall8m","Inverted Ramp Wall (8 m)","","","Game","#buildable
+#item"
+"Walls/RampWall1m","Ramp Wall (1 m)","","","Game","#buildable
+#item"
+"Walls/RampWall2m","Ramp Wall (2 m)","","","Game","#buildable
+#item"
+"Walls/RampWall4m","Ramp Wall (4 m)","","","Game","#buildable
+#item"
+"Walls/RampWall8m","Ramp Wall (8 m)","","","Game","#buildable
+#item"
+"Walls/TiltedConcaveWall4m","Tilted Concave Wall (4 m)","","","Game","#buildable
+#item"
+"Walls/TiltedConcaveWall8m","Tilted Concave Wall (8 m)","","","Game","#buildable
+#item"
+"Walls/TiltedCornerWall4m","Tilted Corner Wall (4 m)","","","Game","#buildable
+#item"
+"Walls/TiltedCornerWall8m","Tilted Corner Wall (8 m)","","","Game","#buildable
+#item"
+"Walls/TiltedWall4m","Tilted Wall (4 m)","","","Game","#buildable
+#item"
+"Walls/TiltedWall8m","Tilted Wall (8 m)","","","Game","#buildable
+#item"
+"Walls/WallConveyorPerpendicular","Perpendicular Wall Conveyor","","","Game","#buildable
+#item"
+"Walls/WallConveyorPerpendicular/Description","Connects to other Walls and Foundations. Use these to make buildings with several floors.
+Has 1 Conveyor Belt connection perpendicular to the wall.
+Height: 4 m","","","Game","#buildable
+#item"
+"Walls/WithDoors/8x4m/GenericDescription","Allows pioneers to pass through a wall.
+Door settings can be configured.
+Snaps to Foundations and other Walls.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Walls/WithDoors/CenterDoorWall","Center Door Wall","","","Game","#buildable
+#item"
+"Walls/WithDoors/LeftDoorWall","Left Door Wall","","","Game","#buildable
+#item"
+"Walls/WithDoors/NoSize/GenericDescription","Snaps to Foundations and other Walls.
+The door allows pioneers to pass through a Wall.","","","Game","#buildable
+#item"
+"Walls/WithDoors/SideDoorWall","Side Door Wall","","","Game","#buildable
+#item"
+"Windows/8x4m/GenericDescription","Snaps to Foundations and other Walls.
+The windows allow pioneers to see through a wall.
+
+Size: 8 m x 4 m","","","Game","#buildable
+#item"
+"Windows/FrameAngleWindow","Angled Frame Window","","","",""
+"Windows/FrameHexWindow","Hex Frame Window","","","Game","#buildable
+#item"
+"Windows/FrameHoneycombWindow","Honeycomb Frame Window","","","",""
+"Windows/FrameThreeWindow","Triple Frame Window","","","",""
+"Windows/FrameWindow","Frame Window","","","Game","#buildable
+#item"
+"Windows/FrameWindowFull","Full Frame Window","","","Game","#buildable
+#item"
+"Windows/PanelWindow","Panel Window","","","Game","#buildable
+#item"
+"Windows/ReinforcedWindow","Reinforced Window","","","Game","#buildable
+#item"
+"Windows/SingeWindow","Single Window","","","Game","#buildable
+#item"

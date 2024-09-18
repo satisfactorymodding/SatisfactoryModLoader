@@ -1,0 +1,124 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"Categories/Equipment","Equipment","","","Game","#schematics"
+"Categories/Logistics","Logistics","","","Game","#schematics"
+"Categories/Organization","Organization","","","Game","#schematics"
+"Categories/Power","Power","","","Game","#schematics"
+"Categories/Production","Production","","","Game","#schematics"
+"Categories/Stairs","Stairs","","","",""
+"Categories/Walkways","Walkways","","","Game","#schematics"
+"Categories/Walls","Walls","","","Game","#schematics"
+"Exploration/CateriumElectronics","Caterium Electronics","","","Game","#schematics"
+"Exploration/CateriumTechnology","Caterium Technology","","","Game","#schematics"
+"Exploration/CentralStorage","Central Storage","","","Game","#schematics"
+"Exploration/Explosives","Explosives","","","Game","#schematics"
+"Exploration/RemoteStorage","Remote Storage","","","Game","#schematics"
+"Progression/1/1","Base Building","","","Game","#schematics"
+"Progression/1/2","Logistics","","","Game","#schematics"
+"Progression/1/3","Field Research","","","Game","#schematics"
+"Progression/2/1","Part Assembly","","","Game","#schematics"
+"Progression/2/2","Obstacle Clearing","","","Game","#schematics"
+"Progression/2/3","Jump Pads","","","Game","#schematics"
+"Progression/2/5","Resource Sink Bonus Program","","","Game","#schematics"
+"Progression/2/5/UnlockDescription","This Build Gun software upgrade adds a new tab to the Build Menu: The Customizer. From here pioneers have access to the Color section, as well as Material and Pattern options, which can be purchased in the AWESOME Shop.","","","Game","#schematics"
+"Progression/2/5/UnlockName","Build Gun Upgrade: Customizer","","","Game","#schematics"
+"Progression/3/1","Coal Power","","","Game","#schematics"
+"Progression/3/2","Logistics Mk.2","","","Game","#schematics"
+"Progression/3/3","Vehicular Transport","","","Game","#schematics"
+"Progression/3/4/","Basic Steel Production","","","Game","#schematics"
+"Progression/3/4/UnlockDescription","Awesome new products will become available in the AWESOME Shop upon obtaining this Milestone.","","","Game","#schematics"
+"Progression/3/4/UnlockName","New Shop Products!","","","Game","#schematics"
+"Progression/4/1","Advanced Steel Production","","","Game","#schematics"
+"Progression/4/2","Enhanced Asset Security","","","Game","#schematics"
+"Progression/4/3","Expanded Power Infrastructure","","","Game","#schematics"
+"Progression/4/4","Hypertubes","","","Game","#schematics"
+"Progression/4/5","FICSIT Blueprints","","","Game","#schematics"
+"Progression/4/5/UnlockDescription","This Build Gun software upgrade adds the Blueprint tab to the Build Menu. From the Blueprint tab, pioneers are able to access and organize the Blueprints created with the Blueprint Designer.","","","Game","#schematics"
+"Progression/4/5/UnlockName","Build Gun Upgrade: Blueprints","","","Game","#schematics"
+"Progression/5/1","Oil Processing","","","Game","#schematics"
+"Progression/5/1/1","Oil Processing 2","","","Game","#schematics"
+"Progression/5/1/Unlocks/1","Heavy Oil Residue","","","Game","#schematics"
+"Progression/5/1/Unlocks/1/Description","A by-product of Plastic and Rubber production. Can be further refined into Fuel and Petroleum Coke.","","","Game","#schematics"
+"Progression/5/1/Unlocks/2","Polymer Resin","","","Game","#schematics"
+"Progression/5/1/Unlocks/2/Description","A by-product of Crude Oil refinement into Fuel. Commonly used to manufacture Plastic and Rubber.","","","Game","#schematics"
+"Progression/5/1/Unlocks/3","New Shop Products!","","","Game","#schematics"
+"Progression/5/1/Unlocks/3/Description","Awesome new products will become available in the AWESOME Shop upon obtaining this Milestone.","","","Game","#schematics"
+"Progression/5/2","Industrial Manufacturing","","","Game","#schematics"
+"Progression/5/3","Logistics Mk.3","","","Game","#schematics"
+"Progression/5/4","Fluid Packaging","","","Game","#schematics"
+"Progression/5/4/1","Alternative Fluid Transport 2","","","Game","#schematics"
+"Progression/5/5","Petroleum Power","","","Game","#schematics"
+"Progression/5/5/1","Petroleum Power 2","","","Game","#schematics"
+"Progression/5/5/1/Description","Hidden schematic that unlocks additional features that should not be showed in the milestone overview.","","","Game","#schematics"
+"Progression/6/1","Logistics Mk.4","","","Game","#schematics"
+"Progression/6/2","Jetpack","","","Game","#schematics"
+"Progression/6/3","Monorail Train Technology","","","Game","#schematics"
+"Progression/6/5","Pipeline Engineering Mk.2","","","Game","#schematics"
+"Progression/6/6","FICSIT Blueprints Mk.2","","","","#schematics"
+"Progression/6/7","Railway Signalling","","","","#schematics"
+"Progression/7/1","Bauxite Refinement","","","Game","#schematics"
+"Progression/7/1/1","Bauxite Refinement 2","","","Game","#schematics"
+"Progression/7/2","Logistics Mk.5","","","Game","#schematics"
+"Progression/7/3","Hazmat Suit","","","Game","#schematics"
+"Progression/7/4","Aeronautical Engineering","","","Game","#schematics"
+"Progression/7/4/1","Control System Development 2","","","Game","#schematics"
+"Progression/7/4/1/Description","Hidden schematic that unlocks additional features that should not be showed in the milesotne overview.","","","Game","#schematics"
+"Progression/7/5","Control System Development","","","Game","#schematics"
+"Progression/8/1","Nuclear Power","","","Game","#schematics"
+"Progression/8/2","Advanced Aluminum Production","","","Game","#schematics"
+"Progression/8/2/1","Advanced Aluminum Production 2","","","Game","#schematics"
+"Progression/8/3","Hoverpack","","","Game","#schematics"
+"Progression/8/4","Leading-Edge Production","","","Game","#schematics"
+"Progression/8/5","Particle Enrichment","","","Game","#schematics"
+"Progression/8/5/1","Particle Enrichment 2","","","Game","#schematics"
+"Progression/9/1","Matter Conversion","","","Game","#schematics"
+"Progression/9/1/1","Matter Conversion - Background Unlocks","","","Game","#schematics"
+"Progression/9/1/1/Description","Unlocks additional features that we don't want to show in the HUB screen.","","","Game","#schematics"
+"Progression/9/2","Quantum Encoding","","","Game","#schematics"
+"Progression/9/3","FICSIT Blueprints Mk.3","","","Game","#schematics"
+"Progression/9/4","Spatial Energy Regulation","","","Game","#schematics"
+"Progression/9/5","Peak Efficiency","","","Game","#schematics"
+"Progression/CustomColorSwatches","Customizer Color Swatches","","","Game","#schematics"
+"Progression/PipelineSwatch","Pipeline Swatch","","","Game","#schematics"
+"ProjectAssembly/Phase0","Onboarding","Project Assembly phase","","UI","#interface
+#project_assembly"
+"ProjectAssembly/Phase1","Distribution Platform","Project Assembly phase","","UI","#interface
+#project_assembly"
+"ProjectAssembly/Phase2","Construction Dock","Project Assembly phase","","UI","#interface
+#project_assembly"
+"ProjectAssembly/Phase3","Main Body","Project Assembly phase","","UI","#interface
+#project_assembly"
+"ProjectAssembly/Phase4","Propulsion Systems","Project Assembly phase","","UI","#interface
+#project_assembly"
+"ProjectAssembly/Phase5","Assembly","Project Assembly phase","","UI","#interface
+#project_assembly"
+"ProjectAssembly/Phase6","Launch","Project Assembly phase","","UI","#interface
+#project_assembly"
+"ProjectAssembly/Phase7","Completed","","","",""
+"Schematic/SaveCompatibility","Save Compatibility","","","UI","#schematics"
+"Schematic/StartingBlueprints","Starting Blueprints","","","UI","#schematics"
+"Story/MercerSphere","Object Scanner: Mercer Sphere","","","Game","#schematics"
+"Story/Somersloop","Object Scanner: Somersloop","","","Game","#schematics"
+"Tutorial/HUBUpgade1","HUB Upgrade 1","","","Game","#schematics
+#interface
+#hub
+#milestone"
+"Tutorial/HUBUpgade2","HUB Upgrade 2","","","Game","#schematics
+#interface
+#hub
+#milestone"
+"Tutorial/HUBUpgade3","HUB Upgrade 3","","","Game","#schematics
+#interface
+#hub
+#milestone"
+"Tutorial/HUBUpgade4","HUB Upgrade 4","","","Game","#schematics
+#interface
+#hub
+#milestone"
+"Tutorial/HUBUpgade5","HUB Upgrade 5","","","Game","#schematics
+#interface
+#hub
+#milestone"
+"Tutorial/HUBUpgade6","HUB Upgrade 6","","","Game","#schematics
+#interface
+#hub
+#milestone"

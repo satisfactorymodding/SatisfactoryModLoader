@@ -1,0 +1,1008 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"BlueprintDesigner/Details/Clear/Button","Clear Blueprint Designer","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Cost","Cost:","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Cost/NoCost","This Blueprint has no cost.","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Description","Blueprint Description:","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Description/TextBoxHint","Description...","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Directory","Directory:","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Directory/Pattern","Directory: {category} / {subcategory}","","{category} = text, category the blueprint is in
+{subcategory} = text, subcategory the blueprint is in","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Directory/UndefinedCategory","Undefined","Name given to an undefined category","","",""
+"BlueprintDesigner/Details/IconSettings","Icon Settings:","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/IconSettings/SelectColor/Button","Select Color","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/IconSettings/SelectIcon/Button","Select Icon","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Load/Button","Load Blueprint","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Name","Blueprint Name:","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Name/DefaultName","New Blueprint","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Name/InvalidSymbols/Body/Pattern","Blueprint names containing the following symbols are not allowed:{symbols}","","{symbols} = text, list of symbols that aren't allowed in a blueprint name","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Name/InvalidSymbols/aTitle","Invalid Symbols in Blueprint Name","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Name/TextBoxHint","Name...","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Name/Used/Body","This name is already in use. Saving will overwrite the Blueprint that's currently using this name.","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Name/Used/aTitle","Blueprint name is already in use","","","",""
+"BlueprintDesigner/Details/NoBlueprinName/WindowTitle","Edit Blueprint","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Remove/Button","Remove Blueprint","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/Save/Button","Save Blueprint","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Details/SetDirectory/Button","Set Directory","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Load/Fail","Load Failed","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Load/Fail/DoesNotFit","This Blueprint was made in a Blueprint Designer of a different size, and cannot be loaded in to this Blueprint Designer.","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Load/Fail/FileMissing","The file for this Blueprint is missing.","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Load/Fail/InvalidBlueprint","The selected Blueprint is not valid.","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Load/Fail/LockedRecipies","This Blueprint contains recipes you haven't unlocked.","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Load/Fail/MissingResources","You do not have the resources to load this Blueprint.","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Load/Fail/UnableToLoad","Unable to load Blueprint.","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Load/Success/Pattern","Blueprint <Bold>{name}</> loaded!","","{name} = text, blueprint name","UI","#interface
+#buildable"
+"BlueprintDesigner/Remove/Body","By removing a Blueprint it will be deleted from your computer. This cannot be undone, even if you load an older save.
+
+Do you wish to continue?","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Remove/aTitle","Remove Blueprint","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Save/NameInUse/Body","This name is already in use. Saving will overwrite the Blueprint that's currently using this name.
+
+Do you wish to continue?","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Save/NameInUse/aTitle","Blueprint name already in use","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Save/NameRequired/Body","Please give the Blueprint a name before saving.","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Save/NameRequired/aTitle","Blueprint has no name","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Save/NoBuildings/Body","There are no buildings in the Blueprint Designer.","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Save/NoBuildings/aTitle","No buildings in Blueprint","","","UI","#interface
+#buildable"
+"BlueprintDesigner/Save/Success","Blueprint Saved","","","UI","#interface
+#buildable"
+"BlueprintDesigner/UnsavedChanges/Body","Changes have been made to the information in this Blueprint. If you close the Blueprint Designer now all these changes will be discarded.
+
+Do you wish to continue?","","","UI","#interface
+#buildable"
+"BlueprintDesigner/UnsavedChanges/aTitle","Unsaved Changes","","","UI","#interface
+#buildable"
+"BlueprintMenu/AddBlueprint/Button","Add Blueprint
+Here","","","UI","interface
+#build_menu"
+"BlueprintMenu/AddCategory/Button","Add Category","","","UI","interface
+#build_menu"
+"BlueprintMenu/AddSubcategory/Button","Add Subcategory","","","UI","interface
+#build_menu"
+"BlueprintMenu/ApplyChanges/Button","Apply Changes","","","UI","interface
+#build_menu"
+"BlueprintMenu/Category/Edit/Apply/Button","Apply","","","UI","interface
+#build_menu"
+"BlueprintMenu/Category/Edit/WindowTitle","Edit Category","","","UI","interface
+#build_menu"
+"BlueprintMenu/Category/Empty","This Category is empty.
+
+To add a Subcategory, press the ""Edit"" button, and then press the ""Add Subcategory"" button. You can also drag a Blueprint here to automatically create a new Subcategory.","","","UI","interface
+#build_menu"
+"BlueprintMenu/Category/Name","Category Name:","","","UI","interface
+#build_menu"
+"BlueprintMenu/Category/Name/TextBoxHint","Category Name...","","","UI","interface
+#build_menu"
+"BlueprintMenu/Category/NewCategory/DefaultName","New Category","","","UI",""
+"BlueprintMenu/Category/NewSubcategory/DefaultName","New Subcategory","","","UI",""
+"BlueprintMenu/Category/Remove/Button","Remove Category","","","UI","interface
+#build_menu"
+"BlueprintMenu/Category/Remove/NotEmpty/Body","To remove a Category you must first make sure that it's empty.","","","UI","interface
+#build_menu"
+"BlueprintMenu/Category/Remove/NotEmpty/aTitle","Category isn't empty","","","UI","interface
+#build_menu"
+"BlueprintMenu/Clear/Success/Notification","<Bold>Blueprint Designer Cleared</>
+Resources have been sent to the Blueprint Designer Storage","","","UI","#interface
+#buildable"
+"BlueprintMenu/Edit/Button","Edit","","","UI","interface
+#build_menu"
+"BlueprintMenu/Name/UniqueName/Pattern","{name} ({num})","","{name} = text, blueprint name
+{num} = number, the first available index that makes the name unique","UI","#interface
+#buildable"
+"BlueprintMenu/NoRecipes","<Bold>Recipes missing for Blueprint!</>
+This Blueprint contains recipes you have not unlocked yet.","","","UI","interface
+#build_menu"
+"BlueprintMenu/Search/TextBoxHint","Search for Blueprint...","","","UI","interface
+#build_menu"
+"BlueprintMenu/Subcategory/Remove/Button","Remove Subcategory","","","UI","#prototype
+interface
+#build_menu"
+"BlueprintMenu/Subcategory/Undefined","Undefined","","","UI","interface
+#build_menu"
+"BlueprintMenu/UnsavedChanges/Body","You have unsaved changes in the Blueprint tab. Closing this menu will discard these changes.
+
+Do you wish to continue?","","","UI","interface
+#build_menu"
+"BlueprintMenu/UnsavedChanges/aTitle","Unsaved Changes","","","UI","interface
+#build_menu"
+"BlueprintMenu/WindowTitle","Select Blueprint","","","UI","interface
+#build_menu"
+"Buildables/LookAtDescription/DefaultConfigure/Pattern","Press <Key>{0}</> to configure {1}","","{0} = text, key name
+{1} = text, buildable name","UI","#common
+#look_at_description"
+"ConveyorBelts/LookAtDescription/PickUp/Pattern","Press [{0}] to pick up {1} from {2}","","{0} = text, key name
+{1} = text, item name
+{2} = text, localized name (Conveyor Belt ...)","UI","#common
+#look_at_description"
+"ConveyorBelts/NotEnoughSpace/Pattern","Not enough space to pick up {0} from {1}!","Warning message. Appears when you're building Conveyor Belt","{0} = text, item name
+{1} = text, localized name (Conveyor Belt ...)","UI","#message #transportation"
+"CraftBench/Info/AddedToInventory/Pattern","+{Amount} {Name}","","{Amount} = number, number of items
+{Name} = text, item name","UI","#interface
+#craft_bench"
+"CraftBench/Info/Craft/Button","CRAFT","","","UI","#interface
+#craft_bench"
+"CraftBench/Info/InputOutput/Label","INPUT/OUTPUT","","","UI","#interface
+#craft_bench"
+"CraftBench/Info/Recipe/Search/TextBoxHint","Search for recipe...","","","UI","#interface
+#craft_bench"
+"CraftBench/Info/TotalInInventory/Pattern","({TotalAmount} Total)","","{TotalAmount} = number, number of crafted items","UI","#interface
+#craft_bench"
+"CraftBench/Keybindings/Craft","Craft","","","UI","#interface
+#craft_bench"
+"CraftBench/Keybindings/Craft/Shortcut","Space","","","UI","#interface
+#craft_bench"
+"CraftBench/Keybindings/Craft/Shortcut2","Hold LMB on Craft Button","","","UI","#interface
+#craft_bench"
+"CraftBench/LookAtDescription/Interact/Pattern","Press {BUTTON} to interact with {NAME}","","{BUTTON} = text, key name
+{NAME} = text, localized building name (Craft Bench)","UI","Craft Bench"
+"CraftBench/Status/Occupied","Crafting Bench is occupied!","","","UI","#interface
+#craft_bench"
+"CraftBench/Status/Occupied/Pattern","{NAME} is occupied!","","{NAME} = text, localized building name (Craft Bench)","UI","#interface
+#craft_bench"
+"CraftBench/Warnings/CannotAfford","Can't afford Recipe","","","UI","#interface
+#craft_bench"
+"CraftBench/Warnings/NotEnoughSpace","Not Enough Space in Inventory","","","UI","#interface
+#craft_bench"
+"CraftBench/Warnings/SelectRecipe","Select Recipe","","","UI","Craft Bench"
+"CraftBenchI/Info/ShowOnlyAffordable/Checkbox","Only Show Affordable Recipes","","","UI","#interface
+#craft_bench"
+"CraftBenchI/Info/ShowOnlyAffordable/Checkbox.Gamepad","Only Show Affordable","","","UI","#interface
+#craft_bench"
+"Doors/Modes/LookAtDescription/AlwaysClosed","Always Closed","","","UI","#interface
+#doors"
+"Doors/Modes/LookAtDescription/AlwaysOpen","Always Open","","","UI","#interface
+#doors"
+"Doors/Modes/LookAtDescription/Automatic","Automatic","","","UI","#interface
+#doors"
+"Doors/Modes/LookAtDescription/None","N/A","","","UI","#interface
+#doors"
+"Doors/Modes/LookAtDescription/Set/Pattern","Press {Use} to set {Mode} mode","","{Use} = text, key name
+{Mode} = text, door mode: `Doors/Modes/LookAtDescription/` (Automatic|AlwaysOpen|AlwaysClosed)","UI","#interface
+#doors
+#look_at_description"
+"Doors/Modes/LookAtDescription/SetUseKey/Pattern","Press {Use_Key} to set {Mode} mode","","{Use_Key} = text, key name
+{Mode} = text, door mode: `Doors/Modes/LookAtDescription/` (Automatic|AlwaysOpen|AlwaysClosed)","UI","#interface
+#doors"
+"Doors/Modes/LookAtDescription/Switch/Pattern","Press {Use_Key} to switch to {Mode} mode","","{Use_Key} = text, key name
+{Mode} = text, door mode: `Doors/Modes/LookAtDescription/` (Automatic|AlwaysOpen|AlwaysClosed)","UI","#interface
+#doors"
+"Equipment/PortableMiner/FunnyName","Portobello Miner","","","UI","#resources"
+"Equipment/PortableMiner/Keybindings/GrabAll","Grab All","","","UI","#resources"
+"Equipment/PortableMiner/Keybindings/PickUp","Pick Up Miner","","","UI","#resources"
+"Equipment/PortableMiner/LookAtDescription/Open/Pattern","Press [{0}] to open Portable Miner","","{0} = text, key name","UI","#common
+#look_at_description"
+"Equipment/PortableMiner/MiningSpeed/Pattern","{num} per minute","","{num} = number, amount of ore per minute","UI","#equipment"
+"Equipment/PortableMiner/NoSpace/Tooltip","Not enough space in inventory.","","","UI","#interface
+#resource
+#equipment"
+"Equipment/PortableMiner/Output/Label","Output","","","UI","#interface
+#resource
+#equipment"
+"Equipment/PortableMiner/Percent/%/Pattern","{A}%","","{A} = number","UI","#resources"
+"EquipmentWorkshop/GetLookAtDescription/Occupied/Pattern","{NAME} is occupied!","","{NAME} = text, localized building name (Equipment Workshop)","UI","#interface
+#workshop"
+"EquipmentWorkshop/LookAtDescription/Interact/Pattern","Press {BUTTON} to interact with {NAME}","","{BUTTON} = text, key name
+{NAME} = text, localized building name (Equipment Workshop)","UI","#interface
+#workshop"
+"EquipmentWorkshop/Status/Occupied","Equipment Workshop is occupied!","","","UI","#interface
+#workshop"
+"Fluids/Buffer/FlushMode","FLUSH MODE","","","UI","#interface
+#buildable
+#fluid_buffer"
+"Fluids/FillRate/DrainRate/Label","Drain Rate","","","UI","#interface
+#pipes
+Flow Rate Panel"
+"Fluids/FillRate/FillRate/Label","Fill Rate","","","UI","#interface
+#pipes
+Flow Rate Panel"
+"Fluids/FillRate/Net/Label","Net","","","UI","#interface
+#pipes
+Flow Rate Panel"
+"Fluids/FlowRate/FlowRate/Pattern","<{BlueStyle}>{CurrentValue}</> <{GreyStyle}>m³/min</>","","{CurrentValue} = text, fluid flow rate in pipe","UI","#interface
+#pipes
+Flow Rate Panel"
+"Fluids/FlowRate/GaugeName","Flow Rate","","","UI","#interface
+#transportation"
+"Fluids/FlowRate/MaxFlowRate/GaugeName","Max Flow Rate","","","UI","#interface
+#pipes
+Flow Rate Panel"
+"Fluids/FlowRate/Pump/HeadLift","Head Lift","","","UI","#interface
+#pipes
+Flow Rate Panel"
+"Fluids/FlowRate/Pump/HeadLift/Pattern","<{BlueStyle}>{CurrentValue}</> <{WhiteStyle}>m</>","","{CurrentValue} = text, head lift value","UI","#interface
+#pipes
+Flow Rate Panel"
+"Fluids/FlowRate/Pump/RecommendedMaxHeadLift","Recommended Max Head Lift","","","UI","#interface
+#pipes
+Flow Rate Panel"
+"Fluids/FrackingExtractor/Info/CurrentAmount","Current Amount in Extractor","","","UI","#interface
+#transportation"
+"Fluids/FrackingSmasher/Info/ConnectedExtractors","Extractors Connected:","","","UI","#interface
+#transportation"
+"Fluids/FrackingSmasher/Info/ResourceWellPotential","Resource Well Potential","","","UI","#interface
+#transportation"
+"Fluids/Gauge/Gauge","Gauge","","","UI","interface"
+"Fluids/Module/Amount/Pattern","Current Amount in Building","","","UI","#interface
+Fluid Buffer"
+"Fluids/Module/Common/FluidConsumption","Consumption","","","UI","#interface
+Fluid Buffer"
+"Fluids/Module/Common/FluidStorage","FLUID STORAGE","","","UI","#interface
+Fluid Buffer"
+"Fluids/Module/None","None","","","UI","#interface
+Fluid Buffer"
+"Fluids/PipeModule/CurrentAmount","Current Amount in Storage","","","UI","#interface
+Fluid Buffer
+#pipe_Module"
+"Fluids/PipeModule/DrainRate/Pattern","<Blue10Reg>{DrainRateValue} </><Grey10Reg>m³/min</>","","{DrainRateValue} = number","UI","#interface
+Fluid Buffer
+#pipe_Module"
+"Fluids/PipeModule/FillRate/Pattern","<Blue10Reg>{FillRateValue} </><Grey10Reg>m³/min</>","","{FillRateValue} = number","UI","#interface
+Fluid Buffer
+#pipe_Module"
+"Fluids/PipeModule/FullPipeNetwork","Full Pipe Network","","","UI","#interface
+#common"
+"Fluids/PipeModule/Liquid/None","None","","","UI","#interface
+Fluid Buffer
+#pipe_Module"
+"Fluids/PipeModule/Mode/Current/Button","This Fluid 
+Buffer","","","UI","#interface
+Fluid Buffer
+#pipe_Module"
+"Fluids/PipeModule/Mode/Network/Button","Full Pipe 
+Network","","","UI","#interface
+Fluid Buffer
+#pipe_Module"
+"Fluids/PipeModule/NetFlow/Pattern","<Blue10Reg>{NetFlowValue} </><Grey10Reg>m³/min</>","","{NetFlowValue} = number","UI","#interface
+Fluid Buffer
+#pipe_Module"
+"Fluids/PipeModule/PlusNetFlow/Pattern","<Blue10Reg>+{NetFlowValue} </><Grey10Reg>m³/min</>","","{NetFlowValue} = number","UI","#interface
+Fluid Buffer
+#pipe_Module"
+"Fluids/Pipeline/CurrentlyInPipe","Current Amount in Pipe","","","UI","#interface
+#pipe"
+"Fluids/Pipeline/Fluid/None","None","","","UI","#interface
+#pipe"
+"Fluids/Pipeline/FlushMode/FullNetwork","FULL PIPE
+NETWORK","","","UI","#interface
+#pipe"
+"Fluids/Pipeline/FlushMode/Segment","PIPE SEGMENT","","","UI","#interface
+#pipe"
+"Fluids/PipelinePump/HeadLift","Head Lift","","","Game","#interface
+#pipe"
+"Fluids/PipelinePump/HeadLift/Description","Displays how much higher up this pump is pushing the fluid.","","","Game","#buildable
+#item"
+"Fluids/PipelinePump/Warnings/HeadLift","Head Lift is Exceeding Recommended Level","","","UI","#interface
+#pipe"
+"Fluids/PipilineValve/Limit","Valve Limit","","","UI","Valve Menu"
+"Fluids/WaterExtractor/Info/CurrentAmount","Current Amount in Extractor","","","UI","#interface
+#water_extractor"
+"HUB/DaysSinceLastIncident","Days Since Last Incident","","","UI",""
+"Lighting/LightControlPanel/ConfigurationModule/LogoText","Light Configuration Module","Logo text on Light Control Panel","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Intensity","Intensity","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/Color","COLOR","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/Color/EditColor","Edit","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/Intensity","INTENSITY","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/IntensityPercentage","Intensity","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/NightMode","NIGHT MODE","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/NightMode/Off","Night Mode Off","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/NightMode/On","Night Mode On","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/Preview","PREVIEW","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/Preview/Color","Color","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/Preview/Intensity","Light Intensity","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/Preview/NightMode","Night Mode","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/Preview/NightMode/Off","OFF","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Label/Preview/NightMode/On","ON","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Status/LightsOnStandby","Light is on Standby","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Status/NoLightsConnected","No Lights Connected","","","UI","#interface
+#lighting"
+"Lighting/LightControlPanel/Status/NoPower","No Power Connected","","","UI","#interface
+#lighting"
+"Manufacturer/MapText/CurrentRecipe","Current Recipe:","","","UI","#interface
+#manufacturer"
+"Manufacturer/MapText/ProductionStats","Production Stats:","","","UI","#interface
+#manufacturer"
+"Manufacturing/IOSlot/ProductionPerMinute/TargetHit/Pattern","{amount} per minute","","{amount} = number, production rate per item","UI","#buildable"
+"Manufacturing/IOSlot/ProductionPerMinute/TargetNotHit/Pattern","{CurrentAmount} {FormattingTag}({TargetAmount})</> per minute","Treat {FormattingTag} and </> as opening and closing tags","{CurrentAmount} = number
+{FormattingTag} = text. formatting tag, treat as a pair of tags with </>
+{TargetAmount} = number","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/IOSlot/RecipeAmount/TargetNotHit/Pattern","{CurrentAmount} ({TargetAmount}) {Unit} {Name}","","{CurrentAmount} = number
+{TargetAmount} = number
+{Unit} = text, units
+{Name} = text, name of the produced item","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/Info/AmountUnitName/Pattern","{Amount} {Unit} {Name}","","{Amount} = number
+{Unit} = text, units
+{Name} = text, name of the produced item","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/Info/Fluid","Fluid","","","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/Info/Input/Label","INPUT","","","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/Info/Output//Label","Output","","","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/Info/Output/Label","OUTPUT","","","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/Info/Production","Production","","","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/Info/Recipe","Recipe:","","","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/Info/Recipe/NoneSelected","No Recipe Selected","","","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/Info/Recipe/Search/TextBoxHint","Search for recipe...","","","UI","#interface
+#common
+#manufacturing"
+"Manufacturing/OutputSlot/Info/CycleProgress/Pattern","{A}%","","{A} = number","UI","#buildable"
+"Manufacturing/OutputSlot/Info/Input","Input","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Info/Producing","Producing - ","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Info/ProductionStats/FluidSuffix/Pattern","Fluid {suffix}","Goes into `Manufacturing/OutputSlot/ProductionStats/Pattern` as {suffix} if the product is liquid","{suffix} = text, units","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Info/Waste","Waste","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/ProductionStats/Pattern","{number} {suffix} per minute","Takes `Manufacturing/OutputSlot/ProductionStats/FluidSuffix/Pattern` as {suffix} for liquids","{number} = number per minute
+{suffix} = text, units (or Fluid units)","UI","#buildable"
+"Manufacturing/OutputSlot/Tooltips/ConsumptionRate","How long it takes to consume one fuel unit, measured in seconds.","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Tooltips/ConsumptionRate/Description","Consumption Rate","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Tooltips/Efficiency","Efficiency","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Tooltips/Efficiency/Description","How efficient production is compared to the current max production speed.","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Tooltips/PowerConsumption","Power Consumption","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Tooltips/PowerConsumption/Description","How much power this machine consumes.","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Tooltips/PowerProduction","Power Production","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Tooltips/PowerProduction/Description","How much power this machine produces.","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Tooltips/ProductionTime","Production Time","","","UI","#interface
+#common
+#slot"
+"Manufacturing/OutputSlot/Tooltips/ProductionTime/Description","How long this part takes to craft.","","","UI","#interface
+#common
+#slot"
+"Manufacturing/ProductionTooltip/Pattern","<White10Reg>{Amount} {Part}</>
+<Orange10Reg>{PerMinRate} per min</>","","{Amount} = number, number of parts produced in one cycle
+{Part} = text, name of the part
+{PerMinRate} = number, float, produced per minute","UI","interface
+Inventory"
+"Manufacturing/UnlockBuildEffeciency","Building Efficiency Stat","","","UI",""
+"Manufacturing/UnlockBuildOverclock","Overclocking","","","UI",""
+"Manufacturing/UnlockProductionAmplifier","Production Amplifier","","","UI",""
+"Organization/CentralStorage/AlreadyInStockpile","Already in Stockpile:","","","UI","#interface
+#storage"
+"Organization/CentralStorage/DepotUploadRate","Depot Upload Rate:","","","UI",""
+"Organization/CentralStorage/DepotUploadRate/Pattern","{rate} per min","","{rate}","UI","#buildable"
+"Organization/CentralStorage/DropBox/Label","Drop Items here to upload to Dimensional Depot","","","UI",""
+"Organization/CentralStorage/DropBox/Label/Locked","Unlock by researching Manual Depot Uploader in the MAM","","","",""
+"Organization/CentralStorage/Status/NoSpace","No space left in Depot","","","UI","#interface
+#storage"
+"Organization/CentralStorage/Status/Uploading","Uploading...","","","UI","#interface
+#storage"
+"Organization/CentralStorage/TakeFromDepot/Checkbox","Take from Depot before inventory","","","UI",""
+"Organization/CentralStorage/TakeFromInventory/Checkbox","Take from inventory before Depot","","","UI",""
+"Organization/CentralStorage/WindowTitle","Dimensional Depot","","","UI",""
+"Organization/Crate/LookAtDescription/Pattern","Press {Use} to open the Crate","","{Use} = text, key name","UI","#common
+#look_at_description"
+"Organization/Crate/MapText","Crate","","","UI","interface
+crate"
+"Organization/Crate/Tabs/Storage","Storage","","","UI","interface
+crate"
+"Organization/Crate/WindowTitle","Player Crate","","","UI","Crate Menu"
+"Organization/DeathCrate/MapText","Death Crate","","","",""
+"Organization/DismantleCrate/MapText","Dismantle Crate","","","",""
+"Organization/Generic/TakeAll/Button","TAKE ALL","","","UI","Crate Menu"
+"Organization/Shared/PipeModule/Storage","Storage","","","UI","#interface
+Fluid Buffer
+#pipe_Module"
+"Organization/Storage/Central/StackIncrease/Pattern","Dimensional Depot Stack Increase: {num}","","{num} = number","UI",""
+"Organization/Storage/Central/UploadSlots/Pattern","Enables uploading from the inventory","","","",""
+"Organization/Storage/Central/UploadSpeed/Pattern","Dimensional Depot Upload Speed: {percentage}%","","{percentage} = number","UI",""
+"Organization/Storage/Hazard/LookAtDescription/Open/Pattern","Press {Use} to open the {Name}","","{Use} = text, key name
+{Name} = localized building name (Hazard Storage Box)","UI","#common
+#look_at_description"
+"Organization/Storage/Info/StoreAll/Button","STORE ALL","","","UI","#interface
+#storage"
+"Organization/Storage/Medkit/LookAtDescription/Open/Pattern","Press {Use} to open the {Name}","","{Use} = text, key name
+{Name} = localized building name (Medical Storage Box)","UI","#common
+#look_at_description"
+"Organization/Storage/Player/LookAtDescription/Open/Pattern","Press {Use} to open the {Name}","","{Use} = text, key name
+{Name} = localized building name (Personal Storage Box)","UI","#common
+#look_at_description"
+"Organization/Storage/WindowTitle","Storage","","","UI","#interface
+#storage"
+"Player/Respawn/Status/Reviving","Reviving...","","","UI","interface"
+"Power/AlienPower/Graph/Label","Graph","","","UI","Alien Power Augmenter"
+"Power/AlienPower/Info/CircuitBoost","Circuit Boost:","","","UI","Alien Power Augmenter"
+"Power/AlienPower/Info/CircuitBoost/Pattern","({MW} MW)","","{MW} = number","UI","#buildable"
+"Power/AlienPower/Info/NotConnected","Not Connected","","","UI","Alien Power Augmenter"
+"Power/AlienPower/Info/StaticPower","Static Power:","","","UI","Alien Power Augmenter"
+"Power/AlienPower/Info/StaticPower/Pattern","{MW} MW","","{MW} = number","UI","#buildable"
+"Power/CircuitGraph/Status/NoConnection/AllCaps","NO CONNECTION","","","UI","#interface
+#power"
+"Power/FuseBox/Fuse/Label","FUSE","","","UI","interface
+fuse_box"
+"Power/FuseBox/FuseOk/Label","FUSE OK","","","UI","interface
+fuse_box"
+"Power/FuseBox/PullLeverToReset/Hint","PULL LEVER TO RESET FUSE","","","UI","interface
+fuse_box"
+"Power/FuseBox/WindowTitle","Fuse Box","","","UI","interface
+fuse_box"
+"Power/Generator/Info/TargetPower","Target MW:","","","UI","#interface
+#generator"
+"Power/Generator/MapText/FuelInput","Fuel Input:","Information window shown on the map for this type of object","","UI","#interface
+#generator"
+"Power/Generator/MapText/Stats","Generator Stats:","Information window shown on the map for this type of object","","UI","#interface
+#generator"
+"Power/Generator/Warnings/NoWater","No Water","","","",""
+"Power/Generator/Warnings/RemoveWaste","Remove Waste","","","",""
+"Power/Generator/Warnings/WasteIsFull","Waste Is Full","","","",""
+"Power/Generator/WindowTitle","Generator","","","UI","#buildable
+#item"
+"Power/GeneratorGeothermal/Info/PressureSensor","PRESSURE SENSOR","","","UI","#interface
+#generator"
+"Power/GeneratorGeothermal/WindowTitle","Generator","","","UI","#interface
+#generator"
+"Power/Graph/Capacity/Description","Shows the maximum amount of power this grid can supply.","","","",""
+"Power/Graph/Capacity/DisplayName","Capacity","","","",""
+"Power/Graph/Capacity/FullName","Capacity","","","",""
+"Power/Graph/Consumption/Description","Shows the amount of power being consumed on this grid.","","","",""
+"Power/Graph/Consumption/DisplayName","Consum.","","","",""
+"Power/Graph/Consumption/FullName","Consumption","","","",""
+"Power/Graph/Label","GRAPH","","","UI","#interface
+#generator"
+"Power/Graph/MaxConsumption/Description","Shows the amount of power that would be consumed if all machines on this grid were active.","","","",""
+"Power/Graph/MaxConsumption/DisplayName","Max Cons.","","","",""
+"Power/Graph/MaxConsumption/FullName","Max Consumption","","","",""
+"Power/Graph/None","None","","","UI","#interface
+#graph"
+"Power/Graph/PowerBoost/Description","Shows the amount of additional power generated by the Alien Power Augmenter.","","","",""
+"Power/Graph/PowerBoost/DisplayName","Power Boost","","","",""
+"Power/Graph/PowerBoost/FullName","Power Boost","","","",""
+"Power/Graph/Production/Description","Shows the amount of power being produced on this grid.","","","",""
+"Power/Graph/Production/DisplayName","Production","","","",""
+"Power/Graph/Production/FullName","Production","","","",""
+"Power/Graph/Value/Pattern","{Value} {Suffix}","","{Value} = number
+{Suffix} = text, units","UI","#interface
+#graph"
+"Power/Pole/Connections/None","N/A","","","UI","Pole Connections"
+"Power/Pole/WindowTitle","Power Pole","","","UI","#buildable
+#item"
+"Power/PowerPole/MapText/Connections","Connections:","Information window shown on the map for this type of object","","UI","#interface
+#resource
+#equipment"
+"Power/PowerStorage/Info","POWER STORAGE INFO","","","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/ChargeRate","Charge Rate","","","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/ChargeRate/Pattern","<Charge>{ChargeRate}</> MW","","{ChargeRate} = number","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/ChargeStoredMax/Pattern","<Charge>{StoredCharge}/{MaxStoredCharge}</> MWh","","{StoredCharge} = number
+{MaxStoredCharge} = number","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/Charged","Fully Charged","","","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/DiscargeRate","Discharge Rate","","","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/DiscargeRate/Pattern","<Discharge>{ChargeRate}</> MW","","{ChargeRate} = number, discharge rate in this case","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/DischargeStoredMax/Pattern","<Discharge>{StoredCharge}/{MaxStoredCharge}</> MWh","","{StoredCharge} = number
+{MaxStoredCharge} = number","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/IdleRate/Pattern","<Idle>{ChargeRate}</> MW","","{ChargeRate} = number","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/IdleStoredMax/Pattern","<Idle>{StoredCharge}/{MaxStoredCharge}</> MWh","","{StoredCharge} = number
+{MaxStoredCharge} = number","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/StoredCharge","Stored Charge","","","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/TimeUntilEmpty","Time until Empty","","","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/Info/TimeUntilFull","Time until Full","","","UI","#interface
+#power
+#storage"
+"Power/PowerStorage/LookAtDescription/Configure/Pattern","Press {Use} to configure {Name}","","{Use} = text, key name
+{Name} =  text, localized building name (Power Storage)","UI","#interface
+#power
+#storage"
+"Power/PowerSwitch/GridA","Power Grid A","","","UI","#interface
+#power"
+"Power/PowerSwitch/GridB","Power Grid B","","","UI","#interface
+#power"
+"Power/PowerSwitch/LookAtDescription/Configure/Pattern","Press {Use} to configure {DisplayName}","","{Use} = text, key name
+{Name} =  text, localized building name (Power Switch)","UI","#interface
+#power"
+"Power/PowerSwitch/Priority/Group/Off","Off","Power Switch screen","","UI","#interface
+#power"
+"Power/PowerSwitch/Priority/Group/On","On","Power Switch screen","","UI","#interface
+#power"
+"Power/PowerSwitch/Priority/Group/Pattern","Priority Group {Index}","Power Switch screen","{Index} = number, priority group number","UI","#interface
+#power"
+"Power/PowerSwitch/Priority/Group/Undefined","Undefined","Power Switch screen","","UI","#interface
+#power"
+"Power/PowerSwitch/Priority/Group/Undefined/UnnamedSwitchToggle","Unnamed Switch","Power Switch screen","","UI","#interface
+#power"
+"Power/PowerSwitch/Priority/LogoText","Prioritized Automatic Circuit Break System","Power Switch screen","","UI","#interface
+#power"
+"Power/PowerSwitch/Priority/Tab/CircuitBreakPriority","Circuit Break Priority","Power Switch screen","","UI","#interface
+#power"
+"Power/PowerSwitch/SignModule/LogoText","SIGN MODULE","Power Switch screen","","UI","#interface
+#power"
+"Power/PowerSwitch/SignModule/Name/Off","Off","Power Switch screen","","UI","#interface
+#power"
+"Power/PowerSwitch/SignModule/Name/On","On","Power Switch screen","","UI","#interface
+Power Switch"
+"Power/PowerSwitch/SignModule/Name/TextBoxHint","Enter name here...","Power Switch screen","","UI","#interface
+#power"
+"Power/PowerSwitch/Status/Off","Power Switch Is Off","Power Switch screen","","UI","#interface
+#power"
+"ProjectAssembly/Presentations/1/1/Subheader","PHASE 1: Distribution Platform","","","UI",""
+"ProjectAssembly/Presentations/1/2/Subheader","New Exciting Features in TIERS 3 & 4!","","","UI",""
+"ProjectAssembly/Presentations/1/2/Texts/0","Automated Power","","","UI",""
+"ProjectAssembly/Presentations/1/2/Texts/1","Steel Production","","","UI",""
+"ProjectAssembly/Presentations/1/2/Texts/2","Personnel Transportation","","","UI",""
+"ProjectAssembly/Presentations/1/2/Texts/3","And many more!","","","UI",""
+"ProjectAssembly/Presentations/1/3/Subheader","Get ready for Phase 2: Construction Dock!","","","UI",""
+"ProjectAssembly/Presentations/2/1/Subheader","PHASE 2: Construction Dock","","","UI",""
+"ProjectAssembly/Presentations/2/2/Subheader","New Exciting Features in TIERS 5 & 6!","","","UI",""
+"ProjectAssembly/Presentations/2/2/Texts/0","Oil Production","","","UI",""
+"ProjectAssembly/Presentations/2/2/Texts/1","Railway Transportation","","","UI",""
+"ProjectAssembly/Presentations/2/2/Texts/2","Jetpack","","","UI",""
+"ProjectAssembly/Presentations/2/3/Subheader","Get ready for Phase 3: Main Body!","","","UI",""
+"ProjectAssembly/Presentations/26","Even a monkey could do it!","","","UI",""
+"ProjectAssembly/Presentations/27","PHASE 4: Propulsion Systems","","","UI",""
+"ProjectAssembly/Presentations/28","Complicated thing","","","UI",""
+"ProjectAssembly/Presentations/29","Don't ask","","","UI",""
+"ProjectAssembly/Presentations/3/1/Subheader","PHASE 3: Main Body","","","UI",""
+"ProjectAssembly/Presentations/3/2/Subheader","Look in the HUB","","","UI",""
+"ProjectAssembly/Presentations/3/2/Texts/0","Aluminium Production","","","UI",""
+"ProjectAssembly/Presentations/3/2/Texts/1","Hoverpack","","","UI",""
+"ProjectAssembly/Presentations/3/2/Texts/2","Aerial Transportation","","","UI",""
+"ProjectAssembly/Presentations/3/2/Texts/3","Nuclear Power","","","UI",""
+"ProjectAssembly/Presentations/3/3/Content/0/Content","Success is the only option for FICSIT pioneers!","","","UI",""
+"ProjectAssembly/Presentations/3/3/Content/0/aHeader","Saving the Day","","","UI",""
+"ProjectAssembly/Presentations/3/3/Content/1/Content","Optimize them or don't use them at all!","","","UI",""
+"ProjectAssembly/Presentations/3/3/Content/1/aHeader","Pipe Throughput","","","UI",""
+"ProjectAssembly/Presentations/3/3/Content/2/Content","When in a FICSIT zone, you should be available for the entire local diurnal course!","","","UI",""
+"ProjectAssembly/Presentations/3/3/Content/2/aHeader","Work Time","","","UI",""
+"ProjectAssembly/Presentations/30","You wouldn't get it","","","UI",""
+"ProjectAssembly/Presentations/31","Don't bother trying","","","UI",""
+"ProjectAssembly/Presentations/32","New Exciting Features in TIER 9!!","","","UI",""
+"ProjectAssembly/Presentations/33","Don't waste time!","","","UI",""
+"ProjectAssembly/Presentations/34","Keep producing the parts you need!","","","UI",""
+"ProjectAssembly/Presentations/35","Plan Ahead!","","","UI",""
+"ProjectAssembly/Presentations/36","Any moment not producing is time for planning further expansion!","","","UI",""
+"ProjectAssembly/Presentations/37","Stay Alert!","","","UI",""
+"ProjectAssembly/Presentations/38","Don't delay the production of Project Parts!","","","UI",""
+"ProjectAssembly/Presentations/39","JOIN YOUR FELLOW PIONEERS!","","","UI",""
+"ProjectAssembly/Presentations/40","Become AVERAGE or BETTER!","","","UI",""
+"ProjectAssembly/Presentations/41","Get ready for Phase 5: Assembly","","","UI",""
+"ProjectAssembly/Presentations/42","Think!","","","UI",""
+"ProjectAssembly/Presentations/43","Think deeply about the importance of this moment.","","","UI",""
+"ProjectAssembly/Presentations/44","Consider!","","","UI",""
+"ProjectAssembly/Presentations/45","You have never been more important.","","","UI",""
+"ProjectAssembly/Presentations/46","TIME TO CONTEMPLATE","","","UI",""
+"ProjectAssembly/Presentations/47","Your LAST delivery!","","","UI",""
+"ProjectAssembly/Presentations/48","Automated construction","","","UI",""
+"ProjectAssembly/Presentations/49","DO NOT interfere while Project Assembly finalizes construction!","","","UI",""
+"ProjectAssembly/Presentations/50","Listen!","","","UI",""
+"ProjectAssembly/Presentations/51","Follow instructions when given! DO NOT do anything else!","","","UI",""
+"ProjectAssembly/Presentations/52","THE END","","","UI",""
+"ProjectAssembly/Presentations/53","The DAY will soon be SAVED!","","","UI",""
+"ProjectAssembly/Presentations/Motivational/Header","UPCOMING MILESTONES!","","","UI",""
+"ProjectAssembly/Presentations/NextObjective/Header","NEXT OBJECTIVE!","","","UI",""
+"ProjectAssembly/Presentations/NextObjective/YouCanDoItText","You can do it!","","","UI",""
+"ProjectAssembly/Presentations/ShipmentReady/Header","SHIPMENT READY!","","","UI",""
+"ProjectAssembly/Presentations/ShipmentReady/ReadyToSendText","Ready to send and
+begin construction!","","","UI",""
+"ProjectAssembly/Presentations/Upcoming/Header","UPCOMING MILESTONES!","","","UI",""
+"RadarTower/Found/Fauna","Fauna found in area:","","","UI","#buildable
+#interface"
+"RadarTower/Found/Flora","Flora found in area:","","","UI","#buildable
+#interface"
+"RadarTower/Found/NoSignals","No signals found in area.","","","UI","#buildable
+#interface"
+"RadarTower/Found/WeakSignals","Weak signals found in area:","","","UI","#buildable
+#interface"
+"RadarTower/Name/Label","Radar Tower Name","","","UI","#buildable
+#interface"
+"RadarTower/Name/Pattern","Radar Tower: {Name}","","{Name} = text, this radar tower name","UI","#buildable
+#interface"
+"RadarTower/Name/TextBoxHint","Enter name here...","","","UI","#buildable
+#interface"
+"RadarTower/ZoomX/Pattern","{Zoom}x","","{Zoom} = number, map magnification","UI",""
+"ResourceExtractor/Info/Miner","Miner","","","UI","#interface
+#buildable
+#resource"
+"ResourceExtractor/Info/Output/Label","OUTPUT","","","UI","#interface
+#buildable
+#resource"
+"ResourceExtractor/MapText/Output","Output:","Part of the information window shown on the map for this type of object","","UI","#interface
+#buildable
+#resource"
+"ResourceExtractor/MapText/Stats","Extractor Stats:","Part of the information window shown on the map for this type of object","","UI","#interface
+#buildable
+#resource"
+"ResourceExtractor/Warnings/Paused","PAUSED","Information window shown on the map for this type of object","","UI","#interface
+#buildable
+#resource"
+"Schematics/Progression/FreighterReEntry/Body","Milestone exchange concluded. FICSIT Freighter re-entry complete.","","","UI","#schematics"
+"Schematics/Progression/FreighterReEntry/aTitle","Freighter re-entry","","","UI","#schematics"
+"Shared/IndicatorPanel/Caution","Caution","","","UI","#interface
+Indicator Panel"
+"Shared/IndicatorPanel/Error","Error","","","UI","#interface
+Indicator Panel"
+"Shared/IndicatorPanel/Off","Off","","","UI","#interface
+Indicator Panel"
+"Shared/IndicatorPanel/Operational","Operational","","","UI","#interface
+Indicator Panel"
+"Shared/IndicatorPanel/Overclocked","Overclocked","","","UI","#interface
+Indicator Panel"
+"Shared/InputParts/AddItem","+ Add Item","","","UI","#interface
+#input"
+"Shared/Keybindings/SelectRecipe","Select Recipe","","","UI","#interface
+#common
+#manufacturing"
+"Shared/Overclock/Alien/Multiplier/Label","MULTIPLIER","","","UI","interface
+#overclocking
+#alien"
+"Shared/Overclock/Alien/OutputMultiplier/Label","Output Multiplier:","","","UI","interface
+#overclocking
+#alien"
+"Shared/Overclock/ClockSpeed/0","0%","","","UI","#interface
+#common
+overclock"
+"Shared/Overclock/ClockSpeed/100","100%","","","UI","#interface
+#common
+overclock"
+"Shared/Overclock/ClockSpeed/150","150%","","","UI","#interface
+#common
+overclock"
+"Shared/Overclock/ClockSpeed/200","200%","","","UI","#interface
+#common
+overclock"
+"Shared/Overclock/ClockSpeed/250","250%","","","UI","#interface
+#common
+overclock"
+"Shared/Overclock/ClockSpeed/Label","Clock Speed:","","","UI","#interface
+#common
+overclock"
+"Shared/Overclock/ClockSpeed/PerMin","per min","","","UI","#interface
+#common
+overclock"
+"Shared/Overclock/Overclock/Label","OVERCLOCK","","","UI","#interface
+#common
+overclock"
+"Shared/Overclock/Percent","<White10Reg>Overclocking Percent:</>","","","UI",""
+"Shared/Overclock/TargetProductionRate","Target production rate:","","","UI","#interface
+#common
+overclock"
+"Shared/Overclock/TargetRate","<White10Reg>Overclocking Target Rate:</>","","","UI",""
+"Shared/Overclock/TargetRate/Pattern","{amount} per min","","{amount} = number, overclock target rate","UI",""
+"Shared/ProductionDisplay/Module/CycleTime/Pattern","{CycleTime} sec","","{CycleTime} = number, cycle duration","UI","#interface"
+"Shared/ProductionDisplay/Module/InputOutput/Name/Pattern","{Amount}{Suffix} {Name}","","{Amount} = number
+{Suffix} = text, suffix/units, can be empty
+{Name} = item name","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/InputOutput/PerMinStat/Pattern","{value}{suffix}","","{value} = number
+{suffix} = text, suffix/units, can be empty","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/InputOutput/Status/Invalid","Invalid","","","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/Power/Pattern","{Power} MW","","{Power} = number, amount of power","UI","#interface"
+"Shared/ProductionDisplay/Module/ProductionPercentage/Pattern","{ProductionText} - {Percent}","","{ProductionText} = text, production status
+{Percent} = text, percentage","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/Status/BurningFuel","Burning Fuel","","","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/Status/Constructing","Constructing","","","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/Status/Extracting","Extracting","","","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/Status/FrackingKindOf","Fracking, kind of","","","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/Status/Idle","Idle","","","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/Status/Mining","Mining","","","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/Status/TryingHard","Trying really hard","","","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/Module/Status/Working","Working","","","UI","#interface
+Production Display"
+"Shared/ProductionDisplay/ProductionStatus/1","Working, sorta...","","","UI","#interface"
+"Shared/ProductionDisplay/ProductionStatus/2","Doing my best...","","","UI","#interface"
+"Shared/ProductionDisplay/ProductionStatus/3","Keeping the cogs turning...","","","UI","#interface"
+"Shared/ProductionDisplay/ProductionStatus/4","Respawning lizard doggos...","","","UI","#interface"
+"Shared/ProductionDisplay/ProductionStatus/5","Feeding the developers...","","","UI","#interface"
+"Shared/ProductionDisplay/ProductionStatus/6","Producing...","","","UI","#interface"
+"Shared/ProductionDisplay/WasteOutput","Waste Output","","","UI","#interface
+Production Display"
+"Shared/Warnings/NoConnection","No Connection","","","",""
+"Shared/Warnings/NoFuel","No Fuel","","","",""
+"Shared/Warnings/NoFuel/AllCaps","NO FUEL","","","UI","#interface
+#generator"
+"Shared/Warnings/NoPower","No Power","","","",""
+"Shared/Warnings/NoPower/AllCaps","NO POWER","Information window shown on the map for this type of object","","UI","#interface
+#manufacturer"
+"Shared/Warnings/ProductionPaused","Production Paused","","","",""
+"Shared/Warnings/ProductionPaused/AllCaps","PRODUCTION PAUSED","Information window shown on the map for this type of object","","UI","#interface
+#manufacturer"
+"Shared/Warnings/ResetFuse/AllCaps","RESET FUSE","Information window shown on the map for this type of object","","UI","#interface
+#generator"
+"Signs/SignDesigner/Accept/Button","Accept","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/ElementSettings","Element Settings","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Info/ElementSettings/Button","Element Settings","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Info/Layout/Button","Layout","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Info/RevertSettings/Button","Revert Settings","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/Background","Background","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/Colors","Colors","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/Icon/Label","Icon","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/Material","Material Settings","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/Material/Emission/Off","OFF","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/Material/EmissionStrength","Emission Strength:","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/Material/Surface","Surface Finish:","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/Material/Surface/Glossy","Glossy","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/Material/Surface/Matte","Matte","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/SelectColors/Button","Select Colors","","","UI","#interface
+#sign_designer"
+"Signs/SignDesigner/Settings/SelectImage/Button","Select Icon","","","UI","#interface
+Sign Designer"
+"Signs/SignDesigner/Settings/Text","Text","","","",""
+"Signs/SignDesigner/WindowTitle","Sign Designer","","","UI","#interface
+#sign_designer"
+"Signs/SignType/DefaultText/Label","A","Default text for when the sign is built. Will disappear once the player changes the text.","","",""
+"Signs/SignType/DefaultText/Number","10","Default text for when the sign is built. Will disappear once the player changes the text.","","",""
+"Signs/SignType/DefaultText/OtherText","Other Text","Default text for when the sign is built. Will disappear once the player changes the text.","","",""
+"Signs/SignType/DefaultText/SetText","Set Text Here…","Default text for when the sign is built. Will disappear once the player changes the text.","","",""
+"Signs/SpeedSign/LookAtDescription/ChangeLimit/Pattern","Press [{0}] to change speed limit","","{0} = text, key name","UI","#common
+#look_at_description"
+"SpaceElevator/CargoControl/Load/Button","<Grey12Bold>LOAD</>","","","UI",""
+"SpaceElevator/CargoControl/LoadAndAwaitingCargo/Button","<Orange12Bold>LOAD</>
+<Orange10Reg>Awaiting Cargo...</>","","","UI",""
+"SpaceElevator/CargoControl/LoadAndLoaded/Button","<Orange12Bold>LOAD</>
+<Orange10Reg>Cargo Loaded.</>","","","UI",""
+"SpaceElevator/CargoControl/Seal/Button","<Grey12Bold>SEAL</>","","","UI",""
+"SpaceElevator/CargoControl/SealAndReadyForDispatch/Button","<Orange12Bold>SEAL</>
+<Orange10Reg>Ready for Dispatch.</>","","","UI",""
+"SpaceElevator/CargoControl/SealAndSecuringContainer/Button","<Orange12Bold>SEAL</>
+<Orange10Reg>Securing Container...</>","","","UI",""
+"SpaceElevator/CargoControl/Send/Grey/Button","<Grey12Bold>SEND</>","","","UI",""
+"SpaceElevator/CargoControl/Send/Orange/Button","<Orange12Bold>SEND</>","","","UI",""
+"SpaceElevator/CargoControl/SendAndDelivering/Button","<Orange12Bold>SEND</>
+<Orange10Reg>Delivering to Project Assembly...</>","","","UI",""
+"SpaceElevator/Launch/A0/Label","A0","","","UI",""
+"SpaceElevator/Launch/A1/Label","A1","","","UI",""
+"SpaceElevator/Launch/B0/Label","B0","","","UI",""
+"SpaceElevator/Launch/B1/Label","B1","","","UI",""
+"SpaceElevator/Launch/BusSelector/Label","Bus Selector","","","UI",""
+"SpaceElevator/Launch/Button","LAUNCH","","","UI",""
+"SpaceElevator/Launch/C0/Label","C0","","","UI",""
+"SpaceElevator/Launch/C1/Label","C1","","","UI",""
+"SpaceElevator/Launch/CurrentInstructions","CURRENT INSTRUCTION:","","","UI",""
+"SpaceElevator/Launch/FinalizingPreparations","Finalizing preparations...","","","UI",""
+"SpaceElevator/Launch/Instructions/ActivateSelector/Pattern","Activate Bus {value}","","{value} = text, one of `SpaceElevator/Launch/**/Label`, e.g., A0","UI",""
+"SpaceElevator/Launch/Instructions/Off","Off","","","UI",""
+"SpaceElevator/Launch/Instructions/On","On","","","UI",""
+"SpaceElevator/Launch/Instructions/PressRocketButton","Wipe Windows","","","UI",""
+"SpaceElevator/Launch/Instructions/PressSettingsButton","Heat Seats","","","UI",""
+"SpaceElevator/Launch/Instructions/PressWaitingButton","Check Oil","","","UI",""
+"SpaceElevator/Launch/Instructions/SetKnobTo/Pattern","Set Fuel Injection Level to: {value}","","{value} = number","UI",""
+"SpaceElevator/Launch/Instructions/SetLeftThrusterTo/Pattern","Set Left Stabilizer to: {value}","","{value} = number","UI",""
+"SpaceElevator/Launch/Instructions/SetRightThrusterTo/Pattern","Set Right Stabilizer to: {value}","","{value} = number","UI",""
+"SpaceElevator/Launch/Instructions/TurnXSwitch/Pattern","Turn Gyroscopic Balancer X {state}","","{state} = text, one of `SpaceElevator/Launch/Instructions/On` or `Off`","UI",""
+"SpaceElevator/Launch/Instructions/TurnYSwitch/Pattern","Turn Gyroscopic Balancer Y {state}","","{state} = text, one of `SpaceElevator/Launch/Instructions/On` or `Off`","UI",""
+"SpaceElevator/Launch/Instructions/TurnZSwitch/Pattern","Turn Gyroscopic Balancer Z {state}","","{state} = text, one of `SpaceElevator/Launch/Instructions/On` or `Off`","UI",""
+"SpaceElevator/Launch/Knob/Label","Fuel Injection Level","","","UI",""
+"SpaceElevator/Launch/PreparationsComplete","Preparations complete.","","","UI",""
+"SpaceElevator/Launch/PreparationsComplete/LaunchProjectAssembly/Button","Launch Project Assembly","","","UI",""
+"SpaceElevator/Launch/PreparationsComplete/ProjectAssemblyLaunched","Project Assembly Launched.
+Pioneer purpose concluded.","","","UI",""
+"SpaceElevator/Launch/ProjectAssemblyLauncher","Project Assembly Launcher","","","UI",""
+"SpaceElevator/Launch/ProjectAssemblyLauncher/Name","FICSIT Project Assembly Launcher","","","",""
+"SpaceElevator/Launch/Rocket/Button","Wipe Windows","","","UI",""
+"SpaceElevator/Launch/Settings/Button","Heat Seats","","","UI",""
+"SpaceElevator/Launch/SomethingCompleted/Pattern","{value}.....Completed!","","{value} = text, launch stage name","UI",""
+"SpaceElevator/Launch/ThrusterL/Label","L","","","UI",""
+"SpaceElevator/Launch/ThrusterR/Label","R","","","UI",""
+"SpaceElevator/Launch/Values/KnobSetTo/Pattern","Fuel Injection Level set to: {value}","","{value} = number, knob value","UI",""
+"SpaceElevator/Launch/Values/Off","Off","","","UI",""
+"SpaceElevator/Launch/Values/On","On","","","UI",""
+"SpaceElevator/Launch/Values/RocketButtonPressed/Pattern","Windows Wiped","","","UI",""
+"SpaceElevator/Launch/Values/SettingsButtonPressed","Seats Heated","","","UI",""
+"SpaceElevator/Launch/Values/ThrusterLSetTo/Pattern","L Stabilizer set to {value}","","{value} = number","UI",""
+"SpaceElevator/Launch/Values/ThrusterRSetTo/Pattern","R Stabilizer set to {value}","","{value} = number","UI",""
+"SpaceElevator/Launch/Values/ValueSelected/Pattern","Bus {value} selected","","{value} = text, one of `SpaceElevator/Launch/**/Label`, e.g., A0","UI",""
+"SpaceElevator/Launch/Values/WarningButtonPressed/Pattern","Oil Checked","","","UI",""
+"SpaceElevator/Launch/Values/XSwitchTurned/Pattern","Gyroscopic Balancer X turned {state}","","{state} = text, one of `SpaceElevator/Launch/Values/On` and `Off`","UI",""
+"SpaceElevator/Launch/Values/YSwitchTurned/Pattern","Gyroscopic Balancer Y turned {state}","","{state} = text, one of `SpaceElevator/Launch/Values/On` and `Off`","UI",""
+"SpaceElevator/Launch/Values/ZSwitchTurned/Pattern","Gyroscopic Balancer Z turned {state}","","{state} = text, one of `SpaceElevator/Launch/Values/On` and `Off`","UI",""
+"SpaceElevator/Launch/Warning/Button","Check Oil","","","UI",""
+"SpaceElevator/MapText/ResourceDelivery","Space Elevator Resource Delivery {PhaseInt}:","Part of the information window shown on the map for this type of object","{PhaseInt} = text, formatted phase number","UI","#interface
+#buildable"
+"SpaceElevator/PhaseScreen/Phase/Pattern","Phase {PhaseNum}","Space Elevator screen","{PhaseNum} = number, Project Assembly phase","UI","#interface
+#space_elevator"
+"SpaceElevator/PhaseScreen/TiersText/AddingLastTierInList/Pattern","{PrevTiers} & {NewTier}","Used to add the last tier to the comma-separated list, <> are texts that would come in here as variables:
+<Tier 1, Tier 2> & <Tier 3>
+(if it's the last tier in the list)","{PrevTiers} = text, one Tier or a comma-separated list of Tiers combined via `SpaceElevator/PhaseScreen/TiersText/CombiningTierList/Pattern`
+{NewTier} = text, last Tier in a list to add","UI","#interface
+#space_elevator"
+"SpaceElevator/PhaseScreen/TiersText/CombiningTierList/Pattern","{PrevTiers}, {NewTier}","Used to combine tiers into a comma-separated list, <> are texts that would come in here as variables:
+<Tier 1, Tier 2>, <Tier 3>
+(if there's more Tiers in the list)","{PrevTiers} = text, one Tier or a comma-separated list of Tiers combined via this pattern
+{NewTier} = text, another Tier to be added to the comma-esparated list of Tiers","UI","#interface
+#space_elevator"
+"SpaceElevator/PhaseScreen/TiersText/Pattern","Unlocks Tiers {tiers}","Uses the tiers list from TiersText patterns to create the final tiers text
+Space Elevator screen","{tiers} = text, comma and ampersand-separated list of Tiers","UI","#interface
+#space_elevator"
+"SpaceElevator/Status/Completed","Completed","","","UI","#interface
+#space_elevator"
+"SpaceElevator/Switches/Label","Gyroscopic Balancers","","","UI",""
+"SpaceElevator/Thrusters/Label","Stabilizers","","","UI",""
+"Splitters/Rule/Add/Button","Add Rule","","","UI","#interface
+#buildable"
+"Splitters/Rule/None","NONE","","","UI","#interface
+#buildable"
+"Splitters/Rule/Output/Center","Center Output","","","UI","#interface
+#buildable"
+"Splitters/Rule/Output/Left","Left Output","","","UI","#interface
+#buildable"
+"Splitters/Rule/Output/Right","Right Output","","","UI","#interface
+#buildable"
+"Splitters/Smart/AddItem/Any/Description","Anything","","","UI",""
+"Splitters/Smart/AddItem/AnyUndefined","Any Undefined","","","UI","#resources
+#buildable"
+"Splitters/Smart/AddItem/AnyUndefined/Description","Any item not specified elsewhere","","","UI",""
+"Splitters/Smart/AddItem/None","None","","","UI","#resources
+#buildable"
+"Splitters/Smart/AddItem/None/Description","Nothing","","","UI",""
+"Splitters/Smart/AddItem/Overflow","Overflow","","","UI","#resources
+#buildable"
+"Splitters/Smart/AddItem/Overflow/Description","Overflow Output","","","UI",""
+"Splitters/Smart/FilteringRules/Any","Any","","","UI","#resources
+#buildable"
+"Splitters/Smart/FilteringRules/AnyPart","Any part, regardless of other output settings.","","","UI","#resources"
+"Splitters/Smart/FilteringRules/AnyUndefined","Any part that is NOT selected in another output.","","","UI","#resources"
+"Splitters/Smart/FilteringRules/None","No parts will pass through this output.","","","UI","#resources"
+"Splitters/Smart/FilteringRules/Overflow","Any part or amount the other outputs cannot handle.","","","UI","#resources"
+"Splitters/Smart/Outputs/AllCaps","SPLITTER OUTPUTS","","","UI","#resources
+#buildable"
+"Storage/Locker/LookAtDescription","Press <Key>{PlayerActions_Use}</> to open Character Customization.","","{PlayerActions_Use} = text, key name","",""
+"UnlockPickup/LookAtDescription/Pattern","Press [{0}] to unlock {1}","","{0} = text, key name
+{1} = text, ...?","UI","#common
+#look_at_description"
+"World/DropPod/Repair/BatteryBroken","Battery Broken:","","","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Button","Repair","","","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Close/Button","Close","","","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Info/EmergencyStatus","Emergency Door Status:","","","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Info/ItemsNeeded/Pattern","Repair using {NUM}x {ITEM} to open the access hatch","","{NUM} = number, number of items
+{ITEM} = text, item name","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Info/PowerNeeded/Pattern","Connect {MW} MW of power to open the access hatch","","{MW} = number, power","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/LootLocked","Oh no, the loot is locked inside!","","","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/PullHandleToOpenDoor/Hint","Pull Handle to Open Door","","","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Status/Damaged","Pod Damaged:","","","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Status/NeedsItems/Pattern","Needs {Amount} {Item}","","{Amount} = number, number of items
+{Item} = text, item name","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Status/NeedsPower/Pattern","Needs {Amount} MW","","{Amount} = number, power","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Status/Operational","OPERATIONAL","","","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Status/RepairCondition","REPAIR CONDITION","","","UI","#interface
+#drop_pod"
+"World/DropPod/Repair/Status/RepairsNeeded","REPAIRS NEEDED","","","UI","#interface
+#drop_pod"
+"World/DropPod/WindowTitle","Crashed Drop Pod","","","UI","#interface
+#drop_pod"

@@ -1,0 +1,777 @@
+﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"AGS/Gameplay/GiveItems/Back/Button","Back","","","UI","#ags"
+"AGS/Gameplay/GiveItems/GiveItem/Button","Give Item","","","UI","#ags"
+"AGS/Gameplay/GiveItems/GiveStacks/Button","Give Stacks","","","UI","#ags"
+"AGS/Gameplay/GiveItems/NoSpace","There was not enough room in your inventory, some items may not have been placed in your inventory.","","","UI","#ags"
+"AGS/Gameplay/GiveItems/SelectItems/Button","Select items to give","","","UI","#ags"
+"AGS/Gameplay/GiveItems/WindowTitle","Select items to give...","","","UI","#ags"
+"Accounts/ConnectAccounts/Close/Button","Close","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/ConnectionStatus/Working","Working...","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/ConnectionStatus/WorkingCheckBrowser","Working...
+Check browser","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/ContinueNoMultiplayer/Button","Continue without multiplayer","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/CrossPlay","<Header>Set up a new </><HeaderOrange>EOS connection</><Header> for your Steam account</>","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/CrossPlay/BulletPoint1","No Epic Game Store account needed","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/CrossPlay/BulletPoint2","Find your Steam friends ingame","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/CrossPlay/BulletPoint3","Play Cross-Play via Search for Session ID","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/CrossPlay/Intro","<Regular>We use </><RegularOrange>Epic Online Services (EOS)</><Regular> to handle multiplayer, which allows us to enable Cross-Play.</>
+<Regular>To play Satisfactory, you will have to connect to </><RegularOrange>EOS</><Regular> via the Epic Games Store or Steam.</>","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/Epic/Ok/Button","OK","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/Epic/Share/Body","You're currently logged in to the Epic Games Store with the account '{AccountName}'.
+
+Is this the account you want to share a connection with?","Connecting account UI","{AccountName} = text, account name","UI","#interface"
+"Accounts/ConnectAccounts/Epic/Share/Title","Log in to Epic Account","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/Epic/Share/WithAccount/Button/Pattern","Share EOS connection with {AccountName}","Connecting account UI","{AccountName} = text, account name","UI","#interface"
+"Accounts/ConnectAccounts/Epic/Share/WithDifferentAccount/Button","Share EOS connection with different Account","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/FullCrossPlay","<Header>Share </><HeaderOrange>EOS connection</><Header> between your Steam and Epic Games Store accounts</>","Enabling crossplay UI","","UI","#interface"
+"Accounts/ConnectAccounts/FullCrossPlay/BulletPoint1","Requires logging in to an existing Epic Games Store account","Enabling crossplay UI","","UI","#interface"
+"Accounts/ConnectAccounts/FullCrossPlay/BulletPoint2","Find your Epic & Steam friends ingame","Enabling crossplay UI","","UI","#interface"
+"Accounts/ConnectAccounts/FullCrossPlay/BulletPoint3","Play Cross-Play by simply joining your friends in game","Enabling crossplay UI","","UI","#interface"
+"Accounts/ConnectAccounts/Intro/Title","<Header>Before you start...</>","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/NoMultiplayer/Body","We haven't received a response from EOS. This will let you play offline in the event that EOS servers are offline. If you want to play online later, please restart the game.","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/NoteChooseWithCare","IMPORTANT:
+Please choose with care. You will only be able to change this in the future by contacting our support.","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/NoteLinkBothNowOrNever","IMPORTANT: If you do not link your Steam and Epic account to the same EOS connection now, you won't be able to do so later.","Connecting account UI","","UI","#interface"
+"Accounts/ConnectAccounts/ResetLinking/Button","Reset Account Linking","Linking account UI","","UI","#interface"
+"Accounts/ConnectAccounts/ResetLinking/Note","IMPORTANT:
+You can reset your account linking at any time in Options > Online. For further assistance, please contact our support.","Linking account UI","","UI","#interface"
+"Accounts/Errors/Critical/Body","Account connection widget class is invalid!
+Login and setup will not be able to continue and will likely result in serious issues.
+
+Please restart the game. If the issue persists, please report this issue.","Connecting account UI","","UI","#interface"
+"Accounts/Errors/Critical/aTitle","Critical Login Error","Connecting account UI","","UI","#interface"
+"Accounts/Notifications/FailedToLogIn","Failed to log in to the online service. You need to relaunch the game from the launcher to log in again (sorry for the temporary solution).","A warning message related to server","","UI","#interface"
+"Accounts/Notifications/LoggedOut","You were sent back to the Main Menu because you were logged out from the online service. Your game was autosaved. You need to relaunch the game from the launcher to log in again (sorry for the temporary solution).","A warning message related to server","","UI","#interface"
+"Accounts/Notifications/LostConnection","You were sent back to the Main Menu as you lost connection with the online service. Your game was autosaved. You need to relaunch the game from the launcher to log in again (sorry for the temporary solution).","A warning message related to server","","UI","#interface"
+"Accounts/ResetAccountsLinking/Confirm/Button","Confirm","Linking account UI","","UI","#interface"
+"Accounts/ResetAccountsLinking/Continue/Button","Continue","Linking account UI","","UI","#interface"
+"Accounts/ResetAccountsLinking/Error","An error occurred.
+
+Please restart the game and try again.","Linking account UI","","UI","#interface"
+"Accounts/ResetAccountsLinking/Status/Resetting","Resetting Account Linking","Linking account UI","","UI","#interface"
+"Accounts/ResetAccountsLinking/Unlinked","Your accounts have been successfully unlinked!","Linking account UI","","UI","#interface"
+"Accounts/ResetLinking/Confirm/Body","You are about to unlink this account. Do you want to proceed?","Linking account UI","","UI","#interface"
+"Accounts/ResetLinking/NoAccount/Body","No account is currently logged in.","Linking account UI","","UI","#interface"
+"Accounts/ResetLinking/PleaseTurnItOffAndOnAgain","Something went wrong. Please restart the game and try again.","Linking account UI","","UI","#interface"
+"Accounts/ResetLinking/aTitle","Reset Account Linking","Linking account UI","","UI","#interface"
+"Errors/ErrorCodeMessage/HideInfo","Hide Advanced Info","","","UI",""
+"Errors/ErrorCodeMessage/ShowInfo","Show Advanced Info","","","UI",""
+"Errors/NetworkError/Title","Network Error","","","UI","#message #session"
+"Games/AGS/ApplyChanges/Button","Apply","","","UI","#ags"
+"Games/AGS/ApplyChanges/Description","Are you sure you want to apply the changes?","","","UI","#ags"
+"Games/AGS/ApplyChanges/Title","Apply changes?","","","UI","#ags"
+"Games/AGS/Back/Button","Back","","","UI","#ags"
+"Games/AGS/GameMode/Warning/Pattern","{Description}
+
+<Orange>(This game mode applies changes for the entire session and affects all players.)</>","","{Description} = text, game mode name","UI","#ags"
+"Games/AGS/ResetToDefaults/Body","Are you sure you want to reset all settings to default?","","","UI","#ags"
+"Games/AGS/ResetToDefaults/Button","Reset to Default","","","UI","#options"
+"Games/AGS/ResetToDefaults/Title","Reset to Defaults?","","","UI","#ags"
+"Games/AGS/UnsavedChanges/Body","You have unsaved changes to Advanced Game Settings.
+Are you sure you wish to continue?","","","UI","#ags"
+"Games/AGS/UnsavedChanges/Title","Unsaved Changes","","","UI","#ags"
+"Games/AutosaveNotifications/AutosaveCompleted","AUTOSAVE COMPLETE!","","","UI","#interface
+#common
+#game
+#messages"
+"Games/AutosaveNotifications/AutosaveInProgress","AUTOSAVE IN PROGRESS...","","","UI","#interface
+#common
+#game
+#messages"
+"Games/AutosaveNotifications/AutosaveStarting","AUTOSAVE STARTING...","","","UI","#interface
+#common
+#game
+#messages"
+"Games/AutosaveNotifications/Pattern","Autosave in {time}","","{time} = number, countdown until autosave","UI","#interface
+#common
+#game
+#messages"
+"Games/AutosaveNotifications/SaveCompleted","Save completed","","","UI","#interface
+#common
+#game
+#messages"
+"Games/AutosaveNotifications/Saving","Saving","","","UI","#interface
+#common
+#game
+#messages"
+"Games/CreativeMode/ClientAGSWarning","<Default>The game host has not enabled Advanced Game Settings.</>
+
+<Default>If you want to access Advanced Game Settings, ask the game host to enable it.</>","","","UI","#interface"
+"Games/CreativeMode/GenericAGSWarning","<Default>You are currently playing the default version of the game.</>
+
+<Default>Would you like to access Advanced Game Settings?</> 
+
+<Default>Please note that editing these settings is a</><BoldRed> one-way action</><Default>, and you will not be able to switch back to the default version of the game unless you</><BoldRed> reload a save</> that was created before switching over.
+
+<Default>Enabling Advanced Game Settings means that you will</> <BoldRed>not be able to get any Achievements.</>
+
+<BoldRed>All players in this session will have access</> <Default>to these settings once activated.</> 
+
+<Default>If you want to proceed, press Confirm to access Advanced Game Settings.</>","","","UI","interface"
+"Games/CreativeMode/GenericAGSWarning.TargetPS5","<Default>You are currently playing the default version of the game.</>
+
+<Default>Would you like to access Advanced Game Settings?</> 
+
+<Default>Please note that editing these settings is a</><BoldRed> one-way action</><Default>, and you will not be able to switch back to the default version of the game unless you</><BoldRed> reload a save</> that was created before switching over.
+
+<Default>Enabling Advanced Game Settings means that you will</> <BoldRed>not be able to get any Trophies.</>
+
+<BoldRed>All players in this session will have access</> <Default>to these settings once activated.</> 
+
+<Default>If you want to proceed, press Confirm to access Advanced Game Settings.</>","","","UI","interface"
+"Games/CreativeMode/GenericAGSWarning.TargetXSX","<Default>You are currently playing the default version of the game.</>
+
+<Default>Would you like to access Advanced Game Settings?</> 
+
+<Default>Please note that editing these settings is a</><BoldRed> one-way action</><Default>, and you will not be able to switch back to the default version of the game unless you</><BoldRed> reload a save</> that was created before switching over.
+
+<Default>Enabling Advanced Game Settings means that you will</> <BoldRed>not be able to get any Achievements.</>
+
+<BoldRed>All players in this session will have access</> <Default>to these settings once activated.</> 
+
+<Default>If you want to proceed, press Confirm to access Advanced Game Settings.</>","","","UI","interface"
+"Games/LoadGame/AGS","Advanced Game Settings","","","UI",""
+"Games/LoadGame/Button","Load Game","","","UI",""
+"Games/NewGame/AGS","Advanced Game Settings","","","UI","#ags"
+"Games/NewGame/AGS/Enabled","Advanced Game Settings (Enabled)","","","UI","#ags"
+"Games/NewGame/Confirmation/Confirm/Button","Confirm","","","UI",""
+"Games/NewGame/Confirmation/StartingArea","Starting Area:","","","UI",""
+"Games/NewGame/Confirmation/Title","Starting New Game","","","UI",""
+"Games/NewGame/MultiplayerSettings","Multiplayer Settings","","","UI","#multiplayer"
+"Games/NewGame/Preview/StartingArea","Starting Area:","","","UI",""
+"Games/NewGame/Session/EnableAGS","Enable Advanced Game Settings?","","","UI","#session"
+"Games/NewGame/Session/Name","Session Name","","","UI","#session"
+"Games/NewGame/Session/Name/TextBoxHint","Enter Name...","","","UI","#session"
+"Games/NewGame/Session/Name/TooShort","Session name needs to be at least 3 characters","","","UI","#session"
+"Games/NewGame/Session/Name/UnsupportedCharacters","Session name contains unsupported characters or reserved names","","","UI","#session"
+"Games/NewGame/Session/Name/Used","Session name already in use","","","UI","#session"
+"Games/NewGame/Session/SkipIntro/Description","Enable to skip the onboarding process and start the game at Tier 1.","","","UI","#session"
+"Games/NewGame/Session/SkipIntro/Title","Skip Intro","","","UI","#session"
+"Games/NewGame/StartGame/Button","Start Game","","","UI","#session"
+"Games/Savegames/List/Delete/Body","Are you sure you want to delete this save file?","","","UI",""
+"Games/Savegames/List/Delete/Button","Delete","","","UI",""
+"Games/Savegames/List/DeleteSave/Button","Delete Save","","","UI",""
+"Games/Savegames/List/Failed/Tooltip","Save Failed!","","","UI",""
+"Games/Savegames/List/Save/Button","Save","","","UI",""
+"Games/Savegames/List/SaveInputBox","+ New Save","","","UI","interface"
+"Games/Savegames/List/Saved","Save Successful!","","","UI",""
+"Games/Savegames/List/Saved/Tooltip","Your game was saved!","","","UI",""
+"Games/Savegames/List/UnnamedSave","Unnamed","","","UI",""
+"Games/Savegames/Row/PreviousSave/None","No Previous Saves","","","UI",""
+"Games/Savegames/Row/PreviousSave/Overwrite/Button","Overwrite Save","","","UI",""
+"Games/Savegames/Row/PreviousSave/Pattern","{PlayDuration} | {SaveTime}","","{PlayDuration} = text, time (0h 0m 0s)
+{SaveTime} = text, time of save","UI",""
+"Games/Savegames/Row/PreviousSave/PlayDuration/Pattern","<Default>Play Duration: {hours}h {min}m {sec}s</>","","{hours} = number
+{min} = number
+{sec} = number","UI",""
+"Games/Savegames/Row/PreviousSaveWithAGS/Pattern","{PlayDuration} | {SaveTime} | Advanced Game Settings Enabled","","{PlayDuration} = text, time (0h 0m 0s)
+{SaveTime} = text, time of save","UI",""
+"Games/Savegames/SaveRow/DeleteSave/Body","Are you sure you want to delete this save file?","Save settings UI","","UI","#interface"
+"Games/Savegames/SaveRow/DeleteSave/PlayDuration/Pattern","Play Duration: {hours}h {min}m {sec}s","Save settings UI","{hours} = number
+{min} = number
+{sec} = number","UI","#interface"
+"Games/Savegames/SaveRow/DeleteSave/aTitle","Delete Save File","Save settings UI","","UI","#interface"
+"Games/Savegames/Warnings/Save/CantWriteFileToDisk","Failed to save game, couldn't write file to disk","Warning message. Appears when you try to save the game","","UI",""
+"Games/Savegames/Warnings/Save/FailedToSerializeHeader","Failed to save game, failed to serialize header (THIS SHOULD NEVER EVER HAPPEN)","Warning message. Appears when you try to save the game","","UI",""
+"Games/Savegames/Warnings/Save/FileReadOnly","Failed to save game, file {0} was read only","Warning message. Appears when you try to save the game","{0} = text, file name","UI",""
+"Games/Savegames/Warnings/Save/InvalidFileName","Failed to save game, game has an invalid filename","Warning message. Appears when you try to save the game","","UI",""
+"JoinList/Warning/CrossPlayDisabled","Cross-Play is disabled in the Online Settings. You will only be able to see friend sessions which also have Cross-Play disabled","","","",""
+"LoadingScreen/AutosaveWarning","THIS GAME USES AN AUTO-SAVE FEATURE. PLEASE DON'T TURN OFF THE POWER WHEN YOU SEE THIS INDICATOR.","","","UI","#console"
+"LoadingScreen/Copyright","© 2024 Open in Codex publishing. Al buttons reserved. UE has all the rights on everything. Bacon ipsum dolor sit amet salami ham jamon hock prosciutto, brisket turducken boudin shankle meatball. ","","","UI","#console"
+"LoadingScreen/EpilepsyWarning","A very small percentage of individuals may experience epileptic seizures when exposed to certain visual images, including light patterns or flashing lights that may appear in videogames or other content. Exposure to certain patterns or backgrounds on a computer screen, or while playing videogames, may induce an epileptic seizure in these individuals. Certain conditions may induce previously undetected epileptic symptoms even in persons who have no history of prior seizures or epilepsy.
+
+If you, or anyone in your family, have an epileptic condition, consult your physician prior to playing Satisfactory. If you experience any of the following symptoms while playing - dizziness, altered vision, eye or muscle twitches, loss of awareness, disorientation, any involuntary movement, or convulsions -  discontinue use IMMEDIATELY  and consult your physician before resuming use of Satisfactory. ","","","UI","#console"
+"LoadingScreen/EpilepsyWarning/Body","PHOTOSENSITIVE SEIZURE WARNING: READ BEFORE PLAYING","","","UI","#console"
+"MainMenu/AlphaInfo/Agree/Button","Agree and Proceed","","","UI",""
+"MainMenu/AlphaInfo/ExperimentalBuild","EXPERIMENTAL BUILD INFO","","","UI",""
+"MainMenu/AlphaInfo/ExperimentalBuild/Description","Greetings, pioneers!
+
+Welcome to the <BoldRed>Experimental Early Access build of Satisfactory.</> It includes the newest content that we need to test before we push it to the stable Early Access build. This means that we might introduce game- or potentially save- breaking bugs to this version, so <Bold>tread with caution!</> 
+We advise backing up your save files before loading any of your precious stable games.
+
+This is the directory where you will find your saves:
+<Bold>%localappdata%\FactoryGame\Saved\SaveGames\</>
+
+You will also experience regular bugs, crashes, visual issues, and performance issues. All the good stuff. We would really appreciate your honest feedback, no matter what it is. Please go to our questions site <Bold>https://questions.satisfactorygame.com/</> and let us know what you think.
+
+<BoldOrange>Note: We collect gameplay-related data from your play sessions, which allows us to see potential problems with the game.</> <Bold>We are not harvesting any personal data. If you don’t want us to collect this data, you can opt out in the options menu.</>
+
+<default>Stay effective!</>","","","UI",""
+"MainMenu/AlphaInfo/WelcomeInfo","WELCOME INFORMATION","","","",""
+"MainMenu/AlphaInfo/WelcomeInfo/Description","Greetings Pioneers!
+
+Welcome to the 1.0 Release of Satisfactory, if you experience any bugs, crashes, visual or performance issues or have any feedback for us, please go to our questions site 
+<Bold>https://questions.satisfactorygame.com</> and let us know what you think. We always appreciate your feedback.
+ 
+<BoldOrange>Note: We are collecting gameplay-related data from your play sessions, which allows us to see potential problems with the game.</><Bold> We are not harvesting any personal data. If you don't want us to collect this data, you can opt-out in the options menu.</>
+
+Stay effective!","","","",""
+"Menu/ExitToDesktop","Exit to Desktop","","","UI",""
+"Menu/ExitToMainMenu","Exit to Main Menu","","","UI",""
+"Menu/Main/AlphaInfo/ExperimentalBuild/Label","EXPERIMENTAL BUILD","","","UI",""
+"Menu/Main/Login/Platform/Logging/Pattern","Logging in to {platform}","","{platform} = text, platform name","UI",""
+"Menu/Main/Login/Platform/LoggingAsUser/Pattern","Logged in to {platform} as: {username}","","{platform} = text, platform name
+{username} = text, username","UI",""
+"Menu/Main/Login/Platform/NotLogged/Pattern","Not logged in to {platform}","","{platform} = text, platform name","UI",""
+"Menu/Main/Menu/Continue/Button","Continue","","","UI",""
+"Menu/Main/Menu/Credits/Button","Credits","","","UI",""
+"Menu/Main/Menu/Exit/Body","Are you sure you want to quit the game?","","","UI",""
+"Menu/Main/Menu/Exit/Button","Exit","","","UI",""
+"Menu/Main/Menu/Exit/Title","Exiting Game","","","UI",""
+"Menu/Main/Menu/LoadGame/Button","Load","","","UI",""
+"Menu/Main/Menu/Multiplayer/Button","Join Game","","","UI",""
+"Menu/Main/Menu/NewGame/Button","New Game","","","UI",""
+"Menu/Main/Menu/OnlineSettings/Button","Online Settings","","","UI",""
+"Menu/Main/Popups/UnableToJoinGame/NoMultiplayerMode","You are in No Multiplayer mode","","","UI",""
+"Menu/Main/Popups/UnableToJoinGame/NotLogged","You are not logged in","","","UI",""
+"Menu/Main/Popups/UnableToJoinGame/Title","Unable to Join Game","","","UI",""
+"Menu/Main/Session/LatestSave/Pattern","Latest Save: {A}","","{A} = text, save name","UI",""
+"Menu/Main/Session/SessionName/Pattern","Session Name: {A}","","{A} = text, session name","UI",""
+"Menu/Pause/AGS","Advanced Game Settings","","","UI","#ags"
+"Menu/Pause/AGS/Enable","Enable Advanced Game Settings?","","","UI","#ags"
+"Menu/Pause/AGS/NoPermission","No Permission to Access Advanced Game Settings","Session information block","","UI","#ags"
+"Menu/Pause/ExitGame/Body","Are you sure you want to exit the game?","","","UI",""
+"Menu/Pause/ExitToMainMenu/Body","Are you sure you want to go back to the Main Menu?","","","UI",""
+"Menu/Pause/FeedbackSite","Go to feedback site","","","UI",""
+"Menu/Pause/LoadGame","Load Game","","","UI",""
+"Menu/Pause/ManageSession","Manage Session","","","UI","#session"
+"Menu/Pause/Options","Options","","","UI","#options"
+"Menu/Pause/Respawn","Respawn","","","UI",""
+"Menu/Pause/ResumeGame","Resume Game","","","UI",""
+"Menu/Pause/SaveGame","Save Game","","","UI",""
+"Menu/Pause/Session/CurrentGame","Current Game:","","","UI",""
+"Menu/Pause/Session/PlayDuration/Pattern","Play Duration: {hours}h {min}m {sec}s","","{hours} = number
+{min} = number
+{sec} = number","UI","#session"
+"Menu/Pause/SkipIntro","Skip Intro","","","UI",""
+"Menu/Pause/TakePhoto","Take Photo","","","UI",""
+"Menu/Pause/UnsavedChanges/Body","You have unsaved changes.
+Are you sure you wish to continue?","","","UI",""
+"Menu/Pause/UnsavedChanges/Title","Unsaved Changes","","","UI",""
+"Menu/ServerManager","Server Manager","","","UI",""
+"Multiplayer/Messages/ConnectingToHost","Connecting to host","","","UI","#message #session"
+"Multiplayer/Messages/ConnectingToOnlineServices","Connecting to online service","","","UI","#message #session"
+"Multiplayer/Messages/CreatingSession","Creating session","","","UI","#message #session"
+"Multiplayer/Messages/DestroyingOldSession","Destroying old session","","","UI","#message #session"
+"Multiplayer/Messages/QueryingHostId","Querying backend server for host ID","","","UI","#message #session"
+"Multiplayer/Messages/UpdatingPresence","Updating presence","","","UI","#message #session"
+"Multiplayer/Messages/WaitingForLoginToComplete","Waiting for your login to complete","","","UI","#message #session"
+"Multiplayer/Messages/WaitingForPresenceToPropagate","Waiting for presence to propagate to server","","","UI","#message #session"
+"NewsFeed/ReadMore/Button","Read More","","","UI",""
+"NewsFeed/ReadMore/Warning","<Bold>Failed to get news!</>","","","UI",""
+"OnlineSettings/AccountInfo","Account Info","","","UI",""
+"OnlineSettings/Epic/LogOut","Log Out of Epic Online Services","","","UI",""
+"OnlineSettings/GeneralOnlineSettings","General Online Settings","","","UI",""
+"OnlineSettings/LogInToEpic/AuthPending","Authentication Pending","","","UI",""
+"OnlineSettings/LogInToEpic/Button","Log In to Epic","","","UI",""
+"OnlineSettings/LogInToEpic/Description","By logging in to Epic Online Services with your Steam account, you will be able to both Host and Join other games that are running via Epic Online Services (as well as games hosted by the Steam service).
+
+Logging in to Epic Online Services with your Steam account requires your Steam account to be linked to an Epic account.
+
+If you don’t have a Steam account linked to Epic Online Services, there will be an option to either link your Steam account to an existing Epic account or create a new Epic account to link with during the login process.
+
+If you do not wish to log in to Epic Online Services, you’ll still be able to Host and Join games for players who play via the Steam service.","","","UI",""
+"OnlineSettings/LogInToEpic/Description.TargetPS5","By logging in to Epic Online Services with your account, you will be able to both Host and Join other games that are running via Epic Online Services.
+
+Logging in to Epic Online Services with your account on PlayStation™Network requires your account to be linked to an Epic account.
+
+If you don’t have an account on PlayStation™Network linked to Epic Online Services, there will be an option to either link your account on PlayStation™Network to an existing Epic account or create a new Epic account to link with during the login process.","","","UI",""
+"OnlineSettings/LogInToEpic/Description.TargetXSX","By logging in to Epic Online Services with your account, you will be able to both Host and Join other games that are running via Epic Online Services.
+
+Logging in to Epic Online Services with your Xbox Network account requires your account to be linked to an Epic account.
+
+If you don’t have an Xbox network account linked to Epic Online Services, there will be an option to either link your account on the Xbox network to an existing Epic account or create a new Epic account to link with during the login process.","","","UI",""
+"OnlineSettings/LogInToEpic/Title","Log in to Epic","","","UI",""
+"OnlineSettings/LogInToEpicOnlineServices/Button","Log In to Epic Online Services","","","UI",""
+"OnlineSettings/LogOutFromEpic/Button","Log Out of Epic","","","UI",""
+"OnlineSettings/LogOutFromEpic/Description","Logging out of Epic means that you’ll no longer be able to host games via Epic, nor join other games that are hosted via Epic. You’ll still be able to join and host games via Steam.
+
+Logging out of Epic will NOT unlink your Steam account from Epic. Unlinking your Steam account can be done from the Epic account management page.","","","UI",""
+"OnlineSettings/LogOutFromEpic/Description.TargetPS5","Logging out of Epic means that you’ll no longer be able to host games via Epic, nor join other games that are hosted via Epic.
+
+Logging out of Epic will NOT unlink your account on PlayStation™Network from Epic. Unlinking your account on PlayStation™Network can be done from the Epic account management page.","","","UI",""
+"OnlineSettings/LogOutFromEpic/Description.TargetXSX","Logging out of Epic means that you’ll no longer be able to host games via Epic, nor join other games that are hosted via Epic.
+
+Logging out of Epic will NOT unlink your Xbox account from Epic. Unlinking your Xbox account can be done from the Epic account management page.","","","UI",""
+"OnlineSettings/LogOutFromEpicOnlineServices/Title","Log out of Epic","","","UI",""
+"Options/AGS/CheckBox","Play with Advanced Game Settings","","","UI","#ags"
+"Options/AGS/Description","Enable this option to play Satisfactory with Advanced Game Settings. This will allow players to play the game with custom settings like no power cost, no fuel cost, etc.","","","UI","#ags"
+"Options/Changes/ApplyConfirmation/Body","Are you sure you want to apply the changes?","","","UI","#interface
+#common
+#options"
+"Options/Changes/ApplyConfirmation/aTitle","Apply changes?","","","UI","#interface
+#common
+#options"
+"Options/Changes/NetworkQualityWarning/Body","You have selected a higher value than the default network quality value. Increasing this value may improve client load times and network performance at the cost of server framerate. Experiment with these settings to see what works for you.","","","UI","#settings"
+"Options/Changes/NetworkQualityWarning/aTitle","Warning","","","UI","#interface
+#common
+#options"
+"Options/Changes/ResetToDefault/Body","Are you sure you want to reset all {Category} settings to default?","","{Category} = text, options category name","UI","#interface
+#common
+#options"
+"Options/Changes/ResetToDefault/aTitle","Reset to Defaults?","","","UI","#interface
+#common
+#options"
+"Options/Changes/ResolutionChanged/Body/Pattern","Do you want to keep these settings? Reverting in {time} seconds","","{time} = number, seconds","UI","#interface
+#common
+#options"
+"Options/Changes/ResolutionChanged/aTitle","Resolution Changed","","","UI","#interface
+#common
+#options"
+"Options/Changes/SessionRestartRequired/Body","For all changes to take effect, you need to restart the game session!","","","UI","interface"
+"Options/Changes/SessionRestartRequired/aTitle","Session Restart Required","","","UI","#interface
+#common
+#options"
+"Options/Changes/Unsaved/BodyOnExit","You have unsaved changes.
+Are you sure you wish to continue?","","","UI","#interface
+#common
+#options"
+"Options/Changes/Unsaved/BodyOnSwitchCategory","You have unsaved changes that will be reverted if you continue!","","","UI","#interface
+#common
+#options"
+"Options/Changes/Unsaved/aTitle","Unsaved Changes","","","UI","#interface
+#common
+#options"
+"Options/Epic/UnlinkAccounts/Body","This will unlink your Epic and Steam accounts. You will then be prompted to link your accounts again if you wish.","","","UI","#interface
+#main_menu
+#options
+#session
+Session Status???"
+"Options/Epic/UnlinkAccounts/Title","Reset Account Linking","","","UI","#settings"
+"Options/EpicLogIn","Log in to Epic Account","","","UI","#interface
+#main_menu
+#options
+#session
+Session Status???"
+"Options/EpicLogOut","Log out of Epic Account","","","UI","#interface
+#main_menu
+#options
+#session
+Session Status???"
+"Options/FactoryClipboard/Copy/Button","Copy Factory Clipboard","","","UI","interface
+#general_ui"
+"Options/FactoryClipboard/Paste/Button","Paste Factory Clipboard","","","UI","interface"
+"Options/KeyBinding/RebindingConflict","Rebinding Conflict","","","UI","#options"
+"Options/KeyBinding/RebindingConflict/Description/Pattern","{HardConflicts}
+{SoftConflicts}
+Rebind anyway?","","{HardConflicts} = text, key name
+{SoftConflicts} = text, key name","UI","#options"
+"Options/KeyBindings/Other","Other","","","UI","#options"
+"Options/KeyBindings/PressKeyToRebind","Press a key to rebind","","","UI","#options"
+"Options/KeyBindings/RebindingHardConflict/Description/Pattern","This binding is currently bound to ({HardConflicts}) in the same context.","","{SoftConflicts} = text, key name","UI","#options"
+"Options/KeyBindings/RebindingSoftConflict/Description/Pattern","This binding is currently bound to ({SoftConflicts}) in another context.","","{SoftConflicts} = text, key name","UI","#options"
+"Options/MainScreen/Apply/Button","Apply","","","UI","#interface
+#common
+#options"
+"Options/MainScreen/ResetToDefault/Button","Reset to Default","","","UI","#interface
+#common
+#options"
+"Options/MultiplayerSettings/Apply/Button","Apply","Multiplayer settings UI","","UI","#interface"
+"Options/MultiplayerSettings/Back/Button","Back","Multiplayer settings UI","","UI","#interface"
+"Options/MultiplayerSettings/Popups/ApplyChanges/Body","Are you sure you want to apply the changes?","Multiplayer settings UI","","UI","#interface"
+"Options/MultiplayerSettings/Popups/ApplyChanges/aTitle","Apply changes?","Multiplayer settings UI","","UI","#interface"
+"Options/MultiplayerSettings/Popups/ResetChanges/Body","Are you sure you want to reset all settings to default?","Multiplayer settings UI","","UI","#interface"
+"Options/MultiplayerSettings/Popups/ResetChanges/aTitle","Reset to Defaults?","Multiplayer settings UI","","UI","#interface"
+"Options/MultiplayerSettings/ReloadSessionToApplyChanges","The session will be reloaded in order to apply the new settings. Do you want to continue? ","","","",""
+"Options/MultiplayerSettings/Reset/Button","Reset to Default","Multiplayer settings UI","","UI","#interface"
+"Options/OfflinePlayer","Offline Player","","","UI",""
+"Options/Online","Online","","","UI","#multiplayer"
+"Options/OptionsColor/Edit/Button","Edit","","","UI","#interface
+#options
+#common
+#hologram"
+"Options/OptionsColor/Reset/Body","Are you sure you wish to reset this color to its default setting?","","","UI","#interface
+#options
+#common
+#hologram"
+"Options/OptionsColor/Reset/Button","Reset","","","UI","#interface
+#options
+#common
+#hologram"
+"Options/OptionsColor/Reset/aTitle","Reset Color","","","UI","#interface
+#options
+#common
+#hologram"
+"Options/OptionsColor/SelectColorWindow/WindowTitle","Select Color","","","UI","#interface
+#options
+#common
+#hologram"
+"Options/Slider/OffValue","Off","","","UI",""
+"Options/Video/HardwareBenchmarkResults","Hardware Benchmark Result","","","UI","interface
+options"
+"Options/Video/HardwareBenchmarkResults/NewSettingsSelected","New Graphic Values Selected","","","",""
+"Players/FriendList/CanOnlyJoinViaSessionIDOrOverlay","Currently you can only join friends through Join via Session ID or by going through the overlay in Steam/Epic.","","","UI","#interface
+#multiplayer"
+"Players/FriendList/Status/Away","Away","","","UI","#interface
+#multiplayer"
+"Players/FriendList/Status/DoNotDisturb","Do Not Disturb","","","UI","#interface
+#multiplayer"
+"Players/FriendList/Status/ExtendedAway","Away","","","UI","#interface
+#multiplayer"
+"Players/FriendList/Status/Game/PlayingOtherGame","| Playing other game...","E.g. `Do Not Disturb | Playing other game...`","","UI","#interface
+#multiplayer"
+"Players/FriendList/Status/Game/PlayingStatisfactory","| Playing Satisfactory","E.g. `Online | Playing Satisfactory`","","UI","#interface
+#multiplayer"
+"Players/FriendList/Status/Offline","Offline","","","UI","#interface
+#multiplayer"
+"Players/FriendList/Status/Online","Online","","","UI","#interface
+#multiplayer"
+"Players/FriendList/Status/Pattern","{Presence} {GameStatus}","Both variables can be empty here, if status and/or game are not known","{Presence} = text, status, one of `Multiplayer/FriendList/Status/` or EMPTY
+{GameStatus} = text, one of `Multiplayer/FriendList/Status/Game/` or EMPTY","UI","#interface
+#multiplayer"
+"Players/FriendListAction/ManagePlayer/AcceptInvite/Button","Accept Invite","Friends managing UI","","UI","#interface"
+"Players/FriendListAction/ManagePlayer/Header","Manage Player","Friends managing UI","","UI","#interface"
+"Players/FriendListAction/ManagePlayer/Invite/Button","Invite","","","UI","#interface
+#multiplayer"
+"Players/FriendListAction/ManagePlayer/Join/Button","Join","","","UI","#interface
+#multiplayer"
+"Players/FriendListAction/ManagePlayer/Kick/Button","Kick","Friends managing UI","","UI","#interface"
+"Players/FriendListAction/ManagePlayer/MakeAdmin/Button","Make Admin","Friends managing UI","","UI","#interface"
+"Players/FriendListAction/ManagePlayer/RejectInvite/Button","Reject Invite","Friends managing UI","","UI","#interface"
+"Players/Manage/Kick/Button","Kick Player","","","UI",""
+"Players/Manage/Kick/Confirm","Are you sure you want to kick this player from the session?","","","",""
+"Players/Manage/MakeAdmin/Button","Make Admin","","","UI",""
+"Players/Manage/MakeAdmin/Confirm","Are you sure you want to promote this player to Admin?","","","",""
+"Players/Messages/JoinedGame","has joined the game!","Friend's status","","UI","#interface"
+"Players/Messages/LeftGame","has left the game!","Friend's status","","UI","#interface"
+"Players/Messages/YouGotKicked","You were kicked","Your status","","UI","#interface"
+"Players/OnlineStatus/CurrentSession/Pattern","Current Session: {A}","","{A} = text, session name","UI",""
+"Players/OnlineStatus/CurrentSession/SessionName","Session Name","","","UI",""
+"Players/OnlineStatus/CurrentSession/State/LoggedInToEpic","Logged in to Epic","","","UI",""
+"Players/OnlineStatus/CurrentSession/Username","Username","","","UI",""
+"Players/PlayerProfileFields/EpicAccount","Epic Account:","","","UI",""
+"Players/PlayerProfileFields/EpicLogin","Has valid Epic Games login:","","","UI",""
+"Players/PlayerProfileFields/EpicLogin/No","No","","","UI",""
+"Players/PlayerProfileFields/EpicLogin/Yes","Yes","","","UI",""
+"Players/PlayerProfileFields/Platform","Platform:","","","UI",""
+"Players/PlayerProfileFields/Platform/Epic","Epic","","","",""
+"Players/PlayerProfileFields/Platform/Null","None","","","",""
+"Players/PlayerProfileFields/Platform/PSN","PlayStation™Network","","","",""
+"Players/PlayerProfileFields/Platform/Steam","Steam","","","",""
+"Players/PlayerProfileFields/Platform/Xbox","Xbox network","","","",""
+"Players/PlayerProfileFields/Version","Version:","","","UI",""
+"Players/SessionPrivilege/Admin","Admin","","","",""
+"Servers/ChangeServerName/TextBoxHint","Enter a friendly name for your server...","","","UI",""
+"Servers/Dedicated/Back/Button","Back","","","UI",""
+"Servers/Dedicated/Password/Admin/None","[None]","","","UI",""
+"Servers/Dedicated/Password/Change/Button","Change Password","","","UI",""
+"Servers/Dedicated/ServerName/Change/Button","Change Server Name","","","UI",""
+"Servers/SecurityCertificate/AdditionalInfo/Button","Additional Info","","","UI",""
+"Servers/SecurityCertificate/NA","Certificate Fingerprint: N/A","","","UI",""
+"Servers/SecurityCertificate/Pattern","Certificate Fingerprint: {Fingerprint}","","{Fingerprint} = text, server fingerprint","UI",""
+"Servers/SecurityCertificate/Unverified","The remote host has presented a security certificate with an origin that cannot be verified. Please manually confirm that the remote host is the one you are trying to connect to.","","","UI",""
+"Servers/ServerInfo/CurrentPlayers","Current Players","Server information block","","UI","#interface"
+"Servers/ServerInfo/GameDuration","Game Duration","Server information block","","UI","#interface"
+"Servers/ServerInfo/GamePhase","Game Phase","Server information block","","UI","#interface"
+"Servers/ServerInfo/GamePhase/None","None","Server information block","","UI",""
+"Servers/ServerInfo/JoinGame/Button","Join Game","Server information block","","UI","#interface"
+"Servers/ServerInfo/JoinGame/Warning","You need to create or load a game before you can join it.","Server information block","","UI","#interface"
+"Servers/ServerInfo/List/InvalidServerObject","Invalid Server Object","Server information block","","UI","#interface"
+"Servers/ServerInfo/List/Ping/Pattern","Ping: {Ping}ms","Server information block","{Ping} = number","UI","#interface"
+"Servers/ServerInfo/List/Rights/Administrator","Administrator","Server information block","","UI","#interface"
+"Servers/ServerInfo/List/Rights/Client","Client","Server information block","","UI","#interface"
+"Servers/ServerInfo/List/Rights/NotAuthenticated","Not Authenticated","Server information block","","UI","#interface"
+"Servers/ServerInfo/List/Statuses/GameOngoing","Game Ongoing","Server information block","","UI","#interface"
+"Servers/ServerInfo/List/Statuses/Idle","Idle","Server information block","","UI","#interface"
+"Servers/ServerInfo/List/Statuses/LoadingGame","Loading Game","Server information block","","UI","#interface"
+"Servers/ServerInfo/List/Statuses/Offline","Offline","Server information block","","UI","#interface"
+"Servers/ServerInfo/Milestone","Milestone","Server information block","","UI","#interface"
+"Servers/ServerInfo/Milestone/None","None","Server information block","","UI","#interface"
+"Servers/ServerInfo/ServerName","Server Name","Server information block","","UI","#interface"
+"Servers/ServerInfo/SessionName","Session Name","Server information block","","UI","#interface"
+"Servers/ServerInfo/State/Offline","This server appears to be offline.","Server information block","","UI","#interface"
+"Servers/ServerInfo/TickRate","Average Tick Rate","Server information block","","UI","#interface"
+"Servers/ServerInfo/Tier","Tier","Server information block","","UI","#interface"
+"Servers/ServerInteraction/AdminPassword/aTitle","Set Admin Password","Server managing UI","","UI","#interface"
+"Servers/ServerInteraction/ChangeName/aTitle","Change Server Name","Server managing UI","","UI",""
+"Servers/ServerInteraction/ClaimServer/aTitle","Claim Server","Server managing UI","","UI","#interface"
+"Servers/ServerInteraction/ClientPassword/Body","Set client password. Leave empty to allow anyone to join games","Server managing UI","","UI","#interface"
+"Servers/ServerInteraction/ClientPassword/aTitle","Set Client Password","Server managing UI","","UI","#interface"
+"Servers/ServerInteraction/Error/Body","An Unexpected Error has been received from the Server:
+{ErrorDescription}
+(Error Code: {ErrorCode})","Server managing UI","{ErrorDescription} = text
+{ErrorCode} = text","UI",""
+"Servers/ServerInteraction/Error/aTitle","Unhandled Server Error","Server managing UI","","UI",""
+"Servers/ServerInteraction/ServerCertificateWarning/aTitle","Server Certificate Warning","Server managing UI","","UI","#interface"
+"Servers/ServerInteraction/ServerLogin/aTitle","Server Login","Server managing UI","","UI","#interface"
+"Servers/ServerInteraction/ServerMessage/aTitle","Server Message","Server managing UI","","UI","#interface"
+"Servers/ServerManager/AddServer/Address","Address:","Server managing UI","","UI","#interface"
+"Servers/ServerManager/AddServer/Address/Hide","Hide","Server managing UI","","UI","#interface"
+"Servers/ServerManager/AddServer/Address/Show","Show","Server managing UI","","UI","#interface"
+"Servers/ServerManager/AddServer/Address/TextBoxHint","Address","Server managing UI","","UI","#interface"
+"Servers/ServerManager/AddServer/Button","Add Server","Server managing UI","","UI","#interface"
+"Servers/ServerManager/AddServer/Port","Port:","Server managing UI","","UI","#interface"
+"Servers/ServerManager/AddServer/Port/TextBoxHint","Port","Server managing UI","","UI","#interface"
+"Servers/ServerManager/Console/Button","Console","Server managing UI","","UI","#interface"
+"Servers/ServerManager/ConsoleCommand","Command","Server managing UI","","UI","#interface"
+"Servers/ServerManager/CreateGame/Button","Create Game","Server managing UI","","UI","#interface"
+"Servers/ServerManager/Error","Failed to add Server","Server managing UI","","UI",""
+"Servers/ServerManager/ManageSaves/Button","Manage Saves","Server managing UI","","UI","#interface"
+"Servers/ServerManager/Password/Admin/aTitle","You need an Administrator password for this operation.","Server managing UI","","UI",""
+"Servers/ServerManager/Password/TextBoxHint","Password...","Server managing UI","","UI","#interface"
+"Servers/ServerManager/Password/aTitle","You need a password for this operation.","Server managing UI","","UI","#interface"
+"Servers/ServerManager/RemoveServer/Button","Remove Server","Server managing UI","","UI","#interface"
+"Servers/ServerManager/Saves/CreateSave/Button","Create Save","Server managing UI","","UI","#interface"
+"Servers/ServerManager/Saves/DownloadSave/Button","Download Save","Server managing UI","","UI","#interface"
+"Servers/ServerManager/Saves/LoadSave/Button","Load Save","Server managing UI","","UI","#interface"
+"Servers/ServerManager/Saves/UploadSave/Button","Upload Save","Server managing UI","","UI","#interface"
+"Servers/ServerManager/Server/Status","Status","Server managing UI","","UI","#interface"
+"Servers/ServerManager/ServerSettings/Button","Server Settings","Server managing UI","","UI","#interface"
+"Servers/ServerSettings/Apply/Button","Apply","","","UI",""
+"Servers/ServerSettings/ApplyChanges/Body","Are you sure you want to apply the changes?","","","UI",""
+"Servers/ServerSettings/ApplyChanges/aTitle","Apply changes?","","","UI",""
+"Servers/ServerSettings/ResetToDefault/Body","Are you sure you want to reset all settings to default?","","","UI",""
+"Servers/ServerSettings/ResetToDefault/Button","Reset to Default","","","UI",""
+"Servers/ServerSettings/ResetToDefault/aTitle","Reset to Defaults?","","","UI",""
+"Servers/ServerSettings/SetPassword/Repeat/TextBoxHint","Repeat password...","Server settings UI","","UI","#interface"
+"Servers/ServerSettings/SetPassword/TextBoxHint","Password...","Server settings UI","","UI","#interface"
+"Servers/ServerStates/AuthRequired","You need to be authenticated to see this information.","Server information block","","UI","#interface"
+"Servers/ServerStates/AuthRequired/Auth/Button","Authenticate","Server information block","","UI","#interface"
+"Servers/ServerStates/ConnectionFailed/CouldNotConnect","Could not connect to the server.","Server information block","","UI","#interface"
+"Servers/ServerStates/ConnectionFailed/FailedToResolveIP","Failed to resolve Server API Address.","Server information block","","UI",""
+"Servers/ServerStates/ConnectionFailed/Retry/Button","Retry","Server information block","","UI","#interface"
+"Servers/ServerStates/ConnectionPossible/Connect/Button","Connect","Server information block","","UI","#interface"
+"Servers/ServerStates/ConnectionPossible/NotConnected","You are not connected to this server.","Server information block","","UI","#interface"
+"Servers/ServerStates/ConnetingToServer","Connecting to server","","","UI","#interface"
+"Servers/ServerStates/CreateOrLoadBeforeJoin/Warning","You need to create or load a game before you can join it.","Server information block","","UI","#interface"
+"Servers/ServerStates/GameRunningConnected","Game Running Connected","Server information block / Used?","","UI","#interface"
+"Servers/ServerStates/PreparingANewGame","Server is preparing a new game","Server information block","","UI","#interface"
+"Servers/ServerStates/VersionMismatch/Pattern","Version mismatch detected between game and server. 
+Game Version: {0}
+Server Version: {1}","Server information block","{0} = number, local game version
+{1} = number, server game version","UI","#interface"
+"Servers/ServerStates/VersionMismatch/Unknown","Unknown incompatibility","","","UI",""
+"Servers/ServerStates/VersionMismatch/VanillaToModdedError","Cannot connect to a modded server on a vanilla game client.","","","UI",""
+"Servers/Tooltips/RestartNotification/Hours","hour(s)","","","UI","#interface"
+"Servers/Tooltips/RestartNotification/Minutes","minute(s)","","","UI","#interface"
+"Servers/Tooltips/RestartNotification/Seconds","second(s)","","","UI","#interface"
+"Servers/Tooltips/RestartNotification/ServerRestart/Pattern","Server will restart in {time} {units}","","{time} = number
+{units} = text, one of `ServerTooltips/RestartNotification/Hours`, `ServerTooltips/RestartNotification/Minutes`, `ServerTooltips/RestartNotification/Seconds`","UI","#interface"
+"Servers/Tooltips/RestartNotification/ServerRestartHours/Pattern","Server will restart in {time} {time}|plural(one=hour,other=hours)","","{time} = number","UI","#interface"
+"Servers/Tooltips/RestartNotification/ServerRestartMinutes/Pattern","Server will restart in {time} {time}|plural(one=minute,other=minutes)","","{time} = number","UI","#interface"
+"Servers/Tooltips/RestartNotification/ServerRestartSeconds/Pattern","Server will restart in {time} {time}|plural(one=second,other=seconds)","","{time} = number","UI","#interface"
+"Servers/UnclaimedServer/Greeting","This server is unclaimed. You will need to follow a few setup steps before you can connect to it. Turn around to leave it unclaimed, but note that you will be unable to join until the server is configured.","Server information block","","UI","#interface"
+"Servers/UnclaimedServer/Greeting/TextBoxHint","Enter a friendly name for your server...","Server information block","","UI","#interface"
+"SessionDef/EpicCrossPlay/Description","Players from other PC platforms will be able to join your multiplayer game. ","","","",""
+"SessionDef/EpicCrossPlay/Name","Cross-Play","","","",""
+"SessionDef/EpicCrossPlay/Setting/Open/Description","Other players will be able to join your session freely if they are friends with another session member.","","","",""
+"SessionDef/EpicCrossPlay/Setting/Open/DisplayName","Open for Friends","","","",""
+"SessionDef/EpicCrossPlay/Setting/Private/Description","Other Epic players will only be able to join your session by direct invite from another session member. ","","","",""
+"SessionDef/EpicCrossPlay/Setting/Private/DisplayName","Join by Invite Only","","","",""
+"SessionDef/EpicExclusive/Description","Other Epic Games players will be able to join your session by invite or via their friend list, depending on session visibility.","","","",""
+"SessionDef/EpicExclusive/Name","Epic","","","",""
+"SessionDef/EpicExclusive/Setting/Open/Description","Other players will be able to join your session freely if they are friends with another session member.","","","",""
+"SessionDef/EpicExclusive/Setting/Open/DisplayName","Open for Friends","","","",""
+"SessionDef/EpicExclusive/Setting/Private/Description","Other Epic players will only be able to join your session by direct invite from another session member. ","","","",""
+"SessionDef/EpicExclusive/Setting/Private/DisplayName","Join by Invite Only","","","",""
+"SessionDef/EpicOnConsolesPlatformAgnostic/Name","Online Multiplayer","","","",""
+"SessionDef/EpicOnConsolesWithCrossPlay/Description","Placeholder","","","",""
+"SessionDef/EpicOnConsolesWithCrossPlay/Name","Epic","","","",""
+"SessionDef/EpicOnConsolesWithCrossPlay/Setting/Open/Description","Only your friends can see and join the session, but they can do so without being invited","","","",""
+"SessionDef/EpicOnConsolesWithCrossPlay/Setting/Open/DisplayName","Open for Friends","","","",""
+"SessionDef/EpicOnConsolesWithCrossPlay/Setting/Private/Description","Only players you manually invite can join the session.","","","",""
+"SessionDef/EpicOnConsolesWithCrossPlay/Setting/Private/DisplayName","Join by Invite Only","","","",""
+"SessionDef/EpicOnPSN/Description","Placeholder","","","",""
+"SessionDef/EpicOnPSN/Name","Epic","","","",""
+"SessionDef/EpicOnPSN/Setting/Open/Description","Only your friends can see and join the session, but they can do so without being invited","","","",""
+"SessionDef/EpicOnPSN/Setting/Open/DisplayName","Open for Friends","","","",""
+"SessionDef/EpicOnPSN/Setting/Private/Description","Only players you manually invite can join the session.","","","",""
+"SessionDef/EpicOnPSN/Setting/Private/DisplayName","Join by Invite Only","","","",""
+"SessionDef/EpicOnSteam/Description","Requires login to Epic Games. Players from Steam or Epic Games will be able to join your session. ","","","",""
+"SessionDef/EpicOnSteam/Name","Epic","","","",""
+"SessionDef/EpicOnSteam/Setting/Open/Description","Friends of players already in the session will be able to join the game without receiving an invitation.","","","",""
+"SessionDef/EpicOnSteam/Setting/Open/DisplayName","Open","","","",""
+"SessionDef/EpicOnSteam/Setting/Private/Description","New players will only be able to join the game by means of a direct Epic Games invite. Steam invites will not work. ","","","",""
+"SessionDef/EpicOnSteam/Setting/Private/DisplayName","Private","","","",""
+"SessionDef/EpicOnXSXNoCrossPlay/Description","Placeholder","","","",""
+"SessionDef/EpicOnXSXNoCrossPlay/Name","Epic","","","",""
+"SessionDef/EpicOnXSXNoCrossPlay/Setting/Open/Description","Only your friends can see and join the session, but they can do so without being invited","","","",""
+"SessionDef/EpicOnXSXNoCrossPlay/Setting/Open/DisplayName","Open for Friends","","","",""
+"SessionDef/EpicOnXSXNoCrossPlay/Setting/Private/Description","Only players you manually invite can join the session.","","","",""
+"SessionDef/EpicOnXSXNoCrossPlay/Setting/Private/DisplayName","Join by Invite Only","","","",""
+"SessionDef/IP/Description","Advanced method of hosting a multiplayer game. Does not require login to any service but it might require setting up port forwarding. Others will be able to join you using your IP address that you will have to share with them independently.","","","",""
+"SessionDef/IP/Name","IP","","","",""
+"SessionDef/PSN/Description","Placeholder","","","",""
+"SessionDef/PSN/Name","PlayStation™Network","","","",""
+"SessionDef/PSN/Setting/Open/Description","Placeholder - todo","","","",""
+"SessionDef/PSN/Setting/Open/DisplayName","Open for Friends","","","",""
+"SessionDef/PSN/Setting/Private/Description","Placeholder - todo","","","",""
+"SessionDef/PSN/Setting/Private/DisplayName","Join by Invite Only","","","",""
+"SessionDef/SinglePlayer/Description","You want to play the game alone. Nobody will be able to join you, no matter what.","","","",""
+"SessionDef/SinglePlayer/Name","Single Player","","","",""
+"SessionDef/Steam/Description","Requires login to Steam. Other Steam players might be able to join you, depending on visibility preferences.","","","",""
+"SessionDef/Steam/Name","Steam","","","",""
+"SessionDef/Steam/Setting/Open/Description","Friends of players already in the game will be able to join freely.","","","",""
+"SessionDef/Steam/Setting/Open/DisplayName","Open for Friends","","","",""
+"SessionDef/Steam/Setting/Private/Description","New players will only be able to join your game by direct invitation from you or another player already in the session. ","","","",""
+"SessionDef/Steam/Setting/Private/DisplayName","Join by Invite Only","","","",""
+"Sessions/Errors/CouldNotJoin/CrossPlayFailure/Body","Could not join the requested session because it is a cross-play session but this account has no permissions to join cross-play sessions.","","","UI",""
+"Sessions/Errors/CouldNotJoin/NoPriviledges/Body","Could not join session because this account does not have online privileges.","","","UI",""
+"Sessions/Errors/CouldNotJoin/aTitle","Could not Join Session","","","UI",""
+"Sessions/Errors/OfflineFallback/Body","Failed to create an online session. Falling back to an offline session. You'll need to rehost the same game session from the main menu for your friends to be able to join you.","Session managing UI","","UI","#interface"
+"Sessions/Errors/OfflineFallback/aTitle","Offline Session","Session managing UI","","UI","#interface"
+"Sessions/FindSession/Header","Find Session via IP Address or Session ID","","","UI",""
+"Sessions/FindSession/Paste/Button","Paste From Clipboard","","","UI",""
+"Sessions/FindSession/TextBoxHint","Enter IP Address or Session ID...","","","UI",""
+"Sessions/JoinGame/Join/Button","Join","","","UI",""
+"Sessions/JoinGame/JoinGameDirectly/Button","Join game directly...","","","UI",""
+"Sessions/JoinGame/LogInToEpic/Button","Log In to Epic","","","UI",""
+"Sessions/JoinGame/Multiplayer/Description","The amount of bugs and performance issues in multiplayer is higher than in single player. Improvements will release as we continue development.","","","UI",""
+"Sessions/JoinGame/Multiplayer/Header","MULTIPLAYER","","","UI",""
+"Sessions/JoinGame/Popups/FindSession/Title","Find Session...","","","UI",""
+"Sessions/JoinGame/Search/TextBoxHint","Enter name to search...","","","UI",""
+"Sessions/JoinGame/Warnings/EOSWarning","Game is running via Epic Online Services. You need to log in to Epic to join this game.","","","UI",""
+"Sessions/JoinSession/Body","Joining online session","Joining session UI","","UI","#interface"
+"Sessions/JoinSession/ByID/PasteFromClipboard/Button","Paste From Clipboard","","","UI","#interface
+#common"
+"Sessions/JoinSession/ByID/SessionID","Session ID:","","","UI","#interface
+#multiplayer
+#session"
+"Sessions/JoinSession/ByID/ShowID/Button","Show ID","","","UI","#interface
+#multiplayer
+#session"
+"Sessions/JoinSession/ByID/TextBoxHint","Enter Session ID...","","","UI","#interface
+#multiplayer
+#session"
+"Sessions/JoinSession/CircularThrobber/Connecting","Connecting to server","Joining session UI","","UI","#interface"
+"Sessions/JoinSession/CircularThrobber/Connecting/Progress/Pattern","{Message} {Step}/{MaxStep}","Joining session UI","{Message} = text, progress update message
+{Step} = number, current step
+{MaxStep} = number, total number of steps","UI","#interface
+#message"
+"Sessions/JoinSession/Header","Multiplayer","Joining session UI","","UI","#interface"
+"Sessions/LoadSession/Delete/Button","Delete","","","UI","#session"
+"Sessions/LoadSession/DeleteSession/Button","Delete Session","","","UI","#session"
+"Sessions/LoadSession/DownloadGame/Button","Download Game","","","UI","#session"
+"Sessions/LoadSession/Load/Button","Load","","","UI","#session"
+"Sessions/LoadSession/LoadGame/Button","Load Game","","","UI","#session"
+"Sessions/LoadSession/LoadGameWithSettings/Button","Load Settings","It's a noun phrase (Settings of Load[ing the game]) that opens a ""Load game with settings"" popup","","UI","#session"
+"Sessions/LoadSession/Popups/DeleteSave/Body/Pattern","Are you sure you want to delete the save ""{SaveName}""?","Session managing UI","{SaveName} = text","UI","#interface"
+"Sessions/LoadSession/Popups/DeleteSave/aTitle","Delete Save File","","","UI","#session"
+"Sessions/LoadSession/Popups/DeleteSession/Body/Pattern","Are you sure you want to delete the session ""{SessionName}""?
+All saves in this session will also be deleted.","","{SessionName} = text","UI","#session"
+"Sessions/LoadSession/Popups/DeleteSession/aTitle","Delete Session","","","UI","#session"
+"Sessions/LoadSession/Popups/DownloadSave/NoConflicts/Body/Pattern","Are you sure you want to download ""{SaveName}"" from the server?","","{SaveName} = text","UI",""
+"Sessions/LoadSession/Popups/DownloadSave/SaveExistsDifferentSession/Body/Pattern","Save ""{SaveName}"" already exists locally in a different Session (""{ServerSessionName}""). Are you sure you want to overwrite it?","","{SaveName} = text
+{ServerSessionName} = text","UI",""
+"Sessions/LoadSession/Popups/DownloadSave/SaveExistsThisSession/Body/Pattern","Save ""{SaveName}"" already exists in the local save directory. Are you sure you want to overwrite it?","","{SaveName} = text","UI",""
+"Sessions/LoadSession/Popups/DownloadSave/aTitle","Download Save","","","UI",""
+"Sessions/LoadSession/Popups/DownloadingSave/aTitle","Downloading Save","","","",""
+"Sessions/LoadSession/Popups/LoadWithAGS/Body","You are about to load your save with Advanced Game Settings enabled.
+
+Please note that editing these settings is a one-way action, and you will not be able to switch back to the default version of the game unless you reload a save that was created before switching over. 
+
+Enabling Advanced Game Settings means that you will not be able to get any Achievements.
+
+All players in this session will have access to these settings once activated.
+
+If you want to proceed, press Confirm to continue loading your save file.","","","UI","#session"
+"Sessions/LoadSession/Popups/LoadWithAGS/Body.TargetPS5","You are about to load your save with Advanced Game Settings enabled.
+
+Please note that editing these settings is a one-way action, and you will not be able to switch back to the default version of the game unless you reload a save that was created before switching over. 
+
+Enabling Advanced Game Settings means that you will not be able to get any Trophies.
+
+All players in this session will have access to these settings once activated.
+
+If you want to proceed, press Confirm to continue loading your save file.","","","UI","#session"
+"Sessions/LoadSession/Popups/LoadWithAGS/Body.TargetXSX","You are about to load your save with Advanced Game Settings enabled.
+
+Please note that editing these settings is a one-way action, and you will not be able to switch back to the default version of the game unless you reload a save that was created before switching over. 
+
+Enabling Advanced Game Settings means that you will not be able to get any Achievements.
+
+All players in this session will have access to these settings once activated.
+
+If you want to proceed, press Confirm to continue loading your save file.","","","UI","#session"
+"Sessions/LoadSession/Popups/LoadWithAGS/aTitle","Load Game with Advanced Game Settings enabled?","","","UI","#session"
+"Sessions/LoadSession/Popups/Modded/Description","The save you are loading has previously been loaded with mods. When loading a modded save without the mods installed, anything and everything can happen, including missing items, buildings, and all kinds of bugs and crashes. Do you still want to load it?","","","UI",""
+"Sessions/LoadSession/Popups/Modded/aTitle","Modded Save","","","UI",""
+"Sessions/LoadSession/Popups/NewerVersion/Body","The save you are loading was created in a newer version of the game. Anything and everything can happen, do you still want to load it?","","","UI",""
+"Sessions/LoadSession/Popups/OverwriteSave/ExistsInOtherSession/Body","Are you sure you want to overwrite the save that exists in another session?","","","UI",""
+"Sessions/LoadSession/Popups/OverwriteSave/ExistsInThisSession/Body","Are you sure you want to overwrite the save?","","","UI",""
+"Sessions/LoadSession/Popups/OverwriteSave/aTitle","Overwrite Save","","","UI",""
+"Sessions/LoadSession/Popups/Unsupported/Body","Sorry, we can't load this version of the game anymore.","","","UI",""
+"Sessions/LoadSession/Popups/Unsupported/aTitle","Unsupported Save","","","UI",""
+"Sessions/LoadSession/Popups/UploadSave/NoConflicts/Body/Pattern","Are you sure you want to upload ""{SaveName}"" to this server?","","{SaveName} = text","UI","#session"
+"Sessions/LoadSession/Popups/UploadSave/SaveExistsDifferentSession/Body/Pattern","Save ""{SaveName}"" already exists on the server in a different Session (""{ServerSessionName}""). Are you sure you want to overwrite it on the server?","","{SaveName} = text
+{ServerSessionName} = text","UI",""
+"Sessions/LoadSession/Popups/UploadSave/SaveExistsThisSession/Body/Pattern","Save ""{SaveName}"" already exists on the server. Are you sure you want to overwrite it on the server?","","{SaveName} = text","UI",""
+"Sessions/LoadSession/Popups/UploadSave/aTitle","Upload Save","","","UI","#session"
+"Sessions/LoadSession/Popups/UploadingSave/aTitle","Uploading Save","","","UI","#session"
+"Sessions/LoadSession/Popups/VolatileSave/Body","Warning: this save is from an older version of the game. 
+Your factory might perform below satisfactory levels when loading it in this version, and overwriting this save file will most likely irreversibly erase some data. 
+Do you still want to load it?","","","UI",""
+"Sessions/LoadSession/Popups/VolatileSave/aTitle","Unstable Save Version","","","UI",""
+"Sessions/LoadSession/UploadGame/Button","Upload Game","","","UI","#interface"
+"Sessions/ManageSession/Apply/Button","Apply","","","UI",""
+"Sessions/ManageSession/ManagePlayers/Category","Manage Players","Session settings UI","","UI","#interface"
+"Sessions/ManageSession/ManagePlayers/CurrentAmount","Current Amount of Players:","","","UI",""
+"Sessions/ManageSession/ResetToDefaults/Button","Reset to Default","","","UI",""
+"Sessions/ManageSession/SessionSettings/Category","Session Settings","Session settings UI","","UI","#interface"
+"Sessions/Messages/CrossplayInformation","Cross-Play Information","","","UI",""
+"Sessions/Messages/CrossplayInformation/Body","You are about to join a session that has Cross-Play enabled. This will potentially match you with players from different Platforms.
+
+Do you wish to proceed?","","","UI",""
+"Sessions/ReadOnlyInfo/Host","Host:","","","UI",""
+"Sessions/ReadOnlyInfo/Name/TextBoxHint","Session Name","","","UI",""
+"Sessions/ReadOnlyInfo/Name/Unknown","Unknown","","","UI",""
+"Sessions/SaveSlots/NotEnough/Description","No save slots available. Please delete or overwrite an existing save slot and try again","","","",""
+"Sessions/SaveSlots/NotEnough/StartGame","Insufficient Save Slots - No save slots available. Please delete or overwrite an existing save slot and try again","","","",""
+"Sessions/SaveSlots/NotEnough/Title","Insufficient Save Slots","","","",""
+"Sessions/SessionOffline/Continue/Body","You are currently not signed in and are unable to create an online session. You can retry the sign-in process by restarting the game.
+ 
+You can still play offline, but you won’t be able to invite your friends.","Session managing UI","","UI","#interface"
+"Sessions/SessionOffline/Continue/aTitle","Continue Offline","Session managing UI","","UI","#interface"
+"Sessions/SessionOnline/SignIn/Button","Sign In","Session managing UI","","UI","#interface"
+"Sessions/SessionOnline/SignIn/Description","Sign in with an Epic Games Store account if you would like to enable cross-platform invites.","Session managing UI","","UI","#interface"
+"Sessions/SessionOnline/SignIn/Title","Link an Epic Games Store Account?","Session managing UI","","UI","#interface
+#main_menu
+#options
+#session
+Session Status???"
+"Sessions/SessionOnline/Skip/Button","Skip","Session managing UI","","UI","interface
+Online Session Prompt"
+"Sessions/SessionRow/Saves/Latest","{SaveName} | {LastSaveTime}","Session information block","{SaveName} = text, save name
+{LastSaveTime} = text, save time","UI","#interface"
+"Sessions/SessionRow/Saves/NoSession","No Previous Sessions","Session information block","","UI","#interface"
+"Sessions/SessionRow/Saves/None","(No Previous Saves)","Session information block","","UI","#interface"
+"Sessions/SessionVisibility/EnableCrossPlay","Enable Cross-Play","","","UI","#interface
+#multiplayer
+#session"
+"Sessions/SessionVisibility/EnableCrossPlay/PrivacyWarning","Cross-Play disabled due to Account Privacy Settings","","","UI",""
+"Sessions/SessionVisibility/InviteOnly","Invite Only","","","UI","#interface
+#multiplayer
+#session"
+"Sessions/SessionVisibility/Open","Open","","","UI","#interface
+#multiplayer
+#session"
+"Sessions/Settings/AllowCrossPlay","Allow Cross-Play Join","","","",""
+"Sessions/Settings/CrossPlayDisabled","Cross-Play disabled because Cross-Play is disabled in Online Settings.","","","",""
+"Sessions/Settings/SessionID","Session ID","","","",""
+"Sessions/Settings/SessionName","Session Name","","","",""
+"Sessions/Settings/SessionType","Session Type","","","",""
+"Sessions/Settings/SessionVisibility","Session Visibility","","","",""
+"Sessions/ShowID/CopyToClipboard/Button","Copy to Clipboard","","","UI",""
+"Sessions/ShowID/SessionID/Hint","Session ID...","","","UI",""
+"Sessions/ShowID/Show/Button","Show","","","UI",""
+"Sessions/ShowID/ShowSessionID/Title","Show Session ID","","","UI",""
+"Sessions/Summary/CreativeMode","Advanced Game Settings:","","","UI",""
+"Sessions/Summary/CreativeMode/Disabled","Disabled","AGS disabled, session info block","","",""
+"Sessions/Summary/CreativeMode/Enabled","Enabled","AGS enabled, session info block","","",""
+"Sessions/Summary/CurrentMilestone","Current Milestone:","","","UI",""
+"Sessions/Summary/CurrentPhase","Current Phase:","","","UI",""
+"Sessions/Summary/Duration","Duration:","","","UI",""
+"Sessions/Summary/PlayerCount","Player Count:","","","UI",""
+"Sessions/Summary/TechTier","Tech Tier:","","","UI",""
+"Sessions/Summary/Version","Version:","","","UI",""
+"Sessions/UploadSave/Downloaded","Download Completed!","","","UI",""
+"Sessions/UploadSave/Downloading/Pattern","Downloading ""{SaveName}"" from ""{ServerName}""...","","{SaveName} = text
+{ServerName} = text","UI",""
+"Sessions/UploadSave/Error/Pattern","ERROR: {ErrorMessage}","Server information block","{ErrorMessage} = text","UI","#interface"
+"Sessions/UploadSave/Uploaded","Upload Completed!","","","UI",""
+"Sessions/UploadSave/Uploading/Pattern","Uploading ""{SaveName}"" to ""{ServerName}""...","Server information block","{SaveName} = text
+{ServerName} = text","UI","#interface"
+"Sessions/ViewID/CopyToClipboard","Copy To Clipboard","","","UI",""
+"Sessions/ViewID/PasteFromClipboard/Button","Paste From Clipboard","","","UI",""
+"Sessions/ViewID/SessionID","Session ID:","","","UI",""
+"Sessions/ViewID/SessionID/TextboxHint","Enter Session ID","","","UI",""
