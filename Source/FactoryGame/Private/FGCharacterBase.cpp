@@ -5,6 +5,10 @@
 #include "FGHealthComponent.h"
 #include "Net/UnrealNetwork.h"
 
+void AFGCharacterBase::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const {
+	out_data = mClearanceData;
+}
+
 void FFootstepEffect::Reset(){ }
 AFGCharacterBase::AFGCharacterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mDefaultFootstepEffect.Particle = nullptr;
@@ -68,7 +72,6 @@ void AFGCharacterBase::PostLoadGame_Implementation(int32 saveVersion, int32 game
 void AFGCharacterBase::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGCharacterBase::NeedTransform_Implementation(){ return bool(); }
 bool AFGCharacterBase::ShouldSave_Implementation() const{ return bool(); }
-void AFGCharacterBase::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 void AFGCharacterBase::LaunchCharacter(FVector LaunchVelocity, bool bXYOverride, bool bZOverride){ }
 void AFGCharacterBase::Died(AActor* thisActor){ }
 void AFGCharacterBase::OnTakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }

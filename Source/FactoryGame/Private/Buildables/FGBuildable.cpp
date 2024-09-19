@@ -69,6 +69,9 @@ void AFGBuildable::RemoveInstances_Native() {
         mInstanceHandles.Empty();
     }
 }
+void AFGBuildable::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const {
+	out_data = mClearanceData;
+}
 
 void UFGSignificantNetworkRCO::GetLifetimeReplicatedProps(::TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -194,7 +197,6 @@ void AFGBuildable::GatherDependencies_Implementation(TArray< UObject* >& out_dep
 bool AFGBuildable::NeedTransform_Implementation(){ return bool(); }
 bool AFGBuildable::ShouldSave_Implementation() const{ return bool(); }
 void AFGBuildable::PostLazySpawnInstances_Implementation(){ }
-void AFGBuildable::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 void AFGBuildable::AddClearanceData(const FFGClearanceData& newData){ }
 void AFGBuildable::AddClearanceData(const TArray< FFGClearanceData >& newData){ }
 void AFGBuildable::ResetClearanceData(){ }

@@ -4,6 +4,10 @@
 #include "Components/StaticMeshComponent.h"
 #include "Net/UnrealNetwork.h"
 
+void AFGDestructibleActor::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const {
+	out_data = mClearanceData;
+}
+
 AFGDestructibleActor::AFGDestructibleActor() : Super() {
 	this->mStaticMeshProxy = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshProxy"));
 	this->mGeometryCollection = nullptr;
@@ -29,7 +33,6 @@ void AFGDestructibleActor::PostLoadGame_Implementation(int32 saveVersion, int32 
 void AFGDestructibleActor::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGDestructibleActor::NeedTransform_Implementation(){ return bool(); }
 bool AFGDestructibleActor::ShouldSave_Implementation() const{ return bool(); }
-void AFGDestructibleActor::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 bool AFGDestructibleActor::IsMeshChainSawable(UStaticMesh* Mesh) const{ return bool(); }
 void AFGDestructibleActor::SetDestructibleActorState(EDestructibleActorState newState){ }
 void AFGDestructibleActor::ApplyDestructibleActorState(){ }

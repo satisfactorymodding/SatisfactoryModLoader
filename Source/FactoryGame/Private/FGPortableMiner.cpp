@@ -4,6 +4,10 @@
 #include "FGInventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 
+void AFGPortableMiner::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const {
+	out_data.Add(mClearanceData);
+}
+
 void AFGPortableMiner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPortableMiner, mExtractResourceNode);
@@ -51,7 +55,6 @@ bool AFGPortableMiner::IsUseable_Implementation() const{ return bool(); }
 void AFGPortableMiner::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 FText AFGPortableMiner::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGPortableMiner::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
-void AFGPortableMiner::GetClearanceData_Implementation(TArray<FFGClearanceData>& out_data) const{ }
 bool AFGPortableMiner::IsProducing() const{ return bool(); }
 bool AFGPortableMiner::CanProduce() const{ return bool(); }
 void AFGPortableMiner::StartProducing(){ }

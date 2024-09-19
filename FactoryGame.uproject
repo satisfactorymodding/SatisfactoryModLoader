@@ -25,6 +25,20 @@
 			]
 		},
 		{
+			"Name": "FactoryEditor",
+			"Type": "EditorNoCommandlet",
+			"LoadingPhase": "PostEngineInit",
+			"AdditionalDependencies": [
+				"Engine",
+				"CoreUObject",
+				"UnrealEd",
+				"FactoryGame",
+				"EditorSubsystem",
+				"Blutility",
+				"BlueprintGraph"
+			]
+		},
+		{
 			"Name": "FactoryPreEarlyLoadingScreen",
 			"Type": "Runtime",
 			"LoadingPhase": "PreEarlyLoadingScreen"

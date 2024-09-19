@@ -3,6 +3,10 @@
 #include "Resources/FGResourceNodeBase.h"
 #include "Net/UnrealNetwork.h"
 
+void AFGResourceNodeBase::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const {
+	out_data = mClearanceData;
+}
+
 #if WITH_EDITOR
 bool AFGResourceNodeBase::IsGeyserDescButNotGeyserNode(){ return bool(); }
 void AFGResourceNodeBase::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
@@ -48,7 +52,6 @@ bool AFGResourceNodeBase::IsOccupied() const{ return bool(); }
 bool AFGResourceNodeBase::CanBecomeOccupied() const{ return bool(); }
 TSubclassOf< UFGResourceDescriptor > AFGResourceNodeBase::GetResourceClass() const{ return TSubclassOf<UFGResourceDescriptor>(); }
 FVector AFGResourceNodeBase::GetPlacementLocation(const FVector& hitLocation) const{ return FVector(); }
-void AFGResourceNodeBase::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 FText AFGResourceNodeBase::GetResourceName() const{ return FText(); }
 EResourceForm AFGResourceNodeBase::GetResourceForm() const{ return EResourceForm(); }
 void AFGResourceNodeBase::OnRep_IsOccupied(){ }

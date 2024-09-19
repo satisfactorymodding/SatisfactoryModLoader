@@ -6,6 +6,10 @@
 #include "FGSwatchGroup.h"
 #include "Net/UnrealNetwork.h"
 
+void AFGVehicle::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const {
+	out_data = mClearanceData;
+}
+
 FVehicleSeat::FVehicleSeat(){ }
 void AFGVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -72,7 +76,6 @@ void AFGVehicle::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersio
 void AFGVehicle::GainedSignificance_Implementation(){ }
 void AFGVehicle::LostSignificance_Implementation(){ }
 float AFGVehicle::GetSignificanceRange(){ return float(); }
-void AFGVehicle::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 void AFGVehicle::OnBuildEffectFinished(){ }
 void AFGVehicle::OnDismantleEffectFinished(){ }
 void AFGVehicle::ExecuteBuildEffect(){ }
