@@ -132,6 +132,17 @@ void UFGItemDescriptor::PostEditChangeProperty( struct FPropertyChangedEvent& pr
 	}
 }
 #endif
+void UFGItemDescriptor::PostLoad() {
+	Super::PostLoad();
+	if( const int32* stackSizePtr = UFGResourceSettings::Get()->mStackSizes.FindKey( mStackSize ) )
+	{
+		mCachedStackSize = *stackSizePtr;
+	}
+	else
+	{
+		mCachedStackSize = INDEX_NONE;
+	}
+}
 
 TAutoConsoleVariable<int32> CVarStressTestRadioActivity(TEXT("CVarStressTestRadioActivity"), 0, TEXT(""));
 #if !UE_BUILD_SHIPPING
@@ -170,7 +181,6 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 	this->mItemIndex = -1;
 }
 void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void UFGItemDescriptor::PostLoad(){ Super::PostLoad(); }
 void UFGItemDescriptor::BeginDestroy(){ Super::BeginDestroy(); }
 EGasType UFGItemDescriptor::GetGasType(TSubclassOf< UFGItemDescriptor > inClass){ return EGasType(); }
 FText UFGItemDescriptor::GetAbbreviatedDisplayName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
