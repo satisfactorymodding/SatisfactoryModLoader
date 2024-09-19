@@ -1,7 +1,5 @@
 ﻿#include "Kismet/SMLBlueprintArrayLibrary.h"
 
-PRAGMA_DISABLE_OPTIMIZATION
-
 void USMLBlueprintArrayLibrary::Array_Sort(const TArray<int32>& TargetArray, UObject* Object, FName FunctionName) {
 	checkf(false, TEXT("Blueprint only function. Use TArray::StableSort instead in C++"));
 }
@@ -85,5 +83,3 @@ void USMLBlueprintArrayLibrary::GenericArray_Sort(const void* TargetArray, const
 		}
 	}
 }
-
-PRAGMA_ENABLE_OPTIMIZATION
