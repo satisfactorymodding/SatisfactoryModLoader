@@ -1,7 +1,6 @@
-
-
 #include "Utils/EditorBlueprintFunctionLibrary.h"
-#include "Kismet/KismetMathLibrary.h"
+#include "Engine/ObjectLibrary.h"
+#include "Kismet2/KismetEditorUtilities.h"
 
 UObject * UEditorBlueprintFunctionLibrary::CreateBlueprintOfClass(UClass * Class, FString Name, FString Path) {
 	if (Path.StartsWith("C:") || Path.StartsWith("D:")){

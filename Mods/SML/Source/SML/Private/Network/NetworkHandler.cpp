@@ -1,9 +1,6 @@
 #include "Network/NetworkHandler.h"
 #include "Net/DataChannel.h"
-#include "FGGameInstance.h"
-#include "FGGameMode.h"
 #include "Patching/NativeHookManager.h"
-#include "Engine/Engine.h"
 #include "Engine/NetConnection.h"
 
 DEFINE_LOG_CATEGORY(LogModNetworkHandler);

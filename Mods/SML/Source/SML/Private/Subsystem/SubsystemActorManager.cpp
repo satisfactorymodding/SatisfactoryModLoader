@@ -3,7 +3,6 @@
 #include "EngineUtils.h"
 #include "Command/ChatCommandLibrary.h"
 #include "ModLoading/PluginModuleLoader.h"
-#include "Registry/ModContentRegistry.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"
 #include "SessionSettings/SessionSettingsSubsystem.h"
 

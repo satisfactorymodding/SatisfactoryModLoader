@@ -5,7 +5,6 @@
 #include "TimerManager.h"
 #include "Configuration/RootConfigValueHolder.h"
 #include "Configuration/RawFileFormat/Json/JsonRawFormatConverter.h"
-#include "Engine/Engine.h"
 #include "ModLoading/ModLoadingLibrary.h"
 #include "Util/EngineUtil.h"
 

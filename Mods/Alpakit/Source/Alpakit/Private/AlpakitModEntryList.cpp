@@ -3,9 +3,7 @@
 #include "AlpakitEditModDialog.h"
 #include "AlpakitModEntry.h"
 #include "AlpakitSettings.h"
-#include "AlpakitStyle.h"
 #include "Interfaces/IPluginManager.h"
-#include "Slate.h"
 
 #define LOCTEXT_NAMESPACE "AlpakitModListEntry"
 

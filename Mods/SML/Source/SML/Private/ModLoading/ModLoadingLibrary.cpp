@@ -5,7 +5,6 @@
 #include "SatisfactoryModLoader.h"
 #include "Interfaces/IPluginManager.h"
 #include "Util/ImageLoadingUtil.h"
-#include "Json.h"
 
 //We only want to enforce plugin dependency versions outside of the editor
 #define ENFORCE_PLUGIN_DEPENDENCY_VERSIONS !WITH_EDITOR

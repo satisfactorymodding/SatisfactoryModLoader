@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "AlpakitProfile.h"
-#include "AlpakitSettings.h"
 #include "Misc/MonitoredProcess.h"
 #include "Widgets/Notifications/SNotificationList.h"
 #include "Misc/DateTime.h"

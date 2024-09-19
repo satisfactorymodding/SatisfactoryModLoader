@@ -1,6 +1,5 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "Inventory.h"
 #include "Components/Widget.h"
 #include "SMLItemTooltipProvider.generated.h"
 

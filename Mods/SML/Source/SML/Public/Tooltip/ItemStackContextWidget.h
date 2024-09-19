@@ -1,7 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Components/Widget.h"
-#include "Inventory.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
 
 #include "ItemStackContextWidget.generated.h"

@@ -3,7 +3,6 @@
 #include "Engine/MemberReference.h"
 #include "EdGraph/EdGraph.h"
 #include "EdGraphSchema_K2.h"
-#include "K2Node_BaseMCDelegate.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Kismet2/CompilerResultsLog.h"
 #include "BlueprintNodeSpawner.h"

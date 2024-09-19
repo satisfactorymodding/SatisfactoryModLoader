@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "ModMetadataObject.h"
-#include "Slate.h"
 #include "Interfaces/IPluginManager.h"
 #include "Util/SemVersion.h"
 

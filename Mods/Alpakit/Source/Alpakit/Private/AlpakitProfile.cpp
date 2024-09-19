@@ -1,5 +1,4 @@
 ﻿#include "AlpakitProfile.h"
-#include "Alpakit.h"
 #include "PlatformInfo.h"
 
 // UE_DISABLE_OPTIMIZATION

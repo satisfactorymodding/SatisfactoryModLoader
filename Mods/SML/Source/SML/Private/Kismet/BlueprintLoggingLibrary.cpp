@@ -1,5 +1,4 @@
 #include "Kismet/BlueprintLoggingLibrary.h"
-#include "FactoryGame.h"
 #include "SatisfactoryModLoader.h"
 #include "UObject/Package.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"

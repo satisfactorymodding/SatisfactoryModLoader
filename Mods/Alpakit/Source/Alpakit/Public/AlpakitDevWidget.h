@@ -1,7 +1,6 @@
 #pragma once
 
 #include "AlpakitModEntryList.h"
-#include "Slate.h"
 
 class SAlpakitDevWidget : public SCompoundWidget {
 public:

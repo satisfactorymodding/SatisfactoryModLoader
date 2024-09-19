@@ -2,7 +2,6 @@
 
 #include "AlpakitModEntryList.h"
 #include "ModTargetsConfig.h"
-#include "Slate.h"
 #include "Util/SemVersion.h"
 
 class SAlpakitReleaseWidget : public SCompoundWidget {

@@ -1,6 +1,5 @@
 ﻿#include "Configuration/ConfigProperty.h"
 #include "Configuration/ConfigValueDirtyHandlerInterface.h"
-#include "Configuration/CodeGeneration/ConfigGenerationContext.h"
 #include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 
 FString UConfigProperty::DescribeValue_Implementation() const {

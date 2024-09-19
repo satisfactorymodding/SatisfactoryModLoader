@@ -4,9 +4,7 @@
 #include "FGSaveManagerInterface.h"
 #include "SatisfactoryModLoader.h"
 #include "Dom/JsonObject.h"
-#include "Engine/Engine.h"
 #include "ModLoading/ModLoadingLibrary.h"
-#include "Registry/GameMapRegistry.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 

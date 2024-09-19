@@ -1,7 +1,6 @@
 #include "Util/SemVersion.h"
 #include <regex>
 #include "Containers/StringConv.h"
-#include "SatisfactoryModLoader.h"
 
 //Use stdlib regex here because UE Regex(which is ICU regex wrapper) requires initialized localization system, and our versioning can be called much earlier than that
 std::wregex VersionRegex(L"^(~|v|=|<=|<|>|>=|\\^)?(X|x|\\*|0|[1-9]\\d*)(?:\\.(X|x|\\*|0|[1-9]\\d*)(?:\\.(X|x|\\*|0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?)?)?$");

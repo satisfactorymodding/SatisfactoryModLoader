@@ -1,7 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Configuration/RawFileFormat/RawFormatValue.h"
-#include "Json.h"
 
 /**
  * Class handling conversion from raw format value to

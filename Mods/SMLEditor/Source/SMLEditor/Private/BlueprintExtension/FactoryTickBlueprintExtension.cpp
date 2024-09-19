@@ -1,5 +1,4 @@
 ﻿#include "BlueprintExtension/FactoryTickBlueprintExtension.h"
-#include "Kismet2/BlueprintEditorUtils.h"
 #include "Buildables/FGBuildable.h"
 
 #define LOCTEXT_NAMESPACE "KismetCompiler"

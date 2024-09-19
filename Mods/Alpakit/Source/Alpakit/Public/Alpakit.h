@@ -1,7 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "AlpakitProfile.h"
-#include "ContentBrowserDelegates.h"
 #include "Interfaces/IPluginManager.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogAlpakit, Verbose, All);
