@@ -42,7 +42,7 @@ jobs:
         run: .\\ue\\Engine\\Build\\BatchFiles\\Build.bat -projectfiles -project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -game -rocket -progres
 
       - name: Build for Development Editor
-        run: MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Development Editor" /p:Platform="Win64" /t:"Games\FactoryGame"
+        run: MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Development Editor" /p:Platform="Win64" /t:"Games\FactoryGame\FactoryGame"
 
       - name: Package SML Mod
         run: .\\ue\\Engine\\Build\\BatchFiles\\RunUAT.bat -ScriptsForProject="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" PackagePlugin -Project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -dlcname=SML -build -server -clientconfig=Shipping -serverconfig=Shipping -platform=Win64 -serverplatform=Win64+Linux -nocompileeditor -installed
