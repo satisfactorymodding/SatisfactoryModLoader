@@ -2,4 +2,4 @@
 
 #include "UI/FGGenericListView.h"
 
-TSubclassOf<UUserWidget> UFGGenericListView::GetDesiredEntryClassForItem(UObject* Item) const{ return TSubclassOf<UUserWidget>(); }
+TSubclassOf<UUserWidget> UFGGenericListView::GetDesiredEntryClassForItem(UObject* Item) const{ return Super::GetDesiredEntryClassForItem(Item); }
