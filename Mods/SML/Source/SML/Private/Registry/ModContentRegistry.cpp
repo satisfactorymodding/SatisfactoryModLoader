@@ -336,30 +336,6 @@ void UModContentRegistry::ModifySchematicList( TArray<TSubclassOf<UFGSchematic>>
 		}
 	}
 
-	TArray<TSubclassOf<UFGSchematic>>& mAvailableSchematics = AFGSchematicManager::Get(GetWorld())->mAvailableSchematics;
-	// Cleanup invalid or removed schematics from the available schematics list
-	for ( int32 SchematicIndex = mAvailableSchematics.Num() - 1; SchematicIndex >= 0; SchematicIndex-- )
-	{
-		if ( !IsValid( mAvailableSchematics[SchematicIndex] ) )
-		{
-			mAvailableSchematics.RemoveAt( SchematicIndex );
-			continue;
-		}
-
-		const FGameObjectRegistration* Registration = SchematicRegistryState.FindObjectRegistration( mAvailableSchematics[SchematicIndex] );
-
-		// Unlike the cleanup of mAllSchematics above, mAvailableSchematics is SaveGame,
-		// and might contain mod schematics that are now not registered
-		// (for example schematics registered based on settings or the presence of another mod).
-		// The class would still exist, therefore the IsValid check above does not apply.
-		// The intent of a schematic not being registered is for it not to be present in the game,
-		// so we remove it from the list in that case as well.
-		if ( !Registration || Registration->HasAnyFlags( EGameObjectRegistrationFlags::Removed ) )
-		{
-			mAvailableSchematics.RemoveAt( SchematicIndex );
-		}
-	}
-
 	// Append non-builtin objects to the resulting schematic list
 	for ( const FGameObjectRegistration* Registration : SchematicRegistryState.GetAllRegistrationsCopyFree() )
 	{
