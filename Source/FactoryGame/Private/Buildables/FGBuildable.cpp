@@ -45,6 +45,10 @@ TArray<struct FInstanceData> AFGBuildable::GetActorLightweightInstanceData_Imple
 }
 void AFGBuildable::SetupInstances_Native(bool bInitializeHidden) {
     if (this && GetWorld() && IsValid(mInstanceDataCDO)) {
+    	EWorldType::Type WorldType = GetWorld()->WorldType; // TODO: Reenable in editor worlds when it doesn't cause crashes
+    	if (WorldType == EWorldType::Editor || WorldType == EWorldType::EditorPreview || WorldType == EWorldType::GamePreview) {
+			return;
+		}
         for (FInstanceData InstanceData : mInstanceDataCDO->GetInstanceData()) {
             if (IsValid(InstanceData.StaticMesh) && !InstanceData.OverridenMaterials.Contains(nullptr)) {
                 FInstanceHandle* Handle;
