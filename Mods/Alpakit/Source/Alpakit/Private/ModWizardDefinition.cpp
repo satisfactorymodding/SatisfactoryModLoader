@@ -153,6 +153,7 @@ void FModWizardDefinition::PluginCreated(const FString& PluginName, bool bWasSuc
 		Descriptor.FriendlyName = PluginName;
 	}
 	Descriptor.AdditionalFieldsToWrite.Add( TEXT("SemVersion"), MakeShared<FJsonValueString>( TEXT("1.0.0") ) );
+	Descriptor.AdditionalFieldsToWrite.Add( TEXT("GameVersion"), MakeShared<FJsonValueString>(FString::Printf(TEXT(">=%s"), *FAlpakitModule::GetCurrentGameVersion())) );
 	Descriptor.VersionName = TEXT("1.0.0");
 	Descriptor.Version = 1;
 	Descriptor.Category = TEXT("Modding");
