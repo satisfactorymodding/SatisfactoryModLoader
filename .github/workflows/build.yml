@@ -21,7 +21,7 @@ jobs:
           path: SML
 
       - name: Copy repo to working directory
-        run: Copy-Item ${{ env.GITHUB_WORKSPACE }}\SML -Destination C:\SML\SML -Recurse
+        run: Copy-Item "$Env:GITHUB_WORKSPACE\\SML" -Destination "C:\\SML" -Recurse
 
       - name: Create UE directory
         run: mkdir ue
