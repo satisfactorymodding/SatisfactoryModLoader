@@ -5,6 +5,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+defaults:
+  run:
+    working-directory: C:/SML
+
 jobs:
   build:
     runs-on: self-hosted
@@ -20,7 +24,7 @@ jobs:
         run: mkdir ue
 
       - name: Download, Extract and Setup UE
-        working-directory: ue
+        working-directory: C:/SML/ue
         run: |
           gh release download --repo satisfactorymodding/UnrealEngine -p "UnrealEngine-CSS-Editor-Win64.7z.*"
           7z x UnrealEngine-CSS-Editor-Win64.7z.001
