@@ -18,7 +18,10 @@ jobs:
 
       - uses: actions/checkout@v2
         with:
-          path: ../../../../SML/SML
+          path: SML
+
+      - name: Copy repo to working directory
+        run: Move-Item -Path ${{ env.GITHUB_WORKSPACE }}\SML -Destination C:\SML\SML
 
       - name: Create UE directory
         run: mkdir ue
