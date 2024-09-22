@@ -36,7 +36,7 @@ jobs:
           Invoke-WebRequest -Uri "https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-windows.exe" -OutFile "b2.exe"
           .\b2.exe account authorize "${{ secrets.WWISE_B2_KEY_ID }}" "${{ secrets.WWISE_B2_KEY }}"
           .\b2.exe file download "b2://${{ secrets.WWISE_B2_BUCKET }}/Wwise.7z" "Wwise.7z"
-          7z x Wwise.7z -oSML\\Plugins\\
+          7z x -aoa Wwise.7z -oSML\\Plugins\\
           rm Wwise.7z
 
       - name: Build for Development Editor
