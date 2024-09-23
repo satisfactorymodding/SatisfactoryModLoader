@@ -18,7 +18,10 @@ public:
 	void OnSessionSettingUpdated(const FString StrID, FVariant value);
 	void PushSettingToSessionSettings( const FString& StrID, FVariant value );
 
-private:	
+private:
+	void GameModePostLogin(AGameModeBase* GameMode, APlayerController* PlayerController) const;
+	void SendAllSessionSettings(AFGPlayerController* PlayerController) const;
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_SessionSettingUpdated(const FString& StrID, const FString& ValueString);
 
@@ -34,9 +37,6 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RequestSessionSettingUpdate(const FString& SessionSettingName, const FString& ValueString);
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_RequestAllSessionSettings();
 
 	UFUNCTION(Client, Reliable, WithValidation)
 	void Client_SendSessionSetting(const FString& SessionSettingName, const FString& ValueString);
