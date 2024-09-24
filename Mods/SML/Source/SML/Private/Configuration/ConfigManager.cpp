@@ -5,7 +5,14 @@
 #include "TimerManager.h"
 #include "Configuration/RootConfigValueHolder.h"
 #include "Configuration/RawFileFormat/Json/JsonRawFormatConverter.h"
+#include "Dom/JsonValue.h"
+#include "Engine/GameInstance.h"
+#include "HAL/PlatformFileManager.h"
+#include "Misc/CoreDelegates.h"
+#include "Misc/FileHelper.h"
 #include "ModLoading/ModLoadingLibrary.h"
+#include "Serialization/JsonSerializer.h"
+#include "Serialization/JsonWriter.h"
 #include "Util/EngineUtil.h"
 
 DEFINE_LOG_CATEGORY(LogConfigManager);

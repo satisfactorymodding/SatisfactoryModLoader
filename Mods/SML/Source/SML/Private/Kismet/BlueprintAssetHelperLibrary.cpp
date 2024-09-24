@@ -1,7 +1,10 @@
 #include "Kismet/BlueprintAssetHelperLibrary.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "SatisfactoryModLoader.h"
+#include "AssetRegistry/AssetData.h"
+#include "Engine/Blueprint.h"
 #include "Interfaces/IPluginManager.h"
+#include "Misc/App.h"
 #include "ModLoading/ModLoadingLibrary.h"
 
 void UBlueprintAssetHelperLibrary::FindBlueprintAssetsByTag(UClass* BaseClass, const FName TagName, const TArray<FString>& TagValues, TArray<UClass*>& FoundAssets) {

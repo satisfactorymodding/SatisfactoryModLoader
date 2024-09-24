@@ -4,6 +4,8 @@
 #include "Patching/BlueprintHookManager.h"
 #include "Components/TextBlock.h"
 #include "Components/PanelWidget.h"
+#include "Engine/Engine.h"
+#include "Engine/GameInstance.h"
 #include "Tooltip/ItemStackContextWidget.h"
 #include "Tooltip/SMLItemDisplayInterface.h"
 #include "Tooltip/SMLItemTooltipProvider.h"

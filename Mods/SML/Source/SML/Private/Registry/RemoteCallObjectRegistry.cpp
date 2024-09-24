@@ -1,5 +1,6 @@
 #include "Registry/RemoteCallObjectRegistry.h"
 #include "FGGameMode.h"
+#include "Engine/GameInstance.h"
 #include "Player/SMLRemoteCallObject.h"
 #include "GameFramework/GameModeBase.h"
 #include "SessionSettings/SessionSettingsSubsystem.h"

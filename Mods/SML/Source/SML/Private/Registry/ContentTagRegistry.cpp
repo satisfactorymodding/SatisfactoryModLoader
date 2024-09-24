@@ -1,4 +1,5 @@
 #include "Registry/ContentTagRegistry.h"
+#include "Engine/Engine.h"
 #include "Registry/SMLExtendedAttributeProvider.h"
 
 #include "ModLoading/PluginModuleLoader.h"

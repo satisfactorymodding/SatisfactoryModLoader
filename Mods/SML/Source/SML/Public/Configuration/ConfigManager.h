@@ -2,7 +2,10 @@
 #include "CoreMinimal.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "Configuration/ModConfiguration.h"
+#include "Engine/TimerHandle.h"
 #include "Reflection/ReflectionHelper.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "Templates/SubclassOf.h"
 #include "ConfigManager.generated.h"
 
 //Whenever to use FillConfigStruct optimization caching results in a single struct and then copying it

@@ -1,5 +1,7 @@
 ﻿#include "Kismet/SMLBlueprintSystemLibrary.h"
 
+#include "Misc/App.h"
+
 bool USMLBlueprintSystemLibrary::IsGEditor() {
 	return GIsEditor;
 }

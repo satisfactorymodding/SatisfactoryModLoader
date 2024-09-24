@@ -6,7 +6,7 @@
 #include "Templates/Identity.h"
 #include "Settings/FGUserSetting.h"
 #include "Settings/FGUserSettingCategory.h"
-#include "Subsystems/EngineSubsystem.h"
+#include "Subsystems/WorldSubsystem.h"
 #include "SessionSettingsManager.generated.h"
 
 UCLASS()

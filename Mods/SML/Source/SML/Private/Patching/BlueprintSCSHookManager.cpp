@@ -1,6 +1,9 @@
 ﻿#include "Patching/BlueprintSCSHookManager.h"
+
+#include "Engine/Engine.h"
 #include "Engine/SCS_Node.h"
 #include "Engine/SimpleConstructionScript.h"
+#include "UObject/Package.h"
 
 DEFINE_LOG_CATEGORY(LogBlueprintSCSHookManager);
 

@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "Engine/DataAsset.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "GameMapRegistry.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogGameMapRegistry, All, All);

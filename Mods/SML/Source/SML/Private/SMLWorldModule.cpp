@@ -2,6 +2,7 @@
 #include "FGGameState.h"
 #include "FGSaveSession.h"
 #include "Dom/JsonObject.h"
+#include "Engine/GameInstance.h"
 #include "ModLoading/ModLoadingLibrary.h"
 #include "Patching/Patch/SaveMetadataPatch.h"
 #include "Policies/CondensedJsonPrintPolicy.h"

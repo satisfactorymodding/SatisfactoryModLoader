@@ -2,6 +2,7 @@
 #include "SatisfactoryModLoader.h"
 #include "UObject/Package.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"
+#include "Misc/App.h"
 
 DEFINE_LOG_CATEGORY(LogBlueprintLogging);
 

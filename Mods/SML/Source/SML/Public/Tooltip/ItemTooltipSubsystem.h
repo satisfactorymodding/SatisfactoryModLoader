@@ -3,6 +3,7 @@
 #include "Internationalization/Text.h"
 #include "Components/Widget.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "ItemTooltipSubsystem.generated.h"
 
 UCLASS()

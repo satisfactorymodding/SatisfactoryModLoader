@@ -2,6 +2,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/PanelSlot.h"
+#include "Engine/DataAsset.h"
+#include "Subsystems/EngineSubsystem.h"
 #include "WidgetBlueprintHookManager.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogWidgetBlueprintHookManager, All, All);

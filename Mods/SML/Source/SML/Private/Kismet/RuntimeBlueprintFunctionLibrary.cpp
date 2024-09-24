@@ -2,6 +2,8 @@
 #include "FGBlueprintFunctionLibrary.h"
 #include "Configuration/RootConfigValueHolder.h"
 #include "SatisfactoryModLoader.h"
+#include "Engine/Engine.h"
+#include "Engine/GameInstance.h"
 #include "Patching/BlueprintHookHelper.h"
 #include "Patching/BlueprintHookManager.h"
 #include "Settings/FGAdvancedGameSettings.h"

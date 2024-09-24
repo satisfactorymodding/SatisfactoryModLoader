@@ -6,6 +6,7 @@
 #include "Command/SMLCommands/PlayerListCommandInstance.h"
 #include "SatisfactoryModLoader.h"
 #include "Subsystem/SubsystemActorManager.h"
+#include "UnrealEngine.h"
 
 DEFINE_LOG_CATEGORY(LogChatCommand);
 

@@ -3,6 +3,7 @@
 #include "Misc/FileHelper.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
+#include "TextureResource.h"
 #include "Modules/ModuleManager.h"
 
 UTexture2D* FImageLoadingUtil::LoadImageFromByteArray(const TArray<uint8>& InByteArray, FString& OutErrorMessage) {

@@ -4,6 +4,7 @@
 #include "Configuration/RawFileFormat/RawFormatValueNumber.h"
 #include "Configuration/RawFileFormat/RawFormatValueString.h"
 #include "Configuration/RawFileFormat/RawFormatValueBool.h"
+#include "Dom/JsonObject.h"
 
 TSharedPtr<FJsonValue> FJsonRawFormatConverter::ConvertToJson(const URawFormatValue* RawFormatValue) {
     if (const URawFormatValueNumber* Number = Cast<URawFormatValueNumber>(RawFormatValue)) {

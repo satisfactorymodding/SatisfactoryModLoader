@@ -1,7 +1,10 @@
 #include "Network/NetworkHandler.h"
+#include "Engine/Engine.h"
 #include "Net/DataChannel.h"
 #include "Patching/NativeHookManager.h"
 #include "Engine/NetConnection.h"
+#include "Engine/World.h"
+#include "UObject/UObjectAnnotation.h"
 
 DEFINE_LOG_CATEGORY(LogModNetworkHandler);
 DEFINE_CONTROL_CHANNEL_MESSAGE_THREEPARAM(ModMessage, 40, FString, int32, FString);

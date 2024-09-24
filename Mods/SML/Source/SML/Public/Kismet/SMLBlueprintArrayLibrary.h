@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "SMLBlueprintArrayLibrary.generated.h"
 
 UCLASS()

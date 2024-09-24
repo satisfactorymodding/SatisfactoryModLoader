@@ -2,6 +2,7 @@
 #include "Command/CommandSender.h"
 #include "SatisfactoryModLoader.h"
 #include "Engine/Engine.h"
+#include "Engine/GameInstance.h"
 #include "ModLoading/ModLoadingLibrary.h"
 
  AInfoCommandInstance::AInfoCommandInstance() {

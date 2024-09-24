@@ -2,6 +2,7 @@
 #include "FGPlayerController.h"
 #include "Dom/JsonObject.h"
 #include "Engine/GameInstance.h"
+#include "Engine/NetConnection.h"
 #include "Network/NetworkHandler.h"
 #include "Player/SMLRemoteCallObject.h"
 #include "GameFramework/GameModeBase.h"
@@ -9,6 +10,7 @@
 #include "Policies/CondensedJsonPrintPolicy.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
+#include "UObject/UObjectAnnotation.h"
 
 static TAutoConsoleVariable CVarSkipRemoteModListCheck(
 	TEXT("SML.SkipRemoteModListCheck"),

@@ -1,6 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "Subsystems/EngineSubsystem.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "Util/SemVersion.h"
 #include "ModLoadingLibrary.generated.h"
 

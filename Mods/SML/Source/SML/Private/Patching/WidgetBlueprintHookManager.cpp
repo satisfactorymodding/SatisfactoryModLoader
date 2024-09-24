@@ -3,6 +3,8 @@
 #include "Blueprint/WidgetBlueprintGeneratedClass.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/PanelWidget.h"
+#include "Engine/Engine.h"
+#include "UObject/Package.h"
 
 DEFINE_LOG_CATEGORY(LogWidgetBlueprintHookManager);
 

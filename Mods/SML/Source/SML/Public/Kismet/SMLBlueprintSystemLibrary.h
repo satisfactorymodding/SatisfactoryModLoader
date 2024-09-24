@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "SMLBlueprintSystemLibrary.generated.h"
 
 UCLASS()

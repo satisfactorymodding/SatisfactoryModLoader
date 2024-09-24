@@ -1,4 +1,6 @@
 ﻿#include "Util/EngineUtil.h"
+#include "FGWorldSettings.h"
+#include "Engine/GameInstance.h"
 #if WITH_EDITOR
 #include "Editor.h"
 #endif

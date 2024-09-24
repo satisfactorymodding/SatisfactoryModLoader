@@ -1,4 +1,5 @@
 #pragma once
+#include "Engine/Engine.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "BlueprintHookManager.generated.h"

@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "UObject/Script.h"
 #include "Dom/JsonObject.h"
 
 class SML_API FSMLKismetBytecodeDisassembler {

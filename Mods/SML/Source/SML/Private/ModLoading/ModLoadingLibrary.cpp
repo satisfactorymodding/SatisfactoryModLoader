@@ -3,7 +3,12 @@
 #include "GeneralProjectSettings.h"
 #include "PluginDescriptor.h"
 #include "SatisfactoryModLoader.h"
+#include "Dom/JsonObject.h"
 #include "Interfaces/IPluginManager.h"
+#include "Misc/EngineVersion.h"
+#include "Misc/FileHelper.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 #include "Util/ImageLoadingUtil.h"
 
 //We only want to enforce plugin dependency versions outside of the editor

@@ -6,6 +6,7 @@
 #include "FGResourceSinkSubsystem.h"
 #include "Engine/DataTable.h"
 #include "Misc/EnumClassFlags.h"
+#include "Subsystems/WorldSubsystem.h"
 #include "ModContentRegistry.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogContentRegistry, Log, All);

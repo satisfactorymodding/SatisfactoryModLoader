@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "LatentActions.h"
+#include "Engine/World.h"
 #include "Module/WorldModule.h"
+#include "Subsystems/WorldSubsystem.h"
 #include "WorldModuleManager.generated.h"
 
 /** Manages registered world modules and their lifecycle events */

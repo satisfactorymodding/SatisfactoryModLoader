@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "FGRemoteCallObject.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "RemoteCallObjectRegistry.generated.h"
 
 UCLASS()

@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "Engine/DataAsset.h"
+#include "Subsystems/EngineSubsystem.h"
 #include "BlueprintSCSHookManager.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogBlueprintSCSHookManager, All, All);

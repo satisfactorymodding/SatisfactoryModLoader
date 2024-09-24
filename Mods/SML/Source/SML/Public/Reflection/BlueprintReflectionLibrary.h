@@ -5,6 +5,7 @@
 #include "Reflection/ReflectionHelper.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"
 #include "SatisfactoryModLoader.h"
+#include "UObject/Package.h"
 #include "BlueprintReflectionLibrary.generated.h"
 
 UCLASS()

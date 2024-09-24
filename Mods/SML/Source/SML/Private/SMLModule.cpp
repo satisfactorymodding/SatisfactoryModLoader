@@ -3,6 +3,7 @@
 #include "GameplayTagsManager.h"
 #include "SatisfactoryModLoader.h"
 #include "Interfaces/IPluginManager.h"
+#include "Misc/CoreDelegates.h"
 
 void AddModGameplayTagIniSearchPath(const IPlugin& Plugin) {
 	if(Plugin.GetType() == EPluginType::Mod) {

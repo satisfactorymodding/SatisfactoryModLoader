@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "SessionSettings/SessionSetting.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "SessionSettingsRegistry.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogSessionSettingsRegistry, All, All);

@@ -1,7 +1,9 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "LatentActions.h"
+#include "Engine/World.h"
 #include "Subsystem/ModSubsystem.h"
+#include "Subsystems/WorldSubsystem.h"
 #include "SubsystemActorManager.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogSubsystemManager, Log, All)

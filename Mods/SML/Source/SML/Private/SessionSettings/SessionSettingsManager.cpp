@@ -3,6 +3,7 @@
 #include "FGGameMode.h"
 #include "FGOptionsLibrary.h"
 #include "SatisfactoryModLoader.h"
+#include "Engine/Engine.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
 #include "ModLoading/PluginModuleLoader.h"

@@ -1,5 +1,7 @@
 #include "Module/GameInstanceModule.h"
 #include "Configuration/ConfigManager.h"
+#include "Engine/Engine.h"
+#include "Engine/GameInstance.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
 #include "Patching/BlueprintSCSHookManager.h"
 #include "Patching/WidgetBlueprintHookManager.h"

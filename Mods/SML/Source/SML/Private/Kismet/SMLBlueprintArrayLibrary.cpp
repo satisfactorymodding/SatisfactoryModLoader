@@ -1,5 +1,7 @@
 ﻿#include "Kismet/SMLBlueprintArrayLibrary.h"
 
+#include "EngineLogs.h"
+
 void USMLBlueprintArrayLibrary::Array_Sort(const TArray<int32>& TargetArray, UObject* Object, FName FunctionName) {
 	checkf(false, TEXT("Blueprint only function. Use TArray::StableSort instead in C++"));
 }
