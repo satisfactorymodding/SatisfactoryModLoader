@@ -33,7 +33,7 @@ void GenerateStructsForSelectedBlueprints(const TArray<FAssetData> SelectedAsset
 	}
 }
 
-void PopulateModConfigBlueprintAssetActionsMenu(FMenuBuilder& MenuBuilder, const TArray<FAssetData>& SelectedAssets) {
+void PopulateModConfigBlueprintAssetActionsMenu(FMenuBuilder& MenuBuilder, TArray<FAssetData> SelectedAssets) {
 	MenuBuilder.AddMenuEntry(
         LOCTEXT("GenerateBlueprintStruct", "Regenerate Config Struct"),
         LOCTEXT("GenerateBlueprintStructTooltip", "Regenerates User-Defined Struct from the Configuration layout"),
@@ -47,14 +47,8 @@ void PopulateModConfigBlueprintAssetActionsMenu(FMenuBuilder& MenuBuilder, const
         FUIAction(FExecuteAction::CreateStatic(GenerateStructsForSelectedBlueprints, SelectedAssets, true), EUIActionRepeatMode::RepeatEnabled));
 }
 
-void PopulateBlueprintAssetActionsMenu(FMenuBuilder& MenuBuilder, TArray<FAssetData> SelectedAssets) {
-	if (ContainsAtLeastOneModConfigBlueprint(SelectedAssets)) {
-		PopulateModConfigBlueprintAssetActionsMenu(MenuBuilder, SelectedAssets);
-	}
-}
-
 TSharedRef<FExtender> OnExtendContentBrowserAssetSelectionMenu(const TArray<FAssetData>& SelectedAssets) {
-	TSharedRef<FExtender> Extender(new FExtender());
+	TSharedRef<FExtender> Extender = MakeShared<FExtender>();
 
 	//Only add additional handlers if we're dealing with blueprints
 	bool bHaveAnyBlueprints = false;
@@ -62,12 +56,13 @@ TSharedRef<FExtender> OnExtendContentBrowserAssetSelectionMenu(const TArray<FAss
 		bHaveAnyBlueprints |= AssetData.AssetClassPath == FTopLevelAssetPath(UBlueprint::StaticClass());
 	}
 	
-	if (bHaveAnyBlueprints) {
+	if (bHaveAnyBlueprints && ContainsAtLeastOneModConfigBlueprint(SelectedAssets)) {
 		Extender->AddMenuExtension(
             "GetAssetActions",
             EExtensionHook::After,
             nullptr,
-            FMenuExtensionDelegate::CreateStatic(&PopulateBlueprintAssetActionsMenu, SelectedAssets));
+            FMenuExtensionDelegate::CreateStatic(&PopulateModConfigBlueprintAssetActionsMenu, SelectedAssets)
+		);
 	}
 
 	return Extender;
