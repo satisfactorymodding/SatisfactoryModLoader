@@ -55,9 +55,9 @@ struct SML_API FModInfo {
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FString SupportURL;
 
-    /** Whenever this mod accepts any remote version, basically behaving as a client-/server-side only mod */
+    /** Whether this mod accepts being missing on the remote, i.e. behaving as a client-/server-side only mod */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    bool bAcceptsAnyRemoteVersion;
+    bool bRequiredOnRemote;
 
     /** Range of the remote versions accepted by this mod. Defaults to >=CurrentVersion, unless explicitly defined */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -71,8 +71,8 @@ struct SML_API FSMLPluginDescriptorMetadata {
     /** Current version of the mod, following SemVer specification */
     FVersion Version;
 
-    /** Whenever mod accepts any remote version */
-    bool bAcceptsAnyRemoteVersion;
+    /** Whenever mod accepts being missing on the remote */
+    bool bRequiredOnRemote;
     
     /** Range of the accepted remote versions, by default >=Version */
     FVersionRange RemoteVersionRange;

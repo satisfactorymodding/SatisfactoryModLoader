@@ -148,19 +148,21 @@ void FSMLNetworkManager::ValidateSMLConnectionData(UNetConnection* Connection)
 	{
 		if ( UModLoadingLibrary* ModLoadingLibrary = GameInstance->GetSubsystem<UModLoadingLibrary>() )
 		{
+			// TODO: Do we want to check that the client doesn't have any extra mods compared to the server?
+			// Doing so would require the client passing the complete mod info to the server, rather than just the version
+
 			const TArray<FModInfo> Mods = ModLoadingLibrary->GetLoadedMods();
 
 			for (const FModInfo& ModInfo : Mods)
 			{
-				if ( ModInfo.bAcceptsAnyRemoteVersion )
-				{
-					continue; //Server-side only mod
-				}
-
 				const FVersion* ClientVersion = SMLMetadata.InstalledClientMods.Find( ModInfo.Name );
 				const FString ModName = FString::Printf( TEXT("%s (%s)"), *ModInfo.FriendlyName, *ModInfo.Name );
 				if ( ClientVersion == nullptr )
 				{
+					if ( !ModInfo.bRequiredOnRemote )
+					{
+						continue; //Server-side only mod
+					}
 					ClientMissingMods.Add( ModName );
 					continue;
 				}

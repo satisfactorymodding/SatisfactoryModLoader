@@ -119,9 +119,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Remote")
 	FString RemoteVersionRange;
 
-	/** Whether the remote version check is skipped */
+	/** Whether this mod accepts being missing on the remote, i.e. behaving as a client-/server-side only mod */
 	UPROPERTY(EditAnywhere, Category = "Remote")
-	bool bAcceptsAnyRemoteVersion{};
+	bool bRequiredOnRemote{true};
 
 	/**
 	 * Populate the fields of this object from an existing descriptor.

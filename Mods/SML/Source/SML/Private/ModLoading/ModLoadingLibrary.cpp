@@ -16,7 +16,7 @@
 
 void FSMLPluginDescriptorMetadata::SetupDefaults(const FPluginDescriptor& PluginDescriptor) {
     this->Version = FVersion(PluginDescriptor.Version, 0, 0);
-    this->bAcceptsAnyRemoteVersion = false;
+    this->bRequiredOnRemote = true;
     this->RemoteVersionRange = FVersionRange::CreateRangeWithMinVersion(Version);
     this->GameVersion = FVersionRange::CreateAnyVersionRange();
 }
@@ -34,7 +34,7 @@ void FSMLPluginDescriptorMetadata::Load(const FString& PluginName, const TShared
         if (bParseSuccess) {
             this->Version = ResultVersion;
             this->RemoteVersionRange = FVersionRange::CreateRangeWithMinVersion(Version);
-            this->bAcceptsAnyRemoteVersion = false;
+            this->bRequiredOnRemote = true;
             
         } else {
             UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Plugin/Mod %s has invalid Semantic Version value: '%s': %s"), *PluginName, *SemanticVersion, *VersionParseError);
@@ -43,8 +43,8 @@ void FSMLPluginDescriptorMetadata::Load(const FString& PluginName, const TShared
         UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Plugin/Mod %s does not specify 'SemVersion' field, falling back to UE Version"), *PluginName);
     }
 
-    //Try to parse AcceptsAnyRemoteVersion boolean, indicating policy when remote is missing mod
-    Source->TryGetBoolField(TEXT("AcceptsAnyRemoteVersion"), bAcceptsAnyRemoteVersion);
+    //Try to parse RequiredOnRemote boolean, indicating policy when remote is missing mod
+    Source->TryGetBoolField(TEXT("RequiredOnRemote"), bRequiredOnRemote);
 
     //Try to parse RemoteVersionRange
     FString RemoteVersionRangeString;
@@ -57,9 +57,6 @@ void FSMLPluginDescriptorMetadata::Load(const FString& PluginName, const TShared
             this->RemoteVersionRange = VersionRange;
         } else {
             UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Plugin %s has invalid Remote Version Range value: %s: %s"), *PluginName, *RemoteVersionRangeString, *VersionRangeError);
-        }
-        if (bAcceptsAnyRemoteVersion) {
-            UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Plugin %s specifies remote version range while also having acceptAnyRemoteVersion set"), *PluginName);
         }
     }
 
@@ -189,7 +186,10 @@ FModInfo UModLoadingLibrary::CreateGameProjectModInfo() {
     const int64 ChangelistNum = FEngineVersion::Current().GetChangelist();
     ResultModInfo.Version = FVersion(ChangelistNum, 0, 0);
 
-    ResultModInfo.bAcceptsAnyRemoteVersion = true;
+    // The game already does its own version check, we shouldn't enforce it
+    ResultModInfo.RemoteVersionRange = FVersionRange::CreateAnyVersionRange();
+    ResultModInfo.bRequiredOnRemote = false;
+    
     return ResultModInfo;
 }
 
@@ -281,7 +281,7 @@ void UModLoadingLibrary::PopulatePluginModInfo(IPlugin& Plugin, FModInfo& OutMod
     OutModInfo.DocsURL = PluginDescriptor.DocsURL;
     OutModInfo.SupportURL = PluginDescriptor.SupportURL;
 
-    OutModInfo.bAcceptsAnyRemoteVersion = PluginDescriptorMetadata.bAcceptsAnyRemoteVersion;
+    OutModInfo.bRequiredOnRemote = PluginDescriptorMetadata.bRequiredOnRemote;
     OutModInfo.RemoteVersionRange = PluginDescriptorMetadata.RemoteVersionRange;
 }
 

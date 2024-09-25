@@ -50,7 +50,7 @@ void UModMetadataObject::PopulateFromDescriptor(const FPluginDescriptor& InDescr
 	CachedJson->TryGetStringField( TEXT("SemVersion"), SemVersion );
 	CachedJson->TryGetStringField( TEXT("GameVersion"), GameVersion );
 	CachedJson->TryGetStringField( TEXT("RemoteVersionRange"), RemoteVersionRange );
-	CachedJson->TryGetBoolField( TEXT("AcceptsAnyRemoteVersion"), bAcceptsAnyRemoteVersion );
+	CachedJson->TryGetBoolField( TEXT("RequiredOnRemote"), bRequiredOnRemote );
 }
 
 void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
@@ -106,12 +106,12 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 			OutDescriptor.CachedJson->RemoveField(TEXT("RemoteVersionRange"));
 		}
 	}
-	if (bAcceptsAnyRemoteVersion) {
-		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("AcceptsAnyRemoteVersion"), MakeShared<FJsonValueBoolean>( bAcceptsAnyRemoteVersion ) );
+	if (!bRequiredOnRemote) {
+		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RequiredOnRemote"), MakeShared<FJsonValueBoolean>( bRequiredOnRemote ) );
 	} else {
-		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("AcceptsAnyRemoteVersion"));
+		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("RequiredOnRemote"));
 		if (OutDescriptor.CachedJson.IsValid()) {
-			OutDescriptor.CachedJson->RemoveField(TEXT("AcceptsAnyRemoteVersion"));
+			OutDescriptor.CachedJson->RemoveField(TEXT("RequiredOnRemote"));
 		}
 	}
 }
