@@ -777,6 +777,15 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 			Result->SetArrayField(TEXT("Values"), Values);
 			break;
 		}
+	case EX_BitFieldConst:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("BitFieldConst"));
+			FProperty* BitProperty = ReadPointer<FProperty>(ScriptIndex);
+			uint8 ConstValue = ReadByte(ScriptIndex);
+			Result->SetStringField(TEXT("Property"), GetNameSafe(BitProperty));
+			Result->SetNumberField(TEXT("Value"), ConstValue);
+			break;
+		}
 	case EX_ByteConst:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("ByteConst"));
@@ -989,6 +998,56 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 			Result->SetObjectField(TEXT("IndexExpression"), SerializeExpression(ScriptIndex));
 			break;
 		}
+	case EX_AutoRtfmTransact:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("AutoRtfmTransact"));
+			// Code offset.
+			int32 TransactionId = ReadInt(ScriptIndex);				
+			CodeSkipSizeType SkipCount = ReadSkipCount(ScriptIndex);
+
+			Result->SetNumberField(TEXT("TransactionId"), TransactionId);
+			Result->SetNumberField(TEXT("Offset"), SkipCount);
+		
+			TArray<TSharedPtr<FJsonValue>> Params;
+			ReadInt(ScriptIndex); //Skip element amount
+					
+			while (Script[ScriptIndex] != EX_AutoRtfmStopTransact) {
+				TSharedPtr<FJsonObject> Expression = SerializeExpression(ScriptIndex);
+				Params.Add(MakeShareable(new FJsonValueObject(Expression)));
+			}
+		
+			Result->SetArrayField(TEXT("Params"), Params);
+
+			Result->SetObjectField(TEXT("End"), SerializeExpression(ScriptIndex));
+			break;
+		}
+	case EX_AutoRtfmStopTransact:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("AutoRtfmStopTransact"));
+			
+			int32 TransactionId = ReadInt(ScriptIndex);
+
+			Result->SetNumberField(TEXT("TransactionId"), TransactionId);
+
+			EAutoRtfmStopTransactMode Mode = EAutoRtfmStopTransactMode(ReadByte(ScriptIndex));
+
+			const TCHAR* ModeText = TEXT("");
+			switch(Mode)
+			{
+			case GracefulExit: ModeText = TEXT("GracefulExit"); break;
+			case AbortingExit: ModeText = TEXT("AbortingExit"); break;
+			case AbortingExitAndAbortParent: ModeText = TEXT("AbortingExitAndAbortParent"); break;
+			}
+		
+			Result->SetStringField(TEXT("EndMode"), ModeText);
+			break;
+		}
+	case EX_AutoRtfmAbortIfNot:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("AutoRtfmAbortIfNot"));
+			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
+			break;
+		}
 	default:
 		{
 			// This should never occur.
@@ -1159,4 +1218,3 @@ FString FSMLKismetBytecodeDisassembler::ReadString(int32& ScriptIndex) {
 
 	return FString();
 }
-
