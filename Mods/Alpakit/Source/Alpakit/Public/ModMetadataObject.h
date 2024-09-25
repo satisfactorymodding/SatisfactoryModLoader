@@ -48,7 +48,7 @@ struct FModDependencyDescriptorData
 	/**
 	 * Copy the metadata fields into a mod descriptor.
 	 */
-	void CopyIntoDescriptor(FPluginReferenceDescriptor& OutDescriptor);
+	void CopyIntoDescriptor(FPluginReferenceDescriptor& OutDescriptor, TSharedPtr<FJsonObject> CachedJson);
 };
 
 /**

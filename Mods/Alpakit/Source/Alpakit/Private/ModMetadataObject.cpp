@@ -72,12 +72,21 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 		FPluginReferenceDescriptor* ExistingMod = OutDescriptor.Plugins.FindByPredicate(DependencyModLambda);
 		if (ExistingMod)
 		{
-			Dependency.CopyIntoDescriptor(*ExistingMod);
+			TSharedPtr<FJsonObject> DependencyCachedJson = nullptr;
+			if (OutDescriptor.CachedJson.IsValid()) {
+				const TSharedPtr<FJsonValue>* CachedPluginJson = OutDescriptor.CachedJson->GetArrayField("Plugins").FindByPredicate([Dependency](TSharedPtr<FJsonValue> PluginDep) {
+					return PluginDep->AsObject()->GetStringField(TEXT("Name")) == Dependency.Name;
+				});
+				if (CachedPluginJson) {
+					DependencyCachedJson = (*CachedPluginJson)->AsObject();
+				}
+			}
+			Dependency.CopyIntoDescriptor(*ExistingMod, DependencyCachedJson);
 		}
 		else
 		{
 			FPluginReferenceDescriptor NewMod;
-			Dependency.CopyIntoDescriptor(NewMod);
+			Dependency.CopyIntoDescriptor(NewMod, nullptr);
 			OutDescriptor.Plugins.Add(NewMod);
 		}
 	}
@@ -92,14 +101,18 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 	if (RemoteVersionRange.Len() > 0) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("RemoteVersionRange"), MakeShared<FJsonValueString>( RemoteVersionRange ) );
 	} else {
-		// Remove field entirely when default value
 		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("RemoteVersionRange"));
+		if (OutDescriptor.CachedJson.IsValid()) {
+			OutDescriptor.CachedJson->RemoveField(TEXT("RemoteVersionRange"));
+		}
 	}
 	if (bAcceptsAnyRemoteVersion) {
 		OutDescriptor.AdditionalFieldsToWrite.Add( TEXT("AcceptsAnyRemoteVersion"), MakeShared<FJsonValueBoolean>( bAcceptsAnyRemoteVersion ) );
 	} else {
-		// Remove field entirely when default value
 		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("AcceptsAnyRemoteVersion"));
+		if (OutDescriptor.CachedJson.IsValid()) {
+			OutDescriptor.CachedJson->RemoveField(TEXT("AcceptsAnyRemoteVersion"));
+		}
 	}
 }
 
@@ -148,7 +161,7 @@ void FModDependencyDescriptorData::PopulateFromDescriptor(const FPluginReference
 	CachedJson->TryGetBoolField( TEXT("BasePlugin"), bBasePlugin );
 }
 
-void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor& OutDescriptor)
+void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor& OutDescriptor, TSharedPtr<FJsonObject> CachedJson)
 {
 	OutDescriptor.Name = Name;
 	OutDescriptor.bEnabled = bEnabled;
@@ -156,16 +169,26 @@ void FModDependencyDescriptorData::CopyIntoDescriptor(FPluginReferenceDescriptor
 
 	if (!bBasePlugin) {
 		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("SemVersion"), MakeShared<FJsonValueString>( SemVersion ));
-	} else if (OutDescriptor.CachedJson.IsValid() && OutDescriptor.CachedJson->HasField(TEXT("SemVersion"))) {
-		// We cannot remove the field when using UpdateDescriptor, because it will be copied from the existing descriptor
-		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("SemVersion"), MakeShared<FJsonValueString>( TEXT("") ));
+	} else {
+		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("SemVersion"));
+		if (OutDescriptor.CachedJson.IsValid()) {
+			OutDescriptor.CachedJson->RemoveField(TEXT("SemVersion"));
+		}
+		if (CachedJson.IsValid()) {
+			CachedJson->RemoveField(TEXT("SemVersion"));
+		}
 	}
 	
 	if (bBasePlugin) {
 		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( bBasePlugin ));
-	} else if (OutDescriptor.CachedJson.IsValid() && OutDescriptor.CachedJson->HasField(TEXT("BasePlugin"))) {
-		// We cannot remove the field when using UpdateDescriptor, because it will be copied from the existing descriptor
-		OutDescriptor.AdditionalFieldsToWrite.Add(TEXT("BasePlugin"), MakeShared<FJsonValueBoolean>( false ));
+	} else {
+		OutDescriptor.AdditionalFieldsToWrite.Remove(TEXT("BasePlugin"));
+		if (OutDescriptor.CachedJson.IsValid()) {
+			OutDescriptor.CachedJson->RemoveField(TEXT("BasePlugin"));
+		}
+		if (CachedJson.IsValid()) {
+			CachedJson->RemoveField(TEXT("BasePlugin"));
+		}
 	}
 }
 

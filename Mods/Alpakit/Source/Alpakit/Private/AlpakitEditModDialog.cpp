@@ -164,6 +164,9 @@ FReply SAlpakitEditModDialog::OnOkClicked() {
 
 	// Update the descriptor with the new metadata
 	FPluginDescriptor NewDescriptor = OldDescriptor;
+	// Ensure we have don't modify the original descriptor for the changed check
+	NewDescriptor.CachedJson = MakeShared<FJsonObject>();
+	FJsonObject::Duplicate(OldDescriptor.CachedJson, NewDescriptor.CachedJson);
 	MetadataObject->CopyIntoDescriptor(NewDescriptor);
 	MetadataObject->RemoveFromRoot();
 
@@ -192,8 +195,10 @@ FReply SAlpakitEditModDialog::OnOkClicked() {
 		}
 
 		// Write to the file and update the in-memory metadata
+		// Don't use UpdateDescriptor because it doesn't allow removing fields
+		FString PluginDescriptorPath = Mod->GetDescriptorFileName();
 		FText FailReason;
-		if(!Mod->UpdateDescriptor(NewDescriptor, FailReason))
+		if(!NewDescriptor.Save(PluginDescriptorPath, FailReason))
 		{
 			FMessageDialog::Open(EAppMsgType::Ok, FailReason);
 		}
