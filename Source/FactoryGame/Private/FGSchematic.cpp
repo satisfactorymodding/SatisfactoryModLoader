@@ -75,6 +75,11 @@ EDataValidationResult UFGSchematic::IsDataValid(TArray< FText >& ValidationError
 		}
 	}
 
+	if (!mSchematicIcon.IsSet() || !IsValid(mSchematicIcon.GetResourceObject())) {
+		ValidationErrors.Add(NSLOCTEXT("Schematic", "SchematicValidation_InvalidIcon", "Invalid icon set for schematic. This will cause the milestone to not display its unlocks or cost in the HUB."));
+		ValidationResult = EDataValidationResult::Invalid;
+	}
+
 	return ValidationResult;
 }
 #endif
