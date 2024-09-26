@@ -2,11 +2,12 @@
 #include "Engine/Engine.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Patching/BlueprintHookHelper.h"
 #include "BlueprintHookManager.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogBlueprintHookManager, Log, All);
 
-using HookFunctionSignature = void(class FBlueprintHookHelper& HookHelper);
+using HookFunctionSignature = void(FBlueprintHookHelper& HookHelper);
 
 /** Holds information about hooked blueprint function */
 USTRUCT()
