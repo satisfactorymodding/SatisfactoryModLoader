@@ -178,6 +178,10 @@ IFGOptionInterface* USessionSettingsManager::GetPrimaryOptionInterface(UWorld* w
 	return const_cast<USessionSettingsManager*>( this );
 }
 
+bool USessionSettingsManager::IsGlobalManager() const {
+	return !IsInMainMenu();
+}
+
 void USessionSettingsManager::SubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate) {
 	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
 		Options.Value->AddSubscriber(onOptionUpdatedDelegate);
