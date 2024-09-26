@@ -20,10 +20,19 @@ public class AHookingEntrypoint
         Patch();
     }
     
+    private static bool _hasAppliedPatches;
+
     private static void Patch()
     {
+        // UHT can run multiple times in the same UBT process (for different targets for example)
+        // and Harmony does not check whether a patch for the same ID has already been applied
+        // resulting in the same patch being applied multiple times, causing duplicate code to be generated
+        if (_hasAppliedPatches)
+            return;
+
         Harmony harmony = new("AccessTransformers");
         harmony.PatchAll();
+        _hasAppliedPatches = true;
     }
 
     private static Assembly? CurrentDomain_AssemblyResolve(object? sender, ResolveEventArgs args)

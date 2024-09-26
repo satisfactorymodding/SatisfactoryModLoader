@@ -88,11 +88,20 @@ public static class AccessTransformers
         }
     }
 
-    public static readonly AccessTransformerTable<FriendAccessTransformer> FriendAccessTransformers = new();
-    public static readonly AccessTransformerTable<AccessorAccessTransformer> AccessorAccessTransformers = new();
+    private static AccessTransformerTable<FriendAccessTransformer> _friendAccessTransformers = new();
+    private static AccessTransformerTable<AccessorAccessTransformer> _accessorAccessTransformers = new();
+
+    public static AccessTransformerTable<FriendAccessTransformer> FriendAccessTransformers => _friendAccessTransformers;
+    public static AccessTransformerTable<AccessorAccessTransformer> AccessorAccessTransformers => _accessorAccessTransformers;
 
     public static void Load(UhtSession session)
     {
+        // UHT can run multiple times in the same UBT process (for different targets for example)
+        // but it should never run concurrently, so we only need to clean the previous state when
+        // starting a new UHT session.
+        // If UE ever makes changes that run UHT concurrently, replace this with per-UhtSession AccessTransformerTables
+        _friendAccessTransformers = new();
+        _accessorAccessTransformers = new();
         var availablePlugins = PluginsBase.EnumeratePlugins(new FileReference(session.ProjectFile!));
         foreach (var plugin in availablePlugins)
         {
