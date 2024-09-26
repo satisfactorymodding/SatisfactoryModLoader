@@ -54,7 +54,7 @@ void FAlpakitInstance::Cancel() const
 
 	if ( UATProcess.IsValid() )
 	{
-		UATProcess->Cancel();
+		UATProcess->Cancel(true);
 	}
 }
 
