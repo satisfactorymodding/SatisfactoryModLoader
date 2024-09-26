@@ -1,0 +1,12 @@
+diff --git a/Plugins/Wwise/Source/AudiokineticTools/Private/WwiseProject/AcousticTextureParamLookup.cpp b/Plugins/Wwise/Source/AudiokineticTools/Private/WwiseProject/AcousticTextureParamLookup.cpp
+index c6116b3..fe2fa11 100644
+--- a/Plugins/Wwise/Source/AudiokineticTools/Private/WwiseProject/AcousticTextureParamLookup.cpp
++++ b/Plugins/Wwise/Source/AudiokineticTools/Private/WwiseProject/AcousticTextureParamLookup.cpp
+@@ -30,7 +30,7 @@ void AkAcousticTextureParamLookup::LoadAllTextures()
+ 	FWwiseProjectDatabase* ProjectDatabase = FWwiseProjectDatabase::Get();
+ 	if (UNLIKELY(!ProjectDatabase))
+ 	{
+-		UE_LOG(LogAudiokineticTools, Error, TEXT("LoadAllTextures: ProjectDatabase not loaded"));
++		UE_LOG(LogAudiokineticTools, Warning, TEXT("LoadAllTextures: ProjectDatabase not loaded"));
+ 		return;
+ 	}
