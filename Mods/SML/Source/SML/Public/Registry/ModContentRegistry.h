@@ -298,10 +298,12 @@ private:
     UPROPERTY( Transient )
     TArray<FPendingResourceSinkRegistration> PendingItemSinkPointsRegistrations;
 	
-	int32 PreSpawnInitializationStack;
-	int32 PostSpawnInitializationStack;
+	int32 PreSpawnInitializationStack{0};
+	int32 PostSpawnInitializationStack{0};
 	FDelegateHandle OnActorPreSpawnDelegateHandle;
 	FDelegateHandle OnActorPostSpawnDelegateHandle;
+
+	bool bBegunPlay{false};
 	
 	/** Pointer to the currently active script callstack frame, used for debugging purposes */
 	static FFrame* ActiveScriptFramePtr;
@@ -327,7 +329,9 @@ private:
 	FOnWorldBeginPlay OnWorldBeginPlayDelegate;
 	
 	void ModifySchematicList( TArray<TSubclassOf<UFGSchematic>>& RefSchematics );
+	void ModifySchematicListInternal( TArray<TSubclassOf<UFGSchematic>>& RefSchematics );
 	void ModifyResearchTreeList( TArray<TSubclassOf<UFGResearchTree>>& RefResearchTrees );
+	void ModifyResearchTreeListInternal( TArray<TSubclassOf<UFGResearchTree>>& RefResearchTrees );
 	
 	void AutoRegisterSchematicReferences(TSubclassOf<UFGSchematic> Schematic, FName RegistrarPluginName);
 	void AutoRegisterResearchTreeReferences(TSubclassOf<UFGResearchTree> ResearchTree, FName RegistrarPluginName);

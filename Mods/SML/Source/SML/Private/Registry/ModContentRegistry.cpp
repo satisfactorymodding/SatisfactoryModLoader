@@ -304,7 +304,28 @@ void UModContentRegistry::OnSchematicPurchased(TSubclassOf<UFGSchematic> Schemat
     }
 }
 
-void UModContentRegistry::ModifySchematicList( TArray<TSubclassOf<UFGSchematic>>& RefSchematics )
+void UModContentRegistry::ModifySchematicList(TArray<TSubclassOf<UFGSchematic>>& RefSchematics) {
+	// PopulateSchematicList happens during PreInitializeComponents,
+	// while WorldModules get constructed during OnActorsInitialized
+	// BeginPlay is a reasonable moment in the lifecycle past OnActorsInitialized to delay this to,
+	// since mods could technically register schematics during POST_INITIALIZE, and we can't guarantee
+	// the order in which bindings to the same delegate are executed.
+
+	// On the client, the world will BeginPlay before the actor is replicated,
+	// so by the time we reach this point, WorldBeginPlayDelegate will have already fired.
+	// But this also means that mod content was registered, so we can safely modify the list here.
+	
+	if (bBegunPlay) {
+		ModifySchematicListInternal(RefSchematics);
+	} else {
+		OnWorldBeginPlayDelegate.AddWeakLambda(this, [&] {
+			ModifySchematicListInternal(RefSchematics);
+		});
+	}
+}
+
+
+void UModContentRegistry::ModifySchematicListInternal( TArray<TSubclassOf<UFGSchematic>>& RefSchematics )
 {
 	// Register vanilla schematics in the registry first
 	{
@@ -347,7 +368,19 @@ void UModContentRegistry::ModifySchematicList( TArray<TSubclassOf<UFGSchematic>>
 	SchematicRegistryState.FreezeRegistry();
 }
 
-void UModContentRegistry::ModifyResearchTreeList( TArray<TSubclassOf<UFGResearchTree>>& RefResearchTrees )
+void UModContentRegistry::ModifyResearchTreeList(TArray<TSubclassOf<UFGResearchTree>>& RefResearchTrees) {
+	// Similarly to PopulateSchematicList, PopulateResearchTreeList happens during PreInitializeComponents.
+	if (bBegunPlay) {
+		ModifyResearchTreeListInternal(RefResearchTrees);
+	} else {
+		OnWorldBeginPlayDelegate.AddWeakLambda(this, [&] {
+			ModifyResearchTreeListInternal(RefResearchTrees);
+		});
+	}	
+}
+
+
+void UModContentRegistry::ModifyResearchTreeListInternal( TArray<TSubclassOf<UFGResearchTree>>& RefResearchTrees )
 {
 	// Register vanilla research trees in the registry first
 	{
@@ -631,6 +664,9 @@ void UModContentRegistry::Initialize( FSubsystemCollectionBase& Collection )
 
 void UModContentRegistry::OnWorldBeginPlay(UWorld& InWorld) {
 	OnWorldBeginPlayDelegate.Broadcast();
+	// Apparently World->bBegunPlay is not set by the time the manager delegates are called on clients
+	// Maybe it just isn't set on clients at all
+	bBegunPlay = true;
 }
 
 void UModContentRegistry::OnSchematicRegisteredCallback( const FGameObjectRegistration* Schematic )
@@ -654,30 +690,13 @@ void UModContentRegistry::OnActorPreSpawnInitialization( AActor* Actor )
 {
 	if ( AFGSchematicManager* SchematicManager = Cast<AFGSchematicManager>( Actor ) )
 	{
-		SchematicManager->PopulateSchematicListDelegate.AddWeakLambda( this, [&](TArray<TSubclassOf<UFGSchematic>>& RefSchematics) {
-			// PopulateSchematicList happens during PreInitializeComponents,
-			// while WorldModules get constructed during OnActorsInitialized
-			// Additionally, the schematic list is used to populate the available schematics during AFGSchematicManager::BeginPlay
-			// so we need to defer the registration until right before that.
-			// UWorldSubsystem::OnWorldBeginPlay is called before BeginPlay is dispatched to actors, and this subsystem
-			// just so happens to be a UWorldSubsystem, so we can use that to our advantage.
-			OnWorldBeginPlayDelegate.AddWeakLambda(this, [&]() {
-				ModifySchematicList(RefSchematics);
-			});
-		});
+		SchematicManager->PopulateSchematicListDelegate.AddUObject( this, &UModContentRegistry::ModifySchematicList );
 		SchematicManager->PurchasedSchematicDelegate.AddUniqueDynamic( this, &UModContentRegistry::OnSchematicPurchased );
 		PreSpawnInitializationStack++;
 	}
 	if ( AFGResearchManager* ResearchManager = Cast<AFGResearchManager>( Actor ) )
 	{
-		ResearchManager->PopulateResearchTreeListDelegate.AddWeakLambda( this, [&](TArray<TSubclassOf<UFGResearchTree>>& RefResearchTrees) {
-			// Similarly to PopulateSchematicList, PopulateResearchTreeList happens during PreInitializeComponents.
-			// This research tree array is the final one, as opposed to mAvailableSchematics in the schematic manager,
-			// but BeginPlay is still a good time for this to be delayed to.
-			OnWorldBeginPlayDelegate.AddWeakLambda(this, [&]() {
-				ModifyResearchTreeList(RefResearchTrees);
-			});
-		});
+		ResearchManager->PopulateResearchTreeListDelegate.AddUObject( this, &UModContentRegistry::ModifyResearchTreeList );
 		PreSpawnInitializationStack++;
 	}
 	
