@@ -76,6 +76,9 @@ void ASessionSettingsSubsystem::SendAllSessionSettings(AFGPlayerController* Play
 }
 
 void ASessionSettingsSubsystem::Multicast_SessionSettingUpdated_Implementation(const FString& StrID, const FString& value) {
+	if (HasAuthority()) {
+		return;
+	}
 	PushSettingToSessionSettings(StrID, USessionSettingsManager::StringToVariant(value));
 }
 
