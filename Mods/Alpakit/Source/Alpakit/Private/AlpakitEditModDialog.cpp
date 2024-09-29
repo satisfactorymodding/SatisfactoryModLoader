@@ -195,10 +195,15 @@ FReply SAlpakitEditModDialog::OnOkClicked() {
 		}
 
 		// Write to the file and update the in-memory metadata
-		// Don't use UpdateDescriptor because it doesn't allow removing fields
+		// Don't use UpdateDescriptor here because it doesn't allow removing fields
 		FString PluginDescriptorPath = Mod->GetDescriptorFileName();
 		FText FailReason;
 		if(!NewDescriptor.Save(PluginDescriptorPath, FailReason))
+		{
+			FMessageDialog::Open(EAppMsgType::Ok, FailReason);
+		}
+		// Update the descriptor in memory
+		if(!Mod->UpdateDescriptor(NewDescriptor, FailReason))
 		{
 			FMessageDialog::Open(EAppMsgType::Ok, FailReason);
 		}
