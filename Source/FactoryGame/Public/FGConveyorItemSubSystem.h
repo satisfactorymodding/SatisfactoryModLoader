@@ -37,20 +37,56 @@ struct FItemContainer
 	UFGConveyorInstanceMeshBucket* CreateComponent(AActor* Outer, UStaticMesh* Mesh);
 };
 
+struct FLUTData
+{
+	TArray<FVector3f> Position;
+	TArray<FQuat4f> Quat;
+
+	FLUTData()
+	{
+		
+	}
+};
+
+struct FDeferredLookupAdd
+{
+	FLUTData Data;
+	TWeakObjectPtr<AFGConveyorChainActor> Owner;
+
+	FDeferredLookupAdd(FLUTData& InData, AFGConveyorChainActor* InOwner)
+	{
+		Data = InData;
+		Owner = InOwner;
+	}
+	
+	FDeferredLookupAdd(const TArray<FVector3f>& InPosition,const TArray<FQuat4f>& InQuats, AFGConveyorChainActor* InOwner)
+	{
+		Data.Position = InPosition;
+		Data.Quat = InQuats;
+		Owner = InOwner;
+	}
+	
+	FDeferredLookupAdd()
+	{
+		Data = FLUTData();
+		Owner = nullptr;
+	}
+};
+
 struct FConveyorItemData
 {
 	float Offset = 0.f;
 	uint32 ItemID = 0;
 	uint32 LUTSize = 0;
-	TArray<FVector3f>* LUTPosPtr = nullptr;
-	TArray<FQuat4f>* LUTQuat = nullptr;
+	const TArray<FVector3f>* LUTPosPtr = nullptr;
+	const TArray<FQuat4f>* LUTQuat = nullptr;
 	float DistanceMoved = 0.f;
 			
 	// Created later.
 	FRenderTransform RenderTransform;
 	FRenderTransform PrevRenderTransform;
 
-	FConveyorItemData(float InOffset,int32 InItemID, TArray<FVector3f>* InLUTPos,TArray<FQuat4f>* InLUTQuat,int32 InLUTSize, float InDistanceMoved)
+	FConveyorItemData(float InOffset,int32 InItemID, const TArray<FVector3f>* InLUTPos,const TArray<FQuat4f>* InLUTQuat,int32 InLUTSize, float InDistanceMoved)
 	{
 		Offset = InOffset;
 		ItemID = InItemID;
@@ -104,6 +140,10 @@ public:
 
 	bool IsKnown(UClass* Descriptor) const { return mKnownItems.Contains( Descriptor ); }
 	void LazyAddConveyorItemOfClass(UClass* Descriptor);
+
+	static void AddLookupTable(AFGConveyorChainActor* Actor, const TArray<FVector3f>& Position, const TArray<FQuat4f>& Quats);
+	static void RemoveChainActorFromLookupTable(AFGConveyorChainActor* ChainActor);
+
 private:
 	// Begin AActor interface
 	virtual void Tick(float DeltaSeconds) override;
@@ -113,15 +153,28 @@ private:
 
 	void InitializeConveyorItems();
 	void Update();
-	
+
+	// Resolves remove queue.
+	void CleanupLookupTables();
+
+	// Resolves add queue.
+	void AddNewLookupTables();
 	/* Called in the beginning of the frame to ensure we are working with clean buffers. */
 	static bool mIsConveyorRendererActive;
 
 private:
+	/* Map of actors to lookup data.
+	 * NOTE we dont want this as an UPROPERTY() because we don't want the GC to clean up the pointers.
+	 * They act more as an unique ID then a pointer in this use case. */
+	TMap<AFGConveyorChainActor*,FLUTData> LookupTableMap;
 
 	// Queued up by custom code in the unreal's visibility logic.
 	TQueue< const class UFGConveyorBeltVisibilityMesh*, EQueueMode::Mpsc > mVisibleConveyors;
 	TQueue< const class UFGConveyorLiftVisibilityMesh*, EQueueMode::Mpsc > mVisibleLifts;
+
+	// Queued up adds and removes for lookup data.
+	TQueue< class AFGConveyorChainActor*, EQueueMode::Mpsc > mRemovedChainActors;
+	TQueue< FDeferredLookupAdd, EQueueMode::Mpsc > mAddedChainActors;
 	
 	UPROPERTY()
 	TArray< const UFGConveyorBeltVisibilityMesh* > mActiveConveyorBelts;
@@ -149,4 +202,6 @@ private:
 	TArray<AFGBuildableConveyorLift*> ActiveLifts;
 
 	bool bAreItemsInitialized = false;
+
+	std::atomic<bool> bDidFinishTask = true;
 };

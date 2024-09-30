@@ -200,7 +200,7 @@ private:
 	void RemoveComponentFromCircuit( class UFGCircuitConnectionComponent* component );
 
 	/** Called when a power circuit is considered stable. */
-	void OnPowerCircuitStable( class UFGPowerCircuit* circuit, class AFGPlayerController* fuseResetInstigator );
+	void OnPowerCircuitStable( AFGPlayerController* fuseResetInstigator ) const;
 
 	void RemovePowerCircuitStabilityData( int32 circuitID );
 

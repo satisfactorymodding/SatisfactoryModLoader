@@ -12,7 +12,6 @@ AFGObjectScanner::AFGObjectScanner() : Super() {
 	this->mBeepDelayMin = 0.2;
 	this->mDetectionRange = 500.0;
 	this->mUpdateClosestObjectTime = 2.0;
-	this->mClosestObject = nullptr;
 	this->mClosestObjectInScanRange = false;
 	this->mNormalizedDistanceToClosestObject = 0.0;
 	this->mAngleToClosestObject = 0.0;
@@ -51,6 +50,8 @@ void AFGObjectScanner::OpenScannerInteractUI(){ }
 void AFGObjectScanner::ForceCloseScannerInteractUI(){ }
 void AFGObjectScanner::Input_OpenMenu(const FInputActionValue& actionValue){ }
 void AFGObjectScanner::Input_Cycle(const FInputActionValue& actionValue){ }
+AActor* AFGObjectScanner::GetClosestObjectIfLoaded() const { return nullptr; }
+FVector AFGObjectScanner::GetClosestObjectLocation() const { return FVector(); }
 void AFGObjectScanner::Server_SetScannableDescriptor_Implementation(TSubclassOf<UFGItemDescriptor> newScannableDescriptor, EFGScannerCycleDirection cycleDirection, bool shouldPlayAnimation){ }
 void AFGObjectScanner::Multicast_PlayCycleAnimation_Implementation(EFGScannerCycleDirection cycleDirection){ }
 void AFGObjectScanner::Multicast_PlayBeepAnimation_Implementation(){ }

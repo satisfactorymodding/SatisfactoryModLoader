@@ -591,6 +591,9 @@ public:
 	
 	virtual void ReceiveActionEvent( EDroneActionEvent ActionEvent, void* EventData = nullptr ) {}
 
+	/** Can be used to migrate or sanitize data for each individual drone action */
+	virtual void PostLoadGame( int32 saveVersion ) {}
+
 #if !UE_BUILD_SHIPPING
 	virtual void ShowDebug( FString& out_concatDebugString );
 #endif
@@ -650,6 +653,7 @@ public:
 	virtual void ReceiveActionEvent( EDroneActionEvent ActionEvent, void* EventData ) override;
 
 	virtual bool IsDone() const override;
+	virtual void PostLoadGame(int32 saveVersion) override;
 
 private:
 	void OnDestinationReached();
@@ -686,6 +690,7 @@ public:
 	virtual void ReceiveActionEvent( EDroneActionEvent ActionEvent, void* EventData ) override;
 
 	virtual bool IsDone() const override;
+	virtual void PostLoadGame(int32 saveVersion) override;
 
 private:
 	void OnDestinationReached();
@@ -836,6 +841,7 @@ public:
 	virtual void End() override;
 
 	virtual float GetActionDuration() const override;
+	virtual void PostLoadGame(int32 saveVersion) override;
 
 private:
 	UPROPERTY( SaveGame )

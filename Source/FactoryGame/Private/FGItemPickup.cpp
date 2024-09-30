@@ -2,6 +2,7 @@
 
 #include "FGItemPickup.h"
 #include "Net/UnrealNetwork.h"
+#include "UObject/ObjectSaveContext.h"
 
 AFGItemPickup::AFGItemPickup() : Super() {
 	this->mSignificanceRange = 5000.0;
@@ -29,6 +30,7 @@ void AFGItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 void AFGItemPickup::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGItemPickup::BeginPlay(){ }
 void AFGItemPickup::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGItemPickup::PreSave(FObjectPreSaveContext SaveContext){ Super::PreSave(SaveContext); }
 void AFGItemPickup::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGItemPickup::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGItemPickup::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

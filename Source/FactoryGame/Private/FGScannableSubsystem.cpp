@@ -9,7 +9,6 @@ AFGScannableSubsystem* AFGScannableSubsystem::Get(UWorld* world){ return nullptr
 AFGScannableSubsystem* AFGScannableSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGScannableSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGScannableSubsystem, mUnlootedDropPods);
 }
 void AFGScannableSubsystem::BeginPlay(){ }
 void AFGScannableSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
@@ -21,5 +20,5 @@ void AFGScannableSubsystem::OnCreatureSpawnerUpdated( AFGCreatureSpawner* creatu
 void AFGScannableSubsystem::OnCreatureSpawnerAdded( AFGCreatureSpawner* creatureSpawner){ }
 void AFGScannableSubsystem::OnCreatureSpawnerRemoved( AFGCreatureSpawner* creatureSpawner){ }
 bool AFGScannableSubsystem::DoesPickupExist(const FGuid& PickupGuid) const{ return bool(); }
-void AFGScannableSubsystem::CacheDropPods(){ }
-void AFGScannableSubsystem::AssignAvailableItemPickups(const TArray< FWorldScannableData >& ItemPickups){ }
+bool AFGScannableSubsystem::HasDropPodBeenLooted(const FGuid& dropPodGuid) const { return bool(); }
+void AFGScannableSubsystem::AssignScannableData(const TArray<FWorldScannableData>& itemPickups,	const TArray<FWorldScannableData>& dropPods){ }

@@ -6,6 +6,7 @@
 #include "FGPowerConnectionComponent.h"
 #include "FGPowerInfoComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "UObject/ObjectSaveContext.h"
 
 #if WITH_EDITOR
 void AFGDropPod::PostLoad(){ Super::PostLoad(); }
@@ -47,6 +48,7 @@ void AFGDropPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 }
 void AFGDropPod::BeginPlay(){ }
 void AFGDropPod::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGDropPod::PreSave(FObjectPreSaveContext SaveContext){ Super::PreSave(SaveContext); }
 void AFGDropPod::GainedSignificance_Implementation(){ }
 void AFGDropPod::LostSignificance_Implementation(){ }
 void AFGDropPod::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }

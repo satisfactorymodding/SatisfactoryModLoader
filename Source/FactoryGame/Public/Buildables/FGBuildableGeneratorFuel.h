@@ -146,7 +146,7 @@ private:
 	bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
 	
 	void UpdateInInventoryFuelTypes( const UFGInventoryComponent* instigatorInventory );
-	void UpdateUnlockedFuelTypes();
+	TArray< TSubclassOf< UFGItemDescriptor > > UpdateUnlockedFuelTypes();
 
 protected:
 	/** Kept for save game compatibility. @see mDefaultFuelClasses */

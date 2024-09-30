@@ -24,6 +24,7 @@ void UFGLightweightBuildableRemovalBundle::GetLifetimeReplicatedProps(TArray<FLi
 	DOREPLIFETIME(UFGLightweightBuildableRemovalBundle, mFullSize);
 }
 void UFGLightweightBuildableRemovalBundle::PostInitProperties(){ Super::PostInitProperties(); }
+void UFGLightweightBuildableRemovalBundle::OnRep_BuildableClass() { }
 void UFGLightweightCustomizationBundle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGLightweightCustomizationBundle, mLightweightCustomizationArray);
@@ -31,6 +32,7 @@ void UFGLightweightCustomizationBundle::GetLifetimeReplicatedProps(TArray<FLifet
 	DOREPLIFETIME(UFGLightweightCustomizationBundle, mFullSize);
 }
 void UFGLightweightCustomizationBundle::PostInitProperties(){ Super::PostInitProperties(); }
+void UFGLightweightCustomizationBundle::OnRep_BuildableClass(){ }
 AFGLightweightBuildableRepProxy::AFGLightweightBuildableRepProxy() : Super() {
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -63,8 +65,8 @@ void AFGLightweightBuildableRepProxy::Server_NotifyBundleBunchReceived_Implement
 void AFGLightweightBuildableRepProxy::Server_NotifyBundleInitialRepReceived_Implementation(UFGLightweightBuildableConstructionBundle* bundle){ }
 void AFGLightweightBuildableRepProxy::NotifyConstructBundleInitialRepReceived(UFGLightweightBuildableConstructionBundle* bundle){ }
 void AFGLightweightBuildableRepProxy::Client_SendConstructionBundle_Implementation(UFGLightweightBuildableConstructionBundle* bundle, const TArray< FLightweightBuildableReplicationItem >& Items){ }
-void AFGLightweightBuildableRepProxy::Server_NotifyRemovalBundleReplicated_Implementation(UFGLightweightBuildableRemovalBundle* removalBundle){ }
-void AFGLightweightBuildableRepProxy::Server_NotifyCustomizationBundleReplicated_Implementation(UFGLightweightCustomizationBundle* customizationBundle){ }
+void AFGLightweightBuildableRepProxy::Server_NotifyRemovalBundleReplicated_Implementation(int32 clientCount, UFGLightweightBuildableRemovalBundle* removalBundle){ }
+void AFGLightweightBuildableRepProxy::Server_NotifyCustomizationBundleReplicated_Implementation(int32 clientCount, UFGLightweightCustomizationBundle* customizationBundle){ }
 AFGLightweightBuildableSubsystem::AFGLightweightBuildableSubsystem() : Super() {
 	this->mCachedLocalRepProxy = nullptr;
 	this->mBuildEffectComponentActor = nullptr;

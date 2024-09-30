@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
 #include "FactoryGame.h"
@@ -31,8 +31,6 @@ public:
 	void BuildLUT();
 
 	bool bHasValidLUT = false;
-	TArray<FVector3f> mLUTPosition;
-	TArray<FQuat4f> mLUTQuat;
 	
 	/*
 	*	On Server we want to know when this actor is culled for a connection. When it is culled we clear the removal/addition index
@@ -309,4 +307,3 @@ class FACTORYGAME_API AFGConveyorChainActor_RepSizeNoCull : public AFGConveyorCh
 {
 	GENERATED_BODY()
 };
-

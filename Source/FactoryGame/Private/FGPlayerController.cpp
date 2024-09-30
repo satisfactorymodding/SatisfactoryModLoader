@@ -29,7 +29,6 @@ AFGPlayerController::AFGPlayerController() : Super() {
 	this->mSpeedToReachForAchievement = 4166.67;
 	this->mIsRespawning = false;
 	this->mCachedMapAreaTexture = nullptr;
-	this->mInTutorialMode = false;
 	this->mRespawnFromDeath = false;
 	this->mRespawnFromJoin = false;
 	this->mMinPhotoModeFOV = 5;
@@ -45,7 +44,6 @@ void AFGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AFGPlayerController, mLightweightBuildableRepProxy);
 	DOREPLIFETIME(AFGPlayerController, mRemoteCallObjects);
 	DOREPLIFETIME(AFGPlayerController, mIsRespawning);
-	DOREPLIFETIME(AFGPlayerController, mInTutorialMode);
 	DOREPLIFETIME(AFGPlayerController, mDedicatedServerPrivilegeLevel);
 }
 void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents(); }
@@ -117,6 +115,7 @@ void AFGPlayerController::ClientPlayCameraAnimationSequence_Implementation( UCam
 float AFGPlayerController::GetObjectScreenRadius(AActor* actor, float boundingRadius){ return float(); }
 float AFGPlayerController::GetScreenBasedObjectRadius(AActor* actor, float screenRadius){ return float(); }
 void AFGPlayerController::SetDisabledInputGate(FDisabledInputGate newDisabledInputGate){ }
+bool AFGPlayerController::IsInTutorialMode(){ return bool() ;}
 void AFGPlayerController::Client_NotifyHitFeedback_Implementation(EHitFeedbackType feedbackType, AActor* damageCauser, AFGCharacterBase* hitCharacter){ }
 void AFGPlayerController::Client_SendChatMessage_Implementation(const FChatMessageStruct& chatMessage){ }
 FString AFGPlayerController::GetScreenshotPath(bool isHighRes){ return FString(); }

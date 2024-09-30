@@ -361,6 +361,9 @@ public:
 	virtual bool IsSupportedForNetworking() const override { return true; }
 	virtual void PostInitProperties() override;
 
+	UFUNCTION()
+	void OnRep_BuildableClass();
+	
 	UPROPERTY()
 	AFGLightweightBuildableSubsystem* mCachedLightweightSubsystem;
 
@@ -370,11 +373,17 @@ public:
 	UPROPERTY( Replicated )
 	FLightweightBuildableRemovalArray mLightweightBuildableRemovalArray;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_BuildableClass )
 	TSubclassOf< class AFGBuildable > mBuildableClass;
+
+	UPROPERTY()
+	TArray< int32 > mPendingIndices;
 
 	UPROPERTY( Replicated )
 	int32 mFullSize;
+
+	UPROPERTY()
+	int32 mNumReceived = 0;
 	
 };
 
@@ -387,6 +396,9 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual bool IsSupportedForNetworking() const override { return true; }
 	virtual void PostInitProperties() override;
+	
+	UFUNCTION()
+	void OnRep_BuildableClass();
 
 	UPROPERTY()
 	AFGLightweightBuildableSubsystem* mCachedLightweightSubsystem;
@@ -394,11 +406,17 @@ public:
 	UPROPERTY( Replicated )
 	FLightweightBuildableCustomizationArray mLightweightCustomizationArray;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing=OnRep_BuildableClass )
 	TSubclassOf< class AFGBuildable > mBuildableClass;
+
+	UPROPERTY()
+	TArray< int32 > mPendingIndices;
 
 	UPROPERTY( Replicated )
 	int32 mFullSize;
+
+	UPROPERTY()
+	int32 mNumReceived = 0;
 	
 };
 
@@ -431,10 +449,10 @@ public:
 	void Client_SendConstructionBundle( UFGLightweightBuildableConstructionBundle* bundle, const TArray< FLightweightBuildableReplicationItem >& Items );
 	
 	UFUNCTION(Server, Reliable)
-	void Server_NotifyRemovalBundleReplicated(UFGLightweightBuildableRemovalBundle* removalBundle);
+	void Server_NotifyRemovalBundleReplicated( int32 clientCount, UFGLightweightBuildableRemovalBundle* removalBundle);
 
 	UFUNCTION(Server, Reliable)
-	void Server_NotifyCustomizationBundleReplicated(UFGLightweightCustomizationBundle* customizationBundle );
+	void Server_NotifyCustomizationBundleReplicated( int32 clientCount, UFGLightweightCustomizationBundle* customizationBundle );
 	
 	UPROPERTY( Replicated )
 	TArray< UFGLightweightBuildableConstructionBundle* > mPendingConstructionBundles;
@@ -703,5 +721,3 @@ private:
 	float mTimeSinceLastStaleTemporaryCulling;
 
 };
-
-

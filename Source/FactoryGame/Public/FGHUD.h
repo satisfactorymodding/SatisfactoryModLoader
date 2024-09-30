@@ -61,6 +61,7 @@ struct FCompassEntry
 	bool bHasSpecialEffect{false};
 	bool bHasDynamicText{false};
 	bool bImportantEntry{false};
+	bool bIsFilteredOut{false};
 	/** True if special effect is visible, special effect will be set to false if time left expires */
 	bool bSpecialEffectVisible{true};
 	float SpecialEffectTime{0.0f};

@@ -338,11 +338,7 @@ public:
 	FDisabledInputGateDelegate mDisabledInputGateChanged;
 
 	UFUNCTION( BlueprintCallable, Category = "Input")
-	FORCEINLINE bool IsInTutorialMode() { return mInTutorialMode; }
-	
-	/** Set when a player is added to the TutorialManager */
-	UFUNCTION( BlueprintCallable, Category = "Input" )
-	void SetTutorialMode( bool active ) { mInTutorialMode = active; }
+	bool IsInTutorialMode();
 
 	UFUNCTION( Client, Reliable )
 	void Client_NotifyHitFeedback( EHitFeedbackType feedbackType, AActor* damageCauser, AFGCharacterBase* hitCharacter );
@@ -801,10 +797,6 @@ private:
 	/** Cached info about the map areas */
 	UPROPERTY()
 	class UFGMapAreaTexture* mCachedMapAreaTexture;
-
-	/** If the tutorial is currently active and affecting the player controller */
-	UPROPERTY( Replicated )
-	bool mInTutorialMode;
 
 	/** Did we died */
 	UPROPERTY()

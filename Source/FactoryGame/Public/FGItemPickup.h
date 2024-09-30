@@ -51,8 +51,6 @@ class FACTORYGAME_API AFGItemPickup : public AFGStaticReplicatedActor, public IF
 {
 	GENERATED_BODY()
 
-	friend class AFGWorldScannableDataGenerator;
-	
 public:
 	AFGItemPickup();
 
@@ -61,6 +59,7 @@ public:
 	virtual void Serialize( FArchive& ar ) override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason) override;
+	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 	//~ End UObject interface
 
 	// Begin IFGSaveInterface

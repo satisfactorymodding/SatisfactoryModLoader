@@ -145,6 +145,7 @@ void FDroneAction_TraversePath::Begin(){ }
 void FDroneAction_TraversePath::End(){ }
 void FDroneAction_TraversePath::ReceiveActionEvent(EDroneActionEvent ActionEvent, void* EventData){ }
 bool FDroneAction_TraversePath::IsDone() const{ return bool(); }
+void FDroneAction_TraversePath::PostLoadGame(int32 saveVersion){ }
 void FDroneAction_TraversePath::OnDestinationReached(){ }
 FDroneAction_MoveToLocation::FDroneAction_MoveToLocation(){ }
 FDroneAction_MoveToLocation::FDroneAction_MoveToLocation(AFGDroneVehicle* drone, const FVector& location, EDroneFlyingMode flyingMode, const FVector& directionToFace , EDroneDirectionFacingIstruction directionFacingInstruction){ }
@@ -152,6 +153,7 @@ void FDroneAction_MoveToLocation::Begin(){ }
 void FDroneAction_MoveToLocation::End(){ }
 void FDroneAction_MoveToLocation::ReceiveActionEvent(EDroneActionEvent ActionEvent, void* EventData){ }
 bool FDroneAction_MoveToLocation::IsDone() const{ return bool(); }
+void FDroneAction_MoveToLocation::PostLoadGame(int32 saveVersion){ }
 void FDroneAction_MoveToLocation::OnDestinationReached(){ }
 #if !UE_BUILD_SHIPPING
 void FDroneAction_RequestDocking::ShowDebug(FString& out_concatDebugString){ }
@@ -186,3 +188,4 @@ FDroneAction_TravelStartSequence::FDroneAction_TravelStartSequence(AFGDroneVehic
 void FDroneAction_TravelStartSequence::Begin(){ }
 void FDroneAction_TravelStartSequence::End(){ }
 float FDroneAction_TravelStartSequence::GetActionDuration() const{ return float(); }
+void FDroneAction_TravelStartSequence::PostLoadGame(int32 saveVersion){ }

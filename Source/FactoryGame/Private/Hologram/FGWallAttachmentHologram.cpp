@@ -8,4 +8,5 @@ AFGWallAttachmentHologram::AFGWallAttachmentHologram() : Super() {
 	this->mSnapAxis = EAxis::X;
 	this->mNeedsValidFloor = false;
 }
+void AFGWallAttachmentHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGWallAttachmentHologram::CheckValidPlacement(){ }

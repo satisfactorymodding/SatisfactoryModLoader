@@ -61,5 +61,5 @@ void AFGCircuitSubsystem::RebuildCircuitGroups(){ }
 void AFGCircuitSubsystem::RebuildCircuit(int32 circuitID){ }
 void AFGCircuitSubsystem::AddComponentToCircuit( UFGCircuitConnectionComponent* component, int32 circuitID, bool rebuildTrivialCircuits){ }
 void AFGCircuitSubsystem::RemoveComponentFromCircuit( UFGCircuitConnectionComponent* component){ }
-void AFGCircuitSubsystem::OnPowerCircuitStable( UFGPowerCircuit* circuit,  AFGPlayerController* fuseResetInstigator){ }
+void AFGCircuitSubsystem::OnPowerCircuitStable( AFGPlayerController* fuseResetInstigator ) const{ }
 void AFGCircuitSubsystem::RemovePowerCircuitStabilityData(int32 circuitID){ }

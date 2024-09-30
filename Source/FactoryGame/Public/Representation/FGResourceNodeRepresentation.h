@@ -30,6 +30,7 @@ public:
 	virtual FVector2f GetRepresentationCompassEffectSize() const override;
 	virtual bool UpdateRepresentationCompassEffectMaterial(UMaterialInstanceDynamic* compassMaterialInstance, APlayerController* ownerPlayerController, float distanceToPlayer, float totalTime) override;
 	virtual bool IsImportantCompassRepresentation() const override;
+	virtual bool GetShouldShowOnMap() const override;
 	// End UFGActorRepresentation interface
 	
 	void SetupResourceNodeRepresentation( class AFGResourceNodeBase* resourceNode );

@@ -52,4 +52,4 @@ bool AFGBuildableGeneratorFuel::CanLoadFuel() const{ return bool(); }
 bool AFGBuildableGeneratorFuel::CanLoadSupplemental() const{ return bool(); }
 bool AFGBuildableGeneratorFuel::FilterFuelClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
 void AFGBuildableGeneratorFuel::UpdateInInventoryFuelTypes(const UFGInventoryComponent* instigatorInventory){ }
-void AFGBuildableGeneratorFuel::UpdateUnlockedFuelTypes(){ }
+TArray< TSubclassOf< UFGItemDescriptor > > AFGBuildableGeneratorFuel::UpdateUnlockedFuelTypes(){ return TArray< TSubclassOf< UFGItemDescriptor > >(); }

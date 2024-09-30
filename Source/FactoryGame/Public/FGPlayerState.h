@@ -286,6 +286,9 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
+	void RegisterPlayerWithSessionRemote(bool bWasFromInvite);
+	void RegisterPlayerWithSessionAuthoritative(bool bWasFromInvite);
+	
 	/** Set the pawn we controls (it should be the character, not a vehicle) */
 	FORCEINLINE void SetOwnedPawn( class APawn* pawn ){ mOwnedPawn = pawn; }
 

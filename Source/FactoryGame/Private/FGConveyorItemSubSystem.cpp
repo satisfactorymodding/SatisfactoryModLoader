@@ -22,9 +22,13 @@ AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
 }
 AFGConveyorItemSubsystem* AFGConveyorItemSubsystem::Get(UWorld* world){ return nullptr; }
 void AFGConveyorItemSubsystem::LazyAddConveyorItemOfClass(UClass* Descriptor){ }
+void AFGConveyorItemSubsystem::AddLookupTable(AFGConveyorChainActor* Actor, const TArray<FVector3f>& Position, const TArray<FQuat4f>& Quats){ }
+void AFGConveyorItemSubsystem::RemoveChainActorFromLookupTable(AFGConveyorChainActor* ChainActor){ }
 void AFGConveyorItemSubsystem::Tick(float DeltaSeconds){ }
 void AFGConveyorItemSubsystem::BeginPlay(){ }
 void AFGConveyorItemSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGConveyorItemSubsystem::InitializeConveyorItems(){ }
 void AFGConveyorItemSubsystem::Update(){ }
+void AFGConveyorItemSubsystem::CleanupLookupTables(){ }
+void AFGConveyorItemSubsystem::AddNewLookupTables(){ }
 bool AFGConveyorItemSubsystem::mIsConveyorRendererActive = bool();

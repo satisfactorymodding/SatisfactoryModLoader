@@ -19,6 +19,7 @@ public:
 	AFGWallAttachmentHologram();
 
 	// Begin AFGHologram interface
+	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual void CheckValidPlacement() override;
 	// End AFGHologram interface
 };

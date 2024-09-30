@@ -19,6 +19,7 @@ UMaterialInterface* UFGResourceNodeRepresentation::GetRepresentationCompassEffec
 FVector2f UFGResourceNodeRepresentation::GetRepresentationCompassEffectSize() const{ return FVector2f(); }
 bool UFGResourceNodeRepresentation::UpdateRepresentationCompassEffectMaterial(UMaterialInstanceDynamic* compassMaterialInstance, APlayerController* ownerPlayerController, float distanceToPlayer, float totalTime){ return bool(); }
 bool UFGResourceNodeRepresentation::IsImportantCompassRepresentation() const{ return bool(); }
+bool UFGResourceNodeRepresentation::GetShouldShowOnMap() const{ return bool(); }
 void UFGResourceNodeRepresentation::SetupResourceNodeRepresentation( AFGResourceNodeBase* resourceNode){ }
 bool UFGResourceNodeRepresentation::IsCluster() const{ return bool(); }
 bool UFGResourceNodeRepresentation::IsOccupied() const{ return bool(); }

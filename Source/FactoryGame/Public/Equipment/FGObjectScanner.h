@@ -104,6 +104,14 @@ protected:
 	UFUNCTION( NetMulticast, Reliable )
 	void Multicast_PlayBeepAnimation();
 
+	/** Returns the location of the object closest to the scanner if it is loaded, otherwise returns null */
+	UFUNCTION( BlueprintPure, Category = "Scanner" )
+	AActor* GetClosestObjectIfLoaded() const;
+
+	/** Returns the location of the object closest to the scanner. If the object is not loaded, returns the estimated location */
+	UFUNCTION( BlueprintPure, Category = "Scanner" )
+	FVector GetClosestObjectLocation() const;
+
 	/** Called when the scanner should play the "Beep" VFX when the object is in range */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Scanner", DisplayName = "PlayScannerBeepVFX" )
 	void K2_PlayScannerBeepVFX();
@@ -172,8 +180,8 @@ protected:
 	float mUpdateClosestObjectTime;
 
 	/** The current closest Object */
-	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_ClosestObject, Category = "Scanner" )
-	class AActor* mClosestObject;
+	UPROPERTY( ReplicatedUsing = OnRep_ClosestObject )
+	FScannableActorDetails mClosestObject;
 
 	UPROPERTY( BlueprintReadOnly, Category = "Scanner" )
 	bool mClosestObjectInScanRange;

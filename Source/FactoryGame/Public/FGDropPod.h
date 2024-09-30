@@ -77,6 +77,7 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 	// End AActor interface
 
 #if WITH_EDITOR
@@ -130,6 +131,9 @@ public:
 	/** Returns true if this has been opened and also looted (e.g. it's reward has been removed from the inventory) */
 	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
 	bool HasBeenLooted() const;
+
+	/** Returns the GUID of the drop pod actor. This is used in runtime to address drop pods that are not streamed in yet */
+	FORCEINLINE FGuid GetDropPodGuid() const { return mDropPodGuid; }
 	
 	/** Returns the inventory containing possible loot */
 	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
@@ -262,4 +266,8 @@ protected:
 	
 	UPROPERTY( SaveGame )
 	bool mHasBeenLooted = false;
+
+	/** Actor ID cached during the cook to be able to identify this actor in runtime */
+	UPROPERTY()
+	FGuid mDropPodGuid;
 };

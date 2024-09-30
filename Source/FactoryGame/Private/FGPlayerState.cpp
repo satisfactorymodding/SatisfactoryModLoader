@@ -128,6 +128,8 @@ void AFGPlayerState::PostLoadGame_Implementation(int32 saveVersion, int32 gameVe
 void AFGPlayerState::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGPlayerState::NeedTransform_Implementation(){ return bool(); }
 bool AFGPlayerState::ShouldSave_Implementation() const{ return bool(); }
+void AFGPlayerState::RegisterPlayerWithSessionRemote(bool bWasFromInvite){ }
+void AFGPlayerState::RegisterPlayerWithSessionAuthoritative(bool bWasFromInvite){ }
 void AFGPlayerState::SetPlayerColorData(FPlayerColorData slotData){ }
 void AFGPlayerState::SetCreatureHostility(EPlayerHostilityMode hostility){ }
 void AFGPlayerState::Server_SetCreatureHostility_Implementation(EPlayerHostilityMode hostility){ }

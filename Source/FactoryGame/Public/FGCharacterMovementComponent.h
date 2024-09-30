@@ -546,6 +546,9 @@ public:
 	/** Keeps is the player sprinting this update or not? */
 	bool mIsSliding;
 
+	/** Keep track of what status was for mIsSliding */
+	bool mLastIsSliding; 
+
 	/** True if the player is pressing jump */
 	bool mIsPressingJump;
 
@@ -765,10 +768,6 @@ public:
 	uint8 mSavedIsPressingJump : 1;
 
 	uint8 mSavedWantsToSprintOnZipline : 1;
-
-	float mSavedSlideTime;
-
-	float mSavedLastSlideTime;
 	
 	FVector mSavedHookLocation;
 
