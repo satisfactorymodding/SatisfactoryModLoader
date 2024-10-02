@@ -5,6 +5,7 @@ using System.IO;
 using System;
 using System.Diagnostics;
 using EpicGames.Core;
+using Microsoft.Extensions.Logging;
 
 public class SML : ModuleRules
 {
@@ -127,7 +128,7 @@ public class SML : ModuleRules
         PrivateDefinitions.Add($"SML_BUILD_METADATA=\"{BuildMetadataString}\"");
     }
 
-    private static void RetrieveHeadBranchAndCommitFromGit(DirectoryReference RootDir, out string BranchName, out string CommitRef) {
+    private void RetrieveHeadBranchAndCommitFromGit(DirectoryReference RootDir, out string BranchName, out string CommitRef) {
         BranchName = null;
         CommitRef = null;
             
@@ -146,14 +147,14 @@ public class SML : ModuleRules
                 if (BranchNameProcess.ExitCode == 0)
                     BranchName = BranchNameProcess.StandardOutput.ReadToEnd().Trim();
                 else
-                    Log.TraceWarning("Failed to run git to retrieve branch name: exit code {0}. Falling back to checking .git folder", BranchNameProcess.ExitCode);
+                    Target.Logger.LogWarning("Failed to run git to retrieve branch name: exit code {0}. Falling back to checking .git folder", BranchNameProcess.ExitCode);
             }
             else
             {
-                Log.TraceWarning("Failed to run git to retrieve branch name: Failed to create git process. Falling back to checking .git folder");
+                Target.Logger.LogWarning("Failed to run git to retrieve branch name: Failed to create git process. Falling back to checking .git folder");
             }
         } catch (Exception Ex) { 
-            Log.TraceWarning("Failed to run git to retrieve branch name: {0}. Falling back to checking .git folder", Ex.Message);
+            Target.Logger.LogWarning("Failed to run git to retrieve branch name: {0}. Falling back to checking .git folder", Ex.Message);
         }
 
         try
@@ -170,14 +171,14 @@ public class SML : ModuleRules
                 if (CommitProcess.ExitCode == 0)
                     CommitRef = CommitProcess.StandardOutput.ReadToEnd().Trim();
                 else
-                    Log.TraceWarning("Failed to run git to retrieve commit: exit code {0}. Falling back to checking .git folder", CommitProcess.ExitCode);
+                    Target.Logger.LogWarning("Failed to run git to retrieve commit: exit code {0}. Falling back to checking .git folder", CommitProcess.ExitCode);
             }
             else
             {
-                Log.TraceWarning("Failed to run git to retrieve commit: Failed to create git process. Falling back to checking .git folder");
+                Target.Logger.LogWarning("Failed to run git to retrieve commit: Failed to create git process. Falling back to checking .git folder");
             }
         } catch (Exception Ex) {
-            Log.TraceWarning("Failed to run git to retrieve commit: {0}. Falling back to checking .git folder", Ex.Message);
+            Target.Logger.LogWarning("Failed to run git to retrieve commit: {0}. Falling back to checking .git folder", Ex.Message);
         }
 
         if (CommitRef != null && BranchName != null) return;
@@ -206,12 +207,12 @@ public class SML : ModuleRules
                 CommitRef = HeadRefFileContents;
                 return;
             }
-            Log.TraceWarning("Git HEAD does not refer to a branch, are we in a detached head state? HEAD: {0}", HeadFileContents);
+            Target.Logger.LogWarning("Git HEAD does not refer to a branch, are we in a detached head state? HEAD: {0}", HeadFileContents);
             BranchName = "detached-head";
             CommitRef = HeadFileContents;
         }
         catch (Exception Ex) {
-            Log.TraceWarning("Failed to handle git HEAD file at {0}: {1}", GitHeadFile, Ex.Message);
+            Target.Logger.LogWarning("Failed to handle git HEAD file at {0}: {1}", GitHeadFile, Ex.Message);
         }
     }
 }
