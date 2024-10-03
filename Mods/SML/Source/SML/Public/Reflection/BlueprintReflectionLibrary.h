@@ -160,7 +160,7 @@ public:
         P_FINISH;
 
     	P_NATIVE_BEGIN;
-        if (StructInfo.Struct != NULL) {
+        if (StructInfo.Struct == NULL) {
             const FBlueprintExceptionInfo ExceptionInfo(EBlueprintExceptionType::AccessViolation,
               INVTEXT("Tried to pass NULL struct to DeflectStruct"));
             FBlueprintCoreDelegates::ThrowScriptException(Context, Stack, ExceptionInfo);
@@ -175,7 +175,7 @@ public:
         P_FINISH;
 
     	P_NATIVE_BEGIN;
-        if (StructInfo.Struct != NULL) {
+        if (StructInfo.Struct == NULL) {
             const FBlueprintExceptionInfo ExceptionInfo(EBlueprintExceptionType::AccessViolation,
               INVTEXT("Tried to pass NULL struct to ReflectStruct"));
             FBlueprintCoreDelegates::ThrowScriptException(Context, Stack, ExceptionInfo);
