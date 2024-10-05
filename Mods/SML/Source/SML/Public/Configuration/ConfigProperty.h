@@ -64,7 +64,7 @@ public:
     FConfigVariableDescriptor CreatePropertyDescriptor(class UConfigGenerationContext* Context, const FString& OuterPath) const;
 
 	/** Fills variable of provided object with the value carried by this property */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, BlueprintPure = false)
     void FillConfigStruct(const FReflectedObject& ReflectedObject, const FString& VariableName) const;
 
 private:
