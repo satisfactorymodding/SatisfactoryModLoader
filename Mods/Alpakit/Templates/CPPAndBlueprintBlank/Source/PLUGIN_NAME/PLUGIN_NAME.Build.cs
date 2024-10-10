@@ -7,6 +7,7 @@ public class PLUGIN_NAME : ModuleRules
 	public PLUGIN_NAME(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		CppStandard = CppStandardVersion.Cpp20;
 
 		// FactoryGame transitive dependencies
 		// Not all of these are required, but including the extra ones saves you from having to add them later.
