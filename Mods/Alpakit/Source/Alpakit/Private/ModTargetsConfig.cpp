@@ -10,8 +10,8 @@ FModTargetsConfig::FModTargetsConfig(TSharedRef<IPlugin> InMod) {
 	TArray<FString> Targets;
 	ConfigFile.GetArray(TEXT("ModTargets"), TEXT("Targets"), Targets);
 	bWindows = Targets.Contains(TEXT("Windows")) || Targets.Num() == 0;
-	bWindowsServer = Targets.Contains(TEXT("WindowsServer"));
-	bLinuxServer = Targets.Contains(TEXT("LinuxServer"));
+	bWindowsServer = Targets.Contains(TEXT("WindowsServer")) || Targets.Num() == 0;
+	bLinuxServer = Targets.Contains(TEXT("LinuxServer")) || Targets.Num() == 0;
 }
 
 void FModTargetsConfig::Save() {
