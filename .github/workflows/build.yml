@@ -53,4 +53,4 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         with:
           name: sml
-          path: SML\\Saved\\ArchivedPlugins\\SML\\*.zip
+          path: C:\\SML\\SML\\Saved\\ArchivedPlugins\\SML\\*.zip
