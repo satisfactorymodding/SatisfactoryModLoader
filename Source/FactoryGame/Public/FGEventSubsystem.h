@@ -15,11 +15,15 @@
 UENUM( BlueprintType )
 enum class EEvents : uint8
 {
-	EV_None = 0						UMETA( DisplayName = "None"),
-	EV_Christmas = 1				UMETA( DisplayName = "Christmas"),
-	EV_Birthday = 2					UMETA( DisplayName = "Satisfactory Birthday"),
-	EV_CSSBirthday = 3				UMETA( DisplayName = "CSS Birthday"),
-	EV_FirstOfApril = 4				UMETA( DisplayName = "First Of April"),
+	EV_None						UMETA( DisplayName = "None"),
+	
+	EV_Christmas				UMETA( DisplayName = "Christmas"),
+	EV_Birthday					UMETA( DisplayName = "Satisfactory Birthday"),
+	EV_CSSBirthday				UMETA( DisplayName = "CSS Birthday"),
+	EV_FirstOfApril				UMETA( DisplayName = "First Of April"),
+
+	// New events above this line
+	EV_MAX						UMETA( Hidden )
 };
 
 USTRUCT( BlueprintType )

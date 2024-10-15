@@ -18,7 +18,6 @@ void UFGLocalPlayer::OnMaintainYAxisFOVUpdated(FString updatedCvar){ }
 void UFGLocalPlayer::GetUserWatermarkInformation(TArray<FString>& OutWatermarkData) const{ }
 void UFGLocalPlayer::UpdatePresence(){ }
 void UFGLocalPlayer::RefreshRecentRegisteredSocialAccountID(){ }
-TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerId() const{ return TSharedPtr<const FUniqueNetId>(); }
 void UFGLocalPlayer::PopulateEnhancedInputUserSettingsWithContexts( UEnhancedInputUserSettings* inputUserSettings){ }
 void UFGLocalPlayer::PopulateChildMappingContexts(const UFGInputMappingContext* mainContext, TArray<UFGInputMappingContext*>& out_childContexts){ }
 void UFGLocalPlayer::ForceHideEarlyLoadingScreen(){ }

@@ -49,15 +49,6 @@ public:
 	/** Get The current status of this connection */
 	ETrainPlatformConnectionType GetConnectionType() const { return mPlatformConnectionStatus; }
 
-	/** Force the component into the reverse direction */
-	void ReverseComponentDirection();
-
-	/** Set the component direction explicitly */
-	void SetComponentDirection( uint8 componentDirection );
-
-	/** Get the direction of the connection */
-	uint8 GetComponentDirection() const { return mComponentDirection; }
-
 	/** Get owning FGBuildableTrainPlatform */
 	class AFGBuildableTrainPlatform* GetPlatformOwner();
 
@@ -71,10 +62,6 @@ public:
 	
 	/** Is this platform connected to another one? */
 	bool IsConnected() const;
-
-	/** TEMP: Will remove (TM) */
-	void DrawDebugDirection();
-	FTimerHandle mDrawDebugTimerHandle;
 
 protected:
 	/** This bool indicates an arbitrary direction of this platform. It is used for stepping through platforms 

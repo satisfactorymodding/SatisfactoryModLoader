@@ -46,7 +46,7 @@ void UFGVertexAnimatedMeshComponent::OnProductionStatusChanged(EProductionStatus
 void UFGVertexAnimatedMeshComponent::OnBuildingCurrentPotentialChanged(float NewPotential){ }
 void UFGVertexAnimatedMeshComponent::DelayedOverclockingChanged(){ }
 void UFGVertexAnimatedMeshComponent::OnOverclockingChanged(EVTXAnimOverclockState NewState, bool IsSignificant){ }
-void UFGVertexAnimatedMeshComponent::UpdateEffectTimeline(const float Dt, const float Dist, const float WorldTime){ }
+void UFGVertexAnimatedMeshComponent::UpdateEffectTimeline(const float LastTickTime, const float Dist, const float WorldTime){ }
 void UFGVertexAnimatedMeshComponent::OnUpdateState(EVTXAnimProductionStatus NewState){ }
 void UFGVertexAnimatedMeshComponent::StartProducing(bool bFromFrozenIdle , int32 AnimationSequenceID){ }
 void UFGVertexAnimatedMeshComponent::StartWindup(){ }
@@ -62,7 +62,7 @@ TArray<UMaterialInterface*> UFGVertexAnimatedMeshComponent::GetMaterialsFromStat
 void UFGVertexAnimatedMeshComponent::UpdateMaterial(TArray<UMaterialInterface*> Materials){ }
 #if WITH_EDITOR
 #endif 
-void UFGNotifyBase::TryFireNotify(const float& Distance, const float& AnimDuration, const float& DeltaTime, UFGVertexAnimatedMeshComponent* Owner,const UFGNotifyBase* Entry, bool bForceSeek){ }
+void UFGNotifyBase::TryFireNotify(const float& Distance, const float& AnimDuration, const float& LastTickTime, UFGVertexAnimatedMeshComponent* Owner,const UFGNotifyBase* Entry, bool bForceSeek){ }
 void UFGStaticVFXNotify::Fire(UFGVertexAnimatedMeshComponent* Owner, float CurrentTime , bool bForceSeek) const{ }
 void UFGStaticSFXNotify::Fire(UFGVertexAnimatedMeshComponent* Owner, float CurrentTime , bool bForceSeek) const{ }
 #if WITH_EDITOR

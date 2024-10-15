@@ -75,6 +75,7 @@ void AFGBlueprintSubsystem::LoadStoredBlueprint(UFGBlueprintDescriptor* blueprin
 void AFGBlueprintSubsystem::CollectObjects(TArray<  AFGBuildable* >& buildables, TArray< UObject* >& out_objectsToSerialize){ }
 FString AFGBlueprintSubsystem::GetSessionBlueprintPath(){ return FString(); }
 FString AFGBlueprintSubsystem::SanitizeBlueprintFileName(const FString& blueprintName){ return FString(); }
+FString AFGBlueprintSubsystem::SanitizeBlueprintFolderName(const FString& folderName) { return FString(); }
 void AFGBlueprintSubsystem::GatherRecipeObjectRefsForBuildableArray(const TArray< AFGBuildable* >& buildables, TArray< FObjectReferenceDisc >& out_recipeRefs){ }
 AFGBuildableBlueprintDesigner* AFGBlueprintSubsystem::IsLocationInsideABlueprintDesigner(const FVector& hitLocation){ return nullptr; }
 void AFGBlueprintSubsystem::NotifyBuildableWithBlueprintBuildIDSet( AFGBuildable* buildable, int32 id){ }

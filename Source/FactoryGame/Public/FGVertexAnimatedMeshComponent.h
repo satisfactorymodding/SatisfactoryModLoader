@@ -155,7 +155,8 @@ public:
 		return FMath::Fmod(( ( WorldTime - StartTime ) * Speed ) + CurrentSequenceDuration, CurrentSequenceDuration);
 	}
 	FORCEINLINE float GetSequenceLength() const { return CurrentSequenceDuration; }
-
+	FORCEINLINE void SetLastTickTime(float AnimationDurationLastTick ) { mTimeLastTime = AnimationDurationLastTick; }
+	FORCEINLINE float GetLastTickTime() const { return mTimeLastTime; }
 	void RandomizeAnimation();
 	
 	/* Called when parent buildable production status changed.*/
@@ -169,7 +170,7 @@ public:
 	void DelayedOverclockingChanged();
 
 	void OnOverclockingChanged(EVTXAnimOverclockState NewState, bool IsSignificant);
-	void UpdateEffectTimeline( const float Dt, const float Dist, const float WorldTime );
+	void UpdateEffectTimeline( const float LastTickTime, const float Dist, const float WorldTime );
 
 	FORCEINLINE void SetWorldTimeLastRandomization(float WorldTime) { mWorldTimeLastRandomization = WorldTime; }
 	FORCEINLINE float GetTimeSinceLastRandomization( const UWorld* World ) const { return World->TimeSince( mWorldTimeLastRandomization ); }
@@ -279,7 +280,8 @@ private:
 	float CurrentSequenceDuration = 0.f;
 
 	float mTimeSinceLastTick = 0.f;
-
+	float mTimeLastTime = 0.f;
+	
 	/* Last world time we randomized the animation selection. */
 	float mWorldTimeLastRandomization = -1;
 
@@ -355,7 +357,7 @@ public:
 	virtual void Deactivate(UFGVertexAnimatedMeshComponent* Owner) const
 	{ }
 	
-	static void TryFireNotify( const float& Distance, const float& AnimDuration, const float& DeltaTime, UFGVertexAnimatedMeshComponent* Owner,const UFGNotifyBase* Entry, bool bForceSeek = false );
+	static void TryFireNotify( const float& Distance, const float& AnimDuration, const float& LastTickTime, UFGVertexAnimatedMeshComponent* Owner,const UFGNotifyBase* Entry, bool bForceSeek = false );
 #if WITH_EDITOR
 	virtual void Compress() {};
 #endif

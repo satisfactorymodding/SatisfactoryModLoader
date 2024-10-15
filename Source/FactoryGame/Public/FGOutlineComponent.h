@@ -8,6 +8,17 @@
 #include "FGBlueprintFunctionLibrary.h"
 #include "FGOutlineComponent.generated.h"
 
+/* Swap data for the build effect to function. */
+UCLASS( EditInlineNew, DefaultToInstanced )
+class FACTORYGAME_API UFGGlassIdentifier : public UAssetUserData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* DepthOverrideMaterial = nullptr;
+};
+
 USTRUCT()
 struct FActorOutlineState
 {

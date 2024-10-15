@@ -174,6 +174,10 @@ public:
 	void InitVideoQualityValues();
 	void UpdateVideoQualityCvars( const FString& cvar );
 	void OnUpScalingUpdated( FString strId, FVariant value );
+
+	void OnFrameGenerationUpdated(FString strId, FVariant value);
+	void InitFrameGeneration();
+	
 	void InitUpScalingMethod();
 	bool IsUsingThirdPartyUpscaler() const;
 	UFUNCTION(BlueprintPure, Category = "Satisfactory|Settings|Upscaler" )
@@ -512,5 +516,3 @@ private:
 	/** const variables */
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;
 };
-
-

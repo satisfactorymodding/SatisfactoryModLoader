@@ -25,6 +25,12 @@ struct FConstructHologramMessage
 	AActor* UpgradeActor;
 
 	UPROPERTY()
+	TSubclassOf< AFGBuildable > LightweightUpgradeClass;
+
+	UPROPERTY()
+	int32 LightweightUpgradeRuntimeIndex;
+
+	UPROPERTY()
 	TArray<uint8> SerializedHologramData;
 
 	UPROPERTY()
@@ -33,6 +39,8 @@ struct FConstructHologramMessage
 	FConstructHologramMessage() :
 		Recipe( nullptr ),
 		UpgradeActor(nullptr),
+		LightweightUpgradeClass( nullptr ),
+		LightweightUpgradeRuntimeIndex( INDEX_NONE ),
 		SerializedHologramData(),
 		NumBits( 0 )
 	{}

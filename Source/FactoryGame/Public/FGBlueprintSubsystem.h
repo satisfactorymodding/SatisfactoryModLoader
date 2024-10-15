@@ -289,6 +289,12 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|FactoryBlueprint" )
 	static FString SanitizeBlueprintFileName( const FString& blueprintName );
 
+	/**
+	* Removes any invalid path characters from a blueprint session name (the name used as the folder which has diff requirements than a file name).
+	**/
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|FactoryBlueprint" )
+	static FString SanitizeBlueprintFolderName( const FString& folderName );
+
 	/** Get an array to all blueprint world buildables present */
 	const TArray< class AFGBuildable* >& GetBlueprintWorldBuildables() { return mBlueprintWorldBuildables; }
 
@@ -765,5 +771,3 @@ private:
 	bool mClientAwaitingResponse;
 	
 };
-
-

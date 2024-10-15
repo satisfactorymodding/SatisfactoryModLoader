@@ -92,7 +92,8 @@ public class FactoryGame : ModuleRules
 			// If the target is not a server we add upscaler modules to the PublicDependencyModuleNames
 			// PublicDependencyModuleNames.AddRange( new string[] { 
 			// 	"XeSSBlueprint",
-			// 	"DLSSBlueprint"
+			// 	"DLSSBlueprint",
+			// 	"StreamlineBlueprint",
 			// } );
 		}
 
@@ -169,6 +170,7 @@ public class FactoryGame : ModuleRules
 			// {
 			// 	"XeSSBlueprint",
 			// 	"DLSSBlueprint",
+			// 	"StreamlineBlueprint",
 			// } );
 		}
 

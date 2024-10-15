@@ -135,7 +135,7 @@ public:
 	/** Show/hide the block color on this track. */
 	void ShowBlockVisualization();
 	void StopBlockVisualization();
-	bool IsBlockVisualizationActive() const { return mBlockVisualizationSplineMeshComponent.IsValid(); }
+	bool IsBlockVisualizationActive() const { return mBlockVisualizationSplineMeshComponents.Num() > 0; }
 	bool CanShowBlockVisualization() const { return mSignalBlockID != INDEX_NONE; }
 
 	/** Get the length of this track. */
@@ -305,28 +305,12 @@ private:
 	UPROPERTY( ReplicatedUsing = OnRep_SignalBlockID, VisibleAnywhere, Category = "Track" )
 	int32 mSignalBlockID;
 
-	/** The instance spline mesh component dynamic spawned when needed to preview feedback. */
-	TWeakObjectPtr< UInstancedSplineMeshComponent > mBlockVisualizationSplineMeshComponent;
+	/** The spline mesh components dynamic spawned when needed to preview feedback. */
+	TArray< TObjectPtr< USplineMeshComponent > > mBlockVisualizationSplineMeshComponents;
 
 	/* Mesh to use for block feedback. */
 	UPROPERTY( EditDefaultsOnly, Category = "Track|Block Visualization" )
 	UStaticMesh* mBlockVisualizationMesh;
-
-	/** Length of the block visualization mesh */
-	UPROPERTY( EditDefaultsOnly, Category = "Track|Block Visualization" )
-	float mBlockVisualizationMeshLength;
-
-	/** The offset for the spline data for the block visualization */
-	UPROPERTY( EditDefaultsOnly, Category = "Track|Block Visualization" )
-	int32 mBlockVisualizationNumPrimitiveDataFloats;
-	
-	/** The offset for the spline data for the block visualization */
-	UPROPERTY( EditDefaultsOnly, Category = "Track|Block Visualization" )
-	int32 mBlockVisualizationNumPerInstancePrimitiveDataCountOffset;
-	
-	/** Spline data settings for the visualization */
-	UPROPERTY( EditDefaultsOnly, Category = "Track|Block Visualization" )
-	FSplineDataSettings mBlockVisualizationSplineDataSettings;
 
 	/** First index of the Custom Data used for the block visualization color. It will use 3 custom data floats for R/G/B channels of the color */
 	UPROPERTY( EditDefaultsOnly, Category = "Track|Block Visualization" )
@@ -340,4 +324,3 @@ private:
 	static inline const float COLLISION_SPACING =   300.f;
 	static inline const FVector COLLISION_OFFSET = FVector( 0.f, 0.f, 30.f + 1.f );
 };
-

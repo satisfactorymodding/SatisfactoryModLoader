@@ -57,11 +57,12 @@ public:
 	FRailroadTrackPosition GetTrackPosition() const;
 	int32 GetTrackGraphID() const;
 
-	/** Get the platform that precedes this platform
-	*	@param direction - 0 or 1 
-	*	@info this can be null if the platform in the specified direction does not exist
-	*/
-	AFGBuildableTrainPlatform* GetConnectedPlatformInDirectionOf( uint8 direction );
+	/**
+	 * Get the connection that is in the opposite direction of the given connection
+	 * @param sourceConnection the connection on THIS platform that we are trying to get the opposite of
+	 * @return the connection on this station that is the opposite of the provided connection
+	 */
+	class UFGTrainPlatformConnection* GetConnectionInOppositeDirection( const class UFGTrainPlatformConnection* sourceConnection );
 
 	/** When a locomotive docks it will call this on relevant children in the direction of its output. It is up to the platform to decide how to act */
 	virtual void NotifyTrainDocked( class AFGRailroadVehicle* railroadVehicle, class AFGBuildableRailroadStation* initiatedByStation );
@@ -99,8 +100,6 @@ protected:
 	virtual void OnRep_DockedRailroadVehicle();
 
 private:
-	/** Used by the hologram to configure this platform. */
-	void ReverseConnectionDirections();
 	void AssignRailroadTrack( class AFGBuildableRailroadTrack* track );
 
 protected:

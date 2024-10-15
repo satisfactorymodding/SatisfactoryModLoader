@@ -38,6 +38,8 @@ void UFGGameUserSettings::OnFOVScalingUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::InitVideoQualityValues(){ }
 void UFGGameUserSettings::UpdateVideoQualityCvars(const FString& cvar){ }
 void UFGGameUserSettings::OnUpScalingUpdated(FString strId, FVariant value){ }
+void UFGGameUserSettings::OnFrameGenerationUpdated(FString strId, FVariant value){ }
+void UFGGameUserSettings::InitFrameGeneration(){ }
 void UFGGameUserSettings::InitUpScalingMethod(){ }
 bool UFGGameUserSettings::IsUsingThirdPartyUpscaler() const{ return bool(); }
 bool UFGGameUserSettings::IsXeSSSupported(){ return bool(); }

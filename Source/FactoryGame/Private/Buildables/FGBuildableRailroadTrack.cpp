@@ -38,7 +38,6 @@ AFGBuildableRailroadTrack::AFGBuildableRailroadTrack() : Super() {
 	this->mIsOwnedByPlatform = false;
 	this->mTrackGraphID = -1;
 	this->mBlockVisualizationMesh = nullptr;
-	this->mBlockVisualizationMeshLength = 0.0;
 	this->mHologramClass = AFGRailroadTrackHologram::StaticClass();
 	this->mSplineComponent->SetupAttachment(RootComponent);
 	this->mConnections[0]->SetupAttachment(RootComponent);

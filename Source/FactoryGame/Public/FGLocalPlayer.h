@@ -78,9 +78,6 @@ public:
 	/** Checks if last logged in user id matches the current logged in user and if not updates the cached value */
 	void RefreshRecentRegisteredSocialAccountID();
 
-	// Get the unique net id of the current local player
-	TSharedPtr<const FUniqueNetId> GetPlayerId() const;
-
 	void PopulateEnhancedInputUserSettingsWithContexts( class UEnhancedInputUserSettings* inputUserSettings );
 	void PopulateChildMappingContexts( const UFGInputMappingContext* mainContext, TArray<UFGInputMappingContext*>& out_childContexts );
 

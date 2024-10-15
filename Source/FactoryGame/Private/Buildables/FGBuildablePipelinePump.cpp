@@ -38,6 +38,7 @@ void AFGBuildablePipelinePump::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	DOREPLIFETIME(AFGBuildablePipelinePump, mIndicatorData);
 }
 void AFGBuildablePipelinePump::BeginPlay(){ }
+void AFGBuildablePipelinePump::EndPlay(const EEndPlayReason::Type EndPlayReason) { Super::EndPlay(EndPlayReason); }
 void AFGBuildablePipelinePump::Tick(float dt){ }
 void AFGBuildablePipelinePump::Factory_Tick(float dt){ }
 bool AFGBuildablePipelinePump::CanProduce_Implementation() const{ return bool(); }

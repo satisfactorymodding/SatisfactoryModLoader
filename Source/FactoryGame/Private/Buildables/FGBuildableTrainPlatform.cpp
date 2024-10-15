@@ -45,7 +45,7 @@ void AFGBuildableTrainPlatform::Dismantle_Implementation(){ }
 bool AFGBuildableTrainPlatform::IsUseable_Implementation() const{ return bool(); }
 FRailroadTrackPosition AFGBuildableTrainPlatform::GetTrackPosition() const{ return FRailroadTrackPosition(); }
 int32 AFGBuildableTrainPlatform::GetTrackGraphID() const{ return int32(); }
-AFGBuildableTrainPlatform* AFGBuildableTrainPlatform::GetConnectedPlatformInDirectionOf(uint8 direction){ return nullptr; }
+class UFGTrainPlatformConnection* AFGBuildableTrainPlatform::GetConnectionInOppositeDirection(const class UFGTrainPlatformConnection* sourceConnection){ return nullptr; }
 void AFGBuildableTrainPlatform::NotifyTrainDocked( AFGRailroadVehicle* railroadVehicle,  AFGBuildableRailroadStation* initiatedByStation){ }
 void AFGBuildableTrainPlatform::UpdateDockingSequence(){ }
 void AFGBuildableTrainPlatform::CancelDockingSequence(){ }
@@ -54,5 +54,4 @@ void AFGBuildableTrainPlatform::FinishDockingSequence(){ }
 void AFGBuildableTrainPlatform::OnRep_RailroadTrack(){ }
 void AFGBuildableTrainPlatform::OnRep_UpdateDockingStatus(){ }
 void AFGBuildableTrainPlatform::OnRep_DockedRailroadVehicle(){ }
-void AFGBuildableTrainPlatform::ReverseConnectionDirections(){ }
 void AFGBuildableTrainPlatform::AssignRailroadTrack( AFGBuildableRailroadTrack* track){ }
