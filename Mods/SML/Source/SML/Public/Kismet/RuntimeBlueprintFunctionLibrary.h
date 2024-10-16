@@ -118,7 +118,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Widget | Advanced")
 	static void SetComboBoxFont(UComboBoxString* Box, FSlateFontInfo Font);
 
-	/** Allows Binding on BP Function. Function must be implemented in Blueprint */
+	/**
+	  * Allows Binding on BP (blueprint) Functions. Function must be implemented in Blueprint
+	  * @param    Binding            Delegate to call when the function is called. In blueprint you usually want to hook this to an "Add Custom Event..."
+	  * @param    HookOffsetStart    true to execute Binding before normal function body, false to execute after
+	  */
 	UFUNCTION(BlueprintCallable, Category= "Widget | Advanced")
 	static void BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName, bool HookOffsetStart);
 };
