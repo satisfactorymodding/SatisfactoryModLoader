@@ -1,5 +1,6 @@
 ﻿#include "SMLWorldModule.h"
 #include "FGGameState.h"
+#include "FGResearchManager.h"
 #include "FGSaveSession.h"
 #include "Dom/JsonObject.h"
 #include "Engine/GameInstance.h"
@@ -16,6 +17,13 @@ void USMLWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
 		AGameStateBase* State = GetWorld()->GetGameState();
 		if (State && State->HasAuthority()) {
 			WriteModMetadataToSave();
+		}
+		// Update research trees in case dependencies were already unlocked.
+		// After adding mods to an existing save, newly-added research trees
+		// stay locked, even though their dependencies are already unlocked.
+		AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
+		if (ResearchManager != NULL && ResearchManager->HasAuthority()) {
+			ResearchManager->UpdateUnlockedResearchTrees();
 		}
 	}
 }
