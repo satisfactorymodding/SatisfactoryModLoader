@@ -5,7 +5,7 @@
 AFGStackableStorageHologram::AFGStackableStorageHologram() : Super() {
 
 }
-void AFGStackableStorageHologram::BeginPlay(){ }
+void AFGStackableStorageHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGStackableStorageHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGStackableStorageHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 int32 AFGStackableStorageHologram::GetRotationStep() const{ return int32(); }

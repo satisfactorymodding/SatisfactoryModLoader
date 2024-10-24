@@ -48,9 +48,9 @@ AFGBuildEffectActor::AFGBuildEffectActor() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	this->mSlicePlane->SetupAttachment(RootComponent);
 }
-void AFGBuildEffectActor::Tick(float DeltaTime){ }
-void AFGBuildEffectActor::BeginPlay(){ }
-void AFGBuildEffectActor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildEffectActor::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
+void AFGBuildEffectActor::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildEffectActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildEffectActor::SetDismantle(bool State){ }
 void AFGBuildEffectActor::AddAbstractDataEntry(TSubclassOf< AFGBuildable > buildableClass, const FRuntimeBuildableInstanceData& runtimeData, UAbstractInstanceDataObject* InstanceData, int32 Index){ }
 void AFGBuildEffectActor::RemoveAbstractDataEntry(TSubclassOf< AFGBuildable > buildableClass, int32 index){ }

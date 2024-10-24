@@ -76,9 +76,9 @@ void AFGBuildableFactory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AFGBuildableFactory, mIsOverclocked);
 	DOREPLIFETIME(AFGBuildableFactory, mIsAlienOverclocked);
 }
-void AFGBuildableFactory::BeginPlay(){ }
-void AFGBuildableFactory::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGBuildableFactory::Tick(float dt){ }
+void AFGBuildableFactory::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableFactory::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGBuildableFactory::Tick(float dt){ Super::Tick(dt); }
 void AFGBuildableFactory::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableFactory::GainedSignificance_Implementation(){ }
 void AFGBuildableFactory::LostSignificance_Implementation(){ }

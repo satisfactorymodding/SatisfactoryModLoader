@@ -37,7 +37,7 @@ void AFGFoliageStateRepProxy::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGFoliageStateRepProxy, mPendingBundles);
 }
-void AFGFoliageStateRepProxy::Tick(float DeltaTime){ }
-void AFGFoliageStateRepProxy::BeginPlay(){ }
+void AFGFoliageStateRepProxy::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
+void AFGFoliageStateRepProxy::BeginPlay(){ Super::BeginPlay(); }
 void AFGFoliageStateRepProxy::Server_ConfirmFullyReplicated_Implementation(UFGFoliageRemovalBundle* replicator){ }
 void AFGFoliageStateRepProxy::OnFoliageBucketRemoved(const FIntVector& inCell, const UFoliageType* forFoliageType, int32 bucketId){ }

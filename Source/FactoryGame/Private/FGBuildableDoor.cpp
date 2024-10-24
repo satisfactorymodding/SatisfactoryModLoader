@@ -14,8 +14,8 @@ AFGBuildableDoor::AFGBuildableDoor() : Super() {
 	this->Steps = 2;
 	this->mManagedByLightweightBuildableSubsystem = false;
 }
-void AFGBuildableDoor::BeginPlay(){ }
-void AFGBuildableDoor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableDoor::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableDoor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableDoor, mDoorState);

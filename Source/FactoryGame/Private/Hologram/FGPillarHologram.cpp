@@ -14,7 +14,7 @@ AFGPillarHologram::AFGPillarHologram() : Super() {
 	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }
-void AFGPillarHologram::BeginPlay(){ }
+void AFGPillarHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGPillarHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPillarHologram, mCurrentZoop);

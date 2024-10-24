@@ -15,4 +15,4 @@ bool AFGBuildablePoleBase::ShouldBeConsideredForBase_Implementation(){ return bo
 bool AFGBuildablePoleBase::ShouldShowCenterGuidelinesForHologram(const AFGHologram* hologram) const{ return bool(); }
 struct FPoleHeightMesh AFGBuildablePoleBase::FindBestHeightMesh(float inHeight) const{ return FPoleHeightMesh(); }
 void AFGBuildablePoleBase::PostLoad(){ Super::PostLoad(); }
-void AFGBuildablePoleBase::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildablePoleBase::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }

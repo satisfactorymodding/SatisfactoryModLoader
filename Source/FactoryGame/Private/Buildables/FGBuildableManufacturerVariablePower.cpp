@@ -8,7 +8,7 @@ AFGBuildableManufacturerVariablePower::AFGBuildableManufacturerVariablePower() :
 	this->mPowerConsumptionCurve = nullptr;
 	this->mPowerConsumption = 0.1;
 }
-void AFGBuildableManufacturerVariablePower::BeginPlay(){ }
+void AFGBuildableManufacturerVariablePower::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableManufacturerVariablePower::Factory_StartProducing(){ }
 void AFGBuildableManufacturerVariablePower::Factory_TickProducing(float dt){ }
 void AFGBuildableManufacturerVariablePower::Factory_Tick(float dt){ }

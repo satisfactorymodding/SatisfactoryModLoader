@@ -27,7 +27,7 @@ void AFGBuildablePipelineSupport::GetLifetimeReplicatedProps(TArray< FLifetimePr
 	DOREPLIFETIME(AFGBuildablePipelineSupport, mVerticalAngle);
 	DOREPLIFETIME(AFGBuildablePipelineSupport, mSupportMesh);
 }
-void AFGBuildablePipelineSupport::BeginPlay(){ }
+void AFGBuildablePipelineSupport::BeginPlay(){ Super::BeginPlay(); }
 TArray<struct FInstanceData> AFGBuildablePipelineSupport::GetActorLightweightInstanceData_Implementation(){ return TArray<struct FInstanceData>(); }
 void AFGBuildablePipelineSupport::SetSupportLength(float length){ }
 void AFGBuildablePipelineSupport::SetVerticalAngle(float angle){ }

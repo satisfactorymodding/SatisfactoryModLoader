@@ -27,8 +27,8 @@ AFGBuildablePipelineAttachment::AFGBuildablePipelineAttachment() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGBuildablePipelineAttachment::BeginPlay(){ }
-void AFGBuildablePipelineAttachment::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildablePipelineAttachment::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildablePipelineAttachment::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildablePipelineAttachment::Dismantle_Implementation(){ }
 bool AFGBuildablePipelineAttachment::ShouldShowCenterGuidelinesForHologram(const AFGHologram* hologram) const{ return bool(); }
 FFluidBox* AFGBuildablePipelineAttachment::GetFluidBox(){ return nullptr; }

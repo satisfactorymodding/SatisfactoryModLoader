@@ -9,7 +9,7 @@ void AFGVehicleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 }
-void AFGVehicleHologram::BeginPlay(){ }
+void AFGVehicleHologram::BeginPlay(){ Super::BeginPlay(); }
 AActor* AFGVehicleHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
 void AFGVehicleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGVehicleHologram::CheckValidPlacement(){ }

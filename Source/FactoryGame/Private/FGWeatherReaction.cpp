@@ -13,7 +13,7 @@ AFGWeatherReaction::AFGWeatherReaction() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGWeatherReaction::Tick(float DeltaSeconds){ }
-void AFGWeatherReaction::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGWeatherReaction::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
+void AFGWeatherReaction::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGWeatherReaction::StartWeatherState_Implementation(AFGSkySphere* SkySphere){ }
 void AFGWeatherReaction::EndWeatherState_Implementation(AFGSkySphere* SkySphere){ }

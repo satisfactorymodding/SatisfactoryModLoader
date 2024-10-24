@@ -32,8 +32,8 @@ void UFGSplinePathMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetime
 	DOREPLIFETIME(UFGSplinePathMovementComponent, mServerPauseTime);
 	DOREPLIFETIME(UFGSplinePathMovementComponent, mIsMoving);
 }
-void UFGSplinePathMovementComponent::BeginPlay(){ }
-void UFGSplinePathMovementComponent::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void UFGSplinePathMovementComponent::BeginPlay(){ Super::BeginPlay(); }
+void UFGSplinePathMovementComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void UFGSplinePathMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction){ }
 void UFGSplinePathMovementComponent::TicTac(float DeltaTime){ }
 void UFGSplinePathMovementComponent::OnBecameTheChosenWheeledVehicle(){ }

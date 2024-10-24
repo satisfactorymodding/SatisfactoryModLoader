@@ -80,9 +80,9 @@ float AFGWheeledVehicleInfo::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGWheeledVehicleInfo::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGWheeledVehicleInfo::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 UMaterialInterface* AFGWheeledVehicleInfo::GetActorRepresentationCompassMaterial(){ return nullptr; }
-void AFGWheeledVehicleInfo::BeginPlay(){ }
-void AFGWheeledVehicleInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGWheeledVehicleInfo::Tick(float dt){ }
+void AFGWheeledVehicleInfo::BeginPlay(){ Super::BeginPlay(); }
+void AFGWheeledVehicleInfo::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGWheeledVehicleInfo::Tick(float dt){ Super::Tick(dt); }
 void AFGWheeledVehicleInfo::Init(AFGWheeledVehicle* vehicle){ }
 void AFGWheeledVehicleInfo::InitCollisionData(){ }
 AFGWheeledVehicle* AFGWheeledVehicleInfo::GetVehicle() const{ return nullptr; }

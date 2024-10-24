@@ -17,8 +17,8 @@ void AFGTrainStationIdentifier::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 	DOREPLIFETIME(AFGTrainStationIdentifier, mTrackGraphID);
 	DOREPLIFETIME(AFGTrainStationIdentifier, mStationName);
 }
-void AFGTrainStationIdentifier::BeginPlay(){ }
-void AFGTrainStationIdentifier::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGTrainStationIdentifier::BeginPlay(){ Super::BeginPlay(); }
+void AFGTrainStationIdentifier::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGTrainStationIdentifier::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTrainStationIdentifier::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTrainStationIdentifier::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

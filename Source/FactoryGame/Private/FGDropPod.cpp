@@ -46,8 +46,8 @@ void AFGDropPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	DOREPLIFETIME(AFGDropPod, mPropertyReplicator);
 	DOREPLIFETIME(AFGDropPod, mHasBeenOpened);
 }
-void AFGDropPod::BeginPlay(){ }
-void AFGDropPod::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGDropPod::BeginPlay(){ Super::BeginPlay(); }
+void AFGDropPod::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGDropPod::PreSave(FObjectPreSaveContext SaveContext){ Super::PreSave(SaveContext); }
 void AFGDropPod::GainedSignificance_Implementation(){ }
 void AFGDropPod::LostSignificance_Implementation(){ }

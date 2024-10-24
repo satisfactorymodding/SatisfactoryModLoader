@@ -6,7 +6,7 @@ AFGBuildableControlPanelHost::AFGBuildableControlPanelHost() : Super() {
 	this->mDownstreamConnection = nullptr;
 	this->mControlledBuildableType = nullptr;
 }
-void AFGBuildableControlPanelHost::BeginPlay(){ }
+void AFGBuildableControlPanelHost::BeginPlay(){ Super::BeginPlay(); }
 TArray< AFGBuildable* >& AFGBuildableControlPanelHost::GetControlledBuildables(TSubclassOf< AFGBuildable > outputType){ return *(new TArray< AFGBuildable* >); }
 void AFGBuildableControlPanelHost::OnCircuitsRebuilt(){ }
 void AFGBuildableControlPanelHost::SearchDownstreamCircuit(){ }

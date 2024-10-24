@@ -11,5 +11,5 @@ AQAPickableItem::AQAPickableItem() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AQAPickableItem::BeginPlay(){ }
-void AQAPickableItem::Tick(float DeltaTime){ }
+void AQAPickableItem::BeginPlay(){ Super::BeginPlay(); }
+void AQAPickableItem::Tick(float DeltaTime){ Super::Tick(DeltaTime); }

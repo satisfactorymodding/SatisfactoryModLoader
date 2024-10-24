@@ -20,7 +20,7 @@ AFGBuildablePowerStorage::AFGBuildablePowerStorage() : Super() {
 	this->mInteractionRegisterPlayerWithCircuit = true;
 	this->mMeshMesh->SetupAttachment(RootComponent);
 }
-void AFGBuildablePowerStorage::BeginPlay(){ }
+void AFGBuildablePowerStorage::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePowerStorage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildablePowerStorage, mBatteryStatus);

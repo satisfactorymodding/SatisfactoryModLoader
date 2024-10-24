@@ -51,7 +51,7 @@ void FFGBackgroundThread::DispatchToStatisticsSubsystem(){ }
 void APoolRoot::UpdateBuildingState( AFGBuildable* Building, int32 FlagsToSet){ }
 void APoolRoot::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos){ }
 void APoolRoot::SetFlag(AFGBuildable* Buildable,  int32 Flags){ }
-void APoolRoot::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void APoolRoot::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 UFGPoolableProxyComponentBase::UFGPoolableProxyComponentBase() : Super() {
 	this->bHiddenInGame = true;
 }

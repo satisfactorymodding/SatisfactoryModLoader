@@ -35,7 +35,7 @@ void AFGBuildableConveyorLift::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	DOREPLIFETIME(AFGBuildableConveyorLift, mSnappedPassthroughs);
 	DOREPLIFETIME(AFGBuildableConveyorLift, mOpposingConnectionClearance);
 }
-void AFGBuildableConveyorLift::BeginPlay(){ }
+void AFGBuildableConveyorLift::BeginPlay(){ Super::BeginPlay(); }
 int32 AFGBuildableConveyorLift::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 bool AFGBuildableConveyorLift::ShouldShowCenterGuidelinesForHologram(const AFGHologram* hologram) const{ return bool(); }
 void AFGBuildableConveyorLift::Upgrade_Implementation(AActor* newActor){ }

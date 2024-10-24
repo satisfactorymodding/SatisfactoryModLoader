@@ -10,7 +10,7 @@ AFGBuildablePassthroughPipeHyper::AFGBuildablePassthroughPipeHyper() : Super() {
 	this->mConnection0->SetupAttachment(RootComponent);
 	this->mConnection1->SetupAttachment(RootComponent);
 }
-void AFGBuildablePassthroughPipeHyper::BeginPlay(){ }
+void AFGBuildablePassthroughPipeHyper::BeginPlay(){ Super::BeginPlay(); }
 TArray<TPair<UFGPipeConnectionComponentBase*, float>> AFGBuildablePassthroughPipeHyper::GetPossibleConnectionsToTransitionThrough(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough) const{ return TArray<TPair<UFGPipeConnectionComponentBase*,float>>(); }
 EPipeHyperEnterResult AFGBuildablePassthroughPipeHyper::OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, TStructOnScope<FFGPipeHyperBasePipeData>& outPipeData, const TStructOnScope<FFGPipeHyperBasePipeData>& predictionPipeData){ return EPipeHyperEnterResult(); }
 bool AFGBuildablePassthroughPipeHyper::FindDistanceClosestToWorldLocation(AFGCharacterPlayer* charPlayer, const FVector& worldLocation, const FVector& velocity, TStructOnScope<FFGPipeHyperBasePipeData>& out_pipeData, float& out_distance) const{ return bool(); }

@@ -8,4 +8,4 @@ AFGPioneerPotty::AFGPioneerPotty() : Super() {
 	this->mForceNetUpdateOnRegisterPlayer = true;
 	this->mToggleDormancyOnInteraction = true;
 }
-void AFGPioneerPotty::BeginPlay(){ }
+void AFGPioneerPotty::BeginPlay(){ Super::BeginPlay(); }

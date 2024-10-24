@@ -73,8 +73,8 @@ void AFGBuildGun::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 	DOREPLIFETIME(AFGBuildGun, mStates);
 	DOREPLIFETIME(AFGBuildGun, mCurrentBuildGunMode);
 }
-void AFGBuildGun::BeginPlay(){ }
-void AFGBuildGun::Tick(float dt){ }
+void AFGBuildGun::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildGun::Tick(float dt){ Super::Tick(dt); }
 void AFGBuildGun::Equip( AFGCharacterPlayer* character){ }
 void AFGBuildGun::UnEquip(){ }
 void AFGBuildGun::OnInteractWidgetAddedOrRemoved(UFGInteractWidget* widget, bool added){ }

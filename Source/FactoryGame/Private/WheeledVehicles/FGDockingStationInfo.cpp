@@ -43,8 +43,8 @@ ECompassViewDistance AFGDockingStationInfo::GetActorCompassViewDistance(){ retur
 void AFGDockingStationInfo::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 UMaterialInterface* AFGDockingStationInfo::GetActorRepresentationCompassMaterial(){ return nullptr; }
 void AFGDockingStationInfo::SetBuildingTag_Implementation(const FString& buildingTag){ }
-void AFGDockingStationInfo::BeginPlay(){ }
-void AFGDockingStationInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGDockingStationInfo::BeginPlay(){ Super::BeginPlay(); }
+void AFGDockingStationInfo::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGDockingStationInfo::Init( AFGBuildableDockingStation* station){ }
 void AFGDockingStationInfo::SetStationStatus(EDockingStationStatus status){ }
 void AFGDockingStationInfo::OnRep_Status(){ }

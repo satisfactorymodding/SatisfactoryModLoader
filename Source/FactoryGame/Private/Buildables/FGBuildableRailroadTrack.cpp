@@ -48,8 +48,8 @@ void AFGBuildableRailroadTrack::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(AFGBuildableRailroadTrack, mSplineData);
 	DOREPLIFETIME(AFGBuildableRailroadTrack, mSignalBlockID);
 }
-void AFGBuildableRailroadTrack::BeginPlay(){ }
-void AFGBuildableRailroadTrack::Destroyed(){ }
+void AFGBuildableRailroadTrack::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableRailroadTrack::Destroyed(){ Super::Destroyed(); }
 void AFGBuildableRailroadTrack::Dismantle_Implementation(){ }
 bool AFGBuildableRailroadTrack::CanDismantle_Implementation() const{ return bool(); }
 void AFGBuildableRailroadTrack::GetDismantleDependencies_Implementation(TArray<AActor*>& out_dismantleDependencies) const{ }

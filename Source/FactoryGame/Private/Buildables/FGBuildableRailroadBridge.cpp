@@ -13,4 +13,4 @@ void AFGBuildableRailroadBridge::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableRailroadBridge, mSplineData);
 }
-void AFGBuildableRailroadBridge::BeginPlay(){ }
+void AFGBuildableRailroadBridge::BeginPlay(){ Super::BeginPlay(); }

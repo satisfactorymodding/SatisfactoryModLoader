@@ -23,7 +23,7 @@ void AFGBuildablePole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 	DOREPLIFETIME(AFGBuildablePole, mHeight);
 	DOREPLIFETIME(AFGBuildablePole, mSelectedPoleVersion);
 }
-void AFGBuildablePole::BeginPlay(){ }
+void AFGBuildablePole::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePole::SetPoleHeight(float height){ }
 void AFGBuildablePole::SetupConnectionComponent(){ }
 TArray<struct FInstanceData> AFGBuildablePole::GetActorLightweightInstanceData_Implementation(){ return TArray<struct FInstanceData>(); }

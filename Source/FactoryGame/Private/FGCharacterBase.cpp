@@ -57,9 +57,9 @@ void AFGCharacterBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 	DOREPLIFETIME(AFGCharacterBase, mRagdollMeshAngularVelocity);
 	DOREPLIFETIME(AFGCharacterBase, mIsPossessed);
 }
-void AFGCharacterBase::BeginPlay(){ }
-void AFGCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGCharacterBase::Tick(float deltaTime){ }
+void AFGCharacterBase::BeginPlay(){ Super::BeginPlay(); }
+void AFGCharacterBase::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGCharacterBase::Tick(float deltaTime){ Super::Tick(deltaTime); }
 void AFGCharacterBase::CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult){ }
 float AFGCharacterBase::TakeDamage(float DamageAmount,  FDamageEvent const& DamageEvent,  AController* EventInstigator, AActor* DamageCauser){ return float(); }
 void AFGCharacterBase::ApplyDamageMomentum(float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser){ }

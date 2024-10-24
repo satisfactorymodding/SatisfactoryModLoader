@@ -12,7 +12,7 @@ AFGPortableMinerDispenser::AFGPortableMinerDispenser() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	this->mHologramMeshComponent->SetupAttachment(RootComponent);
 }
-void AFGPortableMinerDispenser::Tick(float DeltaSeconds){ }
+void AFGPortableMinerDispenser::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGPortableMinerDispenser::UnEquip(){ }
 void AFGPortableMinerDispenser::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
 bool AFGPortableMinerDispenser::TraceForPortableMinerPlacementLocation(FVector& out_Location) const{ return bool(); }

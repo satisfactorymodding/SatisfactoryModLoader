@@ -12,6 +12,6 @@ AFGBuildableAttachmentMerger::AFGBuildableAttachmentMerger() : Super() {
 	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
 	this->mFactoryTickFunction.TickInterval = 0.0;
 }
-void AFGBuildableAttachmentMerger::BeginPlay(){ }
+void AFGBuildableAttachmentMerger::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableAttachmentMerger::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableAttachmentMerger::Factory_Tick(float deltaTime){ }

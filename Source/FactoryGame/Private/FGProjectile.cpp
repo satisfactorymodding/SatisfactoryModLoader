@@ -58,7 +58,7 @@ AFGProjectile::AFGProjectile() : Super() {
 	this->bReplicateUsingRegisteredSubObjectList = true;
 	this->RootComponent = mCollisionComp;
 }
-void AFGProjectile::Tick(float DeltaSeconds){ }
+void AFGProjectile::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGProjectile::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGProjectile, mProjectileLifespan);

@@ -32,9 +32,9 @@ void AFGRailroadSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 	DOREPLIFETIME(AFGRailroadSubsystem, mTrains);
 }
 void AFGRailroadSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGRailroadSubsystem::BeginPlay(){ }
-void AFGRailroadSubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGRailroadSubsystem::Tick(float dt){ }
+void AFGRailroadSubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGRailroadSubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGRailroadSubsystem::Tick(float dt){ Super::Tick(dt); }
 void AFGRailroadSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGRailroadSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGRailroadSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

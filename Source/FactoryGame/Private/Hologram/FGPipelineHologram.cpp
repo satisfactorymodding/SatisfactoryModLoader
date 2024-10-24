@@ -33,7 +33,7 @@ AFGPipelineHologram::AFGPipelineHologram() : Super() {
 	this->mBuildModeCategory = EHologramBuildModeCategory::HBMC_Pipe;
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
-void AFGPipelineHologram::BeginPlay(){ }
+void AFGPipelineHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGPipelineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPipelineHologram, mChildPoleHologram);

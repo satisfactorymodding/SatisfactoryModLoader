@@ -47,9 +47,9 @@ void AFGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AFGPlayerController, mDedicatedServerPrivilegeLevel);
 }
 void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents(); }
-void AFGPlayerController::BeginPlay(){ }
-void AFGPlayerController::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGPlayerController::Destroyed(){ }
+void AFGPlayerController::BeginPlay(){ Super::BeginPlay(); }
+void AFGPlayerController::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGPlayerController::Destroyed(){ Super::Destroyed(); }
 void AFGPlayerController::PostRenderFor(APlayerController* PC, UCanvas* Canvas, FVector CameraPosition, FVector CameraDir){ }
 void AFGPlayerController::OnRep_PlayerState(){ }
 void AFGPlayerController::SetPawn(APawn* inPawn){ }

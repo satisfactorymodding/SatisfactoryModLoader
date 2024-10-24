@@ -5,7 +5,7 @@
 UFGSignPixelInstanceManager::UFGSignPixelInstanceManager() : Super() {
 	this->mInstanceComponent = nullptr;
 }
-void UFGSignPixelInstanceManager::BeginPlay(){ }
+void UFGSignPixelInstanceManager::BeginPlay(){ Super::BeginPlay(); }
 UFGSignPixelInstanceManager::FSignHandle UFGSignPixelInstanceManager::AddPixelSign( AFGBuildablePixelSign* pixelSign){ return FSignHandle(); }
 void UFGSignPixelInstanceManager::RemovePixelSign(const FSignHandle& signHandle){ }
 void UFGSignPixelInstanceManager::CreateHierarchicalInstancingComponent(UStaticMesh* staticMesh){ }

@@ -30,6 +30,6 @@ void AFGProximitySubsystem::OnEnteredMapArea_Implementation( AFGPlayerController
 void AFGProximitySubsystem::OnPawnChanged_Implementation( APawn* newPawn){ }
 UParticleSystem* AFGProximitySubsystem::GetParticleSystemFromMapArea(TSubclassOf<  UFGMapArea > inArea){ return nullptr; }
 void AFGProximitySubsystem::SpawnPooledDecal(const UObject* WorldContextObject,  UMaterialInterface* DecalMaterial, FVector DecalSize, FVector Location, FRotator Rotation , float LifeSpan){ }
-void AFGProximitySubsystem::BeginPlay(){ }
-void AFGProximitySubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGProximitySubsystem::Tick(float DeltaTime){ }
+void AFGProximitySubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGProximitySubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGProximitySubsystem::Tick(float DeltaTime){ Super::Tick(DeltaTime); }

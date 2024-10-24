@@ -23,7 +23,7 @@ void AFGSplineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& 
 	DOREPLIFETIME(AFGSplineHologram, mSplineData);
 	DOREPLIFETIME(AFGSplineHologram, mBuildStep);
 }
-void AFGSplineHologram::BeginPlay(){ }
+void AFGSplineHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGSplineHologram::CanNudgeHologram() const{ return bool(); }
 bool AFGSplineHologram::IsConnectionSnapped(bool lastConnection){ return bool(); }
 void AFGSplineHologram::GetLastSplineData(FSplinePointData& data){ }

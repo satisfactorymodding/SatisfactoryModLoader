@@ -11,8 +11,8 @@ void AFGItemPickupMarker::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGItemPickupMarker, mItemDescriptor);
 }
-void AFGItemPickupMarker::BeginPlay(){ }
-void AFGItemPickupMarker::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGItemPickupMarker::BeginPlay(){ Super::BeginPlay(); }
+void AFGItemPickupMarker::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGItemPickupMarker::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGItemPickupMarker::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGItemPickupMarker::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

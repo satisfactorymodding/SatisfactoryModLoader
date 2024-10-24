@@ -59,9 +59,9 @@ void AFGLightweightBuildableRepProxy::GetLifetimeReplicatedProps(TArray<FLifetim
 	DOREPLIFETIME(AFGLightweightBuildableRepProxy, mPendingRemovalBundles);
 	DOREPLIFETIME(AFGLightweightBuildableRepProxy, mPendingCustomizationBundle);
 }
-void AFGLightweightBuildableRepProxy::BeginPlay(){ }
-void AFGLightweightBuildableRepProxy::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGLightweightBuildableRepProxy::Tick(float DeltaTime){ }
+void AFGLightweightBuildableRepProxy::BeginPlay(){ Super::BeginPlay(); }
+void AFGLightweightBuildableRepProxy::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGLightweightBuildableRepProxy::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
 void AFGLightweightBuildableRepProxy::AddConstructedRuntimeDataForIndex(TSubclassOf<  AFGBuildable > buildableClass, FRuntimeBuildableInstanceData& runtimeData, int32 index, uint16 constructId, AActor* instigator, int32
 	                                       blueprintBuildIndex){ }
 void AFGLightweightBuildableRepProxy::AddRemovedRuntimeDataForIndex(TSubclassOf<  AFGBuildable > buildableClass, int32 index){ }
@@ -96,8 +96,8 @@ AFGLightweightBuildableSubsystem::AFGLightweightBuildableSubsystem() : Super() {
 AFGLightweightBuildableSubsystem* AFGLightweightBuildableSubsystem::Get(UWorld* world){ return nullptr; }
 AFGLightweightBuildableSubsystem* AFGLightweightBuildableSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGLightweightBuildableSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGLightweightBuildableSubsystem::Tick(float DeltaSeconds){ }
-void AFGLightweightBuildableSubsystem::BeginPlay(){ }
+void AFGLightweightBuildableSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
+void AFGLightweightBuildableSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGLightweightBuildableSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGLightweightBuildableSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGLightweightBuildableSubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

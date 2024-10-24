@@ -12,6 +12,6 @@ AFGBuildableAttachmentSplitter::AFGBuildableAttachmentSplitter() : Super() {
 	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
 	this->mFactoryTickFunction.TickInterval = 0.0;
 }
-void AFGBuildableAttachmentSplitter::BeginPlay(){ }
+void AFGBuildableAttachmentSplitter::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableAttachmentSplitter::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableAttachmentSplitter::Factory_Tick(float deltaTime){ }

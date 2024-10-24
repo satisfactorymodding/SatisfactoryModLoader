@@ -18,7 +18,7 @@ void AFGPipeSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 game
 void AFGPipeSubsystem::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGPipeSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGPipeSubsystem::ShouldSave_Implementation() const{ return bool(); }
-void AFGPipeSubsystem::Tick(float dt){ }
+void AFGPipeSubsystem::Tick(float dt){ Super::Tick(dt); }
 void AFGPipeSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 AFGPipeSubsystem* AFGPipeSubsystem::Get(UWorld* world){ return nullptr; }
 AFGPipeSubsystem* AFGPipeSubsystem::GetPipeSubsystem(UObject* worldContext){ return nullptr; }

@@ -7,7 +7,7 @@ AFGBuildableCheatItemSink::AFGBuildableCheatItemSink() : Super() {
 	this->mCurrentItemRate = 0.0;
 	this->mCurrentPeriodTime = 0.0;
 }
-void AFGBuildableCheatItemSink::BeginPlay(){ }
+void AFGBuildableCheatItemSink::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableCheatItemSink::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
 void AFGBuildableCheatItemSink::Factory_Tick(float dt){ }
 void AFGBuildableCheatItemSink::Factory_CollectInput_Implementation(){ }

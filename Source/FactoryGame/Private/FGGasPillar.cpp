@@ -23,8 +23,8 @@ AFGGasPillar::AFGGasPillar() : Super() {
 	this->mBindChaosPhysicsCollisionEvent = true;
 	this->RootComponent = mMesh;
 }
-void AFGGasPillar::BeginPlay(){ }
-void AFGGasPillar::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGGasPillar::BeginPlay(){ Super::BeginPlay(); }
+void AFGGasPillar::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGGasPillar::PostUnregisterAllComponents(void){ }
 void AFGGasPillar::PostRegisterAllComponents(){ }
 void AFGGasPillar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

@@ -7,7 +7,7 @@ AFGEquipmentDecoration::AFGEquipmentDecoration() : Super() {
 	this->mArmAnimation = EArmEquipment::AE_Generic1Hand;
 	this->mDefaultEquipmentActions = 1;
 }
-void AFGEquipmentDecoration::Tick(float DeltaSeconds){ }
+void AFGEquipmentDecoration::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGEquipmentDecoration::OnPrimaryFirePressed(){ }
 void AFGEquipmentDecoration::Server_PrimaryFire_Implementation(){ }
 bool AFGEquipmentDecoration::Server_PrimaryFire_Validate(){ return bool(); }

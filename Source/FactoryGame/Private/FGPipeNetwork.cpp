@@ -9,8 +9,8 @@ void AFGPipeNetwork::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Out
 	DOREPLIFETIME(AFGPipeNetwork, mPipeNetworkID);
 	DOREPLIFETIME(AFGPipeNetwork, mFluidDescriptor);
 }
-void AFGPipeNetwork::BeginPlay(){ }
-void AFGPipeNetwork::EndPlay(EEndPlayReason::Type endPlayReason){ }
+void AFGPipeNetwork::BeginPlay(){ Super::BeginPlay(); }
+void AFGPipeNetwork::EndPlay(EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGPipeNetwork::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGPipeNetwork::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGPipeNetwork::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

@@ -12,8 +12,8 @@ AFGBuildableCalendar::AFGBuildableCalendar() : Super() {
 	this->mSlotFillerItemClass = nullptr;
 	this->NetDormancy = ENetDormancy::DORM_Awake;
 }
-void AFGBuildableCalendar::BeginPlay(){ }
-void AFGBuildableCalendar::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableCalendar::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableCalendar::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableCalendar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableCalendar, mReplicatedIndexMapping);

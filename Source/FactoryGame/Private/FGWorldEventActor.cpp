@@ -12,8 +12,8 @@ AFGWorldEventActor::AFGWorldEventActor() : Super() {
 	this->mState = EWorldEventState::Inactive;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
-void AFGWorldEventActor::BeginPlay(){ }
-void AFGWorldEventActor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGWorldEventActor::BeginPlay(){ Super::BeginPlay(); }
+void AFGWorldEventActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGWorldEventActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGWorldEventActor, mState);

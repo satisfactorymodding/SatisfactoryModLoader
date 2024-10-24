@@ -5,5 +5,5 @@
 AFGCornerWallHologram::AFGCornerWallHologram() : Super() {
 
 }
-void AFGCornerWallHologram::BeginPlay(){ }
+void AFGCornerWallHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGCornerWallHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }

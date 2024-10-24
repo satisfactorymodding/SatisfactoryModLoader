@@ -2,8 +2,8 @@
 
 #include "Buildables/FGBuildableCheatFluidSink.h"
 
-void AFGBuildableCheatFluidSink::BeginPlay(){ }
-void AFGBuildableCheatFluidSink::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildableCheatFluidSink::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableCheatFluidSink::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableCheatFluidSink::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
 FFluidBox* AFGBuildableCheatFluidSink::GetFluidBox(){ return nullptr; }
 TArray< class UFGPipeConnectionComponent* > AFGBuildableCheatFluidSink::GetPipeConnections(){ return TArray<class UFGPipeConnectionComponent*>(); }

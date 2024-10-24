@@ -24,6 +24,6 @@ AFGBuildableStorage::AFGBuildableStorage() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 }
-void AFGBuildableStorage::BeginPlay(){ }
+void AFGBuildableStorage::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableStorage::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }
 void AFGBuildableStorage::Factory_CollectInput_Implementation(){ }

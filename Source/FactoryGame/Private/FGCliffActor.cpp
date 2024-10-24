@@ -13,8 +13,8 @@ AFGCliffActorManager::AFGCliffActorManager() : Super() {
 	this->PrimaryActorTick.TickInterval = 1.0;
 }
 void AFGCliffActorManager::EnqueueTask(UWorld* World, FAsyncTask<class FFGAsyncCliffGrassBuilderTask>* inAsyncTask, AFGCliffActor* inActor){ }
-void AFGCliffActorManager::Tick(float DeltaSeconds){ }
-void AFGCliffActorManager::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGCliffActorManager::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
+void AFGCliffActorManager::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 #if WITH_EDITOR
 void AFGCliffActor::ConvertStaticMeshActorToOnTopMesh(AActor* SelectedActor, FString& ResultMsg){ }
 void AFGCliffActor::UpdateAssociatedCliffActorsAndReParent(){ }
@@ -30,8 +30,8 @@ AFGCliffActor::AFGCliffActor() : Super() {
 	this->mSignificanceRangeMultiplier = 1.25;
 	this->RootComponent = mMeshComponent;
 }
-void AFGCliffActor::BeginPlay(){ }
-void AFGCliffActor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGCliffActor::BeginPlay(){ Super::BeginPlay(); }
+void AFGCliffActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGCliffActor::OnConstruction(const FTransform& Transform){ }
 void AFGCliffActor::GainedSignificance_Implementation(){ }
 void AFGCliffActor::LostSignificance_Implementation(){ }

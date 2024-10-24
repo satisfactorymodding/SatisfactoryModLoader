@@ -25,7 +25,7 @@ void AFGJumpPadLauncherHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGJumpPadLauncherHologram, mLaunchAngle);
 }
-void AFGJumpPadLauncherHologram::BeginPlay(){ }
+void AFGJumpPadLauncherHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGJumpPadLauncherHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGJumpPadLauncherHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGJumpPadLauncherHologram::ScrollRotate(int32 delta, int32 step){ }

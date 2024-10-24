@@ -8,6 +8,6 @@ void AFGVolumeMapArea::CheckForErrors(){ Super::CheckForErrors(); }
 AFGVolumeMapArea::AFGVolumeMapArea() : Super() {
 	this->mMapArea = nullptr;
 }
-void AFGVolumeMapArea::BeginPlay(){ }
+void AFGVolumeMapArea::BeginPlay(){ Super::BeginPlay(); }
 void AFGVolumeMapArea::OnPrimitiveComponentEntered(UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult){ }
 void AFGVolumeMapArea::OnPawnEntered(APawn* pawn, const FHitResult& enterInfo){ }
