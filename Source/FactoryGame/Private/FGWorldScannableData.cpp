@@ -3,7 +3,6 @@
 #include "FGWorldScannableData.h"
 #include "UObject/ObjectSaveContext.h"
 
-FWorldScannableData::FWorldScannableData() { }
 #if WITH_EDITOR
 FWorldScannableData::FWorldScannableData(const AActor* actor) { }
 FWorldScannableData::FWorldScannableData(const class FWorldPartitionActorDesc* ActorDesc, int32 PIEInstanceIndex) { }

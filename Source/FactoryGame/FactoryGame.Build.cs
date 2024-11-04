@@ -90,11 +90,11 @@ public class FactoryGame : ModuleRules
 		else
 		{
 			// If the target is not a server we add upscaler modules to the PublicDependencyModuleNames
-			PublicDependencyModuleNames.AddRange( new string[] { 
-				"XeSSBlueprint",
-				"DLSSBlueprint",
-				"StreamlineBlueprint",
-			} );
+			// PublicDependencyModuleNames.AddRange( new string[] { 
+			// 	"XeSSBlueprint",
+			// 	"DLSSBlueprint",
+			// 	"StreamlineBlueprint",
+			// } );
 		}
 
 		// <FL> [PfaffN] EOS does not compile on PS5 or XSX, they are not compatible
@@ -103,8 +103,8 @@ public class FactoryGame : ModuleRules
 		// [ZolotukhinN:24/01/2024] Exclude EOSShared on dedicated server, it's not enabled as a plugin for the dedicated server so we cannot depend on it
 		if (Target.Type != TargetType.Server)
 		{
-			if (Target.Platform != UnrealTargetPlatform.PS5 &&
-			    Target.Platform != UnrealTargetPlatform.XSX)
+			if (/*Target.Platform != UnrealTargetPlatform.PS5 &&
+			    Target.Platform != UnrealTargetPlatform.XSX*/ true)
 			{
 				PublicDependencyModuleNames.AddRange(new string[] {
 					"OnlineSubsystemSteam",
@@ -118,7 +118,7 @@ public class FactoryGame : ModuleRules
 			}
 		}
 		// <FL> [WuttkeP] Additional dependencies that are required to run the game on XSX.
-		if (Target.Platform == UnrealTargetPlatform.XSX)
+		if (/*Target.Platform == UnrealTargetPlatform.XSX*/ false)
 		{
 			PublicDependencyModuleNames.AddRange(new string[]
 			{
@@ -134,14 +134,14 @@ public class FactoryGame : ModuleRules
 		if (Target.Configuration != UnrealTargetConfiguration.Shipping &&
 			Target.Type != TargetType.Server)
 		{
-			PrivateDependencyModuleNames.AddRange(new string[] {
-				"DebugUI",
-			});
+			// PrivateDependencyModuleNames.AddRange(new string[] {
+			// 	"DebugUI",
+			// });
 		}
 		// </FL>
 		// <FL> [PfaffN] TODO: PS5 does not compile with WITH_SHOWVAR, we disable it until
 		// we know if it is necessary for the build.
-		if (Target.Platform == UnrealTargetPlatform.PS5)
+		if (/*Target.Platform == UnrealTargetPlatform.PS5*/ false)
 		{
 			PrivateDefinitions.Add("WITH_SHOWVAR=0");
 		}
@@ -166,15 +166,15 @@ public class FactoryGame : ModuleRules
 		// Only depend on XESS and DLSS blueprint module for non-dedicated servers
 		if (Target.Type != TargetType.Server)
 		{
-			PrivateDependencyModuleNames.AddRange( new string[]
-			{
-				"XeSSBlueprint",
-				"DLSSBlueprint",
-				"StreamlineBlueprint",
-			} );
+			// PrivateDependencyModuleNames.AddRange( new string[]
+			// {
+			// 	"XeSSBlueprint",
+			// 	"DLSSBlueprint",
+			// 	"StreamlineBlueprint",
+			// } );
 		}
 
-		const bool withTelemetry = true;
+		const bool withTelemetry = false;
 		if ( withTelemetry )
 		{
 			PublicDependencyModuleNames.Add( "DSTelemetry" );
@@ -185,7 +185,7 @@ public class FactoryGame : ModuleRules
 			PrivateDefinitions.Add("WITH_TELEMETRY=0");
 		}
 
-		bool isPublicBuild = false;
+		bool isPublicBuild = true;
 		string isPublicBuildVersion = System.Environment.GetEnvironmentVariable("IS_PUBLIC_BUILD");
 		if( isPublicBuildVersion != null && isPublicBuildVersion.Length > 0 )
 		{
@@ -215,5 +215,9 @@ public class FactoryGame : ModuleRules
 				"SourceControl", // <FL>
             } );
         }
+		
+		PublicDependencyModuleNames.AddRange(new[] {
+			"DummyHeaders",
+		});
 	}
 }

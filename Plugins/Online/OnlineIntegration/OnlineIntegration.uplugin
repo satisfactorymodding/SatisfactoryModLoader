@@ -83,7 +83,7 @@
 		},
 		{
 			"Name": "OnlineServicesSteamLimited",
-			"Enabled": true,
+			"Enabled": false,
 			"WhitelistPlatforms": [
 				"Win64",
 				"Linux"

@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "UObject/NoExportTypes.h"
+#include "AkMetering.h" // MODDING EDIT: Wwise changes
 #include "FGAudioMeteringSubsystem.generated.h"
 
 

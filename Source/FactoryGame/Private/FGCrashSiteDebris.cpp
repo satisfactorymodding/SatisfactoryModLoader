@@ -3,6 +3,7 @@
 #include "FGCrashSiteDebris.h"
 #include "Components/BoxComponent.h"
 #include "Components/SceneComponent.h"
+#include "UObject/ObjectSaveContext.h"
 
 #if WITH_EDITOR
 void AFGCrashSiteDebris::PreSave(FObjectPreSaveContext SaveContext){ }

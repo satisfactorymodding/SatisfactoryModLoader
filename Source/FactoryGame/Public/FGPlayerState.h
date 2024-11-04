@@ -16,6 +16,8 @@
 #include "UI/Message/FGMessageBase.h"
 #include "FGPlayerState.generated.h"
 
+#undef GetUserName // MODDING EDIT: Wwise includes Windows.h which defines GetUserName as a macro
+
 class UFGPlayerHotbar;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedNew, TSubclassOf< class UFGItemDescriptor >, itemDesc );

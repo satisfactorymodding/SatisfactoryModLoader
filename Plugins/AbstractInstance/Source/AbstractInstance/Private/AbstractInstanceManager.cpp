@@ -187,7 +187,7 @@ void AAbstractInstanceManager::Tick( float DeltaSeconds )
 #endif
 }
 
-void AAbstractInstanceManager::SetInstancedStatic( AActor* OwnerActor, const FTransform& ActorTransform, const UAbstractInstanceDataObject* InstanceDataArray, TArray<FInstanceHandle*>& OutHandles, bool bInitializeHidden,TSubclassOf< class AActor > buildableClass )
+void AAbstractInstanceManager::SetInstancedStatic( AActor* OwnerActor, const FTransform& ActorTransform, const UAbstractInstanceDataObject* InstanceDataArray, TArray<FInstanceHandle*>& OutHandles, bool bInitializeHidden)
 {
 	QUICK_SCOPE_CYCLE_COUNTER( AAbstractInstanceManager_SetInstancedStatic )
 	
@@ -201,7 +201,7 @@ void AAbstractInstanceManager::SetInstancedStatic( AActor* OwnerActor, const FTr
 				FInstanceHandle* Handle = new FInstanceHandle();
 
 				// Assign buildable class if its used (LightWeightBuildableSubsystem)
-				Handle->BuildableClass = buildableClass;
+				//Handle->BuildableClass = buildableClass;
 
 				if( InstanceDataEntry.bAllowLazyInstance && Manager->CanLazyLoad() )
 				{

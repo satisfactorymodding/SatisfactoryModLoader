@@ -4,6 +4,7 @@
 #include "FGCategory.h"
 #include "FGItemCategory.h"
 #include "FGResourceSettings.h"
+#include "FactoryGame.h"
 
 EResourceForm UFGItemDescriptor::GetForm(TSubclassOf<UFGItemDescriptor> inClass) {
 	if (inClass)

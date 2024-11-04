@@ -7,7 +7,7 @@ public class FactoryGameSteamTarget : FactoryGameTarget
 {
     public FactoryGameSteamTarget(TargetInfo Target) : base(Target)
     {
-	    CustomConfig = "Steam";
+	    // CustomConfig = "Steam"; // MODDING EDIT: Cannot deploy targets with conflicting CustomConfig values
 	    GlobalDefinitions.Add("STOREFRONT_ID=steam");
     }
 }

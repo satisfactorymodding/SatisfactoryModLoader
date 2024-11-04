@@ -16,6 +16,7 @@ AFGCircuitSubsystem::AFGCircuitSubsystem() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bReplicateUsingRegisteredSubObjectList = true;
 }
+void AFGCircuitSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGCircuitSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGCircuitSubsystem, mReplicatedCircuits);
