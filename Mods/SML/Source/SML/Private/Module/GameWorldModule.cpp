@@ -21,6 +21,12 @@ EDataValidationResult UGameWorldModule::IsDataValid(TArray<FText>& ValidationErr
 			ValidationResult = EDataValidationResult::Invalid;
 		}
 	}
+	for (const TSubclassOf<AModSubsystem>& Subsystem : ModSubsystems) {
+		if (Subsystem == nullptr) {
+			ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "Validation_NullModSubsystem", "Null ModSubsystem found. Was the content it previously referenced deleted or moved?"));
+			ValidationResult = EDataValidationResult::Invalid;
+		}
+	}
 
 	return ValidationResult;
 }
