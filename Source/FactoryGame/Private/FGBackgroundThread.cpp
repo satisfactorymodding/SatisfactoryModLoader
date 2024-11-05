@@ -3,7 +3,7 @@
 #include "FGBackgroundThread.h"
 
 DEFINE_LOG_CATEGORY(LogPoolSystem);
-
+class FFGBackgroundThread* FPoolInstanceBase::GetRunnable(const AActor* owner) const{ return nullptr; }
 bool FPoolInstanceBase::ResolveHitResults(const TArray<FHitResult>& inHits, const TArray<UClass*>& classesToCheckAgainst, FVector& outHitLocation, float& inNearestDistance){ return bool(); }
 void FPoolInstanceComponent::Claim(int32 EntryId){ }
 bool FPoolInstanceComponent::Update(const TArray<FPoolItem*>& entries){ return bool(); }

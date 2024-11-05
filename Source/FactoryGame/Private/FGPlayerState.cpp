@@ -149,6 +149,7 @@ int32 AFGPlayerState::FindHotbarIndex(UFGPlayerHotbar* hotbar) const{ return int
 void AFGPlayerState::GetAllHotbars(TArray<UFGPlayerHotbar*>& out_hotbars) const{ }
 bool AFGPlayerState::GetAndSetFirstTimeEquipped( AFGEquipment* equipment){ return bool(); }
 AFGPlayerController* AFGPlayerState::GetOwningController() const{ return nullptr; }
+class AFGHUD* AFGPlayerState::GetHUD() const{ return nullptr; }
 UFGGameUI* AFGPlayerState::GetGameUI() const{ return nullptr; }
 void AFGPlayerState::AddNewRecipe(TSubclassOf< UFGRecipe > recipe){ }
 void AFGPlayerState::GetNewRecipes(TArray<TSubclassOf<class UFGRecipe>>& out_newRecipes) const{ }
@@ -177,6 +178,7 @@ void AFGPlayerState::Server_SetMapCategoryCollapsed_Implementation(ERepresentati
 void AFGPlayerState::SetCustomMapCategoryCollapsed(const FString& customMapCategory, bool collapsed){ }
 void AFGPlayerState::Server_SetCustomMapCategoryCollapsed_Implementation(const FString& customMapCategory, bool collapsed){ }
 void AFGPlayerState::UpdateOwningPawnActorRepresentation() const{ }
+void AFGPlayerState::SetIsServerAdmin(const bool isAdmin){ }
 void AFGPlayerState::DumpHotbars(){ }
 void AFGPlayerState::UpdateNumObservedInventorySlots(){ }
 bool AFGPlayerState::IsShopFavorite(TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }

@@ -8,6 +8,7 @@ void FLightweightBuildablePool::PreallocPool(AActor* owner, TArray<TSubclassOf<A
 AFGBuildable* FLightweightBuildablePool::GetBuildableFromPool(AActor* owner, FRuntimeBuildableInstanceData* runtimeData, int32 indexOfRuntimeData, TSubclassOf<AFGBuildable> buildableClass){ return nullptr; }
 void FLightweightBuildablePool::ReturnBuildableToPool(AFGBuildable* buildable){ }
 AFGBuildable* FLightweightBuildablePool::SpawnBuildableForPool(AActor* owner, TSubclassOf<AFGBuildable> buildableClass){ return nullptr; }
+bool FInstanceConverterInstigator::TryAddInstigatedBuildable(FInstanceToTemporaryBuildable* instanceToTemp){ return bool(); }
 void FLightweightBuildableRemovalArray::PostReplicatedAdd(const TArrayView<int32>& AddedIndices, int32 FinalSize){ }
 void FLightweightBuildableCustomizationArray::PostReplicatedAdd(const TArrayView<int32>& AddedIndices, int32 FinalSize){ }
 void UFGLightweightBuildableConstructionBundle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

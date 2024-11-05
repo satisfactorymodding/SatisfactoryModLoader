@@ -123,6 +123,7 @@ FDroneAction* AFGDroneVehicle::MigrateLegacyAction( UFGDroneAction* action){ ret
 void AFGDroneVehicle::OnMovementFlyingModeChanged(EDroneFlyingMode NewFlyingMode){ }
 void AFGDroneVehicle::OnMovementBrakingStateChanged(bool IsBraking){ }
 FGDroneActionFactory::FGDroneActionFactory(AFGDroneVehicle* drone){ }
+struct FDroneAction* FGDroneActionFactory::CreateDroneActionFromName(const FName& name) const{ return nullptr; }
 #if !UE_BUILD_SHIPPING
 void FDroneAction::ShowDebug(FString& out_concatDebugString){ }
 #endif 

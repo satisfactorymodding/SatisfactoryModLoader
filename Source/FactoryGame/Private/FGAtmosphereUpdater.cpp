@@ -9,6 +9,7 @@ UFGAtmosphereUpdater::UFGAtmosphereUpdater() : Super() {
 }
 void UFGAtmosphereUpdater::Tick(float dt){ }
 void UFGAtmosphereUpdater::FinishDestroy(){ Super::FinishDestroy(); }
+const TArray<FAtmosphereVolumeBlend>& UFGAtmosphereUpdater::GetEffectiveAtmosphereVolumes() const{ return *(new TArray<FAtmosphereVolumeBlend>()); }
 void UFGAtmosphereUpdater::ApplyFogSettings(const FExponentialFogSettings& fogSettings,  UWorld* world) const{ }
 void UFGAtmosphereUpdater::ApplySkyAtmosphereSettings(const  FSkyAtmosphereSettings& settings,  UWorld* world) const{ }
 void UFGAtmosphereUpdater::InterpolateFogSettings(FExponentialFogSettings& dest, const FExponentialFogSettings& src, float alpha) const{ }

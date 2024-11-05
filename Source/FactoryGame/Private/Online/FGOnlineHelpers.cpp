@@ -5,6 +5,8 @@
 void RefreshEOSConnectionForPlayer::CallLoginRefresh(IOnlineSubsystem* systemEos){ }
 FEOSAccountHelpers::FEOSAccountHelpers() noexcept(false){ }
 FEOSAccountHelpers::~FEOSAccountHelpers(){ }
+const TCHAR* FEOSAccountHelpers::EpicAccountIDToString(EOS_EpicAccountId InAccountId){ return nullptr; }
+const TCHAR* FEOSAccountHelpers::ProductUserIDToString(EOS_ProductUserId InAccountId){ return nullptr; }
 void FEOSAccountHelpers::ConnectAccount(UObject* worldContext, int32 LocalUserNum, TSharedRef<const FUniqueNetId> userId, FString token, const FOnEOSAccountConnectionCompleteDelegate& onComplete){ }
 void FEOSAccountHelpers::ConnectLinkAccountToExistingEOSAccount(UObject* worldContext, int32 LocalUserNum, EOS_ContinuanceToken token, const FOnEOSAccountConnectionCompleteDelegate& onComplete){ }
 void FEOSAccountHelpers::CreateNewAccountConnection(UObject* worldContext, int32 LocalUserNum, TSharedRef<const FUniqueNetId> userId, EOS_ContinuanceToken token, const FOnEOSAccountConnectionCompleteDelegate& onComplete){ }

@@ -26,8 +26,17 @@ void AFGWorldGridSubsystem::CreateRuntimeWorldGrid(const TArray< FFGWorldGridCel
 bool AFGWorldGridSubsystem::HasValidGrid() const{ return bool(); }
 void AFGWorldGridSubsystem::UpdateCellContainingBuildable( AFGBuildable* pBuildable){ }
 void AFGWorldGridSubsystem::UpdateCellContainingLocation(const FVector& location){ }
+FIntPoint AFGWorldGridSubsystem::GetWorldGridCoordinatesForLocation(const FVector& WorldLocation) const{ return FIntPoint(); }
+FFGWorldGridCell* AFGWorldGridSubsystem::GetCellByIndex(int32 Index){ return nullptr; }
+const FFGWorldGridCell* AFGWorldGridSubsystem::GetCellByIndex(int32 Index) const{ return nullptr; }
+FFGWorldGridCell* AFGWorldGridSubsystem::GetCellFromGridCoordinates(const FIntPoint& Coords){ return nullptr; }
+const FFGWorldGridCell* AFGWorldGridSubsystem::GetCellFromGridCoordinates(const FIntPoint& Coords) const{ return nullptr; }
 FFGWorldGridCell* AFGWorldGridSubsystem::GetCellContainingWorldLocation(const FVector& WorldLocation){ return nullptr; }
 FFGWorldGridCell* AFGWorldGridSubsystem::GetClosestCellToWorldLocation(const FVector& WorldLocation){ return nullptr; }
+int32 AFGWorldGridSubsystem::GetCellIndexFromGridCoordinates(const FIntPoint& Coords) const{ return int32(); }
+int32 AFGWorldGridSubsystem::GetCellIndexFromWorldLocation(const FVector& WorldLocation) const{ return int32(); }
+FVector AFGWorldGridSubsystem::GetCellWorldLocationFromGridCoords(const FIntPoint& Coords) const { return FVector(); }
+void AFGWorldGridSubsystem::GetCellWorldLocationFromGridCoords(const FIntPoint& Coords, FVector& OutVector) const{ }
 float AFGWorldGridSubsystem::GetCellElevationFromWorldLocation(const FVector& WorldLocation) const{ return float(); }
 float AFGWorldGridSubsystem::GetCellElevationFromGridCoordinates(const FIntPoint& Coords) const{ return float(); }
 TArray< const FFGWorldGridCell* > AFGWorldGridSubsystem::GetCellNeighbours(const FFGWorldGridCell* Cell) const{ return TArray<const FFGWorldGridCell*>(); }

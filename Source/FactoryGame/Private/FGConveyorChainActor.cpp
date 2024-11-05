@@ -74,6 +74,7 @@ float AFGConveyorChainActor::FindOffsetClosestToLocation(const FVector& location
 FConveyorChainSplineSegment* AFGConveyorChainActor::GetSegmentForConveyorBase(AFGBuildableConveyorBase* conveyorBase){ return nullptr; }
 FConveyorChainSplineSegment* AFGConveyorChainActor::GetSegmentForItemIndex(int32 itemIndex){ return nullptr; }
 FConveyorChainSplineSegment* AFGConveyorChainActor::GetSegmentForOffset(float offset){ return nullptr; }
+bool AFGConveyorChainActor::HasRoomOnChain(float& out_availableSpace){ return bool(); }
 float AFGConveyorChainActor::GetAvailableSpace(){ return float(); }
 void AFGConveyorChainActor::InitializeConveyorItemArray(){ }
 void AFGConveyorChainActor::AddClientAvailableConveyor( AFGBuildableConveyorBase* conveyorBase){ }

@@ -13,5 +13,6 @@ void AFGBuildablePoleBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 }
 bool AFGBuildablePoleBase::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 bool AFGBuildablePoleBase::ShouldShowCenterGuidelinesForHologram(const AFGHologram* hologram) const{ return bool(); }
+struct FPoleHeightMesh AFGBuildablePoleBase::FindBestHeightMesh(float inHeight) const{ return FPoleHeightMesh(); }
 void AFGBuildablePoleBase::PostLoad(){ Super::PostLoad(); }
 void AFGBuildablePoleBase::EndPlay(const EEndPlayReason::Type EndPlayReason){ }

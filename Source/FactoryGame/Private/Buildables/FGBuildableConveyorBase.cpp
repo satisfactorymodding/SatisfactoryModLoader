@@ -14,6 +14,9 @@ void UFGConveyorRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimePr
 void UFGConveyorRemoteCallObject::Server_OnUse_Implementation( AFGBuildableConveyorBase* target,  AFGCharacterPlayer* byCharacter, float itemOffset, uint16 desiredItemClassIdx){ }
 #if !UE_BUILD_SHIPPING
 void AFGBuildableConveyorBase::DebugDrawStalled() const{ }
+#if !UE_BUILD_SHIPPING
+void AFGBuildableConveyorBase::SetStalled(bool stall) const{ }
+#endif
 #endif 
 #if UE_BUILD_SHIPPING
 #endif 

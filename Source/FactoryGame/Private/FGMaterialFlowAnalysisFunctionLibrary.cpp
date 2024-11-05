@@ -3,7 +3,9 @@
 #include "FGMaterialFlowAnalysisFunctionLibrary.h"
 
 int32 FMaterialFlowGraph::GetDepth() const{ return int32(); }
+struct FMaterialFlowNode* FMaterialFlowGraph::CreateNodeFromRecipe(TSubclassOf<UFGRecipe> recipe, int32 depth){ return nullptr; }
 TArray< struct FMaterialFlowNode* > FMaterialFlowGraph::GetNodes(int32 depth) const{ return TArray<struct FMaterialFlowNode*>(); }
+struct FMaterialFlowNode* FMaterialFlowGraph::CreateNodeFromOutput(TSubclassOf<class UFGItemDescriptor> descriptor, int32 depth){ return nullptr; }
 void FMaterialFlowGraph::SortNodes(){ }
 void FMaterialFlowGraph::UpdateTotals(){ }
 FMaterialFlowConnection::FMaterialFlowConnection(){ }

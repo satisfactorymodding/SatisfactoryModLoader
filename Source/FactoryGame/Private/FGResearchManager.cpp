@@ -3,6 +3,8 @@
 #include "FGResearchManager.h"
 #include "Net/UnrealNetwork.h"
 
+bool IsValidForLoad(const FResearchData& element){ return bool(); }
+bool IsValidForLoad(const FResearchTime& element){ return bool(); }
 bool FHardDriveData::operator==(const FHardDriveData& other) const{ return bool(); }
 void UFGResearchManagerRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

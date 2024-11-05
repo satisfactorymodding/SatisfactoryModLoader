@@ -101,6 +101,7 @@ bool AFGBuildableTrainPlatformCargo::CanCompleteDocking(){ return bool(); }
 bool AFGBuildableTrainPlatformCargo::IsLoadUnloadBlockedByNoneFilter(){ return bool(); }
 void AFGBuildableTrainPlatformCargo::UpdateItemTransferRate(int32 numItemsTransfered){ }
 float AFGBuildableTrainPlatformCargo::GetCurrentItemTransferRate(){ return float(); }
+bool AFGBuildableTrainPlatformCargo::ShouldLockIncomingOutgoing() const{ return bool(); }
 void AFGBuildableTrainPlatformCargo::OnRep_SmoothedLoadRate(){ }
 void AFGBuildableTrainPlatformCargo::OnRep_SmoothedUnloadRate(){ }
 FName AFGBuildableTrainPlatformCargo::mMagicBoxComponentName = FName();
