@@ -121,7 +121,7 @@ public:
 
 	void RegisterFlyingBabyCrab( class AFGFlyingBabyCrab* babyCrab );
 	void UnregisterFlyingBabyCrab( class AFGFlyingBabyCrab* babyCrab );
-
+	
 	/** Used to force spawners which have players near them to spawn. */
 	void ForceTriggerSpawnersInRange();
 
@@ -134,6 +134,9 @@ public:
 	/** Whether or not the specified creature is protected and can not be targeted by other creatures. */
 	UFUNCTION( BlueprintPure, Category = "AI" )
 	bool IsProtectedCreature( TSubclassOf< class AFGCreature > creatureClass ) const;
+
+	UFUNCTION( BlueprintPure, Category = "AI" )
+	int32 GetNumActiveCreatures( bool includePersistent = true ) const;
 
 	void SetCreatureStressEnabled( bool enabled );
 

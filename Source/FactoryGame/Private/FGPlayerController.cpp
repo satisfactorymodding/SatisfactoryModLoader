@@ -55,6 +55,9 @@ void AFGPlayerController::OnRep_PlayerState(){ }
 void AFGPlayerController::SetPawn(APawn* inPawn){ }
 void AFGPlayerController::OnPossess(APawn* aPawn){ }
 void AFGPlayerController::OnUnPossess(){ }
+void AFGPlayerController::SetIgnoreMoveInput(bool bNewMoveInput){ }
+void AFGPlayerController::ResetIgnoreMoveInput(){ }
+void AFGPlayerController::ResetIgnoreInputFlags(){ }
 void AFGPlayerController::PawnLeavingGame(){ }
 void AFGPlayerController::PlayerTick(float DeltaTime){ }
 void AFGPlayerController::PreClientTravel(const FString& pendingURL, ETravelType travelType, bool isSeamlessTravel){ }

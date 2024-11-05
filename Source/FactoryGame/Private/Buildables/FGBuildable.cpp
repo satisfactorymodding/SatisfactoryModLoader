@@ -212,6 +212,7 @@ bool AFGBuildable::GetCanBeColored_Implementation(){ return bool(); }
 bool AFGBuildable::GetCanBePatterned_Implementation(){ return bool(); }
 void AFGBuildable::StartIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter, bool isValid){ }
 void AFGBuildable::StopIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter){ }
+void AFGBuildable::SetCustomizationDataLightweightNoApply(const FFactoryCustomizationData& customizationData, bool skipCombine){ }
 void AFGBuildable::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGBuildable::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGBuildable::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
@@ -280,6 +281,7 @@ TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGBuildable::GetD
 void AFGBuildable::ToggleInstanceVisibility(bool bNewState){ }
 void AFGBuildable::SetInsideBlueprintDesigner( AFGBuildableBlueprintDesigner* designer){ }
 AFGBuildableBlueprintDesigner* AFGBuildable::GetBlueprintDesigner() const{ return nullptr; }
+void AFGBuildable::BlueprintCleanUpFaultyConnectionHookups(){ }
 void AFGBuildable::PreSerializedToBlueprint(){ }
 void AFGBuildable::PostSerializedToBlueprint(){ }
 void AFGBuildable::PostSerializedFromBlueprint(bool isBlueprintWorld){ }

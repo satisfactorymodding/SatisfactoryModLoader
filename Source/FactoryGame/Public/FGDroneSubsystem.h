@@ -15,25 +15,43 @@ struct FDroneStationData
 {
 	GENERATED_BODY()
 
+	FDroneStationData() :
+		Station( nullptr ),
+		IsOrigin( false ),
+		IsPairedToOrigin( false ),
+		IsPairedFromOrigin( false ),
+		Distance( 0.0f )
+	{
+	}
+
+	FDroneStationData( TObjectPtr<AFGDroneStationInfo> station, bool isOrigin, bool isPairedToOrigin, bool isPairedFromOrigin, float distance ) :
+		Station( station ),
+		IsOrigin( isOrigin ),
+		IsPairedToOrigin( isPairedToOrigin ),
+		IsPairedFromOrigin( isPairedFromOrigin ),
+		Distance( distance )
+	{
+	}
+	
 	/**  */
 	UPROPERTY( BlueprintReadOnly )
-	TObjectPtr<AFGDroneStationInfo> Station = nullptr;
+	TObjectPtr<AFGDroneStationInfo> Station;
 
 	/**  */
 	UPROPERTY( BlueprintReadOnly )
-	bool IsOrigin = false;
+	bool IsOrigin;
 
 	/**  */
 	UPROPERTY( BlueprintReadOnly )
-	bool IsPairedToOrigin = false;
+	bool IsPairedToOrigin;
 
 	/**  */
 	UPROPERTY( BlueprintReadOnly )
-	bool IsPairedFromOrigin = false;
+	bool IsPairedFromOrigin;
 
 	/**  */
 	UPROPERTY( BlueprintReadOnly )
-	float Distance = false;
+	float Distance;
 };
 
 /**

@@ -34,6 +34,8 @@ class FACTORYGAME_API AFGCircuitSubsystem : public AFGSubsystem, public IFGSaveI
 	GENERATED_BODY()
 public:
 	AFGCircuitSubsystem();
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	/** Replication. */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
@@ -170,6 +172,10 @@ public:
 	
 	/** Debugging function to dump stats of all circuits to the log */
 	void Debug_DumpCircuitsToLog();
+
+	void ClearAllTimers();
+
+	void StableCircuitCallback( const FPowerCircuitFuseStabilityData circuitStabilityData );
 	
 private:
 	/** Let the clients know about changes in the circuits. */

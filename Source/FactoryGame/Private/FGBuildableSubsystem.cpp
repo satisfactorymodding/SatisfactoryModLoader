@@ -130,6 +130,7 @@ void AFGBuildableSubsystem::RemovePendingConstructionHologram(FNetConstructionID
 void AFGBuildableSubsystem::RemovePendingConstructionHologramForLightweight(uint16 clientId){ }
 void AFGBuildableSubsystem::ApplyCustomizationPreview( IFGColorInterface* colorInterface, const FFactoryCustomizationData& previewData){ }
 void AFGBuildableSubsystem::ClearCustomizationPreview( IFGColorInterface* colorInterface){ }
+void AFGBuildableSubsystem::ClearCustomizationPreviewNoApply(class IFGColorInterface* colorInterface){ }
 void AFGBuildableSubsystem::ClearAllCustomizationPreviews(){ }
 AFGPlayerController* AFGBuildableSubsystem::GetLocalPlayerController() const{ return nullptr; }
 float AFGBuildableSubsystem::GetDistanceSqToBoundingBox(const FVector& point,  AFGBuildable* buildable) const{ return float(); }

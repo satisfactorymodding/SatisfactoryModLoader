@@ -24,7 +24,7 @@ namespace LightweightBuildables
 }
 
 USTRUCT()
-struct FBuildEffectAndRuntimeInfo
+struct FACTORYGAME_API FBuildEffectAndRuntimeInfo
 {
 	GENERATED_BODY()
 
@@ -37,6 +37,7 @@ struct FBuildEffectAndRuntimeInfo
 	UPROPERTY()
 	class AFGBuildEffectActor* BuildEffectActor = nullptr;
 };
+
 
 USTRUCT()
 struct FACTORYGAME_API FRuntimeBuildableInstanceData
@@ -94,6 +95,26 @@ struct FACTORYGAME_API FRuntimeBuildableInstanceData
 	
 };
 
+// A Simple pool struct for spawning and reusing buildables as lightweights
+USTRUCT()
+struct FACTORYGAME_API FLightweightBuildablePool
+{
+	GENERATED_BODY()
+	FLightweightBuildablePool() {}
+	
+public:
+	void PreallocPool( AActor* owner, TArray< TSubclassOf< AFGBuildable > > availableClasses );
+	AFGBuildable* GetBuildableFromPool( AActor* owner, FRuntimeBuildableInstanceData* runtimeData, int32 indexOfRuntimeData, TSubclassOf<AFGBuildable> buildableClass );
+	void ReturnBuildableToPool( AFGBuildable* buildable );
+	AFGBuildable* SpawnBuildableForPool( AActor* owner, TSubclassOf< AFGBuildable > buildableClass );
+
+public:
+	TMap< TSubclassOf< AFGBuildable >, TArray< AFGBuildable* > > BuildableClassToPool;
+	inline static const FTransform PoolTransform = FTransform( FVector( 0.f, 0.f, -100000.f ) );
+	TArray< FInstanceHandle* > emptyHandles;
+};
+
+
 FArchive& operator<<( FArchive& ar, FRuntimeBuildableInstanceData& runtimeInstanceData );
 
 struct FACTORYGAME_API FInstanceToTemporaryBuildable
@@ -132,6 +153,8 @@ struct FACTORYGAME_API FInstanceConverterInstigator
 	AActor* Instigator = nullptr;
 
 	float InfluenceRadius = 0.f;
+
+	FVector LastUpdateLocation = FVector( 0.f, 0.f, 0.f );
 
 	// Array of all buildables that were spawned as a result of this instigator
 	TArray< FInstanceToTemporaryBuildable* > InstigatedBuildables;
@@ -517,6 +540,76 @@ struct FACTORYGAME_API FRuntimeDataBuildEffectProxyData
 	TArray< UMeshComponent* > MeshComponents;
 };
 
+/** Metadata set on the abstract instances to associate them with a lightweight buildable */
+struct FACTORYGAME_API FLightweightBuildableInstanceHandleMetadata : FInstanceHandleMetadata
+{
+	/** Class of the buildable */
+	TSubclassOf<AFGBuildable> BuildableClass;
+	/** ID of the lightweight buildable */
+	int32 BuildableID{INDEX_NONE};
+};
+
+/**
+ * A descriptor of a lightweight buildable existing in the world
+ * Can be used to perform manipulations on the lightweight actor and stored indefinitely without worrying about the lifetime of the lightweight
+ * Also caches the position of the lightweight so it can be used to check if the lightweight is still alive
+ */
+USTRUCT(BlueprintType)
+struct FACTORYGAME_API FLightweightBuildableInstanceRef
+{
+	GENERATED_BODY()
+public:
+	/** Initializes this struct with the given lightweight buildable data*/
+	void Initialize(AFGLightweightBuildableSubsystem* ownerSubsystem, TSubclassOf<AFGBuildable> buildableClass, int32 buildableIndex);
+
+	/** Returns the subsystem that owns this buildable */
+	AFGLightweightBuildableSubsystem* GetOwnerSubsystem() const;
+
+	/** Returns the class of this buildable */
+	FORCEINLINE TSubclassOf<AFGBuildable> GetBuildableClass() const { return BuildableClass; }
+
+	/** Returns the transform of the buildable */
+	FORCEINLINE FTransform GetBuildableTransform() const { return Transform; }
+
+	/** Returns the recipe that this buildable was built with, if any */
+	FORCEINLINE TSubclassOf<UFGRecipe> GetBuiltWithRecipe() const { return BuiltWithRecipe; }
+
+	/** Returns the instance data for this buildable, if it is still alive. Will return nullptr if the buildable is no longer valid */
+	const FRuntimeBuildableInstanceData* ResolveBuildableInstanceData() const;
+
+	/** Returns true if this lightweight buildable is still valid */
+	FORCEINLINE bool IsValid() const { return ResolveBuildableInstanceData() != nullptr; }
+
+	/** Removes the buildable from the world, if it is still valid */
+	bool Remove();
+
+	/** Updates the customization data on the buildable, if it is still valid */
+	bool SetCustomizationData(const FFactoryCustomizationData& customizationData) const;
+
+	/** Spawns a temporary buildable for this lightweights. Must only be called on game thread, buildable is not replicated or saved. */
+	AFGBuildable* SpawnTemporaryBuildable() const;
+protected:
+	/** The subsystem that owns this lightweight buildable */
+	UPROPERTY(SaveGame)
+	TWeakObjectPtr<class AFGLightweightBuildableSubsystem> OwnerSubsystem;
+
+	/** Class of this buildable. Used for lookups into the lightweight system */
+	UPROPERTY(SaveGame)
+	TSubclassOf<AFGBuildable> BuildableClass;
+
+	/** Cached transform of the buildable. Since the index can be re-purposed by another lightweight buildable, we use the transform to be able to tell if this is the same buildable or not */
+	UPROPERTY(SaveGame)
+	FTransform Transform;
+
+	/** The recipe that the buildable was built with. Cached here because it does not change and also so that this information can be retrieved even when the buildable is no longer there */
+	UPROPERTY(SaveGame)
+	TSubclassOf<UFGRecipe> BuiltWithRecipe;
+
+	/** ID of the lightweight buildable. Used for lifetime checking and making modifications to the lightweight */
+	UPROPERTY(SaveGame)
+	int32 LightweightBuildableID{INDEX_NONE};
+};
+
 /**
  * Subsystem to manage buildables that dont have an actual actor representation persistent in the world.
  * The primary purpose of this system is to handle walls and foundations without creating persistent actors for them
@@ -578,7 +671,7 @@ public:
 	void InvalidateRuntimeInstanceDataForIndex( TSubclassOf<AFGBuildable> buildableClass, int32 index );
 
 	// Lean method of adding an instance from BuildableInstanceData (no instance required)
-	int32 AddFromBuildableInstanceData(TSubclassOf< class AFGBuildable > buildableClass, FRuntimeBuildableInstanceData& buildableInstanceData, bool fromSaveData = false, uint16 constructId = MAX_uint16, AActor* buildEffectInstigator = nullptr, int32 blueprintBuildEffectIndex = INDEX_NONE );
+	int32 AddFromBuildableInstanceData(TSubclassOf< class AFGBuildable > buildableClass, FRuntimeBuildableInstanceData& buildableInstanceData, bool fromSaveData = false, int32 saveDataBuildableIndex = INDEX_NONE, uint16 constructId = MAX_uint16, AActor* buildEffectInstigator = nullptr, int32 blueprintBuildEffectIndex = INDEX_NONE );
 
 	void AddFromReplicatedData( TSubclassOf< AFGBuildable > buildableClass, TSubclassOf< class UFGRecipe > builtWithRecipe, const FLightweightBuildableReplicationItem& replicationData, int32 maxSize, AActor* buildEffectInstigator, int32 blueprintBuildIndex );
 
@@ -616,15 +709,16 @@ public:
 
 	FRuntimeBuildableInstanceData* GetRuntimeDataForBuildableClassAndIndex( TSubclassOf< class AFGBuildable > buildableClass, int32 index );
 
-	// Using Handle to get the runtime data. This function takes a location to reduce the search area as iterating over all instances can be quite time consuming.
-	FRuntimeBuildableInstanceData* GetRuntimeDataForBuildableClassAndHandleNearLocation( TSubclassOf< class AFGBuildable > buildableClass, const FInstanceHandle& handle, const FVector& location );
-
 	void NotifyRepProxyCreated( AFGLightweightBuildableRepProxy* proxy ) { mCachedLocalRepProxy = proxy; }
 
 	FORCEINLINE void SetColorSlotDataDirty() { mColorSlotDataDirty = true; }
 
 	void AddBuildEffectForRuntimeData( AFGBuildEffectActor* buildEffectActor, TSubclassOf< AFGBuildable > buildableClass, int32 index );
 	void RemoveBuildEffectForRuntimeData( AFGBuildEffectActor* buildEffectActor );
+
+	/** Resolves a hit of the lightweight buildable subsystem instance into the info about the buildable that was hit */
+	UFUNCTION(BlueprintCallable, Category = "Lightweight Buildable")
+	static bool ResolveLightweightInstance(const FInstanceHandle& instanceHandle, FLightweightBuildableInstanceRef& out_buildableDescriptor);
 public:
 	// When loading we will repeatedly use this storage location to store temporary instances that then get copied to their correct location
 	static FRuntimeBuildableInstanceData mStaticRuntimeInstanceDataStorage;
@@ -642,6 +736,9 @@ private:
 private:
 	friend class AFGLightweightBuildableRepProxy;
 	friend class UFGLightweightBuildableRemovalBundle;
+
+	// Simple pool struct for handling pre spawned buildables to reduce overhead on creating lightweight temporaries (just reuse buildings)
+	FLightweightBuildablePool mLightweightBuildablePool;
 
 	// Cached Gamestate to allow us to initialize customization data without getting it everytime
 	class AFGGameState* mCachedGameState;

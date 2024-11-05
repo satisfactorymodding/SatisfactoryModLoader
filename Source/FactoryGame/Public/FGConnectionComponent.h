@@ -25,4 +25,7 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFGSaveInterface
+	
+	/** Checks the outer for its assigned blueprint designer. Valid only on Buildables and Holograms otherwise always null */
+	class AFGBuildableBlueprintDesigner* GetOuterBlueprintDesigner() const;
 };

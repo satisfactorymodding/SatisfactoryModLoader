@@ -107,7 +107,7 @@ void AFGHologram::UpdateRotationValuesFromTransform(){ }
 void AFGHologram::SetBuildClass(TSubclassOf<  AActor > buildClass){ }
 TSubclassOf< AActor > AFGHologram::GetActorClass() const{ return TSubclassOf<AActor>(); }
 void AFGHologram::SetInsideBlueprintDesigner( AFGBuildableBlueprintDesigner* designer){ }
-AFGBuildableBlueprintDesigner* AFGHologram::GetBlueprintDesigner(){ return nullptr; }
+AFGBuildableBlueprintDesigner* AFGHologram::GetBlueprintDesigner() const{ return nullptr; }
 bool AFGHologram::CanNudgeHologram() const{ return bool(); }
 void AFGHologram::LockHologramPosition(bool lock){ }
 void AFGHologram::SetNudgeOffset(const FVector& NewNudgeOffset){ }

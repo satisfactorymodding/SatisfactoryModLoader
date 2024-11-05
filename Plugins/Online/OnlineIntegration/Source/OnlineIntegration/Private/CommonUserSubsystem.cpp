@@ -53,6 +53,7 @@ void UCommonUserSubsystem::RegisterBackendLinkConnection(UOnlineUserBackendLink*
 TFuture<bool> UCommonUserSubsystem::QueryUserInfo(ULocalUserInfo* LocalUser, UOnlineUserBackendLink* BackendLink){ return TFuture<bool>(); }
 TFuture<void> UCommonUserSubsystem::QueryEntitlements(ULocalUserInfo* LocalUser, const TArray<UAddOnEntitlement*>& Entitlements){ return TFuture<void>(); }
 UOnlineUserInfo* UCommonUserSubsystem::CreateOnlineUserForLink(UOnlineUserBackendLink* BackendLink){ return nullptr; }
+void UCommonUserSubsystem::UpdateAllAggregatedStats(const UE::Online::FAccountId& AccountId, UOnlineIntegrationBackend* Backend){ }
 void UCommonUserSubsystem::OnGameplayEventTriggered(const FGameplayEvent& GameplayEvent){ }
 ULocalUserInfo* UCommonUserSubsystem::CreateLocalUserInfo(int32 LocalPlayerIndex){ return nullptr; }
 void UCommonUserSubsystem::BindDelegates(){ }

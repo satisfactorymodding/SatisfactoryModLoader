@@ -25,6 +25,7 @@ void AFGCreatureSubsystem::RegisterFlyingBabyCrab( AFGFlyingBabyCrab* babyCrab){
 void AFGCreatureSubsystem::UnregisterFlyingBabyCrab( AFGFlyingBabyCrab* babyCrab){ }
 void AFGCreatureSubsystem::ForceTriggerSpawnersInRange(){ }
 bool AFGCreatureSubsystem::IsProtectedCreature(TSubclassOf<  AFGCreature > creatureClass) const{ return bool(); }
+int32 AFGCreatureSubsystem::GetNumActiveCreatures(bool includePersistent) const{ return int32(); }
 void AFGCreatureSubsystem::SetCreatureStressEnabled(bool enabled){ }
 AFGCreatureSubsystem* AFGCreatureSubsystem::Get(UWorld* world){ return nullptr; }
 AFGCreatureSubsystem* AFGCreatureSubsystem::Get(UObject* worldContext){ return nullptr; }

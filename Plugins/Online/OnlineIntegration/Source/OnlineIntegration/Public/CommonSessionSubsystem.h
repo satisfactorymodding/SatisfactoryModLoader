@@ -77,6 +77,7 @@ public:
 	/// Native API - should be preferred when used from native code
 	UE::Online::TOnlineResult<UE::Online::FGetSessionByName> GetSessionByName(UE::Online::FGetSessionByName::Params&& Params, UOnlineIntegrationBackend* Backend);
 	
+	static bool IsProviderNameSupported(const FString& ProviderName);
 	static UE::Online::FOnlineSessionId MakeOnlineSessionId(const FString& SessionIdString);
 	static FString OnlineSessionIdToString(UE::Online::FOnlineSessionId SessionId);
 

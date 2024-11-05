@@ -15,6 +15,7 @@ USessionMigrationSequence* UCommonSessionSubsystem::CreateSessionCreationSequenc
 USessionMigrationSequence* UCommonSessionSubsystem::CreateSessionJoiningSequence(const FSessionJoinParams& JoinParams){ return nullptr; }
 TFuture<USessionInformation*> UCommonSessionSubsystem::FetchFriendSession(UOnlineFriend* Friend, UOnlineIntegrationBackend* Backend){ return TFuture<USessionInformation*>(); }
 UE::Online::TOnlineResult<UE::Online::FGetSessionByName> UCommonSessionSubsystem::GetSessionByName(UE::Online::FGetSessionByName::Params&& Params, UOnlineIntegrationBackend* Backend){ return UE::Online::TOnlineResult<UE::Online::FGetSessionByName>({TSharedPtr<UE::Online::ISession>().ToSharedRef()}); }
+bool UCommonSessionSubsystem::IsProviderNameSupported(const FString& ProviderName){ return bool(); }
 UE::Online::FOnlineSessionId UCommonSessionSubsystem::MakeOnlineSessionId(const FString& SessionIdString){ return UE::Online::FOnlineSessionId(); }
 FString UCommonSessionSubsystem::OnlineSessionIdToString(UE::Online::FOnlineSessionId SessionId){ return FString(); }
 FString UCommonSessionSubsystem::ToString_OnlineSessionBackendLink(UOnlineSessionBackendLink* SessionBackendLink){ return FString(); }

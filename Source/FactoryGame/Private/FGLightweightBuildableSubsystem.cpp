@@ -4,6 +4,10 @@
 #include "Components/SceneComponent.h"
 #include "Net/UnrealNetwork.h"
 
+void FLightweightBuildablePool::PreallocPool(AActor* owner, TArray<TSubclassOf<AFGBuildable>> availableClasses){ }
+AFGBuildable* FLightweightBuildablePool::GetBuildableFromPool(AActor* owner, FRuntimeBuildableInstanceData* runtimeData, int32 indexOfRuntimeData, TSubclassOf<AFGBuildable> buildableClass){ return nullptr; }
+void FLightweightBuildablePool::ReturnBuildableToPool(AFGBuildable* buildable){ }
+AFGBuildable* FLightweightBuildablePool::SpawnBuildableForPool(AActor* owner, TSubclassOf<AFGBuildable> buildableClass){ return nullptr; }
 void FLightweightBuildableRemovalArray::PostReplicatedAdd(const TArrayView<int32>& AddedIndices, int32 FinalSize){ }
 void FLightweightBuildableCustomizationArray::PostReplicatedAdd(const TArrayView<int32>& AddedIndices, int32 FinalSize){ }
 void UFGLightweightBuildableConstructionBundle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -67,6 +71,12 @@ void AFGLightweightBuildableRepProxy::NotifyConstructBundleInitialRepReceived(UF
 void AFGLightweightBuildableRepProxy::Client_SendConstructionBundle_Implementation(UFGLightweightBuildableConstructionBundle* bundle, const TArray< FLightweightBuildableReplicationItem >& Items){ }
 void AFGLightweightBuildableRepProxy::Server_NotifyRemovalBundleReplicated_Implementation(int32 clientCount, UFGLightweightBuildableRemovalBundle* removalBundle){ }
 void AFGLightweightBuildableRepProxy::Server_NotifyCustomizationBundleReplicated_Implementation(int32 clientCount, UFGLightweightCustomizationBundle* customizationBundle){ }
+void FLightweightBuildableInstanceRef::Initialize(AFGLightweightBuildableSubsystem* ownerSubsystem,	TSubclassOf<AFGBuildable> buildableClass, int32 buildableIndex){ }
+AFGLightweightBuildableSubsystem* FLightweightBuildableInstanceRef::GetOwnerSubsystem() const{ return nullptr; }
+const FRuntimeBuildableInstanceData* FLightweightBuildableInstanceRef::ResolveBuildableInstanceData() const{ return nullptr; }
+bool FLightweightBuildableInstanceRef::Remove(){ return bool(); }
+bool FLightweightBuildableInstanceRef::SetCustomizationData(const FFactoryCustomizationData& customizationData) const{ return bool(); }
+AFGBuildable* FLightweightBuildableInstanceRef::SpawnTemporaryBuildable() const{ return nullptr; }
 AFGLightweightBuildableSubsystem::AFGLightweightBuildableSubsystem() : Super() {
 	this->mCachedLocalRepProxy = nullptr;
 	this->mBuildEffectComponentActor = nullptr;
@@ -102,7 +112,7 @@ int32 AFGLightweightBuildableSubsystem::AddFromBuildable( AFGBuildable* buildabl
 void AFGLightweightBuildableSubsystem::RemoveByBuildable( AFGBuildable* buildable){ }
 void AFGLightweightBuildableSubsystem::RemoveByInstanceIndex(TSubclassOf<  AFGBuildable > buildableClass, int32 instanceIndex){ }
 void AFGLightweightBuildableSubsystem::InvalidateRuntimeInstanceDataForIndex(TSubclassOf<AFGBuildable> buildableClass, int32 index){ }
-int32 AFGLightweightBuildableSubsystem::AddFromBuildableInstanceData(TSubclassOf<  AFGBuildable > buildableClass, FRuntimeBuildableInstanceData& buildableInstanceData, bool fromSaveData , uint16 constructId , AActor* buildEffectInstigator , int32 blueprintBuildEffectIndex){ return int32(); }
+int32 AFGLightweightBuildableSubsystem::AddFromBuildableInstanceData(TSubclassOf< class AFGBuildable > buildableClass, FRuntimeBuildableInstanceData& buildableInstanceData, bool fromSaveData, int32 saveDataBuildableIndex, uint16 constructId, AActor* buildEffectInstigator, int32 blueprintBuildEffectIndex){ return int32(); }
 void AFGLightweightBuildableSubsystem::AddFromReplicatedData(TSubclassOf< AFGBuildable > buildableClass, TSubclassOf<  UFGRecipe > builtWithRecipe, const FLightweightBuildableReplicationItem& replicationData, int32 maxSize, AActor* buildEffectInstigator, int32 blueprintBuildIndex){ }
 void AFGLightweightBuildableSubsystem::RemoveStaleTemporaryBuildables(){ }
 void AFGLightweightBuildableSubsystem::RemoveTemporaryBuildableForInstanceIndex(TSubclassOf<AFGBuildable> buildableClass, int32 instanceIndex){ }
@@ -119,9 +129,9 @@ void AFGLightweightBuildableSubsystem::BlueprintProxyHoveredForDismantle( AFGBlu
 void AFGLightweightBuildableSubsystem::BlueprintProxyStopHoveredForDismantle( AFGBlueprintProxy* blueprintProxy){ }
 void AFGLightweightBuildableSubsystem::NotifyInstancesOfBlueprintProxy(const TArray< FBuildableClassLightweightIndices >& lightweightInstancesAndIndices, AFGBlueprintProxy* blueprintProxy){ }
 FRuntimeBuildableInstanceData* AFGLightweightBuildableSubsystem::GetRuntimeDataForBuildableClassAndIndex(TSubclassOf<  AFGBuildable > buildableClass, int32 index){ return nullptr; }
-FRuntimeBuildableInstanceData* AFGLightweightBuildableSubsystem::GetRuntimeDataForBuildableClassAndHandleNearLocation(TSubclassOf<  AFGBuildable > buildableClass, const FInstanceHandle& handle, const FVector& location){ return nullptr; }
 void AFGLightweightBuildableSubsystem::AddBuildEffectForRuntimeData(AFGBuildEffectActor* buildEffectActor, TSubclassOf< AFGBuildable > buildableClass, int32 index){ }
 void AFGLightweightBuildableSubsystem::RemoveBuildEffectForRuntimeData(AFGBuildEffectActor* buildEffectActor){ }
+bool AFGLightweightBuildableSubsystem::ResolveLightweightInstance(const FInstanceHandle& instanceHandle, FLightweightBuildableInstanceRef& out_buildableDescriptor){ return bool(); }
 TSoftClassPtr< class UFGMaterialEffect_Build > AFGLightweightBuildableSubsystem::GetBuildEffectTemplate() const{ return TSoftClassPtr<class UFGMaterialEffect_Build>(); }
 TSoftClassPtr< class UFGMaterialEffect_Build > AFGLightweightBuildableSubsystem::GetDismantleEffectTemplate() const{ return TSoftClassPtr<class UFGMaterialEffect_Build>(); }
 void AFGLightweightBuildableSubsystem::CreateBuildEffectForRuntimeData(TSubclassOf<AFGBuildable> buildableClass, FRuntimeBuildableInstanceData& runtimeData, AActor* instigator, UAbstractInstanceDataObject* instanceData, int32 Index){ }

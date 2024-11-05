@@ -251,6 +251,9 @@ public:
 	virtual void StopIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter );
 	//~ End IFGColorInterface
 
+	// Used by the lightweight subsystem to apply customization data to lightweight temporaries when they're created (it leaves out a lot of unwanted logic)
+	void SetCustomizationDataLightweightNoApply( const FFactoryCustomizationData& customizationData, bool skipCombine = false );
+
 	//~ Begin IFGUseableInterface
 	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
@@ -516,6 +519,11 @@ public:
 	/** Gets the blueprint proxy this buildable belongs to. */
 	FORCEINLINE class AFGBlueprintProxy* GetBlueprintProxy() const { return mBlueprintProxy; }
 
+	/**
+	 * Called when serializing to blueprint and when loading from as a safety for faulty connections (that may have arisen due to improper blueprint serialization)
+	 */
+	void BlueprintCleanUpFaultyConnectionHookups();
+	
 	/**
 	* Called from blueprint subsystem after being loaded. Can be used to run custom logic post serialization
 	*/
