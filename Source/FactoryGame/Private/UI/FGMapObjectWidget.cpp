@@ -5,8 +5,8 @@
 bool UFGMapObjectWidget::CanBeHighlighted() const{ return bool(); }
 void UFGMapObjectWidget::SetHighlighted(bool highlighted){ }
 FLinearColor UFGMapObjectWidget::IsHighlighted(bool& out_IsHighlighted,  bool& out_HighlightedByLocalPlayer) const{ return FLinearColor(); }
-void UFGMapObjectWidget::NativeConstruct(){ }
-void UFGMapObjectWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ }
+void UFGMapObjectWidget::NativeConstruct(){ Super::NativeConstruct(); }
+void UFGMapObjectWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ Super::NativeTick(MyGeometry, InDeltaTime); }
 void UFGMapObjectWidget::InitMapObject(){ }
 void UFGMapObjectWidget::InitMapObjectPostion(){ }
 void UFGMapObjectWidget::OnActorRepresentationFiltered(ERepresentationType representationType, bool visible){ }

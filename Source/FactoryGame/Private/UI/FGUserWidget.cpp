@@ -7,7 +7,7 @@ DEFINE_LOG_CATEGORY(LogUI);
 #if WITH_EDITOR
 void UFGUserWidget::ValidateCompiledWidgetTree(const UWidgetTree& BlueprintWidgetTree,  IWidgetCompilerLog& CompileLog) const{ }
 #endif 
-void UFGUserWidget::NativeConstruct(){ }
+void UFGUserWidget::NativeConstruct(){ Super::NativeConstruct(); }
 FReply UFGUserWidget::NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent){ return FReply::Unhandled(); }
 FReply UFGUserWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent){ return FReply::Unhandled(); }
 FReply UFGUserWidget::NativeOnKeyUp(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent){ return FReply::Unhandled(); }
