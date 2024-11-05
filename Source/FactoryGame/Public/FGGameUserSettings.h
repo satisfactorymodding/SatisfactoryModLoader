@@ -515,3 +515,5 @@ private:
 	/** const variables */
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;
 };
+
+

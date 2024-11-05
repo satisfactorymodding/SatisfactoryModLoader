@@ -306,3 +306,4 @@ class FACTORYGAME_API AFGConveyorChainActor_RepSizeNoCull : public AFGConveyorCh
 {
 	GENERATED_BODY()
 };
+

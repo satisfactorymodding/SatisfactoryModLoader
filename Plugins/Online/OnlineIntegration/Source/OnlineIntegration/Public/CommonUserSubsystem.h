@@ -270,6 +270,11 @@ public:
 	
 	UOnlineUserInfo* CreateOnlineUserForLink(UOnlineUserBackendLink* BackendLink);
 
+	const TMap<FGameplayTag, FString>& GetTrackedStats() const { return TrackedStatMap; }
+	const TArray<FAggregatedOnlineStat>& GetTrackedAggregatedStats() const { return TrackedAggregatedStats; }
+
+	void UpdateAllAggregatedStats(const UE::Online::FAccountId& AccountId, UOnlineIntegrationBackend* Backend);
+
 protected:
 	/**
 	 * Handles Gameplay events. Most likely that means a backend stat update

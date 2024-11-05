@@ -11,7 +11,7 @@ struct FWorldScannableData
 {
 	GENERATED_BODY()
 
-	FWorldScannableData();
+	FWorldScannableData() = default;
 #if WITH_EDITOR
 	explicit FWorldScannableData( const AActor* actor );
 	FWorldScannableData( const class FWorldPartitionActorDesc* ActorDesc, int32 PIEInstanceIndex = INDEX_NONE );

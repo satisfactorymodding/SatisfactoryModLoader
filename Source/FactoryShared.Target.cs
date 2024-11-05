@@ -9,7 +9,7 @@ public class FactorySharedTarget : TargetRules
 {
 	/** Allows overriding whenever the checks in the shipping builds should be used from the commandline */
 	[CommandLine("-UseChecksInShipping")]
-	public bool UseChecksInShippingOverride = true;
+	public bool UseChecksInShippingOverride = false;
 
 	/** Allows overriding the build type from the command line */
 	[CommandLine("-Monolithic", Value = "Monolithic")] 

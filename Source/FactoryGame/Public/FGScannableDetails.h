@@ -225,3 +225,5 @@ class FACTORYGAME_API UFGScannableDetailsHarddrive : public UFGScannableDetails
 public:
 	virtual FScannableActorDetails FindClosestRelevantActor(UWorld* world, const FVector& scanLocation, const float maxRangeSquared, TSubclassOf<AActor> actorClassToScanFor) const override;
 };
+
+

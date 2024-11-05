@@ -323,3 +323,4 @@ private:
 	static inline const float COLLISION_SPACING =   300.f;
 	static inline const FVector COLLISION_OFFSET = FVector( 0.f, 0.f, 30.f + 1.f );
 };
+

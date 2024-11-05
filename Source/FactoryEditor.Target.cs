@@ -14,8 +14,8 @@ public class FactoryEditorTarget : TargetRules
 		ExtraModuleNames.AddRange(new string[] {
 			"FactoryPreEarlyLoadingScreen",
             "FactoryGame",
-            //"FactoryEditor",
-			//"FactoryUncookedOnly",
+            "FactoryEditor",
+			"FactoryUncookedOnly",
 			"FactoryDedicatedServer",
 			"FactoryDedicatedClient"
 		});

@@ -7,7 +7,7 @@ public class FactoryGameEGSTarget : FactoryGameTarget
 {
     public FactoryGameEGSTarget(TargetInfo Target) : base(Target)
     {
-	    // CustomConfig = "EGS"; // MODDING EDIT: Cannot deploy targets with conflicting CustomConfig values 
+	    CustomConfig = "EGS";
 	    GlobalDefinitions.Add("STOREFRONT_ID=epic");
 	    
 	    // Enable launcher checks for the game targets built for EGS

@@ -44,7 +44,9 @@
 			"Enabled": true,
 			"WhitelistPlatforms": [
 				"Win64",
-				"Linux"
+				"Linux",
+				"PS5",
+				"XSX"
 			],
 			"BlacklistTargets": [
 				"Server"
@@ -70,6 +72,17 @@
 		},
 		{
 			"Name": "OnlineSubsystemSteam",
+			"Enabled": true,
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux"
+			],
+			"BlacklistTargets": [
+				"Server"
+			]
+		},
+		{
+			"Name": "OnlineServicesSteamLimited",
 			"Enabled": true,
 			"WhitelistPlatforms": [
 				"Win64",

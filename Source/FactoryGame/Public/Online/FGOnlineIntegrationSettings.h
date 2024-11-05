@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -62,7 +62,7 @@ struct FACTORYGAME_API FReadOnlySessionInfoRowDesc: public FTableRowBase
 /**
  *
  */
-UCLASS( config = Game, meta = ( DisplayName = "Online Integration Settings" ) )
+UCLASS( config = Game, DefaultConfig, meta = ( DisplayName = "Online Integration Settings" ) )
 class FACTORYGAME_API UFGOnlineIntegrationSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
