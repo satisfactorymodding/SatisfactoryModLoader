@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGObjectReference.h"
 #include "SaveErrors.generated.h"
 

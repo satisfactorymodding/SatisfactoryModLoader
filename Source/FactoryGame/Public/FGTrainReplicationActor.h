@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Buildables/FGBuildableRailroadTrack.h"
 #include "GameFramework/Actor.h"
 #include "FGTrainReplicationActor.generated.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FGBuildableSubsystem.h"
 #include "Engine/NetConnection.h"

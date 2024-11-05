@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "AkComponent.h"
 #include "FGSoundSplineComponent.generated.h"
 

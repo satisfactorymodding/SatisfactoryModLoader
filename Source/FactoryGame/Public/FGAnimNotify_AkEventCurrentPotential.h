@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGAnimNotify_AkEventSetRTPC.h"
 #include "FGAnimNotify_AkEventCurrentPotential.generated.h"

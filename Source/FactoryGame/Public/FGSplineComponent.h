@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineComponent.h"
 #include "FGSplineComponent.generated.h"

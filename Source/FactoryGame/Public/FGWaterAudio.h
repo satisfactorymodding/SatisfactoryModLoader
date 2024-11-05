@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGWaterAudio.generated.h"
 
 USTRUCT( BlueprintType )

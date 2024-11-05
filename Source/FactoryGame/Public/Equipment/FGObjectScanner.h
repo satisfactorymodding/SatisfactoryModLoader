@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Equipment/FGEquipment.h"
 #include "FGObjectScanner.generated.h"
 

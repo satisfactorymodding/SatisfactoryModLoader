@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGSharedPostProcessSettings.h"
 #include "Interfaces/Interface_PostProcessVolume.h"
 #include "Curves/CurveFloat.h"

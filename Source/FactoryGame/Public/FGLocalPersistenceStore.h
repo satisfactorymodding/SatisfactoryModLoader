@@ -14,7 +14,6 @@
 */
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "FGLocalPersistenceStore.generated.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
 #include "FGTrainSoundComponent.generated.h"

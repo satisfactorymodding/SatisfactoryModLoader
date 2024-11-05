@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Components/VerticalBox.h"
 #include "FGMultiplayerVerticalBox.generated.h"
 

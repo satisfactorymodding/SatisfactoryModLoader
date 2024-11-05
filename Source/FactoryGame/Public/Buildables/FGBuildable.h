@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "AbstractInstanceInterface.h"
 #include "AkSwitchValue.h"
 #include "Engine/BlueprintGeneratedClass.h"

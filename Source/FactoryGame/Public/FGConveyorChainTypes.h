@@ -1,7 +1,6 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
-#include "FactoryGame.h"
 #include "Components/SplineComponent.h"
 #include "FGConveyorItem.h"
 #include "FGConveyorChainTypes.generated.h"

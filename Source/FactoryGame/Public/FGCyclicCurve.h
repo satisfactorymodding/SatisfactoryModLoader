@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Curves/CurveLinearColor.h"
 #include "Curves/CurveFloat.h"

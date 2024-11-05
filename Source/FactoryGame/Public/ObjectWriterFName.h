@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Serialization/ObjectWriter.h"
 
 /** 

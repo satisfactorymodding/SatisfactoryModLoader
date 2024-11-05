@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGSchematic.h"
 #include "FGMigrationSettings.generated.h"
 

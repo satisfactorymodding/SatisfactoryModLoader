@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Engine/LocalPlayer.h"
 #include "Framework/Application/AnalogCursor.h"
 //#include "FGGamepadCursor.generated.h"

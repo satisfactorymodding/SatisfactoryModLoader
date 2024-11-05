@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Equipment/FGEquipment.h" // I really want to get rid of this include, but removing it adds compile errors
 #include "FGItemDescriptor.h"
 #include "FGEquipmentDescriptor.generated.h"

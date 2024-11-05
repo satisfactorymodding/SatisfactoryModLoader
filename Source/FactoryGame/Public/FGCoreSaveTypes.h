@@ -1,6 +1,5 @@
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGSaveSystem.h"
 #include "Misc/EngineVersion.h"
 #include "SaveCustomVersion.h"

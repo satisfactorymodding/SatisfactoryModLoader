@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGAnimNotify.h"
 #include "FGAnimNotify_Attack.generated.h"
 

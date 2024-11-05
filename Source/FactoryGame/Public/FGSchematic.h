@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "AssetRegistry/AssetBundleData.h"
 #include "FGEventSubsystem.h"
 #include "IncludeInBuild.h"

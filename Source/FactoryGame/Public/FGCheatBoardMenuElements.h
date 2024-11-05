@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Templates/SharedPointer.h"
 #include "UObject/StructOnScope.h"
 #include "Widgets/Input/SEditableTextBox.h"

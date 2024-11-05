@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "AkAudioEvent.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "CoreMinimal.h"

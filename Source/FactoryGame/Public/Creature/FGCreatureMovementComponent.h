@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "FGCreatureMovementComponent.generated.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/FGUserWidget.h" // <FL> [WuttkeP] Changed base type of UFGInteractWidget to UFGUserWidget to allow assigning keybindings to it.
 #include "FGInteractWidget.generated.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "UObject/Object.h"
 #include "FGAtmosphereVolume.h"
 #include "FGAtmosphereUpdater.generated.h"

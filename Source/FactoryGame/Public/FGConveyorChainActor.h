@@ -1,7 +1,6 @@
 ﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGConveyorChainTypes.h"
 #include "FGSaveInterface.h"
 #include "Engine/NetConnection.h"

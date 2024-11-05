@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Components/WidgetSwitcher.h"
 #include "FGWidgetSwitcher.generated.h"
 

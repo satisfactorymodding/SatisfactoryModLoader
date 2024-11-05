@@ -3,7 +3,6 @@
 #pragma once
 
 //#include "VehicleAnimInstance.h"
-#include "FactoryGame.h"
 #include "VehicleAnimationInstance.h"
 
 #include "FGWheeledVehicleAnimationInstance.generated.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGInventoryComponent.h"
 #include "Resources/FGItemDescriptor.h"
 #include "FGInventoryLibrary.h"

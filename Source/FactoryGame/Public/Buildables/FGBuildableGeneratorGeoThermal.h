@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGBuildableGenerator.h"
 #include "Resources/FGExtractableResourceInterface.h"
 #include "FGBuildableGeneratorGeoThermal.generated.h"

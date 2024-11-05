@@ -1,6 +1,5 @@
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGObjectReference.h"
 #include "FGSaveInterface.h"
 

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGBuildableSubsystem.h"
 #include "Engine/NetDriver.h"
 #include "FGConstructionMessageInterface.generated.h"

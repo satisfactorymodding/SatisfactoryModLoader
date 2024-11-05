@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGInteractActor.h"
 #include "FGSaveInterface.h"
 #include "FGActorRepresentationInterface.h"

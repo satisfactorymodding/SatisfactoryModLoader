@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Volume.h"
 #include "FGVolumeMapArea.generated.h"

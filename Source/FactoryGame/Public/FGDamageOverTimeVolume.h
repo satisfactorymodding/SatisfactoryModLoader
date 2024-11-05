@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Interfaces/Interface_PostProcessVolume.h"
 #include "GameFramework/Volume.h"
 #include "FGDamageOverTimeVolume.generated.h"

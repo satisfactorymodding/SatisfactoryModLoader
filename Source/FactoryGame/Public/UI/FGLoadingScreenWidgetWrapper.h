@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Components/Widget.h"
 #include "CoreMinimal.h"
 #include "FGLoadingScreenWidgetWrapper.generated.h"

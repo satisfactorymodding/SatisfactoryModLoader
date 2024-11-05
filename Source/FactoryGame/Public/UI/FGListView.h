@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Components/ListView.h"
 #include "CoreMinimal.h"
 #include "Widgets/Views/SListView.h"

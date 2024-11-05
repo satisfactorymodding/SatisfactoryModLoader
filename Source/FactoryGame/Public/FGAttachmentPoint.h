@@ -1,7 +1,6 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Templates/SubclassOf.h"
 #include "FGAttachmentPoint.generated.h"

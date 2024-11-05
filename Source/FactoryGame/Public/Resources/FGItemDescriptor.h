@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGScannableDetails.h"
 #include "HAL/IConsoleManager.h"
 #include "UObject/Object.h"

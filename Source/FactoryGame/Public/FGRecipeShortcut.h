@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGHotbarShortcut.h"
 #include "FGRecipeShortcut.generated.h"
 

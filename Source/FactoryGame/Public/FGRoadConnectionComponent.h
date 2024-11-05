@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGConnectionComponent.h"
 #include "FGRoadConnectionComponent.generated.h"
 

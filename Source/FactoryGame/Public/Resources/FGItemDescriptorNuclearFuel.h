@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGItemDescriptor.h"
 #include "FGItemDescriptorNuclearFuel.generated.h"
 

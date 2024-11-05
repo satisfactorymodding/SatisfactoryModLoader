@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGUnlockPickup.h"
 #include "FGUnlockPickup_Customization.generated.h"

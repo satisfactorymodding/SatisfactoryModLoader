@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGSchematic.h"

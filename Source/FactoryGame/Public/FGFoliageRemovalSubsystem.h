@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGFoliageResourceUserData.h"
 #include "FGFoliageTypes.h"
 #include "FGSaveInterface.h"

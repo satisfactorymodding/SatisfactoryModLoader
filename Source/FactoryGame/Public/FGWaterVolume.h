@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "AI/Navigation/NavRelevantInterface.h"
 #include "FGSignificanceInterface.h"
 #include "GameFramework/PhysicsVolume.h"

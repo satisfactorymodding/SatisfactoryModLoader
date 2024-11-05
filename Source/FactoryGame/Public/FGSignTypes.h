@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGIconLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "FGSignTypes.generated.h"

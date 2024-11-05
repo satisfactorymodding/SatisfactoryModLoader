@@ -1,7 +1,6 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGClearanceInterface.h"
 #include "DamageTypes/FGDamageType.h"
 #include "FGSaveInterface.h"

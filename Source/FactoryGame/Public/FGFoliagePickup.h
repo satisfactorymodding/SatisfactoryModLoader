@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGFoliageRemovalSubsystem.h"
 #include "FGUseableInterface.h"
 #include "GameFramework/Actor.h"

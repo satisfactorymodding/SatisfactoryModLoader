@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Animation/CurveSequence.h"

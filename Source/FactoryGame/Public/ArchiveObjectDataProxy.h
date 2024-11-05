@@ -1,6 +1,5 @@
 #pragma once
 
-#include "FactoryGame.h"
 #include "Serialization/ArchiveProxy.h"
 
 /**

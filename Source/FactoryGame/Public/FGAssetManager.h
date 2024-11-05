@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Engine/AssetManager.h"
 #include "IncludeInBuild.h"
 #include "FGAssetManager.generated.h"

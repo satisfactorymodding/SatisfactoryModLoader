@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "OnlineInteractionHandlers.h"
 #include "GameFramework/HUD.h"

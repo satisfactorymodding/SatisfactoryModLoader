@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGBaseUI.h"
 #include "FGSchematic.h"
 #include "FGTutorialIntroManager.h"

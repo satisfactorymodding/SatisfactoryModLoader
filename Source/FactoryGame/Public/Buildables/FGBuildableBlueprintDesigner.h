@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "CoreMinimal.h"
 #include "FGBuildable.h"

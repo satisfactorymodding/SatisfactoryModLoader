@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "ItemAmount.h"
 #include "Resources/FGItemDescriptor.h"
 #include "Engine/Texture2D.h"

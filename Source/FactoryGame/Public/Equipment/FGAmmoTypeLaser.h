@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGAmmoTypeInstantHit.h"
 #include "FGAmmoTypeLaser.generated.h"

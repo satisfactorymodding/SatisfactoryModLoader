@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGBuildableFactory.h"
 #include "FGUseableInterface.h"
 #include "FGBuildableRailroadSwitchControl.generated.h"

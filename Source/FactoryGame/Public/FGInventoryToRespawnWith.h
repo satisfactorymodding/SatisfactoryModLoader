@@ -1,7 +1,6 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "FactoryGame.h"
 #include "Containers/Map.h"
 #include "Containers/Array.h"
 #include "Equipment/FGEquipment.h"

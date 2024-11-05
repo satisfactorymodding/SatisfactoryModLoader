@@ -1,7 +1,6 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "FGSignificanceInterface.h"

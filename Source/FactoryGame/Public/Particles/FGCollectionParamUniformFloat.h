@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Distributions/DistributionVector.h"
 #include "Materials/MaterialParameterCollection.h"

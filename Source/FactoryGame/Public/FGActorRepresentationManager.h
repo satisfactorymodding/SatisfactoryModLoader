@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGActorRepresentation.h"
 #include "FGRemoteCallObject.h"

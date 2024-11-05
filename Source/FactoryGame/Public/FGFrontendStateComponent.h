@@ -1,6 +1,5 @@
 #pragma once
 
-#include "FactoryGame.h"
 #include "Async/Future.h"
 #include "Components/ActorComponent.h"
 #include "FGGameUserSettings.h"

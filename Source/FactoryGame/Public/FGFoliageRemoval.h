@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGFoliageTypes.h"
 #include "GameFramework/Actor.h"
 #include "FGSaveInterface.h"

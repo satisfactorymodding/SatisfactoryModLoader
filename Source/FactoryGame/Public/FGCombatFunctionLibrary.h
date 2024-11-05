@@ -1,7 +1,6 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "FactoryGame.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 
 #include "FGCombatFunctionLibrary.generated.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGGenericListEntryModel.h"
 #include "FGGenericListModel.h"
 #include "SessionCreationSettings.h"

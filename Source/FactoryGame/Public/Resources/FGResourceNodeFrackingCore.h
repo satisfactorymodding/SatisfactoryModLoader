@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGResourceNodeBase.h"
 #include "UObject/WeakObjectPtrTemplates.h"
 #include "FGResourceNodeFrackingCore.generated.h"

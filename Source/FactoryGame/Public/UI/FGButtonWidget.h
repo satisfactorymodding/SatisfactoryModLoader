@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "UI/FGUserWidget.h" // <FL> [WuttkeP] Changed base type to FGUserWidget to allow customizing key bindings.
 #include "FGButtonWidget.generated.h"
 

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGColoredInstanceMeshProxy.h"
 #include "Buildables/FGBuildable.h"

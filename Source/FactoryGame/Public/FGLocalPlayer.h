@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Engine/LocalPlayer.h"
 #include "FGErrorMessage.h"

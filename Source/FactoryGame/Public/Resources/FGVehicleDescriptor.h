@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGBuildDescriptor.h"
 #include "FGVehicleDescriptor.generated.h"
 

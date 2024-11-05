@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGWeapon.h"
 #include "GameFramework/Actor.h"
 #include "FGResourceMiner.generated.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGResourceExtractorHologram.h"
 #include "FGWaterPumpHologram.generated.h"
 

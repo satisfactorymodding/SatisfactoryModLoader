@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "EngineGlobals.h"
 #include "UObject/Package.h"
 #include "Engine/ActorChannel.h"

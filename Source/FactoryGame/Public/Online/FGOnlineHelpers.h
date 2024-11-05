@@ -1,7 +1,6 @@
 // Copyright 2023 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "FactoryGame.h"
 #include "FGNetConstructionFunctionLibrary.h"
 
 #include "FGOnlineHelpers.generated.h"

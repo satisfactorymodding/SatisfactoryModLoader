@@ -1,5 +1,4 @@
 #pragma once
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGItemDescriptor.h"
 #include "FGPowerShardDescriptor.generated.h"

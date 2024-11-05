@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Engine/Texture2D.h"
 #include "Styling/SlateBrush.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Curves/CurveFloat.h"
 #include "FGBuildableManufacturer.h"
 #include "FGBuildableManufacturerVariablePower.generated.h"

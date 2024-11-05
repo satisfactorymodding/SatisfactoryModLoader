@@ -3,7 +3,6 @@
 #pragma once
 
 #if WITH_TELEMETRY
-#include "FactoryGame.h"
 #include "FGGameInstance.h"
 #include "DJSONObject.h"
 #include "DSTelemetry.h"

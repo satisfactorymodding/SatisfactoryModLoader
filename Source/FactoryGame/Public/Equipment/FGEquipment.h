@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CameraAnimationCameraModifier.h"
 #include "Blueprint/UserWidget.h"
 #include "CharacterAnimationTypes.h"

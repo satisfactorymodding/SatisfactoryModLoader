@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/VolumetricCloudComponent.h"
 #include "Curves/CurveFloat.h"

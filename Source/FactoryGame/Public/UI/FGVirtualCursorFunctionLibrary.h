@@ -5,7 +5,6 @@
 */
 #pragma once
 
-#include "FactoryGame.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FGVirtualCursorFunctionLibrary.generated.h"
 

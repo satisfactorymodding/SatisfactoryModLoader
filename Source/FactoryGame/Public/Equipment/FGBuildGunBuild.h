@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Delegates/DelegateCombinations.h"
 #include "FGBuildGun.h"
 #include "FGBuildableSubsystem.h"

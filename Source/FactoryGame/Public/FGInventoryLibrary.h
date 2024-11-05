@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGInventoryComponent.h"
 #include "ItemAmount.h"
 #include "Kismet/BlueprintFunctionLibrary.h"

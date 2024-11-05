@@ -1,7 +1,6 @@
 // Copyright 2016-2021 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "FactoryGame.h"
 #include "Curves/CurveFloat.h"
 #include "DamageTypes/FGDamageType.h"
 #include "FGSaveInterface.h"

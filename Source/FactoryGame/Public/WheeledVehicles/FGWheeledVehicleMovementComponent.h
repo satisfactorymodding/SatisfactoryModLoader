@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "AkAudioEvent.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "ChaosVehicleWheel.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGRecipe.h"
 #include "Buildables/FGBuildable.h"
 #include "UObject/Object.h"

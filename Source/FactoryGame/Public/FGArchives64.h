@@ -1,6 +1,5 @@
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreTypes.h"
 #include "HAL/UnrealMemory.h"
 #include "Math/UnrealMathUtility.h"

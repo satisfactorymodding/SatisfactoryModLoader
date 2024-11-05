@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGBuildableControlPanelHost.h"
 #include "FGBuildableLightSource.h"

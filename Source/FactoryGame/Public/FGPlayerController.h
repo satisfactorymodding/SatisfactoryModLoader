@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CameraAnimationCameraModifier.h"
 #include "Equipment/FGBuildGun.h"
 #include "FGCharacterPlayer.h"

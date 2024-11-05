@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Components/ActorComponent.h"
 #include "FGCreatureSpawnerDebugComponent.generated.h"
 

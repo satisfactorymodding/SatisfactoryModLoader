@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Replication/FGConditionalPropertyReplicator.h"
 #include "Replication/FGConditionalReplicationInterface.h"

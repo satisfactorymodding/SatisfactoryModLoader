@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGRailroadVehicleMovementComponent.h"
 #include "Curves/CurveFloat.h"
 #include "FGLocomotiveMovementComponent.generated.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGActorRepresentationInterface.h"
 #include "Animation/SkeletalMeshActor.h"
 #include "FGWheeledVehicle.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "GameFramework/Pawn.h"
 #include "FGSaveInterface.h"
 #include "Replication/FGConditionalReplicationInterface.h"

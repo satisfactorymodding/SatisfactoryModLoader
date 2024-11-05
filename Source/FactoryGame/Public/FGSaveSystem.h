@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGSaveManagerInterface.h"
 #include "UObject/Object.h"
 #include "FGSaveSystem.generated.h"

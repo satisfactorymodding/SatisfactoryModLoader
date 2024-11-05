@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "FGRiverSpline.generated.h"
 

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGVehicle.h"
 #include "FGSplinePathMovementComponent.h"
 #include "FGVehicleSubsystem.h"

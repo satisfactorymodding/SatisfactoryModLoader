@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "AvailabilityDependencies/FGAvailabilityDependency.h"
 #include "CoreMinimal.h"
 #include "FGEventSubsystem.h"

@@ -1,5 +1,4 @@
 #pragma once
-#include "FactoryGame.h"
 #include "LatentActions.h"
 #include "Engine/LatentActionManager.h"
 

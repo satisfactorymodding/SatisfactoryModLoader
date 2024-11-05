@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Engine/GameInstance.h"
 #include "Online/FGOnlineHelpers.h"
 #include "OnlineSessionSettings.h"

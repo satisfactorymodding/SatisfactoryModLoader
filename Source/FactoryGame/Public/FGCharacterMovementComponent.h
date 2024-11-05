@@ -1,7 +1,6 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "FactoryGame.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Buildables/FGBuildablePipeHyperJunction.h"
 #include "FGCharacterMovementComponent.generated.h"

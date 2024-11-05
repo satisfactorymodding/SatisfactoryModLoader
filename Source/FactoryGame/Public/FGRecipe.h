@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "ItemAmount.h"
 #include "FGEventSubsystem.h"
 #include "FGRecipe.generated.h"

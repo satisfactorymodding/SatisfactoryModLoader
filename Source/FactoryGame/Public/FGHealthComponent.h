@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "DamageTypes/FGDamageType.h"
 #include "Components/ActorComponent.h"
 #include "Engine/HitResult.h"

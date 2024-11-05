@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "AkGameplayTypes.h"
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"

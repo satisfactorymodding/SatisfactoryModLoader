@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "AkGameplayTypes.h"
 #include "AkAudioDevice.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGBuildablePipePart.h"
 #include "FGPipeHyperStart.generated.h"
 

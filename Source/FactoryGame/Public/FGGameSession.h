@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "GameFramework/GameSession.h"
 #include "FGGameSession.generated.h"

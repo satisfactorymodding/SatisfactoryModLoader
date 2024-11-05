@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Buildables/FGBuildableManufacturerVariablePower.h"
 #include "FGBuildDescriptor.h"
 #include "FGBuildingDescriptor.generated.h"

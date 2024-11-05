@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGUserWidget.h" // <FL> [AZimmermann] Changed to UFGUserWidget
 #include "FGMenuBase.generated.h"
 

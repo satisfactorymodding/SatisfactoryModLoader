@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Buildables/FGBuildableFactoryBuilding.h"
 #include "FGBuildableHologram.h"
 

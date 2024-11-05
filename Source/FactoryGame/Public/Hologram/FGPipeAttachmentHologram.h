@@ -1,5 +1,4 @@
 #pragma once
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGBuildableHologram.h"
 #include "FGFactoryHologram.h"

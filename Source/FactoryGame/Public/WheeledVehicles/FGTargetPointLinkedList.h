@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Containers/Map.h"
 #include "CoreMinimal.h"
 #include "FGSaveInterface.h"

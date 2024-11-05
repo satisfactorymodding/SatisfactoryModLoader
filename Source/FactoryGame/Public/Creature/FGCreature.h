@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGCharacterBase.h"
 #include "FGAction.h"
 #include "BehaviorTree/BehaviorTree.h"

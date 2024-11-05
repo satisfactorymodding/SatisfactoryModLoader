@@ -1,7 +1,6 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
-#include "FactoryGame.h"
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "Buildables/FGBuildableFactory.h"
 #include <type_traits>

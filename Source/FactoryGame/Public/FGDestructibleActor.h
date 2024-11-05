@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGClearanceInterface.h"
 #include "FGSaveInterface.h"
 #include "GeometryCollection/GeometryCollectionActor.h"

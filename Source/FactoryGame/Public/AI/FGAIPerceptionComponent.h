@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "FGAIPerceptionComponent.generated.h"

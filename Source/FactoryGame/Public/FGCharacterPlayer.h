@@ -1,7 +1,6 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 
-#include "FactoryGame.h"
 #include "CameraAnimationCameraModifier.h"
 #include "Buildables/FGBuildablePipeHyperJunction.h"
 #include "Creature/FGCreature.h"

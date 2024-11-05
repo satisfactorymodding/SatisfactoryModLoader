@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGBuildableSpawnStrategy.h"
 #include "FGBuildableSpawnStrategy_Factory.generated.h"
 

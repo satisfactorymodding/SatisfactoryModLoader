@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Equipment/FGEquipment.h"
 #include "Templates/SubclassOf.h"

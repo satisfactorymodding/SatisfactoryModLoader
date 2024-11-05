@@ -3,7 +3,6 @@
 #pragma once
 
 
-#include "FactoryGame.h"
 #include "FGBuildablePipeBase.h"
 #include "FGPipeHyperInterface.h"
 #include "FGBuildablePipeHyper.generated.h"

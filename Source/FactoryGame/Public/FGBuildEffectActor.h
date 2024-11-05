@@ -6,7 +6,6 @@
  * 
  */
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Curves/CurveFloat.h"
 #include "GameFramework/Actor.h"

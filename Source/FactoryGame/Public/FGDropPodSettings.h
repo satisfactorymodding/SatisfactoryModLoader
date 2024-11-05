@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "ItemAmount.h"
 #include "Engine/DeveloperSettings.h"
 #include "Templates/SubclassOf.h"

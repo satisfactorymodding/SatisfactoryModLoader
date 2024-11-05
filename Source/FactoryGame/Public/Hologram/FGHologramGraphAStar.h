@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "GraphAStar.h"
 
 struct FHologramGraphAStarDefaultPolicy

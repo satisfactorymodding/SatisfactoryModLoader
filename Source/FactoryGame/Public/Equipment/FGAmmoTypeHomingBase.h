@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGAmmoType.h"
 #include "FGAmmoTypeHomingBase.generated.h"

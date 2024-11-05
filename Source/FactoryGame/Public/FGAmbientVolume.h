@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "GameFramework/Volume.h"
 #include "FGSignificanceInterface.h"
 #include "FGAmbientVolume.generated.h"

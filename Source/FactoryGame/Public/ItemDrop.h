@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Templates/SubclassOf.h"
 #include "ItemDrop.generated.h"
 

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "GameFramework/CheatManager.h"
 #include "FGGamePhaseManager.h"
 #include "FGCreatureSubsystem.h"

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "UObject/Object.h"
 #include "FGDamageOverTime.generated.h"
 

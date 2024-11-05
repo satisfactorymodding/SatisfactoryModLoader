@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "UObject/StructOnScope.h"
 #include "FGDynamicStruct.generated.h"
