@@ -109,6 +109,7 @@ private:
 	FGameObjectRegistration* FindOrAddObject( UObject* Object );
 	bool CanRegisterObject( UObject* Object, EGameObjectRegistrationFlags ExtraFlags, FString& OutMessage );
 	EGameObjectRegistrationFlags GetAllowedNewFlags( UObject* Object ) const;
+	static bool IsBuildIn(UObject* Object);
 };
 
 // Holds information about a pending registration of item points table to the resource sink subsystem
