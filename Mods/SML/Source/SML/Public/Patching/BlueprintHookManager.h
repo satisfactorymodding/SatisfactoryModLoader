@@ -45,14 +45,17 @@ public:
     * Multiple hooks bound to one hook offset will be processed in the order they were registered
     * UClass holding Function will be added to root set to avoid getting Garbage Collected
     */
-    void HookBlueprintFunction(UFunction* Function, const TFunction<HookFunctionSignature>& Hook, int32 HookOffset);
+    void HookBlueprintFunction(UFunction* Function, const TFunction<HookFunctionSignature>& Hook, const int32 HookOffset);
 private:
+    //Minimum amount of bytes required to insert unconditional jump with code offset
+    static const int32 JumpBytesRequired = 1 + sizeof(CodeSkipSizeType);
+
     /** Actually performs bytecode modification to install hook */
-    static void InstallBlueprintHook(UFunction* Function, int32 HookOffset);
+    static void InstallBlueprintHook(UFunction* Function, const int32 OriginalHookOffset, const int32 ResolvedHookOffset);
     
-    /** Does preprocessing to hook offset to handle predefined hook locations */
-    static int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset);
-    
+    /** Called by InstallBlueprintHook to modify the bytecode based on the desired hookoffset **/
+    static void ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Script, TSharedPtr<FJsonObject> Expression, int32 HookOffset);
+
     /** Called when hook is executed */
     void HandleHookedFunctionCall(FFrame& Frame, int32 HookOffset);
 
