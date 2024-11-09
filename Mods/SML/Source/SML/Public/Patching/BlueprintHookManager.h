@@ -54,7 +54,7 @@ private:
     static void InstallBlueprintHook(UFunction* Function, const int32 OriginalHookOffset, const int32 ResolvedHookOffset);
     
     /** Called by InstallBlueprintHook to modify the bytecode based on the desired hookoffset **/
-    static void ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Script, TSharedPtr<FJsonObject> Expression, int32 HookOffset);
+    static void ModifyOffsetsForNewHookOffset(TArray<uint8>& Script, TSharedPtr<FJsonObject> Expression, int32 HookOffset);
 
     /** Called when hook is executed */
     void HandleHookedFunctionCall(FFrame& Frame, int32 HookOffset);

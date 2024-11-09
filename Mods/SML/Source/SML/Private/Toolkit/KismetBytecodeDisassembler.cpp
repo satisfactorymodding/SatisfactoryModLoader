@@ -3,12 +3,12 @@
 #include "Toolkit/PropertyTypeHandler.h"
 
 TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int32& ScriptIndex) {
-	int32 StartingScriptIndex = ScriptIndex;
+	int32 OpcodeIndex = ScriptIndex;
 	EExprToken Opcode = (EExprToken)ReadByte(ScriptIndex);
 	TSharedPtr<FJsonObject> Result = MakeShareable(new FJsonObject());
 
 	Result->SetNumberField(TEXT("Opcode"), Opcode);
-	Result->SetNumberField(TEXT("ScriptIndex"), StartingScriptIndex);
+	Result->SetNumberField(TEXT("OpcodeIndex"), OpcodeIndex);
 	switch (Opcode) {
 	case EX_Cast:
 		{
@@ -1059,7 +1059,7 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 		}
 	}
 
-	Result->SetNumberField(TEXT("ExpressionSizeInBytes"), ScriptIndex - StartingScriptIndex);
+	Result->SetNumberField(TEXT("OpSizeInBytes"), ScriptIndex - OpcodeIndex);
 	//Make sure no instruction identifier is ever missing from returned json object
 	fgcheck(Result->HasField(TEXT("Inst")));
 	return Result;
@@ -1074,7 +1074,7 @@ TArray<TSharedPtr<FJsonValue>> FSMLKismetBytecodeDisassembler::SerializeFunction
 	int32 ScriptIndex = 0;
 
 	while (ScriptIndex < Script.Num()) {
-		TSharedPtr<FJsonObject> StatementObject = SerializeExpression(ScriptIndex);
+		TSharedPtr<FJsonObject> StatementObject = SerializeStatement(ScriptIndex);
 		Statements.Add(MakeShareable(new FJsonValueObject(StatementObject)));
 	}
 
@@ -1085,7 +1085,7 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeStatement(UStru
 	this->Script = Function->Script;
 	this->SelfScope = Function->GetTypedOuter<UClass>();
 
-	return SerializeExpression(StatementIndex);
+	return SerializeStatement(StatementIndex);
 }
 
 bool FSMLKismetBytecodeDisassembler::FindFirstStatementOfType(UStruct* Function, int32 StartScriptIndex, uint8 ExpectedStatementOpcode, int32& OutStatementIndex) {
@@ -1097,7 +1097,7 @@ bool FSMLKismetBytecodeDisassembler::FindFirstStatementOfType(UStruct* Function,
 		const int32 StatementIndex = ScriptIndex;
 		const uint8 StatementOpcode = Script[ScriptIndex];
 		FString ResultString;
-		SerializeExpression(ScriptIndex);
+		SerializeStatement(ScriptIndex);
 		if (StatementOpcode == ExpectedStatementOpcode) {
 			OutStatementIndex = StatementIndex;
 			return true;
@@ -1114,8 +1114,8 @@ bool FSMLKismetBytecodeDisassembler::GetStatementLength(UStruct* Function, int32
 
 	int32 ScriptIndex = 0;
 	while (ScriptIndex < Script.Num()) {
-	const int32 StatementIndex = ScriptIndex;
-	SerializeExpression(ScriptIndex);
+		const int32 StatementIndex = ScriptIndex;
+		SerializeStatement(ScriptIndex);
 		if (StatementIndex == ExpectedStatementIndex) {
 			//This is the statement we are looking for, compute difference and return it as length
 			OutStatementLength = ScriptIndex - StatementIndex;
@@ -1125,6 +1125,14 @@ bool FSMLKismetBytecodeDisassembler::GetStatementLength(UStruct* Function, int32
 	//We haven't found a statement with expected index, so input is probably invalid
 	OutStatementLength = -1;
 	return false;
+}
+
+TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeStatement(int32& StatementIndex)
+{
+	const int32 StartingStatementIndex = StatementIndex;
+	TSharedPtr<FJsonObject> StatementObject = SerializeExpression(StatementIndex);
+	StatementObject->SetNumberField(TEXT("StatementIndex"), StartingStatementIndex);
+	return StatementObject;
 }
 
 int32 FSMLKismetBytecodeDisassembler::ReadInt(int32& ScriptIndex) {

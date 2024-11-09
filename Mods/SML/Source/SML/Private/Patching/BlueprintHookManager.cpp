@@ -52,7 +52,7 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, const int3
 	// order just means we don't have to worry about errantly changing the jump offset we will add.
 	TArray<TSharedPtr<FJsonValue>> DisassembledFunction = Disassembler.SerializeFunction(Function);
 	for (TSharedPtr<FJsonValue> JsonValue : DisassembledFunction) {
-		ModifyJumpTargetsForNewHookOffset(OriginalCode, JsonValue->AsObject(), ResolvedHookOffset);
+		ModifyOffsetsForNewHookOffset(OriginalCode, JsonValue->AsObject(), ResolvedHookOffset);
 	}
 
 	//Add enough room to add the jump. This will shift all the post-hookoffset bytes down so adding
@@ -95,7 +95,7 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, const int3
 #endif
 }
 
-void UBlueprintHookManager::ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Script, TSharedPtr<FJsonObject> Expression, int32 HookOffset)
+void UBlueprintHookManager::ModifyOffsetsForNewHookOffset(TArray<uint8>& Script, TSharedPtr<FJsonObject> Expression, int32 HookOffset)
 {
 	int32 Opcode;
 	if (!Expression->TryGetNumberField(TEXT("Opcode"), Opcode)) {
@@ -107,7 +107,7 @@ void UBlueprintHookManager::ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Scr
 	//it needs to be modified to work correctly. For now, the only predictable solution is to forbid hooking functions with them.
 	fgcheckf(Opcode != EX_ComputedJump, TEXT("Cannot hook a blueprint function that contains an EX_ComputedJump instruction. There's no way to guarantee it would not crash at some point."));
 
-	int32 IndexAfterOpcode = 1 + Expression->GetIntegerField(TEXT("ScriptIndex"));
+	int32 IndexAfterOpcode = 1 + Expression->GetIntegerField(TEXT("OpcodeIndex"));
 
 	// This switch was created by comparing to the serialization done in FSMLKismetBytecodeDisassembler::SerializeExpression to
 	// identify which opcodes can jump to offsets and where exactly those jump targets reside in the script.
@@ -133,7 +133,7 @@ void UBlueprintHookManager::ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Scr
 			if (CurrentJumpOffset > HookOffset) {
 				// The offset is just past the Context object, so we have to get its size so we can write to the correct place
 				TSharedPtr<FJsonObject> Context = Expression->GetObjectField(TEXT("Context"));
-				int32 SizeOfContext = (int32)Context->GetNumberField(TEXT("ExpressionSizeInBytes"));
+				int32 SizeOfContext = (int32)Context->GetNumberField(TEXT("OpSizeInBytes"));
 				int32 IndexOfCurrentJumpOffset = IndexAfterOpcode + SizeOfContext;
 				FPlatformMemory::WriteUnaligned(&Script[IndexOfCurrentJumpOffset], (CodeSkipSizeType)(CurrentJumpOffset + UBlueprintHookManager::JumpBytesRequired));
 			}
@@ -147,18 +147,18 @@ void UBlueprintHookManager::ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Scr
 				int32 IndexOfCurrentJumpOffset = IndexAfterOpcode + sizeof(uint16);
 				FPlatformMemory::WriteUnaligned(&Script[IndexOfCurrentJumpOffset], (CodeSkipSizeType)(CurrentJumpOffset + UBlueprintHookManager::JumpBytesRequired));
 				IndexOfCurrentJumpOffset += sizeof(CodeSkipSizeType); // Move past the offset we just wrote
-				int32 SwitchExpressionSizeInBytes = (int32)Expression->GetObjectField(TEXT("Expression"))->GetNumberField(TEXT("ExpressionSizeInBytes"));
-				IndexOfCurrentJumpOffset += SwitchExpressionSizeInBytes; // Move past the switch expression
+				int32 SwitchOpSizeInBytes = (int32)Expression->GetObjectField(TEXT("Expression"))->GetNumberField(TEXT("OpSizeInBytes"));
+				IndexOfCurrentJumpOffset += SwitchOpSizeInBytes; // Move past the switch expression
 				// Each case in the switch has an absolute offset reference to the next case, so we have to adjust each of them, as well
 				TArray<TSharedPtr<FJsonValue>> Cases = Expression->GetArrayField(TEXT("Cases"));
 				for (TSharedPtr<FJsonValue>& Case : Cases) {
 					TSharedPtr<FJsonObject> NextCase = Case->AsObject();
-					int32 CaseValueSizeInBytes = (int32)NextCase->GetObjectField(TEXT("CaseValue"))->GetNumberField(TEXT("ExpressionSizeInBytes"));
+					int32 CaseValueSizeInBytes = (int32)NextCase->GetObjectField(TEXT("CaseValue"))->GetNumberField(TEXT("OpSizeInBytes"));
 					IndexOfCurrentJumpOffset += CaseValueSizeInBytes;
 					int32 OffsetToNextCase = (int32)NextCase->GetNumberField(TEXT("OffsetToNextCase"));
 					FPlatformMemory::WriteUnaligned(&Script[IndexOfCurrentJumpOffset], (CodeSkipSizeType)(OffsetToNextCase + UBlueprintHookManager::JumpBytesRequired));
 					IndexOfCurrentJumpOffset += sizeof(CodeSkipSizeType);
-					int32 CaseResultSizeInBytes = (int32)NextCase->GetObjectField(TEXT("CaseResult"))->GetNumberField(TEXT("ExpressionSizeInBytes"));
+					int32 CaseResultSizeInBytes = (int32)NextCase->GetObjectField(TEXT("CaseResult"))->GetNumberField(TEXT("OpSizeInBytes"));
 					IndexOfCurrentJumpOffset += CaseResultSizeInBytes;
 				}
 			}
@@ -180,14 +180,14 @@ void UBlueprintHookManager::ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Scr
 	for (auto& Pair : Expression->Values) {
 		TSharedPtr<FJsonObject>* ExpressionValue;
 		if (Pair.Value->TryGetObject(ExpressionValue)) {
-			ModifyJumpTargetsForNewHookOffset(Script, *ExpressionValue, HookOffset);
+			ModifyOffsetsForNewHookOffset(Script, *ExpressionValue, HookOffset);
 			continue;
 		}
 		TArray<TSharedPtr<FJsonValue>>* ArrayValue;
 		if (Pair.Value->TryGetArray(ArrayValue)) {
 			for (TSharedPtr<FJsonValue> Value : *ArrayValue) {
 				if (Value->TryGetObject(ExpressionValue)) {
-					ModifyJumpTargetsForNewHookOffset(Script, *ExpressionValue, HookOffset);
+					ModifyOffsetsForNewHookOffset(Script, *ExpressionValue, HookOffset);
 				}
 			}
 		}

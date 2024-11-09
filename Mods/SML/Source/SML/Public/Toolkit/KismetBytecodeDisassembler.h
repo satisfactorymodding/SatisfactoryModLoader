@@ -24,6 +24,8 @@ private:
 	TWeakObjectPtr<UClass> SelfScope;
 	TArray<uint8> Script;
 
+	/** Internal utility function to convert a single statement into json object, provided Script and SelfScope have been set. Will include a StatementIndex in the returned json */
+	TSharedPtr<FJsonObject> SerializeStatement(int32& StatementIndex);
 
 	//Begin script bytecode parsing methods
 	int32 ReadInt(int32& ScriptIndex);
