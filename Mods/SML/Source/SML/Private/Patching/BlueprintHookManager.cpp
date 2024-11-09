@@ -55,20 +55,16 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, const int3
 		ModifyJumpTargetsForNewHookOffset(OriginalCode, JsonValue->AsObject(), ResolvedHookOffset);
 	}
 
-	// Add enough room to add the jump
-	OriginalCode.AddUninitialized(UBlueprintHookManager::JumpBytesRequired);
-
-	// Shift all the post-hookoffset bytes down so adding the jump doesn't overwrite valid instructions and data
-	for (int Index = OriginalCode.Num() - 1; Index >= ResolvedHookOffset + UBlueprintHookManager::JumpBytesRequired; --Index) {
-		OriginalCode[Index] = OriginalCode[Index - UBlueprintHookManager::JumpBytesRequired];
-	}
+	//Add enough room to add the jump. This will shift all the post-hookoffset bytes down so adding
+	//the jump at the resolved offset doesn't overwrite valid instructions and data
+	OriginalCode.InsertUninitialized(ResolvedHookOffset, UBlueprintHookManager::JumpBytesRequired);
 
 	//Generate code required for calling our hook
 	TArray<uint8> AppendedCode;
 
 	//Make sure hook function is not NULL, otherwise we may experience weird crashes later
 	UFunction* HookCallFunction = UBlueprintHookManager::StaticClass()->FindFunctionByName(TEXT("ExecuteBPHook"));
-	check(HookCallFunction);
+	fgcheck(HookCallFunction);
 
 	//We use EX_CallMath for speed since our inserted function doesn't need context, and is fine with being called on CDO
 	//EX_CallMath requires just UFunction object pointer and argument list
@@ -101,18 +97,17 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, const int3
 
 void UBlueprintHookManager::ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Script, TSharedPtr<FJsonObject> Expression, int32 HookOffset)
 {
-	double OpcodeDouble;
-	if (!Expression->TryGetNumberField(TEXT("Opcode"), OpcodeDouble)) {
+	int32 Opcode;
+	if (!Expression->TryGetNumberField(TEXT("Opcode"), Opcode)) {
 		// No opcode means it's not an instruction, so we can just return;
 		return;
 	}
-	int32 Opcode = (int32)OpcodeDouble;
 
 	//A computed jump could do anything at runtime - it could jump to before or after the hook, so we have no way of knowing how
 	//it needs to be modified to work correctly. For now, the only predictable solution is to forbid hooking functions with them.
-	checkf(Opcode != EX_ComputedJump, TEXT("Cannot hook a blueprint function that contains an EX_ComputedJump instruction. There's no way to guarantee it would not crash at some point."));
+	fgcheckf(Opcode != EX_ComputedJump, TEXT("Cannot hook a blueprint function that contains an EX_ComputedJump instruction. There's no way to guarantee it would not crash at some point."));
 
-	int32 IndexAfterOpcode = 1 + (int32)Expression->GetNumberField(TEXT("StatementIndex"));
+	int32 IndexAfterOpcode = 1 + Expression->GetIntegerField(TEXT("ScriptIndex"));
 
 	// This switch was created by comparing to the serialization done in FSMLKismetBytecodeDisassembler::SerializeExpression to
 	// identify which opcodes can jump to offsets and where exactly those jump targets reside in the script.
@@ -124,7 +119,7 @@ void UBlueprintHookManager::ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Scr
 	case EX_PushExecutionFlow:
 		{
 			int32 IndexOfCurrentJumpOffset = IndexAfterOpcode;
-			int32 CurrentJumpOffset = (int32)Expression->GetNumberField(TEXT("Offset"));
+			int32 CurrentJumpOffset = Expression->GetIntegerField(TEXT("Offset"));
 			if (CurrentJumpOffset > HookOffset) {
 				FPlatformMemory::WriteUnaligned(&Script[IndexOfCurrentJumpOffset], (CodeSkipSizeType)(CurrentJumpOffset + UBlueprintHookManager::JumpBytesRequired));
 			}
@@ -134,7 +129,7 @@ void UBlueprintHookManager::ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Scr
 	case EX_Context:
 	case EX_Context_FailSilent:
 		{
-			int32 CurrentJumpOffset = (int32)Expression->GetNumberField(TEXT("SkipOffsetForNull"));
+			int32 CurrentJumpOffset = Expression->GetIntegerField(TEXT("SkipOffsetForNull"));
 			if (CurrentJumpOffset > HookOffset) {
 				// The offset is just past the Context object, so we have to get its size so we can write to the correct place
 				TSharedPtr<FJsonObject> Context = Expression->GetObjectField(TEXT("Context"));
@@ -146,7 +141,7 @@ void UBlueprintHookManager::ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Scr
 		}
 	case EX_SwitchValue:
 		{
-			int32 CurrentJumpOffset = (int32)Expression->GetNumberField(TEXT("OffsetToSwitchEnd"));
+			int32 CurrentJumpOffset = Expression->GetIntegerField(TEXT("OffsetToSwitchEnd"));
 			if (CurrentJumpOffset > HookOffset) {
 				// The switch end offset is just past the a single Word field holding the number of cases in the switch
 				int32 IndexOfCurrentJumpOffset = IndexAfterOpcode + sizeof(uint16);
@@ -171,7 +166,7 @@ void UBlueprintHookManager::ModifyJumpTargetsForNewHookOffset(TArray<uint8>& Scr
 		}
 	case EX_AutoRtfmTransact:
 		{
-			int32 CurrentJumpOffset = (int32)Expression->GetNumberField(TEXT("Offset"));
+			int32 CurrentJumpOffset = Expression->GetIntegerField(TEXT("Offset"));
 			if (CurrentJumpOffset > HookOffset) {
 				// The offset is beyond a single TransactionId int
 				int32 IndexOfCurrentJumpOffset = IndexAfterOpcode + sizeof(int32);
@@ -217,7 +212,13 @@ void FFunctionHookInfo::RecalculateReturnStatementOffset(UFunction* Function) {
 void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFunction<HookFunctionSignature>& Hook, const int32 HookOffset) {
 #if !WITH_EDITOR
 	fgcheckf(Function->Script.Num(), TEXT("HookBPFunction: Function provided is not implemented in BP"));
-	
+
+	//Make sure to add outer UClass to root set to avoid it being Garbage Collected
+	//Because otherwise after GC script byte code will be reloaded, without our hooks applied
+	UClass* OuterUClass = Function->GetTypedOuter<UClass>();
+	fgcheck(OuterUClass);
+	HookedClasses.AddUnique(OuterUClass);
+
 #if UE_BLUEPRINT_EVENTGRAPH_FASTCALLS
 	if (Function->EventGraphFunction != nullptr) {
 		UE_LOG(LogBlueprintHookManager, Warning, TEXT("Attempt to hook event graph call stub function with fast-call enabled, disabling fast call for that function"));
@@ -226,12 +227,6 @@ void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFu
 		Function->EventGraphFunction = nullptr;
 	}
 #endif
-
-	//Make sure to add outer UClass to root set to avoid it being Garbage Collected
-	//Because otherwise after GC script byte code will be reloaded, without our hooks applied
-	UClass* OuterUClass = Function->GetTypedOuter<UClass>();
-	check(OuterUClass);
-	HookedClasses.AddUnique(OuterUClass);
 
 	FFunctionHookInfo& FunctionHookInfo = HookedFunctions.FindOrAdd(Function);
 

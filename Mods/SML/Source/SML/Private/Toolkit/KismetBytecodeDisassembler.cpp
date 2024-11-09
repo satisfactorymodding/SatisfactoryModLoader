@@ -8,7 +8,7 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 	TSharedPtr<FJsonObject> Result = MakeShareable(new FJsonObject());
 
 	Result->SetNumberField(TEXT("Opcode"), Opcode);
-	Result->SetNumberField(TEXT("StatementIndex"), StartingScriptIndex);
+	Result->SetNumberField(TEXT("ScriptIndex"), StartingScriptIndex);
 	switch (Opcode) {
 	case EX_Cast:
 		{
@@ -602,7 +602,7 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 					break;
 				}
 			default:
-				fgcheckf(false, TEXT("Unknown EBlueprintTextLiteralType! Please update FKismetBytecodeDisassembler::SerializeExpression to handle this type of text."));
+				fgcheckf(false, TEXT("Unknown EBlueprintTextLiteralType! Please update FSMLKismetBytecodeDisassembler::SerializeExpression to handle this type of text."));
 				break;
 			}
 			break;
@@ -1053,8 +1053,8 @@ TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int3
 		}
 	default:
 		{
-			// This should only really occur if the caller has requested an unaligned index.
-			fgcheckf(0, TEXT("Unknown bytecode 0x%02X at ScriptIndex %d. The supplied index is not aligned with a valid instruction!"), (uint8)Opcode, ScriptIndex);
+			// This should only really occur if the caller has passed an incorrect index that is not the start of an instruction.
+			fgcheckf(0, TEXT("Unknown bytecode 0x%02X at ScriptIndex %d. Either a new opcode has been added or the supplied index does not contain a valid instruction!"), (uint8)Opcode, ScriptIndex);
 			break;
 		}
 	}
@@ -1105,6 +1105,25 @@ bool FSMLKismetBytecodeDisassembler::FindFirstStatementOfType(UStruct* Function,
 	}
 	//We haven't found any statement with matching opcode
 	OutStatementIndex = -1;
+	return false;
+}
+
+bool FSMLKismetBytecodeDisassembler::GetStatementLength(UStruct* Function, int32 ExpectedStatementIndex, int32& OutStatementLength) {
+	this->Script = Function->Script;
+	this->SelfScope = Function->GetTypedOuter<UClass>();
+
+	int32 ScriptIndex = 0;
+	while (ScriptIndex < Script.Num()) {
+	const int32 StatementIndex = ScriptIndex;
+	SerializeExpression(ScriptIndex);
+		if (StatementIndex == ExpectedStatementIndex) {
+			//This is the statement we are looking for, compute difference and return it as length
+			OutStatementLength = ScriptIndex - StatementIndex;
+			return true;
+		}
+	}
+	//We haven't found a statement with expected index, so input is probably invalid
+	OutStatementLength = -1;
 	return false;
 }
 
