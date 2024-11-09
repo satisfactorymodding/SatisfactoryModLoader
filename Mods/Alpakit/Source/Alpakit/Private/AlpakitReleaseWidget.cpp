@@ -12,6 +12,7 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 	const float TargetColumnWidth = 90;
 
 	FString TargetSMLVersion = TEXT("^") + FAlpakitModule::GetCurrentSMLVersion();
+	FString archivePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() / TEXT("ArchivedPlugins"));
 
 	ChildSlot[
 		SNew(SVerticalBox)
@@ -33,9 +34,8 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 				+ SHorizontalBox::Slot().AutoWidth()[
 					SNew(SButton)
 					.Text(LOCTEXT("PackageDirRootAlpakit", "Open Archive Folder"))
-					.OnClicked_Lambda([this]
+					.OnClicked_Lambda([this, archivePath]
 					{
-						FString archivePath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("ArchivedPlugins")));
 						FPlatformProcess::ExploreFolder(*archivePath);
 						return FReply::Handled();
 					})
@@ -43,9 +43,8 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 					{
 						return !FAlpakitModule::Get().IsPackaging();
 					})
-					.Visibility_Lambda([this]
+					.Visibility_Lambda([this, archivePath]
 					{
-						FString archivePath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("ArchivedPlugins")));
 						if (FPaths::DirectoryExists(archivePath))
 							return EVisibility::Visible;
 						return EVisibility::Hidden;
@@ -107,8 +106,9 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 							return !FAlpakitModule::Get().IsPackaging();
 						});
 			})
-			.ModEntryTrail_Lambda([this, TargetColumnWidth, TargetSMLVersion] (const TSharedRef<IPlugin>& Mod) {
+			.ModEntryTrail_Lambda([this, TargetColumnWidth, TargetSMLVersion, archivePath] (const TSharedRef<IPlugin>& Mod) {
 				TSharedRef<FModTargetsConfig> ModTargetsConfig = ModTargetsConfigs.FindOrAdd(Mod->GetName(), MakeShared<FModTargetsConfig>(Mod));
+				FString modPath = archivePath / Mod->GetName() / (Mod->GetName() + TEXT(".zip"));
 
 				return SNew(SBox)
 					.Padding(5, 0, 5, 0)
@@ -188,20 +188,18 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 						+ SHorizontalBox::Slot().AutoWidth().Padding(5, 0)[
 							SNew(SBox)
 							.HAlign(HAlign_Right)
-							.Visibility_Lambda([this, Mod]
+							.Visibility_Lambda([this, modPath]
 								{
-								   FString archivePath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("ArchivedPlugins"), Mod->GetName()));
-									if (FPaths::DirectoryExists(archivePath))
+									if (FPaths::FileExists(modPath))
 										return EVisibility::Visible;
 									return EVisibility::Hidden;
 								})
 							.Content()[
 								SNew(SButton)
 								.Text(LOCTEXT("OpenDirAlpakit", "Open Folder"))
-								.OnClicked_Lambda([this, Mod]
+								.OnClicked_Lambda([this, modPath]
 									{
-										FString archivePath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("ArchivedPlugins"), Mod->GetName()));
-										FPlatformProcess::ExploreFolder(*archivePath);
+										FPlatformProcess::ExploreFolder(*modPath);
 										return FReply::Handled();
 									})
 								.IsEnabled_Lambda([this]
