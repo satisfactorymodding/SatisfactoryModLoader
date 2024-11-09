@@ -586,6 +586,18 @@ using CallScope = TCallScope<T>;
 		return HookInvoker<decltype(&MethodReference), &MethodReference>::AddHandlerAfter(Handler); \
 	} )
 
+#define SUBSCRIBE_METHOD_EXPLICIT(MethodSignature, MethodReference, Handler) \
+	Invoke( [&]() { \
+		HookInvoker<MethodSignature, &MethodReference>::InstallHook(TEXT(#MethodReference)); \
+		return HookInvoker<MethodSignature, &MethodReference>::AddHandlerBefore(Handler); \
+	} )
+
+#define SUBSCRIBE_METHOD_EXPLICIT_AFTER(MethodSignature, MethodReference, Handler) \
+	Invoke( [&]() { \
+		HookInvoker<MethodSignature, &MethodReference>::InstallHook(TEXT(#MethodReference)); \
+		return HookInvoker<MethodSignature, &MethodReference>::AddHandlerAfter(Handler); \
+	} )
+
 #define SUBSCRIBE_METHOD_VIRTUAL(MethodReference, SampleObjectInstance, Handler) \
 	Invoke( [&]() { \
 		HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
@@ -596,6 +608,12 @@ using CallScope = TCallScope<T>;
 	Invoke( [&]() { \
 		HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
 		return HookInvoker<decltype(&MethodReference), &MethodReference>::AddHandlerAfter(Handler); \
+	} )
+
+#define SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL(MethodSignature, MethodReference, SampleObjectInstance, Handler) \
+	Invoke( [&]() { \
+		HookInvoker<MethodSignature, &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
+		return HookInvoker<MethodSignature, &MethodReference>::AddHandlerBefore(Handler); \
 	} )
 
 #define SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL_AFTER(MethodSignature, MethodReference, SampleObjectInstance, Handler) \
@@ -616,8 +634,26 @@ using CallScope = TCallScope<T>;
 		return HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::AddHandlerAfter(Handler); \
 	} )
 
+#define SUBSCRIBE_UOBJECT_METHOD_EXPLICIT(MethodSignature, ObjectClass, MethodName, Handler) \
+	Invoke( [&]() { \
+		HookInvoker<MethodSignature, &ObjectClass::MethodName>::InstallHook(TEXT(#ObjectClass "::" #MethodName), GetDefault<ObjectClass>()); \
+		return HookInvoker<MethodSignature, &ObjectClass::MethodName>::AddHandlerBefore(Handler); \
+	} )
+
+#define SUBSCRIBE_UOBJECT_METHOD_EXPLICIT_AFTER(MethodSignature, ObjectClass, MethodName, Handler) \
+	Invoke( [&]() { \
+		HookInvoker<MethodSignature, &ObjectClass::MethodName>::InstallHook(TEXT(#ObjectClass "::" #MethodName), GetDefault<ObjectClass>()); \
+		return HookInvoker<MethodSignature, &ObjectClass::MethodName>::AddHandlerAfter(Handler); \
+	} )
+
 #define UNSUBSCRIBE_METHOD(MethodReference, HandlerHandle) \
 	HookInvoker<decltype(&MethodReference), &MethodReference>::RemoveHandler(TEXT(#MethodReference), HandlerHandle )
 
+#define UNSUBSCRIBE_METHOD_EXPLICIT(MethodSignature, MethodReference, HandlerHandle) \
+	HookInvoker<MethodSignature, &MethodReference>::RemoveHandler(TEXT(#MethodReference), HandlerHandle )
+
 #define UNSUBSCRIBE_UOBJECT_METHOD(ObjectClass, MethodName, HandlerHandle) \
 	HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::RemoveHandler(TEXT(#ObjectClass "::" #MethodName), HandlerHandle )
+
+#define UNSUBSCRIBE_UOBJECT_METHOD_EXPLICIT(MethodSignature, ObjectClass, MethodName, HandlerHandle) \
+	HookInvoker<MethodSignature, &ObjectClass::MethodName>::RemoveHandler(TEXT(#ObjectClass "::" #MethodName), HandlerHandle )
