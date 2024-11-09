@@ -209,6 +209,7 @@ void FFunctionHookInfo::RecalculateReturnStatementOffset(UFunction* Function) {
 
 void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFunction<HookFunctionSignature>& Hook, const int32 HookOffset) {
 #if !WITH_EDITOR
+	fgcheckf(Function, TEXT("HookBPFunction: Function provided is null"));
 	fgcheckf(Function->Script.Num(), TEXT("HookBPFunction: Function provided is not implemented in BP"));
 
 	//Make sure to add outer UClass to root set to avoid it being Garbage Collected
