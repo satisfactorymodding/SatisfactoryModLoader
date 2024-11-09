@@ -197,7 +197,7 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 								})
 							.Content()[
 								SNew(SButton)
-								.Text(LOCTEXT("OpenDirAlphakit", "Open Folder"))
+								.Text(LOCTEXT("OpenDirAlpakit", "Open Folder"))
 								.OnClicked_Lambda([this, Mod]
 									{
 										FString archivePath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("ArchivedPlugins"), Mod->GetName()));
