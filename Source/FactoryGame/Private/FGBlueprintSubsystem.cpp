@@ -39,14 +39,14 @@ AFGBlueprintSubsystem::AFGBlueprintSubsystem() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGBlueprintSubsystem::BeginPlay(){ }
-void AFGBlueprintSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBlueprintSubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGBlueprintSubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBlueprintSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBlueprintSubsystem, mBlueprintCategoryRecords);
 	DOREPLIFETIME(AFGBlueprintSubsystem, mServerManifest);
 }
-void AFGBlueprintSubsystem::Tick(float deltaTime){ }
+void AFGBlueprintSubsystem::Tick(float deltaTime){ Super::Tick(deltaTime); }
 AFGBlueprintSubsystem* AFGBlueprintSubsystem::Get(UWorld* world){ return nullptr; }
 AFGBlueprintSubsystem* AFGBlueprintSubsystem::GetBlueprintSubsystem(UObject* worldContext){ return nullptr; }
 void AFGBlueprintSubsystem::Init(){ }

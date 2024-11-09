@@ -30,8 +30,8 @@ void AFGBuildableWidgetSign::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableWidgetSign, mDataVersion);
 }
-void AFGBuildableWidgetSign::BeginPlay(){ }
-void AFGBuildableWidgetSign::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableWidgetSign::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableWidgetSign::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableWidgetSign::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableWidgetSign::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableWidgetSign::OnConstruction(const FTransform& transform){ }

@@ -19,8 +19,8 @@ AFGGasPillarCloud::AFGGasPillarCloud() : Super() {
 	this->mIsSignificant = false;
 	this->mHasPendingRefreshOfSystems = false;
 }
-void AFGGasPillarCloud::BeginPlay(){ }
-void AFGGasPillarCloud::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGGasPillarCloud::BeginPlay(){ Super::BeginPlay(); }
+void AFGGasPillarCloud::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGGasPillarCloud::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGGasPillarCloud, mRemovedWorldLocations);

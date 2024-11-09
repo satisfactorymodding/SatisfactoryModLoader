@@ -9,7 +9,7 @@ AFGBuildableBeam::AFGBuildableBeam(const FObjectInitializer& ObjectInitializer) 
 	this->mMaxLength = 0.0;
 	this->mLength = 0.0;
 }
-void AFGBuildableBeam::BeginPlay(){ }
+void AFGBuildableBeam::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableBeam::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableBeam, mLength);

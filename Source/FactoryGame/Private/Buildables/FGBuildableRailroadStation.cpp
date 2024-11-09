@@ -22,8 +22,8 @@ void AFGBuildableRailroadStation::GetLifetimeReplicatedProps(TArray< FLifetimePr
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableRailroadStation, mStationIdentifier);
 }
-void AFGBuildableRailroadStation::BeginPlay(){ }
-void AFGBuildableRailroadStation::Destroyed(){ }
+void AFGBuildableRailroadStation::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableRailroadStation::Destroyed(){ Super::Destroyed(); }
 void AFGBuildableRailroadStation::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGBuildableRailroadStation::CanDismantle_Implementation() const{ return bool(); }
 void AFGBuildableRailroadStation::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ }

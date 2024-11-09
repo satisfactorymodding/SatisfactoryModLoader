@@ -20,4 +20,4 @@ AFGBuildableRoad::AFGBuildableRoad() : Super() {
 	this->mConnection1->SetupAttachment(RootComponent);
 	this->mSplineComponent->SetupAttachment(RootComponent);
 }
-void AFGBuildableRoad::BeginPlay(){ }
+void AFGBuildableRoad::BeginPlay(){ Super::BeginPlay(); }

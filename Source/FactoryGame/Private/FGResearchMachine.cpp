@@ -26,6 +26,6 @@ void UFGResearchMachine::SetResearchMeshCurveScale(UCurveFloat* curveScale){ }
 void UFGResearchMachine::OnResearchStarted(TSubclassOf<class UFGSchematic> schematic){ }
 void UFGResearchMachine::OnResearchConcluded(TSubclassOf<class UFGSchematic> schematic){ }
 void UFGResearchMachine::SetMachineUser( AFGCharacterPlayer* player){ }
-void UFGResearchMachine::BeginPlay(){ }
-void UFGResearchMachine::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void UFGResearchMachine::BeginPlay(){ Super::BeginPlay(); }
+void UFGResearchMachine::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void UFGResearchMachine::OnRep_ResearchMesh(){ }

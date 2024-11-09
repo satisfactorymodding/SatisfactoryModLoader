@@ -14,8 +14,8 @@ AFGAmbientVolume::AFGAmbientVolume() : Super() {
 	this->mSignificanceRange = 25000.0;
 	this->mAudioComponent->SetupAttachment(GetBrushComponent());
 }
-void AFGAmbientVolume::BeginPlay(){ }
-void AFGAmbientVolume::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGAmbientVolume::BeginPlay(){ Super::BeginPlay(); }
+void AFGAmbientVolume::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGAmbientVolume::GainedSignificance_Implementation(){ }
 void AFGAmbientVolume::LostSignificance_Implementation(){ }
 void AFGAmbientVolume::GainedSignificance_Native(){ }

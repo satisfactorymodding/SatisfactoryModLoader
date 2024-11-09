@@ -5,8 +5,8 @@
 UFGAttachedLootComponent::UFGAttachedLootComponent() : Super() {
 	this->mAttachedItemPickup = nullptr;
 }
-void UFGAttachedLootComponent::BeginPlay(){ }
-void UFGAttachedLootComponent::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void UFGAttachedLootComponent::BeginPlay(){ Super::BeginPlay(); }
+void UFGAttachedLootComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void UFGAttachedLootComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGAttachedLootComponent::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGAttachedLootComponent::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

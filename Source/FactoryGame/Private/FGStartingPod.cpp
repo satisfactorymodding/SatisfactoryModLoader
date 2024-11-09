@@ -35,8 +35,8 @@ void AFGStartingPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGStartingPod, mDropPodSpawnLocation);
 }
-void AFGStartingPod::BeginPlay(){ }
-void AFGStartingPod::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGStartingPod::BeginPlay(){ Super::BeginPlay(); }
+void AFGStartingPod::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 FVector AFGStartingPod::GetRefundSpawnLocationAndArea_Implementation(const FVector& aimHitLocation, float& out_radius) const{ return FVector(); }
 bool AFGStartingPod::CanDismantle_Implementation() const{ return bool(); }
 void AFGStartingPod::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }

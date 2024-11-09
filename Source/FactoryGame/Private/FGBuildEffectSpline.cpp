@@ -12,6 +12,6 @@ AFGBuildEffectSpline::AFGBuildEffectSpline() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGBuildEffectSpline::BeginPlay(){ }
-void AFGBuildEffectSpline::Tick(float DeltaTime){ }
+void AFGBuildEffectSpline::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildEffectSpline::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
 void AFGBuildEffectSpline::SetupAttachment( AFGPipeBuilderTrail* inAttachment){ }

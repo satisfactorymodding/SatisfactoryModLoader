@@ -22,7 +22,7 @@ void AFGRailroadTrackHologram::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGRailroadTrackHologram, mSwitchControls);
 }
-void AFGRailroadTrackHologram::BeginPlay(){ }
+void AFGRailroadTrackHologram::BeginPlay(){ Super::BeginPlay(); }
 USceneComponent* AFGRailroadTrackHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 void AFGRailroadTrackHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 int32 AFGRailroadTrackHologram::GetBaseCostMultiplier() const{ return int32(); }

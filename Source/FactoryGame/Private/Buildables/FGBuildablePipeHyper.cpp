@@ -11,7 +11,7 @@ AFGBuildablePipeHyper::AFGBuildablePipeHyper() : Super() {
 	this->mConnection0->SetupAttachment(RootComponent);
 	this->mConnection1->SetupAttachment(RootComponent);
 }
-void AFGBuildablePipeHyper::BeginPlay(){ }
+void AFGBuildablePipeHyper::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePipeHyper::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 TArray<TPair<UFGPipeConnectionComponentBase*, float>> AFGBuildablePipeHyper::GetPossibleConnectionsToTransitionThrough(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough) const{ return TArray<TPair<UFGPipeConnectionComponentBase*,float>>(); }
 EPipeHyperEnterResult AFGBuildablePipeHyper::OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, TStructOnScope<FFGPipeHyperBasePipeData>& outPipeData, const TStructOnScope<FFGPipeHyperBasePipeData>& predictionPipeData){ return EPipeHyperEnterResult(); }

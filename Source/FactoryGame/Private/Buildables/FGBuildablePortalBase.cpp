@@ -31,8 +31,8 @@ void AFGBuildablePortalBase::GetLifetimeReplicatedProps(TArray< FLifetimePropert
 	DOREPLIFETIME(AFGBuildablePortalBase, mIsPortalTraversable);
 	DOREPLIFETIME(AFGBuildablePortalBase, mPortalName);
 }
-void AFGBuildablePortalBase::BeginPlay(){ }
-void AFGBuildablePortalBase::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildablePortalBase::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildablePortalBase::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 float AFGBuildablePortalBase::GetProducingPowerConsumptionBase() const{ return float(); }
 void AFGBuildablePortalBase::Factory_Tick(float dt){ }
 void AFGBuildablePortalBase::Dismantle_Implementation(){ }

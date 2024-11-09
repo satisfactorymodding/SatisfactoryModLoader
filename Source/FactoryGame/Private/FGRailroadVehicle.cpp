@@ -27,10 +27,10 @@ void AFGRailroadVehicle::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	DOREPLIFETIME(AFGRailroadVehicle, mTrackPosition);
 	DOREPLIFETIME(AFGRailroadVehicle, mIsDerailed);
 }
-void AFGRailroadVehicle::BeginPlay(){ }
-void AFGRailroadVehicle::Destroyed(){ }
+void AFGRailroadVehicle::BeginPlay(){ Super::BeginPlay(); }
+void AFGRailroadVehicle::Destroyed(){ Super::Destroyed(); }
 void AFGRailroadVehicle::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGRailroadVehicle::Tick(float dt){ }
+void AFGRailroadVehicle::Tick(float dt){ Super::Tick(dt); }
 bool AFGRailroadVehicle::CanDismantle_Implementation() const{ return bool(); }
 void AFGRailroadVehicle::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ }
 void AFGRailroadVehicle::GainedSignificance_Implementation(){ }

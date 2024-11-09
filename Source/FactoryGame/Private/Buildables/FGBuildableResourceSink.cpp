@@ -10,9 +10,9 @@ AFGBuildableResourceSink::AFGBuildableResourceSink() : Super() {
 	this->mProcessingTime = 3.0;
 	this->mProducingTimer = 0.0;
 }
-void AFGBuildableResourceSink::BeginPlay(){ }
-void AFGBuildableResourceSink::Tick(float dt){ }
-void AFGBuildableResourceSink::Destroyed(){ }
+void AFGBuildableResourceSink::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableResourceSink::Tick(float dt){ Super::Tick(dt); }
+void AFGBuildableResourceSink::Destroyed(){ Super::Destroyed(); }
 void AFGBuildableResourceSink::Factory_CollectInput_Implementation(){ }
 bool AFGBuildableResourceSink::CanProduce_Implementation() const{ return bool(); }
 int32 AFGBuildableResourceSink::ClaimCoupons(int32 numCoupons){ return int32(); }

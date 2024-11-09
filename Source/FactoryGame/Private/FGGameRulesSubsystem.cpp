@@ -16,7 +16,7 @@ void UFGGameRulesRemoteCallObject::Server_SetNoUnlockCost_Implementation(bool en
 void UFGGameRulesRemoteCallObject::Server_SetNoPower_Implementation(bool enabled){ }
 void UFGGameRulesRemoteCallObject::Server_SetArachnidCreaturesDisabled_Implementation(bool disabled){ }
 void UFGGameRulesRemoteCallObject::Server_SetGamePhase_Implementation(int32 gamePhase){ }
-void AFGGameRulesSubsystem::BeginPlay(){ }
+void AFGGameRulesSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGGameRulesSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGGameRulesSubsystem, mHasInitialized);

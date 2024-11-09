@@ -8,6 +8,6 @@ AFGBuildableResourceSinkShop::AFGBuildableResourceSinkShop() : Super() {
 	this->mShopInventoryDefaultSize = 30;
 	this->mResourceSinkSubsystem = nullptr;
 }
-void AFGBuildableResourceSinkShop::BeginPlay(){ }
+void AFGBuildableResourceSinkShop::BeginPlay(){ Super::BeginPlay(); }
 bool AFGBuildableResourceSinkShop::CanInventoryFitPlannedPurchase(TArray< TSubclassOf<  UFGSchematic > > schematics) const{ return bool(); }
 bool AFGBuildableResourceSinkShop::PurchaseResourceSinkSchematics( UFGInventoryComponent* playerInventory, TArray< TSubclassOf<  UFGSchematic > > schematics){ return bool(); }

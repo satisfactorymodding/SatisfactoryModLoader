@@ -16,7 +16,7 @@ void AFGTrainPlatformHologram::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGTrainPlatformHologram, mRailroadTrackHologram);
 }
-void AFGTrainPlatformHologram::BeginPlay(){ }
+void AFGTrainPlatformHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGTrainPlatformHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 AActor* AFGTrainPlatformHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
 void AFGTrainPlatformHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }

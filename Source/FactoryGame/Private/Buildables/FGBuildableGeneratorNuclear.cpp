@@ -8,7 +8,7 @@ AFGBuildableGeneratorNuclear::AFGBuildableGeneratorNuclear() : Super() {
 	this->mCurrentGeneratorNuclearWarning = EGeneratorNuclearWarning::GNW_None;
 }
 void AFGBuildableGeneratorNuclear::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
-void AFGBuildableGeneratorNuclear::BeginPlay(){ }
+void AFGBuildableGeneratorNuclear::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableGeneratorNuclear::Factory_Tick(float dt){ }
 bool AFGBuildableGeneratorNuclear::CanStartPowerProduction_Implementation() const{ return bool(); }
 bool AFGBuildableGeneratorNuclear::CanLoadFuel() const{ return bool(); }

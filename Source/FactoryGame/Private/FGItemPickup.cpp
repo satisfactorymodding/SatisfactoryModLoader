@@ -28,8 +28,8 @@ void AFGItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(AFGItemPickup, mItemState);
 }
 void AFGItemPickup::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGItemPickup::BeginPlay(){ }
-void AFGItemPickup::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGItemPickup::BeginPlay(){ Super::BeginPlay(); }
+void AFGItemPickup::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGItemPickup::PreSave(FObjectPreSaveContext SaveContext){ Super::PreSave(SaveContext); }
 void AFGItemPickup::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGItemPickup::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

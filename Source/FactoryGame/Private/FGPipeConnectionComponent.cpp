@@ -16,7 +16,7 @@ void UFGPipeConnectionComponentBase::GetLifetimeReplicatedProps(TArray< FLifetim
 	DOREPLIFETIME(UFGPipeConnectionComponentBase, mConnectedComponent);
 }
 void UFGPipeConnectionComponentBase::OnComponentDestroyed(bool isDestroyingHierarchy){ }
-void UFGPipeConnectionComponentBase::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void UFGPipeConnectionComponentBase::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void UFGPipeConnectionComponentBase::SetConnection( UFGPipeConnectionComponentBase* toComponent){ }
 void UFGPipeConnectionComponentBase::ClearConnection(){ }
 bool UFGPipeConnectionComponentBase::IsConnected() const{ return bool(); }
@@ -32,7 +32,7 @@ UFGPipeConnectionComponent::UFGPipeConnectionComponent() : Super() {
 	this->mPipeNetworkID = -1;
 	this->mFluidDescriptor = nullptr;
 }
-void UFGPipeConnectionComponent::BeginPlay(){ }
+void UFGPipeConnectionComponent::BeginPlay(){ Super::BeginPlay(); }
 void UFGPipeConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGPipeConnectionComponent, mPipeNetworkID);

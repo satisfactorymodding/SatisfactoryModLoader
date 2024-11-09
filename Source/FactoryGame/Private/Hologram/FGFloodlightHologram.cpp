@@ -12,7 +12,7 @@ void AFGFloodlightHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGFloodlightHologram, mFixtureAngle);
 }
-void AFGFloodlightHologram::BeginPlay(){ }
+void AFGFloodlightHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGFloodlightHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGFloodlightHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGFloodlightHologram::ScrollRotate(int32 delta, int32 step){ }

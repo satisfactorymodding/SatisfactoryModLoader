@@ -13,7 +13,7 @@ AFGPowerPoleWallHologram::AFGPowerPoleWallHologram() : Super() {
 	this->mWireHologramOut = nullptr;
 	this->mDefaultPowerLineRecipe = nullptr;
 }
-void AFGPowerPoleWallHologram::BeginPlay(){ }
+void AFGPowerPoleWallHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGPowerPoleWallHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPowerPoleWallHologram, mUpgradeTarget);
@@ -21,7 +21,7 @@ void AFGPowerPoleWallHologram::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	DOREPLIFETIME(AFGPowerPoleWallHologram, mWireHologramIn);
 	DOREPLIFETIME(AFGPowerPoleWallHologram, mWireHologramOut);
 }
-void AFGPowerPoleWallHologram::Destroyed(){ }
+void AFGPowerPoleWallHologram::Destroyed(){ Super::Destroyed(); }
 USceneComponent* AFGPowerPoleWallHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 AActor* AFGPowerPoleWallHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID constructionID){ return nullptr; }
 void AFGPowerPoleWallHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }

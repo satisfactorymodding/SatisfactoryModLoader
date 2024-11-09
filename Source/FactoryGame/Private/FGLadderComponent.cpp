@@ -16,8 +16,8 @@ UFGLadderComponent::UFGLadderComponent(const FObjectInitializer& ObjectInitializ
 }
 void UFGLadderComponent::OnRegister(){ Super::OnRegister(); }
 void UFGLadderComponent::OnUnregister(){ Super::OnUnregister(); }
-void UFGLadderComponent::BeginPlay(){ }
-void UFGLadderComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void UFGLadderComponent::BeginPlay(){ Super::BeginPlay(); }
+void UFGLadderComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void UFGLadderComponent::TickComponent(float deltaTime, enum ELevelTick tickType, FActorComponentTickFunction* thisTickFunction){ }
 void UFGLadderComponent::Update(){ }
 void UFGLadderComponent::BeginPotentialClimberOverlap(UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool isFromSweep, const FHitResult& sweepResult){ }

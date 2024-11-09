@@ -26,7 +26,7 @@ void AFGBuildablePortal::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	DOREPLIFETIME(AFGBuildablePortal, mCurrentHeatUpProgress);
 }
 void AFGBuildablePortal::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
-void AFGBuildablePortal::BeginPlay(){ }
+void AFGBuildablePortal::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePortal::Factory_Tick(float dt){ }
 void AFGBuildablePortal::Factory_CollectInput_Implementation(){ }
 bool AFGBuildablePortal::CanProduce_Implementation() const{ return bool(); }

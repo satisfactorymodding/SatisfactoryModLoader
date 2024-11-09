@@ -25,8 +25,8 @@ void AFGCreatureController::OnPossess(APawn* InPawn){ }
 void AFGCreatureController::OnUnPossess(){ }
 FPathFollowingRequestResult AFGCreatureController::MoveTo(const FAIMoveRequest& MoveRequest, FNavPathSharedPtr* OutPath){ return FPathFollowingRequestResult(); }
 void AFGCreatureController::UpdateControlRotation(float DeltaTime, bool bUpdatePawn){ }
-void AFGCreatureController::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGCreatureController::Tick(float DeltaSeconds){ }
+void AFGCreatureController::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
+void AFGCreatureController::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGCreatureController::SetEnabled(bool enabled){ }
 bool AFGCreatureController::IsReadyToDespawn() const{ return bool(); }
 void AFGCreatureController::CreatureDied(){ }

@@ -48,10 +48,10 @@ void AFGBuildableDockingStation::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AFGBuildableDockingStation, mMaximumStackTransferRate);
 }
 void AFGBuildableDockingStation::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
-void AFGBuildableDockingStation::BeginPlay(){ }
-void AFGBuildableDockingStation::Tick(float DeltaSeconds){ }
-void AFGBuildableDockingStation::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGBuildableDockingStation::Destroyed(){ }
+void AFGBuildableDockingStation::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableDockingStation::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
+void AFGBuildableDockingStation::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGBuildableDockingStation::Destroyed(){ Super::Destroyed(); }
 void AFGBuildableDockingStation::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 float AFGBuildableDockingStation::GetSignificanceRange(){ return float(); }
 bool AFGBuildableDockingStation::DockActor( AActor* actor){ return bool(); }

@@ -10,5 +10,5 @@ AFGWorldGridGeneratorActor::AFGWorldGridGeneratorActor() : Super() {
 	this->mWorldGridMin = FVector2D::ZeroVector;
 	this->mWorldGridMax = FVector2D::ZeroVector;
 }
-void AFGWorldGridGeneratorActor::BeginPlay(){ }
+void AFGWorldGridGeneratorActor::BeginPlay(){ Super::BeginPlay(); }
 void AFGWorldGridGeneratorActor::GenerateWorldGrid(TArray< FFGWorldGridCellData >& CellData, FVector2D& GridMin, FVector2D& GridMax) const{ }

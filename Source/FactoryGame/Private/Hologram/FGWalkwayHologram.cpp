@@ -13,4 +13,4 @@ void AFGWalkwayHologram::CheckValidPlacement(){ }
 void AFGWalkwayHologram::UpdateZoop(){ }
 void AFGWalkwayHologram::ConstructZoop(TArray<AActor*>& out_children){ }
 FVector AFGWalkwayHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return FVector(); }
-void AFGWalkwayHologram::BeginPlay(){ }
+void AFGWalkwayHologram::BeginPlay(){ Super::BeginPlay(); }

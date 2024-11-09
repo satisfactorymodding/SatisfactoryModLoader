@@ -6,8 +6,8 @@
 AFGBuildableDroneHologram::AFGBuildableDroneHologram() : Super() {
 	this->mSnappedStation = nullptr;
 }
-void AFGBuildableDroneHologram::BeginPlay(){ }
-void AFGBuildableDroneHologram::Destroyed(){ }
+void AFGBuildableDroneHologram::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableDroneHologram::Destroyed(){ Super::Destroyed(); }
 void AFGBuildableDroneHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableDroneHologram, mSnappedStation);

@@ -56,8 +56,8 @@ void AFGBuildableTradingPost::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(AFGBuildableTradingPost, mCalendar);
 	DOREPLIFETIME(AFGBuildableTradingPost, mMiniGame);
 }
-void AFGBuildableTradingPost::BeginPlay(){ }
-void AFGBuildableTradingPost::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableTradingPost::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableTradingPost::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableTradingPost::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }
 bool AFGBuildableTradingPost::AddAsRepresentation(){ return bool(); }
 bool AFGBuildableTradingPost::UpdateRepresentation(){ return bool(); }

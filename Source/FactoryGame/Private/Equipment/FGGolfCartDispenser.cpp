@@ -11,7 +11,7 @@ AFGGolfCartDispenser::AFGGolfCartDispenser() : Super() {
 	this->mArmAnimation = EArmEquipment::AE_PortableMiner;
 	this->mDefaultEquipmentActions = 1;
 }
-void AFGGolfCartDispenser::BeginPlay(){ }
+void AFGGolfCartDispenser::BeginPlay(){ Super::BeginPlay(); }
 void AFGGolfCartDispenser::SetMaterial( UMaterialInterface* material){ }
 void AFGGolfCartDispenser::SpawnGolfCart(){ }
 void AFGGolfCartDispenser::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }

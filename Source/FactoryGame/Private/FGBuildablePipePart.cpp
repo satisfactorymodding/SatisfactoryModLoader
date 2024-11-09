@@ -24,7 +24,7 @@ void AFGBuildablePipePart::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 	DOREPLIFETIME(AFGBuildablePipePart, mLength);
 	DOREPLIFETIME(AFGBuildablePipePart, mSupportMesh);
 }
-void AFGBuildablePipePart::BeginPlay(){ }
+void AFGBuildablePipePart::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePipePart::SetSupportLength(float length){ }
 void AFGBuildablePipePart::SetupConnectionComponent(){ }
 const FName AFGBuildablePipePart::SupportMeshName = FName();

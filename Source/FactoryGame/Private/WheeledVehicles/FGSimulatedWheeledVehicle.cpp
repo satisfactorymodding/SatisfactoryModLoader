@@ -11,5 +11,5 @@ void AFGSimulatedWheeledVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 
 }
 void AFGSimulatedWheeledVehicle::Init( AFGWheeledVehicle* vehicle){ }
-void AFGSimulatedWheeledVehicle::BeginPlay(){ }
-void AFGSimulatedWheeledVehicle::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGSimulatedWheeledVehicle::BeginPlay(){ Super::BeginPlay(); }
+void AFGSimulatedWheeledVehicle::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }

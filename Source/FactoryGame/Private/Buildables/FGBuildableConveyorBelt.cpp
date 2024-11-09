@@ -24,8 +24,8 @@ void AFGBuildableConveyorBelt::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableConveyorBelt, mSplineData);
 }
-void AFGBuildableConveyorBelt::BeginPlay(){ }
-void AFGBuildableConveyorBelt::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableConveyorBelt::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableConveyorBelt::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableConveyorBelt::GainedSignificance_Implementation(){ }
 void AFGBuildableConveyorBelt::LostSignificance_Implementation(){ }
 float AFGBuildableConveyorBelt::GetSignificanceRange(){ return float(); }

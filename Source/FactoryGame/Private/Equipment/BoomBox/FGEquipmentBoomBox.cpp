@@ -11,8 +11,8 @@ void AFGEquipmentBoomBox::WasEquipped_Implementation(){ }
 void AFGEquipmentBoomBox::WasUnEquipped_Implementation(){ }
 void AFGEquipmentBoomBox::WasRemovedFromSlot_Implementation(){ }
 void AFGEquipmentBoomBox::WasSlottedIn_Implementation( AFGCharacterPlayer* holder){ }
-void AFGEquipmentBoomBox::BeginPlay(){ }
-void AFGEquipmentBoomBox::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGEquipmentBoomBox::BeginPlay(){ Super::BeginPlay(); }
+void AFGEquipmentBoomBox::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGEquipmentBoomBox::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGEquipmentBoomBox, mBoomBoxPlayer);

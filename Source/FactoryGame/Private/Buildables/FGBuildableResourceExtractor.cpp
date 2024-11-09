@@ -20,7 +20,7 @@ void AFGBuildableResourceExtractor::GetLifetimeReplicatedProps(TArray< FLifetime
 	DOREPLIFETIME(AFGBuildableResourceExtractor, mExtractStartupTimer);
 }
 void AFGBuildableResourceExtractor::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
-void AFGBuildableResourceExtractor::BeginPlay(){ }
+void AFGBuildableResourceExtractor::BeginPlay(){ Super::BeginPlay(); }
 bool AFGBuildableResourceExtractor::CanProduce_Implementation() const{ return bool(); }
 float AFGBuildableResourceExtractor::GetProductionCycleTime() const{ return float(); }
 float AFGBuildableResourceExtractor::GetProductionProgress() const{ return float(); }

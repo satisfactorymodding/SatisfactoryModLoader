@@ -14,7 +14,7 @@ void AFGParachute::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGParachute, mIsDeployed);
 }
-void AFGParachute::Tick(float DeltaSeconds){ }
+void AFGParachute::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGParachute::UnEquip(){ }
 void AFGParachute::Input_Deploy(const FInputActionValue& actionValue){ }
 void AFGParachute::Input_UnDeploy(const FInputActionValue& actionValue){ }

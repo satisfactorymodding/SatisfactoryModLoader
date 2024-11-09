@@ -25,7 +25,7 @@ void AFGPipeAttachmentHologram::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(AFGPipeAttachmentHologram, mSnappedConnectionComponent);
 	DOREPLIFETIME(AFGPipeAttachmentHologram, mSnappedPipeOffset);
 }
-void AFGPipeAttachmentHologram::BeginPlay(){ }
+void AFGPipeAttachmentHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGPipeAttachmentHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGPipeAttachmentHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 void AFGPipeAttachmentHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

@@ -78,8 +78,8 @@ void AFGCreature::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 	DOREPLIFETIME(AFGCreature, mIsEnabled);
 	DOREPLIFETIME(AFGCreature, mIsStunned);
 }
-void AFGCreature::BeginPlay(){ }
-void AFGCreature::Tick(float DeltaSeconds){ }
+void AFGCreature::BeginPlay(){ Super::BeginPlay(); }
+void AFGCreature::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGCreature::PreInitializeComponents(){ Super::PreInitializeComponents(); }
 void AFGCreature::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGCreature::OnConstruction(const FTransform& Transform){ }

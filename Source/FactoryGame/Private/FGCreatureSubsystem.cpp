@@ -15,8 +15,8 @@ AFGCreatureSubsystem::AFGCreatureSubsystem() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGCreatureSubsystem::BeginPlay(){ }
-void AFGCreatureSubsystem::Tick(float dt){ }
+void AFGCreatureSubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGCreatureSubsystem::Tick(float dt){ Super::Tick(dt); }
 void AFGCreatureSubsystem::RegisterSpawner( AFGCreatureSpawner* spawner){ }
 void AFGCreatureSubsystem::UnregisterSpawner( AFGCreatureSpawner* spawner){ }
 void AFGCreatureSubsystem::RegisterCreature( AFGCreature* creature){ }

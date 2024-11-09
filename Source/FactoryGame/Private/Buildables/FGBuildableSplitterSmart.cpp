@@ -19,7 +19,7 @@ void AFGBuildableSplitterSmart::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableSplitterSmart, mSortRules);
 }
-void AFGBuildableSplitterSmart::BeginPlay(){ }
+void AFGBuildableSplitterSmart::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableSplitterSmart::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableSplitterSmart::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled) const{ }
 void AFGBuildableSplitterSmart::Factory_Tick(float deltaTime){ }

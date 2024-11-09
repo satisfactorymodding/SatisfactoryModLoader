@@ -85,10 +85,10 @@ void AFGTrain::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 	DOREPLIFETIME(AFGTrain, mIsDerailed);
 	DOREPLIFETIME(AFGTrain, mTrainReplicationActor);
 }
-void AFGTrain::Tick(float dt){ }
-void AFGTrain::BeginPlay(){ }
-void AFGTrain::Destroyed(){ }
-void AFGTrain::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGTrain::Tick(float dt){ Super::Tick(dt); }
+void AFGTrain::BeginPlay(){ Super::BeginPlay(); }
+void AFGTrain::Destroyed(){ Super::Destroyed(); }
+void AFGTrain::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 bool AFGTrain::IsLevelBoundsRelevant() const{ return bool(); }
 void AFGTrain::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTrain::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

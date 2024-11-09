@@ -18,8 +18,8 @@ void AFGBuildableRailroadSwitchControl::GetLifetimeReplicatedProps(TArray<FLifet
 	DOREPLIFETIME(AFGBuildableRailroadSwitchControl, mSwitchData);
 	DOREPLIFETIME(AFGBuildableRailroadSwitchControl, mVisualState);
 }
-void AFGBuildableRailroadSwitchControl::BeginPlay(){ }
-void AFGBuildableRailroadSwitchControl::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildableRailroadSwitchControl::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableRailroadSwitchControl::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableRailroadSwitchControl::OnBuildEffectFinished(){ }
 void AFGBuildableRailroadSwitchControl::OnBuildEffectActorFinished(){ }
 void AFGBuildableRailroadSwitchControl::GainedSignificance_Implementation(){ }

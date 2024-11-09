@@ -7,6 +7,6 @@ void AFGBuildableFloodlight::GetLifetimeReplicatedProps(TArray< FLifetimePropert
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableFloodlight, mFixtureAngle);
 }
-void AFGBuildableFloodlight::BeginPlay(){ }
+void AFGBuildableFloodlight::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableFloodlight::SetFixtureAngle(int32 angle){ }
 const FName AFGBuildableFloodlight::FIXTURE_COMPONENT_NAME = FName();

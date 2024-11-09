@@ -41,8 +41,8 @@ void UFGInteractWidget::SetDefaultFocusWidget(UWidget* focusWidget){ }
 void UFGInteractWidget::SetupDefaultFocus_Implementation(){ }
 void UFGInteractWidget::CopyFactoryClipboard(){ }
 void UFGInteractWidget::PasteFactoryClipboard(){ }
-void UFGInteractWidget::NativeConstruct(){ }
-void UFGInteractWidget::NativeDestruct(){ }
+void UFGInteractWidget::NativeConstruct(){ Super::NativeConstruct(); }
+void UFGInteractWidget::NativeDestruct(){ Super::NativeDestruct(); }
 bool UFGInteractWidget::NativeCanCallInit(){ return bool(); }
 void UFGInteractWidget::NativeTestAndQueueInit(){ }
 void UFGInteractWidget::ClearRestoreFocusGate(){ }

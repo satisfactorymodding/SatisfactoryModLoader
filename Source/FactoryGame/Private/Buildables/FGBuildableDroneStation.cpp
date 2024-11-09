@@ -65,8 +65,8 @@ void AFGBuildableDroneStation::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME(AFGBuildableDroneStation, mInfo);
 	DOREPLIFETIME(AFGBuildableDroneStation, mMapText);
 }
-void AFGBuildableDroneStation::BeginPlay(){ }
-void AFGBuildableDroneStation::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableDroneStation::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableDroneStation::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableDroneStation::Factory_Tick(float dt){ }
 void AFGBuildableDroneStation::Factory_TickProducing(float dt){ }
 void AFGBuildableDroneStation::Factory_CollectInput_Implementation(){ }

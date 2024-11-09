@@ -24,7 +24,7 @@ AFGDestructibleActor::AFGDestructibleActor() : Super() {
 	this->NetDormancy = ENetDormancy::DORM_DormantAll;
 	this->RootComponent = mStaticMeshProxy;
 }
-void AFGDestructibleActor::BeginPlay(){ }
+void AFGDestructibleActor::BeginPlay(){ Super::BeginPlay(); }
 float AFGDestructibleActor::TakeDamage(float damage,  FDamageEvent const& damageEvent, AController* eventInstigator, AActor* damageCauser){ return float(); }
 void AFGDestructibleActor::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDestructibleActor::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

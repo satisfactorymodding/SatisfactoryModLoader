@@ -11,5 +11,5 @@ AFGWaterfall::AFGWaterfall() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGWaterfall::BeginPlay(){ }
-void AFGWaterfall::Tick(float DeltaTime){ }
+void AFGWaterfall::BeginPlay(){ Super::BeginPlay(); }
+void AFGWaterfall::Tick(float DeltaTime){ Super::Tick(DeltaTime); }

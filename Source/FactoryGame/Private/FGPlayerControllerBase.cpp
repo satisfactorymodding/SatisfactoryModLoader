@@ -15,7 +15,7 @@ void AFGPlayerControllerBase::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(AFGPlayerControllerBase, mAdminInterface);
 	DOREPLIFETIME(AFGPlayerControllerBase, mReplicatedCheatManager);
 }
-void AFGPlayerControllerBase::BeginPlay(){ }
+void AFGPlayerControllerBase::BeginPlay(){ Super::BeginPlay(); }
 void AFGPlayerControllerBase::ClientRestart_Implementation(APawn* newPawn){ }
 void AFGPlayerControllerBase::AddCheats(bool force){ }
 void AFGPlayerControllerBase::SetIsUsingGamepad(bool newIsUsingGamepad){ }

@@ -188,8 +188,8 @@ AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) : Super(
 }
 void AFGBuildable::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildable::PostLoad(){ Super::PostLoad(); }
-void AFGBuildable::BeginPlay(){ }
-void AFGBuildable::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildable::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildable::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildable::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildable::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildable::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

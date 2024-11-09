@@ -80,8 +80,8 @@ AFGSkySphere::AFGSkySphere() : Super() {
 void AFGSkySphere::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGSkySphere::PostLoad(){ Super::PostLoad(); }
 void AFGSkySphere::BeginDestroy(){ Super::BeginDestroy(); }
-void AFGSkySphere::Tick(float DeltaTime){ }
-void AFGSkySphere::BeginPlay(){ }
+void AFGSkySphere::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
+void AFGSkySphere::BeginPlay(){ Super::BeginPlay(); }
 void AFGSkySphere::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGSkySphere, mCurrentSelectedWeather);

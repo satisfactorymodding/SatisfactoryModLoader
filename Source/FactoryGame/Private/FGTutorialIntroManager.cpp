@@ -54,7 +54,7 @@ void AFGTutorialIntroManager::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(AFGTutorialIntroManager, mStartingPod);
 	DOREPLIFETIME(AFGTutorialIntroManager, mTradingPostLevel);
 }
-void AFGTutorialIntroManager::Tick(float DeltaTime){ }
+void AFGTutorialIntroManager::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
 void AFGTutorialIntroManager::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGTutorialIntroManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTutorialIntroManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -83,7 +83,7 @@ void AFGTutorialIntroManager::ResetHubTutorial(){ }
 void AFGTutorialIntroManager::SetCanSkipTutorialIntro(bool canSkip){ }
 void AFGTutorialIntroManager::OnCodexOpened(){ }
 void AFGTutorialIntroManager::SkipOnboarding(){ }
-void AFGTutorialIntroManager::BeginPlay(){ }
+void AFGTutorialIntroManager::BeginPlay(){ Super::BeginPlay(); }
 void AFGTutorialIntroManager::OnBuildingBuiltGlobal( AFGBuildable* buildable){ }
 void AFGTutorialIntroManager::OnSchematicPurchased(TSubclassOf< UFGSchematic > newSchematic){ }
 void AFGTutorialIntroManager::OnItemPickuped(AFGPlayerState* playerState, const FItemAmount& totalAmountPickuped){ }
