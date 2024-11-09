@@ -62,7 +62,7 @@ private:
 
     /** This function is just a stub for UHT to generate reflection data, it is not actually implemented. */
     UFUNCTION(BlueprintInternalUseOnly, CustomThunk)
-    static void ExecuteBPHook(int32 HookOffset) { check(0); };
+    static void ExecuteBPHook(int32 HookOffset) { fgcheck(0); };
 
     DECLARE_FUNCTION(execExecuteBPHook) {
         //StepCompiledIn is not used here since this function cannot be called from BP directly, it can only
