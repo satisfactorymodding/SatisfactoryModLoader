@@ -15,6 +15,7 @@ struct FFunctionHookInfo {
     GENERATED_BODY()
 private:
     TMap<int32, TArray<TFunction<HookFunctionSignature>>> CodeOffsetByHookList;
+    int32 OriginalReturnStatementOffset;
     int32 ReturnStatementOffset;
     friend class UBlueprintHookManager;
 public:
@@ -52,7 +53,7 @@ private:
 
     /** Actually performs bytecode modification to install hook */
     static void InstallBlueprintHook(UFunction* Function, const int32 OriginalHookOffset, const int32 ResolvedHookOffset);
-    
+
     /** Called by InstallBlueprintHook to modify the bytecode based on the desired hookoffset **/
     static void ModifyOffsetsForNewHookOffset(TArray<uint8>& Script, TSharedPtr<FJsonObject> Expression, int32 HookOffset);
 

@@ -1127,6 +1127,14 @@ bool FSMLKismetBytecodeDisassembler::GetStatementLength(UStruct* Function, int32
 	return false;
 }
 
+int32 FSMLKismetBytecodeDisassembler::GetReturnStatementOffset(UFunction* Function) {
+	int32 ReturnStatementOffset;
+	//For now Kismet Compiler will always generate exactly one Return node
+	const bool bIsValid = FindFirstStatementOfType(Function, 0, EX_Return, ReturnStatementOffset);
+	fgcheckf(bIsValid, TEXT("EX_Return not found for function %s"), *Function->GetPathName());
+	return ReturnStatementOffset;
+}
+
 TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeStatement(int32& StatementIndex)
 {
 	const int32 StartingStatementIndex = StatementIndex;

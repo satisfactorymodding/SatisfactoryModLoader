@@ -35,12 +35,12 @@ void DebugDumpFunctionScriptCode(UFunction* Function, int32 HookOffset, int32 Re
 }
 #endif
 
-void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, const int32 RequestedHookOffset, const int32 ResolvedHookOffset) {
+void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, const int32 OriginalHookOffset, const int32 ResolvedHookOffset) {
 	TArray<uint8>& OriginalCode = Function->Script;
 	fgcheckf(OriginalCode.Num() > ResolvedHookOffset, TEXT("Invalid hook: Resolved HookOffset > Script.Num()"));
 
 #if DEBUG_BLUEPRINT_HOOKING
-	DebugDumpFunctionScriptCode(Function, RequestedHookOffset, ResolvedHookOffset, TEXT("BeforeHook"));
+	DebugDumpFunctionScriptCode(Function, OriginalHookOffset, ResolvedHookOffset, TEXT("BeforeHook"));
 #endif
 
 	// Will throw an error if the resolved hook offset is not at properly-aligned, parseable opcode
@@ -71,10 +71,10 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, const int3
 	AppendedCode.Add(EX_CallMath);
 	WRITE_UNALIGNED(AppendedCode, ScriptPointerType, HookCallFunction);
 	
-	//Begin writing function parameters - we have just the requested hook offset constant.
-	//The hook function needs this because it stores the user hooks according to their requested offset, not the resolved offset.
+	//Begin writing function parameters - we have just the original hook offset constant.
+	//The hook function needs this because it stores the user hooks according to their original offset, not the resolved offset.
 	AppendedCode.Add(EX_IntConst);
-	WRITE_UNALIGNED(AppendedCode, int32, RequestedHookOffset);
+	WRITE_UNALIGNED(AppendedCode, int32, OriginalHookOffset);
 	AppendedCode.Add(EX_EndFunctionParms);
 
 	//Insert jump to after the resolved hook offset location for running code after hook
@@ -91,7 +91,7 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, const int3
 	FPlatformMemory::WriteUnaligned<CodeSkipSizeType>(&OriginalCode[ResolvedHookOffset + 1], StartOfAppendedCode);
 
 #if DEBUG_BLUEPRINT_HOOKING
-	DebugDumpFunctionScriptCode(Function, RequestedHookOffset, ResolvedHookOffset, TEXT("AfterHook"));
+	DebugDumpFunctionScriptCode(Function, OriginalHookOffset, ResolvedHookOffset, TEXT("AfterHook"));
 #endif
 }
 
@@ -204,9 +204,7 @@ void FFunctionHookInfo::InvokeBlueprintHook(FFrame& Frame, int32 HookOffset) {
 
 void FFunctionHookInfo::RecalculateReturnStatementOffset(UFunction* Function) {
 	FSMLKismetBytecodeDisassembler Disassembler;
-	int32 ReturnInstructionOffset;
-	Disassembler.FindFirstStatementOfType(Function, 0, EX_Return, ReturnInstructionOffset);
-	this->ReturnStatementOffset = ReturnInstructionOffset;
+	ReturnStatementOffset = Disassembler.GetReturnStatementOffset(Function);
 }
 
 void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFunction<HookFunctionSignature>& Hook, const int32 HookOffset) {
@@ -228,10 +226,17 @@ void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFu
 	}
 #endif
 
+	FSMLKismetBytecodeDisassembler Disassembler;
+	bool IsFirstTimeFunctionEverHooked = !HookedFunctions.Contains(Function);
 	FFunctionHookInfo& FunctionHookInfo = HookedFunctions.FindOrAdd(Function);
+	if (IsFirstTimeFunctionEverHooked)
+	{
+		FunctionHookInfo.OriginalReturnStatementOffset = Disassembler.GetReturnStatementOffset(Function);
+	}
 
-	//Each new offset modifies the code but we need to keep track by unmodified offsets because callers cannot know how the code has been modified by other hooks.
-	TArray<TFunction<HookFunctionSignature>>& InstalledHooks = FunctionHookInfo.CodeOffsetByHookList.FindOrAdd(HookOffset);
+	//Each new offset modifies the code but we need to keep track by original offsets because callers cannot know how the code has been modified by other hooks.
+	int32 StoredHookOffset = HookOffset == EPredefinedHookOffset::Return ? FunctionHookInfo.OriginalReturnStatementOffset : HookOffset;
+	TArray<TFunction<HookFunctionSignature>>& InstalledHooks = FunctionHookInfo.CodeOffsetByHookList.FindOrAdd(StoredHookOffset);
 
 	if (InstalledHooks.Num() == 0) {
 		//First time function is hooked at this requested offset. We need to resolve what the offset actually is.
@@ -243,8 +248,7 @@ void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFu
 			//execution paths will end up either with executing it directly or jumping to it
 			//So we need to hook only in one place to handle all possible execution paths
 			FSMLKismetBytecodeDisassembler Disassembler;
-			const bool bIsValid = Disassembler.FindFirstStatementOfType(Function, 0, EX_Return, ResolvedHookOffset);
-			fgcheckf(bIsValid, TEXT("EX_Return not found for function %s"), *Function->GetPathName());
+			ResolvedHookOffset = Disassembler.GetReturnStatementOffset(Function);
 		} else {
 			//Each new offset moves the subsequent code by UBlueprintHookManager::JumpBytesRequired to make room for the hook jump.
 			//So the resolved offset must be increased by JumpBytesRequired for every hook installed earlier than it in the instruction list.
@@ -257,7 +261,7 @@ void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFu
 			}
 		}
 
-		InstallBlueprintHook(Function, HookOffset, ResolvedHookOffset);
+		InstallBlueprintHook(Function, StoredHookOffset, ResolvedHookOffset);
 
 		//Update cached return instruction offset because we've edited the function and moved instructions around
 		FunctionHookInfo.RecalculateReturnStatementOffset(Function);
