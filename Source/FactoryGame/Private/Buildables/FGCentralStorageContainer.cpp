@@ -29,14 +29,14 @@ float AFGCentralStorageContainer::GetActorFogOfWarRevealRadius(){ return float()
 ECompassViewDistance AFGCentralStorageContainer::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGCentralStorageContainer::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 UMaterialInterface* AFGCentralStorageContainer::GetActorRepresentationCompassMaterial(){ return nullptr; }
-void AFGCentralStorageContainer::BeginPlay(){ }
-void AFGCentralStorageContainer::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGCentralStorageContainer::BeginPlay(){ Super::BeginPlay(); }
+void AFGCentralStorageContainer::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGCentralStorageContainer::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGCentralStorageContainer, mUploadTimer);
 	DOREPLIFETIME(AFGCentralStorageContainer, mTimeToUpload);
 }
-void AFGCentralStorageContainer::Tick(float DeltaSeconds){ }
+void AFGCentralStorageContainer::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGCentralStorageContainer::Factory_Tick(float dt){ }
 void AFGCentralStorageContainer::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGCentralStorageContainer::IsUploadingToCentralStorage(){ return bool(); }

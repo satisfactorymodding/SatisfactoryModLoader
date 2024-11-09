@@ -15,7 +15,7 @@ AFGBlueprintHologram::AFGBlueprintHologram() : Super() {
 	this->mBlueprintDirectionMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Blueprint Direction Mesh"));
 	this->mBlueprintDirectionMesh->SetupAttachment(RootComponent);
 }
-void AFGBlueprintHologram::BeginPlay(){ }
+void AFGBlueprintHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGBlueprintHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBlueprintHologram, mBlueprintDescName);

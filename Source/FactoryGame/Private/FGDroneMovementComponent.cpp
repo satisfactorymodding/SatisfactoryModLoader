@@ -19,8 +19,8 @@ UFGDroneMovementComponent::UFGDroneMovementComponent() : Super() {
 	this->SetIsReplicatedByDefault(true);
 }
 void UFGDroneMovementComponent::OnRegister(){ Super::OnRegister(); }
-void UFGDroneMovementComponent::BeginPlay(){ }
-void UFGDroneMovementComponent::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void UFGDroneMovementComponent::BeginPlay(){ Super::BeginPlay(); }
+void UFGDroneMovementComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void UFGDroneMovementComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGDroneMovementComponent, mFlyingMode);

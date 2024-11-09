@@ -7,7 +7,6 @@
 #include "Logging/LogMacros.h"
 #include "UObject/ReflectedTypeAccessors.h"
 
-enum ENetMode;
 enum ECollisionChannel : int32;
 
 // Defines for custom Ak GameObject IDs, kept in one place for organization purposes
@@ -121,7 +120,8 @@ extern const ECollisionChannel OC_MapGeneration;
 extern const ECollisionChannel OC_BlueprintProxy;
 extern const ECollisionChannel OC_WireMesh;
 
-FACTORYGAME_API const TCHAR* NetModeToString( ENetMode netMode );
+// [ZolotukhinN:14/10/2024] This function needs to take ENetMode as an argument, but because ENetMode is an enum with no explicit underlying type, one cannot pre-declare it. So we fallback to the int type here to avoid including the entire EngineBaseTypes.h
+FACTORYGAME_API const TCHAR* NetModeToString( int32 netMode );
 FACTORYGAME_API FString EnumToStringInternal( const class UEnum* enumClass, int64 enumValue );
 FACTORYGAME_API int64 StringToEnumInternal( const class UEnum* enumClass, const FString& enumNameString, int64 fallbackValue );
 

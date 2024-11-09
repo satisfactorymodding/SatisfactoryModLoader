@@ -17,8 +17,8 @@ AFGRainOcclusionActor::AFGRainOcclusionActor() : Super() {
 	this->mRampShapeOccluder->SetupAttachment(RootComponent);
 	this->mTriangleShapeOccluder->SetupAttachment(RootComponent);
 }
-void AFGRainOcclusionActor::Tick(float DeltaSeconds){ }
-void AFGRainOcclusionActor::BeginPlay(){ }
+void AFGRainOcclusionActor::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
+void AFGRainOcclusionActor::BeginPlay(){ Super::BeginPlay(); }
 void AFGRainOcclusionActor::ForceUpdateOcclusionShapes(const FVector& Location, const float& Range){ }
 void AFGRainOcclusionActor::OnTraceCompleted(const FTraceHandle& Handle, FOverlapDatum& Data){ }
 void AFGRainOcclusionActor::AddShape(AFGBuildable* Buildable){ }

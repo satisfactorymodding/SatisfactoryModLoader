@@ -62,8 +62,8 @@ public:
 	virtual bool ForceSetPendingAppliedValue(FVariant newValue);
 	/** Set the default value. Useful when we want to set a new default value to reset to. */ 
 	void OverrideDefaultValue(FVariant newDefaultValue);
-	/** Called when we want to restore default values. When the player presses reset in the UI */
-	virtual void ResetToDefaultValue();
+	/** Called when we want to restore default values. When the player presses reset in the UI. bForce can be used to ignore the disqualifiers and restrictions on resetting the option value, similar to how ForceSetValue works */
+	virtual void ResetToDefaultValue(bool bForce = false);
 	/** Clear out pending changes. Triggers no updates */ 
 	virtual void ClearPendingChanges();
 	/** Mark as dirty. This means the value will be saved */ 
@@ -174,7 +174,7 @@ public:
 	virtual void OnPreRestartGame() override;
 	virtual void ForceSetValue(FVariant newValue, bool bClearPendingValue) override;
 	virtual bool ForceSetPendingAppliedValue(FVariant newValue) override;
-	virtual void ResetToDefaultValue() override;
+	virtual void ResetToDefaultValue(bool bForce) override;
 	virtual FVariant GetDisplayValue() const override;
 	virtual bool HasGameRestartRequiredChanges() const override;
 	virtual FVariant GetValueToSave() const override;
@@ -194,7 +194,7 @@ public:
 	virtual void OnPreSessionRestart() override;
 	virtual void ForceSetValue(FVariant newValue, bool bClearPendingValue) override;
 	virtual bool ForceSetPendingAppliedValue(FVariant newValue) override;
-	virtual void ResetToDefaultValue() override;
+	virtual void ResetToDefaultValue(bool bForce) override;
 	virtual FVariant GetDisplayValue() const override;
 	virtual bool HasSessionRestartRequiredChanges() const override;
 	virtual FVariant GetValueToSave() const override;

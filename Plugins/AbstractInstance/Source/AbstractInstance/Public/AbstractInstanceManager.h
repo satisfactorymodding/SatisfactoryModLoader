@@ -96,7 +96,7 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	static void SetInstancedStatic( AActor* OwnerActor, const FTransform& ActorTransform, const UAbstractInstanceDataObject* InstanceData, TArray<FInstanceHandle*>& OutHandle, bool bInitializeHidden = false, TSubclassOf< class AActor > buildableClass = nullptr );
+	static void SetInstancedStatic( AActor* OwnerActor, const FTransform& ActorTransform, const UAbstractInstanceDataObject* InstanceData, TArray<FInstanceHandle*>& OutHandle, bool bInitializeHidden = false );
 	static void SetInstanceFromDataStatic( AActor* OwnerActor, const FTransform& ActorTransform, const FInstanceData& InstanceData, FInstanceHandle* &OutHandle, bool bInitializeHidden = false );
 	void SetInstanced( AActor* OwnerActor, const FTransform& ActorTransform, const FInstanceData& InstanceData, FInstanceHandle* &OutHandle, bool bInitializeHidden = false );
 
@@ -126,7 +126,7 @@ public:
 	void StartDrawDebug(bool bEnabled);
 	void HideAllInstance(bool bIsHidden);
 
-	FORCEINLINE bool CanLazyLoad() const { return bAllowLazySpawn; }
+	FORCEINLINE bool CanLazyLoad() const { return false; }
 	
 protected:	
 	// Called when the game starts or when spawned

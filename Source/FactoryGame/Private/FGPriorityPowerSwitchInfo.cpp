@@ -19,8 +19,8 @@ void AFGPriorityPowerSwitchInfo::GetLifetimeReplicatedProps(TArray< FLifetimePro
 	DOREPLIFETIME(AFGPriorityPowerSwitchInfo, mCircuitGroupID0);
 	DOREPLIFETIME(AFGPriorityPowerSwitchInfo, mCircuitGroupID1);
 }
-void AFGPriorityPowerSwitchInfo::BeginPlay(){ }
-void AFGPriorityPowerSwitchInfo::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGPriorityPowerSwitchInfo::BeginPlay(){ Super::BeginPlay(); }
+void AFGPriorityPowerSwitchInfo::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGPriorityPowerSwitchInfo::Init( AFGBuildablePriorityPowerSwitch* prioritySwitch){ }
 void AFGPriorityPowerSwitchInfo::SetPriority(int32 priority){ }
 void AFGPriorityPowerSwitchInfo::SetSwitchOn(bool on){ }

@@ -42,7 +42,7 @@ void AFGConveyorBeltHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProper
 	DOREPLIFETIME(AFGConveyorBeltHologram, mUpgradedConveyorBelt);
 	DOREPLIFETIME(AFGConveyorBeltHologram, mConnectionArrowComponentDirection);
 }
-void AFGConveyorBeltHologram::BeginPlay(){ }
+void AFGConveyorBeltHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGConveyorBeltHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 void AFGConveyorBeltHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGConveyorBeltHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }

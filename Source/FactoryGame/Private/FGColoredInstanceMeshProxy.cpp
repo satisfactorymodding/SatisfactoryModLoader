@@ -28,7 +28,7 @@ UFGColoredInstanceMeshProxy::UFGColoredInstanceMeshProxy() : Super() {
 	this->PrimaryComponentTick.bAllowTickOnDedicatedServer = false;
 	this->PrimaryComponentTick.TickInterval = 0.0;
 }
-void UFGColoredInstanceMeshProxy::BeginPlay(){ }
+void UFGColoredInstanceMeshProxy::BeginPlay(){ Super::BeginPlay(); }
 void UFGColoredInstanceMeshProxy::OnRegister(){ Super::OnRegister(); }
 void UFGColoredInstanceMeshProxy::OnUnregister(){ Super::OnUnregister(); }
 void UFGColoredInstanceMeshProxy::SetCustomizationData(const FFactoryCustomizationData& customizationData){ }

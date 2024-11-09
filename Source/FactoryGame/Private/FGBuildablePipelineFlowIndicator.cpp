@@ -22,9 +22,9 @@ void AFGBuildablePipelineFlowIndicator::GetLifetimeReplicatedProps(TArray< FLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildablePipelineFlowIndicator, mOwningPipeline);
 }
-void AFGBuildablePipelineFlowIndicator::BeginPlay(){ }
-void AFGBuildablePipelineFlowIndicator::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGBuildablePipelineFlowIndicator::Tick(float dt){ }
+void AFGBuildablePipelineFlowIndicator::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildablePipelineFlowIndicator::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGBuildablePipelineFlowIndicator::Tick(float dt){ Super::Tick(dt); }
 void AFGBuildablePipelineFlowIndicator::GainedSignificance_Implementation(){ }
 void AFGBuildablePipelineFlowIndicator::LostSignificance_Implementation(){ }
 void AFGBuildablePipelineFlowIndicator::GainedSignificance_Native(){ }

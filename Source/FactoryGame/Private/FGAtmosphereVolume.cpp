@@ -199,7 +199,7 @@ AFGAtmosphereVolume::AFGAtmosphereVolume() : Super() {
 	this->mEnableExpandGamut = false;
 	this->mEnableSceneColorTint = false;
 }
-void AFGAtmosphereVolume::BeginPlay(){ }
+void AFGAtmosphereVolume::BeginPlay(){ Super::BeginPlay(); }
 void AFGAtmosphereVolume::PostLoad(){ Super::PostLoad(); }
 void AFGAtmosphereVolume::PostRegisterAllComponents(){ }
 void AFGAtmosphereVolume::PostUnregisterAllComponents(void){ }

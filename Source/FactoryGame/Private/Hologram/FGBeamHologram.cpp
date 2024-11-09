@@ -13,7 +13,7 @@ AFGBeamHologram::AFGBeamHologram() : Super() {
 	this->mNeedsValidFloor = false;
 	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 }
-void AFGBeamHologram::BeginPlay(){ }
+void AFGBeamHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGBeamHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBeamHologram, mCurrentLength);

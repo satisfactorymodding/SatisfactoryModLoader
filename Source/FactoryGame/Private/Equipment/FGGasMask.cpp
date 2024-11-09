@@ -12,7 +12,7 @@ AFGGasMask::AFGGasMask() : Super() {
 void AFGGasMask::UnEquip(){ }
 FFGDynamicStruct AFGGasMask::SaveToItemState_Implementation() const{ return FFGDynamicStruct(); }
 void AFGGasMask::LoadFromItemState_Implementation(const FFGDynamicStruct& itemState){ }
-void AFGGasMask::Tick(const float deltaTime){ }
+void AFGGasMask::Tick(const float deltaTime){ Super::Tick(deltaTime); }
 float AFGGasMask::AdjustDamage_Implementation(const float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ return float(); }
 void AFGGasMask::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

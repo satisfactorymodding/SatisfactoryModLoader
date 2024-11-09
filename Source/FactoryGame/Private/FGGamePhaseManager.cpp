@@ -20,8 +20,8 @@ void AFGGamePhaseManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AFGGamePhaseManager, mIsGameCompleted);
 }
 void AFGGamePhaseManager::PostInitializeComponents(){ Super::PostInitializeComponents(); }
-void AFGGamePhaseManager::BeginPlay(){ }
-void AFGGamePhaseManager::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGGamePhaseManager::BeginPlay(){ Super::BeginPlay(); }
+void AFGGamePhaseManager::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGGamePhaseManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGamePhaseManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGamePhaseManager::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

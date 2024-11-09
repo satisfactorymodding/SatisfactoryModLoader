@@ -17,7 +17,7 @@ AFGBuildableLadder::AFGBuildableLadder() : Super() {
 	this->mFrontLadderComponent->SetupAttachment(RootComponent);
 	this->mBackLadderComponent->SetupAttachment(RootComponent);
 }
-void AFGBuildableLadder::BeginPlay(){ }
+void AFGBuildableLadder::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableLadder::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableLadder, mNumSegments);

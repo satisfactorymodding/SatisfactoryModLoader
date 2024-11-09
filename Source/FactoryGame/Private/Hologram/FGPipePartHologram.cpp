@@ -11,7 +11,7 @@ AFGPipePartHologram::AFGPipePartHologram() : Super() {
 	this->mSupportMeshComponent = nullptr;
 	this->mSupportLengthComponent = nullptr;
 }
-void AFGPipePartHologram::BeginPlay(){ }
+void AFGPipePartHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGPipePartHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPipePartHologram, mSupportMesh);

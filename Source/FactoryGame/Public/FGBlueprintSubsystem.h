@@ -655,6 +655,10 @@ public:
 	
 private:
 	friend class UFGBlueprintRemoteCallObject;
+
+	// Blocks collection of undesired classes on blueprint serialization
+	UPROPERTY( EditDefaultsOnly )
+	TArray< TSubclassOf< UObject > > mBlacklistedBlueprintCollectClasses;
 	
 	///
 	///	Begin Blueprint Asset Declarations

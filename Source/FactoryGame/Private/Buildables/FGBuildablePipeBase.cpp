@@ -26,8 +26,8 @@ void AFGBuildablePipeBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 	DOREPLIFETIME(AFGBuildablePipeBase, mSplineData);
 	DOREPLIFETIME(AFGBuildablePipeBase, mSnappedPassthroughs);
 }
-void AFGBuildablePipeBase::BeginPlay(){ }
-void AFGBuildablePipeBase::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildablePipeBase::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildablePipeBase::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 int32 AFGBuildablePipeBase::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 bool AFGBuildablePipeBase::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildablePipeBase::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }

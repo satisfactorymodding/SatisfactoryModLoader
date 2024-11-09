@@ -203,6 +203,8 @@ TSubclassOf<UFGSchematic> UFGItemDescriptor::GetRequiredSchematicToScan(TSubclas
 FText UFGItemDescriptor::GetScannerDisplayText(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 FColor UFGItemDescriptor::GetScannerLightColor(TSubclassOf< UFGItemDescriptor > inClass){ return FColor(); }
 bool UFGItemDescriptor::NeedsPickupMapMarker(TSubclassOf<UFGItemDescriptor> inClass){ return bool(); }
+void UFGItemDescriptor::SetItemEncountered(TSubclassOf<UFGItemDescriptor> Class, int32 Index){ }
+int32 UFGItemDescriptor::IsItemEncountered(TSubclassOf<UFGItemDescriptor> Class){ return int32(); }
 bool UFGItemDescriptor::CanItemBePickedup(TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
 bool UFGItemDescriptor::CanItemBePickedup(UFGItemDescriptor* inClass){ return bool(); }
 FText UFGItemDescriptor::GetItemNameInternal() const{ return FText(); }

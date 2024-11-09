@@ -13,7 +13,7 @@ AFGWorldEventSubsystem::AFGWorldEventSubsystem() : Super() {
 	this->mAllowAutomaticWorldEvents = true;
 	this->mAutomaticWorldEventActiveLimit = 3;
 }
-void AFGWorldEventSubsystem::Tick(float dt){ }
+void AFGWorldEventSubsystem::Tick(float dt){ Super::Tick(dt); }
 void AFGWorldEventSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGWorldEventSubsystem, mWorldEventActors);

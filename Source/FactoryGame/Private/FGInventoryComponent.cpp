@@ -49,7 +49,7 @@ bool UFGInventoryComponent::NeedTransform_Implementation(){ return bool(); }
 bool UFGInventoryComponent::ShouldSave_Implementation() const{ return bool(); }
 void UFGInventoryComponent::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
 bool UFGInventoryComponent::IsPropertyRelevantForConnection(UNetConnection* netConnection, const FProperty* property) const{ return bool(); }
-void UFGInventoryComponent::BeginPlay(){ }
+void UFGInventoryComponent::BeginPlay(){ Super::BeginPlay(); }
 void UFGInventoryComponent::SetDefaultSize(int32 defaultSize){ }
 void UFGInventoryComponent::Resize(int32 newSize){ }
 void UFGInventoryComponent::SortInventory(){ }

@@ -39,8 +39,8 @@ void AFGWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifet
 	DOREPLIFETIME(AFGWeapon, mCurrentAmmunitionClass);
 	DOREPLIFETIME(AFGWeapon, mCurrentMagazineObject);
 }
-void AFGWeapon::BeginPlay(){ }
-void AFGWeapon::Tick(float DeltaSeconds){ }
+void AFGWeapon::BeginPlay(){ Super::BeginPlay(); }
+void AFGWeapon::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGWeapon::LoadFromItemState_Implementation(const FFGDynamicStruct& itemState){ }
 FFGDynamicStruct AFGWeapon::SaveToItemState_Implementation() const{ return FFGDynamicStruct(); }
 bool AFGWeapon::CanPickBestUsableActor_Implementation() const{ return bool(); }

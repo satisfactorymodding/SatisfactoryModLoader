@@ -43,11 +43,15 @@ UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindCompatibleOver
 		const FVector& location,
 		const AActor* priorityActor,
 		float radius){ return nullptr; }
+
+UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindOverlappingConnections(UWorld* world,
+	const FVector& location, const AActor* priorityActor, float radius, EFactoryConnectionConnector connector,
+	EFactoryConnectionDirection direction, const TArray<TSubclassOf<class AFGBuildable>>& buildableClassFilter){ return nullptr; }
 int32 UFGFactoryConnectionComponent::FindAllOverlappingConnections(TArray< UFGFactoryConnectionComponent* > out_Connection,
-		UWorld* world,
-		const FVector& location,
-		float radius,
-		EFactoryConnectionConnector connector,
-		EFactoryConnectionDirection direction){ return int32(); }
+                                                                   UWorld* world,
+                                                                   const FVector& location,
+                                                                   float radius,
+                                                                   EFactoryConnectionConnector connector,
+                                                                   EFactoryConnectionDirection direction){ return int32(); }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::CheckIfSnapOnlyIsBlockedByOtherConnection(UFGFactoryConnectionComponent* connectionToCheck,
 		const TArray< FOverlapResult >& potentialBlockers){ return nullptr; }

@@ -21,3 +21,4 @@ void FFGRequestBodyPart::AppendBodyHeaders(const TMap<FString, TArray<FString>>&
 FString FFGRequestBodyPart::GetContentDisposition() const{ return FString(); }
 FFGRequestBodyPart* FFGMultipartDataWrapper::operator->() const{ return nullptr; }
 FFGRequestBodyPart& FFGMultipartDataWrapper::operator*() const{ return *MultipartData; }
+FFGMultipartDataWrapper::operator FFGRequestBodyPart*() const { return nullptr; }

@@ -23,8 +23,8 @@ void AFGFreightWagon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGFreightWagon, mCargoMeshComponentDerailedTransform);
 }
-void AFGFreightWagon::BeginPlay(){ }
-void AFGFreightWagon::Tick(float dt){ }
+void AFGFreightWagon::BeginPlay(){ Super::BeginPlay(); }
+void AFGFreightWagon::Tick(float dt){ Super::Tick(dt); }
 UPawnMovementComponent* AFGFreightWagon::GetMovementComponent() const{ return nullptr; }
 UFGRailroadVehicleMovementComponent* AFGFreightWagon::GetRailroadVehicleMovementComponent() const{ return nullptr; }
 FText AFGFreightWagon::GetLookAtDecription_Implementation(AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }

@@ -18,7 +18,7 @@ void AFGResourceMiner::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGResourceMiner, mActiveResourceNode);
 }
-void AFGResourceMiner::Tick(float DeltaSeconds){ }
+void AFGResourceMiner::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGResourceMiner::UnEquip(){ }
 void AFGResourceMiner::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
 void AFGResourceMiner::ForceStopMining(){ }

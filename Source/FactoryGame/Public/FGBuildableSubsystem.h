@@ -383,9 +383,12 @@ public:
 	/** Preview Customization application on Buildable/Actor */
 	void ApplyCustomizationPreview( class IFGColorInterface* colorInterface, const FFactoryCustomizationData& previewData );
 
-	/** Clear a single customization preview */
+	/** Clear a single customization preview (apply back old data) */
 	void ClearCustomizationPreview( class IFGColorInterface* colorInterface );
 
+	/** Remove a customization preview and do not apply back the data */
+	void ClearCustomizationPreviewNoApply( class IFGColorInterface* colorInterface);
+	
 	/** Clear all previewed customizations in the cached buildable map */
 	void ClearAllCustomizationPreviews();
 	

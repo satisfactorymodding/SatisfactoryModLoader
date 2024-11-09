@@ -47,14 +47,17 @@ void AFGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AFGPlayerController, mDedicatedServerPrivilegeLevel);
 }
 void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents(); }
-void AFGPlayerController::BeginPlay(){ }
-void AFGPlayerController::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGPlayerController::Destroyed(){ }
+void AFGPlayerController::BeginPlay(){ Super::BeginPlay(); }
+void AFGPlayerController::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGPlayerController::Destroyed(){ Super::Destroyed(); }
 void AFGPlayerController::PostRenderFor(APlayerController* PC, UCanvas* Canvas, FVector CameraPosition, FVector CameraDir){ }
 void AFGPlayerController::OnRep_PlayerState(){ }
 void AFGPlayerController::SetPawn(APawn* inPawn){ }
 void AFGPlayerController::OnPossess(APawn* aPawn){ }
 void AFGPlayerController::OnUnPossess(){ }
+void AFGPlayerController::SetIgnoreMoveInput(bool bNewMoveInput){ }
+void AFGPlayerController::ResetIgnoreMoveInput(){ }
+void AFGPlayerController::ResetIgnoreInputFlags(){ }
 void AFGPlayerController::PawnLeavingGame(){ }
 void AFGPlayerController::PlayerTick(float DeltaTime){ }
 void AFGPlayerController::PreClientTravel(const FString& pendingURL, ETravelType travelType, bool isSeamlessTravel){ }

@@ -366,14 +366,13 @@ public:
 		return bOutSuccess;
 	}
 
-	UPROPERTY( SaveGame, EditAnywhere, NotReplicated )
+	UPROPERTY( SaveGame, EditAnywhere, BlueprintReadWrite, NotReplicated, Category = "Customization" )
 	FLinearColor PrimaryColor;
 
-	UPROPERTY( SaveGame, EditAnywhere, NotReplicated )
+	UPROPERTY( SaveGame, EditAnywhere, BlueprintReadWrite, NotReplicated, Category = "Customization" )
 	FLinearColor SecondaryColor;
 
-	
-	UPROPERTY( SaveGame, EditAnywhere, NotReplicated)
+	UPROPERTY( SaveGame, EditAnywhere, BlueprintReadWrite, NotReplicated, Category = "Customization" )
 	TSubclassOf<UFGFactoryCustomizationDescriptor_PaintFinish> PaintFinish;
 };
 
@@ -445,22 +444,22 @@ struct FACTORYGAME_API FFactoryCustomizationData
 		return !( *this == other );
 	}
 
-	UPROPERTY( SaveGame, EditAnywhere, Category = "Customization" )
+	UPROPERTY( SaveGame, EditAnywhere, BlueprintReadWrite, Category = "Customization" )
 	TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > SwatchDesc;
 	
-	UPROPERTY( SaveGame, EditAnywhere, Category = "Customization" )
+	UPROPERTY( SaveGame, EditAnywhere, BlueprintReadWrite, Category = "Customization" )
 	TSubclassOf< class UFGFactoryCustomizationDescriptor_Pattern > PatternDesc;
 
-	UPROPERTY( SaveGame, EditAnywhere, Category = "Customization" )
+	UPROPERTY( SaveGame, EditAnywhere, BlueprintReadWrite, Category = "Customization" )
 	TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > MaterialDesc;
 
-	UPROPERTY( SaveGame, EditAnywhere, Category = "Customization" )
+	UPROPERTY( SaveGame, EditAnywhere, BlueprintReadWrite, Category = "Customization" )
 	TSubclassOf< class UFGFactoryCustomizationDescriptor_Skin > SkinDesc;
 	
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "Customization" )
 	FFactoryCustomizationColorSlot OverrideColorData;
 
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "Customization" )
 	uint8 PatternRotation;
 
 	/**
@@ -493,6 +492,3 @@ struct FACTORYGAME_API FFactoryCustomizationData
 	UPROPERTY( NotReplicated )
 	uint8 HasPower;
 };
-
-
-

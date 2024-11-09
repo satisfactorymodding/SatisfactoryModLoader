@@ -21,7 +21,7 @@ void AFGJetPack::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLife
 	DOREPLIFETIME(AFGJetPack, mSelectedFuelType);
 	DOREPLIFETIME(AFGJetPack, mCurrentFuelType);
 }
-void AFGJetPack::Tick(const float deltaTime){ }
+void AFGJetPack::Tick(const float deltaTime){ Super::Tick(deltaTime); }
 void AFGJetPack::LoadFromItemState_Implementation(const FFGDynamicStruct& itemState){ }
 FFGDynamicStruct AFGJetPack::SaveToItemState_Implementation() const{ return FFGDynamicStruct(); }
 void AFGJetPack::DisableEquipment(){ }

@@ -221,7 +221,7 @@ private:
 	 *                3 OBSERVED
 	 *             BLOCK CONNECTION
 	 */
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, Replicated )
 	TArray< class UFGRailroadTrackConnectionComponent* > mGuardedConnections;
 	UPROPERTY( SaveGame )
 	TArray< class UFGRailroadTrackConnectionComponent* > mObservedConnections;

@@ -87,6 +87,12 @@ public:
 	UStaticMeshComponent* CreateStaticMeshComponent( UObject* Outer ) const;
 };
 
+/** Base class that can be used to store metadata on instance handles */
+struct FInstanceHandleMetadata
+{
+	virtual ~FInstanceHandleMetadata() = default;
+};
+
 USTRUCT( BlueprintType )
 struct ABSTRACTINSTANCE_API FInstanceHandle
 {
@@ -135,8 +141,6 @@ public:
 			HideInstance(bMarkRenderStateDirty);
 		}
 	}
-
-	FORCEINLINE TSubclassOf< AActor > GetInstancedBasedOnClass() { return BuildableClass; }
 	
 	void HideInstance( bool bMarkRenderStateDirty = true );
 	void HideInstance( UHierarchicalInstancedStaticMeshComponent* Hism, int32 Id, bool bMarkRenderStateDirty = true );
@@ -195,12 +199,11 @@ private:
 
 	int32 NumPrimitiveFloatData;
 	
-	UPROPERTY()
-	TSubclassOf< class AActor > BuildableClass;
-	
 	/* Used for hiding */
 	mutable FVector Scale;
-	
+public:
+	/** Metadata set on the instance. Can be used to store additional data associated with the instance handle */
+	TSharedPtr<FInstanceHandleMetadata> Metadata;
 public:
 	
 	FInstanceHandle( uint32 inIndex, uint32 inCollisionID, AActor* inOwner, UHierarchicalInstancedStaticMeshComponent* inInstancedStaticMeshComponent, UInstancedStaticMeshComponent* inBatchCollision )

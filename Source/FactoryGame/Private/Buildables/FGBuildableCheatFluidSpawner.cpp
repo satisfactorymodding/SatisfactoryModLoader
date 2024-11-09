@@ -11,8 +11,8 @@ AFGBuildableCheatFluidSpawner::AFGBuildableCheatFluidSpawner() : Super() {
 	this->mPressure = 0.0;
 	this->mOutputConnection = nullptr;
 }
-void AFGBuildableCheatFluidSpawner::BeginPlay(){ }
-void AFGBuildableCheatFluidSpawner::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildableCheatFluidSpawner::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableCheatFluidSpawner::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableCheatFluidSpawner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableCheatFluidSpawner, mResourceType);

@@ -16,6 +16,7 @@ AFGCircuitSubsystem::AFGCircuitSubsystem() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bReplicateUsingRegisteredSubObjectList = true;
 }
+void AFGCircuitSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGCircuitSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGCircuitSubsystem, mReplicatedCircuits);
@@ -33,8 +34,8 @@ bool AFGCircuitSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGCircuitSubsystem::ShouldSave_Implementation() const{ return bool(); }
 void AFGCircuitSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGCircuitSubsystem::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector){ }
-void AFGCircuitSubsystem::BeginPlay(){ }
-void AFGCircuitSubsystem::Tick(float DeltaSeconds){ }
+void AFGCircuitSubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGCircuitSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGCircuitSubsystem::DebugRebuildAll(){ }
 void AFGCircuitSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGCircuitSubsystem::ConnectComponents( UFGCircuitConnectionComponent* first,  UFGCircuitConnectionComponent* second){ }
@@ -51,6 +52,8 @@ TArray< AFGPriorityPowerSwitchInfo* > AFGCircuitSubsystem::PowerCircuit_GetPrior
 void AFGCircuitSubsystem::PowerCircuit_SortPriorityPowerSwitchInfos(TArray< AFGPriorityPowerSwitchInfo* >& infos) const{ }
 void AFGCircuitSubsystem::PowerCircuit_SetPrioritySwitchGroupOn(int32 priority, bool on){ }
 void AFGCircuitSubsystem::Debug_DumpCircuitsToLog(){ }
+void AFGCircuitSubsystem::ClearAllTimers(){ }
+void AFGCircuitSubsystem::StableCircuitCallback(const FPowerCircuitFuseStabilityData circuitStabilityData){ }
 void AFGCircuitSubsystem::OnRep_ReplicatedCircuits(){ }
 int32 AFGCircuitSubsystem::GenerateUniqueCircuitID(){ return int32(); }
 void AFGCircuitSubsystem::MergeCircuits(int32 first, int32 second){ }

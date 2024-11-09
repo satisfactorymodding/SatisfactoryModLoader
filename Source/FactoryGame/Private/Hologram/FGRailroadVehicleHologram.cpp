@@ -3,7 +3,7 @@
 #include "Hologram/FGRailroadVehicleHologram.h"
 #include "Net/UnrealNetwork.h"
 
-void AFGRailroadVehicleHologram::BeginPlay(){ }
+void AFGRailroadVehicleHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGRailroadVehicleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGRailroadVehicleHologram, mTrackPosition);

@@ -3,6 +3,8 @@
 #include "FGResearchManager.h"
 #include "Net/UnrealNetwork.h"
 
+bool IsValidForLoad(const FResearchData& element){ return bool(); }
+bool IsValidForLoad(const FResearchTime& element){ return bool(); }
 bool FHardDriveData::operator==(const FHardDriveData& other) const{ return bool(); }
 void UFGResearchManagerRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -31,7 +33,7 @@ void AFGResearchManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AFGResearchManager, mCanRerollHardDrives);
 }
 void AFGResearchManager::PreInitializeComponents(){ Super::PreInitializeComponents(); }
-void AFGResearchManager::BeginPlay(){ }
+void AFGResearchManager::BeginPlay(){ Super::BeginPlay(); }
 AFGResearchManager* AFGResearchManager::Get( UWorld* world){ return nullptr; }
 AFGResearchManager* AFGResearchManager::Get( UObject* worldContext){ return nullptr; }
 void AFGResearchManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

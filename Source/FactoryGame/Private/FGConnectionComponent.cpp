@@ -9,3 +9,4 @@ void UFGConnectionComponent::PostLoadGame_Implementation(int32 saveVersion, int3
 void UFGConnectionComponent::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool UFGConnectionComponent::NeedTransform_Implementation(){ return bool(); }
 bool UFGConnectionComponent::ShouldSave_Implementation() const{ return bool(); }
+class AFGBuildableBlueprintDesigner* UFGConnectionComponent::GetOuterBlueprintDesigner() const{ return nullptr; }

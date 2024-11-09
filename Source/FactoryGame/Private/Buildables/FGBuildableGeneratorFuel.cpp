@@ -27,7 +27,7 @@ void AFGBuildableGeneratorFuel::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 	DOREPLIFETIME(AFGBuildableGeneratorFuel, mCurrentFuelClass);
 }
 void AFGBuildableGeneratorFuel::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
-void AFGBuildableGeneratorFuel::BeginPlay(){ }
+void AFGBuildableGeneratorFuel::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableGeneratorFuel::PostLoad(){ Super::PostLoad(); }
 void AFGBuildableGeneratorFuel::Factory_Tick(float dt){ }
 bool AFGBuildableGeneratorFuel::IsValidFuel(TSubclassOf<  UFGItemDescriptor > resource) const{ return bool(); }

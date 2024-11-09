@@ -29,8 +29,8 @@ AFGLocomotive::AFGLocomotive() : Super() {
 	this->mHeadlightModes[2].Intensity = 0.0;;
 	this->mLocomotiveMenuWidgetClass = nullptr;
 }
-void AFGLocomotive::BeginPlay(){ }
-void AFGLocomotive::Tick(float dt){ }
+void AFGLocomotive::BeginPlay(){ Super::BeginPlay(); }
+void AFGLocomotive::Tick(float dt){ Super::Tick(dt); }
 void AFGLocomotive::PossessedBy(AController* newController){ }
 void AFGLocomotive::UnPossessed(){ }
 bool AFGLocomotive::DriverEnter( AFGCharacterPlayer* driver){ return bool(); }

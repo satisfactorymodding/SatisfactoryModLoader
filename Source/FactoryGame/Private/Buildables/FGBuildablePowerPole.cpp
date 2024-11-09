@@ -17,7 +17,7 @@ AFGBuildablePowerPole::AFGBuildablePowerPole() : Super() {
 	this->mInteractionRegisterPlayerWithCircuit = true;
 	this->mMeshComponentProxy->SetupAttachment(RootComponent);
 }
-void AFGBuildablePowerPole::BeginPlay(){ }
+void AFGBuildablePowerPole::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePowerPole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildablePowerPole, mHasPower);

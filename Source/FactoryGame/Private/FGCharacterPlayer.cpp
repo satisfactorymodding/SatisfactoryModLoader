@@ -197,11 +197,11 @@ void AFGCharacterPlayer::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 }
 void AFGCharacterPlayer::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGCharacterPlayer::PostInitializeComponents(){ Super::PostInitializeComponents(); }
-void AFGCharacterPlayer::BeginPlay(){ }
-void AFGCharacterPlayer::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGCharacterPlayer::Tick(float deltaTime){ }
+void AFGCharacterPlayer::BeginPlay(){ Super::BeginPlay(); }
+void AFGCharacterPlayer::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGCharacterPlayer::Tick(float deltaTime){ Super::Tick(deltaTime); }
 bool AFGCharacterPlayer::CanBeBaseForCharacter(APawn* Pawn) const{ return bool(); }
-void AFGCharacterPlayer::Destroyed(){ }
+void AFGCharacterPlayer::Destroyed(){ Super::Destroyed(); }
 bool AFGCharacterPlayer::IsLocallyControlled() const{ return bool(); }
 void AFGCharacterPlayer::PossessedBy(AController* newController){ }
 void AFGCharacterPlayer::UnPossessed(){ }
@@ -429,6 +429,7 @@ void AFGCharacterPlayer::OnDisabledInputGateChanged_Implementation(const FDisabl
 void AFGCharacterPlayer::StartPortal(AFGBuildablePortalBase* sourcePortal, AFGBuildablePortalBase* destPortal){ }
 void AFGCharacterPlayer::OnPortalStateChanged_Implementation(const FFGPlayerPortalData& newValue){ }
 void AFGCharacterPlayer::SnapPlayerToPortalExitLocation(){ }
+struct FInventoryToRespawnWith AFGCharacterPlayer::SpawnDeathCrate(const EPlayerKeepInventoryMode& keepInventoryMode, UFGInventoryComponent* inventory){ return FInventoryToRespawnWith(); }
 void AFGCharacterPlayer::OnItemAddedToInventory(TSubclassOf< UFGItemDescriptor > itemClass, const int32 numAdded, UFGInventoryComponent* targetInventory){ }
 void AFGCharacterPlayer::OnInventorySlotUpdated(const int32 Index){ }
 void AFGCharacterPlayer::OnCentralStorageItemAmountUpdated(const TSubclassOf<UFGItemDescriptor> itemClass, int32 newAmount){ }

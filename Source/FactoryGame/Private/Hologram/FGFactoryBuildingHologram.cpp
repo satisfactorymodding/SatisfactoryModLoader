@@ -10,7 +10,7 @@ AFGFactoryBuildingHologram::AFGFactoryBuildingHologram() : Super() {
 	this->mBuildModeZoop = nullptr;
 	this->mBuildModeCategory = EHologramBuildModeCategory::HBMC_Architecture;
 }
-void AFGFactoryBuildingHologram::BeginPlay(){ }
+void AFGFactoryBuildingHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGFactoryBuildingHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGFactoryBuildingHologram, mDesiredZoop);

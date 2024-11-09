@@ -5,4 +5,9 @@
 #include "GameplayTagContainerViewModel.h"
 
 UOnlineUserBackendLink::UOnlineUserBackendLink(){ }
+const FPlayerAvatar& UOnlineUserBackendLink::GetAvatar() const{ return *(new FPlayerAvatar()); }
+const FString& UOnlineUserBackendLink::GetNickname() const{ return *(new FString()); }
+UE::Online::FAccountId UOnlineUserBackendLink::GetAccountId() const{ return UE::Online::FAccountId(); }
+UOnlineIntegrationBackend* UOnlineUserBackendLink::GetOnlineBackend() const{ return nullptr; }
+UOnlineUserInfo* UOnlineUserBackendLink::GetOnlineUser() const{ return nullptr; }
 const UGameplayTagContainerViewModel& UOnlineUserBackendLink::GetTagContainer() const{ return *NewObject<UGameplayTagContainerViewModel>(); }

@@ -2,5 +2,6 @@
 
 #include "Atmosphere/BiomeHelpers.h"
 
+void FBiomeHelpers::GetExponentialFogSettings(UFGBiome* biome, float atTime, struct FExponentialFogSettings& out_settings){ }
 void FBiomeHelpers::GetSkySphereSettings(UFGBiome *biome, float atTime,  FSkySphereSettings& out_settings){ }
 void FBiomeHelpers::GetAtmosphereSettings(UFGBiome *biome, float atTime,  FSkyAtmosphereSettings& out_settings){ }

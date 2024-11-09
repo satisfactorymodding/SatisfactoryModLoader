@@ -83,9 +83,9 @@ void AFGBuildableSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32
 void AFGBuildableSubsystem::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGBuildableSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGBuildableSubsystem::ShouldSave_Implementation() const{ return bool(); }
-void AFGBuildableSubsystem::BeginPlay(){ }
-void AFGBuildableSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGBuildableSubsystem::Tick(float dt){ }
+void AFGBuildableSubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableSubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGBuildableSubsystem::Tick(float dt){ Super::Tick(dt); }
 void AFGBuildableSubsystem::TickFactory(float dt, ELevelTick TickType){ }
 AFGBuildableSubsystem* AFGBuildableSubsystem::Get(UWorld* world){ return nullptr; }
 AFGBuildableSubsystem* AFGBuildableSubsystem::Get(UObject* worldContext){ return nullptr; }
@@ -130,6 +130,7 @@ void AFGBuildableSubsystem::RemovePendingConstructionHologram(FNetConstructionID
 void AFGBuildableSubsystem::RemovePendingConstructionHologramForLightweight(uint16 clientId){ }
 void AFGBuildableSubsystem::ApplyCustomizationPreview( IFGColorInterface* colorInterface, const FFactoryCustomizationData& previewData){ }
 void AFGBuildableSubsystem::ClearCustomizationPreview( IFGColorInterface* colorInterface){ }
+void AFGBuildableSubsystem::ClearCustomizationPreviewNoApply(class IFGColorInterface* colorInterface){ }
 void AFGBuildableSubsystem::ClearAllCustomizationPreviews(){ }
 AFGPlayerController* AFGBuildableSubsystem::GetLocalPlayerController() const{ return nullptr; }
 float AFGBuildableSubsystem::GetDistanceSqToBoundingBox(const FVector& point,  AFGBuildable* buildable) const{ return float(); }

@@ -2,4 +2,4 @@
 
 #include "FGPowerCircuitWidget.h"
 
-void UFGPowerCircuitWidget::NativeTick(const FGeometry& myGeometry, float inDeltaTime){ }
+void UFGPowerCircuitWidget::NativeTick(const FGeometry& myGeometry, float inDeltaTime){ Super::NativeTick(myGeometry, inDeltaTime); }

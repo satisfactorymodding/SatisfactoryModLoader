@@ -399,7 +399,7 @@ public:
 
 	/** Sets whether the hologram is currently residing inside a blueprint designer */
 	void SetInsideBlueprintDesigner( class AFGBuildableBlueprintDesigner* designer );
-	class AFGBuildableBlueprintDesigner* GetBlueprintDesigner();
+	class AFGBuildableBlueprintDesigner* GetBlueprintDesigner() const;
 
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	virtual bool CanLockHologram() const { return mCanLockHologram; }
@@ -613,6 +613,12 @@ protected:
 	TArray< FFGClearanceData > mClearanceData;
 
 	UPROPERTY()
+	class UStaticMeshComponent* mClearanceSnapMeshVisualization;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	bool mCreateClearanceSnapMeshVisualization;
+
+	UPROPERTY()
 	TMap< AActor*, EClearanceOverlapResult > mCachedClearanceOverlapResults;
 
 	/** Clearance detector box. Used to detect nearby clearances an display them during the build steps */
@@ -701,7 +707,7 @@ protected:
 	TArray< TSubclassOf< class UFGConstructDisqualifier > > mConstructDisqualifiers;
 	
 	/** Tracks the blueprint designer this hologram resides inside of */
-	UPROPERTY()
+	UPROPERTY( CustomSerialization )
 	class AFGBuildableBlueprintDesigner* mBlueprintDesigner;
 	
 	/** Special override to allow certain buildables to intersect with the blueprint designer when theyre at the very edge (walls, poles) */

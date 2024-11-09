@@ -29,7 +29,7 @@ AFGBuildableTrainPlatform::AFGBuildableTrainPlatform() : Super() {
 	this->mPlatformConnection0->SetupAttachment(RootComponent);
 	this->mPlatformConnection1->SetupAttachment(RootComponent);
 }
-void AFGBuildableTrainPlatform::BeginPlay(){ }
+void AFGBuildableTrainPlatform::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableTrainPlatform::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableTrainPlatform, mRailroadTrack);

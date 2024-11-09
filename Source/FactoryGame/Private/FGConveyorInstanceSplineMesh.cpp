@@ -2,9 +2,9 @@
 
 #include "FGConveyorInstanceSplineMesh.h"
 
-void UFGConveyorInstancedSplineMeshComponent::BeginPlay(){ }
+void UFGConveyorInstancedSplineMeshComponent::BeginPlay(){ Super::BeginPlay(); }
 void UFGConveyorInstancedSplineMeshComponent::ReportVisibility() const{ }
-void UFGConveyorLiftVisibilityMesh::BeginPlay(){ }
+void UFGConveyorLiftVisibilityMesh::BeginPlay(){ Super::BeginPlay(); }
 void UFGConveyorLiftVisibilityMesh::ReportVisibility() const{ }
-void UFGConveyorBeltVisibilityMesh::BeginPlay(){ }
+void UFGConveyorBeltVisibilityMesh::BeginPlay(){ Super::BeginPlay(); }
 void UFGConveyorBeltVisibilityMesh::ReportVisibility() const{ }

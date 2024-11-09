@@ -2,4 +2,4 @@
 
 #include "Buildables/FGBuildableWindTurbine.h"
 
-void AFGBuildableWindTurbine::BeginPlay(){ }
+void AFGBuildableWindTurbine::BeginPlay(){ Super::BeginPlay(); }

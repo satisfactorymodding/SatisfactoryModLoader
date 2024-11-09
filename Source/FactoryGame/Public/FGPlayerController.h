@@ -67,7 +67,9 @@ public:
 	virtual void SetPawn( APawn* inPawn ) override;
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void OnUnPossess() override;
-
+	virtual void SetIgnoreMoveInput( bool bNewMoveInput ) override;
+	virtual void ResetIgnoreMoveInput() override;
+	virtual void ResetIgnoreInputFlags() override;
 	// End AController interface
 
 	// Begin APlayerController interface
@@ -832,6 +834,9 @@ private:
 
 	/** Time left until next tick */
 	float mMusicPlayerTickInterval;
+
+	bool mClipboardCopyPressed;
+	bool mClipboardPastePressed;
 
 	/** List of music player to keep track of  */
 	UPROPERTY()

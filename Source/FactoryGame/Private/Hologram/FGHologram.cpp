@@ -55,8 +55,8 @@ TSubclassOf< class UFGItemDescriptor > AFGHologram::GetItemDescriptor() const{ r
 void AFGHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGHologram::PreConstructMessageSerialization(){ }
 void AFGHologram::PostConstructMessageDeserialization(){ }
-void AFGHologram::BeginPlay(){ }
-void AFGHologram::Destroyed(){ }
+void AFGHologram::BeginPlay(){ Super::BeginPlay(); }
+void AFGHologram::Destroyed(){ Super::Destroyed(); }
 void AFGHologram::SetActorHiddenInGame(bool newHidden){ }
 void AFGHologram::OnNearbyBuildableOverlapBegin( AFGBuildable* buildable){ }
 void AFGHologram::OnNearbyBuildableOverlapEnd( AFGBuildable* buildable){ }
@@ -107,7 +107,7 @@ void AFGHologram::UpdateRotationValuesFromTransform(){ }
 void AFGHologram::SetBuildClass(TSubclassOf<  AActor > buildClass){ }
 TSubclassOf< AActor > AFGHologram::GetActorClass() const{ return TSubclassOf<AActor>(); }
 void AFGHologram::SetInsideBlueprintDesigner( AFGBuildableBlueprintDesigner* designer){ }
-AFGBuildableBlueprintDesigner* AFGHologram::GetBlueprintDesigner(){ return nullptr; }
+AFGBuildableBlueprintDesigner* AFGHologram::GetBlueprintDesigner() const{ return nullptr; }
 bool AFGHologram::CanNudgeHologram() const{ return bool(); }
 void AFGHologram::LockHologramPosition(bool lock){ }
 void AFGHologram::SetNudgeOffset(const FVector& NewNudgeOffset){ }

@@ -15,7 +15,7 @@ AFGRenderTargetStage::AFGRenderTargetStage() : Super() {
 	this->mSceneCaptureComponent->SetupAttachment(RootComponent);
 	this->mStage->SetupAttachment(RootComponent);
 }
-void AFGRenderTargetStage::BeginPlay(){ }
+void AFGRenderTargetStage::BeginPlay(){ Super::BeginPlay(); }
 void AFGRenderTargetStage::BeginCapture(){ }
 void AFGRenderTargetStage::EndCapture(){ }
 void AFGRenderTargetStage::CaptureOnce(){ }

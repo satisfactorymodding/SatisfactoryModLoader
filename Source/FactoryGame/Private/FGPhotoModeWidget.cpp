@@ -5,8 +5,8 @@
 UFGPhotoModeWidget::UFGPhotoModeWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->bIsFocusable = true;
 }
-void UFGPhotoModeWidget::NativeConstruct(){ }
-void UFGPhotoModeWidget::NativeDestruct(){ }
+void UFGPhotoModeWidget::NativeConstruct(){ Super::NativeConstruct(); }
+void UFGPhotoModeWidget::NativeDestruct(){ Super::NativeDestruct(); }
 void UFGPhotoModeWidget::ListenForInput(FInputChord inputkeyChord, TEnumAsByte<EInputEvent> eventType, bool consume, FOnInputAction callback){ }
 void UFGPhotoModeWidget::StopListeningForAllInputs(){ }
 void UFGPhotoModeWidget::ToggleMouseControl(){ }

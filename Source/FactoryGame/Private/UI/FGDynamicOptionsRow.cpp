@@ -2,7 +2,7 @@
 
 #include "UI/FGDynamicOptionsRow.h"
 
-void UFGDynamicOptionsRow::NativePreConstruct(){ }
+void UFGDynamicOptionsRow::NativePreConstruct(){ Super::NativePreConstruct(); }
 void UFGDynamicOptionsRow::InitOptionRow(FOptionRowData optionRowData, TSubclassOf<class UFGOptionsValueController> widgetOptionClass, TScriptInterface<  IFGOptionInterface > optionInterface){ }
 void UFGDynamicOptionsRow::InitOptionRow( UFGUserSetting* userSetting, TScriptInterface<  IFGOptionInterface > optionInterface){ }
 void UFGDynamicOptionsRow::AddSubOption(UFGDynamicOptionsRow* dynamicOptionsRow){ }

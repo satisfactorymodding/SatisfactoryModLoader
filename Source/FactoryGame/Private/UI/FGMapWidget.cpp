@@ -2,8 +2,8 @@
 
 #include "UI/FGMapWidget.h"
 
-void UFGMapWidget::NativeConstruct(){ }
-void UFGMapWidget::NativeDestruct(){ }
+void UFGMapWidget::NativeConstruct(){ Super::NativeConstruct(); }
+void UFGMapWidget::NativeDestruct(){ Super::NativeDestruct(); }
 void UFGMapWidget::UpdateFogOfWarTexture(){ }
 void UFGMapWidget::SetupRepresentationManager(){ }
 void UFGMapWidget::BindActorRepresentationManager( AFGActorRepresentationManager* representationManager){ }

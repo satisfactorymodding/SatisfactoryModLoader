@@ -15,8 +15,8 @@ AFGCreatureSubsystem::AFGCreatureSubsystem() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGCreatureSubsystem::BeginPlay(){ }
-void AFGCreatureSubsystem::Tick(float dt){ }
+void AFGCreatureSubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGCreatureSubsystem::Tick(float dt){ Super::Tick(dt); }
 void AFGCreatureSubsystem::RegisterSpawner( AFGCreatureSpawner* spawner){ }
 void AFGCreatureSubsystem::UnregisterSpawner( AFGCreatureSpawner* spawner){ }
 void AFGCreatureSubsystem::RegisterCreature( AFGCreature* creature){ }
@@ -25,6 +25,7 @@ void AFGCreatureSubsystem::RegisterFlyingBabyCrab( AFGFlyingBabyCrab* babyCrab){
 void AFGCreatureSubsystem::UnregisterFlyingBabyCrab( AFGFlyingBabyCrab* babyCrab){ }
 void AFGCreatureSubsystem::ForceTriggerSpawnersInRange(){ }
 bool AFGCreatureSubsystem::IsProtectedCreature(TSubclassOf<  AFGCreature > creatureClass) const{ return bool(); }
+int32 AFGCreatureSubsystem::GetNumActiveCreatures(bool includePersistent) const{ return int32(); }
 void AFGCreatureSubsystem::SetCreatureStressEnabled(bool enabled){ }
 AFGCreatureSubsystem* AFGCreatureSubsystem::Get(UWorld* world){ return nullptr; }
 AFGCreatureSubsystem* AFGCreatureSubsystem::Get(UObject* worldContext){ return nullptr; }

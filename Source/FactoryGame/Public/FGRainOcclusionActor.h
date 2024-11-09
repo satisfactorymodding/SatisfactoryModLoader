@@ -45,7 +45,7 @@ struct FSimpleComponentInfo
 	float CustomScaleAmount;
 };
 
-struct FSimpleBuildingInfo
+struct FACTORYGAME_API FSimpleBuildingInfo
 {
 	TArray< FSimpleComponentInfo > mComponentData;
 	EFGRainOcclusionShape mOcclusionType;

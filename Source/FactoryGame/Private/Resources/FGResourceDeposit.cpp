@@ -24,7 +24,7 @@ void AFGResourceDeposit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AFGResourceDeposit, mMineAmount);
 }
 void AFGResourceDeposit::PostLoad(){ Super::PostLoad(); }
-void AFGResourceDeposit::BeginPlay(){ }
+void AFGResourceDeposit::BeginPlay(){ Super::BeginPlay(); }
 void AFGResourceDeposit::RollResourceType(){ }
 void AFGResourceDeposit::TrySetDesiredResourceType(){ }
 void AFGResourceDeposit::SetupResourceInfo(){ }

@@ -3,7 +3,7 @@
 #include "FGBackgroundThread.h"
 
 DEFINE_LOG_CATEGORY(LogPoolSystem);
-
+class FFGBackgroundThread* FPoolInstanceBase::GetRunnable(const AActor* owner) const{ return nullptr; }
 bool FPoolInstanceBase::ResolveHitResults(const TArray<FHitResult>& inHits, const TArray<UClass*>& classesToCheckAgainst, FVector& outHitLocation, float& inNearestDistance){ return bool(); }
 void FPoolInstanceComponent::Claim(int32 EntryId){ }
 bool FPoolInstanceComponent::Update(const TArray<FPoolItem*>& entries){ return bool(); }
@@ -51,7 +51,7 @@ void FFGBackgroundThread::DispatchToStatisticsSubsystem(){ }
 void APoolRoot::UpdateBuildingState( AFGBuildable* Building, int32 FlagsToSet){ }
 void APoolRoot::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos){ }
 void APoolRoot::SetFlag(AFGBuildable* Buildable,  int32 Flags){ }
-void APoolRoot::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void APoolRoot::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 UFGPoolableProxyComponentBase::UFGPoolableProxyComponentBase() : Super() {
 	this->bHiddenInGame = true;
 }

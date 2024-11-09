@@ -19,7 +19,7 @@ void AFGBuildableFrackingActivator::GetLifetimeReplicatedProps(TArray<FLifetimeP
 }
 float AFGBuildableFrackingActivator::GetPotentialExtractionPerMinute() const{ return float(); }
 void AFGBuildableFrackingActivator::OnExtractorSet(){ }
-void AFGBuildableFrackingActivator::BeginPlay(){ }
+void AFGBuildableFrackingActivator::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableFrackingActivator::Factory_StartProducing(){ }
 void AFGBuildableFrackingActivator::Factory_TickProducing(float dt){ }
 void AFGBuildableFrackingActivator::Factory_StopProducing(){ }

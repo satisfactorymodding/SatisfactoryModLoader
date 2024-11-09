@@ -19,7 +19,7 @@ AFGAttentionPingActor::AFGAttentionPingActor() : Super() {
 	this->SetReplicatingMovement(true);
 	this->bReplicates = true;
 }
-void AFGAttentionPingActor::BeginPlay(){ }
+void AFGAttentionPingActor::BeginPlay(){ Super::BeginPlay(); }
 void AFGAttentionPingActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGAttentionPingActor, mOwningPlayerState);

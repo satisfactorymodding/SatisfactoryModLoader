@@ -2,6 +2,7 @@
 
 #include "FactoryGame.h"
 #include "Serialization/ArchiveProxy.h"
+#include "Templates/SubclassOf.h"
 
 /**
  * Blueprint Implementation for the "TOC" of a object, that is it's name, class and path, transform and other relevant properties that is need for a object to be spawned.
@@ -19,7 +20,7 @@ public:
 
 	void SetBuildablesBlueprintDesigner( class AFGBuildableBlueprintDesigner* designer) { mDesigner = designer; }
 	void SetSuppressSaveWarnings( const bool suppress ) { mSuppressSaveWarnings = suppress; }
-	
+	void SetBlacklistedForLoadClass( TArray< TSubclassOf< UObject > > blacklisted ) { mBlacklistedFromLoad.Reset(); mBlacklistedFromLoad.Append( blacklisted ); }
 private:
 	/** World to spawn new objects in if loading */
 	class UWorld* mWorld;
@@ -35,5 +36,7 @@ private:
 
 	/** When loading to blueprint world save warnings / errors are expected and that is fine */
 	bool mSuppressSaveWarnings = false;
-};
 
+	/** Taken from the blueprint subsystem, do not create objects of these classes */
+	TArray< TSubclassOf< UObject > > mBlacklistedFromLoad;
+};

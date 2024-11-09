@@ -15,8 +15,8 @@ AFGResourceScanner::AFGResourceScanner() : Super() {
 	this->mNeedsDefaultEquipmentMappingContext = false;
 	this->mArmAnimation = EArmEquipment::AE_ResourceScanner;
 }
-void AFGResourceScanner::BeginPlay(){ }
-void AFGResourceScanner::Tick(float dt){ }
+void AFGResourceScanner::BeginPlay(){ Super::BeginPlay(); }
+void AFGResourceScanner::Tick(float dt){ Super::Tick(dt); }
 void AFGResourceScanner::CreateResourceNodeRepresentations(const FNodeClusterData& cluster){ }
 TArray< TSubclassOf< UFGResourceDescriptor > > AFGResourceScanner::GetScannableResources() const{ return TArray<TSubclassOf<UFGResourceDescriptor> >(); }
 void AFGResourceScanner::SetResourceDescriptorToScanFor(TSubclassOf< UFGResourceDescriptor > inClass){ }

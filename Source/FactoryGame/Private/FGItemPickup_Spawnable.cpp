@@ -12,8 +12,8 @@ AFGItemPickup_Spawnable::AFGItemPickup_Spawnable() : Super() {
 	this->RootComponent = mMeshComponent;
 }
 void AFGItemPickup_Spawnable::PostLoad(){ Super::PostLoad(); }
-void AFGItemPickup_Spawnable::BeginPlay(){ }
-void AFGItemPickup_Spawnable::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGItemPickup_Spawnable::BeginPlay(){ Super::BeginPlay(); }
+void AFGItemPickup_Spawnable::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 bool AFGItemPickup_Spawnable::ShouldSave_Implementation() const{ return bool(); }
 bool AFGItemPickup_Spawnable::NeedTransform_Implementation(){ return bool(); }
 void AFGItemPickup_Spawnable::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }

@@ -32,9 +32,9 @@ void AFGSchematicManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AFGSchematicManager, mShipLandTimeStamp);
 }
 void AFGSchematicManager::PreInitializeComponents(){ Super::PreInitializeComponents(); }
-void AFGSchematicManager::BeginPlay(){ }
-void AFGSchematicManager::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGSchematicManager::Tick(float dt){ }
+void AFGSchematicManager::BeginPlay(){ Super::BeginPlay(); }
+void AFGSchematicManager::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGSchematicManager::Tick(float dt){ Super::Tick(dt); }
 void AFGSchematicManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGSchematicManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGSchematicManager::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

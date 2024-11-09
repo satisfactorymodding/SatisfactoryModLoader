@@ -146,13 +146,19 @@ bool DoesPluginHaveRuntime(const IPlugin& Plugin) {
 	return false;
 }
 
-const TSet<FString> HiddenMods = { TEXT("SMLEditor") };
+static bool IsPluginEditorOnly(const IPlugin& Plugin) {
+    if (TSharedPtr<FJsonObject> Json = Plugin.GetDescriptor().CachedJson) {
+        bool Result = false;
+        return Json->TryGetBoolField("EditorOnly", Result) && Result;
+    }
+    return false;
+}
 
 void SAlpakitModEntryList::LoadMods() {
 	Mods.Empty();
 	const TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
 	for (TSharedRef<IPlugin> Plugin : EnabledPlugins) {
-		if (HiddenMods.Contains(Plugin->GetName())) {
+		if (IsPluginEditorOnly(Plugin.Get())) {
 			continue;
 		}
 

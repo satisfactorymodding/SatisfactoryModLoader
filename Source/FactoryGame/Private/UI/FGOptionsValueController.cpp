@@ -18,6 +18,6 @@ FString UFGOptionsValueController::GetSettingIndentifier() const{ return FString
 TArray<FIntegerSelection> UFGOptionsValueController::GetIntegerSelectionValues() const{ return TArray<FIntegerSelection>(); }
 bool UFGOptionsValueController::GetBlockLastIndexFromManualSelection() const{ return bool(); }
 EOptionType UFGOptionsValueController::GetOptionType() const{ return EOptionType(); }
-void UFGOptionsValueController::NativeConstruct(){ }
+void UFGOptionsValueController::NativeConstruct(){ Super::NativeConstruct(); }
 bool UFGOptionsValueController::GetBoolOptionValue(){ return bool(); }
 FOptionRowData UFGOptionsValueController::GetOptionRowData() const{ return FOptionRowData(); }

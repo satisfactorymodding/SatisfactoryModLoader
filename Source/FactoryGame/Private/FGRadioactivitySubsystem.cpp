@@ -11,8 +11,8 @@ AFGRadioactivitySubsystem::AFGRadioactivitySubsystem() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGRadioactivitySubsystem::BeginPlay(){ }
-void AFGRadioactivitySubsystem::Tick(float dt){ }
+void AFGRadioactivitySubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGRadioactivitySubsystem::Tick(float dt){ Super::Tick(dt); }
 void AFGRadioactivitySubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGRadioactivitySubsystem::OnActorSpawned(AActor* spawnedActor){ }
 void AFGRadioactivitySubsystem::OnActorDestroyed(AActor* destroyedActor){ }

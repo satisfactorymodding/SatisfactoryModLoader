@@ -2,7 +2,7 @@
 
 #include "UI/FGButtonHintBar.h"
 
-void UFGButtonHintBar::NativeConstruct(){ }
+void UFGButtonHintBar::NativeConstruct(){ Super::NativeConstruct(); }
 void UFGButtonHintBar::UpdateButtonHints(const TArray<FFGButtonHintDescription>& buttonHints){ }
 void UFGButtonHintBar::UpdateKeyHintsFromWidgetPath(){ }
 void UFGButtonHintBar::HandleSlateFocusChanging(const FFocusEvent& FocusEvent, const FWeakWidgetPath& OldFocusedWidgetPath, const TSharedPtr<SWidget>& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath, const TSharedPtr<SWidget>& NewFocusedWidget){ }

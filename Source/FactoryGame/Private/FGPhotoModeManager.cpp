@@ -15,8 +15,8 @@ AFGPhotoModeManager::AFGPhotoModeManager() : Super() {
 }
 AFGPhotoModeManager* AFGPhotoModeManager::Get( UWorld* world){ return nullptr; }
 AFGPhotoModeManager* AFGPhotoModeManager::Get( UObject* worldContext){ return nullptr; }
-void AFGPhotoModeManager::BeginPlay(){ }
-void AFGPhotoModeManager::Tick(float DeltaSeconds){ }
+void AFGPhotoModeManager::BeginPlay(){ Super::BeginPlay(); }
+void AFGPhotoModeManager::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGPhotoModeManager::ToggleAdvancedPhotoMode(){ }
 void AFGPhotoModeManager::AddCurrentPlayerLocation(FFrameTime frameTime){ }
 void AFGPhotoModeManager::AddPlayerLocation(FFrameTime frameTime, FVector location){ }

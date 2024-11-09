@@ -62,8 +62,8 @@ void AFGBuildableTrainPlatformCargo::GetLifetimeReplicatedProps(TArray<FLifetime
 	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mIsLoadUnloading);
 }
 void AFGBuildableTrainPlatformCargo::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
-void AFGBuildableTrainPlatformCargo::BeginPlay(){ }
-void AFGBuildableTrainPlatformCargo::Destroyed(){ }
+void AFGBuildableTrainPlatformCargo::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableTrainPlatformCargo::Destroyed(){ Super::Destroyed(); }
 bool AFGBuildableTrainPlatformCargo::Factory_PeekOutput_Implementation(const  UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type) const{ return bool(); }
 bool AFGBuildableTrainPlatformCargo::Factory_GrabOutput_Implementation( UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type){ return bool(); }
 bool AFGBuildableTrainPlatformCargo::Dock( AFGRailroadVehicle* actor){ return bool(); }
@@ -101,6 +101,7 @@ bool AFGBuildableTrainPlatformCargo::CanCompleteDocking(){ return bool(); }
 bool AFGBuildableTrainPlatformCargo::IsLoadUnloadBlockedByNoneFilter(){ return bool(); }
 void AFGBuildableTrainPlatformCargo::UpdateItemTransferRate(int32 numItemsTransfered){ }
 float AFGBuildableTrainPlatformCargo::GetCurrentItemTransferRate(){ return float(); }
+bool AFGBuildableTrainPlatformCargo::ShouldLockIncomingOutgoing() const{ return bool(); }
 void AFGBuildableTrainPlatformCargo::OnRep_SmoothedLoadRate(){ }
 void AFGBuildableTrainPlatformCargo::OnRep_SmoothedUnloadRate(){ }
 FName AFGBuildableTrainPlatformCargo::mMagicBoxComponentName = FName();

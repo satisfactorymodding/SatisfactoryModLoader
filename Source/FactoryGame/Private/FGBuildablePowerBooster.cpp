@@ -20,7 +20,7 @@ void AFGBuildablePowerBooster::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	DOREPLIFETIME(AFGBuildablePowerBooster, mHasFuelCached);
 }
 void AFGBuildablePowerBooster::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
-void AFGBuildablePowerBooster::BeginPlay(){ }
+void AFGBuildablePowerBooster::BeginPlay(){ Super::BeginPlay(); }
 bool AFGBuildablePowerBooster::CanProduce_Implementation() const{ return bool(); }
 float AFGBuildablePowerBooster::GetProductionProgress() const{ return float(); }
 float AFGBuildablePowerBooster::GetProductionCycleTime() const{ return float(); }
