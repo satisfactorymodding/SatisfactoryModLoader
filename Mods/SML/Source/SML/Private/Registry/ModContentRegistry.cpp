@@ -156,13 +156,15 @@ EGameObjectRegistrationFlags FGameObjectRegistryState::GetAllowedNewFlags(UObjec
 
 	// Never allow Removed, since it's handled by MarkObjectAsRemoved
 
+	static FName baseGameProjectName = FApp::GetProjectName();
+
 	EGameObjectRegistrationFlags allowedFlags = EGameObjectRegistrationFlags::None;
 
-	if ( IsBuildIn( Object ) ) {
+	if ( !Registration || Registration->OwnedByModReference == baseGameProjectName ) {
 		allowedFlags |= EGameObjectRegistrationFlags::BuiltIn;
 	}
 
-	if (!Registration || Registration->HasAnyFlags(EGameObjectRegistrationFlags::Unregistered | EGameObjectRegistrationFlags::Implicit))
+	if ( !Registration || Registration->HasAnyFlags(EGameObjectRegistrationFlags::Unregistered | EGameObjectRegistrationFlags::Implicit) )
 	{
 		// Allow Implicit only on unregistered objects, or if it is already set
 		// so that is is kept when re-registering as Implicit
@@ -170,16 +172,6 @@ EGameObjectRegistrationFlags FGameObjectRegistryState::GetAllowedNewFlags(UObjec
 	}
 
 	return allowedFlags;
-}
-
-bool FGameObjectRegistryState::IsBuildIn(UObject* Object) {
-	UPackage* package = Object->GetPackage();
-
-	if ( !IsValid( package ) ) {
-		return false;
-	}
-
-	return package->FileName.ToString().StartsWith("/Game/FactoryGame/");
 }
 
 bool FGameObjectRegistryState::AttemptRegisterObject( FName InRegistrationPluginName, UObject* Object, EGameObjectRegistrationFlags ExtraFlags )
