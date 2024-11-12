@@ -151,17 +151,27 @@ EGameObjectRegistrationFlags FGameObjectRegistryState::GetAllowedNewFlags(UObjec
 	{
 		return EGameObjectRegistrationFlags::None;
 	}
+
 	const FGameObjectRegistration* Registration = FindObjectRegistration( Object );
 
 	// Never allow Removed, since it's handled by MarkObjectAsRemoved
-	
+
+	static FName baseGameProjectName = FApp::GetProjectName();
+
+	EGameObjectRegistrationFlags allowedFlags = EGameObjectRegistrationFlags::None;
+
+	if ( !Registration || Registration->OwnedByModReference == baseGameProjectName ) {
+		allowedFlags |= EGameObjectRegistrationFlags::BuiltIn;
+	}
+
 	if ( !Registration || Registration->HasAnyFlags(EGameObjectRegistrationFlags::Unregistered | EGameObjectRegistrationFlags::Implicit) )
 	{
 		// Allow Implicit only on unregistered objects, or if it is already set
 		// so that is is kept when re-registering as Implicit
-		return EGameObjectRegistrationFlags::Implicit | EGameObjectRegistrationFlags::BuiltIn;
+		allowedFlags |= EGameObjectRegistrationFlags::Implicit;
 	}
-	return EGameObjectRegistrationFlags::BuiltIn;
+
+	return allowedFlags;
 }
 
 bool FGameObjectRegistryState::AttemptRegisterObject( FName InRegistrationPluginName, UObject* Object, EGameObjectRegistrationFlags ExtraFlags )
@@ -323,7 +333,6 @@ void UModContentRegistry::ModifySchematicList(TArray<TSubclassOf<UFGSchematic>>&
 		});
 	}
 }
-
 
 void UModContentRegistry::ModifySchematicListInternal( TArray<TSubclassOf<UFGSchematic>>& RefSchematics )
 {
