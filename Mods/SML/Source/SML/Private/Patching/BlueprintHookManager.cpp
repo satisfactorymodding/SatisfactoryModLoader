@@ -248,7 +248,6 @@ void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFu
 			//For now Kismet Compiler will always generate only one Return node, so all
 			//execution paths will end up either with executing it directly or jumping to it
 			//So we need to hook only in one place to handle all possible execution paths
-			FSMLKismetBytecodeDisassembler Disassembler;
 			ResolvedHookOffset = Disassembler.GetReturnStatementOffset(Function);
 		} else {
 			//Each new offset moves the subsequent code by UBlueprintHookManager::JumpBytesRequired to make room for the hook jump.
