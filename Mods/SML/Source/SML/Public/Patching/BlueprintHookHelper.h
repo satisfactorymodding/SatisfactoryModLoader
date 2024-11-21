@@ -12,13 +12,9 @@ public:
 	FFrame& FramePointer;
 private:
 	int32 ReturnInstructionOffset;
+
 public:
 	FORCEINLINE FBlueprintHookHelper(FFrame& Frame, const int32 MyReturnInstructionOffset) : FramePointer(Frame), ReturnInstructionOffset(MyReturnInstructionOffset) {}
-
-	/**
-	 * Returns object pointer to the object which current function is executed on
-	 */
-	FORCEINLINE UObject* GetContext() const { return FramePointer.Object; }
 
 	/**
 	 * Jumps to function's EX_Return instruction to terminate function execution
@@ -31,23 +27,101 @@ public:
 	}
 
 	/**
+	 * Returns object pointer to the object which current function is executed on
+	 */
+	FORCEINLINE UObject* GetContext() const { return FramePointer.Object; }
+
+private:
+	template<typename T>
+	T* GetContextProperty(const TCHAR* PropertyName) const {
+		UObject* Context = GetContext();
+		UClass* ContextClass = Context->GetClass();
+		FProperty* BaseProperty = ContextClass->FindPropertyByName(PropertyName);
+		fgcheckf(BaseProperty, TEXT("Did not find property %s on Context type %s"), PropertyName, *ContextClass->GetName());
+		T* Property = CastField<T>(BaseProperty);
+		fgcheckf(Property, TEXT("Property %s on Context type %s is not the requested type. Actual type: %s"), PropertyName, *ContextClass->GetName(), *BaseProperty->GetClass()->GetName());
+		return Property;
+	}
+
+public:
+	template<typename T>
+	typename T::TCppType* GetContextVarPtr(const TCHAR* PropertyName, int32 ArrayIndex = 0) const {
+		T* Property = GetContextProperty<T>(PropertyName);
+		return Property->GetPropertyValuePtr_InContainer(GetContext(), ArrayIndex);
+	}
+	
+	template<typename TEnum>
+	TEnum* GetContextVarEnumPtr(const TCHAR* PropertyName, int32 ArrayIndex = 0) const {
+		FEnumProperty* Property = GetContextProperty<FEnumProperty>(PropertyName);
+		// K2 only supports byte enums right now, according to a comment in EdGraphSchema_K2.cpp
+		return (TEnum*)Property->ContainerPtrToValuePtr<uint8>(GetContext(), ArrayIndex);
+	}
+	
+	// Bool properties have unique handling because they don't have a CppType because they can packed into
+	// a single bit and there's no CppType for that, so all reads/modifications have to go through the API
+	bool GetContextVarBool(const TCHAR* PropertyName, int32 ArrayIndex = 0) const {
+		FBoolProperty* Property = GetContextProperty<FBoolProperty>(PropertyName);
+		return Property->GetPropertyValue_InContainer(GetContext(), ArrayIndex);
+	}
+	
+	void SetContextVarBool(const TCHAR* PropertyName, bool Value, int32 ArrayIndex = 0) const {
+		FBoolProperty* Property = GetContextProperty<FBoolProperty>(PropertyName);
+		Property->SetPropertyValue_InContainer(GetContext(), Value, ArrayIndex);
+	}
+
+	/**
 	 * Retrieves local variable pointer from stack frame by the provided name
+	 * This method won't work on bool variables; use GetLocalBoolVar instead
 	 * This method won't work on [out] variables, as these are stored separately from local stack frame
 	 * Passed pointer is guaranteed to be valid for the duration of hook execution
 	 *
-	 * @param ParameterName name of the local variable to retrieve
+	 * @param VariableName name of the local variable to retrieve
 	 * @param ArrayIndex if variable represents a statically sized array, retrieve value at specified index
 	 * @return pointer to the local variable value
 	 * @note Will check false if provided variable name represents an [out] variable
 	 */
 	template<typename T>
-	typename T::TCppType* GetLocalVarPtr(const TCHAR* ParameterName, int32 ArrayIndex = 0) const {
-		T* Property = CastField<T>(FramePointer.Node->FindPropertyByName(ParameterName));
-		check(Property);
-		checkf(!Property->HasAnyPropertyFlags(CPF_OutParm), TEXT("Attempt to use GetLocalVarPtr on [out] variable"));
+	typename T::TCppType* GetLocalVarPtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
+		T* Property = CastField<T>(FramePointer.Node->FindPropertyByName(VariableName));
+		fgcheck(Property);
+		fgcheckf(!Property->HasAnyPropertyFlags(CPF_OutParm), TEXT("Attempt to use GetLocalVarPtr on [out] variable"));
 		return Property->GetPropertyValuePtr_InContainer(FramePointer.Locals, ArrayIndex);
 	}
 
+	template<typename TEnum>
+	TEnum* GetLocalVarEnumPtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
+		FEnumProperty* Property = CastField<FEnumProperty>(FramePointer.Node->FindPropertyByName(VariableName));
+		// K2 only supports byte enums right now, according to a comment in EdGraphSchema_K2.cpp
+		return (TEnum*)Property->ContainerPtrToValuePtr<uint8>(FramePointer.Locals, ArrayIndex);
+	}
+
+	bool GetLocalVarBool(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
+		FBoolProperty* Property = CastField<FBoolProperty>(FramePointer.Node->FindPropertyByName(VariableName));
+		fgcheck(Property);
+		fgcheckf(!Property->HasAnyPropertyFlags(CPF_OutParm), TEXT("Attempt to use GetLocalBoolVar on [out] variable"));
+		return Property->GetPropertyValue_InContainer(FramePointer.Locals, ArrayIndex);
+	}
+
+	void SetLocalVarBool(const TCHAR* VariableName, bool Value, int32 ArrayIndex = 0) const {
+		FBoolProperty* Property = CastField<FBoolProperty>(FramePointer.Node->FindPropertyByName(VariableName));
+		fgcheck(Property);
+		fgcheckf(!Property->HasAnyPropertyFlags(CPF_OutParm), TEXT("Attempt to use SetLocalBoolVar on [out] variable"));
+		return Property->SetPropertyValue_InContainer(FramePointer.Locals, Value, ArrayIndex);
+	}
+
+private:
+	FOutParmRec* GetOutParm(const TCHAR* VariableName) const {
+		FOutParmRec* Out = FramePointer.OutParms;
+		fgcheck(Out);
+		while (Out->Property->GetName() != VariableName) {
+			Out = Out->NextOutParm;
+			fgcheck(Out);
+		}
+		fgcheckf(Out->Property->GetName() == VariableName, TEXT("Current Frame has no output variable named \"%s\""), VariableName);
+		return Out;
+	}
+
+public:
 	/**
 	 * Retrieves variable passed to method as [out] parameter (pass by reference basically), e.g which
 	 * Can be set by blueprint method and changes will be visible to caller
@@ -61,15 +135,36 @@ public:
 	 */
 	template<typename T>
 	typename T::TCppType* GetOutVariablePtr(const TCHAR* VariableName = TEXT("ReturnValue")) const {
-		FOutParmRec* Out = FramePointer.OutParms;
-		check(Out);
-		while (Out->Property->GetName() != VariableName) {
-			Out = Out->NextOutParm;
-			check(Out);
-		}
-		check(Out->Property->GetName() == VariableName);
+		FOutParmRec* Out = GetOutParm(VariableName);
 		T* Property = CastField<T>(Out->Property);
-		check(Property);
 		return Property->GetPropertyValuePtr(Out->PropAddr);
+	}
+
+	template<typename TEnum>
+	TEnum* GetOutVarEnumPtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
+		FOutParmRec* Out = GetOutParm(VariableName);
+		FEnumProperty* EnumProperty = CastField<FEnumProperty>(Out->Property);
+		fgcheck(EnumProperty);
+		// We get the underlying property for out vars but we didn't for context or local vars.
+		// For unknown reasons, the enum property for out variables contains an internal offset
+		// that yields the wrong result with ContainerPtrToValuePtr but the underlying numeric
+		// property works. Tests of the same approach for local and context vars yield crashes
+		// or incorrect enum values.
+		FNumericProperty* Property = EnumProperty->GetUnderlyingProperty();
+		fgcheck(Property);
+		// K2 only supports byte enums right now, according to a comment in EdGraphSchema_K2.cpp
+		return (TEnum*)Property->ContainerPtrToValuePtr<uint8>(Out->PropAddr, ArrayIndex);
+	}
+
+	bool GetOutVarBool(const TCHAR* VariableName) const {
+		FOutParmRec* Out = GetOutParm(VariableName);
+		FBoolProperty* Property = CastField<FBoolProperty>(Out->Property);
+		return Property->GetPropertyValue(Out->PropAddr);
+	}
+
+	void SetOutVarBool(const TCHAR* VariableName, bool Value ) {
+		FOutParmRec* Out = GetOutParm(VariableName);
+		FBoolProperty* Property = CastField<FBoolProperty>(Out->Property);
+		Property->SetPropertyValue(Out->PropAddr, Value);
 	}
 };
