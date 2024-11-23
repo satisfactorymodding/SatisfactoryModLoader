@@ -174,6 +174,15 @@ void UBlueprintHookManager::ModifyOffsetsForNewHookOffset(TArray<uint8>& Script,
 			}
 			break;
 		}
+	case EX_SkipOffsetConst:
+		{
+			int32 CurrentJumpOffset = Expression->GetIntegerField(TEXT("Value"));
+			if (CurrentJumpOffset > HookOffset) {
+				int32 IndexOfCurrentJumpOffset = IndexAfterOpcode;
+				FPlatformMemory::WriteUnaligned(&Script[IndexOfCurrentJumpOffset], (CodeSkipSizeType)(CurrentJumpOffset + UBlueprintHookManager::JumpBytesRequired));
+			}
+			break;
+		}
 	}
 
 	// Now we search all the children of this node for jump instructions that need to be updated
