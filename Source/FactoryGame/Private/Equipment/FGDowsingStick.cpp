@@ -5,4 +5,4 @@
 AFGDowsingStick::AFGDowsingStick() : Super() {
 	this->mNumVolumesPerTick = 20;
 }
-void AFGDowsingStick::Tick(float DeltaSeconds){ }
+void AFGDowsingStick::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }

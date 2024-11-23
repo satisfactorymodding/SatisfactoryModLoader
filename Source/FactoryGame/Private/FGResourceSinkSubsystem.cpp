@@ -32,8 +32,8 @@ void AFGResourceSinkSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	DOREPLIFETIME(AFGResourceSinkSubsystem, mNumResourceSinkCoupons);
 	DOREPLIFETIME(AFGResourceSinkSubsystem, mGlobalPointHistoryValues);
 }
-void AFGResourceSinkSubsystem::BeginPlay(){ }
-void AFGResourceSinkSubsystem::Tick(float DeltaSeconds){ }
+void AFGResourceSinkSubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGResourceSinkSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGResourceSinkSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 AFGResourceSinkSubsystem* AFGResourceSinkSubsystem::Get(UWorld* world){ return nullptr; }
 AFGResourceSinkSubsystem* AFGResourceSinkSubsystem::Get(UObject* worldContext){ return nullptr; }

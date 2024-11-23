@@ -10,8 +10,8 @@ void AFGBuildableCircuitBridge::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableCircuitBridge, mIsBridgeConnected);
 }
-void AFGBuildableCircuitBridge::BeginPlay(){ }
-void AFGBuildableCircuitBridge::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableCircuitBridge::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableCircuitBridge::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 bool AFGBuildableCircuitBridge::IsBridgeConnected() const{ return bool(); }
 void AFGBuildableCircuitBridge::CalculateBridgeConnected(){ }
 int32 AFGBuildableCircuitBridge::GetCircuitID0() const{ return int32(); }

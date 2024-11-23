@@ -55,8 +55,8 @@ void AFGEquipment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 }
 void AFGEquipment::PreReplication(IRepChangedPropertyTracker & ChangedPropertyTracker){ }
 void AFGEquipment::OnRep_AttachmentReplication(){ }
-void AFGEquipment::BeginPlay(){ }
-void AFGEquipment::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGEquipment::BeginPlay(){ Super::BeginPlay(); }
+void AFGEquipment::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGEquipment::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGEquipment::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGEquipment::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

@@ -50,9 +50,9 @@ bool AFGFlyingBabyCrab::IsValidTarget(AActor* target) const{ return bool(); }
 void AFGFlyingBabyCrab::SetHomeLocation(const FVector& Location){ }
 void AFGFlyingBabyCrab::Explode(){ }
 void AFGFlyingBabyCrab::RegisterHostilePlayer( AFGCharacterPlayer* player){ }
-void AFGFlyingBabyCrab::BeginPlay(){ }
-void AFGFlyingBabyCrab::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGFlyingBabyCrab::Destroyed(){ }
+void AFGFlyingBabyCrab::BeginPlay(){ Super::BeginPlay(); }
+void AFGFlyingBabyCrab::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGFlyingBabyCrab::Destroyed(){ Super::Destroyed(); }
 void AFGFlyingBabyCrab::PostNetReceiveLocationAndRotation(){ }
 void AFGFlyingBabyCrab::OnClientSubsystemsValid(){ }
 void AFGFlyingBabyCrab::UpdateProjectileComponentSpeed(){ }

@@ -39,9 +39,9 @@ AFGGameMode::AFGGameMode() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGGameMode::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGGameMode::BeginPlay(){ }
-void AFGGameMode::Tick(float DeltaSeconds){ }
-void AFGGameMode::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGGameMode::BeginPlay(){ Super::BeginPlay(); }
+void AFGGameMode::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
+void AFGGameMode::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGGameMode::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameMode::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameMode::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

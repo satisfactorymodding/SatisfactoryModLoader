@@ -2,8 +2,8 @@
 
 #include "Buildables/FGBuildablePixelSign.h"
 
-void AFGBuildablePixelSign::BeginPlay(){ }
-void AFGBuildablePixelSign::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildablePixelSign::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildablePixelSign::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 bool AFGBuildablePixelSign::CanApplyDeferredColorToBuildable(FVector hitLocation, FVector hitNormal, TSubclassOf<  UFGFactoryCustomizationDescriptor_Swatch > swatch, APlayerController* playerController){ return bool(); }
 void AFGBuildablePixelSign::ApplyDeferredColorToBuildable(FVector hitLocation, TSubclassOf<  UFGFactoryCustomizationDescriptor_Swatch > swatch, APlayerController* playerController){ }
 bool AFGBuildablePixelSign::ShouldSave_Implementation() const{ return bool(); }

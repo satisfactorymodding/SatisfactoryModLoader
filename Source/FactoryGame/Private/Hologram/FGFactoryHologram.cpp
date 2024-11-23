@@ -5,6 +5,6 @@
 AFGFactoryHologram::AFGFactoryHologram() : Super() {
 
 }
-void AFGFactoryHologram::BeginPlay(){ }
-void AFGFactoryHologram::Tick(float dt){ }
+void AFGFactoryHologram::BeginPlay(){ Super::BeginPlay(); }
+void AFGFactoryHologram::Tick(float dt){ Super::Tick(dt); }
 void AFGFactoryHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

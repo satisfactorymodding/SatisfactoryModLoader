@@ -36,8 +36,8 @@ bool AFGTestManager::ShouldSave_Implementation() const{ return bool(); }
 AFGTestManager* AFGTestManager::Get(const UObject* worldContext){ return nullptr; }
 bool AFGTestManager::ShouldSpawnForWorld(const UWorld* world){ return bool(); }
 FString AFGTestManager::GetWorldGameplayTestName(const UWorld* world){ return FString(); }
-void AFGTestManager::BeginPlay(){ }
-void AFGTestManager::Tick(float DeltaSeconds){ }
+void AFGTestManager::BeginPlay(){ Super::BeginPlay(); }
+void AFGTestManager::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGTestManager::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos){ }
 UFGGameplayTest* AFGTestManager::RunGameplayTest(TSubclassOf<UFGGameplayTest> gameplayTest){ return nullptr; }
 void AFGTestManager::GetRunningGameplayTests(TArray<UFGGameplayTest*>& out_gameplayTests) const{ }

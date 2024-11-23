@@ -34,8 +34,8 @@ bool AFGCircuitSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGCircuitSubsystem::ShouldSave_Implementation() const{ return bool(); }
 void AFGCircuitSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGCircuitSubsystem::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector){ }
-void AFGCircuitSubsystem::BeginPlay(){ }
-void AFGCircuitSubsystem::Tick(float DeltaSeconds){ }
+void AFGCircuitSubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGCircuitSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGCircuitSubsystem::DebugRebuildAll(){ }
 void AFGCircuitSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGCircuitSubsystem::ConnectComponents( UFGCircuitConnectionComponent* first,  UFGCircuitConnectionComponent* second){ }

@@ -55,8 +55,8 @@ TSubclassOf< class UFGItemDescriptor > AFGHologram::GetItemDescriptor() const{ r
 void AFGHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGHologram::PreConstructMessageSerialization(){ }
 void AFGHologram::PostConstructMessageDeserialization(){ }
-void AFGHologram::BeginPlay(){ }
-void AFGHologram::Destroyed(){ }
+void AFGHologram::BeginPlay(){ Super::BeginPlay(); }
+void AFGHologram::Destroyed(){ Super::Destroyed(); }
 void AFGHologram::SetActorHiddenInGame(bool newHidden){ }
 void AFGHologram::OnNearbyBuildableOverlapBegin( AFGBuildable* buildable){ }
 void AFGHologram::OnNearbyBuildableOverlapEnd( AFGBuildable* buildable){ }

@@ -6,7 +6,7 @@
 AFGIconDatabaseSubsystem::AFGIconDatabaseSubsystem() : Super() {
 	this->mDefaultIconLibrary = nullptr;
 }
-void AFGIconDatabaseSubsystem::BeginPlay(){ }
+void AFGIconDatabaseSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGIconDatabaseSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGIconDatabaseSubsystem, mGlobalIconLibraries);

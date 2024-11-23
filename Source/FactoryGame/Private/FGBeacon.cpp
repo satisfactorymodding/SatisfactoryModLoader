@@ -2,4 +2,4 @@
 
 #include "FGBeacon.h"
 
-void AFGBeacon::BeginPlay(){ }
+void AFGBeacon::BeginPlay(){ Super::BeginPlay(); }

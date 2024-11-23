@@ -3,6 +3,7 @@
 #include "Patching/BlueprintHookHelper.h"
 #include "Patching/BlueprintHookManager.h"
 #include "Components/TextBlock.h"
+#include "Components/VerticalBox.h"
 #include "Components/PanelWidget.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
@@ -18,11 +19,14 @@ void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, 
     FObjectProperty* DescriptionWidgetProperty = CastField<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mDescription")));
     check(TitleWidgetProperty && DescriptionWidgetProperty);
     
+    
     //Retrieve references to some stuff
     UTextBlock* NameBlock = Cast<UTextBlock>(TitleWidgetProperty->GetObjectPropertyValue_InContainer(TooltipWidget));
     UTextBlock* DescriptionBlock = Cast<UTextBlock>(DescriptionWidgetProperty->GetObjectPropertyValue_InContainer(TooltipWidget));
     //Retrieve parent panel, it will hold name, description and recipe blocks
     UPanelWidget* ParentPanel = NameBlock->GetParent();
+    UVerticalBox* VerticalBoxPanel = Cast<UVerticalBox>(DescriptionBlock->GetParent());
+    check(VerticalBoxPanel);
     
     //Spawn custom widget in parent panel and add it
     UItemStackContextWidget* ContextWidget = NewObject<UItemStackContextWidget>(ParentPanel);
@@ -38,7 +42,7 @@ void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, 
     //Append custom widgets to description
     TArray<UWidget*> Widgets = CreateDescriptionWidgets(OwningPlayer, InventoryStack);
     for (UWidget* Widget : Widgets) {
-        ParentPanel->AddChild(Widget);
+        VerticalBoxPanel->AddChild(Widget);
     }
 }
 

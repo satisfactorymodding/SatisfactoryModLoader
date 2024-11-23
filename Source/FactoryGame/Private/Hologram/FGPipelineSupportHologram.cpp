@@ -23,7 +23,7 @@ AFGPipelineSupportHologram::AFGPipelineSupportHologram() : Super() {
 	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }
-void AFGPipelineSupportHologram::BeginPlay(){ }
+void AFGPipelineSupportHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGPipelineSupportHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPipelineSupportHologram, mVerticalAngle);

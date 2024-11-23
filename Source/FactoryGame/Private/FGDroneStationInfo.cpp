@@ -48,7 +48,7 @@ void AFGDroneStationInfo::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	DOREPLIFETIME(AFGDroneStationInfo, mLastInsertedFuelType);
 	DOREPLIFETIME(AFGDroneStationInfo, mDroneTripStatistics);
 }
-void AFGDroneStationInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGDroneStationInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGDroneStationInfo::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDroneStationInfo::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDroneStationInfo::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

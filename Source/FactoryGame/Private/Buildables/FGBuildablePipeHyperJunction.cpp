@@ -8,7 +8,7 @@ AFGBuildablePipeHyperJunction::AFGBuildablePipeHyperJunction() : Super() {
 	this->DefaultConnectionInfo.ConnectionLabel = INVTEXT("");
 	this->DefaultConnectionInfo.bDefaultRoute = false;
 }
-void AFGBuildablePipeHyperJunction::BeginPlay(){ }
+void AFGBuildablePipeHyperJunction::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePipeHyperJunction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildablePipeHyperJunction, ConnectionInfoList);

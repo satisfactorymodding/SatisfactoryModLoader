@@ -63,10 +63,10 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->bNetLoadOnClient = false;
 	this->RootComponent = mMesh;
 }
-void AFGVehicle::BeginPlay(){ }
-void AFGVehicle::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGVehicle::Destroyed(){ }
-void AFGVehicle::Tick(float dt){ }
+void AFGVehicle::BeginPlay(){ Super::BeginPlay(); }
+void AFGVehicle::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGVehicle::Destroyed(){ Super::Destroyed(); }
+void AFGVehicle::Tick(float dt){ Super::Tick(dt); }
 float AFGVehicle::TakeDamage(float DamageAmount,  FDamageEvent const& DamageEvent,  AController* EventInstigator, AActor* DamageCauser){ return float(); }
 void AFGVehicle::DisplayDebug( UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 UPawnMovementComponent* AFGVehicle::GetMovementComponent() const{ return nullptr; }

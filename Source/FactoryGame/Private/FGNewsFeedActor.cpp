@@ -19,6 +19,6 @@ AFGNewsFeedActor::AFGNewsFeedActor() : Super() {
 	this->mNewsFeedURLs[3].GameVersion = EGameVersion::GV_ClosedBeta;
 	this->mNewsFeedURLs[3].URL = TEXT("http://ingamenews.satisfactorygame.com/closed_beta.news");
 }
-void AFGNewsFeedActor::BeginPlay(){ }
+void AFGNewsFeedActor::BeginPlay(){ Super::BeginPlay(); }
 FString AFGNewsFeedActor::GetNewsFeedURL(){ return FString(); }
 void AFGNewsFeedActor::OnResponseReceived(FHttpRequestPtr request, FHttpResponsePtr response, bool wasSuccessful){ }

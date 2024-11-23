@@ -5,8 +5,8 @@
 UFGBaseUI::UFGBaseUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mActivePopup = nullptr;
 }
-void UFGBaseUI::NativeConstruct(){ }
-void UFGBaseUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ }
+void UFGBaseUI::NativeConstruct(){ Super::NativeConstruct(); }
+void UFGBaseUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ Super::NativeTick(MyGeometry, InDeltaTime); }
 void UFGBaseUI::AddPopupToQueue(FPopupData inPopupData){ }
 void UFGBaseUI::AddPopup(FText Title, FText Body, const FPopupConfirmClicked& ConfirmClickDelegate, EPopupId PopupID , TSubclassOf< UUserWidget > popupClass){ }
 void UFGBaseUI::PopPopupQueue(){ }

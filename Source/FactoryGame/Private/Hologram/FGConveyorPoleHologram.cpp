@@ -6,6 +6,6 @@ AFGConveyorPoleHologram::AFGConveyorPoleHologram() : Super() {
 	this->mSnapConnection = nullptr;
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
-void AFGConveyorPoleHologram::BeginPlay(){ }
+void AFGConveyorPoleHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGConveyorPoleHologram::SnapToConnection(UFGFactoryConnectionComponent* connection,  AFGConveyorBeltHologram* parentConveyor){ }
 void AFGConveyorPoleHologram::SetSnappBuilding( AFGBuildable* snappedBuilding){ }

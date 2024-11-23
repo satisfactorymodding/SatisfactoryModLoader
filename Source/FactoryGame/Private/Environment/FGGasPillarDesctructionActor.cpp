@@ -10,5 +10,5 @@ AFGGasPillarDesctructionActor::AFGGasPillarDesctructionActor() : Super() {
 	this->mForceLocation = FVector::ZeroVector;
 	this->RootComponent = mGeometryCollectionComponent;
 }
-void AFGGasPillarDesctructionActor::BeginPlay(){ }
+void AFGGasPillarDesctructionActor::BeginPlay(){ Super::BeginPlay(); }
 void AFGGasPillarDesctructionActor::SetDestructionInfo(float dmgScale, const FVector& dmgLocation){ }

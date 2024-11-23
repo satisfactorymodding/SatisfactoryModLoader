@@ -26,8 +26,8 @@ AFGBuildableManufacturer::AFGBuildableManufacturer() : Super() {
 	this->mCanChangeProductionBoost = true;
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 }
-void AFGBuildableManufacturer::BeginPlay(){ }
-void AFGBuildableManufacturer::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableManufacturer::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableManufacturer::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 bool AFGBuildableManufacturer::IsConfigured() const{ return bool(); }
 float AFGBuildableManufacturer::GetProductionCycleTime() const{ return float(); }
 float AFGBuildableManufacturer::GetDefaultProductionCycleTime() const{ return float(); }

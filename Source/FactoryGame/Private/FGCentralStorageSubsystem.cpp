@@ -15,7 +15,7 @@ void AFGCentralStorageSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	DOREPLIFETIME(AFGCentralStorageSubsystem, mStoredItems);
 	DOREPLIFETIME(AFGCentralStorageSubsystem, mItemStackLimit);
 }
-void AFGCentralStorageSubsystem::BeginPlay(){ }
+void AFGCentralStorageSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGCentralStorageSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGCentralStorageSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 int32 AFGCentralStorageSubsystem::GetNumItemsFromCentralStorage(TSubclassOf<  UFGItemDescriptor > itemClass){ return int32(); }

@@ -44,5 +44,5 @@ TArray< const FFGWorldGridCell* > AFGWorldGridSubsystem::GetCellNeighboursFromIn
 TArray< int32 > AFGWorldGridSubsystem::GetCellNeighbourIndicesFromIndex(int32 Index) const{ return TArray<int32>(); }
 FVector2D AFGWorldGridSubsystem::GetWorldGridSize() const{ return FVector2D(); }
 FVector2D AFGWorldGridSubsystem::GetCellSize() const{ return FVector2D(); }
-void AFGWorldGridSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGWorldGridSubsystem::Tick(float DeltaSeconds){ }
+void AFGWorldGridSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
+void AFGWorldGridSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }

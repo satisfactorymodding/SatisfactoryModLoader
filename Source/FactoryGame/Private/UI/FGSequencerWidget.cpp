@@ -2,8 +2,8 @@
 
 #include "UI/FGSequencerWidget.h"
 
-void UFGSequencerWidget::NativeConstruct(){ }
-void UFGSequencerWidget::NativeDestruct(){ }
+void UFGSequencerWidget::NativeConstruct(){ Super::NativeConstruct(); }
+void UFGSequencerWidget::NativeDestruct(){ Super::NativeDestruct(); }
 void UFGSequencerWidget::ListenForInput(FInputChord inputkeyChord, TEnumAsByte<EInputEvent> eventType, bool consume, FOnInputAction callback){ }
 void UFGSequencerWidget::StopListeningForAllInputs(){ }
 void UFGSequencerWidget::MoveCursorForward(){ }

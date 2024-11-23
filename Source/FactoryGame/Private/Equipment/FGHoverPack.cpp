@@ -51,8 +51,8 @@ void AFGHoverPack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGHoverPack, mCurrentConnectionLocation);
 	DOREPLIFETIME(AFGHoverPack, mCurrentRailroadTrack);
 }
-void AFGHoverPack::BeginPlay(){ }
-void AFGHoverPack::Tick(float deltaTime){ }
+void AFGHoverPack::BeginPlay(){ Super::BeginPlay(); }
+void AFGHoverPack::Tick(float deltaTime){ Super::Tick(deltaTime); }
 void AFGHoverPack::UnEquip(){ }
 void AFGHoverPack::OnCharacterMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode, EMovementMode NewMovementMode, uint8 NewCustomMode){ }
 void AFGHoverPack::AddEquipmentActionBindings(){ }

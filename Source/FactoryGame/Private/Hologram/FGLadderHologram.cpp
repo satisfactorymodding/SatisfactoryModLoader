@@ -21,7 +21,7 @@ void AFGLadderHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& 
 	DOREPLIFETIME(AFGLadderHologram, mTargetSegmentHeight);
 	DOREPLIFETIME(AFGLadderHologram, mBuildStep);
 }
-void AFGLadderHologram::BeginPlay(){ }
+void AFGLadderHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGLadderHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGLadderHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGLadderHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }

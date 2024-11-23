@@ -22,6 +22,6 @@ AFGInteractableMarker::AFGInteractableMarker() : Super() {
 	this->mIconWidget->SetupAttachment(RootComponent);
 	this->mSplineMesh->SetupAttachment(RootComponent);
 }
-void AFGInteractableMarker::Tick(float dt){ }
+void AFGInteractableMarker::Tick(float dt){ Super::Tick(dt); }
 void AFGInteractableMarker::SetTrackedActor( AActor* trackedActor){ }
-void AFGInteractableMarker::BeginPlay(){ }
+void AFGInteractableMarker::BeginPlay(){ Super::BeginPlay(); }

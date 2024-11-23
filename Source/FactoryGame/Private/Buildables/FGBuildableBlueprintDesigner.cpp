@@ -50,8 +50,8 @@ void AFGBuildableBlueprintDesigner::GetLifetimeReplicatedProps(TArray<FLifetimeP
 	DOREPLIFETIME(AFGBuildableBlueprintDesigner, mBuildables);
 	DOREPLIFETIME(AFGBuildableBlueprintDesigner, mCurrentRecordData);
 }
-void AFGBuildableBlueprintDesigner::BeginPlay(){ }
-void AFGBuildableBlueprintDesigner::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableBlueprintDesigner::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableBlueprintDesigner::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableBlueprintDesigner::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGBuildableBlueprintDesigner::CanDismantle_Implementation() const{ return bool(); }
 void AFGBuildableBlueprintDesigner::GetChildDismantleActors_Implementation(TArray<AActor*>& out_ChildDismantleActors) const{ }

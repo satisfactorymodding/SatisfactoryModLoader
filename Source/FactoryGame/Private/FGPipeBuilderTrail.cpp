@@ -19,5 +19,5 @@ void AFGPipeBuilderTrail::AddPipeline( AFGBuildablePipeline* inPipe){ }
 void AFGPipeBuilderTrail::StartSplineMovement(){ }
 void AFGPipeBuilderTrail::PlayBuildEffect(){ }
 void AFGPipeBuilderTrail::EffectDone(){ }
-void AFGPipeBuilderTrail::BeginPlay(){ }
-void AFGPipeBuilderTrail::Tick(float DeltaTime){ }
+void AFGPipeBuilderTrail::BeginPlay(){ Super::BeginPlay(); }
+void AFGPipeBuilderTrail::Tick(float DeltaTime){ Super::Tick(DeltaTime); }

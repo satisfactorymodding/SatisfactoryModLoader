@@ -10,7 +10,7 @@ AFGBuildableConveyorAttachment::AFGBuildableConveyorAttachment() : Super() {
 	this->mHologramClass = AFGConveyorAttachmentHologram::StaticClass();
 	this->NetDormancy = ENetDormancy::DORM_DormantAll;
 }
-void AFGBuildableConveyorAttachment::BeginPlay(){ }
+void AFGBuildableConveyorAttachment::BeginPlay(){ Super::BeginPlay(); }
 bool AFGBuildableConveyorAttachment::ShouldShowCenterGuidelinesForHologram(const AFGHologram* hologram) const{ return bool(); }
 void AFGBuildableConveyorAttachment::Dismantle_Implementation(){ }
 AFGBuildableConveyorAttachmentLightweight::AFGBuildableConveyorAttachmentLightweight() : Super() {

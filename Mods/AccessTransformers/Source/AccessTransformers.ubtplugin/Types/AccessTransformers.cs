@@ -110,7 +110,7 @@ public static class AccessTransformers
             {
                 var accessTransformers = new ConfigFile(accessTransformersFile, ConfigLineAction.Add);
                 accessTransformers.TryGetSection("AccessTransformers", out var section);
-                section!.Lines.ForEach((line) =>
+                section?.Lines.ForEach((line) =>
                 {
                     switch (line.Key)
                     {

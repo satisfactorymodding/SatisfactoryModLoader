@@ -10,7 +10,7 @@ AFGResourceExtractorHologram::AFGResourceExtractorHologram() : Super() {
 	this->mNeedsValidFloor = false;
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
-void AFGResourceExtractorHologram::BeginPlay(){ }
+void AFGResourceExtractorHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGResourceExtractorHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGResourceExtractorHologram, mSnappedExtractableResource);

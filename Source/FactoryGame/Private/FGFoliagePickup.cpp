@@ -18,8 +18,8 @@ AFGFoliagePickup::AFGFoliagePickup() : Super() {
 	this->bNetUseOwnerRelevancy = true;
 	this->bReplicates = true;
 }
-void AFGFoliagePickup::BeginPlay(){ }
-void AFGFoliagePickup::Tick(float DeltaSeconds){ }
+void AFGFoliagePickup::BeginPlay(){ Super::BeginPlay(); }
+void AFGFoliagePickup::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGFoliagePickup::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 bool AFGFoliagePickup::IsUseable_Implementation() const{ return bool(); }
 void AFGFoliagePickup::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }

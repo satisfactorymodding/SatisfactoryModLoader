@@ -14,12 +14,12 @@ AFGHookshot::AFGHookshot() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	this->mHookshotAudio->SetupAttachment(RootComponent);
 }
-void AFGHookshot::BeginPlay(){ }
+void AFGHookshot::BeginPlay(){ Super::BeginPlay(); }
 void AFGHookshot::OnPrimaryFirePressed(){ }
 void AFGHookshot::OnSecondaryFirePressed(){ }
 void AFGHookshot::Equip( AFGCharacterPlayer* character){ }
 void AFGHookshot::UnEquip(){ }
-void AFGHookshot::Tick(float deltaTime){ }
+void AFGHookshot::Tick(float deltaTime){ Super::Tick(deltaTime); }
 void AFGHookshot::WireDetach(){ }
 void AFGHookshot::AddEquipmentActionBindings(){ }
 void AFGHookshot::MoveAudioSourceInFrontOfPlayer(){ }

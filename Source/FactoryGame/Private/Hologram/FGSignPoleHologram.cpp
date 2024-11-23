@@ -5,6 +5,6 @@
 AFGSignPoleHologram::AFGSignPoleHologram() : Super() {
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
-void AFGSignPoleHologram::BeginPlay(){ }
+void AFGSignPoleHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGSignPoleHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGSignPoleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

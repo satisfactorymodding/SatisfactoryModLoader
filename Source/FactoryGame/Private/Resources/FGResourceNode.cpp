@@ -18,7 +18,7 @@ AFGResourceNode::AFGResourceNode() : Super() {
 	this->mCanPlaceResourceExtractor = true;
 	this->mExtractMultiplier = 1;
 }
-void AFGResourceNode::BeginPlay(){ }
+void AFGResourceNode::BeginPlay(){ Super::BeginPlay(); }
 void AFGResourceNode::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGResourceNode::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGResourceNode::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }

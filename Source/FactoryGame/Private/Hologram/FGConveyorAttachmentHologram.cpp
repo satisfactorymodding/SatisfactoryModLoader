@@ -13,7 +13,7 @@ AFGConveyorAttachmentHologram::AFGConveyorAttachmentHologram() : Super() {
 	this->mSnappedConveyorOffset = 0.0;
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
-void AFGConveyorAttachmentHologram::BeginPlay(){ }
+void AFGConveyorAttachmentHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGConveyorAttachmentHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGConveyorAttachmentHologram, mSnappedConveyor);

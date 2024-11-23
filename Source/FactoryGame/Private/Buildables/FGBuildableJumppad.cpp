@@ -44,8 +44,8 @@ FVector AFGBuildableJumppad::CalculateLaunchVelocity(const FVector& startLocatio
 const FTrajectoryData& AFGBuildableJumppad::ResimulateTrajectory(){ return *(new FTrajectoryData); }
 FTrajectoryData AFGBuildableJumppad::SimulateTrajectory(UWorld* pWorld, const FVector& StartLocation, const FVector& LaunchVector, float GravityMultiplier, AFGBuildableJumppad* pJumpPad){ return FTrajectoryData(); }
 void AFGBuildableJumppad::Launch(){ }
-void AFGBuildableJumppad::BeginPlay(){ }
-void AFGBuildableJumppad::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableJumppad::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableJumppad::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 float AFGBuildableJumppad::GetProductionProgress() const{ return float(); }
 bool AFGBuildableJumppad::CanProduce_Implementation() const{ return bool(); }
 EProductionStatus AFGBuildableJumppad::GetProductionIndicatorStatus() const{ return EProductionStatus(); }

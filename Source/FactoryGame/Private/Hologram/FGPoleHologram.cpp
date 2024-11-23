@@ -25,7 +25,7 @@ void AFGPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPoleHologram, mPoleHeight);
 }
-void AFGPoleHologram::BeginPlay(){ }
+void AFGPoleHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGPoleHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 bool AFGPoleHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGPoleHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }

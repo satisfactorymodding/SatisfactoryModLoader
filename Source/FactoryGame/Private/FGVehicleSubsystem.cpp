@@ -49,9 +49,9 @@ void AFGVehicleSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	DOREPLIFETIME(AFGVehicleSubsystem, mWheeledVehicles);
 	DOREPLIFETIME(AFGVehicleSubsystem, mSavedPaths);
 }
-void AFGVehicleSubsystem::BeginPlay(){ }
-void AFGVehicleSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGVehicleSubsystem::Tick(float dt){ }
+void AFGVehicleSubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGVehicleSubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGVehicleSubsystem::Tick(float dt){ Super::Tick(dt); }
 AFGVehicleSubsystem* AFGVehicleSubsystem::Get(UWorld* world){ return nullptr; }
 AFGVehicleSubsystem* AFGVehicleSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGVehicleSubsystem::TickVehicleSimulation(float dt){ }

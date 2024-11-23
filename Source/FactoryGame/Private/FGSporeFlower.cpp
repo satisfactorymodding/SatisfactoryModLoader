@@ -10,8 +10,8 @@ void AFGSporeFlower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 }
-void AFGSporeFlower::BeginPlay(){ }
-void AFGSporeFlower::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGSporeFlower::BeginPlay(){ Super::BeginPlay(); }
+void AFGSporeFlower::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 float AFGSporeFlower::TakeDamage(float damage,  FDamageEvent const& damageEvent, AController* eventInstigator, AActor* damageCauser){ return float(); }
 void AFGSporeFlower::GainedSignificance_Implementation(){ }
 void AFGSporeFlower::LostSignificance_Implementation(){ }

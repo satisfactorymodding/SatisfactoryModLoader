@@ -76,10 +76,10 @@ AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mFoliageCollideBox->SetupAttachment(mMesh);
 }
 void AFGWheeledVehicle::PostInitializeComponents(){ Super::PostInitializeComponents(); }
-void AFGWheeledVehicle::BeginPlay(){ }
-void AFGWheeledVehicle::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGWheeledVehicle::Destroyed(){ }
-void AFGWheeledVehicle::Tick(float dt){ }
+void AFGWheeledVehicle::BeginPlay(){ Super::BeginPlay(); }
+void AFGWheeledVehicle::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGWheeledVehicle::Destroyed(){ Super::Destroyed(); }
+void AFGWheeledVehicle::Tick(float dt){ Super::Tick(dt); }
 void AFGWheeledVehicle::DisplayDebug(UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 bool AFGWheeledVehicle::DriverEnter(AFGCharacterPlayer* driver){ return bool(); }
 bool AFGWheeledVehicle::DriverLeave(bool keepDriving){ return bool(); }

@@ -23,7 +23,7 @@ void AFGEquipmentZipline::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGEquipmentZipline, mWantToGrab);
 }
-void AFGEquipmentZipline::Tick(float delta){ }
+void AFGEquipmentZipline::Tick(float delta){ Super::Tick(delta); }
 void AFGEquipmentZipline::AddEquipmentActionBindings(){ }
 void AFGEquipmentZipline::UnEquip(){ }
 void AFGEquipmentZipline::DoDrop(){ }

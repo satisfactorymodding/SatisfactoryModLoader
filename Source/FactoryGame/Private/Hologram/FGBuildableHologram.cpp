@@ -24,7 +24,7 @@ AFGBuildableHologram::AFGBuildableHologram() : Super() {
 	this->mUseBuildClearanceOverlapSnapp = true;
 	this->mCanNudgeHologram = true;
 }
-void AFGBuildableHologram::BeginPlay(){ }
+void AFGBuildableHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableHologram::SetBuildableClass(TSubclassOf<  AFGBuildable > buildableClass){ }
 bool AFGBuildableHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGBuildableHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }

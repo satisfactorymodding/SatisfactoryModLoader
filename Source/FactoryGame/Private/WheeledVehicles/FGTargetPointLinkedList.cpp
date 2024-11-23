@@ -30,8 +30,8 @@ void AFGDrivingTargetList::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 }
 void AFGDrivingTargetList::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGDrivingTargetList::ShouldSave_Implementation() const{ return bool(); }
-void AFGDrivingTargetList::BeginPlay(){ }
-void AFGDrivingTargetList::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGDrivingTargetList::BeginPlay(){ Super::BeginPlay(); }
+void AFGDrivingTargetList::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGDrivingTargetList::CreatePath(){ }
 void AFGDrivingTargetList::DestroyPath_Server(){ }
 void AFGDrivingTargetList::DestroyLocalActors(){ }

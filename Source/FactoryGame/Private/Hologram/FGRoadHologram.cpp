@@ -8,7 +8,7 @@ AFGRoadHologram::AFGRoadHologram() : Super() {
 	this->mSnappedConnectionComponents[0] = nullptr;
 	this->mSnappedConnectionComponents[1] = nullptr;
 }
-void AFGRoadHologram::BeginPlay(){ }
+void AFGRoadHologram::BeginPlay(){ Super::BeginPlay(); }
 USceneComponent* AFGRoadHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 void AFGRoadHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGRoadHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }

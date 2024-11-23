@@ -22,9 +22,9 @@ void AFGBuildableRailroadSignal::GetLifetimeReplicatedProps(TArray< FLifetimePro
 	DOREPLIFETIME(AFGBuildableRailroadSignal, mBlockValidation);
 	DOREPLIFETIME(AFGBuildableRailroadSignal, mVisualState);
 }
-void AFGBuildableRailroadSignal::BeginPlay(){ }
-void AFGBuildableRailroadSignal::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGBuildableRailroadSignal::Destroyed(){ }
+void AFGBuildableRailroadSignal::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableRailroadSignal::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGBuildableRailroadSignal::Destroyed(){ Super::Destroyed(); }
 void AFGBuildableRailroadSignal::OnBuildEffectFinished(){ }
 void AFGBuildableRailroadSignal::OnBuildEffectActorFinished(){ }
 void AFGBuildableRailroadSignal::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

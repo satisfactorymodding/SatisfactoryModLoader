@@ -8,7 +8,7 @@ void AFGRiver::OnSelected(UObject* Object){ }
 void AFGRiver::ReDraw(){ }
 void AFGRiver::DrawDebugData(){ }
 void AFGRiver::StopDrawDebugData(){ }
-void AFGRiver::Destroyed(){ }
+void AFGRiver::Destroyed(){ Super::Destroyed(); }
 void AFGRiver::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 #endif 
 #if WITH_EDITOR
@@ -43,8 +43,8 @@ AFGRiver::AFGRiver() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->RootComponent = mSplineComponent;
 }
-void AFGRiver::BeginPlay(){ }
-void AFGRiver::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGRiver::BeginPlay(){ Super::BeginPlay(); }
+void AFGRiver::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGRiver::OnConstruction(const FTransform & Transform){ }
 void AFGRiver::FixupSplinePoints(){ }
 void AFGRiver::ConstructMesh(){ }
@@ -52,5 +52,5 @@ void AFGRiver::ConstructVolumes(){ }
 void AFGRiver::SetupMaterialValues(UMaterialInstanceDynamic* Material){ }
 void AFGRiver::ApplyVertexColors(TArray<USplineMeshComponent*>& MeshComponents){ }
 void AFGRiver::HandlePush(float DeltaTime, ACharacter* Actor){ }
-void AFGRiver::Tick(float DeltaTime){ }
+void AFGRiver::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
 void AFGRiver::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){ }

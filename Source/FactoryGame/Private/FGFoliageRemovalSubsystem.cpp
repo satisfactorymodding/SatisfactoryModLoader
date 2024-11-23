@@ -17,9 +17,9 @@ void AFGFoliageRemovalSubsystem::PostLoad(){ Super::PostLoad(); }
 AFGFoliageRemovalSubsystem::AFGFoliageRemovalSubsystem() : Super() {
 
 }
-void AFGFoliageRemovalSubsystem::BeginPlay(){ }
-void AFGFoliageRemovalSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGFoliageRemovalSubsystem::Destroyed(){ }
+void AFGFoliageRemovalSubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGFoliageRemovalSubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGFoliageRemovalSubsystem::Destroyed(){ Super::Destroyed(); }
 void AFGFoliageRemovalSubsystem::Serialize(FArchive& Ar){ Super::Serialize(Ar); }
 void AFGFoliageRemovalSubsystem::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector){ }
 void AFGFoliageRemovalSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

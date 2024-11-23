@@ -36,8 +36,8 @@ UFGVertexAnimatedMeshComponent::UFGVertexAnimatedMeshComponent() : Super() {
 	this->mBlockInstancing = true;
 	this->WorldPositionOffsetDisableDistance = 100000;
 }
-void UFGVertexAnimatedMeshComponent::BeginPlay(){ }
-void UFGVertexAnimatedMeshComponent::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void UFGVertexAnimatedMeshComponent::BeginPlay(){ Super::BeginPlay(); }
+void UFGVertexAnimatedMeshComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void UFGVertexAnimatedMeshComponent::GainedSignificance_Implementation(){ }
 void UFGVertexAnimatedMeshComponent::LostSignificance_Implementation(){ }
 bool UFGVertexAnimatedMeshComponent::ShouldAddToSignificanceManager() const{ return bool(); }

@@ -16,7 +16,7 @@ void AFGStandaloneSignHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGStandaloneSignHologram, mChildSignPoleHologram);
 }
-void AFGStandaloneSignHologram::BeginPlay(){ }
+void AFGStandaloneSignHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGStandaloneSignHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGStandaloneSignHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 void AFGStandaloneSignHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

@@ -5,8 +5,8 @@
 AFGResourceNodeFrackingCore::AFGResourceNodeFrackingCore() : Super() {
 
 }
-void AFGResourceNodeFrackingCore::BeginPlay(){ }
-void AFGResourceNodeFrackingCore::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGResourceNodeFrackingCore::BeginPlay(){ Super::BeginPlay(); }
+void AFGResourceNodeFrackingCore::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGResourceNodeFrackingCore::RegisterSatellite(TWeakObjectPtr<  AFGResourceNodeFrackingSatellite > satellite){ }
 void AFGResourceNodeFrackingCore::Factory_SetSatellitesActive(bool isActive){ }
 void AFGResourceNodeFrackingCore::GetSatellites(TArray<  AFGResourceNodeFrackingSatellite* >& out_Satellites) const{ }

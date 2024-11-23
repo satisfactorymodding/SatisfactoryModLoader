@@ -10,4 +10,4 @@ void AFGPassengerSeat::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 AFGPassengerSeat::AFGPassengerSeat() : Super() {
 	this->mOuterVehicle = nullptr;
 }
-void AFGPassengerSeat::Tick(float dt){ }
+void AFGPassengerSeat::Tick(float dt){ Super::Tick(dt); }

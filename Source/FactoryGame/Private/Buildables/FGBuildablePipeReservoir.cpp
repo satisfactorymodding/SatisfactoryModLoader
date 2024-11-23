@@ -26,9 +26,9 @@ void AFGBuildablePipeReservoir::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildablePipeReservoir, mIndicatorData);
 }
-void AFGBuildablePipeReservoir::BeginPlay(){ }
-void AFGBuildablePipeReservoir::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGBuildablePipeReservoir::Tick(float dt){ }
+void AFGBuildablePipeReservoir::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildablePipeReservoir::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGBuildablePipeReservoir::Tick(float dt){ Super::Tick(dt); }
 void AFGBuildablePipeReservoir::Factory_Tick(float dt){ }
 FFluidBox* AFGBuildablePipeReservoir::GetFluidBox(){ return nullptr; }
 TArray< class UFGPipeConnectionComponent* > AFGBuildablePipeReservoir::GetPipeConnections(){ return TArray<class UFGPipeConnectionComponent*>(); }

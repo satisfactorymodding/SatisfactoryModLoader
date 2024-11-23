@@ -27,8 +27,8 @@ AFGObjectScanner::AFGObjectScanner() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	this->mScannerSkeletalMesh->SetupAttachment(RootComponent);
 }
-void AFGObjectScanner::BeginPlay(){ }
-void AFGObjectScanner::Tick(float deltaTime){ }
+void AFGObjectScanner::BeginPlay(){ Super::BeginPlay(); }
+void AFGObjectScanner::Tick(float deltaTime){ Super::Tick(deltaTime); }
 void AFGObjectScanner::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGObjectScanner, mClosestObject);

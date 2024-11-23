@@ -17,7 +17,7 @@ AFGBlueprintProxy::AFGBlueprintProxy() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	this->mBoundingBox->SetupAttachment(RootComponent);
 }
-void AFGBlueprintProxy::BeginPlay(){ }
+void AFGBlueprintProxy::BeginPlay(){ Super::BeginPlay(); }
 void AFGBlueprintProxy::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBlueprintProxy, mBlueprintName);
@@ -25,7 +25,7 @@ void AFGBlueprintProxy::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& 
 	DOREPLIFETIME(AFGBlueprintProxy, mBuildables);
 	DOREPLIFETIME(AFGBlueprintProxy, mLightweightClassAndIndices);
 }
-void AFGBlueprintProxy::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBlueprintProxy::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBlueprintProxy::RegisterBuildable( AFGBuildable* buildable){ }
 void AFGBlueprintProxy::RegisterLightweightInstance(TSubclassOf<  AFGBuildable > buildableClass, int32 index){ }
 void AFGBlueprintProxy::UnregisterBuildable( AFGBuildable* buildable){ }

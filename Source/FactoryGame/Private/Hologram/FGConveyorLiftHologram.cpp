@@ -33,7 +33,7 @@ void AFGConveyorLiftHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProper
 	DOREPLIFETIME(AFGConveyorLiftHologram, mSnappedPassthroughs);
 	DOREPLIFETIME(AFGConveyorLiftHologram, mArrowDirection);
 }
-void AFGConveyorLiftHologram::BeginPlay(){ }
+void AFGConveyorLiftHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGConveyorLiftHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGConveyorLiftHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGConveyorLiftHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }

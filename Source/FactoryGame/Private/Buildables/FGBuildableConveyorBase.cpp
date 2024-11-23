@@ -47,10 +47,10 @@ void AFGBuildableConveyorBase::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	DOREPLIFETIME(AFGBuildableConveyorBase, mChainSegmentIndex);
 }
 void AFGBuildableConveyorBase::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
-void AFGBuildableConveyorBase::BeginPlay(){ }
-void AFGBuildableConveyorBase::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildableConveyorBase::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableConveyorBase::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableConveyorBase::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGBuildableConveyorBase::Tick(float dt){ }
+void AFGBuildableConveyorBase::Tick(float dt){ Super::Tick(dt); }
 void AFGBuildableConveyorBase::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableConveyorBase::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGBuildableConveyorBase::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }

@@ -12,5 +12,5 @@ AFGProfileSpline::AFGProfileSpline() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGProfileSpline::BeginPlay(){ }
-void AFGProfileSpline::Tick(float DeltaTime){ }
+void AFGProfileSpline::BeginPlay(){ Super::BeginPlay(); }
+void AFGProfileSpline::Tick(float DeltaTime){ Super::Tick(DeltaTime); }

@@ -20,8 +20,8 @@ void AFGCrate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 	DOREPLIFETIME(AFGCrate, mInventory);
 }
 void AFGCrate::PostActorCreated(){ Super::PostActorCreated(); }
-void AFGCrate::BeginPlay(){ }
-void AFGCrate::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGCrate::BeginPlay(){ Super::BeginPlay(); }
+void AFGCrate::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGCrate::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGCrate::AddAsRepresentation(){ return bool(); }
 bool AFGCrate::UpdateRepresentation(){ return bool(); }
