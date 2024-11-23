@@ -22,7 +22,7 @@ AFGPipelinePumpHologram::AFGPipelinePumpHologram() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGPipelinePumpHologram::Tick(float dt){ }
+void AFGPipelinePumpHologram::Tick(float dt){ Super::Tick(dt); }
 bool AFGPipelinePumpHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 float AFGPipelinePumpHologram::GetHeadLiftPathLength(const FPumpHeadLiftLocationPath& Path){ return float(); }
 TArray<FTransform> AFGPipelinePumpHologram::GetTransformsAtDistanceAlongPath(const FPumpHeadLiftLocationPath& Path, float Distance){ return TArray<FTransform>(); }

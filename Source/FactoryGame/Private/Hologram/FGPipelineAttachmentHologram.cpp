@@ -10,5 +10,5 @@ AFGPipelineAttachmentHologram::AFGPipelineAttachmentHologram() : Super() {
 	this->mBasePipeClass = AFGBuildablePipeline::StaticClass();
 	this->mPipeAttachmentInterfaceClass = UFGPipeAttachmentSnapTargetInterface::StaticClass();
 }
-void AFGPipelineAttachmentHologram::BeginPlay(){ }
+void AFGPipelineAttachmentHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGPipelineAttachmentHologram::ConfigureComponents(AFGBuildable* inBuildable) const{ }

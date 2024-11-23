@@ -23,8 +23,8 @@ UFGAudioMessage::UFGAudioMessage(const FObjectInitializer& ObjectInitializer) : 
 	this->mAudioMessageInputComponent = nullptr;
 	this->mMessage = nullptr;
 }
-void UFGAudioMessage::NativeConstruct(){ }
-void UFGAudioMessage::NativeDestruct(){ }
+void UFGAudioMessage::NativeConstruct(){ Super::NativeConstruct(); }
+void UFGAudioMessage::NativeDestruct(){ Super::NativeDestruct(); }
 int32 UFGAudioMessage::GetMessagePriority() const{ return int32(); }
 void UFGAudioMessage::StartPlayback(){ }
 void UFGAudioMessage::OnSkipButtonPressed(){ }

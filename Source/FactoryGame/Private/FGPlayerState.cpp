@@ -116,7 +116,7 @@ void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(AFGPlayerState, mPlayerSpecificSchematics);
 	DOREPLIFETIME(AFGPlayerState, mCentralStoragePinnedItems);
 }
-void AFGPlayerState::BeginPlay(){ }
+void AFGPlayerState::BeginPlay(){ Super::BeginPlay(); }
 void AFGPlayerState::CopyProperties(APlayerState* playerState){ }
 void AFGPlayerState::ClientInitialize(AController* C){ }
 void AFGPlayerState::RegisterPlayerWithSession(bool bWasFromInvite){ }

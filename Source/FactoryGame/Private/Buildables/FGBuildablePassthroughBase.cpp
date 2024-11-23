@@ -16,7 +16,7 @@ AFGBuildablePassthroughBase::AFGBuildablePassthroughBase() : Super() {
 	this->mClearanceThickness = 80.0;
 	this->mCostSegmentLength = 400.0;
 }
-void AFGBuildablePassthroughBase::BeginPlay(){ }
+void AFGBuildablePassthroughBase::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePassthroughBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildablePassthroughBase, mSnappedBuildingThickness);

@@ -49,8 +49,8 @@ void AFGBuildablePipeline::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 	DOREPLIFETIME(AFGBuildablePipeline, mFlowIndicator);
 	DOREPLIFETIME(AFGBuildablePipeline, mIndicatorData);
 }
-void AFGBuildablePipeline::BeginPlay(){ }
-void AFGBuildablePipeline::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildablePipeline::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildablePipeline::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildablePipeline::Factory_Tick(float dt){ }
 void AFGBuildablePipeline::PreUpgrade_Implementation(){ }
 void AFGBuildablePipeline::Upgrade_Implementation(AActor* newActor){ }

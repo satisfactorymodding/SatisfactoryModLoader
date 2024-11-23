@@ -12,8 +12,8 @@ void AFGBuildableGeneratorGeoThermal::GetLifetimeReplicatedProps(TArray<FLifetim
 	DOREPLIFETIME(AFGBuildableGeneratorGeoThermal, mMaxPowerProduction);
 	DOREPLIFETIME(AFGBuildableGeneratorGeoThermal, mVariablePowerProductionCycleOffset);
 }
-void AFGBuildableGeneratorGeoThermal::BeginPlay(){ }
-void AFGBuildableGeneratorGeoThermal::Destroyed(){ }
+void AFGBuildableGeneratorGeoThermal::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableGeneratorGeoThermal::Destroyed(){ Super::Destroyed(); }
 void AFGBuildableGeneratorGeoThermal::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableGeneratorGeoThermal::SetExtractableResource(TScriptInterface<  IFGExtractableResourceInterface > extractableResource){ }
 void AFGBuildableGeneratorGeoThermal::Factory_Tick(float dt){ }

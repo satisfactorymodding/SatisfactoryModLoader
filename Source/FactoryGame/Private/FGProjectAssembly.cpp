@@ -30,11 +30,11 @@ void AFGProjectAssembly::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AFGProjectAssembly, mIsMovingToTarget);
 	DOREPLIFETIME(AFGProjectAssembly, mTargetLocation);
 }
-void AFGProjectAssembly::BeginPlay(){ }
-void AFGProjectAssembly::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGProjectAssembly::BeginPlay(){ Super::BeginPlay(); }
+void AFGProjectAssembly::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGProjectAssembly::OnGamePhaseChanged_Implementation(UFGGamePhase* currentGamePhase){ }
 void AFGProjectAssembly::BeginMoveToTarget_Implementation(){ }
 void AFGProjectAssembly::OnTargetReached_Implementation(){ }
-void AFGProjectAssembly::Tick(float DeltaSeconds){ }
+void AFGProjectAssembly::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGProjectAssembly::UpdatePosition_Implementation(){ }
 void AFGProjectAssembly::OnRep_IsMovingToTarget(){ }

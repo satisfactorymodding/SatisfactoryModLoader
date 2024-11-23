@@ -40,7 +40,7 @@ float AFGBuildableSpaceElevator::GetActorFogOfWarRevealRadius(){ return float();
 ECompassViewDistance AFGBuildableSpaceElevator::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGBuildableSpaceElevator::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 UMaterialInterface* AFGBuildableSpaceElevator::GetActorRepresentationCompassMaterial(){ return nullptr; }
-void AFGBuildableSpaceElevator::BeginPlay(){ }
+void AFGBuildableSpaceElevator::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableSpaceElevator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableSpaceElevator, mSpaceElevatorState);

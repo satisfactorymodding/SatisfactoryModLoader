@@ -14,13 +14,13 @@ AFGDroneSubsystem::AFGDroneSubsystem() : Super() {
 }
 AFGDroneSubsystem* AFGDroneSubsystem::Get(UWorld* world){ return nullptr; }
 AFGDroneSubsystem* AFGDroneSubsystem::Get(UObject* worldContext){ return nullptr; }
-void AFGDroneSubsystem::BeginPlay(){ }
+void AFGDroneSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGDroneSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGDroneSubsystem, mStations);
 	DOREPLIFETIME(AFGDroneSubsystem, mDrones);
 }
-void AFGDroneSubsystem::Tick(float DeltaSeconds){ }
+void AFGDroneSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGDroneSubsystem::AddStation( AFGBuildableDroneStation* station){ }
 void AFGDroneSubsystem::RemoveStation( AFGBuildableDroneStation* station){ }
 void AFGDroneSubsystem::RegisterDrone( AFGDroneVehicle* drone){ }

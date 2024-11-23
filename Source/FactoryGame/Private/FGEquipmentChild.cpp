@@ -16,7 +16,7 @@ AFGEquipmentChild::AFGEquipmentChild() : Super() {
 	this->bNetUseOwnerRelevancy = true;
 	this->bReplicates = true;
 }
-void AFGEquipmentChild::BeginPlay(){ }
+void AFGEquipmentChild::BeginPlay(){ Super::BeginPlay(); }
 void AFGEquipmentChild::Equip( AFGCharacterPlayer* character,  AFGEquipment* parentEquipment){ }
 void AFGEquipmentChild::UnEquip(){ }
 void AFGEquipmentChild::OnEquip_Implementation( AFGCharacterPlayer* character){ }

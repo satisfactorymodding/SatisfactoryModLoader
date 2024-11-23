@@ -38,8 +38,8 @@ AFGPortableMiner::AFGPortableMiner() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bReplicates = true;
 }
-void AFGPortableMiner::BeginPlay(){ }
-void AFGPortableMiner::Tick(float dt){ }
+void AFGPortableMiner::BeginPlay(){ Super::BeginPlay(); }
+void AFGPortableMiner::Tick(float dt){ Super::Tick(dt); }
 void AFGPortableMiner::TickProducing(float dt){ }
 void AFGPortableMiner::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGPortableMiner::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

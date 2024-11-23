@@ -8,7 +8,7 @@ AFGPassthroughHologram::AFGPassthroughHologram() : Super() {
 	this->mAllowMultiFoundationPassThrough = false;
 	this->mSnappedBuildingThickness = 0.0;
 }
-void AFGPassthroughHologram::BeginPlay(){ }
+void AFGPassthroughHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGPassthroughHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPassthroughHologram, mSnappedBuildingThickness);

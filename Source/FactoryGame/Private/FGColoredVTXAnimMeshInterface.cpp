@@ -13,7 +13,7 @@ UFGColoredVTXAnimMeshInterface::UFGColoredVTXAnimMeshInterface() : Super() {
 	this->mDefaultStopAnimDuration = 0.0;
 	this->mBlockInstancing = true;
 }
-void UFGColoredVTXAnimMeshInterface::BeginPlay(){ }
+void UFGColoredVTXAnimMeshInterface::BeginPlay(){ Super::BeginPlay(); }
 void UFGColoredVTXAnimMeshInterface::SetupDelegates(bool bShouldDoInitialCall){ }
 void UFGColoredVTXAnimMeshInterface::SetupDefaultPrimitiveValues(){ }
 bool UFGColoredVTXAnimMeshInterface::ShouldPlayStartAnimation(EProductionStatus NewState, EProductionStatus OldState){ return bool(); }

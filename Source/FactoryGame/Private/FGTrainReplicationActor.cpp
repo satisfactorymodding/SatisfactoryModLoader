@@ -19,8 +19,8 @@ void AFGTrainReplicationActor::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	DOREPLIFETIME(AFGTrainReplicationActor, mVehicles);
 	DOREPLIFETIME(AFGTrainReplicationActor, mLastServerSimulationState);
 }
-void AFGTrainReplicationActor::BeginPlay(){ }
-void AFGTrainReplicationActor::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGTrainReplicationActor::BeginPlay(){ Super::BeginPlay(); }
+void AFGTrainReplicationActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 UClass* AFGTrainReplicationActor::GetConcreteClassForTrainSize(int32 numVehicles){ return nullptr; }
 void AFGTrainReplicationActor::SetVehicles(TArray< AFGRailroadVehicle* > vehicles){ }
 const TArray< class AFGRailroadVehicle* >& AFGTrainReplicationActor::GetVehicles() const{ return *(new TArray< class AFGRailroadVehicle* >); }

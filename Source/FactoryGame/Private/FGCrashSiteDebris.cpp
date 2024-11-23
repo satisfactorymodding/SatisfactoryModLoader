@@ -8,7 +8,7 @@
 void AFGCrashSiteDebris::PreSave(FObjectPreSaveContext SaveContext){ }
 void AFGCrashSiteDebris::PreEditChange(FProperty* PropertyAboutToChange){ }
 void AFGCrashSiteDebris::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
-void AFGCrashSiteDebris::Tick(float dt){ }
+void AFGCrashSiteDebris::Tick(float dt){ Super::Tick(dt); }
 bool AFGCrashSiteDebris::ShouldTickIfViewportsOnly() const{ return bool(); }
 void AFGCrashSiteDebris::ResetSavedSimulation(){ }
 void AFGCrashSiteDebris::SpawnSimulation(){ }

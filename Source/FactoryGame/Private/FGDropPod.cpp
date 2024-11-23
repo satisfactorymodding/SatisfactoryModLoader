@@ -46,9 +46,19 @@ void AFGDropPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	DOREPLIFETIME(AFGDropPod, mPropertyReplicator);
 	DOREPLIFETIME(AFGDropPod, mHasBeenOpened);
 }
-void AFGDropPod::BeginPlay(){ }
-void AFGDropPod::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGDropPod::PreSave(FObjectPreSaveContext SaveContext){ Super::PreSave(SaveContext); }
+void AFGDropPod::BeginPlay(){ Super::BeginPlay(); }
+void AFGDropPod::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
+void AFGDropPod::PreSave(FObjectPreSaveContext SaveContext)
+{
+	Super::PreSave(SaveContext);
+#if WITH_EDITOR
+	// Cache scannable data from the world during the cooking process
+	// Avoid attempting to cache the data on the CDOs and Archetypes, and objects without a world context
+	if (SaveContext.IsCooking() && !HasAnyFlags(RF_ClassDefaultObject | RF_ArchetypeObject) && GetWorld() != nullptr) {
+		mDropPodGuid = GetActorGuid();
+	}
+#endif
+}
 void AFGDropPod::GainedSignificance_Implementation(){ }
 void AFGDropPod::LostSignificance_Implementation(){ }
 void AFGDropPod::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }

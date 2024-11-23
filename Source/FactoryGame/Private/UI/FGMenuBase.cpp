@@ -8,6 +8,6 @@ UFGMenuBase::UFGMenuBase(const FObjectInitializer& objectInitializer) : Super(ob
 void UFGMenuBase::ReleaseSlateResources(bool bReleaseChildren){ Super::ReleaseSlateResources(bReleaseChildren); }
 void UFGMenuBase::MenuEnter( UWidget* prevMenu){ }
 void UFGMenuBase::MenuExit( UWidget* nextMenu, bool noAnimation){ }
-void UFGMenuBase::NativeConstruct(){ }
+void UFGMenuBase::NativeConstruct(){ Super::NativeConstruct(); }
 void UFGMenuBase::OnMenuEnterDone(){ }
 void UFGMenuBase::OnMenuExitDone(){ }

@@ -8,8 +8,8 @@ AFGCrashSiteDebrisActor::AFGCrashSiteDebrisActor() : Super() {
 	this->mMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	this->RootComponent = mMesh;
 }
-void AFGCrashSiteDebrisActor::BeginPlay(){ }
-void AFGCrashSiteDebrisActor::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGCrashSiteDebrisActor::BeginPlay(){ Super::BeginPlay(); }
+void AFGCrashSiteDebrisActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGCrashSiteDebrisActor::GainedSignificance_Implementation(){ }
 void AFGCrashSiteDebrisActor::LostSignificance_Implementation(){ }
 void AFGCrashSiteDebrisActor::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

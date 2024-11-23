@@ -23,8 +23,8 @@ AFGBuildableResourceExtractorBase::AFGBuildableResourceExtractorBase() : Super()
 	this->mCanChangePotential = true;
 	this->mHologramClass = AFGResourceExtractorHologram::StaticClass();
 }
-void AFGBuildableResourceExtractorBase::BeginPlay(){ }
-void AFGBuildableResourceExtractorBase::Destroyed(){ }
+void AFGBuildableResourceExtractorBase::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableResourceExtractorBase::Destroyed(){ Super::Destroyed(); }
 bool AFGBuildableResourceExtractorBase::DisconnectExtractableResource(){ return bool(); }
 void AFGBuildableResourceExtractorBase::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableResourceExtractorBase::SetExtractableResource(TScriptInterface< IFGExtractableResourceInterface > extractableInterface){ }

@@ -9,7 +9,7 @@ AFGWallHologram::AFGWallHologram() : Super() {
 	this->mPlacementRequirements = EFactoryBuildingPlacementRequirements::FBPR_MustSnap;
 	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 }
-void AFGWallHologram::BeginPlay(){ }
+void AFGWallHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGWallHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGWallHologram, mUpgradeTarget);

@@ -8,8 +8,8 @@ AFGRailroadSignalHologram::AFGRailroadSignalHologram() : Super() {
 	this->mSnappedRailroadTrack = nullptr;
 	this->mUpgradeTarget = nullptr;
 }
-void AFGRailroadSignalHologram::BeginPlay(){ }
-void AFGRailroadSignalHologram::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGRailroadSignalHologram::BeginPlay(){ Super::BeginPlay(); }
+void AFGRailroadSignalHologram::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGRailroadSignalHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGRailroadSignalHologram, mSnappedConnection);

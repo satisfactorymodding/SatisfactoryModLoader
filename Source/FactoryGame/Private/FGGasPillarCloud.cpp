@@ -4,10 +4,57 @@
 #include "Net/UnrealNetwork.h"
 
 #if WITH_EDITOR
-void AFGGasPillarCloud::GatherNearbyPillarLocations(){ }
-void AFGGasPillarCloud::NotifyGasPillarRemovedFromInfluence( AFGGasPillar* gasPillar){ }
-void AFGGasPillarCloud::DebugDrawCurrentPillarLocations(){ }
-#endif 
+#include "FGGasPillar.h"
+#include "EngineUtils.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Framework/Notifications/NotificationManager.h"
+#include "Widgets/Notifications/SNotificationList.h"
+#endif
+
+#if WITH_EDITOR
+static void ShowPostEditNotification(const FString& Message, SNotificationItem::ECompletionState State)
+{
+	FNotificationInfo Info(FText::FromString(Message));
+	Info.ExpireDuration = 5.0f;
+	Info.bUseLargeFont = false;
+	TSharedPtr<SNotificationItem> Notification = FSlateNotificationManager::Get().AddNotification(Info);
+	if (Notification.IsValid()) {
+		Notification->SetCompletionState(State);
+	}
+}
+
+void AFGGasPillarCloud::GatherNearbyPillarLocations()
+{
+	mProximityPillarWorldLocations.Empty();
+	for (TActorIterator<AFGGasPillar> ActorItr(GetWorld()); ActorItr; ++ActorItr) {
+		if (AFGGasPillar* gasPillar = *ActorItr) {
+			if (GetDistanceTo(gasPillar) <= mOverlapRadius) {
+				mProximityPillarWorldLocations.Add(gasPillar->GetActorLocation() + FVector(0, 0, gasPillar->GetEffectHeightOffset()));
+				gasPillar->SetNearbyGasCloud(this);
+				gasPillar->MarkPackageDirty();
+			}
+		}
+	}
+	const FString Message = FString::Printf(TEXT("Found %d gas pillars around gas cloud '%s'"), mProximityPillarWorldLocations.Num(), *GetName());
+	ShowPostEditNotification(Message, SNotificationItem::CS_Success);
+	this->MarkPackageDirty();
+}
+
+void AFGGasPillarCloud::NotifyGasPillarRemovedFromInfluence(AFGGasPillar* gasPillar)
+{
+	if (gasPillar) {
+		mProximityPillarWorldLocations.Remove(gasPillar->GetActorLocation() + FVector(0, 0, gasPillar->GetEffectHeightOffset()));
+		this->MarkPackageDirty();
+	}
+}
+
+void AFGGasPillarCloud::DebugDrawCurrentPillarLocations()
+{
+	for (const FVector& Vec : mProximityPillarWorldLocations) {
+		UKismetSystemLibrary::DrawDebugArrow(this, FVector(0, 0, 600) + Vec, Vec, 10000, FLinearColor::Red, 10, 20);
+	}
+}
+#endif
 void AFGGasPillarCloud::GainedSignificance_Implementation(){ }
 void AFGGasPillarCloud::LostSignificance_Implementation(){ }
 AFGGasPillarCloud::AFGGasPillarCloud() : Super() {
@@ -19,8 +66,8 @@ AFGGasPillarCloud::AFGGasPillarCloud() : Super() {
 	this->mIsSignificant = false;
 	this->mHasPendingRefreshOfSystems = false;
 }
-void AFGGasPillarCloud::BeginPlay(){ }
-void AFGGasPillarCloud::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGGasPillarCloud::BeginPlay(){ Super::BeginPlay(); }
+void AFGGasPillarCloud::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGGasPillarCloud::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGGasPillarCloud, mRemovedWorldLocations);

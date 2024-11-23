@@ -5,6 +5,6 @@
 AFGFluffActor::AFGFluffActor() : Super() {
 
 }
-void AFGFluffActor::BeginPlay(){ }
-void AFGFluffActor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGFluffActor::Tick(float DeltaTime){ }
+void AFGFluffActor::BeginPlay(){ Super::BeginPlay(); }
+void AFGFluffActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGFluffActor::Tick(float DeltaTime){ Super::Tick(DeltaTime); }

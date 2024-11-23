@@ -6,8 +6,8 @@ UFGFrontendStateComponent::UFGFrontendStateComponent(const FObjectInitializer& O
 	this->mAuthenticationSequence = nullptr;
 	this->mOnlineIntegrationModeModel = nullptr;
 }
-void UFGFrontendStateComponent::BeginPlay(){ }
-void UFGFrontendStateComponent::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void UFGFrontendStateComponent::BeginPlay(){ Super::BeginPlay(); }
+void UFGFrontendStateComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void UFGFrontendStateComponent::OnOnlineIntegrationModeChanged(EOnlineIntegrationMode mode){ }
 void UFGFrontendStateComponent::AuthenticationSequenceComplete(UOnlineAsyncOperation* InAsyncOp){ }
 void UFGFrontendStateComponent::OnlineModeSelectionConfirmed(bool popupConfirmed){ }

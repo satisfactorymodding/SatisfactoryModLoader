@@ -37,9 +37,9 @@ AFGCreatureSpawner::AFGCreatureSpawner() : Super() {
 	this->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	this->RootComponent = mCapsuleComponent;
 }
-void AFGCreatureSpawner::BeginPlay(){ }
-void AFGCreatureSpawner::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGCreatureSpawner::Tick(float DeltaSeconds){ }
+void AFGCreatureSpawner::BeginPlay(){ Super::BeginPlay(); }
+void AFGCreatureSpawner::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGCreatureSpawner::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGCreatureSpawner::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGCreatureSpawner::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGCreatureSpawner::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

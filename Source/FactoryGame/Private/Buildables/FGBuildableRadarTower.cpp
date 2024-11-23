@@ -13,8 +13,8 @@ AFGBuildableRadarTower::AFGBuildableRadarTower() : Super() {
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 	this->NetUpdateFrequency = 1.0;
 }
-void AFGBuildableRadarTower::BeginPlay(){ }
-void AFGBuildableRadarTower::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGBuildableRadarTower::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableRadarTower::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 bool AFGBuildableRadarTower::AddAsRepresentation(){ return bool(); }
 bool AFGBuildableRadarTower::UpdateRepresentation(){ return bool(); }
 bool AFGBuildableRadarTower::RemoveAsRepresentation(){ return bool(); }

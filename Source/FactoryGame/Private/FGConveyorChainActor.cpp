@@ -25,8 +25,8 @@ AFGConveyorChainActor::AFGConveyorChainActor() : Super() {
 	this->bReplicates = true;
 	this->RootComponent = mSceneComponent;
 }
-void AFGConveyorChainActor::BeginPlay(){ }
-void AFGConveyorChainActor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGConveyorChainActor::BeginPlay(){ Super::BeginPlay(); }
+void AFGConveyorChainActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGConveyorChainActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGConveyorChainActor, mTotalLength);
@@ -34,7 +34,7 @@ void AFGConveyorChainActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(AFGConveyorChainActor, mItemAdditions);
 	DOREPLIFETIME(AFGConveyorChainActor, mSpeedOfSlowestBelt);
 }
-void AFGConveyorChainActor::Tick(float DeltaSeconds){ }
+void AFGConveyorChainActor::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGConveyorChainActor::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGConveyorChainActor::BuildLUT(){ }
 void AFGConveyorChainActor::NotifyActorChannelClosedForNetConnection(UNetConnection* NetConnection){ }

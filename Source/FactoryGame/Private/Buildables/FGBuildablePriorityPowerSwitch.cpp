@@ -4,8 +4,8 @@
 #include "Net/UnrealNetwork.h"
 
 void AFGBuildablePriorityPowerSwitch::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGBuildablePriorityPowerSwitch::BeginPlay(){ }
-void AFGBuildablePriorityPowerSwitch::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildablePriorityPowerSwitch::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildablePriorityPowerSwitch::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildablePriorityPowerSwitch::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildablePriorityPowerSwitch, mPriority);

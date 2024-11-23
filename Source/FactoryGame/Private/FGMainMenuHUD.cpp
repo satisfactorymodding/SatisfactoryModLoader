@@ -2,5 +2,5 @@
 
 #include "FGMainMenuHUD.h"
 
-void AFGMainMenuHUD::BeginPlay(){ }
+void AFGMainMenuHUD::BeginPlay(){ Super::BeginPlay(); }
 void AFGMainMenuHUD::Native_ShowMainMenu(){ }

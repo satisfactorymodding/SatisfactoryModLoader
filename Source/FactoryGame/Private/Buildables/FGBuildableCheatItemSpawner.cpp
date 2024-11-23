@@ -16,7 +16,7 @@ void AFGBuildableCheatItemSpawner::GetLifetimeReplicatedProps(TArray< FLifetimeP
 	DOREPLIFETIME(AFGBuildableCheatItemSpawner, mItemRateLimit);
 	DOREPLIFETIME(AFGBuildableCheatItemSpawner, mItemDescriptor);
 }
-void AFGBuildableCheatItemSpawner::BeginPlay(){ }
+void AFGBuildableCheatItemSpawner::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableCheatItemSpawner::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
 void AFGBuildableCheatItemSpawner::Factory_Tick(float dt){ }
 bool AFGBuildableCheatItemSpawner::Factory_PeekOutput_Implementation(const UFGFactoryConnectionComponent* connection, TArray<FInventoryItem>& out_items, TSubclassOf<UFGItemDescriptor> type) const{ return bool(); }

@@ -14,7 +14,7 @@ void AFGResourceNodeFrackingSatellite::GetLifetimeReplicatedProps(TArray<FLifeti
 	DOREPLIFETIME(AFGResourceNodeFrackingSatellite, mState);
 }
 void AFGResourceNodeFrackingSatellite::OnConstruction(const FTransform& Transform){ }
-void AFGResourceNodeFrackingSatellite::BeginPlay(){ }
+void AFGResourceNodeFrackingSatellite::BeginPlay(){ Super::BeginPlay(); }
 void AFGResourceNodeFrackingSatellite::SetIsOccupied(bool occupied){ }
 bool AFGResourceNodeFrackingSatellite::CanPlaceResourceExtractor() const{ return bool(); }
 void AFGResourceNodeFrackingSatellite::OnRep_IsOccupied(){ }

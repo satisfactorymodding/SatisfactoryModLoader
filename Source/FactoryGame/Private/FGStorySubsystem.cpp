@@ -14,7 +14,7 @@ AFGStorySubsystem::AFGStorySubsystem() : Super() {
 }
 AFGStorySubsystem* AFGStorySubsystem::Get(UWorld* world){ return nullptr; }
 AFGStorySubsystem* AFGStorySubsystem::Get(UObject* worldContext){ return nullptr; }
-void AFGStorySubsystem::BeginPlay(){ }
+void AFGStorySubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGStorySubsystem::OnOnboardingStepUpdated( UFGOnboardingStep* newOnboardingStep){ }
 void AFGStorySubsystem::OnSchematicsPurchased(TArray< TSubclassOf< UFGSchematic > > newSchematics,  AFGCharacterPlayer* purchaseInstigator){ }
 void AFGStorySubsystem::OnGamePhaseChanged(UFGGamePhase* currentGamePhase){ }

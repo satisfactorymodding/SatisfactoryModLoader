@@ -2,5 +2,5 @@
 
 #include "FGPipelineFlowIndicatorComponent.h"
 
-void UFGPipelineFlowIndicatorComponent::BeginPlay(){ }
+void UFGPipelineFlowIndicatorComponent::BeginPlay(){ Super::BeginPlay(); }
 void UFGPipelineFlowIndicatorComponent::OnFluidDescriptorSet_Implementation(TSubclassOf< UFGItemDescriptor > fluidDescriptor){ }

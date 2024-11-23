@@ -19,7 +19,7 @@ AFGChainsaw::AFGChainsaw() : Super() {
 	this->mDefaultEquipmentActions = 1;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
-void AFGChainsaw::Tick(float dt){ }
+void AFGChainsaw::Tick(float dt){ Super::Tick(dt); }
 void AFGChainsaw::LoadFromItemState_Implementation(const FFGDynamicStruct& itemState){ }
 FFGDynamicStruct AFGChainsaw::SaveToItemState_Implementation() const{ return FFGDynamicStruct(); }
 void AFGChainsaw::DisableEquipment(){ }

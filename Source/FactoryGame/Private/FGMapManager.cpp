@@ -19,9 +19,9 @@ AFGMapManager::AFGMapManager() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.1;
 	this->SetHidden(false);
 }
-void AFGMapManager::BeginPlay(){ }
-void AFGMapManager::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGMapManager::Tick(float dt){ }
+void AFGMapManager::BeginPlay(){ Super::BeginPlay(); }
+void AFGMapManager::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGMapManager::Tick(float dt){ Super::Tick(dt); }
 void AFGMapManager::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGMapManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGMapManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

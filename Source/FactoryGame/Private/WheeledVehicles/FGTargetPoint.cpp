@@ -4,7 +4,7 @@
 #include "Net/UnrealNetwork.h"
 
 #if DEBUG_SELF_DRIVING
-void AFGTargetPoint::Tick(float DeltaSeconds){ }
+void AFGTargetPoint::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 #endif 
 AFGTargetPoint::AFGTargetPoint() : Super() {
 	this->mOwningList = nullptr;
@@ -58,8 +58,8 @@ bool AFGTargetPoint::IsLockedByDocking(const  AFGWheeledVehicleInfo* vehicle) co
 void AFGTargetPoint::DrawTargetDebug( AFGWheeledVehicleInfo* claimant, bool drawSearchPoints, bool drawSmall){ }
 int AFGTargetPoint::GetDebugLevel() const{ return int(); }
 void AFGTargetPoint::FindBlockingVehicles( AFGWheeledVehicleInfo* blockedVehicle, TSet< const  AFGWheeledVehicleInfo* >& blockingVehicles) const{ }
-void AFGTargetPoint::BeginPlay(){ }
-void AFGTargetPoint::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGTargetPoint::BeginPlay(){ Super::BeginPlay(); }
+void AFGTargetPoint::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGTargetPoint::OnRep_IsLoopTarget(){ }
 void AFGTargetPoint::OnRep_IsDockingTarget(){ }
 void AFGTargetPoint::OnRep_TargetSpeed(){ }

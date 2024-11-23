@@ -7,7 +7,7 @@ void AFGDecorHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGDecorHologram, mDecorMesh);
 }
-void AFGDecorHologram::BeginPlay(){ }
+void AFGDecorHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGDecorHologram::CheckValidPlacement(){ }
 void AFGDecorHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 USceneComponent* AFGDecorHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }

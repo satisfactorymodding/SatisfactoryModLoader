@@ -2,6 +2,6 @@
 
 #include "Hologram/FGGeoThermalGeneratorHologram.h"
 
-void AFGGeoThermalGeneratorHologram::BeginPlay(){ }
+void AFGGeoThermalGeneratorHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGGeoThermalGeneratorHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 bool AFGGeoThermalGeneratorHologram::CanOccupyResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }

@@ -9,7 +9,7 @@ AFGBuildableCircuitSwitch::AFGBuildableCircuitSwitch() : Super() {
 	this->mBuildingTag = TEXT("");
 	this->mInteractionRegisterPlayerWithCircuit = true;
 }
-void AFGBuildableCircuitSwitch::BeginPlay(){ }
+void AFGBuildableCircuitSwitch::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableCircuitSwitch::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableCircuitSwitch, mIsSwitchOn);

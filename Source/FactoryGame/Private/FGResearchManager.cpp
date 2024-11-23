@@ -33,7 +33,7 @@ void AFGResearchManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(AFGResearchManager, mCanRerollHardDrives);
 }
 void AFGResearchManager::PreInitializeComponents(){ Super::PreInitializeComponents(); }
-void AFGResearchManager::BeginPlay(){ }
+void AFGResearchManager::BeginPlay(){ Super::BeginPlay(); }
 AFGResearchManager* AFGResearchManager::Get( UWorld* world){ return nullptr; }
 AFGResearchManager* AFGResearchManager::Get( UObject* worldContext){ return nullptr; }
 void AFGResearchManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

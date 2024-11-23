@@ -35,8 +35,8 @@ UFGColoredVTXAnimMesh::UFGColoredVTXAnimMesh() : Super() {
 	this->mProductionStateID = 22;
 }
 void UFGColoredVTXAnimMesh::UpdateEffectTimeline(const float Dt, const float Dist, const float WorldTime){ }
-void UFGColoredVTXAnimMesh::BeginPlay(){ }
-void UFGColoredVTXAnimMesh::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void UFGColoredVTXAnimMesh::BeginPlay(){ Super::BeginPlay(); }
+void UFGColoredVTXAnimMesh::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void UFGColoredVTXAnimMesh::GainedSignificance_Implementation(){ }
 void UFGColoredVTXAnimMesh::LostSignificance_Implementation(){ }
 void UFGColoredVTXAnimMesh::StopAnimation(float WorldTime){ }

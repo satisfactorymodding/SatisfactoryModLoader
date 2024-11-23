@@ -13,8 +13,8 @@ void AFGUnlockPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(AFGUnlockPickup, mPickupState);
 }
 void AFGUnlockPickup::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGUnlockPickup::BeginPlay(){ }
-void AFGUnlockPickup::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGUnlockPickup::BeginPlay(){ Super::BeginPlay(); }
+void AFGUnlockPickup::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 bool AFGUnlockPickup::ShouldSave_Implementation() const{ return bool(); }
 void AFGUnlockPickup::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGUnlockPickup::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }

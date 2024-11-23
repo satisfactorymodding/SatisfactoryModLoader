@@ -24,8 +24,8 @@ void AFGBuildableWire::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 	DOREPLIFETIME(AFGBuildableWire, mConnectionLocations);
 }
 void AFGBuildableWire::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGBuildableWire::BeginPlay(){ }
-void AFGBuildableWire::Destroyed(){ }
+void AFGBuildableWire::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableWire::Destroyed(){ Super::Destroyed(); }
 int32 AFGBuildableWire::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 bool AFGBuildableWire::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildableWire::StartIsLookedAtForDismantle_Implementation(AFGCharacterPlayer* byCharacter){ }

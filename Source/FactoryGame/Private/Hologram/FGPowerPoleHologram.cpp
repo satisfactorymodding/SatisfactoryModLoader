@@ -3,8 +3,8 @@
 #include "Hologram/FGPowerPoleHologram.h"
 #include "Net/UnrealNetwork.h"
 
-void AFGPowerPoleHologram::BeginPlay(){ }
-void AFGPowerPoleHologram::Destroyed(){ }
+void AFGPowerPoleHologram::BeginPlay(){ Super::BeginPlay(); }
+void AFGPowerPoleHologram::Destroyed(){ Super::Destroyed(); }
 void AFGPowerPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPowerPoleHologram, mSnapWire);

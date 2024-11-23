@@ -12,8 +12,8 @@ AFGJumpPadHologram::AFGJumpPadHologram() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGJumpPadHologram::BeginPlay(){ }
-void AFGJumpPadHologram::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGJumpPadHologram::Tick(float dt){ }
+void AFGJumpPadHologram::BeginPlay(){ Super::BeginPlay(); }
+void AFGJumpPadHologram::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGJumpPadHologram::Tick(float dt){ Super::Tick(dt); }
 void AFGJumpPadHologram::DisplayNearbyJumpPadTrajectories(){ }
 void AFGJumpPadHologram::OnTraceCompleted(const FTraceHandle& Handle, FOverlapDatum& Data){ }

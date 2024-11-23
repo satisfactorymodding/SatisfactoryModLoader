@@ -13,6 +13,6 @@ AFGSignificanceActor::AFGSignificanceActor() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGSignificanceActor::BeginPlay(){ }
-void AFGSignificanceActor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGSignificanceActor::Tick(float DeltaTime){ }
+void AFGSignificanceActor::BeginPlay(){ Super::BeginPlay(); }
+void AFGSignificanceActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGSignificanceActor::Tick(float DeltaTime){ Super::Tick(DeltaTime); }

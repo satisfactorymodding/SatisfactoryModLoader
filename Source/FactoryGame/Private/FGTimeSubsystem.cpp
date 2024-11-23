@@ -29,8 +29,8 @@ AFGTimeOfDaySubsystem::AFGTimeOfDaySubsystem() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGTimeOfDaySubsystem::BeginPlay(){ }
-void AFGTimeOfDaySubsystem::Tick(float dt){ }
+void AFGTimeOfDaySubsystem::BeginPlay(){ Super::BeginPlay(); }
+void AFGTimeOfDaySubsystem::Tick(float dt){ Super::Tick(dt); }
 void AFGTimeOfDaySubsystem::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos){ }
 void AFGTimeOfDaySubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTimeOfDaySubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

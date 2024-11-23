@@ -19,7 +19,7 @@ void AFGBuildableSignSupport::GetLifetimeReplicatedProps(TArray< FLifetimeProper
 	DOREPLIFETIME(AFGBuildableSignSupport, mHeight);
 	DOREPLIFETIME(AFGBuildableSignSupport, mPoleMesh);
 }
-void AFGBuildableSignSupport::BeginPlay(){ }
+void AFGBuildableSignSupport::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableSignSupport::SetPoleScale(FVector2D poleScale){ }
 void AFGBuildableSignSupport::OnBuildEffectActorFinished(){ }
 TArray<struct FInstanceData> AFGBuildableSignSupport::GetActorLightweightInstanceData_Implementation(){ return TArray<struct FInstanceData>(); }

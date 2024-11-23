@@ -25,8 +25,8 @@ AFGWaterVolume::AFGWaterVolume() : Super() {
 	this->bWaterVolume = true;
 }
 void AFGWaterVolume::OnConstruction(const FTransform& transform){ }
-void AFGWaterVolume::BeginPlay(){ }
-void AFGWaterVolume::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGWaterVolume::BeginPlay(){ Super::BeginPlay(); }
+void AFGWaterVolume::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 bool AFGWaterVolume::IsOverlapInVolume(const  USceneComponent& testComponent) const{ return bool(); }
 void AFGWaterVolume::GainedSignificance_Implementation(){ }
 void AFGWaterVolume::LostSignificance_Implementation(){ }
