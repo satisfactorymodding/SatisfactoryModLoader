@@ -55,7 +55,7 @@ bool WidgetBlueprintHookParentValidator::ValidateDirectWidget(UWidget* Widget, U
 	return true;
 }
 
-bool WidgetBlueprintHookParentValidator::ValidateIndirectChildWidget(UWidget* Widget, UPanelWidget*& OutPanelWidget, bool bCheckVariableName) {
+bool WidgetBlueprintHookParentValidator::ValidateIndirectChildWidget(UWidget* Widget, UPanelWidget*& OutPanelWidget, bool bCheckVariableName, FName ParentNameToCheck) {
 	if (!ValidateWidgetBase(Widget, bCheckVariableName)) {
 		return false;
 	}
@@ -63,15 +63,18 @@ bool WidgetBlueprintHookParentValidator::ValidateIndirectChildWidget(UWidget* Wi
 		return false;
 	}
 	UPanelWidget* ParentPanelWidget = Widget->Slot->Parent;
+	while (ParentPanelWidget && (!ParentNameToCheck.IsNone() && ParentPanelWidget->GetFName() != ParentNameToCheck)) {
+		ParentPanelWidget = ParentPanelWidget->GetParent();
+	}
 	return ValidateDirectWidget(ParentPanelWidget, OutPanelWidget, false);
 }
 
-bool WidgetBlueprintHookParentValidator::ValidateParentWidget(UWidget* Widget, EWidgetBlueprintHookParentType ParentType, UPanelWidget*& OutParentWidget, bool bCheckVariableName) {
+bool WidgetBlueprintHookParentValidator::ValidateParentWidget(UWidget* Widget, EWidgetBlueprintHookParentType ParentType, UPanelWidget*& OutParentWidget, bool bCheckVariableName, FName ParentNameToCheck) {
 	if (ParentType == EWidgetBlueprintHookParentType::Direct) {
 		return ValidateDirectWidget(Widget, OutParentWidget, bCheckVariableName);
 	}
 	if (ParentType == EWidgetBlueprintHookParentType::Indirect_Child) {
-		return ValidateIndirectChildWidget(Widget, OutParentWidget, bCheckVariableName);
+		return ValidateIndirectChildWidget(Widget, OutParentWidget, bCheckVariableName, ParentNameToCheck);
 	}
 	return false;
 }
@@ -94,6 +97,14 @@ void UWidgetBlueprintHookData::SetParentWidgetType(EWidgetBlueprintHookParentTyp
 
 void UWidgetBlueprintHookData::SetParentWidgetName(FName InParentWidgetName) {
 	this->ParentWidgetName = InParentWidgetName;
+	ReinitializePanelSlotTemplate();
+}
+
+void UWidgetBlueprintHookData::SetIndirectParentWidgetNameToAttachTo(FName InIndirectParentWidgetNameToAttachTo) {
+	if (ParentWidgetType != EWidgetBlueprintHookParentType::Indirect_Child) {
+		return;
+	}
+	this->IndirectParentWidgetNameToAttachTo = InIndirectParentWidgetNameToAttachTo;
 	ReinitializePanelSlotTemplate();
 }
 
@@ -145,7 +156,7 @@ void UWidgetBlueprintHookData::ReinitializeNewWidgetTemplate() {
 }
 
 void UWidgetBlueprintHookData::ReinitializePanelSlotTemplate() {
-	if (const UPanelWidget* PanelWidget = ResolveParentWidget()) {
+	if (const UPanelWidget* PanelWidget = ResolveParentWidget(true)) {
 		PanelSlotClass = UPanelWidgetAccessor::GetPanelSlotClass(PanelWidget);
 	} else {
 		PanelSlotClass = NULL;
@@ -194,7 +205,8 @@ void UWidgetBlueprintHookData::PostEditChangeProperty(FPropertyChangedEvent& Pro
 	const FName PropertyName = PropertyChangedEvent.MemberProperty->GetFName();
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, WidgetClass) ||
 		PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, ParentWidgetType) ||
-		PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, ParentWidgetName)) {
+		PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, ParentWidgetName) ||
+		PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, IndirectParentWidgetNameToAttachTo)) {
 		ReinitializePanelSlotTemplate();
 		
 	} else if (PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, NewWidgetClass)) {
@@ -225,7 +237,23 @@ TArray<FString> UWidgetBlueprintHookData::GetParentWidgetNames() const {
 	return ResultWidgetNames;
 }
 
-UPanelWidget* UWidgetBlueprintHookData::ResolveParentWidget() const {
+TArray<FString> UWidgetBlueprintHookData::GetIndirectParentWidgetNames() const {
+	TArray<FString> ResultWidgetNames;
+
+	UPanelWidget* ResultParentWidget;
+
+	UPanelWidget* ParentPanelWidget = ResolveParentWidget(false);
+	while (ParentPanelWidget) {
+		if (WidgetBlueprintHookParentValidator::ValidateDirectWidget(ParentPanelWidget, ResultParentWidget, false)) {
+			ResultWidgetNames.Add(ParentPanelWidget->GetName());
+		}
+		ParentPanelWidget = ParentPanelWidget->GetParent();
+	}
+
+	return ResultWidgetNames;
+}
+
+UPanelWidget* UWidgetBlueprintHookData::ResolveParentWidget(bool bFollowIndirectParents) const {
 	const UWidgetBlueprintGeneratedClass* WidgetBlueprintClass = Cast<UWidgetBlueprintGeneratedClass>(WidgetClass.LoadSynchronous());
 	if (WidgetBlueprintClass == NULL) {
 		return NULL;
@@ -234,7 +262,7 @@ UPanelWidget* UWidgetBlueprintHookData::ResolveParentWidget() const {
 	UWidget* ParentWidget = WidgetBlueprintClass->GetWidgetTreeArchetype()->FindWidget(ParentWidgetName);
 
 	UPanelWidget* OutParentWidget;
-	if (WidgetBlueprintHookParentValidator::ValidateParentWidget(ParentWidget, ParentWidgetType, OutParentWidget, false)) {
+	if (WidgetBlueprintHookParentValidator::ValidateParentWidget(ParentWidget, ParentWidgetType, OutParentWidget, false, bFollowIndirectParents ? IndirectParentWidgetNameToAttachTo : FName{})) {
 		return OutParentWidget;
 	}
 	return NULL;
@@ -258,7 +286,7 @@ void UWidgetBlueprintHookManager::RegisterWidgetBlueprintHook(UWidgetBlueprintHo
 		return;
 	}
 	
-	UPanelWidget* PanelWidget = HookData->ResolveParentWidget();
+	UPanelWidget* PanelWidget = HookData->ResolveParentWidget(true);
 
 	if (PanelWidget == NULL) {
 		UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Failed to hook widget blueprint %s, failed to resolve parent widget %s inside %s"),
