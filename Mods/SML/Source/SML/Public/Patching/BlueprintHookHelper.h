@@ -80,8 +80,8 @@ public:
 	 * @returns A pointer to the value, which can be used to get and/or set the underlying value.
 	 */
 	template<typename TEnum>
-	TEnum* GetContextVarEnumPtr(const TCHAR* PropertyName, int32 ArrayIndex = 0) const {
-		FEnumProperty* Property = GetContextVarProperty<FEnumProperty>(PropertyName);
+	TEnum* GetContextVarEnumPtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
+		FEnumProperty* Property = GetContextVarProperty<FEnumProperty>(VariableName);
 		// K2 only supports byte enums right now, according to a comment in EdGraphSchema_K2.cpp
 		return (TEnum*)Property->ContainerPtrToValuePtr<uint8>(GetContext(), ArrayIndex);
 	}
@@ -93,8 +93,8 @@ public:
 	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
 	 * @param ArrayIndex - If the variable represents a statically sized array, returns the value at the specified index.
 	 */
-	bool GetContextVarBool(const TCHAR* PropertyName, int32 ArrayIndex = 0) const {
-		FBoolProperty* Property = GetContextVarProperty<FBoolProperty>(PropertyName);
+	bool GetContextVarBool(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
+		FBoolProperty* Property = GetContextVarProperty<FBoolProperty>(VariableName);
 		return Property->GetPropertyValue_InContainer(GetContext(), ArrayIndex);
 	}
 	
@@ -105,8 +105,8 @@ public:
 	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
 	 * @param ArrayIndex - If the variable represents a statically sized array, sets the value at the specified index.
 	 */
-	void SetContextVarBool(const TCHAR* PropertyName, bool Value, int32 ArrayIndex = 0) const {
-		FBoolProperty* Property = GetContextVarProperty<FBoolProperty>(PropertyName);
+	void SetContextVarBool(const TCHAR* VariableName, bool Value, int32 ArrayIndex = 0) const {
+		FBoolProperty* Property = GetContextVarProperty<FBoolProperty>(VariableName);
 		Property->SetPropertyValue_InContainer(GetContext(), Value, ArrayIndex);
 	}
 
@@ -117,9 +117,10 @@ public:
 	 * This exists because the reading the FMapProperty will return an FScriptMap, which is basically-unusable without being wrapped in an FScriptMapHelper.
 	 * 
 	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
+	 * @returns An FScriptMapHelper that can be used to read/write contents of the underlying map.
 	 */
-	FScriptMapHelper GetContextVarMapHelper(const TCHAR* PropertyName) const {
-		FMapProperty* Property = GetContextVarProperty<FMapProperty>(PropertyName);
+	FScriptMapHelper GetContextVarMapHelper(const TCHAR* VariableName) const {
+		FMapProperty* Property = GetContextVarProperty<FMapProperty>(VariableName);
 		FScriptMap* ScriptMap = Property->GetPropertyValuePtr_InContainer(GetContext());
 		return FScriptMapHelper(Property, ScriptMap);
 	}
