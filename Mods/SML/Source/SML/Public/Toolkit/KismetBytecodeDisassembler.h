@@ -5,14 +5,8 @@
 
 class SML_API FSMLKismetBytecodeDisassembler {
 public:
-	/** Converts a single expression into json object, provided Script and SelfScope have been set */
-	TSharedPtr<FJsonObject> SerializeExpression(int32& ScriptIndex);
-
 	/** Parses a block of statements until it hits return */
 	TArray<TSharedPtr<FJsonValue>> SerializeFunction(UStruct* Function);
-
-	/** Converts a single statement at the given index into json object. Will throw an error if the statement index does not correspond to the start of a statement.*/
-	TSharedPtr<FJsonObject> SerializeStatement(UStruct* Function, int32 StatementIndex);
 
 	/** Computes length of the statement in bytes and returns it. Returns false if given index does not correspond to any statement (e.g if it is inside of some statement) */
 	bool GetStatementLength(UStruct* Function, int32 StatementIndex, int32& OutStatementLength);
@@ -23,13 +17,15 @@ public:
 	/** Returns index of the first statement using given opcode */
 	bool FindFirstStatementOfType(UStruct* Function, int32 StartIndex, uint8 StatementOpcode, int32& OutStatementIndex);
 
-
 private:
 	TWeakObjectPtr<UClass> SelfScope;
 	TArray<uint8> Script;
 
 	/** Internal utility function to convert a single statement into json object, provided Script and SelfScope have been set. Will include a StatementIndex in the returned json */
 	TSharedPtr<FJsonObject> SerializeStatement(int32& StatementIndex);
+
+	/** Converts a single expression into json object, provided Script and SelfScope have been set */
+	TSharedPtr<FJsonObject> SerializeExpression(int32& ScriptIndex);
 
 	//Begin script bytecode parsing methods
 	int32 ReadInt(int32& ScriptIndex);

@@ -1081,13 +1081,6 @@ TArray<TSharedPtr<FJsonValue>> FSMLKismetBytecodeDisassembler::SerializeFunction
 	return Statements;
 }
 
-TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeStatement(UStruct* Function, int32 StatementIndex) {
-	this->Script = Function->Script;
-	this->SelfScope = Function->GetTypedOuter<UClass>();
-
-	return SerializeStatement(StatementIndex);
-}
-
 bool FSMLKismetBytecodeDisassembler::FindFirstStatementOfType(UStruct* Function, int32 StartScriptIndex, uint8 ExpectedStatementOpcode, int32& OutStatementIndex) {
 	this->Script = Function->Script;
 	this->SelfScope = Function->GetTypedOuter<UClass>();
