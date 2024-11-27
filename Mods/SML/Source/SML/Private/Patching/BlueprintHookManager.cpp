@@ -43,9 +43,10 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, const int3
 	DebugDumpFunctionScriptCode(Function, OriginalHookOffset, ResolvedHookOffset, TEXT("BeforeHook"));
 #endif
 
-	// Will throw an error if the resolved hook offset is not at properly-aligned, parseable opcode
+	// Will assert if the resolved hook offset is not at properly-aligned, parseable statement
+	int32 OutStatementLength;
 	FSMLKismetBytecodeDisassembler Disassembler;
-	Disassembler.SerializeStatement(Function, ResolvedHookOffset);
+	Disassembler.GetStatementLength(Function, ResolvedHookOffset, OutStatementLength);
 
 	// First we go over the existing code and add UBlueprintHookManager::JumpBytesRequired to all
 	// the offsets. Afterwards we will move the relevant code and add the jump.  Doing it in this
@@ -107,7 +108,8 @@ void UBlueprintHookManager::ModifyOffsetsForNewHookOffset(TArray<uint8>& Script,
 	//it needs to be modified to work correctly. For now, the only predictable solution is to forbid hooking functions with them.
 	fgcheckf(Opcode != EX_ComputedJump, TEXT("Cannot hook a blueprint function that contains an EX_ComputedJump instruction. There's no way to guarantee it would not crash at some point."));
 
-	int32 IndexAfterOpcode = 1 + Expression->GetIntegerField(TEXT("OpcodeIndex"));
+	int32 OpcodeIndex = Expression->GetIntegerField(TEXT("OpcodeIndex"));
+	int32 IndexAfterOpcode = OpcodeIndex + 1;
 
 	// This switch was created by comparing to the serialization done in FSMLKismetBytecodeDisassembler::SerializeExpression to
 	// identify which opcodes can jump to offsets and where exactly those jump targets reside in the script.
@@ -129,13 +131,37 @@ void UBlueprintHookManager::ModifyOffsetsForNewHookOffset(TArray<uint8>& Script,
 	case EX_Context:
 	case EX_Context_FailSilent:
 		{
-			int32 CurrentJumpOffset = Expression->GetIntegerField(TEXT("SkipOffsetForNull"));
-			if (CurrentJumpOffset > HookOffset) {
+			// Context instructions' SkipOffsetForNull are not absolute - they are relative to the opcode index of the enclosed Expression. For all
+			// known examples, they also just point to right after the Context because the intent is the value tells the code where to continue
+			// executing when the Context is null/invalid, and that is quite naturally going to be the next statement. But there's nothing preventing
+			// the offset from jumping to anywhere, so we'll handle the general case to be future-proof.
+			// 
+			// SkipOffsetForNull only needs to be adjusted if the inserting hook offset is between the Context instruction and the absolute address
+			// of the jump offset, because inserting the hook pushes them away from each other.
+
+			int32 CurrentSkipOffset = Expression->GetIntegerField(TEXT("SkipOffsetForNull"));
+			int32 AbsoluteJumpOffset = Expression->GetObjectField(TEXT("Expression"))->GetIntegerField(TEXT("OpcodeIndex")) + CurrentSkipOffset;
+
+			int32 JumpAdjustment = 0;
+			// Jumping backwards to before the Context instruction and we're hooking at/after the absolute jump offset and at/before the context instruction
+			if (AbsoluteJumpOffset < OpcodeIndex && HookOffset >= AbsoluteJumpOffset && HookOffset <= OpcodeIndex)
+			{
+				// Jump an extra jump instruction backwards
+				JumpAdjustment = -UBlueprintHookManager::JumpBytesRequired;
+			}
+			// Jumping forwards to after the Context instruction and we're hooking at/after the next statement and BEFORE the absolute jump offset
+			else if (AbsoluteJumpOffset > OpcodeIndex && HookOffset > OpcodeIndex && HookOffset < AbsoluteJumpOffset)
+			{
+				// Jump an extra jump instruction forwards
+				JumpAdjustment = UBlueprintHookManager::JumpBytesRequired;
+			}
+
+			if (JumpAdjustment != 0) {
 				// The offset is just past the Context object, so we have to get its size so we can write to the correct place
 				TSharedPtr<FJsonObject> Context = Expression->GetObjectField(TEXT("Context"));
-				int32 SizeOfContext = (int32)Context->GetNumberField(TEXT("OpSizeInBytes"));
-				int32 IndexOfCurrentJumpOffset = IndexAfterOpcode + SizeOfContext;
-				FPlatformMemory::WriteUnaligned(&Script[IndexOfCurrentJumpOffset], (CodeSkipSizeType)(CurrentJumpOffset + UBlueprintHookManager::JumpBytesRequired));
+				int32 SizeOfContext = Context->GetIntegerField(TEXT("OpSizeInBytes"));
+				int32 IndexOfCurrentSkipOffset = IndexAfterOpcode + SizeOfContext;
+				FPlatformMemory::WriteUnaligned(&Script[IndexOfCurrentSkipOffset], (CodeSkipSizeType)(CurrentSkipOffset + JumpAdjustment));
 			}
 			break;
 		}
@@ -147,18 +173,18 @@ void UBlueprintHookManager::ModifyOffsetsForNewHookOffset(TArray<uint8>& Script,
 				int32 IndexOfCurrentJumpOffset = IndexAfterOpcode + sizeof(uint16);
 				FPlatformMemory::WriteUnaligned(&Script[IndexOfCurrentJumpOffset], (CodeSkipSizeType)(CurrentJumpOffset + UBlueprintHookManager::JumpBytesRequired));
 				IndexOfCurrentJumpOffset += sizeof(CodeSkipSizeType); // Move past the offset we just wrote
-				int32 SwitchOpSizeInBytes = (int32)Expression->GetObjectField(TEXT("Expression"))->GetNumberField(TEXT("OpSizeInBytes"));
+				int32 SwitchOpSizeInBytes = Expression->GetObjectField(TEXT("Expression"))->GetIntegerField(TEXT("OpSizeInBytes"));
 				IndexOfCurrentJumpOffset += SwitchOpSizeInBytes; // Move past the switch expression
 				// Each case in the switch has an absolute offset reference to the next case, so we have to adjust each of them, as well
 				TArray<TSharedPtr<FJsonValue>> Cases = Expression->GetArrayField(TEXT("Cases"));
 				for (TSharedPtr<FJsonValue>& Case : Cases) {
 					TSharedPtr<FJsonObject> NextCase = Case->AsObject();
-					int32 CaseValueSizeInBytes = (int32)NextCase->GetObjectField(TEXT("CaseValue"))->GetNumberField(TEXT("OpSizeInBytes"));
+					int32 CaseValueSizeInBytes = NextCase->GetObjectField(TEXT("CaseValue"))->GetIntegerField(TEXT("OpSizeInBytes"));
 					IndexOfCurrentJumpOffset += CaseValueSizeInBytes;
-					int32 OffsetToNextCase = (int32)NextCase->GetNumberField(TEXT("OffsetToNextCase"));
+					int32 OffsetToNextCase = NextCase->GetIntegerField(TEXT("OffsetToNextCase"));
 					FPlatformMemory::WriteUnaligned(&Script[IndexOfCurrentJumpOffset], (CodeSkipSizeType)(OffsetToNextCase + UBlueprintHookManager::JumpBytesRequired));
 					IndexOfCurrentJumpOffset += sizeof(CodeSkipSizeType);
-					int32 CaseResultSizeInBytes = (int32)NextCase->GetObjectField(TEXT("CaseResult"))->GetNumberField(TEXT("OpSizeInBytes"));
+					int32 CaseResultSizeInBytes = NextCase->GetObjectField(TEXT("CaseResult"))->GetIntegerField(TEXT("OpSizeInBytes"));
 					IndexOfCurrentJumpOffset += CaseResultSizeInBytes;
 				}
 			}
