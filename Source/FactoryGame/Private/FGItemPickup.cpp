@@ -59,6 +59,8 @@ FText AFGItemPickup::GetLookAtDecription_Implementation( AFGCharacterPlayer* byC
 void AFGItemPickup::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGItemPickup::PickUpByCharacter(AFGCharacterPlayer* byCharacter){ }
 const AFGPlayerController* AFGItemPickup::EatenByCreature(const int32 amount){ return nullptr; }
+bool AFGItemPickup::CanEverRespawn() const{ return bool(); }
+bool AFGItemPickup::CanBePickedUp(class AFGCharacterPlayer* byCharacter) const{ return bool(); }
 void AFGItemPickup::Multicast_PlayPickupEffect_Implementation(){ }
 float AFGItemPickup::GetNormalizedCollectionProgress(){ return float(); }
 void AFGItemPickup::RespawnItems(){ }

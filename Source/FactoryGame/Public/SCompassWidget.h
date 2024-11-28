@@ -73,7 +73,7 @@ public:
 
 	static void DrawEntry(const FVector2f& RootLocation, const FCompassEntry& Entry, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32& LayerId);
 	static void DrawEntrySpecialEffect(const FVector2f& RootLocation, const FCompassEntry& Entry, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32& LayerId);
-	static void UpdateEntryTextMetrics( FCompassEntry& Entry, const FSlateFontInfo& FontInfo );
+	static void UpdateEntryTextRenderData( FCompassEntry& Entry, const FSlateFontInfo& FontInfo );
 	
 protected:
 	TWeakObjectPtr<UFGCompassWidget> mOwnerCompassWidget;

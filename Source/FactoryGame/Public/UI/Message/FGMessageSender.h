@@ -25,17 +25,17 @@ public:
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
 	FText mSenderName;
 
-	/** Mail adress of the sender */
+	/** Jingle to play when receiving a message from this sender. */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
-	FText mSenderMail;
+	class UAkAudioEvent* mMessageJingle;
 
-	/** Image of the sender */
+	/** Music to play when displaying a presentation from this sender. */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
-	class UTexture2D* mTexture;
+	class UAkAudioEvent* mPresentationMusic;
 
-	/** Color of the sender */
+	/** Logo material for this sender. */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
-	FLinearColor mSenderColor = FLinearColor::White;
+	class UMaterialInterface* mLogoMaterial;
 
 	/** The tag used when importing messages. Case-insensitive. */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Import" )

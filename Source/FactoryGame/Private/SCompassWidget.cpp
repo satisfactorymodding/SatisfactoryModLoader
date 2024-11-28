@@ -30,4 +30,4 @@ FChildren* SCompassWidget::GetChildren(){ return nullptr; }
 void SCompassWidget::OnArrangeChildren(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const{ }
 void SCompassWidget::DrawEntry(const FVector2f& RootLocation, const FCompassEntry& Entry, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32& LayerId){ }
 void SCompassWidget::DrawEntrySpecialEffect(const FVector2f& RootLocation, const FCompassEntry& Entry, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32& LayerId){ }
-void SCompassWidget::UpdateEntryTextMetrics(FCompassEntry& Entry, const FSlateFontInfo& FontInfo){ }
+void SCompassWidget::UpdateEntryTextRenderData(FCompassEntry& Entry, const FSlateFontInfo& FontInfo){ }

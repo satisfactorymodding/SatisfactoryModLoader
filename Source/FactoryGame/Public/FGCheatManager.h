@@ -272,6 +272,10 @@ public:
 	void Server_SetSAMIntensity( int32 newSAMIntensity );
 	UFUNCTION( exec, CheatBoard, category = "World|Alien" )
 	void SetSAMIntensity( int32 newSAMIntensity );
+	UFUNCTION( Server, Reliable )
+	void Server_SpawnFallingGiftBundle();
+	UFUNCTION( exec, CheatBoard, category = "Creature" )
+	void SpawnFallingGiftBundle();
 	
 	/****************************************************************
 	 * Creatures

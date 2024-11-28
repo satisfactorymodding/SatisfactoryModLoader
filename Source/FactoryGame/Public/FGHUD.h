@@ -65,8 +65,12 @@ struct FCompassEntry
 	/** True if special effect is visible, special effect will be set to false if time left expires */
 	bool bSpecialEffectVisible{true};
 	float SpecialEffectTime{0.0f};
+	/** This is actually not just text dimensions, but also the glyph sequence for this text */
 	bool bHasCachedTextDimensions{false};
 	FVector2f CachedTextDimensions{ForceInit};
+	/** Current font scaling this glyph sequence has been initialized with. Used to invalidate text dimensions if scaling changes */
+	float CachedRenderedTextScaling{0.0f};
+	TSharedPtr<const FShapedGlyphSequence> CachedShapedGlyphSequence;
 	float CachedDistanceToCamera{0.0f};
 
 	float MaxDrawRange{-1.0f};
@@ -256,6 +260,11 @@ public:
 
 	UFUNCTION()
 	void OnActorRepresentationFiltered( ERepresentationType type, bool visible );
+
+	void OnCultureChanged();
+
+	/** Invalidates text dimensions and glyph sequences that have been cached by the compass widget */
+	void InvalidateCachedTextDimensionsAndGlyphs();
 
 	void SetCompassEntryVisibility(UFGActorRepresentation* actorRepresentation, bool visible);
 	void RegisterCardinalCompassDirections();

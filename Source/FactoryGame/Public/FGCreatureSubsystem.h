@@ -161,7 +161,7 @@ public:
 
 	/** Used to remove any potential active creature class overrides. */
 	UFUNCTION( BlueprintCallable, Category = "Creatures" )
-	void RemoveCreatureClassOverride( TSubclassOf< AFGCreature > creatureClass, bool updateScannableState = true );
+	void RemoveCreatureClassOverride( TSubclassOf< AFGCreature > creatureClass );
 
 	AFGCreature* BeginSpawningCreature( TSubclassOf< AFGCreature > creatureClass, const FTransform& spawnTransform );
 

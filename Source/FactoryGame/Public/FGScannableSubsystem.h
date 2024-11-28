@@ -52,14 +52,10 @@ public:
 	void OnLevelPlacedActorDestroyed(AActor* destroyedActor);
 
 	void OnDropPodLooted( class AFGDropPod* dropPod );
-	
-	void OnCreatureSpawnerUpdated( class AFGCreatureSpawner* creatureSpawner, bool scannable );
-	void OnCreatureSpawnerAdded( class AFGCreatureSpawner* creatureSpawner );
-	void OnCreatureSpawnerRemoved( class AFGCreatureSpawner* creatureSpawner );
 
 	FORCEINLINE const TArray<FWorldScannableData>& GetAvailableItemPickups() const { return mAvailableItemPickups; }
 	FORCEINLINE const TArray<FWorldScannableData>& GetAvailableDropPods() const { return mAvailableDropPods; }
-	FORCEINLINE const TArray<class AFGCreatureSpawner*>& GetScannableCreatureSpawners() const { return mScannableCreatureSpawners; }
+	FORCEINLINE const TArray<FCreatureSpawnerWorldScannableData>& GetAvailableCreatureSpawners() const { return mAvailableCreatureSpawners; }
 
 	/** Whether or not the specified item pickup exists. */
 	bool DoesPickupExist( const FGuid& PickupGuid ) const;
@@ -67,7 +63,7 @@ public:
 	bool HasDropPodBeenLooted( const FGuid& dropPodGuid ) const;
 private:
 	// Called by AFGWorldScannableDataGenerator to populate the subsystem with the data cached during cooking
-	void AssignScannableData( const TArray<FWorldScannableData>& itemPickups, const TArray<FWorldScannableData>& dropPods );
+	void AssignScannableData( const class AFGWorldScannableDataGenerator* sourceGenerator );
 
 	UPROPERTY( Transient )
 	TArray< class AFGBuildableRadarTower* > mRadarTowers;
@@ -75,9 +71,13 @@ private:
 	UPROPERTY( Transient )
 	TArray<FWorldScannableData> mAvailableItemPickups;
 
-	/** All crash site actors available for this level, cached in the editor time */
+	/** All crash site actors available for this level, cached in the editor during cooking */
 	UPROPERTY( Transient )
 	TArray<FWorldScannableData> mAvailableDropPods;
+
+	/** All creature spawners for this level, cached in the editor during cooking */
+	UPROPERTY( Transient )
+	TArray<FCreatureSpawnerWorldScannableData> mAvailableCreatureSpawners;
 
 	/** List of destroyed pickups. */
 	UPROPERTY( SaveGame )
@@ -86,8 +86,4 @@ private:
 	/** List of looted crash sites */
 	UPROPERTY( SaveGame )
 	TSet<FGuid> mLootedDropPods;
-
-	UPROPERTY( Transient )
-	TArray< class AFGCreatureSpawner* > mScannableCreatureSpawners;
-	
 };

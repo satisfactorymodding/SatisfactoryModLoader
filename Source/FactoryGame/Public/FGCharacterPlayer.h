@@ -284,6 +284,8 @@ enum class EPlayerMappingContextCategory : uint8
 
 	Cheats = 0x20,
 
+	Camera = 0x40,
+	
 	// <FL> [KajtaziT]
 	GamepadDefault = 0x80, // essential gamepad controls
 
@@ -1742,6 +1744,9 @@ private:
 	void RadiationIntensityUpdated();
 
 	bool IsPlayerInOrAboveWater( const FVector& hitPosition ) const;
+
+	void ActivateCameraComponents();
+	void DeactivateCameraComponents();
 	
 protected:
 	/** Player camera */

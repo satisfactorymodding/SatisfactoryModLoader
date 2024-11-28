@@ -165,7 +165,11 @@ public:
 	FORCEINLINE USkeletalMesh* GetMagazineMesh() const { return mMagazineMesh; }
 
 	UFUNCTION( BlueprintPure, Category="Ammunition" )
-	FORCEINLINE TSubclassOf<UAnimInstance> GetMagazineAnimClass() const { return mMagazineMeshAnimClass; }
+	FORCEINLINE TSubclassOf< class UAnimInstance > GetMagazineAnimClass() const { return mMagazineMeshAnimClass; }
+
+	/** Tobias 2024-11-04: Hacky solution for overriding the idle animation for the snowball ammo. */
+	UFUNCTION( BlueprintPure, Category="Ammunition" )
+	FORCEINLINE class UAnimSequence* GetNobeliskWeaponIdleAnimationOverride() const { return mNobeliskWeaponIdleAnimationOverride; }
 
 	UFUNCTION( BlueprintPure, Category="Ammunition")
 	USkeletalMesh* GetMagazineMeshWithCustomMaterials();
@@ -174,7 +178,7 @@ public:
 	FORCEINLINE TArray<FSkeletalMaterial> GetMagazineMaterials() const { return mMagazineMeshMaterials; }
 
 	UFUNCTION( BlueprintPure, Category="Ammunition")
-	TArray< UMaterialInstance* > GetMagazineMaterials1p() const { return mMagazineMeshMaterials1p; }
+	TArray< class UMaterialInstance* > GetMagazineMaterials1p() const { return mMagazineMeshMaterials1p; }
 
 	UFUNCTION( BlueprintPure, Category="Ammunition" )
 	FORCEINLINE float GetMaxAmmoEffectiveRange() const { return mMaxAmmoEffectiveRange; }
@@ -299,7 +303,11 @@ private:
 	USkeletalMesh* mMagazineMesh = nullptr;
  
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
-	TSubclassOf<UAnimInstance> mMagazineMeshAnimClass = nullptr;
+	TSubclassOf< class UAnimInstance > mMagazineMeshAnimClass = nullptr;
+
+	/** Tobias 2024-11-04: Hacky solution for overriding the idle animation for the snowball ammo. */
+	UPROPERTY( EditDefaultsOnly, Category = "Item" )
+	TObjectPtr< class UAnimSequence > mNobeliskWeaponIdleAnimationOverride;
 
 	UPROPERTY( EditDefaultsOnly, EditFixedSize, Category = "Item" )
 	TArray<FSkeletalMaterial> mMagazineMeshMaterials;
@@ -308,7 +316,7 @@ private:
 	TArray<UMaterialInstance* > mMagazineMeshMaterials1p;
 
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Ammunition|Damage" )
-	TArray<  UFGDamageType*  > mDamageTypesOnImpact;
+	TArray< UFGDamageType* > mDamageTypesOnImpact;
 
 	/** The noise to make when we fire the weapon. */
 	UPROPERTY( EditDefaultsOnly, Category = "Ammunition|Noise" )

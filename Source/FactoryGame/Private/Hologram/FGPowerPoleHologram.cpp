@@ -14,7 +14,6 @@ void AFGPowerPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 void AFGPowerPoleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGPowerPoleHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPowerPoleHologram::PostHologramPlacement(const FHitResult& hitResult){ }
-void AFGPowerPoleHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 USceneComponent* AFGPowerPoleHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 bool AFGPowerPoleHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 AActor* AFGPowerPoleHologram::GetUpgradedActor() const{ return nullptr; }
@@ -26,4 +25,5 @@ void AFGPowerPoleHologram::CheckValidPlacement(){ }
 float AFGPowerPoleHologram::GetBuildGunRangeOverride_Implementation() const{ return float(); }
 bool AFGPowerPoleHologram::ShouldBuildGunHitWireMeshes() const{ return bool(); }
 bool AFGPowerPoleHologram::AlignWithWire(const  AFGBuildableWire* wire, FVector& locationToAlign, FRotator& out_rotation) const{ return bool(); }
+void AFGPowerPoleHologram::SpawnWireChildHolograms(TSubclassOf<class UFGRecipe> wireRecipe){ }
 void AFGPowerPoleHologram::ResetByproductHolograms(){ }

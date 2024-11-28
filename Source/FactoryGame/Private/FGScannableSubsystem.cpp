@@ -16,9 +16,6 @@ void AFGScannableSubsystem::RegisterRadarTower( AFGBuildableRadarTower* radarTow
 void AFGScannableSubsystem::UnRegisterRadarTower( AFGBuildableRadarTower* radarTower){ }
 void AFGScannableSubsystem::OnLevelPlacedActorDestroyed(AActor* destroyedActor){ }
 void AFGScannableSubsystem::OnDropPodLooted( AFGDropPod* dropPod){ }
-void AFGScannableSubsystem::OnCreatureSpawnerUpdated( AFGCreatureSpawner* creatureSpawner, bool scannable){ }
-void AFGScannableSubsystem::OnCreatureSpawnerAdded( AFGCreatureSpawner* creatureSpawner){ }
-void AFGScannableSubsystem::OnCreatureSpawnerRemoved( AFGCreatureSpawner* creatureSpawner){ }
 bool AFGScannableSubsystem::DoesPickupExist(const FGuid& PickupGuid) const{ return bool(); }
 bool AFGScannableSubsystem::HasDropPodBeenLooted(const FGuid& dropPodGuid) const { return bool(); }
-void AFGScannableSubsystem::AssignScannableData(const TArray<FWorldScannableData>& itemPickups,	const TArray<FWorldScannableData>& dropPods){ }
+void AFGScannableSubsystem::AssignScannableData( const class AFGWorldScannableDataGenerator* sourceGenerator ){ }
