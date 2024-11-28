@@ -44,9 +44,11 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, const int3
 #endif
 
 	// Will assert if the resolved hook offset is not at properly-aligned, parseable statement
-	int32 OutStatementLength;
 	FSMLKismetBytecodeDisassembler Disassembler;
-	Disassembler.GetStatementLength(Function, ResolvedHookOffset, OutStatementLength);
+	int32 OutStatementLength;
+	fgcheckf(
+		Disassembler.GetStatementLength(Function, ResolvedHookOffset, OutStatementLength),
+		TEXT("Cannot install a blueprint hook at the requested hook offset, as it is not aligned with the beginning of a statement within the target function.") );
 
 	// First we go over the existing code and add UBlueprintHookManager::JumpBytesRequired to all
 	// the offsets. Afterwards we will move the relevant code and add the jump.  Doing it in this
