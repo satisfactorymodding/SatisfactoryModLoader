@@ -15,6 +15,7 @@ struct FFunctionHookInfo {
     GENERATED_BODY()
 private:
     TMap<int32, TArray<TFunction<HookFunctionSignature>>> CodeOffsetByHookList;
+    int32 OriginalReturnStatementOffset;
     int32 ReturnStatementOffset;
     friend class UBlueprintHookManager;
 public:
@@ -45,20 +46,23 @@ public:
     * Multiple hooks bound to one hook offset will be processed in the order they were registered
     * UClass holding Function will be added to root set to avoid getting Garbage Collected
     */
-    void HookBlueprintFunction(UFunction* Function, const TFunction<HookFunctionSignature>& Hook, int32 HookOffset);
+    void HookBlueprintFunction(UFunction* Function, const TFunction<HookFunctionSignature>& Hook, const int32 HookOffset);
 private:
+    //Minimum amount of bytes required to insert unconditional jump with code offset
+    static const int32 JumpBytesRequired = 1 + sizeof(CodeSkipSizeType);
+
     /** Actually performs bytecode modification to install hook */
-    static void InstallBlueprintHook(UFunction* Function, int32 HookOffset);
-    
-    /** Does preprocessing to hook offset to handle predefined hook locations */
-    static int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset);
-    
+    static void InstallBlueprintHook(UFunction* Function, const int32 OriginalHookOffset, const int32 ResolvedHookOffset);
+
+    /** Called by InstallBlueprintHook to modify the bytecode based on the desired hookoffset **/
+    static void ModifyOffsetsForNewHookOffset(TArray<uint8>& Script, TSharedPtr<FJsonObject> Expression, int32 HookOffset);
+
     /** Called when hook is executed */
     void HandleHookedFunctionCall(FFrame& Frame, int32 HookOffset);
 
     /** This function is just a stub for UHT to generate reflection data, it is not actually implemented. */
     UFUNCTION(BlueprintInternalUseOnly, CustomThunk)
-    static void ExecuteBPHook(int32 HookOffset) { check(0); };
+    static void ExecuteBPHook(int32 HookOffset) { fgcheck(0); };
 
     DECLARE_FUNCTION(execExecuteBPHook) {
         //StepCompiledIn is not used here since this function cannot be called from BP directly, it can only
