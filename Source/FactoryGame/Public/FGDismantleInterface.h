@@ -24,16 +24,16 @@ class FACTORYGAME_API IFGDismantleInterface
 	/**
 	 * Can this be dismantled.
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Dismantle" )
 	bool CanDismantle() const;
-
+	
 	/**
 	 * How much do we get back when dismantling this.
 	 * @param noBuildCostEnabled If the player unique game rules NoBuildCost is enabled. This is needed here because we can't check this
 	 * in a global scope since it's per player. If noBuildCostEnabled is true we only want to return content of buildings (inventory, potential inventory etc.)
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
-	void GetDismantleRefund( UPARAM( ref ) TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const;
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Dismantle" )
+	void GetDismantleRefund( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const;
 
 	/**
 	 * Returns the location where the refund should be spawned and the area
@@ -42,13 +42,13 @@ class FACTORYGAME_API IFGDismantleInterface
 	 * @param aimHitLocation - the location we aimed at when dismantling happened
 	 * @param out_radius - radius we want to spawn stuff within
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Dismantle" )
 	FVector GetRefundSpawnLocationAndArea( const FVector& aimHitLocation, float& out_radius ) const;
 
 	/**
 	 * If we want to dismantle something else along with this, then add it through this
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Dismantle" )
 	void GetChildDismantleActors( TArray< AActor* >& out_ChildDismantleActors ) const;
 
 	/**

@@ -34,6 +34,7 @@ public:
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
+	virtual bool ShouldBuildGunHitWireMeshes() const override;
 	virtual void CheckBlueprintCommingling() override;
 	virtual float GetBuildGunRangeOverride_Implementation() const override;
 	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;

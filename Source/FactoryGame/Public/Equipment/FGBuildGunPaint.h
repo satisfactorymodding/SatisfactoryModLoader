@@ -59,6 +59,12 @@ public:
 	UFUNCTION( Server, Reliable )
 	void Server_ExecutePaint( uint8 mode, FFactoryCustomizationData customizationData, AActor* hitActor );
 
+	UFUNCTION( Server, Reliable )
+	void Server_SetCustomizeClassFilter( TSubclassOf<AActor> actorToFilter );
+
+	UFUNCTION( Server, Reliable )
+	void Server_SetActiveRecipe( TSubclassOf< UFGCustomizationRecipe > customizationRecipe );
+
 	/** Start - Remove all these */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|BuildGunPaint" )
 	void SetActiveCustomization( TSubclassOf< UFGFactoryCustomizationDescriptor > customizationDesc );
@@ -88,6 +94,8 @@ public:
 	/** Sets the current class filters for customizing. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|BuildGunPaint" )
 	void SetCustomizeClassFilter( AActor* actorToFilter );
+	void SetCustomizeClassFilter_Internal( TSubclassOf< AActor > actorClass, TSubclassOf< UFGItemDescriptor > itemDesc );
+	
 
 	/** Return the currently active Color Descriptor */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|BuildGunPaint" )
@@ -273,5 +281,3 @@ private:
 	AActor* mInstanceConverterInstigator;
 
 };
-
-

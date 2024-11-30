@@ -86,7 +86,7 @@
 "Player/PlayerController/CycleToPrevioustHotbar","Cycle to Previous Hotbar","","","UI","#settings"
 "Player/PlayerController/Escape","Escape","","","UI","#input"
 "Player/PlayerController/Map","Map","","","UI","#input"
-"Player/PlayerController/OpenPauseMenu","Open Pause Menu","","","UI",""
+"Player/PlayerController/OpenPauseMenu","Open Game Menu","","","UI",""
 "Player/PlayerController/PhotoMode","Photo Mode","","","UI","#input"
 "Player/PlayerController/Shortcut/Pattern01","Shortcut 1","","","UI","#input"
 "Player/PlayerController/Shortcut/Pattern02","Shortcut 2","","","UI","#input"

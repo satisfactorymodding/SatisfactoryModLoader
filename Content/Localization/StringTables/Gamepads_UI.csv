@@ -94,7 +94,7 @@
 "GamepadHints/Manufacturing/RecipesShowInaffordable","Show Inaffordable","","","UI","#gamepads"
 "GamepadHints/Manufacturing/Search","Search","","","UI","#gamepads"
 "GamepadHints/Map/AccessMenu","Access Menu","","","UI","#gamepads"
-"GamepadHints/Map/CenterMap","Center Map","","","UI","#gamepads"
+"GamepadHints/Map/CenterMap","Center on Player","","","UI","#gamepads"
 "GamepadHints/Map/CreateNewMarker","Create New Marker","","","UI","#gamepads"
 "GamepadHints/Map/CreateStamp","Create Stamp","","","UI","#gamepads"
 "GamepadHints/Map/EditMarkerStamp","Edit Marker/Stamp","","","UI","#gamepads"

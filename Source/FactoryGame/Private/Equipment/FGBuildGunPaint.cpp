@@ -36,6 +36,8 @@ void UFGBuildGunStatePaint::CreateStencilProxy(AActor* selected){ }
 void UFGBuildGunStatePaint::DestroyStencilProxies(bool destroyComponents){ }
 void UFGBuildGunStatePaint::Server_ExecutePrimaryFire_Implementation(){ }
 void UFGBuildGunStatePaint::Server_ExecutePaint_Implementation(uint8 mode, FFactoryCustomizationData customizationData, AActor* hitActor){ }
+void UFGBuildGunStatePaint::Server_SetActiveRecipe_Implementation(TSubclassOf<UFGCustomizationRecipe> customizationRecipe){ }
+void UFGBuildGunStatePaint::Server_SetCustomizeClassFilter_Implementation(TSubclassOf<AActor> actorToFilter){ }
 void UFGBuildGunStatePaint::SetActiveCustomization(TSubclassOf< UFGFactoryCustomizationDescriptor > customizationDesc){ }
 void UFGBuildGunStatePaint::SetActiveSwatchDesc(TSubclassOf< UFGFactoryCustomizationDescriptor_Swatch > swatchDesc){ }
 void UFGBuildGunStatePaint::SetActivePatternDesc(TSubclassOf< UFGFactoryCustomizationDescriptor_Pattern > patternDesc){ }
@@ -45,6 +47,7 @@ void UFGBuildGunStatePaint::RemoveCustomization(TSubclassOf< UFGFactoryCustomiza
 void UFGBuildGunStatePaint::ClearAllCustomizations(){ }
 void UFGBuildGunStatePaint::SetActiveRecipe(TSubclassOf< UFGCustomizationRecipe > customizationRecipe){ }
 void UFGBuildGunStatePaint::SetCustomizeClassFilter(AActor* actorToFilter){ }
+void UFGBuildGunStatePaint::SetCustomizeClassFilter_Internal(TSubclassOf<AActor> actorClass, TSubclassOf<UFGItemDescriptor> itemDesc){ }
 bool UFGBuildGunStatePaint::IsCustomizationActive(TSubclassOf< UFGFactoryCustomizationDescriptor > customization){ return bool(); }
 bool UFGBuildGunStatePaint::IsRecipeActive(TSubclassOf<  UFGCustomizationRecipe > inClass){ return bool(); }
 TArray< FItemAmount > UFGBuildGunStatePaint::GetCustomizationCost() const{ return TArray<FItemAmount>(); }

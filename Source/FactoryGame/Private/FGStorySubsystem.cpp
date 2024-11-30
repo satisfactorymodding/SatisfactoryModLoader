@@ -25,6 +25,9 @@ void AFGStorySubsystem::OnItemManuallyCrafted(AFGPlayerState* playerState, const
 void AFGStorySubsystem::OnBuildingBuilt(AFGPlayerState* playerState, TSubclassOf<  AActor > builtActor, int64 totalBuildCount){ }
 void AFGStorySubsystem::OnBuildingDismantled(AFGPlayerState* playerState, TSubclassOf<  AActor > builtActor, int64 totalDismantledCount){ }
 void AFGStorySubsystem::OnFirstItemSinkFailure(TSubclassOf<UFGItemDescriptor> itemFailedToSink){ }
+void AFGStorySubsystem::OnCalendarSlotUnlocked(int32 slot, bool isRandomUnlock, class UFGUnlock* unlock){ }
+void AFGStorySubsystem::OnCalendarOpenedByPlayer(class AFGCharacterPlayer* byCharacter,	class AFGBuildableCalendar* calendar, bool firstTime){ }
+void AFGStorySubsystem::OnPlayerFinishedSpawning(class AFGCharacterPlayer* player){ }
 void AFGStorySubsystem::OnSpaceElevatorShipmentLockedIn(AFGPlayerState* playerState,  UFGGamePhase* gamePhase){ }
 void AFGStorySubsystem::OnSpaceElevatorFullyBuilt(){ }
 void AFGStorySubsystem::ForwardMessagesToGameUI(const TArray<class UFGMessage*>& messages){ }

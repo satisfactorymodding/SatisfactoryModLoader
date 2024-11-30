@@ -16,6 +16,7 @@ void FObjectReferenceDisc::Set(const UObject* obj){ }
 void FObjectReferenceDisc::ParseObjectName(FString& out_objName) const{ }
 void FObjectReferenceDisc::ParseObjectNameAndPath(FString& out_objPath, FString& out_objName) const{ }
 FString FObjectReferenceDisc::GetSubPathString() const{ return FString(); }
+FString FObjectReferenceDisc::GetTopLevelActorName() const{ return FString(); }
 void FObjectReferenceDisc::GetRelativePath(const UObject* obj, FString& out_pathName){ }
 const ULevel* FObjectReferenceDisc::FindOuterLevel(const UObject* obj){ return nullptr; }
 const UWorldPartitionRuntimeCell* FObjectReferenceDisc::FindWorldPartitionCell(const UWorld* world, const FString& levelName){ return nullptr; }

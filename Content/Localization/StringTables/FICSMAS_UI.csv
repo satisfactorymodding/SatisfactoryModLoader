@@ -1,7 +1,5 @@
 ﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
-"Calendar/2020","2020 Calendar","FICSMAS Advent calendar. Finding hidden numbers on the picture the player unlocks FICSMAS decoration, equipment, etc.","","UI",""
-"Calendar/2022","2022 Calendar","FICSMAS Advent calendar. Finding hidden numbers on the picture the player unlocks FICSMAS decoration, equipment, etc.","","UI",""
-"Calendar/2023","2023 Calendar","FICSMAS Advent calendar. Finding hidden numbers on the picture the player unlocks FICSMAS decoration, equipment, etc.","","UI","#minigame"
+"Calendar/CalendarTitle","FICSMAS Calendar","","","UI",""
 "Calendar/FindHint","Need help finding a number?","FICSMAS Advent calendar menu","","UI","#minigame"
 "Calendar/FindHint/EnterNumber/TextBoxHint","Enter Number","FICSMAS Advent calendar menu","","UI","#minigame"
 "Calendar/FindHint/Errors/DateInTheFuture","This date has not yet arrived, so no hint will be given.","FICSMAS Advent calendar menu","","UI","#minigame"

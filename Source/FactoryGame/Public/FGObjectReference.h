@@ -88,6 +88,9 @@ struct FACTORYGAME_API FObjectReferenceDisc
 	/** Returns the sub-object path within (eg if PathName==Persistent_Level:PersistentLevel.Actor1 then it returns PersistentLevel.Actor1 */
 	FString GetSubPathString() const;
 
+	/** Returns the name of the top level actor that this object reference maps to. e.g. if PathName is Persistent_Level:PersistentLevel.Actor1.SubObject1, it will return Actor1 */
+	FString GetTopLevelActorName() const;
+	
 	/** Get the relative path between the level the object resides in */
 	static void GetRelativePath( const UObject* obj, FString& out_pathName );
 

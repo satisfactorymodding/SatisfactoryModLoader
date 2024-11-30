@@ -63,6 +63,7 @@ int32 UFGInventoryComponent::FindFirstIndexWithItemType(TSubclassOf<UFGItemDescr
 int32 UFGInventoryComponent::AddStack(const FInventoryStack& stack, const bool allowPartialAdd){ return int32(); }
 void UFGInventoryComponent::AddStacks(const TArray< FInventoryStack >& stacks){ }
 int32 UFGInventoryComponent::AddStackToIndex(const int32 idx, const FInventoryStack& stack, const bool allowPartialAdd , UFGInventoryComponent* sourceInventory){ return int32(); }
+int32 UFGInventoryComponent::AddStackToIndex_Unsafe(const int32 idx, const FInventoryStack& stack, const bool allowPartialAdd, UFGInventoryComponent* sourceInventory){ return int32(); }
 bool UFGInventoryComponent::GetStackFromIndex(const int32 idx, FInventoryStack& out_stack) const{ return bool(); }
 void UFGInventoryComponent::Remove(TSubclassOf< UFGItemDescriptor > itemClass, int32 num){ }
 void UFGInventoryComponent::RemoveFromIndex(const int32 idx, const int32 num, UFGInventoryComponent* targetInventory){ }

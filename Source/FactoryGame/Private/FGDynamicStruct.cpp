@@ -75,6 +75,7 @@ bool FFGDynamicStruct::Serialize( FArchive& Ar )
     }
     return true;
 }
+bool FFGDynamicStruct::NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess){ return bool(); }
 
 FFGDynamicStruct::FFGDynamicStruct(){ }
 FFGDynamicStruct::FFGDynamicStruct(const FFGDynamicStruct& other){ }

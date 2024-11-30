@@ -56,6 +56,9 @@ public:
 	/** Subsystem to manage all the buildables in the game. */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGBuildableSubsystem > mBuildableSubsystemClass;
+	/** Subsystem to audio volume according to external voice chat apps */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGVoiceChatAudioMeterSubsystem > mVoiceChatAudioMeterSubsystemClass;
 	/** Subsystem to manage all the lightweight buildables in the game (Foundations, Walls). */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGLightweightBuildableSubsystem > mLightweightBuildableSubsystemClass;
@@ -114,4 +117,3 @@ public:
 	UPROPERTY( Config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGWorldEventSubsystem > mWorldEventSubsystem;
 };
-

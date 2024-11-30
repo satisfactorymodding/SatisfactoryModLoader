@@ -10,6 +10,24 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewRecipeDelegate, TSubclassOf< class UFGRecipe >, newRecipe );
 
+struct FSimpleIngredientData
+{
+	int32 StackSize = INDEX_NONE;
+	EResourceForm Form = EResourceForm::RF_INVALID;
+
+	FSimpleIngredientData(int32 InStackSize, EResourceForm InForm)
+	{
+		StackSize = InStackSize;
+		Form = InForm;
+	}
+	
+	FSimpleIngredientData()
+	{
+		StackSize = INDEX_NONE;
+		Form = EResourceForm::RF_INVALID;
+	}
+};
+
 UCLASS()
 class FACTORYGAME_API UFGManufacturerClipboardSettings : public UFGFactoryClipboardSettings
 {
@@ -270,6 +288,9 @@ protected:
 	/** Cached Recipe CDO to reduce calls.*/
 	UPROPERTY()
 	const UFGRecipe* mCachedRecipe;
+
+	/** Cached resource recipe ingredient data */
+	TArray<FSimpleIngredientData> mCachedIngredientData;
 
 	/* Updated once an item is removed from the input inventory.*/
 	bool mCachedCanProduce;

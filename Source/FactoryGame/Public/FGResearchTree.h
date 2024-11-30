@@ -81,6 +81,8 @@ public:
 
 	static EResearchTreeStatus GetResearchTreeStatus( TSubclassOf< UFGResearchTree > inClass, UObject* worldContext );
 
+	bool GetIsEventTree() const { return mIsEventTree; }
+	
 protected:
 	/** The name to be displayed to the player before the tree is unlocked */
 	UPROPERTY( EditDefaultsOnly, Category = "Research Tree" )
@@ -118,6 +120,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Research Tree" )
 	TArray< class UFGResearchTreeNode* > mNodes;
 
+	/** True if tree is related to event. Will not give achievement if researched. */
+	UPROPERTY( EditDefaultsOnly, Category = "Research Tree" )
+	bool mIsEventTree = false;
+	
 private:
 	/** Asset Bundle data computed at save time. In cooked builds this is accessible from AssetRegistry */
 	UPROPERTY()

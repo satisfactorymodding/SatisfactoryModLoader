@@ -34,9 +34,12 @@ void AFGBuildableConveyorBelt::UpdateMeshLodLevels(int32 newLodLevel){ }
 TArray<FInstanceData> AFGBuildableConveyorBelt::GetActorLightweightInstanceData_Implementation(){ return TArray<FInstanceData>(); }
 int32 AFGBuildableConveyorBelt::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableConveyorBelt::OnBuildEffectFinished(){ }
+void AFGBuildableConveyorBelt::OnSkinCustomizationApplied_Implementation(TSubclassOf<class UFGFactoryCustomizationDescriptor_Skin> skin){ }
 float AFGBuildableConveyorBelt::FindOffsetClosestToLocation(const FVector& location) const{ return float(); }
 void AFGBuildableConveyorBelt::GetLocationAndDirectionAtOffset(float offset, FVector& out_location, FVector& out_direction) const{ }
 FVector AFGBuildableConveyorBelt::GetVelocityForBase( AActor* basedActor,  UPrimitiveComponent* baseComponent) const{ return FVector(); }
+TArray<FInstanceData> AFGBuildableConveyorBelt::SetupAbstractInstances(const FFactoryCustomizationData& CustomizationData) { return TArray<FInstanceData>(); }
+void AFGBuildableConveyorBelt::ApplyCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
 FVector AFGBuildableConveyorBelt::GetRefundSpawnLocationAndArea_Implementation(const FVector& aimHitLocation, float& out_radius) const{ return FVector(); }
 void AFGBuildableConveyorBelt::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildableConveyorBelt::CreateClearanceData( USplineComponent* splineComponent, const TArray< FSplinePointData >& splineData, const FTransform& conveyorTransform, TArray< FFGClearanceData >& out_clearanceData, float maxDistance){ }

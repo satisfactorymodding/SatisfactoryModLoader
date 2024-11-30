@@ -56,6 +56,7 @@ bool AFGWeapon::CanReload() const{ return bool(); }
 float AFGWeapon::GetReloadTimeLeft() const{ return float(); }
 FVector AFGWeapon::GetWeaponMeshSocketLocation_Implementation(FName socketName) const{ return FVector(); }
 void AFGWeapon::Server_CycleDesiredAmmunitionType_Implementation(){ }
+class UAnimSequence* AFGWeapon::GetNobeliskWeaponIdleAnimationOverride() const{ return nullptr; }
 void AFGWeapon::CycleDesiredAmmunitionType(){ }
 void AFGWeapon::Server_SetDesiredAmmoClass_Implementation(TSubclassOf< UFGAmmoType > newDesiredAmmoClass){ }
 void AFGWeapon::SetDesiredAmmoClass(TSubclassOf< UFGAmmoType > newDesiredAmmoClass){ }

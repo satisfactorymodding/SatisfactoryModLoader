@@ -54,7 +54,7 @@ Once Roofs are unlocked, Roof Materials will become available for purchase in th
 "AWESOMEShop/Architecture/StructuralBeamPack","Structural Beam Pack","","","Game","#item #schematics"
 "AWESOMEShop/Architecture/StructuralFrameSet","Structural Frame Set","","","Game","#item #schematics"
 "AWESOMEShop/Architecture/WalkwaysAndCatwalks/GenericDescription","Ever wanted to admire your factories from a safe and convenient overlook? Build some Walkways and let your own labor inspire you to do even better!","","","Game","#item #schematics"
-"AWESOMEShop/Customization/Finishes/CarbonSteel","Carbon Steel FInish","","","Game",""
+"AWESOMEShop/Customization/Finishes/CarbonSteel","Carbon Steel Finish","","","Game",""
 "AWESOMEShop/Customization/Finishes/CarbonSteel/Description","Adds the premium Carbon Steel Paint Finish to the Customizer, from where it can be applied to any building.","","","Game",""
 "AWESOMEShop/Customization/Finishes/Caterium","Caterium Paint Finish","","","Game",""
 "AWESOMEShop/Customization/Finishes/Caterium/Description","Adds the premium Caterium Paint Finish to the Customizer, from where it can be applied to any building.","","","Game",""
@@ -94,6 +94,7 @@ Once Roofs are unlocked, Roof Materials will become available for purchase in th
 "AWESOMEShop/Foundations/CornerRampPack","Corner Ramp Pack","","","Game","#item #schematic"
 "AWESOMEShop/Foundations/DoubleRampSet","Double Ramp Set","","","Game","#item #schematic"
 "AWESOMEShop/Foundations/DoubleRampSet/Description","Never again will you have to build a Ramp one step at a time. Take over the world efficiently, increase your productivity, and enjoy building diagonally with the new Double Ramps!","","","Game","#item #schematic"
+"AWESOMEShop/Foundations/FoundationStairsSet","Foundation Stairs Set","","","",""
 "AWESOMEShop/Foundations/HalfFoundationSet","Half Foundation Set","","","Game","#item #schematic"
 "AWESOMEShop/Foundations/HalfFoundationSet/Description","Are regular Foundations too wide for your needs? Want to keep space on your floor for Conveyor Lifts?
 Introducing: Half Foundations! Half the size, full price!","","","Game","#item #schematic"

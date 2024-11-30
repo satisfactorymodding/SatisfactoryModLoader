@@ -89,6 +89,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	void GetAllAvailableCustomizationRecipes( TArray< TSubclassOf< UFGCustomizationRecipe > >& out_recipes );
 
+	/** Returns the customization recipe the specified customization desc belongs to, if any. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
+	TSubclassOf< class UFGCustomizationRecipe > GetCustomizationRecipeFromDesc( TSubclassOf< class UFGFactoryCustomizationDescriptor > desc );
+
 	/** Gets the available recipes for the given class, may not be null. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	void GetAvailableRecipesForProducer( TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes );

@@ -113,9 +113,9 @@
 #transportation"
 "Drones/DronePort/MainTab/TripCost/Pattern","{trip_cost_in_fuel} per trip","","{trip_cost_in_fuel} = number, battery consumption","UI","#interface
 #transportation"
-"Drones/DronePort/MapText/BatteryConsumption/Pattern","Battery Consumption: <OrangeSmall>{amount} per minute</>","","{amount} = number, battery consumption","UI","#interface
+"Drones/DronePort/MapText/BatteryConsumption/Pattern","Fuel Consumption: <OrangeSmall>{amount} per minute</>","","{amount} = number, battery consumption","UI","#interface
 #transportation"
-"Drones/DronePort/MapText/BatteryConsumption/Unknown","Battery Consumption: <OrangeSmall>N/A</>","","","UI","#interface
+"Drones/DronePort/MapText/BatteryConsumption/Unknown","Fuel Consumption: <OrangeSmall>N/A</>","","","UI","#interface
 #transportation"
 "Drones/DronePort/MapText/DroneStatus/Pattern","Drone Status: <OrangeSmall>{Status}</>","Drone screen","{Status} = text","UI","#interface
 #transportation"
@@ -143,7 +143,7 @@
 #transportation"
 "Drones/DronePort/ThisPortTab/ThisPort/Status","Status","","","UI","#interface
 #transportation"
-"Drones/DronePort/ThisPortTab/Tooltip/BatteryConsumption","Battery Consumption:","","","UI","#interface
+"Drones/DronePort/ThisPortTab/Tooltip/BatteryConsumption","Fuel Consumption:","","","UI","#interface
 #transportation"
 "Drones/DronePort/ThisPortTab/Tooltip/BatteryConsumption/Pattern","{float_number_of_batteries} per minute","","{float_number_of_batteries} = number, number of batteries","UI","#buildable
 #transportation"
@@ -163,6 +163,8 @@
 "Equipment/FactoryCart/Inventory/NotEnoughSpace","Not enough space in inventory.","","","UI","#interface
 #transportation"
 "Equipment/FactoryCart/LookAtDescription/Enter/Pattern","Press {BUTTON} to enter Factory Cart™","","{BUTTON} = text, key name","UI","#interface
+#transportation"
+"Equipment/FactoryCart/LookAtDescription/OpenInventory/Pattern","Press {BUTTON} to open Factory Cart™ Inventory","","{BUTTON} = text, key name","UI","#interface
 #transportation"
 "Equipment/FactoryCart/LookAtDescription/PickUp","Pick Up Factory Cart™","","","UI","#interface
 #transportation"
@@ -216,7 +218,7 @@ Fuel Info"
 <OrangeSmall>{TransferRateText}</>","Train Station screen","{TransferRateText} = number","UI","#interface
 #transportation"
 "Trains/DockingStation/IncomingTransferRateItemsPerMinute/Fluid/Pattern","<WhiteSmall>Incoming Transfer Rate:</>
-<OrangeSmall>{TransferRateText} items per minute</>","","{TransferRateText} = number","UI","#interface
+<OrangeSmall>{TransferRateText} m³ per minute</>","","{TransferRateText} = number","UI","#interface
 #transportation"
 "Trains/DockingStation/IncomingTransferRateItemsPerMinute/Pattern","<WhiteSmall>Incoming Transfer Rate:</>
 <OrangeSmall>{TransferRateText} items per minute</>","Train Station screen","{TransferRateText} = number","UI","#interface
@@ -360,6 +362,10 @@ Fuel Info"
 #transportation"
 "Trains/Locomotive/TimeTable/Edit/NextStation","Next Station","","","UI","#interface
 #transportation"
+"Trains/Locomotive/TimeTable/Prompt/Description","You have unsaved changes in the Time Table. Closing will revert those changes.
+
+Are you sure you wish to continue?","","","",""
+"Trains/Locomotive/TimeTable/Prompt/Title","Unsaved Changes","","","",""
 "Trains/Locomotive/TimeTable/Setup/AvailableStation","Available Stations","","","UI","#interface
 #transportation"
 "Trains/Locomotive/TimeTable/Setup/AvailableStation/Search/TextBoxHint","Search for a station...","","","UI","#interface
@@ -564,6 +570,7 @@ Common Vehicles Tooltips"
 {fuel_name} = text, fuel type","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/Path/FuelPerTrip","Fuel per Trip","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/Path/FuelPerTrip/NoFuel","No Fuel","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Path/LastEditedBy","Last Edited By","Record menu that the player see when you enter a vehicle","","",""
 "Vehicles/RecordMenu/Path/Legnth","Path Length","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/Path/Length/Pattern","{path_length} m","Record menu that the player see when you enter a vehicle","{path_length} = number, path length","UI","#buildable
 #transportation"

@@ -48,6 +48,7 @@ public:
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
 	virtual void OnBuildEffectFinished() override;
+	virtual void OnSkinCustomizationApplied_Implementation( TSubclassOf< class UFGFactoryCustomizationDescriptor_Skin > skin ) override;
 	// End Buildable interface
 
 	// Begin AFGBuildableConveyorBase interface
@@ -57,6 +58,9 @@ public:
 
 	/** Get the velocity of the conveyor where the based actor is. */
 	FVector GetVelocityForBase( class AActor* basedActor, class UPrimitiveComponent* baseComponent ) const;
+
+	virtual TArray<FInstanceData> SetupAbstractInstances(const FFactoryCustomizationData& CustomizationData);
+	virtual void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData ) override;
 
 	//~ Begin IFGDismantleInterface
 	virtual FVector GetRefundSpawnLocationAndArea_Implementation( const FVector& aimHitLocation, float& out_radius ) const override;

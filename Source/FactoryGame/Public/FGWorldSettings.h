@@ -210,6 +210,10 @@ private:
 
 	UPROPERTY()
 	class AFGAudioVolumeSubsystem* mAudioVolumeSubsystem;
+	
+	UPROPERTY()
+	class AFGVoiceChatAudioMeterSubsystem* mVoiceChatAudioMeterSubsystem;
+	
 	UPROPERTY()
 	class AFGFoliageRemovalSubsystem* mFoliageRemovalSubsystem;
 

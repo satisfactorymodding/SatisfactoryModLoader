@@ -28,10 +28,16 @@ struct FErrorDescriptor: public FTableRowBase
 	TSoftClassPtr< UFGPopupWidgetContent > PopupClass;
 
 	/**
-	 * An error code that will be presented to the user for this error.
+	 * An error code (not localized) that will be presented to the user for this error.
 	 */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	FName ErrorCode;
+
+	/**
+	 * A human readable and localized error code that will be presented to the user for this error.
+	 */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	FText ErrorCodeName;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	FText ErrorDescription;
@@ -41,6 +47,9 @@ struct FErrorDescriptor: public FTableRowBase
 	 */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	bool bShowPopup = true;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	bool bShowPopupInShippingBuild = true;
 };
 
 UCLASS()
@@ -51,6 +60,9 @@ public:
 
 	UPROPERTY(FieldNotify, BlueprintReadOnly)
 	FName ErrorCode;
+
+	UPROPERTY( FieldNotify, BlueprintReadOnly )
+	FText ErrorCodeName;
 
 	UPROPERTY(FieldNotify, BlueprintReadOnly)
 	FText ErrorDescription;

@@ -114,6 +114,9 @@ color_picker"
 "Shared/Combobox/SelectColor/RemoveConfirmation","Remove?","","","UI",""
 "Shared/Delay/Button/Pattern","{ButtonText} ({SecondsLeft} sec)","","{ButtonText} = text, button text
 {SecondsLeft} = number, countdown until action","UI","#interface"
+"Shared/GiftBundle/LookAtDescription/PickUp/Pattern","Press [{0}] to pick up {1}","","{0} = text, key name
+{1} = text, Gift Bundle name","UI","#common
+#look-at_description"
 "Shared/ImageBrowser/Categories/Backgrounds","Backgrounds","","","UI","#interface
 Image Browser"
 "Shared/ImageBrowser/Categories/Buildings","Buildings","","","UI","#interface
@@ -157,6 +160,8 @@ New recipes can be unlocked by completing Milestones, researching things in the 
 "Shared/RecipeInfo/RecipeUnavailable/aTitle","Recipe Unavailable","","","UI",""
 "Shared/Standby/Label","STANDBY","","","UI","#interface
 #common"
+"SignEditor/Popup/Description","Are you sure you want to apply your current settings?","","","",""
+"SignEditor/Popup/Title","Apply Settings","","","",""
 "World/CollectableItems/LookAtDescription","Collecting... {0}","","{0} = number, number of collected items","UI","#common
 #look_at_description"
 "World/DecorationActor/LookAtDescription/Pattern","Press [{0}] to pick up {1}","","{0} = text, key name
@@ -171,6 +176,7 @@ New recipes can be unlocked by completing Milestones, researching things in the 
 {1} = text, foliage name","UI","#common
 #look_at_description"
 "World/Foliage/NoSpaceForFoliage/Pattern","Not enough space to pick up {0}","","{0} = text, foliage name","UI",""
+"World/Foliage/ToggleAutoPickup","Hold <Key/> to toggle <Bold>Foliage Auto-Pickup</> ","","","",""
 "World/LizardDoggo/FunnyName","Lizardious Doggo","","","UI",""
 "World/LizardDoggo/FunnyName2","Lizardius Doggo","","","UI",""
 "World/LizardDoggo/GivenName","Name:","","","UI","#interface
@@ -196,7 +202,8 @@ New recipes can be unlocked by completing Milestones, researching things in the 
 "World/ResourceNode/LookAtDescription/Pattern","{Ore} {Purity}","","{Ore} = text, type of ore
 {Purity} = text, purity level","UI","#common
 #look_at_description"
-"World/ResourceNode/NotEnoughSpace/Pattern","Not enough space to pick up {Ore} ({Purity})!","Warning message related to resources","{Ore} = text, ore type
+"World/ResourceNode/NotEnoughSpace/Pattern","Not enough space to pick up {Ore} {Purity}","Warning message related to resources.
+Purities come with their own set of parentheses: (Impure),(Normal), (Pure) etc.","{Ore} = text, ore type
 {Purity} = text, purity level","UI","#message #transportation"
 "World/Resources/NodesClaimed","Claimed Nodes:","","","UI","#interface
 #resource"

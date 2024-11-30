@@ -150,7 +150,7 @@ Do you wish to continue?","","","UI","interface
 {1} = text, item name
 {2} = text, localized name (Conveyor Belt ...)","UI","#common
 #look_at_description"
-"ConveyorBelts/NotEnoughSpace/Pattern","Not enough space to pick up {0} from {1}!","Warning message. Appears when you're building Conveyor Belt","{0} = text, item name
+"ConveyorBelts/NotEnoughSpace/Pattern","Not enough space to pick up {0} from {1}","Warning message. Appears when you're building Conveyor Belt","{0} = text, item name
 {1} = text, localized name (Conveyor Belt ...)","UI","#message #transportation"
 "CraftBench/Info/AddedToInventory/Pattern","+{Amount} {Name}","","{Amount} = number, number of items
 {Name} = text, item name","UI","#interface
@@ -763,11 +763,11 @@ overclock"
 "Shared/Overclock/Overclock/Label","OVERCLOCK","","","UI","#interface
 #common
 overclock"
-"Shared/Overclock/Percent","<White10Reg>Overclocking Percent:</>","","","UI",""
+"Shared/Overclock/Percent","<White12Reg>Overclocking Percent:</>","","","UI",""
 "Shared/Overclock/TargetProductionRate","Target production rate:","","","UI","#interface
 #common
 overclock"
-"Shared/Overclock/TargetRate","<White10Reg>Overclocking Target Rate:</>","","","UI",""
+"Shared/Overclock/TargetRate","<White12Reg>Overclocking Target Rate:</>","","","UI",""
 "Shared/Overclock/TargetRate/Pattern","{amount} per min","","{amount} = number, overclock target rate","UI",""
 "Shared/ProductionDisplay/Module/CycleTime/Pattern","{CycleTime} sec","","{CycleTime} = number, cycle duration","UI","#interface"
 "Shared/ProductionDisplay/Module/InputOutput/Name/Pattern","{Amount}{Suffix} {Name}","","{Amount} = number
