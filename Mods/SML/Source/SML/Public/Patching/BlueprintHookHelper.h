@@ -68,6 +68,24 @@ public:
 		T* Property = GetContextVarProperty<T>(VariableName);
 		return Property->GetPropertyValuePtr_InContainer(GetContext(), ArrayIndex);
 	}
+
+	/**
+	 * Writes the value of a named struct blueprint member variable on the Context to the location the passed pointer references.
+	 * Member variables are viewable in Unreal Editor under the Variables accordion in the My Blueprint tab of the Graph view of the blueprint.
+	 * This method won't work on bool or enum variables; use the corresponding helper methods instead.
+	 *
+	 * Example usage:
+	 * FLinearColor MyColorValue;
+	 * helper.GetContextVarStruct<FLinearColor>( TEXT("MyColor"), &MyColorValue );
+	 *
+	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
+	 * @param OutValuePtr - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
+	 */
+	template<typename T>
+	void GetContextVarStruct(const TCHAR* VariableName, T* OutValuePtr) const {
+		FStructProperty* Property = GetContextVarProperty<FStructProperty>(VariableName);
+		Property->GetValue_InContainer(GetContext(), OutValuePtr);
+	}
 	
 	/**
 	 * Gets a pointer to the value of a named enum blueprint member variable on the Context.
@@ -92,6 +110,7 @@ public:
 	 *
 	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
 	 * @param ArrayIndex - If the variable represents a statically sized array, returns the value at the specified index.
+	 * @returns The boolean value of the member variable
 	 */
 	bool GetContextVarBool(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
 		FBoolProperty* Property = GetContextVarProperty<FBoolProperty>(VariableName);
