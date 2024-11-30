@@ -1152,11 +1152,14 @@ Nuclear Pasta is extremely dense degenerate matter, formed when extreme pressure
 Years ahead of the competition, this top-of-the-line 3D printer is used for the production of synthetic biological resources.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
 "SpaceElevator/Part11","Ballistic Warp Drive","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
 "SpaceElevator/Part11/Description","Project Part #11. Ship via the Space Elevator to complete phases of Project Assembly.
-Power Usage: 1000-2000 MW (1500 MW average).
 
-A large amount of force is required for the Warp Drives to activate, so sticking them to rockets was the logical next step. Additionally, results improved immensely when the observers were further removed from the Warp Drives upon activation.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+A large amount of force is required for the Warp Drives to activate, so sticking them to rockets was the logical next step. Additionally, results improved immensely when the observers were further removed from the Warp Drives upon activation.","Tutorial: how to build Space Elevator
+
+Updated - Removed power usage numbers from the description.","","Game","#message #onboarding"
 "SpaceElevator/Part12","AI Expansion Server","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
 "SpaceElevator/Part12/Description","Project Part #12. Ship via the Space Elevator to complete phases of Project Assembly.
-Power Usage: 1500-2500 MW (2000 MW average).
+Power Usage: 0-2000 MW (1000 MW average).
 
-Growth is the metric by which we measure success.","Tutorial: how to build Space Elevator","","Game","#message #onboarding"
+Growth is the metric by which we measure success.","Tutorial: how to build Space Elevator
+
+Updated - Corrected power requirement numbers.","","Game","#message #onboarding"

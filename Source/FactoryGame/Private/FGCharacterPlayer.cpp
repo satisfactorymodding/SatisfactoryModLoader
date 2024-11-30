@@ -544,6 +544,8 @@ void AFGCharacterPlayer::FadeDamageIndicator(float deltaTime){ }
 void AFGCharacterPlayer::TickFlashlight(){ }
 void AFGCharacterPlayer::RadiationIntensityUpdated(){ }
 bool AFGCharacterPlayer::IsPlayerInOrAboveWater(const FVector& hitPosition) const{ return bool(); }
+void AFGCharacterPlayer::ActivateCameraComponents(){ }
+void AFGCharacterPlayer::DeactivateCameraComponents(){ }
 void AFGCharacterPlayer::OnActiveEquipmentChangedInSlot(EEquipmentSlot slot){ }
 FOnPersistentEquipmentActivated AFGCharacterPlayer::OnPersistentEquipmentActivated = FOnPersistentEquipmentActivated();
 FOnEquipmentEquipped AFGCharacterPlayer::OnEquipmentEquipped = FOnEquipmentEquipped();

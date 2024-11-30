@@ -61,6 +61,7 @@
 "Section/GameDirector","Game Director","","","UI","#interface"
 "Section/HR","HR","","","UI","#interface"
 "Section/IT","IT","","","UI","#interface"
+"Section/Localization/EnglishProofreading","1.0 English Proofreading","","","",""
 "Section/Localization/LionbridgeLQA","1.0 LQA and LCQA: Lionbridge Games","","","",""
 "Section/Localization/LionbridgeLoc","1.0 and Console Localization: Lionbridge Games","","","",""
 "Section/Music","Music","","","UI","#interface"

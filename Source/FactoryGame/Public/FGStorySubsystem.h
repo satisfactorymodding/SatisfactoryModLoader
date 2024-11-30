@@ -14,6 +14,7 @@
 #include "FGRemoteCallObject.h"
 #include "FGStorySubsystem.generated.h"
 
+class UFGGamePhase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnMessageFinishedForPlayer, class AFGPlayerController*, player, class UFGMessage*, message );
 
 UCLASS()
@@ -129,6 +130,13 @@ public:
 	void OnBuildingBuilt( AFGPlayerState* playerState, TSubclassOf< class AActor > builtActor, int64 totalBuildCount );
 	void OnBuildingDismantled( AFGPlayerState* playerState, TSubclassOf< class AActor > builtActor, int64 totalDismantledCount );
 	void OnFirstItemSinkFailure( TSubclassOf<UFGItemDescriptor> itemFailedToSink );
+	UFUNCTION()
+	void OnCalendarSlotUnlocked( int32 slot, bool isRandomUnlock, class UFGUnlock* unlock );
+	UFUNCTION()
+	void OnCalendarOpenedByPlayer( class AFGCharacterPlayer* byCharacter, class AFGBuildableCalendar* calendar, bool firstTime );
+
+	void OnPlayerFinishedSpawning( class AFGCharacterPlayer* player );
+	
 	// Not bound to the space elevator delegate since we don't always have a space elevator built. So the space elevator calls this instead
 	void OnSpaceElevatorShipmentLockedIn( AFGPlayerState* playerState, class UFGGamePhase* gamePhase );
 	// Not bound to any delegate since we don't always have a space elevator built. The Build_SpaceElevator calls this
@@ -190,4 +198,3 @@ private:
 	TMap<ESchematicType, TArray<double> > mSchematicTypePurchaseHistory;
 	
 };
-

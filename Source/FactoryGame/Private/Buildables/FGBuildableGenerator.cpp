@@ -2,6 +2,10 @@
 
 #include "Buildables/FGBuildableGenerator.h"
 
+void UFGGeneratorClipboardRCO::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+void UFGGeneratorClipboardRCO::Server_PasteSettings_Implementation(class AFGBuildableGenerator* generator, AFGCharacterPlayer* player, float overclock, float productionBoost, TSubclassOf<UFGPowerShardDescriptor> overclockingShard, TSubclassOf<UFGPowerShardDescriptor> productionBoostShard){ }
 AFGBuildableGenerator::AFGBuildableGenerator() : Super() {
 	this->mPowerProduction = 0.0;
 	this->mLoadPercentage = 0.0;
@@ -12,6 +16,9 @@ void AFGBuildableGenerator::GetConditionalReplicatedProps(TArray<FFGCondReplicat
 bool AFGBuildableGenerator::CanProduce_Implementation() const{ return bool(); }
 bool AFGBuildableGenerator::Factory_HasPower() const{ return bool(); }
 EProductionStatus AFGBuildableGenerator::GetProductionIndicatorStatus() const{ return EProductionStatus(); }
+bool AFGBuildableGenerator::CanUseFactoryClipboard_Implementation() { return bool(); }
+UFGFactoryClipboardSettings* AFGBuildableGenerator::CopySettings_Implementation(){ return nullptr; }
+bool AFGBuildableGenerator::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
 float AFGBuildableGenerator::GetPowerProductionCapacity() const{ return float(); }
 float AFGBuildableGenerator::GetDefaultPowerProductionCapacity() const{ return float(); }
 float AFGBuildableGenerator::CalcPowerProductionCapacityForPotential(float potential) const{ return float(); }

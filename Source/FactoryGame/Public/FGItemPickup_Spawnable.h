@@ -32,6 +32,7 @@ public:
 
 	//~ Begin AFGItemPickup interface
 	virtual bool ShouldBeRegisteredForPickup() const override;
+	virtual bool CanEverRespawn() const override;
 	//~ End AFGItemPickup interface
 	
 	/**
@@ -46,22 +47,27 @@ public:
 	*
 	* @return a valid item drop if everything went well
 	*/
-	static AFGItemPickup_Spawnable* CreateItemDrop( UWorld* world, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None )
+	static AFGItemPickup_Spawnable* CreateItemDrop( UWorld* world, const FInventoryStack& item, const FVector& spawnLocation, const FRotator& spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None )
 	{
 		return CreateItemDrop( nullptr, world, item, spawnLocation, spawnRotation, itemDropClass, spawnLevelOverride, spawnNameOverride );
 	}
 	UFUNCTION( BlueprintCallable, Category = "ItemDrop", meta = ( DefaultToSelf = "worldContext" ) )
-	static AFGItemPickup_Spawnable* CreateItemDrop( UFGInventoryComponent* inventoryComponent, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None )
+	static AFGItemPickup_Spawnable* CreateItemDrop( UFGInventoryComponent* inventoryComponent, const FInventoryStack& item, const FVector& spawnLocation, const FRotator& spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None )
 	{
 		return CreateItemDrop( inventoryComponent, inventoryComponent->GetWorld(), item, spawnLocation, spawnRotation, itemDropClass, spawnLevelOverride, spawnNameOverride );
 	}
 	/**
 	* @copydoc AFGItemPickup_Spawnable::CreateItemDrop
 	*/
-	static AFGItemPickup_Spawnable* CreateItemDrop( UFGInventoryComponent* inventoryComponent, UWorld* world, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None );
+	static AFGItemPickup_Spawnable* CreateItemDrop( UFGInventoryComponent* inventoryComponent, UWorld* world, const FInventoryStack& item, const FVector& spawnLocation, const FRotator& spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None );
 
 	UFUNCTION()
 	void OnColorUpdated( int32 index );
+
+	virtual void ConfigureMeshComponent( const FInventoryStack& item );
+
+	virtual bool CanMove() const { return mCanMove; }
+	virtual void SetCanMove( bool canMove );
 
 	/**
 	* Will drop item at location if there are no stack found on location that have enough space available.
@@ -163,4 +169,6 @@ private:
 	/** Should we play a spawn effect? */
 	UPROPERTY( SaveGame )
 	bool mPlaySpawnEffect;
+
+	bool mCanMove;
 };

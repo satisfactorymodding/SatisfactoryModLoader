@@ -32,6 +32,8 @@ int32 AFGBuildablePipeBase::GetDismantleRefundReturnsMultiplier() const{ return 
 bool AFGBuildablePipeBase::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildablePipeBase::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 bool AFGBuildablePipeBase::ShouldBlockGuidelinePathForHologram(const  AFGHologram* hologram) const{ return bool(); }
+void AFGBuildablePipeBase::OnSkinCustomizationApplied_Implementation(TSubclassOf<UFGFactoryCustomizationDescriptor_Skin> skin){ }
+void AFGBuildablePipeBase::ApplyCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
 void AFGBuildablePipeBase::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildablePipeBase::Dismantle_Implementation(){ }
 TArray<FInstanceData> AFGBuildablePipeBase::GetActorLightweightInstanceData_Implementation(){ return TArray<FInstanceData>(); }
@@ -43,6 +45,7 @@ void AFGBuildablePipeBase::SetupForSignificance(){ }
 float AFGBuildablePipeBase::GetSignificanceRange(){ return float(); }
 float AFGBuildablePipeBase::FindOffsetClosestToLocation(const FVector& location) const{ return float(); }
 void AFGBuildablePipeBase::GetLocationAndDirectionAtOffset(float offset, FVector& out_location, FVector& out_direction) const{ }
+TArray<FInstanceData> AFGBuildablePipeBase::SetupAbstractInstances(const FFactoryCustomizationData& CustomizationData){ return TArray<FInstanceData>(); }
 UFGConnectionComponent* AFGBuildablePipeBase::GetSplineConnection0() const{ return nullptr; }
 UFGConnectionComponent* AFGBuildablePipeBase::GetSplineConnection1() const{ return nullptr; }
 void AFGBuildablePipeBase::CreateClearanceData( USplineComponent* splineComponent, const TArray< FSplinePointData >& splineData, const FTransform& pipeTransform, TArray< FFGClearanceData >& out_clearanceData, float maxDistance){ }

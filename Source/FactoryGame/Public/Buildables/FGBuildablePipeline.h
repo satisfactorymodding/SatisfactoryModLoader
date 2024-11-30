@@ -65,6 +65,7 @@ public:
 
 	// Begin AFGBuildable interface
 	virtual void Factory_Tick( float dt ) override;
+	virtual bool ShouldRegisterToFactoryTickGroup() const override;
 	// End AFGBuildable interface
 
 	// Begin IFGDismantleInterface

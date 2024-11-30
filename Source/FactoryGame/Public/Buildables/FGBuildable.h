@@ -279,6 +279,8 @@ public:
 	/** Root of factory ticking hierarchy */
 	void TickFactory( float dt, ELevelTick TickType );
 
+	virtual bool ShouldRegisterToFactoryTickGroup() const { return mFactoryTickFunction.bCanEverTick; }
+
 	/** Always ticking tick, this is where factory logic resides, other tick will be disabled pretty frequent */
 	virtual void Factory_Tick( float dt );
 

@@ -51,7 +51,11 @@ public:
 	// Begin IFGSaveInterface
 	virtual bool ShouldSave_Implementation() const override { return false; }
 	// End IFGSaveInterface
-	
+
+	// Begin IFGUseableInterface
+	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
+	// End IFGUseableInterface
+
 	/** Get the inventory for the christmas calendar. Each inventory slot represents one slot in the calendar */
 	UFUNCTION( BlueprintPure, Category = "Calendar" )
 	FORCEINLINE class UFGInventoryComponent* GetInventory() const { return mInventory; }
@@ -92,10 +96,6 @@ protected:
 	/** How many slots it should be in the calendar */
 	UPROPERTY( EditDefaultsOnly, Category = "Calendar" )
 	int32 mNumberOfSlotsInCalendar;
-
-	/** The calendar rewards class we use to get rewards for slots in this calendar */
-	UPROPERTY( EditDefaultsOnly, Category = "Calendar" )
-	TSubclassOf< UFGCalendarRewards > mCalendarRewardsClass;
 
 	/** This maps an inventory index to a random reward index in the calendar reward class */
 	UPROPERTY()

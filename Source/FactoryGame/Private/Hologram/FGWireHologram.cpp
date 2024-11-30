@@ -36,6 +36,7 @@ void AFGWireHologram::OnInvalidHitResult(){ }
 void AFGWireHologram::ScrollRotate(int32 delta, int32 step){ }
 AActor* AFGWireHologram::GetUpgradedActor() const{ return nullptr; }
 bool AFGWireHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
+bool AFGWireHologram::ShouldBuildGunHitWireMeshes() const { return bool(); }
 void AFGWireHologram::CheckBlueprintCommingling(){ }
 float AFGWireHologram::GetBuildGunRangeOverride_Implementation() const{ return float(); }
 void AFGWireHologram::PostHologramPlacement(const FHitResult& hitResult){ }

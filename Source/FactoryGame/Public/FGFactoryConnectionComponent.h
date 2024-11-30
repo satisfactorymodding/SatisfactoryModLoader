@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "FGConnectionComponent.h"
 #include "FGInventoryComponent.h"
+#include "GameFramework/Actor.h"
 #include "FGFactoryConnectionComponent.generated.h"
 
 // For lazy people. This is used in nearly every BeginPlay of Proxies.
@@ -78,16 +79,19 @@ public:
 	/**
 	 * Set the inventory associated with this connection
 	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|FactoryConnection" )
 	void SetInventory( class UFGInventoryComponent* inventory );
 
 	/**
 	* Sets a specified index for the component to access on its assigned inventory
 	*/
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|FactoryConnection" )
 	void SetInventoryAccessIndex( int32 index );
 
 	/**
 	* Gets the inventory access index specified for this factory connection
 	*/
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|FactoryConnection" )
 	int32 GetInventoryAccessIndex() const { return mInventoryAccessIndex; }
 
 	/**

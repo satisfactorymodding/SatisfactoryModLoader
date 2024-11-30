@@ -49,3 +49,5 @@ void AFGConveyorChainSubsystem::OnRep_ServerFactoryTickTime(float oldValue){ }
 float AFGConveyorChainSubsystem::GetAndConsumeClientTimeDebt(float updateDelta){ return float(); }
 float AFGConveyorChainSubsystem::GetAverageServerTickDeltaTime(){ return float(); }
 bool AFGConveyorChainSubsystem::IsUnusuallyLargeTickDelta(){ return bool(); }
+
+FGetAdditionalConveyorItemDescriptors AFGConveyorChainSubsystem::GetAdditionalItemDescriptors;

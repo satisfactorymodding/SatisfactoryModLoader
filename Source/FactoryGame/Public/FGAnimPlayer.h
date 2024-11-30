@@ -53,6 +53,10 @@ public:
 	/** is this character not controlled by anyone */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim Player" )
 	bool mIsIdling;
+	
+	/** Tobias 2024-11-04: Hacky solution for overriding the idle animation for the snowball ammo. */
+	UPROPERTY( BlueprintReadOnly, Category = "Anim Player" )
+	UAnimSequence* mNobeliskWeaponIdlePoseOverride;
 };
 
 

@@ -97,6 +97,10 @@ public:
 	UFUNCTION( BlueprintPure, BlueprintNativeEvent, Category = "Weapon" )
 	FVector GetWeaponMeshSocketLocation( FName socketName ) const;
 
+	/** Tobias 2024-11-04: Hacky solution for overriding the idle animation for the snowball ammo. */
+	UFUNCTION( BlueprintPure, Category="Weapon" )
+	class UAnimSequence* GetNobeliskWeaponIdleAnimationOverride() const;
+
 	UFUNCTION( Server, Reliable )
 	void Server_CycleDesiredAmmunitionType();
 

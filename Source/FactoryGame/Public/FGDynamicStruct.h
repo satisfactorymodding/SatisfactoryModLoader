@@ -127,6 +127,7 @@ public:
 
 	void AddStructReferencedObjects(class FReferenceCollector& Collector);
 	bool Serialize(FArchive& Ar);
+	bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess);
 
 	friend FArchive& operator<<( FArchive& Ar, FFGDynamicStruct& DynamicStruct )
 	{
@@ -143,5 +144,6 @@ struct TStructOpsTypeTraits<FFGDynamicStruct> : TStructOpsTypeTraitsBase2<FFGDyn
 		WithCopy = true,
 		WithAddStructReferencedObjects = true,
 		WithSerializer = true,
+		WithNetSerializer = true,
 	};
 };

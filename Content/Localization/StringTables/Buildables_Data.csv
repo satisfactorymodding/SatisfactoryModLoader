@@ -672,7 +672,7 @@ Refuels at any of its connected Ports if possible.","This description was update
 #transportation"
 "Transport/Drones/DronePort","Drone Port","","","Game","#interface
 #transportation"
-"Transport/Drones/DronePort/Description","Functions as home Port to a single Drone, which transports available input back and forth between its home Port and destination Ports.
+"Transport/Drones/DronePort/Description","Functions as home Port to a single Drone, which transports available input back and forth between its home Port and destination Port.
 Drone Ports can have one other Port assigned as their transport destination.
 
 The Drone Port interface provides delivery details and allows management of Port connections.","","","Game","#buildable

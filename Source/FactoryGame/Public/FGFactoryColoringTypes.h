@@ -107,17 +107,6 @@ UCLASS( Blueprintable, BlueprintType )
 class FACTORYGAME_API UFGFactoryCustomizationDescriptor_Pattern : public UFGFactoryCustomizationDescriptor
 {
 	GENERATED_BODY()
-
-public:
-	FItemAmount GetRefundCostOnApplication() const { return mRefundCostOnApplication; }
-
-protected:
-	/** 
-	* This is a very specific property for only the Pattern Removal so that we can refund a cost when used. This was preferable to having to store the 
-	* recipes used for every pattern since that's a lot of extra data and all patterns should TM cost the same to apply.
-	*/
-	UPROPERTY( EditDefaultsOnly, Category="Pattern Removal" )
-	FItemAmount mRefundCostOnApplication;
 };
 
 // Material Class
@@ -394,8 +383,13 @@ struct FACTORYGAME_API FFactoryCustomizationData
 
 	FFactoryCustomizationData() :
 		SwatchDesc( nullptr ),
+	
 		PatternDesc( nullptr ),
+	
 		MaterialDesc( nullptr ),
+	
+		SkinDesc( nullptr ),
+	
 		PatternRotation( 0.f ),
 		ColorSlot( INDEX_NONE ),
 		NeedsSkinUpdate( false ),
@@ -424,9 +418,14 @@ struct FACTORYGAME_API FFactoryCustomizationData
 	void UpdateHasPowerData();
 
 	/**
-	 * Fills an array with all valid customizations ( useful when sampling buildings tex. )
+	 * Returns all the recipes applied to this customization data.
 	 */
-	void GetCustomizationArray( TArray< TSubclassOf < class UFGFactoryCustomizationDescriptor > >& out_customizations );
+	void GetAppliedRecipes( class UWorld* worldContext, TArray< TSubclassOf< class UFGRecipe > >& out_recipes ) const;
+
+	/**
+	 * Returns the refunds for the specified customization data. If newCustomizationData isn't supplied, then all refunds will be returned. Otherwise only the refunds for the customization that has changed will be returned.
+	 */
+	static TArray< struct FInventoryStack > GetCustomizationRefunds( class UWorld* worldContext, const FFactoryCustomizationData& baseCustomizationData, const FFactoryCustomizationData* newCustomizationData = nullptr );
 
 	FORCEINLINE bool operator==( const FFactoryCustomizationData& other ) const
 	{

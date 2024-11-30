@@ -33,6 +33,8 @@ public:
 	virtual bool ShouldBeConsideredForBase_Implementation() override;
 	virtual void GetClearanceData_Implementation( TArray< FFGClearanceData >& out_data ) const override;
 	virtual bool ShouldBlockGuidelinePathForHologram( const class AFGHologram* hologram ) const override;
+	virtual void OnSkinCustomizationApplied_Implementation( TSubclassOf<UFGFactoryCustomizationDescriptor_Skin> skin ) override;
+	virtual void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData ) override;
 	// End Buildable interface
 
 	// Begin IFGDismantleInterface
@@ -69,6 +71,8 @@ public:
 	virtual float FindOffsetClosestToLocation( const FVector& location ) const;
 	virtual void GetLocationAndDirectionAtOffset( float offset, FVector& out_location, FVector& out_direction ) const;
 
+	virtual TArray<FInstanceData> SetupAbstractInstances(const FFactoryCustomizationData& CustomizationData);
+	
 	// Begin IFGSplineBuildableInterface
 	virtual UFGConnectionComponent* GetSplineConnection0() const override;
 	virtual UFGConnectionComponent* GetSplineConnection1() const override;
@@ -182,5 +186,3 @@ private:
 	static inline const float COLLISION_SPACING =  80.f;
 	static inline const FVector COLLISION_OFFSET = FVector( 0.f, 0.f, 0.f );
 };
-
-

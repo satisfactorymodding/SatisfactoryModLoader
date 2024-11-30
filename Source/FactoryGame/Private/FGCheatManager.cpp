@@ -80,6 +80,8 @@ void UFGCheatManager::RunGameplayTest(TSubclassOf<class UFGGameplayTest> gamepla
 void UFGCheatManager::Server_RunGameplayTest_Implementation(TSubclassOf<class UFGGameplayTest> gameplayTest){ }
 void UFGCheatManager::Server_SetSAMIntensity_Implementation(int32 newSAMIntensity){ }
 void UFGCheatManager::SetSAMIntensity(int32 newSAMIntensity){ }
+void UFGCheatManager::SpawnFallingGiftBundle(){ }
+void UFGCheatManager::Server_SpawnFallingGiftBundle_Implementation(){ }
 void UFGCheatManager::Server_Creature_CanAttackEachother_Implementation(bool canAttack){ }
 void UFGCheatManager::Creature_CanAttackEachother(bool canAttack){ }
 void UFGCheatManager::Creature_SetStressEnabled(bool enable){ }

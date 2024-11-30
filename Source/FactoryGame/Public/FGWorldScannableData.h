@@ -7,6 +7,9 @@
 #include "GameFramework/Actor.h"
 #include "FGWorldScannableData.generated.h"
 
+class AFGCreature;
+class AFGCreatureSpawner;
+
 USTRUCT()
 struct FWorldScannableData
 {
@@ -15,21 +18,36 @@ struct FWorldScannableData
 	FWorldScannableData() = default;
 #if WITH_EDITOR
 	explicit FWorldScannableData( const AActor* actor );
-	FWorldScannableData( const class FWorldPartitionActorDesc* ActorDesc, int32 PIEInstanceIndex = INDEX_NONE );
+	explicit FWorldScannableData( const class FWorldPartitionActorDesc* ActorDesc, int32 PIEInstanceIndex = INDEX_NONE );
 #endif
 
-	UPROPERTY( VisibleAnywhere )
+	UPROPERTY( VisibleAnywhere, Category = "Scannable Data" )
 	TSoftObjectPtr<AActor> Actor;
 
-	UPROPERTY( VisibleAnywhere )
+	UPROPERTY( VisibleAnywhere, Category = "Scannable Data" )
 	FGuid ActorGuid{};
 
-	UPROPERTY( VisibleAnywhere )
+	UPROPERTY( VisibleAnywhere, Category = "Scannable Data" )
 	TSubclassOf<AActor> ActorClass;
 
-	UPROPERTY( VisibleAnywhere )
+	UPROPERTY( VisibleAnywhere, Category = "Scannable Data" )
 	FVector ActorLocation{ForceInit};
-	
+};
+
+USTRUCT()
+struct FCreatureSpawnerWorldScannableData : public FWorldScannableData
+{
+	GENERATED_BODY()
+
+	FCreatureSpawnerWorldScannableData() = default;
+#if WITH_EDITOR
+	explicit FCreatureSpawnerWorldScannableData( const AFGCreatureSpawner* actor );
+	explicit FCreatureSpawnerWorldScannableData( const class FWorldPartitionActorDesc* ActorDesc, int32 PIEInstanceIndex = INDEX_NONE );
+#endif
+
+	/** Class of the creature that is spawned by this spawner */
+	UPROPERTY( VisibleAnywhere, Category = "Scannable Data" )
+	TSoftClassPtr<AFGCreature> CreatureClass;
 };
 
 UCLASS()
@@ -48,7 +66,7 @@ private:
 #if WITH_EDITOR
 	void CacheWorldScannableData();
 #endif
-
+public:
 	/** Item pickups that were found in the world */
 	UPROPERTY()
 	TArray<FWorldScannableData> mItemPickups;
@@ -56,4 +74,8 @@ private:
 	/** Drop pods that were found in the world */
 	UPROPERTY()
 	TArray<FWorldScannableData> mDropPods;
+
+	/** Creature spawners that were found in the world */
+	UPROPERTY()
+	TArray<FCreatureSpawnerWorldScannableData> mCreatureSpawners;
 };

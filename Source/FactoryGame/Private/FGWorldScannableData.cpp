@@ -6,6 +6,7 @@
 #include "FGScannableSubsystem.h"
 #include "FGItemPickup.h"
 #include "FGDropPod.h"
+#include "Creature/FGCreatureSpawner.h"
 #include "WorldPartition/WorldPartition.h"
 #if WITH_EDITOR
 #include "WorldPartition/WorldPartitionActorDesc.h"
@@ -49,6 +50,20 @@ FWorldScannableData::FWorldScannableData(const FWorldPartitionActorDesc* ActorDe
 	}
 }
 
+FCreatureSpawnerWorldScannableData::FCreatureSpawnerWorldScannableData(const AFGCreatureSpawner* actor) : FWorldScannableData(actor)
+{
+	if (actor) {
+		CreatureClass = actor->GetCreatureToSpawn();
+	}
+}
+
+FCreatureSpawnerWorldScannableData::FCreatureSpawnerWorldScannableData(const FWorldPartitionActorDesc* ActorDesc, int32 PIEInstanceIndex) : FWorldScannableData(ActorDesc, PIEInstanceIndex)
+{
+	if (AFGCreatureSpawner* actor = Cast<AFGCreatureSpawner>(Actor.Get())) {
+		CreatureClass = actor->GetCreatureToSpawn();
+	}
+}
+
 #endif
 
 AFGWorldScannableDataGenerator::AFGWorldScannableDataGenerator()
@@ -72,7 +87,7 @@ void AFGWorldScannableDataGenerator::BeginPlay()
 #endif
 
 	if (AFGScannableSubsystem* scannableSubsystem = AFGScannableSubsystem::Get(GetWorld())) {
-		scannableSubsystem->AssignScannableData(mItemPickups, mDropPods);
+		scannableSubsystem->AssignScannableData(this);
 	}
 }
 

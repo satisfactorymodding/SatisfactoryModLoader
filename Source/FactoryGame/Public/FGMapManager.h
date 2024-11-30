@@ -335,7 +335,9 @@ private:
 	FAsyncTask<class FFogOfWarTask>* mFOWAsyncTask;
 
 	TArray<FFOWData> mFOWDrawQueue;
-	
+
+	UPROPERTY()
+	TMap<UFGActorRepresentation*,FVector> mActorMapToLocation;
 };
 
 struct FFogOfWarWorker

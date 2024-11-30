@@ -236,6 +236,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	float mUnderClockedAnimationSpeed = 0.5f;
+
+	UPROPERTY(EditDefaultsOnly,Category="Animation|Wire")
+	uint8 bNeedsSimulationForWires:1 = false;
+	
 	// Begin pre-cached states.
 	/*	Cached on property changed for runtime speed.*/
 	UPROPERTY()
@@ -261,7 +265,7 @@ protected:
 	int8 mCurrentSequence = 0;
 	
 private:
-	UPROPERTY(Transient)
+	UPROPERTY(VisibleInstanceOnly,Transient)
 	USkeletalMeshComponent* mSpawnedWireMeshComponent;
 
 	/*	Current animation state. */

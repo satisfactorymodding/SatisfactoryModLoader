@@ -43,6 +43,8 @@ void AFGHUD::OnActorRepresentationAdded(UFGActorRepresentation* actorRepresentat
 void AFGHUD::OnActorRepresentationRemoved(UFGActorRepresentation* actorRepresentation){ }
 void AFGHUD::OnActorRepresentationUpdated(UFGActorRepresentation* actorRepresentation){ }
 void AFGHUD::OnActorRepresentationFiltered(ERepresentationType type, bool visible){ }
+void AFGHUD::OnCultureChanged(){ }
+void AFGHUD::InvalidateCachedTextDimensionsAndGlyphs(){ }
 void AFGHUD::SetCompassEntryVisibility(UFGActorRepresentation* actorRepresentation, bool visible){ }
 void AFGHUD::RegisterCardinalCompassDirections(){ }
 void AFGHUD::OnSetupBinds(){ }

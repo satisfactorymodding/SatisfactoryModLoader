@@ -21,6 +21,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnColorChanged, int32, Index );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOccluderBuildingConstructed, AFGBuildable*, buildable );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOccluderBuildingRemoved, AFGBuildable*, buildable );
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableAdded, AFGBuildable*, buildable );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableRemoved, AFGBuildable*, buildable );
+
 /** Used to track constructed (spawned) buildables matched with their holograms between client and server */
 USTRUCT()
 struct FNetConstructionID
@@ -288,6 +291,9 @@ public:
 	/** @return a const reference to all buildables in the world. Avoids copying, but can be invalidated by buildables being added/removed */
 	FORCEINLINE const TArray<AFGBuildable*>& GetAllBuildablesRef() const { return mBuildables; }
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory" )
+	int32 GetBuildableCount( TSubclassOf< AFGBuildable > buildableClass ) const;
+
 	/** Get all buildables of the supplied type. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory" )
 	void GetTypedBuildable( TSubclassOf< class AFGBuildable > inClass, TArray< class AFGBuildable* >& out_buildables ) const;
@@ -470,6 +476,14 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Build", DisplayName = "OnBuildableConstructedGlobal" )
 	FOnBuildableConstructedGlobal BuildableConstructedGlobalDelegate;
 
+	/** Broadcast when a buildable is added to the buildable subsystem. */
+	UPROPERTY( BlueprintAssignable, Category = "Build", DisplayName = "OnBuildableAdded" )
+	FOnBuildableAdded mBuildableAddedDelegate;
+
+	/** Broadcast when a buildable is removed from the buildable subsystem. */
+	UPROPERTY( BlueprintAssignable, Category = "Build", DisplayName = "OnBuildableRemoved" )
+	FOnBuildableRemoved mBuildableRemovedDelegate;
+
 	/** Broadcast when buildable light color slots have been updated. Used to update UI */
 	UPROPERTY( BlueprintAssignable, Category = "Light Color" )
 	FOnBuildableLightColorSlotsUpdated mOnBuildableLightColorSlotsUpdated;
@@ -527,6 +541,9 @@ private:
 	/** List of all buildables. */
 	UPROPERTY()
 	TArray< class AFGBuildable* > mBuildables;
+
+	/** Count of all buildables. */
+	TMap< TSubclassOf< AFGBuildable >, int32 > mBuildableCount;
 
 	/************************************************************************/
 	/* Begin variables for parallelization									*/

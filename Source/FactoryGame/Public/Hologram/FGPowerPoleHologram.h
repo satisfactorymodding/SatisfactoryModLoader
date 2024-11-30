@@ -32,7 +32,6 @@ public:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
-	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual AActor* GetUpgradedActor() const override;
@@ -57,6 +56,7 @@ protected:
 
 	EBreakWireState mBreakingWireState = EBreakWireState::Initial;
 private:
+	void SpawnWireChildHolograms( TSubclassOf< class UFGRecipe > wireRecipe );
 	void ResetByproductHolograms();
 	
 	/** The connection wires snap to, used when placing a pole automatically. */

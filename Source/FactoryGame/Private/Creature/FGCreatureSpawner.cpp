@@ -40,6 +40,9 @@ AFGCreatureSpawner::AFGCreatureSpawner() : Super() {
 void AFGCreatureSpawner::BeginPlay(){ Super::BeginPlay(); }
 void AFGCreatureSpawner::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGCreatureSpawner::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
+#if WITH_EDITOR
+void AFGCreatureSpawner::GetActorDescProperties(FPropertyPairsMap& PropertyPairsMap) const{ }
+#endif
 void AFGCreatureSpawner::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGCreatureSpawner::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGCreatureSpawner::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -64,7 +67,8 @@ bool AFGCreatureSpawner::IsTimeForCreature() const{ return bool(); }
 void AFGCreatureSpawner::CreatureDied(AActor* thisActor){ }
 bool AFGCreatureSpawner::PopulateSpawnData(){ return bool(); }
 float AFGCreatureSpawner::GetSpawnDistance() const{ return float(); }
-void AFGCreatureSpawner::UpdateScannableState(){ }
 void AFGCreatureSpawner::TryRecoupleCreatureAndSpawner(){ }
 void AFGCreatureSpawner::RegisterAsNavigationInvoker(bool shouldRegister){ }
 void AFGCreatureSpawner::TraceForNearbyBase(){ }
+
+const FName AFGCreatureSpawner::CreatureClassPropertyName = FName();

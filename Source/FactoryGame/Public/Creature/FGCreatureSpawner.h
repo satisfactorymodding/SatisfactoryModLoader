@@ -53,17 +53,20 @@ UCLASS()
 class FACTORYGAME_API AFGCreatureSpawner : public AActor, public IFGSaveInterface
 {
 	GENERATED_BODY()
-public:	
+public:
+	static const FName CreatureClassPropertyName;
+	
 	AFGCreatureSpawner();
 
 	// BEGIN AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	virtual void Tick(float DeltaSeconds) override;
-	#if WITH_EDITOR
+#if WITH_EDITOR
+	virtual void GetActorDescProperties(FPropertyPairsMap& PropertyPairsMap) const override;
 	/** Moved in the editor, on done, calculate spawn locations */
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-	#endif
+#endif
 	// END AActor interface
 
 	// Begin IFGSaveInterface
@@ -167,9 +170,6 @@ public:
 	/** Returns the cached value for isNearBase */
 	UFUNCTION()
 	FORCEINLINE bool VisualizeSpawnDistance() const { return mVisualizeSpawnDistance; }
-
-	/** Update if this spawner is scannable. Checks if near base and if it has any alive untamed creatures */
-	void UpdateScannableState();
 
 	/** Try and recouple creatures that are in this instances mSpawnData but has no spawner set */
 	void TryRecoupleCreatureAndSpawner();

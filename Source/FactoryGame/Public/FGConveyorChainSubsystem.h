@@ -223,6 +223,7 @@ public:
 	bool HasPendingSegmentClientRequest = false;
 };
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FGetAdditionalConveyorItemDescriptors, class AFGConveyorChainSubsystem* /* chainSubsystem */, TSet<TSubclassOf<UFGItemDescriptor>>& /* out_itemDescriptors */);
 
 UCLASS()
 class FACTORYGAME_API AFGConveyorChainSubsystem : public AFGSubsystem
@@ -312,6 +313,8 @@ public:
 		return mReparamStepsPerSegment;
 	}
 
+	/** Delegate that can be bound to register additional item descriptors that are not known to the Asset Registry as being able to be on conveyor belts */
+	static FGetAdditionalConveyorItemDescriptors GetAdditionalItemDescriptors;
 private:
 	FORCEINLINE int32 GetReparamStepForQualitySetting( int32 qualitySetting )
 	{
@@ -382,4 +385,3 @@ private:
 	TArray< TSubclassOf< UFGItemDescriptor > > mAllItemDescriptors;
 
 };
-

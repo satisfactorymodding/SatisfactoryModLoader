@@ -52,6 +52,7 @@ void AFGBuildablePipeline::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 void AFGBuildablePipeline::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePipeline::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildablePipeline::Factory_Tick(float dt){ }
+bool AFGBuildablePipeline::ShouldRegisterToFactoryTickGroup() const { return bool(); }
 void AFGBuildablePipeline::PreUpgrade_Implementation(){ }
 void AFGBuildablePipeline::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildablePipeline::GainedSignificance_Implementation(){ }

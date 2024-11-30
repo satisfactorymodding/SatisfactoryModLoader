@@ -28,7 +28,6 @@ public:
 	// Begin AFGHologram interface
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID constructionID ) override;
-	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
 	virtual bool IsValidHitResult(const FHitResult& hitResult) const override;
 	virtual bool TryUpgrade(const FHitResult& hitResult) override;
@@ -48,6 +47,7 @@ protected:
 	bool AlignWithWire( const class AFGBuildableWire* wire, FVector& locationToAlign, FRotator& out_rotation ) const;
 
 private:
+	void SpawnWireChildHolograms( TSubclassOf< class UFGRecipe > wireRecipe );
 	void ResetByproductHolograms();
 	
 protected:
