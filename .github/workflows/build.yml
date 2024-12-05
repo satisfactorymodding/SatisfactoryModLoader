@@ -37,8 +37,9 @@ jobs:
           .\\SetupScripts\\Register.bat
 
       - name: Download and Extract Wwise
+      # TODO: Switch back to https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-windows.exe once b2 fixes their signing
         run: |
-          Invoke-WebRequest -Uri "https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-windows.exe" -OutFile "b2.exe"
+          Invoke-WebRequest -Uri "https://github.com/Backblaze/B2_Command_Line_Tool/releases/download/v4.1.0/b2-windows.exe" -OutFile "b2.exe"
           .\b2.exe account authorize "${{ secrets.WWISE_B2_KEY_ID }}" "${{ secrets.WWISE_B2_KEY }}"
           .\b2.exe file download "b2://${{ secrets.WWISE_B2_BUCKET }}/Wwise.7z" "Wwise.7z"
           7z x -aoa Wwise.7z -oSML\\Plugins\\
