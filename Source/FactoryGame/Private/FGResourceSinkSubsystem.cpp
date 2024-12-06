@@ -54,6 +54,7 @@ int32 AFGResourceSinkSubsystem::RemoveResourceSinkCoupons(int32 numCoupons){ ret
 int32 AFGResourceSinkSubsystem::GetResourceSinkPointsForItem(TSubclassOf<  UFGItemDescriptor > itemDescriptor){ return int32(); }
 bool AFGResourceSinkSubsystem::FindResourceSinkPointsForItem(TSubclassOf<  UFGItemDescriptor > itemDescriptor, int32& out_numPoints, EResourceSinkTrack& out_itemTrack){ return bool(); }
 void AFGResourceSinkSubsystem::HandleQueuedPoints(){ }
+void AFGResourceSinkSubsystem::HandleQueuedItemClasses(){ }
 void AFGResourceSinkSubsystem::HandleQueuedFailedItems(){ }
 void AFGResourceSinkSubsystem::InitCouponClass(){ }
 void AFGResourceSinkSubsystem::CalculateLevel(){ }

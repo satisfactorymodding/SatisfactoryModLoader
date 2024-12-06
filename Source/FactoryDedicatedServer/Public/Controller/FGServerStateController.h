@@ -7,6 +7,7 @@
 #include "Networking/FGServerAPIManager.h"
 #include "FGServerStateController.generated.h"
 
+class UFGUserSetting;
 struct FFGServerJoinDataResponse;
 class UFGServerSubsystem;
 
@@ -46,4 +47,7 @@ public:
 
 	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "NotAuthenticated" )
 	FFGServerErrorResponse Handler_HealthCheck( const FString& ClientCustomData, FString& OutHealth, FString& OutServerCustomData ) const;
+
+	/** Returns true if the following user setting should be sent and handled as a part of the Server API */
+	static bool ShouldAllowUserSettingInAPI( const UFGUserSetting* UserSetting);
 };

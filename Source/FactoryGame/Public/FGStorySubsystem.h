@@ -129,6 +129,7 @@ public:
 	void OnItemManuallyCrafted( AFGPlayerState* playerState, const FItemAmount& totalAmountCrafted );
 	void OnBuildingBuilt( AFGPlayerState* playerState, TSubclassOf< class AActor > builtActor, int64 totalBuildCount );
 	void OnBuildingDismantled( AFGPlayerState* playerState, TSubclassOf< class AActor > builtActor, int64 totalDismantledCount );
+	void OnItemsSunk( TSet< TSubclassOf<UFGItemDescriptor> > items );
 	void OnFirstItemSinkFailure( TSubclassOf<UFGItemDescriptor> itemFailedToSink );
 	UFUNCTION()
 	void OnCalendarSlotUnlocked( int32 slot, bool isRandomUnlock, class UFGUnlock* unlock );
@@ -136,6 +137,9 @@ public:
 	void OnCalendarOpenedByPlayer( class AFGCharacterPlayer* byCharacter, class AFGBuildableCalendar* calendar, bool firstTime );
 
 	void OnPlayerFinishedSpawning( class AFGCharacterPlayer* player );
+
+	UFUNCTION( BlueprintCallable, Category = "Story" )
+	void OnToiletFlushed( class AFGCharacterPlayer* byCharacter, class AFGPioneerPotty* toilet );
 	
 	// Not bound to the space elevator delegate since we don't always have a space elevator built. So the space elevator calls this instead
 	void OnSpaceElevatorShipmentLockedIn( AFGPlayerState* playerState, class UFGGamePhase* gamePhase );

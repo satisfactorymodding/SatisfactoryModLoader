@@ -24,10 +24,12 @@ void AFGStorySubsystem::OnItemPickuped(AFGPlayerState* playerState, const FItemA
 void AFGStorySubsystem::OnItemManuallyCrafted(AFGPlayerState* playerState, const FItemAmount& totalAmountCrafted){ }
 void AFGStorySubsystem::OnBuildingBuilt(AFGPlayerState* playerState, TSubclassOf<  AActor > builtActor, int64 totalBuildCount){ }
 void AFGStorySubsystem::OnBuildingDismantled(AFGPlayerState* playerState, TSubclassOf<  AActor > builtActor, int64 totalDismantledCount){ }
+void AFGStorySubsystem::OnItemsSunk(TSet<TSubclassOf<UFGItemDescriptor>> items){ }
 void AFGStorySubsystem::OnFirstItemSinkFailure(TSubclassOf<UFGItemDescriptor> itemFailedToSink){ }
 void AFGStorySubsystem::OnCalendarSlotUnlocked(int32 slot, bool isRandomUnlock, class UFGUnlock* unlock){ }
 void AFGStorySubsystem::OnCalendarOpenedByPlayer(class AFGCharacterPlayer* byCharacter,	class AFGBuildableCalendar* calendar, bool firstTime){ }
 void AFGStorySubsystem::OnPlayerFinishedSpawning(class AFGCharacterPlayer* player){ }
+void AFGStorySubsystem::OnToiletFlushed(class AFGCharacterPlayer* byCharacter, class AFGPioneerPotty* toilet){ }
 void AFGStorySubsystem::OnSpaceElevatorShipmentLockedIn(AFGPlayerState* playerState,  UFGGamePhase* gamePhase){ }
 void AFGStorySubsystem::OnSpaceElevatorFullyBuilt(){ }
 void AFGStorySubsystem::ForwardMessagesToGameUI(const TArray<class UFGMessage*>& messages){ }

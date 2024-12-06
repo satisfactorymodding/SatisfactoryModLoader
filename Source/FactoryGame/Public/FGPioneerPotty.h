@@ -14,13 +14,14 @@ UCLASS()
 class FACTORYGAME_API AFGPioneerPotty : public AFGBuildable
 {
 	GENERATED_BODY()
-	
+public:
 	AFGPioneerPotty();
-protected:
-	virtual void BeginPlay() override;
 
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	FORCEINLINE class UFGInventoryComponent* GetStorageInventory() const { return mStorageInventory; }
+	
+protected:
+	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY( SaveGame )

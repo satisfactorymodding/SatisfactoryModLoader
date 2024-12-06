@@ -10,3 +10,4 @@ void UFGServerStateController::Handler_GetServerOptions(TMap<FString, FString>& 
 void UFGServerStateController::Handler_GetAdvancedGameSettings(bool& bOutCreativeModeEnabled, TMap<FString, FString>& OutAdvancedGameSettings) const {}
 void UFGServerStateController::Handler_ApplyAdvancedGameSettings(const TMap<FString, FString>& AppliedAdvancedGameSettings) const {}
 FFGServerErrorResponse UFGServerStateController::Handler_HealthCheck(const FString& ClientCustomData, FString& OutHealth, FString& OutServerCustomData) const { return FFGServerErrorResponse(); }
+bool UFGServerStateController::ShouldAllowUserSettingInAPI(const UFGUserSetting* UserSetting){ return bool(); }

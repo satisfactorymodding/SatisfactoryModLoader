@@ -70,6 +70,7 @@ struct FResourceSinkValuePair32
 };
 
 DECLARE_MULTICAST_DELEGATE_OneParam( FOnFirstItemSinkFailure, TSubclassOf<class UFGItemDescriptor> );
+DECLARE_MULTICAST_DELEGATE_OneParam( FOnItemsSunkDelegate, TSet< TSubclassOf<class UFGItemDescriptor> > );
 
 /**
  * Subsystem to handle the resource sink and the rewards from sinked items
@@ -178,9 +179,15 @@ public:
 
 	// Called when we fail to sink an item the first time. Can be called once per item descriptor
 	FOnFirstItemSinkFailure mOnFirstItemSinkFailure;
+
+	// Called when processing the item sink queue, provides a set of all items classes that were sunk / processed.
+	FOnItemsSunkDelegate mOnItemsSunk;
 private:
 	/** Handle the points added to the point queue and adds them to the system */
 	void HandleQueuedPoints();
+
+	/** Handle the items added to the item queue and plays messages */
+	void HandleQueuedItemClasses();
 
 	/** Handle the items added to the item queue and plays messages */
 	void HandleQueuedFailedItems();
@@ -229,6 +236,9 @@ private:
 	
 	/** Thread safe queue where we store the failed items that have been tried to be sinked and failed by resource sinks during the factory tick */
 	TQueue<TSubclassOf<UFGItemDescriptor>, EQueueMode::Mpsc> mQueuedFailedItems;
+
+	/** Thread safe queue where we store items that have been sunk. */
+	TQueue<TSubclassOf<UFGItemDescriptor>, EQueueMode::Mpsc> mQueuedItems;
 
 	/** Used to keeps track if we have earned one or more coupons on the given track since we last called this function
 	 *	At the start of the game it's equal to the current point level for each track. When HasTrackGivenCouponSinceLastCheck is called it's updated
