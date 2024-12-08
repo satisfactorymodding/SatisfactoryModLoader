@@ -1,6 +1,243 @@
 #pragma once
 #include "UObject/Object.h"
 #include "UObject/Stack.h"
+#include "Concepts/BaseStructureProvider.h"
+#include "Concepts/StaticStructProvider.h"
+
+struct FBlueprintHookVariableHelper
+{
+public:
+	FBlueprintHookVariableHelper(FFrame& Frame) : Frame(Frame) {}
+	virtual ~FBlueprintHookVariableHelper() = default;
+
+	/**
+	 * Gets a property and a pointer to its value by name. Used as a helper function in other methods of this struct.
+	 *
+	 * For users of this function, the ValuePtr is *not* to be used with _InContainer or ContainerPtr methods of FProperty,
+	 * it is already the pointer to the value of the property.
+	 *
+	 * Example:
+	 * \code
+	 * void* ValuePtr;
+	 * FProperty* Property = helper.GetPropertyByName(TEXT("ReturnValue"), ValuePtr);
+	 * \endcode
+	 * 
+	 * @tparam T a FProperty type
+	 * @param VariableName the variable name, as shown in the blueprint (may or may not contain spaces)
+	 * @param ValuePtr [out] a pointer to the value of the variable, for advanced users
+	 * @param ArrayIndex [optional] the index in native static-sized property array (not TArray) types, unlikely to be found in blueprints
+	 * @return a property pointer for the requested property
+	 */
+	template <typename T>
+	T* GetVariableProperty(const TCHAR* VariableName, void*& ValuePtr, int32 ArrayIndex = 0) const
+	{
+		FProperty* Property = GetVariablePropertyInternal(VariableName, ValuePtr, ArrayIndex);
+		T* CastedProperty = CastField<T>(Property);
+		fgcheckf(CastedProperty, TEXT("Property %s is not of type %s"), VariableName, *T::StaticClass()->GetName());
+		return CastedProperty;
+	}
+
+	/**
+	 * Gets a pointer to the value of the named basic variable.
+	 * <b>This method won't work on bool, struct or enum variables; use the corresponding methods instead.</b>
+	 *
+	 * Example:
+	 * \code
+	 * int* ReturnValuePtr = helper.GetVariablePtr<FIntProperty>( TEXT("ReturnValue") );
+	 * \endcode
+	 *
+	 * @param VariableName the name of the variable to access. Will assert if the variable is not found or is not the expected type
+	 * @param ArrayIndex [optional] the index in native static-sized property array (not TArray) types, unlikely to be found in blueprints
+	 * @returns a pointer to the value, which can be used to get and/or set the underlying value.
+	 */
+	template<typename T>
+	typename T::TCppType* GetVariablePtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
+		void* ValuePtr;
+		T* Property = GetVariableProperty<T>(VariableName, ValuePtr, ArrayIndex);
+		return Property->GetPropertyValuePtr(ValuePtr);
+	}
+
+	/**
+	 * Gets a pointer to the value of the named struct variable. <b>This method will only work on struct variables; for other types use the corresponding methods instead.</b>
+	 *
+	 * Example usage:
+	 * \code
+	 * FLinearColor* MyColorValue = helper.GetStructVariablePtr<FLinearColor>( TEXT("MyColor") );
+	 * \endcode
+	 *
+	 * @param VariableName the name of the member variable to access. Will assert if the variable is not found or is not the expected type
+	 * @param ArrayIndex [optional] the index in native static-sized property array (not TArray) types, unlikely to be found in blueprints
+	 * @returns a pointer to the value, which can be used to get and/or set the underlying value
+	 */
+	template<typename T>
+	T* GetStructVariablePtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
+		UStruct* StructType = nullptr;
+		if constexpr (TModels_V<CStaticStructProvider, T>) {
+			StructType = T::StaticStruct();
+		}
+		else if constexpr (TModels_V<CBaseStructureProvider, T>) {
+			StructType = TBaseStructure<T>::Get();
+		}
+		fgcheckf(StructType, TEXT("Type does not provide a static structure type"));
+		void* ValuePtr;
+		FStructProperty* Property = GetVariableProperty<FStructProperty>(VariableName, ValuePtr, ArrayIndex);
+		fgcheckf(StructType->IsChildOf(Property->Struct), TEXT("Property %s is not of type %s"), VariableName, *StructType->GetName());
+		return (T*)ValuePtr;
+	}
+
+	/**
+	 * Gets a pointer to the value of the named enum variable. <b>This method will only work on enum variables; for other types use the corresponding methods instead.</b>
+	 *
+	 * Example:
+	 * \code
+	 * EMyEnum* EnumValuePtr = helper.GetEnumVariablePtr<EMyEnum>( TEXT("EnumValue") );
+	 * \endcode
+	 *
+	 * @param VariableName the name of the Output variable to access. Will assert if the variable is not found or is not the expected type
+	 * @param ArrayIndex [optional] the index in native static-sized property array (not TArray) types, unlikely to be found in blueprints
+	 * @returns A pointer to the value, which can be used to get and/or set the underlying value.
+	 */
+	template<typename TEnum>
+	TEnum* GetEnumVariablePtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
+		void* ValuePtr;
+		FEnumProperty* EnumProperty = GetVariableProperty<FEnumProperty>(VariableName, ValuePtr, ArrayIndex);
+		UEnum* Enum = StaticEnum<TEnum>();
+		fgcheckf(Enum == EnumProperty->GetEnum(), TEXT("Property %s is not of type %s"), VariableName, *Enum->GetName());
+		return (TEnum*)ValuePtr;
+	}
+
+	/**
+	 * Gets an FScriptArrayHelper for reading/writing values of the named array variable. Array properties store a FScriptArray value, which cannot be directly accessed or modified.
+	 * The inner property type is also provided to enable reading/writing the contents of the array.
+	 * 
+	 * @param VariableName the name of the member variable to access. Will assert if the variable is not found or is not the expected type
+	 * @param InnerType [out] the inner property type of the array, used to read/write the contents of the array
+	 * @param ArrayIndex [optional] the index in native static-sized property array (not TArray) types, unlikely to be found in blueprints
+	 * @returns an FScriptArrayHelper that can be used to read/write contents of the underlying map.
+	 */
+	template <typename T>
+	FScriptArrayHelper GetArrayVariable(const TCHAR* VariableName, T*& InnerType, int32 ArrayIndex = 0) const {
+		void* ValuePtr;
+		FArrayProperty* Property = GetVariableProperty<FArrayProperty>(VariableName, ValuePtr, ArrayIndex);
+		InnerType = CastField<T>(Property->Inner);
+		fgcheckf(InnerType, TEXT("Array property %s does not have %s as inner type. Actual inner type: %s"), VariableName, *T::StaticClass()->GetName(), *Property->Inner->GetClass()->GetName());
+		return FScriptArrayHelper(Property, ValuePtr);
+	}
+
+	/**
+	 * Gets an FScriptMapHelper for reading/writing values of the named map variable. Map properties store a FScriptMap value, which cannot be directly accessed or modified.
+	 * The key and value property types are also provided to enable reading/writing the contents of the map.
+	 *
+	 * @param VariableName the name of the member variable to access. Will assert if the variable is not found or is not the expected type
+	 * @param KeyType [out] the key property type of the map, used to read/write the contents of the map
+	 * @param ValueType [out] the value property type of the map, used to read/write the contents of the map
+	 * @param ArrayIndex [optional] the index in native static-sized property array (not TArray) types, unlikely to be found in blueprints
+	 * @returns an FScriptMapHelper that can be used to read/write contents of the underlying map.
+	 */
+	template <typename K, typename V>
+	FScriptMapHelper GetMapVariable(const TCHAR* VariableName, K*& KeyType, V*& ValueType, int32 ArrayIndex = 0) const {
+		void* ValuePtr;
+		FMapProperty* Property = GetVariableProperty<FMapProperty>(VariableName, ValuePtr, ArrayIndex);
+		KeyType = CastField<K>(Property->KeyProp);
+		ValueType = CastField<V>(Property->ValueProp);
+		fgcheckf(KeyType, TEXT("Property %s does not have %s as key type. Actual key type: %s"), VariableName, *K::StaticClass()->GetName(), *Property->KeyProp->GetClass()->GetName());
+		fgcheckf(ValueType, TEXT("Property %s does not have %s as value type. Actual value type: %s"), VariableName, *V::StaticClass()->GetName(), *Property->ValueProp->GetClass()->GetName());
+		return FScriptMapHelper(Property, ValuePtr);
+	}
+
+	/**
+	 * Gets an FScriptSetHelper for reading/writing values of the named set variable. Set properties store a FScriptSet value, which cannot be directly accessed or modified.
+	 * The element property type is also provided to enable reading/writing the contents of the set.
+	 *
+	 * @param VariableName the name of the member variable to access. Will assert if the variable is not found or is not the expected type
+	 * @param ArrayIndex [optional] the index in native static-sized property array (not TArray) types, unlikely to be found in blueprints
+	 * @returns an FScriptSetHelper that can be used to read/write contents of the underlying set.
+	*/
+	template <typename T>
+	FScriptSetHelper GetSetVariable(const TCHAR* VariableName, T*& InnerType, int32 ArrayIndex = 0) const {
+		void* ValuePtr;
+		FSetProperty* Property = GetVariableProperty<FSetProperty>(VariableName, ValuePtr, ArrayIndex);
+		InnerType = CastField<T>(Property->ElementProp);
+		fgcheckf(InnerType, TEXT("Set property %s does not have %s as element type. Actual element type: %s"), VariableName, *T::StaticClass()->GetName(), *Property->ElementProp->GetClass()->GetName());
+		return FScriptSetHelper(Property, ValuePtr);
+	}
+
+	/**
+	 * Gets the value of the named bool variable. Due to bitfield packing, the generic GetVariablePtr method cannot be used for bools.
+	 * 
+	 * @param VariableName the name of the local variable to access. Will assert if the variable is not found or is not the expected type
+	 * @param ArrayIndex [optional] the index in native static-sized property array (not TArray) types, unlikely to be found in blueprints
+	 * @returns the value of the variable
+	 */
+	bool GetBoolVariable(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
+		void* ValuePtr;
+		FBoolProperty* Property = GetVariableProperty<FBoolProperty>(VariableName, ValuePtr, ArrayIndex);
+		return Property->GetPropertyValue(ValuePtr);
+	}
+
+	/**
+	 * Sets the value of the named bool variable. Due to bitfield packing, the generic GetVariablePtr method cannot be used for bools.
+	 *
+	 * @param VariableName the name of the local variable to access. Will assert if the variable is not found or is not the expected type
+	 * @param ArrayIndex [optional] the index in native static-sized property array (not TArray) types, unlikely to be found in blueprints
+	 * @param Value the value to set the variable to
+	 */
+	void SetBoolVariable(const TCHAR* VariableName, bool Value, int32 ArrayIndex = 0) const {
+		void* ValuePtr;
+		FBoolProperty* Property = GetVariableProperty<FBoolProperty>(VariableName, ValuePtr, ArrayIndex);
+		Property->SetPropertyValue(ValuePtr, Value);
+	}
+protected:
+	virtual FProperty* GetVariablePropertyInternal(const TCHAR* VariableName, void*& ValuePtr, int32 ArrayIndex) const = 0;
+
+	FFrame& Frame;
+};
+
+struct FBlueprintHookVariableHelper_Context : public FBlueprintHookVariableHelper
+{
+public:
+	FBlueprintHookVariableHelper_Context(FFrame& Frame) : FBlueprintHookVariableHelper(Frame) {}
+protected:
+	virtual FProperty* GetVariablePropertyInternal(const TCHAR* VariableName, void*& ValuePtr, int32 ArrayIndex) const override {
+		UClass* ContextClass = Frame.Object->GetClass();
+		FProperty* Property = ContextClass->FindPropertyByName(VariableName);
+		fgcheckf(Property, TEXT("Did not find Variable %s on Context type %s"), VariableName, *ContextClass->GetName());
+		ValuePtr = Property->ContainerPtrToValuePtr<void>(Frame.Object, ArrayIndex);
+		return Property;
+	}
+};
+
+struct FBlueprintHookVariableHelper_Local : public FBlueprintHookVariableHelper
+{
+public:
+	FBlueprintHookVariableHelper_Local(FFrame& Frame) : FBlueprintHookVariableHelper(Frame) {}
+protected:
+	virtual FProperty* GetVariablePropertyInternal(const TCHAR* VariableName, void*& ValuePtr, int32 ArrayIndex) const override {
+		FProperty* Property = Frame.Node->FindPropertyByName(VariableName);
+		fgcheckf(Property, TEXT("Could not find a local variable named %s"), VariableName);
+		fgcheckf(!Property->HasAnyPropertyFlags(CPF_OutParm), TEXT("%s is an [out] variable and must be accessed via the Out variable helper"), VariableName);
+		ValuePtr = Property->ContainerPtrToValuePtr<void>(Frame.Locals, ArrayIndex);
+		return Property;
+	}
+};
+
+struct FBlueprintHookVariableHelper_Out : public FBlueprintHookVariableHelper
+{
+public:
+	FBlueprintHookVariableHelper_Out(FFrame& Frame) : FBlueprintHookVariableHelper(Frame) {}
+protected:
+	virtual FProperty* GetVariablePropertyInternal(const TCHAR* VariableName, void*& ValuePtr, int32 ArrayIndex) const override {
+		fgcheckf(ArrayIndex == 0, TEXT("Output variables do not support array indexing"));
+		FOutParmRec* Out = Frame.OutParms;
+		while (Out && Out->Property->GetName() != VariableName) {
+			Out = Out->NextOutParm;
+		}
+		fgcheckf(Out, TEXT("Current Frame has no output variable named %s. Maybe you're looking for a Local variable?"), VariableName);
+		FProperty* Property = Out->Property;
+		ValuePtr = Out->PropAddr;
+		return Property;
+	}
+};
 
 /** 
  * Helps in reading/writing information about the currently-executing hooked blueprint function
@@ -29,305 +266,24 @@ public:
 	 */
 	FORCEINLINE UObject* GetContext() const { return FramePointer.Object; }
 
-
-	/************************************************************************************************************************************
-	 * Functions to interact with member variables of the Context (i.e. the blueprint object on which the current function is executing).
-	 ************************************************************************************************************************************/
-
 	/**
-	 * Gets a pointer to the FProperty representing a named blueprint member variable, which are viewable in Unreal Editor under the Variables accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 * 
-	 * Example usage: FIntProperty* IntProperty = helper.GetContextVarProperty<FIntProperty>( TEXT("MyInt") );
-	 * 
-	 * This is mostly for internal use but can be also helpful for reading types that require special handling (see GetContextVarMapHelper for an example) and are not supported here yet.
-	 */
-	template<typename T>
-	FORCEINLINE T* GetContextVarProperty(const TCHAR* VariableName) const {
-		UObject* Context = GetContext();
-		UClass* ContextClass = Context->GetClass();
-		FProperty* BaseProperty = ContextClass->FindPropertyByName(VariableName);
-		fgcheckf(BaseProperty, TEXT("Did not find Variable %s on Context type %s"), VariableName, *ContextClass->GetName());
-		T* Property = CastField<T>(BaseProperty);
-		fgcheckf(Property, TEXT("Variable %s on Context type %s does not have an FProperty of the expected type. Actual FProperty type: %s"), VariableName, *ContextClass->GetName(), *BaseProperty->GetClass()->GetName());
-		return Property;
-	}
-
-	/**
-	 * Gets a pointer to the value of a named blueprint member variable on the Context.
 	 * Member variables are viewable in Unreal Editor under the Variables accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 * This method won't work on bool or enum variables; use the corresponding helper methods instead.
-	 *
-	 * Example usage: int* MyIntPtr = helper.GetContextVarPtr<FIntProperty>( TEXT("MyInt") );
-	 *
-	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
-	 * @param ArrayIndex - If the variable represents a statically sized array, returns the value at the specified index.
-	 * @returns A pointer to the value, which can be used to get and/or set the underlying value.
 	 */
-	template<typename T>
-	typename T::TCppType* GetContextVarPtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
-		T* Property = GetContextVarProperty<T>(VariableName);
-		return Property->GetPropertyValuePtr_InContainer(GetContext(), ArrayIndex);
+	TSharedRef<FBlueprintHookVariableHelper_Context> GetContextVariableHelper() const {
+		return MakeShared<FBlueprintHookVariableHelper_Context>(FramePointer);
 	}
 
 	/**
-	 * Writes the value of a named struct blueprint member variable on the Context to the location the passed pointer references.
-	 * Member variables are viewable in Unreal Editor under the Variables accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 * This method won't work on bool or enum variables; use the corresponding helper methods instead.
-	 *
-	 * Example usage:
-	 * FLinearColor MyColorValue;
-	 * helper.GetContextVarStruct<FLinearColor>( TEXT("MyColor"), &MyColorValue );
-	 *
-	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
-	 * @param OutValuePtr - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
+	 * Local variables include function Input variables and temporary local variables inside the function.
 	 */
-	template<typename T>
-	void GetContextVarStruct(const TCHAR* VariableName, T* OutValuePtr) const {
-		FStructProperty* Property = GetContextVarProperty<FStructProperty>(VariableName);
-		Property->GetValue_InContainer(GetContext(), OutValuePtr);
-	}
-	
-	/**
-	 * Gets a pointer to the value of a named enum blueprint member variable on the Context.
-	 * Member variables are viewable in Unreal Editor under the Variables accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 *
-	 * Example usage: EMyEnum* MyEnumValuePtr = helper.GetContextVarEnumPtr<EMyEnum>( TEXT("MyEnumValue") );
-	 * 
-	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
-	 * @param ArrayIndex - If the variable represents a statically sized array, returns the value at the specified index.
-	 * @returns A pointer to the value, which can be used to get and/or set the underlying value.
-	 */
-	template<typename TEnum>
-	TEnum* GetContextVarEnumPtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
-		FEnumProperty* Property = GetContextVarProperty<FEnumProperty>(VariableName);
-		// K2 only supports byte enums right now, according to a comment in EdGraphSchema_K2.cpp
-		return (TEnum*)Property->ContainerPtrToValuePtr<uint8>(GetContext(), ArrayIndex);
-	}
-	
-	/**
-	 * Gets the value of a named bool blueprint member variable on the Context.
-	 * Member variables are viewable in Unreal Editor under the Variables accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 *
-	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
-	 * @param ArrayIndex - If the variable represents a statically sized array, returns the value at the specified index.
-	 * @returns The boolean value of the member variable
-	 */
-	bool GetContextVarBool(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
-		FBoolProperty* Property = GetContextVarProperty<FBoolProperty>(VariableName);
-		return Property->GetPropertyValue_InContainer(GetContext(), ArrayIndex);
-	}
-	
-	/**
-	 * Sets the value of a named bool blueprint member variable on the Context.
-	 * Member variables are viewable in Unreal Editor under the Variables accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 *
-	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
-	 * @param ArrayIndex - If the variable represents a statically sized array, sets the value at the specified index.
-	 */
-	void SetContextVarBool(const TCHAR* VariableName, bool Value, int32 ArrayIndex = 0) const {
-		FBoolProperty* Property = GetContextVarProperty<FBoolProperty>(VariableName);
-		Property->SetPropertyValue_InContainer(GetContext(), Value, ArrayIndex);
+	TSharedRef<FBlueprintHookVariableHelper_Local> GetLocalVariableHelper() const {
+		return MakeShared<FBlueprintHookVariableHelper_Local>(FramePointer);
 	}
 
 	/**
-	 * Gets an FScriptMapHelper for reading/writing values of a named Map blueprint member variable on the Context.
-	 * Member variables are viewable in Unreal Editor under the Variables accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 * 
-	 * This exists because the reading the FMapProperty will return an FScriptMap, which is basically-unusable without being wrapped in an FScriptMapHelper.
-	 * 
-	 * @param VariableName - The name of the member variable to access. Will assert if the variable is not found or is not the expected type.
-	 * @returns An FScriptMapHelper that can be used to read/write contents of the underlying map.
-	 */
-	FScriptMapHelper GetContextVarMapHelper(const TCHAR* VariableName) const {
-		FMapProperty* Property = GetContextVarProperty<FMapProperty>(VariableName);
-		FScriptMap* ScriptMap = Property->GetPropertyValuePtr_InContainer(GetContext());
-		return FScriptMapHelper(Property, ScriptMap);
-	}
-
-	 /*******************************************************************************************
-	  * Functions to interact with local variables of the currently-executing blueprint function.
-	  *******************************************************************************************/
-
-	 /**
-	  * Gets a pointer to the FProperty representing a named local variable in the executing function. Local variables include function Input variables and temporary local variables inside the function.
-	  * Function Input variables are viewable in Unreal Editor by viewing the Details of a function found under the Functions accordion in the My Blueprint tab of the Graph view of the blueprint.
-	  * Temporary local variable names can be viewed by disassembling the underlying code - see BlueprintHookManager.cpp for one existing way to dump debugging disassambly.
-	  * 
-	  * Example usage: FIntProperty* LocalIntProperty = helper.GetLocalVarProperty<FIntProperty>( TEXT("localInt") );
-	  *
-	  * This is mostly for internal use but can be also helpful for reading types that require special handling (see GetContextVarMapHelper for an example) and are not supported here yet.
-	  */
-	template<typename T>
-	FORCEINLINE T* GetLocalVarProperty(const TCHAR* VariableName) const {
-		FProperty* BaseProperty = FramePointer.Node->FindPropertyByName(VariableName);
-		fgcheckf(BaseProperty, TEXT("Could not find a local variable named %s"), VariableName);
-		fgcheckf(!BaseProperty->HasAnyPropertyFlags(CPF_OutParm), TEXT("%s is an [out] variable and must be accessed via the GetOutVar functions"), VariableName);
-		T* Property = CastField<T>(BaseProperty);
-		fgcheckf(Property, TEXT("Local variable %s does not have an FProperty of the expected type. Actual FProperty type: %s"), VariableName, *BaseProperty->GetClass()->GetName());
-		return Property;
-	}
-
-	/**
-	 * Gets a pointer to the value of a named local variable in the executing function. Local variables include function Input variables and temporary local variables inside the function.
-	 * Function Input variables are viewable in Unreal Editor by viewing the Details of a function found under the Functions accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 * Temporary local variable names can be viewed by disassembling the underlying code - see BlueprintHookManager.cpp for one existing way to dump debugging disassambly.
-	 *
-	 * This method will assert if used with blueprint function Output variables; use GetOutVar* helper methods for those.
-	 * This method won't work on bool or enum variables; use the corresponding helper methods instead.
-	 * 
-	 * Example usage: int* InputIntPtr = helper.GetLocalVarProperty<FIntProperty>( TEXT("InputInt") );
-	 *
-	 * @param VariableName - The name of the local variable to access. Will assert if the variable is an Output variable, is not found, or is not the expected type.
-	 * @param ArrayIndex - If the variable represents a statically sized array, returns the value at the specified index.
-	 * @returns A pointer to the value, which can be used to get and/or set the underlying value.
-	 */
-	template<typename T>
-	typename T::TCppType* GetLocalVarPtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
-		T* Property = GetLocalVarProperty<T>(VariableName);
-		return Property->GetPropertyValuePtr_InContainer(FramePointer.Locals, ArrayIndex);
-	}
-
-	/**
-	 * Gets a pointer to the value of a named enum local variable in the executing function. Local variables include function Input variables and temporary local variables inside the function.
-	 * Function Input variables are viewable in Unreal Editor by viewing the Details of a function found under the Functions accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 * Temporary local variable names can be viewed by disassembling the underlying code - see BlueprintHookManager.cpp for one existing way to dump debugging disassambly.
-	 *
-	 * This method will assert if used with blueprint function Output variables; use GetOutVar* helper methods for those.
-	 *
-	 * Example usage: EMyEnum* InputEnumValuePtr = helper.GetContextVarEnumPtr<EMyEnum>( TEXT("InputEnumValue") );
-	 *
-	 * @param VariableName - The name of the local variable to access. Will assert if the variable is an Output variable, is not found, or is not the expected type.
-	 * @param ArrayIndex - If the variable represents a statically sized array, returns the value at the specified index.
-	 * @returns A pointer to the value, which can be used to get and/or set the underlying value.
-	 */
-	template<typename TEnum>
-	TEnum* GetLocalVarEnumPtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
-		FEnumProperty* Property = GetLocalVarProperty<FEnumProperty>(VariableName);
-		// K2 only supports byte enums right now, according to a comment in EdGraphSchema_K2.cpp
-		return (TEnum*)Property->ContainerPtrToValuePtr<uint8>(FramePointer.Locals, ArrayIndex);
-	}
-
-	/**
-	 * Gets the value of a named bool local variable in the executing function. Local variables include function Input variables and temporary local variables inside the function.
-	 * Function Input variables are viewable in Unreal Editor by viewing the Details of a function found under the Functions accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 * Temporary local variable names can be viewed by disassembling the underlying code - see BlueprintHookManager.cpp for one existing way to dump debugging disassambly.
-	 *
-	 * @param VariableName - The name of the local variable to access. Will assert if the variable is not found or is not the expected type.
-	 * @param ArrayIndex - If the variable represents a statically sized array, returns the value at the specified index.
-	 */
-	bool GetLocalVarBool(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
-		FBoolProperty* Property = GetLocalVarProperty<FBoolProperty>(VariableName);
-		return Property->GetPropertyValue_InContainer(FramePointer.Locals, ArrayIndex);
-	}
-
-	/**
-	 * Gets the value of a named bool local variable in the executing function. Local variables include function Input variables and temporary local variables inside the function.
-	 * Function Input variables are viewable in Unreal Editor by viewing the Details of a function found under the Functions accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 * Temporary local variable names can be viewed by disassembling the underlying code - see BlueprintHookManager.cpp for one existing way to dump debugging disassambly.
-	 *
-	 * @param VariableName - The name of the local variable to access. Will assert if the variable is not found or is not the expected type.
-	 * @param ArrayIndex - If the variable represents a statically sized array, sets the value at the specified index.
-	 */
-	void SetLocalVarBool(const TCHAR* VariableName, bool Value, int32 ArrayIndex = 0) const {
-		FBoolProperty* Property = GetLocalVarProperty<FBoolProperty>(VariableName);
-		return Property->SetPropertyValue_InContainer(FramePointer.Locals, Value, ArrayIndex);
-	}
-
-	/*******************************************************************************************
-	 * Functions to interact with Output variables of the currently-executing blueprint function.
-	 *******************************************************************************************/
-
-	 /**
-	  * Gets a pointer to the FProperty representing a named Output variable of the executing function.
-	  * Function Output variables are viewable in Unreal Editor by viewing the Details of a function found under the Functions accordion in the My Blueprint tab of the Graph view of the blueprint.
-	  *
-	  * Example usage:
-	  * FOutParmRec* FoundOutParmRecPtr;
-	  * FIntProperty* ReturnValueProperty = helper.GetOutVarProperty<FIntProperty>( TEXT("ReturnValue"), &FoundOutParmRecPtr );
-	  *
-	  * This is mostly for internal use but can be also helpful for reading types that require special handling (see GetContextVarMapHelper for an example) and are not supported here yet.
-	  * 
-	  * @param VariableName - The name of the Output variable to access. Will assert if the variable is not found or is not the expected type.
-	  * @param OutOutParmPtr - Output parameter. A pointer to the pointer the caller wishes to point to the FOutParmRec where the property was found.
-	  */
-	template<typename T>
-	FORCEINLINE T* GetOutVarProperty(const TCHAR* VariableName, FOutParmRec** OutOutParmPtr) const {
-		FOutParmRec* Out = FramePointer.OutParms;
-		while (Out && Out->Property->GetName() != VariableName) {
-			Out = Out->NextOutParm;
-		}
-		fgcheckf(Out, TEXT("Current Frame has no output variable named %s"), VariableName);
-		FProperty* BaseProperty = Out->Property;
-		T* Property = CastField<T>(BaseProperty);
-		fgcheckf(Property, TEXT("Out variable %s does not have an FProperty of the expected type. Actual FProperty type: %s"), VariableName, *BaseProperty->GetClass()->GetName());
-		*OutOutParmPtr = Out;
-		return Property;
-	}
-
-	/**
-	 * Gets a pointer to the value of a named Output variable of the executing function.
 	 * Function Output variables are viewable in Unreal Editor by viewing the Details of a function found under the Functions accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 *
-	 * This method won't work on bool or enum variables; use the corresponding helper methods instead.
-	 *
-	 * Example usage: int* ReturnValuePtr = helper.GetOutVariablePtr<FIntProperty>( TEXT("ReturnValue") );
-	 *
-	 * @param VariableName - The name of the Output variable to access. Will assert if the variable is not found or is not the expected type.
-	 * @returns A pointer to the value, which can be used to get and/or set the underlying value.
 	 */
-	template<typename T>
-	typename T::TCppType* GetOutVariablePtr(const TCHAR* VariableName = TEXT("ReturnValue")) const {
-		FOutParmRec* Out;
-		T* Property = GetOutVarProperty<T>(VariableName, &Out);
-		return Property->GetPropertyValuePtr(Out->PropAddr);
-	}
-
-	/**
-	 * Gets a pointer to the value of a named enum Output variable of the executing function.
-	 * Function Output variables are viewable in Unreal Editor by viewing the Details of a function found under the Functions accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 *
-	 * Example usage: EMyEnum* OutputEnumValuePtr = helper.GetOutVarEnumPtr<EMyEnum>( TEXT("OutputEnumValue") );
-	 *
-	 * @param VariableName - The name of the Output variable to access. Will assert if the variable is not found or is not the expected type.
-	 * @param ArrayIndex - If the variable represents a statically sized array, returns the value at the specified index.
-	 * @returns A pointer to the value, which can be used to get and/or set the underlying value.
-	 */
-	template<typename TEnum>
-	TEnum* GetOutVarEnumPtr(const TCHAR* VariableName, int32 ArrayIndex = 0) const {
-		FOutParmRec* Out;
-		FEnumProperty* EnumProperty = GetOutVarProperty<FEnumProperty>(VariableName, &Out);
-		// We get the underlying property for out vars but we didn't for context or local vars.
-		// For unknown reasons, the enum property for out variables contains an internal offset
-		// that yields the wrong result with ContainerPtrToValuePtr but the underlying numeric
-		// property works. Tests of the same approach for local and context vars yield crashes
-		// or incorrect enum values.
-		FNumericProperty* Property = EnumProperty->GetUnderlyingProperty();
-		fgcheckf(Property, TEXT("Enum property has no underlying property? This shouldn't happen."));
-		// K2 only supports byte enums right now, according to a comment in EdGraphSchema_K2.cpp
-		return (TEnum*)Property->ContainerPtrToValuePtr<uint8>(Out->PropAddr, ArrayIndex);
-	}
-
-	/**
-	 * Gets the value of a named bool Output variable of the executing function.
-	 * Function Output variables are viewable in Unreal Editor by viewing the Details of a function found under the Functions accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 *
-	 * @param VariableName - The name of the local variable to access. Will assert if the variable is not found or is not the expected type.
-	 */
-	bool GetOutVarBool(const TCHAR* VariableName) const {
-		FOutParmRec* Out;
-		FBoolProperty* Property = GetOutVarProperty<FBoolProperty>(VariableName, &Out);
-		return Property->GetPropertyValue(Out->PropAddr);
-	}
-
-	/**
-	 * Sets the value of a named bool Output variable of the executing function.
-	 * Function Output variables are viewable in Unreal Editor by viewing the Details of a function found under the Functions accordion in the My Blueprint tab of the Graph view of the blueprint.
-	 *
-	 * @param VariableName - The name of the local variable to access. Will assert if the variable is not found or is not the expected type.
-	 */
-	void SetOutVarBool(const TCHAR* VariableName, bool Value ) const {
-		FOutParmRec* Out;
-		FBoolProperty* Property = GetOutVarProperty<FBoolProperty>(VariableName, &Out);
-		Property->SetPropertyValue(Out->PropAddr, Value);
+	TSharedRef<FBlueprintHookVariableHelper_Out> GetOutVariableHelper() const {
+		return MakeShared<FBlueprintHookVariableHelper_Out>(FramePointer);
 	}
 };

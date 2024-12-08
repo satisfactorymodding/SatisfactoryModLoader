@@ -75,7 +75,7 @@ void UItemTooltipSubsystem::InitializePatches() {
 
     UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
     HookManager->HookBlueprintFunction(Function, [](FBlueprintHookHelper& HookHelper) {
-        UUserWidget* TooltipWidget = Cast<UUserWidget>(*HookHelper.GetOutVariablePtr<FObjectProperty>());
+        UUserWidget* TooltipWidget = Cast<UUserWidget>(*HookHelper.GetOutVariableHelper()->GetVariablePtr<FObjectProperty>(TEXT("ReturnValue")));
         UUserWidget* SlotWidget = Cast<UUserWidget>(HookHelper.GetContext());
         
         if (TooltipWidget != nullptr) {
