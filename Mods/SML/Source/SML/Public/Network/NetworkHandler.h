@@ -12,7 +12,7 @@ class UNetDriver;
 DECLARE_LOG_CATEGORY_EXTERN(LogModNetworkHandler, Log, All);
 DECLARE_DELEGATE_TwoParams(FMessageReceived, class UNetConnection* /*Connection*/, FString /*Data*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FWelcomePlayer, UWorld* /*ServerWorld*/, class UNetConnection* /*Connection*/);
-DECLARE_MULTICAST_DELEGATE_OneParam(FClientInitialJoin, class UNetConnection* /*Connection*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FConnectionEvent, class UNetConnection* /*Connection*/);
 
 struct FMessageType {
     FString ModReference;
@@ -42,22 +42,38 @@ class SML_API UModNetworkHandler : public UEngineSubsystem {
 private:
     TMap<FString, TMap<int32, FMessageEntry>> MessageHandlers;
     FWelcomePlayer WelcomePlayerDelegate;
-    FClientInitialJoin ClientLoginDelegate;
+    FConnectionEvent WelcomePlayerDelegateClient;
+    FConnectionEvent ClientLoginDelegate;
+    FConnectionEvent ClientLoginDelegateServer;
 private:
     void ReceiveMessage(class UNetConnection* Connection, const FString& ModId, int32 MessageId, const FString& Content) const;
 public:
     /**
-     * Delegate called on server when he received client join request and welcomed new player
-     * You can send additional information to client here, or check information received by client
-     * before to perform any required validation
+     * Delegate called on server after it has received and validate the client join request, and has sent the world load information to the client
+     * You can send additional information to the client here,
+     * or check information received by client to perform any required validation
      */
     FORCEINLINE FWelcomePlayer& OnWelcomePlayer() { return WelcomePlayerDelegate; }
 
     /**
-     * Delegate called when client has sent initial join request to remote side
-     * Here you can send additional information to be acknowledged by the server via SendMessage
+     * Delegate called on the client when it has received the welcome message from the server.
+     * This is called before the client processes the welcome message, so it has not yet begun the process of loading the map.
+     * You can send additional information to the server here,
+     * or check information received by the server to perform any required validation
      */
-    FORCEINLINE FClientInitialJoin& OnClientInitialJoin() { return ClientLoginDelegate; }
+    FORCEINLINE FConnectionEvent& OnWelcomePlayer_Client() { return WelcomePlayerDelegateClient; }
+
+    /**
+     * Delegate called on the client after it has sent initial join request to the server
+     * Here you can queue additional information to be sent to the server after the SML connection is established (see flowchart), using SendMessage
+     */
+    FORCEINLINE FConnectionEvent& OnClientInitialJoin() { return ClientLoginDelegate; }
+
+    /**
+     * Delegate called on the server when it has received initial join request from client
+     * Here you can queue additional information to be sent to the client after the SML connection is established (see flowchart), using SendMessage
+     */
+    FORCEINLINE FConnectionEvent& OnClientInitialJoin_Server() { return ClientLoginDelegateServer; }
 
     /**
      * Register new mod message type and return message entry which can be used

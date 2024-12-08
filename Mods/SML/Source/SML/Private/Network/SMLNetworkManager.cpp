@@ -29,10 +29,13 @@ void FSMLNetworkManager::RegisterMessageTypeAndHandlers() {
     
     FMessageEntry& MessageEntry = NetworkHandler->RegisterMessageType(*MessageTypeModInit);
     MessageEntry.bServerHandled = true;
+	MessageEntry.bClientHandled = true;
     
     MessageEntry.MessageReceived.BindStatic(FSMLNetworkManager::HandleMessageReceived);
     NetworkHandler->OnClientInitialJoin().AddStatic(FSMLNetworkManager::HandleInitialClientJoin);
+	NetworkHandler->OnClientInitialJoin_Server().AddStatic(FSMLNetworkManager::HandleInitialClientJoin);
     NetworkHandler->OnWelcomePlayer().AddStatic(FSMLNetworkManager::HandleWelcomePlayer);
+	NetworkHandler->OnWelcomePlayer_Client().AddStatic(FSMLNetworkManager::HandleWelcomePlayer_Client);
     FGameModeEvents::GameModePostLoginEvent.AddStatic(FSMLNetworkManager::HandleGameModePostLogin);
 }
 
@@ -53,7 +56,11 @@ void FSMLNetworkManager::HandleInitialClientJoin(UNetConnection* Connection) {
 }
 
 void FSMLNetworkManager::HandleWelcomePlayer(UWorld* World, UNetConnection* Connection) {
-    ValidateSMLConnectionData(Connection);
+    ValidateSMLConnectionData(Connection, true);
+}
+
+void FSMLNetworkManager::HandleWelcomePlayer_Client(UNetConnection* Connection) {
+	ValidateSMLConnectionData(Connection, false);
 }
 
 void FSMLNetworkManager::HandleGameModePostLogin(AGameModeBase* GameMode, APlayerController* Controller) {
@@ -75,7 +82,7 @@ void FSMLNetworkManager::HandleGameModePostLogin(AGameModeBase* GameMode, APlaye
             const UNetConnection* NetConnection = CastChecked<UNetConnection>(Controller->Player);
         	const FConnectionMetadata ConnectionMetadata = GModConnectionMetadata.GetAndRemoveAnnotation( NetConnection );
         	
-            RemoteCallObject->ClientInstalledMods.Append(ConnectionMetadata.InstalledClientMods);
+            RemoteCallObject->ClientInstalledMods.Append(ConnectionMetadata.InstalledRemoteMods);
         }
     }
 }
@@ -124,7 +131,7 @@ bool FSMLNetworkManager::HandleModListObject( FConnectionMetadata& Metadata, con
         FVersion ModVersion = FVersion{};
         FString ErrorMessage;
         if ( ModVersion.ParseVersion(Pair.Value->AsString(), ErrorMessage) ) {
-            Metadata.InstalledClientMods.Add(Pair.Key, ModVersion);
+            Metadata.InstalledRemoteMods.Add(Pair.Key, ModVersion);
         } else {
             return false;
         }
@@ -133,13 +140,14 @@ bool FSMLNetworkManager::HandleModListObject( FConnectionMetadata& Metadata, con
     return true;
 }
 
-void FSMLNetworkManager::ValidateSMLConnectionData(UNetConnection* Connection)
+void FSMLNetworkManager::ValidateSMLConnectionData(UNetConnection* Connection, bool IsServer)
 {
 	const bool bAllowMissingMods = CVarSkipRemoteModListCheck.GetValueOnGameThread();
 	const FConnectionMetadata SMLMetadata = GModConnectionMetadata.GetAnnotation( Connection );
-    TArray<FString> ClientMissingMods;
+    TArray<FString> RemoteMissingMods;
     
-    if (!SMLMetadata.bIsInitialized && !bAllowMissingMods ) {
+    if (!SMLMetadata.bIsInitialized && !bAllowMissingMods && IsServer ) {
+		// TODO: Is joining a modded server with a vanilla client safe?
         UModNetworkHandler::CloseWithFailureMessage(Connection, TEXT("This server is running Satisfactory Mod Loader, and your client doesn't have it installed."));
         return;
     }
@@ -148,39 +156,39 @@ void FSMLNetworkManager::ValidateSMLConnectionData(UNetConnection* Connection)
 	{
 		if ( UModLoadingLibrary* ModLoadingLibrary = GameInstance->GetSubsystem<UModLoadingLibrary>() )
 		{
-			// TODO: Do we want to check that the client doesn't have any extra mods compared to the server?
-			// Doing so would require the client passing the complete mod info to the server, rather than just the version
-
 			const TArray<FModInfo> Mods = ModLoadingLibrary->GetLoadedMods();
 
 			for (const FModInfo& ModInfo : Mods)
 			{
-				const FVersion* ClientVersion = SMLMetadata.InstalledClientMods.Find( ModInfo.Name );
+				const FVersion* ClientVersion = SMLMetadata.InstalledRemoteMods.Find( ModInfo.Name );
 				const FString ModName = FString::Printf( TEXT("%s (%s)"), *ModInfo.FriendlyName, *ModInfo.Name );
 				if ( ClientVersion == nullptr )
 				{
-					if ( !ModInfo.bRequiredOnRemote )
+					// If the mod is not required on the remote, we don't care if it's missing
+					// We also ignore SML in case we're joining a vanilla server with a modded client
+					// TODO: Is joining a modded server with a vanilla client safe?
+					if ( !ModInfo.bRequiredOnRemote || (ModInfo.Name == TEXT("SML") && !IsServer) )
 					{
 						continue; //Server-side only mod
 					}
-					ClientMissingMods.Add( ModName );
+					RemoteMissingMods.Add( ModName );
 					continue;
 				}
 				const FVersionRange& RemoteVersion = ModInfo.RemoteVersionRange;
 
 				if ( !RemoteVersion.Matches(*ClientVersion) )
 				{
-					const FString VersionText = FString::Printf( TEXT("required: %s, client: %s"), *RemoteVersion.ToString(), *ClientVersion->ToString() );
-					ClientMissingMods.Add( FString::Printf( TEXT("%s: %s"), *ModName, *VersionText ) );
+					const FString VersionText = FString::Printf( TEXT("required: %s, %s: %s"), *RemoteVersion.ToString(), IsServer ? TEXT("client") : TEXT("server"), *ClientVersion->ToString() );
+					RemoteMissingMods.Add( FString::Printf( TEXT("%s: %s"), *ModName, *VersionText ) );
 				}
 			}
 		}	
 	}
     
-    if ( ClientMissingMods.Num() > 0 && !bAllowMissingMods )
+    if ( RemoteMissingMods.Num() > 0 && !bAllowMissingMods )
     {
-        const FString JoinedModList = FString::Join( ClientMissingMods, TEXT("\n") );
-        const FString Reason = FString::Printf( TEXT("Client missing mods: %s"), *JoinedModList );
+        const FString JoinedModList = FString::Join( RemoteMissingMods, TEXT("\n") );
+        const FString Reason = FString::Printf( TEXT("%s missing mods: %s"), IsServer ? TEXT("Client") : TEXT("Server"), *JoinedModList );
         UModNetworkHandler::CloseWithFailureMessage( Connection, Reason );
     }
 }

@@ -33,8 +33,23 @@ FMessageEntry& UModNetworkHandler::RegisterMessageType(const FMessageType& Messa
 
 void UModNetworkHandler::CloseWithFailureMessage(UNetConnection* Connection, const FString& Message) {
     FString MutableMessage = Message;
-    FNetControlMessage<NMT_Failure>::Send(Connection, MutableMessage);
-    Connection->FlushNet(true);
+    if (Connection->GetDriver()->ServerConnection == Connection) {
+        // We are a client. Nothing is listening for NMT_Failure on the remote
+        // so we must "send" ourselves the message.
+        // We cannot use GEngine->BroadcastNetworkFailure, followed by Connection->Close,
+        // because UPendingNetGame will then call BroadcastNetworkFailure again with the generic "lost connection" message
+
+        // Build a fake NMT_Failure bunch, only needs to contain a string.
+        // We don't need to handle byte swapping, the Bunches handle that themselves.
+        FControlChannelOutBunch Bunch(Connection->Channels[0], false);
+        Bunch << MutableMessage;
+        FInBunch InBunch(Connection, Bunch.GetData(), Bunch.GetNumBits());
+        Connection->GetDriver()->Notify->NotifyControlMessage(Connection, NMT_Failure, InBunch);
+    } else {
+        // We are the server. Send NMT_Failure with the message to the client.
+        FNetControlMessage<NMT_Failure>::Send(Connection, MutableMessage);
+        Connection->FlushNet(true);
+    }
 }
 
 void UModNetworkHandler::SendMessage(UNetConnection* Connection, FMessageType MessageType, FString Data) {
@@ -69,7 +84,7 @@ void UModNetworkHandler::SetConnectionSupportsModMessages(UNetConnection* Connec
     }
 
     Connection->FlushNet(true);
-                    
+    
     ConnectionMetadata.PendingMessages.Empty();
     GConnectionMetadata.AddAnnotation(Connection, ConnectionMetadata);
 }
@@ -108,19 +123,26 @@ void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FStrin
 /**
  * SML handshake is done in the following way:
  *
- *                              Server                     Client
- *                                |        SML_HELLO         |
- *                                |------------------------->|
- *                                |        SML_HELLO         | bSupportsModMessageType = true
- *                                |<-------------------------|
- * bSupportsModMessageType = true |                          |
- *                                | any pending mod messages |
- *                                |<-------------------------|
- *                                |        SML_HELLO         |
- *                                |------------------------->|
- *                                | any pending mod messages |
- *                                |------------------------->|
- *   
+ *                                                   Server                     Client
+ *                                                     |        NMT_HELLO         |  UE initiates connection
+ *               OnClientInitialJoin_Server is called  |<-------------------------|  OnClientInitialJoin is called
+ *   SML intercepts the NMT_HELLO and sends SML_HELLO  |        SML_HELLO         |
+ *                                                     |------------------------->|
+ *                           UE responds to NMT_HELLO  |      NMT_CHALLENGE       |
+ *                                                     |------------------------->|
+ *                                                     |        SML_HELLO         |  SML receives SML_HELLO, responds with SML_HELLO
+ *                                                     |<-------------------------|  SML sets bSupportsModMessageType = true
+ *                                                     |   (queued SML messages)  |  SML sends all queued messages
+ *                                                     |<-------------------------|
+ *                                                     |        NMT_LOGIN         |  UE responds to NMT_CHALLENGE
+ *                                                     |<-------------------------|
+ *    SML receives SML_HELLO, responds with SML_HELLO  |        SML_HELLO         |
+ *            SML sets bSupportsModMessageType = true  |------------------------->|
+ *                      SML sends all queued messages  |   (queued SML messages)  |
+ *                                                     |------------------------->|
+ *                           UE responds to NMT_LOGIN  |       NMT_WELCOME        |
+ *                          OnWelcomePlayer is called  |------------------------->|  OnWelcomePlayer_Client is called
+ *                  
  * If the client is not running SML, it will not respond to the SML_HELLO message,
  * so the server will not mark the connection as supporting mod messages, and never send any mod messages.
  *
@@ -153,15 +175,25 @@ void UModNetworkHandler::InitializePatches() {
     });
 	
     auto MessageHandler = [=](auto& Call, void*, UNetConnection* Connection, uint8 MessageType, class FInBunch& Bunch) {
+        UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
         if (MessageType == NMT_Hello) {
             // NMT_Hello is only received on the server, sent by UPendingNetGame::SendInitialJoin
             // Initiate the SML handshake
 
             FNetControlMessage<NMT_DebugText>::Send(Connection, GSML_HELLO);
             Connection->FlushNet(true);
+
+            NetworkHandler->OnClientInitialJoin_Server().Broadcast(Connection);
+        }
+
+        if (MessageType == NMT_Welcome) {
+            // NMT_Welcome is only received on the client, sent by UWorld::WelcomePlayer
+
+            NetworkHandler->OnWelcomePlayer_Client().Broadcast(Connection);
         }
         
         if (MessageType == NMT_DebugText) {
+            // Part of the SML handshake, normally SML_HELLO is the only message ever sent on this channel.
             const int64 Pos = Bunch.GetPosBits();
 
             FString Text;
@@ -182,7 +214,6 @@ void UModNetworkHandler::InitializePatches() {
         if (MessageType == NMT_ModMessage) {
             FString ModId; int32 MessageId; FString Content;
             if (FNetControlMessage<NMT_ModMessage>::Receive(Bunch, ModId, MessageId, Content)) {
-                UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
                 NetworkHandler->ReceiveMessage(Connection, ModId, MessageId, Content);
                 Call.Cancel();
             }
