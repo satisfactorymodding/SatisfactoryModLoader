@@ -50,7 +50,7 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 							return EVisibility::Visible;
 						return EVisibility::Hidden;
 					})
-					.ToolTipText(LOCTEXT("PackageDirRootAlpakit_Tooltip", "Opens the ArchivedPlugins Folder to view all built plugins."))
+					.ToolTipText(LOCTEXT("PackageDirRootAlpakit_Tooltip", "Open the ArchivedPlugins folder to view all mod release packages."))
 				]
 			]
 			.SearchTrail() [
@@ -197,7 +197,11 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 								})
 							.Content()[
 								SNew(SButton)
-								.Text(LOCTEXT("OpenDirAlpakit", "Open Folder"))
+								.Content()
+								[
+									SNew(SImage)
+									.Image(FAlpakitStyle::Get().GetBrush("Alpakit.FolderOpen"))
+								]
 								.OnClicked_Lambda([this, modPath]
 									{
 										FPlatformProcess::ExploreFolder(*modPath);
@@ -207,7 +211,7 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 									{
 										return !FAlpakitModule::Get().IsPackaging();
 									})
-								.ToolTipText(LOCTEXT("OpenDirToolTip", "Opens the Mod's ArchivedPlugins directory in File Explorer"))
+								.ToolTipText(LOCTEXT("OpenDirToolTip", "Open the mod's ArchivedPlugins directory in File Explorer, which contains the multi-target zip file to upload to the Satisfactory Mod Repository."))
 							]
 						]
 						+ SHorizontalBox::Slot().AutoWidth().Padding(5,0)[
