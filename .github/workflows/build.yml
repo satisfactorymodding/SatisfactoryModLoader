@@ -13,19 +13,18 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - name: Cleanup
-        run: Remove-Item * -Recurse -Force -Confirm:$false -ErrorAction Ignore
-
       - name: Check for permission to run CI
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
         # Temporarily != to ensure it fails
         if: ${{ env.GH_TOKEN != '' }}
-        shell: bash
-        # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#setting-an-error-message
+        # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions?tool=powershell#setting-an-error-message
         run: | 
-          echo "::error title=External Contributor PR::Pull requests made by users not in the organization (intentionally) can't access the CI secrets. Ignore this CI failure - the team will be building the project locally anyways to test it out."
+          Write-Output "::error title=External Contributor PR::Pull requests made by users not in the organization intentionally can't access the CI secrets. Don't worry about the CI failure, the team will build the project locally to test it out anyways."
           exit 1
+
+      - name: Cleanup
+        run: Remove-Item * -Recurse -Force -Confirm:$false -ErrorAction Ignore
 
       - uses: actions/checkout@v2
         with:
