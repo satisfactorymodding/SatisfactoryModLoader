@@ -12,7 +12,8 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 	const float TargetColumnWidth = 90;
 
 	FString TargetSMLVersion = TEXT("^") + FAlpakitModule::GetCurrentSMLVersion();
-	FString archivePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectSavedDir() / TEXT("ArchivedPlugins"));
+	// FPaths::ProjectSavedDir() points to an appdata folder when the project is loaded via "restore last opened project", so use ProjectDir instead
+	FString archivePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("Saved") / TEXT("ArchivedPlugins"));
 
 	ChildSlot[
 		SNew(SVerticalBox)
