@@ -16,6 +16,20 @@ jobs:
       - name: Cleanup
         run: Remove-Item * -Recurse -Force -Confirm:$false -ErrorAction Ignore
 
+      - name: Check for permission to run CI
+        env:
+          GH_TOKEN: ${{ secrets.BOT_TOKEN }}
+        if: ${{ env.GH_TOKEN == '' }}
+        shell: bash
+        run: | 
+          if [ \"$SECRET\" == \"\" ]; then
+            echo \"Pull requests made by users not in the organization (intentionally) can't access the CI secrets. Ignore this CI failure - the team will be building the project locally anyways to test it out." >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo \"Temporarily fail this case anyways as a test" >> $GITHUB_OUTPUT
+            exit 2
+          fi
+
       - uses: actions/checkout@v2
         with:
           path: SML
