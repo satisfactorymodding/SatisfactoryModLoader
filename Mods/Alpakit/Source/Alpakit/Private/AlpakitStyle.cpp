@@ -55,7 +55,7 @@ TSharedRef<FSlateStyleSet> FAlpakitStyle::Create() {
 	Style->SetCoreContentRoot(FPaths::EngineContentDir() / TEXT("Slate"));
 
     Style->Set("Alpakit.Warning", new IMAGE_BRUSH("Icons/alert", Icon16x16) );
-    
+	Style->Set("Alpakit.FolderOpen", new IMAGE_BRUSH("Icons/icon_file_ProjectOpen_16x", Icon16x16));
     return Style;
 }
 

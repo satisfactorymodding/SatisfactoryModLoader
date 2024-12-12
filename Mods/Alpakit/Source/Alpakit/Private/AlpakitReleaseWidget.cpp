@@ -196,7 +196,11 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 								})
 							.Content()[
 								SNew(SButton)
-								.Text(LOCTEXT("OpenDirAlpakit", "Open Folder"))
+								.Content()
+								[
+									SNew(SImage)
+									.Image(FAlpakitStyle::Get().GetBrush("Alpakit.FolderOpen"))
+								]
 								.OnClicked_Lambda([this, modPath]
 									{
 										FPlatformProcess::ExploreFolder(*modPath);
