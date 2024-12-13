@@ -16,8 +16,7 @@ jobs:
       - name: Check for permission to run CI
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
-        # Temporarily != to ensure it fails
-        if: ${{ env.GH_TOKEN != '' }}
+        if: ${{ env.GH_TOKEN == '' }}
         # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions?tool=powershell#setting-an-error-message
         run: | 
           Write-Output "::error title=External Contributor PR::Pull requests made by users not in the organization intentionally can't access the CI secrets. Don't worry about the CI failure, the team will build the project locally to test it out anyways."
