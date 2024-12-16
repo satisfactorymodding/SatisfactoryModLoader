@@ -45,4 +45,7 @@ private:
 
 	/** Finishes mod loading and mounts packages, initializes subsystems, loads mod configurations, etc */
 	static void InitializeModLoading();
+
+	/** Runs console commands using the ExecCmds argument (reimplementation; existing UE ExecCmds doesn't work in shipping) */
+	static void ParseExecCmds();
 };

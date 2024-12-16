@@ -17,6 +17,7 @@
 #include "Misc/FileHelper.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
+#include "ParseExecCommands.h"
 
 #ifndef FACTORYGAME_VERSION
 #define FACTORYGAME_VERSION 0
@@ -215,4 +216,13 @@ void FSatisfactoryModLoader::InitializeModLoading() {
     	RegisterSubsystems();
     }
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Initialization finished!"));
+}
+
+void FSatisfactoryModLoader::ParseExecCmds()
+{
+    //ExecCmds is run natively by UE on non-Shipping builds, so we only want to run our reimplementation when in Shipping (in case CSS enables it later)
+#if UE_BUILD_SHIPPING && !(ENABLE_PGO_PROFILE)
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Parsing ExecCmds"));
+    ParseExecCommands::QueueDeferredCommands(ParseExecCommands::ParseExecCmdsFromCommandLine(TEXT("ExecCmds")));
+#endif
 }
