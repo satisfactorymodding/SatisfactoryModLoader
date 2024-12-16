@@ -220,7 +220,7 @@ void FSatisfactoryModLoader::InitializeModLoading() {
 
 void FSatisfactoryModLoader::ParseExecCmds()
 {
-    //ExecCmds is run natively by UE on non-Shipping builds so we only want to run it when it is Shipping
+    //ExecCmds is run natively by UE on non-Shipping builds, so we only want to run our reimplementation when in Shipping (in case CSS enables it later)
 #if UE_BUILD_SHIPPING && !(ENABLE_PGO_PROFILE)
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Parsing ExecCmds"));
     ParseExecCommands::QueueDeferredCommands(ParseExecCommands::ParseExecCmdsFromCommandLine(TEXT("ExecCmds")));
