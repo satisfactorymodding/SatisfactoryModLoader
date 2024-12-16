@@ -216,3 +216,12 @@ void FSatisfactoryModLoader::InitializeModLoading() {
     }
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Initialization finished!"));
 }
+
+void FSatisfactoryModLoader::ParseExecCmds()
+{
+    //ExecCmds is run natively by UE on non-Shipping builds so we only want to run it when it is Shipping
+#if UE_BUILD_SHIPPING || !(ENABLE_PGO_PROFILE)
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Parsing ExecCmds"));
+    ParseExecCommands::QueueDeferredCommands(ParseExecCommands::ParseExecCmdsFromCommandLine(TEXT("ExecCmds")));
+#endif
+}

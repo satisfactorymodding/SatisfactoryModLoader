@@ -45,4 +45,7 @@ private:
 
 	/** Finishes mod loading and mounts packages, initializes subsystems, loads mod configurations, etc */
 	static void InitializeModLoading();
+
+	/** Runs console commands using the ExecCmds flag */
+	static void ParseExecCmds();
 };

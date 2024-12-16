@@ -30,6 +30,9 @@ void FSMLModule::StartupModule() {
 	//UObject subsystem and Engine are initialized on PostEngineInit and we need to delay their initialization to that moment
 	FCoreDelegates::OnPostEngineInit.AddStatic(FSatisfactoryModLoader::InitializeModLoading);
 
+	// ExecCmds are run after Engine is initialized as they use GEngine to run the commands
+	FCoreDelegates::OnPostEngineInit.AddStatic(FSatisfactoryModLoader::ParseExecCmds);
+
 	RegisterPluginGameplayTagInis();
 }
 
