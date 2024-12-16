@@ -17,6 +17,7 @@
 #include "Misc/FileHelper.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
+#include "ParseExecCommands.h"
 
 #ifndef FACTORYGAME_VERSION
 #define FACTORYGAME_VERSION 0
