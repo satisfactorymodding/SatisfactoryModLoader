@@ -1,9 +1,9 @@
 {
 	"FileVersion": 3,
 	"Version": 3,
-	"VersionName": "3.8.0",
-	"SemVersion": "3.8.0",
-	"GameVersion": ">=365306",
+	"VersionName": "3.9.0",
+	"SemVersion": "3.9.0",
+	"GameVersion": ">=383729",
 	"FriendlyName": "Satisfactory Mod Loader",
 	"Description": "Mod loading and compatibility API for Satisfactory",
 	"Category": "Modding",

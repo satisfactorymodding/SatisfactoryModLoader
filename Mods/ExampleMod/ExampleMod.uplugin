@@ -21,12 +21,12 @@
 			"LoadingPolicy": "Always"
 		}
 	],
-	"GameVersion": ">=365306",
+	"GameVersion": ">=383729",
 	"Plugins": [
 		{
 			"Name": "SML",
 			"Enabled": true,
-			"SemVersion": "^3.8.0"
+			"SemVersion": "^3.9.0"
 		}
 	]
 }
