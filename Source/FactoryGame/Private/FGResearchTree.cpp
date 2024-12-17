@@ -33,38 +33,81 @@ TArray<class UFGAvailabilityDependency*> UFGResearchTree::GetUnlockDependencies(
 }
 
 #if WITH_EDITOR
+// Lazily initialize research tree node reflection properties for faster access
+namespace
+{
+	// This function does things that are generally frowned upon
+	// because it has to make do with what the game provides. Do
+	// not do this unless you have no other choice and know what
+	// you are doing.
+	UClass* GetResearchTreeNodeClass()
+	{
+		// Saving a raw (i.e. not UPROPERTY) pointer to an UObject
+		// is a terrible idea unless one knows what they are doing
+		// as the GC (Garbage Collector) does not keep track of it.
+		static UClass* ResearchTreeNodeClass = NULL;
+		if (ResearchTreeNodeClass == NULL) {
+			// Hardcoding Blueprint asset paths is also a terrible idea because
+			// the editor cannot update the code when the Blueprint is moved or
+			// renamed. This will not prevent deletion of the Blueprint either.
+			ResearchTreeNodeClass = LoadClass<UFGResearchTreeNode>(NULL, TEXT("/Game/FactoryGame/Schematics/Research/BPD_ResearchTreeNode.BPD_ResearchTreeNode_C"));
+			if (ResearchTreeNodeClass) {
+				// Make sure class is not garbage collected because
+				// the GC does not know we are referencing it here.
+				ResearchTreeNodeClass->AddToRoot();
+			}
+		}
+		return ResearchTreeNodeClass;
+	}
+
+	FStructProperty* GetNodeDataStructProperty(UClass* ResearchTreeNodeClass)
+	{
+		static FStructProperty* NodeDataStructProperty = NULL;
+		if (ResearchTreeNodeClass && !NodeDataStructProperty) {
+			NodeDataStructProperty = CastField<FStructProperty>(ResearchTreeNodeClass->FindPropertyByName(TEXT("mNodeDataStruct")));
+		}
+		return NodeDataStructProperty;
+	}
+
+	FClassProperty* GetSchematicStructProperty(FStructProperty* NodeDataStructProperty)
+	{
+		static FClassProperty* SchematicStructProperty = NULL;
+		if (NodeDataStructProperty && !SchematicStructProperty) {
+			// Generated structs names contain GUIDs, so we can't use FindPropertyByName
+			for (FField* StructProp = NodeDataStructProperty->Struct->ChildProperties; StructProp; StructProp = StructProp->Next) {
+				if (FClassProperty* ClassProp = CastField<FClassProperty>(StructProp)) {
+					if (ClassProp->MetaClass->IsChildOf(UFGSchematic::StaticClass())) {
+						SchematicStructProperty = ClassProp;
+						break;
+					}
+				}
+			}
+		}
+		return SchematicStructProperty;
+	}
+}
+
 EDataValidationResult UFGResearchTree::IsDataValid(TArray<FText>& ValidationErrors) {
 	// MODDING IMPLEMENTATION
 	EDataValidationResult ValidationResult = Super::IsDataValid(ValidationErrors);
 
-	// UFGResearchTreeNode::GetNodeSchematic is not implemented due to placeholder assets
-	// so we read its property directly
-	
-	static FStructProperty* NodeDataStructProperty = NULL;
-	static FClassProperty* SchematicStructProperty = NULL;
-	static UClass* ResearchTreeNodeClass = NULL;
-
-	// Lazily initialize research tree node reflection properties for faster access
-	if (ResearchTreeNodeClass == NULL) {
-		ResearchTreeNodeClass = LoadClass<UFGResearchTreeNode>(NULL, TEXT("/Game/FactoryGame/Schematics/Research/BPD_ResearchTreeNode.BPD_ResearchTreeNode_C"));
-		check(ResearchTreeNodeClass);
-		//Make sure class is not garbage collected
-		ResearchTreeNodeClass->AddToRoot();
-
-		NodeDataStructProperty = CastFieldChecked<FStructProperty>(ResearchTreeNodeClass->FindPropertyByName(TEXT("mNodeDataStruct")));
-
-		// Generated structs names contain GUIDs, so we can't use FindPropertyByName
-		for(FField* StructProp = NodeDataStructProperty->Struct->ChildProperties; StructProp; StructProp = StructProp->Next) {
-			if (FClassProperty* ClassProp = CastField<FClassProperty>(StructProp)) {
-				if (ClassProp->MetaClass->IsChildOf(UFGSchematic::StaticClass())) {
-					SchematicStructProperty = ClassProp;
-					break;
-				}
-			}
-		}
+	// Exit early if the research tree has no nodes
+	const TArray<UFGResearchTreeNode*> Nodes = UFGResearchTree::GetNodes(GetClass());
+	if (Nodes.IsEmpty()) {
+		return ValidationResult;
 	}
 
-	const TArray<UFGResearchTreeNode*> Nodes = UFGResearchTree::GetNodes(GetClass());
+	// UFGResearchTreeNode::GetNodeSchematic is not implemented due to placeholder assets
+	// so we read its property directly
+	UClass* ResearchTreeNodeClass = GetResearchTreeNodeClass();
+	FStructProperty* NodeDataStructProperty = GetNodeDataStructProperty(ResearchTreeNodeClass);
+	FClassProperty* SchematicStructProperty = GetSchematicStructProperty(NodeDataStructProperty);
+
+	if (!ResearchTreeNodeClass || !NodeDataStructProperty || !SchematicStructProperty) {
+		ValidationErrors.Add(NSLOCTEXT("ResearchTree", "Validation_ReflectionFailed", "Could not retrieve properties to validate using reflection, validation not performed"));
+		return ValidationResult;
+	}
+
 	for (UFGResearchTreeNode* Node : Nodes) {
 		if (!Node->IsA(ResearchTreeNodeClass)) {
 			continue;
