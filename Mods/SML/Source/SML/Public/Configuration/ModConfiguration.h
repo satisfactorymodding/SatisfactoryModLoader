@@ -36,11 +36,11 @@ public:
     
     /** Display name of this configuration, as it will be visible to user */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    FString DisplayName;
+    FText DisplayName;
     
     /** Description of this configuration, can be empty */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-    FString Description;
+    FText Description;
 
     /** Root property of this configuration describing its values */
     UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly)
@@ -48,7 +48,7 @@ public:
 
 	/** Custom Widget - placed at the Bottom of the Mod Config Widgets*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		TSubclassOf<UUserWidget> CustomWidget;
+	TSubclassOf<UUserWidget> CustomWidget;
 
 #if WITH_EDITOR
     virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
