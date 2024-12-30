@@ -1,0 +1,44 @@
+﻿diff --git a/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp
+index d570163eb3..400925ec4d 100644
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp
+@@ -105,7 +105,7 @@ Copyright (c) 2024 Audiokinetic Inc.
+ #include "WwiseUnrealHelper.h"
+ 
+ //<CSS> Stats
+-extern int32 ENGINE_API GCurrentRunningSounds;
++extern int32 AKAUDIO_API GCurrentRunningSounds;
+ //</CSS>
+ 
+ /*------------------------------------------------------------------------------------
+@@ -968,7 +968,7 @@ bool FAkAudioDevice::Update( float DeltaTime )
+ {
+ //<CSS>
+ 	// Counter for thread time
+-	extern double ENGINE_API GWWiseUpdateTime;
++	extern double AKAUDIO_API GWWiseUpdateTime;
+ 	GWWiseUpdateTime = 0.0;
+ 	//GWWiseAudioUpdateTime = 0.0; // Reset to 0
+ 	FSimpleScopeSecondsCounter ScopedTimer(GWWiseUpdateTime);
+@@ -5068,3 +5068,8 @@ void FAkAudioDevice::RegisterBusMeteringDelegate(const FString &BusName, EAkMete
+ }
+ 
+ // </CSS>
++
++// <MODDING EDIT> These were not defined anywhere
++double GWWiseUpdateTime = 0.0;
++int GCurrentRunningSounds = 0;
++// </MODDING EDIT>
+diff --git a/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp
+index 63e6089e0f..4a7b427b76 100644
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp
+@@ -53,7 +53,7 @@ Copyright (c) 2024 Audiokinetic Inc.
+ #endif
+ 
+ //<CSS> Stats
+-extern int32 ENGINE_API GCurrentRunningSounds;
++extern int32 AKAUDIO_API GCurrentRunningSounds;
+ //</CSS>
+ 
+ /*------------------------------------------------------------------------------------
