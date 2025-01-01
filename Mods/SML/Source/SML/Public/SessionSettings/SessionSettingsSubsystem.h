@@ -18,14 +18,24 @@ public:
 	void OnSessionSettingUpdated(const FString StrID, FVariant value);
 	void PushSettingToSessionSettings( const FString& StrID, FVariant value );
 
-private:
-	void GameModePostLogin(AGameModeBase* GameMode, APlayerController* PlayerController) const;
-	void SendAllSessionSettings(AFGPlayerController* PlayerController) const;
-	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+private:	
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_SessionSettingUpdated(const FString& StrID, const FString& ValueString);
 
 	FOnOptionUpdated OnOptionUpdatedDelegate;
+
+	UFUNCTION()
+	void OnRep_SessionSettingsNames();
+
+	UPROPERTY(ReplicatedUsing=OnRep_SessionSettingsNames)
+	TArray<FString> SessionSettingsNames;
+
+	bool HasPendingSessionSettingsRequest = false;
+	int ReceivedSessionSettings = 0;
+
+	friend class USMLSessionSettingsRemoteCallObject;
 };
 
 UCLASS(NotBlueprintable)
@@ -38,10 +48,15 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RequestSessionSettingUpdate(const FString& SessionSettingName, const FString& ValueString);
 
-	UFUNCTION(Client, Reliable, WithValidation)
-	void Client_SendSessionSetting(const FString& SessionSettingName, const FString& ValueString);
-
 private:
+	UFUNCTION(Server, Reliable)
+	void Server_RequestInitialSessionSettings(const int& CurrentIndex);
+	
+	UFUNCTION(Client, Reliable)
+	void Client_RespondInitialSessionSettings(const TArray<FString>& SessionSettingsValues);
+
 	UPROPERTY(Replicated)
 	bool mForceNetField_USMLSessionSettingsRemoteCallObject;
+
+	friend class ASessionSettingsSubsystem;
 };

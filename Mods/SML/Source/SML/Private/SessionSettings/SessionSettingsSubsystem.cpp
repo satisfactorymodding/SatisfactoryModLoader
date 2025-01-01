@@ -16,7 +16,11 @@ void ASessionSettingsSubsystem::Init() {
 	check(SessionSettingsManager);
 
 	if (HasAuthority()) {
-		FGameModeEvents::GameModePostLoginEvent.AddUObject(this, &ASessionSettingsSubsystem::GameModePostLogin);
+		// We have to chunk the replication of a map, and the server must decide how much data to send,
+		// so we cannot send the list of missing setting names, as that could, itself, overflow the buffer (though arguably unlikely)
+		// For this, we only populate the settings names list on server to ensure it gets replicated,
+		// and then we can use this order to decide which settings to send in each chunk, and the client can know which settings the values belong to		
+		SessionSettingsManager->GetAllSessionSettings().GetKeys(SessionSettingsNames);
 	}
 
 	OnOptionUpdatedDelegate = FOnOptionUpdated::CreateUObject(this, &ASessionSettingsSubsystem::OnSessionSettingUpdated);
@@ -48,31 +52,9 @@ void ASessionSettingsSubsystem::PushSettingToSessionSettings(const FString& StrI
 	SessionSettingsManager->ForceSetOptionValue(StrID, value, this);
 }
 
-void ASessionSettingsSubsystem::GameModePostLogin(AGameModeBase* GameMode, APlayerController* PlayerController) const {
-	if (!PlayerController || PlayerController->GetWorld() != GetWorld())
-		return;
-
-	AFGPlayerController* FGPlayerController = Cast<AFGPlayerController>(PlayerController);
-	if (!FGPlayerController) {
-		UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Skipping client Mod Session Settings initialization, PlayerController is not an AFGPlayerController"));
-		return;
-	}
-	// AFGGameMode::PostLogin sets the remote call objects on the player controller
-	// before calling Super, so the RCOs are valid here
-	SendAllSessionSettings(FGPlayerController);
-}
-
-void ASessionSettingsSubsystem::SendAllSessionSettings(AFGPlayerController* PlayerController) const {
-	USMLSessionSettingsRemoteCallObject* RCO = PlayerController->GetRemoteCallObjectOfClass<USMLSessionSettingsRemoteCallObject>();
-	
-	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
-	TMap<FString, UFGUserSettingApplyType*> Settings = SessionSettingsManager->GetAllSessionSettings();
-	for (TPair<FString, UFGUserSettingApplyType*> Setting : Settings)
-	{
-		FVariant AppliedValue = Setting.Value->GetAppliedValue();
-		FString ValueString = USessionSettingsManager::VariantToString(AppliedValue);
-		RCO->Client_SendSessionSetting(Setting.Key, ValueString);
-	}
+void ASessionSettingsSubsystem::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASessionSettingsSubsystem, SessionSettingsNames);
 }
 
 void ASessionSettingsSubsystem::Multicast_SessionSettingUpdated_Implementation(const FString& StrID, const FString& value) {
@@ -80,6 +62,26 @@ void ASessionSettingsSubsystem::Multicast_SessionSettingUpdated_Implementation(c
 		return;
 	}
 	PushSettingToSessionSettings(StrID, USessionSettingsManager::StringToVariant(value));
+}
+
+void ASessionSettingsSubsystem::OnRep_SessionSettingsNames() {
+	if (!HasPendingSessionSettingsRequest && !HasAuthority()) {
+		// We're on a client, so there should be only one player controller
+		// and we only care to request the settings, so even if there are more, it doesn't matter
+		AFGPlayerController* FirstPlayerController = GetWorld()->GetFirstPlayerController<AFGPlayerController>();
+		if (FirstPlayerController) {
+			USMLSessionSettingsRemoteCallObject* RCO = FirstPlayerController->GetRemoteCallObjectOfClass<USMLSessionSettingsRemoteCallObject>();
+			if (RCO) {
+				ReceivedSessionSettings = 0;
+				RCO->Server_RequestInitialSessionSettings(0);
+				HasPendingSessionSettingsRequest = true;
+			}
+		}
+	}
+	if (!HasPendingSessionSettingsRequest) {
+		// Retry until the RCO is available
+		GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateUObject(this, &ASessionSettingsSubsystem::OnRep_SessionSettingsNames));
+	}
 }
 
 USMLSessionSettingsRemoteCallObject::USMLSessionSettingsRemoteCallObject() {
@@ -104,16 +106,47 @@ bool USMLSessionSettingsRemoteCallObject::Server_RequestSessionSettingUpdate_Val
 	return SessionSettingsManager != NULL && SessionSettingsManager->FindSessionSetting(SessionSettingName) != NULL;
 }
 
-void USMLSessionSettingsRemoteCallObject::Client_SendSessionSetting_Implementation(const FString& SessionSettingName, const FString& ValueString)
-{
-	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
-	check(SessionSettingsManager);
+void USMLSessionSettingsRemoteCallObject::Server_RequestInitialSessionSettings_Implementation(const int& CurrentIndex) {
+	ASessionSettingsSubsystem* SessionSettingsSubsystem = ASessionSettingsSubsystem::Get(GetWorld());
+	fgcheck(SessionSettingsSubsystem);
 
-	SessionSettingsManager->ForceSetOptionValue(SessionSettingName, USessionSettingsManager::StringToVariant(ValueString), this);
+	// Current values for session settings are primitives, so they don't take up much space
+	// But if we support more complex types, we may need to limit the size of the data sent, not the number of settings
+	int NumSettingsToSend = FMath::Min(SessionSettingsSubsystem->SessionSettingsNames.Num() - CurrentIndex, 512);
+	TArray<FString> SessionSettingsNamesToSend;
+	SessionSettingsNamesToSend.Reserve(NumSettingsToSend);
+	for (int i = 0; i < NumSettingsToSend; i++) {
+		SessionSettingsNamesToSend.Add(SessionSettingsSubsystem->SessionSettingsNames[CurrentIndex + i]);
+	}
+
+	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
+	fgcheck(SessionSettingsManager);
+
+	TArray<FString> SettingValues;
+	SettingValues.Reserve(NumSettingsToSend);
+	for (const FString& SettingName : SessionSettingsNamesToSend) {
+		FVariant Value = SessionSettingsManager->FindSessionSetting(SettingName)->GetAppliedValue();
+		FString ValueString = USessionSettingsManager::VariantToString(Value);
+		SettingValues.Add(ValueString);
+	}
+
+	Client_RespondInitialSessionSettings(SettingValues);	
 }
 
-bool USMLSessionSettingsRemoteCallObject::Client_SendSessionSetting_Validate(const FString& SessionSettingName, const FString& ValueString)
+void USMLSessionSettingsRemoteCallObject::Client_RespondInitialSessionSettings_Implementation(const TArray<FString>& SessionSettings)
 {
-	const USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
-	return SessionSettingsManager != NULL && !SessionSettingName.IsEmpty() && !ValueString.IsEmpty();
+	ASessionSettingsSubsystem* SessionSettingsSubsystem = ASessionSettingsSubsystem::Get(GetWorld());
+	fgcheck(SessionSettingsSubsystem);
+	
+	USessionSettingsManager* SessionSettingsManager = GetWorld()->GetSubsystem<USessionSettingsManager>();
+	fgcheck(SessionSettingsManager);
+
+	for (int i = 0; i < SessionSettings.Num(); i++) {
+		SessionSettingsSubsystem->PushSettingToSessionSettings(SessionSettingsSubsystem->SessionSettingsNames[SessionSettingsSubsystem->ReceivedSessionSettings + i], USessionSettingsManager::StringToVariant(SessionSettings[i]));
+	}
+	SessionSettingsSubsystem->ReceivedSessionSettings += SessionSettings.Num();
+	SessionSettingsSubsystem->HasPendingSessionSettingsRequest = false;
+	if (SessionSettingsSubsystem->ReceivedSessionSettings < SessionSettingsSubsystem->SessionSettingsNames.Num()) {
+		Server_RequestInitialSessionSettings(SessionSettingsSubsystem->ReceivedSessionSettings);
+	}
 }
