@@ -52,7 +52,7 @@ public class SML : ModuleRules
 
         if (Target.Platform == UnrealTargetPlatform.Win64)
         {
-            // https://github.com/satisfactorymodding/funchook/tree/1c0228483e46f36257ff86ff98db87b260298791
+            // https://github.com/satisfactorymodding/funchook/tree/4074c90c1bb4de294eb1dc2519c5830ed96739c0
             PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "funchook.lib"));
             // funchook will additionally build distorm 
             PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "distorm.lib"));
@@ -64,7 +64,7 @@ public class SML : ModuleRules
             PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zydis.lib"));
             PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "Zycore.lib"));
         } else if (Target.Platform == UnrealTargetPlatform.Linux) {
-            // https://github.com/satisfactorymodding/funchook/tree/1c0228483e46f36257ff86ff98db87b260298791
+            // https://github.com/satisfactorymodding/funchook/tree/4074c90c1bb4de294eb1dc2519c5830ed96739c0
             // Built on windows using the Unreal Engine cross-compile clang toolchain
             PublicAdditionalLibraries.Add(Path.Combine(LibraryFolder, "libfunchook.a"));
             // funchook will additionally build distorm
