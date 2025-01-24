@@ -4,7 +4,7 @@
 
 AHelpCommandInstance::AHelpCommandInstance() {
 	CommandName = TEXT("help");
-	Usage = TEXT("/help - Command help");
+	Usage = NSLOCTEXT("SML", "ChatCommand.Help.Usage", "/help - Command help");
 	Aliases.Add(TEXT("?"));
 }
 
@@ -18,12 +18,12 @@ EExecutionStatus AHelpCommandInstance::ExecuteCommand_Implementation(UCommandSen
 			Sender->SendChatMessage(FString(TEXT("Command not found: ")) += TargetCommandName, FLinearColor::Red);
 			return EExecutionStatus::BAD_ARGUMENTS;
 		}
-		Sender->SendChatMessage(CommandEntry->Usage);
+		Sender->SendChatMessage(CommandEntry->Usage.ToString());
 		return EExecutionStatus::COMPLETED;
 	}
 	Sender->SendChatMessage(TEXT("Command List:"));
 	for (const AChatCommandInstance* CommandEntry : CommandSubsystem->GetRegisteredCommands()) {
-		Sender->SendChatMessage(CommandEntry->Usage);
+		Sender->SendChatMessage(CommandEntry->Usage.ToString());
 	}
 	return EExecutionStatus::COMPLETED;
 }

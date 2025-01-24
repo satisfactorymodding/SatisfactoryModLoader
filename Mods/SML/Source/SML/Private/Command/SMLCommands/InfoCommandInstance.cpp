@@ -7,7 +7,7 @@
 
  AInfoCommandInstance::AInfoCommandInstance() {
 	CommandName = TEXT("info");
-	Usage = TEXT("/info - Information about the modded environment");
+	Usage = NSLOCTEXT("SML", "ChatCommand.Info.Usage", "/info - Information about the modded environment");
 	Aliases.Add(TEXT("version"));
 }
 

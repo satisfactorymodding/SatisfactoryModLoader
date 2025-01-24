@@ -6,7 +6,7 @@
 
 APlayerListCommandInstance::APlayerListCommandInstance() {
 	CommandName = TEXT("list");
-	Usage = TEXT("/list - List players online");
+	Usage = NSLOCTEXT("SML", "ChatCommand.List.Usage", "/list - List players online");
 	Aliases.Add(TEXT("players"));
 }
 
