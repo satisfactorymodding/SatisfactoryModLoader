@@ -17,5 +17,5 @@ void AChatCommandInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 }
 
 void AChatCommandInstance::PrintCommandUsage(UCommandSender* Player) const {
-	Player->SendChatMessage(FString::Printf(TEXT("Usage: %s"), *Usage), FLinearColor::Red);
+	Player->SendChatMessage(FString::Printf(TEXT("Usage: %s"), *Usage.ToString()), FLinearColor::Red);
 }
