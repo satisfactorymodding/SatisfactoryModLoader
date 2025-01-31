@@ -213,6 +213,12 @@ bool UAccessTransformersSubsystem::GetAccessTransformersForPlugin(IPlugin& Plugi
 		OutPluginAccessTransformers.BlueprintCallable.Add(FFunctionReference::FromConfigString(ConfigValue.GetValue()));
 	}
 
+	TArray<FConfigValue> EditAnywhere;
+	AccessTransformersSection->MultiFind(TEXT("EditAnywhere"), EditAnywhere);
+	for (const FConfigValue& ConfigValue : EditAnywhere) {
+		OutPluginAccessTransformers.EditAnywhere.Add(FPropertyReference::FromConfigString(ConfigValue.GetValue()));
+	}
+
 	return true;
 }
 
@@ -263,6 +269,29 @@ void UAccessTransformersSubsystem::ApplyTransformers() {
 			}
 		
 			Function->FunctionFlags |= FUNC_BlueprintCallable;
+		}
+	}
+	for (const auto& PluginTransformers : AccessTransformers) {
+		for (const FPropertyReference& EDOPropertyReference : PluginTransformers.Value.EditAnywhere) {
+			FString Error, Warning;
+			FProperty* Property = EDOPropertyReference.Resolve(Error, Warning);
+			if (!Warning.IsEmpty()) {
+				UE_LOG(LogAccessTransformers, Warning, TEXT("Resolving EditAnywhere %s requested by %s: %s"), *ToString(EDOPropertyReference), *PluginTransformers.Key, *Warning);
+			}
+			if (!Property) {
+				UE_LOG(LogAccessTransformers, Error, TEXT("Could not resolve property for EditAnywhere %s requested by %s: %s"), *ToString(EDOPropertyReference), *PluginTransformers.Key, *Error);
+				continue;
+			}
+
+			if (!OriginalPropertyFlags.Contains(Property)) {
+				// Only store the original flags if we haven't already
+				// so we don't override this with modified flags
+				OriginalPropertyFlags.Add(Property, Property->PropertyFlags);
+			}
+
+			Property->SetPropertyFlags(CPF_Edit);
+			Property->ClearPropertyFlags(CPF_EditConst);
+			Property->ClearPropertyFlags(CPF_DisableEditOnInstance);
 		}
 	}
 }

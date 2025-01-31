@@ -53,6 +53,9 @@ struct ACCESSTRANSFORMERS_API FPluginAccessTransformers {
 
 	UPROPERTY()
 	TArray<FFunctionReference> BlueprintCallable;
+
+	UPROPERTY()
+	TArray<FPropertyReference> EditAnywhere;
 };
 
 UCLASS()
