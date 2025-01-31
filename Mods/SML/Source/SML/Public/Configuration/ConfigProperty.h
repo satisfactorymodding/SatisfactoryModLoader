@@ -22,11 +22,11 @@ class SML_API UConfigProperty : public UObject {
 public:
     /** Display name of this property as it is visible to the user */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
-    FString DisplayName;
+    FText DisplayName;
 
     /** Tooltip visible to user hovering over this property */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property", meta = (MultiLine = true))
-    FString Tooltip;
+    FText Tooltip;
 
 	/** Whenever this value is only editable from main menu and disabled for editing in pause menu */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
@@ -34,7 +34,7 @@ public:
 
 	/** Whenever this value should be hidden in Widgets ( No User Input )  */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
-		uint8 bHidden : 1;
+	uint8 bHidden : 1;
 
 	/** Describes value of this property for debugging purposes */
 	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
