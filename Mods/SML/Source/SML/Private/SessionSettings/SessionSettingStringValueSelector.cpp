@@ -11,6 +11,7 @@ bool USessionSettingStringValueSelector::CanEditChange(const FProperty* InProper
 	const FName PropertyName = InProperty->GetFName();
 	if (PropertyName == GET_MEMBER_NAME_CHECKED(USessionSettingStringValueSelector, DefaultTextEditWidget))
 	{
+		// Only allow the Blueprint implementation located in SML to change this property value
 		return ParentVal && this->GetPathName().Contains("SML");
 	}
 
