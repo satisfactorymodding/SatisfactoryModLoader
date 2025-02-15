@@ -110,7 +110,7 @@ FString UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(const FString& 
 
 	//Game mount point is owned by Satisfactory itself, since we now have a strong content separation between mods and the game
 	//We use StartsWith here because editor can create sub-mounts under /Game/ for representing shared content packs
-	if (PackageMountPoint.StartsWith(TEXT("Game"))) {
+	if (PackageMountPoint == TEXT("Game") || PackageMountPoint.StartsWith(TEXT("Game/"))) {
 		return FApp::GetProjectName();
 	}
 	//Engine content is owned by the game, although we might want to make a separation later
