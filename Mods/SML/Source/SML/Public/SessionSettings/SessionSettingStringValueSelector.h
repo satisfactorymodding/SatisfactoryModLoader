@@ -14,7 +14,7 @@ class SML_API USessionSettingStringValueSelector : public UFGUserSetting_ValueSe
 public:
 	virtual EOptionType GetOptionType() const override { return EOptionType::OT_Custom; }
 
-	virtual FVariant GetDefaultValue() const override { return DefaultText.ToString(); }
+	virtual FVariant GetDefaultValue() const override { return Default; }
 
 	virtual TSubclassOf<class UFGOptionsValueController> GetValueSelectorWidgetClass() const override;
 
@@ -23,8 +23,8 @@ public:
 #endif
 
 public:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Value", meta=(DisplayName="Default Text Value"))
-	FText DefaultText;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Value", meta=(DisplayName="Default Value"))
+	FString Default;
 
 	// Displayed to the user when no value is entered
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Value")
