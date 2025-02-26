@@ -9,7 +9,7 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "SessionSettingsManager.generated.h"
 
-UCLASS(BlueprintType)
+UCLASS()
 class SML_API USessionSettingsManager : public UWorldSubsystem, public IFGOptionInterfaceImpl
 {
 	GENERATED_BODY()
@@ -53,7 +53,6 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	static FString GetSessionSettingsOption() { return SessionSettingsOption; }
-
 private:
 	void OnGameModeInitialized(AGameModeBase* GameModeBase);
 	
