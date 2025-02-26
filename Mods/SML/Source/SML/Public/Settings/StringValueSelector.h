@@ -4,10 +4,10 @@
 #include "Misc/Variant.h"
 #include "Settings/FGUserSetting.h"
 
-#include "SessionSettingStringValueSelector.generated.h"
+#include "StringValueSelector.generated.h"
 
 UCLASS(Blueprintable, DefaultToInstanced, EditInlineNew, Abstract, AutoExpandCategories="Value")
-class SML_API USessionSettingStringValueSelector : public UFGUserSetting_ValueSelector
+class SML_API UStringValueSelector : public UFGUserSetting_ValueSelector
 {
 	GENERATED_BODY()
 	

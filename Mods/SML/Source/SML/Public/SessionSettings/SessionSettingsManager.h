@@ -54,17 +54,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	static FString GetSessionSettingsOption() { return SessionSettingsOption; }
 
-	/** Set the option value for a string, will need to be applied to take effect and/or get saved */
-	UFUNCTION(BlueprintCallable, Category = "Option")
-	void SetStringOptionValue(const FString& cvar, const FString& newValue) { SetOptionValueTyped<FString>(cvar, newValue); }
-
-	UFUNCTION(BlueprintCallable, Category = "Option")
-	FString GetStringOptionValue(const FString& cvar) const { return GetOptionValueTyped<FString>(cvar); }
-
-	/** Get the current UI value for an string. Doesn't always match the active value. Should only be used in the session settings menu. */
-	UFUNCTION(BlueprintCallable, Category = "Option")
-	virtual FString GetStringUIDisplayValue(const FString& cvar) const { return GetOptionDisplayValueTyped<FString>(cvar); }
-
 private:
 	void OnGameModeInitialized(AGameModeBase* GameModeBase);
 	
