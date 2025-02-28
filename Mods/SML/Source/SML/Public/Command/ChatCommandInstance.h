@@ -68,7 +68,7 @@ public:
 	 * give <username> <item> [amount] [extra_data]
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FString Usage;
+	FText Usage;
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	

@@ -149,6 +149,11 @@ void UModLoadingLibrary::Initialize(FSubsystemCollectionBase& Collection) {
     //Initialize metadata and check dependencies for plugins that have already been loaded
     ReloadPluginMetadata();
     VerifyPluginDependencies();
+
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("List of loaded mods:"));
+    for (const FModInfo& ModInfo : GetLoadedMods()) {
+        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("%s: %s"), *ModInfo.Name, *ModInfo.Version.ToString());
+    }
 }
 
 FSMLPluginDescriptorMetadata UModLoadingLibrary::FindMetadataOrFallback(IPlugin& Plugin) {

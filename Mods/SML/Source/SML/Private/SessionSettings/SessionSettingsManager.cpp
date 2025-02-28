@@ -4,6 +4,7 @@
 #include "FGOptionsLibrary.h"
 #include "SatisfactoryModLoader.h"
 #include "Engine/Engine.h"
+#include "Engine/GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/Base64.h"
 #include "ModLoading/PluginModuleLoader.h"
@@ -86,6 +87,11 @@ void USessionSettingsManager::OnGameModeInitialized(AGameModeBase* GameModeBase)
 		}
 		// Watch for option updates in order to update them in the options string of the game mode
 		SubscribeToAllOptionUpdates(FOnOptionUpdated::CreateUObject(this, &USessionSettingsManager::OnOptionUpdated));
+
+		// Also watch for pending option values to update the game mode options string
+		for (auto& [_,Setting] : SessionSettings) {
+			Setting->OnPendingAppliedOptionValueChanged().AddUObject(this, &USessionSettingsManager::OnOptionUpdated);
+		}
 	}
 }
 
@@ -109,9 +115,9 @@ FString USessionSettingsManager::SerializeSettingsToString() const {
 	
 	for (const TPair<FString, UFGUserSettingApplyType*>& Pair : SessionSettings) {
 		FString Name = Pair.Key;
-		FVariant Value = Pair.Value->GetPendingValue();
+		FVariant Value = Pair.Value->GetPendingAppliedValue();
 		if (Value.IsEmpty())
-			Value = Pair.Value->GetAppliedValue();
+			continue;
 
 		OptionStrings.Add(Pair.Key + TEXT("=") + VariantToString(Value));
 	}

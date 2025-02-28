@@ -89,6 +89,40 @@ UFunction* FFunctionReference::Resolve(FString& OutError, FString& OutWarning) c
 	return ResolvedFunction;
 }
 
+FUStructReference FUStructReference::FromConfigString(const FString& String)
+{
+	FUStructReference StructReference;
+	StaticStruct()->ImportText(
+		*String,
+		&StructReference,
+		nullptr,
+		PPF_None,
+		nullptr,
+		StaticStruct()->GetName()
+	);
+	return StructReference;
+}
+
+UStruct* FUStructReference::Resolve(FString& OutError, FString& OutWarning) const
+{
+	UStruct* ResolvedStruct = FindObject<UStruct>(nullptr, *Struct);
+	if (!ResolvedStruct) {
+		// Backwards compatibility for old structure (no package, allow source class name)
+		ResolvedStruct = FindStructBySourceName(*Struct);
+		if (!ResolvedStruct) {
+			OutError = FString::Printf(TEXT("Could not find struct %s"), *Struct);
+			return nullptr;
+		}
+		OutWarning = FString::Printf(
+			TEXT(
+				"Using deprecated class specification. The loaded struct was %s. Please update your AccessTransformers config file. This will become an error in a future version."
+			), *ResolvedStruct->GetPathName());
+	}
+
+	return ResolvedStruct;
+}
+
+
 void UAccessTransformersSubsystem::Initialize(FSubsystemCollectionBase& Collection) {
 	Super::Initialize(Collection);
 
@@ -213,6 +247,18 @@ bool UAccessTransformersSubsystem::GetAccessTransformersForPlugin(IPlugin& Plugi
 		OutPluginAccessTransformers.BlueprintCallable.Add(FFunctionReference::FromConfigString(ConfigValue.GetValue()));
 	}
 
+	TArray<FConfigValue> EditAnywhere;
+	AccessTransformersSection->MultiFind(TEXT("EditAnywhere"), EditAnywhere);
+	for (const FConfigValue& ConfigValue : EditAnywhere) {
+		OutPluginAccessTransformers.EditAnywhere.Add(FPropertyReference::FromConfigString(ConfigValue.GetValue()));
+	}
+
+	TArray<FConfigValue> BlueprintType;
+	AccessTransformersSection->MultiFind(TEXT("BlueprintType"), BlueprintType);
+	for (const FConfigValue& ConfigValue : BlueprintType) {
+		OutPluginAccessTransformers.BlueprintType.Add(FUStructReference::FromConfigString(ConfigValue.GetValue()));
+	}
+
 	return true;
 }
 
@@ -265,6 +311,50 @@ void UAccessTransformersSubsystem::ApplyTransformers() {
 			Function->FunctionFlags |= FUNC_BlueprintCallable;
 		}
 	}
+	for (const auto& PluginTransformers : AccessTransformers) {
+		for (const FPropertyReference& EDOPropertyReference : PluginTransformers.Value.EditAnywhere) {
+			FString Error, Warning;
+			FProperty* Property = EDOPropertyReference.Resolve(Error, Warning);
+			if (!Warning.IsEmpty()) {
+				UE_LOG(LogAccessTransformers, Warning, TEXT("Resolving EditAnywhere %s requested by %s: %s"), *ToString(EDOPropertyReference), *PluginTransformers.Key, *Warning);
+			}
+			if (!Property) {
+				UE_LOG(LogAccessTransformers, Error, TEXT("Could not resolve property for EditAnywhere %s requested by %s: %s"), *ToString(EDOPropertyReference), *PluginTransformers.Key, *Error);
+				continue;
+			}
+
+			if (!OriginalPropertyFlags.Contains(Property)) {
+				// Only store the original flags if we haven't already
+				// so we don't override this with modified flags
+				OriginalPropertyFlags.Add(Property, Property->PropertyFlags);
+			}
+
+			Property->SetPropertyFlags(CPF_Edit);
+			Property->ClearPropertyFlags(CPF_EditConst);
+			Property->ClearPropertyFlags(CPF_DisableEditOnInstance);
+		}
+	}
+
+	for (const auto& PluginTransformers : AccessTransformers) {
+		for (const FUStructReference& EDOStructReference : PluginTransformers.Value.BlueprintType) {
+			FString Error, Warning;
+			UStruct* Struct = EDOStructReference.Resolve(Error, Warning);
+			if (!Warning.IsEmpty()) {
+				UE_LOG(LogAccessTransformers, Warning, TEXT("Resolving BlueprintType %s requested by %s: %s"), *ToString(EDOStructReference), *PluginTransformers.Key, *Warning);
+			}
+			if (!Struct) {
+				UE_LOG(LogAccessTransformers, Error, TEXT("Could not resolve struct for BlueprintType %s requested by %s: %s"), *ToString(EDOStructReference), *PluginTransformers.Key, *Error);
+				continue;
+			}
+
+			if (!OriginalStructMetadata.Contains(Struct))
+			{
+				OriginalStructMetadata.Add(Struct, Struct->GetMetaData(TEXT("BlueprintType")));
+			}
+
+			Struct->SetMetaData(TEXT("BlueprintType"), TEXT("true"));
+		}
+	}
 }
 
 void UAccessTransformersSubsystem::Reset() {
@@ -279,6 +369,11 @@ void UAccessTransformersSubsystem::Reset() {
         Function.Key->FunctionFlags = Function.Value;
     }
 	OriginalFunctionFlags.Empty();
+
+	for (const TTuple<UStruct*, FString>& Struct : OriginalStructMetadata) {
+		Struct.Key->SetMetaData(TEXT("BlueprintType"), *Struct.Value);
+	}
+	OriginalStructMetadata.Empty();
 }
 
 const TCHAR* UAccessTransformersSubsystem::AccessTransformersFileName = TEXT("AccessTransformers.ini");

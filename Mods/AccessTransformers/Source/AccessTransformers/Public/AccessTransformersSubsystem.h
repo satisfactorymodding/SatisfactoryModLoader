@@ -45,6 +45,22 @@ inline FString ToString(const FFunctionReference& FunctionReference) {
 }
 
 USTRUCT()
+struct ACCESSTRANSFORMERS_API FUStructReference {
+	GENERATED_BODY()
+
+	static FUStructReference FromConfigString(const FString& String);
+
+	UPROPERTY(Config)
+	FString Struct;
+
+	UStruct* Resolve(FString& OutError, FString& OutWarning) const;
+};
+
+inline FString ToString(const FUStructReference& StructReference) {
+	return StructReference.Struct;
+}
+
+USTRUCT()
 struct ACCESSTRANSFORMERS_API FPluginAccessTransformers {
 	GENERATED_BODY()
 
@@ -53,6 +69,12 @@ struct ACCESSTRANSFORMERS_API FPluginAccessTransformers {
 
 	UPROPERTY()
 	TArray<FFunctionReference> BlueprintCallable;
+
+	UPROPERTY()
+	TArray<FPropertyReference> EditAnywhere;
+
+	UPROPERTY()
+	TArray<FUStructReference> BlueprintType;
 };
 
 UCLASS()
@@ -80,6 +102,8 @@ private:
 	TMap<FProperty*, EPropertyFlags> OriginalPropertyFlags;
 
 	TMap<UFunction*, EFunctionFlags> OriginalFunctionFlags;
+
+	TMap<UStruct*, FString> OriginalStructMetadata;
 	
 	IDirectoryWatcher::FDirectoryChanged OnAccessTransformersChanged;
 };
