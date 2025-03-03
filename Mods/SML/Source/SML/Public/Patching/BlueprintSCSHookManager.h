@@ -75,6 +75,10 @@ UCLASS(BlueprintType, EditInlineNew)
 class SML_API URootBlueprintSCSHookData : public UBlueprintSCSHookData {
 	GENERATED_BODY()
 public:
+	/** Use this field to leave future you notes about what this hook is supposed to accomplish */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (MultiLine = "true"))
+	FString DeveloperComment;
+
 	/** Blueprint class to hook. Must be a Blueprint! */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (ShowTreeView, BlueprintBaseOnly))
 	TSoftClassPtr<AActor> ActorClass;
