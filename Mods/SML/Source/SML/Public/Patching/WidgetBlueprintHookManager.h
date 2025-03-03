@@ -83,7 +83,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (GetOptions = "GetParentWidgetNames"))
 	FName ParentWidgetName;
 
-	/** Name of the parent widget to attach this widget to when ParentWidgetType is Indirect (Child) */
+	/**
+	 * Name of the parent widget to attach this widget to when ParentWidgetType is Indirect (Child).
+	 * Warning: use this feature with caution as widget structure elements that aren't variables are especially prone to changing across game updates
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Advanced", meta = (EditCondition = "ParentWidgetType == EWidgetBlueprintHookParentType::Indirect_Child", GetOptions = "GetIndirectParentWidgetNames"))
 	FName IndirectParentWidgetNameToAttachTo;
 
