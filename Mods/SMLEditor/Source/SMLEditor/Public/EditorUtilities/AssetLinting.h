@@ -7,7 +7,7 @@
 
 UENUM(BlueprintType)
 enum class ELintingResultSeverity : uint8 {
-	// Information for the developer about the asset
+	// Information for the developer about what the check did for this asset
 	NOTICE,
 	// Could confuse end users, but asset will still behave as expected of Satisfactory assets
 	WARNING,
@@ -27,8 +27,15 @@ class URecipeLintingCheckInterface : public UInterface {
 class SMLEDITOR_API IRecipeLintingCheckInterface
 {
 	GENERATED_BODY()
-	
+
 public:
+	/**
+	  * Check the passed recipe for mistakes or other points of note.
+	  * 
+	  * Returns true when a message of some sort was produced.
+	  * out_message contains the message.
+	  * out_severity contains the severity level of the message.
+	  */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	const bool CheckRecipe(TSubclassOf<UFGRecipe> recipe, FString &out_message, ELintingResultSeverity &out_severity);
 };
