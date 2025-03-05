@@ -26,14 +26,19 @@ enum class EWidgetBlueprintHookParentType : uint8 {
 	/** Hook directly using the parent widget name */
 	Direct UMETA(DisplayName = "Direct"),
 	/** Hook indirectly by traversing the widget hierarchy of the provided widget for the closest panel widget */
-	Indirect_Child UMETA(DisplayName = "Indirect (Child)")
+	Indirect_Child UMETA(DisplayName = "Indirect (Child)"),
+	/**
+	 * Hook directly using the parent widget name, including elements that aren't variables.
+	 * Warning: use this feature with caution as widget structure elements that aren't variables are especially prone to changing across game updates
+	 */
+	Direct_Any UMETA(DisplayName = "Direct (Any)"),
 };
 
 namespace WidgetBlueprintHookParentValidator {
-	SML_API bool ValidateParentWidget(UWidget* Widget, EWidgetBlueprintHookParentType ParentType, UPanelWidget*& OutParentWidget, bool bCheckVariableName = true, FName ParentNameToCheck = FName{});
+	SML_API bool ValidateParentWidget(UWidget* Widget, EWidgetBlueprintHookParentType ParentType, UPanelWidget*& OutParentWidget, bool bCheckVariableName = true);
 
 	SML_API bool ValidateDirectWidget(UWidget* Widget, UPanelWidget*& OutPanelWidget, bool bCheckVariableName);
-	SML_API bool ValidateIndirectChildWidget(UWidget* Widget, UPanelWidget*& OutPanelWidget, bool bCheckVariableName, FName ParentNameToCheck = FName{});
+	SML_API bool ValidateIndirectChildWidget(UWidget* Widget, UPanelWidget*& OutPanelWidget, bool bCheckVariableName);
 	SML_API bool ValidateWidgetBase(UWidget* Widget, bool bCheckVariableName);
 }
 
@@ -76,19 +81,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Advanced")
 	EWidgetBlueprintHookParentType ParentWidgetType;
 	
-	/**
-	 * Name of the parent widget variable to attach this widget to. Must a panel widget.
-	 * If ParentWidgetType is Indirect (Child), this is the name of the child widget variable to search for the parents.
-	 */
+	/** Name of the parent widget variable to attach this widget to. Must a panel widget. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (GetOptions = "GetParentWidgetNames"))
 	FName ParentWidgetName;
-
-	/**
-	 * Name of the parent widget to attach this widget to when ParentWidgetType is Indirect (Child).
-	 * Warning: use this feature with caution as widget structure elements that aren't variables are especially prone to changing across game updates
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Advanced", meta = (EditCondition = "ParentWidgetType == EWidgetBlueprintHookParentType::Indirect_Child", GetOptions = "GetIndirectParentWidgetNames"))
-	FName IndirectParentWidgetNameToAttachTo;
 
 	/**
 	 * When not -1, specifies the index in the parent widget Slots array at which the widget will be inserted
@@ -110,9 +105,6 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	TArray<FString> GetParentWidgetNames() const;
-
-	UFUNCTION(BlueprintPure)
-	TArray<FString> GetIndirectParentWidgetNames() const;
 	
 	/** Updates the blueprint widget class being hooked */
 	UFUNCTION(BlueprintSetter)
@@ -132,14 +124,10 @@ public:
 	/** Updates the name of the parent widget for this hook */
 	UFUNCTION(BlueprintSetter)
 	void SetParentWidgetName(FName InParentWidgetName);
-
-	/** Updates the name of the parent widget for this hook when ParentWidgetType is Indirect (Child) */
-	UFUNCTION(BlueprintSetter)
-	void SetIndirectParentWidgetNameToAttachTo(FName InIndirectParentWidgetNameToAttachTo);
 	
 	void ReinitializeNewWidgetTemplate();
 	void ReinitializePanelSlotTemplate();
-	UPanelWidget* ResolveParentWidget(bool bFollowIndirectParents = false) const;
+	UPanelWidget* ResolveParentWidget() const;
 };
 
 UCLASS()
