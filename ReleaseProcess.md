@@ -22,5 +22,6 @@ Rough notes on the steps we follow when making an SML release.
 1. While waiting for CI to finish
    1. Merge the docs PR to master
    1. Update [SMLFeatureTests](https://github.com/satisfactorymodding/SMLFeatureTests) SML dependency version
-1. Upload CI artifact to GitHub as release
-1. Upload CI artifact to SMR as a new version of the SML mod, changelog is the GitHub changelog
+1. Upload CI artifact to GitHub as release. Attach all of the CI zip file contents as release items (Windows (Client), Windows Server, Linux Server, SML (multi-target))
+1. Upload CI artifact to SMR as a new version of the SML mod (multi-target zip file), SMR changelog is the GitHub changelog
+1. Post in #toolkit-updates on Discord
