@@ -51,3 +51,5 @@ EDataValidationResult USMLSessionSetting::IsDataValid(TArray<FText>& ValidationE
 	return ValidationResult;
 }
 #endif
+
+#undef LOCTEXT_NAMESPACE
