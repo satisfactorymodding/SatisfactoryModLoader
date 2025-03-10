@@ -21,6 +21,13 @@ void FObjectReferenceDisc::GetRelativePath(const UObject* obj, FString& out_path
 const ULevel* FObjectReferenceDisc::FindOuterLevel(const UObject* obj){ return nullptr; }
 const UWorldPartitionRuntimeCell* FObjectReferenceDisc::FindWorldPartitionCell(const UWorld* world, const FString& levelName){ return nullptr; }
 ULevel* FObjectReferenceDisc::FindLevel(UWorld* world) const{ return nullptr; }
+FArchive& operator<<(FArchive& ar, FObjectReferenceDisc& reference)
+{
+	ar << reference.LevelName;
+	ar << reference.PathName;
+	ar << reference.BlueprintRedirectCount;
+	return ar;
+}
 bool FObjectReferenceDisc::Valid() const{ return bool(); }
 FString FObjectReferenceDisc::ToString() const{ return FString(); }
 void FObjectReferenceDisc::ClearRedirects(){ }
