@@ -13,6 +13,7 @@ EExecutionStatus AChatCommandInstance::ExecuteCommand_Implementation(UCommandSen
 }
 
 void AChatCommandInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AChatCommandInstance, ModReference);
 }
 
