@@ -15,16 +15,24 @@ struct SML_API FBPSCSHookDescriptor {
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, Category = "Default")
-	URootBlueprintSCSHookData* RootHookData;
+	URootBlueprintSCSHookData* RootHookData{};
 
 	UPROPERTY(VisibleAnywhere, Category = "Default")
-	USimpleConstructionScript* SimpleConstructionScript;
+	class USimpleConstructionScript* SimpleConstructionScript{};
 
 	UPROPERTY(VisibleAnywhere, Category = "Default")
 	TMap<UBlueprintSCSHookData*, USCS_Node*> InstalledNodes;
 
 	UPROPERTY(VisibleAnywhere, Category = "Default")
 	TArray<USCS_Node*> InstalledNodesOrdered;
+	
+	int32 RegistrationCount{0};
+};
+
+struct FSoftEditorBPSCSHookRegistration
+{
+	TSoftObjectPtr<URootBlueprintSCSHookData> HookAsset;
+	int32 RegistrationCount{0};
 };
 
 /** Data required to hook into the SCS tree */
@@ -67,7 +75,8 @@ public:
 	TArray<FString> GetAvailableSocketNames() const;
 	
 	void ReinitializeActorComponentTemplate();
-	virtual bool ResolveParentComponent(struct FParentComponentInfo& OutParentComponent) const;
+	virtual bool ResolveParentComponentOnArchetype(struct FParentComponentInfo& OutParentComponent) const;
+	virtual void ExecuteSCSHookOnInstance(AActor* InActorInstance, USceneComponent* InParentComponent) const;
 };
 
 /** Data required to hook into the existing SCS tree at the provided point */
@@ -98,15 +107,24 @@ public:
 	UFUNCTION(BlueprintPure)
 	TArray<FString> GetParentComponentNames() const;
 
-	virtual bool ResolveParentComponent(FParentComponentInfo& OutParentComponent) const override;
+	virtual bool ResolveParentComponentOnArchetype(FParentComponentInfo& OutParentComponent) const override;
+	bool ResolveParentComponentOnInstance(AActor* ActorInstance, class USceneComponent*& OutParentComponent) const;
+	void ExecuteSCSHookOnInstanceRootComponent(AActor* InActorInstance) const;
 };
 
 UCLASS()
 class SML_API UBlueprintSCSHookManager : public UEngineSubsystem {
 	GENERATED_BODY()
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Default")
-	TArray<FBPSCSHookDescriptor> InstalledHooks;
+	/** Used in runtime to install hooks directly to the archetypes of the blueprints */
+	UPROPERTY()
+	TArray<FBPSCSHookDescriptor> InstalledArchetypeHooks;
+
+	/**
+	 * Used in the editor and standalone to instead populate the components on the instances, and does not retain hard references to the hooks in question
+	 * Keep in mind that such hooks are reference counted, so each register must be correctly paired up with unregister
+	 */
+	TMap<FTopLevelAssetPath, TArray<FSoftEditorBPSCSHookRegistration>> InstalledSlowPerInstanceHooks;
 public:
 	/** Installs the SCS hook with the provided parameters */
 	UFUNCTION(BlueprintCallable)
@@ -115,7 +133,11 @@ public:
 	/** Removes the previously installed SCS hook */
 	UFUNCTION(BlueprintCallable)
 	void UnregisterBlueprintSCSHook(URootBlueprintSCSHookData* HookData);
+
+	/** Called from the initialization to register static hooks if necessary */
+	static void RegisterStaticHooks();
 private:
-	static void InstallSCSHookRecursive(UBlueprintSCSHookData* HookData, FBPSCSHookDescriptor& OutHookDescriptor);
-	static void UninstallSCSHookOrdered(const FBPSCSHookDescriptor& HookDescriptor);
+	static void BlueprintGeneratedClassCreateComponentsFromActor(const UClass* ThisClass, AActor* Actor);
+	static void InstallArchetypeSCSHookRecursive(UBlueprintSCSHookData* HookData, FBPSCSHookDescriptor& OutHookDescriptor);
+	static void RemoveArchetypeSCSHookOrdered(const FBPSCSHookDescriptor& HookDescriptor);
 };

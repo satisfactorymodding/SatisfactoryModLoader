@@ -8,6 +8,7 @@
 #include "Registry/RemoteCallObjectRegistry.h"
 #include "GameInstanceModule.generated.h"
 
+class UHookBlueprintGeneratedClass;
 class UModSubsystemHolder;
 class UModConfiguration;
 class URootBlueprintSCSHookData;
@@ -35,6 +36,10 @@ public:
     */
     UPROPERTY(EditDefaultsOnly, Category = "Advanced | Tooltips")
     TArray<UClass*> GlobalItemTooltipProviders;
+
+	/** Blueprint hooks to apply to the Blueprint assets when this module is loaded */
+	UPROPERTY(EditDefaultsOnly, Category = "Advanced | Hooks")
+	TArray<TSubclassOf<class UStaticBlueprintHook>> BlueprintHooks;
     
     /**
      * Simple construction script hooks to install for this mod

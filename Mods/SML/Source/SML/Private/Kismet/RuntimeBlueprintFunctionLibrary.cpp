@@ -4,8 +4,6 @@
 #include "SatisfactoryModLoader.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
-#include "Patching/BlueprintHookHelper.h"
-#include "Patching/BlueprintHookManager.h"
 #include "Settings/FGAdvancedGameSettings.h"
 
 UClass* URuntimeBlueprintFunctionLibrary::FindClassByName(FString ClassNameInput) {
@@ -297,26 +295,4 @@ void URuntimeBlueprintFunctionLibrary::SetComboBoxFont(UComboBoxString* Box, FSl
 	if (Box) {
 		Box->Font = Font;
 	}
-}
-
-void URuntimeBlueprintFunctionLibrary::BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName, bool bHookOffsetStart) {
-	if (Class == NULL) {
-		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to bind on Blueprint Function '%s': Class is null"), *FunctionName);
-		return;
-	}
-	UFunction* Function = Class->FindFunctionByName(*FunctionName);
-	if (Function == NULL) {
-		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to bind on Blueprint Function '%s' of class '%s': Function does not exist"), *FunctionName, *Class->GetPathName());
-		return;
-	}
-	if (Function->IsNative()) {
-		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to bind on Blueprint Function '%s' of class '%s': Function is native"), *FunctionName, *Class->GetPathName());
-		return;
-	}
-	const EPredefinedHookOffset Offset = bHookOffsetStart ? EPredefinedHookOffset::Start : EPredefinedHookOffset::Return;
-	UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
-
-	HookManager->HookBlueprintFunction(Function, [Binding](const FBlueprintHookHelper& HookHelper) {
-		Binding.ExecuteIfBound(HookHelper.GetContext());
-	}, Offset);
 }

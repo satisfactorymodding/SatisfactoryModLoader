@@ -2,6 +2,8 @@
 #include "Configuration/ConfigManager.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
+#include "Patching/BlueprintHookBlueprint.h"
+#include "Patching/BlueprintHookManager.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
 #include "Patching/BlueprintSCSHookManager.h"
 #include "Patching/WidgetBlueprintHookManager.h"
@@ -51,7 +53,12 @@ void UGameInstanceModule::RegisterDefaultContent() {
     for (const UClass* GlobalTooltipProvider : GlobalItemTooltipProviders) {
         ItemTooltipSubsystem->RegisterGlobalTooltipProvider(OwnerModReferenceString, GlobalTooltipProvider->GetDefaultObject());
     }
-	
+
+	UBlueprintHookManager* BlueprintHookManager = GameInstance->GetEngine()->GetEngineSubsystem<UBlueprintHookManager>();
+	for (const TSubclassOf<UStaticBlueprintHook>& HookBlueprintClass : BlueprintHooks) {
+		BlueprintHookManager->RegisterBlueprintHook(GameInstance, Cast<UHookBlueprintGeneratedClass>(HookBlueprintClass.Get()));
+	}
+
     UBlueprintSCSHookManager* HookManager = GameInstance->GetEngine()->GetEngineSubsystem<UBlueprintSCSHookManager>();
     for (URootBlueprintSCSHookData* HookData : BlueprintSCSHooks) {
         HookManager->RegisterBlueprintSCSHook(HookData);

@@ -1,9 +1,20 @@
 ﻿#include "Patching/BlueprintSCSHookManager.h"
 
+#include "SatisfactoryModLoader.h"
 #include "Engine/Engine.h"
 #include "Engine/SCS_Node.h"
 #include "Engine/SimpleConstructionScript.h"
+#include "Misc/App.h"
+#include "Patching/NativeHookManager.h"
 #include "UObject/Package.h"
+
+#if WITH_EDITOR
+	// Fast path can be used if we are running Standalone (-game or -server) and not running a Commandlet
+	#define GAllowUsingFastBlueprintSCSHookPath !GIsEditor && !IsRunningCommandlet()
+#else
+	// Fast path can be used at all times in non-editor builds
+	#define GAllowUsingFastBlueprintSCSHookPath true
+#endif
 
 DEFINE_LOG_CATEGORY(LogBlueprintSCSHookManager);
 
@@ -24,16 +35,16 @@ enum class EParentComponentType {
 };
 
 struct FParentComponentInfo {
-	EParentComponentType Type;
-	UActorComponent* ParentActorComponent;
+	EParentComponentType Type{};
+	UActorComponent* ParentActorComponent{};
 	
-	USimpleConstructionScript* SimpleConstructionScript;
-	USCS_Node* ParentSCSNode;
+	USimpleConstructionScript* SimpleConstructionScript{};
+	USCS_Node* ParentSCSNode{};
 	
 	FName ParentComponentOrVariableName;
 	FName ParentComponentOwnerClassName;
 
-	UBlueprintSCSHookData* ParentHookData;
+	UBlueprintSCSHookData* ParentHookData{};
 };
 
 #if WITH_EDITOR
@@ -66,7 +77,7 @@ TArray<FString> UBlueprintSCSHookData::GetAvailableSocketNames() const {
 	ResultArray.Add(FName(NAME_None).ToString());
 
 	FParentComponentInfo ParentComponentInfo{};
-	if (ResolveParentComponent(ParentComponentInfo)) {
+	if (ResolveParentComponentOnArchetype(ParentComponentInfo)) {
 
 		if (const USceneComponent* SceneComponent = Cast<USceneComponent>(ParentComponentInfo.ParentActorComponent)) {
 			for (const FName& SocketName : SceneComponent->GetAllSocketNames()) {
@@ -111,7 +122,7 @@ void UBlueprintSCSHookData::ReinitializeActorComponentTemplate() {
 	}
 }
 
-bool UBlueprintSCSHookData::ResolveParentComponent(FParentComponentInfo& OutParentComponent) const {
+bool UBlueprintSCSHookData::ResolveParentComponentOnArchetype(FParentComponentInfo& OutParentComponent) const {
 	//We, as a child, hold no data about any parent component
 	//Therefore the only way for us to get a parent is to check our outer, which should be URootBlueprintSCSHookData
 	//That particular hook will be our parent
@@ -124,6 +135,36 @@ bool UBlueprintSCSHookData::ResolveParentComponent(FParentComponentInfo& OutPare
 
 	//Otherwise we have no data for hooking
 	return false;
+}
+
+void UBlueprintSCSHookData::ExecuteSCSHookOnInstance(AActor* InActorInstance, USceneComponent* InParentComponent) const {
+	// Failsafe to avoid attempting to create invalid components
+	if (ActorComponentTemplate == nullptr || ActorComponentClass == nullptr || !ActorComponentTemplate->IsA(ActorComponentClass)) {
+		return;
+	}
+	// Create a new component from the template
+	UActorComponent* NewActorComponent = NewObject<UActorComponent>(InActorInstance, ActorComponentClass, VariableName, RF_NoFlags, ActorComponentTemplate);
+
+	NewActorComponent->CreationMethod = EComponentCreationMethod::SimpleConstructionScript;
+	NewActorComponent->SetNetAddressable();
+
+	// Call OnComponentCreated on the resulting component before RegisterComponentWithWorld is called later
+	if (!NewActorComponent->HasBeenCreated()) {
+		NewActorComponent->OnComponentCreated();
+	}
+	USceneComponent* NewSceneComponent = Cast<USceneComponent>(NewActorComponent);
+	
+	// Set up the attachment to the parent component if this is a scene component
+	if (NewSceneComponent) {
+		NewSceneComponent->SetupAttachment(InParentComponent, AttachToName);
+	}
+
+	// Execute child hooks on this component
+	for (const UBlueprintSCSHookData* ChildHookData : Children) {
+		if (ChildHookData && ChildHookData->ActorComponentTemplate) {
+			ChildHookData->ExecuteSCSHookOnInstance(InActorInstance, NewSceneComponent);
+		}
+	}
 }
 
 TArray<FString> URootBlueprintSCSHookData::GetParentComponentNames() const {
@@ -156,7 +197,7 @@ TArray<FString> URootBlueprintSCSHookData::GetParentComponentNames() const {
 	return ResultArray;
 }
 
-bool URootBlueprintSCSHookData::ResolveParentComponent(FParentComponentInfo& OutParentComponent) const {
+bool URootBlueprintSCSHookData::ResolveParentComponentOnArchetype(FParentComponentInfo& OutParentComponent) const {
 	//If we have a parent node, make sure its actor class always matched what we expect
 	//We might end up in a really, really weird situations if user picks some nonsense in the editor
 	//Realistically speaking, root nodes should never end up as other node children, but users are dumb and weird
@@ -224,12 +265,31 @@ bool URootBlueprintSCSHookData::ResolveParentComponent(FParentComponentInfo& Out
 
 	//Found no matching SCS node, parent BP component or native BP component
 	//Attempt to proceed as normal child hook
-	return Super::ResolveParentComponent(OutParentComponent);
+	return Super::ResolveParentComponentOnArchetype(OutParentComponent);
 }
 
-bool MountSCSNodeToParent(UBlueprintSCSHookData* HookData, USCS_Node* NewNode) {
+bool URootBlueprintSCSHookData::ResolveParentComponentOnInstance(AActor* ActorInstance, USceneComponent*& OutParentComponent) const {
+	// Resolve the parent component by name if the name has been given
+	if (ActorComponentClass && ActorComponentClass->IsChildOf(USceneComponent::StaticClass()) && ParentComponentName != NAME_None) {
+		if (USceneComponent* ParentSceneComponent = FindObjectFast<USceneComponent>(ActorInstance, ParentComponentName)) {
+			OutParentComponent = ParentSceneComponent;
+			return true;
+		}
+		return false;
+	}
+	return true;
+}
+
+void URootBlueprintSCSHookData::ExecuteSCSHookOnInstanceRootComponent(AActor* InActorInstance) const {
+	USceneComponent* ParentSceneComponent = nullptr;
+	if (ResolveParentComponentOnInstance(InActorInstance, ParentSceneComponent)) {
+		ExecuteSCSHookOnInstance(InActorInstance, ParentSceneComponent);
+	}
+}
+
+static bool MountSCSNodeToParent(UBlueprintSCSHookData* HookData, USCS_Node* NewNode) {
 	FParentComponentInfo ParentComponentInfo{};
-	if (!HookData->ResolveParentComponent(ParentComponentInfo)) {
+	if (!HookData->ResolveParentComponentOnArchetype(ParentComponentInfo)) {
 		return false;
 	}
 	
@@ -351,16 +411,20 @@ bool MountSCSNodeToParent(USCS_Node* NewNode, const FParentComponentInfo& Parent
 	return false;
 }
 
+// Used when fast hook path is not available to bail out of actor spawns with minimal overhead
+static TSet<FName> StaticSlowPathHookedBlueprintClassFNames;
+
 void UBlueprintSCSHookManager::RegisterBlueprintSCSHook(URootBlueprintSCSHookData* HookData) {
-	//SCS hooking in editor is extremely dangerous as it modifies the source assets
-	//TODO: Hooks can be supported in the editor too by only adding them on the PIE-cloned objects
-	if (!FPlatformProperties::RequiresCookedData()) {
+	// This should not be done from anywhere other than the game thread
+	check(IsInGameThread());
+
+	// Silently ignore any hooking requests if hooking is not allowed in this environment
+	if (!FSatisfactoryModLoader::IsAssetHookingAllowed()) {
 		return;
 	}
-	
-	const UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(HookData->ActorClass.LoadSynchronous());
-	if (!BlueprintGeneratedClass) {
-		UE_LOG(LogBlueprintSCSHookManager, Error, TEXT("InstallBlueprintSCSHook(%s) failed: Provided Class %s is not a Blueprint"), *HookData->GetPathName(), *HookData->ActorClass->GetPathName());
+	// Validate the hook data before registering a hook
+	if (!HookData) {
+		UE_LOG(LogBlueprintSCSHookManager, Error, TEXT("InstallBlueprintSCSHook failed: Invalid hook data asset"));
 		return;
 	}
 	if (!HookData->ActorComponentTemplate || !HookData->ActorComponentClass) {
@@ -368,32 +432,77 @@ void UBlueprintSCSHookManager::RegisterBlueprintSCSHook(URootBlueprintSCSHookDat
 		return;
 	}
 
-	FBPSCSHookDescriptor HookDescriptor{};
-	HookDescriptor.RootHookData = HookData;
-	HookDescriptor.SimpleConstructionScript = BlueprintGeneratedClass->SimpleConstructionScript;
-	InstallSCSHookRecursive(HookData, HookDescriptor);
-	InstalledHooks.Add(HookDescriptor);
+	// Use fast path if possible instead of registering a slow soft hook
+	if (GAllowUsingFastBlueprintSCSHookPath) {
+		const UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(HookData->ActorClass.LoadSynchronous());
+		if (!BlueprintGeneratedClass) {
+			UE_LOG(LogBlueprintSCSHookManager, Error, TEXT("InstallBlueprintSCSHook(%s) failed: Provided Class %s is not a Blueprint"), *HookData->GetPathName(), *HookData->ActorClass->GetPathName());
+			return;
+		}
+
+		FBPSCSHookDescriptor* CurrentRegistration = InstalledArchetypeHooks.FindByPredicate([&](const FBPSCSHookDescriptor& Other) {
+			return Other.RootHookData == HookData;
+		});
+
+		// Only perform actual registration if we have no existing registration
+		if (CurrentRegistration == nullptr) {
+			CurrentRegistration = &InstalledArchetypeHooks.AddDefaulted_GetRef();
+			CurrentRegistration->RootHookData = HookData;
+			CurrentRegistration->SimpleConstructionScript = BlueprintGeneratedClass->SimpleConstructionScript;
+			InstallArchetypeSCSHookRecursive(HookData, *CurrentRegistration);
+		}
+		CurrentRegistration->RegistrationCount++;
+	} else {
+		// We are in the editor, so we have to use a slow path that does not directly reference or load any assets, and does not modify the blueprints
+		// TODO: This does not process core redirects, if class is not loaded but is redirected the hook will not fire in the editor
+		TArray<FSoftEditorBPSCSHookRegistration>& HookRegistrations = InstalledSlowPerInstanceHooks.FindOrAdd(HookData->ActorClass.ToSoftObjectPath().GetAssetPath());
+		FSoftEditorBPSCSHookRegistration* ExistingRegistration = HookRegistrations.FindByPredicate([&](const FSoftEditorBPSCSHookRegistration& Other) {
+			return Other.HookAsset == HookData;
+		});
+
+		// Create a new registration if we do not have one already
+		if (ExistingRegistration == nullptr) {
+			ExistingRegistration = &HookRegistrations.AddDefaulted_GetRef();
+			ExistingRegistration->HookAsset = HookData;
+		}
+		ExistingRegistration->RegistrationCount++;
+
+		// Add the BPGC class name to the fast lookup. We never remove classes from there, even when hooks are unregistered
+		StaticSlowPathHookedBlueprintClassFNames.Add( HookData->ActorClass.ToSoftObjectPath().GetAssetPath().GetAssetName() );
+	}
 }
 
 void UBlueprintSCSHookManager::UnregisterBlueprintSCSHook(URootBlueprintSCSHookData* HookData) {
-	//SCS hooking in editor is extremely dangerous as it modifies the source assets
-	//TODO: Hooks can be supported in the editor too by only adding them on the PIE-cloned objects
-	if (!FPlatformProperties::RequiresCookedData()) {
-		return;
-	}
+	// This should not be done from anywhere other than the game thread
+	check(IsInGameThread());
 	
-	const int32 ExistingHookIndex = InstalledHooks.IndexOfByPredicate([&](const FBPSCSHookDescriptor& Other) {
-		return HookData == Other.RootHookData;
-	});
+	// Use fast path if possible instead of registering a slow soft hook
+	if (GAllowUsingFastBlueprintSCSHookPath) {
+		const int32 ExistingHookIndex = InstalledArchetypeHooks.IndexOfByPredicate([&](const FBPSCSHookDescriptor& Other) {
+			return HookData == Other.RootHookData;
+		});
 
-	if (ExistingHookIndex != INDEX_NONE) {
-		const FBPSCSHookDescriptor HookDescriptor = InstalledHooks[ExistingHookIndex];
-		InstalledHooks.RemoveAt(ExistingHookIndex);
-		UninstallSCSHookOrdered(HookDescriptor);
+		// Remove the installed archetype hook if registration count reached zero
+		if (ExistingHookIndex != INDEX_NONE && --InstalledArchetypeHooks[ExistingHookIndex].RegistrationCount == 0) {
+			const FBPSCSHookDescriptor HookDescriptor = InstalledArchetypeHooks[ExistingHookIndex];
+			InstalledArchetypeHooks.RemoveAt(ExistingHookIndex);
+			RemoveArchetypeSCSHookOrdered(HookDescriptor);
+		}
+	} else {
+		// We are in the editor, so we have to use a slow path that does not directly reference or load any assets, and does not modify the blueprints
+		TArray<FSoftEditorBPSCSHookRegistration>& HookRegistrations = InstalledSlowPerInstanceHooks.FindOrAdd(HookData->ActorClass.ToSoftObjectPath().GetAssetPath());
+		const int32 CurrentRegistrationIndex = HookRegistrations.IndexOfByPredicate([&](const FSoftEditorBPSCSHookRegistration& Other) {
+			return Other.HookAsset == HookData;
+		});
+
+		// Remove the hook registration completely if registration count reaches zero
+		if (CurrentRegistrationIndex != INDEX_NONE && --HookRegistrations[CurrentRegistrationIndex].RegistrationCount == 0) {
+			HookRegistrations.RemoveAt(CurrentRegistrationIndex);
+		}
 	}
 }
 
-void UBlueprintSCSHookManager::InstallSCSHookRecursive(UBlueprintSCSHookData* HookData, FBPSCSHookDescriptor& OutHookDescriptor) {
+void UBlueprintSCSHookManager::InstallArchetypeSCSHookRecursive(UBlueprintSCSHookData* HookData, FBPSCSHookDescriptor& OutHookDescriptor) {
 	USimpleConstructionScript* SimpleConstructionScript = OutHookDescriptor.SimpleConstructionScript;
 	USCS_Node* NewNode = CreateNewTransientSCSNode(SimpleConstructionScript, HookData->ActorComponentClass, HookData->VariableName, HookData->ActorComponentTemplate);
 	if (NewNode == NULL) {
@@ -403,7 +512,7 @@ void UBlueprintSCSHookManager::InstallSCSHookRecursive(UBlueprintSCSHookData* Ho
 	NewNode->AttachToName = HookData->AttachToName;
 
 	FParentComponentInfo ParentComponentInfo{};
-	if (!HookData->ResolveParentComponent(ParentComponentInfo) || !MountSCSNodeToParent(NewNode, ParentComponentInfo, OutHookDescriptor)) {
+	if (!HookData->ResolveParentComponentOnArchetype(ParentComponentInfo) || !MountSCSNodeToParent(NewNode, ParentComponentInfo, OutHookDescriptor)) {
 		UE_LOG(LogBlueprintSCSHookManager, Error, TEXT("Failed to instance SCS hook %s: cannot mount Node %s declared by hook %s"),
 			*OutHookDescriptor.RootHookData->GetPathName(), *NewNode->GetPathName(), *HookData->GetPathName());
 		return;
@@ -415,11 +524,11 @@ void UBlueprintSCSHookManager::InstallSCSHookRecursive(UBlueprintSCSHookData* Ho
 			*OutHookDescriptor.RootHookData->GetPathName(), *HookData->GetPathName(), *OutHookDescriptor.SimpleConstructionScript->GetOwnerClass()->GetPathName());
 
 	for (UBlueprintSCSHookData* ChildHook : HookData->Children) {
-		InstallSCSHookRecursive(ChildHook, OutHookDescriptor);
+		InstallArchetypeSCSHookRecursive(ChildHook, OutHookDescriptor);
 	}
 }
 
-void UBlueprintSCSHookManager::UninstallSCSHookOrdered(const FBPSCSHookDescriptor& HookDescriptor) {
+void UBlueprintSCSHookManager::RemoveArchetypeSCSHookOrdered(const FBPSCSHookDescriptor& HookDescriptor) {
 	//Uninstall hooks in the reverse order of their installation
 	for (int32 i = HookDescriptor.InstalledNodesOrdered.Num() - 1; i >= 0; i--) {
 		USCS_Node* SCSNode = HookDescriptor.InstalledNodesOrdered[i];
@@ -428,5 +537,37 @@ void UBlueprintSCSHookManager::UninstallSCSHookOrdered(const FBPSCSHookDescripto
 		
 		UE_LOG(LogBlueprintSCSHookManager, Log, TEXT("Removed SCS hook %s subhook %s from Blueprint %s"),
 			*HookDescriptor.RootHookData->GetPathName(), *HookData->GetPathName(), *HookDescriptor.SimpleConstructionScript->GetOwnerClass()->GetPathName());
+	}
+}
+
+void UBlueprintSCSHookManager::RegisterStaticHooks()
+{
+	// If we are not allowed to use the fast SCS hooking path in this environment, we need to install a global hook on
+	// UBlueprintGeneratedClass::CreateComponentsFromActor to support dynamic component creation on the instances instead of the archetypes
+	//if (!GAllowUsingFastBlueprintSCSHookPath && FSatisfactoryModLoader::IsAssetHookingAllowed()) {
+		//SUBSCRIBE_METHOD_AFTER(UBlueprintGeneratedClass::CreateComponentsForActor, [](const UClass* ThisClass, AActor* Actor) {
+			// Only forward the components creation to the classes that actually have hooks registered to reduce the overhead
+		//	if (StaticSlowPathHookedBlueprintClassFNames.Contains(ThisClass->GetFName())) {
+		//		BlueprintGeneratedClassCreateComponentsFromActor(ThisClass, Actor);
+		//	}
+		//});
+	//}
+}
+
+void UBlueprintSCSHookManager::BlueprintGeneratedClassCreateComponentsFromActor(const UClass* ThisClass, AActor* Actor) {
+	// This logic should only run on actors in game worlds, never in Editor or EditorPreview worlds
+	const UWorld* OwnerWorld = Actor->GetWorld();
+	if (OwnerWorld != nullptr && (OwnerWorld->WorldType == EWorldType::PIE || OwnerWorld->WorldType == EWorldType::Game)) {
+		if (UBlueprintSCSHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintSCSHookManager>()) {
+
+			// Retrieve all registrations for the class in question and process them
+			if (const TArray<FSoftEditorBPSCSHookRegistration>* AllRegistrationsForThisClass = HookManager->InstalledSlowPerInstanceHooks.Find(ThisClass->GetClassPathName())) {
+				for (const FSoftEditorBPSCSHookRegistration& Registration : *AllRegistrationsForThisClass) {
+					if (const URootBlueprintSCSHookData* BlueprintHookData = Registration.HookAsset.LoadSynchronous()) {
+						BlueprintHookData->ExecuteSCSHookOnInstanceRootComponent(Actor);
+					}
+				}
+			}
+		}
 	}
 }

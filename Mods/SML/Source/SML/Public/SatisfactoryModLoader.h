@@ -24,6 +24,9 @@ public:
 	
 	/** Returns active SML configuration. If not loaded, it will return empty struct */
 	FORCEINLINE static FSMLConfiguration GetSMLConfiguration() { return SMLConfigurationPrivate; }
+
+	/** Returns true if SCS, widget or blueprint hooking is allowed in this environment. Hooking is not allowed by default during commandlet execution to avoid modifying the original assets */
+	static bool IsAssetHookingAllowed();
 private:
 	friend class FSMLModule;
 	
