@@ -22,6 +22,7 @@ public:
 	
 	// Begin IFGOptionInterfaceImpl
 	virtual void GetAllUserSettings( TArray<UFGUserSettingApplyType*>& OutUserSettings ) const override;
+	virtual void GetAllUserSettingsMap( TMap<FString, UFGUserSettingApplyType* >& OutUserSettings ) const override;
 	virtual UFGUserSettingApplyType* FindUserSetting( const FString& SettingId ) const override;
 	// End IFGOptionInterfaceImpl
 
