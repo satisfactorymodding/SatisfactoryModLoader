@@ -43,10 +43,10 @@ struct FMoveSpeedPair
 	GENERATED_BODY()
 
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
-	EMoveSpeed MoveSpeedType; 
+	EMoveSpeed MoveSpeedType = EMoveSpeed::MS_Undefined; 
 
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
-	float Speed;
+	float Speed = 0.f;
 };
 
 USTRUCT( BlueprintType ) 
@@ -212,11 +212,11 @@ struct FACTORYGAME_API FCreatureBehaviorOverride
 	
 	/** The behavior tree will only be executed for the following states. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, meta=(Bitmask,BitmaskEnum="ECreatureState") )
-	uint8 OverriddenStates;
+	uint8 OverriddenStates = {};
 
 	/** The custom behavior tree to run. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	UBehaviorTree* BehaviorTree;
+	UBehaviorTree* BehaviorTree = {};
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCreatureStunnedChanged, bool, isStunned );
@@ -258,6 +258,7 @@ public:
 	
 	// Begin IFGSaveInterface
 	virtual bool ShouldSave_Implementation() const override;
+	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
 	// End IFSaveInterface
 
 	// Begin FGCharacterBase

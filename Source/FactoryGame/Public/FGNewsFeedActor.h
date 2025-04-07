@@ -17,7 +17,7 @@ struct FNewsFeedMap
 	GENERATED_BODY()
 
 	UPROPERTY()
-	EGameVersion GameVersion;
+	EGameVersion GameVersion = {};
 
 	UPROPERTY()
 	FString URL;

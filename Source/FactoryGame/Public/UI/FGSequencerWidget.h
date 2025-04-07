@@ -23,25 +23,6 @@ public:
 	void StopListeningForAllInputs();
 
 protected:
-	UFUNCTION( BlueprintCallable, Category="Sequencer" )
-	void MoveCursorForward();
-	UFUNCTION( BlueprintCallable, Category="Sequencer" )
-	void MoveCursorBackward();
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnCursorMoved();
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnSequencerUpdated();
-	UFUNCTION( BlueprintImplementableEvent )
-	void DeleteSelectedNodes();
-	UFUNCTION()
-	void AddCurrentPlayerLocation();
-	UFUNCTION()
-	void AddCurrentPlayerRotation();
-	UFUNCTION()
-	void AddCurrentPlayerFOV();
-	UFUNCTION()
-	void AddCurrentPlayerLocRotFOV();
-	
 	UFUNCTION()
 	void ToggleMouseControl();
 
@@ -57,7 +38,5 @@ private:
 	void DiscardInput(){};
 	
 	FFrameTime mCurrentFrameTime;
-
-	UPROPERTY()
-	class AFGPhotoModeManager* mCachedPhotoModeManager;
+	
 };

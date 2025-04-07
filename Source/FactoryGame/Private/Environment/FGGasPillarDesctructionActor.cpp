@@ -5,6 +5,7 @@
 
 AFGGasPillarDesctructionActor::AFGGasPillarDesctructionActor() : Super() {
 	this->mGeometryCollectionComponent = CreateDefaultSubobject<UGeometryCollectionComponent>(TEXT("GeometryCollection"));
+	this->mGeometryCollectionComponent->SetMobility(EComponentMobility::Movable);
 	this->mDestructionImpulseScale = 2.0;
 	this->mAppliedDamageScale = 0.0;
 	this->mForceLocation = FVector::ZeroVector;

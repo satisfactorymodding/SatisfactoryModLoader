@@ -20,7 +20,16 @@ enum ECollisionChannel : int32;
 #define DEBUG_SPLINE_HOLOGRAM_AUTO_ROUTER 0
 #define DEBUG_FACTORY_IO 0
 
+/** Channel IDs for Reliable Messaging */
+constexpr int32 RELIABLE_MESSAGING_CHANNEL_ID_LIGHTWEIGHT_SUBSYSTEM = 1;
+constexpr int32 RELIABLE_MESSAGING_CHANNEL_ID_SCHEMATIC_MANAGER = 2;
+constexpr int32 RELIABLE_MESSAGING_CHANNEL_ID_RECIPE_MANAGER = 3;
+constexpr int32 RELIABLE_MESSAGING_CHANNEL_ID_MAP_MANAGER = 4;
+constexpr int32 RELIABLE_MESSAGING_CHANNEL_ID_CONVEYOR_CHAIN_SUBSYSTEM = 5;
+constexpr int32 RELIABLE_MESSAGING_CHANNEL_ID_BLUEPRINT_SUBSYSTEM = 6;
+
 /** Show debug names */
+static const FName SHOWDEBUG_AUDIO( TEXT( "Audio" ) );
 static const FName SHOWDEBUG_FACTORY( TEXT( "Factory" ) );
 static const FName SHOWDEBUG_FACTORYCONNECTIONS( TEXT( "FactoryConnections" ) );
 static const FName SHOWDEBUG_CIRCUITS( TEXT( "Circuits" ) );
@@ -54,9 +63,13 @@ static const FName SHOWDEBUG_CENTRAL_STORAGE( TEXT( "CentralStorage" ) );
 static const FName SHOWDEBUG_BLUEPRINT_PROXY( TEXT( "BlueprintProxy" ) );
 static const FName SHOWDEBUG_TEST_MANAGER( TEXT( "TestManager" ) );
 static const FName SHOWDEBUG_TIME_OF_DAY( TEXT( "TimeOfDay" ) );
+static const FName SHOWDEBUG_KEYBINDINGS( TEXT( "Keybindings" ) );
+static const FName SHOWDEBUG_KEYHINTS( TEXT( "KeyHints" ) );
 
 /** User settings string Ids that are used globally. */
 static const FString GAME_RULE_NO_UNLOCK_COST = "FG.GameRules.NoUnlockCost";
+static const FString GAME_RULE_NO_POWER = "FG.GameRules.NoPower";
+static const FString GAME_RULE_NO_FUEL_COST = "FG.GameRules.NoFuelCost";
 
 /** Logs */
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogGame, Log, All );
@@ -97,6 +110,7 @@ static const FName CollisionProfileWireMesh( TEXT( "WireMesh" ) );
 static const FName CollisionProfileConveyorSpline( TEXT( "ConveyorSpline" ) );
 static const FName CollisionProfileRailroadTrack( TEXT( "RailroadTrack" ) );
 static const FName CollisionProfileBuildingMesh( TEXT( "BuildingMesh" ) );
+static const FName CollisionProfileBlueprintDesigner( TEXT( "BlueprintDesigner" ) );
 static const FName CollisionProfileClearanceDetector( TEXT( "ClearanceDetector" ) );
 static const FName CollisionProfileRailroadVehicle( TEXT( "RailroadVehicle" ) );
 static const FName CollisionProfileDerailedRailroadVehicle( TEXT( "DerailedRailroadVehicle" ) );
@@ -105,6 +119,7 @@ static const FName CollisionProfilePortableMinerDispenser( TEXT("PortableMinerDi
 
 extern const ECollisionChannel TC_BuildGun;
 extern const ECollisionChannel TC_WeaponInstantHit;
+extern const ECollisionChannel TC_AudioOpaque;
 extern const ECollisionChannel TC_WorldGrid;
 extern const ECollisionChannel TC_Interact;
 

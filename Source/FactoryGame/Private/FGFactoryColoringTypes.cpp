@@ -15,7 +15,7 @@ bool UFGFactoryCustomizationDescriptor_Material::AddType(TSubclassOf<  AFGBuilda
 void UFGFactoryCustomizationDescriptor_PaintFinish::GetPaintFinishSettings(TSubclassOf<UFGFactoryCustomizationDescriptor_PaintFinish> Class, float& Roughness, float& Metallic, bool& HasForcedColor, FLinearColor& ForcedColor){ }
 void UFGFactorySkinActorData::GetSkinComponentDataForSkinActorData(TSubclassOf< UFGFactorySkinActorData > skinClass, TMap< TSubclassOf< UFGFactoryCustomizationDescriptor_Skin >, FFactorySkinComponentGroup >& out_componentGroupData){ }
 #if WITH_EDITOR
-EDataValidationResult UFGFactoryCustomizationCollection::IsDataValid(TArray< FText >& ValidationErrors){ return EDataValidationResult::Valid; }
+EDataValidationResult UFGFactoryCustomizationCollection::IsDataValid(FDataValidationContext& validationContext) const{ return EDataValidationResult::Valid; }
 #endif 
 UFGFactoryCustomizationCollection::UFGFactoryCustomizationCollection() : Super() {
 	this->mCustomizationClass = nullptr;
@@ -24,4 +24,11 @@ void FFactoryCustomizationData::Initialize( AFGGameState* gameState, int32 force
 void FFactoryCustomizationData::InlineCombine(const FFactoryCustomizationData& other){ }
 void FFactoryCustomizationData::UpdateHasPowerData(){ }
 void FFactoryCustomizationData::GetAppliedRecipes(class UWorld* worldContext, TArray<TSubclassOf<class UFGRecipe>>& out_recipes) const{ }
+void FFactoryCustomizationData::AddReferencedObjects(FReferenceCollector& referenceCollector){ }
+FResolvedFactoryCustomizationData::FResolvedFactoryCustomizationData(const FFactoryCustomizationData& customizationData, int32 colorSlotFallback){  }
+void FResolvedFactoryCustomizationData::ApplySwatch(TSubclassOf<class UFGFactoryCustomizationDescriptor_Swatch> swatch){  }
+void FResolvedFactoryCustomizationData::ApplyDefaultSwatchForSwatchGroup(TSubclassOf<class UFGSwatchGroup> swatchGroup){  }
+void FResolvedFactoryCustomizationData::ResolveDefaultColorForColorSlot(){  }
+void FResolvedFactoryCustomizationData::ApplyToMeshComponent(class UMeshComponent* meshComponent) const{  }
+void FResolvedFactoryCustomizationData::ApplyToPerInstanceCustomData(TArray<float>& out_perInstanceCustomData) const{  }
 TArray<struct FInventoryStack> FFactoryCustomizationData::GetCustomizationRefunds(class UWorld* worldContext, const FFactoryCustomizationData& baseCustomizationData, const FFactoryCustomizationData* newCustomizationData) { return TArray<FInventoryStack>(); }

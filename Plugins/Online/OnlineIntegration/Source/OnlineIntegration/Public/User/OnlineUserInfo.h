@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -28,11 +28,13 @@ public:
 	UOnlineUserBackendLink* GetPrimaryBackendLink();
 	const UOnlineUserBackendLink* GetPrimaryBackendLink() const;
 	UOnlineUserBackendLink* GetBackendByIndex(int32 Index);
-	UOnlineUserBackendLink* GetUserBackendByProvider(FName ProviderName);
+	UOnlineUserBackendLink* GetUserBackendByProvider(FName ProviderName) const;
 	TArray<UOnlineUserBackendLink*> GetUserBackendLinks() const;
 	int32 NumBackendLinks() const;
 	const UGameplayTagContainerViewModel& GetTagContainer() const;
 
+	UFUNCTION(BlueprintCallable)
+	UOnlineUserBackendLink* GetUserBackendEpic() const;
 	/**
 	 * If any of this user's backends have this account it, it'll be found by this function. Can be used to simply tell if an online user has a specific
 	 * account id

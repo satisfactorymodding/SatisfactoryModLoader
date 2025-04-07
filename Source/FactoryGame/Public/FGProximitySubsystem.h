@@ -53,9 +53,6 @@ public:
 	bool IsNearBase(const FVector& Location, float Range, int32 MinimumRequiredBuildables, bool bIgnoreWeight = false ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
-	static void StaticRegisterFactoryBuildingToProximitySystem( AActor* Actor, float Weight = 1.f );
-	
-	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
 	void RegisterFactoryBuildingToProximitySystem( FVector Location, float Weight ); 
 
 	UFUNCTION( BlueprintCallable, Category = "ProximitySubsystem" )
@@ -157,11 +154,4 @@ private:
 	
 	/* Locations of factory buildings that are considered for base. */
 	TMap<FIntVector,TArray<FProximityEntry>> mFactoryRegions;
-
-
-#if WITH_EDITOR
-	static TMap<UObject*, AFGProximitySubsystem*> mPIESubsystemMap;
-#else
-	static AFGProximitySubsystem* SubsystemPtr;
-#endif
 };

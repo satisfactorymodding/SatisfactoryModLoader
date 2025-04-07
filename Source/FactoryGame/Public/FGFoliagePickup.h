@@ -119,7 +119,7 @@ protected:
 	 * The number of seconds until the 'hold to toggle auto pickup' widget appears.
 	 */
 	UPROPERTY( EditDefaultsOnly )
-	float mAutoPickUpToggleDelay = 0.5f;
+	float mAutoPickUpToggleDelay = 0.3f;
 
 protected:
 	/** The mesh that should be outlining */

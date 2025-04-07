@@ -22,4 +22,5 @@ bool IFGOptionInterfaceImpl::GetRequireGameRestart() const{ return bool(); }
 void IFGOptionInterfaceImpl::SubscribeToDynamicOptionUpdate(const FString& cvar, const FOptionUpdated& optionUpdatedDelegate){ }
 void IFGOptionInterfaceImpl::UnsubscribeToDynamicOptionUpdate(const FString& cvar, const FOptionUpdated& optionUpdatedDelegate){ }
 void IFGOptionInterfaceImpl::UnsubscribeToAllDynamicOptionUpdate(UObject* boundObject){ }
+bool IFGOptionInterfaceImpl::ClearDynamicOptionSubscriptions(const FString& cvar){ return bool(); }
 TArray<FUserSettingCategoryMapping> IFGOptionInterfaceImpl::GetCategorizedSettingWidgets(UObject* worldContext, UUserWidget* owningWidget){ return TArray<FUserSettingCategoryMapping>(); }

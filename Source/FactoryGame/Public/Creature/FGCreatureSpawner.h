@@ -53,7 +53,7 @@ UCLASS()
 class FACTORYGAME_API AFGCreatureSpawner : public AActor, public IFGSaveInterface
 {
 	GENERATED_BODY()
-public:
+public:	
 	static const FName CreatureClassPropertyName;
 	
 	AFGCreatureSpawner();

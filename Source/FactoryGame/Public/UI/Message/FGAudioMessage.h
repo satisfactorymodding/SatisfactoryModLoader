@@ -154,6 +154,8 @@ public:
 	void OnSkipButtonPressed();
 	UFUNCTION()
 	void OnSkipButtonReleased();
+	UFUNCTION()
+	void OnSkipButtonHeld( FInputActionValue ActionValue, float ElapsedTime, float TriggeredTime, const UInputAction* SourceAction );
 	
 	/** Does the setup for playing next part in the dialogue
 	 * @param skipToNextTimeStamp if true we jump in the audio file to the next subtitles timestamp.
@@ -172,8 +174,24 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Audio Message" )
 	void CancelPlayback();
 
+	// <FL> [KonradA] Exposing function to BP because GamepadSkip will be called from BP callbacks and should skip everything instead of
+	// just one line
+	UFUNCTION( BlueprintCallable, Category = "Audio Message" ) 
+	// </FL>
 	/** Called when all dialogue waves have finished playing or we canceled the dialogue */
 	void FinishPlayback();
+
+
+	// <FL> [KonradA] Functions to communicate to blueprint that the skip button is currently being held used for gamepad hints
+	UFUNCTION( BlueprintNativeEvent, Category = "Input" )
+	void OnSkipButtonHeldEvent( float TimeHeld );
+
+	UFUNCTION( BlueprintNativeEvent, Category = "Input" )
+	void OnSkipButtonReleasedEvent();
+	
+	UFUNCTION( BlueprintNativeEvent, Category = "Input" )
+	void OnSkipButtonPressedEvent();
+	//</FL>
 
 	/** Gets current dialogue */
 	UFUNCTION( BlueprintPure, Category = "Audio Message" )

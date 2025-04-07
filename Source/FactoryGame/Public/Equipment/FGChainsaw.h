@@ -18,13 +18,13 @@ struct FACTORYGAME_API FPickedUpInstance
 
 	FPickedUpInstance() :
 		InstanceMesh( NULL ),
-		Location( FVector::ZeroVector )
+		Transform( FTransform::Identity )
 	{
 	}
 
-	FPickedUpInstance( UStaticMesh* instanceMesh, FVector location ) :
+	FPickedUpInstance( UStaticMesh* instanceMesh, const FTransform& inTransform ) :
 		InstanceMesh( instanceMesh ),
-		Location( location )
+		Transform( inTransform )
 	{
 	}
 
@@ -32,7 +32,10 @@ struct FACTORYGAME_API FPickedUpInstance
 	class UStaticMesh* InstanceMesh;
 
 	UPROPERTY()
-	FVector Location;
+	FTransform Transform;
+
+	UPROPERTY()
+	UHierarchicalInstancedStaticMeshComponent* SourceHISM;
 };
 
 UENUM( BlueprintType )

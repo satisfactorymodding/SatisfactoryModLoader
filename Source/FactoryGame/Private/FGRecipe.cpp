@@ -63,9 +63,9 @@ void UFGRecipe::GetProducedIn(TArray<TSubclassOf<UObject>> &out_producedIn) cons
 }
 
 #if WITH_EDITOR
-EDataValidationResult UFGRecipe::IsDataValid(TArray<FText>& ValidationErrors) {
+EDataValidationResult UFGRecipe::IsDataValid(FDataValidationContext& validationContext ) const {
 	// MODDING IMPLEMENTATION
-	EDataValidationResult ValidationResult = Super::IsDataValid(ValidationErrors);
+	EDataValidationResult ValidationResult = Super::IsDataValid(validationContext);
 
 	TArray<FItemAmount> AllReferencedItems;
 	AllReferencedItems.Append(UFGRecipe::GetIngredients(GetClass()));
@@ -73,7 +73,7 @@ EDataValidationResult UFGRecipe::IsDataValid(TArray<FText>& ValidationErrors) {
 
 	for (const FItemAmount& ItemAmount : AllReferencedItems) {
 		if (ItemAmount.ItemClass == nullptr) {
-			ValidationErrors.Add(NSLOCTEXT("Recipe", "RecipeValidation_NullItem", "Null item referenced by recipe. Was the content it previously referenced deleted or moved?"));
+			validationContext.AddError(NSLOCTEXT("Recipe", "RecipeValidation_NullItem", "Null item referenced by recipe. Was the content it previously referenced deleted or moved?"));
 			ValidationResult = EDataValidationResult::Invalid;
 		}
 	}

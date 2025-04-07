@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "OnlineIntegration/Public/LocalUserInfo.h"
 #include "FGBuildingTagInterface.generated.h"
 
 /**
@@ -48,6 +49,13 @@ class FACTORYGAME_API IFGBuildingTagInterface
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Building Tag" )
 	void SetBuildingTag( const FString& buildingTag );
 
+//<FL>[KonradA]
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Building Tag" )
+	void SetLastEditedBy( const TArray< FLocalUserNetIdBundle >& lastEditedBy );
+
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Building Tag" )
+	TArray< FLocalUserNetIdBundle > GetLastEditedBy() const;
+//</FL>
 };
 
 inline UFGBuildingTagInterface::UFGBuildingTagInterface( class FObjectInitializer const& objectInitializer )

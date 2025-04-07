@@ -37,8 +37,8 @@ public:
 	void TryRegisterCvarValue();
 	/** Update the cvar value if the underlying user setting wants cvar updates  */
 	void TryUpdateCvarValue();
-	/** Check if the cvar value has been updated. If so, update the value and indirectly broadcast changes to UI. returns true if we found a change */
-	bool CheckCvarValueForUpdates();
+	/** Retrieves the option value from the CVar associated with this option */
+	FVariant GetOptionValueFromCvar() const;
 	
 	/** Called when the owning option interface wants to apply pending changes. This will trigger option updated broadcasts.
 	 *  Returns true if we actually changed something */ 
@@ -61,7 +61,7 @@ public:
 	 */
 	virtual bool ForceSetPendingAppliedValue(FVariant newValue);
 	/** Set the default value. Useful when we want to set a new default value to reset to. */ 
-	void OverrideDefaultValue(FVariant newDefaultValue);
+	void OverrideDefaultValue(FVariant newDefaultValue, bool bSkipCVarUpdate = false);
 	/** Called when we want to restore default values. When the player presses reset in the UI. bForce can be used to ignore the disqualifiers and restrictions on resetting the option value, similar to how ForceSetValue works */
 	virtual void ResetToDefaultValue(bool bForce = false);
 	/** Clear out pending changes. Triggers no updates */ 
@@ -83,6 +83,10 @@ public:
 	void RemoveObjectAsSubscriber( UObject* boundObject );
 	/** Clear out subscribers. Triggers no updates */ 
 	void ClearSubscribers(){ Subscribers.Empty(); }
+	void ClearDynamicSubscribers(){ LegacySubscribers.Empty(); }
+	/** Returns true if SettingsApplyType has any subscribers */
+	bool HasSubscribers(){return !Subscribers.IsEmpty();}
+	bool HasDynamicSubscribers(){return !LegacySubscribers.IsEmpty();}
 	/** Called when the "pending applied" (applied, but pending game/session restart) value changes for this setting */
 	FOnPendingAppliedOptionValueChangedDelegate& OnPendingAppliedOptionValueChanged() { return PendingAppliedOptionValueChanged; }
 
@@ -119,7 +123,7 @@ public:
 	/** Sets the option row widget used to display the user setting */
 	void SetOptionRowWidget( class UFGDynamicOptionsRow* inOptionRowWidget );
 	/** Gets the option row widget used to display the user setting */
-	class UFGDynamicOptionsRow* GetOptionRowWidget() const { return OptionRowWidget; }
+	class UFGDynamicOptionsRow* GetOptionRowWidget() const { return OptionRowWidgetWeak.Get(); }
 
 	/** Populates debug data with current values (Applied, Pending, Default) */
 	virtual void GetDebugData( TArray<FString>& out_debugData );
@@ -135,7 +139,7 @@ protected:
 	class UFGUserSetting* UserSetting = nullptr;
 	/** The option row widget that displays the user setting */
 	UPROPERTY(Transient)
-	class UFGDynamicOptionsRow* OptionRowWidget = nullptr;
+	TWeakObjectPtr< class UFGDynamicOptionsRow > OptionRowWidgetWeak = nullptr;
 	
 	/** The currently applied value for user setting */
 	FVariant AppliedValue = FVariant();

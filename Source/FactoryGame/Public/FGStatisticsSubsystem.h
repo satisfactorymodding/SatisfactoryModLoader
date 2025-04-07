@@ -12,8 +12,8 @@
 
 DECLARE_MULTICAST_DELEGATE_TwoParams( FOnItemPickedUp, class AFGPlayerState*, const FItemAmount& /*totalAmountPickuped*/ );
 DECLARE_MULTICAST_DELEGATE_TwoParams( FOnItemManuallyCrafted, class AFGPlayerState*, const FItemAmount& /*totalAmountCrafted*/ );
-DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnBuildingBuilt, class AFGPlayerState*, TSubclassOf< class AActor >, int64 /*totalAmountBuilt*/ );
-DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnBuildingDismantled, class AFGPlayerState*, TSubclassOf< class AActor >, int64 /*totalAmountDismantled*/ );
+DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnBuildingBuilt, class AFGPlayerState*, class AActor*, const FActorBuiltData& );
+DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnBuildingDismantled, class AFGPlayerState*, TSubclassOf< class AActor >, const FActorBuiltData& );
 
 /** Data to store the number of actors we built and dismantled with the buildgun. We map this struct to an actor class. A building or vehicle for example */
 USTRUCT()
@@ -31,19 +31,19 @@ struct FActorBuiltData
 	
 	/** The current amount of built actors that is in the world */
 	UPROPERTY( SaveGame )
-	int64 Current;
+	int64 Current = {};
 
 	/** The maximum amount of built actors that have been in the world, i.e highest number that ever been assigned to Current */
 	UPROPERTY( SaveGame )
-	int64 CurrentMax;
+	int64 CurrentMax = {};
 
 	/** The total amount of actors built in this world. Dismantle doesn't affect this number */
 	UPROPERTY( SaveGame )
-	int64 Total;
+	int64 Total = {};
 
 	/** The total amount of actors dismantled. */
 	UPROPERTY( SaveGame )
-	int64 TotalDismantled;
+	int64 TotalDismantled = {};
 	
 };
 
@@ -86,7 +86,7 @@ public:
     int32 Stat_GetNumItemsManuallyCrafted( TSubclassOf< class UFGItemDescriptor > itemDescriptor, class AFGPlayerState* playerState );
     int32 Stat_GetNumItemsManuallyCrafted( TSubclassOf< class UFGItemDescriptor > itemDescriptor );
 
-	void Stat_ActorBuilt( TSubclassOf< class AActor > actor, class AFGPlayerState* playerState, int32 numBuilt = 1 );
+	void Stat_ActorBuilt( class AActor* actor, class AFGPlayerState* playerState, int32 numBuilt = 1 );
 	void Stat_ActorDismantled( TSubclassOf< class AActor > actor, class AFGPlayerState* playerState, int32 numDismantled = 1 );
 	int32 Stat_GetNumActorsBuilt_Current( TSubclassOf< class AActor > actor );
 	int32 Stat_GetNumActorsBuilt_CurrentMax( TSubclassOf< class AActor > actor );

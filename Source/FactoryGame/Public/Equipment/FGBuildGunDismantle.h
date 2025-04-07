@@ -72,7 +72,7 @@ public:
 	virtual TSubclassOf< UFGBuildGunModeDescriptor > GetInitialBuildGunMode_Implementation() const override;
 	virtual void OnBuildGunModeChanged_Implementation( TSubclassOf< UFGBuildGunModeDescriptor > newMode) override;
 	virtual void BindInputActions( class UFGEnhancedInputComponent* inputComponent ) override;
-	virtual bool CanSampleBuildings() const override;
+	virtual bool CanSampleBuildables() const override;
 	virtual bool CanSampleBlueprints() const override;
 	// End UFGBuildGunState
 

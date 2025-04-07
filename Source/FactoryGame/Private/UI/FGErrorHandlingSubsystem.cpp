@@ -3,4 +3,5 @@
 #include "UI/FGErrorHandlingSubsystem.h"
 
 void UFGErrorHandlingSubsystem::Initialize(FSubsystemCollectionBase& Collection){ }
+void UFGErrorHandlingSubsystem::PopPendingGameplayEvent(){ }
 void UFGErrorHandlingSubsystem::HandleGameplayEvent(const FGameplayEvent& GameplayEvent){ }

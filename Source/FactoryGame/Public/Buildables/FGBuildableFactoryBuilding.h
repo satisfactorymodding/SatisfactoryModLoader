@@ -60,6 +60,9 @@ struct FFoundationSideNormal
 	
 	EFoundationSide Side = EFoundationSide::Invalid;
 	FVector LocalNormal = FVector{ EForceInit::ForceInit };
+
+	bool IsVertical() const { return Side == EFoundationSide::FoundationTop || Side == EFoundationSide::FoundationBottom; }
+	bool IsHorizontal() const { return Side != EFoundationSide::Invalid && !IsVertical(); }
 };
 
 struct FFoundationHelpers
@@ -95,6 +98,6 @@ UCLASS()
 class FACTORYGAME_API AFGBuildableFactoryBuildingLightweight : public AFGBuildableFactoryBuilding
 {
 	GENERATED_BODY()
-
+public:
 	AFGBuildableFactoryBuildingLightweight( const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 };

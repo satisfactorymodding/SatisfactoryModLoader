@@ -2,9 +2,12 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "AkAudioEvent.h"
 #include "FGClearanceInterface.h"
 #include "DamageTypes/FGDamageType.h"
 #include "FGSaveInterface.h"
+#include "FGUnsafePawnRelocationInterface.h"
+#include "Audio/AudioEventsCache.h"
 #include "GameFramework/Character.h"
 #include "Chaos/ChaosEngineInterface.h"
 #include "FGCharacterBase.generated.h"
@@ -88,7 +91,7 @@ struct FBoneDamageModifier
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRagdollStateChangedDelegate, const bool, IsRagdolled );
 
 UCLASS()
-class FACTORYGAME_API AFGCharacterBase : public ACharacter, public IFGSaveInterface, public IFGClearanceInterface
+class FACTORYGAME_API AFGCharacterBase : public ACharacter, public IFGSaveInterface, public IFGClearanceInterface, public IFGUnsafePawnRelocationInterface
 {
 	GENERATED_BODY()
 public:
@@ -128,6 +131,12 @@ public:
 	// Begin IFGClearanceInterface
 	virtual void GetClearanceData_Implementation( TArray< FFGClearanceData >& out_data ) const override;
 	// End IFGClearanceInterface
+
+	// Begin IFGUnsafePawnRelocationInterface
+	virtual void SetIsInUnsafeLoadLocation(bool isUnsafe ) override;
+	virtual void SetLastSafeLocation(const FVector& location) override;
+	virtual FVector GetLastSafeLoadLocation() override;
+	// End IFGUnsafePawnRelocationInterface
 
 	// Begin ACharacter interface
 	virtual void LaunchCharacter( FVector LaunchVelocity, bool bXYOverride, bool bZOverride ) override;
@@ -206,11 +215,11 @@ public:
 
 	/** Sound played when pawn takes damage */
 	UFUNCTION( BlueprintPure, Category = "Sound" )
-	FORCEINLINE class UAkAudioEvent* GetTakeDamageSound() const{ return mTakeDamageSound; }
+	FORCEINLINE class UAkAudioEvent* GetTakeDamageSound() const{ return mTakeDamageSound.Get(); }
 
 	/** Sound played when pawn dies */
 	UFUNCTION( BlueprintPure, Category = "Sound" )
-	FORCEINLINE class UAkAudioEvent* GetDeathSound() const{ return mDeathSound; }
+	FORCEINLINE class UAkAudioEvent* GetDeathSound() const{ return mDeathSound.Get(); }
 
 	/** Get mTakeDamageParticle */
 	UFUNCTION( BlueprintPure, Category = "VFX" )
@@ -282,7 +291,7 @@ public:
 
 	/** Gets the bone used for ragdole based movement */
 	FName GetRagdollPhysicsBoneName() { return mRagdollMeshPhysicsBoneName; }
-	
+
 protected:
 	/** Event called when a locally controlled pawn gets possessed/unpossessed */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Character" )
@@ -373,7 +382,7 @@ protected:
 	
 	UFUNCTION()
 	virtual void OnRep_IsPossessed();
-	
+
 private:
 	UFUNCTION()
 	void OnRep_IsRagdolled();
@@ -398,7 +407,7 @@ protected:
 
 	/** Audio event to play (where index in array is the feet index passed from AnimNotify_FootDown) */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep|Audio" )
-	TArray<class UAkAudioEvent*> mFootstepAudioEvents;
+	TArray<TSoftObjectPtr<class UAkAudioEvent>> mFootstepAudioEvents;
 
 	/** Maximum distance we want to play footstep particles at */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
@@ -471,15 +480,15 @@ protected:
 
 	/** Sound played when pawn takes damage */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
-	class UAkAudioEvent* mTakeDamageSound;
+	TSoftObjectPtr<class UAkAudioEvent> mTakeDamageSound;
 
 	/** Sound played when pawn dies */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
-	class UAkAudioEvent* mDeathSound;
+	TSoftObjectPtr<class UAkAudioEvent> mDeathSound;
 
 	/** Event posted when landing */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio")
-	class UAkAudioEvent* mLandEvent;
+	TSoftObjectPtr<class UAkAudioEvent> mLandEvent;
 
 	/** Particle for when pawn takes damage */
 	UPROPERTY( EditDefaultsOnly, Category = "VFX" )
@@ -555,6 +564,13 @@ protected:
 	/** Multiplier for this creature and normal damage taken */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
 	float mNormalDamageMultiplier;
+
+	UPROPERTY( SaveGame )
+	bool mIsInUnsafeLoadPosition;
+
+	UPROPERTY( SaveGame )
+	FVector mLastSafeLoadLocation;
+	
 private:
 	/** Clearance data of this character. */
 	UPROPERTY( EditDefaultsOnly, Category = "Character" )
@@ -566,4 +582,7 @@ private:
 	/** Used to let client know when a pawn gets possessed/unpossessed */
 	UPROPERTY( ReplicatedUsing = OnRep_IsPossessed )
 	bool mIsPossessed;
+
+	UPROPERTY()
+	FAudioEventsCache mAudioEventsCacheObject;
 };

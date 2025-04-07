@@ -64,6 +64,7 @@ void AFGGameMode::GenericPlayerInitialization(AController* C){ }
 bool AFGGameMode::IsPaused() const{ return bool(); }
 void AFGGameMode::InitStartSpot_Implementation(AActor* StartSpot, AController* NewPlayer){ }
 void AFGGameMode::PostActorsInitialized(const UWorld::FActorsInitializedParams& inParams){ }
+void AFGGameMode::SetLastAutoSaveId(uint8 newId){ }
 uint8 AFGGameMode::GenerateNextAutoSaveId(){ return uint8(); }
 void AFGGameMode::SetSaveSessionName(const FString& name){ }
 bool AFGGameMode::ShouldSetupSave() const{ return bool(); }

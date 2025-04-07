@@ -66,13 +66,8 @@ FCreatureSpawnerWorldScannableData::FCreatureSpawnerWorldScannableData(const FWo
 
 #endif
 
-AFGWorldScannableDataGenerator::AFGWorldScannableDataGenerator()
-{
-	PrimaryActorTick.bCanEverTick = false;
+AFGWorldScannableDataGenerator::AFGWorldScannableDataGenerator() : Super() {
 
-#if WITH_EDITORONLY_DATA
-	bIsSpatiallyLoaded = false;
-#endif
 }
 
 void AFGWorldScannableDataGenerator::BeginPlay()

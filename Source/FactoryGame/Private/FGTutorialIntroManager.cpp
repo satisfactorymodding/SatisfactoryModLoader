@@ -37,6 +37,7 @@ AFGTutorialIntroManager::AFGTutorialIntroManager() : Super() {
 	this->mWaitTimeAfterCompletingHubStep = 0.0;
 	this->mHoldTimeToSkipIntro = 0.0;
 	this->mDidOpenCodex = false;
+	this->mHasStartedProgression01Activity = false;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;

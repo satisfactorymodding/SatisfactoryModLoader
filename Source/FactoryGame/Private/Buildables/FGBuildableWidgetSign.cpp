@@ -8,6 +8,7 @@
 bool FFGSignPrefabLayoutWidgetConversionHelper::SerializeFromMismatchedTag(const FPropertyTag& PropertyTag, FArchive& Ar){ return bool(); }
 AFGBuildableWidgetSign::AFGBuildableWidgetSign() : Super() {
 	this->mSignProxyPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProxyMesh"));
+	this->mSignProxyPlane->SetMobility(EComponentMobility::Static);
 	this->mSignTypeDescriptor = nullptr;
 	this->mPrefabLayout = nullptr;
 	this->mGainSignificanceDistance = 10000.0;
@@ -41,13 +42,15 @@ FVector2D AFGBuildableWidgetSign::GetSignDimensions_Implementation(){ return FVe
 void AFGBuildableWidgetSign::GainedSignificance_Implementation(){ }
 void AFGBuildableWidgetSign::LostSignificance_Implementation(){ }
 UFGFactoryClipboardSettings* AFGBuildableWidgetSign::CopySettings_Implementation(){ return nullptr; }
-bool AFGBuildableWidgetSign::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
+bool AFGBuildableWidgetSign::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings, class AFGPlayerController* player){ return bool(); }
 void AFGBuildableWidgetSign::OnBuildEffectFinished(){ }
 void AFGBuildableWidgetSign::OnBuildEffectActorFinished(){ }
-void AFGBuildableWidgetSign::SetPrefabSignData(FPrefabSignData& signData){ }
+void AFGBuildableWidgetSign::SetPrefabSignData(FPrefabSignData& signData, bool bFilterText){ }
 void AFGBuildableWidgetSign::GetSignPrefabData(FPrefabSignData& out_signData) const{ }
 void AFGBuildableWidgetSign::UpdateSignElements(FPrefabSignData& prefabSignData){ }
 float AFGBuildableWidgetSign::GetAdjustedEmissiveValue(int32 Level) const{ return float(); }
+bool AFGBuildableWidgetSign::WasLastChangedByLocalPlayer(){ return false; }
+void AFGBuildableWidgetSign::GetDefaultSignMaps(TMap<FString, FString>& TextElementToDataMap, TMap<FString, int32>& IconElementToDataMap){ }
 void AFGBuildableWidgetSign::OnRep_SignDataDirty(){ }
 uint32 AFGBuildableWidgetSign::GenerateGUID(FPrefabSignData& signData, UClass* Prefab, FVector2D Size){ return uint32(); }
 void AFGBuildableWidgetSign::ConvertToEmissiveOnly(FPrefabSignData& prefabSignData) const{ }

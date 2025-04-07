@@ -120,7 +120,7 @@ private:
 
 	/** Hologra of pipe support that indicates where to build the pipe to */
 	UPROPERTY( Replicated )
-	class AFGPipelineSupportHologram* mSupportHologram;
+	class AFGPipelinePoleHologram* mSupportHologram;
 
 	/** What recipe to use for the pipe support */
 	UPROPERTY(  )
@@ -132,7 +132,7 @@ private:
 
 	/** The pipe support that the pipe is built from */
 	UPROPERTY( Replicated )
-	class AFGBuildablePipelineSupport* mInternalSplineSupport;
+	class AFGBuildablePolePipe* mInternalSplineSupport;
 
 	/** Result of the latest trace. */
 	UPROPERTY()

@@ -7,6 +7,9 @@
 #include "FGHUDBase.h"
 #include "FGMainMenuHUD.generated.h"
 
+//<FL>[KonradA]
+DECLARE_MULTICAST_DELEGATE( FOnGameStartupSequenceDone );
+//</FL>
 /**
  * 
  */
@@ -16,6 +19,13 @@ class FACTORYGAME_API AFGMainMenuHUD : public AFGHUDBase
 	GENERATED_BODY()
 
 public:
+	//<FL>
+	FOnGameStartupSequenceDone OnGameStartupSequenceDone;
+
+	UFUNCTION(BlueprintCallable)
+	void DispatchOnGameStartupSequenceDone() { OnGameStartupSequenceDone.Broadcast(); };
+	//</FL>
+
 	virtual void BeginPlay() override;
 
 	void Native_ShowMainMenu();

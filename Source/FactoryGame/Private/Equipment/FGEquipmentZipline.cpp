@@ -25,6 +25,7 @@ void AFGEquipmentZipline::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 }
 void AFGEquipmentZipline::Tick(float delta){ Super::Tick(delta); }
 void AFGEquipmentZipline::AddEquipmentActionBindings(){ }
+void AFGEquipmentZipline::Equip(class AFGCharacterPlayer* character){ Super::Equip(character); }
 void AFGEquipmentZipline::UnEquip(){ }
 void AFGEquipmentZipline::DoDrop(){ }
 void AFGEquipmentZipline::JumpExit(){ }
@@ -34,15 +35,12 @@ void AFGEquipmentZipline::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAct
 void AFGEquipmentZipline::Input_Crouch(const FInputActionValue& actionValue){ }
 void AFGEquipmentZipline::Input_Jump(const FInputActionValue& actionValue){ }
 void AFGEquipmentZipline::PlayZiplineEffects_Implementation(const FVector &inLocation){ }
-void AFGEquipmentZipline::ZiplineStart(AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward){ }
-void AFGEquipmentZipline::Local_ZiplineStart(AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward){ }
-void AFGEquipmentZipline::ZiplineEnd(const FVector& exitForce){ }
-void AFGEquipmentZipline::Local_ZiplineEnd(const FVector& exitForce){ }
+void AFGEquipmentZipline::OnZiplineStatusChanged(bool bIsOnZipline){ }
+void AFGEquipmentZipline::Local_OnZiplineStarted(){ }
+void AFGEquipmentZipline::Local_OnZiplineEnded(){ }
 void AFGEquipmentZipline::StartActiveNoise(){ }
 void AFGEquipmentZipline::StopActiveNoise(){ }
 void AFGEquipmentZipline::MakeActiveNoise(){ }
-void AFGEquipmentZipline::Multicast_ZiplineStart_Implementation(AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward){ }
-void AFGEquipmentZipline::Multicast_ZiplineEnd_Implementation(FVector exitForce){ }
 void AFGEquipmentZipline::Server_DoDrop_Implementation(){ }
 void AFGEquipmentZipline::Server_JumpExit_Implementation(){ }
 void AFGEquipmentZipline::SetWantsToGrab(bool wantsToGrab, bool jumpExit){ }

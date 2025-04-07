@@ -20,6 +20,7 @@ AFGStartingPod::AFGStartingPod() : Super() {
 	this->mActorRepresentationTexture = nullptr;
 	this->mActorRepresentationColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mDropPodMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("DropPod Mesh"));
+	this->mDropPodMeshComponent->SetMobility(EComponentMobility::Movable);
 	this->mDropModSkeletalMesh = nullptr;
 	this->mLocalIntroSequenceState = EIntroSequencePlayState::None;
 	this->mCameraModifierLimitFOV = nullptr;
@@ -29,6 +30,7 @@ AFGStartingPod::AFGStartingPod() : Super() {
 	this->mDropPodSpawnLocation = FVector::ZeroVector;
 	this->mCompassMaterialInstance = nullptr;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 	this->mDropPodMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGStartingPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

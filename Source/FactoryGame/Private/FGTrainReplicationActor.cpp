@@ -13,6 +13,7 @@ AFGTrainReplicationActor::AFGTrainReplicationActor() : Super() {
 	this->mLastServerSimulationState.FirstVehiclePosition.Forward = 0.0;
 	this->bReplicates = true;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }
 void AFGTrainReplicationActor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

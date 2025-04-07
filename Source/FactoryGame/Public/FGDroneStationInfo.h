@@ -189,6 +189,10 @@ public:
 	virtual void SetHasBuildingTag_Implementation( bool hasBuildingTag ) override { }
 	virtual FString GetBuildingTag_Implementation() const override { return mBuildingTag; }
 	virtual void SetBuildingTag_Implementation( const FString& buildingTag ) override;
+	//<FL>[KonradA]
+	virtual void SetLastEditedBy_Implementation( const TArray< FLocalUserNetIdBundle >& lastEditedBy ) override;
+	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy_Implementation() const override { return mLastEditedBy; };
+	//</FL>
 	//~ End FGBuildingTagInterface
 
 	/** @returns the status of the drone attached to this station */
@@ -429,4 +433,9 @@ private:
 	// This is a big struct to replicate, but the alternative is to just replicate the Trip array, which is potentially even more data depending on how many trips we store.
 	UPROPERTY( ReplicatedUsing = OnRep_DroneTripStatistics )
 	FFGDroneTripStatistics mDroneTripStatistics;
+
+	//<FL>[KonradA]
+	UPROPERTY( SaveGame, Replicated )
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	//</FL>
 };

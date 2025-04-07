@@ -16,5 +16,5 @@ bool UFGGameModeDSComponent::ShouldSkipOnboarding(bool bGameModeSkipOnboarding) 
 void UFGGameModeDSComponent::OnAutoSaveOnPlayerDisconnectChanged(FString OptionName, FVariant OptionValue){ }
 void UFGGameModeDSComponent::OnAutoPauseChanged(FString OptionName, FVariant OptionValue){ }
 void UFGGameModeDSComponent::OnAdvancedGameSettingChanged(FString OptionName, FVariant OptionValue){ }
-void UFGGameModeDSComponent::OnCurrentGamePhaseUpdated(UFGGamePhase* NewCurrentGamePhase){ }
+void UFGGameModeDSComponent::OnCurrentGamePhaseUpdated(UFGGamePhase* NewCurrentGamePhase, bool bSuppressNarrativeMessages){ }
 void UFGGameModeDSComponent::OnActiveSchematicChanged(TSubclassOf<UFGSchematic> NewActiveSchematic){ }

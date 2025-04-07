@@ -169,6 +169,7 @@ struct FGenericObjectSaveHeader
 
 	friend FArchive& operator<<(FArchive& ar, FGenericObjectSaveHeader& objectSaveData)
 	{
+		const int32 saveCustomVersion = ar.CustomVer( FSaveCustomVersion::GUID );
 		if( ar.IsLoading() )
 		{
 			bool isActor = false;
@@ -176,12 +177,12 @@ struct FGenericObjectSaveHeader
 			if(isActor)
 			{
 				objectSaveData.Header.Emplace<FActorSaveHeader>();
-				ar << objectSaveData.Header.Get<FActorSaveHeader>();
+				objectSaveData.Header.Get<FActorSaveHeader>().Serialize( ar, saveCustomVersion );
 			}
 			else
 			{
 				objectSaveData.Header.Emplace<FObjectSaveHeader>();
-				ar << objectSaveData.Header.Get<FObjectSaveHeader>();
+				objectSaveData.Header.Get<FObjectSaveHeader>().Serialize( ar, saveCustomVersion );
 			}
 		}
 		else
@@ -191,11 +192,11 @@ struct FGenericObjectSaveHeader
 			
 			if(objectSaveData.Header.IsType<FActorSaveHeader>())
 			{
-				ar << objectSaveData.Header.Get<FActorSaveHeader>();
+				objectSaveData.Header.Get<FActorSaveHeader>().Serialize( ar, saveCustomVersion );
 			}
 			else
 			{
-				ar << objectSaveData.Header.Get<FObjectSaveHeader>();
+				objectSaveData.Header.Get<FObjectSaveHeader>().Serialize( ar, saveCustomVersion );
 			}
 		}
 
@@ -245,7 +246,7 @@ public:
 	
 private:
 	void MigrateBlobs( const TArray<uint8> &TOCBlob, const TArray<uint8> &DataBlob, const bool DataIsFromPersistentLevel );
-	void MigrateBlobs( const TArray<uint8, TSizedDefaultAllocator<64>> &TOCBlob, const TArray<uint8, TSizedDefaultAllocator<64>> &DataBlo0b, const bool DataIsFromPersistentLevel );
+	void MigrateBlobs( int32 saveVersion, const TArray<uint8, TSizedDefaultAllocator<64>> &TOCBlob, const TArray<uint8, TSizedDefaultAllocator<64>> &DataBlo0b, const bool DataIsFromPersistentLevel );
 	void MigrateDestroyedActors( const TArray<FObjectReferenceDisc>& DestroyedActors );
 	void RepackSaveData( class UFGSaveSession& SaveSession );
 

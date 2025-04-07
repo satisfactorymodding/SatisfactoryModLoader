@@ -43,6 +43,19 @@ public:
 	
 	void InitializeState( APlayerController* firstPlayerController, AFGGameState* inGameState );
 	void SetSessionState(EFactorySessionState inSessionState, FTimespan inGameDuration);
+
+	UFUNCTION()
+	void SetCrossPlayAllowed( bool bAllowCrossPlay );
+	// In a crossplay session, a player's primary backend might not be the platform he's playing on.
+	// e.g. If you are playing on platform A and your friend has an Epic account that is linked to platform A and B.
+	//      Even when he is playing on platform B, his primary backend is still A from your perspective.
+	UFUNCTION()
+	void SetOriginLocalPlatformName( FString OLPName );
+
+	// <FL> [MartinC] Set the platform avatar URL of the session host
+	UFUNCTION()
+	void SetPlatformAvatarURL( FString AvatarURL );
+
 	void AddPlayerToSession(AFGPlayerState* inPlayerState);
 	void RemovePlayerFromSession(AFGPlayerState* inPlayerState);
 
@@ -60,11 +73,18 @@ protected:
 
 	void SetCreativeModeEnabled( bool isEnabled );
 
+#if( PLATFORM_PS5 || PLATFORM_XSX )
+public:
+#endif	  //( PLATFORM_PS5 || PLATFORM_XSX )
+
 	UFUNCTION()
 	void SetSessionName(const FString& inSessionName);
 
+protected:
+
 	UFUNCTION()
-	void SetCurrentGamePhase(UFGGamePhase* inCurrentPhase);
+	void SetCurrentGamePhase(UFGGamePhase* inCurrentPhase, bool bSuppressNarrativeMessages);
+
 
 	UFUNCTION()
 	void SetActiveSchematic(TSubclassOf<UFGSchematic> inActiveSchematic);
@@ -83,9 +103,13 @@ protected:
 	UPROPERTY( BlueprintReadWrite, BlueprintSetter=SetOnlineSessionInfo, FieldNotify )
 	TObjectPtr< USessionInformation > mOnlineSessionInfo;
 
+#if( PLATFORM_PS5 || PLATFORM_XSX )
+public:
+#endif	  //( PLATFORM_PS5 || PLATFORM_XSX )
 	UPROPERTY( BlueprintReadOnly, FieldNotify )
 	FString mSessionName;
 
+protected:
 	UPROPERTY( BlueprintReadOnly, FieldNotify )
 	FDateTime mLastUpdateUTCTimestamp;
 
@@ -109,6 +133,19 @@ protected:
 
 	UPROPERTY( BlueprintReadOnly, FieldNotify )
 	TObjectPtr<UFGGamePhase> mCurrentGamePhase;
+
+	//<FL>[KonradA]
+	UPROPERTY( BlueprintReadOnly, FieldNotify )
+	bool mbAllowCrossPlay = true;
+	//</FL>
+
+	UPROPERTY( BlueprintReadOnly, FieldNotify )
+	FName mOriginLocalPlatformName;
+
+	//<FL>[MartinC] Platform avatar URL of the host
+	UPROPERTY( BlueprintReadOnly, FieldNotify )
+	FString mPlatformAvatarURL;
+	//</FL>
 
 	UPROPERTY( BlueprintReadOnly, FieldNotify )
 	TSubclassOf<UFGSchematic> mActiveSchematic;

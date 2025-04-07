@@ -61,7 +61,7 @@ struct FACTORYGAME_API FWeatherChanceEntry
 
 	/* Do we need a capture rain occlusion depth map?*/
 	UPROPERTY( EditDefaultsOnly )
-	bool bRequiresOcclusionRenderTarget;
+	bool bRequiresOcclusionRenderTarget = false;
 
 	UPROPERTY( EditDefaultsOnly )
 	FFloatInterval mWeatherEffectDuration;
@@ -87,7 +87,7 @@ struct FACTORYGAME_API FSkySphereSettings
 
 	// Color of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
-	FLinearColor SunLightColor = {};
+	FLinearColor SunLightColor = FLinearColor::Black;
 
 	// Color of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
@@ -95,7 +95,7 @@ struct FACTORYGAME_API FSkySphereSettings
 
 	// Color of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
-	FLinearColor MoonLightColor = {};
+	FLinearColor MoonLightColor = FLinearColor::Black;
 
 	// Color of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )

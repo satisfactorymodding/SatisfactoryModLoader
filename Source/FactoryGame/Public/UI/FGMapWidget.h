@@ -4,14 +4,14 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "FGUserWidget.h"
 #include "FGMapWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FACTORYGAME_API UFGMapWidget : public UUserWidget
+class FACTORYGAME_API UFGMapWidget : public UFGBaseWidget
 {
 	GENERATED_BODY()
 public:

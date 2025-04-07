@@ -1,4 +1,4 @@
-﻿#include "AvailabilityDependencies/FGCalendarOpenedDependency.h"
+#include "AvailabilityDependencies/FGCalendarOpenedDependency.h"
 
 bool UFGCalendarOpenedDependency::AreDependenciesMet( UObject* worldContext ) const{ return bool(); }
 #if WITH_EDITOR

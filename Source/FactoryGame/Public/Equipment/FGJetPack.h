@@ -99,7 +99,7 @@ protected:
 	void SetSelectedFuelType( int32 newSelectedFuelType );
 
 	/** Updates the current amount of fuel */
-	void SetCurrentFuel( float newCurrentFuel );
+	void SetCurrentFuel( const float newCurrentFuel );
 
 	/** Updates the selected fuel type on the server */
 	UFUNCTION( Server, Reliable )

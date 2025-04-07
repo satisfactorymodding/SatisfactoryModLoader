@@ -2,3 +2,6 @@
 
 #include "FGLocalSettings.h"
 
+#if WITH_EDITOR
+void UFGLocalDevSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
+#endif

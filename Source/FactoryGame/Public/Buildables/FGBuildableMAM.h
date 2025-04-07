@@ -27,8 +27,6 @@ public:
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
 	virtual float GetSignificanceRange() override { return mSignificanceRange; }
-	virtual void GainedSignificance_Native() override;
-	virtual void LostSignificance_Native() override;
 	//End IFGSignificanceInterface
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "MAM" )

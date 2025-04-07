@@ -25,6 +25,10 @@ struct FSongData
 	/** The name (title) of the song */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	FName SongName;
+
+	/** Maximum song duration cached from the AkAudioEvent during cooking to allow accessing that information on Dedicated Servers */
+	UPROPERTY()
+	float CachedMaximumSongDuration{0.0f};
 };
 
 DECLARE_DYNAMIC_DELEGATE_OneParam( FOnTapeTextureLoaded, UTexture2D*, Texture );
@@ -72,6 +76,14 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Tape" )
 	static void LoadTapeTexture( TSubclassOf< UFGTapeData > tapeClass, FOnTapeTextureLoaded OnTextureLoaded );
 
+	// Begin UObject interface
+	virtual void PostLoad() override;
+	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
+	// End UObject interface
 private:
+#if WITH_EDITOR
+	/** Caches song durations from the provided project database */
+	void CachePlaylistSongDurations(class FWwiseProjectDatabase* InProjectDatabase);
+#endif
 	static void LoadTapeTexture2DAsync( TSoftObjectPtr< UTexture2D >, FOnTapeTextureLoaded OnTextureLoaded );
 };

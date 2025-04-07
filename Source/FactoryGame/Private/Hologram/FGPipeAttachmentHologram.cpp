@@ -13,6 +13,8 @@ AFGPipeAttachmentHologram::AFGPipeAttachmentHologram() : Super() {
 	this->mIncrementSnappedConnectionOnScroll = true;
 	this->mWallSnapOffset = FVector2D((0, 75));
 	this->mHasPipeRotationBuildStep = true;
+	this->mAllowSnapToPipeline = true;
+	this->mPipelineSnapOffset = FVector::ZeroVector;
 	this->mSnappedPipe = nullptr;
 	this->mSnappedConnectionComponent = nullptr;
 	this->mSnappedPipeOffset = 0.0;
@@ -31,7 +33,7 @@ bool AFGPipeAttachmentHologram::DoMultiStepPlacement(bool isInputFromARelease){ 
 void AFGPipeAttachmentHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGPipeAttachmentHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 float AFGPipeAttachmentHologram::GetHologramHoverHeight() const{ return float(); }
-void AFGPipeAttachmentHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+void AFGPipeAttachmentHologram::GetIgnoredClearanceActors(TSet< AActor* >& ignoredActors) const{ }
 bool AFGPipeAttachmentHologram::IsValidHitActor(AActor* hitActor) const{ return bool(); }
 bool AFGPipeAttachmentHologram::CanNudgeHologram() const{ return bool(); }
 bool AFGPipeAttachmentHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }

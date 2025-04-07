@@ -5,6 +5,9 @@
 void UFGSessionInformationModel::SetOnlineSessionInfo(USessionInformation* inOnlineSessionInfo){ }
 void UFGSessionInformationModel::InitializeState(APlayerController* firstPlayerController, AFGGameState* inGameState){ }
 void UFGSessionInformationModel::SetSessionState(EFactorySessionState inSessionState, FTimespan inGameDuration){ }
+void UFGSessionInformationModel::SetCrossPlayAllowed(bool bAllowCrossPlay){  }
+void UFGSessionInformationModel::SetOriginLocalPlatformName(FString OLPName){  }
+void UFGSessionInformationModel::SetPlatformAvatarURL(FString AvatarURL){  }
 void UFGSessionInformationModel::AddPlayerToSession(AFGPlayerState* inPlayerState){ }
 void UFGSessionInformationModel::RemovePlayerFromSession(AFGPlayerState* inPlayerState){ }
 TArray< FCustomOnlineSessionSetting > UFGSessionInformationModel::GetInitialSessionSettingsFromSaveHeader(const FSaveHeader& saveHeader){ return TArray<FCustomOnlineSessionSetting>(); }
@@ -15,7 +18,7 @@ void UFGSessionInformationModel::OnSessionAttributesUpdated(const TArray<FCustom
 void UFGSessionInformationModel::RebuildRows(){ }
 void UFGSessionInformationModel::SetCreativeModeEnabled(bool isEnabled){ }
 void UFGSessionInformationModel::SetSessionName(const FString& inSessionName){ }
-void UFGSessionInformationModel::SetCurrentGamePhase(UFGGamePhase* inCurrentPhase){ }
+void UFGSessionInformationModel::SetCurrentGamePhase(UFGGamePhase* inCurrentPhase, bool bSuppressNarrativeMessages){ }
 void UFGSessionInformationModel::SetActiveSchematic(TSubclassOf<UFGSchematic> inActiveSchematic){ }
 void UFGSessionInformationModel::ReadyToReadFromSubsystems(){ }
 void UFGSessionInformationModel::InitializeStateFromSubsystems(bool flushMetadata){ }

@@ -132,7 +132,7 @@ public:
 	bool IsEventActive( EEvents event ) const { return GetCurrentEvents().Contains( event ); }
 
 	const FFGEventData* GetEventData( EEvents event ) const { return mEvents.Find( event ); }
-
+	
 	void StoreCurrentCalendarData( const FCalendarData& calendarData );
 	void StoreCalendarData( TSubclassOf<class UFGCalendarRewards> calendarRewardClass, const FCalendarData& calendarData );
 	const FCalendarData* GetStoredCalendarData( TSubclassOf<class UFGCalendarRewards> calendarRewardClass ) const;
@@ -166,7 +166,7 @@ public:
 
 	TSubclassOf<class AActor> GetCalendarClassForCurrentEvent();
 	TSubclassOf<class AFGBuildable> GetHubMiniGameClassForCurrentEvent();
-
+	
 protected:
 	/** Called from beginplay for each active event. */
 	virtual void OnBeginEvent_Native( EEvents event);
@@ -181,7 +181,7 @@ private:
 public:
 	UPROPERTY( Replicated )
 	TArray< EEvents > mCurrentEvents;
-
+	
 	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Events|Calendar" )
 	FCalendarSlotUnlocked mOnCalendarSlotUnlocked;
 
@@ -206,11 +206,11 @@ private:
 
 	UPROPERTY( EditDefaultsOnly )
 	TMap< EEvents, TSubclassOf<class AFGBuildable> > mHubMiniGameClass;
-
+	
 	UPROPERTY( SaveGame )
 	TMap< EEvents, FCalendarData > mStoredCalendarData; // 2020 Stored just in case we need it -K2
 	UPROPERTY( SaveGame )
-	TMap< TSubclassOf<class UFGCalendarRewards>, FCalendarData > mCalendarData; // 2021 and forward. Should handle as many calendars as we can think of.
+	TMap< TSubclassOf<class UFGCalendarRewards>, FCalendarData > mCalendarData; // 2021 and forward. Should handle as many calendars as we can think of. 
 
 	UPROPERTY( SaveGame )
 	TMap< TSubclassOf<class UFGCalendarRewards>, FPlayerStateSetWrapper > mCalendarsOpenedByPlayers;

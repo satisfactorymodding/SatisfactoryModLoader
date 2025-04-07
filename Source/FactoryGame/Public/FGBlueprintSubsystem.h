@@ -61,13 +61,12 @@ struct FLightweightBuildEffectData
 {
 	GENERATED_BODY()
 
-	FLightweightBuildEffectData() : RuntimeDataIndex( INDEX_NONE ), BuildableClass( nullptr ), AbstractInstanceData( nullptr )
+	FLightweightBuildEffectData() : RuntimeDataIndex( INDEX_NONE ), BuildableClass( nullptr )
 	{}
 	
-	FLightweightBuildEffectData( int32 runtimeDataIndex, TSubclassOf< AFGBuildable > buildableClass, UAbstractInstanceDataObject* abstractInstanceData ) :
+	FLightweightBuildEffectData( int32 runtimeDataIndex, TSubclassOf< AFGBuildable > buildableClass ) :
 			RuntimeDataIndex( runtimeDataIndex ),
-			BuildableClass( buildableClass ),
-			AbstractInstanceData( abstractInstanceData )
+			BuildableClass( buildableClass )
 	{}
 	
 	UPROPERTY()
@@ -75,9 +74,6 @@ struct FLightweightBuildEffectData
 
 	UPROPERTY()
 	TSubclassOf< AFGBuildable > BuildableClass;
-
-	UPROPERTY()
-	UAbstractInstanceDataObject* AbstractInstanceData;
 };
 
 USTRUCT()
@@ -88,9 +84,9 @@ struct FBlueprintBuildEffectData
 	FBlueprintBuildEffectData() : Transform( FTransform::Identity ), ID( INDEX_NONE ), NumBuildables( 0 )
 	{}
 
-	void AddLightweightData( int32 runtimeDataIndex, TSubclassOf< AFGBuildable > buildableClass, UAbstractInstanceDataObject* abstractData )
+	void AddLightweightData( int32 runtimeDataIndex, TSubclassOf< AFGBuildable > buildableClass )
 	{
-		LightweightData.Add( FLightweightBuildEffectData(runtimeDataIndex, buildableClass, abstractData) );
+		LightweightData.Add( FLightweightBuildEffectData(runtimeDataIndex, buildableClass ) );
 	}
 	
 	UPROPERTY()
@@ -131,15 +127,7 @@ public:
 	
 	// Request Blueprint Desc File
 	UFUNCTION( Server, Reliable )
-	void Server_RequestFileData( const FString& fileName, int32 currentProgress );
-
-	// Respond to client with requested data
-	UFUNCTION( Client, Reliable )
-	void Client_RespondFileDataResponse( const TArray< uint8 >& fileData );
-
-	// Final Response to client, includes the Blueprint Record data so we can write out a Blueprint Config file as well
-	UFUNCTION( Client, Reliable )
-	void Client_RespondFinalFileDataResponse( const TArray< uint8 >& fileData, FBlueprintRecord record );
+	void Server_RequestFileData( const FString& fileName );
 
 	// Response from the server indicating the client requested a bad file (no desc was found, or file was not found)
 	UFUNCTION( Client, Reliable )
@@ -275,7 +263,7 @@ public:
 	/** Load Actors into blueprint designer
 	 * @param instigator (optional)  AActor* the actor that requested the blueprint. */
 	void LoadStoredBlueprint(UFGBlueprintDescriptor* blueprintDesc, const FTransform& blueprintOrigin, TArray< class AFGBuildable* >& out_spawnedBuildables, bool useBlueprintWorld = false, class
-	                         AFGBuildableBlueprintDesigner* = nullptr, APawn* instigator = nullptr, const TFunction<void(AFGBuildable*)>& buildablePreBeginPlayDelegate = nullptr, class AFGBlueprintProxy* blueprintProxy = nullptr );
+	                         AFGBuildableBlueprintDesigner* = nullptr, APawn* instigator = nullptr, class AFGBlueprintProxy* blueprintProxy = nullptr, const TFunction<void(AFGBuildable*, int32)>& buildablePostSerializeCallback = nullptr );
 
 	/** Collects all objects for a given "root set". The root set in this case will be a list of buildables and we gather objects from them */
 	void CollectObjects( TArray< class AFGBuildable* >& buildables, TArray< UObject* >& out_objectsToSerialize );
@@ -322,7 +310,10 @@ public:
 	 *	When a lightweight is added with a certain blueprint build effect ID it notifies the subsystem
 	 *	so we can add that data and potentially start the build effect in Tick
 	 */
-	void NotifyRuntimeInstanceWithBlueprintBuildIDSet( int32 buildEffectId, int32 runtimeIndex, TSubclassOf< class AFGBuildable > buildableClass, UAbstractInstanceDataObject* abstractData );
+	void NotifyRuntimeInstanceWithBlueprintBuildIDSet( int32 buildEffectId, int32 runtimeIndex, TSubclassOf< class AFGBuildable > buildableClass );
+
+	/** Called when the client receives the blueprint file from the server */
+	void ReceiveBlueprintFileDownload( const FBlueprintRecord& blueprintRecord, const TArray<uint8>& filePayload );
 
 	// Increment and return a valid blueprint buildeffect ID
 	int32 GetUniqueBlueprintBuildEffectID() { mBlueprintBuildEffectID++; return mBlueprintBuildEffectID; }
@@ -381,6 +372,10 @@ public:
 		}
 		return nullptr;
 	}
+
+	/** Returns a blueprint descriptor by it's name string. Case insensitive. */
+	UFUNCTION( BlueprintPure, Category = "Blueprint Subsystem" )
+	UFGBlueprintDescriptor* GetBlueprintDescriptorByNameString( const FString& blueprintName );
 	
 	// Creates a blueprint desc with a new ID and tracks blueprint Desc
 	UFGBlueprintDescriptor* CreateBlueprintDescriptor(const FBlueprintRecord& record, FBlueprintHeader& header, bool markDescriptorsForRefresh = true );
@@ -397,7 +392,7 @@ public:
 	void RebuildCategoryRecordsFromDescriptors( TArray< FBlueprintCategoryRecord >& out_categoryRecords );
 	
 	UFGBlueprintCategory* CreateBlueprintCategory( const FBlueprintCategoryRecord& record );
-	UFGBlueprintCategory* CreateBlueprintCategory( FText categoryName, int32 iconID, float menuPriority );
+	UFGBlueprintCategory* CreateBlueprintCategory( FText categoryName, int32 iconID, float menuPriority, TArray<FLocalUserNetIdBundle> createdBy ); // <FL> [KonradA] adding CreatedBy for UGC tracking
 	
 	UFGBlueprintSubCategory* CreateBlueprintSubCategory( const FBlueprintSubCategoryRecord& record );
 
@@ -761,17 +756,12 @@ private:
 	// List for tracking which blueprints are still missing on clients
 	UPROPERTY()
 	TArray< FBlueprintNameAndHash > mMissingClientBlueprints;
-
-	UPROPERTY()
-	TArray< uint8 > mFileTransferData;
 	
 	UPROPERTY()
 	FString mPendingFileTransferName;
 	
 	UPROPERTY()
 	bool mHasActiveFileTransfer;
-
-	UPROPERTY()
-	bool mClientAwaitingResponse;
-	
 };
+
+

@@ -53,16 +53,25 @@ public:
 	virtual TMap<FString, FString> GetFunctionCategories() const = 0;
 };
 
+struct FCheatBoardBlueprintContext
+{
+	const FAssetData& BlueprintAssetData;
+	const UClass* NativeParentClass{};
+	const TSoftClassPtr<UObject> BlueprintClassPath;
+};
+
 /** Allows filtering and visually transforming values of arguments passed to the cheat through the cheat board (currently only supports classes and objects) */
 class FACTORYGAME_API IFGCheatBoardParameterFilter
 {
 public:
 	virtual ~IFGCheatBoardParameterFilter() = default;
 
-	virtual FString GetPrettifiedClassName( UClass* InClass ) const;
-	virtual bool IsClassFilteredOut( UClass* InClass ) const { return false; }
-	virtual FString GetPrettifiedAssetName( UObject* InAsset ) const;
-	virtual bool IsAssetFilteredOut( UObject* InAsset ) const { return false; }
+	virtual FString GetPrettifiedNativeClassName(UClass* InNativeClass) const;
+	virtual bool IsNativeClassFilteredOut(UClass* InNativeClass) const { return false; }
+	virtual FString GetPrettifiedBlueprintName(const FCheatBoardBlueprintContext& Context) const;
+	virtual bool IsBlueprintFilteredOut(const FCheatBoardBlueprintContext& Context) const { return false; }
+	virtual FString GetPrettifiedAssetName(const FAssetData& InAssetData) const;
+	virtual bool IsAssetFilteredOut(const FAssetData& InAssetData) const { return false; }
 };
 
 /** Wraps parameter filter into a struct that can be passed around */
@@ -93,9 +102,12 @@ class FFGCheatBoardParameterFilter_ItemDescriptor : public IFGCheatBoardParamete
 public:
 	explicit FFGCheatBoardParameterFilter_ItemDescriptor( const EResourceForm InResourceForm ) : mTargetResourceForm( InResourceForm ) {}
 
-	virtual FString GetPrettifiedClassName( UClass* InClass ) const override;
-	virtual bool IsClassFilteredOut( UClass* InClass ) const override;
+	virtual FString GetPrettifiedNativeClassName( UClass* InNativeClass ) const override;
+	virtual bool IsNativeClassFilteredOut( UClass* InNativeClass ) const override;
+	virtual FString GetPrettifiedBlueprintName( const FCheatBoardBlueprintContext& Context ) const override;
+	virtual bool IsBlueprintFilteredOut( const FCheatBoardBlueprintContext& Context ) const override;
 private:
+	static bool IsExcludedParentClass( const UClass* InNativeParentClass);
 	EResourceForm mTargetResourceForm{};
 };
 
@@ -188,6 +200,8 @@ public:
 	void Server_SetCentralStorageUploadSpeed( float seconds );
 	UFUNCTION( exec, CheatBoard, Category = "Resources", meta = ( ToolTip = "This will not save the value. Just for runtime debugging" )  )
 	void SetCentralStorageUploadSpeed( float seconds );
+	UFUNCTION( exec, CheatBoard, Category = "Resources" )
+	void SetMaxDismantleRefundStacks( int32 maxDismantleRefundStacks );
 	
 	/****************************************************************
 	 * UI
@@ -570,36 +584,17 @@ public:
 	void Server_Map_Hide();
 	UFUNCTION( exec, CheatBoard, category = "Map" )
 	void Map_Hide();
-	
-	/****************************************************************
-	 * Photo
-	 ****************************************************************/
-	UFUNCTION( exec, CheatBoard, category = "Photo" )
-	void Photo_ToggleAdvancedPhotoMode();
-	UFUNCTION( exec, CheatBoard, category = "Photo" )
-	void Photo_SetManualFocusDistance( float manualFocusDistance );
-	UFUNCTION( exec, CheatBoard, category = "Photo" )
-	void Photo_FocusTrackLookedAtObject();
-	UFUNCTION( exec, CheatBoard, category = "Photo" )
-	void Photo_SetAperture( float aperture );
-	UFUNCTION( exec, CheatBoard, category = "Photo" )
-	void Photo_ToggleDebug();
-	UFUNCTION( exec, CheatBoard, category = "Photo" )
-	void Photo_ResetToDefault();
-	UFUNCTION( exec, CheatBoard, category = "Photo" )
-	void Photo_AddCurrentPlayerPosAndRot();
-	UFUNCTION( exec, CheatBoard, category = "Photo" )
-	void Photo_PlaySequence();
-	UFUNCTION( exec, CheatBoard, category = "Photo" )
-	void Photo_ToggleSequencer();
+	UFUNCTION( Server, Reliable )
+	void Server_ForceFOWUpdate();
+	/** Forces a full Fog Of War update to be sent to the client by the server. Has no effect if not playing as a client */
+	UFUNCTION( Exec, CheatBoard, Category = "Map" )
+	void ForceFOWUpdate();
 
 	/****************************************************************
 	 * Online
 	 ****************************************************************/
 	UFUNCTION( exec, category = "Online" )
 	void Online_TriggerPresenceUpdate();
-	UFUNCTION( exec, category = "Online" )
-	void Online_UpdateGameSession();
 	UFUNCTION( exec, category = "Online" )
 	void Online_DumpConnectionString();
 	
@@ -735,10 +730,6 @@ public:
 	UFUNCTION( exec, CheatBoard, category = "Save/Load" )
 	void PurgeAllBeaconsFromSave();
 	UFUNCTION( Server, Reliable )
-	void Server_PurgeDeathMarkersFromSave();
-	UFUNCTION( exec, CheatBoard, category = "Save/Load" )
-	void PurgeDeathMarkersFromSave();
-	UFUNCTION( Server, Reliable )
 	void Server_PurgeAllTrainState();
 	UFUNCTION( exec, category = "Save/Load" )
 	void PurgeAllTrainState();
@@ -812,12 +803,18 @@ public:
 	void DumpGamePhases();
 	UFUNCTION( Exec, CheatBoard, Category = "Log" )
 	void DumpPlayerCustomizationData();
+	UFUNCTION( Exec, CheatBoard, Category = "Log")
+	void LogPerInstancePrimitiveDataInfo();
 
 	/****************************************************************
 	 * Audio
 	 ****************************************************************/
 	UFUNCTION( exec, CheatBoard, category = "Audio" )
 	void Audio_ToggleLandingDebug();
+	UFUNCTION( Exec, CheatBoard, Category = "Audio", meta = ( ToolTip="Trigger ak audio event") )
+	void Audio_TriggerAkEvent( TSoftObjectPtr< class UAkAudioEvent > EventName);
+	UFUNCTION( Exec, CheatBoard, Category = "Audio", meta = ( ToolTip="Set global rtpc") )
+	void Audio_SetGlobalRTPC(TSoftObjectPtr<class UAkRtpc> RtpcObject, float RtpcValue);
 	
 	/****************************************************************
 	 * Misc
@@ -830,6 +827,12 @@ public:
 	void ShowSequenceList();
 	UFUNCTION( exec )
 	void HitchNow( float ms );
+
+	/** Spawns a cube of building of the same type centered at the player location */
+	UFUNCTION( Exec, CheatBoard, Category = "Misc" )
+	void SpawnBuildableBlockAtPlayerLocation( TSubclassOf<class UFGRecipe> buildableRecipe, int32 blockSize );
+	UFUNCTION( Server, Reliable )
+	void Server_SpawnBuildableBlockAtPlayerLocation( TSubclassOf<class UFGRecipe> buildableRecipe, int32 blockSize );
 
 	/** Global parameter filters for a few types */
 	UFUNCTION( CheatBoard )

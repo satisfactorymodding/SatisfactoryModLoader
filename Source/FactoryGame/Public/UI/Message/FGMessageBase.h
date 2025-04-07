@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "UI/FGUserWidget.h"
 #include "FGMessageBase.generated.h"
 
 UENUM( BlueprintType )
@@ -20,8 +21,9 @@ enum class EMessageType : uint8
  * An old legacy class from when we had both pure text messages and audio messages. Now, we only have audio messages, and text messages have
  * been replaced with notifications. The relevant parts of this class could be moved to UFGAudioMessage, after which this class could be deleted.
  */
+
 UCLASS( BlueprintType, Blueprintable )
-class FACTORYGAME_API UFGMessageBase : public UUserWidget
+class FACTORYGAME_API UFGMessageBase : public UFGUserWidget // <FL> [KonradA] Changing the inheritance of MessageBase to FGUserWidget so we can utilize Console Keybind systems and prompts
 {
 	GENERATED_BODY()
 public:

@@ -87,9 +87,9 @@ namespace
 	}
 }
 
-EDataValidationResult UFGResearchTree::IsDataValid(TArray<FText>& ValidationErrors) {
+EDataValidationResult UFGResearchTree::IsDataValid(FDataValidationContext& validationContext ) const {
 	// MODDING IMPLEMENTATION
-	EDataValidationResult ValidationResult = Super::IsDataValid(ValidationErrors);
+	EDataValidationResult ValidationResult = Super::IsDataValid(validationContext);
 
 	// Exit early if the research tree has no nodes
 	const TArray<UFGResearchTreeNode*> Nodes = UFGResearchTree::GetNodes(GetClass());
@@ -104,7 +104,7 @@ EDataValidationResult UFGResearchTree::IsDataValid(TArray<FText>& ValidationErro
 	FClassProperty* SchematicStructProperty = GetSchematicStructProperty(NodeDataStructProperty);
 
 	if (!ResearchTreeNodeClass || !NodeDataStructProperty || !SchematicStructProperty) {
-		ValidationErrors.Add(NSLOCTEXT("ResearchTree", "Validation_ReflectionFailed", "Could not retrieve properties to validate using reflection, validation not performed"));
+		validationContext.AddWarning(NSLOCTEXT("ResearchTree", "Validation_ReflectionFailed", "Could not retrieve properties to validate using reflection, validation not performed"));
 		return ValidationResult;
 	}
 
@@ -116,7 +116,7 @@ EDataValidationResult UFGResearchTree::IsDataValid(TArray<FText>& ValidationErro
 		const UClass* SchematicClass = Cast<UClass>(SchematicStructProperty->GetPropertyValue_InContainer(NodeDataStructPtr));
 	
 		if (SchematicClass == nullptr) {
-			ValidationErrors.Add(NSLOCTEXT("ResearchTree", "Validation_NullSchematic", "Null Schematic found. Was the content it previously referenced deleted or moved?"));
+			validationContext.AddError(NSLOCTEXT("ResearchTree", "Validation_NullSchematic", "Null Schematic found. Was the content it previously referenced deleted or moved?"));
 			ValidationResult = EDataValidationResult::Invalid;
 		}			
 	}

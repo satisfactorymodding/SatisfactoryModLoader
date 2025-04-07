@@ -265,6 +265,7 @@ inline const FName GameSessionIdPresenceKey = "CommonSessionId";
 inline const FName SessionBackendKey = "SessionBackend";
 inline constexpr TCHAR SessionIdKeyFormat[] = TEXT("SessionId-%s");
 inline const FName LastGameSessionUpdateTimestampUTC = "LastGameSessionUpdateTimestampUTC";
+inline const FName SessionConsoleInviteOnlyKey = "ConsoleInviteOnly"; // <FL> [TranN] Workaround for the public crossplay session to work with invite-only platform session
 
 inline UOnlineIntegrationStatePrivate* GetViewModelPrivate(const UOnlineIntegrationSubsystem* Subsystem)
 {

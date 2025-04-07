@@ -14,6 +14,7 @@
 #include "FGColorInterface.h"
 #include "FGBuildableSubsystem.h"
 #include "FGClearanceInterface.h"
+#include "Audio/AudioEventsCache.h"
 #include "FGVehicle.generated.h"
 
 class UFGDamageType;
@@ -180,7 +181,8 @@ public:
 	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Native() { return mFactorySkinClass; }
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin_Native();
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin_Implementation();
-	bool GetCanBeColored_Implementation(){ return true; }
+	bool GetCanBeColored_Native() override { return true; };
+	bool GetCanBeColored_Implementation(){ return GetCanBeColored_Native(); }
 	virtual bool IsColorApplicationDeferred() { return false; }
 	virtual bool CanApplyDeferredColorToBuildable( FVector hitLocation, FVector hitNormal, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > swatch, APlayerController* playerController ){ return false; }
 	virtual void ApplyDeferredColorToBuildable( FVector hitLocation, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > swatch, APlayerController* playerController ){};
@@ -608,6 +610,9 @@ public:
 
 	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Representation" )
 	FText mMapText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	FAudioEventsCache mAudioEventsCacheObject;
 
 	bool IsPlayingBuildEffect() const { return mBuildEffectIsPlaying; }
 };

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FactoryGame.h"
 #include "FGDismantleInterface.h"
@@ -47,6 +48,9 @@ public:
 	/** Used by the buildables in postload to register themselves to their blueprint proxy, so we can reference them through the proxy. */
 	void RegisterBuildable( class AFGBuildable* buildable );
 
+	/** Perform a final check to see if we have valid lightweights and buildables. If not self destruct */
+	void ValidateExistanceOtherwiseSelfDestruct();
+
 	/** When a buildable is actually converted to a lightweight instance in its begin play it is added through here */
 	void RegisterLightweightInstance( TSubclassOf< class AFGBuildable > buildableClass, int32 index );
 
@@ -55,6 +59,13 @@ public:
 
 	/** When a lightweight buildable is removed this is called */
 	void UnregisterLightweightInstance( TSubclassOf< class AFGBuildable > buildableClass, int32 index );
+
+	/**
+	 * Verifies theres no nullptrs in the buildable array and Checks with the lightweight subsystem if the any lightweights referenced by
+	 *  this proxy are indeed valid on the subsystem. This is used by clients to check if they're waiting for data
+	 * @return True if all lightweight indices are registered OR if there are no lightweights to consider AND all buildables have been replicated
+	*/
+	bool AreProxyBuildingsRegisteredAndValid() const;
 
 	UFUNCTION( BlueprintPure, Category = "BlueprintProxy" )
 	class UBoxComponent* GetBoundingBox() const { return mBoundingBox; }
@@ -100,7 +111,7 @@ public:
 	virtual FText GetDismantleDisplayName_Implementation(AFGCharacterPlayer* byCharacter) const override;
 	//~ End IFGDismantleInterface
 
-	FORCEINLINE const TArray<FBuildableClassLightweightIndices>& GetLightweightClassAndIndices() { return mLightweightClassAndIndices; }
+	FORCEINLINE const TArray<FBuildableClassLightweightIndices>& GetLightweightClassAndIndices() const { return mLightweightClassAndIndices; }
 	
 private:
 	UFUNCTION()

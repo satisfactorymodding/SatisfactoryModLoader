@@ -78,7 +78,9 @@ public class FactoryGame : ModuleRules
 			"FieldNotification",
 			"GameplayEvents",
 			"ModelViewViewModel",
-			"MovieScene"
+			"MovieScene",
+			"ReliableMessaging",
+			"GeometryFramework",
 		} );
 
 		if (Target.Type == TargetType.Server)
@@ -96,6 +98,20 @@ public class FactoryGame : ModuleRules
 			// 	"StreamlineBlueprint",
 			// } );
 		}
+
+
+		//<FL>[KonradA] Binding SceLibPad for windows to use dual sense speakers
+		// Use reflection to allow type not to exist if console code is not present
+		if (/*Target.Platform == UnrealTargetPlatform.Win64 && Target.Type != TargetType.Server*/ false)
+		{
+			PrivateDefinitions.Add("PAD_LIB_SUPPORT=1");
+			AddEngineThirdPartyPrivateStaticDependencies(Target, "LibScePad");
+			string[] Includes = new string[1];
+			Includes[0] = "ApplicationCore_Sony";
+
+			PrivateIncludePathModuleNames.AddRange(Includes);
+		}
+		//</FL>
 
 		// <FL> [PfaffN] EOS does not compile on PS5 or XSX, they are not compatible
 		// Game EOS: 4.27
@@ -124,7 +140,7 @@ public class FactoryGame : ModuleRules
 			{
 				"LensDistortion",
 				"MfMedia",
-				"MfMediaFactory"
+				"MfMediaFactory",
 			});
 
 			PublicSystemIncludePaths.Add(System.IO.Path.Combine(EngineDirectory, "Platforms/XSX/Source/Runtime/D3D12RHI/Private"));
@@ -145,7 +161,6 @@ public class FactoryGame : ModuleRules
 		{
 			PrivateDefinitions.Add("WITH_SHOWVAR=0");
 		}
-		// </FL>
 
 		PrivateDependencyModuleNames.AddRange( new string[] { 
             "ReplicationGraph",
@@ -160,7 +175,8 @@ public class FactoryGame : ModuleRules
 			"OnlineServicesInterface",
 			"Niagara",
 			"OpenSSL", 
-			"SSL"
+			"SSL", 
+			"Gauntlet"
 		});
 
 		// Only depend on XESS and DLSS blueprint module for non-dedicated servers
@@ -174,18 +190,15 @@ public class FactoryGame : ModuleRules
 			// } );
 		}
 
-		const bool withTelemetry = false;
+		const bool withTelemetry = false; // MODDING EDIT: DSTelemetry is private
 		if ( withTelemetry )
 		{
 			PublicDependencyModuleNames.Add( "DSTelemetry" );
-			PrivateDefinitions.Add( "WITH_TELEMETRY=1" );
 		}
-		else
-		{
-			PrivateDefinitions.Add("WITH_TELEMETRY=0");
-		}
+		
+		PrivateDefinitions.Add($"WITH_TELEMETRY={(withTelemetry ? "1" : "0")}");
 
-		bool isPublicBuild = true;
+		bool isPublicBuild = true; // MODDING EDIT: we always target public builds
 		string isPublicBuildVersion = System.Environment.GetEnvironmentVariable("IS_PUBLIC_BUILD");
 		if( isPublicBuildVersion != null && isPublicBuildVersion.Length > 0 )
 		{
@@ -213,11 +226,20 @@ public class FactoryGame : ModuleRules
 				"AssetTools",
                 "ViewportInteraction",
 				"SourceControl", // <FL>
+				"WwiseResourceCooker",
+				"WwiseProjectDatabase",
+				"WwiseResourceLoader",
+				"DesktopPlatform",
             } );
         }
 		
+		// MODDING EDIT
 		PublicDependencyModuleNames.AddRange(new[] {
 			"DummyHeaders",
 		});
+		
+		// MODDING EDIT: Define PLATFORM_PS5=0 and PLATFORM_XSX=0 for modding, we don't have these modules
+		PublicDefinitions.Add("PLATFORM_PS5=0");
+		PublicDefinitions.Add("PLATFORM_XSX=0");
 	}
 }

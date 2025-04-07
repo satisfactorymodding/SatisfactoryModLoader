@@ -3,7 +3,7 @@
 #include "FGCustomizationRecipe.h"
 
 #if WITH_EDITOR
-EDataValidationResult UFGCustomizationRecipe::IsDataValid(TArray< FText >& ValidationErrors){ return EDataValidationResult::Valid; }
+EDataValidationResult UFGCustomizationRecipe::IsDataValid(FDataValidationContext& validationContext) const{ return EDataValidationResult::Valid; }
 #endif 
 UFGCustomizationRecipe::UFGCustomizationRecipe() : Super() {
 	this->mCustomizationDesc = nullptr;

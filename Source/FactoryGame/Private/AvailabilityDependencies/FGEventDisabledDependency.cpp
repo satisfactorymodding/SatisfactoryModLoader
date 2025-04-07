@@ -1,4 +1,4 @@
-﻿#include "AvailabilityDependencies/FGEventDisabledDependency.h"
+#include "AvailabilityDependencies/FGEventDisabledDependency.h"
 
 bool UFGEventDisabledDependency::AreDependenciesMet( UObject* worldContext ) const{ return bool(); }
 #if WITH_EDITOR

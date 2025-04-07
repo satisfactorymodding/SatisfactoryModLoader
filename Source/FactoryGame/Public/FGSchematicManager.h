@@ -6,18 +6,32 @@
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGSchematic.h"
+#include "FGSchematicManagerReplicationComponent.h"
 #include "ItemAmount.h"
 #include "IncludeInBuild.h"
 #include "FGSchematicManager.generated.h"
+
+class UFGSchematicManagerReplicationComponent;
+
+/** Flags that can be passed to Give Access to Schematic to alter it's behavior */
+UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
+enum class ESchematicUnlockFlags : uint8
+{
+	None = 0x0,
+	BlockTelemetry = 0x01 UMETA(DisplayName = "Block Telemetry"),
+	Force = 0x02 UMETA(DisplayName = "Force (Ignore Prerequisites)"),
+	SuppressNarrativeMessages = 0x04 UMETA(DisplayName = "Supress Narrative Messages"),
+};
+ENUM_CLASS_FLAGS(ESchematicUnlockFlags);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FPurchasedSchematicDelegate, TSubclassOf< class UFGSchematic >, purchasedSchematic );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FPaidOffOnSchematicDelegate, AFGSchematicManager*, schematicManager );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActiveSchematicChanged, TSubclassOf< UFGSchematic >, activeSchematic );
 DECLARE_MULTICAST_DELEGATE_OneParam( FOnPopulateSchematicListDelegate, TArray< TSubclassOf< UFGSchematic > >&);
 
-// @todoK2 refactor FPurchasedSchematicDelegate to use this one instead
+// TODO @Nick refactor FPurchasedSchematicDelegate to use this one instead
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FPurchasedSchematicInstigatorDelegate, TSubclassOf< class UFGSchematic >, purchasedSchematic, class AFGCharacterPlayer*, purchaseInstigator );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FPurchasedSchematicsInstigatorDelegate, TArray< TSubclassOf< class UFGSchematic > >, purchasedSchematic, class AFGCharacterPlayer*, purchaseInstigator );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams( FPurchasedSchematicsInstigatorDelegate, TArray< TSubclassOf< class UFGSchematic > >, purchasedSchematic, class AFGCharacterPlayer*, purchaseInstigator, ESchematicUnlockFlags, unlockFlags );
 
 /** Holds info about a schematic and How much has been paid of on it. */
 USTRUCT()
@@ -74,6 +88,31 @@ struct FACTORYGAME_API FSchematicCategoryData
 };
 
 /**
+ * Scoped bulk schematic unlock can be used by the code that intends to unlock multiple schematics to commit all of them at once instead of unlocking them separately
+ * This prevents some race conditions and re-entries that could happen naturally when unlocking schematics that could result in other schematics being unlocked
+ * All schematics unlocks run scoped, and the parameters of the unlock are determined by the top level scoped schematic unlock
+ */
+class FScopedSchematicUnlockTransaction
+{
+	AFGSchematicManager* SchematicManager{};
+	TArray<TSubclassOf<UFGSchematic>> CurrentlyUnlockingSchematicList;
+	TSet<TSubclassOf<UFGSchematic>> CurrentlyUnlockingCurrentSchematicHashSet;
+	TSet<TSubclassOf<UFGSchematic>> CurrentlyUnlockingSchematicHashSet;
+	AFGCharacterPlayer* AccessInstigator{};
+	ESchematicUnlockFlags UnlockFlags{};
+	
+	friend class AFGSchematicManager;
+public:
+	explicit FScopedSchematicUnlockTransaction(AFGSchematicManager* schematicManager, AFGCharacterPlayer* accessInstigator, ESchematicUnlockFlags unlockFlags = ESchematicUnlockFlags::None);
+	~FScopedSchematicUnlockTransaction();
+
+	/** Adds a single schematic to this transaction */
+	void AddSchematic(const TSubclassOf<UFGSchematic>& schematic) const;
+	/** Adds multiple schematics to this transaction */
+	void AddSchematics(const TArrayView<const TSubclassOf<UFGSchematic>>& schematics) const;
+};
+
+/**
  * Keeps track of everything regarding schematics
  */
 UCLASS( Blueprintable, abstract, HideCategories=("Actor Tick",Rendering,Replication,Input,Actor) )
@@ -92,6 +131,7 @@ public:
 	/** Called when a player is granted a schematic and which player instigated the purchase, instigator is only valid on server */
 	UPROPERTY( BlueprintAssignable, Category = "Events|Schematics", DisplayName = "OnPurchasedSchematic" )
 	FPurchasedSchematicInstigatorDelegate PurchasedSchematicInstigatorDelegate;
+
 	/** Called when a player is granted schematics and which player instigated the purchase, instigator is only valid on server */
 	UPROPERTY( BlueprintAssignable, Category = "Events|Schematics", DisplayName = "OnPurchasedSchematics" )
 	FPurchasedSchematicsInstigatorDelegate PurchasedSchematicsInstigatorDelegate;
@@ -182,12 +222,13 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
 	bool IsSchematicPurchased( TSubclassOf< UFGSchematic > schematicClass, APlayerController* owningPlayerController = nullptr ) const;
 
-	/** Give the player access to one or more schematics. accessInstigator can be nullptr. */
+	/** Give the player access to a single schematic. accessInstigator can be nullptr */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
-	void GiveAccessToSchematic( TSubclassOf< UFGSchematic > schematicClass, class AFGCharacterPlayer* accessInstigator, bool blockTelemetry = false, bool bBypassAccessChecks = false );
+	void GiveAccessToSchematic( TSubclassOf< UFGSchematic > schematicClass, AFGCharacterPlayer* accessInstigator, ESchematicUnlockFlags unlockFlags = ESchematicUnlockFlags::None );
 
+	/** Gives the player access to the provided schematics using the provided unlock flags */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
-	void GiveAccessToSchematics( const TArray< TSubclassOf< UFGSchematic > >& schematicClasses, class AFGCharacterPlayer* accessInstigator, bool blockTelemetry = false, bool bBypassAccessChecks = false );
+	void GiveAccessToSchematics( const TArray< TSubclassOf< UFGSchematic > >& schematicClasses, AFGCharacterPlayer* accessInstigator, ESchematicUnlockFlags unlockFlags = ESchematicUnlockFlags::None );
 	
 	/** Gives you the base cost, after random, for a schematic */
 	UFUNCTION( BlueprintPure, DisplayName = "GetCostFor_Deprecated", Category = "Schematic", meta = ( DeprecatedFunction, DeprecationMessage = "Get the cost from the Schematic directly" ) )
@@ -256,6 +297,10 @@ public:
 	/** Resets schematics to their defaults. Used for resetting specific progressions for testing. */
 	void ResetSchematicsOfType( ESchematicType type );
 
+	/** Resets given previously purchased schematics to their original state. Will not revoke any unlocks! */
+	UFUNCTION(BlueprintCallable, Category = "Schematic")
+	void ResetPurchasedSchematics( const TArray<TSubclassOf<UFGSchematic>>& schematics );
+
 	/** Used to fix up old saves that are missing the built with recipe. */
 	TSubclassOf< class UFGRecipe > FixupSave_FindBuiltByRecipe( AActor* forActor );
 
@@ -283,15 +328,25 @@ public:
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Organization" )
 	ETechTierState GetTechTierState( int32 tier ) const;
-	
+
+	/** Called by AFGPlayerState to notify the schematic manager that the schematics have been purchased for a particular player on the client */
+	void NotifyPurchasedPlayerSpecificSchematics( const TArray<TSubclassOf<UFGSchematic>>& purchasedSchematics, AFGPlayerState* playerState, ESchematicUnlockFlags unlockFlags ) const;
 private:
+	friend class UFGSchematicManagerReplicationComponent;
+	friend class FScopedSchematicUnlockTransaction;
+	
+	void RegisterReplicationComponent( UFGSchematicManagerReplicationComponent* InReplicationComponent ) { mReplicationComponents.Add( InReplicationComponent ); }
+	void UnregisterReplicationComponent( UFGSchematicManagerReplicationComponent* InReplicationComponent ) { mReplicationComponents.Remove( InReplicationComponent ); }
+
+	void ReceiveInitialPurchasedSchematics( const TArray<TSubclassOf<UFGSchematic>>& purchasedSchematics );
+	void ReceivePurchasedSchematics( const TArray<TSubclassOf<UFGSchematic>>& purchasedSchematics, AFGCharacterPlayer* accessInstigator, ESchematicUnlockFlags unlockFlags );
+	void ReceiveSchematicsReset( const TArray<TSubclassOf<UFGSchematic>>& schematicsToReset );
+	
 	/** Populate list with all schematics */
 	void PopulateSchematicsLists();
 
 	UFUNCTION()
 	void OnRep_ActiveSchematic();
-	UFUNCTION()
-	void OnRep_PurchasedSchematic( TArray< TSubclassOf< UFGSchematic > > lastPurchasedSchematics );
 	UFUNCTION()
 	void OnRep_PaidOffOnSchematic();
 
@@ -300,7 +355,6 @@ private:
 
 	/** Find or remove a given schematic in the pay off schematic list. */
 	FSchematicCost* FindSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
-	void AddSchematicPayOff( TSubclassOf< class UFGSchematic > schematic, const TArray< FItemAmount >& amount );
 	void RemoveSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
 
 	/** Telemetry helper. */
@@ -319,20 +373,19 @@ private:
 	/** Called next tick after a call to TryUnlockNewSchematicsOfType to avoid spamming of this function when unlocking alot of things at the same time*/
 	void Internal_TryUnlockNewSchematicsOfType( ESchematicType schematicType );
 
-
+	void Internal_OpenSchematicUnlockTransaction( FScopedSchematicUnlockTransaction* transaction );
+	void Internal_CommitSchematicUnlockTransaction( const FScopedSchematicUnlockTransaction* transaction );
+	void Internal_AddSchematicsToTransaction( const TArrayView<const TSubclassOf<UFGSchematic>>& schematics ) const;
+	
+	/** Called when holding a give access to schematics lock to prevent re-entry caused by the unlock subsystem */
+	void Internal_CommitCurrentSchematicTransaction();
 protected:	
 	/** All schematics in the game. Populated early on both server and clients. */
 	UPROPERTY()
 	TArray< TSubclassOf< UFGSchematic > > mAllSchematics;
 
-	/** [FreiholtzK:Tue/11-07-2023] I don't think we need to have this. Feels unnecessary to save and replicate this. I kept the save specifier until I know it works without it.
-	  * We should be able to find the correct schematics with mAllSchematics/mPurchasedSchematics */
-	UE_DEPRECATED( 5.1, "Don't use this. We should be able to find all we need with mAllSchematics/mPurchasedSchematics" )
-	UPROPERTY( SaveGame )
-	TArray< TSubclassOf< UFGSchematic > > mAvailableSchematics;
-
-	/** Once schematic is purchased it ends up here */
-	UPROPERTY( EditDefaultsOnly, SaveGame, ReplicatedUsing = OnRep_PurchasedSchematic, Category = "Schematic" )
+	/** Once schematic is purchased it ends up here. This is Replicated using FGSchematicManagerReplicationComponent */
+	UPROPERTY( EditDefaultsOnly, SaveGame, Category = "Schematic" )
 	TArray< TSubclassOf< UFGSchematic > > mPurchasedSchematics;
 
 	/* This keeps track of what players have paid off on different schematics */
@@ -365,7 +418,13 @@ protected:
 	int32 mMaxAllowedTechTier = 6;
 
 	/** Internal bool to keep track of the state of the ship  */
-	bool mIsShipAtTradingPost; 
+	bool mIsShipAtTradingPost;
+
+	/** Current top level bulk schematic unlock transaction */
+	FScopedSchematicUnlockTransaction* mCurrentUnlockTransaction{};
+
+	UPROPERTY()
+	TArray<class UFGSchematicManagerReplicationComponent*> mReplicationComponents;
 
 #if WITH_EDITORONLY_DATA
 	// Schematics we shouldn't give when we use the cheat give all schematics in PIE and standalone.

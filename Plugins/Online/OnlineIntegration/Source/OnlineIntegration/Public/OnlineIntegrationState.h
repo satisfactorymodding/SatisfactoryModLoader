@@ -1,11 +1,11 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameplayTagAssetInterface.h"
 #include "MVVMViewModelBase.h"
-#include "OnlineIntegrationTypes.h"
+#include "Online/CoreOnline.h"
 
 #include "OnlineIntegrationState.generated.h"
 
@@ -17,7 +17,7 @@ class UOnlineIntegrationBackend;
 class UGameSessionInfo;
 
 /**
- * The entry point model for the entire Online Integration which glues everything together1`. More specialized models can be accessed through this model.  
+ * The entry point model for the entire Online Integration which glues everything together. Entry point for more specific models.  
  */
 UCLASS(BlueprintType)
 class ONLINEINTEGRATION_API UOnlineIntegrationState: public UMVVMViewModelBase
@@ -34,6 +34,7 @@ public:
 	TArray<UOnlineIntegrationBackend*> GetBackends() const;
 	UOnlineIntegrationBackend* GetBackendByIndex(int32 Index) const;
 	UOnlineIntegrationBackend* GetBackendByProvider(FName ServiceProvider);
+	UOnlineIntegrationBackend* GetBackendByOnlineServiceType(UE::Online::EOnlineServices type); // <FL>[KonradA]
 	USessionMigrationSequence* GetPendingSessionMigrationSequence() const;
 
 	ULocalUserInfo* GetFirstUserInfo() const;
@@ -44,6 +45,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	USessionDefinition* GetDefaultSessionDefinition();
+
+	const TArray<TObjectPtr<USessionDefinition>>& GetSessionDefinitions() const
+	{
+		return SessionDefinitions;
+	}
+
 protected:
 	UPROPERTY(BlueprintReadOnly, FieldNotify)
 	TObjectPtr<UOnlineIntegrationBackend> PlatformBackend;
@@ -65,4 +72,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify)
 	TArray<TObjectPtr<USessionDefinition>> SessionDefinitions;
+
+	FString ConvertServiceEnumToServiceProviderString(UE::Online::EOnlineServices type); //<FL>[KonradA]
 };

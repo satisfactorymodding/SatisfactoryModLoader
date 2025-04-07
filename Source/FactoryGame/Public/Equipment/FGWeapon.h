@@ -199,6 +199,7 @@ protected:
 
 	/** Input Actions */
 	void Input_Reload( const FInputActionValue& actionValue );
+	void Input_AmmoSwitch( const FInputActionValue& actionValue );
 
 public:
 	UPROPERTY( BlueprintAssignable )

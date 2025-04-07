@@ -91,6 +91,8 @@ AFGBuildableSubsystem* AFGBuildableSubsystem::Get(UWorld* world){ return nullptr
 AFGBuildableSubsystem* AFGBuildableSubsystem::Get(UObject* worldContext){ return nullptr; }
 AFGBuildable* AFGBuildableSubsystem::BeginSpawnBuildable(TSubclassOf<  AFGBuildable > inClass, const FTransform& inTransform){ return nullptr; }
 void AFGBuildableSubsystem::AddBuildable( AFGBuildable* buildable){ }
+void AFGBuildableSubsystem::AddFactoryTickHandler(IFGFactoryTickHandlerInterface* tickHandler){ }
+void AFGBuildableSubsystem::RemoveFactoryTickHandler(IFGFactoryTickHandlerInterface* tickHandler){ }
 void AFGBuildableSubsystem::OnDesignerBuildableSpawned(AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::AssignConveyorTickOrder(int32 id){ }
 void AFGBuildableSubsystem::MigrateConveyorGroupToChainActor(FConveyorTickGroup* tickGroup){ }

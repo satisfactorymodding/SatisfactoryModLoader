@@ -10,8 +10,10 @@ UOnlineIntegrationBackend* UOnlineIntegrationState::GetExternalBackend() const{ 
 TArray<UOnlineIntegrationBackend*> UOnlineIntegrationState::GetBackends() const{ return TArray<UOnlineIntegrationBackend*>(); }
 UOnlineIntegrationBackend* UOnlineIntegrationState::GetBackendByIndex(int32 Index) const{ return nullptr; }
 UOnlineIntegrationBackend* UOnlineIntegrationState::GetBackendByProvider(FName ServiceProvider){ return nullptr; }
+UOnlineIntegrationBackend* UOnlineIntegrationState::GetBackendByOnlineServiceType(UE::Online::EOnlineServices type){ return nullptr; }
 USessionMigrationSequence* UOnlineIntegrationState::GetPendingSessionMigrationSequence() const{ return nullptr; }
 ULocalUserInfo* UOnlineIntegrationState::GetFirstUserInfo() const{ return nullptr; }
 const UGameplayTagContainerViewModel& UOnlineIntegrationState::GetTagContainer() const{ return *NewObject<UGameplayTagContainerViewModel>(); }
 USessionDefinition* UOnlineIntegrationState::GetSessionDefinitionByName(FName SessionDefinition) const{ return nullptr; }
 USessionDefinition* UOnlineIntegrationState::GetDefaultSessionDefinition(){ return nullptr; }
+FString UOnlineIntegrationState::ConvertServiceEnumToServiceProviderString(UE::Online::EOnlineServices type){ return FString(); }

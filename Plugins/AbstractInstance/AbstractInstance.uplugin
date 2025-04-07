@@ -20,5 +20,12 @@
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault"
 		}
+	],
+	"Plugins":
+	[
+		{
+			"Name": "Wwise",
+			"Enabled": true
+		}
 	]
 }

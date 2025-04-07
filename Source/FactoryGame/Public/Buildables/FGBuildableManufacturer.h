@@ -110,7 +110,7 @@ public:
 	//~ Begin IFGFactoryClipboardInterface
 	bool CanUseFactoryClipboard_Implementation() override { return true; }
 	UFGFactoryClipboardSettings* CopySettings_Implementation() override;
-	bool PasteSettings_Implementation( UFGFactoryClipboardSettings* settings ) override;
+	bool PasteSettings_Implementation( UFGFactoryClipboardSettings* settings, class AFGPlayerController* player ) override;
 	//~ End IFGFactoryClipboardInterface
 
 	// Begin IFGRecipeProducerInterface

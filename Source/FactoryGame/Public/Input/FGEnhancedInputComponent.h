@@ -29,7 +29,11 @@ void UFGEnhancedInputComponent::BindActionByTag( const FGameplayTag& InputTag, E
 	if( const UFGInputSettings* InputSettings = UFGInputSettings::Get() )
 	{
 		// Try to find an input action associated with this tag
-		if( UInputAction* inputAction = InputSettings->GetInputActionForTag( InputTag ) )
+		const TSoftObjectPtr<UInputAction> inputActionAsset = InputSettings->GetInputActionForTag( InputTag );
+
+		// LoadSynchronous here is okay because the action should already be loaded by the Mapping Context bound, or if it is not loaded it will be loaded synchronously as a dependency
+		// for the mapping context immediately right after.
+		if( UInputAction* inputAction = inputActionAsset.LoadSynchronous() )
 		{
 			// Bind to it
 			BindAction( inputAction, TriggerEvent, Object, Func );

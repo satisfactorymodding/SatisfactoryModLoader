@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -14,6 +14,13 @@
 class UOnlineIntegrationSubsystem;
 class UOnlineIntegrationState;
 
+//<FL>[KonradA] avoid magic strings in ugc code. Those are taken from the engine.ini files
+#define NAME_ONLINE_BACKEND_PSN "PSN"
+#define NAME_ONLINE_BACKEND_XSX "Xbox"
+#define NAME_ONLINE_BACKEND_EPIC "Epic"
+//</FL.
+
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnBackendConnectionStatusChanged, UOnlineIntegrationBackend*, EOnlineBackendConnectionStatus); // <FL> [TranN] Handle disconnect
 /**
  * Represents one instance of an online integration backend and caches all the data pertaining to said backend.
  */
@@ -66,6 +73,8 @@ public:
 
 	UOnlineIntegrationSubsystem* GetOnlineIntegration() const;
 	UOnlineIntegrationState* GetOnlineIntegrationState() const;
+
+	FOnBackendConnectionStatusChanged OnBackendConnectionStatusChanged; // <FL> [TranN] Handle disconnect
 protected:
 	/**
 	 * Service provider name for this backend. Needs to be convertible to an UE::Online::EOnlineServices member.

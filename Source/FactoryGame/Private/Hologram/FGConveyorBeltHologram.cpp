@@ -18,6 +18,8 @@ AFGConveyorBeltHologram::AFGConveyorBeltHologram() : Super() {
 	this->mConnectionComponents[1] = nullptr;
 	this->mSnappedConnectionComponents[0] = nullptr;
 	this->mSnappedConnectionComponents[1] = nullptr;
+	this->mSnappedWallPassthrough[0] = nullptr;
+	this->mSnappedWallPassthrough[1] = nullptr;
 	this->mUpgradedConveyorBelt = nullptr;
 	this->mDefaultConveyorPoleRecipe = nullptr;
 	this->mDefaultConveyorWallPoleRecipe = nullptr;
@@ -26,6 +28,7 @@ AFGConveyorBeltHologram::AFGConveyorBeltHologram() : Super() {
 	this->mMaxSplineLength = 5600.1;
 	this->mMaxIncline = 35.0;
 	this->mBuildModeStraight = nullptr;
+	this->mBuildModeCurve = nullptr;
 	this->mConnectionArrowComponentDirection = EFactoryConnectionDirection::FCD_ANY;
 	this->mConnectionArrowComponent = nullptr;
 	this->mMesh = nullptr;
@@ -39,6 +42,8 @@ void AFGConveyorBeltHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProper
 	DOREPLIFETIME(AFGConveyorBeltHologram, mChildWallPoleHologram);
 	DOREPLIFETIME(AFGConveyorBeltHologram, mChildCeilingPoleHologram);
 	DOREPLIFETIME(AFGConveyorBeltHologram, mSnappedConnectionComponents);
+	DOREPLIFETIME(AFGConveyorBeltHologram, mSnappedWallPassthrough);
+	DOREPLIFETIME(AFGConveyorBeltHologram, mSnappedWallPassthroughConnectionIndex);
 	DOREPLIFETIME(AFGConveyorBeltHologram, mUpgradedConveyorBelt);
 	DOREPLIFETIME(AFGConveyorBeltHologram, mConnectionArrowComponentDirection);
 }
@@ -52,12 +57,13 @@ void AFGConveyorBeltHologram::OnInvalidHitResult(){ }
 void AFGConveyorBeltHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 bool AFGConveyorBeltHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGConveyorBeltHologram::AdjustForGround(FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
-void AFGConveyorBeltHologram::PreHologramPlacement(const FHitResult& hitResult){ }
-void AFGConveyorBeltHologram::PostHologramPlacement(const FHitResult& hitResult){ }
+void AFGConveyorBeltHologram::PreHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
+void AFGConveyorBeltHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
 bool AFGConveyorBeltHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGConveyorBeltHologram::Scroll(int32 delta){ }
 float AFGConveyorBeltHologram::GetHologramHoverHeight() const{ return float(); }
-void AFGConveyorBeltHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+void AFGConveyorBeltHologram::GetIgnoredClearanceActors(TSet< AActor* >& ignoredActors) const{ }
+bool AFGConveyorBeltHologram::ShouldIgnoreClearanceCheckForActor(AActor* actor) const{ return Super::ShouldIgnoreClearanceCheckForActor(actor); }
 void AFGConveyorBeltHologram::CheckBlueprintCommingling(){ }
 AFGHologram* AFGConveyorBeltHologram::GetNudgeHologramTarget(){ return nullptr; }
 bool AFGConveyorBeltHologram::CanTakeNextBuildStep() const{ return bool(); }
@@ -70,11 +76,13 @@ void AFGConveyorBeltHologram::CheckValidFloor(){ }
 void AFGConveyorBeltHologram::CheckValidPlacement(){ }
 void AFGConveyorBeltHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGConveyorBeltHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
+void AFGConveyorBeltHologram::ValidateConveyorBelt(){ }
 void AFGConveyorBeltHologram::PostConstructMessageDeserialization(){ }
 void AFGConveyorBeltHologram::SetupSnappedConnectionDirections() const{ }
 void AFGConveyorBeltHologram::OnRep_SplineData(){ }
 void AFGConveyorBeltHologram::UpdateSplineComponent(){ }
 void AFGConveyorBeltHologram::UpdateClearanceData(){ }
+void AFGConveyorBeltHologram::GenerateAndUpdateSpline(const FHitResult& hitResult){ }
 void AFGConveyorBeltHologram::OnRep_ConnectionArrowComponentDirection(){ }
 void AFGConveyorBeltHologram::AutoRouteSpline(const FVector& startConnectionPos,
 		const FVector& startConnectionNormal,
@@ -82,3 +90,4 @@ void AFGConveyorBeltHologram::AutoRouteSpline(const FVector& startConnectionPos,
 		const FVector& endConnectionNormal){ }
 bool AFGConveyorBeltHologram::ValidateIncline(){ return bool(); }
 bool AFGConveyorBeltHologram::ValidateMinLength(){ return bool(); }
+bool AFGConveyorBeltHologram::ValidateCurvature(){ return false; }

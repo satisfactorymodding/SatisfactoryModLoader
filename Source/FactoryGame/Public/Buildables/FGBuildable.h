@@ -44,6 +44,7 @@ static const FString MAIN_MESH_NAME( TEXT( "MainMesh" ) );
 // Replication graph related delegates
 DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnRegisteredPlayerChanged, class AFGBuildable*, class AFGCharacterPlayer* /* registered player */, bool /* bIsUseStateActive */ );
 
+DECLARE_DYNAMIC_MULTICAST_SPARSE_DELEGATE_OneParam(FOnBuildableReturnedToLightweightPool, AFGBuildable, mOnBuildableReturnedToLightweightPool, AActor*, PooledBuildable );
 
 /**
  * Production status of the factory, i.e. displayed on the indicator.
@@ -188,6 +189,9 @@ public:
 	virtual void OnConstruction( const FTransform& transform ) override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+#if WITH_EDITOR
+	virtual bool CanVisualizeBlueprintAsset() const override;
+#endif
 	// End AActor interface
 
 	// Begin IFGSaveInterface
@@ -201,11 +205,11 @@ public:
 	// End IFSaveInterface
 
 	// Begin IAbstractInstanceInterface
-	virtual TArray<struct FInstanceData> GetActorLightweightInstanceData_Implementation() override;
+	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() const override;
 	virtual bool DoesContainLightweightInstances_Implementation() override { return DoesContainLightweightInstances_Native(); }
 	virtual FTransform GetLightweightInstanceActorTransform_Implementation() const override { return GetActorTransform(); }
-		//mLightweightTransform; }
-	virtual FInstanceHandleArray GetLightweightInstanceHandles() const override { return FInstanceHandleArray{mInstanceHandles}; }
+	virtual FInstanceHandleArray GetLightweightInstanceHandles() const override;
+	virtual FInstanceHandleArray GetDynamicLightweightInstanceHandles() const override;
 	virtual void PostLazySpawnInstances_Implementation() override;
 	// End IAbstractInstanceInterface
 
@@ -242,6 +246,7 @@ public:
 	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Native() { return mFactorySkinClass; }
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin_Native();
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin_Implementation();
+	bool GetCanBeColored_Native() override;
 	bool GetCanBeColored_Implementation();
 	bool GetCanBePatterned_Implementation();
 	virtual bool IsColorApplicationDeferred() { return false; }
@@ -438,7 +443,7 @@ public:
 	 * Hides the buildable and disables the collision. Will hide instanced meshes and static instances as well
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Buildable" )
-	void SetBuildableHiddenInGame( bool hide = false );
+	virtual void SetBuildableHiddenInGame( bool hide = false, bool disableCollisionOnHide = true );
 
 	/** Helper function for getting buildable classes from recipes
 	*	@note Useful when generating child holograms based off their recipe
@@ -552,7 +557,7 @@ public:
 	TSoftClassPtr< UFGMaterialEffect_Build > GetBuildEffectTemplate() const;
 
 	/** Set from deferred spawn for special buildables that are just temporaries spawned by the lightweightBuildableSubsystem */
-	void SetIsLightweightTemporary( TArray< FInstanceHandle* >& instanceHandles, int32 indexOfRuntimeData );
+	void SetIsLightweightTemporary( TArray<FInstanceOwnerHandlePtr>& instanceHandles, int32 indexOfRuntimeData );
 	FORCEINLINE bool GetIsLightweightTemporary() const { return mIsLightweightTemporary; }
 	
 	/** When a lightweight temporary this index will be set to avoid having to search for the runtime data when its modified */
@@ -609,6 +614,22 @@ public:
 	void SetBuildEffectActor(AFGBuildEffectActor* BuildEffectActor) { mBuildEffectActor = BuildEffectActor; }
 	AFGBuildEffectActor* GetBuildEffectActor() const { return mBuildEffectActor; }
 	
+	/** Removes all lightweight instances currently owned by this buildable. Needs to be public to be accessible by lightweight buildable subsystem */
+	void Internal_CallRemoveInstances();
+	
+	/** Get the refundable cost for this building, not including any connected buildings. Consolidated. */
+	void GetDismantleRefundReturns( TArray< FInventoryStack >& out_returns ) const;
+	/** Get the refundable cost for a lightweight buildable of this type. This will be called on the CDO. Consolidated. */
+	void GetLightweightBuildableDismantleRefundReturns( const TSubclassOf<UFGRecipe>& builtWithRecipe, const FFGDynamicStruct& typeSpecificData, TArray<FInventoryStack>& out_returns ) const;
+
+	/** Applies a buildable-type specific metadata from a lightweight buildable to this temporary buildable */
+	virtual void ApplyLightweightTypeSpecificData( const struct FFGDynamicStruct& typeSpecificData );
+
+	/** Retrieves a buildable-type specific metadata from this buildable to store on a lightweight buildable */
+	virtual FFGDynamicStruct GetLightweightTypeSpecificData() const;
+
+	/** Creates lightweight instance data for a lightweight buildable representation of this buildable. Will be called on the CDO! */
+	virtual void CreateLightweightBuildableInstanceData( const struct FFGDynamicStruct& typeSpecificData, TArray<FInstanceData>& outLightweightInstanceData ) const;
 protected:
 	/** Blueprint event for when materials are updated by the buildable subsystem*/
 	UFUNCTION( BlueprintImplementableEvent, Category = "Buildable|Build Effect" )
@@ -664,10 +685,10 @@ protected:
 	 */
 	virtual bool VerifyDefaults( FString& out_message );
 
-	/** Get the refundable cost for this building, not including any connected buildings. Not consolidated. */
-	void GetDismantleRefundReturns( TArray< FInventoryStack >& out_returns ) const;
 	/** Get the multiplier for the refundable cost, e.g. for buildings that cost per length unit. */
 	virtual int32 GetDismantleRefundReturnsMultiplier() const;
+	/** Gets the multiplier for the refundable cost if this buildable is a lightweight. Will be called on the buildable CDO! */
+	virtual int32 GetDismantleRefundReturnsMultiplierForLightweight( const FFGDynamicStruct& typeSpecificData ) const;
 
 	/** Get all items to be returned from the buildings inventory on dismantle. Not consolidated. */
 	virtual void GetDismantleInventoryReturns( TArray< FInventoryStack >& out_returns ) const;
@@ -682,7 +703,7 @@ protected:
 
 	/** Get the widget used to interact with this buildable. */
 	UFUNCTION( BlueprintPure, Category = "Buildable|Interaction" )
-	FORCEINLINE class TSubclassOf< class UFGInteractWidget > GetInteractWidgetClass() const { return mInteractWidgetClass; }
+	FORCEINLINE class TSubclassOf< class UFGInteractWidget > GetInteractWidgetClass() const { return mInteractWidgetSoftClass.LoadSynchronous(); }
 
 	/** Toggles the pending dismantle material on buildable */
 	virtual void TogglePendingDismantleMaterial( bool enabled );
@@ -701,6 +722,12 @@ protected:
 	
 	/** Visually (CustomData / PIC ) does this building have "power". For now powered buildings this should always return true to light the emissive channel */
 	FORCEINLINE virtual float GetEmissivePower() { return 1.f; }
+
+	UFUNCTION( BlueprintCallable, BlueprintPure, Category = "Buildable|Hologram" )
+	static bool HasOverrideForHologramInClass( TSubclassOf<UFGItemDescriptor> OwnerBuilding, TSubclassOf< UFGItemDescriptor > HologramDescriptor );	
+
+	UFUNCTION( BlueprintCallable, Category = "Buildable|Hologram" )
+	virtual bool HasOverrideForHologram( TSubclassOf<UFGItemDescriptor> itemDescriptor ) const { return false; }
 	
 	UFUNCTION( BlueprintCallable, Category = "Buildable" )
 	TArray< UStaticMeshComponent* > CreateBuildEffectProxyComponents();
@@ -715,32 +742,28 @@ protected:
 	/* Spawns all instances in the lightweight instance system associated by this buildable. */
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable,Category ="Buildable|Instancing")
 	void SetupInstances( bool bInitializeHidden = false );
+
 	virtual void SetupInstances_Native( bool bInitializeHidden = false );
 
-	/* Tries to call the most efficient route for setting up instances. */
-	FORCEINLINE void CallSetupInstances( bool bInitializeHidden = false )
-	{
-		if ( !mLightweightInstancesRegistered )
-		{
-			mLightweightInstancesRegistered = true;
-			
-			/* Only call native to avoid blueprint VM */
-			if( !mHasSetupInstances )
-			{
-				SetupInstances_Native( bInitializeHidden );
-				return;
-			}
+	/** Adds a new dynamic instance handle to this buildables dynamic instances list. Instance will be cleaned up automatically when buildable is removed. Also see GetDynamicLightweightInstanceDataForBuildEffect */
+	void AddDynamicInstanceHandle(const FInstanceOwnerHandlePtr& NewInstanceHandle);
+	/** Adds dynamic instance handles to this buildables dynamic instances list. Instance will be cleaned up automatically when buildable is removed. Also see GetDynamicLightweightInstanceDataForBuildEffect */
+	void AddDynamicInstanceHandles(const TArray<FInstanceOwnerHandlePtr>& NewInstanceHandles);
 
-			SetupInstances( bInitializeHidden );
-		}
-	}
-	
+	/* Tries to call the most efficient route for setting up instances. */
+	void CallSetupInstances( bool bInitializeHidden = false );
+			
 	/* Removes all instances in the lightweight instance system associated by this buildable. */
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable,Category ="Buildable|Instancing")
 	void RemoveInstances();
 	virtual void RemoveInstances_Native();
 	/** When a buildable needs to be converted into a lightweight instance this is the way */
 	bool HandleLightweightAddition();
+
+#if WITH_EDITOR
+	/** Called during OnConstruction in Editor and EditorPreview worlds to create visualization for this buildable when it's BeginPlay will not be run */
+	virtual void CreateEditorVisualization();
+#endif
 
 private:
 	// TODO @Ben modding support make this available in runtime.
@@ -798,15 +821,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="Proximity")
 	float mIsConsideredForBaseWeightValue = 1.f;
+
+	UPROPERTY( BlueprintAssignable, Category="Buildable")
+	FOnBuildableReturnedToLightweightPool mOnBuildableReturnedToLightweightPool;
 	
 protected:
-	/* Begin css sparse data implementation */
-#if	WITH_EDITORONLY_DATA
-	UPROPERTY(instanced,EditDefaultsOnly)
-	UFGBuildableSparseDataObject* mBuildableSparseDataEditorObject;
-#endif
-	/* Assigned by post edit property */
-	UPROPERTY()
+	/* Sparse data for this buildable */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable", meta = (EditInline, DisplayName = "Buildable Sparse Data") )
 	UFGBuildableSparseDataObject* mBuildableSparseDataCDO;
 
 	UPROPERTY()
@@ -929,21 +950,15 @@ protected:
 	UPROPERTY()
 	uint8 mHasBeenRemovedFromSubsystem:1;
 
-#if WITH_EDITORONLY_DATA
-	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Buildable|Instances" )
-	UAbstractInstanceDataObject* mInstanceData;
-#endif
-	
-	UPROPERTY( VisibleDefaultsOnly )
+	/** Abstract instances configuration data for the buildable */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Instances", meta = (EditInline, DisplayName = "Instance Data") )
 	UAbstractInstanceDataObject* mInstanceDataCDO;
 
-protected:
-	/* Handle data */
-	TArray< struct FInstanceHandle* > mInstanceHandles;
-
+	/* All lightweight instance handles belonging to this buildable, both static (created from instance data) and dynamic (created in runtime) */
+	TArray<FInstanceOwnerHandlePtr> mInstanceHandles;
+	/** All dynamic lightweight instance handles belonging to this buildable. Dynamic instance handles are instances that are not created from instance data */
+	TArray<FInstanceOwnerHandlePtr> mDynamicInstanceHandles;
 	
-	
-protected:
 	/** Should affect the occlusion system .*/
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem" )
 	bool mAffectsOcclusion;
@@ -1002,16 +1017,11 @@ private:
 	TArray< UMeshComponent* > mCachedMainMeshes; //@todoGC Do we still use this? Probably not, check with Ben.
 
 	/** The widget that will present our UI. */
-	UPROPERTY( EditDefaultsOnly, Category = "Interaction", meta = ( EditCondition = mIsUseable ) )
-	TSubclassOf< class UFGInteractWidget > mInteractWidgetClass;
+	UPROPERTY( EditDefaultsOnly, Category = "Interaction", meta = ( DisplayName = "Interact Widget Class", EditCondition = mIsUseable ) )
+	TSoftClassPtr< class UFGInteractWidget > mInteractWidgetSoftClass;
 
-	/** Caches the number of factory components for sanity checking */
-	uint8 mNumFactoryConnections;
-
-	/** Caches the number of power components for sanity checking */
-	uint8 mNumPowerConnections;
-	/** Cached actual number of power components **/
-	uint8 mNumPowerConnectionsOnPlay;
+	/** Cached actual number of power components */
+	int32 mNumPowerConnectionsOnPlay;
 
 	/** Players interacting with this building */
 	UPROPERTY()
@@ -1111,6 +1121,12 @@ private:
 	UPROPERTY()
 	float mAlienOverClockingPitch_RTPC_DEPRECATED;
 #endif
+
+#if WITH_EDITORONLY_DATA
+	/** Visualization components used by this building. Automatically cleaned up when visualization is updated */
+	UPROPERTY(Transient)
+	TArray<UActorComponent*> VisualizationComponents;
+#endif
 	
 	// Editor tools
 #if WITH_EDITOR
@@ -1125,6 +1141,15 @@ private:
 
 	UPROPERTY( Replicated )
 	int32 mBlueprintBuildEffectID;
+
+#if	WITH_EDITORONLY_DATA
+	/** Deprecated, use Buildable Sparse Data instead */
+	UPROPERTY(Instanced)
+	UFGBuildableSparseDataObject* mBuildableSparseDataEditorObject_DEPRECATED;
+	/** Deprecated, use Instance Data instead */
+	UPROPERTY(Instanced)
+	UAbstractInstanceDataObject* mInstanceData_DEPRECATED;
+#endif
 };
 
 /** Definition for GetDefaultComponents. */

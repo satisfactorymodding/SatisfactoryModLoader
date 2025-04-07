@@ -110,9 +110,21 @@ public:
 	/**
 	 * We have sampled a new recipe
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState|Build" )
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
 	void OnRecipeSampled( TSubclassOf<class UFGRecipe> recipe );
 
+	/** Called whenever a buildable is sampled. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void OnBuildableSampled( class AFGBuildable* buildable );
+
+	/** Called whenever a vehicle is sampled. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void OnVehicleSampled( class AFGVehicle* vehicle );
+
+	/** Called whenever a lightweight buildable is sampled. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void OnLightweightBuildableSampled( struct FLightweightBuildableInstanceRef& buildableInstance );
+	
 	/** Redirected from the build gun. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
 	void BuildSampleRelease();
@@ -156,6 +168,9 @@ public:
 
 	/** Get the owning player state */
 	class AFGPlayerState* GetPlayerState() const;
+
+	/** Get the input mode of the owning player */
+	EInputDeviceType GetPlayerInputDeviceType() const;
 	
 	/** 
 	 * Get's current percentage of Build delay progress. 
@@ -196,8 +211,11 @@ public:
 	void ClearInputActions( class UEnhancedInputComponent* inputComponent );
 	virtual bool OnShortcutPressed( int32 shortcutIndex ) { return false; }
 protected:
-	/** If true, then we can sample buildings in this state */
-	virtual bool CanSampleBuildings() const;
+	/** If true, then we can sample buildables in this state */
+	virtual bool CanSampleBuildables() const;
+
+	/** If true, then we can sample vehicles in this state */
+	virtual bool CanSampleVehicles() const;
 	
 	/** If true, the we can sample customizations in this state */
 	virtual bool CanSampleCustomizations() const;
@@ -329,6 +347,9 @@ public:
 	/** Input Action Bindings */
 	void Input_PrimaryFire( const FInputActionValue& actionValue );
 	void Input_SecondaryFire( const FInputActionValue& actionValue );
+	// <FL> [KonradA] Split the Secondary Fire Callbacks to better support double bindings on gamepad
+	void Input_SecondaryFireCompleted( const FInputActionValue& actionValue );
+	// </FL>
 	void Input_ModeSelect( const FInputActionValue& actionValue );
 	void Input_ScrollAxis( const FInputActionValue& actionValue );
 	void Input_BuildSample( const FInputActionValue& actionValue );
@@ -445,6 +466,17 @@ public:
 
 	void GotoNoneState() { GotoState(EBuildGunState::BGS_NONE); } // i am not feeling good about this :( but it seems necessary in order to switch back to the build menu state after shortcut radial menu closes
 
+	/** Called whenever a buildable is sampled. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void OnBuildableSampled( class AFGBuildable* buildable );
+
+	/** Called whenever a vehicle is sampled. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void OnVehicleSampled( class AFGVehicle* vehicle );
+
+	/** Called whenever a lightweight buildable is sampled. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void OnLightweightBuildableSampled( struct FLightweightBuildableInstanceRef& buildableInstance );
 protected:
 	/** Add custom bindings for this equipment */
 	virtual void AddEquipmentActionBindings() override;
@@ -460,6 +492,9 @@ private:
 	/** Lets the server handle the action. */
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_PrimaryFire();
+
+	UFUNCTION( Server, Reliable )
+	void Server_PrimaryFireReleased();
 
 	/** Lets the server handle the action. */
 	UFUNCTION( Server, Reliable, WithValidation )
@@ -554,6 +589,13 @@ protected:
 	
 	bool mAllowWireMeshRayHits = false;
 
+	// <FL> [MartinC] Radius for the extra sphere trace used when aiming with the gamepad
+	UPROPERTY( EditDefaultsOnly, Category = "Gamepad Aim Assist" )
+	float mGamepadTraceRadius = 80.0f;
+	
+	UPROPERTY( EditDefaultsOnly, Category = "BuildGun", meta = (ToolTip = "Time to wait between rotation triggers with gamepad") )
+	float mHologramRotateCooldown = 0.1f;
+
 private:
 	/** All the states. */
 	UPROPERTY( Replicated )
@@ -572,6 +614,9 @@ private:
 	/** Result of the latest trace. */
 	UPROPERTY()
 	FHitResult mHitResult;
+
+	/** Time to wait between rotation triggers with gamepad */
+	float mCurrentRotateCooldown = -1;
 
 	/**
 	 * (Simulated)

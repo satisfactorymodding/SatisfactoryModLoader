@@ -36,6 +36,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Stun Spear", meta = ( DeprecatedFunction, DeprecationMessage = "Old function doing nothing, left to let Anim_1P compile. Use Local_Attack instead" ) )
 	FORCEINLINE void DoAttack() {}
 	
+	// <FL> [MartinC]
+	virtual void Equip( class AFGCharacterPlayer* character ) override;
+	virtual void UnEquip() override;
+	// </FL>
 protected:
 	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
 	
@@ -55,6 +59,11 @@ protected:
 
 	UFUNCTION( Unreliable, NetMulticast )
 	void Multicast_PlaySwingEffects( bool secondSwing );
+
+	/** <FL> [MartinC] Makes sure that the auto-attack timer is cleared */
+	UFUNCTION()
+	void StopAutoAttack( AActor* DeadActor );
+
 private:
 	/** Sphere collision component */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Stun Spear" )
@@ -66,6 +75,10 @@ private:
 	/** The noise to make when attacking with the spear. */
 	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
 	TSubclassOf< class UFGNoise > mAttackNoise;
+
+	/** <FL> [MartinC] Timer that handles the controller autoattack */
+	FTimerHandle mAutoAttackTimer;
+
 
 public:
 	/** Time of the first swing */

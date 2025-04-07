@@ -2,10 +2,6 @@
 
 #include "FGInventoryLibrary.h"
 
-UFGInventoryComponent* UFGInventoryLibrary::CreateInventoryComponent( AActor* owner, FName name){ return nullptr; }
-UFGInventoryComponent* UFGInventoryLibrary::CreateInventoryComponentOfClass( AActor* owner,
-																		  TSubclassOf<  UFGInventoryComponent > inClass,
-																		 FName name){ return nullptr; }
 void UFGInventoryLibrary::BreakInventoryStack(const FInventoryStack& stack,
 									  int32& out_numItems,
 									  FInventoryItem& out_item){ }
@@ -13,6 +9,7 @@ void UFGInventoryLibrary::BreakInventoryItem(const FInventoryItem& item,
 									 TSubclassOf<  UFGItemDescriptor >& out_itemClass,
 									 FFGDynamicStruct& out_itemState){ }
 FInventoryItem UFGInventoryLibrary::MakeInventoryItem(TSubclassOf<  UFGItemDescriptor > itemClass){ return FInventoryItem(); }
+FInventoryItem UFGInventoryLibrary::MakeInventoryItemWithState(TSubclassOf<class UFGItemDescriptor> itemClass, const FFGDynamicStruct& itemState){ return FInventoryItem(); }
 FInventoryStack UFGInventoryLibrary::MakeInventoryStack(int32 numItems, FInventoryItem item){ return FInventoryStack(); }
 float UFGInventoryLibrary::GetAmountConvertedByForm(int32 amount, EResourceForm form){ return float(); }
 FText UFGInventoryLibrary::GetProductionSuffixFromFormType(EResourceForm form){ return FText(); }
@@ -31,3 +28,6 @@ void UFGInventoryLibrary::GrabItemsFromInventoryAndCentralStorage( UFGInventoryC
 		bool takeFromInventoryBeforeCentralStorage, TSubclassOf<  UFGItemDescriptor> itemClass, int32 numItemsToRemove){ }
 int32 UFGInventoryLibrary::GrabItemFromCentralStorage(const FItemAmount& itemAmount, UFGInventoryComponent* destinationComponent, const int32 destinationIdx){ return int32(); }
 int32 UFGInventoryLibrary::MoveItemFromCentralStorage(const FItemAmount& itemAmount, UFGInventoryComponent* destinationComponent){ return int32(); }
+void UFGInventoryLibrary::DiscardInventoryContents(UFGInventoryComponent* inventoryComponent){  }
+bool UFGInventoryLibrary::IsAutoOpenTooltipEnabled(){ return bool(); }
+void UFGInventoryLibrary::SetAutoOpenTooltipMenu(bool Enable){  }

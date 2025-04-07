@@ -11,10 +11,82 @@
 #include "FGUseableInterface.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UI/FGPopupWidget.h"
+#include "Interfaces/IMessageSanitizerInterface.h"
 #include "FGBlueprintFunctionLibrary.generated.h"
+
+typedef UE::Online::FAccountId FAccountId;
+
+//<FL>[KonradA] Utility declarations to better chain and control blocking from Blueprint
+DECLARE_DYNAMIC_DELEGATE( FOnBlockOverlayClosed );
+
+UENUM( BlueprintType)
+enum class EBlockBackendTarget : uint8
+{
+	BBT_Platform = 0 UMETA( DisplayName = "Platform" ),
+	BBT_CrossPlay = 1 UMETA( DisplayName = "CrossPlay" )
+};
+//</FL>
+
+// <FL> [ZimmermannA]
+UENUM(BlueprintType)
+enum class EFGTargetPlatform : uint8
+{
+	TP_Windows			UMETA(DisplayName = "Windows"),
+	TP_Linux			UMETA(DisplayName = "Linux"),
+	TP_PS5				UMETA(DisplayName = "Playstation 5"),
+	TP_PS5_Pro			UMETA(DisplayName = "Playstation 5 Pro"),
+	TP_XSS_Lockhart		UMETA(DisplayName = "Xbox Series S (Lockhart)"),
+	TP_XSX_Anaconda		UMETA(DisplayName = "Xbox Series X (Anaconda)")
+};
+// </FL>
+
+//<FL>[KonradA]
+UENUM(BlueprintType)
+enum class EIntegrationStateCheckResultDesc : uint8
+{
+	// Valid State
+	ISC_Valid = 0 UMETA( DisplayName = "Valid" ),
+	// Platform is not authenticated when it should be (because a valid connection is present)
+	ISC_PlatformNoAuth = 1 UMETA( DisplayName = "Platform Not Authenticated" ),
+	// The platform remains authenticated but there is no connection to the internet- requires cache invalidation or reauth
+	ISC_PlatformImpossibleAuth = 2 UMETA( DisplayName = "Platform Disconnected but Authenticated " ),
+	// Epic is authenticated but the Platform has no connection. Since Epic Auth depends on Platform Privileges this is an error!
+	ISC_EpicImpossibleAuth = 3 UMETA( DisplayName = "Platform Disconnected but Epic Authenticated" ),
+	ISC_PendingAuthentication = 4 UMETA( DisplayName = "Pending Authentication" )
+};
+
+USTRUCT(BlueprintType)
+struct FIntegrationStateCheckResult
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite)
+	bool bPlatformConnected = false;
+	UPROPERTY( BlueprintReadWrite )
+	bool bPlatformAuthenticated = false;
+	UPROPERTY( BlueprintReadWrite )
+	bool bEpicConnected = false;
+	UPROPERTY( BlueprintReadWrite )
+	bool bEpicAuthenticated = false;
+	UPROPERTY( BlueprintReadWrite )
+	EIntegrationStateCheckResultDesc Result = EIntegrationStateCheckResultDesc::ISC_Valid;
+};
+//</FL>
+
+UENUM( BlueprintType, meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
+enum class EUGCVisibilityErrors : uint8
+{
+	UGCVE_NoErrors = 0 UMETA( DisplayName = "Can See Content" ),
+	UGCVE_UGCBlocked = 1 << 0 UMETA( DisplayName = "Cannot see any UGC" ), 
+	UGCVE_TextRestricted = 1 << 1 UMETA( DisplayName = "Cannot see Text communications" ),
+	UGCVE_BlockList = 1 << 2 UMETA( DisplayName = "Other Player is on Block List" ), 
+	UGCVE_NoExternalUGC = 1 << 3 UMETA( DisplayName = "Nobody edited this or we were the last editor- content is safe to show to restricted accounts" )
+};
+ENUM_CLASS_FLAGS( EUGCVisibilityErrors )
 
 class UDirectionalLightComponent;
 class UFXSystemAsset;
+
 UENUM( BlueprintType )
 enum class EOutlineColor : uint8
 {
@@ -28,6 +100,15 @@ enum class EOutlineColor : uint8
 	OC_RED							= 7		UMETA( DisplayName = "Red" ),
 	OC_DISMANTLE					= 8		UMETA( DisplayName = "Dismantle" ),
 	OC_SOFTCLEARANCEOVERLAP			= 9		UMETA( DisplayName = "Soft Clearance Overlap" ),
+};
+
+//<FL>[KonradA]
+UENUM(BlueprintType)
+enum class EUGCStringConversionResult : uint8
+{
+	USCR_NoFailures = 0 UMETA( DisplayName = "No Failures" ),
+	USCR_TooLong = 1 UMETA( DisplayName = "Too Long" ),
+	USCR_TooManyNumerics = 2 UMETA( DisplayName = "Too Many Numerics" )
 };
 
 // Information about an attachment for a given component
@@ -46,8 +127,10 @@ struct FACTORYGAME_API FFGComponentParentAttachmentInfo
 };
 
 DECLARE_DYNAMIC_DELEGATE_RetVal( bool, FLatentActionPredicate );
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnMessageProcessedDynamic, const FString&, SanitizedMessage);
+DECLARE_DYNAMIC_DELEGATE_OneParam( FOnMessageArrayProcessedDynamic, const TArray< FString >&, SanitizedMessages );
 
-// <FL> [WuttkeP] Interface to allow widgets to influence which child should be focused when using FindWidgetToFocus().
+	// <FL> [WuttkeP] Interface to allow widgets to influence which child should be focused when using FindWidgetToFocus().
 UENUM(BlueprintType)
 enum class EFGFocusReason : uint8
 {
@@ -123,6 +206,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Factory|Customization" )
 	static void GetAllComponentsInClass( const TSubclassOf<AActor> inClass, const TSubclassOf<UActorComponent> inActorComponentClass, TArray<UActorComponent*>& out_components, TMap<USceneComponent*, FFGComponentParentAttachmentInfo>& out_parentComponentMap );
 
+	/** Calculates the bounding box of the actor by combining all the components bounding boxes */
+	UFUNCTION( BlueprintCallable, Category = "Factory|Customization" )
+	static FBox GetCollisionBoundingBoxFromActorClass( const TSubclassOf<AActor> inClass, const FTransform& originTransform );
+	
 	/**
 	 * Does what Cheat_GetAllDescriptors does, but tries to do in in a more reliable way,
 	 * and not only hoping for the descriptor to be loaded in memory. This is probably slow!
@@ -363,6 +450,19 @@ public:
 	/** Finds the first parent widget of the provided child widget that is of the specified class. */
 	UFUNCTION( BlueprintCallable, meta = ( DefaultToSelf = "childWidget", DeterminesOutputType = "widgetClass" ), Category = "Widget" )
 	static UWidget* GetFirstParentWidgetOfClass( UWidget* childWidget, TSubclassOf< UWidget > widgetClass );
+
+	/** Finds the first parent widget of the provided child widget that has the specified name. */
+	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "childWidget", DeterminesOutputType = "widgetClass"), Category = "Widget")
+	static UWidget* GetFirstParentWidgetByName(UWidget* childWidget, FName Name);
+	// </FL>	
+
+	// <FL> [KonradA] Utility FUnctions to interface with the FGWidgetChild struct
+
+	UFUNCTION( BlueprintCallable, Category = "FGWidgetChild Utility" )
+	static UWidget* GetWidgetFromWidgetChild( FFGWidgetChild WidgetChild );
+	UFUNCTION( BlueprintCallable, Category = "FGWidgetChild Utility" )
+	static FName GetNameFromWidgetChild( FFGWidgetChild WidgetChild );
+
 	// </FL>	
 
 	/** Returns all items in a item category */
@@ -468,11 +568,16 @@ public:
 
 	/** Adds a popup to the queue. Allows the caller handle popup content creation. */
 	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( AutoCreateRefTerm = "CloseDelegate" ) )
-	static void AddPopupWithContent( APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, class UFGPopupWidgetContent* Content, EPopupId PopupID = PID_OK, UObject* popupInstigator = nullptr, bool restoreFocusOnClose = false ); // <FL> [WuttkeP] Added restoreFocusOnClose parameter.
+	static void AddPopupWithContent( APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate,
+									 class UFGPopupWidgetContent* Content, FKey OverrideConfirmKey, EPopupId PopupID = PID_OK, UObject* popupInstigator = nullptr,
+									 bool restoreFocusOnClose = false, bool manuallyHandleClosing = false );	// <FL> [WuttkeP] Added restoreFocusOnClose parameter.
 
 	/** Close the popup that is currently showing. If no popup is showing, don't do anything */	
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static void ClosePopup( APlayerController* controller );
+
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static bool HasActivePopup( APlayerController* controller );
 
 	/** Clear the popup queue of all popups of the given class */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
@@ -516,7 +621,10 @@ public:
 
 	/** Returns given map marker hidden ID used for identifying markers and if it's considered to be a valid marker ID*/
 	UFUNCTION( BlueprintPure,  Category = "Map" )
-	static int32 GetMapMarkerID( const FMapMarker& mapMarker, UPARAM( DisplayName = "HasValidID" ) bool& out_hasValidID );
+	static FGuid GetMapMarkerGUID( const FMapMarker& mapMarker, UPARAM( DisplayName = "HasValidID" ) bool& out_hasValidID );
+
+	UFUNCTION( BlueprintCallable, Category = "Widget" )
+	static void Set3DWidgetClass(TSubclassOf<UUserWidget> InWidgetClass,UWidgetComponent* Target);
 
 	/** 
 	*	Evaluates a math expression. Can handle white spaces between characters.
@@ -616,12 +724,14 @@ public:
 	static bool ShouldShowOfflineSessionWarning();
 
 	UFUNCTION( BlueprintPure, Category = "UI" )
-	static bool ShouldShowControllerUI();
+	static bool ShouldShowConsoleUI();
 
-	// <FL> [ZimmermannA] Utility function to check if we are using controller
-	UFUNCTION( BlueprintPure, Category = "UI" )
+	UFUNCTION( BlueprintPure, Category = "UI", meta=(WorldContext="WorldContextObject")  )
+	static bool ShouldShowGamepadUI(const UObject* WorldContextObject);
+
+		/** Returns true if we are using the controller. Must NOT be called on Dedicated Server. */
+	UFUNCTION( BlueprintPure, Category = "UI", meta=(WorldContext="WorldContextObject")  )
 	static bool IsUsingController( const UObject* WorldContextObject );
-	// </FL>
 
 	/** Get the FGGameInstance */
 	UFUNCTION( BlueprintPure, Category="Game", meta=(WorldContext="WorldContextObject") )
@@ -698,6 +808,10 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Input", meta = ( WorldContext = "WorldContextObject" ) )
 	static bool GetKeyState(UObject* WorldContextObject, FKey Key);
+
+	/** Check if a gamepad is attached */
+	UFUNCTION( BlueprintPure, Category = "Input" )
+	static bool IsGamepadAttached();
 	// </FL>
 
 	// <FL> [WuttkeP] Added function to notify button hint widgets of key hint changes.
@@ -705,6 +819,8 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Input", meta = ( WorldContext = "WorldContextObject" ) )
 	static void NotifyKeyHintsChanged( UObject* WorldContextObject );
 	// </FL>
+	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( WorldContext = "WorldContextObject" ) )
+	static void ToggleThumbstickUiNavigation( bool bEnabled );
 
 	/** Returns the underlying source string for this text as it is defined in the editor */
 	UFUNCTION( BlueprintPure, Category = "UI" )
@@ -714,6 +830,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Utilities|String", meta=(Keywords = "alphabetically, array"))
 	static void SortStrings( UPARAM( ref ) TArray< FString >& strings, bool sortAscending = true );
 	
+	/** Sort an array of list view entry widgets by y coordinates */
+	UFUNCTION(BlueprintCallable, Category="Utilities|ListView", meta=(Keywords = "array"))
+	static TArray<UUserWidget*> SortListViewEntryWidgets(const TArray<UUserWidget*>& EntryWidgets);
+
 	//////////////////////////////////////////////////////////////////////////
 	/// Factory Customization
 
@@ -837,4 +957,126 @@ public:
 	
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	static bool IsNavigationEvent( UPARAM( ref ) FFocusEvent& inEvent);
+
+	/*Editor only.*/
+	UFUNCTION( BlueprintCallable, Category = "Profiling" )
+	static void ChangeActorNameToLableName( AActor* Actor );
+
+	static void FilterText( const FString& text, const FOnMessageProcessed& completionDelegate );
+	UFUNCTION( BlueprintCallable)
+	static void FilterText( const FString& text, const FOnMessageProcessedDynamic& completionDelegate );
+	static void FilterTexts( const TArray< FString >& texts, const FOnMessageArrayProcessed& completionDelegate );
+	UFUNCTION( BlueprintCallable )
+	static void FilterTexts( const TArray<FString>& texts, const FOnMessageArrayProcessedDynamic& completionDelegate );
+
+	UFUNCTION( BlueprintCallable, meta=( Latent, WorldContext="WorldContextObject", LatentInfo="LatentInfo" ) )
+	static void WaitForFilterText( const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo, const FString& Text, UPARAM(DisplayName="Filtered") FString& out_Filtered );
+
+	UFUNCTION( BlueprintCallable, meta=( Latent, WorldContext="WorldContextObject", LatentInfo="LatentInfo" ) )
+	static void WaitForFilterTexts( const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo, const TArray<FString>& texts, UPARAM(DisplayName="Filtered") TArray<FString>& out_Filtered );
+
+	UFUNCTION(BlueprintCallable)
+	static FString MakeStringUGCCompatible( const FString& inText, EUGCStringConversionResult& conversionResult );
+	
+	UFUNCTION( BlueprintCallable )
+	static bool IsConsolePlatform();
+
+	UFUNCTION( BlueprintCallable, BlueprintPure )
+	static bool IsConsolePlatformPure();
+	
+	// <FL> [ZimmermannA]
+	UFUNCTION(BlueprintPure, Category="Platform")
+	static EFGTargetPlatform GetCurrentPlatform();
+	// </FL>
+
+	// <FL> [MartinC] Resolve the platform avatar URL of a given user
+	UFUNCTION( BlueprintPure, Category = "Platform" )
+	static FString GetPlatformAvatarURL( FName UserPlatform, FString UserPlatformAvatarURL, FString OnlineUserAvatarURL );
+	// </FL>
+
+	UFUNCTION(BlueprintCallable)
+	//<FL> [KonradA] Utility function to determine if a local player controller can see UGC by a specific user.
+	// This will check the following:
+	// 1. Can the player See any UGC at all?
+	// 2. Does the player have text Communication Restrictions?
+	// 3. Is the player that has last edited the UGC on a block list?
+	static EUGCVisibilityErrors UserCanSeeUGCInThisContext( AFGPlayerController* LocalPlayerController,
+															TArray< FLocalUserNetIdBundle > LastUGCEditBy );
+	UFUNCTION( BlueprintCallable )
+	static bool UGCIsBlurExcempt( EUGCVisibilityErrors VisibilityResult );
+
+	UFUNCTION(BlueprintCallable)
+	static bool UGCVisibilityErrorsIsMatch( UPARAM( meta = ( Bitmask, BitmaskEnum = EUGCVisibilityErrors ) ) int32 Bitmask,
+									 UPARAM( meta = ( Bitmask, BitmaskEnum = EUGCVisibilityErrors ) ) int32 Bitmask2 );
+
+	UFUNCTION(BlueprintCallable)
+	static FString ComposeLastEditedByStringForPlatform(const TArray<FLocalUserNetIdBundle> & LastEditedByData);
+
+	UFUNCTION( BlueprintCallable )
+	static void BlockUser( UOnlineUserInfo* BlockingUser, UOnlineUserInfo* UserToBlock );
+
+	UFUNCTION( BlueprintCallable )
+	static void BlockUserOn( UOnlineUserInfo* BlockingUser, UOnlineUserInfo* UserToBlock, EBlockBackendTarget BackendTarget,
+							 FOnBlockOverlayClosed  OnPopupClosed);
+	
+	UFUNCTION(BlueprintCallable)
+	static bool UserCanBeBlockedOn( UOnlineUserInfo* UserToBlock ,EBlockBackendTarget BackendTarget);
+	
+
+	// Shorthand for UI to check if user info A block user info B on all available backends
+	UFUNCTION( BlueprintCallable )
+	static bool UserIsBlockedFullyBy( UOnlineUserInfo* UserChecking, UOnlineUserInfo* UserToCheck );
+
+
+	UFUNCTION(BlueprintCallable)
+	static void FullReAuth( UObject* WorldContextObject );
+
+	UFUNCTION( BlueprintCallable )
+	static bool IsFrontEndLoadingScreenFinished(APlayerController* controller);
+
+	UFUNCTION( BlueprintCallable )
+	static bool CanDisplayPopup(APlayerController* controller);
+
+	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( WorldContext = "WorldContextObject" ) )
+	static void PopErrorHandlingSubsystem( UObject* WorldContextObject );
+	UFUNCTION( BlueprintCallable, BlueprintPure, Category = "UI", meta = ( WorldContext = "WorldContextObject" ) )
+	static bool HasPendingErrorHandlingSubsystem( UObject* WorldContextObject );
+
+
+	UFUNCTION( BlueprintCallable, Category = "Online", meta = ( WorldContext = "WorldContextObject" ) )
+	// Shorthand function to check if the underlying (console) platform is connected but not authenticated.
+	static bool IsPlatformConnectedButNotAuthenticated(UObject* WorldContext);
+
+	
+	UFUNCTION( BlueprintCallable, Category = "Online", meta = ( WorldContext = "WorldContextObject" ) )
+	static bool HasPlatformConnectionAndAuthenticationMismatch( UObject* WorldContext );
+
+	UFUNCTION( BlueprintCallable, Category = "Online", meta = ( WorldContext = "WorldContextObject" ) )
+	static bool IsFullyAuthenticatedAtPlatformServices( UObject* WorldContext );
+
+	UFUNCTION( BlueprintCallable, Category = "Online", meta = ( WorldContext = "WorldContextObject" ) )
+	static bool IsFullyAuthenticatedAtEOS( UObject* WorldContext );
+
+	UFUNCTION( BlueprintCallable, Category = "Online", meta = ( WorldContext = "WorldContextObject" ) )
+	static void CheckAndFixPlatformAuthentication( UObject* WorldContextObject );
+
+	UFUNCTION( BlueprintCallable, Category = "Online", meta = ( WorldContext = "WorldContextObject" ) )
+	static FString GetDetailedPlatformConnectionStateString( UObject* WorldContext );
+
+	UFUNCTION( BlueprintCallable, Category = "Online", meta = ( WorldContext = "WorldContextObject" ) )
+	static bool IsCurrentOnlineIntegrationStateValid(UObject* WorldContext, FIntegrationStateCheckResult& out_detailedResult );
+
+	UFUNCTION( BlueprintCallable, meta = (DisplayName = "IsA ( soft )"))
+	static bool IsAWithSoftRef( UObject* Object, TSoftClassPtr<UObject> SoftClass );
+	//</FL>
+
+	//<FL> [MartinC] Handles the activation/deactivation of the controller aim assist for a given weapon
+	UFUNCTION( BlueprintCallable, Category = "Aim Assist" )
+	static void ActivateAimAssistClient( APlayerController* PlayerController, TScriptInterface< IFGAimAssistClient > AimAssistClient,
+										 bool IsActive );
+
+	//<FL> KohnhorstT - enables or disables analog stick navigation in the UI (needed for the photo mode)
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	static void EnableAnalogUINavigation( bool bEnable );
+
 };

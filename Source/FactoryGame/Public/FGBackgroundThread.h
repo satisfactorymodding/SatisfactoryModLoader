@@ -815,7 +815,7 @@ struct FACTORYGAME_API FFGPoolType
 
 	/* Component placed in the blueprint to handle this instance. */
 	UPROPERTY( EditDefaultsOnly )
-	TSubclassOf< UFGPoolableProxyComponentBase > mProxyComponent = {};
+	TSoftClassPtr< UFGPoolableProxyComponentBase > mProxyComponent = {};
 	
 	/* Max Default count of instances in the world. */
 	UPROPERTY( EditDefaultsOnly, meta = ( EditCondition = "!bInstanced" ) )
@@ -833,7 +833,7 @@ struct FACTORYGAME_API FFGPoolType
     	
 	// TODO uncomment with ue 4.25
 	UPROPERTY( EditDefaultsOnly, Category = "Mesh" /*, meta = ( EditCondition = "Type == EPT_StaticMesh || Type == EPT_InstanceMesh") */)
-	UStaticMesh* mVisual_Mesh = nullptr;
+	TSoftObjectPtr<UStaticMesh> mVisual_Mesh = nullptr;
 
 	/* DEPRECATED */
 	UPROPERTY( EditDefaultsOnly )

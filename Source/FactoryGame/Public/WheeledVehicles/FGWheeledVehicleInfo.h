@@ -79,6 +79,10 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION()
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+	//<FL>[KonradA]
+	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray< struct FLocalUserNetIdBundle >(); }
+	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	//</FL>
 	// End IFGActorRepresentationInterface
 
 	// Begin AActor interface
@@ -100,6 +104,7 @@ public:
 	// Accessors and change delegates
 
 	AFGWheeledVehicle* GetVehicle() const;
+	UFUNCTION(BlueprintCallable,  Category = "Vehicle")
 	AFGWheeledVehicle* GetVehicleOnClient_MayReturnNull() const;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FStatusChanged, EVehicleStatus, status );

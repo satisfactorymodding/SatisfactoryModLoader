@@ -10,6 +10,18 @@
 #include "FGCreatureSubsystem.h"
 #include "FGLocalSettings.generated.h"
 
+// <FL> [WuttkeP] Added option to emulate console string variants in editor.
+UENUM()
+enum class EFGEditorStringVariantEmulation : uint8
+{
+	Default,
+	PS5,
+	XSX
+};
+
+DECLARE_MULTICAST_DELEGATE(FFGEditorStringVariantEmulationChanged);
+// </FL>
+
 /**
  * 
  */
@@ -72,6 +84,9 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats" )
 	EPlayerHostilityMode mSetCreatureHostility;
 	
+	/** Whenever "New" sticker in the Build Menu for the unlocked recipes should be suppressed in PIE */
+	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats" )
+	bool mSuppressNewRecipeSticker{true};
 };
 
 UCLASS( config = EditorPerProjectUserSettings, meta = ( DisplayName = "Satisfactory Local Dev Settings" ) )
@@ -81,6 +96,12 @@ class FACTORYGAME_API UFGLocalDevSettings : public UDeveloperSettings
 public:
 	static const UFGLocalDevSettings* Get() { return GetDefault<UFGLocalDevSettings>(); };
 	
+	// <FL> [WuttkeP] Added option to emulate console string variants in editor.
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+	// </FL>
+
 	UPROPERTY( EditAnywhere, config, Category = Tutorial, meta = (
 		ToolTip = "Skips the tutorial/onboarding steps if we play in PIE" ) )
 	bool mSkipTutoialInPIE = true;
@@ -109,6 +130,16 @@ public:
     bool mTrailerMode;
 
 	UPROPERTY( EditAnywhere, config, Category = Input, meta = ( 
-		ToolTip = "Enable input for all devices (keyboard, mouse & gamepad) and activate adaptive UI when switching between them." ) )
-	bool mEnableAdaptiveInputUI = false;
+		ToolTip = "Display UI as shown on consoles ie Main menu without Exit to Desktop button. See function: ShouldShowConsoleUI" ) )
+	bool mForceConsoleUI = false;
+
+	// <FL> [WuttkeP] Added option to emulate console string variants in editor.
+	UPROPERTY( EditAnywhere, config, Category = "UI", meta = (
+		ToolTip = "Show string variants for a specific platform in editor.\nWarning: disable this option before working with the UMG editor." ) )
+	EFGEditorStringVariantEmulation mStringVariantEmulation = EFGEditorStringVariantEmulation::Default;
+
+#if WITH_EDITOR
+	static FFGEditorStringVariantEmulationChanged mOnStringVariantEmulationChanged;
+#endif
+	// </FL>
 };

@@ -16,6 +16,8 @@ void UFGConveyorRemoteCallObject::Server_OnUse_Implementation( AFGBuildableConve
 void AFGBuildableConveyorBase::DebugDrawStalled() const{ }
 #if !UE_BUILD_SHIPPING
 void AFGBuildableConveyorBase::SetStalled(bool stall) const{ }
+void AFGBuildableConveyorBase::RegisterThroughputMonitor(AFGBuildableConveyorMonitor* monitor){ }
+void AFGBuildableConveyorBase::UnregisterThroughputMonitor(AFGBuildableConveyorMonitor* monitor){ }
 #endif
 #endif 
 #if UE_BUILD_SHIPPING
@@ -25,7 +27,9 @@ AFGBuildableConveyorBase::AFGBuildableConveyorBase() : Super() {
 	this->mItems.ArrayReplicationKey = -1;
 	this->mItems.ConveyorLength = 0.0;
 	this->mConnection0 = CreateDefaultSubobject<UFGFactoryConnectionComponent>(TEXT("ConveyorAny0"));
+	this->mConnection0->SetMobility(EComponentMobility::Static);
 	this->mConnection1 = CreateDefaultSubobject<UFGFactoryConnectionComponent>(TEXT("ConveyorAny1"));
+	this->mConnection1->SetMobility(EComponentMobility::Static);
 	this->mNextConveyor = nullptr;
 	this->mConveyorChainFlags = 0;
 	this->mConveyorChainActor = nullptr;
@@ -67,12 +71,11 @@ uint8 AFGBuildableConveyorBase::MaxNumGrab(float dt) const{ return uint8(); }
 uint8 AFGBuildableConveyorBase::EstimatedMaxNumGrab_Threadsafe(float estimatedDeltaTime) const{ return uint8(); }
 void AFGBuildableConveyorBase::GainedSignificance_Implementation(){ }
 void AFGBuildableConveyorBase::LostSignificance_Implementation(){ }
-void AFGBuildableConveyorBase::GainedSignificance_Native(){ }
-void AFGBuildableConveyorBase::LostSignificance_Native(){ }
 void AFGBuildableConveyorBase::SetupForSignificance(){ }
 void AFGBuildableConveyorBase::OnUseServerRepInput( AFGCharacterPlayer* byCharacter, float itemOffset, TSubclassOf<  UFGItemDescriptor > desiredItemClass){ }
 void AFGBuildableConveyorBase::BuildStaticItemInstances(){ }
 void AFGBuildableConveyorBase::DestroyStaticItemInstancesNextFrame(){ }
+void AFGBuildableConveyorBase::Upgrade_Implementation(AActor* newActor){ Super::Upgrade_Implementation(newActor); }
 float AFGBuildableConveyorBase::GetDistanceBetweenFirstConnection(){ return float(); }
 float AFGBuildableConveyorBase::GetDistanceBetweenLastConnection(){ return float(); }
 void AFGBuildableConveyorBase::SetConveyorChainActor(AFGConveyorChainActor* chainActor){ }

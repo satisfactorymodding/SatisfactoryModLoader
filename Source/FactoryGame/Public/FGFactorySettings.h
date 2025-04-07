@@ -97,6 +97,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
 	class UMaterialInstance* mDefaultOutputConnectionMaterial;
 
+	/** Material on hologram for automatic blueprint connections connections. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
+	class UMaterialInstance* mDefaultAutomaticBlueprintConnectionMaterial;
+
 	/** Material on hologram for directionally neutral connections. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
 	class UMaterialInstance* mDefaultNeutralConnectionMaterial;
@@ -113,6 +117,14 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryColor" )
 	FLinearColor mDefaultFactoryColor_Secondary;
 
+	/** Mesh used to visualize orientation. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
+	class UStaticMesh* mDefaultOrientationDirectionMesh;
+
+	/** Scale of mesh used to visualize orientation. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
+	float mDefaultOrientationDirectionMeshScale;
+	
 	/** Mesh used to visualize attachment points for connection. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
 	class UStaticMesh* mDefaultAttachmentPointConnectionMesh;
@@ -141,6 +153,10 @@ public:
     UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
     class UStaticMesh* mBlueprintDirectionIndicatorMesh;
 
+	/** Mesh used to visualize automatic blueprint connections. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
+	class UStaticMesh* mBlueprintAutoConnectionMesh;
+	
 	/** Material for blueprint direction indicator. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
 	class UMaterialInstance* mBlueprintDirectionIndicatorMaterial;
@@ -224,6 +240,10 @@ public:
 	/** Effect to play when a building is dismantled */ //[DavalliusA:Mon/01-04-2019] seems to never ba used? //@TODO: see if we can't remove this
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Build Effect" )
 	TSubclassOf< class UFGMaterialEffect_Build > mDismantleEffect;
+
+	/** Default build mode of holograms, unless overridden in the hologram. */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Build Mode" )
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mDefaultBuildMode;
 
 	/** Material used when looking at buildings for dismantle */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Dismantle" )

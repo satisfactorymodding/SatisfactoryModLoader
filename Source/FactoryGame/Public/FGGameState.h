@@ -17,6 +17,7 @@
 #include "FGGameState.generated.h"
 
 class UOnlineUserInfo;
+struct FLocalUserNetIdBundle;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FVisitedMapAreaDelegate, TSubclassOf< class UFGMapArea >, mapArea );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRestartTimeNotification, float, timeLeft );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnAutoSaveTimeNotification, float, timeLeft );
@@ -26,6 +27,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPlayerStateSlotDataUpdated, clas
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnClientSubsystemsIsValid );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSessionNameChanged, const FString&, sessionName );
 DECLARE_MULTICAST_DELEGATE_OneParam( FOnCreativeModeEnabled, bool );
+DECLARE_MULTICAST_DELEGATE( FOnSingleSubsystemReplicatedDelegate );
 
 // Minigame struct for minigames like tetromino packaging game 
 USTRUCT( BlueprintType )
@@ -221,15 +223,23 @@ public:
 
 	/** Getter for NoCost */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat" )
-	FORCEINLINE bool GetCheatNoCost() { return mCheatNoCost; }
+	FORCEINLINE bool GetCheatNoCost() const { return mCheatNoCost; }
 
 	/** Getter for NoPower */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat" )
-	FORCEINLINE bool GetCheatNoPower() { return mCheatNoPower; }
+	FORCEINLINE bool GetCheatNoPower() const { return mCheatNoPower; }
 
 	/** Getter for NoFuel */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat" )
-	FORCEINLINE bool GetCheatNoFuel() { return mCheatNoFuel; }
+	FORCEINLINE bool GetCheatNoFuel() const { return mCheatNoFuel; }
+
+	/** Returns true if "Turbo Production Mode" cheat is active, which makes workbench crafting faster */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat" )
+	FORCEINLINE bool GetCheatTurboProductionMode() const { return mCheatTurboProductionMode; }
+
+	/** Returns true if "Turbo Build Mode" cheat is active, which skips the build effect */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat" )
+	FORCEINLINE bool GetCheatTurboBuildMode() const { return mCheatTurboBuildMode; }
 
 	/** Setter for no power */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat" )
@@ -242,6 +252,14 @@ public:
 	/** Setter for no fuel */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat" )
 	void SetCheatNoFuel( bool noFuel );
+
+	/** Setter for "Turbo Production Mode" cheat */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat" )
+	void SetCheatTurboProductionMode( bool enabled );
+
+	/** Setter for "Turbo Build Mode" cheat */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat" )
+	void SetCheatTurboBuildMode( bool enabled );
 	
 	UFUNCTION()
 	void NotifyPlayerAdded( class AFGCharacterPlayer* inPlayer );
@@ -350,15 +368,28 @@ public:
 	UFUNCTION()
 	void OnRep_TetrominoLeaderBoard();
 
-	UFUNCTION()
-	void OnRep_RecipeManager();
+	UFUNCTION() void OnRep_RecipeManager();
+	UFUNCTION() void OnRep_SchematicManager();
+	UFUNCTION() void OnRep_MapManager();
+	UFUNCTION() void OnRep_ActorRepresentationManager();
+	UFUNCTION() void OnRep_ConveyorChainSubsystem();
+	UFUNCTION() void OnRep_BlueprintSubsystem();
 	
 	FORCEINLINE FString GetPublicTodoList() const { return mPublicTodoList; }
+//<FL>[KonradA] editet to support last edited by
+	FORCEINLINE TArray< FLocalUserNetIdBundle > GetPublicTodoListLastEditedBy() const { return mPublicTodoListLastEditedBy; }
 
 	// No server RPC call per se but used with server rpc from player state to update server value and spread to clients so figuerd the naming was good to separate from the other SetPublicTodoList. 
-	void Server_SetPublicTodoList( const FString& newTodoList );
+	void Server_SetPublicTodoList( const FString& newTodoList, const TArray< FLocalUserNetIdBundle >& lastEditedBy );
 	
-	void SetPublicTodoList( const FString& newTodoList ) { mPublicTodoList = newTodoList; }
+	void SetPublicTodoList( const FString& newTodoList, const TArray< FLocalUserNetIdBundle >& lastEditedBy )
+	{
+		mPublicTodoList = newTodoList;
+		//<FL>[KonradA]
+		mPublicTodoListLastEditedBy = lastEditedBy;
+		//</FL>
+	}
+//</FL>
 
 	UFUNCTION( BlueprintPure, Category = "Creative" )
 	bool IsCreativeModeEnabled() const { return mIsCreativeModeEnabled; }
@@ -379,6 +410,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_CreativeModeEnabled();
+
+	void UpdateServerRealTimeSeconds();
 
 	/** Helper to spawn subsystems. */
 	template< class C >
@@ -444,6 +477,18 @@ public:
 	UPROPERTY()
 	FOnClientSubsystemsIsValid mOnClientSubsystemsValid;
 
+	/** Called on the client when the schematic manager is available */
+	FOnSingleSubsystemReplicatedDelegate mOnSchematicManagerReplicated;
+	/** Called on the client when the recipe manager is available */
+	FOnSingleSubsystemReplicatedDelegate mOnRecipeManagerReplicated;
+	/** Called on the client when the map manager is available */
+	FOnSingleSubsystemReplicatedDelegate mOnMapManagerReplicated;
+	/** Called on the client when the representation manager is available */
+	FOnSingleSubsystemReplicatedDelegate mOnRepresentationManagerReplicated;
+	/** Called on the client when the conveyor chain subsystem is available */
+	FOnSingleSubsystemReplicatedDelegate mOnConveyorChainSubsystemReplicated;
+	/** Called on the client when the blueprint subsystem is available */
+	FOnSingleSubsystemReplicatedDelegate mOnBlueprintSubsystemReplicated;
 private:
 	/** Spawned subsystems */
 	UPROPERTY( SaveGame, Replicated )
@@ -452,9 +497,9 @@ private:
 	class AFGRailroadSubsystem* mRailroadSubsystem;
 	UPROPERTY( SaveGame, Replicated )
 	class AFGCircuitSubsystem* mCircuitSubsystem;
-	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_RecipeManager )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_RecipeManager )
 	class AFGRecipeManager* mRecipeManager;
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_SchematicManager )
 	class AFGSchematicManager* mSchematicManager;
 	UPROPERTY( SaveGame, Replicated )
 	class AFGGamePhaseManager* mGamePhaseManager;
@@ -462,9 +507,9 @@ private:
 	class AFGResearchManager* mResearchManager;
 	UPROPERTY( SaveGame, Replicated )
 	class AFGTutorialIntroManager* mTutorialIntroManager;
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ActorRepresentationManager )
 	class AFGActorRepresentationManager* mActorRepresentationManager;
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_MapManager )
 	class AFGMapManager* mMapManager;
 	UPROPERTY()
 	class AFGRadioactivitySubsystem* mRadioactivitySubsystem;
@@ -496,7 +541,7 @@ private:
 	class AFGCreatureSubsystem* mCreatureSubsystem;
 	UPROPERTY( Replicated )
 	class AFGScannableSubsystem* mScannableSubsystem;
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_BlueprintSubsystem )
 	class AFGBlueprintSubsystem* mBlueprintSubsystem;
 	UPROPERTY( SaveGame, Replicated )
 	class AFGGameRulesSubsystem* mGameRulesSubsystem;
@@ -509,7 +554,7 @@ private:
 
 	UPROPERTY( SaveGame, Replicated )
 	class AFGProjectAssembly* mProjectAssembly;
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_ConveyorChainSubsystem )
 	class AFGConveyorChainSubsystem* mConveyorChainSubsystem;
 	
 	/** This array keeps track of what map areas have been visited this game */
@@ -579,6 +624,14 @@ private:
 	/** Cheat bool for not requiring fuel */
 	UPROPERTY( SaveGame, Replicated )
 	bool mCheatNoFuel;
+
+	/** Cheat bool for faster manual crafting speed in the workbench */
+	UPROPERTY( SaveGame, Replicated )
+	bool mCheatTurboProductionMode;
+
+	/** Cheat bool for suppressing build effect when building */
+	UPROPERTY( SaveGame, Replicated )
+	bool mCheatTurboBuildMode;
 	
 	/** There can only be one trading post in the game, so we keep track it here so that we also can replicate it to client */
 	UPROPERTY( SaveGame, Replicated )
@@ -596,6 +649,13 @@ private:
 	UPROPERTY( Replicated )
 	int64 mServerLocalDateTimeTicksAtInit;
 
+	/** Number of seconds since the world has been loaded by the server. Updated periodically. Unlike WorldTimeSeconds, this value is NOT dilated, and is NOT affected by pausing */
+	UPROPERTY( Replicated )
+	double mReplicatedWorldRealTimeSeconds;
+
+	/** Timer handle for updating mReplicatedWorldRealTimeSeconds */
+	FTimerHandle mTimerHandle_UpdateServerRealTimeSeconds;
+
 	// @todok2 Might want to move this to a separate system like statistics subsystem or something.
 	/** The leaderboard for tetromino mini game */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_TetrominoLeaderBoard )
@@ -604,6 +664,11 @@ private:
 	/** The public todo list. Only replicated on initial send. Then RPCed through FGPlayerState. */
 	UPROPERTY( SaveGame, Replicated )
 	FString mPublicTodoList;
+	// <FL>[KonradA]
+	UPROPERTY( SaveGame, Replicated )
+	TArray< FLocalUserNetIdBundle > mPublicTodoListLastEditedBy;
+	// </FL>
+	
 	
 	/** If we have given the first player that joins the starting recipes or not. Based on which tier you start on */
 	UPROPERTY( SaveGame )

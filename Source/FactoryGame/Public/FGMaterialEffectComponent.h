@@ -20,11 +20,11 @@ struct FCostIngredientEffectActorInfo
 
 	/** Delay between this and the previous cost actor spawned */
 	UPROPERTY( BlueprintReadWrite )
-	float SpawnDelay;
+	float SpawnDelay = {};
 
 	/** Where this cost actor should travel to */
 	UPROPERTY( BlueprintReadWrite )
-	FVector TargetLocation;
+	FVector TargetLocation = FVector::ZeroVector;
 };
 
 USTRUCT()

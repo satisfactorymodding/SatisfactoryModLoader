@@ -13,7 +13,7 @@
  * 
  */
 UCLASS()
-class FACTORYGAME_API UFGOptionsValueController : public UUserWidget
+class FACTORYGAME_API UFGOptionsValueController : public UFGUserWidget
 {
 	GENERATED_BODY()
 
@@ -71,6 +71,9 @@ public:
 
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable )
 	bool HandleActivateDetails( UPARAM(ref) FFGKeyHint& KeyHint );
+
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	void OnOptionSelectInputValueCustom();
 	// </FL>
 
 	// Called before an option is applied. So we can take action before option is applied 
@@ -89,17 +92,23 @@ public:
 	UFUNCTION( BlueprintPure )
 	bool IsOptionEditable() const;
 	
+	// when true the highlight should be on the option slot (ie OptionsSlider) instead of the whole OptionRow
+	UFUNCTION( BlueprintPure )
+	bool ShouldFocusOptionSlotToEdit() const;
+	
 	bool CanSelectIndex( int32 newIndex );
 
 	UFUNCTION( BlueprintCallable )
 	bool ChangeSelection( FText currentKey, bool incrementSelection );
 
+	UFUNCTION( BlueprintPure )
 	FString GetSettingIndentifier() const;
 
 	TArray<FIntegerSelection> GetIntegerSelectionValues() const;
 	
 	bool GetBlockLastIndexFromManualSelection() const;
 	
+	UFUNCTION( BlueprintCallable )
 	EOptionType GetOptionType() const;
 
 protected:

@@ -5,61 +5,20 @@
 #include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
-#include "FGActorRepresentationInterface.h"
 #include "FGMinimapCaptureActor.h"
 #include "FGMapMarker.h"
 #include "Async/AsyncWork.h"
 #include "FGMapManager.generated.h"
 
 DECLARE_STATS_GROUP( TEXT( "MapManager" ), STATGROUP_MapManager, STATCAT_Advanced );
+
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogMapManager, Log, All );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnMapMarkerAdded, int32, markerIndex );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnMapMarkerRemoved, int32, markerIndex  );
+
+class UFGMapMarkerRepresentation;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnMapMarkerAdded, FGuid, markerGuid );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnMapMarkerRemoved, FGuid, markerGuid );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams( FOnMarkerHighlightUpdated, UFGActorRepresentation*, actorRepresentation, bool, highlighted, class AFGPlayerState*, playerState );
-
-USTRUCT()
-struct FFogOfWarQueuePair
-{
-	GENERATED_BODY()
-
-	FFogOfWarQueuePair() :
-		PlayerController( nullptr ),
-		CurrentProgressIndex( 0 )
-	{
-		CompressedFogOfWar.Reset();
-	}
-
-	UPROPERTY()
-	class AFGPlayerController* PlayerController;
-
-	// The index of the progress through the compressed data for this transfer
-	int32 CurrentProgressIndex;
-	// Array to hold the compressed data per transfer
-	TArray<uint8> CompressedFogOfWar;
-
-};
-
-USTRUCT()
-struct FMapMarkerQueuePair
-{
-	GENERATED_BODY()
-
-	FMapMarkerQueuePair() :
-		PlayerController( nullptr ),
-		CurrentProgressIndex( 0 )
-	{
-		MapMarkers.Reset();
-	}
-
-	UPROPERTY()
-	class AFGPlayerController* PlayerController;
-
-	// The index of the progress through the map marker data for this transfer
-	int32 CurrentProgressIndex;
-	// Array to hold the map marker data per transfer
-	TArray<FMapMarker> MapMarkers;
-
-};
 
 USTRUCT()
 struct FHighlightedMarkerPair
@@ -112,17 +71,10 @@ class FACTORYGAME_API AFGMapManager : public AFGSubsystem, public IFGSaveInterfa
 {
 	GENERATED_BODY()
 public:
-	/** Get the map manager, this should always return something unless you call it really early. */
-	static AFGMapManager* Get(UWorld* world);
-
-	/** Get the map manager from a world context, this should always return something unless you call it really early. */
-	UFUNCTION(BlueprintPure, Category = "Map", DisplayName = "GetMapManager", Meta = (DefaultToSelf = "worldContext"))
-	static AFGMapManager* Get(UObject* worldContext);
-
-public:
 	AFGMapManager();
 
 	// Begin AActor interface
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	virtual void Tick( float dt ) override;
@@ -139,60 +91,70 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
+	/** Get the map manager, this should always return something unless you call it really early. */
+	static AFGMapManager* Get(UWorld* world);
+
+	/** Get the map manager from a world context, this should always return something unless you call it really early. */
+	UFUNCTION(BlueprintPure, Category = "Map", DisplayName = "GetMapManager", Meta = (DefaultToSelf = "worldContext"))
+	static AFGMapManager* Get(UObject* worldContext);
+
+	/* *Returns the texture used for Fog Of War */
 	UFUNCTION( BlueprintPure, Category = "Fog of War" )
-	FORCEINLINE class UTexture2D* GetFogOfWarTexture() const { return mFogOfWarTexture; }
-
-	/** Puts a player controller in the transfer queue awaiting fog of war transfer  */
-	void RequestFogOfWarData( class AFGPlayerController* playerController );
-
-	/** Transfers fog of war data via player controller  */
-	void TransferFogOfWarData();
-	/** Transfers map marker data via player controller  */
-	void TransferMapMarkerData();
-
-	/** Receive fog of war data via player controller  */
-	void SyncFogOfWarChanges( const TArray<uint8>& fogOfWarRawData, int32 finalIndex );
-	/** Receive map marker data via player controller  */
-	void SyncMapMarkerChanges( const TArray<FMapMarker>& mapMarkers );
-
-	// Cheats
-	void RevealMap();
-	void HideMap();
-
-	/** Return true if we could add a map marker. False if we have reached marker limit */
-	UFUNCTION( BlueprintCallable, Category=Map )
-	UPARAM( DisplayName = "Success" ) bool AddNewMapMarker( const FMapMarker& mapMarker, FMapMarker& out_NewMapMarker  );
-
-	/** Adds a new marker to the system. This function is NEVER meant to trigger remote calls that adds markers.
-	 *	Just a local add and whatever local changes we want to trigger after that */ 
-	void AddIndexedMapMarker( const FMapMarker& mapMarker );
-
-	void SyncMapMarkerAdded( const FMapMarker& mapMarker );
-
-	UFUNCTION( BlueprintCallable, Category=Map )
-	void UpdateMapMarker( const FMapMarker& mapMarker, bool localUpdateOnly = false );
-
-	UFUNCTION( BlueprintCallable, Category=Map )
-	void GetMapMarkers( TArray<FMapMarker>& out_mapMarkers );
-	UFUNCTION( BlueprintPure, Category=Map )
-	int32 GetMaxNumMapMarkers() const { return mMaxNumMapMarkers; }
+	FORCEINLINE UTexture2D* GetFogOfWarTexture() const { return mFogOfWarTexture; }
 	
-	UFUNCTION( BlueprintPure, Category=Map )
-	int32 GetNumMapMarkers() const;
-	UFUNCTION( BlueprintPure, Category=Map )
+	/** Returns the maximum number of map markers that can be created */
+	UFUNCTION( BlueprintPure, Category = "Map" )
+	FORCEINLINE int32 GetMaxNumMapMarkers() const { return mMaxNumMapMarkers; }
+
+	/** Returns the number of map markers that are currently visible */
+	UFUNCTION( BlueprintPure, Category = "Map" )
+	FORCEINLINE int32 GetNumMapMarkers() const { return mMapMarkers.Num(); }
+
+	/** Returns the ID of the local player */
+	FORCEINLINE FGuid GetLocalPlayerID() const { return mLocalPlayerID; }
+
+	/** Returns all map markers that are currently present */
+	UFUNCTION( BlueprintCallable, Category = "Map" )
+	void GetMapMarkers( TArray<FMapMarker>& out_mapMarkers );
+
+	/** Returns true if new map markers can be added, and false otherwise */
+	UFUNCTION( BlueprintPure, Category = "Map" )
 	bool CanAddNewMapMarker() const;
 
-	UFUNCTION( BlueprintCallable, Category=Map )
+	/** Creates a new map marker with the data provided in the existing marker. Will return the ID for the created marker and true if the marker was created */
+	UFUNCTION( BlueprintCallable, Category = "Map" )
+	bool AddNewMapMarker( const FMapMarker& mapMarker, FMapMarker& out_NewMapMarker  );
+
+	/** Updates existing map marker on the map. Can be called on the client, in which case the request will be proxied to the server */
+	UFUNCTION( BlueprintCallable, Category = "Map" )
+	void UpdateMapMarker( const FMapMarker& mapMarker, bool localUpdateOnly = false );
+	
+	/** Removes map marker from the map. Can be called on the client, in which case the request will be proxied to the server */
+	UFUNCTION( BlueprintCallable, Category = "Map" )
 	void RemoveMapMarker( const FMapMarker& mapMarker );
-	void RemoveMapMarkerOnIndex( int32 index );
 
+	/** Updates the visibility of the map markers in the world */
+	UFUNCTION( BlueprintCallable, Category = "Map" )
 	void SetMapMarkerComponentsVisible( bool visible );
-	void SpawnMapMarkerObjectOfType( const FMapMarker& mapMarker );
-	void RemoveMapMarkerObjectOfType( const FMapMarker& mapMarker );
 
+	/** Creates the map marker, or updates it if it already exists. MarkerGUID must already be set on the marker */
+	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Map" )
+	void Authority_UpdateMapMarker( const FMapMarker& mapMarker );
+	
+	/** Removes Map Marker by it's ID. Should only be called on the Server */
+	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Map" )
+	void Authority_RemoveMapMarkerByID( const FGuid& markerGuid );
+
+	/** Attempts to resolve which map marker was hit from the hit result. Returns true if marker was found and populated */
+	UFUNCTION( BlueprintCallable, Category = "Map" )
 	bool FindMapMarkerFromHitResult( const FHitResult& hitResult, FMapMarker& out_mapMarker );
-	class UFGMapMarkerRepresentation* FindMapMarkerRepresentation( const FMapMarker& mapMarker ); 
-	class UFGMapMarkerRepresentation* FindMapMarkerRepresentation( const int32 mapMarkerID ); 
+
+	/** Attempts to retrieve the representation for the map marker by it's GUID */
+	UFUNCTION( BlueprintPure, Category = "Map" )
+	UFGMapMarkerRepresentation* FindMapMarkerRepresentation( const FMapMarker& mapMarker );
+
+	/** Attempts to retrieve the representation for the map marker by it's GUID */
+	UFGMapMarkerRepresentation* FindMapMarkerRepresentation( const FGuid mapMarkerGUID ); 
 
 	UFUNCTION( BlueprintPure, Category=MapMarker )
 	UPARAM(DisplayName = "HighlightColor") FLinearColor IsMarkerHighlighted( const FMapMarker& mapMarker, UPARAM(DisplayName = "IsHighlighted") bool& out_IsHighlighted, UPARAM(DisplayName = "HighlightedByLocalPlayer") bool& out_HighlightedByLocalPlayer );
@@ -202,7 +164,7 @@ public:
 	void OnMarkerHighlightUpdated( class AFGPlayerState* fgPlayerState, UFGActorRepresentation* actorRepresentation, bool highlighted );
 	void HighlightMapMarkerInstance( class UHierarchicalInstancedStaticMeshComponent* component, int32 instanceIndex, bool highlighted, FLinearColor color );
 	void OnSetHighLightMarker( class AFGPlayerState* fgPlayerState, UFGActorRepresentation* actorRepresentation );
-	void OnSetHighLightMarker( class AFGPlayerState* fgPlayerState, int32 markerID );
+	void OnSetHighLightMarker( class AFGPlayerState* fgPlayerState, FGuid markerGUID );
 	UStaticMeshComponent* SpawnHighLightMarkerMeshComp();
 	UNiagaraComponent* SpawnHighLightMarkerNiagaraComponent( const FVector& location );
 	void SyncSetHighLightMarker( class AFGPlayerState* fgPlayerState, UFGActorRepresentation* actorRepresentation );
@@ -213,24 +175,40 @@ public:
 	void UpdateHoveredMapMarker( const FHitResult& hitResult );
 	void SetMapMarkerHovered( TPair< class UHierarchicalInstancedStaticMeshComponent*, int32> instancedMeshPair, bool enabled );
 	void ClearHoveredMapMarker();
-
 	void MapToHighlightedMarker( UFGActorRepresentation* actorRepresentation );
-	void RequestMapMarkerData( class AFGPlayerController* playerController );
 
-	UPROPERTY( BlueprintAssignable )
-	FOnMapMarkerAdded mOnMapMarkerAdded;
-	UPROPERTY( BlueprintAssignable )
-	FOnMapMarkerRemoved mOnMapMarkerRemoved;
-	UPROPERTY()
-	FOnMarkerHighlightUpdated mOnMarkerHighlightUpdated;
-
-private:
-	void UpdateMarkerComponentVisiblity();
-	void SetMarkerComponentVisiblity( float opacity );
+	/** Returns a reference to the raw FOW data array */
+	FORCEINLINE const TArray<uint8>& GetFogOfWarRawData() const { return mFogOfWarRawData; }
 	
+	void UpdateFogOfWarRawData( const TArray<uint8>& newFogOfWarRawData );
+
+	/** Overwrites all of the fog of war data with the provided value. 0 means hidden, 0xFF means fully revealed */
+	void ReplaceFogOfWarData(uint8 newFogOfWarData);
+public:
+	/** Broadcast when map marker is added locally */
+	UPROPERTY( BlueprintAssignable, Category = "Map" )
+	FOnMapMarkerAdded mOnMapMarkerAdded;
+
+	/** Broadcast when map marker is updated locally. Not called when the marker is added*/
+	UPROPERTY( BlueprintAssignable, Category = "Map" )
+	FOnMapMarkerAdded mOnMapMarkerUpdated;
+
+	/** Broadcast when map marker is removed locally */
+	UPROPERTY( BlueprintAssignable, Category = "Map" )
+	FOnMapMarkerRemoved mOnMapMarkerRemoved;
+
+	/** Broadcast when the highlight status is changed for a specific marker */
+	UPROPERTY( BlueprintAssignable, Category = "Map" )
+	FOnMarkerHighlightUpdated mOnMarkerHighlightUpdated;
+private:
+	void SpawnMapMarkerObjectOfType( const FMapMarker& mapMarker );
+	void RemoveMapMarkerObjectOfType( const FMapMarker& mapMarker );
+	void CreateOrUpdateMarkerRepresentation( const FMapMarker& mapMarker );
+	
+	void UpdateMarkerComponentVisibility();
+
 	/** Setups the fog of war texture */
 	void SetupFogOfWarTexture();
-	void InitialFogOfWarRequest();
 	void SetupRepresentationManager();
 	void BindActorRepresentationManager( class AFGActorRepresentationManager* representationManager );
 
@@ -239,36 +217,41 @@ private:
 	FVector2D GetMapPositionFromWorldLocation( FVector worldLocation );
 	float GetMapDistanceFromWorldDistance( float worldDistance );
 	void DrawCircle( FVector2D centerPoint, float radius, float gradientHeightModifier, bool useGradientFalloff );
-	
-	void InitialMapMarkerRequest();
 
 	UFUNCTION()
 	void OnActorRepresentationAdded( class UFGActorRepresentation* actorRepresentation );
-
 	UFUNCTION()
 	void OnActorRepresentationUpdated( class UFGActorRepresentation* actorRepresentation );
-	
 	void OnActorRepresentationFOWUpdated( class UFGActorRepresentation* actorRepresentation );
-
 	UFUNCTION()
 	void OnActorRepresentationRemoved( class UFGActorRepresentation* actorRepresentation );
-
 	UFUNCTION()
 	void OnPlayerStateSlotDataUpdated( class AFGPlayerState* playerState );
 
 	void RecreateSavedMarkers();
-
 	void RefreshHighlightedMarkers();
 
+	void Local_CreateOrUpdateMarkerRepresentation(const FMapMarker& mapMarker);
+	void Local_RemoveMarkerRepresentationById(const FGuid& markerGuid);
+
+	/** Broadcast to create or update the provided map marker */
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_CreateUpdateMapMarker(const FMapMarker& mapMarker);
+
+	/** Broadcast to remove the map marker by it's ID */
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_RemoveMapMarker(const FGuid& mapMarkerGUID);
+
+	/** Make sure map markers for the initial creation are initialized once all of the relevant data is available */
+	UFUNCTION()
+	void CreateMapMarkersForInitialReplication();
 private:
-	
 	/** The raw pixel data for the fog of war texture. Each element represents a channel for a pixel */
 	UPROPERTY( SaveGame )
 	TArray<uint8> mFogOfWarRawData;
-	UPROPERTY()
-	TArray<uint8> mClientFogOfWarBuffer;
 
-	UPROPERTY( SaveGame )
+	/** Map markers that are currently saved. Replicated only once on join, upcoming replications are handled by multicasts */
+	UPROPERTY( SaveGame, Replicated )
 	TArray<FMapMarker> mMapMarkers;
 
 	/** The size of the raw pixel data array */
@@ -286,6 +269,11 @@ private:
 	UPROPERTY()
 	AFGMinimapCaptureActor* mCachedMinimapCaptureActor;
 
+	/** ID of the local player used to tell markers created by this player apart from other players */
+	FGuid mLocalPlayerID;
+	/** True if we have already create map markers for initial replication */
+	bool bCreatedInitialMapMarkers{false};
+
 	/** Fog of war config values used for debugging */
 	float mLowestWorldLocation;
 	float mHighestWorldLocation;
@@ -295,12 +283,6 @@ private:
 	bool mEnableFogOfWarRevealCalculations;
 	bool mEnableFogOfWarTextureUpdates;
 
-	/** Queue to handle clients waiting for fog of war transfer */
-	UPROPERTY()
-	TArray<FFogOfWarQueuePair> mFogOfWarTransferQueue;
-	/** Queue to handle clients waiting for map marker transfer */
-	UPROPERTY()
-	TArray<FMapMarkerQueuePair> mMapMarkerTransferQueue;
 
 	/** Actor representation manager to get representations updates to calculate fog of war data  */
 	UPROPERTY( Transient )
@@ -335,7 +317,7 @@ private:
 	FAsyncTask<class FFogOfWarTask>* mFOWAsyncTask;
 
 	TArray<FFOWData> mFOWDrawQueue;
-
+	
 	UPROPERTY()
 	TMap<UFGActorRepresentation*,FVector> mActorMapToLocation;
 };

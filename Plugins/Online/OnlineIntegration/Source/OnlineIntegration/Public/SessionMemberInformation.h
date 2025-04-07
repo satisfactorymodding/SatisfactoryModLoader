@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -34,12 +34,26 @@ public:
 	// Do not call these setters from the outside, they are meant for internal use only.
 	void SetPlayerState(APlayerState* InPlayerState);
 	void SetOnlineUserInfo(UOnlineUserInfo* InOnlineUserInfo);
+	void SetPlayingPlatformName(const FName& InPlayingPlatformName); // <FL> [TranN] See FGPlayerState::mPlayingPlatformName
+	void SetPlatformAvatarURL(const FString& InPlatformAvatarURL);	// <FL> [MartinC] See FGPlayerState::mPlatformAvatarURL
 
+	UFUNCTION(BlueprintCallable)
+	void ShowProfileUI();
 protected:
 	
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Category="Session Member")
-	TObjectPtr<APlayerState> PlayerState;
+	TObjectPtr<class APlayerState> PlayerState;
 
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Category="Session Member")
 	TObjectPtr<UOnlineUserInfo> OnlineUserInfo;
+
+	// <FL> [TranN] See FGPlayerState::mPlayingPlatformName
+	UPROPERTY(BlueprintReadOnly, FieldNotify, Category="Session Member")
+	FName PlayingPlatformName;
+	// </FL>
+
+	// <FL> [MartinC] See FGPlayerState::mPlatformAvatarURL
+	UPROPERTY(BlueprintReadOnly, FieldNotify, Category = "Session Member")
+	FString PlatformAvatarURL;
+	// </FL>
 };

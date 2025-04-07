@@ -12,9 +12,11 @@ AFGBuildableConveyorBelt::AFGBuildableConveyorBelt() : Super() {
 	this->mCollisionProxyMesh = nullptr;
 	this->mMeshLength = 0.0;
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
+	this->mSplineComponent->SetMobility(EComponentMobility::Static);
 	this->mSoundSplineComponent = nullptr;
 	this->mSplineAudioEvent = nullptr;
 	this->mVisibilityMeshComponent = CreateDefaultSubobject<UFGConveyorBeltVisibilityMesh>(TEXT("VisibilityMesh"));
+	this->mVisibilityMeshComponent->SetMobility(EComponentMobility::Movable);
 	this->PhysicalMaterial = nullptr;
 	this->mHologramClass = AFGConveyorBeltHologram::StaticClass();
 	this->mSplineComponent->SetupAttachment(RootComponent);
@@ -30,8 +32,7 @@ void AFGBuildableConveyorBelt::GainedSignificance_Implementation(){ }
 void AFGBuildableConveyorBelt::LostSignificance_Implementation(){ }
 float AFGBuildableConveyorBelt::GetSignificanceRange(){ return float(); }
 void AFGBuildableConveyorBelt::SetupForSignificance(){ }
-void AFGBuildableConveyorBelt::UpdateMeshLodLevels(int32 newLodLevel){ }
-TArray<FInstanceData> AFGBuildableConveyorBelt::GetActorLightweightInstanceData_Implementation(){ return TArray<FInstanceData>(); }
+TArray<FInstanceData> AFGBuildableConveyorBelt::GetActorLightweightInstanceData_Implementation() const{ return TArray<FInstanceData>(); }
 int32 AFGBuildableConveyorBelt::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableConveyorBelt::OnBuildEffectFinished(){ }
 void AFGBuildableConveyorBelt::OnSkinCustomizationApplied_Implementation(TSubclassOf<class UFGFactoryCustomizationDescriptor_Skin> skin){ }

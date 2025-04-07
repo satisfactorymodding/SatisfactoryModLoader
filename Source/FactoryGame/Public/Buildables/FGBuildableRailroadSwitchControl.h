@@ -14,8 +14,8 @@ USTRUCT()
 struct FSwitchData
 {
 	GENERATED_BODY()
-public:
-	UPROPERTY()
+	
+	UPROPERTY( SaveGame )
 	uint8 Position = 0;
 	UPROPERTY()
 	uint8 NumPositions = 1;
@@ -46,10 +46,12 @@ public:
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
 	virtual float GetSignificanceRange() override { return mSignificanceRange; }
-	virtual void GainedSignificance_Native() override;
-	virtual void LostSignificance_Native() override;
 	virtual	void SetupForSignificance() override;
 	//End IFGSignificanceInterface
+
+	// Begin IFGSaveInterface
+	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
+	// End IFGSaveInterface
 	
 	// Begin IFGDismantleInterface
 	virtual bool ShouldBlockDismantleSample_Implementation() const override;
@@ -83,9 +85,9 @@ public:
 	/** Toggle the switch position to the next track. */
 	void ToggleSwitchPosition();
 
-	/** Called when switch changes position, server only */
+	/** Change the switch position */
 	UFUNCTION()
-	void OnSwitchPositionChanged( int32 newPosition, int32 numPositions );
+	void SetSwitchPosition( int32 newPosition );
 
 	/** @return If this is significant. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Signal" )
@@ -96,12 +98,10 @@ public:
 	 * Note that the track the controlled connection belongs to and its connected components track must have had its begin play called.
 	 * Must be called, prior to this actors BeginPlay.
 	 */
-	void SetControlledConnection( class UFGRailroadTrackConnectionComponent* controlledConnection );
+	void AddControlledConnection( class UFGRailroadTrackConnectionComponent* connection );
+	void RemoveControlledConnection( class UFGRailroadTrackConnectionComponent* connection );
 
-protected:
-	UFUNCTION()
-	void OnRep_ControlledConnection();
-	
+protected:	
 	UFUNCTION()
 	void OnRep_VisualState();
 
@@ -109,6 +109,10 @@ private:
 	/** Updates the material parameters of this switch. */
 	void UpdateVisuals();
 	void ApplyVisualState( int16 state );
+	void UpdateSwitchData();
+
+	UFUNCTION()
+	void OnControlledConnectionChanged( class UFGRailroadTrackConnectionComponent* controlledConnection );
 
 protected:
 	/** Mesh for this switch, must be using the signal factory material for it to work. */
@@ -116,12 +120,16 @@ protected:
 	class UFGColoredInstanceMeshProxy* mSwitchComponent;
 	
 private:
-	/** Connection we control, might become null if the track is removed but not the control (mods and save game editing). */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ControlledConnection )
-	class UFGRailroadTrackConnectionComponent* mControlledConnection;
+	/** Connections we control, might contain null if the track is removed but not the control (mods and save game editing). */
+	UPROPERTY( SaveGame, Replicated )
+	TArray< class UFGRailroadTrackConnectionComponent* > mControlledConnections;
+
+	/** LEGACY: Only keeping this here for pre 1.1 switches. */
+	UPROPERTY( SaveGame )
+	class UFGRailroadTrackConnectionComponent* mControlledConnection_DEPRECATED;
 
 	/** Current switch position read from the controlled connection. */
-	UPROPERTY( Replicated, Meta = (NoAutoJson = true) )
+	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
 	FSwitchData mSwitchData;
 
 	/** Stored custom data for the switch material. */

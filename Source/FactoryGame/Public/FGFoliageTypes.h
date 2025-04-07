@@ -44,7 +44,7 @@ struct FFoliageRemovalDataKey
 	GENERATED_BODY()
 
 	UPROPERTY(SaveGame)
-	FIntVector CellCoord;
+	FIntVector CellCoord = {};
 
 	UPROPERTY(SaveGame)
 	TObjectPtr<const class UFoliageType> FoliageType;

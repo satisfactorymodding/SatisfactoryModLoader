@@ -38,7 +38,7 @@ USTRUCT()
 struct FCreatureSpawnerWorldScannableData : public FWorldScannableData
 {
 	GENERATED_BODY()
-
+	
 	FCreatureSpawnerWorldScannableData() = default;
 #if WITH_EDITOR
 	explicit FCreatureSpawnerWorldScannableData( const AFGCreatureSpawner* actor );

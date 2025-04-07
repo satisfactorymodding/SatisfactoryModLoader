@@ -137,10 +137,10 @@ public:
 	void ConnectToNearestPowerConnection();
 
 	/** Checks if a power connection is valid, and returns the reason if not. */
-	EHoverConnectionStatus GetPowerConnectionStatus( class UFGPowerConnectionComponent* Connection ) const;
+	EHoverConnectionStatus GetPowerConnectionStatus( const UFGPowerConnectionComponent* connection ) const;
 
 	/** Checks if a power connection is valid for connection. */
-	bool IsPowerConnectionValid( class UFGPowerConnectionComponent* Connection, bool CheckDistance = true ) const;
+	bool IsPowerConnectionValid( const UFGPowerConnectionComponent* connection, bool checkDistance = true ) const;
 
 	/** Checks if a railroad track is valid for connection. */
 	bool IsRailroadTrackValid( class AFGBuildableRailroadTrack* RailroadTrack, bool CheckDistance = true ) const;

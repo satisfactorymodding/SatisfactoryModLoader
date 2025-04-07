@@ -6,20 +6,26 @@
 #include "Net/UnrealNetwork.h"
 
 AFGBuildableRailroadSignal::AFGBuildableRailroadSignal() : Super() {
+	this->mRailroadSignalSparesDataCDO = nullptr;
 	this->mSignalComponent = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("Signal Component"));
+	this->mSignalComponent->SetMobility(EComponentMobility::Static);
 	this->mDrawDebugVisualState = false;
 	this->mOwningConnection = nullptr;
 	this->mAspect = ERailroadSignalAspect::RSA_None;
 	this->mBlockValidation = ERailroadBlockValidation::RBV_Unvalidated;
 	this->mIsPathSignal = false;
 	this->mIsBiDirectional = false;
+	this->mIsLeftHanded = false;
 	this->mSignificanceRange = 75000.0;
 	this->mSignalComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildableRailroadSignal::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableRailroadSignal, mGuardedConnections);
+	DOREPLIFETIME(AFGBuildableRailroadSignal, mObservedConnections);
 	DOREPLIFETIME(AFGBuildableRailroadSignal, mAspect);
 	DOREPLIFETIME(AFGBuildableRailroadSignal, mBlockValidation);
+	DOREPLIFETIME(AFGBuildableRailroadSignal, mIsLeftHanded);
 	DOREPLIFETIME(AFGBuildableRailroadSignal, mVisualState);
 }
 void AFGBuildableRailroadSignal::BeginPlay(){ Super::BeginPlay(); }
@@ -30,10 +36,11 @@ void AFGBuildableRailroadSignal::OnBuildEffectActorFinished(){ }
 void AFGBuildableRailroadSignal::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableRailroadSignal::GainedSignificance_Implementation(){ }
 void AFGBuildableRailroadSignal::LostSignificance_Implementation(){ }
-void AFGBuildableRailroadSignal::GainedSignificance_Native(){ }
-void AFGBuildableRailroadSignal::LostSignificance_Native(){ }
 void AFGBuildableRailroadSignal::SetupForSignificance(){ }
 void AFGBuildableRailroadSignal::PreUpgrade_Implementation(){ }
+#if WITH_EDITOR
+void AFGBuildableRailroadSignal::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent){ Super::PostEditChangeChainProperty(PropertyChangedEvent); }
+#endif
 void AFGBuildableRailroadSignal::OnAspectChanged(){ }
 void AFGBuildableRailroadSignal::OnBlockValidationChanged(){ }
 void AFGBuildableRailroadSignal::OnDirectionalityChanged(){ }
@@ -48,6 +55,8 @@ void AFGBuildableRailroadSignal::OnBlockChanged(){ }
 void AFGBuildableRailroadSignal::OnRep_Aspect(){ }
 void AFGBuildableRailroadSignal::OnRep_BlockValidation(){ }
 void AFGBuildableRailroadSignal::OnRep_VisualState(){ }
+void AFGBuildableRailroadSignal::OnRep_GuardedConnections(const TArray<UFGRailroadTrackConnectionComponent*>& oldGuardedConnections){ }
+void AFGBuildableRailroadSignal::OnRep_ObservedConnections(const TArray<UFGRailroadTrackConnectionComponent*>& oldObservedConnections){ }
 void AFGBuildableRailroadSignal::UpdateDirectionality(){ }
 void AFGBuildableRailroadSignal::UpdateAspect(){ }
 void AFGBuildableRailroadSignal::UpdateBlockValidation(){ }

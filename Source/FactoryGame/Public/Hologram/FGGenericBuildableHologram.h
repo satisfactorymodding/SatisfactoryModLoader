@@ -49,7 +49,7 @@ public:
 	
 protected:
 	// Begin AFGBuildableHologram interface
-	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	// End AFGBuildableHologram interface
 	
 protected:

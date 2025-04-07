@@ -89,13 +89,13 @@ struct FProjectAssemblyLaunchSequenceValue
 	GENERATED_BODY()
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, SaveGame )
-	uint8 Key;
+	uint8 Key = 0;
 	
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, SaveGame )
-	int32 Value;
+	int32 Value = 0;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, SaveGame )
-	bool IsCompleted;
+	bool IsCompleted = false;
 };
 
 /**
@@ -132,11 +132,11 @@ struct FRemainingPhaseCost
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnGamePhaseChanged, EGamePhase, gamePhase );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCurrentGamePhaseUpdated, UFGGamePhase*, currentGamePhase );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnCurrentGamePhaseUpdated, UFGGamePhase*, currentGamePhase, bool, bSuppressNarrativeMessages );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnTargetGamePhaseUpdated, UFGGamePhase*, targetGamePhase );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPayOffOnGamePhase, FRemainingPhaseCost, remainingPhaseCost );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnProjectAssemblyLaunchSequenceValuesUpdated, const TArray< FProjectAssemblyLaunchSequenceValue >&, newValues );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnGameCompleted );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnGameCompleted, bool, bSuppressNarrativeMessages );
 
 UCLASS( Blueprintable, abstract, HideCategories = ( "Actor Tick", Rendering, Replication, Input, Actor ) )
 class FACTORYGAME_API AFGGamePhaseManager : public AFGSubsystem, public IFGSaveInterface
@@ -187,15 +187,16 @@ public:
 	 * If no next phase is available after updating current phase, sets mTargetGamePhase to nullptr.
 	 *
 	 * @param inPhase The incoming phase to consider.
+	 * @param bSuppressNarrativeMessages True if narrative messages from phase change should be suppressed
 	 * @return True if we could update the current game phase
 	 */
-	bool UpdateCurrentGamePhase( class UFGGamePhase* inPhase );
+	bool UpdateCurrentGamePhase( class UFGGamePhase* inPhase, bool bSuppressNarrativeMessages = false );
 
 	bool IsLastGamePhaseReached() const;
 	bool ReadyToGoToNextGamePhase() const;
 
 	/** Set the game phase corresponding to the given tier */
-	void SetGamePhaseForTier( int32 tier );
+	void SetGamePhaseForTier( int32 tier, bool bSuppressNarrativeMessages = false );
 
 	/** Gives the last relevant game phase */
 	void UnlockAllGamePhases();
@@ -297,15 +298,21 @@ public:
 
 	/** Marks the game as completed. This means we have completed the game and launched project assembly. i.e the outro sequence has played  */
 	UFUNCTION( BlueprintCallable, Category = "Progression" )
-	void SetGameIsCompleted();
+	void SetGameIsCompleted( bool bSuppressNarrativeMessages = false );
 	/** Return true if we have completed the game and launched project assembly. i.e the outro sequence has played */
 	UFUNCTION( BlueprintPure, Category = "Progression" )
 	FORCEINLINE bool GetGameIsCompleted() const { return mIsGameCompleted; }
 
 private:
 	UFUNCTION()
-	void SubmitGamePhaseTelemetry( UFGGamePhase* currentGamePhase );
+	void SubmitGamePhaseTelemetry( UFGGamePhase* currentGamePhase, bool bSuppressNarrativeMessages );
 	
+	// <FL> [TranN] PS5 Activity
+	void OnActivityStarted( const FName& activity );
+	void OnActivityEnded( const FName& activity );
+	FDelegateHandle OnActivityStartedHandle;
+	FDelegateHandle OnActivityEndedHandle;
+	// </FL>
 public:
 	/** Broadcast a notification when we pay something of on a game phase*/
 	UPROPERTY( BlueprintAssignable, Category = "Progression" )
@@ -369,5 +376,13 @@ private:
 	/** True if we have completed the game and launched project assembly. i.e the outro sequence has played */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsGameCompleted )
 	bool mIsGameCompleted = false;
+
+	// <FL> [TranN] PS5 Activity. I put these in this class for the convenience of having save game already implemented.
+	// The functionality is not really related.
+	UPROPERTY( SaveGame )
+	TSet< FName > mStartedActivities;
+	UPROPERTY( SaveGame )
+	TSet< FName > mEndedActivities;
+	// </FL>
 };
 

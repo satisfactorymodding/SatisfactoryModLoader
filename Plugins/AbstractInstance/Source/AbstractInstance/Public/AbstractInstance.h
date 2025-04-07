@@ -16,7 +16,6 @@ public:
 	virtual void ShutdownModule() override;
 };
 
-#define AI_PIE WITH_EDITOR
 #if WITH_EDITOR
 	#define EditorCheck(expr)		check(expr)
 #else

@@ -40,10 +40,10 @@ struct FDroneDockingStateInfo
 	GENERATED_BODY()
 
 	UPROPERTY( SaveGame )
-	EDroneDockingState State;
+	EDroneDockingState State = EDroneDockingState::DS_UNDOCKED;
 
 	UPROPERTY()
-	float StateStartTime;
+	float StateStartTime = 0.f;
 };
 
 USTRUCT( BlueprintType )
@@ -111,7 +111,7 @@ struct FFGDroneFuelRuntimeData
 
 	/** Current energy level of this fuel type. */
 	UPROPERTY( SaveGame, BlueprintReadOnly )
-	float EnergyLevel;
+	float EnergyLevel = 0.f;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDroneActiveFuelTypeChanged, const FFGDroneFuelType&, newFuelType );
@@ -181,6 +181,10 @@ public:
 	UFUNCTION() virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION() virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+	//<FL>[KonradA] TODO:UGC C
+	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override;
+	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	//</FL>
 	// End IFGActorRepresentationInterface
 
 	void NotifyPairedStationUpdated( class AFGBuildableDroneStation* NewPairedStation );

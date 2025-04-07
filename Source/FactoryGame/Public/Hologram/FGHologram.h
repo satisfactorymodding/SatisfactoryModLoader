@@ -40,7 +40,39 @@ enum class EHologramMaterialState : uint8
 
 enum class ENudgeFailReason : uint8;
 
+/** Entry in the hologram material overrides */
+USTRUCT()
+struct FACTORYGAME_API FFGHologramMaterialSlotOverride
+{
+	GENERATED_BODY()
+
+	/** Index of the material slot to replace the material in */
+	UPROPERTY( EditAnywhere, Category = "Hologram Material Override" )
+	int32 MaterialSlotIndex{0};
+
+	/** The material that this material must be replaced with */
+	UPROPERTY( EditAnywhere, Category = "Hologram Material Override" )
+	UMaterialInterface* MaterialOverride{nullptr};
+};
+
+/**
+ * Can be added to Static Mesh assets in Asset User Data to allow overriding specific material slots for the hologram meshes
+ */
+UCLASS( EditInlineNew, DefaultToInstanced )
+class FACTORYGAME_API UFGHologramMaterialOverrideIdentifier : public UAssetUserData
+{
+	GENERATED_BODY()
+public:
+	/** Material overrides for each material slot of this mesh */
+	UPROPERTY( EditAnywhere, Category = "Material Overrides" )
+	TArray<FFGHologramMaterialSlotOverride> MaterialOverrides;
+
+	/** Applies material overrides to the mesh component that is placed on the hologram */
+	static void ApplyHologramMaterialOverrides( UMeshComponent* meshComponent );
+};
+
 extern TAutoConsoleVariable<int32> CVarHologramDebug;
+
 /**
  * The base class for all holograms.
  * It defines the interface all "buildable things" must follow.
@@ -60,17 +92,15 @@ public:
 	virtual bool IsNetRelevantFor( const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation ) const override;
 
 	/** Spawns a hologram from recipe */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Hologram" )
-	static AFGHologram* SpawnHologramFromRecipe( TSubclassOf< class UFGRecipe > inRecipe, AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator = nullptr );
+	static AFGHologram* SpawnHologramFromRecipe( TSubclassOf< class UFGRecipe > inRecipe, AActor* hologramOwner, const FVector& spawnLocation, APawn* hologramInstigator = nullptr, const TFunction< void( AFGHologram* ) >& preSpawnFunction = nullptr );
 
 	/** Spawns a hologram from recipe and sets is as child to specified parent */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Hologram" )
-	static AFGHologram* SpawnChildHologramFromRecipe( AFGHologram* parent, FName hologramName, TSubclassOf< UFGRecipe > recipe, AActor* hologramOwner, FVector spawnLocation );
+	static AFGHologram* SpawnChildHologramFromRecipe( AFGHologram* parent, FName hologramName, TSubclassOf< UFGRecipe > recipe, AActor* hologramOwner, const FVector& spawnLocation, const TFunction< void( AFGHologram* ) >& preSpawnFunction = nullptr );
 
 	template<typename T>
-	T* SpawnChildHologram( FName hologramName, TSubclassOf<UFGRecipe> recipe, AActor* hologramOwner, const FVector& spawnLocation )
+	T* SpawnChildHologram( FName hologramName, TSubclassOf<UFGRecipe> recipe, AActor* hologramOwner, const FVector& spawnLocation, const TFunction< void( AFGHologram* ) >& preSpawnFunction = nullptr )
 	{
-		return CastChecked<T>( SpawnChildHologramFromRecipe( this, hologramName, recipe, hologramOwner, spawnLocation ) );
+		return CastChecked<T>( SpawnChildHologramFromRecipe( this, hologramName, recipe, hologramOwner, spawnLocation, preSpawnFunction ) );
 	}
 
 	/** Set the item descriptor for this hologram, called when setting up the hologram, before BeginPlay. */
@@ -85,13 +115,13 @@ public:
 
 	FORCEINLINE AFGHologram* GetParentHologram() const { return mParent; }
 	FORCEINLINE FName GetNameWithinParentHologram() const { return mHologramNameWithinParent; }
-	
+
 	FORCEINLINE AFGHologram* FindChildHologramByName( FName hologramName ) const
 	{
 		AFGHologram* const* hologram = mChildrenNameLookupMap.Find( hologramName );
 		return hologram ? *hologram : nullptr;
 	}
-	
+
 	/** Net Construction Messages */
 	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
 	virtual void PreConstructMessageSerialization() override;
@@ -145,12 +175,17 @@ public:
 	/**
 	* Gets called before all the placement logic of the hologram has been run.
 	*/
-	virtual void PreHologramPlacement( const FHitResult& hitResult );
+	virtual void PreHologramPlacement( const FHitResult& hitResult, bool callForChildren = true );
 	
 	/**
 	 * Gets called after all the placement logic of the hologram has been run.
 	 */
-	virtual void PostHologramPlacement( const FHitResult& hitResult );
+	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren = true );
+
+	/**
+	 * Called from post hologram placement. Used to update/add/remove Instance Converting instigators that may be needed for long / odd shaped holograms
+	 */
+	virtual void RefreshHologramInstanceInstigators();
 
 	/**
 	 * Notify that the hologram hit result is NOT valid and that the hologram is sett to hidden in game. Will usually trigger when E.g. Aiming up in the sky. 
@@ -189,20 +224,7 @@ public:
 	 * @param delta	The scroll direction and amount, negative is down and positive is up.
 	 */
 	virtual void Scroll( int32 delta );
-
-	///**
-	// * Used to update build input based on directional input from mouse/control pad right stick. Only called for holograms that returns true for "hasDirectionalInput". When it's called depends on the hold/press to continue method used.
-	// //[DavalliusA:Tue/19-11-2019] we should probably do this based on input here, instead of view angle, as we would probably like it to require the same amount of input no matter the distance to the pole/perspective? Or would we actually want this to change? If so, how do we handle input when from pretty much straight above?
-	// */
-	//virtual void UpdateBuildDirectionInput( FVector2D delta );
-
-	///**
-	// * Use scroll on the hologram.
-	// * @param delta	The scroll direction and amount, negative is down and positive is up.
-	// */
-	//virtual void UpdateBuildDirectionInput( int32 delta );
-
-	//@todoscroll Cleanup or use old scroll with modes, there are some problems with how it was implemented before -G2
+	
 	virtual void ScrollRotate( int32 delta, int32 step );
 	int32 GetScrollRotateValue() const;
 	void SetScrollRotateValue( int32 rotValue );
@@ -210,6 +232,9 @@ public:
 	/** Called when we're replacing another hologram with this one. */
 	virtual void ReplaceHologram( AFGHologram* hologram, bool snapTransform );
 
+	// Allow for holograms to override themselves after handling location and snapping. If an override happened, return true.
+	virtual TOptional<TSubclassOf<class UFGRecipe>> ProcessHologramOverride( const FHitResult& hitResult ) const { return {}; };
+	
 	/**
 	* Get the build modes implemented for the hologram
 	* @param out_buildmodes	 Array with all supported build modes
@@ -226,7 +251,9 @@ public:
 	EHologramBuildModeCategory GetBuildModeCategory() const { return mBuildModeCategory; }
 
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
-	bool IsCurrentBuildMode( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) const;
+	bool IsCurrentBuildMode( TSubclassOf< class UFGHologramBuildModeDescriptor > buildMode ) const;
+
+	void SetBuildModeOverride( TSubclassOf< class UFGHologramBuildModeDescriptor > buildMode );
 
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	FORCEINLINE TSubclassOf< AActor > GetBuildClass() const { return mBuildClass; }
@@ -293,7 +320,7 @@ public:
 
 	/** Allows you to opt out of using pending construction holograms if they are unfeasible for some reason (e.g. blueprints opt out) */
 	virtual bool ShouldSetupPendingConstructionHologram() const { return true; }
-	
+
 	/**
 	 * Called when this hologram has been constructed as a "pending construction" hologram -
 	 * a client-sided representation of a hologram that the server will construct soon
@@ -308,7 +335,7 @@ public:
 	virtual void OnPendingConstructionHologramTimeout();
 	
 	/** The base cost for this hologram. */
-	TArray< FItemAmount > GetBaseCost() const;
+	virtual TArray< FItemAmount > GetBaseCost() const;
 
 	/** Get the multiplier for the base cost, e.g. if this hologram cost per length unit. */
 	virtual int32 GetBaseCostMultiplier() const;
@@ -331,7 +358,8 @@ public:
 	FORCEINLINE bool HasClearance() const{ return mClearanceData.Num() > 0; }
 
 	/** Gets all actors we should ignore when doing our clearance check. */
-	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const;
+	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const;
+	virtual bool ShouldIgnoreClearanceCheckForActor( class AActor* actor ) const;
 
 	/** Disable this hologram. */
 	void SetDisabled( bool disabled  );
@@ -388,6 +416,12 @@ public:
 	/***/
 	FORCEINLINE TArray<class AFGHologram*> GetHologramChildren() const { return mChildren; }
 
+	void SetShouldSpawnChildHolograms( bool shouldSpawn ) { mShouldSpawnChildHolograms = shouldSpawn; }
+	FORCEINLINE virtual bool ShouldSpawnChildHolograms() const { return mShouldSpawnChildHolograms; }
+
+	/** Returns an array of holograms which we want to share material state with, by default returns all child holograms. */
+	virtual void GetHologramsToShareMaterialStateWith( TArray<AFGHologram*>& out_holograms ) const;
+
 	/** Set the build class for this hologram, called before BeginPlay. */
 	void SetBuildClass( TSubclassOf< class AActor > buildClass );
 
@@ -422,7 +456,7 @@ public:
 
 	/** Used to nudge the hologram location when locking it in place. */
 	UFUNCTION( BlueprintCallable, Category = "Hologram" )
-	ENudgeFailReason AddNudgeOffset( const FVector& Offset );
+	ENudgeFailReason AddNudgeOffset( const FVector& Offset, const FVector& MaxNudgeDistance = FVector(-1.0f) );
 
 	/** The amount of distance to nudge the hologram. */
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
@@ -448,7 +482,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	virtual AFGHologram* GetNudgeHologramTarget();
 
-	/** @return The overridden rotation step size to use when rotating. */
+	/** @return The overridden rotation step size to use when rotating. 0 or negative means no override. */
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	virtual int32 GetRotationStep() const;
 
@@ -456,6 +490,18 @@ public:
 	void HideHologram(bool bVisible);
 
 	virtual bool ShouldBuildGunHitWireMeshes() const;
+	
+	/**
+	 * Called when the hologram snapped to something.
+	 * E.g. a conveyor snapped to an output.
+	 * NOT called when we align to a grid, e.g. building placed on a foundation or wall "snapped" to another wall.
+	 */
+	void OnSnap();
+
+	/** Wait for Gamestate (address a crash with holograms crashing on apply customization data) */
+	UFUNCTION()
+	void WaitForGamestateApplyCustomizationData();
+	virtual void OnGamestateReceived() {}
 	
 protected:
 	/** OnHologramTransformUpdated
@@ -472,7 +518,7 @@ protected:
 	void SetupClearanceDetector();
 
 	/** Checks our clearance if we have any, and adds construct disqualifiers if necessary. */
-	virtual void CheckClearance( const FVector& locationOffset );
+	virtual void CheckClearance();
 
 	/** Checks whether or not the specified clearances are overlapping and returns a result based on the overlap. */
 	EClearanceOverlapResult TestClearanceOverlap( const FFGClearanceData& clearanceData, const FFGClearanceData& otherClearanceData, AActor* otherActor ) const;
@@ -484,7 +530,7 @@ protected:
 	virtual TSubclassOf< class UFGConstructDisqualifier > GetConstructDisqualifierFromClearanceOverlap( const EClearanceOverlapResult& overlapResult, AActor* otherActor ) const;
 
 	/** Whether or not building our hologram would result in an identical buildable inside of another. */
-	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const;
 
 	/** When overlapping with the edge of a designer, this function determines whether or not the overlap is allowed. */
 	virtual bool CanIntersectWithDesigner( class AFGBuildableBlueprintDesigner* designer ) const;
@@ -503,22 +549,9 @@ protected:
 	 */
 	virtual void CheckCanAfford( class UFGInventoryComponent* inventory );
 
-	/**
-	 * Called when the hologram snapped to something.
-	 * E.g. a conveyor snapped to an output.
-	 * NOT called when we align to a grid, e.g. building placed on a foundation or wall "snapped" to another wall.
-	 */
-	void OnSnap();
-
 	/** So we can set the material on client. */
 	UFUNCTION()
 	void OnRep_PlacementMaterialState();
-
-	/**
-	 * Set the material on the hologram.
-	 * @param material - The new override material.
-	 */
-	virtual void SetMaterial( class UMaterialInterface* material );
 
 	/**
 	* Set the stencil value on the hologram meshes.
@@ -538,6 +571,9 @@ protected:
 	 * @return - The newly created component.
 	 */
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName );
+	virtual USceneComponent* SetupInstanceDataComponent( USceneComponent* attachParent, const struct FInstanceData& instanceData );
+	
+	virtual bool ShouldAutomaticallySpawnLightWeightInstances() const { return true;}
 
 	virtual TArray<UStaticMeshComponent*> SpawnLightWeightInstanceData( USceneComponent* attachParent );
 	
@@ -562,11 +598,9 @@ protected:
 	 */
 	float ApplyScrollRotationTo( float base, bool onlyUseBaseForAlignment = false ) const;
 
-	FVector GetMaxNudgeDistance() const;
-
 	/** Returns a transform representing the space we want to nudge in. */
 	virtual FTransform GetNudgeSpaceTransform() const;
-
+	
 	/** Tags for marking components in the hologram. */
 	static const FName HOLOGRAM_MESH_TAG;
 	
@@ -676,13 +710,16 @@ protected:
 	UPROPERTY()
 	TMap< FName, AFGHologram* > mChildrenNameLookupMap;
 
+	/** Whether or not this hologram should have the SpawnChildren function called when spawned. */
+	bool mShouldSpawnChildHolograms;
+
 	/**
 	 * Used with composite holograms. Sometimes it's useful to know if a hologram has a parent
 	 * to for example prevent it from spawning child holograms.
 	 */ 
 	UPROPERTY()
 	AFGHologram* mParent = nullptr;
-
+	
 	/** Name of the hologram within the parent, used for fast lookup */
 	UPROPERTY()
 	FName mHologramNameWithinParent;
@@ -732,12 +769,11 @@ protected:
 	/** The default nudge distance of this hologram. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	float mDefaultNudgeDistance;
-
-	/** The maximum amount of distance (per axis) that this hologram can be nudged. The actual value used is whatever is highest between this, and half the clearance box size, if it exists. */
-	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
-	float mMaxNudgeDistance;
 	
 private:
+	UPROPERTY( Replicated, CustomSerialization )
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeOverride;
+	
 	/** Used for offsetting the hologram location with the nudge system. */
 	UPROPERTY( CustomSerialization )
 	FVector mHologramNudgeOffset;

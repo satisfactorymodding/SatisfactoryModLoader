@@ -6,7 +6,9 @@
 
 AFGBuildablePipeHyper::AFGBuildablePipeHyper() : Super() {
 	this->mConnection0 = CreateDefaultSubobject<UFGPipeConnectionComponentHyper>(TEXT("PipeHyperConnection0"));
+	this->mConnection0->SetMobility(EComponentMobility::Static);
 	this->mConnection1 = CreateDefaultSubobject<UFGPipeConnectionComponentHyper>(TEXT("PipeHyperConnection1"));
+	this->mConnection1->SetMobility(EComponentMobility::Static);
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 	this->mConnection0->SetupAttachment(RootComponent);
 	this->mConnection1->SetupAttachment(RootComponent);
@@ -14,10 +16,10 @@ AFGBuildablePipeHyper::AFGBuildablePipeHyper() : Super() {
 void AFGBuildablePipeHyper::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePipeHyper::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 TArray<TPair<UFGPipeConnectionComponentBase*, float>> AFGBuildablePipeHyper::GetPossibleConnectionsToTransitionThrough(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough) const{ return TArray<TPair<UFGPipeConnectionComponentBase*,float>>(); }
-EPipeHyperEnterResult AFGBuildablePipeHyper::OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, TStructOnScope<FFGPipeHyperBasePipeData>& outPipeData, const TStructOnScope<FFGPipeHyperBasePipeData>& predictionPipeData){ return EPipeHyperEnterResult(); }
-bool AFGBuildablePipeHyper::FindDistanceClosestToWorldLocation(AFGCharacterPlayer* charPlayer, const FVector& worldLocation, const FVector& velocity, TStructOnScope<FFGPipeHyperBasePipeData>& out_pipeData, float& out_distance) const{ return bool(); }
-float AFGBuildablePipeHyper::GetLengthAlongPipe(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData){ return float(); }
-void AFGBuildablePipeHyper::GetLocationAndRotationAlongPipe(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData, float distance, FVector& outLocation, FVector& outDirection){ }
-UFGPipeConnectionComponentBase* AFGBuildablePipeHyper::GetConnectionToTransitThrough(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData, float distance, float& outExitOffset){ return nullptr; }
+EPipeHyperEnterResult AFGBuildablePipeHyper::OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, FFGDynamicStruct& outPipeData, const FFGDynamicStruct& predictionPipeData){ return EPipeHyperEnterResult(); }
+bool AFGBuildablePipeHyper::FindDistanceClosestToWorldLocation(AFGCharacterPlayer* charPlayer, const FVector& worldLocation, const FVector& velocity, FFGDynamicStruct& out_pipeData, float& out_distance) const{ return bool(); }
+float AFGBuildablePipeHyper::GetLengthAlongPipe(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData){ return float(); }
+void AFGBuildablePipeHyper::GetLocationAndRotationAlongPipe(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData, float distance, FVector& outLocation, FVector& outDirection){ }
+UFGPipeConnectionComponentBase* AFGBuildablePipeHyper::GetConnectionToTransitThrough(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData, float distance, float& outExitOffset){ return nullptr; }
 const FName AFGBuildablePipeHyper::mConnectionName0 = FName();
 const FName AFGBuildablePipeHyper::mConnectionName1 = FName();

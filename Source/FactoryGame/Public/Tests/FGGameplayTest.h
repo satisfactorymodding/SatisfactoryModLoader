@@ -62,7 +62,7 @@ struct FACTORYGAME_API FFGGameplayTestMessage
 
 	// Level of importance of this message
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Gameplay Test" )
-	EFGGameplayTestMessageLevel Level;
+	EFGGameplayTestMessageLevel Level = {};
 
 	// Message in question
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Gameplay Test" )
@@ -132,7 +132,7 @@ public:
 	 * Buildables spawned by the test via FGTestBlueprintFunctionLibrary are automatically added there when the functions are called in the context of Start Test/End Test/Tick Test
 	 * In all other cases, you need to manually add them there if you want them gone by the time the test ends
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Gameplay Test" )
+	UFUNCTION( BlueprintCallable, Category = "Gameplay Test", meta = (HideSelfPin = "true") )
 	void AddTestActor( AActor* testActor );
 
 	// Makes the test transition to the next state. This will catch invalid transitions and assert on them.
@@ -146,34 +146,41 @@ public:
 
 	/**
 	 * Adds the message to the output of this test.
+	 * This will automatically fetch the Context from the call stack if you do not provide one.
+	 */
+	void AddMessage( EFGGameplayTestMessageLevel messageLevel, const FText& message, const FString& context = TEXT(""), int32 stackOffset = 0 );
+
+	/**
+	 * Adds the message to the output of this test.
 	 * Fully qualified form, do not use directly, use AddInfo/AddWarning/AddError instead.
 	 * This will automatically fetch the Context from the call stack if you do not provide one.
 	 */
-	UFUNCTION( BlueprintCallable, CustomThunk, Category = "Gameplay Test" )
-	void AddMessage( EFGGameplayTestMessageLevel messageLevel, const FText& message, const FString& context = TEXT(""), int32 stackOffset = 0 );
-
+	UFUNCTION( BlueprintCallable, CustomThunk, Category = "Gameplay Test", DisplayName = "Add Message", meta = (HideSelfPin = "true") )
+	void K2_AddMessage( EFGGameplayTestMessageLevel messageLevel, FText message, const FString& context = TEXT("") );
+	
 	// Adds info message to the test output log. Info messages do not fail a test.
-	UFUNCTION( BlueprintCallable, CustomThunk, Category = "Gameplay Test" )
-	void AddInfo( const FText& message, const FString& context = TEXT(""), int32 stackOffset = 0 );
+	UFUNCTION( BlueprintCallable, CustomThunk, Category = "Gameplay Test", meta = (HideSelfPin = "true") )
+	void AddInfo( FText message );
 
 	// Adds warning to the output of the test. Warnings will not fail the test.
-	UFUNCTION( BlueprintCallable, CustomThunk, Category = "Gameplay Test" )
-	void AddWarning( const FText& message, const FString& context = TEXT(""), int32 stackOffset = 0 );
+	UFUNCTION( BlueprintCallable, CustomThunk, Category = "Gameplay Test", meta = (HideSelfPin = "true") )
+	void AddWarning( FText message );
 
 	// Adds the error to the output of the test. Errors in the test output will automatically fail the test, regardless of the outcome
-	UFUNCTION( BlueprintCallable, CustomThunk, Category = "Gameplay Test" )
-	void AddError( const FText& message, const FString& context = TEXT(""), int32 stackOffset = 0 );
+	UFUNCTION( BlueprintCallable, CustomThunk, Category = "Gameplay Test", meta = (HideSelfPin = "true") )
+	void AddError( FText message );
 
-	DECLARE_FUNCTION( execAddMessage );
+	DECLARE_FUNCTION( execK2_AddMessage );
 	DECLARE_FUNCTION( execAddInfo );
 	DECLARE_FUNCTION( execAddWarning );
 	DECLARE_FUNCTION( execAddError );
+	DECLARE_FUNCTION( execFailTest );
 public:
 	// The gameplay test running at this particular moment of time. Only valid during the calls to Test functions on GameThread
 	static UFGGameplayTest* ActiveGameplayTest;
 
 	// User friendly name of the test
-	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay Test" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Gameplay Test", AssetRegistrySearchable )
 	FText mDisplayName;
 
 	// Maximum duration of the test above which the test will be considered failed.
@@ -240,11 +247,19 @@ protected:
 	 * Note that the status provided here might be overwritten if the Test has Succeeded, but it has reported Errors.
 	 * The test object will be destroyed shortly after.
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Gameplay Test" )
+	UFUNCTION( BlueprintCallable, Category = "Gameplay Test", meta = (HideSelfPin = "true") )
 	void FinishTest( EFGGameplayTestResult testResult );
 
+	/** Fails the text with a provided error message. A convenient wrapper for AddError + FinishTest */
+	UFUNCTION( BlueprintCallable, CustomThunk, Category = "Gameplay Test", meta = (HideSelfPin = "true") )
+	void FailTest( FText errorMessage );
+
+	/** Passes the test. Equivalent to FinishTest with Pass result */
+	UFUNCTION( BlueprintCallable, Category = "Gameplay Test", meta = (HideSelfPin = "true") )
+	void PassTest();
+
 	// Adds metadata to this test instance. The metadata will be included into the test results
-	UFUNCTION( BlueprintCallable, Category = "Gameplay Test" )
+	UFUNCTION( BlueprintCallable, Category = "Gameplay Test", meta = (HideSelfPin = "true") )
 	void AddTestMetadata( const FString& metadataKey, const FString& metadataValue );
 
 	void KillTestSpawnedActors();

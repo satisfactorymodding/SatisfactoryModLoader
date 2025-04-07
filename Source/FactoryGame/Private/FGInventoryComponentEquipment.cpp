@@ -17,7 +17,8 @@ void UFGInventoryComponentEquipment::SetOverrideEquipment(AFGEquipment* equipmen
 AFGEquipment* UFGInventoryComponentEquipment::GetStackEquipmentActorAtIdx(const int32 index) const{ return nullptr; }
 int32 UFGInventoryComponentEquipment::FindSlotForSlottedInEquipment(const AFGEquipment* equipment) const{ return int32(); }
 void UFGInventoryComponentEquipment::CycleEquipment(int32 dir){ }
-void UFGInventoryComponentEquipment::SetActiveIndexWithDefaultItem(int32 index){ }
+void UFGInventoryComponentEquipment::Server_SetActiveEquipmentIndex_Implementation(int32 index){  }
+void UFGInventoryComponentEquipment::SetActiveEquipmentIndex(int32 index){  }
 void UFGInventoryComponentEquipment::SetActiveIndex(int32 index, TOptional<FInventoryItem> itemAtCurrentIndex){ }
 bool UFGInventoryComponentEquipment::ContainsItemTypeAndHasEnoughSpaceForItem(FInventoryItem item){ return bool(); }
 FDelegateHandle UFGInventoryComponentEquipment::BindOnActiveEquipmentChanged(const FOnActiveEquipmentChanged::FDelegate &Delegate){ return FDelegateHandle(); }

@@ -4,7 +4,6 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-
 #include "Buildables/FGBuildableFactoryBuilding.h"
 #include "FGBuildableBeam.generated.h"
 
@@ -14,11 +13,21 @@ class FACTORYGAME_API UFGBeamAttachmentPoint : public UFGAttachmentPointType
 	GENERATED_BODY()
 };
 
+USTRUCT()
+struct FACTORYGAME_API FBuildableBeamLightweightData
+{
+	GENERATED_BODY()
+	
+	/** Length of the beam in meters */
+	UPROPERTY(SaveGame)
+	float BeamLength{0.0f};
+};
+
 /**
  * 
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildableBeam : public AFGBuildableFactoryBuilding
+class FACTORYGAME_API AFGBuildableBeam : public AFGBuildableFactoryBuildingLightweight
 {
 	GENERATED_BODY()
 public:
@@ -31,31 +40,34 @@ public:
 
 	// Begin AFGBuildable interface
 	virtual void GetAttachmentPoints( TArray< const FFGAttachmentPoint* >& out_points ) const override;
+	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() const override;
+	virtual void CreateLightweightBuildableInstanceData(const struct FFGDynamicStruct& typeSpecificData, TArray<FInstanceData>& outLightweightInstanceData) const override;
+	virtual FFGDynamicStruct GetLightweightTypeSpecificData() const override;
+	virtual void ApplyLightweightTypeSpecificData(const struct FFGDynamicStruct& typeSpecificData) override;
 	// End AFGBuildable interface
-
-	// Begin IFGSaveInterface
-	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	// End IFGSaveInterface
 	
 	// Begin IFGDismantleInterface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
+	virtual int32 GetDismantleRefundReturnsMultiplierForLightweight(const FFGDynamicStruct& typeSpecificData) const override;
 	// End IFGDismantleInterface
 
-	float GetSize() const { return mSize; }
+	// Begin IFGSaveInterface
+	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
+	// End IFGSaveInterface
 
+	float GetSize() const { return mSize; }
 	float GetDefaultLength() const { return mDefaultLength; }
 	float GetMaxLength() const { return mMaxLength; }
+	FORCEINLINE bool IsMeshTiled() const { return bTiledMesh; }
 
 	float GetLength() const { return mLength; }
 	void SetLength( float NewLength );
-
-	virtual void OnBuildEffectActorFinished() override;
+protected:
+	/** Returns the dismantle returns multiplier based on the beam length */
+	int32 GetDismantleReturnsMultiplierForBeam( float beamLength ) const;
+	/** Populates the instance data for the beam */
+	void PopulateBeamInstanceData( float beamLength, TArray<FInstanceData>& outInstanceData ) const;
 	
-protected:
-	UFUNCTION()
-	void OnRep_Length();
-
-protected:
 	/** Size of the beam. */
 	UPROPERTY( EditDefaultsOnly, Category = "Beam" )
 	float mSize;
@@ -69,17 +81,11 @@ protected:
 	float mMaxLength;
 
 	/** Length of the beam. */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_Length )
+	UPROPERTY( SaveGame, Replicated )
 	float mLength;
 
+	UPROPERTY( EditDefaultsOnly, Category = "Beam" )
+	bool bTiledMesh = false;
 private:
 	FFGAttachmentPoint mFrontAttachmentPoint;
-};
-
-
-UCLASS()
-class FACTORYGAME_API AFGBuildableBeamLightweight : public AFGBuildableBeam
-{
-	GENERATED_BODY()
-	AFGBuildableBeamLightweight( const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 };

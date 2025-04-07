@@ -10,8 +10,13 @@ UStaticMeshComponent* FHologramHelpers::CreateBoxMeshComponent( USceneComponent*
 void FHologramHelpers::SetScaledBoxMeshData( UStaticMeshComponent* boxMesh, const FTransform& relativeTransform, const FVector& extent){ }
 UStaticMeshComponent* FHologramHelpers::CreateConnectionRepresentation( UFGConnectionComponent* connectionComponent, bool isOutput, float heightOffset){ return nullptr; }
 UStaticMeshComponent* FHologramHelpers::CreateAttachmentPointRepresentation(const  FFGAttachmentPoint* attachmentPoint, const  AFGBuildable* buildable){ return nullptr; }
+class UStaticMeshComponent* FHologramHelpers::CreateAutomaticBlueprintConnectionRepresentation(class UFGConnectionComponent* connectionComponent){ return nullptr; }
+class UStaticMeshComponent* FHologramHelpers::CreateOrientationRepresentation(const FTransform& RelativeTransform, float size, const class AFGHologram* hologram){ return nullptr; }
+void FHologramHelpers::SetupHologramVisualizationMesh(class UStaticMeshComponent* meshComponent){  }
 FBox FHologramHelpers::CreateBoxFromCombinedClearanceData(const TArray< FFGClearanceData >& clearanceData, bool onlySnapping){ return FBox(); }
 FBox FHologramHelpers::CreateBoxFromCombinedClearanceData(const TArray< const FFGClearanceData* >& clearanceData, bool onlySnapping){ return FBox(); }
+FSphere FHologramHelpers::CreateSphereFromCombinedClearanceData(const TArray<FFGClearanceData>& clearanceData, bool onlySnapping){ return FSphere(); }
+FSphere FHologramHelpers::CreateSphereFromCombinedClearanceData(const TArray<const FFGClearanceData*>& clearanceData, bool onlySnapping){ return FSphere(); }
 float FHologramHelpers::CalcPoleHeight(const  FHitResult& aimResult, const FVector& poleLocation){ return float(); }
 float FHologramHelpers::CalcPoleHeightAndHorisontalOffset(float& out_horisontalOffset, const  FHitResult& aimResult, const FVector& poleLocation){ return float(); }
 float FHologramHelpers::FindRightAngleBetweenLocations(const FVector& location, const FVector& targetLocation, const FVector& direction){ return float(); }

@@ -21,13 +21,6 @@ class FACTORYGAME_API AFGGameSessionOnline : public AFGGameSession
 public:
 	AFGGameSessionOnline();
 	
-	/**
-	 * Takes info from GameMode and GameState and sends it to the OSS to be published
-	 * so players searching for games can see it.
-	 */
-	UE_DEPRECATED( 5.3, "Game session updates will be event driven and this function will be removed alltogether." )
-	void UpdateGameSession();
-
 	// Begin AActor interface
 	virtual void Destroyed() override;
 	// End AActor interface

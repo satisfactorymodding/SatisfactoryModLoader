@@ -14,6 +14,7 @@ UTexture2D* UFGBlueprintShortcut::GetDisplayImage_Implementation() const{ return
 bool UFGBlueprintShortcut::IsActive_Implementation( AFGPlayerController* owner) const{ return bool(); }
 bool UFGBlueprintShortcut::IsSame_Implementation(UFGHotbarShortcut* shortcut) const{ return bool(); }
 FString UFGBlueprintShortcut::DescribeShortcut_Implementation() const{ return FString(); }
+UFGBlueprintDescriptor* UFGBlueprintShortcut::GetBlueprintDescriptorWithUpdate(){ return nullptr; }
 void UFGBlueprintShortcut::OnRep_BlueprintName(){ }
 void UFGBlueprintShortcut::OnClientSubsystemsValid(){ }
 void UFGBlueprintShortcut::DestroyShortcut_Implementation(){ }

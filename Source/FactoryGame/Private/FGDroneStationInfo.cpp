@@ -47,6 +47,7 @@ void AFGDroneStationInfo::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	DOREPLIFETIME(AFGDroneStationInfo, mActiveDroneFuelType);
 	DOREPLIFETIME(AFGDroneStationInfo, mLastInsertedFuelType);
 	DOREPLIFETIME(AFGDroneStationInfo, mDroneTripStatistics);
+	DOREPLIFETIME(AFGDroneStationInfo, mLastEditedBy);
 }
 void AFGDroneStationInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGDroneStationInfo::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -57,6 +58,7 @@ void AFGDroneStationInfo::GatherDependencies_Implementation(TArray< UObject* >& 
 bool AFGDroneStationInfo::NeedTransform_Implementation(){ return bool(); }
 bool AFGDroneStationInfo::ShouldSave_Implementation() const{ return bool(); }
 void AFGDroneStationInfo::SetBuildingTag_Implementation(const FString& buildingTag){ }
+void AFGDroneStationInfo::SetLastEditedBy_Implementation(const TArray<FLocalUserNetIdBundle>& lastEditedBy){ }
 void AFGDroneStationInfo::PairStation(AFGDroneStationInfo* otherStation){ }
 void AFGDroneStationInfo::ClearLatestDroneTrips(){ }
 TArray< FFGDroneFuelType > AFGDroneStationInfo::GetDroneFuelTypes() const{ return TArray<FFGDroneFuelType>(); }

@@ -8,6 +8,8 @@
 #include "FGNetSerialization.h"
 #include "FGPowerCircuit.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnFuseTriggered, bool, bTriggered );
+
 /**
  * A point on the power curve.
  */
@@ -47,7 +49,6 @@ struct TStructOpsTypeTraits< FPowerGraphPoint > : public TStructOpsTypeTraitsBas
 		WithNetSerializer = true
 	};
 };
-
 
 /**
  * Stats for a power circuit, refreshed once every second. Implemented as a ring buffer, so that we don't have to re-replicate all the time
@@ -258,6 +259,10 @@ public:
 	DECLARE_EVENT_OneParam( UFGPowerCircuit, FOnHasPowerChanged, bool )
 	FOnHasPowerChanged OnHasPowerChanged;
 
+	//DECLARE_EVENT_OneParam( UFGPowerCircuit, FOnFuseTriggered, bool )
+	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Circuits|PowerCircuit" )
+	FOnFuseTriggered OnFuseTriggeredDelegate;
+
 	UFUNCTION( BlueprintCallable, BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	float GetMaximumPowerConsumption() const { return mMaximumPowerConsumption; }
 	
@@ -283,6 +288,9 @@ private:
 	virtual UFGCircuitGroup* CreateCircuitGroup( AFGCircuitSubsystem* subsystem ) const override;
 	
 	void SetHasPower( bool hasPower );
+
+	UFUNCTION()
+	void OnRep_IsFuseTriggered();
 
 private:
 	/** All power infos in this circuit, in the order they should be updated. */
@@ -339,7 +347,7 @@ private:
 
 	//@optimize This should preferably not be replicated always.
 	/** true if the fuse was triggered. */
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_IsFuseTriggered )
 	bool mIsFuseTriggered;
 
 	/** How much is the production boosted in this circuit. [%] */

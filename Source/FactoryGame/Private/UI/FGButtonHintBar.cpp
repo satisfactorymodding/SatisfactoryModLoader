@@ -2,13 +2,26 @@
 
 #include "UI/FGButtonHintBar.h"
 
+void UFGButtonHintSubsystem::Initialize(FSubsystemCollectionBase& Collection){ Super::Initialize(Collection); }
+void UFGButtonHintSubsystem::Deinitialize(){ Super::Deinitialize(); }
+void UFGButtonHintSubsystem::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
+bool UFGButtonHintSubsystem::ShouldCreateSubsystem(UObject* Outer) const{ return Super::ShouldCreateSubsystem(Outer); }
+void UFGButtonHintSubsystem::HandleSlateFocusChanging(const FFocusEvent& FocusEvent, const FWeakWidgetPath& OldFocusedWidgetPath, const TSharedPtr<SWidget>& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath, const TSharedPtr<SWidget>& NewFocusedWidget){  }
+void UFGButtonHintSubsystem::UpdateKeyHints(){  }
+void UFGButtonHintSubsystem::UpdateKeyHintsFromFocusPath(const FWidgetPath& FocusPath){  }
 void UFGButtonHintBar::NativeConstruct(){ Super::NativeConstruct(); }
+void UFGButtonHintBar::NativeDestruct(){ Super::NativeDestruct(); }
 void UFGButtonHintBar::UpdateButtonHints(const TArray<FFGButtonHintDescription>& buttonHints){ }
+void UFGButtonHintBar::InsertButtonHint(const FFGButtonHintDescription& ButtonHint, int32 Index){  }
+bool UFGButtonHintBar::RemoveButtonHintAtIndex(int32 Index, FFGButtonHintDescription& out_ButtonHint){ return false; }
+bool UFGButtonHintBar::RemoveButtonHintByInputAction(UInputAction* InputAction,	FFGButtonHintDescription& out_ButtonHint){ return false; }
 void UFGButtonHintBar::UpdateKeyHintsFromWidgetPath(){ }
-void UFGButtonHintBar::HandleSlateFocusChanging(const FFocusEvent& FocusEvent, const FWeakWidgetPath& OldFocusedWidgetPath, const TSharedPtr<SWidget>& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath, const TSharedPtr<SWidget>& NewFocusedWidget){ }
+void UFGButtonHintBar::SetHintTag(FName hintTag){  }
+void UFGButtonHintBar::HandleKeyHintListUpdated(const TArray<FFGKeyHint>& KeyHints){  }
 void UFGButtonHintBar::HandleKeyHintsChanged(){ }
 void UFGButtonHintBar::UpdateKeyHintsFromFocusPath(const FWidgetPath& FocusPath){ }
 void UFGButtonHintBar::HandleEnhancedInputMappingsRebuilt(){ }
 void UFGButtonHintBar::UpdateKeyHintsFromEnhancedInput(){ }
+void UFGButtonHintBar::SortKeyHints(){  }
 UEnhancedInputLocalPlayerSubsystem* UFGButtonHintBar::GetEnhancedInputSubsystem() const{ return nullptr; }
 void UFGButtonHintFunctionLibrary::GroupAndSortKeyHints(const TArray<FFGKeyHint>& KeyHints, TArray<FFGKeyHintGroup>& out_Groups){ }

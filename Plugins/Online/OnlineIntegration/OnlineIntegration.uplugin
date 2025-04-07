@@ -29,7 +29,7 @@
 			"Name": "OnlineIntegrationEOSExtensions",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
-			"BlacklistTargets": [
+			"TargetDenyList": [
 				"Server"
 			]
 		}
@@ -42,40 +42,46 @@
 		{
 			"Name": "OnlineServicesEOS",
 			"Enabled": true,
-			"WhitelistPlatforms": [
+			"PlatformAllowList": [
 				"Win64",
-				"Linux"
+				"Linux",
+				"PS5",
+				"XSX"
 			],
-			"BlacklistTargets": [
+			"TargetDenyList": [
 				"Server"
 			]
 		},
 		{
 			"Name": "OnlineServicesEOSGS",
 			"Enabled": true,
-			"BlacklistTargets": [
+			"TargetDenyList": [
 				"Server"
 			]
 		},
 		{
 			"Name": "SocketSubsystemEOS",
 			"Enabled": true,
-			"BlacklistTargets": [
+			"TargetDenyList": [
 				"Server"
 			]
 		},
 		{
 			"Name": "OnlineServicesOSSAdapter",
-			"Enabled": true
+			"Enabled": true,
+			"PlatformAllowList": [
+				"PS5",
+				"XSX"
+			]
 		},
 		{
 			"Name": "OnlineSubsystemSteam",
 			"Enabled": true,
-			"WhitelistPlatforms": [
+			"PlatformAllowList": [
 				"Win64",
 				"Linux"
 			],
-			"BlacklistTargets": [
+			"TargetDenyList": [
 				"Server"
 			]
 		},
@@ -90,7 +96,7 @@
 		{
 			"Name": "SteamSockets",
 			"Enabled": true,
-			"WhitelistPlatforms": [
+			"PlatformAllowList": [
 				"Win64",
 				"Linux"
 			],

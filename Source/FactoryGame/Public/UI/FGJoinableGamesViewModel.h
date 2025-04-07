@@ -26,6 +26,14 @@ struct FOnlineSessionInfoCache
 
 	UPROPERTY()
 	TObjectPtr< UFGSessionInformationModel > SessionInfoModel;
+
+	//<FL>[KonradA] Metadata for --local-- crossplay filtering
+	UPROPERTY()
+	bool bIsCrossPlaySession = false;
+
+	UPROPERTY()
+	FName HostPlatform;
+	//</FL>
 };
 
 /**
@@ -47,8 +55,16 @@ protected:
 	void FriendAdded( UOnlineFriend* newFriend );
 	void FriendRemoved( UOnlineFriend* deletedFriend );
 	void FriendGameSessionChanged(UObject*, UE::FieldNotification::FFieldId);
+	//<FL>[KonradA]
+	void LoginStateChanged( ULocalUserInfo* UserInfo, TSharedRef< UE::Online::FAccountInfo > AccountInfo, UOnlineIntegrationBackend* Backend );
+	void OnFriendListReset( ULocalUserInfo* UserInfo );
+	void ReAddFriends( ULocalUserInfo* UserInfo );
+	FDelegateHandle ReAddFriendsDelegateHandle;
+	//</FL>
 
 	void UpdateFriendSession( UOnlineFriend* newFriend, USessionInformation* sessionInfo );
+	UFUNCTION( BlueprintCallable )
+	void UpdateAndFilterListEntries();
 	
 	UPROPERTY( BlueprintSetter=SetLocalUser, FieldNotify )
 	TObjectPtr< ULocalUserInfo > mLocalUser;
@@ -58,4 +74,7 @@ protected:
 
 	UPROPERTY()
 	TMap< TObjectPtr< UOnlineFriend >, TObjectPtr< USessionInformation > > mFriendSessionMap;
+
+	UPROPERTY()
+	TArray< TObjectPtr< UFGGenericListItemDescriptor > > mUnfilteredListEntires;
 };

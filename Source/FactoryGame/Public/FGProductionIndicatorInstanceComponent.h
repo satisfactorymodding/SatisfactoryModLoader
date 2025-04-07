@@ -14,10 +14,10 @@ struct FFGIndicatorReaction
 	GENERATED_BODY()
 	
 	UPROPERTY(EditDefaultsOnly)
-	int32 FlashingPattern;
+	int32 FlashingPattern = {};
 
 	UPROPERTY(EditDefaultsOnly)
-	FLinearColor mColor;
+	FLinearColor mColor = FLinearColor::Black;
 };
 
 /**

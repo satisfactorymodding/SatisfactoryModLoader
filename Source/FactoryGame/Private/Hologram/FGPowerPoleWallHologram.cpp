@@ -24,7 +24,7 @@ void AFGPowerPoleWallHologram::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 void AFGPowerPoleWallHologram::Destroyed(){ Super::Destroyed(); }
 USceneComponent* AFGPowerPoleWallHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 AActor* AFGPowerPoleWallHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID constructionID){ return nullptr; }
-void AFGPowerPoleWallHologram::PostHologramPlacement(const FHitResult& hitResult){ }
+void AFGPowerPoleWallHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
 bool AFGPowerPoleWallHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGPowerPoleWallHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 AActor* AFGPowerPoleWallHologram::GetUpgradedActor() const{ return nullptr; }

@@ -81,6 +81,14 @@ struct FCompassEntry
 	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
 	bool bShouldShowName{false};
 
+	// <FL>[KonradA] When updating the Compass elements we also need to recalculate which ones can even be seen by the user due to UGC/Blocklist/Platformholder
+	// restrictions. Keep this here to later pass into the SCompassWidget
+	bool bNeedsUGCCensoring{ false };
+	// Also cache the last edited by that was used for evaluating the bNeedsUGCCensoring so we can react and update the former if the field has been updated instead 
+	// of running the expensive update operation often.
+	TArray< FLocalUserNetIdBundle > CachedLastEditedBy;
+	// </FL>
+
 	/** The representation this compass entry is bound to. Can be NULL in some cases */
 	UPROPERTY()
 	UFGActorRepresentation* RepresentingActor{};

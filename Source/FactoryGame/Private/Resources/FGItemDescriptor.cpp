@@ -11,6 +11,7 @@ EResourceForm UFGItemDescriptor::GetForm(TSubclassOf<UFGItemDescriptor> inClass)
 	else
 		return EResourceForm();
 }
+EResourceForm UFGItemDescriptor::GetFormFromAssetData(const FAssetData& blueprintAssetData){ return EResourceForm(); }
 float UFGItemDescriptor::GetEnergyValue(TSubclassOf<UFGItemDescriptor> inClass) {
 	if (inClass)
 		return inClass.GetDefaultObject()->mEnergyValue;
@@ -31,6 +32,7 @@ FText UFGItemDescriptor::GetItemName(TSubclassOf<UFGItemDescriptor> inClass) {
 	else
 		return FText::FromString(inClass->GetName());
 }
+FText UFGItemDescriptor::GetItemNameFromAssetData(const FAssetData& blueprintAssetData){ return FText(); }
 FText UFGItemDescriptor::GetItemDescription(TSubclassOf<UFGItemDescriptor> inClass) {
 	if (inClass)
 		return inClass.GetDefaultObject()->mDescription;
@@ -182,6 +184,7 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 }
 void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGItemDescriptor::BeginDestroy(){ Super::BeginDestroy(); }
+void UFGItemDescriptor::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const{ UObject::GetAssetRegistryTags(OutTags); }
 EGasType UFGItemDescriptor::GetGasType(TSubclassOf< UFGItemDescriptor > inClass){ return EGasType(); }
 FText UFGItemDescriptor::GetAbbreviatedDisplayName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 UMaterialInterface* UFGItemDescriptor::GetCrosshairMaterial(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
@@ -205,6 +208,8 @@ FColor UFGItemDescriptor::GetScannerLightColor(TSubclassOf< UFGItemDescriptor > 
 bool UFGItemDescriptor::NeedsPickupMapMarker(TSubclassOf<UFGItemDescriptor> inClass){ return bool(); }
 void UFGItemDescriptor::SetItemEncountered(TSubclassOf<UFGItemDescriptor> Class, int32 Index){ }
 int32 UFGItemDescriptor::IsItemEncountered(TSubclassOf<UFGItemDescriptor> Class){ return int32(); }
+void UFGItemDescriptor::SetSmallIcon(TSubclassOf<UFGItemDescriptor> Class, UTexture2D* Icon){  }
+void UFGItemDescriptor::SetBigIcon(TSubclassOf<UFGItemDescriptor> Class, UTexture2D* Icon){  }
 bool UFGItemDescriptor::CanItemBePickedup(TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
 bool UFGItemDescriptor::CanItemBePickedup(UFGItemDescriptor* inClass){ return bool(); }
 FText UFGItemDescriptor::GetItemNameInternal() const{ return FText(); }

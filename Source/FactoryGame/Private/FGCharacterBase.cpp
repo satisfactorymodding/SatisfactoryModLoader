@@ -8,7 +8,9 @@
 void AFGCharacterBase::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const {
 	out_data = mClearanceData;
 }
-
+void AFGCharacterBase::SetIsInUnsafeLoadLocation(bool isUnsafe){ IFGUnsafePawnRelocationInterface::SetIsInUnsafeLoadLocation(isUnsafe); }
+void AFGCharacterBase::SetLastSafeLocation(const FVector& location){ IFGUnsafePawnRelocationInterface::SetLastSafeLocation(location); }
+FVector AFGCharacterBase::GetLastSafeLoadLocation(){ return IFGUnsafePawnRelocationInterface::GetLastSafeLoadLocation(); }
 void FFootstepEffect::Reset(){ }
 AFGCharacterBase::AFGCharacterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mDefaultFootstepEffect.Particle = nullptr;
@@ -44,6 +46,8 @@ AFGCharacterBase::AFGCharacterBase(const FObjectInitializer& ObjectInitializer) 
 	this->mRagdollMeshPhysicsBoneName = TEXT("Pelvis");
 	this->mApplyDamageMomentum = false;
 	this->mNormalDamageMultiplier = 1.0;
+	this->mIsInUnsafeLoadPosition = false;
+	this->mLastSafeLoadLocation = FVector::ZeroVector;
 	this->mIsPossessed = false;
 	this->bReplicateUsingRegisteredSubObjectList = true;
 }

@@ -18,6 +18,7 @@ TArray<UFGMessage*> UFGMessage::GetAllMessageAssets(){ return TArray<UFGMessage*
 bool UFGMessage::operator<(const UFGMessage& otherMessage) const{ return bool(); }
 TArray<FMessageSubtitle> UFGMessage::GetSubtitles(){ return TArray<FMessageSubtitle>(); }
 bool UFGMessage::DoesMessageContainPresentation() const{ return bool(); }
+bool UFGMessage::IsBarkMessage() const{ return false; }
 float UFGMessage::GetSharingDistance() const{ return float(); }
 bool UFGMessage::IsMessageConsideredImportant() const{ return bool(); }
 bool UFGMessage::AreConditionsMet(UWorld* world) const{ return bool(); }

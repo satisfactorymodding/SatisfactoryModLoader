@@ -8,12 +8,12 @@ bool UFGUserSettingApplyType::StringAsVariant(const FString& String, EVariantTyp
 void UFGUserSettingApplyType::Init( UFGUserSetting* inUserSetting){ }
 void UFGUserSettingApplyType::TryRegisterCvarValue(){ }
 void UFGUserSettingApplyType::TryUpdateCvarValue(){ }
-bool UFGUserSettingApplyType::CheckCvarValueForUpdates(){ return bool(); }
+FVariant UFGUserSettingApplyType::GetOptionValueFromCvar() const{ return FVariant(); }
 bool UFGUserSettingApplyType::OnApply(bool markDirty){ return bool(); }
 void UFGUserSettingApplyType::SetValue(FVariant newValue){ }
 void UFGUserSettingApplyType::ForceSetValue(FVariant newValue, bool bClearPendingValue){ }
 bool UFGUserSettingApplyType::ForceSetPendingAppliedValue(FVariant newValue){ return bool(); }
-void UFGUserSettingApplyType::OverrideDefaultValue(FVariant newDefaultValue){ }
+void UFGUserSettingApplyType::OverrideDefaultValue(FVariant newDefaultValue, bool bSkipCVarUpdate){ }
 void UFGUserSettingApplyType::ResetToDefaultValue(bool bForce){ }
 void UFGUserSettingApplyType::ClearPendingChanges(){ }
 void UFGUserSettingApplyType::NotifySubscribers(){ }

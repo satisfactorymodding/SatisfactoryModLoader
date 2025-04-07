@@ -35,6 +35,14 @@ public:
 	UFUNCTION( BlueprintPure, Category = "ChargedWeapon" )
 	float GetChargePct() const;
 
+	UFUNCTION( BlueprintPure, Category = "ChargedWeapon" )
+	bool HasDispensedProjectiles() const;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
+
+	UPROPERTY( Replicated )
+	bool bHasDispensedProjectiles;
+
 protected:
 	/** Executes on Server, Spawns and throws out a charged projectile*/
 	void SpawnChargedProjectile( FTransform spawnTransform, int32 throwForce );
@@ -80,6 +88,10 @@ protected:
 	// Begin AFGEquipment interface
 	virtual void HandleDefaultEquipmentActionEvent( EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent ) override;
 	virtual bool IsEquipmentMontageTagAllowed_Implementation(FName montageTag) const override;
+
+	virtual void AddEquipmentActionBindings() override;
+
+	void Input_Detonate( const FInputActionValue& actionValue );
 	// End AFGEquipment interface
 
 	virtual void UpdateDispersion( float DeltaSeconds ) override;

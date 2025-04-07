@@ -26,7 +26,8 @@ public:
 
 	void SetSnappBuilding( class AFGBuildable* snappedBuilding );
 protected:
-
+	virtual void UpdatePoleMesh() override;
+	
 private:
 	/** The connection conveyors snap to, used when placing a pole automatically. */
 	UPROPERTY( )

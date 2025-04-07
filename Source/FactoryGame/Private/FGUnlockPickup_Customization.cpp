@@ -11,8 +11,10 @@ AFGUnlockPickup_Customization::AFGUnlockPickup_Customization() : Super() {
 	this->mPickupMesh = nullptr;
 	this->mPickupMeshSize = 200.0;
 	this->mStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	this->mStaticMeshComponent->SetMobility(EComponentMobility::Static);
 	this->mSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	this->mSphereComponent->SetupAttachment(mStaticMeshComponent);
+	this->mSphereComponent->SetMobility(EComponentMobility::Movable);
 }
 void AFGUnlockPickup_Customization::UpdateVisuals_Implementation(){ }
 void AFGUnlockPickup_Customization::StartIsLookedAt_Implementation(AFGCharacterPlayer* byCharacter, const FUseState& state){ }

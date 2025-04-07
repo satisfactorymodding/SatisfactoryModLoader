@@ -90,3 +90,4 @@ void FFGDynamicStruct::Destroy(){ }
 FString FFGDynamicStruct::ToString() const{ return FString(); }
 bool FFGDynamicStruct::Identical(const FFGDynamicStruct& otherStruct, uint32 portFlags) const{ return bool(); }
 void FFGDynamicStruct::AddStructReferencedObjects( FReferenceCollector& Collector){ }
+bool FFGDynamicStruct::Identical(const FFGDynamicStruct* Other, uint32 PortFlags) const{ return false; }

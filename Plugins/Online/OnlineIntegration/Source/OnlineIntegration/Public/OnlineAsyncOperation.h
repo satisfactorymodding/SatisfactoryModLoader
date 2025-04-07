@@ -1,9 +1,9 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
 #include "MVVMViewModelBase.h"
-
+#include "Online/OnlineError.h"
 #include "OnlineAsyncOperation.generated.h"
 
 namespace UE::Online
@@ -38,6 +38,17 @@ public:
 	 */
 	virtual bool HasErrors() const;
 	
+
+	//<FL>[KonradA]
+	/**
+	* Returns a list of errors that have been set by Op->SetErrors(). Override for inheriting async actions
+	*/
+	virtual TArray<UE::Online::FOnlineError> GetErrors()
+	{
+		return TArray<UE::Online::FOnlineError>();
+	};
+	//</FL>
+	
 protected:
 	virtual void NotifySequenceFinished();
 
@@ -63,4 +74,8 @@ private:
 	FOnOnlineAsyncOperationCompleted_Native OnOperationCompleted_Native;
 	UPROPERTY(BlueprintAssignable)
 	FOnOnlineAsyncOperationCompleted OnOperationCompleted;
+
+public:
+	//<FL>[KonradA] Determines if the authentication sequence should broadcast errors to all subsystems or just log
+	bool bSuppressErrors = false;
 };

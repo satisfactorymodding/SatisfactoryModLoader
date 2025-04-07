@@ -14,6 +14,6 @@ bool FWPSaveDataMigrationContext::ValidateSaveData(FArchive& ReadAr){ return boo
 void FWPSaveDataMigrationContext::PerformSaveDataMigration( UFGSaveSession& SaveSession){ }
 void FWPSaveDataMigrationContext::SaveValidationData(FArchive& WriteAr,  UFGSaveSession& SaveSession){ }
 void FWPSaveDataMigrationContext::MigrateBlobs(const TArray<uint8> &TOCBlob, const TArray<uint8> &DataBlob, const bool DataIsFromPersistentLevel){ }
-void FWPSaveDataMigrationContext::MigrateBlobs(const TArray<uint8, TSizedDefaultAllocator<64>> &TOCBlob, const TArray<uint8, TSizedDefaultAllocator<64>> &DataBlo0b, const bool DataIsFromPersistentLevel){ }
+void FWPSaveDataMigrationContext::MigrateBlobs(int32 saveVersion, const TArray<uint8, TSizedDefaultAllocator<64>> &TOCBlob, const TArray<uint8, TSizedDefaultAllocator<64>> &DataBlo0b, const bool DataIsFromPersistentLevel){ }
 void FWPSaveDataMigrationContext::MigrateDestroyedActors(const TArray<FObjectReferenceDisc>& DestroyedActors){ }
 void FWPSaveDataMigrationContext::RepackSaveData( UFGSaveSession& SaveSession){ }

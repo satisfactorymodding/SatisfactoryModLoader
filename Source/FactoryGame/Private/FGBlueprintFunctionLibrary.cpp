@@ -16,6 +16,7 @@ void UFGBlueprintFunctionLibrary::ApplyCustomizationPrimitiveData( AActor* actor
 void UFGBlueprintFunctionLibrary::ApplyDefaultColorPrimitiveData( AActor* actor){ }
 void UFGBlueprintFunctionLibrary::GetAllMeshComponentsInClass(const TSubclassOf< AActor > inClass, TArray< UMeshComponent* >& out_components){ }
 void UFGBlueprintFunctionLibrary::GetAllComponentsInClass(const TSubclassOf<AActor> inClass, const TSubclassOf<UActorComponent> inActorComponentClass, TArray<UActorComponent*>& out_components, TMap<USceneComponent*, FFGComponentParentAttachmentInfo>& out_parentComponentMap){ }
+FBox UFGBlueprintFunctionLibrary::GetCollisionBoundingBoxFromActorClass(const TSubclassOf<AActor> inClass, const FTransform& originTransform){ return FBox(); }
 void UFGBlueprintFunctionLibrary::GetAllDescriptorsSorted(UObject* worldContext,  TArray< TSubclassOf< UFGItemDescriptor > >& out_descriptors){ }
 void UFGBlueprintFunctionLibrary::ChangeLanguage(FString target){ }
 FString UFGBlueprintFunctionLibrary::GetLanguage(){ return FString(); }
@@ -71,6 +72,9 @@ void UFGBlueprintFunctionLibrary::GetVisibleChildWidgetsOfClass(UWidget* rootWid
 void UFGBlueprintFunctionLibrary::GetAllChildWidgetsOfAnyClass(UWidget* rootWidget, TArray< TSubclassOf< UWidget > > widgetClasses, TArray< UWidget* >& foundWidgets){ }
 UWidget* UFGBlueprintFunctionLibrary::GetFirstChildWidgetOfClass(UWidget* rootWidget, TSubclassOf< UWidget > widgetClass){ return nullptr; }
 UWidget* UFGBlueprintFunctionLibrary::GetFirstParentWidgetOfClass(UWidget* childWidget, TSubclassOf< UWidget > widgetClass){ return nullptr; }
+UWidget* UFGBlueprintFunctionLibrary::GetFirstParentWidgetByName(UWidget* childWidget, FName Name){ return nullptr; }
+UWidget* UFGBlueprintFunctionLibrary::GetWidgetFromWidgetChild(FFGWidgetChild WidgetChild){ return nullptr; }
+FName UFGBlueprintFunctionLibrary::GetNameFromWidgetChild(FFGWidgetChild WidgetChild){ return FName(); }
 TArray< TSubclassOf< class UFGItemDescriptor > > UFGBlueprintFunctionLibrary::GetAllItemsInCategory(UObject* worldContext, TSubclassOf< UFGItemCategory > itemCategory){ return TArray<TSubclassOf<class UFGItemDescriptor> >(); }
 TArray< TSubclassOf< class UFGItemCategory > > UFGBlueprintFunctionLibrary::GetCategoriesWithAffordableRecipes(AFGCharacterPlayer* playerPawn, TSubclassOf< UObject > forProducer){ return TArray<TSubclassOf<class UFGItemCategory> >(); }
 void UFGBlueprintFunctionLibrary::GetAllAvailableCustomizations(UObject* worldContext, TArray< TSubclassOf<  UFGFactoryCustomizationDescriptor > >& out_customizations, TSubclassOf<  UFGFactoryCustomizationDescriptor > customizationClass){ }
@@ -91,8 +95,9 @@ FString UFGBlueprintFunctionLibrary::LinearColorToHex(FLinearColor inColor){ ret
 FLinearColor UFGBlueprintFunctionLibrary::HexToLinearColor(const FString& inHex){ return FLinearColor(); }
 void UFGBlueprintFunctionLibrary::AddPopup(APlayerController* controller, FText Title, FText Body, const FPopupConfirmClicked& ConfirmClickDelegate, EPopupId PopupID , TSubclassOf< UUserWidget > popupClass , UObject* popupInstigator){ }
 void UFGBlueprintFunctionLibrary::AddPopupWithCloseDelegate(APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, EPopupId PopupID , TSubclassOf< UUserWidget > popupClass , UObject* popupInstigator , bool restoreFocusOnClose){ }
-void UFGBlueprintFunctionLibrary::AddPopupWithContent(APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate,  UFGPopupWidgetContent* Content, EPopupId PopupID , UObject* popupInstigator , bool restoreFocusOnClose){ }
+void UFGBlueprintFunctionLibrary::AddPopupWithContent(APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, class UFGPopupWidgetContent* Content, FKey OverrideConfirmKey, EPopupId PopupID, UObject* popupInstigator, bool restoreFocusOnClose, bool manuallyHandleClosing){  }
 void UFGBlueprintFunctionLibrary::ClosePopup(APlayerController* controller){ }
+bool UFGBlueprintFunctionLibrary::HasActivePopup(APlayerController* controller){ return false; }
 void UFGBlueprintFunctionLibrary::ClearPopupQueueOfClass(APlayerController* controller, TSubclassOf< UUserWidget > widgetClass){ }
 void UFGBlueprintFunctionLibrary::ClearPopupQueueOfContentClass(APlayerController* controller, TSubclassOf< UFGPopupWidgetContent > contentClass){ }
 void UFGBlueprintFunctionLibrary::CopyTextToClipboard(FText textToCopy){ }
@@ -105,7 +110,8 @@ bool UFGBlueprintFunctionLibrary::NotEqual_FrameTimeFrameTime(FFrameTime frameTi
 FFrameTime UFGBlueprintFunctionLibrary::Conv_IntToFrameTime(int32 frameCount){ return FFrameTime(); }
 int32 UFGBlueprintFunctionLibrary::Conv_FrameTimeToInt(FFrameTime frameTime){ return int32(); }
 bool UFGBlueprintFunctionLibrary::EqualEqual_FMapMarkerFMapMarker(const FMapMarker& mapMarkerA, const FMapMarker& mapMarkerB){ return bool(); }
-int32 UFGBlueprintFunctionLibrary::GetMapMarkerID(const FMapMarker& mapMarker,  bool& out_hasValidID){ return int32(); }
+FGuid UFGBlueprintFunctionLibrary::GetMapMarkerGUID(const FMapMarker& mapMarker, bool& out_hasValidID){ return FGuid(); }
+void UFGBlueprintFunctionLibrary::Set3DWidgetClass(TSubclassOf<UUserWidget> InWidgetClass, UWidgetComponent* Target){  }
 bool UFGBlueprintFunctionLibrary::EvaluateMathExpression(const FString& expression,  FText& out_Result){ return bool(); }
 FString UFGBlueprintFunctionLibrary::SecondsToTimeString(float inSeconds){ return FString(); }
 FString UFGBlueprintFunctionLibrary::Conv_IntToString(int64 InInt){ return FString(); }
@@ -127,7 +133,8 @@ void UFGBlueprintFunctionLibrary::WaitForCondition(const UObject* WorldContextOb
 void UFGBlueprintFunctionLibrary::GetAllPickupableItemDescriptors(UObject* WorldContextObject, TArray< TSubclassOf<  UFGItemDescriptor > >& out_itemDescriptors){ }
 bool UFGBlueprintFunctionLibrary::ShouldShowUnstableSaveVersionWarning(){ return bool(); }
 bool UFGBlueprintFunctionLibrary::ShouldShowOfflineSessionWarning(){ return bool(); }
-bool UFGBlueprintFunctionLibrary::ShouldShowControllerUI(){ return bool(); }
+bool UFGBlueprintFunctionLibrary::ShouldShowConsoleUI(){ return false; }
+bool UFGBlueprintFunctionLibrary::ShouldShowGamepadUI(const UObject* WorldContextObject){ return false; }
 bool UFGBlueprintFunctionLibrary::IsUsingController(const UObject* WorldContextObject){ return bool(); }
 UFGGameInstance* UFGBlueprintFunctionLibrary::GetFGGameInstance(const UObject* WorldContextObject){ return nullptr; }
 UWidget* UFGBlueprintFunctionLibrary::FindWidgetToFocus(UWidget* Widget, EFGFocusReason FocusReason){ return nullptr; }
@@ -148,9 +155,12 @@ UWidget* UFGBlueprintFunctionLibrary::FindOppositeWidgetY(const FGeometry& geome
 void UFGBlueprintFunctionLibrary::SimulateKeyDownEvent(const FKeyEvent& keyEvent){ }
 void UFGBlueprintFunctionLibrary::SimulateKeyUpEvent(const FKeyEvent& keyEvent){ }
 bool UFGBlueprintFunctionLibrary::GetKeyState(UObject* WorldContextObject, FKey Key){ return bool(); }
+bool UFGBlueprintFunctionLibrary::IsGamepadAttached(){ return false; }
 void UFGBlueprintFunctionLibrary::NotifyKeyHintsChanged(UObject* WorldContextObject){ }
+void UFGBlueprintFunctionLibrary::ToggleThumbstickUiNavigation(bool bEnabled){  }
 FString UFGBlueprintFunctionLibrary::BuildSourceString(const FText& inText){ return FString(); }
 void UFGBlueprintFunctionLibrary::SortStrings(TArray< FString >& strings, bool sortAscending){ }
+TArray<UUserWidget*> UFGBlueprintFunctionLibrary::SortListViewEntryWidgets(const TArray<UUserWidget*>& EntryWidgets){ return TArray<UUserWidget*>(); }
 void UFGBlueprintFunctionLibrary::BreakCustomizationColorSlot(const  FFactoryCustomizationColorSlot& customData, FLinearColor& primaryColor, FLinearColor& secondaryColor, TSubclassOf<UFGFactoryCustomizationDescriptor_PaintFinish>& Finish){ }
 FFactoryCustomizationColorSlot UFGBlueprintFunctionLibrary::MakeCustomizationColorSlot(FLinearColor primaryColor, FLinearColor secondaryColor, TSubclassOf<UFGFactoryCustomizationDescriptor_PaintFinish> Finish){ return FFactoryCustomizationColorSlot(); }
 UTexture2D* UFGBlueprintFunctionLibrary::GetIconForCustomizationDesc(const TSubclassOf<  UFGFactoryCustomizationDescriptor > customizationDesc){ return nullptr; }
@@ -183,9 +193,44 @@ void UFGBlueprintFunctionLibrary::ForceReRunConstructionScript(AActor* Actor){ }
 TSubclassOf<UFGItemDescriptor> UFGBlueprintFunctionLibrary::GetRecipeProducerItemDescriptor(TSubclassOf<UObject> recipeProducer, UObject* worldContext){ return TSubclassOf<UFGItemDescriptor>(); }
 TArray< AFGPlayerController* > UFGBlueprintFunctionLibrary::GetAllPlayerControllersInSession(const UObject* worldContextObject){ return TArray<AFGPlayerController*>(); }
 bool UFGBlueprintFunctionLibrary::IsNavigationEvent(FFocusEvent& inEvent){ return bool(); }
+void UFGBlueprintFunctionLibrary::ChangeActorNameToLableName(AActor* Actor){  }
+void UFGBlueprintFunctionLibrary::FilterText(const FString& text, const FOnMessageProcessed& completionDelegate){  }
+void UFGBlueprintFunctionLibrary::FilterText(const FString& text, const FOnMessageProcessedDynamic& completionDelegate){  }
+void UFGBlueprintFunctionLibrary::FilterTexts(const TArray<FString>& texts, const FOnMessageArrayProcessed& completionDelegate){  }
+void UFGBlueprintFunctionLibrary::FilterTexts(const TArray<FString>& texts, const FOnMessageArrayProcessedDynamic& completionDelegate){  }
+void UFGBlueprintFunctionLibrary::WaitForFilterText(const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo, const FString& Text, FString& out_Filtered){  }
+void UFGBlueprintFunctionLibrary::WaitForFilterTexts(const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo, const TArray<FString>& texts, TArray<FString>& out_Filtered){  }
+FString UFGBlueprintFunctionLibrary::MakeStringUGCCompatible(const FString& inText, EUGCStringConversionResult& conversionResult){ return FString(); }
+bool UFGBlueprintFunctionLibrary::IsConsolePlatform(){ return false; }
+bool UFGBlueprintFunctionLibrary::IsConsolePlatformPure(){ return false; }
+EFGTargetPlatform UFGBlueprintFunctionLibrary::GetCurrentPlatform(){ return EFGTargetPlatform::TP_Windows; }
+FString UFGBlueprintFunctionLibrary::GetPlatformAvatarURL(FName UserPlatform, FString UserPlatformAvatarURL, FString OnlineUserAvatarURL){ return FString(); }
+EUGCVisibilityErrors UFGBlueprintFunctionLibrary::UserCanSeeUGCInThisContext(AFGPlayerController* LocalPlayerController, TArray<FLocalUserNetIdBundle> LastUGCEditBy){ return EUGCVisibilityErrors::UGCVE_NoErrors; }
+bool UFGBlueprintFunctionLibrary::UGCIsBlurExcempt(EUGCVisibilityErrors VisibilityResult){ return false; }
+bool UFGBlueprintFunctionLibrary::UGCVisibilityErrorsIsMatch(int32 Bitmask, int32 Bitmask2){ return false; }
+FString UFGBlueprintFunctionLibrary::ComposeLastEditedByStringForPlatform(const TArray<FLocalUserNetIdBundle>& LastEditedByData){ return FString(); }
+void UFGBlueprintFunctionLibrary::BlockUser(UOnlineUserInfo* BlockingUser, UOnlineUserInfo* UserToBlock){  }
+void UFGBlueprintFunctionLibrary::BlockUserOn(UOnlineUserInfo* BlockingUser, UOnlineUserInfo* UserToBlock, EBlockBackendTarget BackendTarget, FOnBlockOverlayClosed OnPopupClosed){  }
+bool UFGBlueprintFunctionLibrary::UserCanBeBlockedOn(UOnlineUserInfo* UserToBlock, EBlockBackendTarget BackendTarget){ return false; }
+bool UFGBlueprintFunctionLibrary::UserIsBlockedFullyBy(UOnlineUserInfo* UserChecking, UOnlineUserInfo* UserToCheck){ return false; }
+void UFGBlueprintFunctionLibrary::FullReAuth(UObject* WorldContextObject){  }
+bool UFGBlueprintFunctionLibrary::IsFrontEndLoadingScreenFinished(APlayerController* controller){ return false; }
+bool UFGBlueprintFunctionLibrary::CanDisplayPopup(APlayerController* controller){ return false; }
+void UFGBlueprintFunctionLibrary::PopErrorHandlingSubsystem(UObject* WorldContextObject){  }
+bool UFGBlueprintFunctionLibrary::HasPendingErrorHandlingSubsystem(UObject* WorldContextObject){ return false; }
+bool UFGBlueprintFunctionLibrary::IsPlatformConnectedButNotAuthenticated(UObject* WorldContext){ return false; }
+bool UFGBlueprintFunctionLibrary::HasPlatformConnectionAndAuthenticationMismatch(UObject* WorldContext){ return false; }
+bool UFGBlueprintFunctionLibrary::IsFullyAuthenticatedAtPlatformServices(UObject* WorldContext){ return false; }
+bool UFGBlueprintFunctionLibrary::IsFullyAuthenticatedAtEOS(UObject* WorldContext){ return false; }
+void UFGBlueprintFunctionLibrary::CheckAndFixPlatformAuthentication(UObject* WorldContextObject){  }
+FString UFGBlueprintFunctionLibrary::GetDetailedPlatformConnectionStateString(UObject* WorldContext){ return FString(); }
+bool UFGBlueprintFunctionLibrary::IsCurrentOnlineIntegrationStateValid(UObject* WorldContext, FIntegrationStateCheckResult& out_detailedResult){ return false; }
+bool UFGBlueprintFunctionLibrary::IsAWithSoftRef(UObject* Object, TSoftClassPtr<UObject> SoftClass){ return false; }
+void UFGBlueprintFunctionLibrary::ActivateAimAssistClient(APlayerController* PlayerController, TScriptInterface<IFGAimAssistClient> AimAssistClient, bool IsActive){  }
+void UFGBlueprintFunctionLibrary::EnableAnalogUINavigation(bool bEnable){  }
 
-
-DEFINE_FUNCTION(UFGBlueprintFunctionLibrary::execMakeDynamicStruct) {
+DEFINE_FUNCTION(UFGBlueprintFunctionLibrary::execMakeDynamicStruct)
+{
 	PARAM_PASSED_BY_REF(inDynamicStruct, FIntProperty, int32);
 	P_FINISH;
 	P_NATIVE_BEGIN;

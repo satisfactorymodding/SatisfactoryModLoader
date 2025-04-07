@@ -13,3 +13,6 @@ void ULocalUserInfoPrivate::HandlePresenceUpdated(const UE::Online::FPresenceUpd
 void ULocalUserInfoPrivate::HandleUISessionJoinRequested(const UE::Online::FUISessionJoinRequested& SessionJoinRequested, UOnlineIntegrationBackend* Backend){ }
 UOnlineUserBackendLinkPrivate* ULocalUserInfoPrivate::GetBackendPrivate(UOnlineIntegrationBackend* Backend){ return nullptr; }
 UOnlineUserInfoPrivate& ULocalUserInfoPrivate::GetOnlineUserInfoPrivate(){ return *NewObject<UOnlineUserInfoPrivate>(); }
+void ULocalUserInfoPrivate::QueryGlobalCrossplaySetting(UOnlineIntegrationBackend* Backend){ }
+void ULocalUserInfoPrivate::DisplayCrossPlaySystemMessage(UCommonUserSubsystem* userSubsystem){ }
+void ULocalUserInfoPrivate::OnPlatformChecksDoneCallback(EPrivilegeResults privilege){ }

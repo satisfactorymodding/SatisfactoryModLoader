@@ -114,10 +114,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "OnlineFramework",
-			"Enabled": true
-		},
-		{
 			"Name": "OnlineSubsystemGooglePlay",
 			"Enabled": false
 		},
@@ -358,6 +354,29 @@
 		{
 			"Name": "WwiseNiagara",
 			"Enabled": true
+		},
+		{
+			"Name": "AnimationWarping",
+			"Enabled": true
+		},
+		{
+			"Name": "Gauntlet",
+			"Enabled": true
+		},
+		{
+			"Name": "TestFramework",
+			"Enabled": true
+		},
+		{
+			"Name": "ReliableMessaging",
+			"Enabled": true
+		},
+		{
+			"Name": "WinDualShock",
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win64"
+			]
 		}
 	],
 	"TargetPlatforms": [

@@ -414,6 +414,10 @@ public:
 	void Debug_MarkAllGraphsForFullRebuild();
 	
 protected:
+	/** Multicast to notify the clients that the trains have collided */
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_OnTrainsCollided( class AFGTrain* first, class AFGTrain* second );
+	
 	/** Called when two trains collide, only called once. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Railroad" )
 	void OnTrainsCollided( class AFGTrain* first, class AFGTrain* second );
@@ -551,6 +555,10 @@ public:
 	float mClientSimulationServerVelocityBlend = 0.5f;
 	/** How much corrective velocity to blend in per second. [0, 1] */
 	float mClientSimulationCorrectionVelocityBlend = 0.8f;
+	
+	/** Whether or not trains should derail when exiting tracks. */
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Railroad" )
+	bool mDerailWhenExitingTrack;
 
 private:
 	/** Counters for generating UIDs. */
@@ -579,6 +587,12 @@ private:
 	TArray< FPendingTrainCollisionEvent > mPendingTrainCollisions;
 
 private:
+	/**
+	 * The train self driving needs a frame to warm up after load.
+	 * This fixed bugs such as trains going down the wrong track or passing red signals the first frame.
+	 */
+	bool mIsSelfDrivingWarmingUp;
+
 	/** Handles all the trains and their reservations inside the blocks. Only valid on server. */
 	UPROPERTY()
 	class AFGTrainScheduler* mTrainScheduler;

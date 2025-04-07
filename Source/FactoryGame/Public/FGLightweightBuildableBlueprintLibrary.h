@@ -53,4 +53,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Lightweight Buildable")
 	static AFGBuildable* SpawnTemporaryFromLightweight(const FLightweightBuildableInstanceRef& instance);
+
+	/**
+	* Retrieves a lightweight buildable associated with the buildable actor that has been converted to a lightweight or that represents a lightweight temporary
+	* 
+	* @param buildable buildable to retrieve the temporary for
+	* @param out_instance the lightweight buildable instance if successfully retrieved
+	* @return true if the passed buildable has an associated lightweight buildable
+	*/
+	UFUNCTION(BlueprintPure, Category = "Lightweight Buildable")
+	static bool GetLightweightBuildableInstanceFromConvertedBuildableOrTemporary( const AFGBuildable* buildable, FLightweightBuildableInstanceRef& out_instance);
 };

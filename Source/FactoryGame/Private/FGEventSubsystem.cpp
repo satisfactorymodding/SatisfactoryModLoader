@@ -3,7 +3,9 @@
 #include "FGEventSubsystem.h"
 #include "Net/UnrealNetwork.h"
 
-AFGEventSubsystem::AFGEventSubsystem() : Super() { }
+AFGEventSubsystem::AFGEventSubsystem() : Super() {
+	this->mCalendarRewardsClass = nullptr;
+}
 void AFGEventSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGEventSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

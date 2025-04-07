@@ -42,13 +42,14 @@ bool AFGConveyorLiftHologram::TryUpgrade(const FHitResult& hitResult){ return bo
 AActor* AFGConveyorLiftHologram::GetUpgradedActor() const{ return nullptr; }
 int32 AFGConveyorLiftHologram::GetBaseCostMultiplier() const{ return int32(); }
 float AFGConveyorLiftHologram::GetHologramHoverHeight() const{ return float(); }
-void AFGConveyorLiftHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+void AFGConveyorLiftHologram::GetIgnoredClearanceActors(TSet< AActor* >& ignoredActors) const{ }
 void AFGConveyorLiftHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
-void AFGConveyorLiftHologram::PostHologramPlacement(const FHitResult& hitResult){ }
+void AFGConveyorLiftHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
 void AFGConveyorLiftHologram::CheckBlueprintCommingling(){ }
 void AFGConveyorLiftHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
 bool AFGConveyorLiftHologram::CanNudgeHologram() const{ return bool(); }
 void AFGConveyorLiftHologram::GetClearanceData(TArray<const FFGClearanceData*>& out_ClearanceData) const{ }
+bool AFGConveyorLiftHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramTransform) const{ return Super::IsHologramIdenticalToActor(actor, hologramTransform); }
 void AFGConveyorLiftHologram::CheckValidFloor(){ }
 void AFGConveyorLiftHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGConveyorLiftHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
@@ -62,3 +63,4 @@ void AFGConveyorLiftHologram::UpdateClearance(){ }
 void AFGConveyorLiftHologram::OnRep_ArrowDirection(){ }
 void AFGConveyorLiftHologram::OnRep_SnappedPassthroughs(){ }
 bool AFGConveyorLiftHologram::CanConnectToConnection(UFGFactoryConnectionComponent* from, UFGFactoryConnectionComponent* to) const{ return bool(); }
+bool AFGConveyorLiftHologram::IsVerticalConnection(int32 connectionIndex) const{ return false; }

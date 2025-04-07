@@ -5,7 +5,6 @@
 AFGGameSessionOnline::AFGGameSessionOnline() : Super() {
 	this->mSessionInformation = nullptr;
 }
-void AFGGameSessionOnline::UpdateGameSession(){ }
 void AFGGameSessionOnline::Destroyed(){ Super::Destroyed(); }
 void AFGGameSessionOnline::InitOptions(const FString& options){ }
 void AFGGameSessionOnline::HandleMatchHasStarted(){ }

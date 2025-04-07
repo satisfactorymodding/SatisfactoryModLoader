@@ -8,6 +8,7 @@
 #include "Widgets/Views/SListView.h"
 #include "FGListView.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnListViewItemsChangedEventDynamic);
 
 /**
  * Created so we can exposes hidden properties that isn't exposed for Epics UListView.
@@ -28,6 +29,12 @@ public:
 	UUserWidget* GetEntryWidgetForItem( UObject* item ) const;
 	
 	virtual TSharedRef<STableViewBase> RebuildListWidget() override;
+
+	UPROPERTY(EditAnywhere, BlueprintAssignable, Category = ListView)
+	FOnListViewItemsChangedEventDynamic OnListViewItemsChangedEvent;
+
+protected:
+	virtual void OnItemsChanged(const TArray<UObject*>& AddedItems, const TArray<UObject*>& RemovedItems) override;
 };
 
 template < typename ItemType >

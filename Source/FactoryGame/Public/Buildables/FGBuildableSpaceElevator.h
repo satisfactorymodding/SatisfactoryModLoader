@@ -94,6 +94,10 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION()
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+	//<FL>[KonradA]
+	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray< struct FLocalUserNetIdBundle >(); }
+	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	//</FL>
 
 	// End IFGActorRepresentationInterface
 	

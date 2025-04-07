@@ -19,8 +19,8 @@ void AFGTrainPlatformHologram::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 void AFGTrainPlatformHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGTrainPlatformHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 AActor* AFGTrainPlatformHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
-void AFGTrainPlatformHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
-void AFGTrainPlatformHologram::PostHologramPlacement(const FHitResult& hitResult){ }
+void AFGTrainPlatformHologram::GetIgnoredClearanceActors(TSet< AActor* >& ignoredActors) const{ }
+void AFGTrainPlatformHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
 USceneComponent* AFGTrainPlatformHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 void AFGTrainPlatformHologram::PreConfigureActor( AFGBuildable* inBuildable){ }
 void AFGTrainPlatformHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }

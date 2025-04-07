@@ -151,6 +151,21 @@ struct FACTORYGAME_API FSaveCustomVersion
 		
 		// 2024-06-04: Arbitrary "1.0" version
 		Version1,
+
+		// 2025-03-12: Tobias: I refactored the poles (conveyor / pipe) a while ago, but missed some save migration code necessary for the pipe poles so I'm adding this now
+		PoleRefactor,
+
+		// 2025-03-18: Lightweight Buildable Subsystem serializes lightweight buildable version now, to avoid having to bump the save version when updating serialization format for lightweights
+		LightweightBuildableSubsystemWritesRuntimeVersion,
+
+		// 2025-03-24: ObjectFlags are now serialized for objects and actors during saving. NOTE: Versions from this version till SerializePerStreamableLevelTOCVersion are VOLATILE and might lose sublevel data!!
+		SerializeObjectFlags,
+
+		// 2025-03-26: Back-to-back railroad switches.
+		BackToBackRailroadSwitches,
+
+		// 2025-03-28: Serialize per Streamable Level TOC version rather than using the persistent level version for all streamable levels TOC serialization
+		SerializePerStreamableLevelTOCVersion,
 		
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
@@ -172,6 +187,8 @@ struct FACTORYGAME_API FRuntimeBuildableInstanceDataVersion
 		NoVersion,
 
 		InitialVersion,
+		// 2025-03-18: Added data specific to the type of the lightweight buildable. Used for beams.
+		AddedTypeSpecificData,
 		
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,

@@ -9,23 +9,9 @@
 #if WITH_EDITOR
 void AFGBuildable::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) {
     Super::PostEditChangeProperty(PropertyChangedEvent);
-    if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(AFGBuildable, mInstanceData)) {
-        mInstanceDataCDO = mInstanceData;
-    }
-
-    if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(AFGBuildable, mBuildableSparseDataEditorObject)) {
-        mBuildableSparseDataCDO = mBuildableSparseDataEditorObject;
-    }
 }
 void AFGBuildable::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) {
     Super::PostEditChangeChainProperty(PropertyChangedEvent);
-    if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(AFGBuildable, mInstanceData)) {
-        mInstanceDataCDO = mInstanceData;
-    }
-
-    if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(AFGBuildable, mBuildableSparseDataEditorObject)) {
-        mBuildableSparseDataCDO = mBuildableSparseDataEditorObject;
-    }
 }
 #endif
 void AFGBuildable::OnConstruction(const FTransform& transform) {
@@ -37,7 +23,7 @@ void AFGBuildable::OnConstruction(const FTransform& transform) {
     CallSetupInstances();
 #endif
 }
-TArray<struct FInstanceData> AFGBuildable::GetActorLightweightInstanceData_Implementation() {
+TArray<struct FInstanceData> AFGBuildable::GetActorLightweightInstanceData_Implementation() const{
     if (IsValid(mInstanceDataCDO)) {
         return mInstanceDataCDO->GetInstanceData();
     }
@@ -51,17 +37,21 @@ void AFGBuildable::SetupInstances_Native(bool bInitializeHidden) {
 		}
         for (FInstanceData InstanceData : mInstanceDataCDO->GetInstanceData()) {
             if (IsValid(InstanceData.StaticMesh) && !InstanceData.OverridenMaterials.Contains(nullptr)) {
-                FInstanceHandle* Handle;
+                FInstanceOwnerHandlePtr Handle;
                 AAbstractInstanceManager::SetInstanceFromDataStatic(this, FTransform(), InstanceData, Handle, bInitializeHidden);
                 mInstanceHandles.Add(Handle);
             }
         }
     }
 }
+
+void AFGBuildable::AddDynamicInstanceHandle(const FInstanceOwnerHandlePtr& NewInstanceHandle){ }
+void AFGBuildable::AddDynamicInstanceHandles(const TArray<FInstanceOwnerHandlePtr>& NewInstanceHandles){ }
+void AFGBuildable::CallSetupInstances(bool bInitializeHidden){ }
 void AFGBuildable::RemoveInstances_Native() {
     if (this && GetWorld()) {
         AAbstractInstanceManager* Manager = AAbstractInstanceManager::GetInstanceManager(GetWorld());
-        for (FInstanceHandle* InstanceHandle : mInstanceHandles) {
+        for (FInstanceOwnerHandlePtr InstanceHandle : mInstanceHandles) {
             if (InstanceHandle->IsInstanced()) {
                 Manager->RemoveInstance(InstanceHandle);
             }
@@ -165,7 +155,7 @@ AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) : Super(
 	this->mCustomScaleType = EFGRainOcclusionShapeScaling::ROCSS_Center;
 	this->mBlueprintDesigner = nullptr;
 	this->mReplicatedBuiltInsideBlueprintDesigner = false;
-	this->mInteractWidgetClass = nullptr;
+	this->mInteractWidgetSoftClass = nullptr;
 	this->mIsUseable = false;
 	this->mBuiltWithRecipe = nullptr;
 	this->mOriginalBuildableVariant = nullptr;
@@ -190,6 +180,9 @@ void AFGBuildable::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildable::PostLoad(){ Super::PostLoad(); }
 void AFGBuildable::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildable::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+#if WITH_EDITOR
+bool AFGBuildable::CanVisualizeBlueprintAsset() const{ return Super::CanVisualizeBlueprintAsset(); }
+#endif
 void AFGBuildable::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildable::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildable::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -197,6 +190,8 @@ void AFGBuildable::PostLoadGame_Implementation(int32 saveVersion, int32 gameVers
 void AFGBuildable::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGBuildable::NeedTransform_Implementation(){ return bool(); }
 bool AFGBuildable::ShouldSave_Implementation() const{ return bool(); }
+FInstanceHandleArray AFGBuildable::GetLightweightInstanceHandles() const{ return IAbstractInstanceInterface::GetLightweightInstanceHandles(); }
+FInstanceHandleArray AFGBuildable::GetDynamicLightweightInstanceHandles() const{ return IAbstractInstanceInterface::GetDynamicLightweightInstanceHandles(); }
 void AFGBuildable::PostLazySpawnInstances_Implementation(){ }
 void AFGBuildable::AddClearanceData(const FFGClearanceData& newData){ }
 void AFGBuildable::AddClearanceData(const TArray< FFGClearanceData >& newData){ }
@@ -208,6 +203,7 @@ void AFGBuildable::ApplyCustomizationData_Implementation(const FFactoryCustomiza
 void AFGBuildable::ApplyCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
 TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGBuildable::GetActiveSkin_Native(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
 TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGBuildable::GetActiveSkin_Implementation(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
+bool AFGBuildable::GetCanBeColored_Native(){ return false; }
 bool AFGBuildable::GetCanBeColored_Implementation(){ return bool(); }
 bool AFGBuildable::GetCanBePatterned_Implementation(){ return bool(); }
 void AFGBuildable::StartIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter, bool isValid){ }
@@ -263,7 +259,7 @@ void AFGBuildable::PlayDismantleEffects(){ }
 void AFGBuildable::OnDismantleEffectFinished(){ }
 UFGMaterialEffect_Build* AFGBuildable::GetActiveBuildEffect(){ return nullptr; }
 bool AFGBuildable::CanBeSampled_Implementation() const{ return bool(); }
-void AFGBuildable::SetBuildableHiddenInGame(bool hide){ }
+void AFGBuildable::SetBuildableHiddenInGame(bool hide, bool disableCollisionOnHide){ }
 TSubclassOf< AFGBuildable > AFGBuildable::GetBuildableClassFromRecipe(TSubclassOf<  UFGRecipe > inRecipe){ return TSubclassOf<AFGBuildable>(); }
 bool AFGBuildable::ShouldBlockGuidelinePathForHologram(const  AFGHologram* hologram) const{ return bool(); }
 bool AFGBuildable::ShouldShowCenterGuidelinesForHologram(const  AFGHologram* hologram) const{ return bool(); }
@@ -286,7 +282,7 @@ void AFGBuildable::PreSerializedToBlueprint(){ }
 void AFGBuildable::PostSerializedToBlueprint(){ }
 void AFGBuildable::PostSerializedFromBlueprint(bool isBlueprintWorld){ }
 TSoftClassPtr< UFGMaterialEffect_Build > AFGBuildable::GetBuildEffectTemplate_Implementation() const{ return TSoftClassPtr<UFGMaterialEffect_Build>(); }
-void AFGBuildable::SetIsLightweightTemporary(TArray< FInstanceHandle* >& instanceHandles, int32 indexOfRuntimeData){ }
+void AFGBuildable::SetIsLightweightTemporary(TArray< FInstanceOwnerHandlePtr >& instanceHandles, int32 indexOfRuntimeData){ }
 TSoftClassPtr< UFGMaterialEffect_Build > AFGBuildable::GetDismantleEffectTemplate_Implementation() const{ return TSoftClassPtr<UFGMaterialEffect_Build>(); }
 bool AFGBuildable::ManagedByLightweightBuildableSubsystem() const{ return bool(); }
 void AFGBuildable::OnSkinCustomizationApplied_Implementation(TSubclassOf<  UFGFactoryCustomizationDescriptor_Skin > skin){ }
@@ -299,19 +295,29 @@ bool AFGBuildable::Factory_GrabOutput_Implementation( UFGFactoryConnectionCompon
 uint8 AFGBuildable::MaxNumGrab(float delta) const{ return uint8(); }
 uint8 AFGBuildable::EstimatedMaxNumGrab_Threadsafe(float estimatedDeltaTime) const{ return uint8(); }
 bool AFGBuildable::VerifyDefaults(FString& out_message){ return bool(); }
+void AFGBuildable::Internal_CallRemoveInstances(){ }
 void AFGBuildable::GetDismantleRefundReturns(TArray< FInventoryStack >& out_returns) const{ }
+void AFGBuildable::GetLightweightBuildableDismantleRefundReturns(const TSubclassOf<UFGRecipe>& builtWithRecipe, const FFGDynamicStruct& typeSpecificData, TArray<FInventoryStack>& out_returns) const{ }
+void AFGBuildable::ApplyLightweightTypeSpecificData(const struct FFGDynamicStruct& typeSpecificData){ }
+FFGDynamicStruct AFGBuildable::GetLightweightTypeSpecificData() const{ return FFGDynamicStruct(); }
+void AFGBuildable::CreateLightweightBuildableInstanceData(const struct FFGDynamicStruct& typeSpecificData, TArray<FInstanceData>& outLightweightInstanceData) const{ }
 int32 AFGBuildable::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
+int32 AFGBuildable::GetDismantleRefundReturnsMultiplierForLightweight(const FFGDynamicStruct& typeSpecificData) const{ return 0; }
 void AFGBuildable::GetDismantleInventoryReturns(TArray< FInventoryStack >& out_returns) const{ }
 void AFGBuildable::GetAlienOverClockingSourceMesh_Implementation(UStaticMesh*& SourceMesh, FTransform& Transform){ }
 void AFGBuildable::TogglePendingDismantleMaterial(bool enabled){ }
 void AFGBuildable::ApplySkinData(TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > newSkinDesc){ }
 void AFGBuildable::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
+bool AFGBuildable::HasOverrideForHologramInClass(TSubclassOf<UFGItemDescriptor> OwnerBuilding, TSubclassOf<UFGItemDescriptor> HologramDescriptor){ return false; }
 TArray< UStaticMeshComponent* > AFGBuildable::CreateBuildEffectProxyComponents(){ return TArray<UStaticMeshComponent*>(); }
 void AFGBuildable::DestroyBuildEffectProxyComponents(){ }
 void AFGBuildable::OnRep_CustomizationData(){ }
 void AFGBuildable::SetupInstances_Implementation(bool bInitializeHidden){ }
 void AFGBuildable::RemoveInstances_Implementation(){ }
 bool AFGBuildable::HandleLightweightAddition(){ return bool(); }
+#if WITH_EDITOR
+void AFGBuildable::CreateEditorVisualization(){ }
+#endif
 void AFGBuildable::ForceUpdateCustomizerMaterialToRecipeMapping(bool bTryToSave){ }
 void AFGBuildable::CreateFactoryStatID() const{ }
 bool AFGBuildable::CheckFactoryConnectionComponents(FString& out_message){ return bool(); }

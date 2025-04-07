@@ -74,6 +74,7 @@ float AFGDroneVehicle::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGDroneVehicle::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGDroneVehicle::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 UMaterialInterface* AFGDroneVehicle::GetActorRepresentationCompassMaterial(){ return nullptr; }
+TArray<FLocalUserNetIdBundle> AFGDroneVehicle::GetLastEditedBy() const{ return TArray<FLocalUserNetIdBundle>(); }
 void AFGDroneVehicle::NotifyPairedStationUpdated( AFGBuildableDroneStation* NewPairedStation){ }
 void AFGDroneVehicle::OnUndocked(){ }
 void AFGDroneVehicle::OnDockedStationDestroyed(){ }

@@ -4,3 +4,6 @@
 
 void USessionMemberInformation::SetPlayerState(APlayerState* InPlayerState){ }
 void USessionMemberInformation::SetOnlineUserInfo(UOnlineUserInfo* InOnlineUserInfo){ }
+void USessionMemberInformation::SetPlayingPlatformName(const FName& InPlayingPlatformName){ }
+void USessionMemberInformation::SetPlatformAvatarURL(const FString& InPlatformAvatarURL){ }
+void USessionMemberInformation::ShowProfileUI(){ }

@@ -11,6 +11,8 @@ struct FACTORYGAME_API FObjectBaseSaveHeader
 	FString ClassName;
 	// A Reference to the object
 	FObjectReferenceDisc Reference;
+	// Flags with which the object has been saved
+	uint32 ObjectFlags{RF_NoFlags};
 
 	/** ctor */
 	FObjectBaseSaveHeader(){}
@@ -20,6 +22,7 @@ struct FACTORYGAME_API FObjectBaseSaveHeader
 	{
 		Reference.Reset();
 		ClassName.Reset();
+		ObjectFlags = RF_NoFlags;
 	}
 
 	/** Helper to find the level this actor/object resides in */
@@ -39,15 +42,11 @@ struct FACTORYGAME_API FObjectBaseSaveHeader
 	{
 		Reference.Set( obj );
 		ClassName = obj->GetClass()->GetPathName();
+		ObjectFlags = obj->GetFlags();
 	}
 
 	/** Save/load data from disc */
-	friend FArchive& operator<<( FArchive& ar, FObjectBaseSaveHeader& header )
-	{
-		ar << header.ClassName << header.Reference;
-
-		return ar;
-	}
+	void Serialize( FArchive& ar, int32 saveCustomVersion );
 
 	FString ToString() const;
 	UClass* ResolveClass() const;
@@ -79,11 +78,11 @@ struct FACTORYGAME_API FObjectSaveHeader
 	FString ToString() const;
 
 	/** Save/load data from disc */
-	friend FArchive& operator<<( FArchive& ar, FObjectSaveHeader& header )
+	void Serialize( FArchive& ar, int32 saveCustomVersion )
 	{
-		ar << header.BaseHeader << header.OuterPathName;
-
-		return ar;
+		BaseHeader.Serialize( ar, saveCustomVersion );
+		// TODO @Nick: This is unnecessary to serialize, outer path can be derived from object path
+		ar << OuterPathName;
 	}
 };
 
@@ -144,13 +143,11 @@ struct FACTORYGAME_API FActorSaveHeader
 		ObjectHeader.ParseObjectName( out_objName );
 	}
 
-
-	/** Save/load data */
-	friend FArchive& operator<<( FArchive& ar, FActorSaveHeader& header )
+	/** Save/load data from disc */
+	void Serialize( FArchive& ar, int32 saveCustomVersion )
 	{
-		// We always store transform, so that the need transform switch can be flicked anytime during development without breaking savegames
-		ar << header.ObjectHeader << header.NeedTransform << header.Transform << header.WasPlacedInLevel;
-	
-		return ar;
+		ObjectHeader.Serialize( ar, saveCustomVersion );
+		// TODO @Nick: WasPlacedInLevel on newer saves is not necessary and can be replaced with ObjectFlags & RF_WasLoaded
+		ar << NeedTransform << Transform << WasPlacedInLevel;
 	}
 };

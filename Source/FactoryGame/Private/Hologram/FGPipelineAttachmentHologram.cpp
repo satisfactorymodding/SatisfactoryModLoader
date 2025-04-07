@@ -9,6 +9,7 @@ AFGPipelineAttachmentHologram::AFGPipelineAttachmentHologram() : Super() {
 	this->mProducerArrowRelativeLocation = FVector((0, 0, 200));
 	this->mBasePipeClass = AFGBuildablePipeline::StaticClass();
 	this->mPipeAttachmentInterfaceClass = UFGPipeAttachmentSnapTargetInterface::StaticClass();
+	this->mCreateClearanceSnapMeshVisualization = false;
 }
 void AFGPipelineAttachmentHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGPipelineAttachmentHologram::ConfigureComponents(AFGBuildable* inBuildable) const{ }

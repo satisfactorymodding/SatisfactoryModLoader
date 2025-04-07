@@ -11,7 +11,7 @@ USTRUCT()
 struct ABSTRACTINSTANCE_API FInstanceHandleArray
 {
 	GENERATED_BODY()
-	TArray<struct FInstanceHandle*> HandleArray;
+	TArray<FInstanceHandlePtr> HandleArray;
 };
 
 /**
@@ -30,7 +30,7 @@ class ABSTRACTINSTANCE_API IAbstractInstanceInterface
 	
 public:
 	UFUNCTION( BlueprintNativeEvent, Category = "LightweightInstances" )
-	TArray<struct FInstanceData> GetActorLightweightInstanceData();
+	TArray<struct FInstanceData> GetActorLightweightInstanceData() const;
 
 	UFUNCTION( BlueprintNativeEvent, Category = "LightweightInstances" )
 	bool DoesContainLightweightInstances();
@@ -43,5 +43,8 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "LightweightInstances" )
 	void PostLazySpawnInstances();
 
+	/** Optional function returning all Instance Handles (both static and dynamic) currently owned by this actor. Returned handles are read-only */
 	virtual FInstanceHandleArray GetLightweightInstanceHandles() const	{ return FInstanceHandleArray(); }
+	/** Optional function returning all Dynamic Instance Handles. Dynamic Instance Handles are handles that were not created from GetActorLightweightInstanceData. Returned handles are read-only */
+	virtual FInstanceHandleArray GetDynamicLightweightInstanceHandles() const { return FInstanceHandleArray(); }
 }; 

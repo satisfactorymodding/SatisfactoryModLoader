@@ -546,7 +546,7 @@ public:
 	/** Returns the player state from the outer player character */
 	class AFGPlayerState* GetOwningPlayerState() const;
 
-	// Returns true if either the session wide cheat NoCost is enabled or if the individual game mode NoBuildCost is enabled
+	// Returns true if either the session wide cheat NoCost is enabled or if the individual game mode NoBuildCost is enabled 
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	bool GetNoBuildCost() const;
 

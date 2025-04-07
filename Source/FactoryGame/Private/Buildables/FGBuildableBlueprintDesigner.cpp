@@ -14,10 +14,13 @@ void AFGBuildableBlueprintDesigner::PostEditChangeProperty(FPropertyChangedEvent
 #endif 
 AFGBuildableBlueprintDesigner::AFGBuildableBlueprintDesigner() : Super() {
 	this->mCollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
-	this->mDesignerBoxMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DesignAreaMesh"));
+	this->mCollisionComponent->SetMobility(EComponentMobility::Movable);
 	this->mTerminalMesh = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("TerminalMesh"));
+	this->mTerminalMesh->SetMobility(EComponentMobility::Static);
 	this->mFloorMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("FloorMesh"));
+	this->mFloorMeshComponent->SetMobility(EComponentMobility::Static);
 	this->mRefundLocationComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RefundLocation"));
+	this->mRefundLocationComponent->SetMobility(EComponentMobility::Static);
 	this->mFloorMeshTile = nullptr;
 	this->mTerminalDistanceFromEdge = 0.0;
 	this->mTerminalHalfDepth = 0.0;
@@ -27,17 +30,11 @@ AFGBuildableBlueprintDesigner::AFGBuildableBlueprintDesigner() : Super() {
 	this->mDefaultStorageRecipe = nullptr;
 	this->mStorage = nullptr;
 	this->mStorageLocation = CreateDefaultSubobject<USceneComponent>(TEXT("StorageLocation"));
-	this->mCurrentRecordData.BlueprintName = TEXT("");
-	this->mCurrentRecordData.BlueprintDescription = TEXT("");
-	this->mCurrentRecordData.IconID.IconID = -1;
-	this->mCurrentRecordData.Color = FLinearColor(0.0, 0.0, 0.0, 1.0);
-	this->mCurrentRecordData.Category = nullptr;
-	this->mCurrentRecordData.SubCategory = nullptr;
+	this->mStorageLocation->SetMobility(EComponentMobility::Static);
 	this->mCurrentBlueprintDescriptor = nullptr;
 	this->mIsDismantlingAll = false;
 	this->mHologramClass = AFGBlueprintDesignerHologram::StaticClass();
 	this->mCollisionComponent->SetupAttachment(RootComponent);
-	this->mDesignerBoxMesh->SetupAttachment(RootComponent);
 	this->mTerminalMesh->SetupAttachment(RootComponent);
 	this->mFloorMeshComponent->SetupAttachment(RootComponent);
 	this->mRefundLocationComponent->SetupAttachment(RootComponent);
@@ -59,12 +56,11 @@ void AFGBuildableBlueprintDesigner::GetDismantleDependencies_Implementation(TArr
 void AFGBuildableBlueprintDesigner::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ }
 void AFGBuildableBlueprintDesigner::RegisterInteractingPlayer_Implementation(AFGCharacterPlayer* player){ }
 void AFGBuildableBlueprintDesigner::BuildTiledMeshes(UInstancedStaticMeshComponent* tiledMeshComp, const FIntVector& dims){ }
-void AFGBuildableBlueprintDesigner::GatherBuildables(TArray< AFGBuildable* >& out_Buildables){ }
 void AFGBuildableBlueprintDesigner::OnBuildableConstructedInsideDesigner(AFGBuildable* buildable){ }
 void AFGBuildableBlueprintDesigner::OnBuildableDismantledInsideDesigner(AFGBuildable* buildable){ }
 void AFGBuildableBlueprintDesigner::OnBuildableChangedInsideDesigner(AFGBuildable* buildable){ }
 void AFGBuildableBlueprintDesigner::CalculateBlueprintCost(TArray<FItemAmount>& cost) const{ }
-void AFGBuildableBlueprintDesigner::SaveBlueprint(FBlueprintRecord blueprintRecord, AFGPlayerController* controller){ }
+void AFGBuildableBlueprintDesigner::SaveBlueprint(FBlueprintRecord blueprintRecord, AFGPlayerController* controller, bool bFromDesignerContext){ }
 void AFGBuildableBlueprintDesigner::DismantleCurrentBuildables(AFGPlayerController* controller){ }
 void AFGBuildableBlueprintDesigner::GetCurrentBuildablesDismantleRefund(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled){ }
 EBlueprintDesignerLoadResult AFGBuildableBlueprintDesigner::LoadBlueprintIntoDesigner(UFGBlueprintDescriptor* blueprintDescriptor, AFGPlayerController* controller){ return EBlueprintDesignerLoadResult(); }

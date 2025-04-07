@@ -25,7 +25,7 @@ public:
 	FText PresetName;
 
 	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadWrite )
-	FLinearColor Color;
+	FLinearColor Color = FLinearColor::Black;
 };
 
 
@@ -267,7 +267,7 @@ public:
 	UFGFactoryCustomizationCollection();
 
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid( TArray< FText >& ValidationErrors ) override;
+	virtual EDataValidationResult IsDataValid( FDataValidationContext& validationContext ) const override;
 #endif
 	
 	// Returns the class type all elements must be of to exist in this collection
@@ -319,6 +319,9 @@ public:
 	{ 
 		return !(*this == other);
 	}
+
+	/** Persistent archive serializer for coloring data */
+	friend FArchive& operator<<(FArchive& Ar, FFactoryCustomizationColorSlot& CustomizationColorSlot);
 
 	bool NetSerialize( FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess )
 	{
@@ -422,6 +425,9 @@ struct FACTORYGAME_API FFactoryCustomizationData
 	 */
 	void GetAppliedRecipes( class UWorld* worldContext, TArray< TSubclassOf< class UFGRecipe > >& out_recipes ) const;
 
+	/** Fast version to be called to add references to swatches and pattern descriptors referenced by this data */
+	void AddReferencedObjects( FReferenceCollector& referenceCollector );
+
 	/**
 	 * Returns the refunds for the specified customization data. If newCustomizationData isn't supplied, then all refunds will be returned. Otherwise only the refunds for the customization that has changed will be returned.
 	 */
@@ -442,6 +448,9 @@ struct FACTORYGAME_API FFactoryCustomizationData
 	{
 		return !( *this == other );
 	}
+
+	/** Serializer for networked and/or persistent archives. Will only serialize data marked as SaveGame here */
+	friend FArchive& operator<<(FArchive& Ar, FFactoryCustomizationData& CustomizationData);
 
 	UPROPERTY( SaveGame, EditAnywhere, BlueprintReadWrite, Category = "Customization" )
 	TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > SwatchDesc;
@@ -491,3 +500,41 @@ struct FACTORYGAME_API FFactoryCustomizationData
 	UPROPERTY( NotReplicated )
 	uint8 HasPower;
 };
+
+/**
+ * Resolved factory customization data is a low-level customization data that has been resolved into the parameters that will be set on the material
+ * This takes the applied swatch, coloring patterns, and paint finishes into account, and translates them to the low level data that will be passed to the material
+ */
+struct FACTORYGAME_API FResolvedFactoryCustomizationData
+{
+	float PatternID{0.0f};
+	float MaterialID{0.0f};
+	int32 ColorSlot{0};
+	FLinearColor PrimaryColor{FLinearColor::White};
+	FLinearColor SecondaryColor{FLinearColor::Black};
+	float Roughness{1.0f};
+	float Metallic{0.0f};
+	bool bHasPower{false};
+	uint8 PatternRotation{0};
+	TArray<float> ExtraData;
+
+	FResolvedFactoryCustomizationData() = default;
+	explicit FResolvedFactoryCustomizationData(const FFactoryCustomizationData& customizationData, int32 colorSlotFallback = 0);
+
+	/** Applies the provided swatch to this customization data */
+	void ApplySwatch(TSubclassOf<class UFGFactoryCustomizationDescriptor_Swatch> swatch);
+	
+	/** Applies the default swatch for this swatch group */
+	void ApplyDefaultSwatchForSwatchGroup(TSubclassOf<class UFGSwatchGroup> swatchGroup);
+
+	/** Resolves default color for the set color slot on this customization data */
+	void ResolveDefaultColorForColorSlot();
+
+	/** Applies the data to the mesh component */
+	void ApplyToMeshComponent(class UMeshComponent* meshComponent) const;
+
+	/** Applies the data to the per instance custom data array. Note that the array will be resized to fit at least 20 elements */
+	void ApplyToPerInstanceCustomData(TArray<float>& out_perInstanceCustomData) const;
+};
+
+

@@ -15,5 +15,5 @@ bool AFGRoadHologram::DoMultiStepPlacement(bool isInputFromARelease){ return boo
 void AFGRoadHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGRoadHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGRoadHologram::CheckValidFloor(){ }
-void AFGRoadHologram::CheckClearance(const FVector& locationOffset){ }
+void AFGRoadHologram::CheckClearance(){ }
 UFGRoadConnectionComponent* AFGRoadHologram::FindOverlappingConnectionComponent(const FVector& location, float radius,  UFGRoadConnectionComponent* ignoredConnection, bool ignoreIsConnected) const{ return nullptr; }

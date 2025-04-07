@@ -12,6 +12,7 @@
 #include "FGBuildableConveyorBase.generated.h"
 
 
+class AFGBuildableConveyorMonitor;
 class UFGConnectionComponent;
 using FG_ConveyorItemRepKeyType = uint32;
 using FG_ConveyorVersionType = uint32;
@@ -137,8 +138,6 @@ public:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual void GainedSignificance_Native() override;
-	virtual void LostSignificance_Native() override;
 	virtual	void SetupForSignificance() override;
 
 	// Server Use
@@ -151,6 +150,11 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Significance" )
 	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
 	// End IFGSignificanceInterface
+
+	//~ Begin IFGDismantleInterface
+	virtual void Upgrade_Implementation( AActor* newActor ) override;
+	//~ End IFGDismantleInterface
+
 
 	FORCEINLINE float GetLength() const { return mLength; }
 	FORCEINLINE float GetSpeed() const { return mSpeed; }
@@ -186,6 +190,8 @@ public:
 			mConveyorChainActor->GetItemsForSegment( this, out_items );
 		}
 	}
+
+	FORCEINLINE bool HasAnyThroughputMonitorsAttached() const { return mAttachedThroughputMonitors.Num() > 0; }
 
 	/** Assigns a Chain Actor to a Conveyor. This will also clear temporary ism instances for clients if there are any */
 	void SetConveyorChainActor( AFGConveyorChainActor* chainActor );
@@ -227,8 +233,11 @@ public:
 #endif
 
 	void EmptyBelt() { mItems.Empty(); }
-
 	
+	void RegisterThroughputMonitor( AFGBuildableConveyorMonitor* monitor );
+	void UnregisterThroughputMonitor( AFGBuildableConveyorMonitor* monitor );
+	void GetThroughputMonitors( TArray< AFGBuildableConveyorMonitor *>& out_Monitors ) const { out_Monitors.Append( mAttachedThroughputMonitors ); }
+
 protected:
 	// Begin Factory_ interface
 	virtual bool Factory_PeekOutput_Implementation( const class UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type ) const override;
@@ -361,9 +370,8 @@ protected:
 	/** Speed of this conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor" )
 	float mSpeed;
-
 	/** Length of the conveyor. */
-	float mLength;
+	mutable float mLength;
 
 	/** All the locally simulated resource offsets on the conveyor belt.
 	 * This array is an items queue, first items in the array is the last item on the belt. */
@@ -395,6 +403,9 @@ protected:
 
 	UPROPERTY( Replicated )
 	int32 mChainSegmentIndex = INDEX_NONE;
+	
+	UPROPERTY()
+	TArray< AFGBuildableConveyorMonitor* > mAttachedThroughputMonitors;
 	
 	/** For conveyor chain support this is a quick way to tell if this base conveyor is a lift or not */
 	bool mIsConveyorLift = false;

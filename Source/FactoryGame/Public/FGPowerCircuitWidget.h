@@ -4,14 +4,14 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/FGUserWidget.h"
 #include "FGPowerCircuitWidget.generated.h"
 
 /**
  * Base for widgets thats observes a power circuit.
  */
 UCLASS()
-class FACTORYGAME_API UFGPowerCircuitWidget : public UUserWidget
+class FACTORYGAME_API UFGPowerCircuitWidget : public UFGUserWidget
 {
 	GENERATED_BODY()
 public:

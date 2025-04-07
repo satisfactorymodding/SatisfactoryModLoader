@@ -25,9 +25,11 @@ public:
 	UFUNCTION( BlueprintCallable )
 	virtual void SpawnEffects(const FHitResult& hitResult, AActor* outer);
 
+	void AsyncLoadAndSpawnAkEvent( const FHitResult& hitResult, AActor* outer, bool AttachToActor );
+	
 	/** When pawn take damage from a source, they play this take damage event */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SFX" )
-	class UAkAudioEvent* mImpactAudioEvent;
+	TSoftObjectPtr<class UAkAudioEvent> mImpactAudioEvent;
 
 	/** When pawn take damage from a source, they play this take damage event */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "VFX" )

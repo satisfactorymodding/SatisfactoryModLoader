@@ -16,6 +16,7 @@ AFGRailroadSubsystem::AFGRailroadSubsystem() : Super() {
 	this->mTrainClass = nullptr;
 	this->mBlockVisualizationDistance = 30000.0;
 	this->mClientSimulationResetDistance = 3000.0;
+	this->mDerailWhenExitingTrack = false;
 	this->mTrainScheduler = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -74,6 +75,7 @@ void AFGRailroadSubsystem::ToggleBlockVisualizationAlways(bool enabled){ }
 FLinearColor AFGRailroadSubsystem::GetBlockVisualizationColor(int32 forSignalBlockID){ return FLinearColor(); }
 void AFGRailroadSubsystem::Debug_MarkAllGraphsAsChanged(){ }
 void AFGRailroadSubsystem::Debug_MarkAllGraphsForFullRebuild(){ }
+void AFGRailroadSubsystem::Multicast_OnTrainsCollided_Implementation(class AFGTrain* first, class AFGTrain* second){ }
 void AFGRailroadSubsystem::TickTrackGraphs(float dt){ }
 void AFGRailroadSubsystem::TickPendingCollisions(){ }
 void AFGRailroadSubsystem::TickBlockVisualization(){ }

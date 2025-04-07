@@ -10,6 +10,7 @@
 #include "FGInventoryComponent.h"
 #include "FGObjectReference.h"
 #include "Resources/FGItemDescriptor.h"
+#include <LocalUserInfo.h> // <FL>[KonradA]
 #include "ItemAmount.h"
 #include "FGFactoryBlueprintTypes.generated.h"
 
@@ -21,6 +22,7 @@ struct FACTORYGAME_API FBlueprintConfigVersion
 		AddedMD5Hash,
 		RemovedMD5Hash,
 		AddedIconLibraryPath,
+		AddedLastEditedBy,
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1
 	};
@@ -45,6 +47,11 @@ public:
 
 	UPROPERTY( SaveGame )
 	TArray< FString > BlueprintNames;
+
+	// <FL> [KonradA]
+	UPROPERTY( SaveGame )
+	TArray< FLocalUserNetIdBundle > LastEditedBy;
+	//</FL>
 };
 
 USTRUCT( BlueprintType )
@@ -56,16 +63,21 @@ public:
 	FString CategoryName;
 
 	UPROPERTY( SaveGame )
-	int32 IconID;
+	int32 IconID = {};
 
 	UPROPERTY( SaveGame )
-	float MenuPriority;
+	float MenuPriority = {};
 	
 	UPROPERTY( SaveGame )
 	uint8 IsUndefined :1;
 
 	UPROPERTY( SaveGame )
 	TArray< FBlueprintSubCategoryRecord > SubCategoryRecords;
+
+	// <FL> [KonradA]
+	UPROPERTY( SaveGame )
+	TArray< FLocalUserNetIdBundle > LastEditedBy;
+	//</FL>
 };
 
 USTRUCT( BlueprintType )
@@ -94,6 +106,7 @@ public:
 	UPROPERTY(  SaveGame, BlueprintReadWrite, Category="Blueprint Record")
 	FPersistentGlobalIconId IconID;
 
+
 	UPROPERTY(  SaveGame, BlueprintReadWrite, Category="Blueprint Record")
 	FLinearColor Color;
 	
@@ -106,6 +119,11 @@ public:
 	UPROPERTY( SaveGame, BlueprintReadWrite, Category="Blueprint Record" )
 	int32 Priority;
 	
+	// <FL> [KonradA]
+	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "Blueprint Record" )
+	TArray<FLocalUserNetIdBundle > LastEditedBy;
+	//</FL>
+
 	int32 ConfigVersion;
 	
 	friend FArchive& operator<< ( FArchive& ar, FBlueprintRecord& record );
@@ -216,7 +234,7 @@ public:
 	FString BlueprintName;
 
 	UPROPERTY()
-	FIntVector Dimensions;
+	FIntVector Dimensions = {};
 
 	UPROPERTY()
 	TArray< FBlueprintItemAmount > Cost;
@@ -300,6 +318,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Category|Blueprint")
 	bool GetRecipeRequirementsAreMet() { return mRecipeRequirementsAreMet; }
 	
+	UFUNCTION(Blueprintcallable)
+	TArray< FLocalUserNetIdBundle > GetLastEditedBy() const { return mLastEditedBy; };
+	
 public:
 	
 	UPROPERTY()
@@ -319,6 +340,11 @@ public:
 
 	UPROPERTY()
 	bool mRecipeRequirementsAreMet;
+	
+	//<FL>[KonradA]
+	UPROPERTY()
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	//</FL>
 	
 };
 
@@ -368,8 +394,18 @@ public:
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Category|Blueprint")
 	class UFGBlueprintCategory* GetParentCategory() { return mParentCategory; }
 
+	//<FL>[KonradA]
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Category|Blueprint" )
+	TArray< FLocalUserNetIdBundle > GetLastEditedBy() const { return mLastEditedBy; };
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Category|Blueprint" )
+	void SetLastEditedBy( TArray< FLocalUserNetIdBundle > LastEditedBy ) { mLastEditedBy = LastEditedBy; };
+	//</FL>
+
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Category|Blueprint" )
 	FORCEINLINE bool IsUndefined() const { return (bool)mIsUndefined; }
+	
+	
+
 	
 public:
 	UPROPERTY()
@@ -380,6 +416,11 @@ public:
 
 	UPROPERTY()
 	uint8 mIsUndefined;
+
+	// <FL> [KonradA]
+	UPROPERTY( )
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	//</FL>
 };
 
 
@@ -441,6 +482,14 @@ public:
 		return nullptr;
 	}
 	
+	//<FL>[KonradA]
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Category|Blueprint" )
+	TArray< FLocalUserNetIdBundle > GetLastEditedBy() const { return mLastEditedBy; };
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Category|Blueprint" )
+	void SetLastEditedBy( TArray< FLocalUserNetIdBundle > LastEditedBy ) { mLastEditedBy = LastEditedBy; };
+	//</FL>
+
+	
 public:
 	UPROPERTY()
 	uint32 mID;
@@ -453,6 +502,11 @@ public:
 
 	UPROPERTY()
 	TArray< UFGBlueprintSubCategory* > mSubCategories;
+	
+		// <FL> [KonradA]
+	UPROPERTY()
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	//</FL>
 	
 };
 

@@ -8,6 +8,7 @@
 AFGProximitySubsystem::AFGProximitySubsystem() : Super() {
 	this->mOwningController = nullptr;
 	this->mRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->mRootComponent->SetMobility(EComponentMobility::Movable);
 	this->mMaxNumDecals = 20;
 	this->mRegionSize = 25000.0;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
@@ -22,7 +23,6 @@ AFGProximitySubsystem::AFGProximitySubsystem() : Super() {
 void AFGProximitySubsystem::SetupPlayerBinds( AFGPlayerController* Player){ }
 AFGProximitySubsystem* AFGProximitySubsystem::GetProximitySubsystem(UObject* World){ return nullptr; }
 bool AFGProximitySubsystem::IsNearBase(const FVector& Location, float Range, int32 MinimumRequiredBuildables, bool bIgnoreWeight) const{ return bool(); }
-void AFGProximitySubsystem::StaticRegisterFactoryBuildingToProximitySystem(AActor* Actor, float Weight){ }
 void AFGProximitySubsystem::RegisterFactoryBuildingToProximitySystem(FVector Location, float Weight){ }
 void AFGProximitySubsystem::StaticRemoveFactoryBuildingToProximitySystem(AActor* Actor, float Weight){ }
 void AFGProximitySubsystem::RemoveFactoryBuildingToProximitySystem(FVector Location, float Weight){ }

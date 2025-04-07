@@ -10,6 +10,7 @@
 #include "Styling/SlateBrush.h"
 #include "UObject/Object.h"
 #include "GameplayTagContainer.h"
+#include "Misc/DataValidation.h"
 #include "FGSchematic.generated.h"
 
 //@todo [MODSUPPORT] This should maybe be implemented the same way as UFGBuildCategories?
@@ -62,7 +63,7 @@ public:
 	virtual void Serialize( FArchive& ar ) override;
 #if WITH_EDITOR
 	virtual void PreSave( FObjectPreSaveContext saveContext ) override;
-	virtual EDataValidationResult IsDataValid(TArray< FText >& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid( FDataValidationContext& validationContext ) const override;
 #endif
 	// End UObject interface
 

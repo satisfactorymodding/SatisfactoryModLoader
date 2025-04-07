@@ -6,6 +6,7 @@ void USessionInformationPrivate::RegisterSessionBackend(UOnlineSessionBackendLin
 void USessionInformationPrivate::OnSessionUpdateReceived(const UE::Online::FSessionUpdate& SessionUpdate, UOnlineIntegrationBackend* Backend){ }
 void USessionInformationPrivate::SetSessionHost(UOnlineUserInfo* InUserInfo){ }
 void USessionInformationPrivate::SetSessionDefinition(USessionDefinition* InSessionDefinition){ }
+void USessionInformationPrivate::SetSessionProfile(const FName& InProfile){ }
 void USessionInformationPrivate::RefreshCachedData(FDateTime UpdateTimestampUtc){ }
 void USessionInformationPrivate::InitializeSessionData(TSharedRef<const UE::Online::ISession> Session, UOnlineSessionBackendLink* Backend){ }
 void USessionInformationPrivate::SetGameSessionActor(AGameSession* GameSession){ }

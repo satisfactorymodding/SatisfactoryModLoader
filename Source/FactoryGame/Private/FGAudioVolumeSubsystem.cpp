@@ -4,6 +4,8 @@
 
 #if WITH_AUDIO_DEBUG
 void AFGAudioVolumeSubsystem::AudioVolumeDebuggingChanged(IConsoleVariable* var){ }
+void AFGAudioVolumeSubsystem::OnAudioRenderBegin(AK::IAkGlobalPluginContext*, AkGlobalCallbackLocation AkLocation){ }
+void AFGAudioVolumeSubsystem::OnAudioRenderEnd(AK::IAkGlobalPluginContext*, AkGlobalCallbackLocation AkLocation){ }
 #endif 
 AFGAudioVolumeSubsystem::AFGAudioVolumeSubsystem() : Super() {
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PostPhysics;

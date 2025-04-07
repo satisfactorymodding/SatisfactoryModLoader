@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "FGSubsystem.h"
+#include "AkAudioDevice.h"
 #include "FGAudioVolumeSubsystem.generated.h"
 
 #define WITH_AUDIO_DEBUG 1 && !UE_BUILD_SHIPPING
@@ -32,12 +33,19 @@ protected:
 
 private:
 #if WITH_AUDIO_DEBUG
+	FDelegateHandle mAudioRenderBeginHandle;
+	FDelegateHandle mAudioRenderEndHandle;
+	double mSecondsCounterData { 0.0 };
+	uint64 mFrameNum { 0 };
+	
 	TArray< TWeakObjectPtr< AFGAmbientVolume > > mInsideVolumes;
 	TArray< TWeakObjectPtr< AFGAmbientVolume > > mNearbyVolumes;
 	bool mDebuggingEnabled = false;
 	FDelegateHandle mDebugMessageDelegateHandle;
 
 	void AudioVolumeDebuggingChanged(IConsoleVariable* var);
+	void OnAudioRenderBegin(AK::IAkGlobalPluginContext*, AkGlobalCallbackLocation AkLocation);
+	void OnAudioRenderEnd(AK::IAkGlobalPluginContext*, AkGlobalCallbackLocation AkLocation);
 #endif
 };
 

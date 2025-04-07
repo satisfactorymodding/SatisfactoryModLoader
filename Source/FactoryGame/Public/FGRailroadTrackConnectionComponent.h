@@ -16,6 +16,8 @@ class FACTORYGAME_API UFGRailroadTrackConnectionComponent : public UFGConnection
 {
 	GENERATED_BODY()
 public:
+	constexpr static int32 MAX_NUM_SWITCH_POSITIONS = 3;
+	
 	UFGRailroadTrackConnectionComponent();
 
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
@@ -33,6 +35,8 @@ public:
 	/** Return the connectors world normal. */
 	FORCEINLINE FVector GetConnectorNormal() const { return GetComponentRotation().Vector(); }
 
+	bool CanConnectTo( const UFGRailroadTrackConnectionComponent* toComponent ) const;
+	
 	/**
 	 * Add a connected component.
 	 * @note Sets both ends of the connection.
@@ -50,10 +54,10 @@ public:
 	 * @note If this is called on a component with multiple connections (switch/turnout) the result is depends on the switch's position.
 	 * @return The connected connection; nullptr if not connected.
 	 */
-	FORCEINLINE UFGRailroadTrackConnectionComponent* GetConnection() const { return GetConnection( mSwitchPosition ); }
-
+	UFGRailroadTrackConnectionComponent* GetConnection() const;
+	
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Track" )
-	FORCEINLINE UFGRailroadTrackConnectionComponent* GetConnectionAtSwitchPosition() const { return GetConnection( mSwitchPosition ); }
+	UFGRailroadTrackConnectionComponent* GetConnectionAtSwitchPosition() const;
 
 	/**
 	 * @return All connections; empty if not connected. If more than one this is a switch.
@@ -86,7 +90,7 @@ public:
 	FORCEINLINE class AFGBuildableRailroadTrack* GetTrack() const { return mTrackPosition.Track.Get(); }
 
 	/** @return true if this connection is occupied by rolling stock. */
-	bool IsOccupied( float distance ) const { return GetTrack()->IsConnectionOccupied( this, distance ); }
+	bool IsOccupied( float distance, AFGTrain* ignored ) const { return GetTrack()->IsConnectionOccupied( this, distance, ignored ); }
 	
 	/**
 	 * @return what part of a switch this connection is.
@@ -100,15 +104,13 @@ public:
 	 * >1: Turnout.
 	 *
 	 * @return The number of connections, i.e. switch positions.
-	 *
-	 * Note: On client use the switch control instead.
 	 */
-	FORCEINLINE int32 GetNumSwitchPositions() const { return mConnectedComponents.Num(); }
+	int32 GetNumSwitchPositions() const;
 
 	/**
 	 * @return The current switch position [0,n]; 0 if not a switch, INDEX_NONE if track is not connected.
 	 */
-	FORCEINLINE int32 GetSwitchPosition() const { return mSwitchPosition; }
+	int32 GetSwitchPosition() const;
 
 	/**
 	 * Look up at which position a given track is.
@@ -121,6 +123,7 @@ public:
 
 	/** @return true if the switch is clear of rolling stock, otherwise false. */
 	bool IsSwitchClear() const;
+	bool IsSwitchClear( AFGTrain* ignored ) const;
 	
 	/**
 	 * Set the current switch position, not valid to call on client.
@@ -151,22 +154,37 @@ public:
 	UFGRailroadTrackConnectionComponent* GetNext() const;
 
 	/** Find the closest overlapping connection matching all search criteria. */
-	static UFGRailroadTrackConnectionComponent* FindOverlappingConnections(
-		class UFGRailroadTrackConnectionComponent* component,
+	static UFGRailroadTrackConnectionComponent* FindClosestOverlappingConnection(
+		const class UFGRailroadTrackConnectionComponent* component,
 		const FVector& location,
 		float radius,
 		bool allowPlatformTracks,
-		TArray< UFGRailroadTrackConnectionComponent* >* out_additionalSwitchConnections = nullptr );
+		const TSet< class UFGRailroadTrackConnectionComponent* >& ignoredConnections = {} );
+
+	/** Finds all connections within a specified radius which are opposite / neighbouring our connection. */
+	static TArray< UFGRailroadTrackConnectionComponent* > FindAlignedConnections(
+		const class UFGRailroadTrackConnectionComponent* component,
+		float radius,
+		bool allowPlatformTracks,
+		bool neighbouring = false );
+
+	/** Returns a filtered list of the specified connections based on whether or not they're aligned with the specified connection. */
+	static TArray< UFGRailroadTrackConnectionComponent* > FilterAlignedConnections(
+		const class UFGRailroadTrackConnectionComponent* component,
+		const TArray< UFGRailroadTrackConnectionComponent* >& connections,
+		float radius,
+		bool allowPlatformTracks,
+		bool neighbouring = false );
 	
 	/** Find probable client connection. */
 	static UFGRailroadTrackConnectionComponent* FindProbableClientConnection(
-		class UFGRailroadTrackConnectionComponent* connection );
+		const class UFGRailroadTrackConnectionComponent* connection );
 
 	/**
 	 * Functions used by buildings that are built on a track, do not call them unless you know what you're doing.
 	 * Note that these can be called multiple times with the same input.
 	 */
-	void SetSwitchControl( class AFGBuildableRailroadSwitchControl* control ) { mSwitchControl = control; }
+	void SetSwitchControl( class AFGBuildableRailroadSwitchControl* control );
 	void SetStation( class AFGBuildableRailroadStation* station ) { mStation = station; }
 	void SetFacingSignal( class AFGBuildableRailroadSignal* signal ) { mFacingSignal = signal; }
 	void SetTrailingSignal( class AFGBuildableRailroadSignal* signal ) { mTrailingSignal = signal; }
@@ -184,14 +202,13 @@ private:
 	void RemoveConnectionInternal( UFGRailroadTrackConnectionComponent* toComponent );
 	void OnConnectionsChangedInternal();
 
-	void ClampSwitchPosition();
-
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnConnectionSwitched, int32, newPosition, int32, numPositions );
-	
-	/** Delegate to fire when changing switch on a track */
-	UPROPERTY()
-	FOnConnectionSwitched mOnConnectionSwitchedDelegate;
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnConnectionsChanged, UFGRailroadTrackConnectionComponent*, connectionComponent );
+	FOnConnectionsChanged mOnConnectionsChanged;
+
+	/** LEGACY: This is now saved inside the switch control, this is here for migration from pre 1.1 saves. */
+	UPROPERTY( SaveGame )
+	int32 mSwitchPosition_DEPRECATED;
 	
 private:
 	/** Position of this connection component on the track. */
@@ -202,12 +219,8 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	TArray< UFGRailroadTrackConnectionComponent* > mConnectedComponents;
 
-	/** If this is a switch, this is the switch position. */
-	UPROPERTY( Replicated, SaveGame )
-	int32 mSwitchPosition;
-
 	/** The switch control associated with this connection, if any. */
-	UPROPERTY()
+	UPROPERTY( Replicated )
 	class AFGBuildableRailroadSwitchControl* mSwitchControl;
 
 	/** The station associated with this connection, if any. */

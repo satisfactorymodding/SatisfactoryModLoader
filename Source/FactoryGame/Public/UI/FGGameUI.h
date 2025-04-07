@@ -171,22 +171,6 @@ public:
 	/** Returns the owning pawn by looking at owner and vehicle driver */
 	class AFGCharacterPlayer* GetFGCharacter();
 
-	/** Setter for show inventory */
-	UFUNCTION( BlueprintCallable, Category = "UI" )
-	void SetShowInventory( bool doShow ) { mShowInventory = doShow; }
-
-	/** Getter for mShowInventory */
-	UFUNCTION( BlueprintPure, Category = "UI" )
-	FORCEINLINE bool GetShowInventory(){ return mShowInventory; }
-
-	/** Setter form WindowWantInventoryAddon */
-	UFUNCTION( BlueprintCallable, Category = "UI" )
-	void SetWindowWantsInventoryAddon( bool doWantAddon ) { mWindowWantInventoryAddon = doWantAddon; }
-
-	/** Getter for mWindowWantInventoryAddon */
-	UFUNCTION( BlueprintPure, Category = "UI" )
-	FORCEINLINE bool GetWindowWantsInventoryAddon(){ return mWindowWantInventoryAddon; }
-
 	/** Allow the gameUI to add pawn specific HUD */
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "UI" )
 	void AddPawnHUD( UUserWidget* newContent );
@@ -274,6 +258,9 @@ public:
 	FORCEINLINE float GetMessageCooldown() const { return mMessageCooldown; }
 	FORCEINLINE void ClearMessageCooldown() { mMessageCooldown = 0.f; }
 
+	float GetBarkMessageCooldown( TSubclassOf< class UFGBarkMessageType > barkMessageType ) const;
+	void ClearBarkMessageCooldown( TSubclassOf< class UFGBarkMessageType > barkMessageType );
+
 	/** Request and release functions for the user widget pool */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI", meta = (DeterminesOutputType = "widgetClass") )
 	UUserWidget* RequestWidget( TSubclassOf< UUserWidget > widgetClass );
@@ -285,6 +272,9 @@ public:
 
 	UFUNCTION( BlueprintCallable )
 	void SetControllerDragWidget( class UFGControllerDragWidget* widget );
+
+	UFUNCTION( BlueprintPure )
+	bool HasControllerDragWidget() const { return mControllerDragWidget != nullptr; }
 
 	UPROPERTY( BlueprintAssignable )
 	FFGOnControllerDragWidgetChanged mControllerDragWidgetChanged;
@@ -333,12 +323,6 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Message" )
 	FOnMessageFinished mOnMessageFinishedDelegate;
 
-protected:
-	/** Do we want the inventory to be shown? */
-	bool mShowInventory;
-
-	/** Do we want a player inventory to be created */
-	bool mWindowWantInventoryAddon;
 private:
 	/** A stack with widgets that are currently open */
 	UPROPERTY()
@@ -354,6 +338,9 @@ private:
 
 	/* Every time a message is triggered a cooldown will start running. Some message will not be played if triggered while this cooldown is active. */
 	float mMessageCooldown = 0.f;
+
+	/** Cooldowns for each bark message type. */
+	TMap< TSubclassOf< class UFGBarkMessageType >, float > mBarkMessageTypeCooldowns;
 
 	/** Whether or not the pause menu is open. */
 	bool mPauseMenuOpen;

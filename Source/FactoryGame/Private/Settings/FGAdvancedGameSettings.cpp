@@ -8,11 +8,10 @@ void IFGAdvancedGameSettingsInterface::ApplySettingsFromMap(const TMap<FString, 
 void IFGAdvancedGameSettingsInterface::SerializeSettingsToMap(TMap<FString, FString>& OutSettingValues) const{ }
 FString IFGAdvancedGameSettingsInterface::SerializeSettingsToString() const{ return FString(); }
 void IFGAdvancedGameSettingsInterface::DeserializeSettingsFromString(const FString& serializedString){ }
-#if WITH_EDITOR
-void UFGAdvancedGameSettings::OnBeginPIE(const bool bIsSimulating){ }
-#endif 
 void UFGAdvancedGameSettings::Initialize(FSubsystemCollectionBase& Collection){ }
+bool UFGAdvancedGameSettings::DoesSupportWorldType(const EWorldType::Type WorldType) const{ return Super::DoesSupportWorldType(WorldType); }
 void UFGAdvancedGameSettings::GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const{ }
+void UFGAdvancedGameSettings::GetAllUserSettingsMap(TMap<FString, UFGUserSettingApplyType*>& OutUserSettings) const{  }
 UFGUserSettingApplyType* UFGAdvancedGameSettings::FindUserSetting(const FString& SettingId) const{ return nullptr; }
 bool UFGAdvancedGameSettings::HasAnyUnsavedOptionValueChanges() const{ return bool(); }
 bool UFGAdvancedGameSettings::HasPendingApplyOptionValue(const FString& cvar) const{ return bool(); }
@@ -20,6 +19,7 @@ void UFGAdvancedGameSettings::RevertUnsavedChanges(){ }
 void UFGAdvancedGameSettings::ApplyChanges(){ }
 IFGOptionInterface* UFGAdvancedGameSettings::GetPrimaryOptionInterface(UWorld* world) const{ return nullptr; }
 bool UFGAdvancedGameSettings::IsInMainMenu() const{ return bool(); }
+bool UFGAdvancedGameSettings::IsUsingController() const{ return false; }
 void UFGAdvancedGameSettings::GetDebugData(TArray<FString>& out_debugData){ }
 void UFGAdvancedGameSettings::OnPreLoadMap(const FString &MapName){ }
 void UFGAdvancedGameSettings::TryInitAdvancedGameSettings(){ }

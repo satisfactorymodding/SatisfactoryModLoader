@@ -12,6 +12,9 @@ UFGAmbientSettings::UFGAmbientSettings() : Super() {
 	this->mOnExitOuterVolumeEvent = nullptr;
 	this->mOnEnterInnerVolumeEvent = nullptr;
 	this->mOnExitInnerVolumeEvent = nullptr;
+	this->mOnEnterInnerState = nullptr;
+	this->mInnerStateGroupName = TEXT("");
+	this->mOnExitInnerState = nullptr;
 	this->mIgnoreListenerRotation = false;
 }
 UAkAudioEvent* UFGAmbientSettings::GetEnterOuterVolumeEvent_Implementation() const{ return nullptr; }

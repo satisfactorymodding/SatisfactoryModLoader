@@ -70,19 +70,32 @@ public:
 
 // ENHANCED INPUT SUPPORT 
 	
-	/** Replaces input action names in the provided text with the corresponding key e.g. ("{PrimaryFire} is for shooting and {PlayerActions_Use} is for using" returns "LMB is for shooting and E is for using" */
+	//
 	UFUNCTION( BlueprintPure, Category = "Input" )
 	static FText FormatStringWithInputActionNames( APlayerController* playerController, FText textToFormat, bool abbreviateKeyNames = true );
 
-	/** Returns the mapped keys to the input action name as a text. "PrimaryFire" returns LMB
-	 */
+	/** Replaces input action names in the provided text with the corresponding key e.g. ("{PrimaryFire} is for shooting and {PlayerActions_Use} is for using" returns "LMB is for shooting and E is for using" */
+	static FText FormatStringWithInputActionNames_Keyboard( APlayerController* playerController, FText textToFormat, bool abbreviateKeyNames = true );
+
+	static FText FormatStringWithInputActionNames_Gamepad( APlayerController* playerController, FText textToFormat);
+
 	UFUNCTION( BlueprintPure, Category = "Input" )
 	static FText GetInputActionNameAsText( APlayerController* playerController, const FName& inActionName, bool abbreviateKeyNames = true );
+	/** Returns the mapped keys to the input action name as a text. "PrimaryFire" returns LMB */
+	static FText GetInputActionNameAsText_Keyboard( APlayerController* playerController, const FName& inActionName, bool abbreviateKeyNames = true );
+	static FText GetInputActionNameAsText_Gamepad( APlayerController* playerController, const FName& inActionName);
 
 	/** Returns all mapping contexts that have at least one rebindable mapping. Sorted by UFGInputMappingContext::mMenuPriority */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	static void GetPlayerRebindableMappingContexts(TArray<class UFGInputMappingContext*>& out_MappingContexts);
 	
+	/** Returns all mapping contexts that have at least one gamepad key mapping. Sorted by UFGInputMappingContext::mMenuPriority */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	static void GetGamepadMappingContexts(TArray<class UFGInputMappingContext*>& out_MappingContexts);
+	
+	template< typename Predicate >
+	static void GetSortedMappingContext( TArray< UFGInputMappingContext* >& out_MappingContexts, Predicate Pred );
+
 	/** Returns a global mapping of a parent mapping context to a list of child ones */
 	static void FindAllChildMappingContexts(TMultiMap<TSoftObjectPtr<UFGInputMappingContext>, TSoftObjectPtr<UFGInputMappingContext>>& out_ParentToChildContexts);
 
@@ -110,6 +123,11 @@ public:
 	 * out_primaryKey can be a FKeys::Invalid if we removed a conflicting binding  */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	static bool GetCurrentMappingForAction( APlayerController* playerController, const FName& inActionName, FKey& out_primaryKey, TArray<FKey>& out_modifierKeys );
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	static bool GetCurrentMappingForInputAction( APlayerController* playerController, const UInputAction* inputAction, FKey& out_primaryKey, TArray<FKey> out_modifierKeys, FName preferredActionName, const UInputMappingContext* preferredContext );
+
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	static void FindDefaultKeyMappingForInputAction(APlayerController* playerController, const UInputAction* inputAction, FName preferredActionName, const UInputMappingContext* preferredContext, bool allowOtherContexts, FEnhancedActionKeyMapping& out_keyMapping, bool& out_Success, const UInputMappingContext* out_mappingContext = nullptr );
 
 	/** Clears any inut callback delegates from the given user widget
 	 *	Exposes UInputComponent::ClearBindingsForObject for a widget
@@ -119,6 +137,12 @@ public:
 
 	// <FL> [WuttkeP] Added function to retrieve the corresponding texture for a controller button.
 	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static bool ShouldShowXboxIcons();
+
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static bool IsDualSenseForWindowsEnabled();
+	
+	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static UTexture* GetTextureFromKey( const FKey& key );
 
 	UFUNCTION( BlueprintCallable, Category = "UI" )
@@ -126,6 +150,9 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static bool GetTexturePaddingFromKey( const FKey& key, FMargin& out_Padding );
+
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static bool GetTexturePaddingFromOverrideTag( const FGameplayTag& tag, FMargin& out_Padding );
 
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	static FMargin GetReferenceKeyTexturePadding();
@@ -135,7 +162,16 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static bool GetKeyTextureBinding( const FKey& key, struct FFGKeyTextureBinding& out_Binding );
+
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	static float GetMaxTapSeconds();
+
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static UTexture2D* GetKeyTexture2DFromBinding( const FFGKeyTextureBinding& binding );
+
 	// </FL>
 private:
 	static const TArray<FString> IRRELEVANT_PREFIXES;
+
+	static TArray<FAssetData> chachedMappingContextAssets;		// <FL> [BGR] Cache mapping to avoid unneccesary lookups
 };

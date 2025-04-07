@@ -4,8 +4,13 @@
 #include "Net/UnrealNetwork.h"
 
 AFGRailroadSignalHologram::AFGRailroadSignalHologram() : Super() {
+	this->mBuildModeRightHanded = nullptr;
+	this->mBuildModeLeftHanded = nullptr;
+	this->mSparseData = nullptr;
+	this->mSignalComponent = nullptr;
 	this->mSnappedConnection = nullptr;
 	this->mSnappedRailroadTrack = nullptr;
+	this->mIsLeftHanded = false;
 	this->mUpgradeTarget = nullptr;
 }
 void AFGRailroadSignalHologram::BeginPlay(){ Super::BeginPlay(); }
@@ -14,15 +19,22 @@ void AFGRailroadSignalHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGRailroadSignalHologram, mSnappedConnection);
 	DOREPLIFETIME(AFGRailroadSignalHologram, mSnappedRailroadTrack);
+	DOREPLIFETIME(AFGRailroadSignalHologram, mIsLeftHanded);
 	DOREPLIFETIME(AFGRailroadSignalHologram, mUpgradeTarget);
 }
-void AFGRailroadSignalHologram::ScrollRotate(int32 delta, int32 step){ }
-void AFGRailroadSignalHologram::PreHologramPlacement(const FHitResult& hitResult){ }
+void AFGRailroadSignalHologram::PreHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
 bool AFGRailroadSignalHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 bool AFGRailroadSignalHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 AActor* AFGRailroadSignalHologram::GetUpgradedActor() const{ return nullptr; }
 bool AFGRailroadSignalHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 bool AFGRailroadSignalHologram::CanNudgeHologram() const{ return bool(); }
+void AFGRailroadSignalHologram::GetSupportedBuildModes_Implementation(TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes) const{ Super::GetSupportedBuildModes_Implementation(out_buildmodes); }
+void AFGRailroadSignalHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ Super::OnBuildModeChanged(buildMode); }
+int32 AFGRailroadSignalHologram::GetRotationStep() const{ return Super::GetRotationStep(); }
 bool AFGRailroadSignalHologram::IsLocallyOwnedHologram() const{ return bool(); }
 void AFGRailroadSignalHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGRailroadSignalHologram::CheckValidPlacement(){ }
+void AFGRailroadSignalHologram::SetLeftHanded(bool isLeftHanded){  }
+void AFGRailroadSignalHologram::OnRep_IsLeftHanded(){  }
+void AFGRailroadSignalHologram::UpdateSignalSide(){  }
+bool AFGRailroadSignalHologram::ShouldBeRotatedToOtherSide() const{ return false; }

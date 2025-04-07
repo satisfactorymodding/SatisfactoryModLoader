@@ -6,10 +6,12 @@
 #include "CoreMinimal.h"
 
 #include "FGDamageType.h"
+#include "FGFoliageRemovalSubsystem.h"
 #include "Engine/EngineTypes.h"
 
 #include "FGRadialDamageType.generated.h"
 
+class UHierarchicalInstancedStaticMeshComponent;
 /**
  *
  */
@@ -35,4 +37,12 @@ public:
 	/** Falloff for the destructible impulse. Based on the Damage Radius */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Destruction" )
 	float mDestructibleImpulseFalloff = 1.0f;
+
+	/* Default "trunk" search radius for foliage. */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Destruction" )
+	FBoxSphereBounds mDestructionDefaultRadius = FBoxSphereBounds(FVector(0), FVector(50,50,50),50.f);
+	
+	/* Minimum "trunk" search radius for foliage. */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Destruction" )
+	float mDestructionMinimumRadius = 25;
 };

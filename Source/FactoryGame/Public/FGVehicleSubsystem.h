@@ -9,6 +9,7 @@
 #include "FGVehicleSubsystem.generated.h"
 
 #define DEBUG_SELF_DRIVING ( 0 && ( UE_BUILD_SHIPPING == 0 ) )
+struct FLocalUserNetIdBundle;
 
 UCLASS( BlueprintType )
 class FACTORYGAME_API AFGSavedWheeledVehiclePath : public AInfo, public IFGSaveInterface
@@ -37,6 +38,10 @@ protected:
 	UPROPERTY( SaveGame, Replicated, BlueprintReadOnly )
 	FString mPathName;
 	
+//<FL>[KonradA] Added Last Edited By
+	UPROPERTY(SaveGame, Replicated, BlueprintReadOnly)
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+//</FL>
 	/**
 	 *  Deprecated, use mTargetList->mVehicleType instead
 	 */
@@ -170,7 +175,8 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
 	bool IsPathNameTaken( const FString& name ) const;
 
-	void SaveWheeledVehiclePath( const FString& saveName, class AFGWheeledVehicleInfo* vehicle );
+	//<FL> Added last edited by for ugc censoring
+	void SaveWheeledVehiclePath( const FString& saveName, class AFGWheeledVehicleInfo* vehicle, const TArray<FLocalUserNetIdBundle> & lastEditedBy );
 
 	void UnsaveWheeledVehiclePath( AFGSavedWheeledVehiclePath* path );
 

@@ -259,6 +259,9 @@ private:
 	/* Map from pawn to location used to determine the distance. */
 	UPROPERTY()
 	TMap<APawn*, FFGPawnLocationData> mPawnToLocationMap;
+
+	/** True if server side significance needs to be fully recalculated because new objects have been added */
+	bool mServerSideSignificanceDirty{false};
 	// End serverside significance
 };
 

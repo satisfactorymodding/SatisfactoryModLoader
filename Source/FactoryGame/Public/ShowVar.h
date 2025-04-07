@@ -104,6 +104,13 @@ FORCEINLINE FString VarToString( const TObjectPtr<T>& ObjectPtr )
 	return GetNameSafe( ObjectPtr.Get() );
 }
 
+// Implementation of VarToString for TSubClassOf style pointers.
+template<typename T>
+FORCEINLINE FString VarToString( const TSubclassOf< T > Object )
+{
+	return GetNameSafe( Object );
+}
+
 // Implementation of VarToString for weak object pointers
 FORCEINLINE FString VarToString( const FWeakObjectPtr& WeakObjectPtr )
 {

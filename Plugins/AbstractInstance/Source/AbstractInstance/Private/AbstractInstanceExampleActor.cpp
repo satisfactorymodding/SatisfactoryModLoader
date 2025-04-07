@@ -26,7 +26,7 @@ void AAbstractInstanceExampleActor::BeginPlay()
 		
 		for( const auto& AbstractInstance : InstanceData->GetInstanceData() )
 		{
-			FInstanceHandle* Handle = new FInstanceHandle();
+			FInstanceOwnerHandlePtr Handle;
 			Manager->SetInstanced(this, ActorTransform, AbstractInstance, Handle);
 			InstanceHandles.Add( Handle );
 		}
@@ -38,7 +38,7 @@ void AAbstractInstanceExampleActor::Tick( float DeltaSeconds )
 	Super::Tick( DeltaSeconds );
 	for(int32 i = 0; i < InstanceHandles.Num(); i++)
 	{
-		if( !InstanceHandles[i]->IsValid() )
+		if( !InstanceHandles[i]->IsInstanced() )
 		{
 			UE_LOG(LogTemp,Warning,TEXT("Handle is invalid!"));
 		}

@@ -53,6 +53,9 @@ class FACTORYGAME_API IFGColorInterface
 	UFUNCTION( BlueprintNativeEvent, Category = "Factory Customization")
 	bool GetCanBeColored();
 
+	/** Fast native function. The blueprint implementable should call into this one for any additional logic. Useful to speed up Buildable Subsystem swatch changes */
+	virtual bool GetCanBeColored_Native() = 0;
+
 	/**
 	 *	Returns wherther the building can have a pattern applied. The stencil still needs that buildable type to be added to itself.
 	 *	This acts as an override for similar buildables (noteably foundations) where special types or meshes should not allow patters

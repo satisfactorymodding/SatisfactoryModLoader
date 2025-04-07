@@ -83,8 +83,6 @@ void AFGBuildableFactory::PostLoadGame_Implementation(int32 saveVersion, int32 g
 void AFGBuildableFactory::GainedSignificance_Implementation(){ }
 void AFGBuildableFactory::LostSignificance_Implementation(){ }
 void AFGBuildableFactory::UpdateSignificanceTickRate_Implementation(float NewTickRate, bool bTickEnabled){ }
-void AFGBuildableFactory::GainedSignificance_Native(){ }
-void AFGBuildableFactory::LostSignificance_Native(){ }
 void AFGBuildableFactory::SetupForSignificance(){ }
 bool AFGBuildableFactory::DoesReduceTick() const{ return bool(); }
 int32 AFGBuildableFactory::NumTickLevels() const{ return int32(); }

@@ -250,9 +250,8 @@ public:
 
 	/** Builds an array of all Item Descriptors. The class index in this array becomes its Network Identifier (we assume < 65k items so we can rep item classes with only 2 bytes) */
 	void BuildItemDescriptorRepArray();
-	
-	UFUNCTION()
-	void OnRep_ConveyorItemDescAndID();
+	/** Called on the client when item descriptor lookup array is received from the server. From that point, client can request chain actor contents */
+	void ReceiveItemDescriptorRepArray(const TArray<TSubclassOf<UFGItemDescriptor>>& itemDescriptorRepArray);
 
 	void NotifyChainReceivedItemUpdate( AFGConveyorChainActor* chainActor );
 	void NotifyChainNeedsSegmentUpdate( AFGConveyorChainActor* ChainActor );
@@ -312,6 +311,9 @@ public:
 	{
 		return mReparamStepsPerSegment;
 	}
+
+	/** Returns a full list of item descriptors used for looking up indices on the client */
+	FORCEINLINE const TArray<TSubclassOf<UFGItemDescriptor>>& GetItemDescriptorLookup() const { return mAllItemDescriptors; }
 
 	/** Delegate that can be bound to register additional item descriptors that are not known to the Asset Registry as being able to be on conveyor belts */
 	static FGetAdditionalConveyorItemDescriptors GetAdditionalItemDescriptors;
@@ -381,7 +383,8 @@ private:
 	UPROPERTY()
 	TArray< float > mServerFactoryTickDeltas;
 	
-	UPROPERTY( ReplicatedUsing=OnRep_ConveyorItemDescAndID )
+	UPROPERTY()
 	TArray< TSubclassOf< UFGItemDescriptor > > mAllItemDescriptors;
 
 };
+

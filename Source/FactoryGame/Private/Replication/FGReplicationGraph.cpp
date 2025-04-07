@@ -17,6 +17,8 @@ void UFGReplicationGraph::InitClassReplicationInfo( FClassReplicationInfo& class
 void UFGReplicationGraph::RegisterCustomClassRepPolicy(TSoftClassPtr<AActor> inActor, EClassRepPolicy inRepPolicy){ }
 void UFGReplicationGraph::OnTrainReplicationActorAdded( AFGTrainReplicationActor* replicationActor){ }
 void UFGReplicationGraph::OnTrainReplicationActorRemoved( AFGTrainReplicationActor* replicationActor){ }
+void UFGReplicationGraph::OnElevatorChildAdded(AActor* dependantActor, class AActor* elevator){  }
+void UFGReplicationGraph::OnElevatorChildRemoved(AActor* dependantActor, class AActor* elevator){  }
 void UFGReplicationGraph::OnLocomotivePossessedBy( AFGLocomotive* locomotive, AController* controller){ }
 void UFGReplicationGraph::OnLocomotiveUnPossessed( AFGLocomotive* locomotive, AController* controller){ }
 void UFGReplicationGraph::AddPersistentDependencyActor( AFGCharacterPlayer* pawn,  IFGReplicationDependencyActorInterface* depedencyActor){ }
@@ -25,7 +27,6 @@ void UFGReplicationGraph::OnCharacterPlayerUnequip( AFGCharacterPlayer* pawn,  A
 void UFGReplicationGraph::OnCharacterPlayerFoliagePickupSpawned( AFGCharacterPlayer* pawn,  AFGFoliagePickup* foliagePickup){ }
 void UFGReplicationGraph::OnPlayerControllerPawnChanged( APlayerController* playerController, APawn* oldPawn, APawn* newPawn){ }
 EClassRepPolicy UFGReplicationGraph::GetMappingPolicy(UClass* inClass){ return EClassRepPolicy(); }
-void UFGReplicationGraph::LogCurrentActorDependencyList(FGlobalActorReplicationInfo& actorInfo, FString& logMarker){ }
 UReplicationGraphNode_AlwaysRelevant_ForConnection* UFGReplicationGraph::GetAlwaysRelevantNodeForConnection(UNetConnection* Connection){ return nullptr; }
 void UFGReplicationGraphNode_AlwaysRelevantWithDormancy::NotifyAddNetworkActor(const FNewReplicatedActorInfo& ActorInfo){ }
 bool UFGReplicationGraphNode_AlwaysRelevantWithDormancy::NotifyRemoveNetworkActor(const FNewReplicatedActorInfo& ActorInfo, bool bWarnIfNotFound){ return bool(); }
@@ -37,23 +38,6 @@ void UFGReplicationGraphNode_ConditionallyAlwaysRelevant::GatherActorListsForCon
 void UFGReplicationGraphNode_ConditionallyAlwaysRelevant::NotifyAddNetworkActor(const FNewReplicatedActorInfo& ActorInfo){ }
 bool UFGReplicationGraphNode_ConditionallyAlwaysRelevant::NotifyRemoveNetworkActor(const FNewReplicatedActorInfo& ActorInfo, bool bWarnIfNotFound){ return bool(); }
 void UFGReplicationGraphNode_ConditionallyAlwaysRelevant::NotifyResetAllNetworkActors(){ }
-bool UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D_Cell::AddActor(AActor* actor){ return bool(); }
-bool UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D_Cell::RemoveActor(AActor* actor){ return bool(); }
-void UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D_Cell::SplitBucket(FConveyorFrequency_ZBucketNode* zBucket){ }
-void UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D_Cell::PreReplication(){ }
-int32 UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D_Cell::GetZBucketForActorIndex(int32 actorIndex){ return int32(); }
-void UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D_Cell::OnActorChangedInBucket(int32 bucketIndex, int32 plusminus){ }
-int32 UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D::GetCellIndexForLocation(FVector location){ return int32(); }
-UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D_Cell* UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D::GetCellForLocation(const FVector& location){ return nullptr; }
-void UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D::GatherAndRankCellsForViewer(UFGReplicationGraphNode_ConveyorSpatialFrequency* GraphNode, UReplicationGraph* RepGraph, UNetReplicationGraphConnection& ConnectionManager, UNetConnection* NetConnection, FSettings& MySettings, const FNetViewerArray& Viewers, const int32 FrameNum, TArray< FConveyorFrequency_SortedCell*>& out_cells){ }
-void UFGReplicationGraphNode_ConveyorSpatialFrequency::FFrequencyGrid2D::DrawDebug(UWorld* world, TArray<FConveyorFrequency_SortedCell*>& sortedCells){ }
-void UFGReplicationGraphNode_ConveyorSpatialFrequency::InitializeFrequencyGrid(FVector2D origin, FVector2D cellSize, int32 subdivisions){ }
-void UFGReplicationGraphNode_ConveyorSpatialFrequency::GatherActorListsForConnection(const FConnectionGatherActorListParameters& Params){ }
-void UFGReplicationGraphNode_ConveyorSpatialFrequency::TearDown(){ }
-void UFGReplicationGraphNode_ConveyorSpatialFrequency::OnStaticActorPutIntoCell(const FNewReplicatedActorInfo& ActorInfo){ }
-void UFGReplicationGraphNode_ConveyorSpatialFrequency::OnStaticActorRemovedFromCell(const FNewReplicatedActorInfo& ActorInfo){ }
-int32 UFGReplicationGraphNode_ConveyorSpatialFrequency::CalcFrequencyForCell(FFrequencyGrid2D_Cell* GridCell, UReplicationGraph* RepGraph, UNetReplicationGraphConnection& ConnectionManager, UNetConnection* NetConnection, FSettings& MySettings, const FNetViewerArray& Viewers, const uint32 FrameNum, bool IsPlayerInCell){ return int32(); }
-UFGReplicationGraphNode_ConveyorSpatialFrequency::FSettings UFGReplicationGraphNode_ConveyorSpatialFrequency::mDefaultSettings = UFGReplicationGraphNode_ConveyorSpatialFrequency::FSettings();
 UFGReplicationGraphNode_PlayerStateFrequencyLimiter::UFGReplicationGraphNode_PlayerStateFrequencyLimiter() : Super() {
 
 }

@@ -3,4 +3,3 @@
 #include "FGMapMarker.h"
 
 bool FMapMarker::operator==(const FMapMarker& other) const{ return bool(); }
-bool FMapMarker::operator!=(const FMapMarker& other) const{ return bool(); }

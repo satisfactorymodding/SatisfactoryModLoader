@@ -40,6 +40,7 @@ public:
 	virtual void Factory_StartProducing() override;
 	virtual void Factory_StopProducing() override;
 	virtual void Factory_TickProducing( float deltaTime ) override;
+	virtual void GainedSignificance_Implementation() override;
 	//~ End AFGBuildableFactory interface
 
 	/** @return the amount of power currently stored in this battery, in MWh. */
@@ -91,11 +92,17 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Power" )
 	void IndicatorLevelChanged( uint8 indicatorLevel );
 
-	UPROPERTY(EditDefaultsOnly)
-	int32 mStatusPrimitiveID = 13;
+	/** Zero-based ID of the customization data that will have the current status of the power storage. Inside the material, the custom data index is 11 + StatusPrimitiveID */
+	UPROPERTY(EditDefaultsOnly, Category = "Visuals")
+	int32 mStatusPrimitiveID{2};
+	
+	/** Zero-based ID of the customization data that will have the current charge level of the power storage (0.0-1.0). Inside the material, the custom data index is 11 + mChargePrimitiveID */
+	UPROPERTY(EditDefaultsOnly, Category = "Visuals")
+	int32 mChargePrimitiveID{3};
 
-	UPROPERTY(EditDefaultsOnly)
-	int32 mChargePrimitiveID = 14;
+	/** Number of extra customization data to maintain on the power storage. Should be bigger than Status Primitive ID and Charge Primitive ID */
+	UPROPERTY(EditDefaultsOnly, Category = "Visuals")
+	int32 mNumExtraCustomizationData{4};
 
 	UPROPERTY(EditDefaultsOnly)
 	UFGColoredInstanceMeshProxy* mMeshMesh;
@@ -113,6 +120,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_IndicatorLevel();
+
+	void UpdateExtraCustomizationData();
 
 private:
 	/** Battery info */
@@ -157,4 +166,13 @@ private:
 	*/
 	UPROPERTY( ReplicatedUsing = OnRep_IndicatorLevel )
 	uint8 mIndicatorLevel;
+
+	/** Maximum amount of time, in seconds, by which the visual state can be out of sync with the real state of the power grid */
+	UPROPERTY( EditDefaultsOnly, Category = "Visuals" )
+	float mMaxRealDataDriftTime{4.0f};
+
+	/** Amount of time the data on the factory tick has been different from the visual state observable on the game thread. Used to clamp the update frequency for power storages */
+	float mRealDataDriftTime{0.0f};
+	/** Offset of the drift time to start at. This is a random value from 0 to 1.0 to more evenly distribute the load from buildables across multiple frames. Value is in [0;1] range */
+	float mRealDataDriftTimeOffset{0.0f};
 };

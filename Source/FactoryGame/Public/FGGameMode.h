@@ -127,6 +127,9 @@ public:
 	/** Get the current options we started the map with */
 	const FString& GetCurrentOptions() const { return mOptions; }
 
+	/** Override the last AutoSave id */
+	void SetLastAutoSaveId( uint8 newId );
+
 	/** Generate the next AutoSave id */
 	uint8 GenerateNextAutoSaveId();
 
@@ -204,6 +207,12 @@ public:
 	/** Name for the option enabling possessing any player pawn on the map */
 	static const TCHAR* AllowPossessAnyOption;
 
+	/** Name for the option to possess the player by a specific nickname */
+	static const TCHAR* PossessPlayerByNicknameOption;
+
+	/** Name for the option to possess the player state at the specific index */
+	static const TCHAR* PossessPlayerByIndexOption;
+
 	/** List of map options that should never be saved into the save files. This includes options that are saved in the different places, for example, or one-time options like ?listen */
 	static TSet<FString> MapOptionsToNeverSave;
 protected:
@@ -224,6 +233,9 @@ protected:
 
 	UFUNCTION( exec )
 	void PrintSessionId();
+
+	UFUNCTION(exec)
+	void RebootServer() { RebootSession(); };
 
 	/**
 	 * If return true, then this is a pawn that we can take control of during spawning, else it's not valid

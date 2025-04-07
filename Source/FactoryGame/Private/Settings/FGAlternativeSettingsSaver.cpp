@@ -2,6 +2,25 @@
 
 #include "Settings/FGAlternativeSettingsSaver.h"
 
-bool UFGAlternativeSettingsSaver::SaveCurrentSettingsToDisc(UFGAlternativeSettingSaveGame* SaveGameObject){ return bool(); }
-bool UFGAlternativeSettingsSaver::SaveCurrentSettings(const TMap< FString, int32 > & inIntValues, const TMap< FString, float >& inFloatValues){ return bool(); }
-bool UFGAlternativeSettingsSaver::LoadCurrentSettings(TMap< FString, int32 >& outIntValues, TMap< FString, float >& outFloatValues){ return bool(); }
+void UFGAlternativeSettingSaveGame::FilterBySettingsAvailability(){ }
+void UFGPlayerReportSaveGame::AddOrUpdateReport(const FString& ReportedID, FDateTime dateOfReport){  }
+bool UFGPlayerReportSaveGame::IsPlayerReportedAlready(const FString& PlayerID) const{ return false; }
+bool UFGAlternativeSaveSubsystem::SaveCurrentSettings(const TMap<FString, int32>& inIntValues, const TMap<FString, float>& inFloatValues, FString inLanguage){ return false; }
+bool UFGAlternativeSaveSubsystem::LoadCurrentSettings(TMap<FString, int32>& outIntValues, TMap<FString, float>& outFloatValues, FString& outLanguage){ return false; }
+bool UFGAlternativeSaveSubsystem::LoadBlueprintRecords(const FString& sessionName, TArray<FBlueprintRecord>& out_Records){ return false; }
+bool UFGAlternativeSaveSubsystem::LoadBlueprintHeaders(const FString& sessionName, TArray<FBlueprintHeader>& out_Headers){ return false; }
+bool UFGAlternativeSaveSubsystem::DeleteBlueprint(const FString& sessionName, const FString& name){ return false; }
+bool UFGAlternativeSaveSubsystem::SaveBlueprint(const FString& sessionName, const FBlueprintRecord& record, TArray<uint8> data){ return false; }
+bool UFGAlternativeSaveSubsystem::LoadBlueprint(const FString& sessionName, const FString& name, TArray<uint8>& out_Data){ return false; }
+bool UFGAlternativeSaveSubsystem::GenerateBlueprintManifest(const FString& sessionName, struct FBlueprintManifest& out_Manifest){ return false; }
+#if !UE_BUILD_SHIPPING
+bool UFGAlternativeSaveSubsystem::SetNumDummyBlueprints(int count){ return false; }
+#endif
+UFGPlayerReportSaveGame* UFGAlternativeSaveSubsystem::LoadPlayerReports(){ return nullptr; }
+bool UFGAlternativeSaveSubsystem::SavePlayerReports(){ return false; }
+bool UFGAlternativeSaveSubsystem::SavePlayerReportsAsync(){ return false; }
+const FString& UFGAlternativeSaveSubsystem::GetPlayerReportSaveSlotName() const{ return *(new FString()); }
+bool UFGAlternativeSaveSubsystem::LoadSettingsFromDisc(){ return false; }
+bool UFGAlternativeSaveSubsystem::SaveCurrentSettingsToDisc(){ return false; }
+bool UFGAlternativeSaveSubsystem::LoadBlueprintsFromDisc(){ return false; }
+bool UFGAlternativeSaveSubsystem::SaveBlueprintsToDisc(uint32 SaveIndex){ return false; }

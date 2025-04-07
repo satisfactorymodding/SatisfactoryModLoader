@@ -39,7 +39,7 @@ float AFGBuildableManufacturer::GetProductionCycleTimeForRecipe(TSubclassOf< UFG
 float AFGBuildableManufacturer::CalcProductionCycleTimeForPotential(float potential) const{ return float(); }
 void AFGBuildableManufacturer::SetCurrentProductionBoost(float newProductionBoost){ }
 UFGFactoryClipboardSettings* AFGBuildableManufacturer::CopySettings_Implementation(){ return nullptr; }
-bool AFGBuildableManufacturer::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
+bool AFGBuildableManufacturer::PasteSettings_Implementation(UFGFactoryClipboardSettings* factoryClipboard, class AFGPlayerController* player){ return bool(); }
 TSubclassOf<UFGItemDescriptor> AFGBuildableManufacturer::GetRecipeProducerItemDescriptor_Implementation(UObject* WorldContext) const{ return TSubclassOf<UFGItemDescriptor>(); }
 bool AFGBuildableManufacturer::MoveOrDropInputInventory(AFGCharacterPlayer* pawn){ return bool(); }
 bool AFGBuildableManufacturer::MoveOrDropOutputInventory(AFGCharacterPlayer* pawn){ return bool(); }

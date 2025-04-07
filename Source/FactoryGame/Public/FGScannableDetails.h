@@ -49,7 +49,7 @@ struct FActorToScan
 {
 	GENERATED_BODY()
 
-	FActorToScan(){}
+	FActorToScan() = default;
 
 	FActorToScan( AActor* actor, TSubclassOf<AActor> scanningClass, FVector location, EActorToScanState state ) :
 		FoundActor( actor ),
@@ -59,7 +59,7 @@ struct FActorToScan
 	{}
 
 	UPROPERTY()
-	AActor* FoundActor;
+	AActor* FoundActor = nullptr;
 
 	/* This is the actor class specified to scan for. It might not be the same class as the instance above.
 	 * e.g if ScannedForActorClass is a creature FoundActor will probably be an CreatureSpawner
@@ -68,10 +68,10 @@ struct FActorToScan
 	TSubclassOf<AActor> ScanningClass;
 
 	UPROPERTY()
-	FVector Location;
+	FVector Location = FVector::ZeroVector;
 
 	UPROPERTY()
-	EActorToScanState State;
+	EActorToScanState State = {};
 	
 };
 
@@ -226,3 +226,5 @@ class FACTORYGAME_API UFGScannableDetailsHarddrive : public UFGScannableDetails
 public:
 	virtual FScannableActorDetails FindClosestRelevantActor(UWorld* world, const FVector& scanLocation, const float maxRangeSquared, TSubclassOf<AActor> actorClassToScanFor) const override;
 };
+
+

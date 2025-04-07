@@ -48,8 +48,6 @@ public:
 	virtual	void LostSignificance_Implementation() override;
 	virtual void UpdateSignificanceTickRate_Implementation(float NewTickRate, bool bTickEnabled) override;
 	virtual float GetSignificanceRange() override { return mSignificanceRange; }
-	virtual void GainedSignificance_Native() override;
-	virtual void LostSignificance_Native() override;
 	virtual	void SetupForSignificance() override;
 	virtual void SetInitialState(bool bState) override { mIsSignificant = bState; }
 	virtual bool DoesReduceTick() const override;

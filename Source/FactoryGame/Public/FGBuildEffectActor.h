@@ -30,7 +30,7 @@ struct FLightweightActorData
 {
 	TSubclassOf< AFGBuildable > BuildableClass;
 	FRuntimeBuildableInstanceData RuntimeData;
-	UAbstractInstanceDataObject* Instances;
+	TArray< FInstanceData > Instances;
 	int32 Index;
 };
 
@@ -63,8 +63,7 @@ public:
 	uint64 GetSpawnedFrame() const { return mSpawnedFrame; }
 
 	void SetDismantle(bool State);
-	//void AddAbstractDataEntry(FTransform Transform, UAbstractInstanceDataObject* Data,const TArray< FInstanceHandle* >& Handles);
-	void AddAbstractDataEntry( TSubclassOf< AFGBuildable > buildableClass, const FRuntimeBuildableInstanceData& runtimeData, UAbstractInstanceDataObject* InstanceData, int32 Index);
+	void AddAbstractDataEntry( TSubclassOf< AFGBuildable > buildableClass, const FRuntimeBuildableInstanceData& runtimeData, int32 Index);
 	void RemoveAbstractDataEntry(  TSubclassOf< AFGBuildable > buildableClass, int32 index );
 	
 	// Add actor to the build effect.
@@ -84,8 +83,10 @@ public:
 		}
 	}
 	
-	// Set recipe used for spawning flying resources, NOTE buildable can be null.
+	/** Set recipe used for spawning flying resources, NOTE buildable can be null. */
 	void SetRecipe( TSubclassOf<UFGRecipe> inRecipe, AFGBuildable* buildable );
+	/** Sets the recipe used for spawning flying resources for a lightweight buildable. Provides access to type-specific data */
+	void SetRecipeFromLightweight( TSubclassOf<UFGRecipe> inRecipe, TSubclassOf<AFGBuildable> buildableClass, const struct FFGDynamicStruct& lightweightTypeSpecificData );
 
 	// Force traditional way of building the effect force ignoring the zoop direction assumption logic.
 	void MarkAsBlueprintBuildEffect() { mIsBlueprint = true;}
@@ -144,16 +145,14 @@ private:
 
 	void UpdateSplineBuildables(float Dt);
 	void UpdateGenericBuildables(float Dt);
-	void UpdateWires();
 
 	void CalculateBuildEffectBounds();
 
 private:
-	TArray<USplineComponent*> GetBeltSourceSplinesOrdered( const TArray<class AFGBuildableConveyorBelt*>& inBelts, TArray<AActor*>& orderedActors ) const;
-	TArray<USplineComponent*> GetPipeSourceSplineOrdered( const TArray<class AFGBuildablePipeBase*>& inPipes, TArray<AActor*>& orderedActors ) const;
+	static TArray<USplineComponent*> GetBeltSourceSplinesOrdered( const TArray<class AFGBuildableConveyorBelt*>& inBelts, TArray<AActor*>& orderedActors );
+	static TArray<USplineComponent*> GetPipeSourceSplineOrdered( const TArray<class AFGBuildablePipeBase*>& inPipes, TArray<AActor*>& orderedActors );
 
 	TArray<FLightweightActorData> LightweightActors;
-	TArray<FInstanceHandle*> AllHandles;
 	
 public:
 	/* Called before it start fading out */

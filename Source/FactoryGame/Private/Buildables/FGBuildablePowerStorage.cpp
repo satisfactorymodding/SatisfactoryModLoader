@@ -6,9 +6,11 @@
 #include "Net/UnrealNetwork.h"
 
 AFGBuildablePowerStorage::AFGBuildablePowerStorage() : Super() {
-	this->mStatusPrimitiveID = 13;
-	this->mChargePrimitiveID = 14;
+	this->mStatusPrimitiveID = 2;
+	this->mChargePrimitiveID = 3;
+	this->mNumExtraCustomizationData = 4;
 	this->mMeshMesh = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("MainMesh"));
+	this->mMeshMesh->SetMobility(EComponentMobility::Movable);
 	this->mBatteryInfo = nullptr;
 	this->mBatteryStatus = EBatteryStatus::BS_Idle;
 	this->mPowerStore = 0.0;
@@ -17,6 +19,7 @@ AFGBuildablePowerStorage::AFGBuildablePowerStorage() : Super() {
 	this->mPowerInputCapacity = 0.0;
 	this->mIndicatorLevelMax = 0;
 	this->mIndicatorLevel = 0;
+	this->mMaxRealDataDriftTime = 4.0;
 	this->mInteractionRegisterPlayerWithCircuit = true;
 	this->mMeshMesh->SetupAttachment(RootComponent);
 }
@@ -33,6 +36,7 @@ EProductionStatus AFGBuildablePowerStorage::GetProductionIndicatorStatus() const
 void AFGBuildablePowerStorage::Factory_StartProducing(){ }
 void AFGBuildablePowerStorage::Factory_StopProducing(){ }
 void AFGBuildablePowerStorage::Factory_TickProducing(float deltaTime){ }
+void AFGBuildablePowerStorage::GainedSignificance_Implementation(){ Super::GainedSignificance_Implementation(); }
 float AFGBuildablePowerStorage::GetPowerStore() const{ return float(); }
 float AFGBuildablePowerStorage::GetTimeUntilFull() const{ return float(); }
 float AFGBuildablePowerStorage::GetTimeUntilEmpty() const{ return float(); }
@@ -42,3 +46,4 @@ void AFGBuildablePowerStorage::UpdatePropertiesOnGameThread(EBatteryStatus statu
 void AFGBuildablePowerStorage::UpdateProperties(EBatteryStatus status, uint8 indicatorLevel){ }
 void AFGBuildablePowerStorage::OnRep_Status(){ }
 void AFGBuildablePowerStorage::OnRep_IndicatorLevel(){ }
+void AFGBuildablePowerStorage::UpdateExtraCustomizationData(){ }

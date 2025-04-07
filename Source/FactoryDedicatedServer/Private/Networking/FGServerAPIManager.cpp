@@ -17,7 +17,7 @@ void FFGRequestHandlerContext::Internal_CompleteRequest(TUniquePtr<FHttpServerRe
 void FFGRequestHandlerContext::Internal_CompleteRequestWithError(const FFGServerErrorResponse& InErrorResponse){ }
 TArray<FString> FFGRequestHandlerContext::GetSupportedCompressionAlgorithms() const{ return TArray<FString>(); }
 UFGServerAPIManager::UFGServerAPIManager(){ }
-bool UFGServerAPIManager::Initialize(const TArray<TSharedRef<FInternetAddr>>& BindAddresses){ return bool(); }
+TSharedPtr<FInternetAddr> UFGServerAPIManager::Initialize(int32 ServerAPIPort, const TArray<TSharedRef<FInternetAddr>>& BindAddresses){ return TSharedPtr<FInternetAddr>(); }
 void UFGServerAPIManager::Shutdown(){ }
 void UFGServerAPIManager::RegisterRequestHandler(UObject* RequestHandler){ }
 void UFGServerAPIManager::RegisterParamHandler(UScriptStruct* ScriptStruct, const FFGServerAPIRequestParamHandler& ParamHandler){ }
@@ -34,6 +34,7 @@ TUniquePtr<FHttpServerResponse> UFGServerAPIManager::CreateServerResponseFromSta
 bool UFGServerAPIManager::ProcessClientAuthentication(const FString& AuthenticationHeader, TSharedPtr<FFGRequestHandlerContext> RequestHandlerContext) const{ return bool(); }
 void UFGServerAPIManager::OnClientFailedAuthentication(TSharedPtr<FFGRequestHandlerContext> RequestHandlerContext, EHttpServerResponseCodes ResponseCode,
 		const FString& OAuth2ErrorCode, const FString& ErrorDescription, const FString& OAuth2Scope){ }
+bool UFGServerAPIManager::CreateServerAPIListenSocket(FSocket*& OutSocket, ISocketSubsystem*& OutSocketSubsystem){ return false; }
 void UFGServerAPIManager::BindRoutes(){ }
 void UFGServerAPIManager::UnbindRoutes() const{ }
 void UFGServerAPIManager::RegisterDefaultParameterHandlers(){ }

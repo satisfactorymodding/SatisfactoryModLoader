@@ -18,10 +18,6 @@ public:
 	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled ) const override;
 	//End AFGBuildable
 protected:
-	/** Length of the attachment across Connection0 and Connection1, used for slicing logic and returns calculation */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Pipe Hyper" )
-	float mAttachmentLength;
-	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper" )
 	UFGPipeConnectionComponentBase* mConnection0;
 
@@ -34,7 +30,6 @@ protected:
 	UPROPERTY( VisibleAnywhere, SaveGame, Category = "Pipe Hyper" )
 	int32 mBuiltWithPipelineCostMultiplier;
 public:
-	FORCEINLINE float GetAttachmentLength() const { return mAttachmentLength; }
 	
 	/** @return The connections, safe to assume its always valid. */
 	FORCEINLINE UFGPipeConnectionComponentBase* GetConnection0() const { return mConnection0; }

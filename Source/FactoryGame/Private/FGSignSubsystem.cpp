@@ -31,6 +31,7 @@ AFGSignSubsystem::AFGSignSubsystem() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.5;
 	this->SetHidden(false);
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }
 void AFGSignSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGSignSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }

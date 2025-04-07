@@ -13,18 +13,16 @@ struct FWireInstance
 {
 	GENERATED_BODY()
 
-	FWireInstance()
-		: WireMesh( nullptr )
-	{}
+	FWireInstance() = default;
 	
 	UPROPERTY()
-	UStaticMeshComponent* WireMesh;
+	UStaticMeshComponent* WireMesh = {};
 
 	UPROPERTY( SaveGame )
-	FVector Locations[2];
+	FVector Locations[2] = { FVector::ZeroVector, FVector::ZeroVector };
 
 	UPROPERTY( SaveGame )
-	FVector CachedRelativeLocations[2];
+	FVector CachedRelativeLocations[2] = { FVector::ZeroVector, FVector::ZeroVector };
 };
 
 /**

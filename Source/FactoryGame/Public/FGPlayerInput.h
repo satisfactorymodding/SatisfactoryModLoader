@@ -63,6 +63,8 @@ public:
 
 class UFGPlayerInputPreProcessor : public IInputProcessor
 {
+	friend class UFGPlayerInput;
+
 public:
 	UFGPlayerInputPreProcessor( class UFGPlayerInput* playerInput );
 	virtual ~UFGPlayerInputPreProcessor() override;
@@ -78,6 +80,8 @@ public:
 
 private:
 	UFGPlayerInput* mPlayerInput = nullptr;
+
+	TMap<FKey,bool> KeyStateMap;
 };
 /**
  * 
@@ -145,6 +149,13 @@ public:
 
 	/** Returns all contexts in which the given input action is bound */
 	bool FindAllMappedContextsForInputAction( const UInputAction* inputAction, TArray<UInputMappingContext*>& out_mappedContexts ) const;
+
+	bool KeyState(FKey Key) const
+	{
+		if (mInputPreprocessor)	return mInputPreprocessor->KeyStateMap.FindRef(Key);
+		return false;
+	}
+
 protected:
 	void TryCacheDefaultKeyMappings() const;
 	void GatherKeyMappingsFromInputContext( UInputMappingContext* mappingContext ) const;

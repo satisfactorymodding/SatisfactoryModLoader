@@ -2,11 +2,18 @@
 
 #include "FGInputLibrary.h"
 
+#include "Layout/Margin.h"
+
 FInputActionKeyMapping UFGInputLibrary::GetKeyMappingForAction(APlayerController* playerController, FName inAction, bool getGamepadKey){ return FInputActionKeyMapping(); }
 FText UFGInputLibrary::GetAbbreviatedKeyName(FKey key){ return FText(); }
 FText UFGInputLibrary::FormatStringWithInputActionNames(APlayerController* playerController, FText textToFormat, bool abbreviateKeyNames){ return FText(); }
+FText UFGInputLibrary::FormatStringWithInputActionNames_Keyboard(APlayerController* playerController, FText textToFormat, bool abbreviateKeyNames){ return FText(); }
+FText UFGInputLibrary::FormatStringWithInputActionNames_Gamepad(APlayerController* playerController, FText textToFormat){ return FText(); }
 FText UFGInputLibrary::GetInputActionNameAsText(APlayerController* playerController, const FName& inActionName, bool abbreviateKeyNames){ return FText(); }
+FText UFGInputLibrary::GetInputActionNameAsText_Keyboard(APlayerController* playerController, const FName& inActionName, bool abbreviateKeyNames){ return FText(); }
+FText UFGInputLibrary::GetInputActionNameAsText_Gamepad(APlayerController* playerController, const FName& inActionName){ return FText(); }
 void UFGInputLibrary::GetPlayerRebindableMappingContexts(TArray<class UFGInputMappingContext*>& out_MappingContexts){ }
+void UFGInputLibrary::GetGamepadMappingContexts(TArray<class UFGInputMappingContext*>& out_MappingContexts){  }
 void UFGInputLibrary::FindAllChildMappingContexts(TMultiMap<TSoftObjectPtr<UFGInputMappingContext>, TSoftObjectPtr<UFGInputMappingContext>>& out_ParentToChildContexts){ }
 TSoftObjectPtr< class UInputAction > UFGInputLibrary::FindInputActionByTag(const FGameplayTag& tag){ return TSoftObjectPtr<class UInputAction>(); }
 TSoftObjectPtr< class UInputAction > UFGInputLibrary::FindInputActionByMappingName(APlayerController* playerController, const FName& mappingName){ return TSoftObjectPtr<class UInputAction>(); }
@@ -14,10 +21,17 @@ bool UFGInputLibrary::GetOverlappingEnhancedKeyMappings(APlayerController* playe
 void UFGInputLibrary::RebindEnhancedKeyMapping(APlayerController* playerController, const FName& inActionName, const FKey& primaryKey, const TArray<FKey>& modifierKeys){ }
 void UFGInputLibrary::ResetAllEnhancedKeyBindings(APlayerController* playerController){ }
 bool UFGInputLibrary::GetCurrentMappingForAction(APlayerController* playerController, const FName& inActionName, FKey& out_primaryKey, TArray<FKey>& out_modifierKeys){ return bool(); }
+bool UFGInputLibrary::GetCurrentMappingForInputAction(APlayerController* playerController, const UInputAction* inputAction, FKey& out_primaryKey, TArray<FKey> out_modifierKeys, FName preferredActionName, const UInputMappingContext* preferredContext){ return bool(); }
+void UFGInputLibrary::FindDefaultKeyMappingForInputAction(APlayerController* playerController, const UInputAction* inputAction, FName preferredActionName, const UInputMappingContext* preferredContext, bool allowOtherContexts, FEnhancedActionKeyMapping& out_keyMapping, bool& out_Success,	const UInputMappingContext* out_mappingContext){ } 
 void UFGInputLibrary::ClearBindingsForWidget(UUserWidget* widget){ }
+bool UFGInputLibrary::ShouldShowXboxIcons(){ return bool(); }
+bool UFGInputLibrary::IsDualSenseForWindowsEnabled(){ return bool(); }
 UTexture* UFGInputLibrary::GetTextureFromKey(const FKey& key){ return nullptr; }
 UTexture* UFGInputLibrary::GetTextureFromTag(const FGameplayTag& tag){ return nullptr; }
 bool UFGInputLibrary::GetTexturePaddingFromKey(const FKey& key, FMargin& out_Padding){ return bool(); }
+bool UFGInputLibrary::GetTexturePaddingFromOverrideTag(const FGameplayTag& tag, FMargin& out_Padding){ return bool(); }
 FMargin UFGInputLibrary::GetReferenceKeyTexturePadding(){ return FMargin(); }
 FMargin UFGInputLibrary::GetKeyVariantTexturePadding(){ return FMargin(); }
 bool UFGInputLibrary::GetKeyTextureBinding(const FKey& key,  FFGKeyTextureBinding& out_Binding){ return bool(); }
+float UFGInputLibrary::GetMaxTapSeconds(){ return float(); }
+UTexture2D* UFGInputLibrary::GetKeyTexture2DFromBinding(const FFGKeyTextureBinding& binding){ return nullptr; }

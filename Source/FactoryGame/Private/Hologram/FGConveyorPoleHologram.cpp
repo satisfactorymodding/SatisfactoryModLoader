@@ -9,3 +9,4 @@ AFGConveyorPoleHologram::AFGConveyorPoleHologram() : Super() {
 void AFGConveyorPoleHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGConveyorPoleHologram::SnapToConnection(UFGFactoryConnectionComponent* connection,  AFGConveyorBeltHologram* parentConveyor){ }
 void AFGConveyorPoleHologram::SetSnappBuilding( AFGBuildable* snappedBuilding){ }
+void AFGConveyorPoleHologram::UpdatePoleMesh(){ Super::UpdatePoleMesh(); }

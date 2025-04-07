@@ -83,10 +83,17 @@ public:
 
 	/** Forcefully hides the early loading screen if it is visible */
 	void ForceHideEarlyLoadingScreen();
+
+	void JoinPendingActivity();
 protected:
 	//~Begin OnlineIdentity delegates
 	void OnLoginStatusChanged( ULocalUserInfo* userInfo, TSharedRef<UE::Online::FAccountInfo> accountInfo, UOnlineIntegrationBackend* backend );
 	//~End OnlineIdentity delegates
+
+	// <FL> [TranN] Handle disconnect
+	void OnBackendConnectionStatusChanged( UOnlineIntegrationBackend* backend, EOnlineBackendConnectionStatus status );
+	void SendLocalPlayerToMainMenuAndShowError();
+	// </FL>
 
 	/** Get the presence string we should show to other users */
 	virtual FString GetPresenceString() const;
@@ -94,6 +101,14 @@ protected:
 	void OnAboutToTravel( ULocalUserInfo* UserInfo, TMap<FString ,FString> &ExtraOptions );
 
 	void GetPresenceState(FPlayerPresenceState& outState) const;
+
+	void OnGameActivityActivationRequested( const FUniqueNetId& localUserId, const FString& activityId, const class FOnlineSessionSearchResult* sessionInfo );
+
+	UFUNCTION()
+	void OnAdminEnumerateSaveGamesComplete( bool success, const TArray< struct FSaveHeader >& saveGames );
+
+	bool mHasPendingActivity;
+
 private:
 
 	/** Push error and autosave the game */

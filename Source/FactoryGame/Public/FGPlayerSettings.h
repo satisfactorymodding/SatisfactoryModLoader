@@ -7,6 +7,21 @@
 #include "FGRecipe.h"
 #include "FGPlayerSettings.generated.h"
 
+USTRUCT()
+struct FPlayerMappingContextConfig
+{
+	GENERATED_BODY()
+
+	UPROPERTY( EditAnywhere, Config, Category = "Player Mapping Context" )
+	EPlayerMappingContextCategory ContextCategory{EPlayerMappingContextCategory::None};
+
+	UPROPERTY( EditAnywhere, Config, Category = "Player Mapping Context" )
+	TSoftObjectPtr<UInputMappingContext> MappingContext;
+
+	UPROPERTY( EditAnywhere, Config, Category = "Player Mapping Context" )
+	int32 Priority{};
+};
+
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Player" ) )
 class FACTORYGAME_API UFGPlayerSettings : public UDeveloperSettings
 {
@@ -46,4 +61,8 @@ public:
 	/** Reference to the default sprint head bob shake */
 	UPROPERTY( EditDefaultsOnly, Config, Category = "Movement" )
 	TSoftObjectPtr<UCameraAnimationSequence> mDefaultSprintHeadBobCameraAnim;
+
+	/** Player mapping context configs. Will be appended to AFGCharacterPlayer::mMappingContexts */
+	UPROPERTY( EditDefaultsOnly, Config, Category = "Input Mapping" )
+	TArray<FPlayerMappingContextConfig> mPlayerMappingContexts;
 };

@@ -55,9 +55,12 @@ public:
 	/** Loop de loop */
 	void CycleEquipment( int32 dir );
 
-	// <FL> [KajtaziT] handheldselection radial menu can set the active equipment directly
+	// <FL> the handheld radial menu sets the active equipment directly
+	UFUNCTION( Reliable, Server )
+	void Server_SetActiveEquipmentIndex(int32 index);
+
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
-	void SetActiveIndexWithDefaultItem( int32 index );
+	void SetActiveEquipmentIndex( int32 index );
 	// </FL>
 
 	/** Sets @index to be active if it is a valid index. If @itemAtCurrentIndex is set, it is assumed to be the item currently active in this

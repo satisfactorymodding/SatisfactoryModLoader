@@ -6,6 +6,4 @@ void AFGBuildableMAM::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableMAM::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableMAM::GainedSignificance_Implementation(){ }
 void AFGBuildableMAM::LostSignificance_Implementation(){ }
-void AFGBuildableMAM::GainedSignificance_Native(){ }
-void AFGBuildableMAM::LostSignificance_Native(){ }
 void AFGBuildableMAM::OnResearchStateChanged(EResearchState researchState){ }

@@ -62,3 +62,4 @@ void AFGRailroadVehicle::CoupleVehicleAt(AFGRailroadVehicle* vehicle, ERailroadV
 void AFGRailroadVehicle::DecoupleVehicleAt(ERailroadVehicleCoupler coupler){ }
 void AFGRailroadVehicle::OnRep_IsOrientationReversed(){ }
 void AFGRailroadVehicle::OnRep_IsDerailed(){ }
+void AFGRailroadVehicle::OnRep_TrackPosition(const FRailroadTrackPosition& oldTrackPosition){ }

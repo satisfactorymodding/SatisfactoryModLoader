@@ -7,7 +7,6 @@ UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent() : Sup
 	this->mTrackPosition.Track = nullptr;
 	this->mTrackPosition.Offset = 0.0;
 	this->mTrackPosition.Forward = 0.0;
-	this->mSwitchPosition = -1;
 	this->mSwitchControl = nullptr;
 	this->mStation = nullptr;
 	this->mFacingSignal = nullptr;
@@ -19,29 +18,41 @@ void UFGRailroadTrackConnectionComponent::GetLifetimeReplicatedProps(TArray<FLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGRailroadTrackConnectionComponent, mTrackPosition);
 	DOREPLIFETIME(UFGRailroadTrackConnectionComponent, mConnectedComponents);
-	DOREPLIFETIME(UFGRailroadTrackConnectionComponent, mSwitchPosition);
+	DOREPLIFETIME(UFGRailroadTrackConnectionComponent, mSwitchControl);
 }
 void UFGRailroadTrackConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGRailroadTrackConnectionComponent::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+bool UFGRailroadTrackConnectionComponent::CanConnectTo(const UFGRailroadTrackConnectionComponent* toComponent) const{ return bool(); }
 void UFGRailroadTrackConnectionComponent::AddConnection(UFGRailroadTrackConnectionComponent* toComponent){ }
+UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::GetConnection() const{ return nullptr; }
+UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::GetConnectionAtSwitchPosition() const{ return nullptr; }
 void UFGRailroadTrackConnectionComponent::RemoveConnection(UFGRailroadTrackConnectionComponent* toComponent){ }
 bool UFGRailroadTrackConnectionComponent::IsFacingSwitch() const{ return bool(); }
 bool UFGRailroadTrackConnectionComponent::IsTrailingSwitch() const{ return bool(); }
+int32 UFGRailroadTrackConnectionComponent::GetNumSwitchPositions() const{ return int32(); }
+int32 UFGRailroadTrackConnectionComponent::GetSwitchPosition() const{ return int32(); }
 int32 UFGRailroadTrackConnectionComponent::GetSwitchPositionForTrack( AFGBuildableRailroadTrack* track) const{ return int32(); }
 bool UFGRailroadTrackConnectionComponent::IsSwitchClear() const{ return bool(); }
+bool UFGRailroadTrackConnectionComponent::IsSwitchClear(AFGTrain* ignored) const{ return bool(); }
 void UFGRailroadTrackConnectionComponent::SetSwitchPosition(int32 position){ }
 TWeakPtr< FFGRailroadSignalBlock > UFGRailroadTrackConnectionComponent::GetSignalBlock() const{ return TWeakPtr<FFGRailroadSignalBlock>(); }
 UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::GetOpposite() const{ return nullptr; }
 UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::GetNext() const{ return nullptr; }
-UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::FindOverlappingConnections( UFGRailroadTrackConnectionComponent* component,
-		const FVector& location,
-		float radius,
-		bool allowPlatformTracks,
-		TArray< UFGRailroadTrackConnectionComponent* >* out_additionalSwitchConnections){ return nullptr; }
-UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::FindProbableClientConnection( UFGRailroadTrackConnectionComponent* connection){ return nullptr; }
+UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::FindClosestOverlappingConnection(
+	const class UFGRailroadTrackConnectionComponent* component, const FVector& location, float radius,
+	bool allowPlatformTracks, const TSet<class UFGRailroadTrackConnectionComponent*>& ignoredConnections){ return nullptr; }
+TArray<UFGRailroadTrackConnectionComponent*> UFGRailroadTrackConnectionComponent::FindAlignedConnections(
+	const class UFGRailroadTrackConnectionComponent* component, float radius, bool allowPlatformTracks,
+	bool neighbouring){ return TArray<UFGRailroadTrackConnectionComponent*>(); }
+TArray<UFGRailroadTrackConnectionComponent*> UFGRailroadTrackConnectionComponent::FilterAlignedConnections(
+	const class UFGRailroadTrackConnectionComponent* component,
+	const TArray<UFGRailroadTrackConnectionComponent*>& connections, float radius, bool allowPlatformTracks,
+	bool neighbouring){ return TArray<UFGRailroadTrackConnectionComponent*>(); }
+UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::FindProbableClientConnection(
+	const class UFGRailroadTrackConnectionComponent* connection){ return nullptr; }
+void UFGRailroadTrackConnectionComponent::SetSwitchControl(class AFGBuildableRailroadSwitchControl* control){  }
 void UFGRailroadTrackConnectionComponent::SetTrackPosition(const FRailroadTrackPosition& position){ }
 void UFGRailroadTrackConnectionComponent::SortConnections(){ }
 void UFGRailroadTrackConnectionComponent::AddConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::RemoveConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::OnConnectionsChangedInternal(){ }
-void UFGRailroadTrackConnectionComponent::ClampSwitchPosition(){ }

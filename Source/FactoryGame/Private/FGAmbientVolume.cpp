@@ -10,6 +10,7 @@ void AFGAmbientVolume::CheckForErrors(){ Super::CheckForErrors(); }
 AFGAmbientVolume::AFGAmbientVolume() : Super() {
 	this->mAmbientSettings = nullptr;
 	this->mAudioComponent = CreateDefaultSubobject<UAkComponent>(TEXT("AudioComponent"));
+	this->mAudioComponent->SetMobility(EComponentMobility::Movable);
 	this->mAdditionalAttenuationDistance = 300.0;
 	this->mSignificanceRange = 25000.0;
 	this->mAudioComponent->SetupAttachment(GetBrushComponent());
@@ -18,8 +19,6 @@ void AFGAmbientVolume::BeginPlay(){ Super::BeginPlay(); }
 void AFGAmbientVolume::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGAmbientVolume::GainedSignificance_Implementation(){ }
 void AFGAmbientVolume::LostSignificance_Implementation(){ }
-void AFGAmbientVolume::GainedSignificance_Native(){ }
-void AFGAmbientVolume::LostSignificance_Native(){ }
 float AFGAmbientVolume::GetSignificanceRange(){ return float(); }
 const UFGAmbientSettings* AFGAmbientVolume::GetAmbientSettings() const{ return nullptr; }
 void AFGAmbientVolume::SetCameraIsClose(bool close){ }

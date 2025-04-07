@@ -6,6 +6,22 @@
 #include "FGInputLibrary.h"
 #include "PlayerPresenceState.h"
 #include "GameFramework/PlayerController.h"
+
+//<FL> WWise Motion/Controller Speaker on Windows integration
+#include "AkGameplayTypes.h"
+#if PLATFORM_WINDOWS && defined(PLATFORM_WINDOWS)
+#include <mmdeviceapi.h>
+#include <propkey.h>
+#elif( PLATFORM_PS5 && defined( PLATFORM_PS5 ) || (PLATFORM_LINUX) && defined(PLATFORM_LINUX))
+// define the immdevice as something to make it compile, it will not be used outside of this context but we
+// want to retain the function signature
+typedef int32 IMMDevice;
+#endif
+#if(defined( PLATFORM_XSX ) && PLATFORM_XSX )
+#include <GameInput.h>
+#endif
+//</FL>
+
 #include "FGPlayerControllerBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnInputChanged );
@@ -26,6 +42,19 @@ public:
 	virtual void ClientRestart_Implementation( APawn* newPawn ) override;
 	virtual void AddCheats( bool force = false ) override;
 	// End APlayerController interface
+
+	//<FL>[KonradA] Override Possess/Unpossess functions here too to handle dualsense registration
+	virtual void OnPossess( APawn* aPawn ) override;
+	virtual void OnUnPossess() override;
+	//</FL>
+
+	void SetupWwise();
+	void RemoveWwise();
+
+	UFUNCTION(Reliable, Client)
+	void Client_SetupWwise();
+
+	virtual void ClientPlayForceFeedback( class UForceFeedbackEffect* ForceFeedbackEffect, FForceFeedbackParameters Params = FForceFeedbackParameters() ) override;
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input" )
 	FORCEINLINE bool GetIsUsingGamepad(){ return mIsUsingGamepad; }
@@ -143,6 +172,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Utility")
 	TScriptInterface<class IFGSaveManagerInterface> GetLocalSaveManager();
 
+	/** Returns the input device type used by this player. This is synced with the client and is safe to use on the server */
+	UFUNCTION( BlueprintPure, Category = "Input" )
+	virtual EInputDeviceType GetPlayerInputDeviceType() const;
 protected:
 	/** Used to discard any input when we are dead */
 	UFUNCTION()
@@ -151,6 +183,8 @@ protected:
 	virtual void SetPlayer(UPlayer* InPlayer);
 	virtual void OnNetCleanup(class UNetConnection* Connection) override;
 
+	UFUNCTION()
+	virtual void ActiveInputDeviceChanged(EInputDeviceType deviceType);
 	// UPROPERTY( BlueprintReadOnly )
 	// class UFGServerObject* mCurrentServer = nullptr;
 private:
@@ -185,4 +219,28 @@ private:
 
 	/** Are we using gamepad? */
 	bool mIsUsingGamepad;
+
+protected:
+	//<FL>[KonradA] For WWise Motion Integration
+	AkOutputDeviceID hMotionOutputDevice;
+	AkOutputDeviceID hControllerOutputDevice;
+	bool hMotionOutputDeviceAdded = false;
+	bool hControllerOutputDeviceAdded = false;
+	int32 GetMotionDeviceIndex(bool& SonyController);
+	int32 GetPS5PadDeviceIndex();
+	bool GetMMDeviceFromPadHandle( int in_padHandle, IMMDevice*& io_pMmDevice );
+
+	void InitializePadSpeakerWindows();
+	void InitializePadSpeakerNative();
+	void InitializePadType(const bool IsSonyController);
+
+	UFUNCTION()
+	void OnGamepadRumbleStrengthRequiresChange( bool enabled, float strength );
+
+	#if( defined( PLATFORM_XSX ) && PLATFORM_XSX )
+public:
+	static TArray< IGameInputDevice* > GameInputDeviceMap;
+	#endif
+
+	//</FL>
 };

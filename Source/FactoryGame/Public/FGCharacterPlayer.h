@@ -1,9 +1,9 @@
-// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "FactoryGame.h"
 #include "CameraAnimationCameraModifier.h"
-#include "Buildables/FGBuildablePipeHyperJunction.h"
 #include "Creature/FGCreature.h"
 #include "Equipment/FGEquipment.h"
 #include "FGActorRepresentationInterface.h"
@@ -19,6 +19,7 @@
 #include "FGCinematicPlayerSettings.h"
 #include "PlayerCustomizationData.h"
 #include "Curves/CurveFloat.h"
+#include "Online/CoreOnline.h"
 #include "FGCharacterPlayer.generated.h"
 
 class AFGBuildablePortal;
@@ -43,7 +44,13 @@ DECLARE_MULTICAST_DELEGATE_TwoParams( FOnPlayerInputInitializedDelegate, class A
 DECLARE_MULTICAST_DELEGATE_OneParam( FSimpleCharacterPlayerDelegate, class AFGCharacterPlayer* );
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnActiveMenuUpdated, bool, isActive );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnIntroSequencePodContextChanged, bool, isActive );
 
+
+
+// <FL> [MartinC] Callback used to detect changes in the trace that handle gamepad quick sampling
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnGamepadSampleChanged, bool, canSample, bool, canCopyPaste );
+// </FL>
 
 UENUM( BlueprintType )
 enum class EPlayerKeepInventoryMode : uint8
@@ -214,7 +221,7 @@ struct FACTORYGAME_API FFGPlayerPortalData
 
 	/** The rotation of the player exiting the portal */
 	UPROPERTY( BlueprintReadOnly, Category = "Portal" )
-	FVector PortalExitDirection;
+	FVector PortalExitDirection = FVector::ZeroVector;
 	
 	/** World time at which we have entered the portal */
 	UPROPERTY( BlueprintReadOnly, Category = "Portal" )
@@ -272,24 +279,21 @@ ENUM_CLASS_FLAGS( EActionsToBind )
 
 // Flags representing each type of mapping context on the player
 UENUM( meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
-enum class EPlayerMappingContextCategory : uint8
+enum class EPlayerMappingContextCategory : uint64
 {
-	None = 0,
+	None = 0x0000,
+	Movement = 0x0001,
+	Actions = 0x0002,
+	EquipmentHandling = 0x0004,
+	EquipmentActions = 0x0008,
+	Interface = 0x0010,
+	Cheats = 0x0020,
+	Camera = 0x4000,
+	HypertubeActions = 0x0100,
 	
-	Movement = 0x1,
-	Actions = 0x2,
-	EquipmentHandling = 0x4,
-	EquipmentActions = 0x8,
-	Interface = 0x10,
-
-	Cheats = 0x20,
-
-	Camera = 0x40,
-	
-	// <FL> [KajtaziT]
-	GamepadDefault = 0x80, // essential gamepad controls
-
-	All = 0xFF
+	// essential gamepad controls
+	GamepadDefault = 0x0080,
+	All = 0xFFFF,
 };
 
 ENUM_CLASS_FLAGS( EPlayerMappingContextCategory )
@@ -300,14 +304,28 @@ struct FPlayerMappingContext
 	GENERATED_BODY()
 	
 	UPROPERTY( EditDefaultsOnly )
-	EPlayerMappingContextCategory ContextCategory;
+	EPlayerMappingContextCategory ContextCategory = EPlayerMappingContextCategory::None;
 
 	UPROPERTY( EditDefaultsOnly )
 	TObjectPtr< UInputMappingContext > MappingContext;
 
 	UPROPERTY( EditDefaultsOnly )
-	int32 Priority;
+	int32 Priority = 0;
 };
+
+// <FL> [TranN] TMap replacement for replication
+USTRUCT()
+struct FServiceNameAndPlayerName
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FName Service;
+
+	UPROPERTY()
+	FString PlayerName;
+};
+// </FL>
 
 /**
  * Base class for all player characters in the game.
@@ -391,6 +409,10 @@ public:
 	virtual void PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion) override;
 	//~End IFGSaveInterface
 
+	// Begin IFGUnsafePawnRelocationInterface
+	virtual void SetIsInUnsafeLoadLocation(bool isUnsafe ) override;
+	// End IFGUnsafePawnRelocationInterface
+
 	// Begin IFGActorRepresentationInterface
 	UFUNCTION() virtual bool AddAsRepresentation() override;
 	UFUNCTION() virtual bool UpdateRepresentation() override;
@@ -412,6 +434,13 @@ public:
 	UFUNCTION() virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION()	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+	//<FL>[KonradA]
+	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray< FLocalUserNetIdBundle >(); }
+	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+
+	virtual UE::Online::FAccountId GetPlatformAccountID() const override;
+	virtual FString GetPlatformAccountIDString() const override;
+	//</FL>
 	// End IFGActorRepresentationInterface
 	
 	/** Whether or not the player is currently inside the starting pod. */
@@ -456,6 +485,9 @@ public:
 	/** Shows or hides the active equipment (holster/unholster) */
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	void ToggleEquipment();
+
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	void ItemDroppedFromEquipmentSlot( EEquipmentSlot slot, int32 idx );
 
 	/**
 	 * Set/clear override the active equipment in a slot.
@@ -518,6 +550,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Portal" )
 	bool IsInPortal() const;
 
+	/** <FL> [MartinC] True if player is currently allowed to use the mBestUsableActor */
+	bool IsUseAllowed() const;
+
 	/** Equips/unequips buildgun */ 
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	void ToggleBuildGun();
@@ -566,13 +601,6 @@ public:
 	/** Switches between camera modes */
 	UFUNCTION()
 	void ToggleCameraMode( bool force = false );
-
-	/** Switches between "regular" camera and cinematic camera, enabled = true activates cinematic camera and deactivates regular camera and vice versa */
-	UFUNCTION()
-	void Photo_SetAdvancedPhotoMode( bool enabled );
-
-	/** Switches between "regular" camera and cinematic camera */
-	void Photo_ToggleAdvancedPhotoMode();
 
 	/** Get current camera mode */
 	UFUNCTION( BlueprintPure, Category = "Camera" )
@@ -720,6 +748,9 @@ public:
 	UFUNCTION( BlueprintPure )
 	class AFGPlayerController* GetFGPlayerController() const;
 
+	UFUNCTION( BlueprintPure )
+	AFGPlayerController* FindWaywardPlayerController() const;
+	
 	/** Whether or not an interact widget is open. */
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	bool IsInteractWidgetOpen() const { return mIsInteractWidgetOpen; }
@@ -808,10 +839,6 @@ public:
 	UFUNCTION( Server, Reliable, Category = "Portal" )
 	void Server_NotifyPortalLevelStreamingComplete();
 
-	/** Returns the Cinematic Camera SubObject used in PhotoMode **/
-	UFUNCTION( BlueprintPure, Category = "Camera" )
-	FORCEINLINE class UFGCineCameraComponent* GetCinematicCameraComponent() const { return mCinematicCameraComponent; }
-
 	UFUNCTION( BlueprintCallable, Category = "Emote" )
 	void PlayEmote( TSubclassOf<class UFGEmote> emote );
 	UFUNCTION( Server, Reliable, Category = "Emote" )
@@ -846,6 +873,10 @@ public:
 	UFUNCTION( BlueprintCallable, Server, Reliable, WithValidation, Category = "Hyper Tube" )
 	void Server_UpdateHyperJunctionOutputConnection( UFGPipeConnectionComponentBase* connectionEnteredThrough, UFGPipeConnectionComponentBase* newOutputConnection);
 
+	/** Cycles to the next output path of the junction */
+	UFUNCTION( BlueprintCallable, Server, Reliable, WithValidation, Category = "Hyper Tube" )
+	void Server_CycleHyperJunctionOutputConnection( UFGPipeConnectionComponentBase* connectionEnteredThrough );
+
 	/** Returns the last history entry for the provided junction actor */
 	UFUNCTION( BlueprintPure, Category = "Hyper Tube" )
 	UFGPipeConnectionComponentBase* GetHyperTubeJunctionOutputConnectionFromHistory( UFGPipeConnectionComponentBase* connectionEnteredThrough ) const;
@@ -874,7 +905,7 @@ public:
 	
 	void SetIsFlyingToggleable( const bool canFlyingBeToggled );
 
-	void OnPhotoModeToggled( bool enabled );
+	void HandlePhotoModeOnCharacter( const bool enabled );
 
 	UFUNCTION( BlueprintPure, Category = "Input" )
 	int32 GetMappingContextPriority() const;
@@ -883,6 +914,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	void SetMappingContextEnabled( UPARAM( meta = ( Bitmask, BitmaskEnum = "EPlayerMappingContextCategory" ) )int32 contextMask, bool enabled );
 	void SetMappingContextEnabled( EPlayerMappingContextCategory contextMask, bool enabled );
+
+	/** Returns the input device type used by this player. This is synced with the client and is safe to use on the server. Will return mouse and keyboard if the player is not possessed */
+	UFUNCTION( BlueprintPure, Category = "Input" )
+	EInputDeviceType GetPlayerInputDeviceType() const;
 	
 	void ClipboardCopy();
     void ClipboardPaste();
@@ -929,7 +964,7 @@ public:
 
 	// switch gamepad mapping context on menu open/close
 	UFUNCTION( BlueprintCallable )
-	void SetMenuActive( bool IsActive, UUserWidget* MenuWidget );
+	void SetMenuActive( bool IsActive );
 
 	UPROPERTY( BlueprintAssignable, Category = "Input" )
 	FFGOnActiveMenuUpdated mOnActiveMenuUpdated;
@@ -966,6 +1001,22 @@ public:
 
 	void Input_ToggleFlashlight( const FInputActionValue& actionValue );
 	
+	// <FL> [MartinC] Actions for showing a button hints bar with options to quickly sample,
+	// copy and paste buildings using gamepad
+	void Input_ShowSampleGamepadHints( const FInputActionValue& actionValue );
+	// </FL>
+
+
+	// <FL> [MartinC] Updates the trace result for quickly sample,
+	// copy and paste buildings using gamepad
+	void Input_UpdateSampleGamepadHitResult( const FInputActionValue& actionValue );
+	// </FL>
+
+	// <FL> [MartinC] Actions for quickly copying and pasting buildings using gamepad
+	void Input_GamepadCopyBuilding( const FInputActionValue& actionValue );
+	void Input_GamepadPasteBuilding( const FInputActionValue& actionValue );
+	// </FL>
+
 	UFUNCTION( BlueprintImplementableEvent, Category = "Player", meta = (DisplayName = "OnToggleFlashlight") )
 	void NotifyOnToggleFlashlight();
 	
@@ -975,6 +1026,8 @@ public:
 	void Input_ToggleGhostFly( const FInputActionValue& actionValue );
 
 	void Input_Teleport( const FInputActionValue& actionValue );
+	
+	void Input_CycleHyperTubeTravelDirection( const FInputActionValue& actionValue );
 	
 	/**
 	 * Binds the input context to the input subsystem owned by this local player
@@ -996,10 +1049,6 @@ public:
 	bool GetIsInGasCloud() const;
 	void SetIsInGasCloud( const bool isInGas );
 
-	/** Called when the ziplining is started or ended by the FGCharacterMovementComponent. */
-	void OnZiplineStarted();
-	void OnZiplineEnded();
-
 	/** Returns true if the player is currently playing intro sequence */
 	UFUNCTION( BlueprintPure, Category = "Intro Sequence" )
 	FORCEINLINE bool IsPlayingIntroSequence() const { return mIntroSequenceStartingPod != nullptr; }
@@ -1019,12 +1068,38 @@ public:
 	/** Updates the movement mode based on whenever the player is currently respawning */
 	void UpdateMovementModeOnRespawn( bool bIsRespawning );
 
-	FORCEINLINE void Internal_SetIntroSequenceStartingPod( AFGStartingPod* newStartingPod ) { mIntroSequenceStartingPod = newStartingPod; } 
+	FORCEINLINE void Internal_SetIntroSequenceStartingPod( AFGStartingPod* newStartingPod ) { mIntroSequenceStartingPod = newStartingPod; }
+
+	/** Returns spring arm SubObject **/
+	UFUNCTION( BlueprintPure, Category = "Camera" )
+	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() const { return mSpringArmComponent; }
+	
+	void SetPhotoModeHeadVisibility( const bool visibility );
+
+	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
+	class AFGPlayerController* GetCachedPhotoModeController() const { return mCachedPhotoModeController; }
+
+	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
+	class UFGPhotoModeComponent* GetCachedPhotoModeComponent() const { return mCachedPhotoModeComponent; }
+
+	/** Can be called on the server and locally to start or end the zipline movement. Has no effect when called on a non-controlling client. */
+	void StartZiplineMovement( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
+	void StopZiplineMovement( const FVector& exitForce );
+
+	void SetStartingPodGamepadControls(bool bEnable);
+
+	/** Returns true if this player is currently ziplining. This is a shortcut to UFGCharacterMovementComponent::IsOnZipline */
+	bool IsOnZipline() const;
+	/** Returns true if the player is currently considered on zipline locally. This is for internal use by movement component - use UFGCharacterMovementComponent::IsOnZipline instead in external code! */
+	FORCEINLINE bool GetPlayerZiplineStatus_DoNotUse() const { return mIsCurrentlyOnZiplineStatus; }
+	/** Returns the current third person mesh Z adjust applied by the movement logic. Used in character movement component to re-apply it when doing movement smoothing */
+	UFUNCTION(BlueprintPure, Category = "Character")
+	FORCEINLINE float GetCurrentThirdPersonMeshZAdjust() const { return mCurrentThirdPersonZAdjust; }
 protected:
-	// APawn interface
+	// Begin APawn interface
 	virtual void SetupPlayerInputComponent( class UInputComponent* inputComponent ) override;
 	virtual void DestroyPlayerInputComponent() override;
-	// End of APawn interface
+	// End APawn interface
 
 	void BindActions( EActionsToBind actionsToBindMask = EActionsToBind::All );
 	void UnbindActions();
@@ -1135,10 +1210,6 @@ protected:
 	UFUNCTION( BlueprintPure, Category = "Camera" )
 	FORCEINLINE class UCameraComponent* GetCameraComponent() const { return mCameraComponent; }
 
-	/** Returns spring arm SubObject **/
-	UFUNCTION( BlueprintPure, Category = "Camera" )
-	FORCEINLINE class USpringArmComponent* GetSpringArmComponent() const { return mSpringArmComponent; }
-
 	/** Set the best usable actor */
 	void SetBestUsableActor( class AActor* newBestUsableActor );
 
@@ -1187,10 +1258,6 @@ protected:
 	UFUNCTION()
 	void StopReceivingRadiation();
 
-	/** Called when we respawn but did not get a death crate, so we can find our last death location. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Death" )
-	void OnSpawnDeathMarker();
-
 	/** Returns accumulated normalized radiation intensity at the the players location **/
 	UFUNCTION( BlueprintPure, Category = "Radiation" )
 	FORCEINLINE float GetRadiationIntensity() const { return mRadiationIntensity; }
@@ -1210,7 +1277,7 @@ protected:
 	virtual void TornOff() override;
 	
 	/** Called when some state changed so we can update name tag location */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Character" )
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "Character" )
 	void UpdatePlayerNameTagLocation();
 
 	/** Called when the player customization data is updated and needs to be applied to the mesh */
@@ -1327,10 +1394,20 @@ public:
 	/** Called just after a new equipment actor has been spawned, before it eventually gets equipped. */
 	FOnEquipmentSpawned mOnEquipmentSpawned;
 
+	/** Called locally when the player exits or enters the zipline movement */
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnZiplineStatusChanged, bool);
+	FOnZiplineStatusChanged mOnZiplineStatusChanged;
+
+	/** Called locally when playing VFX during zipline movement */
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateZiplineEffects, const FVector& /* newAttachmentLocation */);
+	FOnUpdateZiplineEffects mOnZiplineEffectsUpdate;
+
 	/** Cached player start actor that was used to restart this player. If player pawn was loaded from the save game, this will be null */
 	UPROPERTY()
 	AActor* mPlayerStartActor;
 
+	bool mHasEnteredPhotoMode = false;
+	
 	/** The best usable actor nearby. */
 	UFUNCTION( BlueprintPure, Category = "Use" )
 	FORCEINLINE	class AActor* GetBestUsableActor() const { return mBestUsableActor; }
@@ -1374,6 +1451,15 @@ public:
 	
 	/** Registers dependencies between this pawn and replication of it's owned equipments and foliage pickup */
 	void RegisterPersistentEquipmentReplicationDependencies();
+
+	/** Returns the fly speed multiplier adjustable in internal builds from the option menu */
+	FORCEINLINE float GetFlySpeedMultiplier() const { return mFlySpeedMultiplier; }
+	/** Returns the dismantle crate placement mode configured in player settings */
+	FORCEINLINE int32 GetDismantleCratePlacementMode() const { return mDismantleCratePlacementMode; }
+	/** Whenever dismantle crate merging is allowed */
+	FORCEINLINE bool GetAllowDismantleCrateMerging() const { return mAllowDismantleCrateMerging; }
+	/** Returns the last position of the player known as "safe" for crate spawning. Safe positions are positions on the ground or up to 50m above the ground */
+	FORCEINLINE FVector GetLastSafePlayerPosition() const { return mLastSafeGroundPositions[ mLastSafeGroundPositionLoopHead ]; }
 private:
 	/**
 	 * Spawn a new equipment.
@@ -1434,11 +1520,21 @@ private:
 	UFUNCTION( Reliable, Server )
 	void Server_PickUpBoomBoxPlayer( class AFGBoomBoxPlayer* boomBox );
 	UFUNCTION( Reliable, Server )
-	void Server_UpdateFlySpeedMultiplier( float newFlySpeedMultiplier );
-
+	void Server_UpdateClientSettings( float flySpeedMultiplier, int32 dismantleCratePlacementMode, bool allowDismantleCrateMerging );
+	
+	UFUNCTION( NetMulticast, Reliable )
+	void NetMulticast_HasEnteredPhotoModeReplication( const bool hasEnteredPhotoMode );
+	UFUNCTION( Server, Reliable )
+	void Server_HasEnteredPhotoModeReplication( const bool hasEnteredPhotoMode );
+	
 	UFUNCTION( Client, Reliable )
 	void Client_OnPerceivingCreatureStateChange( AFGCreature* creature, ECreatureState newState );
 	void OnPerceivingCreatureStateChange_Internal( AFGCreature* creature, ECreatureState newState ) const;
+
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_ZiplineEnd( const FVector& exitForce );
 	
 	/** Called when slide status changes so we can change capsule size accordingly */
 	void OnSlideStatusUpdated();
@@ -1503,6 +1599,12 @@ private:
 	void SetThirdPersonMode();
 	/** Applies the first person mode transition to the camera, but does not actually set it to the real first person mode */
 	void SetFirstPersonTransition();
+	/** Updates Z adjust currently applied to the third person mesh. Used by crouching and ziplining */
+	void SetThirdPersonMeshZAdjust( float newThirdPersonMeshZAdjust );
+
+	/** Called locally to start or stop zipline movement */
+	void Local_ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
+	void Local_ZiplineEnd( const FVector& exitForce );
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Camera )
@@ -1519,9 +1621,6 @@ public:
 	UPROPERTY( BlueprintReadWrite )
 	bool mIsCurrentlyTryingToEnterVehicle = false;
 
-	/** Locally cached fly speed multiplier. Fetched from the options menu in cheat builds */
-	float mFlySpeedMultiplier{1.0f};
-
 	// <FL> [KajtaziT] decoupling radial menus from input
 	UPROPERTY( DisplayName = "RadialMenuDirection" )
 	FVector2f mRadialMenuDirection;
@@ -1534,8 +1633,16 @@ public:
 	FORCEINLINE FVector2f GetRadialMenuDirection() const { return mRadialMenuDirection; }
 	// </FL>
 
+	// <FL> [TranN] If an other player is on the same platform, display the platform name. Otherwise, display Epic name
+	void SetPlayerNames( const TArray<FServiceNameAndPlayerName>& playerNames );
+	UFUNCTION()
+	void OnRep_PlayerNames();
+	FString GetOnlinePlayerName( const AFGPlayerState* playerState );
+	// </FL>
+
 	/** Returns the cached player customization data. Note that unlike retrieving player state, this handles offline players correctly by remembering their customizations */
 	FORCEINLINE FPlayerCustomizationData GetCachedPlayerCustomizationData() const { return mCachedPlayerCustomizationData; }
+	FORCEINLINE FString GetCachedPlayerName() const { return mCachedPlayerName; }
 	
 	FORCEINLINE float GetFloorIsLavaAchievementTimerDuration() const { return mFloorIsLavaAchievementTimerDuration; }
 protected:
@@ -1605,12 +1712,21 @@ protected:
 	UPROPERTY( BlueprintReadOnly )
 	FUseState mOldCachedUseState;
 	
+	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category="Slide" )
+	float mSlidingCapsuleHeight = 40;
+
+	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category="Slide" )
+	float mSlidingCapsuleRadius = 40;
+
+	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category="Slide" )
+	float mCapsuleDefaultRadius = 40;
+	
 	/** Anim instance class to use in third person */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Character" )
 	TSubclassOf< class UAnimInstance > mAnimInstanceClass;
 
 	/** Anim instance class to use in first person */
-	UPROPERTY( EditDefaultsOnly, Category = "Character" )
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Character" )
 	TSubclassOf< class UAnimInstance > mAnimInstanceClass1P;
 
 	/** time (in seconds) it takes to revive a fellow player */
@@ -1672,6 +1788,18 @@ protected:
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly)
 	UMaterialInterface* mCompassMaterialInstance;
+
+	// <FL> [MartinC] Reference to the Widget Class with the gamepad sample button hints bar
+	UPROPERTY( EditDefaultsOnly, Category = "Gamepad|UI" )
+	TSoftClassPtr< UUserWidget > mGamepadSampleWidgetClass;
+	// </FL>
+
+	// <FL> [MartinC] Called when the gamepad quick sampling hit actor changes
+	UPROPERTY( BlueprintAssignable, Category = "Gamepad|UI" )
+	FOnGamepadSampleChanged mOnGamepadSampleChanged;
+
+	UPROPERTY( BlueprintAssignable, Category = "Input" )
+	FOnIntroSequencePodContextChanged mOnIntroSequencePodContextChanged;
 
 	/** Checks if this player has any holstered equipment */
 	UFUNCTION( BlueprintCallable )
@@ -1744,7 +1872,7 @@ private:
 	void RadiationIntensityUpdated();
 
 	bool IsPlayerInOrAboveWater( const FVector& hitPosition ) const;
-
+	
 	void ActivateCameraComponents();
 	void DeactivateCameraComponents();
 	
@@ -1815,6 +1943,17 @@ protected:
 	UPROPERTY( BlueprintReadWrite, EditAnywhere, Category = "TakeDamageFX" )
 	float mMaxDamageIndicator = 2.0f;
 	
+	// <FL> [MartinC] Variables to achieve a more accurate aiming experience when using the build gun with a gamepad
+
+	/** Scalar modifier for the aim pitch angle when aiming the build gun with a gamepad */
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Gamepad Aim Assist", meta = ( ClampMin = 0.0001f, ClampMax = 1.0f ) )
+	float mGamepadAimPitchScalar = 0.2f;
+
+	/** Scalar modifier for the aim yaw angle when aiming the build gun with a gamepad */
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Gamepad Aim Assist", meta = ( ClampMin = 0.0001f, ClampMax = 1.0f ) )
+	float mGamepadAimYawScalar = 0.5f;
+
+	// </FL>
 private:
 	UFUNCTION()
 	void OnActiveEquipmentChangedInSlot( EEquipmentSlot slot );
@@ -1835,10 +1974,6 @@ private:
 	
 	/** Tracks whether or not an interact widget is open. */
 	bool mIsInteractWidgetOpen;
-	
-	/** The cinematic camera used in photo mode */
-	UPROPERTY( Transient )
-	class UFGCineCameraComponent* mCinematicCameraComponent;
 
 	/** Spring arm for camera */
 	UPROPERTY( EditAnywhere )
@@ -2030,6 +2165,11 @@ private:
 
 	/** Keep track of what status was for mReplicatedIsSliding */
 	bool mLastSlideStatus;
+	
+	/** Whenever the player is currently considered to be on zipline. Used to track the character-level adjustments made when ziplining. This is local */
+	bool mIsCurrentlyOnZiplineStatus{false};
+	/** Current Z adjustment on the third person mesh applied based on the movement. Tracked to make sure the network smoothing does not stomp that value */
+	float mCurrentThirdPersonZAdjust{0.0f};
 
 	/** The noise to make when sliding . */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Movement|Slide" )
@@ -2052,8 +2192,14 @@ private:
 	/** New offset that we want to have */
 	float mCurrentCameraPipeOffset = 0;
 	
+	/** Locally cached fly speed multiplier. Fetched from the options menu in cheat builds */
+	float mFlySpeedMultiplier{1.0f};
 	/** Representation of user setting */
-	float mCameraMoveFeedback = 0;
+	float mCameraMoveFeedback{0.0f};
+	/** Spawn mode for the dismantle refunds crates */
+	int32 mDismantleCratePlacementMode{0};
+	/** Whenever to allow merging dismantle crates */
+	bool mAllowDismantleCrateMerging{false};
 	
 	/** How fast the blend is for crouch and slide */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Movement|Crouch" )
@@ -2102,6 +2248,18 @@ private:
 	UPROPERTY( SaveGame, Replicated ) 
 	float mUploadTimer;
 	
+	// <FL> [MartinC] Reference to the widget with the gamepad sample button hints bar
+	UPROPERTY()
+	UFGInteractWidget* mGamepadSampleWidget;
+	// </FL>
+
+	// <FL> [MartinC] Result of the latest trace for the gamepad quick sampling
+	UPROPERTY()
+	FHitResult mGamepadSampleHitResult;
+	// </FL>
+
+
+	
 	// <FL> [PfaffN] Why are these variables public? Why nobody reviewed this code?
 public:
 	/** Whenever we should skip the next camera offset update */
@@ -2110,7 +2268,8 @@ public:
 	uint8 mIsPartiallySubmergedInWater : 1;
 
 	// <FL> [KajtaziT] temporary functions to allow to dynamically toggle bindings to aid design process
-	UUserWidget* mActiveMenuWidget; // to determine if gamepad mapping context should be enbaled
+	// UUserWidget* mActiveMenuWidget; // to determine if gamepad mapping context should be enbaled
+	bool mMenuActive = false;
 	// </FL>
 
 private:
@@ -2136,6 +2295,14 @@ private:
 	/** The player name of the last logged in player that possessed this pawn */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CachedPlayerName )
 	FString mCachedPlayerName;
+
+	/** Player controller that has controlled this pawn previously, before we entered the photo mode decoupled camera */
+	UPROPERTY()
+	AFGPlayerController* mCachedPhotoModeController;
+	
+	/** Cached reference to the photo mode component of this player. Replicated to all clients from the server. */
+	UPROPERTY( Replicated )
+	class UFGPhotoModeComponent* mCachedPhotoModeComponent;
 
 	/** Customization data for the player that has been cached the last time player was possessed by a player state */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CachedPlayerCustomizationData )
@@ -2185,4 +2352,9 @@ private:
 	/** Set to the drop pod associated with the intro sequence if it is currently playing. That means they should be invincible, do not get aggro'd by the creatures, and not get saved into the save game */
 	UPROPERTY( Transient )
 	AFGStartingPod* mIntroSequenceStartingPod;
+
+	// <FL> [TranN] player names for all the services
+	UPROPERTY( ReplicatedUsing = OnRep_PlayerNames )
+	TArray< struct FServiceNameAndPlayerName > mPlayerNames;
+	// </FL>
 };

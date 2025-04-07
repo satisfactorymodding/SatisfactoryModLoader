@@ -7,6 +7,10 @@
 #include "Engine/GameViewportClient.h"
 #include "FGGameViewportClient.generated.h"
 
+
+//<FL> [KonradA] We want to keep track of this event in some hard to reach objects for e.g. Console Privelege refreshes
+DECLARE_MULTICAST_DELEGATE(FOnViewportReceivedFocus)
+//</FL>
 /**
  * 
  */
@@ -15,6 +19,9 @@ class FACTORYGAME_API UFGGameViewportClient : public UGameViewportClient
 {
 	GENERATED_BODY()
 public:
+
+	FOnViewportReceivedFocus OnViewportReceivedFocus;
+
 	// Begin UEngine interface
 	virtual void Tick( float deltaSeconds ) override;
 	// End UEngine interface
@@ -26,6 +33,10 @@ public:
 	virtual void LostFocus( FViewport* Viewport ) override;
 	virtual void ReceivedFocus( FViewport* Viewport ) override;
 	//~ End FViewportClient Interface.
+
+
+	virtual void Activated( FViewport* InViewport, const FWindowActivateEvent& InActivateEvent ) override;
+	virtual void Deactivated( FViewport* InViewport, const FWindowActivateEvent& InActivateEvent ) override;
 
 	/** When full screen command is triggered we handle it hear */
 	bool HandleToggleFullscreenCommand() override;

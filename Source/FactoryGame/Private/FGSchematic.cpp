@@ -61,22 +61,22 @@ FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf<UFGSchematic> inClass) {
 }
 
 #if WITH_EDITOR
-EDataValidationResult UFGSchematic::IsDataValid(TArray< FText >& ValidationErrors) {
+EDataValidationResult UFGSchematic::IsDataValid(FDataValidationContext& validationContext ) const {
 	// MODDING IMPLEMENTATION
-	EDataValidationResult ValidationResult = Super::IsDataValid(ValidationErrors);
+	EDataValidationResult ValidationResult = Super::IsDataValid(validationContext);
 
 	const TArray<UFGUnlock*> Unlocks = UFGSchematic::GetUnlocks(GetClass());
 	for (UFGUnlock* Unlock : Unlocks) {
 		if (const UFGUnlockRecipe* UnlockRecipe = Cast<UFGUnlockRecipe>(Unlock)) {
 			if (UnlockRecipe->GetRecipesToUnlock().Contains(nullptr)) {
-				ValidationErrors.Add(NSLOCTEXT("Schematic", "SchematicValidation_NullRecipe", "Null recipe entry found in schematic. Was the content it previously referenced deleted or moved?"));
+				validationContext.AddError(NSLOCTEXT("Schematic", "SchematicValidation_NullRecipe", "Null recipe entry found in schematic. Was the content it previously referenced deleted or moved?"));
 				ValidationResult = EDataValidationResult::Invalid;
 			}
 		}
 	}
 
 	if (!mSchematicIcon.IsSet() || !IsValid(mSchematicIcon.GetResourceObject())) {
-		ValidationErrors.Add(NSLOCTEXT("Schematic", "SchematicValidation_InvalidIcon", "Invalid icon set for schematic. This will cause the milestone to not display its unlocks or cost in the HUB."));
+		validationContext.AddError(NSLOCTEXT("Schematic", "SchematicValidation_InvalidIcon", "Invalid icon set for schematic. This will cause the milestone to not display its unlocks or cost in the HUB."));
 		ValidationResult = EDataValidationResult::Invalid;
 	}
 

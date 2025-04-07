@@ -245,6 +245,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
 	class AFGCharacterPlayer* GetInstigatorCharacter() const;
 
+	/** Convenience function to return the input device type of the instigator. This is valid on both client and server. If no valid instigator is found, default return value is keyboard and mouse */
+	UFUNCTION( BlueprintPure, Category = "Equipment" )
+	EInputDeviceType GetInstigatorInputDeviceType() const;
+
 	/** Applies player customization data to this piece of equipment. Automatically called when our customization data updates for equipped equipments. */
 	void ApplyPlayerCustomizationData( const FPlayerCustomizationData& NewCustomizationData );
 	

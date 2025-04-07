@@ -75,7 +75,7 @@ public:
 	//~ Begin IFGFactoryClipboardInterface
 	virtual bool CanUseFactoryClipboard_Implementation() override;
 	virtual UFGFactoryClipboardSettings* CopySettings_Implementation() override;
-	virtual bool PasteSettings_Implementation( UFGFactoryClipboardSettings* settings ) override;
+	virtual bool PasteSettings_Implementation( UFGFactoryClipboardSettings* factoryClipboard, class AFGPlayerController* player ) override;
 	//~ End IFGFactoryClipboardInterface
 
 	/** Get the current load of this generator in the range [0,1]. */

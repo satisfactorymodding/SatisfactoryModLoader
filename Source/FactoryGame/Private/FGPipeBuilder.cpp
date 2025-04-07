@@ -9,6 +9,7 @@
 AFGPipeBuilder::AFGPipeBuilder() : Super() {
 	this->mMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingMovementComponent"));
 	this->mPipeSupportLocation = CreateDefaultSubobject<USceneComponent>(TEXT("PipeSupportLocation"));
+	this->mPipeSupportLocation->SetMobility(EComponentMobility::Stationary);
 	this->mSplineHologram = nullptr;
 	this->mSupportHologram = nullptr;
 	this->mCurrentSplineSupportRecipeClass = nullptr;

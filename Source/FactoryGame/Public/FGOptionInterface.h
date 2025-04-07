@@ -147,6 +147,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	virtual void UnsubscribeToAllDynamicOptionUpdate( UObject* boundObject ) = 0;
 
+	/** Tries to clear the subscriptions from the input cvar option.*/ 
+	UFUNCTION(BlueprintCallable, Category = "Option")
+	virtual bool ClearDynamicOptionSubscriptions(const FString& cvar) = 0;
+
 	/** Returns all setting widgets for all settings this interface owns */
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	virtual TArray<FUserSettingCategoryMapping> GetCategorizedSettingWidgets( UObject* worldContext, UUserWidget* owningWidget ) = 0;

@@ -11,6 +11,7 @@ AFGConveyorAttachmentHologram::AFGConveyorAttachmentHologram() : Super() {
 	this->mSnappedConnection = nullptr;
 	this->mSnappingConnectionIndex = -1;
 	this->mSnappedConveyorOffset = 0.0;
+	this->mCreateClearanceSnapMeshVisualization = false;
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
 void AFGConveyorAttachmentHologram::BeginPlay(){ Super::BeginPlay(); }
@@ -21,16 +22,18 @@ void AFGConveyorAttachmentHologram::GetLifetimeReplicatedProps(TArray< FLifetime
 	DOREPLIFETIME(AFGConveyorAttachmentHologram, mSnappingConnectionIndex);
 	DOREPLIFETIME(AFGConveyorAttachmentHologram, mSnappedConveyorOffset);
 }
-void AFGConveyorAttachmentHologram::PreHologramPlacement(const FHitResult& hitResult){ }
+void AFGConveyorAttachmentHologram::PreHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
 void AFGConveyorAttachmentHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGConveyorAttachmentHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 bool AFGConveyorAttachmentHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 AActor* AFGConveyorAttachmentHologram::GetUpgradedActor() const{ return nullptr; }
 bool AFGConveyorAttachmentHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 float AFGConveyorAttachmentHologram::GetHologramHoverHeight() const{ return float(); }
-void AFGConveyorAttachmentHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+void AFGConveyorAttachmentHologram::GetIgnoredClearanceActors(TSet< AActor* >& ignoredActors) const{ }
 bool AFGConveyorAttachmentHologram::CanNudgeHologram() const{ return bool(); }
+TOptional<TSubclassOf<UFGRecipe>> AFGConveyorAttachmentHologram::ProcessHologramOverride(const FHitResult& hitResult) const{ return Super::ProcessHologramOverride(hitResult); }
 bool AFGConveyorAttachmentHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
+void AFGConveyorAttachmentHologram::CheckValidFloor(){ Super::CheckValidFloor(); }
 int32 AFGConveyorAttachmentHologram::GetRotationStep() const{ return int32(); }
 void AFGConveyorAttachmentHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGConveyorAttachmentHologram::CheckValidPlacement(){ }

@@ -7,18 +7,30 @@ DEFINE_LOG_CATEGORY(LogUI);
 #if WITH_EDITOR
 void UFGUserWidget::ValidateCompiledWidgetTree(const UWidgetTree& BlueprintWidgetTree,  IWidgetCompilerLog& CompileLog) const{ }
 #endif 
+void UFGBaseWidget::NativeConstruct(){ Super::NativeConstruct(); }
+void UFGBaseWidget::NativeDestruct(){ Super::NativeDestruct(); }
 void UFGUserWidget::NativeConstruct(){ Super::NativeConstruct(); }
+void UFGUserWidget::NativeDestruct(){ Super::NativeDestruct(); }
 FReply UFGUserWidget::NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent){ return FReply::Unhandled(); }
 FReply UFGUserWidget::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent){ return FReply::Unhandled(); }
 FReply UFGUserWidget::NativeOnKeyUp(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent){ return FReply::Unhandled(); }
 void UFGUserWidget::NativeOnFocusChanging(const FWeakWidgetPath& PreviousFocusPath, const FWidgetPath& NewWidgetPath, const FFocusEvent& InFocusEvent){ }
 void UFGUserWidget::HandleFocusChange(const FWeakWidgetPath& OldFocusPath, const FWidgetPath& NewFocusPath, const FFocusEvent& InFocusEvent){ }
-void UFGUserWidget::GetKeyHints_Implementation(FName hintTag, TArray<FFGKeyHint>& out_keyHints){ }
+void UFGUserWidget::GetKeyHints_Implementation(TArray<FFGKeyHint>& out_keyHints){ }
 UWidgetTree* UFGUserWidget::GetWidgetTree(UWidget* Widget){ return nullptr; }
-float UFGUserWidget::GetLongPressSeconds(){ return float(); }
+float UFGUserWidget::GetLongPressSeconds(const EFGKeyHintVariant& KeyVariant){ return 0; }
 UFGUserWidget* UFGUserWidget::FromSlateWidget(SWidget& SlateWidget){ return nullptr; }
 bool UFGUserWidget::PreprocessKeyDownEvent(const FKeyEvent& InKeyEvent){ return bool(); }
 bool UFGUserWidget::PreprocessKeyUpEvent(UWorld* World, const FKeyEvent& InKeyEvent){ return bool(); }
+void UFGUserWidget::DisplayDebugKeyHints(UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){  }
+void UFGUserWidget::DisplayDebugKeybindings(UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){  }
+void UFGUserWidget::OnFocusHighlightActivated_Implementation(const FFGFocusHighlight& highlight){  }
+void UFGUserWidget::OnFocusHighlightDeactivated_Implementation(const FFGFocusHighlight& highlight){  }
+bool UFGUserWidget::IsFocusWidgetForKeybindFound(const FFGKeybinding& Keybinding){ return false; }
+void UFGUserWidget::OverwriteKeybindings(TArray<FFGKeybinding> newkeyHints){  }
+FKey UFGUserWidget::FindKeyByBindingTag(FName HintTag){ return FKey(); }
+bool UFGUserWidget::UpdateKeybindingByTag(FName HintTag, FKey NewKey){ return false; }
 FReply UFGUserWidget::CallDelegateForKeyEventOfType(const FKeyEvent& InKeyEvent, EFGKeyHintDelegateType DelegateType){ return FReply::Unhandled(); }
 FReply UFGUserWidget::CallKeybindingDelegate(const FFGKeybinding& Keybinding, EFGKeyHintDelegateType DelegateType){ return FReply::Unhandled(); }
-void UFGUserWidget::BeginLongPress(const FFGKeybinding& Keybinding){ }
+void UFGUserWidget::BeginLongPress(const FFGKeybinding& Keybinding){ }\
+void UFGUserWidget::AddParentKeybindings(){  }

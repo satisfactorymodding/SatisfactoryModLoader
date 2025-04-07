@@ -2,3 +2,4 @@
 
 #include "Input/FGInputMappingContext.h"
 
+FKey UFGInputMappingContext::FindKeyForInputAction(const FName& actionName){ return FKey(); }

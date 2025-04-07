@@ -37,6 +37,7 @@ AFGBuildEffectActor::AFGBuildEffectActor() : Super() {
 	this->mBounds = FBox(FVector::ZeroVector, FVector::ZeroVector);
 	this->mActorBounds = FBox(FVector::ZeroVector, FVector::ZeroVector);
 	this->mSlicePlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Slice plane"));
+	this->mSlicePlane->SetMobility(EComponentMobility::Movable);
 	this->mIsBlueprint = false;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -46,15 +47,17 @@ AFGBuildEffectActor::AFGBuildEffectActor() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	this->RootComponent->SetMobility(EComponentMobility::Static);
 	this->mSlicePlane->SetupAttachment(RootComponent);
 }
 void AFGBuildEffectActor::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
 void AFGBuildEffectActor::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildEffectActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildEffectActor::SetDismantle(bool State){ }
-void AFGBuildEffectActor::AddAbstractDataEntry(TSubclassOf< AFGBuildable > buildableClass, const FRuntimeBuildableInstanceData& runtimeData, UAbstractInstanceDataObject* InstanceData, int32 Index){ }
+void AFGBuildEffectActor::AddAbstractDataEntry(TSubclassOf< AFGBuildable > buildableClass, const FRuntimeBuildableInstanceData& runtimeData, int32 Index){ }
 void AFGBuildEffectActor::RemoveAbstractDataEntry(TSubclassOf< AFGBuildable > buildableClass, int32 index){ }
 void AFGBuildEffectActor::SetRecipe(TSubclassOf<UFGRecipe> inRecipe, AFGBuildable* buildable){ }
+void AFGBuildEffectActor::SetRecipeFromLightweight(TSubclassOf<UFGRecipe> inRecipe, TSubclassOf<AFGBuildable> buildableClass, const struct FFGDynamicStruct& lightweightTypeSpecificData){ }
 FBuildEffectEnded& AFGBuildEffectActor::GetBind(UClass* actorClass){ return *(new FBuildEffectEnded); }
 void AFGBuildEffectActor::Start(){ }
 void AFGBuildEffectActor::Stop(){ }
@@ -69,7 +72,6 @@ void AFGBuildEffectActor::OnCostActorReachedTarget(){ }
 void AFGBuildEffectActor::CleanupRemovedBuildables(){ }
 void AFGBuildEffectActor::UpdateSplineBuildables(float Dt){ }
 void AFGBuildEffectActor::UpdateGenericBuildables(float Dt){ }
-void AFGBuildEffectActor::UpdateWires(){ }
 void AFGBuildEffectActor::CalculateBuildEffectBounds(){ }
-TArray<USplineComponent*> AFGBuildEffectActor::GetBeltSourceSplinesOrdered(const TArray<class AFGBuildableConveyorBelt*>& inBelts, TArray<AActor*>& orderedActors) const{ return TArray<USplineComponent*>(); }
-TArray<USplineComponent*> AFGBuildEffectActor::GetPipeSourceSplineOrdered(const TArray<class AFGBuildablePipeBase*>& inPipes, TArray<AActor*>& orderedActors) const{ return TArray<USplineComponent*>(); }
+TArray<USplineComponent*> AFGBuildEffectActor::GetBeltSourceSplinesOrdered(const TArray<class AFGBuildableConveyorBelt*>& inBelts, TArray<AActor*>& orderedActors){ return TArray<USplineComponent*>(); }
+TArray<USplineComponent*> AFGBuildEffectActor::GetPipeSourceSplineOrdered(const TArray<class AFGBuildablePipeBase*>& inPipes, TArray<AActor*>& orderedActors){ return TArray<USplineComponent*>(); }

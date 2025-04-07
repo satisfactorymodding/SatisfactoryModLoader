@@ -39,8 +39,6 @@ public:
 	virtual bool ShouldSkipOnboarding(bool bGameModeSkipOnboarding) const override;
 	// End UFGDedicatedServerGameModeComponent interface
 
-	FORCEINLINE bool IsAllowedToReclaimSocket() const { return mAllowedToReclaimSocket; }
-
 	/** Amount of time to delay the auto-pause for to allow the level streaming and factory logic to complete initialization */
 	float ServerAutoPauseStartupTimeDelay;
 protected:
@@ -49,7 +47,7 @@ protected:
 	void OnAdvancedGameSettingChanged( FString OptionName, FVariant OptionValue );
 
 	UFUNCTION()
-	void OnCurrentGamePhaseUpdated( UFGGamePhase* NewCurrentGamePhase );
+	void OnCurrentGamePhaseUpdated( UFGGamePhase* NewCurrentGamePhase, bool bSuppressNarrativeMessages );
 	UFUNCTION()
 	void OnActiveSchematicChanged( TSubclassOf<UFGSchematic> NewActiveSchematic );
 	
@@ -59,8 +57,6 @@ protected:
 	uint8 mAutoPause : 1;
 	/** True if we are allowed to auto pause. That means no level streaming is pending and a fixed amount of time has passed since the server has started */
 	uint8 mAllowedToAutoPause : 1;
-	/** True if we are allowed to re-claim the server socket */
-	uint8 mAllowedToReclaimSocket: 1;
 	/** Amount of time passed since the server started */
 	float TimeSinceServerStarted;
 };

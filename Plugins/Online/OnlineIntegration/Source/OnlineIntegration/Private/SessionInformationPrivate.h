@@ -21,6 +21,7 @@ public:
 	
 	void SetSessionHost(UOnlineUserInfo* InUserInfo);
 	void SetSessionDefinition(USessionDefinition* InSessionDefinition);
+	void SetSessionProfile(const FName& InProfile); // <FL> [TranN] Required for the initial UpdatePresenceForSessionMembers()
 
 	virtual void RefreshCachedData(FDateTime UpdateTimestampUtc) override;
 	void InitializeSessionData(TSharedRef<const UE::Online::ISession> Session, UOnlineSessionBackendLink* Backend);

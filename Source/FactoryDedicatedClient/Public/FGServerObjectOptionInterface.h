@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -22,7 +22,8 @@ class FACTORYDEDICATEDCLIENT_API UFGServerObjectOptionAdapter : public UObject, 
 	GENERATED_BODY()
 public:
 	// Begin IFGAdvancedGameSettingsInterface
-	virtual void GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const override;
+	virtual void GetAllUserSettings( TArray< UFGUserSettingApplyType* >& OutUserSettings ) const override;
+	virtual void GetAllUserSettingsMap( TMap< FString, UFGUserSettingApplyType* >& OutUserSettings ) const override; //<FL>[KonradA] Add a direct map getter to avoid conversions from and to a map with loss of key data in certain situations
 	virtual UFGUserSettingApplyType* FindUserSetting(const FString& SettingId) const override;
 	virtual void ApplyChanges() override;
 	virtual bool HasAnyUnsavedOptionValueChanges() const override;

@@ -5,7 +5,10 @@
 #if WITH_EDITOR
 void UFGSessionGameSubsystem::OnPostBeginPIE(bool boolParam){ }
 #endif 
-UFGSessionGameSubsystem::UFGSessionGameSubsystem() {}
+UFGSessionGameSubsystem::UFGSessionGameSubsystem() : Super() {
+	this->mSessionInfoModel = nullptr;
+	this->mFirstLocalUser = nullptr;
+}
 void UFGSessionGameSubsystem::Initialize(FSubsystemCollectionBase& Collection){ }
 void UFGSessionGameSubsystem::FirstLocalUserInfoCreated(ULocalUserInfo* userInfo){ }
 void UFGSessionGameSubsystem::GameSessionChanged(UObject*, UE::FieldNotification::FFieldId){ }

@@ -73,6 +73,7 @@ void AFGEquipment::UpdateMaterialsFromCameraMode(){ }
 void AFGEquipment::DisableEquipment(){ }
 void AFGEquipment::SetupTrinketMeshes_Implementation(bool bIsLocalInstigator, USkeletalMesh* TrinketChainMesh, FName TrinketChainSocketName, UStaticMesh* TrinketMesh, FName TrinketSocketName){ }
 AFGCharacterPlayer* AFGEquipment::GetInstigatorCharacter() const{ return nullptr; }
+EInputDeviceType AFGEquipment::GetInstigatorInputDeviceType() const{ return EInputDeviceType(); }
 void AFGEquipment::ApplyPlayerCustomizationData(const FPlayerCustomizationData& NewCustomizationData){ }
 bool AFGEquipment::IsLocalInstigator() const{ return bool(); }
 void AFGEquipment::LoadFromItemState_Implementation(const FFGDynamicStruct& itemState){ }

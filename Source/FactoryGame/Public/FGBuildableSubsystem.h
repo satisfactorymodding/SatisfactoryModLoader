@@ -14,6 +14,7 @@
 class AFGProjectAssembly;
 class UFGProductionIndicatorInstanceManager;
 class AFGBuildEffectActor;
+class AFGBuildableSubsystem;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedGlobal, AFGBuildable*, buildable );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnBuildableLightColorSlotsUpdated );
@@ -177,6 +178,26 @@ struct FBuildableComponentsOctree : public TOctree2<AFGBuildable*, FBuildableOct
 	TMap<const AFGBuildable*, FOctreeElementId2> mElementIdMap;
 };
 
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
+class UFGFactoryTickHandlerInterface : public UInterface
+{
+	GENERATED_BODY()
+};
+
+/**
+ * Implement this interface and register it using RegisterFactoryTickHandler on the buildable subsystem to receive sequential factory tick callback.
+ * This can be used to create custom Factory Tick Groups for buildables that need to access the inventory contents or state of other buildables,
+ * which is normally unsafe to do from FactoryTick because other buildables can be modified at the same time from other threads.
+ */
+class FACTORYGAME_API IFGFactoryTickHandlerInterface
+{
+	GENERATED_BODY()
+public:
+	/** Called before FactoryTick is dispatched on the build subsystem. Handlers are executed sequentially on the game thread, and as such, it is safe to read and write data for any buildable during this function */
+	virtual void PreFactoryTick(AFGBuildableSubsystem* subsystem, float deltaTime) {}
+	/** Called after FactoryTick is dispatched on the build subsystem. Handlers are executed sequentially on the game thread */
+	virtual void PostFactoryTick(AFGBuildableSubsystem* subsystem, float deltaTime) {}
+};
 
 /**
  * Subsystem responsible for spawning and maintaining buildables.
@@ -225,6 +246,11 @@ public:
 
 	/** Adds a buildable to the buildable array. */
 	void AddBuildable( class AFGBuildable* buildable );
+
+	/** Registers a factory tick handler for the buildable subsystem */
+	void AddFactoryTickHandler( IFGFactoryTickHandlerInterface* tickHandler );
+	/** Unregisters a factory tick handler for the buildable subsystem */
+	void RemoveFactoryTickHandler( IFGFactoryTickHandlerInterface* tickHandler );
 
 	/**
 	 * Notify the subsystem a buildable was spawned inside the designer for any special logic that needs to run even if
@@ -543,6 +569,7 @@ private:
 	TArray< class AFGBuildable* > mBuildables;
 
 	/** Count of all buildables. */
+	UPROPERTY()
 	TMap< TSubclassOf< AFGBuildable >, int32 > mBuildableCount;
 
 	/************************************************************************/
@@ -642,6 +669,9 @@ private:
 	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Customization" )
 	TArray< FFactoryCustomizationColorSlot > mColorSlots_Data;
 
+	UPROPERTY()
+	TArray< uint8 > mDirtyColorSlots;
+
 	/** List of actors which are having customizations (color, pattern etc. ) previewed on them so we can clear them later*/
 	UPROPERTY()
 	TArray< AActor* > mPreviewingCustomizationsList;
@@ -668,9 +698,11 @@ private:
 	int32 mVehiclePropagationProgressIndex = 0;
 	float mColorPropagationTimer = 0;
 	/** Array with all the buildings that should replay their effect */
+	UPROPERTY()
 	TArray< AFGBuildable* > mColorPropagationArray;
 
 	/** Array of all vehicles to update while updating color slots */
+	UPROPERTY()
 	TArray< class AFGVehicle* > mVehicleColorPropagationArray;
 
 	/** Maximum number of buildables that we consider their optimization level during the same frame */
@@ -737,6 +769,10 @@ private:
 	UPROPERTY( VisibleInstanceOnly, Transient, Category = "Timelapse" )
 	TArray<FFGBuildableTimelapseBucket> mActiveTimelapseBuckets;
 #endif
+
+	/** Currently registered factory tick handlers */
+	UPROPERTY(Transient)
+	TArray<TScriptInterface<IFGFactoryTickHandlerInterface>> mFactoryTickHandlers;
 };
 
 template< typename T >

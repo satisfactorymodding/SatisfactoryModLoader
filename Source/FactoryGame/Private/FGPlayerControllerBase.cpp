@@ -18,6 +18,12 @@ void AFGPlayerControllerBase::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 void AFGPlayerControllerBase::BeginPlay(){ Super::BeginPlay(); }
 void AFGPlayerControllerBase::ClientRestart_Implementation(APawn* newPawn){ }
 void AFGPlayerControllerBase::AddCheats(bool force){ }
+void AFGPlayerControllerBase::OnPossess(APawn* aPawn){ Super::OnPossess(aPawn); }
+void AFGPlayerControllerBase::OnUnPossess(){ Super::OnUnPossess(); }
+void AFGPlayerControllerBase::SetupWwise(){  }
+void AFGPlayerControllerBase::RemoveWwise(){  }
+void AFGPlayerControllerBase::ClientPlayForceFeedback(class UForceFeedbackEffect* ForceFeedbackEffect, FForceFeedbackParameters Params){ Super::ClientPlayForceFeedback(ForceFeedbackEffect, Params); }
+void AFGPlayerControllerBase::Client_SetupWwise_Implementation(){  }
 void AFGPlayerControllerBase::SetIsUsingGamepad(bool newIsUsingGamepad){ }
 void AFGPlayerControllerBase::OnControlledCharacterDied( AFGCharacterBase* character){ }
 void AFGPlayerControllerBase::OnControlledCharacterRevived( AFGCharacterBase* character){ }
@@ -43,10 +49,19 @@ void AFGPlayerControllerBase::Admin(const FString& command){ }
 void AFGPlayerControllerBase::Server_Admin_Implementation(const FString& command){ }
 TScriptInterface<class IFGSaveManagerInterface> AFGPlayerControllerBase::GetMostRelevantSaveManager(){ return TScriptInterface<class IFGSaveManagerInterface>(); }
 TScriptInterface<class IFGSaveManagerInterface> AFGPlayerControllerBase::GetLocalSaveManager(){ return TScriptInterface<class IFGSaveManagerInterface>(); }
+EInputDeviceType AFGPlayerControllerBase::GetPlayerInputDeviceType() const{ return EInputDeviceType(); }
 void AFGPlayerControllerBase::DiscardInput(){ }
 void AFGPlayerControllerBase::SetPlayer(UPlayer* InPlayer){ }
 void AFGPlayerControllerBase::OnNetCleanup( UNetConnection* Connection){ }
+void AFGPlayerControllerBase::ActiveInputDeviceChanged(EInputDeviceType deviceType){  }
 void AFGPlayerControllerBase::EnablePlayerInput(bool enable){ }
 void AFGPlayerControllerBase::SetCurrentServer( UFGServerObject* CurrentServer){ }
 void AFGPlayerControllerBase::OnRep_ReplicatedCheatManager(){ }
 void AFGPlayerControllerBase::InitDefaultCheats(){ }
+int32 AFGPlayerControllerBase::GetMotionDeviceIndex(bool& SonyController){ return int32(); }
+int32 AFGPlayerControllerBase::GetPS5PadDeviceIndex(){ return int32(); }
+bool AFGPlayerControllerBase::GetMMDeviceFromPadHandle(int in_padHandle, IMMDevice*& io_pMmDevice){ return bool(); }
+void AFGPlayerControllerBase::InitializePadSpeakerWindows(){  }
+void AFGPlayerControllerBase::InitializePadSpeakerNative(){  }
+void AFGPlayerControllerBase::InitializePadType(const bool IsSonyController){  }
+void AFGPlayerControllerBase::OnGamepadRumbleStrengthRequiresChange(bool enabled, float strength){  }

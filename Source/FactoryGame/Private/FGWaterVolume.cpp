@@ -30,8 +30,6 @@ void AFGWaterVolume::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::E
 bool AFGWaterVolume::IsOverlapInVolume(const  USceneComponent& testComponent) const{ return bool(); }
 void AFGWaterVolume::GainedSignificance_Implementation(){ }
 void AFGWaterVolume::LostSignificance_Implementation(){ }
-void AFGWaterVolume::GainedSignificance_Native(){ }
-void AFGWaterVolume::LostSignificance_Native(){ }
 float AFGWaterVolume::GetSignificanceRange(){ return float(); }
 void AFGWaterVolume::SetCameraIsInside(bool cameraInside, FVector cameraLocation,  AFGPlayerController* PC){ }
 const UFGWaterAudio* AFGWaterVolume::GetAudioSettings() const{ return nullptr; }

@@ -27,6 +27,9 @@ public:
 	void Start(FOnOnlineAsyncOperationCompleted_Native::FDelegate&& CompleteDelegate);
 
 	bool HasErrors() const override;
+	//<FL>[KonradA] add getters for errors
+	virtual TArray<UE::Online::FOnlineError> GetErrors() override { return Errors; }
+
 
 	FPlatformUserId GetPlatformUserId() const
 	{

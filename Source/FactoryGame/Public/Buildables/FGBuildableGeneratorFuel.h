@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGExternalFluidActorInterface.h"
 #include "Buildables/FGBuildableGenerator.h"
 #include "FGBuildableGeneratorFuel.generated.h"
 

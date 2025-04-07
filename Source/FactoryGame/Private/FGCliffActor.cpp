@@ -26,6 +26,7 @@ void AFGCliffActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChange
 #endif 
 AFGCliffActor::AFGCliffActor() : Super() {
 	this->mMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CliffMesh"));
+	this->mMeshComponent->SetMobility(EComponentMobility::Static);
 	this->mStaticMesh = nullptr;
 	this->mSignificanceRangeMultiplier = 1.25;
 	this->RootComponent = mMeshComponent;

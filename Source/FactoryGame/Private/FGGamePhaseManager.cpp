@@ -32,10 +32,10 @@ bool AFGGamePhaseManager::ShouldSave_Implementation() const{ return bool(); }
 bool AFGGamePhaseManager::SetGamePhaseFromGamePhaseIndex(int32 inGamePhaseIndex){ return bool(); }
 int32 AFGGamePhaseManager::GetGamePhaseIndexFromGamePhase( UFGGamePhase* inPhase) const{ return int32(); }
 void AFGGamePhaseManager::GoToNextGamePhase(){ }
-bool AFGGamePhaseManager::UpdateCurrentGamePhase( UFGGamePhase* inPhase){ return bool(); }
+bool AFGGamePhaseManager::UpdateCurrentGamePhase( UFGGamePhase* inPhase, bool bSuppressNarrativeMessages){ return bool(); }
 bool AFGGamePhaseManager::IsLastGamePhaseReached() const{ return bool(); }
 bool AFGGamePhaseManager::ReadyToGoToNextGamePhase() const{ return bool(); }
-void AFGGamePhaseManager::SetGamePhaseForTier(int32 tier){ }
+void AFGGamePhaseManager::SetGamePhaseForTier(int32 tier, bool bSuppressNarrativeMessages){ }
 void AFGGamePhaseManager::UnlockAllGamePhases(){ }
 EGamePhase AFGGamePhaseManager::GetGamePhase() const{ return EGamePhase(); }
 UFGGamePhase* AFGGamePhaseManager::GetGamePhaseFromGamePhaseEnum(EGamePhase gamePhase) const{ return nullptr; }
@@ -59,5 +59,7 @@ void AFGGamePhaseManager::OnRep_IsGameCompleted(){ }
 void AFGGamePhaseManager::OnRep_ProjectAssemblyLaunchSequenceValues(){ }
 void AFGGamePhaseManager::Debug_DumpStateToLog(){ }
 void AFGGamePhaseManager::ResetGamePhase(){ }
-void AFGGamePhaseManager::SetGameIsCompleted(){ }
-void AFGGamePhaseManager::SubmitGamePhaseTelemetry(UFGGamePhase* currentGamePhase){ }
+void AFGGamePhaseManager::SetGameIsCompleted(bool bSuppressNarrativeMessages){ }
+void AFGGamePhaseManager::SubmitGamePhaseTelemetry(UFGGamePhase* currentGamePhase, bool bSuppressNarrativeMessages){ }
+void AFGGamePhaseManager::OnActivityStarted(const FName& activity){ }
+void AFGGamePhaseManager::OnActivityEnded(const FName& activity){ }

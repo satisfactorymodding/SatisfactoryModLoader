@@ -1,4 +1,4 @@
-﻿// Copyright 2016-2021 Coffee Stain Studios. All Rights Reserved.
+// Copyright 2016-2021 Coffee Stain Studios. All Rights Reserved.
 
 /**
  * Utility header used for declaratively declaring all of a Biome's attributes. It is a way of implementing pseudo static reflection. Define one (or more)

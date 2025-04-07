@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -18,11 +18,14 @@ class UOnlineUserBackendLinkPrivate : public UOnlineUserBackendLink
 	GENERATED_BODY()
 public:
 	void Initialize(UOnlineIntegrationBackend* OnlineBackend);
-	
+
+	void SetLoginStatus(ECommonUserLoginStatus InLoginStatus);
 	void SetNickname(const FString& InNickname);
 	void SetAvatar(const FPlayerAvatar& InAvatar);
 	void SetAccountId(UE::Online::FAccountId InAccountId);
 	void SetOnlineUser(UOnlineUserInfo* InUserInfo);
+
+	void SetDisplayPictureURL(const FString& InPictureURL);
 
 	UOnlineIntegrationBackendPrivate* GetOnlineBackendPrivate() const;
 	UGameplayTagContainerViewModel& GetMutableTagContainer();

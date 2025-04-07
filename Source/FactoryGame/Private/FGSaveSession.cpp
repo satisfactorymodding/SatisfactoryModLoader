@@ -32,6 +32,7 @@ FString UFGSaveSession::SaveNameToFileName(const FString& saveName){ return FStr
 FObjectReferenceDisc UFGSaveSession::FixupObjectReferenceForPartitionedWorld(const FObjectReferenceDisc& Reference, const  AFGWorldSettings& WorldSettings){ return FObjectReferenceDisc(); }
 void UFGSaveSession::Autosave(){ }
 void UFGSaveSession::SetAutosaveInterval(int32 newInterval){ }
+bool UFGSaveSession::ShouldPerformAutoSave(){ return bool(); }
 void UFGSaveSession::SetAutoSaveEnabled(bool enabled){ }
 void UFGSaveSession::DumpUnresolvedDestroyedActors(){ }
 void UFGSaveSession::PurgeUnresolvedDestroyedActors(){ }
@@ -60,7 +61,7 @@ void UFGSaveSession::DeserializePersistentAndRuntimeState(){ }
 void UFGSaveSession::MakeSureAllActorsAreSaved(){ }
 TArray< AActor* > UFGSaveSession::GatherSaveActors(ULevel* level){ return TArray<AActor*>(); }
 void UFGSaveSession::SaveWorldEndOfFrame( UWorld* world, ELevelTick, float){ }
-void UFGSaveSession::SaveWorldImplementation(const FString& gameName){ }
+void UFGSaveSession::SaveWorldImplementation(FString gameName){ }
 void UFGSaveSession::StartBackgroundSave(const FString& fullFilePath,  FBufferArchive64&& memArchive, const FSaveHeader& saveHeader){ }
 void UFGSaveSession::SaveToDiskWithCompressionInBackground(const TWeakObjectPtr<UFGSaveSession>& saveSession, const FString& fullFilePath,  FBufferArchive64& memArchive, FSaveHeader& saveHeader, bool bIsAutoSave, bool bAllowSaveBackups){ }
 void UFGSaveSession::CompleteBackgroundSave(const TWeakObjectPtr<UFGSaveSession>& saveSession, bool bResult, const FText& ErrorMessage){ }

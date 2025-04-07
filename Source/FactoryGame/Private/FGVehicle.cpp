@@ -31,6 +31,7 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mDescription = INVTEXT("");
 	this->mHologramClass = nullptr;
 	this->mMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("VehicleMesh"));
+	this->mMesh->SetMobility(EComponentMobility::Movable);
 	this->mHealthComponent = CreateDefaultSubobject<UFGHealthComponent>(TEXT("HealthComponent"));
 	this->mDOTReceiverComponent = nullptr;
 	this->mDisabledByWaterLocations.Add(FVector::ZeroVector);

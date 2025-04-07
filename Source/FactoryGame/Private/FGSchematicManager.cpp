@@ -5,6 +5,10 @@
 
 #if WITH_EDITORONLY_DATA
 #endif 
+FScopedSchematicUnlockTransaction::FScopedSchematicUnlockTransaction(AFGSchematicManager* schematicManager, AFGCharacterPlayer* accessInstigator, ESchematicUnlockFlags unlockFlags){  }
+FScopedSchematicUnlockTransaction::~FScopedSchematicUnlockTransaction(){  }
+void FScopedSchematicUnlockTransaction::AddSchematic(const TSubclassOf<UFGSchematic>& schematic) const{  }
+void FScopedSchematicUnlockTransaction::AddSchematics(const TArrayView<const TSubclassOf<UFGSchematic>>& schematics) const{  }
 AFGSchematicManager* AFGSchematicManager::Get(UWorld* world){ return nullptr; }
 AFGSchematicManager* AFGSchematicManager::Get(UObject* worldContext){ return nullptr; }
 int32 AFGSchematicManager::GetTechTier(const FAssetData& schematicAsset){ return int32(); }
@@ -26,7 +30,6 @@ AFGSchematicManager::AFGSchematicManager() : Super() {
 }
 void AFGSchematicManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGSchematicManager, mPurchasedSchematics);
 	DOREPLIFETIME(AFGSchematicManager, mPaidOffSchematic);
 	DOREPLIFETIME(AFGSchematicManager, mActiveSchematic);
 	DOREPLIFETIME(AFGSchematicManager, mShipLandTimeStamp);
@@ -52,8 +55,8 @@ void AFGSchematicManager::GetAllSchematicsOfTypeFilteredOnDependency(ESchematicT
 void AFGSchematicManager::GetAllVisibleSchematicsOfType(ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetHubSchematicsForTier(int32 tier, TArray<TSubclassOf<UFGSchematic>>& out_schematics) const{ }
 bool AFGSchematicManager::IsSchematicPurchased(TSubclassOf< UFGSchematic > schematicClass, APlayerController* owningPlayerController) const{ return bool(); }
-void AFGSchematicManager::GiveAccessToSchematic(TSubclassOf< UFGSchematic > schematicClass,  AFGCharacterPlayer* accessInstigator, bool blockTelemetry , bool bBypassAccessChecks){ }
-void AFGSchematicManager::GiveAccessToSchematics(const TArray< TSubclassOf< UFGSchematic > >& schematicClasses,  AFGCharacterPlayer* accessInstigator, bool blockTelemetry , bool bBypassAccessChecks){ }
+void AFGSchematicManager::GiveAccessToSchematic(TSubclassOf<UFGSchematic> schematicClass, AFGCharacterPlayer* accessInstigator, ESchematicUnlockFlags unlockFlags){  }
+void AFGSchematicManager::GiveAccessToSchematics(const TArray<TSubclassOf<UFGSchematic>>& schematicClasses, AFGCharacterPlayer* accessInstigator, ESchematicUnlockFlags unlockFlags){  }
 TArray< FItemAmount > AFGSchematicManager::GetCostFor(TSubclassOf< UFGSchematic > schematic){ return TArray<FItemAmount>(); }
 TArray< FItemAmount > AFGSchematicManager::GetRemainingCostFor(TSubclassOf< UFGSchematic > schematic){ return TArray<FItemAmount>(); }
 TArray< FItemAmount > AFGSchematicManager::GetPaidOffCostFor(TSubclassOf< UFGSchematic > schematic){ return TArray<FItemAmount>(); }
@@ -69,6 +72,7 @@ int32 AFGSchematicManager::GetHighestAvailableTechTier(){ return int32(); }
 int32 AFGSchematicManager::GetDefaultMaxAllowedTechTier(){ return int32(); }
 int32 AFGSchematicManager::GetMaxAllowedTechTier() const{ return int32(); }
 void AFGSchematicManager::ResetSchematicsOfType(ESchematicType type){ }
+void AFGSchematicManager::ResetPurchasedSchematics(const TArray<TSubclassOf<UFGSchematic>>& schematics){  }
 TSubclassOf< class UFGRecipe > AFGSchematicManager::FixupSave_FindBuiltByRecipe(AActor* forActor){ return TSubclassOf<class UFGRecipe>(); }
 void AFGSchematicManager::Debug_DumpStateToLog() const{ }
 TArray< TSubclassOf< class UFGRecipe > > AFGSchematicManager::Debug_GetAllRecipes() const{ return TArray<TSubclassOf<class UFGRecipe> >(); }
@@ -78,15 +82,21 @@ void AFGSchematicManager::GetVisibleSchematicCategoryData(ESchematicType schemat
 void AFGSchematicManager::UnlockAllSchematicsOfType(ESchematicType schematicType, bool requireDependency){ }
 void AFGSchematicManager::UnlockSchematicsUpToTier(int32 tier){ }
 ETechTierState AFGSchematicManager::GetTechTierState(int32 tier) const{ return ETechTierState(); }
+void AFGSchematicManager::NotifyPurchasedPlayerSpecificSchematics(const TArray<TSubclassOf<UFGSchematic>>& purchasedSchematics, AFGPlayerState* playerState, ESchematicUnlockFlags unlockFlags) const{  }
+void AFGSchematicManager::ReceiveInitialPurchasedSchematics(const TArray<TSubclassOf<UFGSchematic>>& purchasedSchematics){  }
+void AFGSchematicManager::ReceivePurchasedSchematics(const TArray<TSubclassOf<UFGSchematic>>& purchasedSchematics, AFGCharacterPlayer* accessInstigator, ESchematicUnlockFlags unlockFlags){  }
+void AFGSchematicManager::ReceiveSchematicsReset(const TArray<TSubclassOf<UFGSchematic>>& schematicsToReset){  }
 void AFGSchematicManager::PopulateSchematicsLists(){ }
 void AFGSchematicManager::OnRep_ActiveSchematic(){ }
-void AFGSchematicManager::OnRep_PurchasedSchematic(TArray< TSubclassOf< UFGSchematic > > lastPurchasedSchematics){ }
 void AFGSchematicManager::OnRep_PaidOffOnSchematic(){ }
 int32 AFGSchematicManager::FindHighestAvailableTechTier(){ return int32(); }
 FSchematicCost* AFGSchematicManager::FindSchematicPayOff(TSubclassOf<  UFGSchematic > schematic){ return nullptr; }
-void AFGSchematicManager::AddSchematicPayOff(TSubclassOf<  UFGSchematic > schematic, const TArray< FItemAmount >& amount){ }
 void AFGSchematicManager::RemoveSchematicPayOff(TSubclassOf<  UFGSchematic > schematic){ }
 void AFGSchematicManager::SubmitUnlockSchematicTelemetry(TSubclassOf< UFGSchematic > schematicClass){ }
 void AFGSchematicManager::SubmitMilestoneTelemetry(TSubclassOf< UFGSchematic > activeSchematic){ }
 void AFGSchematicManager::TryUnlockNewSchematicsOfType(const FString& userSettingStrID, FTimerHandle& timerHandle, ESchematicType schematicType){ }
 void AFGSchematicManager::Internal_TryUnlockNewSchematicsOfType(ESchematicType schematicType){ }
+void AFGSchematicManager::Internal_OpenSchematicUnlockTransaction(FScopedSchematicUnlockTransaction* transaction){  }
+void AFGSchematicManager::Internal_CommitSchematicUnlockTransaction(const FScopedSchematicUnlockTransaction* transaction){  }
+void AFGSchematicManager::Internal_AddSchematicsToTransaction(const TArrayView<const TSubclassOf<UFGSchematic>>& schematics) const{  }
+void AFGSchematicManager::Internal_CommitCurrentSchematicTransaction(){  }

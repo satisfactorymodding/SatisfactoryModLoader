@@ -28,7 +28,7 @@ public:
 	FORCEINLINE float GetEmitterInterval( float newEmitterInterval ) const { return mEmitterInterval; }
 
 	// Begin UAkComponent interface
-	virtual void UpdateGameObjectPosition(); // MODDING EDIT Wwise... override;
+	virtual void UpdateGameObjectPosition() override;
 	// End UAkComponent interface
 protected:
 	/** Distance between each emitter on our parent spline, this might be scaled slightly so that we get a point on both start and end */

@@ -9,6 +9,7 @@
 #include "FGSignInterface.h"
 #include "FGSignTypes.h"
 #include "FGSignificanceInterface.h"
+#include <LocalUserInfo.h>
 #include "FGBuildableWidgetSign.generated.h"
 
 class UTextureRenderTarget2D;
@@ -89,7 +90,7 @@ public:
 	//~ Begin IFGFactoryClipboardInterface
 	bool CanUseFactoryClipboard_Implementation() override { return true; }
 	UFGFactoryClipboardSettings* CopySettings_Implementation() override;
-	bool PasteSettings_Implementation( UFGFactoryClipboardSettings* settings ) override;
+	bool PasteSettings_Implementation( UFGFactoryClipboardSettings* settings, class AFGPlayerController* player ) override;
 	//~ End IFGFactoryClipboardInterface
 
 	virtual void OnBuildEffectFinished() override;
@@ -97,7 +98,7 @@ public:
 	
 	// When a text element is updated, this call will update that element and set the save data
 	UFUNCTION( BlueprintCallable, Category = "WidgetSign" )
-	void SetPrefabSignData( UPARAM( ref ) FPrefabSignData& signData );
+	void SetPrefabSignData( UPARAM( ref ) FPrefabSignData& signData, bool bFilterText = true );  // <FL> [WuttkeP] Added bFilterText parameter.
 
 	// When a text element is updated, this call will update that element and set the save data
 	UFUNCTION( BlueprintPure, Category = "WidgetSign" )
@@ -107,6 +108,13 @@ public:
 	void UpdateSignElements( FPrefabSignData& prefabSignData );
 
 	virtual float GetAdjustedEmissiveValue(int32 Level) const;
+
+	//<FL>[KonradA]
+	UFUNCTION( BlueprintPure, Category = "WidgetSign Online" )
+	bool WasLastChangedByLocalPlayer();
+	UFUNCTION(BlueprintCallable, Category = "WidgetSign")
+	void GetDefaultSignMaps( TMap< FString, FString >& TextElementToDataMap, TMap< FString, int32 >& IconElementToDataMap );
+	//</FL>
 
 protected:
 
@@ -131,6 +139,12 @@ protected:
 	virtual void PreSerializedToBlueprint() override;
 	virtual void PostSerializedToBlueprint() override;
 	virtual void PostSerializedFromBlueprint(bool isBlueprintWorld) override;
+
+//<FL>[KonradA]
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	TArray< FLocalUserNetIdBundle > GetLastEditedBy() const { return mLastEditedBy; };
+//</FL>
+
 protected:
 	friend class UFGSignBuildingWidget;
 	friend class AFGSignSubsystem;
@@ -217,6 +231,12 @@ protected:
 
 	UPROPERTY( SaveGame )
 	float mGlossiness;
+
+	//<FL> [KonradA] For Parental Control reasons we need to keep track of who last edited this sign
+	UPROPERTY(SaveGame)
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	FDelegateHandle hOnQueryAllBlockedComplete;
+	//</FL>
 
 	// When a signs data is changed, the server will increment this. When the onRep fires the client will add this sign to the PendingSigns array in the sign subsystem
 	UPROPERTY( ReplicatedUsing=OnRep_SignDataDirty )

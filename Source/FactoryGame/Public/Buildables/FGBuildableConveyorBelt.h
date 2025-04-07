@@ -5,14 +5,14 @@
 #include "FactoryGame.h"
 #include "Components/SplineComponent.h"
 #include "FGBuildableConveyorBase.h"
+#include "FGBuildableConveyorMonitor.h"
 #include "FGSplineBuildableInterface.h"
 #include "FGUseableInterface.h"
 #include "Components/SplineMeshComponent.h"
 #include "FGBuildableConveyorBelt.generated.h"
 
 
-
-
+class AFGBuildableConveyorMonitor;
 /**
  * Base for conveyor belts.
  * Assumption: Conveyors are never rotated, rotation is always 0,0,0.
@@ -37,11 +37,10 @@ public:
 	virtual	void LostSignificance_Implementation() override;
 	virtual float GetSignificanceRange() override;
 	virtual	void SetupForSignificance() override;					// TODO deprecate
-	virtual void UpdateMeshLodLevels(int32 newLodLevel) override;	// TODO deprecate
 	// End IFGSignificanceInterface
 
 	// Begin abstract instance interface.
-	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() override;
+	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() const override;
 	virtual bool DoesContainLightweightInstances_Native() const override { return true; }
 	// End abstract instance interface
 	
@@ -113,9 +112,7 @@ public:
 
 	virtual void PostSerializedFromBlueprint( bool isBlueprintWorld = false ) override;
 	void ClearLUT();
-	
 
-	
 protected:
 	// Begin AFGBuildableFactory interface
 	virtual bool VerifyDefaults( FString& out_message ) override;

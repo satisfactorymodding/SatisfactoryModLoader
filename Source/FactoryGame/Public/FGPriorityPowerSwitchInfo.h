@@ -36,6 +36,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Power|PrioritySwitchIdentifier" )
 	bool IsSwitchOn() const { return mIsSwitchOn; }
 
+	UFUNCTION(BlueprintPure)
+	AFGBuildablePriorityPowerSwitch* GetSwitch() const { return mSwitch.Get(); }
+
 	/** @return Get the circuit group ID we belong to at our first connection, -1 if disconnected. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Power|PrioritySwitchIdentifier" )
 	int32 GetCircuitGroupID0() const { return mCircuitGroupID0; }

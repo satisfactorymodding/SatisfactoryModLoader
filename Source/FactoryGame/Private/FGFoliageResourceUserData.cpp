@@ -9,4 +9,14 @@ bool UFGFoliageResourceUserData::MeshHasIdentifier(UStaticMesh* mesh, TSubclassO
 EProximityEffectTypes UFGFoliageResourceUserData::GetProximityEffectTypeByMesh(UStaticMesh* mesh){ return EProximityEffectTypes(); }
 TArray<int32> UFGFoliageResourceUserData::GetProximityEffectIdsByMesh(UStaticMesh* mesh){ return TArray<int32>(); }
 bool UFGFoliageResourceUserData::GetIsCaveTypeByMesh(UStaticMesh* mesh){ return bool(); }
+UAkAudioEvent* UFGFoliageResourceUserData::GetPickupEventByMesh(UStaticMesh* mesh){ return nullptr; }
+UParticleSystem* UFGFoliageResourceUserData::GetPickupEffectByMesh(UStaticMesh* mesh){ return nullptr; }
 UParticleSystem* UFGFoliageResourceUserData::GetExplosionDestroyedEffect() const{ return nullptr; }
+UFGFoliageDestructionData* UFGFoliageResourceUserData::GetFoliageDestructionData(UStaticMesh* mesh){ return nullptr; }
+int32 UFGFoliageResourceUserData::GetLeafDestructionIndex(UStaticMesh* mesh){ return int32(); }
+int32 UFGFoliageResourceUserData::GetTrunkCrumbleDestructionIndex(UStaticMesh* mesh){ return int32(); }
+FVector UFGFoliageResourceUserData::GetTrunkPivot(UStaticMesh* mesh){ return FVector(); }
+float UFGFoliageResourceUserData::GetTrunkRadius(UStaticMesh* mesh){ return float(); }
+UMaterialInterface* UFGFoliageResourceUserData::GetCapMaterialOverride(UStaticMesh* Mesh){ return nullptr; }
+void UFGFoliageResourceUserData::GetTrunkPreciseCollision(UStaticMesh* Mesh, FBoxSphereBounds& UserDefinedBounds){  }
+bool UFGFoliageResourceUserData::HandleUserDefinedCollision(const FBoxSphereBounds& SimpleBounds, const FTransform& InstanceTransform, const FVector& HitLocation, float HitRadius){ return bool(); }

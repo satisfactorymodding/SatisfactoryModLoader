@@ -138,10 +138,10 @@ public:
 	int32 mNumGlobalHistoryPoints;
 	
 	UPROPERTY( EditAnywhere, config, Category = "Cyber coupon", meta = ( ToolTip = "The schematic to unlock when sinking a coupon" ) )
-	TSubclassOf<class UFGSchematic> mCyberCouponSchematic;
+	TSoftClassPtr<class UFGSchematic> mCyberCouponSchematic;
 
 	UPROPERTY( EditAnywhere, config, Category = "Custom Rewards", meta = ( ToolTip = "Custom rewards that will be given in the form of a schematic when you sink a specific item." ) )
-	TMap<TSubclassOf<class UFGItemDescriptor>, TSubclassOf<class UFGSchematic>> mCustomRewards;
+	TMap<TSoftClassPtr<class UFGItemDescriptor>, TSoftClassPtr<class UFGSchematic>> mCustomRewards;
 
 	UPROPERTY( EditAnywhere, config, Category = "Rewards", meta = ( ToolTip = "Points = mMulitplier * level^mExponent" ) )
 	float mMultiplier;
@@ -156,6 +156,6 @@ public:
 	int32 mDefaultNumRepeats;
 
 	UPROPERTY( EditAnywhere, config, Category = "Tool", meta = ( ToolTip = "The subclasses of UFGItemDescriptor that we don't want to show up in resource sink balancer", AllowAbstract=true ) )
-	TArray<TSubclassOf<class UFGItemDescriptor>> mExcludedDescriptors;
+	TArray<TSoftClassPtr<class UFGItemDescriptor>> mExcludedDescriptors;
 
 };

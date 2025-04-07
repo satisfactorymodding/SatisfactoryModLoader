@@ -77,7 +77,10 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION()
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
-
+	//<FL>[KonradA]
+	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return mLastEditedBy; };
+	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	//</FL>
 	// End IFGActorRepresentationInterface
 	
 	//~ Begin IFGBuildingTagInterface
@@ -85,6 +88,10 @@ public:
 	virtual void SetHasBuildingTag_Implementation( bool hasBuildingTag ) override {}
 	virtual FString GetBuildingTag_Implementation() const override { return mBuildingTag; }
 	virtual void SetBuildingTag_Implementation( const FString& buildingTag ) override;
+	//<FL>[KonradA]
+	virtual void SetLastEditedBy_Implementation( const TArray< FLocalUserNetIdBundle >& lastEditedBy ) override;
+	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy_Implementation() const override { return mLastEditedBy; };
+	//</FL>
 	//~ End FGBuildingTagInterface
 	
 	// Begin AActor interface
@@ -117,6 +124,11 @@ private:
 	UFUNCTION()
 	void OnRep_BuildingTag();
 
+	//<FL>[KonradA]
+	UFUNCTION()
+	void OnRep_LastEditedBy();
+	//</FL>
+
 private:
 	bool mIsServer = false;
 
@@ -137,4 +149,10 @@ private:
 
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_BuildingTag )
 	FString mBuildingTag;
+
+	
+	//<FL>[KonradA]
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_LastEditedBy )
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	//</FL>
 };

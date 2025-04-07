@@ -11,6 +11,7 @@ AFGBeamHologram::AFGBeamHologram() : Super() {
 	this->mCurrentLength = 0.0;
 	this->mBuildStep = EBeamHologramBuildStep::BHBS_Placement;
 	this->mNeedsValidFloor = false;
+	this->mCreateClearanceSnapMeshVisualization = false;
 	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 }
 void AFGBeamHologram::BeginPlay(){ Super::BeginPlay(); }
@@ -30,7 +31,7 @@ int32 AFGBeamHologram::GetBaseCostMultiplier() const{ return int32(); }
 bool AFGBeamHologram::CanBeZooped() const{ return bool(); }
 bool AFGBeamHologram::CanIntersectWithDesigner(AFGBuildableBlueprintDesigner* designer) const{ return bool(); }
 void AFGBeamHologram::OnRep_CurrentLength(){ }
-bool AFGBeamHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
+bool AFGBeamHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramLocationOffset) const{ return bool(); }
 void AFGBeamHologram::CreateAttachmentPointTransform(FTransform& out_transformResult, const FHitResult& HitResult, AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint){ }
 void AFGBeamHologram::CreateVerticalBeam(const FHitResult& hitResult, bool allowDiagonal){ }
 void AFGBeamHologram::CreateFreeformBeam(const FHitResult& hitResult){ }

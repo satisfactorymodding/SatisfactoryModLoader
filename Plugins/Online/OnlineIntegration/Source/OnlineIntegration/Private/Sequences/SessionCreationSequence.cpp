@@ -6,6 +6,7 @@ void USessionCreationSequence::Initialize(const FCommonSessionCreationSettings& 
 bool USessionCreationSequence::Start(){ return bool(); }
 bool USessionCreationSequence::IsHostingSession() const{ return bool(); }
 void USessionCreationSequence::OnTravelFinished(UWorld* World){ }
+bool USessionCreationSequence::CheckConnection(){ return false; }
 EConditionalLoopResult USessionCreationSequence::SessionCleanupLoop(TSharedRef<FConditionalLoop> LoopNodeRef){ return EConditionalLoopResult(); }
 void USessionCreationSequence::CreateMainSession(TSharedRef<FControlFlowNode>){ }
 EConditionalLoopResult USessionCreationSequence::MirrorSessionCreationLoop(TSharedRef<FConditionalLoop> LoopNodeRef){ return EConditionalLoopResult(); }

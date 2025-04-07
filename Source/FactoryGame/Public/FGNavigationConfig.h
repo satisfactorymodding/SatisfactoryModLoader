@@ -18,4 +18,6 @@ public:
 
 	/* Set if we should enable navigation with tab and arrow keys. Stops UE4 to hog tab and arrow key input bindings in widgets*/
 	static void EnableTabAndNavKeys( bool enable );
+
+	static void EnableAnalogNavigation( bool enable );
 };

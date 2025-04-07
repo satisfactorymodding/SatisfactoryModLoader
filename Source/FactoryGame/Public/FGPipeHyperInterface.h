@@ -3,6 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGDynamicStruct.h"
+#include "UObject/Interface.h"
 #include "FGPipeHyperInterface.generated.h"
 
 class AFGBuildablePipeBase;
@@ -10,16 +12,6 @@ class UFGPipeConnectionComponentBase;
 class UFGCharacterMovementComponent;
 class AFGCharacterPlayer;
 struct FPlayerPipeHyperData;
-
-/** Base struct to be used as a parent for all pipe data structs used by the implementers of IFGPipeHyperInterface */
-USTRUCT(BlueprintType)
-struct FFGPipeHyperBasePipeData
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	bool bDummy;
-};
 
 UINTERFACE( meta = (CannotImplementInterfaceInBlueprint) )
 class FACTORYGAME_API UFGPipeHyperInterface : public UInterface
@@ -58,16 +50,16 @@ public:
 	 * @param predictionPipeData custom data that was derived from FindDistanceClosestToWorldLocation when we are simulating the movement for simulated proxies, empty otherwise
 	 * @return true if player is allowed to enter the pipe, false if he should be turned back
 	 */
-	virtual EPipeHyperEnterResult OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, TStructOnScope<FFGPipeHyperBasePipeData>& outPipeData, const TStructOnScope<FFGPipeHyperBasePipeData>& predictionPipeData ) = 0;
+	virtual EPipeHyperEnterResult OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, FFGDynamicStruct& outPipeData, const FFGDynamicStruct& predictionPipeData ) = 0;
 
 	/**
 	 * Called when the pipe has been entered during the sub-step interpolation
 	 * This would always happen after OnPipeEnterReal has been called.
 	 **/
-	virtual void OnPipeEnterInterpolated(AFGCharacterPlayer* charPlayer, TStructOnScope<FFGPipeHyperBasePipeData>& pipeData) {}
+	virtual void OnPipeEnterInterpolated(AFGCharacterPlayer* charPlayer, FFGDynamicStruct& pipeData) {}
 
 	/** Returns the length of the pipe spline, serves as maximum valid value for distance passed to GetLocationAndRotationAlongPipe and GetConnectionToTransitThrough */
-	virtual float GetLengthAlongPipe(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData) = 0;
+	virtual float GetLengthAlongPipe(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData) = 0;
 
 	/**
 	 * Called every hyper pipe movement logic simulation step right after the normal velocity calculations are applied
@@ -77,35 +69,35 @@ public:
 	 * 
 	 * @param stepLength length of the simulation step
 	 */
-	virtual void OnPipeMoveStep(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData, float stepLength, const FPlayerPipeHyperData& pipeTravelData, float& pipeVelocityReal, float& pipeTempMinSpeed ) { }
+	virtual void OnPipeMoveStep(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData, float stepLength, const FPlayerPipeHyperData& pipeTravelData, float& pipeVelocityReal, float& pipeTempMinSpeed ) { }
 	
 	/** Retrieves location and rotation when travelling along the pipe at the particular distance (0 - <PipeLength>) */
-	virtual void GetLocationAndRotationAlongPipe(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData, float distance, FVector& outLocation, FVector& outDirection ) = 0;
+	virtual void GetLocationAndRotationAlongPipe(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData, float distance, FVector& outLocation, FVector& outDirection ) = 0;
 
 	/**
 	 * This function attempts to find the closest point inside of this pipe to the world location provided,
 	 * and also potentially synthesize the pipe data struct matching to the player moving inside of this pipe at the specified location with specified velocity
 	 * @return true if the approximation was successful
 	 */
-	virtual bool FindDistanceClosestToWorldLocation(AFGCharacterPlayer* charPlayer, const FVector& worldLocation, const FVector& velocity, TStructOnScope<FFGPipeHyperBasePipeData>& out_pipeData, float& out_distance) const = 0;
+	virtual bool FindDistanceClosestToWorldLocation(AFGCharacterPlayer* charPlayer, const FVector& worldLocation, const FVector& velocity, FFGDynamicStruct& out_pipeData, float& out_distance) const = 0;
 	
 	/**
 	 * Returns the exit connection that the player must transit through when passing the provided distance.
 	 * Only called at the ends of the pipe, e.g. when travel distance exceeds pipe length of goes below zero
 	 */
-	virtual UFGPipeConnectionComponentBase* GetConnectionToTransitThrough(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData, float distance, float& outExitOffset ) = 0;
+	virtual UFGPipeConnectionComponentBase* GetConnectionToTransitThrough(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData, float distance, float& outExitOffset ) = 0;
 
 	/**
 	 * Called when the pipe has actually been exited, but can still get interpolated during sub-step interpolation later on
 	 * That means the pipe data will be still kept around until OnPipeExitInterpolated has been called
 	 * Keep in mind that because of that, the player can still visually be in the pipe when this function is called.
 	 */
-	virtual void OnPipeExitReal(AFGCharacterPlayer* charPlayer, TStructOnScope<FFGPipeHyperBasePipeData>& pipeData) {}
+	virtual void OnPipeExitReal(AFGCharacterPlayer* charPlayer, FFGDynamicStruct& pipeData) {}
 	
 	/**
-	 * Called when pipe has been fully exited by the sub-step interpolation
+	 * Called when pipe has been fully exit by the sub-step interpolation
 	 * Will always be called after OnPipeExitReal has been called.
 	 * After this function is called, the pipe data struct for this pipe will be thrashed.
 	 */
-	virtual void OnPipeExitInterpolated(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData ) {}
+	virtual void OnPipeExitInterpolated(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData ) {}
 };

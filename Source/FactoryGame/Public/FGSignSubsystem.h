@@ -214,6 +214,8 @@ public:
 private:
 	/** Tracks whether the subsystem is waiting for a sign data request is pending from the server. If so, no new requests will be issued */
 	bool mHasPendingClientRequest;
+	double mLastClientRequestTime;
+	double mPendingClientRequestTimeout = 5.0;
 
 	/** Array of every buildable. These are added from the signs begin play */
 	UPROPERTY()

@@ -34,6 +34,7 @@ float AFGBuildableRadarTower::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGBuildableRadarTower::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGBuildableRadarTower::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 UMaterialInterface* AFGBuildableRadarTower::GetActorRepresentationCompassMaterial(){ return nullptr; }
+void AFGBuildableRadarTower::SetActorLastEditedBy(const TArray<FLocalUserNetIdBundle>& LastEditedBy){ }
 void AFGBuildableRadarTower::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableRadarTower::Factory_StartProducing(){ }
 void AFGBuildableRadarTower::Factory_StopProducing(){ }

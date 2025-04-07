@@ -39,7 +39,8 @@ public class AbstractInstance : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore",
+				"SlateCore", 
+				"AkAudio",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

@@ -1,16 +1,31 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+
 #include "FactoryGame.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Buildables/FGBuildablePipeHyperJunction.h"
+#include "FGDynamicStruct.h"
 #include "FGCharacterMovementComponent.generated.h"
 
 class AFGParachute;
 class AFGBuildablePipeHyperJunction;
 class UFGPipeConnectionComponentBase;
-struct FFGPipeHyperJunctionConnectionInfo;
 struct FFGPipeHyperBasePipeData;
+
+/** Info on a single hypertube junction exit */
+USTRUCT(BlueprintType)
+struct FFGHypertubeJunctionOutputConnectionInfo
+{
+	GENERATED_BODY()
+
+	/** The connection this info is associated with */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, SaveGame, Category = "Pipe Hyper" )
+	UFGPipeConnectionComponentBase* Connection{};
+
+	/** Custom data for this output connection */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category = "Pipe Hyper")
+	FFGDynamicStruct Metadata;
+};
 
 /** Info on the pending hypertube junction */
 USTRUCT(BlueprintType)
@@ -25,50 +40,16 @@ struct FACTORYGAME_API FFGPendingHyperJunctionInfo
 	UFGPipeConnectionComponentBase* mConnectionEnteredThrough = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper")
-	float mDistanceToJunction = 0.f;
+	float mDistanceToJunction = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hyper Tube")
-	float mLastJunctionCheckDistance = 0.f;
+	float mLastJunctionCheckDistance = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hyper Tube")
-	TArray<FFGPipeHyperJunctionConnectionInfo> mAvailableOutputConnections;
-};
+	TArray<FFGHypertubeJunctionOutputConnectionInfo> mAvailableOutputConnections;
 
-/** A struct used as a wrapper for dynamically typed TStructOnScope<FFGPipeHyperBasePipeData> */
-USTRUCT()
-struct FACTORYGAME_API FFGPipeHyperDynamicPipeData
-{
-	GENERATED_BODY()
-	using StructOnScopeType = TStructOnScope<FFGPipeHyperBasePipeData>;
-private:
-	StructOnScopeType Data;
-public:
-	FFGPipeHyperDynamicPipeData();
-	FFGPipeHyperDynamicPipeData(const FFGPipeHyperDynamicPipeData& Other);
-	FFGPipeHyperDynamicPipeData(FFGPipeHyperDynamicPipeData&& Other) noexcept;
-	FFGPipeHyperDynamicPipeData( const StructOnScopeType& InStructOnScope );
-
-	FFGPipeHyperDynamicPipeData& operator=(const FFGPipeHyperDynamicPipeData& Other);
-	FFGPipeHyperDynamicPipeData& operator=(FFGPipeHyperDynamicPipeData&& Other) noexcept;
-	
-	bool Serialize(FArchive& Ar);
-	void AddStructReferencedObjects(class FReferenceCollector& Collector);
-
-	/** Convenient accessors with both const and non-const versions */
-	FORCEINLINE StructOnScopeType& operator*() { return Data; }
-	FORCEINLINE StructOnScopeType& operator->() { return Data; }
-	FORCEINLINE const StructOnScopeType& operator*() const { return Data; }
-	FORCEINLINE const StructOnScopeType& operator->() const { return Data; }
-};
-
-template<>
-struct TStructOpsTypeTraits< FFGPipeHyperDynamicPipeData > : public TStructOpsTypeTraitsBase2< FFGPipeHyperDynamicPipeData >
-{
-	enum
-	{
-		WithAddStructReferencedObjects = true,
-		WithSerializer = true
-	};
+	/** Sorts the output connections left to right, clockwise, so that the output that is on the left of the input is always before the input that is straight, and input that is to the right is always the last one */
+	void SortOutputConnectionsClockwise();
 };
 
 USTRUCT( BlueprintType )
@@ -81,14 +62,14 @@ struct FACTORYGAME_API FPlayerPipeHyperData
 	AActor* mTravelingPipeHyperReal;
 	/** Pipe data associated with our travel in mTravelingPipeHyper */
 	UPROPERTY()
-	FFGPipeHyperDynamicPipeData mTravelingPipeHyperRealData;
+	FFGDynamicStruct mTravelingPipeHyperRealData;
 
 	/** The pipe that we have been traveling during the last substep */
 	UPROPERTY()
 	AActor* mTravelingPipeHyperLast;
 	/** Pipe data associated with our travel in mTravelingPipeHyperLast */
 	UPROPERTY()
-	FFGPipeHyperDynamicPipeData mTravelingPipeHyperLastData;
+	FFGDynamicStruct mTravelingPipeHyperLastData;
 	/** True if we transitioned into the current pipe from the end of the previous pipe, used for interpolation. If false, we transitioned from the start */
 	bool bTransitionedFromLastPipeHyperEnd;
 
@@ -124,15 +105,15 @@ struct FACTORYGAME_API FPlayerPipeHyperData
 	AActor* mTravelingPipeHyper;
 	/**The spline progress in the pipe we are currently in */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Hyper Tube" )
-	float mPipeProgress;
+	float mPipeProgress = 0.f;
 	/**The velocity we are currently traveling in along the spline of the pipe*/
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Hyper Tube" )
-	float mPipeVelocity;
+	float mPipeVelocity = 0.f;
 	/** The forward direction of the pipe we are currently traveling */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Hyper Tube" )
-	FVector mPipeDirection;
+	FVector mPipeDirection = FVector::ForwardVector;
 	UPROPERTY()
-	FFGPipeHyperDynamicPipeData mTravelingPipeHyperData;
+	FFGDynamicStruct mTravelingPipeHyperData;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Hyper Tube" )
 	float mMinPipeSpeed = 300;
@@ -168,7 +149,7 @@ struct FACTORYGAME_API FPlayerPipeHyperData
 
 	/** Maximum distance to search for junctions */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Hyper Tube" )
-	float mMaxJunctionSearchDistance = 4000.0f;
+	float mMaxJunctionSearchDistance = 16000.0f;
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Hyper Tube" )
 	float mMaxCurveDiffThisFrame = 0.f;
@@ -371,6 +352,8 @@ public:
 	/** Get mBoostJumpVelocityMultiplier */
 	FORCEINLINE float GetBoostJumpVelocityMultiplier() const { return mBoostJumpVelocityMultiplier; }
 
+	FORCEINLINE float GetBoostJumpVelocityLimit() const { return mBoostJumpVelocityLimit; }
+
 	/** Checks if we still can slide */
 	void UpdateSlideStatus();
 
@@ -436,10 +419,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Zipline" )
 	float GetZiplineSpeed() const;
 
+	/** Only to be called from the internal movement logic or from AFGCharacterPlayer. For external interface, use AFGCharacterPlayer functions with the same names */
 	void StopZiplineMovement( const FVector& exitForce = FVector::ZeroVector );
-
 	void StartZiplineMovement( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
-	
 protected:
 	// Begin UCharacterMovementComponent
 	virtual void UpdateFromCompressedFlags(uint8 flags) override;
@@ -520,7 +502,7 @@ private:
 	void StopLedgeClimb( const bool interrupt );
 
 	/** Attempts to find and enter the closest hypertube at the provided location. Used for movement replication on simulated proxies */
-	AActor* FindClosestPipeHyper( const FVector& worldLocation, const FVector& velocity, float& out_distanceAlongSpline, TStructOnScope<FFGPipeHyperBasePipeData>& out_pipeData ) const;
+	AActor* FindClosestPipeHyper( const FVector& worldLocation, const FVector& velocity, float& out_distanceAlongSpline, FFGDynamicStruct& out_pipeData ) const;
 	
 	/** Updates the hypertube movement data based on the movement information received as a part of network correction or smoothing */
 	void UpdatePipeMovementDataFromCorrectionResult( const FVector& newLocation, const FVector& newVelocity );
@@ -547,7 +529,7 @@ public:
 	bool mIsSliding;
 
 	/** Keep track of what status was for mIsSliding */
-	bool mLastIsSliding; 
+	bool mLastIsSliding;
 
 	/** True if the player is pressing jump */
 	bool mIsPressingJump;
@@ -639,6 +621,9 @@ private:
 	/* Multiplier for velocity in 2D when boost jumping */
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
 	float mBoostJumpVelocityMultiplier;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
+	float mBoostJumpVelocityLimit;
 
 	/** Timestamp for when we ended the last slide */
 	float mLastSlideTime;
@@ -768,7 +753,6 @@ public:
 	uint8 mSavedIsPressingJump : 1;
 
 	uint8 mSavedWantsToSprintOnZipline : 1;
-	
 	FVector mSavedHookLocation;
 
 	TSoftObjectPtr<UFGParachuteSettings> mParachuteSettings;

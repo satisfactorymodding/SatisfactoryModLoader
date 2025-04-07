@@ -13,4 +13,18 @@ class FACTORYGAME_API UFGCharacterPlayerRepresentation : public UFGActorRepresen
 	GENERATED_BODY()
 public:
 	UFGCharacterPlayerRepresentation();
+
+	// <FL> [TranN]
+	FText GetRepresentationText() const override;
+	bool NeedsDynamicCompassRepresentationText() const override { return true; }
+
+	UFUNCTION(BlueprintCallable)
+	void ViewProfileOfOwningPlayer();
+
+	UFUNCTION(BlueprintPure)
+	bool IsCharacterOwnerOnSamePlatform();
+
+private:
+	bool ResolvePlatformIDFromString();
+	// </FL>
 };

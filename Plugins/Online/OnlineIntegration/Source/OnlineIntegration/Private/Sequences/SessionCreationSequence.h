@@ -28,6 +28,7 @@ protected:
 	virtual bool IsHostingSession() const override;
 	virtual void OnTravelFinished(UWorld* World) override;
 
+	bool CheckConnection(); // <FL> [TranN] check for connection status before starting session
 	EConditionalLoopResult SessionCleanupLoop(TSharedRef<FConditionalLoop> LoopNodeRef);
 	void CreateMainSession(TSharedRef<FControlFlowNode>);
 	EConditionalLoopResult MirrorSessionCreationLoop(TSharedRef<FConditionalLoop> LoopNodeRef);

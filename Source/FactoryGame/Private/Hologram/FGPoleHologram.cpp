@@ -7,41 +7,27 @@
 #include "Net/UnrealNetwork.h"
 
 AFGPoleHologram::AFGPoleHologram() : Super() {
-	this->mPoleMesh.Mesh = nullptr;
-	this->mPoleMesh.Height = 0.0;
 	this->mPoleMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PoleMesh"));
-	this->mPoleHeightComponent = nullptr;
-	this->mInstancedMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Instanced Mesh Component"));
-	this->mPoleHeight = 0.0;
-	this->mMaxZoopAmount = 9;
-	this->mBuildModeZoop = nullptr;
-	this->mClearanceExtent = FVector::ZeroVector;
+	this->mPoleMeshComponent->SetMobility(EComponentMobility::Movable);
+	this->mPoleVariationIndex = -1;
 	this->mUseGradualFoundationRotations = true;
+	this->mCreateClearanceSnapMeshVisualization = false;
 	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 	this->mPoleMeshComponent->SetupAttachment(RootComponent);
-	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGPoleHologram, mPoleHeight);
+	DOREPLIFETIME(AFGPoleHologram, mPoleVariationIndex);
 }
 void AFGPoleHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGPoleHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 bool AFGPoleHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
-bool AFGPoleHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPoleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
-AActor* AFGPoleHologram::Construct(TArray<AActor*>& out_children, FNetConstructionID constructionID){ return nullptr; }
-void AFGPoleHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
-void AFGPoleHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ }
-int32 AFGPoleHologram::GetBaseCostMultiplier() const{ return int32(); }
-bool AFGPoleHologram::CanNudgeHologram() const{ return bool(); }
 void AFGPoleHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
 void AFGPoleHologram::GetClearanceData(TArray< const FFGClearanceData* >& out_ClearanceData) const{ }
+bool AFGPoleHologram::ShouldAutomaticallySpawnLightWeightInstances() const{ return Super::ShouldAutomaticallySpawnLightWeightInstances(); }
 void AFGPoleHologram::ResetBuildSteps(){ }
 void AFGPoleHologram::SetPoleHeight(float height){ }
-float AFGPoleHologram::GetActiveMeshHeight() const{ return float(); }
 void AFGPoleHologram::UpdatePoleMesh(){ }
+void AFGPoleHologram::OnRep_PoleVariationIndex(){ }
 void AFGPoleHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
-void AFGPoleHologram::CheckValidPlacement(){ }
-void AFGPoleHologram::OnRep_PoleHeight(){ }
-void AFGPoleHologram::UpdatePoleHeightRelativeLoc(){ }

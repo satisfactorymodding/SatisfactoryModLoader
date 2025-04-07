@@ -9,6 +9,7 @@ UCommonSessionSubsystem* UOnlineIntegrationSubsystem::GetSessionManager() const{
 UOnlineIntegrationState* UOnlineIntegrationSubsystem::GetOnlineIntegrationState() const{ return nullptr; }
 const TArray<FNetDriverDefinition>& UOnlineIntegrationSubsystem::GetDefaultNetDriverDefinitions() const{ return *(new TArray<FNetDriverDefinition>); }
 const FGameplayTagContainer& UOnlineIntegrationSubsystem::GetTraitTags() const{ return *(new FGameplayTagContainer); }
+UOnlineIntegrationBackend* UOnlineIntegrationSubsystem::GetBackendByName(FName BackendName) const{ return nullptr; }
 void UOnlineIntegrationSubsystem::Initialize(FSubsystemCollectionBase& Collection){ }
 bool UOnlineIntegrationSubsystem::ShouldCreateSubsystem(UObject* Outer) const{ return bool(); }
 void UOnlineIntegrationSubsystem::Deinitialize(){ }

@@ -27,7 +27,7 @@ void UFGBuildGunStateDismantle::GetSupportedBuildModes_Implementation(TArray<TSu
 TSubclassOf< UFGBuildGunModeDescriptor > UFGBuildGunStateDismantle::GetInitialBuildGunMode_Implementation() const{ return TSubclassOf<UFGBuildGunModeDescriptor>(); }
 void UFGBuildGunStateDismantle::OnBuildGunModeChanged_Implementation(TSubclassOf< UFGBuildGunModeDescriptor > newMode){ }
 void UFGBuildGunStateDismantle::BindInputActions( UFGEnhancedInputComponent* inputComponent){ }
-bool UFGBuildGunStateDismantle::CanSampleBuildings() const{ return bool(); }
+bool UFGBuildGunStateDismantle::CanSampleBuildables() const{ return bool(); }
 bool UFGBuildGunStateDismantle::CanSampleBlueprints() const{ return bool(); }
 void UFGBuildGunStateDismantle::SetMultiDismantleState(bool isActive){ }
 void UFGBuildGunStateDismantle::SetDismantleClassFilter(AActor* actorToFilter){ }

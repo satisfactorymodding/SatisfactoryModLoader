@@ -52,6 +52,7 @@ AFGCreature::AFGCreature(const FObjectInitializer& ObjectInitializer) : Super(Ob
 	this->mIsPassiveCreature = false;
 	this->mPassiveHealthRegen = 0.0;
 	this->mEyeLocationComponent = CreateDefaultSubobject<USceneComponent>(TEXT("EyeLocationComponent"));
+	this->mEyeLocationComponent->SetMobility(EComponentMobility::Movable);
 	this->mArachnophobia_Sprite = nullptr;
 	this->mArachnophobia_Material = nullptr;
 	this->mArachnophobia_Particle = nullptr;
@@ -92,6 +93,7 @@ void AFGCreature::RenameActionArrayEntries(){ }
 void AFGCreature::UpdateCreatureNavAgentProps(){ }
 bool AFGCreature::IsReadyToDespawn() const{ return bool(); }
 bool AFGCreature::ShouldSave_Implementation() const{ return bool(); }
+void AFGCreature::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ Super::PostLoadGame_Implementation(saveVersion, gameVersion); }
 void AFGCreature::Died(AActor* died){ }
 void AFGCreature::DoRagdoll_Internal(){ }
 FVector AFGCreature::GetPawnViewLocation() const{ return FVector(); }

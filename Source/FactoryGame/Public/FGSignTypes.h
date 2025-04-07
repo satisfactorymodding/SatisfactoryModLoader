@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "FGIconLibrary.h"
 #include "Blueprint/UserWidget.h"
+#include <LocalUserInfo.h>
 #include "FGSignTypes.generated.h"
 
 // Blueprint Data class for holding information that can be shared between multiple FGBuildableWidgetSign classes
@@ -113,7 +114,7 @@ struct FACTORYGAME_API FPrefabIconElementSaveData
 	FString ElementName;
 
 	UPROPERTY( SaveGame )
-	int32 IconID;
+	int32 IconID = {};
 };
 
 /** Struct for saving Icon Data in contexts where SaveGame Local IDs cannot be used because the data is supposed to be usable across the SaveGame boundaries */
@@ -163,6 +164,11 @@ struct FACTORYGAME_API FPrefabSignData
 
 	UPROPERTY( BlueprintReadWrite, Category = "Prefab Sign Data" )
 	TSubclassOf<UFGSignTypeDescriptor> SignTypeDesc;
+
+	//<FL> [KonradA] For Parental Control reasons we need to keep track of who last edited this sign
+	UPROPERTY( BlueprintReadWrite, Category = "Prefab Sign Data" )
+	TArray< FLocalUserNetIdBundle > LastEditedBy;
+	//</FL>
 
 	// For clients to know if they should call the server RPC to set the data when they receive new data (if from replication don't trigger the RPC as it came from an RPC)
 	bool IsFromReplication = false;

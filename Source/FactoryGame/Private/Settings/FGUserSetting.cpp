@@ -7,7 +7,7 @@ DEFINE_LOG_CATEGORY(LogUserSetting);
 
 #if WITH_EDITOR
 bool UFGUserSetting::SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction) const{ return bool(); }
-EDataValidationResult UFGUserSetting::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult::Valid; }
+EDataValidationResult UFGUserSetting::IsDataValid(FDataValidationContext& validationContext) const{ return EDataValidationResult::Valid; }
 #endif 
 UFGUserSetting::UFGUserSetting() : Super() {
 	this->StrId = TEXT("");
@@ -24,7 +24,6 @@ UFGUserSetting::UFGUserSetting() : Super() {
 	this->ValueSelector = nullptr;
 	this->CustomValueSelectorWidget = nullptr;
 	this->ManagerTypeAvailability = nullptr;
-	this->VisibilityDisqualifiers = 0;
 	this->EditabilityDisqualifiers = 0;
 	this->SubOptionTo = nullptr;
 	this->ShowInBuilds = EIncludeInBuilds::IIB_Development;
@@ -52,9 +51,7 @@ bool UFGUserSetting_CheckBox::SetupValueFunction( UK2Node_CallFunction* callFunc
 #endif 
 TSubclassOf< class UFGOptionsValueController > UFGUserSetting_CheckBox::GetValueSelectorWidgetClass() const{ return TSubclassOf<class UFGOptionsValueController>(); }
 FVariant UFGUserSetting_CheckBox::GetDefaultValue() const{ return FVariant(); }
-TSubclassOf< class UFGOptionsValueController > UFGUserSetting_EnumSelector::GetValueSelectorWidgetClass() const{ return TSubclassOf<class UFGOptionsValueController>(); }
-TArray<FIntegerSelection> UFGUserSetting_EnumSelector::GetIntegerSelectionValues(int32& out_DefaultSelectionIndex){ return TArray<FIntegerSelection>(); }
-TArray<FString> UFGUserSetting_EnumSelector::GetEnumOptions() const{ return TArray<FString>(); }
+FVariant UFGUserSetting_IntSelector::GetDefaultValue() const{ return Super::GetDefaultValue(); }
 #if WITH_EDITOR
 FName UFGUserSetting_IntSelector::GetGraphSchemaName() const{ return FName(); }
 bool UFGUserSetting_IntSelector::SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction) const{ return bool(); }

@@ -29,4 +29,8 @@ public:
 	/* Every time a message is triggered a cooldown will start running. Some message will not be played if triggered while this cooldown is active. */
 	UPROPERTY( EditAnywhere, config, Category = Cooldown, meta=(Units="s") )
 	float mMessageCooldown = 600.0f;
+
+	/* Every time a bark message is triggered a global cooldown will start running. This is a general cooldown that affects all bark message types. */
+	UPROPERTY( EditAnywhere, config, Category = Cooldown, meta=(Units="s") )
+	float mGlobalBarkMessageCooldown = 600.0f;
 };

@@ -2,4 +2,7 @@
 
 #include "FGDropPodSettings.h"
 
+bool UFGDropPodRefundsLootPool::IsValidDropPodRefundsIndex(int32 RefundsIndex) const{ return false; }
+TArray<FItemAmount> UFGDropPodRefundsLootPool::GetDropPodRefundsByIndex(int32 RefundsIndex) const{ return TArray<FItemAmount>(); }
+int32 UFGDropPodRefundsLootPool::RollDropPodRefundsLootPool() const{ return int32(); }
 UFGDropPodSettings* UFGDropPodSettings::Get(){ return nullptr; }

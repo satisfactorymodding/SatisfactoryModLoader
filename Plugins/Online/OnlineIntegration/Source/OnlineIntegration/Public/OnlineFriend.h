@@ -77,6 +77,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	EOnlineUserPresenceGameStatus GetPresenceGameStatus(UOnlineIntegrationBackend* Backend) const;
 
+	void FetchFriendSession(UOnlineIntegrationBackend* Backend);
 protected:
 	
 	UE::Online::FAccountId AccountId;

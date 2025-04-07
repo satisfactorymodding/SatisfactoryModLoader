@@ -28,7 +28,7 @@ public:
 	// Begin AFGHologram interface
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID constructionID ) override;
-	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual bool IsValidHitResult(const FHitResult& hitResult) const override;
 	virtual bool TryUpgrade(const FHitResult& hitResult) override;
 	virtual AActor* GetUpgradedActor() const override;

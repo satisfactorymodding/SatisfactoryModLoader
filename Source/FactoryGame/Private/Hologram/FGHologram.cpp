@@ -6,9 +6,13 @@
 #include "Net/UnrealNetwork.h"
 
 TAutoConsoleVariable<int32> CVarHologramDebug(TEXT("CVarHologramDebug"), 0, TEXT(""));
+void UFGHologramMaterialOverrideIdentifier::ApplyHologramMaterialOverrides(UMeshComponent* meshComponent){ }
 AFGHologram::AFGHologram() : Super() {
 	this->mRecipe = nullptr;
 	this->mLoopSound = CreateDefaultSubobject<UAkComponent>(TEXT("LoopSound"));
+	this->mLoopSound->SetMobility(EComponentMobility::Movable);
+	this->mClearanceSnapMeshVisualization = nullptr;
+	this->mCreateClearanceSnapMeshVisualization = true;
 	this->mClearanceDetector = nullptr;
 	this->mBuildModeCategory = EHologramBuildModeCategory::HBMC_ActorClass;
 	this->mDefaultBuildMode = nullptr;
@@ -25,7 +29,7 @@ AFGHologram::AFGHologram() : Super() {
 	this->mCanLockHologram = true;
 	this->mCanNudgeHologram = false;
 	this->mDefaultNudgeDistance = 100.0;
-	this->mMaxNudgeDistance = 800.0;
+	this->mBuildModeOverride = nullptr;
 	this->mHologramNudgeOffset = FVector::ZeroVector;
 	this->mHologramLockLocation = FVector::ZeroVector;
 	this->mConstructionInstigator = nullptr;
@@ -36,6 +40,7 @@ AFGHologram::AFGHologram() : Super() {
 	this->SetHidden(true);
 	this->bReplicates = true;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 	this->mLoopSound->SetupAttachment(RootComponent);
 }
 void AFGHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
@@ -44,12 +49,13 @@ void AFGHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLif
 	DOREPLIFETIME(AFGHologram, mScrollRotation);
 	DOREPLIFETIME(AFGHologram, mPlacementMaterialState);
 	DOREPLIFETIME(AFGHologram, mBuildClass);
+	DOREPLIFETIME(AFGHologram, mBuildModeOverride);
 	DOREPLIFETIME(AFGHologram, mConstructionInstigator);
 	DOREPLIFETIME(AFGHologram, mIsChanged);
 }
 bool AFGHologram::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const{ return bool(); }
-AFGHologram* AFGHologram::SpawnHologramFromRecipe(TSubclassOf<  UFGRecipe > inRecipe, AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ return nullptr; }
-AFGHologram* AFGHologram::SpawnChildHologramFromRecipe(AFGHologram* parent, FName hologramName, TSubclassOf< UFGRecipe > recipe, AActor* hologramOwner, FVector spawnLocation){ return nullptr; }
+AFGHologram* AFGHologram::SpawnHologramFromRecipe(TSubclassOf< class UFGRecipe > inRecipe, AActor* hologramOwner, const FVector& spawnLocation, APawn* hologramInstigator, const TFunction< void( AFGHologram* ) >& preSpawnFunction){ return nullptr; }
+AFGHologram* AFGHologram::SpawnChildHologramFromRecipe(AFGHologram* parent, FName hologramName, TSubclassOf< UFGRecipe > recipe, AActor* hologramOwner, const FVector& spawnLocation, const TFunction< void( AFGHologram* ) >& preSpawnFunction){ return nullptr; }
 void AFGHologram::SetRecipe(TSubclassOf<  UFGRecipe > recipe){ }
 TSubclassOf< class UFGItemDescriptor > AFGHologram::GetItemDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 void AFGHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
@@ -65,8 +71,9 @@ bool AFGHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 void AFGHologram::AdjustForGround(FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
 bool AFGHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
-void AFGHologram::PreHologramPlacement(const FHitResult& hitResult){ }
-void AFGHologram::PostHologramPlacement(const FHitResult& hitResult){ }
+void AFGHologram::PreHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
+void AFGHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
+void AFGHologram::RefreshHologramInstanceInstigators(){  }
 void AFGHologram::OnInvalidHitResult(){ }
 void AFGHologram::SetHologramNudgeLocation(){ }
 void AFGHologram::ValidatePlacementAndCost( UFGInventoryComponent* inventory){ }
@@ -78,6 +85,7 @@ void AFGHologram::SetScrollRotateValue(int32 rotValue){ }
 void AFGHologram::ReplaceHologram(AFGHologram* hologram, bool snapTransform){ }
 void AFGHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
 bool AFGHologram::IsCurrentBuildMode(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode) const{ return bool(); }
+void AFGHologram::SetBuildModeOverride(TSubclassOf<class UFGHologramBuildModeDescriptor> buildMode){  }
 void AFGHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ }
 void AFGHologram::SetSnapToGuideLines(bool isEnabled){ }
 void AFGHologram::SetPlacementMaterialState(EHologramMaterialState materialState){ }
@@ -95,7 +103,8 @@ TArray< FItemAmount > AFGHologram::GetBaseCost() const{ return TArray<FItemAmoun
 int32 AFGHologram::GetBaseCostMultiplier() const{ return int32(); }
 TArray< FItemAmount > AFGHologram::GetCost(bool includeChildren) const{ return TArray<FItemAmount>(); }
 void AFGHologram::GetClearanceData(TArray< const FFGClearanceData* >& out_ClearanceData) const{ }
-void AFGHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+void AFGHologram::GetIgnoredClearanceActors(TSet< AActor* >& ignoredActors) const{ }
+bool AFGHologram::ShouldIgnoreClearanceCheckForActor(class AActor* actor) const{ return false; }
 void AFGHologram::SetDisabled(bool disabled){ }
 bool AFGHologram::IsDisabled() const{ return bool(); }
 void AFGHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
@@ -104,6 +113,7 @@ void AFGHologram::AddConstructDisqualifier(TSubclassOf<  UFGConstructDisqualifie
 void AFGHologram::GetConstructDisqualifiers(TArray< TSubclassOf<  UFGConstructDisqualifier > >& out_constructResults) const{ }
 void AFGHologram::ResetConstructDisqualifiers(){ }
 void AFGHologram::UpdateRotationValuesFromTransform(){ }
+void AFGHologram::GetHologramsToShareMaterialStateWith(TArray<AFGHologram*>& out_holograms) const{  }
 void AFGHologram::SetBuildClass(TSubclassOf<  AActor > buildClass){ }
 TSubclassOf< AActor > AFGHologram::GetActorClass() const{ return TSubclassOf<AActor>(); }
 void AFGHologram::SetInsideBlueprintDesigner( AFGBuildableBlueprintDesigner* designer){ }
@@ -111,7 +121,7 @@ AFGBuildableBlueprintDesigner* AFGHologram::GetBlueprintDesigner() const{ return
 bool AFGHologram::CanNudgeHologram() const{ return bool(); }
 void AFGHologram::LockHologramPosition(bool lock){ }
 void AFGHologram::SetNudgeOffset(const FVector& NewNudgeOffset){ }
-ENudgeFailReason AFGHologram::AddNudgeOffset(const FVector& Offset){ return ENudgeFailReason(); }
+ENudgeFailReason AFGHologram::AddNudgeOffset(const FVector& Offset, const FVector& MaxNudgeDistance){ return ENudgeFailReason(); }
 float AFGHologram::GetNudgeDistance() const{ return float(); }
 ENudgeFailReason AFGHologram::NudgeTowardsWorldDirection(const FVector& Direction){ return ENudgeFailReason(); }
 ENudgeFailReason AFGHologram::NudgeHologram(const FVector& NudgeInput, const FHitResult& HitResult){ return ENudgeFailReason(); }
@@ -123,26 +133,26 @@ void AFGHologram::OnHologramTransformUpdated(){ }
 void AFGHologram::InitializeClearanceData(){ }
 void AFGHologram::PostInitializeClearanceData(){ }
 void AFGHologram::SetupClearanceDetector(){ }
-void AFGHologram::CheckClearance(const FVector& locationOffset){ }
+void AFGHologram::CheckClearance(){ }
 EClearanceOverlapResult AFGHologram::TestClearanceOverlap(const FFGClearanceData& clearanceData, const FFGClearanceData& otherClearanceData, AActor* otherActor) const{ return EClearanceOverlapResult(); }
 void AFGHologram::OnClearanceOverlapResultChanged(AActor* actor, EClearanceOverlapResult overlapResult){ }
 TSubclassOf< class UFGConstructDisqualifier > AFGHologram::GetConstructDisqualifierFromClearanceOverlap(const EClearanceOverlapResult& overlapResult, AActor* otherActor) const{ return TSubclassOf<class UFGConstructDisqualifier>(); }
-bool AFGHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
+bool AFGHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramLocationOffset) const{ return bool(); }
 bool AFGHologram::CanIntersectWithDesigner( AFGBuildableBlueprintDesigner* designer) const{ return bool(); }
 void AFGHologram::CheckValidPlacement(){ }
 void AFGHologram::CheckCanAfford( UFGInventoryComponent* inventory){ }
 void AFGHologram::OnSnap(){ }
+void AFGHologram::WaitForGamestateApplyCustomizationData(){  }
 void AFGHologram::OnRep_PlacementMaterialState(){ }
-void AFGHologram::SetMaterial( UMaterialInterface* material){ }
 void AFGHologram::SetMaterialState(EHologramMaterialState state){ }
 uint8 AFGHologram::GetStencilForHologramMaterialState(EHologramMaterialState state) const{ return uint8(); }
 USceneComponent* AFGHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
+USceneComponent* AFGHologram::SetupInstanceDataComponent(USceneComponent* attachParent, const struct FInstanceData& instanceData){ return nullptr; }
 TArray<UStaticMeshComponent*> AFGHologram::SpawnLightWeightInstanceData(USceneComponent* attachParent){ return TArray<UStaticMeshComponent*>(); }
 void AFGHologram::SetIsChanged(bool isChanged){ }
 bool AFGHologram::IsLocalHologram() const{ return bool(); }
 bool AFGHologram::IsValidHitActor(AActor* hitActor) const{ return bool(); }
 float AFGHologram::ApplyScrollRotationTo(float base, bool onlyUseBaseForAlignment) const{ return float(); }
-FVector AFGHologram::GetMaxNudgeDistance() const{ return FVector(); }
 FTransform AFGHologram::GetNudgeSpaceTransform() const{ return FTransform(); }
 void AFGHologram::SetupComponents(){ }
 void AFGHologram::Client_PlaySnapSound_Implementation(){ }

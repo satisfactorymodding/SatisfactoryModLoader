@@ -28,6 +28,21 @@ struct FAuthPendingAuthExpiration;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCommonUser, Log, All);
 
+// <FL> [ZimmermannA] Event that is being called when login process is being started or when it ended.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEOSLoginProcessUpdated, bool, hasStarted);
+// </FL> [ZimmermannA] 
+
+//<FL>[KonradA]
+UENUM(BlueprintType)
+enum class EUserJoinSessionFailureReason : uint8
+{
+	None,
+	NoPremium,
+	CrossPlayFailure,
+	NoEOS
+};
+//</FL>
+
 class FNativeGameplayTag;
 
 /** List of tags used by the common user subsystem */
@@ -96,8 +111,75 @@ struct FAggregatedOnlineStat
 	TArray< FString > AggregatedStats;
 };
 
+USTRUCT(BlueprintType)
+struct FOnlineActivityData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=OnlineActivity)
+	FString ActivityId;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=OnlineActivity)
+	FGameplayTag ActivityToEndAfterThis;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=OnlineActivity)
+	FGameplayTag ActivityToStartAfterThis;
+};
+
+USTRUCT(BlueprintType)
+struct FOnlineActivityDataRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=OnlineActivity)
+	FGameplayTag GameplayEvent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=OnlineActivity)
+	FOnlineActivityData Data;
+};
+
+USTRUCT(BlueprintType)
+struct FOnlineStatToActivityRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=OnlineActivity)
+	FGameplayTag StatTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=OnlineActivity)
+	FGameplayTag ActivityTag;
+};
+
+//<FL>[KonradA] Blueprint for a confirmation query code branch. Bind 2 functions and allow blueprint/widgets/modals to select which function to call, since we don't have access to
+// modal window frameworks in this plugin we use this to allow FactoryGame context to handle a code branch in the user subsystem however it wants.
+UCLASS(BlueprintType)
+class UOnlineCrossplayConfirmationQuery : public UObject
+{
+	GENERATED_BODY()
+public:
+	UFUNCTION(BlueprintCallable)
+	void Confirm()
+	{
+		OnConfirm();
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void Deny()
+	{
+		OnDeny();
+	}
+
+	TFunction<void()> OnConfirm;
+	TFunction<void()> OnDeny;
+};
+//</FL>
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLocalUserInfoCreated, ULocalUserInfo*, UserInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalUserFailedSessionJoin, ULocalUserInfo*, UserInfo, EUserJoinSessionFailureReason, Reason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalUserQueriesJoinCrossplay, ULocalUserInfo*, UserInfo, UOnlineCrossplayConfirmationQuery*, ConfirmationQuerySender);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnActivityChanged, const FName& /*Activity*/); // <FL> [TranN] PS5 Activity
+
+
 
 /**
  * Game subsystem that handles queries and changes to user identity and login status.
@@ -113,6 +195,13 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
+//<FL>[KonradA]
+	UPROPERTY(BlueprintAssignable)
+	FOnLocalUserFailedSessionJoin OnLocalUserFailedSessionJoin;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLocalUserQueriesJoinCrossplay OnLocalUserQueriesJoinCrossplay;
+//</FL>
 	/** Async future for when a local user info with a certain player index gets created. */
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnLocalUserInfoCreated_Native, ULocalUserInfo*);
 
@@ -122,6 +211,13 @@ public:
 	FDelegateHandle AddOnLocalUserInfoCreatedDelegate(FOnLocalUserInfoCreated_Native::FDelegate Delegate);
 	void RemoveOnLocalUserInfoCreatedDelegate(FDelegateHandle DelegateHandle);
 	
+	UFUNCTION()
+	void NotifyUserJoinFailure(ULocalUserInfo* User, EUserJoinSessionFailureReason Reason);
+//<FL>[KonradA]
+	void QueryUserTryJoinCrossplay(ULocalUserInfo* User, TFunction<void()> OnConfirm, TFunction<void()> OnDeny);
+	UFUNCTION(BlueprintCallable)
+	bool IsProcessingAuthenticationSequences();	   
+	//</FL>
 	/** Sets the maximum number of local players, will not destroy existing ones */
 	UFUNCTION(BlueprintCallable, Category = CommonUser)
 	virtual void SetMaxLocalPlayers(int32 InMaxLocalPLayers);
@@ -159,13 +255,23 @@ public:
 	 * Creates a new online authentication sequence if there's isn't already a pending one for the given platform user id
 	 */
 	UFUNCTION(BlueprintCallable)
-	UOnlineAsyncOperation *CreateAuthenticationSequence(FPlatformUserId PlatformUserId, FName SequenceName);
+	//<FL>[KonradA] Adding a parameter to suppress ui erroring out of the routine
+	UOnlineAsyncOperation *CreateAuthenticationSequence(FPlatformUserId PlatformUserId, FName SequenceName, bool bSuppressErrors = false);
 
 	UFUNCTION(BlueprintCallable)
 	void EnqueueAuthenticationSequence(UOnlineAsyncOperation* InAsyncOp);
 
+	// <FL> [TranN]
+	void SetPendingAuthenticationSequence(UOnlineAsyncOperation* InAsyncOp);
+	void ExecutePendingAuthenticationSequence();
+	void CancelPendingAuthenticationSequence();
+	// </FL>
+
 	ULocalUserInfo* GetUserInfoForAccountId(const UE::Online::FAccountId AccountId) const;
 	
+	UFUNCTION(BlueprintCallable)
+	FString GetAccountIdStringForUserBackend(UOnlineUserBackendLink* BackendLink);
+
 	/**
 	 * Starts a general user login and initialization process, using the params structure to determine what to log in to.
 	 * When the process has succeeded or failed, it will broadcast the OnUserInitializeComplete delegate.
@@ -243,6 +349,8 @@ public:
 	 */
 	void RegisterStats(UDataTable* StatTable);
 
+	void RegisterActivities(UDataTable* ActivityTable, UDataTable* StatToActivityTable);
+
 #if !UE_BUILD_SHIPPING
 	/** Used in development to reset stats / achievements of the specified local user. */
 	void ResetLocalUserStats(ULocalUserInfo* LocalUser);
@@ -275,11 +383,37 @@ public:
 
 	void UpdateAllAggregatedStats(const UE::Online::FAccountId& AccountId, UOnlineIntegrationBackend* Backend);
 
+	/** Helper function that converts an accountId (v2) to a UniqueNetId (v1).*/
+	FUniqueNetIdPtr ConvertAccountIdToNetId(UE::Online::FAccountId accountId);
+
+	UFUNCTION(BlueprintCallable)
+	void RefreshFriends();
+
+	// <FL> [TranN] PS5 Activity
+	FOnActivityChanged OnActivityStarted;
+	FOnActivityChanged OnActivityEnded;
+	// </FL>
+
+	// <FL> [ZimmermannA] 
+	UPROPERTY(BlueprintAssignable, Category = "Network", DisplayName = "OnEOSLoginProcessUpdated")
+	FOnEOSLoginProcessUpdated mOnEOSLoginProcessUpdated;
+	// </FL>
+
+	
+	//<FL>[KonradA]
+	void ResetAuthenticationQueue_Unsafe();
+	//</FL>
+
+	//<FL>[BGR]
+	int8 GetRefreshFriendsQueryID() const { return RefreshFriendsQueryID; }
+	//</FL>
+
+	UOnlineIntegrationSubsystem* GetOnlineIntegration() const;
 protected:
 	/**
 	 * Handles Gameplay events. Most likely that means a backend stat update
 	 */
-void OnGameplayEventTriggered(const FGameplayEvent& GameplayEvent);
+	void OnGameplayEventTriggered(const FGameplayEvent& GameplayEvent);
 	
 	/** Create a new user info object */
 	virtual ULocalUserInfo* CreateLocalUserInfo(int32 LocalPlayerIndex);
@@ -289,6 +423,9 @@ void OnGameplayEventTriggered(const FGameplayEvent& GameplayEvent);
 	 * the backends that the event instigator/s are fully authenticated for.
 	 */
 	TMap<FGameplayTag, FString> TrackedStatMap;
+
+	TMap<FGameplayTag, FOnlineActivityData> TrackedActivities;
+	TMap<FGameplayTag, FGameplayTag> StatToActivityMap;
 
 	TArray< FAggregatedOnlineStat > TrackedAggregatedStats;
 
@@ -392,4 +529,8 @@ void OnGameplayEventTriggered(const FGameplayEvent& GameplayEvent);
 	bool bStatUpdatesBlocked = false;
 	
 	friend ULocalUserInfo;
+
+	// <FL> [BGR] To identify request results from different request turns
+	int8 RefreshFriendsQueryID = 0; // it's ok if they overflow
+	// </FL>
 };

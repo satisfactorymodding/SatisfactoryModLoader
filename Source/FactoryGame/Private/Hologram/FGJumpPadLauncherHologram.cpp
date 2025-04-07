@@ -10,9 +10,12 @@ AFGJumpPadLauncherHologram::AFGJumpPadLauncherHologram() : Super() {
 	this->mBuildStep = EJumpPadHologramBuildStep::JPHBS_PlacementAndRotation;
 	this->mLaunchAngle = 45;
 	this->mLauncherMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LauncherMeshComponent"));
+	this->mLauncherMeshComponent->SetMobility(EComponentMobility::Movable);
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
+	this->mSplineComponent->SetMobility(EComponentMobility::Movable);
 	this->mTrajectoryMeshScale = FVector::ZeroVector;
 	this->mDestinationMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DestinationMeshComponent"));
+	this->mDestinationMeshComponent->SetMobility(EComponentMobility::Movable);
 	this->mDestinationMeshHeightOffset = 400.0;
 	this->mTrajectoryMeshSeparationDistance = 200.0;
 	this->mDestinationMeshRotation = FRotator::ZeroRotator;

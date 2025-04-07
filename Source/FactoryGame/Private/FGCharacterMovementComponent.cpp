@@ -2,17 +2,10 @@
 
 #include "FGCharacterMovementComponent.h"
 
-FFGPipeHyperDynamicPipeData::FFGPipeHyperDynamicPipeData(){ }
-FFGPipeHyperDynamicPipeData::FFGPipeHyperDynamicPipeData(const FFGPipeHyperDynamicPipeData& Other){ }
-FFGPipeHyperDynamicPipeData::FFGPipeHyperDynamicPipeData(FFGPipeHyperDynamicPipeData&& Other) noexcept{ }
-FFGPipeHyperDynamicPipeData::FFGPipeHyperDynamicPipeData(const StructOnScopeType& InStructOnScope){ }
-FFGPipeHyperDynamicPipeData& FFGPipeHyperDynamicPipeData::operator=(const FFGPipeHyperDynamicPipeData& Other){ return *(this); }
-FFGPipeHyperDynamicPipeData& FFGPipeHyperDynamicPipeData::operator=(FFGPipeHyperDynamicPipeData&& Other) noexcept{ return *(this); }
-bool FFGPipeHyperDynamicPipeData::Serialize(FArchive& Ar){ return bool(); }
-void FFGPipeHyperDynamicPipeData::AddStructReferencedObjects( FReferenceCollector& Collector){ }
 #if WITH_EDITOR
 bool UFGCharacterMovementComponent::MoveUpdatedComponentImpl(const FVector& Delta, const FQuat& NewRotation, bool bSweep, FHitResult* OutHit, ETeleportType Teleport){ return bool(); }
 #endif 
+void FFGPendingHyperJunctionInfo::SortOutputConnectionsClockwise(){ }
 UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
 	this->mLastJumpTimeStamp = 0.0;
 	this->mClimbSpeed = 500.0;
@@ -37,6 +30,7 @@ UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
 	this->mBaseVelocity = FVector::ZeroVector;
 	this->mBoostJumpZMultiplier = 1.5;
 	this->mBoostJumpVelocityMultiplier = 1.3;
+	this->mBoostJumpVelocityLimit = 3333.3;
 	this->mBoostJumpTimeWindow = 0.15;
 	this->mEnableVaultPrototype = false;
 	this->mVaultSweepDistance = 250.0;
@@ -128,7 +122,7 @@ AFGHoverPack* UFGCharacterMovementComponent::GetCachedHoverPack(){ return nullpt
 void UFGCharacterMovementComponent::TickSlide(const float delta){ }
 bool UFGCharacterMovementComponent::StartLedgeClimb(const float duration, const float speed){ return bool(); }
 void UFGCharacterMovementComponent::StopLedgeClimb(const bool interrupt){ }
-AActor* UFGCharacterMovementComponent::FindClosestPipeHyper(const FVector& worldLocation, const FVector& velocity, float& out_distanceAlongSpline, TStructOnScope<FFGPipeHyperBasePipeData>& out_pipeData) const{ return nullptr; }
+AActor* UFGCharacterMovementComponent::FindClosestPipeHyper(const FVector& worldLocation, const FVector& velocity, float& out_distanceAlongSpline, FFGDynamicStruct& out_pipeData) const{ return nullptr; }
 void UFGCharacterMovementComponent::UpdatePipeMovementDataFromCorrectionResult(const FVector& newLocation, const FVector& newVelocity){ }
 void FSavedMove_FGMovement::Clear(){ }
 uint8 FSavedMove_FGMovement::GetCompressedFlags() const{ return uint8(); }

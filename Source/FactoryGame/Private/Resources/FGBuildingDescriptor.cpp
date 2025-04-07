@@ -8,12 +8,14 @@ void UFGBuildingDescriptor::SetBuildableClass(TSubclassOf< UFGBuildingDescriptor
 #endif 
 UFGBuildingDescriptor::UFGBuildingDescriptor() : Super() {
 	this->mBuildableClass = nullptr;
+	this->mUsesDistanceForZooping = false;
 	this->mUseDisplayNameAndDescription = false;
 	this->mDisplayName = INVTEXT("");
 	this->mDescription = INVTEXT("");
 }
 void UFGBuildingDescriptor::PostLoad(){ Super::PostLoad(); }
 TSubclassOf< class AFGBuildable > UFGBuildingDescriptor::GetBuildableClass(TSubclassOf< UFGBuildingDescriptor > inClass){ return TSubclassOf<class AFGBuildable>(); }
+bool UFGBuildingDescriptor::GetUsesDistanceForZooping(TSubclassOf<UFGBuildingDescriptor> inClass){ return false; }
 float UFGBuildingDescriptor::GetPowerConsumption(TSubclassOf< UFGBuildingDescriptor > inClass){ return float(); }
 bool UFGBuildingDescriptor::HasVariablePowerConsumption(TSubclassOf< UFGBuildingDescriptor > inClass){ return bool(); }
 float UFGBuildingDescriptor::GetMinimumPowerConsumption(TSubclassOf< UFGBuildingDescriptor > inClass){ return float(); }

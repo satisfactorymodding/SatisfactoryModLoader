@@ -4,25 +4,32 @@
 
 void UFGSessionSettingsModel::SetSessionDefinition(USessionDefinition* SessionDefinition){ }
 void UFGSessionSettingsModel::SetSessionProfile(const FSessionProfilePath& ProfilePath){ }
+void UFGSessionSettingsModel::SetAllowCrossPlay(bool bAllowCrossPlay){  }
+void UFGSessionSettingsModel::SetCurrentAllowCrossPlay(bool bAllowCrossPlay){  }
 void UFGSessionSettingsModel::SetSessionName(FString SessionName){ }
 bool UFGSessionSettingsModel::HasPendingSessionDefinition() const{ return bool(); }
 bool UFGSessionSettingsModel::HasPendingSessionProfile() const{ return bool(); }
 bool UFGSessionSettingsModel::HasPendingSessionName() const{ return bool(); }
+bool UFGSessionSettingsModel::HasPendingCrossPlayAllowance() const{ return false; }
 bool UFGSessionSettingsModel::RequiresSessionRestart() const{ return bool(); }
 void UFGSessionSettingsModel::Reset(){ }
 const FString& UFGSessionSettingsModel::GetSessionName() const{ return *(new FString); }
 USessionDefinition* UFGSessionSettingsModel::GetSessionDefinition() const{ return nullptr; }
+bool UFGSessionSettingsModel::GetAllowCrossPlay() const{ return false; }
+bool UFGSessionSettingsModel::GetCurrentAllowCrossPlay() const{ return false; }
+void UFGSessionSettingsModel::RebroadcastFieldValueChanges(){  }
 FName UFGSessionSettingsModel::GetSessionProfile() const{ return FName(); }
 void UFGSessionSettingsModel::SetActiveSessionDefinition(USessionDefinition* activeSessionDefinition){ }
 void UFGSessionSettingsModel::SetCurrentSessionDefinition(USessionDefinition* activeSessionDefinition){ }
 void UFGSessionSettingsModel::SetCurrentSessionName(const FString& currentSessionName){ }
-void UFGSessionSettingsModel::InitializeModel(UFGSessionSettings* sessionSettings, AFGGameMode* gameMode){ }
+void UFGSessionSettingsModel::InitializeModel( APlayerController* player, UFGSessionSettings* sessionSettings, AFGGameMode* gameMode){ }
 FCommonSessionCreationSettings UFGSessionSettings::MakeSessionCreationSettings(APlayerController* Host, const FString& SessionName, const FSoftObjectPath& MapAssetName, const FCreateNewGameParameters& CreateNewGameParameters){ return FCommonSessionCreationSettings(); }
 void UFGSessionSettings::Initialize(FSubsystemCollectionBase& Collection){ }
 void UFGSessionSettings::ApplySettingsModel(UFGSessionSettingsModel* Model){ }
 void UFGSessionSettings::SetSessionSettingsProfile(FName ProfileName){ }
-UFGSessionSettingsModel* UFGSessionSettings::MakeSessionSettingsModel(AFGGameMode* gameMode){ return nullptr; }
+UFGSessionSettingsModel* UFGSessionSettings::MakeSessionSettingsModel(APlayerController* player, AFGGameMode* gameMode){ return nullptr; }
 FName UFGSessionSettings::GetCurrentProfileForSessionDefinition(USessionDefinition* SessionDefinition){ return FName(); }
+bool UFGSessionSettings::GetAllowCrossplayForSessionDefinition(USessionDefinition* SessionDefinition){ return false; }
 FSessionProfilePath UFGSessionSettings::MakeSessionProfilePathFromDefinitionAndProfile(USessionDefinition* SessionDefinition, const FSessionSettingsProfile &Profile) const{ return FSessionProfilePath(); }
 FSessionProfilePath UFGSessionSettings::MakeSessionProfilePathFromDefinitionAndProfileName(USessionDefinition* SessionDefinition, FName ProfileName) const{ return FSessionProfilePath(); }
 USessionDefinition* UFGSessionSettings::SessionDefinitionFromProfilePath(const FSessionProfilePath& SessionProfile) const{ return nullptr; }
