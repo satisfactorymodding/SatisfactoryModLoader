@@ -149,3 +149,5 @@ void AFGLightweightBuildableSubsystem::OnBuildEffectFinished( UFGMaterialEffectC
 void AFGLightweightBuildableSubsystem::CreateDismantleEffectForRuntimeData(TSubclassOf<AFGBuildable> buildableClass, FRuntimeBuildableInstanceData& runtimeData, AActor* instigator){  }
 void AFGLightweightBuildableSubsystem::OnDismantleEffectFinished( UFGMaterialEffectComponent* materialEffect){ }
 FRuntimeBuildableInstanceData AFGLightweightBuildableSubsystem::mStaticRuntimeInstanceDataStorage = FRuntimeBuildableInstanceData();
+
+bool LightweightBuildables::GAllowLightweightManagement = false;
