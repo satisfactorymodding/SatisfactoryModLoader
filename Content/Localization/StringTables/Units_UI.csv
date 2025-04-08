@@ -14,4 +14,5 @@
 "Meter/m","m","","","UI","#interface"
 "Number/Per/Minute/Pattern","{Value} per minute","","{Value} = number","UI","#interface"
 "Parts","Parts","Suffix for Solids, not sure if used","","",""
+"Slash/Per/Minute","/min","","","",""
 "Suffix/Per/Minute"," {Suffix} per minute","Leading space has to be preserved","{Suffix} = text, units","UI","#interface"

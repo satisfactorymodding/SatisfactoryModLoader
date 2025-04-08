@@ -51,6 +51,9 @@ Please select a Tier ","","","UI","#interface
 #milestone"
 "HUB/Name","The HUB","","","UI","#interface
 #hub"
+"HUB/Props/CoffeeMachine","Coffee Machine","","","",""
+"HUB/Props/Faucet","Faucet","","","",""
+"HUB/Props/Microwave","Microwave","","","",""
 "HUB/Rewards/HandEquipmentSlots/1","+1 Hand Equipment Slot","","","UI","#buildable
 #interface
 #hub

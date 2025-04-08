@@ -1,5 +1,6 @@
 ﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
 "AWESOME/ACategories/Architecture","Architecture","Category/subcategory of items that can be purchased in AWESOME Shop","","Game","#item #schematics"
+"AWESOME/ACategories/Architecture/Accessories","Accessories","Currently not implemented in-game. Will contain buildables like ventilation wall attachments.","","",""
 "AWESOME/ACategories/Architecture/Structural","Structural","Category/subcategory of items that can be purchased in AWESOME Shop","","Game","#item #schematics"
 "AWESOME/ACategories/Architecture/Traversal","Traversal","Category/subcategory of items that can be purchased in AWESOME Shop","","Game","#item #schematics"
 "AWESOME/ACategories/Categories/Parts","Parts","Category/subcategory of items that can be purchased in AWESOME Shop","","Game","#item #schematics"
@@ -45,6 +46,7 @@
 "AWESOMEShop/Architecture/MetalBarriers","Metal Barriers","","","",""
 "AWESOMEShop/Architecture/MetalPillarSet","Metal Pillar Set","","","Game","#item #schematics"
 "AWESOMEShop/Architecture/ModernCatwalks","Modern Catwalks","","","Game","#item #schematics"
+"AWESOMEShop/Architecture/RoadBarriers","Road Barriers","Currently not implemented in-game. Will unlock Road Barrier and a new corner piece.","","",""
 "AWESOMEShop/Architecture/RoofCorners","FICSIT Roof Corners","","","Game","#item #schematics"
 "AWESOMEShop/Architecture/RoofCorners/Description","New research has shown that repetitive Roof aesthetics reduce pioneer efficiency. Solve your productivity issues today with these versatile Roof Corner pieces!","","","Game","#item #schematics"
 "AWESOMEShop/Architecture/Roofs","FICSIT Roofs","","","Game","#item #schematics"
@@ -52,7 +54,10 @@
 
 Once Roofs are unlocked, Roof Materials will become available for purchase in the Customizer section of the AWESOME Shop. Do not miss out on these special looks!","","","Game","#item #schematics"
 "AWESOMEShop/Architecture/StructuralBeamPack","Structural Beam Pack","","","Game","#item #schematics"
+"AWESOMEShop/Architecture/StructuralBeamPack2","Beam Expansion Pack","Currently not implemented in-game. Adds more Beam buildables.","","",""
+"AWESOMEShop/Architecture/StructuralBeamPackCable","Structural Cable Pack","Currently not implemented in-game. Adds two Beam buildables that look like big cables.","","",""
 "AWESOMEShop/Architecture/StructuralFrameSet","Structural Frame Set","","","Game","#item #schematics"
+"AWESOMEShop/Architecture/VentilationBundle","Ventilation Bundle","Currently not implemented in-game. Unlocks a large vent and fan.","","",""
 "AWESOMEShop/Architecture/WalkwaysAndCatwalks/GenericDescription","Ever wanted to admire your factories from a safe and convenient overlook? Build some Walkways and let your own labor inspire you to do even better!","","","Game","#item #schematics"
 "AWESOMEShop/Customization/Finishes/CarbonSteel","Carbon Steel Finish","","","Game",""
 "AWESOMEShop/Customization/Finishes/CarbonSteel/Description","Adds the premium Carbon Steel Paint Finish to the Customizer, from where it can be applied to any building.","","","Game",""
@@ -149,7 +154,7 @@ Introducing: Half Foundations! Half the size, full price!","","","Game","#item #
 "AWESOMEShop/Specials/Checkmark","FICSIT Checkmark™","","","Game","#item #schematic"
 "AWESOMEShop/Specials/Checkmark/Description","The FICSIT Checkmark™ is a way for pioneers to truly distinguish themselves as Verified pioneers. It's an opt-in, paid subscription that adds an orange checkmark to your player ID in online sessions and offers no other beneficial features. 
 
-The goal of the FICSIT Checkmark™ is to increase trust in FICSIT Inc. by providing a visual signifier that notable pioneers are the real deal and not just impostors or parody pioneers that can’t afford the coupons.  
+The goal of the FICSIT Checkmark™ is to increase trust in FICSIT Inc. by providing a visual signifier that notable pioneers are the real deal and not just impostors or parody pioneers that can’t afford the Coupons.  
 
 The FICSIT Checkmark™ will only be visible in online sessions for other pioneers to witness your certification status within FICSIT. The knowledge of purchase is its own reward.","","","Game","#item #schematic"
 "AWESOMEShop/Specials/Checkmark/UnlockName","Small FICSIT Checkmark","","","Game","#item #schematic"
@@ -175,8 +180,10 @@ The FICSIT Checkmark™ will only be visible in online sessions for other pionee
 "AWESOMEShop/Walls/Gates","Gates","","","Game","#item #schematic"
 "AWESOMEShop/Walls/InvertedRampWallBundle","Inverted Ramp Wall Bundle","","","Game","#item #schematic"
 "AWESOMEShop/Walls/RampWallBundle","Ramp Wall Bundle","","","Game","#item #schematic"
+"AWESOMEShop/Walls/RampWindows","Ramp Window Walls","Currently not implemented in-game.","","",""
 "AWESOMEShop/Walls/SteelFramedWindows","Steel-Framed Windows","","","Game","#item #schematic"
 "AWESOMEShop/Walls/TiltedWalls","Tilted Walls","","","Game","#item #schematic"
+"AWESOMEShop/Walls/TiltedWindows","Tilted Window Walls","Currently not implemented in-game.","","",""
 "AWESOMEShop/Walls/WallExpantionPack","Wall Expansion Pack","","","Game","#item #schematic"
 "AWESOMEShop/Walls/WallLamps","Wall Lamps","","","Game","#item #schematic"
 "AWESOMEShop/Walls/WindowedWalls","Windowed Walls","","","Game","#item #schematic"

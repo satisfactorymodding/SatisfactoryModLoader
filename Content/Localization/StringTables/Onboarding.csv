@@ -33,7 +33,7 @@ Well done.","","","UI","interface
 "OnboardingSteps/DismantleDropPod/Objectives/1.GamepadControls","While in Dismantle Mode, hold <img id=""IA_PrimaryFire""/> to Dismantle.","","","UI","#gamepads"
 "OnboardingSteps/EquipXenoZapper","Equip the Xeno-Zapper","","","UI","#onboarding
 #xeno_zapper"
-"OnboardingSteps/EquipXenoZapper/Objectives/0","Press {PlayerInterfaceActions_ToggleInventory} to open the Inventory.","","{PlayerInterfaceActions_ToggleInventory} = text, key name","UI","#onboarding
+"OnboardingSteps/EquipXenoZapper/Objectives/0","Press {PlayerInterfaceActions_ToggleInventory} to open the inventory.","","{PlayerInterfaceActions_ToggleInventory} = text, key name","UI","#onboarding
 #xeno_zapper"
 "OnboardingSteps/EquipXenoZapper/Objectives/0.GamepadControls","Press <img id=""IA_ToggleInventory""/> to open the Inventory.","","","UI","#gamepads"
 "OnboardingSteps/EquipXenoZapper/Objectives/1","Drag and drop Equipment to a Hands slot to equip it.","","","UI","#onboarding
@@ -53,7 +53,7 @@ Well done.","","","UI","interface
 #hub"
 "OnboardingSteps/HUBUpgrade2/Hints/0","The Equipment Workshop is used to craft Equipment, like the Portable Miner.","","","UI",""
 "OnboardingSteps/HUBUpgrade2/Hints/1","Press {PlayerInterfaceActions_Dismantle} to enter Dismantle Mode. Buildings can be Dismantled without any loss of resources.","Only used in HUB Upgrade 3 now…","{PlayerInterfaceActions_Dismantle} = text, key name","",""
-"OnboardingSteps/HUBUpgrade2/Hints/3","Use {PlayerActions_CycleEquipmentNext}/{PlayerActions_CycleEquipmentPrevious} to swap between Hand Equipment. ","","{PlayerActions_CycleEquipmentNext} = text, key name
+"OnboardingSteps/HUBUpgrade2/Hints/3","Use {PlayerActions_CycleEquipmentNext}/{PlayerActions_CycleEquipmentPrevious} to swap between Hand Equipment.","","{PlayerActions_CycleEquipmentNext} = text, key name
 {PlayerActions_CycleEquipmentPrevious} = text, key name","",""
 "OnboardingSteps/HUBUpgrade2/Objectives/1.GamepadControls","Hold <img id=""IA_Player_HandheldSelectionRadialMenu""/> to swap between Hand Equipment.","","","UI","#gamepads"
 "OnboardingSteps/HUBUpgrade3","Complete HUB Upgrade 3","","","UI","#onboarding

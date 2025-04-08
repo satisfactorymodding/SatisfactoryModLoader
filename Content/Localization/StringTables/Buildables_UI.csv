@@ -1,4 +1,6 @@
 ﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
+"AGS/NoFuelEnabled","""No Fuel"" Setting Active","AGS = Advanced Game Settings ","","",""
+"AGS/NoPowerEnabled","""No Power"" Setting Active","AGS = Advanced Game Settings ","","",""
 "BlueprintDesigner/Details/Clear/Button","Clear Blueprint Designer","","","UI","#interface
 #buildable"
 "BlueprintDesigner/Details/Cost","Cost:","","","UI","#interface
@@ -202,6 +204,12 @@ Do you wish to continue?","","","UI","interface
 "Doors/Modes/LookAtDescription/Switch/Pattern","Press {Use_Key} to switch to {Mode} mode","","{Use_Key} = text, key name
 {Mode} = text, door mode: `Doors/Modes/LookAtDescription/` (Automatic|AlwaysOpen|AlwaysClosed)","UI","#interface
 #doors"
+"ElevatorCabin/LookAtDescription/Floor/CancelStop","Press <Key>{PlayerActions_Use}</> to Cancel Stop: {FLOOR NAME}","Interact with panel to cancel going to floor","{PlayerActions_Use} = text, Use Key 
+{Floor Name} = text, Name of floor or Floor Number if no name","",""
+"ElevatorCabin/LookAtDescription/Floor/GotoStop","Press <Key>{PlayerActions_Use}</> to Go to Stop: {FLOOR NAME}","Interact with panel to go to floor","{PlayerActions_Use} = text, Use Key 
+{Floor Name} = text, Name of floor or Floor Number if no name","",""
+"ElevatorCabin/LookAtDescription/OpenInteract","Press <Key>{PlayerActions_Use}</> to Edit Floor Info","Interact with panel to edit floor names","{PlayerActions_Use} = text, Use Key ","",""
+"ElevatorFloorStop/LookAtDescription/CallElevator","Press <Key>{PlayerActions_Use}</> to Call Elevator","Call elevator down (from outside)","{PlayerActions_Use} = text, Use Key ","",""
 "Equipment/PortableMiner/FunnyName","Portobello Miner","","","UI","#resources"
 "Equipment/PortableMiner/Keybindings/GrabAll","Grab All","","","UI","#resources"
 "Equipment/PortableMiner/Keybindings/PickUp","Pick Up Miner","","","UI","#resources"
@@ -398,7 +406,7 @@ NETWORK","","","UI","#interface
 "Manufacturing/OutputSlot/Info/Input","Input","","","UI","#interface
 #common
 #slot"
-"Manufacturing/OutputSlot/Info/Producing","Producing - ","","","UI","#interface
+"Manufacturing/OutputSlot/Info/Producing","Producing -","","","UI","#interface
 #common
 #slot"
 "Manufacturing/OutputSlot/Info/ProductionStats/FluidSuffix/Pattern","Fluid {suffix}","Goes into `Manufacturing/OutputSlot/ProductionStats/Pattern` as {suffix} if the product is liquid","{suffix} = text, units","UI","#interface
@@ -447,6 +455,22 @@ Inventory"
 "Manufacturing/UnlockBuildEffeciency","Building Efficiency Stat","","","UI",""
 "Manufacturing/UnlockBuildOverclock","Overclocking","","","UI",""
 "Manufacturing/UnlockProductionAmplifier","Production Amplifier","","","UI",""
+"Mergers/Label/MergerInputs","Merger Inputs","","","UI","#interface
+#buildable"
+"Mergers/Priority/High","High","","","UI","#interface
+#buildable"
+"Mergers/Priority/Label","Priority","","","UI","#interface
+#buildable"
+"Mergers/Priority/Low","Low","","","UI","#interface
+#buildable"
+"Mergers/Priority/Medium","Medium","","","UI","#interface
+#buildable"
+"Mergers/Rule/Input/Center","Center Input","","","UI","#interface
+#buildable"
+"Mergers/Rule/Input/Left","Left Input","","","UI","#interface
+#buildable"
+"Mergers/Rule/Input/Right","Right Input","","","UI","#interface
+#buildable"
 "Organization/CentralStorage/AlreadyInStockpile","Already in Stockpile:","","","UI","#interface
 #storage"
 "Organization/CentralStorage/DepotUploadRate","Depot Upload Rate:","","","UI",""
@@ -469,6 +493,7 @@ crate"
 "Organization/Crate/WindowTitle","Player Crate","","","UI","Crate Menu"
 "Organization/DeathCrate/MapText","Death Crate","","","",""
 "Organization/DismantleCrate/MapText","Dismantle Crate","","","",""
+"Organization/Generic/RemoveAll/Button","REMOVE ALL","","","",""
 "Organization/Generic/TakeAll/Button","TAKE ALL","","","UI","Crate Menu"
 "Organization/Shared/PipeModule/Storage","Storage","","","UI","#interface
 Fluid Buffer
@@ -489,6 +514,12 @@ Fluid Buffer
 #look_at_description"
 "Organization/Storage/WindowTitle","Storage","","","UI","#interface
 #storage"
+"PersonnelElevator/","Personnel Elevator","Name of buildable","","",""
+"PersonnelElevator/Floors/","Floor {FloorNumber}","Descriptive in list of floors. E.g. ""Floor 1"". ""Floor 2"", etc.","","",""
+"PersonnelElevator/Floors/FloorEditor/Floor","Edit Elevator Floor...","","","",""
+"PersonnelElevator/Floors/FloorEditor/Icon","Floor Icon:","","","",""
+"PersonnelElevator/Floors/FloorEditor/Name","Floor Name:","","","",""
+"PersonnelElevator/Floors/FloorEditor/SelectColor","Select Color...","","","",""
 "Player/Respawn/Status/Reviving","Reviving...","","","UI","interface"
 "Power/AlienPower/Graph/Label","Graph","","","UI","Alien Power Augmenter"
 "Power/AlienPower/Info/CircuitBoost","Circuit Boost:","","","UI","Alien Power Augmenter"
@@ -645,7 +676,7 @@ Power Switch"
 "ProjectAssembly/Presentations/29","Don't ask","","","UI",""
 "ProjectAssembly/Presentations/3/1/Subheader","PHASE 3: Main Body","","","UI",""
 "ProjectAssembly/Presentations/3/2/Subheader","Look in the HUB","","","UI",""
-"ProjectAssembly/Presentations/3/2/Texts/0","Aluminium Production","","","UI",""
+"ProjectAssembly/Presentations/3/2/Texts/0","Aluminum Production","","","UI",""
 "ProjectAssembly/Presentations/3/2/Texts/1","Hoverpack","","","UI",""
 "ProjectAssembly/Presentations/3/2/Texts/2","Aerial Transportation","","","UI",""
 "ProjectAssembly/Presentations/3/2/Texts/3","Nuclear Power","","","UI",""
@@ -971,6 +1002,8 @@ Space Elevator screen","{tiers} = text, comma and ampersand-separated list of Ti
 "Splitters/Smart/Outputs/AllCaps","SPLITTER OUTPUTS","","","UI","#resources
 #buildable"
 "Storage/Locker/LookAtDescription","Press <Key>{PlayerActions_Use}</> to open Character Customization.","","{PlayerActions_Use} = text, key name","",""
+"ThroughputDisplay/Calibrating","Calibrating:","","","",""
+"ThroughputDisplay/Graph/ThroughputRate","Throughput Rate","","","",""
 "UnlockPickup/LookAtDescription/Pattern","Press [{0}] to unlock {1}","","{0} = text, key name
 {1} = text, ...?","UI","#common
 #look_at_description"

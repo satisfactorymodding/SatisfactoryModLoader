@@ -70,7 +70,7 @@
 "Photo/TakePicture","Take Picture","","","UI","#gamepads"
 "Photo/ToggleHighRes","Toggle Hi-Res","","","UI","#gamepads"
 "aCommon/BackToMainMode","Back to Main Mode","","","UI","#gamepads"
-"aCommon/BigMenu","Big Menu","","","UI","#gamepads"
+"aCommon/BigMenu","Map, To-Do List, Codex","","","UI","#gamepads"
 "aCommon/BuildMenu","Build Menu","","","UI","#gamepads"
 "aCommon/GameMenu","Game Menu","","","UI","#gamepads"
 "aCommon/HideUI","Hide UI","","","UI","#gamepads"

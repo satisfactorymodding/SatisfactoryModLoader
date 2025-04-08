@@ -30,6 +30,7 @@
 "Customizer/HUD/Keybindings/Apply","Apply","","","UI","#customization"
 "Customizer/HUD/Keybindings/ApplyCustomization","Apply Customization","","","UI","#customization"
 "Customizer/HUD/Keybindings/CustomizerFilter","Customizer Filter","","","UI","#customization"
+"Customizer/HUD/Keybindings/CustomizerFilter/Cleared","Customizer Filter Cleared!","Text shown when the customizer filter is cleared","","",""
 "Customizer/HUD/Keybindings/CustomizerMenu","Customizer Menu","","","UI","#customization"
 "Customizer/HUD/Keybindings/HideHUD","Hide HUD","","","UI","#customization"
 "Customizer/HUD/Keybindings/QuickSwitch","Quick Switch","","","UI","#customization"
