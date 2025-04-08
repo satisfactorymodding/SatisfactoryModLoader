@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "HookTargetNode.h"
+#include "Nodes/HookTargetNode.h"
 #include "SGraphNodeDefault.h"
 #include "Widgets/Input/SComboBox.h"
 
@@ -25,6 +25,8 @@ protected:
 	void OnOwnerBlueprintChanged(UBlueprint* InOwnerBlueprint);
 	TSharedRef<SWidget> HandleGenerateTextBoxFunctionNameItem(TSharedPtr<FString> StringItem);
 	bool IsEditable() const;
+	bool IsClassContextForced() const;
+	UClass* GetForcedClassContext() const;
 
 	TAttribute<bool> IsEditableAttribute{false};
 	UHookTargetNode* GraphNode{};

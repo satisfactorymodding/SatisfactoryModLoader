@@ -369,14 +369,15 @@ TSharedPtr<FScriptExpr> FScriptExprAssembler::DisassembleScriptExpr(const uint8*
 		case EX_SwitchValue: {
 			const uint16 NumCases = ReadRawData<uint16>(ScriptData, ScriptOffset);
 			Result->Operands.Add(NumCases);
-			const CodeSkipSizeType EndAbsoluteCodeOffset = ReadRawData<CodeSkipSizeType>(ScriptData, ScriptOffset);
-			Result->Operands.Add(FScriptExprOperand::CreateResolvedLabel(EndAbsoluteCodeOffset));
+			// Skip absolute code offset to the end of the switch expression, this is not a real jump target as it does not point to a statement
+			ReadRawData<CodeSkipSizeType>(ScriptData, ScriptOffset);
+		
 			Result->Operands.Add(DisassembleScriptExpr(ScriptData, ScriptOffset, Result));
 
 			for (int32 CaseIndex = 0; CaseIndex < NumCases; CaseIndex++) {
 				Result->Operands.Add(DisassembleScriptExpr(ScriptData, ScriptOffset, Result));
-				const CodeSkipSizeType CaseAbsoluteCodeOffset = ReadRawData<CodeSkipSizeType>(ScriptData, ScriptOffset);
-				Result->Operands.Add(FScriptExprOperand::CreateResolvedLabel(CaseAbsoluteCodeOffset));
+				// Skip absolute code offset to the next switch case, this is not a real jump target as it does not point to a statement
+				ReadRawData<CodeSkipSizeType>(ScriptData, ScriptOffset);
 				Result->Operands.Add(DisassembleScriptExpr(ScriptData, ScriptOffset, Result));
 			}
 			Result->Operands.Add(DisassembleScriptExpr(ScriptData, ScriptOffset, Result));
@@ -664,24 +665,40 @@ void FScriptExprAssembler::AssembleScriptExpr(TArray<uint8>& OutScriptData, int3
 		}
 		case EX_SwitchValue: {
 			const uint16 Operand0 = Expr->RequireOperand(0, FScriptExprOperand::TypeInteger).Integer;
-			const CodeSkipSizeType Operand1 = Expr->RequireOperand(1, FScriptExprOperand::TypeLabel).TargetLabelCodeOffset;
-			const TSharedPtr<FScriptExpr>& Operand2 = Expr->RequireOperand(2, FScriptExprOperand::TypeExpr).Expr;
+			const TSharedPtr<FScriptExpr>& Operand1 = Expr->RequireOperand(1, FScriptExprOperand::TypeExpr).Expr;
 
 			WriteRawData<uint16>(OutScriptData, ScriptOffset, Operand0);
-			WriteRawData<CodeSkipSizeType>(OutScriptData, ScriptOffset, Operand1);
-			AssembleScriptExpr(OutScriptData, ScriptOffset, Operand2);
+			
+			// Write placeholder absolute code skip offset to the end of switch expression, we will come back to it to patch it up once we finish serializing the current instruction
+			int32 SwitchExpressionEndSkipOffsetOffset = ScriptOffset;
+			CodeSkipSizeType SwitchExpressionEndSkipOffset = -1;
+			WriteRawData<CodeSkipSizeType>(OutScriptData, ScriptOffset, SwitchExpressionEndSkipOffset);
+			
+			AssembleScriptExpr(OutScriptData, ScriptOffset, Operand1);
 
 			for (int32 CaseIndex = 0; CaseIndex < Operand0; CaseIndex++) {
-				const TSharedPtr<FScriptExpr>& OperandI0 = Expr->RequireOperand(3 + CaseIndex * 3 + 0, FScriptExprOperand::TypeExpr).Expr;
-				const CodeSkipSizeType OperandI1 = Expr->RequireOperand(3 + CaseIndex * 3 + 1, FScriptExprOperand::TypeLabel).TargetLabelCodeOffset;
-				const TSharedPtr<FScriptExpr>& OperandI2 = Expr->RequireOperand(3 + CaseIndex * 3 + 2, FScriptExprOperand::TypeExpr).Expr;
+				const TSharedPtr<FScriptExpr>& CaseSelectorExpression = Expr->RequireOperand(2 + CaseIndex * 2 + 0, FScriptExprOperand::TypeExpr).Expr;
+				const TSharedPtr<FScriptExpr>& CaseValueExpression = Expr->RequireOperand(2 + CaseIndex * 2 + 1, FScriptExprOperand::TypeExpr).Expr;
 				
-				AssembleScriptExpr(OutScriptData, ScriptOffset, OperandI0);
-				WriteRawData<CodeSkipSizeType>(OutScriptData, ScriptOffset, OperandI1);
-				AssembleScriptExpr(OutScriptData, ScriptOffset, OperandI2);
+				AssembleScriptExpr(OutScriptData, ScriptOffset, CaseSelectorExpression);
+
+				// Write placeholder absolute code skip offset to the next case statement, we will come back to it to patch it up once we write the value expression for this case
+				int32 SwitchCaseEndSkipOffsetOffset = ScriptOffset;
+				CodeSkipSizeType SwitchCaseEndSkipOffset = -1;
+				WriteRawData<CodeSkipSizeType>(OutScriptData, ScriptOffset, SwitchCaseEndSkipOffset);
+				
+				AssembleScriptExpr(OutScriptData, ScriptOffset, CaseValueExpression);
+
+				// Patcj up placeholder absolute code skip offset that we have written above
+				SwitchCaseEndSkipOffset = ScriptOffset;
+				WriteRawData<CodeSkipSizeType>(OutScriptData, SwitchCaseEndSkipOffsetOffset, SwitchCaseEndSkipOffset);
 			}
-			const TSharedPtr<FScriptExpr>& OperandN = Expr->RequireOperand(3 + Operand0 * 3, FScriptExprOperand::TypeExpr).Expr;
+			const TSharedPtr<FScriptExpr>& OperandN = Expr->RequireOperand(2 + Operand0 * 2, FScriptExprOperand::TypeExpr).Expr;
 			AssembleScriptExpr(OutScriptData, ScriptOffset, OperandN);
+
+			// Patch up placeholder absolute code skip offset that we have written earlier
+			SwitchExpressionEndSkipOffset = ScriptOffset;
+			WriteRawData<CodeSkipSizeType>(OutScriptData, SwitchExpressionEndSkipOffsetOffset, SwitchExpressionEndSkipOffset);
 			break;
 		}
 		case EX_AutoRtfmTransact: {

@@ -9,6 +9,30 @@ class UBlueprintGeneratedClass;
 class UHookBlueprintGeneratedClass;
 
 UCLASS()
+class SML_API UBlueprintMixinHostComponent : public UActorComponent {
+	GENERATED_BODY()
+public:
+	// Begin UActorComponent interface
+	virtual void OnComponentCreated() override;
+	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	// End UActorComponent interface
+
+	UBlueprintActorMixin* FindMixinByClass(TSubclassOf<UBlueprintActorMixin> MixinClass) const;
+protected:
+	/** Mixin classes installed on this host */
+	UPROPERTY(VisibleAnywhere, Category = "Mixin Host")
+	TArray<UHookBlueprintGeneratedClass*> MixinClasses;
+
+	/** Constructed mixins for this actor instance */
+	UPROPERTY()
+	TArray<UBlueprintActorMixin*> MixinInstances;
+
+	friend class UBlueprintHookManager;
+};
+
+UCLASS()
 class SML_API UBlueprintHookManager : public UEngineSubsystem {
     GENERATED_BODY()
 private:
@@ -26,9 +50,18 @@ public:
 private:
 	/** Called to sanitize the function code prior to the save and remove any hooks from it */
 	static void SanitizeFunctionScriptCodeBeforeSave(UFunction* InFunction);
+
+	/** Called to sanotize the simple construction script and purge any transient nodes from its lists to avoid runtime crash */
+	static void SanitizeSimpleConstructionScript(class USimpleConstructionScript* InSimpleConstructionScript);
+
+	/** Applies currently registered and valid hooks and mixins to the blueprint class */
+	void ApplyRegisteredHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass) const;
 	
 	/** Re-applies currently registered blueprint hooks to the provided BPGC */
-	void ApplyBlueprintHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass) const;
+	void ApplyBlueprintHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass, const TArray<FBlueprintHookDefinition>& BlueprintHooks) const;
+
+	/** Re-applies currently registered blueprint mixins to the provided BPGC */
+	void ApplyActorMixinsToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass, TArray<UHookBlueprintGeneratedClass*>& BlueprintMixins) const;
 
 	/** Applies the new script code to the function while also stashing away the original code */
 	static void UpdateFunctionScriptCode(UFunction* InFunction, const TArray<uint8>& NewScriptCode, const TArray<uint8>& OriginalScriptCode);

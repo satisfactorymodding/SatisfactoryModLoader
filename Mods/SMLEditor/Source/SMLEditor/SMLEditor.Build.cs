@@ -32,6 +32,7 @@ public class SMLEditor : ModuleRules
         
         PrivateDependencyModuleNames.AddRange(new[] {
 	        "PropertyEditor",
+	        "SubobjectDataInterface",
         });
 
         //SML transitive dependencies

@@ -1,9 +1,9 @@
-﻿#include "Hooking/HookTargetNode_TargetExpression.h"
+﻿#include "Nodes/HookTargetNode_TargetExpression.h"
 #include "EdGraph/EdGraph.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "Engine/Engine.h"
 #include "Hooking/EdGraphSchema_HookTarget.h"
-#include "Hooking/HookTargetNode_Root.h"
+#include "Nodes/HookTargetNode_Root.h"
 
 #define LOCTEXT_NAMESPACE "SMLEditor"
 

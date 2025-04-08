@@ -14,6 +14,7 @@ enum class EHTNMemberRefFlags : uint64 {
 	SelfContext = 0x02,
 	FunctionsWithScriptOnly = 0x04,
 	ShowDelegateSignatureFunctions = 0x08,
+	HookTargetFunctionReference = 0x10,
 };
 ENUM_CLASS_FLAGS(EHTNMemberRefFlags);
 

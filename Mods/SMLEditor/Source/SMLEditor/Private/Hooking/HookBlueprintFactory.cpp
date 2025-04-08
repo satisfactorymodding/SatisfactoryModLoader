@@ -14,6 +14,7 @@ UHookBlueprintFactory::UHookBlueprintFactory(const FObjectInitializer& ObjectIni
 	SupportedClass = UHookBlueprint::StaticClass();
 	ParentClass = UStaticBlueprintHook::StaticClass();
 	BlueprintType = BPTYPE_FunctionLibrary;
+	bSkipClassPicker = true;
 }
 
 FText UHookBlueprintFactory::GetDisplayName() const {
@@ -47,10 +48,6 @@ UObject* UHookBlueprintFactory::FactoryCreateNew(UClass* Class, UObject* InParen
 		return HookBlueprint;
 	}
 	return nullptr;
-}
-
-bool UHookBlueprintFactory::ConfigureProperties() {
-	return true;
 }
 
 FString UHookBlueprintFactory::GetDefaultNewAssetName() const {

@@ -1,7 +1,9 @@
-﻿#include "Hooking/HookTargetNode_Root.h"
+﻿#include "Nodes/HookTargetNode_Root.h"
 #include "EdGraph/EdGraph.h"
 #include "Hooking/EdGraphSchema_HookTarget.h"
-#include "Hooking/GraphNodeHookTarget_Root.h"
+#include "GraphNodes/GraphNodeHookTarget_Root.h"
+#include "Kismet2/BlueprintEditorUtils.h"
+#include "Patching/BlueprintHookBlueprint.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
 #define LOCTEXT_NAMESPACE "SMLEditor"
@@ -48,7 +50,7 @@ void UHookTargetNode_Root::GetMemberReferenceDescriptors(TArray<FHookTargetNodeM
 	OutMemberReferenceDescriptors.Add(FHookTargetNodeMemberReferenceDescriptor{
 		GET_MEMBER_NAME_CHECKED(ThisClass, TargetFunctionReference),
 		LOCTEXT("HookTargetNodeRoot_TargetFunction", "Target Function"),
-		EHTNMemberRefFlags::FunctionReference | EHTNMemberRefFlags::FunctionsWithScriptOnly
+		EHTNMemberRefFlags::FunctionReference | EHTNMemberRefFlags::FunctionsWithScriptOnly | EHTNMemberRefFlags::HookTargetFunctionReference
 	});
 	OutMemberReferenceDescriptors.Add(FHookTargetNodeMemberReferenceDescriptor{
 		GET_MEMBER_NAME_CHECKED(ThisClass, HookFunctionReference),
@@ -96,6 +98,16 @@ void UHookTargetNode_Root::CompileRoot(FCompilerResultsLog& MessageLog, UClass* 
 	OutBlueprintHookDefinition.TargetSelectionMode = TargetSelectionMode;
 	OutBlueprintHookDefinition.TargetOrdinal = TargetOrdinal;
 
+	// If current blueprint is not a Function Library, we must have mixin target class as the target function scope, otherwise this hook is invalid
+	const UHookBlueprint* OwnerBlueprint = Cast<UHookBlueprint>(FBlueprintEditorUtils::FindBlueprintForNode(this));
+	if (OwnerBlueprint && OwnerBlueprint->BlueprintType != BPTYPE_FunctionLibrary) {
+		if (!TargetFunctionReference.IsSelfContext() && TargetFunctionReference.GetScope() && TargetFunctionReference.GetScope() != OwnerBlueprint->MixinTargetClass) {
+			MessageLog.Error(*FText::Format(LOCTEXT("HookTargetNode_Root_InvalidHookTargetScope", "Blueprint Hook Node @@ does not have a valid Class as a Target Function Scope. All hooks in this Blueprint must target Class {0}."),
+				FText::FromString(GetPathNameSafe(OwnerBlueprint->MixinTargetClass))).ToString(), this);
+			return;
+		}
+	}
+
 	// Resolve target function. Avoid passing self context since we never want the target to be on this blueprint
 	OutBlueprintHookDefinition.TargetFunction = TargetFunctionReference.ResolveMember<UFunction>();
 
@@ -104,6 +116,7 @@ void UHookTargetNode_Root::CompileRoot(FCompilerResultsLog& MessageLog, UClass* 
 	if (OutBlueprintHookDefinition.HookFunction == nullptr) {
 		MessageLog.Error(*FText::Format(LOCTEXT("HookTargetNode_Root_CannotResolveHook", "Blueprint Hook Node @@ could not find Hook Implementation function {0}. Hook implementation function might have been removed."),
 			FText::FromName(TargetFunctionReference.GetMemberName())).ToString(), this);
+		return;
 	}
 
 	// Resolve the target specifier pin

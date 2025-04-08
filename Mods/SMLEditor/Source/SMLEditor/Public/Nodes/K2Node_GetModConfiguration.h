@@ -1,4 +1,5 @@
 #pragma once
+
 #include "CoreMinimal.h"
 #include "K2Node.h"
 #include "Configuration/ModConfiguration.h"

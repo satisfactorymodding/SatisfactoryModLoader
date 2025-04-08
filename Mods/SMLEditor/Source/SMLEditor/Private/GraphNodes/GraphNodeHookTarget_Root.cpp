@@ -1,5 +1,5 @@
-﻿#include "Hooking/GraphNodeHookTarget_Root.h"
-#include "Hooking/HookTargetNode_Root.h"
+﻿#include "GraphNodes/GraphNodeHookTarget_Root.h"
+#include "Nodes/HookTargetNode_Root.h"
 
 #define LOCTEXT_NAMESPACE "SMLEditor"
 

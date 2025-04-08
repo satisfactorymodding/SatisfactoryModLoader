@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/MemberReference.h"
-#include "Hooking/HookTargetNode.h"
+#include "Nodes/HookTargetNode.h"
 #include "Patching/BlueprintHookingTypes.h"
 #include "HookTargetNode_Root.generated.h"
 

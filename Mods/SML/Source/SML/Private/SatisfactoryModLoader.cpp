@@ -19,7 +19,6 @@
 #include "Serialization/JsonSerializer.h"
 #include "ParseExecCommands.h"
 #include "Patching/BlueprintHookManager.h"
-#include "Patching/BlueprintSCSHookManager.h"
 #include "Patching/WidgetBlueprintHookManager.h"
 
 #ifndef FACTORYGAME_VERSION
@@ -140,7 +139,6 @@ void FSatisfactoryModLoader::RegisterSubsystems() {
 	FSMLNetworkManager::RegisterMessageTypeAndHandlers();
 
 	// Register static hooks for SCS hook manager if necessary
-	UBlueprintSCSHookManager::RegisterStaticHooks();
 	UWidgetBlueprintHookManager::RegisterStaticHooks();
 	UBlueprintHookManager::RegisterStaticHooks();
 }

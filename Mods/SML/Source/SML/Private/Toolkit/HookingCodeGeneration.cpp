@@ -14,10 +14,10 @@ FHookCodeGenFunctionContext::FHookCodeGenFunctionContext(UFunction* OwnerFunctio
 	bFunctionUsesFlowStack = !FunctionScript.IsEmpty() && FunctionScript[0]->Opcode == EX_PushExecutionFlow;
 }
 
-void FHookCodeGenFunctionContext::InitializeUbergraphFunction(const TMap<UFunction*, TSharedPtr<FScriptExpr>>& UberGraphEventEntryPoints) {
+void FHookCodeGenFunctionContext::InitializeUbergraphFunction(const TMap<UFunction*, TSharedPtr<FScriptExpr>>& UberGraphEventEntryPoints, const TMap<UFunction*, TArray<TSharedPtr<FScriptExpr>>>& EventFunctionToEventStubScript) {
 	// Mark the function as the ubergraph
 	bIsUberGraphFunction = true;
-
+	
 	// Perform reachability analysis to deduce all statements that are rechable from the entry point of a particular event into the event graph
 	for (const TPair<UFunction*, TSharedPtr<FScriptExpr>>& EntryPointData : UberGraphEventEntryPoints) {
 		EventGraphEventToEntryPoint.Add(EntryPointData.Key, EntryPointData.Value);
@@ -62,6 +62,35 @@ void FHookCodeGenFunctionContext::InitializeUbergraphFunction(const TMap<UFuncti
 		}
 		// Associate the list of reachable statements with this event function so that event target resolvers can find their targets
 		EventFunctionToReachableStatements.Add(EntryPointData.Key, {ReachableStatements, SyntheticEventReturnStatement});
+		TMap<FName, FProperty*>& StubLocalVariableToEventGraphLocalVariable = EventGraphEventToParameterNameToUbergraphStackFrameProperty.FindOrAdd(EntryPointData.Key);
+		
+		// Process event stub to determine the intermediate variable names used in event graph frame for event parameters
+		for (const TSharedPtr<FScriptExpr>& EventStubStatement : EventFunctionToEventStubScript.FindChecked(EntryPointData.Key)) {
+
+			// We are dealing with a persistent ubergraph frame
+			if (EventStubStatement->Opcode == EX_LetValueOnPersistentFrame) {
+				FProperty* EventGraphLocalVariable = EventStubStatement->RequireOperand(0, FScriptExprOperand::TypeProperty).Property;
+				const TSharedPtr<FScriptExpr> ValueExpression = EventStubStatement->RequireOperand(1, FScriptExprOperand::TypeExpr).Expr;
+
+				// Assignment expression in event graph stub must always be a simple local variable read
+				if (ValueExpression->Opcode == EX_LocalVariable) {
+					const FProperty* EventStubLocalVariable = ValueExpression->RequireOperand(0, FScriptExprOperand::TypeProperty).Property;
+					StubLocalVariableToEventGraphLocalVariable.Add(EventStubLocalVariable->GetFName(), EventGraphLocalVariable);
+				}
+			}
+			// We are dealing with a non-persistent ubergraph frame
+			else if (FScriptExprClassification::IsSingleAssignmentOpcode(EventStubStatement->Opcode)) {
+				const TSharedPtr<FScriptExpr> AssignmentExpression = FScriptExprHelper::GetAssignmentStatementLHS(EventStubStatement);
+				const TSharedPtr<FScriptExpr> ValueExpression = FScriptExprHelper::GetSingleAssignmentStatementRHS(EventStubStatement);
+
+				// Assignment should be from a simple local variable to a simple instance variable in default context
+				if (AssignmentExpression->Opcode == EX_InstanceVariable && ValueExpression->Opcode == EX_LocalVariable) {
+					FProperty* EventGraphInstanceVariable = AssignmentExpression->RequireOperand(0, FScriptExprOperand::TypeProperty).Property;
+					const FProperty* EventStubLocalVariable = ValueExpression->RequireOperand(0, FScriptExprOperand::TypeProperty).Property;
+					StubLocalVariableToEventGraphLocalVariable.Add(EventStubLocalVariable->GetFName(), EventGraphInstanceVariable);
+				}
+			}
+		}
 	}
 }
 
@@ -134,7 +163,7 @@ TSharedPtr<FScriptExpr> FHookCodeGenFunctionContext::GenerateStaticFunctionInvoc
 	return FunctionCallContextExpression;
 }
 
-TSharedPtr<FScriptExpr> FHookCodeGenFunctionContext::GenerateFunctionOrObjectContextHookParameterValue(const FHookCodeGenParameterDescriptor& ParameterDescriptor) const {
+TSharedPtr<FScriptExpr> FHookCodeGenFunctionContext::GenerateFunctionOrObjectContextHookParameterValue(UFunction* OwnerFunctionOrEvent, const FHookCodeGenParameterDescriptor& ParameterDescriptor) const {
 	const FName ParameterName = ParameterDescriptor.ParameterProperty->GetFName();
 
 	// Attempt to resolve as class instance variable (but only if function is not marked as Static)
@@ -144,6 +173,22 @@ TSharedPtr<FScriptExpr> FHookCodeGenFunctionContext::GenerateFunctionOrObjectCon
 			LocalVariableReadExpression->Opcode = EX_InstanceVariable;
 			LocalVariableReadExpression->Operands.Add(InstanceVariableProperty);
 			return LocalVariableReadExpression;
+		}
+	}
+
+	// If this is an ubergraph event hook, the hook might attempt to capture event function parameters as local variables, but they have mangled names inside the ubergraph.
+	// So we need to look up the original parameter name to the evenr graph property it maps to before attempting to look up locals normally
+	if (bIsUberGraphFunction && OwnerFunctionOrEvent && EventGraphEventToParameterNameToUbergraphStackFrameProperty.Contains(OwnerFunctionOrEvent)) {
+		const TMap<FName, FProperty*>& EventParameterNameToEventGraphProperty = EventGraphEventToParameterNameToUbergraphStackFrameProperty.FindChecked(OwnerFunctionOrEvent);
+		if (EventParameterNameToEventGraphProperty.Contains(ParameterName)) {
+			FProperty* LocalVariableProperty = EventParameterNameToEventGraphProperty.FindChecked(ParameterName);
+
+			// This is a local variable on the persistent ubergraph frame or an instance level variable, so pick the correct opcode based on the owner struct
+			const TSharedPtr<FScriptExpr> EventGraphLocalVariableReadExpression = MakeShared<FScriptExpr>();
+			EventGraphLocalVariableReadExpression->Opcode = LocalVariableProperty->GetOwnerStruct()->IsA<UClass>() ? EX_InstanceVariable :
+				(LocalVariableProperty->HasAnyPropertyFlags(CPF_OutParm) ? EX_LocalOutVariable : EX_LocalVariable);
+			EventGraphLocalVariableReadExpression->Operands.Add(LocalVariableProperty);
+			return EventGraphLocalVariableReadExpression;
 		}
 	}
 
@@ -219,7 +264,7 @@ bool FHookCodeGenFunctionContext::GenerateInsertionHookInvocation(const FHookCod
 		}
 		
 		// Generate common hook parameter value otherwise
-		return GenerateFunctionOrObjectContextHookParameterValue(ParameterDescriptor);
+		return GenerateFunctionOrObjectContextHookParameterValue(HookData.TargetFunctionOrEvent, ParameterDescriptor);
 	});
 
 	// Check that we have successfully generated the invocation expression
@@ -274,7 +319,7 @@ TSharedPtr<FScriptExpr> FHookCodeGenFunctionContext::GenerateRedirectHookInvocat
 		}
 		
 		// Generate common hook parameter value otherwise
-		return GenerateFunctionOrObjectContextHookParameterValue(ParameterDescriptor);
+		return GenerateFunctionOrObjectContextHookParameterValue(HookData.TargetFunctionOrEvent, ParameterDescriptor);
 	});
 
 	// Check that we have successfully generated the invocation expression
@@ -547,7 +592,7 @@ bool FHookCodeGenFunctionContext::GenerateFunctionCode(TArray<TSharedPtr<FScript
 			// We cannot actually insert after hooks if this statement represents an unconditional control flow jump, since they would never be called
 			if (!FScriptExprClassification::IsUnconditionalControlFlowStop(OriginalScriptStatement->Opcode)) {
 				// Generate insert after hooks
-				for (const FHookCodeGenInsertionHookData& BeforeHook : StatementModificationData->InsertBeforeHooks) {
+				for (const FHookCodeGenInsertionHookData& BeforeHook : StatementModificationData->InsertAfterHooks) {
 					bInstalledAllHooksSuccessfully &= GenerateInsertionHookInvocation(BeforeHook, OutFunctionScript);
 				}
 			} else if (!StatementModificationData->InsertAfterHooks.IsEmpty()) {

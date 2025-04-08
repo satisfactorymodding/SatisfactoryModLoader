@@ -1,5 +1,4 @@
 ﻿#include "Hooking/EdGraphSchema_HookTarget.h"
-
 #include "EdGraphUtilities.h"
 #include "ScopedTransaction.h"
 #include "ToolMenu.h"

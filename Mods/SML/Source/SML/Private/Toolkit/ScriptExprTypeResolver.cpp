@@ -318,7 +318,7 @@ TSharedPtr<FScriptExprType> FScriptExprTypeResolver::ResolveExpressionTypeWithEx
 		case EX_NoInterface: { return FScriptExprType::CreateInterfaceProperty(UInterface::StaticClass()); }
 		case EX_SwitchValue: {
 			const uint16 NumCases = Expr->RequireOperand(0, FScriptExprOperand::TypeInteger).Integer;
-			const TSharedPtr<FScriptExpr>& DefaultCaseValue = Expr->RequireOperand(3 + NumCases * 3, FScriptExprOperand::TypeExpr).Expr;
+			const TSharedPtr<FScriptExpr>& DefaultCaseValue = Expr->RequireOperand(2 + NumCases * 2, FScriptExprOperand::TypeExpr).Expr;
 			return ResolveExpressionTypeWithExplicitContext(DefaultCaseValue, ContextType);
 		}
 		default: { return FScriptExprType::CreateNothing(); }

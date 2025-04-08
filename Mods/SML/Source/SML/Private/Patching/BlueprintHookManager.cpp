@@ -12,6 +12,111 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogBlueprintHookManager, All, All);
 
+void UBlueprintMixinHostComponent::OnComponentCreated() {
+	Super::OnComponentCreated();
+
+	const UWorld* OwnerWorld = GetWorld();
+	AActor* OwnerActor = GetOwner();
+
+	// Do not create mixin instances for non-game world actors. We do not want to modify editor worlds
+	// since they will be saved, and we only want active mixins to be saved in game and not within the editor assets.
+	if (OwnerActor && OwnerWorld && OwnerWorld->IsGameWorld()) {
+
+		// Check which mixins we might already have to avoid creating them multiple times
+		TSet<UHookBlueprintGeneratedClass*> ExistingMixinInstanceClasses;
+		for (const UBlueprintActorMixin* ActorMixin : MixinInstances) {
+			if (ActorMixin) {
+				ExistingMixinInstanceClasses.Add(Cast<UHookBlueprintGeneratedClass>(ActorMixin->GetClass()));
+			}
+		}
+		
+		// Create mixin instances or find existing ones. Skip nulls since editor can null out references to deleted assets
+		for (UHookBlueprintGeneratedClass* MixinClass : MixinClasses) {
+			if (MixinClass && !ExistingMixinInstanceClasses.Contains(MixinClass) && MixinClass->IsChildOf<UBlueprintActorMixin>() && !MixinClass->HasAnyClassFlags(CLASS_Deprecated | CLASS_Abstract)) {
+
+				// Attempt to find an existing mixin object. If we failed, create a new one
+				const FName MixinInstanceName = *FString::Printf(TEXT("Mixin_%s"), *MixinClass->GetName());
+				UBlueprintActorMixin* ActorMixinObject = Cast<UBlueprintActorMixin>(StaticFindObjectFast(MixinClass, OwnerActor, MixinInstanceName, true));
+				if (ActorMixinObject == nullptr) {
+					ActorMixinObject = NewObject<UBlueprintActorMixin>(OwnerActor, MixinClass, MixinInstanceName);
+					check(ActorMixinObject);
+				}
+
+				// Add mixin object to the list
+				MixinInstances.Add(ActorMixinObject);
+			}
+		}
+	}
+
+	// Evaluate overlay component tree for each mixin
+	for (UBlueprintActorMixin* ActorMixin : MixinInstances) {
+		if (ActorMixin) {
+			const UHookBlueprintGeneratedClass* MixinGeneratedClass = Cast<UHookBlueprintGeneratedClass>(ActorMixin->GetClass());
+			if (MixinGeneratedClass && MixinGeneratedClass->OverlayComponentTree) {
+				MixinGeneratedClass->OverlayComponentTree->ExecuteOnActor(OwnerActor, ActorMixin);
+			}
+		}
+	}
+
+	// Dispatch OnMixinCreated to all the mixins now that we have created components for all of them
+	bool bAnyMixinsRequireComponentTick = false;
+	for (UBlueprintActorMixin* ActorMixin : MixinInstances) {
+		if (ActorMixin) {
+			ActorMixin->DispatchMixinCreated();
+			bAnyMixinsRequireComponentTick |= ActorMixin->bEnableMixinTick;
+		}
+	}
+
+	// If any of our mixins require Tick to be dispatched, set bCanEverTick to true
+	if (bAnyMixinsRequireComponentTick) {
+		PrimaryComponentTick.bCanEverTick = true;
+	}
+}
+
+void UBlueprintMixinHostComponent::BeginPlay() {
+	Super::BeginPlay();
+
+	// Dispatch BeginPlay to mixins
+	for (UBlueprintActorMixin* ActorMixin : MixinInstances) {
+		if (ActorMixin) {
+			ActorMixin->DispatchBeginPlay();
+		}
+	}
+}
+
+void UBlueprintMixinHostComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// Tick mixins only if we are ticking actors, or if we are paused. Mixin actor tick mimics Actor tick, which runs even if the game is paused
+	if (TickType == LEVELTICK_All || TickType == LEVELTICK_PauseTick) {
+		// Dispatch Tick to mixins
+		for (UBlueprintActorMixin* ActorMixin : MixinInstances) {
+			if (ActorMixin && ActorMixin->bEnableMixinTick) {
+				ActorMixin->DispatchTick(DeltaTime);
+			}
+		}
+	}
+}
+
+void UBlueprintMixinHostComponent::EndPlay(const EEndPlayReason::Type EndPlayReason) {
+	// Dispatch EndPlay to mixins
+	for (UBlueprintActorMixin* ActorMixin : MixinInstances) {
+		if (ActorMixin) {
+			ActorMixin->DispatchEndPlay(EndPlayReason);	
+		}
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
+UBlueprintActorMixin* UBlueprintMixinHostComponent::FindMixinByClass(TSubclassOf<UBlueprintActorMixin> MixinClass) const {
+	for (UBlueprintActorMixin* ActorMixin : MixinInstances) {
+		if (ActorMixin && ActorMixin->GetClass() == MixinClass) {
+			return ActorMixin;
+		}
+	}
+	return nullptr;
+}
+
 bool UBlueprintHookManager::GetOriginalScriptCodeFromFunction(const UFunction* InFunction, TArray<uint8>& OutOriginalScriptCode) {
 	constexpr int32 HookedFunctionFooterSizeBytes = 6;
 	const int32 NumScriptBytes = InFunction->Script.Num();
@@ -64,24 +169,40 @@ static TAutoConsoleVariable<bool> CVarDumpBlueprintPatchingResults(
 	TEXT("1 = Dump function code to log after blueprint hook application; 0 = only dump on errors"),
 	ECVF_Default);
 
-void UBlueprintHookManager::ApplyBlueprintHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass) const {
+void UBlueprintHookManager::ApplyRegisteredHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass) const {
 	TArray<FBlueprintHookDefinition> BlueprintHooks;
+	TArray<UHookBlueprintGeneratedClass*> ActorMixins;
 	
 	// Collect all active hook registrations for this class
 	if (const TArray<TSoftObjectPtr<UHookBlueprintGeneratedClass>>* RegisteredHooks = InstalledHooksPerBlueprintGeneratedClass.Find(BlueprintGeneratedClass->GetClassPathName())) {
 		for (const TSoftObjectPtr<UHookBlueprintGeneratedClass>& HookBlueprintClass : *RegisteredHooks) {
 			// Attempt to load the hook class. If the asset has been deleted in the editor this might fail.
 			if (UHookBlueprintGeneratedClass* LoadedHookClass = HookBlueprintClass.LoadSynchronous()) {
+
+				// Get hook descriptors from the class
 				for (const FBlueprintHookDefinition& HookDefinition : LoadedHookClass->HookDescriptors) {
 					// Check that hook definition has valid data and targets this class
 					if (HookDefinition.HookFunction && HookDefinition.TargetFunction && HookDefinition.TargetSpecifier && HookDefinition.TargetFunction->GetOuterUClass() == BlueprintGeneratedClass) {
 						BlueprintHooks.Add(HookDefinition);
 					}
 				}
+				// Add this class as a mixin if provided class is the target and this class is a mixin hook
+				if (LoadedHookClass->MixinTargetClass && LoadedHookClass->MixinTargetClass == BlueprintGeneratedClass && LoadedHookClass->IsChildOf<UBlueprintActorMixin>()) {
+					ActorMixins.Add(LoadedHookClass);
+				}
 			}
 		}
 	}
-	
+
+	// We have to apply hooks even if we have no active hooks, because we might want to reset currently applied hooks
+	ApplyBlueprintHooksToBlueprintClass(BlueprintGeneratedClass, BlueprintHooks);
+	// Apply actor mixins if this is an actor class as well
+	if (BlueprintGeneratedClass->IsChildOf<AActor>() && BlueprintGeneratedClass->SimpleConstructionScript) {
+		ApplyActorMixinsToBlueprintClass(BlueprintGeneratedClass, ActorMixins);
+	}
+}
+
+void UBlueprintHookManager::ApplyBlueprintHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass, const TArray<FBlueprintHookDefinition>& BlueprintHooks) const {
 	// Disassemble all blueprint functions in the class
 	TMap<UFunction*, TArray<TSharedPtr<FScriptExpr>>> FunctionToFunctionScript;
 	TMap<UFunction*, TArray<uint8>> FunctionToOriginalScript;
@@ -130,6 +251,7 @@ void UBlueprintHookManager::ApplyBlueprintHooksToBlueprintClass(UBlueprintGenera
 		// Process functions to spot any calls into the ubergraph so that we can patch them up later
 		for (const TPair<UFunction*, TArray<TSharedPtr<FScriptExpr>>>& FunctionToScriptPair : FunctionToFunctionScript) {
 			for (const TSharedPtr<FScriptExpr>& FunctionStatement : FunctionToScriptPair.Value) {
+				
 				// If we have a local final function call into the ubergraph function, this is an event function stub
 				if (FunctionStatement->Opcode == EX_LocalFinalFunction && FunctionStatement->RequireOperand(0, FScriptExprOperand::TypeObject).Object == ExecuteUbergraphFunction) {
 					// Resolve to which specific statement this event points
@@ -177,7 +299,7 @@ void UBlueprintHookManager::ApplyBlueprintHooksToBlueprintClass(UBlueprintGenera
 
 		// If this is an ubergraph function, initialize it with the data for each event function contained in it
 		if (Pair.Key == ExecuteUbergraphFunction) {
-			FunctionContext.InitializeUbergraphFunction(EventFunctionToUberGraphEntryPoint);
+			FunctionContext.InitializeUbergraphFunction(EventFunctionToUberGraphEntryPoint, FunctionToFunctionScript);
 		}
 
 		// Resolve hook targets and then generate the function code after the hook application
@@ -299,9 +421,43 @@ void UBlueprintHookManager::ApplyBlueprintHooksToBlueprintClass(UBlueprintGenera
 	}
 }
 
+void UBlueprintHookManager::ApplyActorMixinsToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass, TArray<UHookBlueprintGeneratedClass*>& BlueprintMixins) const {
+	// Find an existing mixin host component node on the actor
+	USCS_Node* MixinComponentHostNode = nullptr;
+	for (USCS_Node* RootNode : BlueprintGeneratedClass->SimpleConstructionScript->GetRootNodes()) {
+		if (RootNode && RootNode->ComponentClass == UBlueprintMixinHostComponent::StaticClass()) {
+			MixinComponentHostNode = RootNode;
+			break;
+		}
+	}
 
-// Names of owner classes for hooked blueprint functions, used to avoid relatively expensive sanitization pass on functions on classes that are not hooked
-static TSet<FName> HookedBlueprintFunctionClassFNameSet;
+	// If we have no node and no blueprint mixins to install, we can exit early
+	if (MixinComponentHostNode == nullptr && BlueprintMixins.IsEmpty()) {
+		return;
+	}
+	
+	// Create a new SCS node that will hold the mixin host component if we do not have one
+	if (MixinComponentHostNode == nullptr) {
+		MixinComponentHostNode = NewObject<USCS_Node>(BlueprintGeneratedClass->SimpleConstructionScript, TEXT("TRANSIENT_NODE_MixinHostComponent"), RF_Transient);
+		MixinComponentHostNode->ComponentClass = UBlueprintMixinHostComponent::StaticClass();
+		
+		MixinComponentHostNode->ComponentTemplate = NewObject<UActorComponent>(BlueprintGeneratedClass, UBlueprintMixinHostComponent::StaticClass(),
+			*FString::Printf(TEXT("TRANSIENT_MixinHostComponent%s"), *USimpleConstructionScript::ComponentTemplateNameSuffix), RF_ArchetypeObject | RF_Transient);
+		
+		// Add the node as a root node. It does not need to be attached to any other nodes.
+		// We cannot use AddNode here because it would mark the package dirty, which we do not want because the original blueprint must appear unchanged from the user perspective,
+		// and we will purge that extra node that we have added before the asset is actually saved on disk
+		const_cast<TArray<USCS_Node*>&>(BlueprintGeneratedClass->SimpleConstructionScript->GetRootNodes()).Add(MixinComponentHostNode);
+		const_cast<TArray<USCS_Node*>&>(BlueprintGeneratedClass->SimpleConstructionScript->GetAllNodes()).Add(MixinComponentHostNode);
+	}
+
+	// Replace the mixin classes on the component template. All new actors created from the template will have the provided mixins initialized.
+	UBlueprintMixinHostComponent* MixinHostComponentTemplate = CastChecked<UBlueprintMixinHostComponent>(MixinComponentHostNode->ComponentTemplate);
+	MixinHostComponentTemplate->MixinClasses = BlueprintMixins;
+}
+
+// Names of owner classes for hooked blueprint functions/SCS hooks, used to avoid relatively expensive sanitization pass on functions and SCS on classes that are not hooked
+static TSet<FName> HookedBlueprintGeneratedClassNames;
 
 void UBlueprintHookManager::RegisterStaticHooks() {
 #if WITH_EDITOR
@@ -310,8 +466,12 @@ void UBlueprintHookManager::RegisterStaticHooks() {
 	if (FSatisfactoryModLoader::IsAssetHookingAllowed()) {
 		FCoreUObjectDelegates::OnObjectPreSave.AddStatic([](UObject* InObject, FObjectPreSaveContext) {
 			UFunction* Function = Cast<UFunction>(InObject);
-			if (Function && !Function->Script.IsEmpty() && HookedBlueprintFunctionClassFNameSet.Contains(Function->GetOuterUClass()->GetFName())) {
+			if (Function && !Function->Script.IsEmpty() && HookedBlueprintGeneratedClassNames.Contains(Function->GetOuterUClass()->GetFName())) {
 				SanitizeFunctionScriptCodeBeforeSave(Function);
+			}
+			USimpleConstructionScript* SimpleConstructionScript = Cast<USimpleConstructionScript>(InObject);
+			if (SimpleConstructionScript && HookedBlueprintGeneratedClassNames.Contains(SimpleConstructionScript->GetOwnerClass()->GetFName())) {
+				SanitizeSimpleConstructionScript(SimpleConstructionScript);
 			}
 		});
 		// TODO: Add OnAssetDeleted callback here and to all other systems to delete stale hooks
@@ -324,6 +484,20 @@ void UBlueprintHookManager::SanitizeFunctionScriptCodeBeforeSave(UFunction* InFu
 	TArray<uint8> OriginalFunctionScript;
 	if (GetOriginalScriptCodeFromFunction(InFunction, OriginalFunctionScript)) {
 		InFunction->Script = OriginalFunctionScript;
+	}
+}
+
+void UBlueprintHookManager::SanitizeSimpleConstructionScript(USimpleConstructionScript* InSimpleConstructionScript) {
+	TArray<USCS_Node*> TemporaryRootNodesToPurge;
+	for (USCS_Node* RootNode : InSimpleConstructionScript->GetRootNodes()) {
+		if (RootNode->HasAnyFlags(RF_Transient) && RootNode->ComponentClass == UBlueprintMixinHostComponent::StaticClass()) {
+			TemporaryRootNodesToPurge.Add(RootNode);
+		}
+	}
+	if (!TemporaryRootNodesToPurge.IsEmpty()) {
+		for (USCS_Node* TemporaryRootNode : TemporaryRootNodesToPurge) {
+			InSimpleConstructionScript->RemoveNode(TemporaryRootNode, false);
+		}
 	}
 }
 
@@ -369,6 +543,11 @@ void UBlueprintHookManager::RegisterBlueprintHook(UGameInstance* OwnerGameInstan
 		InstalledHooksForBlueprintClass.AddUnique(TSoftObjectPtr<UHookBlueprintGeneratedClass>(HookBlueprintGeneratedClass));
 	}
 
+	// If we have a mixin target class, we have to apply hooks to it as well, even if we have traditional hook definitions registered
+	if (HookBlueprintGeneratedClass->MixinTargetClass) {
+		ClassesToReapplyHooks.Add(HookBlueprintGeneratedClass->MixinTargetClass);
+	}
+
 	// Keep the hook object itself from being garbage collected
 	OwnerGameInstance->RegisterReferencedObject(HookBlueprintGeneratedClass);
 
@@ -376,8 +555,10 @@ void UBlueprintHookManager::RegisterBlueprintHook(UGameInstance* OwnerGameInstan
 	for (UBlueprintGeneratedClass* BlueprintGeneratedClass : ClassesToReapplyHooks) {
 		// Make sure the blueprint is kept in memory until the game instance runs out of scope
 		OwnerGameInstance->RegisterReferencedObject(BlueprintGeneratedClass);
+		// Mark the class as needing the sanitization before it can be saved on disk in the editor
+		HookedBlueprintGeneratedClassNames.Add(BlueprintGeneratedClass->GetFName());
 
 		// Apply blueprint hooks to that class
-		ApplyBlueprintHooksToBlueprintClass(BlueprintGeneratedClass);
+		ApplyRegisteredHooksToBlueprintClass(BlueprintGeneratedClass);
 	}
 }

@@ -5,7 +5,6 @@
 #include "Patching/BlueprintHookBlueprint.h"
 #include "Patching/BlueprintHookManager.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
-#include "Patching/BlueprintSCSHookManager.h"
 #include "Patching/WidgetBlueprintHookManager.h"
 #include "Registry/GameMapRegistry.h"
 #include "Registry/SessionSettingsRegistry.h"
@@ -55,14 +54,9 @@ void UGameInstanceModule::RegisterDefaultContent() {
     }
 
 	UBlueprintHookManager* BlueprintHookManager = GameInstance->GetEngine()->GetEngineSubsystem<UBlueprintHookManager>();
-	for (const TSubclassOf<UStaticBlueprintHook>& HookBlueprintClass : BlueprintHooks) {
+	for (const TSubclassOf<UBlueprintHook>& HookBlueprintClass : BlueprintHooks) {
 		BlueprintHookManager->RegisterBlueprintHook(GameInstance, Cast<UHookBlueprintGeneratedClass>(HookBlueprintClass.Get()));
 	}
-
-    UBlueprintSCSHookManager* HookManager = GameInstance->GetEngine()->GetEngineSubsystem<UBlueprintSCSHookManager>();
-    for (URootBlueprintSCSHookData* HookData : BlueprintSCSHooks) {
-        HookManager->RegisterBlueprintSCSHook(HookData);
-    }
 
     UWidgetBlueprintHookManager* WidgetHookManager = GameInstance->GetEngine()->GetEngineSubsystem<UWidgetBlueprintHookManager>();
     for (UWidgetBlueprintHookData* HookData : WidgetBlueprintHooks) {

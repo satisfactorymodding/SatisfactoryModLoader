@@ -42,13 +42,14 @@ protected:
 	TSet<TSharedPtr<FScriptExpr>> EventGraphEntryPointStatements;
 	TMap<TSharedPtr<FScriptExpr>, FHookCodeGenStatementModificationData> StatementToHookModificationData;
 	TArray<TSharedPtr<FScriptExpr>> SyntheticReturnStatements;
+	TMap<UFunction*, TMap<FName, FProperty*>> EventGraphEventToParameterNameToUbergraphStackFrameProperty;
 	bool bFunctionUsesFlowStack{false};
 public:
 	/** Initializes the function context with the provided function and its script */
 	FHookCodeGenFunctionContext(UFunction* OwnerFunction, const TArray<TSharedPtr<FScriptExpr>>& FunctionScript);
 
 	/** Called to populate the ubergraph function context with the entry points to the ubergraph from other functions */
-	void InitializeUbergraphFunction(const TMap<UFunction*, TSharedPtr<FScriptExpr>>& UberGraphEventEntryPoints);
+	void InitializeUbergraphFunction(const TMap<UFunction*, TSharedPtr<FScriptExpr>>& UberGraphEventEntryPoints, const TMap<UFunction*, TArray<TSharedPtr<FScriptExpr>>>& EventFunctionToEventStubScript);
 
 	/** Attempts to resolve the targets of the provided hooks in this function, and prepare them for application */
 	void ResolveHookTargets(const TArray<FBlueprintHookDefinition>& Hooks);
@@ -60,7 +61,7 @@ protected:
 	static TSharedPtr<FScriptExpr> GenerateStaticFunctionInvocationExpression(UFunction* CallTarget, UClass* OuterFunctionUClass, const TFunctionRef<TSharedPtr<FScriptExpr>(FProperty*)>& ParameterExpressionGenerator);
 
 	/** Generates expression to populate the hook parameter with data available during the function execution */
-	TSharedPtr<FScriptExpr> GenerateFunctionOrObjectContextHookParameterValue(const FHookCodeGenParameterDescriptor& ParameterDescriptor) const;
+	TSharedPtr<FScriptExpr> GenerateFunctionOrObjectContextHookParameterValue(UFunction* OwnerFunctionOrEvent, const FHookCodeGenParameterDescriptor& ParameterDescriptor) const;
 	
 	/** Generates insertion hook invocation and appends it to the output script */
 	bool GenerateInsertionHookInvocation(const FHookCodeGenInsertionHookData& HookData, TArray<TSharedPtr<FScriptExpr>>& OutGeneratedStatements) const;

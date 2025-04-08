@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Hooking/HookTargetNode.h"
+#include "Nodes/HookTargetNode.h"
 #include "Templates/SubclassOf.h"
 #include "HookTargetNode_TargetExpression.generated.h"
 

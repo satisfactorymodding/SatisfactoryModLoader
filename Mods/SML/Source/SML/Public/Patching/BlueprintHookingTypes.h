@@ -1,15 +1,85 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "GameFramework/Actor.h"
 #include "BlueprintHookingTypes.generated.h"
 
 class FBlueprintHookTargetResolver;
 
+/** Base class for all blueprint hooks, both static and instance based */
+UCLASS(Abstract, BlueprintInternalUseOnly)
+class SML_API UBlueprintHook : public UObject {
+	GENERATED_BODY()
+};
+
 /** Parent class for static blueprint hooks */
 UCLASS(Abstract, Blueprintable, BlueprintInternalUseOnly, meta = (ShowWorldContextPin))
-class SML_API UStaticBlueprintHook : public UObject {
+class SML_API UStaticBlueprintHook : public UBlueprintHook {
 	GENERATED_BODY()
+};
+
+/** Parent class for blueprint hooks that represent actor mixins */
+UCLASS(Abstract, Blueprintable, BlueprintInternalUseOnly, Within = Actor)
+class SML_API UBlueprintActorMixin : public UBlueprintHook {
+	GENERATED_BODY()
+public:
+	// Begin UObject interface
+#if WITH_EDITOR
+	virtual bool ImplementsGetWorld() const override { return true; }
+#endif
+	// End UObject interface
+
+	/** Retrieves actor mixin instance of the provided type from the actor instance */
+	UFUNCTION(BlueprintPure, Category = "Actor Mixin", meta = (DeterminesOutputType = "InMixinClass", CallableWithoutWorldContext))
+	static UBlueprintActorMixin* GetActorMixin( const AActor* InActor, TSubclassOf<UBlueprintActorMixin> InMixinClass);
+
+	/** Internal function used by generated hooking code */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly)
+	static UObject* GetHookObjectInstanceFromTargetMethodInstance(UObject* InObjectInstance, UClass* InHookObjectClass);
+
+	/** Called when mixin is created on the actor instance */
+	void DispatchMixinCreated();
+
+	/** Dispatches BeginPlay to the mixin */
+	void DispatchBeginPlay();
+
+	/** Dispatches Tick to the mixin. Will only be called if bEnableMixinTick is true */
+	void DispatchTick(float DeltaTime);
+
+	/** Dispatches EndPlay to the mixin */
+	void DispatchEndPlay(EEndPlayReason::Type EndPlayReason);
+protected:
+	/** Called when the mixin is created on the actor. Mixins are created during SCS initialization. */
+	virtual void OnMixinCreated() {}
+	
+	/** Called when the actor receives BeginPlay. This is called after the actors BeginPlay */
+	virtual void BeginPlay() {}
+
+	/** Called when the actor receives tick. Requires bEnableMixinTick to be set to true */
+	virtual void Tick(float DeltaTime) {}
+
+	/** Called when the actor receives EndPlay. This is called before the actors EndPlay */
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) {}
+	
+	/** Called when the mixin is created on the actor. This is called before Actor construction script is executed */
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Construction Script"))
+	void UserConstructionScript();
+	
+	/** Called when BeginPlay is dispatched on the actor this mixin is attached to */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Actor Mixin", meta = (DisplayName = "Begin Play"))
+	void ReceiveBeginPlay();
+
+	/** Called to dispatch Tick to blueprint classes */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Actor Mixin", meta = (DisplayName = "Tick"))
+	void ReceiveTick(float DeltaTime);
+
+	/** Called when EndPlay is dispatched on the actor this mixin is attached to */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Actor Mixin", meta = (DisplayName = "End Play"))
+	void ReceiveEndPlay();
+public:
+	/** True to enable Tick to be dispatched for this mixin. Tick will not be called unless this is enabled */
+	UPROPERTY(EditDefaultsOnly, Category = "Actor Mixin")
+	bool bEnableMixinTick{false};
 };
 
 UENUM()
