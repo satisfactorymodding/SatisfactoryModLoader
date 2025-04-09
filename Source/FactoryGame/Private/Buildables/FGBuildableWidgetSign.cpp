@@ -10,7 +10,6 @@ AFGBuildableWidgetSign::AFGBuildableWidgetSign() : Super() {
 	this->mSignProxyPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProxyMesh"));
 	this->mSignProxyPlane->SetMobility(EComponentMobility::Static);
 	this->mSignTypeDescriptor = nullptr;
-	this->mPrefabLayout = nullptr;
 	this->mGainSignificanceDistance = 10000.0;
 	this->mWidgetMaterial = nullptr;
 	this->mEmissiveOnlySignMaterial = nullptr;

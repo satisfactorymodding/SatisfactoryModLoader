@@ -56,6 +56,7 @@ public:
 protected:
 
 	// The build step of this hologram. Are we placing? Changing height? Rotating?
+	UPROPERTY( CustomSerialization )
 	ESignHologramBuildStep mBuildStep;
 
 private:

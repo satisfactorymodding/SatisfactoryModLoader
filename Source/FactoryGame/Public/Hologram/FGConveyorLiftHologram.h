@@ -157,6 +157,7 @@ private:
 	UPROPERTY()
 	float mFirstStepYaw;
 
+	UPROPERTY( CustomSerialization )
 	int32 mActivePointIdx;
 };
 

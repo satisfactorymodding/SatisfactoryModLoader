@@ -75,6 +75,8 @@ public:
 			FGameplayTag MoveLeft;
 			FGameplayTag MoveUp;
 			FGameplayTag MoveDown;
+			FGameplayTag MoveFaster;
+			FGameplayTag MoveSlower;
 		} DetachedCamera;
 		
 		// Actions

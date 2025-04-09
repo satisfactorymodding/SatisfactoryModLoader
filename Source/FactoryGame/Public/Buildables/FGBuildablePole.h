@@ -83,3 +83,14 @@ protected:
 	int32 mPoleVariationVisualizationOverride;
 #endif
 };
+
+/**
+ * Same as AFGBuildablePole, but we disable replication for customization data
+ */
+UCLASS( Abstract )
+class FACTORYGAME_API AFGBuildablePole_NoCustomization : public AFGBuildablePole
+{
+	GENERATED_BODY()
+public:
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+};

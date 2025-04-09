@@ -28,10 +28,14 @@ FVariant UFGUserSettingApplyType::GetValueToSave() const{ return FVariant(); }
 FVariant UFGUserSettingApplyType::GetPendingAppliedValue() const{ return FVariant(); }
 bool UFGUserSettingApplyType::HasPendingChanges() const{ return bool(); }
 bool UFGUserSettingApplyType::IsDefaultValueApplied() const{ return bool(); }
-void UFGUserSettingApplyType::SetOptionRowWidget( UFGDynamicOptionsRow* inOptionRowWidget){ }
+void UFGUserSettingApplyType::AddOptionRowWidget(class UFGDynamicOptionsRow* inOptionRowWidget){ }
+void UFGUserSettingApplyType::BroadcastUpdatePendingIconVisibility(){ }
+void UFGUserSettingApplyType::BroadcastOptionValueChanged(){ }
 void UFGUserSettingApplyType::GetDebugData(TArray<FString>& out_debugData){ }
 TScriptInterface<IFGOptionInterface> UFGUserSettingApplyType::GetOwnerOptionInterface() const{ return TScriptInterface<IFGOptionInterface>(); }
 bool UFGUserSettingApplyType::IsInMainMenu() const{ return bool(); }
+void UFGUserSettingApplyType::BroadcastBeforeOptionValueReset(){ }
+void UFGUserSettingApplyType::BroadcastBeforeOptionValueApply(){ }
 bool UFGUserSettingApplyType_UpdateInstantly::OnApply(bool markDirty){ return bool(); }
 void UFGUserSettingApplyType_UpdateInstantly::SetValue(FVariant newValue){ }
 void UFGUserSettingApplyType_UpdateInstantly::ClearPendingChanges(){ }

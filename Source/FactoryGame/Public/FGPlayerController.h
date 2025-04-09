@@ -658,7 +658,9 @@ private:
 	virtual void Input_PhotoModeMoveDown( const FInputActionValue& ActionValue );
 	virtual void Input_PhotoModeMoveMouseX( const FInputActionValue& ActionValue );
 	virtual void Input_PhotoModeMoveMouseY( const FInputActionValue& ActionValue );
-
+	virtual void Input_PhotoModeMoveFaster( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeMoveSlower( const FInputActionValue& ActionValue );
+	
     virtual void Input_PhotoModeToggleDecoupleCamera( const FInputActionValue& ActionValue );
 	
 	virtual void Input_ClipboardCopy( const FInputActionValue& actionValue );

@@ -371,6 +371,9 @@ protected:
 	*/
 	FORCEINLINE void GetStearmingLevelDataMap( TMap< FString, FPerStreamingLevelSaveData* >& out_data );
 
+	/** Retrieves the save level name to be used as a key for this level data */
+	static FString GetSaveLevelName( const ULevel* level );
+	
 	/**
 	* A helper function that will call GetLevelSaveData( const FString& levelName, bool isPersistent )
 	* @param level - The level to retrive the FPerLevelSaveData for.

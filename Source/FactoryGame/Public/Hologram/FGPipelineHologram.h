@@ -238,7 +238,7 @@ private:
 	UPROPERTY( Replicated, CustomSerialization )
 	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 
-	UPROPERTY()
+	UPROPERTY( CustomSerialization )
 	FVector mPassthroughSnapDirection;
 
 	/** Cached from the default buildable. */

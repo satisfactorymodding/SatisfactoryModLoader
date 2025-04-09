@@ -11,7 +11,7 @@
  * 
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildablePoleConveyor : public AFGBuildablePole
+class FACTORYGAME_API AFGBuildablePoleConveyor : public AFGBuildablePole_NoCustomization
 {
 	GENERATED_BODY()
 public:

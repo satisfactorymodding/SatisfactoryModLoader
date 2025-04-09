@@ -158,14 +158,12 @@ public:
 		const class UFGRailroadTrackConnectionComponent* component,
 		const FVector& location,
 		float radius,
-		bool allowPlatformTracks,
 		const TSet< class UFGRailroadTrackConnectionComponent* >& ignoredConnections = {} );
 
 	/** Finds all connections within a specified radius which are opposite / neighbouring our connection. */
 	static TArray< UFGRailroadTrackConnectionComponent* > FindAlignedConnections(
 		const class UFGRailroadTrackConnectionComponent* component,
 		float radius,
-		bool allowPlatformTracks,
 		bool neighbouring = false );
 
 	/** Returns a filtered list of the specified connections based on whether or not they're aligned with the specified connection. */
@@ -173,7 +171,6 @@ public:
 		const class UFGRailroadTrackConnectionComponent* component,
 		const TArray< UFGRailroadTrackConnectionComponent* >& connections,
 		float radius,
-		bool allowPlatformTracks,
 		bool neighbouring = false );
 	
 	/** Find probable client connection. */

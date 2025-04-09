@@ -44,6 +44,7 @@ void UFGSaveSession::OnRuntimeSpawnedActorDestroyed(AActor* destroyedActor){ }
 void UFGSaveSession::OnActorSpawned(AActor* spawnedActor){ }
 void UFGSaveSession::SaveLevelState(ULevel* forLevel, bool markAsUpToDate){ }
 void UFGSaveSession::CleanupPerLevelData(){ }
+FString UFGSaveSession::GetSaveLevelName(const ULevel* level){ return FString(); }
 void UFGSaveSession::DeleteSave(FString sessionName, int32 autosaveNum){ }
 FString UFGSaveSession::GenerateAutosaveName(int32& out_autosaveNum, const FString& sessionName){ return FString(); }
 FString UFGSaveSession::GetFullMapName() const{ return FString(); }

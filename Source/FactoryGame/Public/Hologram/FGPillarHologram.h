@@ -86,7 +86,7 @@ private:
 	bool mDownZoopDirectionBlocked;
 	bool mUpZoopDirectionBlocked;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	EPillarHologramBuildStep mBuildStep;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )

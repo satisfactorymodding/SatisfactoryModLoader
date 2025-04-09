@@ -206,7 +206,7 @@ public:
 	/* Add a new preset to the managed pool.*/
 	void RegisterNewPreset(AFGBuildableWidgetSign* Sign, uint32 GUID, UWidgetComponent* Widget, UMaterialInstanceDynamic* InMaterial);
 
-	void SetNewRenderTarget(uint32 GUID, UTextureRenderTarget2D* InRenderTarget, TFunction<void(void)>&& UpdateFunction);
+	void UpdatePresetMaterialInstance(uint32 GUID, const TFunctionRef<void(class UWidgetComponent* InWidgetComponent, UMaterialInstanceDynamic* InMaterialInstance)>& UpdateFunction);
 
 	void ResolveRemoved(AFGBuildableWidgetSign* Sign, uint32 GUID);
 

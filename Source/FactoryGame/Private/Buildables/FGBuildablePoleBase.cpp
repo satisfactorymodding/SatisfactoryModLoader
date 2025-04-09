@@ -2,9 +2,5 @@
 
 #include "Buildables/FGBuildablePoleBase.h"
 
-void AFGBuildablePoleBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-}
 bool AFGBuildablePoleBase::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 bool AFGBuildablePoleBase::ShouldShowCenterGuidelinesForHologram(const AFGHologram* hologram) const{ return bool(); }

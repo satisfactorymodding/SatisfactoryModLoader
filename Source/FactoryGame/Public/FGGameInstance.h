@@ -361,6 +361,7 @@ protected:
 	FString mLastInputDeviceIdentifier = "";
 	FTimerHandle mIsGamepadAttachedTimer;
 	FDelegateHandle mInputDeviceConnectionChangeHandle;
+	FDelegateHandle mMouseEnteredViewportHandle;
 
 	//<FL>[VilagosD] store the player avatar textures so we don't have to download them everytime 
 	UPROPERTY()
@@ -446,7 +447,9 @@ private:
 	void OnInputModeUpdated( FString cvar );
 	UFUNCTION()
 	void OnDynamicInputSwapUpdated( FString cvar );
-
+	UFUNCTION()
 	void OnControllerConnectionChanged( EInputDeviceConnectionState NewConnectionState, FPlatformUserId UserID, FInputDeviceId InputDeviceId );
+	UFUNCTION()
+	void HandleMouseEnteredViewport();
 	// </FL>
 };

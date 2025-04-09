@@ -12,7 +12,7 @@
  * Includes ability to change the pole scale on the X/Y for variable thickness poles
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildableSignSupport : public AFGBuildablePole
+class FACTORYGAME_API AFGBuildableSignSupport : public AFGBuildablePole_NoCustomization
 {
 	GENERATED_BODY()
 public:

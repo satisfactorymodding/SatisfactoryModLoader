@@ -43,6 +43,8 @@ public:
 	virtual void OnNearbyBuildableOverlapBegin( class AFGBuildable* buildable ) override;
 	virtual void OnNearbyBuildableOverlapEnd( class AFGBuildable* buildable ) override;
 	virtual void OnBuildModeChanged( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) override;
+	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
+	virtual void PostConstructMessageDeserialization() override;
 	/// End Hologram Interface
 
 	// Begin AFGBuildableHologram Interface

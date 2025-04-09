@@ -152,7 +152,7 @@ protected:
 	
 	uint8 mBlockedZoopDirectionMask;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	EFactoryBuildingHologramBuildStep mBuildStep;
 	
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )

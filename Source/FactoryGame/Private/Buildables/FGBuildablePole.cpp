@@ -25,4 +25,7 @@ void AFGBuildablePole::SetPoleHeight(float height){ }
 void AFGBuildablePole::SetupConnectionComponent(){ }
 const FPoleVariation* AFGBuildablePole::GetBestPoleVariationForHeight(float inHeight) const{ return nullptr; }
 int32 AFGBuildablePole::GetBestPoleVariationIndexForHeight(float inHeight) const{ return 0; }
+void AFGBuildablePole_NoCustomization::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
 TArray<struct FInstanceData> AFGBuildablePole::GetActorLightweightInstanceData_Implementation() const{ return TArray<struct FInstanceData>(); }

@@ -120,10 +120,13 @@ public:
 	/** Returns the underlying setting that this apply type affects */
 	class UFGUserSetting* GetUserSetting() const { return UserSetting; }
 
-	/** Sets the option row widget used to display the user setting */
-	void SetOptionRowWidget( class UFGDynamicOptionsRow* inOptionRowWidget );
-	/** Gets the option row widget used to display the user setting */
-	class UFGDynamicOptionsRow* GetOptionRowWidget() const { return OptionRowWidgetWeak.Get(); }
+	/** Adds an option reference widget to the subscribers of this setting. Notifications of the option value changes will be sent to all valid registered widget objects */
+	void AddOptionRowWidget( class UFGDynamicOptionsRow* inOptionRowWidget );
+
+	/** Broadcast a request to the registered value controller widgets to refresh the pending application icon visibility */
+	void BroadcastUpdatePendingIconVisibility();
+	/** Broadcast to registered value controller widgets that the option value (pending or actual) has potentially changed */
+	void BroadcastOptionValueChanged();
 
 	/** Populates debug data with current values (Applied, Pending, Default) */
 	virtual void GetDebugData( TArray<FString>& out_debugData );
@@ -134,12 +137,17 @@ public:
 	/** Returns true if we are currently in the main menu, as much as the setting application logic is concerned */
 	bool IsInMainMenu() const;
 protected:
+	/** Notifies the user setting controller widgets that we are about to reset the option value to the default state */
+	void BroadcastBeforeOptionValueReset();
+	/** Notifies the user setting controller widgets that we are about to apply the pending option value */
+	void BroadcastBeforeOptionValueApply();
+protected:
 	/** The underlying user setting that this apply type handles */
 	UPROPERTY(Transient)
 	class UFGUserSetting* UserSetting = nullptr;
-	/** The option row widget that displays the user setting */
+	/** The option row widgets that currently display the user setting */
 	UPROPERTY(Transient)
-	TWeakObjectPtr< class UFGDynamicOptionsRow > OptionRowWidgetWeak = nullptr;
+	TArray<TWeakObjectPtr<class UFGDynamicOptionsRow>> OptionsRowWidgets;
 	
 	/** The currently applied value for user setting */
 	FVariant AppliedValue = FVariant();

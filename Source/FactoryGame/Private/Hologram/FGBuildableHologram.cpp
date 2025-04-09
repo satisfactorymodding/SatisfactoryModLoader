@@ -36,7 +36,6 @@ void AFGBuildableHologram::ScrollRotate(int32 delta, int32 step){ }
 void AFGBuildableHologram::AdjustForGround(FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
 AActor* AFGBuildableHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
 void AFGBuildableHologram::GetIgnoredClearanceActors(TSet< AActor* >& ignoredActors) const{ }
-bool AFGBuildableHologram::CanNudgeHologram() const{ return bool(); }
 ENudgeFailReason AFGBuildableHologram::NudgeTowardsWorldDirection(const FVector& Direction){ return ENudgeFailReason(); }
 FTransform AFGBuildableHologram::GetNudgeSpaceTransform() const{ return FTransform(); }
 bool AFGBuildableHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }

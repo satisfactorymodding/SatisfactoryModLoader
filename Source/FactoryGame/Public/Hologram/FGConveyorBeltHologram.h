@@ -106,6 +106,7 @@ private:
 	bool ValidateCurvature();
 
 private:
+	UPROPERTY( CustomSerialization )
 	bool mUsingCutstomPoleRotation;
 
 	/** Whether or not to automatically generate spline in PostHologramPlacement. */
@@ -132,6 +133,7 @@ private:
 	class UFGFactoryConnectionComponent* mChildCeilingPoleSnapConnection[ 2 ];
 
 	/** Whether or not to flip the direction our belt snaps to our child wall pole hologram. */
+	UPROPERTY( CustomSerialization )
 	bool mFlipWallPoleSnapDirection;
 	
 	/** The two connection components for this conveyor. */
@@ -145,7 +147,7 @@ private:
 	UPROPERTY( Replicated, CustomSerialization )
 	class AFGBuildableWallPassthrough* mSnappedWallPassthrough[ 2 ];
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	int32 mSnappedWallPassthroughConnectionIndex[ 2 ];
 
 	/** If we upgrade another conveyor belt this is the belt we replaces. */

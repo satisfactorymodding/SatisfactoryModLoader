@@ -158,6 +158,7 @@ private:
 	void HandleEnhancedInputMappingsRebuilt();
 	void UpdateKeyHintsFromEnhancedInput();
 
+	bool GameUIHasActiveInteractWidget();
 	void SortKeyHints();
 	class UEnhancedInputLocalPlayerSubsystem* GetEnhancedInputSubsystem() const;
 };

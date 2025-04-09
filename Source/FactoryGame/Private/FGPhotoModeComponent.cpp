@@ -41,10 +41,13 @@ void UFGPhotoModeComponent::MoveUp(const float moveValue){  }
 void UFGPhotoModeComponent::MoveDown(const float moveValue){  }
 void UFGPhotoModeComponent::MoveMouseX(const float axisValue){  }
 void UFGPhotoModeComponent::MoveMouseY(const float axisValue){  }
+void UFGPhotoModeComponent::MoveFaster(const float moveValue){ }
+void UFGPhotoModeComponent::MoveSlower(const float moveValue){ }
 bool UFGPhotoModeComponent::SetPMOption(const FString& optionKey, const float optionValue, const bool isResetCall){ return bool(); }
 bool UFGPhotoModeComponent::ClearPMOption(const FString& optionKey){ return bool(); }
 void UFGPhotoModeComponent::ClearPMOMap(const int expectedNumElements){  }
 float UFGPhotoModeComponent::GetOptionValueFromID(const FString& ID) const{ return float(); }
+void UFGPhotoModeComponent::Client_ProperlyResetClientAfterTogglingDecoupledCamera_Implementation(){ }
 AFGCharacterPlayer* UFGPhotoModeComponent::GetOwnerPlayerCharacter() const{ return nullptr; }
 AFGPlayerController* UFGPhotoModeComponent::GetPlayerController() const{ return nullptr; }
 void UFGPhotoModeComponent::SetHandEquipmentVisibility(const bool isVisible){  }
@@ -69,6 +72,8 @@ AFGPhotoModeCamera::AFGPhotoModeCamera() : Super() {
 	this->NetCullDistanceSquared = 1000000000000.0;
 	this->mSpringArmComp->SetupAttachment(GetCapsuleComponent());
 }
+void AFGPhotoModeCamera::HandleDecoupledCameraMoveSpeed(){ }
+void AFGPhotoModeCamera::Server_SetMoveSpeed_Implementation(const float newSpeed){ }
 void AFGPhotoModeCamera::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGPhotoModeCamera, mControllingPlayerCharacter);

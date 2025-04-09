@@ -79,6 +79,6 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Ladder" )
 	class UInstancedStaticMeshComponent* mInstancedMeshComponent;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	ELadderHologramBuildStep mBuildStep = ELadderHologramBuildStep::LHBS_SnapToActor;
 };

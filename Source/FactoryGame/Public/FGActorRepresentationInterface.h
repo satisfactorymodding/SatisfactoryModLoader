@@ -5,7 +5,7 @@
 #include "FactoryGame.h"
 #include "FGActorRepresentation.h"
 #include "UObject/Interface.h"
-#include "OnlineIntegration\Public\LocalUserInfo.h"
+#include "LocalUserInfo.h"
 #include "Online/CoreOnline.h"
 #include "FGActorRepresentationInterface.generated.h"
 

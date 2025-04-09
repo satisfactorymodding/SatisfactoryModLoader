@@ -87,7 +87,7 @@ private:
 	UPROPERTY()
 	class AFGElevatorFloorStopHologram* mChildFloorStops[2];
 
-	UPROPERTY()
+	UPROPERTY( CustomSerialization )
 	int32 mActivePointIdx;
 
 	UPROPERTY()

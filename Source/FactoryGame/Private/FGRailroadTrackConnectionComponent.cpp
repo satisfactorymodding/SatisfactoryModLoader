@@ -40,13 +40,13 @@ UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::GetOpp
 UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::GetNext() const{ return nullptr; }
 UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::FindClosestOverlappingConnection(
 	const class UFGRailroadTrackConnectionComponent* component, const FVector& location, float radius,
-	bool allowPlatformTracks, const TSet<class UFGRailroadTrackConnectionComponent*>& ignoredConnections){ return nullptr; }
+	const TSet<class UFGRailroadTrackConnectionComponent*>& ignoredConnections){ return nullptr; }
 TArray<UFGRailroadTrackConnectionComponent*> UFGRailroadTrackConnectionComponent::FindAlignedConnections(
-	const class UFGRailroadTrackConnectionComponent* component, float radius, bool allowPlatformTracks,
+	const class UFGRailroadTrackConnectionComponent* component, float radius,
 	bool neighbouring){ return TArray<UFGRailroadTrackConnectionComponent*>(); }
 TArray<UFGRailroadTrackConnectionComponent*> UFGRailroadTrackConnectionComponent::FilterAlignedConnections(
 	const class UFGRailroadTrackConnectionComponent* component,
-	const TArray<UFGRailroadTrackConnectionComponent*>& connections, float radius, bool allowPlatformTracks,
+	const TArray<UFGRailroadTrackConnectionComponent*>& connections, float radius,
 	bool neighbouring){ return TArray<UFGRailroadTrackConnectionComponent*>(); }
 UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::FindProbableClientConnection(
 	const class UFGRailroadTrackConnectionComponent* connection){ return nullptr; }

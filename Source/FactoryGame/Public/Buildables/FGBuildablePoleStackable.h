@@ -17,8 +17,6 @@ class FACTORYGAME_API AFGBuildablePoleStackable : public AFGBuildablePoleBase
 public:
 	AFGBuildablePoleStackable();
 
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-
 	UFUNCTION( BlueprintPure, Category = "Stackable Pole" )
 	FORCEINLINE float GetStackHeight() const { return mStackHeight; }
 

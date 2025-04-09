@@ -68,9 +68,10 @@ protected:
 	UPROPERTY( ReplicatedUsing = OnRep_SplineData, CustomSerialization )
 	TArray< FSplinePointData > mSplineData;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	ESplineHologramBuildStep mBuildStep = ESplineHologramBuildStep::SHBS_FindStart;
 
 	/** Index of the currently moved point. */
+	UPROPERTY( CustomSerialization )
 	int32 mActivePointIdx;
 };

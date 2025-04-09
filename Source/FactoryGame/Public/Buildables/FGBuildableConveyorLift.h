@@ -272,6 +272,9 @@ private:
 	UPROPERTY( SaveGame )
 	bool mIsReversed;
 
+	UPROPERTY( SaveGame )
+	bool mIsBeltUsingInputRotation;
+
 	/** Used by mk6 lifts because they are enclosed and have a directional arrow on them */
 	UPROPERTY( EditDefaultsOnly )
 	bool mFlipMeshOnReverse;
@@ -470,18 +473,15 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 
 	if( bShouldFlipMesh )
 	{
-		FTransform flipTransform = FTransform();
-		float zOffset = ( snappedPassthroughs[0] || (snappedPassthroughs[0] == nullptr && snappedPassthroughs[1] == nullptr) ) ? -50.f : 0.f; // This is a bit hacky to account for different spacing behaviour. Again, with all the special cases this code should perhaps be rewritten entirely
-		flipTransform.SetLocation( endTransform.GetLocation() - FVector( 0.f, 0.f, zOffset ) );
-		flipTransform.SetRotation( FRotator( 180.f, 0.f, 0.f).Quaternion() );
-		int32 startAt = snappedPassthroughs[0] == nullptr ? 1 : 0;
-		int32 endAt = snappedPassthroughs[1] == nullptr ? numMeshes - 1 : numMeshes;
-		for( int32 i = startAt; i < endAt; ++i)
+		for( int32 i = startAtIndex; i < numMeshes; ++i )
 		{
-			auto& mesh = meshPool[ i ];
-			FTransform meshRelative = mesh->GetRelativeTransform();
-			meshRelative *= flipTransform;
-			mesh->SetRelativeTransform( meshRelative );
+			auto& InstanceEntry = meshPool[ i ];
+			if(InstanceEntry->GetStaticMesh() == midMesh || InstanceEntry->GetStaticMesh() == halfMidMesh)
+			{
+				// Flip the mesh around its center
+				InstanceEntry->GetRelativeTransform().SetLocation( InstanceEntry->GetRelativeTransform().GetLocation() + FVector( 0.f, 0.f, stepHeight ) );
+				InstanceEntry->GetRelativeTransform().SetRotation(  InstanceEntry->GetRelativeTransform().GetRotation() * FRotator( 180.f, 0.f, 0.f).Quaternion() );
+			}
 		}
 	}
 

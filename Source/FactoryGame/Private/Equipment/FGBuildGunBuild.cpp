@@ -85,6 +85,7 @@ void UFGBuildGunStateBuild::OnUserSettingsUpdated(){ }
 void UFGBuildGunStateBuild::Server_SetUseAutomaticClearanceSnapping_Implementation(bool useAutomaticSnapping){ }
 void UFGBuildGunStateBuild::Server_UpdateNudgeOffset_Implementation(const FVector& newNudgeOffset){ }
 void UFGBuildGunStateBuild::NudgeTimerTick(){ }
+void UFGBuildGunStateBuild::NudgeOnce(const FVector& nudgeVector){ }
 void UFGBuildGunStateBuild::Server_SetSampledCustomizationData_Implementation(const FFactoryCustomizationData& customizationData){ }
 void UFGBuildGunStateBuild::SetSampledCustomizationData(const FFactoryCustomizationData& customizationData){ }
 void UFGBuildGunStateBuild::Input_HologramLock(const FInputActionValue& actionValue){ }

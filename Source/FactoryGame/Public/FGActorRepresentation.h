@@ -5,7 +5,7 @@
 #include "FactoryGame.h"
 #include "FGConveyorItemRenderTargetWriter.h"
 #include "UObject/NoExportTypes.h"
-#include "OnlineIntegration\Public\LocalUserInfo.h"
+#include "LocalUserInfo.h"
 #include "Online/CoreOnline.h"
 #include "FGActorRepresentation.generated.h"
 

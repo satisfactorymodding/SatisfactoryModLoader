@@ -232,6 +232,8 @@ void AFGPlayerController::Input_PhotoModeMoveUp(const FInputActionValue& ActionV
 void AFGPlayerController::Input_PhotoModeMoveDown(const FInputActionValue& ActionValue){  }
 void AFGPlayerController::Input_PhotoModeMoveMouseX(const FInputActionValue& ActionValue){  }
 void AFGPlayerController::Input_PhotoModeMoveMouseY(const FInputActionValue& ActionValue){  }
+void AFGPlayerController::Input_PhotoModeMoveFaster(const FInputActionValue& ActionValue){ }
+void AFGPlayerController::Input_PhotoModeMoveSlower(const FInputActionValue& ActionValue){ }
 void AFGPlayerController::Input_PhotoModeToggleDecoupleCamera(const FInputActionValue& ActionValue){  }
 void AFGPlayerController::Input_ClipboardCopy(const FInputActionValue& actionValue){ }
 void AFGPlayerController::Input_ClipboardPaste(const FInputActionValue& actionValue){ }

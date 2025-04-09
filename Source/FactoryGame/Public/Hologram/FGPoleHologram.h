@@ -64,6 +64,7 @@ protected:
 
 	bool mCanAdjustHeight;
 
+	UPROPERTY( CustomSerialization )
 	EPoleHologramBuildStep mBuildStep;
 
 	/** The pole mesh. */

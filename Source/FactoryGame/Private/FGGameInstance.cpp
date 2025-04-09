@@ -71,3 +71,4 @@ void UFGGameInstance::SetupInitialInputDeviceMode(){  }
 void UFGGameInstance::OnInputModeUpdated(FString cvar){  }
 void UFGGameInstance::OnDynamicInputSwapUpdated(FString cvar){  }
 void UFGGameInstance::OnControllerConnectionChanged(EInputDeviceConnectionState NewConnectionState, FPlatformUserId UserID, FInputDeviceId InputDeviceId){  }
+void UFGGameInstance::HandleMouseEnteredViewport(){ }

@@ -41,6 +41,8 @@ void AFGBlueprintHologram::GetHologramsToShareMaterialStateWith(TArray<AFGHologr
 void AFGBlueprintHologram::OnNearbyBuildableOverlapBegin(class AFGBuildable* buildable){ Super::OnNearbyBuildableOverlapBegin(buildable); }
 void AFGBlueprintHologram::OnNearbyBuildableOverlapEnd(class AFGBuildable* buildable){ Super::OnNearbyBuildableOverlapEnd(buildable); }
 void AFGBlueprintHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ Super::OnBuildModeChanged(buildMode); }
+void AFGBlueprintHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ Super::SerializeConstructMessage(ar, id); }
+void AFGBlueprintHologram::PostConstructMessageDeserialization(){ Super::PostConstructMessageDeserialization(); }
 bool AFGBlueprintHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
 bool AFGBlueprintHologram::ShouldBuildGunHitProxies() const{ return bool(); }
 void AFGBlueprintHologram::LoadBlueprintToOtherWorld(){ }

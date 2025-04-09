@@ -14,8 +14,6 @@ class FACTORYGAME_API AFGBuildablePoleBase : public AFGBuildable
 {
 	GENERATED_BODY()
 public:
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const override;
-
 	virtual bool ShouldBeConsideredForBase_Implementation() override;
 
 	virtual bool ShouldShowCenterGuidelinesForHologram( const class AFGHologram* hologram ) const override;

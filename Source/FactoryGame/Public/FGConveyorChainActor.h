@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
 #include "FactoryGame.h"
@@ -205,6 +205,10 @@ public:
 
 	/** Does this chain consist of belts that differ in speeds? */
 	FORCEINLINE bool HasVariableSpeedBelts() const { return mHasVariableSpeedBelts; }
+
+	// Updates any monitors that are tracking item throughput
+	void UpdateAttachedMonitors( float deltaTime );
+	
 private:
 	void DebugDrawChainInfo();
 	void DebugDrawItemTimeDebt( int32 itemIndex );

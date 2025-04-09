@@ -138,15 +138,22 @@ private:
 	TArray< class USplineMeshComponent* > mSplineMeshes;
 
 	/** This is an additional floor data for the spline data (local space). */
+	UPROPERTY( CustomSerialization )
 	TArray< FVector > mFloorData;
 
+	UPROPERTY( CustomSerialization )
 	FVector mHitLocation;
+	UPROPERTY( CustomSerialization )
 	FVector mHitTangent;
+	UPROPERTY( CustomSerialization )
 	FVector mHitFloor;
 
+	UPROPERTY( CustomSerialization )
 	FVector mSnappedStartLocation;
+	UPROPERTY( CustomSerialization )
 	FVector mSnappedStartTangent;
 
+	UPROPERTY( CustomSerialization )
 	bool mUseCustomEndRotation;
 
 	/** Cached from the default buildable. */

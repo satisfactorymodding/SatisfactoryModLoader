@@ -48,6 +48,9 @@ public:
 
 	virtual void Construct( TArray< class AFGBuildable* >& out_ConstructedBridgeBuildables, FNetConstructionID NetConstructionID ) = 0;
 
+	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) = 0;
+	virtual void PostConstructMessageDeserialization() = 0;
+
 	virtual void ResetAutomaticConnections() = 0;
 
 public:
@@ -98,6 +101,16 @@ public:
 			IsValid( false ),
 			PreviousIsValid( false )
 		{
+		}
+
+		friend FArchive& operator<<( FArchive& ar, OpenConnectionState& item )
+		{
+			ar << item.TargetConnection;
+			ar << item.HasSnappedTargetConnection;
+			ar << item.BridgeHologram;
+			ar << item.CanDirectlyConnect;
+			
+			return ar;
 		}
 
 		TArray< const OpenConnection* > OpenConnections;
@@ -174,6 +187,10 @@ public:
 	/** Will connect all open ended connection states with their target connections. */
 	virtual void Construct( TArray< class AFGBuildable* >& out_ConstructedBridgeBuildables, FNetConstructionID NetConstructionID ) override;
 
+	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
+
+	virtual void PostConstructMessageDeserialization() override;
+	
 	/** Will reset all open connection states. */
 	virtual void ResetAutomaticConnections() override;
 
@@ -342,30 +359,30 @@ void FGBlueprintOpenConnectionManager<ConnectionClass, BridgeHologramClass>::Upd
 		}
 	}
 
-	// Figure out the highest scoring potential connection pairs for all open connection state
-	TMap< OpenConnectionState*, const PotentialConnectionPair* > HighestScoringConnectionPairs;
+	// Figure out the lowest scoring potential connection pairs for all open connection state
+	TMap< OpenConnectionState*, const PotentialConnectionPair* > LowestScoringConnectionPairs;
 	for( const PotentialConnectionPair& PotentialConnection : PotentialConnections )
 	{
-		if( !HighestScoringConnectionPairs.Contains( PotentialConnection.OpenConnectionState ) )
+		if( !LowestScoringConnectionPairs.Contains( PotentialConnection.OpenConnectionState ) )
 		{
-			HighestScoringConnectionPairs.Add( PotentialConnection.OpenConnectionState, &PotentialConnection );
+			LowestScoringConnectionPairs.Add( PotentialConnection.OpenConnectionState, &PotentialConnection );
 		}
 		else
 		{
-			if( PotentialConnection.Score > HighestScoringConnectionPairs[PotentialConnection.OpenConnectionState]->Score )
+			if( PotentialConnection.Score < LowestScoringConnectionPairs[PotentialConnection.OpenConnectionState]->Score )
 			{
-				HighestScoringConnectionPairs[PotentialConnection.OpenConnectionState] = &PotentialConnection;
+				LowestScoringConnectionPairs[PotentialConnection.OpenConnectionState] = &PotentialConnection;
 			}
 		}
 	}
 
 	// Connect the highest scoring connection pairs
 	TArray< OpenConnectionState* > StatesToConnect;
-	HighestScoringConnectionPairs.GenerateKeyArray( StatesToConnect );
+	LowestScoringConnectionPairs.GenerateKeyArray( StatesToConnect );
 
 	for( OpenConnectionState* State : StatesToConnect )
 	{
-		State->TargetConnection = HighestScoringConnectionPairs[State]->TargetConnection;
+		State->TargetConnection = LowestScoringConnectionPairs[State]->TargetConnection;
 	}
 
 	// Update open connection states
@@ -420,7 +437,29 @@ void FGBlueprintOpenConnectionManager<ConnectionClass, BridgeHologramClass>::Upd
 			if( bShouldEnableBridgeHologram )
 			{				
 				// Play snap effect if we're enabling a bridge hologram or the target connection has changed
-				if( State.BridgeHologram->IsDisabled() || ( State.PreviousTargetConnection != State.TargetConnection ) )
+				bool connectionChanged = false;
+
+				if( State.PreviousTargetConnection != State.TargetConnection )
+				{
+					if( IsValid( State.PreviousTargetConnection ) && IsValid( State.TargetConnection ) )
+					{
+						// In some cases (train tracks), we might be snapped to an open ended junction with multiple connections, they are different connections but all are in the same location.
+
+						// We check the distance between the old and new connection to avoid playing snap effects if we're still connected to that same junction
+						const float DistSqr = FVector::DistSquared( State.PreviousTargetConnection->GetComponentLocation(), State.TargetConnection->GetComponentLocation() );
+
+						if( !FMath::IsNearlyZero( DistSqr, 1.0f ) )
+						{
+							connectionChanged = true;
+						}
+					}
+					else
+					{
+						connectionChanged = true;
+					}
+				}
+				
+				if( State.BridgeHologram->IsDisabled() || connectionChanged)
 				{
 					out_PlaySnapEffects = true;
 				}
@@ -537,6 +576,25 @@ void FGBlueprintOpenConnectionManager<ConnectionClass, BridgeHologramClass>::Con
 }
 
 template<class ConnectionClass, class BridgeHologramClass>
+void FGBlueprintOpenConnectionManager<ConnectionClass, BridgeHologramClass>::SerializeConstructMessage( FArchive& ar, FNetConstructionID id )
+{	
+	for( OpenConnectionState& openConnectionState : mOpenConnectionStates )
+	{
+		ar << openConnectionState;
+	}
+}
+
+template<class ConnectionClass, class BridgeHologramClass>
+void FGBlueprintOpenConnectionManager<ConnectionClass, BridgeHologramClass>::PostConstructMessageDeserialization()
+{
+	for( OpenConnectionState& openConnectionState : mOpenConnectionStates )
+	{
+		FHitResult dummy;
+		UpdateOpenConnectionState( openConnectionState, dummy );
+	}
+}
+
+template<class ConnectionClass, class BridgeHologramClass>
 void FGBlueprintOpenConnectionManager<ConnectionClass, BridgeHologramClass>::ResetAutomaticConnections()
 {
 	for( OpenConnectionState& State : mOpenConnectionStates )
@@ -582,11 +640,8 @@ bool FGBlueprintOpenConnectionManager<ConnectionClass, BridgeHologramClass>::Att
 	{
 		if( IsValid( State.TargetConnection ) && !State.HasSnappedTargetConnection )
 		{
-			if( IsValid( State.BridgeHologram ) && !State.BridgeHologram->IsDisabled() )
-			{
-				bFoundUnsnappedTargetConnection = true;
-				State.HasSnappedTargetConnection = true;
-			}
+			bFoundUnsnappedTargetConnection = true;
+			State.HasSnappedTargetConnection = true;
 		}
 	}
 

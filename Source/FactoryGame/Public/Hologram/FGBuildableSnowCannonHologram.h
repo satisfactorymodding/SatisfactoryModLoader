@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -45,6 +45,7 @@ private:
 
 	FInt32Interval mAngleLimit;
 	float mAngleOffset;
-	
+
+	UPROPERTY( CustomSerialization )
 	ESnowCannonHologramBuildStep mBuildStep;
 };

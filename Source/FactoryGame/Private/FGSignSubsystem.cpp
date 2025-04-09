@@ -43,6 +43,6 @@ void AFGSignSubsystem::AddPixelSign(AFGBuildablePixelSign* pixelSign){ }
 void AFGSignSubsystem::RemovePixelSign(AFGBuildablePixelSign* pixelSign){ }
 bool AFGSignSubsystem::DoesSamePresetExists(uint32 GUID, FMappedSignData*& OutData){ return bool(); }
 void AFGSignSubsystem::RegisterNewPreset(AFGBuildableWidgetSign* Sign, uint32 GUID, UWidgetComponent* Widget, UMaterialInstanceDynamic* InMaterial){ }
-void AFGSignSubsystem::SetNewRenderTarget(uint32 GUID, UTextureRenderTarget2D* InRenderTarget, TFunction<void(void)>&& UpdateFunction){ }
+void AFGSignSubsystem::UpdatePresetMaterialInstance(uint32 GUID, const TFunctionRef<void(class UWidgetComponent* InWidgetComponent, UMaterialInstanceDynamic* InMaterialInstance)>& UpdateFunction){ }
 void AFGSignSubsystem::ResolveRemoved(AFGBuildableWidgetSign* Sign, uint32 GUID){ }
 UWidgetComponent* AFGSignSubsystem::GetWidgetByGUID(uint32 GUID){ return nullptr; }

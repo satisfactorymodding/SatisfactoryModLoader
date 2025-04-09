@@ -122,7 +122,9 @@ public:
 	void MoveDown( const float moveValue );
 	void MoveMouseX( const float axisValue );
 	void MoveMouseY( const float axisValue );
-
+	void MoveFaster( const float moveValue );
+	void MoveSlower( const float moveValue );
+	
 	UPROPERTY( BlueprintAssignable, Category = "Photo Mode" )
 	FOnDecoupledCameraToggled mOnDecoupledCameraToggled;
 
@@ -184,6 +186,9 @@ protected:
 	UFUNCTION( Server, Reliable )
 	void Server_ToggleDecoupledCamera( const bool isOn );
 
+	UFUNCTION( Client, Reliable )
+	void Client_ProperlyResetClientAfterTogglingDecoupledCamera();
+	
 	AFGCharacterPlayer* GetOwnerPlayerCharacter() const;
 	AFGPlayerController* GetPlayerController() const;
 
@@ -222,7 +227,6 @@ private:
 	
 };
 
-
 UCLASS( Blueprintable )
 class FACTORYGAME_API AFGPhotoModeCamera : public ACharacter
 {
@@ -240,8 +244,16 @@ public:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Photo Mode" )
 	class USpringArmComponent* mSpringArmComp;
 
+	void HandleDecoupledCameraMoveSpeed();
+
+	UFUNCTION( Server, Reliable )
+	void Server_SetMoveSpeed( const float newSpeed );
+	
 	FVector mPreviousCameraLocation;
 	FRotator mPreviousCameraRotation;
 	bool mHasDecoupledInThisPhotoModeSession = false;
+	bool mIsSprinting = false;
+	bool mIsCrawling = false;
+	float mOldFlySpeed;
 	
 };

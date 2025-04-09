@@ -90,5 +90,6 @@ uint8 AFGConveyorChainActor::EstimatedMaxNumGrab_Threadsafe(float estimatedDelta
 float AFGConveyorChainActor::GetAndUseTimeDebtForItem(int32 itemIndex, float dt){ return float(); }
 void AFGConveyorChainActor::RegisterConveyorMonitor(class AFGBuildableConveyorMonitor* monitor){  }
 void AFGConveyorChainActor::UnregisterConveyorMonitor(class AFGBuildableConveyorMonitor* monitor){  }
+void AFGConveyorChainActor::UpdateAttachedMonitors(float deltaTime){ }
 void AFGConveyorChainActor::DebugDrawChainInfo(){ }
 void AFGConveyorChainActor::DebugDrawItemTimeDebt(int32 itemIndex){ }

@@ -6,7 +6,7 @@
 #include "FGActorRepresentationInterface.h"
 #include "FGBuildableFactory.h"
 #include "Representation/FGRadarTowerRepresentation.h"
-#include "OnlineIntegration\Public\LocalUserInfo.h"
+#include "LocalUserInfo.h"
 #include "FGScannableDetails.h"
 #include "FGBuildableRadarTower.generated.h"
 

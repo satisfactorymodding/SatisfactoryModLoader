@@ -6,7 +6,7 @@
 #include "GameFramework/Info.h"
 #include "FGSaveInterface.h"
 #include "FGActorRepresentationInterface.h"
-#include "OnlineIntegration\Public\LocalUserInfo.h"
+#include "LocalUserInfo.h"
 #include "FGTrainStationIdentifier.generated.h"
 
 /**

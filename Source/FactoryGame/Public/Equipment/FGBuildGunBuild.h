@@ -355,9 +355,12 @@ private:
 
 	UFUNCTION( Server, Reliable )
 	void Server_UpdateNudgeOffset( const FVector& newNudgeOffset );
-
+	
 	UFUNCTION()
 	void NudgeTimerTick();
+
+	UFUNCTION(BlueprintCallable)
+	void NudgeOnce( const FVector &nudgeVector );
 
 	UFUNCTION( Server, Reliable )
 	void Server_SetSampledCustomizationData( const FFactoryCustomizationData& customizationData );

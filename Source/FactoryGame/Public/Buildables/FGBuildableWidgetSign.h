@@ -117,6 +117,7 @@ public:
 	//</FL>
 
 protected:
+	void UpdateRenderTargetReferenceInMaterialInstanceFromWidget();
 
 	/** Update sign prefab on replication */
 	UFUNCTION()
@@ -160,10 +161,6 @@ protected:
 	/** Sign Descriptor. This is a class that holds information that can be shared across different signs of similar aspect ratios */
 	UPROPERTY( EditDefaultsOnly, Category = "WidgetSign" )
 	TSubclassOf< UFGSignTypeDescriptor > mSignTypeDescriptor;
-
-	/** Reference to the current prefab template */
-	UPROPERTY()
-	class UFGSignPrefabWidget* mPrefabLayout;
 
 	/** Distance at which to gain significance */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )

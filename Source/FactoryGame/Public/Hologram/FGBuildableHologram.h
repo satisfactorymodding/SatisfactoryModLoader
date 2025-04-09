@@ -134,7 +134,6 @@ public:
 	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
 	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
-	virtual bool CanNudgeHologram() const override;
 	virtual ENudgeFailReason NudgeTowardsWorldDirection( const FVector& Direction ) override;
 	virtual FTransform GetNudgeSpaceTransform() const override;
 	// End AFGHologram interface

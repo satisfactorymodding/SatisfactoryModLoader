@@ -123,7 +123,7 @@ public:
 	bool IsDedicatedServerRelevant() const;
 
 private:
-	// Should we show this setting in the current build
+	// Should we show this setting in the current build. Even if returns false, the setting value can still be read and evaluated!
 	bool ShouldShowInBuild() const;
 
 public:

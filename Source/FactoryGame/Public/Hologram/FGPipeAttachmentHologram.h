@@ -79,7 +79,7 @@ protected:
 	TSubclassOf<UInterface> mPipeAttachmentInterfaceClass;
 	
 	/** The current build step of the attachment. */
-	UPROPERTY()
+	UPROPERTY( CustomSerialization )
 	EPipeAttachmentBuildStep mBuildStep = EPipeAttachmentBuildStep::PABS_PlacementAndDirection;
 
 	/** Used to limit the placement in turns. What's the maximum offset to check from center to detect the curve. */

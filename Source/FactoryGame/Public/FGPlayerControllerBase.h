@@ -24,8 +24,6 @@ typedef int32 IMMDevice;
 
 #include "FGPlayerControllerBase.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnInputChanged );
-
 UCLASS()
 class FACTORYGAME_API AFGPlayerControllerBase : public APlayerController
 {
@@ -75,10 +73,6 @@ public:
 	* @param character - the character that was revived
 	**/
 	virtual void OnControlledCharacterRevived( class AFGCharacterBase* character );
-
-	/** Called when we rebind any key */
-	UPROPERTY( BlueprintAssignable )
-	FOnInputChanged OnInputChanged;
 
 	/** Exposing flushPressedKeys to BP */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Input" )

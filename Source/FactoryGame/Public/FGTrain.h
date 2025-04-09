@@ -8,7 +8,7 @@
 #include "FGSaveInterface.h"
 #include "FGSignificanceInterface.h"
 #include "RailroadNavigation.h"
-#include "OnlineIntegration\Public\LocalUserInfo.h"
+#include "LocalUserInfo.h"
 #include "FGTrainDockingRules.h"
 #include "FGTrain.generated.h"
 

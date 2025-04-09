@@ -86,6 +86,6 @@ private:
 
 	FRotator mSnappedRotation;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	EBeamHologramBuildStep mBuildStep;
 };
