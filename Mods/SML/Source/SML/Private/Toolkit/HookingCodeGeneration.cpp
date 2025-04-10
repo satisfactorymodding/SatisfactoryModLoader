@@ -252,6 +252,14 @@ bool FHookCodeGenFunctionContext::GenerateInsertionHookInvocation(const FHookCod
 		FHookCodeGenParameterDescriptor ParameterDescriptor;
 		ParameterDescriptor.ParameterProperty = HookParameter;
 
+		// Generate common hook parameter value
+		TSharedPtr<FScriptExpr> ParameterExpression = GenerateFunctionOrObjectContextHookParameterValue(HookData.TargetFunctionOrEvent, ParameterDescriptor);
+		if (ParameterExpression) {
+			return ParameterExpression;
+		}
+
+		// If common parameters are not a match (i.e. not instance or local variables), check for special parameters
+		
 		// Handle hook target expression being requested as a hook parameter
 		const FName ParameterName = ParameterDescriptor.ParameterProperty->GetFName();
 		if (HookTargetExpressionParameter && (ParameterName == TEXT("HookTarget") || ParameterName == TEXT("__HookTarget"))) {
@@ -262,9 +270,8 @@ bool FHookCodeGenFunctionContext::GenerateInsertionHookInvocation(const FHookCod
 		if (HookAssignmentTargetExpression && (ParameterName == TEXT("AssignmentTarget") || ParameterName == TEXT("_AssignmentTarget"))) {
 			return HookAssignmentTargetExpression->DeepCopy();
 		}
-		
-		// Generate common hook parameter value otherwise
-		return GenerateFunctionOrObjectContextHookParameterValue(HookData.TargetFunctionOrEvent, ParameterDescriptor);
+
+		return TSharedPtr<FScriptExpr>(nullptr);
 	});
 
 	// Check that we have successfully generated the invocation expression
@@ -312,14 +319,21 @@ TSharedPtr<FScriptExpr> FHookCodeGenFunctionContext::GenerateRedirectHookInvocat
 		FHookCodeGenParameterDescriptor ParameterDescriptor;
 		ParameterDescriptor.ParameterProperty = HookParameter;
 
+		// Generate common hook parameter value
+		TSharedPtr<FScriptExpr> ParameterExpression = GenerateFunctionOrObjectContextHookParameterValue(HookData.TargetFunctionOrEvent, ParameterDescriptor);
+		if (ParameterExpression) {
+			return ParameterExpression;
+		}
+
+		// If common parameters are not a match (i.e. not instance or local variables), check for special parameters
+
 		// Handle reference to the original value that the redirect hook receives. Make sure the hook cannot use the original value twice
 		const FName ParameterName = ParameterDescriptor.ParameterProperty->GetFName();
 		if (ParameterName == TEXT("OriginalValue") || ParameterName == TEXT("__OriginalValue")) {
 			return OriginalValueUseCount++ == 0 ? RedirectedExpression : nullptr;
 		}
-		
-		// Generate common hook parameter value otherwise
-		return GenerateFunctionOrObjectContextHookParameterValue(HookData.TargetFunctionOrEvent, ParameterDescriptor);
+
+		return TSharedPtr<FScriptExpr>(nullptr);
 	});
 
 	// Check that we have successfully generated the invocation expression
