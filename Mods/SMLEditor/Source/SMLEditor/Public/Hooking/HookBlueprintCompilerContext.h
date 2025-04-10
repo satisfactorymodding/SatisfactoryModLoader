@@ -8,7 +8,7 @@ class UHookBlueprint;
 struct FInstanceHookStubGenerationData {
 	FName InstanceFunctionName;
 	class UK2Node_FunctionEntry* FunctionEntry{};
-	class UK2Node_FunctionTerminator* FunctionTerminator{};
+	class UK2Node_FunctionResult* FunctionResult{};
 };
 
 class SMLEDITOR_API FHookBlueprintCompilerContext : public FKismetCompilerContext {

@@ -74,15 +74,15 @@ void FHookBlueprintCompilerContext::CreateFunctionList() {
 			if (NewFunctionName != NAME_None && HookTargetFunctionGraphNames.Contains(NewFunctionName)) {
 				FunctionContext.MarkAsInternalOrCppUseOnly();
 
-				TArray<UK2Node_FunctionTerminator*> FunctionTerminators;
-				FunctionContext.SourceGraph->GetNodesOfClass(EntryPoints);
+				TArray<UK2Node_FunctionResult*> FunctionResults;
+				FunctionContext.SourceGraph->GetNodesOfClass(FunctionResults);
 
 				// If this function is not Static, save function name, entry point and terminator to generate static stub for it
 				if (!EntryPoints[0]->HasAnyExtraFlags(FUNC_Static)) {
 					FInstanceHookStubGenerationData& NewGenerationData = StubGenerationDataList.AddDefaulted_GetRef();
 					NewGenerationData.InstanceFunctionName = NewFunctionName;
 					NewGenerationData.FunctionEntry = EntryPoints[0];
-					NewGenerationData.FunctionTerminator = FunctionTerminators.IsEmpty() ? nullptr : FunctionTerminators[0];
+					NewGenerationData.FunctionResult = FunctionResults.IsEmpty() ? nullptr : FunctionResults[0];
 				}
 			}
 		}
@@ -124,7 +124,7 @@ void FHookBlueprintCompilerContext::CreateStaticFunctionStubForInstanceHookFunct
 	GeneratedFunctionGraphs.Add(FunctionGraph);
 
 	const UEdGraphSchema_K2* K2Schema = Cast<const UEdGraphSchema_K2>(FunctionGraph->GetSchema());
-	Schema->CreateDefaultNodesForGraph(*FunctionGraph);
+	K2Schema->CreateDefaultNodesForGraph(*FunctionGraph);
 	K2Schema->MarkFunctionEntryAsEditable(FunctionGraph, true);
 
 	// Create function entry node
@@ -137,14 +137,15 @@ void FHookBlueprintCompilerContext::CreateStaticFunctionStubForInstanceHookFunct
 		// Copy function reference from the original entry point, but override function name to match the name of the graph
 		EntryNode->FunctionReference = StubGenerationData.FunctionEntry->FunctionReference;
 		EntryNode->CustomGeneratedFunctionName = *FunctionName;
-
-		// Copy user defined pins from the original function entry point
-		for (const TSharedPtr<FUserPinInfo>& UserDefinedPin : StubGenerationData.FunctionEntry->UserDefinedPins) {
-			EntryNode->UserDefinedPins.Add(MakeShared<FUserPinInfo>(*UserDefinedPin));
-		}
 		
 		// Finalize the node creation. Note that entry point node will not have world context pin because we have not marked the graph as Static yet
 		FunctionEntryCreator.Finalize();
+
+		// Copy user defined pins from the original function entry point
+		for (const TSharedPtr<FUserPinInfo>& UserDefinedPin : StubGenerationData.FunctionEntry->UserDefinedPins) {
+			EntryNode->CreatePinFromUserDefinition(MakeShared<FUserPinInfo>(*UserDefinedPin));
+		}
+		
 		CurrentNodeInFunctionChain = EntryNode;
 	}
 
@@ -279,17 +280,17 @@ void FHookBlueprintCompilerContext::CreateStaticFunctionStubForInstanceHookFunct
 		// Copy function reference from the original entry point
 		FallbackReturnNode->FunctionReference = StubGenerationData.FunctionEntry->FunctionReference;
 
-		// Copy user defined pins from the original function terminator if we have one
-		if (StubGenerationData.FunctionTerminator) {
-			for (const TSharedPtr<FUserPinInfo>& UserDefinedPin : StubGenerationData.FunctionTerminator->UserDefinedPins) {
-				FallbackReturnNode->UserDefinedPins.Add(MakeShared<FUserPinInfo>(*UserDefinedPin));
-			}
-		}
-
 		// Finally allocate the node pins and finish the creation process
 		FallbackReturnNode->NodePosX = CurrentNodeInFunctionChain->NodePosX + FMath::Max(CurrentNodeInFunctionChain->NodeWidth, AverageNodeWidth) + 256;
 		FallbackReturnNode->NodePosY = CurrentNodeInFunctionChain->NodePosY - FMath::Max(CurrentNodeInFunctionChain->NodeHeight, AverageNodeHeight) - 100;
 		FunctionReturnCreator.Finalize();
+
+		// Copy user defined pins from the original function terminator if we have one
+		if (StubGenerationData.FunctionResult) {
+			for (const TSharedPtr<FUserPinInfo>& UserDefinedPin : StubGenerationData.FunctionResult->UserDefinedPins) {
+				FallbackReturnNode->CreatePinFromUserDefinition(MakeShared<FUserPinInfo>(*UserDefinedPin));
+			}
+		}
 
 		// Connect else pin to the exec pin of fallback return node
 		FallbackReturnNode->GetExecPin()->MakeLinkTo(ObjectInstanceInvalidThenPin);
@@ -352,17 +353,17 @@ void FHookBlueprintCompilerContext::CreateStaticFunctionStubForInstanceHookFunct
 		// Copy function reference from the original entry point
 		ReturnNode->FunctionReference = StubGenerationData.FunctionEntry->FunctionReference;
 
-		// Copy user defined pins from the original function terminator if we have one
-		if (StubGenerationData.FunctionTerminator && StubGenerationData.FunctionTerminator->IsEditable()) {
-			for (const TSharedPtr<FUserPinInfo>& UserDefinedPin : StubGenerationData.FunctionTerminator->UserDefinedPins) {
-				ReturnNode->UserDefinedPins.Add(MakeShared<FUserPinInfo>(*UserDefinedPin));
-			}
-		}
-
 		// Finally allocate the node pins and finish the creation process
 		ReturnNode->NodePosX = CurrentNodeInFunctionChain->NodePosX + FMath::Max(CurrentNodeInFunctionChain->NodeWidth, AverageNodeWidth) + 256;
 		ReturnNode->NodePosY = CurrentNodeInFunctionChain->NodePosY;
 		FunctionReturnCreator.Finalize();
+
+		// Copy user defined pins from the original function terminator if we have one
+		if (StubGenerationData.FunctionResult && StubGenerationData.FunctionResult->IsEditable()) {
+			for (const TSharedPtr<FUserPinInfo>& UserDefinedPin : StubGenerationData.FunctionResult->UserDefinedPins) {
+				ReturnNode->CreatePinFromUserDefinition(MakeShared<FUserPinInfo>(*UserDefinedPin));
+			}
+		}
 
 		// Connect function call then pin to the exec pin of the return node
 		ReturnNode->GetExecPin()->MakeLinkTo(OriginalFunctionCall->GetThenPin());
