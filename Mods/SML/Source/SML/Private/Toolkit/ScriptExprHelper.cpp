@@ -202,14 +202,14 @@ UClass* FScriptExprHelper::GetObjectExpressionResultType(const TSharedPtr<FScrip
 	
 	// If this expression has a dest property type, PropertyClass of that property is the type of the object
 	if (FScriptExprClassification::IsPropertyOpcode(UnwrappedExpression->Opcode) || UnwrappedExpression->Opcode == EX_StructMemberContext || UnwrappedExpression->Opcode == EX_ArrayGetByRef) {
-		const FObjectProperty* DestObjectProperty = Cast<FObjectProperty>(GetExpressionDestPropertyType(Expression));
+		const FObjectProperty* DestObjectProperty = CastField<FObjectProperty>(GetExpressionDestPropertyType(Expression));
 		return DestObjectProperty ? DestObjectProperty->PropertyClass : nullptr;
 	}
 
 	// If this expression is a function call, return value property of that function call is a type of the object
 	if (FScriptExprClassification::IsFunctionCallOpcode(UnwrappedExpression->Opcode)) {
 		const UFunction* FunctionTarget = GetFunctionCallTarget(UnwrappedExpression, OuterUFunctionClass);
-		const FObjectProperty* ReturnValueProperty = FunctionTarget ? Cast<FObjectProperty>(FunctionTarget->GetReturnProperty()) : nullptr;
+		const FObjectProperty* ReturnValueProperty = FunctionTarget ? CastField<FObjectProperty>(FunctionTarget->GetReturnProperty()) : nullptr;
 		return ReturnValueProperty ? ReturnValueProperty->PropertyClass : nullptr;
 	}
 
@@ -271,7 +271,7 @@ FProperty* FScriptExprHelper::GetExpressionDestPropertyType(const TSharedPtr<FSc
 	// EX_ArrayGetByRef type is the type of the Inner array element
 	if (UnwrappedExpression->Opcode == EX_ArrayGetByRef) {
 		const TSharedPtr<FScriptExpr>& ArrayDestExpression = UnwrappedExpression->RequireOperand(0, FScriptExprOperand::TypeExpr).Expr;
-		const FArrayProperty* ArrayPropertyType = Cast<FArrayProperty>(GetExpressionDestPropertyType(ArrayDestExpression));
+		const FArrayProperty* ArrayPropertyType = CastField<FArrayProperty>(GetExpressionDestPropertyType(ArrayDestExpression));
 		return ArrayPropertyType ? ArrayPropertyType->Inner : nullptr;
 	}
 	// Not a valid LValue reference opcode otherwise
