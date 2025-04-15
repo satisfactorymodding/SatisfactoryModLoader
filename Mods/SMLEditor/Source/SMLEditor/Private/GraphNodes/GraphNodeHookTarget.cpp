@@ -5,6 +5,7 @@
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Nodes/HookTargetNode.h"
 #include "Kismet2/BlueprintEditorUtils.h"
+#include "Nodes/HookTargetNode_TargetExpression.h"
 #include "Patching/BlueprintHookBlueprint.h"
 
 void SHookMemberReference::Construct(const FArguments& InArgs) {
@@ -230,6 +231,32 @@ void SGraphNodeHookTarget::CreateBelowPinControls(TSharedPtr<SVerticalBox> MainB
 				.OwnerNode(TargetNode)
 				.MemberDescriptor(Descriptor)
 				.IsEditable(this, &SGraphNode::IsNodeEditable)
+			];
+		}
+
+		if (UHookTargetNode_TargetExpression* TargetExpressionNode = Cast<UHookTargetNode_TargetExpression>(TargetNode)) { 
+			FDetailsViewArgs DetailsViewArgs;
+			DetailsViewArgs.bAllowSearch = false;
+			DetailsViewArgs.bHideSelectionTip = true;
+			DetailsViewArgs.bLockable = false;
+			DetailsViewArgs.bSearchInitialKeyFocus = true;
+			DetailsViewArgs.bUpdatesFromSelection = false;
+			DetailsViewArgs.bShowOptions = false;
+			DetailsViewArgs.bShowModifiedPropertiesOption = true;
+			DetailsViewArgs.bShowObjectLabel = false;
+			DetailsViewArgs.bCustomNameAreaLocation = true;
+			DetailsViewArgs.bCustomFilterAreaLocation = true;
+			DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+			DetailsViewArgs.bAllowMultipleTopLevelObjects = true;
+			DetailsViewArgs.bShowScrollBar = false;
+			
+
+			FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
+			TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
+			DetailsView->SetObject(TargetExpressionNode->TargetSpecifierArchetype);			
+			
+			MainBox->AddSlot().HAlign(HAlign_Fill).VAlign(VAlign_Center).AutoHeight() [
+				DetailsView.ToSharedRef()
 			];
 		}
 	}

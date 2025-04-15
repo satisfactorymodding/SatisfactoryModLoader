@@ -16,7 +16,7 @@ public:
 	TSubclassOf<UBlueprintHookTargetSpecifier> TargetSpecifierClass;
 
 	/** Archetype which we will use to create the resulting target specifier */
-	UPROPERTY(meta = (ShowInnerProperties))
+	UPROPERTY(EditAnywhere, meta = (ShowInnerProperties, ShowOnlyInnerProperties))
 	UBlueprintHookTargetSpecifier* TargetSpecifierArchetype;
 
 	/** Mapping of the member reference descriptor to the bound member reference */
