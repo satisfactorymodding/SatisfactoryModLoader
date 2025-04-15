@@ -471,12 +471,14 @@ void FHookCodeGenFunctionContext::ResolveHookTargets(const TArray<FBlueprintHook
 		}
 
 		// Filter targets based on the target selection mode
-		TargetExpressions = FBlueprintHookTargetResolver_TargetSelectionMode::ApplyTargetSelectionMode(HookDefinition.TargetSelectionMode, HookDefinition.TargetOrdinal, TargetExpressions);
-		if (TargetExpressions.IsEmpty()) {
+		TArray<TSharedPtr<FScriptExpr>> FilteredTargetExpressions = FBlueprintHookTargetResolver_TargetSelectionMode::ApplyTargetSelectionMode(HookDefinition.TargetSelectionMode, HookDefinition.TargetOrdinal, TargetExpressions);
+		if (FilteredTargetExpressions.IsEmpty()) {
 			UE_LOG(LogBlueprintHookingCodeGen, Error, TEXT("Failed to select a target expression out of %d targets for hook %s"), TargetExpressions.Num(),
 				*HookDefinition.HookFunction->GetFullName());
 			continue;
 		}
+
+		TargetExpressions = FilteredTargetExpressions;
 
 		// Apply the insertion hook to the statements referenced
 		if (HookDefinition.Type == EBlueprintFunctionHookType::InsertionHook) {
