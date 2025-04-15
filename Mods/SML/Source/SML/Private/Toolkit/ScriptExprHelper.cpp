@@ -174,7 +174,19 @@ UFunction* FScriptExprHelper::GetFunctionCallTarget(const TSharedPtr<FScriptExpr
 		// For virtual functions, we need to calculate the type of the context in which they will run to determine the archetype UFunction object from the base class
 		if (FunctionCallExpression->Opcode == EX_VirtualFunction || FunctionCallExpression->Opcode == EX_LocalVirtualFunction) {
 			const FName FunctionName = ScriptNameToName(FunctionCallExpression->RequireOperand(0, FScriptExprOperand::TypeScriptName).ScriptName);
-			const UClass* FunctionOwnerOrInterfaceClass = GetObjectExpressionResultType(FunctionCallExpression, OuterUFunctionClass, true);
+
+			const TSharedPtr<FScriptExpr> OuterContextSwitchExpression = GetOuterContextSwitchExpression(FunctionCallExpression);
+
+			UClass* FunctionOwnerOrInterfaceClass;
+			if (OuterContextSwitchExpression == nullptr) {
+				// If outer context switch expression is null, the function will get called on the class of the function that this code belongs to
+				FunctionOwnerOrInterfaceClass = OuterUFunctionClass;
+			} else {
+				// Otherwise, determine the object expression type for the context object
+				const TSharedPtr<FScriptExpr> ContextExpression = OuterContextSwitchExpression->RequireOperand(0, FScriptExprOperand::TypeExpr).Expr;
+				FunctionOwnerOrInterfaceClass = GetObjectExpressionResultType(ContextExpression, OuterUFunctionClass);
+			}
+
 			return FunctionOwnerOrInterfaceClass ? FunctionOwnerOrInterfaceClass->FindFunctionByName(FunctionName) : nullptr;
 		}
 		// For non-virtual functions, the call target is directly given as the first operand
@@ -222,7 +234,7 @@ UClass* FScriptExprHelper::GetObjectExpressionResultType(const TSharedPtr<FScrip
 		}
 		
 		// DynamicCast always resutls in an object. However, it will only actually cast to the object type if the provided class is an interface
-		if (UnwrappedExpression->Opcode == EX_InterfaceToObjCast) {
+		if (UnwrappedExpression->Opcode == EX_DynamicCast) {
 			UClass* ObjectOrInterfaceClass = Cast<UClass>(UnwrappedExpression->RequireOperand(0, FScriptExprOperand::TypeObject).Object);
 			const TSharedPtr<FScriptExpr>& CastedExpression = UnwrappedExpression->RequireOperand(1, FScriptExprOperand::TypeExpr).Expr;
 
