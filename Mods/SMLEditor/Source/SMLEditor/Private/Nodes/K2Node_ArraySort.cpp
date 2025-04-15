@@ -1,4 +1,4 @@
-﻿#include "Node/K2Node_ArraySort.h"
+﻿#include "Nodes/K2Node_ArraySort.h"
 #include "Engine/Blueprint.h"
 #include "Engine/MemberReference.h"
 #include "EdGraph/EdGraph.h"
@@ -12,7 +12,7 @@
 #include "K2Node_CallFunction.h"
 #include "K2Node_Self.h"
 #include "KismetCompiler.h"
-#include "KismetNodes/SGraphNodeK2ArraySort.h"
+#include "GraphNodes/GraphNodeK2ArraySort.h"
 #include "Kismet/SMLBlueprintArrayLibrary.h"
 
 PRAGMA_DISABLE_OPTIMIZATION

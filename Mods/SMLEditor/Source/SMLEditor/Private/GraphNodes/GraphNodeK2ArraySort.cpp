@@ -1,4 +1,4 @@
-﻿#include "KismetNodes/SGraphNodeK2ArraySort.h"
+﻿#include "GraphNodes/GraphNodeK2ArraySort.h"
 #include "SSearchableComboBox.h"
 #include "EdGraphSchema_K2.h"
 #include "K2Node_FunctionEntry.h"
@@ -6,11 +6,9 @@
 #include "Editor/UnrealEd/Public/Kismet2/BlueprintEditorUtils.h"
 #include "Editor/UnrealEd/Public/Kismet2/KismetEditorUtilities.h"
 #include "Editor/UnrealEd/Public/ScopedTransaction.h"
-#include "Editor/BlueprintGraph/Classes/BlueprintNodeBinder.h"
-#include "Editor/BlueprintGraph/Classes/BlueprintEventNodeSpawner.h"
 #include "Editor/BlueprintGraph/Classes/K2Node_CustomEvent.h"
 #include "Editor/GraphEditor/Public/SGraphNode.h"
-#include "Node/K2Node_ArraySort.h"
+#include "Nodes/K2Node_ArraySort.h"
 
 PRAGMA_DISABLE_OPTIMIZATION
 

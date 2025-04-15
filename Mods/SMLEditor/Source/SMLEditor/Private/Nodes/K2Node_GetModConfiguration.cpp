@@ -1,4 +1,4 @@
-#include "Node/K2Node_GetModConfiguration.h"
+#include "Nodes/K2Node_GetModConfiguration.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintNodeSpawner.h"
 #include "EditorCategoryUtils.h"
@@ -10,10 +10,12 @@
 #include "PackageTools.h"
 #include "Interfaces/IPluginManager.h"
 #include "Configuration/ConfigManager.h"
+#include "Engine/BlueprintGeneratedClass.h"
 #include "Engine/UserDefinedStruct.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"
+
 #define LOCTEXT_NAMESPACE "SML"
 
 static FName GetModConfiguration_OutputPinName(TEXT("Config"));

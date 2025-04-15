@@ -8,6 +8,7 @@
 #include "Registry/RemoteCallObjectRegistry.h"
 #include "GameInstanceModule.generated.h"
 
+class UHookBlueprintGeneratedClass;
 class UModSubsystemHolder;
 class UModConfiguration;
 class URootBlueprintSCSHookData;
@@ -35,14 +36,10 @@ public:
     */
     UPROPERTY(EditDefaultsOnly, Category = "Advanced | Tooltips")
     TArray<UClass*> GlobalItemTooltipProviders;
-    
-    /**
-     * Simple construction script hooks to install for this mod
-     * SCS hooks allow adding modded components to any blueprint-based actor
-     * Consult documentation if you're not sure what you want to achieve
-     */
-    UPROPERTY(Instanced, EditDefaultsOnly, Category = "Advanced | Hooks")
-    TArray<URootBlueprintSCSHookData*> BlueprintSCSHooks;
+
+	/** Blueprint hooks to apply to the Blueprint assets when this module is loaded */
+	UPROPERTY(EditDefaultsOnly, Category = "Advanced | Hooks")
+	TArray<TSubclassOf<class UBlueprintHook>> BlueprintHooks;
 
     /**
      * Widget blueprint hooks to add your custom widget into one of the existing game blueprints
@@ -73,6 +70,10 @@ public:
     /** Register content from properties here.
     Make sure to call super on the C++ side if you have both a C++ and Blueprint implementation. */
     virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
+private:
+	/** DEPRECATED - to be removed. Only exists to make the migration to new Actor Mixins easier. */
+	UPROPERTY(Instanced, VisibleDefaultsOnly, Category = "Deprecated")
+	TArray<class UObject*> BlueprintSCSHooks;
 protected:
     /** Allow SetOwnerModReference access to game instance module manager */
     friend class UGameInstanceModuleManager;

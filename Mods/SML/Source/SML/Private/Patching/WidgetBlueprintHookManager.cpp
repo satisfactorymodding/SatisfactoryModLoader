@@ -1,10 +1,25 @@
 ﻿#include "Patching/WidgetBlueprintHookManager.h"
-
+#include "SatisfactoryModLoader.h"
 #include "Blueprint/WidgetBlueprintGeneratedClass.h"
 #include "Blueprint/WidgetTree.h"
+#include "Components/BorderSlot.h"
+#include "Components/HorizontalBoxSlot.h"
+#include "Components/OverlaySlot.h"
 #include "Components/PanelWidget.h"
+#include "Components/ScaleBoxSlot.h"
+#include "Components/VerticalBoxSlot.h"
+#include "Components/WrapBoxSlot.h"
 #include "Engine/Engine.h"
+#include "Patching/NativeHookManager.h"
 #include "UObject/Package.h"
+
+#if WITH_EDITOR
+	// Fast path can be used if we are running Standalone (-game or -server) and not running a Commandlet
+	#define GAllowUsingFastWidgetTreeHookPath !GIsEditor && !IsRunningCommandlet()
+#else
+	// Fast path can be used at all times in non-editor builds
+	#define GAllowUsingFastWidgetTreeHookPath true
+#endif
 
 DEFINE_LOG_CATEGORY(LogWidgetBlueprintHookManager);
 
@@ -76,137 +91,44 @@ bool WidgetBlueprintHookParentValidator::ValidateParentWidget(UWidget* Widget, E
 	return false;
 }
 
-UWidgetBlueprintHookData::UWidgetBlueprintHookData() {
-	this->ParentSlotIndex = INDEX_NONE;
-	this->NewWidgetTemplate = NULL;
-	this->PanelSlotTemplate = NULL;
-}
-
-void UWidgetBlueprintHookData::SetWidgetClass(TSoftClassPtr<UUserWidget> InWidgetClass) {
-	this->WidgetClass = InWidgetClass;
-	ReinitializePanelSlotTemplate();
-}
-
-void UWidgetBlueprintHookData::SetParentWidgetType(EWidgetBlueprintHookParentType InParentWidgetType) {
-	this->ParentWidgetType = InParentWidgetType;
-	ReinitializePanelSlotTemplate();
-}
-
-void UWidgetBlueprintHookData::SetParentWidgetName(FName InParentWidgetName) {
-	this->ParentWidgetName = InParentWidgetName;
-	ReinitializePanelSlotTemplate();
-}
-
-void UWidgetBlueprintHookData::SetNewWidgetName(FName InNewWidgetName) {
-	this->NewWidgetName = InNewWidgetName;
-	ReinitializeNewWidgetTemplate();
-	ReinitializePanelSlotTemplate();
-}
-
-void UWidgetBlueprintHookData::SetNewWidgetClass(TSubclassOf<UUserWidget> InNewWidgetClass) {
-	this->NewWidgetClass = InNewWidgetClass;
-	ReinitializeNewWidgetTemplate();
-}
-
-void UWidgetBlueprintHookData::ReinitializeNewWidgetTemplate() {
-	const UClass* CurrentWidgetTemplateClass = NewWidgetTemplate ? NewWidgetTemplate->GetClass() : NULL;
-
-	//Re-initialize with the new class if it does not match currently
-	if (CurrentWidgetTemplateClass != NewWidgetClass) {
-		//Thrash the old object so it does not occupy the name we have now
-		if (NewWidgetTemplate != NULL) {
-			NewWidgetTemplate->Rename(nullptr, GetTransientPackage(), REN_DontCreateRedirectors | REN_ForceNoResetLoaders);
-		}
-		if (NewWidgetClass != NULL) {
-			UUserWidget* OldWidgetTemplate = NewWidgetTemplate;
-			
-			//The object needs RF_Public, otherwise a blueprint referencing an instance of UWidgetBlueprintHookData
-			//(or another object containing it) will cause a cooking error, since it would be referencing a private object
-			//in another package
-			NewWidgetTemplate = NewObject<UUserWidget>(this, NewWidgetClass, NewWidgetName, RF_Public | RF_ArchetypeObject | RF_Transactional);
-
-			//Transfer properties from the old object to the new one
-			if (OldWidgetTemplate && NewWidgetTemplate) {
-				UEngine::CopyPropertiesForUnrelatedObjects(OldWidgetTemplate, NewWidgetTemplate);
-			}
-			NewWidgetTemplate->Modify();
-		} else {
-			//If we have no class anymore
-			NewWidgetTemplate = NULL;
-		}
-	}
-	
-	//Rename the component if its name does not match the variable name
-	if (NewWidgetTemplate != NULL) {
-		if (NewWidgetTemplate->GetFName() != NewWidgetName) {
-			NewWidgetTemplate->Rename(*NewWidgetName.ToString(), NULL, REN_DontCreateRedirectors | REN_ForceNoResetLoaders);
-		}
+void UWidgetBlueprintHookSlot_Generic::SetupPanelSlot(UPanelSlot* InPanelSlot) {
+	Super::SetupPanelSlot(InPanelSlot);
+	if (UBorderSlot* BorderSlot = Cast<UBorderSlot>(InPanelSlot)) {
+		BorderSlot->SetPadding(Padding);
+		BorderSlot->SetHorizontalAlignment(HorizontalAlignment);
+		BorderSlot->SetVerticalAlignment(VerticalAlignment);
+	} else if (UHorizontalBoxSlot* HorizontalBoxSlot = Cast<UHorizontalBoxSlot>(InPanelSlot)) {
+		HorizontalBoxSlot->SetSize(Size);
+		HorizontalBoxSlot->SetPadding(Padding);
+		HorizontalBoxSlot->SetHorizontalAlignment(HorizontalAlignment);
+		HorizontalBoxSlot->SetVerticalAlignment(VerticalAlignment);
+	} else if (UOverlaySlot* OverlaySlot = Cast<UOverlaySlot>(InPanelSlot)) {
+		OverlaySlot->SetPadding(Padding);
+		OverlaySlot->SetHorizontalAlignment(HorizontalAlignment);
+		OverlaySlot->SetVerticalAlignment(VerticalAlignment);
+	} else if (UScaleBoxSlot* ScaleBoxSlot = Cast<UScaleBoxSlot>(InPanelSlot)) {
+		ScaleBoxSlot->SetHorizontalAlignment(HorizontalAlignment);
+		ScaleBoxSlot->SetVerticalAlignment(VerticalAlignment);
+	} else if (UVerticalBoxSlot* VerticalBoxSlot = Cast<UVerticalBoxSlot>(InPanelSlot)) {
+		HorizontalBoxSlot->SetSize(Size);
+		VerticalBoxSlot->SetPadding(Padding);
+		VerticalBoxSlot->SetHorizontalAlignment(HorizontalAlignment);
+		VerticalBoxSlot->SetVerticalAlignment(VerticalAlignment);
+	} else if (UWrapBoxSlot* WrapBoxSlot = Cast<UWrapBoxSlot>(InPanelSlot)) {
+		WrapBoxSlot->SetPadding(Padding);
+		WrapBoxSlot->SetHorizontalAlignment(HorizontalAlignment);
+		WrapBoxSlot->SetVerticalAlignment(VerticalAlignment);
 	}
 }
 
-void UWidgetBlueprintHookData::ReinitializePanelSlotTemplate() {
-	if (const UPanelWidget* PanelWidget = ResolveParentWidget()) {
-		PanelSlotClass = UPanelWidgetAccessor::GetPanelSlotClass(PanelWidget);
-	} else {
-		PanelSlotClass = NULL;
-	}
-	
-	const UClass* CurrentPanelSlotClass = PanelSlotTemplate ? PanelSlotTemplate->GetClass() : NULL;
-	const FString PanelSlotName = NewWidgetName.ToString() + TEXT("_Slot");
-
-	//Re-initialize with the new class if it does not match currently
-	if (CurrentPanelSlotClass != PanelSlotClass) {
-		//Thrash the old object so it does not occupy the name we have now
-		if (PanelSlotTemplate != NULL) {
-			PanelSlotTemplate->Rename(nullptr, GetTransientPackage(), REN_DontCreateRedirectors | REN_ForceNoResetLoaders);
-		}
-		if (PanelSlotClass != NULL) {
-			UPanelSlot* OldPanelSlotTemplate = PanelSlotTemplate;
-			//The object needs RF_Public, otherwise a blueprint referencing an instance of UWidgetBlueprintHookData
-			//(or another object containing it) will cause a cooking error, since it would be referencing a private object
-			//in another package
-			PanelSlotTemplate = NewObject<UPanelSlot>(this, PanelSlotClass, *PanelSlotName, RF_Public | RF_ArchetypeObject | RF_Transactional);
-
-			//Transfer properties from the old object to the new one
-			if (OldPanelSlotTemplate && PanelSlotTemplate) {
-				UEngine::CopyPropertiesForUnrelatedObjects(OldPanelSlotTemplate, PanelSlotTemplate);
-			}
-			PanelSlotTemplate->Modify();
-		} else {
-			//If we have no class anymore
-			PanelSlotTemplate = NULL;
-		}
-	}
-	
-	//Rename the component if its name does not match the variable name
-	if (PanelSlotTemplate != NULL) {
-		if (PanelSlotTemplate->GetName() != PanelSlotName) {
-			PanelSlotTemplate->Rename(*PanelSlotName, NULL, REN_DontCreateRedirectors | REN_ForceNoResetLoaders);
-		}
+void UWidgetBlueprintHookSlot_Canvas::SetupPanelSlot(UPanelSlot* InPanelSlot) {
+	Super::SetupPanelSlot(InPanelSlot);
+	if (UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(InPanelSlot)) {
+		CanvasPanelSlot->SetLayout(LayoutData);
+		CanvasPanelSlot->SetAutoSize(bAutoSize);
+		CanvasPanelSlot->SetZOrder(ZOrder);
 	}
 }
-
-#if WITH_EDITOR
-
-void UWidgetBlueprintHookData::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) {
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	const FName PropertyName = PropertyChangedEvent.MemberProperty->GetFName();
-	if (PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, WidgetClass) ||
-		PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, ParentWidgetType) ||
-		PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, ParentWidgetName)) {
-		ReinitializePanelSlotTemplate();
-		
-	} else if (PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, NewWidgetClass)) {
-		ReinitializeNewWidgetTemplate();
-		
-	} else if (PropertyName == GET_MEMBER_NAME_CHECKED(ThisClass, NewWidgetName)) {
-		ReinitializePanelSlotTemplate();
-		ReinitializeNewWidgetTemplate();
-	}
-}
-
-#endif
 
 TArray<FString> UWidgetBlueprintHookData::GetParentWidgetNames() const {
 	const UWidgetBlueprintGeneratedClass* WidgetBlueprintClass = Cast<UWidgetBlueprintGeneratedClass>(WidgetClass.LoadSynchronous());
@@ -225,70 +147,63 @@ TArray<FString> UWidgetBlueprintHookData::GetParentWidgetNames() const {
 	return ResultWidgetNames;
 }
 
-UPanelWidget* UWidgetBlueprintHookData::ResolveParentWidget() const {
+UPanelWidget* UWidgetBlueprintHookData::ResolveParentWidgetOnArchetype() const {
 	const UWidgetBlueprintGeneratedClass* WidgetBlueprintClass = Cast<UWidgetBlueprintGeneratedClass>(WidgetClass.LoadSynchronous());
-	if (WidgetBlueprintClass == NULL) {
-		return NULL;
+	if (WidgetBlueprintClass == nullptr) {
+		return nullptr;
 	}
-	
-	UWidget* ParentWidget = WidgetBlueprintClass->GetWidgetTreeArchetype()->FindWidget(ParentWidgetName);
+	return ResolveParentWidget(WidgetBlueprintClass->GetWidgetTreeArchetype());
+}
 
-	UPanelWidget* OutParentWidget;
+UPanelWidget* UWidgetBlueprintHookData::ResolveParentWidget(const UWidgetTree* InWidgetTree) const {
+	UWidget* ParentWidget = InWidgetTree->FindWidget(ParentWidgetName);
+	UPanelWidget* OutParentWidget{};
 	if (WidgetBlueprintHookParentValidator::ValidateParentWidget(ParentWidget, ParentWidgetType, OutParentWidget, false)) {
 		return OutParentWidget;
 	}
-	return NULL;
+	return nullptr;
 }
 
-void UWidgetBlueprintHookManager::RegisterWidgetBlueprintHook(UWidgetBlueprintHookData* HookData) {
-	//Blueprint hooking in editor is extremely dangerous as it modifies the source assets
-	//TODO: Hooks can be supported in the editor too by only adding them on the PIE-cloned objects
-	if (!FPlatformProperties::RequiresCookedData()) {
-		return;
+void UWidgetBlueprintHookData::AttachToWidgetInstance(UUserWidget* InWidgetTreeRoot, UPanelWidget* InParentWidget) const {
+	if (InParentWidget) {
+		UUserWidget* NewUserWidget = UUserWidget::CreateWidgetInstance(*InWidgetTreeRoot, NewWidgetClass, NewWidgetName);
+		if (NewUserWidget != nullptr) {
+			// Apply slot configuration to the slot if we have one
+			UPanelSlot* CreatedPanelSlot = InParentWidget->AddChild(NewUserWidget);
+			if (SlotConfiguration && CreatedPanelSlot) {
+				SlotConfiguration->SetupPanelSlot(CreatedPanelSlot);
+			}
+		}
 	}
-	
-	// Widgets are not included on servers
-	if (FPlatformProperties::IsServerOnly()) {
-		return;
-	}
+}
 
-	if (!HookData->NewWidgetClass || HookData->NewWidgetName.IsNone()) {
-		UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Failed to hook widget blueprint %s, new widget class %s or name %s are invalid"),
-			*HookData->GetPathName(), *HookData->NewWidgetClass->GetPathName(), *HookData->NewWidgetName.ToString());
-		return;
-	}
-	
-	UPanelWidget* PanelWidget = HookData->ResolveParentWidget();
-
-	if (PanelWidget == NULL) {
-		UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Failed to hook widget blueprint %s, failed to resolve parent widget %s inside %s"),
-			*HookData->GetPathName(), *HookData->ParentWidgetName.ToString(), *HookData->WidgetClass->GetPathName());
-		return;
-	}
-
-	UWidgetTree* WidgetTree = PanelWidget->GetTypedOuter<UWidgetTree>();
-	const UClass* PanelWidgetSlotClass = UPanelWidgetAccessor::GetPanelSlotClass(PanelWidget);
+static UUserWidget* AttachWidgetToWidgetTreeArchetype(UPanelWidget* ParentWidget, const UWidgetBlueprintHookData* HookData) {
+	UWidgetTree* WidgetTree = ParentWidget->GetTypedOuter<UWidgetTree>();
+	const UClass* PanelWidgetSlotClass = UPanelWidgetAccessor::GetPanelSlotClass(ParentWidget);
 
 	if (WidgetTree->FindWidget(HookData->NewWidgetName)) {
 		UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Failed to hook widget blueprint %s, widget with the name %s already exists"),
 			*HookData->GetPathName(), *HookData->NewWidgetName.ToString());
-		return;
+		return nullptr;
 	}
-	
-	UUserWidget* NewUserWidget = NewObject<UUserWidget>(WidgetTree, HookData->NewWidgetClass, HookData->NewWidgetName, RF_Transient, HookData->NewWidgetTemplate);
+	UUserWidget* NewUserWidget = NewObject<UUserWidget>(WidgetTree, HookData->NewWidgetClass, HookData->NewWidgetName, RF_Transient);
 
 	if (NewUserWidget == NULL) {
 		UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Failed to hook widget blueprint %s, failed to create new user widget %s"),
 			*HookData->GetPathName(), *HookData->NewWidgetClass->GetPathName());
-		return;
+		return nullptr;
 	}
 	
-	UPanelSlot* PanelSlot = NewObject<UPanelSlot>(PanelWidget, PanelWidgetSlotClass, NAME_None, RF_Transient, HookData->PanelSlotTemplate);
+	UPanelSlot* PanelSlot = NewObject<UPanelSlot>(ParentWidget, PanelWidgetSlotClass, NAME_None, RF_Transient);
+	// Apply slot configuration to the slot if we have one
+	if (HookData->SlotConfiguration) {
+		HookData->SlotConfiguration->SetupPanelSlot(PanelSlot);
+	}
 	PanelSlot->Content = NewUserWidget;
-	PanelSlot->Parent = PanelWidget;
+	PanelSlot->Parent = ParentWidget;
 
 	NewUserWidget->Slot = PanelSlot;
-	TArray<UPanelSlot*>& MutablePanelSlots = UPanelWidgetAccessor::GetPanelSlots(PanelWidget);
+	TArray<UPanelSlot*>& MutablePanelSlots = UPanelWidgetAccessor::GetPanelSlots(ParentWidget);
 	const int32 ParentSlotIndex = HookData->ParentSlotIndex;
 
 	if (ParentSlotIndex != INDEX_NONE && MutablePanelSlots.IsValidIndex(ParentSlotIndex)) {
@@ -298,36 +213,141 @@ void UWidgetBlueprintHookManager::RegisterWidgetBlueprintHook(UWidgetBlueprintHo
 		//Otherwise just append it at the end of the array
 		MutablePanelSlots.Add(PanelSlot);
 	}
+	return NewUserWidget;
+}
 
-	FWidgetBlueprintHookDescriptor HookDescriptor;
-	HookDescriptor.HookData = HookData;
-	HookDescriptor.InstalledWidget = NewUserWidget;
+// FNames of UWidgetBlueprintGeneratedClass objects that have widget hooks. Used to avoid expensive lookup logic for common widget initialization hook in the editor
+static TSet<FName> HookedWidgetBlueprintGeneratedClassFNameSet;
 
-	InstalledHooks.Add(HookDescriptor);
+void UWidgetBlueprintHookManager::RegisterWidgetBlueprintHook(UWidgetBlueprintHookData* HookData) {
+	// This should not be done from anywhere other than the game thread
+	check(IsInGameThread());
+
+	// Dedicated servers do not use widgets, so skip the registration completely
+	if (IsRunningDedicatedServer()) {
+		return;
+	}
+	// Silently ignore any hooking requests if hooking is not allowed in this environment
+	if (!FSatisfactoryModLoader::IsAssetHookingAllowed()) {
+		return;
+	}
+
+	// Make sure we were provided a valid hook asset
+	if (!HookData) {
+		UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Attempt to register invalid widget blueprint hook"));
+		return;
+	}
+	// Validate the hook data before attempting to do anything with it
+	if (!HookData->NewWidgetClass || HookData->NewWidgetName.IsNone()) {
+		UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Failed to hook widget blueprint %s, new widget class %s or name %s are invalid"),
+			*HookData->GetPathName(), *HookData->NewWidgetClass->GetPathName(), *HookData->NewWidgetName.ToString());
+		return;
+	}
+
+	// Use fast path by directly inserting the widget into the widget tree hierarchy when we can pin and modify the archetypes. This is only possible outside the editor and when not running a commandlet
+	if (GAllowUsingFastWidgetTreeHookPath) {
+		FWidgetBlueprintHookDescriptor* RegistrationHookDescriptor = InstalledArchetypeHooks.FindByPredicate([&](const FWidgetBlueprintHookDescriptor& Other) {
+			return Other.HookData == HookData;
+		});
+
+		// Register a new hook if we do not have an existing registration
+		if (RegistrationHookDescriptor == nullptr) {
+			UPanelWidget* ParentWidget = HookData->ResolveParentWidgetOnArchetype();
+			if (ParentWidget == nullptr) {
+				UE_LOG(LogWidgetBlueprintHookManager, Error, TEXT("Failed to hook widget blueprint %s, failed to resolve parent widget %s inside %s"),
+					*HookData->GetPathName(), *HookData->ParentWidgetName.ToString(), *HookData->WidgetClass->GetPathName());
+				return;
+			}
+			RegistrationHookDescriptor = &InstalledArchetypeHooks.AddDefaulted_GetRef();
+			RegistrationHookDescriptor->HookData = HookData;
+			RegistrationHookDescriptor->InstalledWidget = AttachWidgetToWidgetTreeArchetype(ParentWidget, HookData);
+		}
+
+		RegistrationHookDescriptor->RegistrationCount++;
+	} else {
+		// Use a slow path that does not modify the source assets while we are in the editor
+		TArray<FWidgetBlueprintEditorSlowHookData>& HookRegistrations = InstalledSlowEditorHooks.FindOrAdd(HookData->WidgetClass.ToSoftObjectPath().GetAssetPath());
+		FWidgetBlueprintEditorSlowHookData* CurrentRegistration = HookRegistrations.FindByPredicate([&](const FWidgetBlueprintEditorSlowHookData& Other) {
+			return Other.HookData == HookData;
+		});
+
+		// Register a new hook if we do not have an existing registration
+		if (CurrentRegistration == nullptr) {
+			CurrentRegistration = &HookRegistrations.AddDefaulted_GetRef();
+			CurrentRegistration->HookData = HookData;
+		}
+		CurrentRegistration->RegistrationCount++;
+
+		// Make sure the widget class that we are attempting to hook is added into the lookup, so we will run the logic for it
+		HookedWidgetBlueprintGeneratedClassFNameSet.Add(HookData->WidgetClass.ToSoftObjectPath().GetAssetPath().GetAssetName());
+	}
 	UE_LOG(LogWidgetBlueprintHookManager, Log, TEXT("Installed widget blueprint hook %s on WidgetBlueprint %s"),
 		*HookData->GetPathName(), *HookData->NewWidgetClass->GetPathName());
 }
 
 void UWidgetBlueprintHookManager::UnregisterWidgetBlueprintHook(UWidgetBlueprintHookData* HookData) {
-	//Blueprint hooking in editor is extremely dangerous as it modifies the source assets
-	//TODO: Hooks can be supported in the editor too by only adding them on the PIE-cloned objects
-	if (!FPlatformProperties::RequiresCookedData()) {
-		return;
+	// This should not be done from anywhere other than the game thread
+	check(IsInGameThread());
+
+	// If we can use the fast path, just remove the hooked widget from the archetype
+	if (GAllowUsingFastWidgetTreeHookPath) {
+		const int32 HookDataIndex = InstalledArchetypeHooks.IndexOfByPredicate([&](const FWidgetBlueprintHookDescriptor& HookDescriptor){
+			return HookDescriptor.HookData == HookData;
+		});
+
+		// Remove the archetype hook once the registration count reaches zero
+		if (HookDataIndex != INDEX_NONE && --InstalledArchetypeHooks[HookDataIndex].RegistrationCount == 0) {
+			UUserWidget* HookedUserWidget = InstalledArchetypeHooks[HookDataIndex].InstalledWidget;
+			InstalledArchetypeHooks.RemoveAt(HookDataIndex);
+
+			HookedUserWidget->Slot->Parent->RemoveChild(HookedUserWidget);
+			HookedUserWidget->SetFlags(RF_Transient);
+			HookedUserWidget->Rename(nullptr, GetTransientPackage(), REN_DontCreateRedirectors | REN_ForceNoResetLoaders);
+
+			UE_LOG(LogWidgetBlueprintHookManager, Log, TEXT("Removed widget blueprint hook %s from WidgetBlueprint %s"),
+				*HookData->GetPathName(), *HookData->WidgetClass->GetPathName());
+		}
+	} else {
+		// If we are in the editor environment, we cannot directly modify the assets, so we have to use a slow global hook instead
+		TArray<FWidgetBlueprintEditorSlowHookData>& HookRegistrations = InstalledSlowEditorHooks.FindOrAdd(HookData->WidgetClass.ToSoftObjectPath().GetAssetPath());
+		const int32 CurrentRegistrationIndex = HookRegistrations.IndexOfByPredicate([&](const FWidgetBlueprintEditorSlowHookData& Other) {
+			return Other.HookData == HookData;
+		});
+
+		// Remove the hook registration completely if registration count reaches zero
+		if (CurrentRegistrationIndex != INDEX_NONE && --HookRegistrations[CurrentRegistrationIndex].RegistrationCount == 0) {
+			HookRegistrations.RemoveAt(CurrentRegistrationIndex);
+		}
 	}
+}
 
-	const int32 HookDataIndex = InstalledHooks.IndexOfByPredicate([&](const FWidgetBlueprintHookDescriptor& HookDescriptor){
-		return HookDescriptor.HookData == HookData;
-	});
+void UWidgetBlueprintHookManager::RegisterStaticHooks() {
+	// If we cannot use the archetype modification method in this environment, we need to place a global hook
+	if (!GAllowUsingFastWidgetTreeHookPath && FSatisfactoryModLoader::IsAssetHookingAllowed()) {
+		//SUBSCRIBE_METHOD_AFTER(UWidgetBlueprintGeneratedClass::InitializeWidget, [](const UBlueprintGeneratedClass* WidgetClass, UUserWidget* WidgetInstance) {
+		//	if (HookedWidgetBlueprintGeneratedClassFNameSet.Contains(WidgetClass->GetFName())) {
+		//		WidgetBlueprintGeneratedClassInitializeWidget(WidgetClass, WidgetInstance);
+		//	}
+		//});
+	}
+}
 
-	if (HookDataIndex != INDEX_NONE) {
-		UUserWidget* HookedUserWidget = InstalledHooks[HookDataIndex].InstalledWidget;
-		InstalledHooks.RemoveAt(HookDataIndex);
+void UWidgetBlueprintHookManager::WidgetBlueprintGeneratedClassInitializeWidget(const UBlueprintGeneratedClass* WidgetClass, UUserWidget* UserWidget) {
+	// Only attempt to hook widgets that are not templates and located in a game world
+	const UWorld* WidgetWorld = UserWidget->GetWorld();
+	if (!UserWidget->IsTemplate() && WidgetWorld && (WidgetWorld->WorldType == EWorldType::PIE || WidgetWorld->WorldType == EWorldType::Game)) {
+		if (UWidgetBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UWidgetBlueprintHookManager>()) {
+			if (const TArray<FWidgetBlueprintEditorSlowHookData>* RegisteredHooks = HookManager->InstalledSlowEditorHooks.Find(WidgetClass->GetClassPathName())) {
 
-		HookedUserWidget->Slot->Parent->RemoveChild(HookedUserWidget);
-		HookedUserWidget->SetFlags(RF_Transient);
-		HookedUserWidget->Rename(nullptr, GetTransientPackage(), REN_DontCreateRedirectors | REN_ForceNoResetLoaders);
-
-		UE_LOG(LogWidgetBlueprintHookManager, Log, TEXT("Removed widget blueprint hook %s from WidgetBlueprint %s"),
-			*HookData->GetPathName(), *HookData->WidgetClass->GetPathName());
+				// Attach each hook to the widget individually
+				for (const FWidgetBlueprintEditorSlowHookData& RegisteredHookData : *RegisteredHooks) {
+					if (const UWidgetBlueprintHookData* HookData = RegisteredHookData.HookData.LoadSynchronous()) {
+						if (UPanelWidget* ParentWidget = HookData->ResolveParentWidget(UserWidget->WidgetTree)) {
+							HookData->AttachToWidgetInstance(UserWidget, ParentWidget);
+						}
+					}
+				}
+			}
+		}
 	}
 }

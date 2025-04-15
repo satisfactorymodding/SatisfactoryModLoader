@@ -7,8 +7,10 @@ public class SMLEditor : ModuleRules
     public SMLEditor(ReadOnlyTargetRules Target) : base(Target)
     {
         CppStandard = CppStandardVersion.Cpp20;
+	    DefaultBuildSettings = BuildSettingsVersion.Latest;
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         bLegacyPublicIncludePaths = false;
+        bUseUnity = false;
                
         PublicDependencyModuleNames.AddRange(new[] {
             "SML",
@@ -20,6 +22,17 @@ public class SMLEditor : ModuleRules
             "DesktopPlatform",
             "Kismet",
             "ToolWidgets",
+            "InputCore",
+            "Slate",
+            "SlateCore", 
+            "AssetDefinition",
+            "ToolMenus",
+            "EditorFramework",
+        });
+        
+        PrivateDependencyModuleNames.AddRange(new[] {
+	        "PropertyEditor",
+	        "SubobjectDataInterface",
         });
 
         //SML transitive dependencies
