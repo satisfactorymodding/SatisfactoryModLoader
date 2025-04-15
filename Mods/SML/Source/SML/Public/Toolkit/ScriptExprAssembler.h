@@ -31,7 +31,8 @@ struct FScriptExprOperand {
 	// Conversion constructors for trivial integral types
 	template<typename IntegralType> requires(std::is_integral_v<IntegralType>)
 	FORCEINLINE FScriptExprOperand(const IntegralType Integer) : Type(TypeInteger), Integer(Integer) {}
-	FORCEINLINE FScriptExprOperand(const double Float) : Type(TypeFloat),  Float(Float) {}
+	template<typename FloatingType> requires(std::is_floating_point_v<FloatingType>)
+	FORCEINLINE FScriptExprOperand(const FloatingType Float) : Type(TypeFloat),  Float(Float) {}
 
 	// Absolute code offset is absolute, starting at 0 and ending at the script size
 	static FScriptExprOperand CreateResolvedLabel(const int32 InAbsoluteCodeOffset) {
