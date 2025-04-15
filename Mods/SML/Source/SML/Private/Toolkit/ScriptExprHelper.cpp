@@ -49,8 +49,8 @@ TSharedPtr<FScriptExpr> FScriptExprHelper::ImplicitlyConvertExpressionToType(con
 
 		// Range extension conversion from float to double using a Cast
 		if (ExpressionType->IsA<FFloatProperty>() && CoercePropertyType->IsA<FDoubleProperty>()) {
-			const TSharedPtr<FScriptExpr> FloatToDoubleCast = MakeShared<FScriptExpr>(EX_Cast);
-			FloatToDoubleCast->Operands.Add(CST_FloatToDouble);
+			const TSharedPtr<FScriptExpr> FloatToDoubleCast = MakeShared<FScriptExpr>(EX_CallMath);
+			FloatToDoubleCast->Operands.Add(UKismetMathLibrary::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(UKismetMathLibrary, Conv_FloatToDouble)));
 			FloatToDoubleCast->Operands.Add(Expression);
 			return FloatToDoubleCast;
 		}
@@ -98,14 +98,14 @@ TSharedPtr<FScriptExpr> FScriptExprHelper::ImplicitlyConvertExpressionToType(con
 		}
 		// Coercion from a more specific class of a class to a less specific class of a class
 		if(bHasValidPropertyData && SourceMetaClass == DestMetaClass && SourcePropertyClass->IsChildOf(DestPropertyClass)) {
-			const TSharedPtr<FScriptExpr> DynamicCast = MakeShared<FScriptExpr>(EX_MetaCast);
+			const TSharedPtr<FScriptExpr> DynamicCast = MakeShared<FScriptExpr>(EX_DynamicCast);
 			DynamicCast->Operands.Add(DestPropertyClass);
 			DynamicCast->Operands.Add(Expression);
 			return DynamicCast;
 		}
 		// Coercion from a more specific class of a class to a less specific class of a class and a less specific base class type
 		if (bHasValidPropertyData && SourcePropertyClass->IsChildOf(DestPropertyClass) && SourceMetaClass->IsChildOf(DestMetaClass)) {
-			const TSharedPtr<FScriptExpr> DynamicCast = MakeShared<FScriptExpr>(EX_MetaCast);
+			const TSharedPtr<FScriptExpr> DynamicCast = MakeShared<FScriptExpr>(EX_DynamicCast);
 			DynamicCast->Operands.Add(DestPropertyClass);
 			DynamicCast->Operands.Add(Expression);
 
@@ -132,7 +132,7 @@ TSharedPtr<FScriptExpr> FScriptExprHelper::ImplicitlyConvertExpressionToType(con
 	// Object to interface conversion
 	if (ExpressionType->IsA<FObjectProperty>() && CoercePropertyType->IsA<FInterfaceProperty>()) {
 		const UClass* SourcePropertyClass = Cast<UClass>(ExpressionType->RequireOperand<FObjectProperty>(0, FScriptExprTypeOperand::TypeObject).Object);
-		UClass* DestInterfaceClass = Cast<UClass>(ExpressionType->RequireOperand<FInterfaceProperty>(0, FScriptExprTypeOperand::TypeObject).Object);
+		UClass* DestInterfaceClass = Cast<UClass>(CoercePropertyType->RequireOperand<FInterfaceProperty>(0, FScriptExprTypeOperand::TypeObject).Object);
 
 		// Coerce an object type that implements the interface to that interface
 		if (SourcePropertyClass && DestInterfaceClass && SourcePropertyClass->ImplementsInterface(DestInterfaceClass)) {
