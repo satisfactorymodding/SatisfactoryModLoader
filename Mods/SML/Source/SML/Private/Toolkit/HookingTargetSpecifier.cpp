@@ -75,7 +75,7 @@ void FBlueprintHookTargetResolver_PropertyAccess::ResolveTargets(UFunction* Targ
 	for (const TSharedPtr<FScriptExpr>& Statement : FunctionScript) {
 		Statement->ForEachExpressionRecursive([&](const TSharedPtr<FScriptExpr>& Expression) {
 			if (FScriptExprClassification::IsPropertyOpcode(Expression->Opcode)) {
-				const FProperty* PropertyReadTarget = FScriptExprHelper::GetExpressionDestPropertyType(Statement);
+				const FProperty* PropertyReadTarget = FScriptExprHelper::GetExpressionDestPropertyType(Expression);
 				// Target the property read as long as it is not a right hand side of an impure assignment
 				if (PropertyReadTarget && PropertyReadTarget == PropertyTarget) {
 					OutTargetExpressions.Add(Expression);
@@ -92,7 +92,8 @@ void FBlueprintHookTargetResolver_PropertySingleAssignment::ResolveTargets(UFunc
 	for (const TSharedPtr<FScriptExpr>& Statement : FunctionScript) {
 		// Target single property assignment statements only, so skip set, map and array initializers, as well as delegate binds
 		if (FScriptExprClassification::IsSingleAssignmentOpcode(Statement->Opcode)) {
-			const FProperty* PropertyWriteTarget = FScriptExprHelper::GetExpressionDestPropertyType(Statement);
+			const TSharedPtr<FScriptExpr> AssignmentLeftSide = FScriptExprHelper::GetAssignmentStatementLHS(Statement);
+			const FProperty* PropertyWriteTarget = FScriptExprHelper::GetExpressionDestPropertyType(AssignmentLeftSide);
 			// Target the property assignment right side
 			if (PropertyWriteTarget && PropertyWriteTarget == PropertyTarget) {
 				if (const TSharedPtr<FScriptExpr>& AssignmentRightSide = FScriptExprHelper::GetSingleAssignmentStatementRHS(Statement)) {
