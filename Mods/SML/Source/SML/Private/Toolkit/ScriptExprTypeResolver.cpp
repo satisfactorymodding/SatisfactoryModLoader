@@ -166,10 +166,9 @@ TSharedPtr<FScriptExprType> FScriptExprTypeResolver::ResolveExpressionType(const
 
 	// Evaluate the context of the context switch expression and then evaluate the evaluated expression with that context
 	const TSharedPtr<FScriptExpr> ContextExpression = OuterContextSwitchExpression->RequireOperand(0, FScriptExprOperand::TypeExpr).Expr;
-	const TSharedPtr<FScriptExpr> EvaluatedExpression = OuterContextSwitchExpression->RequireOperand(3, FScriptExprOperand::TypeExpr).Expr;
 
 	const TSharedPtr<FScriptExprType> ContextExpressionType = ResolveExpressionType(ContextExpression, OwnerFunctionOuterClass);
-	return ResolveExpressionTypeWithExplicitContext(EvaluatedExpression, ContextExpressionType);
+	return ResolveExpressionTypeWithExplicitContext(Expr, ContextExpressionType);
 }
 
 TSharedPtr<FScriptExprType> FScriptExprTypeResolver::ResolveExpressionTypeWithExplicitContext(const TSharedPtr<FScriptExpr>& Expr, const TSharedPtr<FScriptExprType>& ContextType) {
