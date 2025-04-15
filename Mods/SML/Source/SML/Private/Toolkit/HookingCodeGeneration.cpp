@@ -356,7 +356,7 @@ TSharedPtr<FScriptExpr> FHookCodeGenFunctionContext::GenerateRedirectHookInvocat
 	}
 
 	// Make sure that the return value type is identical to the redirected expression type
-	const TSharedPtr<FScriptExprType> ReturnValueType = FScriptExprTypeResolver::ResolvePropertyType(HookReturnValueProperty);
+	const TSharedPtr<FScriptExprType> ReturnValueType = FScriptExprTypeResolver::ResolveExpressionType(RedirectedExpression, OwnerFunction->GetOuterUClass());
 	const TSharedPtr<FScriptExpr> ConformedHookInvocationExpression = FScriptExprHelper::ConformExpressionToType(HookInvocationExpression, OwnerFunction->GetOuterUClass(), ReturnValueType);
 	if (ConformedHookInvocationExpression == nullptr) {
 		UE_LOG(LogBlueprintHookingCodeGen, Error, TEXT("Failed to generate redirection hook %s because its return value %s does not conform to the type of the redirected expression"),
