@@ -454,7 +454,7 @@ void FScriptExprAssembler::AssembleScriptExpr(TArray<uint8>& OutScriptData, int3
 			UClass* Operand0 = Cast<UClass>(Expr->RequireOperand(0, FScriptExprOperand::TypeObject).Object);
 			const TSharedPtr<FScriptExpr>& Operand1 = Expr->RequireOperand(1, FScriptExprOperand::TypeExpr).Expr;
 
-			WritePointer<UObject>(OutScriptData, ScriptOffset, Operand0);
+			WritePointer<UClass>(OutScriptData, ScriptOffset, Operand0);
 			AssembleScriptExpr(OutScriptData, ScriptOffset, Operand1);
 			break;
 		}
