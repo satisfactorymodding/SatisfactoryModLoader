@@ -293,7 +293,7 @@ bool FHookCodeGenFunctionContext::GenerateInsertionHookInvocation(const FHookCod
 		// Wrap the hook invocation into JumpIfNot to return value statement if the function does not use the flow stack
 		if (!bFunctionUsesFlowStack) {
 			const TSharedPtr<FScriptExpr> JumpToFunctionReturnStatementIfFalse = MakeShared<FScriptExpr>(EX_JumpIfNot);
-			JumpToFunctionReturnStatementIfFalse->Operands.Add(HookData.TargetFunctionOrEventReturnStatement);
+			JumpToFunctionReturnStatementIfFalse->Operands.Add(FScriptExprOperand::CreateUnresolvedLabel(HookData.TargetFunctionOrEventReturnStatement));
 			JumpToFunctionReturnStatementIfFalse->Operands.Add(HookInvocationExpression);
 			
 			OutGeneratedStatements.Add(JumpToFunctionReturnStatementIfFalse);
