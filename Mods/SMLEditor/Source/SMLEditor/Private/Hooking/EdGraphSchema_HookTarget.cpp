@@ -105,8 +105,10 @@ bool FEdGraphSchemaAction_NewHookTargetNode::IsNodeActionRelevantToTheGraphConte
 		// If we have at least a single compatible pin, this node is relevant to the current context
 		for (const UEdGraphPin* NodeGraphPin : TemporaryPinContextNode->Pins) {
 			if (NodeGraphPin && CurrentGraphSchema && CurrentGraphSchema->ArePinsCompatible(NodeGraphPin, ContextMenuBuilder.FromPin)) {
-				return (NodeGraphPin->Direction == EGPD_Input && ContextMenuBuilder.FromPin->Direction == EGPD_Output) ||
-					(NodeGraphPin->Direction == EGPD_Output && ContextMenuBuilder.FromPin->Direction == EGPD_Input);
+				if ((NodeGraphPin->Direction == EGPD_Input && ContextMenuBuilder.FromPin->Direction == EGPD_Output) ||
+					(NodeGraphPin->Direction == EGPD_Output && ContextMenuBuilder.FromPin->Direction == EGPD_Input)) {
+					return true;
+				}
 			}
 		}
 	}
