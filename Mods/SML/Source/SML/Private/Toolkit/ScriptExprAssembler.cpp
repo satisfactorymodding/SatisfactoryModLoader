@@ -275,11 +275,17 @@ TSharedPtr<FScriptExpr> FScriptExprAssembler::DisassembleScriptExpr(const uint8*
 		case EX_Context:
 		case EX_Context_FailSilent: {
 			Result->Operands.Add(DisassembleScriptExpr(ScriptData, ScriptOffset, Result));
+
+			// The jump offset is relative to offset of Expression (4th operand) 
+			const CodeSkipSizeType TargetRelativeCodeOffset = ReadRawData<CodeSkipSizeType>(ScriptData, ScriptOffset);
+			Result->Operands.Add(FScriptExprOperand::CreateResolvedLabel(INDEX_NONE));
+
+			Result->Operands.Add(ReadPointer<FProperty>(ScriptData, ScriptOffset));
+
 			// Compute the absolute code offset from the serialized relative offset
 			const CodeSkipSizeType RelativeCodeOffsetBase = ScriptOffset;
-			const CodeSkipSizeType TargetRelativeCodeOffset = ReadRawData<CodeSkipSizeType>(ScriptData, ScriptOffset);
-			Result->Operands.Add(FScriptExprOperand::CreateResolvedLabel(RelativeCodeOffsetBase + TargetRelativeCodeOffset));
-			Result->Operands.Add(ReadPointer<FProperty>(ScriptData, ScriptOffset));
+			Result->Operands[1] = FScriptExprOperand::CreateResolvedLabel(RelativeCodeOffsetBase + TargetRelativeCodeOffset);
+
 			Result->Operands.Add(DisassembleScriptExpr(ScriptData, ScriptOffset, Result));
 			return Result;
 		}
@@ -545,12 +551,22 @@ void FScriptExprAssembler::AssembleScriptExpr(TArray<uint8>& OutScriptData, int3
 			AssembleScriptExpr(OutScriptData, ScriptOffset, Operand0);
 
 			// Code offset here is relative to the end of first operand
-			const CodeSkipSizeType Operand1 = Expr->RequireOperand(1, FScriptExprOperand::TypeLabel).TargetLabelCodeOffset - ScriptOffset;
+			const CodeSkipSizeType Operand1 = Expr->RequireOperand(1, FScriptExprOperand::TypeLabel).TargetLabelCodeOffset;
 			FProperty* Operand2 = Expr->RequireOperand(2, FScriptExprOperand::TypeProperty).Property;
 			const TSharedPtr<FScriptExpr>& Operand3 = Expr->RequireOperand(3, FScriptExprOperand::TypeExpr).Expr;
 
-			WriteRawData<CodeSkipSizeType>(OutScriptData, ScriptOffset, Operand1);
+			// The jump offset is relative to offset of Expression (4th operand)
+			// Write a placeholder value, we will come back to patch it later
+			int32 ContextNullSkipOffset = ScriptOffset;
+			CodeSkipSizeType ContextNullSkip = -1;
+			WriteRawData<CodeSkipSizeType>(OutScriptData, ScriptOffset, ContextNullSkip);
+
 			WritePointer<FProperty>(OutScriptData, ScriptOffset, Operand2);
+
+			// Compute the relative code offset from the serialized absolute offset and patch the placeholder
+			ContextNullSkip = Operand1 - ScriptOffset;
+			WriteRawData<CodeSkipSizeType>(OutScriptData, ContextNullSkipOffset, ContextNullSkip);
+
 			AssembleScriptExpr(OutScriptData, ScriptOffset, Operand3);
 			break;
 		}
