@@ -384,7 +384,7 @@ TSharedPtr<FScriptExpr> FHookCodeGenFunctionContext::ProcessExpressionTreeWithRe
 		}	
 	} else {
 		// Context switch expressions need additional processing since they override the running context for their second operand
-		const TSharedPtr<FScriptExpr>& OriginalContextExpression = Expression->RequireOperand(3, FScriptExprOperand::TypeExpr).Expr;
+		const TSharedPtr<FScriptExpr>& OriginalContextExpression = Expression->RequireOperand(0, FScriptExprOperand::TypeExpr).Expr;
 		const TSharedPtr<FScriptExpr>& OriginalEvaluatedExpression = Expression->RequireOperand(3, FScriptExprOperand::TypeExpr).Expr;
 
 		// For context switch expression types, we need to first process the context expression with redirect hooks (in the current context), and then run the evaluated expression in that new context
