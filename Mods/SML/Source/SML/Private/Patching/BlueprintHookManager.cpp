@@ -12,6 +12,12 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogBlueprintHookManager, All, All);
 
+UBlueprintMixinHostComponent::UBlueprintMixinHostComponent() {
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = true;
+	PrimaryComponentTick.bAllowTickOnDedicatedServer = true;	
+}
+
 void UBlueprintMixinHostComponent::OnComponentCreated() {
 	Super::OnComponentCreated();
 
