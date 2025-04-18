@@ -117,6 +117,17 @@ UBlueprintActorMixin* UBlueprintMixinHostComponent::FindMixinByClass(TSubclassOf
 	return nullptr;
 }
 
+void UMixinInputDelegateBinding::BindToInputComponent(UInputComponent* InputComponent, UObject* ObjectToBindTo) const {
+	if (AActor* Actor = Cast<AActor>(ObjectToBindTo)) {
+		UBlueprintMixinHostComponent* MixinHostComponent = Actor->GetComponentByClass<UBlueprintMixinHostComponent>();
+		if (MixinHostComponent) {
+			for (UBlueprintActorMixin* ActorMixin : MixinHostComponent->MixinInstances) {
+				UInputDelegateBinding::BindInputDelegates(ActorMixin->GetClass(), InputComponent, ActorMixin);
+			}
+		}
+	}
+}
+
 bool UBlueprintHookManager::GetOriginalScriptCodeFromFunction(const UFunction* InFunction, TArray<uint8>& OutOriginalScriptCode) {
 	constexpr int32 HookedFunctionFooterSizeBytes = 6;
 	const int32 NumScriptBytes = InFunction->Script.Num();
@@ -449,6 +460,9 @@ void UBlueprintHookManager::ApplyActorMixinsToBlueprintClass(UBlueprintGenerated
 		// and we will purge that extra node that we have added before the asset is actually saved on disk
 		const_cast<TArray<USCS_Node*>&>(BlueprintGeneratedClass->SimpleConstructionScript->GetRootNodes()).Add(MixinComponentHostNode);
 		const_cast<TArray<USCS_Node*>&>(BlueprintGeneratedClass->SimpleConstructionScript->GetAllNodes()).Add(MixinComponentHostNode);
+
+		UMixinInputDelegateBinding* InputDelegateBindingWrapper = NewObject<UMixinInputDelegateBinding>(BlueprintGeneratedClass, UMixinInputDelegateBinding::StaticClass(), TEXT("TRANSIENT_MixinInputDelegateBindingWrapper"), RF_Transient);
+		BlueprintGeneratedClass->DynamicBindingObjects.Add(InputDelegateBindingWrapper);
 	}
 
 	// Replace the mixin classes on the component template. All new actors created from the template will have the provided mixins initialized.
@@ -472,6 +486,10 @@ void UBlueprintHookManager::RegisterStaticHooks() {
 			USimpleConstructionScript* SimpleConstructionScript = Cast<USimpleConstructionScript>(InObject);
 			if (SimpleConstructionScript && HookedBlueprintGeneratedClassNames.Contains(SimpleConstructionScript->GetOwnerClass()->GetFName())) {
 				SanitizeSimpleConstructionScript(SimpleConstructionScript);
+			}
+			UBlueprintGeneratedClass* BlueprintGeneratedClass = Cast<UBlueprintGeneratedClass>(InObject);
+			if (BlueprintGeneratedClass) {
+				SanitizeBlueprintGeneratedClass(BlueprintGeneratedClass);
 			}
 		});
 		// TODO: Add OnAssetDeleted callback here and to all other systems to delete stale hooks
@@ -499,6 +517,12 @@ void UBlueprintHookManager::SanitizeSimpleConstructionScript(USimpleConstruction
 			InSimpleConstructionScript->RemoveNode(TemporaryRootNode, false);
 		}
 	}
+}
+
+void UBlueprintHookManager::SanitizeBlueprintGeneratedClass(UBlueprintGeneratedClass* BlueprintGeneratedClass) {
+	BlueprintGeneratedClass->DynamicBindingObjects.RemoveAll([](TObjectPtr<UDynamicBlueprintBinding> Binding) {
+		return Binding->IsA<UMixinInputDelegateBinding>();
+	});
 }
 
 void UBlueprintHookManager::RegisterBlueprintHook(UGameInstance* OwnerGameInstance, UHookBlueprintGeneratedClass* HookBlueprintGeneratedClass) {

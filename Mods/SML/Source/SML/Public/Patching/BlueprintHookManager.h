@@ -3,6 +3,7 @@
 #include "Engine/Engine.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "BlueprintHookingTypes.h"
+#include "Engine/InputDelegateBinding.h"
 #include "BlueprintHookManager.generated.h"
 
 class UBlueprintGeneratedClass;
@@ -30,6 +31,14 @@ protected:
 	TArray<UBlueprintActorMixin*> MixinInstances;
 
 	friend class UBlueprintHookManager;
+	friend class UMixinInputDelegateBinding;
+};
+
+UCLASS()
+class SML_API UMixinInputDelegateBinding : public UInputDelegateBinding  {
+	GENERATED_BODY()
+public:
+	virtual void BindToInputComponent(UInputComponent* InputComponent, UObject* ObjectToBindTo) const override;
 };
 
 UCLASS()
@@ -53,6 +62,9 @@ private:
 
 	/** Called to sanotize the simple construction script and purge any transient nodes from its lists to avoid runtime crash */
 	static void SanitizeSimpleConstructionScript(class USimpleConstructionScript* InSimpleConstructionScript);
+
+	/** Called to sanitize the blueprint generated class and remove any transient dynamic bindings from it */
+	static void SanitizeBlueprintGeneratedClass(UBlueprintGeneratedClass* BlueprintGeneratedClass);
 
 	/** Applies currently registered and valid hooks and mixins to the blueprint class */
 	void ApplyRegisteredHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass) const;
