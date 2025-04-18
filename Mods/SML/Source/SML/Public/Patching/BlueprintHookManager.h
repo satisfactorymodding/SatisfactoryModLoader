@@ -13,6 +13,8 @@ UCLASS()
 class SML_API UBlueprintMixinHostComponent : public UActorComponent {
 	GENERATED_BODY()
 public:
+	UBlueprintMixinHostComponent();
+	
 	// Begin UActorComponent interface
 	virtual void OnComponentCreated() override;
 	virtual void BeginPlay() override;
