@@ -546,6 +546,8 @@ void UBlueprintHookManager::RegisterBlueprintHook(UGameInstance* OwnerGameInstan
 	// If we have a mixin target class, we have to apply hooks to it as well, even if we have traditional hook definitions registered
 	if (HookBlueprintGeneratedClass->MixinTargetClass) {
 		ClassesToReapplyHooks.Add(HookBlueprintGeneratedClass->MixinTargetClass);
+		TArray<TSoftObjectPtr<UHookBlueprintGeneratedClass>>& InstalledHooksForBlueprintClass = InstalledHooksPerBlueprintGeneratedClass.FindOrAdd(HookBlueprintGeneratedClass->MixinTargetClass->GetClassPathName());
+		InstalledHooksForBlueprintClass.AddUnique(TSoftObjectPtr<UHookBlueprintGeneratedClass>(HookBlueprintGeneratedClass));
 	}
 
 	// Keep the hook object itself from being garbage collected
