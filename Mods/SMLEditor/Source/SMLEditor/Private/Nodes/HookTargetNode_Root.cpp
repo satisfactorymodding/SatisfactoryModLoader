@@ -18,7 +18,7 @@ FLinearColor UHookTargetNode_Root::GetNodeTitleColor() const {
 }
 
 FText UHookTargetNode_Root::GetTooltipText() const {
-	return LOCTEXT("HookTargetNodeRoot_Tooltip", "Hook Nodes are Entry Points into the Hook Graph and facillate injection of user-defined Hook Function Calls into provided Target Functions defined in other Blueprints.");
+	return LOCTEXT("HookTargetNodeRoot_Tooltip", "Hook Nodes are Entry Points into the Hook Graph and facilitate injection of user-defined Hook Function Calls into provided Target Functions defined in other Blueprints.");
 }
 
 void UHookTargetNode_Root::ValidateNodeDuringCompilation(FCompilerResultsLog& MessageLog) const {
@@ -50,11 +50,13 @@ void UHookTargetNode_Root::GetMemberReferenceDescriptors(TArray<FHookTargetNodeM
 	OutMemberReferenceDescriptors.Add(FHookTargetNodeMemberReferenceDescriptor{
 		GET_MEMBER_NAME_CHECKED(ThisClass, TargetFunctionReference),
 		LOCTEXT("HookTargetNodeRoot_TargetFunction", "Target Function"),
+		LOCTEXT("HookTargetNodeRoot_TargetFunction_Tooltip", "The Blueprint class and function to hook. Actor Mixins always use their Target class."),
 		EHTNMemberRefFlags::FunctionReference | EHTNMemberRefFlags::FunctionsWithScriptOnly | EHTNMemberRefFlags::HookTargetFunctionReference
 	});
 	OutMemberReferenceDescriptors.Add(FHookTargetNodeMemberReferenceDescriptor{
 		GET_MEMBER_NAME_CHECKED(ThisClass, HookFunctionReference),
-		LOCTEXT("HookTargetNodeRoot_HookFunction", "Hook Reference"),
+		LOCTEXT("HookTargetNodeRoot_HookFunction", "Hook Implementation"),
+		LOCTEXT("HookTargetNodeRoot_HookFunction_Tooltip", "The user-defined Function Call that will be injected by the hook"),
 		EHTNMemberRefFlags::FunctionReference | EHTNMemberRefFlags::SelfContext
 	});
 }
@@ -157,13 +159,17 @@ FText UHookTargetNode_InsertionHook::GetNodeTitle(const ENodeTitleType::Type Tit
 	return FText::Format(LOCTEXT("HookTargetNodeInsertionHook_ShortName", "Call Hook {0}"), HookInsertLocationToText(InsertLocation));
 }
 
+FText UHookTargetNode_InsertionHook::GetTooltipText() const {
+	return FText::Format(LOCTEXT("HookTargetNodeInsertionHook_Tooltip", "{0}\n\n{1}"), UHookTargetNode_Root::GetTooltipText(), UHookTargetNode_InsertionHook::Description);
+}
+
 void UHookTargetNode_InsertionHook::GetMenuEntries(FGraphContextMenuBuilder& ContextMenuBuilder) const {
 	// Utility lambda to create a template with the provided insert location
 	const auto RegisterInsertionHookAction = [&](const EBlueprintFunctionHookInsertLocation InsertLocation) {
 		const TSharedPtr<FEdGraphSchemaAction_NewHookTargetNode> NodePlacementAction = MakeShared<FEdGraphSchemaAction_NewHookTargetNode>(
 			LOCTEXT("HookTargetNodeInsertionHook_Category", "Hooks"),
-			FText::Format(LOCTEXT("HookTargetNodeInsertionHook_MenuName", "Create Insertion Hook {0}"), HookInsertLocationToText(InsertLocation)),
-			LOCTEXT("HookTargetNodeInsertionHook_Description", "Insertion Hooks allow executing user-defined code before the specific Statement in the Target Function."), 0);
+			FText::Format(LOCTEXT("HookTargetNodeInsertionHook_MenuName", "Create Insertion Hook - {0}"), HookInsertLocationToText(InsertLocation)),
+			UHookTargetNode_InsertionHook::Description, 0);
 
 		UHookTargetNode_InsertionHook* NodeTemplate = ContextMenuBuilder.CreateTemplateNode<UHookTargetNode_InsertionHook>();
 		NodeTemplate->InsertLocation = InsertLocation;
@@ -191,6 +197,10 @@ FName UHookTargetNode_InsertionHook::GetTargetExpressionPinName() const {
 	return TEXT("TargetStatement");
 }
 
+FText UHookTargetNode_Redirect::GetTooltipText() const {
+	return FText::Format(LOCTEXT("HookTargetNodeRedirectHook_Tooltip", "{0}\n\n{1}"), UHookTargetNode_Root::GetTooltipText(), UHookTargetNode_Redirect::Description);
+}
+
 FText UHookTargetNode_Redirect::GetNodeTitle(const ENodeTitleType::Type TitleType) const {
 	const FName TargetFunctionName = TargetFunctionReference.GetMemberName();
 	const UClass* TargetClass = TargetFunctionReference.GetScope();
@@ -209,7 +219,7 @@ void UHookTargetNode_Redirect::GetMenuEntries(FGraphContextMenuBuilder& ContextM
 	const TSharedPtr<FEdGraphSchemaAction_NewHookTargetNode> NodePlacementAction = MakeShared<FEdGraphSchemaAction_NewHookTargetNode>(
 			LOCTEXT("HookTargetNodeRedirectHook_Category", "Hooks"),
 			LOCTEXT("HookTargetNodeRedirectHook_MenuName", "Create Redirect Hook"),
-			LOCTEXT("HookTargetNodeRedirectHook_Description", "Redirect Hooks allow redirecting arbitrary expressions (such as variable reads or function calls) in Target Function to user-defined code."), 0);
+			UHookTargetNode_Redirect::Description, 0);
 	NodePlacementAction->NodeTemplate = ContextMenuBuilder.CreateTemplateNode<UHookTargetNode_Redirect>();
 	
 	if (NodePlacementAction->IsNodeActionRelevantToTheGraphContext(ContextMenuBuilder)) {

@@ -69,7 +69,7 @@ bool UActorMixinBlueprintFactory::ConfigureProperties() {
 }
 
 FText UActorMixinBlueprintFactory::GetDisplayName() const {
-	return LOCTEXT("BlueprintMixinFactoryDescription", "Blueprint Mixin");
+	return LOCTEXT("BlueprintMixinFactoryDescription", "Blueprint Mixin (SML)");
 }
 
 FName UActorMixinBlueprintFactory::GetNewAssetThumbnailOverride() const {
@@ -81,7 +81,7 @@ uint32 UActorMixinBlueprintFactory::GetMenuCategories() const {
 }
 
 FText UActorMixinBlueprintFactory::GetToolTip() const {
-	return LOCTEXT("BlueprintMixinTooltip", "Blueprint Mixin is a Blueprint asset that is automatically created for each Actor Instance the Mixin is applied to. It can be used to add additional Components to the Target Actor, Hook Actor Functions, or implement additional logic.");
+	return LOCTEXT("BlueprintMixinTooltip", "Blueprint Mixins are Blueprint assets that are automatically created for each Actor Instance the Mixin is applied to. They can be used to add additional Components to the Target Actor, hook Actor Functions, or implement additional logic.\n\nImplemented by SMLEditor");
 }
 
 UObject* UActorMixinBlueprintFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn, FName CallingContext) {

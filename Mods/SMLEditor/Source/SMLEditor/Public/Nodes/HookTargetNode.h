@@ -29,6 +29,10 @@ struct FHookTargetNodeMemberReferenceDescriptor {
 	/** Name of the member reference as it is shown to the user */
 	UPROPERTY()
 	FText DisplayName;
+
+	/** Hover tool tip text shown to the user */
+	UPROPERTY()
+	FText ToolTip;
 	
 	/** Flags for the descriptor */
 	UPROPERTY()

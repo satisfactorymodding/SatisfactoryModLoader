@@ -231,6 +231,7 @@ void SGraphNodeHookTarget::CreateBelowPinControls(TSharedPtr<SVerticalBox> MainB
 				.OwnerNode(TargetNode)
 				.MemberDescriptor(Descriptor)
 				.IsEditable(this, &SGraphNode::IsNodeEditable)
+				.ToolTipText(Descriptor.ToolTip)
 			];
 		}
 

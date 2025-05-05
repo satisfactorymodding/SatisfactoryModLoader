@@ -6,6 +6,8 @@
 #include "Patching/BlueprintHookingTypes.h"
 #include "HookTargetNode_Root.generated.h"
 
+#define LOCTEXT_NAMESPACE "SMLEditor"
+
 struct FBlueprintHookDefinition;
 
 UCLASS(Abstract)
@@ -58,12 +60,15 @@ public:
 	// Begin UHookTargetNode_Root interface
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual FText GetTooltipText() const override;
 	virtual void GetMenuEntries(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
 	virtual void CompileRoot(FCompilerResultsLog& MessageLog, UClass* SelfClass, UObject* DerivedDataOuter, FBlueprintHookDefinition& OutBlueprintHookDefinition) const override;
 	virtual FName GetTargetExpressionPinName() const override;
 	// End UHookTargetNode_Root interface
 private:
 	static FText HookInsertLocationToText(EBlueprintFunctionHookInsertLocation InsertLocation);
+
+	const FText Description = LOCTEXT("HookTargetNodeInsertionHook_Description", "Insertion Hooks allow executing user-defined code before/instead of/after the specific Statement in the Target Function.");
 };
 
 UCLASS()
@@ -72,8 +77,14 @@ class SMLEDITOR_API UHookTargetNode_Redirect : public UHookTargetNode_Root {
 public:
 	// Begin UHookTargetNode_Root interface
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual FText GetTooltipText() const override;
 	virtual void GetMenuEntries(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
 	virtual void CompileRoot(FCompilerResultsLog& MessageLog, UClass* SelfClass, UObject* DerivedDataOuter, FBlueprintHookDefinition& OutBlueprintHookDefinition) const override;
 	virtual FName GetTargetExpressionPinName() const override;
 	// End UHookTargetNode_Root interface
+
+private:
+	const FText Description = LOCTEXT("HookTargetNodeRedirectHook_Description", "Redirect Hooks allow redirecting arbitrary expressions (such as variable reads or function calls) in Target Function to user-defined code.");
 };
+
+#undef LOCTEXT_NAMESPACE

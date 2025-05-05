@@ -24,7 +24,7 @@ static const FName HookBlueprintComponentTreeEditorID(TEXT("OverlayComponentTree
 static const FName HookBlueprintViewportEditorID(TEXT("OverlayComponentTreeViewport"));
 
 void FHookBlueprintEditorCommands::RegisterCommands() {
-	UI_COMMAND(EditHookBlueprintHookGraph, "Hook Graph", "Edit Hook Blueprint Hook Graph", EUserInterfaceActionType::Button, FInputChord());
+	UI_COMMAND(EditHookBlueprintHookGraph, "Hook Graph", "Open a window to edit the Hook Blueprint's Hook Graph. If the button is grayed out, you already have the window open.", EUserInterfaceActionType::Button, FInputChord());
 }
 
 FName FHookBlueprintEditor::GetToolkitFName() const {

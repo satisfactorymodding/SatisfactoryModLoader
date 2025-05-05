@@ -18,7 +18,7 @@ UHookBlueprintFactory::UHookBlueprintFactory(const FObjectInitializer& ObjectIni
 }
 
 FText UHookBlueprintFactory::GetDisplayName() const {
-	return LOCTEXT("BlueprintHookFactoryDescription", "Blueprint Hook");
+	return LOCTEXT("BlueprintHookFactoryDescription", "Blueprint Hook (SML)");
 }
 
 FName UHookBlueprintFactory::GetNewAssetThumbnailOverride() const {
@@ -30,7 +30,7 @@ uint32 UHookBlueprintFactory::GetMenuCategories() const {
 }
 
 FText UHookBlueprintFactory::GetToolTip() const {
-	return LOCTEXT("BlueprintHookTooltip", "Blueprint Hook is a Blueprint asset that contains definitions for Functions the calls to which are injected into other Blueprints in Runtime.");
+	return LOCTEXT("BlueprintHookTooltip", "Blueprint Hooks are Blueprint assets that contain definitions for Functions, the calls to which are injected into other Blueprints at runtime.\n\nImplemented by SMLEditor");
 }
 
 UObject* UHookBlueprintFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn, FName CallingContext) {
