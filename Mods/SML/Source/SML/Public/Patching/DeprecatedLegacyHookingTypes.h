@@ -4,36 +4,38 @@
 #include "Engine/DataAsset.h"
 #include "DeprecatedLegacyHookingTypes.generated.h"
 
-UCLASS(Deprecated)
-class UDEPRECATED_BlueprintSCSHookData : public UDataAsset {
+/** DEPRECATED - to be removed. Only exists to make the migration to new Actor Mixins easier. */
+UCLASS()
+class UBlueprintSCSHookData : public UDataAsset {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, Category = "Default")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Default")
 	TSubclassOf<class UActorComponent> ActorComponentClass;
 
-	UPROPERTY(EditAnywhere, Category = "Default")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Default")
 	FName VariableName;
 
-	UPROPERTY(VisibleAnywhere, Category = "Default", meta = (ShowInnerProperties))
+	UPROPERTY(VisibleDefaultsOnly, Category = "Default", meta = (ShowInnerProperties))
 	UActorComponent* ActorComponentTemplate;
 
-	UPROPERTY(EditAnywhere, Category = "Default")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Default")
 	FName AttachToName;
 
-	UPROPERTY(Instanced, VisibleAnywhere, Category = "Default")
+	UPROPERTY(Instanced, VisibleDefaultsOnly, Category = "Default")
 	TArray<UObject*> Children;
 };
 
-UCLASS(Deprecated)
-class UDEPRECATED_RootBlueprintSCSHookData : public UDEPRECATED_BlueprintSCSHookData {
+/** DEPRECATED - to be removed. Only exists to make the migration to new Actor Mixins easier. */
+UCLASS()
+class URootBlueprintSCSHookData : public UBlueprintSCSHookData {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, Category = "Default", meta = (MultiLine = "true"))
+	UPROPERTY(VisibleDefaultsOnly, Category = "Default", meta = (MultiLine = "true"))
 	FString DeveloperComment;
 
-	UPROPERTY(EditAnywhere, Category = "Default")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Default")
 	TSoftClassPtr<class AActor> ActorClass;
 
-	UPROPERTY(EditAnywhere, Category = "Default")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Default")
 	FName ParentComponentName;
 };
