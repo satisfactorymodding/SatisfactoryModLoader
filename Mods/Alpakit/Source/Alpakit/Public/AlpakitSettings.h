@@ -74,6 +74,9 @@ public:
     UPROPERTY(BlueprintReadOnly, config, Category = Config)
     TMap<FString, bool> ModSelection;
 
+    UPROPERTY(BlueprintReadOnly, config, Category = Config)
+    bool OrderByFriendlyName;
+
 	UFUNCTION()
 	TArray<FString> GetAllowedBuildConfigurations() const;
 
