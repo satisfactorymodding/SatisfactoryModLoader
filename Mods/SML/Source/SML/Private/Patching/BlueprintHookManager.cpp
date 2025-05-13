@@ -5,6 +5,7 @@
 #include "UObject/ObjectSaveContext.h"
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Engine/GameInstance.h"
+#include "Engine/Level.h"
 #include "Misc/CommandLine.h"
 #include "Toolkit/HookingCodeGeneration.h"
 #include "Toolkit/ScriptExprHelper.h"
@@ -476,6 +477,42 @@ void UBlueprintHookManager::ApplyActorMixinsToBlueprintClass(UBlueprintGenerated
 	MixinHostComponentTemplate->MixinClasses = BlueprintMixins;
 }
 
+void UBlueprintHookManager::ApplyMixinsToLevelActors(ULevel* Level) {
+	for (auto& [ClassPath, Hooks] : InstalledHooksPerBlueprintGeneratedClass) {
+		UClass* MixinTargetClass = Cast<UClass>(FSoftObjectPath(ClassPath).TryLoad());
+		TArray<UHookBlueprintGeneratedClass*> MixinClasses;
+		for (auto& Hook : Hooks) {
+			if (UHookBlueprintGeneratedClass* LoadedHookClass = Hook.LoadSynchronous()) {
+				// Sanity check, mixins should not ever be installed on other classes, but doesn't hurt to check
+				if (LoadedHookClass->MixinTargetClass == MixinTargetClass) {
+					MixinClasses.Add(LoadedHookClass);
+				}
+			}
+		}
+		if (MixinClasses.IsEmpty()) {
+			continue;
+		}
+		TArray<UClass*> AllClassesArray;
+		GetDerivedClasses(MixinTargetClass, AllClassesArray);
+		TSet<UClass*> AllClasses(AllClassesArray);
+		AllClasses.Add(MixinTargetClass);
+		for (AActor* Actor : Level->Actors) {
+			if (AllClasses.Contains(Actor->GetClass())) {
+				if (Actor->GetComponentByClass(UBlueprintMixinHostComponent::StaticClass()) != nullptr) {
+					continue;
+				}
+				UBlueprintMixinHostComponent* MixinHostComponent = NewObject<UBlueprintMixinHostComponent>(Actor, UBlueprintMixinHostComponent::StaticClass(), TEXT("TRANSIENT_MixinHostComponent"), RF_Transient);
+				if(!MixinHostComponent) {
+					UE_LOG(LogBlueprintHookManager, Error, TEXT("Failed to create mixin host component for level actor %s"), *GetFullNameSafe(Actor));
+					continue;
+				}
+				MixinHostComponent->MixinClasses = MixinClasses;
+				MixinHostComponent->RegisterComponent();
+			}
+		}
+	}
+}
+
 // Names of owner classes for hooked blueprint functions/SCS hooks, used to avoid relatively expensive sanitization pass on functions and SCS on classes that are not hooked
 static TSet<FName> HookedBlueprintGeneratedClassNames;
 
@@ -501,6 +538,17 @@ void UBlueprintHookManager::RegisterStaticHooks() {
 		// TODO: Add OnAssetDeleted callback here and to all other systems to delete stale hooks
 	}
 #endif
+	// The construction script is not invoked on level actors as they are simply loaded from the cooked asset, or duplicated for PIE
+	// So we need to manually add the mixin host component to such actors
+	if (FSatisfactoryModLoader::IsAssetHookingAllowed()) {
+		// TODO: This delegate is called after all save data for the actors in this level is loaded
+		// so mixins on these actors cannot have components with SaveGame properties
+		// Could not find any good delegate or hook that would fix this, maybe it can be addressed in the future 
+		FWorldDelegates::LevelAddedToWorld.AddLambda([](ULevel* Level, UWorld*) {
+			UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
+			HookManager->ApplyMixinsToLevelActors(Level);
+		});
+	}
 }
 
 void UBlueprintHookManager::SanitizeFunctionScriptCodeBeforeSave(UFunction* InFunction) {

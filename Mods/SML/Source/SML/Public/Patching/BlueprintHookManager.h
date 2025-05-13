@@ -77,6 +77,9 @@ private:
 	/** Re-applies currently registered blueprint mixins to the provided BPGC */
 	void ApplyActorMixinsToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass, TArray<UHookBlueprintGeneratedClass*>& BlueprintMixins) const;
 
+	/** Registers the mixin component on level actors which do not run the construction script */
+	void ApplyMixinsToLevelActors(ULevel* Level);
+
 	/** Applies the new script code to the function while also stashing away the original code */
 	static void UpdateFunctionScriptCode(UFunction* InFunction, const TArray<uint8>& NewScriptCode, const TArray<uint8>& OriginalScriptCode);
 };
