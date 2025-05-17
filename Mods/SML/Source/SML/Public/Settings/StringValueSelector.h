@@ -16,6 +16,8 @@ public:
 
 	virtual FVariant GetDefaultValue() const override { return Default; }
 
+	virtual bool ShouldFocusOptionSlotToEdit() const override { return true; }
+
 	virtual TSubclassOf<class UFGOptionsValueController> GetValueSelectorWidgetClass() const override;
 
 #if WITH_EDITOR
