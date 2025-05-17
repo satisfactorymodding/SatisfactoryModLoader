@@ -113,11 +113,11 @@ void SAlpakitEditModDialog::Construct(const FArguments& InArgs, TSharedRef<IPlug
 						})
 						.ToolTipText_Lambda([this]() {
 							return HasCPP() 
-								? LOCTEXT("CppButtonDisabledTooltip", "This mod already has C++ module files.") 
-								: LOCTEXT("CppButtonEnabledTooltip", "Create C++ module files to convert this mod into a hybrid Blueprint and C++ mod. This can't be automatically reversed.");
+								? LOCTEXT("AddCppButtonDisabledTooltip", "This mod already has C++ module files.") 
+								: LOCTEXT("AddCppButtonEnabledTooltip", "Create C++ module files to convert this mod into a hybrid Blueprint and C++ mod. This can't be automatically reversed.");
 						})
 						.ContentPadding(FMargin(20.0f, 2.0f))
-						.Text(LOCTEXT("CppButtonLabel", "Convert to C++ & Blueprint Mod"))
+						.Text(LOCTEXT("AddCppButtonLabel", "Convert to C++ & Blueprint Mod"))
 						.OnClicked(this, &SAlpakitEditModDialog::OnCPPClicked)
 					]
 					+ SHorizontalBox::Slot()
@@ -317,7 +317,7 @@ FReply SAlpakitEditModDialog::OnCPPClicked()
 	}
 
 	// Show popup message
-	FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("CPPFilesGenerated", "C++ files created. You must manually build the project for the Development Editor target before you can use them in the editor."));
+	FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("AddCppFilesSuccessMessage", "C++ files created. You must manually build the project for the Development Editor target before you can use them in the Unreal editor. You also must regenerate Visual Studio project files for them to appear in VS/Rider."));
 
 	return FReply::Handled();
 }
