@@ -55,5 +55,6 @@ USceneComponent* AFGBlueprintHologram::SetupBuildableComponent(USceneComponent* 
 USceneComponent* AFGBlueprintHologram::SetInstanceDataBuildableComponent(USceneComponent* attachParent, const FInstanceData& instanceData){ return nullptr; }
 void AFGBlueprintHologram::RegisterCustomBuildableVisualization(TSubclassOf<AFGBuildable> inBuildable, const FCreateBuildableVisualizationDelegate& inDelegate){ }
 bool AFGBlueprintHologram::AreAutomaticConnectionsEnabled() const{ return false; }
+void AFGBlueprintHologram::ApplyCustomizationData(){ }
 void AFGBlueprintHologram::OnOpenConnectionStateChanged(const TArray<class UFGConnectionComponent*>& connections, class UFGConnectionComponent* previousTargetConnection, class UFGConnectionComponent* newTargetConnection, bool isValid){ }
 bool AFGBlueprintHologram::FindCustomVisualizer(TSubclassOf<AFGBuildable> buildableClass, FCreateBuildableVisualizationDelegate& outVisualizer){ return bool(); }

@@ -78,6 +78,7 @@ void AFGElevatorCabin::RebuildButtonMeshComponents(bool iconsOnly){  }
 void AFGElevatorCabin::RemoveButtonMeshComponents(){  }
 void AFGElevatorCabin::ClientWaitForIconSubsystem(){  }
 void AFGElevatorCabin::NotifyPowerStatusChanged(bool hasPower){  }
+UBoxComponent* AFGElevatorCabin::GetOccupyingBoxCollisionComp_Implementation() const{ return nullptr; }
 void AFGElevatorCabin::ApplyCustomizatinDataFromElevator(){  }
 #if WITH_EDITOR
 void AFGElevatorCabin::PostCDOCompiled(const FPostCDOCompiledContext& Context){ Super::PostCDOCompiled(Context); }

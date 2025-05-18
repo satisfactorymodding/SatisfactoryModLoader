@@ -15,6 +15,8 @@
 #include "ItemAmount.h"
 #include "Replication/FGReplicationDependencyActorInterface.h"
 #include "PlayerCustomizationData.h"
+#include "Equipment/AimAssist/FGAimAssistClient.h"
+
 #include "FGEquipment.generated.h"
 
 class UCameraAnimationSequence;
@@ -180,7 +182,7 @@ struct FFGWeightedEquipmentMontageArray
  * Base class for all kinds of equipment in the game.
  */
 UCLASS( meta = (AutoJson = true) )
-class FACTORYGAME_API AFGEquipment : public AActor, public IFGSaveInterface, public IFGReplicationDependencyActorInterface, public IFGLegacyItemStateActorInterface
+class FACTORYGAME_API AFGEquipment : public AActor, public IFGSaveInterface, public IFGReplicationDependencyActorInterface, public IFGLegacyItemStateActorInterface, public IFGAimAssistClient
 {
 	GENERATED_BODY()
 public:
@@ -203,7 +205,15 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
-	
+
+	// <FL> [MartinC] Begin IFGAimAssistClient interface
+	virtual FVector2D GetCrosshairPosition_Implementation() const override;
+	virtual FMagnetismInfo GetMagnetismInfo_Implementation() const override;
+	virtual void GetMagnetismRadiiByDistance_Implementation( float Distance, float& OuterRadius, float& InnerRadius ) const override;
+	virtual bool IsMagnetismActive_Implementation() const override; 
+	// End IFGAimAssistClient interface
+
+
 	// Begin IFGLegacyItemStateActorInterface
 	virtual FFGDynamicStruct ConvertToItemState( TSubclassOf<UFGItemDescriptor> itemDescriptor ) const override;
 	// End IFGLegacyItemStateActorInterface
@@ -580,6 +590,34 @@ protected:
 	/** The equip montage that was played when the equipment was equipped */
 	UPROPERTY( VisibleInstanceOnly, Category = "Equipment", Transient )
 	FFGWeightedEquipmentMontage mPickedEquipMontage;
+	
+
+	// <FL>[MartinC] Aim Assist Variables
+
+	// Strength of the aim assist magnetism effect
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Aim Assist|Magnetism" )
+	float mMagnetismStrength;
+
+	// Modifier for magnetism strength when there's no player input
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Aim Assist|Magnetism" )
+	float mMagnetismZeroInputStrength;
+
+	// Controls whether the aim assist is enabled or not
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Aim Assist|Magnetism" )
+	bool bMagnetismActive;
+
+	// Adjusts the outer radius around the target depending on your distance to it
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Aim Assist|Magnetism" )
+	TObjectPtr< UCurveFloat > mMagnetismOuterRadiusByDistanceCurve;
+
+	// Adjusts the inner radius around the target depending on your distance to it
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Aim Assist|Magnetism" )
+	TObjectPtr< UCurveFloat > mMagnetismInnerRadiusByDistanceCurve;
+
+	// Blends the magnetism strength between the target’s outer and inner radii
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Aim Assist|Magnetism" )
+	TObjectPtr< UCurveFloat > mMagnetismStrengthRadiusBlendCurve;
+	
 private:
 	/** True if we have a blueprint version of some functions */
 	uint8 mHave_AdjustDamage : 1;

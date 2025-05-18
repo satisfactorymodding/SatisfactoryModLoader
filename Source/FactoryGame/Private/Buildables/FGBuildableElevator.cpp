@@ -53,6 +53,9 @@ void AFGBuildableElevator::Factory_StartProducing(){ Super::Factory_StartProduci
 void AFGBuildableElevator::Factory_StopProducing(){ Super::Factory_StopProducing(); }
 void AFGBuildableElevator::GetChildClearanceOutlineActors_Implementation(TArray<AActor*>& out_actors) const{ Super::GetChildClearanceOutlineActors_Implementation(out_actors); }
 const TArray<AFGCharacterPlayer*>& AFGBuildableElevator::GetOccupyingCharacters(){ return *(new TArray<AFGCharacterPlayer*>()); }
+const TArray<APawn*>& AFGBuildableElevator::GetOccupyingPawns(){ return *(new TArray<APawn*>()); }
+void AFGBuildableElevator::AddOccupyingPawn(APawn* pawn) {}
+void AFGBuildableElevator::RemoveOccupyingPawn(APawn* pawn) {}
 int32 AFGBuildableElevator::GetIndexOfFloorStop(AFGBuildableElevatorFloorStop* floorStop) const{ return 0; }
 bool AFGBuildableElevator::HasFloorAtHeight(float height) const{ return false; }
 bool AFGBuildableElevator::HasFloorAtHeightFromFloorInfos(const TArray<FElevatorFloorStopInfo>& floorInfos, float height){ return false; }
@@ -81,6 +84,7 @@ void AFGBuildableElevator::ConnectFloorStopPower(AFGBuildableElevatorFloorStop* 
 void AFGBuildableElevator::CopyFloorStopInfoFrom(AFGBuildableElevator* from){ }
 void AFGBuildableElevator::SetSongID(uint8 songId){ }
 void AFGBuildableElevator::OnRep_SongID(){ }
+bool AFGBuildableElevator::IsPointInElevatorCabin(const FVector& location) const{ return false; }
 void AFGBuildableElevator::BeginMoveToFloorStop(const FElevatorFloorStopInfo& floorInfo){ }
 void AFGBuildableElevator::DebugLogQueuedArray(){ }
 void AFGBuildableElevator::SetElevatorState(EElevatorState newState){ }

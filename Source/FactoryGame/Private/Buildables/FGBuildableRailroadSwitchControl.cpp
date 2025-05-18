@@ -39,7 +39,8 @@ void AFGBuildableRailroadSwitchControl::StopIsLookedAt_Implementation( AFGCharac
 void AFGBuildableRailroadSwitchControl::ToggleSwitchPosition(){ }
 void AFGBuildableRailroadSwitchControl::SetSwitchPosition(int32 newPosition){ }
 void AFGBuildableRailroadSwitchControl::AddControlledConnection(class UFGRailroadTrackConnectionComponent* connection){ }
-void AFGBuildableRailroadSwitchControl::RemoveControlledConnection(class UFGRailroadTrackConnectionComponent* connection){ }
+void AFGBuildableRailroadSwitchControl::RemoveControlledConnection(class UFGRailroadTrackConnectionComponent* connection, bool dismantleWhenCleared){ }
+void AFGBuildableRailroadSwitchControl::ClearControlledConnections(bool dismantleWhenCleared){ }
 void AFGBuildableRailroadSwitchControl::OnRep_VisualState(){ }
 void AFGBuildableRailroadSwitchControl::UpdateVisuals(){ }
 void AFGBuildableRailroadSwitchControl::ApplyVisualState(int16 state){ }

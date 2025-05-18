@@ -64,6 +64,10 @@ void AFGEquipment::PostLoadGame_Implementation(int32 saveVersion, int32 gameVers
 void AFGEquipment::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGEquipment::NeedTransform_Implementation(){ return bool(); }
 bool AFGEquipment::ShouldSave_Implementation() const{ return bool(); }
+FVector2D AFGEquipment::GetCrosshairPosition_Implementation() const{ return FVector2D(); }
+FMagnetismInfo AFGEquipment::GetMagnetismInfo_Implementation() const{ return FMagnetismInfo(); }
+void AFGEquipment::GetMagnetismRadiiByDistance_Implementation(float Distance, float& OuterRadius, float& InnerRadius) const{ }
+bool AFGEquipment::IsMagnetismActive_Implementation() const{ return false; }
 FFGDynamicStruct AFGEquipment::ConvertToItemState(TSubclassOf<UFGItemDescriptor> itemDescriptor) const{ return FFGDynamicStruct(); }
 void AFGEquipment::Equip( AFGCharacterPlayer* character){ }
 void AFGEquipment::UnEquip(){ }

@@ -47,6 +47,9 @@ struct FFGButtonHintDescription
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	float LongPressSeconds = -1.f;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	bool Disabled = false;
 };
 
 USTRUCT( BlueprintType )
@@ -59,6 +62,9 @@ struct FFGButtonBindingDescription
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	TObjectPtr<UInputAction> ChordInputAction;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = (ToolTip = "Force this Key instead of looking up the InputAction" )  )
+	FKey OverrideKey;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = (ToolTip = "If left empty will use DisplayName from PlayerMappableKeySettings" ) )
 	FText DescriptionText;
@@ -147,19 +153,28 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta=(ExposeOnSpawn=true) )
 	FName mHintTag;
 
+	/** If set to true, the bar will never show. Used to hide bars of stacked Widget_Window_DarkMode. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = true))
+	bool mHintBarIsAlwaysHidden = false;
+
 private:
+
 	UFUNCTION()
 	void HandleKeyHintListUpdated(const TArray<FFGKeyHint>& KeyHints);
+
 	UFUNCTION()
 	void HandleKeyHintsChanged();
-	void UpdateKeyHintsFromFocusPath(const FWidgetPath& FocusPath);
 
 	UFUNCTION()
 	void HandleEnhancedInputMappingsRebuilt();
+
+	void UpdateKeyHintsFromFocusPath(const FWidgetPath& FocusPath);
 	void UpdateKeyHintsFromEnhancedInput();
 
-	bool GameUIHasActiveInteractWidget();
+	bool ParentWindowIsTopmostOnWidgetStack();
 	void SortKeyHints();
+
+	class UFGGameUI* GetGameUI();
 	class UEnhancedInputLocalPlayerSubsystem* GetEnhancedInputSubsystem() const;
 };
 

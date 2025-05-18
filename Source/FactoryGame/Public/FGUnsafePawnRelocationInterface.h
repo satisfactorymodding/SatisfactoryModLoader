@@ -8,7 +8,12 @@
 #include "FGUnsafePawnRelocationInterface.generated.h"
 
 /**
- * Interface for actors that should be colorable with the colorgun.
+ * Interface for flagging actors as in an unsafe location. This was used by the elevators to relocate pawns if loading inside a cabin.
+ * This is no longer the case but is still used there to not update the last safe location.
+ *
+ * @TODO A better method would be to track the reason
+ * the actor is "unsafe" by saving the reason. This could be a good idea for a refactor since a bool doesn't have a way of evaluating
+ * if its still unsafe or if it was flagged for a different reason. Currently there is no need for this but it would be a smart change 
  */
 UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGUnsafePawnRelocationInterface : public UInterface

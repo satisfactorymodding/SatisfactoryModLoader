@@ -29,10 +29,6 @@ public:
 	UPROPERTY( BlueprintReadWrite )
 	TObjectPtr< UCurveFloat > RadiusBlendCurve;
 
-	// <FL> [MartinC] Blends magnetism strength accordingly to the player's rotation input direction
-	UPROPERTY( BlueprintReadWrite )
-	TObjectPtr< UCurveFloat > AngleBlendCurve;
-
 	// <FL> [MartinC] Modifier for magnetism strength when there's no player input
 	UPROPERTY( BlueprintReadWrite )
 	float ZeroInputStrengthFactor = 0.f;

@@ -139,7 +139,7 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static bool ShouldShowXboxIcons();
 
-	UFUNCTION( BlueprintCallable, Category = "UI" )
+	UFUNCTION( BlueprintCallable, BlueprintPure, Category = "UI" )
 	static bool IsDualSenseForWindowsEnabled();
 	
 	UFUNCTION( BlueprintCallable, Category = "UI" )

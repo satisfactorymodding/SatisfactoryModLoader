@@ -13,7 +13,7 @@ class USessionInformation;
 /**
  * 
  */
-UCLASS()
+UCLASS(Config=Game, DefaultConfig)
 class USessionJoiningSequence : public USessionMigrationSequence
 {
 	GENERATED_BODY()
@@ -56,5 +56,17 @@ private:
 	int32 BackendIndex = 0;
 	int32 MirrorSessionLookupLoopIndex = 0;
 	int32 SessionJoinLoopIndex = 0;
+
+	// <FL> [BGR] EOS response timeout
+protected:
+
+	UPROPERTY(Config)
+	float SessionJoiningTimeout = -1.0f;
+
+private:
+	FTimerHandle TimeoutHandle;
+
+	void OnTimeout();
+	// </FL>
 };
 

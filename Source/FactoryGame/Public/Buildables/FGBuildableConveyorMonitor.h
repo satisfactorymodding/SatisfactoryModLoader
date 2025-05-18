@@ -27,6 +27,18 @@ struct FACTORYGAME_API FItemMonitorData
 	float FloatLocalAverage = 0;
 };
 
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FReplicatedCoreBeltThroughputData
+{
+	GENERATED_BODY()
+
+	UPROPERTY( )
+	int32 Average = 0;
+
+	UPROPERTY( )
+	float Confidence = 0.f;
+};
+
 /**
  * Attaches to conveyors to monitor their effective throughput
  */
@@ -58,6 +70,8 @@ public:
 	virtual void SetSnappedSplineBuildable(AFGBuildable* buildable) override;
 	// End FGBuildableSplineSnappedBase
 
+	virtual void InitializeOffset( bool forceUpdate = false );
+
 	UFUNCTION( BlueprintPure, Category="ConveyorMonitor" )
 	AFGBuildableConveyorBase* GetConveyorBase();
 	
@@ -81,6 +95,13 @@ public:
 
 	void UpdatePassedTimeAndItems( double time, int32 numItems );
 
+	UFUNCTION( BlueprintPure, Category="ConveyorMonitor" )
+	int32 GetCalculatedAverage() const { return mCalculatedItemsPerMinute; }
+
+	UFUNCTION( BlueprintPure, Category="ConveyorMonitor" )
+	float GetConfidence() const { return mConfidence; } 
+	
+	
 	/**
 	 * Event is triggered when the calculated item throughput rate changes. The item throughput is calculated a little differently if the confidence is less than 100.
 	 * This is done so that any hiccups at the initial rebuild of the belt (which is a common issue) get exclude early on. Otherwise it could take a long time
@@ -98,7 +119,7 @@ public:
 	void ResetMonitorData( AFGConveyorChainActor* chainActor );
 
 	UFUNCTION()
-	void OnRep_CalculatedItemsPerMinute();
+	void OnRep_ReplicatedCoreData();
 
 	UFUNCTION()
 	void OnRep_MonitorData();
@@ -142,7 +163,7 @@ private:
 	UPROPERTY( SaveGame )
 	float mOffsetAlongConveyor = -1.f;
 	
-	UPROPERTY( ReplicatedUsing=OnRep_CalculatedItemsPerMinute )
+	UPROPERTY()
 	int32 mCalculatedItemsPerMinute = -1;
 	
 	UPROPERTY()
@@ -155,8 +176,12 @@ private:
 #endif
 	
 	// Percentage of Average sections that have been tallied. After all sections have been filled this will be 100%
-	UPROPERTY( Replicated )
+	UPROPERTY()
 	float mConfidence = 0.f;
+
+	// Struct for replicating the data so we can trigger via a single on rep
+	UPROPERTY( ReplicatedUsing=OnRep_ReplicatedCoreData )
+	FReplicatedCoreBeltThroughputData mReplicatedCoreData;
 
 	UPROPERTY( meta = ( NoAutoJson = true, FGReplicated ) )
 	int32 mCurrentDataIndex = 0;

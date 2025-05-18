@@ -116,6 +116,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input" )
 	float GetDefaultMouseSensitivityY();
 
+	UFUNCTION()
+	void OnGamepadSpeakerEnabledUpdated( FString updatedCvar );
+
 	/** Returns readable name for an action */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input", meta = ( DeprecatedFunction, DeprecationMessage = "Use FGInpuLibrary::FormatStringWithInputActionNames or FGInpuLibrary::GetInputActionNameAsText" ) )
 	FText GetKeyNameForAction( FName inAction, bool getGamepadKey );
@@ -223,7 +226,9 @@ protected:
 	int32 GetMotionDeviceIndex(bool& SonyController);
 	int32 GetPS5PadDeviceIndex();
 	bool GetMMDeviceFromPadHandle( int in_padHandle, IMMDevice*& io_pMmDevice );
+	static bool IsControllerSpeakerSettingEnabled();
 
+	void InitializePadSpeakers();
 	void InitializePadSpeakerWindows();
 	void InitializePadSpeakerNative();
 	void InitializePadType(const bool IsSonyController);

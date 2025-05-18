@@ -173,6 +173,9 @@ struct FACTORYGAME_API FPrefabSignData
 	// For clients to know if they should call the server RPC to set the data when they receive new data (if from replication don't trigger the RPC as it came from an RPC)
 	bool IsFromReplication = false;
 
+	//<FL>[KonradA] 
+	bool IsFromCopyLoadOperation = false;
+
 	uint32 GetGUID() const;
 };
 
@@ -207,6 +210,9 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Sign Data" )
 	bool bContainsIcon;
 
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Sign Data" )
+	bool bContainsOtherIcon = false;
+	
 	// The prefab data for this widget - Changes per instance
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Transient, Category = "Sign Data", meta=( ExposeOnSpawn ) )
 	FPrefabSignData mPrefabSignData;

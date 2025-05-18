@@ -23,6 +23,7 @@ public:
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual void CheckValidPlacement() override;
+	virtual bool CanNudgeHologram() const override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual void ConfigureActor(AFGBuildable* inBuildable) const override;
 	virtual void ConfigureComponents(AFGBuildable* inBuildable) const override;

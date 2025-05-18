@@ -130,15 +130,15 @@ struct FACTORYGAME_API FMappedSignData
 {
 	GENERATED_BODY()
 
+	bool bIsRelevant = true;
+	
+	uint32 PresetGUID = 0;
+	
 	UPROPERTY()
 	UMaterialInstanceDynamic* mMaterialInstance = nullptr;
 	
 	UPROPERTY()
 	class UWidgetComponent* mRootWidgetComponent = nullptr;
-	
-	/* Zero will be the owner. */
-	UPROPERTY()
-	TArray<AFGBuildableWidgetSign*> Owners;
 	
 	FMappedSignData(UMaterialInstanceDynamic* InMaterial, UWidgetComponent* InWidget)
 	{
@@ -150,6 +150,31 @@ struct FACTORYGAME_API FMappedSignData
 		mMaterialInstance = nullptr;
 		mRootWidgetComponent = nullptr;
 	}
+
+	void AddOwner( AFGBuildableWidgetSign* NewSign )
+	{
+		Owners.Add( NewSign );
+	}
+
+	void RemoveOwner( AFGBuildableWidgetSign* RemovedSign )
+	{
+		const int32 Index = Owners.IndexOfByKey( RemovedSign );
+		if(Index != INDEX_NONE)
+		{
+			Owners.RemoveAt( Index,1,true );
+		}
+	}
+
+	int32 GetNumOwners() const { return Owners.Num(); }
+	AFGBuildableWidgetSign* GetWidgetOwner() const					{ return Owners.IsValidIndex( 0 ) ? Owners[0] : nullptr; }
+	bool DoesContainSign(const AFGBuildableWidgetSign* Sign) const	{ return Owners.Contains( Sign); }
+	const TArray<AFGBuildableWidgetSign*>& GetOwnersConst()			{ return Owners; }
+private:
+	/* First buildable will own the widget, must be modified through Add and Remove Owner. */
+	UPROPERTY()
+	TArray<AFGBuildableWidgetSign*> Owners;
+
+
 };
 
 /**
@@ -159,7 +184,7 @@ UCLASS()
 class FACTORYGAME_API AFGSignSubsystem : public AFGSubsystem
 {
 	GENERATED_BODY()
-	
+
 public:
 	/** Replication. */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
@@ -170,7 +195,6 @@ public:
 	/** Get the circuit subsystem */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits", Meta = ( DefaultToSelf = "worldContext" ) )
 	static AFGSignSubsystem* GetSignSubsystem( UObject* worldContext );
-
 
 	AFGSignSubsystem();
 
@@ -206,11 +230,17 @@ public:
 	/* Add a new preset to the managed pool.*/
 	void RegisterNewPreset(AFGBuildableWidgetSign* Sign, uint32 GUID, UWidgetComponent* Widget, UMaterialInstanceDynamic* InMaterial);
 
-	void UpdatePresetMaterialInstance(uint32 GUID, const TFunctionRef<void(class UWidgetComponent* InWidgetComponent, UMaterialInstanceDynamic* InMaterialInstance)>& UpdateFunction);
+	void UpdatePresetMaterialInstance(uint32 GUID, const TFunctionRef<void(class UWidgetComponent* InWidgetComponent, UMaterialInstanceDynamic* InMaterialInstance ) >& UpdateFunction);
 
 	void ResolveRemoved(AFGBuildableWidgetSign* Sign, uint32 GUID);
 
+ 	void UpdateRelevancy();
+
 	UWidgetComponent* GetWidgetByGUID(uint32 GUID);
+
+	//<FL>[KonradA]
+	FORCEINLINE bool HasQueriedBlockedUsers() { return bHasQueriedBlockedUsers; };
+	//</FL>
 private:
 	/** Tracks whether the subsystem is waiting for a sign data request is pending from the server. If so, no new requests will be issued */
 	bool mHasPendingClientRequest;
@@ -226,9 +256,12 @@ private:
 	TArray< FSortedPendingSign > mPendingSortedSigns;
 
 	/* Map of GUID for unique sign setup and ptr to the render target.
-	 * The material instances in FMappedSignData have the subsustem as outer to avoid GC. */
+	 * The material instances in FMappedSignData have the subsystem as outer to avoid GC. */
+	//UPROPERTY()
+	//TMap<uint32,FMappedSignData> mUniqueSignToRenderTargetSetup;
+
 	UPROPERTY()
-	TMap<uint32,FMappedSignData> mUniqueSignToRenderTargetSetup;
+	TArray<FMappedSignData> mUniqueSignToRenderTargetData; 
 
 	//////////////////////////////////////////////////////
 	/// Pixel Sign Members
@@ -239,4 +272,9 @@ private:
 	TMap< int32, UFGSignPixelInstanceManager* > mPixelInstanceManagerMap;
 
 	TArray< AFGBuildablePixelSign* > mAllPixelSigns;
+
+	// <FL>[KonradA]
+	bool bHasQueriedBlockedUsers;
+	FDelegateHandle hOnQueryAllBlockedComplete;
+	// </FL>
 };

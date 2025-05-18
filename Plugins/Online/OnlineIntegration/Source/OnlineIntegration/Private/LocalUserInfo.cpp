@@ -54,6 +54,5 @@ TFuture<bool> ULocalUserInfo::FetchFriendInfoAsync(UOnlineFriend* Friend, UOnlin
 bool ULocalUserInfo::RetrievePrivileges(TOptional<EPrivilegeResults>& Result, EUserPrivilege PrivilegeToQuery) const{ return false; }
 bool ULocalUserInfo::RetrievePrivileges(TOptional<EPrivilegeResults>& PrivilegeResult, EUserPrivilege PrivilegeToQuery, FOnPrivilegeQueryDone Callback) const{ return false; }
 void ULocalUserInfo::DisplayPremiumInformation(const FOnShowStoreUIClosedDelegate2& OnShowStoreUIClosedDelegate) const{ }
-void ULocalUserInfo::SetOnlineFeatureStatus(EOnlineSessionFeatureType sessionFeatureType){ }
 bool ULocalUserInfo::HasUserBlocked(FUserNetIdBundles userBundlesToCheck){ return false; }
 void ULocalUserInfo::QueryBlockedAll(){ }

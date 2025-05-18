@@ -292,7 +292,8 @@ private:
 	FReply CallDelegateForKeyEventOfType(const FKeyEvent& InKeyEvent, EFGKeyHintDelegateType DelegateType);
 	FReply CallKeybindingDelegate(const FFGKeybinding& Keybinding, EFGKeyHintDelegateType DelegateType);
 	void BeginLongPress(const FFGKeybinding& Keybinding);
-
+	static void FakeKeyDownAndUpEvents(const FKeyEvent& InKeyEvent);
+	static void FakeKeyUpEvent(const FKeyEvent& InKeyEvent);
 	void AddParentKeybindings();
 	TArray< FFGKeybinding > AllKeybindings;
 };

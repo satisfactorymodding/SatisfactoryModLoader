@@ -67,18 +67,21 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Factory|Elevator")
 	const TArray< AFGCharacterPlayer* >& GetOccupyingCharacters();
-	
-	UFUNCTION( BlueprintCallable, Category="FactoryGame|Factory|Elevator" )
-	bool IsElevatorOccupiedByCharacter( AFGCharacterPlayer* character ) { return mCharactersInElevator.Contains( character ); }
-	
-	UFUNCTION( BlueprintCallable, Category="FactoryGame|Factory|Elevator" )
-	void AddOccupyingCharacter( AFGCharacterPlayer* character ) { mCharactersInElevator.AddUnique( character ); }
 
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Factory|Elevator")
+	const TArray< APawn* >& GetOccupyingPawns();
+	
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Factory|Elevator" )
-	void RemoveOccupyingCharacter( AFGCharacterPlayer* character ) { mCharactersInElevator.Remove( character ); }
+	bool IsElevatorOccupiedByCharacter( AFGCharacterPlayer* character ) { return mOccupyingCharacters.Contains( character ); }
+	
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Factory|Elevator" )
+	void AddOccupyingPawn( APawn* pawn );
+	
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Factory|Elevator" )
+	void RemoveOccupyingPawn( APawn* pawn );
 	
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Factory|Elevator" )
-	bool IsElevatorOccupied() const { return mCharactersInElevator.Num() > 0; }
+	bool IsElevatorOccupied() const { return mOccupyingCharacters.Num() > 0; }
 
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Factory|Elevator" )
 	int32 GetIndexOfFloorStop( AFGBuildableElevatorFloorStop* floorStop ) const;
@@ -296,6 +299,10 @@ public:
 	// For clients to update the song in the cabin
 	UFUNCTION()
 	void OnRep_SongID();
+
+	// Helper to determine if a point falls inside the elevator cabin
+	UFUNCTION( BlueprintPure, Category="Personel Elevator" )
+	bool IsPointInElevatorCabin( const FVector& location ) const;
 	
 private:
 	// Begin execution of moving to a floor stop. SHould only be called internally.
@@ -305,6 +312,11 @@ private:
 
 	// Setter for the Elevator State that marks the property dirty for replication
 	void SetElevatorState( EElevatorState newState );
+
+	// Called when adding an occupying pawn. Should not be called manually as this array is not saved
+	void AddOccupyingCharacter( AFGCharacterPlayer* character ) { mOccupyingCharacters.AddUnique( character ); }
+	void RemoveOccupyingCharacter( AFGCharacterPlayer* character ) { mOccupyingCharacters.Remove( character ); }
+	
 protected:
 	
 #if WITH_EDITOR
@@ -369,8 +381,15 @@ private:
 	UPROPERTY( ReplicatedUsing=OnRep_QueuedStopIndexes )
 	TArray< int32 > mQueuedStopIndexes;
 
+	// DEPRECATED - Left for converting to mAllPawnsInElevator 
 	UPROPERTY( SaveGame )
 	TArray< class AFGCharacterPlayer* > mCharactersInElevator;
+
+	UPROPERTY()
+	TArray< AFGCharacterPlayer* > mOccupyingCharacters;
+	
+	UPROPERTY( SaveGame )
+	TArray< class APawn* > mAllPawnsInElevator;
 
 	// The position of the cabin in the elevator. This is only updated when a stop is reached. Saved so the Cabin can be spawned at the correct location
 	UPROPERTY( SaveGame, Replicated )

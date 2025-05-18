@@ -192,6 +192,14 @@ public:
 	 * Note that this does not change the current switch position if the connections are reordered.
 	 */
 	void SortConnections();
+
+	/**
+	 * Clears out any connections that are considered "invalid"
+	 */
+	void ClearInvalidConnections();
+
+	/** Whether or not the specified connection is considered "valid" for us. */
+	bool IsConnectionValid( UFGRailroadTrackConnectionComponent* toComponent );
 	
 private:
 	/** Internal helper functions to add/remove connection. */

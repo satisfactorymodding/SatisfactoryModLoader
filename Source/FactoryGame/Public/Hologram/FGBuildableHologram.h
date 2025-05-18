@@ -354,7 +354,7 @@ protected:
 	 */
 	virtual void CreateAttachmentPointTransform( FTransform& out_transformResult, const FHitResult& HitResult, class AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint );
 
-	void ApplyCustomizationData();
+	virtual void ApplyCustomizationData();
 	// Delayed client apply customization
 	virtual void OnGamestateReceived() override;
 

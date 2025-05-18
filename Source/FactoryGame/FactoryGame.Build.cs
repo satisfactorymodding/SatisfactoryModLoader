@@ -190,13 +190,17 @@ public class FactoryGame : ModuleRules
 			// } );
 		}
 
-		const bool withTelemetry = false; // MODDING EDIT: DSTelemetry is private
-		if ( withTelemetry )
+		// <FL> [PfaffN] Disable telemetry for consoles
+		if (/*Target.Platform == UnrealTargetPlatform.PS5 ||
+		    Target.Platform == UnrealTargetPlatform.XSX*/ true)
 		{
-			PublicDependencyModuleNames.Add( "DSTelemetry" );
+			PrivateDefinitions.Add($"WITH_TELEMETRY=0");
 		}
-		
-		PrivateDefinitions.Add($"WITH_TELEMETRY={(withTelemetry ? "1" : "0")}");
+		else
+		{
+			PublicDependencyModuleNames.Add("DSTelemetry");
+			PrivateDefinitions.Add($"WITH_TELEMETRY=1");
+		}
 
 		bool isPublicBuild = true; // MODDING EDIT: we always target public builds
 		string isPublicBuildVersion = System.Environment.GetEnvironmentVariable("IS_PUBLIC_BUILD");

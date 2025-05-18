@@ -236,6 +236,10 @@ void UFGCheatManager::Server_Trains_EmptyAllFreightCars_Implementation(){ }
 void UFGCheatManager::Trains_EmptyAllFreightCars(){ }
 void UFGCheatManager::Server_Trains_RerailAll_Implementation(){ }
 void UFGCheatManager::Trains_RerailAll(){ }
+void UFGCheatManager::Trains_DismantleAll(){ }
+void UFGCheatManager::Trains_ValidateAndFixConnections(){ }
+void UFGCheatManager::Server_Trains_ValidateAndFixConnections_Implementation(){ }
+void UFGCheatManager::Server_Trains_DismantleAll_Implementation(){ }
 void UFGCheatManager::Server_Trains_MarkTrackGraphsAsChanged_Implementation(){ }
 void UFGCheatManager::Trains_MarkTrackGraphsAsChanged(){ }
 void UFGCheatManager::Server_Trains_MarkTrackGraphsForRebuild_Implementation(){ }

@@ -76,6 +76,7 @@ void AFGBuildableConveyorBase::OnUseServerRepInput( AFGCharacterPlayer* byCharac
 void AFGBuildableConveyorBase::BuildStaticItemInstances(){ }
 void AFGBuildableConveyorBase::DestroyStaticItemInstancesNextFrame(){ }
 void AFGBuildableConveyorBase::Upgrade_Implementation(AActor* newActor){ Super::Upgrade_Implementation(newActor); }
+void AFGBuildableConveyorBase::GetChildDismantleActors_Implementation(TArray<AActor*>& out_ChildDismantleActors) const{ Super::GetChildDismantleActors_Implementation(out_ChildDismantleActors); }
 float AFGBuildableConveyorBase::GetDistanceBetweenFirstConnection(){ return float(); }
 float AFGBuildableConveyorBase::GetDistanceBetweenLastConnection(){ return float(); }
 void AFGBuildableConveyorBase::SetConveyorChainActor(AFGConveyorChainActor* chainActor){ }

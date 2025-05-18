@@ -22,6 +22,8 @@ void UFGButtonHintBar::HandleKeyHintsChanged(){ }
 void UFGButtonHintBar::UpdateKeyHintsFromFocusPath(const FWidgetPath& FocusPath){ }
 void UFGButtonHintBar::HandleEnhancedInputMappingsRebuilt(){ }
 void UFGButtonHintBar::UpdateKeyHintsFromEnhancedInput(){ }
+bool UFGButtonHintBar::ParentWindowIsTopmostOnWidgetStack(){ return false; }
 void UFGButtonHintBar::SortKeyHints(){  }
+class UFGGameUI* UFGButtonHintBar::GetGameUI() { return nullptr; }
 UEnhancedInputLocalPlayerSubsystem* UFGButtonHintBar::GetEnhancedInputSubsystem() const{ return nullptr; }
 void UFGButtonHintFunctionLibrary::GroupAndSortKeyHints(const TArray<FFGKeyHint>& KeyHints, TArray<FFGKeyHintGroup>& out_Groups){ }

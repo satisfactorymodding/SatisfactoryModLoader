@@ -18,3 +18,4 @@ void USessionCreationSequence::CreateSession(TSharedRef<FControlFlowNode>, UOnli
 void USessionCreationSequence::StoreSessionMetadata(TSharedRef<FControlFlowNode>, UOnlineIntegrationBackend* Backend){ }
 void USessionCreationSequence::Travel(){ }
 void USessionCreationSequence::NotifySetupComplete(){ }
+void USessionCreationSequence::OnTimeout() { }

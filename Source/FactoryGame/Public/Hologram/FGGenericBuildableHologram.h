@@ -43,7 +43,6 @@ public:
 	// Begin AFGHologram interface
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual int32 GetRotationStep() const override;
-	virtual ENudgeFailReason NudgeHologram( const FVector& NudgeInput, const FHitResult& HitResult ) override;
 	virtual void UpdateRotationValuesFromTransform() override;
 	// End AFGHologram interface
 	

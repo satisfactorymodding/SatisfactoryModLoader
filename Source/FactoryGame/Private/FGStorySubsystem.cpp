@@ -33,8 +33,8 @@ void AFGStorySubsystem::OnCalendarOpenedByPlayer(class AFGCharacterPlayer* byCha
 void AFGStorySubsystem::OnMessageStartedForPlayer(class AFGPlayerController* player, class UFGMessage* message){  }
 void AFGStorySubsystem::OnMessageFinishedForPlayer(class AFGPlayerController* player, class UFGMessage* message){  }
 void AFGStorySubsystem::OnPlayerFinishedSpawning(class AFGCharacterPlayer* player){ }
-void AFGStorySubsystem::OnPersonalElevatorBeginMove(const TArray<class AFGCharacterPlayer*>& OccupyingPlayers){  }
-void AFGStorySubsystem::OnPersonalElevatorEndMove(const TArray<class AFGCharacterPlayer*>& OccupyingPlayers){  }
+void AFGStorySubsystem::OnPersonalElevatorBeginMove(const TArray<class AFGCharacterPlayer*>& OccupyingPlayers, float estimatedTravelTime){  }
+void AFGStorySubsystem::OnPersonalElevatorEndMove(const TArray<class AFGCharacterPlayer*>& OccupyingPlayers, float estimatedTravelTime){  }
 void AFGStorySubsystem::OnToiletFlushed(class AFGCharacterPlayer* byCharacter, class AFGPioneerPotty* toilet){ }
 void AFGStorySubsystem::OnActorTookDamage(AActor* damagedActor, float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser){  }
 void AFGStorySubsystem::OnSpaceElevatorShipmentLockedIn(AFGPlayerState* playerState,  UFGGamePhase* gamePhase){ }

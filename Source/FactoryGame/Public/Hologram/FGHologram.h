@@ -454,6 +454,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Hologram" )
 	void SetNudgeOffset( const FVector& NewNudgeOffset );
 
+	UFUNCTION( BlueprintPure, Category="Hologram" )
+	const FVector& GetHologramNudgeOffset() const { return mHologramNudgeOffset; }
+	
 	/** Used to nudge the hologram location when locking it in place. */
 	UFUNCTION( BlueprintCallable, Category = "Hologram" )
 	ENudgeFailReason AddNudgeOffset( const FVector& Offset, const FVector& MaxNudgeDistance = FVector(-1.0f) );
