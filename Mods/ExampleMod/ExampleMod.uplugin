@@ -21,7 +21,7 @@
 			"LoadingPolicy": "Always"
 		}
 	],
-	"GameVersion": ">=383729",
+	"GameVersion": ">=410840",
 	"Plugins": [
 		{
 			"Name": "SML",
