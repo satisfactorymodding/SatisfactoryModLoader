@@ -10,6 +10,7 @@ AFGElevatorFloorStopHologram::AFGElevatorFloorStopHologram() : Super() {
 bool AFGElevatorFloorStopHologram::IsValidHitResult(const FHitResult& hitResult) const{ return Super::IsValidHitResult(hitResult); }
 void AFGElevatorFloorStopHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ Super::SetHologramLocationAndRotation(hitResult); }
 void AFGElevatorFloorStopHologram::CheckValidPlacement(){ Super::CheckValidPlacement(); }
+bool AFGElevatorFloorStopHologram::CanNudgeHologram() const{ return Super::CanNudgeHologram(); }
 AActor* AFGElevatorFloorStopHologram::GetUpgradedActor() const{ return Super::GetUpgradedActor(); }
 void AFGElevatorFloorStopHologram::ConfigureActor(AFGBuildable* inBuildable) const{ Super::ConfigureActor(inBuildable); }
 void AFGElevatorFloorStopHologram::ConfigureComponents(AFGBuildable* inBuildable) const{ Super::ConfigureComponents(inBuildable); }

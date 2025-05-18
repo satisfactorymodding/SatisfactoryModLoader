@@ -62,7 +62,7 @@ private:
 
 /** Class responsible for connecting open ended connections on a blueprint to buildables in the world. This is the base manager class containing some basic functionality and boilerplate functions for managing connections of a certain type. */
 template<class ConnectionClass, class BridgeHologramClass>
-class FACTORYGAME_API FGBlueprintOpenConnectionManager : public FGBlueprintOpenConnectionManagerBase
+class FGBlueprintOpenConnectionManager : public FGBlueprintOpenConnectionManagerBase
 {
 public:
 	/** Struct representing a single open connection on the blueprint hologram. */

@@ -19,6 +19,5 @@ AFGGenericBuildableHologram::AFGGenericBuildableHologram() : Super() {
 void AFGGenericBuildableHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGGenericBuildableHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 int32 AFGGenericBuildableHologram::GetRotationStep() const{ return int32(); }
-ENudgeFailReason AFGGenericBuildableHologram::NudgeHologram(const FVector& NudgeInput, const FHitResult& HitResult){ return ENudgeFailReason(); }
 void AFGGenericBuildableHologram::UpdateRotationValuesFromTransform(){ }
 bool AFGGenericBuildableHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramLocationOffset) const{ return bool(); }

@@ -79,7 +79,7 @@ public:
 
 	virtual bool ShouldSave_Implementation() const override { return true; }
 	
-	TArray< APawn* > GetOccupyingPawns() { return mOccupyingPawns; }
+	TArray< APawn* > GetOccupyingPawns() { return mOwningElevator ? mOwningElevator->GetOccupyingPawns() : TArray<APawn*>() ; }
 
 	UFUNCTION( BlueprintCallable, Category="ElevatorCabin" )
 	void OnPawnEnterCabin( APawn* pawn, const FVector& lastLocation );
@@ -172,7 +172,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="FactoryGame|Buildable|ElevatorFloorStop" )
 	void OnPowerStatusChanged( bool hasPower );
 
-	
+	UFUNCTION(BlueprintNativeEvent, Category="FactoryGame|Buildable|ElevatorFloorStop" )
+	UBoxComponent* GetOccupyingBoxCollisionComp() const;
 	
 	FTransform GetConsoleToWorldForConsoleSection( EElevatorConsoleLocation consoleType ) const
 	{
@@ -289,8 +290,6 @@ protected:
 	FVector mWidgetInteractExtents;
 
 private:
-	UPROPERTY()
-	TArray< APawn* > mOccupyingPawns;
 
 	UPROPERTY()
 	EElevatorState mCachedElevatorState;

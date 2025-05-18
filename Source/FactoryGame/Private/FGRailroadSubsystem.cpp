@@ -75,6 +75,7 @@ void AFGRailroadSubsystem::ToggleBlockVisualizationAlways(bool enabled){ }
 FLinearColor AFGRailroadSubsystem::GetBlockVisualizationColor(int32 forSignalBlockID){ return FLinearColor(); }
 void AFGRailroadSubsystem::Debug_MarkAllGraphsAsChanged(){ }
 void AFGRailroadSubsystem::Debug_MarkAllGraphsForFullRebuild(){ }
+void AFGRailroadSubsystem::ValidateAndFixupAllRailroadConnections(){ }
 void AFGRailroadSubsystem::Multicast_OnTrainsCollided_Implementation(class AFGTrain* first, class AFGTrain* second){ }
 void AFGRailroadSubsystem::TickTrackGraphs(float dt){ }
 void AFGRailroadSubsystem::TickPendingCollisions(){ }

@@ -52,6 +52,7 @@ protected:
 	
 	//[KonradA] Keep track of last auth error
 	TArray< UE::Online::FOnlineError > mLastAuthError;
+	bool bSuppressPlatformReauth = false; // Keep track of reauth attempts
 	//</FL>
 	
 	/** Gets the game state that owns the component, this will always be valid during gameplay but can return null in the editor */

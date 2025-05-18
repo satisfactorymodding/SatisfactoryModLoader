@@ -35,7 +35,7 @@ class FACTORYGAME_API IFGColorInterface
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin();
 
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Factory Customization" )
-	FFactoryCustomizationData GetCustomizationData();
+	FFactoryCustomizationData GetCustomizationData() const;
 
 	/** This function should be used to actually apply the custom/pic data to meshes on the implementing object */
 	virtual void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData ) = 0;

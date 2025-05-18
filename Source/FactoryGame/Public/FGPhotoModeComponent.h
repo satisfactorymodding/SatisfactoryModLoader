@@ -174,7 +174,7 @@ protected:
 	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
 	void ClearPMOMap( const int expectedNumElements = 0 );
 
-	UFUNCTION( BlueprintImplementableEvent, Category = "Photo Mode" )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Photo Mode" )
 	void OnPhotoTaken();
 	
 	UFUNCTION( BlueprintPure, Category = "Photo Mode" )

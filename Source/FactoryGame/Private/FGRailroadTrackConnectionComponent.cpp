@@ -53,6 +53,8 @@ UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::FindPr
 void UFGRailroadTrackConnectionComponent::SetSwitchControl(class AFGBuildableRailroadSwitchControl* control){  }
 void UFGRailroadTrackConnectionComponent::SetTrackPosition(const FRailroadTrackPosition& position){ }
 void UFGRailroadTrackConnectionComponent::SortConnections(){ }
+void UFGRailroadTrackConnectionComponent::ClearInvalidConnections(){ }
+bool UFGRailroadTrackConnectionComponent::IsConnectionValid(UFGRailroadTrackConnectionComponent* toComponent){ return false; }
 void UFGRailroadTrackConnectionComponent::AddConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::RemoveConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::OnConnectionsChangedInternal(){ }

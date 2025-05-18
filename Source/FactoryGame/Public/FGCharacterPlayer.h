@@ -552,6 +552,7 @@ public:
 
 	/** <FL> [MartinC] True if player is currently allowed to use the mBestUsableActor */
 	bool IsUseAllowed() const;
+	bool IsUsableActorBuildable() const;
 
 	/** Equips/unequips buildgun */ 
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )

@@ -116,6 +116,8 @@ public:
 	void GetDefaultSignMaps( TMap< FString, FString >& TextElementToDataMap, TMap< FString, int32 >& IconElementToDataMap );
 	//</FL>
 
+	FORCEINLINE float LastTimeSeen() const { return IsValid(mSignProxyPlane) ? mSignProxyPlane->GetLastRenderTime() : MAX_FLT; }
+	
 protected:
 	void UpdateRenderTargetReferenceInMaterialInstanceFromWidget();
 
@@ -135,6 +137,10 @@ protected:
 	UMaterialInterface* GetBackground( FPrefabSignData& prefabSignData ) const;
 
 	void WaitForClientSubsystemsToInitializeSignPrefabData();
+	
+	//<FL>[KonradA]
+	void StartInitializeSignPrefabData();
+	//</FL>
 	void InitializeSignPrefabData();
 
 	virtual void PreSerializedToBlueprint() override;
@@ -233,6 +239,7 @@ protected:
 	UPROPERTY(SaveGame)
 	TArray< FLocalUserNetIdBundle > mLastEditedBy;
 	FDelegateHandle hOnQueryAllBlockedComplete;
+	bool mDelayInitForBlockedUserData = false;
 	//</FL>
 
 	// When a signs data is changed, the server will increment this. When the onRep fires the client will add this sign to the PendingSigns array in the sign subsystem

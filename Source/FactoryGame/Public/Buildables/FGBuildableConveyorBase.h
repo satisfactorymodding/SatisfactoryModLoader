@@ -153,6 +153,7 @@ public:
 
 	//~ Begin IFGDismantleInterface
 	virtual void Upgrade_Implementation( AActor* newActor ) override;
+	virtual void GetChildDismantleActors_Implementation(TArray<AActor*>& out_ChildDismantleActors) const override;
 	//~ End IFGDismantleInterface
 
 
@@ -403,8 +404,9 @@ protected:
 
 	UPROPERTY( Replicated )
 	int32 mChainSegmentIndex = INDEX_NONE;
-	
-	UPROPERTY()
+
+	// Replicate to clients so they can retrieve child dismantle actors
+	UPROPERTY( Replicated )
 	TArray< AFGBuildableConveyorMonitor* > mAttachedThroughputMonitors;
 	
 	/** For conveyor chain support this is a quick way to tell if this base conveyor is a lift or not */

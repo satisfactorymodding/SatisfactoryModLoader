@@ -10,3 +10,4 @@ void USessionJoiningSequence::ClientTravel(){ }
 void USessionJoiningSequence::CleanupSessions(TSharedRef<FControlFlowNode> SubFlow){ }
 void USessionJoiningSequence::JoinSessions(TSharedRef<FControlFlowNode> SubFlow){ }
 void USessionJoiningSequence::IncrementBackendIndex(){ }
+void USessionJoiningSequence::OnTimeout(){ }

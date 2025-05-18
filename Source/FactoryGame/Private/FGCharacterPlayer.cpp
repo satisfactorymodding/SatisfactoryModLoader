@@ -299,6 +299,7 @@ bool AFGCharacterPlayer::CanEquipBuildGunForPaint() const{ return bool(); }
 bool AFGCharacterPlayer::IsBuildGunEquipped() const{ return bool(); }
 bool AFGCharacterPlayer::IsInPortal() const{ return bool(); }
 bool AFGCharacterPlayer::IsUseAllowed() const{ return false; }
+bool AFGCharacterPlayer::IsUsableActorBuildable() const{ return false; }
 void AFGCharacterPlayer::ToggleBuildGun(){ }
 void AFGCharacterPlayer::EquipBuildGunAndGoToMenuState(){ }
 bool AFGCharacterPlayer::UnequipBuildGun(){ return bool(); }

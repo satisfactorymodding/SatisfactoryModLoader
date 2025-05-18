@@ -28,6 +28,8 @@ public:
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool TrySnapToActor(const FHitResult& hitResult) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual void SetHologramNudgeLocation() override;
+	virtual void PostHologramPlacement(const FHitResult& hitResult, bool callForChildren) override;
 	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual void SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator) override;
@@ -38,6 +40,7 @@ public:
 	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	virtual void RefreshHologramInstanceInstigators() override;
 	virtual void GetIgnoredClearanceActors( TSet<AActor*>& ignoredActors ) const override;
+	virtual bool CanNudgeHologram() const override;
 	//End Hologram Interface
 
 	// Gets the world space transform for a given child index. Called from the child floor stop SetHologramPositionAndRotation

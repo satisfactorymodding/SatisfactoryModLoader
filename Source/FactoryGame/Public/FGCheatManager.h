@@ -638,6 +638,14 @@ public:
 	UFUNCTION( exec, category = "Trains" )
 	void Trains_RerailAll();
 	UFUNCTION( Server, Reliable )
+	void Server_Trains_DismantleAll();
+	UFUNCTION( exec, category = "Trains" )
+	void Trains_DismantleAll();
+	UFUNCTION( Server, Reliable )
+	void Server_Trains_ValidateAndFixConnections();
+	UFUNCTION( exec, category = "Trains" )
+	void Trains_ValidateAndFixConnections();
+	UFUNCTION( Server, Reliable )
 	void Server_Trains_MarkTrackGraphsAsChanged();
 	UFUNCTION( exec, category = "Trains" )
 	void Trains_MarkTrackGraphsAsChanged();

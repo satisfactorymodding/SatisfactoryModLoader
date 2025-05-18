@@ -176,7 +176,7 @@ public:
 	void SetCustomizationData_Implementation( const FFactoryCustomizationData& colorData );
 	void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData );
 	FFactoryCustomizationData& GetCustomizationData_Native() { return mCustomizationData; }
-	FFactoryCustomizationData GetCustomizationData_Implementation() { return mCustomizationData; }
+	FFactoryCustomizationData GetCustomizationData_Implementation() const{ return mCustomizationData; }
 	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Implementation() { return mFactorySkinClass; }
 	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Native() { return mFactorySkinClass; }
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin_Native();

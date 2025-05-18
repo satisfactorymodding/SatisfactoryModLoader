@@ -37,6 +37,7 @@ float AFGPlayerControllerBase::GetMouseSensitivityY(){ return float(); }
 float AFGPlayerControllerBase::GetDefaultMouseSensitivity(){ return float(); }
 float AFGPlayerControllerBase::GetDefaultMouseSensitivityX(){ return float(); }
 float AFGPlayerControllerBase::GetDefaultMouseSensitivityY(){ return float(); }
+void AFGPlayerControllerBase::OnGamepadSpeakerEnabledUpdated(FString updatedCvar){ }
 FText AFGPlayerControllerBase::GetKeyNameForAction(FName inAction, bool getGamepadKey){ return FText(); }
 FText AFGPlayerControllerBase::GetKeyNameForUseAction(){ return FText(); }
 FString AFGPlayerControllerBase::GetPresenceString_Implementation() const{ return FString(); }
@@ -61,6 +62,8 @@ void AFGPlayerControllerBase::InitDefaultCheats(){ }
 int32 AFGPlayerControllerBase::GetMotionDeviceIndex(bool& SonyController){ return int32(); }
 int32 AFGPlayerControllerBase::GetPS5PadDeviceIndex(){ return int32(); }
 bool AFGPlayerControllerBase::GetMMDeviceFromPadHandle(int in_padHandle, IMMDevice*& io_pMmDevice){ return bool(); }
+bool AFGPlayerControllerBase::IsControllerSpeakerSettingEnabled(){ return false; }
+void AFGPlayerControllerBase::InitializePadSpeakers(){ }
 void AFGPlayerControllerBase::InitializePadSpeakerWindows(){  }
 void AFGPlayerControllerBase::InitializePadSpeakerNative(){  }
 void AFGPlayerControllerBase::InitializePadType(const bool IsSonyController){  }

@@ -34,6 +34,8 @@ void AFGElevatorHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 bool AFGElevatorHologram::IsValidHitResult(const FHitResult& hitResult) const{ return Super::IsValidHitResult(hitResult); }
 bool AFGElevatorHologram::TrySnapToActor(const FHitResult& hitResult){ return Super::TrySnapToActor(hitResult); }
 void AFGElevatorHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ Super::SetHologramLocationAndRotation(hitResult); }
+void AFGElevatorHologram::SetHologramNudgeLocation(){ Super::SetHologramNudgeLocation(); }
+void AFGElevatorHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ Super::PostHologramPlacement(hitResult, callForChildren); }
 bool AFGElevatorHologram::DoMultiStepPlacement(bool isInputFromARelease){ return Super::DoMultiStepPlacement(isInputFromARelease); }
 int32 AFGElevatorHologram::GetBaseCostMultiplier() const{ return Super::GetBaseCostMultiplier(); }
 void AFGElevatorHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ Super::SpawnChildren(hologramOwner, spawnLocation, hologramInstigator); }
@@ -44,6 +46,7 @@ void AFGElevatorHologram::GetClearanceData(TArray<const FFGClearanceData*>& out_
 bool AFGElevatorHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramTransform) const{ return Super::IsHologramIdenticalToActor(actor, hologramTransform); }
 void AFGElevatorHologram::RefreshHologramInstanceInstigators(){ Super::RefreshHologramInstanceInstigators(); }
 void AFGElevatorHologram::GetIgnoredClearanceActors(TSet<AActor*>& ignoredActors) const{ Super::GetIgnoredClearanceActors(ignoredActors); }
+bool AFGElevatorHologram::CanNudgeHologram() const{ return Super::CanNudgeHologram(); }
 FTransform AFGElevatorHologram::GetTransformForChildStop(int32 childIndex){ return FTransform(); }
 void AFGElevatorHologram::BuildFloorStopInfos(){ }
 void AFGElevatorHologram::OnRep_TopTransform(){ }

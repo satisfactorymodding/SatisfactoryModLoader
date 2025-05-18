@@ -176,5 +176,5 @@ private:
 	TArray<FKey> ReleasedButtons;
 
 	UPROPERTY()
-	TArray<UObject*> mBlueprintPreprocessors;
+	TArray<TWeakObjectPtr<UObject>> mBlueprintPreprocessors;
 };

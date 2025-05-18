@@ -240,7 +240,7 @@ public:
 	void SetCustomizationData_Native( const FFactoryCustomizationData& customizationData, bool skipCombine = false );
 	void ApplyCustomizationData_Implementation( const FFactoryCustomizationData& customizationData );
 	void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData );
-	FFactoryCustomizationData GetCustomizationData_Implementation() { return mCustomizationData; }
+	FFactoryCustomizationData GetCustomizationData_Implementation() const { return mCustomizationData; }
 	FFactoryCustomizationData& GetCustomizationData_Native() { return mCustomizationData; }
 	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Implementation() { return mFactorySkinClass; }
 	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Native() { return mFactorySkinClass; }

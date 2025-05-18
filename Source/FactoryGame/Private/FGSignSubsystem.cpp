@@ -45,4 +45,5 @@ bool AFGSignSubsystem::DoesSamePresetExists(uint32 GUID, FMappedSignData*& OutDa
 void AFGSignSubsystem::RegisterNewPreset(AFGBuildableWidgetSign* Sign, uint32 GUID, UWidgetComponent* Widget, UMaterialInstanceDynamic* InMaterial){ }
 void AFGSignSubsystem::UpdatePresetMaterialInstance(uint32 GUID, const TFunctionRef<void(class UWidgetComponent* InWidgetComponent, UMaterialInstanceDynamic* InMaterialInstance)>& UpdateFunction){ }
 void AFGSignSubsystem::ResolveRemoved(AFGBuildableWidgetSign* Sign, uint32 GUID){ }
+void AFGSignSubsystem::UpdateRelevancy(){ }
 UWidgetComponent* AFGSignSubsystem::GetWidgetByGUID(uint32 GUID){ return nullptr; }

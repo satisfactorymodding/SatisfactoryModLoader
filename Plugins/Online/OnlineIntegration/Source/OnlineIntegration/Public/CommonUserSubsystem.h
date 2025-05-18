@@ -28,10 +28,21 @@ struct FAuthPendingAuthExpiration;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCommonUser, Log, All);
 
-// <FL> [ZimmermannA] Event that is being called when login process is being started or when it ended.
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEOSLoginProcessUpdated, bool, hasStarted);
-// </FL> [ZimmermannA] 
+// <FL> [ZimmermannA]
+UENUM(BlueprintType)
+enum class EOnlineSessionFeatureType : uint8
+{
+	OSFT_OnlineMultiplayer = 0,	   // Displayed as 'None' on the debug screen
+	OSFT_Crossplay,
+	// OSFT_EngineSpectate currently not used or implemented, but would need to be extended here
+	OSFT_Off,	 
+};
 
+// //Event that is being called when login process is being started or when it ended.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEOSLoginProcessUpdated, bool, hasStarted);
+// Event that is being called when the platform telemetry tracking feature should be called.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOnlineTelemetryUpdated, EOnlineSessionFeatureType, sessionFeatureType );
+// </FL> [ZimmermannA] 
 //<FL>[KonradA]
 UENUM(BlueprintType)
 enum class EUserJoinSessionFailureReason : uint8
@@ -397,6 +408,9 @@ public:
 	// <FL> [ZimmermannA] 
 	UPROPERTY(BlueprintAssignable, Category = "Network", DisplayName = "OnEOSLoginProcessUpdated")
 	FOnEOSLoginProcessUpdated mOnEOSLoginProcessUpdated;
+	
+	UPROPERTY(BlueprintAssignable, Category = "Network", DisplayName = "OnOnlineTelemetryUpdated")
+	FOnOnlineTelemetryUpdated mOnOnlineTelemetryUpdated;
 	// </FL>
 
 	

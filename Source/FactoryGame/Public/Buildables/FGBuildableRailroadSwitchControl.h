@@ -82,6 +82,12 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Switch" )
 	FORCEINLINE int32 GetNumSwitchPositions() const { return mSwitchData.NumPositions; }
 
+	/** Gets the controlled connections for this switch. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Switch" )
+	const TArray< class UFGRailroadTrackConnectionComponent* >& GetControlledConnections() const { return mControlledConnections; }
+
+	class UFGRailroadTrackConnectionComponent* GetControlledConnection_DEPRECATED() const { return mControlledConnection_DEPRECATED; }
+
 	/** Toggle the switch position to the next track. */
 	void ToggleSwitchPosition();
 
@@ -99,7 +105,9 @@ public:
 	 * Must be called, prior to this actors BeginPlay.
 	 */
 	void AddControlledConnection( class UFGRailroadTrackConnectionComponent* connection );
-	void RemoveControlledConnection( class UFGRailroadTrackConnectionComponent* connection );
+	void RemoveControlledConnection( class UFGRailroadTrackConnectionComponent* connection, bool dismantleWhenCleared = true );
+
+	void ClearControlledConnections( bool dismantleWhenCleared );
 
 protected:	
 	UFUNCTION()

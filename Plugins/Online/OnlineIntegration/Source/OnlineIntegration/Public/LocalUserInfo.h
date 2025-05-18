@@ -136,14 +136,6 @@ enum class EPrivilegeCheckResult : uint8
 	PCR_InvalidResult,
 	PCR_HasPrivilege
 };
-
-enum class EOnlineSessionFeatureType : uint8
-{
-	OSFT_OnlineMultiplayer = 0,	   // Displayed as 'None' on the debug screen
-	OSFT_Crossplay,
-	// OSFT_EngineSpectate currently not used or implemented, but would need to be extended here
-	OSFT_Off,	 
-};
 // </FL> 
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FUserHasPremiumAccountDelegate, bool, hasPremium);
@@ -357,8 +349,6 @@ public:
 	bool RetrievePrivileges(TOptional<EPrivilegeResults>& Result, EUserPrivilege PrivilegeToQuery) const;
 	bool RetrievePrivileges(TOptional<EPrivilegeResults>& PrivilegeResult, EUserPrivilege PrivilegeToQuery, FOnPrivilegeQueryDone Callback) const;
 	void DisplayPremiumInformation(const FOnShowStoreUIClosedDelegate2& OnShowStoreUIClosedDelegate = FOnShowStoreUIClosedDelegate2()) const;
-	//<FL> [ZimmermannA] Used for certification.
-	void SetOnlineFeatureStatus(EOnlineSessionFeatureType sessionFeatureType);
 
 private:
 	bool bUsesMultiplayerFeature = false;

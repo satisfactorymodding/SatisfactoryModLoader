@@ -32,5 +32,7 @@ FKey UFGUserWidget::FindKeyByBindingTag(FName HintTag){ return FKey(); }
 bool UFGUserWidget::UpdateKeybindingByTag(FName HintTag, FKey NewKey){ return false; }
 FReply UFGUserWidget::CallDelegateForKeyEventOfType(const FKeyEvent& InKeyEvent, EFGKeyHintDelegateType DelegateType){ return FReply::Unhandled(); }
 FReply UFGUserWidget::CallKeybindingDelegate(const FFGKeybinding& Keybinding, EFGKeyHintDelegateType DelegateType){ return FReply::Unhandled(); }
-void UFGUserWidget::BeginLongPress(const FFGKeybinding& Keybinding){ }\
+void UFGUserWidget::BeginLongPress(const FFGKeybinding& Keybinding){ }
+void UFGUserWidget::FakeKeyDownAndUpEvents(const FKeyEvent& InKeyEvent){ }
+void UFGUserWidget::FakeKeyUpEvent(const FKeyEvent& InKeyEvent){ }
 void UFGUserWidget::AddParentKeybindings(){  }

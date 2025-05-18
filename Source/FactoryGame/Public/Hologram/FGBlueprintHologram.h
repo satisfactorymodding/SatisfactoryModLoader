@@ -107,6 +107,8 @@ protected:
 
 	bool AreAutomaticConnectionsEnabled() const;
 
+	virtual void ApplyCustomizationData() override;
+
 private:
 	UFUNCTION()
 	void OnOpenConnectionStateChanged( const TArray< class UFGConnectionComponent* >& connections, class UFGConnectionComponent* previousTargetConnection, class UFGConnectionComponent* newTargetConnection, bool isValid );

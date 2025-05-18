@@ -412,6 +412,9 @@ public:
 	 */
 	void Debug_MarkAllGraphsAsChanged();
 	void Debug_MarkAllGraphsForFullRebuild();
+
+	/** Expensive, goes through every railroad track buildable and fixes up their connections. Removing invalid ones, adding missing switches for junctions, etc. */
+	void ValidateAndFixupAllRailroadConnections();
 	
 protected:
 	/** Multicast to notify the clients that the trains have collided */

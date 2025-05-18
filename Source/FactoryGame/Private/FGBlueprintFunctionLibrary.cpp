@@ -13,6 +13,7 @@ void UFGBlueprintFunctionLibrary::HideOutline( UPrimitiveComponent* comp){ }
 void UFGBlueprintFunctionLibrary::UpdateUseState(FUseState& state, TSubclassOf< UFGUseState > newState){ }
 void UFGBlueprintFunctionLibrary::Cheat_GetAllDescriptors(TArray< TSubclassOf<  UFGItemDescriptor > >& out_descriptors){ }
 void UFGBlueprintFunctionLibrary::ApplyCustomizationPrimitiveData( AActor* actor, const FFactoryCustomizationData& customizationData, int32 colorSlotFallback ,  UMeshComponent* onlyApplyToComponent , bool isLightweightTemporary){ }
+void UFGBlueprintFunctionLibrary::ApplyCustomizationPrimitiveDataToComponent(class UMeshComponent* component, const FFactoryCustomizationData& customizationData, int32 colorSlotFallback){ }
 void UFGBlueprintFunctionLibrary::ApplyDefaultColorPrimitiveData( AActor* actor){ }
 void UFGBlueprintFunctionLibrary::GetAllMeshComponentsInClass(const TSubclassOf< AActor > inClass, TArray< UMeshComponent* >& out_components){ }
 void UFGBlueprintFunctionLibrary::GetAllComponentsInClass(const TSubclassOf<AActor> inClass, const TSubclassOf<UActorComponent> inActorComponentClass, TArray<UActorComponent*>& out_components, TMap<USceneComponent*, FFGComponentParentAttachmentInfo>& out_parentComponentMap){ }

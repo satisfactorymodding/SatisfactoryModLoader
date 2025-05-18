@@ -4,6 +4,7 @@
 #include "Serialization/MemoryReader.h"
 #include "Containers/Queue.h"
 #include "Serialization/MemoryWriter.h"
+#include "BulkDataReplicationModule.h"
 
 enum class EReliableDataProtocolOpCode : uint8
 {
@@ -369,6 +370,11 @@ private:
 		{
 			return Offset == Data.Num();
 		}
+
+		RDTProtocol::SizeType GetRemainingBytes() const
+		{
+			return Data.Num() - Offset;
+		}
 		
 		RDTProtocol::SizeType Offset = 0;
 	};
@@ -475,6 +481,7 @@ void FReliableDataTransferProtocolReader<Base>::ParsePacket()
 			{
 				// Set the error flag so we can stop trying to parse any data this tick
 				MemoryReader.SetError();
+				UE_LOG(LogReliableMessaging, Error, TEXT("Received an invalid message type. Disconnecting."));
 				// No way to recover from here. Let the transport layer know that we're disconnecting so they can deal with it.
 				static_cast<BaseType&>(*this).CloseConnection();
 			}
@@ -533,9 +540,8 @@ void FReliableDataTransferProtocolReader<Base>::ParseHeaderType(FArchive& Ar)
 			NewState = EParserState::ParsingChunk;
 			break;
 		default:
-			// We've received an invalid message type, so we need to reset the state machine. Means we must have a bug in the protocol
-			// or parser. No graceful way to recover from this, other than just disconnecting the client.
-			// @todo, the above
+			// We've received an invalid message type, so we need to reset the state machine. Means we must have a bug in the protocol or parser.
+			// This is already handled in ParsePacket as long as the NewState is set to Error.
 			break;
 	}
 
@@ -577,6 +583,19 @@ void FReliableDataTransferProtocolReader<Base>::ParseMessageHeader(FArchive& Ar)
 			PerChannelData.SetNum(MessageHeader.ChannelId + 1);
 		}
 
+		if (PerChannelData[MessageHeader.ChannelId].PendingMessages.FindByPredicate(
+			[&MessageHeader](const FInboundMessage& PendingMessage)
+		{
+			return PendingMessage.MessageId == MessageHeader.MessageId;
+		}) != nullptr)
+		{
+			Ar.SetError();
+			UE_LOG(LogReliableMessaging, Error,
+				TEXT("Received a message with a duplicate message id. Closing connection."));
+			static_cast<BaseType&>(*this).CloseConnection();
+			return;
+		}
+		
 		PerChannelData[MessageHeader.ChannelId].PendingMessages.Emplace(MoveTemp(MessageHeader));
 		SwitchState(EParserState::ParsingHeaderType);
 	}
@@ -598,11 +617,32 @@ void FReliableDataTransferProtocolReader<Base>::ParseChunk(FArchive& Ar)
 			Ar << ChunkHeader;
 			check(!Ar.IsError());
 
+			// Make sure this chunk was expected at this time. 
+			if (!PerChannelData.IsValidIndex(ChunkHeader.ChannelId))
+			{
+				// Semantic error, if the channel id is invalid, this chunk header wasn't preceded by a message header.
+				Ar.SetError();
+				UE_LOG(LogReliableMessaging, Error,
+					TEXT("Chunk header refers to an invalid channel id. A message header wasn't sent before this chunk. Closing connection."));
+				static_cast<BaseType&>(*this).CloseConnection();
+				return;
+			}
+
 			PendingChunk.Emplace(ChunkHeader);
-			PendingChunk->PendingMessagePtr = PerChannelData[PendingChunk->ChannelId].PendingMessages.FindByPredicate([this](const FInboundMessage& PendingMessage)
+			PendingChunk->PendingMessagePtr = PerChannelData[PendingChunk->ChannelId].PendingMessages.FindByPredicate(
+				[this](const FInboundMessage& PendingMessage)
 			{
 				return PendingMessage.MessageId == PendingChunk->MessageId;
 			});
+
+			if (PendingChunk->PendingMessagePtr == nullptr)
+			{
+				Ar.SetError();
+				UE_LOG(LogReliableMessaging, Error,
+					TEXT("Chunk header refers to an invalid message id. A message header wasn't sent before this chunk. Closing connection."));
+				static_cast<BaseType&>(*this).CloseConnection();
+				return;
+			}
 		}
 		else
 		{
@@ -613,6 +653,14 @@ void FReliableDataTransferProtocolReader<Base>::ParseChunk(FArchive& Ar)
 	}
 
 	{
+		// Make sure the length of this chunk does not exceed the length of the message. This would be an unrecoverable error. 
+		if ((PendingChunk->Length - PendingChunk->Offset) > PendingChunk->PendingMessagePtr->GetRemainingBytes())
+		{
+			Ar.SetError();
+			UE_LOG(LogReliableMessaging, Error, TEXT("Chunk length is greater than remaining message length. Closing connection."));
+			static_cast<BaseType&>(*this).CloseConnection();
+			return;
+		}
 		const RDTProtocol::SizeType ReadLen = FMath::Min(PendingChunk->Length - PendingChunk->Offset, Ar.TotalSize() - Ar.Tell());
 		uint8* ReadPosition = PendingChunk->PendingMessagePtr->Data.GetData() + PendingChunk->PendingMessagePtr->Offset;
 		Ar.Serialize(ReadPosition, ReadLen);

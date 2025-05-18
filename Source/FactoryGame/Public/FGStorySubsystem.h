@@ -148,8 +148,8 @@ public:
 
 	void OnPlayerFinishedSpawning( class AFGCharacterPlayer* player );
 
-	void OnPersonalElevatorBeginMove( const TArray< class AFGCharacterPlayer* >& OccupyingPlayers );
-	void OnPersonalElevatorEndMove( const TArray< class AFGCharacterPlayer* >& OccupyingPlayers );
+	void OnPersonalElevatorBeginMove( const TArray< class AFGCharacterPlayer* >& OccupyingPlayers, float estimatedTravelTime );
+	void OnPersonalElevatorEndMove( const TArray< class AFGCharacterPlayer* >& OccupyingPlayers, float estimatedTravelTime );
 
 	UFUNCTION( BlueprintCallable, Category = "Story" )
 	void OnToiletFlushed( class AFGCharacterPlayer* byCharacter, class AFGPioneerPotty* toilet );

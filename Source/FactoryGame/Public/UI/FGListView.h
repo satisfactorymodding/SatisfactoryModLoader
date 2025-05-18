@@ -38,7 +38,7 @@ protected:
 };
 
 template < typename ItemType >
-class FACTORYGAME_API SFGListView : public SListView< ItemType >
+class SFGListView : public SListView< ItemType >
 {
 public:
 	void SetBarStyle( const FScrollBarStyle& inBarStyle );

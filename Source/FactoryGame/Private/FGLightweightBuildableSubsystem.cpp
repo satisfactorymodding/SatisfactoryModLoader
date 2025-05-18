@@ -81,7 +81,7 @@ AFGLightweightBuildableSubsystem* FLightweightBuildableInstanceRef::GetOwnerSubs
 const FRuntimeBuildableInstanceData* FLightweightBuildableInstanceRef::ResolveBuildableInstanceData() const{ return nullptr; }
 bool FLightweightBuildableInstanceRef::Remove(){ return bool(); }
 bool FLightweightBuildableInstanceRef::SetCustomizationData(const FFactoryCustomizationData& customizationData) const{ return bool(); }
-const FFactoryCustomizationData* FLightweightBuildableInstanceRef::GetCustomizationData() const{ return nullptr; }
+const FFactoryCustomizationData* FLightweightBuildableInstanceRef::GetCustomizationData(){ return nullptr; }
 AFGBuildable* FLightweightBuildableInstanceRef::SpawnTemporaryBuildable() const{ return nullptr; }
 AFGLightweightBuildableSubsystem::AFGLightweightBuildableSubsystem() : Super() {
 	this->mCachedGameState = nullptr;

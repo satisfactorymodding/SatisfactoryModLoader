@@ -65,6 +65,7 @@ static const FName SHOWDEBUG_TEST_MANAGER( TEXT( "TestManager" ) );
 static const FName SHOWDEBUG_TIME_OF_DAY( TEXT( "TimeOfDay" ) );
 static const FName SHOWDEBUG_KEYBINDINGS( TEXT( "Keybindings" ) );
 static const FName SHOWDEBUG_KEYHINTS( TEXT( "KeyHints" ) );
+static const FName SHOWDEBUG_AIMASSIST( TEXT( "AimAssist" ) );
 
 /** User settings string Ids that are used globally. */
 static const FString GAME_RULE_NO_UNLOCK_COST = "FG.GameRules.NoUnlockCost";

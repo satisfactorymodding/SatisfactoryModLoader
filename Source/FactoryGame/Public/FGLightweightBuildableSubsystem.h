@@ -610,7 +610,7 @@ public:
 	bool SetCustomizationData(const FFactoryCustomizationData& customizationData) const;
 
 	/** Returns the customization data for this buildable, will return nullptr if the instance is not valid. */
-	const FFactoryCustomizationData* GetCustomizationData() const;
+	const FFactoryCustomizationData* GetCustomizationData();
 
 	/** Spawns a temporary buildable for this lightweights. Must only be called on game thread, buildable is not replicated or saved. */
 	AFGBuildable* SpawnTemporaryBuildable() const;
