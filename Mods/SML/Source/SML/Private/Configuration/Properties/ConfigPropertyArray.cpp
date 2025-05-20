@@ -52,7 +52,7 @@ EDataValidationResult UConfigPropertyArray::IsDataValid(TArray<FText>& Validatio
                 FText::FromString(ConfigProperty ? ConfigProperty->GetClass()->GetName() : TEXT("None"))));
             ValidationResult = EDataValidationResult::Invalid;
         }
-    }    
+    }
     return ValidationResult;
 }
 #endif
@@ -93,6 +93,19 @@ void UConfigPropertyArray::FillConfigStruct_Implementation(const FReflectedObjec
         check(NewElementIndex >= 0);
         Property->FillConfigStruct(ArrayObject, FString::FromInt(NewElementIndex));
     }
+}
+
+void UConfigPropertyArray::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
+	const UConfigPropertyArray* DefaultArray = Cast<UConfigPropertyArray>(DefaultProp);
+	if (!DefaultArray || !this->CanEditNow()) {
+		return;
+	}
+	this->Clear();
+	for (const UConfigProperty* DefaultElement : DefaultArray->Values) {
+		UConfigProperty* NewElement = AddNewElement();
+		NewElement->ResetToDefault(DefaultElement);
+	}
+	this->HandleMarkDirty_Implementation();
 }
 
 void UConfigPropertyArray::HandleMarkDirty_Implementation()

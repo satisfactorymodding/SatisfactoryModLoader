@@ -66,6 +66,15 @@ void UConfigPropertyClass::FillConfigStruct_Implementation(const FReflectedObjec
     ReflectedObject.SetObjectProperty(*VariableName, Value);
 }
 
+void UConfigPropertyClass::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
+	const UConfigPropertyClass* DefaultClass = Cast<UConfigPropertyClass>(DefaultProp);
+	if (!DefaultClass || !this->CanEditNow()) {
+		return;
+	}
+	this->Value = DefaultClass->Value;
+	this->MarkDirty();
+}
+
 FConfigVariableDescriptor UConfigPropertyClass::CreatePropertyDescriptor_Implementation(
     UConfigGenerationContext* Context, const FString& OuterPath) const {
     return UConfigVariableLibrary::MakeConfigVariableClass(BaseClass);
