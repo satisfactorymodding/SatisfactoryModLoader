@@ -22,6 +22,7 @@ void AFGBuildableConveyorMonitor::EndPlay(const EEndPlayReason::Type EndPlayReas
 void AFGBuildableConveyorMonitor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableConveyorMonitor, mPropertyReplicator);
+	DOREPLIFETIME(AFGBuildableConveyorMonitor, mReplicatedCoreData);
 }
 void AFGBuildableConveyorMonitor::RegisterInteractingPlayer_Implementation(class AFGCharacterPlayer* player){ Super::RegisterInteractingPlayer_Implementation(player); }
 void AFGBuildableConveyorMonitor::UnregisterInteractingPlayer_Implementation(class AFGCharacterPlayer* player){ Super::UnregisterInteractingPlayer_Implementation(player); }
