@@ -28,6 +28,14 @@ void UConfigPropertyString::FillConfigStruct_Implementation(const FReflectedObje
     ReflectedObject.SetStrProperty(*VariableName, Value);
 }
 
+void UConfigPropertyString::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
+	const UConfigPropertyString* DefaultString = Cast<UConfigPropertyString>(DefaultProp);
+	if (!DefaultString || !this->CanEditNow()) {
+		return;
+	}
+	this->Value = DefaultString->Value;
+	this->MarkDirty();
+}
 
 FConfigVariableDescriptor UConfigPropertyString::CreatePropertyDescriptor_Implementation(
     UConfigGenerationContext* Context, const FString& OuterPath) const {

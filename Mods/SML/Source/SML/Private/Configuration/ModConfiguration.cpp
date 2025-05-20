@@ -1,6 +1,13 @@
 #include "Configuration/ModConfiguration.h"
 #define LOCTEXT_NAMESPACE "SML"
 
+void UModConfiguration::ResetUserConfigToDefaults() {
+	const UModConfiguration* DefaultCDO = GetClass()->GetDefaultObject<UModConfiguration>();
+	if (DefaultCDO && DefaultCDO->RootSection && this->RootSection) {
+		this->RootSection->ResetToDefault(DefaultCDO->RootSection);
+	}
+}
+
 #if WITH_EDITOR
 EDataValidationResult UModConfiguration::IsDataValid(TArray<FText>& ValidationErrors) {
 	EDataValidationResult ValidationResult = EDataValidationResult::Valid;
