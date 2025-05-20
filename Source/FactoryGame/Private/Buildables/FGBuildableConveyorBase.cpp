@@ -49,6 +49,7 @@ void AFGBuildableConveyorBase::GetLifetimeReplicatedProps(TArray< FLifetimePrope
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableConveyorBase, mConveyorChainActor);
 	DOREPLIFETIME(AFGBuildableConveyorBase, mChainSegmentIndex);
+	DOREPLIFETIME(AFGBuildableConveyorBase, mAttachedThroughputMonitors);
 }
 void AFGBuildableConveyorBase::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void AFGBuildableConveyorBase::BeginPlay(){ Super::BeginPlay(); }
