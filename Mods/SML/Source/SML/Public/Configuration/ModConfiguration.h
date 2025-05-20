@@ -6,7 +6,7 @@
 USTRUCT(BlueprintType)
 struct SML_API FConfigId {
     GENERATED_BODY();
-public:    
+public:
     /** Mod reference of the requested configuration owner */
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     FString ModReference;
@@ -33,11 +33,11 @@ public:
     /** Id for configuration described by this class */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FConfigId ConfigId;
-    
+
     /** Display name of this configuration, as it will be visible to user */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FText DisplayName;
-    
+
     /** Description of this configuration, can be empty */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FText Description;
@@ -49,6 +49,10 @@ public:
 	/** Custom Widget - placed at the Bottom of the Mod Config Widgets*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UUserWidget> CustomWidget;
+
+    /** Reset user configuration to their default values*/
+    UFUNCTION(BlueprintCallable)
+    void ResetUserConfigToDefaults();
 
 #if WITH_EDITOR
     virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;

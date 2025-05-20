@@ -29,6 +29,15 @@ void UConfigPropertyInteger::FillConfigStruct_Implementation(const FReflectedObj
     ReflectedObject.SetIntProperty(*VariableName, Value);
 }
 
+void UConfigPropertyInteger::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
+	const UConfigPropertyInteger* DefaultInteger = Cast<UConfigPropertyInteger>(DefaultProp);
+	if (!DefaultInteger || !this->CanEditNow()) {
+		return;
+	}
+	this->Value = DefaultInteger->Value;
+	this->MarkDirty();
+}
+
 FConfigVariableDescriptor UConfigPropertyInteger::CreatePropertyDescriptor_Implementation(
     UConfigGenerationContext* Context, const FString& OuterPath) const {
     return UConfigVariableLibrary::MakeConfigVariablePrimitive(EConfigVariableType::ECVT_Int32);

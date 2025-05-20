@@ -17,10 +17,10 @@ public:
 
 	/** Fills reflected object with the values of this section */
 	void FillConfigStructSelf(const FReflectedObject& ReflectedObject) const;
-	
+
 	//Begin UObject
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;    
+	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
 #endif
 	//End UObject
 
@@ -30,6 +30,7 @@ public:
 	virtual void Deserialize_Implementation(const URawFormatValue* Value) override;
 	FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
 	void FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const override;
+	virtual void ResetToDefault_Implementation(const UConfigProperty* DefaultProp) override;
 	//End UConfigProperty
 
 	//Begin IConfigValueDirtyHandlerInterface

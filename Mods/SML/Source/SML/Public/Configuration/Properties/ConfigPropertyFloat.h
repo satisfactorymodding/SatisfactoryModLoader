@@ -9,7 +9,7 @@ public:
     /** Current value of this configuration property */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration Property")
     float Value;
-    
+
     UConfigPropertyFloat();
 
     //Begin UConfigProperty
@@ -18,5 +18,6 @@ public:
     virtual void Deserialize_Implementation(const URawFormatValue* Value) override;
     virtual FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
     virtual void FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const override;
+	virtual void ResetToDefault_Implementation(const UConfigProperty* DefaultProp) override;
     //End UConfigProperty
 };
