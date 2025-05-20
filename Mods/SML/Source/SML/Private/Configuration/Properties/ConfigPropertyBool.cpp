@@ -29,6 +29,15 @@ void UConfigPropertyBool::FillConfigStruct_Implementation(const FReflectedObject
     ReflectedObject.SetBoolProperty(*VariableName, Value);
 }
 
+void UConfigPropertyBool::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
+	const UConfigPropertyBool* DefaultBool = Cast<UConfigPropertyBool>(DefaultProp);
+	if (!DefaultBool || !this->CanEditNow()) {
+		return;
+	}
+	this->Value = DefaultBool->Value;
+	this->MarkDirty();
+}
+
 FConfigVariableDescriptor UConfigPropertyBool::CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const {
     return UConfigVariableLibrary::MakeConfigVariablePrimitive(EConfigVariableType::ECVT_Bool);
 }

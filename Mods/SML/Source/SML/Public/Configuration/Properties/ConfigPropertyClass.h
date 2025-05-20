@@ -9,7 +9,7 @@ public:
     /** True if we should limit which classes can be set to this property values by particular base class type */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
     bool bLimitBaseClass;
-    
+
     /** Base class that values of this type should have */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "bLimitBaseClass",AllowAbstract = "true"), Category = "Configuration Property")
     UClass* BaseClass;
@@ -23,7 +23,7 @@ public:
     UClass* Value;
 
     UConfigPropertyClass();
-    
+
     /** Returns true if this class is a valid value for this property */
     UFUNCTION(BlueprintPure)
     bool IsValidValueClass(UClass* Class) const;
@@ -37,12 +37,13 @@ public:
     virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
 #endif
     //End UObject
-    
+
     //Begin UConfigProperty
     virtual FString DescribeValue_Implementation() const override;
     virtual URawFormatValue* Serialize_Implementation(UObject* Outer) const override;
     virtual void Deserialize_Implementation(const URawFormatValue* RawValue) override;
     virtual FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
     virtual void FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const override;
+    virtual void ResetToDefault_Implementation(const UConfigProperty* DefaultProp) override;
     //End UConfigProperty
 };

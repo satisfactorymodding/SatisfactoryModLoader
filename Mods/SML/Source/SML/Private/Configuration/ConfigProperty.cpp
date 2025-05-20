@@ -31,6 +31,24 @@ void UConfigProperty::FillConfigStruct_Implementation(const FReflectedObject& Re
     checkf(false, TEXT("FillConfigStruct not implemented"));
 }
 
+void UConfigProperty::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
+	checkf(false, TEXT("ResetToDefault not implemented"));
+}
+
+bool UConfigProperty::CanEditNow() {
+	if (!this->bRequiresWorldReload) {
+		return true;
+	}
+	UWorld* World = this->GetWorld();
+	if (!World) {
+		return true;
+	}
+	if (AFGGameMode* GameMode = World->GetAuthGameMode<AFGGameMode>()) {
+		return GameMode->IsMainMenuGameMode();
+	}
+	return false;
+}
+
 FConfigVariableDescriptor UConfigProperty::CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const {
     checkf(false, TEXT("CreatePropertyDescriptor not implemented"));
     return FConfigVariableDescriptor{};

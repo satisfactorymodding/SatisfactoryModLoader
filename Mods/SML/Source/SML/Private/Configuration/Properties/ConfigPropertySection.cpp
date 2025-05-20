@@ -94,6 +94,21 @@ void UConfigPropertySection::FillConfigStruct_Implementation(const FReflectedObj
     ReflectedObject.SetStructProperty(*VariableName, ChildObject);
 }
 
+void UConfigPropertySection::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
+	const UConfigPropertySection* DefaultSection = Cast<UConfigPropertySection>(DefaultProp);
+	if (!DefaultSection || !this->CanEditNow()) {
+		return;
+	}
+	for (const TPair<FString, UConfigProperty*>& Pair : this->SectionProperties) {
+		UConfigProperty* UserProp = Pair.Value;
+		UConfigProperty* DefaultProp = DefaultSection->SectionProperties.FindRef(Pair.Key);
+		if (UserProp && DefaultProp) {
+			UserProp->ResetToDefault(DefaultProp);
+		}
+	}
+	this->HandleMarkDirty_Implementation();
+}
+
 void UConfigPropertySection::HandleMarkDirty_Implementation()
 {
     MarkDirty();
