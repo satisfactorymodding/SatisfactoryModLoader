@@ -84,7 +84,7 @@ public:
 	// End UHookTargetNode_Root interface
 
 private:
-	const FText Description = LOCTEXT("HookTargetNodeRedirectHook_Description", "Redirect Hooks allow redirecting arbitrary expressions (such as variable reads or function calls) in Target Function to user-defined code.");
+	const FText Description = LOCTEXT("HookTargetNodeRedirectHook_Description", "Redirect Hooks allow redirecting arbitrary expressions (such as variable reads or function calls) in the Target Function to user-defined code.");
 };
 
 #undef LOCTEXT_NAMESPACE
