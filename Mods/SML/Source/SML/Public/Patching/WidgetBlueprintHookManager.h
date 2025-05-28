@@ -104,7 +104,7 @@ public:
 };
 
 /** Data required to hook into the existing widget blueprint */
-UCLASS()
+UCLASS(NotBlueprintable, BlueprintType, EditInlineNew)
 class SML_API UWidgetBlueprintHookData : public UDataAsset {
 	GENERATED_BODY()
 public:
