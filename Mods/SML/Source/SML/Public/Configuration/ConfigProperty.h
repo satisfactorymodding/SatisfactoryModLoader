@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "FGGameMode.h"
 #include "UObject/Object.h"
 #include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 #include "Reflection/BlueprintReflectedObject.h"
@@ -54,7 +55,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPropertyValueChanged OnPropertyValueChanged;
-	
+
     /** Creates widget instance for editing this configuration property's value. Can return NULL if property doesn't support direct UI editing */
     UFUNCTION(BlueprintPure, BlueprintNativeEvent, meta = (DefaultToSelf = "ParentWidget"))
     UUserWidget* CreateEditorWidget(class UUserWidget* ParentWidget) const;
@@ -66,6 +67,14 @@ public:
 	/** Fills variable of provided object with the value carried by this property */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, BlueprintPure = false)
     void FillConfigStruct(const FReflectedObject& ReflectedObject, const FString& VariableName) const;
+
+	/** Resets this property to its default value */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void ResetToDefault(const UConfigProperty* DefaultProp);
+
+	/** Returns true if not in-game or if 'Requires World Reload' is disabled */
+	UFUNCTION(BlueprintCallable)
+	bool CanEditNow();
 
 private:
     /** The Serialize() definition above shadows the native UObject::Serialize. Declare that we want to keep the UBOject implementation. */

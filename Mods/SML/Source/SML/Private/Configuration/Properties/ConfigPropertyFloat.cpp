@@ -29,6 +29,15 @@ void UConfigPropertyFloat::FillConfigStruct_Implementation(const FReflectedObjec
     ReflectedObject.SetFloatProperty(*VariableName, Value);
 }
 
+void UConfigPropertyFloat::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
+	const UConfigPropertyFloat* DefaultFloat = Cast<UConfigPropertyFloat>(DefaultProp);
+	if (!DefaultFloat || !this->CanEditNow()) {
+		return;
+	}
+	this->Value = DefaultFloat->Value;
+	this->MarkDirty();
+}
+
 FConfigVariableDescriptor UConfigPropertyFloat::CreatePropertyDescriptor_Implementation(
     UConfigGenerationContext* Context, const FString& OuterPath) const {
     return UConfigVariableLibrary::MakeConfigVariablePrimitive(EConfigVariableType::ECVT_Float);
