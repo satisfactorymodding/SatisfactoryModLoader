@@ -20,6 +20,18 @@ class UOnlineIntegrationState;
 #define NAME_ONLINE_BACKEND_EPIC "Epic"
 //</FL.
 
+
+/* Used to differentiate between different crossplay groups. E.g. Epic -> Steam are one group, EpicXSX->EpicPSN are another and can be distinguished to not
+ * be able to play with EpicPC */
+UENUM(BlueprintType)
+enum class EOnlineCrossplayGroup : uint8
+{
+	OCG_CROSSPLAY_GROUP_None = 0 UMETA(DisplayName = "No Crossplay"),
+	OCG_CROSSPLAY_GROUP_ONE = 1 UMETA(DisplayName = "Crossplay Group 1"),
+	OCG_CROSSPLAY_GROUP_TWO = 2 UMETA(DisplayName = "Crossplay Group 2"),
+	OCG_CROSSPLAY_GROUP_THREE = 3 UMETA(DisplayName = "Crossplay Group 3")
+};
+
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnBackendConnectionStatusChanged, UOnlineIntegrationBackend*, EOnlineBackendConnectionStatus); // <FL> [TranN] Handle disconnect
 /**
  * Represents one instance of an online integration backend and caches all the data pertaining to said backend.
@@ -73,6 +85,15 @@ public:
 
 	UOnlineIntegrationSubsystem* GetOnlineIntegration() const;
 	UOnlineIntegrationState* GetOnlineIntegrationState() const;
+	EOnlineCrossplayGroup GetCrossplayGroup() const
+	{
+		return CrossplayGroup;
+	};
+
+	void SetCrossplayGroup(EOnlineCrossplayGroup Group)
+	{
+		CrossplayGroup = Group;
+	}
 
 	FOnBackendConnectionStatusChanged OnBackendConnectionStatusChanged; // <FL> [TranN] Handle disconnect
 protected:
@@ -117,6 +138,14 @@ protected:
 	 */
 	UPROPERTY(Config)
 	TArray<FGameplayTag> LoginTags;
+
+	/**
+	 *  Assigns a crossplay group which will be passed to the sessioninformation. Games can then filter to allow only sessions of the same group
+	 *  to be able to communicate with each other. Useful e.g. to prevent Epic on PC to play with Epic on Gen9 or Epic on Luna etc.
+	 */
+	UPROPERTY()
+	EOnlineCrossplayGroup CrossplayGroup = EOnlineCrossplayGroup::OCG_CROSSPLAY_GROUP_ONE;
+
 	
 	/** Online services, accessor to specific services */
 	UE::Online::IOnlineServicesPtr ServicesPtr;

@@ -13,6 +13,8 @@ class UFGElevatorMovementComponent;
 class AFGBuildableElevator;
 class UBoxComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSongIdChanged, int32, newSongId );
+
 UENUM( BlueprintType )
 enum class EElevatorConsoleLocation : uint8
 {
@@ -215,7 +217,7 @@ public:
 	}
 
 	// Called from owning elevator to notify of change to song ID (which in turn triggers a blueprint event)
-	void NotifySongIdChanged( uint8 newSongId ) { OnSongIDChanged( newSongId ); }
+	void NotifySongIdChanged( uint8 newSongId ) { SongIDChangedBroadcast.Broadcast( newSongId ); OnSongIDChanged( newSongId ); }
 	
 	UFUNCTION(BlueprintImplementableEvent, Category="Elevator Cabin" )
 	void OnSongIDChanged( uint8 newSongId );
@@ -223,6 +225,10 @@ public:
 	void ApplyCustomizatinDataFromElevator();
 	
 	UStaticMeshComponent* GetMeshComponent() const { return mMeshComponent; }
+
+public:
+	UPROPERTY( BlueprintReadWrite, BlueprintAssignable, Category = "Elevator Cabin" )
+	FOnSongIdChanged SongIDChangedBroadcast;
 	
 protected:
 #if WITH_EDITOR

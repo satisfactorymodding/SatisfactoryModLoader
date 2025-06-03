@@ -43,6 +43,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEOSLoginProcessUpdated, bool, has
 // Event that is being called when the platform telemetry tracking feature should be called.
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOnlineTelemetryUpdated, EOnlineSessionFeatureType, sessionFeatureType );
 // </FL> [ZimmermannA] 
+
 //<FL>[KonradA]
 UENUM(BlueprintType)
 enum class EUserJoinSessionFailureReason : uint8
@@ -532,6 +533,7 @@ protected:
 	TMap<UOnlineUserBackendLink*, UOnlineUserInfo*> BackendLinkUserLookup;
 	
 	TMap<UE::Online::FAccountId, TArray<TPromise<UOnlineUserInfo*>>> PendingUserInfoResolves;
+	TMap<UE::Online::FAccountId, TSharedRef<TPromise<bool>>> PendingUserInfoQueries;
 
 	UFUNCTION()
 	void AuthenticationSequenceFinished(UOnlineAsyncOperation* InAsyncOp);

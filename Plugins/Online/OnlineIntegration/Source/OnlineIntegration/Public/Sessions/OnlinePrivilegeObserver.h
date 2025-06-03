@@ -85,7 +85,8 @@ public:
 protected:
 	void OnBackendLoginStateChanged(ULocalUserInfo* UserInfo, TSharedRef<UE::Online::FAccountInfo> AccountInfo, UOnlineIntegrationBackend* Backend);
 	void OnBackendConnectionStateChanged(UObject*, UE::FieldNotification::FFieldId);
-	
+	UFUNCTION()
+	void OnApplicationReactivated();
 	void OnPrivilegeQueryDone(UOnlineIntegrationBackend* Backend, ECommonUserPrivilege Privilege, ECommonUserPrivilegeResult PrivilegeResult);
 
 	void QueryAllPrivilegesForBackend(UOnlineIntegrationBackend* Backend);
@@ -110,4 +111,12 @@ protected:
 	 */
 	UPROPERTY(FieldNotify, BlueprintReadOnly)
 	bool bIsAvailable = true;
+
+	/*
+	* If this Observer instance should re-query all priveleges after the application re-enter foreground. (Important on consoles where putting the
+	* application into background could have the user change account settings that alter their account privileges.)
+	*/
+	UPROPERTY(FieldNotify, BlueprintReadOnly)
+	bool bReQueryPrivilegesOnAppReactivate = true;
+
 };

@@ -225,6 +225,8 @@ private:
 	bool mIsCameraDecoupled = false;
 	bool mIsPlayerVisible = true;
 	
+	float ControllerTurnAtRate( float rate, bool WithInvertHandling = true );
+	float ControllerLookUpAtRate( float rate, bool WithInvertHandling = true );
 };
 
 UCLASS( Blueprintable )

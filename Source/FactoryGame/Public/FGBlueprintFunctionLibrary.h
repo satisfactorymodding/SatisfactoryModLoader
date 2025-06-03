@@ -12,6 +12,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "UI/FGPopupWidget.h"
 #include "Interfaces/IMessageSanitizerInterface.h"
+#include "FGLocalizationSettings.h"
 #include "FGBlueprintFunctionLibrary.generated.h"
 
 typedef UE::Online::FAccountId FAccountId;
@@ -1083,4 +1084,7 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	static void EnableAnalogUINavigation( bool bEnable );
 
+	//<FL> [BGR] check if a language is available on this platform
+	UFUNCTION( BlueprintCallable, Category = "Localization" )
+	static bool IsTranslationSupportedByPlatform(FLocalizationEntry LocalizationEntry);
 };

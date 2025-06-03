@@ -164,6 +164,7 @@ public:
 
 	UOnlineUserBackendLink* GetUserBackend(const UOnlineIntegrationBackend* Backend);
 	const UOnlineUserBackendLink* GetUserBackend(const UOnlineIntegrationBackend* Backend) const;
+	UFUNCTION(BlueprintCallable)
 	UOnlineUserBackendLink* GetPlatformBackend();
 	const UOnlineUserBackendLink* GetPlatformBackend() const;
 	UOnlineUserBackendLink* GetBackendByIndex(int32 Index) const;

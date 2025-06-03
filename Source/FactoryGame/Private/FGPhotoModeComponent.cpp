@@ -61,6 +61,8 @@ void UFGPhotoModeComponent::OnRep_CameraCharacter(){  }
 void UFGPhotoModeComponent::Server_ToggleDecoupledCamera_Implementation(const bool isOn){  }
 void UFGPhotoModeComponent::Server_TogglePhotoMode_Implementation(const bool isOn){  }
 class UCineCameraComponent* UFGPhotoModeComponent::GetCameraComponent() const{ return nullptr; }
+float UFGPhotoModeComponent::ControllerTurnAtRate(float rate, bool WithInvertHandling){ return float(); }
+float UFGPhotoModeComponent::ControllerLookUpAtRate(float rate, bool WithInvertHandling){ return float(); }
 AFGPhotoModeCamera::AFGPhotoModeCamera() : Super() {
 	this->mControllingPlayerCharacter = nullptr;
 	this->mCameraComp = CreateDefaultSubobject<UCineCameraComponent>(TEXT("Camera"));

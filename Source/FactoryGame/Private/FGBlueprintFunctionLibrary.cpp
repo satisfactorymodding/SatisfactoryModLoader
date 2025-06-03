@@ -229,9 +229,9 @@ bool UFGBlueprintFunctionLibrary::IsCurrentOnlineIntegrationStateValid(UObject* 
 bool UFGBlueprintFunctionLibrary::IsAWithSoftRef(UObject* Object, TSoftClassPtr<UObject> SoftClass){ return false; }
 void UFGBlueprintFunctionLibrary::ActivateAimAssistClient(APlayerController* PlayerController, TScriptInterface<IFGAimAssistClient> AimAssistClient, bool IsActive){  }
 void UFGBlueprintFunctionLibrary::EnableAnalogUINavigation(bool bEnable){  }
+bool UFGBlueprintFunctionLibrary::IsTranslationSupportedByPlatform(FLocalizationEntry LocalizationEntry){ return false; }
 
-DEFINE_FUNCTION(UFGBlueprintFunctionLibrary::execMakeDynamicStruct)
-{
+DEFINE_FUNCTION(UFGBlueprintFunctionLibrary::execMakeDynamicStruct) {
 	PARAM_PASSED_BY_REF(inDynamicStruct, FIntProperty, int32);
 	P_FINISH;
 	P_NATIVE_BEGIN;

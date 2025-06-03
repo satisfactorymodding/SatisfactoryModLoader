@@ -12,6 +12,47 @@
 
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogUserSetting, Log, All );
 
+USTRUCT( BlueprintType )
+struct FSettingsWidgetLocationDescriptor
+{
+	GENERATED_BODY()
+public:
+	FSettingsWidgetLocationDescriptor() {
+		CategoryClass = nullptr;
+		SubCategoryClass = nullptr;
+		SubOptionTo = nullptr;
+		MenuPriority = 0;
+	}
+
+	FSettingsWidgetLocationDescriptor( TSubclassOf< class UFGUserSettingCategory > in_CategoryClass,
+									   TSubclassOf< class UFGUserSettingCategory > in_SubCategoryClass,
+										UFGUserSetting* in_SubOptionTo,
+									   float in_MenuPriority )
+	{
+		CategoryClass = in_CategoryClass;
+		SubCategoryClass = in_SubCategoryClass;
+		SubOptionTo = in_SubOptionTo;
+		MenuPriority = in_MenuPriority;
+	};
+
+	inline bool operator==( const FSettingsWidgetLocationDescriptor& rhs ) const;
+
+	/** This is the main category class for this setting. It represents the broader category under which a specific setting falls */
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Setting" )
+	TSubclassOf< class UFGUserSettingCategory > CategoryClass;
+
+	/** This is the sub category class for this setting. It represents a more specific category for a setting, which is shown when expanding
+	 * the main category class */
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Setting" )
+	TSubclassOf< class UFGUserSettingCategory > SubCategoryClass;
+
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Availability" )
+	UFGUserSetting* SubOptionTo;
+	/** The order in menus is decided by this value. Lower values means earlier in menu. Negative values are allowed. [-N..0..N]*/
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "User Interface" )
+	float MenuPriority;
+};
+
 /** Old enum indicating what menu the option belongs to. Was used before switching to the manager subclass */
 UENUM()
 enum class EUserSettingManagers : uint8
@@ -159,17 +200,20 @@ public:
 	FText ToolTip;
 
 	/** This is the main category class for this setting. It represents the broader category under which a specific setting falls */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Setting" )
-	TSubclassOf< class UFGUserSettingCategory > CategoryClass;
+	UPROPERTY()
+	TSubclassOf< class UFGUserSettingCategory > CategoryClass_DEPRECATED;
 
 	/** This is the sub category class for this setting. It represents a more specific category for a setting, which is shown when expanding
 	 * the main category class */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Setting" )
-	TSubclassOf< class UFGUserSettingCategory > SubCategoryClass;
+	UPROPERTY()
+	TSubclassOf< class UFGUserSettingCategory > SubCategoryClass_DEPRECATED;
 
 	/** The order in menus is decided by this value. Lower values means earlier in menu. Negative values are allowed. [-N..0..N]*/
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "User Interface" )
-	float MenuPriority;
+	UPROPERTY()
+	float MenuPriority_DEPRECATED;
+
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "UserInterface" )
+	TArray< FSettingsWidgetLocationDescriptor > WidgetsToCreate;
 
 	/** If true this setting affect the whole session and not only the local player */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Setting" )
@@ -205,8 +249,8 @@ public:
 	uint8 EditabilityDisqualifiers;
 
 	// Not used for now but we want support for it later
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Availability" )
-	UFGUserSetting* SubOptionTo;
+	UPROPERTY()
+	UFGUserSetting* SubOptionTo_DEPRECATED;
 
 private:
 	/** Slightly misleading name, as this doesn't only apply to builds. If set to Never, it won't show up in editor

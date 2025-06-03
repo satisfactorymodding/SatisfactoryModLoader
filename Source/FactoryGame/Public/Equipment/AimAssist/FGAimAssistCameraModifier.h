@@ -29,6 +29,9 @@ public:
 
 	static void DisplayDebugAimAssist( UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos );
 
+	UFUNCTION()
+	void OnAimAssistStrengthSettingUpdated( FString cvar );
+
 protected:
 	// <FL> [MartinC] Currently active aim assist client
 	UPROPERTY()
@@ -38,5 +41,7 @@ protected:
 	FRotator LastViewRotation;
 	UFGAimTargetComponent* LastBestTarget = nullptr;
 	float LastBestStrength;
+	//<FL>[VilagosD] reads value from US_AimAssistStrength
+	float AssistMultiplyerSetting = 1.0f;
 
 };

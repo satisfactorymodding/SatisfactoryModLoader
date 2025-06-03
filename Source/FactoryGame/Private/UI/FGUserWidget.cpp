@@ -30,6 +30,7 @@ bool UFGUserWidget::IsFocusWidgetForKeybindFound(const FFGKeybinding& Keybinding
 void UFGUserWidget::OverwriteKeybindings(TArray<FFGKeybinding> newkeyHints){  }
 FKey UFGUserWidget::FindKeyByBindingTag(FName HintTag){ return FKey(); }
 bool UFGUserWidget::UpdateKeybindingByTag(FName HintTag, FKey NewKey){ return false; }
+void UFGUserWidget::AddChildKeybindings(UFGUserWidget* ChildWidget){ }
 FReply UFGUserWidget::CallDelegateForKeyEventOfType(const FKeyEvent& InKeyEvent, EFGKeyHintDelegateType DelegateType){ return FReply::Unhandled(); }
 FReply UFGUserWidget::CallKeybindingDelegate(const FFGKeybinding& Keybinding, EFGKeyHintDelegateType DelegateType){ return FReply::Unhandled(); }
 void UFGUserWidget::BeginLongPress(const FFGKeybinding& Keybinding){ }

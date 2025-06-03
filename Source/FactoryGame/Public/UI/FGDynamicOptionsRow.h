@@ -80,6 +80,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	void SetSubOptionsVisibility( bool newVisibilty ) { mSubOptionsVisibility = newVisibilty; }
 
+	UFUNCTION()
+	void SetWidgetLocator( FSettingsWidgetLocationDescriptor widgetLocator ) { mWidgetLocator = widgetLocator; };
+
 protected:
 	UPROPERTY( BlueprintAssignable, BlueprintCallable )
 	FOnOptionRowHovered mOnOptionRowHovered;
@@ -92,6 +95,9 @@ protected:
 
 	UPROPERTY( BlueprintAssignable, BlueprintCallable )
 	FOnOptionSlotButtonFocusChanged mOnOptionSlotButtonFocusChanged;
+
+	UPROPERTY( Transient, BlueprintReadOnly )
+	FSettingsWidgetLocationDescriptor mWidgetLocator;
 	
 private:
 
@@ -115,5 +121,6 @@ private:
 	TArray< UFGDynamicOptionsRow* > mSubOptions;
 
 	bool mSubOptionsVisibility;
-	
+
+
 };
