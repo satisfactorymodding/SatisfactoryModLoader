@@ -31,7 +31,17 @@ bool UFGUserSetting::ShouldShowInCurrentConfig(ESettingVisiblityDisqualifier vis
 FVariant UFGUserSetting::GetDefaultValue() const{ return FVariant(); }
 IFGOptionInterface* UFGUserSetting::GetPrimaryOptionInterface(UWorld* world) const{ return nullptr; }
 TSubclassOf< class UFGOptionsValueController > UFGUserSetting::GetValueSelectorWidgetClass() const{ return TSubclassOf<class UFGOptionsValueController>(); }
-void UFGUserSetting::PostLoad(){ Super::PostLoad(); }
+void UFGUserSetting::PostLoad() {
+	Super::PostLoad();
+	if (WidgetsToCreate.IsEmpty()) {
+		WidgetsToCreate.Emplace(FSettingsWidgetLocationDescriptor(
+			CategoryClass_DEPRECATED,
+			SubCategoryClass_DEPRECATED,
+			SubOptionTo_DEPRECATED,
+			MenuPriority_DEPRECATED
+		));
+	}
+}
 void UFGUserSetting::Serialize(FStructuredArchive::FRecord Record){ Super::Serialize(Record); }
 bool UFGUserSetting::HasVisibilityDisqualifier(ESettingVisiblityDisqualifier disqualifier) const{ return bool(); }
 bool UFGUserSetting::HasEditabilityDisqualifier(ESettingEditabilityDisqualifier disqualifier) const{ return bool(); }
