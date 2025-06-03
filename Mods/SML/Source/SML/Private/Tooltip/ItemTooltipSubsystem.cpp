@@ -3,6 +3,7 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/PanelWidget.h"
+#include "Components/RichTextBlock.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
 #include "Tooltip/ItemStackContextWidget.h"
@@ -10,7 +11,7 @@
 #include "Tooltip/SMLItemTooltipProvider.h"
 
 //Overwrites delegates bound to title & description widgets to use FTooltipHookHelper, add custom item widget
-void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UTextBlock* TitleTextBlock, UTextBlock* DescriptionTextBlock, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
+void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UTextBlock* TitleTextBlock, URichTextBlock* DescriptionTextBlock, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
 
     //Retrieve parent panel, it will hold name, description and recipe blocks
     UPanelWidget* ParentPanel = TitleTextBlock->GetParent();
@@ -23,10 +24,6 @@ void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UTextBlock* TitleTextBlo
     ContextWidget->PlayerController = OwningPlayer;
     ContextWidget->SetVisibility(ESlateVisibility::Collapsed);
     ParentPanel->AddChild(ContextWidget);
-
-    //Rebind text delegates to custom widget
-    TitleTextBlock->TextDelegate.BindUFunction(ContextWidget, TEXT("GetItemName"));
-    DescriptionTextBlock->TextDelegate.BindUFunction(ContextWidget, TEXT("GetItemDescription"));
     
     //Append custom widgets to description
     TArray<UWidget*> Widgets = CreateDescriptionWidgets(OwningPlayer, InventoryStack);

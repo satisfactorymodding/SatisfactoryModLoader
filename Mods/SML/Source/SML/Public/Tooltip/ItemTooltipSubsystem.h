@@ -37,7 +37,7 @@ public:
 
 	/** For internal use only - called to evaluate all the custom description widgets registered to the subsystem */
 	UFUNCTION(BlueprintCallable, Category = "Item Tooltip Subsystem")
-	void ApplyItemOverridesToTooltip(class UTextBlock* TitleTextBlock, class UTextBlock* DescriptionTextBlock, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+	void ApplyItemOverridesToTooltip(class UTextBlock* TitleTextBlock, class URichTextBlock* DescriptionTextBlock, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 private:
     /** Array of registered tooltip providers, UPROPERTY to avoid garbage collection */
     UPROPERTY()

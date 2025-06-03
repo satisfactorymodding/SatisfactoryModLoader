@@ -16,9 +16,9 @@ public:
     UPROPERTY()
     UItemTooltipSubsystem* ItemTooltipSubsystem;
 
-    UFUNCTION()
+    UFUNCTION(BlueprintPure)
     FText GetItemName() const;
-    UFUNCTION()
+    UFUNCTION(BlueprintPure)
     FText GetItemDescription() const;
 
 	// Begin UWidget interface
