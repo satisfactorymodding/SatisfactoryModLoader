@@ -6,6 +6,23 @@
 
 #define LOCTEXT_NAMESPACE "SML"
 
+void UConfigPropertyArray::PostInitProperties() {
+    Super::PostInitProperties();
+    if (HasAnyFlags(RF_ClassDefaultObject) || bDefaultValueInitialized) {
+        return;
+    }
+    bDefaultValueInitialized = true;
+    DefaultValues.Empty(Values.Num());
+    for (UConfigProperty* Property : Values) {
+        if (Property) {
+            UConfigProperty* Clone = DuplicateObject<UConfigProperty>(Property, this);
+            DefaultValues.Add(Clone);
+        } else {
+            DefaultValues.Add(nullptr);
+        }
+    }
+}
+
 UConfigProperty* UConfigPropertyArray::AddNewElement() {
     checkf(DefaultValue, TEXT("Cannot add new element without default value defined"));
     UConfigProperty* NewValueProperty = NewObject<UConfigProperty>(this, DefaultValue->GetClass(), NAME_None, RF_NoFlags, DefaultValue);
@@ -80,7 +97,16 @@ void UConfigPropertyArray::Deserialize_Implementation(const URawFormatValue* Val
         //Just iterate raw format array and deserialize each of its items
         for (URawFormatValue* RawFormatValue : SerializedArray->GetUnderlyingArrayRef()) {
             UConfigProperty* AllocatedValue = AddNewElement();
+            if (!bAllowUserReset || !bParentSectionAllowsUserReset) {
+                AllocatedValue->bParentSectionAllowsUserReset = false;
+            }
             AllocatedValue->Deserialize(RawFormatValue);
+        }
+    }
+    // Set default values to inherit Allow User Reset
+    for (UConfigProperty* Property : DefaultValues) {
+        if (Property && !bAllowUserReset || !bParentSectionAllowsUserReset) {
+            Property->bParentSectionAllowsUserReset = false;
         }
     }
 }
@@ -95,21 +121,46 @@ void UConfigPropertyArray::FillConfigStruct_Implementation(const FReflectedObjec
     }
 }
 
-void UConfigPropertyArray::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
-	const UConfigPropertyArray* DefaultArray = Cast<UConfigPropertyArray>(DefaultProp);
-	if (!DefaultArray || !this->CanEditNow()) {
-		return;
-	}
-	this->Clear();
-	for (const UConfigProperty* DefaultElement : DefaultArray->Values) {
-		UConfigProperty* NewElement = AddNewElement();
-		NewElement->ResetToDefault(DefaultElement);
-	}
-	this->HandleMarkDirty_Implementation();
+bool UConfigPropertyArray::ResetToDefault_Implementation() {
+    if (!CanResetNow() || !bDefaultValueInitialized) {
+        return false;
+    }
+    Values.Empty(DefaultValues.Num());
+    for (UConfigProperty* Property : DefaultValues) {
+        if (Property) {
+            UConfigProperty* Clone = DuplicateObject<UConfigProperty>(Property, this);
+            Values.Add(Clone);
+        } else {
+            Values.Add(nullptr);
+        }
+    }
+    MarkDirty();
+    return true;
 }
 
-void UConfigPropertyArray::HandleMarkDirty_Implementation()
-{
+bool UConfigPropertyArray::IsSetToDefaultValue_Implementation() const {
+    if (Values.Num() != DefaultValues.Num()) {
+        return false;
+    }
+    for (int32 i = 0; i < Values.Num(); i++) {
+        const UConfigProperty* UserProperty = Values[i];
+        const UConfigProperty* DefaultProperty = DefaultValues.IsValidIndex(i) ? DefaultValues[i] : nullptr;
+        if (!UserProperty || !DefaultProperty) {
+            return false;
+        }
+        if (UserProperty->DescribeValue() != DefaultProperty->DescribeValue()) {
+            return false;
+        }
+    }
+    // MarkDirty();
+    return true;
+}
+
+FString UConfigPropertyArray::GetDefaultValueAsString_Implementation() const {
+    return FString::JoinBy(DefaultValues, TEXT(", "), [](const UConfigProperty* Property) { return Property->GetDefaultValueAsString(); });
+}
+
+void UConfigPropertyArray::HandleMarkDirty_Implementation() {
     MarkDirty();
 }
 

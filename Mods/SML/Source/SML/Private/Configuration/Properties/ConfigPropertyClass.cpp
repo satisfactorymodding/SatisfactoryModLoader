@@ -12,6 +12,15 @@ UConfigPropertyClass::UConfigPropertyClass() {
     bLimitBaseClass = false;
 }
 
+void UConfigPropertyClass::PostInitProperties() {
+    Super::PostInitProperties();
+    if (HasAnyFlags(RF_ClassDefaultObject) || bDefaultValueInitialized) {
+        return;
+    }
+    bDefaultValueInitialized = true;
+    DefaultValue = Value;
+}
+
 bool UConfigPropertyClass::IsValidValueClass(UClass* Class) const {
     return Class ? (bLimitBaseClass && BaseClass ? Class->IsChildOf(BaseClass) : true) : bAllowNullValue;
 }
@@ -66,13 +75,22 @@ void UConfigPropertyClass::FillConfigStruct_Implementation(const FReflectedObjec
     ReflectedObject.SetObjectProperty(*VariableName, Value);
 }
 
-void UConfigPropertyClass::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
-	const UConfigPropertyClass* DefaultClass = Cast<UConfigPropertyClass>(DefaultProp);
-	if (!DefaultClass || !this->CanEditNow()) {
-		return;
-	}
-	this->Value = DefaultClass->Value;
-	this->MarkDirty();
+bool UConfigPropertyClass::ResetToDefault_Implementation() {
+    if (!CanResetNow() || !bDefaultValueInitialized) {
+        return false;
+    }
+    UClass* DefaultClassObject = DuplicateObject<UClass>(DefaultValue, this);
+    SetClassValue(DefaultClassObject);
+    MarkDirty();
+    return true;
+}
+
+bool UConfigPropertyClass::IsSetToDefaultValue_Implementation() const {
+    return Value == DefaultValue;
+}
+
+FString UConfigPropertyClass::GetDefaultValueAsString_Implementation() const {
+    return DefaultValue ? DefaultValue->GetName() : TEXT("");
 }
 
 FConfigVariableDescriptor UConfigPropertyClass::CreatePropertyDescriptor_Implementation(
