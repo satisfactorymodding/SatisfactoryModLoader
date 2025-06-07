@@ -79,8 +79,7 @@ bool UConfigPropertyClass::ResetToDefault_Implementation() {
     if (!CanResetNow() || !bDefaultValueInitialized) {
         return false;
     }
-    UClass* DefaultClassObject = DuplicateObject<UClass>(DefaultValue, this);
-    SetClassValue(DefaultClassObject);
+    SetClassValue(DefaultValue);
     MarkDirty();
     return true;
 }
