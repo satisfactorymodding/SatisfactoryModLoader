@@ -8,6 +8,15 @@ UConfigPropertyFloat::UConfigPropertyFloat() {
     this->Value = 0.0f;
 }
 
+void UConfigPropertyFloat::PostInitProperties() {
+    Super::PostInitProperties();
+    if (HasAnyFlags(RF_ClassDefaultObject) || bDefaultValueInitialized) {
+        return;
+    }
+    bDefaultValueInitialized = true;
+    DefaultValue = Value;
+}
+
 FString UConfigPropertyFloat::DescribeValue_Implementation() const {
     return FString::Printf(TEXT("[float %f]"), Value);
 }
@@ -29,13 +38,21 @@ void UConfigPropertyFloat::FillConfigStruct_Implementation(const FReflectedObjec
     ReflectedObject.SetFloatProperty(*VariableName, Value);
 }
 
-void UConfigPropertyFloat::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
-	const UConfigPropertyFloat* DefaultFloat = Cast<UConfigPropertyFloat>(DefaultProp);
-	if (!DefaultFloat || !this->CanEditNow()) {
-		return;
-	}
-	this->Value = DefaultFloat->Value;
-	this->MarkDirty();
+bool UConfigPropertyFloat::ResetToDefault_Implementation() {
+    if (!CanResetNow() || !bDefaultValueInitialized) {
+        return false;
+    }
+    Value = DefaultValue;
+    MarkDirty();
+    return true;
+}
+
+bool UConfigPropertyFloat::IsSetToDefaultValue_Implementation() const {
+    return FMath::IsNearlyEqual(Value, DefaultValue, SMALL_NUMBER);
+}
+
+FString UConfigPropertyFloat::GetDefaultValueAsString_Implementation() const {
+    return FString::SanitizeFloat(DefaultValue);
 }
 
 FConfigVariableDescriptor UConfigPropertyFloat::CreatePropertyDescriptor_Implementation(
