@@ -8,6 +8,15 @@ UConfigPropertyBool::UConfigPropertyBool() {
     this->Value = false;
 }
 
+void UConfigPropertyBool::PostInitProperties() {
+    Super::PostInitProperties();
+    if (HasAnyFlags(RF_ClassDefaultObject) || bDefaultValueInitialized) {
+        return;
+    }
+    bDefaultValueInitialized = true;
+    DefaultValue = Value;
+}
+
 FString UConfigPropertyBool::DescribeValue_Implementation() const {
     return FString::Printf(TEXT("[bool %s]"), Value ? TEXT("true") : TEXT("false"));
 }
@@ -27,6 +36,23 @@ void UConfigPropertyBool::Deserialize_Implementation(const URawFormatValue* RawV
 
 void UConfigPropertyBool::FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const {
     ReflectedObject.SetBoolProperty(*VariableName, Value);
+}
+
+bool UConfigPropertyBool::ResetToDefault_Implementation() {
+    if (!CanResetNow() || !bDefaultValueInitialized) {
+        return false;
+    }
+    Value = DefaultValue;
+    MarkDirty();
+    return true;
+}
+
+bool UConfigPropertyBool::IsSetToDefaultValue_Implementation() const {
+    return Value == DefaultValue;
+}
+
+FString UConfigPropertyBool::GetDefaultValueAsString_Implementation() const {
+    return DefaultValue ? TEXT("true") : TEXT("false");
 }
 
 FConfigVariableDescriptor UConfigPropertyBool::CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const {
