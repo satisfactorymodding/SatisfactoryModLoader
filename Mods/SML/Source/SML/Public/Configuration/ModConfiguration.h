@@ -50,10 +50,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UUserWidget> CustomWidget;
 
-    /** Reset user configuration to their default values*/
-    UFUNCTION(BlueprintCallable)
-    void ResetUserConfigToDefaults();
-
 #if WITH_EDITOR
     virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
 #endif

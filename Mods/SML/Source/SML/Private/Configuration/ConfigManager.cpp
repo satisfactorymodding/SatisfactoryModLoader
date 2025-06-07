@@ -21,7 +21,7 @@ const TCHAR* SMLConfigModVersionField = TEXT("SML_ModVersion_DoNotChange");
 
 void UConfigManager::ReloadModConfigurations() {
     UE_LOG(LogConfigManager, Display, TEXT("Reloading mod configurations..."));
-    
+
     for (const TPair<FConfigId, FRegisteredConfigurationData>& Pair : Configurations) {
         LoadConfigurationInternal(Pair.Key, Pair.Value.RootValue, true);
     }
@@ -29,20 +29,20 @@ void UConfigManager::ReloadModConfigurations() {
 
 void UConfigManager::SaveConfigurationInternal(const FConfigId& ConfigId) {
     const FRegisteredConfigurationData& ConfigurationData = Configurations.FindChecked(ConfigId);
-    
+
     const URootConfigValueHolder* RootValue = ConfigurationData.RootValue;
     URawFormatValue* RawFormatValue = RootValue->GetWrappedValue()->Serialize(GetTransientPackage());
     checkf(RawFormatValue, TEXT("Root RawFormatValue returned NULL for config %s"), *ConfigId.ModReference);
-    
+
     //Root value should always be JsonObject, since root property is section property
     const TSharedPtr<FJsonValue> JsonValue = FJsonRawFormatConverter::ConvertToJson(RawFormatValue);
     check(JsonValue->Type == EJson::Object);
     TSharedRef<FJsonObject> UnderlyingObject = JsonValue->AsObject().ToSharedRef();
-    
+
     //Record mod version so we can keep file system file schema up to date
     FModInfo ModInfo;
     UModLoadingLibrary* ModLoadingLibrary = GetGameInstance()->GetSubsystem<UModLoadingLibrary>();
-    
+
     if (ModLoadingLibrary->GetLoadedModInfo(ConfigId.ModReference, ModInfo)) {
         const FString ModVersion = ModInfo.Version.ToString();
         UnderlyingObject->SetStringField(SMLConfigModVersionField, ModVersion);
@@ -57,7 +57,7 @@ void UConfigManager::SaveConfigurationInternal(const FConfigId& ConfigId) {
     const FString ConfigurationFilePath = GetConfigurationFilePath(ConfigId);
     //Make sure configuration directory exists
     FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*FPaths::GetPath(ConfigurationFilePath));
-    
+
     if (!FFileHelper::SaveStringToFile(JsonOutputString, *ConfigurationFilePath)) {
         UE_LOG(LogConfigManager, Error, TEXT("Failed to save configuration file to %s"), *ConfigurationFilePath);
         return;
@@ -132,8 +132,8 @@ void UConfigManager::OnTimerManagerAvailable(FTimerManager* TimerManager) {
 }
 
 void UConfigManager::OnConfigMarkedDirty(FTimerManager* TimerManager) {
-    //Setup a timer which will force all changes into filesystem every in .2 seconds 
-    
+    //Setup a timer which will force all changes into filesystem every in .2 seconds
+
     // I dont like this .. Creating a UObject here ..
     // We want a Timer to Stop too frequent writing from incoming changes
     // some way to get world context from MarkConfigurationDirty would be needed to reliably use Timers for this
@@ -154,7 +154,7 @@ void UConfigManager::ReinitializeCachedStructs(const FConfigId& ConfigId) {
 #if OPTIMIZE_FILL_CONFIGURATION_STRUCT
     const FRegisteredConfigurationData& ConfigurationData = Configurations.FindChecked(ConfigId);
     URootConfigValueHolder* RootConfigValue = ConfigurationData.RootValue;
-    
+
     for (const TPair<UScriptStruct*, FReflectedObject>& Pair : ConfigurationData.CachedValues) {
         RootConfigValue->GetWrappedValue()->FillConfigStructSelf(Pair.Value);
     }
@@ -191,12 +191,24 @@ void UConfigManager::FillConfigurationStruct(const FConfigId& ConfigId, const FD
 #endif
 }
 
+bool UConfigManager::ResetToDefault(const FConfigId& ConfigId) {
+    UConfigPropertySection* UserRootSection = GetConfigurationRootSection(ConfigId);
+    if (!UserRootSection) {
+        return false;
+    }
+    bool bReset = UserRootSection->ResetToDefault();
+    if (bReset) {
+        MarkConfigurationDirty(ConfigId);
+    }
+    return bReset;
+}
+
 UUserWidget* UConfigManager::CreateConfigurationWidget(const FConfigId& ConfigId, UUserWidget* Outer) {
     FRegisteredConfigurationData* ConfigurationData = Configurations.Find(ConfigId);
     if (ConfigurationData == NULL) {
         return NULL;
     }
-    
+
     UConfigPropertySection* RootValue = ConfigurationData->RootValue->GetWrappedValue();
     return RootValue->CreateEditorWidget(Outer);
 }
@@ -207,14 +219,14 @@ void UConfigManager::ReplaceConfigurationClass(FRegisteredConfigurationData* Exi
 
     //Create new root section value from new configuration class
     URootConfigValueHolder* RootConfigValueHolder = ExistingData->RootValue;
-    
+
     //Replace wrapped configuration section value with new root section, replace old configuration class
     RootConfigValueHolder->UpdateWrappedValue(NewConfiguration.GetDefaultObject()->RootSection);
     ExistingData->ConfigurationClass = NewConfiguration;
 
     //Populate new configuration with data from previous one
     RootConfigValueHolder->GetWrappedValue()->Deserialize(TempDataObject);
-    
+
     //Refresh all cached struct values with new data
     ReinitializeCachedStructs(ExistingData->ConfigId);
 
@@ -238,7 +250,7 @@ bool IsCompatibleConfigurationClassChange(UClass* OldConfigurationClass, UClass*
         }
     }
 #endif
-    
+
     //Otherwise, replace is not compatible
     return false;
 }
@@ -262,12 +274,12 @@ void UConfigManager::RegisterModConfiguration(TSubclassOf<UModConfiguration> Con
         ReplaceConfigurationClass(ExistingData, Configuration);
         return;
     }
-    
+
     //Create root value and wrap it into config root handling marking config dirty
     URootConfigValueHolder* RootConfigValueHolder = NewObject<URootConfigValueHolder>(this);
     RootConfigValueHolder->SetupRootValue(this, ConfigId);
     RootConfigValueHolder->UpdateWrappedValue(Configuration.GetDefaultObject()->RootSection);
-    
+
     //Register configuration inside all of the internal properties
     Configurations.Add(ConfigId, FRegisteredConfigurationData{ConfigId, Configuration, RootConfigValueHolder});
 
@@ -287,7 +299,7 @@ UConfigPropertySection* UConfigManager::GetConfigurationRootSection(const FConfi
 
 void UConfigManager::Initialize(FSubsystemCollectionBase& Collection) {
 	Collection.InitializeDependency<UModLoadingLibrary>();
-	
+
     //Subscribe to exit event so we make sure that pending saves are written to filesystem
     FCoreDelegates::OnPreExit.AddUObject(this, &UConfigManager::FlushPendingSaves);
     //Subscribe to timer manager availability delegate to be able to do periodic auto-saves

@@ -16,6 +16,10 @@ public:
     UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Category = "Configuration Property")
     TArray<UConfigProperty*> Values;
 
+    /** Default value of this configuration property */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration Property")
+    TArray<UConfigProperty*> DefaultValues;
+
     /** Allocates new default element and inserts it at the specified index */
     UFUNCTION(BlueprintCallable)
     UConfigProperty* AddNewElement();
@@ -35,16 +39,23 @@ public:
 #endif
     //End UObject
 
+    virtual void PostInitProperties() override;
+
     //Begin UConfigProperty
     virtual FString DescribeValue_Implementation() const override;
     virtual URawFormatValue* Serialize_Implementation(UObject* Outer) const override;
     virtual void Deserialize_Implementation(const URawFormatValue* Value) override;
     virtual FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
     virtual void FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const override;
-    virtual void ResetToDefault_Implementation(const UConfigProperty* DefaultProp) override;
+	virtual bool ResetToDefault_Implementation() override;
+	virtual bool IsSetToDefaultValue_Implementation() const override;
+	virtual FString GetDefaultValueAsString_Implementation() const override;
     //End UConfigProperty
 
     //Begin IConfigValueDirtyHandlerInterface
     virtual void HandleMarkDirty_Implementation() override;
     //End IConfigValueDirtyHandlerInterface
+
+private:
+    bool bDefaultValueInitialized = false;
 };

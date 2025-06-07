@@ -30,7 +30,9 @@ public:
 	virtual void Deserialize_Implementation(const URawFormatValue* Value) override;
 	FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
 	void FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const override;
-	virtual void ResetToDefault_Implementation(const UConfigProperty* DefaultProp) override;
+	virtual bool ResetToDefault_Implementation() override;
+	virtual bool IsSetToDefaultValue_Implementation() const override;
+	virtual FString GetDefaultValueAsString_Implementation() const override;
 	//End UConfigProperty
 
 	//Begin IConfigValueDirtyHandlerInterface

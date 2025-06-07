@@ -7,6 +7,15 @@ UConfigPropertyString::UConfigPropertyString() {
     this->Value = TEXT("");
 }
 
+void UConfigPropertyString::PostInitProperties() {
+    Super::PostInitProperties();
+    if (HasAnyFlags(RF_ClassDefaultObject) || bDefaultValueInitialized) {
+        return;
+    }
+    bDefaultValueInitialized = true;
+    DefaultValue = Value;
+}
+
 FString UConfigPropertyString::DescribeValue_Implementation() const {
     return FString::Printf(TEXT("[string \"%s\"]"), *Value.ReplaceQuotesWithEscapedQuotes());
 }
@@ -28,13 +37,21 @@ void UConfigPropertyString::FillConfigStruct_Implementation(const FReflectedObje
     ReflectedObject.SetStrProperty(*VariableName, Value);
 }
 
-void UConfigPropertyString::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
-	const UConfigPropertyString* DefaultString = Cast<UConfigPropertyString>(DefaultProp);
-	if (!DefaultString || !this->CanEditNow()) {
-		return;
-	}
-	this->Value = DefaultString->Value;
-	this->MarkDirty();
+bool UConfigPropertyString::ResetToDefault_Implementation() {
+    if (!CanResetNow() || !bDefaultValueInitialized) {
+        return false;
+    }
+    Value = DefaultValue;
+    MarkDirty();
+    return true;
+}
+
+bool UConfigPropertyString::IsSetToDefaultValue_Implementation() const {
+    return Value == DefaultValue;
+}
+
+FString UConfigPropertyString::GetDefaultValueAsString_Implementation() const {
+    return DefaultValue;
 }
 
 FConfigVariableDescriptor UConfigPropertyString::CreatePropertyDescriptor_Implementation(

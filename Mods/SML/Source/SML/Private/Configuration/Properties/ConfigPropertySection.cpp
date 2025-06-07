@@ -33,6 +33,9 @@ void UConfigPropertySection::Deserialize_Implementation(const URawFormatValue* V
         for (const TPair<FString, UConfigProperty*>& Property : SectionProperties) {
             const URawFormatValue* RawChildValue = ObjectValue->GetValue(Property.Key);
             if (Property.Value != NULL && RawChildValue != NULL) {
+                if (!bAllowUserReset || !bParentSectionAllowsUserReset) {
+                    Property.Value->bParentSectionAllowsUserReset = false;
+                }
                 Property.Value->Deserialize(RawChildValue);
             }
         }
@@ -94,23 +97,39 @@ void UConfigPropertySection::FillConfigStruct_Implementation(const FReflectedObj
     ReflectedObject.SetStructProperty(*VariableName, ChildObject);
 }
 
-void UConfigPropertySection::ResetToDefault_Implementation(const UConfigProperty* DefaultProp) {
-	const UConfigPropertySection* DefaultSection = Cast<UConfigPropertySection>(DefaultProp);
-	if (!DefaultSection || !this->CanEditNow()) {
-		return;
-	}
-	for (const TPair<FString, UConfigProperty*>& Pair : this->SectionProperties) {
-		UConfigProperty* UserProp = Pair.Value;
-		UConfigProperty* DefaultProp = DefaultSection->SectionProperties.FindRef(Pair.Key);
-		if (UserProp && DefaultProp) {
-			UserProp->ResetToDefault(DefaultProp);
-		}
-	}
-	this->HandleMarkDirty_Implementation();
+bool UConfigPropertySection::ResetToDefault_Implementation() {
+    if (!CanResetNow()) {
+        return false;
+    }
+    bool bAnyReset = (SectionProperties.Num() == 0);
+    for (const TPair<FString, UConfigProperty*>& Pair : SectionProperties) {
+        UConfigProperty* Property = Pair.Value;
+        if (Property) {
+            bool bResetThisOne = Property->ResetToDefault();
+            bAnyReset = bAnyReset || bResetThisOne;
+        }
+    }
+    if (bAnyReset) {
+        MarkDirty();
+    }
+    return bAnyReset;
 }
 
-void UConfigPropertySection::HandleMarkDirty_Implementation()
-{
+bool UConfigPropertySection::IsSetToDefaultValue_Implementation() const {
+    for (const TPair<FString, UConfigProperty*>& Pair : SectionProperties) {
+        UConfigProperty* Property = Pair.Value;
+        if (Property && !Property->IsSetToDefaultValue()) {
+           return false;
+        }
+    }
+    return true;
+}
+
+FString UConfigPropertySection::GetDefaultValueAsString_Implementation() const {
+    return TEXT("");
+}
+
+void UConfigPropertySection::HandleMarkDirty_Implementation() {
     MarkDirty();
 }
 

@@ -22,6 +22,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowAbstract = "true"), Category = "Configuration Property")
     UClass* Value;
 
+    /** Default value of this class property */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration Property")
+    UClass* DefaultValue;
+
     UConfigPropertyClass();
 
     /** Returns true if this class is a valid value for this property */
@@ -38,12 +42,19 @@ public:
 #endif
     //End UObject
 
+    virtual void PostInitProperties() override;
+
     //Begin UConfigProperty
     virtual FString DescribeValue_Implementation() const override;
     virtual URawFormatValue* Serialize_Implementation(UObject* Outer) const override;
     virtual void Deserialize_Implementation(const URawFormatValue* RawValue) override;
     virtual FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
     virtual void FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const override;
-    virtual void ResetToDefault_Implementation(const UConfigProperty* DefaultProp) override;
+	virtual bool ResetToDefault_Implementation() override;
+	virtual bool IsSetToDefaultValue_Implementation() const override;
+	virtual FString GetDefaultValueAsString_Implementation() const override;
     //End UConfigProperty
+
+private:
+    bool bDefaultValueInitialized = false;
 };
