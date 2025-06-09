@@ -450,6 +450,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Hologram" )
 	void ToggleHologramPositionLock() { LockHologramPosition( !mHologramIsLocked ); }
 
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	virtual bool ShouldUnlockHologramOnBuildStep() const;
+
 	/** Used to nudge the hologram location when locking it in place. */
 	UFUNCTION( BlueprintCallable, Category = "Hologram" )
 	void SetNudgeOffset( const FVector& NewNudgeOffset );

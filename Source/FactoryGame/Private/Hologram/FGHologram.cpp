@@ -120,6 +120,10 @@ void AFGHologram::SetInsideBlueprintDesigner( AFGBuildableBlueprintDesigner* des
 AFGBuildableBlueprintDesigner* AFGHologram::GetBlueprintDesigner() const{ return nullptr; }
 bool AFGHologram::CanNudgeHologram() const{ return bool(); }
 void AFGHologram::LockHologramPosition(bool lock){ }
+bool AFGHologram::ShouldUnlockHologramOnBuildStep() const
+{
+	return false;
+}
 void AFGHologram::SetNudgeOffset(const FVector& NewNudgeOffset){ }
 ENudgeFailReason AFGHologram::AddNudgeOffset(const FVector& Offset, const FVector& MaxNudgeDistance){ return ENudgeFailReason(); }
 float AFGHologram::GetNudgeDistance() const{ return float(); }

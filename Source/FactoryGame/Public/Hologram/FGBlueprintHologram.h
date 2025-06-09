@@ -39,6 +39,7 @@ public:
 	virtual bool ShouldSetupPendingConstructionHologram() const override { return false; }
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	virtual bool CanTakeNextBuildStep() const override;
+	virtual bool ShouldUnlockHologramOnBuildStep() const override;
 	virtual void GetHologramsToShareMaterialStateWith( TArray< AFGHologram* >& out_holograms ) const override;
 	virtual void OnNearbyBuildableOverlapBegin( class AFGBuildable* buildable ) override;
 	virtual void OnNearbyBuildableOverlapEnd( class AFGBuildable* buildable ) override;
