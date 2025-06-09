@@ -299,7 +299,13 @@ public:
 	 */
 	UFUNCTION(unreliable, client, BlueprintCallable, Category="Camera")
 	void ClientPlayCameraAnimationSequence(class UCameraAnimationSequence* AnimToPlay, float Scale=1.f, float Rate=1.f, float BlendInTime=0.f, float BlendOutTime=0.f, bool bLoop=false, bool bRandomStartTime=false, ECameraShakePlaySpace Space=ECameraShakePlaySpace::CameraLocal, FRotator CustomPlaySpace=FRotator::ZeroRotator );
-	
+
+	/** Stops the indicated CameraAnim on this camera.
+	 * @param AnimToStop - Camera animation to stop
+	 */
+	UFUNCTION(unreliable, client, BlueprintCallable, Category="Camera")
+	void ClientStopCameraAnimationSequence(class UCameraAnimationSequence* AnimToStop);
+
 	/** Gets the size on the viewport of the given actor */
 	UFUNCTION( BlueprintPure, Category = "HUD" )
 	float GetObjectScreenRadius( AActor* actor, float boundingRadius );
