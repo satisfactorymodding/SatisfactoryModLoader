@@ -638,7 +638,7 @@ bool FGBlueprintOpenConnectionManager<ConnectionClass, BridgeHologramClass>::Att
 	
 	for( OpenConnectionState& State : mOpenConnectionStates )
 	{
-		if( IsValid( State.TargetConnection ) && !State.HasSnappedTargetConnection )
+		if( IsValid( State.TargetConnection ) && State.IsValid && !State.HasSnappedTargetConnection )
 		{
 			bFoundUnsnappedTargetConnection = true;
 			State.HasSnappedTargetConnection = true;
@@ -654,7 +654,7 @@ bool FGBlueprintOpenConnectionManager<ConnectionClass, BridgeHologramClass>::Can
 	// Can take next build step if we're trying to snap an open connection to a target connection
 	for( const OpenConnectionState& State : mOpenConnectionStates )
 	{
-		if( IsValid( State.TargetConnection ) && !State.HasSnappedTargetConnection )
+		if( IsValid( State.TargetConnection ) && State.IsValid && !State.HasSnappedTargetConnection )
 		{
 			return true;
 		}

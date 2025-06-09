@@ -111,6 +111,7 @@ void AFGPlayerController::Server_RemoveMapMarker_Implementation(FGuid markerGuid
 void AFGPlayerController::Server_SetHighlighMarker_Implementation(class AFGPlayerState* fgPlayerState, FGuid markerGUID){  }
 void AFGPlayerController::Client_OnMarkerHighlighted_Implementation(class AFGPlayerState* fgPlayerState, FGuid markerID){  }
 void AFGPlayerController::Server_UpdatePlayerRepresentations_Implementation(){  }
+void AFGPlayerController::ClientStopCameraAnimationSequence_Implementation(UCameraAnimationSequence* AnimToStop) {	}
 float AFGPlayerController::GetObjectScreenRadius(AActor* actor, float boundingRadius){ return float(); }
 float AFGPlayerController::GetScreenBasedObjectRadius(AActor* actor, float screenRadius){ return float(); }
 void AFGPlayerController::SetDisabledInputGate(FDisabledInputGate newDisabledInputGate){ }

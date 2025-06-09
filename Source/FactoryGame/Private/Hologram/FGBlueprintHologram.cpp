@@ -37,6 +37,7 @@ TArray<FItemAmount> AFGBlueprintHologram::GetBaseCost() const{ return Super::Get
 void AFGBlueprintHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
 bool AFGBlueprintHologram::DoMultiStepPlacement(bool isInputFromARelease){ return Super::DoMultiStepPlacement(isInputFromARelease); }
 bool AFGBlueprintHologram::CanTakeNextBuildStep() const{ return Super::CanTakeNextBuildStep(); }
+bool AFGBlueprintHologram::ShouldUnlockHologramOnBuildStep() const { return false; }
 void AFGBlueprintHologram::GetHologramsToShareMaterialStateWith(TArray<AFGHologram*>& out_holograms) const{ Super::GetHologramsToShareMaterialStateWith(out_holograms); }
 void AFGBlueprintHologram::OnNearbyBuildableOverlapBegin(class AFGBuildable* buildable){ Super::OnNearbyBuildableOverlapBegin(buildable); }
 void AFGBlueprintHologram::OnNearbyBuildableOverlapEnd(class AFGBuildable* buildable){ Super::OnNearbyBuildableOverlapEnd(buildable); }
