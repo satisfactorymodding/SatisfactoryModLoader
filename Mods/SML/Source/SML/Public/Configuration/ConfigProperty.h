@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "FGGameMode.h"
 #include "UObject/Object.h"
 #include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 #include "Reflection/BlueprintReflectedObject.h"
@@ -36,6 +37,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
 	uint8 bHidden : 1;
 
+	/** If true, this property can be reset by the user. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
+	bool bAllowUserReset;
+
+	UPROPERTY(BlueprintReadOnly, Category="Configuration Property")
+	bool bParentSectionAllowsUserReset = true;
+
 	/** Describes value of this property for debugging purposes */
 	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
     FString DescribeValue() const;
@@ -54,7 +62,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPropertyValueChanged OnPropertyValueChanged;
-	
+
     /** Creates widget instance for editing this configuration property's value. Can return NULL if property doesn't support direct UI editing */
     UFUNCTION(BlueprintPure, BlueprintNativeEvent, meta = (DefaultToSelf = "ParentWidget"))
     UUserWidget* CreateEditorWidget(class UUserWidget* ParentWidget) const;
@@ -66,6 +74,22 @@ public:
 	/** Fills variable of provided object with the value carried by this property */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, BlueprintPure = false)
     void FillConfigStruct(const FReflectedObject& ReflectedObject, const FString& VariableName) const;
+
+	/** Resets this property to its default value */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Configuration Property")
+	bool ResetToDefault();
+
+	/** Returns true if this property is currently able to be reset by the user */
+	UFUNCTION(BlueprintCallable, Category="Configuration Property")
+	bool CanResetNow() const;
+
+	/** Returns true if this property's current value is equal to its default value */
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category="Configuration Property")
+	bool IsSetToDefaultValue() const;
+
+	/** Returns the default value as a string */
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category="Configuration Property")
+	FString GetDefaultValueAsString() const;
 
 private:
     /** The Serialize() definition above shadows the native UObject::Serialize. Declare that we want to keep the UBOject implementation. */

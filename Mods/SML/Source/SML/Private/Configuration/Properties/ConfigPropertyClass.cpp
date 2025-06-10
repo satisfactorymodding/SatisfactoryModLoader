@@ -12,6 +12,15 @@ UConfigPropertyClass::UConfigPropertyClass() {
     bLimitBaseClass = false;
 }
 
+void UConfigPropertyClass::PostInitProperties() {
+    Super::PostInitProperties();
+    if (HasAnyFlags(RF_ClassDefaultObject) || bDefaultValueInitialized) {
+        return;
+    }
+    bDefaultValueInitialized = true;
+    DefaultValue = Value;
+}
+
 bool UConfigPropertyClass::IsValidValueClass(UClass* Class) const {
     return Class ? (bLimitBaseClass && BaseClass ? Class->IsChildOf(BaseClass) : true) : bAllowNullValue;
 }
@@ -64,6 +73,23 @@ void UConfigPropertyClass::Deserialize_Implementation(const URawFormatValue* Raw
 
 void UConfigPropertyClass::FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const {
     ReflectedObject.SetObjectProperty(*VariableName, Value);
+}
+
+bool UConfigPropertyClass::ResetToDefault_Implementation() {
+    if (!CanResetNow() || !bDefaultValueInitialized) {
+        return false;
+    }
+    SetClassValue(DefaultValue);
+    MarkDirty();
+    return true;
+}
+
+bool UConfigPropertyClass::IsSetToDefaultValue_Implementation() const {
+    return Value == DefaultValue;
+}
+
+FString UConfigPropertyClass::GetDefaultValueAsString_Implementation() const {
+    return DefaultValue ? DefaultValue->GetName() : TEXT("");
 }
 
 FConfigVariableDescriptor UConfigPropertyClass::CreatePropertyDescriptor_Implementation(
