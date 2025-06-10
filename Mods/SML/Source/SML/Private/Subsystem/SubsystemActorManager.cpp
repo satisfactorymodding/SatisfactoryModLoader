@@ -93,7 +93,7 @@ void USubsystemActorManager::RegisterSubsystemActor(TSubclassOf<AModSubsystem> S
 	}
 }
 
-void USubsystemActorManager::WaitForSubsystem(TSubclassOf<AModSubsystem> SubsystemClass, FLatentActionInfo& LatentInfo) {
+void USubsystemActorManager::WaitForSubsystem(TSubclassOf<AModSubsystem> SubsystemClass, FLatentActionInfo LatentInfo) {
 	checkf(SubsystemClass, TEXT("Attempt to WaitForSubsystem on NULL SubsystemClass"));
 	checkf(RegisteredSubsystems.Contains(SubsystemClass), TEXT("Attempt to WaitForSubsystem on Unregistered SubsystemClass '%s'"), *SubsystemClass->GetPathName());
 
