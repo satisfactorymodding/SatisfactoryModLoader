@@ -26,8 +26,11 @@ struct FSongData
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	FName SongName;
 
-	/** Maximum song duration cached from the AkAudioEvent during cooking to allow accessing that information on Dedicated Servers */
-	UPROPERTY()
+	/** 
+ 	* Maximum song duration cached from the AkAudioEvent during cooking to allow accessing that information on Dedicated Servers
+  	* TODO(#372): revert it to non-editable in Blueprints once UFGTapeData::CachePlaylistSongDurations is reimplemented.
+  	*/
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	float CachedMaximumSongDuration{0.0f};
 };
 
