@@ -105,7 +105,16 @@ void USubsystemActorManager::WaitForSubsystem(TSubclassOf<AModSubsystem> Subsyst
 
 AModSubsystem* USubsystemActorManager::K2_GetSubsystemActor(TSubclassOf<AModSubsystem> SubsystemClass) {
 	AModSubsystem** SubsystemEntry = SubsystemActors.Find(SubsystemClass);
-	return SubsystemEntry ? *SubsystemEntry : NULL;
+
+	if (SubsystemEntry)
+		return *SubsystemEntry;
+
+	for (const TPair<TSubclassOf<AModSubsystem>, AModSubsystem*>& subsystemEntry : SubsystemActors) {
+		if (subsystemEntry.Key->IsChildOf(SubsystemClass))
+			return subsystemEntry.Value;
+	}
+
+	return NULL;
 }
 
 bool USubsystemActorManager::ShouldCreateSubsystem(UObject* Outer) const {
