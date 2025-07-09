@@ -36,7 +36,7 @@ public:
 
 	/** Waits until provided Modded SubsystemClass is Available and can be retrieved through GetSubsystemActor */
 	UFUNCTION(BlueprintCallable, meta = (Latent, LatentInfo = "LatentInfo"))
-	void WaitForSubsystem(TSubclassOf<AModSubsystem> SubsystemClass, struct FLatentActionInfo& LatentInfo);
+	void WaitForSubsystem(TSubclassOf<AModSubsystem> SubsystemClass, struct FLatentActionInfo LatentInfo);
 	
 	/** Retrieves subsystem actor of the provided class, or NULL if it has not been created or replicated yet */
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetSubsystemActor", DeterminesOutputType = "SubsystemClass"))
