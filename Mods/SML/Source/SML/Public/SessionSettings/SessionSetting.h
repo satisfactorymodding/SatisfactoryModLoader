@@ -17,6 +17,6 @@ public:
 	TArray<TSoftObjectPtr<UWorld>> MapNameWhitelist;
 
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid(FDataValidationContext& ValidationContext) const override;
 #endif
 };
