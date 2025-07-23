@@ -9,7 +9,7 @@
 
 AFGStartingPod::AFGStartingPod() : Super() {
 	this->mIntroSequencePlayerCameraFOV = 90.0;
-	this->mDropPodAttachmentRelativeLocation = FVector((0, 0, 95));
+	this->mDropPodAttachmentRelativeLocation = FVector(0, 0, 95);
 	this->mIntroLevelSequence = nullptr;
 	this->mCameraLockLookRotator = FRotator::ZeroRotator;
 	this->mPlanetFallOnboardingStep = nullptr;

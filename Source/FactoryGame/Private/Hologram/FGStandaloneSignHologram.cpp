@@ -9,7 +9,7 @@ AFGStandaloneSignHologram::AFGStandaloneSignHologram() : Super() {
 	this->mOrientationVisualizationMesh = nullptr;
 	this->mBeamSnappingMode = EBeamSnappingMode::BSM_AllSides;
 	this->mPillarSnappingMode = EPillarSnappingMode::PSM_AllSides;
-	this->mWallSnapOffset = FVector((50, 0, 0));
+	this->mWallSnapOffset = FVector(50, 0, 0);
 	this->mUseGradualFoundationRotations = true;
 	this->mAttachmentPointSnapDistanceThreshold = 10000.0;
 }

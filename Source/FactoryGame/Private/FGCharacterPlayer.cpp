@@ -79,7 +79,7 @@ AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializ
 	this->mCameraDistanceDefault3P = 300.0;
 	this->mStartCameraDistance3PTransition = 20.0;
 	this->mCutoffCameraDistance1PTransition = 20.0;
-	this->mCameraOffset3P = FVector((0, 40, 0));
+	this->mCameraOffset3P = FVector(0, 40, 0);
 	this->mLastDamageTime = -1.0;
 	this->mCurrentDamageIndicator = 0.0;
 	this->mDesiredDamageIndicator = 0.0;

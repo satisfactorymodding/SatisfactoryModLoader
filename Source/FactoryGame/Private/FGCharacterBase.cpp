@@ -16,8 +16,8 @@ AFGCharacterBase::AFGCharacterBase(const FObjectInitializer& ObjectInitializer) 
 	this->mDefaultFootstepEffect.Particle = nullptr;
 	this->mMaxFootstepParticleSpawnDistance = 2500.0;
 	this->mMaxFootstepDecalSpawnDistance = 1250.0;
-	this->mFootstepDecalSize.Add(FVector((-20, -20, -20)));
-	this->mFootstepDecalSize.Add(FVector((20, 20, 20)));
+	this->mFootstepDecalSize.Add(FVector(-20, -20, -20));
+	this->mFootstepDecalSize.Add(FVector(20, 20, 20));
 	this->mFootstepDecalLifetime = 10.0;
 	this->mFootstepWalkingNoiseClass = nullptr;
 	this->mFootstepSprintingNoiseClass = nullptr;
