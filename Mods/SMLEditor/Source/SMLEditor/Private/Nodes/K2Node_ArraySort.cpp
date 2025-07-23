@@ -86,8 +86,8 @@ UFunction* UK2Node_ArraySort::ResolveFunction(bool bAllowRefresh) {
 	const auto Blueprint = HasValidBlueprint() ? GetBlueprint() : nullptr;
 	const auto SelfScopeClass = Blueprint ? Blueprint->SkeletonGeneratedClass : nullptr;
 	const auto ParentClass = GetScopeClass();
-	const bool bIsSelfScope = SelfScopeClass && ParentClass && (SelfScopeClass->IsChildOf(ParentClass)) ||
-		(SelfScopeClass->ClassGeneratedBy == ParentClass->ClassGeneratedBy);
+	const bool bIsSelfScope = SelfScopeClass && ParentClass && ((SelfScopeClass->IsChildOf(ParentClass)) ||
+		(SelfScopeClass->ClassGeneratedBy == ParentClass->ClassGeneratedBy));
 
 	FMemberReference FunctionReference;
 	FunctionReference.SetDirect(SelectedFunctionName, SelectedFunctionGuid, GetScopeClass(), bIsSelfScope);

@@ -5,7 +5,7 @@
 #include "Features/IPluginsEditorFeature.h"
 #include "GenericPlatform/GenericPlatformFile.h"
 #include "Interfaces/IPluginManager.h"
-#include "HAL/PlatformFilemanager.h"
+#include "HAL/PlatformFileManager.h"
 #include "Misc/App.h"
 
 #define LOCTEXT_NAMESPACE "NewModWizard"
