@@ -61,7 +61,7 @@ FSavedModInfo FSavedModInfo::FromModInfo(const FModInfo& ModInfo)
 FString FModMismatch::ToString() const {
 	if (this->IsMissing)
 	{
-		return FString::Printf(TEXT("%ls is missing"), *this->Was.Name);
+		return FString::Printf(TEXT("%ls (%ls) is missing"), *this->Was.Name, *this->Was.Reference);
 	}
 	return FString::Printf(TEXT("%ls (%ls -> %ls)"),
 		*this->Is.FriendlyName,* this->Was.Version.ToString(), *this->Is.Version.ToString());
