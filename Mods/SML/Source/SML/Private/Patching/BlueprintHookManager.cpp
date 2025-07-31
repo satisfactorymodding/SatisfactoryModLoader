@@ -602,8 +602,22 @@ void UBlueprintHookManager::RegisterBlueprintHook(UGameInstance* OwnerGameInstan
 	for (const FBlueprintHookDefinition& HookDefinition : HookBlueprintGeneratedClass->HookDescriptors) {
 
 		// Make sure the hook target function in question is actually valid
-		if (HookDefinition.TargetFunction == nullptr || HookDefinition.HookFunction == nullptr || HookDefinition.TargetSpecifier == nullptr) {
-			UE_LOG(LogBlueprintHookManager, Error, TEXT("Blueprint hook %s has invalid data, blueprint might need to be recompiled."), *HookBlueprintGeneratedClass->GetFullName());
+		// It could be invalid due to broken data, removal of the target class/function, or being on a dedicated server (ex. widget blueprints not on servers)
+		if (HookDefinition.TargetFunction == nullptr) {
+			if (HookDefinition.HookFunction == nullptr) {
+				// If the hook function is also invalid, we probably have invalid data
+				UE_LOG(LogBlueprintHookManager, Error, TEXT("Blueprint hook asset %s has invalid data and one of its hooks can't be applied. Target structure may have changed or blueprint might need to be recompiled."), *HookBlueprintGeneratedClass->GetFullName());
+			} else {
+				// If the hook function is still valid, we are probably on a dedicated server where the target blueprint doesn't exist
+				// Short form HookFunction name since the function must be defined in the hook blueprint
+				UE_LOG(LogBlueprintHookManager, Warning, TEXT("Blueprint hook asset %s hook which would call hook implementation '%s' has invalid Target Function and can't be applied. Either the target structure has changed, or we're running on a dedicated server where the target doesn't exist (for example, widgets) in which case this isn't a problem."), *HookBlueprintGeneratedClass->GetFullName(), *HookDefinition.HookFunction->GetName());
+			}
+			continue;
+		}
+
+		// Verify other hook required data
+		if (HookDefinition.HookFunction == nullptr || HookDefinition.TargetSpecifier == nullptr) {
+			UE_LOG(LogBlueprintHookManager, Error, TEXT("Blueprint hook asset %s for target function %s has invalid data and can't be applied. Blueprint might need to be recompiled."), *HookBlueprintGeneratedClass->GetFullName(), *HookDefinition.TargetFunction->GetFullName());
 			continue;
 		}
 
