@@ -14,15 +14,15 @@ UCLASS(EditInlineNew, Abstract)
 class SML_API UCP_Section : public UConfigPropertySection {
     GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, Category = "Default", BlueprintReadOnly, meta = (DisplayAfter = "DefaultValue"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Default", meta = (DisplayAfter = "DefaultValue"))
 		ECP_SectionWidgetType WidgetType;
 
-	UPROPERTY(EditAnywhere, Category = "Default", BlueprintReadOnly, meta = (DisplayAfter = "DefaultValue"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Default", meta = (DisplayAfter = "DefaultValue"))
 		bool HasHeader;
-	UPROPERTY(EditAnywhere,Category= "Default", BlueprintReadOnly, meta = (DisplayAfter = "DefaultValue"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Default", meta = (DisplayAfter = "DefaultValue"))
 		FText HeaderText;
 
-	UPROPERTY(Category = "Default", BlueprintReadWrite, meta = (DisplayAfter = "DefaultValue"))
+	UPROPERTY(Transient, BlueprintReadWrite, Category = "Default", meta = (DisplayAfter = "DefaultValue"))
 		bool Collapsed;
 
 };
