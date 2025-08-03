@@ -18,6 +18,10 @@ public:
 	/** Fills reflected object with the values of this section */
 	void FillConfigStructSelf(const FReflectedObject& ReflectedObject) const;
 
+	/** Checks if any child properties can be reset. */
+	UFUNCTION(BlueprintCallable, Category="Configuration Property")
+	bool HasResettableChildProperty() const;
+
 	//Begin UObject
 #if WITH_EDITOR
 	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;

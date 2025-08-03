@@ -118,11 +118,24 @@ bool UConfigPropertySection::ResetToDefault_Implementation() {
 bool UConfigPropertySection::IsSetToDefaultValue_Implementation() const {
     for (const TPair<FString, UConfigProperty*>& Pair : SectionProperties) {
         UConfigProperty* Property = Pair.Value;
-        if (Property && !Property->IsSetToDefaultValue()) {
+        if (IsValid(Property) && !Property->IsSetToDefaultValue()) {
            return false;
         }
     }
     return true;
+}
+
+bool UConfigPropertySection::HasResettableChildProperty() const {
+    for (const TPair<FString, UConfigProperty*>& Pair : SectionProperties) {
+        UConfigProperty* Property = Pair.Value;
+        if (!IsValid(Property) || Property->bHidden) {
+            continue;
+        }
+        if (Property->CanResetNow() && !Property->IsSetToDefaultValue()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 FString UConfigPropertySection::GetDefaultValueAsString_Implementation() const {
