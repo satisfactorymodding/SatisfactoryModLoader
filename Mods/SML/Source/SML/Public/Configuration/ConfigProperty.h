@@ -29,21 +29,24 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property", meta = (MultiLine = true))
     FText Tooltip;
 
-	/** Whenever this value is only editable from main menu and disabled for editing in pause menu */
+	/** If this value is only editable from the main menu -> can't be edited from the pause menu when loaded into a game world */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
 	uint8 bRequiresWorldReload: 1;
 
-	/** Whenever this value should be hidden in Widgets ( No User Input )  */
+	/** If this value should not be displayed in Config Widgets, meaning the user can't see it to configure it (unless they manually edit the config file on disk)  */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
 	uint8 bHidden : 1;
 
-	/** If true, this property can be reset by the user. */
+	/** If true, this property can be reset by the user from the Config Widget. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
 	bool bAllowUserReset;
 
-	UPROPERTY(BlueprintReadOnly, Category="Configuration Property")
+	/** Cached. If the parent section allows this property to be reset. It is up to container properties to implement setting this value. */
+	UPROPERTY(BlueprintReadOnly, Transient, Category="Internal")
 	bool bParentSectionAllowsUserReset = true;
 
+
+public:
 	/** Describes value of this property for debugging purposes */
 	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
     FString DescribeValue() const;
