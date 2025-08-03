@@ -7,7 +7,22 @@
 #include "GameplayTagContainer.h"
 #include "InputAction.h"
 #include "Engine/DeveloperSettings.h"
+#include "Layout/Margin.h"
 #include "FGInputSettings.generated.h"
+
+//<FL>[KonradA]
+USTRUCT(BlueprintType)
+struct FACTORYGAME_API FStringTextureMap
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString Id;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UTexture2D* Texture;
+
+};
+//</FL>
 
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FInputActionTagBinding
@@ -24,7 +39,7 @@ struct FACTORYGAME_API FInputActionTagBinding
 
 	/** Soft object path for the input action object. */
 	UPROPERTY()
-	FSoftObjectPath ObjectPath;
+	TSoftObjectPtr<class UInputAction> ObjectPath;
 
 	/** Cached object pointer to the input action. */
 	UPROPERTY( Transient )
@@ -45,6 +60,12 @@ struct FACTORYGAME_API FFGKeyTextureBinding
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Secondary Controller Icon" ) )
 	class UTexture* TextureSecondary;
+
+		UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Primary Slate Controller Icon" ) )
+	class UTexture2D* TexturePrimarySlate;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Secondary Slate Controller Icon" ) )
+	class UTexture2D* TextureSecondarySlate;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	FMargin InternalPaddingPrimary;
@@ -94,7 +115,7 @@ public:
 
 	/** Returns an InputAction which has been paired to the specified tag. */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
-	class UInputAction* GetInputActionForTag( const FGameplayTag& Tag ) const;
+	TSoftObjectPtr<UInputAction> GetInputActionForTag( const FGameplayTag& Tag ) const;
 	
 	// <FL> [WuttkeP] Added key/texture bindings for displaying in button hints.
 	UFUNCTION( BlueprintCallable, Category = "Input" )
@@ -104,10 +125,24 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	bool GetTagTextureBinding( const FGameplayTag& Key, FFGTagTextureBinding& out_Binding ) const;
 
+	const TArray< FFGKeyTextureBinding >& GetKeyTextureBindingArray() const { return mKeyTextureBindings; }
+
 	FMargin GetVariantTexturePadding() const { return mVariantTexturePadding; }
+//<FL>[KonradA]
+	UTexture2D* GetInlineTextureForId( FString TextureId ) const;
+//</FL>
+	//<FL>[MartinC]
+	float GetLongPressVariantSeconds() const { return mLongPressVariantSeconds; }
+
+	//<FL>[MartinC]
+	float GetVeryLongPressVariantSeconds() const { return mVeryLongPressVariantSeconds; }
+
+	// <FL> [WuttkeP]
+	float GetMaxTapSeconds() const { return mMaxTapSeconds; }
+
 	// </FL>
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid( class FDataValidationContext& Context ) override;
+	virtual EDataValidationResult IsDataValid( class FDataValidationContext& Context ) const override;
 	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override;
 
 	UFUNCTION( BlueprintCallable )
@@ -151,7 +186,21 @@ protected:
 	// <FL> [VilagosD] Added key/texture bindings for displaying in button hints.
 	UPROPERTY( config, EditAnywhere )
 	TArray< FFGTagTextureBinding > mTagTextureBindings;
+	// <FL>[KonradA] Platform Mini-Textures for inline Texts
+	UPROPERTY( config, EditAnywhere )
+	TArray < FStringTextureMap> PlatformInlineTextDecoratorTextures;
 	UPROPERTY( config, EditAnywhere )
 	FMargin mVariantTexturePadding;
+	// </FL>
+	// <FL> [MartinC] Interaction duration for long press on gamepad keybindings
+	UPROPERTY( config, EditAnywhere )
+	float mLongPressVariantSeconds = 0.5f;
+	// <FL> [MartinC] Interaction duration for very long press on gamepad keybindings
+	UPROPERTY( config, EditAnywhere )
+	float mVeryLongPressVariantSeconds = 1.0f;
+	// </FL>
+	// <FL> [WuttkeP] Maximum time a gamepad button is pressed for it to be considered a tap.
+	UPROPERTY( config, EditAnywhere )
+	float mMaxTapSeconds = 0.2f;
 	// </FL>
 };

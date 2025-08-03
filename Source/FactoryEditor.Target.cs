@@ -10,12 +10,14 @@ public class FactoryEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+		// [ZolotukhinN:11/03/2025] Re-enable ray tracing in editor to avoid modifying the shared editor build environment. It is still disabled in runtime.
+		WindowsPlatform.bEnableRayTracing = true;
 
 		ExtraModuleNames.AddRange(new string[] {
 			"FactoryPreEarlyLoadingScreen",
             "FactoryGame",
-            //"FactoryEditor",
-			//"FactoryUncookedOnly",
+            "FactoryEditor",
+			// "FactoryUncookedOnly",
 			"FactoryDedicatedServer",
 			"FactoryDedicatedClient"
 		});

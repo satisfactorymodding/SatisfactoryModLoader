@@ -3,4 +3,4 @@
 #include "Hologram/FGWheeledVehicleHologram.h"
 
 void AFGWheeledVehicleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
-AFGVehicle* AFGWheeledVehicleHologram::ConstructVehicle(FNetConstructionID netConstructionID) const{ return nullptr; }
+FTransform AFGWheeledVehicleHologram::GetVehicleSpawnTransform() const{ return Super::GetVehicleSpawnTransform(); }

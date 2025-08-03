@@ -628,7 +628,7 @@ Go the extra kilometer! Knowledge is power, and power is just efficiency with fe
 #item"
 "Parts/AlienPowerMatrix","Alien Power Matrix","","","Game","#resource
 #item"
-"Parts/AlienPowerMatrix/Description","This intricate condensed-matter matrix is used to enhance the output of the Alien Power Augmenter. 
+"Parts/AlienPowerMatrix/Description","This intricate condensed-matter matrix is used to enhance the output of the Alien Power Augmenter.
 
 Initially developed in efforts to create a human-made Somersloop, the Alien Power Matrix cannot sustain the extra-dimensional energy connection on its own. However, it can effectively stabilize the energy stream of the Somersloop.","","","Game","#resource
 #item"
@@ -799,7 +799,7 @@ Synthesized by FICSIT to be the perfect construction material, and used in the m
 #item"
 "Parts/FICSITMesh","Ficsite Trigon","","","Game","#resource
 #item"
-"Parts/FICSITMesh/Description","The Ficsite Trigon, made from Ficsite Ingots, is perfectly shaped for all construction challenges. It's performance is so exceptional, it basically solved structural engineering.","","","Game","#resource
+"Parts/FICSITMesh/Description","The Ficsite Trigon, made from Ficsite Ingots, is perfectly shaped for all construction challenges. Its performance is so exceptional, it basically solved structural engineering.","","","Game","#resource
 #item"
 "Parts/Fabric","Fabric","","","Game","#resource #item"
 "Parts/Fabric/Description","Used to craft equipment.
@@ -808,7 +808,8 @@ Flexible but durable fabric.","","","Game","#resource #item"
 #item"
 "Parts/Ficsomium/Description","Usage and production of this material is strictly prohibited. On Earth, that is. There are no rules in space, only efficiency. 
 
-Power Usage: 500-1500 MW (1000 MW average).","","","Game","#resource
+Power Usage: 500-1500 MW (1000 MW average).
+Caution: Moderately Radioactive.","","","Game","#resource
 #item"
 "Parts/FicsomiumFuelRod","Ficsonium Fuel Rod","","","Game","#resource
 #item"
@@ -852,7 +853,7 @@ Used for MAM research.","","","Game","#resource
 "Parts/IronIngot/Description","Used for crafting the most basic parts.","","","Game","#resource
 #item"
 "Parts/IronIngotALTBasic","Alternate: Basic Iron Ingot","","","",""
-"Parts/IronIngotALTLeached","Alternate: Leached Iron ingot","","","",""
+"Parts/IronIngotALTLeached","Alternate: Leached Iron Ingot","","","",""
 "Parts/IronIngotAlloy","Alternate: Iron Alloy Ingot","","","Game","#alternative
 #schematic
 #item"
@@ -953,7 +954,8 @@ A multipurpose building block.","","","Game","#resource #item"
 "Parts/PlutoniumCell/Description","Plutonium Pellets encased in concrete.
 Used to produce Plutonium Fuel Rods for Nuclear Power production.
 
-Caution: Moderately Radioactive.","","","Game","#resource
+Power Usage: 250-750 MW (500 MW average).
+﻿Caution: Moderately Radioactive.","","","Game","#resource
 #item"
 "Parts/PlutoniumCellInstant","Alternate: Instant Plutonium Cell","","","Game","#alternative
 #schematic
@@ -1019,14 +1021,14 @@ Proper electromagnetic containment is required, as it appears to be able to mani
 #item"
 "Parts/SAMFluctuator","SAM Fluctuator","","","Game","#resource
 #item"
-"Parts/SAMFluctuator/Description","The SAM Fluctuator is able to regulate and direct the behaviour of Reanimated SAM through the application of electric charges with varying frequencies.
+"Parts/SAMFluctuator/Description","The SAM Fluctuator is able to regulate and direct the behavior of Reanimated SAM through the application of electric charges with varying frequencies.
 This control facilitates technologies such as matter-to-energy conversion and spatiotemporal matter manipulation.","","","Game","#resource
 #item"
-"Parts/Screw","Screw","","","Game","#resource #item"
-"Parts/ScrewCast","Alternate: Cast Screw","","","Game","#alternative
+"Parts/Screw","Screws","","","Game","#resource #item"
+"Parts/ScrewCast","Alternate: Cast Screws","","","Game","#alternative
 #schematic
 #item"
-"Parts/ScrewSteel","Alternate: Steel Screw","","","Game","#alternative
+"Parts/ScrewSteel","Alternate: Steel Screws","","","Game","#alternative
 #schematic
 #item"
 "Parts/SingularityCell","Singularity Cell","","","Game","#resource

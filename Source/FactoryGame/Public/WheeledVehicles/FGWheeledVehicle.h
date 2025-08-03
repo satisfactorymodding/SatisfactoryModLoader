@@ -210,7 +210,7 @@ public:
 
 	/** Blueprint client accessor for when foliage was destroyed */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Character" )
-	void Client_PlayFoliageDestroyedEffect( UParticleSystem* destroyEffect, UAkAudioEvent* destroyAudioEvent, FVector location );
+	void Client_PlayFoliageDestroyedEffect( UStaticMesh* HitMesh, FTransform HitTransform, AActor* HitActor = nullptr );
 	
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "Vehicle" )
 	void CloseVehicleTrunk();
@@ -399,7 +399,7 @@ public:
 	void Server_ClearRecordedPath();
 
 	UFUNCTION( BlueprintCallable, Server, Reliable )
-	void Server_SavePath( const FString& saveName );
+	void Server_SavePath( const FString& saveName, const TArray< FLocalUserNetIdBundle >& lastEditedBy ); //<FL>[KonradA] Added Last Edited By
 
 	UFUNCTION( BlueprintCallable, Server, Reliable )
 	void Server_UnsavePath( AFGSavedWheeledVehiclePath* path );
@@ -575,6 +575,13 @@ protected:
 	UPROPERTY( BlueprintReadWrite, Replicated )
 	bool mIsTrunkOpen;
 	
+	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Camera" )
+	float mBaseTurnRate;
+
+	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Camera" )
+	float mBaseLookUpRate;
 private:
 	bool mIsServer = false;
 	

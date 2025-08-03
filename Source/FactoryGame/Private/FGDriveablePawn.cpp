@@ -13,6 +13,8 @@ AFGDriveablePawn::AFGDriveablePawn() : Super() {
 	this->mMappingContext = nullptr;
 	this->mSpringArmComponent = nullptr;
 	this->mCameraComponent = nullptr;
+	this->mLastSafeLocation = FVector::ZeroVector;
+	this->mIsInUnsafeLoadLocation = false;
 	this->mDriver = nullptr;
 	this->mIsDriving = false;
 }
@@ -37,6 +39,9 @@ void AFGDriveablePawn::UnPossessed(){ }
 void AFGDriveablePawn::OnRep_PlayerState(){ }
 void AFGDriveablePawn::CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult){ }
 void AFGDriveablePawn::PreInitializeComponents(){ Super::PreInitializeComponents(); }
+void AFGDriveablePawn::SetIsInUnsafeLoadLocation(bool isUnsafe){ }
+void AFGDriveablePawn::SetLastSafeLocation(const FVector& location){ }
+FVector AFGDriveablePawn::GetLastSafeLoadLocation(){ return FVector(); }
 void AFGDriveablePawn::UpdatePlayerStatus(){ }
 bool AFGDriveablePawn::HasActiveDriver() const{ return bool(); }
 bool AFGDriveablePawn::CanDriverEnter( AFGCharacterPlayer* character){ return bool(); }

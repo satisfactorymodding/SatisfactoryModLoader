@@ -19,6 +19,7 @@ AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
 	this->bAllowTickBeforeBeginPlay = false;
 	this->bReplicates = false;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }
 AFGConveyorItemSubsystem* AFGConveyorItemSubsystem::Get(UWorld* world){ return nullptr; }
 void AFGConveyorItemSubsystem::LazyAddConveyorItemOfClass(UClass* Descriptor){ }

@@ -16,13 +16,17 @@ class UFGBuildingDescriptor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnRecipeAvailableDelegate, TSubclassOf<UFGRecipe>, recipeClass );
 
+extern TAutoConsoleVariable<bool> CVarUseLegacyRecipeManagerReplication;
 
 UCLASS()
 class FACTORYGAME_API UFGRecipeRCO : public UFGRemoteCallObject
 {
 	GENERATED_BODY()
 public:
+	// Begin UFGRemoteCallObject interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	virtual bool ShouldRegisterRemoteCallObject(const AFGGameMode* gameMode) const override;
+	// End UFGRemoteCallObject interface
 
 	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
 	bool mForceNetField_UFGRecipeRemoteCallObject = false;
@@ -40,7 +44,6 @@ public:
 	void Client_RespondAllRecipeUpdate( const TArray< TSubclassOf< UFGRecipe > >& recipes );
 	
 };
-
 
 /**
  * Handles everything to do with recipes in the game.
@@ -72,10 +75,15 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
-
-	//@todounlock Make private and add schematics manager as a friend
+	
 	/** Make a recipe available to the producers. */
 	void AddAvailableRecipe( TSubclassOf< UFGRecipe > recipe );
+
+	/** Makes multiple recipes available to the producers */
+	void AddAvailableRecipes( TArray<TSubclassOf<UFGRecipe>> recipes );
+	
+	/** Removes a list of recipes from the available list */
+	void RemoveAvailableRecipes( const TArray<TSubclassOf<UFGRecipe>>& recipes );
 
 	/** Gets all available recipes. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
@@ -134,11 +142,16 @@ public:
 
 	/** Debug */
 	void Debug_DumpStateToLog() const;
-
 	
 	UFUNCTION()
 	void NotifyGameStateReadyOnClient();
 
+	void RegisterReplicationComponent(class UFGRecipeManagerReplicationComponent* ReplicationComponent) { mReplicationComponents.Add(ReplicationComponent); }
+	void UnregisterReplicationComponent(UFGRecipeManagerReplicationComponent* ReplicationComponent) { mReplicationComponents.Remove(ReplicationComponent); }
+
+	void Internal_ReceivedInitialAvailableRecipes(const TArray<TSubclassOf<UFGRecipe>>& initialAvailableRecipes);
+	void Internal_ReceivedAvailableRecipes(const TArray<TSubclassOf<UFGRecipe>>& newAvailableRecipes);
+	void Internal_ReceivedRemovedRecipes(const TArray<TSubclassOf<UFGRecipe>>& removedRecipes);
 public:
 	/** Called when the provided recipe becomes available. Called for both normal recipes and customization recipes. */
 	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Recipe" )
@@ -156,8 +169,10 @@ private:
 	/** Checks if a recipe is valid for addition depending on it relevant events  */
 	bool ShouldAddRecipeByEvent( TSubclassOf< UFGRecipe > recipe ) const;
 
-	/** Steps through mAvailableRecipes and looks for buildings that we can build to add to mAvailableBuildings */
-	void PopulateAvailableBuildings();
+	/** Evaluates newly unlocked recipes for the additions to the available buildings */
+	void UpdateAvailableBuildings(const TArray<TSubclassOf<UFGRecipe>>& newAvailableRecipes);
+	/** Steps through mAvailableRecipes and looks for buildings that we can build to add to mAvailableBuildings. This is a full rebuild. */
+	void RebuildAvailableBuildings();
 
 	/** Finds every recipe available in the game and stores it in mAllRecipes. */
 	void PopulateAllRecipesList();
@@ -202,6 +217,10 @@ private:
 	/** Mapping of buildings to their descriptors. Generated from mAvailableRecipes */
 	UPROPERTY( Transient )
 	TMap< TSubclassOf< class AFGBuildable >, TSubclassOf< class UFGBuildingDescriptor > > mBuildingToDescriptorLookup;
+
+	/** Replication components currently listening for recipe additions and removals */
+	UPROPERTY()
+	TArray<class UFGRecipeManagerReplicationComponent*> mReplicationComponents;
 
 	bool mHasPendingAvailableRecipeRequest = false;
 	bool mHasPendingTotalRecipeRequest = false;

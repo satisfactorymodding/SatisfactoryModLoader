@@ -36,14 +36,14 @@ public:
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
-	virtual void PreHologramPlacement( const FHitResult& hitResult ) override;
+	virtual void ConfigureChildActor( class AFGBuildable* inBuildableParent, class AActor* childActor ) const override;
+	virtual void PreHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void Scroll( int32 delta ) override;
 	virtual void OnInvalidHitResult() override;
 	virtual AFGHologram* GetNudgeHologramTarget() override;
-	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual int32 GetRotationStep() const override;
 	// End AFGHologram Interface
 	
@@ -56,6 +56,7 @@ public:
 protected:
 
 	// The build step of this hologram. Are we placing? Changing height? Rotating?
+	UPROPERTY( CustomSerialization )
 	ESignHologramBuildStep mBuildStep;
 
 private:
@@ -72,9 +73,10 @@ private:
 
 	/* The offset of this hologram when it is being placed at the end of a sign pole */
 	FVector mPoleOffset;
-
-	/** The scale size for the poles pulled from the buildable class */
 	FVector2D mPoleScale;
+
+	UPROPERTY()
+	class UStaticMeshComponent* mOrientationVisualizationMesh;
 
 	/** Optional value for aligning holograms on the Y axis for variable sizes */
 	float mSignToSignOffset;

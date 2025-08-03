@@ -18,7 +18,9 @@ AFGBuildableJumppad::AFGBuildableJumppad() : Super() {
 	this->mPlayerChainJumpResetTime = 8.0;
 	this->mHasPowerForLaunch = false;
 	this->mLauncherBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LauncherBox"));
+	this->mLauncherBox->SetMobility(EComponentMobility::Static);
 	this->mLauncherMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LauncherMeshComponent"));
+	this->mLauncherMeshComponent->SetMobility(EComponentMobility::Movable);
 	this->mLauncherBox->SetupAttachment(mLauncherMeshComponent);
 	this->mTrajectoryMeshScale = FVector::OneVector;
 	this->mTrajectoryMeshRotation = FRotator::ZeroRotator;

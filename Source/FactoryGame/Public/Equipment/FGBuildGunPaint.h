@@ -11,6 +11,8 @@
 #include "FGBuildGunPaint.generated.h"
 
 
+struct FInstanceData;
+
 UENUM( BlueprintType )
 enum class EPaintMode : uint8
 {
@@ -48,10 +50,6 @@ public:
 	virtual void BindInputActions( class UFGEnhancedInputComponent* inputComponent ) override;
 	virtual bool CanSampleCustomizations() const override;
 	// End UFGBuildGunState
-
-	// Stencil Previews
-	void CreateStencilProxy( AActor* selected );
-	void DestroyStencilProxies( bool destroyComponents );
 
 	UFUNCTION( Server, Unreliable )
 	void Server_ExecutePrimaryFire();
@@ -150,6 +148,7 @@ public:
 	
 	/** Sets up components for the preview actor*/
 	USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName );
+	USceneComponent* SetupAbstractInstanceComponent( USceneComponent* attachParent, const FInstanceData& instanceData );
 
 	//////////////////////////////////////////////////////////////////////////
 	/// Blueprint Events
@@ -281,3 +280,5 @@ private:
 	AActor* mInstanceConverterInstigator;
 
 };
+
+

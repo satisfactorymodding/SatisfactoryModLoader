@@ -1,0 +1,1 @@
+#include "Buildables/FGBuildableSplineSnappedBase.h"

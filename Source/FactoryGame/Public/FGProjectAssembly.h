@@ -33,6 +33,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 
+	UFUNCTION()
+	void OnGamePhaseChangedInternal( UFGGamePhase* newGamePhase, bool bSuppressNarrativeMessages );
+
 	UFUNCTION(BlueprintNativeEvent)
 	void OnGamePhaseChanged(UFGGamePhase* currentGamePhase);
 

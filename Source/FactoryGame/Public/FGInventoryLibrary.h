@@ -17,28 +17,6 @@ class FACTORYGAME_API UFGInventoryLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
-	/** Dynamically create an inventory component of a given type with a given size. */
-	template< class T >
-	static T* CreateInventoryComponent( class AActor* owner, FName name )
-	{
-		fgcheck( owner );
-		fgcheck( name != NAME_None );
-
-		return CastChecked< T >( CreateInventoryComponentOfClass( owner, T::StaticClass(), name ) );
-	}
-
-	/** Dynamically create a default inventory component with a given size. */
-	UE_DEPRECATED(5.1, "UFGInventoryComponent objects should be created in the Object Constructor as Default Subobjects instead. For dynamic creation, just use NewObject<UFGInventoryComponent>(Outer) and RegisterComponent()")
-	UFUNCTION( BlueprintCallable, Category = "Inventory" )
-	static class UFGInventoryComponent* CreateInventoryComponent( class AActor* owner, FName name );
-
-	/** Dynamically create an inventory component of a given class with a given size. */
-	UE_DEPRECATED(5.1, "UFGInventoryComponent objects should be created in the Object Constructor as Default Subobjects instead. For dynamic creation, just use NewObject<UFGInventoryComponent>(Outer) and RegisterComponent()")
-	UFUNCTION( BlueprintCallable, Category = "Inventory" )
-	static class UFGInventoryComponent* CreateInventoryComponentOfClass( class AActor* owner,
-																		 UPARAM( DisplayName = "Class" ) TSubclassOf< class UFGInventoryComponent > inClass,
-																		 FName name );
-
 	/** Manual break for inventory stack. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	static void BreakInventoryStack( UPARAM( ref ) const FInventoryStack& stack,
@@ -54,6 +32,10 @@ public:
 	/** Manual make for inventory item. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	static FInventoryItem MakeInventoryItem( UPARAM( DisplayName = "Class" ) TSubclassOf< class UFGItemDescriptor > itemClass );
+
+	/** Creates inventory item with the provided item state */
+	UFUNCTION( BlueprintPure, Category = "Inventory" )
+	static FInventoryItem MakeInventoryItemWithState( UPARAM( DisplayName = "Class" ) TSubclassOf< class UFGItemDescriptor > itemClass, const FFGDynamicStruct& itemState );
 
 	/** Manual make for inventory stack. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
@@ -218,4 +200,17 @@ public:
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
 	static int32 MoveItemFromCentralStorage( const FItemAmount& itemAmount, UFGInventoryComponent* destinationComponent );
+
+	/** Removes all inventory contents that can be discarded. Leaves item stacks that cannot be discarded intact */
+	UFUNCTION( BlueprintCallable, Category = "Inventory" )
+	static void DiscardInventoryContents( UFGInventoryComponent* inventoryComponent );
+
+	UFUNCTION( BlueprintPure, Category = "Inventory" )
+	static bool IsAutoOpenTooltipEnabled();
+
+	UFUNCTION( BlueprintCallable, Category = "Inventory" )
+	static void SetAutoOpenTooltipMenu(bool Enable);
+
+	static bool AutoOpenTooltipMenu;
+
 };

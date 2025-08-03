@@ -2,20 +2,24 @@
 
 #include "FGOutlineComponent.h"
 
+void UFGOutlineMaterialOverrideIdentifier::ApplyOutlineMaterialOverrides(class UStaticMeshComponent* meshComponent){ }
 UFGOutlineComponent::UFGOutlineComponent() : Super() {
 
 }
 UFGOutlineComponent* UFGOutlineComponent::Get(const UWorld* world){ return nullptr; }
 void UFGOutlineComponent::ShowOutline(AActor* actorToOutline, const EOutlineColor color, bool createDefaultProxies , bool onlyHighlightProxies){ }
-const FActorOutlineState* UFGOutlineComponent::GetOutlineStateForActor(const AActor* actor) const{ return nullptr; }
+void UFGOutlineComponent::ShowOutlineForStaticMeshComponent(AActor* actorToOutline, UStaticMeshComponent* meshComp,	const EOutlineColor color){  }
+const FActorOutlineState* UFGOutlineComponent::GetImmutableOutlineStateForActor(const AActor* actor) const{ return nullptr; }
+EOutlineColor UFGOutlineComponent::GetOutlineStateColorForActor(const AActor* actor){ return EOutlineColor(); }
 UStaticMeshComponent* UFGOutlineComponent::FindOrAddOutlineProxy(const AActor* actor, const FName& identifier){ return nullptr; }
-UInstancedStaticMeshComponent* UFGOutlineComponent::FindOrAddInstancedOutlineProxy(const AActor* actor, const FName& identifier){ return nullptr; }
+UInstancedStaticMeshComponent* UFGOutlineComponent::FindOrAddInstancedOutlineProxy(const AActor* actor, const FName& identifier, UMeshComponent* meshComp){ return nullptr; }
 void UFGOutlineComponent::RemoveOutlineProxy(const AActor* actor, const FName& identifier){ }
 void UFGOutlineComponent::RemoveInstancedOutlineProxy(const AActor* actor, const FName& identifier){ }
 void UFGOutlineComponent::HideOutline(AActor* actor){ }
+void UFGOutlineComponent::HideOutlineForStaticMeshComponent(AActor* actor, UStaticMeshComponent* meshComp){  }
 void UFGOutlineComponent::UpdateOutlineState(const FActorOutlineState& outlineState){ }
 void UFGOutlineComponent::BuildEffectFinished(){ }
-FActorOutlineState* UFGOutlineComponent::GetOutlineStateForActor(const AActor* actor){ return nullptr; }
+FActorOutlineState* UFGOutlineComponent::GetOutlineStateForActor(const AActor* actor, UMeshComponent* meshComp){ return nullptr; }
 UStaticMeshComponent* UFGOutlineComponent::CreateOutlineProxy(FActorOutlineState& outlineState, const FName& identifier){ return nullptr; }
 UInstancedStaticMeshComponent* UFGOutlineComponent::CreateInstancedOutlineProxy(FActorOutlineState& outlineState, const FName& identifier){ return nullptr; }
 void UFGOutlineComponent::SetupOutlineProxyComponent(const FActorOutlineState& outlineState, UStaticMeshComponent* comp){ }

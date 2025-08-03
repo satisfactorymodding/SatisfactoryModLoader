@@ -16,7 +16,7 @@ class FACTORYDEDICATEDSERVER_API UFGServerCertificateManager : public UObject
 	GENERATED_BODY()
 public:
 	// Wraps the provided socket into the SSL tunnel
-	FSocket* CreateSecureSocket( FUniqueSocket&& InUnderlyingSocket );
+	FUniqueSocket CreateSecureSocket( FUniqueSocket&& InUnderlyingSocket );
 
 	void SetUserCertificatePath( const FString& InUserCertificatePath, const FString& InUserPrivateKeyPath );
 	

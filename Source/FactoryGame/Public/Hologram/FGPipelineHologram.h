@@ -16,6 +16,8 @@ UCLASS()
 class FACTORYGAME_API AFGPipelineHologram : public AFGSplineHologram
 {
 	GENERATED_BODY()
+
+	friend class FGBlueprintOpenPipeConnectionManager;
 public:
 	AFGPipelineHologram();
 
@@ -34,14 +36,15 @@ public:
 	virtual void GetSupportedBuildModes_Implementation( TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes ) const override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
-	virtual void PreHologramPlacement( const FHitResult& hitResult ) override;
-	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
+	virtual void PreHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void OnInvalidHitResult() override;
 	virtual void Scroll( int32 delta ) override;
 	virtual void SetSnapToGuideLines( bool isEnabled ) override;
 	virtual float GetHologramHoverHeight() const override;
-	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
+	virtual bool ShouldIgnoreClearanceCheckForActor( AActor* actor ) const override;
 	virtual void CheckBlueprintCommingling() override;
 	virtual AFGHologram* GetNudgeHologramTarget() override;
 	virtual bool CanTakeNextBuildStep() const override;
@@ -64,8 +67,12 @@ protected:
 	virtual void CheckValidPlacement() override;
 	// End AFGBuildableHologram Interface
 
+	void ValidatePipeline();
+
 	/** Creates the clearance detector used with Pipelines */
 	virtual void OnRep_SplineData() override;
+
+	void GenerateAndUpdateSpline( const FHitResult& hitResult );
 private:
 	void RouteSelectedSplineMode( FVector startLocation, FVector startNormal, FVector endLocation, FVector endNormal );
 
@@ -112,6 +119,10 @@ private:
 		const FVector& endConnectionPos,
 		const FVector& endConnectionNormal );
 
+	void AutoRouteCurveSpline( const FVector& startConnectionPos, const FVector& startConnectionNormal, const FVector& endConnectionPos, const FVector& endConnectionNormal );
+
+	void AutoRouteStraightSpline( const FVector& startConnectionPos, const FVector& startConnectionNormal, const FVector& endConnectionPos, const FVector& endConnectionNormal );
+
 	/**
 	* Path finding route of a spline from start to end location.
 	*/
@@ -148,7 +159,7 @@ private:
 
 	/**Used to redirect input and construct poles when needed*/
 	UPROPERTY( Replicated )
-	class AFGPipelineSupportHologram* mChildPoleHologram[ 2 ];
+	class AFGPipelinePoleHologram* mChildPoleHologram[ 2 ];
 
 	/**Used to redirect input and construct wall poles when needed*/
 	UPROPERTY( Replicated )
@@ -217,14 +228,17 @@ private:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode")
 	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeHorzToVert;
+	
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
+	TSubclassOf< UFGHologramBuildModeDescriptor > mBuildModeCurve;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
+	TSubclassOf< UFGHologramBuildModeDescriptor > mBuildModeStraight;
 
 	UPROPERTY( Replicated, CustomSerialization )
 	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 
-	UPROPERTY()
-	FVector mPassthroughOverrideStartLocation;
-
-	UPROPERTY()
+	UPROPERTY( CustomSerialization )
 	FVector mPassthroughSnapDirection;
 
 	/** Cached from the default buildable. */
@@ -235,7 +249,4 @@ private:
 	class UMaterialInterface* mMeshMaterial;
 	
 	float mMeshLength;
-
-	TSubclassOf< UFGBuildGunModeDescriptor > mPrevBuildGunMode;
-	FVector mCachedSnapNormal;
 };

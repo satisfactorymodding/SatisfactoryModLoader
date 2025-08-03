@@ -26,7 +26,13 @@ public:
 	using IFGOptionInterface::GetOptionDisplayValue;
 
 	/** Returns all settings that are available in this interface */
-	virtual void GetAllUserSettings( TArray<UFGUserSettingApplyType*>& OutUserSettings ) const = 0;
+	virtual void GetAllUserSettings( TArray< UFGUserSettingApplyType* >& OutUserSettings ) const = 0;
+	// <FL> [KonradA] In a lot of cases in implementing classes we pass data from mUserSettings (which is a map) -> GetAllUserSettings (Array) -> Recreate a map to pass it to another function, recreating key data 
+	// for the map from CVarID's. This was fine as long as one setting could only ever exist once, but if we want to have a setting twice in different submenus with different priorities etc,
+	// the ID = OptionCVarName assumption breaks, and recreation of the map from GetAllUserSettings fails. We need a way to get the raw data if possible to be able to have differen Option Assets reference 
+	// the same CVar setting and still show up in the ui.
+	virtual void GetAllUserSettingsMap( TMap<FString, UFGUserSettingApplyType* >& OutUserSettings ) const = 0;
+	// </FL>
 	/** Returns an instance of the user setting with a given ID */
 	virtual UFGUserSettingApplyType* FindUserSetting( const FString& SettingId ) const = 0;
 
@@ -50,6 +56,7 @@ public:
 	virtual void SubscribeToDynamicOptionUpdate( const FString& cvar, const FOptionUpdated& optionUpdatedDelegate ) override;
 	virtual void UnsubscribeToDynamicOptionUpdate( const FString& cvar, const FOptionUpdated& optionUpdatedDelegate ) override;
 	virtual void UnsubscribeToAllDynamicOptionUpdate( UObject* boundObject ) override;
+	virtual bool ClearDynamicOptionSubscriptions(const FString& cvar) override;
 	virtual TArray<FUserSettingCategoryMapping> GetCategorizedSettingWidgets( UObject* worldContext, UUserWidget* owningWidget ) override;
 	// End IFGOptionInterface
 };

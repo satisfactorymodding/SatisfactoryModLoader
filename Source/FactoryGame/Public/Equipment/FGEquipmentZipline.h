@@ -21,6 +21,7 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void Tick( float delta ) override;
     virtual void AddEquipmentActionBindings() override;
+	virtual void Equip(class AFGCharacterPlayer* character) override;
 	virtual void UnEquip() override;
 	// End AFGEquipment interface
 	
@@ -55,7 +56,7 @@ protected:
 
 	/** Called from the movement component every frame we update the movement to update the Zipline VFX */
 	UFUNCTION( BlueprintNativeEvent, Category = "Zipline" )
-	void PlayZiplineEffects( const FVector &inLocation );
+	void PlayZiplineEffects( const FVector& inLocation );
 	
 	/** Called whenever our "Want to grab" value changes. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Zipline" )
@@ -64,14 +65,10 @@ protected:
 	/** Called to re-apply the current state of the "wants to grab" when we end the zipline movement. Used to restart the animation if we are still wanting to grab the wire */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Zipline" )
 	void ReapplyWantsToGrabAfterZiplineEnd( bool bWantsToGrab );
-
-	void ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
-	void Local_ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
-
-	void ZiplineEnd( const FVector& exitForce );
-	void Local_ZiplineEnd( const FVector& exitForce );
 private:
-	friend class UFGCharacterMovementComponent;
+	void OnZiplineStatusChanged( bool bIsOnZipline );
+	void Local_OnZiplineStarted();
+	void Local_OnZiplineEnded();
 	
 	void StartActiveNoise();
 	void StopActiveNoise();
@@ -79,12 +76,6 @@ private:
 	/** Used to make noise for when the zipline is active. */
 	UFUNCTION()
 	void MakeActiveNoise();
-
-	UFUNCTION( NetMulticast, Reliable, Category = "Zipline" )
-	void Multicast_ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
-	
-	UFUNCTION( NetMulticast, Reliable, Category = "Zipline" )
-	void Multicast_ZiplineEnd( FVector exitForce );
 
 	/** Same as DoDrop but on server */
 	UFUNCTION( Server, Reliable )
@@ -139,6 +130,8 @@ private:
     UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
     float mActiveNoiseFrequency;
 
+	FDelegateHandle mOnZiplineStatusChangedDelegateHandle;
+	FDelegateHandle mOnZiplineUpdateEffectsDelegateHandle;
     FTimerHandle mActiveNoiseTimerHandle;
 	
 	/** Duration we need to wait before allowing the player to reattach zipline */

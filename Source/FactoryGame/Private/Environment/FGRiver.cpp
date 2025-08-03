@@ -21,6 +21,7 @@ void AFGRiver::ResampleSpline(){ }
 #endif 
 AFGRiver::AFGRiver() : Super() {
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("RiverSpline"));
+	this->mSplineComponent->SetMobility(EComponentMobility::Static);
 	this->mSplineMesh = nullptr;
 	this->mSegmentLengthMultiplier = 1.0;
 	this->mVolumePrecision = 1000.0;

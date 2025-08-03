@@ -38,9 +38,17 @@ public:
 	//RPTC for voice chat metering which ranges from -100 to 0 with default being to -100 (when no once is talking). The data is coming from the audio metering system (windows audio peaks)
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
 	class UAkRtpc* mAudioMeterPeakRtpc = nullptr;
+
 	//RPTC for voice chat metering which ranges from -100 to 0 with default being to -100 (when no once is talking). This is either -100 to 0, and is interpolating inside wwise
+	//Different strength rtpc for attenuation curves
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
-	class UAkRtpc* mAudioMeterRtpc = nullptr;
+	class UAkRtpc* mAttenuationStrengthLowRtpc;
+
+	UPROPERTY( EditDefaultsOnly, Category = Audio )
+	class UAkRtpc* mAttenuationStrengthMediumRtpc;
+
+	UPROPERTY( EditDefaultsOnly, Category = Audio )
+	class UAkRtpc* mAttenuationStrengthStrongRtpc;
 
 private:
 	void ConvertPeakToRTPC( float peak, float DeltaTime );
@@ -48,6 +56,8 @@ private:
 
 	float mPreviousRTPCValue{ -100.0f };
 	float mPreviousAudioPeak{ 0.0f };
+
+	int mPreviousAttenuationStrengthType { 0 };
 
 	bool mReadyToMonitor{ true };
 

@@ -73,7 +73,8 @@ public:
 	
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
-
+protected:
+	virtual void OnIsSimulatedChanged() override;
 private:
 	UFUNCTION()
 	void OnItemAddedToFreight( TSubclassOf< UFGItemDescriptor > itemClass, const int32 numAdded, UFGInventoryComponent* sourceInventory = nullptr );

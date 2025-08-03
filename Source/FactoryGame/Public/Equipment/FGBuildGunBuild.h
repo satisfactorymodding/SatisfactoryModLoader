@@ -23,6 +23,7 @@ enum class ENudgeFailReason : uint8
 	NFR_ExceedMaxDistance	UMETA( DisplayName = "Exceeding Max Distance" ),
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FSnapModeChanged, bool, isEnabled );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FHologramLockStateChanged, class AFGHologram*, hologram, bool, locked );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FHologramNudgeOffsetChanged, class AFGHologram*, hologram, const FVector&, offset );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FHologramNudgeFailed, class AFGHologram*, hologram, ENudgeFailReason, reason );
@@ -157,8 +158,11 @@ public:
 	virtual TSubclassOf< UFGBuildGunModeDescriptor > GetInitialBuildGunMode_Implementation() const override;
 	virtual float GetBuildGunRangeOverride_Implementation() override;
 	virtual void BindInputActions( class UFGEnhancedInputComponent* inputComponent ) override;
-	virtual bool CanSampleBuildings() const override;
+	virtual bool CanSampleBuildables() const override;
 	virtual bool OnShortcutPressed(int32 shortcutIndex) override;
+	virtual void OnBuildableSampled_Implementation( AFGBuildable* buildable ) override;
+	virtual void OnVehicleSampled_Implementation( AFGVehicle* vehicle ) override;
+	virtual void OnLightweightBuildableSampled_Implementation( FLightweightBuildableInstanceRef& buildableInstance ) override;
 	// End UFGBuildGunState
 
 	/**
@@ -174,6 +178,13 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "BuildGunState|Build")
 	UFGBlueprintDescriptor* GetLastBlueprintDescriptor() const { return mLastBlueprintDescriptor; }
+
+	// <FL> [ZimmermannA]
+	UFUNCTION()
+	void OnHoldToSnapUpdated( FString cvar );
+	
+	UFUNCTION()
+	void OnActiveInputChanged( EInputDeviceType newInputDeviceType );
 	// </FL>
 
 	/**
@@ -204,6 +215,7 @@ public:
 
 	UFUNCTION( Server, Reliable )
     void Server_ChangeGuideLinesSnapMode( bool enabled );
+	UFUNCTION(BlueprintCallable)
 	void ChangeGuidelineSnapMode( bool enabled );
 
 	UFUNCTION( Server, Reliable )
@@ -242,6 +254,9 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Hologram", DisplayName = "OnHologramNudgeFailed" )
 	FHologramNudgeFailed OnHologramNudgeFailedDelegate;
 
+	UPROPERTY( BlueprintAssignable, Category = "BuildGunState|Build" )
+	FSnapModeChanged OnSnapModeChanged;
+
 	/** The last focused category in the build menu. */
 	UPROPERTY( BlueprintReadWrite )
 	TSubclassOf< class UFGBuildCategory > mLastFocusedCategory;
@@ -254,6 +269,12 @@ public:
 	static UPackageMap* FindPackageMapForPlayerController( const APlayerController* playerController );
 
 	const FActorClearanceData* GetClearanceDataForActor( const AActor* actor ) const;
+
+	const struct FFactoryCustomizationData* GetSampledCustomizationData() const { return mHasSampledCustomizationData ? &mSampledCustomizationData : nullptr; }
+
+	UFUNCTION( Server, Reliable )
+	void Server_SampleClipboardSettingsFromActor( AActor* actor );
+	void SampleClipboardSettingsFromActor( AActor* actor );
 protected:
 	
 	/** InternalExecuteDuBuildStepInput
@@ -268,6 +289,8 @@ protected:
 	 */
 	UFUNCTION( BlueprintCallable, Category = "BuildGunState|Build" )
 	void ResetHologram();
+	UFUNCTION(Server, Reliable)
+	void Server_ResetHologram();
 
 	/**
 	 * Let blueprint know when we get a new descriptor, the new descriptor may be null.
@@ -332,9 +355,16 @@ private:
 
 	UFUNCTION( Server, Reliable )
 	void Server_UpdateNudgeOffset( const FVector& newNudgeOffset );
-
+	
 	UFUNCTION()
 	void NudgeTimerTick();
+
+	UFUNCTION(BlueprintCallable)
+	void NudgeOnce( const FVector &nudgeVector );
+
+	UFUNCTION( Server, Reliable )
+	void Server_SetSampledCustomizationData( const FFactoryCustomizationData& customizationData );
+	void SetSampledCustomizationData( const FFactoryCustomizationData& customizationData );
 
 	/** Input Action Bindings */
 	void Input_HologramLock( const FInputActionValue& actionValue );
@@ -343,6 +373,8 @@ private:
 	void Input_HotbarSample( const FInputActionValue& actionValue );
 
 	void HandleBuildableAchievementTags( const AFGBuildable* buildable ) const;
+
+	void SetUpgradeActorHidden( bool hidden ) const;
 	
 private:
 	/** stores a time we have held the primary fire button for. Used so we can detect if it's a hold or tap or similar*/
@@ -431,4 +463,12 @@ private:
 
 	FTimerHandle mNudgeTimerHandle;
 	FVector mNudgeAxisInput;
+
+	/** Customization data copied from sampling a buildable. */
+	FFactoryCustomizationData mSampledCustomizationData;
+	bool mHasSampledCustomizationData;
+
+	/** Clipboard settings copied from sampling a buildable. */
+	UPROPERTY()
+	class UFGFactoryClipboardSettings* mSampledClipboardSettings;
 };

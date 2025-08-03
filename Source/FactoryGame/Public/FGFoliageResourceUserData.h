@@ -5,7 +5,10 @@
 #include "FactoryGame.h"
 #include "Engine/AssetUserData.h"
 #include "ItemDrop.h"
+#include "Materials/MaterialInstance.h"
 #include "FGFoliageResourceUserData.generated.h"
+
+class UFGFoliageDestructionData;
 
 /**
  * 
@@ -56,22 +59,47 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Foliage")
 	static bool GetIsCaveTypeByMesh(UStaticMesh* mesh);
+
+	UFUNCTION(BlueprintPure, Category = "Foliage")
+	static UAkAudioEvent* GetPickupEventByMesh( UStaticMesh* mesh);
+	
+	UFUNCTION(BlueprintPure, Category = "Foliage")
+	static UParticleSystem* GetPickupEffectByMesh( UStaticMesh* mesh);
 	
 	// Accessors
-	FORCEINLINE const TArray< FItemDropWithChance >& GetPickupItems() const{ return mPickupItems; }
-	FORCEINLINE class UAkAudioEvent* GetPickupEvent() const{ return mPickupEvent; }
-	FORCEINLINE class UParticleSystem* GetPickupEffect() const { return mPickupEffect; }
-	FORCEINLINE class UAkAudioEvent* GetVehicleDestroyedEvent() const { return mVehicleDestroyedEvent; }
-	FORCEINLINE class UParticleSystem* GetVehicleDestroyedEffect() const { return mVehicleDestroyedEffect; }
-	FORCEINLINE int32 GetFXPriority() const { return mFXPriority;  }
-	FORCEINLINE class UStaticMesh* GetPhysicsMesh() const { return mPhysicsMesh; }
-	FORCEINLINE EProximityEffectTypes GetEffectCategory() const { return EffectCategory; }
-	FORCEINLINE TArray<int32> GetFoliageTypeIDs() const { return FoliageTypeIDs; }
-	FORCEINLINE bool GetIsCaveType() const { return bIsCaveMesh; }
-	
+	FORCEINLINE const TArray< FItemDropWithChance >& GetPickupItems() const			{ return mPickupItems; }
+	FORCEINLINE class UAkAudioEvent* GetPickupEvent() const							{ return mPickupEvent; }
+	FORCEINLINE class UParticleSystem* GetPickupEffect() const						{ return mPickupEffect; }
+	FORCEINLINE class UAkAudioEvent* GetVehicleDestroyedEvent() const				{ return mVehicleDestroyedEvent; }
+	FORCEINLINE class UParticleSystem* GetVehicleDestroyedEffect() const			{ return mVehicleDestroyedEffect; }
+	FORCEINLINE int32 GetFXPriority() const											{ return mFXPriority;  }
+	// @NOTE DEPRECATED
+	FORCEINLINE class UStaticMesh* GetPhysicsMesh() const							{ return mPhysicsMesh; }
+	FORCEINLINE EProximityEffectTypes GetEffectCategory() const						{ return EffectCategory; }
+	FORCEINLINE TArray<int32> GetFoliageTypeIDs() const								{ return FoliageTypeIDs; }
+	FORCEINLINE bool GetIsCaveType() const											{ return bIsCaveMesh; }
+	FORCEINLINE UFGFoliageDestructionData* GetFoliageDestructionData() const		{ return FoliageDestructionData; }
+	FORCEINLINE int32 GetFoliageLeafDestructionIndex() const						{ return FoliageLeafParticleID; }
+	FORCEINLINE int32 GetFoliageTrunkCrumbleDestructionIndex() const				{ return TrunkCrumbleParticleID; }
+	FORCEINLINE FVector GetTrunkCustomPivotLocation() const							{ return TrunkPivotLocation; }
+	FORCEINLINE float GetTrunkCustomRadius() const									{ return TrunkRadius; }
+	FORCEINLINE FBoxSphereBounds GetSimpleCollision() const							{ return SimpleCollision; }
+	FORCEINLINE float GetMaxWedgeAngle() const										{ return MaxWedgeAngle; }
+	                                                                    			
 	// Returns the first defined effect starting from most desirable, mExplosionDestroyedEffect working down to mPickupEffect
 	class UParticleSystem* GetExplosionDestroyedEffect() const;
 
+	// TODO @ben add comments.
+	static UFGFoliageDestructionData* GetFoliageDestructionData( UStaticMesh* mesh );
+	static int32 GetLeafDestructionIndex( UStaticMesh* mesh );
+	static int32 GetTrunkCrumbleDestructionIndex( UStaticMesh* mesh );
+	static FVector GetTrunkPivot( UStaticMesh* mesh );
+	static float GetTrunkRadius( UStaticMesh* mesh );
+	static UMaterialInterface* GetCapMaterialOverride(UStaticMesh* Mesh);
+	
+	static void GetTrunkPreciseCollision(UStaticMesh* Mesh, FBoxSphereBounds& UserDefinedBounds);
+	static bool HandleUserDefinedCollision(const FBoxSphereBounds& SimpleBounds, const FTransform& InstanceTransform, const FVector& HitLocation, float HitRadius);
+	
 protected:
 	/** Items we should gain when picking up the item, @todo: Remove BlueprintReadOnly */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
@@ -109,13 +137,52 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	class UStaticMesh* mPhysicsMesh;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Proximity")
 	TEnumAsByte<EProximityEffectTypes> EffectCategory;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Proximity")
 	TArray<int32> FoliageTypeIDs;
 
 	/* Is the foliage type normally used in caves? if so we know what vfx to spawn from it.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bIsCaveMesh = false;
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	// Begin tree variables
+	
+	/* Foliage destruction data, which sound effect to play etc. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Destruction" )
+	TObjectPtr<UFGFoliageDestructionData> FoliageDestructionData = nullptr;
+
+	/* ID used for selecting mesh on the niagara system for falling leaves,
+	 * Particle is set in the Destruction data and the Parameter name too. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Destruction")
+	int32 FoliageLeafParticleID = INDEX_NONE;
+
+	/* ID used for selecting mesh on the niagara system for falling leaves,
+	 * Particle is set in the Destruction data and the Parameter name too. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Destruction")
+	int32 TrunkCrumbleParticleID = INDEX_NONE;
+
+	/* Simple collision used for accurate destruction of the foliage. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Destruction")
+	FBoxSphereBounds SimpleCollision;
+	
+	/* Trunk radius used for falling animation. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Destruction")
+	float TrunkRadius = -1.f;
+
+	/* Slice location for the cutting.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Destruction")
+	FVector TrunkPivotLocation;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Destruction")
+	float MaxWedgeAngle = 15.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Destruction")
+	UMaterialInstance* mCapMaterialOverride = nullptr;
+	
+	friend class AFGFallingTree;
+	// End tree variables
+	////////////////////////////////////////////////////////////////////////////////////////////////
 };

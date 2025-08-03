@@ -23,10 +23,10 @@ void UFGGameplayTest::Internal_TransitionToState(EFGGameplayTestState newState){
 void UFGGameplayTest::Internal_Tick(float dt){ }
 void UFGGameplayTest::DrawDebug(UCanvas* canvas){ }
 void UFGGameplayTest::AddMessage(EFGGameplayTestMessageLevel messageLevel, const FText& message, const FString& context , int32 stackOffset){ }
-void UFGGameplayTest::AddInfo(const FText& message, const FString& context , int32 stackOffset){ }
-void UFGGameplayTest::AddWarning(const FText& message, const FString& context , int32 stackOffset){ }
-void UFGGameplayTest::AddError(const FText& message, const FString& context , int32 stackOffset){ }
-FString UFGGameplayTest::CaptureStackTraceContext(int32 StackOffset){ return FString(); }
+void UFGGameplayTest::K2_AddMessage(EFGGameplayTestMessageLevel messageLevel, FText message, const FString& context){  }
+void UFGGameplayTest::AddInfo(FText message){  }
+void UFGGameplayTest::AddWarning(FText message){  }
+void UFGGameplayTest::AddError(FText message){  }FString UFGGameplayTest::CaptureStackTraceContext(int32 StackOffset){ return FString(); }
 FString UFGGameplayTest::CaptureScriptContext(const FFrame& Stack){ return FString(); }
 FColor UFGGameplayTest::GetDebugColorForLevel(EFGGameplayTestMessageLevel level){ return FColor(); }
 void UFGGameplayTest::OnTestStarted(){ }
@@ -34,11 +34,13 @@ void UFGGameplayTest::OnTestFinished(){ }
 void UFGGameplayTest::OnTestEnded(){ }
 void UFGGameplayTest::TickRunningTest(float dt){ }
 void UFGGameplayTest::FinishTest(EFGGameplayTestResult testResult){ }
+void UFGGameplayTest::FailTest(FText errorMessage){  }
+void UFGGameplayTest::PassTest(){  }
 void UFGGameplayTest::AddTestMetadata(const FString& metadataKey, const FString& metadataValue){ }
 void UFGGameplayTest::KillTestSpawnedActors(){ }
 bool UFGGameplayTest::HasAnyErrorMessagesInLog() const{ return bool(); }
 
-DEFINE_FUNCTION(UFGGameplayTest::execAddMessage) {
+DEFINE_FUNCTION(UFGGameplayTest::execK2_AddMessage) {
 	PARAM_PASSED_BY_VAL(messageLevel, FEnumProperty, EFGGameplayTestMessageLevel);
 	PARAM_PASSED_BY_REF(message, FStructProperty, FText);
 	PARAM_PASSED_BY_REF(context, FStrProperty, FString);
@@ -67,6 +69,15 @@ DEFINE_FUNCTION(UFGGameplayTest::execAddWarning) {
 }
 
 DEFINE_FUNCTION(UFGGameplayTest::execAddError) {
+	PARAM_PASSED_BY_REF(message, FStructProperty, FText);
+	PARAM_PASSED_BY_REF(context, FStrProperty, FString);
+	PARAM_PASSED_BY_REF(stackOffset, FIntProperty, int32);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_NATIVE_END;
+}
+
+DEFINE_FUNCTION(UFGGameplayTest::execFailTest) {
 	PARAM_PASSED_BY_REF(message, FStructProperty, FText);
 	PARAM_PASSED_BY_REF(context, FStrProperty, FString);
 	PARAM_PASSED_BY_REF(stackOffset, FIntProperty, int32);

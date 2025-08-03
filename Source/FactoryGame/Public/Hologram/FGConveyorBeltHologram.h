@@ -15,6 +15,8 @@ UCLASS()
 class FACTORYGAME_API AFGConveyorBeltHologram : public AFGSplineHologram
 {
 	GENERATED_BODY()
+
+	friend class FGBlueprintOpenFactoryConnectionManager;
 public:
 	AFGConveyorBeltHologram();
 
@@ -22,6 +24,9 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	// End AActor Interface
+
+	FORCEINLINE float GetBendRadius() const { return mBendRadius; }
+	FORCEINLINE float GetMaxSplineLength() const { return mMaxSplineLength; }
 
 	// Begin AFGHologram Interface
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
@@ -33,12 +38,13 @@ public:
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
-	virtual void PreHologramPlacement( const FHitResult& hitResult ) override;
-	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
+	virtual void PreHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void Scroll( int32 delta ) override;
 	virtual float GetHologramHoverHeight() const override;
-	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
+	virtual bool ShouldIgnoreClearanceCheckForActor( AActor* actor ) const override;
 	virtual void CheckBlueprintCommingling() override;
 	virtual AFGHologram* GetNudgeHologramTarget() override;
 	virtual bool CanTakeNextBuildStep() const override;
@@ -64,6 +70,8 @@ protected:
 	virtual void ConfigureComponents( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram Interface
 
+	void ValidateConveyorBelt();
+
 	// Begin AFGHologram interface
 	virtual void PostConstructMessageDeserialization() override;
 	// End AFGHologram interface
@@ -76,6 +84,8 @@ protected:
 	virtual void UpdateSplineComponent() override;
 	virtual void UpdateClearanceData() override;
 	// End FGSplineHologram
+
+	void GenerateAndUpdateSpline( const FHitResult& hitResult );
 private:
 
 	/** Create connection arrow component on the client. */
@@ -93,9 +103,14 @@ private:
 
 	bool ValidateIncline();
 	bool ValidateMinLength();
+	bool ValidateCurvature();
 
 private:
-	bool mUsingCutstomPoleRotation = false;
+	UPROPERTY( CustomSerialization )
+	bool mUsingCutstomPoleRotation;
+
+	/** Whether or not to automatically generate spline in PostHologramPlacement. */
+	bool mAutomaticallyGenerateSpline;
 	
 	/** Child pole hologram used for normal placement */
 	UPROPERTY( Replicated )
@@ -118,6 +133,7 @@ private:
 	class UFGFactoryConnectionComponent* mChildCeilingPoleSnapConnection[ 2 ];
 
 	/** Whether or not to flip the direction our belt snaps to our child wall pole hologram. */
+	UPROPERTY( CustomSerialization )
 	bool mFlipWallPoleSnapDirection;
 	
 	/** The two connection components for this conveyor. */
@@ -127,6 +143,12 @@ private:
 	/** The connections we've made. */
 	UPROPERTY( Replicated, CustomSerialization )
 	class UFGFactoryConnectionComponent* mSnappedConnectionComponents[ 2 ];
+
+	UPROPERTY( Replicated, CustomSerialization )
+	class AFGBuildableWallPassthrough* mSnappedWallPassthrough[ 2 ];
+
+	UPROPERTY( Replicated, CustomSerialization )
+	int32 mSnappedWallPassthroughConnectionIndex[ 2 ];
 
 	/** If we upgrade another conveyor belt this is the belt we replaces. */
 	UPROPERTY( Replicated, CustomSerialization )
@@ -159,6 +181,10 @@ private:
 	/** Straight spline build mode. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode")
     TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeStraight;
+
+	/** Curve spline build mode. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
+	TSubclassOf< UFGHologramBuildModeDescriptor > mBuildModeCurve;
 
 	/** Used to replicate the direction arrow. */
 	UPROPERTY( ReplicatedUsing = OnRep_ConnectionArrowComponentDirection )

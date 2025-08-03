@@ -42,6 +42,9 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
 	class UFGPopupWidgetContent* PopupContent = nullptr;
 		
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
+	FKey mOverrideConfirmKey = EKeys::Invalid;
+		
 	UPROPERTY()
 	FPopupConfirmClicked PopupConfirmClickedDelegate_DEPRECATED = {};
 
@@ -50,6 +53,9 @@ public:
 
 	TWeakPtr<SWidget> FocusOnClose; // <FL> [WuttkeP] Allow restoring focused widget when a popup is closed.
 
+	bool RestoreFocusOnClose = false;
+
+	bool ManuallyHandleClosing = false;
 };
 
 /**
@@ -65,6 +71,9 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "Popup" )
 	void CallPopupClosedClicked( bool confirm );
+
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent )
+	void SetConfirmText( const FText& text );
 public:
 	int32 mPriority;
 
@@ -85,4 +94,9 @@ public:
 
 	TWeakPtr<SWidget> mFocusOnClose; // <FL> [WuttkeP] Allow restoring focused widget when a popup is closed.
 
+	UPROPERTY(BlueprintReadOnly)
+	bool mManuallyHandleClosing;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Popup" )
+	FKey mOverrideConfirmKey;
 };

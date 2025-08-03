@@ -26,8 +26,19 @@ struct FACTORYGAME_API FHologramHelpers
 	/** Creates the representation mesh for an attachment point */
 	static class UStaticMeshComponent* CreateAttachmentPointRepresentation( const struct FFGAttachmentPoint* attachmentPoint, const class AFGBuildable* buildable );
 
+	/** Creates the representation mesh for an orientation */
+	static class UStaticMeshComponent* CreateOrientationRepresentation( const FTransform& RelativeTransform, float size, const class AFGHologram* hologram );
+
+	/** Creates the representation mesh for an orientation */
+	static class UStaticMeshComponent* CreateAutomaticBlueprintConnectionRepresentation( class UFGConnectionComponent* connectionComponent );
+
+	static void SetupHologramVisualizationMesh( class UStaticMeshComponent* meshComponent );
+	
 	static FBox CreateBoxFromCombinedClearanceData( const TArray< FFGClearanceData >& clearanceData, bool onlySnapping );
 	static FBox CreateBoxFromCombinedClearanceData( const TArray< const FFGClearanceData* >& clearanceData, bool onlySnapping );
+
+	static FSphere CreateSphereFromCombinedClearanceData( const TArray< FFGClearanceData >& clearanceData, bool onlySnapping );
+	static FSphere CreateSphereFromCombinedClearanceData( const TArray< const FFGClearanceData* >& clearanceData, bool onlySnapping );
 
 	/**
 	 * Calculate a poles height given a hit result and the poles location.
@@ -45,6 +56,7 @@ struct FACTORYGAME_API FHologramHelpers
 
 	/** Find how many degrees targetLocation is from location's right-angles (0, 90, 180, 270) given a direction. Will convert vectors to 2D space. */
 	static float FindRightAngleBetweenLocations( const FVector& location, const FVector& targetLocation, const FVector& direction );
+
 };
 
 struct FACTORYGAME_API FSplineUtils

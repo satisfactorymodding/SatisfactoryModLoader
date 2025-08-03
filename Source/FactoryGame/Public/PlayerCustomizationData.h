@@ -12,15 +12,15 @@ struct FACTORYGAME_API FPlayerCustomizationData
 
 	/** First color that the player can choose */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "Player Customization" )
-	FLinearColor PrimaryColor;
+	FLinearColor PrimaryColor = FLinearColor::Black;
 
 	/** Secondary color that the player can choose */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "Player Customization" )
-	FLinearColor SecondaryColor;
+	FLinearColor SecondaryColor = FLinearColor::Black;
 
 	/** Detail color that the player can choose */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "Player Customization" )
-	FLinearColor DetailColor;
+	FLinearColor DetailColor = FLinearColor::Black;
 
 	/** Helmet that the player has selected */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, SaveGame, Category = "Player Customization" )

@@ -60,17 +60,25 @@ public:
 		// Photo Mode
 		struct FPhotoModeTags
 		{
-			FGameplayTag FOVScrollAxis;
-			FGameplayTag ToggleInstructionWidgetVisibility;
-			FGameplayTag ToggleHiRes;
-
-			FGameplayTag ToggleAdvancedPhotoMode;
-			FGameplayTag TogglePhotoModeDebug;
-			FGameplayTag ToggleSequencer;
-			FGameplayTag ToggleMouseControl;
+			FGameplayTag PhotoModeDecouple;
 			FGameplayTag TakePhoto;
+			FGameplayTag MoveMouseX;
+			FGameplayTag MoveMouseY;
 		} PhotoMode;
 
+		// Detached Camera
+		struct FDetachedCamera
+		{
+			FGameplayTag MoveForward;
+			FGameplayTag MoveBackwards;
+			FGameplayTag MoveRight;
+			FGameplayTag MoveLeft;
+			FGameplayTag MoveUp;
+			FGameplayTag MoveDown;
+			FGameplayTag MoveFaster;
+			FGameplayTag MoveSlower;
+		} DetachedCamera;
+		
 		// Actions
 		struct FPlayerActionTags
 		{
@@ -127,6 +135,10 @@ public:
 			{
 				FGameplayTag Copy;
 				FGameplayTag Paste;
+				// <FL> [MartinC] Copy and paste buildings without accessing their menu using gamepad
+				FGameplayTag GamepadCopy;
+				FGameplayTag GamepadPaste;
+				// </FL>
 			} Clipboard;
 
 			// Buildgun
@@ -136,6 +148,12 @@ public:
 				FGameplayTag Dismantle;
 				FGameplayTag Paint;
 			} BuildGun;
+
+			// Hypertube movement
+			struct FPlayerHypertubeTags
+			{
+				FGameplayTag CycleTravelDirection;
+			} HyperTubeMovement;
 
 			FGameplayTag HandheldSelectionRadialMenu;	 // <FL> [KajtaziT]
 			
@@ -148,6 +166,8 @@ public:
 			FGameplayTag CycleNext;
 			FGameplayTag Holster;
 			FGameplayTag Reload;
+			FGameplayTag Detonate;
+			FGameplayTag AmmoSwitch;
 			
 			// BuildGun
 			struct FEquipmentBuildGunTags
@@ -276,6 +296,7 @@ protected:
 	static void AddInputPlayerMovementTags( UGameplayTagsManager& Manager );
 	static void AddInputPlayerActionTags( UGameplayTagsManager& Manager );
 	static void AddInputPhotoModeTags( UGameplayTagsManager& Manager );
+	static void AddInputDetachedCameraTags( UGameplayTagsManager& Manager );
 
 	static void AddCheatTags( UGameplayTagsManager& Manager );
 

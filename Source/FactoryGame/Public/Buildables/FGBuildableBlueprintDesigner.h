@@ -36,6 +36,13 @@ class FACTORYGAME_API AFGBuildableBlueprintDesigner : public AFGBuildable
 {
 	GENERATED_BODY()
 public:
+	static constexpr int32 TILE_SIZE = 800;
+	static constexpr int32 HALF_TILE_SIZE = TILE_SIZE / 2;
+	static constexpr int32 INTERSECT_THICKNESS = 10;
+	static constexpr float HALF_INTERSECT_THICKNESS = INTERSECT_THICKNESS / 2.f;
+	static constexpr int32 FLOOR_HEIGHT = 100;
+	static constexpr float HALF_FLOOR_HEIGHT = FLOOR_HEIGHT / 2.f;
+	
 	AFGBuildableBlueprintDesigner();
 
 	//Begin UObject Interface
@@ -69,9 +76,6 @@ public:
 	/** Draws the tiles for visualizing the Rectangular prism */
 	static void BuildTiledMeshes( UInstancedStaticMeshComponent* tiledMeshComp, const FIntVector& dims );
 
-	/** This shouldnt be used in the end as we should catch all added buildables when constructed */
-	void GatherBuildables(TArray< AFGBuildable* >& out_Buildables );
-
 	/** When a buildable is constructed it informs the designer of its existence. This way we don't need to gather them to serialize */
 	void OnBuildableConstructedInsideDesigner( AFGBuildable* buildable ); 
 	void OnBuildableDismantledInsideDesigner( AFGBuildable* buildable );
@@ -83,7 +87,7 @@ public:
 	void CalculateBlueprintCost( TArray<FItemAmount>& cost ) const;
 	
 	UFUNCTION( BlueprintCallable, Category="Blueprint Designer" )
-	void SaveBlueprint( FBlueprintRecord blueprintRecord, AFGPlayerController* controller );
+	void SaveBlueprint( FBlueprintRecord blueprintRecord, AFGPlayerController* controller, bool bFromDesignerContext = false ); // <FL>[KonradA] Passing the context so we can know if we could have updated something UGC related to update the last ugc user;
 
 	/**
 	 * Dismantles buildings inside the designer
@@ -147,6 +151,9 @@ public:
 	void OnBuildingsChanged();
 
 	void RecalculateBlueprintCost();
+
+	/** Returns all buildables currently placed inside the blueprint designer */
+	FORCEINLINE const TArray<AFGBuildable*>& GetBuildablesInBlueprintDesigner() const { return mBuildables; }
 private:
 	void GenerateIntersectionBoxes();
 	
@@ -164,10 +171,6 @@ public:
 	/** Collision Box */
 	UPROPERTY( EditAnywhere, Category="Blueprint Designer")
 	class UBoxComponent* mCollisionComponent;
-
-	/** Design area box mesh. Should be a 1x1 cube, code will scale to match tile dimensions */
-	UPROPERTY( EditAnywhere, Category="Blueprint Designer")
-	UStaticMeshComponent* mDesignerBoxMesh;
 
 	/** Colored Mesh Proxy for the Edit Terminal */
 	UPROPERTY(EditDefaultsOnly, Category="Blueprint Designer")

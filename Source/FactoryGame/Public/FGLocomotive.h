@@ -33,7 +33,7 @@ struct FHeadlightParams
 
 	/** Color of the light. */
 	UPROPERTY( EditDefaultsOnly )
-	FLinearColor Color;
+	FLinearColor Color = FLinearColor::Black;
 
 	/** Intensity for the light source, does not affect the beam. */
 	UPROPERTY( EditDefaultsOnly )

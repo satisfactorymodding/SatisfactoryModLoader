@@ -74,6 +74,8 @@ public:
 	static const UFGOnlineIntegrationSettings* Get();
 	UDataTable* GetOnlineStatDataTable() const;
 	UDataTable* GetOnlineAggregatedStatDataTable() const;
+	UDataTable* GetOnlineActivityDataTable() const;
+	UDataTable* GetOnlineStatToActivityMappingTable() const;
 	UDataTable* GetSessionValidationRowDescTable() const;
 	UDataTable* GetReadOnlySessionInfoRowDescTable() const;
 	TArray<UAddOnEntitlement*> LoadAddonEntitlements() const;
@@ -87,6 +89,13 @@ protected:
 			   meta = ( RequiredAssetDataTags = "RowStructure=/Script/OnlineIntegration.OnlineStatDataAggregated" ) )
 	TSoftObjectPtr< UDataTable > mOnlineAggregatedStatDataTable;
 
+	UPROPERTY( EditAnywhere, Config, Category = "Online Activities",
+			   meta = ( RequiredAssetDataTags = "RowStructure=/Script/OnlineIntegration.OnlineActivityDataRow" ) )
+	TSoftObjectPtr< UDataTable > mOnlineActivityDataTable;
+	UPROPERTY( EditAnywhere, Config, Category = "Online Activities",
+			   meta = ( RequiredAssetDataTags = "RowStructure=/Script/OnlineIntegration.OnlineStatToActivityRow" ) )
+	TSoftObjectPtr< UDataTable > mOnlineStatToActivityMappingTable;
+
 	UPROPERTY( EditAnywhere, Config, Category = "UI Settings",
 			   meta = ( RequiredAssetDataTags = "RowStructure=/Script/FactoryGame.SessionValidationInfoRowDescriptor" ) )
 	TSoftObjectPtr< UDataTable > mSessionValidationRowDescTable;
@@ -98,3 +107,4 @@ protected:
 	UPROPERTY( EditAnywhere, Config, Category=DLC)
 	TArray<TSoftObjectPtr<UAddOnEntitlement>> mAddonEntitlements;
 };
+

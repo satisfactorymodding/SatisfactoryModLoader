@@ -66,7 +66,7 @@
 #transportation"
 "Drones/DronePort/MainTab/Status/CannotUnload","Cannot Unload","","","UI","#interface
 #transportation"
-"Drones/DronePort/MainTab/Status/Charging","Charging","","","UI","#interface
+"Drones/DronePort/MainTab/Status/Charging","Refueling","","","UI","#interface
 #transportation"
 "Drones/DronePort/MainTab/Status/Docked","Docked","","","UI","#interface
 #transportation"
@@ -179,10 +179,10 @@
 "Portals/Name/TextBoxHint","Enter Name...","","","UI","Portal"
 "Portals/Portals/Available","Available Portals","","","UI","Portal"
 "Portals/Portals/Current","This Portal","","","UI","Portal"
-"Portals/Portals/List/CurrentLiked","Current Linked Portal","","","UI","Portal"
+"Portals/Portals/List/CurrentLiked","Currently Linked Portal","","","UI","Portal"
 "Portals/Portals/List/Invalid","Invalid","","","UI","Portal"
 "Portals/Portals/List/LinkedWithDifferentPortal","Linked with different Portal","","","UI","Portal"
-"Portals/Portals/List/NotMasterPortal","Not a Master Portal","","","UI","Portal"
+"Portals/Portals/List/NotMasterPortal","Not a Main Portal","","","UI","Portal"
 "Portals/Portals/List/NotPowered","Not powered","","","UI","Portal"
 "Portals/Portals/List/NotSatellitePortal","Not a Satellite Portal","","","UI","Portal"
 "Portals/Portals/Unavailable","Unavailable Portals","","","UI","Portal"
@@ -362,9 +362,9 @@ Fuel Info"
 #transportation"
 "Trains/Locomotive/TimeTable/Edit/NextStation","Next Station","","","UI","#interface
 #transportation"
-"Trains/Locomotive/TimeTable/Prompt/Description","You have unsaved changes in the Time Table. Closing will revert those changes.
+"Trains/Locomotive/TimeTable/Prompt/Description","You have unsaved changes in the Timetable. Closing will revert those changes.
 
-Are you sure you wish to continue?","","","",""
+Are you sure you wish to close?","","","",""
 "Trains/Locomotive/TimeTable/Prompt/Title","Unsaved Changes","","","",""
 "Trains/Locomotive/TimeTable/Setup/AvailableStation","Available Stations","","","UI","#interface
 #transportation"
@@ -436,7 +436,7 @@ Are you sure you wish to continue?","","","",""
 #transportation"
 "Trains/TrainStation/Name/TextBoxHint","Enter Name...","","","UI","#interface
 #transportation"
-"Trains/TrainStation/NextStop","Next Stop: ","","","UI","#interface
+"Trains/TrainStation/NextStop","Next Stop:","","","UI","#interface
 #transportation"
 "Trains/TrainStation/Notifications/01","Please mind the gap between the train and the platform.","","","UI","#interface
 #transportation"
@@ -546,7 +546,7 @@ Common Vehicles Tooltips"
 #transportation"
 "Vehicles/RecordMenu/AutopilotOn/Button","Enable Autopilot","Record menu that the player see when you enter a vehicle","","UI","#interface
 #transportation"
-"Vehicles/RecordMenu/HUD/Autopilot","Autopilot: ","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/HUD/Autopilot","Autopilot:","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/HUD/Speed","Speed","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/HUD/Speed/Variable","KM/H","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/HUD/VehiclePath","Vehicle Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"

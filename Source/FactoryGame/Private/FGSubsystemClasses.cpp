@@ -16,8 +16,10 @@ UFGSubsystemClasses::UFGSubsystemClasses() : Super() {
 	this->mChatManagerClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_ChatManager.BP_ChatManager_C");
 	this->mCentralStorageSubsystemClass = FSoftClassPath("/Script/FactoryGame.FGCentralStorageSubsystem");
 	this->mMapManagerClass = FSoftClassPath("/Script/FactoryGame.FGMapManager");
-	this->mBuildableSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_BuildableSubsystem.BP_BuildableSubsystem_C").ResolveClass();
-	this->mLightweightBuildableSubsystemClass = AFGLightweightBuildableSubsystem::StaticClass();
+	this->mLocalAudioContextSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_LocalAudioContextSubsystem.BP_LocalAudioContextSubsystem_C");
+	this->mBuildableSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_BuildableSubsystem.BP_BuildableSubsystem_C");
+	this->mVoiceChatAudioMeterSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_VoiceChatAudioMeterSubsystem.BP_VoiceChatAudioMeterSubsystem_C").ResolveClass();
+	this->mLightweightBuildableSubsystemClass = FSoftClassPath("/Script/FactoryGame.FGLightweightBuildableSubsystem");
 	this->mFoliageRemovalSubsystemClass = FSoftClassPath("/Script/FactoryGame.FGFoliageRemovalSubsystem");
 	this->mProximitySubsystemClass = FSoftClassPath("/Game/FactoryGame/Character/Player/BP_ProximitySubsystem.BP_ProximitySubsystem_C");
 	this->mUnlockSubsystem = FSoftClassPath("/Game/FactoryGame/Unlocks/BP_UnlockSubsystem.BP_UnlockSubsystem_C");
@@ -31,7 +33,6 @@ UFGSubsystemClasses::UFGSubsystemClasses() : Super() {
 	this->mConveyorItemSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_ConveyorItemSubsystem.BP_ConveyorItemSubsystem_C");
 	this->mStatisticsSubsystemClass = FSoftClassPath("/Script/FactoryGame.FGStatisticsSubsystem");
 	this->mSignSubsystemClass = FSoftClassPath("/Script/FactoryGame.FGSignSubsystem");
-	this->mPhotoModeManagerClass = FSoftClassPath("/Script/FactoryGame.FGPhotoModeManager");
 	this->mCreatureSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_CreatureSubsystem.BP_CreatureSubsystem_C");
 	this->mScannableSubsystemClass = FSoftClassPath("/Script/FactoryGame.FGScannableSubsystem");
 	this->mBlueprintSubsystem = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_BlueprintSusbystem.BP_BlueprintSusbystem_C");

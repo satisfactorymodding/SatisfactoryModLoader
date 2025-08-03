@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "ItemAmount.h"
 #include "FGEventSubsystem.h"
+#include "Misc/DataValidation.h"
 #include "FGRecipe.generated.h"
 
 // A simple struct to expose a recipe amount pair to blueprints
@@ -19,7 +20,7 @@ struct FRecipeAmountPair
 
 	/** How many of given recipe */
 	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
-	int32 Amount;
+	int32 Amount = {};
 };
 
 // Exposes FRecipeAmount as an array
@@ -45,7 +46,7 @@ public:
 	// Begin UObject interface
 #if WITH_EDITOR
 	virtual bool CanEditChange( const FProperty* InProperty ) const override;
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid( FDataValidationContext& validationContext ) const override;
 #endif
 	// End UObject interface
 

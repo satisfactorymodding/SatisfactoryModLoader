@@ -6,7 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "ItemTooltipSubsystem.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class SML_API UItemTooltipSubsystem: public UGameInstanceSubsystem {
     GENERATED_BODY()
 public:
@@ -15,7 +15,7 @@ public:
      * Please be careful with implementation as it will be called very often
      * Object should implement ISMLItemTooltipProvider
      */
-    UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable, Category = "Item Tooltip Subsystem")
     void RegisterGlobalTooltipProvider(const FString& ModReference, UObject* ItemTooltipProvider);
     
     /**
@@ -23,24 +23,22 @@ public:
      * For normal items it just returns UFGItemDescriptor::GetItemDescription
      * For items implementing ISMLItemDisplayInterface, this is routed to GetItemName
      */
-    UFUNCTION(BlueprintPure)
+    UFUNCTION(BlueprintPure, Category = "Item Tooltip Subsystem")
     FText GetItemName(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
     /**
      * Retrieves correct item description for given inventory stack
      * Call semantics are similar to GetItemName()
      */
-    UFUNCTION(BlueprintPure)
+    UFUNCTION(BlueprintPure, Category = "Item Tooltip Subsystem")
     FText GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
     TArray<UWidget*> CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+
+	/** For internal use only - called to evaluate all the custom description widgets registered to the subsystem */
+	UFUNCTION(BlueprintCallable, Category = "Item Tooltip Subsystem")
+	void ApplyItemOverridesToTooltip(class UTextBlock* TitleTextBlock, class URichTextBlock* DescriptionTextBlock, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 private:
-    friend class FSatisfactoryModLoader;
-
-    void ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
-
-    static void InitializePatches();
-    
     /** Array of registered tooltip providers, UPROPERTY to avoid garbage collection */
     UPROPERTY()
     TArray<UObject*> GlobalTooltipProviders;

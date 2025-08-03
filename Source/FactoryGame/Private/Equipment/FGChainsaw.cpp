@@ -18,6 +18,7 @@ AFGChainsaw::AFGChainsaw() : Super() {
 	this->mArmAnimation = EArmEquipment::AE_ChainSaw;
 	this->mDefaultEquipmentActions = 1;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }
 void AFGChainsaw::Tick(float dt){ Super::Tick(dt); }
 void AFGChainsaw::LoadFromItemState_Implementation(const FFGDynamicStruct& itemState){ }

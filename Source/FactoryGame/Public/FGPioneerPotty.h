@@ -19,7 +19,7 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	FORCEINLINE class UFGInventoryComponent* GetStorageInventory() const { return mStorageInventory; }
-	
+
 protected:
 	virtual void BeginPlay() override;
 

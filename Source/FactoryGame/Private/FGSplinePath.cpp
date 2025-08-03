@@ -5,6 +5,7 @@
 
 AFGSplinePath::AFGSplinePath() : Super() {
 	this->mSpline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
+	this->mSpline->SetMobility(EComponentMobility::Movable);
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;

@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "GameFramework/Pawn.h"
 #include "FGSaveInterface.h"
+#include "FGUnsafePawnRelocationInterface.h"
 #include "Replication/FGConditionalReplicationInterface.h"
 #include "FGDriveablePawn.generated.h"
 
@@ -13,7 +14,7 @@
  * Base class for pawns that can be driven by a player character, this includes vehicles, remote drones and passenger seats.
  */
 UCLASS()
-class FACTORYGAME_API AFGDriveablePawn : public APawn, public IFGSaveInterface, public IFGConditionalReplicationInterface
+class FACTORYGAME_API AFGDriveablePawn : public APawn, public IFGSaveInterface, public IFGConditionalReplicationInterface, public IFGUnsafePawnRelocationInterface
 {
 	GENERATED_BODY()
 public:
@@ -47,6 +48,12 @@ public:
 	// Begin AActor interface
 	virtual void PreInitializeComponents()  override;
 	// End AActor interface
+
+	// Begin IFGUnsafePawnRelocationInterface
+	virtual void SetIsInUnsafeLoadLocation(bool isUnsafe ) override;
+	virtual void SetLastSafeLocation(const FVector& location) override;
+	virtual FVector GetLastSafeLoadLocation() override;
+	// End IFGUnsafePawnRelocationInterface
 
 	virtual void UpdatePlayerStatus();
 
@@ -209,6 +216,12 @@ protected:
 	void ActivateCameraComponents();
 	void DeactivateCameraComponents();
 	
+	UPROPERTY( SaveGame )
+	FVector mLastSafeLocation;
+
+	UPROPERTY( SaveGame )
+	bool mIsInUnsafeLoadLocation;
+	
 private:
 	/** If another driver is about to enter this vehicle. Used to not shutdown/startup the */
 	bool mHasPendingDriver;
@@ -221,5 +234,6 @@ private:
 	/** Is this vehicle being driven. */
 	UPROPERTY( ReplicatedUsing = OnRep_IsDriving )
 	bool mIsDriving;
+
 	
 };

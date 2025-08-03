@@ -91,7 +91,7 @@ public:
 	//~ Begin IFGFactoryClipboardInterface
 	virtual bool CanUseFactoryClipboard_Implementation() override { return true; }
 	virtual UFGFactoryClipboardSettings* CopySettings_Implementation() override;
-	virtual bool PasteSettings_Implementation( UFGFactoryClipboardSettings* settings ) override;
+	virtual bool PasteSettings_Implementation( UFGFactoryClipboardSettings* factoryClipboard, class AFGPlayerController* player ) override;
 	//~ End IFGFactoryClipboardInterface
 
 	/** [DEPRECATED] - Use GetExtractableResource() instead.

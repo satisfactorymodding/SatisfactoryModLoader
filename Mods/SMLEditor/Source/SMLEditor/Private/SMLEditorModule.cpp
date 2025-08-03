@@ -6,6 +6,10 @@
 #include "CodeGeneration/NativeCodeGenerator.h"
 #include "CodeGeneration/UserDefinedStructCodeGenerator.h"
 #include "Configuration/ModConfiguration.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
+#include "Hooking/HookBlueprintCompilerContext.h"
+#include "Patching/BlueprintHookBlueprint.h"
+
 #define LOCTEXT_NAMESPACE "SML"
 
 bool ContainsAtLeastOneModConfigBlueprint(TArray<FAssetData> SelectedAssets) {
@@ -74,10 +78,15 @@ void FSMLEditorModule::StartupModule() {
 	CBMenuExtenderDelegates.Add(FContentBrowserMenuExtender_SelectedAssets::CreateStatic(&OnExtendContentBrowserAssetSelectionMenu));
 
 	FBlueprintCompilationManager::RegisterCompilerExtension(UBlueprint::StaticClass(), GetMutableDefault<UFactoryTickBlueprintExtension>());
+
+	FKismetCompilerContext::RegisterCompilerForBP(UHookBlueprint::StaticClass(), [](UBlueprint* SourceBlueprint, FCompilerResultsLog& MessageLog, const FKismetCompilerOptions& CompilerOptions) {
+		return MakeShared<FHookBlueprintCompilerContext>(CastChecked<UHookBlueprint>(SourceBlueprint), MessageLog, CompilerOptions);
+	} );
 }
 
 void FSMLEditorModule::ShutdownModule() {
 }
 
 IMPLEMENT_GAME_MODULE(FSMLEditorModule, SMLEditor);
+
 #undef LOCTEXT_NAMESPACE

@@ -11,6 +11,7 @@ AFGResourceDeposit::AFGResourceDeposit() : Super() {
 	this->mIsEmptied = false;
 	this->mHasInitializedVisuals = false;
 	this->mDepositMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DepositMesh"));
+	this->mDepositMeshComponent->SetMobility(EComponentMobility::Movable);
 	this->mOverrideResourceClass = nullptr;
 	this->mCanBeRadioactive = true;
 	this->mCanPlaceResourceExtractor = false;

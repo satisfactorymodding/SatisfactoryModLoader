@@ -5,9 +5,11 @@
 
 AFGFactoryBuildingHologram::AFGFactoryBuildingHologram() : Super() {
 	this->mPlacementRequirements = EFactoryBuildingPlacementRequirements::FBPR_None;
+	this->mMaxZoopAmount = 9;
 	this->mDefaultBlockedZoopDirections = 0;
 	this->mBuildStep = EFactoryBuildingHologramBuildStep::FBHBS_PlacementAndRotation;
 	this->mBuildModeZoop = nullptr;
+	this->mCreateClearanceSnapMeshVisualization = false;
 	this->mBuildModeCategory = EHologramBuildModeCategory::HBMC_Architecture;
 }
 void AFGFactoryBuildingHologram::BeginPlay(){ Super::BeginPlay(); }
@@ -24,14 +26,13 @@ bool AFGFactoryBuildingHologram::DoMultiStepPlacement(bool isInputFromARelease){
 void AFGFactoryBuildingHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ }
 USceneComponent* AFGFactoryBuildingHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 bool AFGFactoryBuildingHologram::CanBeZooped() const{ return bool(); }
-void AFGFactoryBuildingHologram::CheckClearance(const FVector& locationOffset){ }
 void AFGFactoryBuildingHologram::CheckValidPlacement(){ }
+void AFGFactoryBuildingHologram::GetClearanceData(TArray<const FFGClearanceData*>& out_ClearanceData) const{ Super::GetClearanceData(out_ClearanceData); }
 void AFGFactoryBuildingHologram::CheckValidFloor(){ }
 FVector AFGFactoryBuildingHologram::GetFloorEdgeDirection(const FVector& floorLoc, const FRotator& floorRot, const FVector& testLoc, FFoundationSideSelectionFlags excludeEdges) const{ return FVector(); }
 FVector AFGFactoryBuildingHologram::GetFloorEdgeOffset(const FVector& floorLoc, const FRotator& floorRot, float floorSize, const FVector& testLoc, float testSize, FFoundationSideSelectionFlags excludeEdges) const{ return FVector(); }
 FVector AFGFactoryBuildingHologram::GetWallEdgeDirection(const  AFGBuildableWall* wall, const FVector& testLoc) const{ return FVector(); }
-void AFGFactoryBuildingHologram::UpdateZoop(){ }
-void AFGFactoryBuildingHologram::ConstructZoop(TArray<AActor*>& out_children){ }
+void AFGFactoryBuildingHologram::CreateZoopInstances(){  }
 FVector AFGFactoryBuildingHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return FVector(); }
 void AFGFactoryBuildingHologram::ClearZoopInstances(){ }
 void AFGFactoryBuildingHologram::GenerateZoopInstance(const FTransform& instanceTransform){ }

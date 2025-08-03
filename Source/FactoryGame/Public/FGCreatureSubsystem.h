@@ -21,10 +21,10 @@ struct FACTORYGAME_API FSpawnerInfo
 	GENERATED_BODY()
 
 	UPROPERTY( BlueprintReadOnly )
-	class AFGCreatureSpawner* Spawner;
+	class AFGCreatureSpawner* Spawner = nullptr;
 
 	UPROPERTY( BlueprintReadOnly )
-	float PlayerDistanceSq;
+	float PlayerDistanceSq = 0.f;
 };
 
 UENUM( BlueprintType )

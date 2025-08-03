@@ -8,6 +8,7 @@ void UFGGameRulesRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeP
 	DOREPLIFETIME(UFGGameRulesRemoteCallObject, mForceNetField_UFGGameRulesRemoteCallObject);
 }
 UFGGameRulesRemoteCallObject* UFGGameRulesRemoteCallObject::Get(UWorld* world){ return nullptr; }
+void UFGGameRulesRemoteCallObject::Server_SetNoFuelCost_Implementation(bool enabled){ }
 void UFGGameRulesRemoteCallObject::Server_UnlockInstantAltRecipes_Implementation(bool enabled){ }
 void UFGGameRulesRemoteCallObject::Server_UnlockAllMileStoneSchematics_Implementation(){ }
 void UFGGameRulesRemoteCallObject::Server_UnlockAllResourceSinkSchematics_Implementation(){ }
@@ -34,6 +35,7 @@ void AFGGameRulesSubsystem::UnlockAllResourceSinkSchematics(){ }
 void AFGGameRulesSubsystem::UnlockAllResearchSchematics(){ }
 void AFGGameRulesSubsystem::UnlockInstantAltRecipes(bool enabled){ }
 void AFGGameRulesSubsystem::SetNoUnlockCost(bool enabled){ }
+void AFGGameRulesSubsystem::SetNoFuelCost(bool enabled){ }
 void AFGGameRulesSubsystem::SetNoPower(bool enabled){ }
 void AFGGameRulesSubsystem::SetArachnidCreaturesDisabled(bool disabled){ }
 void AFGGameRulesSubsystem::SetGamePhase(int32 gamePhase){ }

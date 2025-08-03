@@ -12,6 +12,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOptionRowHovered, UFGDynamicOptionsRow*, optionRow );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOptionRowUnhovered, UFGDynamicOptionsRow*, optionRow );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOptionSlotButtonFocusChanged, bool, hasFocus );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnOptionBackPressed );
 
 /**
  * 
@@ -66,7 +68,7 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option" )
 	void UpdatePendingIconsVisibilty();
 
-	UFUNCTION( BlueprintImplementableEvent, Category = "Option" )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option" )
 	void OnSubOptionsUpdated();
 
 	UFUNCTION( BlueprintCallable, Category = "Option" )
@@ -78,12 +80,24 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	void SetSubOptionsVisibility( bool newVisibilty ) { mSubOptionsVisibility = newVisibilty; }
 
+	UFUNCTION()
+	void SetWidgetLocator( FSettingsWidgetLocationDescriptor widgetLocator ) { mWidgetLocator = widgetLocator; };
+
 protected:
 	UPROPERTY( BlueprintAssignable, BlueprintCallable )
 	FOnOptionRowHovered mOnOptionRowHovered;
 
 	UPROPERTY( BlueprintAssignable, BlueprintCallable )
 	FOnOptionRowUnhovered mOnOptionRowUnhovered;
+	
+	UPROPERTY( BlueprintAssignable, BlueprintCallable )
+	FOnOptionBackPressed mOnOptionRowBackPressed;
+
+	UPROPERTY( BlueprintAssignable, BlueprintCallable )
+	FOnOptionSlotButtonFocusChanged mOnOptionSlotButtonFocusChanged;
+
+	UPROPERTY( Transient, BlueprintReadOnly )
+	FSettingsWidgetLocationDescriptor mWidgetLocator;
 	
 private:
 
@@ -107,5 +121,6 @@ private:
 	TArray< UFGDynamicOptionsRow* > mSubOptions;
 
 	bool mSubOptionsVisibility;
-	
+
+
 };

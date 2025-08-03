@@ -10,6 +10,7 @@ AFGBuildablePowerPole::AFGBuildablePowerPole() : Super() {
 	this->mConnectionsWidgetComponent = nullptr;
 	this->mConnectionWidgetClass = nullptr;
 	this->mMeshComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("PoleMeshProxy"));
+	this->mMeshComponentProxy->SetMobility(EComponentMobility::Static);
 	this->mPowerPoleType = EPowerPoleType::PPT_POLE;
 	this->mPowerTowerWireMaxLength = 100000.0;
 	this->mHasPower = false;

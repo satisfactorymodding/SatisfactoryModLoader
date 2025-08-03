@@ -14,7 +14,7 @@ public class FactoryPreEarlyLoadingScreen : ModuleRules
             }
         );
 
-        PublicDependencyModuleNames.AddRange(
+        PrivateDependencyModuleNames.AddRange(
             new string[]
             {
                 "CoreUObject",

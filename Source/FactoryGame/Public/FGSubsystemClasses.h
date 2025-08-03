@@ -11,15 +11,15 @@ UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Subsystem Classes"
 class FACTORYGAME_API UFGSubsystemClasses : public UDeveloperSettings
 {
 	GENERATED_BODY()
-	
+
 public:
 	UFGSubsystemClasses();
-	
-	static const UFGSubsystemClasses* Get() { return GetDefault<UFGSubsystemClasses>(); };
-	
+
+	static const UFGSubsystemClasses* Get() { return GetDefault< UFGSubsystemClasses >(); };
+
 	/** Subsystem to handle narrative messages in the game */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
-	TSoftClassPtr<class AFGStorySubsystem> mStorySubsystemClass;
+	TSoftClassPtr< class AFGStorySubsystem > mStorySubsystemClass;
 	/** Subsystem to handle time of day. */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGTimeOfDaySubsystem > mTimeSubsystemClass;
@@ -53,15 +53,18 @@ public:
 	/** Subsystem that handles the map */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGMapManager > mMapManagerClass;
+	/** Subsystem to manage audio space around player */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSoftClassPtr< class AFGLocalAudioContextSubsystem > mLocalAudioContextSubsystemClass;
 	/** Subsystem to manage all the buildables in the game. */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
-	TSubclassOf< class AFGBuildableSubsystem > mBuildableSubsystemClass;
+	TSoftClassPtr< class AFGBuildableSubsystem > mBuildableSubsystemClass;
 	/** Subsystem to audio volume according to external voice chat apps */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGVoiceChatAudioMeterSubsystem > mVoiceChatAudioMeterSubsystemClass;
 	/** Subsystem to manage all the lightweight buildables in the game (Foundations, Walls). */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
-	TSubclassOf< class AFGLightweightBuildableSubsystem > mLightweightBuildableSubsystemClass;
+	TSoftClassPtr< class AFGLightweightBuildableSubsystem > mLightweightBuildableSubsystemClass;
 	/** Subsystem used to remove foliage on the map. */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGFoliageRemovalSubsystem > mFoliageRemovalSubsystemClass;
@@ -84,7 +87,7 @@ public:
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGVehicleSubsystem > mVehicleSubsystemClass;
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
-	TSoftClassPtr< class AFGEventSubsystem> mEventSubsystemClass;
+	TSoftClassPtr< class AFGEventSubsystem > mEventSubsystemClass;
 	/** Handles world grid and data for those cells */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGWorldGridSubsystem > mWorldGridSubsystemClass;
@@ -100,10 +103,7 @@ public:
 	/** Handles sign data replication */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGSignSubsystem > mSignSubsystemClass;
-	/** Handles actions relevant for photo mode, Camera adjustments, Simple sequences etc. */ 
-	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
-	TSoftClassPtr< class AFGPhotoModeManager > mPhotoModeManagerClass;
-	/** Handles everything related to creatures. */ 
+	/** Handles everything related to creatures. */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGCreatureSubsystem > mCreatureSubsystemClass;
 	/** Helps scanning of objects */

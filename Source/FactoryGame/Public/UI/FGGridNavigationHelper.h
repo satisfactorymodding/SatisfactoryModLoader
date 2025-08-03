@@ -31,6 +31,9 @@ public:
 	UFUNCTION( BlueprintCallable )
 	void SetupNavigation( const TArray<UWidget*>& widgets );
 
+	UFUNCTION( BlueprintCallable )
+	void SetWidgetsToSkip( int amountOfWidgetsToSkip );
+
 private:
 	UFUNCTION( BlueprintCallable )
 	UWidget* DoNavigation( EUINavigation NavigationDirection );
@@ -63,4 +66,6 @@ private:
 	TArray< UWidget* > mAllWidgets;
 
 	double mActiveColumn = -1.0;
+
+	int mWidgetsToSkip = 0;
 };

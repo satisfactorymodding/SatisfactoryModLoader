@@ -5,7 +5,7 @@
 UOnlineSessionBackendLink* USessionInformation::GetSessionBackendLink(UOnlineIntegrationBackend* OnlineBackend) const{ return nullptr; }
 FCommonSession USessionInformation::GetSessionHandle() const{ return FCommonSession(); }
 void USessionInformation::UpdateCustomSettings(APlayerController *Player, const TArray<FCustomOnlineSessionSetting>& UpdatedCustomSettings){ }
-void USessionInformation::AddSessionMember(APlayerState* PlayerState){ }
+USessionMemberInformation* USessionInformation::AddSessionMember(APlayerState* PlayerState){ return nullptr; }
 void USessionInformation::RemoveSessionMember(APlayerState* PlayerState){ }
 bool USessionInformation::GetCustomSetting(FName SettingName, FCustomOnlineSessionSetting& OutSetting){ return bool(); }
 void USessionInformation::RefreshCachedData(FDateTime UpdateTimestampUtc){ }
@@ -21,6 +21,9 @@ void USessionInformation::RemoveOnSessionAttributesRemovedDelegate(FDelegateHand
 void USessionInformation::RemoveOnSessionAttributesUpdatedDelegate(FDelegateHandle DelegateHandle){ }
 void USessionInformation::ApplyProfile(FName ProfileName){ }
 void USessionInformation::ApplyAllowNewMembers(bool AllowNewMembers){ }
+bool USessionInformation::IsOnlineSession() const{ return false; }
+void USessionInformation::UpdateRecentlyPlayedWith(class ULocalUserInfo* LocalUser){ }
 void USessionInformation::UpdatePresenceForSessionMembers() const{ }
 USessionMemberInformation* USessionInformation::FindMember(UE::Online::FAccountId AccountId){ return nullptr; }
 int32 USessionInformation::FindMemberIndex(UE::Online::FAccountId AccountId){ return int32(); }
+void USessionInformation::TryUpdateRecentPlayers(){ }

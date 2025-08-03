@@ -6,6 +6,7 @@
 void AFGBuildableHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableHologram, mSnappedBuilding);
+	DOREPLIFETIME(AFGBuildableHologram, mCustomizationData);
 }
 AFGBuildableHologram::AFGBuildableHologram() : Super() {
 	this->mMaxPlacementFloorAngle = 35.0;
@@ -19,8 +20,8 @@ AFGBuildableHologram::AFGBuildableHologram() : Super() {
 	this->mNeedsValidFloor = true;
 	this->mMustSnapToAttachmentPoint = false;
 	this->mCanSnapWithAttachmentPoints = true;
+	this->mCanRotateAroundAttachmentPoint = true;
 	this->mAttachmentPointSnapDistanceThreshold = 500.0;
-	this->mDefaultSwatch = nullptr;
 	this->mUseBuildClearanceOverlapSnapp = true;
 	this->mCanNudgeHologram = true;
 }
@@ -29,13 +30,12 @@ void AFGBuildableHologram::SetBuildableClass(TSubclassOf<  AFGBuildable > builda
 bool AFGBuildableHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGBuildableHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGBuildableHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
-void AFGBuildableHologram::PreHologramPlacement(const FHitResult& hitResult){ }
-void AFGBuildableHologram::PostHologramPlacement(const FHitResult& hitResult){ }
+void AFGBuildableHologram::PreHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
+void AFGBuildableHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
 void AFGBuildableHologram::ScrollRotate(int32 delta, int32 step){ }
 void AFGBuildableHologram::AdjustForGround(FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
 AActor* AFGBuildableHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
-void AFGBuildableHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
-bool AFGBuildableHologram::CanNudgeHologram() const{ return bool(); }
+void AFGBuildableHologram::GetIgnoredClearanceActors(TSet< AActor* >& ignoredActors) const{ }
 ENudgeFailReason AFGBuildableHologram::NudgeTowardsWorldDirection(const FVector& Direction){ return ENudgeFailReason(); }
 FTransform AFGBuildableHologram::GetNudgeSpaceTransform() const{ return FTransform(); }
 bool AFGBuildableHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
@@ -49,10 +49,11 @@ void AFGBuildableHologram::SnapHologramToGuidelines(){ }
 void AFGBuildableHologram::UpdateGuidelineVisuals(const TArray< FFGHologramGuidelineData >& guidelineData){ }
 void AFGBuildableHologram::ClearGuidelineVisuals(){ }
 void AFGBuildableHologram::FilterAttachmentPoints(TArray< const FFGAttachmentPoint* >& Points,  AFGBuildable* pBuildable, const FHitResult& HitResult) const{ }
+void AFGBuildableHologram::SetCustomizationData(const struct FFactoryCustomizationData& customizationData){ }
 USceneComponent* AFGBuildableHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 void AFGBuildableHologram::CheckValidPlacement(){ }
 int32 AFGBuildableHologram::GetRotationStep() const{ return int32(); }
-bool AFGBuildableHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
+bool AFGBuildableHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramLocationOffset) const{ return bool(); }
 void AFGBuildableHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGBuildableHologram::SnapToFloor( AFGBuildable* floor, FVector& location, FRotator& rotation){ }
 void AFGBuildableHologram::SnapToFoundationSide( AFGBuildableFoundation* foundation, const FVector& localSideNormal, EAxis::Type snapAxis, FVector& location, FRotator& rotation){ }
@@ -72,14 +73,15 @@ void AFGBuildableHologram::PreConfigureActor( AFGBuildable* inBuildable){ }
 void AFGBuildableHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureBuildEffect( AFGBuildable* inBuildable){ }
-void AFGBuildableHologram::SetMaterial( UMaterialInterface* material){ }
-void AFGBuildableHologram::SetupFactoryConnectionMesh( UFGFactoryConnectionComponent* connectionComponent, bool bUseFrameMesh, bool bUseArrowMesh,  USceneComponent* attachParent){ }
-void AFGBuildableHologram::SetupPowerConnectionMesh( UFGPowerConnectionComponent* connectionComponent,  USceneComponent* attachParent){ }
-void AFGBuildableHologram::SetupPipeConnectionMesh( UFGPipeConnectionComponentBase* connectionComponent, bool bUseFrameMesh, bool bUseArrowMesh,  USceneComponent* attachParent){ }
+void AFGBuildableHologram::ConfigureChildActor(class AFGBuildable* inBuildableParent, class AActor* childActor) const{ }
+TArray< class UStaticMeshComponent* > AFGBuildableHologram::SetupFactoryConnectionMesh( UFGFactoryConnectionComponent* connectionComponent, bool bUseFrameMesh, bool bUseArrowMesh,  USceneComponent* attachParent){ return TArray<class UStaticMeshComponent*>(); }
+TArray< class UStaticMeshComponent* > AFGBuildableHologram::SetupPowerConnectionMesh( UFGPowerConnectionComponent* connectionComponent,  USceneComponent* attachParent){ return TArray<class UStaticMeshComponent*>(); }
+TArray< class UStaticMeshComponent* > AFGBuildableHologram::SetupPipeConnectionMesh( UFGPipeConnectionComponentBase* connectionComponent, bool bUseFrameMesh, bool bUseArrowMesh,  USceneComponent* attachParent){ return TArray<class UStaticMeshComponent*>(); }
 const FFGAttachmentPoint* AFGBuildableHologram::SelectCandidateForAttachment(const TArray< const FFGAttachmentPoint* >& Candidates,  AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FHitResult& HitResult){ return nullptr; }
 void AFGBuildableHologram::CreateAttachmentPointTransform(FTransform& out_transformResult, const FHitResult& HitResult,  AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint){ }
-void AFGBuildableHologram::DelayApplyPrimitiveData(){ }
-void AFGBuildableHologram::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
+void AFGBuildableHologram::ApplyCustomizationData(){ }
+void AFGBuildableHologram::OnGamestateReceived(){ Super::OnGamestateReceived(); }
+void AFGBuildableHologram::OnRep_CustomizationData(){ }
 FName AFGBuildableHologram::mInputConnectionMeshTag = FName();
 FName AFGBuildableHologram::mOutputConnectionMeshTag = FName();
 FName AFGBuildableHologram::mNeutralConnectionMeshTag = FName();

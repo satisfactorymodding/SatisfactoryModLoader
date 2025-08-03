@@ -7,8 +7,10 @@
 
 AFGConveyorChainActor::AFGConveyorChainActor() : Super() {
 	this->mSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
+	this->mSceneComponent->SetMobility(EComponentMobility::Movable);
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	this->mSplineComponent->SetupAttachment(mSceneComponent);
+	this->mSplineComponent->SetMobility(EComponentMobility::Movable);
 	this->mFirstConveyor = nullptr;
 	this->mLastConveyor = nullptr;
 	this->mConnection0 = nullptr;
@@ -65,10 +67,11 @@ int32 AFGConveyorChainActor::GetIndexDistanceFromLeadItem(int32 index) const{ re
 FConveyorBeltItem* AFGConveyorChainActor::GetItemForIndex(int32 index){ return nullptr; }
 void AFGConveyorChainActor::GetItemsForSegment( AFGBuildableConveyorBase* conveyorBase, TArray< FConveyorBeltItem* >& out_Items){ }
 void AFGConveyorChainActor::GetItemsForSegmentIndex(int32 segIndex, TArray< FConveyorBeltItem* >& out_Items){ }
-FConveyorBeltItem* AFGConveyorChainActor::FindItemClosestToLocation(const FVector& location, bool discountLifts, int32& out_ItemIndex, TSubclassOf<  UFGItemDescriptor > desiredClass){ return nullptr; }
-FConveyorBeltItem* AFGConveyorChainActor::FindItemClosestToOffset(float offset, float maxDistance, bool discountLifts,  int32& out_ItemIndex, TSubclassOf<  UFGItemDescriptor > desiredClass){ return nullptr; }
+FConveyorBeltItem* AFGConveyorChainActor::FindItemClosestToLocation(const FVector& location, bool discountLifts, int32& out_ItemIndex, TSubclassOf<  UFGItemDescriptor > desiredClass, EChainItemSearchDirection dir){ return nullptr; }
+FConveyorBeltItem* AFGConveyorChainActor::FindItemClosestToOffset(float offset, float maxDistance, bool discountLifts,  int32& out_ItemIndex, TSubclassOf<  UFGItemDescriptor > desiredClass, EChainItemSearchDirection dir){ return nullptr; }
 FConveyorBeltItem* AFGConveyorChainActor::FindItemPickupForClient(float offset, TSubclassOf< UFGItemDescriptor > desiredClass, int32& out_ItemIndex){ return nullptr; }
-FVector AFGConveyorChainActor::GetLocationAtDistanceAlongSpline(float offset,  ESplineCoordinateSpace::Type cordSpace) const{ return FVector(); }
+FVector AFGConveyorChainActor::GetLocationAtDistanceAlongSpline(float offset, ESplineCoordinateSpace::Type cordSpace) const{ return FVector(); }
+FVector AFGConveyorChainActor::GetDirectionAtDistanceAlongSpline(float offset, ESplineCoordinateSpace::Type cordSpace) const{ return FVector(); }
 void AFGConveyorChainActor::GetLocationAndRotationOfItem(int32 index, FVector& out_Location, FRotator& out_Rotation){ }
 float AFGConveyorChainActor::FindOffsetClosestToLocation(const FVector& location){ return float(); }
 FConveyorChainSplineSegment* AFGConveyorChainActor::GetSegmentForConveyorBase(AFGBuildableConveyorBase* conveyorBase){ return nullptr; }
@@ -85,5 +88,8 @@ void AFGConveyorChainActor::AddConnectionEntryForItemStateIndices(UNetConnection
 void AFGConveyorChainActor::RemoveConnectionEntryForItemStateIndices(UNetConnection* connection){ }
 uint8 AFGConveyorChainActor::EstimatedMaxNumGrab_Threadsafe(float estimatedDeltaTime) const{ return uint8(); }
 float AFGConveyorChainActor::GetAndUseTimeDebtForItem(int32 itemIndex, float dt){ return float(); }
+void AFGConveyorChainActor::RegisterConveyorMonitor(class AFGBuildableConveyorMonitor* monitor){  }
+void AFGConveyorChainActor::UnregisterConveyorMonitor(class AFGBuildableConveyorMonitor* monitor){  }
+void AFGConveyorChainActor::UpdateAttachedMonitors(float deltaTime){ }
 void AFGConveyorChainActor::DebugDrawChainInfo(){ }
 void AFGConveyorChainActor::DebugDrawItemTimeDebt(int32 itemIndex){ }

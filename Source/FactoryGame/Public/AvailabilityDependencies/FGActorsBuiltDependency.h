@@ -29,6 +29,7 @@ public:
 
 	TMap< TSubclassOf< class AActor >, int32 > GetActorsBuiltCount() const { return mActorsBuiltCount; }
 	EActorBuiltDependencyType GetType() const { return mType; }
+	bool IsPlayerSpecific() const { return mIsPlayerSpecific; }
 
 #if WITH_EDITOR
 	virtual FString ToString() const override;
@@ -43,4 +44,8 @@ protected:
 	/** The type of build action this dependency cares about */
 	UPROPERTY( EditDefaultsOnly, Category="Dependency" )
 	EActorBuiltDependencyType mType;
+
+	/** Whether or not this dependency is player specific, i.e should check the amount built / dismantled for the specific player, not the total overall. */
+	UPROPERTY( EditDefaultsOnly, Category="Dependency" )
+	bool mIsPlayerSpecific;
 };

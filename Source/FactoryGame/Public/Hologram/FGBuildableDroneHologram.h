@@ -28,7 +28,7 @@ public:
 
 	// Begin AFGHologram interface
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
-	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
 	virtual void CheckValidPlacement() override;
 	// End of AFGHologram interface
 

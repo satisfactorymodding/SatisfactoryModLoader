@@ -61,7 +61,7 @@ private:
 	void OnRep_LaunchAngle();
 
 protected:
-	UPROPERTY()
+	UPROPERTY( CustomSerialization )
 	EJumpPadHologramBuildStep mBuildStep = EJumpPadHologramBuildStep::JPHBS_PlacementAndRotation;
 
 	UPROPERTY( VisibleAnywhere, ReplicatedUsing = OnRep_LaunchAngle, CustomSerialization )

@@ -91,7 +91,7 @@ struct FCompatibleItemDescriptors
 	GENERATED_BODY()
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
-	ECompatibleItemType CompatibleItemType;
+	ECompatibleItemType CompatibleItemType = {};
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	TArray< TSubclassOf< class UFGItemDescriptor > > CompatibleItemDescriptors;
@@ -111,10 +111,10 @@ struct FDescriptorStatBar
 	GENERATED_BODY()
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
-	EDescriptorStatBarType DescriptorStatBarType;
+	EDescriptorStatBarType DescriptorStatBarType = {};
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
-	int32 Value;
+	int32 Value = {};
 };
 
 /** Simple struct when you need an array of item descriptors in a struct. For example when you want to have TMap< xyz, TArray< TSubclassOf< class UFGItemDescriptor> > > */
@@ -150,11 +150,15 @@ public:
 	virtual void Serialize( FArchive& ar ) override;
 	virtual void PostLoad() override;
 	virtual void BeginDestroy() override;
+	virtual void GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const override;
 	// End UObject interface
 
 	/** The state of this resource. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static EResourceForm GetForm( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Retrieves the resource form from a potentially unloaded blueprint asset corresponding to this item descriptor */
+	static EResourceForm GetFormFromAssetData( const FAssetData& blueprintAssetData );
 
 	/** In case the item is a gas form, this is the type of gas. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
@@ -185,6 +189,9 @@ public:
 	/** Used to get the resource name in blueprints */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static FText GetItemName( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Retrieves the item name from a potentially unloaded blueprint asset corresponding to this item descriptor */
+	static FText GetItemNameFromAssetData( const FAssetData& blueprintAssetData );
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	FText GetItemNameFromInstance() const { return GetItemNameInternal(); }
@@ -330,6 +337,12 @@ public:
 	FORCEINLINE static void SetItemEncountered( TSubclassOf<UFGItemDescriptor> Class, int32 Index );
 	FORCEINLINE static int32 IsItemEncountered( TSubclassOf<UFGItemDescriptor> Class );
 
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Descriptor" )
+	static void SetSmallIcon( TSubclassOf< UFGItemDescriptor > Class, UTexture2D* Icon );
+	
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Descriptor" )
+	static void SetBigIcon( TSubclassOf< UFGItemDescriptor > Class, UTexture2D* Icon );
+
 	/** Returns true if this item descriptor can be picked up and stored in player inventory. i.e if its a solid and not a building or other non pickupable item
 	 *  If it's a non pickupable class we will return false in the overridden Internal_CanItemBePickedup */
 	static bool CanItemBePickedup( TSubclassOf< UFGItemDescriptor > inClass );
@@ -359,11 +372,11 @@ public:
 	UPROPERTY( Transient )
 	bool mUseDisplayNameAndDescription;
 
-	/** Readable name of the item */
+	/** Readable name of the item. This is also AssetRegistrySearchable */
 	UPROPERTY( EditDefaultsOnly, Category = "Item", meta = ( EditCondition = mUseDisplayNameAndDescription, HideEditConditionToggle ) )
 	FText mDisplayName;
 
-	/** Readable description of the item */
+	/** Readable description of the item. This is also AssetRegistrySearchable */
 	UPROPERTY( EditDefaultsOnly, Category = "Item", meta = ( EditCondition = mUseDisplayNameAndDescription, HideEditConditionToggle, MultiLine = true ) )
 	FText mDescription;
 
@@ -397,7 +410,7 @@ protected:
 	float mRadioactiveDecay;
 
 	/** The state of this resource (cannot change during it's lifetime). */
-	UPROPERTY( EditDefaultsOnly, Category = "Item" )
+	UPROPERTY( EditDefaultsOnly, Category = "Item", AssetRegistrySearchable )
 	EResourceForm mForm;
 
 	/** In case this item is a gas type, this represents the type of gas. */

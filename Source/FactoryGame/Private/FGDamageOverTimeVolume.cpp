@@ -13,6 +13,7 @@ void AFGDamageOverTimeVolume::CheckForErrors(){ Super::CheckForErrors(); }
 AFGDamageOverTimeVolume::AFGDamageOverTimeVolume() : Super() {
 	this->mPostProcessSettings = nullptr;
 	this->mDotComponent = CreateDefaultSubobject<UFGDotComponent>(TEXT("DotComponent"));
+	this->mDotComponent->SetMobility(EComponentMobility::Static);
 	this->mDotComponent->SetupAttachment(GetBrushComponent());
 }
 bool AFGDamageOverTimeVolume::EncompassesPoint(FVector point, float sphereRadius , float* out_distanceToPoint){ return bool(); }

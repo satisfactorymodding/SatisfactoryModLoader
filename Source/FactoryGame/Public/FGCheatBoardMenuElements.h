@@ -8,7 +8,9 @@
 #include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/Views/STreeView.h"
+#include "UObject/SoftObjectPtr.h"
 
+class UObject;
 struct FCheatMenuCategory;
 class SCheatTreeView;
 class IFGCheatBoardParameterFilter;
@@ -65,13 +67,12 @@ struct FACTORYGAME_API FCheatMenuElement : TSharedFromThis<FCheatMenuElement>
 struct FACTORYGAME_API FCheatMenuParam : FCheatMenuElement
 {
 	explicit FCheatMenuParam( const TSharedPtr<FCheatMenuCategory> InParentCategory, const FString& InDisplayName );
-	FCheatMenuParam( const TSharedPtr<FCheatMenuCategory> InParentCategory, const FString& InDisplayName, UObject* InObjectValue );
+	FCheatMenuParam( const TSharedPtr<FCheatMenuCategory> InParentCategory, const FString& InDisplayName, const TSoftObjectPtr<UObject>& InObjectValue );
 	FCheatMenuParam( const TSharedPtr<FCheatMenuCategory> InParentCategory, const FString& InDisplayName, bool bInBoolValue );
 	FCheatMenuParam( const TSharedPtr<FCheatMenuCategory> InParentCategory, const FString& InDisplayName, int64 InIntegerValue );
 
 	// Begin FCheatMenuElement interface
 	virtual EItemType GetType() const override;
-	virtual void AddReferencedObjects(FReferenceCollector& ReferenceCollector) override;
 	// End FCheatMenuElement interface
 
 	//we don't need support for all types, just the ones we want to have in a menu with our full menu logics, like when picking in big lists
@@ -87,7 +88,7 @@ struct FACTORYGAME_API FCheatMenuParam : FCheatMenuElement
 
 	bool bBoolVal{false};
 	int64 NumberValue{0};
-	TObjectPtr<UObject> ObjectPtr{nullptr};
+	TSoftObjectPtr<UObject> ObjectPtr{nullptr};
 };
 
 struct FACTORYGAME_API FCheatMenuCategory : FCheatMenuElement

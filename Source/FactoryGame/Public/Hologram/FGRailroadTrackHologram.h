@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGRailroadTrackConnectionComponent.h"
 #include "FGSplineHologram.h"
 #include "Components/SplineComponent.h"
 #include "FGRailroadTrackHologram.generated.h"
@@ -22,6 +23,8 @@ UCLASS()
 class FACTORYGAME_API AFGRailroadTrackHologram : public AFGSplineHologram
 {
 	GENERATED_BODY()
+
+	friend class FGBlueprintOpenRailroadConnectionManager;
 public:
 	AFGRailroadTrackHologram();
 
@@ -31,13 +34,17 @@ public:
 	// End AActor interface
 
 	// Begin AFGHologram interface
-	virtual class USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
+	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
 	virtual void CheckBlueprintCommingling() override;
-	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
+	virtual bool CanTakeNextBuildStep() const override;
+	virtual int32 GetRotationStep() const override;
+	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	// End AFGHologram interface
 
 	// Begin AFGBuildableHologram interface
@@ -55,10 +62,14 @@ public:
 	TArray< class UFGRailroadTrackConnectionComponent* > GetSnappedConnectionComponents();
 
 protected:
+	void GenerateAndUpdateSpline( const FHitResult& hitResult );
+	
 	// Begin AFGBuildableHologram interface
 	virtual void CheckValidPlacement() override;
 	virtual void CheckValidFloor() override;
 	// End AFGBuildableHologram interface
+
+	void ValidateRailroadTrack();
 
 	// Begin AFGSplineHologram interface
 	virtual void UpdateClearanceData() override;
@@ -66,8 +77,8 @@ protected:
 	// End AFGSplineHologram interface
 
 private:
-	void TryFindAndSnapToOverlappingConnection( int32 forConnectionIndex, FVector& inout_newLocation, FVector& inout_newTangent );
-	void TryPlaceSwitchControl( int32 forConnectionIndex );
+	bool TryFindAndSnapToOverlappingConnection( int32 forConnectionIndex, const FVector& location );
+	void TryPlaceSwitchControl( int32 forConnectionIndex, const TArray<class UFGRailroadTrackConnectionComponent*>* blueprintHologramConnections = nullptr );
 
 	bool ValidateGrade();
 	bool ValidateCurvature();
@@ -108,16 +119,42 @@ private:
 	UPROPERTY( CustomSerialization )
 	class UFGRailroadTrackConnectionComponent* mSnappedConnectionComponents[ 2 ];
 
-	/** The track connections to go along with the snapped connection if that one used to be a switch. */
 	UPROPERTY( CustomSerialization )
-	FConnectionComponentArrayWrapper mSnappedAdditionalConnectionComponents[ 2 ];
+	class AFGBuildableRailroadTrack* mSnappedRailroadTrack;
+	
+	UPROPERTY( CustomSerialization )
+	float mSnappedRailroadTrackDistance;
+
+	UPROPERTY( CustomSerialization )
+	bool mFlipSnappedDirection;
+
+	bool mAllowAutomaticSnappedDirectionFlipping;
+
+	UPROPERTY( CustomSerialization )
+	bool mStraightMode;
 
 	/** All the generated spline meshes. */
 	UPROPERTY()
 	TArray< class USplineMeshComponent* > mSplineMeshes;
 
 	/** This is an additional floor data for the spline data (local space). */
+	UPROPERTY( CustomSerialization )
 	TArray< FVector > mFloorData;
+
+	UPROPERTY( CustomSerialization )
+	FVector mHitLocation;
+	UPROPERTY( CustomSerialization )
+	FVector mHitTangent;
+	UPROPERTY( CustomSerialization )
+	FVector mHitFloor;
+
+	UPROPERTY( CustomSerialization )
+	FVector mSnappedStartLocation;
+	UPROPERTY( CustomSerialization )
+	FVector mSnappedStartTangent;
+
+	UPROPERTY( CustomSerialization )
+	bool mUseCustomEndRotation;
 
 	/** Cached from the default buildable. */
 	UPROPERTY()
@@ -127,4 +164,7 @@ private:
 	/** Optional child hologram to build if we are dragging out a turnout */
 	UPROPERTY( Replicated )
 	class AFGRailroadSwitchControlHologram* mSwitchControls[ 2 ];
+
+	UPROPERTY( Replicated )
+	int32 mNumSwitchConnections[2];
 };

@@ -44,6 +44,7 @@ AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mIsUnloadingVehicle = false;
 	this->mVehicleMovement = CreateDefaultSubobject<UFGWheeledVehicleMovementComponent>(TEXT("MovementComp"));
 	this->mFoliageCollideBox = CreateDefaultSubobject<UBoxComponent>(TEXT("FoliageBox"));
+	this->mFoliageCollideBox->SetMobility(EComponentMobility::Movable);
 	this->mVehicleLightsOn = true;
 	this->mVehicleHonkOn = false;
 	this->mDefaultLockedSprintArmRotation = FRotator::ZeroRotator;
@@ -183,7 +184,7 @@ void AFGWheeledVehicle::Server_ToggleAutoPilot_Implementation(){ }
 void AFGWheeledVehicle::Server_TogglePathVisibility_Implementation(){ }
 void AFGWheeledVehicle::Server_ToggleRecording_Implementation(){ }
 void AFGWheeledVehicle::Server_ClearRecordedPath_Implementation(){ }
-void AFGWheeledVehicle::Server_SavePath_Implementation(const FString& saveName){ }
+void AFGWheeledVehicle::Server_SavePath_Implementation(const FString& saveName, const TArray< FLocalUserNetIdBundle >& lastEditedBy){ }
 void AFGWheeledVehicle::Server_UnsavePath_Implementation(AFGSavedWheeledVehiclePath* path){ }
 void AFGWheeledVehicle::Server_LoadPath_Implementation( AFGDrivingTargetList* targetList){ }
 void AFGWheeledVehicle::FindSavedPaths(const FString& textFilter, bool filterOnVehicleType, TArray< AFGSavedWheeledVehiclePath* >& result) const{ }

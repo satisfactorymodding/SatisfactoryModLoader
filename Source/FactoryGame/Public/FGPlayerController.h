@@ -13,6 +13,7 @@
 #include "FGPlayerState.h"
 #include "PlayerPresenceState.h"
 #include "UI/Message/FGAudioMessage.h"
+
 #include "FGPlayerController.generated.h"
 
 enum class EPrivilegeLevel : uint8;
@@ -23,7 +24,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FDisabledInputGateDelegate, FDisabl
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnToggleInventory, bool, isOpen );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnToggleInteractionUI, bool, isOpen, TSubclassOf< class UUserWidget >, interactionClass );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnFinishRespawn );
-DECLARE_MULTICAST_DELEGATE_TwoParams( FOnChatMessageEnteredDelegate, FChatMessageStruct&, bool& );
+DECLARE_MULTICAST_DELEGATE_TwoParams( FOnChatMessageEnteredDelegate, const FString& /* chatMessage */, bool& /* shouldSendMessage */ );
 DECLARE_MULTICAST_DELEGATE_OneParam( FOnPlayerControllerBegunPlay, class AFGPlayerController* );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnPlayerRespawnWithInventory, const FInventoryToRespawnWith&, respawnInventory );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnInputActionRemapped, const FName&, inActionName );
@@ -78,6 +79,7 @@ public:
 	virtual void PreClientTravel( const FString& pendingURL, ETravelType travelType, bool isSeamlessTravel ) override;
 	virtual void NotifyLoadedWorld( FName worldPackageName, bool isFinalDest ) override;
 	virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos) override;
+	virtual void GetNetViewerSpecificHighPriorityActors( TArray< AActor* >& HighPrioActors ) override;
 	// End APlayerController interface
 
 	/** Get the RCO of the given class. */
@@ -94,6 +96,7 @@ public:
 	**/
 	virtual void OnControlledCharacterDied( class AFGCharacterBase* character ) override;
 	virtual void OnControlledCharacterRevived( AFGCharacterBase* character ) override;
+	virtual EInputDeviceType GetPlayerInputDeviceType() const override;
 
 	/** Called when the controlled character inputs/exits the portal */
 	void OnControlledCharacterPortalStateChanged( AFGCharacterPlayer* character, bool isInPortalNow );
@@ -139,15 +142,18 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
 	void ExecuteShortcut( int32 shortcutIndex );
 
-	/** Get all shortcuts in the current hotbar */
-	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	void GetCurrentShortcuts( TArray< class UFGHotbarShortcut* >& out_shortcuts );
+	/** Returns true if the provided shortcut index is relevant for the currently selected input device type for the player character, e.g. should be shown in the UI */
+	UFUNCTION( BlueprintPure, Category = "Shortcut" )
+	bool IsShortcutIndexRelevantForCurrentInputType( int32 shortcutIndex ) const;
 
-	// <FL> [KajtaziT] actually returns ALL shortcuts, not just valid shortcuts	
+	/** Get all shortcuts in the current hotbar. If only relevant shortcuts is set, only shortcuts relevant to the current input type are returned */
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	void GetCurrentShortcutsInSlots( TArray< class UFGHotbarShortcut* >& out_shortcuts );
-	// </FL>
-	
+	void GetCurrentShortcuts( TArray< class UFGHotbarShortcut* >& out_shortcuts, bool bOnlyRelevantShortcuts = true );
+
+	/** Get all shortcut slots in the current hotbar, including the empty slots. If only relevant shortcuts is set, only shortcuts relevant to the current input type are returned */
+	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
+	void GetCurrentShortcutsInSlots( TArray< class UFGHotbarShortcut* >& out_shortcuts, bool bOnlyRelevantShortcuts = true );
+
 	/** Is a given material customization present as a shortcut on the active hotbar? */
 	UFUNCTION( BlueprintPure, Category = "Shortcut" )
 	bool DoesHotbarContainMaterialCustomization();
@@ -267,44 +273,25 @@ public:
 	/** Called when controlled pawn changes on the player controller */
 	static FOnPlayerControllerPawnChanged StaticOnControlledPawnChanged;
 
-	// Begin AFGMapManager RPCs
-	// @todok2 should me move these to a RCO of its own in map manager instead?
-	/** Tells the server to start transferring fog of war data to the requesting client  */
-	UFUNCTION( Reliable, Server, WithValidation )
-	void Server_RequestFogOfWarData();
-
-	/** Transfer fog of war data to the client */
-	UFUNCTION( Reliable, Client )
-	void Client_TransferFogOfWarData( const TArray<uint8>& fogOfWarRawData, int32 finalIndex );
-
 	UFUNCTION( Reliable, Server )
-	void Server_RequestMapMarkerData();
-	/** Transfer map marker data to the client */
-	UFUNCTION( Reliable, Client )
-	void Client_TransferMapMarkerData( const TArray<FMapMarker>& mapMarkers );
-	
+	void Server_AddOrUpdateMapMarker( FMapMarker mapMarker );
 	UFUNCTION( Reliable, Server )
-	void Server_AddMapMarker( FMapMarker mapMarker );
-
-	UFUNCTION( Reliable, Client )
-	void Client_OnMapMarkerAdded( FMapMarker mapMarker );
-
-	UFUNCTION( Reliable, Server )
-	void Server_RemoveMapMarker( int32 index );
-
-	UFUNCTION( Reliable, Client )
-	void Client_OnMapMarkerRemoved( int32 index );
+	void Server_RemoveMapMarker( FGuid markerGuid );
 	
 	UFUNCTION( Reliable, Server )
 	void Server_SetHighlightRepresentation( class AFGPlayerState* fgPlayerState, class UFGActorRepresentation* actorRepresentation );
 	UFUNCTION( Reliable, Server )
-	void Server_SetHighlighMarker( class AFGPlayerState* fgPlayerState, int32 markerID );
+	void Server_SetHighlighMarker( class AFGPlayerState* fgPlayerState, FGuid markerGUID );
 
 	UFUNCTION( Reliable, Client )
 	void Client_OnRepresentationHighlighted( class AFGPlayerState* fgPlayerState, class UFGActorRepresentation* actorRepresentation );
 	UFUNCTION( Reliable, Client )
-	void Client_OnMarkerHighlighted( class AFGPlayerState* fgPlayerState, int32 markerID );
+	void Client_OnMarkerHighlighted( class AFGPlayerState* fgPlayerState, FGuid markerID );
+
+	UFUNCTION(Server, Reliable)
+	void Server_UpdatePlayerRepresentations();
 	// End AFGMapManager RPCs
+
 
 	/** Play the indicated CameraAnim on this camera.
 	 * @param AnimToPlay - Camera animation to play
@@ -312,7 +299,13 @@ public:
 	 */
 	UFUNCTION(unreliable, client, BlueprintCallable, Category="Camera")
 	void ClientPlayCameraAnimationSequence(class UCameraAnimationSequence* AnimToPlay, float Scale=1.f, float Rate=1.f, float BlendInTime=0.f, float BlendOutTime=0.f, bool bLoop=false, bool bRandomStartTime=false, ECameraShakePlaySpace Space=ECameraShakePlaySpace::CameraLocal, FRotator CustomPlaySpace=FRotator::ZeroRotator );
-	
+
+	/** Stops the indicated CameraAnim on this camera.
+	 * @param AnimToStop - Camera animation to stop
+	 */
+	UFUNCTION(unreliable, client, BlueprintCallable, Category="Camera")
+	void ClientStopCameraAnimationSequence(class UCameraAnimationSequence* AnimToStop);
+
 	/** Gets the size on the viewport of the given actor */
 	UFUNCTION( BlueprintPure, Category = "HUD" )
 	float GetObjectScreenRadius( AActor* actor, float boundingRadius );
@@ -353,9 +346,6 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Cheat" )
 	void CreateSequenceList();
 
-	UFUNCTION( BlueprintPure, Category = "Screenshot" )
-	FString GetScreenshotPath( bool isHighRes );
-
 	virtual bool DestroyNetworkActorHandled() override;
 
 	virtual void AcknowledgePossession( class APawn* P ) override;
@@ -389,25 +379,11 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Map" )
 	FORCEINLINE bool HasCurrentAreaBeenPreviouslyVisited() const { return mCurrentAreaWasPreviouslyVisited; }
 
-	/** Lower limit of photo mode FOV. */
-	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
-	FORCEINLINE int32 GetPhotoModeFOVMin() const { return mMinPhotoModeFOV; }
-
-	/** Upper limit of photo mode FOV. */
-	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
-    FORCEINLINE int32 GetPhotoModeFOVMax() const { return mMaxPhotoModeFOV; }
-
 	UFUNCTION(Server, Reliable)
 	void OnAreaEnteredServer(TSubclassOf< UFGMapArea > newArea);
 
 	/** Called whenever an interact widget gets added or removed. */
 	void OnInteractWidgetAddedOrRemoved( class UFGInteractWidget* widget, bool added );
-
-	UFUNCTION( BlueprintImplementableEvent, Category = "Photo Mode" )
-	class UFGPhotoModeWidget* GetPhotoModeWidget() const;
-	
-	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
-	bool GetIsPhotoMode() { return mPhotoModeEnabled; }
 
 	UFUNCTION( BlueprintPure, Category = "Input" )
 	int32 GetMappingContextPriority() const;
@@ -416,6 +392,8 @@ public:
 	bool IsPauseMenuOpen() const;
 
 	UInputMappingContext* GetMappingContextChords() const { return mMappingContextChords; }
+
+	UInputMappingContext* GetMappingContextIntroDropPodSequence() const { return mMappingContextIntroDropPodSequence; }
 
 	/** Get the character we are controlling (if we are in vehicles, this finds our pawn in the vehicle), can return null if we don't control any character */
 	UFUNCTION( BlueprintPure, Category = "Character" )
@@ -452,10 +430,14 @@ public:
 	// </FL>
 
 	void OnSystemUIOverlayStateChanged(bool bOverlayShown);
+	
+	void SetDetachedCamera( const bool isEnabled );
 
+	void SetPhotoMode( const bool isEnabled );
+	
 protected:
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
-	void PonderRemoveDeadPawn();
+	void PonderRemoveDeadPawn(AFGCharacterPlayer* playerPawn);
 
 	/** Return false if we don't control anything */
 	bool ControlledCharacterIsAliveAndWell() const;
@@ -522,9 +504,9 @@ protected:
 
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Map" )
 	void ToggleMap();
-
-	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
-	void EnablePhotoMode( bool isEnabled );
+	
+	UFUNCTION( BlueprintCallable )
+	bool GetIsPhotoMode() const;
 
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Photo Mode" )
 	void TakePhoto();
@@ -537,15 +519,6 @@ protected:
 
 	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
 	void TogglePhotoMode();
-	
-	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
-	void ToggleHiResPhotoMode();
-
-	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
-	int32 GetPhotoModeFOV() { return mPhotoModeFOV; }
-
-	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
-	bool GetHiResPhotoModeEnabled() { return mHiResPhotoMode; }
 	
 	/** Returns true if we could give all items to the player. Partial adds are allowed */
 	UFUNCTION( BlueprintCallable, Category = "Items" )
@@ -584,8 +557,8 @@ private:
 	void Server_SetBlueprintShortcutOnIndex( const FString& blueprintName, int32 onIndex );
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_SetHotbarIndex( int32 index );
-	UFUNCTION( Reliable, Server, WithValidation )
-	void Server_SendChatMessage( const FChatMessageStruct& newMessage );
+	UFUNCTION( Reliable, Server )
+	void Server_SendChatMessage( const FString& messageText );
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_SpawnAttentionPingActor( FVector pingLocation, FVector pingNormal );
 	UFUNCTION( Reliable, Server, WithValidation )
@@ -594,6 +567,8 @@ private:
 	void Server_StartRespawn();
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_FinishRespawn();
+	UFUNCTION( Reliable, Server )
+	void Server_UpdatePlayerInputDeviceType( EInputDeviceType newInputDeviceType );
 
 	/** These are called in the respawn/join logic to let the server and client wait for the level streaming. */
 	void Server_WaitForLevelStreaming();
@@ -605,7 +580,9 @@ private:
 	void OnRep_IsRespawning();
 	/** Called by the server when the client grace period during respawn has elapsed */
 	void OnClientGracePeriodElapsed();
-
+	/** Called by the client to check if it has received the initial lightweight buildable replication data */
+	bool HasReceivedInitialLightweightReplicationData() const;
+	
 	static void testAndProcesAdaMessages( AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds, class APlayerState* PlayerState, class AFGGameState* fgGameState );
 	
 	/** Gets the saved mappings from game user settings and applies them to the enhanced input subsystem */
@@ -626,13 +603,19 @@ private:
 	virtual void Input_HotbarShortcut9( const FInputActionValue& ActionValue );
 	virtual void Input_HotbarShortcut10( const FInputActionValue& ActionValue );
 
+	/** Called when input device type is changed for the local player controller */
+	UFUNCTION()
+	void Local_OnInputDeviceTypeChanged(EInputDeviceType newInputDeviceType);
+
 	// <FL> hotbar and handheld radial menus
+public:
 	virtual void Input_HandheldRadialMenu_Started  ( const FInputActionInstance& ActionInstance );
 	virtual void Input_HandheldRadialMenu_Completed( const FInputActionInstance& ActionInstance );
 	virtual void Input_HotbarRadialMenu_Started    ( const FInputActionInstance& ActionInstance );
 	virtual void Input_HotbarRadialMenu_Completed  ( const FInputActionInstance& ActionInstance );
 	virtual void Input_HotbarRadialMenuPageDown	   ( const FInputActionInstance& ActionInstance );
 	virtual void Input_HotbarRadialMenuPageUp      ( const FInputActionInstance& ActionInstance );
+
 
 	void UpdateHotbarRadialMenuPage();
 
@@ -642,6 +625,7 @@ private:
 	void AddMappingContextImmediately(TObjectPtr< UInputMappingContext > MappingContext);
 	void RemoveMappingContextImmediately(TObjectPtr< UInputMappingContext > MappingContext);
 
+private:
 	// </FL>
 	
 	virtual void Input_Chat( const FInputActionValue& ActionValue );
@@ -656,15 +640,34 @@ private:
 	
 	virtual void Input_AttentionPing( const FInputActionValue& ActionValue );
 	
+	//<FL> [KonradA] BP accessible wrappers for gamepad Implementation of certain events.
+	// Many Input events check for the ActionValue, which makes then incompatible with tap/release triggers that
+	// are necessary on gamepad because we have multiple actions on a single button. These events can be called from enchanced input
+	// in bp and route it over the same code path, simulating actionvalue = true
+	UFUNCTION( BlueprintCallable )
+	void Input_AttentionPing_BP();
+	UFUNCTION(BlueprintCallable)
+	void Input_MapMarkerMode_BP( bool enabled );
+	//</FL>
+
 	virtual void Input_MapMarkerMode( const FInputActionValue& ActionValue );
 	virtual void Input_MapMarkerPlace( const FInputActionValue& ActionValue );
 
 	virtual void Input_ToggleMap( const FInputActionValue& ActionValue );
 	virtual void Input_TogglePhotoMode( const FInputActionValue& ActionValue );
+
+	virtual void Input_PhotoModeMoveForward( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeMoveBackwards( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeMoveLeft( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeMoveRight( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeMoveUp( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeMoveDown( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeMoveMouseX( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeMoveMouseY( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeMoveFaster( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeMoveSlower( const FInputActionValue& ActionValue );
 	
-	virtual void Input_PhotoModeFOVScroll( const FInputActionValue& ActionValue );
-    virtual void Input_PhotoModeToggleInstructionWidget( const FInputActionValue& ActionValue );
-	virtual void Input_PhotoModeToggleHiRes( const FInputActionValue& ActionValue );
+    virtual void Input_PhotoModeToggleDecoupleCamera( const FInputActionValue& ActionValue );
 	
 	virtual void Input_ClipboardCopy( const FInputActionValue& actionValue );
     virtual void Input_ClipboardPaste( const FInputActionValue& actionValue );
@@ -691,9 +694,7 @@ public:
 
 	float mRespawnInvincibilityTimer = 0.0f;
 
-	UPROPERTY( Replicated )
-	TObjectPtr<class AFGFoliageStateRepProxy> mFoliageStateRepProxy;
-	
+
 	UFUNCTION( BlueprintCallable, Category = "Shortcut Radial" )
 	void CreateShortcutRadialMenu(TSubclassOf< UFGRecipe > RecipeClass, UFGBlueprintDescriptor* Blueprint);
 
@@ -702,6 +703,9 @@ public:
 
 	UPROPERTY( Replicated )
 	TObjectPtr<class AFGLightweightBuildableRepProxy> mLightweightBuildableRepProxy;
+
+	UPROPERTY( BlueprintReadWrite )
+	UDragDropOperation* mDragAndDropItemObject = nullptr;
 	
 protected:
 	/** Object that manages non-cheat commands. Instantiated in shipping builds. */
@@ -728,6 +732,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
 	TObjectPtr< UInputMappingContext > mMappingContextPhotoMode;
 
+	/** Mapping context for the Detached Camera. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
+	TObjectPtr< UInputMappingContext > mMappingContextDetachedCamera;
+	
 	/** Mapping context for the map marker mode. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
 	TObjectPtr< UInputMappingContext > mMappingContextMapMarkerMode;
@@ -751,6 +759,10 @@ protected:
 	// <FL> mapping context for the handheld radial menu
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr< UInputMappingContext > mMappingContextHandheldRadialMenu;
+
+	// <FL> mapping context for the handheld radial menu
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr< UInputMappingContext > mMappingContextIntroDropPodSequence;
 
 	/** How often should we check which map area the pawn is in? */
 	UPROPERTY( EditDefaultsOnly )
@@ -780,6 +792,21 @@ protected:
 	float mSpeedToReachForAchievement = 4166.667f;
 	
 public:
+//<FL>[KonradA]
+	UFUNCTION(BlueprintCallable)
+	FString GetOnlineIdIfPossible( bool& hasValidOnlineId );
+	UFUNCTION( BlueprintCallable )
+	FString GetOnlineHandleIfPossible( bool& bHasValidOnlineHandle );
+
+	UFUNCTION( BlueprintCallable )
+	TArray< FLocalUserNetIdBundle > GetOnlineNetIdBundlesIfPossible( bool& bHasValidOnlineBundles );
+
+	bool IsSameAccount( TArray< FLocalUserNetIdBundle > OtherAccountBundles);
+	//</FL>
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void StartLookInputDelay();
+
 	float GetLookInputDelayTime(); // Full time in seconds until look input is fully activated again after closing the Handheld or Hotbar radial menu
 	float GetLookInputFadeFactor(); // Returns a factor to smoothly scale the looking input after closing the Handheld or Hotbar radial menu
 
@@ -813,17 +840,6 @@ private:
 
 	FDisabledInputGate mDisabledInputGate;
 
-	//Photo mode 
-	int32 mPhotoModeFOV; 
-	bool mPhotoModeEnabled;
-	bool mHiResPhotoMode;
-
-	UPROPERTY( EditDefaultsOnly, Category = "Photo Mode" )
-	int32 mMinPhotoModeFOV;
-
-	UPROPERTY( EditDefaultsOnly, Category = "Photo Mode" )
-	int32 mMaxPhotoModeFOV;
-
 	/** Subsystem that keeps track of effects in proximity to the player */
 	UPROPERTY()
 	class AFGProximitySubsystem* mProximitySubsystem;
@@ -848,4 +864,7 @@ private:
 	/** Privilege level of this player when playing on the dedicated server. None if not playing on Dedicated Server */
 	UPROPERTY( Replicated, Transient )
 	EPrivilegeLevel mDedicatedServerPrivilegeLevel;
+
+	/** Input device type used by the remote player client when this is not a local player */
+	EInputDeviceType mPlayerActiveInputDeviceType{EInputDeviceType::MouseAndKeyboard};
 };

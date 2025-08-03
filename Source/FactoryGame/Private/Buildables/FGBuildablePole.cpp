@@ -7,16 +7,11 @@
 #include "Hologram/FGPoleHologram.h"
 #include "Net/UnrealNetwork.h"
 
-AFGBuildablePole::AFGBuildablePole(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+AFGBuildablePole::AFGBuildablePole() : Super() {
 	this->mHeight = 100.0;
-	this->mPoleComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("PoleComponentProxy"));
-	this->mSnapOnly0 = CreateDefaultSubobject<UFGFactoryConnectionComponent>(TEXT("SnapOnly0"));
-	this->mPoleMesh = nullptr;
-	this->mSelectedPoleVersion = -1;
-	this->mUseStaticHeight = false;
+	this->mSnapOnly0 = nullptr;
 	this->mHologramClass = AFGPoleHologram::StaticClass();
-	this->mPoleComponentProxy->SetupAttachment(RootComponent);
-	this->mSnapOnly0->SetupAttachment(RootComponent);
+	this->mCanContainLightweightInstances = true;
 }
 void AFGBuildablePole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -24,11 +19,13 @@ void AFGBuildablePole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& O
 	DOREPLIFETIME(AFGBuildablePole, mSelectedPoleVersion);
 }
 void AFGBuildablePole::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildablePole::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ Super::PostLoadGame_Implementation(saveVersion, gameVersion); }
+void AFGBuildablePole::GetClearanceData_Implementation(TArray<FFGClearanceData>& out_data) const{ Super::GetClearanceData_Implementation(out_data); }
 void AFGBuildablePole::SetPoleHeight(float height){ }
 void AFGBuildablePole::SetupConnectionComponent(){ }
-TArray<struct FInstanceData> AFGBuildablePole::GetActorLightweightInstanceData_Implementation(){ return TArray<struct FInstanceData>(); }
-void AFGBuildablePole::SetupInstances_Native(bool bSpawnHidden){ }
-const FName AFGBuildablePole::PoleMeshName = FName();
-AFGBuildablePoleLightweight::AFGBuildablePoleLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-	this->mPoleComponentProxy = nullptr;
+const FPoleVariation* AFGBuildablePole::GetBestPoleVariationForHeight(float inHeight) const{ return nullptr; }
+int32 AFGBuildablePole::GetBestPoleVariationIndexForHeight(float inHeight) const{ return 0; }
+void AFGBuildablePole_NoCustomization::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
+TArray<struct FInstanceData> AFGBuildablePole::GetActorLightweightInstanceData_Implementation() const{ return TArray<struct FInstanceData>(); }

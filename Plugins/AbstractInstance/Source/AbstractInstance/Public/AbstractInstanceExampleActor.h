@@ -28,5 +28,5 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Instanced )
 	UAbstractInstanceDataObject* InstanceData;
 
-	TArray<FInstanceHandle*> InstanceHandles;
+	TArray<FInstanceOwnerHandlePtr> InstanceHandles;
 };

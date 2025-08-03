@@ -5,30 +5,8 @@
 #include "FactoryGame.h"
 #include "FGBuildablePipeBase.h"
 #include "FGFluidIntegrantInterface.h"
+#include "FGPipelineIndicatorData.h"
 #include "FGBuildablePipeline.generated.h"
-
-
-/**
- * Struct containing quantized fluid content for a more optimized replication.
- */
-USTRUCT()
-struct FACTORYGAME_API FQuantizedPipelineIndicatorData
-{
-	GENERATED_BODY()
-public:
-	void SetFlowPct( float pct );
-	float GetFlowPct() const;
-
-	void SetContentPct( float pct );
-	float GetContentPct() const;
-
-private:
-	/** See setters for how this data is packed. */
-	UPROPERTY()
-	int8 PackedFlow = 0;
-	UPROPERTY()
-	uint8 PackedContent = 0;
-};
 
 USTRUCT( BlueprintType )
 struct FStringPair
@@ -64,8 +42,9 @@ public:
 	// End Actor Interface 
 
 	// Begin AFGBuildable interface
-	virtual void Factory_Tick( float dt ) override;
 	virtual bool ShouldRegisterToFactoryTickGroup() const override;
+	virtual void RegisterInteractingPlayer_Implementation(AFGCharacterPlayer* player) override;
+	virtual void UnregisterInteractingPlayer_Implementation(AFGCharacterPlayer* player) override;
 	// End AFGBuildable interface
 
 	// Begin IFGDismantleInterface
@@ -166,16 +145,18 @@ public:
 	/** Adds an actor to ignore when determining indicator placement in begin play. This needs to be called BEFORE begin play to have any effect */
 	void AddIgnoredActorForIndicator( AActor* ignoredActor ) { mIgnoreActorsForIndicator.Add( TWeakObjectPtr< const AActor>( ignoredActor ) ); }
 
-	FORCEINLINE TArray< class AFGBuildablePassthrough* > GetSnappedPassthroughs() { return mSnappedPassthroughs; }
+	FORCEINLINE TArray<AFGBuildablePassthrough* > GetSnappedPassthroughs() const { return mSnappedPassthroughs; }
 
 	/** Smooth the values of the percentages for use in the indicator or UI. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Pipes|Pipeline" )
-	void SmoothValues( UPARAM( ref ) float& flowPct, UPARAM( ref ) float& contentPct, float dt ) const;
+	void SmoothValues( UPARAM( ref ) float& flowPct, UPARAM( ref ) float& contentPct, UPARAM( ref ) bool& stale, float dt ) const;
 
 	/** Get the values of the percentages for use in the indicator or UI. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Pipes|Pipeline" )
 	void GetRawValues( UPARAM( ref ) float& flowPct, UPARAM( ref ) float& contentPct ) const;
 
+	/** Updates the cached pipeline indicator data on the pipeline. Only updated when the local player has the UI open */
+	void SetCachedPipelineIndicatorData(const FPipelineIndicatorData& NewIndicatorData);
 protected:
 	/** Updates sounds depending on liquid in pipe */
 	UFUNCTION()
@@ -239,10 +220,6 @@ private:
 	UPROPERTY( SaveGame )
 	FFluidBox mFluidBox;
 
-	/** Quantized data used by the indicators. */
-	UPROPERTY( Replicated )
-	FQuantizedPipelineIndicatorData mIndicatorData;
-
 	/** Smoothed values used by the indicators/UI. */
 	float mIndicatorFlowPct;
 	float mIndicatorContentPct;
@@ -300,7 +277,11 @@ private:
 	/** Timer to handle the update when this pipe is significant. */
 	UPROPERTY()
 	FTimerHandle mUpdateSoundsHandle;
+	
 	/** How often do we update the sound parameters. [s] */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline|Audio" )
 	float mUpdateSoundsTimerInterval;
+
+	/** Cached indicator data. This data is only valid on the client */
+	FPipelineIndicatorData mPipelineIndicatorData;
 };

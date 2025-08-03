@@ -7,6 +7,7 @@ void UFGRecipeRCO::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGRecipeRCO, mForceNetField_UFGRecipeRemoteCallObject);
 }
+bool UFGRecipeRCO::ShouldRegisterRemoteCallObject(const AFGGameMode* gameMode) const{ return Super::ShouldRegisterRemoteCallObject(gameMode); }
 void UFGRecipeRCO::Server_RequestAvailableRecipeUpdate_Implementation(const int32& currentIndex){ }
 void UFGRecipeRCO::Client_RespondAvailableRecipeUpdate_Implementation(const TArray< TSubclassOf< UFGRecipe > >& recipes){ }
 void UFGRecipeRCO::Server_RequestAllRecipeUpdate_Implementation(const int32& currentIndex){ }
@@ -28,6 +29,8 @@ void AFGRecipeManager::GatherDependencies_Implementation(TArray< UObject* >& out
 bool AFGRecipeManager::NeedTransform_Implementation(){ return bool(); }
 bool AFGRecipeManager::ShouldSave_Implementation() const{ return bool(); }
 void AFGRecipeManager::AddAvailableRecipe(TSubclassOf< UFGRecipe > recipe){ }
+void AFGRecipeManager::AddAvailableRecipes(TArray<TSubclassOf<UFGRecipe>> recipes){  }
+void AFGRecipeManager::RemoveAvailableRecipes(const TArray<TSubclassOf<UFGRecipe>>& recipes){  }
 void AFGRecipeManager::GetAllAvailableRecipes(TArray< TSubclassOf< UFGRecipe > >& out_recipes){ }
 void AFGRecipeManager::GetAllAvailableCustomizationRecipes(TArray< TSubclassOf< UFGCustomizationRecipe > >& out_recipes){ }
 TSubclassOf<class UFGCustomizationRecipe> AFGRecipeManager::GetCustomizationRecipeFromDesc(TSubclassOf<class UFGFactoryCustomizationDescriptor> desc){ return TSubclassOf<UFGCustomizationRecipe>(); }
@@ -42,11 +45,15 @@ TArray< TSubclassOf< UFGRecipe > > AFGRecipeManager::FindRecipesByProduct(TSubcl
 void AFGRecipeManager::ResetAllRecipes(){ }
 void AFGRecipeManager::Debug_DumpStateToLog() const{ }
 void AFGRecipeManager::NotifyGameStateReadyOnClient(){ }
+void AFGRecipeManager::Internal_ReceivedInitialAvailableRecipes(const TArray<TSubclassOf<UFGRecipe>>& initialAvailableRecipes){  }
+void AFGRecipeManager::Internal_ReceivedAvailableRecipes(const TArray<TSubclassOf<UFGRecipe>>& newAvailableRecipes){  }
+void AFGRecipeManager::Internal_ReceivedRemovedRecipes(const TArray<TSubclassOf<UFGRecipe>>& removedRecipes){  }
 void AFGRecipeManager::OnSubsystemsValid(){ }
 void AFGRecipeManager::FilterRecipesByProducer(const TArray< TSubclassOf< UFGRecipe > >& inRecipes, TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes){ }
 bool AFGRecipeManager::CanAddToAvailableRecipes(TSubclassOf< UFGRecipe > recipe) const{ return bool(); }
 bool AFGRecipeManager::ShouldAddRecipeByEvent(TSubclassOf< UFGRecipe > recipe) const{ return bool(); }
-void AFGRecipeManager::PopulateAvailableBuildings(){ }
+void AFGRecipeManager::UpdateAvailableBuildings(const TArray<TSubclassOf<UFGRecipe>>& newAvailableRecipes){  }
+void AFGRecipeManager::RebuildAvailableBuildings(){  }
 void AFGRecipeManager::PopulateAllRecipesList(){ }
 void AFGRecipeManager::Internal_FindRecipesByIngredient(TSubclassOf< UFGItemDescriptor > ingredient, const TArray< TSubclassOf< UFGRecipe > >& recipeList, TArray< TSubclassOf< UFGRecipe > >& out_recipes, bool ignoreUniqueCheck) const{ }
 void AFGRecipeManager::Internal_FindRecipesByProduct(TSubclassOf< UFGItemDescriptor > product, const TArray< TSubclassOf< UFGRecipe > >& recipeList, TArray< TSubclassOf< UFGRecipe > >& out_recipes, bool ignoreUniqueCheck) const{ }

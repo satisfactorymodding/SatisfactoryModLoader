@@ -9,6 +9,7 @@ AFGScannableSubsystem* AFGScannableSubsystem::Get(UWorld* world){ return nullptr
 AFGScannableSubsystem* AFGScannableSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGScannableSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
 }
 void AFGScannableSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGScannableSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }

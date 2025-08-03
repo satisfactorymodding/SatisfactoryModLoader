@@ -14,6 +14,7 @@ AFGCreatureSpawner::AFGCreatureSpawner() : Super() {
 	this->mDebugComponent = nullptr;
 	this->mEditorSprite = nullptr;
 	this->mCapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
+	this->mCapsuleComponent->SetMobility(EComponentMobility::Static);
 	this->mCreatureClass = nullptr;
 	this->mCreatureClassArachnidOverride = nullptr;
 	this->mNumberOfCreatures = FInt32Interval(1, 1);

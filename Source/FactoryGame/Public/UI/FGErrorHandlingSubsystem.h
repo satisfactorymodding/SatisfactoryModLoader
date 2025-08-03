@@ -19,6 +19,13 @@ class FACTORYGAME_API UFGErrorHandlingSubsystem : public UGameInstanceSubsystem
 public:
 	void Initialize(FSubsystemCollectionBase& Collection) override;
 
+	void PopPendingGameplayEvent();
+	bool HasPendingGameplayEvent() { return mPendingGameplayEvents.Num() > 0; }
+
 protected:
 	void HandleGameplayEvent(const FGameplayEvent& GameplayEvent);
+
+private:
+
+	TArray< FGameplayEvent > mPendingGameplayEvents;
 };

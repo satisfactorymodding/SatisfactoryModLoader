@@ -2,16 +2,20 @@
 
 #include "Online/FGOnlineIntegrationSettings.h"
 
-UFGOnlineIntegrationSettings::UFGOnlineIntegrationSettings() {
-	this->mOnlineStatDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/Achievements/DT_OnlineStats.DT_OnlineStats");
-	this->mOnlineAggregatedStatDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/Achievements/DT_OnlineStatsAggregated.DT_OnlineStatsAggregated");
-	this->mSessionValidationRowDescTable = FSoftObjectPath("/Game/FactoryGame/Interface/UI/Online/SessionCreationSummaryFields/DT_SessionSummaryRowDescTable.DT_SessionSummaryRowDescTable");
-	this->mSessionInformationRowDescTable = FSoftObjectPath("/Game/FactoryGame/Interface/UI/Online/DT_ReadOnlySessionInfoRowDescs.DT_ReadOnlySessionInfoRowDescs");
+UFGOnlineIntegrationSettings::UFGOnlineIntegrationSettings() : Super() {
+	this->mOnlineStatDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/Achievements/DT_OnlineStats.DT_OnlineStats").ResolveObject();
+	this->mOnlineAggregatedStatDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/Achievements/DT_OnlineStatsAggregated.DT_OnlineStatsAggregated").ResolveObject();
+	this->mOnlineActivityDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/DT_OnlineActivities.DT_OnlineActivities").ResolveObject();
+	this->mOnlineStatToActivityMappingTable = FSoftObjectPath("/Game/FactoryGame/Testing/DT_OnlineStatToActivityMapping.DT_OnlineStatToActivityMapping").ResolveObject();
+	this->mSessionValidationRowDescTable = FSoftObjectPath("/Game/FactoryGame/Interface/UI/Online/SessionCreationSummaryFields/DT_SessionSummaryRowDescTable.DT_SessionSummaryRowDescTable").ResolveObject();
+	this->mSessionInformationRowDescTable = FSoftObjectPath("/Game/FactoryGame/Interface/UI/Online/DT_ReadOnlySessionInfoRowDescs.DT_ReadOnlySessionInfoRowDescs").ResolveObject();
 	this->mAddonEntitlements.Add(FSoftObjectPath("/Game/FactoryGame/DLC/AddOn_EarlySupporterPack.AddOn_EarlySupporterPack").ResolveObject());
 }
 const UFGOnlineIntegrationSettings* UFGOnlineIntegrationSettings::Get(){ return nullptr; }
 UDataTable* UFGOnlineIntegrationSettings::GetOnlineStatDataTable() const{ return nullptr; }
 UDataTable* UFGOnlineIntegrationSettings::GetOnlineAggregatedStatDataTable() const{ return nullptr; }
+UDataTable* UFGOnlineIntegrationSettings::GetOnlineActivityDataTable() const{ return nullptr; }
+UDataTable* UFGOnlineIntegrationSettings::GetOnlineStatToActivityMappingTable() const{ return nullptr; }
 UDataTable* UFGOnlineIntegrationSettings::GetSessionValidationRowDescTable() const{ return nullptr; }
 UDataTable* UFGOnlineIntegrationSettings::GetReadOnlySessionInfoRowDescTable() const{ return nullptr; }
 TArray<UAddOnEntitlement*> UFGOnlineIntegrationSettings::LoadAddonEntitlements() const{ return TArray<UAddOnEntitlement*>(); }

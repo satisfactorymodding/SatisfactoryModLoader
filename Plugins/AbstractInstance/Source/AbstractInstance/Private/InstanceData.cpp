@@ -1,11 +1,9 @@
 // Copyright Ben de Hullu. All Rights Reserved.
 
 #include "InstanceData.h"
-
 #include "AbstractInstance.h"
 #include "Engine/InstancedStaticMesh.h"
 #include "Components/InstancedStaticMeshComponent.h"
-
 
 UStaticMeshComponent* FInstanceData::CreateStaticMeshComponent( UObject* Outer ) const
 {
@@ -17,8 +15,7 @@ UStaticMeshComponent* FInstanceData::CreateStaticMeshComponent( UObject* Outer )
 	return OutComponent;
 }
 
-
-void FInstanceHandle::HideInstance(bool bMarkRenderStateDirty )
+void FInstanceOwnershipHandle::HideInstance(bool bMarkRenderStateDirty )
 {
 	// This is already "hidden" Dont offset.
 	if( IsBigOffsetHidden )
@@ -35,31 +32,11 @@ void FInstanceHandle::HideInstance(bool bMarkRenderStateDirty )
 		T.AddToTranslation( -FVector(0,0,AIM_BigOffset) );
 
 		Hism->UpdateInstanceTransform( HandleID, T,false, bMarkRenderStateDirty,false );
-
-		SetIsBigOffsetHidden( true );
+		Internal_SetIsBigOffsetHidden( true );
 	}
 }
 
-void FInstanceHandle::HideInstance(UHierarchicalInstancedStaticMeshComponent* Hism, int32 Id, bool bMarkRenderStateDirty)
-{
-	// This is already "hidden" Dont offset.
-	if( IsBigOffsetHidden )
-	{
-		return;
-	}
-	
-	FTransform T;
-	Hism->GetInstanceTransform(HandleID, T);
-	Scale = T.GetScale3D();
-	T.SetScale3D(FVector(0.001));
-	T.AddToTranslation( -FVector(0,0,AIM_BigOffset) );
-
-	Hism->UpdateInstanceTransform( HandleID, T,false, bMarkRenderStateDirty,false );
-
-	SetIsBigOffsetHidden( true );
-}
-
-void FInstanceHandle::UnHideInstance( bool bMarkRenderStateDirty )
+void FInstanceOwnershipHandle::UnHideInstance( bool bMarkRenderStateDirty )
 {
 	// This isn't "hidden" Dont offset.
 	if( !IsBigOffsetHidden )
@@ -75,32 +52,60 @@ void FInstanceHandle::UnHideInstance( bool bMarkRenderStateDirty )
 		T.AddToTranslation( FVector(0,0,AIM_BigOffset) );
 		Hism->UpdateInstanceTransform(HandleID, T, false, bMarkRenderStateDirty, false);
 	}
-
-	SetIsBigOffsetHidden( false );
+	Internal_SetIsBigOffsetHidden( false );
 }
 
-void FInstanceHandle::UpdateTransform( const FTransform& T ) const
+void FInstanceOwnershipHandle::ResetHandle()
+{
+	HandleID = INDEX_NONE;
+	CollisionHandleID = INDEX_NONE;
+	Owner.Reset();
+	InstancedStaticMeshComponent.Reset();
+	BatchCollisionMeshComponent.Reset();
+}
+
+FTransform FInstanceHandle::GetWorldTransform() const
+{
+	if( const UHierarchicalInstancedStaticMeshComponent* MeshComponent = InstancedStaticMeshComponent.Get() )
+	{
+		FTransform InstanceRelativeTransform;
+		if ( MeshComponent->GetInstanceTransform( GetHandleID(), InstanceRelativeTransform, false ) )
+		{
+			// Adjust scale of the transform to avoid returning wrong transform when the instance is hidden, and remove the offset
+			if (IsBigOffsetHidden)
+			{
+				InstanceRelativeTransform.SetScale3D( Scale );
+				InstanceRelativeTransform.AddToTranslation( FVector( 0.0f, 0.0f, AIM_BigOffset ) );
+			}
+			// Now that we have a correct local space instance transform, convert it to world space
+			return InstanceRelativeTransform * MeshComponent->GetComponentTransform();
+		}
+	}
+	return FTransform::Identity;
+}
+
+void FInstanceOwnershipHandle::SetLocalTransform( const FTransform& NewLocalTransform ) const
 {
 	if( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
-		Hism->UpdateInstanceTransform( HandleID,T,false,true,false );
-		Scale = T.GetScale3D();
+		Hism->UpdateInstanceTransform( HandleID, NewLocalTransform, false, true, false );
+		Scale = NewLocalTransform.GetScale3D();
 		
 		if(UInstancedStaticMeshComponent* CollisionComp = GetCollisionInstanceComponent())
 		{
-			CollisionComp->UpdateInstanceTransform( CollisionHandleID, T, false, false );
+			CollisionComp->UpdateInstanceTransform( CollisionHandleID, NewLocalTransform, false, false );
 		}
 	}
 }
 
-void FInstanceHandle::UpdateScale( const FVector& NewScale ) const
+void FInstanceOwnershipHandle::SetLocalScale( const FVector& NewLocalState ) const
 {
 	if(UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get())
 	{
 		FTransform T;
-		Hism->GetInstanceTransform( HandleID, T,false);
-		T.SetScale3D( NewScale );
-		Scale = NewScale;
+		Hism->GetInstanceTransform( HandleID, T,false );
+		T.SetScale3D( NewLocalState );
+		Scale = NewLocalState;
 		Hism->UpdateInstanceTransform( HandleID, T, false );
 		
 		if(UInstancedStaticMeshComponent* CollisionComp = GetCollisionInstanceComponent())
@@ -110,14 +115,14 @@ void FInstanceHandle::UpdateScale( const FVector& NewScale ) const
 	}
 }
 
-void FInstanceHandle::SetPrimitiveDataByArray( const TArray<float> &Data, bool bMarkDirty ) const
+void FInstanceOwnershipHandle::SetPrimitiveDataByArray( const TArray<float> &Data, bool bMarkDirty ) const
 {
 	if( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
 #if WITH_EDITOR
 		if( Hism->NumCustomDataFloats != Data.Num() ) 
 		{
-			UE_LOG(LogTemp,Error,TEXT("[%s]setting primitive value outside of inital size."), *this->GetOwner()->GetName() );
+			UE_LOG(LogTemp, Error, TEXT("[%s] Setting primitive value outside of initial size."), *GetOwner()->GetName() );
 			return;
 		}
 #endif
@@ -125,14 +130,14 @@ void FInstanceHandle::SetPrimitiveDataByArray( const TArray<float> &Data, bool b
 	}	
 }
 
-void FInstanceHandle::SetPrimitiveDataByID( const float Value, const int32 Index, bool bMarkDirty ) const
+void FInstanceOwnershipHandle::SetPrimitiveDataByID( const float Value, const int32 Index, bool bMarkDirty ) const
 {
 	if( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
 #if WITH_EDITOR
-		if( !(Hism->NumCustomDataFloats <= Index) )
+		if( Hism->NumCustomDataFloats > Index )
 		{
-		 	UE_LOG(LogTemp,Error,TEXT("[%s]setting primitive value outside of inital size."), *this->GetOwner()->GetName() );
+		 	UE_LOG(LogTemp, Error, TEXT("[%s] Setting primitive value outside of initial size."), *GetOwner()->GetName() );
 		 	return;
 		}
 #endif

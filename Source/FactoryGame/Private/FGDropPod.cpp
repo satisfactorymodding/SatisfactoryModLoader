@@ -16,35 +16,28 @@ void AFGDropPod::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEv
 AFGDropPod::AFGDropPod() : Super() {
 	this->mSignificanceRange = 15000.0;
 	this->mLinkedCrashSiteDebris = nullptr;
-	this->mDisplayName = INVTEXT("");
 	this->mUnlockRewardClass = nullptr;
 	this->mUnlockCost.CostType = EFGDropPodUnlockCostType::None;
 	this->mUnlockCost.ItemCost.ItemClass = nullptr;
 	this->mUnlockCost.PowerConsumption = 0.0;
-	this->mDismantleBuildEffect = nullptr;
 	this->mInteractWidgetClass = nullptr;
+	this->mAllowDismantleWithLoot = false;
 	this->mPowerConnectionComponent = CreateDefaultSubobject<UFGPowerConnectionComponent>(TEXT("PowerConnection2"));
+	this->mPowerConnectionComponent->SetMobility(EComponentMobility::Movable);
 	this->mPowerInfoComponent = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("PowerInfo2"));
 	this->mInventoryComponent = CreateDefaultSubobject<UFGInventoryComponent>(TEXT("Inventory2"));
 	this->mSpawnedDebris = false;
 	this->mHasBeenOpened = false;
-	this->mIsDismantled = false;
 	this->mHasBeenLooted = false;
-	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.bTickEvenWhenPaused = false;
-	this->PrimaryActorTick.bCanEverTick = false;
-	this->PrimaryActorTick.bStartWithTickEnabled = false;
-	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
-	this->PrimaryActorTick.TickInterval = 0.0;
-	this->bReplicates = true;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 	this->mPowerConnectionComponent->SetupAttachment(RootComponent);
 }
 void AFGDropPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGDropPod, mPropertyReplicator);
 	DOREPLIFETIME(AFGDropPod, mHasBeenOpened);
+	DOREPLIFETIME(AFGDropPod, mHasBeenLooted);
 }
 void AFGDropPod::BeginPlay(){ Super::BeginPlay(); }
 void AFGDropPod::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
@@ -65,11 +58,7 @@ void AFGDropPod::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>
 bool AFGDropPod::IsPropertyRelevantForConnection(UNetConnection* netConnection, const FProperty* property) const{ return bool(); }
 void AFGDropPod::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDropPod::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGDropPod::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDropPod::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGDropPod::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
-bool AFGDropPod::NeedTransform_Implementation(){ return bool(); }
-bool AFGDropPod::ShouldSave_Implementation() const{ return bool(); }
 void AFGDropPod::RegisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
 void AFGDropPod::UnregisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
 void AFGDropPod::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
@@ -79,6 +68,10 @@ bool AFGDropPod::IsUseable_Implementation() const{ return bool(); }
 void AFGDropPod::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 FText AFGDropPod::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGDropPod::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
+bool AFGDropPod::CanDismantle_Implementation() const{ return Super::CanDismantle_Implementation(); }
+void AFGDropPod::GetDismantleRefund_Implementation(TArray<FInventoryStack>& out_refund, bool noBuildCostEnabled) const{ Super::GetDismantleRefund_Implementation(out_refund, noBuildCostEnabled); }
+void AFGDropPod::Dismantle_Implementation(){ Super::Dismantle_Implementation(); }
+void AFGDropPod::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ Super::GetDismantleDisqualifiers_Implementation(out_dismantleDisqualifiers, allSelectedActors); }
 bool AFGDropPod::HasBeenLooted() const{ return bool(); }
 bool AFGDropPod::GetHasPower() const{ return bool(); }
 bool AFGDropPod::CanPlayerOpen(const AFGCharacterPlayer* player) const{ return bool(); }

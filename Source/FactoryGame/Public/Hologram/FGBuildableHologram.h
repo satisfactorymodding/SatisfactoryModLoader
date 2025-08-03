@@ -128,13 +128,12 @@ public:
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-	virtual void PreHologramPlacement( const FHitResult& hitResult ) override;
-	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
+	virtual void PreHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
-	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
-	virtual bool CanNudgeHologram() const override;
+	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
 	virtual ENudgeFailReason NudgeTowardsWorldDirection( const FVector& Direction ) override;
 	virtual FTransform GetNudgeSpaceTransform() const override;
 	// End AFGHologram interface
@@ -197,12 +196,15 @@ public:
 	FORCEINLINE bool ShouldUsePipeConnectionArrowMesh() const { return mUsePipeConnectionArrowMesh; }
 
 	FORCEINLINE void SetSuppressBuildEffect( bool bNewSuppressBuildEffect ) { mSuppressBuildEffect = bNewSuppressBuildEffect; }
+
+	void SetCustomizationData( const struct FFactoryCustomizationData& customizationData );
+
 protected:
 	// Begin AFGHologram interface
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual void CheckValidPlacement() override;
 	virtual int32 GetRotationStep() const override;
-	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	virtual void SerializeConstructMessage(FArchive& ar, FNetConstructionID id) override;
 	// End AFGHologram interface	
 
@@ -315,14 +317,12 @@ protected:
 	/** Configures the build effect for the constructed actor. */
 	void ConfigureBuildEffect( class AFGBuildable* inBuildable );
 
-	// Begin AFGHologram interface
-	virtual void SetMaterial( class UMaterialInterface* material ) override;
-	// End AFGHologram interface
+	virtual void ConfigureChildActor( class AFGBuildable* inBuildableParent, class AActor* childActor ) const;
 
 	/** Setup the mesh for visualizing connections. */
-	void SetupFactoryConnectionMesh( class UFGFactoryConnectionComponent* connectionComponent, bool bUseFrameMesh, bool bUseArrowMesh, class USceneComponent* attachParent = nullptr );
-	void SetupPowerConnectionMesh( class UFGPowerConnectionComponent* connectionComponent, class USceneComponent* attachParent = nullptr );
-	void SetupPipeConnectionMesh( class UFGPipeConnectionComponentBase* connectionComponent, bool bUseFrameMesh, bool bUseArrowMesh, class USceneComponent* attachParent = nullptr );
+	TArray< class UStaticMeshComponent* > SetupFactoryConnectionMesh( class UFGFactoryConnectionComponent* connectionComponent, bool bUseFrameMesh, bool bUseArrowMesh, class USceneComponent* attachParent = nullptr );
+	TArray< class UStaticMeshComponent* > SetupPowerConnectionMesh( class UFGPowerConnectionComponent* connectionComponent, class USceneComponent* attachParent = nullptr );
+	TArray< class UStaticMeshComponent* > SetupPipeConnectionMesh( class UFGPipeConnectionComponentBase* connectionComponent, bool bUseFrameMesh, bool bUseArrowMesh, class USceneComponent* attachParent = nullptr );
 
 	/** Useful for getting the default buildable */
 	template< class TBuildableClass >
@@ -354,8 +354,13 @@ protected:
 	 */
 	virtual void CreateAttachmentPointTransform( FTransform& out_transformResult, const FHitResult& HitResult, class AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint );
 
-	void DelayApplyPrimitiveData();
-	void ApplyMeshPrimitiveData( const FFactoryCustomizationData& customizationData );
+	virtual void ApplyCustomizationData();
+	// Delayed client apply customization
+	virtual void OnGamestateReceived() override;
+
+private:
+	UFUNCTION()
+	void OnRep_CustomizationData();
 
 protected:
 	/** The maximum allowed angle on the floor for this hologram to be placed on (in degrees). */
@@ -386,6 +391,9 @@ protected:
 
 	/** True if the build effect should be suppressed for the buildable constructed from this hologram */
 	uint32 mSuppressBuildEffect : 1;
+
+	/** Whether or not to delay begin play until after child holograms are spawned (useful if you need to run special logic dependant on the children) */
+	uint32 mDelayBeginPlayUntilAfterChildSpawns : 1;
 
 	/** Cached array of all our factory connection components. */
 	TArray< class UFGFactoryConnectionComponent* > mCachedFactoryConnectionComponents;
@@ -440,6 +448,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	bool mCanSnapWithAttachmentPoints;
 
+	/** Whether or not the hologram can rotate around its snapped attachment point. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	bool mCanRotateAroundAttachmentPoint;
+	
 	/** How far away an attachment point is allowed to be in order to be valid for snapping. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	float mAttachmentPointSnapDistanceThreshold;
@@ -447,12 +459,8 @@ protected:
 	/** Whether or not to hide guideline visuals for this hologram. */
 	bool mHideGuidelineVisuals;
 
-	UPROPERTY()
+	UPROPERTY( ReplicatedUsing = OnRep_CustomizationData )
 	FFactoryCustomizationData mCustomizationData;
-
-	/** The Color Swatch to use when building this hologram */
-	UPROPERTY()
-	TSubclassOf< UFGFactoryCustomizationDescriptor_Swatch > mDefaultSwatch;
 
 	int32 mSelectedHologramAttachmentPointIndex;
 };

@@ -7,15 +7,19 @@ DEFINE_LOG_CATEGORY(LogHUD);
 AFGHUD::AFGHUD() : Super() {
 	this->mGameUIClass = nullptr;
 	this->mRespawnUIClass = nullptr;
-	this->mDefaultCrosshair = Cast<UTexture2D>(FSoftObjectPath("/Game/FirstPerson/Textures/FirstPersonCrosshair.FirstPersonCrosshair").ResolveObject());
+	this->mDefaultCrosshair = nullptr;
+	this->mPickupCrosshair = nullptr;
+	this->mVehicleCrosshair = nullptr;
+	this->mWeaponCrosshair = nullptr;
+	this->mWorkbenchCrosshair = nullptr;
 	this->mBuildCrosshair = nullptr;
 	this->mDismantleCrosshair = nullptr;
 	this->mCustomCrosshair = nullptr;
+	this->mGeneralCrosshair = nullptr;
 	this->mRespawnInputComponent = nullptr;
 	this->mRespawnUI = nullptr;
 	this->mGameUI = nullptr;
 	this->mPawnHUD = nullptr;
-	this->mGeneralCrosshair = mDefaultCrosshair;
 }
 void AFGHUD::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGHUD::BeginPlay(){ Super::BeginPlay(); }

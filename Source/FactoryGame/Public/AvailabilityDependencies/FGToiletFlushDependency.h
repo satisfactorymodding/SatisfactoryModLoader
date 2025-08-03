@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -19,7 +19,7 @@ class FACTORYGAME_API UFGToiletFlushDependency : public UFGAvailabilityDependenc
 public:
 	UFGToiletFlushDependency();
 	
-	TSubclassOf< class UFGItemDescriptor > GetFlushedItemClass() const { return mFlushedItemClass; }
+	const TArray< TSubclassOf< class UFGItemDescriptor > >& GetFlushedItemClasses() const { return mFlushedItemClass; }
 	
 #if WITH_EDITOR
 	virtual FString ToString() const override;
@@ -29,5 +29,5 @@ public:
 protected:
 	/** What item needs to be flushed in order to trigger this dependency, will trigger on any flushed item if unassigned. */
 	UPROPERTY( EditDefaultsOnly, Category = "Dependency" )
-	TSubclassOf< class UFGItemDescriptor > mFlushedItemClass;
+	TArray< TSubclassOf< class UFGItemDescriptor > > mFlushedItemClass;
 };

@@ -5,7 +5,6 @@
 #include "FactoryGame.h"
 #include "GameFramework/Info.h"
 #include "FGActorRepresentationInterface.h"
-#include "FGDeathMarker.generated.h"
 #include "FGSaveInterface.h"
 #include "FGItemPickupMarker.generated.h"
 
@@ -56,6 +55,10 @@ public:
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+	//<FL>[KonradA]
+	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray<struct FLocalUserNetIdBundle >(); }
+	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	//</FL>
 	// End IFGActorRepresentationInterface
 
 	UFUNCTION( BlueprintCallable, Category = "Item Pickup Marker" )

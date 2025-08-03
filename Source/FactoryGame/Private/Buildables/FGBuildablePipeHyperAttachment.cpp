@@ -5,9 +5,10 @@
 #include "FGPipeConnectionComponentHyper.h"
 
 AFGBuildablePipeHyperAttachment::AFGBuildablePipeHyperAttachment() : Super() {
-	this->mAttachmentLength = 0.0;
 	this->mConnection0 = CreateDefaultSubobject<UFGPipeConnectionComponentHyper>(TEXT("Connection0"));
+	this->mConnection0->SetMobility(EComponentMobility::Movable);
 	this->mConnection1 = CreateDefaultSubobject<UFGPipeConnectionComponentHyper>(TEXT("Connection1"));
+	this->mConnection1->SetMobility(EComponentMobility::Movable);
 	this->mBuiltWithPipelineRecipe = nullptr;
 	this->mConnection0->SetupAttachment(RootComponent);
 	this->mConnection1->SetupAttachment(RootComponent);

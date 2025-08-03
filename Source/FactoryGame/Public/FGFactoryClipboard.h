@@ -32,12 +32,10 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Factory Clipboard" )
 	bool CanUseFactoryClipboard();
 	UFUNCTION( BlueprintNativeEvent, Category = "Factory Clipboard" )
-	TSubclassOf<UFGFactoryClipboardSettings> GetClipboardSettingsClass();
-	UFUNCTION( BlueprintNativeEvent, Category = "Factory Clipboard" )
 	TSubclassOf<UObject> GetClipboardMappingClass();
 	UFUNCTION( BlueprintNativeEvent, Category = "Factory Clipboard" )
 	UFGFactoryClipboardSettings* CopySettings();
 	UFUNCTION( BlueprintNativeEvent, Category = "Factory Clipboard" )
-	bool PasteSettings( UFGFactoryClipboardSettings* factoryClipboard );
+	bool PasteSettings( UFGFactoryClipboardSettings* factoryClipboard, class AFGPlayerController* player );
 public:
 };

@@ -29,6 +29,8 @@ DECLARE_LOG_CATEGORY_EXTERN(LogCommonSession, Log, All);
 struct ONLINEINTEGRATION_API FSessionTraitTags
 {
 	static FNativeGameplayTag HasFindFriendSessionSupport;
+	//<FL>[KonradA]
+	static FNativeGameplayTag HasSessionDiscoveryDisabled;
 };
 
 using FOptionsMap = TMap<FString, FString>;
@@ -76,7 +78,7 @@ public:
 	//////////////////////////////////////////////////////////////////////
 	/// Native API - should be preferred when used from native code
 	UE::Online::TOnlineResult<UE::Online::FGetSessionByName> GetSessionByName(UE::Online::FGetSessionByName::Params&& Params, UOnlineIntegrationBackend* Backend);
-	
+
 	static bool IsProviderNameSupported(const FString& ProviderName);
 	static UE::Online::FOnlineSessionId MakeOnlineSessionId(const FString& SessionIdString);
 	static FString OnlineSessionIdToString(UE::Online::FOnlineSessionId SessionId);
@@ -115,12 +117,18 @@ public:
 	// <FL> [WuttkeP] Store platform invites that were received before logging into EOS so they can be joined later.
 	void SetPendingJoinRequest(const UE::Online::FUISessionJoinRequested& JoinRequest);
 	// </FL>
+	//<FL>[KonradA]
+	bool HasPendingJoinRequest() const;
+	void ResetSessions() { SessionIdToBackendMap.Empty(); }
+	//</FL>
 
 	void RegisterSessionBackendMapping(UE::Online::FOnlineSessionId OnlineSessionId, UOnlineSessionBackendLink* SessionBackend);
 
 	// @todo: This will backfire if multiple calls are made to this function for the same backend link. We should handle this case.
-	TFuture<USessionInformation*> ResolveOnlineSession(ULocalUserInfo* LocalUser, UOnlineSessionBackendLink* BackendLink);
-	TFuture<USessionInformation*> ResolveOnlineSession(ULocalUserInfo* LocalUser, UE::Online::FOnlineSessionId SessionId);
+	// <FL>[KonradA] Added an optional array of ignored backends to those functions in case we want to not resolve sessions against certain platforms (e.g. we want to ignore PSN sessions on application boot as it does not propagate all session parameters)
+	// <FL>[KonradA] Added an optional parameter to supress the internal error dispatcher as background processes that get run over a large dataset should never prompt user errors
+	TFuture<USessionInformation*> ResolveOnlineSession(ULocalUserInfo* LocalUser, UOnlineSessionBackendLink* BackendLink, TArray<FName> IgnorePlatformBackends = TArray<FName>(), bool bForceSessionRequery = false, bool bSupressErrorDispatcher = false);
+	TFuture<USessionInformation*> ResolveOnlineSession(ULocalUserInfo* LocalUser, UE::Online::FOnlineSessionId SessionId, TArray<FName> IgnorePlatformBackends = TArray<FName>(), bool bForceSessionRequery = false, bool bSupressErrorDispatcher = false);
 
 	/// Will find a session backend link for the provided session id or will create one if not found. 
 	UOnlineSessionBackendLink* FindOrCreateSessionBackendLink(UE::Online::FOnlineSessionId SessionId);
@@ -160,6 +168,13 @@ protected:
 
 	UE::Online::ISessionsPtr GetSessionsInterface(UOnlineIntegrationBackend* InBackend) const;
 
+	// <FL> [TranN]
+	// In FSessionsCommon::CheckState(const FFindSessions::Params& Params),
+	//   it seemds like we can only search one session per local user at a time, which is weird.
+	// This function queues the FindSessions requests
+	TFuture<UE::Online::TOnlineResult<UE::Online::FFindSessions>> AddFindSessionsRequest(UE::Online::ISessionsPtr SessionsPtr, UE::Online::FFindSessions::Params&& Params);
+	// </FL>
+
 	/** Event handle for UI lobby join requested */
 	UE::Online::FOnlineEventDelegateHandle LobbyJoinRequestedHandle;
 
@@ -178,12 +193,27 @@ protected:
 	TMap<UE::Online::FOnlineSessionId, TWeakObjectPtr<UOnlineSessionBackendLink>> SessionIdToBackendMap;
 	TMap<TWeakObjectPtr<UOnlineSessionBackendLink>, TWeakObjectPtr<USessionInformation>> BackendToSessionMap;
 	TMap<UE::Online::FOnlineSessionId, TArray<TPromise<USessionInformation*>>> OnlineSessionIdResolvePromises;
+	// <FL> [TranN] See AddFindSessionsRequest
+	struct FindSessionsRequest
+	{
+		TPromise<UE::Online::TOnlineResult<UE::Online::FFindSessions>> Promise;
+		UE::Online::FFindSessions::Params Params;
+		bool bInProgress = false;
+	};
+	TMap<UE::Online::FAccountId, TArray<FindSessionsRequest>> PendingFindSessionsRequestsForAccounts;
+	TMap<UE::Online::FAccountId, UE::Online::ISessionsPtr> SessionsPtrForAccounts;
+	// </FL>
 
 	UPROPERTY()
 	TSet<TObjectPtr<USessionInformation>> SessionDataUpdateQueue;
 
 	// <FL> [WuttkeP] Store platform invites that were received before logging into EOS so they can be joined later.
 	TOptional<UE::Online::FUISessionJoinRequested> PendingJoinRequest;
+	// </FL>
+
+	// <FL> [AKonrad, BGR] Used for late update all presence data
+	UFUNCTION()
+	void UpdatePresence() const;
 	// </FL>
 };
 

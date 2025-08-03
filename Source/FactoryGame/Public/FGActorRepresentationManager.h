@@ -111,6 +111,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
 	bool UpdateRepresentationOfActor( AActor* realActor );
 	bool UpdateRepresentation( UFGActorRepresentation* actorRepresentation );
+
+	void UpdateRepresentationsOfAllActors();
+	void UpdateRepresentationsOfType(ERepresentationType representationType);
 	
 	/** Removes the representation of an actor */
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Representation" )

@@ -11,6 +11,7 @@ AFGWorldEventActor::AFGWorldEventActor() : Super() {
 	this->mDataLayer = nullptr;
 	this->mState = EWorldEventState::Inactive;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Static);
 }
 void AFGWorldEventActor::BeginPlay(){ Super::BeginPlay(); }
 void AFGWorldEventActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }

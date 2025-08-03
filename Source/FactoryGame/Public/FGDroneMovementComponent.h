@@ -102,6 +102,10 @@ public:
     UFUNCTION( BlueprintCallable, Category = "DroneMovement" )
     void FollowPath( const TArray< FVector >& Path, EDroneFlyingMode flyingMode, bool brakeWhenApproaching = true );
 
+#if !UE_BUILD_SHIPPING
+	void ShowDebug();
+#endif
+
 private:
 	UFUNCTION()
 	void OnRep_MovementInstruction( EDroneMovementInstruction previousInstruction );

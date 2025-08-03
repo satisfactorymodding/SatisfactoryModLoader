@@ -38,12 +38,16 @@ AFGBoomBoxPlayer::AFGBoomBoxPlayer() : Super() {
 	this->mTurboBassBlockingThreshold = -48.0;
 	this->mTapeTextureParameter = TEXT("Albedo");
 	this->mAkComponent = CreateDefaultSubobject<UAkComponent>(TEXT("AkComponent"));
+	this->mAkComponent->SetMobility(EComponentMobility::Movable);
 	this->mMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+	this->mMesh->SetMobility(EComponentMobility::Movable);
 	this->mSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
+	this->mSceneRoot->SetMobility(EComponentMobility::Movable);
 	this->mAkComponent->SetupAttachment(mSceneRoot);
 	this->mMesh->SetupAttachment(mSceneRoot);
 	this->mBoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	this->mBoxCollision->SetupAttachment(mMesh);
+	this->mBoxCollision->SetMobility(EComponentMobility::Movable);
 	this->mBaseTransformEquipped = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 	this->mBaseTransformFreeActor = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 	this->mImpulseRadius = 3000.0;

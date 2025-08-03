@@ -43,15 +43,13 @@ public:
 	// End IFGDismantleInterface
 
 	// Begin abstract instance interface.
-	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() override;
+	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() const override;
 	virtual bool DoesContainLightweightInstances_Native() const override { return true; }
 	// End
 	
 	// Begin IFGSignificance Interface
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
-	virtual void GainedSignificance_Native() override;				// TODO deprecate
-	virtual void LostSignificance_Native() override;				// TODO deprecate				
 	virtual	void SetupForSignificance() override;					// TODO deprecate		
 
 	virtual float GetSignificanceRange() override;
@@ -186,3 +184,5 @@ private:
 	static inline const float COLLISION_SPACING =  80.f;
 	static inline const FVector COLLISION_OFFSET = FVector( 0.f, 0.f, 0.f );
 };
+
+

@@ -1,12 +1,12 @@
 #pragma once
+
 #include "CoreMinimal.h"
 #include "Components/Widget.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
-
 #include "ItemStackContextWidget.generated.h"
 
 UCLASS()
-class UItemStackContextWidget : public UWidget {
+class SML_API UItemStackContextWidget : public UWidget {
     GENERATED_BODY()
 public:
     UPROPERTY()
@@ -15,9 +15,13 @@ public:
     APlayerController* PlayerController;
     UPROPERTY()
     UItemTooltipSubsystem* ItemTooltipSubsystem;
-public:
-    UFUNCTION()
+
+    UFUNCTION(BlueprintPure)
     FText GetItemName() const;
-    UFUNCTION()
+    UFUNCTION(BlueprintPure)
     FText GetItemDescription() const;
+
+	// Begin UWidget interface
+	virtual TSharedRef<SWidget> RebuildWidget() override;
+	// End UWidget interface
 };

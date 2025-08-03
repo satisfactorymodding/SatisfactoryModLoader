@@ -16,10 +16,13 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mDefaultInvalidPlacementMaterial = nullptr;
 	this->mDefaultInputConnectionMaterial = nullptr;
 	this->mDefaultOutputConnectionMaterial = nullptr;
+	this->mDefaultAutomaticBlueprintConnectionMaterial = nullptr;
 	this->mDefaultNeutralConnectionMaterial = nullptr;
 	this->mDefaultPowerConnectionMaterial = nullptr;
 	this->mDefaultFactoryColor_Primary = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mDefaultFactoryColor_Secondary = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mDefaultOrientationDirectionMesh = nullptr;
+	this->mDefaultOrientationDirectionMeshScale = 0.1;
 	this->mDefaultAttachmentPointConnectionMesh = nullptr;
 	this->mDefaultConveyorConnectionFrameMesh = nullptr;
 	this->mDefaultConveyorConnectionArrowMesh = nullptr;
@@ -27,6 +30,7 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mDefaultPipeConnectionArrowMesh = nullptr;
 	this->mDefaultPowerConnectionMesh = nullptr;
 	this->mBlueprintDirectionIndicatorMesh = nullptr;
+	this->mBlueprintAutoConnectionMesh = nullptr;
 	this->mBlueprintDirectionIndicatorMaterial = nullptr;
 	this->mBlueprintDirectionMeshScale = 0.0;
 	this->mBlueprintDirectionMeshForwardOffset = 0.0;
@@ -46,6 +50,7 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mInventoryDropCrate = nullptr;
 	this->mBuildEffect = nullptr;
 	this->mDismantleEffect = nullptr;
+	this->mDefaultBuildMode = nullptr;
 	this->mDismantlePendingMaterial = nullptr;
 	this->mBuildGunClass = AFGBuildGun::StaticClass();
 	this->mResourceScannerClass = AFGResourceScanner::StaticClass();

@@ -56,9 +56,11 @@ public:
 	virtual void OnBuildModeChanged( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) override;
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName ) override;
 	virtual bool CanBeZooped() const override;
-	virtual void CheckClearance(const FVector& locationOffset) override;
 	virtual void CheckValidPlacement() override;
+	virtual void GetClearanceData( TArray< const FFGClearanceData* >& out_ClearanceData ) const override;
 	// End AFGHologram interface
+
+	const TArray< FTransform >& GetZoopInstanceTransforms() const { return mZoopInstanceTransforms; }
 	
 protected:
 	// Begin AFGBuildableHologram interface
@@ -104,9 +106,7 @@ protected:
 	 */
 	FVector GetWallEdgeDirection( const class AFGBuildableWall* wall, const FVector& testLoc ) const;
 
-	virtual void UpdateZoop();
-	virtual void ConstructZoop( TArray<AActor*>& out_children );
-	
+	virtual void CreateZoopInstances();
 	virtual FVector ConvertZoopToWorldLocation( const FIntVector& zoop ) const;
 
 	void ClearZoopInstances();
@@ -130,6 +130,11 @@ protected:
 	UPROPERTY()
 	TMap< UStaticMeshComponent*, class UInstancedStaticMeshComponent* > mInstancedMeshComponents;
 
+	/** Transforms for our zoop instances. */
+	TArray< FTransform > mZoopInstanceTransforms;
+
+	TArray< FFGClearanceData > mZoopClearanceData;
+
 	/** What kind of placement requirements this hologram has. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	EFactoryBuildingPlacementRequirements mPlacementRequirements;
@@ -147,7 +152,7 @@ protected:
 	
 	uint8 mBlockedZoopDirectionMask;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	EFactoryBuildingHologramBuildStep mBuildStep;
 	
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )

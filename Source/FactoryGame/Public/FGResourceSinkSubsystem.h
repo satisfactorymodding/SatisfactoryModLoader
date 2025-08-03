@@ -56,17 +56,17 @@ struct FResourceSinkValuePair32
 {
 	GENERATED_BODY()
 
-	FResourceSinkValuePair32(){}
+	FResourceSinkValuePair32() = default;
 	FResourceSinkValuePair32( EResourceSinkTrack trackType, int32 value ) :
 		TrackType( trackType ),
 		Value( value )
 	{}
 	
 	UPROPERTY()
-	EResourceSinkTrack TrackType;
+	EResourceSinkTrack TrackType = {};
 
 	UPROPERTY()
-	int32 Value;
+	int32 Value = {};
 };
 
 DECLARE_MULTICAST_DELEGATE_OneParam( FOnFirstItemSinkFailure, TSubclassOf<class UFGItemDescriptor> );

@@ -76,6 +76,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Message" )
 	bool DoesMessageContainPresentation() const;
 
+	/** Whether or not this is a bark message */
+	UFUNCTION( BlueprintPure, Category = "Message" )
+	bool IsBarkMessage() const;
+
 	/** Returns how far away other players will hear this message. Used for local messages that is marked for sharing */
 	float GetSharingDistance() const;
 	
@@ -107,6 +111,10 @@ public:
 	
     UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
 	class UFGOnboardingStep* mOnboardingStep;
+
+	/** In case this is a bark message, this is the type. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
+	TSubclassOf< class UFGBarkMessageType > mBarkMessageType;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "UI" )
     TSubclassOf<class UFGPhasePresentationWidget> mPhasePresentation;

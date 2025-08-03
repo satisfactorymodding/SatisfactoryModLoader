@@ -60,6 +60,9 @@ Useful for routing Conveyor Belts more precisely and over long distances.","",""
 #item"
 "Logistics/ConveyorMerger/Description","Merges up to three Conveyor Belts into one.","","","Game","#buildable
 #item"
+"Logistics/ConveyorMergerPriority","Priority Merger","","","",""
+"Logistics/ConveyorMergerPriority/Description","Merges up to three Conveyor Belts into one.
+Inputs can be prioritized to always be merged before others.","","","",""
 "Logistics/ConveyorPole","Conveyor Pole","","","Game","#buildable
 #item"
 "Logistics/ConveyorPole/Description","Connects Conveyor Belt segments. Pole height can be adjusted.
@@ -84,6 +87,13 @@ Multiple filters can be set for each output to allow specific parts to pass thro
 "Logistics/ConveyorSpitterSmart/Description","Splits one Conveyor Belt into two or three.
 A filter can be set for each output to allow a specific part to pass through.","","","Game","#buildable
 #item"
+"Logistics/ConveyorThroughputMonitor","Conveyor Throughput Monitor","","","",""
+"Logistics/ConveyorThroughputMonitor/Description","Attaches to Conveyor Belts.
+Monitors the number of parts travelling through it and displays the average throughput per minute.
+
+NOTE: Requires a full minute of data before complete accuracy is achieved.","","","",""
+"Logistics/ConveyorWallHole","Conveyor Wall Hole","","","",""
+"Logistics/ConveyorWallHole/Description","Attaches to Walls, allowing Conveyors to pass through.","","","",""
 "Logistics/ConveyorWallMount","Conveyor Wall Mount","","","Game","#buildable
 #item"
 "Logistics/ConveyorWallMount/Description","Attaches to Walls.
@@ -125,9 +135,9 @@ Caution: This version of the Pipeline does not feature an external indicator.","
 #item"
 "Logistics/PipelinePumpMk1","Pipeline Pump Mk.1","","","Game","#interface
 #pipe"
-"Logistics/PipelinePumpMk1/Description","Attaches to a Pipeline to apply Head Lift.
+"Logistics/PipelinePumpMk1/Description","Can be attached to a Pipeline to apply Head Lift.
 Maximum Head Lift: 20 m
-(Allows fluids to be transported 20 m upwards.)
+(Allows fluids to be transported 20 meters upwards.)
 
 NOTE: Arrows and holograms when building indicate Head Lift direction.
 NOTE: Head Lift does not stack, so space between Pumps is recommended.","","","Game","#buildable
@@ -166,6 +176,8 @@ NOTE: Has an in- and output direction.","","","Game","#buildable
 "Logistics/PipelineWallSupport/Description","Attaches to Walls.
 Used to connect Pipelines over longer distances.","","","Game","#buildable
 #item"
+"Organisation/StorageShelf","Basic Shelf Unit","Currently not implemented in-game.","","",""
+"Organisation/StorageShelf/Description","A stackable shelf. Each one can hold two Personal Storage Boxes.","Currently not implemented in-game.","","",""
 "Organization/DimensionalDepot","Dimensional Depot Uploader","","","",""
 "Organization/DimensionalDepot/Description","The Dimensional Depot Uploader is used to upload resources to a dimensional storage deposit.
 From here resources can be used by the Build Gun and Crafting Stations, as if they were in the pioneer Inventory.","","","",""
@@ -540,9 +552,9 @@ Head Lift: 10 m
 #item"
 "Production/Packager/Description","Packages and unpackages fluids.
 Head Lift: 10 m
-(Allows fluids to be transported 10 meters upwards.)
+(Allows fluids to be transported 10 meters upwards.)
 
-Contains both Conveyor Belt and Pipeline input and output ports so that a wide range of recipes can be automated.","","","Game","#buildable
+Has both Conveyor Belt and Pipeline input and output ports so that a wide range of recipes can be automated.","","","Game","#buildable
 #item"
 "Production/ParticleAccelerator","Particle Accelerator","","","Game","#buildable
 #item"
@@ -558,9 +570,9 @@ Warning: Power usage is extremely high and unstable.","","","",""
 #item"
 "Production/Refinery/Description","Refines fluid and/or solid parts into other parts.
 Head Lift: 10 m
-(Allows fluids to be transported 10 meters upwards.)
+(Allows fluids to be transported 10 meters upwards.)
 
-Contains both Conveyor Belt and Pipeline input and output ports so that a wide range of recipes can be automated.","","","Game","#buildable
+Has both Conveyor Belt and Pipeline input and output ports so that a wide range of recipes can be automated.","","","Game","#buildable
 #item"
 "Production/ResourceWellExtractor","Resource Well Extractor","","","Game",""
 "Production/ResourceWellExtractor/Description","Collects pressurized resources when placed on the activated sub-nodes of a Resource Well. Does not require power.
@@ -678,6 +690,13 @@ Drone Ports can have one other Port assigned as their transport destination.
 The Drone Port interface provides delivery details and allows management of Port connections.","","","Game","#buildable
 #item
 #transportation"
+"Transport/Elevators/ElevatorFloorStop","Elevator Floor Stop","","","",""
+"Transport/Elevators/ElevatorFloorStop/Description","Attaches to a Personnel Elevator to add an additional floor stop and power connection.","","","",""
+"Transport/Elevators/PersonnelElevator","Personnel Elevator","","","",""
+"Transport/Elevators/PersonnelElevator/Description","Transports FICSIT personnel between floors while meeting acceptable standards for efficiency and safety.
+Consumes power when in use and transports power between all attached Elevator Floor Stops.
+
+NOTE: Additional floor stops can be added with an Elevator Floor Stop.","","","",""
 "Transport/Hyper/Hypertube","Hypertube","","","Game","#buildable
 #item"
 "Transport/Hyper/Hypertube/Description","Transports FICSIT employees.
@@ -691,6 +710,14 @@ A Hypertube system cannot be powered up or used until a Hypertube Entrance is at
 #item"
 "Transport/Hyper/HypertubeEntrance/Description","Powers up a Hypertube system and allows it to be entered.","","","Game","#buildable
 #item"
+"Transport/Hyper/HypertubeJunction","Hypertube Junction","","","",""
+"Transport/Hyper/HypertubeJunction/Description","A three-way Hypertube Junction that allows travel to and from any of its directions.
+
+Can be built on its own or attached to a Hypertube Support or Junction.","","","",""
+"Transport/Hyper/HypertubeJunctionT","Hypertube Branch","","","",""
+"Transport/Hyper/HypertubeJunctionT/Description","A one-way Hypertube Branch that allows another Hypertube to split off from an existing path. The branching Hypertube can only be accessed when entering from the longer side.
+
+Can be built on its own, onto an existing Hypertube, or attached to a Hypertube Support or Junction.","","","",""
 "Transport/Hyper/HypertubeSupport","Hypertube Support","","","Game","#buildable
 #item"
 "Transport/Hyper/HypertubeSupport/Description","Supports Hypertubes, allowing them to stretch over longer distances.","","","Game","#buildable
@@ -820,6 +847,10 @@ Needs to be connected to a powered Railway to function.","","","Game","#buildabl
 Has a wide turn angle, so make sure to plan it out properly.","","","Game","#buildable
 #item
 #transportation"
+"Transport/Trains/Infrastructure/RailwayBufferStop","Buffer Stop","","","",""
+"Transport/Trains/Infrastructure/RailwayBufferStop/Description","Prevents trains from derailing at the end of a railway.
+
+While automated driving systems have made Buffer Stops mostly obsolete, their use is still recommended to mitigate potential human error.","","","",""
 "Transport/Trains/Infrastructure/RailwaySignal/Block","Block Signal","","","Game","#buildable
 #item
 #transportation"

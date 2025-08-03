@@ -27,6 +27,7 @@ UFGAmmoType::UFGAmmoType() : Super() {
 	this->mWeaponDamageMultiplier = 1.0;
 	this->mMagazineMesh = nullptr;
 	this->mMagazineMeshAnimClass = nullptr;
+	this->mNobeliskWeaponIdleAnimationOverride = nullptr;
 	this->mFiringNoise = nullptr;
 	this->mAmmoDamageFalloff.EditorCurveData.DefaultValue = 3.40282e+38;
 	this->mAmmoDamageFalloff.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;

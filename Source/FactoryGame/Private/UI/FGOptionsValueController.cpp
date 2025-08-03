@@ -12,6 +12,7 @@ bool UFGOptionsValueController::HandleActivateDetails_Implementation(FFGKeyHint&
 void UFGOptionsValueController::OnOptionReverted_Implementation(){ }
 FText UFGOptionsValueController::GetCurrentSelectionText(){ return FText(); }
 bool UFGOptionsValueController::IsOptionEditable() const{ return bool(); }
+bool UFGOptionsValueController::ShouldFocusOptionSlotToEdit() const{ return false; }
 bool UFGOptionsValueController::CanSelectIndex(int32 newIndex){ return bool(); }
 bool UFGOptionsValueController::ChangeSelection(FText currentKey, bool incrementSelection){ return bool(); }
 FString UFGOptionsValueController::GetSettingIndentifier() const{ return FString(); }

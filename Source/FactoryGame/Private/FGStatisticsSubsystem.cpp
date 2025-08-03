@@ -11,7 +11,7 @@ int32 AFGStatisticsSubsystem::Stat_GetNumCreatureKilled(TSubclassOf<  AFGCreatur
 void AFGStatisticsSubsystem::Stat_ItemsManuallyCrafted(TSubclassOf<  UFGItemDescriptor > itemDescriptor,  AFGPlayerState* playerState, int32 numCrafted){ }
 int32 AFGStatisticsSubsystem::Stat_GetNumItemsManuallyCrafted(TSubclassOf<  UFGItemDescriptor > itemDescriptor,  AFGPlayerState* playerState){ return int32(); }
 int32 AFGStatisticsSubsystem::Stat_GetNumItemsManuallyCrafted(TSubclassOf<  UFGItemDescriptor > itemDescriptor){ return int32(); }
-void AFGStatisticsSubsystem::Stat_ActorBuilt(TSubclassOf<  AActor > actor,  AFGPlayerState* playerState, int32 numBuilt){ }
+void AFGStatisticsSubsystem::Stat_ActorBuilt(AActor* actor,  AFGPlayerState* playerState, int32 numBuilt){ }
 void AFGStatisticsSubsystem::Stat_ActorDismantled(TSubclassOf<  AActor > actor,  AFGPlayerState* playerState, int32 numDismantled){ }
 int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_Current(TSubclassOf<  AActor > actor){ return int32(); }
 int32 AFGStatisticsSubsystem::Stat_GetNumActorsBuilt_CurrentMax(TSubclassOf<  AActor > actor){ return int32(); }

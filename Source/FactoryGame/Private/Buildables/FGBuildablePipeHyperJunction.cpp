@@ -3,24 +3,12 @@
 #include "Buildables/FGBuildablePipeHyperJunction.h"
 #include "Net/UnrealNetwork.h"
 
-AFGBuildablePipeHyperJunction::AFGBuildablePipeHyperJunction() : Super() {
-	this->DefaultConnectionInfo.Connection = nullptr;
-	this->DefaultConnectionInfo.ConnectionLabel = INVTEXT("");
-	this->DefaultConnectionInfo.bDefaultRoute = false;
-}
-void AFGBuildablePipeHyperJunction::BeginPlay(){ Super::BeginPlay(); }
-void AFGBuildablePipeHyperJunction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGBuildablePipeHyperJunction, ConnectionInfoList);
-}
 TArray<TPair<UFGPipeConnectionComponentBase*, float>> AFGBuildablePipeHyperJunction::GetPossibleConnectionsToTransitionThrough(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough) const{ return TArray<TPair<UFGPipeConnectionComponentBase*,float>>(); }
-EPipeHyperEnterResult AFGBuildablePipeHyperJunction::OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, TStructOnScope<FFGPipeHyperBasePipeData>& outPipeData, const TStructOnScope<FFGPipeHyperBasePipeData>& predictionPipeData){ return EPipeHyperEnterResult(); }
-bool AFGBuildablePipeHyperJunction::FindDistanceClosestToWorldLocation(AFGCharacterPlayer* charPlayer, const FVector& worldLocation, const FVector& velocity, TStructOnScope<FFGPipeHyperBasePipeData>& out_pipeData, float& out_distance) const{ return bool(); }
-float AFGBuildablePipeHyperJunction::GetLengthAlongPipe(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData){ return float(); }
-void AFGBuildablePipeHyperJunction::GetLocationAndRotationAlongPipe(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData, float distance, FVector& outLocation, FVector& outDirection){ }
-UFGPipeConnectionComponentBase* AFGBuildablePipeHyperJunction::GetConnectionToTransitThrough(AFGCharacterPlayer* charPlayer, const TStructOnScope<FFGPipeHyperBasePipeData>& pipeData, float distance, float& outExitOffset){ return nullptr; }
-void AFGBuildablePipeHyperJunction::OnRep_ConnectionInfoList(){ }
-TArray<FFGPipeHyperJunctionConnectionInfo> AFGBuildablePipeHyperJunction::GetConnectionInfoList() const{ return TArray<FFGPipeHyperJunctionConnectionInfo>(); }
-TArray<FFGPipeHyperJunctionConnectionInfo> AFGBuildablePipeHyperJunction::GetConnectionInfoListForConnection(UFGPipeConnectionComponentBase* Connection) const{ return TArray<FFGPipeHyperJunctionConnectionInfo>(); }
-UFGPipeConnectionComponentBase* AFGBuildablePipeHyperJunction::GetDefaultOutputConnection(UFGPipeConnectionComponentBase* ConnectionEnteredThrough) const{ return nullptr; }
-void AFGBuildablePipeHyperJunction::UpdateConnectionInfo(const FFGPipeHyperJunctionConnectionInfo& ConnectionInfo){ }
+EPipeHyperEnterResult AFGBuildablePipeHyperJunction::OnPipeEnterReal(AFGCharacterPlayer* charPlayer, UFGPipeConnectionComponentBase* connectionEnteredThrough, FFGDynamicStruct& outPipeData, const FFGDynamicStruct& predictionPipeData){ return EPipeHyperEnterResult(); }
+bool AFGBuildablePipeHyperJunction::FindDistanceClosestToWorldLocation(AFGCharacterPlayer* charPlayer, const FVector& worldLocation, const FVector& velocity, FFGDynamicStruct& out_pipeData, float& out_distance) const{ return bool(); }
+float AFGBuildablePipeHyperJunction::GetLengthAlongPipe(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData){ return float(); }
+void AFGBuildablePipeHyperJunction::GetLocationAndRotationAlongPipe(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData, float distance, FVector& outLocation, FVector& outDirection){ }
+UFGPipeConnectionComponentBase* AFGBuildablePipeHyperJunction::GetConnectionToTransitThrough(AFGCharacterPlayer* charPlayer, const FFGDynamicStruct& pipeData, float distance, float& outExitOffset){ return nullptr; }
+TArray<FFGHypertubeJunctionOutputConnectionInfo> AFGBuildablePipeHyperJunction::GetAvailableOutputConnections(const UFGPipeConnectionComponentBase* connectionEnteredThrough, AFGCharacterPlayer* forPlayer) const{ return TArray<FFGHypertubeJunctionOutputConnectionInfo>(); }
+UFGPipeConnectionComponentBase* AFGBuildablePipeHyperJunction::GetDefaultOutputConnection(const UFGPipeConnectionComponentBase* connectionEnteredThrough) const{ return nullptr; }
+FFGDynamicStruct AFGBuildablePipeHyperJunction::PopulateOutputConnectionMetadataForPlayer(const UFGPipeConnectionComponentBase* connectionEnteredThrough, const UFGPipeConnectionComponentBase* outputConnection, AFGCharacterPlayer* forPlayer) const{ return FFGDynamicStruct(); }

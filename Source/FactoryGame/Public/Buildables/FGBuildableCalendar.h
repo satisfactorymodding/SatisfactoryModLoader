@@ -51,7 +51,7 @@ public:
 	// Begin IFGSaveInterface
 	virtual bool ShouldSave_Implementation() const override { return false; }
 	// End IFGSaveInterface
-
+	
 	// Begin IFGUseableInterface
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	// End IFGUseableInterface

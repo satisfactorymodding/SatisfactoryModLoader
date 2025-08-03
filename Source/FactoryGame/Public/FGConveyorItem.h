@@ -36,11 +36,7 @@ struct FConveyorBeltItem
 	GENERATED_BODY()
 
 	/** Ctor */
-	FConveyorBeltItem() :
-		Item(),
-		Offset( 0.0f )
-	{
-	}
+	FConveyorBeltItem() = default;
 
 	/** Ctor */
 	explicit FConveyorBeltItem( const FInventoryItem& item ) :
@@ -57,18 +53,18 @@ struct FConveyorBeltItem
 	 * The offset of this item along the conveyor belt in range [0,LENGTH].
 	 */
 	UPROPERTY()
-	float Offset;
+	float Offset = 0.f;
 
 	// For chain actors (notably for lifts) this is the offset into the portion of the segment that it is on
 	UPROPERTY()
-	float LocalOffset;
+	float LocalOffset = 0.f;
 	
 	/** Client Only - Used to track how far behind (or maybe ahead) an item is based on time */
 	UPROPERTY( NotReplicated )
 	float TimeDebt = 0.f;
 
 	UPROPERTY()
-	float DistanceMoved = 0;
+	float DistanceMoved = 0.f;
 	
 private:
 	friend struct FConveyorBeltItems;
@@ -182,6 +178,6 @@ private:
 
 public:
 	UPROPERTY( NotReplicated )
-	float ConveyorLength;
+	float ConveyorLength = 0.f;
 	class AFGBuildableConveyorBase* Owner = nullptr;
 };

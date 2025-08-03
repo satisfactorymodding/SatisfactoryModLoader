@@ -75,7 +75,7 @@ class FACTORYGAME_API UFGRadiationSettings : public UDeveloperSettings
 public: 
 
 	UPROPERTY( EditAnywhere, config, Category = Radiation, meta = ( ToolTip = "The type of damage radiation deals" ) )
-	TSubclassOf< class UFGDamageType > mRadiationDamageType;
+	TSoftClassPtr< class UFGDamageType > mRadiationDamageType;
 	
 	UPROPERTY( EditAnywhere, config, Category = Radiation, meta = ( ToolTip = "The max accumulated intensity that can be registered from radioactive emitters" ) )
 	float mMaxIntensity;

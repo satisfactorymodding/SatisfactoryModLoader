@@ -3,18 +3,17 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGBuildablePipePart.h"
+#include "FGBuildableFactory.h"
 #include "FGPipeHyperStart.generated.h"
 
-
 /**
- * Pipeline for transferring liquid and gases to factory buildings.
+ * Hypertube entrance part.
  */
 UCLASS()
-class FACTORYGAME_API AFGPipeHyperStart : public AFGBuildablePipeHyperPart
+class FACTORYGAME_API AFGPipeHyperStart : public AFGBuildableFactory
 {
 	GENERATED_BODY()
-	public:
+public:
 
 	// Begin AFGBuildableFactory interface
 	virtual bool CanProduce_Implementation() const override;
@@ -27,6 +26,9 @@ class FACTORYGAME_API AFGPipeHyperStart : public AFGBuildablePipeHyperPart
 	   Could be exploited if made too big, but it felt better and clearer feedback about slowdowns if it was a little above the usual min speed when doing initial tests.*/
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Hyper Tube" )
 	float mInitialMinSpeedFactor = 1.4f;
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadWrite, Category = "Hyper Tube" )
+	class UFGPipeConnectionComponentBase* mConnection0;
 };
 
 

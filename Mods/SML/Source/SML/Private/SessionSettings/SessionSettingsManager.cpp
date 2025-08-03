@@ -73,6 +73,10 @@ void USessionSettingsManager::GetAllUserSettings(TArray<UFGUserSettingApplyType*
 	return SessionSettings.GenerateValueArray(OutUserSettings);
 }
 
+void USessionSettingsManager::GetAllUserSettingsMap( TMap<FString, UFGUserSettingApplyType*>& OutUserSettings ) const {
+	OutUserSettings.Append( SessionSettings );
+}
+
 UFGUserSettingApplyType* USessionSettingsManager::FindUserSetting(const FString& SettingId) const {
 	return SessionSettings.FindRef(SettingId);
 }

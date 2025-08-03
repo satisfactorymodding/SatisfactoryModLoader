@@ -29,9 +29,13 @@ class FACTORYGAME_API UFGSaveSystem : public UObject, public IFGSaveManagerInter
 {
 	GENERATED_BODY()
 public:
+	// Begin UObject interface
+	virtual void BeginDestroy() override;
+	virtual void PostInitProperties() override;
+	// End UObject interface
+
 	/** Initialize our save system, checks for available session ids */
 	virtual void Init();
-	virtual void BeginDestroy() override;
 	
 	/** Get the path to the save folder */
 	static FString GetSaveDirectoryPath();
@@ -108,6 +112,9 @@ public:
 	/** Checks on file system if the save file exists */
 	bool SaveGameExistsSync( FString saveName ) const;
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
+	int GetAmountOfFreeSaveSlots();
+
 	/** Checks if the save with the given filename exists in the filesystem, and loads it's header into the provided struct */
 	bool LoadSaveGameHeaderSync( const FString& saveName, FSaveHeader& out_saveHeader ) const;
 
@@ -123,6 +130,9 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static ESaveExists GetCachedSaveExistsInSessions( const TArray<FSessionSaveStruct>& sessions, const FString& saveName, int32 CurrentSession );
+	
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
+	static int GetCachedSavesCount( const TArray< FSessionSaveStruct >& sessions );
 	
 	/** Get the last result of EnumerateSaves */
 	//UFUNCTION( BlueprintPure, Category="FactoryGame|Save")
@@ -203,6 +213,9 @@ public:
 	 */
 	static bool FindNewObjectName( const FString& oldObjectName, FString& out_newObjectName );
 
+	/** Attempts to resolve an old sub-object name inside the outer class of the provided type into a new name. Will recursively look up redirects for parent outer types as well */
+	static bool FindNewSubObjectName( const UClass* outerObjectClass, const FName oldSubObjectName, FName& outNewSubObjectName );
+
 	/** Moves a save file present in /common/ to the currently logged in player's epic ID folder */
 	static bool MoveSaveFileFromCommonToEpicLocation( const UWorld* world, const FString& saveName );
 
@@ -278,6 +291,9 @@ protected:
 
 	/** Import test save files on console */
 	void ImportTestSaves();
+
+	/** <FL> [BGR] Callback for update cached SaveGames */
+	void UpdateCachedSavegames( bool success, const TArray< FSaveHeader >& saveGames );
 	// </FL>
 protected:
 	/** The session id's that used */
@@ -289,6 +305,13 @@ protected:
 	/** Redirects for the maps when someone renames a map */
 	UPROPERTY( GlobalConfig )
 	TArray<FMapRedirector> mMapRedirectors;
+
+	/** Redirector setup for sub-objects on save system objects */
+	UPROPERTY( GlobalConfig )
+	TArray<FSubObjectRedirector> mSubObjectRedirectors;
+
+	/** Fast lookup into sub-object redirectors using class name and object name */
+	TMap<FTopLevelAssetPath, TMap<FName, FName>> mSubObjectByClassNameAndObjectNameLookup;
 
 	/** Maximum Number of Backup saves (will cull to this number on application startup, not during sessions while saving) */
 	UPROPERTY( Config )

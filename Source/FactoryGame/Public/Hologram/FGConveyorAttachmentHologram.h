@@ -23,19 +23,21 @@ public:
 	// End AActor Interface
 
 	// Begin AFGHologram Interface
-	virtual void PreHologramPlacement( const FHitResult& hitResult ) override;
+	virtual void PreHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual float GetHologramHoverHeight() const override;
-	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
 	virtual bool CanNudgeHologram() const override;
+	virtual TOptional<TSubclassOf<UFGRecipe>> ProcessHologramOverride( const FHitResult& hitResult ) const override;
 	// End AFGHologram Interface
 
 	// Begin AFGBuildableHologram Interface
 	virtual bool ShouldActorBeConsideredForGuidelines( class AActor* actor ) const override;
+	virtual void CheckValidFloor() override;
 	// End AFGBuildableHologram Interface
 
 protected:
@@ -56,10 +58,16 @@ public:
 
 	/** Name of the pass through output connection. */
 	static FName mOutputConnection1;
+	
+	/** Name of the pass through top lift connection. */
+	static FName mLiftConnection_Top;
 
+	/** Name of the pass through bottom lift connection. */
+	static FName mLiftConnection_Bottom;
 
+	inline class UFGFactoryConnectionComponent* GetSnappedConnection() const { return mSnappedConnection; }
 
-private:
+protected:
 	/** Used to limit the placement in turns. What's the maximum offset to check from center to detect the curve. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Attachment" )
 	float mMaxValidTurnOffset;
@@ -69,7 +77,7 @@ private:
 
 	/** The conveyor we snapped to. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableConveyorBelt* mSnappedConveyor;
+	class AFGBuildableConveyorBase* mSnappedConveyor;
 
 	UPROPERTY( Replicated, CustomSerialization )
 	class AFGBuildableConveyorAttachment* mUpgradedConveyorAttachment;
@@ -87,4 +95,7 @@ private:
 	/** The offset we snapped on the conveyor. */
 	UPROPERTY( Replicated, CustomSerialization )
 	float mSnappedConveyorOffset;
+	
+	// The set of names of components that act as input/output connectors on our attachment. See static declarations for "mInputConnection1" etc.
+	TSet<FName> mBuildablePropertyNames;
 };

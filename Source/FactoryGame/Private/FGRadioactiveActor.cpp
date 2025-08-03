@@ -6,5 +6,6 @@
 AFGRadioactiveActor::AFGRadioactiveActor() : Super() {
 	this->mRadioactiveDecay = 0.0;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Static);
 }
 void AFGRadioactiveActor::BeginPlay(){ Super::BeginPlay(); }

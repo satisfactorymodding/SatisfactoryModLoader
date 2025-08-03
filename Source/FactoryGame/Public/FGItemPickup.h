@@ -96,7 +96,7 @@ public:
 	/** Removes one item from stack and returns the player who dropped the item */
 	UFUNCTION( BlueprintCallable )
 	const class AFGPlayerController* EatenByCreature( const int32 amount );
-
+	
 	virtual bool CanEverRespawn() const;
 
 	virtual bool CanBePickedUp( class AFGCharacterPlayer* byCharacter ) const;

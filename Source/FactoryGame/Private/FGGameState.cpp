@@ -51,9 +51,12 @@ AFGGameState::AFGGameState() : Super() {
 	this->mCheatNoCost = false;
 	this->mCheatNoPower = false;
 	this->mCheatNoFuel = false;
+	this->mCheatTurboProductionMode = false;
+	this->mCheatTurboBuildMode = false;
 	this->mIsTradingPostBuilt = false;
 	this->mHasInitalTradingPostLandAnimPlayed = false;
 	this->mIsSpaceElevatorBuilt = false;
+	this->mReplicatedWorldRealTimeSeconds = 0.0;
 	this->mPublicTodoList = TEXT("");
 	this->mHasGivenStartingRecipes = false;
 	this->mIsCreativeModeEnabled = false;
@@ -99,12 +102,16 @@ void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGGameState, mCheatNoCost);
 	DOREPLIFETIME(AFGGameState, mCheatNoPower);
 	DOREPLIFETIME(AFGGameState, mCheatNoFuel);
+	DOREPLIFETIME(AFGGameState, mCheatTurboProductionMode);
+	DOREPLIFETIME(AFGGameState, mCheatTurboBuildMode);
 	DOREPLIFETIME(AFGGameState, mIsTradingPostBuilt);
 	DOREPLIFETIME(AFGGameState, mHasInitalTradingPostLandAnimPlayed);
 	DOREPLIFETIME(AFGGameState, mIsSpaceElevatorBuilt);
 	DOREPLIFETIME(AFGGameState, mServerLocalDateTimeTicksAtInit);
+	DOREPLIFETIME(AFGGameState, mReplicatedWorldRealTimeSeconds);
 	DOREPLIFETIME(AFGGameState, mTetrominoLeaderBoard);
 	DOREPLIFETIME(AFGGameState, mPublicTodoList);
+	DOREPLIFETIME(AFGGameState, mPublicTodoListLastEditedBy);
 	DOREPLIFETIME(AFGGameState, mIsCreativeModeEnabled);
 }
 void AFGGameState::BeginPlay(){ Super::BeginPlay(); }
@@ -137,6 +144,8 @@ void AFGGameState::OnRep_SessionName(){ }
 void AFGGameState::SetCheatNoPower(bool noPower){ }
 void AFGGameState::SetCheatNoCost(bool noCost){ }
 void AFGGameState::SetCheatNoFuel(bool noFuel){ }
+void AFGGameState::SetCheatTurboProductionMode(bool enabled){  }
+void AFGGameState::SetCheatTurboBuildMode(bool enabled){  }
 void AFGGameState::NotifyPlayerAdded( AFGCharacterPlayer* inPlayer){ }
 int32 AFGGameState::GetTotalPlayDuration() const{ return int32(); }
 void AFGGameState::SetSessionName(const FString& inName){ }
@@ -161,7 +170,12 @@ void AFGGameState::SetDefaultSwatchForBuildableGroup(TSubclassOf<  UFGSwatchGrou
 void AFGGameState::AddTetrominoResult(const FMiniGameResult& newResult){ }
 void AFGGameState::OnRep_TetrominoLeaderBoard(){ }
 void AFGGameState::OnRep_RecipeManager(){ }
-void AFGGameState::Server_SetPublicTodoList(const FString& newTodoList){ }
+void AFGGameState::OnRep_SchematicManager(){  }
+void AFGGameState::OnRep_MapManager(){  }
+void AFGGameState::OnRep_ActorRepresentationManager(){  }
+void AFGGameState::OnRep_ConveyorChainSubsystem(){  }
+void AFGGameState::OnRep_BlueprintSubsystem(){  }
+void AFGGameState::Server_SetPublicTodoList(const FString& newTodoList, const TArray<FLocalUserNetIdBundle>& lastEditedBy){  }
 void AFGGameState::SetCreativeModeEnabled(){ }
 AFGPlayerState* AFGGameState::FindPlayerStateForOnlineUser(UOnlineUserInfo* userInfo){ return nullptr; }
 void AFGGameState::BroadcastAutoSaveTimeNotification(float timeLeft) const{ }
@@ -169,6 +183,7 @@ void AFGGameState::BroadcastAutoSaveFinishedNotification() const{ }
 void AFGGameState::BroadcastServerRestartTimeNotification(float timeLeft) const{ }
 void AFGGameState::OnRep_CheatNoPower(){ }
 void AFGGameState::OnRep_CreativeModeEnabled(){ }
+void AFGGameState::UpdateServerRealTimeSeconds(){  }
 void AFGGameState::SubmitNumPlayersTelemetry() const{ }
 void AFGGameState::SubmitCheatTelemetry() const{ }
 void AFGGameState::TryGiveStartingRecipes( AFGCharacterPlayer* inPlayer){ }

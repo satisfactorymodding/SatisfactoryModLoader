@@ -8,6 +8,7 @@
 #include "FGEventSubsystem.h"
 #include "FGResearchTreeNode.h"
 #include "IncludeInBuild.h"
+#include "Misc/DataValidation.h"
 #include "Styling/SlateBrush.h"
 #include "UObject/NoExportTypes.h"
 #include "FGResearchTree.generated.h"
@@ -34,7 +35,7 @@ public:
 	void PostLoad() override;
 #if WITH_EDITOR
 	virtual void PreSave( FObjectPreSaveContext SaveContext ) override;
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid( FDataValidationContext& validationContext ) const override;
 #endif
 	// End UObject interface
 

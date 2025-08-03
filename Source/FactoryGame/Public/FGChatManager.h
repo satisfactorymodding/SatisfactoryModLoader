@@ -18,40 +18,38 @@ enum class EFGChatMessageType : uint8
 {
 	CMT_PlayerMessage = 0,
 	CMT_SystemMessage,
-	CMT_AdaMessage
+	CMT_AdaMessage,
+	CMT_CustomMessage,
 };
 
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FChatMessageStruct
 {
 	GENERATED_BODY()
-public:
 
-	FChatMessageStruct();
-	FChatMessageStruct( FString messageString, class AFGPlayerState* sender, float serverTimeStamp );
-
-	/** The message that was sent */
-	UPROPERTY( BlueprintReadWrite )
-	FString MessageString;
+	/** Contents of the message */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Chat Message" )
+	FText MessageText;
 	
-	/** Synchronized time stamp of when the message was sent */
-	UPROPERTY( BlueprintReadWrite )
-	float ServerTimeStamp;
+	/** Type of this message. Determines the formatting and appearance of the message */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Chat Message" )
+	EFGChatMessageType MessageType{EFGChatMessageType::CMT_SystemMessage};
 
-	/** The player who sent the message */
-	UPROPERTY( BlueprintReadWrite )
-	class AFGPlayerState* Sender;
+	/** Sender of the message. System and ADA messages override the sender, but original sender can be accessed in the message text using <PlayerName/> */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Chat Message" )
+	FText MessageSender;
 
-	/** The name of the player */
-	UPROPERTY()
-	FString CachedPlayerName;
-
-	/** Caching the color */
-	UPROPERTY()
-	FLinearColor CachedColor;
+	/** Color of the message sender. System and ADA messages override the sender, but original sender can be accessed in the message text using <PlayerName/> */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Chat Message" )
+	FLinearColor MessageSenderColor{FLinearColor::White};
 	
-	UPROPERTY()
-	EFGChatMessageType MessageType = EFGChatMessageType::CMT_PlayerMessage;
+	/** Timestamp of this message from the server. Used for message sorting. Automatically set by the Chat Manager */
+	UPROPERTY( BlueprintReadWrite, Category = "Chat Message" )
+	float ServerTimeStamp{0.0f};
+
+	/** True if this message has been instigated by a local player. Automatically set by the Chat Manager */
+	UPROPERTY( BlueprintReadWrite, NotReplicated, Category = "Chat Message" )
+	bool bIsLocalPlayerMessage{false};
 };
 
 /**
@@ -77,17 +75,10 @@ public:
 public:
 	AFGChatManager();
 
-	UFUNCTION( BlueprintPure, Category = "Chat" )
-	static FString GetChatMessageName( const FChatMessageStruct& inMessage );
+	/** Broadcasts a chat message to all connected players */
+	void BroadcastChatMessage( const FChatMessageStruct& newMessage, APlayerController* instigatorPlayerController = nullptr );
 
-	UFUNCTION( BlueprintPure, Category = "Chat" )
-	static FLinearColor GetChatMessageColor( const FChatMessageStruct& inMessage );
-
-	/** Broadcast a chat message to all clients */
-	UFUNCTION( NetMulticast, Reliable )
-	void Multicast_BroadcastChatMessage( const FChatMessageStruct& newMessage );
-
-	/** Helper function to add a chat message to the local array */
+	/** Helper function to add a chat message to the local received messages */
 	void AddChatMessageToReceived( const FChatMessageStruct& inMessage );
 
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Chat" )
@@ -98,7 +89,11 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Chat" )
 	float GetMessageVisibleDuration() const;
+protected:
 
+	/** Broadcast a chat message to all clients */
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_BroadcastChatMessage( const FChatMessageStruct& newMessage, APlayerController* instigatorPlayerController );
 private:
 	/** How many messages will we save in the chat history */
 	UPROPERTY( EditDefaultsOnly, Category = "Chat" )

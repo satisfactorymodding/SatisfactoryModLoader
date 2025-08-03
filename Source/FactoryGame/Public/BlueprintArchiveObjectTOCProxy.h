@@ -39,4 +39,8 @@ private:
 
 	/** Taken from the blueprint subsystem, do not create objects of these classes */
 	TArray< TSubclassOf< UObject > > mBlacklistedFromLoad;
+
+	/** Cached save game custom version to avoid having to look it up from the archive every time */
+	int32 mSaveGameCustomVersion{0};
 };
+

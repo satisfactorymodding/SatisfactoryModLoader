@@ -5,6 +5,7 @@
 
 AFGDestructiveProjectile::AFGDestructiveProjectile() : Super() {
 	this->mDestructionCollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("DestructionSphere"));
+	this->mDestructionCollisionComp->SetMobility(EComponentMobility::Movable);
 	this->mDestroysRelevantActors = true;
 	this->mDestroysFoliage = true;
 	this->mMaxParticleSpawnsPerDetonation = 30;

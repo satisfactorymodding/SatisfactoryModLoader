@@ -31,7 +31,7 @@ void AFGBuildableLightSource::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableLightSource::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 bool AFGBuildableLightSource::GetPoolHandleInitialState() const{ return bool(); }
 UFGFactoryClipboardSettings* AFGBuildableLightSource::CopySettings_Implementation(){ return nullptr; }
-bool AFGBuildableLightSource::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
+bool AFGBuildableLightSource::PasteSettings_Implementation(UFGFactoryClipboardSettings* factoryClipboard, class AFGPlayerController* player){ return bool(); }
 TSubclassOf<UObject> AFGBuildableLightSource::GetClipboardMappingClass_Implementation(){ return TSubclassOf<UObject>(); }
 void AFGBuildableLightSource::OnBuildEffectFinished(){ }
 void AFGBuildableLightSource::SetLightEnabled(bool isEnabled){ }

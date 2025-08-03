@@ -4,7 +4,6 @@
 
 AFGFenceHologram::AFGFenceHologram() : Super() {
 	this->mRotationStep = 15;
-	this->mPlacementRequirements = EFactoryBuildingPlacementRequirements::FBPR_None;
 	this->mDefaultBlockedZoopDirections = 48;
 }
 bool AFGFenceHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }

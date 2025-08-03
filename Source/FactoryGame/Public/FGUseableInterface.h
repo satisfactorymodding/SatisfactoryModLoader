@@ -62,7 +62,7 @@ struct FACTORYGAME_API FUseState
 
 	/** Location of where the use happens */
 	UPROPERTY( BlueprintReadOnly )
-	FVector UseLocation;
+	FVector UseLocation = FVector::ZeroVector;
 
 	/** Component that triggered the use */
 	UPROPERTY( BlueprintReadOnly )
@@ -92,7 +92,7 @@ class FACTORYGAME_API IFGUseableInterface
 	 * @param atLocation	Location on the object where the use is triggered (simulated location on client).
 	 * @param componentHit	The component that the trace hit when looking at the object
 	 **/
-	UFUNCTION( BlueprintNativeEvent, Category = "Use" )
+	UFUNCTION( BlueprintNativeEvent, Category = "Use", Meta = (ForceAsFunction) )
 	void UpdateUseState( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, UPARAM(ref) FUseState& out_useState );
 
 	/**

@@ -46,7 +46,7 @@ protected:
 	void OnRep_CurrentLength();
 
 	// Begin AFGBuildableHologram Interface
-	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	virtual void CreateAttachmentPointTransform( FTransform& out_transformResult, const FHitResult& HitResult, AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint ) override;
 	// End AFGBuildableHologram Interface
 
@@ -69,11 +69,15 @@ protected:
 private:
 	UPROPERTY()
 	UStaticMeshComponent* mBeamMesh;
+
+	UPROPERTY()
+	TArray<UStaticMeshComponent*> mGeneratedComponents;
 	
 	float mSize;
 
 	float mDefaultLength;
 	float mMaxLength;
+	bool mIsMeshTiled{false};
 
 	UPROPERTY( ReplicatedUsing = OnRep_CurrentLength, CustomSerialization )
 	float mCurrentLength;
@@ -82,6 +86,6 @@ private:
 
 	FRotator mSnappedRotation;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	EBeamHologramBuildStep mBuildStep;
 };

@@ -10,9 +10,15 @@ AFGBlueprintHologram::AFGBlueprintHologram() : Super() {
 	this->mBlueprintDescriptor = nullptr;
 	this->mBlueprintDescName = TEXT("");
 	this->mBlueprintSnapBuildMode = nullptr;
+	this->mBlueprintAutoConnectBuildMode = nullptr;
+	this->mBlueprintSnapAutoConnectBuildMode = nullptr;
+	this->mBridgeHologramBuildModeOverride = nullptr;
+	this->mAutomaticConnectionSwitchControlRecipe = nullptr;
 	this->mSnappedProxy = nullptr;
 	this->mBlueprintBoundsMesh = nullptr;
 	this->mBlueprintDirectionMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Blueprint Direction Mesh"));
+	this->mBlueprintDirectionMesh->SetMobility(EComponentMobility::Movable);
+	this->mCreateClearanceSnapMeshVisualization = false;
 	this->mBlueprintDirectionMesh->SetupAttachment(RootComponent);
 }
 void AFGBlueprintHologram::BeginPlay(){ Super::BeginPlay(); }
@@ -21,15 +27,23 @@ void AFGBlueprintHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 	DOREPLIFETIME(AFGBlueprintHologram, mBlueprintDescName);
 }
 AActor* AFGBlueprintHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID NetConstructionID){ return nullptr; }
-void AFGBlueprintHologram::PreHologramPlacement(const FHitResult& hitResult){ }
-void AFGBlueprintHologram::PostHologramPlacement(const FHitResult& hitResult){ }
+void AFGBlueprintHologram::PreHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
+void AFGBlueprintHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
 int32 AFGBlueprintHologram::GetRotationStep() const{ return int32(); }
 bool AFGBlueprintHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGBlueprintHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGBlueprintHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
-void AFGBlueprintHologram::CheckCanAfford(UFGInventoryComponent* inventory){ }
-TArray< FItemAmount > AFGBlueprintHologram::GetCost(bool includeChildren) const{ return TArray<FItemAmount>(); }
+TArray<FItemAmount> AFGBlueprintHologram::GetBaseCost() const{ return Super::GetBaseCost(); }
 void AFGBlueprintHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes) const{ }
+bool AFGBlueprintHologram::DoMultiStepPlacement(bool isInputFromARelease){ return Super::DoMultiStepPlacement(isInputFromARelease); }
+bool AFGBlueprintHologram::CanTakeNextBuildStep() const{ return Super::CanTakeNextBuildStep(); }
+bool AFGBlueprintHologram::ShouldUnlockHologramOnBuildStep() const { return false; }
+void AFGBlueprintHologram::GetHologramsToShareMaterialStateWith(TArray<AFGHologram*>& out_holograms) const{ Super::GetHologramsToShareMaterialStateWith(out_holograms); }
+void AFGBlueprintHologram::OnNearbyBuildableOverlapBegin(class AFGBuildable* buildable){ Super::OnNearbyBuildableOverlapBegin(buildable); }
+void AFGBlueprintHologram::OnNearbyBuildableOverlapEnd(class AFGBuildable* buildable){ Super::OnNearbyBuildableOverlapEnd(buildable); }
+void AFGBlueprintHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ Super::OnBuildModeChanged(buildMode); }
+void AFGBlueprintHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ Super::SerializeConstructMessage(ar, id); }
+void AFGBlueprintHologram::PostConstructMessageDeserialization(){ Super::PostConstructMessageDeserialization(); }
 bool AFGBlueprintHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
 bool AFGBlueprintHologram::ShouldBuildGunHitProxies() const{ return bool(); }
 void AFGBlueprintHologram::LoadBlueprintToOtherWorld(){ }
@@ -38,6 +52,10 @@ void AFGBlueprintHologram::CreateConnectionRepresentations(const TArray<AFGBuild
 void AFGBlueprintHologram::AlignBuildableRootWithBounds(){ }
 void AFGBlueprintHologram::SetBlueprintDescriptor( UFGBlueprintDescriptor* blueprintDesc){ }
 void AFGBlueprintHologram::OnRep_BlueprintDescName(){ }
-USceneComponent* AFGBlueprintHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
+USceneComponent* AFGBlueprintHologram::SetupBuildableComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
+USceneComponent* AFGBlueprintHologram::SetInstanceDataBuildableComponent(USceneComponent* attachParent, const FInstanceData& instanceData){ return nullptr; }
 void AFGBlueprintHologram::RegisterCustomBuildableVisualization(TSubclassOf<AFGBuildable> inBuildable, const FCreateBuildableVisualizationDelegate& inDelegate){ }
+bool AFGBlueprintHologram::AreAutomaticConnectionsEnabled() const{ return false; }
+void AFGBlueprintHologram::ApplyCustomizationData(){ }
+void AFGBlueprintHologram::OnOpenConnectionStateChanged(const TArray<class UFGConnectionComponent*>& connections, class UFGConnectionComponent* previousTargetConnection, class UFGConnectionComponent* newTargetConnection, bool isValid){ }
 bool AFGBlueprintHologram::FindCustomVisualizer(TSubclassOf<AFGBuildable> buildableClass, FCreateBuildableVisualizationDelegate& outVisualizer){ return bool(); }

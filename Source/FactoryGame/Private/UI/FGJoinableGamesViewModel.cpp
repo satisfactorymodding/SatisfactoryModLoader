@@ -7,4 +7,8 @@ void UFGJoinableGamesViewModel::JoinCustomGame(APlayerController* playerControll
 void UFGJoinableGamesViewModel::FriendAdded(UOnlineFriend* newFriend){ }
 void UFGJoinableGamesViewModel::FriendRemoved(UOnlineFriend* deletedFriend){ }
 void UFGJoinableGamesViewModel::FriendGameSessionChanged(UObject*, UE::FieldNotification::FFieldId){ }
+void UFGJoinableGamesViewModel::LoginStateChanged(ULocalUserInfo* UserInfo, TSharedRef<UE::Online::FAccountInfo> AccountInfo, UOnlineIntegrationBackend* Backend){  }
+void UFGJoinableGamesViewModel::OnFriendListReset(ULocalUserInfo* UserInfo){  }
+void UFGJoinableGamesViewModel::ReAddFriends(ULocalUserInfo* UserInfo){  }
 void UFGJoinableGamesViewModel::UpdateFriendSession(UOnlineFriend* newFriend, USessionInformation* sessionInfo){ }
+void UFGJoinableGamesViewModel::UpdateAndFilterListEntries(){  }

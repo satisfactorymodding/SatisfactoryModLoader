@@ -45,6 +45,7 @@ AFGProjectile::AFGProjectile() : Super() {
 	this->mInitialVelocity = FVector::ZeroVector;
 	this->mTraveledDistance = 0.0;
 	this->mCollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	this->mCollisionComp->SetMobility(EComponentMobility::Movable);
 	this->mProjectileMovement = CreateDefaultSubobject<UFGProjectileMovementComponent>(TEXT("ProjectileComp"));
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;

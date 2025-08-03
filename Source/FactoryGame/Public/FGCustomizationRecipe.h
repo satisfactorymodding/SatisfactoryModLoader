@@ -20,7 +20,7 @@ public:
 	UFGCustomizationRecipe();
 
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid( TArray< FText >& ValidationErrors ) override;
+	virtual EDataValidationResult IsDataValid( FDataValidationContext& validationContext ) const override;
 #endif
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Customization" )

@@ -285,6 +285,9 @@ public:
 	
 	static FObjectReferenceDisc FixupObjectReferenceForPartitionedWorld( const FObjectReferenceDisc& Reference, const class AFGWorldSettings& WorldSettings );
 
+	/** Setup the autosave timer */
+	void SetupAutosave();
+
 	/** Called every time by timer to trigger a autosave. Can be called manually if we want to trigger a autosave for key events */
 	UFUNCTION()
 	void Autosave();
@@ -294,6 +297,9 @@ public:
 
 	/** Updates the autosave interval */
 	void SetAutosaveInterval( int32 newInterval );
+
+	/** Defines if a autosave should be done or not */
+	bool ShouldPerformAutoSave();
 
 	UFUNCTION( BlueprintCallable, Category = "Factory Game|Save")
 	void SetAutoSaveEnabled( bool enabled );
@@ -365,6 +371,9 @@ protected:
 	*/
 	FORCEINLINE void GetStearmingLevelDataMap( TMap< FString, FPerStreamingLevelSaveData* >& out_data );
 
+	/** Retrieves the save level name to be used as a key for this level data */
+	static FString GetSaveLevelName( const ULevel* level );
+	
 	/**
 	* A helper function that will call GetLevelSaveData( const FString& levelName, bool isPersistent )
 	* @param level - The level to retrive the FPerLevelSaveData for.
@@ -391,9 +400,6 @@ protected:
 	/** Get the full map name */
 	FString GetFullMapName() const;
 
-	/** Setup the autosave timer */
-	void SetupAutosave();
-	
 	/** Check if we should broadcast an auto save notification and potentially start a new notification timer */
 	void CheckAutoSaveNotificationTimer();
 
@@ -553,7 +559,7 @@ private:
 
 	/** Called after actor ticking so we can save when all actors have been saved */
 	void SaveWorldEndOfFrame( class UWorld* world, ELevelTick, float );
-	void SaveWorldImplementation( const FString& gameName );
+	void SaveWorldImplementation( FString gameName );
 
 	/** Called to initiate the background save compression and file system write operation. */
 	void StartBackgroundSave( const FString& fullFilePath, class FBufferArchive64&& memArchive, const FSaveHeader& saveHeader );

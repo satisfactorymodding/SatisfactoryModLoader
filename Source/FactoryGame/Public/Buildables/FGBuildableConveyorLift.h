@@ -49,6 +49,23 @@ public:
 	UStaticMesh* mShelfMesh;
 };
 
+/* What should the lift endings look like? Should they be bellows or just empty? (or Auto)*/
+UENUM(BlueprintType)
+enum class EFGBuildableConveyorLiftMeshDisplayMode : uint8
+{
+	// Let it be auto if you want it to contextually chose which display mode it should have
+	MDM_Auto,
+	MDM_Bellow,
+	MDM_Empty
+};
+
+// Which direction the contents of the lift flow.
+UENUM(BlueprintType)
+enum class EFGBuildableConveyorLiftDirection : uint8
+{
+	LD_Downwards,
+	LD_Upwards
+};
 
 /** Base for conveyor lifts. */
 UCLASS()
@@ -67,27 +84,56 @@ public:
 
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
+	virtual void PostSerializedFromBlueprint(bool isBlueprintWorld) override;
 	virtual bool ShouldShowCenterGuidelinesForHologram( const AFGHologram* hologram ) const override;
 	// End Buildable interface
 	
 	// Begin IFGDismantleInterface
 	virtual void Upgrade_Implementation( AActor* newActor ) override;
-	// End IFGDismantleInterface
-
-	// Begin IFGDismantleInterface
 	virtual void Dismantle_Implementation() override;
 	// End IFGDismantleInterface
 
+	// Begin IFGSaveInterface
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	// End IFGSaveInterface
+
 	/* Force enable lightweight instancing on lifts. */
 	virtual bool DoesContainLightweightInstances_Native() const override { return true; }
-	virtual TArray<struct FInstanceData> GetActorLightweightInstanceData_Implementation() override;
+	virtual TArray<struct FInstanceData> GetActorLightweightInstanceData_Implementation() const override;
 	//virtual void SetupInstances_Native() override;
 
+	// Begin AFGBuildableConveyorBase interface
+	virtual float FindOffsetClosestToLocation( const FVector& location ) const override;
+	virtual void GetLocationAndDirectionAtOffset( float offset, FVector& out_location, FVector& out_direction ) const override;
+	// End AFGBuildableConveyorBase interface
+
+	EFGBuildableConveyorLiftDirection GetConveyorLiftFlowDirection() const;
+	
+	/**
+	 * Split this conveyor in two.
+	 * First part [0,offset] and second part [offset,length].
+	 * @note Callee is responsible for not creating snakes or 'zero belts'.
+	 *       I.e. Do not split too close to the beginning or end.
+	 *		 Will dismantle the current conveyor lift on successful split
+	 * @param connectNewConveyors - Should the new conveyors be connected to each other after the split
+	 * @return both resulting conveyor lifts; empty on failure to split.
+	 */
+	static TArray< AFGBuildableConveyorLift* > Split( AFGBuildableConveyorLift* conveyorLift, float offset );
+
+	/**
+	 * Merge two conveyor lifts.
+	 * @return The merged conveyor; nullptr on failure to split.
+	 */
+	static AFGBuildableConveyorLift* Merge( TArray< AFGBuildableConveyorLift* > conveyorLifts );
+	
+	static AFGBuildableConveyorLift* DuplicateLift( AFGBuildableConveyorLift* liftToDuplicate, bool dismantleOriginalLift = true );
+	
 	/** Get the height for this lift. */
 	float GetHeight() const { return FMath::Abs( mTopTransform.GetTranslation().Z ); }
 
-	/** Returns whether this lift is reversed or not */
-	FORCEINLINE bool GetIsReversed() const { return mIsReversed; }
+	/** Returns whether this lift is reversed or not [LEGACY, actual reversed flag isn't used anymore and instead we are looking at the flow]*/
+	FORCEINLINE bool GetIsReversed() const { return IsFlowUpwards(); }
+	FORCEINLINE bool IsFlowUpwards() const { return GetConveyorLiftFlowDirection() == EFGBuildableConveyorLiftDirection::LD_Upwards; }
 
 	/** Overriden to account for reversal */
 	virtual float GetDistanceBetweenFirstConnection() override;
@@ -103,6 +149,9 @@ public:
 	void SetupConnections();
 
 	void DestroyVisualItems();
+	
+
+	inline float GetMeshHeight() const { return mMeshHeight; }
 
 	FORCEINLINE TArray< class AFGBuildablePassthrough* > GetSnappedPassthroughs() { return mSnappedPassthroughs; }
 
@@ -117,8 +166,6 @@ public:
 	UFGBuildableConveyorLiftSparseData* mConveyorLiftSparesDataCDO;
 	
 	FORCEINLINE const UFGBuildableConveyorLiftSparseData* GetConveyorLiftSparesData() const { return mConveyorLiftSparesDataCDO; }
-
-	virtual void PostSerializedFromBlueprint(bool isBlueprintWorld) override;
 	
 protected:
 	// Begin AFGBuildableConveyorBase interface
@@ -144,6 +191,8 @@ private:
 		UStaticMesh* topMesh,
 		float stepHeight,
 		TArray< AFGBuildablePassthrough* > snappedPassthroughs,
+		EFGBuildableConveyorLiftMeshDisplayMode inputMeshDisplayMode,
+		EFGBuildableConveyorLiftMeshDisplayMode outputMeshDisplayMode,
 		bool isConnectionReversed,
 		bool shouldFlipOnReverse,
 		TArray< UStaticMeshComponent* >& meshPool,
@@ -189,6 +238,12 @@ public:
 	/** Shelf placed under each item. */
 	UPROPERTY( EditDefaultsOnly )
 	class UStaticMesh* mShelfMesh;
+	/** How we visualize the output of the lift */
+	UPROPERTY( EditDefaultsOnly, SaveGame, Replicated )
+	EFGBuildableConveyorLiftMeshDisplayMode mOutputMeshDisplayMode = EFGBuildableConveyorLiftMeshDisplayMode::MDM_Auto;
+	/** How we visualize the input of the lift */
+	UPROPERTY( EditDefaultsOnly, SaveGame, Replicated )
+	EFGBuildableConveyorLiftMeshDisplayMode mInputMeshDisplayMode = EFGBuildableConveyorLiftMeshDisplayMode::MDM_Auto;
 
 
 private:
@@ -212,8 +267,13 @@ private:
 	UPROPERTY( SaveGame, ReplicatedUsing= OnRep_TopTransform )
 	FTransform mTopTransform;
 
-	UPROPERTY( SaveGame, Replicated )
+	// DEPRECATED 2023-01-30
+	// Instead build lifts where mConnector0 is always input, and the other always output.
+	UPROPERTY( SaveGame )
 	bool mIsReversed;
+
+	UPROPERTY( SaveGame )
+	bool mIsBeltUsingInputRotation;
 
 	/** Used by mk6 lifts because they are enclosed and have a directional arrow on them */
 	UPROPERTY( EditDefaultsOnly )
@@ -258,13 +318,21 @@ inline void AFGBuildableConveyorLift::PostSerializedFromBlueprint( bool isBluepr
  */
 template< typename MeshConstructor >
 void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const FTransform& endTransform, UStaticMesh* bottomMesh, UStaticMesh* midMesh, UStaticMesh* halfMidMesh, UStaticMesh* topMesh,
-												 float stepHeight, TArray< AFGBuildablePassthrough* > snappedPassthroughs, bool isConnectionReversed, bool shouldFlipOnReverse, TArray< UStaticMeshComponent* >& meshPool, MeshConstructor meshConstructor )
+												 float stepHeight, TArray< AFGBuildablePassthrough* > snappedPassthroughs, EFGBuildableConveyorLiftMeshDisplayMode inputMeshDisplayMode, EFGBuildableConveyorLiftMeshDisplayMode outputMeshDisplayMode, bool isConnectionReversed, bool shouldFlipOnReverse, TArray< UStaticMeshComponent* >& meshPool, MeshConstructor meshConstructor )
 {
 	fgcheck( parent );
-	const bool bHasPassthrough = snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ];
-
-	float heightOfBottomPassthrough = snappedPassthroughs[ 0 ] == nullptr ? 0.f : snappedPassthroughs[ 0 ]->GetSnappedBuildingThickness();
-	float heightOfTopPassthrough = snappedPassthroughs[ 1 ] == nullptr ? 0.f : snappedPassthroughs[ 1 ]->GetSnappedBuildingThickness();
+	using enum EFGBuildableConveyorLiftMeshDisplayMode;
+	
+	if( inputMeshDisplayMode == MDM_Auto )
+		inputMeshDisplayMode = snappedPassthroughs[ 0 ] == nullptr ? MDM_Bellow : MDM_Empty;
+	
+	if( outputMeshDisplayMode == MDM_Auto )
+		outputMeshDisplayMode = snappedPassthroughs[ 1 ] == nullptr ? MDM_Bellow : MDM_Empty;
+	
+	const bool bHasPassthrough = inputMeshDisplayMode == MDM_Empty && outputMeshDisplayMode == MDM_Empty;
+	
+	float heightOfBottomPassthrough = snappedPassthroughs[ 0 ] == nullptr ? (inputMeshDisplayMode == MDM_Empty ? stepHeight : 0) : snappedPassthroughs[ 0 ]->GetSnappedBuildingThickness();
+	float heightOfTopPassthrough = snappedPassthroughs[ 1 ] == nullptr ? (outputMeshDisplayMode == MDM_Empty ? stepHeight : 0) : snappedPassthroughs[ 1 ]->GetSnappedBuildingThickness();
 	float totalPassthroughHeight = heightOfTopPassthrough + heightOfBottomPassthrough;
 
 	const float height = FMath::Abs( endTransform.GetTranslation().Z ) - ( totalPassthroughHeight / 2.f );
@@ -276,12 +344,12 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 	int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( height / stepHeight ) + (bHasPassthrough ? 0 : 1) );
 	
 	// When snapping to two passthroughs it is sometimes neccesary to use a half segment at the end to ensure the mesh doesn't clip through thin foundations
-	bool useHalfMeshEnd =	( snappedPassthroughs[ 0 ] && isReversed ) &&
-							( snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ] && 
+	bool useHalfMeshEnd =	( inputMeshDisplayMode == MDM_Empty && isReversed ) &&
+							( inputMeshDisplayMode == MDM_Empty && outputMeshDisplayMode == MDM_Empty && 
 							( ( FMath::FloorToInt( height ) % FMath::FloorToInt( stepHeight ) ) != 0 ) );
 	
 	useHalfMeshEnd =		useHalfMeshEnd ||
-							( !snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ] && ( ( FMath::FloorToInt( height ) % FMath::FloorToInt( stepHeight ) ) != 0 ) );
+							( inputMeshDisplayMode == MDM_Bellow && outputMeshDisplayMode == MDM_Empty && ( ( FMath::FloorToInt( height ) % FMath::FloorToInt( stepHeight ) ) != 0 ) );
 
 	// Special case here for conveyor lifts snapped at the bottom. Their minimum height is allowed to be so small no mid meshes are required
 	if( height <= stepHeight && isReversed )
@@ -317,7 +385,7 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 
 	// Stack all pieces on top of each other. When snapping to a passthrough we begin placing the stepped segments at index 0 rather than 1
 	int32 startAtIndex = 1;
-	if( snappedPassthroughs[ 0 ] )
+	if( snappedPassthroughs[ 0 ] || inputMeshDisplayMode == MDM_Empty )
 	{
 		startAtIndex = 0;
 	}
@@ -329,7 +397,7 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 		float STEP_ALIGNMENT = 0.f;
 
 		// When snapping to a passthrough we use the half thickness (the surface) of the foundation as the step alignment
-		if( snappedPassthroughs[ 0 ] == nullptr )
+		if( inputMeshDisplayMode == MDM_Bellow )
 		{
 			STEP_ALIGNMENT = 50.f;
 		}
@@ -338,7 +406,7 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 			STEP_ALIGNMENT = ( heightOfBottomPassthrough / 2.f ) * -stepDir;
 			if( isReversed )
 			{
-				if( snappedPassthroughs[ 0 ] && !snappedPassthroughs[ 1 ] && isReversed && i == meshPool.Num() - 2 )
+				if( inputMeshDisplayMode == MDM_Empty && outputMeshDisplayMode == MDM_Bellow && isReversed && i == meshPool.Num() - 2 )
 				{
 					STEP_ALIGNMENT += stepHeight / 2.f;
 				}
@@ -361,7 +429,7 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 		mesh->SetRelativeLocation( FVector::UpVector * stepDist );
 		mesh->SetRelativeRotation( midRotation );
 
-		if( i == meshPool.Num() - 2 && snappedPassthroughs[ 0 ] && !snappedPassthroughs[ 1 ] && isReversed )
+		if( i == meshPool.Num() - 2 && inputMeshDisplayMode == MDM_Empty && outputMeshDisplayMode == MDM_Bellow && isReversed )
 		{
 			mesh->SetStaticMesh( halfMidMesh );
 		}
@@ -374,7 +442,7 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 	// Update the last and first piece.
 	if( auto mesh = meshPool.Last() )
 	{
-		if( snappedPassthroughs[ 1 ] == nullptr )
+		if( outputMeshDisplayMode == MDM_Bellow )
 		{
 			mesh->SetRelativeLocationAndRotation( endTransform.GetLocation(), endTransform.GetRotation() );
 			mesh->SetStaticMesh( isReversed ? bottomMesh : topMesh );
@@ -388,7 +456,7 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 	}
 	if( auto mesh = meshPool[ 0 ] )
 	{
-		if( snappedPassthroughs[ 0 ] == nullptr )
+		if( inputMeshDisplayMode == MDM_Bellow )
 		{
 			mesh->SetRelativeLocationAndRotation( FVector::ZeroVector, FRotator::ZeroRotator );
 			mesh->SetStaticMesh( isReversed ? topMesh : bottomMesh );
@@ -405,18 +473,15 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 
 	if( bShouldFlipMesh )
 	{
-		FTransform flipTransform = FTransform();
-		float zOffset = ( snappedPassthroughs[0] || (snappedPassthroughs[0] == nullptr && snappedPassthroughs[1] == nullptr) ) ? -50.f : 0.f; // This is a bit hacky to account for different spacing behaviour. Again, with all the special cases this code should perhaps be rewritten entirely
-		flipTransform.SetLocation( endTransform.GetLocation() - FVector( 0.f, 0.f, zOffset ) );
-		flipTransform.SetRotation( FRotator( 180.f, 0.f, 0.f).Quaternion() );
-		int32 startAt = snappedPassthroughs[0] == nullptr ? 1 : 0;
-		int32 endAt = snappedPassthroughs[1] == nullptr ? numMeshes - 1 : numMeshes;
-		for( int32 i = startAt; i < endAt; ++i)
+		for( int32 i = startAtIndex; i < numMeshes; ++i )
 		{
-			auto& mesh = meshPool[ i ];
-			FTransform meshRelative = mesh->GetRelativeTransform();
-			meshRelative *= flipTransform;
-			mesh->SetRelativeTransform( meshRelative );
+			auto& InstanceEntry = meshPool[ i ];
+			if(InstanceEntry->GetStaticMesh() == midMesh || InstanceEntry->GetStaticMesh() == halfMidMesh)
+			{
+				// Flip the mesh around its center
+				InstanceEntry->GetRelativeTransform().SetLocation( InstanceEntry->GetRelativeTransform().GetLocation() + FVector( 0.f, 0.f, stepHeight ) );
+				InstanceEntry->GetRelativeTransform().SetRotation(  InstanceEntry->GetRelativeTransform().GetRotation() * FRotator( 180.f, 0.f, 0.f).Quaternion() );
+			}
 		}
 	}
 

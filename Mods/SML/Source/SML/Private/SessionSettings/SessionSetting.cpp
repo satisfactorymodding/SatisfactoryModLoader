@@ -36,13 +36,19 @@ EDataValidationResult USMLSessionSetting::IsDataValid(TArray<FText>& ValidationE
 		ValidationErrors.Add(LOCTEXT("SessionSettingNoToolTip", "ToolTip is not set. Please describe the setting for the end user."));
 		ValidationResult = EDataValidationResult::Invalid;
 	}
-	if (!IsValid(CategoryClass)) {
-		ValidationErrors.Add(LOCTEXT("SessionSettingNoCategoryClass", "CategoryClass is not set. Please use a category with your mod's name as the name."));
+	if (WidgetsToCreate.IsEmpty()) {
+		ValidationErrors.Add(LOCTEXT("SessionSettingNoWidgetsToCreate", "WidgetsToCreate is empty. Please add at least one widget to the setting."));
 		ValidationResult = EDataValidationResult::Invalid;
 	}
-	if (!IsValid(SubCategoryClass)) {
-		ValidationErrors.Add(LOCTEXT("SessionSettingNoSubCategoryClass", "SubCategoryClass is not set. Unassigned subcategories not allowed."));
-		ValidationResult = EDataValidationResult::Invalid;
+	for (const FSettingsWidgetLocationDescriptor& Widget : WidgetsToCreate) {
+		if (!IsValid(Widget.CategoryClass)) {
+			ValidationErrors.Add(LOCTEXT("SessionSettingNoCategoryClass", "CategoryClass is not set. Please use a category with your mod's name as the name."));
+			ValidationResult = EDataValidationResult::Invalid;
+		}
+		if (!IsValid(Widget.SubCategoryClass)) {
+			ValidationErrors.Add(LOCTEXT("SessionSettingNoSubCategoryClass", "SubCategoryClass is not set. Unassigned subcategories not allowed."));
+			ValidationResult = EDataValidationResult::Invalid;
+		}
 	}
 	if (!ApplyType) {
 		ValidationErrors.Add(LOCTEXT("SessionSettingNoApplyType", "ApplyType is not set. This would crash the game at runtime; use FGUserSettingApplyType instead."));

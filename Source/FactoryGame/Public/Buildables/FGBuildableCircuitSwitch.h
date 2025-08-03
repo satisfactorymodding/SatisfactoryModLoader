@@ -5,11 +5,12 @@
 #include "FactoryGame.h"
 #include "FGBuildableCircuitBridge.h"
 #include "FGBuildingTagInterface.h"
-
+#include "OnlineIntegration/Public/LocalUserInfo.h"
 #include "FGBuildableCircuitSwitch.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnCircuitSwitchPropertyChanged );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnCircuitSwitchBuildingTagChanged, bool, hasTag, const FString&, tag );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCircuitSwitchLastEditedByChanged, const TArray < FLocalUserNetIdBundle> &, lastEditedBy );
 
 /**
  * Building that connects two circuits, allowing them to act as one single circuit when the switch is turned on.
@@ -33,6 +34,10 @@ public:
 	virtual void SetHasBuildingTag_Implementation( bool hasBuildingTag ) override;
 	virtual FString GetBuildingTag_Implementation() const override { return mBuildingTag; }
 	virtual void SetBuildingTag_Implementation( const FString& buildingTag ) override;
+	//<FL>[KonradA]
+	virtual void SetLastEditedBy_Implementation( const TArray< FLocalUserNetIdBundle >& lastEditedBy ) override;
+	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy_Implementation() const;
+	//</FL>
 	//~ End FGBuildingTagInterface
 
 	/**
@@ -73,6 +78,9 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "CircuitSwitch" )
 	FOnCircuitSwitchBuildingTagChanged mOnBuildingTagChanged;
 
+	UPROPERTY( BlueprintAssignable, Category = "CircuitSwitch" )
+	FOnCircuitSwitchLastEditedByChanged mOnLastEditedByChanged;
+
 protected:
 	/**
 	 * Called when the switch is turned on or off.
@@ -92,6 +100,9 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "CircuitSwitch" )
 	void OnBuildingTagChanged( bool hasTag, const FString& tag );
 	
+	UFUNCTION( BlueprintImplementableEvent, Category = "CircuitSwitch" )
+	void OnLastEditedByChanged( const TArray< FLocalUserNetIdBundle >& lastEditedBy );
+
 private:
 	UFUNCTION()
 	void OnRep_IsSwitchOn();
@@ -101,6 +112,9 @@ private:
 
 	UFUNCTION()
 	void OnRep_BuildingTag();
+
+	UFUNCTION()
+	void OnRep_LastEditedBy();
 
 	virtual void OnRep_IsBridgeConnected() override;
 
@@ -115,4 +129,9 @@ private:
 
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_BuildingTag )
 	FString mBuildingTag;
+
+	//<FL>[KonradA]
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_LastEditedBy )
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	//</FL>
 };

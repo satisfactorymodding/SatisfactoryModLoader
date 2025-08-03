@@ -100,6 +100,9 @@ struct FACTORYGAME_API FSaveHeader
 		// @2023-04-18 Added variable to indicate if creative mode is enabled for this save.
 		AddedIsCreativeModeEnabled,
 
+		// @2024-09-12 Added saveName to the header to have proper names on Consoles	<FL> [bgr]
+		AddedSaveName,
+
 		// -----<new versions can be added above this line>-----
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1 // Last version to use
@@ -110,6 +113,7 @@ struct FACTORYGAME_API FSaveHeader
 	FSaveHeader(
 		int32 saveVersion,
 		int32 buildVersion,
+		FString saveName,	// <FL> [bgr] Required for console saves; File names have to many restrictions
 		FString mapName,
 		FString mapOptions,
 		FString sessionName,
@@ -123,6 +127,7 @@ struct FACTORYGAME_API FSaveHeader
 		bool isCreativeModeEnabled) :
 		SaveVersion( saveVersion ),
 		BuildVersion( buildVersion ),
+		SaveName( saveName ),	// <FL> [bgr] Required for console saves; File names have to many restrictions
 		MapName( mapName ),
 		MapOptions( mapOptions ),
 		SessionName( sessionName ),
@@ -145,13 +150,13 @@ struct FACTORYGAME_API FSaveHeader
 	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	int32 BuildVersion;
 
-	/** Name of the save game, not store to disc */
+	/** Name of the save game */
 	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
 	FString SaveName;
 
 	/** Descriptor for the save game location on the disc at the time of read (not saved to disc) */
 	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
-	ESaveLocationInfo SaveLocationInfo;
+	ESaveLocationInfo SaveLocationInfo = ESaveLocationInfo::SLI_Default;
 
 	/** The map this save is valid on  */
 	UPROPERTY(BlueprintReadOnly, Category="SaveHeader")
@@ -260,6 +265,25 @@ struct FACTORYGAME_API FMapRedirector
 	/** New map name */
 	UPROPERTY()
 	FString NewMapName;
+};
+
+/** Redirect from an object name on the outer of the specified type to a new name on the same outer. Used for redirecting CDO/Sub Object renames/deletions */
+USTRUCT()
+struct FACTORYGAME_API FSubObjectRedirector
+{
+	GENERATED_BODY()
+
+	/** Full path of the outer class of this sub-object */
+	UPROPERTY()
+	FSoftClassPath OuterClassName;
+
+	/** Old name of the sub-object */
+	UPROPERTY()
+	FName OldSubObjectName;
+
+	/** New name of the sub-object, or NAME_None if sub-object has been deleted */
+	UPROPERTY()
+	FName NewSubObjectName;
 };
 
 USTRUCT( BlueprintType )

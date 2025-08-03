@@ -45,6 +45,7 @@ private:
 
 	FInt32Interval mAngleLimit;
 	float mAngleOffset;
-	
+
+	UPROPERTY( CustomSerialization )
 	ESnowCannonHologramBuildStep mBuildStep;
 };

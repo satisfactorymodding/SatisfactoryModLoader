@@ -31,17 +31,12 @@ protected:
 	bool CanSnapVertically( class AFGBuildableFoundation* toFoundation, float dirZ ) const;
 
 	// Begin AFGFactoryBuildingHologram interface
-	virtual void UpdateZoop() override;
-	virtual void ConstructZoop( TArray<AActor*>& out_children ) override;
+	virtual void CreateZoopInstances() override;
 	virtual FVector ConvertZoopToWorldLocation( const FIntVector& zoop ) const override;
 	// End AFGFactoryBuildingHologram interface
-
-	// Begin AFGHologram Interface
-	virtual void CheckValidPlacement() override;
-	// End AFGHologram Interface
 	
 	// Begin AFGBuildableHologram Interface
-	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	// End AFGBuildableHologram Interface
 
 	virtual void SetZoopFromHitresult( const FHitResult& hitResult );

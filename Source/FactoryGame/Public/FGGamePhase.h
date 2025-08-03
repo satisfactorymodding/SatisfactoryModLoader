@@ -22,7 +22,7 @@ public:
 	UFUNCTION( BlueprintCallable, Category="GamePhase")
 	static TArray<UFGGamePhase*> GetAllGamePhaseAssetsSorted();
 
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="UI|Display" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="UI|Display", AssetRegistrySearchable )
 	FText mDisplayName;
 
 	/* Determines the last tier of a game phase. A lower value indicates an earlier phase in game progression */

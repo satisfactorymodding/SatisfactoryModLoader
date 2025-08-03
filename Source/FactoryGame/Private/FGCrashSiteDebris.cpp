@@ -3,6 +3,7 @@
 #include "FGCrashSiteDebris.h"
 #include "Components/BoxComponent.h"
 #include "Components/SceneComponent.h"
+#include "UObject/ObjectSaveContext.h"
 
 #if WITH_EDITOR
 void AFGCrashSiteDebris::PreSave(FObjectPreSaveContext SaveContext){ }
@@ -27,22 +28,16 @@ void AFGCrashSiteDebris::SpawnSavedSimulation(){ }
 #endif 
 AFGCrashSiteDebris::AFGCrashSiteDebris() : Super() {
 	this->mLinkedDropPod = nullptr;
-	this->NetCullDistanceSquared = 2025000000.0;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	this->RootComponent->SetMobility(EComponentMobility::Static);
 }
-void AFGCrashSiteDebris::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrashSiteDebris::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrashSiteDebris::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrashSiteDebris::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrashSiteDebris::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
-bool AFGCrashSiteDebris::NeedTransform_Implementation(){ return bool(); }
-bool AFGCrashSiteDebris::ShouldSave_Implementation() const{ return bool(); }
 #if WITH_EDITOR
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
 AFGCrashSiteDebrisItemBox::AFGCrashSiteDebrisItemBox() : Super() {
 	this->mBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("ItemBox"));
+	this->mBoxComponent->SetMobility(EComponentMobility::Static);
 	this->RootComponent = mBoxComponent;
 }
 #if WITH_EDITORONLY_DATA

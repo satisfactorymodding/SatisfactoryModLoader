@@ -8,15 +8,22 @@
 #include "FGBlueprintFunctionLibrary.h"
 #include "FGOutlineComponent.generated.h"
 
-/* Swap data for the build effect to function. */
+/**
+ * Can be added to Static Mesh assets as User Data to allow overriding some materials on them when they are rendered in the Outline
+ * Note that this does not include hologram meshes, which render in both the main pass and the custom depth pass
+ */
 UCLASS( EditInlineNew, DefaultToInstanced )
-class FACTORYGAME_API UFGGlassIdentifier : public UAssetUserData
+class FACTORYGAME_API UFGOutlineMaterialOverrideIdentifier : public UAssetUserData
 {
 	GENERATED_BODY()
-
 public:
-	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* DepthOverrideMaterial = nullptr;
+	/** The material that the filter material will be replaced with when the mesh is rendered in custom depth pass */
+	UPROPERTY( EditAnywhere, Category = "Material Overrides" )
+	class UMaterialInterface* DepthOverrideMaterial{nullptr};
+
+	/** Applies material overrides to the mesh component that will be rendered in the custom depth pass for the outline component */
+	UFUNCTION( BlueprintCallable, Category = "Custom Depth Material Overrides" )
+	static void ApplyOutlineMaterialOverrides(class UStaticMeshComponent* meshComponent);
 };
 
 USTRUCT()
@@ -37,7 +44,7 @@ struct FActorOutlineState
 	EOutlineColor OutlineColor = EOutlineColor::OC_NONE;
 
 	UPROPERTY()
-	bool OnlyHighlightProxies;
+	bool OnlyHighlightProxies = false;
 };
 
 /**
@@ -56,13 +63,19 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Outline", Meta = ( DefaultToSelf = "actorToOutline" ) )
 	void ShowOutline( AActor* actorToOutline, const EOutlineColor color, bool createDefaultProxies = true, bool onlyHighlightProxies = false );
 
-	const FActorOutlineState* GetOutlineStateForActor( const AActor* actor ) const;
+	/** Shows an outline for only a specific mesh on an actor */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Outline", Meta = ( DefaultToSelf = "actorToOutline" ) )
+	void ShowOutlineForStaticMeshComponent( AActor* actorToOutline, UStaticMeshComponent* meshComp, const EOutlineColor color );
+	
+	const FActorOutlineState* GetImmutableOutlineStateForActor( const AActor* actor ) const;
+
+	EOutlineColor GetOutlineStateColorForActor(const AActor* actor);
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Outline", Meta = ( DefaultToSelf = "actor" ) )
 	UStaticMeshComponent* FindOrAddOutlineProxy( const AActor* actor, const FName& identifier );
 	
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Outline", Meta = ( DefaultToSelf = "actor" ) )
-	UInstancedStaticMeshComponent* FindOrAddInstancedOutlineProxy( const AActor* actor, const FName& identifier );
+	UInstancedStaticMeshComponent* FindOrAddInstancedOutlineProxy( const AActor* actor, const FName& identifier, UMeshComponent* meshComp = nullptr );
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Outline", Meta = ( DefaultToSelf = "actor" ) )
 	void RemoveOutlineProxy( const AActor* actor, const FName& identifier );
@@ -73,6 +86,10 @@ public:
 	/** Disables highlight if it is visible. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Outline", Meta = ( DefaultToSelf = "actor" ) )
 	void HideOutline( AActor* actor );
+
+	/** Disables highlight for a specific mesh comp if its visible. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Outline", Meta = ( DefaultToSelf = "actor" ) )
+	void HideOutlineForStaticMeshComponent( AActor* actor, UStaticMeshComponent* meshComp );
 	
 protected:
 	void UpdateOutlineState( const FActorOutlineState& outlineState );
@@ -81,7 +98,7 @@ protected:
 	void BuildEffectFinished();
 
 private:
-	FActorOutlineState* GetOutlineStateForActor( const AActor* actor );
+	FActorOutlineState* GetOutlineStateForActor( const AActor* actor, UMeshComponent* meshComp = nullptr );
 
 	UStaticMeshComponent* CreateOutlineProxy( FActorOutlineState& outlineState, const FName& identifier );
 	UInstancedStaticMeshComponent* CreateInstancedOutlineProxy( FActorOutlineState& outlineState, const FName& identifier );
@@ -93,4 +110,7 @@ private:
 protected:	
 	UPROPERTY()
 	TArray< FActorOutlineState > mActorOutlineStates;
+
+	UPROPERTY()
+	TArray< FActorOutlineState > mComponentSpecifiedActorOutlineStates;
 };

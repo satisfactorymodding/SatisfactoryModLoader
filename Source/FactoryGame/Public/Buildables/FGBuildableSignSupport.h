@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "FGBuildablePoleBase.h"
+#include "FGBuildablePole.h"
 #include "FGBuildableSignSupport.generated.h"
 
 /**
@@ -12,50 +12,27 @@
  * Includes ability to change the pole scale on the X/Y for variable thickness poles
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildableSignSupport : public AFGBuildablePoleBase
+class FACTORYGAME_API AFGBuildableSignSupport : public AFGBuildablePole_NoCustomization
 {
 	GENERATED_BODY()
-	
-
 public:
 	AFGBuildableSignSupport();
-
-	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual void BeginPlay() override;
-	// End AActor interface
-
-
-	/** Set the poles height */
-	FORCEINLINE void SetPoleHeight( float height ) { mHeight = height; }
 
 	/** Sets an optional scale to scale the x/y values of the pole by */
-	virtual void SetPoleScale( FVector2D poleScale );
+	virtual void SetPoleScale( const FVector2D& poleScale );
 	virtual void OnBuildEffectActorFinished() override;
+
+	virtual bool CanBeSampled_Implementation() const override;
+
+	const FVector2D& GetPoleScale() const { return mPoleScale; }
+
+private:
+	UFUNCTION()
+	void OnRep_PoleScale();
 	
-	/* We only have to check mCanContainLightweightInstances for poles, the instance data is made dynamically. */
-	bool virtual DoesContainLightweightInstances_Native() const override { return mCanContainLightweightInstances; }
-	virtual TArray<struct FInstanceData> GetActorLightweightInstanceData_Implementation() override;
-
-public:
-	static const FName PoleMeshName;
-
-	/** The component we want to use with the pole */
-	UPROPERTY( VisibleAnywhere, Category = "Pole" )
-	class UFGColoredInstanceMeshProxy* mPoleComponentProxy;
-
-	// Instance data set on begin play read during setup instances.
-	FInstanceData InstanceData;
-	
-	/** This poles height. */
-	UPROPERTY( SaveGame, Replicated )
-	float mHeight;
-
-	/** This poles mesh. */
-	UPROPERTY( Replicated )
-	class UStaticMesh* mPoleMesh;
-
+private:
 	// 2D scale for pole meshes
-	UPROPERTY()
+	UPROPERTY( ReplicatedUsing = OnRep_PoleScale )
 	FVector2D mPoleScale;
 };

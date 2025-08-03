@@ -12,6 +12,16 @@ struct FConveyorItemSpacingRange;
 struct FConveyorItemDescRange;
 class AFGBuildableConveyorBase;
 
+USTRUCT()
+struct FACTORYGAME_API FConveyorMonitorChainData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	class AFGBuildableConveyorMonitor* ConveyorMonitor = nullptr;
+	float OffsetOnChain = -1.f;
+	int32 IndexOfNextItem = INDEX_NONE;
+};
 
 UCLASS()
 class FACTORYGAME_API AFGConveyorChainActor : public AActor, public IFGSaveInterface
@@ -117,16 +127,27 @@ public:
 	// Gets an array of the elements in a given conveyor
 	void GetItemsForSegment( class AFGBuildableConveyorBase* conveyorBase, TArray< FConveyorBeltItem* >& out_Items );
 	void GetItemsForSegmentIndex( int32 segIndex, TArray< FConveyorBeltItem* >& out_Items);
+	const TArray< FConveyorChainSplineSegment >& GetChainSegments( ) { return mChainSplineSegments; }
 
+	// Enum to allow us to specify finding an item (search before or after a given location)
+	enum class EChainItemSearchDirection : int8
+	{
+		LessThanOffset = -1,
+		Any = 0,
+		MoreThanOffset = 1
+	};
+	
 	// Finds the item closest to a location. This takes conveyor and an offset along that belt. This is called by the belts themselves
-	FConveyorBeltItem* FindItemClosestToLocation(  const FVector& location, bool discountLifts, int32& out_ItemIndex, TSubclassOf< class UFGItemDescriptor > desiredClass = nullptr );
-	FConveyorBeltItem* FindItemClosestToOffset( float offset, float maxDistance, bool discountLifts,  int32& out_ItemIndex, TSubclassOf< class UFGItemDescriptor > desiredClass = nullptr );
+	FConveyorBeltItem* FindItemClosestToLocation(  const FVector& location, bool discountLifts, int32& out_ItemIndex, TSubclassOf< class UFGItemDescriptor > desiredClass = nullptr, EChainItemSearchDirection dir = EChainItemSearchDirection::Any );
+	FConveyorBeltItem* FindItemClosestToOffset( float offset, float maxDistance, bool discountLifts,  int32& out_ItemIndex, TSubclassOf< class UFGItemDescriptor > desiredClass = nullptr, EChainItemSearchDirection dir = EChainItemSearchDirection::Any );
 
 	// Called from conveyor belts when they receive a Use RPC from the client. 
 	FConveyorBeltItem* FindItemPickupForClient( float offset, TSubclassOf< UFGItemDescriptor > desiredClass, int32& out_ItemIndex );
 
 	// Gets the Location and Rotation of an item in world space
 	FVector GetLocationAtDistanceAlongSpline( float offset,  ESplineCoordinateSpace::Type cordSpace ) const;
+	// Gets the Direction at a distance along the chain
+	FVector GetDirectionAtDistanceAlongSpline( float offset,  ESplineCoordinateSpace::Type cordSpace ) const;
 	
 	// Gets the Location and Rotation of an item in world space
 	void GetLocationAndRotationOfItem( int32 index, FVector& out_Location, FRotator& out_Rotation );
@@ -176,6 +197,17 @@ public:
 	}
 
 	float GetAndUseTimeDebtForItem( int32 itemIndex, float dt );
+
+	void RegisterConveyorMonitor( class AFGBuildableConveyorMonitor* monitor );
+	void UnregisterConveyorMonitor( class AFGBuildableConveyorMonitor* monitor );
+	
+	FORCEINLINE USplineComponent* GetSplineComponent() const { return mSplineComponent; }
+
+	/** Does this chain consist of belts that differ in speeds? */
+	FORCEINLINE bool HasVariableSpeedBelts() const { return mHasVariableSpeedBelts; }
+
+	// Updates any monitors that are tracking item throughput
+	void UpdateAttachedMonitors( float deltaTime );
 	
 private:
 	void DebugDrawChainInfo();
@@ -281,6 +313,14 @@ private:
 	float mCachedAvailableBeltSpace;
 
 	bool mFirstItemUpdate = false;
+	
+	UPROPERTY()
+	TArray< FConveyorMonitorChainData > mConveyorMonitorData;
+	bool mHasMonitorUpdates = false;
+
+	bool mHasVariableSpeedBelts = false;
+
+	float mLastFramesDeltaTime = -1.f;
 };
 
 UCLASS()
@@ -307,3 +347,4 @@ class FACTORYGAME_API AFGConveyorChainActor_RepSizeNoCull : public AFGConveyorCh
 {
 	GENERATED_BODY()
 };
+

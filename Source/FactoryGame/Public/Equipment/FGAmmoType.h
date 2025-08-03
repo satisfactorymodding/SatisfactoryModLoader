@@ -11,6 +11,7 @@
 #include "Resources/FGItemDescriptor.h"
 #include "Engine/EngineTypes.h"
 #include "FGWeaponState.h"
+#include "Audio/AudioEventsCache.h"
 #include "FGAmmoType.generated.h"
 
 class AFGWeapon;
@@ -193,10 +194,10 @@ public:
 	FORCEINLINE FVector GetMuzzleFlashScale() const { return mMuzzleFlashScale; }
 
 	UFUNCTION( BlueprintPure, Category = "Ammunition|FX" )
-	FORCEINLINE TArray<UAkAudioEvent*> GetFiringSounds() const { return mFiringSounds; }
+	FORCEINLINE TArray<TSoftObjectPtr<UAkAudioEvent>> GetFiringSounds() const { return mFiringSounds; }
 
 	UFUNCTION( BlueprintPure, Category = "Ammunition|FX" )
-	FORCEINLINE TArray<UAkAudioEvent*> GetFiringSounds1P() const { return mFiringSounds1P; }
+	FORCEINLINE TArray<TSoftObjectPtr<UAkAudioEvent>> GetFiringSounds1P() const { return mFiringSounds1P; }
 
 	/** Returns reload time multiplier in percent (1 = 100%, 0.5 = 50% time) */
 	UFUNCTION( BlueprintPure, Category="Ammunition|Modifiers" )
@@ -316,7 +317,7 @@ private:
 	TArray<UMaterialInstance* > mMagazineMeshMaterials1p;
 
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Ammunition|Damage" )
-	TArray< UFGDamageType* > mDamageTypesOnImpact;
+	TArray<  UFGDamageType*  > mDamageTypesOnImpact;
 
 	/** The noise to make when we fire the weapon. */
 	UPROPERTY( EditDefaultsOnly, Category = "Ammunition|Noise" )
@@ -334,11 +335,14 @@ private:
 	FVector mMuzzleFlashScale = FVector::OneVector;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Ammunition|FX" )
-	TArray<UAkAudioEvent*> mFiringSounds;
+	TArray<TSoftObjectPtr<UAkAudioEvent>> mFiringSounds;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Ammunition|FX" )
-	TArray<UAkAudioEvent*> mFiringSounds1P;
+	TArray<TSoftObjectPtr<UAkAudioEvent>> mFiringSounds1P;
 
+	UPROPERTY( EditDefaultsOnly, Category = "Ammunition|FX" )
+	FAudioEventsCache mAudioEventsCache;
+	
 	/** To set the color of a spawned ammo type. */
 	UPROPERTY( EditDefaultsOnly, Category = "Ammunition|FX" )
 	FLinearColor mAmmoColor = FLinearColor::White;

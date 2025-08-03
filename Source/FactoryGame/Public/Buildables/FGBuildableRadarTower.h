@@ -6,6 +6,7 @@
 #include "FGActorRepresentationInterface.h"
 #include "FGBuildableFactory.h"
 #include "Representation/FGRadarTowerRepresentation.h"
+#include "LocalUserInfo.h"
 #include "FGScannableDetails.h"
 #include "FGBuildableRadarTower.generated.h"
 
@@ -49,7 +50,10 @@ public:
 	UFUNCTION() virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION() virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
-
+	//<FL>[KonradA]
+	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return GetRepresentationLastUpdatedBy(); }
+	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle > &  LastEditedBy) override;
+	//</FL>
 	// End IFGActorRepresentationInterface
 
 	// Begin Save Interface
@@ -62,6 +66,11 @@ public:
 	virtual void Factory_TickProducing( float dt ) override;
 	// End Factory Interface
 	
+//<FL>[KonradA]
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	void SetLastEditedByPlayer( const TArray< FLocalUserNetIdBundle >& LastEditedBy );
+//</FL>
+
 	/** Fetches the color to use for this actors representation */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	FLinearColor GetDefaultRepresentationColor();
@@ -73,6 +82,11 @@ public:
 	/** Fetches the color to use for this actors representation */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	FText GetRepresentationText();
+
+//<FL>[KonradA]
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	TArray< FLocalUserNetIdBundle > GetRepresentationLastUpdatedBy() const;
+//</FL>
 
 	/** Gets the height of the radar tower. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )

@@ -24,7 +24,7 @@ struct FCompassCardinalDirection
 	float CompassHeightOffset{0.0f};
 
 	UPROPERTY( EditAnywhere, Config, Category = "Cardinal Direction" )
-	FVector2f ImageSize{};
+	FVector2f ImageSize = FVector2f::ZeroVector;
 };
 
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Map and Compass" ) )

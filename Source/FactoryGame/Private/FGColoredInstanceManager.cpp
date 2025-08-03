@@ -4,7 +4,7 @@
 
 void UFGColoredInstanceManager::SetupInstanceList(UStaticMeshComponent* sourceStaticMeshComponent, uint8 numCustomDataFloats, bool useAsOccluder , float MaxDrawDistance , float MaxWPODistance){ }
 void UFGColoredInstanceManager::ClearInstances(){ }
-void UFGColoredInstanceManager::AddInstance(const FTransform& transform, FInstanceHandle& handle, uint8 colorIndex, int32 numCustomDataFloats){ }
+void UFGColoredInstanceManager::AddInstance(const FTransform& transform, FInstanceHandle& handle, uint8 colorIndex, int32 numCustomDataFloats, bool blockAutomaticCustomDataUpdates){ }
 void UFGColoredInstanceManager::RemoveInstance(FInstanceHandle& handle){ }
 void UFGColoredInstanceManager::UpdateTransformForInstance(const FTransform& newTransform, int32 handleId){ }
 void UFGColoredInstanceManager::UpdateColorForInstance(uint8 colorIndex, FInstanceHandle& handle){ }

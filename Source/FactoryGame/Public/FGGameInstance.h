@@ -17,9 +17,9 @@ extern TAutoConsoleVariable< bool > CVarForceGamepadDeviceType;
 UENUM(BlueprintType)
 enum class EInputDeviceMode : uint8
 {
-	InputDeviceMode_MouseAndKeyboardAndGamepad,
-	InputDeviceMode_MouseAndKeyboard,
-	InputDeviceMode_Gamepad
+	InputDeviceMode_MouseAndKeyboardAndGamepad	UMETA(DisplayName="MouseAndKeyboardAndGamepad"),
+	InputDeviceMode_MouseAndKeyboard			UMETA(DisplayName="MouseAndKeyboard"),
+	InputDeviceMode_Gamepad						UMETA(DisplayName="Gamepad")
 };
 // </FL>
 
@@ -42,12 +42,10 @@ DECLARE_DYNAMIC_DELEGATE_OneParam( FFGInputDeviceTypeChangedDelegate, EInputDevi
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnJoinSessionStateChanged, EJoinSessionState, newState );
 
-// <FL> [WuttkeP] Added callback for updating key hints.
-DECLARE_DYNAMIC_MULTICAST_DELEGATE( FFGKeyHintsChanged );
-// </FL>
-
 // Used for reaching through the SlateApplication focus changed event to blueprints.
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FFGOnFocusChanged );
+// Used to allow external assets to be preloaded as a part of the asset preloading pass
+DECLARE_MULTICAST_DELEGATE_OneParam( FFGGatherAssetsForPreloadDelegate, TArray<FSoftObjectPath>& /* OutAssetsToPreload */ );
 
 USTRUCT()
 struct FOnJoinSessionData
@@ -247,17 +245,31 @@ public:
 	/** Updates the encryption data set for the pending client connection */
 	void SetPendingConnectionEncryptionData( const FFGPendingConnectionEncryptionData& NewEncryptionData );
 
-	// <FL> [WuttkeP] Added functions for input device type detection and switching.
-	UFUNCTION( BlueprintPure )
-	EInputDeviceType GetActiveInputDeviceType();
-	// </FL>
+	/** Returns the currently active input device type */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|UI" )
+	EInputDeviceType GetActiveInputDeviceType() const;
 
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
+	FString GetLastInputDeviceIdentifier() const { return mLastInputDeviceIdentifier; }
 	
 	/** Listener delegate is called by the SlateApplication. The OnFocusChanged delegate can be bound to in blueprint. */
-	UPROPERTY( BlueprintAssignable, Category = "UI" )
+	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|UI" )
 	FFGOnFocusChanged mOnFocusChangedDelegate;
 	FDelegateHandle mOnFocusChangedListenerDelegate;
 
+	/** Returns the common user subsystem for this game instance */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Online" )
+	class UCommonUserSubsystem* GetCommonUserSubsystem() const;
+
+	//<FL> [VilagosD] store the player avatar textures so we don't have to download them everytime 
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Online" )
+	const UTexture* GetCachedAvatarTexture(const FString& avatarURL);
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Online"  )
+	void AddAvatarToTextureCache( const FString& avatarURL, UTexture* texture );
+
+	/** Add a callback to the input device type changed event and immediately call it, for convenience. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI"  )
+	void AddAndCallDeviceTypeChangedCallback( UPARAM(DisplayName="Event") FFGInputDeviceTypeChangedDelegate Delegate);
 protected:
 	// Called when a map has loaded properly in Standalone
 	virtual void LoadComplete( const float loadTime, const FString& mapName ) override;
@@ -276,14 +288,17 @@ protected:
 	void OnJoinSessionComplete( FName sessionName, EOnJoinSessionCompleteResult::Type joinResult );
 
 	void SendRecievedNetworkErrorOnDelegate( UWorld* world, UNetDriver* driver, ENetworkFailure::Type errorType, const FString& errorMsg );
+	void SwitchActiveInput( EInputDeviceType deviceType );
 
 	void OnLastInputDeviceTypeChanged(EInputDeviceType deviceType);
 
-	/** Add a callback to the input device type changed event and immediately call it, for convenience. */
-	UFUNCTION( BlueprintCallable )
-	void AddAndCallDeviceTypeChangedCallback( UPARAM(DisplayName="Event") FFGInputDeviceTypeChangedDelegate Delegate);
+	/** Called to preload assets for this game instance */
+	void PreloadAssetsForGameInstance();
 
 private:
+	void OnPackagePreloaded(const FName& PackageName, UPackage* LoadedPackage, EAsyncLoadingResult::Type Result, TArray<FSoftObjectPath> AssetsInPackage);
+	void GatherDefaultAssetsForPreload(TArray<FSoftObjectPath>& OutAssetsToPreload);
+	
 	void OnPreLoadMap( const FString& levelName );
 
 	/** Initializes the Game Analytics Service. Requires that the Epic Online Services handle has been created beforehand. */
@@ -343,13 +358,28 @@ protected:
 	FFGPendingConnectionEncryptionData mPendingConnectionEncryptionData;
 
 	EInputDeviceMode mInputDeviceMode = EInputDeviceMode::InputDeviceMode_MouseAndKeyboard;
+	FString mLastInputDeviceIdentifier = "";
+	FTimerHandle mIsGamepadAttachedTimer;
+	FDelegateHandle mInputDeviceConnectionChangeHandle;
+	FDelegateHandle mMouseEnteredViewportHandle;
+
+	//<FL>[VilagosD] store the player avatar textures so we don't have to download them everytime 
+	UPROPERTY()
+	TMap< FString, UTexture* > mAvatarTextureCache;
+
+#if( defined( PLATFORM_PS5 ) && PLATFORM_PS5 ) || ( defined( PLATFORM_XSX ) && PLATFORM_XSX )
+	// Save time on suspention
+	FDateTime SuspensionTime;
+#endif
 
 public:
 
-	void SetInputDeviceMode(EInputDeviceMode InputDeviceMode);
+	void SetInputDeviceMode(EInputDeviceMode InputDeviceMode, bool bForce = false);
 	bool GetConsoleVariableBool(const char* Variable);
 	void SetConsoleVariable(const char* Variable, bool Active);
+	void UpdateStringTableVariants(bool UsingGamepad);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	EInputDeviceMode GetInputDeviceMode() { return mInputDeviceMode; }
 
 	// Mod packages found - valid or invalid
@@ -363,12 +393,6 @@ public:
 	/** Has the player seen the alpha info screen, used to only show it once per session */
 	bool mHasSeenAlphaInfo;
 
-	// <FL> [WuttkeP] Added callback for updating key hints.
-	/** Fired when a key hint changes without the focused widget changing. */
-	UPROPERTY( BlueprintAssignable, Category = "Input" )
-	FFGKeyHintsChanged mOnKeyHintsChanged;
-	// </FL>
-
 	// <FL> [WuttkeP] Added callback for input device type switching.
 	UPROPERTY( BlueprintAssignable, Category = "Input" )
 	FFGOnActiveInputDeviceTypeChanged mOnActiveInputDeviceTypeChanged;
@@ -379,10 +403,16 @@ public:
 	UFGLocalPersistenceStore* GetLocalPersistenceStore();
 	// </FL>
 	
+	// <FL> [MartinC] Registry of all the aim assist targets currently available in the game
+	UPROPERTY( BlueprintReadOnly, Category = "Aim" )
+	TObjectPtr< class UFGAimTargetRegistry > AimTargetRegistry = nullptr;
+	// </FL>
+
 #if WITH_EDITOR
 	/** If this game instance was started as a part of Play In Editor, this will cache the Server Port it is using */
 	int32 mCachedPIEServerPort;
 #endif
+	TSet< FName > mPendingCanceledActivities; // <FL> [TranN] PS5 Activity
 private:
 	UPROPERTY()
 	class UFGDebugOverlayWidget* mDebugOverlayWidget;
@@ -392,8 +422,34 @@ private:
 	UFGLocalPersistenceStore* mLocalPersistenceStore;
 	//</FL>
 
+	/** Mods and external subsystems can subscribe to this delegate to preload assets when the game instance is initialized and keep them in memory */
+	static FFGGatherAssetsForPreloadDelegate GatherAssetsForPreload;
+
 	/** Is called by the SlateApplication */
 	void OnFocusChanged( const FFocusEvent& FocusEvent, const FWeakWidgetPath& OldFocusedWidgetPath,
 						 const TSharedPtr< SWidget >& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath,
 						 const TSharedPtr< SWidget >& NewFocusedWidget );
+
+	//<FL> [BGR] Handling for console Suspend/Resume state switches
+#if( defined( PLATFORM_PS5 ) && PLATFORM_PS5 ) || ( defined( PLATFORM_XSX ) && PLATFORM_XSX )
+	void HandleAppSuspend();
+	void HandleAppResume();
+	bool IsInMainMenu() const;
+#endif
+	UFUNCTION()
+	void OnMpSessionExpiredConfirmed( bool ConfirmClicked );
+	//<FL>
+
+	// <FL> [WuttkeP] Setup and switching of input device mode
+	void SetupInitialInputDeviceMode();
+
+	UFUNCTION()
+	void OnInputModeUpdated( FString cvar );
+	UFUNCTION()
+	void OnDynamicInputSwapUpdated( FString cvar );
+	UFUNCTION()
+	void OnControllerConnectionChanged( EInputDeviceConnectionState NewConnectionState, FPlatformUserId UserID, FInputDeviceId InputDeviceId );
+	UFUNCTION()
+	void HandleMouseEnteredViewport();
+	// </FL>
 };

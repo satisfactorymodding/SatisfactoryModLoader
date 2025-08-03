@@ -9,7 +9,7 @@ void AFGBuildableLightsControlPanel::GetLifetimeReplicatedProps(TArray< FLifetim
 	DOREPLIFETIME(AFGBuildableLightsControlPanel, mIsEnabled);
 }
 UFGFactoryClipboardSettings* AFGBuildableLightsControlPanel::CopySettings_Implementation(){ return nullptr; }
-bool AFGBuildableLightsControlPanel::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
+bool AFGBuildableLightsControlPanel::PasteSettings_Implementation(UFGFactoryClipboardSettings* factoryClipboard, class AFGPlayerController* player){ return bool(); }
 TSubclassOf<UObject> AFGBuildableLightsControlPanel::GetClipboardMappingClass_Implementation(){ return TSubclassOf<UObject>(); }
 void AFGBuildableLightsControlPanel::SetLightEnabled(bool isEnabled){ }
 void AFGBuildableLightsControlPanel::SetLightControlData(FLightSourceControlData data){ }

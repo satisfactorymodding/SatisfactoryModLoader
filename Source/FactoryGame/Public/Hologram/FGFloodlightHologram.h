@@ -68,6 +68,7 @@ protected:
 	EFloodlightHologramMountingType mMountingType = EFloodlightHologramMountingType::FHMT_Ground;
 
 private:
+	UPROPERTY( CustomSerialization )
 	EFloodlightHologramBuildStep mBuildStep = EFloodlightHologramBuildStep::FHBS_PlacementAndRotation;
 	
 	/** Current angle of the fixture. */

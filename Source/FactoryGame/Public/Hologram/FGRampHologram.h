@@ -26,12 +26,11 @@ protected:
 	// End AActor interface
 
 	// Begin AFGHologram interface
-	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	// End AFGHologram interface
 	
 	// Begin AFGFactoryBuildingHologram interface
-	virtual void UpdateZoop() override;
-	virtual void ConstructZoop( TArray<AActor*>& out_children ) override;
+	virtual void CreateZoopInstances() override;
 	// End AFGFactoryBuildingHologram interface
 
 	// Begin AFGFoundationHologram interface

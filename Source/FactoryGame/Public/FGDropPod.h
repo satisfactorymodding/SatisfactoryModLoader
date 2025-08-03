@@ -3,9 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FGDismantleInterface.h"
+#include "FGCrashSiteBaseActor.h"
 #include "FGDropPodSettings.h"
-#include "FGSaveInterface.h"
 #include "FGUseableInterface.h"
 #include "GameFramework/Actor.h"
 #include "FGSchematic.h"
@@ -42,7 +41,7 @@ struct FACTORYGAME_API FFGDropPodUnlockCost
 
 	/** Type of the unlock cost */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Unlock Cost" )
-	EFGDropPodUnlockCostType CostType;
+	EFGDropPodUnlockCostType CostType = EFGDropPodUnlockCostType::None;
 
 	/** Item cost of unlocking the drop pod */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Unlock Cost", meta = ( EditCondition = "CostType == EFGDropPodUnlockCostType::Item", EditConditionHides ) )
@@ -66,8 +65,8 @@ struct FACTORYGAME_API FFGCachedConnectedWire
 	class UFGCircuitConnectionComponent* mOtherConnection{};
 };
 
-UCLASS()
-class FACTORYGAME_API AFGDropPod : public AActor, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface, public IFGConditionalReplicationInterface
+UCLASS( Blueprintable )
+class FACTORYGAME_API AFGDropPod : public AFGCrashSiteBaseActor, public IFGUseableInterface, public IFGSignificanceInterface, public IFGConditionalReplicationInterface
 {
 	GENERATED_BODY()
 public:
@@ -102,11 +101,7 @@ public:
 	// Begin IFGSaveInterface
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override;
-	virtual bool NeedTransform_Implementation() override;
-	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
 	// Begin IFGUseableInterface
@@ -123,6 +118,14 @@ public:
 	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	// End IFGUseableInterface
+
+	// Begin IFGDismantleInterface
+	virtual bool CanDismantle_Implementation() const override;
+	virtual void GetDismantleRefund_Implementation(TArray<FInventoryStack>& out_refund, bool noBuildCostEnabled) const override;
+	virtual void Dismantle_Implementation() override;
+	virtual bool SupportsDismantleDisqualifiers_Implementation() const override { return true; }
+	virtual void GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const override;
+	// End IFGDismantleInterface
 
 	/** @return true if this has been opened. */
 	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
@@ -195,10 +198,6 @@ public:
 	TSoftObjectPtr<class AFGCrashSiteDebris> mLinkedCrashSiteDebris;
 	
 protected:
-	/** Name of the drop pod as visible when dismantling it */
-	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
-	FText mDisplayName;
-	
 	/** Reward to give the player upon unlocking the drop pod */
 	UPROPERTY( EditAnywhere, Category = "Drop Pod" )
 	TSubclassOf<UFGItemDescriptor> mUnlockRewardClass;
@@ -215,13 +214,13 @@ protected:
 	UPROPERTY( EditAnywhere, Category = "Drop Pod" )
 	FFGDropPodUnlockCost mUnlockCost;
 
-	/** Build effect to play on the actor when dismantling it */
-	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
-	TSoftClassPtr<UFGMaterialEffect_Build> mDismantleBuildEffect;
-
 	/** The UI that will be open when interacting with a drop pod */
 	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
 	TSoftClassPtr<UFGInteractWidget> mInteractWidgetClass;
+
+	/** Whenever dismantling drop pods that have not had their hard drive taken out of them is allowed. This case will not reward player-specific achievements or statistics */
+	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
+	bool mAllowDismantleWithLoot{false};
 
 	UFUNCTION()
 	void OnRep_HasBeenOpened();
@@ -260,11 +259,8 @@ protected:
 	UPROPERTY( VisibleInstanceOnly, Category = "Drop Pod", SaveGame )
 	TArray<FFGCachedConnectedWire> mCachedConnectedWires;
 
-	/** True if we have been dismantled and should be removed after finishing the dismantle effect */
-	UPROPERTY( SaveGame )
-	bool mIsDismantled;
-	
-	UPROPERTY( SaveGame )
+	/** True if this crash site has been looted, e.g. hard drive has been removed from it */
+	UPROPERTY( SaveGame, Replicated )
 	bool mHasBeenLooted = false;
 
 	/** Actor ID cached during the cook to be able to identify this actor in runtime */

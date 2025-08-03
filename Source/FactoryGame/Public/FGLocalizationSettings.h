@@ -16,6 +16,16 @@ enum class ELocalizationType : uint8
     LT_Debug			UMETA( DisplayName = "Debug" )
 };
 
+UENUM( Meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
+enum class ESettingsVisiblityQualifier : uint64
+{
+	VD_None = 0 UMETA( Hidden ),
+	VD_Desktop = 1 << 0 UMETA( DisplayName = "Show on desktop systems" ),
+	VD_XSX = 1 << 1 UMETA( DisplayName = "Show on Xbox Series X|S" ),
+	VD_PS5 = 1 << 2 UMETA( DisplayName = "Show on Playstation 5" )
+};
+ENUM_CLASS_FLAGS( ESettingsVisiblityQualifier );
+
 /** Table entry for localization data. Row name is the culture code */
 USTRUCT( BlueprintType )
 struct FLocalizationEntry : public FTableRowBase
@@ -41,6 +51,8 @@ struct FLocalizationEntry : public FTableRowBase
 	UPROPERTY( BlueprintReadOnly, EditAnywhere )
 	int32 CompletionPercentage;
 
+	UPROPERTY( BlueprintReadOnly, EditAnywhere, meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.ESettingsVisiblityQualifier" ) )
+	int64 VisibilityQualifiers = 1;
 };
 
 /**
@@ -75,4 +87,13 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = "Patch Table"
 		, meta = ( ToolTip = "Should processing stop on first error?" ) );
 	bool bStopOnError = false;
+
+	// Should this option be showed in the current config.
+	static bool ShouldShowInCurrentConfig( FLocalizationEntry LocalizationEntry );
+
+protected:
+	/** Returns a set of visibility qualifiers for the current platform.*/
+	static ESettingsVisiblityQualifier GetVisibilityQualifiers();
+
+	static bool HasVisibilityQualifier(FLocalizationEntry LocalizationEntry, ESettingsVisiblityQualifier qualifier );
 };

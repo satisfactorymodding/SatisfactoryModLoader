@@ -6,6 +6,7 @@ TSharedRef<STableViewBase> UFGListView::RebuildListWidget() {
   return ConstructListView<SFGListView>();
 }
 
+void UFGListView::OnItemsChanged(const TArray<UObject*>& AddedItems, const TArray<UObject*>& RemovedItems){ Super::OnItemsChanged(AddedItems, RemovedItems); }
 UFGListView::UFGListView(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mWidgetBarStyle.Thickness = 8.0;
 }

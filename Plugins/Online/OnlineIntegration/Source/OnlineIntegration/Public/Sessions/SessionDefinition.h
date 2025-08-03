@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine.h"
 #include "MVVMViewModelBase.h"
 #include "Online/Sessions.h"
 #include "OnlineIntegrationTypes.h"
 
 #include "SessionDefinition.generated.h"
 
+class UOnlineIntegrationState;
 class ULocalUserInfo;
 class UOnlineIntegrationBackend;
 struct FCommonSessionCreationSettings;
@@ -179,13 +179,46 @@ struct ONLINEINTEGRATION_API FSessionSettingsProfile
 	FText Description;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ECommonSessionJoinPolicy DefaultJoinPolicy;
+	ECommonSessionJoinPolicy DefaultJoinPolicy = ECommonSessionJoinPolicy::InviteOnly;
 
 	UPROPERTY(EditAnywhere)
 	TMap<FName, FSessionCustomSettingWrapper> DefaultCustomSettings;
 
 	UPROPERTY(EditAnywhere)
 	TMap<FName, FSessionSettingsWrapper> PerBackendSessionSettings;
+
+	// <FL> [TranN]
+	// For invite only session to work on console, we need to set the platform session to invite only and the crossplay session to public.
+	// We also have to update the presence to reflect the join policy so the host can change the join policy without restarting the session
+	// and the friends can be notified via the presence (cause there is no way to notify session setting changes before joining the session)
+	UPROPERTY(EditAnywhere)
+	bool bConsoleInviteOnly = true;
+	// </FL>
+};
+
+USTRUCT()
+struct ONLINEINTEGRATION_API FPrivilegeReference
+{
+	GENERATED_BODY()
+
+	/**
+	 * The backend that needs to grant this privilege. 
+	 */
+	UPROPERTY(EditAnywhere)
+	FName BackendName;
+
+	/**
+	 * The privilege required to create this session. 
+	 */
+	UPROPERTY(EditAnywhere)
+	ECommonUserPrivilege Privilege;
+
+	/**
+	 * An optional map of descriptions for various privilege results. This allows specific platform descriptions to differ, making it possible to comply with
+	 * potential certification requirements. If not defined, the default descriptions will be used.
+	 */
+	UPROPERTY(EditAnywhere)
+	TMap<ECommonUserPrivilegeResult, FText> FailureReasonDescriptions;
 };
 
 /**
@@ -195,7 +228,7 @@ UCLASS(Config=Engine, PerObjectConfig, BlueprintType)
 class ONLINEINTEGRATION_API USessionDefinition: public UMVVMViewModelBase
 {
 	GENERATED_BODY()
-public:	
+public:
 	FName GetHostingBackend() const;
 	bool ShouldCreateMirrorSessions() const;
 	TMap<FString, FString> GetTravelArguments() const;
@@ -215,6 +248,14 @@ public:
 		return DefaultSettingsProfile;
 	}
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, FieldNotify)
+	bool bCreateOnlineSession = false;
+
+	const TArray<FPrivilegeReference>& GetRequiredPrivileges() const
+	{
+		return RequiredPrivileges;
+	}
+	
 protected:
 	
 	// Begin UObject interface
@@ -230,9 +271,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, FieldNotify)
 	FText DescriptionText;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, FieldNotify)
-	bool bCreateOnlineSession = false;
 
 	UPROPERTY(EditAnywhere)
 	bool bIsServerSession = false;
@@ -270,6 +308,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, meta=(EditCondition=bIsServerSession, EditConditionHides))
 	FString NetDriverClassName;
+
+	/**
+	 * Privileges required to create this session. These privileges will be checked before creating the session.
+	 */
+	UPROPERTY(EditAnywhere)
+	TArray<FPrivilegeReference> RequiredPrivileges;
 	
 	UPROPERTY(FieldNotify, BlueprintReadOnly)
 	bool bConditionsFulfilled = false;

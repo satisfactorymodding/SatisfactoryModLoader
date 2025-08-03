@@ -24,6 +24,9 @@ void UFGBuildGunState::SecondaryFire_Implementation(){ }
 void UFGBuildGunState::BuildSamplePressed_Implementation(){ }
 bool UFGBuildGunState::IsValidBuildingSample( AFGBuildable* buildable) const{ return bool(); }
 bool UFGBuildGunState::IsValidVehicleSample( AFGVehicle* vehicle) const{ return bool(); }
+void UFGBuildGunState::OnLightweightBuildableSampled_Implementation(struct FLightweightBuildableInstanceRef& buildableInstance){ }
+void UFGBuildGunState::OnVehicleSampled_Implementation(class AFGVehicle* vehicle){ }
+void UFGBuildGunState::OnBuildableSampled_Implementation(class AFGBuildable* buildable){ }
 void UFGBuildGunState::OnRecipeSampled_Implementation(TSubclassOf<class UFGRecipe> recipe){ }
 void UFGBuildGunState::BuildSampleRelease_Implementation(){ }
 void UFGBuildGunState::OnCustomizationsSampled_Implementation(TArray< TSubclassOf<  UFGFactoryCustomizationDescriptor > >& newCustomizations){ }
@@ -35,6 +38,7 @@ bool UFGBuildGunState::IsCurrentBuildGunMode(TSubclassOf< UFGBuildGunModeDescrip
 float UFGBuildGunState::GetBuildGunRangeOverride_Implementation(){ return float(); }
 AFGBuildGun* UFGBuildGunState::GetBuildGun() const{ return nullptr; }
 AFGPlayerState* UFGBuildGunState::GetPlayerState() const{ return nullptr; }
+EInputDeviceType UFGBuildGunState::GetPlayerInputDeviceType() const{ return EInputDeviceType::MouseAndKeyboard; }
 float UFGBuildGunState::GetBuildGunDelayPercentage() const{ return float(); }
 void UFGBuildGunState::BeginBuildGunDelay(){ }
 void UFGBuildGunState::ResetBuildGunDelay(){ }
@@ -42,7 +46,8 @@ bool UFGBuildGunState::BuildGunDelayIsComplete(){ return bool(); }
 bool UFGBuildGunState::HasBuildGunDelay(){ return bool(); }
 void UFGBuildGunState::BindInputActions( UFGEnhancedInputComponent* inputComponent){ }
 void UFGBuildGunState::ClearInputActions( UEnhancedInputComponent* inputComponent){ }
-bool UFGBuildGunState::CanSampleBuildings() const{ return bool(); }
+bool UFGBuildGunState::CanSampleBuildables() const{ return false; }
+bool UFGBuildGunState::CanSampleVehicles() const{ return false; }
 bool UFGBuildGunState::CanSampleCustomizations() const{ return bool(); }
 bool UFGBuildGunState::CanSampleBlueprints() const{ return bool(); }
 AFGBuildGun::AFGBuildGun() : Super() {
@@ -51,6 +56,8 @@ AFGBuildGun::AFGBuildGun() : Super() {
 	this->mBuildStateClass = nullptr;
 	this->mDismantleStateClass = nullptr;
 	this->mPaintStateClass = nullptr;
+	this->mGamepadTraceRadius = 80.0;
+	this->mHologramRotateCooldown = 0.1;
 	this->mStates[0] = nullptr;
 	this->mStates[1] = nullptr;
 	this->mStates[2] = nullptr;
@@ -67,6 +74,7 @@ AFGBuildGun::AFGBuildGun() : Super() {
 	this->mArmAnimation = EArmEquipment::AE_BuildGun;
 	this->bReplicateUsingRegisteredSubObjectList = true;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }
 void AFGBuildGun::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -104,6 +112,7 @@ void AFGBuildGun::Server_Scroll_Implementation(int32 delta){ }
 void AFGBuildGun::Scroll(int32 delta){ }
 void AFGBuildGun::Input_PrimaryFire(const FInputActionValue& actionValue){ }
 void AFGBuildGun::Input_SecondaryFire(const FInputActionValue& actionValue){ }
+void AFGBuildGun::Input_SecondaryFireCompleted(const FInputActionValue& actionValue){ }
 void AFGBuildGun::Input_ModeSelect(const FInputActionValue& actionValue){ }
 void AFGBuildGun::Input_ScrollAxis(const FInputActionValue& actionValue){ }
 void AFGBuildGun::Input_BuildSample(const FInputActionValue& actionValue){ }
@@ -124,7 +133,11 @@ void AFGBuildGun::SetCurrentBuildGunMode(TSubclassOf< UFGBuildGunModeDescriptor 
 bool AFGBuildGun::IsCurrentBuildGunMode(TSubclassOf< UFGBuildGunModeDescriptor > buildMode) const{ return bool(); }
 void AFGBuildGun::CycleBuildMode(int32 deltaIndex){ }
 float AFGBuildGun::GetBuildGunRange() const{ return float(); }
+void AFGBuildGun::OnBuildableSampled_Implementation(class AFGBuildable* buildable){ }
+void AFGBuildGun::OnVehicleSampled_Implementation(class AFGVehicle* vehicle){ }
+void AFGBuildGun::OnLightweightBuildableSampled_Implementation(struct FLightweightBuildableInstanceRef& buildableInstance){ }
 void AFGBuildGun::AddEquipmentActionBindings(){ }
+void AFGBuildGun::Server_PrimaryFireReleased_Implementation(){ }
 void AFGBuildGun::Server_PrimaryFire_Implementation(){ }
 bool AFGBuildGun::Server_PrimaryFire_Validate(){ return bool(); }
 void AFGBuildGun::Server_SecondaryFire_Implementation(){ }

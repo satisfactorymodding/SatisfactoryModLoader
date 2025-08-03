@@ -6,6 +6,7 @@
 #include "GameFramework/Info.h"
 #include "FGSaveInterface.h"
 #include "FGActorRepresentationInterface.h"
+#include "LocalUserInfo.h"
 #include "FGTrainStationIdentifier.generated.h"
 
 /**
@@ -73,7 +74,10 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION()
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
-
+//<FL>[KonradA]
+	UFUNCTION()
+	virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& lastEditedBy ) { SetLastEditedBy( lastEditedBy ); }
+//</FL>
 	// End IFGActorRepresentationInterface
 
 	/** Get the station actor, only valid on server. */
@@ -87,6 +91,14 @@ public:
 	/** Set the name of this station, must be called on server. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|StationIdentifier" )
 	void SetStationName( const FText& text );
+
+	//<FL>[KonradA]
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|StationIdentifier" )
+	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return mLastEditedBy; }; // This is also part of the IFGActorRepresentation interface
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|StationIdentifier" )
+	void SetLastEditedBy( TArray< FLocalUserNetIdBundle > lastEditedBy);
+	//</FL>
 
 	/** Get the track graph this station is located in. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|StationIdentifier" )
@@ -113,4 +125,8 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly)
 	UMaterialInterface* mCompassMaterialInstance;
+//<FL>[KonradA]
+	UPROPERTY(SaveGame, Replicated)
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+//</FL>
 };

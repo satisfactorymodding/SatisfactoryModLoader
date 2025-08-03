@@ -37,7 +37,8 @@ public:
 		/* Set whole custom data for the component. */
 		void SetCustomDataArray( const TArray<float>& colorDataArray )
 		{
-			CustomData.SetNumZeroed( 20 );
+			const int32 DesiredCount = FMath::Max(CustomData.Num(),colorDataArray.Num());
+			CustomData.SetNumZeroed( DesiredCount );
 			for( int32 i = 0; i < colorDataArray.Num(); ++i )
 			{
 				CustomData[ i ] = colorDataArray[ i ];
@@ -57,7 +58,7 @@ public:
 
 	private:
 		friend UFGColoredInstanceManager;
-
+		bool BlockAutomaticCustomDataUpdates = false;
 		TArray<float> CustomData;
 		int32 HandleID = INDEX_NONE;
 		uint8 ColorIndex = UINT8_MAX;
@@ -73,7 +74,7 @@ public:
 
 	// Functions to manage the instances handled by this class, setup must be called prior to using these.
 	void ClearInstances();
-	void AddInstance( const FTransform& transform, FInstanceHandle& handle, uint8 colorIndex, int32 numCustomDataFloats = 0 );
+	void AddInstance( const FTransform& transform, FInstanceHandle& handle, uint8 colorIndex, int32 numCustomDataFloats = 0, bool blockAutomaticCustomDataUpdates = false);
 	void RemoveInstance( FInstanceHandle& handle );
 
 	FORCEINLINE EDistanceCullCategory GetCullCategory() { return mCullCategory; }

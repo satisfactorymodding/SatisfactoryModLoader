@@ -56,6 +56,11 @@ public:
 
 	const FGameplayTagContainer& GetTraitTags() const;
 
+	/**
+	 * Looks up and returns an online integration backend by it's name. This is not the name of the service provider, but the name of the backend.
+	 */
+	UOnlineIntegrationBackend* GetBackendByName(FName BackendName) const;
+
 protected:
 	// UGameInstanceSubsystem interface
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;

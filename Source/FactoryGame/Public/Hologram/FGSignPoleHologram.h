@@ -16,7 +16,6 @@ class FACTORYGAME_API AFGSignPoleHologram : public AFGPoleHologram
 	GENERATED_BODY()
 public:
 	AFGSignPoleHologram();
-	virtual void BeginPlay() override;
 
 	// Begin AFGHologram Interface
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
@@ -26,6 +25,9 @@ public:
 	// Set to indicated whether this was attached to a cieling or a floor
 	FORCEINLINE float GetDirectionZ() { return zDir; }
 
+	void SetPoleScale( const FVector2D& PoleScale ) { mPoleScale = PoleScale; }
+
 private:
 	float zDir;
+	FVector2D mPoleScale;
 };

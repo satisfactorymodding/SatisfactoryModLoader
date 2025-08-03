@@ -25,4 +25,10 @@ class FACTORYGAME_API IFGClearanceInterface
 	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
 	void GetClearanceData( TArray< FFGClearanceData >& out_data ) const;
+
+	/**
+	 * Appends any child actors that a clearance overlap with this actor should include in its clearance visualization
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category= "Clearance" )
+	void GetChildClearanceOutlineActors( TArray< AActor* >& out_actors ) const;
 };

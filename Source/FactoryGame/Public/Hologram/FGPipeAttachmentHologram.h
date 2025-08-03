@@ -35,7 +35,7 @@ public:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual float GetHologramHoverHeight() const override;
-	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
 	virtual bool IsValidHitActor(AActor* hitActor) const override;
 	virtual bool CanNudgeHologram() const override;
 	// End AFGHologram Interface
@@ -79,7 +79,7 @@ protected:
 	TSubclassOf<UInterface> mPipeAttachmentInterfaceClass;
 	
 	/** The current build step of the attachment. */
-	UPROPERTY()
+	UPROPERTY( CustomSerialization )
 	EPipeAttachmentBuildStep mBuildStep = EPipeAttachmentBuildStep::PABS_PlacementAndDirection;
 
 	/** Used to limit the placement in turns. What's the maximum offset to check from center to detect the curve. */
@@ -106,6 +106,14 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipe Attachment" )
 	bool mHasPipeRotationBuildStep;
 
+	/** Whenever to allow directly snapping this attachment to the pipeline in-place. Should not be allowed for attachments that do not form a straight line from Connection0 to Connection1 */
+	UPROPERTY( EditDefaultsOnly, Category = "Pipe Attachment" )
+	bool mAllowSnapToPipeline;
+
+	/** The offset to apply to the mesh when we are snapping to the pipeline */
+	UPROPERTY( EditDefaultsOnly, Category = "Pipe Attachment" )
+	FVector mPipelineSnapOffset{ForceInit};
+
 	/** Cache the upvector when switching build step, we use this to rotate around the pipe. */
 	FVector mBuildStepUpVector;
 	
@@ -126,6 +134,9 @@ protected:
 	 */
 	UPROPERTY( Replicated, CustomSerialization )
 	class UFGPipeConnectionComponentBase* mSnappedConnectionComponent;
+
+	/** Forward vector for the connection component we are snapped to. Usually identical to the -GetConnectorNormal, but when we are snapping to the snap-only connection it's orientation can change based on the player view angle */
+	FVector mSnappedConnectionComponentForwardVector{ForceInit};
 
 	/** The offset we snapped on the pipe. */
 	UPROPERTY( Replicated, CustomSerialization )

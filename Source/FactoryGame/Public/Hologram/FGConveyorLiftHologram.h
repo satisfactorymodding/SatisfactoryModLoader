@@ -30,15 +30,16 @@ public:
 	virtual AActor* GetUpgradedActor() const override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual float GetHologramHoverHeight() const override;
-	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
 	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildmodes ) const override;
-	virtual void PostHologramPlacement( const FHitResult& hitResult ) override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual void CheckBlueprintCommingling() override;
 	virtual void ReplaceHologram( AFGHologram* hologram, bool snapTransform ) override;
 	virtual bool CanNudgeHologram() const override;
 	virtual void GetClearanceData( TArray<const FFGClearanceData*>& out_ClearanceData ) const override;
+	virtual bool IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramTransform) const override;
 	// End AFGHologram Interface
-	
+
 	/** Get the current height for this lift hologram. */
 	float GetHeight() const { return FMath::Abs( mTopTransform.GetTranslation().Z ); }
 
@@ -77,6 +78,9 @@ private:
 
 	bool CanConnectToConnection( UFGFactoryConnectionComponent* from, UFGFactoryConnectionComponent* to ) const;
 
+	// Returns true if the specified connection (0 = input, 1 = output) is a vertical connection
+	bool IsVerticalConnection(int32 connectionIndex) const;
+
 protected:
 	// Forced direction resulting from a snap to a passthrough
 	FVector mForcedNormalDirection;
@@ -104,7 +108,7 @@ private:
 	float mStepHeight;
 	float mMinimumHeight;
 	float mMaximumHeight;
-	float mMinimumHeightWithPassthrough;
+	float mMinimumHeightWithVerticalConnection;
 
 	/** Cached variables fetched and calculated from the buildable. */
 	float mMeshHeight;
@@ -153,6 +157,7 @@ private:
 	UPROPERTY()
 	float mFirstStepYaw;
 
+	UPROPERTY( CustomSerialization )
 	int32 mActivePointIdx;
 };
 

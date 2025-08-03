@@ -1,10 +1,9 @@
 #include "Tooltip/ItemTooltipSubsystem.h"
 #include "Blueprint/UserWidget.h"
-#include "Patching/BlueprintHookHelper.h"
-#include "Patching/BlueprintHookManager.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/PanelWidget.h"
+#include "Components/RichTextBlock.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
 #include "Tooltip/ItemStackContextWidget.h"
@@ -12,21 +11,11 @@
 #include "Tooltip/SMLItemTooltipProvider.h"
 
 //Overwrites delegates bound to title & description widgets to use FTooltipHookHelper, add custom item widget
-void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
-    //Gather FProperty exposed by tooltip widget
-    UClass* TooltipWidgetClass = TooltipWidget->GetClass();
-    FObjectProperty* TitleWidgetProperty = CastField<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mTitle")));
-    FObjectProperty* DescriptionWidgetProperty = CastField<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mDescription")));
-    check(TitleWidgetProperty && DescriptionWidgetProperty);
-    
-    
-    //Retrieve references to some stuff
-    UTextBlock* NameBlock = Cast<UTextBlock>(TitleWidgetProperty->GetObjectPropertyValue_InContainer(TooltipWidget));
-    UTextBlock* DescriptionBlock = Cast<UTextBlock>(DescriptionWidgetProperty->GetObjectPropertyValue_InContainer(TooltipWidget));
+void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UTextBlock* TitleTextBlock, URichTextBlock* DescriptionTextBlock, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
+
     //Retrieve parent panel, it will hold name, description and recipe blocks
-    UPanelWidget* ParentPanel = NameBlock->GetParent();
-    UVerticalBox* VerticalBoxPanel = Cast<UVerticalBox>(DescriptionBlock->GetParent());
-    check(VerticalBoxPanel);
+    UPanelWidget* ParentPanel = TitleTextBlock->GetParent();
+    UVerticalBox* VerticalBoxPanel = CastChecked<UVerticalBox>(DescriptionTextBlock->GetParent());
     
     //Spawn custom widget in parent panel and add it
     UItemStackContextWidget* ContextWidget = NewObject<UItemStackContextWidget>(ParentPanel);
@@ -35,9 +24,6 @@ void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, 
     ContextWidget->PlayerController = OwningPlayer;
     ContextWidget->SetVisibility(ESlateVisibility::Collapsed);
     ParentPanel->AddChild(ContextWidget);
-    //Rebind text delegates to custom widget
-    NameBlock->TextDelegate.BindUFunction(ContextWidget, TEXT("GetItemName"));
-    DescriptionBlock->TextDelegate.BindUFunction(ContextWidget, TEXT("GetItemDescription"));
     
     //Append custom widgets to description
     TArray<UWidget*> Widgets = CreateDescriptionWidgets(OwningPlayer, InventoryStack);
@@ -60,35 +46,6 @@ FInventoryStack GetStackFromSlot(UObject* SlotWidget) {
         InventoryComponent->GetStackFromIndex(SlotIndex, ResultStack);
     }
     return ResultStack;
-}
-
-void UItemTooltipSubsystem::InitializePatches() {
-    // Widgets are not included on servers
-    if (FPlatformProperties::IsServerOnly()) {
-        return;
-    }
-    
-    //Hook into InventorySlot widget to apply tooltip overrides
-    UClass* InventorySlot = LoadObject<UClass>(NULL, TEXT("/Game/FactoryGame/Interface/UI/InGame/InventorySlots/Widget_InventorySlot.Widget_InventorySlot_C"));
-    check(InventorySlot);
-    UFunction* Function = InventorySlot->FindFunctionByName(TEXT("GetTooltipWidget"));
-
-    UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
-    HookManager->HookBlueprintFunction(Function, [](FBlueprintHookHelper& HookHelper) {
-        UUserWidget* TooltipWidget = Cast<UUserWidget>(*HookHelper.GetOutVariableHelper()->GetVariablePtr<FObjectProperty>(TEXT("ReturnValue")));
-        UUserWidget* SlotWidget = Cast<UUserWidget>(HookHelper.GetContext());
-        
-        if (TooltipWidget != nullptr) {
-            APlayerController* OwningPlayer = SlotWidget->GetOwningPlayer();
-            const FInventoryStack InventoryStack = GetStackFromSlot(SlotWidget);
-            
-            if (InventoryStack.Item.IsValid()) {
-                UGameInstance* GameInstance = SlotWidget->GetWorld()->GetGameInstance();
-                UItemTooltipSubsystem* TooltipSubsystem = GameInstance->GetSubsystem<UItemTooltipSubsystem>();
-                TooltipSubsystem->ApplyItemOverridesToTooltip(TooltipWidget, OwningPlayer, InventoryStack);
-            }
-        }
-    }, EPredefinedHookOffset::Return);
 }
 
 void UItemTooltipSubsystem::RegisterGlobalTooltipProvider(const FString& ModReference, UObject* ItemTooltipProvider) {

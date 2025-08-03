@@ -21,14 +21,14 @@ class FACTORYGAME_API IFGVehicleDestroyableInterface
 
 public:
 	/* @returns the force required (if any) to destroy this object */
-	UFUNCTION( BlueprintNativeEvent, Category = "Vehicle Destroy Interface" )
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Vehicle Destroy Interface" )
 	float GetForceThreshold();
 	
 	/** Audio event to be posted when destroyed */
-	UFUNCTION( BlueprintNativeEvent, Category = "Vehicle Destroy Interface" )
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Vehicle Destroy Interface" )
 	class UAkAudioEvent* GetDestroyAudioEvent();
 
 	/** Particle System to be played when destroyed */
-	UFUNCTION( BlueprintNativeEvent, Category = "Vehicle Destroy Interface" )
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Vehicle Destroy Interface" )
 	class UParticleSystem* GetDestroyEffect();
 };

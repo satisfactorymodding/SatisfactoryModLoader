@@ -55,6 +55,7 @@ void UFGPowerCircuit::StatFuseTriggered(){ }
 UFGCircuit* UFGPowerCircuit::SplitCircuit(AFGCircuitSubsystem* subsystem) const{ return nullptr; }
 UFGCircuitGroup* UFGPowerCircuit::CreateCircuitGroup(AFGCircuitSubsystem* subsystem) const{ return nullptr; }
 void UFGPowerCircuit::SetHasPower(bool hasPower){ }
+void UFGPowerCircuit::OnRep_IsFuseTriggered(){ }
 void UFGPowerCircuitGroup::ResetFuses( AFGPlayerController* instigator){ }
 void UFGPowerCircuitGroup::RegisterPrioritySwitch( AFGBuildablePriorityPowerSwitch* circuitSwitch){ }
 void UFGPowerCircuitGroup::PushCircuit(UFGCircuit* circuit){ }

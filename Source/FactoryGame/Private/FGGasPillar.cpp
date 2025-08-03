@@ -12,12 +12,15 @@ FString AFGGasPillar::GetDebugName() const{ return FString(); }
 #endif 
 AFGGasPillar::AFGGasPillar() : Super() {
 	this->mMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	this->mMesh->SetMobility(EComponentMobility::Static);
 	this->mNearbyGasCloud = nullptr;
 	this->mEffectHeightOffset = 300.0;
 	this->mOverlapCollision = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapBox"));
 	this->mOverlapCollision->SetupAttachment(mMesh);
+	this->mOverlapCollision->SetMobility(EComponentMobility::Static);
 	this->mDotComponent = CreateDefaultSubobject<UFGDotComponent>(TEXT("DotComponent"));
 	this->mDotComponent->SetupAttachment(mOverlapCollision);
+	this->mDotComponent->SetMobility(EComponentMobility::Static);
 	this->mPostProcessSettings = nullptr;
 	this->mSignificanceRange = 15000.0;
 	this->mBindChaosPhysicsCollisionEvent = true;
@@ -33,8 +36,6 @@ void AFGGasPillar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 }
 void AFGGasPillar::GainedSignificance_Implementation(){ }
 void AFGGasPillar::LostSignificance_Implementation(){ }
-void AFGGasPillar::GainedSignificance_Native(){ }
-void AFGGasPillar::LostSignificance_Native(){ }
 float AFGGasPillar::GetSignificanceRange(){ return float(); }
 void AFGGasPillar::RemoveGasComponents(){ }
 void AFGGasPillar::NotifyGasCloudOfRemoval(){ }

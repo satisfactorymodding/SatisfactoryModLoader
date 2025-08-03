@@ -41,6 +41,11 @@ public:
 	/** Returns the blueprint descriptor for this shortcut, if it has been resolved with the blueprint subsystem already */
 	UFUNCTION( BlueprintPure, Category = "Shortcut" )
 	FORCEINLINE class UFGBlueprintDescriptor* GetBlueprintDescriptor() const { return mBlueprintDescriptor; }
+
+	/** Returns the blueprint descriptor for this shortcut, calls UpdateBlueprintDescriptor if it hasn't been resolved with the blueprint subsystem already */
+	UFUNCTION( BlueprintPure, Category = "Shortcut" )
+	UFGBlueprintDescriptor* GetBlueprintDescriptorWithUpdate();
+
 protected:
 	UFUNCTION()
 	void OnRep_BlueprintName();

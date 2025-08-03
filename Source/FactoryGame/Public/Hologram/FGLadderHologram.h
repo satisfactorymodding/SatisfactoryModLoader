@@ -34,7 +34,6 @@ public:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
-	virtual void SetMaterial( class UMaterialInterface* material ) override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual void GetClearanceData( TArray< const FFGClearanceData* >& out_ClearanceData ) const override;
 	// End AFGHologram interface
@@ -80,6 +79,6 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Ladder" )
 	class UInstancedStaticMeshComponent* mInstancedMeshComponent;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	ELadderHologramBuildStep mBuildStep = ELadderHologramBuildStep::LHBS_SnapToActor;
 };

@@ -46,7 +46,7 @@ protected:
 	FORCEINLINE TArray<FSplinePointData> GetSplineData() const { return mSplineData; }
 
 	// Begin AFGHologram Interface
-	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	// End AFGHologram Interface
 	
 	/** Update the spline on the client. */
@@ -68,9 +68,10 @@ protected:
 	UPROPERTY( ReplicatedUsing = OnRep_SplineData, CustomSerialization )
 	TArray< FSplinePointData > mSplineData;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	ESplineHologramBuildStep mBuildStep = ESplineHologramBuildStep::SHBS_FindStart;
 
 	/** Index of the currently moved point. */
+	UPROPERTY( CustomSerialization )
 	int32 mActivePointIdx;
 };

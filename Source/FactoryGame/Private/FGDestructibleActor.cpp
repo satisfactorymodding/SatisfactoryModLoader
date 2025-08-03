@@ -10,6 +10,7 @@ void AFGDestructibleActor::GetClearanceData_Implementation(TArray< FFGClearanceD
 
 AFGDestructibleActor::AFGDestructibleActor() : Super() {
 	this->mStaticMeshProxy = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshProxy"));
+	this->mStaticMeshProxy->SetMobility(EComponentMobility::Movable);
 	this->mGeometryCollection = nullptr;
 	this->mDestructibleActorFractureTime = 10.0;
 	this->mDestructibleActorState = EDestructibleActorState::DSS_Intact;

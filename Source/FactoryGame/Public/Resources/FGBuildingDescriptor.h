@@ -24,6 +24,10 @@ public:
 	/** Get the buildable class for this building descriptor. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Building" )
 	static TSubclassOf< class AFGBuildable > GetBuildableClass( TSubclassOf< UFGBuildingDescriptor > inClass );
+	
+	/** Whether or not the building uses distance when zooping instead of instances. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Building" )
+	static bool GetUsesDistanceForZooping( TSubclassOf< UFGBuildingDescriptor > inClass );
 
 	/** Get the the power consumption of buildable. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Building" )
@@ -70,6 +74,10 @@ protected:
 	/** The class to build. */
 	UPROPERTY( EditDefaultsOnly, Category = "Building" )
 	TSubclassOf< class AFGBuildable > mBuildableClass;
+
+	/** Whether or not the building uses distance when zooping instead of instances. */
+	UPROPERTY( EditDefaultsOnly, Category = "Item" )
+	bool mUsesDistanceForZooping;
 };
 
 template< float AFGBuildableManufacturerVariablePower::*Member >

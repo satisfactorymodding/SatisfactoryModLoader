@@ -21,7 +21,7 @@ struct FDrivingTargetListMapStationData
 	class UFGActorRepresentation* Station = nullptr;
 
 	UPROPERTY( BlueprintReadOnly )
-	FVector2D DisplayPosition;
+	FVector2D DisplayPosition = FVector2D::ZeroVector;
 };
 
 USTRUCT( BlueprintType )

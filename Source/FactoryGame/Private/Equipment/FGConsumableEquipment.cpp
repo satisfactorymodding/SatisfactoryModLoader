@@ -9,6 +9,7 @@ AFGConsumableEquipment::AFGConsumableEquipment() : Super() {
 	this->mArmAnimation = EArmEquipment::AE_Consumables;
 	this->mDefaultEquipmentActions = 1;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }
 void AFGConsumableEquipment::Consume(){ }
 void AFGConsumableEquipment::GetConsumeable(TSubclassOf<  UFGConsumableDescriptor >& out_consumeable, int32& out_numConsumeable) const{ }

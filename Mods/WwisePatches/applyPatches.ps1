@@ -33,20 +33,6 @@ $appliedPatchesFile = Join-Path -Path $projectDir -ChildPath "Plugins\Wwise\appl
 $appliedPatches = @()
 if (Test-Path -Path $appliedPatchesFile) {
     $appliedPatches = Get-Content -Path $appliedPatchesFile
-} else {
-    # Workaround for existing project setups. Remove this after the next wwise upgrade!
-    # Before using patches, we were find-and-replace modifying `Plugins/Wwise/Source/AudiokineticTools/Private/WwiseProject/AcousticTextureParamLookup.cpp`
-    # so we need to check if that file has been modified, and if so, consider the patch `01-ignore_missing_soundbanks.patch` as applied.
-    # The marker of a modified file is `UE_LOG(LogAudiokineticTools, Warning, TEXT("LoadAllTextures: ProjectDatabase not loaded"));`
-    $acousticTextureParamLookupFile = Join-Path -Path $projectDir -ChildPath "Plugins\Wwise\Source\AudiokineticTools\Private\WwiseProject\AcousticTextureParamLookup.cpp"
-    if (Test-Path -Path $acousticTextureParamLookupFile) {
-        $acousticTextureParamLookupContent = Get-Content -Path $acousticTextureParamLookupFile -Raw
-        if ($acousticTextureParamLookupContent -match 'UE_LOG\(LogAudiokineticTools, Warning, TEXT\("LoadAllTextures: ProjectDatabase not loaded"\)\);') {
-            $appliedPatches += "01-ignore_missing_soundbanks.patch"
-            # Also write the applied patch to the file for future runs
-            Add-Content -Path $appliedPatchesFile -Value "01-ignore_missing_soundbanks.patch"
-        }
-    }
 }
 
 # Enumerate all .patch files in the patches folder, sorted alphabetically
@@ -88,8 +74,6 @@ foreach ($file in $files) {
         Write-Host "Error: Dry run failed for patch '$patchFileName'. Exiting."
         exit $dryRunProcess.ExitCode
     }
-    
-    # TODO: redirect patch stdout/stderr to console, so that it can be logged
 
     # Apply the patch if dry run is successful
     Write-Host "Applying patch: $ptchExecutable $arguments"

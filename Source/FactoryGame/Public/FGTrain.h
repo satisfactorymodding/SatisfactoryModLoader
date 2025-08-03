@@ -8,6 +8,7 @@
 #include "FGSaveInterface.h"
 #include "FGSignificanceInterface.h"
 #include "RailroadNavigation.h"
+#include "LocalUserInfo.h"
 #include "FGTrainDockingRules.h"
 #include "FGTrain.generated.h"
 
@@ -419,8 +420,6 @@ public:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual void GainedSignificance_Native() override;
-	virtual void LostSignificance_Native() override;
 	virtual float GetSignificanceRange() override;
 	// Significance helpers
 	//@todo-trains Look over the significance calculation on the trains, I was a bit confused how it all works.
@@ -450,6 +449,9 @@ public:
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+//<FL>[KonradA]
+	virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) { SetLastEditedBy(mLastEditedBy); }
+//</FL>
 	// End IFGActorRepresentationInterface
 
 	/** Get the name of this train. */
@@ -725,6 +727,14 @@ public: //@todo-trains private
 	UPROPERTY( SaveGame, Replicated, EditAnywhere, Category = "Train" )
 	FText mTrainName;
 
+	//<FL>[KonradA]
+	UFUNCTION( BlueprintCallable, Category = "Train" )
+	void SetLastEditedBy( TArray< FLocalUserNetIdBundle > lastEditedBy );
+	// This is also part of the IFGActorRepresentation Interface
+	UFUNCTION( BlueprintPure, Category = "Train" )
+	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return mLastEditedBy; };
+	//</FL>
+
 	/** The track this train is on. */
 	UPROPERTY( Replicated )
 	int32 mTrackGraphID;
@@ -774,6 +784,10 @@ public: //@todo-trains private
 	UPROPERTY( EditDefaultsOnly )
 	UMaterialInterface* mCompassMaterialInstance;
 
+//<FL>[KonradA]
+	UPROPERTY(SaveGame, Replicated)
+	TArray<FLocalUserNetIdBundle> mLastEditedBy;
+//</FL>
 private:
 	/** If this train has any pending collisions that needs to be handled this frame. */
 	bool mHasPendingCollision;

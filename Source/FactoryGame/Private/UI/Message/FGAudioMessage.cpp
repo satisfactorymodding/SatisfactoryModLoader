@@ -2,6 +2,8 @@
 
 #include "UI/Message/FGAudioMessage.h"
 
+#include "InputActionValue.h"
+
 bool FMessageDialogue::HasMoreSubtitlesToShow() const{ return bool(); }
 float FMessageDialogue::GetLength() const{ return float(); }
 FMessageSubtitle FMessageDialogue::PopNextSubtitle(){ return FMessageSubtitle(); }
@@ -29,11 +31,15 @@ int32 UFGAudioMessage::GetMessagePriority() const{ return int32(); }
 void UFGAudioMessage::StartPlayback(){ }
 void UFGAudioMessage::OnSkipButtonPressed(){ }
 void UFGAudioMessage::OnSkipButtonReleased(){ }
+void UFGAudioMessage::OnSkipButtonHeld(FInputActionValue ActionValue, float ElapsedTime, float TriggeredTime, const UInputAction* SourceAction){  }
 void UFGAudioMessage::PlayNextDialogue_Implementation(bool skipToNextTimeStamp){ }
 void UFGAudioMessage::ContinuePlayback(){ }
 void UFGAudioMessage::SkipToNextSubtitle(){ }
 void UFGAudioMessage::CancelPlayback(){ }
 void UFGAudioMessage::FinishPlayback(){ }
+void UFGAudioMessage::OnSkipButtonReleasedEvent_Implementation(){  }
+void UFGAudioMessage::OnSkipButtonHeldEvent_Implementation(float TimeHeld){  }
+void UFGAudioMessage::OnSkipButtonPressedEvent_Implementation(){  }
 FAudioSubtitlePair UFGAudioMessage::GetCurrentDialogue(){ return FAudioSubtitlePair(); }
 EMessagePriorityType UFGAudioMessage::GetMessagePriorityType(TSubclassOf< UFGAudioMessage > message, UObject* worldContext){ return EMessagePriorityType(); }
 void UFGAudioMessage::InitMessage( UFGMessage* message){ }

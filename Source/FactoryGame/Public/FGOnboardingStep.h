@@ -28,8 +28,17 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tutorial" )
 	TArray< FText > Objectives;
 
+	// <FL> [KonradA] Have Seperate objective and hint texts for gamepad navigation- as some objectives describe actions like "dragging and dropping"
+	// that are impossible on a gamepad to perform. This also allows us to inject gamepad specific controller images with decorators.
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tutorial" )
+	TArray< FText > ObjectivesGamepad;
+
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tutorial" )
 	TArray< FText > Hints;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tutorial" )
+	TArray< FText > HintsGamepad;
+	// </FL>
 
 	/** Indicates which index does this step have in the list of all onboarding steps. Set by AFGTutorialIntroManager on init.
 	 * Onboarding steps with mExcludeFromOnboarding set to true is not considered for this and have a value of -1 */

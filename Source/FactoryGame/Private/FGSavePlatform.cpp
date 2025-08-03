@@ -15,3 +15,5 @@ bool FFGSavePlatform::GetUserSaveDirectoryPath(const UWorld* world, FString& out
 FString FFGSavePlatform::GetCommonSaveDirectoryPath(const UWorld* world){ return FString(); }
 FString FFGSavePlatform::SaveNameToFileName(const FString& directory, const FString& saveName){ return FString(); }
 bool FFGSavePlatform::IsDeprecatedSave(const FString& saveName){ return bool(); }
+bool FFGSavePlatform::LoadSaveGameHeaderSync(const FString& saveName, TArray<FString> saveDirectories, FSaveHeader& out_saveHeader){ return bool(); }
+void FFGSavePlatform::ExtendedSaveGameInfoDelegate(const TCHAR* SaveName, const EGameDelegates_SaveGame Key, FString& Value){ }

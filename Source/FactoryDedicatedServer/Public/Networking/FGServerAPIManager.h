@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SocketSubsystem.h"
 #include "GameFramework/OnlineReplStructs.h"
 #include "Server/FGDSAuthenticationTypes.h"
 #include "UObject/GCObject.h"
@@ -156,7 +157,7 @@ class FACTORYDEDICATEDSERVER_API UFGServerAPIManager : public UObject
 public:
 	UFGServerAPIManager();
 
-	bool Initialize( const TArray<TSharedRef<FInternetAddr>>& BindAddresses );
+	TSharedPtr<FInternetAddr> Initialize( int32 ServerAPIPort, const TArray<TSharedRef<FInternetAddr>>& BindAddresses );
 	void Shutdown();
 
 	// Returns the API port the Server API is listening on
@@ -212,6 +213,9 @@ protected:
 	static void OnClientFailedAuthentication( TSharedPtr<FFGRequestHandlerContext> RequestHandlerContext, EHttpServerResponseCodes ResponseCode,
 		const FString& OAuth2ErrorCode, const FString& ErrorDescription, const FString& OAuth2Scope = TEXT("") );
 
+	// Create the Server API socket that the HTTP API should listen on. This will also automatically wrap it into a TLS tunnel
+	bool CreateServerAPIListenSocket(FSocket*& OutSocket, ISocketSubsystem*& OutSocketSubsystem);
+
 	void BindRoutes();
 	void UnbindRoutes() const;
 	void RegisterDefaultParameterHandlers();
@@ -234,4 +238,9 @@ private:
 
 	// A cache of local adapter addresses used to quickly look up if the incoming request is coming from a local network adapter.
 	TArray<TSharedPtr<FInternetAddr>> LocalAdapterAddresses;
+
+	/** List of addresses that the Server API will attempt to bind. Passed from the ServerSubsystem on initialization */
+	TArray<TSharedRef<FInternetAddr>> mServerAPIBindAddresses;
+	/** The final address that Server API has bound */
+	TSharedPtr<FInternetAddr> mServerAPIBoundAddress;
 };

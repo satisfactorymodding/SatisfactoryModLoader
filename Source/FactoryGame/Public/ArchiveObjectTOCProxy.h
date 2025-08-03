@@ -19,7 +19,8 @@ public:
 
 private:
 	/** World to spawn new objects in if loading */
-	class UWorld* mWorld;
-
+	class UWorld* mWorld{};
+	/** Cached save game custom version to avoid having to look it up from the archive every time */
+	int32 mSaveGameCustomVersion{0};
 };
 

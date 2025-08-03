@@ -23,11 +23,10 @@ AFGManta::AFGManta() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bReplicates = true;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }
 void AFGManta::GainedSignificance_Implementation(){ }
 void AFGManta::LostSignificance_Implementation(){ }
-void AFGManta::GainedSignificance_Native(){ }
-void AFGManta::LostSignificance_Native(){ }
 float AFGManta::GetSignificanceRange(){ return float(); }
 void AFGManta::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

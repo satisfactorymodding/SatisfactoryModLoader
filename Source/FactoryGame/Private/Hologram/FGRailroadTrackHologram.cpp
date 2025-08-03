@@ -14,6 +14,10 @@ AFGRailroadTrackHologram::AFGRailroadTrackHologram() : Super() {
 	this->mConnectionComponents[1] = nullptr;
 	this->mSnappedConnectionComponents[0] = nullptr;
 	this->mSnappedConnectionComponents[1] = nullptr;
+	this->mSnappedRailroadTrack = nullptr;
+	this->mSnappedRailroadTrackDistance = 0.0;
+	this->mFlipSnappedDirection = false;
+	this->mStraightMode = false;
 	this->mMesh = nullptr;
 	this->mSwitchControls[0] = nullptr;
 	this->mSwitchControls[1] = nullptr;
@@ -21,25 +25,33 @@ AFGRailroadTrackHologram::AFGRailroadTrackHologram() : Super() {
 void AFGRailroadTrackHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGRailroadTrackHologram, mSwitchControls);
+	DOREPLIFETIME(AFGRailroadTrackHologram, mNumSwitchConnections);
 }
 void AFGRailroadTrackHologram::BeginPlay(){ Super::BeginPlay(); }
-USceneComponent* AFGRailroadTrackHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
+bool AFGRailroadTrackHologram::TrySnapToActor(const FHitResult& hitResult){ return Super::TrySnapToActor(hitResult); }
 void AFGRailroadTrackHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 int32 AFGRailroadTrackHologram::GetBaseCostMultiplier() const{ return int32(); }
 void AFGRailroadTrackHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 bool AFGRailroadTrackHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 void AFGRailroadTrackHologram::CheckBlueprintCommingling(){ }
-void AFGRailroadTrackHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
+void AFGRailroadTrackHologram::GetIgnoredClearanceActors(TSet< AActor* >& ignoredActors) const{ }
+void AFGRailroadTrackHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ Super::PostHologramPlacement(hitResult, callForChildren); }
+bool AFGRailroadTrackHologram::CanTakeNextBuildStep() const{ return Super::CanTakeNextBuildStep(); }
+int32 AFGRailroadTrackHologram::GetRotationStep() const{ return Super::GetRotationStep(); }
+void AFGRailroadTrackHologram::ScrollRotate(int32 delta, int32 step){ Super::ScrollRotate(delta, step); }
 void AFGRailroadTrackHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGRailroadTrackHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGRailroadTrackHologram::SetLocationAndRotationFromPlatformConnections( UFGTrainPlatformConnection* connectionOne,  UFGTrainPlatformConnection* connectionTwo){ }
 TArray< class UFGRailroadTrackConnectionComponent* > AFGRailroadTrackHologram::GetSnappedConnectionComponents(){ return TArray<class UFGRailroadTrackConnectionComponent*>(); }
+void AFGRailroadTrackHologram::GenerateAndUpdateSpline(const FHitResult& hitResult){ }
 void AFGRailroadTrackHologram::CheckValidPlacement(){ }
 void AFGRailroadTrackHologram::CheckValidFloor(){ }
+void AFGRailroadTrackHologram::ValidateRailroadTrack(){ }
 void AFGRailroadTrackHologram::UpdateClearanceData(){ }
 void AFGRailroadTrackHologram::UpdateSplineComponent(){ }
-void AFGRailroadTrackHologram::TryFindAndSnapToOverlappingConnection(int32 forConnectionIndex, FVector& inout_newLocation, FVector& inout_newTangent){ }
-void AFGRailroadTrackHologram::TryPlaceSwitchControl(int32 forConnectionIndex){ }
+bool AFGRailroadTrackHologram::TryFindAndSnapToOverlappingConnection(int32 forConnectionIndex, const FVector& location){ return false; }
+void AFGRailroadTrackHologram::TryPlaceSwitchControl(int32 forConnectionIndex,
+	const TArray<class UFGRailroadTrackConnectionComponent*>* blueprintHologramConnections){  }
 bool AFGRailroadTrackHologram::ValidateGrade(){ return bool(); }
 bool AFGRailroadTrackHologram::ValidateCurvature(){ return bool(); }
 void AFGRailroadTrackHologram::AutoRouteSpline(const FVector& startConnectionPos,

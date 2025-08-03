@@ -180,6 +180,28 @@ class FACTORYGAME_API UFGCDMustSnap : public UFGConstructDisqualifier
 };
 
 UCLASS()
+class FACTORYGAME_API UFGCMustBuildOnLift : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCMustBuildOnLift()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCMustBuildOnLift", "Must be built on a lift!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCCanNotBuildOnLift : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCCanNotBuildOnLift()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCCanNotBuildOnLift", "Cannot be built on a lift!" );
+	}
+};
+
+UCLASS()
 class FACTORYGAME_API UFGCDMustSnapWall : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
@@ -187,6 +209,17 @@ class FACTORYGAME_API UFGCDMustSnapWall : public UFGConstructDisqualifier
 	UFGCDMustSnapWall()
 	{
 		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/BuildMode/RequiresSnapToWall" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDMustSnapRailroadTrack : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDMustSnapRailroadTrack()
+	{
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/BuildMode/RequiresSnapToRailroadTrack" );
 	}
 };
 
@@ -382,6 +415,17 @@ class FACTORYGAME_API UFGCDBeltMustSnap : public UFGConstructDisqualifier
 	UFGCDBeltMustSnap()
 	{
 		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Belts/SnapToConveyorPole" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDBeltConnectionMismatch : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDBeltConnectionMismatch()
+	{
+		mDisqfualifyingText = FText::FromString( TEXT("TODO 1.1 LOC: Conveyor directions do not match.") );
 	}
 };
 
@@ -722,6 +766,14 @@ class FACTORYGAME_API UFGDDBuildablesInsideBlueprintDesigner : public UFGConstru
 };
 
 UCLASS()
+class FACTORYGAME_API UFGDDElevatorOccupied : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGDDElevatorOccupied() { mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/DismantleMode/OccupiedElevator" ); }
+};
+
+UCLASS()
 class FACTORYGAME_API UFGDDRailroadStationDocking : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
@@ -776,6 +828,77 @@ class FACTORYGAME_API UFGDDVehicleHasDriver : public UFGConstructDisqualifier
 	GENERATED_BODY()
 
 	UFGDDVehicleHasDriver() { mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/DismantleMode/OccupiedVehicle" ); }
+};
+
+UCLASS()
+class FACTORYGAME_API UFGDCrashSiteNotOpened : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGDCrashSiteNotOpened() { mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/DismantleMode/UnopenedCrashSite" ); }
+};
+
+UCLASS()
+class FACTORYGAME_API UFGDCrashSiteHasLoot : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGDCrashSiteHasLoot() { mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/DismantleMode/UnlootedCrashSite" ); }
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDMustSnapElevator : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDMustSnapElevator()
+	{
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Elevator/RequiresSnapToElevator" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDMaxElevatorFloorStops : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDMaxElevatorFloorStops()
+	{
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Elevator/MaxFloorStopCountReached" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDElevatorIsOccupied : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDElevatorIsOccupied()
+	{
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Elevator/Occupied" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDMaxElevatorHeight : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDMaxElevatorHeight()
+	{
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Elevator/MaxElevatorHeight" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDElevatorStopUpgradeMustChange : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDElevatorStopUpgradeMustChange()
+	{
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Elevator/ElevatorStopUpgradeMustChange" );
+	}
 };
 
 #undef LOCTEXT_NAMESPACE

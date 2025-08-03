@@ -36,6 +36,8 @@ public:
 	UFUNCTION( Server, Reliable )
 	void Server_SetNoPower( bool enabled );
 	UFUNCTION( Server, Reliable )
+	void Server_SetNoFuelCost( bool enabled );
+	UFUNCTION( Server, Reliable )
 	void Server_SetArachnidCreaturesDisabled( bool disabled );
 	UFUNCTION( Server, Reliable )
 	void Server_SetGamePhase( int32 gamePhase );
@@ -78,6 +80,7 @@ public:
 	void UnlockAllResearchSchematics();
 	void UnlockInstantAltRecipes( bool enabled );
 	void SetNoUnlockCost( bool enabled );
+	void SetNoFuelCost( bool enabled );
 	void SetNoPower( bool enabled );
 	void SetArachnidCreaturesDisabled( bool disabled );
 	void SetGamePhase( int32 gamePhase );

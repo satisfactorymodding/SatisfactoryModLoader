@@ -36,6 +36,8 @@ UFGActorRepresentation* AFGActorRepresentationManager::CreateAndAddNewRepresenta
 void AFGActorRepresentationManager::AddRepresentation( UFGActorRepresentation* actorRepresentation){ }
 bool AFGActorRepresentationManager::UpdateRepresentationOfActor(AActor* realActor){ return bool(); }
 bool AFGActorRepresentationManager::UpdateRepresentation(UFGActorRepresentation* actorRepresentation){ return bool(); }
+void AFGActorRepresentationManager::UpdateRepresentationsOfAllActors(){ }
+void AFGActorRepresentationManager::UpdateRepresentationsOfType(ERepresentationType representationType){ }
 bool AFGActorRepresentationManager::RemoveRepresentationOfActor(AActor* realActor){ return bool(); }
 void AFGActorRepresentationManager::RemoveRepresentation( UFGActorRepresentation* actorRepresentation){ }
 UFGActorRepresentation* AFGActorRepresentationManager::FindActorRepresentation(const AActor* realActor){ return nullptr; }

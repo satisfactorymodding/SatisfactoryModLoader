@@ -41,6 +41,7 @@ UFGCharacterAnimInstance::UFGCharacterAnimInstance() : Super() {
 	this->mCanUpdateActorRotationReference = false;
 	this->mYawAimMaxValue = 45.0;
 	this->mYawAimMinValue = 45.0;
+	this->mMaxWalkPitchValue = 35.0;
 	this->mAimPitch = 0.0;
 	this->mAimPitchInterpSpeed = 5.0;
 	this->mGetDeltaPitchRotation = false;

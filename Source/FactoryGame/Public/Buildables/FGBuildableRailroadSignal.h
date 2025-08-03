@@ -9,6 +9,26 @@
 #include "FGTrain.h"
 #include "FGBuildableRailroadSignal.generated.h"
 
+class UStaticMesh;
+
+UCLASS( EditInlineNew )
+class FACTORYGAME_API UFGBuildableRailroadSignalSparseData : public UObject
+{
+	GENERATED_BODY()
+public:
+	/** Properties for right handed signals (game default). */
+	UPROPERTY( EditDefaultsOnly )
+	UStaticMesh* mRightHandedMesh;
+	UPROPERTY( EditDefaultsOnly )
+	FTransform mRightHandedTransform;
+	
+	/** Properties for left handed signals. */
+	UPROPERTY( EditDefaultsOnly )
+	UStaticMesh* mLeftHandedMesh;
+	UPROPERTY( EditDefaultsOnly )
+	FTransform mLeftHandedTransform;
+};
+
 /**
  * A signal for the railroad, these are placed on connection points and separate access to tracks by block signaling.
  */
@@ -40,8 +60,6 @@ public:
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
 	virtual float GetSignificanceRange() override { return mSignificanceRange; }
-	virtual void GainedSignificance_Native() override;
-	virtual void LostSignificance_Native() override;
 	virtual	void SetupForSignificance() override;
 	//End IFGSignificanceInterface
 
@@ -90,11 +108,19 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Signal" )
 	bool IsBiDirectional() const { return mIsBiDirectional; }
 
+	/** @return true if this signal is left-handed, false if right-handed. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Signal" )
+	bool IsLeftHanded() const { return mIsLeftHanded; }
+	
 	/** @return The visual state for this signals material. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Signal" )
 	int32 GetVisualState() const { return mVisualState; }
-
+	
+	FORCEINLINE const UFGBuildableRailroadSignalSparseData* GetRailroadSignalSparesData() const { return mRailroadSignalSparesDataCDO; }
+	
 public:
+	static const FName SIGNAL_MESH_COMPONENT_NAME;
+	
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnAspectChanged, ERailroadSignalAspect, aspect );
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBlockValidationChanged, ERailroadBlockValidation, blockValidation );
 	
@@ -105,8 +131,20 @@ public:
 	/** Called when the block is validated. Called on server and client. */
 	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Railroad|Signal", DisplayName = "OnBlockValidationChanged" )
 	FOnBlockValidationChanged mOnBlockValidationChangedDelegate;
+
+#if WITH_EDITORONLY_DATA
+	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Signal" )
+	UFGBuildableRailroadSignalSparseData* mRailroadSignalSparesData;
+#endif
+
+	UPROPERTY( )
+	UFGBuildableRailroadSignalSparseData* mRailroadSignalSparesDataCDO;
 	
 protected:
+#if WITH_EDITOR
+	virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;
+#endif
+	
 	/** Called when the aspect of this signal has changed, can be called in some occasions when the aspect is still the same. */
 	void OnAspectChanged();
 
@@ -152,6 +190,10 @@ private:
 	void OnRep_BlockValidation();
 	UFUNCTION()
 	void OnRep_VisualState();
+	UFUNCTION()
+	void OnRep_GuardedConnections(const TArray<UFGRailroadTrackConnectionComponent*>& oldGuardedConnections);
+	UFUNCTION()
+	void OnRep_ObservedConnections(const TArray<UFGRailroadTrackConnectionComponent*>& oldObservedConnections);
 
 	/** Helpers to update the states of this signal. */
 	void UpdateDirectionality();
@@ -221,9 +263,9 @@ private:
 	 *                3 OBSERVED
 	 *             BLOCK CONNECTION
 	 */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_GuardedConnections )
 	TArray< class UFGRailroadTrackConnectionComponent* > mGuardedConnections;
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ObservedConnections )
 	TArray< class UFGRailroadTrackConnectionComponent* > mObservedConnections;
 
 	/** The signal block this signal observers. */
@@ -247,6 +289,10 @@ private:
 	/** Is this signal bi-directional mean if this signal is paired with another one facing the opposite direction. */
 	UPROPERTY( SaveGame )
 	bool mIsBiDirectional;
+
+	/** True if this is a left-handed signal, false if right-handed. */
+	UPROPERTY( SaveGame, Replicated )
+	bool mIsLeftHanded;
 
 	/** Stored custom data for the signal material. */
 	UPROPERTY( ReplicatedUsing = OnRep_VisualState )

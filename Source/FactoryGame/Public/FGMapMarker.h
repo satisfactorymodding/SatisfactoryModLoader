@@ -15,21 +15,26 @@ struct FACTORYGAME_API FMapMarker
 	GENERATED_BODY()
 
 	FMapMarker() :
-		MarkerID( 255 ),
+		MarkerID_DEPRECATED( 0 ),
+		MarkerGUID( FGuid() ),
 		Location( 0,0,0 ),
-		Name( "" ),
+		Name( TEXT("") ),
 		MapMarkerType( ERepresentationType::RT_Default ),
 		IconID( 0 ),
 		Color( FLinearColor::Black ),
 		Scale( 1.0 ),
 		CompassViewDistance( ECompassViewDistance::CVD_Off ),
-		CreatedByLocalPlayer( false )
+		MarkerPlacedByAccountID( "" )
 	{
 	};
 
-	// 255 means empty/available
-	UPROPERTY( SaveGame ) 
-	uint8 MarkerID;
+	// Legacy Marker ID saved by the old save system
+	UPROPERTY(SaveGame) 
+	uint8 MarkerID_DEPRECATED;
+
+	// A unique ID of this map marker
+	UPROPERTY( SaveGame, BlueprintReadWrite ) 
+	FGuid MarkerGUID;
 	
 	UPROPERTY( SaveGame, BlueprintReadWrite )
 	FVector_NetQuantize Location;
@@ -55,16 +60,18 @@ struct FACTORYGAME_API FMapMarker
 	UPROPERTY( SaveGame, BlueprintReadWrite )
 	ECompassViewDistance CompassViewDistance;
 
-	// Used to know if this map marker was created locally. Useful for map representation.
-	// Will only be true for the local session where the marker was created.
-	TOptional<bool> CreatedByLocalPlayer;
+	UPROPERTY( SaveGame, BlueprintReadWrite )
+	FString MarkerPlacedByAccountID;
 
-	bool HasValidID() const { return MarkerID != 255; }
-	void InvalidateMapMarker() { MarkerID = 255; } 
+	/** ID of the player that created this marker. This is not saved, and is only used to associate created markers with their authors in session */
+	UPROPERTY()
+	FGuid CreatedByPlayerID;
+	// static_assert(false, "check if this is needed or the above is sufficient post merge once in IDE");
+	
+	bool HasValidID() const { return MarkerGUID.IsValid(); }
+	void InvalidateMapMarker() { MarkerGUID.Invalidate(); } 
 
 	bool operator==(const FMapMarker& other) const;
-
-	bool operator!=(const FMapMarker& other) const;
 };
 
 // Simple object wrapper for a map marker so we can put it as the interact object for an interact widget
@@ -125,4 +132,3 @@ public:
 	UPROPERTY( SaveGame )
 	FMapMarker mMapMarker;
 };
-

@@ -6,10 +6,6 @@
 #include "FGSwatchGroup.h"
 #include "Net/UnrealNetwork.h"
 
-void FQuantizedPipelineIndicatorData::SetFlowPct(float pct){ }
-float FQuantizedPipelineIndicatorData::GetFlowPct() const{ return float(); }
-void FQuantizedPipelineIndicatorData::SetContentPct(float pct){ }
-float FQuantizedPipelineIndicatorData::GetContentPct() const{ return float(); }
 AFGBuildablePipeline::AFGBuildablePipeline() : Super() {
 	this->mRadius = 65.0;
 	this->mFlowLimit = 10.0;
@@ -32,14 +28,9 @@ AFGBuildablePipeline::AFGBuildablePipeline() : Super() {
 	this->mStopRattleSoundEvent = nullptr;
 	this->mUpdateSoundsTimerInterval = 0.0625;
 	this->mConnection0 = CreateDefaultSubobject<UFGPipeConnectionComponent>(TEXT("PipelineConnection0"));
+	this->mConnection0->SetMobility(EComponentMobility::Static);
 	this->mConnection1 = CreateDefaultSubobject<UFGPipeConnectionComponent>(TEXT("PipelineConnection1"));
-	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
-	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
-	this->mFactoryTickFunction.bTickEvenWhenPaused = false;
-	this->mFactoryTickFunction.bCanEverTick = true;
-	this->mFactoryTickFunction.bStartWithTickEnabled = true;
-	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
-	this->mFactoryTickFunction.TickInterval = 0.0;
+	this->mConnection1->SetMobility(EComponentMobility::Static);
 	this->mSwatchGroup = UFGSwatchGroup_Pipeline::StaticClass();
 	this->mConnection0->SetupAttachment(RootComponent);
 	this->mConnection1->SetupAttachment(RootComponent);
@@ -47,12 +38,12 @@ AFGBuildablePipeline::AFGBuildablePipeline() : Super() {
 void AFGBuildablePipeline::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildablePipeline, mFlowIndicator);
-	DOREPLIFETIME(AFGBuildablePipeline, mIndicatorData);
 }
 void AFGBuildablePipeline::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePipeline::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
-void AFGBuildablePipeline::Factory_Tick(float dt){ }
 bool AFGBuildablePipeline::ShouldRegisterToFactoryTickGroup() const { return bool(); }
+void AFGBuildablePipeline::RegisterInteractingPlayer_Implementation(AFGCharacterPlayer* player){ Super::RegisterInteractingPlayer_Implementation(player); }
+void AFGBuildablePipeline::UnregisterInteractingPlayer_Implementation(AFGCharacterPlayer* player){ Super::UnregisterInteractingPlayer_Implementation(player); }
 void AFGBuildablePipeline::PreUpgrade_Implementation(){ }
 void AFGBuildablePipeline::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildablePipeline::GainedSignificance_Implementation(){ }
@@ -76,8 +67,9 @@ float AFGBuildablePipeline::GetIndicatorContent() const{ return float(); }
 float AFGBuildablePipeline::GetIndicatorFlow() const{ return float(); }
 TSubclassOf< UFGItemDescriptor > AFGBuildablePipeline::GetFluidDescriptor() const{ return TSubclassOf<UFGItemDescriptor>(); }
 AFGBuildablePipelineFlowIndicator* AFGBuildablePipeline::GetFlowIndicator() const{ return nullptr; }
-void AFGBuildablePipeline::SmoothValues(float& flowPct,  float& contentPct, float dt) const{ }
+void AFGBuildablePipeline::SmoothValues(float& flowPct,  float& contentPct, bool& stale, float dt) const{ }
 void AFGBuildablePipeline::GetRawValues(float& flowPct,  float& contentPct) const{ }
+void AFGBuildablePipeline::SetCachedPipelineIndicatorData(const FPipelineIndicatorData& NewIndicatorData){ }
 void AFGBuildablePipeline::UpdateSounds(){ }
 bool AFGBuildablePipeline::FindBestInidicatorPlacement(FTransform& out_transform){ return bool(); }
 const FName AFGBuildablePipeline::mConnectionName0 = FName();

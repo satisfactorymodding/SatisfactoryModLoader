@@ -22,14 +22,9 @@ public:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	// End AFGHologram interface
 
-protected:
-	// Begin AFGHologram Interface
-	virtual void CheckValidPlacement() override;
-	// End AFGHologram Interface
-	
+protected:	
 	// Begin AFGFactoryBuildingHologram interface
-	virtual void UpdateZoop() override;
-	virtual void ConstructZoop( TArray<AActor*>& out_children ) override;
+	virtual void CreateZoopInstances() override;
 	virtual FVector ConvertZoopToWorldLocation( const FIntVector& zoop ) const override;
 	// End AFGFactoryBuildingHologram interface
 	

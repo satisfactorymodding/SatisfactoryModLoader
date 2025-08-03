@@ -2,7 +2,7 @@
 
 #include "Security/FGServerCertificateManager.h"
 
-FSocket* UFGServerCertificateManager::CreateSecureSocket(FUniqueSocket&& InUnderlyingSocket){ return nullptr; }
+FUniqueSocket UFGServerCertificateManager::CreateSecureSocket(FUniqueSocket&& InUnderlyingSocket){ return FUniqueSocket(); }
 void UFGServerCertificateManager::SetUserCertificatePath(const FString& InUserCertificatePath, const FString& InUserPrivateKeyPath){ }
 UFGServerAPIManager* UFGServerCertificateManager::GetOuterServerAPIManager() const{ return nullptr; }
 FFGGeneratedCertificateData UFGServerCertificateManager::GenerateSelfSignedCertificate(){ return FFGGeneratedCertificateData(); }

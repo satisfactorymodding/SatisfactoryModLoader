@@ -14,18 +14,19 @@ void AFGLocomotive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutL
 AFGLocomotive::AFGLocomotive() : Super() {
 	this->mPowerConsumption = FFloatInterval(0.0, 15.0);
 	this->mSlidingShoe = CreateDefaultSubobject<UFGPowerConnectionComponent>(TEXT("SlidingShoe"));
+	this->mSlidingShoe->SetMobility(EComponentMobility::Movable);
 	this->mPowerInfo = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("powerInfo"));
 	this->mHasPower = false;
 	this->mVehicleMovement = CreateDefaultSubobject<UFGLocomotiveMovementComponent>(TEXT("MovementComp"));
 	this->mHeadlightMode = ELocomotiveHeadlightsMode::LHM_Off;
 	this->mHeadlightModes[0].ShowBeam = false;;
-	this->mHeadlightModes[0].Color = FLinearColor(0.0, 0.0, 0.0, 0.0);;
+	this->mHeadlightModes[0].Color = FLinearColor(0.0, 0.0, 0.0, 1.0);;
 	this->mHeadlightModes[0].Intensity = 0.0;;
 	this->mHeadlightModes[1].ShowBeam = false;;
-	this->mHeadlightModes[1].Color = FLinearColor(0.0, 0.0, 0.0, 0.0);;
+	this->mHeadlightModes[1].Color = FLinearColor(0.0, 0.0, 0.0, 1.0);;
 	this->mHeadlightModes[1].Intensity = 0.0;;
 	this->mHeadlightModes[2].ShowBeam = false;;
-	this->mHeadlightModes[2].Color = FLinearColor(0.0, 0.0, 0.0, 0.0);;
+	this->mHeadlightModes[2].Color = FLinearColor(0.0, 0.0, 0.0, 1.0);;
 	this->mHeadlightModes[2].Intensity = 0.0;;
 	this->mLocomotiveMenuWidgetClass = nullptr;
 }

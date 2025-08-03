@@ -6,6 +6,7 @@
 #include "FGInteractActor.h"
 #include "FGSaveInterface.h"
 #include "FGActorRepresentationInterface.h"
+#include "Replication/FGConditionalReplicationInterface.h"
 #include "FGCrate.generated.h"
 
 /** Types of the crate we have in game */
@@ -22,7 +23,7 @@ enum class EFGCrateType : uint8
  * They cannot have additional items inserted into them, and self-destruct when they are empty.
  */
 UCLASS()
-class FACTORYGAME_API AFGCrate : public AFGInteractActor, public IFGSaveInterface, public IFGActorRepresentationInterface
+class FACTORYGAME_API AFGCrate : public AFGInteractActor, public IFGSaveInterface, public IFGActorRepresentationInterface, public IFGConditionalReplicationInterface
 {
 	GENERATED_BODY()
 public:
@@ -32,7 +33,6 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 
 	// Begin AActor Interface
-	virtual void PostActorCreated() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// End AActor interface
@@ -47,45 +47,34 @@ public:
 	virtual bool ShouldSave_Implementation() const override { return true; }
 	// End IFSaveInterface
 
+	// Begin IFGConditionalReplicationInterface
+	virtual void GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const override;
+	virtual bool IsPropertyRelevantForConnection(UNetConnection* netConnection, const FProperty* property) const override;
+	// End IFGConditionalReplicationInterface
+
 	// Begin IFGActorRepresentationInterface
-	UFUNCTION()
 	virtual bool AddAsRepresentation() override;
-	UFUNCTION()
 	virtual bool UpdateRepresentation() override;
-	UFUNCTION()
 	virtual bool RemoveAsRepresentation() override;
-	UFUNCTION()
 	virtual bool IsActorStatic() override;
-	UFUNCTION()
 	virtual FVector GetRealActorLocation() override;
-	UFUNCTION()
 	virtual FRotator GetRealActorRotation() override;
-	UFUNCTION()
 	virtual class UTexture2D* GetActorRepresentationTexture() override;
-	UFUNCTION()
 	virtual FText GetActorRepresentationText() override;
-	UFUNCTION()
 	virtual void SetActorRepresentationText( const FText& newText ) override;
-	UFUNCTION()
 	virtual FLinearColor GetActorRepresentationColor() override;
-	UFUNCTION()
 	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
-	UFUNCTION()
 	virtual ERepresentationType GetActorRepresentationType() override;
-	UFUNCTION()
 	virtual bool GetActorShouldShowInCompass() override;
-	UFUNCTION()
 	virtual bool GetActorShouldShowOnMap() override;
-	UFUNCTION()
 	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
-	UFUNCTION()
 	virtual float GetActorFogOfWarRevealRadius() override;
-	UFUNCTION()
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
-	UFUNCTION()
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
-	UFUNCTION()
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+	//<FL>[KonradA]
+	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray< struct FLocalUserNetIdBundle >(); }
+	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
 
 	// End IFGActorRepresentationInterface
 
@@ -120,6 +109,10 @@ public:
 	FORCEINLINE EFGCrateType GetCrateType() const { return mCrateType; }
 
 protected:
+	/** Property replicator for conditionally replicating details */
+	UPROPERTY( Replicated, Transient, meta = ( FGPropertyReplicator ) )
+	FFGConditionalPropertyReplicator mPropertyReplicator;
+	
 	/** Default type of the crate. Overriden on per instance basis */
 	UPROPERTY( EditAnywhere, SaveGame, Replicated, Category = "Crate" )
 	EFGCrateType mCrateType;
@@ -159,7 +152,7 @@ private:
 	bool mAllowAddingItemsIntoInventory{false};
 
 	/** The inventory of this crate */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY()
 	class UFGInventoryComponent* mInventory;
 
 	/** Players interacting with this crate, used to toggle dormancy */

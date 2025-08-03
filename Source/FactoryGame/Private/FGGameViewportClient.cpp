@@ -6,4 +6,6 @@ void UFGGameViewportClient::Tick(float deltaSeconds){ }
 bool UFGGameViewportClient::InputKey(const FInputKeyEventArgs& EventArgs){ return bool(); }
 void UFGGameViewportClient::LostFocus(FViewport* Viewport1){ }
 void UFGGameViewportClient::ReceivedFocus(FViewport* Viewport1){ }
+void UFGGameViewportClient::Activated(FViewport* InViewport, const FWindowActivateEvent& InActivateEvent){ Super::Activated(InViewport, InActivateEvent); }
+void UFGGameViewportClient::Deactivated(FViewport* InViewport, const FWindowActivateEvent& InActivateEvent){ Super::Deactivated(InViewport, InActivateEvent); }
 bool UFGGameViewportClient::HandleToggleFullscreenCommand(){ return bool(); }

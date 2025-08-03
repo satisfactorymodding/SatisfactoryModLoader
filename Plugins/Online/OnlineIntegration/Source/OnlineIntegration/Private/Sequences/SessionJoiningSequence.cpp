@@ -4,8 +4,10 @@
 
 void USessionJoiningSequence::Initialize(const FSessionJoinParams& InJoinParams, UCommonSessionSubsystem *Subsystem){ }
 bool USessionJoiningSequence::Start(){ return bool(); }
+void USessionJoiningSequence::NotifySequenceFinished(){ Super::NotifySequenceFinished(); }
 void USessionJoiningSequence::JoinSession(TSharedRef<FControlFlowNode>, FCommonSession Session){ }
 void USessionJoiningSequence::ClientTravel(){ }
 void USessionJoiningSequence::CleanupSessions(TSharedRef<FControlFlowNode> SubFlow){ }
 void USessionJoiningSequence::JoinSessions(TSharedRef<FControlFlowNode> SubFlow){ }
 void USessionJoiningSequence::IncrementBackendIndex(){ }
+void USessionJoiningSequence::OnTimeout(){ }

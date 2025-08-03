@@ -6,10 +6,12 @@
 
 AFGPortableMinerDispenser::AFGPortableMinerDispenser() : Super() {
 	this->mHologramMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HologramMesh"));
+	this->mHologramMeshComponent->SetMobility(EComponentMobility::Movable);
 	this->mPortableMinerClass = nullptr;
 	this->mArmAnimation = EArmEquipment::AE_PortableMiner;
 	this->mDefaultEquipmentActions = 1;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 	this->mHologramMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGPortableMinerDispenser::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }

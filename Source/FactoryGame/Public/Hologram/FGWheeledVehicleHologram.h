@@ -19,6 +19,6 @@ public:
 protected:
 	// Begin AFGHologram interface
 	virtual void SetHologramLocationAndRotation(const FHitResult& hitResult) override;
-	virtual AFGVehicle* ConstructVehicle(FNetConstructionID netConstructionID) const override;
+	virtual FTransform GetVehicleSpawnTransform() const override;
 	// End of AFGHologram interface
 };

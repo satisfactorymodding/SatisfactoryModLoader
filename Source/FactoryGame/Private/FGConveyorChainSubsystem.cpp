@@ -32,7 +32,6 @@ AFGConveyorChainSubsystem* AFGConveyorChainSubsystem::Get(UObject* worldContext)
 void AFGConveyorChainSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGConveyorChainSubsystem, mServerFactoryTickTime);
-	DOREPLIFETIME(AFGConveyorChainSubsystem, mAllItemDescriptors);
 }
 void AFGConveyorChainSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGConveyorChainSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
@@ -40,7 +39,7 @@ void AFGConveyorChainSubsystem::OnConveyorItemMovementQualityUpdated(FString cva
 void AFGConveyorChainSubsystem::AddConveyorChain(AFGConveyorChainActor* chainActor){ }
 void AFGConveyorChainSubsystem::RemoveConveyorChain(AFGConveyorChainActor* chainActor){ }
 void AFGConveyorChainSubsystem::BuildItemDescriptorRepArray(){ }
-void AFGConveyorChainSubsystem::OnRep_ConveyorItemDescAndID(){ }
+void AFGConveyorChainSubsystem::ReceiveItemDescriptorRepArray(const TArray<TSubclassOf<UFGItemDescriptor>>& itemDescriptorRepArray){ }
 void AFGConveyorChainSubsystem::NotifyChainReceivedItemUpdate(AFGConveyorChainActor* chainActor){ }
 void AFGConveyorChainSubsystem::NotifyChainNeedsSegmentUpdate(AFGConveyorChainActor* ChainActor){ }
 void AFGConveyorChainSubsystem::NotifyChainReceiveSegmentUpdate(AFGConveyorChainActor* chainActor){ }

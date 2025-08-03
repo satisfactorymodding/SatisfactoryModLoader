@@ -27,6 +27,7 @@ UFGVertexAnimatedMeshComponent::UFGVertexAnimatedMeshComponent() : Super() {
 	this->bAllowWindUpDownInterpolation = false;
 	this->mOverClockedAnimationSpeed = 2.0;
 	this->mUnderClockedAnimationSpeed = 0.5;
+	this->bNeedsSimulationForWires = false;
 	this->bHasWindDownSequence = false;
 	this->bHasWindUpSequence = false;
 	this->bHasWire = false;
@@ -38,6 +39,7 @@ UFGVertexAnimatedMeshComponent::UFGVertexAnimatedMeshComponent() : Super() {
 }
 void UFGVertexAnimatedMeshComponent::BeginPlay(){ Super::BeginPlay(); }
 void UFGVertexAnimatedMeshComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void UFGVertexAnimatedMeshComponent::PostLoad(){ Super::PostLoad(); }
 void UFGVertexAnimatedMeshComponent::GainedSignificance_Implementation(){ }
 void UFGVertexAnimatedMeshComponent::LostSignificance_Implementation(){ }
 bool UFGVertexAnimatedMeshComponent::ShouldAddToSignificanceManager() const{ return bool(); }

@@ -34,17 +34,15 @@ public:
 protected:
 	// Begin AFGHologram interface
 	virtual int32 GetRotationStep() const override;
-	virtual void CheckValidPlacement() override;
 	// End of AFGHologram interface
 
 	// Begin AFGFactoryBuildingHologram Interface
-	virtual void UpdateZoop() override;
-	virtual void ConstructZoop( TArray<AActor*>& out_children ) override;
+	virtual void CreateZoopInstances() override;
 	virtual FVector ConvertZoopToWorldLocation( const FIntVector& zoop ) const override;
 	// End AFGFactoryBuildingHologram Interface
 
 	// Begin AFGBuildableHologram interface
-	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	// End AFGBuildableHologram interface
 
 	/** Changes what buildable we're constructing based on an angle. */
@@ -53,7 +51,7 @@ protected:
 private:
 	void ApplyFoundationFloorSnapping( const FTransform& floorTransform, const FHitResult& hitResult, const FVector& floorSize, const FVector& foundationSize, FVector& out_Location, FRotator& inout_Rotation );
 
-private:	
+protected:	
 	/** Width of the wall, from the default buildable. */
 	float mWidth;
 

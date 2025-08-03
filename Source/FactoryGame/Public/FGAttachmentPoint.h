@@ -44,7 +44,7 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Attachment Point" )
 	bool CanAttach( const FFGAttachmentPoint& point, const FFGAttachmentPoint& targetPoint ) const;
 
-	/** What attachment point types this type can snap to. */
+	/** What attachment point types this type can snap to, apart from our own class. */
 	UPROPERTY( EditDefaultsOnly, Category = "Attachment Point" )
 	TArray< TSubclassOf< UFGAttachmentPointType > > mAllowedAttachmentPointSnapTypes;
 };

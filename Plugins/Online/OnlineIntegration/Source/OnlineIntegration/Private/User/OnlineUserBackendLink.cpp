@@ -5,8 +5,10 @@
 #include "GameplayTagContainerViewModel.h"
 
 UOnlineUserBackendLink::UOnlineUserBackendLink(){ }
+ECommonUserLoginStatus UOnlineUserBackendLink::GetLoginStatus() const{ return ECommonUserLoginStatus::LoggedIn; }
 const FPlayerAvatar& UOnlineUserBackendLink::GetAvatar() const{ return *(new FPlayerAvatar()); }
 const FString& UOnlineUserBackendLink::GetNickname() const{ return *(new FString()); }
+const FString& UOnlineUserBackendLink::GetDisplayPictureURL() const{ return *(new FString()); }
 UE::Online::FAccountId UOnlineUserBackendLink::GetAccountId() const{ return UE::Online::FAccountId(); }
 UOnlineIntegrationBackend* UOnlineUserBackendLink::GetOnlineBackend() const{ return nullptr; }
 UOnlineUserInfo* UOnlineUserBackendLink::GetOnlineUser() const{ return nullptr; }

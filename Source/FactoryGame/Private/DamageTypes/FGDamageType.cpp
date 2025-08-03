@@ -18,3 +18,4 @@ UFGDamageType::UFGDamageType(const FObjectInitializer& ObjectInitializer) : Supe
 }
 void UFGDamageType::ProcessDamage(const FHitResult& hitResult,  AController* instigator, AActor* damageCauser, float damageAmount, TArray<AActor*> ignoredActors){ }
 void UFGDamageType::SpawnEffects(const FHitResult& hitResult, AActor* outer){ }
+void UFGDamageType::AsyncLoadAndSpawnAkEvent(const FHitResult& hitResult, AActor* outer, bool AttachToActor){ }

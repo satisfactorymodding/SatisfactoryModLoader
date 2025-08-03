@@ -1,6 +1,12 @@
-﻿#include "Hologram/FGBuildableSnowCannonHologram.h"
+#include "Hologram/FGBuildableSnowCannonHologram.h"
+#include "Components/SceneComponent.h"
+#include "Components/StaticMeshComponent.h"
 
-AFGBuildableSnowCannonHologram::AFGBuildableSnowCannonHologram(){ }
+AFGBuildableSnowCannonHologram::AFGBuildableSnowCannonHologram() : Super() {
+	this->mCannonHeadMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cannon Head Mesh Component"));
+	this->mCannonHeadMeshComponent->SetMobility(EComponentMobility::Movable);
+	this->mCannonHeadMeshComponent->SetupAttachment(RootComponent);
+}
 void AFGBuildableSnowCannonHologram::BeginPlay(){ Super::BeginPlay(); }
 int32 AFGBuildableSnowCannonHologram::GetRotationStep() const{ return int32(); }
 void AFGBuildableSnowCannonHologram::ScrollRotate(int32 delta, int32 step){ }

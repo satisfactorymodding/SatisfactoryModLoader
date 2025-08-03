@@ -6,16 +6,21 @@
 "Architecture/Beam/GenericDescription","Snaps to other Beams and various other structural buildings.
 Beams support multiple build modes for different use cases.","","","Game","#prototype
 #item"
+"Architecture/BeamBraidedCable","Braided Cable","Currently not implemented in-game. Basically a Beam in functionality, just a different look.","","",""
+"Architecture/BeamBraidedCableCluster","Braided Cable Cluster","Currently not implemented in-game. Basically a Beam in functionality, just a different look.","","",""
+"Architecture/BeamConcrete","Round Concrete Beam","Currently not implemented in-game. Will share generic beam description.","","",""
 "Architecture/BeamConnector","Beam Connector","","","Game","#prototype
 #item"
 "Architecture/BeamConnector/GenericDescription","Hides seams and makes Beam connections more visually pleasing.","","","Game","#prototype
 #item"
 "Architecture/BeamConnectorDouble","Double Beam Connector","","","Game","#prototype
 #item"
+"Architecture/BeamH","H-Beam","Currently not implemented in-game. Will share generic beam description.","","",""
 "Architecture/BeamMetal","Metal Beam","","","Game","#prototype
 #item"
 "Architecture/BeamPainted","Painted Beam","","","Game","#prototype
 #item"
+"Architecture/BeamShelf","Shelf Beam","Currently not implemented in-game. Will share generic beam description.","","",""
 "Architecture/BeamSupport","Beam Support","","","Game","#prototype
 #item"
 "Architecture/BeamSupport/Description","Snaps to Beams and various other structural buildings.
@@ -43,6 +48,8 @@ Specifically designed for humans to walk on.","","","Game","#buildable
 #item"
 "Architecture/Ladder/Description","Snaps to Walls and Foundations. Default height is 2 m, but it can be extended while building.","","","Game","#buildable
 #item"
+"Architecture/LargeFan","Large Fan","Currently not implemented ingame. Buildable that can be attached to walls or foundations.","","",""
+"Architecture/LargeVent","Large Vent","Currently not implemented ingame. Buildable that can be attached to walls or foundations.","","",""
 "Architecture/RailingIndustrial","Industrial Railing","","","Game","#buildable
 #item"
 "Architecture/RailingIndustrial/Description","Creates a safer working environment when built on the edge of Foundations.","","","Game","#buildable
@@ -54,6 +61,8 @@ Simplifies access between floors of your structures.","","","Game","#buildable
 #item"
 "Architecture/StairsRight","Stairs Right","","","Game","#buildable
 #item"
+"Architecture/Ventilation/GenericDescription","Attaches to Foundations and Walls.
+While standard FICSIT factories circumvent the need to follow common airflow regulations, this building piece still adds to the factory ambience.","Currently not implemented ingame. Used for any cosmetic buildables that are a form of ventilation.","","",""
 "Architecture/WalkwayCorner","Walkway Corner","","","Game","#buildable
 #item"
 "Architecture/WalkwayCrossing","Walkway Intersection","","","Game","#buildable
@@ -66,6 +75,7 @@ Simplifies access between floors of your structures.","","","Game","#buildable
 #item"
 "Architetcure/BarrierRoad","Road Barrier","","","Game","#buildable
 #item"
+"Architetcure/BarrierRoadCorner","Corner Road Barrier","Currently not implemented in-game. Will share generic barrier description.","","",""
 "Architetcure/RailingModern","Modern Railing","","","Game","#buildable
 #item"
 "Architetcure/RailingModern/Description","Creates a safer working environment when built on the edge of Foundations.
@@ -279,36 +289,42 @@ Size: 8 m x 8 m","","","Game","#buildable
 
 Size: 4 m x 4 m","","","Game","#buildable
 #item"
+"Pillars/ConcreteBigPillarTriangle","Big Concrete Triangle Pillar","Currently not implemented in-game. Will share generic pillar description.","","",""
 "Pillars/ConcreteSmallPillar","Small Concrete Pillar","","","Game","#buildable
 #item"
 "Pillars/ConcreteSmallPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
 
 Size: 2 m x 4 m","","","Game","#buildable
 #item"
+"Pillars/ConcreteSmallPillarTriangle","Small Concrete Triangle Pillar","Currently not implemented in-game. Will share generic pillar description.","","",""
 "Pillars/FrameBigPillar","Big Frame Pillar","","","Game","#prototype
 #item"
 "Pillars/FrameBigPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
 
 Size: 4 m x 4 m","","","Game","#prototype
 #item"
+"Pillars/FrameBigPillarTriangle","Big Frame Triangle Pillar","Currently not implemented in-game. Will share generic pillar description.","","",""
 "Pillars/FrameSmallPillar","Small Frame Pillar","","","Game","#buildable
 #item"
 "Pillars/FrameSmallPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
 
 Size: 2 m x 4 m","","","Game","#buildable
 #item"
+"Pillars/FrameSmallPillarTriangle","Small Frame Triangle Pillar","Currently not implemented in-game. Will share generic pillar description.","","",""
 "Pillars/MetalBigPillar","Big Metal Pillar","","","Game","#buildable
 #item"
 "Pillars/MetalBigPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
 
 Size: 4 m x 4 m","","","Game","#prototype
 #item"
+"Pillars/MetalBigPillarTriangle","Big Metal Triangle Pillar","Currently not implemented in-game. Will share generic pillar description.","","",""
 "Pillars/MetalSmallPillar","Small Metal Pillar","","","Game","#buildable
 #item"
 "Pillars/MetalSmallPillar/Description","Snaps to other Pillars. Can be placed on surfaces like Foundations and Walls.
 
 Size: 2 m x 4 m","","","Game","#buildable
 #item"
+"Pillars/MetalSmallPillarTriangle","Small Metal Triangle Pillar","Currently not implemented in-game. Will share generic pillar description.","","",""
 "Pillars/PillarSupportBig","Big Pillar Support","","","Game","#buildable
 #item"
 "Pillars/PillarSupportBig/Description","Snaps to Pillars. Can be placed on surfaces like Foundations and Walls.","","","Game","#buildable
@@ -419,6 +435,12 @@ Size: 8 m x 4 m","","","Game","#buildable
 #item"
 "Walls/Gates/HoleWall","Gate Hole Wall","","","Game","#buildable
 #item"
+"Walls/Gates/RollUp","Roll-Up Gate","Currently not implemented in-game.","","",""
+"Walls/Gates/RollUp/Description","An automatic roll-up gate large enough for all commonly used FICSIT vehicles to fit through.
+Gate settings can be configured.
+Snaps to Foundations and Walls.
+
+Size: 8 m x 16 m","Currently not implemented in-game.","","",""
 "Walls/HaflHence","Half Fence","","","Game","#prototype
 #item"
 "Walls/HaflHence/Description","Prevents pioneers from falling when built on the edges of floors.","","","Game","#prototype
@@ -443,6 +465,8 @@ Size: 8 m x 4 m","","","Game","#buildable
 #item"
 "Walls/TiltedConcaveWall8m","Tilted Concave Wall (8 m)","","","Game","#buildable
 #item"
+"Walls/TiltedConvexWall4m","Tilted Convex Wall (4 m)","Currently not implemented in-game. Will share generic wall description.","","",""
+"Walls/TiltedConvexWall8m","Tilted Convex Wall (8 m)","Currently not implemented in-game. Will share generic wall description.","","",""
 "Walls/TiltedCornerWall4m","Tilted Corner Wall (4 m)","","","Game","#buildable
 #item"
 "Walls/TiltedCornerWall8m","Tilted Corner Wall (8 m)","","","Game","#buildable
@@ -477,6 +501,10 @@ The windows allow pioneers to see through a wall.
 
 Size: 8 m x 4 m","","","Game","#buildable
 #item"
+"Windows/8x8m/GenericDescription","Snaps to Foundations and other Walls.
+Windows allow pioneers to see through walls.
+
+Size: 8 m x 8 m","Currently not implemented in-game. Same as generic 8x4 description.","","",""
 "Windows/FrameAngleWindow","Angled Frame Window","","","",""
 "Windows/FrameHexWindow","Hex Frame Window","","","Game","#buildable
 #item"
@@ -488,7 +516,15 @@ Size: 8 m x 4 m","","","Game","#buildable
 #item"
 "Windows/PanelWindow","Panel Window","","","Game","#buildable
 #item"
+"Windows/RampInvertedWindow4m","Inverted Ramp Window (4 m)","Currently not implemented in-game. Will share generic window description.","","",""
+"Windows/RampInvertedWindow8m","Inverted Ramp Window (8 m)","Currently not implemented in-game. Will share generic window description.","","",""
+"Windows/RampWindow4m","Ramp Window (4 m)","Currently not implemented in-game. Will share generic window description.","","",""
+"Windows/RampWindow8m","Ramp Window (8 m)","Currently not implemented in-game. Will share generic window description.","","",""
 "Windows/ReinforcedWindow","Reinforced Window","","","Game","#buildable
 #item"
 "Windows/SingeWindow","Single Window","","","Game","#buildable
 #item"
+"Windows/TiltedCornerWindow4m","Tilted Corner Window (4 m)","Currently not implemented in-game. Will share generic window description.","","",""
+"Windows/TiltedCornerWindow8m","Tilted Corner Window (8 m)","Currently not implemented in-game. Will share generic window description.","","",""
+"Windows/TiltedWindow4m","Tilted Window (4 m)","Currently not implemented in-game. Will share generic window description.","","",""
+"Windows/TiltedWindow8m","Tilted Window (8 m)","Currently not implemented in-game. Will share generic window description.","","",""

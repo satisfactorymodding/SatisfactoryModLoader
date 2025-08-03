@@ -5,3 +5,8 @@
 UFGCharacterPlayerRepresentation::UFGCharacterPlayerRepresentation() : Super() {
 	this->mBackgroundIsPrimaryColor = false;
 }
+
+FText UFGCharacterPlayerRepresentation::GetRepresentationText() const{ return Super::GetRepresentationText(); }
+void UFGCharacterPlayerRepresentation::ViewProfileOfOwningPlayer(){  }
+bool UFGCharacterPlayerRepresentation::IsCharacterOwnerOnSamePlatform(){ return false; }
+bool UFGCharacterPlayerRepresentation::ResolvePlatformIDFromString(){ return false; }

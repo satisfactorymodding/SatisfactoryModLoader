@@ -8,6 +8,7 @@
 #include "ChaosVehicleWheel.h"
 #include "EngineSystem.h"
 #include "TransmissionSystem.h"
+#include "Audio/AudioEventsCache.h"
 
 #include "FGWheeledVehicleMovementComponent.generated.h"
 
@@ -73,16 +74,16 @@ struct FWheelSoundSurfacePair
 {
 	GENERATED_BODY()
 
-	FWheelSoundSurfacePair() : PlayEvent( NoInit ), StopEvent( NoInit )
+	FWheelSoundSurfacePair() : PlayEvent( nullptr ), StopEvent( nullptr )
 	{
 		Surfaces = TArray<TEnumAsByte<EPhysicalSurface>>{EPhysicalSurface::SurfaceType_Default};
 	}
 	
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UAkAudioEvent> PlayEvent;
+	TSoftObjectPtr<UAkAudioEvent> PlayEvent;
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UAkAudioEvent> StopEvent;
+	TObjectPtr<UAkAudioEvent> StopEvent; //This is HARD ref intentionally to avoid any potential issues with stopping async events
 
 	UPROPERTY( EditDefaultsOnly)
 	TArray<TEnumAsByte< EPhysicalSurface >> Surfaces;
@@ -371,7 +372,7 @@ protected:
 	TArray< FVector > mLastDecalLocations;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|General" )
-	TObjectPtr<UAkAudioEvent> mCrashSoundEvent;
+	TSoftObjectPtr<UAkAudioEvent> mCrashSoundEvent;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|General" )
 	FName mCrashRTPCName;
@@ -382,14 +383,14 @@ protected:
 	
 	/** Audio event that's used for the engine sounds of the vehicle */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
-	TObjectPtr<UAkAudioEvent> mEngineAudioPlayEvent;
+	TSoftObjectPtr<UAkAudioEvent> mEngineAudioPlayEvent;
 
 	/** Audio event that's used to stop the engine sounds of the vehicle */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
-	TObjectPtr<UAkAudioEvent> mEngineAudioStopEvent;
+	TObjectPtr<UAkAudioEvent> mEngineAudioStopEvent; //This is HARD ref intentionally to avoid any potential issues with stopping async events
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
-	TObjectPtr<UAkAudioEvent> mEngineShutdownSoundEvent;
+	TSoftObjectPtr<UAkAudioEvent> mEngineShutdownSoundEvent;
 
 	/** Socket for where the engine sounds come from (or exhaust in our case mostly) */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
@@ -407,13 +408,13 @@ protected:
 	TObjectPtr<UAkComponent> mEngineAudioComponent;
 	
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|TransmissionAudio" )
-	TObjectPtr<UAkAudioEvent> mTransmissionAudioEventGearChangeBegin;
+	TSoftObjectPtr<UAkAudioEvent> mTransmissionAudioEventGearChangeBegin;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|TransmissionAudio" )
-	TObjectPtr<UAkAudioEvent> mTransmissionAudioEventGearChangeEnd;
+	TSoftObjectPtr<UAkAudioEvent> mTransmissionAudioEventGearChangeEnd;
 	
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|TransmissionAudio" )
-	TObjectPtr<UAkAudioEvent> mTransmissionAudioEventGearChangedImmediate;
+	TSoftObjectPtr<UAkAudioEvent> mTransmissionAudioEventGearChangedImmediate;
 
 	/** When we bounce off the idle rpm, how much rpm to add to the engine. Random number between min and max */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineSetup" )
@@ -440,6 +441,9 @@ private:
 	void UpdateTireEffects();
 
 	void UpdateTireAudio();
+
+	UPROPERTY()
+	FAudioEventsCache mAudioEventsCache;
 	
 	/** The setup of the wheel when starting the simulation.
 	 * Allows us to revert to stock settings when runtime modifications aren't needed anymore */
@@ -461,5 +465,4 @@ private:
 
 	/** Cached value of the sleep threshold that was setup with the vehicle */
 	float mInitialSleepThreshold = 0;
-	
 };

@@ -8,6 +8,7 @@
 #include "Resources/FGItemDescriptor.h"
 #include "FGCrashSiteDebrisActor.h"
 #include "FGSaveInterface.h"
+#include "FGCrashSiteBaseActor.h"
 #include "FGCrashSiteDebris.generated.h"
 
 class AStaticMeshActor;
@@ -111,24 +112,13 @@ struct FACTORYGAME_API FSimulatedItemDropTransform
  * Actor for spawning debris around a crash site.
  */
 UCLASS( Blueprintable )
-class FACTORYGAME_API AFGCrashSiteDebris : public AActor, public IFGSaveInterface
+class FACTORYGAME_API AFGCrashSiteDebris : public AFGCrashSiteBaseActor
 {
 	GENERATED_BODY()
 public:
 	AFGCrashSiteDebris();
 
-	// Begin IFGSaveInterface
-	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override;
-	virtual bool NeedTransform_Implementation() override;
-	virtual bool ShouldSave_Implementation() const override;
-	// End IFSaveInterface
-
 #if WITH_EDITOR
-
 	// Begin UObject interface
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 	virtual void PreEditChange(FProperty* PropertyAboutToChange) override;
@@ -223,7 +213,7 @@ private:
 	UPROPERTY( VisibleInstanceOnly, Category = "Simulation", Transient, AdvancedDisplay )
 	TArray< AFGCrashSiteDebrisActor*> mSimulatedDebrisCustomActors;
 
-	/** Debris meshes that are simulated but will be attached to this component once the simulation is done */
+	/** Debris meshes that are simulated but will be attached to this actor once the simulation is done */
 	UPROPERTY( VisibleInstanceOnly, Category = "Simulation", Transient, AdvancedDisplay )
 	TArray<AStaticMeshActor*> mSimulatedDebrisMeshes;
 

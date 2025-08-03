@@ -7,6 +7,7 @@
 bool UFGSignAttachmentPoint::CanAttach_Implementation(const  FFGAttachmentPoint& point, const  FFGAttachmentPoint& targetPoint) const{ return bool(); }
 AFGBuildableSignBase::AFGBuildableSignBase() : Super() {
 	this->mMeshComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("SignMeshProxy"));
+	this->mMeshComponentProxy->SetMobility(EComponentMobility::Static);
 	this->mWorldDimensions = FVector2D::ZeroVector;
 	this->mPoleOffset = FVector::ZeroVector;
 	this->mPoleScale = FVector2D::UnitVector;

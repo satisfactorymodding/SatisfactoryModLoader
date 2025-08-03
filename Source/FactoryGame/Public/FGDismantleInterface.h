@@ -26,7 +26,7 @@ class FACTORYGAME_API IFGDismantleInterface
 	 */
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Dismantle" )
 	bool CanDismantle() const;
-	
+
 	/**
 	 * How much do we get back when dismantling this.
 	 * @param noBuildCostEnabled If the player unique game rules NoBuildCost is enabled. This is needed here because we can't check this
@@ -120,13 +120,16 @@ struct FACTORYGAME_API FDismantleHelpers
 	 * @param dismantledActor	Actor to be dismantled.
 	 * @param aimHitLocation	Where the actor is dismantled, i.e. where on the actor did the player initiate the dismantle action.
 	 * @param refund			The refund to drop.
+	 * @param dismantleInitiator The player that has initiated the dismantling
 	 */
-	static void DropRefundOnGround( class AActor* dismantledActor, const FVector& aimHitLocation, const TArray< FInventoryStack >& refund );
+	static void DropRefundOnGround( class AActor* dismantledActor, const FVector& aimHitLocation, const TArray< FInventoryStack >& refund, AFGCharacterPlayer* dismantleInitiator );
 	
 	/**
 	 * @param world				World To Place Refund.
-	 * @param aimHitLocation	Where the object was dismantled, i.e. where on the actor did the player initiate the dismantle action (but for lightweights we dont have an actor so this will be a lightweight location).
+	 * @param lightweightLocation Location of the lightweight buildable dismantled
+	 * @param ignoreActor the actor that should be ignored for dismantle crate placement
 	 * @param refund			The refund to drop.
+	 * @param dismantleInitiator The player that has initiated the dismantling
 	 */
-	static void DropRefundOnGroundNoActor( class UWorld* world, const FVector& lightweightLocation, AActor* ignoreActor, const TArray< FInventoryStack >& refund );
+	static void DropRefundOnGroundNoActor( class UWorld* world, const FVector& lightweightLocation, AActor* ignoreActor, const TArray< FInventoryStack >& refund, AFGCharacterPlayer* dismantleInitiator );
 };

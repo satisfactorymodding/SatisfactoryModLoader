@@ -23,7 +23,7 @@ struct FMirrorSessionCreationParams
 	FName ActiveSessionProfile;
 
 	UPROPERTY()
-	int32 MaxPlayerCount;
+	int32 MaxPlayerCount = {};
 
 	UPROPERTY()
 	FString MainSessionId;

@@ -97,7 +97,7 @@ public:
 	bool CanSnapTo( UFGPipeConnectionComponentBase* otherConnection ) const;
 	
 	/** Check if the given connection can connect to this. */
-	bool CanConnectTo( UFGPipeConnectionComponentBase* otherConnection ) const;
+	bool CanConnectTo( const UFGPipeConnectionComponentBase* otherConnection ) const;
 
 	/** Block snapping to this connection. Used for special cases where we don't want to allow direct snapping Tex. When a connection is snapped to a buildable passthrough */
 	void SetDisallowSnappingTo( bool shouldBlock ) { mDisallowSnappingTo = shouldBlock; }
@@ -131,12 +131,22 @@ public:
 	/**
 	 * Find overlapping connections that are compatible with this one.
 	 */
-	static UFGPipeConnectionComponentBase* FindCompatibleOverlappingConnection( class UFGPipeConnectionComponentBase* component, const FVector& location, const AActor* priorityActor, float radius );
+	static UFGPipeConnectionComponentBase* FindCompatibleOverlappingConnection(
+		class UFGPipeConnectionComponentBase* component,
+		const FVector& location,
+		const AActor* priorityActor,
+		float radius,
+		const TSet< UFGPipeConnectionComponentBase* >& ignoredConnections = {} );
 
 	/**
 	 * Returns an overlapped pipe connection. Does not take into account if it is a valid connection only if the connection is in the radius of the one passed in
 	 */
-	static UFGPipeConnectionComponentBase* FindOverlappingConnection( class UFGPipeConnectionComponentBase* component, const FVector& location, const AActor* priorityActor, float radius );
+	static UFGPipeConnectionComponentBase* FindOverlappingConnection(
+		class UFGPipeConnectionComponentBase* component,
+		const FVector& location,
+		const AActor* priorityActor,
+		float radius,
+		const TSet< UFGPipeConnectionComponentBase* >& ignoredConnections = {} );
 
 	void UpdateClientCachedConnection();
 protected:
@@ -214,11 +224,6 @@ public:
 	TSubclassOf< class UFGItemDescriptor > GetFluidDescriptor() const;
 
 	/**
-	 * Set the inventory associated with this connection
-	 */
-	void SetInventory( class UFGInventoryComponent* inventory );
-
-	/**
 	* Sets a specified index for the component to access on its assigned inventory, if it has one
 	*/
 	void SetInventoryAccessIndex( int32 index );
@@ -247,6 +252,9 @@ public:
 	void PostSerializedFromBlueprint() { SetPipeNetworkID( INDEX_NONE ); }
 	
 private:
+	/** Called on the game thread when the fluid descriptor is updated */
+	void OnFluidDescriptorUpdated_GameThread();
+	
 	/** Used by the pipe subsystem to update the network this is connected to. */
 	void SetPipeNetworkID( int32 networkID );
 
@@ -270,7 +278,7 @@ protected:
 	 * buildables. This is because fluids should belong to a single stack in an inventory and if none is specified then a pipe should
 	 * not be eligible to receive liquid. There may be a better way to handle this but that is how its operating.
 	 */
-	UPROPERTY( SaveGame )
+	UPROPERTY()
 	int32 mInventoryAccessIndex;
 
 	/**

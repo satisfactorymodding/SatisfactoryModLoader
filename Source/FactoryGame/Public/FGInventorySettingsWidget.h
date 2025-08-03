@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "UI/FGUserWidget.h"
 #include "FGInventorySettingsWidget.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnInventorySettingsWidgetClosed );
@@ -13,7 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnInventorySettingsWidgetClosed );
  * 
  */
 UCLASS()
-class FACTORYGAME_API UFGInventorySettingsWidget : public UUserWidget
+class FACTORYGAME_API UFGInventorySettingsWidget : public UFGUserWidget
 {
 	GENERATED_BODY()
 

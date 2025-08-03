@@ -105,6 +105,7 @@ public class PackagePlugin : BuildCookRun
 			DLCIncludeEngineContent: false,
 			Pak: true,
 			Stage: true,
+			UnversionedCookedContent: false,
 			
 			// TODO @SML: I would like to pass an empty based on release version, but the cooker checks against it
 			BasedOnReleaseVersion: "SMLNonExistentBasedOnReleaseVersion"

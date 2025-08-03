@@ -70,6 +70,7 @@ void AFGWeapon::PlayFireEffect_Implementation(UFGAmmoType* AmmoTypeObject){ }
 void AFGWeapon::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
 bool AFGWeapon::IsEquipmentMontageTagAllowed_Implementation(FName montageTag) const{ return bool(); }
 void AFGWeapon::Input_Reload(const FInputActionValue& actionValue){ }
+void AFGWeapon::Input_AmmoSwitch(const FInputActionValue& actionValue){ }
 void AFGWeapon::AddEquipmentActionBindings(){ }
 void AFGWeapon::OnCameraModeChanged_Implementation(ECameraMode newCameraMode){ }
 void AFGWeapon::SetWeaponState(EWeaponState newState){ }

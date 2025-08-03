@@ -14,11 +14,15 @@ AFGEquipmentStunSpear::AFGEquipmentStunSpear() : Super() {
 	this->mArmAnimation = EArmEquipment::AE_StunSpear;
 	this->mDefaultEquipmentActions = 1;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }
 void AFGEquipmentStunSpear::Local_SwingWeapon(){ }
 void AFGEquipmentStunSpear::Local_Attack(){ }
+void AFGEquipmentStunSpear::Equip(class AFGCharacterPlayer* character){ Super::Equip(character); }
+void AFGEquipmentStunSpear::UnEquip(){ Super::UnEquip(); }
 void AFGEquipmentStunSpear::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAction action, EDefaultEquipmentActionEvent actionEvent){ }
 void AFGEquipmentStunSpear::PlayHitEffectsInternal(const TArray<FHitResult>& hitLocations){ }
+void AFGEquipmentStunSpear::StopAutoAttack(AActor* DeadActor){ }
 void AFGEquipmentStunSpear::Server_ProcessAttack_Implementation(const TArray<FHitResult>& hitResults){ }
 void AFGEquipmentStunSpear::Server_ProcessPlayerSwing_Implementation(bool secondSwing){ }
 void AFGEquipmentStunSpear::Multicast_PlayHitEffects_Implementation(const TArray<FHitResult> &hitResults){ }

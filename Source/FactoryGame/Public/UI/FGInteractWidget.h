@@ -56,7 +56,7 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	void OnConsume();
 
-	UFUNCTION( BlueprintCallable, Category = "Input" )
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "UI" )
 	void OnPushedToGameUI();
 
 	/** Gets the alignment we want */
@@ -238,7 +238,7 @@ public:
 
 	/** Class of the default widget we want to give focus to */
 	UPROPERTY( config, EditDefaultsOnly, Category = "UI" ) 
-	TSubclassOf< UUserWidget > mDefaultFocusWidgetClass;
+	TSoftClassPtr< UUserWidget > mDefaultFocusWidgetClass;
 
 protected:
 	/** Should gamepad act as cursor when using this widget? */

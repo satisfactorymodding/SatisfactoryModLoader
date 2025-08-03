@@ -3,4 +3,17 @@
 #include "FGOnboardingSettings.h"
 
 UFGOnboardingSettings::UFGOnboardingSettings() : Super() {
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.PlanetFall")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_PlanetFall.OS_PlanetFall").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.Landed")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_Landed.OS_Landed").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.EquipXenoZapper")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_EquipXenoZapper.OS_EquipXenoZapper").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.DismantleDropPod")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_DismantleDropPod.OS_DismantleDropPod").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.PickupIronOre")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_PickupIronOre.OS_PickupIronOre").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.BuildHub")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_BuildHub.OS_BuildHub").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.HubUpgrade1")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_HubUpgrade1.OS_HubUpgrade1").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.HubUpgrade2")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_HubUpgrade2.OS_HubUpgrade2").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.HubUpgrade3")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_HubUpgrade3.OS_HubUpgrade3").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.HubUpgrade4")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_HubUpgrade4.OS_HubUpgrade4").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.HubUpgrade5")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_HubUpgrade5.OS_HubUpgrade5").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.HubUpgrade6")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_HubUpgrade6.OS_HubUpgrade6").ResolveObject());
+	this->mOnboardingStepMapping.Add(FGameplayTag::RequestGameplayTag(TEXT("OnboardingStep.OnboardingComplete")), FSoftObjectPath("/Game/FactoryGame/OnboardingSteps/OS_OnboardingComplete.OS_OnboardingComplete").ResolveObject());
 }

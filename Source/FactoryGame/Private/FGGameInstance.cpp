@@ -35,14 +35,21 @@ EJoinSessionState UFGGameInstance::GetCurrentJoinSessionState() const{ return EJ
 UFGDebugOverlayWidget* UFGGameInstance::GetDebugOverlayWidget(){ return nullptr; }
 IFGDedicatedServerInterface* UFGGameInstance::GetDedicatedServerInterface() const{ return nullptr; }
 void UFGGameInstance::SetPendingConnectionEncryptionData(const FFGPendingConnectionEncryptionData& NewEncryptionData){ }
-EInputDeviceType UFGGameInstance::GetActiveInputDeviceType(){ return EInputDeviceType(); }
+EInputDeviceType UFGGameInstance::GetActiveInputDeviceType() const{ return EInputDeviceType(); }
 void UFGGameInstance::LoadComplete(const float loadTime, const FString& mapName){ }
 void UFGGameInstance::OnDestroyOldSessionComplete_JoinSession(FName gameSessionName, bool wasSuccessful){ }
 void UFGGameInstance::OnQueryFriendProductIdCompleted_JoinSession(bool wasSuccessful, FString EpicId,  EOS_ProductUserIdDetails* ProductId){ }
 void UFGGameInstance::PollHostProductUserId_JoinSession(){ }
 void UFGGameInstance::OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type joinResult){ }
 void UFGGameInstance::SendRecievedNetworkErrorOnDelegate(UWorld* world, UNetDriver* driver, ENetworkFailure::Type errorType, const FString& errorMsg){ }
+void UFGGameInstance::SwitchActiveInput(EInputDeviceType deviceType){  }
 void UFGGameInstance::OnLastInputDeviceTypeChanged(EInputDeviceType deviceType){ }
+void UFGGameInstance::PreloadAssetsForGameInstance(){  }
+void UFGGameInstance::OnPackagePreloaded(const FName& PackageName, UPackage* LoadedPackage, EAsyncLoadingResult::Type Result, TArray<FSoftObjectPath> AssetsInPackage){  }
+void UFGGameInstance::GatherDefaultAssetsForPreload(TArray<FSoftObjectPath>& OutAssetsToPreload){  }
+class UCommonUserSubsystem* UFGGameInstance::GetCommonUserSubsystem() const{ return nullptr; }
+const UTexture* UFGGameInstance::GetCachedAvatarTexture(const FString& avatarURL){ return nullptr; }
+void UFGGameInstance::AddAvatarToTextureCache(const FString& avatarURL, UTexture* texture){  }
 void UFGGameInstance::AddAndCallDeviceTypeChangedCallback(FFGInputDeviceTypeChangedDelegate Delegate){ }
 void UFGGameInstance::OnPreLoadMap(const FString& levelName){ }
 void UFGGameInstance::InitGameAnalytics(){ }
@@ -53,10 +60,15 @@ void UFGGameInstance::SubmitGameStartTelemetry() const{ }
 void UFGGameInstance::SubmitNetModeTelemetry(UWorld* world) const{ }
 void UFGGameInstance::SubmitModTelemetry() const{ }
 void UFGGameInstance::JoinSession_Internal(){ }
-void UFGGameInstance::SetInputDeviceMode(EInputDeviceMode InputDeviceMode){ }
+void UFGGameInstance::SetInputDeviceMode(EInputDeviceMode InputDeviceMode, bool bForce){  }
 bool UFGGameInstance::GetConsoleVariableBool(const char* Variable){ return bool(); }
 void UFGGameInstance::SetConsoleVariable(const char* Variable, bool Active){ }
+void UFGGameInstance::UpdateStringTableVariants(bool UsingGamepad){  }
 UFGLocalPersistenceStore* UFGGameInstance::GetLocalPersistenceStore(){ return nullptr; }
-void UFGGameInstance::OnFocusChanged(const FFocusEvent& FocusEvent, const FWeakWidgetPath& OldFocusedWidgetPath,
-						 const TSharedPtr< SWidget >& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath,
-						 const TSharedPtr< SWidget >& NewFocusedWidget){ }
+void UFGGameInstance::OnFocusChanged(const FFocusEvent& FocusEvent, const FWeakWidgetPath& OldFocusedWidgetPath, const TSharedPtr< SWidget >& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath, const TSharedPtr< SWidget >& NewFocusedWidget){ }
+void UFGGameInstance::OnMpSessionExpiredConfirmed(bool ConfirmClicked){  }
+void UFGGameInstance::SetupInitialInputDeviceMode(){  }
+void UFGGameInstance::OnInputModeUpdated(FString cvar){  }
+void UFGGameInstance::OnDynamicInputSwapUpdated(FString cvar){  }
+void UFGGameInstance::OnControllerConnectionChanged(EInputDeviceConnectionState NewConnectionState, FPlatformUserId UserID, FInputDeviceId InputDeviceId){  }
+void UFGGameInstance::HandleMouseEnteredViewport(){ }

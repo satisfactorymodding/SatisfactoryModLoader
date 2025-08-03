@@ -6,16 +6,10 @@
 AFGCrashSiteDebrisActor::AFGCrashSiteDebrisActor() : Super() {
 	this->mOwnerCrashSiteDebris = nullptr;
 	this->mMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	this->mMesh->SetMobility(EComponentMobility::Static);
 	this->RootComponent = mMesh;
 }
 void AFGCrashSiteDebrisActor::BeginPlay(){ Super::BeginPlay(); }
 void AFGCrashSiteDebrisActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGCrashSiteDebrisActor::GainedSignificance_Implementation(){ }
 void AFGCrashSiteDebrisActor::LostSignificance_Implementation(){ }
-void AFGCrashSiteDebrisActor::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrashSiteDebrisActor::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrashSiteDebrisActor::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrashSiteDebrisActor::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrashSiteDebrisActor::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
-bool AFGCrashSiteDebrisActor::NeedTransform_Implementation(){ return bool(); }
-bool AFGCrashSiteDebrisActor::ShouldSave_Implementation() const{ return bool(); }

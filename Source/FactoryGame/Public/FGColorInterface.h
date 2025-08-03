@@ -35,7 +35,7 @@ class FACTORYGAME_API IFGColorInterface
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin();
 
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Factory Customization" )
-	FFactoryCustomizationData GetCustomizationData();
+	FFactoryCustomizationData GetCustomizationData() const;
 
 	/** This function should be used to actually apply the custom/pic data to meshes on the implementing object */
 	virtual void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData ) = 0;
@@ -52,6 +52,9 @@ class FACTORYGAME_API IFGColorInterface
 	/** Returns wherther the building can be colored right now or not */
 	UFUNCTION( BlueprintNativeEvent, Category = "Factory Customization")
 	bool GetCanBeColored();
+
+	/** Fast native function. The blueprint implementable should call into this one for any additional logic. Useful to speed up Buildable Subsystem swatch changes */
+	virtual bool GetCanBeColored_Native() = 0;
 
 	/**
 	 *	Returns wherther the building can have a pattern applied. The stencil still needs that buildable type to be added to itself.

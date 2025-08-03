@@ -16,7 +16,7 @@ class FControlFlowBranch;
 /**
  * 
  */
-UCLASS(Within=CommonSessionSubsystem, Hidden)
+UCLASS(Within=CommonSessionSubsystem, Hidden, Config=Game, DefaultConfig)
 class USessionCreationSequence final: public USessionMigrationSequence
 {
 	GENERATED_BODY()
@@ -28,6 +28,7 @@ protected:
 	virtual bool IsHostingSession() const override;
 	virtual void OnTravelFinished(UWorld* World) override;
 
+	bool CheckConnection(); // <FL> [TranN] check for connection status before starting session
 	EConditionalLoopResult SessionCleanupLoop(TSharedRef<FConditionalLoop> LoopNodeRef);
 	void CreateMainSession(TSharedRef<FControlFlowNode>);
 	EConditionalLoopResult MirrorSessionCreationLoop(TSharedRef<FConditionalLoop> LoopNodeRef);
@@ -62,4 +63,14 @@ protected:
 	int32 SessionCleanupLoopIndex = 0;
 	int32 MirrorSessionCreationLoopIndex = 0;
 	int32 SessionMetadataUpdateLoopIndex = 0;
+
+	// <FL> [BGR] EOS response timeout
+	UPROPERTY(Config)
+	float SessionCreationTimeout = -1.0f;
+
+private:
+	FTimerHandle TimeoutHandle;
+
+	void OnTimeout();
+	// </FL>
 };

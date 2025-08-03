@@ -6,6 +6,7 @@
 AFGStandaloneSignHologram::AFGStandaloneSignHologram() : Super() {
 	this->mDefaultSignSupportRecipe = nullptr;
 	this->mChildSignPoleHologram = nullptr;
+	this->mOrientationVisualizationMesh = nullptr;
 	this->mBeamSnappingMode = EBeamSnappingMode::BSM_AllSides;
 	this->mPillarSnappingMode = EPillarSnappingMode::PSM_AllSides;
 	this->mWallSnapOffset = FVector((50, 0, 0));
@@ -20,13 +21,13 @@ void AFGStandaloneSignHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGStandaloneSignHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGStandaloneSignHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 void AFGStandaloneSignHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
-AActor* AFGStandaloneSignHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
-void AFGStandaloneSignHologram::PreHologramPlacement(const FHitResult& hitResult){ }
+void AFGStandaloneSignHologram::ConfigureChildActor(class AFGBuildable* inBuildableParent, class AActor* childActor) const{ Super::ConfigureChildActor(inBuildableParent, childActor); }
+void AFGStandaloneSignHologram::PreHologramPlacement(const FHitResult& hitResult, bool callForChildren){ Super::PreHologramPlacement(hitResult, callForChildren); }
 bool AFGStandaloneSignHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGStandaloneSignHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 void AFGStandaloneSignHologram::Scroll(int32 delta){ }
 void AFGStandaloneSignHologram::OnInvalidHitResult(){ }
 AFGHologram* AFGStandaloneSignHologram::GetNudgeHologramTarget(){ return nullptr; }
-void AFGStandaloneSignHologram::PostHologramPlacement(const FHitResult& hitResult){ }
+void AFGStandaloneSignHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ Super::PostHologramPlacement(hitResult, callForChildren); }
 int32 AFGStandaloneSignHologram::GetRotationStep() const{ return int32(); }
 void AFGStandaloneSignHologram::CheckValidFloor(){ }

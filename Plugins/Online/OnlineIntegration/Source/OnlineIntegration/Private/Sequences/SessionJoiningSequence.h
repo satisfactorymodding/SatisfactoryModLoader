@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -13,7 +13,7 @@ class USessionInformation;
 /**
  * 
  */
-UCLASS()
+UCLASS(Config=Game, DefaultConfig)
 class USessionJoiningSequence : public USessionMigrationSequence
 {
 	GENERATED_BODY()
@@ -21,6 +21,13 @@ public:
 	void Initialize(const FSessionJoinParams& InJoinParams, UCommonSessionSubsystem *Subsystem);
 	virtual bool Start() override;
 	
+	// <FL> [BGR] Error collection to select propper one for user messaging
+	bool HasErrors() const override { return !Errors.IsEmpty(); }
+
+protected:
+	virtual void NotifySequenceFinished() override;
+	// </FL>
+
 private:
 	void JoinSession(TSharedRef<FControlFlowNode>, FCommonSession Session);
 	void ClientTravel();
@@ -38,6 +45,10 @@ private:
 	UPROPERTY()
 	FSessionJoinParams JoinParams;
 
+	// <FL> [BGR] Error collection to select propper one for user messaging
+	TArray<TTuple<FGameplayTag, UE::Online::FOnlineError>> Errors;
+	// </FL>
+
 	// TMap<FName, FCommonSession> SessionHandleMap;
 	TMap<FName, TSharedPtr<const UE::Online::ISession>> SessionPtrMap;
 
@@ -45,5 +56,17 @@ private:
 	int32 BackendIndex = 0;
 	int32 MirrorSessionLookupLoopIndex = 0;
 	int32 SessionJoinLoopIndex = 0;
+
+	// <FL> [BGR] EOS response timeout
+protected:
+
+	UPROPERTY(Config)
+	float SessionJoiningTimeout = -1.0f;
+
+private:
+	FTimerHandle TimeoutHandle;
+
+	void OnTimeout();
+	// </FL>
 };
 

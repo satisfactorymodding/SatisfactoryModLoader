@@ -22,6 +22,7 @@
 
 // TODO Add non linear encoding to the textures, we need more once we are further away from 0.
 
+class UFGNotifyBase;
 class UAkAudioEvent;
 struct FCompressedRichCurve;
 class USkeletalMesh;
@@ -49,22 +50,22 @@ struct FVTXAnimationStateEntry
 	GENERATED_BODY()
 
 	/* Chance that this animation state is played.*/
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY( EditAnywhere, Category = "Vertex Animations" )
 	float chance = 1;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY( EditAnywhere, Category = "Vertex Animations" )
 	float AnimationLength = 1;
 	
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY( EditAnywhere, Category = "Vertex Animations" )
 	UMaterialInterface* AnimationMaterialInstance;
-	
-	// Automatically copied from `mEdNotifies` cached as a direct pointer to the class to avoid re-instanced versions of the inline class.
-	UPROPERTY( VisibleDefaultsOnly, Category = "Vertex animimations" )
+
+	UPROPERTY( EditAnywhere, Category = "Vertex Animations", meta = (EditInline, DisplayName = "Notifies") )
 	TArray< UFGNotifyBase* > mNotifiesCDO;
 
 #if WITH_EDITORONLY_DATA
-	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Vertex animimations" )
-	TArray< UFGNotifyBase* > mEdNotifies;
+	/** Deprecated, use Notifies instead */
+	UPROPERTY( Instanced )
+	TArray<UFGNotifyBase*> mEdNotifies_DEPRECATED;
 #endif
 };
 
@@ -134,10 +135,11 @@ public:
 	
 	UFGVertexAnimatedMeshComponent();
 
-	// Begin actor interface.
+	// Begin Actor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	// End
+	virtual void PostLoad() override;
+	// End Actor interface
 
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;

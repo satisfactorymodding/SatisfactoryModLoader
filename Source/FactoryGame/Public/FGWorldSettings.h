@@ -30,8 +30,10 @@ public:
 	FORCEINLINE class AFGLightweightBuildableSubsystem* GetLightweightBuildableSubsystem() const { return mLightweightBuildableSubsystem; }
 	FORCEINLINE class AFGFoliageRemovalSubsystem* GetFoliageRemovalSubsystem() const { return mFoliageRemovalSubsystem; }
 	FORCEINLINE class AFGConveyorItemSubsystem* GetConveyorItemSubsystem() const { return mConveyorItemSubsystem; }
-	FORCEINLINE class AFGPhotoModeManager* GetPhotoModeManager() const { return mPhotoModeManager; }
 	FORCEINLINE AFGTimeOfDaySubsystem* GetTimeOfDaySubsystem() const { return mTimeOfDaySubsystem; }
+	FORCEINLINE class AFGLocalAudioContextSubsystem* GetLocalAudioContextSubsystem() const { return mLocalAudioContextSubsystem; }
+	FORCEINLINE class AFGProximitySubsystem* GetProximitySubsystem() const { return mProximitySubsystem; }
+	FORCEINLINE class AAbstractInstanceManager* GetAbstractInstanceManager() const { return mAbstractInstanceManager; }
 
 	// Begin UObject interface
 	virtual void BeginDestroy() override;
@@ -100,7 +102,7 @@ protected:
 private:
 	/** Helper to spawn subsystems. */
 	template< class C >
-	void SpawnSubsystem( C*& out_spawnedSubsystem, TSubclassOf< AInfo > spawnClass, FName spawnName )
+	void SpawnSubsystem( C*& out_spawnedSubsystem, UClass* spawnClass, FName spawnName )
 	{
 		// @todo: Refactor, haxx as we didn't think about that there are several world infos in one world
 		// Avoid spawning subsystems if not in a persistent level, as we never expected a level to not be persistent
@@ -117,7 +119,13 @@ private:
 
 		if( !spawnClass )
 		{
-			UE_LOG( LogGame, Error, TEXT( "AFGWorldSettings::SpawnSubsystem failed for '%s', no class given." ), *spawnName.ToString() );
+			UE_LOG( LogGame, Error, TEXT("AFGWorldSettings::SpawnSubsystem failed for '%s', no class given."), *spawnName.ToString() );
+			return;
+		}
+		
+		if( spawnClass->HasAnyClassFlags( CLASS_Abstract ) || !spawnClass->IsChildOf( C::StaticClass() ) )
+		{
+			UE_LOG( LogGame, Error, TEXT("AFGWorldSettings::SpawnSubsystem failed for '%s', class is abstract or does not inherit from %s"), *spawnName.ToString(), *C::StaticClass()->GetPathName() );
 			return;
 		}
 
@@ -215,12 +223,20 @@ private:
 	class AFGVoiceChatAudioMeterSubsystem* mVoiceChatAudioMeterSubsystem;
 	
 	UPROPERTY()
+	class AFGLocalAudioContextSubsystem* mLocalAudioContextSubsystem;
+	
+	UPROPERTY()
 	class AFGFoliageRemovalSubsystem* mFoliageRemovalSubsystem;
 
 	UPROPERTY()
 	class AFGConveyorItemSubsystem* mConveyorItemSubsystem;
+
 	UPROPERTY()
-	class AFGPhotoModeManager* mPhotoModeManager;
+	class AFGProximitySubsystem* mProximitySubsystem;
+
+	/** Cached from the abstract instance subsystem, not actually spawned by the world settings */
+	UPROPERTY()
+	class AAbstractInstanceManager* mAbstractInstanceManager;
 
 #if WITH_EDITORONLY_DATA
 	/** Set the hour you want to preview here, 16.25 means 16h 15min */

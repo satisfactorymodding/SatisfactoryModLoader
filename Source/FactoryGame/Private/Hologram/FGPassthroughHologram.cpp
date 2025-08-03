@@ -16,7 +16,7 @@ void AFGPassthroughHologram::GetLifetimeReplicatedProps(TArray< FLifetimePropert
 void AFGPassthroughHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGPassthroughHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPassthroughHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
-void AFGPassthroughHologram::GetIgnoredClearanceActors(TArray<AActor*>& ignoredActors) const{ }
+void AFGPassthroughHologram::GetIgnoredClearanceActors(TSet<AActor*>& ignoredActors) const{ }
 int32 AFGPassthroughHologram::GetBaseCostMultiplier() const{ return int32(); }
 void AFGPassthroughHologram::GetClearanceData(TArray< const FFGClearanceData* >& out_ClearanceData) const{ }
 void AFGPassthroughHologram::CheckValidPlacement(){ }

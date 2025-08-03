@@ -4,7 +4,7 @@
 
 AFGFoliagePickup::AFGFoliagePickup() : Super() {
 	this->mPickupRepeatInterval = 0.5;
-	this->mAutoPickUpToggleDelay = 0.5;
+	this->mAutoPickUpToggleDelay = 0.3;
 	this->mPickupMesh = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;

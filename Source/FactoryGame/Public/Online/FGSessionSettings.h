@@ -12,7 +12,10 @@
 #include "Settings/FGUserSettingApplyType.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "MVVMViewModelBase.h"
+#include "GameFramework/PlayerController.h"
 #include "FGSessionSettings.generated.h"
+
+class UOnlinePrivilegeObserver;
 
 UCLASS()
 class FACTORYGAME_API UFGSessionDefinitionOptionModel: public UMVVMViewModelBase
@@ -88,6 +91,14 @@ public:
 	UFUNCTION( BlueprintCallable )
 	void SetSessionProfile( const FSessionProfilePath& ProfilePath);
 	
+
+	//<FL>[KonradA]
+	UFUNCTION( BlueprintCallable )
+	void SetAllowCrossPlay( bool bAllowCrossPlay );
+	UFUNCTION( BlueprintCallable )
+	void SetCurrentAllowCrossPlay( bool bAllowCrossPlay );
+	//</FL>
+
 	UFUNCTION( BlueprintCallable )
 	void SetSessionName( FString SessionName );
 	
@@ -100,6 +111,11 @@ public:
 	UFUNCTION( BlueprintPure, FieldNotify )
 	bool HasPendingSessionName() const;
 
+	//<FL>[KonradA]
+	UFUNCTION(BlueprintPure, FieldNotify)
+	bool HasPendingCrossPlayAllowance() const;
+	//</FL>
+
 	UFUNCTION( BlueprintPure, FieldNotify )
 	bool RequiresSessionRestart() const;
 
@@ -111,6 +127,13 @@ public:
 
 	USessionDefinition* GetSessionDefinition() const;
 
+	//<FL>[KonradA]
+	bool GetAllowCrossPlay() const;
+	bool GetCurrentAllowCrossPlay() const;
+	UFUNCTION(BlueprintCallable)
+	void RebroadcastFieldValueChanges();
+	//</FL>
+
 	UFUNCTION( BlueprintCallable, Category = "Session Settings" )
 	FName GetSessionProfile() const;
 	bool IsInGameModel() const { return mInGameSettingsModel; }
@@ -121,7 +144,7 @@ protected:
 	UFUNCTION()
 	void SetCurrentSessionName(const FString& currentSessionName);
 	
-	void InitializeModel( UFGSessionSettings* sessionSettings, AFGGameMode* gameMode );
+	void InitializeModel( APlayerController* player, UFGSessionSettings* sessionSettings, AFGGameMode* gameMode );
 	/**
 	 * Will be onne of @mCurrentSessionDefinition or @mActiveSessionDefinition depending on whether a session is currently ongoing or not.
 	 * It's a convenience so BPs do not have to write complicated logic to determine which one to use. 
@@ -146,6 +169,19 @@ protected:
 	 */
 	UPROPERTY( FieldNotify, BlueprintReadOnly, Category="SessionDefinition" )
 	TObjectPtr< USessionDefinition > mCurrentSessionDefinition;
+
+	UPROPERTY( FieldNotify, BlueprintReadOnly, Category="SessionDefinition" )
+	TObjectPtr<UOnlinePrivilegeObserver> mSessionDefinitionPrivilegeObserver;
+	
+	UPROPERTY()
+	TObjectPtr<APlayerController> mPlayer;
+
+	//<FL>[KonradA]
+	UPROPERTY( FieldNotify, BlueprintReadOnly, Category = "SessionDefinition" )
+	bool mbAllowCrossPlay = true;
+	UPROPERTY( FieldNotify, BlueprintReadOnly, Category = "SessionDefinition" )
+	bool mbCurrentAllowCrossPlay = true;
+	//</FL>
 
 	// UPROPERTY( FieldNotify, BlueprintReadOnly, Category="SessionProfile" )
 	// FSessionProfilePath mDisplaySessionProfile;
@@ -192,11 +228,14 @@ public:
 	void SetSessionSettingsProfile( FName ProfileName );
 	
 	UFUNCTION( BlueprintCallable, Category = "Session Settings" )
-	UFGSessionSettingsModel* MakeSessionSettingsModel( AFGGameMode* gameMode );
+	UFGSessionSettingsModel* MakeSessionSettingsModel( APlayerController* player, AFGGameMode* gameMode );
 
 	UFUNCTION( BlueprintCallable, Category = "Session Settings" )
 	FName GetCurrentProfileForSessionDefinition( USessionDefinition* SessionDefinition );
-
+	//<FL>[KonradA]
+	UFUNCTION( BlueprintCallable, Category = "Session Settings" )
+	bool GetAllowCrossplayForSessionDefinition( USessionDefinition* SessionDefinition );
+	//</FL>
 	USessionDefinition* GetCurrentSessionDefinition() const { return mCurrentSessionDefinition; }
 	USessionDefinition* GetActiveSessionDefinition() const { return mActiveSessionDefinition; }
 
@@ -244,6 +283,11 @@ protected:
 
 	UPROPERTY( Config )
 	TMap< FName, FName > mLastUsedProfilePerSessionDefinition;
+
+	// <FL>[KonradA] keep track of crossplay settings for online sessions like profiles
+	UPROPERTY( Config )
+	TMap< FName, bool > mLastUsedCrossPlayAllowPerSessionDefinition;
+	// </FL>
 
 	FOnSessionDefinitionChanged mOnActiveSessionDefinitionChanged;
 	FOnSessionDefinitionChanged mOnCurrentSessionDefinitionChanged;

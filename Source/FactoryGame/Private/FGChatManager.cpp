@@ -2,18 +2,15 @@
 
 #include "FGChatManager.h"
 
-FChatMessageStruct::FChatMessageStruct(){ }
-FChatMessageStruct::FChatMessageStruct(FString messageString,  AFGPlayerState* sender, float serverTimeStamp){ }
 AFGChatManager* AFGChatManager::Get(UWorld* world){ return nullptr; }
 AFGChatManager* AFGChatManager::Get(UObject* worldContext){ return nullptr; }
 AFGChatManager::AFGChatManager() : Super() {
 	this->mMaxNumMessagesInHistory = 50;
 	this->mMessageVisibleDuration = 10.0;
 }
-FString AFGChatManager::GetChatMessageName(const FChatMessageStruct& inMessage){ return FString(); }
-FLinearColor AFGChatManager::GetChatMessageColor(const FChatMessageStruct& inMessage){ return FLinearColor(); }
-void AFGChatManager::Multicast_BroadcastChatMessage_Implementation(const FChatMessageStruct& newMessage){ }
+void AFGChatManager::BroadcastChatMessage(const FChatMessageStruct& newMessage, APlayerController* instigatorPlayerController){  }
 void AFGChatManager::AddChatMessageToReceived(const FChatMessageStruct& inMessage){ }
 void AFGChatManager::GetReceivedChatMessages(TArray< FChatMessageStruct >& out_messages) const{ }
 int32 AFGChatManager::GetMaxNumMessagesInHistory() const{ return int32(); }
 float AFGChatManager::GetMessageVisibleDuration() const{ return float(); }
+void AFGChatManager::Multicast_BroadcastChatMessage_Implementation(const FChatMessageStruct& newMessage, APlayerController* instigatorPlayerController){  }

@@ -28,7 +28,7 @@ public:
 	friend class UFGLocalPersistenceStore;
 
 	UPROPERTY(BlueprintReadWrite)
-	float ValidTime;
+	float ValidTime = {};
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FString> StringData;
 	UPROPERTY(BlueprintReadWrite)

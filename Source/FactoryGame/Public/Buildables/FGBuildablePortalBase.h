@@ -112,6 +112,10 @@ public:
 	virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
+	//<FL>[KonradA]
+	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return mLastEditedBy; }
+	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) { SetLastEditedBy(LastEditedBy); }
+	//</FL>
 	// End IFGActorRepresentationInterface
 	
 	/**
@@ -171,6 +175,11 @@ public:
 	/** Updates the current portal name */
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Portal" )
 	void SetPortalName( const FText& inPortalName );
+
+//<FL>[KonradA]
+	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Portal" )
+	void SetLastEditedBy( const TArray< FLocalUserNetIdBundle >& lastEditedBy );
+//</FL>
 
 	/** Returns true if we are traversable, e.g. have heated up and have  */
 	UFUNCTION( BlueprintPure, Category = "Portal" )
@@ -299,4 +308,9 @@ private:
 	/** Cached production data of this building. Updated on Factory_Tick while holding the lock */
 	UPROPERTY( SaveGame )
 	FFGPortalCachedFactoryTickData mCachedFactoryTickData;
+protected:	
+//<FL>[KonradA]
+	UPROPERTY(BlueprintReadOnly, SaveGame, Replicated, Category = "Representation" )
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+//</FL>
 };

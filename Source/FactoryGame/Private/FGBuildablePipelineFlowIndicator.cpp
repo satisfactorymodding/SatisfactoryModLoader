@@ -7,27 +7,33 @@
 
 AFGBuildablePipelineFlowIndicator::AFGBuildablePipelineFlowIndicator() : Super() {
 	this->mIndicatorComponent = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("Indicator Component"));
+	this->mIndicatorComponent->SetMobility(EComponentMobility::Static);
 	this->mOwningPipeline = nullptr;
-	this->mFluidDescriptorCDO = nullptr;
+	this->mFluidDescriptor = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
-	this->PrimaryActorTick.bCanEverTick = false;
-	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = false;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
+	this->NetDormancy = ENetDormancy::DORM_DormantAll;
 	this->mIndicatorComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildablePipelineFlowIndicator::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGBuildablePipelineFlowIndicator, mOwningPipeline);
+	DOREPLIFETIME(AFGBuildablePipelineFlowIndicator, mFluidDescriptor);
+	DOREPLIFETIME(AFGBuildablePipelineFlowIndicator, mPipelineIndicatorData);
 }
 void AFGBuildablePipelineFlowIndicator::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildablePipelineFlowIndicator::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildablePipelineFlowIndicator::Tick(float dt){ Super::Tick(dt); }
 void AFGBuildablePipelineFlowIndicator::GainedSignificance_Implementation(){ }
 void AFGBuildablePipelineFlowIndicator::LostSignificance_Implementation(){ }
-void AFGBuildablePipelineFlowIndicator::GainedSignificance_Native(){ }
-void AFGBuildablePipelineFlowIndicator::LostSignificance_Native(){ }
+void AFGBuildablePipelineFlowIndicator::GainedNetSignificance_Implementation(){ IFGSignificanceInterface::GainedNetSignificance_Implementation(); }
+void AFGBuildablePipelineFlowIndicator::LostNetSignificance_Implementation(){ IFGSignificanceInterface::LostNetSignificance_Implementation(); }
 float AFGBuildablePipelineFlowIndicator::GetSignificanceRange(){ return float(); }
+void AFGBuildablePipelineFlowIndicator::UpdateActorTickEnabled(){  }
+void AFGBuildablePipelineFlowIndicator::UpdateReplicationData(bool bAllowFlushingDormancy){  }
 void AFGBuildablePipelineFlowIndicator::UpdateVisuals(float Dt){ }
+void AFGBuildablePipelineFlowIndicator::UpdateInitialReplicationData(){  }

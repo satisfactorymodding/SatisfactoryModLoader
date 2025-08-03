@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -33,4 +33,11 @@ public:
 
 	UOnlineUserBackendLinkPrivate* GetBackendPrivate(UOnlineIntegrationBackend* Backend);
 	UOnlineUserInfoPrivate& GetOnlineUserInfoPrivate();
+	void QueryGlobalCrossplaySetting(UOnlineIntegrationBackend* Backend); // <FL> [TranN]
+private:
+	// <FL> [ZimmermannA]
+	void DisplayCrossPlaySystemMessage(UCommonUserSubsystem* userSubsystem);
+	void OnPlatformChecksDoneCallback(EPrivilegeResults privilege);
+	bool wasShownAlready;
+	// </FL>
 };

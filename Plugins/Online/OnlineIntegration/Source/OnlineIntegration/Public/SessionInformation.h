@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -43,7 +43,6 @@ class ONLINEINTEGRATION_API USessionInformation : public UMVVMViewModelBase
 	GENERATED_BODY()
 
 public:
-
 	TArray<UOnlineSessionBackendLink*> GetBackends() const
 	{
 		return Backends;
@@ -69,7 +68,7 @@ public:
 	void UpdateCustomSettings(APlayerController *Player, const TArray<FCustomOnlineSessionSetting>& UpdatedCustomSettings);
 
 	UFUNCTION(BlueprintCallable)
-	void AddSessionMember(APlayerState* PlayerState);
+	USessionMemberInformation* AddSessionMember(APlayerState* PlayerState); // <FL> [TranN] Need SessionMemberInformation so we can update mPlayingPlatformName when it's replicated
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveSessionMember(APlayerState* PlayerState);
@@ -97,6 +96,18 @@ public:
 
 	void ApplyProfile(FName ProfileName);
 	void ApplyAllowNewMembers(bool AllowNewMembers);
+
+// <FL> [ZimmermannA]
+	bool IsOnlineSession() const;
+// </FL>
+
+	TObjectPtr<USessionMemberInformation> GetHost() const { return Host; } // <FL>
+
+
+	//<FL>[KonradA]
+	void UpdateRecentlyPlayedWith(class ULocalUserInfo* LocalUser);
+	//</FL>
+
 protected:
 	void UpdatePresenceForSessionMembers() const;
 	
@@ -165,4 +176,14 @@ protected:
 	FOnOnlineSessionAttributesAdded OnSessionAttributesAdded;
 	FOnOnlineSessionAttributesRemoved OnSessionAttributesRemoved;
 	FOnOnlineSessionAttributesUpdated OnSessionAttributesUpdated;
+
+//<FL>[BGR/KonA/PWutt] Run the "RecentlyPlayerWith" routine on a repeating timer instead of event based, as we don't have control over how often events are triggered and we will reach rate gdk/psn limits otherwise
+	UPROPERTY()
+	bool bIsRegisteredForRecentPlayersUpdate = false;
+	UPROPERTY()
+	FTimerHandle mRecentPlayersUpdateTimer;
+
+	UFUNCTION()
+	void TryUpdateRecentPlayers();
+//</FL>
 };

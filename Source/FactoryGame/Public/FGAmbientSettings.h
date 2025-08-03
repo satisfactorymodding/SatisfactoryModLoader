@@ -42,6 +42,8 @@ public:
 	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_ShouldIgnoreListenerRotation, Category = "Audio" )
 	bool ShouldIgnoreListenerRotation() const;
 
+	bool HasEnterStateValue() const { return mOnEnterInnerState != nullptr; }
+
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
 	UAkRtpc* mCaveRTPC = nullptr ;
 
@@ -68,6 +70,18 @@ protected:
 	/** Event to post when OnExit is triggered */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Audio" )
 	class UAkAudioEvent* mOnExitInnerVolumeEvent;
+	
+	//Ak state value to set when OnEnter is triggered
+	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
+	class UAkStateValue* mOnEnterInnerState = nullptr;
+
+	//State group which will be assigned by values from below
+	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
+	FString mInnerStateGroupName;
+	
+	//Ak state value to set when OnExit is triggered
+	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
+	class UAkStateValue* mOnExitInnerState = nullptr;
 
 	/** If checked, then we don't rotate the audio source to match the rotation of the listener when inside the volume */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )

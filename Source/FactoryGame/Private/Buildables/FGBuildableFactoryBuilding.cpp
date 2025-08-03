@@ -14,6 +14,7 @@ FVector FFoundationHelpers::GetLocalSpaceNormalFromFoundationSide(EFoundationSid
 FFoundationSideNormal FFoundationHelpers::FindBestMatchingFoundationSideFromLocalNormal(const FVector& normal, FFoundationSideSelectionFlags exludeEdges){ return FFoundationSideNormal(); }
 AFGBuildableFactoryBuilding::AFGBuildableFactoryBuilding(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mMeshComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("BuildingMeshProxy"));
+	this->mMeshComponentProxy->SetMobility(EComponentMobility::Static);
 	this->mCustomRainBoundsMesh = nullptr;
 	this->mMeshComponentProxy->SetupAttachment(RootComponent);
 }

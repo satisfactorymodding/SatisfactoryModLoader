@@ -6,8 +6,10 @@
 #include "FGRemoteCallObject.h"
 #include "GameplayTagContainer.h"
 #include "Registry/RemoteCallObjectRegistry.h"
+#include "Patching/DeprecatedLegacyHookingTypes.h"
 #include "GameInstanceModule.generated.h"
 
+class UHookBlueprintGeneratedClass;
 class UModSubsystemHolder;
 class UModConfiguration;
 class URootBlueprintSCSHookData;
@@ -35,14 +37,10 @@ public:
     */
     UPROPERTY(EditDefaultsOnly, Category = "Advanced | Tooltips")
     TArray<UClass*> GlobalItemTooltipProviders;
-    
-    /**
-     * Simple construction script hooks to install for this mod
-     * SCS hooks allow adding modded components to any blueprint-based actor
-     * Consult documentation if you're not sure what you want to achieve
-     */
-    UPROPERTY(Instanced, EditDefaultsOnly, Category = "Advanced | Hooks")
-    TArray<URootBlueprintSCSHookData*> BlueprintSCSHooks;
+
+	/** Blueprint hooks to apply to the Blueprint assets when this module is loaded */
+	UPROPERTY(EditDefaultsOnly, Category = "Advanced | Hooks")
+	TArray<TSubclassOf<class UBlueprintHook>> BlueprintHooks;
 
     /**
      * Widget blueprint hooks to add your custom widget into one of the existing game blueprints
@@ -73,6 +71,12 @@ public:
     /** Register content from properties here.
     Make sure to call super on the C++ side if you have both a C++ and Blueprint implementation. */
     virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
+private:
+    /** DEPRECATED - to be removed, entries no longer do anything.
+        The data is temporarily kept around to make the migration to Actor Mixins easier. See the Upgrading guide on the docs.
+        There is no need to clear data from this field as it will be deleted in later version. */
+    UPROPERTY(Instanced, VisibleDefaultsOnly, Category = "Deprecated", meta = (DisplayName = "DEPRECATED Blueprint SCS Hooks"))
+    TArray<UBlueprintSCSHookData*> BlueprintSCSHooks;
 protected:
     /** Allow SetOwnerModReference access to game instance module manager */
     friend class UGameInstanceModuleManager;

@@ -39,7 +39,7 @@ bool AFGWireHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 bool AFGWireHologram::ShouldBuildGunHitWireMeshes() const { return bool(); }
 void AFGWireHologram::CheckBlueprintCommingling(){ }
 float AFGWireHologram::GetBuildGunRangeOverride_Implementation() const{ return float(); }
-void AFGWireHologram::PostHologramPlacement(const FHitResult& hitResult){ }
+void AFGWireHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
 bool AFGWireHologram::CanNudgeHologram() const{ return bool(); }
 AFGHologram* AFGWireHologram::GetNudgeHologramTarget(){ return nullptr; }
 void AFGWireHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
@@ -49,7 +49,7 @@ UFGCircuitConnectionComponent* AFGWireHologram::GetConnection(int32 ix) const{ r
 bool AFGWireHologram::IsPowerTowerWire() const{ return bool(); }
 void AFGWireHologram::Destroyed(){ Super::Destroyed(); }
 void AFGWireHologram::CheckValidPlacement(){ }
-void AFGWireHologram::CheckClearance(const FVector& locationOffset){ }
+void AFGWireHologram::CheckClearance(){ }
 uint8 AFGWireHologram::GetStencilForHologramMaterialState(EHologramMaterialState state) const{ return uint8(); }
 void AFGWireHologram::CheckValidSnap(){ }
 void AFGWireHologram::CheckLength(){ }

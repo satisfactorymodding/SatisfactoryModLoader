@@ -4,5 +4,6 @@
 
 void AFGRailroadSwitchControlHologram::SetHologramLocationAndRotationFromConnection( UFGRailroadTrackConnectionComponent* controlledConnection){ }
 void AFGRailroadSwitchControlHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
-void AFGRailroadSwitchControlHologram::CheckClearance(const FVector& locationOffset){ }
+void AFGRailroadSwitchControlHologram::CheckClearance(){ }
 void AFGRailroadSwitchControlHologram::CheckValidFloor(){ }
+bool AFGRailroadSwitchControlHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramTransform) const{ return Super::IsHologramIdenticalToActor(actor, hologramTransform); }

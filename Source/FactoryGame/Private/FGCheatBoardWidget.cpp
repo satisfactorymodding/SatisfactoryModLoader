@@ -167,7 +167,7 @@ TSharedRef<SWidget> SFGCheatBoardWidget::CreateWidgetForObjectParamProperty(cons
 	return MakeShared<STextBlock>();
 }
 
-FReply SFGCheatBoardWidget::OnObjectParamPicked(TObjectPtr<UObject> InObject) {
+FReply SFGCheatBoardWidget::OnObjectParamPicked(TSoftObjectPtr<UObject> InObject) {
 	return FReply::Handled();
 }
 

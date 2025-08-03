@@ -39,7 +39,7 @@ protected:
 	// End AFGBuildableHologram interface
 
 	// Begin AFGHologram interface
-	virtual void CheckClearance( const FVector& locationOffset ) override;
+	virtual void CheckClearance() override;
 	// End AFGHologram interface
 
 private:

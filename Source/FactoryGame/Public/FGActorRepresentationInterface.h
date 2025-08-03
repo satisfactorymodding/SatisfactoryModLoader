@@ -5,6 +5,8 @@
 #include "FactoryGame.h"
 #include "FGActorRepresentation.h"
 #include "UObject/Interface.h"
+#include "LocalUserInfo.h"
+#include "Online/CoreOnline.h"
 #include "FGActorRepresentationInterface.generated.h"
 
 /**
@@ -92,4 +94,15 @@ class FACTORYGAME_API IFGActorRepresentationInterface
 
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) = 0;
+//<FL>[KonradA]
+	UFUNCTION( BlueprintCallable, Category = "Representation" )
+	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const  = 0;
+	UFUNCTION( BlueprintCallable, Category = "Representation" )
+	virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle > & LastEditedBy) = 0;
+//<FL>[VilagosD]
+	virtual UE::Online::FAccountId GetPlatformAccountID() const { return UE::Online::FAccountId(); };
+	virtual FString GetPlatformAccountIDString() const { return ""; };
+//</FL>
+
+
 };

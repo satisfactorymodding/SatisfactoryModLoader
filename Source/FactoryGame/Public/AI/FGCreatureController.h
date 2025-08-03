@@ -435,7 +435,7 @@ private:
 	/** Sometimes a stimulus might come from an actor which belongs to another, such as a weapon which belongs to the player. This function would in that case return the player. */
 	AActor* GetActualPerceivedActor( AActor* inActor ) const;
 
-	bool CanBeHostileAgainstPlayer( const class AFGCharacterPlayer* player ) const;
+	bool CanBeHostileAgainstPlayer( const class AFGCharacterPlayer* playerCharacter ) const;
 
 public:
 	/** Called whenever the creature state changes. */

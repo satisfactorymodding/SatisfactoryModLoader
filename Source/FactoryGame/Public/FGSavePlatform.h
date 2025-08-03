@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGSaveSystem.h"
+#include "GameDelegates.h"
 
 class FACTORYGAME_API FFGSavePlatform
 {
@@ -27,6 +28,9 @@ public:
 	/** Convert a filename with a save directory to a filename */
 	static FString SaveNameToFileName( const FString& directory, const FString& saveName );
 	static bool IsDeprecatedSave( const FString& saveName );
+	static bool LoadSaveGameHeaderSync( const FString& saveName, TArray< FString > saveDirectories, FSaveHeader& out_saveHeader);
+
+	static void ExtendedSaveGameInfoDelegate( const TCHAR* SaveName, const EGameDelegates_SaveGame Key, FString& Value );
 
 private:
 	static inline const FString REL_COMMON_USER = "common/";

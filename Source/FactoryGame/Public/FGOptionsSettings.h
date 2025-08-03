@@ -87,7 +87,7 @@ public:
 	FText Name;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
-	float Value;
+	float Value = {};
 };
 
 USTRUCT( BlueprintType )
@@ -110,6 +110,7 @@ public:
 		ShowZeroAsOff( false ),
 		DefaultSliderValue( 0.0f ),
 		DefaultSelectionIndex( 0 ),
+		BlockLastIndexFromManualSelection( false ),
 		CustomWidgetClass( nullptr ),
 		NetmodeAvailability( EOptionNetmodeType::ONT_ServerAndClient ),
 		GamemodeAvailability( EOptionGamemodeType::OGT_Always ),

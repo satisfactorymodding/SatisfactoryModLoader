@@ -45,10 +45,12 @@ class FACTORYGAME_API UFGAdvancedGameSettings : public UWorldSubsystem, public I
 public:
 	// Begin USubsystem
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual bool DoesSupportWorldType(const EWorldType::Type WorldType) const override;
 	// End USubsystem
 	
 	// Begin IFGAdvancedGameSettingsInterface
-	virtual void GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const override;
+	virtual void GetAllUserSettings( TArray< UFGUserSettingApplyType* >& OutUserSettings ) const override;
+	virtual void GetAllUserSettingsMap( TMap< FString, UFGUserSettingApplyType* >& OutUserSettings ) const override; //<FL>[KonradA] Add a direct map getter to avoid conversions from and to a map with loss of key data in certain situations
 	virtual UFGUserSettingApplyType* FindUserSetting(const FString& SettingId) const override;
 	virtual bool HasAnyUnsavedOptionValueChanges() const override;
 	virtual bool HasPendingApplyOptionValue(const FString& cvar) const override;
@@ -58,11 +60,11 @@ public:
 	virtual bool IsInMainMenu() const override;
 	// End IFGAdvancedGameSettingsInterface
 
+	// <FL> [MartinC] Check if the active input device type is controller
+	bool IsUsingController() const;
+
 	void GetDebugData( TArray<FString>& out_debugData );
 	void OnPreLoadMap( const FString &MapName );
-#if WITH_EDITOR
-	void OnBeginPIE(const bool bIsSimulating);
-#endif
 private:
 	// Collects all user relevant advanced game user settings that exists in the game. Safe to call more than once since it only inits if needed too
 	void TryInitAdvancedGameSettings();

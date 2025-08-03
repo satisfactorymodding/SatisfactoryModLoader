@@ -219,6 +219,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Anim" )
 	float mYawAimMinValue;
 
+	/** Maximum pitch value the creature can take when orienting towards the surface it is walking on. Value is in degrees. Good values are between 10 and 60 */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Anim" )
+	float mMaxWalkPitchValue;
+
 	/** Look up */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim" )
 	float mAimPitch;

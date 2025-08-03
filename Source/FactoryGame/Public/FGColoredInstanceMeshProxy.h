@@ -22,9 +22,11 @@ public:
 	virtual void BeginPlay() override;
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
+	virtual void PostLoad() override;
 	// End AActorComponent interface
 
 	void SetCustomizationData( const FFactoryCustomizationData& customizationData );
+	void ApplyCustomizationData( const FResolvedFactoryCustomizationData& resolvedCustomizationData );
 	void SetHasPowerData( float newHasPower );
 	void SetUserDefinedData( TArray<float> userData );
 
@@ -35,6 +37,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Colored Mesh Proxy")
 	FORCEINLINE uint8 GetNumCustomDataFloats() const { return mNumCustomDataFloats; }
 
+	void SetNumCustomDataFloats(int32 Num) { mNumCustomDataFloats = Num; }
 protected:
 	// Begin USceneComponent interface
 	virtual void OnUpdateTransform( EUpdateTransformFlags UpdateTransformFlags, ETeleportType Teleport ) override;
@@ -49,7 +52,6 @@ public:
 
 private:
 	void InstantiateInternal();
-	virtual void PostLoad() override;
 public:
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
@@ -62,16 +64,17 @@ public:
 	bool mBlockColoring = false;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	bool mBlockBuildableCustomizationUpdates = false;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	bool mHasScalabilityMaterial = false;
 	
 	/** Only used for holding info about where the instance is located, for quicker changes.*/
 	UFGColoredInstanceManager::FInstanceHandle mInstanceHandle;
 
-	/** Used to keep track of our instance ID in the HISM */
-	int32 InstanceID;
-
 	/*Don't need to be a UPROPERTY as it's only meant as a shortcut to an object that is already managed elsewhere and guaranteed to live longer than this component*/
-	UFGColoredInstanceManager* mInstanceManager;
+	// ReSharper disable once CppUE4ProbableMemoryIssuesWithUObject
+	UFGColoredInstanceManager* mInstanceManager{};
 
 	/* Category that will be used based on optimization settings. */
 	UPROPERTY( EditDefaultsOnly )

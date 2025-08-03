@@ -19,11 +19,10 @@ bool FCheatMenuElement::operator>(const FCheatMenuElement& b) const{ return bool
 bool FCheatMenuElement::operator<(const FCheatMenuElement& b) const{ return bool(); }
 bool FCheatMenuElement::operator==(const FString& InDisplayName) const{ return bool(); }
 FCheatMenuParam::FCheatMenuParam(const TSharedPtr<FCheatMenuCategory> InParentCategory, const FString& InDisplayName):FCheatMenuElement(InParentCategory, InDisplayName){ }
-FCheatMenuParam::FCheatMenuParam(const TSharedPtr<FCheatMenuCategory> InParentCategory, const FString& InDisplayName, UObject* InObjectValue):FCheatMenuElement(InParentCategory, InDisplayName){ }
+FCheatMenuParam::FCheatMenuParam(const TSharedPtr<FCheatMenuCategory> InParentCategory, const FString& InDisplayName, const TSoftObjectPtr<UObject>& InObjectValue):FCheatMenuElement(InParentCategory, InDisplayName){ }
 FCheatMenuParam::FCheatMenuParam(const TSharedPtr<FCheatMenuCategory> InParentCategory, const FString& InDisplayName, bool bInBoolValue):FCheatMenuElement(InParentCategory, InDisplayName){ }
 FCheatMenuParam::FCheatMenuParam(const TSharedPtr<FCheatMenuCategory> InParentCategory, const FString& InDisplayName, int64 InIntegerValue):FCheatMenuElement(InParentCategory, InDisplayName){ }
 FCheatMenuElement::EItemType FCheatMenuParam::GetType() const{ return EItemType(); }
-void FCheatMenuParam::AddReferencedObjects(FReferenceCollector& ReferenceCollector){ }
 FCheatMenuCategory::FCheatMenuCategory(const TSharedPtr<FCheatMenuCategory>& InParentCategory, const FString& InCategoryName):FCheatMenuElement(InParentCategory, InCategoryName){ }
 FCheatMenuElement::EItemType FCheatMenuCategory::GetType() const{ return EItemType(); }
 void FCheatMenuCategory::AddReferencedObjects(FReferenceCollector& ReferenceCollector){ }

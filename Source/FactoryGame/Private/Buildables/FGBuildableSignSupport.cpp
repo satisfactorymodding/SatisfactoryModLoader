@@ -7,20 +7,14 @@
 #include "Net/UnrealNetwork.h"
 
 AFGBuildableSignSupport::AFGBuildableSignSupport() : Super() {
-	this->mPoleComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("PoleComponentProxy"));
-	this->mHeight = 100.0;
-	this->mPoleMesh = nullptr;
-	this->mPoleScale = FVector2D::UnitVector;
+	this->mPoleScale = FVector2D::ZeroVector;
 	this->mHologramClass = AFGSignPoleHologram::StaticClass();
-	this->mPoleComponentProxy->SetupAttachment(RootComponent);
 }
 void AFGBuildableSignSupport::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGBuildableSignSupport, mHeight);
-	DOREPLIFETIME(AFGBuildableSignSupport, mPoleMesh);
+	DOREPLIFETIME(AFGBuildableSignSupport, mPoleScale);
 }
-void AFGBuildableSignSupport::BeginPlay(){ Super::BeginPlay(); }
-void AFGBuildableSignSupport::SetPoleScale(FVector2D poleScale){ }
+void AFGBuildableSignSupport::SetPoleScale(const FVector2D& poleScale){ }
 void AFGBuildableSignSupport::OnBuildEffectActorFinished(){ }
-TArray<struct FInstanceData> AFGBuildableSignSupport::GetActorLightweightInstanceData_Implementation(){ return TArray<struct FInstanceData>(); }
-const FName AFGBuildableSignSupport::PoleMeshName = FName();
+bool AFGBuildableSignSupport::CanBeSampled_Implementation() const{ return Super::CanBeSampled_Implementation(); }
+void AFGBuildableSignSupport::OnRep_PoleScale(){ }

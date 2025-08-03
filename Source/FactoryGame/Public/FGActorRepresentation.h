@@ -5,6 +5,8 @@
 #include "FactoryGame.h"
 #include "FGConveyorItemRenderTargetWriter.h"
 #include "UObject/NoExportTypes.h"
+#include "LocalUserInfo.h"
+#include "Online/CoreOnline.h"
 #include "FGActorRepresentation.generated.h"
 
 UENUM( BlueprintType )
@@ -167,6 +169,12 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Representation" )
 	virtual float GetScaleOnMap() const;
 
+	//<FL>[KonradA]
+	UFUNCTION( BlueprintPure, Category = "Representation" )
+	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const { return mLastEditedBy; }
+	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	//</FL>
+
 	/** Sets the client representations compass view distance directly. It doesn't change the connected actors status so this is only for local updates to avoid waiting for replicated value */
 	void SetLocalCompassViewDistance( ECompassViewDistance compassViewDistance );
 	
@@ -291,6 +299,16 @@ protected:
 	/** How far away this representation should be shown in the compass */
 	UPROPERTY( Replicated )
 	ECompassViewDistance mCompassViewDistance;
+
+	//<FL>[KonradA] Keep track of the player that last edited this. This is usually determined by the underlying Actor that implements the RepresentationInterface
+	UPROPERTY(Replicated)
+	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	//<FL>
+
+	UPROPERTY(Replicated)
+	FString mPlatformAccountIDStr;
+
+	UE::Online::FAccountId mPlatformAccountID;
 
 	/** True if background color is considered to be primary color, false if it should be secondary color */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )

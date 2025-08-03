@@ -25,10 +25,14 @@ public:
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	// End of AFGHologram interface
+	
+	void SetCustomizationData( const struct FFactoryCustomizationData& customizationData );
 protected:
 	// Begin AFGHologram interface
 	virtual void CheckValidPlacement() override;
 	// End of AFGHologram interface
+
+	virtual FTransform GetVehicleSpawnTransform() const;
 
 	/**
 	 * Construct the actual thing from this hologram (the vehicle).
@@ -44,12 +48,17 @@ protected:
 		fgcheck( cdo );
 		return cdo;
 	}
+
+	void ApplyCustomizationData();
+
+	// Delayed client apply customization
+	virtual void OnGamestateReceived() override;
+
+private:
+    UFUNCTION()
+    void OnRep_CustomizationData();
 	
 protected:
-	UPROPERTY()
+	UPROPERTY( ReplicatedUsing = OnRep_CustomizationData )
 	FFactoryCustomizationData mCustomizationData;
-
-	/** The Color Swatch to use when building this hologram */
-	UPROPERTY()
-	TSubclassOf< UFGFactoryCustomizationDescriptor_Swatch > mDefaultSwatch;
 };

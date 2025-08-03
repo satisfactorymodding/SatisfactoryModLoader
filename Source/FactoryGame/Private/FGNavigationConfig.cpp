@@ -5,3 +5,4 @@
 FFGNavigationConfig::FFGNavigationConfig(){ }
 EUINavigationAction FFGNavigationConfig::GetNavigationActionFromKey(const FKeyEvent& InKeyEvent) const{ return EUINavigationAction(); }
 void FFGNavigationConfig::EnableTabAndNavKeys(bool enable){ }
+void FFGNavigationConfig::EnableAnalogNavigation(bool enable){ }

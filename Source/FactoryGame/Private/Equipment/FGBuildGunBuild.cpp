@@ -15,6 +15,7 @@ UFGBuildGunStateBuild::UFGBuildGunStateBuild() : Super() {
 	this->mInstanceConverterInstigator = nullptr;
 	this->mActiveBlueprintDescriptor = nullptr;
 	this->mLastBlueprintDescriptor = nullptr;
+	this->mSampledClipboardSettings = nullptr;
 }
 void UFGBuildGunStateBuild::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -36,9 +37,14 @@ void UFGBuildGunStateBuild::GetSupportedBuildModes_Implementation(TArray< TSubcl
 TSubclassOf< UFGBuildGunModeDescriptor > UFGBuildGunStateBuild::GetInitialBuildGunMode_Implementation() const{ return TSubclassOf<UFGBuildGunModeDescriptor>(); }
 float UFGBuildGunStateBuild::GetBuildGunRangeOverride_Implementation(){ return float(); }
 void UFGBuildGunStateBuild::BindInputActions( UFGEnhancedInputComponent* inputComponent){ }
-bool UFGBuildGunStateBuild::CanSampleBuildings() const{ return bool(); }
+bool UFGBuildGunStateBuild::CanSampleBuildables() const{ return bool(); }
 bool UFGBuildGunStateBuild::OnShortcutPressed(int32 shortcutIndex){ return bool(); }
+void UFGBuildGunStateBuild::OnBuildableSampled_Implementation(AFGBuildable* buildable){ Super::OnBuildableSampled_Implementation(buildable); }
+void UFGBuildGunStateBuild::OnVehicleSampled_Implementation(AFGVehicle* vehicle){ Super::OnVehicleSampled_Implementation(vehicle); }
+void UFGBuildGunStateBuild::OnLightweightBuildableSampled_Implementation(FLightweightBuildableInstanceRef& buildableInstance){ Super::OnLightweightBuildableSampled_Implementation(buildableInstance); }
 void UFGBuildGunStateBuild::SetActiveRecipe(TSubclassOf<  UFGRecipe > recipe){ }
+void UFGBuildGunStateBuild::OnHoldToSnapUpdated(FString cvar){ }
+void UFGBuildGunStateBuild::OnActiveInputChanged(EInputDeviceType newInputDeviceType){ }
 void UFGBuildGunStateBuild::SetActiveBlueprintDescriptor(UFGBlueprintDescriptor* blueprintDesc){ }
 TSubclassOf< class UFGItemDescriptor > UFGBuildGunStateBuild::GetDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 TArray< FItemAmount > UFGBuildGunStateBuild::GetHologramCost() const{ return TArray<FItemAmount>(); }
@@ -59,8 +65,11 @@ void UFGBuildGunStateBuild::OnClearanceDetectorAdded(UBoxComponent* clearanceDet
 void UFGBuildGunStateBuild::OnDelayedConstructHologram(FNetConstructionID localId, FConstructHologramMessage message){ }
 UPackageMap* UFGBuildGunStateBuild::FindPackageMapForPlayerController(const APlayerController* playerController){ return nullptr; }
 const FActorClearanceData* UFGBuildGunStateBuild::GetClearanceDataForActor(const AActor* actor) const{ return nullptr; }
+void UFGBuildGunStateBuild::Server_SampleClipboardSettingsFromActor_Implementation(AActor* actor){ }
+void UFGBuildGunStateBuild::SampleClipboardSettingsFromActor(AActor* actor){ }
 void UFGBuildGunStateBuild::InternalExecuteDuBuildStepInput(bool isInputFromARelease){ }
 void UFGBuildGunStateBuild::ResetHologram(){ }
+void UFGBuildGunStateBuild::Server_ResetHologram_Implementation(){ }
 void UFGBuildGunStateBuild::Client_OnBuildableConstructed_Implementation(TSubclassOf< UFGItemDescriptor > desc){ }
 void UFGBuildGunStateBuild::Client_OnRecipeBuilt_Implementation(TSubclassOf<  UFGRecipe > recipe, int32 numConstructed){ }
 void UFGBuildGunStateBuild::Client_OnBlueprintConstructed_Implementation(const FString& blueprintName, int32 numConstructed){ }
@@ -76,9 +85,13 @@ void UFGBuildGunStateBuild::OnUserSettingsUpdated(){ }
 void UFGBuildGunStateBuild::Server_SetUseAutomaticClearanceSnapping_Implementation(bool useAutomaticSnapping){ }
 void UFGBuildGunStateBuild::Server_UpdateNudgeOffset_Implementation(const FVector& newNudgeOffset){ }
 void UFGBuildGunStateBuild::NudgeTimerTick(){ }
+void UFGBuildGunStateBuild::NudgeOnce(const FVector& nudgeVector){ }
+void UFGBuildGunStateBuild::Server_SetSampledCustomizationData_Implementation(const FFactoryCustomizationData& customizationData){ }
+void UFGBuildGunStateBuild::SetSampledCustomizationData(const FFactoryCustomizationData& customizationData){ }
 void UFGBuildGunStateBuild::Input_HologramLock(const FInputActionValue& actionValue){ }
 void UFGBuildGunStateBuild::Input_HologramNudgeAxis(const FInputActionValue& actionValue){ }
 void UFGBuildGunStateBuild::Input_SnapToGuideLines(const FInputActionValue& actionValue){ }
 void UFGBuildGunStateBuild::Input_HotbarSample(const FInputActionValue& actionValue){ }
 void UFGBuildGunStateBuild::HandleBuildableAchievementTags(const AFGBuildable* buildable) const{ }
+void UFGBuildGunStateBuild::SetUpgradeActorHidden(bool hidden) const{ }
 void UFGBuildGunStateBuild::UpdateClearanceData(){ }

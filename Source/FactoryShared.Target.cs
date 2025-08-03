@@ -1,4 +1,4 @@
-﻿// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 using EpicGames.Core;
 using UnrealBuildTool;
@@ -9,7 +9,7 @@ public class FactorySharedTarget : TargetRules
 {
 	/** Allows overriding whenever the checks in the shipping builds should be used from the commandline */
 	[CommandLine("-UseChecksInShipping")]
-	public bool UseChecksInShippingOverride = true;
+	public bool UseChecksInShippingOverride = true; // MODDING EDIT: we want checks in shipping by default
 
 	/** Allows overriding the build type from the command line */
 	[CommandLine("-Monolithic", Value = "Monolithic")] 
@@ -39,7 +39,10 @@ public class FactorySharedTarget : TargetRules
 		// [ZolotukhinN:10/07/2023] Enabled Network Push Model support in normal game builds, it's disabled in non-editor by default
 		bWithPushModel = true;
 		// [ZolotukhinN:04/05/2023] Allow cheat manager initialization in Shipping builds to allow cheating even in shipping builds when compiling with WITH_CHEATS=1
+		if (true /*Target.Platform != UnrealTargetPlatform.PS5 && Target.Platform != UnrealTargetPlatform.XSX*/)
+		{
 		GlobalDefinitions.Add("UE_WITH_CHEAT_MANAGER=1");
+		}
 		// Allow checks in shipping depending on the command line configuration
 		bUseChecksInShipping = UseChecksInShippingOverride;
 		

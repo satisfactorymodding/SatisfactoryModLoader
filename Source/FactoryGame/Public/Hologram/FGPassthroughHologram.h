@@ -27,7 +27,7 @@ public:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
-	virtual void GetIgnoredClearanceActors(TArray<AActor*>& ignoredActors) const override;
+	virtual void GetIgnoredClearanceActors(TSet<AActor*>& ignoredActors) const override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual void GetClearanceData( TArray< const FFGClearanceData* >& out_ClearanceData ) const override;
 	virtual void CheckValidPlacement() override;

@@ -17,11 +17,9 @@ bool AFGFoundationHologram::TrySnapToActor(const FHitResult& hitResult){ return 
 void AFGFoundationHologram::GetSupportedBuildModes_Implementation(TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes) const{ }
 int32 AFGFoundationHologram::GetRotationStep() const{ return int32(); }
 bool AFGFoundationHologram::CanSnapVertically( AFGBuildableFoundation* toFoundation, float dirZ) const{ return bool(); }
-void AFGFoundationHologram::UpdateZoop(){ }
-void AFGFoundationHologram::ConstructZoop(TArray<AActor*>& out_children){ }
+void AFGFoundationHologram::CreateZoopInstances(){ Super::CreateZoopInstances(); }
 FVector AFGFoundationHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return FVector(); }
-void AFGFoundationHologram::CheckValidPlacement(){ }
-bool AFGFoundationHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
+bool AFGFoundationHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramLocationOffset) const{ return bool(); }
 void AFGFoundationHologram::SetZoopFromHitresult(const FHitResult& hitResult){ }
 void AFGFoundationHologram::CreateDefaultFoundationZoop(const FHitResult& hitResult){ }
 void AFGFoundationHologram::CreateVerticalFoundationZoop(const FHitResult& hitResult){ }

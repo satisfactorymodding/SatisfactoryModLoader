@@ -2,3 +2,6 @@
 
 #include "FGLocalizationSettings.h"
 
+bool UFGLocalizationSettings::ShouldShowInCurrentConfig(FLocalizationEntry LocalizationEntry){ return false; }
+ESettingsVisiblityQualifier UFGLocalizationSettings::GetVisibilityQualifiers(){ return ESettingsVisiblityQualifier(); }
+bool UFGLocalizationSettings::HasVisibilityQualifier(FLocalizationEntry LocalizationEntry, ESettingsVisiblityQualifier qualifier){ return false; }

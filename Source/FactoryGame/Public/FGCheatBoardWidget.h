@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGCheatManager.h"
 #include "Widgets/SCompoundWidget.h"
 #include "FactoryGame.h"
 #include "FGCheatBoardMenuElements.h"
+#include "UObject/Object.h"
 
 DECLARE_MULTICAST_DELEGATE_TwoParams( FFGCheatBoardGetCheatObjects, UFGCheatManager* /** CheatManager */, TArray<UObject*>& /** OutCheatObjects */ );
 
@@ -91,7 +93,7 @@ public:
 	/** Creates the value picker for the object property param */
 	TSharedRef<SWidget> CreateWidgetForObjectParamProperty( const FCheatMenuParam& CheatMenuParam );
 	/** If the user presses on a resource, this triggers and gives us the value */
-	FReply OnObjectParamPicked( TObjectPtr<UObject> InObject );
+	FReply OnObjectParamPicked( TSoftObjectPtr<UObject> InObject );
 	/** Creates the value picker for the number (or enum) based property param */
 	TSharedRef<SWidget> CreateWidgetForNumberParamProperty( const FCheatMenuParam& CheatMenuParam );
 	/** If the user presses on true or false, this triggers and gives us the value */

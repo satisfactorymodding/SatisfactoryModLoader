@@ -8,6 +8,7 @@ void FFGGameplayTags::AddInputTags(UGameplayTagsManager& Manager){ }
 void FFGGameplayTags::AddInputPlayerMovementTags(UGameplayTagsManager& Manager){ }
 void FFGGameplayTags::AddInputPlayerActionTags(UGameplayTagsManager& Manager){ }
 void FFGGameplayTags::AddInputPhotoModeTags(UGameplayTagsManager& Manager){ }
+void FFGGameplayTags::AddInputDetachedCameraTags(UGameplayTagsManager& Manager){ }
 void FFGGameplayTags::AddCheatTags(UGameplayTagsManager& Manager){ }
 void FFGGameplayTags::AddInputBuildGunTags(UGameplayTagsManager& Manager){ }
 void FFGGameplayTags::AddInputObjectScannerTags(UGameplayTagsManager& Manager){ }

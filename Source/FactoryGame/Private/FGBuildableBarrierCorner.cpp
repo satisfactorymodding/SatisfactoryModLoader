@@ -1,0 +1,1 @@
+#include "FGBuildableBarrierCorner.h"

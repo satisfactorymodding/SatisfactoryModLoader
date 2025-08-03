@@ -21,6 +21,7 @@ void AFGDockingStationInfo::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	DOREPLIFETIME(AFGDockingStationInfo, mActorRepresentationTexture);
 	DOREPLIFETIME(AFGDockingStationInfo, mDefaultRepresentationColor);
 	DOREPLIFETIME(AFGDockingStationInfo, mBuildingTag);
+	DOREPLIFETIME(AFGDockingStationInfo, mLastEditedBy);
 }
 void AFGDockingStationInfo::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGDockingStationInfo::AddAsRepresentation(){ return bool(); }
@@ -43,9 +44,11 @@ ECompassViewDistance AFGDockingStationInfo::GetActorCompassViewDistance(){ retur
 void AFGDockingStationInfo::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 UMaterialInterface* AFGDockingStationInfo::GetActorRepresentationCompassMaterial(){ return nullptr; }
 void AFGDockingStationInfo::SetBuildingTag_Implementation(const FString& buildingTag){ }
+void AFGDockingStationInfo::SetLastEditedBy_Implementation(const TArray<FLocalUserNetIdBundle>& lastEditedBy){ IFGBuildingTagInterface::SetLastEditedBy_Implementation(lastEditedBy); }
 void AFGDockingStationInfo::BeginPlay(){ Super::BeginPlay(); }
 void AFGDockingStationInfo::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGDockingStationInfo::Init( AFGBuildableDockingStation* station){ }
 void AFGDockingStationInfo::SetStationStatus(EDockingStationStatus status){ }
 void AFGDockingStationInfo::OnRep_Status(){ }
 void AFGDockingStationInfo::OnRep_BuildingTag(){ }
+void AFGDockingStationInfo::OnRep_LastEditedBy(){  }

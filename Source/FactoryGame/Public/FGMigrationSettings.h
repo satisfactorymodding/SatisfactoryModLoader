@@ -37,4 +37,7 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = "Dependency class for item pickup" )
 	TSoftClassPtr< class UFGItemPickedUpDependency > mItemPickedUpDependencyClass;
 
+	/** Tobias 2025-03-26: Referencing legacy poles here so that they get packaged with the game, as the buildable isn't referenced anywhere else. They got unreferenced with a pole refactor between 1.0 and 1.1, but still need to exist for 1.0 and earlier saves. */
+	UPROPERTY( EditAnywhere, config, Category = "Legacy class for sign poles" )
+	TSoftClassPtr< class AFGBuildableSignSupport > mLegacySignPoleClass;
 };

@@ -18,6 +18,8 @@ public:
 
 	static FString FormatGameVersionRange(const FVersionRange& Range);
 
+	bool HasCPP();
+	
 private:
 	TSharedPtr<IPlugin> Mod;
 	UModMetadataObject* MetadataObject = nullptr;
@@ -26,4 +28,5 @@ private:
 	FVersionRange TargetGameVersionRange;
 	
 	FReply OnOkClicked();
+	FReply OnCPPClicked();
 };

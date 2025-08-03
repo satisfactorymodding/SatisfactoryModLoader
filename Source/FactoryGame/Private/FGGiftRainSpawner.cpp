@@ -1,6 +1,12 @@
-﻿#include "FGGiftRainSpawner.h"
+#include "FGGiftRainSpawner.h"
 
-AFGGiftRainSpawner::AFGGiftRainSpawner(){ }
+AFGGiftRainSpawner::AFGGiftRainSpawner() : Super() {
+	this->mGiftRainSpawnHeightIncrease = FFloatInterval(3.40282e+38, -3.40282e+38);
+	this->mEnableAutomaticGiftSpawning = true;
+	this->mGiftSpawnInterval = FFloatInterval(5.0, 25.0);
+	this->mGiftSpawnRadius = FFloatInterval(10000.0, 35000.0);
+	this->mAutomaticGiftSpawnLimit = 15;
+}
 void AFGGiftRainSpawner::BeginPlay(){ Super::BeginPlay(); }
 bool AFGGiftRainSpawner::ShouldAutomaticallySpawnGifts() const{ return bool(); }
 void AFGGiftRainSpawner::SetAutomaticGiftSpawningEnabled(bool enabled){ }

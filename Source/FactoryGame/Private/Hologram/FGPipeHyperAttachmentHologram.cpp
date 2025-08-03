@@ -10,6 +10,5 @@ AFGPipeHyperAttachmentHologram::AFGPipeHyperAttachmentHologram() : Super() {
 	this->mBasePipeClass = AFGBuildablePipeHyper::StaticClass();
 	this->mPipeAttachmentInterfaceClass = UFGPipeHyperAttachmentSnapTargetInterface::StaticClass();
 }
-void AFGPipeHyperAttachmentHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGPipeHyperAttachmentHologram::ConfigureComponents(AFGBuildable* inBuildable) const{ }
 void AFGPipeHyperAttachmentHologram::CheckValidPlacement(){ }

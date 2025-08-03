@@ -37,6 +37,7 @@ void AFGFreightWagon::UpdateFreightPayloadMass(){ }
 bool AFGFreightWagon::CanDockWithPlatformOfType(EFreightCargoType platformType) const{ return bool(); }
 void AFGFreightWagon::KillOverlappedCharacters(){ }
 void AFGFreightWagon::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
+void AFGFreightWagon::OnIsSimulatedChanged(){ Super::OnIsSimulatedChanged(); }
 void AFGFreightWagon::OnItemAddedToFreight(TSubclassOf< UFGItemDescriptor > itemClass, const int32 numAdded, UFGInventoryComponent* sourceInventory){ }
 void AFGFreightWagon::OnItemRemovedFromFreight(TSubclassOf< UFGItemDescriptor > itemClass, const int32 numRemoved, UFGInventoryComponent* targetInventory){ }
 UStaticMesh* AFGFreightWagon::GetCargoStaticMesh(){ return nullptr; }

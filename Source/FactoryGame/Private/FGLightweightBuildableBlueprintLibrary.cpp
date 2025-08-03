@@ -1,4 +1,4 @@
-﻿#include "FGLightweightBuildableBlueprintLibrary.h"
+#include "FGLightweightBuildableBlueprintLibrary.h"
 
 bool UFGLightweightBuildableBlueprintLibrary::IsLightweightValid(const FLightweightBuildableInstanceRef& instance){ return bool(); }
 TSubclassOf<AFGBuildable> UFGLightweightBuildableBlueprintLibrary::GetLightweightClass(const FLightweightBuildableInstanceRef& instance){ return TSubclassOf<AFGBuildable>(); }
@@ -8,3 +8,4 @@ bool UFGLightweightBuildableBlueprintLibrary::ResolveLightweightCustomizationDat
 void UFGLightweightBuildableBlueprintLibrary::UpdateLightweightCustomizationData(const FLightweightBuildableInstanceRef& instance, const FFactoryCustomizationData& customizationData){ }
 void UFGLightweightBuildableBlueprintLibrary::RemoveLightweight(FLightweightBuildableInstanceRef& instance){ }
 AFGBuildable* UFGLightweightBuildableBlueprintLibrary::SpawnTemporaryFromLightweight(const FLightweightBuildableInstanceRef& instance){ return nullptr; }
+bool UFGLightweightBuildableBlueprintLibrary::GetLightweightBuildableInstanceFromConvertedBuildableOrTemporary(const AFGBuildable* buildable, FLightweightBuildableInstanceRef& out_instance){ return bool(); }

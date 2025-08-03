@@ -3,7 +3,7 @@
 #include "FGNewGameSettings.h"
 
 UFGNewGameSettings::UFGNewGameSettings() : Super() {
-	this->mDefaultMap = FSoftObjectPath("/Game/FactoryGame/Map/GameLevel01/Persistent_Level.Persistent_Level");
-	this->mTestMap = FSoftObjectPath("/Game/FactoryGame/Map/TestMapFactoryGame.TestMapFactoryGame");
+	this->mDefaultMap = FSoftObjectPath("/Game/FactoryGame/Map/GameLevel01/Persistent_Level.Persistent_Level").ResolveObject();
+	this->mTestMap = FSoftObjectPath("/Game/FactoryGame/Map/TestMapFactoryGame.TestMapFactoryGame").ResolveObject();
 }
 const UFGNewGameSettings* UFGNewGameSettings::Get(){ return nullptr; }

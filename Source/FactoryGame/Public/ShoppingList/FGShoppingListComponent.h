@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGPlayerStateComponentInterface.h"
 #include "FGSaveInterface.h"
 #include "ItemAmount.h"
 #include "Components/ActorComponent.h"
@@ -75,7 +76,7 @@ struct FACTORYGAME_API FShoppingListClassEntry
 
 // Shopping list class to move away code from bloated player state
 UCLASS( BlueprintType, ClassGroup=(Custom) )
-class FACTORYGAME_API UFGShoppingListComponent : public UActorComponent, public IFGSaveInterface
+class FACTORYGAME_API UFGShoppingListComponent : public UActorComponent, public IFGSaveInterface, public IFGPlayerStateComponentInterface
 {
 	GENERATED_BODY()
 
@@ -84,9 +85,6 @@ public:
 	static UFGShoppingListComponent* GetShoppingListComponent( const class APlayerController* playerController );
 	
 	UFGShoppingListComponent();
-
-	/** Used for copying data between player states */
-	void CopyShoppingListComponent( const UFGShoppingListComponent* otherShoppingListComponent );
 	
 	UFUNCTION( BlueprintCallable, Category = "Shopping List" )
 	void GetShoppingListObjects( TArray<class UFGShoppingListObject*>& out_ShoppingListObjects );
@@ -131,6 +129,10 @@ protected:
 	virtual bool NeedTransform_Implementation() override { return false; }
 	virtual bool ShouldSave_Implementation() const override { return true; }
 	// End IFSaveInterface
+	
+	// Begin IFGPlayerStateComponentInterface interface
+	virtual void CopyComponentProperties_Implementation( UActorComponent* intoComponent ) override;
+	// End IFGPlayerStateComponentInterface interface
 
 private:
 //void UpdateShoppingListObjectBlueprint( class UFGShoppingListObjectBlueprint* shoppingListObjectBlueprint );

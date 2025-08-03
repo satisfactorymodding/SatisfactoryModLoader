@@ -18,5 +18,5 @@ public:
 	static const UFGAutoJsonExportSettings* Get() { return GetDefault<UFGAutoJsonExportSettings>(); };
 public:
 	UPROPERTY( EditAnywhere, config, Category = "Custom Classes" )
-	TArray<TSubclassOf<UObject>> mCustomClasses;
+	TArray<TSoftClassPtr<UObject>> mCustomClasses;
 };

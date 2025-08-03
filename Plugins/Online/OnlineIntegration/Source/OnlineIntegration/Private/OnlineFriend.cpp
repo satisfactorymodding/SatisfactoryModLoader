@@ -12,3 +12,4 @@ UOnlineUserInfo* UOnlineFriend::GetOnlineUser() const{ return nullptr; }
 EOnlineUserPresenceStatus UOnlineFriend::GetPresenceStatus(UOnlineIntegrationBackend* Backend) const{ return EOnlineUserPresenceStatus(); }
 EOnlineUserPresenceJoinability UOnlineFriend::GetPresenceJoinability(UOnlineIntegrationBackend* Backend) const{ return EOnlineUserPresenceJoinability(); }
 EOnlineUserPresenceGameStatus UOnlineFriend::GetPresenceGameStatus(UOnlineIntegrationBackend* Backend) const{ return EOnlineUserPresenceGameStatus(); }
+void UOnlineFriend::FetchFriendSession(UOnlineIntegrationBackend* Backend){ }

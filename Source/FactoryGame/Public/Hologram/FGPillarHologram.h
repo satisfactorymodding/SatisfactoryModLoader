@@ -35,12 +35,13 @@ public:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	virtual AActor* Construct( TArray<AActor*>& out_children, FNetConstructionID constructionID ) override;
-	virtual void SetMaterial( class UMaterialInterface* material ) override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual void GetSupportedBuildModes_Implementation( TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes ) const override;
 	virtual void OnBuildModeChanged( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) override;
 	virtual bool CanBeZooped() const override;
 	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
+	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
+	virtual void GetClearanceData( TArray< const FFGClearanceData* >& out_ClearanceData ) const override;
 	// End AFGHologram interface
 
 	// Begin AFGBuildableHologram interface
@@ -49,12 +50,11 @@ public:
 	// End AFGBuildableHologram interface
 protected:
 	// Begin AFGHologram Interface
-	virtual void CheckValidPlacement() override;
 	virtual bool CanIntersectWithDesigner( class AFGBuildableBlueprintDesigner* designer ) const override;
 	// End AFGHologram Interface
 	
 	// Begin AFGBuildableHologram interface
-	virtual bool IsHologramIdenticalToActor( AActor* actor, const FVector& hologramLocationOffset ) const override;
+	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	// End AFGBuildableHologram interface
 	
 	UFUNCTION()
@@ -71,6 +71,8 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	float mForceVerticalSnapThreshold;
 
+	TArray< FFGClearanceData > mZoopClearance;
+	
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	int32 mMaxZoop;
 
@@ -84,7 +86,7 @@ private:
 	bool mDownZoopDirectionBlocked;
 	bool mUpZoopDirectionBlocked;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated, CustomSerialization )
 	EPillarHologramBuildStep mBuildStep;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )

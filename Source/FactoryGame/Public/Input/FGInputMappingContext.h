@@ -16,6 +16,9 @@ class FACTORYGAME_API UFGInputMappingContext : public UInputMappingContext
 	GENERATED_BODY()
 
 public:
+	UFUNCTION( BlueprintCallable, Category = "Mapping" )
+	FKey FindKeyForInputAction(const FName& actionName);
+
 	/** The display name of this input mapping context that will be shown in the UI */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Mapping" )
 	FText mDisplayName;

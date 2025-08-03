@@ -100,8 +100,6 @@ public:
 	void SetDeadlockSegmentCenter( FVector deadlockSegmentCenter ) { mDeadlockSegmentCenter = deadlockSegmentCenter; }
 
 	class AFGTargetPoint* GetTarget() const { return mTarget; }
-	void SetTarget( class AFGTargetPoint* target ) { mTarget = target; }
-
 	class AFGTargetPoint* GetPreviousTarget() const { return mPreviousTarget; }
 	void SetPreviousTarget( class AFGTargetPoint* previousTarget ) { mPreviousTarget = previousTarget; }
 

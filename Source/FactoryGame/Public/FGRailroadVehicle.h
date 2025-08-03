@@ -182,8 +182,7 @@ protected:
 	void EnableDerailPhysics( const FVector& velocity );
 	void FreezeDerailPhysics();
 	void DisableDerailPhysics();
-	
-private:
+
 	/** Updates the vehicles settings depending on if it should be simulated or "real" */
 	virtual void OnIsSimulatedChanged();
 
@@ -198,6 +197,8 @@ private:
 	void OnRep_IsOrientationReversed();
 	UFUNCTION()
 	void OnRep_IsDerailed();
+	UFUNCTION()
+	void OnRep_TrackPosition( const FRailroadTrackPosition& oldTrackPosition );
 protected:
 	// About 1/5 of the distance to the world bounds and about the same as distance to the KillZ in the sky from sea level.
 	static constexpr float MAX_DERAIL_DISTANCE = 200000.f;
@@ -234,7 +235,7 @@ private:
 	bool mIsOrientationReversed;
 
 	/** Where along the track is the train. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_TrackPosition )
 	FRailroadTrackPosition mTrackPosition;
 
 	/** If this vehicle is derailed, handles the derailment on client. */

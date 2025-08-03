@@ -8,8 +8,10 @@
 AFGBuildableTrainPlatform::AFGBuildableTrainPlatform() : Super() {
 	this->mRailroadTrack = nullptr;
 	this->mPlatformConnection0 = CreateDefaultSubobject<UFGTrainPlatformConnection>(TEXT("PlatformConnection0"));
+	this->mPlatformConnection0->SetMobility(EComponentMobility::Static);
 	this->mPlatformConnections.Add(mPlatformConnection0);
 	this->mPlatformConnection1 = CreateDefaultSubobject<UFGTrainPlatformConnection>(TEXT("PlatformConnection1"));
+	this->mPlatformConnection1->SetMobility(EComponentMobility::Static);
 	this->mPlatformConnections.Add(mPlatformConnection1);
 	this->mDockedRailroadVehicle = nullptr;
 	this->mStationDockingMaster = nullptr;

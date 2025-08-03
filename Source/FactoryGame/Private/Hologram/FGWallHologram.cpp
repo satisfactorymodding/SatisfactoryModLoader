@@ -6,7 +6,6 @@
 AFGWallHologram::AFGWallHologram() : Super() {
 	this->mUpgradeTarget = nullptr;
 	this->mOnlyAllowLineZoop = false;
-	this->mPlacementRequirements = EFactoryBuildingPlacementRequirements::FBPR_MustSnap;
 	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 }
 void AFGWallHologram::BeginPlay(){ Super::BeginPlay(); }
@@ -22,10 +21,8 @@ bool AFGWallHologram::DoMultiStepPlacement(bool isInputFromARelease){ return boo
 void AFGWallHologram::ConfigureActor(AFGBuildable* inBuildable) const{ }
 void AFGWallHologram::ScrollRotate(int32 delta, int32 step){ }
 int32 AFGWallHologram::GetRotationStep() const{ return int32(); }
-void AFGWallHologram::CheckValidPlacement(){ }
-void AFGWallHologram::UpdateZoop(){ }
-void AFGWallHologram::ConstructZoop(TArray<AActor*>& out_children){ }
+void AFGWallHologram::CreateZoopInstances(){ Super::CreateZoopInstances(); }
 FVector AFGWallHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return FVector(); }
-bool AFGWallHologram::IsHologramIdenticalToActor(AActor* actor, const FVector& hologramLocationOffset) const{ return bool(); }
+bool AFGWallHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramTransform) const{ return Super::IsHologramIdenticalToActor(actor, hologramTransform); }
 void AFGWallHologram::SelectWallVariantForElevation(float NewAngle){ }
 void AFGWallHologram::ApplyFoundationFloorSnapping(const FTransform& floorTransform, const FHitResult& hitResult, const FVector& floorSize, const FVector& foundationSize, FVector& out_Location, FRotator& inout_Rotation){ }

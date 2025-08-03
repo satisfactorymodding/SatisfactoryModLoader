@@ -8,12 +8,12 @@ bool UFGUserSettingApplyType::StringAsVariant(const FString& String, EVariantTyp
 void UFGUserSettingApplyType::Init( UFGUserSetting* inUserSetting){ }
 void UFGUserSettingApplyType::TryRegisterCvarValue(){ }
 void UFGUserSettingApplyType::TryUpdateCvarValue(){ }
-bool UFGUserSettingApplyType::CheckCvarValueForUpdates(){ return bool(); }
+FVariant UFGUserSettingApplyType::GetOptionValueFromCvar() const{ return FVariant(); }
 bool UFGUserSettingApplyType::OnApply(bool markDirty){ return bool(); }
 void UFGUserSettingApplyType::SetValue(FVariant newValue){ }
 void UFGUserSettingApplyType::ForceSetValue(FVariant newValue, bool bClearPendingValue){ }
 bool UFGUserSettingApplyType::ForceSetPendingAppliedValue(FVariant newValue){ return bool(); }
-void UFGUserSettingApplyType::OverrideDefaultValue(FVariant newDefaultValue){ }
+void UFGUserSettingApplyType::OverrideDefaultValue(FVariant newDefaultValue, bool bSkipCVarUpdate){ }
 void UFGUserSettingApplyType::ResetToDefaultValue(bool bForce){ }
 void UFGUserSettingApplyType::ClearPendingChanges(){ }
 void UFGUserSettingApplyType::NotifySubscribers(){ }
@@ -28,10 +28,14 @@ FVariant UFGUserSettingApplyType::GetValueToSave() const{ return FVariant(); }
 FVariant UFGUserSettingApplyType::GetPendingAppliedValue() const{ return FVariant(); }
 bool UFGUserSettingApplyType::HasPendingChanges() const{ return bool(); }
 bool UFGUserSettingApplyType::IsDefaultValueApplied() const{ return bool(); }
-void UFGUserSettingApplyType::SetOptionRowWidget( UFGDynamicOptionsRow* inOptionRowWidget){ }
+void UFGUserSettingApplyType::AddOptionRowWidget(class UFGDynamicOptionsRow* inOptionRowWidget){ }
+void UFGUserSettingApplyType::BroadcastUpdatePendingIconVisibility(){ }
+void UFGUserSettingApplyType::BroadcastOptionValueChanged(){ }
 void UFGUserSettingApplyType::GetDebugData(TArray<FString>& out_debugData){ }
 TScriptInterface<IFGOptionInterface> UFGUserSettingApplyType::GetOwnerOptionInterface() const{ return TScriptInterface<IFGOptionInterface>(); }
 bool UFGUserSettingApplyType::IsInMainMenu() const{ return bool(); }
+void UFGUserSettingApplyType::BroadcastBeforeOptionValueReset(){ }
+void UFGUserSettingApplyType::BroadcastBeforeOptionValueApply(){ }
 bool UFGUserSettingApplyType_UpdateInstantly::OnApply(bool markDirty){ return bool(); }
 void UFGUserSettingApplyType_UpdateInstantly::SetValue(FVariant newValue){ }
 void UFGUserSettingApplyType_UpdateInstantly::ClearPendingChanges(){ }

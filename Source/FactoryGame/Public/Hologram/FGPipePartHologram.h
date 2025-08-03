@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "FGFactoryHologram.h"
 #include "FGPipeConnectionComponent.h"
-#include "Resources/FGPoleDescriptor.h"
 #include "FGPipePartHologram.generated.h"
 
 
@@ -24,17 +23,12 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
 	// Begin AFGHologram interface
-	virtual bool DoMultiStepPlacement( bool isInputFromARelease )  override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
-	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual void CheckValidFloor( ) override;
-	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
 	virtual bool CanNudgeHologram() const override;
 	// End AFGHologram interface
-
-	/** Set the height of the support */
-	void SetSupportLength( float height );
 
 	/** Get the connections the pipeline snaps to */
 	FORCEINLINE UFGPipeConnectionComponentBase* GetSnapConnection() const { return mSnapConnection; }
@@ -45,49 +39,17 @@ public:
 protected:
 	
 	// Begin AFGBuildableHologram interface
-	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	virtual void ConfigureComponents( class AFGBuildable* inBuildable ) const override;
 	virtual void CheckValidPlacement() override;
 	// End AFGBuildableHologram interface
-
-private:
-	UFUNCTION()
-	void OnRep_SupportMesh();
-
-	/** Updates the relative offset for mSupportHeightComponent based on mSupportMesh */
-	void UpdateSupportLengthRelativeLoc();
-
-protected:
-	/** The most fitting mesh for our aim height. */
-	UPROPERTY( ReplicatedUsing = OnRep_SupportMesh )
-	FPoleHeightMesh mSupportMesh;
 
 private:
 	/** The connection conveyors snap to, used when placing a support automatically. */
 	UPROPERTY()
 	UFGPipeConnectionComponentBase* mSnapConnection;
 
-	/** True if we've placed it on the ground and is working with the height */
-	bool mIsAdjustingLength;
-	bool mCanAdjustLength;
-
 	/* Component snapped to on another actor during placement */
 	UPROPERTY( CustomSerialization, Replicated )
 	class UFGPipeConnectionComponentBase* mSnappedConnectionComponent;
-
-	/** Can this support be stacked. */
-	bool mCanStack;
-	float mStackLength;
-
-	/** Used to determine whether the relative offset needs to be updated for the support mesh */
-	bool mSupportLengthMarkedDirty : 1;
-
-	/** The support mesh. */
-	UPROPERTY()
-	class UStaticMeshComponent* mSupportMeshComponent;
-
-	/** The scene component for adjusting the length of the support. */
-	UPROPERTY()
-	class USceneComponent* mSupportLengthComponent;
 
 };

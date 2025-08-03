@@ -8,14 +8,23 @@
 
 // <FL> [PfaffN] Cleaned up includes
 #include "OnlineIntegrationTypes.h"
+#include "OnlineIntegration/Public/LocalUserInfo.h"
 #include "FGInputLibrary.h"
 #include "FGOptionInterfaceImpl.h"
 #include "FGGameUserSettings.generated.h"
 // </FL>
 
+#if !UE_BUILD_SHIPPING
+extern TAutoConsoleVariable< bool > CVarShowAllGameSettings;
+#endif
+
 class UFGUserSettingApplyType;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FArachnophobiaModeChangedDelegate, bool, isArachnophobiaMode );
+//<FL>[KonradA] Added this delegate so that player controllers can react to rumble strength changes
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FGamepadRumbleSettingsChanged, bool, enabled, float, strength );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FGamepadSpeakerSettingsChanged, bool, enabled );
+// </FL>
 DECLARE_MULTICAST_DELEGATE( FOnFGGameUserSettingsInitialized );
 
 /** Our representation of the graphics RHI. Used in options menu to select which RHI they want to use.
@@ -64,7 +73,7 @@ struct FAudioVolumeMap
 
 	/** The stored value of the RTPC */
 	UPROPERTY()
-	float Value;
+	float Value = {};
 	
 };
 
@@ -76,18 +85,15 @@ enum class EOnlineIntegrationMode: uint8
 	CrossPlay
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnlineIntegrationModeChangedDelegate, EOnlineIntegrationMode, mode);
-
-/** Holds delegates to be called when a specific option is changed */
-USTRUCT()
-struct FOptionUpdateDelegateData
+UENUM( BlueprintType )
+enum class EDeviceProfileFidelityMode : uint8
 {
-	GENERATED_BODY();
-public:
-
-	UPROPERTY()
-	TArray<FOptionUpdated> OptionUpdatedDelegates;
+	Performance		= 0		UMETA( DisplayName = "Performance" ),
+	Balanced		= 1		UMETA( DisplayName = "Balanced" ),
+	Quality			= 2		UMETA( DisplayName = "Quality" )
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnlineIntegrationModeChangedDelegate, EOnlineIntegrationMode, mode, bool, invokedByUser); // <FL>[KonradA] added InvokedByUser to track if the mode was changed by the platform (e.g. disconnects) or by the user
 
 UCLASS(BlueprintType)
 class FACTORYGAME_API UFGGameUserSettings : public UGameUserSettings, public IFGOptionInterfaceImpl
@@ -170,6 +176,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = Settings )
 	void UpdateVideoQuality();
 	void OnVideoQualityUpdated( FString strId, FVariant value );
+#if PLATFORM_PS5 || PLATFORM_XSX
+	void InitConsoleDeviceProfileValue( bool bForce = false );
+	void OnConsoleVideoPresetUpdated( FString strId, FVariant value );
+#endif
 	void OnFOVScalingUpdated( FString strId, FVariant value );
 	void InitVideoQualityValues();
 	void UpdateVideoQualityCvars( const FString& cvar );
@@ -193,6 +203,9 @@ public:
 	bool HasVideoQualityCmdLineArg();
 	void TestCmdLineVideoQuality();
 	void SetGroupQualityLevel( const TCHAR* InGroupName, int32 InQualityLevel, int32 InNumLevels );
+#if PLATFORM_PS5 || PLATFORM_XSX
+	bool GetCmdLineFidelityMode( EDeviceProfileFidelityMode& out_value );
+#endif
 	
 	/** Returns the option interface that handles getting and settings options*/
 	UFUNCTION( BlueprintCallable, Category = Settings )
@@ -205,12 +218,25 @@ public:
 	UFUNCTION()
 	void OnArachnophobiaModeUpdated( FString updatedCvar );
 
+	//<FL>[KonradA]
+	/** Triggered when GamepadRumble options have changed */
+	UFUNCTION()
+	void OnGamepadRumbleEnabledUpdated( FString updatedCvar );
+	UFUNCTION()
+	void OnGamepadRumbleStrengthUpdated( FString updatedCvar );
+
+	/** Triggered when GamepadSpeaker options have changed */
+	UFUNCTION()
+	void OnGamepadSpeakerEnabledUpdated( FString updatedCVar );
+	UFUNCTION()
+	void OnGamepadSpeakerVolumeUpdated( FString updatedCVar );
+	//</FL>
 	/** Triggered when foliage quality option have changed */
 	UFUNCTION()
 	void OnFoliageQualityUpdated( FString updatedCvar );
 
 	UFUNCTION()
-	void OnOnlineIntegrationModeUpdated();
+	void OnOnlineIntegrationModeUpdated( bool bInvokedByUser = true); // <FL>[KonradA] Added bInvokedByUser to keep track if this action was done by the player or backend systems
 
 	/** Triggered when motion blur option have changed */
 	UFUNCTION()
@@ -232,13 +258,37 @@ public:
 	/** Triggered when TSR preset scalabilty cvar have changed */
 	void OnUpscalingPresetUpdated( FString strId, FVariant value );
 
+	// <FL>[KonradA]
+	UFUNCTION(BlueprintCallable)
+	void SetCrossPlayEnabled( bool bNewCrossPlayEnabled );
+	UFUNCTION(BlueprintCallable)
+	bool GetIsCrossPlayEnabled();
+	// Getter for the current cross-play setting. Does not check privileges.
+	virtual bool GetIsCrossPlayEnabledWithoutCheck() override;
+
+	/** Attempts polling for user privilege. Returns true if an attempt to polling was made. Returns false if there was no neccessity to poll user premium privilege*/
+	UFUNCTION( BlueprintCallable )
+	bool PollHasUserPremiumPrivilege( FUserHasPremiumAccountDelegate completeDelegate );
+
+	UFUNCTION(BlueprintCallable)
+	void ForceOnlineIntegrationDisconnect();
+	//</FL>
+
 	/** Triggered when Screen percentage setting is updated */
 	void OnScreenPercentageUpdated( FString strId, FVariant value );
 	UFUNCTION( BlueprintPure, Category = Settings )
 	bool IsUsingCustomScreenPercentage() const;
 	
+	// <FL> [BGR]
+	/** Triggered when Gamma setting is updated */
+	void OnGammaUpdated( FString strId, FVariant value );
+	// </FL>
+
 	/** Triggered when Foliage loading distance preset scalabilty cvar have changed */
 	void OnFoliageLoadDistanceUpdated( FString strId, FVariant value );
+
+	/** Called to update foliage loading distance for a specific world or for all game worlds */
+	void UpdateFoliageLoadingDistanceInternal(UWorld* currentWorld, int32 foliageLoadDistanceID, bool bBlockForLevelStreaming);
 
 	/** Triggered when network quality option have changed */
 	UFUNCTION()
@@ -264,6 +314,9 @@ public:
 
 	// Begin IFGOptionInterface
 	virtual void GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const;
+//<FL>[KonradA] Add a direct map getter to avoid conversions from and to a map with loss of key data in certain situations
+	virtual void GetAllUserSettingsMap( TMap< FString, UFGUserSettingApplyType* >& OutUserSettings ) const;
+//</FL>
 	virtual UFGUserSettingApplyType* FindUserSetting(const FString& SettingId) const override;
 	virtual void SetOptionValue(const FString& strId, const FVariant& value) override;
 	virtual void ApplyChanges() override;
@@ -343,7 +396,7 @@ public:
 	void ApplyHologramColoursToCollectionParameterInstance( UObject* World );
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
-	void UpdateFoliageLoadingDistance(UObject* World);
+	void UpdateFoliageLoadingDistance(UObject* World, bool bBlockForLevelStreaming = true);
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
 	void UpdatePaniniFOVScaling();
@@ -358,10 +411,25 @@ public:
 	
 	UMaterialParameterCollection* GetHologramMaterialCollectionAsset() const;
 
-	EOnlineIntegrationMode GetPreferredOnlineIntegrationMode() const { return mPreferredOnlineIntegrationMode; }
+	UFUNCTION(BlueprintCallable)
+	EOnlineIntegrationMode GetPreferredOnlineIntegrationMode();
 
 	UFUNCTION( BlueprintCallable )
-	void SetPreferredOnlineIntegrationMode( EOnlineIntegrationMode preferredOnlineIntegrationMode );
+	void SetPreferredOnlineIntegrationMode( EOnlineIntegrationMode preferredOnlineIntegrationMode, bool bInvokedByUser = true ); // <FL>[KonradA] Added bInvokedByUser to keep track if this action was done by the player or backend systems
+
+	//<FL>[BGR] Handling for console fidelity modes
+	/** Returns the name of the active Device Profile */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	static FString GetActiveDeviceProfileName();
+
+	/** Returns the name of the base Device Profile ignoring any overrides */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	static FString GetBaseDeviceProfileName();
+
+	/** Attempts to find and replace the current device profile with the corresponding profile for the given mode. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	static void OverrideDeviceProfileForMode( EDeviceProfileFidelityMode NewMode, bool bForce = false );
+	//</FL>
 
 	/** Debug */
 	void DumpDynamicOptionsSettings();
@@ -385,6 +453,22 @@ private:
 	/** Collects and initializes all user-relevant settings in the game. Assumes required modules are loaded. */
 	void InitUserSettings();
 	
+	// <FL> [BGR] Try to set the Platform OS default language if available
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	void SetPrimaryLangaugeToPlatformDefault();
+
+	//<FL>[KonradA] Sanitizing/AutoUpdating some settings needs access to a game instance, provide utility functions
+	class UFGGameInstance* mCachedGameInstance;
+
+public:
+	UFGGameInstance* GetPrimaryGameInstance();
+
+private:
+
+	// Helper function to get the current users localuserinfo
+	ULocalUserInfo* GetLocalUserInfo();
+	//</FL>
+	
 #if WITH_EDITOR
 	void OnBeginPIE( const bool bIsSimulating );
 	void OnEndPIE( const bool bIsSimulating );
@@ -406,11 +490,6 @@ private:
 	/** Check if any cvar should be checked and applied for video settings */
 	void CheckForVideoCvarOverrides();
 	
-	static void CVarSinkHandler();
-
-	/** CVar sink. Update the internal values so they are the same as the console variables  */
-	void UpdateCvars();
-	
 	/** Handle changes before we do any logic. Can be used to migrate old options to new system */
 	void PreSetup();
 	
@@ -426,16 +505,28 @@ private:
 	
 	void SetAAMethodFromUpscalingMethod( EUpscalingMethod upscalingMethod );
 
+	void OnApplicationActivationChanged( bool isActive);
+
+	FString GetOnlineIntegrationConfigKeyPerUser(); // <FL>
 public:
 	/** Called when arachnophobia mode is changed */
 	UPROPERTY( BlueprintAssignable, Category = "Arachnophobia", DisplayName = "OnArachnophobiaModeChanged" )
 	FArachnophobiaModeChangedDelegate OnArachnophobiaModeChangedDelegate;
+
+	// <FL> [KonradA]
+	UPROPERTY( BlueprintAssignable, Category = "Gamepad", DisplayName = "OnGamepadRumbleSettingsChanged" )
+	FGamepadRumbleSettingsChanged OnGamepadRumbleSettingsChangedDelegate;
+	UPROPERTY( BlueprintAssignable, Category = "Gamepad", DisplayName = "OnGamepadSpeakerSettingsChanged" )
+	FGamepadSpeakerSettingsChanged OnGamepadSpeakerSettingsChangedDelegate;
+	// </FL>
 
 	UPROPERTY( BlueprintAssignable, Category = "Online", DisplayName = "OnOnlineIntegrationModeChanged" )
 	FOnlineIntegrationModeChangedDelegate OnOnlineIntegrationModeChangedDelegate;
 
 	/** Called when user settings are initialized. By that point HasInitialized will return true */
 	FOnFGGameUserSettingsInitialized mOnUserSettingsInitialized;
+
+
 protected:
 
 	UPROPERTY( Transient )
@@ -466,12 +557,6 @@ private:
 
 	/** Same as last stable window mode above but holds the last stable resolution instead */
 	FIntPoint mLastStableResolution;
-
-	/** All options that have been subscribed to and the delegates that will be called when the relevant option updates */
-	TMap<FString, FOptionUpdateDelegateData> SubscribedOptions;
-
-	/** CVar sink that let use listen for changes in CVars and update or internal values accordingly */
-	static FAutoConsoleVariableSink mCVarSink;
 
 	/** language data so we can fetch it later and populate the language dropdown */
 	TMap<FString, FText> mLanguageData;
@@ -505,8 +590,12 @@ private:
 	UPROPERTY( Config )
 	bool mDismissedFirstLaunchPopupScreen;
 
-	UPROPERTY( Config )
-	EOnlineIntegrationMode mPreferredOnlineIntegrationMode = EOnlineIntegrationMode::Undefined;
+	TOptional<EOnlineIntegrationMode> mPreferredOnlineIntegrationMode;
+
+	//<FL>[KonradA]
+	UPROPERTY(Config)
+	bool mbCrossPlayEnabled = true;
+	//</FL>
 
 	TOptional<EGraphicsAPI> mDesiredGraphicsAPI;
 
@@ -516,3 +605,5 @@ private:
 	/** const variables */
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;
 };
+
+
