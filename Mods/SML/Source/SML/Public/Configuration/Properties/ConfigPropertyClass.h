@@ -18,14 +18,16 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
     bool bAllowNullValue;
 
-    /** Current value of this class property. DO NOT SET DIRECTLY, USE SetClassValue */
+    /** Current value of this configuration property. At editor time, this is the default value. DO NOT SET DIRECTLY, USE SetClassValue */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowAbstract = "true"), Category = "Configuration Property")
     UClass* Value;
 
-    /** Default value of this class property */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration Property")
+    /** Cached value this configuration property should reset to */
+    UPROPERTY(Transient, BlueprintReadOnly, Category = "Internal")
     UClass* DefaultValue;
 
+
+public:
     UConfigPropertyClass();
 
     /** Returns true if this class is a valid value for this property */

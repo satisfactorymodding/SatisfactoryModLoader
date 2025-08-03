@@ -6,8 +6,8 @@
 UENUM(Blueprinttype)
 enum class ECP_SectionWidgetType : uint8
 {
-	CPS_Horizontal UMETA(Displayname = "Horizontal List", Tooltip = "Nested Properties will be Listed in a Horizontal Layout"),
-	CPS_Vertical UMETA(Displayname = "Vertical List", Tooltip = "Nested Properties will be Listed in a Vertical Layout"),
+	CPS_Horizontal UMETA(Displayname = "Horizontal List", Tooltip = "Nested Properties will be presented in a Horizontal Layout (scroll bar used if needed)"),
+	CPS_Vertical UMETA(Displayname = "Vertical List", Tooltip = "Nested Properties will be presented in a Vertical Layout"),
 };
 
 UCLASS(EditInlineNew, Abstract)

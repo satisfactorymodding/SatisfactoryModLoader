@@ -8,18 +8,20 @@ UCLASS()
 class SML_API UConfigPropertyArray : public UConfigProperty, public IConfigValueDirtyHandlerInterface {
     GENERATED_BODY()
 public:
-    /** Defines "template" default value used for allocating other values in the array */
-    UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Category = "Configuration Property")
+    /** Defines the "template" default value used for allocating other values in the array */
+    UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Category = "Configuration Property", meta = (DisplayName= "New Value Template"))
     UConfigProperty* DefaultValue;
 
-    /** Current values of this configuration property. Should be of the same type as DefaultValue, names don't matter */
+    /** Current values of this configuration property. At editor time, this is the default contents of the array. Should be of the same type as DefaultValue, names don't matter */
     UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Category = "Configuration Property")
     TArray<UConfigProperty*> Values;
 
-    /** Default value of this configuration property */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration Property")
+    /** Cached value this configuration property should reset to */
+    UPROPERTY(Transient, BlueprintReadOnly, Category = "Internal")
     TArray<UConfigProperty*> DefaultValues;
 
+
+public:
     /** Allocates new default element and inserts it at the specified index */
     UFUNCTION(BlueprintCallable)
     UConfigProperty* AddNewElement();

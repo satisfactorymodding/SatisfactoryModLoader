@@ -6,14 +6,16 @@ UCLASS()
 class SML_API UConfigPropertyString : public UConfigProperty {
     GENERATED_BODY()
 public:
-    /** Current value of this configuration property */
+    /** Current value of this configuration property. At editor time, this is the default value. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration Property")
     FString Value;
 
-    /** Default value of this configuration property */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration Property")
+    /** Cached value this configuration property should reset to */
+    UPROPERTY(Transient, BlueprintReadOnly, Category = "Internal")
     FString DefaultValue;
 
+
+public:
     UConfigPropertyString();
     virtual void PostInitProperties() override;
 
