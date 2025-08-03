@@ -22,4 +22,7 @@ public:
 	UPROPERTY(EditAnywhere,Category= "Default", BlueprintReadOnly, meta = (DisplayAfter = "DefaultValue"))
 		FText HeaderText;
 
+	UPROPERTY(Category = "Default", BlueprintReadWrite, meta = (DisplayAfter = "DefaultValue"))
+		bool Collapsed;
+
 };
