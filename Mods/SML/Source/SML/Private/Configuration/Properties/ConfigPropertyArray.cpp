@@ -1,4 +1,5 @@
 ﻿#include "Configuration/Properties/ConfigPropertyArray.h"
+#include "Configuration/Properties/ConfigPropertyFloat.h"
 #include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 #include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
 #include "Configuration/RawFileFormat/RawFormatValueArray.h"
@@ -148,7 +149,19 @@ bool UConfigPropertyArray::IsSetToDefaultValue_Implementation() const {
         if (!UserProperty || !DefaultProperty) {
             return false;
         }
-        if (UserProperty->DescribeValue() != DefaultProperty->DescribeValue()) {
+        // Check if the classes match and if the values are equal
+        if (UserProperty->GetClass() != DefaultProperty->GetClass()) {
+            return false;
+        }
+        // Special case for float properties to use FMath::IsNearlyEqual for comparison
+        if (const UConfigPropertyFloat* UserFloat = Cast<UConfigPropertyFloat>(UserProperty)) {
+            const UConfigPropertyFloat* DefaultFloat = Cast<UConfigPropertyFloat>(DefaultProperty);
+            if (!DefaultFloat || !FMath::IsNearlyEqual(UserFloat->Value, DefaultFloat->Value, SMALL_NUMBER)) {
+                return false;
+            }
+        }
+        // For other property types, compare describe values
+        else if (UserProperty->DescribeValue() != DefaultProperty->DescribeValue()) {
             return false;
         }
     }
@@ -157,7 +170,16 @@ bool UConfigPropertyArray::IsSetToDefaultValue_Implementation() const {
 }
 
 FString UConfigPropertyArray::GetDefaultValueAsString_Implementation() const {
-    return FString::JoinBy(DefaultValues, TEXT(", "), [](const UConfigProperty* Property) { return Property->GetDefaultValueAsString(); });
+    // A bit hacky, but Property->GetDefaultValueAsString() does not work here as the default
+    // values are not initialized within the DefaultValues array for whatever reason.
+    return FString::JoinBy(DefaultValues, TEXT(", "), [](const UConfigProperty* Property) -> FString {
+        if (!Property) {
+            return TEXT("null");
+        }
+        const FString d = Property->DescribeValue();
+        int32 i = d.Find(TEXT(" "));
+        return (i == INDEX_NONE || d.Len() < 2) ? d : d.Mid(i + 1, d.Len() - i - 2);
+    });
 }
 
 void UConfigPropertyArray::HandleMarkDirty_Implementation() {
