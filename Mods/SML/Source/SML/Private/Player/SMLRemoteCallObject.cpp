@@ -2,6 +2,7 @@
 #include "Command/ChatCommandLibrary.h"
 #include "FGChatManager.h"
 #include "FGPlayerController.h"
+#include "FGGameState.h"
 #include "SatisfactoryModLoader.h"
 #include "Net/UnrealNetwork.h"
 
@@ -30,7 +31,7 @@ void USMLRemoteCallObject::SendChatMessage_Implementation(const FString& Message
 		FChatMessageStruct MessageStruct;
 		MessageStruct.MessageText = FText::FromString(Message);
 		MessageStruct.MessageType = EFGChatMessageType::CMT_SystemMessage;
-		MessageStruct.ServerTimeStamp = GetWorld()->TimeSeconds;
+		MessageStruct.ServerTimeStamp = GetGameState()->GetServerWorldTimeSeconds();
 		MessageStruct.MessageSenderColor = Color;
 		ChatManager->AddChatMessageToReceived(MessageStruct);
 	} else {
