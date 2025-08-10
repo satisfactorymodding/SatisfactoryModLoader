@@ -125,10 +125,13 @@ bool UConfigPropertySection::IsSetToDefaultValue_Implementation() const {
     return true;
 }
 
-bool UConfigPropertySection::HasResettableChildProperty() const {
+bool UConfigPropertySection::HasResettableChildProperty(bool bIncludeHidden = true) const {
     for (const TPair<FString, UConfigProperty*>& Pair : SectionProperties) {
         UConfigProperty* Property = Pair.Value;
-        if (!IsValid(Property) || Property->bHidden) {
+        if (!IsValid(Property)) {
+            continue;
+        }
+        if (!bIncludeHidden && Property->bHidden) {
             continue;
         }
         if (Property->CanResetNow() && !Property->IsSetToDefaultValue()) {

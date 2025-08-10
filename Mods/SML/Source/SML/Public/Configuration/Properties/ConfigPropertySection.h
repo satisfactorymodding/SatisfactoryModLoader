@@ -20,7 +20,7 @@ public:
 
 	/** Checks if any child properties can be reset. */
 	UFUNCTION(BlueprintCallable, Category="Configuration Property")
-	bool HasResettableChildProperty() const;
+	bool HasResettableChildProperty(bool bIncludeHidden) const;
 
 	//Begin UObject
 #if WITH_EDITOR
