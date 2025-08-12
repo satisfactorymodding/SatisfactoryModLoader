@@ -55,10 +55,14 @@ public:
     /** Marks configuration as dirty and pending save */
     UFUNCTION(BlueprintCallable)
     void MarkConfigurationDirty(const FConfigId& ConfigId);
-    
+
     /** Fills passed struct with a data obtained from active configuration identified by passed config id */
     UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, CustomThunk, meta = (CustomStructureParam = "StructInfo"))
     void FillConfigurationStruct(const FConfigId& ConfigId, UPARAM(Ref) const FDynamicStructInfo& StructInfo);
+
+    /** Resets mod configuration to its default values */
+    UFUNCTION(BlueprintCallable)
+    bool ResetToDefault(const FConfigId& ConfigId);
 
     /** Creates a configuration widget hierarchy for active configuration specified by passed id */
     UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "Outer"))
@@ -77,7 +81,7 @@ public:
     UConfigPropertySection* GetConfigurationRootSection(const FConfigId& ConfigId) const;
 
     void Initialize(FSubsystemCollectionBase& Collection) override;
-    
+
     /** Returns configuration folder path used by config manager */
     static FString GetConfigurationFolderPath();
 private:
@@ -87,7 +91,7 @@ private:
     static FString GetConfigurationFilePath(const FConfigId& ConfigId);
 
     void ReplaceConfigurationClass(FRegisteredConfigurationData* ExistingData, TSubclassOf<UModConfiguration> NewConfiguration);
-    
+
     void OnTimerManagerAvailable(class FTimerManager* TimerManager);
 
     void OnConfigMarkedDirty(FTimerManager* TimerManager);
@@ -103,7 +107,7 @@ private:
 
     /** Array of all configurations pending save */
     TArray<FConfigId> PendingSaveConfigurations;
-    
+
     /** Registered configurations */
     UPROPERTY()
     TMap<FConfigId, FRegisteredConfigurationData> Configurations;
@@ -114,7 +118,7 @@ private:
         P_FINISH;
         P_THIS->FillConfigurationStruct(ConfigId, StructInfo);
     }
-	
-	
+
+
 	FTimerHandle SaveToDiskTimerHandle;
 };

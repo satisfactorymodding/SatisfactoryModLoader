@@ -33,6 +33,9 @@ void UConfigPropertySection::Deserialize_Implementation(const URawFormatValue* V
         for (const TPair<FString, UConfigProperty*>& Property : SectionProperties) {
             const URawFormatValue* RawChildValue = ObjectValue->GetValue(Property.Key);
             if (Property.Value != NULL && RawChildValue != NULL) {
+                if (!bAllowUserReset || !bParentSectionAllowsUserReset) {
+                    Property.Value->bParentSectionAllowsUserReset = false;
+                }
                 Property.Value->Deserialize(RawChildValue);
             }
         }
@@ -94,8 +97,55 @@ void UConfigPropertySection::FillConfigStruct_Implementation(const FReflectedObj
     ReflectedObject.SetStructProperty(*VariableName, ChildObject);
 }
 
-void UConfigPropertySection::HandleMarkDirty_Implementation()
-{
+bool UConfigPropertySection::ResetToDefault_Implementation() {
+    if (!CanResetNow()) {
+        return false;
+    }
+    bool bAnyReset = (SectionProperties.Num() == 0);
+    for (const TPair<FString, UConfigProperty*>& Pair : SectionProperties) {
+        UConfigProperty* Property = Pair.Value;
+        if (Property) {
+            bool bResetThisOne = Property->ResetToDefault();
+            bAnyReset = bAnyReset || bResetThisOne;
+        }
+    }
+    if (bAnyReset) {
+        MarkDirty();
+    }
+    return bAnyReset;
+}
+
+bool UConfigPropertySection::IsSetToDefaultValue_Implementation() const {
+    for (const TPair<FString, UConfigProperty*>& Pair : SectionProperties) {
+        UConfigProperty* Property = Pair.Value;
+        if (IsValid(Property) && !Property->IsSetToDefaultValue()) {
+           return false;
+        }
+    }
+    return true;
+}
+
+bool UConfigPropertySection::HasResettableChildProperty(bool bIncludeHidden = true) const {
+    for (const TPair<FString, UConfigProperty*>& Pair : SectionProperties) {
+        UConfigProperty* Property = Pair.Value;
+        if (!IsValid(Property)) {
+            continue;
+        }
+        if (!bIncludeHidden && Property->bHidden) {
+            continue;
+        }
+        if (Property->CanResetNow() && !Property->IsSetToDefaultValue()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+FString UConfigPropertySection::GetDefaultValueAsString_Implementation() const {
+    return TEXT("");
+}
+
+void UConfigPropertySection::HandleMarkDirty_Implementation() {
     MarkDirty();
 }
 
