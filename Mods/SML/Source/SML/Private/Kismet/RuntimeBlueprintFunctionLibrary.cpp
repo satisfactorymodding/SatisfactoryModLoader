@@ -1,6 +1,7 @@
 #include "Kismet/RuntimeBlueprintFunctionLibrary.h"
 #include "FGBlueprintFunctionLibrary.h"
 #include "Configuration/RootConfigValueHolder.h"
+#include "FGFoliageResourceUserData.h"
 #include "SatisfactoryModLoader.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
@@ -295,4 +296,9 @@ void URuntimeBlueprintFunctionLibrary::SetComboBoxFont(UComboBoxString* Box, FSl
 	if (Box) {
 		Box->Font = Font;
 	}
+}
+
+UFGFoliageResourceUserData* URuntimeBlueprintFunctionLibrary::GetStaticMesh_FoliageResourceUserData(UStaticMesh* inMesh) {
+	auto AssetUserData = inMesh->GetAssetUserDataOfClass(UFGFoliageResourceUserData::StaticClass());
+	return Cast<UFGFoliageResourceUserData>(AssetUserData);
 }

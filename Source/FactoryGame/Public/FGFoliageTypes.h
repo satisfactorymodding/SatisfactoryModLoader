@@ -60,7 +60,7 @@ FORCEINLINE uint32 GetTypeHash( const FFoliageRemovalDataKey& saveDataKey )
 /**
  * A struct that can be used to uniquely identify a foliage instance accross the network. Used for replication. 
  */
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FFoliageInstanceStableId
 {
 	GENERATED_BODY()
