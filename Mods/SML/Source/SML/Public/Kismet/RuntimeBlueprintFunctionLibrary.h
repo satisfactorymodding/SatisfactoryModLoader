@@ -13,6 +13,7 @@
 #include "Configuration/Properties/ConfigPropertyBool.h"
 #include "Components/SpinBox.h" 
 #include "Components/ComboBoxString.h" 
+#include "FGFoliageResourceUserData.h"
 #include "RuntimeBlueprintFunctionLibrary.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FObjFunctionBind, UObject*, Object);
@@ -117,4 +118,8 @@ public:
 	/** Allows Font Editing. This needs to be called before PreConstruct. */
 	UFUNCTION(BlueprintCallable, Category = "Widget | Advanced")
 	static void SetComboBoxFont(UComboBoxString* Box, FSlateFontInfo Font);
+
+	/** Retrieves Foliage Resource User Data from Static Mesh. For use with Get Foliage Within Radius and Get Foliage Around Location Of Given Types */
+	UFUNCTION(BlueprintCallable, Category = "Foliage|Foliage Data")
+	static UFGFoliageResourceUserData* GetStaticMesh_FoliageResourceUserData(UStaticMesh* inMesh);
 };
