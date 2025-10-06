@@ -7,19 +7,23 @@
 
 #define LOCTEXT_NAMESPACE "SML"
 
-void UConfigPropertyArray::PostInitProperties() {
-    Super::PostInitProperties();
-    if (HasAnyFlags(RF_ClassDefaultObject) || bDefaultValueInitialized) {
-        return;
+void UConfigPropertyArray::PostLoad() {
+    Super::PostLoad();
+    // Migrate to DefaultValues from Values [Remove only this if statement once migration is no longer needed]
+    // PostLoad runs before the user config is deserialized, but it still has the values from the CDO. If DefaultValues
+    // is set to the type default and Values is not, then Values has the old default value that we need to migrate.
+    if (DefaultValues.Num() == 0 && Values.Num() > 0) {
+        DefaultValues = Values; // Hand off the pointer, no need to duplicate. Values.Empty() below will not delete the objects
     }
-    bDefaultValueInitialized = true;
-    DefaultValues.Empty(Values.Num());
-    for (UConfigProperty* Property : Values) {
+    // Set initial value to default value. This runs before the user config is deserialized
+    // and ensures that if the user has never set a value, it's set to the default.
+    Values.Empty(DefaultValues.Num());
+    for (UConfigProperty* Property : DefaultValues) {
         if (Property) {
             UConfigProperty* Clone = DuplicateObject<UConfigProperty>(Property, this);
-            DefaultValues.Add(Clone);
+            Values.Add(Clone);
         } else {
-            DefaultValues.Add(nullptr);
+            Values.Add(nullptr);
         }
     }
 }
@@ -106,7 +110,7 @@ void UConfigPropertyArray::Deserialize_Implementation(const URawFormatValue* Val
     }
     // Set default values to inherit Allow User Reset
     for (UConfigProperty* Property : DefaultValues) {
-        if (Property && !bAllowUserReset || !bParentSectionAllowsUserReset) {
+        if (Property && (!bAllowUserReset || !bParentSectionAllowsUserReset)) {
             Property->bParentSectionAllowsUserReset = false;
         }
     }
@@ -123,7 +127,7 @@ void UConfigPropertyArray::FillConfigStruct_Implementation(const FReflectedObjec
 }
 
 bool UConfigPropertyArray::ResetToDefault_Implementation() {
-    if (!CanResetNow() || !bDefaultValueInitialized) {
+    if (!CanResetNow()) {
         return false;
     }
     Values.Empty(DefaultValues.Num());

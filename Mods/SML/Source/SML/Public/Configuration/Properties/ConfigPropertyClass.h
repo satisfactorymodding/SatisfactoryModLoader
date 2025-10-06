@@ -18,14 +18,13 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
     bool bAllowNullValue;
 
-    /** Current value of this configuration property. At editor time, this is the default value. DO NOT SET DIRECTLY, USE SetClassValue */
+    /** Default value of this configuration property. This is the value the property resets to. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowAbstract = "true"), Category = "Configuration Property")
-    UClass* Value;
-
-    /** Cached value this configuration property should reset to */
-    UPROPERTY(Transient, BlueprintReadOnly, Category = "Internal")
     UClass* DefaultValue;
 
+    /** Runtime value of this configuration property. DO NOT SET DIRECTLY, USE SetClassValue */
+    UPROPERTY(BlueprintReadOnly, meta = (AllowAbstract = "true"), Category = "Configuration Property")
+    UClass* Value;
 
 public:
     UConfigPropertyClass();
@@ -44,7 +43,7 @@ public:
 #endif
     //End UObject
 
-    virtual void PostInitProperties() override;
+    virtual void PostLoad() override;
 
     //Begin UConfigProperty
     virtual FString DescribeValue_Implementation() const override;
@@ -56,7 +55,4 @@ public:
     virtual bool IsSetToDefaultValue_Implementation() const override;
     virtual FString GetDefaultValueAsString_Implementation() const override;
     //End UConfigProperty
-
-private:
-    bool bDefaultValueInitialized = false;
 };

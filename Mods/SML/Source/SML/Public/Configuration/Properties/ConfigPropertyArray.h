@@ -12,14 +12,13 @@ public:
     UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Category = "Configuration Property", meta = (DisplayName= "New Value Template"))
     UConfigProperty* DefaultValue;
 
-    /** Current values of this configuration property. At editor time, this is the default contents of the array. Should be of the same type as DefaultValue, names don't matter */
+    /** Default values of this configuration property. This is the value the property resets to. Should be of the same type as DefaultValue, names don't matter */
     UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Category = "Configuration Property")
-    TArray<UConfigProperty*> Values;
-
-    /** Cached value this configuration property should reset to */
-    UPROPERTY(Transient, BlueprintReadOnly, Category = "Internal")
     TArray<UConfigProperty*> DefaultValues;
 
+    /** Runtime values of this configuration property. */
+    UPROPERTY(Instanced, BlueprintReadWrite, Category = "Configuration Property")
+    TArray<UConfigProperty*> Values;
 
 public:
     /** Allocates new default element and inserts it at the specified index */
@@ -41,7 +40,7 @@ public:
 #endif
     //End UObject
 
-    virtual void PostInitProperties() override;
+    virtual void PostLoad() override;
 
     //Begin UConfigProperty
     virtual FString DescribeValue_Implementation() const override;
@@ -57,7 +56,4 @@ public:
     //Begin IConfigValueDirtyHandlerInterface
     virtual void HandleMarkDirty_Implementation() override;
     //End IConfigValueDirtyHandlerInterface
-
-private:
-    bool bDefaultValueInitialized = false;
 };

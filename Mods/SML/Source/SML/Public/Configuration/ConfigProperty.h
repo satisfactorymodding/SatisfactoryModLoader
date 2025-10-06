@@ -39,7 +39,7 @@ public:
 
 	/** If true, this property can be reset by the user from the Config Widget. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
-	bool bAllowUserReset;
+	bool bAllowUserReset = true;
 
 	/** Cached. If the parent section allows this property to be reset. It is up to container properties to implement setting this value. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category="Internal")
