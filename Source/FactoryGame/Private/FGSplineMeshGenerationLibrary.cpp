@@ -36,3 +36,9 @@ bool UFGSplineMeshGenerationLibrary::GetNextDistanceExceedingTolerance(USplineCo
 		uint8 fineTuningIterations ,
 		float minStepFactor ,
 		ESplineCoordinateSpace::Type space){ return bool(); }
+
+void UFGSplineMeshGenerationLibrary::BuildSplineCollisionInfoBoxesWithVariableSteps(USplineComponent* InSpline,
+	const FVector& InCollisionExtent,
+	float InCollisionSpacing,
+	TArray<FCachedCollisionBoxInfo>& OutInfo,
+	const FVector& Offset){ }

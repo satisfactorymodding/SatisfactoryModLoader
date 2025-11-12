@@ -127,6 +127,7 @@ void UFGGameUserSettings::TryInitUserSettings(){ }
 void UFGGameUserSettings::InitUserSettings(){ }
 void UFGGameUserSettings::SetPrimaryLangaugeToPlatformDefault(){  }
 UFGGameInstance* UFGGameUserSettings::GetPrimaryGameInstance(){ return nullptr; }
+bool UFGGameUserSettings::IsRunningOnSteamDeckOrConsole(){ return false; }
 ULocalUserInfo* UFGGameUserSettings::GetLocalUserInfo(){ return nullptr; }
 void UFGGameUserSettings::OnPreMapLoad(const FString& MapName){ }
 void UFGGameUserSettings::SetCvarValue(FString cvar, int32 value){ }

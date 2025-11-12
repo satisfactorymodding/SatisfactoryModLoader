@@ -103,6 +103,7 @@ void AFGBuildableSubsystem::AddConveyorChainActor( AFGConveyorChainActor* chainA
 void AFGBuildableSubsystem::RemoveConveyorChainActor( AFGConveyorChainActor* ChainActor){ }
 void AFGBuildableSubsystem::RemoveBuildable( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::RemoveConveyor(AFGBuildableConveyorBase* conveyor){ }
+void AFGBuildableSubsystem::ForceDestroyChainActor(AFGConveyorChainActor* chainActor){ }
 void AFGBuildableSubsystem::SplitConveyorGroupFromAttachment(AFGBuildableConveyorBase* conveyor){ }
 bool AFGBuildableSubsystem::RemoveConveyorFromBucket(AFGBuildableConveyorBase* conveyorToRemove){ return bool(); }
 void AFGBuildableSubsystem::RearrangeConveyorBuckets(int32 emptiedBucketID){ }

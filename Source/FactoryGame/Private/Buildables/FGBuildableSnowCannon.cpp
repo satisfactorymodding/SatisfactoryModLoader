@@ -1,6 +1,7 @@
 #include "Buildables/FGBuildableSnowCannon.h"
 #include "Components/SceneComponent.h"
 #include "FGColoredInstanceMeshProxy.h"
+#include "Net/UnrealNetwork.h"
 
 AFGBuildableSnowCannon::AFGBuildableSnowCannon() : Super() {
 	this->mBaseMeshComponent = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("Base Mesh Component"));
@@ -12,7 +13,10 @@ AFGBuildableSnowCannon::AFGBuildableSnowCannon() : Super() {
 	this->mBaseMeshComponent->SetupAttachment(RootComponent);
 	this->mHeadMeshComponent->SetupAttachment(RootComponent);
 }
-void AFGBuildableSnowCannon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableSnowCannon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableSnowCannon, mCannonAngle);
+}
 void AFGBuildableSnowCannon::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableSnowCannon::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGBuildableSnowCannon::GainedSignificance_Implementation(){ }
