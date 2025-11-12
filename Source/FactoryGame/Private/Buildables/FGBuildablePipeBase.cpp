@@ -42,6 +42,8 @@ TArray<FInstanceData> AFGBuildablePipeBase::GetActorLightweightInstanceData_Impl
 void AFGBuildablePipeBase::GainedSignificance_Implementation(){ }
 void AFGBuildablePipeBase::LostSignificance_Implementation(){ }
 void AFGBuildablePipeBase::SetupForSignificance(){ }
+void AFGBuildablePipeBase::GainedNetSignificance_Implementation(){ }
+void AFGBuildablePipeBase::LostNetSignificance_Implementation(){ }
 float AFGBuildablePipeBase::GetSignificanceRange(){ return float(); }
 float AFGBuildablePipeBase::FindOffsetClosestToLocation(const FVector& location) const{ return float(); }
 void AFGBuildablePipeBase::GetLocationAndDirectionAtOffset(float offset, FVector& out_location, FVector& out_direction) const{ }

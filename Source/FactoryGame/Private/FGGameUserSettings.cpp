@@ -54,6 +54,7 @@ void UFGGameUserSettings::OnGamepadRumbleEnabledUpdated(FString updatedCvar){  }
 void UFGGameUserSettings::OnGamepadRumbleStrengthUpdated(FString updatedCvar){  }
 void UFGGameUserSettings::OnGamepadSpeakerEnabledUpdated(FString updatedCVar){  }
 void UFGGameUserSettings::OnGamepadSpeakerVolumeUpdated(FString updatedCVar){  }
+void UFGGameUserSettings::OnConveyorItemFrequencyUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnFoliageQualityUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnOnlineIntegrationModeUpdated(bool bInvokedByUser){  }
 void UFGGameUserSettings::OnMotionBlurEnabledUpdated(FString updatedCvar){ }

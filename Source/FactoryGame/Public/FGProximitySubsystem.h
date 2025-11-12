@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagContainer.h"
 #include "FGProximitySubsystem.generated.h"
 
 USTRUCT( BlueprintType )
@@ -84,6 +85,9 @@ public:
 	 */
 	void SpawnPooledDecal( const UObject* WorldContextObject, class UMaterialInterface* DecalMaterial, FVector DecalSize, FVector Location, FRotator Rotation = FRotator( 0, 0, 0 ), float LifeSpan = 0 );
 
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "FactoryGame|Proximity" )
+	TMap< TSubclassOf< UFGMapArea > ,FGameplayTag > mAchievementAreas;
+	
 protected:
 	// Begin AActor interface
 	virtual void BeginPlay() override;

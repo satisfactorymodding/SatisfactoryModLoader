@@ -200,6 +200,10 @@ public:
 	void OnGlobalFocusChanged();
 	virtual void OnGlobalFocusChanged_Implementation() {}
 
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "UI" )
+	void OnConstructedOnLowRes();
+	virtual void OnConstructedOnLowRes_Implementation() {}
+
 	// if set to true, the widget will receive OnGlobalFocusChanged events
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Input")
 	bool bGlobalFocusChangedEvents = false;

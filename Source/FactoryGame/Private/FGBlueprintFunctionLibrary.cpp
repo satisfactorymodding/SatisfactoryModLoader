@@ -204,6 +204,7 @@ void UFGBlueprintFunctionLibrary::WaitForFilterTexts(const UObject* WorldContext
 FString UFGBlueprintFunctionLibrary::MakeStringUGCCompatible(const FString& inText, EUGCStringConversionResult& conversionResult){ return FString(); }
 bool UFGBlueprintFunctionLibrary::IsConsolePlatform(){ return false; }
 bool UFGBlueprintFunctionLibrary::IsConsolePlatformPure(){ return false; }
+bool UFGBlueprintFunctionLibrary::IsLowResMode(){ return false; }
 EFGTargetPlatform UFGBlueprintFunctionLibrary::GetCurrentPlatform(){ return EFGTargetPlatform::TP_Windows; }
 FString UFGBlueprintFunctionLibrary::GetPlatformAvatarURL(FName UserPlatform, FString UserPlatformAvatarURL, FString OnlineUserAvatarURL){ return FString(); }
 EUGCVisibilityErrors UFGBlueprintFunctionLibrary::UserCanSeeUGCInThisContext(AFGPlayerController* LocalPlayerController, TArray<FLocalUserNetIdBundle> LastUGCEditBy){ return EUGCVisibilityErrors::UGCVE_NoErrors; }

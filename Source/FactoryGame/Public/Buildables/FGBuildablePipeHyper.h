@@ -21,6 +21,7 @@ public:
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// End AActor interface
 
 	// Begin Save Interface

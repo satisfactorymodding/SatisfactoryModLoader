@@ -18,7 +18,8 @@ class FACTORYGAME_API AFGBuildableSnowCannon : public AFGBuildable, public IFGSi
 
 public:
 	AFGBuildableSnowCannon();
-	
+
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 
@@ -61,7 +62,7 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Snow Cannon" )
 	int32 mAngleOffset;
 
-	UPROPERTY( SaveGame )
+	UPROPERTY(SaveGame, Replicated )
 	int32 mCannonAngle;
 	
 	bool mIsSignificant;

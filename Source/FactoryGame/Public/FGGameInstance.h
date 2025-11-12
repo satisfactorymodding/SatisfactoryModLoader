@@ -7,12 +7,33 @@
 #include "Online/FGOnlineHelpers.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Framework/Application/SlateApplication.h"
 #include "Framework/Application/IInputProcessor.h" // <FL> [WuttkeP] Added input pre-processor for automatically updating the last used input device type.
 #include "FGGameInstance.generated.h"
 
 // <FL> ZimmermannA For usage outside of game instance
 extern TAutoConsoleVariable< bool > CVarForceMouseAndKeyboardDeviceType;
 extern TAutoConsoleVariable< bool > CVarForceGamepadDeviceType;
+
+// <FL> [ZimmermannA] Used for the SteamDeck version
+
+class FSlateSingleUserInputMapping : public ISlateInputManager
+{
+public:
+	virtual int32 GetUserIndexForMouse() const override { return 0; }
+	virtual int32 GetUserIndexForKeyboard() const override { return 0; }
+	virtual FInputDeviceId GetInputDeviceIdForMouse() const override { return IPlatformInputDeviceMapper::Get().GetDefaultInputDevice(); }
+	virtual FInputDeviceId GetInputDeviceIdForKeyboard() const override
+	{
+		return IPlatformInputDeviceMapper::Get().GetDefaultInputDevice();
+	}
+	virtual int32 GetUserIndexForController( int32 ControllerId ) const override { return 0; }
+	virtual TOptional< int32 > GetUserIndexForController( int32 ControllerId, FKey InKey ) const override { return 0; }
+	virtual TOptional< int32 > GetUserIndexForInputDevice( FInputDeviceId InputDeviceId ) const override { return 0; }
+
+	virtual ~FSlateSingleUserInputMapping() = default;
+};
+// </FL>
 
 UENUM(BlueprintType)
 enum class EInputDeviceMode : uint8
@@ -252,6 +273,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
 	FString GetLastInputDeviceIdentifier() const { return mLastInputDeviceIdentifier; }
 	
+	/** Returns if the game is currently running on the steam deck. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|UI" )
+	bool IsRunningOnSteamDeck() const;
+
 	/** Listener delegate is called by the SlateApplication. The OnFocusChanged delegate can be bound to in blueprint. */
 	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|UI" )
 	FFGOnFocusChanged mOnFocusChangedDelegate;

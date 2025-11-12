@@ -12,6 +12,7 @@ AFGBuildableSnowCannon::AFGBuildableSnowCannon() : Super() {
 	this->mBaseMeshComponent->SetupAttachment(RootComponent);
 	this->mHeadMeshComponent->SetupAttachment(RootComponent);
 }
+void AFGBuildableSnowCannon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildableSnowCannon::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableSnowCannon::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGBuildableSnowCannon::GainedSignificance_Implementation(){ }

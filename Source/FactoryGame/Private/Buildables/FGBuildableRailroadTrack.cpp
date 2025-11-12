@@ -59,6 +59,8 @@ bool AFGBuildableRailroadTrack::CanDismantle_Implementation() const{ return bool
 void AFGBuildableRailroadTrack::GetDismantleDependencies_Implementation(TArray<AActor*>& out_dismantleDependencies) const{ }
 void AFGBuildableRailroadTrack::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ }
 void AFGBuildableRailroadTrack::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGBuildableRailroadTrack::GainedNetSignificance_Implementation(){ }
+void AFGBuildableRailroadTrack::LostNetSignificance_Implementation(){ }
 int32 AFGBuildableRailroadTrack::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableRailroadTrack::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 bool AFGBuildableRailroadTrack::ShouldBlockGuidelinePathForHologram(const  AFGHologram* hologram) const{ return bool(); }

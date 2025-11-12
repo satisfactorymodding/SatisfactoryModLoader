@@ -231,6 +231,12 @@ public:
 	UFUNCTION()
 	void OnGamepadSpeakerVolumeUpdated( FString updatedCVar );
 	//</FL>
+
+	// <FL> [ZimmermannA] Used for conveyor item frequency setting
+	UFUNCTION()
+	void OnConveyorItemFrequencyUpdated( FString updatedCvar );
+	//</FL>
+
 	/** Triggered when foliage quality option have changed */
 	UFUNCTION()
 	void OnFoliageQualityUpdated( FString updatedCvar );
@@ -463,6 +469,9 @@ private:
 public:
 	UFGGameInstance* GetPrimaryGameInstance();
 
+	// <FL> [ZimmermannA]
+	static bool IsRunningOnSteamDeckOrConsole();
+	// </FL>
 private:
 
 	// Helper function to get the current users localuserinfo

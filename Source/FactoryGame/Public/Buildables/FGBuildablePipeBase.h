@@ -9,6 +9,7 @@
 #include "FGSignificanceInterface.h"
 #include "FGSplineBuildableInterface.h"
 #include "Templates/SubclassOf.h"
+#include "FGSplineCollisionComponent.h"
 #include "FGBuildablePipeBase.generated.h"
 
 class UFGPipeConnectionComponentBase;
@@ -51,7 +52,9 @@ public:
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
 	virtual	void SetupForSignificance() override;					// TODO deprecate		
-
+	virtual void GainedNetSignificance_Implementation() override;
+	virtual void LostNetSignificance_Implementation() override;
+	
 	virtual float GetSignificanceRange() override;
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|PipeBase" )
@@ -170,6 +173,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	UPhysicalMaterial* PhysicalMaterial;
 
+	UPROPERTY(VisibleInstanceOnly)
+	TObjectPtr<UFGSplineCollisionComponent> mCollisionComponent = nullptr;
+	
 private:
 	friend class AFGPipelineHologram;
 	

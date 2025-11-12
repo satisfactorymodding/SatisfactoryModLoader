@@ -7,8 +7,10 @@
 #include "Components/SplineMeshComponent.h"
 #include "FGBuildable.h"
 #include "FGRailroadSignalBlock.h"
+#include "FGSignificanceInterface.h"
 #include "FGSplineBuildableInterface.h"
 #include "InstancedSplineMeshComponent.h"
+#include "FGSplineCollisionComponent.h"
 #include "FGBuildableRailroadTrack.generated.h"
 
 class USplineComponent;
@@ -96,7 +98,7 @@ struct TStructOpsTypeTraits< FRailroadTrackPosition > : public TStructOpsTypeTra
  * A piece of train track, it has a spline and to ends.
  */
 UCLASS( Abstract )
-class FACTORYGAME_API AFGBuildableRailroadTrack : public AFGBuildable, public IFGSplineBuildableInterface
+class FACTORYGAME_API AFGBuildableRailroadTrack : public AFGBuildable, public IFGSplineBuildableInterface, public IFGSignificanceInterface
 {
 	GENERATED_BODY()
 public:
@@ -120,6 +122,9 @@ public:
 	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
 	// End Save Interface
 
+	virtual void GainedNetSignificance_Implementation() override;
+	virtual void LostNetSignificance_Implementation() override;
+	
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
 	virtual bool ShouldBeConsideredForBase_Implementation() override { return false; }
@@ -222,6 +227,9 @@ public:
 
 	/** Call this to update this tracks overlapping tracks. true if we have any overlapping. */
 	bool UpdateOverlappingTracks();
+
+	void SetupCollisionInfo() const;
+	
 	/** @return Get any tracks adjacent or overlapping this one. */
 	TArray< AFGBuildableRailroadTrack* > GetOverlappingTracks();
 	/** Add an overlapping track */
@@ -332,6 +340,9 @@ private:
 
 	/** Clearance data generated upon request for this track. */
 	TArray< FFGClearanceData > mCachedClearanceData;
+
+	UPROPERTY(VisibleInstanceOnly)
+	TObjectPtr<UFGSplineCollisionComponent> mCollisionComponent = nullptr;
 
 	// Collision Constants. These used to be magic numbers in the .cpp but were moved here so they could be accessed via the SplineBuildableInterface
 	static inline const FVector COLLISION_EXTENT = FVector( 200.f, 300.f, 30.f );

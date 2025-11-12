@@ -32,6 +32,8 @@ void AFGBuildableConveyorBelt::GainedSignificance_Implementation(){ }
 void AFGBuildableConveyorBelt::LostSignificance_Implementation(){ }
 float AFGBuildableConveyorBelt::GetSignificanceRange(){ return float(); }
 void AFGBuildableConveyorBelt::SetupForSignificance(){ }
+void AFGBuildableConveyorBelt::GainedNetSignificance_Implementation(){ }
+void AFGBuildableConveyorBelt::LostNetSignificance_Implementation(){ }
 TArray<FInstanceData> AFGBuildableConveyorBelt::GetActorLightweightInstanceData_Implementation() const{ return TArray<FInstanceData>(); }
 int32 AFGBuildableConveyorBelt::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableConveyorBelt::OnBuildEffectFinished(){ }

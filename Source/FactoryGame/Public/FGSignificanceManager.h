@@ -33,37 +33,12 @@ enum class EFGSignificanceType : uint8
 	MAX
 };
 
-USTRUCT()
-struct FServerSideSignificanceData
-{
-	GENERATED_BODY()
-	
-	UPROPERTY()
-	UObject* Object;
-	
-	mutable SignificanceState bWasSignificant = SignificanceState::Unknown;
-	mutable int32 RelevanceCounter = 0;
-
-	FServerSideSignificanceData(UObject* InObject) : Object( InObject ) { }
-	FServerSideSignificanceData() : Object( nullptr ) { }
-
-	bool operator==(const FServerSideSignificanceData& A) const
-	{
-		return this->Object == A.Object;
-	}
-};
-
-FORCEINLINE uint32 GetTypeHash(const FServerSideSignificanceData* Thing)
-{
-	return FCrc::MemCrc32(&Thing, sizeof(FServerSideSignificanceData));
-}
-
 struct FSignificanceOctreeSemantics
 {
 	// When a leaf gets more than this number of elements, it will split itself into a node with multiple child leaves
-	enum { MaxElementsPerLeaf = 10 };
-	enum { MinInclusiveElementsPerNode = 5 };
-	enum { MaxNodeDepth = 64 };
+	enum { MaxElementsPerLeaf = 16 };
+	enum { MinInclusiveElementsPerNode = 7 };
+	enum { MaxNodeDepth = 20 };
 
 	using FOctree = TOctree2<UObject*, FSignificanceOctreeSemantics>;
 	typedef TInlineAllocator<MaxElementsPerLeaf> ElementAllocator;
@@ -78,7 +53,7 @@ struct FSignificanceOctree : public TOctree2<UObject*, FSignificanceOctreeSemant
 	FSignificanceOctree() = default;
 	FSignificanceOctree(const FVector& InOrigin,FVector::FReal InExtent) : TOctree2(InOrigin, InExtent) {};
 
-	TMap<UObject*, TPair<FServerSideSignificanceData,FOctreeElementId2>> mElementIdMap;
+	TMap<UObject*, FOctreeElementId2> mElementIdMap;
 };
 
 
@@ -251,17 +226,20 @@ private:
 	 * Used for server side significance.*/
 	FSignificanceOctree mServerSideSignificanceOctree;
 
-	/* Set of current significant entries.
-	 * Used for server side significance. */
 	UPROPERTY()
-	TSet<UObject*> mSignificantSet;
+	TSet<UObject*> mSignificantSet = {};
 
+	/* Don't need UPROPERTY() as they are reset every frame. */
+	TSet<UObject*> mNewSignificantSet = {};
+	TSet<UObject*> mRemovedSignificanceSet = {};
+	TSet<UObject*> mAddedSignificanceSet = {};
+	
 	/* Map from pawn to location used to determine the distance. */
 	UPROPERTY()
 	TMap<APawn*, FFGPawnLocationData> mPawnToLocationMap;
 
 	/** True if server side significance needs to be fully recalculated because new objects have been added */
-	bool mServerSideSignificanceDirty{false};
+	bool mServerSideSignificanceDirty = false;
 	// End serverside significance
 };
 

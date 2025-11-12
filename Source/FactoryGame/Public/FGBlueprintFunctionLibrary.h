@@ -37,7 +37,8 @@ enum class EFGTargetPlatform : uint8
 	TP_PS5				UMETA(DisplayName = "Playstation 5"),
 	TP_PS5_Pro			UMETA(DisplayName = "Playstation 5 Pro"),
 	TP_XSS_Lockhart		UMETA(DisplayName = "Xbox Series S (Lockhart)"),
-	TP_XSX_Anaconda		UMETA(DisplayName = "Xbox Series X (Anaconda)")
+	TP_XSX_Anaconda		UMETA(DisplayName = "Xbox Series X (Anaconda)"),
+	TP_SteamDeck		UMETA( DisplayName = "Steam Deck" )
 };
 // </FL>
 
@@ -988,6 +989,9 @@ public:
 
 	UFUNCTION( BlueprintCallable, BlueprintPure )
 	static bool IsConsolePlatformPure();
+
+	UFUNCTION( BlueprintCallable, BlueprintPure )
+	static bool IsLowResMode();
 	
 	// <FL> [ZimmermannA]
 	UFUNCTION(BlueprintPure, Category="Platform")

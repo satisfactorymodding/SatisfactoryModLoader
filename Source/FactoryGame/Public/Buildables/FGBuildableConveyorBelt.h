@@ -9,6 +9,7 @@
 #include "FGSplineBuildableInterface.h"
 #include "FGUseableInterface.h"
 #include "Components/SplineMeshComponent.h"
+#include "FGSplineCollisionComponent.h"
 #include "FGBuildableConveyorBelt.generated.h"
 
 
@@ -37,6 +38,8 @@ public:
 	virtual	void LostSignificance_Implementation() override;
 	virtual float GetSignificanceRange() override;
 	virtual	void SetupForSignificance() override;					// TODO deprecate
+	virtual void GainedNetSignificance_Implementation() override;
+	virtual void LostNetSignificance_Implementation() override;
 	// End IFGSignificanceInterface
 
 	// Begin abstract instance interface.
@@ -178,6 +181,9 @@ private:
 	/* Material assigned to the collision box proxies. */
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	UPhysicalMaterial* PhysicalMaterial;
+
+	UPROPERTY(VisibleInstanceOnly)
+	TObjectPtr<UFGSplineCollisionComponent> mCollisionComponent = nullptr;
 	
 	// Collision Constants. These used to be magic numbers in the .cpp but were moved here so they could be accessed via the SplineBuildableInterface
 	static inline const FVector COLLISION_EXTENT = FVector( 80.f, 80.f, 15.f );

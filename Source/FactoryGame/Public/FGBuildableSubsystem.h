@@ -292,6 +292,9 @@ public:
 	/** Remove the conveyor from the subsystem */
 	void RemoveConveyor( AFGBuildableConveyorBase* conveyor );
 
+	/** Forcefully destroys the given chain actor, removes it from the tick buckets and transfers items from it back to conveyor belts. This function is not particularly fast as it will iterate the conveyor tick buckets */
+	void ForceDestroyChainActor( AFGConveyorChainActor* chainActor );
+
 	/** Splits a conveyor bucket ( invalidating its chain actor ) This is called when a conveyor attachment is placed on a chain (but does not modify the belts via dismantle )*/
 	void SplitConveyorGroupFromAttachment(AFGBuildableConveyorBase* conveyor );
 

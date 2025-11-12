@@ -79,7 +79,8 @@ enum class ESettingVisiblityDisqualifier : uint64
 	// TODO @Nick: Rename this from NotOnWindows to NotOnDesktop in C++
 	USAD_NotOnWindows = 1 << 7 UMETA( DisplayName = "Don't show on Desktop" ),
 	USAD_NotOnPS5 = 1 << 8 UMETA( DisplayName = "Don't show on Playstation 5" ),
-	USAD_NotOnXSX = 1 << 9 UMETA( DisplayName = "Don't show on Xbox Series X|S" )
+	USAD_NotOnXSX = 1 << 9 UMETA( DisplayName = "Don't show on Xbox Series X|S" ),
+	USAD_NotOnSteamDeck = 1 << 10 UMETA( DisplayName = "Don't show on Steam Deck" )
 	// </FL>
 };
 ENUM_CLASS_FLAGS( ESettingVisiblityDisqualifier );
@@ -104,7 +105,8 @@ enum class ETargetPlatformSettings
 	TPS_PS5 UMETA( DisplayName = "Playstation 5" ),
 	TPS_PS5_Pro UMETA( DisplayName = "Playstation 5 Pro" ),
 	TPS_XSX_Lockhart UMETA( DisplayName = "Xbox Series S (Lockhart)" ),
-	TPS_XSX_Anaconda UMETA( DisplayName = "Xbox Series X (Anaconda)" )
+	TPS_XSX_Anaconda UMETA( DisplayName = "Xbox Series X (Anaconda)" ),
+	TPS_SteamDeck UMETA( DisplayName = "Steam Deck" )
 };
 // </FL>
 

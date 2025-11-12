@@ -80,7 +80,9 @@ public:
 	void RegisterWithSubsystem();
 
 	// When a conveyor is removed we are notified. This will cause the chain to self delete. Copying its information back onto the belts the remain
-	void RevertChainActor();
+	// Note: This function is not safe to call directly. Use AFGBuildableSubsystem::ForceDestroyChainActor instead. Calling this function when the chain actor
+	// is part of a conveyor tick group will result in a crash with dangling pointer to the destroyed chain actor.
+	void RevertChainActor_Unsafe();
 	
 	// Called by the Subsystem when this belt registers on begin play
 	bool BuildChain();

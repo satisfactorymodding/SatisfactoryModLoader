@@ -36,6 +36,7 @@ UFGDebugOverlayWidget* UFGGameInstance::GetDebugOverlayWidget(){ return nullptr;
 IFGDedicatedServerInterface* UFGGameInstance::GetDedicatedServerInterface() const{ return nullptr; }
 void UFGGameInstance::SetPendingConnectionEncryptionData(const FFGPendingConnectionEncryptionData& NewEncryptionData){ }
 EInputDeviceType UFGGameInstance::GetActiveInputDeviceType() const{ return EInputDeviceType(); }
+bool UFGGameInstance::IsRunningOnSteamDeck() const{	return false; }
 void UFGGameInstance::LoadComplete(const float loadTime, const FString& mapName){ }
 void UFGGameInstance::OnDestroyOldSessionComplete_JoinSession(FName gameSessionName, bool wasSuccessful){ }
 void UFGGameInstance::OnQueryFriendProductIdCompleted_JoinSession(bool wasSuccessful, FString EpicId,  EOS_ProductUserIdDetails* ProductId){ }

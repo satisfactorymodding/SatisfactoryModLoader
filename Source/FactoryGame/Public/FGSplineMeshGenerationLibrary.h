@@ -2,12 +2,14 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "InstancedSplineMeshComponent.h"
 #include "FactoryGame.h"
+#include "FGSplineCollisionComponent.h"
 #include "FGSplineMeshGenerationLibrary.generated.h"
 
 /**
@@ -169,6 +171,13 @@ public:
 		uint8 fineTuningIterations = 5,
 		float minStepFactor = 0.5f,
 		ESplineCoordinateSpace::Type space = ESplineCoordinateSpace::World );
+
+	static void BuildSplineCollisionInfoBoxesWithVariableSteps(
+		USplineComponent* InSpline,
+		const FVector& InCollisionExtent,
+		float InCollisionSpacing,
+		TArray<FCachedCollisionBoxInfo>& OutInfo,
+		const FVector& Offset = FVector::ZeroVector);
 };
 
 /**
