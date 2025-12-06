@@ -403,7 +403,8 @@ private:
 
 	//Methods which return class/struct/union by value have out pointer inserted
 	//as first parameter after this pointer, with all arguments shifted right by 1 for it
-	static ReturnType* ApplyCallUserTypeByValue( CallableType* Self, ReturnType* OutReturnValue, ArgumentTypes... Args )
+	//On Linux the out pointer goes before this pointer, so we don't need to do anything special
+	static ReturnType* ApplyCallUserTypeByValueWindows( CallableType* Self, ReturnType* OutReturnValue, ArgumentTypes... Args )
 	{
 		// Capture the pointer of the return value
 		// so ScopeType does not have to know about that special case
@@ -453,19 +454,18 @@ private:
     	return (void*) &ApplyCallVoid; //true - type is void
     }
 	static void* GetApplyCall1(std::false_type) {
-	    return GetApplyCall2(std::is_class<ReturnType>{}); //not a void, try call 2
+#ifdef _WIN64
+		using Condition = std::disjunction<std::is_class<ReturnType>, std::is_union<ReturnType>>;
+#else
+		using Condition = std::false_type;
+#endif
+	    return GetApplyCall2(Condition{}); //not a void, try call 2
     }
 	static void* GetApplyCall2(std::true_type) {
-	    return (void*) &ApplyCallUserTypeByValue; //true - type is class
+	    return (void*) &ApplyCallUserTypeByValueWindows; //true - type is class or union on Windows
     }
 	static void* GetApplyCall2(std::false_type) {
-	    return GetApplyCall3(std::is_union<ReturnType>{});
-    }
-	static void* GetApplyCall3(std::true_type) {
-    	return (void*) &ApplyCallUserTypeByValue; //true - type is union
-    }
-	static void* GetApplyCall3(std::false_type) {
-    	return (void*) &ApplyCallScalar; //false - type is scalar type
+    	return (void*) &ApplyCallScalar; //false - type is scalar type or Linux
     }
 	
 	static void* GetApplyCall() {
