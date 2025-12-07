@@ -25,10 +25,20 @@ struct FLinuxMemberFunctionPointer {
 	ptrdiff_t ThisAdjustment;
 };
 
+template<typename Ret, typename... Args>
+FORCEINLINE FMemberFunctionPointer ConvertFunctionPointer(Ret(*SourcePointer)(Args...)) {
+	// Non-member function pointer is just an address.
+	return FMemberFunctionPointer
+	{
+		.FunctionAddress = (void*)SourcePointer,
+	};
+}
+
 template<typename T>
 FORCEINLINE FMemberFunctionPointer ConvertFunctionPointer(const T& SourcePointer) {
+	static_assert(std::is_member_function_pointer_v<T>);
 	const SIZE_T FunctionPointerSize = sizeof(SourcePointer);
-	
+
 #ifdef _WIN64
 	//We only support non-virtual inheritance, so assert on virtual inheritance and unknown inheritance cases
 	//Note that it might also mean that we are dealing with "proper" compiler with static function pointer size
@@ -91,11 +101,11 @@ FORCEINLINE FMemberFunctionPointer ConvertFunctionPointer(const T& SourcePointer
 
 class SML_API FNativeHookManagerInternal {
 public:
-	static void* GetHandlerListInternal( const void* RealFunctionAddress);
-	static void SetHandlerListInstanceInternal(void* RealFunctionAddress, void* HandlerList);
-	static void* RegisterHookFunction(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance, void*
-	                                  HookFunctionPointer, void** OutTrampolineFunction);
-	static void UnregisterHookFunction( const FString& DebugSymbolName, const void* RealFunctionAddress );
+	static void* GetHandlerListInternal(const void* Key);
+	static void SetHandlerListInstanceInternal(void* Key, void* HandlerList);
+	static void* RegisterHookFunction(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance,
+	                                  void* HookFunctionPointer, void** OutTrampolineFunction);
+	static void UnregisterHookFunction(const FString& DebugSymbolName, const void* RealFunctionAddress);
 
 	// A call to this function signature is inlined in mods
 	// Keep it for backwards compatibility
@@ -111,31 +121,31 @@ struct THandlerLists {
 };
 
 template <typename T, typename E>
-static THandlerLists<T, E>* CreateHandlerLists( void* RealFunctionAddress )
+static THandlerLists<T, E>* CreateHandlerLists(void* Key)
 {
-	void* HandlerListRaw = FNativeHookManagerInternal::GetHandlerListInternal( RealFunctionAddress );
+	void* HandlerListRaw = FNativeHookManagerInternal::GetHandlerListInternal(Key);
 	if (HandlerListRaw == nullptr) {
 		HandlerListRaw = new THandlerLists<T, E>();
-		FNativeHookManagerInternal::SetHandlerListInstanceInternal( RealFunctionAddress, HandlerListRaw );
+		FNativeHookManagerInternal::SetHandlerListInstanceInternal(Key, HandlerListRaw);
 	}
-	return static_cast<THandlerLists<T, E>*>( HandlerListRaw );
+	return static_cast<THandlerLists<T, E>*>(HandlerListRaw);
 }
 
 template <typename T, typename E>
-static void DestroyHandlerLists( void* RealFunctionAddress )
+static void DestroyHandlerLists(void* Key)
 {
-	void* HandlerListRaw = FNativeHookManagerInternal::GetHandlerListInternal(RealFunctionAddress);
-
+	void* HandlerListRaw = FNativeHookManagerInternal::GetHandlerListInternal(Key);
 	if (HandlerListRaw != nullptr) {
 		const THandlerLists<T, E>* CastedHandlerList = static_cast<THandlerLists<T, E>*>(HandlerListRaw);
 		delete CastedHandlerList;
-		
-		FNativeHookManagerInternal::SetHandlerListInstanceInternal( RealFunctionAddress, nullptr );
+		FNativeHookManagerInternal::SetHandlerListInstanceInternal(Key, nullptr);
 	}
 }
 
-template <typename TCallable, TCallable Callable>
-struct HookInvoker;
+/// Manages handlers and invokes them when the hooked function is called.
+/// The actual hooking is delegated to the backend, which can decide how it wants to hook.
+template<typename Backend, typename TCallable>
+struct THookInvoker;
 
 template<typename TCallable>
 struct TCallScope;
@@ -189,12 +199,12 @@ public:
 	typedef void HookFuncSig(TCallScope<Result(*)(Args...)>&, Args...);
 	typedef TFunction<HookFuncSig> HookFunc;
 
-    typedef TFunction<Result(Args...)> HookType;
+	typedef TFunction<Result(Args...)> HookType;
 private:
 	TArray<TSharedPtr<HookFunc>>* FunctionList;
 	size_t HandlerPtr = 0;
 	HookType Function;
-	
+
 	bool bForwardCall = true;
 	Result ResultData{};
 public:
@@ -203,7 +213,7 @@ public:
 	FORCEINLINE	bool ShouldForwardCall() const {
 		return bForwardCall;
 	}
-	
+
 	FORCEINLINE Result GetResult() {
 		return ResultData;
 	}
@@ -229,431 +239,314 @@ public:
 	}
 };
 
-template<typename Ret, typename... A>
-class HandlerAfterFunc {
-public:
-	typedef void Value(const Ret&, A...);
-};
-template<typename... A>
-class HandlerAfterFunc<void, A...> {
-public:
-	typedef void Value(A...);
+struct FNativeHookResult
+{
+	/// Value that uniquely identifies this hook, must be the same across all modules. The actual
+	/// meaning of the value is up to the backend, it's never interpreted directly and is only used for
+	/// comparisons.
+	void* Key;
+
+	/// Address of the code that will call the original implementation of the function. This must be an
+	/// actual address and not some sort of (member/virtual) function pointer as it will be directly
+	/// jumped to.
+	void* OriginalFunctionCode;
 };
 
-template<typename T>
-struct FMemberFunctionStruct {
-	T MemberFunctionPtr;
+template<typename TCallable, TCallable OriginalFunction>
+struct TStandardHookBackend
+{
+	// Key = RealFunctionAddress
+
+	template<auto HookFunction>
+	static FNativeHookResult RegisterHook(const FString& DebugSymbolName, const void* SampleObjectInstance = NULL)
+	{
+		FNativeHookResult Result;
+
+		Result.Key = FNativeHookManagerInternal::RegisterHookFunction(
+			DebugSymbolName,
+			ConvertFunctionPointer(OriginalFunction),
+			SampleObjectInstance,
+			(void*)HookFunction,
+			&Result.OriginalFunctionCode);
+
+		return Result;
+	}
+
+	static void UnregisterHook(const FString& DebugSymbolName, void* RealFunctionAddress)
+	{
+		FNativeHookManagerInternal::UnregisterHookFunction(DebugSymbolName, RealFunctionAddress);
+	}
 };
 
-//Hook invoker for global functions
-template <typename TCallable, TCallable Callable, typename ReturnType, typename... ArgumentTypes>
-struct HookInvokerExecutorGlobalFunction {
+template<typename Backend, bool bIsMemberFunction, typename ReturnType, typename... ArgTypes>
+class THookInvokerBase
+{
+	static_assert(!bIsMemberFunction || sizeof...(ArgTypes) >= 1,
+		"Member functions must at least have a 'this' pointer!");
+
+	// For non-void return types, the first parameter is the return value.
+	template<typename R = ReturnType> struct GetHandlerAfterSignature { using type = void(const R&, ArgTypes...); };
+	template<typename R> requires std::is_void_v<R> struct GetHandlerAfterSignature<R> { using type = void(ArgTypes...); };
+
 public:
-	using HookType = TCallable;
-	using ScopeType = TCallScope<TCallable>;
-	using HandlerSignature = void(ScopeType&, ArgumentTypes...);
-	using HandlerSignatureAfter = typename HandlerAfterFunc<ReturnType, ArgumentTypes...>::Value;
-	using Handler = TFunction<HandlerSignature>;
-	using HandlerAfter = TFunction<HandlerSignatureAfter>;
+	using CallableType = ReturnType(ArgTypes...);
+	using ScopeType = TCallScope<CallableType*>;
+	using HandlerBeforeSignature = void(ScopeType&, ArgTypes...);
+	using HandlerAfterSignature = GetHandlerAfterSignature<>::type;
+	using HandlerBefore = TFunction<HandlerBeforeSignature>;
+	using HandlerAfter = TFunction<HandlerAfterSignature>;
+
+	template<typename... BackendArgTypes>
+	static FDelegateHandle AddHandlerBefore(HandlerBefore&& InHandler, BackendArgTypes&&... BackendArgs)
+	{
+		InstallHook(Forward<BackendArgTypes>(BackendArgs)...);
+		return InternalAddHandler(MoveTemp(InHandler), *HandlersBefore, *HandlerBeforeReferences);
+	}
+
+	template<typename... BackendArgTypes>
+	static FDelegateHandle AddHandlerAfter(HandlerAfter&& InHandler, BackendArgTypes&&... BackendArgs)
+	{
+		InstallHook(Forward<BackendArgTypes>(BackendArgs)...);
+		return InternalAddHandler(MoveTemp(InHandler), *HandlersAfter, *HandlerAfterReferences);
+	}
+
+	template<typename... BackendArgTypes>
+	static void RemoveHandler(FDelegateHandle InHandlerHandle, BackendArgTypes&&... BackendArgs)
+	{
+		InternalRemoveHandler(InHandlerHandle, *HandlersBefore, *HandlerBeforeReferences);
+		InternalRemoveHandler(InHandlerHandle, *HandlersAfter, *HandlerAfterReferences);
+
+		if (HandlersBefore->IsEmpty() && HandlersAfter->IsEmpty())
+		{
+			// No handlers left, uninstall the hook.
+			UninstallHook(Forward<BackendArgTypes>(BackendArgs)...);
+		}
+	}
+
 private:
-	static inline TArray<TSharedPtr<Handler>>* HandlersBefore{nullptr};
-	static inline TArray<TSharedPtr<HandlerAfter>>* HandlersAfter{nullptr};
-	static inline TMap<FDelegateHandle, TSharedPtr<Handler>>* HandlerBeforeReferences{nullptr};
-	static inline TMap<FDelegateHandle, TSharedPtr<HandlerAfter>>* HandlerAfterReferences{nullptr};
-	static inline TCallable FunctionPtr{nullptr};
-	static inline void* RealFunctionAddress{nullptr};
-	static inline bool bHookInitialized{false};
-public:
-	static ReturnType ApplyCall(ArgumentTypes... Args)
+	template<typename HandlerType>
+	using HandlersArray = TArray<TSharedPtr<HandlerType>>;
+	template<typename HandlerType>
+	using HandlersMap = TMap<FDelegateHandle, TSharedPtr<HandlerType>>;
+
+	template<typename... BackendArgTypes>
+	static void InstallHook(BackendArgTypes&&... BackendArgs)
 	{
-		ScopeType Scope(HandlersBefore, FunctionPtr);
-		Scope(Args...);
-		for (const TSharedPtr<HandlerAfter>& Handler : *HandlersAfter)
-		{
-			(*Handler)(Scope.GetResult(), Args...);
-		}
-		return Scope.GetResult();
+		if (OriginalFunctionCode != nullptr)
+			return;	// Already installed.
+
+		constexpr auto HookFunction = &GenerateHookFunction<ArgTypes...>::ApplyCall;
+		const FNativeHookResult Result = Backend::template RegisterHook<HookFunction>(Forward<BackendArgTypes>(BackendArgs)...);
+		auto* HandlerLists = CreateHandlerLists<HandlerBefore, HandlerAfter>(Result.Key);
+
+		HandlersBefore = &HandlerLists->HandlersBefore;
+		HandlersAfter = &HandlerLists->HandlersAfter;
+		HandlerBeforeReferences = &HandlerLists->HandlerBeforeReferences;
+		HandlerAfterReferences = &HandlerLists->HandlerAfterReferences;
+		OriginalFunctionCode = Result.OriginalFunctionCode;
+		Key = Result.Key;
 	}
 
-	static void ApplyCallVoid(ArgumentTypes... Args)
+	template<typename... BackendArgTypes>
+	static void UninstallHook(BackendArgTypes&&... BackendArgs)
 	{
-		ScopeType Scope(HandlersBefore, FunctionPtr);
-		Scope(Args...);
-		for (const TSharedPtr<HandlerAfter>& Handler : *HandlersAfter)
-		{
-			(*Handler)(Args...);
-		}
+		if (OriginalFunctionCode == nullptr)
+			return;	// Not installed.
+
+		Backend::UnregisterHook(Forward<BackendArgTypes>(BackendArgs)..., Key);
+		DestroyHandlerLists<HandlerBefore, HandlerAfter>(Key);
+
+		HandlersBefore = nullptr;
+		HandlersAfter = nullptr;
+		HandlerBeforeReferences = nullptr;
+		HandlerAfterReferences = nullptr;
+		OriginalFunctionCode = nullptr;
+		Key = nullptr;
 	}
 
-private:
-	static TCallable GetApplyRef(std::true_type)
+	template<typename HandlerType>
+	static FDelegateHandle InternalAddHandler(HandlerType&& Handler, HandlersArray<HandlerType>& Array, HandlersMap<HandlerType>& Map)
 	{
-		return &ApplyCallVoid;
-	}
+		const TSharedPtr<HandlerType> NewHandlerPtr = MakeShared<HandlerType>(MoveTemp(Handler));
+		const FDelegateHandle NewDelegateHandle(FDelegateHandle::GenerateNewHandle);
 
-	static TCallable GetApplyRef(std::false_type)
-	{
-		return &ApplyCall;
-	}
+		Array.Add(NewHandlerPtr);
+		Map.Add(NewDelegateHandle, NewHandlerPtr);
 
-	static TCallable GetApplyCall()
-	{
-		return GetApplyRef(std::is_same<ReturnType, void>{});
-	}
-public:
-	//This hook invoker is for global non-member static functions, so we don't have to deal with
-	//member function pointers and virtual functions here
-	static void InstallHook(const FString& DebugSymbolName)
-	{
-		if (!bHookInitialized)
-		{
-			bHookInitialized = true;
-			void* HookFunctionPointer = reinterpret_cast<void*>( GetApplyCall() );
-			RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction( DebugSymbolName, { reinterpret_cast<void*>(Callable), 0, 0}, NULL, HookFunctionPointer, (void**) &FunctionPtr );
-			THandlerLists<Handler, HandlerAfter>* HandlerLists = CreateHandlerLists<Handler, HandlerAfter>( RealFunctionAddress );
-
-			HandlersBefore = &HandlerLists->HandlersBefore;
-			HandlersAfter = &HandlerLists->HandlersAfter;
-			HandlerBeforeReferences = &HandlerLists->HandlerBeforeReferences;
-			HandlerAfterReferences = &HandlerLists->HandlerAfterReferences;
-		}
-	}
-
-	// Uninstalls the hook. Also frees the handler lists object.
-	static void UninstallHook(const FString& DebugSymbolName)
-	{
-		if (bHookInitialized)
-		{
-			FNativeHookManagerInternal::UnregisterHookFunction( DebugSymbolName, RealFunctionAddress );
-			DestroyHandlerLists<Handler, HandlerAfter>( RealFunctionAddress );
-			bHookInitialized = false;
-			RealFunctionAddress = nullptr;
-			
-			HandlersBefore = nullptr;
-			HandlersAfter = nullptr;
-			HandlerBeforeReferences = nullptr;
-			HandlerAfterReferences = nullptr;
-		}
-	}
-
-	static FDelegateHandle AddHandlerBefore( Handler&& InHandler )
-	{
-		const TSharedPtr<Handler> NewHandlerPtr = MakeShared<Handler>( MoveTemp( InHandler ) );
-		HandlersBefore->Add( NewHandlerPtr );
-
-		FDelegateHandle NewDelegateHandle( FDelegateHandle::GenerateNewHandle );
-		HandlerBeforeReferences->Add( NewDelegateHandle, NewHandlerPtr );
 		return NewDelegateHandle;
 	}
 
-	static FDelegateHandle AddHandlerAfter( HandlerAfter&& InHandler ) {
-
-		const TSharedPtr<HandlerAfter> NewHandlerPtr = MakeShared<HandlerAfter>( MoveTemp( InHandler ) );
-		HandlersAfter->Add( NewHandlerPtr );
-
-		FDelegateHandle NewDelegateHandle( FDelegateHandle::GenerateNewHandle );
-		HandlerAfterReferences->Add( NewDelegateHandle, NewHandlerPtr );
-		return NewDelegateHandle;
-	}
-
-	static void RemoveHandler(const FString& DebugSymbolName, FDelegateHandle InHandlerHandle )
+	template<typename HandlerType>
+	static void InternalRemoveHandler(FDelegateHandle HandlerHandle, HandlersArray<HandlerType>& Array, HandlersMap<HandlerType>& Map)
 	{
-		if ( HandlerBeforeReferences->Contains( InHandlerHandle ) )
+		if (TSharedPtr<HandlerType> HandlerPtr; Map.RemoveAndCopyValue(HandlerHandle, HandlerPtr))
 		{
-			const TSharedPtr<Handler> HandlerPtr = HandlerBeforeReferences->FindAndRemoveChecked( InHandlerHandle );
-			HandlersBefore->Remove( HandlerPtr );
+			Array.Remove(HandlerPtr);
 		}
-		if ( HandlerAfterReferences->Contains( InHandlerHandle ) )
-		{
-			const TSharedPtr<HandlerAfter> HandlerPtr = HandlerAfterReferences->FindAndRemoveChecked( InHandlerHandle );
-			HandlersAfter->Remove( HandlerPtr );
-		}
-
-		if ( HandlersAfter->IsEmpty() && HandlersBefore->IsEmpty() )
-		{
-			UninstallHook(DebugSymbolName);
-		}
-
-		InHandlerHandle.Reset();
 	}
-};
 
-//Hook invoker for member functions
-template <typename TCallable, TCallable Callable, bool bIsConst, typename ReturnType, typename CallableType, typename... ArgumentTypes>
-struct HookInvokerExecutorMemberFunction {
-public:
-	using ConstCorrectThisPtr = std::conditional_t<bIsConst, const CallableType*, CallableType*>;
-	using CallScopeFunctionSignature = ReturnType(*)(ConstCorrectThisPtr, ArgumentTypes...); 
-	typedef TCallScope<CallScopeFunctionSignature> ScopeType;
-	
-	typedef void HandlerSignature(ScopeType&, ConstCorrectThisPtr, ArgumentTypes...);
-	typedef typename HandlerAfterFunc<ReturnType, ConstCorrectThisPtr, ArgumentTypes...>::Value HandlerSignatureAfter;
-	typedef ReturnType HookType(ConstCorrectThisPtr, ArgumentTypes...);
-
-	using Handler = TFunction<HandlerSignature>;
-	using HandlerAfter = TFunction<HandlerSignatureAfter>;
-private:
-	static inline TArray<TSharedPtr<Handler>>* HandlersBefore{nullptr};
-	static inline TArray<TSharedPtr<HandlerAfter>>* HandlersAfter{nullptr};
-	static inline TMap<FDelegateHandle, TSharedPtr<Handler>>* HandlerBeforeReferences{nullptr};
-	static inline TMap<FDelegateHandle, TSharedPtr<HandlerAfter>>* HandlerAfterReferences{nullptr};
-	static inline HookType* FunctionPtr{nullptr};
-	static inline void* RealFunctionAddress{nullptr};
-	static inline bool bHookInitialized{false};
-
-	//Methods which return class/struct/union by value have out pointer inserted
-	//as first parameter after this pointer, with all arguments shifted right by 1 for it
-	//On Linux the out pointer goes before this pointer, so we don't need to do anything special
-	static ReturnType* ApplyCallUserTypeByValueWindows( CallableType* Self, ReturnType* OutReturnValue, ArgumentTypes... Args )
+	template<typename... /* ArgTypes */>
+	struct GenerateHookFunction
 	{
-		// Capture the pointer of the return value
-		// so ScopeType does not have to know about that special case
-		auto Trampoline = [&](ConstCorrectThisPtr Self_, ArgumentTypes... Args_) -> ReturnType
+		static ReturnType ApplyCall(ArgTypes... Args)
 		{
-			(reinterpret_cast<ReturnType*(*)(ConstCorrectThisPtr, ReturnType*, ArgumentTypes...)>(FunctionPtr))(Self_, OutReturnValue, Args_...);
-			return *OutReturnValue;
-		};
-
-		ScopeType Scope(HandlersBefore, Trampoline);
-		Scope(Self, Args...);
-		for ( const TSharedPtr<HandlerAfter>& Handler : *HandlersAfter )
-		{
-			(*Handler)(Scope.GetResult(), Self, Args...);
+			ScopeType Scope(HandlersBefore, reinterpret_cast<CallableType*>(OriginalFunctionCode));
+			Scope(Args...);
+			if constexpr (std::is_void_v<ReturnType>)
+			{
+				for (const TSharedPtr<HandlerAfter>& Handler : *HandlersAfter)
+				{
+					(*Handler)(Args...);
+				}
+			}
+			else
+			{
+				for (const TSharedPtr<HandlerAfter>& Handler : *HandlersAfter)
+				{
+					(*Handler)(Scope.GetResult(), Args...);
+				}
+				return Scope.GetResult();
+			}
 		}
-		//We always return outReturnValue, so copy our result to output variable and return it
-		*OutReturnValue = Scope.GetResult();
-		return OutReturnValue;
-	}
+	};
 
-	//Normal scalar type call, where no additional arguments are inserted
-	//If it were returning user type by value, first argument would be R*, which is incorrect - that's why we need separate
-	//applyCallUserType with correct argument order
-	static ReturnType ApplyCallScalar(CallableType* Self, ArgumentTypes... Args)
-	{
-		ScopeType Scope(HandlersBefore, FunctionPtr);
-		Scope(Self, Args...);
-		for ( const TSharedPtr<HandlerAfter>& Handler : *HandlersAfter )
-		{
-			(*Handler)(Scope.GetResult(), Self, Args...);
-		}
-		return Scope.GetResult();
-	}
-
-	//Call for void return type - nothing special to do with void
-	static void ApplyCallVoid(CallableType* Self, ArgumentTypes... Args)
-	{
-		ScopeType Scope(HandlersBefore, FunctionPtr);
-		Scope(Self, Args...);
-		for ( const TSharedPtr<HandlerAfter>& Handler : *HandlersAfter )
-		{
-			(*Handler)(Self, Args...);
-		}
-	}
-
-    static void* GetApplyCall1(std::true_type) {
-    	return (void*) &ApplyCallVoid; //true - type is void
-    }
-	static void* GetApplyCall1(std::false_type) {
 #ifdef _WIN64
-		using Condition = std::disjunction<std::is_class<ReturnType>, std::is_union<ReturnType>>;
-#else
-		using Condition = std::false_type;
+	// Depending on the type of the return value, the ABI might require that the caller allocates memory
+	// for the result and passes a pointer to it as a hidden parameter to the function.
+	//
+	// We usually don't need to worry about this, the compiler will do the same to our hook function if
+	// needed and it will just work, however Windows has an exception for non-static member functions
+	// where it will pass the return address parameter after the "this" pointer. This is a problem for
+	// us because our hook functions are never actually non-static member functions, we just emulate
+	// them by having an explicit "this" parameter, so we can't rely on the compiler to do the right
+	// thing.
+	//
+	// Fortunately the rules are very simple on Windows: a non-static member function will never return
+	// a user-defined type (class/union) in a register, regardless of size or triviality.
+	//
+	// This isn't a problem on Linux because System V doesn't treat non-static member functions any
+	// differently, so emulating one with an explicit "this" parameter doesn't cause any issues.
+	template<typename ThisPointer, typename... OtherArgTypes>
+		requires (bIsMemberFunction && (std::is_class_v<ReturnType> || std::is_union_v<ReturnType>))
+	struct GenerateHookFunction<ThisPointer, OtherArgTypes...>
+	{
+		static ReturnType* ApplyCall(ThisPointer Self, ReturnType* OutReturnValue, OtherArgTypes... Args)
+		{
+			// Capture the pointer of the return value so ScopeType does not have to know about that special case.
+			auto Trampoline = [OutReturnValue](ThisPointer Self, OtherArgTypes... OtherArgs) -> ReturnType
+			{
+				reinterpret_cast<ReturnType*(*)(ThisPointer, ReturnType*, OtherArgTypes...)>(OriginalFunctionCode)(Self, OutReturnValue, OtherArgs...);
+				return *OutReturnValue;
+			};
+
+			ScopeType Scope(HandlersBefore, Trampoline);
+			Scope(Self, Args...);
+			for (const TSharedPtr<HandlerAfter>& Handler : *HandlersAfter)
+			{
+				(*Handler)(Scope.GetResult(), Self, Args...);
+			}
+			*OutReturnValue = Scope.GetResult();
+			return OutReturnValue;
+		}
+	};
 #endif
-	    return GetApplyCall2(Condition{}); //not a void, try call 2
-    }
-	static void* GetApplyCall2(std::true_type) {
-	    return (void*) &ApplyCallUserTypeByValueWindows; //true - type is class or union on Windows
-    }
-	static void* GetApplyCall2(std::false_type) {
-    	return (void*) &ApplyCallScalar; //false - type is scalar type or Linux
-    }
-	
-	static void* GetApplyCall() {
-    	return GetApplyCall1(std::is_same<ReturnType, void>{});
-	}
-public:
-	//Handles normal member function hooking, e.g hooking fixed symbol implementation in executable
-	static void InstallHook(const FString& DebugSymbolName, const void* SampleObjectInstance = NULL)
-	{
-		if (!bHookInitialized)
-		{
-			bHookInitialized = true;
-			void* HookFunctionPointer = GetApplyCall();
-			const FMemberFunctionPointer MemberFunctionPointer = ConvertFunctionPointer( Callable );
-			
-			RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction( DebugSymbolName,
-				MemberFunctionPointer,
-				SampleObjectInstance,
-				HookFunctionPointer, (void**) &FunctionPtr );
-			
-			THandlerLists<Handler, HandlerAfter>* HandlerLists = CreateHandlerLists<Handler, HandlerAfter>( RealFunctionAddress );
 
-			HandlersBefore = &HandlerLists->HandlersBefore;
-			HandlersAfter = &HandlerLists->HandlersAfter;
-			HandlerBeforeReferences = &HandlerLists->HandlerBeforeReferences;
-			HandlerAfterReferences = &HandlerLists->HandlerAfterReferences;
-		}
-	}
-
-	// Uninstalls the hook. Also frees the handler lists object.
-	static void UninstallHook(const FString& DebugSymbolName)
-	{
-		if (bHookInitialized)
-		{
-			FNativeHookManagerInternal::UnregisterHookFunction( DebugSymbolName, RealFunctionAddress );
-			DestroyHandlerLists<Handler, HandlerAfter>( RealFunctionAddress );
-			bHookInitialized = false;
-			RealFunctionAddress = nullptr;
-			
-			HandlersBefore = nullptr;
-			HandlersAfter = nullptr;
-			HandlerBeforeReferences = nullptr;
-			HandlerAfterReferences = nullptr;
-		}
-	}
-
-	static FDelegateHandle AddHandlerBefore( Handler&& InHandler )
-	{
-		const TSharedPtr<Handler> NewHandlerPtr = MakeShared<Handler>( MoveTemp( InHandler ) );
-		HandlersBefore->Add( NewHandlerPtr );
-
-		FDelegateHandle NewDelegateHandle( FDelegateHandle::GenerateNewHandle );
-		HandlerBeforeReferences->Add( NewDelegateHandle, NewHandlerPtr );
-		return NewDelegateHandle;
-	}
-
-	static FDelegateHandle AddHandlerAfter( HandlerAfter&& InHandler ) {
-
-		const TSharedPtr<HandlerAfter> NewHandlerPtr = MakeShared<HandlerAfter>( MoveTemp( InHandler ) );
-		HandlersAfter->Add( NewHandlerPtr );
-
-		FDelegateHandle NewDelegateHandle( FDelegateHandle::GenerateNewHandle );
-		HandlerAfterReferences->Add( NewDelegateHandle, NewHandlerPtr );
-		return NewDelegateHandle;
-	}
-
-	static void RemoveHandler(const FString& DebugSymbolName, FDelegateHandle InHandlerHandle )
-	{
-		if ( HandlerBeforeReferences->Contains( InHandlerHandle ) )
-		{
-			const TSharedPtr<Handler> HandlerPtr = HandlerBeforeReferences->FindAndRemoveChecked( InHandlerHandle );
-			HandlersBefore->Remove( HandlerPtr );
-		}
-		if ( HandlerAfterReferences->Contains( InHandlerHandle ) )
-		{
-			const TSharedPtr<HandlerAfter> HandlerPtr = HandlerAfterReferences->FindAndRemoveChecked( InHandlerHandle );
-			HandlersAfter->Remove( HandlerPtr );
-		}
-
-		if ( HandlersAfter->IsEmpty() && HandlersBefore->IsEmpty() )
-		{
-			UninstallHook(DebugSymbolName);
-		}
-
-		InHandlerHandle.Reset();
-	}
+	static inline HandlersArray<HandlerBefore>* HandlersBefore;
+	static inline HandlersArray<HandlerAfter>* HandlersAfter;
+	static inline HandlersMap<HandlerBefore>* HandlerBeforeReferences;
+	static inline HandlersMap<HandlerAfter>* HandlerAfterReferences;
+	static inline void* OriginalFunctionCode;
+	static inline void* Key;
 };
 
-//Hook invoker for member non-const functions
-template<typename R, typename C, typename... A, R(C::*Callable)(A...)>
-struct HookInvoker<R(C::*)(A...), Callable> : HookInvokerExecutorMemberFunction<R(C::*)(A...), Callable, false, R, C, A...> {
-};
+// non-const non-static member function
+template<typename Backend, typename R, typename C, typename... A>
+struct THookInvoker<Backend, R(C::*)(A...)> : THookInvokerBase<Backend, true, R, C*, A...> {};
 
-//Hook invoker for member const functions
-template<typename R, typename C, typename... A, R(C::*Callable)(A...) const>
-struct HookInvoker<R(C::*)(A...) const, Callable> : HookInvokerExecutorMemberFunction<R(C::*)(A...) const, Callable, true, R, C, A...> {
-};
+// const non-static member function
+template<typename Backend, typename R, typename C, typename... A>
+struct THookInvoker<Backend, R(C::*)(A...) const> : THookInvokerBase<Backend, true, R, const C*, A...> {};
 
-//Hook invoker for global functions
-template<typename R, typename... A, R(*Callable)(A...)>
-struct HookInvoker<R(*)(A...), Callable> : HookInvokerExecutorGlobalFunction<R(*)(A...), Callable, R, A...> {
-};
-
+// free function or static member function
+template<typename Backend, typename R, typename... A>
+struct THookInvoker<Backend, R(*)(A...)> : THookInvokerBase<Backend, false, R, A...> {};
 
 UE_DEPRECATED( 5.2, "CallScope type is deprecated. Please migrate your code to use TCallScope" );
 template<typename T>
 using CallScope = TCallScope<T>;
 
+/*
+ * SUBSCRIBE_METHOD
+ * Will trigger a runtime error if the given method is virtual.
+ */
+
 #define SUBSCRIBE_METHOD(MethodReference, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference)); \
-		return HookInvoker<decltype(&MethodReference), &MethodReference>::AddHandlerBefore(Handler); \
-	} )
+	SUBSCRIBE_METHOD_EXPLICIT(decltype(&MethodReference), MethodReference, Handler)
 
 #define SUBSCRIBE_METHOD_AFTER(MethodReference, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference)); \
-		return HookInvoker<decltype(&MethodReference), &MethodReference>::AddHandlerAfter(Handler); \
-	} )
+	SUBSCRIBE_METHOD_EXPLICIT_AFTER(decltype(&MethodReference), MethodReference, Handler)
 
 #define SUBSCRIBE_METHOD_EXPLICIT(MethodSignature, MethodReference, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<MethodSignature, &MethodReference>::InstallHook(TEXT(#MethodReference)); \
-		return HookInvoker<MethodSignature, &MethodReference>::AddHandlerBefore(Handler); \
-	} )
+	INTERNAL_SUBSCRIBE_METHOD(Before, MethodSignature, MethodReference, Handler)
 
 #define SUBSCRIBE_METHOD_EXPLICIT_AFTER(MethodSignature, MethodReference, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<MethodSignature, &MethodReference>::InstallHook(TEXT(#MethodReference)); \
-		return HookInvoker<MethodSignature, &MethodReference>::AddHandlerAfter(Handler); \
-	} )
+	INTERNAL_SUBSCRIBE_METHOD(After, MethodSignature, MethodReference, Handler)
+
+#define INTERNAL_SUBSCRIBE_METHOD(HandlerKind, MethodSignature, MethodReference, Handler) \
+	THookInvoker<TStandardHookBackend<MethodSignature, &MethodReference>, MethodSignature> \
+		::AddHandler##HandlerKind(Handler, TEXT(#MethodReference))
+
+/*
+ * SUBSCRIBE_METHOD_VIRTUAL
+ * Uses the vtable from the given instance to locate the function.
+ */
 
 #define SUBSCRIBE_METHOD_VIRTUAL(MethodReference, SampleObjectInstance, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
-		return HookInvoker<decltype(&MethodReference), &MethodReference>::AddHandlerBefore(Handler); \
-	} )
+	SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL(decltype(&MethodReference), MethodReference, SampleObjectInstance, Handler)
 
 #define SUBSCRIBE_METHOD_VIRTUAL_AFTER(MethodReference, SampleObjectInstance, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
-		return HookInvoker<decltype(&MethodReference), &MethodReference>::AddHandlerAfter(Handler); \
-	} )
+	SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL_AFTER(decltype(&MethodReference), MethodReference, SampleObjectInstance, Handler)
 
 #define SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL(MethodSignature, MethodReference, SampleObjectInstance, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<MethodSignature, &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
-		return HookInvoker<MethodSignature, &MethodReference>::AddHandlerBefore(Handler); \
-	} )
+	INTERNAL_SUBSCRIBE_METHOD_VIRTUAL(Before, MethodSignature, MethodReference, SampleObjectInstance, Handler)
 
 #define SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL_AFTER(MethodSignature, MethodReference, SampleObjectInstance, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<MethodSignature, &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
-		return HookInvoker<MethodSignature, &MethodReference>::AddHandlerAfter(Handler); \
-	} )
+	INTERNAL_SUBSCRIBE_METHOD_VIRTUAL(After, MethodSignature, MethodReference, SampleObjectInstance, Handler)
+
+#define INTERNAL_SUBSCRIBE_METHOD_VIRTUAL(HandlerKind, MethodSignature, MethodReference, SampleObjectInstance, Handler) \
+	THookInvoker<TStandardHookBackend<MethodSignature, &MethodReference>, MethodSignature> \
+		::AddHandler##HandlerKind(Handler, TEXT(#MethodReference), SampleObjectInstance)
+
+/*
+ * SUBSCRIBE_UOBJECT_METHOD
+ * Uses the vtable from the CDO of the given class to locate the function.
+ */
 
 #define SUBSCRIBE_UOBJECT_METHOD(ObjectClass, MethodName, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::InstallHook(TEXT(#ObjectClass "::" #MethodName), GetDefault<ObjectClass>()); \
-		return HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::AddHandlerBefore(Handler); \
-	} )
+	SUBSCRIBE_METHOD_VIRTUAL(ObjectClass::MethodName, GetDefault<ObjectClass>(), Handler)
 
 #define SUBSCRIBE_UOBJECT_METHOD_AFTER(ObjectClass, MethodName, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::InstallHook(TEXT(#ObjectClass "::" #MethodName), GetDefault<ObjectClass>()); \
-		return HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::AddHandlerAfter(Handler); \
-	} )
+	SUBSCRIBE_METHOD_VIRTUAL_AFTER(ObjectClass::MethodName, GetDefault<ObjectClass>(), Handler)
 
 #define SUBSCRIBE_UOBJECT_METHOD_EXPLICIT(MethodSignature, ObjectClass, MethodName, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<MethodSignature, &ObjectClass::MethodName>::InstallHook(TEXT(#ObjectClass "::" #MethodName), GetDefault<ObjectClass>()); \
-		return HookInvoker<MethodSignature, &ObjectClass::MethodName>::AddHandlerBefore(Handler); \
-	} )
+	SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL(MethodSignature, ObjectClass::MethodName, GetDefault<ObjectClass>(), Handler)
 
 #define SUBSCRIBE_UOBJECT_METHOD_EXPLICIT_AFTER(MethodSignature, ObjectClass, MethodName, Handler) \
-	Invoke( [&]() { \
-		HookInvoker<MethodSignature, &ObjectClass::MethodName>::InstallHook(TEXT(#ObjectClass "::" #MethodName), GetDefault<ObjectClass>()); \
-		return HookInvoker<MethodSignature, &ObjectClass::MethodName>::AddHandlerAfter(Handler); \
-	} )
+	SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL_AFTER(MethodSignature, ObjectClass::MethodName, GetDefault<ObjectClass>(), Handler)
+
+/*
+ * UNSUBSCRIBE_METHOD
+ */
 
 #define UNSUBSCRIBE_METHOD(MethodReference, HandlerHandle) \
-	HookInvoker<decltype(&MethodReference), &MethodReference>::RemoveHandler(TEXT(#MethodReference), HandlerHandle )
+	UNSUBSCRIBE_METHOD_EXPLICIT(decltype(&MethodReference), MethodReference, HandlerHandle)
 
 #define UNSUBSCRIBE_METHOD_EXPLICIT(MethodSignature, MethodReference, HandlerHandle) \
-	HookInvoker<MethodSignature, &MethodReference>::RemoveHandler(TEXT(#MethodReference), HandlerHandle )
+	THookInvoker<TStandardHookBackend<MethodSignature, &MethodReference>, MethodSignature> \
+		::RemoveHandler(HandlerHandle, TEXT(#MethodReference))
 
 #define UNSUBSCRIBE_UOBJECT_METHOD(ObjectClass, MethodName, HandlerHandle) \
-	HookInvoker<decltype(&ObjectClass::MethodName), &ObjectClass::MethodName>::RemoveHandler(TEXT(#ObjectClass "::" #MethodName), HandlerHandle )
+	UNSUBSCRIBE_METHOD(ObjectClass::MethodName, HandlerHandle)
 
 #define UNSUBSCRIBE_UOBJECT_METHOD_EXPLICIT(MethodSignature, ObjectClass, MethodName, HandlerHandle) \
-	HookInvoker<MethodSignature, &ObjectClass::MethodName>::RemoveHandler(TEXT(#ObjectClass "::" #MethodName), HandlerHandle )
+	UNSUBSCRIBE_METHOD_EXPLICIT(MethodSignature, ObjectClass::MethodName, HandlerHandle)

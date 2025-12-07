@@ -5,75 +5,80 @@
 
 DEFINE_LOG_CATEGORY(LogNativeHookManager);
 
+namespace
+{
+	struct FStandardHook
+	{
+		void* Trampoline;
+		funchook* FuncHook;
+	};
+}
+
 //since templates are actually compiled for each module separately,
 //we need to have a global handler map which will be shared by all hook invoker templates available in all modules
 //to keep single hook instance for each method
-static TMap<void*, void*> RegisteredListenerMap;
+static TMap<void*, void*> HandlerListMap;
+static TMap<const void* /* RealFunctionAddress */, FStandardHook> StandardHookMap;
 
-//Map of the function implementation pointer to the trampoline function pointer. Used to ensure one hook per function installed
-static TMap<void*, void*> InstalledHookMap;
-
-//Store the funchook instance used to hook each function
-static TMap<void*, funchook_t*> FunchookMap;
-
-void* FNativeHookManagerInternal::GetHandlerListInternal( const void* RealFunctionAddress ) {
-	void** ExistingMapEntry = RegisteredListenerMap.Find(RealFunctionAddress);
+void* FNativeHookManagerInternal::GetHandlerListInternal(const void* Key)
+{
+	void** ExistingMapEntry = HandlerListMap.Find(Key);
 	return ExistingMapEntry ? *ExistingMapEntry : nullptr;
 }
 
-void FNativeHookManagerInternal::SetHandlerListInstanceInternal(void* RealFunctionAddress, void* HandlerList)
+void FNativeHookManagerInternal::SetHandlerListInstanceInternal(void* Key, void* HandlerList)
 {
-	if ( HandlerList == nullptr )
+	if (HandlerList == nullptr)
 	{
-		RegisteredListenerMap.Remove( RealFunctionAddress );
+		HandlerListMap.Remove(Key);
 	}
 	else
 	{
-		RegisteredListenerMap.Add(RealFunctionAddress, HandlerList);
+		HandlerListMap.Add(Key, HandlerList);
 	}
 }
 
 #define CHECK_FUNCHOOK_ERR(arg) \
 	if (arg != FUNCHOOK_ERROR_SUCCESS) UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking function %s failed: funchook failed: %hs"), *DebugSymbolName, funchook_error_message(funchook));
 
-void LogDebugAssemblyAnalyzer(const ANSICHAR* Message) {
+static void LogDebugAssemblyAnalyzer(const ANSICHAR* Message) {
 	UE_LOG(LogNativeHookManager, Display, TEXT("AssemblyAnalyzer Debug: %hs"), Message);
 }
 
 // Installs a hook a the original function. Returns true if a new hook is installed or false on error or
 // a hook already exists and is reused.
-bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, void* HookFunctionPointer, void** OutTrampolineFunction) {
-	if (InstalledHookMap.Contains(OriginalFunctionPointer)) {
+static bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, void* HookFunctionPointer, void** OutTrampolineFunction) {
+	if (const FStandardHook* StandardHook = StandardHookMap.Find(OriginalFunctionPointer)) {
 		//Hook already installed, set trampoline function and return
-		*OutTrampolineFunction = InstalledHookMap.FindChecked(OriginalFunctionPointer);
+		*OutTrampolineFunction = StandardHook->Trampoline;
 		UE_LOG(LogNativeHookManager, Display, TEXT("Hook already installed"));
 		return false;
 	}
+
 	funchook* funchook = funchook_create();
 	if (funchook == nullptr) {
 		UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking function %s failed: funchook_create() returned NULL"), *DebugSymbolName);
 		return false;
 	}
-	*OutTrampolineFunction = OriginalFunctionPointer;
 
 	UE_LOG(LogNativeHookManager, Display, TEXT("Overriding %s at %p to %p"), *DebugSymbolName, OriginalFunctionPointer, HookFunctionPointer);
-
+	*OutTrampolineFunction = OriginalFunctionPointer;
 	CHECK_FUNCHOOK_ERR(funchook_prepare(funchook, OutTrampolineFunction, HookFunctionPointer));
 	CHECK_FUNCHOOK_ERR(funchook_install(funchook, 0));
-	InstalledHookMap.Add(OriginalFunctionPointer, *OutTrampolineFunction);
-	FunchookMap.Add(OriginalFunctionPointer, funchook);
+	StandardHookMap.Add(OriginalFunctionPointer, FStandardHook{*OutTrampolineFunction, funchook});
+
 	return true;
 }
 
 // This method is provided for backwards-compatibility
-SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction) {
+void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction) {
 	// Previous SML versions only supported Windows mods, which have no Vtable adjustment information
 	// in the member function pointer, so we set that value to zero.
 	FMemberFunctionPointer MemberFunctionPointer = {OriginalFunctionPointer, static_cast<uint32>(ThisAdjustment), 0};
 	return FNativeHookManagerInternal::RegisterHookFunction(DebugSymbolName, MemberFunctionPointer, SampleObjectInstance, HookFunctionPointer, OutTrampolineFunction);
 }
 
-SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance, void* HookFunctionPointer, void** OutTrampolineFunction) {
+void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance, void* HookFunctionPointer, void** OutTrampolineFunction) {
 	SetDebugLoggingHook(&LogDebugAssemblyAnalyzer);
 
 #ifdef _WIN64
@@ -102,7 +107,7 @@ SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& De
 		// The patched call is virtual. Calculate the actual address of the function being called.
 		checkf(SampleObjectInstance, TEXT("Attempt to hook virtual function override without providing object instance for implementation resolution"));
 		UE_LOG(LogNativeHookManager, Display, TEXT("Attempting to resolve virtual function %s. This adjustment: 0x%x, virtual function table offset: 0x%x"), *DebugSymbolName, MemberFunctionPointer.ThisAdjustment, MemberFunctionPointer.VtableDisplacement);
-		
+
 		//Target Function Address = (this + ThisAdjustment)->vftable[VirtualFunctionOffset]
 		void* AdjustedThisPointer = ((uint8*) SampleObjectInstance) + MemberFunctionPointer.ThisAdjustment;
 		uint8** VirtualFunctionTableBase = *((uint8***) AdjustedThisPointer);
@@ -121,22 +126,20 @@ SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& De
 	//Log debugging information just in case
 	void* ResolvedHookingFunctionPointer = FunctionInfo.RealFunctionAddress;
 	UE_LOG(LogNativeHookManager, Display, TEXT("Hooking function %s: Provided address: %p, resolved address: %p"), *DebugSymbolName, MemberFunctionPointer.FunctionAddress, ResolvedHookingFunctionPointer);
-	
+
 	HookStandardFunction(DebugSymbolName, ResolvedHookingFunctionPointer, HookFunctionPointer, OutTrampolineFunction);
 	UE_LOG(LogNativeHookManager, Display, TEXT("Successfully hooked function %s at %p"), *DebugSymbolName, ResolvedHookingFunctionPointer);
 	return ResolvedHookingFunctionPointer;
 }
 
 void FNativeHookManagerInternal::UnregisterHookFunction(const FString& DebugSymbolName, const void* RealFunctionAddress) {
-	funchook_t** funchookPtr = FunchookMap.Find(RealFunctionAddress);
-	if (funchookPtr == nullptr) {
+	FStandardHook StandardHook;
+	if (!StandardHookMap.RemoveAndCopyValue(RealFunctionAddress, StandardHook)) {
 		UE_LOG(LogNativeHookManager, Warning, TEXT("Attempt to unregister hook for function %s at %p which was not registered"), *DebugSymbolName, RealFunctionAddress);
 		return;
 	}
-	funchook_t* funchook = *funchookPtr;
+	funchook_t* funchook = StandardHook.FuncHook;
 	CHECK_FUNCHOOK_ERR(funchook_uninstall(funchook, 0));
 	CHECK_FUNCHOOK_ERR(funchook_destroy(funchook));
-	FunchookMap.Remove(RealFunctionAddress);
-	InstalledHookMap.Remove(RealFunctionAddress);
 	UE_LOG(LogNativeHookManager, Display, TEXT("Successfully unregistered hook for function %s at %p"), *DebugSymbolName, RealFunctionAddress);
 }
