@@ -1,5 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
+#include "Reflection/FunctionThunkGenerator.h"
 #include <type_traits>
 
 SML_API DECLARE_LOG_CATEGORY_EXTERN(LogNativeHookManager, Log, Log);
@@ -63,7 +64,7 @@ FORCEINLINE FMemberFunctionPointer ConvertFunctionPointer(const T& SourcePointer
 	if (FunctionPointerSize >= 16) {
 		ResultPointer.ThisAdjustment = RawFunctionPointer->ThisAdjustment;
 		// The vtable displacement here is only valid if the method is NOT virtual. If the method IS virtual,
-		// the vtable offset will be found in the thunk. See FNativeHookManagerInternal::RegisterHookFunction()
+		// the vtable offset will be found in the thunk. See DiscoverMemberFunction().
 		ResultPointer.VtableDisplacement = RawFunctionPointer->VtableDisplacement;
 	} else {
 		// The function pointer contains no information about a `this` adjustment or the vtable displacement.
@@ -82,7 +83,7 @@ FORCEINLINE FMemberFunctionPointer ConvertFunctionPointer(const T& SourcePointer
 		//UE_LOG(LogNativeHookManager, Display, TEXT("Member pointer looks like a Vtable offset: 0x%08x."), RawFunctionPointer->IntPtr);
 
 		// We mark this method as virtual by leaving the original function pointer null. This works in concert with
-		// RegisterHookFunction().
+		// DiscoverMemberFunction().
 		ResultPointer.VtableDisplacement = RawFunctionPointer->VtableDisplacementPlusOne - 1;
 	} else if ((RawFunctionPointer->IntPtr & 0x7) == 0) {
 		//UE_LOG(LogNativeHookManager, Display, TEXT("Member pointer looks like a function pointer: 0x%08x"), RawFunctionPointer->IntPtr);
@@ -106,6 +107,11 @@ public:
 	static void* RegisterHookFunction(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance,
 	                                  void* HookFunctionPointer, void** OutTrampolineFunction);
 	static void UnregisterHookFunction(const FString& DebugSymbolName, const void* RealFunctionAddress);
+	static void** RegisterVtableHook(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance,
+	                                 void* HookFunctionPointer, void** OutOriginalFunction);
+	static void UnregisterVtableHook(const FString& DebugSymbolName, void** VtableEntry);
+	static UFunction* RegisterUFunctionHook(UClass* Class, FName FunctionName, FNativeFuncPtr HookFunctionPointer, FNativeFuncPtr* OutOriginalFunction);
+	static void UnregisterUFunctionHook(const FString& DebugSymbolName, UFunction* Function);
 
 	// A call to this function signature is inlined in mods
 	// Keep it for backwards compatibility
@@ -278,6 +284,66 @@ struct TStandardHookBackend
 	}
 };
 
+template<typename TCallable, TCallable OriginalFunction>
+struct TVtableHookBackend
+{
+	// Key = VtableEntry
+
+	template<auto HookFunction>
+	static FNativeHookResult RegisterHook(const FString& DebugSymbolName, const void* SampleObjectInstance)
+	{
+		FNativeHookResult Result;
+
+		Result.Key = FNativeHookManagerInternal::RegisterVtableHook(
+			DebugSymbolName,
+			ConvertFunctionPointer(OriginalFunction),
+			SampleObjectInstance,
+			(void*)HookFunction,
+			&Result.OriginalFunctionCode);
+
+		return Result;
+	}
+
+	static void UnregisterHook(const FString& DebugSymbolName, void* Key)
+	{
+		auto VtableEntry = static_cast<void**>(Key);
+		FNativeHookManagerInternal::UnregisterVtableHook(DebugSymbolName, VtableEntry);
+	}
+};
+
+template<typename ClassType, auto ImplFunction>
+struct TUFunctionHookBackend
+{
+	// Key = UFunction
+
+	template<auto HookFunction>
+	static consteval FNativeFuncPtr WrapHookFunction()
+	{
+		// Wrap the hook in a UFunction thunk.
+		return &TFunctionThunkGenerator<decltype(ImplFunction)>::template Thunk<HookFunction>;
+	}
+
+	template<FNativeFuncPtr HookFunction>
+	static FNativeHookResult RegisterHook(FName FunctionName)
+	{
+		FNativeHookResult Result;
+
+		Result.Key = FNativeHookManagerInternal::RegisterUFunctionHook(
+			ClassType::StaticClass(),
+			FunctionName,
+			HookFunction,
+			(FNativeFuncPtr*)&Result.OriginalFunctionCode);
+
+		return Result;
+	}
+
+	static void UnregisterHook(const FString& DebugSymbolName, void* Key)
+	{
+		auto Function = static_cast<UFunction*>(Key);
+		FNativeHookManagerInternal::UnregisterUFunctionHook(DebugSymbolName, Function);
+	}
+};
+
 template<typename Backend, bool bIsMemberFunction, typename ReturnType, typename... ArgTypes>
 class THookInvokerBase
 {
@@ -335,7 +401,7 @@ private:
 		if (OriginalFunctionCode != nullptr)
 			return;	// Already installed.
 
-		constexpr auto HookFunction = &GenerateHookFunction<ArgTypes...>::ApplyCall;
+		constexpr auto HookFunction = GetHookFunction();
 		const FNativeHookResult Result = Backend::template RegisterHook<HookFunction>(Forward<BackendArgTypes>(BackendArgs)...);
 		auto* HandlerLists = CreateHandlerLists<HandlerBefore, HandlerAfter>(Result.Key);
 
@@ -385,6 +451,27 @@ private:
 		}
 	}
 
+	// If the actual function signature is different from what's presented to the user, e.g. if there's
+	// a custom thunk that forwards to the user-facing function, then the backend can provide its own
+	// hook function with the expectation that it'll forward the call on to our hook function.
+	static constexpr bool bBackendWrapsHookFunction = requires
+	{
+		Backend::template WrapHookFunction<static_cast<CallableType*>(nullptr)>();
+	};
+
+	static consteval auto GetHookFunction()
+	{
+		constexpr auto DefaultHookFunction = &GenerateHookFunction<ArgTypes...>::ApplyCall;
+		if constexpr (bBackendWrapsHookFunction)
+		{
+			return Backend::template WrapHookFunction<DefaultHookFunction>();
+		}
+		else
+		{
+			return DefaultHookFunction;
+		}
+	}
+
 	template<typename... /* ArgTypes */>
 	struct GenerateHookFunction
 	{
@@ -427,7 +514,8 @@ private:
 	// This isn't a problem on Linux because System V doesn't treat non-static member functions any
 	// differently, so emulating one with an explicit "this" parameter doesn't cause any issues.
 	template<typename ThisPointer, typename... OtherArgTypes>
-		requires (bIsMemberFunction && (std::is_class_v<ReturnType> || std::is_union_v<ReturnType>))
+		requires (bIsMemberFunction && !bBackendWrapsHookFunction
+		          && (std::is_class_v<ReturnType> || std::is_union_v<ReturnType>))
 	struct GenerateHookFunction<ThisPointer, OtherArgTypes...>
 	{
 		static ReturnType* ApplyCall(ThisPointer Self, ReturnType* OutReturnValue, OtherArgTypes... Args)
@@ -550,3 +638,58 @@ using CallScope = TCallScope<T>;
 
 #define UNSUBSCRIBE_UOBJECT_METHOD_EXPLICIT(MethodSignature, ObjectClass, MethodName, HandlerHandle) \
 	UNSUBSCRIBE_METHOD_EXPLICIT(MethodSignature, ObjectClass::MethodName, HandlerHandle)
+
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// WARNING
+// The hook types defined below are for very specific advanced use cases. In most cases, the
+// functionality provided above should suffice.
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+/*
+ * SUBSCRIBE_VTABLE_ENTRY
+ * The hook will only be called if the function is called virtually!
+ */
+
+#define SUBSCRIBE_VTABLE_ENTRY(MethodReference, SampleObjectInstance, Handler) \
+	SUBSCRIBE_VTABLE_ENTRY_EXPLICIT(decltype(&MethodReference), MethodReference, SampleObjectInstance, Handler)
+
+#define SUBSCRIBE_VTABLE_ENTRY_AFTER(MethodReference, SampleObjectInstance, Handler) \
+	SUBSCRIBE_VTABLE_ENTRY_EXPLICIT_AFTER(decltype(&MethodReference), MethodReference, SampleObjectInstance, Handler)
+
+#define SUBSCRIBE_VTABLE_ENTRY_EXPLICIT(MethodSignature, MethodReference, SampleObjectInstance, Handler) \
+	INTERNAL_SUBSCRIBE_VTABLE_ENTRY(Before, MethodSignature, MethodReference, SampleObjectInstance, Handler)
+
+#define SUBSCRIBE_VTABLE_ENTRY_EXPLICIT_AFTER(MethodSignature, MethodReference, SampleObjectInstance, Handler) \
+	INTERNAL_SUBSCRIBE_VTABLE_ENTRY(After, MethodSignature, MethodReference, SampleObjectInstance, Handler)
+
+#define INTERNAL_SUBSCRIBE_VTABLE_ENTRY(HandlerKind, MethodSignature, MethodReference, SampleObjectInstance, Handler) \
+	THookInvoker<TVtableHookBackend<MethodSignature, &MethodReference>, MethodSignature> \
+		::AddHandler##HandlerKind(Handler, TEXT(#MethodReference), SampleObjectInstance)
+
+#define UNSUBSCRIBE_VTABLE_ENTRY(MethodReference, HandlerHandle) \
+	UNSUBSCRIBE_VTABLE_ENTRY_EXPLICIT(decltype(&MethodReference), MethodReference, HandlerHandle)
+
+#define UNSUBSCRIBE_VTABLE_ENTRY_EXPLICIT(MethodSignature, MethodReference, HandlerHandle) \
+	THookInvoker<TVtableHookBackend<MethodSignature, &MethodReference>, MethodSignature> \
+		::RemoveHandler(HandlerHandle, TEXT(#MethodReference))
+
+/*
+ * SUBSCRIBE_UFUNCTION_VM
+ * The hook will only be called if the function is called via the reflection system!
+ */
+
+// There're no "explicit" variants of these macros because UFunctions can't be overloaded.
+
+#define SUBSCRIBE_UFUNCTION_VM(ObjectClass, MethodName, Handler) \
+	INTERNAL_SUBSCRIBE_UFUNCTION_VM(Before, ObjectClass, MethodName, Handler)
+
+#define SUBSCRIBE_UFUNCTION_VM_AFTER(ObjectClass, MethodName, Handler) \
+	INTERNAL_SUBSCRIBE_UFUNCTION_VM(After, ObjectClass, MethodName, Handler)
+
+#define INTERNAL_SUBSCRIBE_UFUNCTION_VM(HandlerKind, ObjectClass, MethodName, Handler) \
+	THookInvoker<TUFunctionHookBackend<ObjectClass, &ObjectClass::MethodName>, decltype(&ObjectClass::MethodName)> \
+		::AddHandler##HandlerKind(Handler, TEXT(#MethodName))
+
+#define UNSUBSCRIBE_UFUNCTION_VM(ObjectClass, MethodName, HandlerHandle) \
+	THookInvoker<TUFunctionHookBackend<ObjectClass, &ObjectClass::MethodName>, decltype(&ObjectClass::MethodName)> \
+		::RemoveHandler(HandlerHandle, TEXT(#ObjectClass "::" #MethodName))
