@@ -246,6 +246,79 @@ public:
 	}
 };
 
+/// Handle returned from hooking functions.
+/// If you want to be able to unhook, you should store the handle and call Unsubscribe() when ready.
+/// Otherwise you can safely ignore it.
+class FNativeHookHandle
+{
+	template<typename Backend, bool bIsMemberFunction, typename ReturnType, typename... ArgTypes>
+	friend class THookInvokerBase;
+
+private:
+	// Most people will ignore the return value from hooking functions, as they tend not to care about
+	// unsubscribing. If we were to return a real handle then we'd be instantiating the unsubscribing
+	// code for everyone, which would cause unecessary code bloat. Instead we return this intermediate
+	// type that doesn't actually reference the unsubscribing functions unless a real handle is
+	// constructed from it, which means that no one will pay that cost unless they want it. This should
+	// be invisible to the user, they should either construct a handle or ignore the result; the
+	// existence of this intermediate type is an implementation detail.
+	template<typename HookInvoker>
+	struct TDelayedInit
+	{
+		friend FNativeHookHandle;
+		friend HookInvoker;
+
+	private:
+		TDelayedInit() = default;
+
+		TDelayedInit(FDelegateHandle DelegateHandle, const TCHAR* DebugSymbolName)
+			: DelegateHandle(DelegateHandle)
+			, DebugSymbolName(DebugSymbolName)
+		{
+		}
+
+		FDelegateHandle DelegateHandle = {};
+		const TCHAR* DebugSymbolName = nullptr;
+
+	public:
+		// This function is provided in case someone stores this object directly with `auto` instead of
+		// making a real FNativeHookHandle out of it.
+		void Unsubscribe()
+		{
+			if (DelegateHandle.IsValid())
+			{
+				HookInvoker::RemoveHandler(DelegateHandle, DebugSymbolName);
+				*this = {};
+			}
+		}
+	};
+
+public:
+	FNativeHookHandle() = default;
+
+	template<typename HookInvoker>
+	FNativeHookHandle(TDelayedInit<HookInvoker> Params)
+		: RemoveHandler(&HookInvoker::RemoveHandler)
+		, DelegateHandle(Params.DelegateHandle)
+		, DebugSymbolName(Params.DebugSymbolName)
+	{
+	}
+
+	void Unsubscribe()
+	{
+		if (RemoveHandler != nullptr)
+		{
+			RemoveHandler(DelegateHandle, DebugSymbolName);
+			*this = {};
+		}
+	}
+
+private:
+	void(*RemoveHandler)(FDelegateHandle, const TCHAR* DebugSymbolName) = nullptr;
+	FDelegateHandle DelegateHandle = {};
+	const TCHAR* DebugSymbolName = nullptr;
+};
+
 struct FNativeHookResult
 {
 	/// Value that uniquely identifies this hook, must be the same across all modules. The actual
@@ -365,21 +438,22 @@ public:
 	using HandlerAfter = TFunction<HandlerAfterSignature>;
 
 	template<typename... BackendArgTypes>
-	static FDelegateHandle AddHandlerBefore(HandlerBefore&& InHandler, BackendArgTypes&&... BackendArgs)
+	static auto AddHandlerBefore(HandlerBefore&& InHandler, const TCHAR* DebugSymbolName, BackendArgTypes&&... BackendArgs)
 	{
-		InstallHook(Forward<BackendArgTypes>(BackendArgs)...);
-		return InternalAddHandler(MoveTemp(InHandler), *HandlersBefore, *HandlerBeforeReferences);
+		InstallHook(DebugSymbolName, Forward<BackendArgTypes>(BackendArgs)...);
+		const FDelegateHandle DelegateHandle = InternalAddHandler(MoveTemp(InHandler), *HandlersBefore, *HandlerBeforeReferences);
+		return FNativeHookHandle::TDelayedInit<THookInvokerBase>(DelegateHandle, DebugSymbolName);
 	}
 
 	template<typename... BackendArgTypes>
-	static FDelegateHandle AddHandlerAfter(HandlerAfter&& InHandler, BackendArgTypes&&... BackendArgs)
+	static auto AddHandlerAfter(HandlerAfter&& InHandler, const TCHAR* DebugSymbolName, BackendArgTypes&&... BackendArgs)
 	{
-		InstallHook(Forward<BackendArgTypes>(BackendArgs)...);
-		return InternalAddHandler(MoveTemp(InHandler), *HandlersAfter, *HandlerAfterReferences);
+		InstallHook(DebugSymbolName, Forward<BackendArgTypes>(BackendArgs)...);
+		const FDelegateHandle DelegateHandle = InternalAddHandler(MoveTemp(InHandler), *HandlersAfter, *HandlerAfterReferences);
+		return FNativeHookHandle::TDelayedInit<THookInvokerBase>(DelegateHandle, DebugSymbolName);
 	}
 
-	template<typename... BackendArgTypes>
-	static void RemoveHandler(FDelegateHandle InHandlerHandle, BackendArgTypes&&... BackendArgs)
+	static void RemoveHandler(FDelegateHandle InHandlerHandle, const TCHAR* DebugSymbolName)
 	{
 		InternalRemoveHandler(InHandlerHandle, *HandlersBefore, *HandlerBeforeReferences);
 		InternalRemoveHandler(InHandlerHandle, *HandlersAfter, *HandlerAfterReferences);
@@ -387,7 +461,7 @@ public:
 		if (HandlersBefore->IsEmpty() && HandlersAfter->IsEmpty())
 		{
 			// No handlers left, uninstall the hook.
-			UninstallHook(Forward<BackendArgTypes>(BackendArgs)...);
+			UninstallHook(DebugSymbolName);
 		}
 	}
 
@@ -398,13 +472,13 @@ private:
 	using HandlersMap = TMap<FDelegateHandle, TSharedPtr<HandlerType>>;
 
 	template<typename... BackendArgTypes>
-	static void InstallHook(BackendArgTypes&&... BackendArgs)
+	static void InstallHook(const TCHAR* DebugSymbolName, BackendArgTypes&&... BackendArgs)
 	{
 		if (OriginalFunctionCode != nullptr)
 			return;	// Already installed.
 
 		constexpr auto HookFunction = GetHookFunction();
-		const FNativeHookResult Result = Backend::template RegisterHook<HookFunction>(Forward<BackendArgTypes>(BackendArgs)...);
+		const FNativeHookResult Result = Backend::template RegisterHook<HookFunction>(DebugSymbolName, Forward<BackendArgTypes>(BackendArgs)...);
 		auto* HandlerLists = CreateHandlerLists<HandlerBefore, HandlerAfter>(Result.Key);
 
 		HandlersBefore = &HandlerLists->HandlersBefore;
@@ -415,13 +489,12 @@ private:
 		Key = Result.Key;
 	}
 
-	template<typename... BackendArgTypes>
-	static void UninstallHook(BackendArgTypes&&... BackendArgs)
+	static void UninstallHook(const TCHAR* DebugSymbolName)
 	{
 		if (OriginalFunctionCode == nullptr)
 			return;	// Not installed.
 
-		Backend::UnregisterHook(Forward<BackendArgTypes>(BackendArgs)..., Key);
+		Backend::UnregisterHook(DebugSymbolName, Key);
 		DestroyHandlerLists<HandlerBefore, HandlerAfter>(Key);
 
 		HandlersBefore = nullptr;
@@ -624,23 +697,6 @@ using CallScope = TCallScope<T>;
 #define SUBSCRIBE_UOBJECT_METHOD_EXPLICIT_AFTER(MethodSignature, ObjectClass, MethodName, Handler) \
 	SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL_AFTER(MethodSignature, ObjectClass::MethodName, GetDefault<ObjectClass>(), Handler)
 
-/*
- * UNSUBSCRIBE_METHOD
- */
-
-#define UNSUBSCRIBE_METHOD(MethodReference, HandlerHandle) \
-	UNSUBSCRIBE_METHOD_EXPLICIT(decltype(&MethodReference), MethodReference, HandlerHandle)
-
-#define UNSUBSCRIBE_METHOD_EXPLICIT(MethodSignature, MethodReference, HandlerHandle) \
-	THookInvoker<TStandardHookBackend<MethodSignature, &MethodReference>, MethodSignature> \
-		::RemoveHandler(HandlerHandle, TEXT(#MethodReference))
-
-#define UNSUBSCRIBE_UOBJECT_METHOD(ObjectClass, MethodName, HandlerHandle) \
-	UNSUBSCRIBE_METHOD(ObjectClass::MethodName, HandlerHandle)
-
-#define UNSUBSCRIBE_UOBJECT_METHOD_EXPLICIT(MethodSignature, ObjectClass, MethodName, HandlerHandle) \
-	UNSUBSCRIBE_METHOD_EXPLICIT(MethodSignature, ObjectClass::MethodName, HandlerHandle)
-
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // WARNING
 // The hook types defined below are for very specific advanced use cases. In most cases, the
@@ -668,13 +724,6 @@ using CallScope = TCallScope<T>;
 	THookInvoker<TVtableHookBackend<MethodSignature, &MethodReference>, MethodSignature> \
 		::AddHandler##HandlerKind(Handler, TEXT(#MethodReference), SampleObjectInstance)
 
-#define UNSUBSCRIBE_VTABLE_ENTRY(MethodReference, HandlerHandle) \
-	UNSUBSCRIBE_VTABLE_ENTRY_EXPLICIT(decltype(&MethodReference), MethodReference, HandlerHandle)
-
-#define UNSUBSCRIBE_VTABLE_ENTRY_EXPLICIT(MethodSignature, MethodReference, HandlerHandle) \
-	THookInvoker<TVtableHookBackend<MethodSignature, &MethodReference>, MethodSignature> \
-		::RemoveHandler(HandlerHandle, TEXT(#MethodReference))
-
 /*
  * SUBSCRIBE_UFUNCTION_VM
  * The hook will only be called if the function is called via the reflection system!
@@ -691,7 +740,3 @@ using CallScope = TCallScope<T>;
 #define INTERNAL_SUBSCRIBE_UFUNCTION_VM(HandlerKind, ObjectClass, MethodName, Handler) \
 	THookInvoker<TUFunctionHookBackend<ObjectClass, &ObjectClass::MethodName>, decltype(&ObjectClass::MethodName)> \
 		::AddHandler##HandlerKind(Handler, TEXT(#ObjectClass "::" #MethodName), TEXT(#MethodName))
-
-#define UNSUBSCRIBE_UFUNCTION_VM(ObjectClass, MethodName, HandlerHandle) \
-	THookInvoker<TUFunctionHookBackend<ObjectClass, &ObjectClass::MethodName>, decltype(&ObjectClass::MethodName)> \
-		::RemoveHandler(HandlerHandle, TEXT(#ObjectClass "::" #MethodName))
