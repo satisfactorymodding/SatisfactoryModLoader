@@ -104,18 +104,19 @@ class SML_API FNativeHookManagerInternal {
 public:
 	static void* GetHandlerListInternal(const void* Key);
 	static void SetHandlerListInstanceInternal(void* Key, void* HandlerList);
-	static void* RegisterHookFunction(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance,
+	static void* RegisterHookFunction(const TCHAR* DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance,
 	                                  void* HookFunctionPointer, void** OutTrampolineFunction);
-	static void UnregisterHookFunction(const FString& DebugSymbolName, const void* RealFunctionAddress);
-	static void** RegisterVtableHook(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance,
+	static void UnregisterHookFunction(const TCHAR* DebugSymbolName, const void* RealFunctionAddress);
+	static void** RegisterVtableHook(const TCHAR* DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance,
 	                                 void* HookFunctionPointer, void** OutOriginalFunction);
-	static void UnregisterVtableHook(const FString& DebugSymbolName, void** VtableEntry);
-	static UFunction* RegisterUFunctionHook(UClass* Class, FName FunctionName, FNativeFuncPtr HookFunctionPointer, FNativeFuncPtr* OutOriginalFunction);
-	static void UnregisterUFunctionHook(const FString& DebugSymbolName, UFunction* Function);
+	static void UnregisterVtableHook(const TCHAR* DebugSymbolName, void** VtableEntry);
+	static UFunction* RegisterUFunctionHook(const TCHAR* DebugSymbolName, UClass* Class, FName FunctionName,
+	                                        FNativeFuncPtr HookFunctionPointer, FNativeFuncPtr* OutOriginalFunction);
+	static void UnregisterUFunctionHook(const TCHAR* DebugSymbolName, UFunction* Function);
 
-	// A call to this function signature is inlined in mods
-	// Keep it for backwards compatibility
+	// Calls to these functions are inlined in mods, keep them for backwards compatibility.
 	static void* RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, const void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction);
+	static void* RegisterHookFunction(const FString& DebugSymbolName, FMemberFunctionPointer MemberFunctionPointer, const void* SampleObjectInstance, void* HookFunctionPointer, void** OutTrampolineFunction);
 };
 
 template <typename T, typename E>
@@ -264,7 +265,7 @@ struct TStandardHookBackend
 	// Key = RealFunctionAddress
 
 	template<auto HookFunction>
-	static FNativeHookResult RegisterHook(const FString& DebugSymbolName, const void* SampleObjectInstance = NULL)
+	static FNativeHookResult RegisterHook(const TCHAR* DebugSymbolName, const void* SampleObjectInstance = NULL)
 	{
 		FNativeHookResult Result;
 
@@ -278,7 +279,7 @@ struct TStandardHookBackend
 		return Result;
 	}
 
-	static void UnregisterHook(const FString& DebugSymbolName, void* RealFunctionAddress)
+	static void UnregisterHook(const TCHAR* DebugSymbolName, void* RealFunctionAddress)
 	{
 		FNativeHookManagerInternal::UnregisterHookFunction(DebugSymbolName, RealFunctionAddress);
 	}
@@ -290,7 +291,7 @@ struct TVtableHookBackend
 	// Key = VtableEntry
 
 	template<auto HookFunction>
-	static FNativeHookResult RegisterHook(const FString& DebugSymbolName, const void* SampleObjectInstance)
+	static FNativeHookResult RegisterHook(const TCHAR* DebugSymbolName, const void* SampleObjectInstance)
 	{
 		FNativeHookResult Result;
 
@@ -304,7 +305,7 @@ struct TVtableHookBackend
 		return Result;
 	}
 
-	static void UnregisterHook(const FString& DebugSymbolName, void* Key)
+	static void UnregisterHook(const TCHAR* DebugSymbolName, void* Key)
 	{
 		auto VtableEntry = static_cast<void**>(Key);
 		FNativeHookManagerInternal::UnregisterVtableHook(DebugSymbolName, VtableEntry);
@@ -324,11 +325,12 @@ struct TUFunctionHookBackend
 	}
 
 	template<FNativeFuncPtr HookFunction>
-	static FNativeHookResult RegisterHook(FName FunctionName)
+	static FNativeHookResult RegisterHook(const TCHAR* DebugSymbolName, FName FunctionName)
 	{
 		FNativeHookResult Result;
 
 		Result.Key = FNativeHookManagerInternal::RegisterUFunctionHook(
+			DebugSymbolName,
 			ClassType::StaticClass(),
 			FunctionName,
 			HookFunction,
@@ -337,7 +339,7 @@ struct TUFunctionHookBackend
 		return Result;
 	}
 
-	static void UnregisterHook(const FString& DebugSymbolName, void* Key)
+	static void UnregisterHook(const TCHAR* DebugSymbolName, void* Key)
 	{
 		auto Function = static_cast<UFunction*>(Key);
 		FNativeHookManagerInternal::UnregisterUFunctionHook(DebugSymbolName, Function);
@@ -688,7 +690,7 @@ using CallScope = TCallScope<T>;
 
 #define INTERNAL_SUBSCRIBE_UFUNCTION_VM(HandlerKind, ObjectClass, MethodName, Handler) \
 	THookInvoker<TUFunctionHookBackend<ObjectClass, &ObjectClass::MethodName>, decltype(&ObjectClass::MethodName)> \
-		::AddHandler##HandlerKind(Handler, TEXT(#MethodName))
+		::AddHandler##HandlerKind(Handler, TEXT(#ObjectClass "::" #MethodName), TEXT(#MethodName))
 
 #define UNSUBSCRIBE_UFUNCTION_VM(ObjectClass, MethodName, HandlerHandle) \
 	THookInvoker<TUFunctionHookBackend<ObjectClass, &ObjectClass::MethodName>, decltype(&ObjectClass::MethodName)> \
