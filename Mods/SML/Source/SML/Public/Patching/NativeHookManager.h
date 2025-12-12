@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Reflection/FunctionThunkGenerator.h"
+#include "Traits/MemberFunctionPtrOuter.h"
 #include <type_traits>
 
 SML_API DECLARE_LOG_CATEGORY_EXTERN(LogNativeHookManager, Log, Log);
@@ -338,8 +339,22 @@ struct TStandardHookBackend
 {
 	// Key = RealFunctionAddress
 
+	static consteval auto GetNullSampleObject()
+	{
+		// Use a dummy nullptr_t instance on non-member functions to make it compile.
+		// The sample object isn't used in that case anyway.
+		if constexpr (std::is_member_function_pointer_v<TCallable>)
+		{
+			return static_cast<const TMemberFunctionPtrOuter_T<TCallable>*>(nullptr);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
 	template<auto HookFunction>
-	static FNativeHookResult RegisterHook(const TCHAR* DebugSymbolName, const void* SampleObjectInstance = NULL)
+	static FNativeHookResult RegisterHook(const TCHAR* DebugSymbolName, decltype(GetNullSampleObject()) SampleObjectInstance = nullptr)
 	{
 		FNativeHookResult Result;
 
@@ -365,7 +380,7 @@ struct TVtableHookBackend
 	// Key = VtableEntry
 
 	template<auto HookFunction>
-	static FNativeHookResult RegisterHook(const TCHAR* DebugSymbolName, const void* SampleObjectInstance)
+	static FNativeHookResult RegisterHook(const TCHAR* DebugSymbolName, const TMemberFunctionPtrOuter_T<TCallable>* SampleObjectInstance)
 	{
 		FNativeHookResult Result;
 
