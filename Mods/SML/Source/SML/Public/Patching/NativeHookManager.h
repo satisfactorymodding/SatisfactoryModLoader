@@ -151,7 +151,8 @@ static void DestroyHandlerLists(void* Key)
 
 /// Manages handlers and invokes them when the hooked function is called.
 /// The actual hooking is delegated to the backend, which can decide how it wants to hook.
-template<typename Backend, typename TCallable>
+/// Variant is an unused parameter that you can change to get a different template instantiation.
+template<typename Backend, typename TCallable, typename Variant = void>
 struct THookInvoker;
 
 template<typename TCallable>
@@ -251,7 +252,7 @@ public:
 /// Otherwise you can safely ignore it.
 class FNativeHookHandle
 {
-	template<typename Backend, bool bIsMemberFunction, typename ReturnType, typename... ArgTypes>
+	template<typename Backend, typename Variant, bool bIsMemberFunction, typename ReturnType, typename... ArgTypes>
 	friend class THookInvokerBase;
 
 private:
@@ -419,7 +420,7 @@ struct TUFunctionHookBackend
 	}
 };
 
-template<typename Backend, bool bIsMemberFunction, typename ReturnType, typename... ArgTypes>
+template<typename Backend, typename Variant, bool bIsMemberFunction, typename ReturnType, typename... ArgTypes>
 class THookInvokerBase
 {
 	static_assert(!bIsMemberFunction || sizeof...(ArgTypes) >= 1,
@@ -623,16 +624,19 @@ private:
 };
 
 // non-const non-static member function
-template<typename Backend, typename R, typename C, typename... A>
-struct THookInvoker<Backend, R(C::*)(A...)> : THookInvokerBase<Backend, true, R, C*, A...> {};
+template<typename Backend, typename Variant, typename R, typename C, typename... A>
+struct THookInvoker<Backend, R(C::*)(A...), Variant>
+	: THookInvokerBase<Backend, Variant, true, R, C*, A...> {};
 
 // const non-static member function
-template<typename Backend, typename R, typename C, typename... A>
-struct THookInvoker<Backend, R(C::*)(A...) const> : THookInvokerBase<Backend, true, R, const C*, A...> {};
+template<typename Backend, typename Variant, typename R, typename C, typename... A>
+struct THookInvoker<Backend, R(C::*)(A...) const, Variant>
+	: THookInvokerBase<Backend, Variant, true, R, const C*, A...> {};
 
 // free function or static member function
-template<typename Backend, typename R, typename... A>
-struct THookInvoker<Backend, R(*)(A...)> : THookInvokerBase<Backend, false, R, A...> {};
+template<typename Backend, typename Variant, typename R, typename... A>
+struct THookInvoker<Backend, R(*)(A...), Variant>
+	: THookInvokerBase<Backend, Variant, false, R, A...> {};
 
 UE_DEPRECATED( 5.2, "CallScope type is deprecated. Please migrate your code to use TCallScope" );
 template<typename T>
@@ -677,8 +681,12 @@ using CallScope = TCallScope<T>;
 	INTERNAL_SUBSCRIBE_METHOD_VIRTUAL(After, MethodSignature, MethodReference, SampleObjectInstance, Handler)
 
 #define INTERNAL_SUBSCRIBE_METHOD_VIRTUAL(HandlerKind, MethodSignature, MethodReference, SampleObjectInstance, Handler) \
-	THookInvoker<TStandardHookBackend<MethodSignature, &MethodReference>, MethodSignature> \
-		::AddHandler##HandlerKind(Handler, TEXT(#MethodReference), SampleObjectInstance)
+	[&] { \
+		/* Each instantiation must be unique to support different SampleObjectInstance types at runtime. */ \
+		struct TotallyUniqueType; \
+		return THookInvoker<TStandardHookBackend<MethodSignature, &MethodReference>, MethodSignature, TotallyUniqueType> \
+			::AddHandler##HandlerKind(Handler, TEXT(#MethodReference), SampleObjectInstance); \
+	}()
 
 /*
  * SUBSCRIBE_UOBJECT_METHOD
@@ -721,8 +729,12 @@ using CallScope = TCallScope<T>;
 	INTERNAL_SUBSCRIBE_VTABLE_ENTRY(After, MethodSignature, MethodReference, SampleObjectInstance, Handler)
 
 #define INTERNAL_SUBSCRIBE_VTABLE_ENTRY(HandlerKind, MethodSignature, MethodReference, SampleObjectInstance, Handler) \
-	THookInvoker<TVtableHookBackend<MethodSignature, &MethodReference>, MethodSignature> \
-		::AddHandler##HandlerKind(Handler, TEXT(#MethodReference), SampleObjectInstance)
+	[&] { \
+		/* Each instantiation must be unique to support different SampleObjectInstance types at runtime. */ \
+		struct TotallyUniqueType; \
+		return THookInvoker<TVtableHookBackend<MethodSignature, &MethodReference>, MethodSignature, TotallyUniqueType> \
+			::AddHandler##HandlerKind(Handler, TEXT(#MethodReference), SampleObjectInstance); \
+	}()
 
 /*
  * SUBSCRIBE_UFUNCTION_VM
