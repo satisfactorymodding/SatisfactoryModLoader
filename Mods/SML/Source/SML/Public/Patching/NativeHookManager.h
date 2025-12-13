@@ -156,95 +156,116 @@ static void DestroyHandlerLists(void* Key)
 template<typename Backend, typename TCallable, typename Variant = void>
 struct THookInvoker;
 
+/// Context object that hooks can use to control function execution.
 template<typename TCallable>
 struct TCallScope;
 
-//CallResult specialization for void
-template <typename... Args>
-struct TCallScope<void(*)(Args...)> {
-public:
-	typedef void HookType(Args...);
-	typedef void HookFuncSig(TCallScope<void(*)(Args...)>&, Args...);
-	typedef TFunction<HookFuncSig> HookFunc;
-
-private:
-	TArray<TSharedPtr<HookFunc>>* FunctionList;
-	SIZE_T HandlerPtr = 0;
-	HookType* Function;
-
-	bool bForwardCall = true;
+template<typename ReturnType, typename... ArgTypes>
+class TCallScopeBase
+{
+	using DerivedCallScope = TCallScope<ReturnType(*)(ArgTypes...)>;
+	static constexpr bool bHasReturnValue = !std::is_void_v<ReturnType>;
 
 public:
-	TCallScope(TArray<TSharedPtr<HookFunc>>* InFunctionList, HookType* InFunction) : FunctionList(InFunctionList), Function(InFunction) {}
+	// When the original function has a non-void return value, we store it as a TFunction instead of a
+	// regular function pointer so that the caller can abstract away any ABI shenanigans.
 
-	FORCEINLINE bool ShouldForwardCall() const {
+	using OrigFuncSignature = ReturnType(ArgTypes...);
+	using OrigCallable = std::conditional_t<bHasReturnValue, TFunction<OrigFuncSignature>, OrigFuncSignature*>;
+	using HookFuncSignature = void(DerivedCallScope&, ArgTypes...);
+	using HookCallable = TFunction<HookFuncSignature>;
+
+	bool ShouldForwardCall() const
+	{
 		return bForwardCall;
 	}
 
-	void Cancel() {
-		bForwardCall = false;
-	}
-
-	FORCEINLINE void operator()(Args... InArgs) {
-		if (FunctionList == nullptr || HandlerPtr >= FunctionList->Num()) {
-			Function(InArgs...);
+	ReturnType operator()(ArgTypes... Args)
+	{
+		if (FunctionList == nullptr || HandlerIndex >= FunctionList->Num())
+		{
+			// Reached the end of the handler list, call the original function.
+			if constexpr (bHasReturnValue)
+			{
+				ResultData = OrigFunc(Args...);
+			}
+			else
+			{
+				OrigFunc(Args...);
+			}
 			bForwardCall = false;
-		} else {
-			const SIZE_T CachePtr = HandlerPtr + 1;
-			const TSharedPtr<HookFunc>& Handler = (*FunctionList)[HandlerPtr++];
-			(*Handler)(*this, InArgs...);
-			if (HandlerPtr == CachePtr && bForwardCall) {
-				(*this)(InArgs...);
+		}
+		else
+		{
+			const size_t CurrentHandlerIndex = HandlerIndex++;
+			const size_t NextHandlerIndex = HandlerIndex;
+
+			// Call the current handler.
+			const TSharedPtr<HookCallable>& Handler = (*FunctionList)[CurrentHandlerIndex];
+			(*Handler)(static_cast<DerivedCallScope&>(*this), Args...);
+
+			// If the handler didn't call back into the scope, either by calling the next handler or overriding
+			// the result, then we do the next call for it.
+			if (HandlerIndex == NextHandlerIndex && bForwardCall)
+			{
+				(*this)(Args...);
 			}
 		}
+
+		return static_cast<ReturnType>(ResultData);
+	}
+
+protected:
+	TCallScopeBase(const TArray<TSharedPtr<HookCallable>>* FunctionList, OrigCallable OrigFunc)
+		: FunctionList(FunctionList)
+		, OrigFunc(MoveTemp(OrigFunc))
+	{
+	}
+
+	const TArray<TSharedPtr<HookCallable>>* FunctionList;
+	size_t HandlerIndex = 0;
+	OrigCallable OrigFunc;
+	bool bForwardCall = true;
+	std::conditional_t<bHasReturnValue, std::remove_cv_t<ReturnType>, std::monostate> ResultData{};
+};
+
+// non-void return
+template<typename ReturnType, typename... ArgTypes>
+struct TCallScope<ReturnType(*)(ArgTypes...)> : TCallScopeBase<ReturnType, ArgTypes...>
+{
+	using Base = TCallScopeBase<ReturnType, ArgTypes...>;
+
+	TCallScope(const TArray<TSharedPtr<typename Base::HookCallable>>* FunctionList, Base::OrigCallable OrigFunc)
+		: Base(FunctionList, OrigFunc)
+	{
+	}
+
+	ReturnType GetResult() const
+	{
+		return this->ResultData;
+	}
+
+	void Override(const ReturnType& NewResult)
+	{
+		this->bForwardCall = false;
+		this->ResultData = NewResult;
 	}
 };
 
-//general template for other types
-template <typename Result, typename... Args>
-struct TCallScope<Result(*)(Args...)> {
-public:
-	// typedef Result HookType(Args...);
-	typedef void HookFuncSig(TCallScope<Result(*)(Args...)>&, Args...);
-	typedef TFunction<HookFuncSig> HookFunc;
+// void return
+template<typename ReturnType, typename... ArgTypes> requires std::is_void_v<ReturnType>
+struct TCallScope<ReturnType(*)(ArgTypes...)> : TCallScopeBase<ReturnType, ArgTypes...>
+{
+	using Base = TCallScopeBase<ReturnType, ArgTypes...>;
 
-	typedef TFunction<Result(Args...)> HookType;
-private:
-	TArray<TSharedPtr<HookFunc>>* FunctionList;
-	size_t HandlerPtr = 0;
-	HookType Function;
-
-	bool bForwardCall = true;
-	Result ResultData{};
-public:
-	TCallScope(TArray<TSharedPtr<HookFunc>>* InFunctionList, HookType InFunction) : FunctionList(InFunctionList), Function(InFunction) {}
-
-	FORCEINLINE	bool ShouldForwardCall() const {
-		return bForwardCall;
+	TCallScope(const TArray<TSharedPtr<typename Base::HookCallable>>* FunctionList, Base::OrigCallable OrigFunc)
+		: Base(FunctionList, OrigFunc)
+	{
 	}
 
-	FORCEINLINE Result GetResult() {
-		return ResultData;
-	}
-
-	void Override(const Result& NewResult) {
-		bForwardCall = false;
-		ResultData = NewResult;
-	}
-
-	FORCEINLINE Result operator()(Args... args) {
-		if (FunctionList == nullptr || HandlerPtr >= FunctionList->Num()) {
-			ResultData = Function(args...);
-			this->bForwardCall = false;
-		} else {
-			const SIZE_T CachePtr = HandlerPtr + 1;
-			const TSharedPtr<HookFunc>& Handler = (*FunctionList)[HandlerPtr++];
-			(*Handler)(*this, args...);
-			if (HandlerPtr == CachePtr && bForwardCall) {
-				(*this)(args...);
-			}
-		}
-		return ResultData;
+	void Cancel()
+	{
+		this->bForwardCall = false;
 	}
 };
 
