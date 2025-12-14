@@ -2,6 +2,7 @@
 #include "CoreMinimal.h"
 #include "Reflection/FunctionThunkGenerator.h"
 #include "Traits/MemberFunctionPtrOuter.h"
+#include <concepts>
 #include <type_traits>
 
 SML_API DECLARE_LOG_CATEGORY_EXTERN(LogNativeHookManager, Log, Log);
@@ -163,6 +164,9 @@ struct TCallScope;
 template<typename ReturnType, typename... ArgTypes>
 class TCallScopeBase
 {
+	template<typename Backend, typename Variant, bool bIsMemberFunction, typename /*ReturnType*/, typename... /*ArgTypes*/>
+	friend class THookInvokerBase;
+
 	using DerivedCallScope = TCallScope<ReturnType(*)(ArgTypes...)>;
 	static constexpr bool bHasReturnValue = !std::is_void_v<ReturnType>;
 
@@ -182,7 +186,9 @@ public:
 
 	ReturnType operator()(ArgTypes... Args)
 	{
-		if (FunctionList == nullptr || HandlerIndex >= FunctionList->Num())
+		const ArgsPreprocessor<ArgTypes...> ArgsPreprocessor(*this, Args...);
+
+		if (FunctionList == nullptr || static_cast<size_t>(HandlerIndex) >= FunctionList->Num())
 		{
 			// Reached the end of the handler list, call the original function.
 			if constexpr (bHasReturnValue)
@@ -197,8 +203,8 @@ public:
 		}
 		else
 		{
-			const size_t CurrentHandlerIndex = HandlerIndex++;
-			const size_t NextHandlerIndex = HandlerIndex;
+			const uint32 CurrentHandlerIndex = HandlerIndex++;
+			const uint32 NextHandlerIndex = HandlerIndex;
 
 			// Call the current handler.
 			const TSharedPtr<HookCallable>& Handler = (*FunctionList)[CurrentHandlerIndex];
@@ -222,11 +228,61 @@ protected:
 	{
 	}
 
+	// We need a new variable to store ThisAdjustment, but we can't change the layout of this class
+	// because we need to maintain compatibility with mods that were compiled before this change. We
+	// also can't make use of existing padding because that won't necessarily be zero-initialized if an
+	// old mod creates the scope. Fortunately there's a really hacky way around this: HandlerIndex was
+	// size_t (64-bits) before, but we're obviously not going to have anywhere near that number of
+	// handlers, so the upper bits of that variable are always going to be zero. It's now restricted to
+	// a 32-bit value, which leaves the upper 32-bits for ThisAdjustment, The hacky thing about this is
+	// that we need to make sure that those upper bits are set back to zero whenever we call into old
+	// code, as it will be doing full 64-bit operations at that address.
+	static_assert(PLATFORM_LITTLE_ENDIAN && sizeof(size_t) == 8,
+		"TCallScope changes aren't backwards-compatible on this platform!");
+
 	const TArray<TSharedPtr<HookCallable>>* FunctionList;
-	size_t HandlerIndex = 0;
+	uint32 HandlerIndex = 0;	// Used to be size_t
+	uint32 ThisAdjustment = 0;
 	OrigCallable OrigFunc;
 	bool bForwardCall = true;
 	std::conditional_t<bHasReturnValue, std::remove_cv_t<ReturnType>, std::monostate> ResultData{};
+
+private:
+	template<typename... /* ArgTypes */>
+	struct ArgsPreprocessor
+	{
+		FORCEINLINE ArgsPreprocessor(const TCallScopeBase& Scope, const ArgTypes&...)
+		{
+			check(Scope.ThisAdjustment == 0);
+		}
+	};
+
+	// Pre-processing for the 'this' pointer in member functions.
+	// Technically this will also run for non-member functions that have a pointer as their first
+	// argument, but in those cases ThisAdjustment will be zero so this won't end up doing anything.
+	template<typename Pointee, typename... OtherArgTypes>
+	struct ArgsPreprocessor<Pointee*, OtherArgTypes...>
+	{
+		TCallScopeBase& Scope;
+		const uint32_t SavedThisAdjustment;
+
+		FORCEINLINE ArgsPreprocessor(TCallScopeBase& Scope, Pointee*& Ptr, const OtherArgTypes&...)
+			: Scope(Scope)
+			, SavedThisAdjustment(Scope.ThisAdjustment)
+		{
+			// Handlers un-apply the ThisAdjustment so that they can have sane pointers for their callbacks, but
+			// we need to re-apply it now as we're about to call into unknown code.
+			Ptr = reinterpret_cast<Pointee*>(reinterpret_cast<uintptr_t>(Ptr) + SavedThisAdjustment);
+
+			// Reset this to zero so it doesn't confuse old mods trying to use HandlerIndex.
+			Scope.ThisAdjustment = 0;
+		}
+
+		FORCEINLINE ~ArgsPreprocessor()
+		{
+			Scope.ThisAdjustment = SavedThisAdjustment;
+		}
+	};
 };
 
 // non-void return
@@ -353,6 +409,10 @@ struct FNativeHookResult
 	/// actual address and not some sort of (member/virtual) function pointer as it will be directly
 	/// jumped to.
 	void* OriginalFunctionCode;
+
+	/// Offset, in bytes, added to the 'this' pointer before the function was called.
+	/// Only relevant for non-static member functions, should be set to zero otherwise.
+	ptrdiff_t ThisAdjustment;
 };
 
 template<typename TCallable, TCallable OriginalFunction>
@@ -378,13 +438,15 @@ struct TStandardHookBackend
 	static FNativeHookResult RegisterHook(const TCHAR* DebugSymbolName, decltype(GetNullSampleObject()) SampleObjectInstance = nullptr)
 	{
 		FNativeHookResult Result;
+		const FMemberFunctionPointer OriginalFunctionData = ConvertFunctionPointer(OriginalFunction);
 
 		Result.Key = FNativeHookManagerInternal::RegisterHookFunction(
 			DebugSymbolName,
-			ConvertFunctionPointer(OriginalFunction),
+			OriginalFunctionData,
 			SampleObjectInstance,
 			(void*)HookFunction,
 			&Result.OriginalFunctionCode);
+		Result.ThisAdjustment = static_cast<ptrdiff_t>(OriginalFunctionData.ThisAdjustment);
 
 		return Result;
 	}
@@ -404,13 +466,15 @@ struct TVtableHookBackend
 	static FNativeHookResult RegisterHook(const TCHAR* DebugSymbolName, const TMemberFunctionPtrOuter_T<TCallable>* SampleObjectInstance)
 	{
 		FNativeHookResult Result;
+		const FMemberFunctionPointer OriginalFunctionData = ConvertFunctionPointer(OriginalFunction);
 
 		Result.Key = FNativeHookManagerInternal::RegisterVtableHook(
 			DebugSymbolName,
-			ConvertFunctionPointer(OriginalFunction),
+			OriginalFunctionData,
 			SampleObjectInstance,
 			(void*)HookFunction,
 			&Result.OriginalFunctionCode);
+		Result.ThisAdjustment = static_cast<ptrdiff_t>(OriginalFunctionData.ThisAdjustment);
 
 		return Result;
 	}
@@ -445,6 +509,7 @@ struct TUFunctionHookBackend
 			FunctionName,
 			HookFunction,
 			(FNativeFuncPtr*)&Result.OriginalFunctionCode);
+		Result.ThisAdjustment = 0;
 
 		return Result;
 	}
@@ -474,19 +539,25 @@ public:
 	using HandlerBefore = TFunction<HandlerBeforeSignature>;
 	using HandlerAfter = TFunction<HandlerAfterSignature>;
 
-	template<typename... BackendArgTypes>
-	static auto AddHandlerBefore(HandlerBefore&& InHandler, const TCHAR* DebugSymbolName, BackendArgTypes&&... BackendArgs)
+	template<std::convertible_to<HandlerBefore> InHandlerType, typename... BackendArgTypes>
+	static auto AddHandlerBefore(InHandlerType&& InHandler, const TCHAR* DebugSymbolName, BackendArgTypes&&... BackendArgs)
 	{
 		InstallHook(DebugSymbolName, Forward<BackendArgTypes>(BackendArgs)...);
-		const FDelegateHandle DelegateHandle = InternalAddHandler(MoveTemp(InHandler), *HandlersBefore, *HandlerBeforeReferences);
+		const FDelegateHandle DelegateHandle = InternalAddHandler(
+			WrapHandler<HandlerBefore>(Forward<InHandlerType>(InHandler)),
+			*HandlersBefore,
+			*HandlerBeforeReferences);
 		return FNativeHookHandle::TDelayedInit<THookInvokerBase>(DelegateHandle, DebugSymbolName);
 	}
 
-	template<typename... BackendArgTypes>
-	static auto AddHandlerAfter(HandlerAfter&& InHandler, const TCHAR* DebugSymbolName, BackendArgTypes&&... BackendArgs)
+	template<std::convertible_to<HandlerAfter> InHandlerType, typename... BackendArgTypes>
+	static auto AddHandlerAfter(InHandlerType&& InHandler, const TCHAR* DebugSymbolName, BackendArgTypes&&... BackendArgs)
 	{
 		InstallHook(DebugSymbolName, Forward<BackendArgTypes>(BackendArgs)...);
-		const FDelegateHandle DelegateHandle = InternalAddHandler(MoveTemp(InHandler), *HandlersAfter, *HandlerAfterReferences);
+		const FDelegateHandle DelegateHandle = InternalAddHandler(
+			WrapHandler<HandlerAfter>(Forward<InHandlerType>(InHandler)),
+			*HandlersAfter,
+			*HandlerAfterReferences);
 		return FNativeHookHandle::TDelayedInit<THookInvokerBase>(DelegateHandle, DebugSymbolName);
 	}
 
@@ -522,6 +593,7 @@ private:
 		HandlersAfter = &HandlerLists->HandlersAfter;
 		HandlerBeforeReferences = &HandlerLists->HandlerBeforeReferences;
 		HandlerAfterReferences = &HandlerLists->HandlerAfterReferences;
+		ThisAdjustment = Result.ThisAdjustment;
 		OriginalFunctionCode = Result.OriginalFunctionCode;
 		Key = Result.Key;
 	}
@@ -538,6 +610,7 @@ private:
 		HandlersAfter = nullptr;
 		HandlerBeforeReferences = nullptr;
 		HandlerAfterReferences = nullptr;
+		ThisAdjustment = 0;
 		OriginalFunctionCode = nullptr;
 		Key = nullptr;
 	}
@@ -651,10 +724,76 @@ private:
 	};
 #endif
 
+	// For some member functions we could end up with a 'this' pointer that has been adjusted to point
+	// to a base class, which won't be compatible with the derived class pointer that the handler is
+	// expecting. To work around this, we need to un-adjust the 'this' pointer before calling the
+	// handler. It's tempting to do this in the hook function itself, we could modify the parameter as
+	// soon as it's passed in and the new value could be passed on to all of the handlers, but we can't
+	// do that because we need to be backwards-compatible with old mods; if an old mod is the first to
+	// register the hook, then they'd define the hook function and they wouldn't know to do that
+	// adjustment. The only thing that we know we have control over is our own handler, so that's the
+	// only place where this can be done.
+	template<typename HandlerType, typename InHandlerType>
+	static HandlerType WrapHandler(InHandlerType&& InHandler)
+	{
+		if constexpr (!bIsMemberFunction)
+		{
+			// Non-member functions shouldn't have a ThisAdjustment.
+			check(ThisAdjustment == 0);
+			return Forward<InHandlerType>(InHandler);
+		}
+		else if (ThisAdjustment == 0)
+		{
+			// No adjustment, use the input handler as-is.
+			return Forward<InHandlerType>(InHandler);
+		}
+		else if constexpr (std::is_same_v<HandlerType, HandlerBefore>)
+		{
+			// HandlerBefore
+			return [Handler = Forward<InHandlerType>(InHandler)]
+				<typename Pointee, typename... OtherArgTypes>
+				(ScopeType& Scope, Pointee* This, OtherArgTypes&&... OtherArgs)
+			{
+				Scope.ThisAdjustment = ThisAdjustment;
+				This = reinterpret_cast<Pointee*>(reinterpret_cast<uintptr_t>(This) - ThisAdjustment);
+				Handler(Scope, This, Forward<OtherArgTypes>(OtherArgs)...);
+				Scope.ThisAdjustment = 0;
+			};
+		}
+		else
+		{
+			// HandlerAfter
+			static_assert(std::is_same_v<HandlerType, HandlerAfter>);
+			if constexpr (std::is_void_v<ReturnType>)
+			{
+				// void return
+				return [Handler = Forward<InHandlerType>(InHandler)]
+					<typename Pointee, typename... OtherArgTypes>
+					(Pointee* This, OtherArgTypes&&... OtherArgs)
+				{
+					This = reinterpret_cast<Pointee*>(reinterpret_cast<uintptr_t>(This) - ThisAdjustment);
+					Handler(This, Forward<OtherArgTypes>(OtherArgs)...);
+				};
+			}
+			else
+			{
+				// non-void return
+				return [Handler = Forward<InHandlerType>(InHandler)]
+					<typename Pointee, typename... OtherArgTypes>
+					(const ReturnType& ReturnValue, Pointee* This, OtherArgTypes&&... OtherArgs)
+				{
+					This = reinterpret_cast<Pointee*>(reinterpret_cast<uintptr_t>(This) - ThisAdjustment);
+					Handler(ReturnValue, This, Forward<OtherArgTypes>(OtherArgs)...);
+				};
+			}
+		}
+	}
+
 	static inline HandlersArray<HandlerBefore>* HandlersBefore;
 	static inline HandlersArray<HandlerAfter>* HandlersAfter;
 	static inline HandlersMap<HandlerBefore>* HandlerBeforeReferences;
 	static inline HandlersMap<HandlerAfter>* HandlerAfterReferences;
+	static inline ptrdiff_t ThisAdjustment;
 	static inline void* OriginalFunctionCode;
 	static inline void* Key;
 };
