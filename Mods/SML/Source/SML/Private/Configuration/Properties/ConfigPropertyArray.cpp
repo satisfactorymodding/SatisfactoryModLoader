@@ -7,6 +7,26 @@
 
 #define LOCTEXT_NAMESPACE "SML"
 
+#if WITH_EDITOR
+void UConfigPropertyArray::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) {
+    Super::PostEditChangeProperty(PropertyChangedEvent);
+    // When DefaultValues is changed in the editor, sync Values to match it.
+    // This prevents the old Values from triggering migration on next load.
+    // [Remove this entire function once migration is no longer needed]
+    if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UConfigPropertyArray, DefaultValues)) {
+        Values.Empty(DefaultValues.Num());
+        for (UConfigProperty* Property : DefaultValues) {
+            if (Property) {
+                UConfigProperty* Clone = DuplicateObject<UConfigProperty>(Property, this);
+                Values.Add(Clone);
+            } else {
+                Values.Add(nullptr);
+            }
+        }
+    }
+}
+#endif
+
 void UConfigPropertyArray::PostLoad() {
     Super::PostLoad();
     // Migrate to DefaultValues from Values [Remove only this if statement once migration is no longer needed]

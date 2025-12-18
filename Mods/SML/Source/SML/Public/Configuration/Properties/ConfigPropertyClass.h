@@ -29,6 +29,12 @@ public:
 public:
     UConfigPropertyClass();
 
+    //Begin UObject
+#if WITH_EDITOR
+    virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+    //End UObject
+
     /** Returns true if this class is a valid value for this property */
     UFUNCTION(BlueprintPure)
     bool IsValidValueClass(UClass* Class) const;

@@ -21,6 +21,12 @@ public:
     TArray<UConfigProperty*> Values;
 
 public:
+    //Begin UObject
+#if WITH_EDITOR
+    virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+    //End UObject
+
     /** Allocates new default element and inserts it at the specified index */
     UFUNCTION(BlueprintCallable)
     UConfigProperty* AddNewElement();

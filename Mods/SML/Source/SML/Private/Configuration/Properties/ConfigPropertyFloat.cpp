@@ -4,6 +4,18 @@
 #include "Configuration/RawFileFormat/RawFormatValueNumber.h"
 #include "Reflection/BlueprintReflectedObject.h"
 
+#if WITH_EDITOR
+void UConfigPropertyFloat::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) {
+    Super::PostEditChangeProperty(PropertyChangedEvent);
+    // When DefaultValue is changed in the editor, sync Value to match it.
+    // This prevents the old Value from triggering migration on next load.
+    // [Remove this entire function once migration is no longer needed]
+    if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UConfigPropertyFloat, DefaultValue)) {
+        Value = DefaultValue;
+    }
+}
+#endif
+
 void UConfigPropertyFloat::PostLoad() {
     Super::PostLoad();
     // Migrate to DefaultValue from Value [Remove only this if statement once migration is no longer needed]

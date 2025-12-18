@@ -15,6 +15,12 @@ public:
     bool Value;
 
 public:
+    //Begin UObject
+#if WITH_EDITOR
+    virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+    //End UObject
+
     virtual void PostLoad() override;
 
     //Begin UConfigProperty
