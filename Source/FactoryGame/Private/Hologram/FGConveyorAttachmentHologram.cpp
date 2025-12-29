@@ -40,3 +40,5 @@ void AFGConveyorAttachmentHologram::CheckValidPlacement(){ }
 void AFGConveyorAttachmentHologram::SnapToConnection( UFGFactoryConnectionComponent* connectiontoSnapTo,  UFGFactoryConnectionComponent* myConnectionToSnapWith, FVector locationToDetermineSideIfAplicable){ }
 FName AFGConveyorAttachmentHologram::mInputConnection1 = FName();
 FName AFGConveyorAttachmentHologram::mOutputConnection1 = FName();
+FName AFGConveyorAttachmentHologram::mLiftConnection_Top = FName();
+FName AFGConveyorAttachmentHologram::mLiftConnection_Bottom = FName();
