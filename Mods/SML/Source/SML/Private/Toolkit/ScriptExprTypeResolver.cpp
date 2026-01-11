@@ -95,7 +95,7 @@ TSharedPtr<FScriptExprType> FScriptExprType::CreateInterfaceProperty(UClass* Int
 
 TSharedPtr<FScriptExprType> FScriptExprType::CreateClassProperty(UClass* MetaClass, UClass* PropertyClass) {
 	const TSharedPtr<FScriptExprType> ClassProperty = CreateProperty<FClassProperty>();
-	ClassProperty->Operands.Add(PropertyClass ? PropertyClass : (MetaClass ? MetaClass->GetClass() : UClass::StaticClass()));
+	ClassProperty->Operands.Add(PropertyClass ? PropertyClass : UClass::StaticClass());
 	ClassProperty->Operands.Add(FScriptExprTypeOperand()); // class properties do not have attached implemented interface
 	ClassProperty->Operands.Add(MetaClass ? MetaClass : UObject::StaticClass());
 	return ClassProperty;
