@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -11,6 +11,7 @@
 enum class ESchematicUnlockFlags : uint8;
 class UFGSchematic;
 class AFGCharacterPlayer;
+struct FGameplayTag;
 
 enum class ESchematicManagerMessageId : uint32
 {
@@ -69,7 +70,7 @@ protected:
 	void SendInitialReplicationMessageToPlayer();
 	
 	/** Handles schematic manager reliable message */
-	void HandleRawSchematicManagerMessage(TArray<uint8>&& InMessageData);
+	void HandleRawSchematicManagerMessage(FGameplayTag InTag, TArray<uint8>&& InMessageData);
 	/** Sends a schematic manager reliable message */
 	void SendRawSchematicManagerMessage(ESchematicManagerMessageId MessageId, const TFunctionRef<void(FArchive&)>& MessageSerializer) const;
 
@@ -85,7 +86,7 @@ protected:
 	}
 
 	UPROPERTY()
-	class AFGSchematicManager* mSchematicManager;
+	TObjectPtr<class AFGSchematicManager> mSchematicManager;
 
 	bool bRegisteredMessageHandler{false};
 	bool bHasReceivedInitialReplicationMessage{false};

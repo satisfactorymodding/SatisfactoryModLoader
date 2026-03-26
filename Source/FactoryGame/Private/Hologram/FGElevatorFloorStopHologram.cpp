@@ -4,8 +4,6 @@ AFGElevatorFloorStopHologram::AFGElevatorFloorStopHologram() : Super() {
 	this->mParentElevatorHologram = nullptr;
 	this->mOwningElevator = nullptr;
 	this->mUpgradedFloorStop = nullptr;
-	this->mCanLockHologram = false;
-	this->mCanNudgeHologram = false;
 }
 bool AFGElevatorFloorStopHologram::IsValidHitResult(const FHitResult& hitResult) const{ return Super::IsValidHitResult(hitResult); }
 void AFGElevatorFloorStopHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ Super::SetHologramLocationAndRotation(hitResult); }

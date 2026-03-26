@@ -174,13 +174,13 @@ private:
 	bool ValidatePasswordData( const FFGStoredPasswordData& PasswordData, const FString& PlainTextPassword ) const;
 
 	UPROPERTY()
-	UFGServerAPIManager* mServerAPIManager;
+	TObjectPtr<UFGServerAPIManager> mServerAPIManager;
 
 	UPROPERTY()
-	UFGServerControllerArray* mServerControllerArray;
+	TObjectPtr<UFGServerControllerArray> mServerControllerArray;
 
 	UPROPERTY()
-	UFGServerSettings* mSettings;
+	TObjectPtr<UFGServerSettings> mSettings;
 
 	FString mCredentialsFile;
 

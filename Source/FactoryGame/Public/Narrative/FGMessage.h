@@ -110,7 +110,7 @@ public:
 	TArray< FMessageSubtitle > mSubtitles;
 	
     UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
-	class UFGOnboardingStep* mOnboardingStep;
+	TObjectPtr<class UFGOnboardingStep> mOnboardingStep;
 
 	/** In case this is a bark message, this is the type. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
@@ -129,7 +129,7 @@ public:
 
 	/** When this dependency is met we try to play the message */
 	UPROPERTY( EditDefaultsOnly, Instanced, BlueprintReadOnly, Category = "Trigger" )
-	class UFGAvailabilityDependency* mTrigger;
+	TObjectPtr<class UFGAvailabilityDependency> mTrigger;
 
 	/** Delay duration before the message is played after being triggered. Accounts for the time spent in queue if another message is playing.
 	 * This is useful when we want to make sure a message isn't played to soon after the trigger is triggered. Keep in mind if we trigger
@@ -139,7 +139,7 @@ public:
 
 	/** This message can only be played if these conditions are met. The conditions never trigger messages */
 	UPROPERTY( EditDefaultsOnly, Instanced, BlueprintReadOnly, Category = "Trigger" )
-	TArray<class UFGAvailabilityDependency*> mConditions;
+	TArray<TObjectPtr<class UFGAvailabilityDependency>> mConditions;
 
 	/** Can this message be queued if another message is already playing */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Trigger" )
@@ -167,7 +167,7 @@ public:
 
 	/** The unlocks you get when playing this message. Only really tested for UFGUnlockSAMIntensity at the moment but should work for all unlocks */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Unlocks" )
-	TArray< class UFGUnlock* > mUnlocks;
+	TArray< TObjectPtr<class UFGUnlock> > mUnlocks;
 
 	// Begin legacy properties. Only left for old message support
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = "Legacy" )

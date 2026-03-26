@@ -32,8 +32,7 @@ public:
 	// End AFGBuildableFactory interface
 
 	/** Get the inventory we output the extracted resources to */
-	UFUNCTION( BlueprintPure, Category = "Resource" )
-	class UFGInventoryComponent* GetOutputInventory() const{ return mOutputInventory; }
+	virtual class UFGInventoryComponent* GetOutputInventory() const override { return mOutputInventory; }
 
 	/** Get the quantity of items mined each production cycle */
 	UFUNCTION( BlueprintPure, Category = "Extraction" )
@@ -110,11 +109,11 @@ private:
 
 	/** Cached pipe output connections */
 	UPROPERTY()
-	TArray< class UFGPipeConnectionComponent* > mPipeOutputConnections;
+	TArray< TObjectPtr<class UFGPipeConnectionComponent> > mPipeOutputConnections;
 
 	/** Our output inventory, */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mOutputInventory;
+	TObjectPtr<class UFGInventoryComponent> mOutputInventory;
 
 	//******* Begin Pipe Flow Output params *******/
 	

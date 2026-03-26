@@ -67,10 +67,10 @@ protected:
 private:
 	/** Sphere collision component */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Stun Spear" )
-	class USphereComponent* mCollisionComp;
+	TObjectPtr<class USphereComponent> mCollisionComp;
 
 	UPROPERTY( EditDefaultsOnly, Instanced, Category= "Stun Spear")
-	TArray < UFGDamageType* > mDamageTypes;
+	TArray < TObjectPtr<UFGDamageType> > mDamageTypes;
 	
 	/** The noise to make when attacking with the spear. */
 	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )

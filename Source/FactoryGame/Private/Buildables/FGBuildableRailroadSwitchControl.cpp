@@ -24,7 +24,6 @@ void AFGBuildableRailroadSwitchControl::OnBuildEffectFinished(){ }
 void AFGBuildableRailroadSwitchControl::OnBuildEffectActorFinished(){ }
 void AFGBuildableRailroadSwitchControl::GainedSignificance_Implementation(){ }
 void AFGBuildableRailroadSwitchControl::LostSignificance_Implementation(){ }
-void AFGBuildableRailroadSwitchControl::SetupForSignificance(){ }
 void AFGBuildableRailroadSwitchControl::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ Super::PostLoadGame_Implementation(saveVersion, gameVersion); }
 bool AFGBuildableRailroadSwitchControl::ShouldBlockDismantleSample_Implementation() const{ return bool(); }
 bool AFGBuildableRailroadSwitchControl::CanDismantle_Implementation() const{ return bool(); }

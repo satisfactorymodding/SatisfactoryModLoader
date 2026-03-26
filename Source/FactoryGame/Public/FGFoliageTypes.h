@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -74,7 +74,7 @@ struct FFoliageInstanceStableId
 	uint32 InstanceHash = 0;
 
 	UPROPERTY()
-	class UFoliageType* FoliageType = nullptr;
+	TObjectPtr<class UFoliageType> FoliageType = nullptr;
 
 	UPROPERTY()
 	FIntVector FoliageCell = {};
@@ -82,4 +82,4 @@ struct FFoliageInstanceStableId
 
 /// A map per foliage cell per foliage type parameterized over @ValueType
 template< typename ValueType >
-using TPerCellPerTypeMap = TMap< FIntVector, TMap< const UFoliageType*, ValueType > >;
+using TPerCellPerTypeMap = TMap< FIntVector, TMap< TObjectPtr<const UFoliageType>, ValueType > >;

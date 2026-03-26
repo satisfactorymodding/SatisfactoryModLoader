@@ -21,19 +21,6 @@
 	UFGFactoryConnectionComponent::SortComponentList( connections ); \
 	for( UFGFactoryConnectionComponent* COMPONENT_NAME : connections )
 
-//@todo This is unused and is only confusing, remove it later -G2 2020-05-29
-/**
- * Type of connections in the game.
- * @todo-Pipes - This is old, we're shifting to a different connection component type for pipes as they don't need most of the special logic in the factory connection
- */
-UENUM( BlueprintType )
-enum class EFactoryConnectionConnector : uint8
-{
-	FCC_CONVEYOR	UMETA( DisplayName = "Conveyor" ),
-	FCC_PIPE		UMETA( DisplayName = "Pipe" ),
-	FCC_MAX			UMETA( Hidden )
-};
-
 /**
  * Type of connections in the game.
  */
@@ -136,10 +123,6 @@ public:
 
 	/** Get the direction needed to be able to connect to this connection, ANY if anything is valid. */
 	EFactoryConnectionDirection GetCompatibleSnapDirection() const;
-
-	/** Return the connector used for this connection. */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|FactoryConnection" )
-	FORCEINLINE EFactoryConnectionConnector GetConnector() const { return mConnector; }
 	
 	/** Check if the given connection can snap to this. */
 	bool CanSnapTo( UFGFactoryConnectionComponent* otherConnection ) const;
@@ -218,7 +201,6 @@ public:
 		const FVector& location,
 		const AActor* priorityActor,
 		float radius,
-		EFactoryConnectionConnector connector,
 		EFactoryConnectionDirection direction,
 		const TArray< TSubclassOf< class AFGBuildable > >& buildableClassFilter = {},
 		const TSet< class UFGFactoryConnectionComponent* >& ignoredConnections = {} );
@@ -232,7 +214,6 @@ public:
 		UWorld* world,
 		const FVector& location,
 		float radius,
-		EFactoryConnectionConnector connector,
 		EFactoryConnectionDirection direction,
 		const TArray< TSubclassOf< class AFGBuildable > >& buildableClassFilter = {},
 		const TSet< class UFGFactoryConnectionComponent* >& ignoredConnections = {} );
@@ -247,10 +228,6 @@ private:
 		const TArray< struct FOverlapResult >& potentialBlockers );
 
 protected:
-	/** Physical type of connector used for this connection. */
-	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
-	EFactoryConnectionConnector mConnector;
-
 	/** Direction for this connection. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	EFactoryConnectionDirection mDirection;
@@ -261,7 +238,7 @@ protected:
 
 	/** Connection to another component. If this is set we're connected. */
 	UPROPERTY( SaveGame )
-	class UFGFactoryConnectionComponent* mConnectedComponent;
+	TObjectPtr<class UFGFactoryConnectionComponent> mConnectedComponent;
 
 	/** Light-weight connected indication for clients. */
 	UPROPERTY( Replicated )
@@ -269,7 +246,7 @@ protected:
 
 	/** The inventory of this connection */
 	UPROPERTY()
-	class UFGInventoryComponent* mConnectionInventory;
+	TObjectPtr<class UFGInventoryComponent> mConnectionInventory;
 
 	/** The inventory index utilized by this connection ( -1 for none specified ) */
 	UPROPERTY()
@@ -277,7 +254,7 @@ protected:
 
 	/** Buildable owning us, cached for performance */
 	UPROPERTY()
-	class AFGBuildable* mOuterBuildable;
+	TObjectPtr<class AFGBuildable> mOuterBuildable;
 
 	/** Forward implementation details to our owner. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -76,19 +76,19 @@ private:
 protected:
 	/** train that owns this component */
 	UPROPERTY()
-	class AFGTrain* mTrainOwner;
+	TObjectPtr<class AFGTrain> mTrainOwner;
 
 	/** Component to play events on the wheelsets. Location is the bogie bone. */
 	UPROPERTY( BlueprintReadOnly, Category = "Ak" )
-	class UAkComponent* mWheelsetsAkComponent;
+	TObjectPtr<class UAkComponent> mWheelsetsAkComponent;
 
 	/** Component to play events on the locomotives. Location is the center of the actor bounds (colliding). */
 	UPROPERTY( BlueprintReadOnly, Category = "Ak" )
-	class UAkComponent* mEnginesAkComponent;
+	TObjectPtr<class UAkComponent> mEnginesAkComponent;
 
 	/** Component to play events on all the locomotives and wagons. Location is the center of the actor bounds (colliding). */
 	UPROPERTY( BlueprintReadOnly, Category = "Ak" )
-	class UAkComponent* mAllVehicleCentersAkComponent;
+	TObjectPtr<class UAkComponent> mAllVehicleCentersAkComponent;
 
 	/** Speed of the train [cm/s]. */
 	UPROPERTY( BlueprintReadOnly, Category = "Train Data" )

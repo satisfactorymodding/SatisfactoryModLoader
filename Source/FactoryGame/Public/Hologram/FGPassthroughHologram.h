@@ -38,7 +38,7 @@ private:
 	
 protected:
 	virtual void RebuildMeshesAndUpdateClearance();
-	void TryExtendInWorldDirection( const FVector& worldLocation, const FQuat& worldRotation, const FVector& worldDirection, AFGBuildableFoundation* snappedFoundation, float& out_extension, TArray<AFGBuildableFoundation*>& overlappingFoundations ) const;
+	void TryExtendInWorldDirection( const FVector& worldLocation, const FQuat& worldRotation, const FVector& worldDirection, AFGBuildableFoundation* snappedFoundation, float& out_extension, TArray<TObjectPtr<AFGBuildableFoundation>>& overlappingFoundations ) const;
 	void OverlapCheckFoundations( const FVector& worldLocation, const FQuat& worldRotation, const FVector& offsetDirection, TArray<AFGBuildableFoundation*>& out_foundations ) const;
 
 	/** Maximum total length of the passthrough */
@@ -55,11 +55,11 @@ protected:
 	
 	/** Generated mesh components */
 	UPROPERTY( VisibleInstanceOnly, Category = "Passthrough" )
-	TArray< class UStaticMeshComponent* > mMeshComponents;
+	TArray< TObjectPtr<class UStaticMeshComponent> > mMeshComponents;
 
 	/** Snapped foundations that will be ignored for the clearance check */
 	UPROPERTY( VisibleInstanceOnly, Category = "Passthrough" )
-	TArray<AFGBuildableFoundation*> mSnappedFoundations;
+	TArray<TObjectPtr<AFGBuildableFoundation>> mSnappedFoundations;
 
 private:
 	FFGClearanceData mClearance;

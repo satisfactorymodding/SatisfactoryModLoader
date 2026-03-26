@@ -6,8 +6,8 @@
 #include "Components/SplineComponent.h"
 #include "FGBuildableConveyorBase.h"
 #include "FGBuildableConveyorMonitor.h"
+#include "FGNetSignificanceInterface.h"
 #include "FGSplineBuildableInterface.h"
-#include "FGUseableInterface.h"
 #include "Components/SplineMeshComponent.h"
 #include "FGSplineCollisionComponent.h"
 #include "FGBuildableConveyorBelt.generated.h"
@@ -19,7 +19,7 @@ class AFGBuildableConveyorMonitor;
  * Assumption: Conveyors are never rotated, rotation is always 0,0,0.
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildableConveyorBelt : public AFGBuildableConveyorBase, public IFGSplineBuildableInterface
+class FACTORYGAME_API AFGBuildableConveyorBelt : public AFGBuildableConveyorBase, public IFGSplineBuildableInterface, public IFGNetSignificanceInterface
 {
 	GENERATED_BODY()
 public:
@@ -35,12 +35,15 @@ public:
 
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
-	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
-	virtual	void SetupForSignificance() override;					// TODO deprecate
+	virtual void LostSignificance_Implementation() override;
+	virtual float GetSignificanceRange_Implementation() const override;
+	// End IFGSignificanceInterface
+
+	// Begin IFGNetSignificanceInterface
 	virtual void GainedNetSignificance_Implementation() override;
 	virtual void LostNetSignificance_Implementation() override;
-	// End IFGSignificanceInterface
+	virtual float GetNetSignificanceRange_Implementation() const override;
+	// End IFGNetSignificanceInterface
 
 	// Begin abstract instance interface.
 	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() const override;
@@ -61,7 +64,7 @@ public:
 	/** Get the velocity of the conveyor where the based actor is. */
 	FVector GetVelocityForBase( class AActor* basedActor, class UPrimitiveComponent* baseComponent ) const;
 
-	virtual TArray<FInstanceData> SetupAbstractInstances(const FFactoryCustomizationData& CustomizationData);
+	virtual TArray<FInstanceData> SetupAbstractInstances(const FFactoryCustomizationData& CustomizationData) const;
 	virtual void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData ) override;
 
 	//~ Begin IFGDismantleInterface
@@ -117,10 +120,10 @@ public:
 	void ClearLUT();
 
 protected:
-	// Begin AFGBuildableFactory interface
-	virtual bool VerifyDefaults( FString& out_message ) override;
-	// End AFGBuildableFactory interface
-
+	// Begin AFGBuildable interface
+	virtual FBox CalculateBounds() const override;
+	// End AFGBuildable interface
+	
 	// Begin AFGBuildableConveyorBase interface
 	virtual void TickItemTransforms( float dt ) override;
 	virtual void TickRadioactivity() override;
@@ -141,22 +144,25 @@ private:
 protected:
 	/** Mesh to use for his conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
-	class UStaticMesh* mMesh;
+	TObjectPtr<class UStaticMesh> mMesh;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
-	class UStaticMesh* mCollisionProxyMesh;
+	TObjectPtr<class UStaticMesh> mCollisionProxyMesh;
 	
 	/** Length of the mesh to use for this conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
 	float mMeshLength;
 
+	/** Index of the spline instance deformation data in the per instance custom data buffer */
+	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
+	int32 mSplineInstanceStartDataIndex{20};
 private:
 	friend class AFGConveyorBeltHologram;
 	friend class AFGBlueprintHologram;
 	
 	/** Meshes for items. */
 	UPROPERTY( Meta = ( NoAutoJson ) )
-	TMap< FName, class UInstancedStaticMeshComponent* > mItemMeshMap;
+	TMap< FName, TObjectPtr<class UInstancedStaticMeshComponent> > mItemMeshMap;
 
 	/** Compact representation of mSplineComponent, used for replication and save game */
 	UPROPERTY( SaveGame, Replicated, Meta = ( NoAutoJson ) )
@@ -164,15 +170,15 @@ private:
 
 	/** The spline component for this conveyor. Note that this is only the spline. */
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
-	class USplineComponent* mSplineComponent;
+	TObjectPtr<class USplineComponent> mSplineComponent;
 
 	/** Wwise multiple position playback for the conveyor spline. */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Audio" )
-	class UFGSoundSplineComponent* mSoundSplineComponent;
+	TObjectPtr<class UFGSoundSplineComponent> mSoundSplineComponent;
 
 	/** The ak event to post for the sound spline */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
-	class UAkAudioEvent* mSplineAudioEvent;
+	TObjectPtr<class UAkAudioEvent> mSplineAudioEvent;
 
 	/* Mesh used to determine visibility of the belt, since we moved to HISM's we have no clue if they are visible or not without this.*/
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
@@ -180,7 +186,7 @@ private:
 
 	/* Material assigned to the collision box proxies. */
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
-	UPhysicalMaterial* PhysicalMaterial;
+	TObjectPtr<UPhysicalMaterial> PhysicalMaterial;
 
 	UPROPERTY(VisibleInstanceOnly)
 	TObjectPtr<UFGSplineCollisionComponent> mCollisionComponent = nullptr;
@@ -189,4 +195,27 @@ private:
 	static inline const FVector COLLISION_EXTENT = FVector( 80.f, 80.f, 15.f );
 	static inline const float COLLISION_SPACING =  160.f;
 	static inline const FVector COLLISION_OFFSET = FVector( 0.f, 0.f, 0.f );
+};
+
+
+UCLASS()
+class FACTORYGAME_API UFGConveyorBeltVisibilityMesh : public UStaticMeshComponent
+{
+	GENERATED_BODY()
+public:
+	// Begin UStaticMeshComponent interface
+	virtual void BeginPlay() override;
+	virtual void ReportVisibility() const override;
+	virtual bool ShouldReportVisibility() const override { return !IsRelevantToConveyorRenderer(); }
+	// End UStaticMeshComponent interface
+
+	FORCEINLINE bool IsRelevantToConveyorRenderer() const { return bIsRelevantToConveyorRenderer; }
+	FORCEINLINE void SetRelevant(const bool Value) const { bIsRelevantToConveyorRenderer = Value; }
+	FORCEINLINE AFGBuildableConveyorBelt* GetOuterConveyorBeltActor() const { return mOwnerBelt; }
+private:
+	// We mark this true once it has been reported.
+	mutable bool bIsRelevantToConveyorRenderer{false};
+
+	UPROPERTY()
+	TObjectPtr<AFGBuildableConveyorBelt> mOwnerBelt;
 };

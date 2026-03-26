@@ -19,7 +19,7 @@ class FACTORYGAME_API AFGGasPillarCloud : public AFGStaticReplicatedActor, publi
 public:
 	virtual  void GainedSignificance_Implementation() override;
 	virtual  void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 private:
 	GENERATED_BODY()
 
@@ -70,10 +70,10 @@ public:
 protected:
 
 	UPROPERTY( VisibleAnywhere, Category="GasPillarCloud")
-	UNiagaraComponent* mNiagaraComponent;
+	TObjectPtr<UNiagaraComponent> mNiagaraComponent;
 
 	UPROPERTY( EditDefaultsOnly, Category="GasPillarCloud" )
-	UNiagaraSystem* mLongRangeNiagaraSystem;
+	TObjectPtr<UNiagaraSystem> mLongRangeNiagaraSystem;
 	
 	// Runtime array of valid locations ( set mProximityPillarWorldLocations - set mRemovedWorldLocations )
 	UPROPERTY()

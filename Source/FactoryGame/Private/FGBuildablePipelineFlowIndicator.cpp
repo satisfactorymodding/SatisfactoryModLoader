@@ -30,9 +30,10 @@ void AFGBuildablePipelineFlowIndicator::EndPlay(const EEndPlayReason::Type endPl
 void AFGBuildablePipelineFlowIndicator::Tick(float dt){ Super::Tick(dt); }
 void AFGBuildablePipelineFlowIndicator::GainedSignificance_Implementation(){ }
 void AFGBuildablePipelineFlowIndicator::LostSignificance_Implementation(){ }
-void AFGBuildablePipelineFlowIndicator::GainedNetSignificance_Implementation(){ IFGSignificanceInterface::GainedNetSignificance_Implementation(); }
-void AFGBuildablePipelineFlowIndicator::LostNetSignificance_Implementation(){ IFGSignificanceInterface::LostNetSignificance_Implementation(); }
-float AFGBuildablePipelineFlowIndicator::GetSignificanceRange(){ return float(); }
+float AFGBuildablePipelineFlowIndicator::GetSignificanceRange_Implementation() const{ return IFGSignificanceInterface::GetSignificanceRange_Implementation(); }
+void AFGBuildablePipelineFlowIndicator::GainedNetSignificance_Implementation(){ IFGNetSignificanceInterface::GainedNetSignificance_Implementation(); }
+void AFGBuildablePipelineFlowIndicator::LostNetSignificance_Implementation(){ IFGNetSignificanceInterface::LostNetSignificance_Implementation(); }
+float AFGBuildablePipelineFlowIndicator::GetNetSignificanceRange_Implementation() const{ return IFGNetSignificanceInterface::GetNetSignificanceRange_Implementation(); }
 void AFGBuildablePipelineFlowIndicator::UpdateActorTickEnabled(){  }
 void AFGBuildablePipelineFlowIndicator::UpdateReplicationData(bool bAllowFlushingDormancy){  }
 void AFGBuildablePipelineFlowIndicator::UpdateVisuals(float Dt){ }

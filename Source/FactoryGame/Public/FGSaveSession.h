@@ -8,6 +8,8 @@
 #include "UObject/Object.h"
 #include "Engine/EngineBaseTypes.h"
 #include "Engine/TimerHandle.h"
+#include "Misc/EngineVersion.h"
+#include "Serialization/CustomVersion.h"
 #include "FGSaveSession.generated.h"
 
 // @todosave: Change the FText to a Enum, so server and client can have different localizations
@@ -15,6 +17,49 @@ DECLARE_DELEGATE_ThreeParams( FOnSaveGameComplete, bool, const FText&, void* );
 DECLARE_DELEGATE_OneParam( FOnLevelPlacedActorDestroyed, AActor* );
 
 FArchive& DeserializeObjectData( FArchive& Ar, TArray<UObject*> &A );
+
+// Full versioning information required for serialization of a save game object. Shared between objects whenever possible.
+struct FSaveObjectVersionData
+{
+	static constexpr uint32 SaveObjectVersionDataVersion_Initial = 0;
+	uint32 SaveObjectVersionDataVersion{SaveObjectVersionDataVersion_Initial}; // version of this struct layout
+	FPackageFileVersion PackageFileVersion;
+	int32 LicenseeVersion{0};
+	FEngineVersion EngineVersion;
+	FCustomVersionContainer CustomVersionContainer;
+
+	friend FArchive& operator<<( FArchive& ar, FSaveObjectVersionData& versionData )
+	{
+		ar << versionData.SaveObjectVersionDataVersion;
+		ar << versionData.PackageFileVersion;
+		ar << versionData.LicenseeVersion;
+		ar << versionData.EngineVersion;
+		versionData.CustomVersionContainer.Serialize( ar, ECustomVersionSerializationFormat::Optimized );
+		return ar;
+	}
+
+	// Applies the save object version data to the archive
+	void ApplyToArchive( FArchive& ar ) const
+	{
+		ar.SetUEVer( PackageFileVersion );
+		ar.SetLicenseeUEVer( LicenseeVersion );
+		ar.SetEngineVer( EngineVersion );
+		ar.SetCustomVersions( CustomVersionContainer );
+	}
+
+	// Resets the container to the current version
+	void SetToCurrentVersion()
+	{
+		SaveObjectVersionDataVersion = SaveObjectVersionDataVersion_Initial;	
+		PackageFileVersion = GPackageFileUEVersion;
+		LicenseeVersion = VER_LIC_AUTOMATIC_VERSION;
+		EngineVersion = FEngineVersion::Current();
+		CustomVersionContainer.Empty();
+	}
+
+	// Helper function to calculate save object versioning data from the provided save custom version for legacy saves
+	static void CalculateSaveObjectVersionDataForLegacyCustomVersion( int32 saveCustomVersion, FSaveObjectVersionData& outSaveObjectVersionData );
+};
 
 struct FPerBasicLevelSaveData
 {
@@ -50,7 +95,7 @@ struct FPerBasicLevelSaveData
 /**
  * Members are pointer as this struct might be moved around in memory as it's in a TMap
  */
-struct FPerStreamingLevelSaveData: public FPerBasicLevelSaveData
+struct FPerStreamingLevelSaveData : public FPerBasicLevelSaveData
 {
 	FPerStreamingLevelSaveData( int32 saveVersion )
 		: FPerBasicLevelSaveData()
@@ -78,7 +123,9 @@ struct FPerStreamingLevelSaveData: public FPerBasicLevelSaveData
 
 	/** If true, then the data is for a runtime level, and then we don't need the destroyed actors */
 	uint8 IsRuntimeData:1;
-	
+
+	/** Object version data for this streamable level, used unless per object versions are serialized */
+	TOptional<FSaveObjectVersionData> StreamableLevelObjectVersionData;
 };
 
 /**
@@ -279,10 +326,6 @@ public:
 	/** Retrieves just the header for any valid save file. Returns true/false if it manages to read the header. */
 	static bool PeekAtFileHeader( const FString& fullFilePath, FSaveHeader& out_fileHeader ); // <FL> [WuttkeP] Made this function static.
 
-
-	/** Converts a saveName to a file name */
-	static FString SaveNameToFileName( const FString& saveName );
-	
 	static FObjectReferenceDisc FixupObjectReferenceForPartitionedWorld( const FObjectReferenceDisc& Reference, const class AFGWorldSettings& WorldSettings );
 
 	/** Setup the autosave timer */
@@ -330,9 +373,6 @@ public:
 
 protected:
 	friend class AFGBlueprintSubsystem;
-	
-	// Load a save game that was created before the LevelStreaming save era
-	bool LoadPreLevelStreamingSave( FString saveName );
 
 	/** Called whenever a level is added to the world, used to expand the list with actors to save */
 	UFUNCTION()
@@ -387,28 +427,14 @@ protected:
 	*/
 	FPerStreamingLevelSaveData& GetLevelSaveData( const FString& levelName, bool isPersistent );
 
-	/** 
-	 * Deletes a existing save of the session id that has that autosave number
-	 * @param sessionName - the session we want to delete
-	 * @param autosaveNum - the autosave number of that save session to delete
-	 */
-	void DeleteSave( FString sessionName, int32 autosaveNum );
-
 	/** Generate the next autosave name, calling this twice will give you different results */
 	FString GenerateAutosaveName( int32& out_autosaveNum, const FString& sessionName );
 
 	/** Get the full map name */
 	FString GetFullMapName() const;
-
+	
 	/** Check if we should broadcast an auto save notification and potentially start a new notification timer */
 	void CheckAutoSaveNotificationTimer();
-
-	/**
-	 * Sort the object list so that objects always have their dependencies first
-	 *
-	 * @param io_objectsToSerialize - the object list to sort
-	 */
-	void SortObjectsByDependency( TArray< UObject* >& io_objectsToSerialize );
 
 	/**
 	 * Traces from a rootobjects and finds all children from that root that implements the FGSaveInterface
@@ -487,7 +513,7 @@ protected:
 
 	/** Objects that has been runtime spawned */
 	UPROPERTY()
-	TArray< class AActor* > mSpawnedActors;
+	TSet< TObjectPtr<class AActor> > mSpawnedActors;
 
 	/** Objects that have been loaded per level */
 	TMap< ULevel*, TArray< class UObject* > > mPerStreamingLevelLoadedObjects;
@@ -503,6 +529,9 @@ protected:
 
 	/** Cached save header from last save game */
 	FSaveHeader mSaveHeader;
+
+	/** Persistent level save object version data for currently loaded save, if present */
+	TOptional<FSaveObjectVersionData> mPersistentLevelSaveObjectVersionData;
 
 	/** Timer holding the autosave timer */
 	FTimerHandle mAutosaveHandle;

@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGCharacterPlayer.h"
 #include "FGSubsystem.h"
 #include "FGRecipe.h"
 #include "GameplayTagContainer.h"
@@ -99,11 +100,8 @@ public:
 	/** Sets the tradingpost level to new value */
 	void SetTradingPostLevel( int32 newLevel );
 
-	/** Based on tutorial progression set player input gates */
-	UFUNCTION( BlueprintCallable, Category = "Tutorial" )
-	void SetInputGatesFromTutorialLevel( class AFGPlayerController* playerController );
-
-	struct FDisabledInputGate GetInputGatesFromTutorialLevel();
+	/** Returns input gate for the current tutorial step */
+	FDisabledInputGate GetDisabledInputGateFromOnboardingStep() const;
 
 	/** Spawns and sets up necessary stuff for the drop pod sequence */
 	void SetupDropPod( class AFGCharacterPlayer* forPlayer );
@@ -235,7 +233,7 @@ private:
 	EIntroTutorialSteps mPendingTutorial = EIntroTutorialSteps::ITS_DEPRECATED;
 
 	UPROPERTY( ReplicatedUsing=OnRep_CurrentOnboardingStep, SaveGame )
-	class UFGOnboardingStep* mCurrentOnboardingStep;
+	TObjectPtr<class UFGOnboardingStep> mCurrentOnboardingStep;
 
 	/** Array of pending tutorial IDs that should be shown when possible ( no other widgets on screen etc ) */
 	EIntroTutorialSteps mCurrentLocalTutorial;
@@ -250,19 +248,19 @@ private:
 
 	/** Class of the message that plays when landing. */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	class UFGMessage* mLandingOnboardingMessage;
+	TObjectPtr<class UFGMessage> mLandingOnboardingMessage;
 
 	/** The class of the trading post */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGBuildingDescriptor > mTradingPostDescriptor;
+	TSoftClassPtr< class UFGBuildingDescriptor > mTradingPostDescriptor;
 
 	/** Cached reference of trading post */
 	UPROPERTY( SaveGame, Replicated )
-	class AFGBuildableTradingPost* mTradingPost;
+	TObjectPtr<class AFGBuildableTradingPost> mTradingPost;
 
 	/** Class of Iron Resource Descriptor */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGItemDescriptor > mIronOreDescriptor;
+	TSoftClassPtr< class UFGItemDescriptor > mIronOreDescriptor;
 	
 	/** Checks if we have dismantled the drop pod */
 	UPROPERTY( SaveGame )
@@ -270,7 +268,7 @@ private:
 
 	/** class to identify the stun spear */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGItemDescriptor > mStunSpearItemClass;
+	TSoftClassPtr< class UFGItemDescriptor > mStunSpearItemClass;
 
 	/** Checks if we equipped the stun spear */
 	UPROPERTY( SaveGame )
@@ -278,7 +276,7 @@ private:
 
 	/** Reference to the class step 1 tutorial schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGSchematic > mStep1UpgradeSchematic;
+	TSoftClassPtr< class UFGSchematic > mStep1UpgradeSchematic;
 
 	/** Bool for the step 1 schematic */
 	UPROPERTY( SaveGame )
@@ -286,7 +284,7 @@ private:
 
 	/** Reference to the class step 1.5 tutorial schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGSchematic > mStep1_5UpgradeSchematic;
+	TSoftClassPtr< class UFGSchematic > mStep1_5UpgradeSchematic;
 
 	/** Bool for the step 1.5 schematic */
 	UPROPERTY( SaveGame )
@@ -294,7 +292,7 @@ private:
 
 	/** Reference to the class step 2 tutorial schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGSchematic > mStep2UpgradeSchematic;
+	TSoftClassPtr< class UFGSchematic > mStep2UpgradeSchematic;
 
 	/** Bool for the step 2 schematic */
 	UPROPERTY( SaveGame )
@@ -302,7 +300,7 @@ private:
 
 	/** Reference to the class step 3 tutorial schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGSchematic > mStep3UpgradeSchematic;
+	TSoftClassPtr< class UFGSchematic > mStep3UpgradeSchematic;
 
 	/** Bool for the step 3 schematic */
 	UPROPERTY( SaveGame )
@@ -310,7 +308,7 @@ private:
 
 	/** Reference to the class step 4 tutorial schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGSchematic > mStep4UpgradeSchematic;
+	TSoftClassPtr< class UFGSchematic > mStep4UpgradeSchematic;
 
 	/** Bool for the step 4 schematic */
 	UPROPERTY( SaveGame )
@@ -318,7 +316,7 @@ private:
 
 	/** Reference to the class step 5 tutorial schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class UFGSchematic > mStep5UpgradeSchematic;
+	TSoftClassPtr< class UFGSchematic > mStep5UpgradeSchematic;
 
 	/** Bool for the step5 schematic */
 	UPROPERTY( SaveGame )
@@ -326,11 +324,11 @@ private:
 
 	/** Class of drop pod to spawn */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
-	TSubclassOf< class AFGStartingPod > mStartingPodClass;
+	TSoftClassPtr< class AFGStartingPod > mStartingPodClass;
 
 	/** Reference to starting pod ( server only ) */
 	UPROPERTY( Replicated )
-	class AFGStartingPod* mStartingPod;
+	TObjectPtr<class AFGStartingPod> mStartingPod;
 
 	/** The upgrade level we have on our trading post */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_TradingPostLevel )
@@ -362,7 +360,7 @@ private:
 
 	/** The different onboarding steps we have in the game. Gathered early in the lifetime of the tutorial intro manager */
 	UPROPERTY( Transient )
-	TArray<class UFGOnboardingStep*> mCachedOnboardingSteps;
+	TArray<TObjectPtr<class UFGOnboardingStep>> mCachedOnboardingSteps;
 
 	bool mIsPlayingIntroSequence;
 

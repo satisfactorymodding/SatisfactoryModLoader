@@ -52,7 +52,7 @@ protected:
 protected:
 	/** Component used for visualizing the portable miner hologram */
 	UPROPERTY( EditAnywhere, Category = "Portable Miner" )
-	USkeletalMeshComponent* mHologramMeshComponent;
+	TObjectPtr<USkeletalMeshComponent> mHologramMeshComponent;
 
 	/** Class of the portable miner to spawn into the world */
 	UPROPERTY( EditDefaultsOnly, Category = "Portable Miner" )

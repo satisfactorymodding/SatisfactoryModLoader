@@ -58,11 +58,11 @@ protected:
 	
 	/** The icon that is shown in the emote wheel */
 	UPROPERTY( EditDefaultsOnly, Category = "Emote" )
-	class UTexture2D* mEmoteIcon;
+	TObjectPtr<class UTexture2D> mEmoteIcon;
 
 private:
 	UPROPERTY()
-	class AFGCharacterPlayer* mPlayerCharacter;
+	TObjectPtr<class AFGCharacterPlayer> mPlayerCharacter;
 
 	/** Get the generated random integer for this emote between 0-1000. Can be used for easter eggs and such. Will be the synced between client and server.*/
 	int32 mRandomInteger;

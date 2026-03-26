@@ -9,6 +9,8 @@
 #include "FGLocomotive.generated.h"
 
 
+struct FInputActionValue;
+
 UENUM( BlueprintType )
 namespace ELocomotiveHeadlightsMode
 {
@@ -196,7 +198,10 @@ private:
 	/** Used by the movement component to control the power usage. */
 	void SetPowerConsumption( float pct );
 	void SetPowerRegeneration( float pct );
-
+	
+	float GetPowerConsumptionMultiplier( ) const;
+	FFloatInterval GetPowerConsumption( ) const;
+	
 	/** Called when the power status changes for this locomotive. */
 	void OnHasPowerChanged();
 
@@ -220,12 +225,12 @@ private:
 	FFloatInterval mPowerConsumption;
 
 	/** The sliding shoe making contact with the third rail. */
-	UPROPERTY( )
-	class UFGPowerConnectionComponent* mSlidingShoe;
+	UPROPERTY()
+	TObjectPtr<class UFGPowerConnectionComponent> mSlidingShoe;
 
 	/** The power info for this train, draw power from the circuit. */
 	UPROPERTY()
-	class UFGPowerInfoComponent* mPowerInfo;
+	TObjectPtr<class UFGPowerInfoComponent> mPowerInfo;
 
 	/** Has power. Used to keep clients in sync with circuit power state */
 	UPROPERTY( Replicated )
@@ -233,10 +238,13 @@ private:
 
 	/** vehicle simulation component */
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = Vehicle, meta = ( AllowPrivateAccess = "true" ) )
-	class UFGLocomotiveMovementComponent* mVehicleMovement;
+	TObjectPtr<class UFGLocomotiveMovementComponent> mVehicleMovement;
 
 	/** True if we're honking right now. */
 	bool mIsHonking;
+
+	/* True if we need to set movement direction on first input trigger */
+	bool mResetMovementInputDirection = false;
 
 	/** Remember the state of the headlights, use the setter to set this so that the light and meshes gets updated. */
 	UPROPERTY( ReplicatedUsing = OnRep_HeadlightMode )

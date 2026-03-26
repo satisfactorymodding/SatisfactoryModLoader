@@ -36,9 +36,9 @@ struct FHighlightedMarkerPair
 	{}
 
 	UPROPERTY( SaveGame )
-	class AFGPlayerState* PlayerState;
+	TObjectPtr<class AFGPlayerState> PlayerState;
 	UPROPERTY( SaveGame )
-	class UFGHighlightedMarker* HighlightedMarker;
+	TObjectPtr<class UFGHighlightedMarker> HighlightedMarker;
 
 	
 };
@@ -262,12 +262,12 @@ private:
 	int32 mFogOfWarNetPacketSize;
 	/** The fog of war texture that is used for the map */
 	UPROPERTY()
-	UTexture2D* mFogOfWarTexture;
+	TObjectPtr<UTexture2D> mFogOfWarTexture;
 	/** The fog of war texture region used for updating the texture */
 	FUpdateTextureRegion2D mFogOfWarUpdateTextureRegion;
 	/** Capture actor used for translate world locations to map locations  */
 	UPROPERTY()
-	AFGMinimapCaptureActor* mCachedMinimapCaptureActor;
+	TObjectPtr<AFGMinimapCaptureActor> mCachedMinimapCaptureActor;
 
 	/** ID of the local player used to tell markers created by this player apart from other players */
 	FGuid mLocalPlayerID;
@@ -286,11 +286,11 @@ private:
 
 	/** Actor representation manager to get representations updates to calculate fog of war data  */
 	UPROPERTY( Transient )
-	class AFGActorRepresentationManager* mActorRepresentationManager;
+	TObjectPtr<class AFGActorRepresentationManager> mActorRepresentationManager;
 
 	/** The currently active dynamic actor representations that reveal fog of war */
 	UPROPERTY()
-	TArray<UFGActorRepresentation*> mDynamicFogOfWarRevealActors;
+	TArray<TObjectPtr<UFGActorRepresentation>> mDynamicFogOfWarRevealActors;
 
 	/** The current index for the tick update loop for fog of war from dynamic actor representations */
 	int32 mDynamicActorsArrayIndex;
@@ -299,7 +299,7 @@ private:
 	int32 mMaxNumMapMarkers = 250;
 
 	UPROPERTY()
-	TMap< int32, class UHierarchicalInstancedStaticMeshComponent* > mMapMarkerComponents;
+	TMap< int32, TObjectPtr<class UHierarchicalInstancedStaticMeshComponent> > mMapMarkerComponents;
 
 	/** Highlighted marker can be almost anything that is an actor representation on the map. The underlying saved data could be an FMapMarker or a actor. */ 
 	UPROPERTY( SaveGame )
@@ -319,7 +319,7 @@ private:
 	TArray<FFOWData> mFOWDrawQueue;
 	
 	UPROPERTY()
-	TMap<UFGActorRepresentation*,FVector> mActorMapToLocation;
+	TMap<TObjectPtr<UFGActorRepresentation>,FVector> mActorMapToLocation;
 };
 
 struct FFogOfWarWorker

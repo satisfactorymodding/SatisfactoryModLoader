@@ -7,7 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameplayEvent.h"
 #include "GameplayEventsSubsystem.h"
-#include "UnrealNetwork.h"
+#include "Net/UnrealNetwork.h"
 
 FReplicatedGameplayEvent::FReplicatedGameplayEvent(const FGameplayEvent& GameplayEvent) : EventTag(GameplayEvent.EventTag), Payload(GameplayEvent.Payload)
 {

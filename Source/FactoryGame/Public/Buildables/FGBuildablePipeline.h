@@ -55,7 +55,7 @@ public:
 	// Begin Significance
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
+	virtual float GetSignificanceRange_Implementation() const override;
 	// End Significance
 
 	// Begin AFGBuildablePipeBase Interface
@@ -187,7 +187,7 @@ public:
 
 	/** The indicator spawned for this pipe, this is optional and can be null. */
 	UPROPERTY( SaveGame, Replicated )
-	AFGBuildablePipelineFlowIndicator* mFlowIndicator;
+	TObjectPtr<AFGBuildablePipelineFlowIndicator> mFlowIndicator;
 
 	/** 
 	* FNames for pipeline connection components. These must match the component names of the components that are added via blueprint 
@@ -199,7 +199,7 @@ public:
 	
 protected:
 	UPROPERTY( BlueprintReadOnly, Category = "Pipeline|Audio" )
-	class UFGSoundSplineComponent* mSoundSplineComponent;
+	TObjectPtr<class UFGSoundSplineComponent> mSoundSplineComponent;
 
 	/** How far apart to place the multiple emitters on the sound spline. [cm] */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline|Audio" )
@@ -207,14 +207,14 @@ protected:
 
 	/** The ak event to post for the sound spline */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline|Audio" )
-	class UAkAudioEvent* mSplineAudioEvent;
+	TObjectPtr<class UAkAudioEvent> mSplineAudioEvent;
 
 private:
 	friend class AFGPipelineHologram;
 
 	/** Cached array of pipe connections. */
 	UPROPERTY()
-	TArray< class UFGPipeConnectionComponent* > mPipeConnections;
+	TArray< TObjectPtr<class UFGPipeConnectionComponent> > mPipeConnections;
 	
 	/** Simulation data. */
 	UPROPERTY( SaveGame )
@@ -268,11 +268,11 @@ private:
 	
 	/** Start rattle sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline|Audio" )
-	class UAkAudioEvent* mStartRattleSoundEvent;
+	TObjectPtr<class UAkAudioEvent> mStartRattleSoundEvent;
 	
 	/** Stop rattle sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline|Audio" )
-	class UAkAudioEvent* mStopRattleSoundEvent;
+	TObjectPtr<class UAkAudioEvent> mStopRattleSoundEvent;
 	
 	/** Timer to handle the update when this pipe is significant. */
 	UPROPERTY()

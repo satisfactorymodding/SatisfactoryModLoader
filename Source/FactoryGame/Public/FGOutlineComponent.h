@@ -19,7 +19,7 @@ class FACTORYGAME_API UFGOutlineMaterialOverrideIdentifier : public UAssetUserDa
 public:
 	/** The material that the filter material will be replaced with when the mesh is rendered in custom depth pass */
 	UPROPERTY( EditAnywhere, Category = "Material Overrides" )
-	class UMaterialInterface* DepthOverrideMaterial{nullptr};
+	TObjectPtr<class UMaterialInterface> DepthOverrideMaterial{nullptr};
 
 	/** Applies material overrides to the mesh component that will be rendered in the custom depth pass for the outline component */
 	UFUNCTION( BlueprintCallable, Category = "Custom Depth Material Overrides" )
@@ -32,13 +32,13 @@ struct FActorOutlineState
 	GENERATED_BODY()
 
 	UPROPERTY()
-	AActor* Actor = nullptr;
+	TObjectPtr<AActor> Actor = nullptr;
 	
 	UPROPERTY()
-	TMap< FName, class UStaticMeshComponent* > OutlineProxies;
+	TMap< FName, TObjectPtr<class UStaticMeshComponent> > OutlineProxies;
 	
 	UPROPERTY()
-	TMap< FName, class UInstancedStaticMeshComponent* > InstancedOutlineProxies;
+	TMap< FName, TObjectPtr<class UInstancedStaticMeshComponent> > InstancedOutlineProxies;
 
 	UPROPERTY()
 	EOutlineColor OutlineColor = EOutlineColor::OC_NONE;

@@ -9,7 +9,7 @@ public class OnlineIntegrationEOSExtensions : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core", "Engine",
+                "Core", "Engine", "OnlineServicesEOS", "OnlineServicesEOS",
             }
         );
 

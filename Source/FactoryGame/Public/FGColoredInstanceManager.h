@@ -10,9 +10,6 @@
 #include "FGColoredInstanceManager.generated.h"
 
 
-
-
-
 /**
  * Handles building instancing and coloring.
  */
@@ -104,10 +101,10 @@ public:
 private:
 
 	//class UHierarchicalInstancedStaticMeshComponent* CreateHierarchicalInstancingComponent( class UStaticMesh* staticMesh, uint8 numCustomData, bool useAsOccluder, FVector2D& minMaxCullDistance );
-	class UHierarchicalInstancedStaticMeshComponent* CreateHierarchicalInstancingComponent( class UStaticMesh* staticMesh,TArray<class UMaterialInterface*> overridenMaterials, uint8 numCustomData, bool useAsOccluder, const FVector2D& minMaxCullDistance );
+	UInstancedStaticMeshComponent* CreateHierarchicalInstancingComponent( class UStaticMesh* staticMesh,TArray<class UMaterialInterface*> overridenMaterials, uint8 numCustomData, bool useAsOccluder, const FVector2D& minMaxCullDistance );
 private:
 	UPROPERTY( EditAnywhere, Category = "UFGColoredInstanceManager")
-	class UHierarchicalInstancedStaticMeshComponent* mInstanceComponent;
+	TObjectPtr<UInstancedStaticMeshComponent> mInstanceComponent;
 
 
 	/** Handles from all the managed instances. */

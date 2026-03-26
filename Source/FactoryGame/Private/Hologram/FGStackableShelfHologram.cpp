@@ -4,8 +4,7 @@ AFGStackableShelfHologram::AFGStackableShelfHologram() : Super() {
 
 }
 void AFGStackableShelfHologram::BeginPlay(){ Super::BeginPlay(); }
-void AFGStackableShelfHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ Super::SetHologramLocationAndRotation(hitResult); }
 bool AFGStackableShelfHologram::TrySnapToActor(const FHitResult& hitResult){ return Super::TrySnapToActor(hitResult); }
-void AFGStackableShelfHologram::CreateZoopInstances(){ Super::CreateZoopInstances(); }
+void AFGStackableShelfHologram::CreateZoopInstances(const FIntVector& DesiredZoop){ Super::CreateZoopInstances(DesiredZoop); }
 FVector AFGStackableShelfHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return Super::ConvertZoopToWorldLocation(zoop); }
 void AFGStackableShelfHologram::SetZoopFromHitResult(const FHitResult& hitResult){  }

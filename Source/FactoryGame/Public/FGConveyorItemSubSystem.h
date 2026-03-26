@@ -4,10 +4,8 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-
 #include "Buildables/FGBuildableConveyorBelt.h"
 #include "Buildables/FGBuildableConveyorLift.h"
-#include "FGConveyorInstanceSplineMesh.h"
 #include "FGSubsystem.h"
 #include "FGConveyorItemSubSystem.generated.h"
 
@@ -177,10 +175,10 @@ private:
 	TQueue< FDeferredLookupAdd, EQueueMode::Mpsc > mAddedChainActors;
 	
 	UPROPERTY()
-	TArray< const UFGConveyorBeltVisibilityMesh* > mActiveConveyorBelts;
+	TArray< TObjectPtr<const UFGConveyorBeltVisibilityMesh> > mActiveConveyorBelts;
 	
 	UPROPERTY()
-	TArray< const class UFGConveyorLiftVisibilityMesh* > mActiveConveyorLifts;
+	TArray< TObjectPtr<const class UFGConveyorLiftVisibilityMesh> > mActiveConveyorLifts;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UFGItemDescriptor> mLiftHandleItemDesc;

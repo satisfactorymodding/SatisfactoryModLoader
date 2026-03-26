@@ -38,10 +38,10 @@ protected:
 
 	/** The player state of the pawn that spawned this actor */
 	UPROPERTY( ReplicatedUsing = OnRep_OwningPlayerState )
-	class AFGPlayerState* mOwningPlayerState;
+	TObjectPtr<class AFGPlayerState> mOwningPlayerState;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Attention Ping" )
-	UTexture2D* mCompassTexture;
+	TObjectPtr<UTexture2D> mCompassTexture;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Attention Ping" )
 	float mLifeSpan = 10.f;

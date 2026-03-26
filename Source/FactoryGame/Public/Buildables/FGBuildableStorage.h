@@ -53,7 +53,7 @@ public:
 private:
 	/** The inventory to store everything in. Don't use this directly, use mStorageInventoryHandler->GetActiveInventoryComponent() */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mStorageInventory;
+	TObjectPtr<class UFGInventoryComponent> mStorageInventory;
 	
 	/** Cached input connections (No need for UPROPERTY as they are referenced in component array) */
 	TArray<class UFGFactoryConnectionComponent*> mCachedInputConnections;

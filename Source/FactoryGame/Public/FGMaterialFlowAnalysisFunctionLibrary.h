@@ -26,7 +26,7 @@ public:
 private:
 	friend class UFGMaterialFlowAnalysisFunctionLibrary;
 
-	struct FMaterialFlowNode* CreateNodeFromRecipe( TSubclassOf< UFGRecipe > recipe, int32 depth );
+	struct FMaterialFlowNode* CreateNodeFromRecipe( const UObject* worldContext, TSubclassOf< UFGRecipe > recipe, int32 depth );
 	struct FMaterialFlowNode* CreateNodeFromOutput( TSubclassOf< class UFGItemDescriptor > descriptor, int32 depth );
 
 	/** Sort nodes by depth. */
@@ -108,7 +108,7 @@ class FACTORYGAME_API UFGMaterialFlowAnalysisFunctionLibrary : public UBlueprint
 public:
 
 	/** Perform a material flow analysis on the given recipe. */
-	static FMaterialFlowGraph PerformMaterialFlowAnalysis( TArray< TSubclassOf< UFGRecipe > > recipes, const TArray< TSubclassOf< UFGRecipe > >& availableRecipes );
+	static FMaterialFlowGraph PerformMaterialFlowAnalysis( const UObject* worldContext, TArray< TSubclassOf< UFGRecipe > > recipes, const TArray< TSubclassOf< UFGRecipe > >& availableRecipes );
 
 	/** Perform a material flow analysis on the given recipe. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|MaterialFlow" )

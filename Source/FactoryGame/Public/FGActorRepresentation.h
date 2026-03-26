@@ -7,6 +7,7 @@
 #include "UObject/NoExportTypes.h"
 #include "LocalUserInfo.h"
 #include "Online/CoreOnline.h"
+#include "Online/PlayerInfoCache.h"
 #include "FGActorRepresentation.generated.h"
 
 UENUM( BlueprintType )
@@ -33,6 +34,7 @@ enum class ERepresentationType : uint8
 	RT_Portal					UMETA( DisplayName = "Portal" ),
 	RT_DeathCrate				UMETA( DisplayName = "Death Crate" ),
 	RT_DismantleCrate			UMETA( DisplayName = "Dismantle Crate" ),
+	RT_PortalPotty				UMETA( DisplayName = "Portal Potty" ),
 };
 
 UENUM( BlueprintType )
@@ -171,8 +173,8 @@ public:
 
 	//<FL>[KonradA]
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const { return mLastEditedBy; }
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	virtual FPlayerInfoHandle GetLastEditedBy() const { return mLastEditedBy; }
+	UFUNCTION() virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy ) {}
 	//</FL>
 
 	/** Sets the client representations compass view distance directly. It doesn't change the connected actors status so this is only for local updates to avoid waiting for replicated value */
@@ -212,7 +214,8 @@ public:
 	/** Returns a cast of outer */
 	class AFGActorRepresentationManager* GetActorRepresentationManager() const;
 protected:
-
+	class IFGActorRepresentationInterface* GetActorRepresentationInterface() const;
+	
 	/** Called before the representation properties are updated by the representation manager replication pass */
 	virtual void PreRepresentationReplication();
 	/** Called to notify the representation that one of it's object properties failed to deserialize because the referenced object has not been replicated to the client yet. */
@@ -241,7 +244,7 @@ protected:
 
 	/** This is the real actor that this representation represents */
 	UPROPERTY( Replicated )
-	AActor* mRealActor;
+	TObjectPtr<AActor> mRealActor;
 
 	/** This is the actor location */
 	UPROPERTY( Replicated )
@@ -260,11 +263,11 @@ protected:
 
 	/** This is the texture to show for this actor representation */
 	UPROPERTY( Replicated )
-	UTexture2D* mRepresentationTexture;
+	TObjectPtr<UTexture2D> mRepresentationTexture;
 
 	/** This is the texture to show for this actor representation */
 	UPROPERTY( Replicated )
-	UMaterialInterface* mRepresentationCompassMaterial;
+	TObjectPtr<UMaterialInterface> mRepresentationCompassMaterial;
 	
 	/** This is the text to show for this actor representation */
 	UPROPERTY( Replicated )
@@ -300,15 +303,9 @@ protected:
 	UPROPERTY( Replicated )
 	ECompassViewDistance mCompassViewDistance;
 
-	//<FL>[KonradA] Keep track of the player that last edited this. This is usually determined by the underlying Actor that implements the RepresentationInterface
+	/** Handle of the last player who have edited this representation */
 	UPROPERTY(Replicated)
-	TArray< FLocalUserNetIdBundle > mLastEditedBy;
-	//<FL>
-
-	UPROPERTY(Replicated)
-	FString mPlatformAccountIDStr;
-
-	UE::Online::FAccountId mPlatformAccountID;
+	FPlayerInfoHandle mLastEditedBy;
 
 	/** True if background color is considered to be primary color, false if it should be secondary color */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )

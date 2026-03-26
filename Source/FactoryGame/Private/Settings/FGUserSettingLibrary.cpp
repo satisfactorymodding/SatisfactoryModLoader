@@ -5,6 +5,10 @@
 bool UFGUserSettingLibrary::GetBoolValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, bool& out_displayValue, UObject* worldContext){ return bool(); }
 int32 UFGUserSettingLibrary::GetInt32Value(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, int32& out_displayValue, UObject* worldContext){ return int32(); }
 float UFGUserSettingLibrary::GetFloatValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, float& out_displayValue, UObject* worldContext){ return float(); }
+FString UFGUserSettingLibrary::GetStringValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, FString& out_displayValue, UObject* worldContext){ return FString(); }
+FLinearColor UFGUserSettingLibrary::GetLinearColorValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, FLinearColor& out_displayValue, UObject* worldContext){ return FLinearColor(); }
 void UFGUserSettingLibrary::SetBoolValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, bool value, bool forceSet, UObject* worldContext){ }
 void UFGUserSettingLibrary::SetInt32Value(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, int32 value, bool forceSet, UObject* worldContext){ }
 void UFGUserSettingLibrary::SetFloatValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, float value, bool forceSet, UObject* worldContext){ }
+void UFGUserSettingLibrary::SetStringValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, const FString& value, bool forceSet, UObject* worldContext){ }
+void UFGUserSettingLibrary::SetLinearColorValue(TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, const FLinearColor& value, bool forceSet, UObject* worldContext){ }

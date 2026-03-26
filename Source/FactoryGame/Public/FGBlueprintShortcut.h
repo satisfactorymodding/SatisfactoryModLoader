@@ -63,5 +63,5 @@ protected:
 	FString mBlueprintName;
 
 	UPROPERTY( Transient )
-	UFGBlueprintDescriptor* mBlueprintDescriptor;
+	TObjectPtr<UFGBlueprintDescriptor> mBlueprintDescriptor;
 };

@@ -34,7 +34,7 @@ struct FACTORYGAME_API FFGCachedActionMappingContextMap
 
 	// Mappings for each input context
 	UPROPERTY()
-	TMap<UInputMappingContext*, FFGCachedActionMapping> Mappings;
+	TMap<TObjectPtr<UInputMappingContext>, FFGCachedActionMapping> Mappings;
 };
 
 UINTERFACE( Blueprintable )
@@ -163,11 +163,11 @@ protected:
 private:
 	/** A map of all input actions to their bindings in various contexts */
 	UPROPERTY()
-	mutable TMap<const UInputAction*, FFGCachedActionMappingContextMap> mDefaultKeyMappings;
+	mutable TMap<TObjectPtr<const UInputAction>, FFGCachedActionMappingContextMap> mDefaultKeyMappings;
 
 	/** Maps player re-bindable action names to input actions that correspond to them. Assumes 1-to-1 relationship, e.g. a single mapping can only be used by a single key */
 	UPROPERTY()
-	mutable TMap<FName, const UInputAction*> mInputActionNameLookupMap;
+	mutable TMap<FName, TObjectPtr<const UInputAction>> mInputActionNameLookupMap;
 	
 	/** An instance of the input processor used to catch and handle specific input events early, before they reach slate. */
 	TSharedPtr<UFGPlayerInputPreProcessor> mInputPreprocessor = nullptr;

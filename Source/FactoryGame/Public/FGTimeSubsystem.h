@@ -223,10 +223,10 @@ protected:
 	float mRTPCAccumulator;
 	
 	UPROPERTY( EditDefaultsOnly )
-	class UMaterialParameterCollection* mTimeOfDayMaterialParameterCollection;
+	TObjectPtr<class UMaterialParameterCollection> mTimeOfDayMaterialParameterCollection;
 
 	UPROPERTY(Transient)
-	class UMaterialParameterCollectionInstance* mCachedTimeOfDayMaterialParameterCollection;
+	TObjectPtr<class UMaterialParameterCollectionInstance> mCachedTimeOfDayMaterialParameterCollection;
 
 	/** Number of days that have passed since the last time any player character died */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_NumberOfDaysSinceLastDeath )

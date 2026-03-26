@@ -50,7 +50,7 @@ public:
 private:
 	/** Who built this */
 	UPROPERTY(  )
-	class AActor* mInstigator;
+	TObjectPtr<class AActor> mInstigator;
 	/** How much did this cost */
 	UPROPERTY(  )
 	TArray< FItemAmount > mCost;

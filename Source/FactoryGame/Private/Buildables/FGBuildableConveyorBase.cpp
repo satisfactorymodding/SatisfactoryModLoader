@@ -72,7 +72,6 @@ uint8 AFGBuildableConveyorBase::MaxNumGrab(float dt) const{ return uint8(); }
 uint8 AFGBuildableConveyorBase::EstimatedMaxNumGrab_Threadsafe(float estimatedDeltaTime) const{ return uint8(); }
 void AFGBuildableConveyorBase::GainedSignificance_Implementation(){ }
 void AFGBuildableConveyorBase::LostSignificance_Implementation(){ }
-void AFGBuildableConveyorBase::SetupForSignificance(){ }
 void AFGBuildableConveyorBase::OnUseServerRepInput( AFGCharacterPlayer* byCharacter, float itemOffset, TSubclassOf<  UFGItemDescriptor > desiredItemClass){ }
 void AFGBuildableConveyorBase::BuildStaticItemInstances(){ }
 void AFGBuildableConveyorBase::DestroyStaticItemInstancesNextFrame(){ }

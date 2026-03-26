@@ -11,6 +11,8 @@ AFGDriveablePawn::AFGDriveablePawn() : Super() {
 	this->mDriverExitOffset = FVector::ZeroVector;
 	this->mIsPossessed = false;
 	this->mMappingContext = nullptr;
+	this->mMappingContextToDisable = nullptr;
+	this->mMappingContextPriority = 1;
 	this->mSpringArmComponent = nullptr;
 	this->mCameraComponent = nullptr;
 	this->mLastSafeLocation = FVector::ZeroVector;

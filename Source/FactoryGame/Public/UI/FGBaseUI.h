@@ -84,7 +84,7 @@ protected:
 
 	/** Current active popup */
 	UPROPERTY()
-	class UFGPopupWidget* mActivePopup;
+	TObjectPtr<class UFGPopupWidget> mActivePopup;
 
 	/** Queue with popups to show */
 	UPROPERTY()

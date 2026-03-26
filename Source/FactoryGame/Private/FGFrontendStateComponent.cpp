@@ -13,8 +13,9 @@ void UFGFrontendStateComponent::OnOnlineIntegrationModeChanged(EOnlineIntegratio
 void UFGFrontendStateComponent::AuthenticationSequenceComplete(UOnlineAsyncOperation* InAsyncOp){ }
 void UFGFrontendStateComponent::StartConsoleFlow(bool bSuppressErrors){  }
 void UFGFrontendStateComponent::OnPremiumChecked(bool hasPremium){  }
-void UFGFrontendStateComponent::TickCheckInvalidOnlineIntegrationState(){  }
+void UFGFrontendStateComponent::TickCheckInvalidOnlineIntegrationState(bool suppressDisconectNotification){ }
 void UFGFrontendStateComponent::OnlineModeSelectionConfirmed(bool popupConfirmed){ }
 void UFGFrontendStateComponent::TryShowMainScreen(){ }
 void UFGFrontendStateComponent::ShowUGCCommRestrictionDialog(){  }
 void UFGFrontendStateComponent::HandleAppResume(){  }
+void UFGFrontendStateComponent::HandleAppSuspend(){ }

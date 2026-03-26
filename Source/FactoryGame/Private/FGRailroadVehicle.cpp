@@ -33,6 +33,7 @@ void AFGRailroadVehicle::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGRailroadVehicle::Tick(float dt){ Super::Tick(dt); }
 bool AFGRailroadVehicle::CanDismantle_Implementation() const{ return bool(); }
 void AFGRailroadVehicle::GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const{ }
+void AFGRailroadVehicle::Dismantle_Implementation(){ Super::Dismantle_Implementation(); }
 void AFGRailroadVehicle::GainedSignificance_Implementation(){ }
 void AFGRailroadVehicle::LostSignificance_Implementation(){ }
 void AFGRailroadVehicle::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }

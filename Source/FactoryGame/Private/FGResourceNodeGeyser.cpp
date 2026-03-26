@@ -3,6 +3,6 @@
 #include "FGResourceNodeGeyser.h"
 
 AFGResourceNodeGeyser::AFGResourceNodeGeyser() : Super() {
-
+	this->mResourceNodeType = EResourceNodeType::Geyser;
 }
 void AFGResourceNodeGeyser::BeginPlay(){ Super::BeginPlay(); }

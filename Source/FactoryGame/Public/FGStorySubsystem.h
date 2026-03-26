@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -151,6 +151,9 @@ public:
 	void OnPersonalElevatorBeginMove( const TArray< class AFGCharacterPlayer* >& OccupyingPlayers, float estimatedTravelTime );
 	void OnPersonalElevatorEndMove( const TArray< class AFGCharacterPlayer* >& OccupyingPlayers, float estimatedTravelTime );
 
+	UFUNCTION()
+	void OnWeatherStateStarted( TSubclassOf<class AFGWeatherReaction> weatherReaction );
+	
 	UFUNCTION( BlueprintCallable, Category = "Story" )
 	void OnToiletFlushed( class AFGCharacterPlayer* byCharacter, class AFGPioneerPotty* toilet );
 
@@ -207,7 +210,7 @@ private:
 	 * Usually, if not always, these are the global ones. This is probably not an issue but is noteworthy.
 	 **/
 	UPROPERTY( Transient )
-	TArray< class UFGMessage* > mAllMessages;
+	TArray< TObjectPtr<class UFGMessage> > mAllMessages;
 	
 	/**
 	 * Stores a collection of all messages that have been played, regardless of trigger conditions or the triggering player.
@@ -215,10 +218,11 @@ private:
 	 * Also serves as a reference to check if a specific message has ever been played.
 	 */
 	UPROPERTY( SaveGame )
-	TArray< class UFGMessage* > mAllPlayedMessages;
+	TArray< TObjectPtr<class UFGMessage> > mAllPlayedMessages;
 
 	/** Local session purchase history. Used to trigger messages */
 	TMap<ESchematicType, TArray<double> > mSchematicTypePurchaseHistory;
-	
+
+	friend class UFGCheatManager;
 };
 

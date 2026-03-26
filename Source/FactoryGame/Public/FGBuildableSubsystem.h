@@ -80,7 +80,7 @@ struct FBuildableBucket
 	TSubclassOf< class AFGBuildable > BuildableClass;
 
 	UPROPERTY()
-	TArray< class AFGBuildable* > Buildables;
+	TArray< TObjectPtr<class AFGBuildable> > Buildables;
 };
 
 USTRUCT()
@@ -91,13 +91,13 @@ struct FConveyorTickGroup
 	FConveyorTickGroup(){}
 	
 	UPROPERTY()
-	AFGBuildable* ForceIntoSharedByBuildable = nullptr; 
+	TObjectPtr<AFGBuildable> ForceIntoSharedByBuildable = nullptr; 
 	
 	UPROPERTY()
-	TArray< class AFGBuildableConveyorBase* > Conveyors;
+	TArray< TObjectPtr<class AFGBuildableConveyorBase> > Conveyors;
 
 	UPROPERTY()
-	class AFGConveyorChainActor* ChainActor = nullptr;
+	TObjectPtr<class AFGConveyorChainActor> ChainActor = nullptr;
 };
 
 USTRUCT()
@@ -143,7 +143,7 @@ struct FFGBuildableTimelapseBucket
 
 	/** Buildables that are pending their construction */
 	UPROPERTY( VisibleAnywhere, Category = "Timelapse" )
-	TArray<AFGBuildable*> BuildablesPending;
+	TArray<TObjectPtr<AFGBuildable>> BuildablesPending;
 
 	/** Whenever the build effect should be played */
 	UPROPERTY( VisibleAnywhere, Category = "Timelapse" )
@@ -333,7 +333,18 @@ public:
 	
 	void GetOcclusionAffectingBuildebles(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range, bool bParallel = true) const;
 
-	void GetNearestBuildables(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range) const;
+	/**
+	 * Get buildables withing range of the requested location.
+	 * Note: This does not include light weight buildables.
+	 */
+	void GetNearestBuildables( TArray< AFGBuildable* >& out_buildables, const FVector& requestLocation, float range ) const;
+
+	/** Returns all buildings that could possibly collide with the given bounding box. Lightweights are not included */
+	void GetCollidingBuildablesInBoundingBox( TArray< AFGBuildable* >& out_buildables, const FBox& boundingBox ) const;
+	
+	/** Templated variant that only gets buildables of the desired type. */
+	template< typename T >
+	void GetCollidingBuildablesInBoundingBox( TArray< T* >& out_buildables, const FBox& boundingBox ) const;
 	
 	/** Plays the timelapse effect on the buildables in the provided bucket. Only works in Editor. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Timelapse" )
@@ -517,12 +528,6 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Light Color" )
 	FOnBuildableLightColorSlotsUpdated mOnBuildableLightColorSlotsUpdated;
 
-	UPROPERTY( BlueprintAssignable, Category = "Occlusion" )
-	FOnOccluderBuildingConstructed mOnOccluderBuildingAdded;
-
-	UPROPERTY( BlueprintAssignable, Category = "Occlusion" )
-	FOnOccluderBuildingRemoved mOnOccluderBuildingRemoved;
-
 	/** Broadcast when when a color index has been changes, ##DO NOT BIND BUILDINGS OR VEHICLES TO THIS they are managed already## */
 	UPROPERTY( BlueprintAssignable, Category = "Factory Color" )
 	FOnColorChanged mOnColorIndexChanged;
@@ -569,7 +574,7 @@ private:
 
 	/** List of all buildables. */
 	UPROPERTY()
-	TArray< class AFGBuildable* > mBuildables;
+	TArray< TObjectPtr<class AFGBuildable> > mBuildables;
 
 	/** Count of all buildables. */
 	UPROPERTY()
@@ -602,7 +607,7 @@ private:
 	
 	
 	UPROPERTY()
-	TMap< AFGBuildable*, int32 > mBuildableToSharedBucketIndexMap;
+	TMap< TObjectPtr<AFGBuildable>, int32 > mBuildableToSharedBucketIndexMap;
 
 	/** All conveyors that are not safe to execute in parallel
 	*	At the time of writing this is used only for conveyors connecting to buildings with multiple outputs
@@ -623,7 +628,7 @@ private:
 
 	/** All conveyor attachments */
 	UPROPERTY()
-	TArray< class AFGBuildableConveyorAttachment* > mConveyorAttachments;
+	TArray< TObjectPtr<class AFGBuildableConveyorAttachment> > mConveyorAttachments;
 
 	// Grouping of conveyor attachments for reduced thread count parallelization
 	TArray< TArray < class AFGBuildableConveyorAttachment* >> mConveyorAttachmentGroups;
@@ -640,15 +645,15 @@ private:
 
 	/** Hierarchical instances for the factory buildings. */
 	UPROPERTY(EditAnywhere, Category="Colorable Instance Actor")
-	AActor* mBuildableInstancesActor;
+	TObjectPtr<AActor> mBuildableInstancesActor;
 
 	/**/
 	UPROPERTY()
-	UFGProductionIndicatorInstanceManager* mProductionIndicatorInstanceManager = nullptr;
+	TObjectPtr<UFGProductionIndicatorInstanceManager> mProductionIndicatorInstanceManager = nullptr;
 
 	/** Map of colorable static meshes to their corresponding instance manager */
 	UPROPERTY(EditAnywhere, Category="Colored Instance Managers" )
-	TMap< FName, class UFGColoredInstanceManager* > mColoredInstances;
+	TMap< FName, TObjectPtr<class UFGColoredInstanceManager> > mColoredInstances;
 
 	bool mColorSlotsAreDirty = false;
 	
@@ -677,13 +682,11 @@ private:
 
 	/** List of actors which are having customizations (color, pattern etc. ) previewed on them so we can clear them later*/
 	UPROPERTY()
-	TArray< AActor* > mPreviewingCustomizationsList;
+	TArray< TObjectPtr<AActor> > mPreviewingCustomizationsList;
 	
 	/** This contains all buildable light sources. Used to update light sources when light color slots have changed */
 	TArray< class AFGBuildableLightSource* > mBuildableLightSources;
-
-	TArray< class AFGBuildable* > mOcclusionEffectors;
-
+	
 	/** The player adjustable color slots used by the buildable lights. Saved and replicated in game state. */ 
 	UPROPERTY( Transient )
 	TArray< FLinearColor > mBuildableLightColorSlots;
@@ -702,11 +705,11 @@ private:
 	float mColorPropagationTimer = 0;
 	/** Array with all the buildings that should replay their effect */
 	UPROPERTY()
-	TArray< AFGBuildable* > mColorPropagationArray;
+	TArray< TObjectPtr<AFGBuildable> > mColorPropagationArray;
 
 	/** Array of all vehicles to update while updating color slots */
 	UPROPERTY()
-	TArray< class AFGVehicle* > mVehicleColorPropagationArray;
+	TArray< TObjectPtr<class AFGVehicle> > mVehicleColorPropagationArray;
 
 	/** Maximum number of buildables that we consider their optimization level during the same frame */
 	int32 mMaxConsideredBuildables;
@@ -726,7 +729,7 @@ private:
 	bool mFactoryOptimizationEnabled;
 	/** Used to store different belt materials and their speeds so their materials can be shared */
 	UPROPERTY()
-	TMap< int32, UMaterialInstanceDynamic* > mConveyorTrackSpeedToMaterial;
+	TMap< int32, TObjectPtr<UMaterialInstanceDynamic> > mConveyorTrackSpeedToMaterial;
 
 	bool IsBasedOn( const UMaterialInterface* instance, const UMaterial* base );
 
@@ -759,12 +762,13 @@ private:
 	float mAccumulatedFactorySimulationTime;
 
 	UPROPERTY(SaveGame)
-	AFGProjectAssembly* mProjectAssemblyActor = nullptr;
+	TObjectPtr<AFGProjectAssembly> mProjectAssemblyActor = nullptr;
 
 	/* Spawned build effect actor this frame. */
 	UPROPERTY(Transient)
-	TMap<TSubclassOf< AFGBuildEffectActor >,AFGBuildEffectActor*> mBuildEffectActorMap; 
+	TMap<TSubclassOf< AFGBuildEffectActor >,TObjectPtr<AFGBuildEffectActor>> mBuildEffectActorMap; 
 
+	/** Octree containing all FGBuildable in the game excluding pure lightweight ones such as foundations and walls. */
 	FBuildableComponentsOctree mBuildableComponentsOctree;
 	
 #if WITH_EDITORONLY_DATA
@@ -789,4 +793,23 @@ void AFGBuildableSubsystem::GetTypedBuildable( TArray< T* >& out_buildables ) co
 			out_buildables.Add( specificBuildable );
 		}
 	}
+}
+
+template< typename T >
+void AFGBuildableSubsystem::GetCollidingBuildablesInBoundingBox( TArray< T* >& out_buildables, const FBox& boundingBox ) const
+{
+	FACTORY_QUICK_SCOPE_CYCLE_COUNTER( AFGBuildableSubsystem_GetCollidingBuildablesInBoundingBox )
+	out_buildables.Reserve( 64 );
+	mBuildableComponentsOctree.FindElementsWithBoundsTest( FBoxCenterAndExtent( boundingBox ),
+	[ &out_buildables ]( UObject* buildable )
+	{
+		// If we end up invalid buildings in here, that would cause crashes in systems that use this, lets detect the issue as soon as possible.
+		if( ensure( IsValid( buildable ) ) )
+		{
+			if( T* typed = Cast< T >( buildable ) )
+			{
+				out_buildables.Add( typed );
+			}
+		}
+	} );
 }

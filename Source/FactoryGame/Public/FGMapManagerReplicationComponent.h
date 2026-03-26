@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -8,6 +8,7 @@
 #include "FGMapManagerReplicationComponent.generated.h"
 
 class AFGMapManager;
+struct FGameplayTag;
 
 enum class EMapManagerMessageId : uint32
 {
@@ -38,7 +39,7 @@ protected:
 	void InitializeAsClient();
 	
 	/** Handles schematic manager reliable message */
-	void HandleRawMessage(TArray<uint8>&& InMessageData) const;
+	void HandleRawMessage(FGameplayTag InTag, TArray<uint8>&& InMessageData) const;
 	/** Sends a schematic manager reliable message */
 	void SendRawMessage(EMapManagerMessageId MessageId, const TFunctionRef<void(FArchive&)>& MessageSerializer) const;
 
@@ -53,5 +54,5 @@ protected:
 	}
 
 	UPROPERTY()
-	AFGMapManager* mMapManager;
+	TObjectPtr<AFGMapManager> mMapManager;
 };

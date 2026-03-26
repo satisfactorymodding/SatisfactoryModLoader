@@ -7,6 +7,8 @@ void AFGBuildableHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableHologram, mSnappedBuilding);
 	DOREPLIFETIME(AFGBuildableHologram, mCustomizationData);
+	DOREPLIFETIME(AFGBuildableHologram, mBuildableHologramBuildStep);
+	DOREPLIFETIME(AFGBuildableHologram, mDesiredZoop);
 }
 AFGBuildableHologram::AFGBuildableHologram() : Super() {
 	this->mMaxPlacementFloorAngle = 35.0;
@@ -17,17 +19,26 @@ AFGBuildableHologram::AFGBuildableHologram() : Super() {
 	this->mSnappedBuilding = nullptr;
 	this->mSnappedFloor = nullptr;
 	this->mSnappedWall = nullptr;
+	this->mBuildModeZoop = nullptr;
+	this->mUseDefaultZoopImplementation = false;
+	this->mDefaultBlockedZoopDirections = 0;
 	this->mNeedsValidFloor = true;
 	this->mMustSnapToAttachmentPoint = false;
 	this->mCanSnapWithAttachmentPoints = true;
 	this->mCanRotateAroundAttachmentPoint = true;
 	this->mAttachmentPointSnapDistanceThreshold = 500.0;
+	this->mBuildableHologramBuildStep = EBuildableHologramBuildStep::BHBS_PlacementAndRotation;
 	this->mUseBuildClearanceOverlapSnapp = true;
 	this->mCanNudgeHologram = true;
 }
 void AFGBuildableHologram::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableHologram::SetBuildableClass(TSubclassOf<  AFGBuildable > buildableClass){ }
+bool AFGBuildableHologram::CanBeZooped() const{ return Super::CanBeZooped(); }
+bool AFGBuildableHologram::IsZoopBuildModeSupported() const{ return bool(); }
+void AFGBuildableHologram::GetSupportedBuildModes_Implementation(TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes) const{ Super::GetSupportedBuildModes_Implementation(out_buildmodes); }
+int32 AFGBuildableHologram::GetBaseCostMultiplier() const{ return Super::GetBaseCostMultiplier(); }
 bool AFGBuildableHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
+bool AFGBuildableHologram::TryZoop(const FHitResult& hitResult){ return Super::TryZoop(hitResult); }
 bool AFGBuildableHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGBuildableHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGBuildableHologram::PreHologramPlacement(const FHitResult& hitResult, bool callForChildren){ }
@@ -38,6 +49,9 @@ AActor* AFGBuildableHologram::Construct(TArray< AActor* >& out_children, FNetCon
 void AFGBuildableHologram::GetIgnoredClearanceActors(TSet< AActor* >& ignoredActors) const{ }
 ENudgeFailReason AFGBuildableHologram::NudgeTowardsWorldDirection(const FVector& Direction){ return ENudgeFailReason(); }
 FTransform AFGBuildableHologram::GetNudgeSpaceTransform() const{ return FTransform(); }
+bool AFGBuildableHologram::DoMultiStepPlacement(bool isInputFromARelease){ return Super::DoMultiStepPlacement(isInputFromARelease); }
+void AFGBuildableHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ Super::OnBuildModeChanged(buildMode); }
+void AFGBuildableHologram::GetClearanceData(TArray<const FFGClearanceData*>& out_ClearanceData) const{ Super::GetClearanceData(out_ClearanceData); }
 bool AFGBuildableHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
 TArray< class UFGFactoryConnectionComponent* > AFGBuildableHologram::GetRelevantFactoryConnectionsForGuidelines() const{ return TArray<class UFGFactoryConnectionComponent*>(); }
 TArray< class UFGPipeConnectionComponent* > AFGBuildableHologram::GetRelevantPipeConnectionsForGuidelines() const{ return TArray<class UFGPipeConnectionComponent*>(); }
@@ -50,6 +64,17 @@ void AFGBuildableHologram::UpdateGuidelineVisuals(const TArray< FFGHologramGuide
 void AFGBuildableHologram::ClearGuidelineVisuals(){ }
 void AFGBuildableHologram::FilterAttachmentPoints(TArray< const FFGAttachmentPoint* >& Points,  AFGBuildable* pBuildable, const FHitResult& HitResult) const{ }
 void AFGBuildableHologram::SetCustomizationData(const struct FFactoryCustomizationData& customizationData){ }
+bool AFGBuildableHologram::IsInZoopBuildMode() const{ return bool(); }
+void AFGBuildableHologram::SetMaxZoopAmount(int32 amount){ }
+void AFGBuildableHologram::SetZoopAmount(const FIntVector& Zoop){ }
+void AFGBuildableHologram::SetZoopFromHitresult(const FHitResult& hitResult){ }
+void AFGBuildableHologram::CreateZoopInstances(const FIntVector& DesiredZoop){ }
+FVector AFGBuildableHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return FVector(); }
+void AFGBuildableHologram::ClearZoopInstances(){ }
+void AFGBuildableHologram::GenerateZoopInstance(const FTransform& instanceTransform, bool isChildZoopInstance){ }
+void AFGBuildableHologram::RegenerateZoopInstances(){ }
+bool AFGBuildableHologram::ShouldGenerateChildZoopInstance(const FTransform& localInstanceTransform, int32 instanceIndex, int32 numInstances) const{ return bool(); }
+class AFGBuildable* AFGBuildableHologram::ConstructInstance(const FTransform& localInstanceTransform, TArray<class AActor*>& out_children, FNetConstructionID netConstructionID, int32 zoopInstanceCounter){ return nullptr; }
 USceneComponent* AFGBuildableHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName, const FName& attachSocketName){ return nullptr; }
 void AFGBuildableHologram::CheckValidPlacement(){ }
 int32 AFGBuildableHologram::GetRotationStep() const{ return int32(); }
@@ -81,6 +106,10 @@ const FFGAttachmentPoint* AFGBuildableHologram::SelectCandidateForAttachment(con
 void AFGBuildableHologram::CreateAttachmentPointTransform(FTransform& out_transformResult, const FHitResult& HitResult,  AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint){ }
 void AFGBuildableHologram::ApplyCustomizationData(){ }
 void AFGBuildableHologram::OnGamestateReceived(){ Super::OnGamestateReceived(); }
+void AFGBuildableHologram::ApplyMaxZoopClamp(FIntVector& Zoop){ }
+void AFGBuildableHologram::BlockZoopDirectionsBasedOnSnapDirection(const FVector& worldSpaceSnapDirection){ }
+void AFGBuildableHologram::CreateZoopInstanceMeshComponent(class UStaticMeshComponent* forComponent, class USceneComponent* attachParent, const FName& attachSocket){ }
+void AFGBuildableHologram::OnRep_DesiredZoop(){ }
 void AFGBuildableHologram::OnRep_CustomizationData(){ }
 FName AFGBuildableHologram::mInputConnectionMeshTag = FName();
 FName AFGBuildableHologram::mOutputConnectionMeshTag = FName();

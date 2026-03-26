@@ -1,10 +1,11 @@
 ﻿#include "ReliableMessagingSubsystem.h"
 
+float UReliableMessagingSubsystem::GetDefaultConnectionTimeoutSeconds(){ return float(); }
 void UReliableMessagingSubsystem::InitializeServer(){ }
 TSubclassOf<UReliableMessagingTransportLayerFactory> UReliableMessagingSubsystem::GetProtocolFactoryClass() const{ return nullptr; }
-void UReliableMessagingSubsystem::SendMessage(const APlayerController* Player, int32 Channel, TArray<uint8> InPayload){ }
+void UReliableMessagingSubsystem::SendTaggedMessage(const APlayerController* Player, FGameplayTag Tag, TArray<uint8> InPayload){ }
 IReliableMessageTransportServer* UReliableMessagingSubsystem::GetServer() const{ return nullptr; }
-void UReliableMessagingSubsystem::RegisterControllerComponentPendingConnection(UReliableMessagingPlayerComponent* UnmappedComponent){ }
+bool UReliableMessagingSubsystem::RegisterControllerComponentPendingConnection(UReliableMessagingPlayerComponent* UnmappedComponent){ return false; }
 void UReliableMessagingSubsystem::RegisterControllerComponentClientSide(UReliableMessagingPlayerComponent* ClientComponent){ }
 void UReliableMessagingSubsystem::UnregisterControllerComponent(UReliableMessagingPlayerComponent* Component){ }
 void UReliableMessagingSubsystem::Initialize(FSubsystemCollectionBase& Collection){ Super::Initialize(Collection); }

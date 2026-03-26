@@ -3,7 +3,6 @@
 
 #include "Buildables/FGBuildableConveyorLift.h"
 #include "Components/SceneComponent.h"
-#include "FGConveyorInstanceSplineMesh.h"
 #include "Net/UnrealNetwork.h"
 
 #if WITH_EDITORONLY_DATA
@@ -32,6 +31,7 @@ AFGBuildableConveyorLift::AFGBuildableConveyorLift() : Super() {
 	this->mInputMeshDisplayMode = EFGBuildableConveyorLiftMeshDisplayMode::MDM_Auto;
 	this->mTopTransform = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 	this->mIsReversed = false;
+	this->mIsBeltUsingInputRotation = false;
 	this->mFlipMeshOnReverse = false;
 	this->mOpposingConnectionClearance[0] = 0.0;
 	this->mOpposingConnectionClearance[1] = 0.0;
@@ -78,4 +78,6 @@ FBox AFGBuildableConveyorLift::FitClearance(float transformZ,
 		bool isReversed){ return FBox(); }
 void AFGBuildableConveyorLift::OnRep_TopTransform(){ }
 void AFGBuildableConveyorLift::OnRep_SnappedPassthroughs(){ }
+void UFGConveyorLiftVisibilityMesh::BeginPlay(){ Super::BeginPlay(); }
+void UFGConveyorLiftVisibilityMesh::ReportVisibility() const{ Super::ReportVisibility(); }
 const FVector2D AFGBuildableConveyorLift::CLEARANCE_EXTENT_2D = FVector2D();

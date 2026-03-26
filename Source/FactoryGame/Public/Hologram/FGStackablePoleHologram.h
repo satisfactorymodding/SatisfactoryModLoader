@@ -25,11 +25,11 @@ public:
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	// End AFGHologram interface
 
-	// Begin AFGFactoryBuildingHologram interface
-	virtual void SetZoopFromHitresult( const FHitResult& hitResult );
-	virtual void CreateZoopInstances() override;
+	// Begin AFGBuildableHologram interface
+	virtual void SetZoopFromHitresult( const FHitResult& hitResult ) override;
+	virtual void CreateZoopInstances( const FIntVector& DesiredZoop ) override;
 	virtual FVector ConvertZoopToWorldLocation( const FIntVector& zoop ) const override;
-	// End AFGFactoryBuildingHologram interface
+	// End AFGBuildableHologram interface
 	
 private:
 	float mStackHeight;

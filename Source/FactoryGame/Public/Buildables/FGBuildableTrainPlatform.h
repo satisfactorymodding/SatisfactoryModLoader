@@ -44,6 +44,7 @@ public:
 
 	// Begin IFGDismantlableInterface
 	virtual bool CanDismantle_Implementation() const override;
+	virtual void GetDismantleDependencies_Implementation(TArray<AActor*>& out_dismantleDependencies) const override;
 	virtual void GetChildDismantleActors_Implementation(TArray<AActor*>& out_ChildDismantleActors) const override;
 	virtual void Dismantle_Implementation() override;
 	virtual bool SupportsDismantleDisqualifiers_Implementation() const override { return true; }
@@ -104,27 +105,27 @@ private:
 
 protected:
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_RailroadTrack )
-	class AFGBuildableRailroadTrack* mRailroadTrack;
+	TObjectPtr<class AFGBuildableRailroadTrack> mRailroadTrack;
 
 	/** Each platform should have exactly 2 FGTrainPlatformConnectionComponents (Not a uproperty as it just holds refs to the below connections)
 	*	They are individual components so that they appear correctly in the blueprint editor. If anyone sees this and knows a way to make containers
 	*	of components be editable when inherited @me (dylan)
 	*/
 	UPROPERTY()
-	TArray< class UFGTrainPlatformConnection* > mPlatformConnections;
+	TArray< TObjectPtr<class UFGTrainPlatformConnection> > mPlatformConnections;
 	
 	UPROPERTY( EditAnywhere )
-	class UFGTrainPlatformConnection* mPlatformConnection0;
+	TObjectPtr<class UFGTrainPlatformConnection> mPlatformConnection0;
 
 	UPROPERTY( EditAnywhere )
-	class UFGTrainPlatformConnection* mPlatformConnection1;
+	TObjectPtr<class UFGTrainPlatformConnection> mPlatformConnection1;
 
 	UPROPERTY( ReplicatedUsing = OnRep_DockedRailroadVehicle, SaveGame )
-	class AFGRailroadVehicle* mDockedRailroadVehicle;
+	TObjectPtr<class AFGRailroadVehicle> mDockedRailroadVehicle;
 
 	/** Stores a reference to the station that initiated a docking sequence. Used to notify the station that we have completed */
 	UPROPERTY( SaveGame )
-	class AFGBuildableRailroadStation* mStationDockingMaster;
+	TObjectPtr<class AFGBuildableRailroadStation> mStationDockingMaster;
 
 	// Is this platform reversed from its attached station?
 	UPROPERTY( SaveGame )

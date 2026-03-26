@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -41,7 +41,7 @@ protected:
 	
 private:
 	UPROPERTY()
-	class UStaticMeshComponent* mCannonHeadMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mCannonHeadMeshComponent;
 
 	FInt32Interval mAngleLimit;
 	float mAngleOffset;

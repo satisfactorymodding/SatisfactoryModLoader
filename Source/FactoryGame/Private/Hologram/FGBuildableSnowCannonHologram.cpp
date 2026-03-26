@@ -5,6 +5,7 @@
 AFGBuildableSnowCannonHologram::AFGBuildableSnowCannonHologram() : Super() {
 	this->mCannonHeadMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cannon Head Mesh Component"));
 	this->mCannonHeadMeshComponent->SetMobility(EComponentMobility::Movable);
+	this->mBuildStep = ESnowCannonHologramBuildStep::PlacementAndRotation;
 	this->mCannonHeadMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildableSnowCannonHologram::BeginPlay(){ Super::BeginPlay(); }

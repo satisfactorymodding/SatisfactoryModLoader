@@ -32,5 +32,5 @@ protected:
 
 	/** The mesh we want to set to our decor to */
 	UPROPERTY( Replicated )
-	class UStaticMesh* mDecorMesh;
+	TObjectPtr<class UStaticMesh> mDecorMesh;
 };

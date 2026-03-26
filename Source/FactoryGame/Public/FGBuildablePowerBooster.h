@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -107,11 +107,11 @@ private:
 	
 	/** Inventory where fuel is loaded into. */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mFuelInventory;
+	TObjectPtr<class UFGInventoryComponent> mFuelInventory;
 
 	/** Cached input connections */
 	UPROPERTY()
-	TArray< class UFGFactoryConnectionComponent* > mCachedInputConnections;
+	TArray< TObjectPtr<class UFGFactoryConnectionComponent> > mCachedInputConnections;
 
 	/** Input inventory index to store the fuel */
 	int32 mFuelInventoryIndex;

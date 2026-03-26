@@ -33,25 +33,25 @@ public:
 	void Handler_SaveGame( const FString& SaveName, const FFGRequestHandlerContextWrapper& Context ) const;
 
 	UFUNCTION( FGServerAsyncCompleteRequest )
-	static void CompleteRequest_SaveGame( const FFGRequestHandlerContextWrapper& Context, const FFGServerErrorResponse& ErrorResponse );
+	void CompleteRequest_SaveGame( const FFGRequestHandlerContextWrapper& Context, const FFGServerErrorResponse& ErrorResponse ) const;
 	
 	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator" )
 	void Handler_DeleteSaveFile( const FString& SaveName, const FFGRequestHandlerContextWrapper& Context );
 
 	UFUNCTION( FGServerAsyncCompleteRequest )
-	static void CompleteRequest_DeleteSaveFile( const FFGRequestHandlerContextWrapper& Context, const FFGServerErrorResponse& ErrorResponse );
+	void CompleteRequest_DeleteSaveFile( const FFGRequestHandlerContextWrapper& Context, const FFGServerErrorResponse& ErrorResponse ) const;
 
 	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator" )
 	void Handler_DeleteSaveSession( const FString& SessionName, const FFGRequestHandlerContextWrapper& Context );
 
 	UFUNCTION( FGServerAsyncCompleteRequest )
-	static void CompleteRequest_DeleteSaveSession( const FFGRequestHandlerContextWrapper& Context, const FFGServerErrorResponse& ErrorResponse );
+	void CompleteRequest_DeleteSaveSession( const FFGRequestHandlerContextWrapper& Context, const FFGServerErrorResponse& ErrorResponse ) const;
 
 	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator", FGServerRequestHandlerEnableCompression )
 	void Handler_EnumerateSessions( const FFGRequestHandlerContextWrapper& Context );
 
 	UFUNCTION( FGServerAsyncCompleteRequest )
-	static void CompleteRequest_EnumerateSessions( const FFGRequestHandlerContextWrapper& Context, const FFGServerErrorResponse& ErrorResponse, const TArray<FSessionSaveStruct>& Sessions, int32 CurrentSessionIndex );
+	void CompleteRequest_EnumerateSessions( const FFGRequestHandlerContextWrapper& Context, const FFGServerErrorResponse& ErrorResponse, const TArray<FSessionSaveStruct>& Sessions, int32 CurrentSessionIndex ) const;
 
 	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator" )
 	FFGServerErrorResponse Handler_LoadGame( const FString& SaveName, bool bEnableAdvancedGameSettings ) const;

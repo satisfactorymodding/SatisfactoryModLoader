@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MVVMViewModelContextResolver.h"
+#include "View/MVVMViewModelContextResolver.h"
 
 #include "LocalUserViewModelResolver.generated.h"
 

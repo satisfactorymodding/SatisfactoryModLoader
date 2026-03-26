@@ -43,7 +43,7 @@ struct FRadioactiveSource
 public:
 	/** Where the emitters are attached. */
 	UPROPERTY()
-	USceneComponent* AttachRoot;
+	TObjectPtr<USceneComponent> AttachRoot;
 
 
 	TArray< FRadioactiveEmitter > Emitters;
@@ -66,7 +66,7 @@ public:
 	}
 
 	UPROPERTY()
-	UObject* Owner;
+	TObjectPtr<UObject> Owner;
 
 	int32 UID;
 };
@@ -98,10 +98,10 @@ public:
 	}
 
 	UPROPERTY()
-	UObject* Owner;
+	TObjectPtr<UObject> Owner;
 
 	UPROPERTY()
-	USceneComponent* AttachRoot;
+	TObjectPtr<USceneComponent> AttachRoot;
 
 	FVector AttachLocation;
 
@@ -139,10 +139,10 @@ struct FSetEmitterIDArray
 	}
 
 	UPROPERTY()
-	UObject* Owner;
+	TObjectPtr<UObject> Owner;
 
 	UPROPERTY()
-	USceneComponent* AttachRoot;
+	TObjectPtr<USceneComponent> AttachRoot;
 
 	TArray<FVector> AttachLocations;
 
@@ -304,7 +304,7 @@ private:
 	//@todooptimize This can be optimized with an array if profiler says anything.
 	/** All the radioactive sources. */
 	UPROPERTY()
-	TMap< UObject*, FRadioactiveSource > mSources;
+	TMap< TObjectPtr<UObject>, FRadioactiveSource > mSources;
 
 	/** Thread safe queue for storing emitters that shall be removed */
 	TQueue< FRemoveEmitterID, EQueueMode::Mpsc > mEmittersToRemove;
@@ -316,10 +316,10 @@ private:
 
 	/** All actors that can receive radiation. */
 	UPROPERTY()
-	TArray< class AActor* > mPotentiallyAffectedActors;
+	TArray< TObjectPtr<class AActor> > mPotentiallyAffectedActors;
 	/** All actors that should receive radiation. */
 	UPROPERTY()
-	TArray< class AActor* > mAffectedActors;
+	TArray< TObjectPtr<class AActor> > mAffectedActors;
 
 	/** All actors cached locations and exposures to radiation, this becomes invalid when a pawn is added/removed. */
 	TArray< FVector > mCachedLocations;

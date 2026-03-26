@@ -16,6 +16,6 @@ public:
 	AFGSplinePath();
 
 public:	
-	UPROPERTY( BlueprintReadOnly, Category = "Spline" )
-	class USplineComponent* mSpline;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Spline" )
+	TObjectPtr<class USplineComponent> mSpline;
 };

@@ -90,5 +90,5 @@ protected:
 
 private:
 	UPROPERTY()
-	TMap< class UAnimMontage*, int32 > mActiveMontages;
+	TMap< TObjectPtr<class UAnimMontage>, int32 > mActiveMontages;
 };

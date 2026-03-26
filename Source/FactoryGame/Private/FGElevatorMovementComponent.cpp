@@ -9,7 +9,7 @@ UFGElevatorMovementComponent::UFGElevatorMovementComponent() : Super() {
 	this->mCheckIfStillInWorld = true;
 	this->mForceSubStepping = true;
 	this->mMaxSimulationTimeStep = 0.0333;
-	this->mMaxSimulationIterations = 10;
+	this->mMaxSimulationIterations = 3;
 	this->mElevatorSpeed = 0.0;
 	this->mServerUpdateTime = 0.0;
 	this->bAutoRegisterPhysicsVolumeUpdates = false;

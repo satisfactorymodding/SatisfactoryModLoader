@@ -10,6 +10,7 @@ UFGBuildGunStateDismantle::UFGBuildGunStateDismantle() : Super() {
 	this->mCurrentlyAimedAtActor = nullptr;
 	this->mDefaultDismantleMode = nullptr;
 	this->mBlueprintDismantleMode = nullptr;
+	this->mVehiclePathRecipe = nullptr;
 	this->mBlueprintProxyDetector = nullptr;
 	this->mInstanceConverterInstigator = nullptr;
 }

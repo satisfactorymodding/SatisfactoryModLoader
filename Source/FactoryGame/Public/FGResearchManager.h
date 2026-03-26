@@ -140,7 +140,7 @@ struct FACTORYGAME_API FHardDriveData
 
 	/** The hard drive connected to this hard drive data. This is just for UI and is only created when hard drive list is requested  */
 	UPROPERTY( Transient, NotReplicated )
-	class UFGHardDrive* HardDrive = nullptr;
+	TObjectPtr<class UFGHardDrive> HardDrive = nullptr;
 
 	bool operator==(const FHardDriveData& other) const;
 };

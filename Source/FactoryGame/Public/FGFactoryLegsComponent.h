@@ -128,11 +128,11 @@ protected:
 
 	/** The mesh to be used as legs on factories */
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
-	class UStaticMesh* mLegMeshOverride;
+	TObjectPtr<class UStaticMesh> mLegMeshOverride;
 
 	/** The mesh to be used as foots on factories */
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
-	class UStaticMesh* mFootMeshOverride;
+	TObjectPtr<class UStaticMesh> mFootMeshOverride;
 
 	/** Scale of the factory leg mesh */
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )

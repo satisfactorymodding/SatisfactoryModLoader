@@ -10,8 +10,14 @@
 #include "FGSaveInterface.h"
 #include "FGSignificanceInterface.h"
 #include "FGUseableInterface.h"
+#include "Engine/StaticMeshActor.h"
 #include "Replication/FGStaticReplicatedActor.h"
 #include "FGResourceNodeBase.generated.h"
+
+DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnResourceClassOverrideReplication, AFGResourceNodeBase*, TSubclassOf<UFGResourceDescriptor>,
+                                        TSubclassOf<UFGResourceDescriptor> );
+
+class UFGResourceNodeData;
 
 /** Enum that specifies what type of a resource node this is. Used mostly for simplify UI work and not having to look/cast specific classes. */
 UENUM( BlueprintType )
@@ -20,7 +26,23 @@ enum class EResourceNodeType : uint8
 	Node,
     FrackingSatellite,
     FrackingCore,
-	Geyser
+	Geyser,
+	Deposit,
+
+	Invalid
+};
+
+/** Mesh type used for the node. To override mesh and materials on nodes that are randomized **/
+UENUM( BlueprintType )
+enum class ENodeMeshType: uint8
+{
+	MT_Node,
+	MT_Core,
+	MT_Crack,
+	MT_Satellite,
+	MT_DesertCore,
+	MT_DesertCrack,
+	MT_DesertSatellite
 };
 
 /**
@@ -34,11 +56,46 @@ class FACTORYGAME_API UFGUseState_NonConveyorResource : public UFGUseState
 	UFGUseState_NonConveyorResource() : Super() { mIsUsableState = false; }
 };
 
+/** A Static Mesh Actor that should be used for all node meshes in the world. Else Random Nodes Game Mode will not work with the related node. */
+UCLASS()
+class FACTORYGAME_API AFGNodeMeshActor : public AStaticMeshActor
+{
+	GENERATED_BODY()
+public:
+	virtual void BeginPlay() override;
+	
+	UPROPERTY( EditInstanceOnly, Category = "Resources" )
+	TSoftObjectPtr< class AFGResourceNodeBase > mNodeActor;
+
+	UPROPERTY( EditInstanceOnly, Category = "Resources" )
+	ENodeMeshType mNodeMeshType = ENodeMeshType::MT_Node;
+
+	void SetNodeActor( AFGResourceNodeBase* node );
+
+	UFUNCTION( BlueprintCallable, Category = "Resources" )
+	bool IsPlayerPositionParameterUpdateOn() const;
+
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent )
+	void OverrideMeshAndMaterials( AFGResourceNodeBase* nodeActor, TSubclassOf< UFGResourceDescriptor > originalDescriptor,
+	                               TSubclassOf< UFGResourceDescriptor > overrideDescriptor );
+
+
+private:
+	void OverrideMaterials( const TArray< TObjectPtr< UMaterialInterface > >& materials, UStaticMeshComponent* meshComp );
+	void OverrideMeshAndMaterials_Implementation( AFGResourceNodeBase* nodeActor, TSubclassOf< UFGResourceDescriptor > originalDescriptor,
+	                                              TSubclassOf< UFGResourceDescriptor > overrideDescriptor );
+
+	TSubclassOf< UFGResourceDescriptor > mMeshVisualData;
+	bool mUpdatePlayerPositionParameter = false;
+};
+
 UCLASS( Abstract )
 class FACTORYGAME_API AFGResourceNodeBase : public AFGStaticReplicatedActor, public IFGExtractableResourceInterface, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface, public IFGClearanceInterface /*, public IFGActorRepresentationInterface*/
 {
 	GENERATED_BODY()
-	
+
+	friend class AFGResourceNodeManager;
+
 public:
 	AFGResourceNodeBase();
 
@@ -57,7 +114,7 @@ public:
 	//Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	//End IFGSignificanceInterface
 
 	// Begin IFGSaveInterface
@@ -86,7 +143,20 @@ public:
 	UFUNCTION()
 	virtual TSubclassOf< UFGResourceDescriptor > GetResourceClass() const override;
 	UFUNCTION()
+	virtual TSubclassOf< UFGResourceDescriptor > GetResourceClassOverride() const { return mResourceClassOverride; }
+	UFUNCTION()
+	virtual bool DoesContainResource( TSubclassOf< class UFGResourceDescriptor > ResourceClass) const override;
+	UFUNCTION()
+	virtual TSubclassOf< UFGResourceDescriptor > GetResourceClassOriginal() const { return mResourceClass; }
+	
+	
+	void SetResourceClass( const TSubclassOf< UFGResourceDescriptor > resource );
+	void SetResourceClassOverride( const TSubclassOf< UFGResourceDescriptor > resource );
+
+	UFUNCTION()
 	virtual FVector GetPlacementLocation( const FVector& hitLocation ) const override;
+	UFUNCTION()
+	virtual FRotator GetPlacementRotation( const FVector& hitLocation ) const override;
 	UFUNCTION()
 	virtual bool HasAnyResources() const override { return false; }
 	UFUNCTION()
@@ -101,27 +171,6 @@ public:
 	virtual void GetClearanceData_Implementation( TArray< FFGClearanceData >& out_data ) const override;
 	// End IFGClearanceInterface
 
-	// Begin IFGActorRepresentationInterface
-	// virtual bool AddAsRepresentation() override;
-	// virtual bool UpdateRepresentation() override;
-	// virtual bool RemoveAsRepresentation() override;
-	// virtual bool IsActorStatic() override {return true;}
-	// virtual FVector GetRealActorLocation() override { return GetActorLocation(); }
-	// virtual FRotator GetRealActorRotation() override { return FRotator::ZeroRotator; }
-	// virtual class UTexture2D* GetActorRepresentationTexture() override;
-	// virtual FText GetActorRepresentationText() override;
-	// virtual void SetActorRepresentationText( const FText& newText ) override;
-	// virtual FLinearColor GetActorRepresentationColor() override;
-	// virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
-	// virtual ERepresentationType GetActorRepresentationType() override;
-	// virtual bool GetActorShouldShowInCompass() override;
-	// virtual bool GetActorShouldShowOnMap() override;
-	// virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
-	// virtual float GetActorFogOfWarRevealRadius() override;
-	// virtual ECompassViewDistance GetActorCompassViewDistance() override;
-	// virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
-	// End IFGActorRepresentationInterface
-
 	/** Get what type of a resource node is this */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
 	EResourceNodeType GetResourceNodeType() const { return mResourceNodeType; }
@@ -129,6 +178,7 @@ public:
 	/** Localized name */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
 	FText GetResourceName() const;
+
 
 	/** What kind of form is the resource in */
 	EResourceForm GetResourceForm() const;
@@ -156,7 +206,7 @@ public:
 #endif
 	
 	/** Used by the descriptor, so that all meshes in the world can get their mesh updated */
-	void UpdateMeshFromDescriptor( bool needRegister = true );
+	void UpdateMeshFromDescriptor( bool needRegister, UMaterial* decalMaterial );
 	
 	void ScanResourceNode_Local( float lifeSpan );
 	UFUNCTION()
@@ -164,11 +214,16 @@ public:
 
 	void ScanResourceNodeScan_Server();
 	void RemoveResourceNodeScan_Server();
+	
+	FOnResourceClassOverrideReplication OnResourceClassOverrideReplication;
+
+	UMaterial* GetDecalMaterial();
+	
 protected:
 	/** @returns the actor that contains the mesh for this node */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
 	class AActor* GetMeshActor() const { return mMeshActor.Get(); }
-
+	
 	void InitResource( TSubclassOf<UFGResourceDescriptor> resourceClass );
 
 	/**
@@ -176,27 +231,36 @@ protected:
 	 * @param needRegister - if true, then we need to register new components
 	 *
 	 **/
-	void ConditionallySetupComponents( bool needRegister );
+	void ConditionallySetupComponents( bool needRegister, UMaterial* decalMaterial );
 
 	void UpdateHighlightParticleSystem();
 
 	UFUNCTION()
 	void OnRep_ServerMapReveals();
+
+	UFUNCTION()
+	void OnRep_ResourceClassOverride();
+	
 private:
 	void UpdateNodeRepresentation();
 
-protected:
+
 	/** Type of resource */
 	UPROPERTY( EditAnywhere, Category = "Resources" )
-	TSubclassOf<UFGResourceDescriptor> mResourceClass;
+	TSubclassOf< UFGResourceDescriptor > mResourceClass;
+
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ResourceClassOverride )
+	TSubclassOf< UFGResourceDescriptor > mResourceClassOverride = nullptr;
+
+protected:
 
 	/** the decal that used for displaying the resource */
 	UPROPERTY( BlueprintReadOnly, VisibleDefaultsOnly, Category = "Resources" )
-	UDecalComponent* mDecalComponent;
+	TObjectPtr<UDecalComponent> mDecalComponent;
 
 	/** If we have no static mesh but a decal, then we use this for collision*/
 	UPROPERTY( BlueprintReadOnly, VisibleDefaultsOnly, Category = "Resources" )
-	class UBoxComponent* mBoxComponent;
+	TObjectPtr<class UBoxComponent> mBoxComponent;
 
 	/** If true, then we are occupied by something // [Dylan 3/2/2020] - Removed savegame meta */
 	UPROPERTY( ReplicatedUsing = OnRep_IsOccupied, BlueprintReadOnly, Category = "Resources" )
@@ -210,28 +274,33 @@ protected:
 	int32 mServerMapReveals;
 
 	UPROPERTY( Transient )
-	class UFGResourceNodeRepresentation* mResourceNodeRepresentation;
+	TObjectPtr<class UFGResourceNodeRepresentation> mResourceNodeRepresentation;
 	
-	/** What type of a resource node this is. */
+	/** What type of resource node this is. */
+	UPROPERTY( EditAnywhere )
 	EResourceNodeType mResourceNodeType;
 
-	/** If true, this node will NEVER join another cluster of nodes, regardless of proximity. */
 	UPROPERTY( EditAnywhere, Category = "Resources" )
 	bool mAllowDecal = true;
 
 public:
 	/** Particle system component  */
 	UPROPERTY( EditAnywhere, Category = "Resources" )
-	class UParticleSystem* mHighlightParticleSystemTemplate;
+	TObjectPtr<class UParticleSystem> mHighlightParticleSystemTemplate;
+
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Resources" )
+	UParticleSystem* GetHighlightParticleSystemTemplate() const;
+	virtual UParticleSystem* GetHighlightParticleSystemTemplate_Implementation() const;
 
 	/** Particle system component  */
 	UPROPERTY()
-	class UParticleSystemComponent* mHighlightParticleSystemComponent;
+	TObjectPtr<class UParticleSystemComponent> mHighlightParticleSystemComponent;
 
 	/** Bool for is we should spawn particle - @todo Do we really need to save this? //[Dylan 3/2/2020] */
 	UPROPERTY( Replicated, EditDefaultsOnly, SaveGame, Category = "Resources" ) 
 	bool mDoSpawnParticle;
 
+	FVector GetBoxExtent() const;
 private:
 	/** Clearance data of this resource */
 	UPROPERTY( EditDefaultsOnly, Category = "Resources" )

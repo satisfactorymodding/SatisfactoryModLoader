@@ -19,7 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Id;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture2D* Texture;
+	TObjectPtr<class UTexture2D> Texture;
 
 };
 //</FL>
@@ -56,16 +56,16 @@ struct FACTORYGAME_API FFGKeyTextureBinding
 	FKey Key;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Primary Controller Icon" ) )
-	class UTexture* TexturePrimary;
+	TObjectPtr<class UTexture> TexturePrimary;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Secondary Controller Icon" ) )
-	class UTexture* TextureSecondary;
+	TObjectPtr<class UTexture> TextureSecondary;
 
 		UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Primary Slate Controller Icon" ) )
-	class UTexture2D* TexturePrimarySlate;
+	TObjectPtr<class UTexture2D> TexturePrimarySlate;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Secondary Slate Controller Icon" ) )
-	class UTexture2D* TextureSecondarySlate;
+	TObjectPtr<class UTexture2D> TextureSecondarySlate;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	FMargin InternalPaddingPrimary;
@@ -86,10 +86,10 @@ struct FACTORYGAME_API FFGTagTextureBinding
 	FGameplayTag Tag;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Primary Controller Icon" ) )
-	class UTexture* TexturePrimary;
+	TObjectPtr<class UTexture> TexturePrimary;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( DisplayName = "Secondary Controller Icon" ) )
-	class UTexture* TextureSecondary;
+	TObjectPtr<class UTexture> TextureSecondary;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	FMargin InternalPaddingPrimary;

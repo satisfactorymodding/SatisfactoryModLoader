@@ -46,12 +46,12 @@ protected:
 	
 private:
 	UPROPERTY()
-	APawn* mPawn;
+	TObjectPtr<APawn> mPawn;
 	UPROPERTY()
-	AController* mController;
+	TObjectPtr<AController> mController;
 
 	UPROPERTY()
-	UFGAction* mOwnerAction;
+	TObjectPtr<UFGAction> mOwnerAction;
 };
 
 /**
@@ -81,5 +81,5 @@ protected:
 
 protected:
 	UPROPERTY( BlueprintReadOnly, Category = "Scorer" )
-	UFGAction* mAction;
+	TObjectPtr<UFGAction> mAction;
 };

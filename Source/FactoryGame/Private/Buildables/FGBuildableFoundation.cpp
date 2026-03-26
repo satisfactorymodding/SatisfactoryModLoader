@@ -22,12 +22,12 @@ AFGBuildableFoundation::AFGBuildableFoundation(const FObjectInitializer& ObjectI
 	this->mDisableAttachmentSnapOn.Left = false;
 	this->mDisableAttachmentSnapOn.Top = false;
 	this->mDisableAttachmentSnapOn.Bottom = false;
+	this->mAffectsOcclusion = true;
 	this->mHologramClass = AFGFoundationHologram::StaticClass();
 	this->mIsConsideredForBaseWeightValue = 0.1;
 	this->mColorSlot = 16;
 	this->mSwatchGroup = UFGSwatchGroup_FicsitFoundation::StaticClass();
 	this->mManagedByLightweightBuildableSubsystem = true;
-	this->mAffectsOcclusion = true;
 }
 AFGBuildableFoundationLightweight::AFGBuildableFoundationLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mMeshComponentProxy = nullptr;

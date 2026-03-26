@@ -45,7 +45,7 @@ void UFGServerObject::UnRegisterStateListener(TScriptInterface<IFGServerStateLis
 UFGServerManager* UFGServerObject::GetOuterServerManager() const{ return nullptr; }
 void UFGServerObject::PromptUserToAllowCertificate(const FFGServerCertificate& NewServerCertificate){ }
 bool UFGServerObject::DiscardServerCertificate(){ return bool(); }
-void UFGServerObject::OnServerAPIError(const FFGServerErrorResponse& ErrorResponse){ }
+void UFGServerObject::OnServerAPIError(const FFGServerErrorResponse& ErrorResponse, EFGClientAPIErrorPopupSuppressLevel PopupSuppressLevel){ }
 void UFGServerObject::ShowServerMessage(EServerMessage ServerMessage) const{ }
 void UFGServerObject::OnServerAddedOrLoaded(){ }
 void UFGServerObject::OnServerRemoved(){ }
@@ -68,7 +68,7 @@ void UFGServerObject::OnLoadGameResponse(const FFGServerErrorResponse& ErrorResp
 void UFGServerObject::OnJoinRequestResponse(const FFGServerErrorResponse& ErrorResponse, const FFGServerJoinDataResponse& ServerJoinData){ }
 void UFGServerObject::OnServerOptionsUpdated(const FFGServerErrorResponse& ErrorResponse, const TMap<FString, FString>& NewServerOptions, const TMap<FString, FString>& PendingServerOptions){ }
 void UFGServerObject::OnAdvancedGameSettingsUpdated(const FFGServerErrorResponse& ErrorResponse, const TMap<FString, FString>& NewAdvancedGameSettings, bool bCreativeModeEnabled){ }
-void UFGServerObject::OnLoginTokenVerificationFinished(FFGServerErrorResponse& ErrorResponse, EPrivilegeLevel MinPrivilegeLevel, bool bAutomaticLogin){ }
+void UFGServerObject::OnLoginTokenVerificationFinished(FFGServerErrorResponse& ErrorResponse, EPrivilegeLevel MinPrivilegeLevel, bool bAutomaticLogin, bool bIsSavedAuthenticationToken){ }
 void UFGServerObject::OnServerClaimResponse(FFGServerErrorResponse& ErrorResponse, const FString& NewAuthenticationToken){ }
 void UFGServerObject::OnAdminPasswordSetResponse(const FString& NewAuthenticationToken){ }
 void UFGServerObject::OnClientJoinPasswordSet(const FString& NewClientJoinPassword){ }
@@ -85,12 +85,14 @@ void UFGServerObject::NotifyComplexStateChange(){ }
 void UFGServerObject::SetServerState(EServerState NewState){ }
 void UFGServerObject::SetServerAPIState(EFGServerAPIState NewServerAPIState){ }
 void UFGServerObject::SetAuthenticationToken(const FServerAuthenticationToken& Token){ }
+void UFGServerObject::SetSavedAuthenticationToken(const FServerAuthenticationToken& Token){ }
 void UFGServerObject::AbortAuthenticationFlow(const FFGServerErrorResponse& Reason){ }
 void UFGServerObject::OnUserPasswordRequestCompleted(const FString& Password, EPrivilegeLevel MinimumTargetPrivilege){ }
 void UFGServerObject::OnUserPasswordRequestCancelled(){ }
 void UFGServerObject::OnUserAcceptedRemoteCertificate(FFGServerCertificate ServerCertificate){ }
 void UFGServerObject::OnUserDeclinedRemoteCertificate(){ }
 void UFGServerObject::OnAuthenticationTokenChanged(){ }
+void UFGServerObject::OnAgreeToCrashUpload(bool confirmed){ }
 void UFGServerObject::RequestPassword(EPrivilegeLevel MinPrivilegeLevel){ }
 bool UFGServerObject::CheckVersionCompatibility() const{ return bool(); }
 void UFGServerObject::SaveState() const{ }

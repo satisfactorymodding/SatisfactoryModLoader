@@ -68,7 +68,7 @@ protected:
 
 	/** Types and values of damages dealt at the end of life of the projectile. Includes FX setup. */
 	UPROPERTY( SaveGame, EditDefaultsOnly, Instanced, Category = "Ammunition|Damage" )
-	TArray< UFGDamageType* > mDamageTypesAtEndOfLife;
+	TArray< TObjectPtr<UFGDamageType> > mDamageTypesAtEndOfLife;
 
 	/** Types and values of damages dealt upon projectile impact. Includes FX setup. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Ammunition|Projectile" )

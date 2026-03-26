@@ -44,8 +44,6 @@ public:
 	/** Disable attachment snapping on specific sides. */
 	UPROPERTY( EditDefaultsOnly, Category = "Foundation" )
 	FFoundationSideSelectionFlags mDisableAttachmentSnapOn;
-
-	virtual FSimpleBuildingInfo GetRainOcclusionShape() override { return FSimpleBuildingInfo::DefaultSquareFoundation( this ); }
 };
 
 UCLASS( Abstract )

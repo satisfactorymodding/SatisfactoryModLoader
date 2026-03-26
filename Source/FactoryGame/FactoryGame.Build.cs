@@ -3,6 +3,8 @@
 using UnrealBuildTool;
 using System;
 using System.Linq;
+using System.IO;
+using EpicGames.Core;
 using Microsoft.Extensions.Logging;
 
 public class FactoryGame : ModuleRules
@@ -46,11 +48,11 @@ public class FactoryGame : ModuleRules
             "MoviePlayer",
             "NavigationSystem",
 			"Sockets",
-            "SignificanceManager",
 			"EngineSettings",
             "RHI",
 			"AnimGraphRuntime",
 			"RenderCore",
+			"Renderer",
 			"DeveloperSettings",
 			"NetCore",
 			"CinematicCamera",
@@ -69,7 +71,6 @@ public class FactoryGame : ModuleRules
 			"Voronoi",
 			"PlanarCut",
 			"GeometryCollectionNodes",  
-			"InstancedSplinesComponent", 
 			"SignificanceISPC",
 			"GameplayTags",
 			"OnlineSubsystemUtils",
@@ -80,22 +81,27 @@ public class FactoryGame : ModuleRules
 			"ModelViewViewModel",
 			"MovieScene",
 			"ReliableMessaging",
-			"GeometryFramework",
+			"GeometryFramework", 
+			"EngineCameras",
+			"GameFeatures",
+			// "Sentry",
+			"SlateIM"
 		} );
 
 		if (Target.Type == TargetType.Server)
 		{
 			// If the target is a server we define upscaler macros to 0 so we can use them even on server
-			PublicDefinitions.Add("USE_XESS=0");
+			PublicDefinitions.Add("WITH_XESS=0");
 			PublicDefinitions.Add("WITH_DLSS=0");	
 		}
 		else
 		{
 			// If the target is not a server we add upscaler modules to the PublicDependencyModuleNames
-			// PublicDependencyModuleNames.AddRange( new string[] { 
+			// PublicDependencyModuleNames.AddRange( new string[] {
 			// 	"XeSSBlueprint",
 			// 	"DLSSBlueprint",
 			// 	"StreamlineBlueprint",
+			// 	"StreamlineDLSSGBlueprint",
 			// } );
 		}
 
@@ -124,7 +130,9 @@ public class FactoryGame : ModuleRules
 			{
 				PublicDependencyModuleNames.AddRange(new string[] {
 					"OnlineSubsystemSteam",
+					"Steamworks"
 				});
+				PrivateDefinitions.Add("WITH_STEAMWORKS=1");
 			}
 			else
 			{
@@ -141,6 +149,8 @@ public class FactoryGame : ModuleRules
 				"LensDistortion",
 				"MfMedia",
 				"MfMediaFactory",
+				"OnlineSubsystemGDK",
+				"OnlineServicesOSSAdapter",
 			});
 
 			PublicSystemIncludePaths.Add(System.IO.Path.Combine(EngineDirectory, "Platforms/XSX/Source/Runtime/D3D12RHI/Private"));
@@ -176,7 +186,8 @@ public class FactoryGame : ModuleRules
 			"Niagara",
 			"OpenSSL", 
 			"SSL", 
-			"Gauntlet"
+			"Gauntlet", 
+			"RainRendering",
 		});
 
 		// Only depend on XESS and DLSS blueprint module for non-dedicated servers
@@ -187,39 +198,50 @@ public class FactoryGame : ModuleRules
 			// 	"XeSSBlueprint",
 			// 	"DLSSBlueprint",
 			// 	"StreamlineBlueprint",
+			// 	"StreamlineDLSSGBlueprint",
 			// } );
 		}
 
 		// <FL> [PfaffN] Disable telemetry for consoles
 		if (/*Target.Platform == UnrealTargetPlatform.PS5 ||
-		    Target.Platform == UnrealTargetPlatform.XSX*/ true)
+				Target.Platform == UnrealTargetPlatform.XSX ||*/
+				Target.Platform == UnrealTargetPlatform.Mac)
 		{
 			PrivateDefinitions.Add($"WITH_TELEMETRY=0");
 		}
 		else
 		{
-			PublicDependencyModuleNames.Add("DSTelemetry");
-			PrivateDefinitions.Add($"WITH_TELEMETRY=1");
-		}
-
-		bool isPublicBuild = true; // MODDING EDIT: we always target public builds
-		string isPublicBuildVersion = System.Environment.GetEnvironmentVariable("IS_PUBLIC_BUILD");
-		if( isPublicBuildVersion != null && isPublicBuildVersion.Length > 0 )
-		{
-			isPublicBuildVersion = isPublicBuildVersion.ToLower();
-			if( isPublicBuildVersion == "true" || isPublicBuildVersion == "1" )
-			{
-				isPublicBuild = true;
-			}
+			// PublicDependencyModuleNames.Add("DSTelemetry");
+			// PrivateDefinitions.Add($"WITH_TELEMETRY=1");
+			PrivateDefinitions.Add($"WITH_TELEMETRY=0");
 		}
 		
 		// Determine whenever this build should have cheats and public build define set to zero or not
-		var publicBuildString = isPublicBuild ? "1" : "0";
-		var withCheatsString = !isPublicBuild ? "1" : "0";
+		var publicBuildString = Target.bIsPublicBuild ? "1" : "0";
+		var withCheatsString = !Target.bIsPublicBuild ? "1" : "0";
 		
 		PrivateDefinitions.Add($"IS_PUBLIC_BUILD={publicBuildString}");
 		PrivateDefinitions.Add($"WITH_CHEATS={withCheatsString}");
 		Target.Logger.LogInformation("[{0}] FactoryGame: IsPublicBuild: {1} WithCheats: {2}", Target.Name, publicBuildString, withCheatsString);
+
+// #if UE_5_0_OR_LATER
+// 		bool bIsLinuxTarget = Target.Platform == UnrealTargetPlatform.Linux || Target.Platform == UnrealTargetPlatform.LinuxArm64;
+// #else
+// 		bool bIsLinuxTarget = Target.Platform == UnrealTargetPlatform.Linux || Target.Platform == UnrealTargetPlatform.LinuxAArch64;
+// #endif
+// 		if (bIsLinuxTarget && Target.ProjectFile != null)
+// 		{
+// 			string platformName = Target.Platform.ToString();
+// 			string crashpadHandlerSourcePath = Path.Combine(EngineDirectory, "Source", "ThirdParty", "CrashpadForCRC", "Bin", platformName, "crashpad_handler");
+// 			if (File.Exists(crashpadHandlerSourcePath))
+// 			{
+// 				RuntimeDependencies.Add("$(TargetOutputDir)/crashpad_handler", crashpadHandlerSourcePath, StagedFileType.NonUFS);
+// 			}
+// 			else
+// 			{
+// 				Target.Logger.LogInformation("Missing shared crashpad_handler at {CrashpadHandlerSourcePath}. Linux early crash bootstrap may be unavailable at runtime.", crashpadHandlerSourcePath);
+// 			}
+// 		}
 		
 		if( Target.bBuildEditor == true )
 		{
@@ -234,6 +256,7 @@ public class FactoryGame : ModuleRules
 				"WwiseProjectDatabase",
 				"WwiseResourceLoader",
 				"DesktopPlatform",
+				"BlueprintGraph",
             } );
         }
 		

@@ -33,7 +33,7 @@ void AFGCircuitSubsystem::GatherDependencies_Implementation(TArray< UObject* >& 
 bool AFGCircuitSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGCircuitSubsystem::ShouldSave_Implementation() const{ return bool(); }
 void AFGCircuitSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGCircuitSubsystem::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector){ }
+void AFGCircuitSubsystem::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector){ Super::AddReferencedObjects(InThis, Collector); }
 void AFGCircuitSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGCircuitSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGCircuitSubsystem::DebugRebuildAll(){ }

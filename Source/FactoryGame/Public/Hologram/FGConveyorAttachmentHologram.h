@@ -77,14 +77,14 @@ protected:
 
 	/** The conveyor we snapped to. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableConveyorBase* mSnappedConveyor;
+	TObjectPtr<class AFGBuildableConveyorBase> mSnappedConveyor;
 
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableConveyorAttachment* mUpgradedConveyorAttachment;
+	TObjectPtr<class AFGBuildableConveyorAttachment> mUpgradedConveyorAttachment;
 
 	/** The connection we snapped to. */
 	UPROPERTY( CustomSerialization )
-	class UFGFactoryConnectionComponent* mSnappedConnection = nullptr;
+	TObjectPtr<class UFGFactoryConnectionComponent> mSnappedConnection = nullptr;
 
 	TArray<class UFGFactoryConnectionComponent* > mConnections;
 

@@ -45,7 +45,7 @@ public:
 	bool HasEnterStateValue() const { return mOnEnterInnerState != nullptr; }
 
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
-	UAkRtpc* mCaveRTPC = nullptr ;
+	TObjectPtr<UAkRtpc> mCaveRTPC = nullptr ;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Audio")
 	float mCaveRTPCValue = 0;
@@ -57,23 +57,23 @@ public:
 protected:
 	/** Event to post when OnGetClose is triggered */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Audio" )
-	class UAkAudioEvent* mOnEnterOuterVolumeEvent;
+	TObjectPtr<class UAkAudioEvent> mOnEnterOuterVolumeEvent;
 
 	/** Event to post when OnGetFar is triggered */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Audio" )
-	class UAkAudioEvent* mOnExitOuterVolumeEvent;
+	TObjectPtr<class UAkAudioEvent> mOnExitOuterVolumeEvent;
 
 	/** Event to post when OnEnter is triggered */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Audio" )
-	class UAkAudioEvent* mOnEnterInnerVolumeEvent;
+	TObjectPtr<class UAkAudioEvent> mOnEnterInnerVolumeEvent;
 
 	/** Event to post when OnExit is triggered */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Audio" )
-	class UAkAudioEvent* mOnExitInnerVolumeEvent;
+	TObjectPtr<class UAkAudioEvent> mOnExitInnerVolumeEvent;
 	
 	//Ak state value to set when OnEnter is triggered
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
-	class UAkStateValue* mOnEnterInnerState = nullptr;
+	TObjectPtr<class UAkStateValue> mOnEnterInnerState = nullptr;
 
 	//State group which will be assigned by values from below
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
@@ -81,7 +81,7 @@ protected:
 	
 	//Ak state value to set when OnExit is triggered
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
-	class UAkStateValue* mOnExitInnerState = nullptr;
+	TObjectPtr<class UAkStateValue> mOnExitInnerState = nullptr;
 
 	/** If checked, then we don't rotate the audio source to match the rotation of the listener when inside the volume */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )

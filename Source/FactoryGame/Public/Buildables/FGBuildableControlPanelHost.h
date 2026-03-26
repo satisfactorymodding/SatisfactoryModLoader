@@ -24,7 +24,9 @@ public:
 
 	/** Get a list of the buildables controlled by this host. @param outputType should correspond to the class default Controlled Buildable Type */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Buildable|ControlPanelHost", Meta = ( DeterminesOutputType = "outputType" ) )
-	TArray< AFGBuildable* >& GetControlledBuildables( TSubclassOf< AFGBuildable > outputType );
+	TArray< AFGBuildable* > GetControlledBuildables( TSubclassOf< AFGBuildable > outputType );
+
+	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 	
 protected:
 	/**
@@ -46,11 +48,11 @@ public:
 private:
 	/** The connection to the circuit containing the buildables controlled by this host. */
 	UPROPERTY()
-	class UFGCircuitConnectionComponent* mDownstreamConnection;
+	TObjectPtr<class UFGCircuitConnectionComponent> mDownstreamConnection;
 
 	UPROPERTY( EditDefaultsOnly, Category = "ControlPanelHost" )
 	TSubclassOf< AFGBuildable > mControlledBuildableType;
 
 	UPROPERTY()
-	TArray< AFGBuildable* > mControlledBuildables;
+	TArray< TObjectPtr<AFGBuildable> > mControlledBuildables;
 };

@@ -7,7 +7,8 @@ TAutoConsoleVariable<bool> CVarForceGamepadDeviceType(TEXT("CVarForceGamepadDevi
 void FOnJoinSessionData::SetState(EJoinSessionState newState, FOnJoinSessionStateChanged& onStateChangedDelegate){ }
 #if WITH_EDITOR
 FGameInstancePIEResult UFGGameInstance::InitializeForPlayInEditor(int32 PIEInstanceIndex, const FGameInstancePIEParameters& Params){ return FGameInstancePIEResult::Success(); }
-#endif 
+#endif
+void UFGGameInstance::Tick(float DeltaTime){ }
 #if WITH_EDITOR
 #endif 
 void UFGGameInstance::Init(){ }
@@ -41,7 +42,9 @@ void UFGGameInstance::LoadComplete(const float loadTime, const FString& mapName)
 void UFGGameInstance::OnDestroyOldSessionComplete_JoinSession(FName gameSessionName, bool wasSuccessful){ }
 void UFGGameInstance::OnQueryFriendProductIdCompleted_JoinSession(bool wasSuccessful, FString EpicId,  EOS_ProductUserIdDetails* ProductId){ }
 void UFGGameInstance::PollHostProductUserId_JoinSession(){ }
+void UFGGameInstance::OnUISessionJoinWasRequested(UOnlineIntegrationBackend* Backend){ }
 void UFGGameInstance::OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type joinResult){ }
+void UFGGameInstance::OnAnyUISessionJoinWasRequestedOnBackend(UOnlineIntegrationBackend* Backend){ }
 void UFGGameInstance::SendRecievedNetworkErrorOnDelegate(UWorld* world, UNetDriver* driver, ENetworkFailure::Type errorType, const FString& errorMsg){ }
 void UFGGameInstance::SwitchActiveInput(EInputDeviceType deviceType){  }
 void UFGGameInstance::OnLastInputDeviceTypeChanged(EInputDeviceType deviceType){ }
@@ -67,9 +70,11 @@ void UFGGameInstance::SetConsoleVariable(const char* Variable, bool Active){ }
 void UFGGameInstance::UpdateStringTableVariants(bool UsingGamepad){  }
 UFGLocalPersistenceStore* UFGGameInstance::GetLocalPersistenceStore(){ return nullptr; }
 void UFGGameInstance::OnFocusChanged(const FFocusEvent& FocusEvent, const FWeakWidgetPath& OldFocusedWidgetPath, const TSharedPtr< SWidget >& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath, const TSharedPtr< SWidget >& NewFocusedWidget){ }
+bool UFGGameInstance::IsInMainMenu() const{ return bool(); }
 void UFGGameInstance::OnMpSessionExpiredConfirmed(bool ConfirmClicked){  }
 void UFGGameInstance::SetupInitialInputDeviceMode(){  }
 void UFGGameInstance::OnInputModeUpdated(FString cvar){  }
 void UFGGameInstance::OnDynamicInputSwapUpdated(FString cvar){  }
 void UFGGameInstance::OnControllerConnectionChanged(EInputDeviceConnectionState NewConnectionState, FPlatformUserId UserID, FInputDeviceId InputDeviceId){  }
 void UFGGameInstance::HandleMouseEnteredViewport(){ }
+uint32 UFGGameInstance::GetLocalNetworkVersion(){ return uint32(); }

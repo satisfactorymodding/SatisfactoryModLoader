@@ -5,6 +5,7 @@
 
 UFGBuildGunStateBuild::UFGBuildGunStateBuild() : Super() {
 	this->mMappingContextHologram = nullptr;
+	this->mShowVehiclePathsInBuildMode = false;
 	this->mLastFocusedCategory = nullptr;
 	this->mIsUsingPressAndReleaseAsBuildSteps = true;
 	this->mPendingRecipe = nullptr;
@@ -29,8 +30,7 @@ void UFGBuildGunStateBuild::PrimaryFireRelease_Implementation(){ }
 void UFGBuildGunStateBuild::SecondaryFire_Implementation(){ }
 void UFGBuildGunStateBuild::Scroll_Implementation(int32 delta){ }
 void UFGBuildGunStateBuild::BuildSampleRelease_Implementation(){ }
-bool UFGBuildGunStateBuild::IsValidBuildingSample( AFGBuildable* buildable) const{ return bool(); }
-bool UFGBuildGunStateBuild::IsValidVehicleSample( AFGVehicle* vehicle) const{ return bool(); }
+bool UFGBuildGunStateBuild::IsValidActorSample(AActor* actor) const{ return Super::IsValidActorSample(actor); }
 void UFGBuildGunStateBuild::OnRecipeSampled_Implementation(TSubclassOf<class UFGRecipe> recipe){ }
 void UFGBuildGunStateBuild::OnBuildGunModeChanged_Implementation(TSubclassOf< UFGBuildGunModeDescriptor > newMode){ }
 void UFGBuildGunStateBuild::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildModes) const{ }
@@ -39,8 +39,7 @@ float UFGBuildGunStateBuild::GetBuildGunRangeOverride_Implementation(){ return f
 void UFGBuildGunStateBuild::BindInputActions( UFGEnhancedInputComponent* inputComponent){ }
 bool UFGBuildGunStateBuild::CanSampleBuildables() const{ return bool(); }
 bool UFGBuildGunStateBuild::OnShortcutPressed(int32 shortcutIndex){ return bool(); }
-void UFGBuildGunStateBuild::OnBuildableSampled_Implementation(AFGBuildable* buildable){ Super::OnBuildableSampled_Implementation(buildable); }
-void UFGBuildGunStateBuild::OnVehicleSampled_Implementation(AFGVehicle* vehicle){ Super::OnVehicleSampled_Implementation(vehicle); }
+void UFGBuildGunStateBuild::OnActorSampled_Implementation(AActor* actor){ Super::OnActorSampled_Implementation(actor); }
 void UFGBuildGunStateBuild::OnLightweightBuildableSampled_Implementation(FLightweightBuildableInstanceRef& buildableInstance){ Super::OnLightweightBuildableSampled_Implementation(buildableInstance); }
 void UFGBuildGunStateBuild::SetActiveRecipe(TSubclassOf<  UFGRecipe > recipe){ }
 void UFGBuildGunStateBuild::OnHoldToSnapUpdated(FString cvar){ }
@@ -49,7 +48,6 @@ void UFGBuildGunStateBuild::SetActiveBlueprintDescriptor(UFGBlueprintDescriptor*
 TSubclassOf< class UFGItemDescriptor > UFGBuildGunStateBuild::GetDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 TArray< FItemAmount > UFGBuildGunStateBuild::GetHologramCost() const{ return TArray<FItemAmount>(); }
 AFGHologram* UFGBuildGunStateBuild::GetHologram() const{ return nullptr; }
-AFGHologram* UFGBuildGunStateBuild::SpawnChildHologram(AFGHologram* parent, TSubclassOf<  UFGRecipe > recipe){ return nullptr; }
 void UFGBuildGunStateBuild::Server_ConstructHologram_Implementation(FNetConstructionID clientNetConstructID, FConstructHologramMessage data){ }
 void UFGBuildGunStateBuild::InternalConstructHologram(FNetConstructionID clientNetConstructID){ }
 void UFGBuildGunStateBuild::Server_ChangeGuideLinesSnapMode_Implementation(bool enabled){ }
@@ -75,7 +73,7 @@ void UFGBuildGunStateBuild::Client_OnRecipeBuilt_Implementation(TSubclassOf<  UF
 void UFGBuildGunStateBuild::Client_OnBlueprintConstructed_Implementation(const FString& blueprintName, int32 numConstructed){ }
 void UFGBuildGunStateBuild::Client_OnBuildableFailedConstruction_Implementation(FNetConstructionID netConstructionID){ }
 void UFGBuildGunStateBuild::SpawnHologram(){ }
-void UFGBuildGunStateBuild::RemoveHologram( AFGHologram*& hologram, bool cleanupClearanceDetection){ }
+void UFGBuildGunStateBuild::RemoveHologram(TObjectPtr<class AFGHologram>& hologram, bool cleanupClearanceDetection){ }
 void UFGBuildGunStateBuild::CleanupHologramClearanceDetection(){ }
 AFGHologram* UFGBuildGunStateBuild::InternalSpawnHologram(){ return nullptr; }
 void UFGBuildGunStateBuild::ApplyPlayerRelativeRotation(AFGHologram* hologram, int32 minRotationMode){ }

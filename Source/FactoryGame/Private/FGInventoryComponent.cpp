@@ -60,6 +60,7 @@ bool UFGInventoryComponent::IsItemAllowed(const TSubclassOf< UFGItemDescriptor >
 int32 UFGInventoryComponent::FindEmptyIndex() const{ return int32(); }
 int32 UFGInventoryComponent::GetFirstIndexWithItem(int32 StartIndex) const{ return int32(); }
 int32 UFGInventoryComponent::FindFirstIndexWithItemType(TSubclassOf<UFGItemDescriptor> itemDescriptor, int32 startIndex) const{ return int32(); }
+bool UFGInventoryComponent::AddItem(const FInventoryItem& item){ return bool(); }
 int32 UFGInventoryComponent::AddStack(const FInventoryStack& stack, const bool allowPartialAdd){ return int32(); }
 void UFGInventoryComponent::AddStacks(const TArray< FInventoryStack >& stacks){ }
 int32 UFGInventoryComponent::AddStackToIndex(const int32 idx, const FInventoryStack& stack, const bool allowPartialAdd , UFGInventoryComponent* sourceInventory){ return int32(); }
@@ -76,6 +77,7 @@ bool UFGInventoryComponent::HasEnoughSpaceForStack(const FInventoryStack& stack)
 void UFGInventoryComponent::SetStateOnIndex(int32 index, const FFGDynamicStruct& itemState){ }
 int32 UFGInventoryComponent::GetFullestStackIndex(){ return int32(); }
 void UFGInventoryComponent::GetInventoryStacks(TArray< FInventoryStack >& out_stacks, const bool getEmptyStacks) const{ }
+TSubclassOf<UFGItemDescriptor> UFGInventoryComponent::GetItemClassAtIndex(int32 index) const{ return TSubclassOf<UFGItemDescriptor>(); }
 TArray<int32> UFGInventoryComponent::GetRelevantStackIndexes(TArray< TSubclassOf<  UFGItemDescriptor > > relevantClasses, int32 stackLimit , bool sortResult){ return TArray<int32>(); }
 void UFGInventoryComponent::AddArbitrarySlotSize(int32 index, int32 arbitrarySlotSize){ }
 void UFGInventoryComponent::RemoveArbitrarySlotSize(int32 index){ }

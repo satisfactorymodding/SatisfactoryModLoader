@@ -52,30 +52,30 @@ private:
 	
 protected:
 	UPROPERTY()
-	class UStaticMeshComponent* mPowerConnectionMesh;
+	TObjectPtr<class UStaticMeshComponent> mPowerConnectionMesh;
 
 	EBreakWireState mBreakingWireState;
 
 private:
 	/** The connection wires snap to, used when placing a pole automatically. */
 	UPROPERTY()
-	class UFGCircuitConnectionComponent* mSnapConnection;
+	TObjectPtr<class UFGCircuitConnectionComponent> mSnapConnection;
 	
 	UPROPERTY()
-	class UFGCircuitConnectionComponent* mPowerTowerSnapConnection;
+	TObjectPtr<class UFGCircuitConnectionComponent> mPowerTowerSnapConnection;
 
 	/** Power pole we are upgrading */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildablePowerPole* mUpgradeTarget;
+	TObjectPtr<class AFGBuildablePowerPole> mUpgradeTarget;
 
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableWire* mSnapWire;
+	TObjectPtr<class AFGBuildableWire> mSnapWire;
 
 	UPROPERTY( Replicated )
-	class AFGWireHologram* mWireHologramIn = nullptr;
+	TObjectPtr<class AFGWireHologram> mWireHologramIn = nullptr;
     
 	UPROPERTY( Replicated )
-	class AFGWireHologram* mWireHologramOut = nullptr;
+	TObjectPtr<class AFGWireHologram> mWireHologramOut = nullptr;
 
 	/** Recipe to use for the automatically spawned wires, can be null. */
     UPROPERTY( EditDefaultsOnly, Category = "Wire" )

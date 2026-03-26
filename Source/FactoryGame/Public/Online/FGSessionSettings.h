@@ -194,6 +194,10 @@ protected:
 
 	UPROPERTY( FieldNotify, BlueprintReadWrite, BlueprintGetter = GetSessionName, BlueprintSetter = SetSessionName, Category="SessionName" )
 	FString mSessionName;
+
+	//Session name getter should be one-way according to 5.4 changes. Quick fix to make it work. TODO: rewrite mSessionName to be one-way
+	UPROPERTY( FieldNotify, BlueprintReadOnly, Category="SessionName" )
+	FString mSessionNameOneWay;
 	
 	UPROPERTY( FieldNotify, BlueprintReadOnly )
 	bool mInGameSettingsModel = false;

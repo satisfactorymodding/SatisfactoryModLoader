@@ -66,6 +66,9 @@ UCLASS( Abstract )
 class FACTORYGAME_API AFGResourceNode : public AFGResourceNodeBase
 {
 	GENERATED_BODY()
+
+	friend class AFGResourceNodeManager;
+
 public:
 	AFGResourceNode();
 
@@ -98,15 +101,18 @@ public:
 
 	/** For UI */
 	UFUNCTION(BlueprintPure,Category="Resources")
-	FText GetResoucesLeftText() const;
+	FText GetResourcesLeftText() const;
 
 	/** For UI */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
-	FText GetResoucePurityText() const;
+	FText GetResourcePurityText() const;
 
 	/** For UI, returns the enum */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
-	FORCEINLINE EResourcePurity GetResoucePurity(){ return mPurity; }
+	EResourcePurity GetResourcePurity() const { return mPurityOverride == RP_MAX ? mPurity : mPurityOverride; };
+
+	void SetResourcePurity( EResourcePurity purity ) { mPurity = purity; }
+	void SetResourcePurityOverride( EResourcePurity purity ) { mPurityOverride = purity; }
 
 	/** The range of a resource for a amount */
 	const FInt32Interval& GetResourceAmount( EResourceAmount amount ) const;
@@ -150,11 +156,16 @@ protected:
 	/** Called when a resource is extracted. Never called on infinite resource nodes. */
 	virtual void UpdateRadioactivity();
 
-protected:
+private:
 	/** How pure the resource is */
 	UPROPERTY(EditInstanceOnly, Category= "Resources" )
 	TEnumAsByte<EResourcePurity> mPurity;
 
+	/** How pure the resource is */
+	UPROPERTY( SaveGame, Replicated )
+	TEnumAsByte< EResourcePurity > mPurityOverride = RP_MAX;
+
+protected:
 	/** How pure the resource is */
 	UPROPERTY( EditInstanceOnly, Category = "Resources" )
 	TEnumAsByte<EResourceAmount> mAmount;

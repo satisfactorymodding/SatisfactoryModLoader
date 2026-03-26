@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -111,11 +111,11 @@ private:
 	
 	/** Inventory holding the fuel item used for the teleportation */
 	UPROPERTY( SaveGame )
-	UFGInventoryComponent* mFuelInventory;
+	TObjectPtr<UFGInventoryComponent> mFuelInventory;
 	
 	/** Cached input connections */
 	UPROPERTY()
-	TArray<UFGFactoryConnectionComponent*> mCachedInputConnections;
+	TArray<TObjectPtr<UFGFactoryConnectionComponent>> mCachedInputConnections;
 	
 	/** True if we have completed our heat up phase and are ready to open a portal connection now */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_HeatUpComplete, VisibleInstanceOnly, Category = "Portal" )
@@ -127,11 +127,11 @@ private:
 	
 	/** Fuel consumption curve used for "heat up" phase, in a form of units of fuel consumed per minute */
 	UPROPERTY( EditDefaultsOnly, Category = "Portal" )
-	UCurveFloat* mHeatUpFuelConsumptionCurve;
+	TObjectPtr<UCurveFloat> mHeatUpFuelConsumptionCurve;
 
 	/** Power consumption curve used for "heat up" phase */
 	UPROPERTY( EditDefaultsOnly, Category = "Portal" )
-	UCurveFloat* mHeatUpPowerConsumptionCurve;
+	TObjectPtr<UCurveFloat> mHeatUpPowerConsumptionCurve;
 	
 	// TODO @Nick: I really don't like replicating it as during the heat up it's changed every frame, but it's needed to animate the model so
 	/** Current heat up progress, scales from 0 (cool) to 1.0f (active) */

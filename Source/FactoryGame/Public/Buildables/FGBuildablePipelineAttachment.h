@@ -51,7 +51,7 @@ protected:
 
 	/** Cached pipe connections from the blueprint. */
 	UPROPERTY()
-	TArray< class UFGPipeConnectionComponent* > mPipeConnections;
+	TArray< TObjectPtr<class UFGPipeConnectionComponent> > mPipeConnections;
 
 	/** 
 	* Cached pipeline network fluidDescriptor ( used to ensure we don't run the same application code over and over if a descriptor is set but not changed 

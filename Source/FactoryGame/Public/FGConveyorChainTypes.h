@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
 #include "FactoryGame.h"
@@ -151,7 +151,7 @@ struct FACTORYGAME_API FConveyorItemRemovalItems
 	int32 MaxRemovalItems = 0;
 
 	UPROPERTY()
-	AFGConveyorChainActor* ChainActor = nullptr;
+	TObjectPtr<AFGConveyorChainActor> ChainActor = nullptr;
 };
 
 template<>
@@ -224,7 +224,7 @@ struct FACTORYGAME_API FConveyorItemAdditionItems
 	int32 MaxAdditionItems = 0;
 
 	UPROPERTY()
-	AFGConveyorChainActor* ChainActor;
+	TObjectPtr<AFGConveyorChainActor> ChainActor;
 };
 
 template<>
@@ -302,10 +302,10 @@ public:
 	
 public:
 	UPROPERTY()
-	class AFGConveyorChainActor* ChainActor = nullptr;
+	TObjectPtr<class AFGConveyorChainActor> ChainActor = nullptr;
 	
 	UPROPERTY()
-	class AFGBuildableConveyorBase* ConveyorBase = nullptr;
+	TObjectPtr<class AFGBuildableConveyorBase> ConveyorBase = nullptr;
 
 	UPROPERTY()
 	TArray< FSplinePointData > SplinePointData;

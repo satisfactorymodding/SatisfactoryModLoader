@@ -12,18 +12,17 @@
 constexpr int32 MaxRMPTransmissionSize = 1024 * 1024;
 
 class UReliableMessagingTCPFactory;
-
 class FReliableMessageProtocolTCPServer: public IReliableMessageTransportServer
 {
 public:
 	virtual ~FReliableMessageProtocolTCPServer() override;
-	bool StartListening(UNetDriver* InNetDriver, const UReliableMessagingTCPFactory& Factory);
+	bool StartListening(UNetDriver* InNetDriver, const UReliableMessagingTCPFactory& Factory, float ConnectionTimeoutSeconds);
 
 	int32 GetListenPort() const;
 protected:
 	virtual void Shutdown() override;
 	virtual TArray<TUniquePtr<IReliableMessageTransportConnection>> Tick(float DeltaTime) override;
-	
+	virtual void RegisterIncomingConnection(TSharedRef<FInternetAddr> Address, FGuid ConnectionId) override;
 private:
 	/**
 	 * Determines the externally facing listen port, the one the clients will actually attempt to connect to. This is needed because the server may be behind a NAT
@@ -56,13 +55,17 @@ public:
 
 protected:
 	virtual FGuid GetConnectionId() const override;
-	virtual void EnqueueMessage(uint8 Channel, TArray<uint8>&& Message) override;
+	virtual void EnqueueTaggedMessage(FGameplayTag Tag, TArray<uint8>&& Message) override;
 	virtual EReliableMessagingConnectionState Tick(float DeltaTime) override;
 	virtual void DispatchMessages(TFunction<void(RDTProtocol::FMessage&&)> MessageDispatcher) override;
 	virtual void Close() override;
+	bool TrySendHandshake();
 
 	TUniquePtr<FReliableMessagingTCPAsyncConnHandler> ConnectionHandler;
 	FSocket* Socket = nullptr;
 	TQueue<RDTProtocol::FMessage> InboundMessages;
+	FDateTime LastSendTime;
+	FGuid ConnectionId{};
+	bool bHandshakePending = false;
 };
 

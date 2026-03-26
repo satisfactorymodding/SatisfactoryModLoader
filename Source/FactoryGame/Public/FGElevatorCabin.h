@@ -1,7 +1,6 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-
 #include "FactoryGame.h"
 #include "FGUseableInterface.h"
 #include "Buildables/FGBuildableElevator.h"
@@ -45,7 +44,7 @@ public:
 	float mUpdateTime = 0.f;
 	
 	UPROPERTY()
-	APlayerController* mInteractingPlayer;
+	TObjectPtr<APlayerController> mInteractingPlayer;
 };
 
 
@@ -76,7 +75,7 @@ public:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
+	virtual float GetSignificanceRange_Implementation() const override;
 	// End IFGSignificanceInterface
 
 	virtual bool ShouldSave_Implementation() const override { return true; }
@@ -257,7 +256,7 @@ protected:
 #endif
 
 	UPROPERTY( VisibleAnywhere, Category="Elevator Cabin")
-	TArray< UStaticMeshComponent* > mButtonMeshComponents;
+	TArray< TObjectPtr<UStaticMeshComponent> > mButtonMeshComponents;
 
 	UPROPERTY( BlueprintReadWrite, VisibleAnywhere, Category="Elevator Cabin" )
 	TObjectPtr< USceneComponent > mButtonArraySceneParent;

@@ -4,7 +4,7 @@
 
 AFGFoliageRemovalEffectActor::AFGFoliageRemovalEffectActor() : Super() {
 	this->bReplicates = true;
-	this->NetCullDistanceSquared = 400000000.0;
+	this->SetNetCullDistanceSquared(400000000.0);
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }

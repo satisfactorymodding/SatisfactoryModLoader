@@ -11,6 +11,7 @@
 #include "FGBuildGunPaint.generated.h"
 
 
+class UInstancedStaticMeshComponent;
 struct FInstanceData;
 
 UENUM( BlueprintType )
@@ -203,7 +204,7 @@ private:
 protected:
 	/** Material used on stencil proxies */
 	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mHoverProxyMaterial;
+	TObjectPtr<UMaterialInterface> mHoverProxyMaterial;
 
 	/** Invisible Material Descriptor (for hiding meshes when they're hovered to for material replacement )*/
 	UPROPERTY( EditDefaultsOnly )
@@ -260,24 +261,24 @@ private:
 	float mRefireTime;
 
 	UPROPERTY()
-	AActor* mCurrentCustomizationTarget;
+	TObjectPtr<AActor> mCurrentCustomizationTarget;
 
 	UPROPERTY()
-	AActor* mCurrentlyAimedAtActor;
+	TObjectPtr<AActor> mCurrentlyAimedAtActor;
 
 	// Utilized by the Custom Color application so that we don't spam apply on the same building while holding down the fire key
 	UPROPERTY()
-	AActor* mLastAppliedActor;
+	TObjectPtr<AActor> mLastAppliedActor;
 
 	UPROPERTY()
-	AActor* mPreviewActor;
+	TObjectPtr<AActor> mPreviewActor;
 
 	UPROPERTY( Transient )
-	TMap< UStaticMesh*, UInstancedStaticMeshComponent* > mPendingPreviewMeshes;
+	TMap< TObjectPtr<UStaticMesh>, TObjectPtr<UInstancedStaticMeshComponent> > mPendingPreviewMeshes;
 
 	/** Track the instance converter so we know which one to remove from the subsystem */
 	UPROPERTY()
-	AActor* mInstanceConverterInstigator;
+	TObjectPtr<AActor> mInstanceConverterInstigator;
 
 };
 

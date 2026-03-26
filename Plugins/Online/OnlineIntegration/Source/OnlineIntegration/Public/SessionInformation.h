@@ -31,6 +31,8 @@ struct ONLINEINTEGRATION_API FCustomOnlineSessionSetting
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnOnlineSessionAttributesAdded, const TArray<FCustomOnlineSessionSetting>& NewAttributes);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnOnlineSessionAttributesRemoved, const TArray<FName>& RemovedAttributes);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnOnlineSessionAttributesUpdated, const TArray<FCustomOnlineSessionSetting>& UpdatedAttributes);
+// <FL> [ZimmermannA]
+// </FL>
 
 /**
  * A model that can be used for accessing and modifying session information. An object of this type will be created for every session created by this plugin,
@@ -68,10 +70,15 @@ public:
 	void UpdateCustomSettings(APlayerController *Player, const TArray<FCustomOnlineSessionSetting>& UpdatedCustomSettings);
 
 	UFUNCTION(BlueprintCallable)
-	USessionMemberInformation* AddSessionMember(APlayerState* PlayerState); // <FL> [TranN] Need SessionMemberInformation so we can update mPlayingPlatformName when it's replicated
+	void AddSessionMember(APlayerState* PlayerState);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveSessionMember(APlayerState* PlayerState);
+	
+	//UFUNCTION(BlueprintCallable)
+	const TArray<TObjectPtr<USessionMemberInformation>>& GetSessionMembers() { return Members; }
+
+	void ForceUpdateMembersModel();
 
 	UFUNCTION(BlueprintCallable)
 	bool GetCustomSetting(FName SettingName, FCustomOnlineSessionSetting& OutSetting);
@@ -85,6 +92,8 @@ public:
 	FDateTime GetLastUpdateTimestampUtc() const;
 
 	ECommonSessionJoinPolicy GetJoinPolicy() const;
+	bool GetJoinPolicyForBackend(ECommonSessionJoinPolicy& JoinPolicy, UOnlineSessionBackendLink* Backend) const;
+	ECommonSessionJoinPolicy GetMostRestrictiveJoinPolicy();
 
 	FDelegateHandle AddOnSessionAttributesAddedDelegate(FOnOnlineSessionAttributesAdded::FDelegate Delegate);
 	FDelegateHandle AddOnSessionAttributesRemovedDelegate(FOnOnlineSessionAttributesRemoved::FDelegate Delegate);
@@ -99,10 +108,11 @@ public:
 
 // <FL> [ZimmermannA]
 	bool IsOnlineSession() const;
-// </FL>
+	// </FL>
 
 	TObjectPtr<USessionMemberInformation> GetHost() const { return Host; } // <FL>
 
+	UE::Online::FOnlineSessionId OnlineSessionId; // <FL>
 
 	//<FL>[KonradA]
 	void UpdateRecentlyPlayedWith(class ULocalUserInfo* LocalUser);
@@ -111,6 +121,8 @@ public:
 protected:
 	void UpdatePresenceForSessionMembers() const;
 	
+	TMap<TObjectPtr<UOnlineIntegrationBackend>, ECommonSessionJoinPolicy> PerBackendJoinPolicy;
+	TMap<TObjectPtr<UOnlineIntegrationBackend>, TMap<FName, FCustomOnlineSessionSetting>> PerBackendCustomSettings;
 	/**
 	 * Finds any session member that has this account id.
 	 * @param AccountId
@@ -176,6 +188,7 @@ protected:
 	FOnOnlineSessionAttributesAdded OnSessionAttributesAdded;
 	FOnOnlineSessionAttributesRemoved OnSessionAttributesRemoved;
 	FOnOnlineSessionAttributesUpdated OnSessionAttributesUpdated;
+
 
 //<FL>[BGR/KonA/PWutt] Run the "RecentlyPlayerWith" routine on a repeating timer instead of event based, as we don't have control over how often events are triggered and we will reach rate gdk/psn limits otherwise
 	UPROPERTY()

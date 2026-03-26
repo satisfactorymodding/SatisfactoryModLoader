@@ -18,13 +18,13 @@ class FACTORYGAME_API UFGBuildableRailroadSignalSparseData : public UObject
 public:
 	/** Properties for right handed signals (game default). */
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mRightHandedMesh;
+	TObjectPtr<UStaticMesh> mRightHandedMesh;
 	UPROPERTY( EditDefaultsOnly )
 	FTransform mRightHandedTransform;
 	
 	/** Properties for left handed signals. */
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mLeftHandedMesh;
+	TObjectPtr<UStaticMesh> mLeftHandedMesh;
 	UPROPERTY( EditDefaultsOnly )
 	FTransform mLeftHandedTransform;
 };
@@ -59,8 +59,7 @@ public:
 	//Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
-	virtual	void SetupForSignificance() override;
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	//End IFGSignificanceInterface
 
 	// Begin IFGDismantleInterface
@@ -134,11 +133,11 @@ public:
 
 #if WITH_EDITORONLY_DATA
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Signal" )
-	UFGBuildableRailroadSignalSparseData* mRailroadSignalSparesData;
+	TObjectPtr<UFGBuildableRailroadSignalSparseData> mRailroadSignalSparesData;
 #endif
 
 	UPROPERTY( )
-	UFGBuildableRailroadSignalSparseData* mRailroadSignalSparesDataCDO;
+	TObjectPtr<UFGBuildableRailroadSignalSparseData> mRailroadSignalSparesDataCDO;
 	
 protected:
 #if WITH_EDITOR
@@ -146,7 +145,7 @@ protected:
 #endif
 	
 	/** Called when the aspect of this signal has changed, can be called in some occasions when the aspect is still the same. */
-	void OnAspectChanged();
+	void OnAspectChanged( ERailroadSignalAspect previousAspect );
 
 	/** Called when the validation of this block has changed. */
 	void OnBlockValidationChanged();
@@ -154,15 +153,14 @@ protected:
 	/** Called when the bi-directionality changes. */
 	void OnDirectionalityChanged();
 
-	/** Called when the visual state changes. Only called if this signal is significant. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Railroad|Signal" )
-	void OnVisualStateChanged();
-
 	/** Called when we want to draw debugging state. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Railroad|Signal" )
 	void OnDrawDebugVisualState();
 
 private:
+	void PlaySoundForAspectChange();
+	void PlaySoundForBlockValidationError();
+	
 	/** Called when this signal is about to be removed. */
 	void DisconnectSignal();
 	
@@ -185,7 +183,7 @@ private:
 
 	/** On reps */
 	UFUNCTION()
-	void OnRep_Aspect();
+	void OnRep_Aspect( ERailroadSignalAspect previousAspect );
 	UFUNCTION()
 	void OnRep_BlockValidation();
 	UFUNCTION()
@@ -202,7 +200,7 @@ private:
 protected:
 	/** Mesh for this signal, must be using the signal factory material for it to work. */
 	UPROPERTY( VisibleAnywhere )
-	UFGColoredInstanceMeshProxy* mSignalComponent;
+	TObjectPtr<UFGColoredInstanceMeshProxy> mSignalComponent;
 
 	/** True if we should draw debug cubes visible from afar, also make the signals always significant, must be set before BeginPlay. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Debug|Signal" )
@@ -218,7 +216,7 @@ private:
 	 * REMOVE BEFORE U5, when people internally have had a chance to re-save their games.
 	 */
 	UPROPERTY( SaveGame )
-	class UFGRailroadTrackConnectionComponent* mOwningConnection;
+	TObjectPtr<class UFGRailroadTrackConnectionComponent> mOwningConnection;
 	
 	/**
 	 * A signal can guard and observe many connections if placed on a switch.
@@ -264,9 +262,9 @@ private:
 	 *             BLOCK CONNECTION
 	 */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_GuardedConnections )
-	TArray< class UFGRailroadTrackConnectionComponent* > mGuardedConnections;
+	TArray< TObjectPtr<class UFGRailroadTrackConnectionComponent> > mGuardedConnections;
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ObservedConnections )
-	TArray< class UFGRailroadTrackConnectionComponent* > mObservedConnections;
+	TArray< TObjectPtr<class UFGRailroadTrackConnectionComponent> > mObservedConnections;
 
 	/** The signal block this signal observers. */
 	TWeakPtr< FFGRailroadSignalBlock > mObservedBlock;
@@ -304,4 +302,12 @@ private:
 	/** The range to keep the factory in significance */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
 	float mSignificanceRange;
+
+	/** Sounds played on state changes for this signal. */
+	UPROPERTY( EditDefaultsOnly, Category = "Signal|Audio" )
+	TObjectPtr<UAkAudioEvent> mSoundOnBlockValidationError = nullptr;
+	UPROPERTY( EditDefaultsOnly, Category = "Signal|Audio" )
+	TObjectPtr<UAkAudioEvent> mSoundOnClearAspect = nullptr;
+	UPROPERTY( EditDefaultsOnly, Category = "Signal|Audio" )
+	TObjectPtr<UAkAudioEvent> mSoundOnStopAspect = nullptr;
 };

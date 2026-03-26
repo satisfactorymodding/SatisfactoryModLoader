@@ -84,7 +84,7 @@ protected:
 
 	/** What damage we should deal to whatever we hit. */
     UPROPERTY( EditDefaultsOnly, Instanced, Category= "Charge" )
-    TArray < UFGDamageType* > mDamageTypes;
+    TArray < TObjectPtr<UFGDamageType> > mDamageTypes;
 
 	/** How the turnrate should be affected by the distance to the target. */
 	UPROPERTY( EditDefaultsOnly, Category= "Charge" )
@@ -92,19 +92,19 @@ protected:
 
 	/** The montage to play before charging. */
 	UPROPERTY( EditDefaultsOnly, Category= "Charge|Animation" )
-	class UAnimMontage* mChargeStartMontage;
+	TObjectPtr<class UAnimMontage> mChargeStartMontage;
 	
 	/** The montage to play while charging. */
 	UPROPERTY( EditDefaultsOnly, Category= "Charge|Animation" )
-	class UAnimMontage* mChargeMontage;
+	TObjectPtr<class UAnimMontage> mChargeMontage;
 
 	/** The montage to play when the charge hits something. */
 	UPROPERTY( EditDefaultsOnly, Category= "Charge|Animation" )
-	class UAnimMontage* mChargeHitMontage;
+	TObjectPtr<class UAnimMontage> mChargeHitMontage;
 
 	/** Recently hit actors and the timestamp of when they were hit. */
 	UPROPERTY()
-	TMap< AActor*, float > mRecentlyHitActors;
+	TMap< TObjectPtr<AActor>, float > mRecentlyHitActors;
 
 private:
 	float mOldRotationRate;

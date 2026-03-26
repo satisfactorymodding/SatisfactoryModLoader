@@ -15,26 +15,12 @@ void UFGWheeledVehicleSimulation::ProcessMechanicalSimulation(float DeltaTime){ 
 void UFGWheeledVehicleMovementComponent::PreTickGT(float DeltaTime){ }
 void UFGWheeledVehicleMovementComponent::SetupVehicle(TUniquePtr<Chaos::FSimpleWheeledVehicle>& PVehicle){ }
 void UFGWheeledVehicleMovementComponent::CreateWheels(){ }
-void UFGWheeledVehicleMovementComponent::UpdateSignificance(bool isSignificant){ }
-void UFGWheeledVehicleMovementComponent::SetHasDriver(bool hasDriver, bool isLocalDriver){ }
-void UFGWheeledVehicleMovementComponent::HandleEngineSounds(const bool hasFuel){ }
-UParticleSystem* UFGWheeledVehicleMovementComponent::GetSurfaceParticleSystem(UPhysicalMaterial* PhysMat){ return nullptr; }
-void UFGWheeledVehicleMovementComponent::OnGearChangedImmediate_Implementation(int32 NewGear){ }
-void UFGWheeledVehicleMovementComponent::OnGearChangeBegin_Implementation(int32 NewGear){ }
-void UFGWheeledVehicleMovementComponent::OnGearChangeEnd_Implementation(int32 NewGear){ }
-void UFGWheeledVehicleMovementComponent::SetClientInputsOnDriverLeave(){ }
-void UFGWheeledVehicleMovementComponent::PlayStartupEngineAudio(){ }
-void UFGWheeledVehicleMovementComponent::PlayShutDownEngineAudio(const bool isOutOfFuel){ }
-void UFGWheeledVehicleMovementComponent::Server_PlayShutDownEngineAudio_Implementation(const bool isOutOfFuel){ }
-void UFGWheeledVehicleMovementComponent::Server_PlayStartupEngineAudio_Implementation(){ }
+void UFGWheeledVehicleMovementComponent::SetHasDriver(bool hasDriver){ }
+void UFGWheeledVehicleMovementComponent::ClearLocalVehicleInput(){ }
+void UFGWheeledVehicleMovementComponent::HardResetVehiclePlayerInputOnServer(){ }
+void UFGWheeledVehicleMovementComponent::PopulateVehicleVisualState(FFGVehicleVFXData& vehicleVisualState) const{ }
 void UFGWheeledVehicleMovementComponent::UpdateState(float DeltaTime){ }
 void UFGWheeledVehicleMovementComponent::ProcessSleeping(const FControlInputs& ControlInputs){ }
-void UFGWheeledVehicleMovementComponent::UpdateAudioPositions(UAkComponent* audioComp){ }
-float UFGWheeledVehicleMovementComponent::GetLargestTireLoadValue(){ return float(); }
-float UFGWheeledVehicleMovementComponent::GetLargestSlipMagnitude(){ return float(); }
-float UFGWheeledVehicleMovementComponent::GetLargestSkidMagnitude(){ return float(); }
-void UFGWheeledVehicleMovementComponent::ReCreateSoundComponents(){ }
-void UFGWheeledVehicleMovementComponent::DeleteSoundComponents(){ }
-void UFGWheeledVehicleMovementComponent::UpdateAirStatus(){ }
-void UFGWheeledVehicleMovementComponent::UpdateTireEffects(){ }
-void UFGWheeledVehicleMovementComponent::UpdateTireAudio(){ }
+void UFGWheeledVehicleMovementComponent::OnGearChangedImmediate_NonGameThread(int32 NewGear){ }
+void UFGWheeledVehicleMovementComponent::OnGearChangeBegin_NonGameThread(int32 NewGear){ }
+void UFGWheeledVehicleMovementComponent::OnGearChangeEnd_NonGameThread(int32 NewGear){ }

@@ -3,12 +3,14 @@
 #include "FactoryGameModule.h"
 
 #include "FGLocalizationSettings.h"
+#include "HAL/FileManager.h"
 #include "Internationalization/StringTableRegistry.h"
+#include "Misc/Paths.h"
 
 void FFactoryGameModule::StartupModule() {
 	const UFGLocalizationSettings* LocalizationSettings = UFGLocalizationSettings::Get();
 	IFileManager::Get().IterateDirectoryStatRecursively(
-		*(FPaths::ProjectContentDir() / LocalizationSettings->StringTablesFolder.Path),
+		*(FPaths::ProjectContentDir() / TEXT("Localization/StringTables")),
 		[](const TCHAR* FileName, const FFileStatData& FileStatData) -> bool {
 			if (FileStatData.bIsDirectory) {
 				return true;

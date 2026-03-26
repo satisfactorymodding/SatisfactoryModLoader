@@ -3,7 +3,7 @@
 #include "Resources/FGResourceNodeFrackingCore.h"
 
 AFGResourceNodeFrackingCore::AFGResourceNodeFrackingCore() : Super() {
-
+	this->mResourceNodeType = EResourceNodeType::FrackingCore;
 }
 void AFGResourceNodeFrackingCore::BeginPlay(){ Super::BeginPlay(); }
 void AFGResourceNodeFrackingCore::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
@@ -11,5 +11,6 @@ void AFGResourceNodeFrackingCore::RegisterSatellite(TWeakObjectPtr<  AFGResource
 void AFGResourceNodeFrackingCore::Factory_SetSatellitesActive(bool isActive){ }
 void AFGResourceNodeFrackingCore::GetSatellites(TArray<  AFGResourceNodeFrackingSatellite* >& out_Satellites) const{ }
 int32 AFGResourceNodeFrackingCore::GetNumOccupiedSatellites(int32& numSatellites) const{ return int32(); }
+UParticleSystem* AFGResourceNodeFrackingCore::GetHighlightParticleSystemTemplate_Implementation() const{ return Super::GetHighlightParticleSystemTemplate_Implementation(); }
 bool AFGResourceNodeFrackingCore::IsAllSatellitesOccupied() const{ return bool(); }
 void AFGResourceNodeFrackingCore::OnSatelliteIsOccupiedChanged(const AFGResourceNodeFrackingSatellite* satellite){ }

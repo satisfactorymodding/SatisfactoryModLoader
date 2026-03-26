@@ -7,6 +7,7 @@
 #include "FGSaveInterface.h"
 #include "FGActorRepresentationInterface.h"
 #include "LocalUserInfo.h"
+#include "Online/PlayerInfoCache.h"
 #include "FGTrainStationIdentifier.generated.h"
 
 /**
@@ -74,10 +75,8 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION()
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
-//<FL>[KonradA]
 	UFUNCTION()
-	virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& lastEditedBy ) { SetLastEditedBy( lastEditedBy ); }
-//</FL>
+	virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& lastEditedByHandle ) override { mLastEditedBy = lastEditedByHandle; }
 	// End IFGActorRepresentationInterface
 
 	/** Get the station actor, only valid on server. */
@@ -94,10 +93,10 @@ public:
 
 	//<FL>[KonradA]
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|StationIdentifier" )
-	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return mLastEditedBy; }; // This is also part of the IFGActorRepresentation interface
+	virtual FPlayerInfoHandle GetLastEditedBy() const override { return mLastEditedBy; }; // This is also part of the IFGActorRepresentation interface
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|StationIdentifier" )
-	void SetLastEditedBy( TArray< FLocalUserNetIdBundle > lastEditedBy);
+	void SetLastEditedBy( const FPlayerInfoHandle& lastEditedBy);
 	//</FL>
 
 	/** Get the track graph this station is located in. */
@@ -109,11 +108,15 @@ private:
 	void OnRep_StationName();
 
 	UFUNCTION()
+	void OnRep_LastEditedBy();
+
+	UFUNCTION()
 	void OnRep_Station();
+
 public:
 	/** The station this info represents. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_Station )
-	class AFGBuildableRailroadStation* mStation;
+	TObjectPtr<class AFGBuildableRailroadStation> mStation;
 
 	/** The track this station is on. */
 	UPROPERTY( Replicated )
@@ -124,9 +127,9 @@ public:
 	FText mStationName;
 	
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 //<FL>[KonradA]
-	UPROPERTY(SaveGame, Replicated)
-	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_LastEditedBy)
+	FPlayerInfoHandle mLastEditedBy;
 //</FL>
 };

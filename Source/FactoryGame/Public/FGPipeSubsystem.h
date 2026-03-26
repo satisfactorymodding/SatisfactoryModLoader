@@ -184,11 +184,11 @@ private:
 
 	/** Map with all circuits and the circuit ID as the key. */
 	UPROPERTY()
-	TMap< int32, class AFGPipeNetwork* > mNetworks;
+	TMap< int32, TObjectPtr<class AFGPipeNetwork> > mNetworks;
 
 	/** List of networks to show debug for, if empty all networks are displayed. */
 	UPROPERTY()
-	TArray< class AFGPipeNetwork* > mDisplayDebugNetworkList;
+	TArray< TObjectPtr<class AFGPipeNetwork> > mDisplayDebugNetworkList;
 
 	/** Data for probed pipes. */
 	TArray< ProbeData > mProbeData;

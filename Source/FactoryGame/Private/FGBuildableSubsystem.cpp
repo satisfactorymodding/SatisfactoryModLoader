@@ -113,6 +113,7 @@ int32 AFGBuildableSubsystem::GetBuildableCount(TSubclassOf<AFGBuildable> buildab
 void AFGBuildableSubsystem::GetTypedBuildable(TSubclassOf<  AFGBuildable > inClass, TArray<  AFGBuildable* >& out_buildables) const{ }
 void AFGBuildableSubsystem::GetOcclusionAffectingBuildebles(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range, bool bParallel) const{ }
 void AFGBuildableSubsystem::GetNearestBuildables(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range) const{ }
+void AFGBuildableSubsystem::GetCollidingBuildablesInBoundingBox(TArray<AFGBuildable*>& out_buildables, const FBox& boundingBox) const{ }
 void AFGBuildableSubsystem::PlayTimelapseEffect(int32 bucketId, bool playBuildEffect){ }
 void AFGBuildableSubsystem::SetTimelapseBucketHidden(int32 bucketId, bool hidden){ }
 const FFactoryCustomizationColorSlot& AFGBuildableSubsystem::GetColorSlot_Data(uint8 index) const{ return *(new FFactoryCustomizationColorSlot); }

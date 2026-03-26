@@ -11,6 +11,7 @@
 #include "ItemAmount.h"
 #include "FGBuildGunBuild.generated.h"
 
+struct FVehiclePathVisualizationHandle;
 /** Used to define reasons for failing to perform a nudge. */
 UENUM( BlueprintType )
 enum class ENudgeFailReason : uint8
@@ -48,10 +49,10 @@ struct FConnectionRepresentation
 	}
 
 	UPROPERTY()
-	class UFGConnectionComponent* mConnectionComponent;
+	TObjectPtr<class UFGConnectionComponent> mConnectionComponent;
 
 	UPROPERTY()
-	class UStaticMeshComponent* mConnectionRepresentation;
+	TObjectPtr<class UStaticMeshComponent> mConnectionRepresentation;
 };
 
 USTRUCT()
@@ -74,7 +75,7 @@ struct FAttachmentPointRepresentation
 	const struct FFGAttachmentPoint* mAttachmentPoint;
 
 	UPROPERTY()
-	class UStaticMeshComponent* mAttachmentRepresentation;
+	TObjectPtr<class UStaticMeshComponent> mAttachmentRepresentation;
 };
 
 USTRUCT()
@@ -104,15 +105,15 @@ struct FActorClearanceData
 
 	/** The actor the clearance detector overlapped. */
 	UPROPERTY()
-	class AActor* Actor;
+	TObjectPtr<class AActor> Actor;
 
 	/** Snapping box visualization. */
 	UPROPERTY()
-	class UStaticMeshComponent* SnappingBoxMeshVisualization;
+	TObjectPtr<class UStaticMeshComponent> SnappingBoxMeshVisualization;
 
 	/** Blueprint proxy mesh representation. */
 	UPROPERTY()
-	class UStaticMeshComponent* BlueprintProxyMesh;
+	TObjectPtr<class UStaticMeshComponent> BlueprintProxyMesh;
 
 	/** Connection representations. */
 	UPROPERTY()
@@ -150,8 +151,7 @@ public:
 	virtual void SecondaryFire_Implementation() override;
 	virtual void Scroll_Implementation( int32 delta ) override;
 	virtual void BuildSampleRelease_Implementation() override;
-	virtual bool IsValidBuildingSample( class AFGBuildable* buildable ) const override;
-	virtual bool IsValidVehicleSample( class AFGVehicle* vehicle ) const override;
+	virtual bool IsValidActorSample(AActor* actor) const override;
 	virtual void OnRecipeSampled_Implementation( TSubclassOf<class UFGRecipe> recipe ) override;
 	virtual void OnBuildGunModeChanged_Implementation( TSubclassOf< UFGBuildGunModeDescriptor > newMode ) override;
 	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGBuildGunModeDescriptor > >& out_buildModes) const override;
@@ -160,8 +160,7 @@ public:
 	virtual void BindInputActions( class UFGEnhancedInputComponent* inputComponent ) override;
 	virtual bool CanSampleBuildables() const override;
 	virtual bool OnShortcutPressed(int32 shortcutIndex) override;
-	virtual void OnBuildableSampled_Implementation( AFGBuildable* buildable ) override;
-	virtual void OnVehicleSampled_Implementation( AFGVehicle* vehicle ) override;
+	virtual void OnActorSampled_Implementation(AActor* actor) override;
 	virtual void OnLightweightBuildableSampled_Implementation( FLightweightBuildableInstanceRef& buildableInstance ) override;
 	// End UFGBuildGunState
 
@@ -205,9 +204,6 @@ public:
 	UFUNCTION( BlueprintPure, Category = "BuildGunState|Build" )
 	class AFGHologram* GetHologram() const;
 
-	/** Spawns a child hologram */
-	AFGHologram* SpawnChildHologram( AFGHologram* parent, TSubclassOf< class UFGRecipe > recipe );
-
 	/** RPC to construct from hologram data */
 	UFUNCTION( Server, Reliable )
 	void Server_ConstructHologram( FNetConstructionID clientNetConstructID, FConstructHologramMessage data );
@@ -242,6 +238,10 @@ public:
 	/** additional Mapping Context for the hologram lock mode. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Hologram")
 	TObjectPtr< UInputMappingContext > mMappingContextHologram;
+
+	/** True if vehicle path visualization should be unconditionally shown while the build mode is active. False if it should only be shown when vehicle path-aware hologram is open */
+	UPROPERTY( EditDefaultsOnly, Category = "BuildGunState" )
+	bool mShowVehiclePathsInBuildMode{false};
 
 	UPROPERTY( BlueprintAssignable, Category = "Hologram", DisplayName = "OnHologramLockStateChanged" )
 	FHologramLockStateChanged OnHologramLockStateChangedDelegate;
@@ -332,7 +332,7 @@ private:
 	void SpawnHologram();
 
 	/** Remove the specified hologram. */
-	void RemoveHologram( class AFGHologram*& hologram, bool cleanupClearanceDetection = true );
+	void RemoveHologram( TObjectPtr<class AFGHologram>& hologram, bool cleanupClearanceDetection = true );
 
 	/** Remove the clearance from our current hologram */
 	void CleanupHologramClearanceDetection();
@@ -425,16 +425,16 @@ private:
 	//@TODO:[DavalliusA:Wed/20-11-2019] should these not be marked as transient?
 	/** The hologram to build. */
 	UPROPERTY( /*ReplicatedUsing=OnRep_Hologram */ )
-	class AFGHologram* mHologram;
+	TObjectPtr<class AFGHologram> mHologram;
 
 	//@TODO:[DavalliusA:Wed/20-11-2019] should these not be marked as transient?
 	/** The actor to replace (dismantle) when upgrading. */
 	UPROPERTY()
-	class AActor* mUpgradedActor;
+	TObjectPtr<class AActor> mUpgradedActor;
 
 	// Instance Converter Instigator
 	UPROPERTY()
-	AActor* mInstanceConverterInstigator;
+	TObjectPtr<AActor> mInstanceConverterInstigator;
 
 	/** Moves the clearance box collision to where we are aiming */
 	void UpdateClearanceData();
@@ -447,16 +447,16 @@ private:
 	//@todo G2 2019-04-10 An improvement here would be to make this a component that can keep track of detected
 	//                    overlaps so the state does not contain this easily self contained logic.
 	UPROPERTY( Transient )
-	TArray< class UBoxComponent* > mClearanceDetectors;
+	TArray< TObjectPtr<class UBoxComponent> > mClearanceDetectors;
 
 	/** All building locations spawned during this frame. Will be cleared at the start of every new frame to avoid spawning multiple buildings at the same location. */
 	TArray<FVector> mConstructionLocationDuringFrame;
 
 	UPROPERTY()
-	UFGBlueprintDescriptor* mActiveBlueprintDescriptor;
+	TObjectPtr<UFGBlueprintDescriptor> mActiveBlueprintDescriptor;
 
 	UPROPERTY()
-	UFGBlueprintDescriptor* mLastBlueprintDescriptor;
+	TObjectPtr<UFGBlueprintDescriptor> mLastBlueprintDescriptor;
 
 	/** Whenever we're in a hotbar sample mode, where clicking a shortcut key would overwrite the shortcut at that index instead */
 	bool mHotbarSampleMode;
@@ -470,5 +470,8 @@ private:
 
 	/** Clipboard settings copied from sampling a buildable. */
 	UPROPERTY()
-	class UFGFactoryClipboardSettings* mSampledClipboardSettings;
+	TObjectPtr<class UFGFactoryClipboardSettings> mSampledClipboardSettings;
+	
+	/** Handle for the vehicle path visualization when in build mode */
+	TSharedPtr<FVehiclePathVisualizationHandle> mVehiclePathVisualizationHandle;
 };

@@ -16,6 +16,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Tickable.h"
 #include "UObject/NoExportTypes.h"
 #include "FGLocalPersistenceStore.generated.h"
 
@@ -34,7 +35,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TArray< float > NumberData;
 	UPROPERTY(BlueprintReadWrite)
-	TArray< UObject* > ObjectData;
+	TArray< TObjectPtr<UObject> > ObjectData;
 
 protected:
 	double mTimeAdded;

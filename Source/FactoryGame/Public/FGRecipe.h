@@ -8,6 +8,7 @@
 #include "Misc/DataValidation.h"
 #include "FGRecipe.generated.h"
 
+class UFGItemCategory;
 // A simple struct to expose a recipe amount pair to blueprints
 USTRUCT( BlueprintType )
 struct FRecipeAmountPair
@@ -55,8 +56,8 @@ public:
 	static FText GetRecipeName( TSubclassOf< UFGRecipe > inClass );
 
 	/** Get the ingredients for this recipe. */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
-	static TArray< FItemAmount > GetIngredients( TSubclassOf< UFGRecipe > inClass );
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe",  meta = ( WorldContext = "worldContext" ) )
+	static TArray< FItemAmount > GetIngredients( const UObject* worldContext, TSubclassOf< UFGRecipe > inClass );
 
 	/** Get the products for this recipe. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
@@ -87,7 +88,7 @@ public:
     static bool HasAnyProducers( TSubclassOf< UFGRecipe > inClass );
 
 	/** Can the given player afford the recipe. */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe")
 	static bool IsRecipeAffordable( class AFGCharacterPlayer* player, TSubclassOf< class UFGRecipe > recipe );
 
 	/** Sort an array dependent on their name. */
@@ -112,16 +113,26 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
     static TArray< EEvents > GetRelevantEvents( TSubclassOf< UFGRecipe > inClass );
 
+	/** Returns true if the recipe has a given gameplay tag */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
+	static bool HasGameplayTag( TSubclassOf<UFGRecipe> inClass, const FGameplayTag& inGameplayTag );
+	
+	/** Returns all gameplay tags for the given recipe */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
+	static FGameplayTagContainer GetAllGameplayTags( TSubclassOf<UFGRecipe> inClass );
+
 	/** Native accessors. */
 	virtual FText GetDisplayName() const;
 	void GetProducedIn( TArray< TSubclassOf< UObject > >& out_producedIn ) const;
 	FORCEINLINE const TArray<FItemAmount>& GetProducts() const { return mProduct; }
-	FORCEINLINE const TArray<FItemAmount>& GetIngredients() const { return mIngredients; }
+	FORCEINLINE const TArray<FItemAmount>& GetIngredients() const{ return mIngredients; }
+	TArray<FItemAmount> GetIngredientsWithPartsCostMultiplier(const UObject* worldContext) const;
 	FORCEINLINE float GetManufacturingDuration() const { return mManufactoringDuration; }
 	FORCEINLINE float GetManualManufacturingDuration() const { return mManufactoringDuration * mManualManufacturingMultiplier; }
 
 	float GetPowerConsumptionConstant() const { return mVariablePowerConsumptionConstant; }
 	float GetPowerConsumptionFactor() const { return mVariablePowerConsumptionFactor; }
+	const FGameplayTagContainer& GetTagContainer() const { return mGameplayTags; }
 	
 	static bool IsProducedIn( TSubclassOf< class UFGRecipe > inClass, TSubclassOf< UObject > inProducer );
 
@@ -176,6 +187,10 @@ protected:
 	 */
 	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
 	TSubclassOf< class UFGCustomizationRecipe > mMaterialCustomizationRecipe;
+
+	/** Gameplay tags associated with this recipe. Can be used to provide additional metadata to the recipe producer */
+	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
+	FGameplayTagContainer mGameplayTags;
 
 	/** The events this recipe are present in */
 	UPROPERTY( EditDefaultsOnly, Category = "Events" )

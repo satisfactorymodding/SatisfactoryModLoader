@@ -25,7 +25,7 @@ struct FACTORYGAME_API FDebrisMesh
 
 	/** Mesh to spawn. */
 	UPROPERTY( EditDefaultsOnly, Category = "Mesh" )
-	class UStaticMesh* Mesh;
+	TObjectPtr<class UStaticMesh> Mesh;
 
 	/** How many to spawn, note that the upper limit is guaranteed while the lower limit is not. */
 	UPROPERTY( EditDefaultsOnly, Category = "Mesh" )
@@ -75,7 +75,7 @@ struct FACTORYGAME_API FSimulatedMeshTransform
 	GENERATED_BODY()
 
 	UPROPERTY()
-	class UStaticMesh* StaticMesh;
+	TObjectPtr<class UStaticMesh> StaticMesh;
 
 	UPROPERTY()
 	FTransform MeshTransform;
@@ -174,11 +174,11 @@ private:
 	
 	/** Component used for the visualization of item spawn locations */
 	UPROPERTY( EditDefaultsOnly, Category = "Visualization" )
-	UInstancedStaticMeshComponent* mItemMeshVisualizationComponent;
+	TObjectPtr<UInstancedStaticMeshComponent> mItemMeshVisualizationComponent;
 
 	/** Debug component for debug visualization */
 	UPROPERTY( EditDefaultsOnly, Category = "Visualization" )
-	class UFGCrashSiteDebrisDebugComponent* mDebugComponent;
+	TObjectPtr<class UFGCrashSiteDebrisDebugComponent> mDebugComponent;
 	
 	/** Description of which meshes to spawn. */
 	UPROPERTY( EditDefaultsOnly, Category = "Simulation" )
@@ -211,15 +211,15 @@ private:
 
 	/** Spawned FGCrashSiteDebris actors for the currently running simulation */
 	UPROPERTY( VisibleInstanceOnly, Category = "Simulation", Transient, AdvancedDisplay )
-	TArray< AFGCrashSiteDebrisActor*> mSimulatedDebrisCustomActors;
+	TArray< TObjectPtr<AFGCrashSiteDebrisActor>> mSimulatedDebrisCustomActors;
 
 	/** Debris meshes that are simulated but will be attached to this actor once the simulation is done */
 	UPROPERTY( VisibleInstanceOnly, Category = "Simulation", Transient, AdvancedDisplay )
-	TArray<AStaticMeshActor*> mSimulatedDebrisMeshes;
+	TArray<TObjectPtr<AStaticMeshActor>> mSimulatedDebrisMeshes;
 
 	/** Item boxes marking the item spawn locations for the current simulation */
 	UPROPERTY( VisibleInstanceOnly, Category = "Simulation", Transient, AdvancedDisplay )
-	TArray<AFGCrashSiteDebrisItemBox*> mSimulateItemBoxActors;
+	TArray<TObjectPtr<AFGCrashSiteDebrisItemBox>> mSimulateItemBoxActors;
 
 	/** Transforms saved during physics simulation. */
 	UPROPERTY( VisibleInstanceOnly, Category = "Saved Simulation" )
@@ -262,11 +262,11 @@ public:
 #endif
 private:
 	UPROPERTY( EditAnywhere, Category = "Item Box" )
-	class UBoxComponent* mBoxComponent;
+	TObjectPtr<class UBoxComponent> mBoxComponent;
 
 #if WITH_EDITORONLY_DATA
 	UPROPERTY( EditAnywhere, Category = "Item Box" )
-	class UStaticMeshComponent* mVisualizationComponent;
+	TObjectPtr<class UStaticMeshComponent> mVisualizationComponent;
 #endif
 };
 
@@ -277,14 +277,14 @@ class FACTORYGAME_API UFGCrashSiteDebrisDebugComponent : public UActorComponent
 public:
 #if WITH_EDITORONLY_DATA
 	UPROPERTY( EditAnywhere, Category = "Crash Site Debug Component" )
-	class UTexture2D* mCrashSiteDebrisIcon;
+	TObjectPtr<class UTexture2D> mCrashSiteDebrisIcon;
 	
 	/** Sprite to draw when the crash site is not linked to this debris actor */
 	UPROPERTY( EditAnywhere, Category = "Crash Site Debug Component" )
-	class UTexture2D* mCrashSiteNotLinkedWarning;
+	TObjectPtr<class UTexture2D> mCrashSiteNotLinkedWarning;
 
 	/** Mesh to use for item box visualization */
 	UPROPERTY( EditAnywhere, Category = "Crash Site Debug Component" )
-	class UStaticMesh* mItemBoxVisualizationMesh;
+	TObjectPtr<class UStaticMesh> mItemBoxVisualizationMesh;
 #endif
 };

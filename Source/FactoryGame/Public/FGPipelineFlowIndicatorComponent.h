@@ -36,5 +36,5 @@ protected:
 private:
 	/** Pipeline we indicate status for. */
 	UPROPERTY()
-	class AFGBuildablePipeline* mPipeline;
+	TObjectPtr<class AFGBuildablePipeline> mPipeline;
 };

@@ -46,17 +46,18 @@ void UFGDroneMovementComponent::TickDroneMovement(float deltaSeconds, FVector& o
 float UFGDroneMovementComponent::GetMaxSpeed() const{ return float(); }
 void UFGDroneMovementComponent::MoveToLocation(const FVector& Location, EDroneFlyingMode flyingMode, const FVector& directionToFace , EDroneDirectionFacingIstruction facingDirectionInstruction){ }
 void UFGDroneMovementComponent::FollowPath(const TArray< FVector >& Path, EDroneFlyingMode flyingMode, bool brakeWhenApproaching){ }
+bool UFGDroneMovementComponent::IsIdle() const{ return bool(); }
+void UFGDroneMovementComponent::OnRegisteredToSubsystem(){ }
+void UFGDroneMovementComponent::OnUnregisteredFromSubsystem(){ }
 #if !UE_BUILD_SHIPPING
 void UFGDroneMovementComponent::ShowDebug(){  }
 #endif
-void UFGDroneMovementComponent::OnRep_MovementInstruction(EDroneMovementInstruction previousInstruction){ }
 void UFGDroneMovementComponent::OnRep_FlyingMode(){ }
 void UFGDroneMovementComponent::SetFlyingMode(EDroneFlyingMode newFlyingMode){ }
 void UFGDroneMovementComponent::SetMovementInstruction(EDroneMovementInstruction movementInstruction){ }
 void UFGDroneMovementComponent::CancelCurrentMovement(){ }
-void UFGDroneMovementComponent::TickMovement_MoveTo(float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation){ }
-void UFGDroneMovementComponent::TickMovement_FollowPath(float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation){ }
-void UFGDroneMovementComponent::TickMovement_None(float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation){ }
+bool UFGDroneMovementComponent::TickMovement_MoveTo(float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation){ return bool(); }
+bool UFGDroneMovementComponent::TickMovement_FollowPath(float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation){ return bool(); }
+bool UFGDroneMovementComponent::TickMovement_None(float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation){ return bool(); }
 bool UFGDroneMovementComponent::MoveTowardsLocation(const FVector& location, float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation, bool brakeWhenApproaching){ return bool(); }
 bool UFGDroneMovementComponent::HasAuthority() const{ return bool(); }
-void UFGDroneMovementComponent::SetRegistered(bool registered, bool updateTransformWhenUnregistered){ }

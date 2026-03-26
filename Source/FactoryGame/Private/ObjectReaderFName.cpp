@@ -2,7 +2,9 @@
 
 #include "ObjectReaderFName.h"
 
-FObjectReaderFName::FObjectReaderFName(UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion,  UWorld* world, FPackageFileVersion version, bool migrateObjectRefsToPersistent) : FObjectReader(Obj, InBytes) { }
+#include "FWPSaveDataMigrationContext.h"
+
+FObjectReaderFName::FObjectReaderFName(UWorld* World, UObject* Obj, const FArchive& InnerArchive, const FObjectSaveData& ObjectSaveData) : FObjectReader(Obj, ObjectSaveData.Data) { }
 FArchive& FObjectReaderFName::operator<<( UObject*& Res){ return *(new FArchive); }
 FArchive& FObjectReaderFName::operator<<(FObjectPtr& Res){ return *(new FArchive); }
 FArchive& FObjectReaderFName::operator<<( FName& N){ return *(new FArchive); }

@@ -128,3 +128,5 @@ void UFGSchematic::SortByMenuPriority(TArray< TSubclassOf< UFGSchematic > >& sch
 TArray< EEvents > UFGSchematic::GetRelevantEvents(TSubclassOf< UFGSchematic > inClass){ return TArray<EEvents>(); }
 bool UFGSchematic::IsIncludedInBuild(TSubclassOf< UFGSchematic > inClass){ return bool(); }
 FGameplayTag UFGSchematic::GetSchematicUnlockTag(TSubclassOf< UFGSchematic > inClass){ return FGameplayTag(); }
+bool UFGSchematic::HasGameplayTag(TSubclassOf<UFGSchematic> inClass, const FGameplayTag& inGameplayTag){ return bool(); }
+FGameplayTagContainer UFGSchematic::GetAllGameplayTags(TSubclassOf<UFGSchematic> inClass){ return FGameplayTagContainer(); }

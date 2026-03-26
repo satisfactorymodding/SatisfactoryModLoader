@@ -4,32 +4,59 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/SceneComponent.h"
 
-FSimpleBuildingInfo FSimpleBuildingInfo::DefaultSquareFoundation(AFGBuildable* Source){ return FSimpleBuildingInfo(); }
-FSimpleBuildingInfo::FSimpleBuildingInfo(AFGBuildable* Source){ }
-AFGRainOcclusionActor::AFGRainOcclusionActor() : Super() {
-	this->mBoxShapedOccluder = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Box Shapes"));
-	this->mBoxShapedOccluder->SetMobility(EComponentMobility::Static);
-	this->mRampShapeOccluder = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Ramp Shapes"));
-	this->mRampShapeOccluder->SetMobility(EComponentMobility::Static);
-	this->mTriangleShapeOccluder = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Triangle Shapes"));
-	this->mTriangleShapeOccluder->SetMobility(EComponentMobility::Static);
-	this->mNumEntriesToHandlePerFrame = 200;
-	this->bIsActive = false;
+FBoxCenterAndExtent FRainOcclusionShapeDataOctreeSemantics::GetBoundingBox(const FRainOcclusionShapeData* Element){ return FBoxCenterAndExtent(); }
+bool FRainOcclusionShapeDataOctreeSemantics::AreElementsEqual(const FRainOcclusionShapeData* A, const FRainOcclusionShapeData* B){ return false; }
+void FRainOcclusionShapeDataOctreeSemantics::SetElementId(FOctree& Octree, const FRainOcclusionShapeData* Element, FOctreeElementId2 OctreeElementID){ }
+void URainOcclusionWorldSubsystem::Initialize(FSubsystemCollectionBase& Collection){ Super::Initialize(Collection); }
+void URainOcclusionWorldSubsystem::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
+bool URainOcclusionWorldSubsystem::DoesSupportWorldType(const EWorldType::Type WorldType) const{ return Super::DoesSupportWorldType(WorldType); }
+void URainOcclusionWorldSubsystem::AddShapeFromBuildable(const AFGBuildable* Buildable, const FSimpleOcclusionData& InstanceData, FRainHashKey Hash){ }
+void URainOcclusionWorldSubsystem::AddShapeFromClass(const UObject* WorldContext, const AFGBuildable* BuildableCDO, const FSimpleOcclusionData& InstanceData, FRainHashKey Hash){ }
+void URainOcclusionWorldSubsystem::RemoveShape(const UObject* WorldContext, const AFGBuildable* BuildableCDO, FRainHashKey Hash){ }
+UInstancedStaticMeshComponent* URainOcclusionWorldSubsystem::CreateOrGetShapeComponent(UMaterialInterface* InMaterial){ return nullptr; }
+UInstancedStaticMeshComponent* URainOcclusionWorldSubsystem::CreateOrGetMeshShapeComponent(UStaticMesh* Mesh){ return nullptr; }
+void URainOcclusionWorldSubsystem::AddBoxSprite(const AFGBuildable* Buildable, const FTransform& ActorTransform, FRainHashKey Hash){ }
+void URainOcclusionWorldSubsystem::RemoveBoxSprite(FRainHashKey Hash){ }
+void URainOcclusionWorldSubsystem::AddMeshShape(const AFGBuildable* Buildable, const FSimpleOcclusionData& InstanceData, FRainHashKey Hash){ }
+void URainOcclusionWorldSubsystem::RemoveMeshShape(FRainHashKey Hash){ }
+void URainOcclusionWorldSubsystem::ProcessAddsAndRemovals(){ }
+void URainOcclusionWorldSubsystem::EnsureWTTaskComplete() const{ }
+void URainOcclusionWorldSubsystem::DrawCells(FVector PC) const{ }
+AFGStaticWorldRainOcclusionManager::AFGStaticWorldRainOcclusionManager() : Super() {
+	this->mCurrentOcclusionTexture = nullptr;
+	this->mDisabledTileTextureFallBack = nullptr;
+	this->CellSize = 102400.0;
+	this->OverCapture = 10000.0;
+	this->TextureSize = 512;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	this->RootComponent->SetMobility(EComponentMobility::Static);
-	this->mBoxShapedOccluder->SetupAttachment(RootComponent);
-	this->mRampShapeOccluder->SetupAttachment(RootComponent);
-	this->mTriangleShapeOccluder->SetupAttachment(RootComponent);
 }
-void AFGRainOcclusionActor::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
-void AFGRainOcclusionActor::BeginPlay(){ Super::BeginPlay(); }
-void AFGRainOcclusionActor::ForceUpdateOcclusionShapes(const FVector& Location, const float& Range){ }
-void AFGRainOcclusionActor::OnTraceCompleted(const FTraceHandle& Handle, FOverlapDatum& Data){ }
-void AFGRainOcclusionActor::AddShape(AFGBuildable* Buildable){ }
-void AFGRainOcclusionActor::RemoveShape(AFGBuildable* Buildable){ }
-void AFGRainOcclusionActor::SetupStaticMeshComponentFlags(UStaticMeshComponent* Component){ }
-void AFGRainOcclusionActor::ResolveTracedEntries(){ }
-void AFGRainOcclusionActor::SetUpdateRainOccluders(bool bActive){ }
-UInstancedStaticMeshComponent* AFGRainOcclusionActor::SetupDefaultOccluderMeshComponent(FName Name){ return nullptr; }
-FTransform AFGRainOcclusionActor::GenerateLocation(const FSimpleComponentInfo& componentInfo, const EFGRainOcclusionShape& shape){ return FTransform(); }
-void FFGBuildingGatheringWorker::DoWork(){ }
+void AFGStaticWorldRainOcclusionManager::BeginPlay(){ Super::BeginPlay(); }
+void AFGStaticWorldRainOcclusionManager::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
+UTexture2D* AFGStaticWorldRainOcclusionManager::GetOcclusionDataForWorldLocation(FVector WorldPosition, FVector& GridCellWPLocation, FIntVector2& XY) const{ return nullptr; }
+#if WITH_EDITOR
+void AFGStaticWorldRainOcclusionManager::CaptureWorld(){ }
+void AFGStaticWorldRainOcclusionManager::UpdateDisabledCells(){ }
+void AFGStaticWorldRainOcclusionManager::CaptureCell(FIntVector2 Location, FVector LocationWS){ }
+void AFGStaticWorldRainOcclusionManager::MoveCameraToLocation(FIntVector2 CellLocation, FVector LocationWS){ }
+void AFGStaticWorldRainOcclusionManager::SetupIgnoreActors(){ }
+void AFGStaticWorldRainOcclusionManager::DrawCells(){ }
+#if WITH_EDITORONLY_DATA
+void AFGStaticWorldRainOcclusionManager::AddRemoveFromIgnoreList(int32 X, int32 Y){ }
+#endif
+#endif
+AFGRainOcclusionActor::AFGRainOcclusionActor() : Super() {
+
+}
+AFGRainActor::AFGRainActor() : Super() {
+	this->mRainComponent = nullptr;
+	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	this->RootComponent->SetMobility(EComponentMobility::Movable);
+}

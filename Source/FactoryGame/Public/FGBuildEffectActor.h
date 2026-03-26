@@ -42,7 +42,7 @@ class FACTORYGAME_API UFGBuildEffectMaterialSwapAssetData : public UAssetUserDat
 
 public:
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* mBuildEffect;
+	TObjectPtr<UMaterialInterface> mBuildEffect;
 };
 
 UCLASS()
@@ -163,16 +163,16 @@ public:
 	
 protected:
 	UPROPERTY(EditDefaultsOnly,Category="Materials")
-	UMaterialInterface* mDecalMaterial;
+	TObjectPtr<UMaterialInterface> mDecalMaterial;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Materials")
-	UMaterialInterface* mDecalBuildEffectMaterial;
+	TObjectPtr<UMaterialInterface> mDecalBuildEffectMaterial;
 
 	UPROPERTY(EditDefaultsOnly,Category="Materials")
-	UMaterialInterface* mMaskedColorDecalMaterial;
+	TObjectPtr<UMaterialInterface> mMaskedColorDecalMaterial;
 
 	UPROPERTY(EditDefaultsOnly,Category="Materials")
-	UMaterialInterface* mMaskedColorDecalEffectMaterial;
+	TObjectPtr<UMaterialInterface> mMaskedColorDecalEffectMaterial;
 
 	UPROPERTY(EditDefaultsOnly,Category="Materials")
 	TObjectPtr<UMaterialInterface> mBuildEffectFallback;
@@ -217,7 +217,7 @@ protected:
 	float mThumbSoundPlayTime = 1.f;
 	
 	UPROPERTY(EditDefaultsOnly)
-	TArray<UClass*> mSplineClasses;
+	TArray<TObjectPtr<UClass>> mSplineClasses;
 
 	/* Cached bounds of all meshes in the build effect actor. */
     UPROPERTY(BlueprintReadOnly)
@@ -228,7 +228,7 @@ protected:
 
 	/*Array of spline ordered by connectivity.*/
 	UPROPERTY()
-	TArray<class USplineComponent*> mOrganizedSplines;
+	TArray<TObjectPtr<class USplineComponent>> mOrganizedSplines;
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> mSlicePlane;
@@ -248,15 +248,15 @@ private:
 	
 	/* all default mesh components made for this build actor. */
 	UPROPERTY()
-	TArray<UMeshComponent*> mMeshComponents;
+	TArray<TObjectPtr<UMeshComponent>> mMeshComponents;
 
 	/* Meshes that are displayed used to determine zoop dir.*/
 	UPROPERTY()
-	TArray<UMeshComponent*> mMainMeshes;
+	TArray<TObjectPtr<UMeshComponent>> mMainMeshes;
 
 	/* all spline mesh components made for this build actor. */
 	UPROPERTY()
-	TArray<UMeshComponent*> mSplineBuildableComponents;
+	TArray<TObjectPtr<UMeshComponent>> mSplineBuildableComponents;
 	
 	/* Total cost of the buildables, used to determine the throw queue.*/
 	UPROPERTY(  )

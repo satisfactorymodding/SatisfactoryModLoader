@@ -15,6 +15,7 @@
 #include "Security/FGClientCertificateManager.h"
 #include "FGServerObject.generated.h"
 
+enum class EFGClientAPIErrorPopupSuppressLevel : uint8;
 enum class EServerMessage : uint8;
 class FFGRequestPayload;
 class IFGOptionInterface;
@@ -279,7 +280,7 @@ public:
 	bool DiscardServerCertificate();
 
 	/** Called by the Server API in case an error has been received */
-	void OnServerAPIError( const FFGServerErrorResponse& ErrorResponse );
+	void OnServerAPIError( const FFGServerErrorResponse& ErrorResponse, EFGClientAPIErrorPopupSuppressLevel PopupSuppressLevel );
 
 	/** Displays a server message to the user if the UI is open, prints it to the log file instead if not */
 	void ShowServerMessage( EServerMessage ServerMessage ) const;
@@ -353,7 +354,7 @@ protected:
 	void OnAdvancedGameSettingsUpdated( const FFGServerErrorResponse& ErrorResponse, const TMap<FString, FString>& NewAdvancedGameSettings, bool bCreativeModeEnabled );
 
 	/** Called when the token verification has concluded to determine the future flow of the authentication */
-	void OnLoginTokenVerificationFinished( FFGServerErrorResponse& ErrorResponse, EPrivilegeLevel MinPrivilegeLevel, bool bAutomaticLogin );
+	void OnLoginTokenVerificationFinished( FFGServerErrorResponse& ErrorResponse, EPrivilegeLevel MinPrivilegeLevel, bool bAutomaticLogin, bool bIsSavedAuthenticationToken );
 
 	/** Called when the server is claimed */
 	void OnServerClaimResponse( FFGServerErrorResponse& ErrorResponse, const FString& NewAuthenticationToken );
@@ -407,6 +408,9 @@ private:
 	/** Called to update the currently used authentication token for the server */
 	void SetAuthenticationToken( const FServerAuthenticationToken& Token );
 
+	/** Updates the authentication token saved for this server in the server manager settings */
+	void SetSavedAuthenticationToken( const FServerAuthenticationToken& Token );
+
 	/** Called when any of the authentication flow routines fail with an unknown error code. Wipes the current token and resets the authentication flow. */
 	void AbortAuthenticationFlow( const FFGServerErrorResponse& Reason );
 protected:
@@ -424,6 +428,10 @@ protected:
 
 	/** Called when we update the authentication token to a new value. This is a good place to re-request certain parts of the server state that might need some privileges to be read */
 	void OnAuthenticationTokenChanged();
+
+	/** UI proxy response to consent request for crash uploading in unattended mode */
+	UFUNCTION()
+	void OnAgreeToCrashUpload( bool confirmed );
 
 	/** Requests the password from the user */
 	void RequestPassword( EPrivilegeLevel MinPrivilegeLevel );
@@ -469,8 +477,11 @@ private:
 	TArray<TSharedPtr<FInternetAddr>> mSolvedAddresses;
 
 	/** Authentication token that the client has obtained since the last communication with the server. */
-	UPROPERTY( SaveGame )
 	FServerAuthenticationToken mAuthenticationToken;
+
+	/** Authentication token saved in the persistent storage. This is stored separately from the authentication token since this token needs to be verified first */
+	UPROPERTY( SaveGame )
+	FServerAuthenticationToken mSavedAuthenticationToken;
 
 	/** Current state of the game on the server*/
 	UPROPERTY( Transient )
@@ -483,6 +494,10 @@ private:
 	/** The certificate that the server has presented and the player has agreed to trust */
 	UPROPERTY( SaveGame )
 	FFGServerCertificate mServerCertificate;
+
+	/** Ask for unattended crash upload consent once per server. */
+	UPROPERTY( SaveGame )
+	bool mAgreeToCrashUploadRequested;
 
 	/** Current state of the server */
 	EServerState mServerState = EServerState::Offline;
@@ -561,19 +576,19 @@ private:
 	FString mCachedClaimedServerName;
 
 	UPROPERTY( Transient )
-	UFGClientAPIManager* mClientAPIManager;
+	TObjectPtr<UFGClientAPIManager> mClientAPIManager;
 
 	UPROPERTY( Transient )
-	UFGClientRequesterArray* mClientRequesterArray;
+	TObjectPtr<UFGClientRequesterArray> mClientRequesterArray;
 
 	UPROPERTY( Transient )
-	UFGServerObjectOptionAdapter* mServerOptionsAdapter;
+	TObjectPtr<UFGServerObjectOptionAdapter> mServerOptionsAdapter;
 
 	UPROPERTY( Transient )
-	UFGServerObjectOptionAdapter* mAdvancedGameSettingsAdapter;
+	TObjectPtr<UFGServerObjectOptionAdapter> mAdvancedGameSettingsAdapter;
 
 	UPROPERTY( Transient )
-	UFGServerObjectOptionAdapter* mNewGameAdvancedGameSettings;
+	TObjectPtr<UFGServerObjectOptionAdapter> mNewGameAdvancedGameSettings;
 };
 
 // This interface had to be moved to this file unfortunately because UHT is dumb and claims that there is a circular dependency between it and FGServerObject, when there is not.

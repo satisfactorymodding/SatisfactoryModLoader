@@ -76,15 +76,15 @@ protected:
 
 	/** store a reference to the owner of this connection as a FGBuildableTrainPlatform, not a UProperty as this is our Owning actor cached so we don't need to keep casting */
 	UPROPERTY( SaveGame )
-	class AFGBuildableTrainPlatform* platformOwner;
+	TObjectPtr<class AFGBuildableTrainPlatform> platformOwner;
 
 private:
 	/** Stores a reference to the track connection (Not a Uproperty because the reference exists in the railroad track) */
 	UPROPERTY( SaveGame )
-	UFGRailroadTrackConnectionComponent* mRailroadTrackConnection;
+	TObjectPtr<UFGRailroadTrackConnectionComponent> mRailroadTrackConnection;
 
 	/** Stores a reference to the connected platform component, if there is one (Not a UProperty as this is just a reference to an external component) */
 	UPROPERTY( SaveGame )
-	UFGTrainPlatformConnection* mConnectedTo;
+	TObjectPtr<UFGTrainPlatformConnection> mConnectedTo;
 
 };

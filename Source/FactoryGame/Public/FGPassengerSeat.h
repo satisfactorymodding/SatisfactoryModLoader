@@ -35,5 +35,5 @@ protected:
 public:
 	/** Instance of the vehicle this passenger seat belongs to */
 	UPROPERTY( SaveGame, Replicated )
-	class AFGVehicle* mOuterVehicle; 
+	TObjectPtr<class AFGVehicle> mOuterVehicle; 
 };

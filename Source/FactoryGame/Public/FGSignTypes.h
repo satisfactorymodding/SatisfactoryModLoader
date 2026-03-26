@@ -6,6 +6,7 @@
 #include "FGIconLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include <LocalUserInfo.h>
+#include "Online/PlayerInfoCache.h"
 #include "FGSignTypes.generated.h"
 
 // Blueprint Data class for holding information that can be shared between multiple FGBuildableWidgetSign classes
@@ -56,10 +57,10 @@ public:
 	TMap<FString, FText> GetTextElementLocTextMap() const { return mTextElementLocTextMap; }
 
 	UFUNCTION( BlueprintPure, Category = "Sign Data" )
-	TMap<FString, UObject*> GetIconElementNameMap() const { return mIconElementNameMap; }
+	TMap<FString, UObject*> GetIconElementNameMap() const { return ObjectPtrDecay( mIconElementNameMap ); }
 
 	UFUNCTION( BlueprintPure, Category = "Sign Data" )
-	TArray<TSoftClassPtr< UFGSignPrefabWidget>> GetPrefabArray() const { return mPrefabArray; }
+	TArray<TSoftClassPtr<class UFGSignPrefabWidget>> GetPrefabArray() const { return mPrefabArray; }
 
 public:
 	UPROPERTY( EditDefaultsOnly, Category = "Sign Data" )
@@ -81,7 +82,7 @@ public:
 	TMap< FString, FText > mTextElementLocTextMap;
 	
 	UPROPERTY( EditDefaultsOnly, Category = "Sign Data" )
-	TMap< FString, class UObject* > mIconElementNameMap;
+	TMap< FString, TObjectPtr<class UObject> > mIconElementNameMap;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Sign Data" )
 	TArray< TSoftClassPtr< class UFGSignPrefabWidget > > mPrefabArray;
@@ -165,9 +166,8 @@ struct FACTORYGAME_API FPrefabSignData
 	UPROPERTY( BlueprintReadWrite, Category = "Prefab Sign Data" )
 	TSubclassOf<UFGSignTypeDescriptor> SignTypeDesc;
 
-	//<FL> [KonradA] For Parental Control reasons we need to keep track of who last edited this sign
 	UPROPERTY( BlueprintReadWrite, Category = "Prefab Sign Data" )
-	TArray< FLocalUserNetIdBundle > LastEditedBy;
+	FPlayerInfoHandle LastEditedByHandle;
 	//</FL>
 
 	// For clients to know if they should call the server RPC to set the data when they receive new data (if from replication don't trigger the RPC as it came from an RPC)
@@ -190,22 +190,22 @@ public:
 	void SetNameToTextWidgetMap( TMap<FString, class URichTextBlock*>& textWidgetMap ) 
 	{
 		mNameToTextWidget.Empty();
-		mNameToTextWidget.Append( textWidgetMap );
+		mNameToTextWidget.Append( ObjectPtrWrap( textWidgetMap ) );
 	}
 
 	UFUNCTION( BlueprintCallable, Category = "Sign Data" )
 	void SetNameToIconWidgetMap( TMap< FString, class UImage* >& iconWidgetMap )
 	{
 		mNameToIconWidget.Empty();
-		mNameToIconWidget.Append( iconWidgetMap );
+		mNameToIconWidget.Append( ObjectPtrWrap( iconWidgetMap ) );
 	}
 	
 	// Toggle background, assuming background is called mBackground.
 	void OnToggleBackground(bool NewVisibility) const;
 
 	// Getters
-	TMap< FString, class URichTextBlock* > GetNameToTextWidgetMap() { return mNameToTextWidget; }
-	TMap< FString, class UImage* > GetNameToIconWidgetMap() { return mNameToIconWidget; }
+	TMap< FString, TObjectPtr<class URichTextBlock> > GetNameToTextWidgetMap() { return mNameToTextWidget; }
+	TMap< FString, TObjectPtr<class UImage> > GetNameToIconWidgetMap() { return mNameToIconWidget; }
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Sign Data" )
 	bool bContainsIcon;
@@ -219,8 +219,8 @@ public:
 
 protected:
 	UPROPERTY( BlueprintReadWrite, Category = "Sign Data" )
-	TMap< FString, class URichTextBlock* > mNameToTextWidget;
+	TMap< FString, TObjectPtr<class URichTextBlock> > mNameToTextWidget;
 
 	UPROPERTY( BlueprintReadWrite, Category = "Sign Data" )
-	TMap< FString, class UImage* > mNameToIconWidget;
+	TMap< FString, TObjectPtr<class UImage> > mNameToIconWidget;
 };

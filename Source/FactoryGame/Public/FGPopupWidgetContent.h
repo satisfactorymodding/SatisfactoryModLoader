@@ -42,9 +42,9 @@ public:
 
 public:
 	UPROPERTY( BlueprintReadWrite, EditAnywhere, Category = "PopupContent" )
-	UObject* mInstigator;
+	TObjectPtr<UObject> mInstigator;
 
 	UPROPERTY( BlueprintReadWrite, Category = "PopupContent" )
-	class UFGPopupWidget* mPopupWidget;
+	TObjectPtr<class UFGPopupWidget> mPopupWidget;
 
 };

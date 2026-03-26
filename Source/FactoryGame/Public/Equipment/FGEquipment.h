@@ -79,7 +79,7 @@ struct FFirstPersonMaterialArray
 
 	// List of materials with matching indices
 	UPROPERTY( EditDefaultsOnly )
-	TArray< class UMaterialInterface* > FirstPersonMaterials;
+	TArray< TObjectPtr<class UMaterialInterface> > FirstPersonMaterials;
 };
 
 /** Montage that plays when you un-equip the equipment */
@@ -90,7 +90,7 @@ struct FEquipmentUnEquipMontage
 	
 	/** Audio event to play *on the character* when un-equipping */
 	UPROPERTY( EditAnywhere, Category = "Audio" )
-	UAkAudioEvent* AudioEvent{};
+	TObjectPtr<UAkAudioEvent> AudioEvent{};
 
 	/** Whenever there is a separate 3P audio event that should be used instead of the main one */
 	UPROPERTY( EditAnywhere, Category = "Audio" )
@@ -98,7 +98,7 @@ struct FEquipmentUnEquipMontage
 
 	/** Audio event to be used when the character is in third person, instead of the main audio event. */
 	UPROPERTY( EditAnywhere, Category = "Audio", meta = ( EditCondition = "bSeparate3PAudioEvent", EditConditionHides ) )
-	UAkAudioEvent* AudioEvent3P{};
+	TObjectPtr<UAkAudioEvent> AudioEvent3P{};
 };
 
 /**
@@ -111,19 +111,19 @@ struct FFGEquipmentMontage
 
 	/** Montage to play on the character in 1P */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Character" )
-	UAnimMontage* Montage_1P{};
+	TObjectPtr<UAnimMontage> Montage_1P{};
 
 	/** Montage to play on the character in 3P */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Character" )
-	UAnimMontage* Montage_3P{};
+	TObjectPtr<UAnimMontage> Montage_3P{};
 
 	/** Montage to play on the equipment mesh */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Equipment" )
-	UAnimMontage* Montage_Equipment;
+	TObjectPtr<UAnimMontage> Montage_Equipment;
 
 	/** Audio event to play when playing the montage. Will be played on the equipment location. */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Equipment" )
-	UAkAudioEvent* AudioEvent{};
+	TObjectPtr<UAkAudioEvent> AudioEvent{};
 
 	/** Whenever there is a separate 3P audio event that should be used instead of the main one */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Equipment" )
@@ -131,11 +131,11 @@ struct FFGEquipmentMontage
 	
 	/** Audio event to be used when the character is in third person, instead of the main audio event. */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Equipment", meta = ( EditCondition = "bSeparate3PAudioEvent", EditConditionHides ) )
-	UAkAudioEvent* AudioEvent3P{};
+	TObjectPtr<UAkAudioEvent> AudioEvent3P{};
 
 	/** Camera animation to play in first person. */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Character" )
-	UCameraAnimationSequence* CameraAnim{};
+	TObjectPtr<UCameraAnimationSequence> CameraAnim{};
 };
 
 /**
@@ -226,7 +226,8 @@ public:
 	virtual void UnEquip();
 
 	/** Called whenever the character changes movement mode. */
-	virtual void OnCharacterMovementModeChanged( EMovementMode PreviousMovementMode, uint8 PreviousCustomMode, EMovementMode NewMovementMode, uint8 NewCustomMode );
+	UFUNCTION()
+	virtual void OnCharacterMovementModeChanged( class ACharacter* character, EMovementMode PreviousMovementMode, uint8 PreviousCustomMode );
 
 	/* Updates primitive values on all UPrimitive components.*/
 	void UpdatePrimitiveColors(FLinearColor Primary, FLinearColor Secondary, FLinearColor Detail);
@@ -516,7 +517,7 @@ public:
 
 	/** Camera shake to play when sprinting */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
-	UCameraAnimationSequence* mSprintHeadBobCameraAnim;
+	TObjectPtr<UCameraAnimationSequence> mSprintHeadBobCameraAnim;
 
 	/** Montages to play when the equipment is equipped */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment|Animation" )
@@ -536,7 +537,7 @@ public:
 	
 	/** Holds a reference to the child equipment that may be spawned with this */
 	UPROPERTY( Replicated, ReplicatedUsing=OnChildEquipmentReplicated )
-	class AFGEquipmentChild* mChildEquipment;
+	TObjectPtr<class AFGEquipmentChild> mChildEquipment;
 
 	UPROPERTY(EditDefaultsOnly)
 	float mMontageBlendOutTime = 0.f;
@@ -584,7 +585,7 @@ protected:
 	TObjectPtr<UInputMappingContext> mMappingContext;
 
 	/** What default equipment actions to enable. */
-	UPROPERTY( EditDefaultsOnly, meta = ( Bitmask, BitmaskEnum = "EDefaultEquipmentAction" ), Category = "Equipment" )
+	UPROPERTY( EditDefaultsOnly, meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.EDefaultEquipmentAction" ), Category = "Equipment" )
 	uint8 mDefaultEquipmentActions;
 
 	/** The equip montage that was played when the equipment was equipped */
@@ -627,23 +628,23 @@ private:
 
 	/** Idle animation to play when equipped. Can be null if we don't want to play any special animation */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
-	class UAnimSequence* mIdlePoseAnimation;
+	TObjectPtr<class UAnimSequence> mIdlePoseAnimation;
 
 	/** Idle animation to play when equipped in 3p. Can be null if we don't want to play any special animation */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
-	class UAnimSequence* mIdlePoseAnimation3p;
+	TObjectPtr<class UAnimSequence> mIdlePoseAnimation3p;
 
 	/** Crouch animation to play when equipped in 3p. Can be null if we don't want to play any special animation */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
-	class UAnimSequence* mCrouchPoseAnimation3p;
+	TObjectPtr<class UAnimSequence> mCrouchPoseAnimation3p;
 
 	/** Slide animation to play when equipped in 3p. Can be null if we don't want to play any special animation */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
-	class UAnimSequence* mSlidePoseAnimation3p;
+	TObjectPtr<class UAnimSequence> mSlidePoseAnimation3p;
 
 	/** Aim offset to override with */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
-	class UAimOffsetBlendSpace* mAttachmentIdleAO;
+	TObjectPtr<class UAimOffsetBlendSpace> mAttachmentIdleAO;
 
 	/** List of damages modifiers that this equipment applies upon equip (and removes once unequipped).
 	 *Used to modify the amount of damages inbound from specific types of damages. */
@@ -656,7 +657,7 @@ private:
 
 	/** The character that equipped us. */
 	UPROPERTY()
-	AFGCharacterPlayer* mPlayerCharacter;
+	TObjectPtr<AFGCharacterPlayer> mPlayerCharacter;
 
 	FCameraAnimationHandle CameraAnimationHandle;
 	

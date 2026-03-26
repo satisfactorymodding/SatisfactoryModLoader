@@ -33,7 +33,7 @@ public:
 
 	/** Server's first vehicle, this is dependent on the direction of travel. */
 	UPROPERTY()
-	AFGRailroadVehicle* FirstVehicle = nullptr;
+	TObjectPtr<AFGRailroadVehicle> FirstVehicle = nullptr;
 	
 	/** Server position at the time. */
 	UPROPERTY()
@@ -126,7 +126,7 @@ public:
 private:
 	/** Array of all vehicles in the train, in the order they appear in the consist. */
 	UPROPERTY( ReplicatedUsing = OnRep_Vehicles )
-	TArray< AFGRailroadVehicle* > mVehicles;
+	TArray< TObjectPtr<AFGRailroadVehicle> > mVehicles;
 	
 	/** Last known server state. */
 	UPROPERTY( ReplicatedUsing = OnRep_LastServerSimulationState )

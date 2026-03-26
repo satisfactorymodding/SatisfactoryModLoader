@@ -79,35 +79,35 @@ public:
 public:
 	/** Material on hologram for valid placement. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
-	class UMaterialInstance* mDefaultValidPlacementMaterial;
+	TObjectPtr<class UMaterialInstance> mDefaultValidPlacementMaterial;
 
 	/** Material on hologram for valid placement. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
-	class UMaterialInstance* mDefaultValidPlacementMaterialSimplified;
+	TObjectPtr<class UMaterialInstance> mDefaultValidPlacementMaterialSimplified;
 
 	/** Material on hologram for invalid placement. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
-	class UMaterialInstance* mDefaultInvalidPlacementMaterial;
+	TObjectPtr<class UMaterialInstance> mDefaultInvalidPlacementMaterial;
 
 	/** Material on hologram for input connections. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
-	class UMaterialInstance* mDefaultInputConnectionMaterial;
+	TObjectPtr<class UMaterialInstance> mDefaultInputConnectionMaterial;
 
 	/** Material on hologram for output connections. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
-	class UMaterialInstance* mDefaultOutputConnectionMaterial;
+	TObjectPtr<class UMaterialInstance> mDefaultOutputConnectionMaterial;
 
 	/** Material on hologram for automatic blueprint connections connections. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
-	class UMaterialInstance* mDefaultAutomaticBlueprintConnectionMaterial;
+	TObjectPtr<class UMaterialInstance> mDefaultAutomaticBlueprintConnectionMaterial;
 
 	/** Material on hologram for directionally neutral connections. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
-	class UMaterialInstance* mDefaultNeutralConnectionMaterial;
+	TObjectPtr<class UMaterialInstance> mDefaultNeutralConnectionMaterial;
 
 	/** Material on hologram for power connections. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
-	class UMaterialInstance* mDefaultPowerConnectionMaterial;
+	TObjectPtr<class UMaterialInstance> mDefaultPowerConnectionMaterial;
 
 	/** Default Factory Primary - Unchanging color regardless of slot */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryColor" )
@@ -119,7 +119,7 @@ public:
 
 	/** Mesh used to visualize orientation. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
-	class UStaticMesh* mDefaultOrientationDirectionMesh;
+	TObjectPtr<class UStaticMesh> mDefaultOrientationDirectionMesh;
 
 	/** Scale of mesh used to visualize orientation. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
@@ -127,39 +127,43 @@ public:
 	
 	/** Mesh used to visualize attachment points for connection. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
-	class UStaticMesh* mDefaultAttachmentPointConnectionMesh;
+	TObjectPtr<class UStaticMesh> mDefaultAttachmentPointConnectionMesh;
 
 	/** Mesh used to visualize input or output connections location. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
-	class UStaticMesh* mDefaultConveyorConnectionFrameMesh;
+	TObjectPtr<class UStaticMesh> mDefaultConveyorConnectionFrameMesh;
 
 	/** Mesh used to visualize input or output connections direction. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
-	class UStaticMesh* mDefaultConveyorConnectionArrowMesh;
+	TObjectPtr<class UStaticMesh> mDefaultConveyorConnectionArrowMesh;
 
 	/** Mesh used to visualize pipeline connections location  @note Do not set in Code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
-	class UStaticMesh* mDefaultPipeConnectionFrameMesh;
+	TObjectPtr<class UStaticMesh> mDefaultPipeConnectionFrameMesh;
 
 	/** Mesh used to visualize pipeline connections direction (Consumer / Producer) @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
-	class UStaticMesh* mDefaultPipeConnectionArrowMesh;
+	TObjectPtr<class UStaticMesh> mDefaultPipeConnectionArrowMesh;
 
 	/** Mesh used to visualize power connections. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
-	class UStaticMesh* mDefaultPowerConnectionMesh;
+	TObjectPtr<class UStaticMesh> mDefaultPowerConnectionMesh;
 
 	/** Mesh used to visualize forward direction of blueprints. @note Do not set in code! */
     UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
-    class UStaticMesh* mBlueprintDirectionIndicatorMesh;
+    TObjectPtr<class UStaticMesh> mBlueprintDirectionIndicatorMesh;
 
 	/** Mesh used to visualize automatic blueprint connections. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
-	class UStaticMesh* mBlueprintAutoConnectionMesh;
+	TObjectPtr<class UStaticMesh> mBlueprintAutoConnectionMesh;
+
+	/** Mesh used to visualize automatic blueprint vehicle path connections. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
+	TObjectPtr<class UStaticMesh> mBlueprintVehiclePathAutoConnectionMesh;
 	
 	/** Material for blueprint direction indicator. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
-	class UMaterialInstance* mBlueprintDirectionIndicatorMaterial;
+	TObjectPtr<class UMaterialInstance> mBlueprintDirectionIndicatorMaterial;
 
 	/** Minimum scale of the blueprint direction indicator mesh. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
@@ -183,27 +187,27 @@ public:
 
 	/** Material for blueprint proxies. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Blueprints" )
-	class UMaterialInstance* mBlueprintProxyMaterial;
+	TObjectPtr<class UMaterialInstance> mBlueprintProxyMaterial;
 
 	/** Mesh used to visualize the clearance mesh on factories @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Clearance" )
-	class UStaticMesh* mClearanceMesh;
+	TObjectPtr<class UStaticMesh> mClearanceMesh;
 
 	/** Material on hologram for clearance. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Clearance" )
-	class UMaterialInstance* mClearanceMaterial;
+	TObjectPtr<class UMaterialInstance> mClearanceMaterial;
 
 	/** Default sound loop placed on holograms. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Sound" )
-	class UAkAudioEvent* mHologramLoopSound;
+	TObjectPtr<class UAkAudioEvent> mHologramLoopSound;
 
 	/** Snapping sound for holograms, e.g. when a conveyor snaps to an output. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Sound" )
-	class UAkAudioEvent* mHologramSnapSound;
+	TObjectPtr<class UAkAudioEvent> mHologramSnapSound;
 
 	/** Mesh used to visualize alignment in build mode. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGuides|Alignment" )
-	class UStaticMesh* mBuildGuideMesh;
+	TObjectPtr<class UStaticMesh> mBuildGuideMesh;
 
 	/** Width of buildguide visualization lines. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGuides|Alignment" )
@@ -219,7 +223,7 @@ public:
 	
 	/** Material applied to build guides to visualize alignment in build mode. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGuides|Alignment" )
-	class UMaterialInstance* mBuildGuideMaterial;
+	TObjectPtr<class UMaterialInstance> mBuildGuideMaterial;
 
 	/** Crate spawned when we dismantle an actor or when we die. It will be filled with the refund if it doesn't fit in the players inventory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
@@ -227,11 +231,11 @@ public:
 
 	/** Default sound played when constructing a building, a random from the list is played. */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Build Effect" )
-	TArray< class UAkAudioEvent* > mConstructionSounds;
+	TArray< TObjectPtr<class UAkAudioEvent> > mConstructionSounds;
 		
 	/** Default sound played when dismantling a building, a random from the list is played. */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Build Effect" )
-	TArray< class UAkAudioEvent* > mDismantleSounds;
+	TArray< TObjectPtr<class UAkAudioEvent> > mDismantleSounds;
 
 	/** Effect to play when a building is built */ //[DavalliusA:Mon/01-04-2019] seems to only be used for replays? //@TODO: see if we can't store this in a way more suitable for replays... a waste to have it in a global class like this
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Build Effect" )
@@ -245,9 +249,13 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Build Mode" )
 	TSubclassOf< class UFGHologramBuildModeDescriptor > mDefaultBuildMode;
 
+	/** Default zoop build mode of holograms. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mDefaultBuildModeZoop;
+
 	/** Material used when looking at buildings for dismantle */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Dismantle" )
-	class UMaterialInterface* mDismantlePendingMaterial;
+	TObjectPtr<class UMaterialInterface> mDismantlePendingMaterial;
 
 	/** The default buildgun class to spawn */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
@@ -270,11 +278,11 @@ public:
 
 	/** The mesh to be used as legs on factories */
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
-	class UStaticMesh* mLegMesh;
+	TObjectPtr<class UStaticMesh> mLegMesh;
 
 	/** The mesh to be used as foots on factories */
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
-	class UStaticMesh* mFootMesh;
+	TObjectPtr<class UStaticMesh> mFootMesh;
 
 	/** Maximum length when we want to spawn the legs */
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
@@ -334,7 +342,7 @@ public:
 
 	/** Material Param Collection containing the panini settings so scaling can be exposed to the Settings Menu */
 	UPROPERTY( EditDefaultsOnly, Category = "Rendering" )
-	class UMaterialParameterCollection* mPaniniProjectionCollection;
+	TObjectPtr<class UMaterialParameterCollection> mPaniniProjectionCollection;
 
 	/** How the snapping threshold is affected over distance between a hologram and a snapping target. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category= "Hologram|Alignment" )

@@ -65,6 +65,11 @@ protected:
 	/** Called to re-apply the current state of the "wants to grab" when we end the zipline movement. Used to restart the animation if we are still wanting to grab the wire */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Zipline" )
 	void ReapplyWantsToGrabAfterZiplineEnd( bool bWantsToGrab );
+
+	/* <FL> [MartinC] Updates the zipline state according to the player's input and the HoldZipline Controls option */
+	void SetControllerGrabZipline( bool holdZipline, EDefaultEquipmentActionEvent actionEvent );
+
+
 private:
 	void OnZiplineStatusChanged( bool bIsOnZipline );
 	void Local_OnZiplineStarted();
@@ -89,6 +94,11 @@ private:
 
 	UFUNCTION()
 	void OnRep_WantToGrab();
+	
+	/* <FL> [MartinC] Called on the server to replicate whether the player is using the zipline by 
+	holding or toggling, depending on their local option */
+	UFUNCTION( Server, Reliable )
+	void Server_ControllerdGrabZipline( bool holdZipline, EDefaultEquipmentActionEvent actionEvent );
 private:
 	/** Set if we should try to grab a zipline */
 	UPROPERTY( ReplicatedUsing = OnRep_WantToGrab )
@@ -96,7 +106,7 @@ private:
 
 	/* Particle associated with zipline */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame" )
-	class UParticleSystem* mZiplineParticle;
+	TObjectPtr<class UParticleSystem> mZiplineParticle;
 
 	/** How much upwards velocity is applied when jumping on the zipline. */
 	UPROPERTY( EditDefaultsOnly, Category = "Zipline" )

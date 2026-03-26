@@ -7,6 +7,7 @@
 AFGResourceNodeFrackingSatellite::AFGResourceNodeFrackingSatellite() : Super() {
 	this->mCore = nullptr;
 	this->mState = EFrackingSatelliteState::FSS_Untouched;
+	this->mResourceNodeType = EResourceNodeType::FrackingSatellite;
 	this->mDoSpawnParticle = false;
 }
 void AFGResourceNodeFrackingSatellite::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

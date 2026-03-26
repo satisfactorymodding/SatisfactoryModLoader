@@ -6,6 +6,7 @@
 UFGCircuitConnectionComponent::UFGCircuitConnectionComponent() : Super() {
 	this->mCircuitType = nullptr;
 	this->mMaxNumConnectionLinks = 1;
+	this->mAllowDaisyChaining = false;
 	this->mIsHiddenConnection = false;
 	this->mConnectionDistanceBias = 0.0;
 	this->mNumWiresConnected = 0;
@@ -21,7 +22,9 @@ void UFGCircuitConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetime
 }
 void UFGCircuitConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGCircuitConnectionComponent::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+bool UFGCircuitConnectionComponent::ShouldSave_Implementation() const{ return Super::ShouldSave_Implementation(); }
 int32 UFGCircuitConnectionComponent::GetNumConnections() const{ return int32(); }
+int32 UFGCircuitConnectionComponent::GetMaxNumConnections() const{ return int32(); }
 void UFGCircuitConnectionComponent::GetConnections(TArray<  UFGCircuitConnectionComponent* >& out_connections) const{ }
 void UFGCircuitConnectionComponent::AddConnection( AFGBuildableWire* wire){ }
 void UFGCircuitConnectionComponent::RemoveConnection( AFGBuildableWire* wire){ }

@@ -52,11 +52,11 @@ private:
 
 private:
 	UPROPERTY()
-	UTexture2D* mFogOfWarTexture;
+	TObjectPtr<UTexture2D> mFogOfWarTexture;
 	UPROPERTY()
-	TArray<UFGActorRepresentation*> mMapActors;
+	TSet<TObjectPtr<UFGActorRepresentation>> mMapActors;
 	UPROPERTY( Transient )
-	class AFGActorRepresentationManager* mActorRepresentationManager;
+	TObjectPtr<class AFGActorRepresentationManager> mActorRepresentationManager;
 	
 
 };

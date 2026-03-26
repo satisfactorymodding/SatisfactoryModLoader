@@ -4,6 +4,6 @@
 
 #include "Server/FGDSSharedTypes.h"
 
-FFGServerErrorResponse UFGServerAuthenticationController::Handler_VerifyAuthenticationToken() { return FFGServerErrorResponse(); }
+FFGServerErrorResponse UFGServerAuthenticationController::Handler_VerifyAuthenticationToken(const FString& AuthenticationToken, EPrivilegeLevel PrivilegeLevel, const FFGRequestHandlerContextWrapper& RequestHandlerContext) const{ return FFGServerErrorResponse(); }
 FFGServerErrorResponse UFGServerAuthenticationController::Handler_PasswordlessLogin(EPrivilegeLevel MinimumPrivilegeLevel, FString& OutAuthenticationToken,	const FFGRequestHandlerContextWrapper& RequestHandlerContext) const { return FFGServerErrorResponse(); }
 FFGServerErrorResponse UFGServerAuthenticationController::Handler_PasswordLogin(const FString& Password, EPrivilegeLevel MinimumPrivilegeLevel, FString& OutAuthenticationToken, const FFGRequestHandlerContextWrapper& RequestHandlerContext) const { return FFGServerErrorResponse(); }

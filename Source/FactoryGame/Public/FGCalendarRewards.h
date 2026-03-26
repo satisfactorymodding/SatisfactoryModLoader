@@ -37,15 +37,15 @@ protected:
 
 	/** The rewards for the slots in the calendar. If a slot is left empty it will grab a random reward from the Random Unlocks.  */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Calendar" )
-	TArray< class UFGUnlock* > mSlotUnlocks;
+	TArray< TObjectPtr<class UFGUnlock> > mSlotUnlocks;
 
 	/** Secondary rewards for the slots in the calendar.  */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Calendar" )
-	TArray< class UFGUnlock* > mSecondarySlotUnlocks;
+	TArray< TObjectPtr<class UFGUnlock> > mSecondarySlotUnlocks;
 
 	/** The random rewards for a calendar. Used when no reward is available for a slot in the Slot Rewards*/
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Calendar" )
-	TArray< class UFGUnlock* > mRandomUnlocks;
+	TArray< TObjectPtr<class UFGUnlock> > mRandomUnlocks;
 	
 	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated" )
 	TArray< FItemAmount > mSlotRewards;

@@ -9,6 +9,8 @@
 
 #include "FGJumpPadLauncherHologram.generated.h"
 
+class USplineMeshComponent;
+
 UENUM()
 enum class EJumpPadHologramBuildStep : uint8
 {
@@ -69,15 +71,15 @@ protected:
 
 	/** The part of the jump pad that angles up and down. */
 	UPROPERTY( EditDefaultsOnly, Category = "Jump Pad" )
-	class UStaticMeshComponent* mLauncherMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mLauncherMeshComponent;
 
 	/** The spline component for the trajectory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )
-	class USplineComponent* mSplineComponent;
+	TObjectPtr<class USplineComponent> mSplineComponent;
 
 	/** The spline meshes for the trajectory. */
 	UPROPERTY( Transient )
-	TArray<USplineMeshComponent*> mTrajectorySplineMeshComponents;
+	TArray<TObjectPtr<USplineMeshComponent>> mTrajectorySplineMeshComponents;
 	
 	/** The scale used for the instances in the spline mesh. */
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )
@@ -85,7 +87,7 @@ protected:
 
 	/** The mesh that shows where launched objects will land. */
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )
-	class UStaticMeshComponent* mDestinationMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mDestinationMeshComponent;
 
 	/** How high above the impact location the destination mesh will be. */
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory" )

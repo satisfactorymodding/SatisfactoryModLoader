@@ -14,6 +14,7 @@ class FFastSaveReferenceCollector : public FReferenceCollector
 	TArray<UObject*>& mObjectsToSave;
 	TSet<UObject*> mAllObjectsEncountered;
 	TSet<ULevel*> mAllowedLevels;
+	bool mOnlyRootSetSubobjects{false};
 public:
 	/**
 	 * Sets up the array that we want to add objects to
@@ -24,7 +25,13 @@ public:
 	{
 		mBlacklistedClasses.Append( blacklist );
 	}
-	
+
+	/** Updates whenever only root set subobjects will be collected. If this is true, objects that are not outered to actors that are part of the root set will NOT be collected as references */
+	void SetOnlyAllowRootSetSubobjects( bool newOnlyRootSetSubobjects )
+	{
+		mOnlyRootSetSubobjects = newOnlyRootSetSubobjects;
+	}
+
 	/** Generates objects to the member that was passed in when class was setup */
 	void GenerateSaveObjects( const TArray<class UObject*>& rootSet );
 	

@@ -36,7 +36,7 @@ class FACTORYGAME_API UFGUseState_Collecting : public UFGUseState
 
 //State that an item pickup can be in
 UENUM( BlueprintType )
-enum class EItemState :uint8
+enum class FGEItemState :uint8
 {
 	ES_SEED			UMETA( DisplayName = "Seed" ),
 	ES_NORMAL		UMETA( DisplayName = "Normal" ),
@@ -75,7 +75,7 @@ public:
 	//IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	//End
 	
 	//~ Begin IFGUseableInterface
@@ -143,7 +143,7 @@ public:
 
 	/** Returns the state of this item pickup */
 	UFUNCTION( BlueprintPure, Category = "Pickup" )
-	FORCEINLINE EItemState GetItemState() const{ return mItemState; }
+	FORCEINLINE FGEItemState GetItemState() const{ return mItemState; }
 
 	/** Returns amount of items we have saved that this pickup should give */
 	UFUNCTION( BlueprintPure, Category = "Pickup" )
@@ -182,14 +182,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Significance")
 	bool bShouldAddToSignificanceManager = false;
 	
-protected:
+public:
 	/**
 	* SERVER and Client picking up: Called right after this item is added to the players inventory, for GameplayEffects.
 	* If you want to do something only on the picking up client, check if byCharacter is locally controlled
 	*/
-	UFUNCTION( BlueprintImplementableEvent )
+	UFUNCTION( BlueprintNativeEvent )
 	void OnPickup( class AFGCharacterPlayer* byCharacter );
 
+protected:
 	/** Set the number of items */
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Pickup" )
 	void SetNumItems( int32 numItems );
@@ -226,7 +227,7 @@ protected:
 
 	//** The player collecting the item */
 	UPROPERTY( Replicated )
-	AFGCharacterPlayer* mCollector;
+	TObjectPtr<AFGCharacterPlayer> mCollector;
 
 	//** Timer handler for item being picked up */
 	UPROPERTY()
@@ -242,11 +243,11 @@ protected:
 
 	/** ak component that plays sound */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Audio" )
-	class UAkComponent* mSoundComponent;
+	TObjectPtr<class UAkComponent> mSoundComponent;
 
 	/** The ak event to post for the sound  */
 	UPROPERTY( EditDefaultsOnly, Category = "AkComponent" )
-	class UAkAudioEvent* mAudioEvent;
+	TObjectPtr<class UAkAudioEvent> mAudioEvent;
 
 	UPROPERTY( EditDefaultsOnly )
 	FGameplayTag mPickupItemTag;
@@ -262,7 +263,7 @@ private:
 
 	/** Current state for this item */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_StateUpdated )
-	EItemState mItemState;
+	FGEItemState mItemState;
 
 	/** How many days before item has grown from seed */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )

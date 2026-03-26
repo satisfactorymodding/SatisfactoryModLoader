@@ -4,6 +4,7 @@
 
 UFGWheeledVehicleRepresentation::UFGWheeledVehicleRepresentation() : Super() {
 	this->mBackgroundIsPrimaryColor = false;
+	this->mAllowRealActorLocationOnClient = false;
 }
 bool UFGWheeledVehicleRepresentation::GetShouldShowInCompass() const{ return bool(); }
 bool UFGWheeledVehicleRepresentation::IsWarningIndicatorVisible(AActor* realActor, FLinearColor& out_warningIndicatorColor) const{ return bool(); }

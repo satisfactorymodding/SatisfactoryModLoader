@@ -3,14 +3,15 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "AkAudioEvent.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "ChaosVehicleWheel.h"
 #include "EngineSystem.h"
+#include "FGWheeledVehicleVFXHandler.h"
 #include "TransmissionSystem.h"
-#include "Audio/AudioEventsCache.h"
-
 #include "FGWheeledVehicleMovementComponent.generated.h"
+
+class UAkAudioEvent;
+struct FWheelSoundSurfacePair;
 
 USTRUCT(BlueprintType)
 struct FSurfaceForceMultiplierOverride
@@ -27,66 +28,6 @@ struct FSurfaceForceMultiplierOverride
 	
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	TArray<TEnumAsByte<EPhysicalSurface>> Surfaces;
-};
-
-USTRUCT( BlueprintType )
-struct FACTORYGAME_API FTireTrackDecalDetails
-{
-	GENERATED_BODY()
-
-	/** Surface material to override for */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	TObjectPtr<UPhysicalMaterial> SurfacePhysicsMaterial = nullptr;
-
-	/** Material to use as an override */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	TObjectPtr<UMaterial> DecalMaterialOverride = nullptr;
-};
-
-USTRUCT( BlueprintType )
-struct FSurfaceParticlePair
-{
-	GENERATED_BODY()
-
-	UPROPERTY( EditDefaultsOnly, Category = "SurfaceParticlePair" )
-	TObjectPtr<UParticleSystem> EmitterTemplate = nullptr;
-
-	UPROPERTY( EditDefaultsOnly, Category = "SurfaceParticlePair" )
-	TEnumAsByte< EPhysicalSurface > Surface = EPhysicalSurface::SurfaceType_Default;
-};
-
-USTRUCT()
-struct FParticleTemplatePair
-{
-	GENERATED_BODY()
-
-	FParticleTemplatePair() : Template( nullptr ), Particle( nullptr ) {}
-
-	UPROPERTY()
-	TObjectPtr<UParticleSystem> Template;
-
-	UPROPERTY()
-	TObjectPtr<UParticleSystemComponent> Particle;
-};
-
-USTRUCT( BlueprintType )
-struct FWheelSoundSurfacePair
-{
-	GENERATED_BODY()
-
-	FWheelSoundSurfacePair() : PlayEvent( nullptr ), StopEvent( nullptr )
-	{
-		Surfaces = TArray<TEnumAsByte<EPhysicalSurface>>{EPhysicalSurface::SurfaceType_Default};
-	}
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSoftObjectPtr<UAkAudioEvent> PlayEvent;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UAkAudioEvent> StopEvent; //This is HARD ref intentionally to avoid any potential issues with stopping async events
-
-	UPROPERTY( EditDefaultsOnly)
-	TArray<TEnumAsByte< EPhysicalSurface >> Surfaces;
 };
 
 class FACTORYGAME_API FFGSimpleEngineSim : public Chaos::FSimpleEngineSim
@@ -200,9 +141,6 @@ public:
 	virtual void SetupVehicle(TUniquePtr<Chaos::FSimpleWheeledVehicle>& PVehicle) override;
 	virtual void CreateWheels() override;
 
-	/** To update significance from the vehicle */
-	void UpdateSignificance(bool isSignificant);
-
 	/** Returns the actual steering input internal to the system (so not the raw input but how far the wheel is turned */
 	UFUNCTION(BlueprintPure, Category = Vehicle)
 	FORCEINLINE float GetModifiedSteeringInput() const { return SteeringInput; }
@@ -215,55 +153,30 @@ public:
 	UFUNCTION(BlueprintPure, Category = Vehicle)
 	FORCEINLINE float GetModifiedBrakeInput() const { return BrakeInput; }
 
-	/** Sets if the vehicle is driven or not, to handle sleep and whatnot */
-	UFUNCTION(BlueprintCallable, Category = Vehicle)
-	void SetHasDriver( bool hasDriver, bool isLocalDriver );
-
-	/** Used to drive audio. */
-	void HandleEngineSounds( const bool hasFuel );
-	
 	/** Is the vehicle in the air? */
 	UFUNCTION(BlueprintPure, Category = Vehicle)
-	FORCEINLINE bool IsInAir() const { return mNumWheelsOnGround == 0; }
+	FORCEINLINE bool IsInAir() const { return !VehicleState.bAllWheelsOnGround; }
 
-	/** Get the wheel particle system associated with that physical material it is on */
-	UFUNCTION(BlueprintPure, Category = Vehicle)
-	UParticleSystem* GetSurfaceParticleSystem( UPhysicalMaterial* PhysMat);
+	/** Sets if the vehicle is driven or not, to handle sleep and whatnot */
+	void SetHasDriver( bool hasDriver );
+	/** Resets all player inputs on this vehicle. Called when entering a manual docking state or running out of fuel */
+	void ClearLocalVehicleInput();
+	/** Completely resets all player inputs on the vehicle. Called when entering a simulated mode or player exiting the vehicle */
+	void HardResetVehiclePlayerInputOnServer();
+	/** Populates visual state of the vehicle when using the vehicle movement component */
+	void PopulateVehicleVisualState( FFGVehicleVFXData& vehicleVisualState ) const;
 
 	/** Gets the mass of the vehicle as set in the vehicle properties */
 	UFUNCTION(BlueprintPure, Category = Vehicle)
 	FORCEINLINE float GetVehicleMass() const { return Mass; }
 
-	/** Get the surface that most wheels are on, if any. Can be null */
-	UFUNCTION(BlueprintPure, Category = Vehicle)
-	FORCEINLINE UPhysicalMaterial* GetPrimarySurfaceMaterial() const { return mPrimarySurfaceMaterial; }
-
-	/** When a vehicle lands, this triggers */
-	UPROPERTY(BlueprintAssignable, Category = Vehicle)
-	FVehicleLandedDelegate mOnVehicleLanded;
-
 	virtual TUniquePtr<Chaos::FSimpleWheeledVehicle> CreatePhysicsVehicle() override
 	{
 		VehicleSimulationPT = MakeUnique<UFGWheeledVehicleSimulation>(); // Custom vehicle simulation
 		PVehicleOutput = MakeUnique<FPhysicsVehicleOutput>();	// create physics output container
-		
 		return MakeUnique<FFGSimpleWheeledVehicle>();
 	}
 
-	UFUNCTION(BlueprintPure, Category="Vehicle|Engine")
-	UAkComponent* GetEngineAudioComponent() const { return mEngineAudioComponent; }
-
-	UFUNCTION(BlueprintNativeEvent, Category="Vehicle|Transmission")
-	void OnGearChangedImmediate( int32 NewGear );
-
-	UFUNCTION(BlueprintNativeEvent, Category="Vehicle|Transmission")
-	void OnGearChangeBegin( int32 NewGear );
-
-	UFUNCTION(BlueprintNativeEvent, Category="Vehicle|Transmission")
-	void OnGearChangeEnd( int32 NewGear );
-
-	void SetClientInputsOnDriverLeave();
-	
 	UPROPERTY(BlueprintAssignable, Category = Vehicle)
 	FVehicleTransmissionEventDelegate mOnGearChangedImmediate;
 
@@ -272,34 +185,15 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = Vehicle)
 	FVehicleTransmissionEventDelegate mOnGearChangeEnd;
-
-	void PlayStartupEngineAudio();
-	void PlayShutDownEngineAudio( const bool isOutOfFuel );
-
-	UFUNCTION( Server, Reliable )
-	void Server_PlayShutDownEngineAudio( const bool isOutOfFuel );
-
-	UFUNCTION( Server, Reliable )
-	void Server_PlayStartupEngineAudio();
-	
 protected:
 	virtual void UpdateState(float DeltaTime) override;
 	virtual void ProcessSleeping(const FControlInputs& ControlInputs) override;
-	void UpdateAudioPositions( UAkComponent* audioComp );
-	
-	/** returns the current largest tire load of the vehicle */
-	UFUNCTION(BlueprintPure, Category = Vehicle )
-	float GetLargestTireLoadValue();
 
-	/** returns the current largest slip (burnout/longitudinal) magnitude lat slip of the vehicle */
-	UFUNCTION(BlueprintPure, Category = Vehicle )
-	float GetLargestSlipMagnitude();
+	virtual void OnGearChangedImmediate_NonGameThread( int32 NewGear );
+	virtual void OnGearChangeBegin_NonGameThread( int32 NewGear );
+	virtual void OnGearChangeEnd_NonGameThread( int32 NewGear );
 
-	/** returns the current largest skid (drift/lateral) magnitude of the vehicle */
-	UFUNCTION(BlueprintPure, Category = Vehicle)
-	float GetLargestSkidMagnitude();
-
-	// Side slip multiplier applied to wheel affected by handbrake while using the handbrake
+	/** Sideslip multiplier applied to wheel affected by handbrake while using the handbrake */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WheelSetup)
 	float mHandbrakeSideSlipMultiplier = 0.1f;
 
@@ -307,162 +201,31 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WheelSetup)
 	TArray<FSurfaceForceMultiplierOverride> mSurfaceWheelForceMultiplierOverrides;
 
-	/** Surface on which most wheels are */
-	UPROPERTY(BlueprintReadWrite, Category = Surface)
-	TObjectPtr<UPhysicalMaterial> mPrimarySurfaceMaterial = nullptr;
-
-	/** Distance between tire track decals */
-	UPROPERTY( EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	float mDistanceBetweenDecals = 15.f;
-
-	/** Time, in seconds, for the tire track decal to live */
-	UPROPERTY( EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	float mDecalsLifespan = 5.0f;
-	
-	/** default tire track decal. Can be empty for no default. */
-	UPROPERTY( EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	TObjectPtr<UMaterial> mDefaultTireTrackDecal;
-	
-	/** tire track decal  settings */
-	UPROPERTY( EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	TArray< FTireTrackDecalDetails > mTireTrackDecals;
-	
-	/** The scale for the decal. This will probably need to be uniquely set for every vehicle. */
-	UPROPERTY( EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	FVector mDecalSize;
-
-	/** Map that lists which templates corresponds to what surface type */
-	UPROPERTY( EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	TArray< FSurfaceParticlePair > mVehicleParticleMap;
-
-	/** Name of the RTPC used to drive the vehicle's speed audio */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	FName mSpeedRTPCName = FName("RTPC_Vehicle_Tires_Speed");
-
-	/** Name of the RTPC to drive the vehicle's skidding magnitude audio */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	FName mSkidRTPCName = FName("RTPC_Vehicle_Tire_Skid");
-
-	/** Speed at which tire sounds will have their RTPC set to max (100). In Kmh */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	float mTireSoundMaxAtSpeed = 100;
-
-	/** Skidding speed at which tire skidding sounds will have their RTPC set to max (100). In Kmh */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	float mTireSkidSoundMaxAtSpeed = 50;
-
-	/** Attenuation scaling factor for Wwise for wheel sounds in 3rd person (so not the vehicle the player drives, but one he sees driven by another player/AI */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	float mTires3PAttenuationScalingFactor = 1.0f;
-
-	/** Array of the different sound switches to use with which surface. The first element without a surface is considered the default switch */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "WheelSetup|Effects" )
-	TArray< FWheelSoundSurfacePair > mVehicleSoundMap;
-
-	/** Map of the wheel index to ak component */
-	UPROPERTY(BlueprintReadOnly)
-	TMap<int, TObjectPtr<UAkComponent>> mVehicleWheelAudioComponents;
-
-	/** Contains references to all current active particle systems on the tires */
-	UPROPERTY()
-	TArray< FParticleTemplatePair > mActiveParticleAndTemplate;
-	
-	/** location of the last placed decals for each wheel */
-	UPROPERTY()
-	TArray< FVector > mLastDecalLocations;
-
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|General" )
-	TSoftObjectPtr<UAkAudioEvent> mCrashSoundEvent;
-
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|General" )
-	FName mCrashRTPCName;
-
-	/** Speed at which the RTPC for the crash sound will be set to max */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|General" )
-	float mCrashMaxSpeed = 100.f;
-	
-	/** Audio event that's used for the engine sounds of the vehicle */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
-	TSoftObjectPtr<UAkAudioEvent> mEngineAudioPlayEvent;
-
-	/** Audio event that's used to stop the engine sounds of the vehicle */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
-	TObjectPtr<UAkAudioEvent> mEngineAudioStopEvent; //This is HARD ref intentionally to avoid any potential issues with stopping async events
-
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
-	TSoftObjectPtr<UAkAudioEvent> mEngineShutdownSoundEvent;
-
-	/** Socket for where the engine sounds come from (or exhaust in our case mostly) */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
-	FName mEngineAudioSocket = FName("exhaustSocket");
-
-	/** RTPC name that will be used by the sim to drive the engine rpm audio */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
-	FName mEngineRpmRTPC = FName("RTPC_Vehicles_Explorer_RPM");
-
-	/** RTPC name that will be used by the sim's throttle position to drive the load audio */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineAudio" )
-	FName mEngineLoadRTPC = FName("RTPC_Vehicle_Load");
-	
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UAkComponent> mEngineAudioComponent;
-	
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|TransmissionAudio" )
-	TSoftObjectPtr<UAkAudioEvent> mTransmissionAudioEventGearChangeBegin;
-
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|TransmissionAudio" )
-	TSoftObjectPtr<UAkAudioEvent> mTransmissionAudioEventGearChangeEnd;
-	
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|TransmissionAudio" )
-	TSoftObjectPtr<UAkAudioEvent> mTransmissionAudioEventGearChangedImmediate;
-
 	/** When we bounce off the idle rpm, how much rpm to add to the engine. Random number between min and max */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineSetup" )
-	FInt32Range mIdleBounceRange = TRange<int>(0, 150);
+	FInt32Range mIdleBounceRange = TRange<int32>(0, 150);
 
 	/** When we bounce of the idle rpm, we can affect the rev rate of the engine a bit: just noticed it does nothing under the hood actually... */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineSetup" )
-	float mIdleRevRateBounceFactor = 0.f;
+	float mIdleRevRateBounceFactor = 0.0f;
 
 	/** When we bounce off the rev limiter, how much rpm do we subtract to the engine max rpm. Random number between min and max */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineSetup" )
-	FInt32Range mRevLimiterBounceRange = TRange<int>(100, 250);
+	FInt32Range mRevLimiterBounceRange = TRange<int32>(100, 250);
 
 	/** When we bounce of the rev limiter, we can affect the rev rate of the engine a bit: just noticed it does nothing under the hood actually... */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Custom|EngineSetup" )
-	float mRevLimiterRevRateBounceFactor = 0.f;
-	
+	float mRevLimiterRevRateBounceFactor = 0.0f;
 private:
-	void ReCreateSoundComponents();
-	void DeleteSoundComponents();
-	
-	void UpdateAirStatus();
-
-	void UpdateTireEffects();
-
-	void UpdateTireAudio();
-
-	UPROPERTY()
-	FAudioEventsCache mAudioEventsCache;
-	
 	/** The setup of the wheel when starting the simulation.
 	 * Allows us to revert to stock settings when runtime modifications aren't needed anymore */
-	TArray< Chaos::FSimpleWheelConfig > mInitialWheelSetup;
-	
-	TMap< int, FWheelSoundSurfacePair* > mVehicleWheelAudioPairs;
-	
-	/** How many of our wheels are on the ground */
-	int mNumWheelsOnGround;
-	
-	/** Vehicle sets if we're significant or not. */
-	bool mIsSignificant = false;
+	TArray<Chaos::FSimpleWheelConfig> mInitialWheelSetup;
 
 	/** Do we have a driver? */
-	bool mHasDriver = false;
-	
-	/** Is our driver the local player */
-	bool mHasLocalDriver = false;
+	bool mHasDriver{false};
+	/** Cached value of the sleep threshold that was set up with the vehicle */
+	float mInitialSleepThreshold{0.0f};
 
-	/** Cached value of the sleep threshold that was setup with the vehicle */
-	float mInitialSleepThreshold = 0;
+	float mCachedEngineThrottle{0.0f};
+	float mCachedEngineRPM{0.0f};
 };

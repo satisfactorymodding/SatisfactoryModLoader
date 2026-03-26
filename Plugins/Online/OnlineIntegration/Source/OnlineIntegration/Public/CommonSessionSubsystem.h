@@ -29,7 +29,6 @@ DECLARE_LOG_CATEGORY_EXTERN(LogCommonSession, Log, All);
 struct ONLINEINTEGRATION_API FSessionTraitTags
 {
 	static FNativeGameplayTag HasFindFriendSessionSupport;
-	//<FL>[KonradA]
 	static FNativeGameplayTag HasSessionDiscoveryDisabled;
 };
 
@@ -115,11 +114,15 @@ public:
 	const TArray<FNetDriverDefinition>& GetDefaultNetDriverDefinitions() const;
 
 	// <FL> [WuttkeP] Store platform invites that were received before logging into EOS so they can be joined later.
-	void SetPendingJoinRequest(const UE::Online::FUISessionJoinRequested& JoinRequest);
+	void SetPendingJoinRequest(const UE::Online::FUISessionJoinRequested& JoinRequest, UOnlineIntegrationBackend* = nullptr);
 	// </FL>
 	//<FL>[KonradA]
+	UFUNCTION(BlueprintCallable)
 	bool HasPendingJoinRequest() const;
-	void ResetSessions() { SessionIdToBackendMap.Empty(); }
+	void ResetSessions();
+
+	TOptional<UE::Online::FUISessionJoinRequested> GetPendingJoinRequest();
+	UOnlineIntegrationBackend* GetPendingJoinRequestBackend();
 	//</FL>
 
 	void RegisterSessionBackendMapping(UE::Online::FOnlineSessionId OnlineSessionId, UOnlineSessionBackendLink* SessionBackend);
@@ -164,6 +167,9 @@ protected:
 	/** Called after traveling to the new hosted session map */
 	virtual void HandlePostLoadMap(UWorld* World);
 
+	UFUNCTION(BlueprintCallable)
+	bool IsLocalPlayerHostOfSession(UObject* context) const;
+
 	virtual void BindDelegates();
 
 	UE::Online::ISessionsPtr GetSessionsInterface(UOnlineIntegrationBackend* InBackend) const;
@@ -194,14 +200,55 @@ protected:
 	TMap<TWeakObjectPtr<UOnlineSessionBackendLink>, TWeakObjectPtr<USessionInformation>> BackendToSessionMap;
 	TMap<UE::Online::FOnlineSessionId, TArray<TPromise<USessionInformation*>>> OnlineSessionIdResolvePromises;
 	// <FL> [TranN] See AddFindSessionsRequest
+	enum FindSessionsProgressState : uint8
+	{
+		Waiting,
+		InProgress,
+		Done,
+	};
 	struct FindSessionsRequest
 	{
 		TPromise<UE::Online::TOnlineResult<UE::Online::FFindSessions>> Promise;
 		UE::Online::FFindSessions::Params Params;
-		bool bInProgress = false;
+		FindSessionsProgressState ProgressState = FindSessionsProgressState::Waiting;
 	};
-	TMap<UE::Online::FAccountId, TArray<FindSessionsRequest>> PendingFindSessionsRequestsForAccounts;
-	TMap<UE::Online::FAccountId, UE::Online::ISessionsPtr> SessionsPtrForAccounts;
+
+	struct FindSessionsRequestKey
+	{
+		TOptional<UE::Online::FAccountId> TargetUser;
+		TOptional<UE::Online::FOnlineSessionId> TargetSession;
+
+		friend bool operator==(const FindSessionsRequestKey& a, const FindSessionsRequestKey& b)
+		{
+			if (a.TargetSession.IsSet() && b.TargetSession.IsSet())
+			{
+				return a.TargetSession == b.TargetSession;
+			}
+			else
+			{
+				return a.TargetUser == b.TargetUser;
+			}
+		}
+
+		friend uint32 GetTypeHash(const FindSessionsRequestKey& RequestKey)
+		{
+			// Move up in the namespace lookup to have access to the other GetTypeHash overloads
+			using ::GetTypeHash;
+			// Yes Branching in hash functions is bad, but in this instance we do it to avoid using Get([DefaultValue]) calls to TOptional<T>
+			// which would create many many many unnecessary allocations which are likely way worse then branches.
+			if (RequestKey.TargetUser.IsSet() && !RequestKey.TargetSession.IsSet())
+				return GetTypeHash(RequestKey.TargetUser.GetValue());
+			else if (RequestKey.TargetSession.IsSet() && !RequestKey.TargetUser.IsSet())
+				return GetTypeHash(RequestKey.TargetSession.GetValue());
+			else
+				return HashCombine(GetTypeHash(RequestKey.TargetUser.GetValue()), GetTypeHash(RequestKey.TargetSession.GetValue()));
+		}
+	};
+	
+	TOptional<FindSessionsRequestKey> RunningSessionQueryKey;
+	TSharedPtr<TArray<FindSessionsRequest>> RunningFindSessionRequestArray;
+	TMap<FindSessionsRequestKey, TSharedPtr<TArray<FindSessionsRequest>>> PendingFindSessionsRequestsForAccounts;
+	TMap<FindSessionsRequestKey, UE::Online::ISessionsPtr> SessionsPtrForAccounts;
 	// </FL>
 
 	UPROPERTY()
@@ -209,13 +256,25 @@ protected:
 
 	// <FL> [WuttkeP] Store platform invites that were received before logging into EOS so they can be joined later.
 	TOptional<UE::Online::FUISessionJoinRequested> PendingJoinRequest;
+	UPROPERTY()
+	TObjectPtr<UOnlineIntegrationBackend> PendingJoinRequestBackend;
+
 	// </FL>
 
 	// <FL> [AKonrad, BGR] Used for late update all presence data
 	UFUNCTION()
 	void UpdatePresence() const;
 	// </FL>
+
+	UFUNCTION(BlueprintCallable)
+	bool HasPendingSessionRequestsForAccounts() const
+	{
+		UE_LOG(LogCommonSession, VeryVerbose, TEXT("Pending find session Requests: %i"), PendingFindSessionsRequestsForAccounts.Num());
+		return PendingFindSessionsRequestsForAccounts.Num() > 0;
+	};
 };
+
+DECLARE_DYNAMIC_DELEGATE_OneParam(FJoinSessionResponse, USessionMigrationSequence*, ResponseDelegate);
 
 UCLASS(BlueprintType)
 class ONLINEINTEGRATION_API UCommonSessionStatics : public UObject
@@ -225,7 +284,7 @@ class ONLINEINTEGRATION_API UCommonSessionStatics : public UObject
 public:
 
 	UFUNCTION(BlueprintCallable, Category=Sessions)
-	static USessionMigrationSequence* JoinSession(APlayerController* PlayerController, USessionInformation* SessionInfo);
+	static USessionMigrationSequence* JoinSession(APlayerController* PlayerController, USessionInformation* SessionInfo, const FJoinSessionResponse& ResponseDelegate);
 
 	UFUNCTION(Blueprintable, Category=Session)
 	static USessionDefinition* GetSessionDefinitionForWorld(const UWorld* World);

@@ -6,4 +6,5 @@ void UOnlineAsyncOperation::Cancel(){ }
 FDelegateHandle UOnlineAsyncOperation::AddOperationFinishedDelegate(FOnOnlineAsyncOperationCompleted_Native::FDelegate &&Delegate){ return FDelegateHandle(); }
 bool UOnlineAsyncOperation::HasErrors() const{ return bool(); }
 void UOnlineAsyncOperation::NotifySequenceFinished(){ }
-void UOnlineAsyncOperation::UpdateStatusText(const FText& Text){ }
+void UOnlineAsyncOperation::SetStatus(EOnlineAsyncOperationStatus OperationStatus){ }
+void UOnlineAsyncOperation::UpdateStatus(EOnlineAsyncOperationStatus OperationStatus){ }

@@ -5,14 +5,18 @@
 UOnlineSessionBackendLink* USessionInformation::GetSessionBackendLink(UOnlineIntegrationBackend* OnlineBackend) const{ return nullptr; }
 FCommonSession USessionInformation::GetSessionHandle() const{ return FCommonSession(); }
 void USessionInformation::UpdateCustomSettings(APlayerController *Player, const TArray<FCustomOnlineSessionSetting>& UpdatedCustomSettings){ }
-USessionMemberInformation* USessionInformation::AddSessionMember(APlayerState* PlayerState){ return nullptr; }
+void USessionInformation::AddSessionMember(APlayerState* PlayerState){ }
 void USessionInformation::RemoveSessionMember(APlayerState* PlayerState){ }
+void USessionInformation::ForceUpdateMembersModel(){ }
 bool USessionInformation::GetCustomSetting(FName SettingName, FCustomOnlineSessionSetting& OutSetting){ return bool(); }
 void USessionInformation::RefreshCachedData(FDateTime UpdateTimestampUtc){ }
 FName USessionInformation::GetCurrentProfile() const{ return FName(); }
 int32 USessionInformation::GetNumMaxConnections() const{ return int32(); }
 FDateTime USessionInformation::GetLastUpdateTimestampUtc() const{ return FDateTime(); }
 ECommonSessionJoinPolicy USessionInformation::GetJoinPolicy() const{ return ECommonSessionJoinPolicy(); }
+bool USessionInformation::GetJoinPolicyForBackend(ECommonSessionJoinPolicy& joinPolicy,
+	UOnlineSessionBackendLink* Backend) const{ return false; }
+ECommonSessionJoinPolicy USessionInformation::GetMostRestrictiveJoinPolicy(){ return ECommonSessionJoinPolicy(); }
 FDelegateHandle USessionInformation::AddOnSessionAttributesAddedDelegate(FOnOnlineSessionAttributesAdded::FDelegate Delegate){ return FDelegateHandle(); }
 FDelegateHandle USessionInformation::AddOnSessionAttributesRemovedDelegate(FOnOnlineSessionAttributesRemoved::FDelegate Delegate){ return FDelegateHandle(); }
 FDelegateHandle USessionInformation::AddOnSessionAttributesUpdatedDelegate(FOnOnlineSessionAttributesUpdated::FDelegate Delegate){ return FDelegateHandle(); }

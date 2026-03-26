@@ -160,7 +160,7 @@ private:
 public:
 	/** Mesh that the scanner is using */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Scanner" )
-	USkeletalMeshComponent* mScannerSkeletalMesh;
+	TObjectPtr<USkeletalMeshComponent> mScannerSkeletalMesh;
 	
 protected:
 	/** Maximum delay (in seconds) between each beep */
@@ -199,23 +199,23 @@ protected:
 
 	/** Screen material to base the dynamic instance on in 3P */
 	UPROPERTY( EditDefaultsOnly, Category = "Scanner" )
-	UMaterialInterface* mScreenMaterial3P;
+	TObjectPtr<UMaterialInterface> mScreenMaterial3P;
 
 	/** Screen material to base the dynamic instance on in 1P */
 	UPROPERTY( EditDefaultsOnly, Category = "Scanner" )
-	UMaterialInterface* mScreenMaterial1P;
+	TObjectPtr<UMaterialInterface> mScreenMaterial1P;
 private:
 	/** Currently open scanner menu widget */
 	UPROPERTY( Transient )
-	UFGInteractWidget* mScannerMenuWidget;
+	TObjectPtr<UFGInteractWidget> mScannerMenuWidget;
 
 	/** Material instance of the screen material */
 	UPROPERTY( Transient )
-	UMaterialInstanceDynamic* mScreenMaterialInstance;
+	TObjectPtr<UMaterialInstanceDynamic> mScreenMaterialInstance;
 
 	/** The texture we are rendering into for the screen material */
 	UPROPERTY( Transient )
-	class UCanvasRenderTarget2D* mScreenCanvasRenderTarget2D;
+	TObjectPtr<class UCanvasRenderTarget2D> mScreenCanvasRenderTarget2D;
 	
 	/** The currently descriptor we would like to scan for */
 	UPROPERTY( SaveGame, ReplicatedUsing = "OnRep_CurrentScannableDescriptor" )

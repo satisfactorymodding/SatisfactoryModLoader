@@ -31,7 +31,7 @@ public:
 	void DestroyPhysics();
 	
 	virtual FBoxSphereBounds CalcBounds(const FTransform& LocalToWorld) const override;
-	
+	virtual void OnRegister() override;
 protected:
 	virtual UBodySetup* GetBodySetup() override;
 	virtual FPrimitiveSceneProxy* CreateSceneProxy() override;

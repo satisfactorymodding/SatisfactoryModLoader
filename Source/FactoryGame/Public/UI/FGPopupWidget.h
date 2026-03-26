@@ -37,10 +37,10 @@ public:
 	TSubclassOf< class UUserWidget > PopupClass = {};
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
-	UObject* Instigator = nullptr;
+	TObjectPtr<UObject> Instigator = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
-	class UFGPopupWidgetContent* PopupContent = nullptr;
+	TObjectPtr<class UFGPopupWidgetContent> PopupContent = nullptr;
 		
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
 	FKey mOverrideConfirmKey = EKeys::Invalid;
@@ -86,7 +86,7 @@ public:
 	FPopupClosed mPopupClosedDelegate;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Popup" )
-	UObject* mInstigator;
+	TObjectPtr<UObject> mInstigator;
 
 	/** The popup widget content if the popup was created with an instance of this type. So this may be null for simple popups */
 	UPROPERTY(Transient)

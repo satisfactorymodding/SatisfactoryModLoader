@@ -46,10 +46,10 @@ protected:
 private:
 	/** The connection conveyors snap to, used when placing a support automatically. */
 	UPROPERTY()
-	UFGPipeConnectionComponentBase* mSnapConnection;
+	TObjectPtr<UFGPipeConnectionComponentBase> mSnapConnection;
 
 	/* Component snapped to on another actor during placement */
 	UPROPERTY( CustomSerialization, Replicated )
-	class UFGPipeConnectionComponentBase* mSnappedConnectionComponent;
+	TObjectPtr<class UFGPipeConnectionComponentBase> mSnappedConnectionComponent;
 
 };

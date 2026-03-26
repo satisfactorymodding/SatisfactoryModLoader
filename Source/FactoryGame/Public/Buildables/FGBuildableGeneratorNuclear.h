@@ -62,7 +62,7 @@ private:
 	
 	/** Spent fuel rods goes here. */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mOutputInventory;
+	TObjectPtr<class UFGInventoryComponent> mOutputInventory;
 
 	/** Waste left to produce from the current fuel rod*/
 	UPROPERTY( SaveGame )

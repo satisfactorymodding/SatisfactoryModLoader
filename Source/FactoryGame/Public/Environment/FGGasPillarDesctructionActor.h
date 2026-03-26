@@ -26,7 +26,7 @@ public:
 public:	
 
 	UPROPERTY( VisibleAnywhere )
-	UGeometryCollectionComponent* mGeometryCollectionComponent;
+	TObjectPtr<UGeometryCollectionComponent> mGeometryCollectionComponent;
 
 	UPROPERTY( EditDefaultsOnly )
 	float mDestructionImpulseScale = 2.f;

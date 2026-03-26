@@ -28,6 +28,7 @@ UFGInteractWidget* UFGGameUI::FindWidgetByClass(TSubclassOf<UFGInteractWidget> w
 void UFGGameUI::ResumeGame(){ }
 void UFGGameUI::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboardSettings){ }
 void UFGGameUI::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboardSettings){ }
+void UFGGameUI::ClearMessageCooldowns(){ }
 float UFGGameUI::GetBarkMessageCooldown(TSubclassOf<class UFGBarkMessageType> barkMessageType) const{ return 0; }
 void UFGGameUI::ClearBarkMessageCooldown(TSubclassOf<class UFGBarkMessageType> barkMessageType){  }
 UUserWidget* UFGGameUI::RequestWidget(TSubclassOf< UUserWidget > widgetClass){ return nullptr; }
@@ -38,3 +39,4 @@ void UFGGameUI::Native_OnOnboardingStepUpdated(UFGOnboardingStep* currentOnboard
 bool UFGGameUI::ShouldShowFicsitSplashWidget() const{ return bool(); }
 bool UFGGameUI::ShouldSuppressMessage( UFGMessage* message) const{ return bool(); }
 void UFGGameUI::SetupDelegates(){ }
+bool UFGGameUI::CanUnpauseTheGame() const{ return bool(); }

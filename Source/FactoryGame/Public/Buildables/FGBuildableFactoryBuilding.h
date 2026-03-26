@@ -87,10 +87,7 @@ public:
 protected:
 	/** Mesh component for the factory building, can be null when marked not to be constructed.*/
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UFGColoredInstanceMeshProxy* mMeshComponentProxy = nullptr;
-
-	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mCustomRainBoundsMesh = nullptr;
+	TObjectPtr<class UFGColoredInstanceMeshProxy> mMeshComponentProxy = nullptr;
 };
 
 

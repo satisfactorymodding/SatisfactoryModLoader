@@ -4,10 +4,13 @@
 
 #include "FactoryGame.h"
 #include "EnhancedActionKeyMapping.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/PlayerInput.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FGInputLibrary.generated.h"
 
+
+class UUserWidget;
 
 USTRUCT( BlueprintType )
 struct FFGKeyMapping
@@ -105,7 +108,7 @@ public:
 
 	/** Returns an input action based on a mapping name. It needs to exist as a binding on the player input by applying a mapping context with the specified action beforehand. */
 	UFUNCTION( BlueprintPure, Category = "Input" )
-	static TSoftObjectPtr< class UInputAction > FindInputActionByMappingName( APlayerController* playerController, const FName& mappingName );
+	static TSoftObjectPtr< const UInputAction > FindInputActionByMappingName( APlayerController* playerController, const FName& mappingName );
 	
 	/** Returns if we have any conflicting mappings with the same exact keys. Hard conflicts are mappings in the same context and soft conflicts are mappings in other contexts */ 
 	UFUNCTION( BlueprintCallable, Category = "Input" )
@@ -114,11 +117,14 @@ public:
 	/** Rebind a mapping with the given action name. If there is a hard conflict, Binding with the same exact keys in the same context, the conflicting key will be overwritten with None (FKeys:Invalid)   */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	static void RebindEnhancedKeyMapping( APlayerController* playerController, const FName& inActionName, const FKey& primaryKey, const TArray<FKey>& modifierKeys );
+	
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	static void RebindEnhancedControllerMappings( APlayerController* playerController, const TMap<FName,FKey>& pendingRebindMappings);
 
 	/** Remove all keybindings that the player have mapped */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
-	static void ResetAllEnhancedKeyBindings( APlayerController* playerController );
-
+	static void ResetAllEnhancedKeyBindings( APlayerController* playerController, bool currentDeviceOnly = false );
+	
 	/* Returns true if we find a mapped key for the given action. Will first check player mapped keys and then fallback to default mappings.
 	 * out_primaryKey can be a FKeys::Invalid if we removed a conflicting binding  */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
@@ -168,6 +174,9 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static UTexture2D* GetKeyTexture2DFromBinding( const FFGKeyTextureBinding& binding );
+
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static UTexture2D* GetKeyTexture2DFromKey( const FKey& key );
 
 	// </FL>
 private:

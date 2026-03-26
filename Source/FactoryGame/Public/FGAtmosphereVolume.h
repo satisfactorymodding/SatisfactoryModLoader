@@ -164,7 +164,7 @@ public:
 	void BeginPlay() override;
 
 	UPROPERTY( EditAnywhere, Instanced, Category="Atmosphere & Weather" )
-	class UFGBiome* mBiome = nullptr;
+	TObjectPtr<class UFGBiome> mBiome = nullptr;
 
 	//~ Begin UObject interface
 #if WITH_EDITOR

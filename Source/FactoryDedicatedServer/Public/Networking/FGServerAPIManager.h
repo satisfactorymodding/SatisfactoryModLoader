@@ -37,10 +37,10 @@ struct FFGRequestHandlerRegistration
 	GENERATED_BODY()
 
 	UPROPERTY()
-	UObject* HandlerObject{};
+	TObjectPtr<UObject> HandlerObject{};
 
 	UPROPERTY()
-	UFunction* HandlerFunction{};
+	TObjectPtr<UFunction> HandlerFunction{};
 
 	FName FunctionName;
 	EPrivilegeLevel PrivilegeLevel{};
@@ -48,7 +48,7 @@ struct FFGRequestHandlerRegistration
 	bool bEnableCompression{false};
 
 	UPROPERTY()
-	UFunction* AsyncCompleteRequestFunction{};
+	TObjectPtr<UFunction> AsyncCompleteRequestFunction{};
 };
 
 /**
@@ -221,7 +221,7 @@ protected:
 	void RegisterDefaultParameterHandlers();
 private:
 	UPROPERTY()
-	UFGServerCertificateManager* mServerCertificateManager;
+	TObjectPtr<UFGServerCertificateManager> mServerCertificateManager;
 
 	UPROPERTY()
 	TMap<FString, FFGRequestHandlerRegistration> mRegisteredHandlers;

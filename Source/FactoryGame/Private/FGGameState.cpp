@@ -53,6 +53,11 @@ AFGGameState::AFGGameState() : Super() {
 	this->mCheatNoFuel = false;
 	this->mCheatTurboProductionMode = false;
 	this->mCheatTurboBuildMode = false;
+	this->mEnergyCostMultiplier = 1.0;
+	this->mPartsCostMultiplier = 1.0;
+	this->mSpacePartsCostMultiplier = 1.0;
+	this->mNodeRandomization = ENodeRandomizationMode::NRM_None;
+	this->mNodePuritySettings = ENodePuritySettings::NPS_NoChange;
 	this->mIsTradingPostBuilt = false;
 	this->mHasInitalTradingPostLandAnimPlayed = false;
 	this->mIsSpaceElevatorBuilt = false;
@@ -104,6 +109,12 @@ void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGGameState, mCheatNoFuel);
 	DOREPLIFETIME(AFGGameState, mCheatTurboProductionMode);
 	DOREPLIFETIME(AFGGameState, mCheatTurboBuildMode);
+	DOREPLIFETIME(AFGGameState, mEnergyCostMultiplier);
+	DOREPLIFETIME(AFGGameState, mPartsCostMultiplier);
+	DOREPLIFETIME(AFGGameState, mSpacePartsCostMultiplier);
+	DOREPLIFETIME(AFGGameState, mNodeRandomization);
+	DOREPLIFETIME(AFGGameState, mNodePuritySettings);
+	DOREPLIFETIME(AFGGameState, mNodeRandomizationSeed);
 	DOREPLIFETIME(AFGGameState, mIsTradingPostBuilt);
 	DOREPLIFETIME(AFGGameState, mHasInitalTradingPostLandAnimPlayed);
 	DOREPLIFETIME(AFGGameState, mIsSpaceElevatorBuilt);
@@ -112,9 +123,11 @@ void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGGameState, mTetrominoLeaderBoard);
 	DOREPLIFETIME(AFGGameState, mPublicTodoList);
 	DOREPLIFETIME(AFGGameState, mPublicTodoListLastEditedBy);
+	DOREPLIFETIME(AFGGameState, mPlayerInfoCache);
 	DOREPLIFETIME(AFGGameState, mIsCreativeModeEnabled);
 }
 void AFGGameState::BeginPlay(){ Super::BeginPlay(); }
+void AFGGameState::EndPlay(EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGGameState::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameState::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameState::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -136,6 +149,7 @@ bool AFGGameState::HasInitalTradingPostLandAnimPlayed() const{ return bool(); }
 void AFGGameState::SetHasInitalTradingPostLandAnimPlayed(){ }
 bool AFGGameState::IsSpaceElevatorBuilt() const{ return bool(); }
 void AFGGameState::SetProjectAssembly( AFGProjectAssembly* projectAssembly){ }
+void AFGGameState::DeserializeGameModeSetting(const FString& options){ }
 void AFGGameState::GetVisitedMapAreas(TArray< TSubclassOf< UFGMapArea > >& out_VisitedAreas){ }
 bool AFGGameState::IsMapAreaVisisted(TSubclassOf< UFGMapArea > inArea){ return bool(); }
 void AFGGameState::AddUniqueVisistedMapArea(TSubclassOf< UFGMapArea > mapArea){ }
@@ -146,13 +160,16 @@ void AFGGameState::SetCheatNoCost(bool noCost){ }
 void AFGGameState::SetCheatNoFuel(bool noFuel){ }
 void AFGGameState::SetCheatTurboProductionMode(bool enabled){  }
 void AFGGameState::SetCheatTurboBuildMode(bool enabled){  }
+void AFGGameState::SetEnergyCostMultiplier(float multiplier){ }
+void AFGGameState::SetPartsCostMultiplier(float multiplier){ }
+void AFGGameState::SetSpacePartsCostMultiplier(float multiplier){ }
 void AFGGameState::NotifyPlayerAdded( AFGCharacterPlayer* inPlayer){ }
 int32 AFGGameState::GetTotalPlayDuration() const{ return int32(); }
 void AFGGameState::SetSessionName(const FString& inName){ }
 void AFGGameState::SetupColorSlots_Data(const TArray< FFactoryCustomizationColorSlot >& colorSlotsPrimary_Data){ }
 void AFGGameState::Server_SetBuildingColorDataForSlot_Implementation(uint8 slotIdx, FFactoryCustomizationColorSlot colorData){ }
 void AFGGameState::RemovePlayerColorPresetAtIndex(int32 index){ }
-void AFGGameState::AddPlayerColorPreset(FText presetName, FLinearColor color){ }
+void AFGGameState::AddPlayerColorPreset(FText presetName, FLinearColor color, const FPlayerInfoHandle& LastEditor){ }
 FLinearColor AFGGameState::GetBuildingColorPrimary_Linear(uint8 slot){ return FLinearColor(); }
 FLinearColor AFGGameState::GetBuildingColorSecondary_Linear(uint8 slot){ return FLinearColor(); }
 void AFGGameState::Server_SetBuildableLightColorSlot_Implementation(uint8 slotIdx, FLinearColor color){ }
@@ -175,15 +192,31 @@ void AFGGameState::OnRep_MapManager(){  }
 void AFGGameState::OnRep_ActorRepresentationManager(){  }
 void AFGGameState::OnRep_ConveyorChainSubsystem(){  }
 void AFGGameState::OnRep_BlueprintSubsystem(){  }
-void AFGGameState::Server_SetPublicTodoList(const FString& newTodoList, const TArray<FLocalUserNetIdBundle>& lastEditedBy){  }
+void AFGGameState::OnRep_VehicleSubsystem(){ }
+void AFGGameState::Server_SetPublicTodoList(const FString& newTodoList, const FPlayerInfoHandle& lastEditedBy){ }
 void AFGGameState::SetCreativeModeEnabled(){ }
-AFGPlayerState* AFGGameState::FindPlayerStateForOnlineUser(UOnlineUserInfo* userInfo){ return nullptr; }
 void AFGGameState::BroadcastAutoSaveTimeNotification(float timeLeft) const{ }
 void AFGGameState::BroadcastAutoSaveFinishedNotification() const{ }
 void AFGGameState::BroadcastServerRestartTimeNotification(float timeLeft) const{ }
+FPlayerInfoHandle AFGGameState::UpdatePlayerInfoFromPlayerLoginSnapshot(const FPlayerInfoSnapshot& playerInfoSnapshot){ return FPlayerInfoHandle(); }
+bool AFGGameState::FindPlayerDataFromCacheByBackendLink(UOnlineUserBackendLink* backendLink, FPlayerInfoHandle& out_handle) const{ return bool(); }
+FPlayerInfoHandle AFGGameState::FindPlayerInfoHandleByAccountId(UE::Online::FAccountId accountId) const{ return FPlayerInfoHandle(); }
+const FCachedPlayerPlatformInfo* AFGGameState::FindPlayerPlatformInfoByHandle(const FPlayerInfoHandle& playerInfoHandle, bool allowFallbackPlatformInfo) const{ return nullptr; }
+UE::Online::FAccountId AFGGameState::FindPlayerAccountIdByHandle(const FPlayerInfoHandle& playerInfoHandle) const{ return UE::Online::FAccountId(); }
+UE::Online::FAccountId AFGGameState::FindLastSeenPlayerAccountIdByHandle(const FPlayerInfoHandle& playerInfoHandle) const{ return UE::Online::FAccountId(); }
+const FCachedPlayerInfo* AFGGameState::FindPlayerInfoDataByHandle(const FPlayerInfoHandle& playerInfoHandle) const{ return nullptr; }
+TArray<FCachedPlayerInfo> AFGGameState::GetOfflineCachedPlayerInfosInSession() const{ return TArray<FCachedPlayerInfo>(); }
 void AFGGameState::OnRep_CheatNoPower(){ }
 void AFGGameState::OnRep_CreativeModeEnabled(){ }
 void AFGGameState::UpdateServerRealTimeSeconds(){  }
 void AFGGameState::SubmitNumPlayersTelemetry() const{ }
 void AFGGameState::SubmitCheatTelemetry() const{ }
 void AFGGameState::TryGiveStartingRecipes( AFGCharacterPlayer* inPlayer){ }
+void AFGGameState::OnRep_PlayerInfoCache(const TArray<FCachedPlayerInfo>& oldPlayerInfoCache){ }
+void AFGGameState::UpdatePlayerInfoCacheUserInfo(){ }
+void AFGGameState::UpdatePlayerInfoFromOnlineUserBackend(const FPlayerInfoHandle& playerInfoHandle, const UOnlineUserBackendLink* onlineUserBackend){ }
+void AFGGameState::RegisterPlayerStateWithLocalPlayerSession(APlayerState* playerState){ }
+void AFGGameState::RemovePlayerStateFromLocalPlayerSession(APlayerState* playerState){ }
+void AFGGameState::RegisterPlayer_OnPlayerPlatformInfoChanged(const FPlayerInfoHandle& playerInfoHandle){ }
+void AFGGameState::CachePlayerInfoAvatarImage_OnPlayerPlatformInfoChanged(const FPlayerInfoHandle& playerInfoHandle){ }
+void AFGGameState::CachePlayerInfoAvatarImageFromAvatarURL(const FCachedPlayerPlatformInfo& playerPlatformInfo) const{ }

@@ -36,6 +36,9 @@ void UFGGameUserSettings::OnFOVScalingUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::InitVideoQualityValues(){ }
 void UFGGameUserSettings::UpdateVideoQualityCvars(const FString& cvar){ }
 void UFGGameUserSettings::OnUpScalingUpdated(FString strId, FVariant value){ }
+void UFGGameUserSettings::OnVehiclePathSettingUpdated(FString strId, FVariant value){ }
+void UFGGameUserSettings::OnVehiclePathRenderDistanceChanged(FString strId, FVariant value){ }
+void UFGGameUserSettings::UpdateVehiclePathRenderDistanceForWorld(UWorld* world){ }
 void UFGGameUserSettings::OnFrameGenerationUpdated(FString strId, FVariant value){ }
 void UFGGameUserSettings::InitFrameGeneration(){ }
 void UFGGameUserSettings::InitUpScalingMethod(){ }
@@ -47,7 +50,7 @@ bool UFGGameUserSettings::GetCmdLineVideoQualityLevel(int32& out_value){ return 
 bool UFGGameUserSettings::HasVideoQualityCmdLineArg(){ return bool(); }
 void UFGGameUserSettings::TestCmdLineVideoQuality(){ }
 void UFGGameUserSettings::SetGroupQualityLevel(const TCHAR* InGroupName, int32 InQualityLevel, int32 InNumLevels){ }
-UFGOptionInterface* UFGGameUserSettings::GetOptionInterface(){ return nullptr; }
+TScriptInterface<IFGOptionInterface> UFGGameUserSettings::GetOptionInterface(){ return TScriptInterface<IFGOptionInterface>(); }
 void UFGGameUserSettings::UpdateAudioOption(FString updatedCvar){ }
 void UFGGameUserSettings::OnArachnophobiaModeUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnGamepadRumbleEnabledUpdated(FString updatedCvar){  }
@@ -66,7 +69,6 @@ void UFGGameUserSettings::OnUpscalingPresetUpdated(FString strId, FVariant value
 void UFGGameUserSettings::SetCrossPlayEnabled(bool bNewCrossPlayEnabled){  }
 bool UFGGameUserSettings::GetIsCrossPlayEnabled(){ return false; }
 bool UFGGameUserSettings::GetIsCrossPlayEnabledWithoutCheck(){ return Super::GetIsCrossPlayEnabledWithoutCheck(); }
-bool UFGGameUserSettings::PollHasUserPremiumPrivilege(FUserHasPremiumAccountDelegate completeDelegate){ return false; }
 void UFGGameUserSettings::ForceOnlineIntegrationDisconnect(){  }
 void UFGGameUserSettings::OnScreenPercentageUpdated(FString strId, FVariant value){ }
 bool UFGGameUserSettings::IsUsingCustomScreenPercentage() const{ return bool(); }
@@ -76,11 +78,14 @@ void UFGGameUserSettings::UpdateFoliageLoadingDistanceInternal(UWorld* currentWo
 void UFGGameUserSettings::OnNetworkQualityUpdated(FString updatedCvar){ }
 int32 UFGGameUserSettings::GetDefaultPostProcessQualitySetting(FString settingName){ return int32(); }
 void UFGGameUserSettings::RefreshNetworkQualityValues(){ }
+void UFGGameUserSettings::OnAgreeToCrashUploadUpdated(FString updateCvar){ }
+void UFGGameUserSettings::RefreshAgreeToCrashUpload(bool flush){ }
 bool UFGGameUserSettings::GetPlayerMappedKey(const FName& inActionName, FFGCustomInputActionMapping& out_FoundMapping) const{ return bool(); }
 void UFGGameUserSettings::AddPlayerMappedKey(const FFGCustomInputActionMapping& newMapping){ }
 void UFGGameUserSettings::RemoveAllPlayerMappedKeys(){ }
-void UFGGameUserSettings::GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const{ }
-void UFGGameUserSettings::GetAllUserSettingsMap(TMap<FString, UFGUserSettingApplyType*>& OutUserSettings) const{  }
+void UFGGameUserSettings::RemovePlayerMappedKeysForCurrentDevice(){ }
+void UFGGameUserSettings::GetAllUserSettings(TArray<TObjectPtr<UFGUserSettingApplyType>>& OutUserSettings) const{ }
+void UFGGameUserSettings::GetAllUserSettingsMap(TMap<FString, TObjectPtr<UFGUserSettingApplyType>>& OutUserSettings) const{ }
 UFGUserSettingApplyType* UFGGameUserSettings::FindUserSetting(const FString& SettingId) const{ return nullptr; }
 void UFGGameUserSettings::SetOptionValue(const FString& strId, const FVariant& value){ }
 void UFGGameUserSettings::ApplyChanges(){ }
@@ -91,6 +96,7 @@ bool UFGGameUserSettings::IsInMainMenu() const{ return bool(); }
 IFGOptionInterface* UFGGameUserSettings::GetPrimaryOptionInterface(UWorld* world) const{ return nullptr; }
 void UFGGameUserSettings::InitSavedValues(){ }
 void UFGGameUserSettings::SetupAudioSettingBindings(){ }
+void UFGGameUserSettings::SetupVehiclePathSettingBindings(){ }
 void UFGGameUserSettings::OnExitToMainMenu(){ }
 void UFGGameUserSettings::OnExitToDesktop(){ }
 TMap<FString, FText> UFGGameUserSettings::GetLanguageData(){ return TMap<FString,FText>(); }
@@ -109,12 +115,14 @@ void UFGGameUserSettings::SetDismantleHologramColour(FVector inColour){ }
 void UFGGameUserSettings::SetInvalidPlacementHologramColour(FVector inColour){ }
 void UFGGameUserSettings::SetSoftClearanceHologramColour(FVector inColour){ }
 void UFGGameUserSettings::ApplyHologramColoursToCollectionParameterInstance(UObject* World){ }
+void UFGGameUserSettings::ApplyVehiclePathColorsToCollectionParameterInstance(UWorld* World){ }
 void UFGGameUserSettings::UpdateFoliageLoadingDistance(UObject* World, bool bBlockForLevelStreaming){  }
 void UFGGameUserSettings::UpdatePaniniFOVScaling(){ }
 bool UFGGameUserSettings::ShouldShowFirstLaunchPopUpScreen(){ return bool(); }
 void UFGGameUserSettings::MarkFirstLaunchPopUpScreenAccepted(){ }
 UMaterialParameterCollection* UFGGameUserSettings::GetHologramMaterialCollectionAsset() const{ return nullptr; }
 EOnlineIntegrationMode UFGGameUserSettings::GetPreferredOnlineIntegrationMode(){ return EOnlineIntegrationMode(); }
+bool UFGGameUserSettings::IsPreferredOnlineIntegrationModeSet(){ return bool(); }
 void UFGGameUserSettings::SetPreferredOnlineIntegrationMode(EOnlineIntegrationMode preferredOnlineIntegrationMode, bool bInvokedByUser){  }
 FString UFGGameUserSettings::GetActiveDeviceProfileName(){ return FString(); }
 FString UFGGameUserSettings::GetBaseDeviceProfileName(){ return FString(); }
@@ -126,6 +134,7 @@ void UFGGameUserSettings::OnModuleChanged(FName name, EModuleChangeReason reason
 void UFGGameUserSettings::TryInitUserSettings(){ }
 void UFGGameUserSettings::InitUserSettings(){ }
 void UFGGameUserSettings::SetPrimaryLangaugeToPlatformDefault(){  }
+void UFGGameUserSettings::UpdateCurrentVehiclePathRenderDistance(){ }
 UFGGameInstance* UFGGameUserSettings::GetPrimaryGameInstance(){ return nullptr; }
 bool UFGGameUserSettings::IsRunningOnSteamDeckOrConsole(){ return false; }
 ULocalUserInfo* UFGGameUserSettings::GetLocalUserInfo(){ return nullptr; }

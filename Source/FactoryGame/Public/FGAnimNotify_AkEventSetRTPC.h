@@ -26,7 +26,7 @@ protected:
 	protected:
 	/** The RTPC object we want to set. RTPC Value Has priority over RTPC name */
 	UPROPERTY( EditAnywhere, Category="Audio" )
-	class UAkRtpc const* mRTPCValue;
+	TObjectPtr<class UAkRtpc const> mRTPCValue;
 	
 	/** The name of the RTPC we want to set. RTPC Value Has priority over RTPC name */
 	UPROPERTY( EditAnywhere, Category="Audio" )

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MVVMViewModelBase.h"
-#include "MVVMViewModelContextResolver.h"
+#include "View/MVVMViewModelContextResolver.h"
 
 #include "LocalUserViewModel.generated.h"
 

@@ -7,6 +7,9 @@ void USessionInformationPrivate::OnSessionUpdateReceived(const UE::Online::FSess
 void USessionInformationPrivate::SetSessionHost(UOnlineUserInfo* InUserInfo){ }
 void USessionInformationPrivate::SetSessionDefinition(USessionDefinition* InSessionDefinition){ }
 void USessionInformationPrivate::SetSessionProfile(const FName& InProfile){ }
+void USessionInformationPrivate::SetNumMaxConnections(int32 InNumMaxConnections){ }
 void USessionInformationPrivate::RefreshCachedData(FDateTime UpdateTimestampUtc){ }
 void USessionInformationPrivate::InitializeSessionData(TSharedRef<const UE::Online::ISession> Session, UOnlineSessionBackendLink* Backend){ }
 void USessionInformationPrivate::SetGameSessionActor(AGameSession* GameSession){ }
+void USessionInformationPrivate::ReadCustomSettings(TSharedRef<const UE::Online::ISession> Session, UOnlineSessionBackendLink* Backend){ }
+void USessionInformationPrivate::UpdateFullCustomSettingsArray(){ }

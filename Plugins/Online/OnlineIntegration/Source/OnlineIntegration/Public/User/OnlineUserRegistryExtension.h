@@ -4,9 +4,8 @@
 
 #include "Async/Future.h"
 #include "CoreMinimal.h"
-#include "Interface.h"
 #include "Online/CoreOnline.h"
-
+#include "UObject/Interface.h"
 #include "OnlineUserRegistryExtension.generated.h"
 
 class UCommonUserSubsystem;

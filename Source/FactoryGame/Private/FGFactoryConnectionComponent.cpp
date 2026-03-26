@@ -4,7 +4,6 @@
 #include "Net/UnrealNetwork.h"
 
 UFGFactoryConnectionComponent::UFGFactoryConnectionComponent() : Super() {
-	this->mConnector = EFactoryConnectionConnector::FCC_CONVEYOR;
 	this->mDirection = EFactoryConnectionDirection::FCD_INPUT;
 	this->mConnectorClearance = 100.0;
 	this->mConnectedComponent = nullptr;
@@ -43,14 +42,7 @@ UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindCompatibleOver
 		const FVector& location,
 		const AActor* priorityActor,
 		float radius){ return nullptr; }
-UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindOverlappingConnections(UWorld* world,
-	const FVector& location, const AActor* priorityActor, float radius, EFactoryConnectionConnector connector,
-	EFactoryConnectionDirection direction, const TArray<TSubclassOf<class AFGBuildable>>& buildableClassFilter,
-		const TSet< class UFGFactoryConnectionComponent* >& ignoredConnections){ return nullptr; }
-int32 UFGFactoryConnectionComponent::FindAllOverlappingConnections(
-	TArray<UFGFactoryConnectionComponent*>& out_Connections, UWorld* world, const FVector& location, float radius,
-	EFactoryConnectionConnector connector, EFactoryConnectionDirection direction,
-	const TArray<TSubclassOf<class AFGBuildable>>& buildableClassFilter,
-	const TSet<class UFGFactoryConnectionComponent*>& ignoredConnections){ return int32(); }
+UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindOverlappingConnections(UWorld* world, const FVector& location, const AActor* priorityActor, float radius, EFactoryConnectionDirection direction, const TArray<TSubclassOf<class AFGBuildable>>& buildableClassFilter, const TSet<class UFGFactoryConnectionComponent*>& ignoredConnections){ return nullptr; }
+int32 UFGFactoryConnectionComponent::FindAllOverlappingConnections(TArray<UFGFactoryConnectionComponent*>& out_Connections, UWorld* world, const FVector& location, float radius, EFactoryConnectionDirection direction, const TArray<TSubclassOf<class AFGBuildable>>& buildableClassFilter, const TSet<class UFGFactoryConnectionComponent*>& ignoredConnections){ return int32(); }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::CheckIfSnapOnlyIsBlockedByOtherConnection(UFGFactoryConnectionComponent* connectionToCheck,
 		const TArray< FOverlapResult >& potentialBlockers){ return nullptr; }

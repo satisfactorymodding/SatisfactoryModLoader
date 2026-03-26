@@ -2,15 +2,21 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
-#include "InstancedSplineMeshComponent.h"
 #include "FactoryGame.h"
 #include "FGSplineCollisionComponent.h"
+#include "InstanceData.h"
 #include "FGSplineMeshGenerationLibrary.generated.h"
+
+
+struct FMeshGenerationSettings
+{
+	bool bCastDistanceFieldShadows = false;
+	float MaxDrawDistance = -1;
+};
 
 /**
  * Helper library for generating spline meshes, collision and meshes along a splines.
@@ -65,22 +71,11 @@ public:
 		float maxSplineLengthToFill,
 		UStaticMesh* mesh,
 		float meshLength,
-		TArray< USplineMeshComponent* >& meshPool,
+		TArray< TObjectPtr<USplineMeshComponent> >& meshPool,
 		MeshConstructor meshConstructor );
 
 	static void BuildNaniteSplineMeshes(USplineComponent* spline,UStaticMesh* Mesh, float meshLength, TArray<USplineMeshComponent*>& outMeshes);
-	static void BuildSplineMeshesInstanced(USplineComponent* spline, float meshLength, class UInstancedSplineMeshComponent* splineInstances);
-
-	/**
-	 * Given a spline, this creates an instanced spline mesh along the spline.
-	 *
-	 * For all parameters see BuildSplineMeshesInstanced.
-	 */
-	static void BuildSplineMeshesPerSegmentInstanced(
-		USplineComponent* spline,
-		UStaticMesh* mesh,
-		float meshLength,
-	    UInstancedSplineMeshComponent* splineInstances );
+	static void BuildLightweightSplineMeshes( const USplineComponent* splineComponent, UStaticMesh* mesh, float meshLength, int32 splineInstanceDataOffset, TArray<FInstanceData>& out_lightweightInstances, float staticInstanceScale = 1.0f, FMeshGenerationSettings Settings = FMeshGenerationSettings() );
 
 	/**
 	 * Given a spline, this creates collisions along the spline.
@@ -278,7 +273,7 @@ void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	float maxSplineLengthToFill,
 	UStaticMesh* mesh,
 	float meshLength,
-	TArray< USplineMeshComponent* >& meshPool,
+	TArray< TObjectPtr<USplineMeshComponent> >& meshPool,
 	MeshConstructor meshConstructor )
 {
 	fgcheck( spline );
@@ -333,7 +328,7 @@ void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	}
 
 	// Register new meshes, needs to happen after the properties are set for static components.
-	for( auto meshComp : meshPool )
+	for( const TObjectPtr<USplineMeshComponent>& meshComp : meshPool )
 	{
 		if( !meshComp->IsRegistered() )
 		{

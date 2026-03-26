@@ -56,8 +56,8 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	//<FL>[KonradA]
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray<struct FLocalUserNetIdBundle >(); }
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	UFUNCTION() virtual FPlayerInfoHandle GetLastEditedBy() const override { return FPlayerInfoHandle(); }
+	UFUNCTION() virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy ) {}
 	//</FL>
 	// End IFGActorRepresentationInterface
 
@@ -71,5 +71,5 @@ protected:
 	TSubclassOf<UFGItemDescriptor> mItemDescriptor;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 };

@@ -77,7 +77,7 @@ private:
 
 	/** Instanced Mesh Component. */
 	UPROPERTY( EditDefaultsOnly, Category = "Ladder" )
-	class UInstancedStaticMeshComponent* mInstancedMeshComponent;
+	TObjectPtr<class UInstancedStaticMeshComponent> mInstancedMeshComponent;
 
 	UPROPERTY( Replicated, CustomSerialization )
 	ELadderHologramBuildStep mBuildStep = ELadderHologramBuildStep::LHBS_SnapToActor;

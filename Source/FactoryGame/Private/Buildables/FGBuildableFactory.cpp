@@ -7,7 +7,6 @@
 #include "Net/UnrealNetwork.h"
 
 AFGBuildableFactory::AFGBuildableFactory() : Super() {
-	this->mPowerConsumption = 0.0;
 	this->mPowerConsumptionExponent = 1.6;
 	this->mProductionBoostPowerConsumptionExponent = 2.0;
 	this->mDoesHaveShutdownAnimation = false;
@@ -29,6 +28,7 @@ AFGBuildableFactory::AFGBuildableFactory() : Super() {
 	this->mHasInventoryPotential = true;
 	this->mIsProductionPaused = false;
 	this->mIsTickRateManaged = true;
+	this->mPowerConsumption = 0.0;
 	this->mInventoryPotential = CreateDefaultSubobject<UFGInventoryComponent>(TEXT("InventoryPotential"));
 	this->mCurrentPotential = 1.0;
 	this->mCurrentProductionBoost = 1.0;
@@ -49,7 +49,7 @@ AFGBuildableFactory::AFGBuildableFactory() : Super() {
 	this->mAddToSignificanceManager = true;
 	this->mAlienOverClockingLayerSFXComponent = nullptr;
 	this->mSignificanceRange = 18000.0;
-	this->mTickExponent = 5.0;
+	this->mNumTickLevels = 5.0;
 	this->mHologramClass = AFGFactoryHologram::StaticClass();
 	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -82,10 +82,8 @@ void AFGBuildableFactory::Tick(float dt){ Super::Tick(dt); }
 void AFGBuildableFactory::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableFactory::GainedSignificance_Implementation(){ }
 void AFGBuildableFactory::LostSignificance_Implementation(){ }
+FFGSignificanceTickRateSettings AFGBuildableFactory::GetSignificanceTickRateSettings_Implementation() const{ return IFGSignificanceInterface::GetSignificanceTickRateSettings_Implementation(); }
 void AFGBuildableFactory::UpdateSignificanceTickRate_Implementation(float NewTickRate, bool bTickEnabled){ }
-void AFGBuildableFactory::SetupForSignificance(){ }
-bool AFGBuildableFactory::DoesReduceTick() const{ return bool(); }
-int32 AFGBuildableFactory::NumTickLevels() const{ return int32(); }
 void AFGBuildableFactory::RegisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
 void AFGBuildableFactory::UnregisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
 void AFGBuildableFactory::GetConditionalReplicatedProps(TArray<FFGCondReplicatedProperty>& outProps) const{ }
@@ -98,8 +96,10 @@ TArray< UFGFactoryConnectionComponent* > AFGBuildableFactory::GetConnectionCompo
 float AFGBuildableFactory::GetEmissivePower(){ return float(); }
 bool AFGBuildableFactory::ShouldShowCenterGuidelinesForHologram(const AFGHologram* hologram) const{ return bool(); }
 float AFGBuildableFactory::GetIdlePowerConsumption() const{ return float(); }
+float AFGBuildableFactory::GetProducingPowerConsumptionBase() const{ return float(); }
 float AFGBuildableFactory::GetProducingPowerConsumption() const{ return float(); }
 float AFGBuildableFactory::GetDefaultProducingPowerConsumption() const{ return float(); }
+float AFGBuildableFactory::GetPowerConsumptionMultiplier() const{ return float(); }
 float AFGBuildableFactory::CalcOverclockPowerConsumption(float power, float overclock, float exponent){ return float(); }
 float AFGBuildableFactory::CalcProductionBoostPowerConsumption(float power, float productionBoost, float exponent){ return float(); }
 float AFGBuildableFactory::CalcProducingPowerConsumptionForPotential(float potential) const{ return float(); }
@@ -126,6 +126,10 @@ void AFGBuildableFactory::SetPendingProductionBoost(float newPendingProductionBo
 float AFGBuildableFactory::GetCurrentMaxProductionBoost() const{ return float(); }
 bool AFGBuildableFactory::TryFillPotentialInventory(AFGCharacterPlayer* player, const TMap<EPowerShardType, TPair<TSubclassOf<class UFGPowerShardDescriptor>, float>>& potentialValues, TMap<EPowerShardType, float>& out_reachedPotentialValues, bool simulate){ return bool(); }
 void AFGBuildableFactory::MoveOrDropInventory(UFGInventoryComponent* inventory, AFGCharacterPlayer* player){ }
+void AFGBuildableFactory::PullItemFromConnectionToInventory(UFGFactoryConnectionComponent* sourceConnection, UFGInventoryComponent* targetInventory){ }
+void AFGBuildableFactory::PullItemFromConnectionToInventorySlot(UFGFactoryConnectionComponent* sourceConnection, UFGInventoryComponent* targetInventory, int32 slotIndex){ }
+void AFGBuildableFactory::PullFluidFromConnectionToInventorySlot(UFGPipeConnectionComponent* sourceConnection, UFGInventoryComponent* targetInventory, int32 slotIndex, float deltaTime){ }
+void AFGBuildableFactory::PushFluidFromInventorySlotToConnection(UFGInventoryComponent* sourceInventory, int32 slotIndex, UFGPipeConnectionComponent* targetConnection, float deltaTime){ }
 void AFGBuildableFactory::FillPotentialSlotsInternal(UFGInventoryComponent* playerInventory, EPowerShardType powerShardType, TSubclassOf<UFGPowerShardDescriptor> shardItemDescriptor, int32& ref_targetAmountOfShardsInSlots, TArray<FInventoryStack>& out_itemsToDrop) const{ }
 float AFGBuildableFactory::GetCurrentMaxPotentialForType(EPowerShardType powerShardType, float minValue, float maxValue, float boostPerShardMultiplier) const{ return float(); }
 void AFGBuildableFactory::OnIsProducingChanged_Native(bool newIsProducing){ }

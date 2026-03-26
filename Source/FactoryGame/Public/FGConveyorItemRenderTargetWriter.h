@@ -110,11 +110,11 @@ public:
 
 private:
 	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mConveyorInstance;
+	TObjectPtr<UMaterialInterface> mConveyorInstance;
 
 	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mMidConveyorInstance;
+	TObjectPtr<UMaterialInterface> mMidConveyorInstance;
 
 	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mFarConveyorInstance;
+	TObjectPtr<UMaterialInterface> mFarConveyorInstance;
 };

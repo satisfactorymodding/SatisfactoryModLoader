@@ -9,8 +9,10 @@
 #include "FGIconLibrary.h"
 #include "FGInventoryComponent.h"
 #include "FGObjectReference.h"
+#include "FGSaveSession.h"
 #include "Resources/FGItemDescriptor.h"
 #include <LocalUserInfo.h> // <FL>[KonradA]
+#include "Online/PlayerInfoCache.h"
 #include "ItemAmount.h"
 #include "FGFactoryBlueprintTypes.generated.h"
 
@@ -23,6 +25,8 @@ struct FACTORYGAME_API FBlueprintConfigVersion
 		RemovedMD5Hash,
 		AddedIconLibraryPath,
 		AddedLastEditedBy,
+		AddedFilteredProfanityName,
+		RemovedFilteredProfanityName,
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1
 	};
@@ -50,7 +54,7 @@ public:
 
 	// <FL> [KonradA]
 	UPROPERTY( SaveGame )
-	TArray< FLocalUserNetIdBundle > LastEditedBy;
+	FPlayerInfoHandle LastEditedBy;
 	//</FL>
 };
 
@@ -76,7 +80,7 @@ public:
 
 	// <FL> [KonradA]
 	UPROPERTY( SaveGame )
-	TArray< FLocalUserNetIdBundle > LastEditedBy;
+	FPlayerInfoHandle LastEditedBy;
 	//</FL>
 };
 
@@ -111,18 +115,21 @@ public:
 	FLinearColor Color;
 	
 	UPROPERTY( SaveGame, NotReplicated, BlueprintReadWrite, Category="Blueprint Record" )
-	class UFGBlueprintCategory* Category;
+	TObjectPtr<class UFGBlueprintCategory> Category;
 
 	UPROPERTY( SaveGame, NotReplicated, BlueprintReadWrite, Category="Blueprint Record" )
-	class UFGBlueprintSubCategory* SubCategory;
+	TObjectPtr<class UFGBlueprintSubCategory> SubCategory;
 
 	UPROPERTY( SaveGame, BlueprintReadWrite, Category="Blueprint Record" )
 	int32 Priority;
 	
 	// <FL> [KonradA]
 	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "Blueprint Record" )
-	TArray<FLocalUserNetIdBundle > LastEditedBy;
+	FPlayerInfoHandle LastEditedBy;
 	//</FL>
+
+	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "Blueprint Record" )
+	FString FilteredBlueprintName;
 
 	int32 ConfigVersion;
 	
@@ -244,6 +251,9 @@ public:
 	
 	TArray< FObjectReferenceDisc > RecipeRefs;
 
+	// Full versioning information for information serialized in this blueprint. Only present for new save versions.
+	FSaveObjectVersionData SaveObjectVersionData;
+
 	friend FArchive& operator<< ( FArchive& ar, FBlueprintHeader& header );
 
 	inline static const FGuid GUID = FGuid( 0xC8C3A46C, 0x9E2BBC1B, 0x13F86A01, 0xD34A7A2D );
@@ -319,8 +329,14 @@ public:
 	bool GetRecipeRequirementsAreMet() { return mRecipeRequirementsAreMet; }
 	
 	UFUNCTION(Blueprintcallable)
-	TArray< FLocalUserNetIdBundle > GetLastEditedBy() const { return mLastEditedBy; };
+	FPlayerInfoHandle GetLastEditedBy() const { return mLastEditedBy; };
 	
+	UFUNCTION( Blueprintcallable )
+	FString GetFilteredDisplayName() const { return mFilteredName; };
+
+	UFUNCTION()
+	void UpdateFilteredDisplayName(const FString& filteredName) { mFilteredName = filteredName;}
+
 public:
 	
 	UPROPERTY()
@@ -343,8 +359,11 @@ public:
 	
 	//<FL>[KonradA]
 	UPROPERTY()
-	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	FPlayerInfoHandle mLastEditedBy;
 	//</FL>
+
+	UPROPERTY()
+	FString mFilteredName;
 	
 };
 
@@ -396,9 +415,9 @@ public:
 
 	//<FL>[KonradA]
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Category|Blueprint" )
-	TArray< FLocalUserNetIdBundle > GetLastEditedBy() const { return mLastEditedBy; };
+	FPlayerInfoHandle GetLastEditedBy() const { return mLastEditedBy; };
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Category|Blueprint" )
-	void SetLastEditedBy( TArray< FLocalUserNetIdBundle > LastEditedBy ) { mLastEditedBy = LastEditedBy; };
+	void SetLastEditedBy( FPlayerInfoHandle LastEditedBy ) { mLastEditedBy = LastEditedBy; };
 	//</FL>
 
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Category|Blueprint" )
@@ -409,17 +428,17 @@ public:
 	
 public:
 	UPROPERTY()
-	class UFGBlueprintCategory* mParentCategory;
+	TObjectPtr<class UFGBlueprintCategory> mParentCategory;
 	
 	UPROPERTY()
-	TArray< UFGBlueprintDescriptor* > mBlueprintDescriptors;
+	TArray< TObjectPtr<UFGBlueprintDescriptor> > mBlueprintDescriptors;
 
 	UPROPERTY()
 	uint8 mIsUndefined;
 
 	// <FL> [KonradA]
 	UPROPERTY( )
-	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	FPlayerInfoHandle mLastEditedBy;
 	//</FL>
 };
 
@@ -484,9 +503,9 @@ public:
 	
 	//<FL>[KonradA]
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Category|Blueprint" )
-	TArray< FLocalUserNetIdBundle > GetLastEditedBy() const { return mLastEditedBy; };
+	FPlayerInfoHandle GetLastEditedBy() const { return mLastEditedBy; };
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Category|Blueprint" )
-	void SetLastEditedBy( TArray< FLocalUserNetIdBundle > LastEditedBy ) { mLastEditedBy = LastEditedBy; };
+	void SetLastEditedBy( FPlayerInfoHandle LastEditedBy ) { mLastEditedBy = LastEditedBy; };
 	//</FL>
 
 	
@@ -501,11 +520,11 @@ public:
 	uint8 mIsUndefined;
 
 	UPROPERTY()
-	TArray< UFGBlueprintSubCategory* > mSubCategories;
+	TArray< TObjectPtr<UFGBlueprintSubCategory> > mSubCategories;
 	
 		// <FL> [KonradA]
 	UPROPERTY()
-	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	FPlayerInfoHandle mLastEditedBy;
 	//</FL>
 	
 };

@@ -144,7 +144,7 @@ protected:
 protected:
 	/** The underlying user setting that this apply type handles */
 	UPROPERTY(Transient)
-	class UFGUserSetting* UserSetting = nullptr;
+	TObjectPtr<class UFGUserSetting> UserSetting = nullptr;
 	/** The option row widgets that currently display the user setting */
 	UPROPERTY(Transient)
 	TArray<TWeakObjectPtr<class UFGDynamicOptionsRow>> OptionsRowWidgets;

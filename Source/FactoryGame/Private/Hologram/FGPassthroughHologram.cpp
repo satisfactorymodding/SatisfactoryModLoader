@@ -22,5 +22,5 @@ void AFGPassthroughHologram::GetClearanceData(TArray< const FFGClearanceData* >&
 void AFGPassthroughHologram::CheckValidPlacement(){ }
 void AFGPassthroughHologram::OnRep_SnappedBuildingThickness(){ }
 void AFGPassthroughHologram::RebuildMeshesAndUpdateClearance(){ }
-void AFGPassthroughHologram::TryExtendInWorldDirection(const FVector& worldLocation, const FQuat& worldRotation, const FVector& worldDirection, AFGBuildableFoundation* snappedFoundation, float& out_extension, TArray<AFGBuildableFoundation*>& overlappingFoundations) const{ }
+void AFGPassthroughHologram::TryExtendInWorldDirection(const FVector& worldLocation, const FQuat& worldRotation, const FVector& worldDirection, AFGBuildableFoundation* snappedFoundation, float& out_extension, TArray<TObjectPtr<AFGBuildableFoundation>>& overlappingFoundations) const{ }
 void AFGPassthroughHologram::OverlapCheckFoundations(const FVector& worldLocation, const FQuat& worldRotation, const FVector& offsetDirection, TArray<AFGBuildableFoundation*>& out_foundations) const{ }

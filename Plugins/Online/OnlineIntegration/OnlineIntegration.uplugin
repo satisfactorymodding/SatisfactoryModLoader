@@ -32,11 +32,31 @@
 			"TargetDenyList": [
 				"Server"
 			]
+		},
+		{
+			"Name": "OnlineIntegrationPostSplashScreen",
+			"Type": "Runtime",
+			"LoadingPhase": "PostSplashScreen",
+			"TargetDenyList": [
+				"Server"
+			]
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "OnlineServices",
+			"Enabled": true
+		},
+		{
+			"Name": "EOSShared",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystemUtils",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystem",
 			"Enabled": true
 		},
 		{

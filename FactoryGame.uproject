@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.3.2-CSS",
+	"EngineAssociation": "5.6.1-CSS",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -13,7 +13,6 @@
 				"CoreUObject",
 				"AIModule",
 				"GameplayTasks",
-				"SignificanceManager",
 				"ReplicationGraph",
 				"CinematicCamera",
 				"OnlineSubsystemUtils",
@@ -21,7 +20,8 @@
 				"DeveloperSettings",
 				"AbstractInstance",
 				"EnhancedInput",
-				"Foliage"
+				"Foliage",
+				"GameFeatures"
 			]
 		},
 		{
@@ -170,6 +170,10 @@
 			"Enabled": false
 		},
 		{
+			"Name": "MetaHumanCharacter",
+			"Enabled": false
+		},
+		{
 			"Name": "LensDistortion",
 			"Enabled": true
 		},
@@ -195,14 +199,11 @@
 		},
 		{
 			"Name": "SteamController",
-			"Enabled": false,
+			"Enabled": true,
 			"TargetDenyList": [
-				"Server"
+				"Server",
+				"Editor"
 			]
-		},
-		{
-			"Name": "RawInput",
-			"Enabled": true
 		},
 		{
 			"Name": "MfMedia",
@@ -238,8 +239,25 @@
 			"Enabled": true
 		},
 		{
+			"Name": "OnlineServicesOSSAdapter",
+			"Enabled": true,
+			"TargetDenyList": [
+				"Server"
+			],
+			"PlatformDenyList": [
+				"Linux"
+			]
+		},
+		{
 			"Name": "OnlineSubsystemSteam",
-			"Enabled": false
+			"Enabled": true,
+			"TargetDenyList": [
+				"Server"
+			],
+			"PlatformAllowList": [
+				"Win64",
+				"Linux"
+			]
 		},
 		{
 			"Name": "OnlineSubsystemEOS",
@@ -248,10 +266,6 @@
 		{
 			"Name": "OculusVR",
 			"Enabled": false
-		},
-		{
-			"Name": "SignificanceManager",
-			"Enabled": true
 		},
 		{
 			"Name": "PythonScriptPlugin",
@@ -282,8 +296,8 @@
 			"Enabled": false
 		},
 		{
-			"Name": "RenderDocPlugin",
-			"Enabled": false
+			"Name": "BlueprintMaterialTextureNodes",
+			"Enabled": true
 		},
 		{
 			"Name": "Landmass",
@@ -345,7 +359,35 @@
 		},
 		{
 			"Name": "HairStrands",
-			"Enabled": true
+			"Enabled": true,
+			"TargetDenyList": [
+				"Server"
+			]
+		},
+		{
+			"Name": "ChaosCloth",
+			"Enabled": true,
+			"TargetDenyList": [
+				"Server"
+			]
+		},
+		{
+			"Name": "ChaosVD",
+			"Enabled": true,
+			"TargetDenyList": [
+				"Server"
+			]
+		},
+		{
+			"Name": "CameraShakePreviewer",
+			"Enabled": true,
+			"TargetDenyList": [
+				"Server"
+			]
+		},
+		{
+			"Name": "NNEDenoiser",
+			"Enabled": false
 		},
 		{
 			"Name": "GameplayEvents",
@@ -377,6 +419,38 @@
 			"SupportedTargetPlatforms": [
 				"Win64"
 			]
+		},
+		{
+			"Name": "AnimationLocomotionLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "GameFeatures",
+			"Enabled": true
+		},
+		{
+			"Name": "ScriptableToolsEditorMode",
+			"Enabled": true
+		},
+		{
+			"Name": "CascadeToNiagaraConverter",
+			"Enabled": true
+		},
+		{
+			"Name": "PlanarCut",
+			"Enabled": true
+		},
+		{
+			"Name": "ModularGameplay",
+			"Enabled": true
+		},
+		{
+			"Name": "OnlineServices",
+			"Enabled": true
+		},
+		{
+			"Name": "SlateIM",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [

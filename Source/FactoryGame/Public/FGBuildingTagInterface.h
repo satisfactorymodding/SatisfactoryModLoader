@@ -6,6 +6,8 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "OnlineIntegration/Public/LocalUserInfo.h"
+#include "Online/PlayerInfoCache.h"
+#include "FGGameMode.h"
 #include "FGBuildingTagInterface.generated.h"
 
 /**
@@ -51,10 +53,13 @@ class FACTORYGAME_API IFGBuildingTagInterface
 
 //<FL>[KonradA]
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Building Tag" )
-	void SetLastEditedBy( const TArray< FLocalUserNetIdBundle >& lastEditedBy );
+	void SetLastEditedBy( const FPlayerInfoSnapshot& playerInfoSnapshot );
 
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Building Tag" )
-	TArray< FLocalUserNetIdBundle > GetLastEditedBy() const;
+	void SetLastEditedByHandle( const FPlayerInfoHandle& lastEditedBy );
+
+	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Building Tag" )
+	FPlayerInfoHandle GetLastEditedBy() const;
 //</FL>
 };
 

@@ -80,7 +80,16 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Research Tree" )
     static TArray< EEvents > GetRelevantEvents( TSubclassOf< UFGResearchTree > inClass );
 
+	/** Returns true if the research tree has a given gameplay tag */
+	UFUNCTION( BlueprintPure, Category = "Research Tree" )
+	static bool HasGameplayTag( TSubclassOf<UFGResearchTree> inClass, const FGameplayTag& inGameplayTag );
+	
+	/** Returns all gameplay tags for the given research tree */
+	UFUNCTION( BlueprintPure, Category = "Research Tree" )
+	static FGameplayTagContainer GetAllGameplayTags( TSubclassOf<UFGResearchTree> inClass );
+
 	static EResearchTreeStatus GetResearchTreeStatus( TSubclassOf< UFGResearchTree > inClass, UObject* worldContext );
+	const FGameplayTagContainer& GetTagContainer() const { return mGameplayTags; }
 
 	bool GetIsEventTree() const { return mIsEventTree; }
 	
@@ -107,11 +116,11 @@ protected:
 
 	/** The dependencies that needs to be satisfied before the player can use the tree */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Research Tree" )
-	TArray< class UFGAvailabilityDependency* > mUnlockDependencies;
+	TArray< TObjectPtr<class UFGAvailabilityDependency> > mUnlockDependencies;
 
 	/** The dependencies that needs to be satisfied before the player can see the tree */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Research Tree" )
-	TArray< class UFGAvailabilityDependency* > mVisibilityDependencies;
+	TArray< TObjectPtr<class UFGAvailabilityDependency> > mVisibilityDependencies;
 
 	/** The events this schematic are present in */
 	UPROPERTY( EditDefaultsOnly, Category = "Events" )
@@ -119,7 +128,11 @@ protected:
 	
 	/** The nodes that this tree is made up of */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Research Tree" )
-	TArray< class UFGResearchTreeNode* > mNodes;
+	TArray< TObjectPtr<class UFGResearchTreeNode> > mNodes;
+
+	/** Gameplay tags associated with this research tree. Can be used to provide additional information about the schematic */
+	UPROPERTY( EditDefaultsOnly, Category = "Research Tree" )
+	FGameplayTagContainer mGameplayTags;
 
 	/** True if tree is related to event. Will not give achievement if researched. */
 	UPROPERTY( EditDefaultsOnly, Category = "Research Tree" )

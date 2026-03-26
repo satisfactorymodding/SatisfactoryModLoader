@@ -35,7 +35,7 @@ private:
 protected:
 	/** The mesh to display for this pickup, if specified. Otherwise one will be grabbed automatically from the schematic. */
 	UPROPERTY( EditAnywhere, Category = "Pickup" )
-	class UStaticMesh* mPickupMesh;
+	TObjectPtr<class UStaticMesh> mPickupMesh;
 
 	/** Desired size of the pickup mesh. Will scale the mesh component automatically to match this based on the mesh itself. */
 	UPROPERTY( EditAnywhere, Category = "Pickup" )
@@ -43,8 +43,8 @@ protected:
 
 private:
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMeshComponent* mStaticMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mStaticMeshComponent;
 	
 	UPROPERTY( EditDefaultsOnly )
-	class USphereComponent* mSphereComponent;
+	TObjectPtr<class USphereComponent> mSphereComponent;
 };

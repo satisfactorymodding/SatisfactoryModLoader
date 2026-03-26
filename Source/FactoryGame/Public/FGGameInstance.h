@@ -2,15 +2,21 @@
 
 #pragma once
 
+#include "EnhancedInputSubsystems.h"
 #include "FactoryGame.h"
 #include "Engine/GameInstance.h"
 #include "Online/FGOnlineHelpers.h"
 #include "OnlineSessionSettings.h"
+#include "TimerManager.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "Framework/Application/SlateApplication.h"
 #include "Framework/Application/IInputProcessor.h" // <FL> [WuttkeP] Added input pre-processor for automatically updating the last used input device type.
+#include "Online/OnlineServices.h"
+#include "Online/Sessions.h"
 #include "FGGameInstance.generated.h"
 
+class UOnlineIntegrationBackend;
+class FWidgetPath;
 // <FL> ZimmermannA For usage outside of game instance
 extern TAutoConsoleVariable< bool > CVarForceMouseAndKeyboardDeviceType;
 extern TAutoConsoleVariable< bool > CVarForceGamepadDeviceType;
@@ -93,7 +99,7 @@ struct FOnJoinSessionData
 
 	/** Player that want to join the session */
 	UPROPERTY()
-	class UFGLocalPlayer* LocalPlayer;
+	TObjectPtr<class UFGLocalPlayer> LocalPlayer;
 
 	/** Session to join */
 	FOnlineSessionSearchResult Session;
@@ -163,7 +169,6 @@ struct FFGPendingConnectionEncryptionData
 
 // Don't pass the error here, as we want the user to specify how it want to handle the error itself (peek or get)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnNewError );
-
 /** Delegate when a network error has occured, like mismatching version, timeouts and so on */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnNetworkErrorRecieved, ENetworkFailure::Type, errorType, FString, errorMsg );
 
@@ -177,7 +182,7 @@ class UFGLocalPersistenceStore;
  * call. This will automatically tear down our current session. Leave the current game and join the new session
  */
 UCLASS()
-class FACTORYGAME_API UFGGameInstance : public UGameInstance
+class FACTORYGAME_API UFGGameInstance : public UGameInstance, public FTickableGameObject
 {
 	GENERATED_BODY()
 public:
@@ -193,6 +198,15 @@ public:
 #endif
 	// End UGameInstance interface
 
+	//FTickableGameObject
+	virtual void Tick( float DeltaTime ) override;
+
+	virtual ETickableTickType GetTickableTickType() const override { return ETickableTickType::Always; }
+	virtual TStatId GetStatId() const override { return UObject::GetStatID();	 }
+	virtual bool IsTickableWhenPaused() const { return true; }
+	virtual bool IsTickableInEditor() const { return true; }
+	//End FTickableGameObject
+	
 	/** Get the music manager */
 	FORCEINLINE class UFGMusicManager* GetMusicManager() const{ return mMusicManager; }
 
@@ -309,8 +323,14 @@ protected:
 	UFUNCTION()
 	virtual void PollHostProductUserId_JoinSession();
 
+	UFUNCTION()
+	void OnUISessionJoinWasRequested( UOnlineIntegrationBackend* Backend );
+
 	/** Called after we have joined a session, makes sure we copy the session settings from the host */
 	void OnJoinSessionComplete( FName sessionName, EOnJoinSessionCompleteResult::Type joinResult );
+
+	UFUNCTION()
+	void OnAnyUISessionJoinWasRequestedOnBackend( UOnlineIntegrationBackend* Backend );
 
 	void SendRecievedNetworkErrorOnDelegate( UWorld* world, UNetDriver* driver, ENetworkFailure::Type errorType, const FString& errorMsg );
 	void SwitchActiveInput( EInputDeviceType deviceType );
@@ -343,7 +363,7 @@ private:
 protected:
 	/** The global save system */
 	UPROPERTY()
-	class UFGSaveSystem* mSaveSystem;
+	TObjectPtr<class UFGSaveSystem> mSaveSystem;
 
 	// @todo: Make accessors for this when moving this to FGErrorBus or similar
 	/** Called whenever a new error is added that doesn't send you to main menu */
@@ -359,11 +379,11 @@ protected:
 	class UDSTelemetry* mTelemetryInstance;
 
 	UPROPERTY( Transient )
-	UObject* mTelemetryInstanceObject;
+	TObjectPtr<UObject> mTelemetryInstanceObject;
 	
 	/** List of errors that we should pop */
 	UPROPERTY()
-	TArray<class UFGErrorMessage*> mErrorList;
+	TArray<TObjectPtr<class UFGErrorMessage>> mErrorList;
 
 	/** Storing data for joining a session */
 	UPROPERTY()
@@ -390,7 +410,7 @@ protected:
 
 	//<FL>[VilagosD] store the player avatar textures so we don't have to download them everytime 
 	UPROPERTY()
-	TMap< FString, UTexture* > mAvatarTextureCache;
+	TMap< FString, TObjectPtr<UTexture> > mAvatarTextureCache;
 
 #if( defined( PLATFORM_PS5 ) && PLATFORM_PS5 ) || ( defined( PLATFORM_XSX ) && PLATFORM_XSX )
 	// Save time on suspention
@@ -398,7 +418,8 @@ protected:
 #endif
 
 public:
-
+	 FTimerManager& GetUITimerManager() { return mUITimerManager; }
+	
 	void SetInputDeviceMode(EInputDeviceMode InputDeviceMode, bool bForce = false);
 	bool GetConsoleVariableBool(const char* Variable);
 	void SetConsoleVariable(const char* Variable, bool Active);
@@ -413,7 +434,7 @@ public:
 
 	/** Controlling our music since... 2018 */
 	UPROPERTY()
-	class UFGMusicManager* mMusicManager;
+	TObjectPtr<class UFGMusicManager> mMusicManager;
 
 	/** Has the player seen the alpha info screen, used to only show it once per session */
 	bool mHasSeenAlphaInfo;
@@ -426,6 +447,9 @@ public:
 	// <FL> [KonradA] Getter For Local Persistence store
 	UFUNCTION(BlueprintCallable)
 	UFGLocalPersistenceStore* GetLocalPersistenceStore();
+	UPROPERTY(BlueprintReadWrite)
+	bool bTraveledToMainMenuFromUserJoinFailure = false;
+
 	// </FL>
 	
 	// <FL> [MartinC] Registry of all the aim assist targets currently available in the game
@@ -440,27 +464,30 @@ public:
 	TSet< FName > mPendingCanceledActivities; // <FL> [TranN] PS5 Activity
 private:
 	UPROPERTY()
-	class UFGDebugOverlayWidget* mDebugOverlayWidget;
+	TObjectPtr<class UFGDebugOverlayWidget> mDebugOverlayWidget;
 
 	//<FL>[KonradA] Helper store for key value pairs so that users can locally store data that does not need to be replicated
 	UPROPERTY()
-	UFGLocalPersistenceStore* mLocalPersistenceStore;
+	TObjectPtr<UFGLocalPersistenceStore> mLocalPersistenceStore;
 	//</FL>
-
+	
+	FTimerManager mUITimerManager;
+	
 	/** Mods and external subsystems can subscribe to this delegate to preload assets when the game instance is initialized and keep them in memory */
 	static FFGGatherAssetsForPreloadDelegate GatherAssetsForPreload;
 
 	/** Is called by the SlateApplication */
-	void OnFocusChanged( const FFocusEvent& FocusEvent, const FWeakWidgetPath& OldFocusedWidgetPath,
-						 const TSharedPtr< SWidget >& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath,
+	void OnFocusChanged( const struct FFocusEvent& FocusEvent, const class FWeakWidgetPath& OldFocusedWidgetPath,
+						 const TSharedPtr< class SWidget >& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath,
 						 const TSharedPtr< SWidget >& NewFocusedWidget );
 
 	//<FL> [BGR] Handling for console Suspend/Resume state switches
-#if( defined( PLATFORM_PS5 ) && PLATFORM_PS5 ) || ( defined( PLATFORM_XSX ) && PLATFORM_XSX )
+#if( defined( PLATFORM_PS5 ) && PLATFORM_PS5 ) || ( defined( PLATFORM_XSX ) && 0 )
 	void HandleAppSuspend();
 	void HandleAppResume();
-	bool IsInMainMenu() const;
 #endif
+	bool IsInMainMenu() const;
+
 	UFUNCTION()
 	void OnMpSessionExpiredConfirmed( bool ConfirmClicked );
 	//<FL>
@@ -477,4 +504,6 @@ private:
 	UFUNCTION()
 	void HandleMouseEnteredViewport();
 	// </FL>
+
+	uint32 GetLocalNetworkVersion();
 };

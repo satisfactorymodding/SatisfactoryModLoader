@@ -36,7 +36,7 @@ protected:
 	void UpdateTargetConsumption();
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper" )
-	USplineComponent* mSplineComponent;
+	TObjectPtr<USplineComponent> mSplineComponent;
 	
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Pipe Hyper" )
 	float ActivePowerConsumption;

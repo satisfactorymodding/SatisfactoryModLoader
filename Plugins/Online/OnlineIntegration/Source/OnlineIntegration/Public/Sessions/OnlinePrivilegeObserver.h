@@ -1,10 +1,10 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "MVVMViewModelBase.h"
-#include "Auth.h"
+#include "Online/Auth.h"
 #include "OnlineIntegrationTypes.h"
 #include "OnlinePrivilegeObserver.generated.h"
 

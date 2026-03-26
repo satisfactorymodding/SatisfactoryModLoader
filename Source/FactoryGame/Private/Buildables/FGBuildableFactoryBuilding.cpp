@@ -15,7 +15,6 @@ FFoundationSideNormal FFoundationHelpers::FindBestMatchingFoundationSideFromLoca
 AFGBuildableFactoryBuilding::AFGBuildableFactoryBuilding(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mMeshComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("BuildingMeshProxy"));
 	this->mMeshComponentProxy->SetMobility(EComponentMobility::Static);
-	this->mCustomRainBoundsMesh = nullptr;
 	this->mMeshComponentProxy->SetupAttachment(RootComponent);
 }
 FName AFGBuildableFactoryBuilding::MeshComponentFName = FName();

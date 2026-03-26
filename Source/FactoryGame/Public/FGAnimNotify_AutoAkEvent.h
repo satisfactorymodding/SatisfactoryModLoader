@@ -37,7 +37,7 @@ protected:
 
 	/** Event to post when this event is triggered */
 	UPROPERTY( EditAnywhere, Category = "Audio" )
-	class UAkAudioEvent* AudioEvent;
+	TObjectPtr<class UAkAudioEvent> AudioEvent;
 
 	/** If true, then we attach the event to the socket/actor, else it stays in the world where it was posted (true is more expensive) */
 	UPROPERTY( EditAnywhere, Category = "Audio" )

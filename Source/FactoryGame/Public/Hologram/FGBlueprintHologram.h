@@ -76,19 +76,19 @@ public:
 
 	// For use in the component duplicator for spline comp duplication when we need to have access the other components on the actor
 	UPROPERTY()
-	class AFGBuildable* mCurrentDuplicatingBuildable;
+	TObjectPtr<class AFGBuildable> mCurrentDuplicatingBuildable;
 
 	// A map containing the buildable (which is instantiated in the blueprint world) to the new root component that represents it visually
 	// in the game world. This is used so we can place our collision components at a separate time onto the correct local space
 	UPROPERTY()
-	TMap< class AFGBuildable*, USceneComponent* > mBuildableToNewRoot;
+	TMap< TObjectPtr<class AFGBuildable>, TObjectPtr<USceneComponent> > mBuildableToNewRoot;
 
 	// Maps the BlueprintWorld buildable to an a corresponding "visual only" spline created for displaying the spline in the game world
 	UPROPERTY()
-	TMap< class AFGBuildable*, class USplineComponent* > mBlueprintWorldSplineToHoloSpline;
+	TMap< TObjectPtr<class AFGBuildable>, TObjectPtr<class USplineComponent> > mBlueprintWorldSplineToHoloSpline;
 
 	UPROPERTY()
-	UFGBlueprintDescriptor* mBlueprintDescriptor;
+	TObjectPtr<UFGBlueprintDescriptor> mBlueprintDescriptor;
 
 	UPROPERTY( ReplicatedUsing=OnRep_BlueprintDescName )
 	FString mBlueprintDescName;
@@ -137,15 +137,15 @@ protected:
 
 	/** In case we snapped to a blueprint proxy, this is it. */
 	UPROPERTY()
-	class AFGBlueprintProxy* mSnappedProxy;
+	TObjectPtr<class AFGBlueprintProxy> mSnappedProxy;
 
 	/** Mesh representing the bounds of our blueprint. */
 	UPROPERTY()
-	class UStaticMeshComponent* mBlueprintBoundsMesh;
+	TObjectPtr<class UStaticMeshComponent> mBlueprintBoundsMesh;
 
 	/** Mesh representing the forward direction of our blueprint. */
 	UPROPERTY()
-	class UStaticMeshComponent* mBlueprintDirectionMesh;
+	TObjectPtr<class UStaticMeshComponent> mBlueprintDirectionMesh;
 
 	FBox mLocalBounds;
 	
@@ -161,10 +161,10 @@ private:
 	TMap< class UFGConnectionComponent*, TArray< class UStaticMeshComponent* > > mConnectionRepresentationMeshes;
 
 	UPROPERTY()
-	TMap< class UFGConnectionComponent*, class UStaticMeshComponent* > mAutomaticConnectionRepresentationMap;
+	TMap< TObjectPtr<class UFGConnectionComponent>, TObjectPtr<class UStaticMeshComponent> > mAutomaticConnectionRepresentationMap;
 
 	UPROPERTY()
-	TMap< class UFGConnectionComponent*, class UFGConnectionComponent* > mDuplicateConnectionToOriginalMap;
+	TMap< TObjectPtr<class UFGConnectionComponent>, TObjectPtr<class UFGConnectionComponent> > mDuplicateConnectionToOriginalMap;
 };
 
 template<class ConnectionClass>

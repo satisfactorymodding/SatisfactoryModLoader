@@ -76,10 +76,10 @@ protected:
 
 	/** The supports that "belong" to this sign. Will be dismantled when the sign is dismantled. */
 	UPROPERTY( SaveGame )
-	TArray< class AFGBuildableSignSupport* > mSignPoles;
+	TArray< TObjectPtr<class AFGBuildableSignSupport> > mSignPoles;
 
 	UPROPERTY( VisibleAnywhere, Category = "SignBase" )
-	class UFGColoredInstanceMeshProxy* mMeshComponentProxy;
+	TObjectPtr<class UFGColoredInstanceMeshProxy> mMeshComponentProxy;
 
 	/** Sign Dimensions in World Space. Used by holograms to align snapping with other signs */
 	UPROPERTY( EditDefaultsOnly, Category = "SignBase" )

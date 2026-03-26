@@ -51,7 +51,7 @@ AFGLightweightBuildableRepProxy::AFGLightweightBuildableRepProxy() : Super() {
 	this->bOnlyRelevantToOwner = true;
 	this->bReplicateUsingRegisteredSubObjectList = true;
 	this->NetDormancy = ENetDormancy::DORM_Awake;
-	this->NetCullDistanceSquared = 1000000000000.0;
+	this->SetNetCullDistanceSquared(1000000000000.0);
 	this->NetPriority = 0.1;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	this->RootComponent->SetMobility(EComponentMobility::Movable);
@@ -81,7 +81,8 @@ AFGLightweightBuildableSubsystem* FLightweightBuildableInstanceRef::GetOwnerSubs
 const FRuntimeBuildableInstanceData* FLightweightBuildableInstanceRef::ResolveBuildableInstanceData() const{ return nullptr; }
 bool FLightweightBuildableInstanceRef::Remove(){ return bool(); }
 bool FLightweightBuildableInstanceRef::SetCustomizationData(const FFactoryCustomizationData& customizationData) const{ return bool(); }
-const FFactoryCustomizationData* FLightweightBuildableInstanceRef::GetCustomizationData(){ return nullptr; }
+const FFactoryCustomizationData* FLightweightBuildableInstanceRef::GetCustomizationData() const{ return nullptr; }
+const FFGDynamicStruct* FLightweightBuildableInstanceRef::GetTypeSpecificData() const{ return nullptr; }
 AFGBuildable* FLightweightBuildableInstanceRef::SpawnTemporaryBuildable() const{ return nullptr; }
 AFGLightweightBuildableSubsystem::AFGLightweightBuildableSubsystem() : Super() {
 	this->mCachedGameState = nullptr;
@@ -104,7 +105,7 @@ AFGLightweightBuildableSubsystem* AFGLightweightBuildableSubsystem::Get(UObject*
 void AFGLightweightBuildableSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGLightweightBuildableSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGLightweightBuildableSubsystem::BeginPlay(){ Super::BeginPlay(); }
-void AFGLightweightBuildableSubsystem::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector){  }
+void AFGLightweightBuildableSubsystem::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector){ Super::AddReferencedObjects(InThis, Collector); }
 void AFGLightweightBuildableSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGLightweightBuildableSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGLightweightBuildableSubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

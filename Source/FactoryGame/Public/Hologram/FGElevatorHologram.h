@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -76,19 +76,19 @@ private:
 	TArray< int32 > mHeight4mInstanceIds;
 	
 	UPROPERTY()
-	UStaticMesh* mHeightMesh1m;
+	TObjectPtr<UStaticMesh> mHeightMesh1m;
 
 	UPROPERTY()
-	UStaticMesh* mHeightMesh4m;
+	TObjectPtr<UStaticMesh> mHeightMesh4m;
 
 	UPROPERTY()
-	UStaticMesh* mBottomMesh;
+	TObjectPtr<UStaticMesh> mBottomMesh;
 
 	UPROPERTY()
-	UStaticMesh* mTopMesh;
+	TObjectPtr<UStaticMesh> mTopMesh;
 	
 	UPROPERTY()
-	class AFGElevatorFloorStopHologram* mChildFloorStops[2];
+	TObjectPtr<class AFGElevatorFloorStopHologram> mChildFloorStops[2];
 
 	UPROPERTY( CustomSerialization )
 	int32 mActivePointIdx;
@@ -114,12 +114,12 @@ private:
 	bool mIsReversed;
 
 	UPROPERTY()
-	AFGBuildableElevator* mSnappedToElevator;
+	TObjectPtr<AFGBuildableElevator> mSnappedToElevator;
 
 	UPROPERTY()
 	bool mSnappedTop;
 
 	UPROPERTY()
-	TArray< AActor* > mHeightInstanceInstigators;
+	TArray< TObjectPtr<AActor> > mHeightInstanceInstigators;
 
 };

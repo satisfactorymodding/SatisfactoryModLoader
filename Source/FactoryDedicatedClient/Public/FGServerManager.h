@@ -166,7 +166,7 @@ public:
 	FHealthCheckCustomDataProviderDelegate HealthCheckCustomDataProvider;
 protected:
 	UPROPERTY()
-	TArray<UFGServerObject*> mServers;
+	TArray<TObjectPtr<UFGServerObject>> mServers;
 
 	TArray<FClientQuerySocketData> mQuerySockets;
 

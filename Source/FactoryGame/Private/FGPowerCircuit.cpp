@@ -48,6 +48,8 @@ bool UFGPowerCircuit::IsNoPowerCheatOn() const{ return bool(); }
 void UFGPowerCircuit::OnCircuitChanged(){ }
 bool UFGPowerCircuit::IsTrivial() const{ return bool(); }
 void UFGPowerCircuit::OnRemoved(){ }
+void UFGPowerCircuit::TriggerFuseInternal(){ }
+void UFGPowerCircuit::ResetFuseInternal(){ }
 void UFGPowerCircuit::UpdateStatsGeneral(){ }
 void UFGPowerCircuit::UpdateStatsGraph(){ }
 void UFGPowerCircuit::PinStatsGraphPoint(){ }

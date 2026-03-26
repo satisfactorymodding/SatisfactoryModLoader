@@ -27,7 +27,7 @@ AFGManta::AFGManta() : Super() {
 }
 void AFGManta::GainedSignificance_Implementation(){ }
 void AFGManta::LostSignificance_Implementation(){ }
-float AFGManta::GetSignificanceRange(){ return float(); }
+float AFGManta::GetSignificanceRange_Implementation() const{ return IFGSignificanceInterface::GetSignificanceRange_Implementation(); }
 void AFGManta::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGManta, mCurrentTime);

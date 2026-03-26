@@ -85,15 +85,15 @@ private:
 protected:
 	/** The montage to play when starting the leap. */
 	UPROPERTY( EditDefaultsOnly, Category = "LeapAttack|Animation" )
-	class UAnimMontage* mLeapStartMontage;
+	TObjectPtr<class UAnimMontage> mLeapStartMontage;
 
 	/** The montage to play when actively in the leap. */
 	UPROPERTY( EditDefaultsOnly, Category = "LeapAttack|Animation" )
-	class UAnimMontage* mLeapLoopMontage;
+	TObjectPtr<class UAnimMontage> mLeapLoopMontage;
 
 	/** The montage to play when landing. */
 	UPROPERTY( EditDefaultsOnly, Category = "LeapAttack|Animation" )
-	class UAnimMontage* mLeapLandMontage;
+	TObjectPtr<class UAnimMontage> mLeapLandMontage;
 
 	/** The radius of the leap attack while it's active. */
 	UPROPERTY( EditDefaultsOnly, Category = "LeapAttack" )
@@ -125,11 +125,11 @@ protected:
 
 	/** List of characters which have been hit by the attack. */
 	UPROPERTY()
-	TArray< class AFGCharacterBase* > mHitCharacters;
+	TArray< TObjectPtr<class AFGCharacterBase> > mHitCharacters;
 
 	/** What damage we should do when we hit a target while leaping. */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category= "LeapAttack" )
-	TArray < UFGDamageType* > mLeapAttackDamageTypes;
+	TArray < TObjectPtr<UFGDamageType> > mLeapAttackDamageTypes;
 
 	/** Whether or not the slam attack can hit targets which have already been hit by the leap itself. */
 	UPROPERTY( EditDefaultsOnly, Category = "LeapAttack|Slam" )
@@ -145,7 +145,7 @@ protected:
 
 	/** What damage we should apply with the slam attack when landing. */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category= "LeapAttack|Slam" )
-	TArray < UFGDamageType* > mLeapAttackSlamDamageTypes;
+	TArray < TObjectPtr<UFGDamageType> > mLeapAttackSlamDamageTypes;
 
 private:
 	/** True if the leap attack is active. */

@@ -17,6 +17,8 @@ public:
 	FFGGamepadCursor( class APlayerController* inPC, float inRadius );
 
 	void Tick( const float DeltaTime, FSlateApplication& SlateApp, TSharedRef<ICursor> Cursor ) override;
+	virtual bool HandleKeyDownEvent(FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent) override;
+	virtual bool HandleKeyUpEvent(FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent) override;
 
 	static void EnableAnalogCursor( class APlayerController* PC, TSharedPtr<SWidget> WidgetToFocus );
 	static void DisableAnalogCursor( class APlayerController* PC );

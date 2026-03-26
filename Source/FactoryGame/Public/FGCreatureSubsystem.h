@@ -21,7 +21,7 @@ struct FACTORYGAME_API FSpawnerInfo
 	GENERATED_BODY()
 
 	UPROPERTY( BlueprintReadOnly )
-	class AFGCreatureSpawner* Spawner = nullptr;
+	TObjectPtr<class AFGCreatureSpawner> Spawner = nullptr;
 
 	UPROPERTY( BlueprintReadOnly )
 	float PlayerDistanceSq = 0.f;
@@ -56,10 +56,6 @@ struct FAgentGenerationProperties
 	/** How many cell sizes do we set the tile size to? Recommended between 32 and 128. */
 	UPROPERTY(EditAnywhere)
 	float autoTileSizeMultiplier = 128;
-
-	/** Good luck. This is all the nifty nifty parameters you'll have to touch to optimize or make it worse. :> */
-	UPROPERTY(EditAnywhere)
-	FRecastNavMeshGenerationProperties navGenerationProperties;
 };
 
 /** Used to replace / disable certain creatures when spawning them. */
@@ -245,19 +241,19 @@ protected:
 
 	/** All the creatures which currently exist. */
 	UPROPERTY( Transient, BlueprintReadOnly )
-	TArray< class AFGCreature* > mAllCreatures;
+	TArray< TObjectPtr<class AFGCreature> > mAllCreatures;
 
 	/** List of creatures with pending reactivation, waiting for level streaming. */
 	UPROPERTY( Transient )
-	TArray< class AFGCreature* > mPersistentCreaturesPendingReactivation;
+	TArray< TObjectPtr<class AFGCreature> > mPersistentCreaturesPendingReactivation;
 	
 	/** All the flying baby crabs which currently exist. */
 	UPROPERTY( Transient, BlueprintReadOnly )
-	TArray< class AFGFlyingBabyCrab* > mAllFlyingBabyCrabs;
+	TArray< TObjectPtr<class AFGFlyingBabyCrab> > mAllFlyingBabyCrabs;
 
 	/** All the persistent creatures which currently exist. */
 	UPROPERTY( Transient, BlueprintReadOnly )
-	TArray< class AFGCreature* > mAllPersistentCreatures;
+	TArray< TObjectPtr<class AFGCreature> > mAllPersistentCreatures;
 
 	/** Every type of FGNoise that exists. */
 	UPROPERTY( VisibleAnywhere, Category = "AI" )

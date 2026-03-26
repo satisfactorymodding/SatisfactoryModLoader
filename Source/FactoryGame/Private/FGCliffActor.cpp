@@ -36,7 +36,7 @@ void AFGCliffActor::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::En
 void AFGCliffActor::OnConstruction(const FTransform& Transform){ }
 void AFGCliffActor::GainedSignificance_Implementation(){ }
 void AFGCliffActor::LostSignificance_Implementation(){ }
-float AFGCliffActor::GetSignificanceRange(){ return float(); }
+float AFGCliffActor::GetSignificanceRange_Implementation() const{ return IFGSignificanceInterface::GetSignificanceRange_Implementation(); }
 FFGCliffGrassWorker::FFGCliffGrassWorker(AFGCliffActor* inCliffActor, UFoliageType* inType,float inMultiplier, UGrassInstancedStaticMeshComponent* inHISMComponent){ }
 void FFGCliffGrassWorker::DoWork(){ }
 void FFGAsyncCliffGrassBuilderTask::DoWork(){ }

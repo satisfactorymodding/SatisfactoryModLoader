@@ -91,7 +91,6 @@ void AFGBuildableDroneStation::PostSerializedToBlueprint(){ }
 void AFGBuildableDroneStation::PostSerializedFromBlueprint(bool isBlueprintWorld){ }
 bool AFGBuildableDroneStation::FilterFuelClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
 void AFGBuildableDroneStation::OnFuelItemAdded(TSubclassOf< UFGItemDescriptor > item, const int32 amount, UFGInventoryComponent* sourceInventory){ }
-void AFGBuildableDroneStation::OnRep_ItemTransferringStage(){ }
 void AFGBuildableDroneStation::OnRep_StationHasDronesInQueue(){ }
 void AFGBuildableDroneStation::OnRep_DroneStationInfo(){ }
 void AFGBuildableDroneStation::SetItemTransferringStage(EItemTransferringStage NewStage){ }
@@ -99,4 +98,3 @@ void AFGBuildableDroneStation::BeginItemTransfer(){ }
 void AFGBuildableDroneStation::EndItemTransfer(){ }
 EItemTransferTickResult AFGBuildableDroneStation::ItemTransferTick( UFGInventoryComponent* FromInventory,  UFGInventoryComponent* ToInventory, bool MustTransferEverything){ return EItemTransferTickResult(); }
 void AFGBuildableDroneStation::OnDroneFuelTypeChanged(const FFGDroneFuelType& newFuelType){ }
-FName AFGBuildableDroneStation::sFuelTag = FName();

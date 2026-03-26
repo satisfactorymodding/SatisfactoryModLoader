@@ -52,4 +52,10 @@ public:
 
 	UFUNCTION( BlueprintPure )
 	static bool HasPlatform120HzEnabled(int32& RefreshRate);
+
+	UFUNCTION( BlueprintPure )
+	static uint8 GetPlatformCrossplayGroup();
+
+	UFUNCTION( BlueprintPure )
+	static uint8 GetPlatformNetworkVersion();
 };

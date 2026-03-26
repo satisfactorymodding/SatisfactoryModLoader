@@ -67,17 +67,17 @@ protected:
 	TSubclassOf<class UFGResearchRecipe> mCurrentResearchRecipe;
 
 	UPROPERTY( Replicated )
-	AFGCharacterPlayer* mPlayerUsingMachine;
+	TObjectPtr<AFGCharacterPlayer> mPlayerUsingMachine;
 
 private:
 	UPROPERTY( )
-	UStaticMeshComponent* mResearchingMeshComponent;
+	TObjectPtr<UStaticMeshComponent> mResearchingMeshComponent;
 
 	/** This holds the actual mesh to be displayed by the assigned Static Mesh Component for mResearchingMeshComponent */
 	UPROPERTY( ReplicatedUsing = OnRep_ResearchMesh )
-	UStaticMesh* mResearchingMesh;
+	TObjectPtr<UStaticMesh> mResearchingMesh;
 
 	UPROPERTY( )
-	UCurveFloat* mItemScaleCurve;
+	TObjectPtr<UCurveFloat> mItemScaleCurve;
 
 };

@@ -107,23 +107,23 @@ protected:
 
 	/** Audio event to be posted when picked up, @todo: Remove BlueprintReadOnly */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	class UAkAudioEvent* mPickupEvent;
+	TObjectPtr<class UAkAudioEvent> mPickupEvent;
 
 	/** The effect to play where the pickup was, @todo: Remove BlueprintReadOnly */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	class UParticleSystem* mPickupEffect;
+	TObjectPtr<class UParticleSystem> mPickupEffect;
 
 	/** Audio event to be posted when run over by a vehicle, @todo: Remove BlueprintReadOnly */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	class UAkAudioEvent* mVehicleDestroyedEvent;
+	TObjectPtr<class UAkAudioEvent> mVehicleDestroyedEvent;
 
 	/** The effect to play when run over by a vehicle, @todo: Remove BlueprintReadOnly */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	class UParticleSystem* mVehicleDestroyedEffect;
+	TObjectPtr<class UParticleSystem> mVehicleDestroyedEffect;
 
 	/** The effect to play when destroyed by an explosive. If one is not specified it may fall back to either the vehicle effect or pickup effect */
 	UPROPERTY( EditDefaultsOnly )
-	class UParticleSystem* mExplosionDestroyedEffect;
+	TObjectPtr<class UParticleSystem> mExplosionDestroyedEffect;
 
 	/** Specifies priority for spawning against other effects. Must be implemented by the spawning class. ex: FGDestructiveProjectile */
 	UPROPERTY( EditDefaultsOnly )
@@ -135,7 +135,7 @@ protected:
 
 	/** Mesh to use when we want this object to simulate physics */
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMesh* mPhysicsMesh;
+	TObjectPtr<class UStaticMesh> mPhysicsMesh;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Proximity")
 	TEnumAsByte<EProximityEffectTypes> EffectCategory;
@@ -180,7 +180,7 @@ protected:
 	float MaxWedgeAngle = 15.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Destruction")
-	UMaterialInstance* mCapMaterialOverride = nullptr;
+	TObjectPtr<UMaterialInstance> mCapMaterialOverride = nullptr;
 	
 	friend class AFGFallingTree;
 	// End tree variables

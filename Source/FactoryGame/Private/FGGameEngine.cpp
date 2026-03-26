@@ -7,4 +7,5 @@ void UFGGameEngine::Start(){ }
 void UFGGameEngine::PreExit(){ }
 void UFGGameEngine::Tick(float deltaSeconds, bool idleMode){ }
 bool UFGGameEngine::LoadMap(FWorldContext& WorldContext, FURL URL,  UPendingNetGame* Pending, FString& Error){ return bool(); }
+float UFGGameEngine::GetMaxTickRate(float DeltaTime, bool bAllowFrameRateSmoothing) const{ return Super::GetMaxTickRate(DeltaTime, bAllowFrameRateSmoothing); }
 bool UFGGameEngine::Exec( UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& Ar){ return bool(); }

@@ -33,7 +33,7 @@ public:
 
 	/** When pawn take damage from a source, they play this take damage event */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "VFX" )
-	class UParticleSystem* mImpactParticle;
+	TObjectPtr<class UParticleSystem> mImpactParticle;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "VFX" )
 	bool mAttachParticleToTarget;
@@ -83,7 +83,7 @@ struct FDamageModifier
 	float DamageModifier;
 
 	UPROPERTY(BlueprintReadWrite, Category= "Modifiers")
-	UObject* AppliedBy;
+	TObjectPtr<UObject> AppliedBy;
 
 	FDamageModifier()
 	{

@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 #include "FactoryGame.h"
@@ -62,18 +62,18 @@ struct FConveyorChainItemRPCData
 
 	
 	UPROPERTY()
-	TArray< AFGConveyorChainActor* > ChainActors;
+	TArray< TObjectPtr<AFGConveyorChainActor> > ChainActors;
 
 	// The Remote call object that sent this RPC data request
 	UPROPERTY()
-	UFGConveyorChainRemoteCallObject* ChainRCO;
+	TObjectPtr<UFGConveyorChainRemoteCallObject> ChainRCO;
 
 	// The chain subsystem (for looking up item class indices)
 	UPROPERTY()
-	AFGConveyorChainSubsystem* ChainSubsystem;
+	TObjectPtr<AFGConveyorChainSubsystem> ChainSubsystem;
 
 	UPROPERTY()
-	class APlayerController* PlayerController;
+	TObjectPtr<class APlayerController> PlayerController;
 
 	// True if data originates from server. This is used because both client and server save and load the data
 	bool IsServerData = false;
@@ -96,10 +96,10 @@ struct FConveyorChainSegmentRPCData
 	bool NetSerialize( FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess );
 	
 	UPROPERTY()
-	TArray< AFGConveyorChainActor* > ChainActors;
+	TArray< TObjectPtr<AFGConveyorChainActor> > ChainActors;
 
 	UPROPERTY()
-	UFGConveyorChainRemoteCallObject* ChainRCO;
+	TObjectPtr<UFGConveyorChainRemoteCallObject> ChainRCO;
 
 	bool IsServerData = false;
 };
@@ -180,7 +180,7 @@ public:
 
 	// --- Begin Partial ITEM Transfer Tracking
 	UPROPERTY()
-	AFGConveyorChainActor* PendingItemChainActor = nullptr;
+	TObjectPtr<AFGConveyorChainActor> PendingItemChainActor = nullptr;
 	
 	UPROPERTY()
 	TArray< FConveyorItemDescRange > PendingDescRanges;
@@ -203,7 +203,7 @@ public:
 
 	// --- Begin Partial Segment Transfer Tracking
 	UPROPERTY()
-	AFGConveyorChainActor* PendingSegmentChainActor = nullptr;
+	TObjectPtr<AFGConveyorChainActor> PendingSegmentChainActor = nullptr;
 
 	UPROPERTY()
 	int32 PendingSegmentIndex = INDEX_NONE;
@@ -211,10 +211,10 @@ public:
 	// --- End Partial Sesgment Transfer Tracking
 
 	UPROPERTY()
-	TArray< AFGConveyorChainActor* > RequestedItemChainActors;
+	TArray< TObjectPtr<AFGConveyorChainActor> > RequestedItemChainActors;
 
 	UPROPERTY()
-	TArray< AFGConveyorChainActor* > RequestedSegmentChainActors;
+	TArray< TObjectPtr<AFGConveyorChainActor> > RequestedSegmentChainActors;
 
 	UPROPERTY()
 	bool HasPendingItemClientRequest = false;
@@ -223,7 +223,7 @@ public:
 	bool HasPendingSegmentClientRequest = false;
 };
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FGetAdditionalConveyorItemDescriptors, class AFGConveyorChainSubsystem* /* chainSubsystem */, TSet<TSubclassOf<UFGItemDescriptor>>& /* out_itemDescriptors */);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FGetAdditionalConveyorItemDescriptors, UWorld* /* worldContext */, TSet<TSubclassOf<UFGItemDescriptor>>& /* out_itemDescriptors */);
 
 UCLASS()
 class FACTORYGAME_API AFGConveyorChainSubsystem : public AFGSubsystem
@@ -247,6 +247,9 @@ public:
 	
 	void AddConveyorChain( AFGConveyorChainActor* chainActor );
 	void RemoveConveyorChain( AFGConveyorChainActor* chainActor );
+
+	/** Utility function to gather every single item descriptor that could appear on the conveyor belt, including unloaded item descriptors and item descriptors not referenced by any recipe */
+	static void GatherAllItemDescriptorsThatCanAppearOnConveyorBelts( UWorld* worldContext, TArray<TSubclassOf<UFGItemDescriptor>>& out_itemDescriptors );
 
 	/** Builds an array of all Item Descriptors. The class index in this array becomes its Network Identifier (we assume < 65k items so we can rep item classes with only 2 bytes) */
 	void BuildItemDescriptorRepArray();
@@ -347,26 +350,23 @@ private:
 	uint16 RepIDIncrement = 0;
 	
 	UPROPERTY()
-	TArray< AFGConveyorChainActor* > mConveyorChains;
+	TArray< TObjectPtr<AFGConveyorChainActor> > mConveyorChains;
 
 	/** When a chain is first replicated it will not have its spline segments replicated so its placed here until its spline data is requested then it is built */
 	UPROPERTY()
-	TArray< AFGConveyorChainActor* > mChainsNeedingSegmentUpdate;
+	TArray< TObjectPtr<AFGConveyorChainActor> > mChainsNeedingSegmentUpdate;
 
 	/** When a chain needs an update it is added here. If there are no pending requests the client will move from here into the pending update request pool after issueing a request*/
 	UPROPERTY()
-	TArray< AFGConveyorChainActor* > mChainsNeedingItemUpdate;
+	TArray< TObjectPtr<AFGConveyorChainActor> > mChainsNeedingItemUpdate;
 
 	/** When the client issues a server RPC for an item update, the requesting actor is placed here. Only when this array is empty will we issue another request */
 	UPROPERTY()
-	TArray< AFGConveyorChainActor* > mPendingItemUpdateRequest;
+	TArray< TObjectPtr<AFGConveyorChainActor> > mPendingItemUpdateRequest;
 
 	/** When the client issues a server RPC for an segment update, the requesting actor is placed here. Only when this array is empty will we issue another request */
 	UPROPERTY()
-	TArray< AFGConveyorChainActor* > mPendingSegmentUpdateRequest;
-
-	UPROPERTY()
-	TArray< AFGConveyorChainActor* > mSegmentUpdatedReceived;
+	TArray< TObjectPtr<AFGConveyorChainActor> > mPendingSegmentUpdateRequest;
 
 	// The total amount of time this subsystem has been accumulating from FactoryTick time.
 	UPROPERTY( ReplicatedUsing=OnRep_ServerFactoryTickTime )

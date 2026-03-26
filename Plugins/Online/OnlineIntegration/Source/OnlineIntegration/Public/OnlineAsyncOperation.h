@@ -13,6 +13,22 @@ class FOnlineError;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnOnlineAsyncOperationCompleted_Native, UOnlineAsyncOperation*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOnlineAsyncOperationCompleted);
 
+UENUM(BlueprintType)
+enum class EOnlineAsyncOperationStatus : uint8
+{
+	Invalid UMETA(DisplayName = "Invalid"),
+	UserInitialization UMETA(DisplayName = "UserInitialization"),
+	CreatingGame UMETA(DisplayName = "CreatingGame"),
+	CleaningUpSession UMETA(DisplayName = "CleaningUpSession"),
+	CreatingMainSession UMETA(DisplayName = "CreatingMainSession"),
+	CreatingMirrorSession UMETA(DisplayName = "CreatingMirrorSession"),
+	StoringSessionMetadata UMETA(DisplayName = "StoringSessionMetadata"),
+	StartingGame UMETA(DisplayName = "StartingGame"),
+	JoiningSession UMETA(DisplayName = "JoiningSession"),
+	JoiningOnlineSession UMETA(DisplayName = "JoiningOnlineSession"),
+	ConnectingToGame UMETA(DisplayName = "ConnectingToGame"),
+};
+
 /**
  * Abstract online asynchronous operation. Provides interested parties with all the necessary information to keep track of a long asynchronous operation
  * in case they want to eg display something in the UI
@@ -52,13 +68,14 @@ public:
 protected:
 	virtual void NotifySequenceFinished();
 
-	void UpdateStatusText(const FText& Text);
+	void SetStatus(EOnlineAsyncOperationStatus OperationStatus);
+	void UpdateStatus(EOnlineAsyncOperationStatus OperationStatus);
 	
 	/**
-	 * The last meaningful status report. 
+	 * The last meaningful status report.
 	 */
 	UPROPERTY(BlueprintReadOnly, FieldNotify)
-	FText StatusText;
+	EOnlineAsyncOperationStatus Status;
 
 private:
 	/**

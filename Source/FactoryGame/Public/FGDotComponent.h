@@ -47,5 +47,5 @@ protected:
 
 	/** Actors which our primitive component is overlapping. */
 	UPROPERTY()
-	TArray< AActor* > mOverlappingActor;
+	TArray< TObjectPtr<AActor> > mOverlappingActor;
 };

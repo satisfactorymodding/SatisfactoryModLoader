@@ -10,8 +10,12 @@
 #include "Online/Connectivity.h"
 #include "Online/Stats.h"
 #include "OnlineIntegrationTypes.h"
+#include "GameFramework/PlayerController.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-
+#include "Online/OnlineServices.h"
+#include "Online/Sessions.h"
+#include "Online/UserInfo.h"
+#include "Online/Presence.h"
 #include "CommonUserSubsystem.generated.h"
 
 class UAddOnEntitlement;
@@ -20,11 +24,11 @@ class UDataTable;
 struct FGameplayEvent;
 class UOnlineAsyncOperation;
 
-namespace UE {namespace Online
+namespace UE::Online
 {
 struct FPresenceUpdated;
 struct FAuthPendingAuthExpiration;
-}}
+}
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCommonUser, Log, All);
 
@@ -51,7 +55,9 @@ enum class EUserJoinSessionFailureReason : uint8
 	None,
 	NoPremium,
 	CrossPlayFailure,
-	NoEOS
+	NoEOS,
+	ErrorDuringAuthentication,
+	SessionRetrievalError
 };
 //</FL>
 
@@ -190,6 +196,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOnLocalUserInfoCreated, ULocalUserInfo*, User
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalUserFailedSessionJoin, ULocalUserInfo*, UserInfo, EUserJoinSessionFailureReason, Reason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLocalUserQueriesJoinCrossplay, ULocalUserInfo*, UserInfo, UOnlineCrossplayConfirmationQuery*, ConfirmationQuerySender);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnActivityChanged, const FName& /*Activity*/); // <FL> [TranN] PS5 Activity
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAnyUISessionJoinWasRequested, UOnlineIntegrationBackend*, Backend);
 
 
 
@@ -213,7 +220,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLocalUserQueriesJoinCrossplay OnLocalUserQueriesJoinCrossplay;
-//</FL>
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAnyUISessionJoinWasRequested OnAnyUISessionJoinWasRequestedOnBackend;
+
+	//</FL>
 	/** Async future for when a local user info with a certain player index gets created. */
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnLocalUserInfoCreated_Native, ULocalUserInfo*);
 
@@ -228,8 +239,15 @@ public:
 //<FL>[KonradA]
 	void QueryUserTryJoinCrossplay(ULocalUserInfo* User, TFunction<void()> OnConfirm, TFunction<void()> OnDeny);
 	UFUNCTION(BlueprintCallable)
-	bool IsProcessingAuthenticationSequences();	   
+	bool IsProcessingAuthenticationSequences();
+	UFUNCTION(BlueprintCallable)
+	void RetryLastPendingJoinRequest();
 	//</FL>
+	// <FL> [ZimmermannA] Broadcasts to the platform telemetry system that a message should be sent.
+	UFUNCTION(BlueprintCallable, Category = CommonUser)
+	void UpdatePlatformTelemetry(EOnlineSessionFeatureType message);
+	// </FL>
+
 	/** Sets the maximum number of local players, will not destroy existing ones */
 	UFUNCTION(BlueprintCallable, Category = CommonUser)
 	virtual void SetMaxLocalPlayers(int32 InMaxLocalPLayers);
@@ -262,6 +280,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure = False, Category = CommonUser)
 	ULocalUserInfo* GetUserInfoForLocalPlayer(ULocalPlayer* LocalPlayer) const;
 	
+	UFUNCTION(BlueprintCallable)
+	ULocalPlayer* GetLocalPlayerFromPlayerController(APlayerController* Controller) { return Controller->GetLocalPlayer(); };
 
 	/**
 	 * Creates a new online authentication sequence if there's isn't already a pending one for the given platform user id
@@ -359,7 +379,7 @@ public:
 	 * Registers all the stats in the given data table with the subsystem. After registration, these stats will be updated in the backend whenever their
 	 * corresponding gameplay events are triggered.
 	 */
-	void RegisterStats(UDataTable* StatTable);
+	void RegisterStats(UDataTable* StatTable, UDataTable* AggregatedStatTable);
 
 	void RegisterActivities(UDataTable* ActivityTable, UDataTable* StatToActivityTable);
 
@@ -386,6 +406,7 @@ public:
 	void RegisterExtension(TScriptInterface<IOnlineUserRegistryExtension> Extension);
 	void RegisterBackendLinkConnection(UOnlineUserBackendLink* Link1, UOnlineUserBackendLink* Link2);
 	TFuture<bool> QueryUserInfo(ULocalUserInfo* LocalUser, UOnlineUserBackendLink* BackendLink);
+	TFuture<UE::Online::TOnlineResult<UE::Online::FQueryPresence>> QueryFriendPresence(ULocalUserInfo* LocalUser, UOnlineUserBackendLink* FriendBackendLink);
 	TFuture<void> QueryEntitlements(ULocalUserInfo* LocalUser, const TArray<UAddOnEntitlement*>& Entitlements);
 	
 	UOnlineUserInfo* CreateOnlineUserForLink(UOnlineUserBackendLink* BackendLink);
@@ -407,7 +428,7 @@ public:
 	// </FL>
 
 	// <FL> [ZimmermannA] 
-	UPROPERTY(BlueprintAssignable, Category = "Network", DisplayName = "OnEOSLoginProcessUpdated")
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category = "Network", DisplayName = "OnEOSLoginProcessUpdated")
 	FOnEOSLoginProcessUpdated mOnEOSLoginProcessUpdated;
 	
 	UPROPERTY(BlueprintAssignable, Category = "Network", DisplayName = "OnOnlineTelemetryUpdated")
@@ -549,4 +570,41 @@ protected:
 	// <FL> [BGR] To identify request results from different request turns
 	int8 RefreshFriendsQueryID = 0; // it's ok if they overflow
 	// </FL>
+
+	// <FL> [BGR] Batch UserInfo and UserAvatar query's
+	UPROPERTY()
+	FTimerHandle BatchTimerHandle;
+
+	UFUNCTION() 
+	void TickBatchProcessing();
+
+	template<typename T>
+	void ClearCacheMap(TMap<UE::Online::FAccountId, TSharedRef<TPromise<UE::Online::TOnlineResult<T>>>>& Map);
+	void ClearBatchQueryCaches();
+	void ClearPresenceQueryCaches();
+	TMap<UE::Online::FAccountId, TSharedRef<TPromise<UE::Online::TOnlineResult<UE::Online::FQueryUserAvatar>>>> UserAvatarRequestQueue;
+	TMap<UE::Online::FAccountId, TSharedRef<TPromise<UE::Online::TOnlineResult<UE::Online::FQueryUserAvatar>>>> UserAvatarRequestPending;
+	TMap<UE::Online::FAccountId, TSharedRef<TPromise<UE::Online::TOnlineResult<UE::Online::FQueryUserInfo>>>> UserInfoRequestQueue;
+	TMap<UE::Online::FAccountId, TSharedRef<TPromise<UE::Online::TOnlineResult<UE::Online::FQueryUserInfo>>>> UserInfoRequestPending;
+	TMap<UE::Online::FAccountId, TSharedRef<TPromise<UE::Online::TOnlineResult<UE::Online::FQueryPresence>>>> FriendPresenceRequestQueue;
+	TMap<UE::Online::FAccountId, TSharedRef<TPromise<UE::Online::TOnlineResult<UE::Online::FQueryPresence>>>> FriendPresenceRequestPending;
+
+	TOptional<UE::Online::TOnlineAsyncOpHandle<UE::Online::FQueryUserAvatar>> LastAvatarHandle;
+	TOptional<UE::Online::TOnlineAsyncOpHandle<UE::Online::FQueryUserInfo>> LastInfoHandle;
+
+	TFuture<UE::Online::TOnlineResult<UE::Online::FQueryUserAvatar>> QueryUserAvatarBatched(UE::Online::FQueryUserAvatar::Params&& Params);
+	TFuture<UE::Online::TOnlineResult<UE::Online::FQueryUserInfo>> QueryUserInfoBatched(UE::Online::FQueryUserInfo::Params&& Params);
+	// </FL>
+
+	UFUNCTION(BlueprintCallable)
+	bool HasPendingUserQueries() const; 
+
+private:
+
+	bool bHasAvatarRequestFinished = false;
+	bool bHasUserInfoRequestFinished = false;
 };
+
+template <typename T>
+void UCommonUserSubsystem::ClearCacheMap(
+	TMap<UE::Online::FAccountId, TSharedRef<TPromise<UE::Online::TOnlineResult<T>>>>& Map){ }

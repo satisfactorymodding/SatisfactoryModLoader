@@ -29,14 +29,18 @@ struct FFGButtonHintDescription
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	TObjectPtr<UInputAction> InputAction;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta=(ToolTip="Force display Key instead of InputAction mapping") )
 	FKey Key;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ToolTip="Use together with Key, force display Key+ComboKey instead of InputAction mapping") )
 	FKey ComboKey;
 
+	//overrides InputAction and Key, looks for matching MappingContext->Mapping->PlayerMappableSetting->Name
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta=(ToolTip="Overrides InputAction and Key, looks for mapping by matching MappingContext->Mapping->PlayerMappableSetting->Name") )
+	FName OverrideKeySettingName;
+
 	//overrides InputAction and Key, looks for matching Tag in Satisfactory Input Settings
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta=(ToolTip="Force display texture of matching Tag in Satisfactory Input Settings -> Tag Texture Bindings") )
 	FGameplayTag OverrideHintTag;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
@@ -89,16 +93,16 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 
-	virtual ETickableTickType GetTickableTickType() const override { return ETickableTickType::Conditional; }
+	virtual ETickableTickType GetTickableTickType() const override { return IsTemplate() ? ETickableTickType::Never : ETickableTickType::Conditional; }
 	virtual bool IsTickable() const override { return IsInitialized(); }
 	virtual bool IsTickableWhenPaused() const override { return IsInitialized(); }
 	virtual bool IsTickableInEditor() const override { return IsInitialized(); }
 	virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(UFGButtonHintSubsystem, STATGROUP_Tickables); }
 	void NotifyKeyHintsChanged() { mUpdateKeyhintsNextFrame = true; }
+	void UpdateKeyHints();
 
 private:
 	void HandleSlateFocusChanging(const FFocusEvent& FocusEvent, const FWeakWidgetPath& OldFocusedWidgetPath, const TSharedPtr<SWidget>& OldFocusedWidget, const FWidgetPath& NewFocusedWidgetPath, const TSharedPtr<SWidget>& NewFocusedWidget);
-	void UpdateKeyHints();
 	void UpdateKeyHintsFromFocusPath(const FWidgetPath& FocusPath);
 
 	FDelegateHandle mFocusChangingHandle;
@@ -175,6 +179,7 @@ private:
 	void SortKeyHints();
 
 	class UFGGameUI* GetGameUI();
+	bool HideEnhancedInputButtonBarBecauseMenuIsActive();
 	class UEnhancedInputLocalPlayerSubsystem* GetEnhancedInputSubsystem() const;
 };
 

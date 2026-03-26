@@ -28,7 +28,6 @@ AFGBuildableJumppad::AFGBuildableJumppad() : Super() {
 	this->mDestinationMesh = nullptr;
 	this->mTrajectorySplineMesh = nullptr;
 	this->mNumArrows = 5;
-	this->mTrajectorySplineComponent = nullptr;
 	this->mDestinationMeshComponent = nullptr;
 	this->mSplineComponent = nullptr;
 	this->mTrajectoryGravityMultiplier = 1.0;
@@ -56,8 +55,8 @@ void AFGBuildableJumppad::Factory_TickProducing(float dt){ }
 void AFGBuildableJumppad::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){ }
 void AFGBuildableJumppad::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex){ }
 void AFGBuildableJumppad::OnRep_LaunchAngle(){ }
-void AFGBuildableJumppad::GenerateSplineMesh(){ }
-void AFGBuildableJumppad::DestroySplineMesh(){ }
+void AFGBuildableJumppad::GenerateSplineMesh(TArray<FInstanceData>& OutSplineInstances){ }
+void AFGBuildableJumppad::DestroySplineMeshInstances(){ }
 void AFGBuildableJumppad::DestroyVisualizer(){ }
 void AFGBuildableJumppad::UpdateDestinationLocation(){ }
 void AFGBuildableJumppad::ConstructSplineFromTrajectoryData(){ }

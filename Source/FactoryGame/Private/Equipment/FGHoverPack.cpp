@@ -19,10 +19,8 @@ AFGHoverPack::AFGHoverPack() : Super() {
 	this->mPowerConnectionSearchRadius = 3000.0;
 	this->mPowerConnectionSearchTickRate = 0.1;
 	this->mPowerConnectionDisconnectionTime = 0.5;
-	this->mPowerCapacity = 3.0;
-	this->mPowerDrainRate = 0.5;
 	this->mPowerConsumption = 0.0;
-	this->mCurrentPowerLevel = 0.0;
+	this->mCanSlowFall = false;
 	this->mRangeWarningNormalizedDistanceThreshold = 0.75;
 	this->mDisplayRangeWarning = false;
 	this->mCurrentHoverMode = EHoverPackMode::HPM_Inactive;
@@ -46,17 +44,18 @@ AFGHoverPack::AFGHoverPack() : Super() {
 }
 void AFGHoverPack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGHoverPack, mCurrentPowerLevel);
+	DOREPLIFETIME(AFGHoverPack, mCanSlowFall);
 	DOREPLIFETIME(AFGHoverPack, mDisplayRangeWarning);
 	DOREPLIFETIME(AFGHoverPack, mCurrentHoverMode);
+	DOREPLIFETIME(AFGHoverPack, mCurrentPowerConnection);
 	DOREPLIFETIME(AFGHoverPack, mHasConnection);
-	DOREPLIFETIME(AFGHoverPack, mCurrentConnectionLocation);
+	DOREPLIFETIME(AFGHoverPack, mShouldAutomaticallyHoverWhenConnected);
 	DOREPLIFETIME(AFGHoverPack, mCurrentRailroadTrack);
 }
 void AFGHoverPack::BeginPlay(){ Super::BeginPlay(); }
 void AFGHoverPack::Tick(float deltaTime){ Super::Tick(deltaTime); }
 void AFGHoverPack::UnEquip(){ }
-void AFGHoverPack::OnCharacterMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode, EMovementMode NewMovementMode, uint8 NewCustomMode){ }
+void AFGHoverPack::OnCharacterMovementModeChanged(class ACharacter* character, EMovementMode PreviousMovementMode, uint8 PreviousCustomMode){ Super::OnCharacterMovementModeChanged(character, PreviousMovementMode, PreviousCustomMode); }
 void AFGHoverPack::AddEquipmentActionBindings(){ }
 float AFGHoverPack::GetCharacterUseDistanceOverride() const{ return float(); }
 float AFGHoverPack::GetMaxSpeed(bool IsSprinting) const{ return float(); }
@@ -69,14 +68,13 @@ float AFGHoverPack::GetMaxDistanceFromCurrentConnection() const{ return float();
 float AFGHoverPack::GetHeightAboveCurrentConnection() const{ return float(); }
 void AFGHoverPack::SetHoverMode(EHoverPackMode HoverMode, bool UpdateMovementMode){ }
 void AFGHoverPack::ConnectToNearestPowerConnection(){ }
-EHoverConnectionStatus AFGHoverPack::GetPowerConnectionStatus( const UFGPowerConnectionComponent* Connection) const{ return EHoverConnectionStatus(); }
-bool AFGHoverPack::IsPowerConnectionValid( const UFGPowerConnectionComponent* Connection, bool CheckDistance) const{ return bool(); }
-bool AFGHoverPack::IsRailroadTrackValid( AFGBuildableRailroadTrack* RailroadTrack, bool CheckDistance) const{ return bool(); }
+AFGHoverPack::EHoverConnectionStatus AFGHoverPack::GetPowerConnectionStatus(const UFGPowerConnectionComponent* connection, const AFGBuildableRailroadTrack* track) const{ return AFGHoverPack::EHoverConnectionStatus(); }
 void AFGHoverPack::HandlePowerConnection(const float DeltaTime){ }
 void AFGHoverPack::UpdateShowRangeWarning(){ }
-void AFGHoverPack::ConnectToPowerConnection( UFGPowerConnectionComponent* Connection){ }
+float AFGHoverPack::GetPowerConsumptionMultiplier() const{ return float(); }
+float AFGHoverPack::GetPowerConsumption() const{ return float(); }
+void AFGHoverPack::ConnectToPowerConnection(UFGPowerConnectionComponent* connection, AFGBuildableRailroadTrack* track){ }
 void AFGHoverPack::DisconnectFromCurrentPowerConnection(){ }
-void AFGHoverPack::ConnectToRailroadTrack( AFGBuildableRailroadTrack* RailroadTrack){ }
 void AFGHoverPack::UpdateHoverNoise(){ }
 void AFGHoverPack::ApplyHoverPackMovementMode() const{ }
 void AFGHoverPack::PlayerStopHover_Server_Implementation(){ }
@@ -84,7 +82,8 @@ bool AFGHoverPack::PlayerStopHover_Server_Validate(){ return bool(); }
 void AFGHoverPack::PlayerStopHover(){ }
 void AFGHoverPack::MakeActiveNoise(){ }
 void AFGHoverPack::Input_Crouch(const FInputActionValue& actionValue){ }
+void AFGHoverPack::UpdateCurrentConnectionLocation(){ }
 void AFGHoverPack::OnRep_HasConnection(){ }
 void AFGHoverPack::OnRep_CurrentHoverMode(EHoverPackMode previousHoverMode){ }
-void AFGHoverPack::OnRep_CurrentConnectionLocation(){ }
+void AFGHoverPack::OnRep_CurrentPowerConnection(){ }
 void AFGHoverPack::OnRep_DisplayRangeWarning(){ }

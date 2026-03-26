@@ -58,15 +58,15 @@ protected:
 
 	/** The Railroad hologram */
 	UPROPERTY( Replicated )
-	class AFGRailroadTrackHologram* mRailroadTrackHologram;
+	TObjectPtr<class AFGRailroadTrackHologram> mRailroadTrackHologram;
 
 	/** The components of this hologram used for detecting platform snapping */
 	UPROPERTY()
-	class UFGTrainPlatformConnection* mPlatformConnectionComponents[ 2 ]; 
+	TObjectPtr<class UFGTrainPlatformConnection> mPlatformConnectionComponents[ 2 ]; 
 
 	/** Stores a reference to the other platforms this hologram is connecting to */
 	UPROPERTY( CustomSerialization )
-	class UFGTrainPlatformConnection* mConnectedPlatformComponents[ 2 ];
+	TObjectPtr<class UFGTrainPlatformConnection> mConnectedPlatformComponents[ 2 ];
 
 private:
 	/** radius to allow snapping to occur*/

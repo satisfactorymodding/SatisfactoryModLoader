@@ -9,7 +9,7 @@
 
 
 UENUM(BlueprintType)
-enum class EOfflineSessionPromptResult
+enum class EOfflineSessionPromptResult : uint8
 {
 	CancelSessionCreation,
 	CreateOfflineSession

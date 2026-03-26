@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Tests/FGGameplayTest.h"
 #include "FGGameplayTest_OnlineStats.generated.h"

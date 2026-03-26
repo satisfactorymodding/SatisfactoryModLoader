@@ -9,6 +9,8 @@
 #include "Templates/SubclassOf.h"
 #include "FGBuildGunDismantle.generated.h"
 
+struct FVehiclePathVisualizationHandle;
+struct FVehiclePathVisualizationInfo;
 class USphereComponent;
 
 USTRUCT()
@@ -220,7 +222,6 @@ private:
 	/** Input Action Bindings */
 	void Input_DismantleMultiSelect( const FInputActionValue& actionValue );
 	void Input_SelectBuildingForDismantleFilter( const FInputActionValue& actionValue );
-	
 private:
 	/** State bool for whether multi-select is in effect */
 	bool mIsMultiSelectActive;
@@ -237,22 +238,22 @@ private:
 
 	/** When in blueprint mode, the current blueprint type for filtering when dismantling. */
 	UPROPERTY()
-	class UFGBlueprintDescriptor* mCurrentDismantleBlueprintFilter;
+	TObjectPtr<class UFGBlueprintDescriptor> mCurrentDismantleBlueprintFilter;
 
 	/** If true then this state won't broadcast when peek refunds have been updated. Used so that there won't be more than one broadcast per tick. */
 	bool mDisablePeekDismantleRefundsBroadcast;
 
 	/** Currently selected dismantable actor */
 	UPROPERTY( Transient )
-	class AActor* mCurrentlySelectedActor;
+	TObjectPtr<class AActor> mCurrentlySelectedActor;
 
 	/** The actor we currently aim at, this does not mean we can dismantle it. */
 	UPROPERTY( Transient )
-	class AActor* mCurrentlyAimedAtActor;
+	TObjectPtr<class AActor> mCurrentlyAimedAtActor;
 
 	/** The actor to dismantle (simulated locally on client). */
 	UPROPERTY(Transient)
-	TArray<class AActor*> mPendingDismantleActors;
+	TArray<TObjectPtr<class AActor>> mPendingDismantleActors;
 	
 	/** Cached dismantle refunds on server that is replicated. This value does not include local lightweight refunds */
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_PeekDismantleRefund )
@@ -274,18 +275,25 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGunMode" )
 	TSubclassOf< UFGDismantleModeDescriptor > mBlueprintDismantleMode;
 
+	/** Recipe that must be unlocked to allow creation of vehicle paths */
+	UPROPERTY( EditDefaultsOnly, Category = "BuildGunMode" )
+	TSubclassOf<UFGRecipe> mVehiclePathRecipe;
+
 	/** Most recently used dismantle mode. */
 	TSubclassOf< UFGDismantleModeDescriptor > mLastUsedDismantleMode;
 
 	/** Used to overlap with blueprint proxies to detect them. */
 	UPROPERTY()
-	USphereComponent* mBlueprintProxyDetector;
+	TObjectPtr<USphereComponent> mBlueprintProxyDetector;
 
 	/** Blueprint proxies and their visual representations. */
 	UPROPERTY()
-	TMap< class AFGBlueprintProxy*, UStaticMeshComponent* > mBlueprintProxyVisualMeshes;
+	TMap< TObjectPtr<class AFGBlueprintProxy>, TObjectPtr<UStaticMeshComponent> > mBlueprintProxyVisualMeshes;
 
 	/** Track the instance converter so we know which one to remove from the subsystem */
 	UPROPERTY()
-	AActor* mInstanceConverterInstigator;
+	TObjectPtr<AActor> mInstanceConverterInstigator;
+
+	/** Handle for the vehicle path visualization when in dismantle mode */
+	TSharedPtr<FVehiclePathVisualizationHandle> mVehiclePathVisualizationHandle;
 };

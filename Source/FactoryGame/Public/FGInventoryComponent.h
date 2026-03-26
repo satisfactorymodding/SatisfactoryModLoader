@@ -70,7 +70,7 @@ private:
 public:
 	/** Legacy actor for the item state. We have to store it upon laod because killing actors during Serialize is risky */
 	UPROPERTY( Transient )
-	AActor* LegacyItemStateActor{};
+	TObjectPtr<AActor> LegacyItemStateActor{};
 };
 
 /** Enable custom serialization of FInventoryItem */
@@ -252,12 +252,11 @@ public:
 	int32 FindFirstIndexWithItemType( TSubclassOf<UFGItemDescriptor> itemDescriptor, int32 startIndex = 0 ) const;
 	
 	/**
-	 * Adds one item to the inventory.
+	 * Adds one item to the inventory. This is significantly faster than AddStack as it has to do less bookkeeping
+	 * @return true if item has been added to the inventory, false otherwise
 	 */
-	FORCEINLINE bool AddItem( const FInventoryItem& item )
-	{
-		return AddStack( FInventoryStack( item ) ) == 1;
-	}
+	UFUNCTION( BlueprintCallable, Category = "Inventory" )
+	bool AddItem( const FInventoryItem& item );
 
 	/**
 	 * Tries to add an item to our inventory, stack it if possible.
@@ -451,6 +450,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	void GetInventoryStacks( TArray< FInventoryStack >& out_stacks, const bool getEmptyStacks = false ) const;
 
+	UFUNCTION(BlueprintPure, Category = "Inventory")
+	TSubclassOf< UFGItemDescriptor > GetItemClassAtIndex(int32 index) const;
+	
 	/** Returns the indexes of relevant stacks depending on the given items classes, 
 	indexes are sorted first by class and secondly in ascending stack size */ 
 	UFUNCTION( BlueprintPure, Category = "Inventory" )

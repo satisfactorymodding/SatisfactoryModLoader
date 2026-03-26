@@ -7,7 +7,7 @@ const FInternetAddrEOS& FEOSReliableDataTransferNetConnection::GetAddress() cons
 void FEOSReliableDataTransferNetConnection::ReceiveBytes(const uint8* InData, int32 InLength){ }
 void FEOSReliableDataTransferNetConnection::InitServerSide(FSocketSubsystemEOS* InSocketSubsystem, FReliableMessagingServerEOS* InServer, TSharedPtr<const FInternetAddrEOS> InAddress, TSharedPtr<FSocketEOS> InSocket){ }
 FGuid FEOSReliableDataTransferNetConnection::GetConnectionId() const{ return FGuid(); }
-void FEOSReliableDataTransferNetConnection::EnqueueMessage(uint8 Channel, TArray<uint8>&& Message){ }
+void FEOSReliableDataTransferNetConnection::EnqueueTaggedMessage(FGameplayTag Tag, TArray<uint8>&& Message){ }
 EReliableMessagingConnectionState FEOSReliableDataTransferNetConnection::Tick(float DeltaTime){ return EReliableMessagingConnectionState::Disconnected; }
 void FEOSReliableDataTransferNetConnection::DispatchMessages(TFunction<void(RDTProtocol::FMessage&&)> MessageDispatcher){ }
 void FEOSReliableDataTransferNetConnection::Close(){ }
@@ -19,4 +19,5 @@ bool FEOSReliableDataTransferNetConnection::WriteData(const uint8* Data, const i
 void FEOSReliableDataTransferNetConnection::CloseConnection(){ }
 EReliableMessagingConnectionState FEOSReliableDataTransferNetConnection::GetConnectionState() const{ return EReliableMessagingConnectionState::Disconnected; }
 bool FEOSReliableDataTransferNetConnection::Connect(UNetConnection* NetConnection, const FGuid& InConnectionId){ return false; }
+bool FEOSReliableDataTransferNetConnection::TrySendHandshake(){ return false; }
 bool FEOSReliableDataTransferNetConnection::SendPacket(const uint8* Data, int32 Count){ return false; }

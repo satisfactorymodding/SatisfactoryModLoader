@@ -27,7 +27,7 @@ public:
 
 protected:
 	// Begin IFGSignificanceInterface
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	// End IFGSignificanceInterface
 protected:
 	UPROPERTY(EditDefaultsOnly,Category = "Significance")

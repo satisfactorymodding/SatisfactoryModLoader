@@ -37,7 +37,7 @@ private:
 	float mTrajectorySearchRadius;
 
 	UPROPERTY()
-	TArray<class AFGBuildableJumppad*> mNearbyJumpPads;
+	TArray<TObjectPtr<class AFGBuildableJumppad>> mNearbyJumpPads;
 
 	FTraceHandle mTraceHandle;
 	FOverlapDelegate mOverlapDelegate;

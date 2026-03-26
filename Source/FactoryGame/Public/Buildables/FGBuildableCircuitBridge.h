@@ -67,6 +67,8 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "CircuitBridge" )
 	FOnCircuitsChanged mOnCircuitsChanged;
 
+	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
+	
 private:
 	UFUNCTION()
 	virtual void OnRep_IsBridgeConnected() { }
@@ -81,5 +83,5 @@ private:
 
 	/** The connections on this building. */
 	UPROPERTY()
-	TArray< class UFGCircuitConnectionComponent* > mConnections;
+	TArray< TObjectPtr<class UFGCircuitConnectionComponent> > mConnections;
 };

@@ -94,7 +94,7 @@ protected:
 private:
 	/** Connection fetched from blueprint. */
 	UPROPERTY()
-	class UFGPipeConnectionComponent* mOutputConnection;
+	TObjectPtr<class UFGPipeConnectionComponent> mOutputConnection;
 
 	/** Simulation data for this fluid integrant. */
 	UPROPERTY( SaveGame )

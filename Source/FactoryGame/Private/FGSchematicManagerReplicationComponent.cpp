@@ -1,5 +1,7 @@
 #include "FGSchematicManagerReplicationComponent.h"
 
+#include "GameplayTagContainer.h"
+
 UFGSchematicManagerReplicationComponent::UFGSchematicManagerReplicationComponent() : Super() {
 	this->mSchematicManager = nullptr;
 }
@@ -9,7 +11,7 @@ void UFGSchematicManagerReplicationComponent::NotifySchematicsPurchased(TArrayVi
 void UFGSchematicManagerReplicationComponent::NotifySchematicsReset(TArrayView<const TSubclassOf<UFGSchematic>> Schematics){  }
 void UFGSchematicManagerReplicationComponent::InitializeAsClient(){  }
 void UFGSchematicManagerReplicationComponent::SendInitialReplicationMessageToPlayer(){  }
-void UFGSchematicManagerReplicationComponent::HandleRawSchematicManagerMessage(TArray<uint8>&& InMessageData){  }
+void UFGSchematicManagerReplicationComponent::HandleRawSchematicManagerMessage(FGameplayTag InTag, TArray<uint8>&& InMessageData){ }
 void UFGSchematicManagerReplicationComponent::SendRawSchematicManagerMessage(ESchematicManagerMessageId MessageId, const TFunctionRef<void(FArchive&)>& MessageSerializer) const{  }
 void UFGSchematicManagerReplicationComponent::ReceivedInitialReplicationMessage(const FSchematicManagerInitialReplicationMessage& InitialReplicationMessage){  }
 void UFGSchematicManagerReplicationComponent::ReceivedSchematicsPurchasedMessage(const FSchematicsPurchasedMessage& SchematicsPurchasedMessage) const{  }

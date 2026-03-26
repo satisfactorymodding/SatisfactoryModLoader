@@ -50,10 +50,10 @@ public:
 	void OnAttachedBuildableDismantled( class AFGBuildable* dismantledBuildable );
 protected:
 	UPROPERTY( SaveGame, Replicated )
-	class UFGConnectionComponent* mBottomSnappedConnection;
+	TObjectPtr<class UFGConnectionComponent> mBottomSnappedConnection;
 
 	UPROPERTY( SaveGame, Replicated )
-	class UFGConnectionComponent* mTopSnappedConnection;
+	TObjectPtr<class UFGConnectionComponent> mTopSnappedConnection;
 	
 	UPROPERTY( EditDefaultsOnly )
 	TSubclassOf< class UFGConnectionComponent > mConnectionComponentClass;

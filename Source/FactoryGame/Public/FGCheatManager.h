@@ -6,8 +6,10 @@
 #include "GameFramework/CheatManager.h"
 #include "FGGamePhaseManager.h"
 #include "FGCreatureSubsystem.h"
+#include "Equipment/FGBuildGunDismantle.h"
 #include "FGCheatManager.generated.h"
 
+class AFGBuildable;
 /** Will store one per parameter in the function cheat in the cheat board */
 USTRUCT()
 struct FCheatBoardParamSelectionData
@@ -72,6 +74,8 @@ public:
 	virtual bool IsBlueprintFilteredOut(const FCheatBoardBlueprintContext& Context) const { return false; }
 	virtual FString GetPrettifiedAssetName(const FAssetData& InAssetData) const;
 	virtual bool IsAssetFilteredOut(const FAssetData& InAssetData) const { return false; }
+	virtual bool IsActorFilteredOut(const AActor* InActor) const { return false; }
+	virtual FString GetPrettifiedActorName(const AActor* InActor) const;
 };
 
 /** Wraps parameter filter into a struct that can be passed around */
@@ -156,6 +160,12 @@ public:
 	bool NoUnlockCost_Get();
 	UFUNCTION( Server, Reliable )
 	void Server_NoPower( bool enabled );
+	UFUNCTION( exec, CheatBoard, Category = "Resources" )
+	void EnergyCostMultiplier( float multiplier );
+	UFUNCTION( exec, CheatBoard, Category = "Resources" )
+	void PartsCostMultiplier( float multiplier );
+	UFUNCTION( exec, CheatBoard, Category = "Resources" )
+	void SpacePartsCostMultiplier( float multiplier );
 	UFUNCTION( exec, CheatBoard, Category = "Resources" )
 	void NoPower( bool enabled );
 	UFUNCTION( exec, CheatBoard)
@@ -262,6 +272,8 @@ public:
 	void Server_SetPlanetSpeedMultiplier( float multiplier );
 	UFUNCTION( exec, CheatBoard, category = "World|Planets" )
 	void SetPlanetSpeedMultiplier( float multiplier );
+	UFUNCTION( Server, Reliable )
+	void Server_ForceSetWeatherType(TSubclassOf<class AFGWeatherReaction> Reaction);
 	UFUNCTION( exec, CheatBoard, category = "World|Weather" )
 	void ForceSetWeatherType( TSubclassOf<class AFGWeatherReaction> Reaction );
 	UFUNCTION( exec, CheatBoard, category = "World|Weather" )
@@ -442,6 +454,12 @@ public:
 	/** Fast forwards currently playing intro sequence N seconds forward */
 	UFUNCTION( Exec, Category = "Player|Intro", CheatBoard )
 	void FastForwardIntroSequence( float SecondsToFastForward );
+	UFUNCTION( Exec, CheatBoard, Category = "Player" )
+	void SaveDismantleSelectionToBlueprint( const FString& newBlueprintName );
+	UFUNCTION( Server, Reliable )
+	void Server_SaveDismantleSelectionToBlueprint( const FString& newBlueprintName, const TArray<AFGBuildable*>& buildables, const TArray<FDismantleLightweightBundle>& lightweightBuildables );
+	UFUNCTION( Client, Reliable )
+	void Client_GotoBlueprintBuildMode( const FString& blueprintName );
 	
 	/****************************************************************
 	 * Foliage
@@ -605,14 +623,6 @@ public:
 	void Server_Vehicle_FlipDrivenVehicle( class AFGWheeledVehicle* vehicle );
 	UFUNCTION( exec, CheatBoard, category = "Vehicle" )
 	void Vehicle_FlipDrivenVehicle();
-	UFUNCTION( Server, Reliable )
-	void Server_Vehicle_ResetDeadlocks();
-	UFUNCTION( exec, category = "Vehicle" )
-	void Vehicle_ResetDeadlocks();
-	UFUNCTION( Server, Reliable )
-	void Server_Vehicle_ResetTheChosenVehicle();
-	UFUNCTION( exec, category = "Vehicle" )
-	void Vehicle_ResetTheChosenVehicle();
 	UFUNCTION( exec, CheatBoard, category = "Vehicle" )
 	void Vehicle_DumpInfoAboutLookedAtVehicle();
 	
@@ -724,7 +734,16 @@ public:
 	 * Narrative/Story
 	 ****************************************************************/
 	UFUNCTION( exec, CheatBoard, category = "Narrative" )
-	void ClearMessageCooldown();
+	void ClearMessageCooldowns();
+	
+	UFUNCTION( exec, CheatBoard, category = "Narrative" )
+	void ClearGlobalMessageCooldown();
+
+	UFUNCTION( exec, CheatBoard, category = "Narrative" )
+	void ClearBarkMessageCooldown( TSubclassOf< class UFGBarkMessageType > barkMessageType );
+
+	UFUNCTION( exec, CheatBoard, Category = "Narrative", meta = ( ToolTip="Play narration message") )
+	void NarrationPlayMessage(TSoftObjectPtr<class UFGMessage> messageToPlay);
 
 	/****************************************************************
 	 * Save/Load (Mostly commands to cleanup or fix save issues)
@@ -819,6 +838,8 @@ public:
 	 ****************************************************************/
 	UFUNCTION( exec, CheatBoard, category = "Audio" )
 	void Audio_ToggleLandingDebug();
+	UFUNCTION( exec, CheatBoard, category = "Audio" )
+	void Audio_ToggleTriggerOnOutdoorRoom();
 	UFUNCTION( Exec, CheatBoard, Category = "Audio", meta = ( ToolTip="Trigger ak audio event") )
 	void Audio_TriggerAkEvent( TSoftObjectPtr< class UAkAudioEvent > EventName);
 	UFUNCTION( Exec, CheatBoard, Category = "Audio", meta = ( ToolTip="Set global rtpc") )

@@ -41,16 +41,19 @@ public:
 	FTrackGraph();
 
 public:
-	/** All the tracks that are connected (nodes in the graph) */
+	/**
+	 * All the tracks that are connected (nodes in the graph)
+	 * Note: Not marked with SaveGame, these will be registered during BeginPlay.
+	 */
 	UPROPERTY()
-	TArray< class AFGBuildableRailroadTrack* > Tracks;
+	TArray< TObjectPtr<class AFGBuildableRailroadTrack> > Tracks;
 	
 	/** All the signal blocks managed by this graph. */
 	TArray< TSharedPtr< FFGRailroadSignalBlock > > SignalBlocks;
 
 	/** This is the third rail the locomotives and stations connect to. */
-	UPROPERTY()
-	class UFGPowerConnectionComponent* ThirdRail;
+	UPROPERTY( SaveGame )
+	TObjectPtr<class UFGPowerConnectionComponent> ThirdRail;
 
 	/** Do this track graph need to be rebuilt, e.g. tracks have been removed. */
 	uint8 NeedFullRebuild:1;
@@ -195,12 +198,13 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Railroad" )
 	void GetTrainStations( int32 trackID, TArray< class AFGTrainStationIdentifier* >& out_stations ) const;
 
+	/** Helper to sort a list of stations by their given name in ascending order. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Railroad" )
+	void SortTrainStations( UPARAM( ref ) TArray< class AFGTrainStationIdentifier* >& stations ) const;
+
 	/** Get all stations. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Railroad" )
 	void GetAllTrainStations( TArray< class AFGTrainStationIdentifier* >& out_stations ) const;
-
-	/** Called to externally update a platforms power connection to use its tracks third rail */
-	void UpdateCargoPlatformPowerConnection( int32 trackGraphID, class AFGBuildableTrainPlatformCargo* cargoPlatform );
 
 
 
@@ -412,6 +416,9 @@ public:
 	 */
 	void Debug_MarkAllGraphsAsChanged();
 	void Debug_MarkAllGraphsForFullRebuild();
+	void Debug_VisualizeSignalBlocks();
+	void Debug_VisualizeSignalReservations();
+	void Debug_VisualizeTrackConnections();
 
 	/** Expensive, goes through every railroad track buildable and fixes up their connections. Removing invalid ones, adding missing switches for junctions, etc. */
 	void ValidateAndFixupAllRailroadConnections();
@@ -426,6 +433,9 @@ protected:
 	void OnTrainsCollided( class AFGTrain* first, class AFGTrain* second );
 	
 private:
+	/** Called when world has begun play, before the first tick. */
+	void PostLoadGameWarmup();
+	
 	void TickTrackGraphs( float dt );
 	void TickPendingCollisions();
 	void TickBlockVisualization();
@@ -483,7 +493,12 @@ private:
 	 */
 	void RebuildSignalBlocks( int32 graphID );
 
-	/** Call when updating a stations hidden power connection to update all platforms attached to that station */
+	/**
+	 * Call when updating a station's hidden power connection to update all platforms attached to that station.
+	 *
+	 * @param station   Parent station to update.
+	 * @param connectTo New connection, if nullptr then the stations are disconnected.
+	 */
 	void RefreshPlatformPowerConnectionsFromStation( class AFGBuildableRailroadStation* station, class UFGCircuitConnectionComponent* connectTo );
 
 	/** Initializes all auto generated station names. */
@@ -575,21 +590,24 @@ private:
 	TArray< TWeakObjectPtr< AFGBuildableRailroadTrack > > mTracks;
 	
 	/** All the train tracks in the world, separated by connectivity. */
-	UPROPERTY()
+	UPROPERTY( SaveGame )
 	TMap< int32, FTrackGraph > mTrackGraphs;
 
 	/** All station identifiers in the world. */
 	UPROPERTY( SaveGame, Replicated )
-	TArray< class AFGTrainStationIdentifier* > mTrainStationIdentifiers;
+	TArray< TObjectPtr<class AFGTrainStationIdentifier> > mTrainStationIdentifiers;
 
 	/** All the trains in the world. */
 	UPROPERTY( SaveGame, Replicated )
-	TArray< class AFGTrain* > mTrains;
+	TArray< TObjectPtr<class AFGTrain> > mTrains;
 
 	/** Pending collision events for trains that collide outside of the loaded world. */
 	TArray< FPendingTrainCollisionEvent > mPendingTrainCollisions;
 
 private:
+	friend class FGRailroadDebugWindowTrainBase;
+	friend class FGRailroadDebugWindowSubsystem;
+	
 	/**
 	 * The train self driving needs a frame to warm up after load.
 	 * This fixed bugs such as trains going down the wrong track or passing red signals the first frame.
@@ -598,11 +616,11 @@ private:
 
 	/** Handles all the trains and their reservations inside the blocks. Only valid on server. */
 	UPROPERTY()
-	class AFGTrainScheduler* mTrainScheduler;
+	TObjectPtr<class AFGTrainScheduler> mTrainScheduler;
 	
 	/** All the objects that require the track visualization right now */
 	UPROPERTY()
-	TArray<UObject*> mBlockVisualizationRequesters;
+	TArray<TObjectPtr<UObject>> mBlockVisualizationRequesters;
 	
 	bool mIsBlockVisualizationAlwaysEnabled;
 };

@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -35,7 +35,7 @@ protected:
 
 	/** Descriptor for the content bundle, holds the GUID of the bundle */
 	UPROPERTY( VisibleAnywhere, Category = "Content Bundle", meta=( EditInline ) )
-	UContentBundleDescriptor* mContentBundleDescriptor;
+	TObjectPtr<UContentBundleDescriptor> mContentBundleDescriptor;
 
 	/** Specifies in which builds this content bundle will be available */
 	UPROPERTY( EditAnywhere, AssetRegistrySearchable, Category = "Content Bundle" )

@@ -19,7 +19,7 @@ public:
 	//IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override; 
+	virtual float GetSignificanceRange_Implementation() const override; 
 	//End
 
 	/** Gets time variable */
@@ -44,15 +44,15 @@ public:
 private: 
 	/** Reference to the spline that was added in BP */
 	UPROPERTY()
-	class USplineComponent* mCachedSpline;
+	TObjectPtr<class USplineComponent> mCachedSpline;
 
 	/** Path spline that this actor should set to follow */
 	UPROPERTY( EditAnywhere, Category = "Manta" )
-	class AFGSplinePath* mSplinePath;
+	TObjectPtr<class AFGSplinePath> mSplinePath;
 
 	/** Reference to the skel mesh that was added in BP */
 	UPROPERTY()
-	class USkeletalMeshComponent* mCachedMesh;
+	TObjectPtr<class USkeletalMeshComponent> mCachedMesh;
 	
 	/** Value between 0.0 - 1.0 */
 	float mPosition; 

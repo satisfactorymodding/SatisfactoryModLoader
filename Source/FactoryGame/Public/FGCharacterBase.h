@@ -23,11 +23,11 @@ struct FACTORYGAME_API FFootstepEffect
 
 	/** The particle to use when hitting the ground */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
-	class UParticleSystem* Particle = nullptr;
+	TObjectPtr<class UParticleSystem> Particle = nullptr;
 
 	/** The decal to place on the ground when walking around */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
-	TArray< class UMaterialInterface* > GroundDecals = {};
+	TArray< TObjectPtr<class UMaterialInterface> > GroundDecals = {};
 };
 
 USTRUCT( BlueprintType )
@@ -266,7 +266,7 @@ public:
 	* @Note: ONLY does something if called from the server.
 	*/
 	UFUNCTION( BlueprintCallable, Category = "Ragdoll" )
-	void RagdollCharacter( bool newRagdoll );
+	virtual void RagdollCharacter( bool newRagdoll );
 	
 	/** Updates the ragdoll sync data on the server. */
 	void UpdateRagdollSyncData();
@@ -439,22 +439,22 @@ protected:
 
 	/** Keeps track of our current health */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, SaveGame, Replicated )
-	class UFGHealthComponent* mHealthComponent;
+	TObjectPtr<class UFGHealthComponent> mHealthComponent;
 
 	/** Keeps track of active DOT effects applied to us. */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
-	class UFGDotReceiverComponent* mDOTReceiverComponent;
+	TObjectPtr<class UFGDotReceiverComponent> mDOTReceiverComponent;
 
 	UPROPERTY( Replicated )
 	bool mIsInGas = false;
 	
 	/** How much damage to take falling with a given velocity */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
-	UCurveFloat* mFallDamageCurve;
+	TObjectPtr<UCurveFloat> mFallDamageCurve;
 
 	/** Overrides the default fall damage curve, utilized by Equipment */
 	UPROPERTY()
-	UCurveFloat* mFallDamageCurveOverride;
+	TObjectPtr<UCurveFloat> mFallDamageCurveOverride;
 
 	/** @todo: This should not be specified for each pawn */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
@@ -492,7 +492,7 @@ protected:
 
 	/** Particle for when pawn takes damage */
 	UPROPERTY( EditDefaultsOnly, Category = "VFX" )
-	class UParticleSystem* mTakeDamageParticle;
+	TObjectPtr<class UParticleSystem> mTakeDamageParticle;
 
 	/** Min push velocity required to start ragdoll */
 	UPROPERTY( EditDefaultsOnly, Category = "Ragdoll" )

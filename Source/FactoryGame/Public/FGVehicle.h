@@ -14,6 +14,7 @@
 #include "FGColorInterface.h"
 #include "FGBuildableSubsystem.h"
 #include "FGClearanceInterface.h"
+#include "FGSampleInterface.h"
 #include "Audio/AudioEventsCache.h"
 #include "FGVehicle.generated.h"
 
@@ -101,7 +102,7 @@ struct FACTORYGAME_API FVehicleSeat
 
 	/** Animation to play on characters in this seat. */
 	UPROPERTY( EditDefaultsOnly, NotReplicated )
-	UAnimSequence* SitAnimation;
+	TObjectPtr<UAnimSequence> SitAnimation;
 
 	/** How much damage do we take in this seat. */
 	UPROPERTY( EditDefaultsOnly, NotReplicated )
@@ -109,20 +110,20 @@ struct FACTORYGAME_API FVehicleSeat
 
 	/** Pawn we possess when entering this seat. */
 	UPROPERTY()
-	class AFGDriveablePawn* mSeatPawn;
+	TObjectPtr<class AFGDriveablePawn> mSeatPawn;
 
 	/** Info about the character in this seat. */
 	UPROPERTY()
-	class AFGCharacterPlayer* mCharacter;
+	TObjectPtr<class AFGCharacterPlayer> mCharacter;
 	UPROPERTY()
-	class AController* mController;
+	TObjectPtr<class AController> mController;
 };
 
 /**
  * Base class for all vehicles in the game, cars, train etc.
  */
 UCLASS()
-class FACTORYGAME_API AFGVehicle : public AFGDriveablePawn, public IFGUseableInterface, public IFGDismantleInterface, public IFGDockableInterface, public IFGColorInterface, public IFGSignificanceInterface, public IFGClearanceInterface
+class FACTORYGAME_API AFGVehicle : public AFGDriveablePawn, public IFGUseableInterface, public IFGDismantleInterface, public IFGColorInterface, public IFGSignificanceInterface, public IFGClearanceInterface, public IFGSampleInterface
 {
 	GENERATED_BODY()
 public:
@@ -134,10 +135,8 @@ public:
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
-	virtual void Destroyed() override;
 	virtual void Tick( float dt ) override;
 	virtual float TakeDamage( float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser ) override;
-	virtual void DisplayDebug( class UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 	// End AActor interface
 
 	// Begin APawn interface
@@ -156,7 +155,7 @@ public:
 	//Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
+	virtual float GetSignificanceRange_Implementation() const override;
 	//End IFGSignificanceInterface
 
 	// Begin IFGClearanceInterface
@@ -176,7 +175,7 @@ public:
 	void SetCustomizationData_Implementation( const FFactoryCustomizationData& colorData );
 	void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData );
 	FFactoryCustomizationData& GetCustomizationData_Native() { return mCustomizationData; }
-	FFactoryCustomizationData GetCustomizationData_Implementation() const{ return mCustomizationData; }
+	FFactoryCustomizationData GetCustomizationData_Implementation() const { return mCustomizationData; }
 	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Implementation() { return mFactorySkinClass; }
 	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Native() { return mFactorySkinClass; }
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin_Native();
@@ -189,17 +188,6 @@ public:
 	void StartIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter, bool isValid = true );
 	void StopIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter );
 	//~ End IFGColorInterface
-
-	//~ Begin IFGDockableInterface
-	virtual bool CanDock_Implementation( EDockStationType atStation ) const override { return false; }
-	virtual class UFGInventoryComponent* GetDockInventory_Implementation() const override { return nullptr; }
-	virtual class UFGInventoryComponent* GetDockFuelInventory_Implementation() const override { return nullptr; }
-	virtual void WasDocked_Implementation( class AFGBuildableDockingStation* atStation ) override {}
-	virtual void WasUndocked_Implementation() override {}
-	virtual void OnBeginLoadVehicle_Implementation() override {}
-	virtual void OnBeginUnloadVehicle_Implementation() override {}
-	virtual void OnTransferComplete_Implementation() override {}
-	//~ End IFGDockableInterface
 
 	//~ Begin IFGUseableInterface
 	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) override;
@@ -227,6 +215,11 @@ public:
 	virtual void GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const override;
 	//~ End IFGDismantleInferface
 
+	// Begin IFGSampleInterface
+	virtual bool CanSample_Implementation() const override;
+	virtual TSubclassOf<UFGRecipe> GetSampledRecipe_Implementation() const override;
+	// End IFGSampleInterface
+
 	void SetBuildEffectInstigator(AActor* Actor) { mBuildEffectInstigator = Actor; }
 	
 	UFUNCTION( Reliable, NetMulticast )
@@ -249,7 +242,8 @@ public:
 	template< class C > TSubclassOf< C > GetBuiltWithDescriptor() const { return *GetBuiltWithDescriptor(); }
 
 	/** Can this vehicle be sampled for the build gun */
-	virtual bool CanBeSampled();
+	UFUNCTION( BlueprintNativeEvent, Category = "Vehicle" )
+	bool CanBeSampled() const;
 
 	/** Skel mesh for this vehicle **/
 	class USkeletalMeshComponent* GetMesh() const;
@@ -268,18 +262,6 @@ public:
 	virtual bool DriverEnter( class AFGCharacterPlayer* driver ) override;
 	virtual bool DriverLeave( bool keepDriving = false ) override;
 	// End ADriveablePawn interface
-
-	/** @return true if an ai can start driving this vehicle; false otherwise. (server only) */
-	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
-	virtual bool CanSelfDriverEnter( class AAIController* ai ) const;
-
-	/** Let an ai enter the vehicle. Will not succeed if there is a human driver in the vehicle already. */
-	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Vehicle|SelfDriving" )
-	virtual bool SelfDriverEnter( class AAIController* ai );
-
-	/** @return true if there's an ai controlling this vehicle; false otherwise. */
-	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
-	bool IsSelfDriving() const { return mIsSelfDriving; }
 
 	/** Check if any passenger seats are available */
 	UFUNCTION( BlueprintPure, Category = "Vehicle" )
@@ -323,6 +305,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Simulation" )
 	FORCEINLINE bool IsSimulated() const { return mIsSimulated; }
 
+	/** Called when the significance changes or autopilot is enabled/disabled to update whenever the vehicle should enter the simulated or real mode */
+	virtual void UpdateVehicleSimulationState();
+
 	/** Fetches the color to use for this actors representation */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	FLinearColor GetDefaultRepresentationColor();
@@ -341,8 +326,6 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Buildable|Customization" )
 	void OnSkinCustomizationApplied( TSubclassOf< class UFGFactoryCustomizationDescriptor_Skin > skin );
 
-	virtual FVector GetVehicleRealActorLocation() const;
-
 	/** Returns true if we are submerged in water */
 	UFUNCTION( BlueprintPure )
 	bool IsSubmergedInWater() const;
@@ -350,7 +333,29 @@ public:
 	void SetOwningPlayerState( class AFGPlayerState* playerState );
 
 	void SetMatchCustomizationWithPlayerState( bool shouldMatch );
-	
+
+	/** True if the vehicle is relevant to any of the players. Replicated from the server to the clients */
+	UFUNCTION( BlueprintPure, Category = "Vehicle" )
+	FORCEINLINE bool IsRelevantToNearbyPlayers() const { return mIsRelevantToPlayers; }
+
+	/** Called by vehicle subsystem to update whenever the vehicle is relevant to nearby players */
+	void SetRelevantToNearbyPlayers( bool newIsRelevantToNearbyPlayers );
+
+	/** Returns the real location of the vehicle in regard to autopilot and proxy actor. This should be used instead of GetActorLocation/GetActorRotation */
+	UFUNCTION( BlueprintPure, Category = "Vehicle" )
+	virtual void GetVehicleLocationAndRotation( FVector& OutVehicleLocation, FRotator& OutVehicleRotation ) const;
+
+	/** Returns the bounding box for this vehicle. Used for calculating vehicle - door overlaps */
+	UFUNCTION( BlueprintPure, Category = "Vehicle" )
+	virtual FBox GetVehicleBoundingBox() const;
+
+	/** Shorthand for GetVehicleLocationAndRotation location component */
+	UFUNCTION( BlueprintPure, Category = "Vehicle" )
+	FVector GetVehicleLocation() const;
+
+	/** Shorthand for GetVehicleLocationAndRotation rotation component */
+	UFUNCTION( BlueprintPure, Category = "Vehicle" )
+	FRotator GetVehicleRotation() const;
 protected:
 	/** Called when customization data is applied. Allows child vehicles to update their simulated vehicles to keep colors synced */
 	virtual void OnCustomizationDataApplied( const FFactoryCustomizationData& customizationData );
@@ -358,6 +363,8 @@ protected:
 	/** Called when customization data gets set. */
 	virtual void OnCustomizationDataSet( const FFactoryCustomizationData& previousData );
 
+	/** Called when the vehicle loses/gains relevance to nearby players. Called on the server only */
+	virtual void OnRelevantToNearbyPlayersChanged();
 private:
 	/** Rep notifies */
 	UFUNCTION()
@@ -386,12 +393,12 @@ protected:
 	virtual void OnDrivingStatusChanged() override;
 	// End AFGDriveablePawn interface
 
-	/** Called when the vehicle (engine) is started. */
-	UFUNCTION( BlueprintImplementableEvent, Meta = ( DisplayName = "OnVehicleStartup" ) )
-	void ReceiveOnVehicleStartup();
-	/** Called when the vehicle (engine) is shut down. */
-	UFUNCTION( BlueprintImplementableEvent, Meta = ( DisplayName = "OnVehicleShutDown" ) )
-	void ReceiveOnVehicleShutDown();
+	/** Called when the vehicle driver has entered the vehicle */
+	UFUNCTION( BlueprintImplementableEvent, Meta = ( DisplayName = "OnVehicleDriverEntered" ) )
+	void ReceiveOnVehicleDriverEnter();
+	/** Called when the vehicle drvier has left the vehicle */
+	UFUNCTION( BlueprintImplementableEvent, Meta = ( DisplayName = "OnVehicleDriverLeft" ) )
+	void ReceiveOnVehicleDriverLeave();
 
 	/** Update if we are submerged in water, SERVER ONLY */
 	void UpdateSubmergedInWater( float deltaTime );
@@ -419,9 +426,6 @@ protected:
 	void UpdateCamera( float DeltaTime );
 
 private:
-	/** Helpers */
-	void SetSelfDriving( bool newSelfDriving );
-
 	/** Notifies from out mesh */
 	UFUNCTION()
 	void UpdatePhysicsVolume( APhysicsVolume* physicsVolume );
@@ -457,15 +461,15 @@ public:
 protected:
 	/** The main skeletal mesh associated with this Vehicle */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Vehicle", meta = ( AllowPrivateAccess = "true" ) )
-	class USkeletalMeshComponent* mMesh;
+	TObjectPtr<class USkeletalMeshComponent> mMesh;
 
 	/** Keeps track of our current health */
 	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Health" )
-	class UFGHealthComponent* mHealthComponent;
+	TObjectPtr<class UFGHealthComponent> mHealthComponent;
 
 	/** Keeps track of active DOT effects applied to us. */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
-	class UFGDotReceiverComponent* mDOTReceiverComponent;
+	TObjectPtr<class UFGDotReceiverComponent> mDOTReceiverComponent;
 
 	/** If any of these locations enters water, then we are unusable */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
@@ -485,6 +489,10 @@ protected:
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CustomColorData )
 	FFactoryCustomizationData mCustomizationData;
 
+	//<FL>[VilagosD] for clients to track if SkinUpdate is needed - see OnRep_CustomColorData 
+	UPROPERTY()
+	TSubclassOf< class UFGFactoryCustomizationDescriptor_Skin > CachedSkinDesc = nullptr;
+
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	TSubclassOf< class UFGFactorySkinActorData > mFactorySkinClass;
 
@@ -492,21 +500,21 @@ protected:
 	TSubclassOf< class UFGSwatchGroup > mSwatchGroup;
 	
 	UPROPERTY( BlueprintReadWrite )
-	USkeletalMeshComponent* mOptionalWorkBenchComponent = nullptr;
+	TObjectPtr<USkeletalMeshComponent> mOptionalWorkBenchComponent = nullptr;
 
 	UPROPERTY( BlueprintReadWrite )
-	class UBoxComponent* mOptionalWorkBenchBox = nullptr;
+	TObjectPtr<class UBoxComponent> mOptionalWorkBenchBox = nullptr;
 
 	/** Recipe this vehicle was built with, e.g. used for refunds and stats. */
 	UPROPERTY( SaveGame, Replicated )
 	TSubclassOf< class UFGRecipe > mBuiltWithRecipe;
 
 	UPROPERTY( Replicated, meta = ( NoAutoJson = true ) )
-	AActor* mBuildEffectInstigator;
+	TObjectPtr<AActor> mBuildEffectInstigator;
 
 	/** The player state that "owns" this vehicle. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_OwningPlayerState )
-	class AFGPlayerState* mOwningPlayerState;
+	TObjectPtr<class AFGPlayerState> mOwningPlayerState;
 
 	/** Whether or not to match customization data with the player that "owns" the vehicle.  */
 	UPROPERTY( EditDefaultsOnly, SaveGame, Replicated, Category = "Vehicle" )
@@ -517,14 +525,6 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	TArray< FFGClearanceData > mClearanceData;
 
-	/** If this vehicle is self driving. */
-	UPROPERTY( Replicated )
-	bool mIsSelfDriving;
-
-	/** The AI that controls this vehicle when self-driving is activated. */
-	UPROPERTY()
-	class AAIController* mSelfDrivingController;
-
 	/** Saved like this, as we can't store it in serialize, as it will be killed  */
 	UPROPERTY()
 	TArray<FVehiclePhysicsData> mStoredPhysicsData;
@@ -534,7 +534,7 @@ private:
 
 	/** Sound played when this vehicle is created */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle|Sound" )
-	class UAkAudioEvent* mConstructSound;
+	TObjectPtr<class UAkAudioEvent> mConstructSound;
 
 	/** Can this vehicle be destroyed by damage? */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
@@ -579,10 +579,14 @@ private:
 	bool mForceRealMode;
 	
 	UPROPERTY()
-	class UFGMaterialEffect_Build* mActiveBuildEffect;
+	TObjectPtr<class UFGMaterialEffect_Build> mActiveBuildEffect;
 	
 	/** Flag for whether the build effect is active */
 	uint8 mBuildEffectIsPlaying : 1;
+
+	/** True if there are players around the vehicle to which it is relevant. Set on the server */
+	UPROPERTY( Replicated )
+	bool mIsRelevantToPlayers{false};
 	
 protected:
 	/** Is the movement being simulated? */
@@ -603,10 +607,10 @@ protected:
 	
 public:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTexture;
+	TObjectPtr<class UTexture2D> mActorRepresentationTexture;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	UMaterialInterface* mActorRepresentationCompassMaterial;
+	TObjectPtr<UMaterialInterface> mActorRepresentationCompassMaterial;
 
 	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Representation" )
 	FText mMapText;

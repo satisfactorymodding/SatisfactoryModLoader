@@ -14,4 +14,3 @@ void UFGColoredInstanceManager::SetHasPowerData(float newHasPower, FInstanceHand
 void UFGColoredInstanceManager::UpdateColorForInstanceFromDataArray(FInstanceHandle& handle){ }
 void UFGColoredInstanceManager::UpdateMaterialColors(){ }
 void UFGColoredInstanceManager::UpdateScalabilityMaterials(bool bEnableLightweightMaterials){ }
-UHierarchicalInstancedStaticMeshComponent* UFGColoredInstanceManager::CreateHierarchicalInstancingComponent( UStaticMesh* staticMesh,TArray<class UMaterialInterface*> overridenMaterials, uint8 numCustomData, bool useAsOccluder, const FVector2D& minMaxCullDistance){ return nullptr; }

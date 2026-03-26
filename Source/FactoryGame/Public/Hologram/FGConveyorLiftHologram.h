@@ -90,15 +90,15 @@ private:
 	
 	/** The two connection components for this conveyor. */
 	UPROPERTY()
-	class UFGFactoryConnectionComponent* mConnectionComponents[ 2 ];
+	TObjectPtr<class UFGFactoryConnectionComponent> mConnectionComponents[ 2 ];
 
 	/** The connections we've made. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class UFGFactoryConnectionComponent* mSnappedConnectionComponents[ 2 ];
+	TObjectPtr<class UFGFactoryConnectionComponent> mSnappedConnectionComponents[ 2 ];
 
 	/** If we upgrade another conveyor lift this is the belt we replace. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableConveyorLift* mUpgradedConveyorLift;
+	TObjectPtr<class AFGBuildableConveyorLift> mUpgradedConveyorLift;
 
 	/** Transform of the top part of the lift, in actor local space. */
 	UPROPERTY( ReplicatedUsing = OnRep_TopTransform, CustomSerialization )
@@ -113,17 +113,17 @@ private:
 	/** Cached variables fetched and calculated from the buildable. */
 	float mMeshHeight;
 	UPROPERTY()
-	class UStaticMesh* mBottomMesh;
+	TObjectPtr<class UStaticMesh> mBottomMesh;
 	UPROPERTY()
-	class UStaticMesh* mMidMesh;
+	TObjectPtr<class UStaticMesh> mMidMesh;
 	UPROPERTY()
-	class UStaticMesh* mHalfMidMesh;
+	TObjectPtr<class UStaticMesh> mHalfMidMesh;
 	UPROPERTY()
-	class UStaticMesh* mTopMesh;
+	TObjectPtr<class UStaticMesh> mTopMesh;
 	UPROPERTY()
-	class UStaticMesh* mJointMesh;
+	TObjectPtr<class UStaticMesh> mJointMesh;
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMesh* mPassthroughBottomMesh;
+	TObjectPtr<class UStaticMesh> mPassthroughBottomMesh;
 	UPROPERTY()
 	bool mFlipOnReverse;
 
@@ -131,7 +131,7 @@ private:
 	bool mIsReversed;
 
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMesh* mPassthroughTopMesh;
+	TObjectPtr<class UStaticMesh> mPassthroughTopMesh;
 
 	/** All the meshes along this lift. */
 	TArray< UStaticMeshComponent* > mMeshes;
@@ -141,7 +141,7 @@ private:
 	UStaticMeshComponent* mFogPlaneComp1;
 
 	UPROPERTY( ReplicatedUsing = OnRep_SnappedPassthroughs, CustomSerialization )
-	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
+	TArray< TObjectPtr<class AFGBuildablePassthrough> > mSnappedPassthroughs;
 
 	/** Used to replicate the direction arrow. */
 	UPROPERTY( ReplicatedUsing = OnRep_ArrowDirection )
@@ -149,7 +149,7 @@ private:
 
 	/** Arrow to indicate the direction of the lift while placing it. */
 	UPROPERTY()
-	class UStaticMeshComponent* mArrowComponent;
+	TObjectPtr<class UStaticMeshComponent> mArrowComponent;
 	
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
 	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeReverse;

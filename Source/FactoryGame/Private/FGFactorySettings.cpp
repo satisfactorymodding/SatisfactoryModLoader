@@ -31,6 +31,7 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mDefaultPowerConnectionMesh = nullptr;
 	this->mBlueprintDirectionIndicatorMesh = nullptr;
 	this->mBlueprintAutoConnectionMesh = nullptr;
+	this->mBlueprintVehiclePathAutoConnectionMesh = nullptr;
 	this->mBlueprintDirectionIndicatorMaterial = nullptr;
 	this->mBlueprintDirectionMeshScale = 0.0;
 	this->mBlueprintDirectionMeshForwardOffset = 0.0;
@@ -51,6 +52,7 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mBuildEffect = nullptr;
 	this->mDismantleEffect = nullptr;
 	this->mDefaultBuildMode = nullptr;
+	this->mDefaultBuildModeZoop = nullptr;
 	this->mDismantlePendingMaterial = nullptr;
 	this->mBuildGunClass = AFGBuildGun::StaticClass();
 	this->mResourceScannerClass = AFGResourceScanner::StaticClass();

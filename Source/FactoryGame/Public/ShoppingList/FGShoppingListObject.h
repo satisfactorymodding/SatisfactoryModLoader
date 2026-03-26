@@ -97,7 +97,7 @@ protected:
 	virtual void AddCost( TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost ) const override;
 	
 	UPROPERTY( Transient, BlueprintReadOnly, Meta = ( ExposeOnSpawn = "true" ) )
-	UObject* mObject;
+	TObjectPtr<UObject> mObject;
 	
 };
 

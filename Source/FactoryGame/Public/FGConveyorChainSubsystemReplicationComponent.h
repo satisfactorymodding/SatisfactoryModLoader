@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -9,6 +9,7 @@
 
 class UFGItemDescriptor;
 class AFGConveyorChainSubsystem;
+struct FGameplayTag;
 
 enum class EConveyorChainSubsystemMessageId : uint32
 {
@@ -38,7 +39,7 @@ protected:
 	void SendInitialReplicationData();
 	
 	/** Handles a reliable message */
-	void HandleRawMessage(TArray<uint8>&& InMessageData) const;
+	void HandleRawMessage(FGameplayTag InTag, TArray<uint8>&& InMessageData) const;
 	/** Sends a a reliable message */
 	void SendRawMessage(EConveyorChainSubsystemMessageId MessageId, const TFunctionRef<void(FArchive&)>& MessageSerializer) const;
 
@@ -53,5 +54,5 @@ protected:
 	}
 
 	UPROPERTY()
-	AFGConveyorChainSubsystem* mConveyorChainSubsystem;
+	TObjectPtr<AFGConveyorChainSubsystem> mConveyorChainSubsystem;
 };

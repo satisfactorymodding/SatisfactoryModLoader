@@ -14,7 +14,7 @@ AFGItemPickup::AFGItemPickup() : Super() {
 	this->mAudioEvent = nullptr;
 	this->mRespawnTimeInDays = -1;
 	this->mUpdatedOnDayNr = -1;
-	this->mItemState = EItemState::ES_NORMAL;
+	this->mItemState = FGEItemState::ES_NORMAL;
 	this->mGrowTimeInDays = 3;
 	this->mSavedNumItems = -1;
 	this->mMaxRespawns = -1;
@@ -69,6 +69,7 @@ void AFGItemPickup::PlantPickup(){ }
 void AFGItemPickup::Grow(){ }
 void AFGItemPickup::RegisterToRegrowSystem(){ }
 void AFGItemPickup::PlayPickupEffectImpl(){ }
+void AFGItemPickup::OnPickup_Implementation(class AFGCharacterPlayer* byCharacter){ }
 void AFGItemPickup::SetNumItems(int32 numItems){ }
 void AFGItemPickup::OnCollectTimerComplete(){ }
 bool AFGItemPickup::IsEquipment() const{ return bool(); }

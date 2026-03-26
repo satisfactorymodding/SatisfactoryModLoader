@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -21,6 +21,7 @@ struct FLightweightBuildableConstructionMessage;
 struct FFactoryCustomizationData;
 struct FRuntimeBuildableInstanceData;
 struct FLightweightBuildableUpdateData;
+struct FGameplayTag;
 
 UCLASS(NotBlueprintable, Within = FGPlayerController)
 class FACTORYGAME_API UFGLightweightBuildableReplicationComponent : public UActorComponent
@@ -44,7 +45,7 @@ public:
 protected:
 	
 	/** Handles lightweight buildable reliable message */
-	void HandleRawLightweightBuildableMessage(TArray<uint8>&& InMessageData);
+	void HandleRawLightweightBuildableMessage(FGameplayTag InTag, TArray<uint8>&& InMessageData);
 	/** Sends a lightweight buildable reliable message */
 	void SendRawLightweightBuildableMessage(ELightweightBuildableMessageId MessageId, const TFunctionRef<void(FArchive&)>& MessageSerializer) const;
 	
@@ -77,9 +78,9 @@ private:
 
 	/** Cached lightweight buildable subsystem this component is mapped to */
 	UPROPERTY()
-	AFGLightweightBuildableSubsystem* LightweightBuildableSubsystem{};
+	TObjectPtr<AFGLightweightBuildableSubsystem> LightweightBuildableSubsystem{};
 	
 	/** Cached buildable subsystem */
 	UPROPERTY()
-	AFGBuildableSubsystem* BuildableSubsystem{};
+	TObjectPtr<AFGBuildableSubsystem> BuildableSubsystem{};
 };

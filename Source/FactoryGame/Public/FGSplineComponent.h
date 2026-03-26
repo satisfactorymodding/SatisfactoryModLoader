@@ -59,7 +59,7 @@ private:
 public:
 	/** The mesh to repeat on curved sections. */
 	UPROPERTY( EditDefaultsOnly, Category = "Mesh" )
-	class UStaticMesh* mSplineMesh;
+	TObjectPtr<class UStaticMesh> mSplineMesh;
 
 	/** The size of each spline mesh. */
 	UPROPERTY( EditDefaultsOnly, Category = "Mesh" )
@@ -88,20 +88,20 @@ public:
 private:
 	/** The cached material, we cache this as the number of meshes grow/shrink as we drag the conveyor belt. */
 	UPROPERTY()
-	class UMaterialInterface* mOverrideMaterial;
+	TObjectPtr<class UMaterialInterface> mOverrideMaterial;
 
 	/** If true, then we will render custom depth but not in main pass */
 	bool mAdditionalCustomDepthPass;
 
 	/** The meshes that make up the spline. */
 	UPROPERTY()
-	TArray< class USplineMeshComponent* > mSplineMeshComponents;
+	TArray< TObjectPtr<class USplineMeshComponent> > mSplineMeshComponents;
 	
 	/** If we have enabled custom depth pass, then we store the custom depth spline meshes here */
 	UPROPERTY()
-	TArray< class USplineMeshComponent* > mCustomDepthSplineMeshComponents;
+	TArray< TObjectPtr<class USplineMeshComponent> > mCustomDepthSplineMeshComponents;
 
 	/** The collisions that make up the spline. */
 	UPROPERTY()
-	TArray< class UShapeComponent* > mSplineCollisionComponents;
+	TArray< TObjectPtr<class UShapeComponent> > mSplineCollisionComponents;
 };

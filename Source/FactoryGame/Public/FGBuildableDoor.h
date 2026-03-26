@@ -52,12 +52,13 @@ public:
 	
 	// Begin AFGBuildable interface
 	virtual void ConfigureDynamicDecoratorComponent( USceneComponent* newComponent ) override;
+	virtual void RemoveDecoratorSignificantComponents() override;
 	// End AFGBuildable interface
 
-	// Begin interaction interface
+	// Begin IFGUseableInterface
 	virtual bool IsUseable_Implementation() const override;
 	virtual void OnUse_Implementation(AFGCharacterPlayer* byCharacter, const FUseState& state) override;
-	// End interaction interface
+	// End IFGUseableInterface
 	
 	/* Returns instanced door component */
 	UFUNCTION( BlueprintPure, Category = "Doors")
@@ -70,13 +71,26 @@ protected:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;	
-	virtual float GetSignificanceRange() override { return 5000.f; }
+	virtual float GetSignificanceRange_Implementation() const override { return 5000.f; }
 	// End IFGSignificanceInterface
-	
-	UFUNCTION(BlueprintCallable)
-	void OnOverlapBegin( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult );
 
-	UFUNCTION(BlueprintCallable)
+	/** Can be called to notify that pawn has started overlapping with the door */
+	UFUNCTION( BlueprintCallable, Category = "Doors" )
+	void NotifyPawnBeginOverlap( APawn* pawn );
+
+	/** Can be called to notify that pawn has stopped overlapping with the door */
+	UFUNCTION( BlueprintCallable, Category = "Doors" )
+	void NotifyPawnEndOverlap( APawn* pawn );
+
+	void SetDoorOverlappingWithVehicles( bool newIsDoorOverlappingWithVehicles );
+
+	/** Will force automatic door to recalculate its state based on overlaps and vehicle proximity */
+	UFUNCTION( BlueprintCallable, Category = "Doors" )
+	void UpdateAutomaticDoorState();
+
+	UFUNCTION()
+	void OnOverlapBegin( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult );
+	UFUNCTION()
 	void OnEndOverlap( UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex );
 
 	UFUNCTION()
@@ -113,10 +127,9 @@ protected:
 
 	UFUNCTION(BlueprintNativeEvent)
 	bool CanClose();
-	
-private:
+
 	UFUNCTION()
-	void Update();
+	void UpdateDoorOpenAnimation();
 	
 	void BeginOpening();
 	void BeginClosing();
@@ -131,7 +144,10 @@ private:
 	
 	/* List of controllers that are active. */
 	UPROPERTY( Transient )
-	TArray<APawn*> mActiveOverlaps;
+	TSet<TObjectPtr<APawn>> mActiveOverlaps;
+
+	/** True if the door is overlapping with any vehicles */
+	bool mIsOverlappingWithAnyVehicles{false};
 
 	bool mIsOpening;
 

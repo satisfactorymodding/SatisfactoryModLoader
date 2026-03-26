@@ -71,7 +71,7 @@ public:
 	int32 GetCircuitGroupID() const { return mCircuitGroupID; }
 
 	/** @return All components that are part of this circuit, this data might change when circuits are rebuilt. */
-	TArray< class UFGCircuitConnectionComponent* >& GetComponents() { return mComponents; }
+	TArray< TObjectPtr<class UFGCircuitConnectionComponent> >& GetComponents() { return mComponents; }
 
 	/** Logs the internal state of this circuit. */
 	void Debug_LogState() const;
@@ -115,7 +115,7 @@ protected:
 
 	/** List of all the components (nodes) in this circuit. */
 	UPROPERTY( SaveGame )
-	TArray< class UFGCircuitConnectionComponent* > mComponents;
+	TArray< TObjectPtr<class UFGCircuitConnectionComponent> > mComponents;
 
 	/** Do this circuit needs to be rebuilt, e.g. wires or components have been removed. */
 	UPROPERTY()
@@ -137,7 +137,7 @@ private:
 
 	/** All players interacting with a building that's connected to this circuit */
 	UPROPERTY()
-	TArray< class AFGCharacterPlayer* > mInteractingPlayers;
+	TArray< TObjectPtr<class AFGCharacterPlayer> > mInteractingPlayers;
 };
 
 /**

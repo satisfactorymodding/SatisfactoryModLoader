@@ -15,7 +15,12 @@
 #include "FGLocalizationSettings.h"
 #include "FGBlueprintFunctionLibrary.generated.h"
 
+class IFGAimAssistClient;
+class USessionMemberInformation;
+struct FSplinePointData;
 typedef UE::Online::FAccountId FAccountId;
+
+//enum class EPlayerReportsCategoryFrontEnd : uint8;
 
 //<FL>[KonradA] Utility declarations to better chain and control blocking from Blueprint
 DECLARE_DYNAMIC_DELEGATE( FOnBlockOverlayClosed );
@@ -79,10 +84,12 @@ UENUM( BlueprintType, meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "tr
 enum class EUGCVisibilityErrors : uint8
 {
 	UGCVE_NoErrors = 0 UMETA( DisplayName = "Can See Content" ),
-	UGCVE_UGCBlocked = 1 << 0 UMETA( DisplayName = "Cannot see any UGC" ), 
+	UGCVE_UGCBlocked = 1 << 0 UMETA( DisplayName = "Cannot see any UGC" ),
 	UGCVE_TextRestricted = 1 << 1 UMETA( DisplayName = "Cannot see Text communications" ),
-	UGCVE_BlockList = 1 << 2 UMETA( DisplayName = "Other Player is on Block List" ), 
-	UGCVE_NoExternalUGC = 1 << 3 UMETA( DisplayName = "Nobody edited this or we were the last editor- content is safe to show to restricted accounts" )
+	UGCVE_BlockList = 1 << 2 UMETA( DisplayName = "Other Player is on Block List" ),
+	UGCVE_NoExternalUGC = 1 << 3 UMETA( DisplayName = "Nobody edited this or we were the last editor- content is safe to show to restricted accounts" ),
+	UGCVE_TextRestrictedOutbound = 1 << 4 UMETA( DisplayName = "Cannot send Text communications" )
+
 };
 ENUM_CLASS_FLAGS( EUGCVisibilityErrors )
 
@@ -121,7 +128,7 @@ struct FACTORYGAME_API FFGComponentParentAttachmentInfo
 	
 	// Parent component this component attaches to
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Scene Component" )
-	USceneComponent* ParentComponent{};
+	TObjectPtr<USceneComponent> ParentComponent{};
 
 	// Name of the socket this component attaches to
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Scene Component" )
@@ -217,11 +224,11 @@ public:
 	static FBox GetCollisionBoundingBoxFromActorClass( const TSubclassOf<AActor> inClass, const FTransform& originTransform );
 	
 	/**
-	 * Does what Cheat_GetAllDescriptors does, but tries to do in in a more reliable way,
-	 * and not only hoping for the descriptor to be loaded in memory. This is probably slow!
+	 * Returns all item descriptors in the game, possibly filtering out fluids and buildings, as well as all non-item item descriptors.
+	 * When Only Unlocked is true, only currently unlocked item descriptors are returned
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Descriptors", meta = ( DefaultToSelf = "worldContext" ) )
-	static void GetAllDescriptorsSorted( UObject* worldContext, UPARAM( ref ) TArray< TSubclassOf< UFGItemDescriptor > >& out_descriptors );
+	static void GetAllDescriptorsSorted( UObject* worldContext, UPARAM( ref ) TArray< TSubclassOf< UFGItemDescriptor > >& out_descriptors, bool includeFluids = false, bool includeBuildings = false, bool onlyUnlocked = true );
 
 	/* Change Localization at Runtime. */
 	UFUNCTION( BlueprintCallable, meta = ( DisplayName = "Change Language"), Category = "Localization" )
@@ -259,86 +266,30 @@ public:
 	UFUNCTION( BlueprintPure, Category="Level")
 	static bool IsInAlwaysLoadedLevel( AActor* actor );
 
-	/** Gets the Significance manager */
-	static class UFGSignificanceManager* GetSignificanceManager( UWorld* InWorld );
+	/* Registers a static (non-moving) object to the significance manager. Object must implement IFGSignificanceInterface */
+	UFUNCTION( BlueprintCallable, Category = "Game" )
+	static void AddStaticSignificance( UObject* Object );
 
-	/* Add generic gain / loss significance to the accelerated significance manager.
-	**	@Param Object - Actor to add to the system */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void AddStaticSignificance( UObject* WorldContextObject, UObject* Object);
+	/* Registers a moving object to the significance manager. Object must implement IFGSignificanceInterface */
+	UFUNCTION( BlueprintCallable, Category = "Game" )
+	static void AddDynamicSignificance( UObject* Object );
 
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void RemoveStaticSignificance( UObject* WorldContextObject, UObject* Object );
+	/** Removes object previously registered with AddStaticSignificance from the significance manager */
+	UFUNCTION( BlueprintCallable, Category = "Game" )
+	static void RemoveStaticSignificance( UObject* Object );
+
+	/** Registers an object to the server-side significance octree. Object must implement IFGNetSignificanceInterface */
+	UFUNCTION( BlueprintCallable, Category="Game" )
+	static void AddToServerSideSignificanceOctTree( UObject* Object );
+
+	/** Removes object registered with AddToServerSideSignificanceOctTree from the server-side significance octree */
+	UFUNCTION( BlueprintCallable, Category="Game" )
+	static void RemoveFromServerSideSignificanceOctTree( UObject* Object );
+
+	/** Immediately marks the given object as significant this frame if it is not already net significant, and marks the significance dirty. Can be used when immediate significance is required */
+	UFUNCTION( BlueprintCallable, Category="Game" )
+	static void ManuallyMarkObjectServerSideSignificant( UObject* Object );
 	
-	/** Adds a generic tickable object to be handled by significance manager */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void AddGenericTickObjectToSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** removes a generic tickable object to be handled by significance manager */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void RemoveGenericTickObjectFromSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** Adds a factory object to be handled by significance manager */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void AddFactoryObjectToSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** removes a factory object to be handled by significance manager */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void RemoveFactoryObjectFromSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** Adds conveyor belt be handled by significance manager */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void AddConveyorBeltToSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** Removes conveyor belt be handled by significance manager */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = (WorldContext = "WorldContextObject") )
-	static void RemoveConveyorBeltFromSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** Adds pipeline to be handled by significance manager */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = (WorldContext = "WorldContextObject") )
-	static void AddPipelineToSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** Generic removal function for objects in significance manager. Use this if you don't need to do any special operations when removing from significance manager */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = (WorldContext = "WorldContextObject") )
-	static void RemoveFromSignificanceManagerGeneric( UObject* WorldContextObject, UObject* obj );
-
-	/** Adds an object that should gain/lose significance on distance */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void AddGainSignificanceObjectToSignificanceManager( UObject* WorldContextObject, UObject* obj, float desiredGainDistance );
-
-	/** Removes an object that should gain/lose significance on distance */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void RemoveGainSignificanceObjectFromSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** Adds an audio volume that should gain/lose significance on distance */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void AddAudioVolumeToSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** Removes an audio volume that should gain/lose significance on distance */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void RemoveAudioVolumeFromSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** Adds an AmbientSoundSpline that should gain/lose significance on distance */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void AddAmbientSoundSplineToSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** Removes an AmbientSoundSpline that should gain/lose significance on distance */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
-	static void RemoveAmbientSoundSplineFromSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** Adds a train to be handled by significance manager */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Trains|Optimization", meta = ( WorldContext = "WorldContextObject" ) )
-	static void AddTrainToSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	/** removes a train from being handled by significance manager */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Trains|Optimization", meta = ( WorldContext = "WorldContextObject" ) )
-	static void RemoveTrainFromSignificanceManager( UObject* WorldContextObject, UObject* obj );
-
-	UFUNCTION( BlueprintCallable, Category="Game", meta = ( WorldContext = "WorldContextObject" ))
-	static void AddToServerSideSignificanceOctTree(UObject* obj);
-	
-	UFUNCTION( BlueprintCallable, Category="Game", meta = ( WorldContext = "WorldContextObject" ))
-	static void RemoveFromServerSideSignificanceOctTree(UObject* obj);
 	/**
 	 * Checks if a impact effect is relevant for any local player
 	 *
@@ -387,10 +338,6 @@ public:
 	UE_DEPRECATED(4.20, "Use IsPublicBuild from FGVersionBlueprintLibrary instead")
 	UFUNCTION( BlueprintPure, Category = "Version", meta=(DeprecatedFunction,DeprecationMessage = "Use IsPublicBuild from FGVersionBlueprintLibrary instead") )
 	static bool IsAlphaBuild();
-
-	/** Returns true if the passed descriptor can be on a conveyor belt. */
-	UFUNCTION( BlueprintPure, Category = "Resource" )
-	static bool CanBeOnConveyor( TSubclassOf< UFGItemDescriptor > inClass );
 
 	/** Returns all recipes with product of a certain category */
 	static void GetAvailableRecipesInCategory( UObject* worldContext, TSubclassOf< class UFGCategory > category, TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
@@ -526,21 +473,7 @@ public:
 	/** Updates a players hotbars based on a passed in material descriptor */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
 	static void UpdateHotbarShortcutsForSpecifiedMaterialDescriptor( APlayerController* playerController, TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > materialDesc );
-
-	/**
-	 * Checks if a location is close to a base
-	 * @param worldContext - if null or invalid, function will return false
-	 * @param inLocation - the location we want to check
-	 * @param closeDistance - the distance we considers as close, if < 0, then we will use the default value specified in buildable susbystem
-	 *
-	 * @return if we consider the location as close to a factory
-	 **/
-	UFUNCTION( BlueprintPure, Category = "Factory" )
-	static bool IsLocationNearABase( const UObject* worldContext, FVector inLocation, float closeDistance = -1);
-
-
-	static bool IsLocationNearABaseFromResult( const UObject* worldContext, FVector inLocation, float closeDistance, const TArray< FOverlapResult >& Results );
-
+	
 	/** Converts legacy short map name to TopLevelAssetPath object containing a full path to the UWorld object representing a map. Returns true if successful, false otherwise */
 	static bool TryConvertShortMapNameToTopLevelAssetPath( const FString& mapName, FTopLevelAssetPath& outAssetPath );
 
@@ -720,7 +653,7 @@ public:
 	static void WaitForCondition( const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo, const FLatentActionPredicate& Predicate, bool ExecuteOnDedicatedServer = true );
 
 	/** Gets all item descriptors in the game including unlocked ones */
-	UFUNCTION(BlueprintCallable, Category = "FactoryGame|Items")
+	UFUNCTION(BlueprintCallable, Category = "FactoryGame|Items", meta = ( DeprecatedFunction, DeprecatedMessage = "Use GetAllDescriptorsSorted with Only Unlocked = true" ))
 	static void GetAllPickupableItemDescriptors( UObject* WorldContextObject, TArray< TSubclassOf< class UFGItemDescriptor > >& out_itemDescriptors );
 
 	UFUNCTION( BlueprintPure, Category = "UI" )
@@ -752,6 +685,11 @@ public:
 	/** Checks if a widget is really visible by iterating through its parents and checking the visibility of each of them. */
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	static bool IsReallyVisible( UWidget* Widget );
+
+	// <FL> [MartinC] Utility function to check actual widget visibility.
+	/** Checks if a widget is really visible by iterating through its parents and checking the visibility of each of them. */
+	static bool IsReallyVisible( TSharedPtr< class SWidget > Widget );
+
 
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	static bool HasAnyVisibleChildren( UPanelWidget* Parent );
@@ -899,7 +837,7 @@ public:
 	static void ApplySkinDataToMeshArray( TArray< UMeshComponent* >& compArr, FFactorySkinComponentGroup& groupData );
 	
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame" )
-	static UFXSystemAsset* SpawnParticleSystemAtLocationFromFXSystem( UObject* WorldContext, UFXSystemAsset* Asset, FVector Location, FRotator Rotation, FVector Scale = FVector(1));
+	static class UFXSystemComponent* SpawnParticleSystemAtLocationFromFXSystem( UObject* WorldContext, UFXSystemAsset* Asset, FVector Location, FRotator Rotation, FVector Scale = FVector(1));
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame" )
 	static void SetTraceDistance(UDirectionalLightComponent* DirectionalLight,float Value);
@@ -975,12 +913,6 @@ public:
 	UFUNCTION( BlueprintCallable )
 	static void FilterTexts( const TArray<FString>& texts, const FOnMessageArrayProcessedDynamic& completionDelegate );
 
-	UFUNCTION( BlueprintCallable, meta=( Latent, WorldContext="WorldContextObject", LatentInfo="LatentInfo" ) )
-	static void WaitForFilterText( const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo, const FString& Text, UPARAM(DisplayName="Filtered") FString& out_Filtered );
-
-	UFUNCTION( BlueprintCallable, meta=( Latent, WorldContext="WorldContextObject", LatentInfo="LatentInfo" ) )
-	static void WaitForFilterTexts( const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo, const TArray<FString>& texts, UPARAM(DisplayName="Filtered") TArray<FString>& out_Filtered );
-
 	UFUNCTION(BlueprintCallable)
 	static FString MakeStringUGCCompatible( const FString& inText, EUGCStringConversionResult& conversionResult );
 	
@@ -989,10 +921,10 @@ public:
 
 	UFUNCTION( BlueprintCallable, BlueprintPure )
 	static bool IsConsolePlatformPure();
-
+	
 	UFUNCTION( BlueprintCallable, BlueprintPure )
 	static bool IsLowResMode();
-	
+
 	// <FL> [ZimmermannA]
 	UFUNCTION(BlueprintPure, Category="Platform")
 	static EFGTargetPlatform GetCurrentPlatform();
@@ -1003,23 +935,40 @@ public:
 	static FString GetPlatformAvatarURL( FName UserPlatform, FString UserPlatformAvatarURL, FString OnlineUserAvatarURL );
 	// </FL>
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION( BlueprintCallable, meta =( WorldContext="WorldContextObject"))
 	//<FL> [KonradA] Utility function to determine if a local player controller can see UGC by a specific user.
 	// This will check the following:
 	// 1. Can the player See any UGC at all?
 	// 2. Does the player have text Communication Restrictions?
 	// 3. Is the player that has last edited the UGC on a block list?
-	static EUGCVisibilityErrors UserCanSeeUGCInThisContext( AFGPlayerController* LocalPlayerController,
-															TArray< FLocalUserNetIdBundle > LastUGCEditBy );
+	static EUGCVisibilityErrors UserCanSeeUGCInThisContext( const UObject* WorldContextObject,
+															AFGPlayerController* LocalPlayerController,
+															const FPlayerInfoHandle& LastUGCEditBy );
 	UFUNCTION( BlueprintCallable )
 	static bool UGCIsBlurExcempt( EUGCVisibilityErrors VisibilityResult );
 
 	UFUNCTION(BlueprintCallable)
-	static bool UGCVisibilityErrorsIsMatch( UPARAM( meta = ( Bitmask, BitmaskEnum = EUGCVisibilityErrors ) ) int32 Bitmask,
-									 UPARAM( meta = ( Bitmask, BitmaskEnum = EUGCVisibilityErrors ) ) int32 Bitmask2 );
+	static bool UGCVisibilityErrorsIsMatch( UPARAM( meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.EUGCVisibilityErrors" ) ) int32 Bitmask,
+									 UPARAM( meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.EUGCVisibilityErrors" ) ) int32 Bitmask2 );
+
+	/** Composes player name into platform last edited by string from the given handle */
+	UFUNCTION( BlueprintCallable, meta = ( WorldContext = "worldContext" ) )
+	static FString ComposeLastEditedByStringForPlatform( UObject* worldContext, const FPlayerInfoHandle& LastEditedByData );
+
+	/** Returns the name of the player from the given player info handle, or empty string if the handle is not valid */
+	UFUNCTION( BlueprintCallable, meta = ( WorldContext = "worldContext" ) )
+	static FString GetPlayerNameFromPlayerInfoHandle( UObject* worldContext, const FPlayerInfoHandle& PlayerInfoHandle );
+
+	/** Returns name of the platform the given player info handle belongs to. Values are names of constants in EOnlineServices enumerator, e.g. Null/Epic/Xbox/PSN/Steam/None */
+	UFUNCTION( BlueprintPure )
+	static FString GetPlatformNameFromPlayerInfoHandle( const FPlayerInfoHandle& playerInfoHandle );
+
+	UFUNCTION( BlueprintCallable )
+	static void BlockSessionMemberOn( UOnlineUserInfo* BlockingUser, USessionMemberInformation* SessionMember,
+									  EBlockBackendTarget BackendTarget, FOnBlockOverlayClosed OnPopupClosed );
 
 	UFUNCTION(BlueprintCallable)
-	static FString ComposeLastEditedByStringForPlatform(const TArray<FLocalUserNetIdBundle> & LastEditedByData);
+	static UOnlineUserBackendLink* GetBackendOfUserTargeted( UOnlineUserInfo* User, EBlockBackendTarget TargetedBackend );
 
 	UFUNCTION( BlueprintCallable )
 	static void BlockUser( UOnlineUserInfo* BlockingUser, UOnlineUserInfo* UserToBlock );
@@ -1027,14 +976,27 @@ public:
 	UFUNCTION( BlueprintCallable )
 	static void BlockUserOn( UOnlineUserInfo* BlockingUser, UOnlineUserInfo* UserToBlock, EBlockBackendTarget BackendTarget,
 							 FOnBlockOverlayClosed  OnPopupClosed);
-	
+	UFUNCTION(BlueprintCallable)
+	static void BlockOfflineUserOn(UOnlineUserInfo* BlockingUser, FCachedPlayerInfo UserToBlock, EBlockBackendTarget BackendTarget, FOnBlockOverlayClosed OnPopupClosed);
+	static void BlockUserByAccountIdOn(UOnlineUserBackendLink* blockingBackendLink, FAccountId AccountToBlock, FOnBlockOverlayClosed OnPopupClosed);
+	 
+	UFUNCTION(BlueprintCallable)
+	static void CloseOverlaysOfOnlineUser( UOnlineUserInfo* BlockingUser );
+
 	UFUNCTION(BlueprintCallable)
 	static bool UserCanBeBlockedOn( UOnlineUserInfo* UserToBlock ,EBlockBackendTarget BackendTarget);
-	
+
+	UFUNCTION( BlueprintCallable, meta = ( WorldContext = "worldContext" ) )
+	static bool SessionWasEverMultiplayer(UObject* worldContext);
+
 
 	// Shorthand for UI to check if user info A block user info B on all available backends
 	UFUNCTION( BlueprintCallable )
 	static bool UserIsBlockedFullyBy( UOnlineUserInfo* UserChecking, UOnlineUserInfo* UserToCheck );
+	UFUNCTION( BlueprintCallable )
+	static bool OfflineUserIsBlockedFully( UOnlineUserInfo* UserChecking, FCachedPlayerInfo UserToCheckByPlayerInfo );
+
+	static bool UserBackendHasBlockedUser( UOnlineUserBackendLink* UserCheckingBackendLink, const FAccountId& UserToCheckByID );
 
 
 	UFUNCTION(BlueprintCallable)
@@ -1077,6 +1039,18 @@ public:
 
 	UFUNCTION( BlueprintCallable, meta = (DisplayName = "IsA ( soft )"))
 	static bool IsAWithSoftRef( UObject* Object, TSoftClassPtr<UObject> SoftClass );
+
+	//<FL> [ZimmermannA] Helper functions for online game state checks
+	UFUNCTION( BlueprintPure, Category = "Online" )
+	static bool IsCrossplayAllowed( APlayerController* playerController );
+
+	//<FL> [ZimmermannA] Helper functions for online check
+	UFUNCTION( BlueprintPure, Category = "Online" )
+	static bool IsInOnlineGame( APlayerController* playerController );
+
+	//<FL> [ZimmermannA] Helper functions for check if we are the session host
+	UFUNCTION( BlueprintPure, Category = "Online" )
+	static bool IsSessionHost( APlayerController* playerController );
 	//</FL>
 
 	//<FL> [MartinC] Handles the activation/deactivation of the controller aim assist for a given weapon
@@ -1091,4 +1065,49 @@ public:
 	//<FL> [BGR] check if a language is available on this platform
 	UFUNCTION( BlueprintCallable, Category = "Localization" )
 	static bool IsTranslationSupportedByPlatform(FLocalizationEntry LocalizationEntry);
+
+	UFUNCTION( BlueprintPure, Category = "Player Info Handle" )
+	static bool IsPlayerInfoValid( FPlayerInfoHandle input );
+	
+	UFUNCTION(BlueprintCallable, Category = "Debugging")
+	static void BlueprintAssertMessage(UObject* caller, bool bCondition, const FString& Message);
+	
+	/** Request and release functions for the user widget pool */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI", meta = (WorldContext="WorldContextObject", DeterminesOutputType = "widgetClass") )
+	static UUserWidget* RequestWidgetFromPool(UObject* WorldContextObject, TSubclassOf< UFGUserWidget > WidgetType );
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI", meta = (WorldContext="WorldContextObject") )
+	static void ReleaseWidgetToPool(UObject* WorldContextObject, UFGUserWidget* Widget);
+
+	/** Draws a Cubic-Hermite curve using provided start and end points, as well as precomputed tangents */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
+	static void DrawSplineCurve( UPARAM(ref) FPaintContext& Context, const FVector2D& DrawOffset, const TArray<FSplinePointData>& SplinePoints, float CoordinateScale, FLinearColor Tint, float Thickness, float SegmentLength = 10.0f );
+
+	/** Compares two strings lexicographically and returns true if A compares less than B */
+	UFUNCTION( BlueprintPure, Category = "Utilities|String", meta = ( DisplayName = "String < String", CompactNodeTitle = "<", Keywords = "< less" ) )
+	static bool String_Less( const FString& A, const FString& B );
+
+	/** Compares two texts lexicographically and returns true if A compares less than B */
+	UFUNCTION( BlueprintPure, Category = "Utilities|Text", meta = ( Keywords = "< less" ) )
+	static int32 CompareText( const FText& A, const FText& B );
+
+	/** Compares two texts lexicographically (ignoring casing) and returns true if A compares less than B */
+	UFUNCTION( BlueprintPure, Category = "Utilities|Text", meta = ( Keywords = "< less" ) )
+	static int32 CompareTextIgnoreCase( const FText& A, const FText& B );
+	
+	/** 
+	 * Sort array elements using the provided comparator function
+	 *
+	 * @param TargetArray the array to sort
+	 * @param Object object on which the sort function is hosted
+	 * @param FunctionName name of the comparator function
+	*/
+	UE_DEPRECATED(5.6, "Array_Sort is a Blueprint-only function that does not have a C++ implementation. Use TArray::StableSort instead")
+	UFUNCTION(BlueprintCallable, CustomThunk, meta = (ArrayParm = "TargetArray", BlueprintInternalUseOnly = "true", BlueprintThreadSafe))
+	static void Array_Sort(const TArray<int32>& TargetArray, UObject* Object, FName FunctionName);
+
+	/** Generic implementation of BP array sorting based on reflection */
+	static void GenericArray_Sort(const void* TargetArray, const FArrayProperty* ArrayProp, UObject* Object, FName FunctionName);
+
+	DECLARE_FUNCTION(execArray_Sort);
 };

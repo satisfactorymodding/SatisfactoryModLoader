@@ -15,7 +15,7 @@ AFGCrashSiteBaseActor::AFGCrashSiteBaseActor() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bReplicates = true;
-	this->NetCullDistanceSquared = 2025000000.0;
+	this->SetNetCullDistanceSquared(2025000000.0);
 }
 void AFGCrashSiteBaseActor::BeginPlay(){ Super::BeginPlay(); }
 void AFGCrashSiteBaseActor::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ IFGSaveInterface::PreSaveGame_Implementation(saveVersion, gameVersion); }

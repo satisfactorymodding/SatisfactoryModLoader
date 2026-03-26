@@ -5,13 +5,15 @@
 #include "Server/FGDSAuthenticationTypes.h"
 
 AFGPlayerController::AFGPlayerController() : Super() {
-	this->mHotbarRadialMenuWidgetClass = nullptr;
-	this->mShortcutRadialMenuWidgetClass = nullptr;
-	this->mHandheldRadialMenuWidgetClass = nullptr;
 	this->mCanAffectAudioVolumes = true;
 	this->mLightweightBuildableRepProxy = nullptr;
 	this->mDragAndDropItemObject = nullptr;
 	this->mConsoleCommandManager = nullptr;
+	this->mHotbarRadialMenuWidgetClass = nullptr;
+	this->mShortcutRadialMenuWidgetClass = nullptr;
+	this->mHandheldRadialMenuWidgetClass = nullptr;
+	this->mVisualizationModeRadialMenuWidgetClass = nullptr;
+	this->mVisualizationModeRadialMenuActivationTime = 1.5;
 	this->mMappingContextChords = nullptr;
 	this->mMappingContext = nullptr;
 	this->mMappingContextDead = nullptr;
@@ -28,11 +30,10 @@ AFGPlayerController::AFGPlayerController() : Super() {
 	this->mCurrentMapArea = nullptr;
 	this->mCurrentAreaWasPreviouslyVisited = false;
 	this->mMovementWindComp = nullptr;
+	this->mCurrentVisualizationMode = nullptr;
 	this->mSpeedToReachForAchievement = 4166.67;
 	this->mIsRespawning = false;
 	this->mCachedMapAreaTexture = nullptr;
-	this->mRespawnFromDeath = false;
-	this->mRespawnFromJoin = false;
 	this->mProximitySubsystem = nullptr;
 	this->mMusicPlayerTickIntervalStart = 1.5;
 	this->mDedicatedServerPrivilegeLevel = EPrivilegeLevel::None;
@@ -44,6 +45,7 @@ void AFGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AFGPlayerController, mRemoteCallObjects);
 	DOREPLIFETIME(AFGPlayerController, mIsRespawning);
 	DOREPLIFETIME(AFGPlayerController, mDedicatedServerPrivilegeLevel);
+	DOREPLIFETIME(AFGPlayerController, mPlatformPlayerInfoHandle);
 }
 void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGPlayerController::BeginPlay(){ Super::BeginPlay(); }
@@ -62,7 +64,7 @@ void AFGPlayerController::PlayerTick(float DeltaTime){ }
 void AFGPlayerController::PreClientTravel(const FString& pendingURL, ETravelType travelType, bool isSeamlessTravel){ }
 void AFGPlayerController::NotifyLoadedWorld(FName worldPackageName, bool isFinalDest){ }
 void AFGPlayerController::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos){ }
-void AFGPlayerController::GetNetViewerSpecificHighPriorityActors(TArray<AActor*>& HighPrioActors){ Super::GetNetViewerSpecificHighPriorityActors(HighPrioActors); }
+void AFGPlayerController::GetNetViewerSpecificHighPriorityActors(TArray<TObjectPtr<AActor>>& HighPrioActors){ Super::GetNetViewerSpecificHighPriorityActors(HighPrioActors); }
 UFGRemoteCallObject* AFGPlayerController::GetRemoteCallObjectOfClass(TSubclassOf< UFGRemoteCallObject > inClass){ return nullptr; }
 UFGRemoteCallObject* AFGPlayerController::RegisterRemoteCallObjectClass(TSubclassOf< UFGRemoteCallObject > inClass){ return nullptr; }
 void AFGPlayerController::OnControlledCharacterDied( AFGCharacterBase* character){ }
@@ -74,9 +76,10 @@ void AFGPlayerController::Server_Respawn_Implementation(){ }
 bool AFGPlayerController::Server_Respawn_Validate(){ return bool(); }
 void AFGPlayerController::Suicide(){ }
 bool AFGPlayerController::NeedRespawn() const{ return bool(); }
-void AFGPlayerController::SetRespawningFromDeath(bool respawningFromDeath){ }
-bool AFGPlayerController::GetRespawningFromDeath(){ return bool(); }
+bool AFGPlayerController::IsRespawningFromDeath() const{ return bool(); }
 void AFGPlayerController::OnFOVUpdated(FString cvar){ }
+void AFGPlayerController::OnAlwaysShowVehiclePathsUpdated(FString cvar, FVariant newOptionValue){ }
+void AFGPlayerController::UpdateAlwaysShowVehiclePathsVisualization(){ }
 void AFGPlayerController::UpdateCameraManagerDefaultFOV(){ }
 void AFGPlayerController::ExecuteShortcut(int32 shortcutIndex){ }
 bool AFGPlayerController::IsShortcutIndexRelevantForCurrentInputType(int32 shortcutIndex) const{ return bool(); }
@@ -89,9 +92,9 @@ void AFGPlayerController::SetCustomizationShortcutOnIndex(TSubclassOf<  UFGCusto
 void AFGPlayerController::SetEmoteShortcutOnIndex(TSubclassOf<  UFGEmote > emote, int32 onIndex){ }
 void AFGPlayerController::SetBlueprintShortcutOnIndex(const FString& blueprintName, int32 onIndex){ }
 void AFGPlayerController::RemovePlayerColorPresetAtIndex(int32 index){ }
+void AFGPlayerController::AddPlayerColorPreset(FText presetName, FLinearColor color, FPlayerInfoHandle lastEditor){ }
+void AFGPlayerController::Server_AddPlayerColorPreset_Implementation(const FText& presetName, FLinearColor color, FPlayerInfoHandle lastEditor){ }
 void AFGPlayerController::Server_RemovePlayerColorPresetAtIndex_Implementation(int32 index){ }
-void AFGPlayerController::AddPlayerColorPreset(FText presetName, FLinearColor color){ }
-void AFGPlayerController::Server_AddPlayerColorPreset_Implementation(const FText& presetName, FLinearColor color){ }
 void AFGPlayerController::SetDefaultSwatchForBuildableGroup(TSubclassOf<  UFGSwatchGroup > swatchGroup, TSubclassOf<  UFGFactoryCustomizationDescriptor_Swatch > newSwatch){ }
 void AFGPlayerController::Server_SetDefaultSwatchForBuildableGroup_Implementation(TSubclassOf<  UFGSwatchGroup > swatchGroup, TSubclassOf<  UFGFactoryCustomizationDescriptor_Swatch > newSwatch){ }
 void AFGPlayerController::SetHotbarIndex(int32 newIndex){ }
@@ -102,6 +105,7 @@ UFGPlayerHotbar* AFGPlayerController::GetHotbarAtIndex(int32 hotbarIndex) const{
 void AFGPlayerController::GetAllHotbars(TArray<UFGPlayerHotbar*>& out_hotbars) const{ }
 int32 AFGPlayerController::GetRecipeShortcutIndex(TSubclassOf<  UFGRecipe > recipe) const{ return int32(); }
 int32 AFGPlayerController::GetShortcutIndexFromKey(const FKeyEvent& key) const{ return int32(); }
+bool AFGPlayerController::IsPlayingGameplayCinematic() const{ return bool(); }
 bool AFGPlayerController::IsPlayingIntroSequence() const{ return bool(); }
 void AFGPlayerController::Server_SetHighlightRepresentation_Implementation( AFGPlayerState* fgPlayerState,  UFGActorRepresentation* actorRepresentation){ }
 void AFGPlayerController::Client_OnRepresentationHighlighted_Implementation( AFGPlayerState* fgPlayerState,  UFGActorRepresentation* actorRepresentation){ }
@@ -114,7 +118,9 @@ void AFGPlayerController::Server_UpdatePlayerRepresentations_Implementation(){  
 void AFGPlayerController::ClientStopCameraAnimationSequence_Implementation(UCameraAnimationSequence* AnimToStop) {	}
 float AFGPlayerController::GetObjectScreenRadius(AActor* actor, float boundingRadius){ return float(); }
 float AFGPlayerController::GetScreenBasedObjectRadius(AActor* actor, float screenRadius){ return float(); }
-void AFGPlayerController::SetDisabledInputGate(FDisabledInputGate newDisabledInputGate){ }
+void AFGPlayerController::SetMovementModeDisabledInputGate(FDisabledInputGate newMovementModeDisabledInputGate){ }
+void AFGPlayerController::ResetMovementModeDisabledInputGate(){ }
+void AFGPlayerController::UpdateDisabledInputGate(){ }
 bool AFGPlayerController::IsInTutorialMode(){ return bool() ;}
 void AFGPlayerController::Client_NotifyHitFeedback_Implementation(EHitFeedbackType feedbackType, AActor* damageCauser, AFGCharacterBase* hitCharacter){ }
 void AFGPlayerController::Client_SendChatMessage_Implementation(const FChatMessageStruct& chatMessage){ }
@@ -134,9 +140,12 @@ FVector AFGPlayerController::GetPawnLocation() const{ return FVector(); }
 void AFGPlayerController::SetDSPrivilegeLevel(EPrivilegeLevel newPrivilegeLevel){ }
 bool AFGPlayerController::IsConnectedToDedicatedServer() const{ return bool(); }
 void AFGPlayerController::SetShortcut(int ShortcutIndex, TSubclassOf< UFGRecipe > Recipe, UFGBlueprintDescriptor* Blueprint){ }
+void AFGPlayerController::GetAvailableVisualizationModes(TArray<TSubclassOf<UFGVisualizationModeDescriptor>>& out_visualizationModes){ }
+void AFGPlayerController::SetActiveVisualizationMode(TSubclassOf<UFGVisualizationModeDescriptor> newVisualizationMode){ }
 void AFGPlayerController::OnSystemUIOverlayStateChanged(bool bOverlayShown){ }
 void AFGPlayerController::SetDetachedCamera(const bool isEnabled){  }
 void AFGPlayerController::SetPhotoMode(const bool isEnabled){  }
+FDisabledInputGate AFGPlayerController::GetDisabledInputGameForPhotoMode() const{ return FDisabledInputGate(); }
 void AFGPlayerController::PonderRemoveDeadPawn(AFGCharacterPlayer* playerPawn){  }
 bool AFGPlayerController::ControlledCharacterIsAliveAndWell() const{ return bool(); }
 void AFGPlayerController::SetupInputComponent(){ }
@@ -188,7 +197,6 @@ void AFGPlayerController::Server_ClientDoneRespawning_Implementation(){ }
 void AFGPlayerController::OnRep_IsRespawning(){ }
 void AFGPlayerController::OnClientGracePeriodElapsed(){ }
 bool AFGPlayerController::HasReceivedInitialLightweightReplicationData() const{ return bool(); }
-void AFGPlayerController::testAndProcesAdaMessages(AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds,  APlayerState* PlayerState,  AFGGameState* fgGameState){ }
 void AFGPlayerController::SetupSavedKeyMappings( UEnhancedInputLocalPlayerSubsystem* inputSubsystem){ }
 void AFGPlayerController::Input_Respawn(const FInputActionValue& ActionValue){ }
 void AFGPlayerController::Input_HotbarShortcut1(const FInputActionValue& ActionValue){ }
@@ -201,6 +209,8 @@ void AFGPlayerController::Input_HotbarShortcut7(const FInputActionValue& ActionV
 void AFGPlayerController::Input_HotbarShortcut8(const FInputActionValue& ActionValue){ }
 void AFGPlayerController::Input_HotbarShortcut9(const FInputActionValue& ActionValue){ }
 void AFGPlayerController::Input_HotbarShortcut10(const FInputActionValue& ActionValue){ }
+void AFGPlayerController::Input_CycleVisualizationMode_Started(const FInputActionValue& ActionValue){ }
+void AFGPlayerController::Input_CycleVisualizationMode_Completed(){ }
 void AFGPlayerController::Local_OnInputDeviceTypeChanged(EInputDeviceType newInputDeviceType){  }
 void AFGPlayerController::Input_HandheldRadialMenu_Started  (const FInputActionInstance& ActionInstance){ }
 void AFGPlayerController::Input_HandheldRadialMenu_Completed(const FInputActionInstance& ActionInstance){ }
@@ -231,24 +241,24 @@ void AFGPlayerController::Input_PhotoModeMoveLeft(const FInputActionValue& Actio
 void AFGPlayerController::Input_PhotoModeMoveRight(const FInputActionValue& ActionValue){  }
 void AFGPlayerController::Input_PhotoModeMoveUp(const FInputActionValue& ActionValue){  }
 void AFGPlayerController::Input_PhotoModeMoveDown(const FInputActionValue& ActionValue){  }
-void AFGPlayerController::Input_PhotoModeMoveMouseX(const FInputActionValue& ActionValue){  }
-void AFGPlayerController::Input_PhotoModeMoveMouseY(const FInputActionValue& ActionValue){  }
+void AFGPlayerController::Input_PhotoModeLookAxis(const FInputActionValue& ActionValue){ }
 void AFGPlayerController::Input_PhotoModeMoveFaster(const FInputActionValue& ActionValue){ }
 void AFGPlayerController::Input_PhotoModeMoveSlower(const FInputActionValue& ActionValue){ }
 void AFGPlayerController::Input_PhotoModeToggleDecoupleCamera(const FInputActionValue& ActionValue){  }
 void AFGPlayerController::Input_ClipboardCopy(const FInputActionValue& actionValue){ }
 void AFGPlayerController::Input_ClipboardPaste(const FInputActionValue& actionValue){ }
 void AFGPlayerController::SetMappingContextBound(UInputMappingContext* context, bool bind, int32 priority){ }
+bool AFGPlayerController::GetPriorityOfAppliedMappingContext(UInputMappingContext* context, int32& out_priority){ return bool(); }
 void AFGPlayerController::BindToAction(const  UInputAction* action, ETriggerEvent triggerEvent, const FFGRuntimeInputActionDelegate& delegate){ }
 void AFGPlayerController::ClearActionBindingsForObject(UObject* object){ }
 void AFGPlayerController::CreateShortcutRadialMenu(TSubclassOf< UFGRecipe > RecipeClass, UFGBlueprintDescriptor* Blueprint){ }
 void AFGPlayerController::DestroyShortcutRadialMenu(){ }
-FString AFGPlayerController::GetOnlineIdIfPossible(bool& hasValidOnlineId){ return FString(); }
-FString AFGPlayerController::GetOnlineHandleIfPossible(bool& bHasValidOnlineHandle){ return FString(); }
-TArray<FLocalUserNetIdBundle> AFGPlayerController::GetOnlineNetIdBundlesIfPossible(bool& bHasValidOnlineBundles){ return TArray<FLocalUserNetIdBundle>(); }
-bool AFGPlayerController::IsSameAccount(TArray<FLocalUserNetIdBundle> OtherAccountBundles){ return bool(); }
+bool AFGPlayerController::IsSameAccount(const FPlayerInfoHandle& OtherPlayerInfoHandle) const{ return bool(); }
+void AFGPlayerController::Internal_SetPlayerPlatformInfoHandle(const FPlayerInfoHandle& newPlatformPlayerInfoHandle){ }
 void AFGPlayerController::StartLookInputDelay(){  }
 float AFGPlayerController::GetLookInputDelayTime(){ return float(); }
 float AFGPlayerController::GetLookInputFadeFactor(){ return float(); }
+void AFGPlayerController::EnterMouseAndKeyboardMode(){ Super::EnterMouseAndKeyboardMode(); }
+void AFGPlayerController::EnterGamepadMode(){ Super::EnterGamepadMode(); }
 FOnPlayerControllerBegunPlay AFGPlayerController::PlayerControllerBegunPlay = FOnPlayerControllerBegunPlay();
 FOnPlayerControllerPawnChanged AFGPlayerController::StaticOnControlledPawnChanged = FOnPlayerControllerPawnChanged();

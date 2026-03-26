@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -38,12 +38,7 @@ public:
 	// End AActor interface
 
 	// Begin IFGSaveInterface
-	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override;
-	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
@@ -95,7 +90,7 @@ protected:
 	void ScanForIconLibraries();
 
 	void TryInitializeDatabase();
-	void BuildGlobalIconData();
+	void RebuildGlobalIconData();
 public:
 	/** Fired when the icon database is fully populated and available for use on the client */
 	UPROPERTY( BlueprintAssignable, Category = "Icon Database" )
@@ -110,6 +105,10 @@ protected:
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_GlobalIconLibraries )
 	TArray<TSoftObjectPtr<UFGIconLibrary>> mGlobalIconLibraries;
 
+	/** Cache of additional data libraries discovered, used to refresh the list after the save game load */
+	UPROPERTY()
+	TArray<TObjectPtr<UFGIconLibrary>> mDiscoveredIconLibraries;
+
 	/** Transient icon data list build from all of the icon libraries combined */
 	UPROPERTY()
 	TArray<FIconData> mAllIconData;
@@ -123,5 +122,5 @@ protected:
 	TMap<EIconType, TArray<int32>> mIconCategoryToGlobalIds;
 
 	/** True if the local database has been initialized */
-	bool mDatabaseInitialized;
+	bool mDatabaseInitialized{false};
 };

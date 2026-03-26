@@ -13,5 +13,6 @@ void AFGBuildablePriorityPowerSwitch::GetLifetimeReplicatedProps(TArray< FLifeti
 }
 void AFGBuildablePriorityPowerSwitch::AcceptCircuitGroup( UFGPowerCircuitGroup* circuitGroup){ }
 void AFGBuildablePriorityPowerSwitch::SetPriority(int32 priority){ }
+void AFGBuildablePriorityPowerSwitch::DisplayDebug(class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ Super::DisplayDebug(canvas, debugDisplay, YL, YPos); }
 void AFGBuildablePriorityPowerSwitch::EnsureInfoCreated(){ }
 void AFGBuildablePriorityPowerSwitch::OnRep_Priority(){ }

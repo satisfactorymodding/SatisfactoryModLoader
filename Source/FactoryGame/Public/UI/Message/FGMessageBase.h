@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -56,5 +56,5 @@ public:
 
 	/** Images to display in the codex */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
-	TArray< class UTexture2D* > mImages;
+	TArray< TObjectPtr<class UTexture2D> > mImages;
 };

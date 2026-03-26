@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Engine/HitResult.h"
 #include "Templates/SubclassOf.h"
 #include "UObject/Interface.h"
 
@@ -58,15 +59,23 @@ struct FACTORYGAME_API FUseState
 
 	/** Additional data that might be heavy to calculate several times the same frame, the reason it's cached here and not in the object, is that several players might want to cache different things */
 	UPROPERTY( BlueprintReadOnly )
-	class UFGUseState* AdditionalData;
+	TObjectPtr<class UFGUseState> AdditionalData;
 
 	/** Location of where the use happens */
 	UPROPERTY( BlueprintReadOnly )
 	FVector UseLocation = FVector::ZeroVector;
 
+	/** True if this is a use state based on a direct hit, false if it is based on a foliage pickup */
+	UPROPERTY( BlueprintReadOnly )
+	bool bIsTraceHit{false};
+
+	/** Full trace result for the use hit. This is only set when not interacting with foliage, in which case this will be blank and bIsTraceHit will be set to false */
+	UPROPERTY( BlueprintReadOnly )
+	FHitResult UseHitResult;
+
 	/** Component that triggered the use */
 	UPROPERTY( BlueprintReadOnly )
-	UPrimitiveComponent* UseComponent;
+	TObjectPtr<UPrimitiveComponent> UseComponent;
 protected:
 	/** Contains the usable state of the object, might be a error code */
 	UPROPERTY( BlueprintReadOnly )
@@ -124,6 +133,14 @@ class FACTORYGAME_API IFGUseableInterface
 	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Use" )
 	bool IsUseable() const;
+
+	/**
+	 * Checks if interaction with this object should be blocked based on hit result.
+	 * This should ideally not exist and IsUsable should just take FHitResult as metadata, but there are way too many implementations
+	 * at this point in the game to change it. This function is optional to implement, and default behavior is to not block interactions based on the hit result.
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category = "Use" )
+	bool ShouldBlockInteraction( AFGCharacterPlayer* byCharacter, const FHitResult& hitResult ) const;
 
 	/**
 	 * Called on by the interface if we are looking at something that's useable

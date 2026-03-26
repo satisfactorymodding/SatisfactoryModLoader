@@ -31,5 +31,5 @@ public:
 protected:
 	/** The mesh we want to have for the decor */
 	UPROPERTY( SaveGame, Replicated )
-	class UStaticMesh* mDecorMesh;
+	TObjectPtr<class UStaticMesh> mDecorMesh;
 };

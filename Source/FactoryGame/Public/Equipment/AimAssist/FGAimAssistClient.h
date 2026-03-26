@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "UObject/Interface.h"
 #include "FGAimAssistClient.generated.h"
 
 

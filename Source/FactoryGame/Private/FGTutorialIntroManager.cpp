@@ -70,8 +70,7 @@ void AFGTutorialIntroManager::CompleteOnboardingStep( UFGOnboardingStep* complet
 void AFGTutorialIntroManager::CompleteOnboardingStepByTag(FGameplayTag completedOnboardingStepTag){ }
 UFGOnboardingStep* AFGTutorialIntroManager::GetOnboardingStepFromTag(FGameplayTag OnboardingStepTag) const{ return nullptr; }
 void AFGTutorialIntroManager::SetTradingPostLevel(int32 newLevel){ }
-void AFGTutorialIntroManager::SetInputGatesFromTutorialLevel( AFGPlayerController* playerController){ }
-struct FDisabledInputGate AFGTutorialIntroManager::GetInputGatesFromTutorialLevel(){ return FDisabledInputGate(); }
+FDisabledInputGate AFGTutorialIntroManager::GetDisabledInputGateFromOnboardingStep() const{ return FDisabledInputGate(); }
 void AFGTutorialIntroManager::SetupDropPod( AFGCharacterPlayer* forPlayer){ }
 void AFGTutorialIntroManager::TradingPostWasBuilt(){ }
 void AFGTutorialIntroManager::StartSkipIntroSequence(){ }

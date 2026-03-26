@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -9,6 +9,7 @@
 #include "FGBlueprintSubsystemReplicationComponent.generated.h"
 
 class AFGBlueprintSubsystem;
+struct FGameplayTag;
 
 enum class EBlueprintSubsystemMessageId : uint32
 {
@@ -41,7 +42,7 @@ protected:
 	void InitializeAsClient();
 	
 	/** Handles a reliable message */
-	void HandleRawMessage(TArray<uint8>&& InMessageData) const;
+	void HandleRawMessage(FGameplayTag InTag, TArray<uint8>&& InMessageData) const;
 	/** Sends a a reliable message */
 	void SendRawMessage(EBlueprintSubsystemMessageId MessageId, const TFunctionRef<void(FArchive&)>& MessageSerializer) const;
 
@@ -56,5 +57,5 @@ protected:
 	}
 
 	UPROPERTY()
-	AFGBlueprintSubsystem* mBlueprintSubsystem;
+	TObjectPtr<AFGBlueprintSubsystem> mBlueprintSubsystem;
 };

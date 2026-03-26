@@ -17,10 +17,10 @@ public:
 
 	/** The material to put on that slot name */
 	UPROPERTY( BlueprintReadWrite, EditAnywhere, DisplayName = "Material 1P" )
-	UMaterialInterface* Material;
+	TObjectPtr<UMaterialInterface> Material;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere, DisplayName = "Material 3P" )
-	UMaterialInterface* Material3P;
+	TObjectPtr<UMaterialInterface> Material3P;
 };
 
 /**

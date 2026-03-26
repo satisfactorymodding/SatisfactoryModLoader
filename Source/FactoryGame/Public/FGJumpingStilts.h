@@ -45,7 +45,7 @@ protected:
 
 	/** The UCurveFloat to use to override the default fall damage curve */
 	UPROPERTY( EditDefaultsOnly, Category = "Jumping Stilts" )
-	UCurveFloat* mFallDamageCurveOverride;
+	TObjectPtr<UCurveFloat> mFallDamageCurveOverride;
 
 	/** The factor by which the default sprint speed is multiplied while equipped */
 	UPROPERTY( EditDefaultsOnly, Category = "Jumping Stilts" )

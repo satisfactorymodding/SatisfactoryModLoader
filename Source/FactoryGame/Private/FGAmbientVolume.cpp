@@ -19,7 +19,7 @@ void AFGAmbientVolume::BeginPlay(){ Super::BeginPlay(); }
 void AFGAmbientVolume::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGAmbientVolume::GainedSignificance_Implementation(){ }
 void AFGAmbientVolume::LostSignificance_Implementation(){ }
-float AFGAmbientVolume::GetSignificanceRange(){ return float(); }
+float AFGAmbientVolume::GetSignificanceRange_Implementation() const{ return IFGSignificanceInterface::GetSignificanceRange_Implementation(); }
 const UFGAmbientSettings* AFGAmbientVolume::GetAmbientSettings() const{ return nullptr; }
 void AFGAmbientVolume::SetCameraIsClose(bool close){ }
 void AFGAmbientVolume::SetCameraIsInside(bool inside){ }

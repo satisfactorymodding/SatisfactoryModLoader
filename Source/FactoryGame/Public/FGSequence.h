@@ -197,9 +197,9 @@ public:
 
 private:
 	UPROPERTY()
-	APawn* Pawn;
+	TObjectPtr<APawn> Pawn;
 	UPROPERTY()
-	APlayerController* PlayerController;
+	TObjectPtr<APlayerController> PlayerController;
 
 	bool IsPlaying;
 

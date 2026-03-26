@@ -29,7 +29,7 @@ public:
 	UPROPERTY( BlueprintReadOnly ,EditDefaultsOnly, Category="Crumble")
 	FName mFoliageCrumbleEffectSocketName;
 
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Crumble", AdvancedDisplay = true )
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Crumble", AdvancedDisplay )
 	FName mFoliageCrumbleParticleIDName = FName("Index");
 
 	UPROPERTY( BlueprintReadOnly ,EditDefaultsOnly, Category="Crumble")
@@ -38,7 +38,7 @@ public:
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Leaves")
 	TObjectPtr<UNiagaraSystem> mFoliageLeafSplatterEffect;
 	
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Leaves", AdvancedDisplay = true )
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Leaves", AdvancedDisplay )
 	FName mFoliageLeafParticleIDName = FName("Index");
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Leaves")
@@ -62,16 +62,16 @@ public:
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Falling")
 	TObjectPtr<UNiagaraSystem> mFoliageTrunkCollisionEffect;
 	
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Falling", AdvancedDisplay = true )
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Falling", AdvancedDisplay )
 	FName mFoliageTrunkCollisionEffectIDName = FName("Index");
 	
 	/* AK event fired when the tree hits a surface.*/
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Falling", DisplayName = "Tree Hit")
-	UAkAudioEvent* mTreeFallHitAKEvent = nullptr;
+	TObjectPtr<UAkAudioEvent> mTreeFallHitAKEvent = nullptr;
 	
 	/* AK event fired when the trees starts to fall.*/
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category="Falling",DisplayName = "Tree Fall")
-	UAkAudioEvent* mTreeFallCrumbleAKEvent = nullptr;
+	TObjectPtr<UAkAudioEvent> mTreeFallCrumbleAKEvent = nullptr;
 
 	// Helper functions
 	UFUNCTION(BlueprintCallable)

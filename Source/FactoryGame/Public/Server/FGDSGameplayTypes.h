@@ -101,6 +101,9 @@ struct FACTORYGAME_API FFGServerNewGameData
 	UPROPERTY( BlueprintReadWrite, Category = "New Game Data" )
 	TMap<FString, FString> AdvancedGameSettings;
 
+	UPROPERTY( BlueprintReadWrite, Category = "New Game Data" )
+	TMap< FString, FString > GameModeSettings;
+
 	// Custom options to be passed as map options for creating a new game.
 	// ONLY FOR MODDING/THIRD PARTY SUPPORT. IF YOU ARE A COFFEE STAIN EMPLOYEE, MAKE A NEW PROPERTY ABOVE INSTEAD
 	UPROPERTY( BlueprintReadWrite, Category = "New Game Data" )

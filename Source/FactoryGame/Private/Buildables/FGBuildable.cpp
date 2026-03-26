@@ -1,6 +1,7 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #include "Buildables/FGBuildable.h"
+#include "Components/SceneComponent.h"
 #include "AkAudioDevice.h"
 #include "AkComponent.h"
 #include "AkGameplayStatics.h"
@@ -62,6 +63,7 @@
 #include "Misc/DataValidation.h"
 #include "AkAudioEvent.h"
 #include "FGRailroadTrackConnectionComponent.h"
+#include "FGRainOcclusionActor.h"
 #include "FGSchematicManager.h"
 #include "FGWorldSettings.h"
 #include "Buildables/FGBuildableConveyorBelt.h"
@@ -111,9 +113,7 @@ void AFGBuildable::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mNetConstructionID, params );
 	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mBuildEffectInstignator, params );
 	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mBuiltWithRecipe, params );
-	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mOriginalBuildableVariant, params );
 	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mBlueprintProxy, params );
-	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mIsMultiSpawnedBuildable, params );
 	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mBlueprintBuildEffectID, params );
 	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mReplicatedBuiltInsideBlueprintDesigner, params );
 	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mBlueprintDesigner, params );
@@ -131,34 +131,80 @@ AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) :
 	mHideOnBuildEffectStart( false ),
 	mShouldModifyWorldGrid( true ),
 	mIsAboutToBeDismantled( false ),
-	mBlueprintBuildEffectID( INDEX_NONE )
-{
-	PrimaryActorTick.bCanEverTick = false;
-	PrimaryActorTick.bStartWithTickEnabled = false;
-	bReplicates = true;
-	NetDormancy = DORM_Initial;
-
-	
-	HAS_BLUEPRINT_IMPLEMENTATION( mHasBlueprintFactoryTick, Factory_ReceiveTick, AFGBuildable );
-	HAS_BLUEPRINT_IMPLEMENTATION( mHasFactory_PeekOutput, Factory_PeekOutput, AFGBuildable );
-	HAS_BLUEPRINT_IMPLEMENTATION( mHasFactory_GrabOutput, Factory_GrabOutput, AFGBuildable );
-	HAS_BLUEPRINT_IMPLEMENTATION( mHasSetupInstances, SetupInstances, AFGBuildable );
-
-	mFactoryTickFunction.TickGroup = TG_PrePhysics;
-	// Default to no tick function, but if we set 'never ticks' to false (so there is a tick function) it is enabled by default
-	mFactoryTickFunction.bCanEverTick = false;
-	mFactoryTickFunction.bStartWithTickEnabled = true;
-	mFactoryTickFunction.SetTickFunctionEnable( false );
-
-	RootComponent = CreateDefaultSubobject< USceneComponent >( TEXT("RootComponent") );
-	RootComponent->SetMobility( EComponentMobility::Static );
-
-	// 75k uu away
-	NetCullDistanceSquared = 5625000000.f;
-
-	// Default to all buildables being able to be colored
-	mAllowColoring = true;
-	mAllowPatterning = true;
+	mBlueprintBuildEffectID( INDEX_NONE ) {
+	this->mRainOcclusionBoundingBox.Min.X = 0.0;
+	this->mRainOcclusionBoundingBox.Min.Y = 0.0;
+	this->mRainOcclusionBoundingBox.Min.Z = 0.0;
+	this->mRainOcclusionBoundingBox.Max.X = 0.0;
+	this->mRainOcclusionBoundingBox.Max.Y = 0.0;
+	this->mRainOcclusionBoundingBox.Max.Z = 0.0;
+	this->mRainOcclusionBoundingBox.IsValid = false;
+	this->mAffectsOcclusion = false;
+	this->mOcclusionShape = EFGRainOcclusionShape::ROCS_Box;
+	this->mCustomRainOcclusionMaterial = nullptr;
+	this->CustomMesh = nullptr;
+	this->OriginOffset = FVector::ZeroVector;
+	this->mHologramClass = nullptr;
+	this->mDisplayName = INVTEXT("");
+	this->mDescription = INVTEXT("");
+	this->MaxRenderDistance = -1.0;
+	this->mDecoratorClass = nullptr;
+	this->mContainsComponents = true;
+	this->mIsConsideredForBaseWeightValue = 1.0;
+	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->mFactoryTickFunction.bTickEvenWhenPaused = false;
+	this->mFactoryTickFunction.bCanEverTick = false;
+	this->mFactoryTickFunction.bStartWithTickEnabled = true;
+	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
+	this->mFactoryTickFunction.TickInterval = 0.0;
+	this->mBuildableSparseDataCDO = nullptr;
+	this->mParentBuildableActor = nullptr;
+	this->mColorSlot = 0;
+	this->CachedSkinDesc = nullptr;
+	this->mDefaultSwatchCustomizationOverride = nullptr;
+	this->mSwatchGroup = UFGSwatchGroup_Standard::StaticClass();
+	this->mFactorySkinClass = nullptr;
+	this->bForceLegacyBuildEffect = false;
+	this->bForceBuildEffectSolo = false;
+	this->mActiveBuildEffect = nullptr;
+	this->mBuildEffectInstignator = nullptr;
+	this->mBuildEffectActor = nullptr;
+	this->mBuildEffectSpeed = 0.0;
+	this->mAllowColoring = true;
+	this->mAllowPatterning = true;
+	this->mInteractionRegisterPlayerWithCircuit = false;
+	this->mSkipBuildEffect = false;
+	this->mShouldApplyCustomizationData = true;
+	this->mForceNetUpdateOnRegisterPlayer = false;
+	this->mToggleDormancyOnInteraction = false;
+	this->mShouldShowAttachmentPointVisuals = false;
+	this->mCanContainLightweightInstances = false;
+	this->mManagedByLightweightBuildableSubsystem = false;
+	this->mRemoveBuildableFromSubsystemOnDismantle = false;
+	this->mHasBeenRemovedFromSubsystem = false;
+	this->mInstanceDataCDO = nullptr;
+	this->mBlueprintDesigner = nullptr;
+	this->mReplicatedBuiltInsideBlueprintDesigner = false;
+	this->mInteractWidgetSoftClass = nullptr;
+	this->mIsUseable = false;
+	this->mBuiltWithRecipe = nullptr;
+	this->mHideOnBuildEffectStart = false;
+	this->mShouldModifyWorldGrid = true;
+	this->mBlueprintProxy = nullptr;
+	this->mBlueprintBuildEffectID = -1;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = false;
+	this->PrimaryActorTick.bStartWithTickEnabled = false;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
+	this->bReplicates = true;
+	this->NetDormancy = ENetDormancy::DORM_Initial;
+	this->SetNetCullDistanceSquared(5625000000.0);
+	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	this->RootComponent->SetMobility(EComponentMobility::Static);
 }
 
 void AFGBuildable::PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion )
@@ -421,7 +467,7 @@ void AFGBuildable::BeginPlay()
 
 	const bool HasValidDecoratorClass = IsValid( mDecoratorClass );
 	
-	if( mBuildEffectInstignator && !mIsMultiSpawnedBuildable )
+	if( mBuildEffectInstignator )
 	{
 		if(!bForceLegacyBuildEffect)
 		{
@@ -432,26 +478,6 @@ void AFGBuildable::BeginPlay()
 			// ! Legacy build effect, only used in super rare cases we shouldn't rely on this!
 			ExecutePlayBuildEffects();
 		}
-	}
-	else if( !mIsMultiSpawnedBuildable ) 
-	{
-		if ( HasValidDecoratorClass )
-		{
-			RegisterWithBackgroundThread();
-		}
-
-		// Handle lightweight instance data.
-		CallSetupInstances();
-	}
-
-	if ( mIsMultiSpawnedBuildable )
-	{
-		for (auto comp : TInlineComponentArray<UFGColoredInstanceMeshProxy*>{this})
-		{
-			comp->SetInstanced(false);
-		}
-
-		SetActorHiddenInGame( true );
 	}
 
 	OnRep_CustomizationData();
@@ -668,7 +694,7 @@ void AFGBuildable::CreateEditorVisualization()
 	CustomizationData.ResolveDefaultColorForColorSlot();
 
 	// We check the data on the default object to avoid issues with BP reinstancing, that will reset the mInstanceDataCDO pointer on the class
-	const AFGBuildable* ClassDefaultObject = CastChecked<AFGBuildable>(GetClass()->ClassDefaultObject);
+	const AFGBuildable* ClassDefaultObject = CastChecked<AFGBuildable>(GetClass()->GetDefaultObject());
 
 	// Abstract Instances visualization
 	if (RootComponent != nullptr && ClassDefaultObject->DoesContainLightweightInstances_Native())
@@ -746,28 +772,6 @@ uint8 AFGBuildable::EstimatedMaxNumGrab_Threadsafe( float estimatedDeltaTime ) c
 	return 0;
 }
 
-bool AFGBuildable::VerifyDefaults( FString& out_message )
-{
-	// Check for legacy clearance components
-	for( auto component : TInlineComponentArray<UBoxComponent*>{ this } )
-	{		
-		if( component->GetName() == TEXT("Clearance") )
-		{
-			out_message = FString::Printf( TEXT( "Legacy clearance component found! Replace with ClearanceData!" ) );
-			return false;
-		}
-	}
-
-	FString message;
-	if( !CheckFactoryConnectionComponents( message ) )
-	{
-		out_message = FString::Printf( TEXT( "Checking of factory connection components failed: %s" ), *message );
-		return false;
-	}
-
-	return true;
-}
-
 int32 AFGBuildable::GetCostMultiplierForLength( float totalLength, float costSegmentLength )
 {
 	if( costSegmentLength > KINDA_SMALL_NUMBER )
@@ -814,63 +818,6 @@ TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGBuildable::GetD
 	}
 
 	return swatch;
-}
-
-bool AFGBuildable::CheckFactoryConnectionComponents( FString& out_message )
-{
-	/**
-	* Here we check and verify the naming of the factory connections.
-	* Valid names are:
-	* ({connector}){direction}{id}
-	*
-	* E.g:
-	* Input5
-	* Any1
-	* PipeOutput4
-	* ConveyorInput2
-	* SnapOnly0
-	*/
-	TStaticArray< FString, 2 > connectors;
-	connectors[ (uint8 )EFactoryConnectionConnector::FCC_CONVEYOR ] = FString( "Conveyor" );
-	connectors[ (uint8 )EFactoryConnectionConnector::FCC_PIPE ] = FString( "Pipe" );
-
-	TStaticArray< FString, 4 > directions;
-	directions[ (uint8 )EFactoryConnectionDirection::FCD_INPUT ] = FString( "Input" );
-	directions[ (uint8 )EFactoryConnectionDirection::FCD_OUTPUT ] = FString( "Output" );
-	directions[ (uint8 )EFactoryConnectionDirection::FCD_ANY ] = FString( "Any" );
-	directions[ (uint8 )EFactoryConnectionDirection::FCD_SNAP_ONLY ] = FString( "SnapOnly" );
-
-	FOR_EACH_FACTORY_INLINE_COMPONENTS( connection )
-	{
-		FString name = connection->GetName();
-		FString connector = connectors[ (uint8 )connection->GetConnector() ];
-		FString direction = directions[ (uint8 )connection->GetDirection() ];
-
-		// Try remove the (optional) prefix.
-		name.RemoveFromStart( connector );
-
-		// Try remove the direction.
-		if( !name.RemoveFromStart( direction ) )
-		{
-			out_message = FString::Printf( TEXT( "Error: '%s' is not a valid name for this factory connection, the proper name is '(%s)%s{id}'" ),
-										   *connection->GetName(),
-										   *connector,
-										   *direction );
-			return false;
-		}
-
-		// Now we should be left with a number.
-		if( !name.IsNumeric() )
-		{
-			out_message = FString::Printf( TEXT( "Error: '%s' is not a valid name for this factory connection, the proper name is '(%s)%s{id}'" ),
-										   *connection->GetName(),
-										   *connector,
-										   *direction );
-			return false;
-		}
-	}
-
-	return true;
 }
 
 void AFGBuildable::TurnOffAndDestroy()
@@ -1322,6 +1269,7 @@ void AFGBuildable::CreateLightweightBuildableInstanceData( const struct FFGDynam
 		outLightweightInstanceData = lightweightInstanceData->GetInstanceData();
 	}
 }
+FBox AFGBuildable::CalculateBounds() const{ return FBox(); }
 
 void AFGBuildable::ForceUpdateCustomizerMaterialToRecipeMapping( bool bTryToSave )
 {
@@ -1545,18 +1493,6 @@ void AFGBuildable::RegisterWithBackgroundThread()
 }
 
 #if WITH_EDITOR
-void AFGBuildable::DebugDrawOcclusionBoxes()
-{
-	for	( const FBox& Box : mOcclusionBoxInfo )
-	{
-		const auto& T = GetActorTransform();
-
-		FVector Center = T.TransformPosition( Box.GetCenter() );
-		FVector Extents = Box.GetExtent();
-
-		DrawDebugBox( GetWorld(), Center, Extents, FColor::Red,false, 10.f, 1, 10.f );
-	}
-}
 
 void AFGBuildable::PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent )
 {
@@ -1793,6 +1729,8 @@ void AFGBuildable::GetDismantleDependencies_Implementation( TArray<AActor*>& out
 		out_dismantleDependencies.Add( mParentBuildableActor );
 	}
 }
+bool AFGBuildable::CanSample_Implementation() const{ return IFGSampleInterface::CanSample_Implementation(); }
+TSubclassOf<UFGRecipe> AFGBuildable::GetSampledRecipe_Implementation() const{ return IFGSampleInterface::GetSampledRecipe_Implementation(); }
 
 void AFGBuildable::StartIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter, UFGCircuitConnectionComponent* overlappingConnection )
 {
@@ -2061,7 +1999,6 @@ void AFGBuildable::OnBuildEffectActorFinished()
 	mBuildEffectIsPlaying = false;
 	mActiveBuildEffect = nullptr;
 	mBuildEffectInstignator = nullptr;
-	mIsMultiSpawnedBuildable = false;
 	K2_OnBuildEffectFinished();
 	
 	if ( IsValid( mDecoratorClass ) && !mIsDismantled )
@@ -2262,7 +2199,7 @@ void AFGBuildable::GetDismantleRefundReturns( TArray< FInventoryStack >& out_ret
 {
 	const int32 costMultiplier = GetDismantleRefundReturnsMultiplier();
 
-	for( const auto& cost : UFGRecipe::GetIngredients( GetBuiltWithRecipe() ) )
+	for( const auto& cost : UFGRecipe::GetIngredients( this, GetBuiltWithRecipe() ) )
 	{
 		if( cost.Amount > 0 )
 		{
@@ -2270,12 +2207,11 @@ void AFGBuildable::GetDismantleRefundReturns( TArray< FInventoryStack >& out_ret
 		}
 	}
 }
-
-void AFGBuildable::GetLightweightBuildableDismantleRefundReturns( const TSubclassOf<UFGRecipe>& builtWithRecipe, const FFGDynamicStruct& typeSpecificData, TArray<FInventoryStack>& out_returns ) const
+void AFGBuildable::GetLightweightBuildableDismantleRefundReturns(UObject* worldContext, const TSubclassOf<UFGRecipe>& builtWithRecipe, const FFGDynamicStruct& typeSpecificData, TArray<FInventoryStack>& out_returns) const
 {
 	const int32 costMultiplier = GetDismantleRefundReturnsMultiplierForLightweight( typeSpecificData );
 
-	for( const auto& cost : UFGRecipe::GetIngredients( builtWithRecipe ) )
+	for( const auto& cost : UFGRecipe::GetIngredients( this, builtWithRecipe ) )
 	{
 		if( cost.Amount > 0 )
 		{
@@ -2465,7 +2401,7 @@ TArray< UStaticMeshComponent* > AFGBuildable::CreateBuildEffectProxyComponents()
 		// Create proxy components for dynamic lightweight instances
 		for ( const FInstanceHandlePtr& InstanceHandle : GetDynamicLightweightInstanceHandles().HandleArray )
 		{
-			const UHierarchicalInstancedStaticMeshComponent* MeshComponent = InstanceHandle->GetInstanceComponent();
+			const ULightweightHierarchicalInstancedStaticMeshComponent* MeshComponent = InstanceHandle->GetInstanceComponent();
 			if ( MeshComponent == nullptr || !InstanceHandle->IsInstanced() ) continue;
 
 			UStaticMeshComponent* proxyBuildEffectMeshComponent = NewObject< UStaticMeshComponent >(this );
@@ -2898,8 +2834,6 @@ void AFGBuildable::PostSerializedFromBlueprint(bool isBlueprintWorld )
 	if( !isBlueprintWorld )
 	{
 		// the build effect will be handled through a build effect actor instead.
-		mIsMultiSpawnedBuildable = true;
-
 		TInlineComponentArray< UFGPipeConnectionComponent* > pipeComponents{ this };
 		for( UFGPipeConnectionComponent* pipeConnection : pipeComponents )
 		{
@@ -3106,22 +3040,11 @@ bool AFGBuildable::CanBeSampled_Implementation() const
 		isBuildingAvailable = recipeManager->IsBuildingAvailable( GetClass() );
 
 		// If our own buildable class is not available, check our original variant, if we have one assigned.
-		if( !isBuildingAvailable && mOriginalBuildableVariant )
+		if( !isBuildingAvailable )
 		{
 			const auto Desc = UFGRecipe::GetDescriptorForRecipe( GetBuiltWithRecipe() );
 
 			fgcheck( Desc );
-			
-			if( Desc && Desc->IsChildOf< UFGBuildDescriptor >() )
-			{
-				// If the recipe build class is the same as our original variant
-				const TSubclassOf< AActor > RecipeBuildableClass = UFGBuildDescriptor::GetBuildClass( *Desc );
-
-				if( RecipeBuildableClass == mOriginalBuildableVariant )
-				{
-					isBuildingAvailable = recipeManager->IsBuildingAvailable( mOriginalBuildableVariant );
-				}
-			}
 		}
 	}
 	
@@ -3140,11 +3063,9 @@ void AFGBuildable::Stat_StockInventory( TArray< FItemAmount >& out_amount ) cons
 	}
 }
 
-void UFGSignificantNetworkRCO::GetLifetimeReplicatedProps( ::TArray<FLifetimeProperty>& OutLifetimeProps ) const
-{
+void UFGSignificantNetworkRCO::GetLifetimeReplicatedProps( ::TArray<FLifetimeProperty>& OutLifetimeProps ) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME_CONDITION( UFGSignificantNetworkRCO, mForceNetField_UFGSignificantNetworkRemoteCallObject, COND_InitialOnly );
+	DOREPLIFETIME(UFGSignificantNetworkRCO, mForceNetField_UFGSignificantNetworkRemoteCallObject);
 }
 
 void UFGSignificantNetworkRCO::Server_RequestDecoratorSignificantComponents_Implementation( AFGBuildable* actor, AFGPlayerController* controller )

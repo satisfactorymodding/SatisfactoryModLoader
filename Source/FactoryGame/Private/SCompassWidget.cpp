@@ -9,15 +9,32 @@ UFGCompassWidget::UFGCompassWidget() : Super() {
 	this->CompassAnchorPoint.X = 0.5;
 	this->CompassAnchorPoint.Y = 0.5;
 	this->CompassWidth = 800.0;
-	this->FontInfo.FontObject = nullptr;
-	this->FontInfo.FontMaterial = nullptr;
-	this->FontInfo.OutlineSettings.bSeparateFillAlpha = false;
-	this->FontInfo.OutlineSettings.bApplyOutlineToDropShadows = false;
-	this->FontInfo.OutlineSettings.OutlineMaterial = nullptr;
-	this->FontInfo.OutlineSettings.OutlineColor = FLinearColor(0.0, 0.0, 0.0, 1.0);
-	this->FontInfo.TypefaceFontName = TEXT("None");
-	this->FontInfo.Size = 24.0;
-	this->FontInfo.SkewAmount = 0.0;
+	this->LabelFontInfo.FontObject = nullptr;
+	this->LabelFontInfo.FontMaterial = nullptr;
+	this->LabelFontInfo.OutlineSettings.bMiteredCorners = false;
+	this->LabelFontInfo.OutlineSettings.bSeparateFillAlpha = false;
+	this->LabelFontInfo.OutlineSettings.bApplyOutlineToDropShadows = false;
+	this->LabelFontInfo.OutlineSettings.OutlineMaterial = nullptr;
+	this->LabelFontInfo.OutlineSettings.OutlineColor = FLinearColor(0.0, 0.0, 0.0, 1.0);
+	this->LabelFontInfo.TypefaceFontName = TEXT("None");
+	this->LabelFontInfo.Size = 24.0;
+	this->LabelFontInfo.SkewAmount = 0.0;
+	this->LabelFontInfo.bForceMonospaced = false;
+	this->LabelFontInfo.bMaterialIsStencil = false;
+	this->LabelFontInfo.MonospacedWidth = 1.0;
+	this->OverlayTextFontInfo.FontObject = nullptr;
+	this->OverlayTextFontInfo.FontMaterial = nullptr;
+	this->OverlayTextFontInfo.OutlineSettings.bMiteredCorners = false;
+	this->OverlayTextFontInfo.OutlineSettings.bSeparateFillAlpha = false;
+	this->OverlayTextFontInfo.OutlineSettings.bApplyOutlineToDropShadows = false;
+	this->OverlayTextFontInfo.OutlineSettings.OutlineMaterial = nullptr;
+	this->OverlayTextFontInfo.OutlineSettings.OutlineColor = FLinearColor(0.0, 0.0, 0.0, 1.0);
+	this->OverlayTextFontInfo.TypefaceFontName = TEXT("None");
+	this->OverlayTextFontInfo.Size = 24.0;
+	this->OverlayTextFontInfo.SkewAmount = 0.0;
+	this->OverlayTextFontInfo.bForceMonospaced = false;
+	this->OverlayTextFontInfo.bMaterialIsStencil = false;
+	this->OverlayTextFontInfo.MonospacedWidth = 1.0;
 }
 TSharedRef<SWidget> UFGCompassWidget::RebuildWidget(){ return Super::RebuildWidget(); }
 TArray<FCompassEntry>& UFGCompassWidget::GetCompassEntries(){ return *(new TArray<FCompassEntry>); }
@@ -28,7 +45,8 @@ int32 SCompassWidget::OnPaint(const FPaintArgs& Args, const FGeometry& AllottedG
 FVector2D SCompassWidget::ComputeDesiredSize(float LayoutScaleMultiplier) const{ return FVector2D(); }
 FChildren* SCompassWidget::GetChildren(){ return nullptr; }
 void SCompassWidget::OnArrangeChildren(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const{ }
-void SCompassWidget::DrawEntry(const FVector2f& RootLocation, const FCompassEntry& Entry, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32& LayerId){ }
+void SCompassWidget::DrawEntry(const FVector2f& RootLocation, FCompassEntry& Entry, const FGeometry& AllottedGeometry, const FSlateFontInfo& OverlayTextFont, FSlateWindowElementList& OutDrawElements, int32& LayerId){ }
 void SCompassWidget::DrawEntrySpecialEffect(const FVector2f& RootLocation, const FCompassEntry& Entry, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32& LayerId){ }
 FVector3f SCompassWidget::CalculateBlurParametersFromStrength(float blurStrength){ return FVector3f(); }
-void SCompassWidget::UpdateEntryTextRenderData(FCompassEntry& Entry, const FSlateFontInfo& FontInfo){ }
+void SCompassWidget::ConditionalUpdateEntryTextRenderData(const FText& Text, FCompassCachedTextRenderInfo& TextRenderInfo, const FGeometry& AllottedGeometry, const FSlateFontInfo& Font){ }
+void SCompassWidget::UpdateEntryTextRenderData(const FText& Text, FCompassCachedTextRenderInfo& TextRenderInfo, const FSlateFontInfo& FontInfo){ }

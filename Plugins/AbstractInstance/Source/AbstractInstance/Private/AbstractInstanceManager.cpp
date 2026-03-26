@@ -16,7 +16,7 @@
 #include "Engine/World.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
-#include "Private/ScenePrivate.h"
+#include "Engine/OverlapResult.h"
 
 static TAutoConsoleVariable<int32> CVarAllowLazySpawning(
 	TEXT("lightweightinstances.AllowLazySpawn"),
@@ -640,7 +640,7 @@ void AAbstractInstanceManager::RemoveInstance( FInstanceOwnerHandlePtr& Handle )
 	EditorCheck( Handle.IsValid() );
 	
 	// Handle redirects.
-	UHierarchicalInstancedStaticMeshComponent* Component = Handle->GetInstanceComponent();
+	ULightweightHierarchicalInstancedStaticMeshComponent* Component = Handle->GetInstanceComponent();
 	check(Component);
 
 	const FName KeyName = BuildUniqueName( Component );
@@ -747,7 +747,7 @@ bool AAbstractInstanceManager::ResolveOverlap( const FOverlapResult& Result, FIn
 	return false;
 }
 
-const UHierarchicalInstancedStaticMeshComponent* AAbstractInstanceManager::GetHandleInfo( const FInstanceHandle& Handle, int32& OutInstanceID )
+const ULightweightHierarchicalInstancedStaticMeshComponent* AAbstractInstanceManager::GetHandleInfo( const FInstanceHandle& Handle, int32& OutInstanceID )
 {
 	OutInstanceID = Handle.HandleID;
 	return Handle.GetInstanceComponent();
@@ -763,10 +763,13 @@ void AAbstractInstanceManager::SetCustomPrimitiveDataOnHandle( const FInstanceOw
 	{
 		if( FPrimitiveSceneProxy* sceneProxy = Handle->GetInstanceComponent()->SceneProxy )
 		{
-			if( sceneProxy->HasPerInstanceCustomData() )
+			if( sceneProxy->HasInstanceDataBuffers() )
 			{
-				const int32 PrevNumCustomDataFloats = sceneProxy->GetInstanceSceneData().Num() ? sceneProxy->GetInstanceCustomData().Num() / sceneProxy->GetInstanceSceneData().Num() : Values.Num();
-				Handle->GetInstanceComponent()->InstanceUpdateCmdBuffer.NumCustomDataFloats = PrevNumCustomDataFloats;
+				const FInstanceSceneDataBuffers* InstanceSceneDataBuffers = sceneProxy->GetInstanceSceneDataBuffers();
+				const int32 PrevNumCustomDataFloats = InstanceSceneDataBuffers->GetNumInstances()
+									? InstanceSceneDataBuffers->GetReadView().InstanceCustomData.Num() / InstanceSceneDataBuffers->GetNumInstances()
+									: Values.Num();
+				Handle->GetInstanceComponent()->SetNumCustomDataFloats(PrevNumCustomDataFloats);
 				Handle->GetInstanceComponent()->MarkRenderInstancesDirty();
 			}
 		}

@@ -59,8 +59,8 @@ void AFGRailroadSubsystem::AddTrainStation( AFGBuildableRailroadStation* station
 void AFGRailroadSubsystem::UpdateTrainStation( AFGBuildableRailroadStation* station){ }
 void AFGRailroadSubsystem::RemoveTrainStation( AFGBuildableRailroadStation* station){ }
 void AFGRailroadSubsystem::GetTrainStations(int32 trackID, TArray<  AFGTrainStationIdentifier* >& out_stations) const{ }
+void AFGRailroadSubsystem::SortTrainStations(TArray<class AFGTrainStationIdentifier*>& stations) const{ }
 void AFGRailroadSubsystem::GetAllTrainStations(TArray<  AFGTrainStationIdentifier* >& out_stations) const{ }
-void AFGRailroadSubsystem::UpdateCargoPlatformPowerConnection(int32 trackGraphID,  AFGBuildableTrainPlatformCargo* cargoPlatform){ }
 bool AFGRailroadSubsystem::MoveTrackPosition( FRailroadTrackPosition& position, float delta, float& out_movedDelta, float endStopDistance){ return bool(); }
 void AFGRailroadSubsystem::AddTrack( AFGBuildableRailroadTrack* track){ }
 void AFGRailroadSubsystem::RemoveTrack( AFGBuildableRailroadTrack* track){ }
@@ -75,8 +75,12 @@ void AFGRailroadSubsystem::ToggleBlockVisualizationAlways(bool enabled){ }
 FLinearColor AFGRailroadSubsystem::GetBlockVisualizationColor(int32 forSignalBlockID){ return FLinearColor(); }
 void AFGRailroadSubsystem::Debug_MarkAllGraphsAsChanged(){ }
 void AFGRailroadSubsystem::Debug_MarkAllGraphsForFullRebuild(){ }
+void AFGRailroadSubsystem::Debug_VisualizeSignalBlocks(){ }
+void AFGRailroadSubsystem::Debug_VisualizeSignalReservations(){ }
+void AFGRailroadSubsystem::Debug_VisualizeTrackConnections(){ }
 void AFGRailroadSubsystem::ValidateAndFixupAllRailroadConnections(){ }
 void AFGRailroadSubsystem::Multicast_OnTrainsCollided_Implementation(class AFGTrain* first, class AFGTrain* second){ }
+void AFGRailroadSubsystem::PostLoadGameWarmup(){ }
 void AFGRailroadSubsystem::TickTrackGraphs(float dt){ }
 void AFGRailroadSubsystem::TickPendingCollisions(){ }
 void AFGRailroadSubsystem::TickBlockVisualization(){ }

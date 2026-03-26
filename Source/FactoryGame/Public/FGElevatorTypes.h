@@ -1,11 +1,11 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-
 #include "FactoryGame.h"
 #include "FGIconDatabaseSubsystem.h"
 #include "AkInstancedGeometryComponent.h"
 #include "FGUseableInterface.h"
+#include "Online/PlayerInfoCache.h"
 
 #include "FGElevatorTypes.generated.h"
 
@@ -19,16 +19,16 @@ class FACTORYGAME_API UFGBuildableElevatorSparseData : public UObject
 public:
 	
 	UPROPERTY(EditDefaultsOnly)
-	UStaticMesh* mHeightSegment1m;
+	TObjectPtr<UStaticMesh> mHeightSegment1m;
 
 	UPROPERTY(EditDefaultsOnly)
-	UStaticMesh* mHeightSegment4m;
+	TObjectPtr<UStaticMesh> mHeightSegment4m;
 	
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mTopMesh;
+	TObjectPtr<UStaticMesh> mTopMesh;
 	
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mBottomMesh;
+	TObjectPtr<UStaticMesh> mBottomMesh;
 
 	UPROPERTY( EditDefaultsOnly )
 	TSubclassOf< class AFGElevatorCabin > mElevatorCabinClass;
@@ -148,7 +148,7 @@ struct FACTORYGAME_API FElevatorFloorStopInfo
 		}
 		else
 		{
-			FloorName = FString::Printf( L"%im", static_cast<int32>(Height / 100.f) );
+			FloorName = FString::Printf( TEXT("%im"), static_cast<int32>(Height / 100.f) );
 		}
 	}
 
@@ -156,7 +156,7 @@ struct FACTORYGAME_API FElevatorFloorStopInfo
 	FORCEINLINE bool operator!=( const FElevatorFloorStopInfo& other ) const { return !( *this == other); }
 	
 	UPROPERTY( BlueprintReadOnly, SaveGame )
-	class AFGBuildableElevatorFloorStop* FloorStop = nullptr;
+	TObjectPtr<class AFGBuildableElevatorFloorStop> FloorStop = nullptr;
 	
 	UPROPERTY( BlueprintReadOnly, SaveGame )
 	FString FloorName;
@@ -174,6 +174,11 @@ struct FACTORYGAME_API FElevatorFloorStopInfo
 	UPROPERTY( Transient )
 	TObjectPtr< UTexture2D > CachedIconTexture;
 	
+	//<FL>[MartinC]
+	UPROPERTY( SaveGame, BlueprintReadWrite )
+	FPlayerInfoHandle LastEditedBy;
+	//</FL>
+
 	static const FElevatorFloorStopInfo EmptyFloor;
 };
 

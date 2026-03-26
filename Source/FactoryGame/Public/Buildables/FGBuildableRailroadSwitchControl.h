@@ -45,8 +45,7 @@ public:
 	//Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
-	virtual	void SetupForSignificance() override;
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	//End IFGSignificanceInterface
 
 	// Begin IFGSaveInterface
@@ -125,16 +124,16 @@ private:
 protected:
 	/** Mesh for this switch, must be using the signal factory material for it to work. */
 	UPROPERTY( VisibleAnywhere )
-	class UFGColoredInstanceMeshProxy* mSwitchComponent;
+	TObjectPtr<class UFGColoredInstanceMeshProxy> mSwitchComponent;
 	
 private:
 	/** Connections we control, might contain null if the track is removed but not the control (mods and save game editing). */
 	UPROPERTY( SaveGame, Replicated )
-	TArray< class UFGRailroadTrackConnectionComponent* > mControlledConnections;
+	TArray< TObjectPtr<class UFGRailroadTrackConnectionComponent> > mControlledConnections;
 
 	/** LEGACY: Only keeping this here for pre 1.1 switches. */
 	UPROPERTY( SaveGame )
-	class UFGRailroadTrackConnectionComponent* mControlledConnection_DEPRECATED;
+	TObjectPtr<class UFGRailroadTrackConnectionComponent> mControlledConnection_DEPRECATED;
 
 	/** Current switch position read from the controlled connection. */
 	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )

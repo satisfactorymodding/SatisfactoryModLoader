@@ -105,7 +105,7 @@ protected:
 	int32 mNumExtraCustomizationData{4};
 
 	UPROPERTY(EditDefaultsOnly)
-	UFGColoredInstanceMeshProxy* mMeshMesh;
+	TObjectPtr<UFGColoredInstanceMeshProxy> mMeshMesh;
 	
 private:
 	float GetNetPowerInput() const;
@@ -126,7 +126,7 @@ private:
 private:
 	/** Battery info */
 	UPROPERTY()
-	class UFGBatteryInfo* mBatteryInfo;
+	TObjectPtr<class UFGBatteryInfo> mBatteryInfo;
 
 	UPROPERTY( ReplicatedUsing = OnRep_Status )
 	EBatteryStatus mBatteryStatus;

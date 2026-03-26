@@ -334,11 +334,14 @@ public:
 
 	/** Updates materials based on the camera mode */
 	void UpdateMaterialsFromCameraMode();
+
+	void OnSetAudioVolumeDelayCompleted();
 	
 protected:
 	void SetPlaybackStateFlag( EBoomBoxPlaybackStateBitfield flag, bool set );
 	
 	void ApplyTurboBassGameplayEffects( class AFGCharacterPlayer* character );
+	void OnSongDurationTimerElapsed();
 	
 	/** Stops playback */
 	void SetAudioVolumeLocally( float normalizedVolume, bool notifyListeners = true );
@@ -361,16 +364,16 @@ protected:
 	void TapeTextureLoadedAsync( UTexture2D *texture );
 
 	UPROPERTY( EditDefaultsOnly, Category = BoomBox )
-	class UAkRtpc* mVolumeRtpc = nullptr;
+	TObjectPtr<class UAkRtpc> mVolumeRtpc = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, Category = BoomBox )
-	class UAkRtpc* mTurboBassOutputRTPC = nullptr;
+	TObjectPtr<class UAkRtpc> mTurboBassOutputRTPC = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, Category = BoomBox )
-	class UAkRtpc* mTurboBassRTPC = nullptr;
+	TObjectPtr<class UAkRtpc> mTurboBassRTPC = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, Category = BoomBox )
-	class UAkAudioEvent* mTurboBassAudioEvent = nullptr;
+	TObjectPtr<class UAkAudioEvent> mTurboBassAudioEvent = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, Category = BoomBox )
 	float mTurboBassBlockingThreshold = -48.f;
@@ -382,18 +385,18 @@ protected:
 	int32 mTapeMaterialIndex = 0;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
-	class UAkComponent* mAkComponent = nullptr;
+	TObjectPtr<class UAkComponent> mAkComponent = nullptr;
 
 	/** Boombox mesh */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Boombox" )
-	USkeletalMeshComponent* mMesh = nullptr;
+	TObjectPtr<USkeletalMeshComponent> mMesh = nullptr;
 
 	/** Separate scene root component, needed to allow the mesh transform to be changed in editor */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Boombox" )
-	USceneComponent* mSceneRoot = nullptr;
+	TObjectPtr<USceneComponent> mSceneRoot = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Boombox" )
-	UBoxComponent* mBoxCollision = nullptr;
+	TObjectPtr<UBoxComponent> mBoxCollision = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Boombox" )
 	FTransform mBaseTransformEquipped = FTransform::Identity;
@@ -426,7 +429,7 @@ protected:
 	float mBoostJumpVelocityRange = 100.f;
 
 	UPROPERTY( EditDefaultsOnly, Category="Equipment" )
-	UMaterialInstance* mFirstPersonTapeMaterial;
+	TObjectPtr<UMaterialInstance> mFirstPersonTapeMaterial;
 	
 	/** Each Mesh Component should have an entry here to remap its materials to the First person material (one with the panini switch enabled) */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment")
@@ -437,10 +440,10 @@ protected:
 	TMap< FName, FFirstPersonMaterialArray > mOriginalMaterials;
 	
 	UPROPERTY()
-	class UMaterialInstanceDynamic* mCachedMaterialInstance = nullptr;
+	TObjectPtr<class UMaterialInstanceDynamic> mCachedMaterialInstance = nullptr;
 
 	UPROPERTY()
-	class UMaterialInstanceDynamic* mCachedMaterialInstance1p = nullptr;
+	TObjectPtr<class UMaterialInstanceDynamic> mCachedMaterialInstance1p = nullptr;
 	
 	/**
 	 * State listeners subscribed to this boombox. 
@@ -546,11 +549,16 @@ private:
 	EBoomBoxRepeatMode mRepeatMode = EBoomBoxRepeatMode::RepeatTape;
 
 	UPROPERTY( SaveGame, Replicated )
-	class AFGCharacterPlayer* mOwningCharacter = nullptr;
+	TObjectPtr<class AFGCharacterPlayer> mOwningCharacter = nullptr;
 
 	UPROPERTY()
-	AFGEquipmentBoomBox* mEquipmentActor = nullptr;
+	TObjectPtr<AFGEquipmentBoomBox> mEquipmentActor = nullptr;
 
 	UPROPERTY()
 	TSubclassOf< UFGTapeData > mNextTape;
+
+	//To prevent network spam, we will delay the actual volume change for other players, and send only the last requested value
+	FTimerHandle mSetAudioVolumeTimerHandle;
+	float mPendingAudioVolumeToSet = 1.f;
+	AFGCharacterPlayer* mPendingAudioVolumeInstigator { nullptr };
 };

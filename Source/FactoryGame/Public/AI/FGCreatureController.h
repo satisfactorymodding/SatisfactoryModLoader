@@ -52,7 +52,7 @@ struct FFGCreatureAggroData
 
 	/** The target this data belongs to. */
 	UPROPERTY( BlueprintReadOnly )
-	AActor* Target = nullptr;
+	TObjectPtr<AActor> Target = nullptr;
 
 	/** The aggro level of this target. */
 	UPROPERTY( BlueprintReadOnly )
@@ -70,7 +70,7 @@ struct FFGCreatureVisibilityData
 	
 	/** The target this data belongs to. */
 	UPROPERTY( BlueprintReadOnly )
-	AActor* Target = nullptr;
+	TObjectPtr<AActor> Target = nullptr;
 
 	/** 0-1 value describing how visible the target is. */
 	UPROPERTY( BlueprintReadOnly )
@@ -100,13 +100,13 @@ struct FFGCreaturePathToTarget
 	{}
 
 	UPROPERTY( BlueprintReadOnly )
-	AActor* Target = nullptr;
+	TObjectPtr<AActor> Target = nullptr;
 
 	UPROPERTY( BlueprintReadOnly )
 	float TimeCached = 0.f;
 
 	UPROPERTY( BlueprintReadOnly )
-	UNavigationPath* PathObject = nullptr;
+	TObjectPtr<UNavigationPath> PathObject = nullptr;
 
 	UPROPERTY( BlueprintReadOnly )
 	TSubclassOf< UNavigationQueryFilter > QueryFilter = nullptr;
@@ -119,7 +119,7 @@ struct FFGRecentDamageTaken
 
 	/** What kind of damage that was received. */
 	UPROPERTY( BlueprintReadOnly )
-	const class UFGDamageType* DamageType = nullptr;
+	TObjectPtr<const class UFGDamageType> DamageType = nullptr;
 
 	/** When the damage was received. */
 	UPROPERTY( BlueprintReadOnly )
@@ -131,11 +131,11 @@ struct FFGRecentDamageTaken
 
 	/** What dealt damage to us. */
 	UPROPERTY( BlueprintReadOnly )
-	AActor* DamageCauser = nullptr;
+	TObjectPtr<AActor> DamageCauser = nullptr;
 
 	/** Who instigated the damage dealt to us. */
 	UPROPERTY( BlueprintReadOnly )
-	AController* DamageInstigator = nullptr;
+	TObjectPtr<AController> DamageInstigator = nullptr;
 
 	/** The location we were at when we were damaged. */
 	UPROPERTY( BlueprintReadOnly )
@@ -465,7 +465,7 @@ public:
 protected:
 	/** Current action being performed by the creature. */
 	UPROPERTY( BlueprintReadOnly, Category = "AI" )
-	class UFGCreatureAction* mCurrentAction;
+	TObjectPtr<class UFGCreatureAction> mCurrentAction;
 	
 	/** Will be alerted by noise which is within this distance. */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
@@ -480,13 +480,13 @@ protected:
 
 	/** Controllers who have been responsible for damaging us recently. */
 	UPROPERTY()
-	TArray< AController* > mAggressors;
+	TArray< TObjectPtr<AController> > mAggressors;
 
 	UPROPERTY()
 	TArray< FFGCreatureVisibilityData > mVisibleTargets;
 
 	UPROPERTY()
-	AActor* mCurrentTarget;
+	TObjectPtr<AActor> mCurrentTarget;
 
 	UPROPERTY()
 	TArray< FFGCreaturePathToTarget > mCachedPathToTargets;
@@ -520,7 +520,7 @@ protected:
 
 private:
 	UPROPERTY()
-	class AFGCreature* mControlledCreature;
+	TObjectPtr<class AFGCreature> mControlledCreature;
 
 	UPROPERTY()
 	FTimerHandle mHealthRegenHandle;

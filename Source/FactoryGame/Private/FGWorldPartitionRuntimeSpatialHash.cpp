@@ -4,8 +4,8 @@
 
 #if WITH_EDITOR
 uint32 UFGWorldPartitionRuntimeSpatialHash::GetGridCellSize(FName GridName){ return uint32(); }
-bool UFGWorldPartitionRuntimeSpatialHash::PopulateGeneratorPackageForCook(const TArray<FWorldPartitionCookPackage*>& PackagesToCook, TArray<UPackage*>& OutModifiedPackage){ return bool(); }
-#endif 
+void UFGWorldPartitionRuntimeSpatialHash::OnPreparedGeneratorPackagesForCook(){ Super::OnPreparedGeneratorPackagesForCook(); }
+#endif
 bool UFGWorldPartitionRuntimeSpatialHash::InjectExternalStreamingObject(URuntimeHashExternalStreamingObjectBase* ExternalStreamingObject){ return bool(); }
 bool UFGWorldPartitionRuntimeSpatialHash::RemoveExternalStreamingObject(URuntimeHashExternalStreamingObjectBase* ExternalStreamingObject){ return bool(); }
 UWorldPartitionRuntimeCell* UFGWorldPartitionRuntimeSpatialHash::FindCellByName(FName cellName) const{ return nullptr; }

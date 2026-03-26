@@ -131,19 +131,19 @@ public:
 	//@todo-trains private
 	/** Light weight representation about this station, the railroad subsystem is responsible for this. */
 	UPROPERTY( ReplicatedUsing = OnRep_StationIdentifier )
-	class AFGTrainStationIdentifier* mStationIdentifier;
+	TObjectPtr<class AFGTrainStationIdentifier> mStationIdentifier;
 
 private:
 	/** When docked, this station will fill this array with every potential platform in its tail. 1 for each train segment */
 	UPROPERTY( SaveGame )
-	TArray< class AFGBuildableTrainPlatform* > mDockedPlatformList;
+	TArray< TObjectPtr<class AFGBuildableTrainPlatform> > mDockedPlatformList;
 
 	UPROPERTY( SaveGame )
 	FTrainDockingRuleSet mCurrentDockedWithRuleSet;
 
 	/** Reference to the docked locomotive. */
 	UPROPERTY( SaveGame )
-	class AFGLocomotive* mDockingLocomotive;
+	TObjectPtr<class AFGLocomotive> mDockingLocomotive;
 
 	/** How long has the current train been docked for at this station? */
 	UPROPERTY( SaveGame )
@@ -153,8 +153,8 @@ private:
 	float mDockedPositionOffset;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTexture;
+	TObjectPtr<class UTexture2D> mActorRepresentationTexture;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Representation")
-	UMaterialInterface* mCompassMaterial;
+	TObjectPtr<UMaterialInterface> mCompassMaterial;
 };

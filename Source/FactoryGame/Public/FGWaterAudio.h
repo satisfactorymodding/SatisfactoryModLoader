@@ -16,7 +16,7 @@ struct FACTORYGAME_API FPawnImpactAudio
 
 	/** Event to post if the pawn has the specified velocity */
 	UPROPERTY( EditAnywhere, Category = "Audio" )
-	class UAkAudioEvent* ImpactEvent = nullptr;
+	TObjectPtr<class UAkAudioEvent> ImpactEvent = nullptr;
 };
 
 UCLASS(Abstract,Blueprintable)

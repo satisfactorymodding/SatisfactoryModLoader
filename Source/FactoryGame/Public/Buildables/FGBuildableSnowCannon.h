@@ -26,8 +26,8 @@ public:
 	//Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
-	virtual void SetInitialState(bool bState) override { mIsSignificant = bState; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
+	virtual void SetInitialSignificanceState_Implementation(bool bState) override { mIsSignificant = bState; }
 	//End IFGSignificanceInterface
 
 	UFUNCTION( BlueprintPure, Category = "Significance" )
@@ -46,10 +46,10 @@ private:
 	
 protected:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Snow Cannon" )
-	class UFGColoredInstanceMeshProxy* mBaseMeshComponent;
+	TObjectPtr<class UFGColoredInstanceMeshProxy> mBaseMeshComponent;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Snow Cannon" )
-	class UFGColoredInstanceMeshProxy* mHeadMeshComponent;
+	TObjectPtr<class UFGColoredInstanceMeshProxy> mHeadMeshComponent;
 	
 private:
 	/** The range to keep the snow cannon in significance */

@@ -73,7 +73,7 @@ private:
 private:
 	/** The fracking core node through which this satellite node is activated */
 	UPROPERTY( EditInstanceOnly, Category = "Resources" )
-	class AFGResourceNodeFrackingCore* mCore;
+	TObjectPtr<class AFGResourceNodeFrackingCore> mCore;
 
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_State )
 	EFrackingSatelliteState mState;

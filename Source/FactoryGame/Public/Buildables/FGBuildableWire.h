@@ -16,7 +16,7 @@ struct FWireInstance
 	FWireInstance() = default;
 	
 	UPROPERTY()
-	UStaticMeshComponent* WireMesh = {};
+	TObjectPtr<UStaticMeshComponent> WireMesh = {};
 
 	UPROPERTY( SaveGame )
 	FVector Locations[2] = { FVector::ZeroVector, FVector::ZeroVector };
@@ -139,7 +139,7 @@ protected:
 
 	/** Mesh used to visualize the power line */
 	UPROPERTY( EditDefaultsOnly, Category = "Wire" )
-	UStaticMesh* mWireMesh;
+	TObjectPtr<UStaticMesh> mWireMesh;
 
 private:
 	friend class AFGWireHologram;

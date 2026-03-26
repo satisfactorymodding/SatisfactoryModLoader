@@ -2,5 +2,5 @@
 
 #include "BlueprintArchiveObjectTOCProxy.h"
 
-FBlueprintArchiveObjectTOCProxy::FBlueprintArchiveObjectTOCProxy(FArchive& inInnerArchive,  UWorld* world, FTransform newOrigin) : FArchiveProxy(inInnerArchive) { }
+FBlueprintArchiveObjectTOCProxy::FBlueprintArchiveObjectTOCProxy(FArchive& inInnerArchive, class UWorld* world, const FTransform& newOrigin) : FArchiveProxy(inInnerArchive), mWorld(world) { }
 FArchive& FBlueprintArchiveObjectTOCProxy::operator<<( UObject*& Res){ return *(new FArchive); }

@@ -6,4 +6,4 @@ void FOnlineIntegrationEditorModule::StartupModule() {
 void FOnlineIntegrationEditorModule::ShutdownModule() {
 }
 
-IMPLEMENT_GAME_MODULE(FOnlineIntegrationEditorModule, OnlineIntegrationModule);
+IMPLEMENT_GAME_MODULE(FOnlineIntegrationEditorModule, OnlineIntegrationEditor);

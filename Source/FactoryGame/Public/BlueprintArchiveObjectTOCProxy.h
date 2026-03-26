@@ -13,7 +13,7 @@
 class FACTORYGAME_API FBlueprintArchiveObjectTOCProxy : public FArchiveProxy
 {
 public:
-	FBlueprintArchiveObjectTOCProxy( FArchive& inInnerArchive, class UWorld* world, FTransform newOrigin );
+	FBlueprintArchiveObjectTOCProxy( FArchive& inInnerArchive, class UWorld* world, const FTransform& newOrigin );
 
 	/** Found a new object, save metadata about it if saving, spawn or find the object if load */
 	virtual FArchive& operator<<( class UObject*& Res ) override;

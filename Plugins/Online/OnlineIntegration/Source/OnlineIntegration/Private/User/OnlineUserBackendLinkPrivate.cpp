@@ -4,7 +4,7 @@
 
 #include "GameplayTagContainerViewModel.h"
 
-void UOnlineUserBackendLinkPrivate::Initialize(UOnlineIntegrationBackend* OnlineBackend){ }
+void UOnlineUserBackendLinkPrivate::Initialize(UOnlineIntegrationBackend* onlineBackend){ }
 void UOnlineUserBackendLinkPrivate::SetLoginStatus(ECommonUserLoginStatus InLoginStatus){ }
 void UOnlineUserBackendLinkPrivate::SetNickname(const FString& InNickname){ }
 void UOnlineUserBackendLinkPrivate::SetAvatar(const FPlayerAvatar& InAvatar){ }

@@ -29,6 +29,7 @@ void AFGProximitySubsystem::RemoveFactoryBuildingToProximitySystem(FVector Locat
 void AFGProximitySubsystem::OnEnteredMapArea_Implementation( AFGPlayerControllerBase* playerController, TSubclassOf<  UFGMapArea > newArea){ }
 void AFGProximitySubsystem::OnPawnChanged_Implementation( APawn* newPawn){ }
 UParticleSystem* AFGProximitySubsystem::GetParticleSystemFromMapArea(TSubclassOf<  UFGMapArea > inArea){ return nullptr; }
+UNiagaraSystem* AFGProximitySubsystem::GetNiagaraParticleSystemFromMapArea(TSubclassOf<class UFGMapArea> inArea){ return nullptr; }
 void AFGProximitySubsystem::SpawnPooledDecal(const UObject* WorldContextObject,  UMaterialInterface* DecalMaterial, FVector DecalSize, FVector Location, FRotator Rotation , float LifeSpan){ }
 void AFGProximitySubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGProximitySubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }

@@ -19,9 +19,6 @@ public:
 	static class UFGFactorySettings* GetFactorySettingsCDO();
 
 	UFUNCTION( BlueprintPure, Category = "Settings" )
-	static class UFGDropPodSettings* GetDropPodSettingsCDO();
-
-	UFUNCTION( BlueprintPure, Category = "Settings" )
 	static class UFGHardDriveSettings* GetHardDriveSettingsCDO();
 
 	UFUNCTION( BlueprintPure, Category = "Settings" )
@@ -30,10 +27,6 @@ public:
 	/** Settings for resources */
 	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
 	TSoftClassPtr< class UFGFactorySettings > mFactorySettings;
-	
-	/** Settings for drop pods */
-	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )
-	TSoftClassPtr< class UFGDropPodSettings > mDropPodSettings;
 
 	/** Settings for Hard Drive Research */
 	UPROPERTY( Config, EditDefaultsOnly, Category = "Settings" )

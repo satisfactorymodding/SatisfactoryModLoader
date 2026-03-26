@@ -27,13 +27,14 @@ public:
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	// End AActor interface
 
 	/** Determine what type of resource node this is by a random factor */
 	void RollResourceType();
 
 	/** Tries to up the resource type to be the one specified in override variable */
-	void TrySetDesiredResourceType();
+	void TrySetDesiredResourceType( TSubclassOf< UFGResourceDescriptor > resourceDescriptor );
 
 	/** Sets up all the data for this node */
 	void SetupResourceInfo();
@@ -55,19 +56,31 @@ public:
 	/**How much to mine per cycle */
 	UFUNCTION( BlueprintPure, Category = "Deposit" )
 	FORCEINLINE int32 GetMineAmount() { return mMineAmount; }
+
+	void SetOverrideResourceClass( const TSubclassOf< UFGResourceDescriptor > resourceDescriptor );
+
+	const TSoftObjectPtr< AFGResourceNode > GetResourceNodeActor() const { return mResourceNodeActor; }
+	void SetResourceNodeActor( const TSoftObjectPtr< AFGResourceNode > resourceNodeActor );
+	
 protected:
+	/** Called to multicast depletion effect VFX and sound */
+	UFUNCTION( NetMulticast, Unreliable )
+	void Multicast_PlayDepletedEffect();
+	
 	/** Called on client when resource deposit index is set so that we can correctly setup the mesh / material*/
 	UFUNCTION()
 	void OnRep_ResourceDepositTableIndex();
-	
-	/** Called on client when resource deposit has been emptied */
-	UFUNCTION()
-	void OnRep_ResourceDepositEmptied();
 
 	virtual void InitRadioactivity() override;
 	virtual void UpdateRadioactivity() override;
 
+	/** If the deposit sits on a larger node this should point to that node. */
+	UPROPERTY( EditInstanceOnly )
+	TSoftObjectPtr< AFGResourceNode > mResourceNodeActor;
+	
 private:
+	bool IsDepositTableIndexValid() const;
+	
 	/** Valid if mLootTableIndex is not INDEX_NONE */
 	UPROPERTY( )
 	FResourceDepositPackage mResourceDepositPackage;
@@ -77,7 +90,7 @@ private:
 	int32 mResourceDepositTableIndex;
 
 	/** is deposit emptied */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ResourceDepositEmptied )
+	UPROPERTY( SaveGame, Replicated )
 	bool mIsEmptied;
 
 	/** How much to mine per cycle */
@@ -85,12 +98,12 @@ private:
 	int32 mMineAmount;
 
 	UPROPERTY( Transient )
-	bool mHasInitializedVisuals;
+	bool mHasInitializedVisuals = false;
 	
 public:
 	/** The mesh we use for displaying the resource deposit */
 	UPROPERTY( BlueprintReadWrite, VisibleAnywhere, Category = "Resources" )
-	UStaticMeshComponent* mDepositMeshComponent;
+	TObjectPtr<UStaticMeshComponent> mDepositMeshComponent;
 
 	UPROPERTY( EditInstanceOnly, Category = "Resources" )
 	TSubclassOf< class UFGResourceDescriptor > mOverrideResourceClass;

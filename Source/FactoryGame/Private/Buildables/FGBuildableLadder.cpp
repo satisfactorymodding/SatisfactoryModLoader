@@ -24,6 +24,7 @@ void AFGBuildableLadder::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableLadder, mNumSegments);
 }
+bool AFGBuildableLadder::ShouldBeConsideredForBase_Implementation(){ return Super::ShouldBeConsideredForBase_Implementation(); }
 int32 AFGBuildableLadder::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableLadder::GetClearanceData_Implementation(TArray< FFGClearanceData >& out_data) const{ }
 void AFGBuildableLadder::SetNumSegments(int32 Num, bool ForceUpdate){ }

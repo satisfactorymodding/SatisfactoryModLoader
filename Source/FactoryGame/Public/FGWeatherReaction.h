@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "FGSaveInterface.h"
 
 #include "Engine/EngineTypes.h"
 #include "GameFramework/Actor.h"
@@ -13,11 +14,20 @@
 /**
  * 
  */
-
 class AFGSkySphere;
 
+/* Weather states for replication.*/
+UENUM()
+enum class EWeatherInterpState : uint8
+{
+	EWeatherInterpState_Undefined,
+	EWeatherInterpState_Begin,
+	EWeatherInterpState_Active,
+	EWeatherInterpState_Ending
+};
+
 UCLASS(Blueprintable)
-class FACTORYGAME_API AFGWeatherReaction : public AActor
+class FACTORYGAME_API AFGWeatherReaction : public AActor, public IFGSaveInterface
 {
 	GENERATED_BODY()
 
@@ -25,17 +35,28 @@ class FACTORYGAME_API AFGWeatherReaction : public AActor
 	
 public:
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	UFUNCTION( BlueprintNativeEvent )
-	void StartWeatherState( AFGSkySphere* SkySphere );
 
-	/* Will auto destroy once done. */
-	UFUNCTION( BlueprintNativeEvent )
-	void EndWeatherState( AFGSkySphere* SkySphere );
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
+	// Begin IFGSaveInterface
+	virtual bool ShouldSave_Implementation() const override { return true; }
+	virtual bool NeedTransform_Implementation() override { return false; }
+	// End
+	
 	UFUNCTION(BlueprintPure, Category = "Weather")
 	AFGSkySphere* GetSkySphere() const { return mSkySphere; }
 
+	// Begins the weather state, should only be called by server / listen server.
+	void ServerBeginWeatherState();
+	
+	// Called by sky-sphere when interpolation into the weather state is finished, should only be called by server / listen server.
+	void ServerFinishedEnterState();
+	
+	// Ends the weather state, should only be called by server / listen server.
+	void ServerEndWeatherState();
+	
 protected:
 	UFUNCTION( BlueprintImplementableEvent )
 	void TransitionBeginWeatherState( float Dt, float Percentage );
@@ -44,19 +65,39 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent )
 	void TransitionEndWeatherState( float Dt, float Percentage );
 
-	UFUNCTION( BlueprintImplementableEvent )
+	UFUNCTION( BlueprintNativeEvent )
 	void OnTransitionFinished( bool bEventFinished );
+
+	UFUNCTION( BlueprintNativeEvent )
+	void StartWeatherState( AFGSkySphere* SkySphere );
+
+	/* Will auto destroy once done. */
+	UFUNCTION( BlueprintNativeEvent )
+	void EndWeatherState( AFGSkySphere* SkySphere );
+	
+	/* seconds the transition takes.*/
+	UPROPERTY( EditDefaultsOnly,BlueprintReadOnly )
+	float TransitionTime;
 	
 private:
-	/* seconds the transition takes.*/
-	UPROPERTY( EditDefaultsOnly )
-	float TransitionTime;
+	UFUNCTION( )
+	void OnRep_OnStateUpdated( EWeatherInterpState OldState );
 
-	float mSpawnTime;
-	
-	UPROPERTY()
-	AFGSkySphere* mSkySphere;
+	UPROPERTY( ReplicatedUsing = OnRep_OnStateUpdated )
+	EWeatherInterpState mCurrentState = EWeatherInterpState::EWeatherInterpState_Undefined;
+		
+
+	/* Outer sky sphere actor.*/
+	UPROPERTY() 
+	TObjectPtr<AFGSkySphere> mSkySphere = {};
 
 	/* is it stopping? or starting*/
 	bool bIsWindingDown;
+
+	// TODO handle replication for this.
+	/* Time it spawned in the world*/
+	float mSpawnTime = 0;
+
+	/* World time the moment the weather effect started to fade out.*/
+	float mEndStartTime = 0;
 };

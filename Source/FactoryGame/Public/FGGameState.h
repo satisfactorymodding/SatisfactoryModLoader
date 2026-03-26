@@ -13,11 +13,13 @@
 #include "FGSwatchGroup.h"
 #include "FGUnlockSubsystem.h"
 #include "GameFramework/GameState.h"
-#include "LatentActions.h"
+#include "Online/PlayerInfoCache.h"
+#include "Settings/FGGameModeSettings.h"
+#include "FGGameMode.h"
 #include "FGGameState.generated.h"
 
 class UOnlineUserInfo;
-struct FLocalUserNetIdBundle;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FVisitedMapAreaDelegate, TSubclassOf< class UFGMapArea >, mapArea );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRestartTimeNotification, float, timeLeft );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnAutoSaveTimeNotification, float, timeLeft );
@@ -28,6 +30,37 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnClientSubsystemsIsValid );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSessionNameChanged, const FString&, sessionName );
 DECLARE_MULTICAST_DELEGATE_OneParam( FOnCreativeModeEnabled, bool );
 DECLARE_MULTICAST_DELEGATE( FOnSingleSubsystemReplicatedDelegate );
+DECLARE_MULTICAST_DELEGATE_TwoParams( FOnGameModeSettingsInitializedDelegate, AFGGameState*, IFGOptionInterface* );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCachedPlayerInfoUpdated, const FPlayerInfoHandle&, playerInfoHandle );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnActorsConstructedByPlayer, AFGCharacterPlayer*, player, TArray<AActor*>, constructedActors );
+
+UENUM( BlueprintType )
+enum class ENodeRandomizationMode : uint8
+{
+	// Default value
+	NRM_None = 0 UMETA( displayName = "None" ),
+	NRM_Strict = 1 UMETA( displayName = "Strict Randomization" ),
+	NRM_BasicReach = 2 UMETA( displayName = "Basic Resource Rich" ),
+	NRM_AdvancedRich = 3 UMETA( displayName = "Advanced Resource Rich" ),
+	NRM_FossilFuelRich = 4 UMETA( displayName = "Fossil Fuel Rich" ),
+};
+
+UENUM( BlueprintType )
+enum class ENodePuritySettings : uint8
+{
+	// Default value
+	NPS_NoChange = 0 UMETA( displayName = "No Change" ),
+	NPS_AllPure = 1 UMETA( displayName = "All Pure" ),
+	// Average
+	NPS_AllNormal = 2 UMETA( displayName = "All Normal" ),
+	NPS_AllImpure = 3 UMETA( displayName = "All Impure" ),
+	NPS_AllRandom = 4 UMETA( displayName = "All Random" ),
+	// Mostly pure
+	NPS_Increase = 5 UMETA( displayName = "Increase" ),
+	// Mostly impure
+	NPS_Decrease = 6 UMETA( displayName = "Decrease" ),
+};
+
 
 // Minigame struct for minigames like tetromino packaging game 
 USTRUCT( BlueprintType )
@@ -40,6 +73,9 @@ struct FMiniGameResult
 	
 	UPROPERTY( SaveGame, BlueprintReadWrite )
 	FString PlayerName = {};
+
+	UPROPERTY(SaveGame, BlueprintReadWrite)
+	FPlayerInfoHandle PlayerInfoHandle;
 	
 	UPROPERTY( SaveGame, BlueprintReadWrite )
 	int32 Points = 0;
@@ -75,6 +111,7 @@ public:
 /**
  * 
  */
+
 UCLASS()
 class FACTORYGAME_API AFGGameState : public AGameState, public IFGSaveInterface
 {
@@ -89,6 +126,7 @@ public:
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay( EEndPlayReason::Type EndPlayReason ) override;
 	// End AActor interface
 
 	// Begin IFGSaveInterface
@@ -191,9 +229,11 @@ public:
 	FORCEINLINE class AFGIconDatabaseSubsystem* GetIconDatabaseSubsystem() const { return mIconDatabaseSubsystem; }
 	FORCEINLINE class AFGWorldEventSubsystem* GetWorldEventSubsystem() const { return mWorldEventSubsystem; }
 	FORCEINLINE class AFGTestManager* GetTestManager() const { return mTestManager; }
-	
 	FORCEINLINE class AFGProjectAssembly* GetProjectAssembly() const { return mProjectAssembly; }
 	FORCEINLINE class AFGConveyorChainSubsystem* GetConveyorChainSubsystem() const { return mConveyorChainSubsystem; }
+
+	void DeserializeGameModeSetting( const FString& options );
+	static FOnGameModeSettingsInitializedDelegate OnGameModeSettingsInitialized;
 
 	/** Helper to access the actor representation manager */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Representation", meta = ( DeprecatedFunction, DeprecationMessage = "Use global getter instead" ) )
@@ -220,6 +260,10 @@ public:
 	/** Called on all players when any player enters a new map area. */
 	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Map Area", DisplayName = "OnNewMapAreaEntered" )
 	FVisitedMapAreaDelegate MapAreaVisistedDelegate;
+
+	/** Called when cached player info has been updated or a new player info has been created */
+	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Session" )
+	FOnCachedPlayerInfoUpdated OnPlayerInfoUpdated;
 
 	/** Getter for NoCost */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat" )
@@ -260,6 +304,36 @@ public:
 	/** Setter for "Turbo Build Mode" cheat */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat" )
 	void SetCheatTurboBuildMode( bool enabled );
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|GameMode" )
+	FORCEINLINE float GetEnergyCostMultiplier() const { return mEnergyCostMultiplier; }
+
+	void SetEnergyCostMultiplier( float multiplier );
+	
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|GameMode" )
+	FORCEINLINE float GetPartsCostMultiplier() const { return mPartsCostMultiplier; }
+
+	void SetPartsCostMultiplier( float multiplier );
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|GameMode" )
+	FORCEINLINE float GetSpacePartsCostMultiplier() const { return mSpacePartsCostMultiplier; }
+	
+	void SetSpacePartsCostMultiplier( float multiplier );
+	
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|GameMode" )
+	FORCEINLINE ENodeRandomizationMode GetNodeRandomization() const { return mNodeRandomization; }
+
+	void ForceNodeRandomization( ENodeRandomizationMode mode ) { mNodeRandomization = mode; }
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|GameMode" )
+	FORCEINLINE ENodePuritySettings GetNodePuritySettings() const { return mNodePuritySettings; }
+
+	void ForceNodePuritySettings( ENodePuritySettings settings ) { mNodePuritySettings = settings; }
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|GameMode" )
+	FORCEINLINE int32 GetNodeRandomizationSeed() const { return mNodeRandomizationSeed; }
+
+	void ForceNodeRandomizationSeed( int32 seed ) { mNodeRandomizationSeed = seed; }
 	
 	UFUNCTION()
 	void NotifyPlayerAdded( class AFGCharacterPlayer* inPlayer );
@@ -302,7 +376,7 @@ public:
 	void RemovePlayerColorPresetAtIndex( int32 index );
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|GlobalColorPresets" )
-	void AddPlayerColorPreset( FText presetName, FLinearColor color );
+	void AddPlayerColorPreset( FText presetName, FLinearColor color, const FPlayerInfoHandle& LastEditor);
 
 	/// End Global Color Presets
 	//////////////////////////////////////////////////////////////////////////
@@ -337,6 +411,9 @@ public:
 	/** return true if we have picked up and item of the given item class and it is marked to be remembered when picked up */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Item" )
 	bool IsItemEverPickedUp( TSubclassOf< class UFGItemDescriptor > itemClass ) const { return mPickedUpItems.Contains( itemClass ); }
+
+	/** Returns a list of all items pickups of which we have remembered */
+	FORCEINLINE const TArray<TSubclassOf<UFGItemDescriptor>>& GetAllPickedUpItems() const { return mPickedUpItems; }
 
 	/** If the given item class is marked to be remembered when picked up we store it */
 	void ItemPickedUp( TSubclassOf< class UFGItemDescriptor > itemClass );
@@ -374,15 +451,16 @@ public:
 	UFUNCTION() void OnRep_ActorRepresentationManager();
 	UFUNCTION() void OnRep_ConveyorChainSubsystem();
 	UFUNCTION() void OnRep_BlueprintSubsystem();
+	UFUNCTION() void OnRep_VehicleSubsystem();
 	
 	FORCEINLINE FString GetPublicTodoList() const { return mPublicTodoList; }
-//<FL>[KonradA] editet to support last edited by
-	FORCEINLINE TArray< FLocalUserNetIdBundle > GetPublicTodoListLastEditedBy() const { return mPublicTodoListLastEditedBy; }
+//<FL>[KonradA] edited to support last edited by
+	FORCEINLINE FPlayerInfoHandle GetPublicTodoListLastEditedBy() const { return mPublicTodoListLastEditedBy; }
 
 	// No server RPC call per se but used with server rpc from player state to update server value and spread to clients so figuerd the naming was good to separate from the other SetPublicTodoList. 
-	void Server_SetPublicTodoList( const FString& newTodoList, const TArray< FLocalUserNetIdBundle >& lastEditedBy );
+	void Server_SetPublicTodoList( const FString& newTodoList, const FPlayerInfoHandle& lastEditedBy );
 	
-	void SetPublicTodoList( const FString& newTodoList, const TArray< FLocalUserNetIdBundle >& lastEditedBy )
+	void SetPublicTodoList( const FString& newTodoList, const FPlayerInfoHandle& lastEditedBy )
 	{
 		mPublicTodoList = newTodoList;
 		//<FL>[KonradA]
@@ -398,12 +476,43 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Creative" )
 	void SetCreativeModeEnabled();
 
-	UFUNCTION( BlueprintCallable, Category = "Players" )
-	AFGPlayerState* FindPlayerStateForOnlineUser( UOnlineUserInfo* userInfo );
-
 	void BroadcastAutoSaveTimeNotification( float timeLeft ) const;
 	void BroadcastAutoSaveFinishedNotification() const;
 	void BroadcastServerRestartTimeNotification( float timeLeft ) const;
+
+	/** Updates the player info cached on the game state from the given player info snapshot received on login, and returns the player info handle for the player logged in platform */
+	FPlayerInfoHandle UpdatePlayerInfoFromPlayerLoginSnapshot( const FPlayerInfoSnapshot& playerInfoSnapshot );
+
+	/** Maps backend link to the player info handle stored in the player state */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Online" )
+	bool FindPlayerDataFromCacheByBackendLink( UOnlineUserBackendLink* backendLink, FPlayerInfoHandle& out_handle ) const;
+
+	/** Attempts to find a player info handle associated with the given account ID. Returns invalid info handle if not found */
+	FPlayerInfoHandle FindPlayerInfoHandleByAccountId( UE::Online::FAccountId accountId ) const;
+
+	/**
+	 * Returns cached information for the player for the given platform.
+	 * Returns nullptr if no information is available or the handle is invalid
+	 * If allow fallback platform is false, nullptr will be returned when the platform info is not available, otherwise the fallback info will be returned (first last seen info, then first info available)
+	 */
+	const FCachedPlayerPlatformInfo* FindPlayerPlatformInfoByHandle( const FPlayerInfoHandle& playerInfoHandle, bool allowFallbackPlatformInfo = true ) const;
+
+	/** Utility function to resolve player info handle to the account ID for the referenced player at the given platform */
+	UE::Online::FAccountId FindPlayerAccountIdByHandle( const FPlayerInfoHandle& playerInfoHandle ) const;
+
+	/** Utility function to resolve player info handle to the account ID that the player was last seen with playing */
+	UE::Online::FAccountId FindLastSeenPlayerAccountIdByHandle( const FPlayerInfoHandle& playerInfoHandle ) const;
+
+	/** Retrieves the snapshot of player info by the given player info handle. This is a function used for compatibility with legacy code */
+	const FCachedPlayerInfo* FindPlayerInfoDataByHandle( const FPlayerInfoHandle& playerInfoHandle ) const;
+
+	/** Returns player info for all players that have ever partaken in the current session */
+	FORCEINLINE const TArray<FCachedPlayerInfo>& GetAllPlayerInfoData() const { return mPlayerInfoCache; }
+
+	/** Returns information about all players that are not currently online in the session */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Online" )
+	TArray<FCachedPlayerInfo> GetOfflineCachedPlayerInfosInSession() const;
+
 private:
 	UFUNCTION()
 	void OnRep_CheatNoPower();
@@ -415,7 +524,7 @@ private:
 
 	/** Helper to spawn subsystems. */
 	template< class C >
-	void SpawnSubsystem( C*& out_spawnedSubsystem, TSoftClassPtr< AFGSubsystem > spawnClass, FName spawnName )
+	void SpawnSubsystem( TObjectPtr<C>& out_spawnedSubsystem, TSoftClassPtr< AFGSubsystem > spawnClass, FName spawnName )
 	{
 		if( out_spawnedSubsystem )
 		{
@@ -441,6 +550,23 @@ private:
 	void SubmitCheatTelemetry() const;
 
 	void TryGiveStartingRecipes( class AFGCharacterPlayer* inPlayer );
+	
+	UFUNCTION()
+	void OnRep_PlayerInfoCache( const TArray<FCachedPlayerInfo>& oldPlayerInfoCache );
+
+	/** Updates cached user info for all the players in the session */
+	void UpdatePlayerInfoCacheUserInfo();
+	/** Updates player info from the online user backend data */
+	void UpdatePlayerInfoFromOnlineUserBackend( const FPlayerInfoHandle& playerInfoHandle, const UOnlineUserBackendLink* onlineUserBackend );
+
+	void RegisterPlayerStateWithLocalPlayerSession( APlayerState* playerState );
+	void RemovePlayerStateFromLocalPlayerSession( APlayerState* playerState );
+
+	UFUNCTION()
+	void RegisterPlayer_OnPlayerPlatformInfoChanged( const FPlayerInfoHandle& playerInfoHandle );
+	UFUNCTION()
+	void CachePlayerInfoAvatarImage_OnPlayerPlatformInfoChanged( const FPlayerInfoHandle& playerInfoHandle );
+	void CachePlayerInfoAvatarImageFromAvatarURL( const FCachedPlayerPlatformInfo& playerPlatformInfo ) const;
 
 public:
 	//@todo When was this used last time? Cleanup?
@@ -471,6 +597,10 @@ public:
 	UPROPERTY( BlueprintAssignable )
 	FOnSessionNameChanged OnSessionNameChanged;
 
+	/** Broadcast on the server when some actors have been constructed by a particular player */
+	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Player" )
+	FOnActorsConstructedByPlayer mOnActorsConstructedByPlayer;
+
 	FOnCreativeModeEnabled OnCreativeModeEnabled;
 
 	/** Broadcast a notification when all subssytems are valid on client */
@@ -489,73 +619,76 @@ public:
 	FOnSingleSubsystemReplicatedDelegate mOnConveyorChainSubsystemReplicated;
 	/** Called on the client when the blueprint subsystem is available */
 	FOnSingleSubsystemReplicatedDelegate mOnBlueprintSubsystemReplicated;
+	/** Called on the client when the vehicle subsystem is available */
+	FOnSingleSubsystemReplicatedDelegate mOnVehicleSubsystemReplicated;
+
 private:
 	/** Spawned subsystems */
 	UPROPERTY( SaveGame, Replicated )
-	class AFGStorySubsystem* mStorySubsystem;
+	TObjectPtr<class AFGStorySubsystem> mStorySubsystem;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGRailroadSubsystem* mRailroadSubsystem;
+	TObjectPtr<class AFGRailroadSubsystem> mRailroadSubsystem;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGCircuitSubsystem* mCircuitSubsystem;
+	TObjectPtr<class AFGCircuitSubsystem> mCircuitSubsystem;
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_RecipeManager )
-	class AFGRecipeManager* mRecipeManager;
+	TObjectPtr<class AFGRecipeManager> mRecipeManager;
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_SchematicManager )
-	class AFGSchematicManager* mSchematicManager;
+	TObjectPtr<class AFGSchematicManager> mSchematicManager;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGGamePhaseManager* mGamePhaseManager;
+	TObjectPtr<class AFGGamePhaseManager> mGamePhaseManager;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGResearchManager* mResearchManager;
+	TObjectPtr<class AFGResearchManager> mResearchManager;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGTutorialIntroManager* mTutorialIntroManager;
+	TObjectPtr<class AFGTutorialIntroManager> mTutorialIntroManager;
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ActorRepresentationManager )
-	class AFGActorRepresentationManager* mActorRepresentationManager;
+	TObjectPtr<class AFGActorRepresentationManager> mActorRepresentationManager;
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_MapManager )
-	class AFGMapManager* mMapManager;
+	TObjectPtr<class AFGMapManager> mMapManager;
 	UPROPERTY()
-	class AFGRadioactivitySubsystem* mRadioactivitySubsystem;
+	TObjectPtr<class AFGRadioactivitySubsystem> mRadioactivitySubsystem;
 	UPROPERTY( Replicated )
-	class AFGChatManager* mChatManager;
+	TObjectPtr<class AFGChatManager> mChatManager;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGCentralStorageSubsystem* mCentralStorageSubsystem;
+	TObjectPtr<class AFGCentralStorageSubsystem> mCentralStorageSubsystem;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGPipeSubsystem* mPipeSubsystem;
+	TObjectPtr<class AFGPipeSubsystem> mPipeSubsystem;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGUnlockSubsystem* mUnlockSubsystem;
+	TObjectPtr<class AFGUnlockSubsystem> mUnlockSubsystem;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGResourceSinkSubsystem* mResourceSinkSubsystem;
+	TObjectPtr<class AFGResourceSinkSubsystem> mResourceSinkSubsystem;
 	UPROPERTY()
-	class AFGItemRegrowSubsystem* mItemRegrowSubsystem;
+	TObjectPtr<class AFGItemRegrowSubsystem> mItemRegrowSubsystem;
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_VehicleSubsystem )
+	TObjectPtr<class AFGVehicleSubsystem> mVehicleSubsystem;
 	UPROPERTY( Replicated )
-	class AFGVehicleSubsystem* mVehicleSubsystem;
-	UPROPERTY( Replicated )
-	class AFGEventSubsystem* mEventSubsystem;
+	TObjectPtr<class AFGEventSubsystem> mEventSubsystem;
 	UPROPERTY()
-	class AFGWorldGridSubsystem* mWorldGridSubsystem;
+	TObjectPtr<class AFGWorldGridSubsystem> mWorldGridSubsystem;
 	UPROPERTY( Replicated )
-	class AFGDroneSubsystem* mDroneSubsystem;
+	TObjectPtr<class AFGDroneSubsystem> mDroneSubsystem;
 	UPROPERTY( SaveGame )
-	class AFGStatisticsSubsystem* mStatisticsSubsystem;
+	TObjectPtr<class AFGStatisticsSubsystem> mStatisticsSubsystem;
 	UPROPERTY( Replicated )
-	class AFGSignSubsystem* mSignSubsystem;
+	TObjectPtr<class AFGSignSubsystem> mSignSubsystem;
 	UPROPERTY( Replicated )
-	class AFGCreatureSubsystem* mCreatureSubsystem;
+	TObjectPtr<class AFGCreatureSubsystem> mCreatureSubsystem;
 	UPROPERTY( Replicated )
-	class AFGScannableSubsystem* mScannableSubsystem;
+	TObjectPtr<class AFGScannableSubsystem> mScannableSubsystem;
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_BlueprintSubsystem )
-	class AFGBlueprintSubsystem* mBlueprintSubsystem;
+	TObjectPtr<class AFGBlueprintSubsystem> mBlueprintSubsystem;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGGameRulesSubsystem* mGameRulesSubsystem;
+	TObjectPtr<class AFGGameRulesSubsystem> mGameRulesSubsystem;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGIconDatabaseSubsystem* mIconDatabaseSubsystem;
+	TObjectPtr<class AFGIconDatabaseSubsystem> mIconDatabaseSubsystem;
 	UPROPERTY( SaveGame, Replicated )
-	class AFGWorldEventSubsystem* mWorldEventSubsystem;
+	TObjectPtr<class AFGWorldEventSubsystem> mWorldEventSubsystem;
 	UPROPERTY()
-	class AFGTestManager* mTestManager;
-
+	TObjectPtr<class AFGTestManager> mTestManager;
+	
 	UPROPERTY( SaveGame, Replicated )
-	class AFGProjectAssembly* mProjectAssembly;
+	TObjectPtr<class AFGProjectAssembly> mProjectAssembly;
 	UPROPERTY( ReplicatedUsing = OnRep_ConveyorChainSubsystem )
-	class AFGConveyorChainSubsystem* mConveyorChainSubsystem;
+	TObjectPtr<class AFGConveyorChainSubsystem> mConveyorChainSubsystem;
 	
 	/** This array keeps track of what map areas have been visited this game */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_MapAreaVisited )
@@ -632,6 +765,24 @@ private:
 	/** Cheat bool for suppressing build effect when building */
 	UPROPERTY( SaveGame, Replicated )
 	bool mCheatTurboBuildMode;
+
+	UPROPERTY( SaveGame, Replicated )
+	float mEnergyCostMultiplier = 1.0f;
+	
+	UPROPERTY( SaveGame, Replicated )
+	float mPartsCostMultiplier = 1.0f;
+
+	UPROPERTY( SaveGame, Replicated )
+	float mSpacePartsCostMultiplier = 1.0f;
+
+	UPROPERTY( SaveGame, Replicated )
+	ENodeRandomizationMode mNodeRandomization = ENodeRandomizationMode::NRM_None;
+
+	UPROPERTY( SaveGame, Replicated )
+	ENodePuritySettings mNodePuritySettings = ENodePuritySettings::NPS_NoChange;
+
+	UPROPERTY( SaveGame, Replicated )
+	int32 mNodeRandomizationSeed = 0;
 	
 	/** There can only be one trading post in the game, so we keep track it here so that we also can replicate it to client */
 	UPROPERTY( SaveGame, Replicated )
@@ -655,6 +806,7 @@ private:
 
 	/** Timer handle for updating mReplicatedWorldRealTimeSeconds */
 	FTimerHandle mTimerHandle_UpdateServerRealTimeSeconds;
+	FTimerHandle mTimerHandle_UpdateCachedPlayerInfo;
 
 	// @todok2 Might want to move this to a separate system like statistics subsystem or something.
 	/** The leaderboard for tetromino mini game */
@@ -664,11 +816,15 @@ private:
 	/** The public todo list. Only replicated on initial send. Then RPCed through FGPlayerState. */
 	UPROPERTY( SaveGame, Replicated )
 	FString mPublicTodoList;
-	// <FL>[KonradA]
+
 	UPROPERTY( SaveGame, Replicated )
-	TArray< FLocalUserNetIdBundle > mPublicTodoListLastEditedBy;
-	// </FL>
-	
+	FPlayerInfoHandle mPublicTodoListLastEditedBy;
+
+	/**
+	 * Then player info cache that FPlayerInfoHandle instances point into.
+	 */
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_PlayerInfoCache )
+	TArray<FCachedPlayerInfo> mPlayerInfoCache;
 	
 	/** If we have given the first player that joins the starting recipes or not. Based on which tier you start on */
 	UPROPERTY( SaveGame )

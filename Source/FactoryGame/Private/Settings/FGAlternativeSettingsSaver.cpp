@@ -5,8 +5,10 @@
 void UFGAlternativeSettingSaveGame::FilterBySettingsAvailability(){ }
 void UFGPlayerReportSaveGame::AddOrUpdateReport(const FString& ReportedID, FDateTime dateOfReport){  }
 bool UFGPlayerReportSaveGame::IsPlayerReportedAlready(const FString& PlayerID) const{ return false; }
-bool UFGAlternativeSaveSubsystem::SaveCurrentSettings(const TMap<FString, int32>& inIntValues, const TMap<FString, float>& inFloatValues, FString inLanguage){ return false; }
-bool UFGAlternativeSaveSubsystem::LoadCurrentSettings(TMap<FString, int32>& outIntValues, TMap<FString, float>& outFloatValues, FString& outLanguage){ return false; }
+bool UFGAlternativeSaveSubsystem::SaveCurrentSettings(const TMap<FString, int32>& inIntValues, const TMap<FString, float>& inFloatValues, const TMap<FString, FString>& inStringValues, const TMap<FString, FLinearColor>& inLinearColorValues, FString inLanguage){ return bool(); }
+bool UFGAlternativeSaveSubsystem::SetLastOnlineMode(EOnlineIntegrationMode Value){ return bool(); }
+EOnlineIntegrationMode UFGAlternativeSaveSubsystem::GetLastOnlineMode(){ return EOnlineIntegrationMode(); }
+bool UFGAlternativeSaveSubsystem::LoadCurrentSettings(TMap<FString, int32>& outIntValues, TMap<FString, float>& outFloatValues, TMap<FString, FString>& outStringValues, TMap<FString, FLinearColor>& outLinearColorValues, FString& outLanguage){ return bool(); }
 bool UFGAlternativeSaveSubsystem::LoadBlueprintRecords(const FString& sessionName, TArray<FBlueprintRecord>& out_Records){ return false; }
 bool UFGAlternativeSaveSubsystem::LoadBlueprintHeaders(const FString& sessionName, TArray<FBlueprintHeader>& out_Headers){ return false; }
 bool UFGAlternativeSaveSubsystem::DeleteBlueprint(const FString& sessionName, const FString& name){ return false; }

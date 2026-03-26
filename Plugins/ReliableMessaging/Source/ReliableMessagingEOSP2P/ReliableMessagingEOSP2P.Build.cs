@@ -25,6 +25,7 @@ public class ReliableMessagingEOSP2P : ModuleRules
                 "EOSShared",
                 "Sockets",
                 "SocketSubsystemEOS",
+                "GameplayTags",
                 "ReliableMessaging"
             }
         );

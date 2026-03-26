@@ -12,7 +12,7 @@
  * Is just a convenience wrapper around server state listener. If you cannot use this class, implement the server state listener directly
  */
 UCLASS( Abstract )
-class FACTORYDEDICATEDCLIENT_API UFGAbstractServerWidget : public UUserWidget, public IFGServerStateListener
+class FACTORYDEDICATEDCLIENT_API UFGAbstractServerWidget : public UFGUserWidget, public IFGServerStateListener
 {
 	GENERATED_BODY()
 public:
@@ -29,5 +29,5 @@ protected:
 
 	/** The server currently associated with this widget */
 	UPROPERTY( BlueprintReadOnly, Category = "Server Widget" )
-	UFGServerObject* mServer;
+	TObjectPtr<UFGServerObject> mServer;
 };

@@ -19,7 +19,6 @@ UFGActorRepresentation::UFGActorRepresentation() : Super() {
 	this->mShouldShowOnMap = false;
 	this->mIsHidden = false;
 	this->mCompassViewDistance = ECompassViewDistance::CVD_Off;
-	this->mPlatformAccountIDStr = TEXT("");
 	this->mBackgroundIsPrimaryColor = true;
 	this->mAllowRealActorLocationOnClient = true;
 }
@@ -42,7 +41,6 @@ void UFGActorRepresentation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(UFGActorRepresentation, mIsHidden);
 	DOREPLIFETIME(UFGActorRepresentation, mCompassViewDistance);
 	DOREPLIFETIME(UFGActorRepresentation, mLastEditedBy);
-	DOREPLIFETIME(UFGActorRepresentation, mPlatformAccountIDStr);
 }
 void UFGActorRepresentation::SetupActorRepresentation(AActor* realActor, bool isLocal, float lifeSpan){ }
 void UFGActorRepresentation::TrySetupDestroyTimer(float lifeSpan){ }
@@ -77,6 +75,7 @@ UFGHighlightedMarker* UFGActorRepresentation::CreateHighlightedMarker(UObject* o
 FVector2f UFGActorRepresentation::GetRepresentationCompassEffectSize() const{ return FVector2f(); }
 void UFGActorRepresentation::SetHidden(bool isHidden){ }
 AFGActorRepresentationManager* UFGActorRepresentation::GetActorRepresentationManager() const{ return nullptr; }
+class IFGActorRepresentationInterface* UFGActorRepresentation::GetActorRepresentationInterface() const{ return nullptr; }
 void UFGActorRepresentation::PreRepresentationReplication(){ }
 void UFGActorRepresentation::NotifyRepresentationUnmappedObjectReference(const TDoubleLinkedList<FProperty*>& PropertyChain, const FNetworkGUID& ObjectGUID){ }
 void UFGActorRepresentation::PostRepresentationReplication(){ }

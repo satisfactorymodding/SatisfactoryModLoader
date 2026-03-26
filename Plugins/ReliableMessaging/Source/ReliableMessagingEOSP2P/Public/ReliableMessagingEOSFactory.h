@@ -19,6 +19,7 @@ public:
 	bool StartListening(UNetDriver* InNetDriver);
 	virtual TArray<TUniquePtr<IReliableMessageTransportConnection>> Tick(float DeltaTime) override;
 	virtual void Shutdown() override;
+	virtual void RegisterIncomingConnection(TSharedRef<FInternetAddr> Address, FGuid ConnectionId) override;
 	
 	void DispatchPacket(const TArray<uint8>& Data, TSharedRef<const FInternetAddrEOS> SenderAddress);
 	TSharedPtr<FInternetAddrEOS> ListenAddress;

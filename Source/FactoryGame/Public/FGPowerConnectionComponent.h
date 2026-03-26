@@ -68,7 +68,7 @@ private:
 	 * Should be unique for each connection or a race condition can occur for setting the circuit ID on the power info.
 	 */
 	UPROPERTY()
-	class UFGPowerInfoComponent* mPowerInfo;
+	TObjectPtr<class UFGPowerInfoComponent> mPowerInfo;
 
 	/** What kind of power connection this is. Power connections of different types are incompatible. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )

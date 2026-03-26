@@ -100,7 +100,7 @@ protected:
 
 	/** Keeps track of the projectiles we have dispensed */
 	UPROPERTY( SaveGame )
-	TArray< AFGProjectile* > mDispensedProjectiles;
+	TArray< TObjectPtr<AFGProjectile> > mDispensedProjectiles;
 
 	/** If we charge the throw for this amount of time we will get max throw velocity */
 	UPROPERTY( EditDefaultsOnly, Category = "ChargedWeapon" )

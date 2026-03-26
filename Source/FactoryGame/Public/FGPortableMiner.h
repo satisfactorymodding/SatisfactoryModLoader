@@ -120,11 +120,11 @@ public:
 
 	/** The resource node we want to extract from */
 	UPROPERTY( SaveGame, Replicated, BlueprintReadOnly, Category = "Resource" )
-	class AFGResourceNode* mExtractResourceNode;
+	TObjectPtr<class AFGResourceNode> mExtractResourceNode;
 
 	/** The inventory of the factory node */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mOutputInventory;
+	TObjectPtr<class UFGInventoryComponent> mOutputInventory;
 
 	/** Current extract progress in the range [0, 1] */
 	UPROPERTY( Replicated, meta = (NoAutoJson = true) )
@@ -140,7 +140,7 @@ public:
 
 	/** The player state that "owns" this miner. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_OwningPlayerState )
-	class AFGPlayerState* mOwningPlayerState;
+	TObjectPtr<class AFGPlayerState> mOwningPlayerState;
 private:
 	/** Are we producing? */
 	UPROPERTY( ReplicatedUsing = OnRep_IsProducing, meta = (NoAutoJson = true) )

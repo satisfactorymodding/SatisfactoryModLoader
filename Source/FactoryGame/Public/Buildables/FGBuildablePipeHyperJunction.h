@@ -24,13 +24,13 @@ struct FFGPipeHyperJunctionPath
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pipe Hyper")
-	UFGPipeConnectionComponentBase* Connection0{};
+	TObjectPtr<UFGPipeConnectionComponentBase> Connection0{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pipe Hyper")
-	UFGPipeConnectionComponentBase* Connection1{};
+	TObjectPtr<UFGPipeConnectionComponentBase> Connection1{};
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pipe Hyper")
-	USplineComponent* SplineComponent{};
+	TObjectPtr<USplineComponent> SplineComponent{};
 };
 
 USTRUCT(BlueprintType)
@@ -39,10 +39,10 @@ struct FFGPipeHyperJunctionDefaultPath
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pipe Hyper")
-	UFGPipeConnectionComponentBase* InputConnection{};
+	TObjectPtr<UFGPipeConnectionComponentBase> InputConnection{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pipe Hyper")
-	UFGPipeConnectionComponentBase* DefaultOutputConnection{};
+	TObjectPtr<UFGPipeConnectionComponentBase> DefaultOutputConnection{};
 };
 
 UCLASS()
