@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using EpicGames.UHT.Types;
@@ -32,7 +33,7 @@ public static class HookStructGeneration
     private static void InsertCodeForStruct(StringBuilder builder, UhtScriptStruct scriptStruct)
     {
         var friends = Types.AccessTransformers.FriendAccessTransformers.GetFor(scriptStruct.EngineName, scriptStruct.EngineNamePrefix + scriptStruct.EngineName);
-        var accessors = Types.AccessTransformers.AccessorAccessTransformers.GetFor(scriptStruct.EngineName, scriptStruct.EngineNamePrefix + scriptStruct.EngineName);
+        var accessors = Types.AccessTransformers.AccessorAccessTransformers.GetFor(scriptStruct.EngineName, scriptStruct.EngineNamePrefix + scriptStruct.EngineName).Distinct().ToList();
 
         if (friends.Count > 0)
         {

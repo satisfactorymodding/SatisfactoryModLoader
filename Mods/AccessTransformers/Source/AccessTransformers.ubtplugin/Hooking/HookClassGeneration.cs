@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using EpicGames.Core;
@@ -41,7 +42,7 @@ public static class HookClassGeneration
     private static void InsertCodeForClass(StringBuilder builder, UhtClass @class)
     {
         var friends = Types.AccessTransformers.FriendAccessTransformers.GetFor(@class.EngineName, @class.EngineNamePrefix + @class.EngineName);
-        var accessors = Types.AccessTransformers.AccessorAccessTransformers.GetFor(@class.EngineName, @class.EngineNamePrefix + @class.EngineName);
+        var accessors = Types.AccessTransformers.AccessorAccessTransformers.GetFor(@class.EngineName, @class.EngineNamePrefix + @class.EngineName).Distinct().ToList();
 
         if (friends.Count > 0)
         {
