@@ -42,7 +42,7 @@ public static class HookClassGeneration
     private static void InsertCodeForClass(StringBuilder builder, UhtClass @class)
     {
         var friends = Types.AccessTransformers.FriendAccessTransformers.GetFor(@class.EngineName, @class.EngineNamePrefix + @class.EngineName);
-        var accessors = Types.AccessTransformers.AccessorAccessTransformers.GetFor(@class.EngineName, @class.EngineNamePrefix + @class.EngineName).Distinct().ToList();
+        var accessors = Types.AccessTransformers.AccessorAccessTransformers.GetFor(@class.EngineName, @class.EngineNamePrefix + @class.EngineName);
 
         if (friends.Count > 0)
         {
@@ -61,7 +61,7 @@ public static class HookClassGeneration
         if (accessors.Count > 0)
         {
             builder.Append("public:").Append(_newLineSeparator);
-            foreach (var accessor in accessors)
+            foreach (var accessor in accessors.Distinct())
             {
                 var implementations = accessor.GetImplementation(@class);
                 if (implementations == null)

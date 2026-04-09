@@ -33,7 +33,7 @@ public static class HookStructGeneration
     private static void InsertCodeForStruct(StringBuilder builder, UhtScriptStruct scriptStruct)
     {
         var friends = Types.AccessTransformers.FriendAccessTransformers.GetFor(scriptStruct.EngineName, scriptStruct.EngineNamePrefix + scriptStruct.EngineName);
-        var accessors = Types.AccessTransformers.AccessorAccessTransformers.GetFor(scriptStruct.EngineName, scriptStruct.EngineNamePrefix + scriptStruct.EngineName).Distinct().ToList();
+        var accessors = Types.AccessTransformers.AccessorAccessTransformers.GetFor(scriptStruct.EngineName, scriptStruct.EngineNamePrefix + scriptStruct.EngineName);
 
         if (friends.Count > 0)
         {
@@ -52,7 +52,7 @@ public static class HookStructGeneration
         if (accessors.Count > 0)
         {
             builder.Append("public:").Append(_newLineSeparator);
-            foreach (var accessor in accessors)
+            foreach (var accessor in accessors.Distinct())
             {
                 var implementations = accessor.GetImplementation(scriptStruct);
                 if (implementations == null)
