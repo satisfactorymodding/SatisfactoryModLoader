@@ -148,7 +148,7 @@ interface
 "BuildMenu/Tabs/Builder","Builder","","","UI","#prototype
 interface
 #build_menu"
-"BuildMenu/Tabs/Cheats","Cheats","","","UI","#interface
+"BuildMenu/Tabs/Creative Mode","Creative Mode","","","UI","#interface
 #build_menu"
 "BuildMenu/Tabs/Customizer","Customizer","","","UI","#prototype
 interface
@@ -229,6 +229,7 @@ interface
 #build_menu"
 "BuildMenu/Tabs/Transport/Vehicles","Vehicle Transport","","","UI","#interface
 #build_menu"
+"BuildMenu/Tabs/Utility","Utility","","","",""
 "BuildMenu/Tabs/Walls","Walls","","","UI","#interface
 #build_menu"
 "BuildMenu/Tabs/Walls/Basic","Basic Walls","","","UI","#interface
@@ -273,6 +274,7 @@ interface
 #build_gun"
 "BuildModes/BlueprintAutoConnect","Default (Auto-Connect)","","","",""
 "BuildModes/BlueprintSnapAutoConnect","Blueprint (Auto-Connect)","","","",""
+"BuildModes/Curve","Curve","","","",""
 "BuildModes/Default","Default","","","UI","#interface
 #build_mode
 #build_gun"
@@ -302,6 +304,7 @@ interface
 "BuildModes/Zoop","Zoop","","","UI","#interface
 #build_mode
 #build_gun"
+"DismantleMode/BuiltBy","Built By:","Shown in the dismantle mode when hovering over buildings to display who built them","","",""
 "Distance/m/Pattern","{Distance} m","","{Distance} = number","UI","#interface"
 "Equipment/Ammo/SelectAmmoType","Selecting Ammunition Type","","","UI",""
 "Equipment/Boombox/Close/Button","Close","Close button","","UI","#interface
@@ -424,18 +427,23 @@ interface
 "Game/PhotoMode/Category/Camera","Camera","","","",""
 "Game/PhotoMode/Category/Image","Image","","","",""
 "Game/PhotoMode/Category/Pioneer","Pioneer","","","",""
+"Game/PhotoMode/Category/Selfie","Selfie","","","",""
 "Game/PhotoMode/ExitPhotoMode/Button","Exit Photo Mode","Photo Mode key binding hint","","UI","#interface"
 "Game/PhotoMode/FOV","Field of View","Photo Mode screen","","UI","#interface"
 "Game/PhotoMode/Instructions/Description","(This window will not appear in the photo.)","Photo Mode screen","","UI","#interface"
 "Game/PhotoMode/Instructions/Header","Photo Mode","Photo Mode screen","","UI","#interface"
 "Game/PhotoMode/Notification/UnableToFindTarget","Unable to find target!","Photo Mode screen","","",""
+"Game/PhotoMode/OpenScreenshotFolder","Open Screenshot Folder","Photo Mode screen","","UI","#interface"
 "Game/PhotoMode/PhotoSaved/Tooltip","Photo Saved!","Photo Mode screen","","UI","#interface"
 "Game/PhotoMode/Popups/SaveError/GenericError","There was an error saving the photo.","Popup shown when the platform screenshot functionality fails","","",""
 "Game/PhotoMode/Popups/SaveError/NoSpace","There is no more space available to save the photo.","Popup shown when the platform screenshot functionality fails","","",""
 "Game/PhotoMode/Popups/SaveError/aTitle","Error Saving Photo!","Popup shown when the platform screenshot functionality fails","","",""
+"Game/PhotoMode/Subcategory/ArmRotation","Arm Rotation","","","",""
+"Game/PhotoMode/Subcategory/CameraRotation","Camera Rotation","","","",""
 "Game/PhotoMode/Subcategory/CameraSettings","Camera Settings","","","",""
 "Game/PhotoMode/Subcategory/ColorCorrection","Color Correction","","","",""
 "Game/PhotoMode/Subcategory/EffectSettings","Effect Settings","","","",""
+"Game/PhotoMode/Subcategory/HeadRotation","Head Rotation","","","",""
 "Game/PhotoMode/Subcategory/Other","Other","","","",""
 "Game/PhotoMode/Subcategory/Pose","Pose","","","",""
 "Game/PhotoMode/Subcategory/Positioning","Positioning","","","",""
@@ -464,10 +472,13 @@ interface
 "Game/PhotoModeDolly/SubCategory/Dolly","Dolly","","","",""
 "Game/PhotoModeDolly/Tracking/Name","Lock on to Tracking Point","","","",""
 "Game/PhotoModeOptions/Aperture/Name","Aperture","","","",""
+"Game/PhotoModeOptions/ArmYaw/Name","Arm Yaw","","","",""
 "Game/PhotoModeOptions/BloomIntensity/Name","Bloom","","","",""
 "Game/PhotoModeOptions/CameraMode/Decoupled","Decoupled","","","",""
 "Game/PhotoModeOptions/CameraMode/FirstPerson","First Person","","","",""
 "Game/PhotoModeOptions/CameraMode/Name","Camera Mode","","","",""
+"Game/PhotoModeOptions/CameraPitch/Name","Camera Pitch","Rotation for the Camera in Selfie Mode.","","",""
+"Game/PhotoModeOptions/CameraYaw/Name","Camera Yaw","Rotation for the Camera in Selfie Mode.","","",""
 "Game/PhotoModeOptions/ChromaticAbberation/Name","Aberration","","","",""
 "Game/PhotoModeOptions/Contrast/Name","Contrast","","","",""
 "Game/PhotoModeOptions/Crop/43","4:3","","","",""
@@ -481,6 +492,7 @@ interface
 "Game/PhotoModeOptions/DecoupleCamera/Button","Decouple","","","",""
 "Game/PhotoModeOptions/DecoupleCamera/Name","Decouple Camera","","","",""
 "Game/PhotoModeOptions/Exposure/Name","Exposure","","","",""
+"Game/PhotoModeOptions/Filter/Blueprint","Blueprint","Photo Mode effect filter","","",""
 "Game/PhotoModeOptions/Filter/Comic","Comic","Photo Mode effect filter","","",""
 "Game/PhotoModeOptions/Filter/Crosshatch","Crosshatch","Photo Mode effect filter","","",""
 "Game/PhotoModeOptions/Filter/Fresnel","Fresnel","Photo Mode effect filter","","",""
@@ -508,10 +520,14 @@ interface
 "Game/PhotoModeOptions/Grid/Grid2","Grid 2","","","",""
 "Game/PhotoModeOptions/Grid/Name","Grid","","","",""
 "Game/PhotoModeOptions/Grid/None","None","","","",""
+"Game/PhotoModeOptions/HeadPitchl/Name","Head Pitch","Rotation for the Pioneers head in Selfie Mode. Pitch means rotation in the Y axis.","","",""
+"Game/PhotoModeOptions/HeadRoll/Name","Head Roll","Rotation for the Pioneers head in Selfie Mode. Roll means rotation in the X axis.","","",""
+"Game/PhotoModeOptions/HeadYaw/Name","Head Yaw","Rotation for the Pioneers head in Selfie Mode. Yaw means rotation in the Z axis.","","",""
 "Game/PhotoModeOptions/LUT/2007","2007","Photo Mode color filter","","",""
 "Game/PhotoModeOptions/LUT/CheeseTimes","Cheese Times","Photo Mode color filter","","",""
 "Game/PhotoModeOptions/LUT/EndOfTimes","End of Times","Photo Mode color filter","","",""
 "Game/PhotoModeOptions/LUT/GoodOlDays","Good Ol' Days","Photo Mode color filter","","",""
+"Game/PhotoModeOptions/LUT/IKnowWhatYouAre","I Know What You Are","Photo Mode color filter. A reference to the Twilight movies.","","",""
 "Game/PhotoModeOptions/LUT/LCD","LCD","Photo Mode color filter","","",""
 "Game/PhotoModeOptions/LUT/Lonely","Lonely","Photo Mode color filter","","",""
 "Game/PhotoModeOptions/LUT/Mercer","Mercer","Photo Mode color filter. Refers to the Mercer Sphere","","",""
@@ -540,6 +556,7 @@ interface
 "Game/PhotoModeOptions/Saturation/Name","Saturation","","","",""
 "Game/PhotoModeOptions/SetTrackingPoint/Button","Set","","","",""
 "Game/PhotoModeOptions/SetTrackingPoint/Name","Set Tracking Point","","","",""
+"Game/PhotoModeOptions/TimeOfDay/Name","Time of Day","","","",""
 "Game/PhotoModeOptions/Tint/Name","Tint","","","",""
 "Game/PhotoModeOptions/Vignette/Name","Vignette","","","",""
 "Game/PhotoModeOptions/Zoom/Name","Zoom","","","",""
@@ -547,13 +564,17 @@ interface
 "HUD/ActiveSchematic/Milestone","Milestone:","To-Do List tooltip","","UI","#interface
 #tutorial
 #game"
-"HUD/AutoPickupLeavesActive","Auto-Pickup (Leaves) Active","","","UI",""
+"HUD/AutoPickupLeavesActive","Auto-Pickup Active","","","UI",""
 "HUD/Box/Ammo/LoadedAmmo","Loaded Ammo","","","","interface
 hud_box"
 "HUD/Box/Ammo/NoAmmo","No Ammo","","","","interface
 hud_box"
 "HUD/Box/Consumables/Amount","Amount:","","","UI","interface
 hud_box"
+"HUD/Compass/East","E","Indicates East direction on the compass","","",""
+"HUD/Compass/North","N","Indicates North direction on the compass","","",""
+"HUD/Compass/South","S","Indicates South direction on the compass","","",""
+"HUD/Compass/West","W","Indicates West direction on the compass","","",""
 "HUD/Hotbar/BoundToHotbar","Bound to Hotbar","","","UI","interface
 hotbar"
 "HUD/Hotbar/UnboundFromHotbar","Unbound from Hotbar","","","UI","interface
@@ -655,7 +676,9 @@ FICSIT does not waste.","Inventory screen","","UI",""
 "PhotoMode/Keybindings/SettingsShow","Show Settings","Photo Mode key binding hint","","UI","#interface"
 "PhotoMode/Notification/DecoupledCameraActive","Decoupled Camera Active","Photo Mode screen","","UI","#interface"
 "PhotoMode/Notification/PioneerCameraActive","Pioneer Camera Active","Photo Mode screen","","UI","#interface"
+"PhotoMode/Notification/SelfieCameraActive","Selfie Camera Active","Photo Mode screen","","UI","#interface"
 "PhotoMode/Reset/Button","Reset","Photo Mode screen","","UI","#interface"
+"PhotoMode/ResetAll/Button","Reset All","Photo Mode screen","","",""
 "PhotoMode/TakePhoto/Button","Take Photo","Photo Mode screen","","UI","#interface"
 "PhotoMode/ToggleHiRes/Off","(Off)","Photo Mode screen","","UI","#interface"
 "PhotoMode/ToggleHiRes/On","(On)","Photo Mode screen","","UI","#interface"
@@ -687,7 +710,7 @@ FICSIT does not waste.","Inventory screen","","UI",""
 "Scanner/ScannableResource/Unlock/Well/Description/Pattern","Allows you to scan for {Item} Wells with the Resource Scanner.","","{Item} = text, resource name","UI","#interface
 #scannables"
 "SchematicsUnlockTitle/AlternativeRecipe","Alternative Recipe Unlocked","","","UI",""
-"SchematicsUnlockTitle/Cheats","Cheats Unlocked","","","UI",""
+"SchematicsUnlockTitle/Creative Mode","Creative Mode Unlocked","","","UI",""
 "SchematicsUnlockTitle/Milestone","Milestone Unlocked","","","UI",""
 "SchematicsUnlockTitle/Research","Research Completed","","","UI",""
 "SchematicsUnlockTitle/Schematic","Schematic Purchased","","","UI",""
@@ -706,7 +729,8 @@ You can add recipes by going to the Build Menu or the Codex.","","","UI",""
 <default><ob>Your Text</></> = <ob>Your Text</>
 <default><h>Your Text</></> = <h>Your Text</>
 [] = <ob>[  ]</>
-[x] = <ob>[</><b>x</><ob>]</>","If unsure, translate only `Commands for Notes:` and `Your Text` :)","","UI",""
+[x] = <ob>[</><b>x</><ob>]</>
+<br> = line break","If unsure, translate only `Commands for Notes:` , `Your Text` and `line break` :)","","UI",""
 "ToDoList/Edit/Button","Edit To-Do List","To-Do List tooltip","","UI","#interface
 #tutorial
 #game"

@@ -152,6 +152,7 @@ Image Browser"
 {1} = text, Item name
 {2} = number, number of items","UI","#common
 #look_at_description"
+"Shared/MenuInfo/LastEditedBy","Last Edited By...","","","",""
 "Shared/OpenInCodex/Button","Open in Codex","","","UI","#interface
 #common"
 "Shared/RecipeInfo/RecipeUnavailable/RecipeLocked/Body","This recipe has not yet been unlocked.
