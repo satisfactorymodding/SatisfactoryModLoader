@@ -9,7 +9,7 @@ class SML_API UGameWorldModule : public UWorldModule {
     GENERATED_BODY()
 public:
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
 #endif
 	
     /**

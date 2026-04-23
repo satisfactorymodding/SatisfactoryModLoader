@@ -24,7 +24,7 @@ class SML_API UModModule : public UObject {
     GENERATED_BODY()
 public:
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
 #endif
 private:
     /** Private field holding owner mod reference, accessible directly only by mod loader */

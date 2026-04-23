@@ -7,6 +7,7 @@
 #include "GraphEditorActions.h"
 #include "SBlueprintEditorToolbar.h"
 #include "SComponentClassCombo.h"
+#include "ToolMenu.h"
 #include "Components/PrimitiveComponent.h"
 #include "EdGraph/EdGraph.h"
 #include "Engine/MemberReference.h"

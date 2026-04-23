@@ -251,7 +251,7 @@ bool DoesPluginHaveRuntime(const IPlugin& Plugin) {
 static bool IsPluginEditorOnly(const IPlugin& Plugin) {
 	if (TSharedPtr<FJsonObject> Json = Plugin.GetDescriptor().CachedJson) {
 		bool Result = false;
-		return Json->TryGetBoolField("EditorOnly", Result) && Result;
+		return Json->TryGetBoolField(TEXT("EditorOnly"), Result) && Result;
 	}
 	return false;
 }

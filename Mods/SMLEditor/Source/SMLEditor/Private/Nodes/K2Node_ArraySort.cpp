@@ -15,8 +15,6 @@
 #include "GraphNodes/GraphNodeK2ArraySort.h"
 #include "Kismet/SMLBlueprintArrayLibrary.h"
 
-PRAGMA_DISABLE_OPTIMIZATION
-
 #define LOCTEXT_NAMESPACE "SMLEditor"
 
 struct FK2Node_ArraySort_Helper {
@@ -446,5 +444,3 @@ void UK2Node_ArraySort::GetMenuActions(FBlueprintActionDatabaseRegistrar& Action
 }
 
 #undef LOCTEXT_NAMESPACE
-
-PRAGMA_ENABLE_OPTIMIZATION

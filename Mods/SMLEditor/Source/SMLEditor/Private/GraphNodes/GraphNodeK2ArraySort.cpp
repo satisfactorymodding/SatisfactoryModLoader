@@ -10,8 +10,6 @@
 #include "Editor/GraphEditor/Public/SGraphNode.h"
 #include "Nodes/K2Node_ArraySort.h"
 
-PRAGMA_DISABLE_OPTIMIZATION
-
 #define LOCTEXT_NAMESPACE "SMLEditor"
 
 SGraphNodeK2ArraySort::~SGraphNodeK2ArraySort() {
@@ -351,5 +349,3 @@ TSharedRef<SWidget> SGraphNodeK2ArraySort::MakeFunctionOptionComboWidget(TShared
 }
 
 #undef LOCTEXT_NAMESPACE
-
-PRAGMA_ENABLE_OPTIMIZATION

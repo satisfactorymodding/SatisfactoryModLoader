@@ -241,6 +241,6 @@ public:
     virtual void* GetObjectData() override;
     virtual void AddReferencedObjects(FReferenceCollector& ReferenceCollector) override;
 private:
-    UScriptStruct* ScriptStruct;
+    TObjectPtr<UScriptStruct> ScriptStruct;
     void* StructDataPointer;
 };

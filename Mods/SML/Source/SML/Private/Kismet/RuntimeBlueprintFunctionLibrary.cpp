@@ -287,12 +287,12 @@ UUserWidget* URuntimeBlueprintFunctionLibrary::CreateSMLWidget(UUserWidget* Owni
 
 void URuntimeBlueprintFunctionLibrary::SetSpinBoxFont(USpinBox* Box, FSlateFontInfo Font) {
 	if (Box) {
-		Box->Font = Font;
+		Box->SetFont(Font);
 	}
 }
 
 void URuntimeBlueprintFunctionLibrary::SetComboBoxFont(UComboBoxString* Box, FSlateFontInfo Font) {
 	if (Box) {
-		Box->Font = Font;
+		Box->Font = Font; // TODO: This is marked as deprecated, but doesn't have a setter
 	}
 }

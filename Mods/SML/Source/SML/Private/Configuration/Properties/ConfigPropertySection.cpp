@@ -3,6 +3,7 @@
 #include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 #include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
 #include "Configuration/RawFileFormat/RawFormatValueObject.h"
+#include "Misc/DataValidation.h"
 #include "Reflection/BlueprintReflectedObject.h"
 
 #define LOCTEXT_NAMESPACE "SML"
@@ -64,24 +65,25 @@ bool IsValidConfigIdentifier(const FString& Identifier) {
 }
 
 #if WITH_EDITOR
-EDataValidationResult UConfigPropertySection::IsDataValid(TArray<FText>& ValidationErrors) {
+EDataValidationResult UConfigPropertySection::IsDataValid(FDataValidationContext& Context) const {
     EDataValidationResult ValidationResult = EDataValidationResult::Valid;
     for (const TPair<FString, TObjectPtr<UConfigProperty>>& Pair : SectionProperties) {
         if (!IsValid(Pair.Value)) {
-            ValidationErrors.Add(FText::Format(LOCTEXT("ConfigSectionValueNull",
+            Context.AddError(FText::Format(LOCTEXT("ConfigSectionValueNull",
                 "Value '{0}' inside of the Config Section '{1}' is NULL."),
                 FText::FromString(Pair.Key), FText::FromString(GetPathName())));
             ValidationResult = EDataValidationResult::Invalid;
         }
         if (!IsValidConfigIdentifier(Pair.Key)) {
-            ValidationErrors.Add(FText::Format(LOCTEXT("ConfigSectionInvalidKey",
+            Context.AddError(FText::Format(LOCTEXT("ConfigSectionInvalidKey",
                 "Section Key '{0}' inside of the Config Section '{1}' is Invalid. "
                 "Make sure it contains only alphanumerical characters and does not contain spaces."),
                 FText::FromString(Pair.Key), FText::FromString(GetPathName())));
             ValidationResult = EDataValidationResult::Invalid;
         }
         if (IsValid(Pair.Value)) {
-            const EDataValidationResult ChildValidationResult = Pair.Value->IsDataValid(ValidationErrors);
+            TObjectPtr<const UConfigProperty> ChildProperty = Pair.Value;
+            const EDataValidationResult ChildValidationResult = ChildProperty->IsDataValid(Context);
             if (ChildValidationResult == EDataValidationResult::Invalid) {
                 ValidationResult = EDataValidationResult::Invalid;
             }

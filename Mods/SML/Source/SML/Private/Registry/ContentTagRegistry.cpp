@@ -169,7 +169,7 @@ FString UContentTagRegistry::GetCallStackContext() {
 	TArray<FProgramCounterSymbolInfo> NativeStackTrace = FPlatformStackWalk::GetStack(1, 10);
 	if (NativeStackTrace.IsEmpty()) {
 		FProgramCounterSymbolInfo& Info = NativeStackTrace.Emplace_GetRef();
-		TCString<ANSICHAR>::Strcpy(Info.Filename, FProgramCounterSymbolInfo::MAX_NAME_LENGTH, "Unknown");
+		TCString<ANSICHAR>::Strncpy(Info.Filename, "Unknown", FProgramCounterSymbolInfo::MAX_NAME_LENGTH);
 		Info.LineNumber = 1;
 	}
 

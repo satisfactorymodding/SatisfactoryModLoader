@@ -21,18 +21,18 @@ static TAutoConsoleVariable CVarSkipModCompatibilityCheck(
 FSavedModInfo::FSavedModInfo(const FString& Reference, const FString& Name, const FVersion& Version) : Reference(Reference), Name(Name), Version(Version){}
 
 bool FSavedModInfo::Read(const TSharedRef<FJsonObject>& Object, FString& OutError) {
-	if(!Object->TryGetStringField("Reference", this->Reference))
+	if(!Object->TryGetStringField(TEXT("Reference"), this->Reference))
 	{
 		OutError = TEXT("Missing Reference");
 		return false;
 	}
-	if(!Object->TryGetStringField("Name", this->Name))
+	if(!Object->TryGetStringField(TEXT("Name"), this->Name))
 	{
 		OutError = TEXT("Missing Name");
 		return false;
 	}
 	FString VersionString;
-	if(!Object->TryGetStringField("Version", VersionString))
+	if(!Object->TryGetStringField(TEXT("Version"), VersionString))
 	{
 		OutError = TEXT("Missing Version");
 		return false;

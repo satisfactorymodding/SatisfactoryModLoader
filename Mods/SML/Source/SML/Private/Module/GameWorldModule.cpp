@@ -5,25 +5,25 @@
 #include "Subsystem/SubsystemActorManager.h"
 
 #if WITH_EDITOR
-EDataValidationResult UGameWorldModule::IsDataValid(TArray<FText>& ValidationErrors) {
-	EDataValidationResult ValidationResult = Super::IsDataValid(ValidationErrors);
+EDataValidationResult UGameWorldModule::IsDataValid(FDataValidationContext& Context) const {
+	EDataValidationResult ValidationResult = Super::IsDataValid(Context);
 
 	//Check that we do not have any null schematics, or research trees
 	for (const TSubclassOf<UFGSchematic>& Schematic : mSchematics) {
 		if (Schematic == nullptr) {
-			ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "Validation_NullSchematic", "Null Schematic found. Was the content it previously referenced deleted or moved?"));
+			Context.AddError(NSLOCTEXT("GameWorldModule", "Validation_NullSchematic", "Null Schematic found. Was the content it previously referenced deleted or moved?"));
 			ValidationResult = EDataValidationResult::Invalid;
 		}
 	}
 	for (const TSubclassOf<UFGResearchTree>& ResearchTree : mResearchTrees) {
 		if (ResearchTree == nullptr) {
-			ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "Validation_NullSResearchTree", "Null ResearchTree found. Was the content it previously referenced deleted or moved?"));
+			Context.AddError(NSLOCTEXT("GameWorldModule", "Validation_NullSResearchTree", "Null ResearchTree found. Was the content it previously referenced deleted or moved?"));
 			ValidationResult = EDataValidationResult::Invalid;
 		}
 	}
 	for (const TSubclassOf<AModSubsystem>& Subsystem : ModSubsystems) {
 		if (Subsystem == nullptr) {
-			ValidationErrors.Add(NSLOCTEXT("GameWorldModule", "Validation_NullModSubsystem", "Null ModSubsystem found. Was the content it previously referenced deleted or moved?"));
+			Context.AddError(NSLOCTEXT("GameWorldModule", "Validation_NullModSubsystem", "Null ModSubsystem found. Was the content it previously referenced deleted or moved?"));
 			ValidationResult = EDataValidationResult::Invalid;
 		}
 	}

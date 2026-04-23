@@ -74,7 +74,7 @@ void UModMetadataObject::CopyIntoDescriptor(FPluginDescriptor& OutDescriptor)
 		{
 			TSharedPtr<FJsonObject> DependencyCachedJson = nullptr;
 			if (OutDescriptor.CachedJson.IsValid()) {
-				const TSharedPtr<FJsonValue>* CachedPluginJson = OutDescriptor.CachedJson->GetArrayField("Plugins").FindByPredicate([Dependency](TSharedPtr<FJsonValue> PluginDep) {
+				const TSharedPtr<FJsonValue>* CachedPluginJson = OutDescriptor.CachedJson->GetArrayField(TEXT("Plugins")).FindByPredicate([Dependency](TSharedPtr<FJsonValue> PluginDep) {
 					return PluginDep->AsObject()->GetStringField(TEXT("Name")) == Dependency.Name;
 				});
 				if (CachedPluginJson) {

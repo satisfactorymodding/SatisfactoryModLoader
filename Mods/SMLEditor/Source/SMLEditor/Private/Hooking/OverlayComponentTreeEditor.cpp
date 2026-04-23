@@ -1470,7 +1470,7 @@ void FOverlayComponentTreeRowDragDropOp::HoverTargetChanged() {
 	}
 }
 
-UK2Node_VariableGet* FOverlayComponentTreeRowDragDropOp::SpawnVariableGetNodeForComponentData(UEdGraph* InTargetGraph, const TSharedPtr<FOverlayComponentData>& InComponentData, const FVector2D& InGraphPosition) {
+UK2Node_VariableGet* FOverlayComponentTreeRowDragDropOp::SpawnVariableGetNodeForComponentData(UEdGraph* InTargetGraph, const TSharedPtr<FOverlayComponentData>& InComponentData, const FVector2f& InGraphPosition) {
 	const UEdGraphSchema_K2* K2_Schema = Cast<const UEdGraphSchema_K2>(InTargetGraph->GetSchema());
 	UBlueprint* Blueprint = FBlueprintEditorUtils::FindBlueprintForGraph(InTargetGraph);
 	const FName VariableName = InComponentData->GetComponentVariableName();
@@ -1481,7 +1481,8 @@ UK2Node_VariableGet* FOverlayComponentTreeRowDragDropOp::SpawnVariableGetNodeFor
 		
 		// Spawn the variable read node and return nothing if it failed
 		const bool bIsSelfContext = VariableOwnerClass && VariableOwnerClass->ClassGeneratedBy == Blueprint;
-		UK2Node_VariableGet* NewVariableNode = K2_Schema->SpawnVariableGetNode(InGraphPosition, InTargetGraph, VariableName, bIsSelfContext ? nullptr : VariableOwnerClass);
+		FVector2D GraphPosition = FVector2D(InGraphPosition.X, InGraphPosition.Y);
+		UK2Node_VariableGet* NewVariableNode = K2_Schema->SpawnVariableGetNode(GraphPosition, InTargetGraph, VariableName, bIsSelfContext ? nullptr : VariableOwnerClass);
 		if (NewVariableNode == nullptr) {
 			return nullptr;
 		}
@@ -1502,7 +1503,7 @@ UK2Node_VariableGet* FOverlayComponentTreeRowDragDropOp::SpawnVariableGetNodeFor
 	return nullptr;
 }
 
-FReply FOverlayComponentTreeRowDragDropOp::DroppedOnPanel(const TSharedRef<SWidget>& Panel, FVector2D ScreenPosition, FVector2D GraphPosition, UEdGraph& Graph) {
+FReply FOverlayComponentTreeRowDragDropOp::DroppedOnPanel(const TSharedRef<SWidget>& Panel, const FVector2f& ScreenPosition, const FVector2f& GraphPosition, UEdGraph& Graph) {
 	TArray<UK2Node_VariableGet*> SpawnedVariableGetters;
 
 	// Check for a valid K2 graph schema and a valid blueprint first
@@ -1514,7 +1515,7 @@ FReply FOverlayComponentTreeRowDragDropOp::DroppedOnPanel(const TSharedRef<SWidg
 			
 				// Add the node to the spawned list and advance the position vertically enough to spawn the next node
 				SpawnedVariableGetters.Add(NewVariableNode);
-				ScreenPosition.Y += 50.0f;
+				// ScreenPosition.Y += 50.0f;
 			}
 		}
 	}
@@ -1522,7 +1523,7 @@ FReply FOverlayComponentTreeRowDragDropOp::DroppedOnPanel(const TSharedRef<SWidg
 	return SpawnedVariableGetters.IsEmpty() ? FReply::Unhandled() : FReply::Handled();
 }
 
-FReply FOverlayComponentTreeRowDragDropOp::DroppedOnPin(FVector2D ScreenPosition, FVector2D GraphPosition) {
+FReply FOverlayComponentTreeRowDragDropOp::DroppedOnPin(const FVector2f& ScreenPosition, const FVector2f& GraphPosition) {
 	UEdGraphPin* CurrentHoveredPin = GetHoveredPin();
 
 	// Make sure we have a valid pin type before we attempt to handle the drop
