@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using EpicGames.UHT.Types;
@@ -52,7 +51,7 @@ public static class HookStructGeneration
         if (accessors.Count > 0)
         {
             builder.Append("public:").Append(_newLineSeparator);
-            foreach (var accessor in accessors.Distinct())
+            foreach (var accessor in accessors)
             {
                 var implementations = accessor.GetImplementation(scriptStruct);
                 if (implementations == null)

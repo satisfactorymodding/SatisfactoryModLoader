@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using EpicGames.Core;
@@ -61,7 +60,7 @@ public static class HookClassGeneration
         if (accessors.Count > 0)
         {
             builder.Append("public:").Append(_newLineSeparator);
-            foreach (var accessor in accessors.Distinct())
+            foreach (var accessor in accessors)
             {
                 var implementations = accessor.GetImplementation(@class);
                 if (implementations == null)
