@@ -992,3 +992,102 @@ In both the unfreeze branch and the freeze branch, the `ResultMsg` variable was 
 ---
 
 *Last updated: 2026-05-03. All 2 Round-14 bugs resolved.*
+
+---
+
+## Round 15 — Full Source Audit (2026-05-03)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket.  
+7 bugs found and fixed.
+
+---
+
+### ✅ Fixed — `ConstantTimeEquals` accumulator not `volatile` — compiler may dead-store-eliminate loop (BUG-R15-01)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** `uint32 Diff` was a plain non-volatile variable.  Once the compiler infers
+that `Diff != 0` (e.g. from the length-mismatch branch), it is allowed to elide subsequent
+`Diff |= …` assignments via dead-store elimination, shortcutting the constant-time loop and
+leaking timing information about the API key.
+
+**Fix:** Changed `uint32 Diff` to `volatile uint32 Diff`, also promoted the `ByteA ^ ByteB`
+expression to `uint32` before the `|=` to prevent any narrowing-related UB.
+
+---
+
+### ✅ Fixed — API port not validated against upper bound 65535 (BUG-R15-02)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** `if (ApiPort <= 0) return` accepted values such as `99999`, which caused a
+silent bind failure inside UE's HTTP server module while the subsystem reported itself as
+active.
+
+**Fix:** Added `if (ApiPort > 65535)` guard with `UE_LOG(Error)` and early return.
+
+---
+
+### ✅ Fixed — `PushMuteEvent` sends uid-only envelope for non-"mute" event types (BUG-R15-03)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanWebSocketPusher.cpp`
+
+**Root cause:** Only the `EventType == "mute"` branch populated `playerName`, `mutedBy`,
+`reason`, and timing fields.  An "unmute" call produced an envelope with only `uid`, leaving
+WebSocket subscribers with no actionable context.
+
+**Fix:** Added `else` branch that emits `playerName`, `mutedBy`, and `reason` (when non-empty)
+for all other event types (e.g. "unmute").
+
+---
+
+### ✅ Fixed — `RecordSession` captures timestamp before acquiring mutex (BUG-R15-04)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/PlayerSessionRegistry.cpp`
+
+**Root cause:** `const FString NowStr = FDateTime::UtcNow().ToIso8601()` was called before
+`FScopeLock Lock(&Mutex)`.  Under lock contention the stored `lastSeen` timestamp could
+predate the actual record insertion by the entire wait duration.
+
+**Fix:** Moved the `NowStr` capture to the first line inside the `FScopeLock` block so it
+reflects the actual instant of mutation.
+
+---
+
+### ✅ Fixed — `AddCounterpartBans` does not kick currently-connected counterpart players (BUG-R15-05)
+**File:** `Mods/BanChatCommands/Source/BanChatCommands/Private/Commands/BanChatCommands.cpp`
+
+**Root cause:** After calling `DB->AddBan(IpEntry)` and `DB->AddBan(EosEntry)`,
+`AddCounterpartBans` never called `UBanEnforcer::KickConnectedPlayer`.  A player who was
+actively connected and matched a newly-created counterpart ban (IP or EOS) would continue
+playing until the next periodic ban-check scan or their next reconnect.
+
+**Fix:** Added `UBanEnforcer::KickConnectedPlayer(World, …, …GetKickMessage())` immediately
+after each successful `AddBan` call for both the IP-counterpart and EOS-counterpart paths.
+
+---
+
+### ✅ Fixed — Discord gateway sequence number accepts fractional floats (BUG-R15-06)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
+
+**Root cause:** The guard `Seq >= 0.0 && Seq <= MAX_int32 && FMath::IsFinite(Seq)` allowed
+non-integer values such as `1.9`, which `static_cast<int32>` would truncate to `1`.  A
+malformed gateway sending `"s": 1.9` would cause a Resume with the wrong sequence number,
+triggering spurious event replays.
+
+**Fix:** Added `&& FMath::Fmod(Seq, 1.0) == 0.0` to the guard, ensuring only whole-number
+values are accepted.
+
+---
+
+### ✅ Fixed — Proxy CONNECT response reader has no wall-clock deadline — DoS via slow proxy (BUG-R15-07)
+**File:** `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketRunnable.cpp`
+
+**Root cause:** `ConnectThroughProxy` read the proxy response one byte at a time with no
+overall timeout.  `RawRecvExact` blocks up to `RecvTimeoutMs` (5 s) per byte; with the
+`MaxLineBytes = 4096` cap, a proxy that trickles one byte every 4.9 s could stall the worker
+thread for ~5.7 hours without triggering the `bStopRequested` check.
+
+**Fix:** Added a 30-second wall-clock deadline (`FPlatformTime::Seconds() + 30.0`) checked at
+the top of the read loop.  If the deadline is exceeded the function logs an error and returns
+`false`, allowing the reconnect logic to retry.
+
+---
+
+*Last updated: 2026-05-03. All 7 Round-15 bugs resolved.*

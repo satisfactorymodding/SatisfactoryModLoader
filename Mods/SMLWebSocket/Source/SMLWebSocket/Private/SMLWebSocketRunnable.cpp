@@ -627,11 +627,21 @@ bool FSMLWebSocketRunnable::ConnectThroughProxy()
 	}
 
 	// Read the proxy response — accumulate until the header block ends (\r\n\r\n).
+	// Enforce a 30-second wall-clock deadline to prevent a slow/malicious proxy
+	// from stalling the worker thread indefinitely (RawRecvExact can block up to
+	// RecvTimeoutMs per byte without the deadline).
 	FString ResponseLine;
 	uint8 Buf[1];
 	static constexpr int32 MaxLineBytes = 4096;
+	const double ConnectDeadline = FPlatformTime::Seconds() + 30.0;
 	while (!bStopRequested && ResponseLine.Len() < MaxLineBytes)
 	{
+		if (FPlatformTime::Seconds() > ConnectDeadline)
+		{
+			UE_LOG(LogSMLWebSocket, Error,
+			       TEXT("SMLWebSocket: Proxy CONNECT response timed out after 30 s"));
+			return false;
+		}
 		if (!RawRecvExact(Buf, 1)) return false;
 		ResponseLine.AppendChar(static_cast<TCHAR>(Buf[0]));
 		if (ResponseLine.EndsWith(TEXT("\r\n\r\n"))) break;

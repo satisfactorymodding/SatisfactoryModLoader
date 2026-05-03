@@ -155,14 +155,16 @@ namespace BanJson
     static bool ConstantTimeEquals(const FString& A, const FString& B)
     {
         const FTCHARToUTF8 Au(*A), Bu(*B);
-        // Use uint32 so that length differences ≥ 256 are not masked by uint8 truncation.
-        uint32 Diff = static_cast<uint32>(Au.Length() != Bu.Length() ? 1 : 0);
+        // Use volatile uint32 to prevent the compiler from dead-store-eliminating the
+        // accumulation loop once Diff becomes non-zero (which would break the constant-time
+        // guarantee).  Length differences ≥ 256 are not masked because we use uint32.
+        volatile uint32 Diff = static_cast<uint32>(Au.Length() != Bu.Length() ? 1 : 0);
         const int32 N = FMath::Max(Au.Length(), Bu.Length());
         for (int32 i = 0; i < N; ++i)
         {
             const uint8 ByteA = (i < Au.Length()) ? static_cast<uint8>(Au.Get()[i]) : 0;
             const uint8 ByteB = (i < Bu.Length()) ? static_cast<uint8>(Bu.Get()[i]) : 0;
-            Diff |= ByteA ^ ByteB;
+            Diff |= static_cast<uint32>(ByteA ^ ByteB);
         }
         return Diff == 0;
     }
@@ -324,6 +326,12 @@ void UBanRestApi::Initialize(FSubsystemCollectionBase& Collection)
     if (ApiPort <= 0)
     {
         UE_LOG(LogBanRestApi, Log, TEXT("BanRestApi: REST API disabled (RestApiPort=0)"));
+        return;
+    }
+    if (ApiPort > 65535)
+    {
+        UE_LOG(LogBanRestApi, Error,
+            TEXT("BanRestApi: Invalid port %d — must be 1–65535. API server not started."), ApiPort);
         return;
     }
 
