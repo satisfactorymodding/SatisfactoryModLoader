@@ -75,6 +75,27 @@ static FString JsonEscapeStr(const FString& S)
 	return Out;
 }
 
+// Escapes Discord markdown special characters so player-supplied strings
+// (names, reasons, etc.) are rendered literally, not as formatting.
+static FString EscapeMarkdown(const FString& Text)
+{
+	static const TCHAR SpecialChars[] = { TEXT('*'), TEXT('_'), TEXT('`'), TEXT('~'),
+	                                       TEXT('|'), TEXT('>'), TEXT('\\'), TEXT('\0') };
+	FString Out;
+	Out.Reserve(Text.Len() + 8);
+	for (TCHAR C : Text)
+	{
+		bool bSpecial = false;
+		for (int32 i = 0; SpecialChars[i] != TEXT('\0'); ++i)
+		{
+			if (C == SpecialChars[i]) { bSpecial = true; break; }
+		}
+		if (bSpecial) Out += TEXT('\\');
+		Out += C;
+	}
+	return Out;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // USubsystem lifetime
 // ─────────────────────────────────────────────────────────────────────────────
@@ -160,7 +181,7 @@ void UDiscordBridgeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 			for (const FString& Name : ExpiredNames)
 			{
 				const FString Msg = FString::Printf(
-					TEXT(":clock1: **%s** has been removed from the whitelist (entry expired)."), *Name);
+					TEXT(":clock1: **%s** has been removed from the whitelist (entry expired)."), *EscapeMarkdown(Name));
 				const FString& NotifyChan = WhitelistConfig.WhitelistEventsChannelId.IsEmpty()
 					? Config.ChannelId : WhitelistConfig.WhitelistEventsChannelId;
 				if (!NotifyChan.IsEmpty())
@@ -197,17 +218,17 @@ void UDiscordBridgeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 							if (RemDays > 0)
 								WarnMsg = FString::Printf(
 									TEXT(":warning: **%s**'s whitelist entry expires in **%dd %dh** (%s UTC)."),
-									*E.Name, RemDays, RemHours,
+									*EscapeMarkdown(E.Name), RemDays, RemHours,
 									*E.ExpiresAt.ToString(TEXT("%Y-%m-%d %H:%M")));
 							else if (RemHours > 0)
 								WarnMsg = FString::Printf(
 									TEXT(":warning: **%s**'s whitelist entry expires in **%dh %dm** (%s UTC)."),
-									*E.Name, RemHours, RemMins,
+									*EscapeMarkdown(E.Name), RemHours, RemMins,
 									*E.ExpiresAt.ToString(TEXT("%Y-%m-%d %H:%M")));
 							else
 								WarnMsg = FString::Printf(
 									TEXT(":warning: **%s**'s whitelist entry expires in **%dm** (%s UTC)."),
-									*E.Name, FMath::Max(1, static_cast<int32>(Remaining.GetTotalMinutes())),
+									*EscapeMarkdown(E.Name), FMath::Max(1, static_cast<int32>(Remaining.GetTotalMinutes())),
 									*E.ExpiresAt.ToString(TEXT("%Y-%m-%d %H:%M")));
 							SendMessageToChannel(WarnChan, WarnMsg);
 						}
@@ -1001,10 +1022,10 @@ void UDiscordBridgeSubsystem::HandleDispatch(const FString& EventType, int32 Seq
 							RespondToInteraction(InteractionId, InteractionToken, 4,
 								FString::Printf(
 									TEXT(":white_check_mark: **%s** has been approved and added to the whitelist."),
-									*PlayerNameCopy),
+									*EscapeMarkdown(PlayerNameCopy)),
 								/*bEphemeral=*/false);
 							PostWhitelistEvent(
-								FString::Printf(TEXT("**%s** approved via application"), *PlayerNameCopy),
+								FString::Printf(TEXT("**%s** approved via application"), *EscapeMarkdown(PlayerNameCopy)),
 								PlayerNameCopy, TEXT("[Discord Approval]"), 3066993);
 
 							if (!WhitelistConfig.WhitelistApprovedDmMessage.IsEmpty())
@@ -1019,7 +1040,7 @@ void UDiscordBridgeSubsystem::HandleDispatch(const FString& EventType, int32 Seq
 							RespondToInteraction(InteractionId, InteractionToken, 4,
 								FString::Printf(
 									TEXT(":yellow_circle: **%s** is already on the whitelist."),
-									*PlayerNameCopy),
+									*EscapeMarkdown(PlayerNameCopy)),
 								/*bEphemeral=*/false);
 						}
 					}
@@ -1041,7 +1062,7 @@ void UDiscordBridgeSubsystem::HandleDispatch(const FString& EventType, int32 Seq
 						RespondToInteraction(InteractionId, InteractionToken, 4,
 							FString::Printf(
 								TEXT(":red_circle: Whitelist application for **%s** has been denied."),
-								*PlayerNameCopy),
+								*EscapeMarkdown(PlayerNameCopy)),
 							/*bEphemeral=*/false);
 					}
 					else
@@ -1107,7 +1128,7 @@ void UDiscordBridgeSubsystem::HandleDispatch(const FString& EventType, int32 Seq
 					if (FWhitelistManager::AddPlayer(SyncUsername, TEXT(""), TEXT("sync-role")))
 					{
 						PostWhitelistEvent(
-							FString::Printf(TEXT("**%s** added via Discord role sync (role assigned)"), *SyncUsername),
+							FString::Printf(TEXT("**%s** added via Discord role sync (role assigned)"), *EscapeMarkdown(SyncUsername)),
 							SyncUsername, TEXT("sync-role"), 3066993);
 					}
 				}
@@ -1126,7 +1147,7 @@ void UDiscordBridgeSubsystem::HandleDispatch(const FString& EventType, int32 Seq
 					if (FWhitelistManager::AddPlayer(SyncUsername, TEXT(""), TEXT("sync-role")))
 					{
 						PostWhitelistEvent(
-							FString::Printf(TEXT("**%s** added via Discord role sync (joined with role)"), *SyncUsername),
+							FString::Printf(TEXT("**%s** added via Discord role sync (joined with role)"), *EscapeMarkdown(SyncUsername)),
 							SyncUsername, TEXT("sync-role"), 3066993);
 					}
 				}
@@ -3593,35 +3614,28 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 				if (ParsedName.IsEmpty()) ParsedName = Arg;
 			}
 
-			// Capacity check
-			if (FWhitelistManager::GetMaxSlots() > 0 &&
-			    FWhitelistManager::GetAllEntries().Num() >= FWhitelistManager::GetMaxSlots())
-			{
-				Response = FString::Printf(
-					TEXT(":no_entry: Whitelist is full (%d/%d slots used)."),
-					FWhitelistManager::GetAllEntries().Num(),
-					FWhitelistManager::GetMaxSlots());
-			}
-			else if (FWhitelistManager::AddPlayer(ParsedName, ParsedPuid, DiscordUsername, ExpiresAt, ParsedGroup))
+			// AddPlayer atomically handles the capacity check internally.
+			// Call it first; inspect the outcome to determine the response.
+			if (FWhitelistManager::AddPlayer(ParsedName, ParsedPuid, DiscordUsername, ExpiresAt, ParsedGroup))
 			{
 				FString AddedMsg;
 				if (ExpiresAt.GetTicks() > 0)
 				{
 					AddedMsg = FString::Printf(
 						TEXT(":green_circle: **%s** added (expires %s)."),
-						*ParsedName,
+						*EscapeMarkdown(ParsedName),
 						*ExpiresAt.ToString(TEXT("%Y-%m-%d %H:%M UTC")));
 				}
 				else
 				{
 					AddedMsg = FString::Printf(
-						TEXT(":green_circle: **%s** has been added to the whitelist."), *ParsedName);
+						TEXT(":green_circle: **%s** has been added to the whitelist."), *EscapeMarkdown(ParsedName));
 				}
 				if (!ParsedGroup.IsEmpty())
-					AddedMsg += FString::Printf(TEXT(" Group: **%s**."), *ParsedGroup);
+					AddedMsg += FString::Printf(TEXT(" Group: **%s**."), *EscapeMarkdown(ParsedGroup));
 				Response = AddedMsg;
 				PostWhitelistEvent(
-					FString::Printf(TEXT("**%s** added to the whitelist"), *ParsedName),
+					FString::Printf(TEXT("**%s** added to the whitelist"), *EscapeMarkdown(ParsedName)),
 					ParsedName, DiscordUsername, 3066993);
 
 				// DM on add when AuthorDiscordId is known and DM is configured.
@@ -3631,9 +3645,18 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 					// For direct /whitelist add we don't know the target's Discord ID, so skip.
 				}
 			}
+			else if (FWhitelistManager::GetMaxSlots() > 0 &&
+			         FWhitelistManager::GetAllEntries().Num() >= FWhitelistManager::GetMaxSlots())
+			{
+				// AddPlayer returned false and capacity is still at or above max — report full.
+				Response = FString::Printf(
+					TEXT(":no_entry: Whitelist is full (%d/%d slots used)."),
+					FWhitelistManager::GetAllEntries().Num(),
+					FWhitelistManager::GetMaxSlots());
+			}
 			else
 			{
-				Response = FString::Printf(TEXT(":yellow_circle: **%s** is already on the whitelist."), *ParsedName);
+				Response = FString::Printf(TEXT(":yellow_circle: **%s** is already on the whitelist."), *EscapeMarkdown(ParsedName));
 			}
 		}
 	}
@@ -3650,14 +3673,14 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 			WarnedExpiryNames.Remove(Arg);
 			SaveWarnedExpiryNames();
 
-			Response = FString::Printf(TEXT(":red_circle: **%s** has been removed from the whitelist."), *Arg);
+			Response = FString::Printf(TEXT(":red_circle: **%s** has been removed from the whitelist."), *EscapeMarkdown(Arg));
 			PostWhitelistEvent(
-				FString::Printf(TEXT("**%s** removed from the whitelist"), *Arg),
+				FString::Printf(TEXT("**%s** removed from the whitelist"), *EscapeMarkdown(Arg)),
 				Arg, DiscordUsername, 15158332);
 		}
 		else
 		{
-			Response = FString::Printf(TEXT(":yellow_circle: **%s** was not on the whitelist."), *Arg);
+			Response = FString::Printf(TEXT(":yellow_circle: **%s** was not on the whitelist."), *EscapeMarkdown(Arg));
 		}
 	}
 	else if (Verb == TEXT("list"))
@@ -3808,7 +3831,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 				LogText += FString::Printf(TEXT("`[%s]` **%s** `%s` by %s\n"),
 					*E.Timestamp.ToString(TEXT("%Y-%m-%d %H:%M")),
 					*E.Action,
-					*E.Target,
+					*EscapeMarkdown(E.Target),
 					E.AdminName.IsEmpty() ? TEXT("system") : *E.AdminName);
 			}
 			Response = LogText;
@@ -3872,7 +3895,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 			}
 			else
 			{
-				FString ResultText = FString::Printf(TEXT(":mag: Search results for `%s` (%d):\n"), *Arg, Results.Num());
+				FString ResultText = FString::Printf(TEXT(":mag: Search results for `%s` (%d):\n"), *EscapeMarkdown(Arg), Results.Num());
 				for (const FWhitelistEntry& E : Results)
 				{
 					FString ExtraInfo;
@@ -3881,7 +3904,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 					if (E.ExpiresAt.GetTicks() > 0)
 						ExtraInfo += FString::Printf(TEXT(" (expires %s)"),
 							*E.ExpiresAt.ToString(TEXT("%Y-%m-%d %H:%M UTC")));
-					ResultText += FString::Printf(TEXT("• **%s**%s\n"), *E.Name, *ExtraInfo);
+					ResultText += FString::Printf(TEXT("• **%s**%s\n"), *EscapeMarkdown(E.Name), *ExtraInfo);
 				}
 				Response = ResultText.TrimEnd();
 				if (Response.Len() > 1900)
@@ -4038,7 +4061,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 
 			Response = FString::Printf(
 				TEXT(":key: Type `/verify %s` in-game within **10 minutes** to link your account **%s** to the whitelist."),
-				*CodeStr, *Arg);
+				*CodeStr, *EscapeMarkdown(Arg));
 		}
 	}
 	else
@@ -4571,10 +4594,10 @@ void UDiscordBridgeSubsystem::HandleInGameVerify(const FString& PlayerName, cons
 				// Announce success to all players — it is appropriate as a broadcast.
 				SendGameChatStatusMessage(FString::Printf(
 					TEXT("[DiscordBridge] Account linked! **%s** has been added to the whitelist."),
-					*PlayerName));
+					*EscapeMarkdown(PlayerName)));
 				PostWhitelistEvent(
 					FString::Printf(TEXT("**%s** added via in-game verification (Discord: %s)"),
-						*PlayerName, *AuditName),
+						*EscapeMarkdown(PlayerName), *AuditName),
 					PlayerName, TEXT("[Verification]"), 3066993);
 
 				// Confirm to the Discord user who initiated the link.
@@ -4588,14 +4611,14 @@ void UDiscordBridgeSubsystem::HandleInGameVerify(const FString& PlayerName, cons
 				{
 					SendDiscordDM(DiscordUserId, FString::Printf(
 						TEXT("✅ Your in-game account **%s** has been verified and added to the whitelist!"),
-						*PlayerName));
+						*EscapeMarkdown(PlayerName));
 				}
 			}
 			else
 			{
 				// Already whitelisted — notify the invoking player privately.
 				SendPrivate(
-					FString::Printf(TEXT("[DiscordBridge] **%s** is already on the whitelist."), *PlayerName),
+					FString::Printf(TEXT("[DiscordBridge] **%s** is already on the whitelist."), *EscapeMarkdown(PlayerName)),
 					FLinearColor::Yellow);
 			}
 		}
@@ -4648,18 +4671,19 @@ void UDiscordBridgeSubsystem::HandleInGameWhitelistCommand(const FString& SubCom
 		{
 			Response = TEXT("Usage: /ingamewhitelist add <PlayerName>");
 		}
+		// AddPlayer atomically handles the capacity check internally.
+		else if (FWhitelistManager::AddPlayer(Arg, TEXT(""), TEXT("[server]")))
+		{
+			Response = FString::Printf(TEXT("%s has been added to the whitelist."), *Arg);
+			PostWhitelistEvent(
+				FString::Printf(TEXT("**%s** added to the whitelist"), *EscapeMarkdown(Arg)),
+				Arg, TEXT("[server]"), 3066993);
+		}
 		else if (FWhitelistManager::GetMaxSlots() > 0 &&
 		         FWhitelistManager::GetAllEntries().Num() >= FWhitelistManager::GetMaxSlots())
 		{
 			Response = FString::Printf(TEXT("Whitelist is full (%d/%d slots)."),
 				FWhitelistManager::GetAllEntries().Num(), FWhitelistManager::GetMaxSlots());
-		}
-		else if (FWhitelistManager::AddPlayer(Arg, TEXT(""), TEXT("[server]")))
-		{
-			Response = FString::Printf(TEXT("%s has been added to the whitelist."), *Arg);
-			PostWhitelistEvent(
-				FString::Printf(TEXT("**%s** added to the whitelist"), *Arg),
-				Arg, TEXT("[server]"), 3066993);
 		}
 		else
 		{
@@ -4676,7 +4700,7 @@ void UDiscordBridgeSubsystem::HandleInGameWhitelistCommand(const FString& SubCom
 		{
 			Response = FString::Printf(TEXT("%s has been removed from the whitelist."), *Arg);
 			PostWhitelistEvent(
-				FString::Printf(TEXT("**%s** removed from the whitelist"), *Arg),
+				FString::Printf(TEXT("**%s** removed from the whitelist"), *EscapeMarkdown(Arg)),
 				Arg, TEXT("[server]"), 15158332);
 		}
 		else
@@ -4953,7 +4977,7 @@ void UDiscordBridgeSubsystem::AddJoinReactions(const FString& MessageId,
 		// Schedule a check when the vote window expires.
 		// Clamp to a minimum of 1 second so that a zero/negative VoteWindowMinutes
 		// misconfiguration does not fire the ticker immediately (before any votes arrive).
-		const float DelaySeconds = FMath::Max(1.0f, static_cast<float>(Config.VoteWindowMinutes * 60));
+		const float DelaySeconds = FMath::Max(1.0f, static_cast<float>(Config.VoteWindowMinutes) * 60.0f);
 		FTSTicker::FDelegateHandle VoteHandle = FTSTicker::GetCoreTicker().AddTicker(
 			FTickerDelegate::CreateWeakLambda(this, [this, MessageId](float) -> bool
 			{
@@ -5133,7 +5157,7 @@ bool UDiscordBridgeSubsystem::AfkKickTick(float /*DeltaTime*/)
 		const FString& NotifChannel = Config.PlayerEventsChannelId.IsEmpty()
 			? Config.ChannelId : Config.PlayerEventsChannelId;
 		SendMessageToChannel(NotifChannel,
-			FString::Printf(TEXT(":zzz: **%s** was kicked for inactivity (AFK)."), *Name));
+			FString::Printf(TEXT(":zzz: **%s** was kicked for inactivity (AFK)."), *EscapeMarkdown(Name)));
 	}
 
 	return true; // keep ticking
@@ -5204,12 +5228,12 @@ else
 UMuteRegistry* MuteReg = GI ? GI->GetSubsystem<UMuteRegistry>() : nullptr;
 if (MuteReg)
 {
-MutedEventHandle = MuteReg->OnPlayerMuted.AddLambda(
+MutedEventHandle = MuteReg->OnPlayerMuted.AddWeakLambda(this,
 [this](const FMuteEntry& Entry, bool bIsTimed)
 {
 NotifyMuteEvent(Entry.PlayerName, Entry.Uid, true, Entry.Reason);
 });
-UnmutedEventHandle = MuteReg->OnPlayerUnmuted.AddLambda(
+UnmutedEventHandle = MuteReg->OnPlayerUnmuted.AddWeakLambda(this,
 [this](const FString& Uid)
 {
 FString PlayerName;
@@ -5779,7 +5803,7 @@ FString::Printf(TEXT("%s Player %s: %s"), *Emoji, *Action, *PlayerName));
 EmbedObj->SetNumberField(TEXT("color"), Colour);
 if (bIsMuted && !Reason.IsEmpty())
 EmbedObj->SetStringField(TEXT("description"),
-FString::Printf(TEXT("**Reason:** %s"), *Reason));
+FString::Printf(TEXT("**Reason:** %s"), *EscapeMarkdown(Reason)));
 EmbedObj->SetStringField(TEXT("timestamp"), FDateTime::UtcNow().ToIso8601());
 
 TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
