@@ -728,12 +728,7 @@ void UBanRestApi::RegisterRoutes()
             FString Csv = TEXT("id,uid,playerUID,platform,playerName,reason,bannedBy,banDate,expireDate,isPermanent,linkedUids\n");
             for (const FBanEntry& E : AllBans)
             {
-                FString LinkedStr;
-                for (int32 i = 0; i < E.LinkedUids.Num(); ++i)
-                {
-                    if (i > 0) LinkedStr += TEXT("|");
-                    LinkedStr += E.LinkedUids[i];
-                }
+                const FString LinkedStr = FString::Join(E.LinkedUids, TEXT("|"));
 
                 Csv += FString::Printf(TEXT("%lld,"), E.Id);
                 Csv += CsvQuote(E.Uid)        + TEXT(",");

@@ -314,28 +314,15 @@ bool FWhitelistManager::RemovePlayer(const FString& PlayerName, const FString& E
 	int32 RemovedIdx = INDEX_NONE;
 
 	if (!EosPUID.IsEmpty())
-	{
-		// Remove by PUID
-		for (int32 i = 0; i < Entries.Num(); ++i)
+		RemovedIdx = Entries.IndexOfByPredicate([&EosPUID](const FWhitelistEntry& E)
 		{
-			if (Entries[i].EosPUID.Equals(EosPUID, ESearchCase::IgnoreCase))
-			{
-				RemovedIdx = i;
-				break;
-			}
-		}
-	}
+			return E.EosPUID.Equals(EosPUID, ESearchCase::IgnoreCase);
+		});
 	else
-	{
-		for (int32 i = 0; i < Entries.Num(); ++i)
+		RemovedIdx = Entries.IndexOfByPredicate([&PlayerName](const FWhitelistEntry& E)
 		{
-			if (Entries[i].Name.Equals(PlayerName, ESearchCase::IgnoreCase))
-			{
-				RemovedIdx = i;
-				break;
-			}
-		}
-	}
+			return E.Name.Equals(PlayerName, ESearchCase::IgnoreCase);
+		});
 
 	if (RemovedIdx == INDEX_NONE) return false;
 
@@ -436,23 +423,16 @@ void FWhitelistManager::RemoveExpiredEntries(TArray<FString>& OutExpiredNames)
 {
 	FScopeLock Lock(&Mutex);
 	const FDateTime Now = FDateTime::UtcNow();
-	TArray<int32> ToRemove;
-	for (int32 i = 0; i < Entries.Num(); ++i)
-	{
-		const FWhitelistEntry& E = Entries[i];
+	for (const FWhitelistEntry& E : Entries)
 		if (E.ExpiresAt.GetTicks() > 0 && E.ExpiresAt <= Now)
-		{
 			OutExpiredNames.Add(E.Name);
-			ToRemove.Add(i);
-		}
-	}
-	if (ToRemove.Num() > 0)
+
+	const int32 Removed = Entries.RemoveAll([&Now](const FWhitelistEntry& E)
 	{
-		// Remove in reverse order to preserve indices
-		for (int32 i = ToRemove.Num() - 1; i >= 0; --i)
-			Entries.RemoveAt(ToRemove[i]);
+		return E.ExpiresAt.GetTicks() > 0 && E.ExpiresAt <= Now;
+	});
+	if (Removed > 0)
 		Save_Locked();
-	}
 }
 
 TArray<FWhitelistEntry> FWhitelistManager::Search(const FString& PartialName)

@@ -1938,3 +1938,133 @@ All 71 source files use properly declared per-file log categories after the
 `LogBanTypes` fix above.  Error/Warning severities are correctly assigned throughout.
 
 *Last updated: 2026-05-03. Hardening audit complete — 1 fix applied.*
+
+---
+
+## Round 25 — UE5 Optimization Pass (2026-05-03)
+
+### Summary
+
+A targeted UE5 optimization pass was performed across the four owner mods.  No new
+correctness or security bugs were found — the codebase is clean after Rounds 1–24.
+The focus was on:
+
+- Replacing remaining hotpath indexed loops with range-based `for` and TArray helpers.
+- Eliminating linear null-terminated array scans inside per-character loops.
+- Adding automated tests for pure utility functions.
+
+---
+
+### ✅ Optimized — `EscapeMarkdown` inner linear scan → `switch` (OPT-R25-01)
+**Files:** `BanDiscordSubsystem.cpp`, `DiscordBridgeSubsystem.cpp`, `TicketSubsystem.cpp`
+
+**Root cause:** All three local `EscapeMarkdown` helper functions contained a nested
+`for` loop that scanned a null-terminated `TCHAR SpecialChars[]` array (7 elements)
+for each character of the input string.  This produced O(7 × N) work per call, where
+N is the string length.  The static array variable also needlessly occupied BSS space.
+
+**Fix:** Replaced the inner scan with a `switch` statement covering the 7 special
+characters (`*`, `_`, `` ` ``, `~`, `|`, `>`, `\`).  The compiler generates a jump
+table (or equivalent branch chain), reducing each character to O(1) and eliminating
+the nested-loop overhead.  The outer loop already iterated with range-based `for`.
+
+---
+
+### ✅ Optimized — `WhitelistManager::RemovePlayer` indexed loop → `IndexOfByPredicate` (OPT-R25-02)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/WhitelistManager.cpp`
+
+**Root cause:** Two explicit `for (int32 i = 0; i < Entries.Num(); ++i)` loops each
+performed a linear scan to find the entry to remove, then stored the found index in
+`RemovedIdx`.  UE5 TArray provides `IndexOfByPredicate` for this exact pattern.
+
+**Fix:** Both search loops replaced with `Entries.IndexOfByPredicate(lambda)`.
+Behaviour is identical; the UE intrinsic is more idiomatic and easier to read.
+
+---
+
+### ✅ Optimized — `WhitelistManager::RemoveExpiredEntries` manual index-then-reverse-remove → `RemoveAll` (OPT-R25-03)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/WhitelistManager.cpp`
+
+**Root cause:** The function built a `TArray<int32> ToRemove`, then iterated it in
+reverse to call `Entries.RemoveAt(i)` one-by-one (to preserve indices during
+removal).  This required a separate `ToRemove` allocation and a reverse-iteration
+loop in addition to the forward scan that collected names.
+
+**Fix:**
+1. Forward range-based `for` over `Entries` to collect expired names into `OutExpiredNames`.
+2. `Entries.RemoveAll(lambda)` with the same predicate to remove all expired entries in a
+   single O(N) pass without a secondary index array.
+
+---
+
+### ✅ Optimized — `BanRestApi` CSV LinkedUids separator loop → `FString::Join` (OPT-R25-04)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** The CSV export built the `|`-separated `LinkedUids` string via a
+`for (int32 i = 0; ...)` loop that prepended a separator for every element after the
+first.  UE5 provides `FString::Join(Container, Separator)` for this exact pattern.
+
+**Fix:** `const FString LinkedStr = FString::Join(E.LinkedUids, TEXT("|"))`.
+
+---
+
+### ✅ Optimized — `DiscordBridgeSubsystem` in-game message setup loop → range-based `for` (OPT-R25-05)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
+
+**Root cause:** The `InGameMessages` ticker-setup loop used `for (int32 i = 0; ...)` and
+accessed the element via `InGameMessagesConfig.Messages[i]`.  The index was only
+used once — in a log line — and does not need to be derived from the container access.
+
+**Fix:** Converted to `for (const FInGameBroadcastMessage& Entry : ...)` with an explicit
+`int32 BroadcastIdx = 0; ++BroadcastIdx;` counter for the log line.
+
+---
+
+### ✅ Added — Automation tests for BanSystem pure utility functions (OPT-R25-06)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/Tests/BanSystemTests.cpp`
+
+**Added tests:**
+
+| Test name | What it exercises |
+|---|---|
+| `BanSystem.BanTemplate.ParseValid` | `FBanTemplate::FromConfigString` — 3-field, 4-field, zero-duration, large-duration clamp |
+| `BanSystem.BanTemplate.ParseInvalid` | Rejects < 3 fields, alpha duration, float duration |
+| `BanSystem.BanDatabase.UidRoundTrip` | `MakeUid`/`ParseUid` round-trip for EOS, IP, lowercase, malformed |
+| `BanSystem.FBanEntry.MatchesUid` | Primary UID, linked UIDs, misses, empty-string guard |
+| `BanSystem.BanTemplate.ParseTemplates` | Batch parse skips invalid entries |
+| `BanSystem.IdSerialization.Int64RoundTrip` | `Printf %lld` / `Atoi64` preserves IDs above 2⁵³; confirms double loses precision |
+
+All tests are guarded by `#if WITH_DEV_AUTOMATION_TESTS` and use
+`IMPLEMENT_SIMPLE_AUTOMATION_TEST` with
+`EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter`.
+
+---
+
+### 📝 Noted — Registry save/load round-trip tests deferred (OPT-R25-NOTE)
+
+Full save/load round-trip tests for `UBanDatabase`, `UBanAppealRegistry`,
+`UPlayerWarningRegistry`, and `UScheduledBanRegistry` require calling private
+`LoadFromFile`/`SaveToFile` methods against a temp file path.  To enable this
+without exposing the API, add `#if WITH_DEV_AUTOMATION_TESTS` friend-class
+declarations or `protected:` test-accessor setters to each registry header, then
+extend this test file.  The `BanSystem.IdSerialization` test already validates the
+core serialization contract (int64 string encoding).
+
+---
+
+### 📝 Noted — Coupling and consolidation (OPT-R25-ARCH)
+
+**Mod coupling:** The `IDiscordBridgeProvider` abstract interface (275 lines in
+`IDiscordBridgeProvider.h`) is the correct UE5 dependency-injection pattern for
+decoupling `BanDiscordSubsystem` and `TicketSubsystem` from the concrete
+`UDiscordBridgeSubsystem`.  Both consumers hold `IDiscordBridgeProvider*` set via
+`SetProvider()` and cleared on `Deinitialize()`.  No code changes needed.
+
+**Consolidation:** Whether to merge `BanChatCommands` into `BanSystem` and whether
+to fold `SMLWebSocket` into `DiscordBridge` are valid long-term architecture
+decisions, but they require a full build-and-test cycle and careful dependency
+graph analysis.  They are left as forward-looking tasks beyond this pass.
+
+---
+
+*Last updated: 2026-05-03. All 5 optimizations applied; 6 tests added.*
