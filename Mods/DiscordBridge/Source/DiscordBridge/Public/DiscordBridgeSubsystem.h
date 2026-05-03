@@ -528,7 +528,7 @@ private:
 
 	/** The WebSocket client connected to the Discord Gateway. */
 	UPROPERTY()
-	USMLWebSocketClient* WebSocketClient{nullptr};
+	TObjectPtr<USMLWebSocketClient> WebSocketClient{nullptr};
 
 	/** Loaded configuration (populated in Initialize()). */
 	FDiscordBridgeConfig Config;
