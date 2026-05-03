@@ -628,7 +628,8 @@ void UBanRestApi::RegisterRoutes()
             UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>();
             if (!DB) { Done(BanJson::Error(TEXT("Database unavailable"), EHttpServerResponseCodes::ServerError)); return true; }
 
-            if (!DB->AddBan(Entry))
+            FBanEntry Saved;
+            if (!DB->AddBan(Entry, &Saved))
             {
                 Done(BanJson::Error(TEXT("Failed to add ban"), EHttpServerResponseCodes::ServerError));
                 return true;
@@ -638,18 +639,6 @@ void UBanRestApi::RegisterRoutes()
             if (UWorld* World = GI->GetWorld())
             {
                 UBanEnforcer::KickConnectedPlayer(World, Entry.Uid, Entry.GetKickMessage());
-            }
-
-            // Fetch the row back so we can return the assigned id (auto-incremented by AddBan).
-            // Fall back to returning the in-memory entry if the lookup fails (should never
-            // happen after a successful AddBan, but guards against a corrupt DB state).
-            FBanEntry Saved;
-            if (!DB->GetBanByUid(Entry.Uid, Saved))
-            {
-                UE_LOG(LogBanRestApi, Warning,
-                    TEXT("BanRestApi: POST /bans — GetBanByUid failed for '%s' immediately after AddBan; returning in-memory entry"),
-                    *Entry.Uid);
-                Saved = Entry;
             }
 
             FBanDiscordNotifier::NotifyBanCreated(Saved);
@@ -1542,21 +1531,11 @@ void UBanRestApi::RegisterRoutes()
             Entry.bIsPermanent = true;
             Entry.ExpireDate   = FDateTime(0);
 
-            if (!DB->AddBan(Entry))
+            FBanEntry Saved;
+            if (!DB->AddBan(Entry, &Saved))
             {
                 Done(BanJson::Error(TEXT("Failed to add IP ban"), EHttpServerResponseCodes::ServerError));
                 return true;
-            }
-
-            // Fetch the row back so the response includes the assigned ID.
-            // (AddBan assigns the ID inside its own local copy; Entry.Id is still 0 here.)
-            FBanEntry Saved;
-            if (!DB->GetBanByUid(Entry.Uid, Saved))
-            {
-                UE_LOG(LogBanRestApi, Warning,
-                    TEXT("BanRestApi: POST /bans/ip — GetBanByUid failed for '%s' immediately after AddBan; returning in-memory entry"),
-                    *Entry.Uid);
-                Saved = Entry;
             }
 
             FBanDiscordNotifier::NotifyBanCreated(Saved);
@@ -2881,18 +2860,9 @@ void UBanRestApi::RegisterRoutes()
                     ? FDateTime(0)
                     : BatchBanNow + FTimespan::FromMinutes(DurationMinutes);
 
-                if (DB->AddBan(Ban))
+                FBanEntry Saved;
+                if (DB->AddBan(Ban, &Saved))
                 {
-                    // Fetch the saved entry so the response and Discord notification
-                    // contain the assigned Id (AddBan assigns it to an internal copy only).
-                    FBanEntry Saved;
-                    if (!DB->GetBanByUid(Ban.Uid, Saved))
-                    {
-                        UE_LOG(LogBanRestApi, Warning,
-                            TEXT("BanRestApi: POST /bans/bulk — GetBanByUid failed for '%s' immediately after AddBan; using in-memory entry"),
-                            *Ban.Uid);
-                        Saved = Ban;
-                    }
                     FBanDiscordNotifier::NotifyBanCreated(Saved);
                     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                         AuditLog->LogAction(TEXT("ban"), Uid, TEXT(""), BannedBy, BannedBy, Reason);

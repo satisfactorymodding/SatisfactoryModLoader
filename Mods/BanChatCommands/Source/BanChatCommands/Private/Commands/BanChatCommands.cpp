@@ -1003,12 +1003,25 @@ EExecutionStatus ALinkBansChatCommand::ExecuteCommand_Implementation(
         return EExecutionStatus::UNCOMPLETED;
     }
 
-    if (DB->LinkBans(UidA, UidB))
+    bool bPartialOnly = false;
+    if (DB->LinkBans(UidA, UidB, &bPartialOnly))
     {
-        Sender->SendChatMessage(
-            FString::Printf(TEXT("[BanChatCommands] Linked %s ↔ %s. "
-                "A ban on either identity will now block both."), *UidA, *UidB),
-            FLinearColor::Green);
+        if (bPartialOnly)
+        {
+            // One UID had a ban record; the other did not — one-sided link stored.
+            Sender->SendChatMessage(
+                FString::Printf(TEXT("[BanChatCommands] Warning: only one of '%s' / '%s' has a ban "
+                    "record; a one-sided link was saved. Create a ban for the missing UID and run "
+                    "/linkbans again to complete the cross-link."), *UidA, *UidB),
+                FLinearColor::Yellow);
+        }
+        else
+        {
+            Sender->SendChatMessage(
+                FString::Printf(TEXT("[BanChatCommands] Linked %s ↔ %s. "
+                    "A ban on either identity will now block both."), *UidA, *UidB),
+                FLinearColor::Green);
+        }
 
         UWorld* LWorld = GetWorld();
         UGameInstance* LGI = LWorld ? LWorld->GetGameInstance() : nullptr;
