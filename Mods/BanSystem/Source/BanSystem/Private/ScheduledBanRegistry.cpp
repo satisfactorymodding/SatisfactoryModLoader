@@ -371,7 +371,9 @@ void UScheduledBanRegistry::LoadFromFile()
         const int64 Parsed = FCString::Atoi64(*StoredNextIdStr);
         NextId = (Parsed > 0) ? Parsed : 1;
     }
-    else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl) && StoredNextIdDbl >= 1.0)
+    else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl)
+             && StoredNextIdDbl >= 1.0
+             && StoredNextIdDbl < static_cast<double>(INT64_MAX)) // guard against Inf/NaN before cast
     {
         NextId = static_cast<int64>(StoredNextIdDbl);
     }
