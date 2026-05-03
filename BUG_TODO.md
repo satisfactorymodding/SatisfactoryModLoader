@@ -1753,3 +1753,131 @@ if (BanDb->RemoveBanByUid(BanRecord.Uid, RemovedBan, /*bSilent=*/true))
 ---
 
 *Last updated: 2026-05-05. All 2 Round-23 bugs resolved.*
+
+---
+
+## Round 24 — Full Fix Pass (2026-05-03)
+
+**Scope:** BanDiscordSubsystem, DiscordBridgeSubsystem, TicketSubsystem, SMLWebSocketRunnable, SMLWebSocketServerRunnable.
+All items identified at the end of the previous session but not applied are now fixed.
+
+---
+
+### ✅ Fixed — `BanDiscordSubsystem.cpp`: ~60 missing `EscapeMarkdown()` calls on player-controlled strings (BUG-R24-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+
+**Root cause:** Player-controlled strings (`PlayerName`, `DisplayName`, `Reason`, `SenderName`, `NoteText`, `OldReason`, `NewReason`, `KickReason`, `MuteReason`, ban entry fields, etc.) were embedded in Discord message format strings containing `**bold**` or `` `code` `` markdown without being passed through `EscapeMarkdown()`. A player whose name or ban reason contained `*`, `_`, `` ` ``, `~`, `|`, `>`, or `\` could inject arbitrary Discord formatting into moderation log messages.
+
+**Fix:** Applied `EscapeMarkdown()` to all player-controlled string arguments at every `FString::Printf` Discord embed site — covering all handlers: ban/unban/kick/mute/warn/note/appeal/lookup/schedule/bulk/link and all `ExecutePanel*` functions.
+
+---
+
+### ✅ Fixed — `BanDiscordSubsystem.cpp`: `EscapeMarkdown()` used in JSON field instead of `JsonEscape()` (BUG-R24-02)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp` — `HandleReputationCommand`
+
+**Root cause:** The `LastSeen` string was passed through `EscapeMarkdown()` before being placed into a Discord embed JSON `"value"` field. `EscapeMarkdown` escapes Discord markdown characters (`*`, `_`, `` ` ``, etc.) which are harmless in JSON but leaves JSON special characters (`"`, `\`) unescaped — the correct helper for JSON string values is `JsonEscape()`.
+
+**Fix:** Changed `EscapeMarkdown(LastSeen)` → `JsonEscape(LastSeen)` at that site.
+
+---
+
+### ✅ Fixed — `DiscordBridgeSubsystem.cpp`: `int32` overflow in `VoteWindowMinutes * 60` (BUG-R24-03)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
+
+**Root cause:** `static_cast<float>(Config.VoteWindowMinutes * 60)` performed the multiplication in `int32` before the cast. Values of `VoteWindowMinutes` ≥ 35792 overflow before the float cast, producing a garbage timer interval.
+
+**Fix:** Changed to `static_cast<float>(Config.VoteWindowMinutes) * 60.0f` — multiplication is done in `float` after the cast, eliminating the overflow.
+
+---
+
+### ✅ Fixed — `DiscordBridgeSubsystem.cpp`: TOCTOU in whitelist capacity check (BUG-R24-04)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
+
+**Root cause:** Two sites performed a capacity pre-check (`GetMaxSlots()` + `GetAllEntries().Num()`) as separate mutex operations before calling `AddPlayer`. A concurrent add between the check and the write could push the whitelist past capacity.
+
+**Fix:** Removed the two-step pre-check. `AddPlayer` already performs the capacity check atomically inside its own lock and returns `false` when full. The capacity-full message is now shown as a post-check diagnostic after `AddPlayer` returns `false`.
+
+---
+
+### ✅ Fixed — `DiscordBridgeSubsystem.cpp`: `AddLambda([this])` on `UMuteRegistry` delegates (BUG-R24-05)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
+
+**Root cause:** `OnPlayerMuted.AddLambda([this]...)` and `OnPlayerUnmuted.AddLambda([this]...)` captured a raw `this` (a `UObject*`). If the subsystem is destroyed while a mute event is pending, the lambda would access a dangling pointer.
+
+**Fix:** Changed to `AddWeakLambda(this, [this]...)` for both delegates.
+
+---
+
+### ✅ Fixed — `DiscordBridgeSubsystem.cpp`: 30+ missing `EscapeMarkdown()` on player-controlled strings (BUG-R24-06)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
+
+**Root cause:** Player names and reasons were embedded in Discord messages without `EscapeMarkdown()`.
+
+**Fix:** Added a file-local `EscapeMarkdown()` helper and applied it to all player-controlled strings in whitelist expiry, approval/deny, add/remove confirmations, search results, AFK kick, verification flow, and mute event Discord embeds.
+
+---
+
+### ✅ Fixed — `TicketSubsystem.cpp`: Missing `EscapeMarkdown()` on player-controlled strings (BUG-R24-07)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp`
+
+**Root cause:** `OpenerName`, `WlIgnCopy`, `ExtraInfoCopy`, `MacroName`, tag arguments, and other player-supplied strings were embedded in Discord messages without `EscapeMarkdown()`.
+
+**Fix:** Added a local `EscapeMarkdown()` helper and applied it to all affected sites (whitelist approve/deny, ban appeal approved/denied, mute appeal denied, whitelist welcome, extra info line, macro name error, tag added/removed messages).
+
+---
+
+### ✅ Fixed — `TicketSubsystem.cpp`: Triple-backtick injection in Discord code-block embeds (BUG-R24-08)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp`
+
+**Root cause:** Ban record fields (`PlayerName`, `Reason`, `BannedBy`) were embedded inside Discord ` ``` ` code blocks without sanitisation. A value containing "```" would escape the code block and inject arbitrary Discord markdown.
+
+**Fix:** Applied `.Replace(TEXT("```"), TEXT("` ` `"))` to `PlayerName`, `Reason`, and `BannedBy` before embedding them in code-block format strings at both affected sites.
+
+---
+
+### ✅ Fixed — `TicketSubsystem.cpp`: Unsafe `double→int32` cast on `InteractionType` without range check (BUG-R24-09)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp`
+
+**Root cause:** `InteractionType = static_cast<int32>(TypeD)` had no `IsFinite`/range guard. A malformed gateway payload with `"type": 1e30` or `"type": Infinity` would produce undefined behaviour.
+
+**Fix:** Added `FMath::IsFinite(TypeD) && TypeD >= 0.0 && TypeD <= static_cast<double>(MAX_int32)` guard before the cast, defaulting to `0` on out-of-range values.
+
+---
+
+### ✅ Fixed — `TicketSubsystem.cpp`: Missing emptiness check on `DiscordUserId` before map lookups (BUG-R24-10)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp`
+
+**Root cause:** `OpenerToTicketsByType.Find(DiscordUserId)` and `OpenerToTicketChannel.Contains(DiscordUserId)` were called without checking `DiscordUserId.IsEmpty()`. An empty string key could produce a false duplicate-ticket match.
+
+**Fix:** Added `!DiscordUserId.IsEmpty()` guards before all affected map lookups in button and modal handlers, and early-return guards in `GetTicketChannelForOpener` and `CloseAppealTicketForOpener`.
+
+---
+
+### ✅ Fixed — `SMLWebSocketRunnable.cpp`: Client must reject masked frames from server — RFC 6455 §5.1 (BUG-R24-11)
+**File:** `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketRunnable.cpp`
+
+**Root cause:** The client's frame parser did not validate the mask bit on incoming server frames. RFC 6455 §5.1 requires a client to close the connection if it detects a masked frame from the server.
+
+**Fix:** Added a check after RSV validation: if `bMasked` is true on a server→client frame, send Close(1002) and return `false`.
+
+---
+
+### ✅ Fixed — `SMLWebSocketServerRunnable.cpp`: Server must reject unmasked client frames — RFC 6455 §5.1 (BUG-R24-12)
+**File:** `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketServerRunnable.cpp`
+
+**Root cause:** The server processed unmasked client frames without error. RFC 6455 §5.1 requires a server to close the connection with Close(1002) if a client sends an unmasked frame.
+
+**Fix:** Added a check after RSV validation: if `!bMasked`, enqueue Close(1002) and return `false`.
+
+---
+
+### ✅ Fixed — `SMLWebSocketServerRunnable.cpp`: Close echo ignores client's status code — RFC 6455 §5.5.1 (BUG-R24-13)
+**File:** `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketServerRunnable.cpp`
+
+**Root cause:** The server's Close-frame echo always sent an empty payload (`0x00`). RFC 6455 §5.5.1 requires the echo to include the client's status code (first 2 bytes of the client's Close payload) if one was provided.
+
+**Fix:** The Close handler now extracts and unmasks the first 2 bytes of the client's payload (when `PayloadLen32 >= 2`) and includes them in the echo frame. If the client sent no payload, the empty-payload echo is retained.
+
+---
+
+*Last updated: 2026-05-03. All 13 Round-24 bugs resolved.*
