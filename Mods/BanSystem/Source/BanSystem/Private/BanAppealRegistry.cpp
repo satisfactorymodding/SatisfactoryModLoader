@@ -265,7 +265,7 @@ void UBanAppealRegistry::LoadFromFile()
             if (Entry.Id <= 0)
             {
                 UE_LOG(LogBanAppealRegistry, Warning,
-                    TEXT("BanAppealRegistry: skipping appeal with invalid id (uid=%s)"), *Entry.Uid);
+                    TEXT("BanAppealRegistry: skipping appeal with invalid id"));
                 continue;
             }
             (*ObjPtr)->TryGetStringField(TEXT("uid"),         Entry.Uid);
@@ -321,7 +321,8 @@ void UBanAppealRegistry::LoadFromFile()
         const int64 Parsed = FCString::Atoi64(*StoredNextIdStr);
         NextId = (Parsed > 0) ? Parsed : 1;
     }
-    else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl) && StoredNextIdDbl >= 1.0)
+    else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl)
+        && StoredNextIdDbl >= 1.0 && StoredNextIdDbl < static_cast<double>(INT64_MAX))
     {
         NextId = static_cast<int64>(StoredNextIdDbl);
     }

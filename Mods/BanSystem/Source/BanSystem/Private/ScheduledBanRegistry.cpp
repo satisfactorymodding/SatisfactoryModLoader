@@ -325,11 +325,14 @@ void UScheduledBanRegistry::LoadFromFile()
             (*ObjPtr)->TryGetStringField(TEXT("category"),     Entry.Category);
 
             double DurDbl = 0.0;
-            if ((*ObjPtr)->TryGetNumberField(TEXT("durationMinutes"), DurDbl))
+            if ((*ObjPtr)->TryGetNumberField(TEXT("durationMinutes"), DurDbl)
+                && FMath::IsFinite(DurDbl) && DurDbl >= 0.0
+                && DurDbl <= static_cast<double>(MAX_int32))
                 Entry.DurationMinutes = static_cast<int32>(DurDbl);
 
             double RetryDbl = 0.0;
-            if ((*ObjPtr)->TryGetNumberField(TEXT("retryCount"), RetryDbl) && RetryDbl > 0.0)
+            if ((*ObjPtr)->TryGetNumberField(TEXT("retryCount"), RetryDbl)
+                && RetryDbl > 0.0 && RetryDbl <= static_cast<double>(MAX_int32))
                 Entry.RetryCount = static_cast<int32>(RetryDbl);
 
             FString EffStr, CreatedStr;

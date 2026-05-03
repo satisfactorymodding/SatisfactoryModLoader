@@ -1091,3 +1091,92 @@ the top of the read loop.  If the deadline is exceeded the function logs an erro
 ---
 
 *Last updated: 2026-05-03. All 7 Round-15 bugs resolved.*
+
+---
+
+## Round 16 — Additional Scan (2026-05-03)
+
+### ✅ Fixed — `BanAppealRegistry::LoadFromFile()` — `NextId` legacy double cast missing upper-bound guard (BUG-R16-01)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanAppealRegistry.cpp`
+
+**Root cause:** The legacy-format load path for `nextId` checked `StoredNextIdDbl >= 1.0`
+(lower bound) but did **not** check `< static_cast<double>(INT64_MAX)` before
+`static_cast<int64>(StoredNextIdDbl)`. A corrupted JSON value such as `"nextId": 1e30`
+or `"nextId": Infinity` would invoke undefined behaviour (implementation-defined trap or
+garbage value on x86), potentially producing a negative or wrapped `NextId` that corrupts
+every subsequent appeal ID. This inconsistency was missed when the other four registries
+were fixed in Round-13 (BUG-R13-01–04).
+
+**Fix:** Added `&& StoredNextIdDbl < static_cast<double>(INT64_MAX)` to the
+`TryGetNumberField` fallback branch, matching the already-correct pattern in every other
+registry.
+
+---
+
+### ✅ Fixed — `BanAppealRegistry::LoadFromFile()` — skip-log prints unassigned `Entry.Uid` (BUG-R16-02)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanAppealRegistry.cpp`
+
+**Root cause:** The `Entry.Id <= 0` early-skip path logged `uid=%s` using `*Entry.Uid`,
+but `Entry.Uid` is only set several lines *later* via
+`TryGetStringField(TEXT("uid"), Entry.Uid)`. The log therefore always printed an empty
+string, making the diagnostic useless for identifying which record was malformed.
+
+**Fix:** Removed the `uid=%s` placeholder from the log message (no uid is available
+at that point — `Entry.Uid` is not yet parsed).
+
+---
+
+### ✅ Fixed — `PlayerWarningRegistry::LoadFromFile()` — `Points` double→int32 cast missing upper-bound guard (BUG-R16-03)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/PlayerWarningRegistry.cpp`
+
+**Root cause:** The `points` field was read as a double and accepted when `PointsDbl >= 1.0`,
+but there was no upper-bound guard. A corrupted or crafted value such as `"points": 1e30`
+passes the lower-bound check and then invokes undefined behaviour in
+`static_cast<int32>(PointsDbl)` (implementation-defined result; typically wraps to
+INT_MIN on x86).
+
+**Fix:** Added `&& PointsDbl <= static_cast<double>(MAX_int32)` to the guard, matching the
+pattern used in `BanAuditLog`, `BanDatabase`, and the Round-13 fixes.
+
+---
+
+### ✅ Fixed — `ScheduledBanRegistry::LoadFromFile()` — `DurationMinutes` and `RetryCount` double→int32 casts have no range guards (BUG-R16-04)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/ScheduledBanRegistry.cpp`
+
+**Root cause:**
+- `DurationMinutes` was assigned via an unconditional `static_cast<int32>(DurDbl)` with no
+  `FMath::IsFinite`, negative-value, or upper-bound check. NaN or ±Infinity produces
+  undefined behaviour; any value outside `[0, INT32_MAX]` overflows.
+- `RetryCount` had a `> 0.0` lower-bound check but no upper-bound check. A value like
+  `1e30` would pass the guard and overflow on cast.
+
+**Fix:** Added `FMath::IsFinite(DurDbl) && DurDbl >= 0.0 && DurDbl <= static_cast<double>(MAX_int32)`
+for `DurationMinutes`, and `RetryDbl <= static_cast<double>(MAX_int32)` for `RetryCount`,
+matching the fully-guarded pattern used by every other numeric-cast site in the codebase.
+
+---
+
+### ✅ Fixed — `SMLWebSocketServerRunnable` token comparison: `Diff` not `volatile` — compiler may dead-store-eliminate loop (BUG-R16-05)
+**File:** `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketServerRunnable.cpp`
+
+**Root cause:** The constant-time WebSocket upgrade token comparison used a plain
+`uint32 Diff` accumulator. Once the compiler infers that `Diff != 0` (e.g. from the
+length-XOR seed when `AuthLen != ExpectedLen`), it is allowed to elide subsequent
+`Diff |= …` assignments via dead-store elimination — shortcutting the constant-time
+loop and potentially leaking timing information about the server's API token. The
+sister implementation in `BanRestApi::ConstantTimeEquals` was fixed with `volatile`
+in Round-15 (BUG-R15-01), but this site was missed.
+
+Additionally, the byte-level XOR expression was widened from
+`static_cast<uint8>(a) ^ static_cast<uint8>(b)` (implicit int promotion, then
+narrowing via `|=`) to
+`static_cast<uint32>(static_cast<uint8>(a)) ^ static_cast<uint32>(static_cast<uint8>(b))`
+to make the promotion explicit and prevent any compiler from emitting narrowed
+intermediate values.
+
+**Fix:** Changed `uint32 Diff` to `volatile uint32 Diff` and widened the per-byte XOR
+operands to `uint32` before ORing into `Diff`, matching the `BanRestApi` pattern.
+
+---
+
+*Last updated: 2026-05-03. All 5 Round-16 bugs resolved.*

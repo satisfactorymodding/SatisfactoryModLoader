@@ -372,7 +372,8 @@ void UPlayerWarningRegistry::LoadFromFile()
 
             // Points (default 1 for records written before this feature).
             double PointsDbl = 1.0;
-            if ((*ObjPtr)->TryGetNumberField(TEXT("points"), PointsDbl) && PointsDbl >= 1.0)
+            if ((*ObjPtr)->TryGetNumberField(TEXT("points"), PointsDbl)
+                && PointsDbl >= 1.0 && PointsDbl <= static_cast<double>(MAX_int32))
                 Entry.Points = static_cast<int32>(PointsDbl);
 
             if (!Entry.Uid.IsEmpty())
