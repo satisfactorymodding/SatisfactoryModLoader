@@ -513,6 +513,22 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
             return false;
         }
 
+        // RFC 6455 §5.1: A server MUST close the connection if a client sends an unmasked frame.
+        if (!bMasked)
+        {
+            UE_LOG(LogWSServer, Error, TEXT("WSServer: Client sent an unmasked frame — dropping client (RFC 6455 §5.1)"));
+            TArray<uint8> CloseFrame;
+            CloseFrame.Add(0x88); // FIN=1, opcode=Close
+            CloseFrame.Add(0x02); // payload length = 2
+            CloseFrame.Add(0x03); // 1002 high byte
+            CloseFrame.Add(0xEA); // 1002 low byte
+            FOutboundMsg ErrClose;
+            ErrClose.ClientId = ClientId;
+            ErrClose.Frame = MoveTemp(CloseFrame);
+            OutboundQueue.Enqueue(MoveTemp(ErrClose));
+            return false;
+        }
+
         int32 HeaderSize = 2;
         if (PayloadLen == 126)
         {
@@ -564,9 +580,23 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
         if (Opcode == 0x8) // Close
         {
             // RFC 6455 §5.5.1: echo a Close frame back before closing the connection.
+            // The echo must include the client's status code (first 2 bytes of payload,
+            // unmasked) if the client supplied one; otherwise send an empty payload.
             TArray<uint8> CloseEcho;
             CloseEcho.Add(0x88); // FIN=1, opcode=0x8
-            CloseEcho.Add(0x00); // no payload
+            if (PayloadLen32 >= 2)
+            {
+                // Unmask the 2-byte status code using the mask key at Buf[HeaderSize].
+                const uint8 B0 = Buf[HeaderSize + MaskSize + 0] ^ (bMasked ? Buf[HeaderSize + 0] : 0);
+                const uint8 B1 = Buf[HeaderSize + MaskSize + 1] ^ (bMasked ? Buf[HeaderSize + 1] : 0);
+                CloseEcho.Add(0x02); // payload length = 2
+                CloseEcho.Add(B0);
+                CloseEcho.Add(B1);
+            }
+            else
+            {
+                CloseEcho.Add(0x00); // no payload
+            }
             FOutboundMsg Echo;
             Echo.ClientId = ClientId;
             Echo.Frame    = MoveTemp(CloseEcho);

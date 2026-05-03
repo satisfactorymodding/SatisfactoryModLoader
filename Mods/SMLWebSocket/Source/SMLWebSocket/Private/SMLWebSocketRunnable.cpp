@@ -1318,6 +1318,16 @@ bool FSMLWebSocketRunnable::ProcessIncomingFrame()
 		return false;
 	}
 
+	// RFC 6455 §5.1: A client MUST close the connection if it detects a masked frame from the server.
+	if (bMasked)
+	{
+		UE_LOG(LogSMLWebSocket, Error,
+		       TEXT("SMLWebSocket: Server sent a masked frame — closing connection (RFC 6455 §5.1)"));
+		const uint8 ClosePayload[2] = { 0x03, 0xEA }; // 1002 Protocol Error
+		SendWsFrame(WsOpcode::Close, ClosePayload, 2);
+		return false;
+	}
+
 	// Extended payload length
 	if (PayloadLen == 126)
 	{

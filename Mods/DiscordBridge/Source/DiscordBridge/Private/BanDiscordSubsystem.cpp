@@ -407,8 +407,9 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 					    static_cast<int64>(INT32_MAX))));
 				const FString Msg = FString::Printf(
 					TEXT("🔨 **%s** (`%s`) banned.\nReason: %s\nBy: %s | Duration: %s"),
-					*Entry.PlayerName, *Entry.Uid,
-					*Entry.Reason, *Entry.BannedBy, *DurationStr);
+					*BanDiscordHelpers::EscapeMarkdown(Entry.PlayerName), *Entry.Uid,
+					*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+					*BanDiscordHelpers::EscapeMarkdown(Entry.BannedBy), *DurationStr);
 				Self->PostModerationLog(Msg);
 			});
 	}
@@ -440,8 +441,9 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 					    static_cast<int64>(INT32_MAX))));
 				const FString Msg = FString::Printf(
 					TEXT("✏️ **%s** (`%s`) ban record updated.\nReason: %s\nBy: %s | Duration: %s"),
-					*Entry.PlayerName, *Entry.Uid,
-					*Entry.Reason, *Entry.BannedBy, *DurationStr);
+					*BanDiscordHelpers::EscapeMarkdown(Entry.PlayerName), *Entry.Uid,
+					*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+					*BanDiscordHelpers::EscapeMarkdown(Entry.BannedBy), *DurationStr);
 				Self->PostModerationLog(Msg);
 			});
 	}
@@ -471,7 +473,7 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 				const FString DisplayName = PlayerName.IsEmpty() ? Uid : PlayerName;
 				const FString Msg = FString::Printf(
-					TEXT("✅ **%s** (`%s`) unbanned."), *DisplayName, *Uid);
+					TEXT("✅ **%s** (`%s`) unbanned."), *BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid);
 				Self->PostModerationLog(Msg);
 			});
 	}
@@ -494,7 +496,9 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 				const FString WarnMsg = FString::Printf(
 					TEXT("⚠️ **%s** (`%s`) warned.\nReason: %s\nBy: %s"),
-					*Entry.PlayerName, *Entry.Uid, *Entry.Reason, *Entry.WarnedBy);
+					*BanDiscordHelpers::EscapeMarkdown(Entry.PlayerName), *Entry.Uid,
+					*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+					*BanDiscordHelpers::EscapeMarkdown(Entry.WarnedBy));
 				Self->PostToPlayerModerationThread(Entry.PlayerName, Entry.Uid, WarnMsg);
 			});
 	}
@@ -527,7 +531,9 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 							: TEXT(" **indefinitely**");
 						const FString MuteMsg = FString::Printf(
 							TEXT("🔇 Muted **%s** (`%s`)%s.\nReason: %s\nBy: %s"),
-							*Entry.PlayerName, *Entry.Uid, *DurStr, *Entry.Reason, *Entry.MutedBy);
+							*BanDiscordHelpers::EscapeMarkdown(Entry.PlayerName), *Entry.Uid, *DurStr,
+							*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+							*BanDiscordHelpers::EscapeMarkdown(Entry.MutedBy));
 						Self->PostToPlayerModerationThread(Entry.PlayerName, Entry.Uid, MuteMsg);
 					});
 
@@ -552,7 +558,7 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 							}
 						}
 						const FString UnmuteMsg = FString::Printf(
-							TEXT("🔊 Unmuted **%s** (`%s`)."), *PlayerName, *Uid);
+							TEXT("🔊 Unmuted **%s** (`%s`)."), *BanDiscordHelpers::EscapeMarkdown(PlayerName), *Uid);
 						Self->PostToPlayerModerationThread(PlayerName, Uid, UnmuteMsg);
 					});
 
@@ -580,7 +586,7 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 				const FString KickMsg = FString::Printf(
 					TEXT("👢 Kicked **%s** (`%s`).\nReason: %s\nBy: %s"),
 					*BanDiscordHelpers::EscapeMarkdown(PlayerName), *Uid,
-					*BanDiscordHelpers::EscapeMarkdown(Reason), *KickedBy);
+					*BanDiscordHelpers::EscapeMarkdown(Reason), *BanDiscordHelpers::EscapeMarkdown(KickedBy));
 				Self->PostToPlayerModerationThread(PlayerName, Uid, KickMsg);
 			});
 	}
@@ -1256,7 +1262,7 @@ bool UBanDiscordSubsystem::ResolveTarget(const FString& Arg,
 				     "`/ban add player:<32-char-hex-PUID>`\n"
 				     "Find the PUID in the server log (`BanEnforcer: cached EOS PUID …`) or your "
 				     "server admin panel."),
-				*Arg);
+				*BanDiscordHelpers::EscapeMarkdown(Arg));
 		}
 		else
 		{
@@ -1264,7 +1270,7 @@ bool UBanDiscordSubsystem::ResolveTarget(const FString& Arg,
 				TEXT("❌ No player found matching `%s` in the session registry (%d record(s)).\n"
 				     "Check the spelling or use the player's EOS PUID directly:\n"
 				     "`/ban add player:<32-char-hex-PUID>`"),
-				*Arg, TotalRecords);
+				*BanDiscordHelpers::EscapeMarkdown(Arg), TotalRecords);
 		}
 		return false;
 	}
@@ -1277,7 +1283,7 @@ bool UBanDiscordSubsystem::ResolveTarget(const FString& Arg,
 		for (int32 i = 0; i < ShowCount; ++i)
 		{
 			if (i > 0) MatchList += TEXT(", ");
-			MatchList += FString::Printf(TEXT("`%s`"), *Matches[i].DisplayName);
+			MatchList += FString::Printf(TEXT("`%s`"), *BanDiscordHelpers::EscapeMarkdown(Matches[i].DisplayName));
 		}
 		if (Matches.Num() > ShowCount)
 			MatchList += FString::Printf(TEXT(", +%d more"), Matches.Num() - ShowCount);
@@ -1285,7 +1291,7 @@ bool UBanDiscordSubsystem::ResolveTarget(const FString& Arg,
 		OutErrorMsg = FString::Printf(
 			TEXT("❌ Ambiguous name `%s` — %d players match: %s. "
 			     "Use an EOS PUID to target a specific player."),
-			*Arg, Matches.Num(), *MatchList);
+			*BanDiscordHelpers::EscapeMarkdown(Arg), Matches.Num(), *MatchList);
 		return false;
 	}
 
@@ -1408,14 +1414,17 @@ void UBanDiscordSubsystem::HandleBanCommand(const TArray<FString>& Args,
 			     "Expires: %s\nReason: %s\nBanned by: %s"),
 			*SafeName, *Uid, *BanDiscordHelpers::FormatDuration(DurationMinutes),
 			*BanDiscordHelpers::FormatExpiry(Entry),
-			*Entry.Reason, *SenderName);
+			*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	}
 	else
 	{
 		Msg = FString::Printf(
 			TEXT("✅ **%s** (`%s`) has been **permanently** banned.\n"
 			     "Reason: %s\nBanned by: %s"),
-			*SafeName, *Uid, *Entry.Reason, *SenderName);
+			*SafeName, *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	}
 	Msg += LookupInfo;
 
@@ -1496,7 +1505,8 @@ void UBanDiscordSubsystem::HandleUnbanCommand(const TArray<FString>& Args,
 		// always clear a stale or missing-file situation.
 		const FString Msg = FString::Printf(
 			TEXT("ℹ️ No active ban record found for **%s** (`%s`) — the player is already unbanned.\nUnbanned by: %s"),
-			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 
 		UE_LOG(LogBanDiscord, Log,
 		       TEXT("BanDiscordSubsystem: %s issued /ban remove for %s (%s) — no record in DB (already clear)."),
@@ -1516,7 +1526,8 @@ void UBanDiscordSubsystem::HandleUnbanCommand(const TArray<FString>& Args,
 
 	FString Msg = FString::Printf(
 		TEXT("✅ Ban removed for **%s** (`%s`).\nUnbanned by: %s"),
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 
 	if (ExtraRemoved > 0)
 		Msg += FString::Printf(TEXT("\nAlso removed %d linked ban(s)."), ExtraRemoved);
@@ -1585,9 +1596,9 @@ void UBanDiscordSubsystem::HandleBanCheckCommand(const TArray<FString>& Args,
 			     "Banned by: %s\n"
 			     "Ban date: %s UTC\n"
 			     "Expires: %s"),
-			*DisplayName, *Uid,
-			*Entry.Reason,
-			*Entry.BannedBy,
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+			*BanDiscordHelpers::EscapeMarkdown(Entry.BannedBy),
 			*Entry.BanDate.ToString(TEXT("%Y-%m-%d %H:%M:%S")),
 			*BanDiscordHelpers::FormatExpiry(Entry));
 
@@ -1606,15 +1617,15 @@ void UBanDiscordSubsystem::HandleBanCheckCommand(const TArray<FString>& Args,
 			Msg = FString::Printf(
 				TEXT("✅ **%s** (`%s`) is **not currently banned**.\n"
 				     "(An expired ban record exists — reason: %s, expired: %s)"),
-				*DisplayName, *Uid,
-				*AnyEntry.Reason,
+				*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+				*BanDiscordHelpers::EscapeMarkdown(AnyEntry.Reason),
 				*BanDiscordHelpers::FormatExpiry(AnyEntry));
 		}
 		else
 		{
 			Msg = FString::Printf(
 				TEXT("✅ **%s** (`%s`) is **not banned**."),
-				*DisplayName, *Uid);
+				*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid);
 		}
 	}
 
@@ -1857,7 +1868,9 @@ void UBanDiscordSubsystem::HandleKickCommand(const TArray<FString>& Args,
 
 		FString KickMsg = FString::Printf(
 			TEXT("✅ Kicked **%s** (`%s`).\nReason: %s\nKicked by: %s"),
-			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *Reason, *SenderName);
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(Reason),
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 		KickMsg += BanDiscordHelpers::FormatPlayerLookup(this, Uid);
 		Respond(ChannelId, KickMsg);
 		SendInGameModerationNoticeToUid(Uid, FString::Printf(
@@ -1929,7 +1942,8 @@ void UBanDiscordSubsystem::HandleMuteCommand(const TArray<FString>& Args,
 
 		const FString UnmuteMsg = FString::Printf(
 			TEXT("✅ Unmuted **%s** (`%s`).\nUnmuted by: %s"),
-			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 		Respond(ChannelId, UnmuteMsg);
 		SendInGameModerationNoticeToUid(Uid, FString::Printf(
 			TEXT("%s Unmuted @%s. By: %s."),
@@ -1964,7 +1978,9 @@ void UBanDiscordSubsystem::HandleMuteCommand(const TArray<FString>& Args,
 
 	const FString MuteMsg = FString::Printf(
 		TEXT("🔇 Muted **%s** (`%s`)%s.\nReason: %s\nMuted by: %s"),
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *DurStr, *Reason, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *DurStr,
+		*BanDiscordHelpers::EscapeMarkdown(Reason),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 
 	// Write to audit log so Discord-issued mutes appear alongside in-game mutes.
 	if (UBanAuditLog* AuditLog = GI ? GI->GetSubsystem<UBanAuditLog>() : nullptr)
@@ -2090,7 +2106,9 @@ void UBanDiscordSubsystem::HandleWarnCommand(const TArray<FString>& Args,
 
 	const FString WarnMsg = FString::Printf(
 		TEXT("⚠️ Warned **%s** (`%s`).\nReason: %s\nTotal warnings: **%d**\nWarned by: %s"),
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *Reason, WarnCount, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+		*BanDiscordHelpers::EscapeMarkdown(Reason), WarnCount,
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Respond(ChannelId, WarnMsg);
 	SendInGameModerationNoticeToUid(Uid, FString::Printf(
 		TEXT("%s Warned @%s. Reason: %s. Total warnings: %d. By: %s."),
@@ -2133,7 +2151,8 @@ void UBanDiscordSubsystem::HandleAnnounceCommand(const TArray<FString>& Args,
 
 	const FString AnnounceConfirm = FString::Printf(
 		TEXT("📢 Announcement sent to all in-game players:\n> %s\nSent by: %s"),
-		*Message, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(Message),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Respond(ChannelId, AnnounceConfirm);
 	PostModerationLog(AnnounceConfirm);
 }
@@ -2177,7 +2196,7 @@ void UBanDiscordSubsystem::HandleUnbanNameCommand(const TArray<FString>& Args,
 	if (Matches.IsEmpty())
 	{
 		Respond(ChannelId,
-			FString::Printf(TEXT("❌ No session record found for name `%s`."), *NameQuery));
+			FString::Printf(TEXT("❌ No session record found for name `%s`."), *BanDiscordHelpers::EscapeMarkdown(NameQuery)));
 		return;
 	}
 	if (Matches.Num() > 1)
@@ -2187,13 +2206,13 @@ void UBanDiscordSubsystem::HandleUnbanNameCommand(const TArray<FString>& Args,
 		for (int32 i = 0; i < Show; ++i)
 		{
 			if (i > 0) List += TEXT(", ");
-			List += FString::Printf(TEXT("`%s`"), *Matches[i].DisplayName);
+			List += FString::Printf(TEXT("`%s`"), *BanDiscordHelpers::EscapeMarkdown(Matches[i].DisplayName));
 		}
 		if (Matches.Num() > Show)
 			List += FString::Printf(TEXT(", +%d more"), Matches.Num() - Show);
 		Respond(ChannelId,
 			FString::Printf(TEXT("❌ Ambiguous name `%s` — %d matches: %s. Use `/ban remove <PUID>` instead."),
-				*NameQuery, Matches.Num(), *List));
+				*BanDiscordHelpers::EscapeMarkdown(NameQuery), Matches.Num(), *List));
 		return;
 	}
 
@@ -2225,7 +2244,7 @@ void UBanDiscordSubsystem::HandleUnbanNameCommand(const TArray<FString>& Args,
 		Removed,
 		*BanDiscordHelpers::EscapeMarkdown(Record.DisplayName),
 		*Record.Uid,
-		*SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	UE_LOG(LogBanDiscord, Log, TEXT("BanDiscordSubsystem: %s unbanname %s (%s)."),
 		*SenderName, *Record.DisplayName, *Record.Uid);
 
@@ -2278,7 +2297,7 @@ void UBanDiscordSubsystem::HandleBanNameCommand(const TArray<FString>& Args,
 	if (Matches.IsEmpty())
 	{
 		Respond(ChannelId,
-			FString::Printf(TEXT("❌ No session record found for name `%s`."), *Args[0]));
+			FString::Printf(TEXT("❌ No session record found for name `%s`."), *BanDiscordHelpers::EscapeMarkdown(Args[0])));
 		return;
 	}
 	if (Matches.Num() > 1)
@@ -2288,13 +2307,13 @@ void UBanDiscordSubsystem::HandleBanNameCommand(const TArray<FString>& Args,
 		for (int32 i = 0; i < Show; ++i)
 		{
 			if (i > 0) List += TEXT(", ");
-			List += FString::Printf(TEXT("`%s`"), *Matches[i].DisplayName);
+			List += FString::Printf(TEXT("`%s`"), *BanDiscordHelpers::EscapeMarkdown(Matches[i].DisplayName));
 		}
 		if (Matches.Num() > Show)
 			List += FString::Printf(TEXT(", +%d more"), Matches.Num() - Show);
 		Respond(ChannelId,
 			FString::Printf(TEXT("❌ Ambiguous name `%s` — %d matches: %s. Use `/ban add <PUID>` instead."),
-				*Args[0], Matches.Num(), *List));
+				*BanDiscordHelpers::EscapeMarkdown(Args[0]), Matches.Num(), *List));
 		return;
 	}
 
@@ -2349,7 +2368,9 @@ void UBanDiscordSubsystem::HandleBanNameCommand(const TArray<FString>& Args,
 	const FString SafeName = BanDiscordHelpers::EscapeMarkdown(Record.DisplayName);
 	FString Msg = FString::Printf(
 		TEXT("✅ Banned **%s** (`%s`) — %d record(s) added.\nReason: %s\nBanned by: %s"),
-		*SafeName, *Record.Uid, Banned, *Reason, *SenderName);
+		*SafeName, *Record.Uid, Banned,
+		*BanDiscordHelpers::EscapeMarkdown(Reason),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 
 	// Show EOS PUID.
 	FString ByNamePlatform, ByNameRawPuid;
@@ -2448,7 +2469,9 @@ void UBanDiscordSubsystem::HandleBanReasonCommand(const TArray<FString>& Args,
 	const FString Msg = FString::Printf(
 		TEXT("✅ Ban reason updated for **%s** (`%s`).\nOld reason: %s\nNew reason: %s\nUpdated by: %s"),
 		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
-		*OldReason, *Updated.Reason, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(OldReason),
+		*BanDiscordHelpers::EscapeMarkdown(Updated.Reason),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Respond(ChannelId, Msg);
 	PostModerationLog(Msg);
 }
@@ -2514,7 +2537,8 @@ void UBanDiscordSubsystem::HandleLinkBansCommand(const TArray<FString>& Args,
 	const FString Verb = bLink ? TEXT("linked") : TEXT("unlinked");
 	const FString Msg = FString::Printf(
 		TEXT("✅ Successfully %s `%s` and `%s`.\nBy: %s"),
-		*Verb, *Uid1, *Uid2, *SenderName);
+		*Verb, *Uid1, *Uid2,
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Respond(ChannelId, Msg);
 	PostModerationLog(Msg);
 }
@@ -2616,7 +2640,7 @@ void UBanDiscordSubsystem::HandleExtendBanCommand(const TArray<FString>& Args,
 		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
 		*BanDiscordHelpers::FormatDuration(Minutes),
 		*Updated.ExpireDate.ToString(TEXT("%Y-%m-%d %H:%M:%S")),
-		*SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Respond(ChannelId, Msg);
 	PostModerationLog(Msg);
 }
@@ -2867,7 +2891,8 @@ void UBanDiscordSubsystem::HandleClearWarnByIdCommand(const TArray<FString>& Arg
 			FString::Printf(TEXT("Deleted warning id %lld"), WarnId));
 
 	const FString Msg = FString::Printf(
-		TEXT("✅ Deleted warning #%lld.\nBy: %s"), WarnId, *SenderName);
+		TEXT("✅ Deleted warning #%lld.\nBy: %s"), WarnId,
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Respond(ChannelId, Msg);
 	PostModerationLog(Msg);
 }
@@ -2910,7 +2935,9 @@ void UBanDiscordSubsystem::HandleNoteCommand(const TArray<FString>& Args,
 
 	Respond(ChannelId,
 		FString::Printf(TEXT("📝 Note added for **%s** (`%s`).\nNote: %s\nAdded by: %s"),
-			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *NoteText, *SenderName));
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(NoteText),
+			*BanDiscordHelpers::EscapeMarkdown(SenderName)));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3025,7 +3052,8 @@ void UBanDiscordSubsystem::HandleReasonCommand(const TArray<FString>& Args,
 	Respond(ChannelId,
 		FString::Printf(TEXT("🔨 **%s** (`%s`) — ban reason: %s\n(Banned by: %s on %s UTC)"),
 			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
-			*Entry.Reason, *Entry.BannedBy,
+			*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+			*BanDiscordHelpers::EscapeMarkdown(Entry.BannedBy),
 			*Entry.BanDate.ToString(TEXT("%Y-%m-%d %H:%M:%S"))));
 }
 
@@ -3129,7 +3157,8 @@ void UBanDiscordSubsystem::HandleModBanCommand(const TArray<FString>& Args,
 		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
 		*BanDiscordHelpers::FormatDuration(DurationMinutes),
 		*Entry.ExpireDate.ToString(TEXT("%Y-%m-%d %H:%M:%S")),
-		*Reason, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(Reason),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Msg += BanDiscordHelpers::FormatPlayerLookup(this, Uid);
 
 	if (ExtraUids.Num() > 0)
@@ -3207,7 +3236,9 @@ void UBanDiscordSubsystem::HandleTempMuteCommand(const TArray<FString>& Args,
 	const FString DurStr = BanDiscordHelpers::FormatDuration(Minutes);
 	const FString Msg = FString::Printf(
 		TEXT("🔇 Timed mute applied to **%s** (`%s`) for **%s**.\nReason: %s\nMuted by: %s"),
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *DurStr, *Reason, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *DurStr,
+		*BanDiscordHelpers::EscapeMarkdown(Reason),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Respond(ChannelId, Msg);
 	SendInGameModerationNoticeToUid(Uid, FString::Printf(
 		TEXT("%s Timed mute applied to @%s for %s. Reason: %s. By: %s."),
@@ -3274,7 +3305,9 @@ void UBanDiscordSubsystem::HandleMuteCheckCommand(const TArray<FString>& Args,
 	Respond(ChannelId,
 		FString::Printf(TEXT("🔇 **%s** (`%s`) is muted %s.\nReason: %s\nMuted by: %s"),
 			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
-			*ExpiryStr, *Entry.Reason, *Entry.MutedBy));
+			*ExpiryStr,
+			*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+			*BanDiscordHelpers::EscapeMarkdown(Entry.MutedBy)));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3392,7 +3425,8 @@ void UBanDiscordSubsystem::HandleTempUnmuteCommand(const TArray<FString>& Args,
 
 	const FString UnmuteMsg = FString::Printf(
 		TEXT("🔊 Timed mute lifted from **%s** (`%s`) early.\nUnmuted by: %s"),
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Respond(ChannelId, UnmuteMsg);
 	SendInGameModerationNoticeToUid(Uid, FString::Printf(
 		TEXT("%s Timed mute lifted for @%s. By: %s."),
@@ -3451,7 +3485,9 @@ void UBanDiscordSubsystem::HandleMuteReasonCommand(const TArray<FString>& Args,
 
 	const FString Msg = FString::Printf(
 		TEXT("✏️ Mute reason updated for **%s** (`%s`).\nNew reason: %s\nUpdated by: %s"),
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *NewReason, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+		*BanDiscordHelpers::EscapeMarkdown(NewReason),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Respond(ChannelId, Msg);
 	SendInGameModerationNoticeToUid(Uid, FString::Printf(
 		TEXT("%s Updated mute reason for @%s. New reason: %s. By: %s."),
@@ -3821,9 +3857,15 @@ void UBanDiscordSubsystem::HandleAppealApproveCommand(const TArray<FString>& Arg
 		if (DB->IsCurrentlyBannedByAnyId(Entry.Uid, BanRecord))
 		{
 			UnbannedUid = BanRecord.Uid;
-			bUnbanned = DB->RemoveBanByUid(BanRecord.Uid);
+			// Use the atomic RemoveBanByUid overload so LinkedUids are captured
+			// within the same mutex scope as the removal, eliminating the TOCTOU
+			// window where a concurrent action could modify LinkedUids between
+			// IsCurrentlyBannedByAnyId and RemoveBanByUid (same race fixed for
+			// ExecutePanelUnban in R22-A and the ticket appeal path in R23-A).
+			FBanEntry RemovedBan;
+			bUnbanned = DB->RemoveBanByUid(BanRecord.Uid, RemovedBan);
 			if (bUnbanned)
-				BanDiscordHelpers::RemoveCounterpartBans(this, DB, BanRecord.Uid, BanRecord.LinkedUids);
+				BanDiscordHelpers::RemoveCounterpartBans(this, DB, RemovedBan.Uid, RemovedBan.LinkedUids);
 		}
 		else
 		{
@@ -3857,7 +3899,7 @@ void UBanDiscordSubsystem::HandleAppealApproveCommand(const TArray<FString>& Arg
 					const FString Resolution = FString::Printf(
 						TEXT(":white_check_mark: **Appeal approved** by %s. %s\n"
 						     "This ticket has been automatically closed."),
-						*SenderName, *NoteStr);
+						*BanDiscordHelpers::EscapeMarkdown(SenderName), *NoteStr);
 					TicketSys->CloseAppealTicketForOpener(AppealDiscordId, Resolution);
 				}
 			}
@@ -3954,7 +3996,7 @@ void UBanDiscordSubsystem::HandleAppealDenyCommand(const TArray<FString>& Args,
 					const FString Resolution = FString::Printf(
 						TEXT(":x: **Appeal denied** by %s.%s\n"
 						     "This ticket has been automatically closed."),
-						*SenderName, *NoteStr);
+						*BanDiscordHelpers::EscapeMarkdown(SenderName), *NoteStr);
 					TicketSys->CloseAppealTicketForOpener(AppealDiscordId, Resolution);
 				}
 			}
@@ -4025,7 +4067,7 @@ void UBanDiscordSubsystem::HandlePlaytimeCommand(const TArray<FString>& Args,
 		Reply = FString::Printf(
 			TEXT(":clock3: **%s** (`%s`)\n• **Last Seen:** %s UTC\n• **Status:** %s"),
 			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
-			*Record.LastSeen,
+			*BanDiscordHelpers::EscapeMarkdown(Record.LastSeen),
 			bOnline ? TEXT("🟢 Online") : TEXT("🔴 Offline"));
 	}
 
@@ -4276,8 +4318,9 @@ void UBanDiscordSubsystem::HandleScheduleBanCommand(const TArray<FString>& Args,
 		: BanDiscordHelpers::FormatDuration(BanDurationMinutes);
 	Respond(ChannelId,
 		FString::Printf(TEXT(":calendar: Scheduled ban **#%lld** for `%s` in **%s** (effective %s). Duration: %s. Reason: %s"),
-			Entry.Id, *DisplayName, *BanDiscordHelpers::FormatDuration(DelayMinutes),
-			*EffectiveAt.ToString(TEXT("%Y-%m-%d %H:%M:%S")), *DurStr, *Reason));
+			Entry.Id, *BanDiscordHelpers::EscapeMarkdown(DisplayName), *BanDiscordHelpers::FormatDuration(DelayMinutes),
+			*EffectiveAt.ToString(TEXT("%Y-%m-%d %H:%M:%S")), *DurStr,
+			*BanDiscordHelpers::EscapeMarkdown(Reason)));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -4382,7 +4425,8 @@ void UBanDiscordSubsystem::HandleQBanCommand(const TArray<FString>& Args,
 
 	const FString DurStr = Ban.bIsPermanent ? TEXT("permanent") : BanDiscordHelpers::FormatDuration(Template->DurationMinutes);
 	FString QBanMsg = FString::Printf(TEXT(":hammer: [%s] Banned **%s** (%s). Reason: %s. Duration: %s."),
-	*Slug, *DisplayName, *Uid, *Template->Reason, *DurStr);
+	*Slug, *BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+	*BanDiscordHelpers::EscapeMarkdown(Template->Reason), *DurStr);
 	QBanMsg += BanDiscordHelpers::FormatPlayerLookup(this, Uid);
 	Respond(ChannelId, QBanMsg);
 }
@@ -4453,8 +4497,11 @@ void UBanDiscordSubsystem::HandleReputationCommand(const TArray<FString>& Args,
 		}
 	}
 
-	const int32 Score = FMath::Max(0,
-	100 - (WarnPoints * 5) - (TotalBans * 15) - (KickCount * 3));
+	const int64 ScoreRaw = static_cast<int64>(100)
+		- (static_cast<int64>(WarnPoints) * 5)
+		- (static_cast<int64>(TotalBans)  * 15)
+		- (static_cast<int64>(KickCount)  * 3);
+	const int32 Score = static_cast<int32>(FMath::Max((int64)0, ScoreRaw));
 
 	const int32 Color = Score >= 70 ? 3066993 : (Score >= 40 ? 16776960 : 15158332);
 
@@ -4468,7 +4515,7 @@ void UBanDiscordSubsystem::HandleReputationCommand(const TArray<FString>& Args,
 	Score,
 	bCurrentlyBanned ? TEXT("YES") : TEXT("No"),
 	WarnCount, WarnPoints, TotalBans, KickCount,
-	*BanDiscordHelpers::EscapeMarkdown(LastSeen));
+	*BanDiscordHelpers::JsonEscape(LastSeen));
 
 	const FString EmbedJson = FString::Printf(
 	TEXT("{\"embeds\":[{\"title\":\"🔍 Reputation: %s\",\"description\":\"`%s`\",\"color\":%d,\"fields\":[%s],\"timestamp\":\"%s\"}]}"),
@@ -4587,7 +4634,8 @@ void UBanDiscordSubsystem::HandleBulkBanCommand(const TArray<FString>& Args,
 
 	Respond(ChannelId,
 		FString::Printf(TEXT(":hammer: Bulk ban complete: **%d/%d** players banned. Reason: %s"),
-			BannedCount, Uids.Num(), *Reason));
+			BannedCount, Uids.Num(),
+			*BanDiscordHelpers::EscapeMarkdown(Reason)));
 	PostModerationLog(FString::Printf(TEXT("%s bulk-banned %d player(s). Reason: %s"),
 		*SenderName, BannedCount, *Reason));
 }
@@ -6081,7 +6129,9 @@ FString UBanDiscordSubsystem::ExecutePanelKick(const FString& PlayerArg,
 		FBanDiscordNotifier::NotifyPlayerKicked(DisplayName, KickReason, SenderName);
 		FString Msg = FString::Printf(
 			TEXT("✅ Kicked **%s** (`%s`).\nReason: %s\nKicked by: %s"),
-			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *KickReason, *SenderName);
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(KickReason),
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 		Msg += BanDiscordHelpers::FormatPlayerLookup(this, Uid);
 		UE_LOG(LogBanDiscord, Log,
 		       TEXT("BanDiscordSubsystem: [Panel] %s kicked %s (%s). Reason: %s"),
@@ -6141,7 +6191,9 @@ FString UBanDiscordSubsystem::ExecutePanelBan(const FString& PlayerArg,
 
 	FString Msg = FString::Printf(
 		TEXT("✅ **%s** (`%s`) has been **permanently** banned.\nReason: %s\nBanned by: %s"),
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *Entry.Reason, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+		*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Msg += BanDiscordHelpers::FormatPlayerLookup(this, Uid);
 
 	UE_LOG(LogBanDiscord, Log,
@@ -6211,7 +6263,9 @@ FString UBanDiscordSubsystem::ExecutePanelTempBan(const FString& PlayerArg,
 		     "Expires: %s\nReason: %s\nBanned by: %s"),
 		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
 		*BanDiscordHelpers::FormatDuration(DurationMinutes),
-		*BanDiscordHelpers::FormatExpiry(Entry), *Entry.Reason, *SenderName);
+		*BanDiscordHelpers::FormatExpiry(Entry),
+		*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Msg += BanDiscordHelpers::FormatPlayerLookup(this, Uid);
 
 	UE_LOG(LogBanDiscord, Log,
@@ -6331,7 +6385,9 @@ FString UBanDiscordSubsystem::ExecutePanelWarn(const FString& PlayerArg,
 
 	const FString WarnMsg = FString::Printf(
 		TEXT("⚠️ Warned **%s** (`%s`).\nReason: %s\nTotal warnings: **%d**\nWarned by: %s"),
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *Reason, WarnCount, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+		*BanDiscordHelpers::EscapeMarkdown(Reason), WarnCount,
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	PostToPlayerModerationThread(DisplayName, Uid, WarnMsg);
 	return WarnMsg;
 }
@@ -6388,7 +6444,8 @@ FString UBanDiscordSubsystem::ExecutePanelMute(const FString& PlayerArg,
 	const FString MuteMsg = FString::Printf(
 		TEXT("🔇 Muted **%s** (`%s`) for %s.\nReason: %s\nMuted by: %s"),
 		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *DurStr,
-		*MuteReason, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(MuteReason),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	PostToPlayerModerationThread(DisplayName, Uid, MuteMsg);
 	return MuteMsg;
 }
@@ -6418,7 +6475,9 @@ FString UBanDiscordSubsystem::ExecutePanelAnnounce(const FString& Message,
 
 	return FString::Printf(
 		TEXT("📢 Announcement sent to **%d** player(s):\n> %s\nSent by: %s"),
-		Delivered, *Message, *SenderName);
+		Delivered,
+		*BanDiscordHelpers::EscapeMarkdown(Message),
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 }
 
 FString UBanDiscordSubsystem::ExecutePanelBanList() const
@@ -6561,7 +6620,7 @@ FString UBanDiscordSubsystem::ExecutePanelReloadConfig(const FString& SenderName
 
 	UE_LOG(LogBanDiscord, Log,
 	       TEXT("BanDiscordSubsystem: [Panel] Config reloaded by %s."), *SenderName);
-	return FString::Printf(TEXT("✅ BanBridge configuration reloaded by **%s**."), *SenderName);
+	return FString::Printf(TEXT("✅ BanBridge configuration reloaded by **%s**."), *BanDiscordHelpers::EscapeMarkdown(SenderName));
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -6580,30 +6639,36 @@ FString UBanDiscordSubsystem::ExecutePanelUnban(const FString& PlayerArg,
 	if (!ResolveTarget(PlayerArg, Uid, DisplayName, ErrorMsg))
 		return ErrorMsg;
 
-	// Remember linked UIDs before removing so counterpart bans can be cleaned up.
+	// Use the atomic RemoveBanByUid overload to capture the removed ban entry
+	// and delete it in a single mutex scope, eliminating the TOCTOU window that
+	// exists when GetBanByUid() and RemoveBanByUid() are called as two separate
+	// operations (the ban record, including LinkedUids, could be modified between
+	// the two calls).
 	FBanEntry BanRecord;
-	const bool bHadRecord = DB->GetBanByUid(Uid, BanRecord);
-
-	if (!DB->RemoveBanByUid(Uid))
+	if (!DB->RemoveBanByUid(Uid, BanRecord))
 	{
 		const FString Msg = FString::Printf(
 			TEXT("ℹ️ No active ban record found for **%s** (`%s`) — player is already unbanned.\nUnbanned by: %s"),
-			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 		UE_LOG(LogBanDiscord, Log,
 		       TEXT("BanDiscordSubsystem: [Panel] %s unbanned %s (%s) — no record in DB."),
 		       *SenderName, *DisplayName, *Uid);
 		return Msg;
 	}
 
+	// RemoveBanByUid returned true, so BanRecord is fully populated from the
+	// removed entry — use its LinkedUids to clean up any counterpart bans.
 	int32 ExtraRemoved = 0;
-	if (bHadRecord)
+	if (!BanRecord.LinkedUids.IsEmpty())
 		ExtraRemoved = BanDiscordHelpers::RemoveCounterpartBans(this, DB, Uid, BanRecord.LinkedUids);
 
 	FBanDiscordNotifier::NotifyBanRemoved(Uid, DisplayName, SenderName);
 
 	FString Msg = FString::Printf(
 		TEXT("✅ Ban removed for **%s** (`%s`).\nUnbanned by: %s"),
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	if (ExtraRemoved > 0)
 		Msg += FString::Printf(TEXT("\nAlso removed %d linked ban(s)."), ExtraRemoved);
 
@@ -6659,7 +6724,8 @@ FString UBanDiscordSubsystem::ExecutePanelUnmute(const FString& PlayerArg,
 
 	const FString UnmuteMsg = FString::Printf(
 		TEXT("✅ Unmuted **%s** (`%s`).\nUnmuted by: %s"),
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	PostToPlayerModerationThread(DisplayName, Uid, UnmuteMsg);
 	return UnmuteMsg;
 }
@@ -6710,15 +6776,15 @@ FString UBanDiscordSubsystem::ExecutePanelBanCheck(const FString& PlayerArg) con
 			Msg = FString::Printf(
 				TEXT("✅ **%s** (`%s`) is **not currently banned**.\n"
 				     "(Expired ban record: reason: %s, expired: %s)"),
-				*DisplayName, *Uid,
-				*AnyEntry.Reason,
+				*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+				*BanDiscordHelpers::EscapeMarkdown(AnyEntry.Reason),
 				*BanDiscordHelpers::FormatExpiry(AnyEntry));
 		}
 		else
 		{
 			Msg = FString::Printf(
 				TEXT("✅ **%s** (`%s`) is **not banned**."),
-				*DisplayName, *Uid);
+				*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid);
 		}
 	}
 
@@ -6821,7 +6887,9 @@ FString UBanDiscordSubsystem::ExecutePanelMuteCheck(const FString& PlayerArg) co
 	return FString::Printf(
 		TEXT("🔇 **%s** (`%s`) is muted %s.\nReason: %s\nMuted by: %s"),
 		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
-		*ExpiryStr, *Entry.Reason, *Entry.MutedBy);
+		*ExpiryStr,
+		*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+		*BanDiscordHelpers::EscapeMarkdown(Entry.MutedBy));
 }
 
 FString UBanDiscordSubsystem::ExecutePanelMuteList() const
@@ -7042,7 +7110,8 @@ void UBanDiscordSubsystem::HandleFreezeCommand(const TArray<FString>& Args,
 		AFreezeChatCommand::FrozenPlayerUids.Remove(Uid);
 		const FString ResultMsg = FString::Printf(
 			TEXT("🔓 **%s** (`%s`) has been **unfrozen** by **%s**."),
-			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 		Respond(ChannelId, ResultMsg);
 		PostModerationLog(ResultMsg);
 		if (UGameInstance* GI2 = GetGameInstance())
@@ -7070,7 +7139,8 @@ void UBanDiscordSubsystem::HandleFreezeCommand(const TArray<FString>& Args,
 		AFreezeChatCommand::FrozenPlayerUids.Add(Uid);
 		const FString ResultMsg = FString::Printf(
 			TEXT("❄️ **%s** (`%s`) has been **frozen** by **%s**. Use `/mod freeze` again to unfreeze."),
-			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 		Respond(ChannelId, ResultMsg);
 		PostModerationLog(ResultMsg);
 		if (UGameInstance* GI2 = GetGameInstance())
@@ -7120,7 +7190,9 @@ void UBanDiscordSubsystem::HandleClearChatCommand(const TArray<FString>& Args,
 			PC->ClientMessage(Notice);
 
 	const FString ResultMsg = FString::Printf(
-		TEXT("🧹 **Chat cleared** by **%s**.\nReason: %s"), *SenderName, *Reason);
+		TEXT("🧹 **Chat cleared** by **%s**.\nReason: %s"),
+			*BanDiscordHelpers::EscapeMarkdown(SenderName),
+			*BanDiscordHelpers::EscapeMarkdown(Reason));
 	Respond(ChannelId, ResultMsg);
 	PostModerationLog(ResultMsg);
 	if (UGameInstance* GI2 = GetGameInstance())
@@ -7172,7 +7244,8 @@ FString UBanDiscordSubsystem::ExecutePanelFreeze(const FString& PlayerArg,
 		       *SenderName, *DisplayName, *Uid);
 		return FString::Printf(
 			TEXT("🔓 **%s** (`%s`) has been **unfrozen** by **%s**."),
-			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	}
 	else
 	{
@@ -7198,7 +7271,8 @@ FString UBanDiscordSubsystem::ExecutePanelFreeze(const FString& PlayerArg,
 		return FString::Printf(
 			TEXT("❄️ **%s** (`%s`) has been **frozen** by **%s**."
 			     " Use the Freeze button again to unfreeze."),
-			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	}
 }
 
@@ -7234,5 +7308,6 @@ FString UBanDiscordSubsystem::ExecutePanelClearChat(const FString& Reason,
 	       *SenderName, *EffectiveReason);
 	return FString::Printf(
 		TEXT("🧹 **Chat cleared** by **%s**.\nReason: %s"),
-		*SenderName, *EffectiveReason);
+		*BanDiscordHelpers::EscapeMarkdown(SenderName),
+		*BanDiscordHelpers::EscapeMarkdown(EffectiveReason));
 }

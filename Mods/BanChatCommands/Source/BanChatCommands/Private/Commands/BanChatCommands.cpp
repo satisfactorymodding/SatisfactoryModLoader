@@ -4244,8 +4244,11 @@ EExecutionStatus AReputationChatCommand::ExecuteCommand_Implementation(
     }
 
     // Reputation score.
-    const int32 Score = FMath::Max(0,
-        100 - (WarnPoints * 5) - (TotalBans * 15) - (KickCount * 3));
+    const int64 ScoreRaw = static_cast<int64>(100)
+        - (static_cast<int64>(WarnPoints) * 5)
+        - (static_cast<int64>(TotalBans)  * 15)
+        - (static_cast<int64>(KickCount)  * 3);
+    const int32 Score = static_cast<int32>(FMath::Max((int64)0, ScoreRaw));
 
     FString ScoreLabel;
     FLinearColor Color;
