@@ -173,7 +173,7 @@ void UScheduledBanRegistry::Tick(float DeltaTime)
         FScopeLock Lock(&Mutex);
 
         // Build the set of IDs to remove entirely.
-        TArray<int64> IdsToRemove = AppliedIds;
+        TSet<int64> IdsToRemove(AppliedIds);
         for (const FScheduledBanEntry& FE : FailedEntries)
         {
             if (FE.RetryCount >= 5) // 5-attempt cap: drop after 5 failed retries
@@ -371,7 +371,9 @@ void UScheduledBanRegistry::LoadFromFile()
         const int64 Parsed = FCString::Atoi64(*StoredNextIdStr);
         NextId = (Parsed > 0) ? Parsed : 1;
     }
-    else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl) && StoredNextIdDbl >= 1.0)
+    else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl)
+             && StoredNextIdDbl >= 1.0
+             && StoredNextIdDbl < static_cast<double>(INT64_MAX)) // guard against Inf/NaN before cast
     {
         NextId = static_cast<int64>(StoredNextIdDbl);
     }

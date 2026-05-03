@@ -7149,8 +7149,8 @@ FString UBanDiscordSubsystem::ExecutePanelFreeze(const FString& PlayerArg,
 
 	if (bWasFrozen)
 	{
-		// D-2 fixed: always update FrozenPlayerUids regardless of online status
-		bool bMatchedUnfreeze = false;
+		// Always update FrozenPlayerUids regardless of online status; SetIgnoreMoveInput
+		// only has an effect if the player is currently in the world.
 		for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
 		{
 			APlayerController* PC = It->Get();
@@ -7160,7 +7160,6 @@ FString UBanDiscordSubsystem::ExecutePanelFreeze(const FString& PlayerArg,
 			if (UBanDatabase::MakeUid(TEXT("EOS"), NetId.ToString().ToLower()) == Uid)
 			{
 				PC->SetIgnoreMoveInput(false);
-				bMatchedUnfreeze = true;
 				break;
 			}
 		}
@@ -7175,8 +7174,8 @@ FString UBanDiscordSubsystem::ExecutePanelFreeze(const FString& PlayerArg,
 	}
 	else
 	{
-		// D-2 fixed: always update FrozenPlayerUids regardless of online status
-		bool bMatchedFreeze = false;
+		// Always update FrozenPlayerUids regardless of online status; SetIgnoreMoveInput
+		// only has an effect if the player is currently in the world.
 		for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
 		{
 			APlayerController* PC = It->Get();
@@ -7186,7 +7185,6 @@ FString UBanDiscordSubsystem::ExecutePanelFreeze(const FString& PlayerArg,
 			if (UBanDatabase::MakeUid(TEXT("EOS"), NetId.ToString().ToLower()) == Uid)
 			{
 				PC->SetIgnoreMoveInput(true);
-				bMatchedFreeze = true;
 				break;
 			}
 		}

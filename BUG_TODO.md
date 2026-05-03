@@ -1413,3 +1413,113 @@ suffix could inject arbitrary text into the ephemeral staff message.
 
 **Fix:** Added an `IsNumeric()` guard immediately after the extraction; non-numeric
 values return an ephemeral error response and abort the handler.
+
+---
+
+*Last updated: 2026-05-03. All 8 Round-18 bugs resolved.*
+
+---
+
+## Round 19 — Full Source Audit (2026-05-03)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket (fresh pass after Round-18 fixes).
+
+---
+
+### ✅ Fixed — `BanRestApi` POST /bans/bulk: `Reason`, `BannedBy`, `Category` used before declaration — compile error (BUG-R19-01)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** The POST `/bans/bulk` lambda body called
+`Body->TryGetStringField(TEXT("reason"), Reason)` etc. but the variables
+`FString Reason, BannedBy, Category` were not declared in scope — compile error.
+
+**Fix:** Added `FString Reason, BannedBy, Category;` declarations immediately before
+the `TryGetStringField` calls.
+
+---
+
+### ✅ Fixed — `BanRestApi` DELETE /bans/bulk: `RemovedBy` used before declaration — compile error (BUG-R19-02)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** Same pattern — `Body->TryGetStringField(TEXT("removedBy"), RemovedBy)`
+called without `FString RemovedBy` being declared in scope.
+
+**Fix:** Added `FString RemovedBy;` declaration immediately before the call.
+
+---
+
+### ✅ Fixed — `PlayerWarningRegistry::LoadFromFile()` — `nextId` double cast missing upper-bound guard (BUG-R19-03)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/PlayerWarningRegistry.cpp`
+
+**Root cause:** The legacy `nextId` load path checked `StoredNextIdDbl >= 1.0` but
+had no upper-bound guard. `Inf` or `NaN` passes `>= 1.0` and causes undefined
+behaviour in `static_cast<int64>`.
+
+**Fix:** Added `&& StoredNextIdDbl < 9.2e18` guard, matching the already-correct
+BanAppealRegistry pattern.
+
+---
+
+### ✅ Fixed — `PlayerNoteRegistry::LoadFromFile()` — `nextId` double cast missing upper-bound guard (BUG-R19-04)
+**File:** `Mods/BanChatCommands/Source/BanChatCommands/Private/PlayerNoteRegistry.cpp`
+
+**Root cause:** Identical to BUG-R19-03.
+
+**Fix:** Same fix applied.
+
+---
+
+### ✅ Fixed — `ScheduledBanRegistry::LoadFromFile()` — `nextId` double cast missing upper-bound guard (BUG-R19-05)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/ScheduledBanRegistry.cpp`
+
+**Root cause:** Identical to BUG-R19-03/04 — `StoredNextIdDbl >= 1.0` check without upper bound.
+
+**Fix:** Added `&& StoredNextIdDbl < static_cast<double>(INT64_MAX)` guard.
+
+---
+
+### ✅ Fixed — `BanRestApi` auto-ban on warning threshold: TOCTOU between `IsCurrentlyBannedByAnyId` and `AddBan` (BUG-R19-06)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** The `POST /warnings` route checked `IsCurrentlyBannedByAnyId` and
+then called `AddBan` as two separate operations. A concurrent request could insert
+a permanent ban between the two calls, which would then be silently overwritten.
+
+**Fix:** Replaced with the atomic `AddBanSkipIfPermanentExists` method that performs
+the check and insertion under a single mutex acquisition.
+
+---
+
+### ✅ Fixed — `BanRestApi` CSV export endpoints missing `Content-Disposition` header (BUG-R19-07)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** The three CSV export routes (`GET /audit/csv`, `GET /warnings/csv`,
+`GET /players/csv`) returned `text/csv` without a `Content-Disposition: attachment`
+header, so browsers displayed the content inline instead of downloading it.
+
+**Fix:** Added `Content-Disposition: attachment; filename="audit.csv"` etc. to each.
+
+---
+
+### ✅ Fixed — `ScheduledBanRegistry::Tick()` cleanup uses `TArray::Contains()` — O(n²) (BUG-R19-08)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/ScheduledBanRegistry.cpp`
+
+**Root cause:** `IdsToRemove` was a `TArray<int64>` and `Contains()` is O(n), making
+the cleanup loop O(n²) for large scheduled-ban lists.
+
+**Fix:** Changed to `TSet<int64>` for O(1) `Contains()`.
+
+---
+
+### ✅ Fixed — `BanDiscordSubsystem::ExecutePanelFreeze`: dead write-only `bMatchedUnfreeze` / `bMatchedFreeze` variables (BUG-R19-09)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+
+**Root cause:** `bool bMatchedUnfreeze` and `bool bMatchedFreeze` were declared and
+set inside their loops but never read (post-loop logic always runs unconditionally).
+MSVC would emit C4189 "local variable initialized but not referenced" for these.
+
+**Fix:** Removed both dead variables.
+
+---
+
+*Last updated: 2026-05-03. All 9 Round-19 bugs resolved.*
