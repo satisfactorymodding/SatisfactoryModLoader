@@ -2056,31 +2056,32 @@ void UBanDiscordSubsystem::HandleWarnCommand(const TArray<FString>& Args,
 			{
 				if (UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>())
 				{
-					FBanEntry Existing;
-					if (!DB->IsCurrentlyBannedByAnyId(Uid, Existing))
+					// Use AddBanSkipIfPermanentExists so the check-and-add is
+					// atomic under the database lock, eliminating the TOCTOU
+					// window that existed when IsCurrentlyBannedByAnyId and
+					// AddBan were called as two separate steps.
+					FBanEntry AutoBan;
+					AutoBan.Uid        = Uid;
+					UBanDatabase::ParseUid(Uid, AutoBan.Platform, AutoBan.PlayerUID);
+					AutoBan.PlayerName   = DisplayName;
+					AutoBan.Reason       = TEXT("Auto-banned: reached warning threshold");
+					AutoBan.BannedBy     = SenderName;
+					const FDateTime AutoNow1 = FDateTime::UtcNow();
+					AutoBan.BanDate      = AutoNow1;
+					AutoBan.bIsPermanent = (BanDurationMinutes <= 0);
+					AutoBan.ExpireDate   = AutoBan.bIsPermanent
+						? FDateTime(0)
+						: AutoNow1 + FTimespan::FromMinutes(BanDurationMinutes);
+					bool bSkipped = false;
+					if (DB->AddBanSkipIfPermanentExists(AutoBan, bSkipped))
 					{
-						FBanEntry AutoBan;
-						AutoBan.Uid        = Uid;
-						UBanDatabase::ParseUid(Uid, AutoBan.Platform, AutoBan.PlayerUID);
-						AutoBan.PlayerName   = DisplayName;
-						AutoBan.Reason       = TEXT("Auto-banned: reached warning threshold");
-						AutoBan.BannedBy     = SenderName;
-						const FDateTime AutoNow1 = FDateTime::UtcNow();
-						AutoBan.BanDate      = AutoNow1;
-						AutoBan.bIsPermanent = (BanDurationMinutes <= 0);
-						AutoBan.ExpireDate   = AutoBan.bIsPermanent
-							? FDateTime(0)
-							: AutoNow1 + FTimespan::FromMinutes(BanDurationMinutes);
-						if (DB->AddBan(AutoBan))
-						{
-							if (UWorld* World = GI->GetWorld())
-								UBanEnforcer::KickConnectedPlayer(World, Uid, AutoBan.GetKickMessage());
-							FBanDiscordNotifier::NotifyBanCreated(AutoBan);
-							FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
-							if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
-								AL->LogAction(TEXT("ban"), Uid, DisplayName,
-									GetCurrentAuditAdminUid(SenderName), SenderName, AutoBan.Reason);
-						}
+						if (UWorld* World = GI->GetWorld())
+							UBanEnforcer::KickConnectedPlayer(World, Uid, AutoBan.GetKickMessage());
+						FBanDiscordNotifier::NotifyBanCreated(AutoBan);
+						FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
+						if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
+							AL->LogAction(TEXT("ban"), Uid, DisplayName,
+								GetCurrentAuditAdminUid(SenderName), SenderName, AutoBan.Reason);
 					}
 				}
 			}
@@ -6292,31 +6293,32 @@ FString UBanDiscordSubsystem::ExecutePanelWarn(const FString& PlayerArg,
 			{
 				if (UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>())
 				{
-					FBanEntry Existing;
-					if (!DB->IsCurrentlyBannedByAnyId(Uid, Existing))
+					// Use AddBanSkipIfPermanentExists so the check-and-add is
+					// atomic under the database lock, eliminating the TOCTOU
+					// window that existed when IsCurrentlyBannedByAnyId and
+					// AddBan were called as two separate steps.
+					FBanEntry AutoBan;
+					AutoBan.Uid        = Uid;
+					UBanDatabase::ParseUid(Uid, AutoBan.Platform, AutoBan.PlayerUID);
+					AutoBan.PlayerName   = DisplayName;
+					AutoBan.Reason       = TEXT("Auto-banned: reached warning threshold");
+					AutoBan.BannedBy     = SenderName;
+					const FDateTime AutoNow2 = FDateTime::UtcNow();
+					AutoBan.BanDate      = AutoNow2;
+					AutoBan.bIsPermanent = (BanDurationMinutes <= 0);
+					AutoBan.ExpireDate   = AutoBan.bIsPermanent
+						? FDateTime(0)
+						: AutoNow2 + FTimespan::FromMinutes(BanDurationMinutes);
+					bool bSkipped2 = false;
+					if (DB->AddBanSkipIfPermanentExists(AutoBan, bSkipped2))
 					{
-						FBanEntry AutoBan;
-						AutoBan.Uid        = Uid;
-						UBanDatabase::ParseUid(Uid, AutoBan.Platform, AutoBan.PlayerUID);
-						AutoBan.PlayerName   = DisplayName;
-						AutoBan.Reason       = TEXT("Auto-banned: reached warning threshold");
-						AutoBan.BannedBy     = SenderName;
-						const FDateTime AutoNow2 = FDateTime::UtcNow();
-						AutoBan.BanDate      = AutoNow2;
-						AutoBan.bIsPermanent = (BanDurationMinutes <= 0);
-						AutoBan.ExpireDate   = AutoBan.bIsPermanent
-							? FDateTime(0)
-							: AutoNow2 + FTimespan::FromMinutes(BanDurationMinutes);
-						if (DB->AddBan(AutoBan))
-						{
-							if (UWorld* World = GI->GetWorld())
-								UBanEnforcer::KickConnectedPlayer(World, Uid, AutoBan.GetKickMessage());
-							FBanDiscordNotifier::NotifyBanCreated(AutoBan);
-							FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
-							if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
-								AL->LogAction(TEXT("ban"), Uid, DisplayName,
-									GetCurrentAuditAdminUid(SenderName), SenderName, AutoBan.Reason);
-						}
+						if (UWorld* World = GI->GetWorld())
+							UBanEnforcer::KickConnectedPlayer(World, Uid, AutoBan.GetKickMessage());
+						FBanDiscordNotifier::NotifyBanCreated(AutoBan);
+						FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
+						if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
+							AL->LogAction(TEXT("ban"), Uid, DisplayName,
+								GetCurrentAuditAdminUid(SenderName), SenderName, AutoBan.Reason);
 					}
 				}
 			}

@@ -2047,51 +2047,52 @@ EExecutionStatus AWarnChatCommand::ExecuteCommand_Implementation(
 
         if (BanDurationMinutes >= 0)
         {
-            // Only auto-ban if the player is not already serving a ban.
-            // Issuing an auto-ban over an active, potentially stricter ban
-            // would silently overwrite the existing record with a lighter one.
             UBanDatabase* BanDB = GI->GetSubsystem<UBanDatabase>();
-            FBanEntry ExistingAutobanEntry;
-            if (BanDB && BanDB->IsCurrentlyBannedByAnyId(Uid, ExistingAutobanEntry))
+            if (BanDB)
             {
-                UE_LOG(LogBanChatCommands, Log,
-                    TEXT("BanChatCommands: auto-ban skipped for '%s' (%s) — player is already banned."),
-                    *DisplayName, *Uid);
-            }
-            else
-            {
-                // Show the threshold metric that actually triggered the ban.
-                const FString ThresholdDesc = bTriggeredByPoints
-                    ? FString::Printf(TEXT("%d points"), WarnPoints)
-                    : FString::Printf(TEXT("%d warnings"), WarnCount);
-                Sender->SendChatMessage(
-                    FString::Printf(TEXT("[BanChatCommands] '%s' reached the auto-ban threshold (%s) — banning."),
-                        *DisplayName, *ThresholdDesc),
-                    FLinearColor::Red);
-                const EExecutionStatus AutoBanResult = BanChat::DoBan(
-                    this, Sender, Uid, DisplayName, BanDurationMinutes,
-                    TEXT("Auto-banned: reached warning threshold"), WarnedBy, AdminUid);
-                if (AutoBanResult != EExecutionStatus::COMPLETED)
+                // Build the entry first, then use AddBanSkipIfPermanentExists so
+                // the check-and-add is atomic under the database lock, eliminating
+                // the TOCTOU window that existed between the old
+                // IsCurrentlyBannedByAnyId check and the subsequent DoBan/AddBan call.
+                FBanEntry AutoBanEntry;
+                AutoBanEntry.Uid        = Uid;
+                UBanDatabase::ParseUid(Uid, AutoBanEntry.Platform, AutoBanEntry.PlayerUID);
+                AutoBanEntry.PlayerName   = DisplayName;
+                AutoBanEntry.Reason       = TEXT("Auto-banned: reached warning threshold");
+                AutoBanEntry.BannedBy     = WarnedBy;
+                const FDateTime AutoNow = FDateTime::UtcNow();
+                AutoBanEntry.BanDate      = AutoNow;
+                AutoBanEntry.bIsPermanent = (BanDurationMinutes <= 0);
+                AutoBanEntry.ExpireDate   = AutoBanEntry.bIsPermanent
+                    ? FDateTime(0)
+                    : AutoNow + FTimespan::FromMinutes(BanDurationMinutes);
+                bool bSkipped = false;
+                if (BanDB->AddBanSkipIfPermanentExists(AutoBanEntry, bSkipped))
                 {
-                    UE_LOG(LogBanChatCommands, Warning,
-                        TEXT("BanChatCommands: auto-ban for '%s' (%s) failed after reaching warn threshold (%d)."),
-                        *DisplayName, *Uid, WarnCount);
+                    const FString ThresholdDesc = bTriggeredByPoints
+                        ? FString::Printf(TEXT("%d points"), WarnPoints)
+                        : FString::Printf(TEXT("%d warnings"), WarnCount);
+                    Sender->SendChatMessage(
+                        FString::Printf(TEXT("[BanChatCommands] â%sâ reached the auto-ban threshold (%s) â banning."),
+                            *DisplayName, *ThresholdDesc),
+                        FLinearColor::Red);
+                    // Kick immediately if the player is currently connected.
+                    UBanEnforcer::KickConnectedPlayer(World, Uid, AutoBanEntry.GetKickMessage());
+                    // Also ban the counterpart identifier (IPâEOS).
+                    BanChat::AddCounterpartBans(this, Sender, Uid, DisplayName,
+                        BanDurationMinutes, AutoBanEntry.Reason, WarnedBy);
+                    // Write to the audit log.
+                    if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
+                        AuditLog->LogAction(TEXT("ban"), Uid, DisplayName, AdminUid, WarnedBy, AutoBanEntry.Reason);
+                    // Notify Discord ban log and auto-escalation review channel.
+                    FBanDiscordNotifier::NotifyBanCreated(AutoBanEntry);
+                    FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBanEntry, WarnCount);
                 }
-
-                // Post a Discord review embed so staff can approve or override.
+                else if (bSkipped)
                 {
-                    FBanEntry ReviewBan;
-                    ReviewBan.Uid        = Uid;
-                    ReviewBan.PlayerName = DisplayName;
-                    ReviewBan.Reason     = TEXT("Auto-banned: reached warning threshold");
-                    ReviewBan.BannedBy   = TEXT("system");
-                    const FDateTime ReviewNow = FDateTime::UtcNow();
-                    ReviewBan.BanDate    = ReviewNow;
-                    ReviewBan.bIsPermanent = (BanDurationMinutes <= 0);
-                    ReviewBan.ExpireDate   = ReviewBan.bIsPermanent
-                        ? FDateTime(0)
-                        : ReviewNow + FTimespan::FromMinutes(BanDurationMinutes);
-                    FBanDiscordNotifier::NotifyAutoEscalationBan(ReviewBan, WarnCount);
+                    UE_LOG(LogBanChatCommands, Log,
+                        TEXT("BanChatCommands: auto-ban skipped for â%sâ (%s) â player is already permanently banned."),
+                        *DisplayName, *Uid);
                 }
             }
         }

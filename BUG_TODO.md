@@ -1523,3 +1523,99 @@ MSVC would emit C4189 "local variable initialized but not referenced" for these.
 ---
 
 *Last updated: 2026-05-03. All 9 Round-19 bugs resolved.*
+
+---
+
+## Round 20 — Full audit of BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket (2026-05-03)
+
+### Summary
+
+Three bugs found, all in the same category: non-atomic TOCTOU (time-of-check / time-of-use)
+race conditions in the auto-ban escalation paths triggered when a player is warned past the
+configured threshold. Round 19 fixed the identical pattern in the REST API POST /warnings
+handler but two analogous paths in the Discord bot and one additional panel path were
+overlooked. All three are now fixed.
+
+All other source files read during this audit were clean with respect to bugs not already
+addressed in prior rounds:
+- `ScheduledBanRegistry.cpp`, `BanSyncClient.cpp`, `BanWebSocketPusher.cpp`,
+  `PlayerSessionRegistry.cpp`, `BanRestApi.cpp`, `BanDiscordNotifier.cpp` — no new issues.
+- `SMLWebSocketRunnable.cpp`, `SMLWebSocketServerRunnable.cpp` — no new issues.
+- `MuteRegistry.cpp`, `PlayerNoteRegistry.cpp` — no new issues.
+- `TicketSubsystem.cpp` — one cosmetic/robustness note (see BUG-R20-NOTED below).
+
+---
+
+### ✅ Fixed — `BanDiscordSubsystem::HandleWarnCommand`: non-atomic auto-ban escalation (BUG-R20-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp` (~line 2059)
+
+**Root cause:** When a `/warn` Discord slash command pushed a player over the auto-ban
+threshold, the handler used a two-step pattern:
+1. `DB->IsCurrentlyBannedByAnyId(Uid, Existing)` — read-only check
+2. `DB->AddBan(AutoBan)` — write (separate database lock acquisition)
+
+Between steps 1 and 2 a concurrent permanent ban could be inserted (e.g. by another admin
+typing `/ban` in the same instant), and `AddBan` would silently overwrite it with the
+shorter auto-ban. This is the exact TOCTOU that was documented and fixed for the REST API
+in Round 19 (`AddBanSkipIfPermanentExists`), but the Discord slash-command path was missed.
+
+**Fix:** Removed the `IsCurrentlyBannedByAnyId` pre-check; call
+`DB->AddBanSkipIfPermanentExists(AutoBan, bSkipped)` directly so the guard and the write
+happen inside a single database lock acquisition.
+
+---
+
+### ✅ Fixed — `UBanDiscordSubsystem::ExecutePanelWarn`: non-atomic auto-ban escalation (BUG-R20-02)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp` (~line 6297)
+
+**Root cause:** `ExecutePanelWarn` (the panel-button `/warn` path, distinct from the slash
+command) contained an identical two-step `IsCurrentlyBannedByAnyId` + `AddBan` pattern for
+the auto-ban escalation block. Same risk as BUG-R20-01.
+
+**Fix:** Same as BUG-R20-01 — replaced with `AddBanSkipIfPermanentExists`.
+
+---
+
+### ✅ Fixed — `AWarnChatCommand::ExecuteCommand_Implementation`: non-atomic auto-ban escalation (BUG-R20-03)
+**File:** `Mods/BanChatCommands/Source/BanChatCommands/Private/Commands/BanChatCommands.cpp` (~line 2048)
+
+**Root cause:** The in-game `/warn` chat command's auto-ban block checked
+`BanDB->IsCurrentlyBannedByAnyId(Uid, ExistingAutobanEntry)` and, if false, called
+`BanChat::DoBan(...)` which internally calls `DB->AddBan(Entry)`. The TOCTOU window is the
+same as BUG-R20-01/02.
+
+Additionally, `DoBan` called `BanChat::AddCounterpartBans` (to also ban the linked IP or
+EOS UID) and logged the audit entry, but both steps were absent from the Discord path. The
+original pre-check code also reconstructed a separate `ReviewBan` object for the
+`NotifyAutoEscalationBan` call, using a fresh `FDateTime::UtcNow()` that could differ from
+the actual ban timestamp — a minor inconsistency.
+
+**Fix:** Replaced the `IsCurrentlyBannedByAnyId` + `DoBan` pair with an inlined block
+that:
+- Builds `AutoBanEntry` once (capturing `FDateTime::UtcNow()` once for all timing fields).
+- Calls `BanDB->AddBanSkipIfPermanentExists(AutoBanEntry, bSkipped)` atomically.
+- On success: kicks the player, calls `BanChat::AddCounterpartBans`, writes to the audit
+  log, calls `FBanDiscordNotifier::NotifyBanCreated` and `NotifyAutoEscalationBan` — all
+  using the same entry object so timestamps are consistent.
+- On `bSkipped == true` (permanent ban exists): logs a diagnostic message.
+
+---
+
+### 📝 Noted (not fixed) — `TicketSubsystem::FinalizeTranscript`: fragile length heuristic for empty transcript detection (BUG-R20-NOTED)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp` (line 1306)
+
+**Description:** The check used to detect "no Discord message history was fetched" compares
+`TranscriptText.Len()` against the length of just the first header line plus a fixed `+80`
+byte allowance, rather than inspecting whether `PageAccum->Pages` is empty. This is
+technically correct for typical Discord user IDs and date strings (total header ≈ 84
+characters, threshold = 107), but is fragile: if the header fields are unexpectedly long,
+or if only very short messages (each < ~7 characters) were actually fetched, the heuristic
+can fire incorrectly.
+
+**Severity:** LOW — unlikely to cause visible issues in practice; the threshold comfortably
+covers all real Discord user ID lengths (max 19 digits) and ISO-8601 date strings. Left as
+a noted improvement opportunity.
+
+---
+
+*Last updated: 2026-05-03. All 3 Round-20 bugs resolved.*
