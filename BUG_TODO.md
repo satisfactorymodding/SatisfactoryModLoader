@@ -1297,3 +1297,119 @@ the outer `GI` directly, which is guaranteed non-null by the earlier guard.
 ---
 
 *Last updated: 2026-05-10. All 8 Round-17 bugs resolved.*
+
+---
+
+## Round 18 — Full Audit Bug Fixes
+
+*Last updated: 2026-05-03. All 8 Round-18 bugs resolved.*
+
+---
+
+### ✅ Fixed — `SMLWebSocketServerRunnable::PerformHandshake`: missing closing `}` — compile error (BUG-R18-01)
+**File:** `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketServerRunnable.cpp`
+
+**Root cause:** A previous round added `Client.Socket->SetReceiveTimeout(FTimespan::Zero())`
+before `return true;` in `PerformHandshake()` but omitted the function's closing `}`.
+Without the brace the file cannot compile.
+
+**Fix:** Added the missing `}` after `return true;`.
+
+---
+
+### ✅ Fixed — `BanRestApi POST /bans/bulk`: Discord notification and response contain `Id=0` (BUG-R18-02)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** `UBanDatabase::AddBan(const FBanEntry&)` assigns the auto-incremented
+`Id` to an internal copy and does not modify the caller's `FBanEntry`. The bulk-ban
+loop passed the original `Ban` (with `Id=0`) directly to `FBanDiscordNotifier::NotifyBanCreated`
+and `BanJson::EntryToJson`, producing Discord embeds and API responses with `id=0`.
+Single-ban POST /bans already solved this correctly via a `GetBanByUid` round-trip.
+
+**Fix:** After `AddBan` succeeds, call `DB->GetBanByUid(Ban.Uid, Saved)` and use `Saved`
+for Discord notification, audit log, and the response array — matching the POST /bans pattern.
+Falls back to the in-memory entry with a warning log if the lookup unexpectedly fails.
+
+---
+
+### ✅ Fixed — `BanRestApi DELETE /bans/ip/:ip`: missing IP format validation on URL parameter (BUG-R18-03)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** `DELETE /bans/ip/:ip` extracted the IP from the URL path and immediately
+constructed a `UBanDatabase::MakeUid(TEXT("IP"), IpAddress)` without validating
+length or character set. `POST /bans/ip` applied strict validation (max 45 chars,
+only `[0-9a-fA-F:.]`), but the matching DELETE endpoint did not.
+
+**Fix:** Applied identical length (≤ 45 chars) and charset (`[0-9a-fA-F:.]`) validation
+before constructing the UID — consistent with the POST endpoint.
+
+---
+
+### ✅ Fixed — `BanRestApi GET /reputation/:uid`: int32 overflow in score arithmetic (BUG-R18-04)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** The reputation score was computed as
+`100 - (WarnPoints * 5) - (TotalBans * 15) - (KickCount * 3)` in plain `int32`
+arithmetic. With enough warnings or bans `WarnPoints * 5` overflows `INT32_MAX`,
+producing a garbage (potentially positive) score.
+
+**Fix:** Cast each operand to `int64` before multiplying, clamp the result to [0, 100],
+then assign to `int32`.
+
+---
+
+### ✅ Fixed — `BanSystemModule::BackupConfigIfNeeded`: INI newline injection via config values (BUG-R18-05)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanSystemModule.cpp`
+
+**Root cause:** All string-valued configuration fields (`DatabasePath`, `RestApiKey`,
+`DiscordWebhookUrl`, `WebSocketPushUrl`, `BanKickMessageTemplate`,
+`TempBanKickMessageTemplate`, `AppealUrl`, `GeoIpApiUrl`, `GeoIpKickMessage`,
+and the per-element array values) were written verbatim into the generated INI content.
+A value containing `\n` would inject extra lines into the file, potentially creating
+spurious keys or overwriting later legitimate keys when the file is parsed on reload.
+
+**Fix:** Added a `SanitizeIni` lambda at the top of `BackupConfigIfNeeded()` that
+replaces `\r\n`, `\n`, and `\r` with a space. Applied it to every string-valued field
+and array element in the generated content.
+
+---
+
+### ✅ Fixed — `BanRestApi POST /bans/bulk` and `DELETE /bans/bulk`: no UID count cap (DoS) (BUG-R18-06)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** Neither the POST nor the DELETE bulk-ban endpoints limited the number
+of UIDs in the request array. An authenticated caller could submit thousands of UIDs,
+blocking the game thread for an extended period via repeated mutex-guarded DB writes,
+KickConnectedPlayer iterations, and Discord webhook calls.
+
+**Fix:** Added a `UidsArr->Num() > 500` guard immediately after the array is extracted
+in both endpoints, responding with HTTP 400 if the limit is exceeded.
+
+---
+
+### ✅ Fixed — `TicketSubsystem ticket_cr_` / `ticket_modal:cr_`: `FCString::Atoi` on malformed index silently maps to 0 (BUG-R18-07)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp`
+
+**Root cause:** All four `ticket_cr_` and `ticket_modal:cr_` parsing sites called
+`FCString::Atoi` on the suffix without first checking that it was numeric.
+`FCString::Atoi("")` and `FCString::Atoi("abc")` both return 0, which is a valid array
+index when `CustomTicketReasons` is non-empty. A tampered `custom_id` such as
+`ticket_cr_abc` would therefore silently open the first custom ticket type instead
+of being rejected.
+
+**Fix:** At all four sites, extracted the suffix into a named `FString IdxStr` and
+added `if (!IdxStr.IsNumeric()) { … reject with error … return; }` before calling
+`FCString::Atoi(*IdxStr)`.
+
+---
+
+### ✅ Fixed — `TicketSubsystem ticket_bancheck:`: `CheckOpenerId` not validated as a numeric Discord snowflake (BUG-R18-08)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp`
+
+**Root cause:** The `ticket_bancheck:` button handler extracted the suffix as
+`CheckOpenerId` and immediately embedded it into a Discord mention (`<@%s>`) without
+verifying that it was a valid numeric Discord snowflake. A tampered `custom_id`
+suffix could inject arbitrary text into the ephemeral staff message.
+
+**Fix:** Added an `IsNumeric()` guard immediately after the extraction; non-numeric
+values return an ephemeral error response and abort the handler.

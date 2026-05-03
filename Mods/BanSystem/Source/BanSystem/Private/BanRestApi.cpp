@@ -1578,6 +1578,22 @@ void UBanRestApi::RegisterRoutes()
 
             const FString IpAddress = FGenericPlatformHttp::UrlDecode(Req.PathParams.FindRef(TEXT("ip")));
 
+            // Validate IP format (same rules as POST /bans/ip).
+            if (IpAddress.Len() > 45)
+            {
+                Done(BanJson::Error(TEXT("ipAddress is invalid (too long)"), EHttpServerResponseCodes::BadRequest));
+                return true;
+            }
+            for (const TCHAR C : IpAddress)
+            {
+                if (!((C >= '0' && C <= '9') || (C >= 'a' && C <= 'f') ||
+                      (C >= 'A' && C <= 'F') || C == ':' || C == '.'))
+                {
+                    Done(BanJson::Error(TEXT("ipAddress is invalid (illegal character)"), EHttpServerResponseCodes::BadRequest));
+                    return true;
+                }
+            }
+
             UGameInstance* GI = WeakGI.Get();
             if (!GI) { Done(BanJson::Error(TEXT("Server shutting down"), EHttpServerResponseCodes::ServiceUnavail)); return true; }
             UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>();
@@ -2761,8 +2777,12 @@ void UBanRestApi::RegisterRoutes()
 
             // Simple reputation score: 100 minus deductions.
             // Deductions: -5 per warn point, -15 per ban, -3 per kick.
-            const int32 Score = FMath::Max(0,
-                100 - (WarnPoints * 5) - (TotalBans * 15) - (KickCount * 3));
+            // Use int64 arithmetic to avoid overflow when WarnPoints/TotalBans/KickCount are large.
+            const int64 Score64 = 100LL
+                - (static_cast<int64>(WarnPoints) * 5LL)
+                - (static_cast<int64>(TotalBans)  * 15LL)
+                - (static_cast<int64>(KickCount)  * 3LL);
+            const int32 Score = static_cast<int32>(FMath::Clamp(Score64, 0LL, 100LL));
 
             TSharedPtr<FJsonObject> Obj = MakeShared<FJsonObject>();
             Obj->SetStringField(TEXT("uid"),             Uid);
@@ -2811,7 +2831,11 @@ void UBanRestApi::RegisterRoutes()
                 return true;
             }
 
-            FString Reason, BannedBy, Category;
+            if (UidsArr->Num() > 500)
+            {
+                Done(BanJson::Error(TEXT("uids array exceeds maximum size of 500")));
+                return true;
+            }
             Body->TryGetStringField(TEXT("reason"),   Reason);
             Body->TryGetStringField(TEXT("bannedBy"), BannedBy);
             Body->TryGetStringField(TEXT("category"), Category);
@@ -2849,13 +2873,23 @@ void UBanRestApi::RegisterRoutes()
 
                 if (DB->AddBan(Ban))
                 {
-                    FBanDiscordNotifier::NotifyBanCreated(Ban);
+                    // Fetch the saved entry so the response and Discord notification
+                    // contain the assigned Id (AddBan assigns it to an internal copy only).
+                    FBanEntry Saved;
+                    if (!DB->GetBanByUid(Ban.Uid, Saved))
+                    {
+                        UE_LOG(LogBanRestApi, Warning,
+                            TEXT("BanRestApi: POST /bans/bulk — GetBanByUid failed for '%s' immediately after AddBan; using in-memory entry"),
+                            *Ban.Uid);
+                        Saved = Ban;
+                    }
+                    FBanDiscordNotifier::NotifyBanCreated(Saved);
                     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                         AuditLog->LogAction(TEXT("ban"), Uid, TEXT(""), BannedBy, BannedBy, Reason);
                     // Kick the player if currently online.
                     if (UWorld* World = GI->GetWorld())
-                        UBanEnforcer::KickConnectedPlayer(World, Uid, Ban.GetKickMessage());
-                    ResultArr.Add(MakeShared<FJsonValueObject>(BanJson::EntryToJson(Ban)));
+                        UBanEnforcer::KickConnectedPlayer(World, Uid, Saved.GetKickMessage());
+                    ResultArr.Add(MakeShared<FJsonValueObject>(BanJson::EntryToJson(Saved)));
                     ++Added;
                 }
             }
@@ -2901,7 +2935,11 @@ void UBanRestApi::RegisterRoutes()
                 return true;
             }
 
-            FString RemovedBy;
+            if (UidsArr->Num() > 500)
+            {
+                Done(BanJson::Error(TEXT("uids array exceeds maximum size of 500")));
+                return true;
+            }
             Body->TryGetStringField(TEXT("removedBy"), RemovedBy);
             if (RemovedBy.IsEmpty()) RemovedBy = TEXT("api");
 
