@@ -881,4 +881,76 @@ appeal UID is found.
 
 *Last updated: 2026-05-03. Round-12 fixes applied.*
 
+---
+
+## Round 13 — Additional Scan (2026-05-03)
+
+### ✅ Fixed — Legacy double→int64 cast missing upper-bound guard in 4 registries (BUG-R13-01/02/03/04)
+**Files:**
+- `Mods/BanSystem/Source/BanSystem/Private/BanAppealRegistry.cpp`
+- `Mods/BanSystem/Source/BanSystem/Private/BanDatabase.cpp` (`JsonToEntry`)
+- `Mods/BanSystem/Source/BanSystem/Private/ScheduledBanRegistry.cpp` (`LoadFromFile`)
+- `Mods/BanSystem/Source/BanSystem/Private/PlayerWarningRegistry.cpp` (`LoadFromFile`)
+
+**Root cause:** The legacy-format load path for IDs used `static_cast<int64>(IdDbl)` without
+checking `IdDbl < static_cast<double>(INT64_MAX)`. A corrupted JSON value such as
+`"id": 1e30` or `"id": Infinity` would cause `static_cast<int64>` to invoke undefined
+behaviour (implementation-defined trap or garbage value on x86). `BanAuditLog.cpp`
+already applied both `>= 1.0` and `< static_cast<double>(INT64_MAX)` guards; the other
+four registries were inconsistent.
+
+**Fix:** Added the same `&& IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX)`
+condition to the `TryGetNumberField` fallback branch in all four files, matching the
+already-correct `BanAuditLog` pattern.
+
+---
+
+### ✅ Fixed — `PlayerNoteRegistry` legacy double→int64 cast missing INT64_MAX upper-bound guard (BUG-R13-05)
+**File:** `Mods/BanChatCommands/Source/BanChatCommands/Private/PlayerNoteRegistry.cpp`
+
+**Root cause:** The fallback had `&& IdDbl >= 1.0` (lower bound only) but no upper-bound
+check. A value like `9.9e18` (which exceeds INT64_MAX) would silently produce a
+negative or wrapped `int64` after the cast.
+
+**Fix:** Added `&& IdDbl < static_cast<double>(INT64_MAX)`, making the guard match
+all other registries.
+
+---
+
+### ✅ Fixed — Two separate `FDateTime::UtcNow()` calls in `PlayerWarningRegistry::AddWarning` (BUG-R13-06)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/PlayerWarningRegistry.cpp`
+
+**Root cause:** `Entry.WarnDate` was set by one call to `UtcNow()` and `Entry.ExpireDate`
+by a second, independent call. On an NTP step-correction, a leap-second, or extreme
+scheduler pressure, the two calls could return timestamps milliseconds apart — causing
+the warning to appear expired immediately on very short (`ExpiryMinutes = 1`) warnings
+where the second call could trail the first by enough ticks to advance past the expiry.
+
+**Fix:** Captured `Entry.WarnDate = FDateTime::UtcNow()` once, stored as `WarnNow`,
+and used `WarnNow + FTimespan::FromMinutes(ExpiryMinutes)` for `ExpireDate`. Both
+fields now share a single consistent timestamp.
+
+---
+
+### ✅ Fixed — `POST /bans/ip` accepts arbitrary string as IP address without format validation (BUG-R13-07)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** `ipAddress` was read from the JSON request body and used verbatim to
+construct the ban UID (`"IP:" + ipAddress`). No character-set or length validation was
+performed, so an authorised API caller could submit a string containing path separators,
+shell metacharacters, or other non-IP characters. The resulting ban entry would be
+silently ineffective (never matching a real player IP), would pollute the database, and
+could confuse sync clients or Discord embeds.
+
+**Fix:** Added a two-step validation immediately after extracting `ipAddress`:
+1. **Length check:** reject strings longer than 45 characters (generous limit that
+   accommodates any valid IPv4 (max 15 chars), standard IPv6 (max 39 chars), or
+   mixed IPv6/IPv4 uncompressed notation (max 45 chars)).
+2. **Character whitelist:** reject any string containing characters outside
+   `[0-9a-fA-F:.]` — the only characters legal in IPv4 and IPv6 address literals.
+Both failure paths return HTTP 400 with `"ipAddress is invalid"`.
+
+---
+
+*Last updated: 2026-05-03. All 7 Round-13 bugs resolved.*
 

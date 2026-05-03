@@ -212,11 +212,12 @@ void UPlayerWarningRegistry::AddWarning(const FString& Uid, const FString& Playe
         Entry.Reason     = Reason;
         Entry.WarnedBy   = WarnedBy;
         Entry.WarnDate   = FDateTime::UtcNow();
+        const FDateTime WarnNow = Entry.WarnDate;
         Entry.Points     = FMath::Max(1, Points);
         if (ExpiryMinutes > 0)
         {
             Entry.bHasExpiry  = true;
-            Entry.ExpireDate  = FDateTime::UtcNow() + FTimespan::FromMinutes(ExpiryMinutes);
+            Entry.ExpireDate  = WarnNow + FTimespan::FromMinutes(ExpiryMinutes);
         }
 
         Warnings.Add(Entry);
@@ -335,7 +336,8 @@ void UPlayerWarningRegistry::LoadFromFile()
                 double IdDbl = 0.0;
                 if ((*ObjPtr)->TryGetStringField(TEXT("id"), IdStr))
                     Entry.Id = FCString::Atoi64(*IdStr);
-                else if ((*ObjPtr)->TryGetNumberField(TEXT("id"), IdDbl))
+                else if ((*ObjPtr)->TryGetNumberField(TEXT("id"), IdDbl)
+                    && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))
                     Entry.Id = static_cast<int64>(IdDbl);
             }
             (*ObjPtr)->TryGetStringField(TEXT("uid"),        Entry.Uid);

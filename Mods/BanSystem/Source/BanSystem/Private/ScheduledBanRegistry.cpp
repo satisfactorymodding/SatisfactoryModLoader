@@ -313,7 +313,8 @@ void UScheduledBanRegistry::LoadFromFile()
                 double IdDbl = 0.0;
                 if ((*ObjPtr)->TryGetStringField(TEXT("id"), IdStr))
                     Entry.Id = FCString::Atoi64(*IdStr);
-                else if ((*ObjPtr)->TryGetNumberField(TEXT("id"), IdDbl))
+                else if ((*ObjPtr)->TryGetNumberField(TEXT("id"), IdDbl)
+                    && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))
                     Entry.Id = static_cast<int64>(IdDbl);
             }
 

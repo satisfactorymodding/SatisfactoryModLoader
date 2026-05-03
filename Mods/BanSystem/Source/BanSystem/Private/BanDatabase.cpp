@@ -69,7 +69,8 @@ namespace BanDbJson
         double IdDbl = 0.0;
         if (Obj->TryGetStringField(TEXT("id"), IdStr))
             OutEntry.Id = FCString::Atoi64(*IdStr);
-        else if (Obj->TryGetNumberField(TEXT("id"), IdDbl))
+        else if (Obj->TryGetNumberField(TEXT("id"), IdDbl)
+            && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))
             OutEntry.Id = static_cast<int64>(IdDbl);
 
         Obj->TryGetStringField(TEXT("uid"),        OutEntry.Uid);

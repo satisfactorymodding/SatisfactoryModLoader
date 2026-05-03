@@ -1493,6 +1493,27 @@ void UBanRestApi::RegisterRoutes()
                 return true;
             }
 
+            // Validate IP address format: reject strings that are too long or contain
+            // characters outside the set permitted in IPv4/IPv6 addresses ([0-9a-fA-F:.]).
+            // This prevents garbage UIDs (e.g. path traversal strings) from being
+            // persisted in the ban database and confusing enforcement/sync components.
+            if (IpAddress.Len() > 45) // 45 chars: generous limit that accommodates any
+                                      // valid IPv4 (15), full IPv6 (39), or mixed
+                                      // IPv6/IPv4 notation (max 45 chars uncompressed)
+            {
+                Done(BanJson::Error(TEXT("ipAddress is invalid")));
+                return true;
+            }
+            for (TCHAR Ch : IpAddress)
+            {
+                if (!((Ch >= '0' && Ch <= '9') || (Ch >= 'a' && Ch <= 'f') ||
+                      (Ch >= 'A' && Ch <= 'F') || Ch == '.' || Ch == ':'))
+                {
+                    Done(BanJson::Error(TEXT("ipAddress is invalid")));
+                    return true;
+                }
+            }
+
             FString Reason, BannedBy;
             Body->TryGetStringField(TEXT("reason"),   Reason);
             Body->TryGetStringField(TEXT("bannedBy"), BannedBy);
