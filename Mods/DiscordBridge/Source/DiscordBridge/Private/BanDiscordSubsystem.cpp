@@ -7025,7 +7025,6 @@ void UBanDiscordSubsystem::HandleFreezeCommand(const TArray<FString>& Args,
 
 	if (bWasFrozen)
 	{
-		bool bMatchedUnfreeze = false;
 		for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
 		{
 			APlayerController* PC = It->Get();
@@ -7035,16 +7034,15 @@ void UBanDiscordSubsystem::HandleFreezeCommand(const TArray<FString>& Args,
 			if (UBanDatabase::MakeUid(TEXT("EOS"), NetId.ToString().ToLower()) == Uid)
 			{
 				PC->SetIgnoreMoveInput(false);
-				bMatchedUnfreeze = true;
 				break;
 			}
 		}
-		if (bMatchedUnfreeze)
-			PC->SetIgnoreMoveInput(false); // controller found above
 		// Always remove from frozen set — if the player is offline the UID removal
 		// prevents them from being re-frozen on reconnect after an admin un-froze them.
 		AFreezeChatCommand::FrozenPlayerUids.Remove(Uid);
 		const FString ResultMsg = FString::Printf(
+			TEXT("🔓 **%s** (`%s`) has been **unfrozen** by **%s**."),
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
 		Respond(ChannelId, ResultMsg);
 		PostModerationLog(ResultMsg);
 		if (UGameInstance* GI2 = GetGameInstance())
@@ -7056,7 +7054,6 @@ void UBanDiscordSubsystem::HandleFreezeCommand(const TArray<FString>& Args,
 	}
 	else
 	{
-		bool bMatchedFreeze = false;
 		for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
 		{
 			APlayerController* PC = It->Get();
@@ -7066,15 +7063,14 @@ void UBanDiscordSubsystem::HandleFreezeCommand(const TArray<FString>& Args,
 			if (UBanDatabase::MakeUid(TEXT("EOS"), NetId.ToString().ToLower()) == Uid)
 			{
 				PC->SetIgnoreMoveInput(true);
-				bMatchedFreeze = true;
 				break;
 			}
 		}
-		if (bMatchedFreeze)
-			PC->SetIgnoreMoveInput(true); // controller found above
 		// Always add to frozen set — ensures offline players are frozen when they reconnect.
 		AFreezeChatCommand::FrozenPlayerUids.Add(Uid);
 		const FString ResultMsg = FString::Printf(
+			TEXT("❄️ **%s** (`%s`) has been **frozen** by **%s**. Use `/mod freeze` again to unfreeze."),
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
 		Respond(ChannelId, ResultMsg);
 		PostModerationLog(ResultMsg);
 		if (UGameInstance* GI2 = GetGameInstance())
