@@ -173,7 +173,7 @@ void UScheduledBanRegistry::Tick(float DeltaTime)
         FScopeLock Lock(&Mutex);
 
         // Build the set of IDs to remove entirely.
-        TArray<int64> IdsToRemove = AppliedIds;
+        TSet<int64> IdsToRemove(AppliedIds);
         for (const FScheduledBanEntry& FE : FailedEntries)
         {
             if (FE.RetryCount >= 5) // 5-attempt cap: drop after 5 failed retries

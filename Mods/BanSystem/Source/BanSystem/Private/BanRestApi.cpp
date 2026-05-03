@@ -1152,23 +1152,26 @@ void UBanRestApi::RegisterRoutes()
                     if (DB)
                     {
                         // Only auto-ban if the player is not already banned.
-                        FBanEntry ExistingBan;
-                        if (!DB->IsCurrentlyBannedByAnyId(Uid, ExistingBan))
-                        {
-                            FBanEntry AutoBan;
-                            AutoBan.Uid        = Uid;
-                            UBanDatabase::ParseUid(Uid, AutoBan.Platform, AutoBan.PlayerUID);
-                            AutoBan.PlayerName   = PlayerName;
-                            AutoBan.Reason       = TEXT("Auto-banned: reached warning threshold");
-                            AutoBan.BannedBy     = TEXT("system");
-                            const FDateTime AutoNow = FDateTime::UtcNow();
-                            AutoBan.BanDate      = AutoNow;
-                            AutoBan.bIsPermanent = (BanDurationMinutes <= 0);
-                            AutoBan.ExpireDate   = AutoBan.bIsPermanent
-                                ? FDateTime(0)
-                                : AutoNow + FTimespan::FromMinutes(BanDurationMinutes);
+                        // Use AddBanSkipIfPermanentExists so the check-and-add is
+                        // atomic under the database lock, eliminating the TOCTOU
+                        // window that existed when IsCurrentlyBannedByAnyId and
+                        // AddBan were called as two separate steps.
+                        FBanEntry AutoBan;
+                        AutoBan.Uid        = Uid;
+                        UBanDatabase::ParseUid(Uid, AutoBan.Platform, AutoBan.PlayerUID);
+                        AutoBan.PlayerName   = PlayerName;
+                        AutoBan.Reason       = TEXT("Auto-banned: reached warning threshold");
+                        AutoBan.BannedBy     = TEXT("system");
+                        const FDateTime AutoNow = FDateTime::UtcNow();
+                        AutoBan.BanDate      = AutoNow;
+                        AutoBan.bIsPermanent = (BanDurationMinutes <= 0);
+                        AutoBan.ExpireDate   = AutoBan.bIsPermanent
+                            ? FDateTime(0)
+                            : AutoNow + FTimespan::FromMinutes(BanDurationMinutes);
 
-                            DB->AddBan(AutoBan);
+                        bool bSkipped = false;
+                        if (DB->AddBanSkipIfPermanentExists(AutoBan, bSkipped))
+                        {
                             FBanDiscordNotifier::NotifyBanCreated(AutoBan);
                             FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
                             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
@@ -1707,6 +1710,8 @@ void UBanRestApi::RegisterRoutes()
 
             auto R = FHttpServerResponse::Create(Csv, TEXT("text/csv"));
             R->Code = EHttpServerResponseCodes::Ok;
+            R->Headers.Add(TEXT("Content-Disposition"),
+                TArray<FString>{TEXT("attachment; filename=\"audit.csv\"")});
             Done(MoveTemp(R));
             return true;
         }
@@ -1809,6 +1814,8 @@ void UBanRestApi::RegisterRoutes()
 
             auto R = FHttpServerResponse::Create(Csv, TEXT("text/csv"));
             R->Code = EHttpServerResponseCodes::Ok;
+            R->Headers.Add(TEXT("Content-Disposition"),
+                TArray<FString>{TEXT("attachment; filename=\"warnings.csv\"")});
             Done(MoveTemp(R));
             return true;
         }
@@ -1848,6 +1855,8 @@ void UBanRestApi::RegisterRoutes()
 
             auto R = FHttpServerResponse::Create(Csv, TEXT("text/csv"));
             R->Code = EHttpServerResponseCodes::Ok;
+            R->Headers.Add(TEXT("Content-Disposition"),
+                TArray<FString>{TEXT("attachment; filename=\"players.csv\"")});
             Done(MoveTemp(R));
             return true;
         }
@@ -2836,6 +2845,7 @@ void UBanRestApi::RegisterRoutes()
                 Done(BanJson::Error(TEXT("uids array exceeds maximum size of 500")));
                 return true;
             }
+            FString Reason, BannedBy, Category;
             Body->TryGetStringField(TEXT("reason"),   Reason);
             Body->TryGetStringField(TEXT("bannedBy"), BannedBy);
             Body->TryGetStringField(TEXT("category"), Category);
@@ -2940,6 +2950,7 @@ void UBanRestApi::RegisterRoutes()
                 Done(BanJson::Error(TEXT("uids array exceeds maximum size of 500")));
                 return true;
             }
+            FString RemovedBy;
             Body->TryGetStringField(TEXT("removedBy"), RemovedBy);
             if (RemovedBy.IsEmpty()) RemovedBy = TEXT("api");
 
