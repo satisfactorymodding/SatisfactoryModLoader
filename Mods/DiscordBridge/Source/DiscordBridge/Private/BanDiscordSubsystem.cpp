@@ -1018,8 +1018,9 @@ void UBanDiscordSubsystem::OnPostLoginModerationReminder(AGameModeBase* GameMode
 			}
 			else
 			{
-				const int32 RemainingMins = static_cast<int32>(FMath::Max(
+				const int64 RemainingMins64 = static_cast<int64>(FMath::Max(
 					0.0, (MuteEntry.ExpireDate - FDateTime::UtcNow()).GetTotalMinutes()));
+			const int32 RemainingMins = static_cast<int32>(FMath::Min(RemainingMins64, static_cast<int64>(INT32_MAX)));
 				MuteStatus = FString::Printf(
 					TEXT("for %s more (until %s UTC)"),
 					*BanDiscordHelpers::FormatDuration(RemainingMins),
@@ -2858,14 +2859,11 @@ void UBanDiscordSubsystem::HandleClearWarnByIdCommand(const TArray<FString>& Arg
 	}
 
 	// Write to audit log so Discord-issued warning deletions appear alongside in-game ones.
-	if (UGameInstance* GI = GetGameInstance())
-	{
-		if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
-			AuditLog->LogAction(TEXT("deletewarn_id"),
-				FString::Printf(TEXT("warning#%lld"), WarnId), TEXT(""),
-				SenderName, SenderName,
-				FString::Printf(TEXT("Deleted warning id %lld"), WarnId));
-	}
+	if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
+		AuditLog->LogAction(TEXT("deletewarn_id"),
+			FString::Printf(TEXT("warning#%lld"), WarnId), TEXT(""),
+			SenderName, SenderName,
+			FString::Printf(TEXT("Deleted warning id %lld"), WarnId));
 
 	const FString Msg = FString::Printf(
 		TEXT("✅ Deleted warning #%lld.\nBy: %s"), WarnId, *SenderName);
@@ -3600,7 +3598,7 @@ void UBanDiscordSubsystem::HandleStaffChatCommand(const TArray<FString>& Args,
 
 		if (PUIDStr.IsEmpty()) continue;
 		const FString CompoundUid = TEXT("EOS:") + PUIDStr.ToLower();
-		if (BccCfg->IsModeratorUid(CompoundUid))
+		if (BccCfg->IsAdminUid(CompoundUid) || BccCfg->IsModeratorUid(CompoundUid))
 		{
 			PC->ClientMessage(Formatted);
 			++DeliveredTo;

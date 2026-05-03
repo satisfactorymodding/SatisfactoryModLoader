@@ -1180,3 +1180,120 @@ operands to `uint32` before ORing into `Diff`, matching the `BanRestApi` pattern
 ---
 
 *Last updated: 2026-05-03. All 5 Round-16 bugs resolved.*
+
+---
+
+## Round 17 Bug Audit
+
+### ✅ Fixed — `BanDiscordSubsystem` mute-reminder: `double→int32` cast without upper-bound clamp — undefined behaviour (BUG-R17-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+
+**Root cause:** In `OnPostLoginModerationReminder`, the number of remaining mute
+minutes was computed with `static_cast<int32>(FMath::Max(0.0, timespan.GetTotalMinutes()))`.
+For mutes longer than ~2 years the `double` value exceeds `INT32_MAX`, making the cast
+undefined behaviour.
+
+**Fix:** Introduced a two-step safe cast via an `int64` intermediate:
+`static_cast<int32>(FMath::Min(RemainingMins64, static_cast<int64>(INT32_MAX)))`,
+matching the pattern used at every other `double→int32` cast site in the codebase.
+
+---
+
+### ✅ Fixed — `BanRestApi` `/players/prune`: `double→int32` cast without upper-bound clamp — undefined behaviour (BUG-R17-02)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** The `daysToKeep` field was parsed from the JSON body with
+`DaysToKeep = static_cast<int32>(DaysDbl)`. A caller supplying a value greater than
+`INT32_MAX` would produce undefined behaviour.
+
+**Fix:** Clamped via `FMath::Min(static_cast<int64>(DaysDbl), static_cast<int64>(INT32_MAX))`
+before the final `int32` cast, consistent with the rest of the codebase.
+
+---
+
+### ✅ Fixed — `SMLWebSocketServerRunnable` handshake: receive timeout not cleared after upgrade — stale 5-second deadline persists into message loop (BUG-R17-03)
+**File:** `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketServerRunnable.cpp`
+
+**Root cause:** `PerformHandshake` sets a 5-second `SO_RCVTIMEO` to protect against
+slow/adversarial clients during the HTTP upgrade phase but never resets it.
+After the upgrade succeeds the same deadline remains active on the socket.
+Although the current message loop guards every `Recv` call with `HasPendingData`,
+any future blocking-receive path or framework upgrade would silently inherit a
+5-second hard cutoff, dropping legitimate idle-but-connected clients.
+
+**Fix:** Added `Client.Socket->SetReceiveTimeout(FTimespan::Zero())` immediately
+before `return true` to clear the deadline once the handshake is complete.
+
+---
+
+### ✅ Fixed — `TicketSubsystem` auto-ban on warn threshold: uses `IsCurrentlyBanned` instead of `IsCurrentlyBannedByAnyId` — linked UIDs not checked (BUG-R17-04)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp`
+
+**Root cause:** When a player's warning count reached the configured threshold the
+auto-ban guard called `DB->IsCurrentlyBanned(WarnUid, Existing)`.
+`IsCurrentlyBanned` performs an exact UID match only; it misses bans recorded against
+a linked UID (e.g. an IP ban or ban issued before UID linking).  
+`IsCurrentlyBannedByAnyId` walks the entire linked-UID graph and is the correct
+function for enforcement checks.
+
+**Fix:** Changed call to `DB->IsCurrentlyBannedByAnyId(WarnUid, Existing)`.
+
+---
+
+### ✅ Fixed — `DiscordBridgeSubsystem` auto-ban on warn threshold: uses `IsCurrentlyBanned` instead of `IsCurrentlyBannedByAnyId` — linked UIDs not checked (BUG-R17-05)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
+
+**Root cause:** Same class of bug as BUG-R17-04. The warn-threshold auto-ban path in
+`DiscordBridgeSubsystem` also called `DB->IsCurrentlyBanned(Uid, Existing)` instead
+of `DB->IsCurrentlyBannedByAnyId(Uid, Existing)`, allowing a duplicate ban to be
+issued for players already banned under a linked UID.
+
+**Fix:** Changed call to `DB->IsCurrentlyBannedByAnyId(Uid, Existing)`.
+
+---
+
+### ✅ Fixed — `BanChatCommands` `/mutecheck`: `double→int32` cast without upper-bound clamp — undefined behaviour (BUG-R17-06)
+**File:** `Mods/BanChatCommands/Source/BanChatCommands/Private/Commands/BanChatCommands.cpp`
+
+**Root cause:** In `AMuteCheckChatCommand::ExecuteCommand`, the remaining mute time
+was computed with `FMath::Max(1, static_cast<int32>(Remaining.GetTotalMinutes()))`.
+For mutes longer than ~2 years the `double` value exceeds `INT32_MAX` before the
+`int32` cast, which is undefined behaviour.
+
+**Fix:** Two-step safe cast: first cast to `int64`, then clamp to `[1, INT32_MAX]`
+using `FMath::Clamp`, matching the pattern used by every other similar site.
+
+---
+
+### ✅ Fixed — `BanDiscordSubsystem` Discord staffchat: online admins not notified — only moderators checked (BUG-R17-07)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+
+**Root cause:** The in-game delivery loop in the Discord `/staffchat` handler only
+called `BccCfg->IsModeratorUid(CompoundUid)` to decide whether to forward the message
+to a connected player. Admins (who pass `IsAdminUid` but not necessarily `IsModeratorUid`)
+were silently skipped, so Discord staffchat messages were never delivered to online
+admins.
+
+**Fix:** Changed the condition to
+`BccCfg->IsAdminUid(CompoundUid) || BccCfg->IsModeratorUid(CompoundUid)`,
+consistent with the analogous checks at lines 3519–3521 and 6532–6534 of the
+same file.
+
+---
+
+### ✅ Fixed — `BanDiscordSubsystem::HandleClearWarnByIdCommand`: inner `GI` declaration shadows outer — variable shadowing maintenance hazard (BUG-R17-08)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+
+**Root cause:** The function declared `UGameInstance* GI = GetGameInstance()` near the
+top, verified it was non-null via an early-return, then—after the main logic—opened a
+second `if (UGameInstance* GI = GetGameInstance())` block that re-declared `GI` in an
+inner scope. Both declarations resolve to the same singleton, but the shadowing
+obscures the proof that `GI` is non-null at that point and could mislead future editors
+into believing an additional null check is necessary there.
+
+**Fix:** Removed the inner redeclaration; the audit-log subsystem lookup now uses
+the outer `GI` directly, which is guaranteed non-null by the earlier guard.
+
+---
+
+*Last updated: 2026-05-10. All 8 Round-17 bugs resolved.*

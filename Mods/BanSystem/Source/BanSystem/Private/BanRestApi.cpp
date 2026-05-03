@@ -1628,7 +1628,10 @@ void UBanRestApi::RegisterRoutes()
                 {
                     double DaysDbl = 0.0;
                     if (Body->TryGetNumberField(TEXT("daysToKeep"), DaysDbl) && DaysDbl > 0.0)
-                        DaysToKeep = static_cast<int32>(DaysDbl);
+                    {
+                        const int64 Clamped = FMath::Min(static_cast<int64>(DaysDbl), static_cast<int64>(INT32_MAX));
+                        DaysToKeep = static_cast<int32>(Clamped);
+                    }
                 }
             }
 
