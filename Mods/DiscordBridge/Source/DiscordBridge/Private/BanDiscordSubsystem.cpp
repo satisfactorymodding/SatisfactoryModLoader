@@ -3821,9 +3821,15 @@ void UBanDiscordSubsystem::HandleAppealApproveCommand(const TArray<FString>& Arg
 		if (DB->IsCurrentlyBannedByAnyId(Entry.Uid, BanRecord))
 		{
 			UnbannedUid = BanRecord.Uid;
-			bUnbanned = DB->RemoveBanByUid(BanRecord.Uid);
+			// Use the atomic RemoveBanByUid overload so LinkedUids are captured
+			// within the same mutex scope as the removal, eliminating the TOCTOU
+			// window where a concurrent action could modify LinkedUids between
+			// IsCurrentlyBannedByAnyId and RemoveBanByUid (same race fixed for
+			// ExecutePanelUnban in R22-A and the ticket appeal path in R23-A).
+			FBanEntry RemovedBan;
+			bUnbanned = DB->RemoveBanByUid(BanRecord.Uid, RemovedBan);
 			if (bUnbanned)
-				BanDiscordHelpers::RemoveCounterpartBans(this, DB, BanRecord.Uid, BanRecord.LinkedUids);
+				BanDiscordHelpers::RemoveCounterpartBans(this, DB, RemovedBan.Uid, RemovedBan.LinkedUids);
 		}
 		else
 		{

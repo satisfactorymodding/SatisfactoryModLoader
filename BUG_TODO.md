@@ -1712,3 +1712,44 @@ if (!BanRecord.LinkedUids.IsEmpty())
 ---
 
 *Last updated: 2026-05-04. All 1 Round-22 bug resolved.*
+
+---
+
+## Round 23 — Audit Results
+
+### ✅ Fixed — R23-A: Non-atomic TOCTOU in `HandleAppealApproveCommand` (`BanDiscordSubsystem.cpp`)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp` (lines 3820–3826)
+
+**Root cause:** `HandleAppealApproveCommand` called `DB->IsCurrentlyBannedByAnyId(Entry.Uid, BanRecord)` to capture `BanRecord.LinkedUids`, then called `DB->RemoveBanByUid(BanRecord.Uid)` as a separate operation. A concurrent admin action could modify `LinkedUids` in the window between the two calls, causing `RemoveCounterpartBans` to use a stale snapshot. This is the same `IsCurrentlyBannedByAnyId + RemoveBanByUid` two-call race fixed for `ExecutePanelUnban` in R22-A.
+
+**Fix applied:** Replaced the non-atomic overload with the `RemoveBanByUid(Uid, OutEntry)` overload so `LinkedUids` are captured within the same mutex scope as the removal:
+```cpp
+FBanEntry RemovedBan;
+bUnbanned = DB->RemoveBanByUid(BanRecord.Uid, RemovedBan);
+if (bUnbanned)
+    BanDiscordHelpers::RemoveCounterpartBans(this, DB, RemovedBan.Uid, RemovedBan.LinkedUids);
+```
+
+---
+
+### ✅ Fixed — R23-B: Non-atomic TOCTOU in ticket appeal-approval unban path (`TicketSubsystem.cpp`)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp` (lines 838–897)
+
+**Root cause:** The ticket appeal approval handler called `BanDb->IsCurrentlyBannedByAnyId(*AppealEosUid, BanRecord)` to capture the ban entry (including `LinkedUids` and `Reason`), then called `BanDb->RemoveBanByUid(BanRecord.Uid, /*bSilent=*/true)` — the two-argument overload that does not capture the removed entry. Subsequent logic then read `BanRecord.LinkedUids` (for linked-ban cleanup) and `BanRecord.Reason` (for the approval message), both of which could be stale if a concurrent action modified the ban between the two calls.
+
+**Fix applied:** Replaced the two-argument `RemoveBanByUid` call with the atomic three-argument overload `RemoveBanByUid(Uid, OutEntry, bSilent)`, then replaced all downstream uses of `BanRecord.LinkedUids`, `BanRecord.Uid`, and `BanRecord.Reason` with the corresponding fields from the atomically-captured `RemovedBan`:
+```cpp
+FBanEntry RemovedBan;
+if (BanDb->RemoveBanByUid(BanRecord.Uid, RemovedBan, /*bSilent=*/true))
+{
+    for (const FString& LinkedUid : RemovedBan.LinkedUids) { … }
+    UBanDatabase::ParseUid(RemovedBan.Uid, Platform, RawId);
+    SessionReg->FindByUid(RemovedBan.Uid, Rec);
+    if (!RemovedBan.LinkedUids.Contains(IpUid) && …) { … }
+    // approval message uses *RemovedBan.Reason
+}
+```
+
+---
+
+*Last updated: 2026-05-05. All 2 Round-23 bugs resolved.*

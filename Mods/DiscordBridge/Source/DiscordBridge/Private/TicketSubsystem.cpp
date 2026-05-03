@@ -845,12 +845,18 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 					// without bSilent=true the BanDiscordSubsystem BanRemovedHandle
 					// would fire a second, generic "✅ unbanned" post to the
 					// moderation-log channel at the same time (Bug #2 fix).
-					if (BanDb->RemoveBanByUid(BanRecord.Uid, /*bSilent=*/true))
+					// Use the atomic RemoveBanByUid(Uid, OutEntry, bSilent) overload
+					// so LinkedUids are captured within the same mutex scope as the
+					// removal, eliminating the TOCTOU window where a concurrent action
+					// could modify LinkedUids between IsCurrentlyBannedByAnyId and
+					// RemoveBanByUid (same race fixed for ExecutePanelUnban in R22-A).
+					FBanEntry RemovedBan;
+					if (BanDb->RemoveBanByUid(BanRecord.Uid, RemovedBan, /*bSilent=*/true))
 					{
 						bUnbanned = true;
 
 						// Also remove every counterpart ban.  We handle two categories:
-						// 1. Explicitly linked UIDs stored in BanRecord.LinkedUids
+						// 1. Explicitly linked UIDs stored in RemovedBan.LinkedUids
 						//    (created by AddCounterpartBans / /linkbans).
 						// 2. Unlinked IP counterpart — look up the session registry for
 						//    a matching IP ban that was never linked (e.g. REST-API ban).
@@ -859,7 +865,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 						int32 ExtraRemoved = 0;
 
 						// 1. Explicitly linked bans.
-						for (const FString& LinkedUid : BanRecord.LinkedUids)
+						for (const FString& LinkedUid : RemovedBan.LinkedUids)
 						{
 							if (BanDb->RemoveBanByUid(LinkedUid, /*bSilent=*/true))
 								++ExtraRemoved;
@@ -869,14 +875,14 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 						if (UPlayerSessionRegistry* SessionReg = GI->GetSubsystem<UPlayerSessionRegistry>())
 						{
 							FString Platform, RawId;
-							UBanDatabase::ParseUid(BanRecord.Uid, Platform, RawId);
+							UBanDatabase::ParseUid(RemovedBan.Uid, Platform, RawId);
 							if (Platform == TEXT("EOS"))
 							{
 								FPlayerSessionRecord Rec;
-								if (SessionReg->FindByUid(BanRecord.Uid, Rec) && !Rec.IpAddress.IsEmpty())
+								if (SessionReg->FindByUid(RemovedBan.Uid, Rec) && !Rec.IpAddress.IsEmpty())
 								{
 									const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Rec.IpAddress);
-									if (!BanRecord.LinkedUids.Contains(IpUid) &&
+									if (!RemovedBan.LinkedUids.Contains(IpUid) &&
 										BanDb->RemoveBanByUid(IpUid, /*bSilent=*/true))
 										++ExtraRemoved;
 								}
@@ -888,7 +894,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 							     "**%s** has been unbanned.\nOriginal reason: %s"),
 							*DiscordUserId,
 							OpenerName.IsEmpty() ? *AppealOpenerId : *OpenerName,
-							*BanRecord.Reason);
+							*RemovedBan.Reason);
 
 						if (ExtraRemoved > 0)
 							ApproveResponse += FString::Printf(
