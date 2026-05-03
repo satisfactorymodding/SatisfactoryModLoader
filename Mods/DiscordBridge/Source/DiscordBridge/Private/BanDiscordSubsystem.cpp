@@ -6583,11 +6583,13 @@ FString UBanDiscordSubsystem::ExecutePanelUnban(const FString& PlayerArg,
 	if (!ResolveTarget(PlayerArg, Uid, DisplayName, ErrorMsg))
 		return ErrorMsg;
 
-	// Remember linked UIDs before removing so counterpart bans can be cleaned up.
+	// Use the atomic RemoveBanByUid overload to capture the removed ban entry
+	// and delete it in a single mutex scope, eliminating the TOCTOU window that
+	// exists when GetBanByUid() and RemoveBanByUid() are called as two separate
+	// operations (the ban record, including LinkedUids, could be modified between
+	// the two calls).
 	FBanEntry BanRecord;
-	const bool bHadRecord = DB->GetBanByUid(Uid, BanRecord);
-
-	if (!DB->RemoveBanByUid(Uid))
+	if (!DB->RemoveBanByUid(Uid, BanRecord))
 	{
 		const FString Msg = FString::Printf(
 			TEXT("ℹ️ No active ban record found for **%s** (`%s`) — player is already unbanned.\nUnbanned by: %s"),
@@ -6598,8 +6600,10 @@ FString UBanDiscordSubsystem::ExecutePanelUnban(const FString& PlayerArg,
 		return Msg;
 	}
 
+	// RemoveBanByUid returned true, so BanRecord is fully populated from the
+	// removed entry — use its LinkedUids to clean up any counterpart bans.
 	int32 ExtraRemoved = 0;
-	if (bHadRecord)
+	if (!BanRecord.LinkedUids.IsEmpty())
 		ExtraRemoved = BanDiscordHelpers::RemoveCounterpartBans(this, DB, Uid, BanRecord.LinkedUids);
 
 	FBanDiscordNotifier::NotifyBanRemoved(Uid, DisplayName, SenderName);

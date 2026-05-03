@@ -1687,4 +1687,28 @@ The outer `if (!DB->IsCurrentlyBannedByAnyId(…))` guard and its nesting level 
 
 ---
 
-*Last updated: 2026-05-04. All 4 Round-21 bugs resolved.*
+---
+
+## Round 22 — Audit Results
+
+### ✅ Fixed — R22-A: Non-atomic TOCTOU in `ExecutePanelUnban` (`BanDiscordSubsystem.cpp`)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp` (lines 6586–6603)
+
+**Root cause:** `ExecutePanelUnban` called `DB->GetBanByUid(Uid, BanRecord)` to capture `LinkedUids` for counterpart-ban cleanup, then called `DB->RemoveBanByUid(Uid)` as a separate operation. In the window between the two calls a concurrent admin action could modify the ban record (e.g., update `LinkedUids`), causing `RemoveCounterpartBans` to use a stale snapshot of the linked UIDs. This is the same `GetBanByUid + RemoveBanByUid` two-call race documented and fixed for the REST API (see R6-A) and appeal approval (see R18-B).
+
+**Fix applied:** Replaced the two-call pattern with the atomic `RemoveBanByUid(Uid, BanRecord)` overload, which captures the removed entry within the same mutex scope:
+```cpp
+FBanEntry BanRecord;
+if (!DB->RemoveBanByUid(Uid, BanRecord))
+{
+    // already-unbanned message
+    return Msg;
+}
+// BanRecord is fully populated from the removed entry — safe to use LinkedUids
+if (!BanRecord.LinkedUids.IsEmpty())
+    ExtraRemoved = BanDiscordHelpers::RemoveCounterpartBans(this, DB, Uid, BanRecord.LinkedUids);
+```
+
+---
+
+*Last updated: 2026-05-04. All 1 Round-22 bug resolved.*
