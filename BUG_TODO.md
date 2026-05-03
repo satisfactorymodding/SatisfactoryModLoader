@@ -1619,3 +1619,72 @@ a noted improvement opportunity.
 ---
 
 *Last updated: 2026-05-03. All 3 Round-20 bugs resolved.*
+
+---
+
+## Round 21 Bug Audit
+
+### ✅ Fixed — R21-A: int32 overflow in `HandleReputationCommand` reputation score
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp` (~line 4456)
+
+**Root cause:** The reputation score formula `100 - (WarnPoints * 5) - (TotalBans * 15) - (KickCount * 3)` used `int32` arithmetic. With enough warnings, bans, or kicks the intermediate products overflow before `FMath::Max(0, ...)` can clamp the result, producing a meaningless score (identical to bug previously fixed in `BanRestApi.cpp`).
+
+**Fix applied:** Introduced `int64 ScoreRaw` computed entirely in 64-bit arithmetic:
+```cpp
+const int64 ScoreRaw = static_cast<int64>(100)
+    - (static_cast<int64>(WarnPoints) * 5)
+    - (static_cast<int64>(TotalBans)  * 15)
+    - (static_cast<int64>(KickCount)  * 3);
+const int32 Score = static_cast<int32>(FMath::Max((int64)0, ScoreRaw));
+```
+This matches the pattern already used in `BanRestApi.cpp` lines 2769–2773.
+
+---
+
+### ✅ Fixed — R21-B: Non-atomic TOCTOU in chat-filter auto-ban escalation (`DiscordBridgeSubsystem.cpp`)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp` (lines 2807–2834)
+
+**Root cause:** The chat-filter auto-warn path used the two-call pattern
+`IsCurrentlyBannedByAnyId(…)` → `AddBan(…)`, leaving a window where a concurrent action could add a permanent ban between the check and the insert, resulting in a duplicate or conflicting ban record. Same class of race condition previously fixed in Rounds 19–20 for other code paths.
+
+**Fix applied:** Replaced the two-call pattern with the atomic helper:
+```cpp
+bool bSkippedPermanent = false;
+if (DB->AddBanSkipIfPermanentExists(AutoBan, bSkippedPermanent)) { … }
+```
+The `IsCurrentlyBannedByAnyId` + `AddBan` calls and their enclosing `if` block were removed.
+
+---
+
+### ✅ Fixed — R21-C: int32 overflow in `AReputationChatCommand::ExecuteCommand_Implementation`
+**File:** `Mods/BanChatCommands/Source/BanChatCommands/Private/Commands/BanChatCommands.cpp` (line 4247)
+
+**Root cause:** Identical to R21-A — `100 - (WarnPoints * 5) - (TotalBans * 15) - (KickCount * 3)` performed in `int32`, with the same overflow risk.
+
+**Fix applied:** Same int64-widening fix as R21-A:
+```cpp
+const int64 ScoreRaw = static_cast<int64>(100)
+    - (static_cast<int64>(WarnPoints) * 5)
+    - (static_cast<int64>(TotalBans)  * 15)
+    - (static_cast<int64>(KickCount)  * 3);
+const int32 Score = static_cast<int32>(FMath::Max((int64)0, ScoreRaw));
+```
+
+---
+
+### ✅ Fixed — R21-D: Non-atomic TOCTOU in `ticket_modal:issuewarn` auto-ban escalation (`TicketSubsystem.cpp`)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp` (lines 2384–2410)
+
+**Root cause:** The ticket-modal warn handler used the same non-atomic
+`IsCurrentlyBannedByAnyId(…)` → `AddBan(…)` two-call race identical to R21-B. A concurrent ban addition could slip in between the two calls.
+
+**Fix applied:** Replaced with the atomic `AddBanSkipIfPermanentExists` pattern:
+```cpp
+bool bSkippedPermanent = false;
+if (DB->AddBanSkipIfPermanentExists(AutoBan, bSkippedPermanent)) { … }
+```
+The outer `if (!DB->IsCurrentlyBannedByAnyId(…))` guard and its nesting level were removed.
+
+---
+
+*Last updated: 2026-05-04. All 4 Round-21 bugs resolved.*

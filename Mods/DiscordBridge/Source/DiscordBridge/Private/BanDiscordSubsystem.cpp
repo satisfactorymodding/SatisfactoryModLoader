@@ -4453,8 +4453,11 @@ void UBanDiscordSubsystem::HandleReputationCommand(const TArray<FString>& Args,
 		}
 	}
 
-	const int32 Score = FMath::Max(0,
-	100 - (WarnPoints * 5) - (TotalBans * 15) - (KickCount * 3));
+	const int64 ScoreRaw = static_cast<int64>(100)
+		- (static_cast<int64>(WarnPoints) * 5)
+		- (static_cast<int64>(TotalBans)  * 15)
+		- (static_cast<int64>(KickCount)  * 3);
+	const int32 Score = static_cast<int32>(FMath::Max((int64)0, ScoreRaw));
 
 	const int32 Color = Score >= 70 ? 3066993 : (Score >= 40 ? 16776960 : 15158332);
 

@@ -2381,32 +2381,29 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 						{
 							if (UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>())
 							{
-								FBanEntry Existing;
-								if (!DB->IsCurrentlyBannedByAnyId(WarnUid, Existing))
+								FBanEntry AutoBan;
+								AutoBan.Uid        = WarnUid;
+								UBanDatabase::ParseUid(WarnUid, AutoBan.Platform, AutoBan.PlayerUID);
+								AutoBan.PlayerName   = ResolvedName;
+								AutoBan.Reason       = TEXT("Auto-banned: reached warning threshold");
+								AutoBan.BannedBy     = TEXT("system");
+								const FDateTime AutoNow = FDateTime::UtcNow();
+								AutoBan.BanDate      = AutoNow;
+								AutoBan.bIsPermanent = (BanDurationMinutes <= 0);
+								AutoBan.ExpireDate   = AutoBan.bIsPermanent
+									? FDateTime(0)
+									: AutoNow + FTimespan::FromMinutes(BanDurationMinutes);
+								bool bSkippedPermanent = false;
+								if (DB->AddBanSkipIfPermanentExists(AutoBan, bSkippedPermanent))
 								{
-									FBanEntry AutoBan;
-									AutoBan.Uid        = WarnUid;
-									UBanDatabase::ParseUid(WarnUid, AutoBan.Platform, AutoBan.PlayerUID);
-									AutoBan.PlayerName   = ResolvedName;
-									AutoBan.Reason       = TEXT("Auto-banned: reached warning threshold");
-									AutoBan.BannedBy     = TEXT("system");
-									const FDateTime AutoNow = FDateTime::UtcNow();
-									AutoBan.BanDate      = AutoNow;
-									AutoBan.bIsPermanent = (BanDurationMinutes <= 0);
-									AutoBan.ExpireDate   = AutoBan.bIsPermanent
-										? FDateTime(0)
-										: AutoNow + FTimespan::FromMinutes(BanDurationMinutes);
-									if (DB->AddBan(AutoBan))
-									{
-										if (UWorld* World = GI->GetWorld())
-											UBanEnforcer::KickConnectedPlayer(World, WarnUid,
-											                                  AutoBan.GetKickMessage());
-										FBanDiscordNotifier::NotifyBanCreated(AutoBan);
-										FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
-										if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
-											AL->LogAction(TEXT("ban"), WarnUid, ResolvedName,
-											              TEXT("system"), TEXT("system"), AutoBan.Reason);
-									}
+									if (UWorld* World = GI->GetWorld())
+										UBanEnforcer::KickConnectedPlayer(World, WarnUid,
+										                                  AutoBan.GetKickMessage());
+									FBanDiscordNotifier::NotifyBanCreated(AutoBan);
+									FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
+									if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
+										AL->LogAction(TEXT("ban"), WarnUid, ResolvedName,
+										              TEXT("system"), TEXT("system"), AutoBan.Reason);
 								}
 							}
 						}
