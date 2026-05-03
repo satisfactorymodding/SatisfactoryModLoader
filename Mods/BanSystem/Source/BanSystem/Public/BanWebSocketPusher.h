@@ -75,7 +75,7 @@ public:
 private:
     /** The WebSocket client connected to WebSocketPushUrl. */
     UPROPERTY()
-    USMLWebSocketClient* Client = nullptr;
+    TObjectPtr<USMLWebSocketClient> Client = nullptr;
 
     /** Weak self-reference used by the static PushEvent helper to locate the
      *  subsystem without requiring a UWorld* at the call site. */
