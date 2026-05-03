@@ -954,3 +954,41 @@ Both failure paths return HTTP 400 with `"ipAddress is invalid"`.
 
 *Last updated: 2026-05-03. All 7 Round-13 bugs resolved.*
 
+
+---
+
+## Round 14
+
+**Files audited (Round 14):** All `.cpp` source files across BanSystem, BanChatCommands, DiscordBridge, and SMLWebSocket mods (64 source files fully read).
+
+**Bugs found: 2** — both in `HandleFreezeCommand` in `BanDiscordSubsystem.cpp`. Both were compilation-breaking errors. Fixed in-place.
+
+---
+
+### Bug R14-1 — `HandleFreezeCommand`: `APlayerController* PC` used outside its `for`-loop scope (compilation error, both branches)
+
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+**Function:** `UBanDiscordSubsystem::HandleFreezeCommand`
+
+**Description:**
+In both the unfreeze branch and the freeze branch, a local variable `APlayerController* PC` was declared inside the body of a range-`for` loop over `GEngine->GetAllLocalPlayerControllers()`. After the loop's closing brace, the code used `bool bMatchedUnfreeze / bMatchedFreeze` to conditionally call `PC->SetIgnoreMoveInput(false/true)` — but at that point `PC` was out of scope (declared inside the loop body, not before it). This was a hard compilation error.
+
+**Fix:** Removed the `bool bMatchedUnfreeze / bMatchedFreeze` variables and the post-loop `if (bMatched*) PC->SetIgnoreMoveInput()` calls. The `SetIgnoreMoveInput` call was moved inside the loop body immediately after the match, before the `break`, consistent with the working reference implementation `ExecutePanelFreeze`.
+
+---
+
+### Bug R14-2 — `HandleFreezeCommand`: incomplete `FString::Printf(` call — missing format string and closing `)` (compilation error, both branches)
+
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+**Function:** `UBanDiscordSubsystem::HandleFreezeCommand`
+
+**Description:**
+In both the unfreeze branch and the freeze branch, the `ResultMsg` variable was constructed with a truncated `FString::Printf(` expression that had no arguments and no closing `)`. The expression was syntactically incomplete and would not compile.
+
+**Fix:** Completed both `FString::Printf(` calls with the appropriate format strings and arguments, derived from the analogous working implementation in `ExecutePanelFreeze`:
+- **Unfreeze:** `TEXT("🔓 **%s** (\`%s\`) has been **unfrozen** by **%s**."), *BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName`
+- **Freeze:** `TEXT("❄️ **%s** (\`%s\`) has been **frozen** by **%s**. Use \`/mod freeze\` again to unfreeze."), *BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName`
+
+---
+
+*Last updated: 2026-05-03. All 2 Round-14 bugs resolved.*
