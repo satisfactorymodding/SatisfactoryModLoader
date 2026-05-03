@@ -411,6 +411,8 @@ namespace BanChat
                 if (DB->AddBan(IpEntry))
                 {
                     DB->LinkBans(PrimaryUid, IpUid);
+                    // Kick any currently-connected player whose IP matches the counterpart ban.
+                    UBanEnforcer::KickConnectedPlayer(World, IpUid, IpEntry.GetKickMessage());
                     if (Sender)
                         Sender->SendChatMessage(
                             FString::Printf(TEXT("[BanChatCommands] Also banned IP %s — linked to EOS ban."),
@@ -433,6 +435,8 @@ namespace BanChat
                 if (DB->AddBan(EosEntry))
                 {
                     DB->LinkBans(PrimaryUid, Rec.Uid);
+                    // Kick any currently-connected player matching this counterpart EOS ban.
+                    UBanEnforcer::KickConnectedPlayer(World, Rec.Uid, EosEntry.GetKickMessage());
                     if (Sender)
                         Sender->SendChatMessage(
                             FString::Printf(TEXT("[BanChatCommands] Also banned EOS %s (%s) — linked to IP ban."),

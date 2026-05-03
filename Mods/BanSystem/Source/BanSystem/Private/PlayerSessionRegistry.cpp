@@ -51,10 +51,12 @@ void UPlayerSessionRegistry::RecordSession(const FString& Uid, const FString& Di
 {
     if (Uid.IsEmpty()) return;
 
-    const FString NowStr = FDateTime::UtcNow().ToIso8601();
-
     {
         FScopeLock Lock(&Mutex);
+
+        // Capture the current time while holding the lock so the stored
+        // LastSeen value is consistent with the moment of the actual insert.
+        const FString NowStr = FDateTime::UtcNow().ToIso8601();
 
         bool bUpdated = false;
         for (FPlayerSessionRecord& R : Records)

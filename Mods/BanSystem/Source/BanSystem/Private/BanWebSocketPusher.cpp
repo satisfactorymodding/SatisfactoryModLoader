@@ -121,6 +121,17 @@ void UBanWebSocketPusher::PushMuteEvent(const FString& EventType,
         else
             Fields->SetField(TEXT("expiresAt"), MakeShared<FJsonValueNull>());
     }
+    else
+    {
+        // For unmute (and any future event types), include the metadata so
+        // subscribers receive actionable context rather than a uid-only envelope.
+        if (!PlayerName.IsEmpty())
+            Fields->SetStringField(TEXT("playerName"), PlayerName);
+        if (!MutedBy.IsEmpty())
+            Fields->SetStringField(TEXT("mutedBy"), MutedBy);
+        if (!Reason.IsEmpty())
+            Fields->SetStringField(TEXT("reason"), Reason);
+    }
 
     PushEvent(EventType, Fields);
 }

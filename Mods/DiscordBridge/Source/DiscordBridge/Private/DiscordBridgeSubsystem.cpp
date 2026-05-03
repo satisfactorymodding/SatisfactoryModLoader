@@ -710,8 +710,9 @@ void UDiscordBridgeSubsystem::HandleGatewayPayload(const FString& RawJson)
 		{
 			// Guard against out-of-range doubles before casting to int32.
 			// Discord sequence numbers are non-negative integers well within
-			// INT32_MAX; anything outside [0, INT32_MAX] is malformed.
-			if (Seq >= 0.0 && Seq <= static_cast<double>(MAX_int32) && FMath::IsFinite(Seq))
+			// INT32_MAX; anything outside [0, INT32_MAX] or non-integer is malformed.
+			if (Seq >= 0.0 && Seq <= static_cast<double>(MAX_int32)
+			    && FMath::IsFinite(Seq) && FMath::Fmod(Seq, 1.0) == 0.0)
 				LastSequenceNumber = static_cast<int32>(Seq);
 		}
 
