@@ -2360,7 +2360,7 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 							if (UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>())
 							{
 								FBanEntry Existing;
-								if (!DB->IsCurrentlyBanned(WarnUid, Existing))
+								if (!DB->IsCurrentlyBannedByAnyId(WarnUid, Existing))
 								{
 									FBanEntry AutoBan;
 									AutoBan.Uid        = WarnUid;

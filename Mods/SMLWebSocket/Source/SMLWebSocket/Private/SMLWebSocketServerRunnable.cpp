@@ -482,11 +482,10 @@ bool FSMLWebSocketServerRunnable::PerformHandshake(FClientState& Client)
         }
         TotalSent += Sent;
     }
+    // Clear the 5-second handshake guard so the normal message loop is not
+    // subject to a receive deadline it does not expect.
+    Client.Socket->SetReceiveTimeout(FTimespan::Zero());
     return true;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  Frame processing
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Maximum total message size (after reassembly of all fragments), in bytes.

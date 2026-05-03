@@ -2807,7 +2807,7 @@ void UDiscordBridgeSubsystem::HandleIncomingChatMessage(const FString& PlayerNam
 									if (UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>())
 									{
 										FBanEntry Existing;
-										if (!DB->IsCurrentlyBanned(Uid, Existing))
+										if (!DB->IsCurrentlyBannedByAnyId(Uid, Existing))
 										{
 											FBanEntry AutoBan;
 											AutoBan.Uid      = Uid;

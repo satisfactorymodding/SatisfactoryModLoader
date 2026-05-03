@@ -3027,7 +3027,8 @@ EExecutionStatus AMuteCheckChatCommand::ExecuteCommand_Implementation(
     else
     {
         const FTimespan Remaining = Entry.ExpireDate - FDateTime::UtcNow();
-        const int32 RemainingMin  = FMath::Max(1, static_cast<int32>(Remaining.GetTotalMinutes()));
+        const int64 RemainingMin64 = static_cast<int64>(Remaining.GetTotalMinutes());
+        const int32 RemainingMin   = static_cast<int32>(FMath::Clamp(RemainingMin64, static_cast<int64>(1), static_cast<int64>(INT32_MAX)));
         Sender->SendChatMessage(
             FString::Printf(TEXT("[BanChatCommands] '%s' is muted until %s UTC (%s remaining). Reason: %s."),
                 *DisplayName,
