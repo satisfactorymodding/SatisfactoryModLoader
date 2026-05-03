@@ -38,6 +38,27 @@ namespace
 	{
 		return FPaths::ProjectSavedDir() / TEXT("DiscordBridge/TicketSystem");
 	}
+
+	// Escape Discord markdown special characters in a player-supplied string so
+	// that it is rendered literally and cannot inject bold/italic/code formatting.
+	FString EscapeMarkdown(const FString& Text)
+	{
+		static const TCHAR SpecialChars[] = { TEXT('*'), TEXT('_'), TEXT('`'), TEXT('~'),
+		                                       TEXT('|'), TEXT('>'), TEXT('\\'), TEXT('\0') };
+		FString Out;
+		Out.Reserve(Text.Len() + 8);
+		for (TCHAR C : Text)
+		{
+			bool bSpecial = false;
+			for (int32 i = 0; SpecialChars[i] != TEXT('\0'); ++i)
+			{
+				if (C == SpecialChars[i]) { bSpecial = true; break; }
+			}
+			if (bSpecial) Out += TEXT('\\');
+			Out += C;
+		}
+		return Out;
+	}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -540,7 +561,8 @@ void UTicketSubsystem::OnInteractionReceived(const TSharedPtr<FJsonObject>& Data
 
 	double TypeD = 0.0;
 	DataObj->TryGetNumberField(TEXT("type"), TypeD);
-	const int32 InteractionType = static_cast<int32>(TypeD);
+	const int32 InteractionType = (FMath::IsFinite(TypeD) && TypeD >= 0.0 && TypeD <= static_cast<double>(MAX_int32))
+		? static_cast<int32>(TypeD) : 0;
 
 	// We handle APPLICATION_COMMAND (2), MESSAGE_COMPONENT (3), and MODAL_SUBMIT (5).
 	if (InteractionType == 2)
@@ -764,12 +786,12 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 		if (!OpenerName.IsEmpty() && FWhitelistManager::AddPlayer(OpenerName, TEXT(""), DiscordUsername))
 		{
 			ApproveResponse = FString::Printf(
-				TEXT(":white_check_mark: **%s** has been added to the whitelist!"), *OpenerName);
+				TEXT(":white_check_mark: **%s** has been added to the whitelist!"), *EscapeMarkdown(OpenerName));
 		}
 		else if (!OpenerName.IsEmpty())
 		{
 			ApproveResponse = FString::Printf(
-				TEXT(":yellow_circle: **%s** is already on the whitelist."), *OpenerName);
+				TEXT(":yellow_circle: **%s** is already on the whitelist."), *EscapeMarkdown(OpenerName));
 		}
 		else
 		{
@@ -893,7 +915,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 							TEXT(":white_check_mark: Ban appeal **approved** by <@%s>.\n"
 							     "**%s** has been unbanned.\nOriginal reason: %s"),
 							*DiscordUserId,
-							OpenerName.IsEmpty() ? *AppealOpenerId : *OpenerName,
+							OpenerName.IsEmpty() ? *AppealOpenerId : *EscapeMarkdown(OpenerName),
 							*RemovedBan.Reason);
 
 						if (ExtraRemoved > 0)
@@ -910,7 +932,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 					ApproveResponse = FString::Printf(
 						TEXT(":information_source: No active ban found for %s. "
 						     "The ticket will be closed."),
-						OpenerName.IsEmpty() ? TEXT("this player") : *OpenerName);
+						OpenerName.IsEmpty() ? TEXT("this player") : *EscapeMarkdown(OpenerName));
 					bUnbanned = true; // treat as success so we close the ticket
 				}
 			}
@@ -965,7 +987,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 		const FString DenyResponse = FString::Printf(
 			TEXT(":x: Ban appeal **denied** by <@%s>.\nThe ban for %s remains in place."),
 			*DiscordUserId,
-			OpenerName.IsEmpty() ? TEXT("this player") : *OpenerName);
+			OpenerName.IsEmpty() ? TEXT("this player") : *EscapeMarkdown(OpenerName));
 
 		Bridge->RespondToInteraction(InteractionId, InteractionToken, 4, DenyResponse, false);
 
@@ -1497,6 +1519,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 
 			if (!IntendedType.IsEmpty())
 			{
+				if (!DiscordUserId.IsEmpty())
 				if (const TMap<FString, FString>* TypeMap = OpenerToTicketsByType.Find(DiscordUserId))
 				{
 					if (const FString* ExistCh = TypeMap->Find(IntendedType))
@@ -1509,7 +1532,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 		}
 		else
 		{
-			if (OpenerToTicketChannel.Contains(DiscordUserId))
+			if (!DiscordUserId.IsEmpty() && OpenerToTicketChannel.Contains(DiscordUserId))
 			{
 				ExistChanId = OpenerToTicketChannel.FindRef(DiscordUserId);
 				bDuplicate  = true;
@@ -1763,7 +1786,9 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 						TEXT(":no_entry_sign: **Active ban found**\n```\n"
 						     "Player  : %s\nReason  : %s\nBy      : %s\n"
 						     "Date    : %s UTC\nDuration: %s\n```\n"),
-						*BanRecord.PlayerName, *BanRecord.Reason, *BanRecord.BannedBy,
+						*BanRecord.PlayerName.Replace(TEXT("```"), TEXT("` ` `")),
+						*BanRecord.Reason.Replace(TEXT("```"), TEXT("` ` `")),
+						*BanRecord.BannedBy.Replace(TEXT("```"), TEXT("` ` `")),
 						*BanRecord.BanDate.ToString(TEXT("%Y-%m-%d %H:%M")), *DurStr);
 				}
 				else
@@ -1850,7 +1875,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 		const FString DenyMuteResponse = FString::Printf(
 			TEXT(":x: Mute appeal **denied** by <@%s>.\nThe mute for %s remains in place."),
 			*DiscordUserId,
-			MuteOpenerName.IsEmpty() ? TEXT("this player") : *MuteOpenerName);
+			MuteOpenerName.IsEmpty() ? TEXT("this player") : *EscapeMarkdown(MuteOpenerName));
 
 		Bridge->RespondToInteraction(InteractionId, InteractionToken, 4, DenyMuteResponse, false);
 
@@ -2013,6 +2038,7 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 
 			if (!IntendedType.IsEmpty())
 			{
+				if (!DiscordUserId.IsEmpty())
 				if (const TMap<FString, FString>* TypeMap = OpenerToTicketsByType.Find(DiscordUserId))
 				{
 					if (const FString* ExistCh = TypeMap->Find(IntendedType))
@@ -2025,7 +2051,7 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 		}
 		else
 		{
-			if (OpenerToTicketChannel.Contains(DiscordUserId))
+			if (!DiscordUserId.IsEmpty() && OpenerToTicketChannel.Contains(DiscordUserId))
 			{
 				ExistChanId = OpenerToTicketChannel.FindRef(DiscordUserId);
 				bDuplicate  = true;
@@ -2633,7 +2659,7 @@ void UTicketSubsystem::CreateTicketChannel(
 						TEXT("%s:ticket: **Whitelist Request** from %s\n\n"
 						     "**In-Game Name:** %s\n\n"
 						     ":information_source: An admin will review your request shortly."),
-						*MentionPrefix, *UserMention, *WlIgnCopy);
+						*MentionPrefix, *UserMention, *EscapeMarkdown(WlIgnCopy));
 				}
 				else
 				{
@@ -2727,9 +2753,9 @@ void UTicketSubsystem::CreateTicketChannel(
 									     "Date    : %s UTC\n"
 									     "Duration: %s\n"
 									     "```"),
-									*BanRecord.PlayerName,
-									*BanRecord.Reason,
-									*BanRecord.BannedBy,
+									*BanRecord.PlayerName.Replace(TEXT("```"), TEXT("` ` `")),
+									*BanRecord.Reason.Replace(TEXT("```"), TEXT("` ` `")),
+									*BanRecord.BannedBy.Replace(TEXT("```"), TEXT("` ` `")),
 									*BanRecord.BanDate.ToString(TEXT("%Y-%m-%d %H:%M")),
 									*DurationStr);
 							}
@@ -2802,7 +2828,7 @@ void UTicketSubsystem::CreateTicketChannel(
 			if (!ExtraInfoCopy.IsEmpty())
 			{
 				WelcomeContent += FString::Printf(
-					TEXT("\n\n**Details provided:** %s"), *ExtraInfoCopy);
+					TEXT("\n\n**Details provided:** %s"), *EscapeMarkdown(ExtraInfoCopy));
 			}
 
 			// Post the welcome message (plain text).
@@ -3839,7 +3865,7 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 			}
 			Bridge->SendDiscordChannelMessage(SourceChannelId,
 				FString::Printf(TEXT(":question: No macro named **%s**. Available: %s"),
-					*MacroName, *AvailNames));
+					*EscapeMarkdown(MacroName), *AvailNames));
 			return;
 		}
 		Bridge->SendDiscordChannelMessage(SourceChannelId, FoundText);
@@ -4012,10 +4038,10 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 		SaveTicketState();
 		if (Removed > 0)
 			Bridge->SendDiscordChannelMessage(SourceChannelId,
-				FString::Printf(TEXT(":label: Tag **%s** removed."), *UntagArg));
+				FString::Printf(TEXT(":label: Tag **%s** removed."), *EscapeMarkdown(UntagArg)));
 		else
 			Bridge->SendDiscordChannelMessage(SourceChannelId,
-				FString::Printf(TEXT(":question: Tag **%s** was not found on this ticket."), *UntagArg));
+				FString::Printf(TEXT(":question: Tag **%s** was not found on this ticket."), *EscapeMarkdown(UntagArg)));
 		return;
 	}
 
@@ -4041,7 +4067,7 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 		TagList.AddUnique(TagArg);
 		SaveTicketState();
 		Bridge->SendDiscordChannelMessage(SourceChannelId,
-			FString::Printf(TEXT(":label: Tag **%s** added."), *TagArg));
+			FString::Printf(TEXT(":label: Tag **%s** added."), *EscapeMarkdown(TagArg)));
 		return;
 	}
 
@@ -4866,6 +4892,7 @@ FString UTicketSubsystem::GetStatsFilePath()
 
 FString UTicketSubsystem::GetTicketChannelForOpener(const FString& DiscordUserId) const
 {
+	if (DiscordUserId.IsEmpty()) return FString();
 	if (const FString* ChannelId = OpenerToTicketChannel.Find(DiscordUserId))
 	{
 		return *ChannelId;
@@ -4880,6 +4907,7 @@ FString UTicketSubsystem::GetTicketChannelForOpener(const FString& DiscordUserId
 void UTicketSubsystem::CloseAppealTicketForOpener(const FString& DiscordUserId,
                                                    const FString& Resolution)
 {
+	if (DiscordUserId.IsEmpty()) return;
 	IDiscordBridgeProvider* Bridge = GetBridge();
 	if (!Bridge) return;
 
