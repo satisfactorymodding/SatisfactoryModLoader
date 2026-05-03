@@ -3,6 +3,8 @@
 #include "BanTypes.h"
 #include "BanSystemConfig.h"
 
+DEFINE_LOG_CATEGORY(LogBanTypes);
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  FBanTemplate helpers
 // ─────────────────────────────────────────────────────────────────────────────
@@ -21,7 +23,7 @@ bool FBanTemplate::FromConfigString(const FString& ConfigStr, FBanTemplate& OutT
     {
         if (!FChar::IsDigit(Ch) && Ch != TEXT('-'))
         {
-            UE_LOG(LogTemp, Warning,
+            UE_LOG(LogBanTypes, Warning,
                 TEXT("BanTypes: template slug='%s' has non-numeric durationMinutes '%s' — skipping"),
                 *Parts[0], *Parts[1]);
             return false;

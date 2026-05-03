@@ -1881,3 +1881,60 @@ All items identified at the end of the previous session but not applied are now 
 ---
 
 *Last updated: 2026-05-03. All 13 Round-24 bugs resolved.*
+
+---
+
+## Clean-Slate UE5 Hardening Audit (2026-05-03)
+
+A systematic full-codebase audit was performed across all 71 owner-mod source files
+(BanChatCommands, BanSystem, DiscordBridge, SMLWebSocket) against the 8-phase
+hardening plan.  Results:
+
+### ✅ Phase 1 — Dead Code & Architecture
+- No `#if 0` blocks or large commented-out code found.
+- No `TODO` / `FIXME` comments found.
+- `IDiscordBridgeProvider.h` is an **actively-used** abstract interface included by
+  `TicketSubsystem.h`, `BanDiscordSubsystem.h`, and `DiscordBridgeSubsystem.h`; it
+  is not a stub and must not be deleted.
+- `ExampleMod` contains only template scaffolding (no `.h`/`.cpp` files); no action needed.
+
+### ✅ Fixed — Phase 2 — `UE_LOG(LogTemp, ...)` in `BanTypes.cpp`
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanTypes.cpp:24`
+
+**Root cause:** `FBanTemplate::FromConfigString()` used `LogTemp` when logging a
+non-numeric `durationMinutes` field — the only `LogTemp` usage across all owner mod code.
+Every other file already had a dedicated `DECLARE_LOG_CATEGORY_EXTERN` / `DEFINE_LOG_CATEGORY` pair.
+
+**Fix:** Declared `DECLARE_LOG_CATEGORY_EXTERN(LogBanTypes, Log, All)` in `BanTypes.h`
+and defined `DEFINE_LOG_CATEGORY(LogBanTypes)` in `BanTypes.cpp`.
+Changed `UE_LOG(LogTemp, Warning, ...)` to `UE_LOG(LogBanTypes, Warning, ...)`.
+
+---
+
+### ✅ Phase 3 — Thread-Safety
+All registry read paths inside `FScopeLock`; all ticker callbacks on game thread.
+`check(IsInGameThread())` guards already in place on game-thread-only methods.
+
+### ✅ Phase 4 — Memory & Lifecycle Safety
+All HTTP `OnProcessRequestComplete()` callbacks that capture `this` use
+`BindWeakLambda`; remaining `BindLambda` calls capture only local `FString`/
+`int`/callback values by value (no `this` capture, no use-after-free risk).
+All `FTSTicker::FDelegateHandle` arrays cancelled in `Deinitialize()`.
+All `SUBSCRIBE_METHOD` hooks have matching `UNSUBSCRIBE_METHOD` in `ShutdownModule()`.
+`volatile uint32 Diff` already present in `SMLWebSocketServerRunnable.cpp`.
+
+### ✅ Phase 5 — Input Validation
+All `FCString::Atoi64` call sites have length + INT64_MAX lexicographic guards.
+All `FDateTime::ParseIso8601` call sites check the return value.
+All REST API int64 ID parameters go through `ParseInt64Param()`.
+
+### ✅ Phase 6 — File I/O
+All `SaveToFile()` call sites check the `bool` return and log on failure.
+All runtime data writes use write-to-`.tmp` then `IFileManager::Move` atomic rename.
+All `FJsonSerializer::Serialize` calls are checked before any file I/O.
+
+### ✅ Phase 7 — Logging & Observability
+All 71 source files use properly declared per-file log categories after the
+`LogBanTypes` fix above.  Error/Warning severities are correctly assigned throughout.
+
+*Last updated: 2026-05-03. Hardening audit complete — 1 fix applied.*

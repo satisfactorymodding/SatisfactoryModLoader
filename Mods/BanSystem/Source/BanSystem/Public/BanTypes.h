@@ -6,6 +6,8 @@
 #include "CoreMinimal.h"
 #include "BanTypes.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogBanTypes, Log, All);
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  Appeal status
 // ─────────────────────────────────────────────────────────────────────────────
