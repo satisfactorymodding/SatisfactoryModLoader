@@ -486,6 +486,7 @@ bool FSMLWebSocketServerRunnable::PerformHandshake(FClientState& Client)
     // subject to a receive deadline it does not expect.
     Client.Socket->SetReceiveTimeout(FTimespan::Zero());
     return true;
+}
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Maximum total message size (after reassembly of all fragments), in bytes.

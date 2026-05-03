@@ -1474,15 +1474,18 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 			else if (CustomId == TEXT("ticket_muteappeal"))   IntendedType = TEXT("muteappeal");
 			else if (CustomId.StartsWith(TEXT("ticket_cr_")))
 			{
-				const int32 CrIdx =
-					FCString::Atoi(*CustomId.Mid(FCString::Strlen(TEXT("ticket_cr_"))));
-				if (Config.CustomTicketReasons.IsValidIndex(CrIdx))
+				const FString IdxStr = CustomId.Mid(FCString::Strlen(TEXT("ticket_cr_")));
+				if (IdxStr.IsNumeric())
 				{
-					FString CrLabel, CrDesc;
-					Config.CustomTicketReasons[CrIdx].Split(TEXT("|"), &CrLabel, &CrDesc);
-					CrLabel.TrimStartAndEndInline();
-					if (!CrLabel.IsEmpty())
-						IntendedType = SanitizeUsernameForChannel(CrLabel);
+					const int32 CrIdx = FCString::Atoi(*IdxStr);
+					if (Config.CustomTicketReasons.IsValidIndex(CrIdx))
+					{
+						FString CrLabel, CrDesc;
+						Config.CustomTicketReasons[CrIdx].Split(TEXT("|"), &CrLabel, &CrDesc);
+						CrLabel.TrimStartAndEndInline();
+						if (!CrLabel.IsEmpty())
+							IntendedType = SanitizeUsernameForChannel(CrLabel);
+					}
 				}
 			}
 
@@ -1626,8 +1629,15 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 	}
 	else if (CustomId.StartsWith(TEXT("ticket_cr_")))
 	{
-		const int32 ReasonIndex =
-			FCString::Atoi(*CustomId.Mid(FCString::Strlen(TEXT("ticket_cr_"))));
+		const FString IdxStr = CustomId.Mid(FCString::Strlen(TEXT("ticket_cr_")));
+		if (!IdxStr.IsNumeric())
+		{
+			Bridge->RespondToInteraction(InteractionId, InteractionToken, /*type=*/4,
+				TEXT(":no_entry: Invalid ticket button identifier."),
+				/*bEphemeral=*/true);
+			return;
+		}
+		const int32 ReasonIndex = FCString::Atoi(*IdxStr);
 
 		if (!Config.CustomTicketReasons.IsValidIndex(ReasonIndex))
 		{
@@ -1706,6 +1716,15 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 		// ── Ban-Check button ───────────────────────────────────────────────────
 		// Staff-only: ephemeral ban / warning / appeal summary for the ticket opener.
 		const FString CheckOpenerId = CustomId.Mid(FCString::Strlen(TEXT("ticket_bancheck:")));
+
+		// Validate that CheckOpenerId is a Discord snowflake (all digits).
+		if (CheckOpenerId.IsEmpty() || !CheckOpenerId.IsNumeric())
+		{
+			Bridge->RespondToInteraction(InteractionId, InteractionToken, 4,
+				TEXT(":no_entry: Invalid ban-check button identifier."),
+				true);
+			return;
+		}
 
 		if (!IsStaffAuthorized())
 		{
@@ -1971,15 +1990,18 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 			else if (ModalCustomId == TEXT("ticket_modal:muteappeal"))   IntendedType = TEXT("muteappeal");
 			else if (ModalCustomId.StartsWith(TEXT("ticket_modal:cr_")))
 			{
-				const int32 CrIdx =
-					FCString::Atoi(*ModalCustomId.Mid(FCString::Strlen(TEXT("ticket_modal:cr_"))));
-				if (Config.CustomTicketReasons.IsValidIndex(CrIdx))
+				const FString IdxStr = ModalCustomId.Mid(FCString::Strlen(TEXT("ticket_modal:cr_")));
+				if (IdxStr.IsNumeric())
 				{
-					FString CrLabel, CrDesc;
-					Config.CustomTicketReasons[CrIdx].Split(TEXT("|"), &CrLabel, &CrDesc);
-					CrLabel.TrimStartAndEndInline();
-					if (!CrLabel.IsEmpty())
-						IntendedType = SanitizeUsernameForChannel(CrLabel);
+					const int32 CrIdx = FCString::Atoi(*IdxStr);
+					if (Config.CustomTicketReasons.IsValidIndex(CrIdx))
+					{
+						FString CrLabel, CrDesc;
+						Config.CustomTicketReasons[CrIdx].Split(TEXT("|"), &CrLabel, &CrDesc);
+						CrLabel.TrimStartAndEndInline();
+						if (!CrLabel.IsEmpty())
+							IntendedType = SanitizeUsernameForChannel(CrLabel);
+					}
 				}
 			}
 
@@ -2412,8 +2434,15 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 	}
 	else if (ModalCustomId.StartsWith(TEXT("ticket_modal:cr_")))
 	{
-		const int32 ReasonIndex =
-			FCString::Atoi(*ModalCustomId.Mid(FCString::Strlen(TEXT("ticket_modal:cr_"))));
+		const FString IdxStr = ModalCustomId.Mid(FCString::Strlen(TEXT("ticket_modal:cr_")));
+		if (!IdxStr.IsNumeric())
+		{
+			Bridge->RespondToInteraction(InteractionId, InteractionToken, /*type=*/4,
+				TEXT(":no_entry: Invalid ticket modal identifier."),
+				/*bEphemeral=*/true);
+			return;
+		}
+		const int32 ReasonIndex = FCString::Atoi(*IdxStr);
 
 		if (!Config.CustomTicketReasons.IsValidIndex(ReasonIndex))
 		{

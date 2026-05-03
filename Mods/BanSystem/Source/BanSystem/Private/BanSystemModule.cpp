@@ -107,6 +107,16 @@ void FBanSystemModule::BackupConfigIfNeeded()
     const UBanSystemConfig* Cfg = UBanSystemConfig::Get();
     if (!Cfg) return;
 
+    // Strip any newline characters from a config value before writing it into
+    // the INI file — a value containing '\n' would inject extra lines and could
+    // create malformed or injected keys when the file is parsed on reload.
+    auto SanitizeIni = [](const FString& S) -> FString
+    {
+        return S.Replace(TEXT("\r\n"), TEXT(" "))
+                .Replace(TEXT("\n"),   TEXT(" "))
+                .Replace(TEXT("\r"),   TEXT(" "));
+    };
+
     // Saved/BanSystem/BanSystem.ini — dedicated per-mod folder so it's easy to
     // find, and never touched by mod updates or Alpakit dev deploys.
     const FString BackupPath = FPaths::Combine(
@@ -135,7 +145,7 @@ void FBanSystemModule::BackupConfigIfNeeded()
         + TEXT("; Absolute path to the JSON ban file.\n")
         + TEXT("; Leave empty to use the default: <ProjectSaved>/BanSystem/bans.json\n")
         + TEXT("; On Linux this is typically: /home/<user>/.config/Epic/FactoryGame/Saved/BanSystem/bans.json\n")
-        + TEXT("DatabasePath=") + Cfg->DatabasePath + TEXT("\n")
+        + TEXT("DatabasePath=") + SanitizeIni(Cfg->DatabasePath) + TEXT("\n")
         + TEXT("\n")
         + TEXT("; -- REST Management API -------------------------------------------------------\n")
         + TEXT(";\n")
@@ -160,7 +170,7 @@ void FBanSystemModule::BackupConfigIfNeeded()
         + TEXT("; Optional API key for authenticating REST API requests.\n")
         + TEXT("; When non-empty, all endpoints except GET /health require the header: X-Api-Key: <value>\n")
         + TEXT("; Leave empty to disable API key authentication (default; only safe on a firewalled server).\n")
-        + TEXT("RestApiKey=")   + Cfg->RestApiKey + TEXT("\n")
+        + TEXT("RestApiKey=")   + SanitizeIni(Cfg->RestApiKey) + TEXT("\n")
         + TEXT("\n")
         + TEXT("; -- Discord Notifications -----------------------------------------------------\n")
         + TEXT(";\n")
@@ -168,7 +178,7 @@ void FBanSystemModule::BackupConfigIfNeeded()
         + TEXT("; When set, BanDiscordNotifier posts an embed to this URL whenever a ban is\n")
         + TEXT("; created or removed, a warning is issued, or a player is kicked.\n")
         + TEXT("; Leave empty to disable Discord notifications (default).\n")
-        + TEXT("DiscordWebhookUrl=") + Cfg->DiscordWebhookUrl + TEXT("\n")
+        + TEXT("DiscordWebhookUrl=") + SanitizeIni(Cfg->DiscordWebhookUrl) + TEXT("\n")
         + TEXT("\n")
         + TEXT("; -- Auto-ban on Warnings ------------------------------------------------------\n")
         + TEXT(";\n")
@@ -221,16 +231,16 @@ void FBanSystemModule::BackupConfigIfNeeded()
         + TEXT(";\n")
         + TEXT("; When true, BanSystem pushes live JSON events to WebSocketPushUrl via SMLWebSocket.\n")
         + TEXT("bPushEventsToWebSocket=") + (Cfg->bPushEventsToWebSocket ? TEXT("True") : TEXT("False")) + TEXT("\n")
-        + TEXT("WebSocketPushUrl=") + Cfg->WebSocketPushUrl + TEXT("\n")
+        + TEXT("WebSocketPushUrl=") + SanitizeIni(Cfg->WebSocketPushUrl) + TEXT("\n")
         + TEXT("\n")
         + TEXT("; -- Kick Message Templates --------------------------------------------------\n")
         + TEXT(";\n")
         + TEXT("; Custom message for permanently banned players. Supports {reason}, {appeal_url}.\n")
-        + TEXT("BanKickMessageTemplate=") + Cfg->BanKickMessageTemplate + TEXT("\n")
+        + TEXT("BanKickMessageTemplate=") + SanitizeIni(Cfg->BanKickMessageTemplate) + TEXT("\n")
         + TEXT("; Custom message for temporarily banned players. Supports {reason}, {expiry}, {appeal_url}.\n")
-        + TEXT("TempBanKickMessageTemplate=") + Cfg->TempBanKickMessageTemplate + TEXT("\n")
+        + TEXT("TempBanKickMessageTemplate=") + SanitizeIni(Cfg->TempBanKickMessageTemplate) + TEXT("\n")
         + TEXT("; URL included as {appeal_url} in ban kick messages.\n")
-        + TEXT("AppealUrl=") + Cfg->AppealUrl + TEXT("\n")
+        + TEXT("AppealUrl=") + SanitizeIni(Cfg->AppealUrl) + TEXT("\n")
         + TEXT("\n")
         + TEXT("; -- Admin Action Rate Limiting ----------------------------------------------\n")
         + TEXT(";\n")
@@ -251,9 +261,9 @@ void FBanSystemModule::BackupConfigIfNeeded()
         + TEXT("; When true, GeoIP lookups are performed at player login.\n")
         + TEXT("bGeoIpEnabled=") + (Cfg->bGeoIpEnabled ? TEXT("True") : TEXT("False")) + TEXT("\n")
         + TEXT("; GeoIP API URL. {ip} is replaced with the connecting player's IP address.\n")
-        + TEXT("GeoIpApiUrl=") + Cfg->GeoIpApiUrl + TEXT("\n")
+        + TEXT("GeoIpApiUrl=") + SanitizeIni(Cfg->GeoIpApiUrl) + TEXT("\n")
         + TEXT("; Message shown to players kicked by the Geo-IP filter. Supports {country}.\n")
-        + TEXT("GeoIpKickMessage=") + Cfg->GeoIpKickMessage + TEXT("\n");
+        + TEXT("GeoIpKickMessage=") + SanitizeIni(Cfg->GeoIpKickMessage) + TEXT("\n");
 
     // WarnEscalationTiers array — one entry per line
     FString TiersContent;
@@ -268,28 +278,28 @@ void FBanSystemModule::BackupConfigIfNeeded()
     FString BanTemplatesContent;
     for (const FString& BanTemplate : Cfg->BanTemplates)
     {
-        BanTemplatesContent += TEXT("+BanTemplates=") + BanTemplate + TEXT("\n");
+        BanTemplatesContent += TEXT("+BanTemplates=") + SanitizeIni(BanTemplate) + TEXT("\n");
     }
 
     // PeerWebSocketUrls array — one entry per line
     FString PeerUrlsContent;
     for (const FString& PeerUrl : Cfg->PeerWebSocketUrls)
     {
-        PeerUrlsContent += TEXT("+PeerWebSocketUrls=") + PeerUrl + TEXT("\n");
+        PeerUrlsContent += TEXT("+PeerWebSocketUrls=") + SanitizeIni(PeerUrl) + TEXT("\n");
     }
 
     // AllowedCountryCodes array — one entry per line
     FString AllowedCountriesContent;
     for (const FString& Code : Cfg->AllowedCountryCodes)
     {
-        AllowedCountriesContent += TEXT("+AllowedCountryCodes=") + Code + TEXT("\n");
+        AllowedCountriesContent += TEXT("+AllowedCountryCodes=") + SanitizeIni(Code) + TEXT("\n");
     }
 
     // BlockedCountryCodes array — one entry per line
     FString BlockedCountriesContent;
     for (const FString& Code : Cfg->BlockedCountryCodes)
     {
-        BlockedCountriesContent += TEXT("+BlockedCountryCodes=") + Code + TEXT("\n");
+        BlockedCountriesContent += TEXT("+BlockedCountryCodes=") + SanitizeIni(Code) + TEXT("\n");
     }
 
     const FString FullContent = Content + TiersContent + BanTemplatesContent
