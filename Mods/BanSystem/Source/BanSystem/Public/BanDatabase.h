@@ -49,9 +49,11 @@ public:
 
     /**
      * Insert or replace (upsert on uid) a ban record.
-     * Returns true on success.
+     * Returns true on success.  If OutSaved is non-null it is filled with the
+     * stored entry (including the auto-assigned Id), eliminating the need for a
+     * separate GetBanByUid() call after AddBan().
      */
-    bool AddBan(const FBanEntry& Entry);
+    bool AddBan(const FBanEntry& Entry, FBanEntry* OutSaved = nullptr);
 
     /**
      * Atomically check for an existing permanent ban and, only if none is found,
@@ -165,12 +167,19 @@ public:
      *
      * Finds the ban record for UidA (or UidB) and adds the other UID to its
      * LinkedUids list.  If both UIDs have their own ban records the link is
-     * added to both.  Returns true if at least one record was updated.
+     * added to both.
+     *
+     * Returns true if the link is now in effect (either just established, or
+     * was already present before the call — idempotent success).  Returns
+     * false only when neither UID has a ban record at all.
+     *
+     * @param bOutPartialOnly  Optional output: set to true when only one of
+     *                         the two UIDs had a ban record (one-sided link).
      *
      * Use /linkbans <UID1> <UID2> from the server console or an admin chat
      * command to associate two EOS PUID bans that belong to the same player.
      */
-    bool LinkBans(const FString& UidA, const FString& UidB);
+    bool LinkBans(const FString& UidA, const FString& UidB, bool* bOutPartialOnly = nullptr);
 
     /**
      * Removes the directional link from PrimaryUid's LinkedUids list.

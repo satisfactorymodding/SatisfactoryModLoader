@@ -217,6 +217,8 @@ void UBanDatabase::Initialize(FSubsystemCollectionBase& Collection)
     }
 
     // Capture the mtime so we can detect external edits in ReloadIfChanged().
+    // Intentionally outside DbMutex: the ReloadIfChanged ticker has not started yet
+    // at this point in Initialize(), so no concurrent reader/writer exists.
     LastKnownFileModTime = IFileManager::Get().GetTimeStamp(*DbPath);
 
     const int32 Pruned = PruneExpiredBans(/*bSilent=*/true);
@@ -472,7 +474,7 @@ bool UBanDatabase::UpdateBan(const FString& Uid, TFunction<void(FBanEntry&)> Mut
     return bSaved;
 }
 
-bool UBanDatabase::AddBan(const FBanEntry& Entry)
+bool UBanDatabase::AddBan(const FBanEntry& Entry, FBanEntry* OutSaved)
 {
     FBanEntry NewEntry;
     bool bSaved;
@@ -512,6 +514,11 @@ bool UBanDatabase::AddBan(const FBanEntry& Entry)
 
         Bans.Add(NewEntry);
         bSaved = SaveToFile();
+
+        // Populate the out-param inside the lock so the caller receives the
+        // fully-assigned entry without a separate GetBanByUid() round-trip.
+        if (bSaved && OutSaved)
+            *OutSaved = NewEntry;
     }
 
     if (bSaved)
@@ -794,18 +801,21 @@ TArray<FBanEntry> UBanDatabase::GetAllBans() const
 //  Cross-platform linking
 // ─────────────────────────────────────────────────────────────────────────────
 
-bool UBanDatabase::LinkBans(const FString& UidA, const FString& UidB)
+bool UBanDatabase::LinkBans(const FString& UidA, const FString& UidB, bool* bOutPartialOnly)
 {
     if (UidA.IsEmpty() || UidB.IsEmpty() || UidA.Equals(UidB, ESearchCase::IgnoreCase))
         return false;
 
-    bool bSaved = false;
+    if (bOutPartialOnly) *bOutPartialOnly = false;
+
+    bool bSaved        = false;
+    bool bAlreadyLinked = false;
     TArray<FBanEntry> Modified;
 
     {
         FScopeLock Lock(&DbMutex);
 
-        bool bDirty = false;
+        bool bDirty  = false;
         bool bFoundA = false;
         bool bFoundB = false;
 
@@ -833,22 +843,25 @@ bool UBanDatabase::LinkBans(const FString& UidA, const FString& UidB)
 
         if (bDirty)
         {
-            if (!bFoundA)
+            const bool bPartial = (!bFoundA || !bFoundB);
+            if (bPartial)
+            {
+                const FString& MissingUid  = bFoundA ? UidB : UidA;
+                const FString& PresentUid  = bFoundA ? UidA : UidB;
                 UE_LOG(LogBanDatabase, Warning,
                     TEXT("BanDatabase: LinkBans — no ban found for '%s'; link added to '%s' only"),
-                    *UidA, *UidB);
-            else if (!bFoundB)
-                UE_LOG(LogBanDatabase, Warning,
-                    TEXT("BanDatabase: LinkBans — no ban found for '%s'; link added to '%s' only"),
-                    *UidB, *UidA);
+                    *MissingUid, *PresentUid);
+                if (bOutPartialOnly) *bOutPartialOnly = true;
+            }
             bSaved = SaveToFile();
         }
         else if (bFoundA && bFoundB)
         {
-            // Both ban records exist but were already cross-linked — no-op, not an error.
+            // Both ban records exist and were already cross-linked — idempotent success.
             UE_LOG(LogBanDatabase, Verbose,
                 TEXT("BanDatabase: LinkBans — '%s' and '%s' are already linked; no change"),
                 *UidA, *UidB);
+            bAlreadyLinked = true;
         }
         else
         {
@@ -861,7 +874,9 @@ bool UBanDatabase::LinkBans(const FString& UidA, const FString& UidB)
         for (const FBanEntry& E : Modified)
             OnBanUpdated.Broadcast(E);
 
-    return bSaved;
+    // Return true both for a newly-saved link and for the already-linked no-op —
+    // both represent the invariant "these UIDs are linked" being satisfied.
+    return bSaved || bAlreadyLinked;
 }
 
 bool UBanDatabase::UnlinkBans(const FString& UidA, const FString& UidB)
