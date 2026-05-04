@@ -94,6 +94,7 @@ FWarningEntry UPlayerWarningRegistry::AddWarning(const FWarningEntry& InEntry)
         FScopeLock Lock(&Mutex);
 
         Entry = InEntry;
+        Entry.Points = FMath::Max(1, InEntry.Points);
         if (NextId == 0)
         {
             UE_LOG(LogPlayerWarningRegistry, Error,

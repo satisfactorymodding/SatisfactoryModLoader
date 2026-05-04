@@ -308,14 +308,27 @@ void FBanSystemModule::BackupConfigIfNeeded()
     IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
     PlatformFile.CreateDirectoryTree(*FPaths::GetPath(BackupPath));
 
-    if (FFileHelper::SaveStringToFile(FullContent, *BackupPath,
+    // Use the atomic write-to-.tmp-then-rename pattern to prevent a partially-written
+    // backup from being used by RestoreDefaultConfigIfNeeded() on the next startup.
+    const FString TmpPath = BackupPath + TEXT(".tmp");
+    if (FFileHelper::SaveStringToFile(FullContent, *TmpPath,
         FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
     {
-        UE_LOG(LogBanSystem, Log,
-            TEXT("BanSystem: Updated backup config at '%s'."), *BackupPath);
+        if (IFileManager::Get().Move(*BackupPath, *TmpPath, /*bReplace=*/true))
+        {
+            UE_LOG(LogBanSystem, Log,
+                TEXT("BanSystem: Updated backup config at '%s'."), *BackupPath);
+        }
+        else
+        {
+            IFileManager::Get().Delete(*TmpPath);
+            UE_LOG(LogBanSystem, Warning,
+                TEXT("BanSystem: Could not rename backup config tmp to '%s'."), *BackupPath);
+        }
     }
     else
     {
+        IFileManager::Get().Delete(*TmpPath);
         UE_LOG(LogBanSystem, Warning,
             TEXT("BanSystem: Could not write backup config to '%s'."), *BackupPath);
     }

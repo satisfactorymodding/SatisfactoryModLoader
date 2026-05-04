@@ -2068,3 +2068,74 @@ graph analysis.  They are left as forward-looking tasks beyond this pass.
 ---
 
 *Last updated: 2026-05-03. All 5 optimizations applied; 6 tests added.*
+
+---
+
+## Round 26 — Full Source Audit (2026-05-04)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket (fresh pass after Round 25).
+
+---
+
+### ✅ Fixed — `PlayerWarningRegistry::AddWarning(const FWarningEntry&)` does not enforce `Points >= 1` (BUG-R26-01)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/PlayerWarningRegistry.cpp`
+
+**Root cause:** The `AddWarning(const FWarningEntry& InEntry)` overload (used by the REST API's
+POST /warnings route) copied `InEntry` verbatim without applying the `FMath::Max(1, Points)`
+guard present in every other `AddWarning` overload. A caller supplying `Points <= 0` would store
+a zero- or negative-point warning in the in-memory `Warnings` array. `GetWarningPoints()` compensates
+with `FMath::Max(1, W.Points)` so auto-ban thresholds were unaffected, but direct inspection of
+`FWarningEntry.Points` in the same session returned the bad value. The inconsistency healed on
+the next save/load via the `SaveToFile()` normalisation path.
+
+**Fix:** Added `Entry.Points = FMath::Max(1, InEntry.Points);` immediately after
+`Entry = InEntry;`, matching the normalisation already present in all other overloads.
+
+---
+
+### ✅ Fixed — `DisconnectClient()` sends no Close frame — RFC 6455 §7.1.1 violation (BUG-R26-02)
+**Files:**
+- `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketServerRunnable.h`
+- `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketServerRunnable.cpp`
+
+**Root cause:** `DisconnectClient()` removed the client from `Clients`, enqueued the socket to
+`SocketsToDestroy`, and returned. No WebSocket Close frame (opcode `0x88`) was sent. RFC 6455
+§7.1.1 requires the server to initiate the closing handshake by sending a Close frame before tearing
+down the TCP connection. All other disconnect paths already send Close frames
+(protocol-error paths at lines 520–528, client-initiated Close echo at lines 582–606), but the
+server-initiated `DisconnectClient()` path (e.g., admin kicks) was missed.
+
+The deferred-destruction model (enqueue socket, destroy at top of next `Run()` iteration) was
+already safe for `SendFrame` because all previous-iteration raw-pointer snapshots have been
+released by the time the queue is drained. The Close frame can therefore be sent at that same
+point without any additional synchronization.
+
+**Fix:**
+1. Introduced `FPendingCloseSocket { FSocket* Socket; TArray<uint8> CloseFrame; }` in the header,
+   replacing the plain `TQueue<FSocket*>` with `TQueue<FPendingCloseSocket, EQueueMode::Mpsc>`.
+2. `DisconnectClient()` now builds a `Close(1000 Normal Closure)` frame (`0x88 0x02 0x03 0xE8`)
+   and enqueues it alongside the socket pointer.
+3. Both drain sites in `Run()` (top-of-loop and shutdown final drain) now call
+   `SendFrame(S.Socket, S.CloseFrame)` before destroying the socket. Send failures are silently
+   ignored — the client may have already closed their side, and the socket must still be destroyed.
+
+---
+
+### ✅ Fixed — `BackupConfigIfNeeded()` uses non-atomic `SaveStringToFile` (BUG-R26-03)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanSystemModule.cpp`
+
+**Root cause:** `BackupConfigIfNeeded()` wrote the INI backup file via a direct
+`FFileHelper::SaveStringToFile()` call. If the server process was killed mid-write (OOM,
+SIGKILL, power loss), the backup file was left partially written. `RestoreDefaultConfigIfNeeded()`
+validates the file by checking for `#` characters — a partially-written file may or may not pass
+this check, making the config-restoration behaviour unpredictable. Every other persistent data file
+in the codebase (all JSON registries, ticket state, whitelist state) already used the
+write-to-`.tmp` then `IFileManager::Move(bReplace=true)` atomic-rename pattern.
+
+**Fix:** Rewrote the write section to: write to `BackupPath + ".tmp"`, then atomically rename to
+`BackupPath` via `IFileManager::Get().Move(*BackupPath, *TmpPath, true)`. On failure the `.tmp`
+file is deleted and a warning is logged; the live backup file is never touched.
+
+---
+
+*Last updated: 2026-05-04. All 3 Round-26 bugs resolved.*

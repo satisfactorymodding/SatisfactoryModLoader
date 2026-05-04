@@ -105,17 +105,26 @@ private:
 
     /**
      * Sockets that have been removed from Clients by DisconnectClient() and are
-     * waiting to be destroyed by the I/O thread.  DisconnectClient() must NOT
-     * destroy the socket directly because the I/O thread may already hold a raw
-     * FSocket* snapshot taken from Clients during the broadcast-drain loop.
-     * Destroying the socket on the game thread while the I/O thread is mid-
-     * SendFrame() on that same pointer is a use-after-free.
+     * waiting to have a Close frame sent and then be destroyed by the I/O thread.
+     * DisconnectClient() must NOT destroy the socket directly because the I/O
+     * thread may already hold a raw FSocket* snapshot taken from Clients during
+     * the broadcast-drain loop.  Destroying the socket on the game thread while
+     * the I/O thread is mid-SendFrame() on that same pointer is a use-after-free.
      *
-     * Ownership: game thread enqueues the pointer; I/O thread (Run) dequeues
-     * and destroys it at the start of each loop iteration and once more after
-     * the shutdown cleanup, ensuring all in-flight sends have completed first.
+     * Each entry carries a pre-built Close frame so the I/O thread can fulfil the
+     * RFC 6455 §7.1.1 closing handshake (send Close frame) before tearing down the
+     * TCP connection.
+     *
+     * Ownership: game thread enqueues; I/O thread (Run) dequeues and processes at
+     * the start of each loop iteration and once more after shutdown cleanup,
+     * ensuring all in-flight sends have completed first.
      */
-    TQueue<FSocket*, EQueueMode::Mpsc> SocketsToDestroy;
+    struct FPendingCloseSocket
+    {
+        FSocket*      Socket{nullptr};
+        TArray<uint8> CloseFrame;
+    };
+    TQueue<FPendingCloseSocket, EQueueMode::Mpsc> SocketsToDestroy;
 
     static std::atomic<uint64> NextClientId;
 };

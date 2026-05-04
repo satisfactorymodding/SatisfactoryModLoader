@@ -91,23 +91,27 @@ uint32 FSMLWebSocketServerRunnable::Run()
 {
     while (!bStopping.load())
     {
-        // Destroy sockets that DisconnectClient() deferred to us.  This drain
-        // must happen at the top of the loop, before the OutboundQueue drain
+        // Send the queued Close frames and destroy the deferred sockets.  This
+        // drain must happen at the top of the loop, before the OutboundQueue drain
         // below collects new raw socket snapshots.  Any socket enqueued by
         // DisconnectClient() was already removed from Clients (under
         // ClientMutex) before being enqueued here, so no new snapshot of it
         // will be taken after this point; all outstanding snapshots were taken
         // in the *previous* iteration and their SendFrame() calls have already
-        // completed, making it safe to destroy the socket now.
+        // completed, making it safe to call SendFrame and then destroy the socket now.
         {
-            FSocket* S;
+            FPendingCloseSocket S;
             ISocketSubsystem* SocketSS = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
             while (SocketsToDestroy.Dequeue(S))
             {
+                // RFC 6455 §7.1.1: send a Close frame before closing the TCP connection.
+                // Ignore the return value — if the client has already closed their side
+                // the send will fail, but we must still destroy the socket.
+                SendFrame(S.Socket, S.CloseFrame);
                 if (SocketSS)
-                    SocketSS->DestroySocket(S);
+                    SocketSS->DestroySocket(S.Socket);
                 else
-                    delete S;
+                    delete S.Socket;
             }
         }
 
@@ -314,14 +318,15 @@ uint32 FSMLWebSocketServerRunnable::Run()
     // raced with the shutdown cleanup above, removing a client from Clients
     // (so it was not destroyed in the loop) and enqueueing its socket here.
     {
-        FSocket* S;
+        FPendingCloseSocket S;
         ISocketSubsystem* SocketSS = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
         while (SocketsToDestroy.Dequeue(S))
         {
+            SendFrame(S.Socket, S.CloseFrame);
             if (SocketSS)
-                SocketSS->DestroySocket(S);
+                SocketSS->DestroySocket(S.Socket);
             else
-                delete S;
+                delete S.Socket;
         }
     }
 
@@ -840,10 +845,19 @@ void FSMLWebSocketServerRunnable::DisconnectClient(const FString& ClientId)
     // hold a raw pointer snapshot of this socket taken from Clients during the
     // broadcast-drain loop.  Destroying the socket on this thread while Run()
     // is mid-SendFrame() on the same pointer is a use-after-free.  Instead,
-    // hand ownership to SocketsToDestroy so that Run() destroys it at the
-    // start of the next iteration, by which time all in-flight sends from the
-    // current iteration have completed.
-    SocketsToDestroy.Enqueue(Removed.Socket);
+    // hand ownership to SocketsToDestroy so that Run() sends the Close frame
+    // and then destroys the socket at the start of the next iteration, by which
+    // time all in-flight sends from the current iteration have completed.
+    //
+    // Build a Close(1000 Normal Closure) frame per RFC 6455 §7.1.1.
+    // The I/O thread sends this frame before destroying the TCP socket.
+    FPendingCloseSocket Pending;
+    Pending.Socket = Removed.Socket;
+    Pending.CloseFrame.Add(0x88); // FIN=1, opcode=0x8 (Close)
+    Pending.CloseFrame.Add(0x02); // payload length = 2
+    Pending.CloseFrame.Add(0x03); // status 1000 high byte
+    Pending.CloseFrame.Add(0xE8); // status 1000 low byte
+    SocketsToDestroy.Enqueue(MoveTemp(Pending));
 
     TWeakObjectPtr<USMLWebSocketServer> WeakOwner = Owner;
     AsyncTask(ENamedThreads::GameThread, [WeakOwner, ClientId]()
