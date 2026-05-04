@@ -2928,8 +2928,18 @@ EExecutionStatus ATempUnmuteChatCommand::ExecuteCommand_Implementation(
     UCommandSender* Sender, const TArray<FString>& Arguments, const FString& Label)
 {
     FString AdminId;
-    if (!BanChat::IsAdminSender(Sender, AdminId))
-        return EExecutionStatus::INSUFFICIENT_PERMISSIONS;
+    if (!BanChat::IsAdminSender(Sender, AdminId, /*bSendError=*/false))
+    {
+        // Also allow moderators to lift timed mutes (same policy as /mutecheck).
+        const UBanChatCommandsConfig* Cfg = UBanChatCommandsConfig::Get();
+        if (!Cfg || !Cfg->IsModeratorUid(AdminId))
+        {
+            Sender->SendChatMessage(
+                TEXT("[BanChatCommands] You do not have permission to use this command."),
+                FLinearColor::Red);
+            return EExecutionStatus::INSUFFICIENT_PERMISSIONS;
+        }
+    }
 
     FString Uid, DisplayName;
     if (!BanChat::ResolveTarget(this, Sender, Arguments[0], Uid, DisplayName))
@@ -3381,14 +3391,17 @@ EExecutionStatus AClearWarnByIdChatCommand::ExecuteCommand_Implementation(
         return EExecutionStatus::COMPLETED;
     }
 
+    if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
+        AuditLog->LogAction(TEXT("deletewarn_id"),
+            FString::Printf(TEXT("warning#%lld"), WarnId), TEXT(""),
+            AdminUid, Sender->GetSenderName(),
+            FString::Printf(TEXT("Deleted warning id %lld"), WarnId));
+
     Sender->SendChatMessage(
         FString::Printf(TEXT("[BanChatCommands] Deleted warning #%lld."), WarnId),
         FLinearColor::Green);
     return EExecutionStatus::COMPLETED;
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  AExtendBanChatCommand  — /extend
 // ─────────────────────────────────────────────────────────────────────────────
 
 AExtendBanChatCommand::AExtendBanChatCommand()
@@ -4189,10 +4202,7 @@ EExecutionStatus AReputationChatCommand::ExecuteCommand_Implementation(
     const FString TargetArg = Arguments[0];
     FString Uid, PlayerName;
     if (!BanChat::ResolveTarget(this, Sender, TargetArg, Uid, PlayerName))
-    {
-        Uid        = UBanDatabase::MakeUid(TEXT("EOS"), TargetArg.ToLower());
-        PlayerName = TargetArg;
-    }
+        return EExecutionStatus::BAD_ARGUMENTS;
 
     UWorld* W = GetWorld();
     UGameInstance* GI = W ? W->GetGameInstance() : nullptr;

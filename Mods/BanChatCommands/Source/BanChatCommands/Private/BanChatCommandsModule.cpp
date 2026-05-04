@@ -300,9 +300,17 @@ void FBanChatCommandsModule::BackupConfigIfNeeded()
         + TEXT("\n")
         + TEXT("[/Script/BanChatCommands.BanChatCommandsConfig]\n");
 
+    // Sanitize values to prevent newline injection into the INI file.
+    auto SanitizeIni = [](const FString& S) -> FString
+    {
+        FString Out; Out.Reserve(S.Len());
+        for (TCHAR C : S) if (C != TEXT('\r') && C != TEXT('\n')) Out += C;
+        return Out;
+    };
+
     for (const FString& Puid : Cfg->AdminEosPUIDs)
     {
-        Content += TEXT("+AdminEosPUIDs=") + Puid + TEXT("\n");
+        Content += TEXT("+AdminEosPUIDs=") + SanitizeIni(Puid) + TEXT("\n");
     }
 
     if (Cfg->AdminEosPUIDs.IsEmpty())
@@ -314,7 +322,7 @@ void FBanChatCommandsModule::BackupConfigIfNeeded()
 
     for (const FString& Puid : Cfg->ModeratorEosPUIDs)
     {
-        Content += TEXT("+ModeratorEosPUIDs=") + Puid + TEXT("\n");
+        Content += TEXT("+ModeratorEosPUIDs=") + SanitizeIni(Puid) + TEXT("\n");
     }
 
     if (Cfg->ModeratorEosPUIDs.IsEmpty())
@@ -330,22 +338,34 @@ void FBanChatCommandsModule::BackupConfigIfNeeded()
     Content += FString::Printf(TEXT("WarningCheckCooldownSeconds=%d\n"), Cfg->WarningCheckCooldownSeconds);
     Content += FString::Printf(TEXT("AdminBanRateLimitCount=%d\n"), Cfg->AdminBanRateLimitCount);
     Content += FString::Printf(TEXT("AdminBanRateLimitMinutes=%d\n"), Cfg->AdminBanRateLimitMinutes);
-    Content += TEXT("ReloadConfigWebhookUrl=") + Cfg->ReloadConfigWebhookUrl + TEXT("\n");
-    Content += TEXT("ReportWebhookUrl=") + Cfg->ReportWebhookUrl + TEXT("\n");
+    Content += TEXT("ReloadConfigWebhookUrl=") + SanitizeIni(Cfg->ReloadConfigWebhookUrl) + TEXT("\n");
+    Content += TEXT("ReportWebhookUrl=") + SanitizeIni(Cfg->ReportWebhookUrl) + TEXT("\n");
 
     IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
     PlatformFile.CreateDirectoryTree(*FPaths::GetPath(BackupPath));
 
-    if (FFileHelper::SaveStringToFile(Content, *BackupPath,
+    // Write atomically: write to .tmp then rename, so a crash mid-write never
+    // leaves a partial/corrupt admin config file.
+    const FString TmpPath = BackupPath + TEXT(".tmp");
+    if (FFileHelper::SaveStringToFile(Content, *TmpPath,
         FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
     {
-        UE_LOG(LogBanChatCommands, Log,
-            TEXT("BanChatCommands: Updated backup config at '%s'."), *BackupPath);
+        if (IFileManager::Get().Move(*BackupPath, *TmpPath, /*bReplace=*/true))
+        {
+            UE_LOG(LogBanChatCommands, Log,
+                TEXT("BanChatCommands: Updated backup config at '%s'."), *BackupPath);
+        }
+        else
+        {
+            IFileManager::Get().Delete(*TmpPath);
+            UE_LOG(LogBanChatCommands, Warning,
+                TEXT("BanChatCommands: Could not rename backup config to '%s'."), *BackupPath);
+        }
     }
     else
     {
         UE_LOG(LogBanChatCommands, Warning,
-            TEXT("BanChatCommands: Could not write backup config to '%s'."), *BackupPath);
+            TEXT("BanChatCommands: Could not write backup config to '%s'."), *TmpPath);
     }
 }
 
