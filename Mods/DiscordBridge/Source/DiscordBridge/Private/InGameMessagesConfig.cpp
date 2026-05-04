@@ -276,11 +276,18 @@ FInGameMessagesConfig FInGameMessagesConfig::Load()
 			+ TEXT("Enabled=") + (Out.bEnabled ? TEXT("True") : TEXT("False")) + TEXT("\n")
 			+ TEXT("DefaultSenderName=") + Out.DefaultSenderName + TEXT("\n");
 
+		// Escape embedded double-quotes in string fields to prevent INI parse
+		// corruption: ExtractQuotedField() searches for the closing " and would
+		// stop prematurely on an unescaped " inside the value.
+		auto EscapeIniStr = [](const FString& S) -> FString
+		{
+			return S.Replace(TEXT("\""), TEXT("\\\""));
+		};
 		for (const FInGameBroadcastMessage& M : Out.Messages)
 		{
 			BackupContent += FString::Printf(
 				TEXT("+Messages=(IntervalMinutes=%d,SenderName=\"%s\",Message=\"%s\")\n"),
-				M.IntervalMinutes, *M.SenderName, *M.Message);
+				M.IntervalMinutes, *EscapeIniStr(M.SenderName), *EscapeIniStr(M.Message));
 		}
 
 		PF.CreateDirectoryTree(*FPaths::GetPath(BackupPath));
