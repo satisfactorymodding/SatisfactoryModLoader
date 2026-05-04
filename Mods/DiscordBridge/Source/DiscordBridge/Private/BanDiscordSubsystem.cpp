@@ -2220,12 +2220,21 @@ void UBanDiscordSubsystem::HandleUnbanNameCommand(const TArray<FString>& Args,
 	const FPlayerSessionRecord& Record = Matches[0];
 	int32 Removed = 0;
 
-	// Remove EOS ban.
-	if (DB->RemoveBanByUid(Record.Uid))
+	// Remove EOS ban atomically, capturing LinkedUids for counterpart cleanup.
+	FBanEntry RemovedEntry;
+	if (DB->RemoveBanByUid(Record.Uid, RemovedEntry))
+	{
 		++Removed;
+		// Remove all counterpart bans recorded via LinkBans or AddCounterpartBans.
+		for (const FString& LinkedUid : RemovedEntry.LinkedUids)
+		{
+			if (DB->RemoveBanByUid(LinkedUid))
+				++Removed;
+		}
+	}
 
-	// Remove IP ban if recorded.
-	if (!Record.IpAddress.IsEmpty())
+	// If no EOS ban was found, also try the IP-only path.
+	if (Removed == 0 && !Record.IpAddress.IsEmpty())
 	{
 		const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Record.IpAddress);
 		if (DB->RemoveBanByUid(IpUid))
@@ -2833,7 +2842,8 @@ void UBanDiscordSubsystem::HandleClearWarnsCommand(const TArray<FString>& Args,
 	const FString Msg = FString::Printf(
 		TEXT("✅ Cleared **%d** warning(s) for **%s** (`%s`).\nBy: %s"),
 		Removed,
-		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid, *SenderName);
+		*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+		*BanDiscordHelpers::EscapeMarkdown(SenderName));
 	Respond(ChannelId, Msg);
 	PostModerationLog(Msg);
 }
@@ -2857,9 +2867,17 @@ void UBanDiscordSubsystem::HandleClearWarnByIdCommand(const TArray<FString>& Arg
 
 	int64 WarnId = 0;
 	{
-		// Parse as int64; FDefaultValueHelper only parses int32, use FCString.
-		TCHAR* End = nullptr;
-		WarnId = static_cast<int64>(FCString::Strtoi64(*Args[0], &End, 10));
+		// Guard against non-numeric input and int64 overflow (same pattern as
+		// AClearWarnByIdChatCommand and BanRestApi::ParseInt64Param).
+		const int32 IdLen = Args[0].Len();
+		if (!Args[0].IsNumeric() || IdLen > 19 ||
+			(IdLen == 19 && Args[0] > TEXT("9223372036854775807")))
+		{
+			Respond(ChannelId,
+				TEXT("❌ `<warning_id>` must be a positive integer."));
+			return;
+		}
+		WarnId = FCString::Atoi64(*Args[0]);
 		if (WarnId <= 0)
 		{
 			Respond(ChannelId,
@@ -2888,7 +2906,7 @@ void UBanDiscordSubsystem::HandleClearWarnByIdCommand(const TArray<FString>& Arg
 	if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
 		AuditLog->LogAction(TEXT("deletewarn_id"),
 			FString::Printf(TEXT("warning#%lld"), WarnId), TEXT(""),
-			SenderName, SenderName,
+			GetCurrentAuditAdminUid(SenderName), SenderName,
 			FString::Printf(TEXT("Deleted warning id %lld"), WarnId));
 
 	const FString Msg = FString::Printf(
@@ -3710,7 +3728,11 @@ void UBanDiscordSubsystem::HandleAppealsCommand(const FString& ChannelId)
 
 		Reply += FString::Printf(
 			TEXT("`#%lld` uid=%s | contact: %s | submitted: %s | reason: %s\n"),
-			A.Id, *A.Uid, *Contact, *DateStr, *Reason);
+			A.Id,
+			*BanDiscordHelpers::EscapeMarkdown(A.Uid),
+			*BanDiscordHelpers::EscapeMarkdown(Contact),
+			*DateStr,
+			*BanDiscordHelpers::EscapeMarkdown(Reason));
 	}
 
 	if (TotalCount > MaxShow)
@@ -4231,14 +4253,19 @@ void UBanDiscordSubsystem::PostToPlayerModerationThread(const FString& PlayerNam
 	const FString UidKey = Uid;
 	TWeakObjectPtr<UBanDiscordSubsystem> WeakThis(this);
 
+	const FString MessageCopy = Message;
 	CachedProvider->CreateDiscordThread(ChanId, ThreadName,
-		[WeakThis, UidKey](const FString& ThreadId)
+		[WeakThis, UidKey, MessageCopy](const FString& ThreadId)
 		{
 			UBanDiscordSubsystem* Self = WeakThis.Get();
 			if (Self && !ThreadId.IsEmpty())
 			{
 				// Cache the thread so subsequent events go straight into it.
 				Self->PlayerThreadIdCache.Add(UidKey, ThreadId);
+				// Re-post the triggering message into the new thread so the first
+				// moderation event is not absent from the per-player thread.
+				if (Self->CachedProvider)
+					Self->CachedProvider->SendDiscordChannelMessage(ThreadId, MessageCopy);
 				UE_LOG(LogBanDiscord, Log,
 				       TEXT("BanDiscordSubsystem: Created mod-log thread %s for player uid=%s."),
 				       *ThreadId, *UidKey);
@@ -4430,6 +4457,7 @@ void UBanDiscordSubsystem::HandleQBanCommand(const TArray<FString>& Args,
 	*BanDiscordHelpers::EscapeMarkdown(Template->Reason), *DurStr);
 	QBanMsg += BanDiscordHelpers::FormatPlayerLookup(this, Uid);
 	Respond(ChannelId, QBanMsg);
+	PostModerationLog(QBanMsg);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -4468,13 +4496,14 @@ void UBanDiscordSubsystem::HandleReputationCommand(const TArray<FString>& Args,
 	bool  bCurrentlyBanned = false;
 	if (DB)
 	{
+		// Use IsCurrentlyBannedByAnyId for accurate active-ban status (checks LinkedUids too).
+		FBanEntry ActiveEntry;
+		bCurrentlyBanned = DB->IsCurrentlyBannedByAnyId(Uid, ActiveEntry);
 		for (const FBanEntry& B : DB->GetAllBans())
 		{
-			if (B.Uid.Equals(Uid, ESearchCase::IgnoreCase))
-			{
+			// Count bans where Uid is the primary UID or appears in LinkedUids.
+			if (B.Uid.Equals(Uid, ESearchCase::IgnoreCase) || B.LinkedUids.Contains(Uid))
 				++TotalBans;
-				if (!B.IsExpired()) bCurrentlyBanned = true;
-			}
 		}
 	}
 
@@ -4606,6 +4635,11 @@ void UBanDiscordSubsystem::HandleBulkBanCommand(const TArray<FString>& Args,
 
 	for (const FString& RawUid : Uids)
 	{
+		if (!IsValidEOSPUID(RawUid))
+		{
+			UE_LOG(LogBanDiscord, Warning, TEXT("BulkBan: skipping invalid PUID '%s'"), *RawUid);
+			continue;
+		}
 		const FString Uid = UBanDatabase::MakeUid(TEXT("EOS"), RawUid.ToLower());
 
 		FBanEntry Ban;
@@ -7243,6 +7277,9 @@ FString UBanDiscordSubsystem::ExecutePanelFreeze(const FString& PlayerArg,
 		UE_LOG(LogBanDiscord, Log,
 		       TEXT("BanDiscordSubsystem: [Panel] %s unfroze %s (%s)."),
 		       *SenderName, *DisplayName, *Uid);
+		if (GI)
+			if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
+				AL->LogAction(TEXT("unfreeze"), Uid, DisplayName, GetCurrentAuditAdminUid(SenderName), SenderName, TEXT(""));
 		return FString::Printf(
 			TEXT("🔓 **%s** (`%s`) has been **unfrozen** by **%s**."),
 			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
@@ -7269,6 +7306,9 @@ FString UBanDiscordSubsystem::ExecutePanelFreeze(const FString& PlayerArg,
 		UE_LOG(LogBanDiscord, Log,
 		       TEXT("BanDiscordSubsystem: [Panel] %s froze %s (%s)."),
 		       *SenderName, *DisplayName, *Uid);
+		if (GI)
+			if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
+				AL->LogAction(TEXT("freeze"), Uid, DisplayName, GetCurrentAuditAdminUid(SenderName), SenderName, TEXT(""));
 		return FString::Printf(
 			TEXT("❄️ **%s** (`%s`) has been **frozen** by **%s**."
 			     " Use the Freeze button again to unfreeze."),
@@ -7307,6 +7347,9 @@ FString UBanDiscordSubsystem::ExecutePanelClearChat(const FString& Reason,
 	UE_LOG(LogBanDiscord, Log,
 	       TEXT("BanDiscordSubsystem: [Panel] %s cleared in-game chat. Reason: %s"),
 	       *SenderName, *EffectiveReason);
+	if (GI)
+		if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
+			AL->LogAction(TEXT("clearchat"), TEXT(""), TEXT(""), GetCurrentAuditAdminUid(SenderName), SenderName, EffectiveReason);
 	return FString::Printf(
 		TEXT("🧹 **Chat cleared** by **%s**.\nReason: %s"),
 		*BanDiscordHelpers::EscapeMarkdown(SenderName),

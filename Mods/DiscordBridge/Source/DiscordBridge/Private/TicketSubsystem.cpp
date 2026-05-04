@@ -50,7 +50,8 @@ namespace
 			switch (C)
 			{
 			case TEXT('*'): case TEXT('_'): case TEXT('`'): case TEXT('~'):
-			case TEXT('|'): case TEXT('>'): case TEXT('\\'):
+			case TEXT('|'): case TEXT('>'): case TEXT('\\'): case TEXT('['):
+			case TEXT(']'): case TEXT('#'):
 				Out += TEXT('\\');
 				break;
 			default:
@@ -2223,7 +2224,21 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 			{
 				const FString AppealUid     = FString::Printf(TEXT("Discord:%s"), *DiscordUserId);
 				const FString ContactInfo   = FString::Printf(TEXT("Discord: %s (%s)"), *DiscordUsername, *DiscordUserId);
-				const FBanAppealEntry NewEntry = AppealReg->AddAppeal(AppealUid, AppealReasonForRegistry, ContactInfo);
+				const FBanAppealEntry NewEntry = AppealReg->AddAppealIfNoDuplicate(AppealUid, AppealReasonForRegistry, ContactInfo);
+				if (NewEntry.Id == 0)
+				{
+					// A pending appeal already exists for this player (submitted via
+					// REST or a previous ticket modal). Reject silently with an
+					// ephemeral reply so staff are not flooded.
+					IDiscordBridgeProvider* Bridge = GetBridge();
+					if (Bridge)
+					{
+						Bridge->RespondToInteraction(InteractionId, InteractionToken, 4,
+							TEXT("{\"content\":\"❌ You already have a pending appeal. Please wait for it to be reviewed.\"}"),
+							/*bEphemeral=*/true);
+					}
+					return;
+				}
 				if (NewEntry.Id > 0)
 				{
 					// Keep the appeal ID mapped to this opener so approve/deny can
@@ -5137,6 +5152,12 @@ void UTicketSubsystem::CloseTicketChannelInactive(const FString& ChannelId)
 		// the entry leaks whenever the appeal was already reviewed (status !=
 		// Pending) but the channel was closed due to inactivity.
 		OpenerToEosUid.Remove(RemovedOpener);
+		// Always remove the appeal-ID mapping unconditionally. If the appeal was
+		// already deleted before this inactivity close fires (e.g. via REST DELETE
+		// /appeals/:id or a panel action), the loop below finds no match and the
+		// stale entry would otherwise persist, mapping the player's next appeal to
+		// the wrong ID.
+		OpenerToAppealId.Remove(RemovedOpener);
 
 		if (UGameInstance* GI = GetGameInstance())
 		{
@@ -5147,10 +5168,6 @@ void UTicketSubsystem::CloseTicketChannelInactive(const FString& ChannelId)
 				{
 					if (E.Uid == AppealUid)
 					{
-						// Always remove the ID mapping, regardless of current appeal status.
-						// Without this, a reviewed (non-Pending) appeal's entry leaks and
-						// maps the player's next appeal to the wrong stale ID.
-						OpenerToAppealId.Remove(RemovedOpener);
 						if (E.Status == EAppealStatus::Pending)
 						{
 							AppealReg->DeleteAppeal(E.Id);
