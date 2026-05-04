@@ -244,7 +244,7 @@ int32 UPlayerWarningRegistry::GetWarningPoints(const FString& Uid) const
         ? FDateTime::UtcNow() - FTimespan::FromDays(static_cast<double>(DecayDays))
         : FDateTime::MinValue();
 
-    int32 TotalPoints = 0;
+    int64 TotalPoints = 0;
     for (const FWarningEntry& W : Warnings)
     {
         if (!W.Uid.Equals(Uid, ESearchCase::IgnoreCase)) continue;
@@ -252,7 +252,7 @@ int32 UPlayerWarningRegistry::GetWarningPoints(const FString& Uid) const
         if (DecayDays > 0 && W.WarnDate < DecayCutoff) continue;
         TotalPoints += FMath::Max(1, W.Points);
     }
-    return TotalPoints;
+    return static_cast<int32>(FMath::Min(TotalPoints, static_cast<int64>(MAX_int32)));
 }
 
 int32 UPlayerWarningRegistry::PruneExpiredWarnings()

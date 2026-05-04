@@ -2230,13 +2230,9 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 					// A pending appeal already exists for this player (submitted via
 					// REST or a previous ticket modal). Reject silently with an
 					// ephemeral reply so staff are not flooded.
-					IDiscordBridgeProvider* Bridge = GetBridge();
-					if (Bridge)
-					{
-						Bridge->RespondToInteraction(InteractionId, InteractionToken, 4,
-							TEXT("{\"content\":\"❌ You already have a pending appeal. Please wait for it to be reviewed.\"}"),
-							/*bEphemeral=*/true);
-					}
+					Bridge->RespondToInteraction(InteractionId, InteractionToken, 4,
+						TEXT("❌ You already have a pending appeal. Please wait for it to be reviewed."),
+						/*bEphemeral=*/true);
 					return;
 				}
 				if (NewEntry.Id > 0)
@@ -5152,30 +5148,52 @@ void UTicketSubsystem::CloseTicketChannelInactive(const FString& ChannelId)
 		// the entry leaks whenever the appeal was already reviewed (status !=
 		// Pending) but the channel was closed due to inactivity.
 		OpenerToEosUid.Remove(RemovedOpener);
-		// Always remove the appeal-ID mapping unconditionally. If the appeal was
-		// already deleted before this inactivity close fires (e.g. via REST DELETE
-		// /appeals/:id or a panel action), the loop below finds no match and the
-		// stale entry would otherwise persist, mapping the player's next appeal to
-		// the wrong ID.
+		// Capture the appeal ID before unconditionally removing the mapping
+		// so the O(1) GetAppealById path can be taken first.  The unconditional
+		// remove is still required: if the appeal was already deleted externally
+		// (e.g. REST DELETE /appeals/:id or a panel action) the stale map entry
+		// would otherwise survive and map the player's next appeal to the wrong ID.
+		int64 CapturedAppealId = 0;
+		if (const int64* IdPtr = OpenerToAppealId.Find(RemovedOpener))
+			CapturedAppealId = *IdPtr;
 		OpenerToAppealId.Remove(RemovedOpener);
 
 		if (UGameInstance* GI = GetGameInstance())
 		{
 			if (UBanAppealRegistry* AppealReg = GI->GetSubsystem<UBanAppealRegistry>())
 			{
-				const FString AppealUid = FString::Printf(TEXT("Discord:%s"), *RemovedOpener);
-			for (const FBanAppealEntry& E : AppealReg->GetAllAppeals())
+				// Prefer the O(1) lookup using the cached appeal ID (present for
+				// tickets opened since the OpenerToAppealId map was introduced).
+				// Fall back to the O(n) UID scan for state files written by older
+				// builds that did not persist the ID.
+				if (CapturedAppealId > 0)
 				{
-					if (E.Uid == AppealUid)
+					const FBanAppealEntry E = AppealReg->GetAppealById(CapturedAppealId);
+					if (E.Id > 0 && E.Status == EAppealStatus::Pending)
 					{
-						if (E.Status == EAppealStatus::Pending)
+						AppealReg->DeleteAppeal(E.Id);
+						UE_LOG(LogTicketSystem, Log,
+						       TEXT("TicketSystem: Auto-dismissed pending appeal id=%lld for Discord user %s on inactivity close."),
+						       E.Id, *RemovedOpener);
+					}
+				}
+				else
+				{
+					// Legacy fallback: scan by Discord UID string.
+					const FString AppealUid = FString::Printf(TEXT("Discord:%s"), *RemovedOpener);
+					for (const FBanAppealEntry& E : AppealReg->GetAllAppeals())
+					{
+						if (E.Uid == AppealUid)
 						{
-							AppealReg->DeleteAppeal(E.Id);
-							UE_LOG(LogTicketSystem, Log,
-							       TEXT("TicketSystem: Auto-dismissed pending appeal id=%lld for Discord user %s on inactivity close."),
-							       E.Id, *RemovedOpener);
+							if (E.Status == EAppealStatus::Pending)
+							{
+								AppealReg->DeleteAppeal(E.Id);
+								UE_LOG(LogTicketSystem, Log,
+								       TEXT("TicketSystem: Auto-dismissed pending appeal id=%lld for Discord user %s on inactivity close."),
+								       E.Id, *RemovedOpener);
+							}
+							break;
 						}
-						break;
 					}
 				}
 			}

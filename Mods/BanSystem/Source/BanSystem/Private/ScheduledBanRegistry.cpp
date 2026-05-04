@@ -161,7 +161,7 @@ void UScheduledBanRegistry::Tick(float DeltaTime)
         }
         else
         {
-            S.RetryCount++;
+            S.RetryCount = FMath::Min(S.RetryCount + 1, INT32_MAX);
             FailedEntries.Add(S);
         }
     }
