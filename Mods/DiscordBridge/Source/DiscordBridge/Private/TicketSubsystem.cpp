@@ -43,18 +43,19 @@ namespace
 	// that it is rendered literally and cannot inject bold/italic/code formatting.
 	FString EscapeMarkdown(const FString& Text)
 	{
-		static const TCHAR SpecialChars[] = { TEXT('*'), TEXT('_'), TEXT('`'), TEXT('~'),
-		                                       TEXT('|'), TEXT('>'), TEXT('\\'), TEXT('\0') };
 		FString Out;
 		Out.Reserve(Text.Len() + 8);
 		for (TCHAR C : Text)
 		{
-			bool bSpecial = false;
-			for (int32 i = 0; SpecialChars[i] != TEXT('\0'); ++i)
+			switch (C)
 			{
-				if (C == SpecialChars[i]) { bSpecial = true; break; }
+			case TEXT('*'): case TEXT('_'): case TEXT('`'): case TEXT('~'):
+			case TEXT('|'): case TEXT('>'): case TEXT('\\'):
+				Out += TEXT('\\');
+				break;
+			default:
+				break;
 			}
-			if (bSpecial) Out += TEXT('\\');
 			Out += C;
 		}
 		return Out;

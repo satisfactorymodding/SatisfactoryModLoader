@@ -79,18 +79,19 @@ static FString JsonEscapeStr(const FString& S)
 // (names, reasons, etc.) are rendered literally, not as formatting.
 static FString EscapeMarkdown(const FString& Text)
 {
-	static const TCHAR SpecialChars[] = { TEXT('*'), TEXT('_'), TEXT('`'), TEXT('~'),
-	                                       TEXT('|'), TEXT('>'), TEXT('\\'), TEXT('\0') };
 	FString Out;
 	Out.Reserve(Text.Len() + 8);
 	for (TCHAR C : Text)
 	{
-		bool bSpecial = false;
-		for (int32 i = 0; SpecialChars[i] != TEXT('\0'); ++i)
+		switch (C)
 		{
-			if (C == SpecialChars[i]) { bSpecial = true; break; }
+		case TEXT('*'): case TEXT('_'): case TEXT('`'): case TEXT('~'):
+		case TEXT('|'): case TEXT('>'): case TEXT('\\'):
+			Out += TEXT('\\');
+			break;
+		default:
+			break;
 		}
-		if (bSpecial) Out += TEXT('\\');
 		Out += C;
 	}
 	return Out;
@@ -5495,9 +5496,9 @@ void UDiscordBridgeSubsystem::StartInGameMessageTickers()
 		return;
 	}
 
-	for (int32 i = 0; i < InGameMessagesConfig.Messages.Num(); ++i)
+	int32 BroadcastIdx = 0;
+	for (const FInGameBroadcastMessage& Entry : InGameMessagesConfig.Messages)
 	{
-		const FInGameBroadcastMessage& Entry = InGameMessagesConfig.Messages[i];
 		if (Entry.IntervalMinutes <= 0 || Entry.Message.IsEmpty())
 			continue;
 
@@ -5536,7 +5537,8 @@ void UDiscordBridgeSubsystem::StartInGameMessageTickers()
 
 		UE_LOG(LogDiscordBridge, Log,
 		       TEXT("DiscordBridge: In-game broadcast [%d] every %d min sender=\"%s\" message=\"%s\""),
-		       i, Entry.IntervalMinutes, *SenderName, *Msg);
+		       BroadcastIdx, Entry.IntervalMinutes, *SenderName, *Msg);
+		++BroadcastIdx;
 	}
 
 	UE_LOG(LogDiscordBridge, Log,
