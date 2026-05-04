@@ -86,7 +86,8 @@ static FString EscapeMarkdown(const FString& Text)
 		switch (C)
 		{
 		case TEXT('*'): case TEXT('_'): case TEXT('`'): case TEXT('~'):
-		case TEXT('|'): case TEXT('>'): case TEXT('\\'):
+		case TEXT('|'): case TEXT('>'): case TEXT('\\'): case TEXT('['):
+		case TEXT(']'): case TEXT('#'):
 			Out += TEXT('\\');
 			break;
 		default:
