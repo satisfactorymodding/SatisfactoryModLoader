@@ -2245,7 +2245,7 @@ API now returns HTTP 409 Conflict with an explanatory message.
 
 ---
 
-### ✅ Fixed — 13 player-controlled strings sent to Discord without `EscapeMarkdown()` (R29-A)
+### ✅ Fixed — 16 player-controlled strings sent to Discord without `EscapeMarkdown()` (R29-A)
 **File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
 
 **Root cause:** Several Discord message-building code paths substituted player-controlled strings
