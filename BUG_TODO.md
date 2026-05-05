@@ -2281,3 +2281,71 @@ The affected call sites had simply been missed.
 | 6514 | `/online` slash-command reply list | `*PS->GetPlayerName()` → `*EscapeMarkdown(PS->GetPlayerName())` |
 
 *Last updated: Round 29. 1 bug cluster (16 call sites) fixed.*
+
+---
+
+## Round 30 — Bug Audit Results
+
+*Files audited: BanRestApi.cpp, BanChatCommands.cpp, BanDiscordSubsystem.cpp, TicketSubsystem.cpp, SMLWebSocketRunnable.cpp, SMLWebSocketServerRunnable.cpp*
+
+### ✅ R30-01 — BanRestApi.cpp: `FCString::Atoi` overflow on `?limit=` / `?page=` params
+**File:** `BanSystem/Private/BanRestApi.cpp` ~line 1295
+**Severity:** MEDIUM
+The `Len() <= 10` guard allows values up to 9,999,999,999 which exceeds `INT32_MAX`.
+`FCString::Atoi` wraps silently (UB). Fixed by using `FCString::Atoi64` with an explicit
+range clamp before narrowing to `int32`.
+
+### ✅ R30-02 — BanRestApi.cpp: `DELETE /bans/ip/:ip` single-arg `RemoveBanByUid`
+**File:** `BanSystem/Private/BanRestApi.cpp` ~line 1601
+**Severity:** LOW
+Used the single-arg overload that discards the removed entry, causing `NotifyBanRemoved`
+and the audit log to always receive the raw IP string instead of the stored `PlayerName`.
+Fixed by switching to the two-arg overload and using a `DisplayName` fallback.
+
+### ✅ R30-03 — BanRestApi.cpp: `DELETE /bans/bulk` missing entry capture / player name
+**File:** `BanSystem/Private/BanRestApi.cpp` ~lines 2948–2953
+**Severity:** LOW
+The bulk-unban loop used the single-arg `RemoveBanByUid`, passing an empty `PlayerName`
+to `NotifyBanRemoved` and the audit log. Fixed by using the two-arg overload and passing
+`RemovedEntry.PlayerName` (with `Uid` as fallback).
+
+### ✅ R30-05 — SMLWebSocketServerRunnable.cpp: Close frames never sent before socket destroy
+**File:** `SMLWebSocket/Private/SMLWebSocketServerRunnable.cpp` ~lines 521–534, 585–610, 269–289
+**Severity:** MEDIUM (RFC 6455 §7.1.1 violation)
+`ProcessFrames` enqueued terminal Close frames (received-Close echo and unmasked-frame
+1002 error) to `OutboundQueue`. However, the outbound queue is drained at the **top** of
+each loop iteration — **before** the read phase that populates `ToRemove`. The client is
+removed from `Clients` and the socket destroyed in `ToRemove` before the next drain, so
+the Close frame lookup finds no socket and the frame is silently dropped.
+Fixed by introducing `FClientState::PendingCloseFrame`, set in `ProcessFrames` under the
+`ClientMutex`, and sent inline in the `ToRemove` loop immediately before socket destroy
+(outside the mutex, so `SendFrame` does not hold the lock).
+
+### ✅ R30-08 — BanDiscordSubsystem.cpp: `ParseDurationMinutes` int32 overflow for large plain integers
+**File:** `DiscordBridge/Private/BanDiscordSubsystem.cpp` ~line 1145
+**Severity:** MEDIUM
+`FDefaultValueHelper::ParseInt` (int32) was used for plain-integer duration strings.
+A string like `"2200000000"` passes `IsNumeric()` but exceeds `INT32_MAX`, triggering
+silent int32 overflow UB. The wrapped negative value hits the `Val > 0` guard and returns
+`0` (interpreted as permanent by callers) instead of an error.
+Fixed by using `FDefaultValueHelper::ParseInt64` with an explicit `<= INT32_MAX` range check.
+
+### ✅ R30-09 — BanDiscordSubsystem.cpp: Empty `PlayerName` in ban-added moderation-log message
+**File:** `DiscordBridge/Private/BanDiscordSubsystem.cpp` ~line 424
+**Severity:** LOW
+For pre-emptive bans (placed before the player has ever connected) `Entry.PlayerName` is
+empty, producing a blank bold field in the Discord moderation-log embed. Added `Uid` as
+fallback: `DisplayName = PlayerName.IsEmpty() ? Uid : PlayerName`.
+
+### ✅ R30-10 — BanChatCommands.cpp: `/mutecheck` shows "1m remaining" for expired timed mutes
+**File:** `BanChatCommands/Private/Commands/BanChatCommands.cpp` ~line 3084
+**Severity:** LOW
+`FMath::Clamp(RemainingMin64, 1LL, INT32_MAX)` floored the remaining time to 1 for expired
+mutes (remaining ≤ 0), causing admins to believe the player was still muted.
+Fixed by checking `RemainingMin64 <= 0` first: calls `UnmutePlayer` to remove the stale
+entry and reports "mute has expired" instead of clamping to 1.
+
+### ✅ TicketSubsystem.cpp, SMLWebSocketRunnable.cpp — No new bugs found
+Both files were audited and found clean with respect to the specified focus areas.
+
+*Last updated: Round 30. 6 bugs fixed (R30-01 through R30-10, with R30-04/06/07 non-issues).*
