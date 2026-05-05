@@ -2235,3 +2235,154 @@ a yellow "already has a permanent ban" message is returned to the sender.
 API now returns HTTP 409 Conflict with an explanatory message.
 
 *Last updated: Round 28. 2 bugs fixed.*
+
+---
+
+## Round 29 — Full Source Audit (2026-05-06)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 28).
+
+---
+
+### ✅ Fixed — 16 player-controlled strings sent to Discord without `EscapeMarkdown()` (R29-A)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
+
+**Root cause:** Several Discord message-building code paths substituted player-controlled strings
+(player display names, EOS Product User IDs, IP addresses) directly into Discord message text or
+embed content without passing them through `EscapeMarkdown()`.  Because Discord renders markdown in
+message bodies, embed titles, embed descriptions, and embed field values, a player with a crafted
+display name (e.g. `**admin**`, `@everyone`, `__root__`) could inject arbitrary Discord formatting
+or mention markers into the server's public Discord channel or into a moderator's DM.
+
+`EscapeMarkdown()` is already defined at file scope (line 80) and is consistently used throughout
+the rest of the file (AFK-kick notification, whitelist add/remove, chat relay to Discord, etc.).
+The affected call sites had simply been missed.
+
+**Affected locations and fixes applied:**
+
+| Line | Location | Fix |
+|------|----------|-----|
+| 3249 | `WhitelistKickDiscordMessage` replacement | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 3287 | Join-reaction embed field `"value"` | `PlayerName` → `EscapeMarkdown(PlayerName)` |
+| 3340 | `PlayerJoinMessage` replacement | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 3349 | `PlayerJoinAdminMessage` `%PlayerName%` | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 3350 | `PlayerJoinAdminMessage` `%EOSProductUserId%` | `*EOSProductUserId` → `*EscapeMarkdown(EOSProductUserId)` |
+| 3351 | `PlayerJoinAdminMessage` `%IpAddress%` | `*IpAddress` → `*EscapeMarkdown(IpAddress)` |
+| 3378 | `WelcomeMessageDM` replacement | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 3539 | `PlayerLeaveMessage` / `PlayerTimeoutMessage` replacement | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 4422 | `SendPlayerEventEmbed` field `"value"` | `PlayerName` → `EscapeMarkdown(PlayerName)` |
+| 4613 | `WhitelistApprovedDmMessage` replacement | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 4909 | `HandlePlayerStatsCommand` embed title | `*TargetPlayerName` → `*EscapeMarkdown(TargetPlayerName)` |
+| 4933 | `HandlePlayerStatsCommand` embed description | `*TargetPlayerName` → `*EscapeMarkdown(TargetPlayerName)` |
+| 5771 | `HandleOnlineCommand` embed description list | `*PS->GetPlayerName()` → `*EscapeMarkdown(PS->GetPlayerName())` |
+| 5809 | `NotifyMuteEvent` embed title | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 6460 | `/players` slash-command name list | `Names.Add(PS->GetPlayerName())` → `Names.Add(EscapeMarkdown(PS->GetPlayerName()))` |
+| 6514 | `/online` slash-command reply list | `*PS->GetPlayerName()` → `*EscapeMarkdown(PS->GetPlayerName())` |
+
+*Last updated: Round 29. 1 bug cluster (16 call sites) fixed.*
+
+---
+
+## Round 30 — Bug Audit Results
+
+*Files audited: BanRestApi.cpp, BanChatCommands.cpp, BanDiscordSubsystem.cpp, TicketSubsystem.cpp, SMLWebSocketRunnable.cpp, SMLWebSocketServerRunnable.cpp*
+
+### ✅ R30-01 — BanRestApi.cpp: `FCString::Atoi` overflow on `?limit=` / `?page=` params
+**File:** `BanSystem/Private/BanRestApi.cpp` ~line 1295
+**Severity:** MEDIUM
+The `Len() <= 10` guard allows values up to 9,999,999,999 which exceeds `INT32_MAX`.
+`FCString::Atoi` wraps silently (UB). Fixed by using `FCString::Atoi64` with an explicit
+range clamp before narrowing to `int32`.
+
+### ✅ R30-02 — BanRestApi.cpp: `DELETE /bans/ip/:ip` single-arg `RemoveBanByUid`
+**File:** `BanSystem/Private/BanRestApi.cpp` ~line 1601
+**Severity:** LOW
+Used the single-arg overload that discards the removed entry, causing `NotifyBanRemoved`
+and the audit log to always receive the raw IP string instead of the stored `PlayerName`.
+Fixed by switching to the two-arg overload and using a `DisplayName` fallback.
+
+### ✅ R30-03 — BanRestApi.cpp: `DELETE /bans/bulk` missing entry capture / player name
+**File:** `BanSystem/Private/BanRestApi.cpp` ~lines 2948–2953
+**Severity:** LOW
+The bulk-unban loop used the single-arg `RemoveBanByUid`, passing an empty `PlayerName`
+to `NotifyBanRemoved` and the audit log. Fixed by using the two-arg overload and passing
+`RemovedEntry.PlayerName` (with `Uid` as fallback).
+
+### ✅ R30-05 — SMLWebSocketServerRunnable.cpp: Close frames never sent before socket destroy
+**File:** `SMLWebSocket/Private/SMLWebSocketServerRunnable.cpp` ~lines 521–534, 585–610, 269–289
+**Severity:** MEDIUM (RFC 6455 §7.1.1 violation)
+`ProcessFrames` enqueued terminal Close frames (received-Close echo and unmasked-frame
+1002 error) to `OutboundQueue`. However, the outbound queue is drained at the **top** of
+each loop iteration — **before** the read phase that populates `ToRemove`. The client is
+removed from `Clients` and the socket destroyed in `ToRemove` before the next drain, so
+the Close frame lookup finds no socket and the frame is silently dropped.
+Fixed by introducing `FClientState::PendingCloseFrame`, set in `ProcessFrames` under the
+`ClientMutex`, and sent inline in the `ToRemove` loop immediately before socket destroy
+(outside the mutex, so `SendFrame` does not hold the lock).
+
+### ✅ R30-08 — BanDiscordSubsystem.cpp: `ParseDurationMinutes` int32 overflow for large plain integers
+**File:** `DiscordBridge/Private/BanDiscordSubsystem.cpp` ~line 1145
+**Severity:** MEDIUM
+`FDefaultValueHelper::ParseInt` (int32) was used for plain-integer duration strings.
+A string like `"2200000000"` passes `IsNumeric()` but exceeds `INT32_MAX`, triggering
+silent int32 overflow UB. The wrapped negative value hits the `Val > 0` guard and returns
+`0` (interpreted as permanent by callers) instead of an error.
+Fixed by using `FDefaultValueHelper::ParseInt64` with an explicit `<= INT32_MAX` range check.
+
+### ✅ R30-09 — BanDiscordSubsystem.cpp: Empty `PlayerName` in ban-added moderation-log message
+**File:** `DiscordBridge/Private/BanDiscordSubsystem.cpp` ~line 424
+**Severity:** LOW
+For pre-emptive bans (placed before the player has ever connected) `Entry.PlayerName` is
+empty, producing a blank bold field in the Discord moderation-log embed. Added `Uid` as
+fallback: `DisplayName = PlayerName.IsEmpty() ? Uid : PlayerName`.
+
+### ✅ R30-10 — BanChatCommands.cpp: `/mutecheck` shows "1m remaining" for expired timed mutes
+**File:** `BanChatCommands/Private/Commands/BanChatCommands.cpp` ~line 3084
+**Severity:** LOW
+`FMath::Clamp(RemainingMin64, 1LL, INT32_MAX)` floored the remaining time to 1 for expired
+mutes (remaining ≤ 0), causing admins to believe the player was still muted.
+Fixed by checking `RemainingMin64 <= 0` first: calls `UnmutePlayer` to remove the stale
+entry and reports "mute has expired" instead of clamping to 1.
+
+### ✅ TicketSubsystem.cpp, SMLWebSocketRunnable.cpp — No new bugs found
+Both files were audited and found clean with respect to the specified focus areas.
+
+*Last updated: Round 30. 6 bugs fixed (R30-01 through R30-10, with R30-04/06/07 non-issues).*
+
+---
+
+## Round 31 — Bug Audit Results
+
+**Files read this round (no prior-round coverage):**
+- `BanEnforcer.cpp` lines 1000–1148 (tail) — clean
+- `BanSystemModule.cpp` lines 450–799 (tail) — clean
+- `BanRestApi.h`, `BanAuditLog.h` — clean
+- All remaining BanSystem and DiscordBridge public headers reviewed
+
+**2 bugs found and fixed:**
+
+### ✅ R31-01 — InGameMessagesConfig.cpp: `ExtractQuotedField` ignores `\"` escape sequences
+**File:** `DiscordBridge/Private/InGameMessagesConfig.cpp` ~line 131
+**Severity:** LOW
+The backup writer's `EscapeIniStr` converts `"` → `\"` in `SenderName`/`Message` tuple
+fields. However `ExtractQuotedField` used a bare `Find('"')` to locate the closing quote,
+so an escaped `\"` inside the value caused the reader to stop at the `"` of the escape
+sequence — returning garbage (e.g. `Hello \` instead of `Hello "World"`).
+Fixed by replacing the `Find` call with a char-by-char walk that treats `\"` as a literal
+`"` and only stops at an unescaped `"`.
+
+### ✅ R31-02 — DiscordBridgeConfig.cpp: ScheduledAnnouncements `Message` field not escaped in backup; parser ignores `\"`
+**File:** `DiscordBridge/Private/DiscordBridgeConfig.cpp` ~lines 547 and 1487
+**Severity:** LOW
+Two related defects in the same field:
+1. **Backup write** (line 1487): `SA.Message` was concatenated into the backup line without
+   escaping `"`, so a message containing a double-quote would corrupt the INI tuple and cause
+   truncation on restore.
+2. **Extraction** (line 549): the `Find('"')` approach used to parse the `Message=` field
+   did not honour `\"` escape sequences — same root cause as R31-01.
+Fixed: backup write now applies `Replace(TEXT("\""), TEXT("\\\""))` to `SA.Message`, and
+the extraction block is replaced with the same escape-aware char-by-char walk as R31-01.
+`ChannelId` (a digit-only Discord snowflake) is unaffected and left unchanged.
+
+*Last updated: Round 31. 2 bugs fixed (R31-01, R31-02).*

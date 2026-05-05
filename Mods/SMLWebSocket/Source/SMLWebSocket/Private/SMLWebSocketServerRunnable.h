@@ -69,6 +69,12 @@ private:
         TArray<uint8> FragmentBuffer;
         uint8 FragmentOpcode{0}; // 0x1 = text, 0x2 = binary
         bool  bInFragment{false};
+
+        // Close frame to send before destroying the socket when ProcessFrames
+        // returns false due to a received Close frame or a protocol violation.
+        // Set inside ProcessFrames (under ClientMutex); consumed and cleared by
+        // the ToRemove loop in Run() after the mutex is released.
+        TArray<uint8> PendingCloseFrame;
     };
 
     /** Perform the RFC 6455 HTTP Upgrade handshake for a new connection.

@@ -413,6 +413,9 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 				// and posting them would produce duplicate moderation-log entries.
 				if (Entry.Platform == TEXT("IP")) return;
 
+				// Use Uid as fallback when PlayerName is empty (e.g. pre-emptive bans
+				// placed before the player has ever connected to the server).
+				const FString DisplayName = Entry.PlayerName.IsEmpty() ? Entry.Uid : Entry.PlayerName;
 				const FString DurationStr = Entry.bIsPermanent
 					? TEXT("permanent")
 					: BanDiscordHelpers::FormatDuration(static_cast<int32>(FMath::Min(
@@ -421,7 +424,7 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 					    static_cast<int64>(INT32_MAX))));
 				const FString Msg = FString::Printf(
 					TEXT("🔨 **%s** (`%s`) banned.\nReason: %s\nBy: %s | Duration: %s"),
-					*BanDiscordHelpers::EscapeMarkdown(Entry.PlayerName), *Entry.Uid,
+					*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Entry.Uid,
 					*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
 					*BanDiscordHelpers::EscapeMarkdown(Entry.BannedBy), *DurationStr);
 				Self->PostModerationLog(Msg);
@@ -1142,9 +1145,12 @@ int32 UBanDiscordSubsystem::ParseDurationMinutes(const FString& DurationStr)
 	// Plain integer — assume minutes.
 	if (DurationStr.IsNumeric())
 	{
-		int32 Val = 0;
-		if (FDefaultValueHelper::ParseInt(DurationStr, Val) && Val > 0)
-			return Val;
+		// Use int64 parsing to avoid silent int32 overflow UB for large values
+		// (e.g., "2200000000" > INT32_MAX wraps to a negative int32 in ParseInt,
+		// which would be misinterpreted as an invalid or near-epoch duration).
+		int64 Val64 = 0;
+		if (FDefaultValueHelper::ParseInt64(DurationStr, Val64) && Val64 > 0 && Val64 <= static_cast<int64>(INT32_MAX))
+			return static_cast<int32>(Val64);
 		return 0;
 	}
 

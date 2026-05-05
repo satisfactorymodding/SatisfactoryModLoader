@@ -269,16 +269,27 @@ uint32 FSMLWebSocketServerRunnable::Run()
         for (const FString& Id : ToRemove)
         {
             FClientState Removed;
+            bool bWasRemoved = false;
             {
                 FScopeLock L(&ClientMutex);
-                if (Clients.RemoveAndCopyValue(Id, Removed))
-                {
-                    ISocketSubsystem* RemoveSS = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
-                    if (RemoveSS)
-                        RemoveSS->DestroySocket(Removed.Socket);
-                    else
-                        delete Removed.Socket;
-                }
+                bWasRemoved = Clients.RemoveAndCopyValue(Id, Removed);
+            }
+            if (bWasRemoved)
+            {
+                // Send any pending RFC 6455 Close frame (set by ProcessFrames for received
+                // Close frames and protocol violations) BEFORE destroying the socket.
+                // The outbound queue is drained at the TOP of the iteration — before the
+                // read phase — so anything enqueued in ProcessFrames would be orphaned once
+                // the client is removed from Clients.  Sending inline here ensures the
+                // remote peer always receives the Close frame as required by RFC 6455 §7.1.1.
+                if (Removed.PendingCloseFrame.Num() > 0)
+                    SendFrame(Removed.Socket, Removed.PendingCloseFrame);
+
+                ISocketSubsystem* RemoveSS = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
+                if (RemoveSS)
+                    RemoveSS->DestroySocket(Removed.Socket);
+                else
+                    delete Removed.Socket;
             }
             TWeakObjectPtr<USMLWebSocketServer> WeakOwner = Owner;
             AsyncTask(ENamedThreads::GameThread, [WeakOwner, Id]()
@@ -522,15 +533,11 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
         if (!bMasked)
         {
             UE_LOG(LogWSServer, Error, TEXT("WSServer: Client sent an unmasked frame — dropping client (RFC 6455 §5.1)"));
-            TArray<uint8> CloseFrame;
-            CloseFrame.Add(0x88); // FIN=1, opcode=Close
-            CloseFrame.Add(0x02); // payload length = 2
-            CloseFrame.Add(0x03); // 1002 high byte
-            CloseFrame.Add(0xEA); // 1002 low byte
-            FOutboundMsg ErrClose;
-            ErrClose.ClientId = ClientId;
-            ErrClose.Frame = MoveTemp(CloseFrame);
-            OutboundQueue.Enqueue(MoveTemp(ErrClose));
+            // Store the Close(1002) frame in PendingCloseFrame so the ToRemove loop
+            // sends it before destroying the socket (OutboundQueue is drained at the
+            // TOP of the iteration — after the client is removed — so enqueuing there
+            // would result in the frame never being sent).
+            Client.PendingCloseFrame = { 0x88, 0x02, 0x03, 0xEA }; // FIN=1, Close, 1002
             return false;
         }
 
@@ -587,6 +594,9 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
             // RFC 6455 §5.5.1: echo a Close frame back before closing the connection.
             // The echo must include the client's status code (first 2 bytes of payload,
             // unmasked) if the client supplied one; otherwise send an empty payload.
+            // Store in PendingCloseFrame rather than OutboundQueue: the outbound drain
+            // runs at the TOP of the next iteration, after the socket has already been
+            // removed and destroyed by the ToRemove loop, so it would never be sent.
             TArray<uint8> CloseEcho;
             CloseEcho.Add(0x88); // FIN=1, opcode=0x8
             if (PayloadLen32 >= 2)
@@ -602,10 +612,7 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
             {
                 CloseEcho.Add(0x00); // no payload
             }
-            FOutboundMsg Echo;
-            Echo.ClientId = ClientId;
-            Echo.Frame    = MoveTemp(CloseEcho);
-            OutboundQueue.Enqueue(MoveTemp(Echo));
+            Client.PendingCloseFrame = MoveTemp(CloseEcho);
             Buf.RemoveAt(0, TotalSize);
             return false;
         }

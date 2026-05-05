@@ -3246,7 +3246,7 @@ void UDiscordBridgeSubsystem::OnPostLogin(AGameModeBase* GameMode, APlayerContro
 	if (!WhitelistConfig.WhitelistKickDiscordMessage.IsEmpty())
 	{
 		FString Notice = WhitelistConfig.WhitelistKickDiscordMessage;
-		Notice = Notice.Replace(TEXT("%PlayerName%"), *PlayerName);
+		Notice = Notice.Replace(TEXT("%PlayerName%"), *EscapeMarkdown(PlayerName));
 		SendMessageToChannel(Config.ChannelId, Notice);
 	}
 }
@@ -3284,7 +3284,7 @@ void UDiscordBridgeSubsystem::SendPlayerJoinNotification(const FString& PlayerNa
 				EmbedObj->SetNumberField(TEXT("color"), 3066993);
 				TSharedPtr<FJsonObject> Field = MakeShared<FJsonObject>();
 				Field->SetStringField(TEXT("name"),   TEXT("Player"));
-				Field->SetStringField(TEXT("value"),  PlayerName);
+				Field->SetStringField(TEXT("value"),  EscapeMarkdown(PlayerName));
 				Field->SetBoolField  (TEXT("inline"), true);
 				EmbedObj->SetArrayField(TEXT("fields"),
 					TArray<TSharedPtr<FJsonValue>>{ MakeShared<FJsonValueObject>(Field) });
@@ -3337,7 +3337,7 @@ void UDiscordBridgeSubsystem::SendPlayerJoinNotification(const FString& PlayerNa
 		else if (!Config.PlayerJoinMessage.IsEmpty())
 		{
 			FString Message = Config.PlayerJoinMessage;
-			Message = Message.Replace(TEXT("%PlayerName%"), *PlayerName);
+			Message = Message.Replace(TEXT("%PlayerName%"), *EscapeMarkdown(PlayerName));
 			SendMessageToChannel(EffectiveChannelId, Message);
 		}
 	}
@@ -3346,9 +3346,9 @@ void UDiscordBridgeSubsystem::SendPlayerJoinNotification(const FString& PlayerNa
 	if (!Config.PlayerJoinAdminChannelId.IsEmpty() && !Config.PlayerJoinAdminMessage.IsEmpty())
 	{
 		FString AdminMessage = Config.PlayerJoinAdminMessage;
-		AdminMessage = AdminMessage.Replace(TEXT("%PlayerName%"),        *PlayerName);
-		AdminMessage = AdminMessage.Replace(TEXT("%EOSProductUserId%"),  EOSProductUserId.IsEmpty() ? TEXT("") : *EOSProductUserId);
-		AdminMessage = AdminMessage.Replace(TEXT("%IpAddress%"),         IpAddress.IsEmpty()        ? TEXT("") : *IpAddress);
+		AdminMessage = AdminMessage.Replace(TEXT("%PlayerName%"),        *EscapeMarkdown(PlayerName));
+		AdminMessage = AdminMessage.Replace(TEXT("%EOSProductUserId%"),  EOSProductUserId.IsEmpty() ? TEXT("") : *EscapeMarkdown(EOSProductUserId));
+		AdminMessage = AdminMessage.Replace(TEXT("%IpAddress%"),         IpAddress.IsEmpty()        ? TEXT("") : *EscapeMarkdown(IpAddress));
 
 		UE_LOG(LogDiscordBridge, Log,
 		       TEXT("DiscordBridge: Player admin-info notification for '%s'"), *PlayerName);
@@ -3375,7 +3375,7 @@ void UDiscordBridgeSubsystem::SendPlayerJoinNotification(const FString& PlayerNa
 		if (!DiscordUserId.IsEmpty())
 		{
 			FString DmText = Config.WelcomeMessageDM;
-			DmText = DmText.Replace(TEXT("%PlayerName%"), *PlayerName);
+			DmText = DmText.Replace(TEXT("%PlayerName%"), *EscapeMarkdown(PlayerName));
 
 			// Step 1: create / retrieve the DM channel via POST /users/@me/channels.
 			const FString CreateDmUrl =
@@ -3536,7 +3536,7 @@ void UDiscordBridgeSubsystem::OnLogout(AGameModeBase* /*GameMode*/, AController*
 		return;
 	}
 
-	Message = Message.Replace(TEXT("%PlayerName%"), *PlayerName);
+	Message = Message.Replace(TEXT("%PlayerName%"), *EscapeMarkdown(PlayerName));
 	SendMessageToChannel(EffectiveChannelId, Message);
 }
 
@@ -4419,7 +4419,7 @@ void UDiscordBridgeSubsystem::SendPlayerEventEmbed(const FString& TargetChannelI
 	{
 		TSharedPtr<FJsonObject> Field = MakeShared<FJsonObject>();
 		Field->SetStringField(TEXT("name"),   TEXT("Player"));
-		Field->SetStringField(TEXT("value"),  PlayerName);
+		Field->SetStringField(TEXT("value"),  EscapeMarkdown(PlayerName));
 		Field->SetBoolField  (TEXT("inline"), true);
 		Fields.Add(MakeShared<FJsonValueObject>(Field));
 	}
@@ -4610,7 +4610,7 @@ void UDiscordBridgeSubsystem::HandleInGameVerify(const FString& PlayerName, cons
 				if (!WhitelistConfig.WhitelistApprovedDmMessage.IsEmpty())
 				{
 					const FString DmMsg = WhitelistConfig.WhitelistApprovedDmMessage
-						.Replace(TEXT("%PlayerName%"), *PlayerName);
+						.Replace(TEXT("%PlayerName%"), *EscapeMarkdown(PlayerName));
 					SendDiscordDM(DiscordUserId, DmMsg);
 				}
 				else
@@ -4906,7 +4906,7 @@ void UDiscordBridgeSubsystem::HandlePlayerStatsCommand(const FString& ResponseCh
 	// Look up per-player stats from the in-memory counters collected by OnPlayerAction.
 	TSharedPtr<FJsonObject> EmbedObj = MakeShared<FJsonObject>();
 	EmbedObj->SetStringField(TEXT("title"),
-		FString::Printf(TEXT("📈 Player Stats – %s"), *TargetPlayerName));
+		FString::Printf(TEXT("📈 Player Stats – %s"), *EscapeMarkdown(TargetPlayerName)));
 	EmbedObj->SetNumberField(TEXT("color"), 10181046); // purple
 
 	TArray<TSharedPtr<FJsonValue>> Fields;
@@ -4930,7 +4930,7 @@ void UDiscordBridgeSubsystem::HandlePlayerStatsCommand(const FString& ResponseCh
 	else
 	{
 		EmbedObj->SetStringField(TEXT("description"),
-			FString::Printf(TEXT("No statistics on record for **%s**."), *TargetPlayerName));
+			FString::Printf(TEXT("No statistics on record for **%s**."), *EscapeMarkdown(TargetPlayerName)));
 	}
 
 	EmbedObj->SetArrayField(TEXT("fields"), Fields);
@@ -5768,7 +5768,7 @@ int32 NonNullCount = 0;
 for (APlayerState* PS : GS->PlayerArray)
 {
 if (!PS) continue;
-PlayerList += FString::Printf(TEXT("%d. **%s**\n"), Idx++, *PS->GetPlayerName());
+PlayerList += FString::Printf(TEXT("%d. **%s**\n"), Idx++, *EscapeMarkdown(PS->GetPlayerName()));
 ++NonNullCount;
 }
 
@@ -5806,7 +5806,7 @@ const int32 Colour = bIsMuted ? 15158332 : 3066993; // red / green
 
 TSharedPtr<FJsonObject> EmbedObj = MakeShared<FJsonObject>();
 EmbedObj->SetStringField(TEXT("title"),
-FString::Printf(TEXT("%s Player %s: %s"), *Emoji, *Action, *PlayerName));
+FString::Printf(TEXT("%s Player %s: %s"), *Emoji, *Action, *EscapeMarkdown(PlayerName)));
 EmbedObj->SetNumberField(TEXT("color"), Colour);
 if (bIsMuted && !Reason.IsEmpty())
 EmbedObj->SetStringField(TEXT("description"),
@@ -6457,7 +6457,7 @@ if (AGameStateBase* GS = World->GetGameState<AGameStateBase>())
 {
 TArray<FString> Names;
 for (APlayerState* PS : GS->PlayerArray)
-if (PS) Names.Add(PS->GetPlayerName());
+if (PS) Names.Add(EscapeMarkdown(PS->GetPlayerName()));
 Reply = Names.Num() == 0
 ? TEXT("No players currently online.")
 : FString::Printf(TEXT("**Online players (%d):** %s"),
@@ -6511,7 +6511,7 @@ else
 Reply = FString::Printf(TEXT("**👥 Online Players (%d):**\n"), GS->PlayerArray.Num());
 int32 Idx = 1;
 for (APlayerState* PS : GS->PlayerArray)
-if (PS) Reply += FString::Printf(TEXT("%d. **%s**\n"), Idx++, *PS->GetPlayerName());
+if (PS) Reply += FString::Printf(TEXT("%d. **%s**\n"), Idx++, *EscapeMarkdown(PS->GetPlayerName()));
 }
 RespondToInteraction(InteractionId, InteractionToken, 4, Reply, false);
 return;
