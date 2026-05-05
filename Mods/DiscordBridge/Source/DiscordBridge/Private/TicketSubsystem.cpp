@@ -918,7 +918,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 							     "**%s** has been unbanned.\nOriginal reason: %s"),
 							*DiscordUserId,
 							OpenerName.IsEmpty() ? *AppealOpenerId : *EscapeMarkdown(OpenerName),
-							*RemovedBan.Reason);
+							*EscapeMarkdown(RemovedBan.Reason));
 
 						if (ExtraRemoved > 0)
 							ApproveResponse += FString::Printf(
@@ -2795,7 +2795,7 @@ void UTicketSubsystem::CreateTicketChannel(
 										{
 											WelcomeContent += FString::Printf(
 												TEXT("\n- **%s** — _%s_ (by %s, %s)"),
-												*W.Reason, *W.PlayerName, *W.WarnedBy,
+												*EscapeMarkdown(W.Reason), *EscapeMarkdown(W.PlayerName), *EscapeMarkdown(W.WarnedBy),
 												*W.WarnDate.ToString(TEXT("%Y-%m-%d")));
 										}
 									}
