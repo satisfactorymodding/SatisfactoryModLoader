@@ -1033,7 +1033,7 @@ void UDiscordBridgeSubsystem::HandleDispatch(const FString& EventType, int32 Seq
 							if (!WhitelistConfig.WhitelistApprovedDmMessage.IsEmpty())
 							{
 								const FString DmMsg = WhitelistConfig.WhitelistApprovedDmMessage
-									.Replace(TEXT("%PlayerName%"), *PlayerNameCopy);
+									.Replace(TEXT("%PlayerName%"), *EscapeMarkdown(PlayerNameCopy));
 								SendDiscordDM(TargetDiscordId, DmMsg);
 							}
 						}
@@ -2893,8 +2893,8 @@ void UDiscordBridgeSubsystem::SendGameMessageToDiscord(const FString& PlayerName
 
 	FString FormattedContent = Config.GameToDiscordFormat;
 	FormattedContent = FormattedContent.Replace(TEXT("%ServerName%"),  *Config.ServerName);
-	FormattedContent = FormattedContent.Replace(TEXT("%PlayerName%"), *EffectivePlayerName);
-	FormattedContent = FormattedContent.Replace(TEXT("%Message%"),    *Message);
+	FormattedContent = FormattedContent.Replace(TEXT("%PlayerName%"), *EscapeMarkdown(EffectivePlayerName));
+	FormattedContent = FormattedContent.Replace(TEXT("%Message%"),    *EscapeMarkdown(Message));
 
 	if (FormattedContent.IsEmpty())
 	{
@@ -2908,9 +2908,13 @@ void UDiscordBridgeSubsystem::SendGameMessageToDiscord(const FString& PlayerName
 	UE_LOG(LogDiscordBridge, Log,
 	       TEXT("DiscordBridge: Sending to Discord: %s"), *FormattedContent);
 
-	// Build the JSON body: {"content": "…"}
+	// Build the JSON body with allowed_mentions suppressed so players cannot
+	// trigger @everyone, @here, role, or user pings via game chat.
 	TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
 	Body->SetStringField(TEXT("content"), FormattedContent);
+	TSharedPtr<FJsonObject> AllowedMentions = MakeShared<FJsonObject>();
+	AllowedMentions->SetArrayField(TEXT("parse"), TArray<TSharedPtr<FJsonValue>>());
+	Body->SetObjectField(TEXT("allowed_mentions"), AllowedMentions);
 
 	FString BodyString;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&BodyString);
