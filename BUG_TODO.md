@@ -2386,3 +2386,41 @@ the extraction block is replaced with the same escape-aware char-by-char walk as
 `ChannelId` (a digit-only Discord snowflake) is unaffected and left unchanged.
 
 *Last updated: Round 31. 2 bugs fixed (R31-01, R31-02).*
+
+---
+
+## Round 32 — Bug Audit Results
+
+**Files audited:** `BanDiscordSubsystem.cpp` (lines 3787–4068, all three `/appeal` command handlers),
+with cross-check against the INT64_MAX guard pattern established in `HandleClearWarnByIdCommand`
+(line 2897) and `BanChatCommands.cpp` `AClearWarnByIdChatCommand` (line 3400).
+
+**1 bug found and fixed:**
+
+### ✅ R32-01 — BanDiscordSubsystem.cpp: Missing INT64_MAX lexicographic guard in three `/appeal` command handlers
+**Files:** `DiscordBridge/Private/BanDiscordSubsystem.cpp` — `HandleDismissAppealCommand` (~line 3800),
+`HandleAppealApproveCommand` (~line 3865), `HandleAppealDenyCommand` (~line 3996)
+**Severity:** LOW
+
+**Root cause:** All three handlers validated the incoming appeal ID string with only:
+```cpp
+if (!Args[0].IsNumeric() || Args[0].Len() > 19)
+```
+The `Len() > 19` check allows any 19-digit string to proceed to `FCString::Atoi64`. A 19-digit
+decimal value greater than `9223372036854775807` (INT64_MAX) — such as `"9999999999999999999"` —
+is accepted by the guard but causes `FCString::Atoi64` to invoke undefined behaviour (signed
+integer overflow in the underlying `strtoll`). On most platforms, `strtoll` returns `LLONG_MAX`
+with `errno = ERANGE`, producing the value `9223372036854775807`, which then passes the
+`AppealId <= 0` post-check and is used as a valid-looking ID. The subsequent registry lookup
+returns `false`/empty (no appeal with ID INT64_MAX exists), so the command reports "not found"
+rather than corrupting state — but the code path still relies on undefined behavior.
+
+The identical overflow pattern was fixed for `HandleClearWarnByIdCommand` in a previous round
+and for `BanRestApi::ParseInt64Param` in Round 2; those two handlers already include the
+`(IdLen == 19 && Args[0] > TEXT("9223372036854775807"))` lexicographic comparison that rejects
+19-digit values exceeding INT64_MAX before calling `Atoi64`.
+
+**Fix:** Added the same `{ const int32 IdLen = ...; if (... || (IdLen == 19 && Args[0] > TEXT("9223372036854775807"))) }` block to all three handlers, consistent with the established
+pattern throughout the codebase.
+
+*Last updated: Round 32. 1 bug fixed (R32-01, 3 call sites).*

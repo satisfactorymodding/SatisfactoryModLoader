@@ -3797,11 +3797,18 @@ void UBanDiscordSubsystem::HandleDismissAppealCommand(const TArray<FString>& Arg
 		return;
 	}
 
-	if (!Args[0].IsNumeric() || Args[0].Len() > 19)
+	// Guard against int64 overflow: Atoi64 is undefined for strings longer than
+	// 19 digits, and a 19-digit string can still exceed INT64_MAX.  Same check
+	// used by HandleClearWarnByIdCommand and BanRestApi::ParseInt64Param.
 	{
-		Respond(ChannelId,
-			TEXT(":x: Invalid appeal ID. Must be a positive integer."));
-		return;
+		const int32 IdLen = Args[0].Len();
+		if (!Args[0].IsNumeric() || IdLen > 19 ||
+			(IdLen == 19 && Args[0] > TEXT("9223372036854775807")))
+		{
+			Respond(ChannelId,
+				TEXT(":x: Invalid appeal ID. Must be a positive integer."));
+			return;
+		}
 	}
 
 	const int64 AppealId = FCString::Atoi64(*Args[0]);
@@ -3855,11 +3862,18 @@ void UBanDiscordSubsystem::HandleAppealApproveCommand(const TArray<FString>& Arg
 		return;
 	}
 
-	if (!Args[0].IsNumeric() || Args[0].Len() > 19)
+	// Guard against int64 overflow: Atoi64 is undefined for strings longer than
+	// 19 digits, and a 19-digit string can still exceed INT64_MAX.  Same check
+	// used by HandleClearWarnByIdCommand and BanRestApi::ParseInt64Param.
 	{
-		Respond(ChannelId,
-			TEXT(":x: Invalid appeal ID. Must be a positive integer."));
-		return;
+		const int32 IdLen = Args[0].Len();
+		if (!Args[0].IsNumeric() || IdLen > 19 ||
+			(IdLen == 19 && Args[0] > TEXT("9223372036854775807")))
+		{
+			Respond(ChannelId,
+				TEXT(":x: Invalid appeal ID. Must be a positive integer."));
+			return;
+		}
 	}
 
 	const int64 AppealId = FCString::Atoi64(*Args[0]);
@@ -3889,15 +3903,6 @@ void UBanDiscordSubsystem::HandleAppealApproveCommand(const TArray<FString>& Arg
 	// Capture the entry BEFORE calling ReviewAppeal — GetAppealById after ReviewAppeal
 	// can return a default-constructed empty entry if a concurrent delete races it.
 	const FBanAppealEntry Entry = Registry->GetAppealById(AppealId);
-	if (Entry.Uid.IsEmpty())
-	{
-		Respond(ChannelId,
-			FString::Printf(TEXT(":x: No appeal found with ID `%lld`."), AppealId));
-		return;
-	}
-
-	// Use the new ReviewAppeal workflow to record the decision with status/note.
-	if (!Registry->ReviewAppeal(AppealId, EAppealStatus::Approved, SenderName, ReviewNote))
 	{
 		Respond(ChannelId,
 			FString::Printf(TEXT(":x: No appeal found with ID `%lld`."), AppealId));
@@ -3988,11 +3993,18 @@ void UBanDiscordSubsystem::HandleAppealDenyCommand(const TArray<FString>& Args,
 		return;
 	}
 
-	if (!Args[0].IsNumeric() || Args[0].Len() > 19)
+	// Guard against int64 overflow: Atoi64 is undefined for strings longer than
+	// 19 digits, and a 19-digit string can still exceed INT64_MAX.  Same check
+	// used by HandleClearWarnByIdCommand and BanRestApi::ParseInt64Param.
 	{
-		Respond(ChannelId,
-			TEXT(":x: Invalid appeal ID. Must be a positive integer."));
-		return;
+		const int32 IdLen = Args[0].Len();
+		if (!Args[0].IsNumeric() || IdLen > 19 ||
+			(IdLen == 19 && Args[0] > TEXT("9223372036854775807")))
+		{
+			Respond(ChannelId,
+				TEXT(":x: Invalid appeal ID. Must be a positive integer."));
+			return;
+		}
 	}
 
 	const int64 AppealId = FCString::Atoi64(*Args[0]);
