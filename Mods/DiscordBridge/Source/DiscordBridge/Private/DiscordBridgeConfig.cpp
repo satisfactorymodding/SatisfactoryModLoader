@@ -544,23 +544,35 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 						}
 					}
 				}
-				// Extract Message
+				// Extract Message — honours \" escape sequences written by the backup writer.
 				{
 					const FString Search = TEXT("Message=\"");
 					const int32 Idx = Cleaned.Find(Search, ESearchCase::IgnoreCase);
 					if (Idx != INDEX_NONE)
 					{
 						const int32 Start = Idx + Search.Len();
-						const int32 End   = Cleaned.Find(TEXT("\""), ESearchCase::CaseSensitive, ESearchDir::FromStart, Start);
-						if (End != INDEX_NONE && End > Start)
-							SA.Message = Cleaned.Mid(Start, End - Start);
+						FString Value;
+						int32 i = Start;
+						bool bClosed = false;
+						while (i < Cleaned.Len())
+						{
+							const TCHAR C = Cleaned[i];
+							if (C == TEXT('\\') && i + 1 < Cleaned.Len() && Cleaned[i + 1] == TEXT('"'))
+							{ Value.AppendChar(TEXT('"')); i += 2; }
+							else if (C == TEXT('"'))
+							{ bClosed = true; break; }
+							else
+							{ Value.AppendChar(C); ++i; }
+						}
+						if (bClosed)
+							SA.Message = Value;
 						else
 							UE_LOG(LogDiscordBridge, Warning,
 								TEXT("DiscordBridgeConfig: malformed ScheduledAnnouncements entry — "
 								     "could not extract Message value"));
 					}
 				}
-				// Extract ChannelId
+				// Extract ChannelId (Discord snowflake — digits only; no escaping needed).
 				{
 					const FString Search = TEXT("ChannelId=\"");
 					const int32 Idx = Cleaned.Find(Search, ESearchCase::IgnoreCase);
@@ -1484,9 +1496,12 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 		FString BackupSALines;
 		for (const FScheduledAnnouncement& SA : Config.ScheduledAnnouncements)
 		{
+			// Escape embedded double-quotes in Message so the backup round-trips
+			// correctly through the escape-aware extraction code above.
+			const FString EscapedMsg = SA.Message.Replace(TEXT("\""), TEXT("\\\""));
 			BackupSALines += TEXT("+ScheduledAnnouncements=(IntervalMinutes=")
 				+ FString::FromInt(SA.IntervalMinutes)
-				+ TEXT(",Message=\"") + SA.Message
+				+ TEXT(",Message=\"") + EscapedMsg
 				+ TEXT("\",ChannelId=\"") + SA.ChannelId
 				+ TEXT("\")\n");
 		}

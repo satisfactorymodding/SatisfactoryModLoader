@@ -127,6 +127,11 @@ static TArray<FString> ParseRawIniArrayIGM(const FString& RawContent,
 /**
  * Extract a quoted string field from a cleaned INI tuple line.
  * e.g. for FieldName="Hello world" returns "Hello world".
+ *
+ * Handles the \" escape sequence produced by the backup writer's EscapeIniStr
+ * helper so that double-quotes inside a value survive the backup→restore
+ * round-trip.  A backslash followed by a double-quote is treated as a literal
+ * double-quote rather than the field terminator.
  */
 static FString ExtractQuotedField(const FString& Cleaned, const FString& FieldName)
 {
@@ -136,12 +141,31 @@ static FString ExtractQuotedField(const FString& Cleaned, const FString& FieldNa
 		return FString();
 
 	const int32 Start = Idx + Search.Len();
-	const int32 End   = Cleaned.Find(TEXT("\""), ESearchCase::CaseSensitive,
-	                                  ESearchDir::FromStart, Start);
-	if (End == INDEX_NONE)
-		return FString();
-
-	return Cleaned.Mid(Start, End - Start);
+	// Walk forward, treating \" as an escaped double-quote rather than the
+	// field terminator, to match what EscapeIniStr writes in the backup.
+	FString Result;
+	int32 i = Start;
+	while (i < Cleaned.Len())
+	{
+		const TCHAR C = Cleaned[i];
+		if (C == TEXT('\\') && i + 1 < Cleaned.Len() && Cleaned[i + 1] == TEXT('"'))
+		{
+			// Escaped double-quote — consume both chars, add literal '"'.
+			Result.AppendChar(TEXT('"'));
+			i += 2;
+		}
+		else if (C == TEXT('"'))
+		{
+			// Unescaped closing quote — end of field.
+			break;
+		}
+		else
+		{
+			Result.AppendChar(C);
+			++i;
+		}
+	}
+	return Result;
 }
 
 /** Extract an integer field from a cleaned INI tuple line. */
