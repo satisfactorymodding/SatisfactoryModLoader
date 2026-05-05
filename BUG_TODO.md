@@ -2424,3 +2424,62 @@ and for `BanRestApi::ParseInt64Param` in Round 2; those two handlers already inc
 pattern throughout the codebase.
 
 *Last updated: Round 32. 1 bug fixed (R32-01, 3 call sites).*
+
+---
+
+## Round 33 — Full Source Audit (2026-05-05)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 32). All prior-round fixes confirmed intact. Two new bugs found, both in
+`HandleAppealApproveCommand`.
+
+---
+
+### ✅ Fixed — BUG-33-A: `HandleAppealApproveCommand` bare block always exits — command always returns "not found" (CRITICAL)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+**Function:** `UBanDiscordSubsystem::HandleAppealApproveCommand` (~line 3905)
+
+**Root cause:** The `if` keyword was absent before the "no appeal found" guard block. The bare compound
+statement executed unconditionally after `GetAppealById`, causing every `/appeal approve <id>` to
+immediately return `:x: No appeal found` and return — making the entire auto-unban, audit log, Discord
+notification, and ticket-close logic (lines 3912–3986) permanently unreachable dead code.
+
+Compare to the correctly-written deny handler (`if (Entry.Uid.IsEmpty()) { … return; }`):
+```cpp
+// Before fix — always executed:
+const FBanAppealEntry Entry = Registry->GetAppealById(AppealId);
+{                             // ← missing: if (Entry.Uid.IsEmpty())
+    Respond(ChannelId, ...); return;
+}
+```
+
+**Fix:** Added the missing `if (Entry.Uid.IsEmpty())` condition, consistent with
+`HandleAppealDenyCommand` and every other registry-lookup guard in the file.
+
+---
+
+### ✅ Fixed — BUG-33-B: `HandleAppealApproveCommand` never marks appeal as Approved in registry (HIGH)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+**Function:** `UBanDiscordSubsystem::HandleAppealApproveCommand` (~line 3943)
+
+**Root cause:** After the auto-unban block, `HandleAppealApproveCommand` never called
+`Registry->ReviewAppeal(AppealId, EAppealStatus::Approved, SenderName, ReviewNote)`. Every other
+approval path calls this:
+
+| Code path | Calls ReviewAppeal for approval? |
+|-----------|----------------------------------|
+| `BanRestApi.cpp` POST /appeals/:id/review | ✅ Yes |
+| `TicketSubsystem.cpp` ticket_approve_ban | ✅ Yes |
+| `HandleAppealDenyCommand` | ✅ Yes |
+| **`HandleAppealApproveCommand`** | ❌ **missing** |
+
+Effect: The appeal's status remained `Pending` in the registry after an approval — admins could
+accidentally re-review it and the pending-appeal count was permanently inflated.
+
+**Fix:** Added `Registry->ReviewAppeal(AppealId, EAppealStatus::Approved, SenderName, ReviewNote)`
+immediately after the unban block (before `Respond`), mirroring `HandleAppealDenyCommand`.
+A `UE_LOG(Warning)` is emitted if the call returns false.
+
+---
+
+*Last updated: 2026-05-05. All 2 Round-33 bugs resolved.*

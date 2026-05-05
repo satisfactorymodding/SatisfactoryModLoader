@@ -3903,6 +3903,7 @@ void UBanDiscordSubsystem::HandleAppealApproveCommand(const TArray<FString>& Arg
 	// Capture the entry BEFORE calling ReviewAppeal — GetAppealById after ReviewAppeal
 	// can return a default-constructed empty entry if a concurrent delete races it.
 	const FBanAppealEntry Entry = Registry->GetAppealById(AppealId);
+	if (Entry.Uid.IsEmpty())
 	{
 		Respond(ChannelId,
 			FString::Printf(TEXT(":x: No appeal found with ID `%lld`."), AppealId));
@@ -3938,6 +3939,15 @@ void UBanDiscordSubsystem::HandleAppealApproveCommand(const TArray<FString>& Arg
 			// with a Discord UID (e.g. manually added entries).
 			bUnbanned = DB->RemoveBanByUid(Entry.Uid);
 		}
+	}
+
+	// Mark the appeal as Approved in the registry.  Must be called after the unban
+	// so that the entry's status reflects the final outcome.  Mirrors the ReviewAppeal
+	// call in HandleAppealDenyCommand (line ~4045) and BanRestApi (POST /appeals/:id/review).
+	if (!Registry->ReviewAppeal(AppealId, EAppealStatus::Approved, SenderName, ReviewNote))
+	{
+		UE_LOG(LogBanDiscord, Warning,
+			TEXT("BanDiscordSubsystem: ReviewAppeal(Approved) returned false for appeal #%lld"), AppealId);
 	}
 
 	const FString NoteStr = ReviewNote.IsEmpty() ? TEXT("") : FString::Printf(TEXT(" Note: %s"), *ReviewNote);
