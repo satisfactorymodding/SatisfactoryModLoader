@@ -2349,3 +2349,40 @@ entry and reports "mute has expired" instead of clamping to 1.
 Both files were audited and found clean with respect to the specified focus areas.
 
 *Last updated: Round 30. 6 bugs fixed (R30-01 through R30-10, with R30-04/06/07 non-issues).*
+
+---
+
+## Round 31 — Bug Audit Results
+
+**Files read this round (no prior-round coverage):**
+- `BanEnforcer.cpp` lines 1000–1148 (tail) — clean
+- `BanSystemModule.cpp` lines 450–799 (tail) — clean
+- `BanRestApi.h`, `BanAuditLog.h` — clean
+- All remaining BanSystem and DiscordBridge public headers reviewed
+
+**2 bugs found and fixed:**
+
+### ✅ R31-01 — InGameMessagesConfig.cpp: `ExtractQuotedField` ignores `\"` escape sequences
+**File:** `DiscordBridge/Private/InGameMessagesConfig.cpp` ~line 131
+**Severity:** LOW
+The backup writer's `EscapeIniStr` converts `"` → `\"` in `SenderName`/`Message` tuple
+fields. However `ExtractQuotedField` used a bare `Find('"')` to locate the closing quote,
+so an escaped `\"` inside the value caused the reader to stop at the `"` of the escape
+sequence — returning garbage (e.g. `Hello \` instead of `Hello "World"`).
+Fixed by replacing the `Find` call with a char-by-char walk that treats `\"` as a literal
+`"` and only stops at an unescaped `"`.
+
+### ✅ R31-02 — DiscordBridgeConfig.cpp: ScheduledAnnouncements `Message` field not escaped in backup; parser ignores `\"`
+**File:** `DiscordBridge/Private/DiscordBridgeConfig.cpp` ~lines 547 and 1487
+**Severity:** LOW
+Two related defects in the same field:
+1. **Backup write** (line 1487): `SA.Message` was concatenated into the backup line without
+   escaping `"`, so a message containing a double-quote would corrupt the INI tuple and cause
+   truncation on restore.
+2. **Extraction** (line 549): the `Find('"')` approach used to parse the `Message=` field
+   did not honour `\"` escape sequences — same root cause as R31-01.
+Fixed: backup write now applies `Replace(TEXT("\""), TEXT("\\\""))` to `SA.Message`, and
+the extraction block is replaced with the same escape-aware char-by-char walk as R31-01.
+`ChannelId` (a digit-only Discord snowflake) is unaffected and left unchanged.
+
+*Last updated: Round 31. 2 bugs fixed (R31-01, R31-02).*
