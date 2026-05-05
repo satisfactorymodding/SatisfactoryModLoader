@@ -244,10 +244,16 @@ namespace BanDiscordHelpers
 			{
 				const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Rec.IpAddress);
 				FBanEntry IpEntry = MakeEntry(IpUid, TEXT("IP"), Rec.IpAddress, DisplayName);
-				if (DB->AddBan(IpEntry))
+				bool bIpSkipped = false;
+				if (DB->AddBanSkipIfPermanentExists(IpEntry, bIpSkipped))
 				{
 					DB->LinkBans(PrimaryUid, IpUid);
 					Added.Add(IpUid);
+				}
+				else if (bIpSkipped)
+				{
+					// Existing permanent IP ban takes precedence; still ensure the cross-link.
+					DB->LinkBans(PrimaryUid, IpUid);
 				}
 			}
 		}
@@ -261,10 +267,16 @@ namespace BanDiscordHelpers
 				UBanDatabase::ParseUid(Rec.Uid, RecPlat, RecRawId);
 				const FString RecName = Rec.DisplayName.IsEmpty() ? DisplayName : Rec.DisplayName;
 				FBanEntry EosEntry = MakeEntry(Rec.Uid, RecPlat, RecRawId, RecName);
-				if (DB->AddBan(EosEntry))
+				bool bEosSkipped = false;
+				if (DB->AddBanSkipIfPermanentExists(EosEntry, bEosSkipped))
 				{
 					DB->LinkBans(PrimaryUid, Rec.Uid);
 					Added.Add(Rec.Uid);
+				}
+				else if (bEosSkipped)
+				{
+					// Existing permanent EOS ban takes precedence; still ensure the cross-link.
+					DB->LinkBans(PrimaryUid, Rec.Uid);
 				}
 			}
 		}
@@ -774,7 +786,9 @@ void UBanDiscordSubsystem::SetProvider(IDiscordBridgeProvider* InProvider)
 				}
 
 				const FString Formatted = FString::Printf(
-					TEXT("[In-Game Staff] %s: %s"), *SenderName, *Message);
+					TEXT("[In-Game Staff] %s: %s"),
+					*BanDiscordHelpers::EscapeMarkdown(SenderName),
+					*BanDiscordHelpers::EscapeMarkdown(Message));
 				Self->CachedProvider->SendDiscordChannelMessage(
 					Self->Config.StaffChatChannelId, Formatted);
 			});
@@ -1386,10 +1400,25 @@ void UBanDiscordSubsystem::HandleBanCommand(const TArray<FString>& Args,
 		Entry.ExpireDate   = FDateTime(0);
 	}
 
-	if (!DB->AddBan(Entry))
+	// For temporary bans, use AddBanSkipIfPermanentExists so we never silently
+	// downgrade an existing permanent ban to a shorter temporary one.
+	bool bSkippedPerm = false;
+	const bool bBanAdded = Entry.bIsPermanent
+		? DB->AddBan(Entry)
+		: DB->AddBanSkipIfPermanentExists(Entry, bSkippedPerm);
+	if (!bBanAdded)
 	{
-		Respond(ChannelId,
-			TEXT("❌ Failed to write the ban to the database. Check server logs."));
+		if (bSkippedPerm)
+		{
+			Respond(ChannelId, FString::Printf(
+				TEXT("⚠️ **%s** already has a permanent ban — the temporary ban was not applied."),
+				*BanDiscordHelpers::EscapeMarkdown(DisplayName)));
+		}
+		else
+		{
+			Respond(ChannelId,
+				TEXT("❌ Failed to write the ban to the database. Check server logs."));
+		}
 		return;
 	}
 
@@ -2219,30 +2248,10 @@ void UBanDiscordSubsystem::HandleUnbanNameCommand(const TArray<FString>& Args,
 	}
 
 	const FPlayerSessionRecord& Record = Matches[0];
-	int32 Removed = 0;
 
 	// Remove EOS ban atomically, capturing LinkedUids for counterpart cleanup.
 	FBanEntry RemovedEntry;
-	if (DB->RemoveBanByUid(Record.Uid, RemovedEntry))
-	{
-		++Removed;
-		// Remove all counterpart bans recorded via LinkBans or AddCounterpartBans.
-		for (const FString& LinkedUid : RemovedEntry.LinkedUids)
-		{
-			if (DB->RemoveBanByUid(LinkedUid))
-				++Removed;
-		}
-	}
-
-	// If no EOS ban was found, also try the IP-only path.
-	if (Removed == 0 && !Record.IpAddress.IsEmpty())
-	{
-		const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Record.IpAddress);
-		if (DB->RemoveBanByUid(IpUid))
-			++Removed;
-	}
-
-	if (Removed == 0)
+	if (!DB->RemoveBanByUid(Record.Uid, RemovedEntry))
 	{
 		Respond(ChannelId,
 			FString::Printf(TEXT("⚠️ No active ban found for **%s** (`%s`)."),
@@ -2250,12 +2259,21 @@ void UBanDiscordSubsystem::HandleUnbanNameCommand(const TArray<FString>& Args,
 		return;
 	}
 
-	const FString Msg = FString::Printf(
-		TEXT("✅ Removed %d ban record(s) for **%s** (`%s`).\nUnbanned by: %s"),
-		Removed,
+	// Remove counterpart bans (linked UIDs + session-registry IP lookup).
+	const int32 ExtraRemoved =
+		BanDiscordHelpers::RemoveCounterpartBans(this, DB, Record.Uid, RemovedEntry.LinkedUids);
+
+	// Notify webhook / OnBanRemoved delegate (same as every other unban path).
+	FBanDiscordNotifier::NotifyBanRemoved(Record.Uid, Record.DisplayName, SenderName);
+
+	FString Msg = FString::Printf(
+		TEXT("✅ Ban removed for **%s** (`%s`).\nUnbanned by: %s"),
 		*BanDiscordHelpers::EscapeMarkdown(Record.DisplayName),
 		*Record.Uid,
 		*BanDiscordHelpers::EscapeMarkdown(SenderName));
+
+	if (ExtraRemoved > 0)
+		Msg += FString::Printf(TEXT("\nAlso removed %d linked ban(s)."), ExtraRemoved);
 	UE_LOG(LogBanDiscord, Log, TEXT("BanDiscordSubsystem: %s unbanname %s (%s)."),
 		*SenderName, *Record.DisplayName, *Record.Uid);
 
@@ -3156,10 +3174,22 @@ void UBanDiscordSubsystem::HandleModBanCommand(const TArray<FString>& Args,
 	Entry.bIsPermanent = false;
 	Entry.ExpireDate   = TempBanNow1 + FTimespan::FromMinutes(DurationMinutes);
 
-	if (!DB->AddBan(Entry))
+	// HandleModBanCommand always issues a temporary ban; use AddBanSkipIfPermanentExists
+	// to prevent silently downgrading an existing permanent ban.
+	bool bModBanSkipped = false;
+	if (!DB->AddBanSkipIfPermanentExists(Entry, bModBanSkipped))
 	{
-		Respond(ChannelId,
-			TEXT("❌ Failed to write the ban to the database."));
+		if (bModBanSkipped)
+		{
+			Respond(ChannelId, FString::Printf(
+				TEXT("⚠️ **%s** already has a permanent ban — the mod temp-ban was not applied."),
+				*BanDiscordHelpers::EscapeMarkdown(DisplayName)));
+		}
+		else
+		{
+			Respond(ChannelId,
+				TEXT("❌ Failed to write the ban to the database."));
+		}
 		return;
 	}
 
@@ -4433,9 +4463,24 @@ void UBanDiscordSubsystem::HandleQBanCommand(const TArray<FString>& Args,
 	? FDateTime(0)
 	: TemplateBanNow + FTimespan::FromMinutes(Template->DurationMinutes);
 
-	if (!DB->AddBan(Ban))
+	// For temporary templates, use AddBanSkipIfPermanentExists to prevent
+	// silently downgrading an existing permanent ban.
+	bool bQBanSkipped = false;
+	const bool bQBanAdded = Ban.bIsPermanent
+		? DB->AddBan(Ban)
+		: DB->AddBanSkipIfPermanentExists(Ban, bQBanSkipped);
+	if (!bQBanAdded)
 	{
-		Respond(ChannelId, TEXT(":x: Failed to apply ban."));
+		if (bQBanSkipped)
+		{
+			Respond(ChannelId, FString::Printf(
+				TEXT(":warning: **%s** already has a permanent ban — the template ban was not applied."),
+				*BanDiscordHelpers::EscapeMarkdown(DisplayName)));
+		}
+		else
+		{
+			Respond(ChannelId, TEXT(":x: Failed to apply ban."));
+		}
 		return;
 	}
 
@@ -6283,8 +6328,17 @@ FString UBanDiscordSubsystem::ExecutePanelTempBan(const FString& PlayerArg,
 	Entry.bIsPermanent = false;
 	Entry.ExpireDate   = TempBanNow2 + FTimespan::FromMinutes(DurationMinutes);
 
-	if (!DB->AddBan(Entry))
+	// ExecutePanelTempBan always issues a temporary ban; use AddBanSkipIfPermanentExists
+	// to prevent silently downgrading an existing permanent ban.
+	bool bPanelTempSkipped = false;
+	if (!DB->AddBanSkipIfPermanentExists(Entry, bPanelTempSkipped))
+	{
+		if (bPanelTempSkipped)
+			return FString::Printf(
+				TEXT("⚠️ **%s** already has a permanent ban — the temporary ban was not applied."),
+				*BanDiscordHelpers::EscapeMarkdown(DisplayName));
 		return TEXT("❌ Failed to write the ban to the database. Check server logs.");
+	}
 
 	if (UWorld* World = GetGameInstance() ? GetGameInstance()->GetWorld() : nullptr)
 		UBanEnforcer::KickConnectedPlayer(World, Uid, Entry.GetKickMessage());

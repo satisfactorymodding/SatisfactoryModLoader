@@ -408,7 +408,8 @@ namespace BanChat
             {
                 const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Rec.IpAddress);
                 FBanEntry IpEntry = MakeEntry(IpUid, TEXT("IP"), Rec.IpAddress, DisplayName);
-                if (DB->AddBan(IpEntry))
+                bool bChatIpSkipped = false;
+                if (DB->AddBanSkipIfPermanentExists(IpEntry, bChatIpSkipped))
                 {
                     DB->LinkBans(PrimaryUid, IpUid);
                     // Kick any currently-connected player whose IP matches the counterpart ban.
@@ -418,6 +419,11 @@ namespace BanChat
                             FString::Printf(TEXT("[BanChatCommands] Also banned IP %s — linked to EOS ban."),
                                 *Rec.IpAddress),
                             FLinearColor::Green);
+                }
+                else if (bChatIpSkipped)
+                {
+                    // Existing permanent IP ban takes precedence; still ensure the cross-link.
+                    DB->LinkBans(PrimaryUid, IpUid);
                 }
             }
         }
@@ -432,7 +438,8 @@ namespace BanChat
                 UBanDatabase::ParseUid(Rec.Uid, RecPlat, RecRawId);
                 const FString RecName = Rec.DisplayName.IsEmpty() ? DisplayName : Rec.DisplayName;
                 FBanEntry EosEntry = MakeEntry(Rec.Uid, RecPlat, RecRawId, RecName);
-                if (DB->AddBan(EosEntry))
+                bool bChatEosSkipped = false;
+                if (DB->AddBanSkipIfPermanentExists(EosEntry, bChatEosSkipped))
                 {
                     DB->LinkBans(PrimaryUid, Rec.Uid);
                     // Kick any currently-connected player matching this counterpart EOS ban.
@@ -442,6 +449,11 @@ namespace BanChat
                             FString::Printf(TEXT("[BanChatCommands] Also banned EOS %s (%s) — linked to IP ban."),
                                 *RecName, *Rec.Uid),
                             FLinearColor::Green);
+                }
+                else if (bChatEosSkipped)
+                {
+                    // Existing permanent EOS ban takes precedence; still ensure the cross-link.
+                    DB->LinkBans(PrimaryUid, Rec.Uid);
                 }
             }
         }
@@ -565,7 +577,24 @@ namespace BanChat
         }
 
         const FString DurStr = FormatDuration(DurationMinutes);
-        if (DB->AddBan(Entry))
+
+        // For temporary bans, use AddBanSkipIfPermanentExists to prevent a
+        // /tempban from silently downgrading an existing permanent ban.
+        bool bSkippedPerm = false;
+        const bool bBanAdded = Entry.bIsPermanent
+            ? DB->AddBan(Entry)
+            : DB->AddBanSkipIfPermanentExists(Entry, bSkippedPerm);
+
+        if (bSkippedPerm)
+        {
+            Sender->SendChatMessage(
+                FString::Printf(TEXT("[BanChatCommands] '%s' already has a permanent ban — temp ban not applied."),
+                    *DisplayName),
+                FLinearColor::Yellow);
+            return EExecutionStatus::UNCOMPLETED;
+        }
+
+        if (bBanAdded)
         {
             Sender->SendChatMessage(
                 FString::Printf(TEXT("[BanChatCommands] Banned '%s' (%s: %s) %s — reason: %s"),
@@ -4150,9 +4179,20 @@ EExecutionStatus AQBanChatCommand::ExecuteCommand_Implementation(
         ? FDateTime(0)
         : TemplateChatBanNow + FTimespan::FromMinutes(Template->DurationMinutes);
 
-    if (!DB->AddBan(Ban))
+    // For temporary templates, use AddBanSkipIfPermanentExists to prevent
+    // silently downgrading an existing permanent ban.
+    bool bQBanChatSkipped = false;
+    const bool bQBanChatAdded = Ban.bIsPermanent
+        ? DB->AddBan(Ban)
+        : DB->AddBanSkipIfPermanentExists(Ban, bQBanChatSkipped);
+    if (!bQBanChatAdded)
     {
-        Sender->SendChatMessage(TEXT("[BanChatCommands] Failed to apply ban."), FLinearColor::Red);
+        if (bQBanChatSkipped)
+            Sender->SendChatMessage(
+                FString::Printf(TEXT("[BanChatCommands] %s already has a permanent ban — template ban not applied."), *PlayerName),
+                FLinearColor::Yellow);
+        else
+            Sender->SendChatMessage(TEXT("[BanChatCommands] Failed to apply ban."), FLinearColor::Red);
         return EExecutionStatus::COMPLETED;
     }
 
