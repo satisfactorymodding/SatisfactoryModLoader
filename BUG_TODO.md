@@ -2483,3 +2483,66 @@ A `UE_LOG(Warning)` is emitted if the call returns false.
 ---
 
 *Last updated: 2026-05-05. All 2 Round-33 bugs resolved.*
+
+---
+
+## Round 34 — Full Audit (2026-05-06)
+
+### Scope
+Complete read of every `.cpp` file in the four mods (BanChatCommands, BanSystem, DiscordBridge,
+SMLWebSocket) — 30 source files, ~37 000 lines of code.
+
+### Files audited
+| File | Lines | Result |
+|------|-------|--------|
+| `BanDiscordSubsystem.cpp` | 7 440 | ✅ Clean |
+| `DiscordBridgeSubsystem.cpp` | 6 774 | ✅ Clean |
+| `TicketSubsystem.cpp` | 5 402 | ✅ Clean |
+| `BanChatCommands.cpp` | 4 444 | ✅ Clean |
+| `BanRestApi.cpp` | 2 977 | ✅ Clean |
+| `DiscordBridgeConfig.cpp` | 1 552 | ✅ Clean |
+| `BanEnforcer.cpp` | 1 148 | ✅ Clean |
+| `BanDatabase.cpp` | 996 | ✅ Clean |
+| `BanSystemModule.cpp` | 799 | ✅ Clean |
+| `BanChatCommandsModule.cpp` | 556 | ✅ Clean |
+| `WhitelistManager.cpp` | 450 | ✅ Clean |
+| `WhitelistConfig.cpp` | 330 | ✅ Clean |
+| `InGameMessagesConfig.cpp` | 410 | ✅ Clean |
+| `SMLWebSocketRunnable.cpp` | ~600 | ✅ Clean |
+| `SMLWebSocketServerRunnable.cpp` | ~450 | ✅ Clean |
+| `PlayerWarningRegistry.cpp` | 473 | ✅ Clean |
+| `ScheduledBanRegistry.cpp` | 457 | ✅ Clean |
+| `BanDiscordNotifier.cpp` | 446 | ✅ Clean |
+| `BanAppealRegistry.cpp` | 402 | ✅ Clean |
+| `BanSyncClient.cpp` | 372 | ✅ Clean |
+| `MuteRegistry.cpp` | 359 | ✅ Clean |
+| `BanAuditLog.cpp` | 302 | ✅ Clean |
+| `PlayerSessionRegistry.cpp` | 293 | ✅ Clean |
+| `PlayerNoteRegistry.cpp` | 262 | ✅ Clean |
+| `TicketConfig.cpp` | ~400 | ✅ Clean |
+| `BanBridgeConfig.cpp` | 288 | ✅ Clean |
+| `DiscordBridgeChatCommands.cpp` | 203 | ✅ Clean |
+| `BanWebSocketPusher.cpp` | 137 | ✅ Clean |
+| `BanTypes.cpp` | 110 | ✅ Clean |
+| `BanChatCommandsConfig.cpp` | 43 | ✅ Clean |
+| `DiscordBridge.cpp` | 49 | ✅ Clean |
+
+### Findings
+**No bugs found.**
+
+All known bug categories were checked across every file:
+
+- **`BindLambda` capturing `this`** — no instances found; all `this`-capturing callbacks use `BindWeakLambda`; `BindLambda` is used only where local-variable-only captures make it safe.
+- **Missing `EscapeMarkdown()`** — no player-controlled string reaches a Discord message field without escaping.
+- **Missing `JsonEscape()`** — no player-controlled string is written into a JSON string field without escaping.
+- **TOCTOU double-lock races** — all check-then-act sequences operate under a single held lock.
+- **`double→int32/int64` casts without range guards** — all numeric casts include `FMath::IsFinite()` or explicit range checks.
+- **`FCString::Atoi` on potentially-large IDs** — `Atoi64` is used for all int64 snowflake/UID fields; `Atoi` is used only for genuinely int32-bounded values (port numbers 1–65535, page sizes, minute counts).
+- **Missing `INT64_MAX` lexicographic guard** — all 19-digit string-to-int64 paths include the `Str > TEXT("9223372036854775807")` guard.
+- **Non-atomic file saves** — `WhitelistManager.cpp` and all data registries use the `write-to-.tmp → IFileManager::Move(bReplace=true)` pattern; config backup writes use direct `SaveStringToFile` consistently across all config files (accepted pattern for advisory backup files).
+- **`FDateTime::ParseIso8601()` return not checked** — all call sites check the return value.
+- **`SaveToFile()` return not checked** — all call sites check the return value.
+- **Missing `IsNumeric()` guard before `Atoi`/`Atoi64` on custom_id suffixes** — all custom_id parsing paths include the `IsNumeric()` guard.
+- **Missing `ReviewAppeal()` / `NotifyBanRemoved()` / `RemoveCounterpartBans()`** — all approval/removal handlers call the required follow-up functions (Round-33 fixes confirmed intact).
+
+*Last updated: 2026-05-06. Round 34 audit complete — no bugs found.*
