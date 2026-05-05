@@ -2235,3 +2235,49 @@ a yellow "already has a permanent ban" message is returned to the sender.
 API now returns HTTP 409 Conflict with an explanatory message.
 
 *Last updated: Round 28. 2 bugs fixed.*
+
+---
+
+## Round 29 — Full Source Audit (2026-05-06)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 28).
+
+---
+
+### ✅ Fixed — 13 player-controlled strings sent to Discord without `EscapeMarkdown()` (R29-A)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
+
+**Root cause:** Several Discord message-building code paths substituted player-controlled strings
+(player display names, EOS Product User IDs, IP addresses) directly into Discord message text or
+embed content without passing them through `EscapeMarkdown()`.  Because Discord renders markdown in
+message bodies, embed titles, embed descriptions, and embed field values, a player with a crafted
+display name (e.g. `**admin**`, `@everyone`, `__root__`) could inject arbitrary Discord formatting
+or mention markers into the server's public Discord channel or into a moderator's DM.
+
+`EscapeMarkdown()` is already defined at file scope (line 80) and is consistently used throughout
+the rest of the file (AFK-kick notification, whitelist add/remove, chat relay to Discord, etc.).
+The affected call sites had simply been missed.
+
+**Affected locations and fixes applied:**
+
+| Line | Location | Fix |
+|------|----------|-----|
+| 3249 | `WhitelistKickDiscordMessage` replacement | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 3287 | Join-reaction embed field `"value"` | `PlayerName` → `EscapeMarkdown(PlayerName)` |
+| 3340 | `PlayerJoinMessage` replacement | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 3349 | `PlayerJoinAdminMessage` `%PlayerName%` | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 3350 | `PlayerJoinAdminMessage` `%EOSProductUserId%` | `*EOSProductUserId` → `*EscapeMarkdown(EOSProductUserId)` |
+| 3351 | `PlayerJoinAdminMessage` `%IpAddress%` | `*IpAddress` → `*EscapeMarkdown(IpAddress)` |
+| 3378 | `WelcomeMessageDM` replacement | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 3539 | `PlayerLeaveMessage` / `PlayerTimeoutMessage` replacement | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 4422 | `SendPlayerEventEmbed` field `"value"` | `PlayerName` → `EscapeMarkdown(PlayerName)` |
+| 4613 | `WhitelistApprovedDmMessage` replacement | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 4909 | `HandlePlayerStatsCommand` embed title | `*TargetPlayerName` → `*EscapeMarkdown(TargetPlayerName)` |
+| 4933 | `HandlePlayerStatsCommand` embed description | `*TargetPlayerName` → `*EscapeMarkdown(TargetPlayerName)` |
+| 5771 | `HandleOnlineCommand` embed description list | `*PS->GetPlayerName()` → `*EscapeMarkdown(PS->GetPlayerName())` |
+| 5809 | `NotifyMuteEvent` embed title | `*PlayerName` → `*EscapeMarkdown(PlayerName)` |
+| 6460 | `/players` slash-command name list | `Names.Add(PS->GetPlayerName())` → `Names.Add(EscapeMarkdown(PS->GetPlayerName()))` |
+| 6514 | `/online` slash-command reply list | `*PS->GetPlayerName()` → `*EscapeMarkdown(PS->GetPlayerName())` |
+
+*Last updated: Round 29. 1 bug cluster (16 call sites) fixed.*
