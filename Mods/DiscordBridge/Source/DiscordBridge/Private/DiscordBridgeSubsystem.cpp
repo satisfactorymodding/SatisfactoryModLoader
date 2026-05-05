@@ -4617,7 +4617,7 @@ void UDiscordBridgeSubsystem::HandleInGameVerify(const FString& PlayerName, cons
 				{
 					SendDiscordDM(DiscordUserId, FString::Printf(
 						TEXT("✅ Your in-game account **%s** has been verified and added to the whitelist!"),
-						*EscapeMarkdown(PlayerName));
+						*EscapeMarkdown(PlayerName)));
 				}
 			}
 			else

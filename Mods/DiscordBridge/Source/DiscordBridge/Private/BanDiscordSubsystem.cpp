@@ -2248,30 +2248,10 @@ void UBanDiscordSubsystem::HandleUnbanNameCommand(const TArray<FString>& Args,
 	}
 
 	const FPlayerSessionRecord& Record = Matches[0];
-	int32 Removed = 0;
 
 	// Remove EOS ban atomically, capturing LinkedUids for counterpart cleanup.
 	FBanEntry RemovedEntry;
-	if (DB->RemoveBanByUid(Record.Uid, RemovedEntry))
-	{
-		++Removed;
-		// Remove all counterpart bans recorded via LinkBans or AddCounterpartBans.
-		for (const FString& LinkedUid : RemovedEntry.LinkedUids)
-		{
-			if (DB->RemoveBanByUid(LinkedUid))
-				++Removed;
-		}
-	}
-
-	// If no EOS ban was found, also try the IP-only path.
-	if (Removed == 0 && !Record.IpAddress.IsEmpty())
-	{
-		const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Record.IpAddress);
-		if (DB->RemoveBanByUid(IpUid))
-			++Removed;
-	}
-
-	if (Removed == 0)
+	if (!DB->RemoveBanByUid(Record.Uid, RemovedEntry))
 	{
 		Respond(ChannelId,
 			FString::Printf(TEXT("⚠️ No active ban found for **%s** (`%s`)."),
@@ -2279,12 +2259,21 @@ void UBanDiscordSubsystem::HandleUnbanNameCommand(const TArray<FString>& Args,
 		return;
 	}
 
-	const FString Msg = FString::Printf(
-		TEXT("✅ Removed %d ban record(s) for **%s** (`%s`).\nUnbanned by: %s"),
-		Removed,
+	// Remove counterpart bans (linked UIDs + session-registry IP lookup).
+	const int32 ExtraRemoved =
+		BanDiscordHelpers::RemoveCounterpartBans(this, DB, Record.Uid, RemovedEntry.LinkedUids);
+
+	// Notify webhook / OnBanRemoved delegate (same as every other unban path).
+	FBanDiscordNotifier::NotifyBanRemoved(Record.Uid, Record.DisplayName, SenderName);
+
+	FString Msg = FString::Printf(
+		TEXT("✅ Ban removed for **%s** (`%s`).\nUnbanned by: %s"),
 		*BanDiscordHelpers::EscapeMarkdown(Record.DisplayName),
 		*Record.Uid,
 		*BanDiscordHelpers::EscapeMarkdown(SenderName));
+
+	if (ExtraRemoved > 0)
+		Msg += FString::Printf(TEXT("\nAlso removed %d linked ban(s)."), ExtraRemoved);
 	UE_LOG(LogBanDiscord, Log, TEXT("BanDiscordSubsystem: %s unbanname %s (%s)."),
 		*SenderName, *Record.DisplayName, *Record.Uid);
 

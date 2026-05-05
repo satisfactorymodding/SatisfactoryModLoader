@@ -2139,3 +2139,75 @@ file is deleted and a warning is logged; the live backup file is never touched.
 ---
 
 *Last updated: 2026-05-04. All 3 Round-26 bugs resolved.*
+
+---
+
+## Round 27 — Full Source Audit (2026-05-05)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 26).  Files read in full:
+BanDiscordSubsystem.cpp (7 423 lines), DiscordBridgeSubsystem.cpp (6 775 lines),
+TicketSubsystem.cpp (5 402 lines), BanRestApi.cpp (2 943 lines), BanEnforcer.cpp (1 148 lines),
+BanChatCommands.cpp, MuteRegistry.cpp, PlayerNoteRegistry.cpp, BanChatCommandsModule.cpp,
+DiscordBridgeConfig.cpp, TicketConfig.cpp, WhitelistConfig.cpp, WhitelistManager.cpp,
+InGameMessagesConfig.cpp, BanBridgeConfig.cpp, BanDiscordNotifier.cpp, BanAuditLog.cpp,
+BanAppealRegistry.cpp, BanDatabase.cpp, BanSyncClient.cpp, BanSystemConfig.cpp,
+BanTypes.cpp, BanWebSocketPusher.cpp, PlayerSessionRegistry.cpp, PlayerWarningRegistry.cpp,
+ScheduledBanRegistry.cpp, BanSystemModule.cpp, DiscordBridgeChatCommands.cpp,
+SMLWebSocketRunnable.cpp, SMLWebSocketServerRunnable.cpp.
+
+---
+
+### ✅ Fixed — `HandleUnbanNameCommand` skips `RemoveCounterpartBans` (R27-A)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+
+**Root cause:** Every other unban path (e.g. `HandleUnbanCommand`) calls
+`BanDiscordHelpers::RemoveCounterpartBans(this, DB, Uid, LinkedUids)`, which does two things:
+(1) removes all bans whose Uid is listed in `LinkedUids`, and (2) looks up the player in
+`UPlayerSessionRegistry` to find any counterpart UID not yet in `LinkedUids` (e.g. a session-IP
+ban recorded after the original ban was created).  `HandleUnbanNameCommand` (Discord slash
+`/ban removename`) replaced this with a bare `for (LinkedUid : RemovedEntry.LinkedUids)` loop
+plus an IP-address fallback gated on `Removed == 0`.  The IP fallback was therefore skipped
+whenever the EOS counterpart was found, leaving the IP ban active.
+
+**Fix:** Replaced the manual loop with a single
+`BanDiscordHelpers::RemoveCounterpartBans(this, DB, Record.Uid, RemovedEntry.LinkedUids)` call,
+matching every other unban code path.  Removed the now-unused `int32 Removed` variable.
+
+---
+
+### ✅ Fixed — `HandleUnbanNameCommand` never fires `NotifyBanRemoved` webhook (R27-B)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+
+**Root cause:** After successfully removing a ban, every other unban path calls
+`FBanDiscordNotifier::NotifyBanRemoved(Uid, PlayerName, AdminName)` to post a Discord webhook
+embed and fire the `OnBanRemoved` delegate (used by `BanSyncClient` for multi-server sync).
+`HandleUnbanNameCommand` never called it, so successful `/ban removename` unbans were invisible
+in Discord audit channels and not propagated to peer servers.
+
+**Fix:** Added `FBanDiscordNotifier::NotifyBanRemoved(Record.Uid, Record.DisplayName, SenderName)`
+immediately after the successful unban, matching the pattern in `HandleUnbanCommand`.  Also updated
+the success reply message to match the style of the other unban handlers.
+
+---
+
+### ✅ Fixed — Missing closing `)` on `SendDiscordDM` call in `HandleInGameVerify` (R27-C)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp`
+
+**Root cause:** Line 4620 read:
+```cpp
+SendDiscordDM(DiscordUserId, FString::Printf(
+    TEXT("✅ Your in-game account **%s** has been verified and added to the whitelist!"),
+    *EscapeMarkdown(PlayerName));
+```
+The `)` closed `FString::Printf(` but not the outer `SendDiscordDM(` call, making the
+translation unit fail to compile.
+
+**Fix:** Added the missing closing `)` so the line reads:
+```cpp
+    *EscapeMarkdown(PlayerName)));
+```
+
+---
+
+*Last updated: 2026-05-05. All 3 Round-27 bugs resolved.*
