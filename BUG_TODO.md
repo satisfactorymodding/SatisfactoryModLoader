@@ -2490,7 +2490,7 @@ A `UE_LOG(Warning)` is emitted if the call returns false.
 
 ### Scope
 Complete read of every `.cpp` file in the four mods (BanChatCommands, BanSystem, DiscordBridge,
-SMLWebSocket) — 30 source files, ~37 000 lines of code.
+SMLWebSocket) — 31 source files, ~37 000 lines of code.
 
 ### Files audited
 | File | Lines | Result |
