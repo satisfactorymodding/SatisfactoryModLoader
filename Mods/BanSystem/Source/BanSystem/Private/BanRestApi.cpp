@@ -628,8 +628,29 @@ void UBanRestApi::RegisterRoutes()
             UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>();
             if (!DB) { Done(BanJson::Error(TEXT("Database unavailable"), EHttpServerResponseCodes::ServerError)); return true; }
 
+            // For temporary bans use AddBanSkipIfPermanentExists so the REST API
+            // cannot silently downgrade an existing permanent ban.
             FBanEntry Saved;
-            if (!DB->AddBan(Entry, &Saved))
+            bool bSkippedPerm = false;
+            bool bBanAdded;
+            if (Entry.bIsPermanent)
+            {
+                bBanAdded = DB->AddBan(Entry, &Saved);
+            }
+            else
+            {
+                bBanAdded = DB->AddBanSkipIfPermanentExists(Entry, bSkippedPerm);
+                if (bBanAdded) Saved = Entry;
+            }
+
+            if (bSkippedPerm)
+            {
+                Done(BanJson::Error(
+                    TEXT("Player already has a permanent ban — temporary ban not applied"),
+                    EHttpServerResponseCodes::Conflict));
+                return true;
+            }
+            if (!bBanAdded)
             {
                 Done(BanJson::Error(TEXT("Failed to add ban"), EHttpServerResponseCodes::ServerError));
                 return true;

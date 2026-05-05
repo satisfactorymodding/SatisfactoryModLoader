@@ -2211,3 +2211,27 @@ translation unit fail to compile.
 ---
 
 *Last updated: 2026-05-05. All 3 Round-27 bugs resolved.*
+
+---
+
+## Round 28 Fixes
+
+### ✅ Fixed — `DoBan()` uses plain `AddBan` for temp bans, allowing silent permanent-ban downgrade (R28-A)
+**Files:** `Mods/BanChatCommands/Source/BanChatCommands/Private/Commands/BanChatCommands.cpp`,
+           `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** `BanChat::DoBan()` (chat `/tempban` command) and the REST API `POST /bans` handler
+both called `DB->AddBan(Entry)` unconditionally for all ban types. `AddBan` replaces any existing
+record, so issuing a `/tempban` or a `POST /bans` with `durationMinutes > 0` against a player who
+already held a permanent ban would silently overwrite it with a shorter temporary ban — effectively
+an unintended pardon. All other ban paths (Discord slash commands, scheduled bans, auto-escalation,
+counterpart bans) were already using `AddBanSkipIfPermanentExists` from prior rounds.
+
+**Fix (`DoBan`):** Split the `AddBan` call — permanent bans still use `DB->AddBan(Entry)`; temp
+bans now use `DB->AddBanSkipIfPermanentExists(Entry, bSkippedPerm)`. When `bSkippedPerm` is true,
+a yellow "already has a permanent ban" message is returned to the sender.
+
+**Fix (`POST /bans`):** Same split applied in the REST handler. When a temp ban is skipped, the
+API now returns HTTP 409 Conflict with an explanatory message.
+
+*Last updated: Round 28. 2 bugs fixed.*

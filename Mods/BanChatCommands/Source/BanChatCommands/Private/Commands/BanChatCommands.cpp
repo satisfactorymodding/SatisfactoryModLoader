@@ -577,7 +577,24 @@ namespace BanChat
         }
 
         const FString DurStr = FormatDuration(DurationMinutes);
-        if (DB->AddBan(Entry))
+
+        // For temporary bans, use AddBanSkipIfPermanentExists to prevent a
+        // /tempban from silently downgrading an existing permanent ban.
+        bool bSkippedPerm = false;
+        const bool bBanAdded = Entry.bIsPermanent
+            ? DB->AddBan(Entry)
+            : DB->AddBanSkipIfPermanentExists(Entry, bSkippedPerm);
+
+        if (bSkippedPerm)
+        {
+            Sender->SendChatMessage(
+                FString::Printf(TEXT("[BanChatCommands] '%s' already has a permanent ban — temp ban not applied."),
+                    *DisplayName),
+                FLinearColor::Yellow);
+            return EExecutionStatus::UNCOMPLETED;
+        }
+
+        if (bBanAdded)
         {
             Sender->SendChatMessage(
                 FString::Printf(TEXT("[BanChatCommands] Banned '%s' (%s: %s) %s — reason: %s"),
