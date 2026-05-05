@@ -1125,34 +1125,34 @@ void UDiscordBridgeSubsystem::HandleDispatch(const FString& EventType, int32 Seq
 
 				if (EventType == TEXT("GUILD_MEMBER_UPDATE"))
 				{
-				if (bHasRole && !SyncUsername.IsEmpty())
-				{
-					if (FWhitelistManager::AddPlayer(SyncUsername, TEXT(""), TEXT("sync-role")))
+					if (bHasRole && !SyncUsername.IsEmpty())
 					{
-						PostWhitelistEvent(
-							FString::Printf(TEXT("**%s** added via Discord role sync (role assigned)"), *EscapeMarkdown(SyncUsername)),
-							SyncUsername, TEXT("sync-role"), 3066993);
+						if (FWhitelistManager::AddPlayer(SyncUsername, TEXT(""), TEXT("sync-role")))
+						{
+							PostWhitelistEvent(
+								FString::Printf(TEXT("**%s** added via Discord role sync (role assigned)"), *EscapeMarkdown(SyncUsername)),
+								SyncUsername, TEXT("sync-role"), 3066993);
+						}
 					}
-				}
-				else if (!bHasRole && !SyncUsername.IsEmpty())
-				{
-					FWhitelistManager::RemovePlayer(SyncUsername, TEXT(""), TEXT("sync-remove"));
-				}
+					else if (!bHasRole && !SyncUsername.IsEmpty())
+					{
+						FWhitelistManager::RemovePlayer(SyncUsername, TEXT(""), TEXT("sync-remove"));
+					}
 				}
 				else // GUILD_MEMBER_ADD
 				{
-				// A new member who already holds the whitelist role when they join
-				// must be auto-added immediately.  Role removal cannot happen via
-				// a join event, so only the add path is executed here.
-				if (bHasRole && !SyncUsername.IsEmpty())
-				{
-					if (FWhitelistManager::AddPlayer(SyncUsername, TEXT(""), TEXT("sync-role")))
+					// A new member who already holds the whitelist role when they join
+					// must be auto-added immediately.  Role removal cannot happen via
+					// a join event, so only the add path is executed here.
+					if (bHasRole && !SyncUsername.IsEmpty())
 					{
-						PostWhitelistEvent(
-							FString::Printf(TEXT("**%s** added via Discord role sync (joined with role)"), *EscapeMarkdown(SyncUsername)),
-							SyncUsername, TEXT("sync-role"), 3066993);
+						if (FWhitelistManager::AddPlayer(SyncUsername, TEXT(""), TEXT("sync-role")))
+						{
+							PostWhitelistEvent(
+								FString::Printf(TEXT("**%s** added via Discord role sync (joined with role)"), *EscapeMarkdown(SyncUsername)),
+								SyncUsername, TEXT("sync-role"), 3066993);
+						}
 					}
-				}
 				}
 			}
 		}
