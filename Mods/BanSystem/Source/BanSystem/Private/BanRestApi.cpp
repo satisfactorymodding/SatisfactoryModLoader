@@ -1290,10 +1290,15 @@ void UBanRestApi::RegisterRoutes()
             int32 Limit = 100;
             if (const FString* LimitStr = Req.QueryParams.Find(TEXT("limit")))
             {
+                // Use Atoi64 to avoid int32 overflow UB on inputs like "9999999999"
+                // that pass the Len()<=10 guard but exceed INT32_MAX.
                 if (LimitStr->IsNumeric() && LimitStr->Len() <= 10)
                 {
-                    const int32 Parsed = FCString::Atoi(**LimitStr);
-                    if (Parsed > 0) Limit = FMath::Min(Parsed, 1000);
+                    const int64 Parsed64 = FCString::Atoi64(**LimitStr);
+                    if (Parsed64 > 0 && Parsed64 <= 1000)
+                        Limit = static_cast<int32>(Parsed64);
+                    else if (Parsed64 > 1000)
+                        Limit = 1000;
                 }
             }
 
@@ -1302,8 +1307,9 @@ void UBanRestApi::RegisterRoutes()
             {
                 if (PageStr->IsNumeric() && PageStr->Len() <= 10)
                 {
-                    const int32 Parsed = FCString::Atoi(**PageStr);
-                    if (Parsed > 0) Page = Parsed;
+                    const int64 Parsed64 = FCString::Atoi64(**PageStr);
+                    if (Parsed64 > 0 && Parsed64 <= static_cast<int64>(INT32_MAX))
+                        Page = static_cast<int32>(Parsed64);
                 }
             }
 
@@ -1598,7 +1604,10 @@ void UBanRestApi::RegisterRoutes()
             if (!DB) { Done(BanJson::Error(TEXT("Database unavailable"), EHttpServerResponseCodes::ServerError)); return true; }
 
             const FString Uid = UBanDatabase::MakeUid(TEXT("IP"), IpAddress);
-            if (!DB->RemoveBanByUid(Uid))
+            // Use the two-arg overload to atomically remove and capture the entry
+            // so the player name is available for the notification and audit log.
+            FBanEntry RemovedIpEntry;
+            if (!DB->RemoveBanByUid(Uid, RemovedIpEntry))
             {
                 Done(BanJson::Error(
                     FString::Printf(TEXT("No IP ban found for '%s'"), *IpAddress),
@@ -1606,9 +1615,10 @@ void UBanRestApi::RegisterRoutes()
                 return true;
             }
 
-            FBanDiscordNotifier::NotifyBanRemoved(Uid, IpAddress, TEXT("api"));
+            const FString DisplayName = RemovedIpEntry.PlayerName.IsEmpty() ? IpAddress : RemovedIpEntry.PlayerName;
+            FBanDiscordNotifier::NotifyBanRemoved(Uid, DisplayName, TEXT("api"));
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
-                AuditLog->LogAction(TEXT("unban"), Uid, IpAddress, TEXT("api"), TEXT("api"), TEXT("ip ban removal"));
+                AuditLog->LogAction(TEXT("unban"), Uid, DisplayName, TEXT("api"), TEXT("api"), TEXT("ip ban removal"));
 
             Done(BanJson::Ok(FString::Printf(TEXT("IP ban for '%s' removed"), *IpAddress)));
             return true;
@@ -2945,11 +2955,15 @@ void UBanRestApi::RegisterRoutes()
             {
                 FString Uid;
                 if (!Val.IsValid() || !Val->TryGetString(Uid) || Uid.IsEmpty()) continue;
-                if (DB->RemoveBanByUid(Uid))
+                // Use the two-arg overload to atomically capture the removed entry so
+                // the player name is available for notifications and the kick message.
+                FBanEntry RemovedEntry;
+                if (DB->RemoveBanByUid(Uid, RemovedEntry))
                 {
-                    FBanDiscordNotifier::NotifyBanRemoved(Uid, TEXT(""), RemovedBy);
+                    const FString DisplayName = RemovedEntry.PlayerName.IsEmpty() ? Uid : RemovedEntry.PlayerName;
+                    FBanDiscordNotifier::NotifyBanRemoved(Uid, DisplayName, RemovedBy);
                     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
-                        AuditLog->LogAction(TEXT("unban"), Uid, TEXT(""), RemovedBy, RemovedBy, TEXT("bulk unban"));
+                        AuditLog->LogAction(TEXT("unban"), Uid, DisplayName, RemovedBy, RemovedBy, TEXT("bulk unban"));
                     ++Removed;
                 }
             }

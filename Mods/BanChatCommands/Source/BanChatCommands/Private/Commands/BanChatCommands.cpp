@@ -3081,7 +3081,18 @@ EExecutionStatus AMuteCheckChatCommand::ExecuteCommand_Implementation(
     {
         const FTimespan Remaining = Entry.ExpireDate - FDateTime::UtcNow();
         const int64 RemainingMin64 = static_cast<int64>(Remaining.GetTotalMinutes());
-        const int32 RemainingMin   = static_cast<int32>(FMath::Clamp(RemainingMin64, static_cast<int64>(1), static_cast<int64>(INT32_MAX)));
+        // If the mute has already expired (remaining ≤ 0) the MuteRegistry
+        // enforcement sweep hasn't run yet.  Report expiry and clean up the
+        // stale entry rather than clamping to 1 and showing false "1m remaining".
+        if (RemainingMin64 <= 0)
+        {
+            MuteReg->UnmutePlayer(Uid);
+            Sender->SendChatMessage(
+                FString::Printf(TEXT("[BanChatCommands] '%s' is no longer muted (mute has expired)."), *DisplayName),
+                FLinearColor::Green);
+            return EExecutionStatus::COMPLETED;
+        }
+        const int32 RemainingMin = static_cast<int32>(FMath::Min(RemainingMin64, static_cast<int64>(INT32_MAX)));
         Sender->SendChatMessage(
             FString::Printf(TEXT("[BanChatCommands] '%s' is muted until %s UTC (%s remaining). Reason: %s."),
                 *DisplayName,
