@@ -2677,6 +2677,7 @@ void UBanRestApi::RegisterRoutes()
             Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
             const int32 DurationMinutes = (!FMath::IsFinite(DurDbl) || DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
                 ? 0 : static_cast<int32>(DurDbl);
+            const FScheduledBanEntry NewEntry = SchReg->AddScheduled(
                 Uid, PlayerName, Reason, ScheduledBy, EffectiveAt, DurationMinutes, Category);
 
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
