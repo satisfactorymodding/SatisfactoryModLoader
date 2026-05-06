@@ -2596,3 +2596,56 @@ pattern throughout the codebase.
 ---
 
 *Last updated: 2026-05-05. All 3 Round-35 bugs resolved.*
+
+---
+
+## Round 36 — Full Source Audit (2026-05-06)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 35).  2 bugs found and fixed.
+
+---
+
+### ✅ Fixed — `WhitelistManager::ParseDuration` — `FCString::Atod` result not validated with `FMath::IsFinite` — UB on Infinity/NaN (BUG-R36-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/WhitelistManager.cpp` (~lines 395–420)
+
+**Root cause:** All four suffix branches (`w`, `d`, `h`, `m`) called `FCString::Atod` on the
+numeric portion of the input and guarded only with `Val > 0.0`. A value like `"1e999w"` or
+`"infw"` produces IEEE 754 `+Infinity` from `FCString::Atod`. `+Infinity > 0.0` is `true`, so
+`FTimespan::FromDays(Infinity * 7.0)` is called. `FTimespan::FromDays` internally multiplies by
+`ETimespan::TicksPerDay` (a constant) and casts to `int64`: `static_cast<int64>(+Infinity)` is
+undefined behaviour in C++17 — typically producing `INT64_MIN` on x86, which creates a whitelist
+entry with a large negative expiry tick that the next prune pass removes immediately, silently
+failing to add the player. `NaN` input falls through to `FTimespan::Zero()` (the `NaN > 0.0` is
+`false` branch), producing a permanent whitelist entry when the parse failed — the wrong outcome.
+
+**Fix:** Added `FMath::IsFinite(Val)` to the condition in all four branches, preventing the
+`static_cast<int64>(Infinity)` UB. Also added a generous upper-bound cap in each branch
+(`<= 36500.0` days, `<= 876000.0` hours, `<= 52560000.0` minutes) to prevent absurdly large
+but technically finite timespans from causing downstream overflow in `FTimespan` arithmetic.
+
+---
+
+### ✅ Fixed — `SMLWebSocketServerRunnable` shutdown loop — destroys sockets without sending RFC 6455 Close frames (BUG-R36-02)
+**File:** `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketServerRunnable.cpp` (~lines 305–317)
+
+**Root cause:** The main shutdown teardown loop iterated `Clients` and called
+`SocketSS->DestroySocket(KV.Value.Socket)` directly — no Close frame was sent beforehand.
+RFC 6455 §7.1.1 requires the initiating endpoint to send a Close frame before tearing down
+the TCP connection. Three other close paths in the same file already comply:
+`DisconnectClient()` (R26-02), the `ToRemove` inline drain (R30-05), and the `SocketsToDestroy`
+final drain (line 336). The graceful server-shutdown path was the only one still missing.
+
+Additionally, the previous code held `ClientMutex` while calling `DestroySocket` — even
+without the new `SendFrame` call, this violated the "ClientMutex released before any blocking
+I/O" invariant documented in the file's comments.
+
+**Fix:** Split the shutdown loop into two phases: (1) collect socket pointers while holding
+`ClientMutex` into a local `TArray<FSocket*> ShutdownSockets` and clear `Clients`; (2) send a
+`Close(1001 Going Away)` frame (`0x88 0x02 0x03 0xE9`) to each socket and destroy it outside
+the lock. Send failures are silently ignored — the client may have already closed. This matches
+the existing `ToRemove` pattern at lines 277–300.
+
+---
+
+*Last updated: 2026-05-06. All 2 Round-36 bugs resolved.*
