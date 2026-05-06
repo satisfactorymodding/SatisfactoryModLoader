@@ -82,7 +82,10 @@ static float GetWLFloat(const FConfigFile& Cfg, const FString& Key, float Defaul
 {
 	FString Value;
 	if (Cfg.GetString(WLSection, *Key, Value) && !Value.IsEmpty())
-		return FCString::Atof(*Value);
+	{
+		const float Result = FCString::Atof(*Value);
+		return FMath::IsFinite(Result) ? Result : Default;
+	}
 	return Default;
 }
 
