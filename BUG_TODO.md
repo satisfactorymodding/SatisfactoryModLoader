@@ -2983,3 +2983,18 @@ if ((*ObjPtr)->TryGetNumberField(TEXT("value"), NumVal) &&
 ---
 
 *Last updated: 2026-05-07. All 2 Round-45 bugs resolved.*
+
+---
+
+## Round 46 — Full Audit of BanChatCommands, BanSystem, DiscordBridge, SMLWebSocket (35 source files)
+
+### ✅ Fixed — `PlayerNoteRegistry` — Missing three-part guard before `FCString::Atoi64` in note-ID parsing (BUG-R46-01)
+**File:** `Mods/BanChatCommands/Source/BanChatCommands/Private/PlayerNoteRegistry.cpp` (~line 154)
+
+**Root cause:** When deserialising the `"id"` field of each note entry from JSON the code called `FCString::Atoi64(*IdStr)` immediately after `TryGetStringField` succeeded, with no validation of the string content. A persisted value longer than 19 digits (e.g. a 20-digit string produced by a bug or external edit) causes `FCString::Atoi64` to silently overflow, returning a wrong positive value that passes the subsequent `Entry.Id <= 0` guard and loads a corrupted note ID into `Notes`. This can cause: duplicate IDs colliding with legitimately allocated IDs; incorrect note lookups (edit/delete operating on the wrong entry); or the `NextId` reconstruction scan returning a garbage maximum and later issuing a duplicate ID on the next `AddNote` call. The same three-part guard (`!IdStr.IsEmpty() && IdStr.IsNumeric() && IdStr.Len() <= 19 && (IdStr.Len() < 19 || IdStr <= TEXT("9223372036854775807"))`) is already applied correctly to the `"nextId"` field at lines 195–197 of the same file, and to the analogous `"appeal_id"` field in `TicketSubsystem.cpp`, but was absent from the note-ID branch.
+
+**Fix:** Added the full three-part guard (empty check, `IsNumeric`, length ≤ 19, lexicographic ≤ `INT64_MAX` string for exactly-19-digit strings) to the `TryGetStringField("id")` branch, making it consistent with every other int64 string-parse site in the codebase. An oversized or non-numeric string now falls through to the `TryGetNumberField` legacy-double branch; if that also fails, `Entry.Id` remains 0, the existing `Entry.Id <= 0` skip fires, and a `Warning` log line is emitted.
+
+---
+
+*Last updated: 2026-05-28. All 1 Round-46 bug resolved.*
