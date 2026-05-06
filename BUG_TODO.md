@@ -2953,3 +2953,33 @@ if ((*ObjPtr)->TryGetNumberField(TEXT("value"), NumVal) &&
 ---
 
 *Last updated: 2026-05-06. All 2 Round-41 bugs resolved.*
+
+---
+
+## Round 45 — Full Source Audit (2026-05-07)
+
+**Scope:** All .cpp / .h files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket (fresh pass after Round 41). 2 bugs found and fixed.
+
+---
+
+### ✅ Fixed — `BanSyncClient::OnPeerMessage()` — temp ban uses bare `AddBan()`, allowing TOCTOU perm-ban downgrade (BUG-R45-01)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanSyncClient.cpp` (~line 327)
+
+**Root cause:** The peer-sync receive path called `DB->AddBan(Ban)` unconditionally for all incoming synced bans regardless of whether the ban was temporary or permanent. The `IsCurrentlyBanned()` check earlier in the function guarded against overwriting an existing permanent ban *at check time*, but there is a TOCTOU window: a permanent ban added concurrently (e.g., by an admin command on this server) between the `IsCurrentlyBanned()` check and the `AddBan()` call would be silently downgraded to the shorter peer-synced temp ban. The pattern for temp bans elsewhere in the codebase uniformly uses `AddBanSkipIfPermanentExists()` to close this race.
+
+**Fix:** Changed the `AddBan` call to be conditional on ban type:
+- Temporary bans use `DB->AddBanSkipIfPermanentExists(Ban, bPeerSyncSkipped)` — skips the write atomically if a permanent ban already exists, then cleans up the `PeerAppliedBanUids` guard entry and logs the skip.
+- Permanent bans keep `DB->AddBan(Ban)` — intentional overwrite is acceptable when the origin server explicitly escalated to permanent.
+
+---
+
+### ✅ Fixed — `TicketSubsystem` — `DeleteAppeal` called without prior `ReviewAppeal(Dismissed)` (4 sites) (BUG-R45-02)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp` (~lines 1207, 1228, 5221, 5238)
+
+**Root cause:** Four code paths that automatically dismissed ban appeals (two in `HandleTicketButtonInteraction` on staff-close, two in `CloseTicketChannelInactive` on inactivity timeout) called `AppealReg->DeleteAppeal(E.Id)` directly without first calling `AppealReg->ReviewAppeal(E.Id, EAppealStatus::Dismissed, ...)`. This left no audit record of the dismissal and the appeal's status remained `Pending` in any log snapshot taken before deletion. The established pattern in `BanRestApi.cpp` and `BanDiscordSubsystem.cpp` always calls `ReviewAppeal(Dismissed, ...)` immediately before `DeleteAppeal`.
+
+**Fix:** Added `AppealReg->ReviewAppeal(E.Id, EAppealStatus::Dismissed, TEXT("system"), TEXT("Ticket closed by staff"))` (or `TEXT("Ticket closed due to inactivity")` for the inactivity paths) immediately before each of the 4 `DeleteAppeal` calls, matching the pattern used elsewhere.
+
+---
+
+*Last updated: 2026-05-07. All 2 Round-45 bugs resolved.*

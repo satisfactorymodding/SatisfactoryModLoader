@@ -1206,6 +1206,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 							CloseAppealReviewNote = E.ReviewNote;
 							if (E.Status == EAppealStatus::Pending)
 							{
+								AppealReg->ReviewAppeal(E.Id, EAppealStatus::Dismissed, TEXT("system"), TEXT("Ticket closed by staff"));
 								AppealReg->DeleteAppeal(E.Id);
 								OpenerToAppealId.Remove(RemovedOpener);
 								OpenerToEosUid.Remove(RemovedOpener);
@@ -1226,6 +1227,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 								CloseAppealReviewNote = E.ReviewNote;
 								if (E.Status == EAppealStatus::Pending)
 								{
+									AppealReg->ReviewAppeal(E.Id, EAppealStatus::Dismissed, TEXT("system"), TEXT("Ticket closed by staff"));
 									AppealReg->DeleteAppeal(E.Id);
 									OpenerToAppealId.Remove(RemovedOpener);
 									OpenerToEosUid.Remove(RemovedOpener);
@@ -5218,6 +5220,7 @@ void UTicketSubsystem::CloseTicketChannelInactive(const FString& ChannelId)
 					const FBanAppealEntry E = AppealReg->GetAppealById(CapturedAppealId);
 					if (E.Id > 0 && E.Status == EAppealStatus::Pending)
 					{
+						AppealReg->ReviewAppeal(E.Id, EAppealStatus::Dismissed, TEXT("system"), TEXT("Ticket closed due to inactivity"));
 						AppealReg->DeleteAppeal(E.Id);
 						UE_LOG(LogTicketSystem, Log,
 						       TEXT("TicketSystem: Auto-dismissed pending appeal id=%lld for Discord user %s on inactivity close."),
@@ -5234,6 +5237,7 @@ void UTicketSubsystem::CloseTicketChannelInactive(const FString& ChannelId)
 						{
 							if (E.Status == EAppealStatus::Pending)
 							{
+								AppealReg->ReviewAppeal(E.Id, EAppealStatus::Dismissed, TEXT("system"), TEXT("Ticket closed due to inactivity"));
 								AppealReg->DeleteAppeal(E.Id);
 								UE_LOG(LogTicketSystem, Log,
 								       TEXT("TicketSystem: Auto-dismissed pending appeal id=%lld for Discord user %s on inactivity close."),
