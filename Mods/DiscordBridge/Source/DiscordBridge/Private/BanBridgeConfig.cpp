@@ -117,6 +117,27 @@ FBanBridgeConfig FBanBridgeConfig::Load()
 	Out.AdminPanelChannelId    = GetIniBridgeString(Cfg, TEXT("AdminPanelChannelId"));
 	Out.StaffChatChannelId     = GetIniBridgeString(Cfg, TEXT("StaffChatChannelId"));
 
+	// Validate: non-empty role/channel IDs must be 17-20 digit Discord snowflakes.
+	// GetIniBridgeString already trims whitespace; this catches typos like "general".
+	auto WarnBadSnowflake = [](const FString& Value, const TCHAR* Key)
+	{
+		if (Value.IsEmpty()) return;
+		if (!Value.IsNumeric() || Value.Len() < 17 || Value.Len() > 20)
+		{
+			UE_LOG(LogBanDiscord, Warning,
+			       TEXT("BanBridge: '%s' = \"%s\" is not a valid Discord snowflake "
+			            "(expected 17-20 digit numeric string). "
+			            "Check DefaultBanBridge.ini."),
+			       Key, *Value);
+		}
+	};
+	WarnBadSnowflake(Out.AdminRoleId,            TEXT("AdminRoleId"));
+	WarnBadSnowflake(Out.ModeratorRoleId,        TEXT("ModeratorRoleId"));
+	WarnBadSnowflake(Out.BanCommandChannelId,    TEXT("BanCommandChannelId"));
+	WarnBadSnowflake(Out.ModerationLogChannelId, TEXT("ModerationLogChannelId"));
+	WarnBadSnowflake(Out.AdminPanelChannelId,    TEXT("AdminPanelChannelId"));
+	WarnBadSnowflake(Out.StaffChatChannelId,     TEXT("StaffChatChannelId"));
+
 	if (Out.AdminRoleId.IsEmpty())
 	{
 		UE_LOG(LogBanDiscord, Log,

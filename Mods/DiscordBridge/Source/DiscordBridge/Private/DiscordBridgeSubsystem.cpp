@@ -1788,7 +1788,7 @@ void UDiscordBridgeSubsystem::SendMessageToChannel(const FString& TargetChannelI
 
 	Request->OnProcessRequestComplete().BindWeakLambda(
 		this,
-		[Message](FHttpRequestPtr /*Req*/, FHttpResponsePtr Resp, bool bConnected)
+		[this, Url, BodyString, Message](FHttpRequestPtr /*Req*/, FHttpResponsePtr Resp, bool bConnected)
 		{
 			if (!bConnected || !Resp.IsValid())
 			{
@@ -1797,11 +1797,65 @@ void UDiscordBridgeSubsystem::SendMessageToChannel(const FString& TargetChannelI
 				       *Message);
 				return;
 			}
-			if (Resp->GetResponseCode() < 200 || Resp->GetResponseCode() >= 300)
+			const int32 Code = Resp->GetResponseCode();
+			if (Code >= 200 && Code < 300)
+				return;
+
+			if (Code == 429)
+			{
+				// Discord rate-limit: parse retry_after from the response body and
+				// schedule a single deferred retry after the requested delay.
+				float RetryAfter = 1.0f;
+				TSharedPtr<FJsonObject> ErrObj;
+				TSharedRef<TJsonReader<>> ErrReader =
+					TJsonReaderFactory<>::Create(Resp->GetContentAsString());
+				if (FJsonSerializer::Deserialize(ErrReader, ErrObj) && ErrObj.IsValid())
+					ErrObj->TryGetNumberField(TEXT("retry_after"), RetryAfter);
+				const float Delay = FMath::Clamp(RetryAfter, 0.1f, 60.0f);
+				UE_LOG(LogDiscordBridge, Warning,
+				       TEXT("DiscordBridge: Rate limited (HTTP 429) for message '%s'. "
+				            "retry_after=%.3fs; scheduling one-shot retry."),
+				       *Message, RetryAfter);
+
+				// One-shot retry — if it also 429s we log and drop to avoid loops.
+				FTSTicker::GetCoreTicker().AddTicker(
+					FTickerDelegate::CreateWeakLambda(this,
+						[this, Url, BodyString, Message](float) -> bool
+						{
+							if (Config.BotToken.IsEmpty())
+								return false; // bridge shut down
+
+							TSharedRef<IHttpRequest, ESPMode::ThreadSafe> RetryReq =
+								FHttpModule::Get().CreateRequest();
+							RetryReq->SetURL(Url);
+							RetryReq->SetVerb(TEXT("POST"));
+							RetryReq->SetHeader(TEXT("Content-Type"),  TEXT("application/json"));
+							RetryReq->SetHeader(TEXT("Authorization"),
+							                    FString::Printf(TEXT("Bot %s"), *Config.BotToken));
+							RetryReq->SetContentAsString(BodyString);
+							RetryReq->OnProcessRequestComplete().BindLambda(
+								[Message](FHttpRequestPtr, FHttpResponsePtr RetryResp, bool bRetryOk)
+								{
+									if (!bRetryOk || !RetryResp.IsValid() ||
+									    RetryResp->GetResponseCode() < 200 ||
+									    RetryResp->GetResponseCode() >= 300)
+									{
+										UE_LOG(LogDiscordBridge, Warning,
+										       TEXT("DiscordBridge: Retry also failed for message '%s' (HTTP %d). Dropping."),
+										       *Message,
+										       RetryResp.IsValid() ? RetryResp->GetResponseCode() : 0);
+									}
+								});
+							RetryReq->ProcessRequest();
+							return false; // one-shot ticker
+						}),
+					Delay);
+			}
+			else
 			{
 				UE_LOG(LogDiscordBridge, Warning,
 				       TEXT("DiscordBridge: Discord REST API returned %d: %s"),
-				       Resp->GetResponseCode(), *Resp->GetContentAsString());
+				       Code, *Resp->GetContentAsString());
 			}
 		});
 
@@ -2084,6 +2138,19 @@ void UDiscordBridgeSubsystem::SendMessageBodyToChannel(const FString& TargetChan
 					FbReq->SetVerb(TEXT("POST"));
 					FbReq->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 					FbReq->SetContentAsString(BodyString);
+					FbReq->OnProcessRequestComplete().BindLambda(
+						[TargetChannelId](FHttpRequestPtr, FHttpResponsePtr FbResp, bool bFbOk)
+						{
+							if (!bFbOk || !FbResp.IsValid() ||
+							    FbResp->GetResponseCode() < 200 || FbResp->GetResponseCode() >= 300)
+							{
+								UE_LOG(LogDiscordBridge, Warning,
+								       TEXT("DiscordBridge: Fallback webhook also failed "
+								            "(channel=%s, HTTP=%d)."),
+								       *TargetChannelId,
+								       FbResp.IsValid() ? FbResp->GetResponseCode() : 0);
+							}
+						});
 					FbReq->ProcessRequest();
 				}
 			}

@@ -2546,3 +2546,53 @@ All known bug categories were checked across every file:
 - **Missing `ReviewAppeal()` / `NotifyBanRemoved()` / `RemoveCounterpartBans()`** — all approval/removal handlers call the required follow-up functions (Round-33 fixes confirmed intact).
 
 *Last updated: 2026-05-06. Round 34 audit complete — no bugs found.*
+
+---
+
+## Round 35 — Full Source Audit (2026-05-05)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 34).  3 bugs found and fixed.
+
+---
+
+### ✅ Fixed — `TicketSubsystem`: `RemovedBan.Reason` not escaped in appeal-approved Discord message (BUG-R35-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp` (~line 921)
+
+**Root cause:** In the `ticket_approve_ban` handler, the appeal-approved response string embedded
+`*RemovedBan.Reason` verbatim in the Discord message. Ban reasons are admin-supplied but may
+contain Discord Markdown characters (`*`, `_`, `` ` ``, `~`, `|`, `>`, `\`), allowing unintended
+formatting to appear in the ticket channel message.
+
+**Fix:** Wrapped `RemovedBan.Reason` in `EscapeMarkdown()`, consistent with all other
+player/admin-supplied string embeds in the same file.
+
+---
+
+### ✅ Fixed — `TicketSubsystem`: `W.Reason`, `W.PlayerName`, `W.WarnedBy` not escaped in prior-warnings embed (BUG-R35-02)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp` (~lines 2796–2799)
+
+**Root cause:** When showing prior warnings in the ticket welcome message, three fields from the
+`FWarningEntry` struct — `Reason`, `PlayerName`, and `WarnedBy` — were embedded directly in the
+Discord message format string without `EscapeMarkdown()`. These strings originate from admin-typed
+ban/warn commands and may contain Markdown-special characters.
+
+**Fix:** Applied `EscapeMarkdown()` to all three fields at the embed site.
+
+---
+
+### ✅ Fixed — `BanDiscordSubsystem`: `GetOpt` lambda casts `double` option value to `int64` without `IsFinite`/range guard (BUG-R35-03)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp` (~line 4941)
+
+**Root cause:** The `GetOpt` helper lambda, used to extract slash-command option values, called
+`TryGetNumberField(TEXT("value"), NumVal)` and then cast the resulting `double` directly to
+`int64` via `static_cast<int64>(NumVal)` without any `FMath::IsFinite()` or range check.
+A crafted gateway payload supplying `NaN`, `±Inf`, or a value outside the
+`[INT64_MIN, INT64_MAX)` range would invoke undefined behaviour in `static_cast<int64>`.
+
+**Fix:** Added `FMath::IsFinite(NumVal) && NumVal >= static_cast<double>(INT64_MIN) && NumVal < static_cast<double>(INT64_MAX)` guards before the cast, matching the established
+pattern throughout the codebase.
+
+---
+
+*Last updated: 2026-05-05. All 3 Round-35 bugs resolved.*
