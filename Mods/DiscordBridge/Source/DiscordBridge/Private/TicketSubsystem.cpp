@@ -4722,9 +4722,13 @@ void UTicketSubsystem::LoadTicketState()
 		{
 			FString AppealIdStr;
 			double  AppealIdLoad = 0.0;
-			if ((*EntryObj)->TryGetStringField(TEXT("appeal_id"), AppealIdStr) && !AppealIdStr.IsEmpty())
+			if ((*EntryObj)->TryGetStringField(TEXT("appeal_id"), AppealIdStr) && !AppealIdStr.IsEmpty()
+				&& AppealIdStr.IsNumeric() && AppealIdStr.Len() <= 19
+				&& (AppealIdStr.Len() < 19 || AppealIdStr <= TEXT("9223372036854775807")))
 				OpenerToAppealId.Add(OpenerId, FCString::Atoi64(*AppealIdStr));
-			else if ((*EntryObj)->TryGetNumberField(TEXT("appeal_id"), AppealIdLoad) && AppealIdLoad > 0.0)
+			else if ((*EntryObj)->TryGetNumberField(TEXT("appeal_id"), AppealIdLoad)
+				&& AppealIdLoad > 0.0 && FMath::IsFinite(AppealIdLoad)
+				&& AppealIdLoad < static_cast<double>(INT64_MAX))
 				OpenerToAppealId.Add(OpenerId, static_cast<int64>(AppealIdLoad));
 		}
 		if ((*EntryObj)->TryGetStringField(TEXT("open_time"), OpenTimeStr) && !OpenTimeStr.IsEmpty())

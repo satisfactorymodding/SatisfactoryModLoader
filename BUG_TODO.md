@@ -2826,3 +2826,49 @@ The following were flagged during the audit but confirmed to be correct code:
 ---
 
 *Last updated: 2026-05-07. All 5 Round-38 bugs resolved.*
+
+---
+
+## Round 39 — Full Source Audit (2026-05-06)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 38). 2 bugs found and fixed.
+
+---
+
+### ✅ Fixed — R39-01: `TicketSubsystem::LoadTicketState` — `appeal_id` string parsed with bare `Atoi64` — no IsNumeric/overflow guard (MEDIUM)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp` (~line 4726)
+
+**Root cause:** The string-format load path for the `"appeal_id"` field called
+`FCString::Atoi64(*AppealIdStr)` without any `IsNumeric()`, `Len() <= 19`, or
+lexicographic guard against 19-digit overflow.  Round 37 (BUG-R37-03) added the
+three-part guard to `"nextId"` fields in six registries, and Round 38 (BUG-R38-01)
+extended it to per-entry `"id"` fields in the same registries.  The `"appeal_id"`
+string field in TicketSubsystem's own state JSON was the remaining unguarded site.
+
+A corrupted state file with `"appeal_id": "garbage"` silently returns 0 (unusable
+appeal ID); `"appeal_id": "9999999999999999999"` (> INT64_MAX) invokes undefined
+behaviour in `strtoll`.
+
+**Fix:** Added the same three-part guard before the `Atoi64` call:
+```cpp
+&& AppealIdStr.IsNumeric() && AppealIdStr.Len() <= 19
+&& (AppealIdStr.Len() < 19 || AppealIdStr <= TEXT("9223372036854775807"))
+```
+
+---
+
+### ✅ Fixed — R39-02: `TicketSubsystem::LoadTicketState` — `appeal_id` legacy `double→int64` cast missing upper-bound guard (LOW)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp` (~line 4728)
+
+**Root cause:** The legacy-format (pre-precision-loss-fix) load path for `"appeal_id"`
+checked only `AppealIdLoad > 0.0` before `static_cast<int64>(AppealIdLoad)`.  A
+corrupted JSON value such as `1e30` or `Infinity` passes the `> 0.0` check and invokes
+undefined behaviour in `static_cast<int64>`.  This is the same pattern fixed in
+Round 13 for per-entry ID fields and Round 16 for `BanAppealRegistry::NextId`.
+
+**Fix:** Added `&& FMath::IsFinite(AppealIdLoad) && AppealIdLoad < static_cast<double>(INT64_MAX)` to the guard, matching all other legacy `double→int64` cast sites in the codebase.
+
+---
+
+*Last updated: 2026-05-06. All 2 Round-39 bugs resolved.*
