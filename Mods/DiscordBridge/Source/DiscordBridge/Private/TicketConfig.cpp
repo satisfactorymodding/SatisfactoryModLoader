@@ -150,7 +150,21 @@ FTicketConfig FTicketConfig::Load()
 	if (bPrimaryExists)
 	{
 		FString RawContent;
-		FFileHelper::LoadFileToString(RawContent, *PrimaryPath);
+		bool bRawContentLoaded = FFileHelper::LoadFileToString(RawContent, *PrimaryPath);
+		if (!bRawContentLoaded)
+		{
+			UE_LOG(LogTicketSystem, Warning,
+			       TEXT("TicketSystem: Failed reading raw config '%s'; array fields may use backup."),
+			       *PrimaryPath);
+			if (PlatformFile.FileExists(*BackupPath) &&
+			    FFileHelper::LoadFileToString(RawContent, *BackupPath))
+			{
+				bRawContentLoaded = true;
+				UE_LOG(LogTicketSystem, Warning,
+				       TEXT("TicketSystem: Using backup raw config '%s' for array fields."),
+				       *BackupPath);
+			}
+		}
 
 		FConfigFile Cfg;
 		Cfg.Read(PrimaryPath);
@@ -167,7 +181,7 @@ FTicketConfig FTicketConfig::Load()
 		Config.TicketNotifyRoleId       = GetIniString(Cfg, TEXT("TicketNotifyRoleId"));
 		Config.TicketPanelChannelId     = GetIniString(Cfg, TEXT("TicketPanelChannelId"));
 		Config.TicketCategoryId         = GetIniString(Cfg, TEXT("TicketCategoryId"));
-		Config.CustomTicketReasons      = ParseRawIniArray(RawContent, TEXT("TicketReason"));
+		Config.CustomTicketReasons      = bRawContentLoaded ? ParseRawIniArray(RawContent, TEXT("TicketReason")) : TArray<FString>{};
 		Config.InactiveTicketTimeoutHours = GetIniFloat(Cfg, TEXT("InactiveTicketTimeoutHours"), 0.0f);
 		Config.WhitelistCategoryId         = GetIniString(Cfg, TEXT("WhitelistCategoryId"));
 		Config.HelpCategoryId              = GetIniString(Cfg, TEXT("HelpCategoryId"));
@@ -175,7 +189,7 @@ FTicketConfig FTicketConfig::Load()
 		Config.AppealCategoryId            = GetIniString(Cfg, TEXT("AppealCategoryId"));
 		Config.MuteAppealCategoryId        = GetIniString(Cfg, TEXT("MuteAppealCategoryId"));
 		Config.bTicketFeedbackEnabled      = GetIniBool  (Cfg, TEXT("TicketFeedbackEnabled"),      false);
-		Config.TicketMacros                = ParseRawIniArray(RawContent, TEXT("TicketMacro"));
+		Config.TicketMacros                = bRawContentLoaded ? ParseRawIniArray(RawContent, TEXT("TicketMacro")) : TArray<FString>{};
 		Config.TicketCooldownMinutes       = GetIniInt(Cfg, TEXT("TicketCooldownMinutes"), 0);
 		Config.TicketReopenGracePeriodMinutes = GetIniInt(Cfg, TEXT("TicketReopenGracePeriodMinutes"), 0);
 		Config.bAllowMultipleTicketTypes   = GetIniBool  (Cfg, TEXT("AllowMultipleTicketTypes"),   false);
@@ -184,8 +198,8 @@ FTicketConfig FTicketConfig::Load()
 		Config.TicketSlaWarningMinutes     = GetIniInt(Cfg, TEXT("TicketSlaWarningMinutes"), 0);
 		Config.TicketEscalationRoleId      = GetIniString(Cfg, TEXT("TicketEscalationRoleId"));
 		Config.TicketEscalationCategoryId  = GetIniString(Cfg, TEXT("TicketEscalationCategoryId"));
-		Config.TicketTemplates             = ParseRawIniArray(RawContent, TEXT("TicketTemplate"));
-		Config.TicketAutoResponses         = ParseRawIniArray(RawContent, TEXT("TicketAutoResponse"));
+		Config.TicketTemplates             = bRawContentLoaded ? ParseRawIniArray(RawContent, TEXT("TicketTemplate")) : TArray<FString>{};
+		Config.TicketAutoResponses         = bRawContentLoaded ? ParseRawIniArray(RawContent, TEXT("TicketAutoResponse")) : TArray<FString>{};
 		Config.BanAppealCooldownDays       = GetIniInt(Cfg, TEXT("BanAppealCooldownDays"), 0);
 		Config.MaxLifetimeAppeals          = GetIniInt(Cfg, TEXT("MaxLifetimeAppeals"), 0);
 
@@ -198,7 +212,13 @@ FTicketConfig FTicketConfig::Load()
 		if (PlatformFile.FileExists(*BackupPath))
 		{
 			FString BackupRaw;
-			FFileHelper::LoadFileToString(BackupRaw, *BackupPath);
+			const bool bBackupRawLoaded = FFileHelper::LoadFileToString(BackupRaw, *BackupPath);
+			if (!bBackupRawLoaded)
+			{
+				UE_LOG(LogTicketSystem, Warning,
+				       TEXT("TicketSystem: Failed reading backup raw config '%s'; array fields will stay empty."),
+				       *BackupPath);
+			}
 
 			FConfigFile BackupCfg;
 			BackupCfg.Read(BackupPath);
@@ -215,7 +235,7 @@ FTicketConfig FTicketConfig::Load()
 			Config.TicketNotifyRoleId      = GetIniString(BackupCfg, TEXT("TicketNotifyRoleId"));
 			Config.TicketPanelChannelId    = GetIniString(BackupCfg, TEXT("TicketPanelChannelId"));
 			Config.TicketCategoryId        = GetIniString(BackupCfg, TEXT("TicketCategoryId"));
-			Config.CustomTicketReasons     = ParseRawIniArray(BackupRaw, TEXT("TicketReason"));
+			Config.CustomTicketReasons     = bBackupRawLoaded ? ParseRawIniArray(BackupRaw, TEXT("TicketReason")) : TArray<FString>{};
 			Config.InactiveTicketTimeoutHours = GetIniFloat(BackupCfg, TEXT("InactiveTicketTimeoutHours"), 0.0f);
 			Config.WhitelistCategoryId         = GetIniString(BackupCfg, TEXT("WhitelistCategoryId"));
 			Config.HelpCategoryId              = GetIniString(BackupCfg, TEXT("HelpCategoryId"));
@@ -223,7 +243,7 @@ FTicketConfig FTicketConfig::Load()
 			Config.AppealCategoryId            = GetIniString(BackupCfg, TEXT("AppealCategoryId"));
 			Config.MuteAppealCategoryId        = GetIniString(BackupCfg, TEXT("MuteAppealCategoryId"));
 			Config.bTicketFeedbackEnabled      = GetIniBool  (BackupCfg, TEXT("TicketFeedbackEnabled"),      false);
-			Config.TicketMacros                = ParseRawIniArray(BackupRaw, TEXT("TicketMacro"));
+			Config.TicketMacros                = bBackupRawLoaded ? ParseRawIniArray(BackupRaw, TEXT("TicketMacro")) : TArray<FString>{};
 			Config.TicketCooldownMinutes       = GetIniInt(BackupCfg, TEXT("TicketCooldownMinutes"), 0);
 			Config.TicketReopenGracePeriodMinutes = GetIniInt(BackupCfg, TEXT("TicketReopenGracePeriodMinutes"), 0);
 			Config.bAllowMultipleTicketTypes   = GetIniBool  (BackupCfg, TEXT("AllowMultipleTicketTypes"),   false);
@@ -232,8 +252,8 @@ FTicketConfig FTicketConfig::Load()
 			Config.TicketSlaWarningMinutes     = GetIniInt(BackupCfg, TEXT("TicketSlaWarningMinutes"), 0);
 			Config.TicketEscalationRoleId      = GetIniString(BackupCfg, TEXT("TicketEscalationRoleId"));
 			Config.TicketEscalationCategoryId  = GetIniString(BackupCfg, TEXT("TicketEscalationCategoryId"));
-			Config.TicketTemplates             = ParseRawIniArray(BackupRaw, TEXT("TicketTemplate"));
-			Config.TicketAutoResponses         = ParseRawIniArray(BackupRaw, TEXT("TicketAutoResponse"));
+			Config.TicketTemplates             = bBackupRawLoaded ? ParseRawIniArray(BackupRaw, TEXT("TicketTemplate")) : TArray<FString>{};
+			Config.TicketAutoResponses         = bBackupRawLoaded ? ParseRawIniArray(BackupRaw, TEXT("TicketAutoResponse")) : TArray<FString>{};
 			Config.BanAppealCooldownDays       = GetIniInt(BackupCfg, TEXT("BanAppealCooldownDays"), 0);
 			Config.MaxLifetimeAppeals          = GetIniInt(BackupCfg, TEXT("MaxLifetimeAppeals"), 0);
 

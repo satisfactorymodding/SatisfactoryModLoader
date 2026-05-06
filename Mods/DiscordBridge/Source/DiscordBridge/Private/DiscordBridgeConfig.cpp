@@ -480,6 +480,18 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 	{
 		FConfigFile ConfigFile;
 		ConfigFile.Read(ModFilePath);
+		FString ModFileRawContent;
+		const bool bHasModFileRawContent = FFileHelper::LoadFileToString(ModFileRawContent, *ModFilePath);
+		if (bHasModFileRawContent)
+		{
+			StripBOM(ModFileRawContent);
+		}
+		else
+		{
+			UE_LOG(LogDiscordBridge, Warning,
+			       TEXT("DiscordBridge: Failed reading raw config '%s'; array-style fields may not load."),
+			       *ModFilePath);
+		}
 
 		Config.BotToken             = GetIniStringOrDefault(ConfigFile, TEXT("BotToken"),             TEXT(""));
 		Config.ChannelId            = GetIniStringOrDefault(ConfigFile, TEXT("ChannelId"),            TEXT(""));
@@ -534,55 +546,55 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 
 		// Chat relay filter – use raw file parsing to support +Key= array syntax.
 		{
-			FString RawPrimary;
-			FFileHelper::LoadFileToString(RawPrimary, *ModFilePath);
-			StripBOM(RawPrimary);
-			Config.ChatRelayBlocklist = ParseRawIniArray(RawPrimary, TEXT("DiscordBridge"), TEXT("ChatRelayBlocklist"));
-
-			// Parse ChatRelayBlocklistReplacements array entries.
-			// Format per entry: Pattern="word",Replacement="***"
-			TArray<FString> RawRepl = ParseRawIniArray(RawPrimary, TEXT("DiscordBridge"), TEXT("ChatRelayBlocklistReplacements"));
-			for (const FString& Line : RawRepl)
+			if (bHasModFileRawContent)
 			{
-				// Strip outer parentheses if present.
-				FString Cleaned = Line.TrimStartAndEnd();
-				if (Cleaned.StartsWith(TEXT("("))) Cleaned = Cleaned.Mid(1);
-				if (Cleaned.EndsWith(TEXT(")")))   Cleaned = Cleaned.LeftChop(1);
+				Config.ChatRelayBlocklist = ParseRawIniArray(ModFileRawContent, TEXT("DiscordBridge"), TEXT("ChatRelayBlocklist"));
 
-				FString PatStr, ReplStr;
-				// Try to extract Pattern="…" and Replacement="…"
-				// Escape-aware extraction: honours \" sequences written by the config writer.
-				auto ExtractQuoted = [&](const FString& Key, FString& Out) -> bool
+				// Parse ChatRelayBlocklistReplacements array entries.
+				// Format per entry: Pattern="word",Replacement="***"
+				TArray<FString> RawRepl = ParseRawIniArray(ModFileRawContent, TEXT("DiscordBridge"), TEXT("ChatRelayBlocklistReplacements"));
+				for (const FString& Line : RawRepl)
 				{
-					const FString Search = Key + TEXT("=\"");
-					const int32   Idx    = Cleaned.Find(Search, ESearchCase::IgnoreCase);
-					if (Idx == INDEX_NONE) return false;
-					const int32 Start = Idx + Search.Len();
-					FString Value;
-					int32 i = Start;
-					bool bClosed = false;
-					while (i < Cleaned.Len())
+					// Strip outer parentheses if present.
+					FString Cleaned = Line.TrimStartAndEnd();
+					if (Cleaned.StartsWith(TEXT("("))) Cleaned = Cleaned.Mid(1);
+					if (Cleaned.EndsWith(TEXT(")")))   Cleaned = Cleaned.LeftChop(1);
+
+					FString PatStr, ReplStr;
+					// Try to extract Pattern="…" and Replacement="…"
+					// Escape-aware extraction: honours \" sequences written by the config writer.
+					auto ExtractQuoted = [&](const FString& Key, FString& Out) -> bool
 					{
-						const TCHAR C = Cleaned[i];
-						if (C == TEXT('\\') && i + 1 < Cleaned.Len() && Cleaned[i + 1] == TEXT('"'))
-						{ Value.AppendChar(TEXT('"')); i += 2; }
-						else if (C == TEXT('"'))
-						{ bClosed = true; break; }
-						else
-						{ Value.AppendChar(C); ++i; }
-					}
-					if (!bClosed) return false;
-					Out = Value;
-					return true;
-				};
+						const FString Search = Key + TEXT("=\"");
+						const int32   Idx    = Cleaned.Find(Search, ESearchCase::IgnoreCase);
+						if (Idx == INDEX_NONE) return false;
+						const int32 Start = Idx + Search.Len();
+						FString Value;
+						int32 i = Start;
+						bool bClosed = false;
+						while (i < Cleaned.Len())
+						{
+							const TCHAR C = Cleaned[i];
+							if (C == TEXT('\\') && i + 1 < Cleaned.Len() && Cleaned[i + 1] == TEXT('"'))
+							{ Value.AppendChar(TEXT('"')); i += 2; }
+							else if (C == TEXT('"'))
+							{ bClosed = true; break; }
+							else
+							{ Value.AppendChar(C); ++i; }
+						}
+						if (!bClosed) return false;
+						Out = Value;
+						return true;
+					};
 
-				if (ExtractQuoted(TEXT("Pattern"),     PatStr) &&
-				    ExtractQuoted(TEXT("Replacement"), ReplStr))
-				{
-					FChatRelayReplacement R;
-					R.Pattern     = PatStr;
-					R.Replacement = ReplStr;
-					Config.ChatRelayBlocklistReplacements.Add(R);
+					if (ExtractQuoted(TEXT("Pattern"),     PatStr) &&
+					    ExtractQuoted(TEXT("Replacement"), ReplStr))
+					{
+						FChatRelayReplacement R;
+						R.Pattern     = PatStr;
+						R.Replacement = ReplStr;
+						Config.ChatRelayBlocklistReplacements.Add(R);
+					}
 				}
 			}
 		}
@@ -644,18 +656,17 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 
 		// DiscordRoleLabels array (used for %Role% placeholder in DiscordToGameFormat)
 		{
-			FString PrimaryRawForRoles;
-			FFileHelper::LoadFileToString(PrimaryRawForRoles, *ModFilePath);
-			StripBOM(PrimaryRawForRoles);
-			Config.DiscordRoleLabels = ParseRawIniArray(PrimaryRawForRoles, TEXT("DiscordBridge"), TEXT("DiscordRoleLabels"));
+			if (bHasModFileRawContent)
+			{
+				Config.DiscordRoleLabels = ParseRawIniArray(ModFileRawContent, TEXT("DiscordBridge"), TEXT("DiscordRoleLabels"));
+			}
 		}
 
 		// Multi-slot scheduled announcements (array field)
 		{
-			FString PrimaryRaw;
-			FFileHelper::LoadFileToString(PrimaryRaw, *ModFilePath);
-			StripBOM(PrimaryRaw);
-			const TArray<FString> SALines = ParseRawIniArray(PrimaryRaw, TEXT("DiscordBridge"), TEXT("ScheduledAnnouncements"));
+			const TArray<FString> SALines = bHasModFileRawContent
+				? ParseRawIniArray(ModFileRawContent, TEXT("DiscordBridge"), TEXT("ScheduledAnnouncements"))
+				: TArray<FString>{};
 			for (const FString& Line : SALines)
 			{
 				FString Cleaned = Line.TrimStartAndEnd();
@@ -756,10 +767,13 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 		// BotToken has not been filled in yet.
 		if (Config.BotToken.IsEmpty())
 		{
-			FString ModFileRaw;
-			FFileHelper::LoadFileToString(ModFileRaw, *ModFilePath);
-			StripBOM(ModFileRaw);
-			if (!ModFileRaw.Contains(TEXT("#")))
+			if (!bHasModFileRawContent)
+			{
+				UE_LOG(LogDiscordBridge, Warning,
+				       TEXT("DiscordBridge: Could not inspect '%s' for comments because raw read failed; skipping template rewrite check."),
+				       *ModFilePath);
+			}
+			else if (!ModFileRawContent.Contains(TEXT("#")))
 			{
 				UE_LOG(LogDiscordBridge, Log,
 				       TEXT("DiscordBridge: Config at '%s' has no BotToken and no comment "
@@ -857,10 +871,7 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 				{
 					// ChatRelayBlocklist is an array field (multi-line +Key=value).
 					// Check for its presence in the raw file rather than via FConfigFile.
-					FString UpgradeRaw;
-					FFileHelper::LoadFileToString(UpgradeRaw, *ModFilePath);
-					StripBOM(UpgradeRaw);
-					if (!UpgradeRaw.Contains(TEXT("ChatRelayBlocklist")))
+					if (bHasModFileRawContent && !ModFileRawContent.Contains(TEXT("ChatRelayBlocklist")))
 					{
 						AppendContent2 +=
 							TEXT("\n")
@@ -870,6 +881,11 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 							TEXT("# Matching is case-insensitive. Leave empty to relay all messages.\n")
 							TEXT("# Example:\n")
 							TEXT("# +ChatRelayBlocklist=spam\n");
+					}
+					else if (!bHasModFileRawContent)
+					{
+						UE_LOG(LogDiscordBridge, Warning,
+						       TEXT("DiscordBridge: Could not inspect raw config for ChatRelayBlocklist; skipping auto-append detection."));
 					}
 				}
 
@@ -1191,10 +1207,19 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 	    PlatformFile.FileExists(*BackupFilePath))
 	{
 		FString BackupFileContent;
-		FFileHelper::LoadFileToString(BackupFileContent, *BackupFilePath);
-		StripBOM(BackupFileContent);
-		const TMap<FString, FString> BackupValues =
-			ParseRawIniSection(BackupFileContent, TEXT("DiscordBridge"));
+		if (!FFileHelper::LoadFileToString(BackupFileContent, *BackupFilePath))
+		{
+			UE_LOG(LogDiscordBridge, Warning,
+			       TEXT("DiscordBridge: Failed reading backup config '%s'; cannot restore missing token/channel from backup."),
+			       *BackupFilePath);
+		}
+		else
+		{
+			StripBOM(BackupFileContent);
+		}
+		const TMap<FString, FString> BackupValues = BackupFileContent.IsEmpty()
+			? TMap<FString, FString>{}
+			: ParseRawIniSection(BackupFileContent, TEXT("DiscordBridge"));
 
 		const bool bHadToken   = !Config.BotToken.IsEmpty();
 		const bool bHadChannel = !Config.ChannelId.IsEmpty();
