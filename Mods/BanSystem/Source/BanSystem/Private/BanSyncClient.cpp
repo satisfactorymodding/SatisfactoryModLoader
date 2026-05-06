@@ -164,7 +164,7 @@ void UBanSyncClient::OnLocalBanAdded(const FBanEntry& Entry)
 
     // Do not sync a temporary ban that has already expired — the peer would
     // have no meaningful duration to enforce.
-    if (!Entry.bIsPermanent && RemainingMinutesDbl <= 0.0)
+    if (!Entry.bIsPermanent && (!FMath::IsFinite(RemainingMinutesDbl) || RemainingMinutesDbl <= 0.0))
         return;
 
     // Round UP fractional minutes so a ban with < 1 minute remaining maps to
@@ -174,9 +174,10 @@ void UBanSyncClient::OnLocalBanAdded(const FBanEntry& Entry)
     // receiver as a permanent ban had the guard not existed.  Ceiling also
     // prevents any ban from losing up to 59 seconds of enforced duration on
     // the receiving peer.
+    // Guard against NaN/Inf before CeilToInt (UB on non-finite doubles).
     const int32 DurationMinutes = Entry.bIsPermanent
         ? 0
-        : FMath::Max(1, FMath::CeilToInt(RemainingMinutesDbl));
+        : FMath::Max(1, FMath::CeilToInt(FMath::Min(RemainingMinutesDbl, static_cast<double>(INT32_MAX))));
 
     BroadcastBan(Entry.Uid, Entry.PlayerName, Entry.Reason, Entry.BannedBy,
                  DurationMinutes, Entry.Category, Entry.Evidence, Entry.BanDate);

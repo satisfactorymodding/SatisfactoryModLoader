@@ -2700,7 +2700,7 @@ void UTicketSubsystem::CreateTicketChannel(
 				? TEXT("")
 				: FString::Printf(TEXT("<@&%s> "), *NotifyRoleIdCopy);
 			const FString UserMention = OpenerUserIdCopy.IsEmpty()
-				? FString::Printf(TEXT("**%s**"), *OpenerUsernameCopy)
+				? FString::Printf(TEXT("**%s**"), *EscapeMarkdown(OpenerUsernameCopy))
 				: FString::Printf(TEXT("<@%s>"), *OpenerUserIdCopy);
 
 			FString WelcomeContent;
@@ -3601,7 +3601,7 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 			FString::Printf(
 				TEXT(":pencil: Ticket assigned to <@%s> by **%s**."),
 				*AssigneeId,
-				*SenderName));
+				*EscapeMarkdown(SenderName)));
 		return;
 	}
 
@@ -3740,7 +3740,7 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 		TicketChannelToAssigneeName.Add(SourceChannelId, SenderName);
 		SaveTicketState();
 		Bridge->SendDiscordChannelMessage(SourceChannelId,
-			FString::Printf(TEXT(":pencil: This ticket has been claimed by **%s**."), *SenderName));
+			FString::Printf(TEXT(":pencil: This ticket has been claimed by **%s**."), *EscapeMarkdown(SenderName)));
 		return;
 	}
 
@@ -3964,7 +3964,7 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 		if (TotalRatings > 0)
 			RatingStr = FString::Printf(TEXT("%.1f/5 (%d rating%s)"),
 				RatingSum / TotalRatings,
-				static_cast<int32>(TotalRatings),
+				(FMath::IsFinite(TotalRatings) && TotalRatings >= 0.0 && TotalRatings <= static_cast<double>(INT32_MAX) ? static_cast<int32>(TotalRatings) : 0),
 				TotalRatings == 1.0 ? TEXT("") : TEXT("s"));
 
 		const FString Msg = FString::Printf(
@@ -3972,8 +3972,8 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 			TEXT("Total opened: %d | Total closed: %d | Open now: %d\n")
 			TEXT("Avg close time: %s\n")
 			TEXT("Average rating: %s"),
-			static_cast<int32>(TotalOpened),
-			static_cast<int32>(TotalClosed),
+			(FMath::IsFinite(TotalOpened) && TotalOpened >= 0.0 && TotalOpened <= static_cast<double>(INT32_MAX) ? static_cast<int32>(TotalOpened) : 0),
+			(FMath::IsFinite(TotalClosed) && TotalClosed >= 0.0 && TotalClosed <= static_cast<double>(INT32_MAX) ? static_cast<int32>(TotalClosed) : 0),
 			TicketChannelToOpener.Num(),
 			*AvgTimeStr,
 			*RatingStr);
@@ -4027,7 +4027,7 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 		if (RptTotalRatings > 0)
 			RptRatingStr = FString::Printf(TEXT("%.1f/5 (%d rating%s)"),
 				RptRatingSum / RptTotalRatings,
-				static_cast<int32>(RptTotalRatings),
+				(FMath::IsFinite(RptTotalRatings) && RptTotalRatings >= 0.0 && RptTotalRatings <= static_cast<double>(INT32_MAX) ? static_cast<int32>(RptTotalRatings) : 0),
 				RptTotalRatings == 1.0 ? TEXT("") : TEXT("s"));
 
 		const FString PeriodDisplay = PeriodArg.Equals(TEXT("week"), ESearchCase::IgnoreCase)
@@ -4039,8 +4039,8 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 			TEXT("Average rating: %s\n")
 			TEXT("*(Date-filtered reporting unavailable; showing all-time totals.)*"),
 			*PeriodDisplay,
-			static_cast<int32>(RptOpened),
-			static_cast<int32>(RptClosed),
+			(FMath::IsFinite(RptOpened) && RptOpened >= 0.0 && RptOpened <= static_cast<double>(INT32_MAX) ? static_cast<int32>(RptOpened) : 0),
+			(FMath::IsFinite(RptClosed) && RptClosed >= 0.0 && RptClosed <= static_cast<double>(INT32_MAX) ? static_cast<int32>(RptClosed) : 0),
 			TicketChannelToOpener.Num(),
 			*RptAvgTimeStr,
 			*RptRatingStr);

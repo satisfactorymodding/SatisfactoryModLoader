@@ -162,7 +162,10 @@ void UScheduledBanRegistry::Tick(float DeltaTime)
         }
         else
         {
-            S.RetryCount = FMath::Min(S.RetryCount + 1, INT32_MAX);
+            // Guard against signed overflow: S.RetryCount + 1 is UB when
+            // RetryCount == INT32_MAX. Use a pre-check instead of FMath::Min
+            // which evaluates the addition unconditionally.
+            S.RetryCount = (S.RetryCount < INT32_MAX) ? S.RetryCount + 1 : INT32_MAX;
             FailedEntries.Add(S);
         }
     }
