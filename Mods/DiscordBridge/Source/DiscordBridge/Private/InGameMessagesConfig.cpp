@@ -181,10 +181,10 @@ static int32 ExtractIntField(const FString& Cleaned, const FString& FieldName, i
 	if (Rest.FindChar(TEXT(','), Comma))
 	{
 		const FString Val = Rest.Left(Comma).TrimStartAndEnd();
-		return Val.IsNumeric() ? FCString::Atoi(*Val) : Default;
+		return (Val.IsNumeric() && Val.Len() <= 10) ? FCString::Atoi(*Val) : Default;
 	}
 	const FString Val = Rest.TrimStartAndEnd();
-	return Val.IsNumeric() ? FCString::Atoi(*Val) : Default;
+	return (Val.IsNumeric() && Val.Len() <= 10) ? FCString::Atoi(*Val) : Default;
 }
 
 // -----------------------------------------------------------------------------

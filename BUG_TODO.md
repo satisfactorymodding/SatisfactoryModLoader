@@ -3135,3 +3135,37 @@ if (!Value.IsNumeric() || Value.Len() > 10)
 ---
 
 *Last updated: 2026-05-06. All 9 Round-49 bugs resolved.*
+
+---
+
+## Round 50 — Full Source Audit (2026-05-07)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 49). 1 bug found and fixed.
+
+---
+
+### ✅ Fixed — `InGameMessagesConfig.cpp::ExtractIntField` — `FCString::Atoi` without `Len()` guard (BUG-IGMC-R50-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/InGameMessagesConfig.cpp` (lines 183–187)
+**Severity:** LOW
+
+**Root cause:** `ExtractIntField` called `FCString::Atoi(*Val)` guarded only by `Val.IsNumeric()`
+with no `Len() <= 10` bound.  An admin-supplied INI value like `IntervalMinutes=99999999999`
+(11+ digits) passes `IsNumeric()` and causes `FCString::Atoi` (signed int32) to silently
+overflow — undefined behaviour in C++.
+
+This is the same pattern fixed in Round 49 across `DiscordBridgeConfig.cpp` (BUG-DBC-R49-01),
+`WhitelistConfig.cpp` (BUG-WC-R49-01), `TicketSubsystem.cpp` (BUG-TS-R49-01), and
+`SMLWebSocketRunnable.cpp` (BUG-SWS-R49-01).  `InGameMessagesConfig.cpp` was not covered by
+the Round-49 sweep.
+
+**Fix:** Added `&& Val.Len() <= 10` to both `IsNumeric()` guards in `ExtractIntField` (the
+comma-terminated branch and the end-of-string branch), returning `Default` for any
+over-length value:
+```cpp
+return (Val.IsNumeric() && Val.Len() <= 10) ? FCString::Atoi(*Val) : Default;
+```
+
+---
+
+*Last updated: 2026-05-07. All 1 Round-50 bug resolved.*
