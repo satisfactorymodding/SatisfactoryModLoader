@@ -2725,4 +2725,150 @@ The following categories were audited and found clean in this round:
 
 ---
 
-*Last updated: 2026-05-06. All 3 Round-37 bugs resolved. 2 Round-36 fixes verified.*
+## Round 38 — Deep Audit (2026-05-07)
+
+Five new bugs found and fixed. Three false-positive AddBan findings from the audit confirmed correct (permanent-ban `AddBan` calls are intentional, only temp-ban paths require `AddBanSkipIfPermanentExists`).
+
+---
+
+### BUG-R38-01 — Per-entry `"id"` string field parsed with bare `Atoi64` — no IsNumeric/overflow guard (MEDIUM)
+
+**Affected files:**
+- `Mods/BanSystem/Source/BanSystem/Private/BanDatabase.cpp` (~line 71)
+- `Mods/BanSystem/Source/BanSystem/Private/ScheduledBanRegistry.cpp` (~line 315)
+- `Mods/BanSystem/Source/BanSystem/Private/PlayerWarningRegistry.cpp` (~line 339)
+- `Mods/BanSystem/Source/BanSystem/Private/BanAuditLog.cpp` (~line 179)
+- `Mods/BanSystem/Source/BanSystem/Private/BanAppealRegistry.cpp` (~line 260)
+
+**Root cause:** The string-format path `if (Obj->TryGetStringField(TEXT("id"), IdStr)) OutEntry.Id = FCString::Atoi64(*IdStr)` had no `IsNumeric()`, no `Len() <= 19`, and no lexicographic guard against 19-digit overflow. Round 37 fixed the `"nextId"` field with the same guard pattern but missed the per-entry `"id"` field in all five registries.
+
+A corrupted JSON `"id": "garbage"` returns 0 silently; `"id": "9999999999999999999"` (> INT64_MAX) invokes UB. `BanAppealRegistry` partially mitigated this via a post-parse `if (Entry.Id <= 0) continue;` guard (protecting the zero-return case) but still left the overflow path unsafe.
+
+**Fix:** Added the same three-part guard used for `"nextId"` before each `Atoi64(*IdStr)` call:
+```cpp
+&& IdStr.IsNumeric() && IdStr.Len() <= 19
+&& (IdStr.Len() < 19 || IdStr <= TEXT("9223372036854775807"))
+```
+
+---
+
+### BUG-R38-02 — `POST /bans/batch` REST endpoint uses bare `AddBan` for temporary bans (MEDIUM)
+
+**Affected file:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp` (~line 2888)
+
+**Root cause:** The `/bans/batch` endpoint supports both permanent (`durationMinutes <= 0`) and temporary (`durationMinutes > 0`) bans. It called `DB->AddBan(Ban, &Saved)` unconditionally regardless of ban type. A temporary-ban request against a player who already has a permanent ban would silently downgrade the permanent ban — the same class of bug fixed in Round 28 for other endpoints.
+
+**Fix:** Applied the same ternary pattern used by all other dual-type ban paths:
+```cpp
+const bool bBatchAdded = Ban.bIsPermanent
+    ? DB->AddBan(Ban, &Saved)
+    : DB->AddBanSkipIfPermanentExists(Ban, bBatchSkipped);
+const FBanEntry& AddedEntry = Ban.bIsPermanent ? Saved : Ban;
+```
+Permanent bans still get the database-assigned `Id` via `Saved`; skipped temp-ban entries are silently omitted from the response.
+
+---
+
+### BUG-R38-03 — `ABulkBanChatCommand` missing `AddCounterpartBans` call (MEDIUM)
+
+**Affected file:** `Mods/BanChatCommands/Source/BanChatCommands/Private/Commands/BanChatCommands.cpp` (~line 4414)
+
+**Root cause:** The Discord `/bulkban` path (`HandleBulkBanCommand` in `BanDiscordSubsystem.cpp`) correctly calls `BanDiscordHelpers::AddCounterpartBans` after each successful ban to propagate the ban to linked IP/EOS identifiers. The in-game chat `/bulkban` command (`ABulkBanChatCommand`) omitted this step entirely, leaving a bypass vector where bulk bans issued from in-game chat did not ban counterpart identifiers.
+
+**Fix:** Added `BanChat::AddCounterpartBans(this, Sender, Uid, RawUid, 0 /* permanent */, Reason, AdminName)` inside the `if (DB->AddBan(Ban))` block, immediately after the Discord notifier call, mirroring the Discord path.
+
+---
+
+### BUG-R38-04 — `BanDiscordNotifier`: `double→int64` cast without `FMath::IsFinite()` guard (LOW)
+
+**Affected file:** `Mods/BanSystem/Source/BanSystem/Private/BanDiscordNotifier.cpp` (lines ~122, ~269, ~400)
+
+**Root cause:** Three duration-display snippets called `static_cast<int64>((DateA - DateB).GetTotalMinutes())` without a `FMath::IsFinite()` guard. While `FDateTime` stores int64 ticks internally (making NaN impossible in practice), the cast is technically UB if an extreme out-of-range double is passed. The same defensive-coding pattern was applied to `BanRestApi.cpp` and other sites in Round 37.
+
+**Fix:** Extracted the `double` result to a named variable (`RawMin0/1/2`) and added `FMath::IsFinite(RawMinN)` with a fallback of `(int64)0`:
+```cpp
+const double RawMin0 = (Entry.ExpireDate - Entry.BanDate).GetTotalMinutes();
+FMath::IsFinite(RawMin0) ? static_cast<int64>(RawMin0) : (int64)0
+```
+
+---
+
+### BUG-R38-05 — `ChatRelayBlocklistReplacements` not `"` escaped in config write/read (LOW)
+
+**Affected file:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeConfig.cpp`
+- Write (primary config rebuild): ~line 1463
+- Write (backup writer): ~lines 1572–1573
+- Read (primary `ExtractQuoted` lambda): ~lines 535–544
+- Read (backup `ExtractQuoted` lambda): ~lines 1215–1225
+
+**Root cause:** `R.Pattern` and `R.Replacement` were concatenated verbatim into the INI line without escaping embedded `"` characters. The `ExtractQuoted` lambdas used a bare `Cleaned.Find(TEXT("\""))` to locate the closing quote, stopping at the first `"` in the value rather than honouring `\"` escapes.
+
+By contrast, `ScheduledAnnouncements` in the same file correctly applied `Replace(TEXT("\""), TEXT("\\\""))` in the write path and an escape-aware char-walk in the read path (lines 658–684). `ChatRelayBlocklistReplacements` was inconsistently missing both protections.
+
+**Fix:**
+- **Write**: Applied `R.Pattern.Replace(TEXT("\""), TEXT("\\\""))` and the same for `R.Replacement` in both write paths before concatenation.
+- **Read**: Replaced both `ExtractQuoted` lambdas with the same escape-aware char-walk pattern used by `ScheduledAnnouncements`, processing `\"` as a literal `"` and stopping on the next unescaped `"`.
+
+---
+
+### Round 38 false positives noted
+
+The following were flagged during the audit but confirmed to be correct code:
+
+| Pattern | Verdict |
+|---|---|
+| `HandleBanNameCommand` uses `AddBan` for permanent bans | ✅ Intentional — admin explicitly replaces any prior ban |
+| `HandleQBanCommand` permanent branch uses `AddBan` | ✅ Correct ternary: permanent → `AddBan`, temp → `AddBanSkipIfPermanentExists` |
+| `HandleBulkBanCommand` Discord path uses `AddBan` for permanent bans | ✅ Intentional bulk-permanent replacement |
+| `ExecutePanelBan` uses `AddBan` | ✅ Admin panel permanent-ban replacement is intentional |
+| `BanRestApi.cpp` `PATCH /bans/:uid` uses `AddBan` | ✅ Explicit update/replace of existing record |
+
+---
+
+*Last updated: 2026-05-07. All 5 Round-38 bugs resolved.*
+
+---
+
+## Round 39 — Full Source Audit (2026-05-06)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 38). 2 bugs found and fixed.
+
+---
+
+### ✅ Fixed — R39-01: `TicketSubsystem::LoadTicketState` — `appeal_id` string parsed with bare `Atoi64` — no IsNumeric/overflow guard (MEDIUM)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp` (~line 4726)
+
+**Root cause:** The string-format load path for the `"appeal_id"` field called
+`FCString::Atoi64(*AppealIdStr)` without any `IsNumeric()`, `Len() <= 19`, or
+lexicographic guard against 19-digit overflow.  Round 37 (BUG-R37-03) added the
+three-part guard to `"nextId"` fields in six registries, and Round 38 (BUG-R38-01)
+extended it to per-entry `"id"` fields in the same registries.  The `"appeal_id"`
+string field in TicketSubsystem's own state JSON was the remaining unguarded site.
+
+A corrupted state file with `"appeal_id": "garbage"` silently returns 0 (unusable
+appeal ID); `"appeal_id": "9999999999999999999"` (> INT64_MAX) invokes undefined
+behaviour in `strtoll`.
+
+**Fix:** Added the same three-part guard before the `Atoi64` call:
+```cpp
+&& AppealIdStr.IsNumeric() && AppealIdStr.Len() <= 19
+&& (AppealIdStr.Len() < 19 || AppealIdStr <= TEXT("9223372036854775807"))
+```
+
+---
+
+### ✅ Fixed — R39-02: `TicketSubsystem::LoadTicketState` — `appeal_id` legacy `double→int64` cast missing upper-bound guard (LOW)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp` (~line 4728)
+
+**Root cause:** The legacy-format (pre-precision-loss-fix) load path for `"appeal_id"`
+checked only `AppealIdLoad > 0.0` before `static_cast<int64>(AppealIdLoad)`.  A
+corrupted JSON value such as `1e30` or `Infinity` passes the `> 0.0` check and invokes
+undefined behaviour in `static_cast<int64>`.  This is the same pattern fixed in
+Round 13 for per-entry ID fields and Round 16 for `BanAppealRegistry::NextId`.
+
+**Fix:** Added `&& FMath::IsFinite(AppealIdLoad) && AppealIdLoad < static_cast<double>(INT64_MAX)` to the guard, matching all other legacy `double→int64` cast sites in the codebase.
+
+---
+
+*Last updated: 2026-05-06. All 2 Round-39 bugs resolved.*

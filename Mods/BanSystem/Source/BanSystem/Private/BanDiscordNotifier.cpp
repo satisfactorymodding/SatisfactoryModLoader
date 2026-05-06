@@ -115,11 +115,12 @@ void FBanDiscordNotifier::PostWebhook(const FString& JsonPayload)
 void FBanDiscordNotifier::NotifyBanCreated(const FBanEntry& Entry)
 {
     const FString PlayerValue = Entry.PlayerName + TEXT(" (") + Entry.Uid + TEXT(")");
+    const double RawMin0 = (Entry.ExpireDate - Entry.BanDate).GetTotalMinutes();
     const FString DurationValue = Entry.bIsPermanent
         ? TEXT("Permanent")
         : FString::Printf(TEXT("%lld minutes"),
             FMath::Max((int64)0,
-                static_cast<int64>((Entry.ExpireDate - Entry.BanDate).GetTotalMinutes())));
+                FMath::IsFinite(RawMin0) ? static_cast<int64>(RawMin0) : (int64)0));
 
     const FString Fields =
         Field(TEXT("Player"),    PlayerValue)         + TEXT(",") +
@@ -262,11 +263,12 @@ void FBanDiscordNotifier::NotifyAutoEscalationBan(const FBanEntry& Ban, int32 Wa
         ? Ban.Uid
         : Ban.PlayerName + TEXT(" (") + Ban.Uid + TEXT(")");
 
+    const double RawMin1 = (Ban.ExpireDate - Ban.BanDate).GetTotalMinutes();
     const FString DurationValue = Ban.bIsPermanent
         ? TEXT("Permanent")
         : FString::Printf(TEXT("%lld minutes"),
             FMath::Max((int64)0,
-                static_cast<int64>((Ban.ExpireDate - Ban.BanDate).GetTotalMinutes())));
+                FMath::IsFinite(RawMin1) ? static_cast<int64>(RawMin1) : (int64)0));
 
     const FString Fields =
         Field(TEXT("Player"),       PlayerValue)                    + TEXT(",") +
@@ -395,9 +397,10 @@ void FBanDiscordNotifier::NotifyPlayerMuted(const FString& Uid, const FString& P
     // configured value regardless of HTTP delivery delay.  Fall back to
     // UtcNow() for callers that do not supply a start time.
     const FDateTime EffectiveMuteDate = (MuteDate.GetTicks() > 0) ? MuteDate : FDateTime::UtcNow();
+    const double RawMin2 = (ExpireDate - EffectiveMuteDate).GetTotalMinutes();
     const FString DurationStr = bIsTimed
         ? FString::Printf(TEXT("%lld min"), FMath::Max((int64)0,
-              static_cast<int64>((ExpireDate - EffectiveMuteDate).GetTotalMinutes())))
+              FMath::IsFinite(RawMin2) ? static_cast<int64>(RawMin2) : (int64)0))
         : TEXT("Indefinite");
 
     const FString Fields =
