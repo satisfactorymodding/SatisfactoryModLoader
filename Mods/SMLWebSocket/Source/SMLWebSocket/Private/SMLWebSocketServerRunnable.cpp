@@ -303,17 +303,31 @@ uint32 FSMLWebSocketServerRunnable::Run()
     }
 
     // Close all client sockets on shutdown and notify the game thread for each.
+    // RFC 6455 §7.1.1 + §7.4.1: send Close(1001 Going Away) before destroying each
+    // socket.  SendFrame is blocking I/O — collect sockets while holding the mutex,
+    // then send Close frames and destroy outside it to avoid indefinite lock stalls.
     TArray<FString> RemainingIds;
+    TArray<FSocket*> ShutdownSockets;
     {
         FScopeLock L(&ClientMutex);
-        ISocketSubsystem* SocketSS = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
         for (auto& KV : Clients)
         {
             RemainingIds.Add(KV.Key);
-            if (SocketSS)
-                SocketSS->DestroySocket(KV.Value.Socket);
+            ShutdownSockets.Add(KV.Value.Socket);
         }
         Clients.Empty();
+    }
+    {
+        ISocketSubsystem* SocketSS = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
+        const TArray<uint8> GoingAwayFrame = { 0x88, 0x02, 0x03, 0xE9 };
+        for (FSocket* S : ShutdownSockets)
+        {
+            SendFrame(S, GoingAwayFrame); // ignore failure — client may already be gone
+            if (SocketSS)
+                SocketSS->DestroySocket(S);
+            else
+                delete S;
+        }
     }
     TWeakObjectPtr<USMLWebSocketServer> WeakOwner = Owner;
     for (FString& ClientId : RemainingIds)

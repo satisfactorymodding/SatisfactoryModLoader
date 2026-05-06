@@ -399,22 +399,24 @@ FTimespan FWhitelistManager::ParseDuration(const FString& DurStr)
 	if (Lower.EndsWith(TEXT("w")))
 	{
 		const double Val = FCString::Atod(*Lower.LeftChop(1));
-		return Val > 0.0 ? FTimespan::FromDays(Val * 7.0) : FTimespan::Zero();
+		// FTimespan::FromDays internally casts to int64 — IsFinite guards against Infinity/NaN UB.
+		// Cap at 36500 days (~100 years) to prevent absurdly large timespan values.
+		return (FMath::IsFinite(Val) && Val > 0.0 && Val <= 36500.0) ? FTimespan::FromDays(Val * 7.0) : FTimespan::Zero();
 	}
 	if (Lower.EndsWith(TEXT("d")))
 	{
 		const double Val = FCString::Atod(*Lower.LeftChop(1));
-		return Val > 0.0 ? FTimespan::FromDays(Val) : FTimespan::Zero();
+		return (FMath::IsFinite(Val) && Val > 0.0 && Val <= 36500.0) ? FTimespan::FromDays(Val) : FTimespan::Zero();
 	}
 	if (Lower.EndsWith(TEXT("h")))
 	{
 		const double Val = FCString::Atod(*Lower.LeftChop(1));
-		return Val > 0.0 ? FTimespan::FromHours(Val) : FTimespan::Zero();
+		return (FMath::IsFinite(Val) && Val > 0.0 && Val <= 876000.0) ? FTimespan::FromHours(Val) : FTimespan::Zero();
 	}
 	if (Lower.EndsWith(TEXT("m")))
 	{
 		const double Val = FCString::Atod(*Lower.LeftChop(1));
-		return Val > 0.0 ? FTimespan::FromMinutes(Val) : FTimespan::Zero();
+		return (FMath::IsFinite(Val) && Val > 0.0 && Val <= 52560000.0) ? FTimespan::FromMinutes(Val) : FTimespan::Zero();
 	}
 	return FTimespan::Zero();
 }
