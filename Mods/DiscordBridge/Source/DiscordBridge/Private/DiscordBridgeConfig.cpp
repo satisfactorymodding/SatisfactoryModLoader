@@ -897,7 +897,13 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 					       *ModFilePath);
 
 					FString ExistingContent2;
-					FFileHelper::LoadFileToString(ExistingContent2, *ModFilePath);
+					if (!FFileHelper::LoadFileToString(ExistingContent2, *ModFilePath))
+					{
+						UE_LOG(LogDiscordBridge, Warning,
+						       TEXT("DiscordBridge: Could not read '%s' to append missing settings — aborting to avoid overwrite."),
+						       *ModFilePath);
+						return Config;
+					}
 					StripBOM(ExistingContent2);
 
 					if (FFileHelper::SaveStringToFile(ExistingContent2 + AppendContent2, *ModFilePath,

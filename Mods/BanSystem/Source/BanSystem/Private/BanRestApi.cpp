@@ -309,6 +309,78 @@ namespace BanJson
 } // namespace BanJson
 
 // ─────────────────────────────────────────────────────────────────────────────
+//  REST API counterpart-ban removal helper
+// ─────────────────────────────────────────────────────────────────────────────
+// Mirrors BanDiscordHelpers::RemoveCounterpartBans / BanChat::RemoveCounterpartBans.
+// Removes every ban listed in LinkedUids and also checks PlayerSessionRegistry for
+// an unlinked IP counterpart (e.g. a REST-API ban created before linking existed).
+static void RestApiRemoveCounterpartBans(UBanDatabase* DB,
+                                         UPlayerSessionRegistry* PlayerReg,
+                                         const FString& PrimaryUid,
+                                         const TArray<FString>& LinkedUids)
+{
+    if (!DB) return;
+
+    // 1. Explicitly linked bans (stored in the entry's LinkedUids array).
+    for (const FString& LinkedUid : LinkedUids)
+        DB->RemoveBanByUid(LinkedUid);
+
+    // 2. Unlinked IP counterpart — session registry lookup for EOS-primary bans.
+    if (PlayerReg)
+    {
+        FString Platform, RawId;
+        UBanDatabase::ParseUid(PrimaryUid, Platform, RawId);
+        if (Platform == TEXT("EOS"))
+        {
+            FPlayerSessionRecord Rec;
+            if (PlayerReg->FindByUid(PrimaryUid, Rec) && !Rec.IpAddress.IsEmpty())
+            {
+                const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Rec.IpAddress);
+                if (!LinkedUids.Contains(IpUid))
+                    DB->RemoveBanByUid(IpUid);
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  REST API counterpart-ban addition helper
+// ─────────────────────────────────────────────────────────────────────────────
+// Mirrors BanDiscordHelpers::AddCounterpartBans / BanChat::AddCounterpartBans.
+// If PrimaryUid is an EOS UID and the player is currently online, adds a matching
+// IP ban and links both records.
+static void RestApiAddCounterpartBans(UBanDatabase* DB,
+                                      UPlayerSessionRegistry* PlayerReg,
+                                      const FBanEntry& PrimaryBan)
+{
+    if (!DB || !PlayerReg) return;
+
+    FString Platform, RawId;
+    UBanDatabase::ParseUid(PrimaryBan.Uid, Platform, RawId);
+    if (Platform != TEXT("EOS")) return;
+
+    FPlayerSessionRecord Rec;
+    if (!PlayerReg->FindByUid(PrimaryBan.Uid, Rec) || Rec.IpAddress.IsEmpty()) return;
+
+    const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Rec.IpAddress);
+    FBanEntry IpBan;
+    IpBan.Uid         = IpUid;
+    IpBan.Platform    = TEXT("IP");
+    IpBan.PlayerUID   = Rec.IpAddress;
+    IpBan.PlayerName  = PrimaryBan.PlayerName;
+    IpBan.Reason      = PrimaryBan.Reason;
+    IpBan.BannedBy    = PrimaryBan.BannedBy;
+    IpBan.BanDate     = PrimaryBan.BanDate;
+    IpBan.bIsPermanent = PrimaryBan.bIsPermanent;
+    IpBan.ExpireDate  = PrimaryBan.ExpireDate;
+    IpBan.LinkedUids.Add(PrimaryBan.Uid);
+
+    bool bIpSkipped = false;
+    if (DB->AddBanSkipIfPermanentExists(IpBan, bIpSkipped) || bIpSkipped)
+        DB->LinkBans(PrimaryBan.Uid, IpUid);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 //  USubsystem lifecycle
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -712,6 +784,8 @@ void UBanRestApi::RegisterRoutes()
                 return true;
             }
 
+            RestApiRemoveCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(),
+                DeletedEntry.Uid, DeletedEntry.LinkedUids);
             FBanDiscordNotifier::NotifyBanRemoved(DeletedEntry.Uid, DeletedEntry.PlayerName, TEXT("api"));
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 AuditLog->LogAction(TEXT("unban"), DeletedEntry.Uid, DeletedEntry.PlayerName, TEXT("api"), TEXT("api"),
@@ -883,6 +957,8 @@ void UBanRestApi::RegisterRoutes()
                 return true;
             }
 
+            RestApiRemoveCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(),
+                OldEntry.Uid, OldEntry.LinkedUids);
             FBanDiscordNotifier::NotifyBanRemoved(OldEntry.Uid, OldEntry.PlayerName, TEXT("api"));
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 AuditLog->LogAction(TEXT("unban"), OldEntry.Uid, OldEntry.PlayerName, TEXT("api"), TEXT("api"), TEXT(""));
@@ -1179,6 +1255,9 @@ void UBanRestApi::RegisterRoutes()
                         bool bSkipped = false;
                         if (DB->AddBanSkipIfPermanentExists(AutoBan, bSkipped))
                         {
+                            // Add counterpart IP ban if the player is currently online,
+                            // mirroring HandleWarnCommand and TicketSubsystem issuewarn.
+                            RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), AutoBan);
                             FBanDiscordNotifier::NotifyBanCreated(AutoBan);
                             FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
                             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
@@ -2223,6 +2302,10 @@ void UBanRestApi::RegisterRoutes()
             UBanAppealRegistry* AppealsReg = GI->GetSubsystem<UBanAppealRegistry>();
             if (!AppealsReg) { Done(BanJson::Error(TEXT("AppealRegistry unavailable"), EHttpServerResponseCodes::ServerError)); return true; }
 
+            // Record the dismissal before deleting so the audit trail is preserved,
+            // mirroring HandleDismissAppealCommand in BanDiscordSubsystem.
+            AppealsReg->ReviewAppeal(Id, EAppealStatus::Dismissed, TEXT("api"), TEXT(""));
+
             if (!AppealsReg->DeleteAppeal(Id))
             {
                 Done(BanJson::Error(
@@ -2570,17 +2653,32 @@ void UBanRestApi::RegisterRoutes()
                     UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>();
                     if (DB)
                     {
-                        // Use the atomic RemoveBanByUid overload to capture the ban
-                        // entry and delete it in a single mutex scope, eliminating the
-                        // TOCTOU window that exists when GetBanByUid and RemoveBanByUid
-                        // are called as two separate operations.
+                        // Use IsCurrentlyBannedByAnyId so that appeals submitted with a
+                        // non-primary UID (e.g. Discord:<id>) are matched via LinkedUids
+                        // to the real ban record — same pattern as HandleAppealApproveCommand.
+                        FBanEntry BanRecord;
+                        FString UnbanUid = Appeal.Uid;
                         FBanEntry RemovedBan;
-                        if (DB->RemoveBanByUid(Appeal.Uid, RemovedBan))
+                        bool bRemovedPrimary = false;
+                        if (DB->IsCurrentlyBannedByAnyId(Appeal.Uid, BanRecord))
                         {
-                            const FString PlayerName = RemovedBan.PlayerName.IsEmpty() ? Appeal.Uid : RemovedBan.PlayerName;
-                            FBanDiscordNotifier::NotifyBanRemoved(Appeal.Uid, PlayerName, ReviewedBy);
+                            UnbanUid = BanRecord.Uid;
+                            bRemovedPrimary = DB->RemoveBanByUid(BanRecord.Uid, RemovedBan);
+                        }
+                        else
+                        {
+                            // Fallback: direct removal for entries stored with the appeal UID.
+                            bRemovedPrimary = DB->RemoveBanByUid(Appeal.Uid, RemovedBan);
+                        }
+                        if (bRemovedPrimary)
+                        {
+                            // Remove counterpart bans (IP↔EOS) linked to the primary entry.
+                            RestApiRemoveCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(),
+                                RemovedBan.Uid, RemovedBan.LinkedUids);
+                            const FString PlayerName = RemovedBan.PlayerName.IsEmpty() ? UnbanUid : RemovedBan.PlayerName;
+                            FBanDiscordNotifier::NotifyBanRemoved(RemovedBan.Uid, PlayerName, ReviewedBy);
                             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
-                                AuditLog->LogAction(TEXT("unban"), Appeal.Uid, PlayerName, ReviewedBy, ReviewedBy,
+                                AuditLog->LogAction(TEXT("unban"), RemovedBan.Uid, PlayerName, ReviewedBy, ReviewedBy,
                                     FString::Printf(TEXT("Appeal #%lld approved: %s"), Id, *ReviewNote));
                         }
                     }
@@ -2965,6 +3063,9 @@ void UBanRestApi::RegisterRoutes()
                 FBanEntry RemovedEntry;
                 if (DB->RemoveBanByUid(Uid, RemovedEntry))
                 {
+                    // Remove counterpart bans (IP↔EOS) linked to this entry.
+                    RestApiRemoveCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(),
+                        RemovedEntry.Uid, RemovedEntry.LinkedUids);
                     const FString DisplayName = RemovedEntry.PlayerName.IsEmpty() ? Uid : RemovedEntry.PlayerName;
                     FBanDiscordNotifier::NotifyBanRemoved(Uid, DisplayName, RemovedBy);
                     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())

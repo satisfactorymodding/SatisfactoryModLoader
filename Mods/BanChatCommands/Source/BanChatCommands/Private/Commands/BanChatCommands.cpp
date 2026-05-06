@@ -1273,6 +1273,9 @@ EExecutionStatus AUnbanChatCommand::ExecuteCommand_Implementation(
         // Also remove every counterpart ban (linked UIDs + session registry lookup).
         BanChat::RemoveCounterpartBans(this, Sender, DB, Uid, BanRecord.LinkedUids);
 
+        // Notify Discord moderation-log channel of the unban.
+        FBanDiscordNotifier::NotifyBanRemoved(Uid, BanRecord.PlayerName, Sender->GetSenderName());
+
         // Write to the audit log.
         {
             UWorld* W = GetWorld();
@@ -1379,6 +1382,9 @@ EExecutionStatus AUnbanNameChatCommand::ExecuteCommand_Implementation(
         // command.  This matches the behaviour of /unban, which was already
         // calling RemoveCounterpartBans but /unbanname was not.
         BanChat::RemoveCounterpartBans(this, Sender, DB, Rec.Uid, EosBanRecord.LinkedUids);
+
+        // Notify Discord moderation-log channel of the unban.
+        FBanDiscordNotifier::NotifyBanRemoved(Rec.Uid, Rec.DisplayName, Sender->GetSenderName());
     }
     else
     {

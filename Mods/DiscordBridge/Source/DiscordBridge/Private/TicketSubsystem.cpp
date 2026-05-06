@@ -923,6 +923,13 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 						if (ExtraRemoved > 0)
 							ApproveResponse += FString::Printf(
 								TEXT("\nAlso removed %d linked ban(s)."), ExtraRemoved);
+
+						// Post a moderation-log notification for the unban.  bSilent=true above
+						// suppresses the generic OnBanRemoved broadcast to avoid a duplicate
+						// "✅ unbanned" post; we call NotifyBanRemoved here so the moderation
+						// log and webhook still receive a record of the removal.
+						FBanDiscordNotifier::NotifyBanRemoved(RemovedBan.Uid, RemovedBan.PlayerName,
+						                                      DiscordUsername);
 					}
 					else
 					{
@@ -1426,7 +1433,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 										(*MsgObjPtr)->TryGetStringField(TEXT("content"), MsgContent);
 
 										if (!AuthorName.IsEmpty() && !MsgContent.IsEmpty())
-											PageLines.Add(FString::Printf(TEXT("[%s]: %s\n"), *AuthorName, *MsgContent));
+											PageLines.Add(FString::Printf(TEXT("[%s]: %s\n"), *EscapeMarkdown(AuthorName), *EscapeMarkdown(MsgContent)));
 									}
 
 									// The last entry in the array is the oldest message.
@@ -2443,6 +2450,34 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 									if (UWorld* World = GI->GetWorld())
 										UBanEnforcer::KickConnectedPlayer(World, WarnUid,
 										                                  AutoBan.GetKickMessage());
+									// Add counterpart bans (IP↔EOS) mirroring all other auto-ban paths.
+									if (UPlayerSessionRegistry* SR = GI->GetSubsystem<UPlayerSessionRegistry>())
+									{
+										FString Plat, RawId;
+										UBanDatabase::ParseUid(WarnUid, Plat, RawId);
+										if (Plat == TEXT("EOS"))
+										{
+											FPlayerSessionRecord SR_Rec;
+											if (SR->FindByUid(WarnUid, SR_Rec) && !SR_Rec.IpAddress.IsEmpty())
+											{
+												const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), SR_Rec.IpAddress);
+												FBanEntry IpBan;
+												IpBan.Uid = IpUid;
+												IpBan.Platform = TEXT("IP");
+												IpBan.PlayerUID = SR_Rec.IpAddress;
+												IpBan.PlayerName = ResolvedName;
+												IpBan.Reason = AutoBan.Reason;
+												IpBan.BannedBy = AutoBan.BannedBy;
+												IpBan.BanDate = AutoBan.BanDate;
+												IpBan.bIsPermanent = AutoBan.bIsPermanent;
+												IpBan.ExpireDate = AutoBan.ExpireDate;
+												IpBan.LinkedUids.Add(WarnUid);
+												bool bIpSkipped = false;
+												if (DB->AddBanSkipIfPermanentExists(IpBan, bIpSkipped) || bIpSkipped)
+													DB->LinkBans(WarnUid, IpUid);
+											}
+										}
+									}
 									FBanDiscordNotifier::NotifyBanCreated(AutoBan);
 									FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
 									if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
@@ -2458,7 +2493,13 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 					TEXT(":warning: Warning issued for `%s` (%s) by <@%s>.\n"
 					     "Reason: %s\n"
 					     "Total warnings for this player: **%d**"),
-					*WarnUid, *ResolvedName, *DiscordUserId, *WarnReason, WarnCount);
+					*WarnUid, *EscapeMarkdown(ResolvedName), *DiscordUserId,
+					*EscapeMarkdown(WarnReason), WarnCount);
+
+				// Post to moderation log and webhook — mirrors BanChatCommands and
+				// BanDiscordSubsystem HandleWarnCommand/ExecutePanelWarn.
+				FBanDiscordNotifier::NotifyWarningIssued(WarnUid, ResolvedName, WarnReason,
+				                                         DiscordUsername, WarnCount);
 			}
 			else
 			{
@@ -4201,12 +4242,14 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 			const TCHAR RemindSuffix = FChar::ToLower(RemindArg[RemindArg.Len() - 1]);
 			const FString RemindNumStr = RemindArg.Left(RemindArg.Len() - 1);
 			const double RemindVal = FCString::Atod(*RemindNumStr);
-			if (RemindVal > 0.0)
+			if (FMath::IsFinite(RemindVal) && RemindVal > 0.0)
 			{
-				if (RemindSuffix == TCHAR('w'))      { RemindSpan = FTimespan::FromDays(RemindVal * 7.0);  bParsedRemind = true; }
-				else if (RemindSuffix == TCHAR('d')) { RemindSpan = FTimespan::FromDays(RemindVal);         bParsedRemind = true; }
-				else if (RemindSuffix == TCHAR('h')) { RemindSpan = FTimespan::FromHours(RemindVal);        bParsedRemind = true; }
-				else if (RemindSuffix == TCHAR('m')) { RemindSpan = FTimespan::FromMinutes(RemindVal);      bParsedRemind = true; }
+				// Cap each unit to 100 years (36 500 days) to prevent int64 overflow
+				// in FTimespan, mirroring the WhitelistManager::ParseDuration guards.
+				if      (RemindSuffix == TCHAR('w') && RemindVal <= 5214.0)   { RemindSpan = FTimespan::FromDays(RemindVal * 7.0);  bParsedRemind = true; }
+				else if (RemindSuffix == TCHAR('d') && RemindVal <= 36500.0)  { RemindSpan = FTimespan::FromDays(RemindVal);         bParsedRemind = true; }
+				else if (RemindSuffix == TCHAR('h') && RemindVal <= 876000.0) { RemindSpan = FTimespan::FromHours(RemindVal);        bParsedRemind = true; }
+				else if (RemindSuffix == TCHAR('m') && RemindVal <= 52560000.0) { RemindSpan = FTimespan::FromMinutes(RemindVal);    bParsedRemind = true; }
 			}
 		}
 		if (!bParsedRemind)
@@ -5068,7 +5111,7 @@ void UTicketSubsystem::CloseAppealTicketForOpener(const FString& DiscordUserId,
 								(*MsgObjPtr)->TryGetStringField(TEXT("content"), MsgContent);
 
 								if (!AuthorName.IsEmpty() && !MsgContent.IsEmpty())
-									TranscriptText += FString::Printf(TEXT("[%s]: %s\n"), *AuthorName, *MsgContent);
+									TranscriptText += FString::Printf(TEXT("[%s]: %s\n"), *EscapeMarkdown(AuthorName), *EscapeMarkdown(MsgContent));
 							}
 						}
 					}
@@ -5276,7 +5319,7 @@ void UTicketSubsystem::CloseTicketChannelInactive(const FString& ChannelId)
 								(*MsgObjPtr)->TryGetStringField(TEXT("content"), MsgContent);
 
 								if (!AuthorName.IsEmpty() && !MsgContent.IsEmpty())
-									TranscriptText += FString::Printf(TEXT("[%s]: %s\n"), *AuthorName, *MsgContent);
+									TranscriptText += FString::Printf(TEXT("[%s]: %s\n"), *EscapeMarkdown(AuthorName), *EscapeMarkdown(MsgContent));
 							}
 						}
 					}

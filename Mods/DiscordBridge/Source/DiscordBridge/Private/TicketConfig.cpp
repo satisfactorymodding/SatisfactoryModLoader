@@ -50,6 +50,7 @@ static float GetIniFloat(const FConfigFile& Cfg, const FString& Key, float Defau
 static int32 GetIniInt(const FConfigFile& Cfg, const FString& Key, int32 Default)
 {
 	const float Raw = GetIniFloat(Cfg, Key, static_cast<float>(Default));
+	if (!FMath::IsFinite(Raw)) return Default;
 	if (Raw < 0.0f) return 0;
 	if (Raw > static_cast<float>(INT32_MAX)) return INT32_MAX;
 	return static_cast<int32>(Raw);
