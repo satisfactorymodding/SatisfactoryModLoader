@@ -4999,7 +4999,8 @@ void UBanDiscordSubsystem::OnDiscordInteraction(const TSharedPtr<FJsonObject>& I
 			if ((*ObjPtr)->TryGetNumberField(TEXT("value"), NumVal) &&
 				FMath::IsFinite(NumVal) &&
 				NumVal >= static_cast<double>(INT64_MIN) &&
-				NumVal < static_cast<double>(INT64_MAX))
+				NumVal <= static_cast<double>(INT64_MAX) &&
+				FMath::Fmod(NumVal, 1.0) == 0.0)
 			return FString::Printf(TEXT("%lld"), static_cast<int64>(NumVal));
 			return FString();
 		}

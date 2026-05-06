@@ -247,7 +247,15 @@ FInGameMessagesConfig FInGameMessagesConfig::Load()
 		Cfg.Read(PrimaryPath);
 		bLoaded = Cfg.Contains(IGMSection);
 		if (bLoaded)
-			FFileHelper::LoadFileToString(RawFileContent, *PrimaryPath);
+		{
+			if (!FFileHelper::LoadFileToString(RawFileContent, *PrimaryPath))
+			{
+				UE_LOG(LogInGameMessagesConfig, Warning,
+				       TEXT("InGameMessages: Failed reading raw config '%s'; trying backup."),
+				       *PrimaryPath);
+				bLoaded = false;
+			}
+		}
 	}
 
 	// Fall back to the backup copy if primary is missing or empty.
@@ -256,7 +264,15 @@ FInGameMessagesConfig FInGameMessagesConfig::Load()
 		Cfg.Read(BackupPath);
 		bLoaded = Cfg.Contains(IGMSection);
 		if (bLoaded)
-			FFileHelper::LoadFileToString(RawFileContent, *BackupPath);
+		{
+			if (!FFileHelper::LoadFileToString(RawFileContent, *BackupPath))
+			{
+				UE_LOG(LogInGameMessagesConfig, Warning,
+				       TEXT("InGameMessages: Failed reading backup raw config '%s'."),
+				       *BackupPath);
+				bLoaded = false;
+			}
+		}
 	}
 
 	if (!bLoaded)
