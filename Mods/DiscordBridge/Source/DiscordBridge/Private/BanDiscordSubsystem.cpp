@@ -3263,6 +3263,7 @@ void UBanDiscordSubsystem::HandleModBanCommand(const TArray<FString>& Args,
 				GetCurrentAuditAdminUid(SenderName), SenderName, Reason);
 	}
 
+	FBanDiscordNotifier::NotifyBanCreated(Entry);
 	Respond(ChannelId, Msg);
 	PostModerationLog(Msg);
 }
