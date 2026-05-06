@@ -532,15 +532,28 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 
 				FString PatStr, ReplStr;
 				// Try to extract Pattern="…" and Replacement="…"
+				// Escape-aware extraction: honours \" sequences written by the config writer.
 				auto ExtractQuoted = [&](const FString& Key, FString& Out) -> bool
 				{
 					const FString Search = Key + TEXT("=\"");
 					const int32   Idx    = Cleaned.Find(Search, ESearchCase::IgnoreCase);
 					if (Idx == INDEX_NONE) return false;
 					const int32 Start = Idx + Search.Len();
-					const int32 End   = Cleaned.Find(TEXT("\""), ESearchCase::IgnoreCase, ESearchDir::FromStart, Start);
-					if (End == INDEX_NONE || End <= Start) return false;
-					Out = Cleaned.Mid(Start, End - Start);
+					FString Value;
+					int32 i = Start;
+					bool bClosed = false;
+					while (i < Cleaned.Len())
+					{
+						const TCHAR C = Cleaned[i];
+						if (C == TEXT('\\') && i + 1 < Cleaned.Len() && Cleaned[i + 1] == TEXT('"'))
+						{ Value.AppendChar(TEXT('"')); i += 2; }
+						else if (C == TEXT('"'))
+						{ bClosed = true; break; }
+						else
+						{ Value.AppendChar(C); ++i; }
+					}
+					if (!bClosed) return false;
+					Out = Value;
 					return true;
 				};
 
@@ -1212,15 +1225,28 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 				if (Cleaned.EndsWith(TEXT(")")))   Cleaned = Cleaned.LeftChop(1);
 
 				FString PatStr, ReplStr;
+				// Escape-aware extraction: honours \" sequences written by the config writer.
 				auto ExtractQuoted = [&](const FString& Key, FString& Out) -> bool
 				{
 					const FString Search = Key + TEXT("=\"");
 					const int32   Idx    = Cleaned.Find(Search, ESearchCase::IgnoreCase);
 					if (Idx == INDEX_NONE) return false;
 					const int32 Start = Idx + Search.Len();
-					const int32 End   = Cleaned.Find(TEXT("\""), ESearchCase::IgnoreCase, ESearchDir::FromStart, Start);
-					if (End == INDEX_NONE || End <= Start) return false;
-					Out = Cleaned.Mid(Start, End - Start);
+					FString Value;
+					int32 i = Start;
+					bool bClosed = false;
+					while (i < Cleaned.Len())
+					{
+						const TCHAR C = Cleaned[i];
+						if (C == TEXT('\\') && i + 1 < Cleaned.Len() && Cleaned[i + 1] == TEXT('"'))
+						{ Value.AppendChar(TEXT('"')); i += 2; }
+						else if (C == TEXT('"'))
+						{ bClosed = true; break; }
+						else
+						{ Value.AppendChar(C); ++i; }
+					}
+					if (!bClosed) return false;
+					Out = Value;
 					return true;
 				};
 
@@ -1460,7 +1486,11 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 					if (!Rebuilt.IsEmpty() && Rebuilt[Rebuilt.Len()-1] != TEXT('\n'))
 						Rebuilt += TEXT("\n");
 					for (const FChatRelayReplacement& R : Config.ChatRelayBlocklistReplacements)
-						Rebuilt += PlusPfx + TEXT("(Pattern=\"") + R.Pattern + TEXT("\",Replacement=\"") + R.Replacement + TEXT("\")\n");
+					{
+						const FString EscPat  = R.Pattern.Replace(TEXT("\""), TEXT("\\\""));
+						const FString EscRepl = R.Replacement.Replace(TEXT("\""), TEXT("\\\""));
+						Rebuilt += PlusPfx + TEXT("(Pattern=\"") + EscPat + TEXT("\",Replacement=\"") + EscRepl + TEXT("\")\n");
+					}
 					PrimaryContent = MoveTemp(Rebuilt);
 				}
 
@@ -1569,8 +1599,10 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 		FString BackupReplLines;
 		for (const FChatRelayReplacement& R : Config.ChatRelayBlocklistReplacements)
 		{
-			BackupReplLines += TEXT("+ChatRelayBlocklistReplacements=(Pattern=\"") + R.Pattern
-				+ TEXT("\",Replacement=\"") + R.Replacement + TEXT("\")\n");
+			const FString EscPat  = R.Pattern.Replace(TEXT("\""), TEXT("\\\""));
+			const FString EscRepl = R.Replacement.Replace(TEXT("\""), TEXT("\\\""));
+			BackupReplLines += TEXT("+ChatRelayBlocklistReplacements=(Pattern=\"") + EscPat
+				+ TEXT("\",Replacement=\"") + EscRepl + TEXT("\")\n");
 		}
 
 		// New config fields for the backup

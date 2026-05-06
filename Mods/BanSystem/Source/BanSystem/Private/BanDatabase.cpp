@@ -67,7 +67,9 @@ namespace BanDbJson
 
         FString IdStr;
         double IdDbl = 0.0;
-        if (Obj->TryGetStringField(TEXT("id"), IdStr))
+        if (Obj->TryGetStringField(TEXT("id"), IdStr)
+            && IdStr.IsNumeric() && IdStr.Len() <= 19
+            && (IdStr.Len() < 19 || IdStr <= TEXT("9223372036854775807")))
             OutEntry.Id = FCString::Atoi64(*IdStr);
         else if (Obj->TryGetNumberField(TEXT("id"), IdDbl)
             && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))

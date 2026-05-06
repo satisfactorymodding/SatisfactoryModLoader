@@ -2884,16 +2884,23 @@ void UBanRestApi::RegisterRoutes()
                     ? FDateTime(0)
                     : BatchBanNow + FTimespan::FromMinutes(DurationMinutes);
 
+                // For temporary bans use AddBanSkipIfPermanentExists to prevent silently
+                // downgrading an existing permanent ban to a shorter temporary one.
                 FBanEntry Saved;
-                if (DB->AddBan(Ban, &Saved))
+                bool bBatchSkipped = false;
+                const bool bBatchAdded = Ban.bIsPermanent
+                    ? DB->AddBan(Ban, &Saved)
+                    : DB->AddBanSkipIfPermanentExists(Ban, bBatchSkipped);
+                if (bBatchAdded)
                 {
-                    FBanDiscordNotifier::NotifyBanCreated(Saved);
+                    const FBanEntry& AddedEntry = Ban.bIsPermanent ? Saved : Ban;
+                    FBanDiscordNotifier::NotifyBanCreated(AddedEntry);
                     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                         AuditLog->LogAction(TEXT("ban"), Uid, TEXT(""), BannedBy, BannedBy, Reason);
                     // Kick the player if currently online.
                     if (UWorld* World = GI->GetWorld())
-                        UBanEnforcer::KickConnectedPlayer(World, Uid, Saved.GetKickMessage());
-                    ResultArr.Add(MakeShared<FJsonValueObject>(BanJson::EntryToJson(Saved)));
+                        UBanEnforcer::KickConnectedPlayer(World, Uid, AddedEntry.GetKickMessage());
+                    ResultArr.Add(MakeShared<FJsonValueObject>(BanJson::EntryToJson(AddedEntry)));
                     ++Added;
                 }
             }
