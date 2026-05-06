@@ -338,6 +338,152 @@ pass "CHECK 10 done"
 echo
 
 # =============================================================================
+# CHECK 11: FCString::Atoi (int32) without a Len <= guard
+#
+# FCString::Atoi silently overflows when the string is longer than 10 digits
+# (INT32_MAX has 10 digits).  Every file that calls FCString::Atoi — as
+# opposed to FCString::Atoi64 — must also have at least one ".Len() <="
+# check to reject strings that are too long before converting them.
+#
+# Note: FCString::Atoi64 has its own separate check (CHECK 13).
+# =============================================================================
+echo "--- CHECK 11: FCString::Atoi (int32) guarded by Len() <= check ---"
+
+while IFS= read -r -d '' file; do
+    # Does this file have a real (non-comment) FCString::Atoi call (not Atoi64)?
+    # Pipeline: grep all Atoi lines, then discard pure-comment lines.
+    atoi_lines=$(grep -P '\bFCString::Atoi\b(?!64)' "$file" | grep -vP '^\s*//')
+    if [[ -n "$atoi_lines" ]]; then
+        # Accept either .Len() or ->Len() paired with any comparison operator (<, >, <=, >=).
+        if ! grep -qP '(?:\.|->)Len\(\)\s*[<>!]' "$file"; then
+            fail "CHECK 11 – FCString::Atoi without Len() guard" \
+                "File: $file" \
+                "Calls FCString::Atoi (int32) but has no Len() length-guard." \
+                "Fix: add 'if (!Str.IsNumeric() || Str.Len() > 10 || (Str.Len() == 10 && Str > TEXT(\"2147483647\"))) return Default;' before each Atoi call."
+            echo "$atoi_lines" | while IFS= read -r ln; do
+                echo "       Line: $ln"
+            done
+        fi
+    fi
+done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+
+pass "CHECK 11 done"
+echo
+
+# =============================================================================
+# CHECK 12: FCString::Atof result guarded with FMath::IsFinite
+#
+# FCString::Atof can return NaN or ±Infinity for inputs like "nan", "inf",
+# or extremely large exponents.  Every file that calls FCString::Atof must
+# also call FMath::IsFinite on the result before using it, to prevent NaN
+# or Inf from propagating into configuration values, ban durations, or
+# arithmetic expressions.
+# =============================================================================
+echo "--- CHECK 12: FCString::Atof result guarded with FMath::IsFinite ---"
+
+while IFS= read -r -d '' file; do
+    if grep -qP '\bFCString::Atof\b' "$file"; then
+        if ! grep -qP '\bFMath::IsFinite\b' "$file"; then
+            fail "CHECK 12 – FCString::Atof without FMath::IsFinite guard" \
+                "File: $file" \
+                "Calls FCString::Atof but has no FMath::IsFinite guard on the result." \
+                "Fix: add 'return FMath::IsFinite(Result) ? Result : Default;' after each Atof call."
+            grep -nP '\bFCString::Atof\b' "$file" | while IFS= read -r ln; do
+                echo "       Line: $ln"
+            done
+        fi
+    fi
+done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+
+pass "CHECK 12 done"
+echo
+
+# =============================================================================
+# CHECK 13: FCString::Atoi64 (int64) without IsNumeric() and Len() <= guard
+#
+# FCString::Atoi64 overflows for strings exceeding INT64_MAX (19 digits).
+# Every file that calls FCString::Atoi64 must have BOTH:
+#   1. An IsNumeric() check — to reject non-digit strings.
+#   2. A Len() <= check  — to reject strings longer than 19 characters.
+# The lexicographic overflow guard (comparing to "9223372036854775807") is
+# encouraged but not required by this check; the two guards above are the
+# minimum mandatory protection.
+# =============================================================================
+echo "--- CHECK 13: FCString::Atoi64 guarded by IsNumeric() and Len() <= ---"
+
+while IFS= read -r -d '' file; do
+    if grep -qP '\bFCString::Atoi64\b' "$file"; then
+        # Accept either .IsNumeric() or FChar::IsDigit as a character-validity guard.
+        has_isnumeric=$(grep -cP '\.IsNumeric\(\)|FChar::IsDigit' "$file")
+        # Accept .Len() or ->Len() followed by any comparison operator (<, >, <=, >=, ==, !=).
+        has_len=$(grep -cP '(?:\.|->)Len\(\)\s*[<>!]' "$file")
+        if [[ "$has_isnumeric" -eq 0 || "$has_len" -eq 0 ]]; then
+            fail "CHECK 13 – FCString::Atoi64 without full safety guard" \
+                "File: $file" \
+                "Calls FCString::Atoi64 but is missing IsNumeric()/IsDigit guard (count=$has_isnumeric) or Len() comparison guard (count=$has_len)." \
+                "Fix: add 'if (!Str.IsNumeric() || Str.Len() > 19 || (Str.Len() == 19 && Str > TEXT(\"9223372036854775807\"))) return Default;' before each Atoi64 call."
+            grep -nP '\bFCString::Atoi64\b' "$file" | while IFS= read -r ln; do
+                echo "       Line: $ln"
+            done
+        fi
+    fi
+done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+
+pass "CHECK 13 done"
+echo
+
+# =============================================================================
+# CHECK 14: AsyncTask lambdas must capture UObjects via TWeakObjectPtr
+#
+# Lambdas passed to AsyncTask run on a background thread and may execute
+# after the owning UObject has been garbage-collected.  Capturing a raw
+# UObject pointer (e.g. "this" or a member pointer) in such a lambda is a
+# use-after-free.  Every file that uses AsyncTask must also use the
+# TWeakObjectPtr (or WeakThis / WeakOwner) capture pattern to guard against
+# accessing a destroyed object.
+# =============================================================================
+echo "--- CHECK 14: AsyncTask lambdas capture UObjects via TWeakObjectPtr ---"
+
+while IFS= read -r -d '' file; do
+    if grep -qP '\bAsyncTask\b' "$file"; then
+        if ! grep -qP '\bTWeakObjectPtr\b|\bWeakThis\b|\bWeakOwner\b|\bWeakGI\b' "$file"; then
+            fail "CHECK 14 – AsyncTask without TWeakObjectPtr capture" \
+                "File: $file" \
+                "Uses AsyncTask but has no TWeakObjectPtr/WeakThis guard for captured UObjects." \
+                "Fix: capture UObject* as 'TWeakObjectPtr<T> WeakX = this;' and check '.IsValid()' before use inside the lambda."
+        fi
+    fi
+done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+
+pass "CHECK 14 done"
+echo
+
+# =============================================================================
+# CHECK 15: PathParams uid values must be URL-decoded before use
+#
+# UE's HTTP server does NOT automatically URL-decode path parameter values.
+# A UID like "EOS:abc%3Axyz" will arrive with the '%3A' still encoded.
+# Every file that reads a uid path parameter via PathParams.FindRef("uid")
+# must also call FGenericPlatformHttp::UrlDecode() on the raw value before
+# passing it to database lookups or string comparisons.
+# =============================================================================
+echo "--- CHECK 15: PathParams uid values URL-decoded before use ---"
+
+while IFS= read -r -d '' file; do
+    if grep -qP 'PathParams.*\buid\b' "$file"; then
+        if ! grep -qP '\bUrlDecode\b' "$file"; then
+            fail "CHECK 15 – PathParams uid not URL-decoded" \
+                "File: $file" \
+                "Reads uid from PathParams but has no UrlDecode() call." \
+                "Fix: add 'const FString Uid = FGenericPlatformHttp::UrlDecode(RawUid);' after PathParams.FindRef(\"uid\")."
+        fi
+    fi
+done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+
+pass "CHECK 15 done"
+echo
+
+# =============================================================================
 # SUMMARY
 # =============================================================================
 echo "========================================================"

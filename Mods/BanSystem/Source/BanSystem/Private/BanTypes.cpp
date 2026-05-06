@@ -29,9 +29,21 @@ bool FBanTemplate::FromConfigString(const FString& ConfigStr, FBanTemplate& OutT
             return false;
         }
     }
-    // Use Atoi64 + clamp to safely handle very large digit strings that would
-    // overflow FCString::Atoi (int32).  Values outside [INT32_MIN, INT32_MAX] are
-    // clamped; negative values are treated as permanent (DurationMinutes <= 0).
+    // Use Atoi64 + clamp to safely handle large digit strings without int32 overflow.
+    // Reject strings exceeding 19 characters (the maximum decimal length of int64)
+    // before calling Atoi64 — beyond that length the conversion itself is UB even
+    // before the clamp below can run.  Values in the valid range that still fall
+    // outside [INT32_MIN, INT32_MAX] are saturated to the respective bound.
+    if (Parts[1].Len() > 19)
+    {
+        UE_LOG(LogBanTypes, Warning,
+            TEXT("BanTypes: template slug='%s' has out-of-range durationMinutes '%s' — clamping to INT32_MAX"),
+            *Parts[0], *Parts[1]);
+        OutTemplate.DurationMinutes = (Parts[1][0] == TEXT('-')) ? INT32_MIN : INT32_MAX;
+        OutTemplate.Reason          = Parts[2];
+        OutTemplate.Category        = Parts.Num() > 3 ? Parts[3] : FString();
+        return true;
+    }
     const int64 DurI64 = FCString::Atoi64(*Parts[1]);
     OutTemplate.DurationMinutes = static_cast<int32>(
         FMath::Clamp<int64>(DurI64, static_cast<int64>(INT32_MIN), static_cast<int64>(INT32_MAX)));
