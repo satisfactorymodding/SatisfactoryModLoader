@@ -71,7 +71,7 @@ static int32 GetWLInt(const FConfigFile& Cfg, const FString& Key, int32 Default)
 	FString Value;
 	if (Cfg.GetString(WLSection, *Key, Value) && !Value.IsEmpty())
 	{
-		if (!Value.IsNumeric())
+		if (!Value.IsNumeric() || Value.Len() > 10)
 			return Default;
 		return FCString::Atoi(*Value);
 	}

@@ -100,7 +100,7 @@ namespace
 		FString Value;
 		if (Cfg.GetString(ConfigSection, *Key, Value) && !Value.IsEmpty())
 		{
-			if (!Value.IsNumeric())
+			if (!Value.IsNumeric() || Value.Len() > 10)
 			{
 				UE_LOG(LogDiscordBridge, Warning,
 					TEXT("DiscordBridgeConfig: '%s' = '%s' is not numeric, using default %d"),
@@ -224,7 +224,7 @@ namespace
 	{
 		const FString* Found = Raw.Find(Key);
 		if (!Found || Found->IsEmpty()) return Default;
-		if (!Found->IsNumeric())
+		if (!Found->IsNumeric() || Found->Len() > 10)
 		{
 			UE_LOG(LogDiscordBridge, Warning,
 				TEXT("DiscordBridgeConfig: raw key '%s' = '%s' is not numeric, using default %d"),
@@ -659,14 +659,14 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 						{
 							// Value is followed by more fields — read up to the comma.
 							const FString Left = Rest.Left(Comma).TrimStartAndEnd();
-							if (Left.IsNumeric())
+							if (Left.IsNumeric() && Left.Len() <= 10)
 								SA.IntervalMinutes = FCString::Atoi(*Left);
 						}
 						else
 						{
 							// Value is the only / last field — use the whole remainder.
 							const FString Trimmed = Rest.TrimStartAndEnd();
-							if (Trimmed.IsNumeric())
+							if (Trimmed.IsNumeric() && Trimmed.Len() <= 10)
 								SA.IntervalMinutes = FCString::Atoi(*Trimmed);
 						}
 					}
