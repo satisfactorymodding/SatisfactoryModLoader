@@ -1044,7 +1044,10 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 	// ── Ticket feedback rating ────────────────────────────────────────────────
 	if (CustomId.StartsWith(TEXT("ticket_fb:")))
 	{
-		const int32 Rating = FCString::Atoi(*CustomId.Mid(FCString::Strlen(TEXT("ticket_fb:"))));
+		const FString RatingSuffix = CustomId.Mid(FCString::Strlen(TEXT("ticket_fb:")));
+		if (!RatingSuffix.IsNumeric() || RatingSuffix.Len() > 2)
+			return; // malformed custom_id — silently ignore
+		const int32 Rating = FCString::Atoi(*RatingSuffix);
 		if (Rating >= 1 && Rating <= 5)
 		{
 			const FString StatsPath = GetStatsFilePath();

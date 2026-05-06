@@ -141,7 +141,11 @@ void FBanDiscordNotifier::PostWebhook(const FString& JsonPayload)
 void FBanDiscordNotifier::NotifyBanCreated(const FBanEntry& Entry)
 {
     const FString PlayerValue = EscapeMarkdown(Entry.PlayerName) + TEXT(" (") + Entry.Uid + TEXT(")");
-    const double RawMin0 = (Entry.ExpireDate - Entry.BanDate).GetTotalMinutes();
+    // When BanDate is unset (FDateTime(0) — common for peer-synced entries), use
+    // the remaining time from now so the displayed duration is always meaningful.
+    const FDateTime EffectiveBanDate = (Entry.BanDate == FDateTime(0))
+        ? FDateTime::UtcNow() : Entry.BanDate;
+    const double RawMin0 = (Entry.ExpireDate - EffectiveBanDate).GetTotalMinutes();
     const FString DurationValue = Entry.bIsPermanent
         ? TEXT("Permanent")
         : FString::Printf(TEXT("%lld minutes"),
@@ -395,9 +399,9 @@ void FBanDiscordNotifier::NotifyGeoIpBlocked(const FString& PlayerName, const FS
         : EscapeMarkdown(PlayerName) + TEXT(" (") + Uid + TEXT(")");
 
     const FString Fields =
-        Field(TEXT("Player"),      PlayerValue)   + TEXT(",") +
-        Field(TEXT("IP"),          IpAddress)     + TEXT(",") +
-        Field(TEXT("Country"),     CountryCode)   + TEXT(",") +
+        Field(TEXT("Player"),      PlayerValue)                   + TEXT(",") +
+        Field(TEXT("IP"),          EscapeMarkdown(IpAddress))     + TEXT(",") +
+        Field(TEXT("Country"),     EscapeMarkdown(CountryCode))   + TEXT(",") +
         Field(TEXT("Reason"),      TEXT("Geo-IP region blocked"), false);
 
     // Amber: 16744272

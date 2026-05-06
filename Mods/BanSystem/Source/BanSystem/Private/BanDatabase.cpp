@@ -3,6 +3,7 @@
 
 #include "BanDatabase.h"
 #include "BanSystemConfig.h"
+#include "BanDiscordNotifier.h"
 
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonReader.h"
@@ -707,7 +708,12 @@ int32 UBanDatabase::PruneExpiredBans(bool bSilent)
     if (!bSilent)
     {
         for (const FBanEntry& E : Expired)
+        {
             OnBanRemoved.Broadcast(E.Uid, E.PlayerName);
+            // Also fire the expiry-specific webhook notification so the event is
+            // classified as "⏱️ Temp-Ban Expired" rather than "✅ Ban Removed".
+            FBanDiscordNotifier::NotifyBanExpired(E);
+        }
     }
 
     return Expired.Num();
@@ -952,15 +958,19 @@ FString UBanDatabase::Backup(const FString& BackupDir, int32 MaxKeep) const
     UE_LOG(LogBanDatabase, Log, TEXT("Backup: %s"), *Dest);
 
     // Prune old backups beyond MaxKeep.
-    TArray<FString> Files;
-    IFileManager::Get().FindFiles(Files, *(BackupDir / TEXT("bans_*.json")), true, false);
-    Files.Sort();
-    // Files is sorted oldest-first by timestamp-stamped filename.
-    // Delete the surplus oldest entries in a single forward pass (O(n)).
-    const int32 ToDelete = FMath::Max(0, Files.Num() - MaxKeep);
-    for (int32 i = 0; i < ToDelete; ++i)
+    // MaxKeep <= 0 is treated as "keep all" (backup rotation disabled).
+    if (MaxKeep > 0)
     {
-        PF.DeleteFile(*(BackupDir / Files[i]));
+        TArray<FString> Files;
+        IFileManager::Get().FindFiles(Files, *(BackupDir / TEXT("bans_*.json")), true, false);
+        Files.Sort();
+        // Files is sorted oldest-first by timestamp-stamped filename.
+        // Delete the surplus oldest entries in a single forward pass (O(n)).
+        const int32 ToDelete = FMath::Max(0, Files.Num() - MaxKeep);
+        for (int32 i = 0; i < ToDelete; ++i)
+        {
+            PF.DeleteFile(*(BackupDir / Files[i]));
+        }
     }
 
     return Dest;

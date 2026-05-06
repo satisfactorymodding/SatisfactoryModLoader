@@ -479,10 +479,17 @@ namespace BanChat
         // Remove all explicitly linked UIDs.
         for (const FString& LinkedUid : LinkedUids)
         {
-            if (DB->RemoveBanByUid(LinkedUid) && Sender)
-                Sender->SendChatMessage(
-                    FString::Printf(TEXT("[BanChatCommands] Also removed linked ban %s."), *LinkedUid),
-                    FLinearColor::Green);
+            FBanEntry LinkedRecord;
+            if (DB->RemoveBanByUid(LinkedUid, LinkedRecord))
+            {
+                FBanDiscordNotifier::NotifyBanRemoved(
+                    LinkedUid, LinkedRecord.PlayerName,
+                    Sender ? Sender->GetSenderName() : TEXT("console"));
+                if (Sender)
+                    Sender->SendChatMessage(
+                        FString::Printf(TEXT("[BanChatCommands] Also removed linked ban %s."), *LinkedUid),
+                        FLinearColor::Green);
+            }
         }
 
         // Also check the session registry for counterparts that were never linked.
@@ -500,11 +507,18 @@ namespace BanChat
             if (Registry->FindByUid(PrimaryUid, Rec) && !Rec.IpAddress.IsEmpty())
             {
                 const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Rec.IpAddress);
-                if (!LinkedUids.Contains(IpUid) && DB->RemoveBanByUid(IpUid) && Sender)
-                    Sender->SendChatMessage(
-                        FString::Printf(TEXT("[BanChatCommands] Also removed IP ban for %s."),
-                            *Rec.IpAddress),
-                        FLinearColor::Green);
+                FBanEntry IpRecord;
+                if (!LinkedUids.Contains(IpUid) && DB->RemoveBanByUid(IpUid, IpRecord))
+                {
+                    FBanDiscordNotifier::NotifyBanRemoved(
+                        IpUid, IpRecord.PlayerName,
+                        Sender ? Sender->GetSenderName() : TEXT("console"));
+                    if (Sender)
+                        Sender->SendChatMessage(
+                            FString::Printf(TEXT("[BanChatCommands] Also removed IP ban for %s."),
+                                *Rec.IpAddress),
+                            FLinearColor::Green);
+                }
             }
         }
         else if (Platform == TEXT("IP"))
@@ -513,11 +527,18 @@ namespace BanChat
             for (const FPlayerSessionRecord& Rec : Records)
             {
                 if (Rec.Uid.IsEmpty()) continue;
-                if (!LinkedUids.Contains(Rec.Uid) && DB->RemoveBanByUid(Rec.Uid) && Sender)
-                    Sender->SendChatMessage(
-                        FString::Printf(TEXT("[BanChatCommands] Also removed EOS ban for %s (%s)."),
-                            *Rec.DisplayName, *Rec.Uid),
-                        FLinearColor::Green);
+                FBanEntry EosRecord;
+                if (!LinkedUids.Contains(Rec.Uid) && DB->RemoveBanByUid(Rec.Uid, EosRecord))
+                {
+                    FBanDiscordNotifier::NotifyBanRemoved(
+                        Rec.Uid, EosRecord.PlayerName,
+                        Sender ? Sender->GetSenderName() : TEXT("console"));
+                    if (Sender)
+                        Sender->SendChatMessage(
+                            FString::Printf(TEXT("[BanChatCommands] Also removed EOS ban for %s (%s)."),
+                                *Rec.DisplayName, *Rec.Uid),
+                            FLinearColor::Green);
+                }
             }
         }
     }
@@ -1532,7 +1553,8 @@ EExecutionStatus ABanListChatCommand::ExecuteCommand_Implementation(
     const int32 PageSize    = UBanChatCommandsConfig::Get()
         ? FMath::Clamp(UBanChatCommandsConfig::Get()->BanListPageSize, 1, 50)
         : 10;
-    const int32 Page        = (Arguments.Num() > 0 && Arguments[0].IsNumeric())
+    const int32 Page        = (Arguments.Num() > 0 && Arguments[0].IsNumeric()
+                               && Arguments[0].Len() <= 9)
         ? FMath::Max(1, FCString::Atoi(*Arguments[0])) : 1;
     const int32 TotalPages  = FMath::DivideAndRoundUp(AllBans.Num(), PageSize);
     const int32 PageClamped = FMath::Clamp(Page, 1, TotalPages);
@@ -2214,7 +2236,7 @@ EExecutionStatus AWarningsChatCommand::ExecuteCommand_Implementation(
 
     // Optional page argument: /warnings <target> [page]
     int32 Page = 1;
-    if (Arguments.Num() >= 2 && Arguments[1].IsNumeric())
+    if (Arguments.Num() >= 2 && Arguments[1].IsNumeric() && Arguments[1].Len() <= 9)
     {
         Page = FMath::Max(1, FCString::Atoi(*Arguments[1]));
     }
@@ -3034,15 +3056,24 @@ EExecutionStatus ATempUnmuteChatCommand::ExecuteCommand_Implementation(
         return EExecutionStatus::COMPLETED;
     }
 
-    MuteReg->UnmutePlayer(Uid);
-    FBanDiscordNotifier::NotifyPlayerUnmuted(Uid, DisplayName, Sender->GetSenderName());
+    if (MuteReg->UnmutePlayer(Uid))
+    {
+        FBanDiscordNotifier::NotifyPlayerUnmuted(Uid, DisplayName, Sender->GetSenderName());
 
-    if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
-        AuditLog->LogAction(TEXT("unmute"), Uid, DisplayName, AdminId, Sender->GetSenderName(), TEXT("Timed mute lifted early"));
+        if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
+            AuditLog->LogAction(TEXT("unmute"), Uid, DisplayName, AdminId, Sender->GetSenderName(), TEXT("Timed mute lifted early"));
 
-    Sender->SendChatMessage(
-        FString::Printf(TEXT("[BanChatCommands] Timed mute lifted early for '%s'."), *DisplayName),
-        FLinearColor::Green);
+        Sender->SendChatMessage(
+            FString::Printf(TEXT("[BanChatCommands] Timed mute lifted early for '%s'."), *DisplayName),
+            FLinearColor::Green);
+    }
+    else
+    {
+        // Mute was already removed concurrently (TickExpiry or another admin's /unmute).
+        Sender->SendChatMessage(
+            FString::Printf(TEXT("[BanChatCommands] '%s' is no longer muted."), *DisplayName),
+            FLinearColor::Yellow);
+    }
 
     return EExecutionStatus::COMPLETED;
 }
@@ -3364,7 +3395,8 @@ EExecutionStatus AMuteListChatCommand::ExecuteCommand_Implementation(
     }
 
     const int32 PageSize    = Cfg ? FMath::Clamp(Cfg->BanListPageSize, 1, 50) : 10;
-    const int32 Page        = (Arguments.Num() > 0 && Arguments[0].IsNumeric())
+    const int32 Page        = (Arguments.Num() > 0 && Arguments[0].IsNumeric()
+                               && Arguments[0].Len() <= 9)
         ? FMath::Max(1, FCString::Atoi(*Arguments[0])) : 1;
     const int32 TotalPages  = FMath::DivideAndRoundUp(Mutes.Num(), PageSize);
     const int32 PageClamped = FMath::Clamp(Page, 1, TotalPages);
@@ -4027,9 +4059,6 @@ EExecutionStatus AScheduleBanChatCommand::ExecuteCommand_Implementation(
 {
     FString AdminUid;
     if (!BanChat::IsAdminSender(Sender, AdminUid)) return EExecutionStatus::INSUFFICIENT_PERMISSIONS;
-
-    UBanDatabase* DB = BanChat::GetDB(this);
-    if (!DB) { Sender->SendChatMessage(TEXT("[BanChatCommands] Database unavailable."), FLinearColor::Red); return EExecutionStatus::UNCOMPLETED; }
 
     // List pending scheduled bans when no arguments.
     if (Arguments.IsEmpty())
