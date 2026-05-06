@@ -297,6 +297,117 @@ namespace
 } // anonymous namespace
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Config post-load helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Trims leading/trailing whitespace from every string field that may hold a
+// Discord snowflake ID, URL, or credential, so accidental spaces in the INI
+// file do not silently break feature guards or HTTP requests.
+static void TrimConfigStringFields(FDiscordBridgeConfig& Config)
+{
+	Config.BotToken                 = Config.BotToken.TrimStartAndEnd();
+	Config.ChannelId                = Config.ChannelId.TrimStartAndEnd();
+	Config.StatusChannelId          = Config.StatusChannelId.TrimStartAndEnd();
+	Config.PlayerEventsChannelId    = Config.PlayerEventsChannelId.TrimStartAndEnd();
+	Config.PlayerJoinAdminChannelId = Config.PlayerJoinAdminChannelId.TrimStartAndEnd();
+	Config.PlayersCommandChannelId  = Config.PlayersCommandChannelId.TrimStartAndEnd();
+	Config.PhaseEventsChannelId     = Config.PhaseEventsChannelId.TrimStartAndEnd();
+	Config.SchematicEventsChannelId = Config.SchematicEventsChannelId.TrimStartAndEnd();
+	Config.BanEventsChannelId       = Config.BanEventsChannelId.TrimStartAndEnd();
+	Config.AnnouncementChannelId    = Config.AnnouncementChannelId.TrimStartAndEnd();
+	Config.ModeratorChannelId       = Config.ModeratorChannelId.TrimStartAndEnd();
+	Config.ModerationLogChannelId   = Config.ModerationLogChannelId.TrimStartAndEnd();
+	Config.BotInfoChannelId         = Config.BotInfoChannelId.TrimStartAndEnd();
+	Config.FallbackWebhookUrl       = Config.FallbackWebhookUrl.TrimStartAndEnd();
+	for (FScheduledAnnouncement& SA : Config.ScheduledAnnouncements)
+		SA.ChannelId = SA.ChannelId.TrimStartAndEnd();
+}
+
+// Returns true when S is a plausible Discord snowflake ID:
+// non-empty, all digits, 17–20 characters (covering IDs issued since 2015).
+static bool IsValidDiscordSnowflake(const FString& S)
+{
+	return !S.IsEmpty() && S.IsNumeric() && S.Len() >= 17 && S.Len() <= 20;
+}
+
+// Logs actionable operator warnings for common configuration mistakes.
+// Called once after all settings have been fully loaded / restored from backup.
+static void ValidateConfigFields(const FDiscordBridgeConfig& Config)
+{
+	// Helper: warn when a non-empty ID field is not a valid snowflake.
+	auto WarnBadSnowflake = [](const FString& Value, const TCHAR* Key)
+	{
+		if (!Value.IsEmpty() && !IsValidDiscordSnowflake(Value))
+		{
+			UE_LOG(LogDiscordBridge, Warning,
+			       TEXT("DiscordBridgeConfig: '%s' = \"%s\" is not a valid Discord snowflake "
+			            "(expected 17-20 digit numeric string). "
+			            "Check DefaultDiscordBridge.ini."),
+			       Key, *Value);
+		}
+	};
+
+	// Channel IDs
+	WarnBadSnowflake(Config.ChannelId,                TEXT("ChannelId"));
+	WarnBadSnowflake(Config.StatusChannelId,          TEXT("StatusChannelId"));
+	WarnBadSnowflake(Config.PlayerEventsChannelId,    TEXT("PlayerEventsChannelId"));
+	WarnBadSnowflake(Config.PlayerJoinAdminChannelId, TEXT("PlayerJoinAdminChannelId"));
+	WarnBadSnowflake(Config.PlayersCommandChannelId,  TEXT("PlayersCommandChannelId"));
+	WarnBadSnowflake(Config.PhaseEventsChannelId,     TEXT("PhaseEventsChannelId"));
+	WarnBadSnowflake(Config.SchematicEventsChannelId, TEXT("SchematicEventsChannelId"));
+	WarnBadSnowflake(Config.BanEventsChannelId,       TEXT("BanEventsChannelId"));
+	WarnBadSnowflake(Config.AnnouncementChannelId,    TEXT("AnnouncementChannelId"));
+	WarnBadSnowflake(Config.ModeratorChannelId,       TEXT("ModeratorChannelId"));
+	WarnBadSnowflake(Config.ModerationLogChannelId,   TEXT("ModerationLogChannelId"));
+	WarnBadSnowflake(Config.BotInfoChannelId,         TEXT("BotInfoChannelId"));
+	for (int32 i = 0; i < Config.ScheduledAnnouncements.Num(); ++i)
+	{
+		if (!Config.ScheduledAnnouncements[i].ChannelId.IsEmpty())
+		{
+			WarnBadSnowflake(Config.ScheduledAnnouncements[i].ChannelId,
+			                 *FString::Printf(TEXT("ScheduledAnnouncements[%d].ChannelId"), i));
+		}
+	}
+
+	// BotToken structure heuristic: a Discord bot token is always
+	// base64_user_id.timestamp.hmac — at least 50 characters with two dots.
+	if (!Config.BotToken.IsEmpty())
+	{
+		int32 DotCount = 0;
+		for (int32 i = 0; i < Config.BotToken.Len(); ++i)
+			if (Config.BotToken[i] == TEXT('.')) ++DotCount;
+		if (Config.BotToken.Len() < 50 || DotCount < 2)
+		{
+			UE_LOG(LogDiscordBridge, Warning,
+			       TEXT("DiscordBridgeConfig: BotToken does not look like a valid Discord bot token "
+			            "(expected base64id.timestamp.hmac, at least 50 characters with two dots). "
+			            "Verify you copied the Token (not the Client Secret) from "
+			            "Bot -> Token in the Discord Developer Portal."));
+		}
+	}
+
+	// Feature-disabled hints: alert when a feature appears configured but its
+	// interval/threshold keeps it silently inactive.
+	if (Config.bEnableJoinReactionVoting && Config.VoteWindowMinutes <= 0)
+	{
+		UE_LOG(LogDiscordBridge, Warning,
+		       TEXT("DiscordBridgeConfig: EnableJoinReactionVoting=True but VoteWindowMinutes=%d. "
+		            "Vote windows will be clamped to 1 second. "
+		            "Set VoteWindowMinutes > 0 to control the voting period."),
+		       Config.VoteWindowMinutes);
+	}
+
+	if (!Config.AnnouncementMessage.IsEmpty() && Config.AnnouncementIntervalMinutes <= 0)
+	{
+		UE_LOG(LogDiscordBridge, Warning,
+		       TEXT("DiscordBridgeConfig: AnnouncementMessage is set but AnnouncementIntervalMinutes=%d. "
+		            "The legacy scheduled announcement will not fire. "
+		            "Set AnnouncementIntervalMinutes > 0, or use ScheduledAnnouncements array entries instead."),
+		       Config.AnnouncementIntervalMinutes);
+	}
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // FDiscordBridgeConfig
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -593,10 +704,9 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 			}
 		}
 
-		// Trim leading/trailing whitespace from credential fields to prevent
+		// Trim leading/trailing whitespace from all ID / URL fields to prevent
 		// subtle mismatches when operators accidentally include spaces.
-		Config.BotToken  = Config.BotToken.TrimStartAndEnd();
-		Config.ChannelId = Config.ChannelId.TrimStartAndEnd();
+		TrimConfigStringFields(Config);
 
 		bLoadedFromMod = true;
 		UE_LOG(LogDiscordBridge, Log, TEXT("DiscordBridge: Loaded config from %s"), *ModFilePath);
@@ -1402,6 +1512,11 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 			}
 		}
 	}
+
+	// ── Post-load: trim whitespace and validate all fields ──────────────────
+	// Applies to values restored from backup as well as those from primary.
+	TrimConfigStringFields(Config);
+	ValidateConfigFields(Config);
 
 	// ── Step 3: write up-to-date backup ─────────────────────────────────────────
 	// Write a single backup file with all settings on every server start so they
