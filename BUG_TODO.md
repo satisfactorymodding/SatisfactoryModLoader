@@ -2872,3 +2872,34 @@ Round 13 for per-entry ID fields and Round 16 for `BanAppealRegistry::NextId`.
 ---
 
 *Last updated: 2026-05-06. All 2 Round-39 bugs resolved.*
+
+---
+
+## Round 40 — Full Source Audit (2026-05-07)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 39).  1 bug found and fixed.
+
+---
+
+### ✅ Fixed — R40-01: `ExecutePanelBanCheck` "currently banned" branch missing `EscapeMarkdown()` on `DisplayName`, `Entry.Reason`, `Entry.BannedBy` (MEDIUM)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp` (~line 6876)
+
+**Root cause:** `ExecutePanelBanCheck` builds two branches of a Discord message depending on
+whether the target is currently banned. The "not currently banned" and "not banned" branches
+(lines 6900–6908) correctly wrap `DisplayName` and `AnyEntry.Reason` in
+`BanDiscordHelpers::EscapeMarkdown()`. However the `bBanned == true` branch (lines 6876–6886)
+embedded `DisplayName`, `Entry.Reason`, and `Entry.BannedBy` verbatim, with no escaping.
+
+A player whose display name or a ban record whose reason or "banned by" field contained
+Discord Markdown special characters (`*`, `_`, `` ` ``, `~`, `|`, `>`, `\`) could inject
+arbitrary formatting into the panel ban-check response. BUG-R24-01 claimed to fix "all
+`ExecutePanel*` functions" but this asymmetric branch was overlooked.
+
+**Fix:** Applied `BanDiscordHelpers::EscapeMarkdown()` to `DisplayName`, `Entry.Reason`, and
+`Entry.BannedBy` at their call sites in the `bBanned == true` branch, making the escaping
+consistent with the "not currently banned" branch.
+
+---
+
+*Last updated: 2026-05-07. All 1 Round-40 bug resolved.*
