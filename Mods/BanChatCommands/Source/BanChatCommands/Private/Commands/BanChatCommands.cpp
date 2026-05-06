@@ -989,6 +989,30 @@ namespace BanChat
         }
         return Out;
     }
+
+    /** Escape Discord markdown special characters so that player-supplied
+     *  strings rendered in embed field values cannot inject bold, italic,
+     *  code or link formatting. */
+    static FString EscapeMarkdown(const FString& Text)
+    {
+        FString Out;
+        Out.Reserve(Text.Len() + 8);
+        for (TCHAR C : Text)
+        {
+            switch (C)
+            {
+            case TEXT('*'): case TEXT('_'): case TEXT('`'): case TEXT('~'):
+            case TEXT('|'): case TEXT('>'): case TEXT('\\'): case TEXT('['):
+            case TEXT(']'): case TEXT('#'):
+                Out += TEXT('\\');
+                break;
+            default:
+                break;
+            }
+            Out += C;
+        }
+        return Out;
+    }
 } // namespace BanChat
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1856,8 +1880,9 @@ EExecutionStatus AReloadConfigChatCommand::ExecuteCommand_Implementation(
             ? TEXT("No changes detected")
             : FString::Join(Changes, TEXT("\n• "));
 
-        // Escape for JSON using the shared helper (handles all control characters and surrogates).
-        const FString EscReloader = BanChat::JsonEscape(Sender->GetSenderName());
+        // Escape for JSON (handles all control chars and surrogates) then escape
+        // Discord markdown so the embed renders the admin name literally.
+        const FString EscReloader = BanChat::JsonEscape(BanChat::EscapeMarkdown(Sender->GetSenderName()));
         const FString EscChanges  = BanChat::JsonEscape(ChangeList);
 
         const FString Payload = FString::Printf(
@@ -3509,10 +3534,18 @@ EExecutionStatus AExtendBanChatCommand::ExecuteCommand_Implementation(
     const FString PrimaryUid   = Entry.Uid;
     const int32   MinutesToAdd = ExtraMinutes;
 
+    bool bRaceWasPermanent = false;
     FBanEntry Updated;
     if (!DB->UpdateBan(PrimaryUid,
-        [MinutesToAdd](FBanEntry& E)
+        [MinutesToAdd, &bRaceWasPermanent](FBanEntry& E)
         {
+            // Re-check inside the lock: a concurrent /ban permanent could have
+            // upgraded this entry between our initial check and the UpdateBan call.
+            if (E.bIsPermanent)
+            {
+                bRaceWasPermanent = true;
+                return;
+            }
             // Re-read ExpireDate inside the lock so the extension is always
             // relative to the freshest known expiry, not a stale snapshot.
             const FDateTime BaseTime = FMath::Max(E.ExpireDate, FDateTime::UtcNow());
@@ -3524,6 +3557,15 @@ EExecutionStatus AExtendBanChatCommand::ExecuteCommand_Implementation(
         // Concurrent unban raced the update.
         Sender->SendChatMessage(
             FString::Printf(TEXT("[BanChatCommands] Ban for '%s' was removed concurrently — not extended."), *DisplayName),
+            FLinearColor::Yellow);
+        return EExecutionStatus::COMPLETED;
+    }
+
+    // Abort if the ban was upgraded to permanent inside the lock.
+    if (bRaceWasPermanent)
+    {
+        Sender->SendChatMessage(
+            FString::Printf(TEXT("[BanChatCommands] '%s' now has a permanent ban — /extend only applies to temporary bans."), *DisplayName),
             FLinearColor::Yellow);
         return EExecutionStatus::COMPLETED;
     }
@@ -3849,7 +3891,8 @@ EExecutionStatus AClearChatChatCommand::ExecuteCommand_Implementation(
                     "{\"name\":\"Admin\",\"value\":\"%s\",\"inline\":true},"
                     "{\"name\":\"Reason\",\"value\":\"%s\",\"inline\":false}],"
                     "\"timestamp\":\"%s\"}]}"),
-                *BanChat::JsonEscape(AdminName), *BanChat::JsonEscape(Reason), *FDateTime::UtcNow().ToIso8601());
+                *BanChat::JsonEscape(BanChat::EscapeMarkdown(AdminName)),
+            *BanChat::JsonEscape(BanChat::EscapeMarkdown(Reason)), *FDateTime::UtcNow().ToIso8601());
 
             TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Req =
                 FHttpModule::Get().CreateRequest();
@@ -3938,8 +3981,9 @@ EExecutionStatus AReportChatCommand::ExecuteCommand_Implementation(
                 "{\"name\":\"Reported By\",\"value\":\"%s\",\"inline\":true},"
                 "{\"name\":\"Reason\",\"value\":\"%s\",\"inline\":false}],"
                 "\"timestamp\":\"%s\"}]}"),
-            *BanChat::JsonEscape(TargetName), *BanChat::JsonEscape(ReporterName),
-            *BanChat::JsonEscape(Reason), *FDateTime::UtcNow().ToIso8601());
+            *BanChat::JsonEscape(BanChat::EscapeMarkdown(TargetName)),
+            *BanChat::JsonEscape(BanChat::EscapeMarkdown(ReporterName)),
+            *BanChat::JsonEscape(BanChat::EscapeMarkdown(Reason)), *FDateTime::UtcNow().ToIso8601());
 
         TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Req =
             FHttpModule::Get().CreateRequest();

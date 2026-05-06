@@ -737,6 +737,7 @@ void UBanRestApi::RegisterRoutes()
             }
 
             FBanDiscordNotifier::NotifyBanCreated(Saved);
+            RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), Saved);
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 // REST API bans have no separate admin UID (BannedBy is a display name).
                 // Pass an empty adminUid so the audit log does not record the name twice.
@@ -1642,6 +1643,9 @@ void UBanRestApi::RegisterRoutes()
             }
 
             FBanDiscordNotifier::NotifyBanCreated(Saved);
+            RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), Saved);
+            if (UWorld* World2 = GI->GetWorld())
+                UBanEnforcer::KickConnectedPlayer(World2, Saved.Uid, Saved.GetKickMessage());
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 AuditLog->LogAction(TEXT("ban"), Saved.Uid, IpAddress, TEXT(""), BannedBy, Reason);
 
@@ -1697,6 +1701,8 @@ void UBanRestApi::RegisterRoutes()
             }
 
             const FString DisplayName = RemovedIpEntry.PlayerName.IsEmpty() ? IpAddress : RemovedIpEntry.PlayerName;
+            RestApiRemoveCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(),
+                Uid, RemovedIpEntry.LinkedUids);
             FBanDiscordNotifier::NotifyBanRemoved(Uid, DisplayName, TEXT("api"));
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 AuditLog->LogAction(TEXT("unban"), Uid, DisplayName, TEXT("api"), TEXT("api"), TEXT("ip ban removal"));
@@ -1732,7 +1738,8 @@ void UBanRestApi::RegisterRoutes()
                 if (FJsonSerializer::Deserialize(Reader, Body) && Body.IsValid())
                 {
                     double DaysDbl = 0.0;
-                    if (Body->TryGetNumberField(TEXT("daysToKeep"), DaysDbl) && DaysDbl > 0.0)
+                    if (Body->TryGetNumberField(TEXT("daysToKeep"), DaysDbl)
+                        && FMath::IsFinite(DaysDbl) && DaysDbl > 0.0)
                     {
                         const int64 Clamped = FMath::Min(static_cast<int64>(DaysDbl), static_cast<int64>(INT32_MAX));
                         DaysToKeep = static_cast<int32>(Clamped);
@@ -2964,6 +2971,9 @@ void UBanRestApi::RegisterRoutes()
             // the same BanDate/ExpireDate regardless of how long the loop takes.
             const FDateTime BatchBanNow = FDateTime::UtcNow();
 
+            TArray<TSharedPtr<FJsonValue>> ResultArr;
+            int32 Added = 0;
+
             for (const TSharedPtr<FJsonValue>& Val : *UidsArr)
             {
                 FString Uid;
@@ -2993,6 +3003,7 @@ void UBanRestApi::RegisterRoutes()
                 {
                     const FBanEntry& AddedEntry = Ban.bIsPermanent ? Saved : Ban;
                     FBanDiscordNotifier::NotifyBanCreated(AddedEntry);
+                    RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), AddedEntry);
                     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                         AuditLog->LogAction(TEXT("ban"), Uid, TEXT(""), BannedBy, BannedBy, Reason);
                     // Kick the player if currently online.

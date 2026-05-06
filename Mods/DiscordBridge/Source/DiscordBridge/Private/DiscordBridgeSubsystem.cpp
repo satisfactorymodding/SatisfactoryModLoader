@@ -3919,7 +3919,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 	else if (Verb == TEXT("log"))
 	{
 		int32 N = 10;
-		if (!Arg.IsEmpty()) N = FMath::Clamp(FCString::Atoi(*Arg), 1, 20);
+		if (!Arg.IsEmpty() && Arg.IsNumeric()) N = FMath::Clamp(FCString::Atoi(*Arg), 1, 20);
 		const TArray<FWhitelistAuditEntry> Log = FWhitelistManager::GetAuditLog(N);
 		if (Log.Num() == 0)
 		{
@@ -3993,7 +3993,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 			const TArray<FWhitelistEntry> Results = FWhitelistManager::Search(Arg);
 			if (Results.Num() == 0)
 			{
-				Response = FString::Printf(TEXT(":mag: No whitelist entries matching `%s`."), *Arg);
+				Response = FString::Printf(TEXT(":mag: No whitelist entries matching `%s`."), *EscapeMarkdown(Arg));
 			}
 			else
 			{
@@ -4110,7 +4110,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 
 			Response = FString::Printf(
 				TEXT(":mailbox_with_mail: Your application for **%s** has been submitted! "
-				     "An admin will review it shortly."), *Arg);
+			     "An admin will review it shortly."), *EscapeMarkdown(Arg));
 		}
 	}
 	else if (Verb == TEXT("link"))

@@ -53,6 +53,32 @@ namespace
         return Out;
     }
 
+    /**
+     * Escape Discord markdown special characters in a player-supplied string so
+     * that it is rendered literally in Discord embed field values and cannot
+     * inject bold/italic/code formatting or clickable links.
+     */
+    FString EscapeMarkdown(const FString& Text)
+    {
+        FString Out;
+        Out.Reserve(Text.Len() + 8);
+        for (TCHAR C : Text)
+        {
+            switch (C)
+            {
+            case TEXT('*'): case TEXT('_'): case TEXT('`'): case TEXT('~'):
+            case TEXT('|'): case TEXT('>'): case TEXT('\\'): case TEXT('['):
+            case TEXT(']'): case TEXT('#'):
+                Out += TEXT('\\');
+                break;
+            default:
+                break;
+            }
+            Out += C;
+        }
+        return Out;
+    }
+
     /** Builds a Discord embed JSON string. */
     FString BuildEmbed(int32 Color, const FString& Title, const FString& FieldsJson)
     {
@@ -114,7 +140,7 @@ void FBanDiscordNotifier::PostWebhook(const FString& JsonPayload)
 
 void FBanDiscordNotifier::NotifyBanCreated(const FBanEntry& Entry)
 {
-    const FString PlayerValue = Entry.PlayerName + TEXT(" (") + Entry.Uid + TEXT(")");
+    const FString PlayerValue = EscapeMarkdown(Entry.PlayerName) + TEXT(" (") + Entry.Uid + TEXT(")");
     const double RawMin0 = (Entry.ExpireDate - Entry.BanDate).GetTotalMinutes();
     const FString DurationValue = Entry.bIsPermanent
         ? TEXT("Permanent")
@@ -123,10 +149,10 @@ void FBanDiscordNotifier::NotifyBanCreated(const FBanEntry& Entry)
                 FMath::IsFinite(RawMin0) ? static_cast<int64>(RawMin0) : (int64)0));
 
     const FString Fields =
-        Field(TEXT("Player"),    PlayerValue)         + TEXT(",") +
-        Field(TEXT("Reason"),    Entry.Reason)         + TEXT(",") +
-        Field(TEXT("Duration"),  DurationValue)        + TEXT(",") +
-        Field(TEXT("Banned By"), Entry.BannedBy);
+        Field(TEXT("Player"),    PlayerValue)                     + TEXT(",") +
+        Field(TEXT("Reason"),    EscapeMarkdown(Entry.Reason))    + TEXT(",") +
+        Field(TEXT("Duration"),  DurationValue)                   + TEXT(",") +
+        Field(TEXT("Banned By"), EscapeMarkdown(Entry.BannedBy));
 
     // Red: 15158332
     PostWebhook(BuildEmbed(15158332, TEXT("🔨 Player Banned"), Fields));
@@ -150,11 +176,11 @@ void FBanDiscordNotifier::NotifyBanRemoved(const FString& Uid, const FString& Pl
 {
     const FString PlayerValue = PlayerName.IsEmpty()
         ? Uid
-        : PlayerName + TEXT(" (") + Uid + TEXT(")");
+        : EscapeMarkdown(PlayerName) + TEXT(" (") + Uid + TEXT(")");
 
     const FString Fields =
-        Field(TEXT("Player"),     PlayerValue) + TEXT(",") +
-        Field(TEXT("Removed By"), RemovedBy);
+        Field(TEXT("Player"),     PlayerValue)                     + TEXT(",") +
+        Field(TEXT("Removed By"), EscapeMarkdown(RemovedBy));
 
     // Green: 3066993
     PostWebhook(BuildEmbed(3066993, TEXT("✅ Ban Removed"), Fields));
@@ -175,12 +201,12 @@ void FBanDiscordNotifier::NotifyWarningIssued(const FString& Uid, const FString&
 {
     const FString PlayerValue = PlayerName.IsEmpty()
         ? Uid
-        : PlayerName + TEXT(" (") + Uid + TEXT(")");
+        : EscapeMarkdown(PlayerName) + TEXT(" (") + Uid + TEXT(")");
 
     const FString Fields =
         Field(TEXT("Player"),         PlayerValue)                               + TEXT(",") +
-        Field(TEXT("Reason"),         Reason)                                    + TEXT(",") +
-        Field(TEXT("Warned By"),      WarnedBy)                                  + TEXT(",") +
+        Field(TEXT("Reason"),         EscapeMarkdown(Reason))                    + TEXT(",") +
+        Field(TEXT("Warned By"),      EscapeMarkdown(WarnedBy))                  + TEXT(",") +
         Field(TEXT("Total Warnings"), FString::FromInt(TotalWarnings));
 
     // Yellow: 16776960
@@ -203,9 +229,9 @@ void FBanDiscordNotifier::NotifyPlayerKicked(const FString& PlayerName, const FS
                                              const FString& KickedBy, const FString& Uid)
 {
     const FString Fields =
-        Field(TEXT("Player"),    PlayerName) + TEXT(",") +
-        Field(TEXT("Reason"),    Reason)     + TEXT(",") +
-        Field(TEXT("Kicked By"), KickedBy);
+        Field(TEXT("Player"),    EscapeMarkdown(PlayerName)) + TEXT(",") +
+        Field(TEXT("Reason"),    EscapeMarkdown(Reason))     + TEXT(",") +
+        Field(TEXT("Kicked By"), EscapeMarkdown(KickedBy));
 
     // Red: 15158332
     PostWebhook(BuildEmbed(15158332, TEXT("👢 Player Kicked"), Fields));
@@ -236,9 +262,9 @@ void FBanDiscordNotifier::NotifyAppealSubmitted(const FBanAppealEntry& Appeal)
 
     const FString Fields =
         Field(TEXT("UID"),         PlayerValue)        + TEXT(",") +
-        Field(TEXT("Contact"),     Appeal.ContactInfo.IsEmpty() ? TEXT("(not provided)") : Appeal.ContactInfo) + TEXT(",") +
+        Field(TEXT("Contact"),     EscapeMarkdown(Appeal.ContactInfo.IsEmpty() ? TEXT("(not provided)") : Appeal.ContactInfo)) + TEXT(",") +
         Field(TEXT("Submitted"),   SubmittedStr,   false) + TEXT(",") +
-        Field(TEXT("Reason"),      Appeal.Reason,  false);
+        Field(TEXT("Reason"),      EscapeMarkdown(Appeal.Reason),  false);
 
     // Blue-purple: 5793266
     PostWebhook(BuildEmbed(5793266,
@@ -261,7 +287,7 @@ void FBanDiscordNotifier::NotifyAutoEscalationBan(const FBanEntry& Ban, int32 Wa
 {
     const FString PlayerValue = Ban.PlayerName.IsEmpty()
         ? Ban.Uid
-        : Ban.PlayerName + TEXT(" (") + Ban.Uid + TEXT(")");
+        : EscapeMarkdown(Ban.PlayerName) + TEXT(" (") + Ban.Uid + TEXT(")");
 
     const double RawMin1 = (Ban.ExpireDate - Ban.BanDate).GetTotalMinutes();
     const FString DurationValue = Ban.bIsPermanent
@@ -274,7 +300,7 @@ void FBanDiscordNotifier::NotifyAutoEscalationBan(const FBanEntry& Ban, int32 Wa
         Field(TEXT("Player"),       PlayerValue)                    + TEXT(",") +
         Field(TEXT("Warnings"),     FString::FromInt(WarnCount))    + TEXT(",") +
         Field(TEXT("Duration"),     DurationValue)                  + TEXT(",") +
-        Field(TEXT("Reason"),       Ban.Reason, false);
+        Field(TEXT("Reason"),       EscapeMarkdown(Ban.Reason), false);
 
     // Dark orange: 16742912
     PostWebhook(BuildEmbed(16742912,
@@ -301,13 +327,13 @@ void FBanDiscordNotifier::NotifyBanExpired(const FBanEntry& Entry)
 
     const FString PlayerValue = Entry.PlayerName.IsEmpty()
         ? Entry.Uid
-        : Entry.PlayerName + TEXT(" (") + Entry.Uid + TEXT(")");
+        : EscapeMarkdown(Entry.PlayerName) + TEXT(" (") + Entry.Uid + TEXT(")");
 
     const FString ExpireStr = Entry.ExpireDate.ToString(TEXT("%Y-%m-%d %H:%M:%S")) + TEXT(" UTC");
 
     const FString Fields =
-        Field(TEXT("Player"),     PlayerValue)   + TEXT(",") +
-        Field(TEXT("Reason"),     Entry.Reason)  + TEXT(",") +
+        Field(TEXT("Player"),     PlayerValue)                  + TEXT(",") +
+        Field(TEXT("Reason"),     EscapeMarkdown(Entry.Reason)) + TEXT(",") +
         Field(TEXT("Expired At"), ExpireStr);
 
     // Grey-blue: 8421504
@@ -333,9 +359,9 @@ void FBanDiscordNotifier::NotifyAppealReviewed(const FBanAppealEntry& Appeal)
     const FString Fields =
         Field(TEXT("Appeal #"),    FString::Printf(TEXT("%lld"), Appeal.Id)) + TEXT(",") +
         Field(TEXT("Player UID"),  Appeal.Uid)                               + TEXT(",") +
-        Field(TEXT("Contact"),     Appeal.ContactInfo)                       + TEXT(",") +
-        Field(TEXT("Reviewed By"), Appeal.ReviewedBy.IsEmpty() ? TEXT("-") : Appeal.ReviewedBy) + TEXT(",") +
-        Field(TEXT("Note"),        Appeal.ReviewNote.IsEmpty()  ? TEXT("-") : Appeal.ReviewNote, false);
+        Field(TEXT("Contact"),     EscapeMarkdown(Appeal.ContactInfo))       + TEXT(",") +
+        Field(TEXT("Reviewed By"), EscapeMarkdown(Appeal.ReviewedBy.IsEmpty() ? TEXT("-") : Appeal.ReviewedBy)) + TEXT(",") +
+        Field(TEXT("Note"),        EscapeMarkdown(Appeal.ReviewNote.IsEmpty() ? TEXT("-") : Appeal.ReviewNote), false);
 
     PostWebhook(BuildEmbed(Color,
         FString::Printf(TEXT("⚖️ Ban Appeal %s"), *StatusLabel),
@@ -366,7 +392,7 @@ void FBanDiscordNotifier::NotifyGeoIpBlocked(const FString& PlayerName, const FS
 {
     const FString PlayerValue = PlayerName.IsEmpty()
         ? Uid
-        : PlayerName + TEXT(" (") + Uid + TEXT(")");
+        : EscapeMarkdown(PlayerName) + TEXT(" (") + Uid + TEXT(")");
 
     const FString Fields =
         Field(TEXT("Player"),      PlayerValue)   + TEXT(",") +
@@ -404,11 +430,11 @@ void FBanDiscordNotifier::NotifyPlayerMuted(const FString& Uid, const FString& P
         : TEXT("Indefinite");
 
     const FString Fields =
-        Field(TEXT("Player"),   PlayerName)  + TEXT(",") +
-        Field(TEXT("UID"),      Uid)         + TEXT(",") +
-        Field(TEXT("Muted By"), MutedBy)     + TEXT(",") +
-        Field(TEXT("Duration"), DurationStr) + TEXT(",") +
-        Field(TEXT("Reason"),   Reason, false);
+        Field(TEXT("Player"),   EscapeMarkdown(PlayerName))  + TEXT(",") +
+        Field(TEXT("UID"),      Uid)                         + TEXT(",") +
+        Field(TEXT("Muted By"), EscapeMarkdown(MutedBy))     + TEXT(",") +
+        Field(TEXT("Duration"), DurationStr)                 + TEXT(",") +
+        Field(TEXT("Reason"),   EscapeMarkdown(Reason), false);
 
     // Deep orange: 15105570
     PostWebhook(BuildEmbed(15105570, TEXT("🔇 Player Muted"), Fields));
@@ -431,9 +457,9 @@ void FBanDiscordNotifier::NotifyPlayerUnmuted(const FString& Uid, const FString&
                                                const FString& UnmutedBy)
 {
     const FString Fields =
-        Field(TEXT("Player"),     PlayerName.IsEmpty() ? Uid : PlayerName) + TEXT(",") +
-        Field(TEXT("UID"),        Uid)       + TEXT(",") +
-        Field(TEXT("Unmuted By"), UnmutedBy, false);
+        Field(TEXT("Player"),     EscapeMarkdown(PlayerName.IsEmpty() ? Uid : PlayerName)) + TEXT(",") +
+        Field(TEXT("UID"),        Uid)                          + TEXT(",") +
+        Field(TEXT("Unmuted By"), EscapeMarkdown(UnmutedBy), false);
 
     // Green: 3066993
     PostWebhook(BuildEmbed(3066993, TEXT("🔊 Player Unmuted"), Fields));

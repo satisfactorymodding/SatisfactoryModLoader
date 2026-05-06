@@ -122,6 +122,19 @@ namespace BanDiscordHelpers
 	}
 
 	/**
+	 * Replace any triple-backtick sequence (```) in a string with a single
+	 * backtick followed by a zero-width space and two more backticks so that
+	 * player-controlled data inside a Discord ```…``` code fence cannot
+	 * escape the fence and inject arbitrary markdown.
+	 */
+	static FString SanitizeForCodeBlock(const FString& S)
+	{
+		FString Out = S;
+		Out.ReplaceInline(TEXT("```"), TEXT("`\u200B``"));
+		return Out;
+	}
+
+	/**
 	 * Format a duration in minutes as a compact human-readable string.
 	 * Examples: 30 → "30m", 90 → "1h 30m", 1500 → "1d 1h".
 	 * Returns "permanently" for 0 or negative values.
@@ -1727,11 +1740,11 @@ void UBanDiscordSubsystem::HandleBanListCommand(const TArray<FString>& Args,
 
 		// Truncate UID display to keep lines manageable.
 		const FString UidShort = BanDiscordHelpers::Truncate(E.Uid, 22);
-		const FString NameShort = BanDiscordHelpers::Truncate(E.PlayerName, 16);
+		const FString NameShort = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(E.PlayerName, 16));
 		const FString ExpiryShort = E.bIsPermanent
 			? TEXT("permanent")
 			: E.ExpireDate.ToString(TEXT("%m-%d %H:%M UTC"));
-		const FString ReasonShort = BanDiscordHelpers::Truncate(E.Reason, 28);
+		const FString ReasonShort = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(E.Reason, 28));
 
 		Body += FString::Printf(TEXT("%-4lld  %-22s  %-16s  %-20s  %s\n"),
 		                        E.Id, *UidShort, *NameShort, *ExpiryShort, *ReasonShort);
@@ -2372,7 +2385,11 @@ void UBanDiscordSubsystem::HandleBanNameCommand(const TArray<FString>& Args,
 	EosEntry.BanDate    = BanNow;
 	EosEntry.bIsPermanent = true;
 	EosEntry.ExpireDate   = FDateTime(0);
-	if (DB->AddBan(EosEntry)) ++Banned;
+	if (DB->AddBan(EosEntry))
+	{
+		++Banned;
+		FBanDiscordNotifier::NotifyBanCreated(EosEntry);
+	}
 
 	// Also ban IP if recorded.
 	FString IpUid;
@@ -2395,6 +2412,7 @@ void UBanDiscordSubsystem::HandleBanNameCommand(const TArray<FString>& Args,
 			++Banned;
 			// Cross-link the EOS ban.
 			DB->LinkBans(Record.Uid, IpUid);
+			FBanDiscordNotifier::NotifyBanCreated(IpEntry);
 		}
 	}
 
@@ -2736,9 +2754,10 @@ void UBanDiscordSubsystem::HandleDurationCommand(const TArray<FString>& Args,
 		}
 		else
 		{
-			const int32 TotalMins = static_cast<int32>(FMath::Min(
-				FMath::Max((int64)0, static_cast<int64>(Remaining.GetTotalMinutes())),
-				static_cast<int64>(INT32_MAX)));
+			const double RawMins = Remaining.GetTotalMinutes();
+			const int32 TotalMins = (FMath::IsFinite(RawMins) && RawMins > 0.0)
+				? static_cast<int32>(FMath::Min(static_cast<int64>(RawMins), static_cast<int64>(INT32_MAX)))
+				: 0;
 			DurStr = FString::Printf(TEXT("**%s** remaining (expires %s UTC)"),
 				*BanDiscordHelpers::FormatDuration(TotalMins),
 				*Entry.ExpireDate.ToString(TEXT("%Y-%m-%d %H:%M:%S")));
@@ -2803,8 +2822,8 @@ void UBanDiscordSubsystem::HandleWarningsCommand(const TArray<FString>& Args,
 	{
 		const FWarningEntry& W = Warnings[i];
 		const FString DateStr  = W.WarnDate.ToString(TEXT("%m-%d %H:%M"));
-		const FString ByShort  = BanDiscordHelpers::Truncate(W.WarnedBy, 12);
-		const FString ReasonSh = BanDiscordHelpers::Truncate(W.Reason, 40);
+		const FString ByShort  = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(W.WarnedBy, 12));
+		const FString ReasonSh = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(W.Reason, 40));
 		Body += FString::Printf(TEXT("%-4lld  %-20s  %-12s  %s\n"),
 			W.Id, *DateStr, *ByShort, *ReasonSh);
 	}
@@ -3353,8 +3372,11 @@ void UBanDiscordSubsystem::HandleMuteCheckCommand(const TArray<FString>& Args,
 	else
 	{
 		const FTimespan Remaining = Entry.ExpireDate - FDateTime::UtcNow();
-		const int64 TotalMinsI64 = FMath::Max<int64>(0LL, static_cast<int64>(Remaining.GetTotalMinutes()));
-	const int32 TotalMins = static_cast<int32>(FMath::Min<int64>(TotalMinsI64, static_cast<int64>(INT32_MAX)));
+		const double RawMinsM = Remaining.GetTotalMinutes();
+		const int64 TotalMinsI64 = (FMath::IsFinite(RawMinsM) && RawMinsM > 0.0)
+			? FMath::Min(static_cast<int64>(RawMinsM), static_cast<int64>(INT32_MAX))
+			: 0LL;
+	const int32 TotalMins = static_cast<int32>(TotalMinsI64);
 		ExpiryStr = FString::Printf(TEXT("for **%s** more (expires %s UTC)"),
 			*BanDiscordHelpers::FormatDuration(TotalMins),
 			*Entry.ExpireDate.ToString(TEXT("%Y-%m-%d %H:%M:%S")));
@@ -3403,12 +3425,12 @@ void UBanDiscordSubsystem::HandleMuteListCommand(const FString& ChannelId)
 	for (int32 i = 0; i < ShowMax; ++i)
 	{
 		const FMuteEntry& M = Mutes[i];
-		const FString NameSh   = BanDiscordHelpers::Truncate(M.PlayerName, 18);
+		const FString NameSh   = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(M.PlayerName, 18));
 		const FString UidSh    = BanDiscordHelpers::Truncate(M.Uid, 30);
 		const FString ExpirySh = M.bIsIndefinite
 			? TEXT("permanent")
 			: M.ExpireDate.ToString(TEXT("%m-%d %H:%M UTC"));
-		const FString ReasonSh = BanDiscordHelpers::Truncate(M.Reason, 24);
+		const FString ReasonSh = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(M.Reason, 24));
 		Body += FString::Printf(TEXT("%-18s  %-30s  %-18s  %s\n"),
 			*NameSh, *UidSh, *ExpirySh, *ReasonSh);
 	}
@@ -3831,23 +3853,33 @@ void UBanDiscordSubsystem::HandleDismissAppealCommand(const TArray<FString>& Arg
 		return;
 	}
 
-	// Record the dismissal in the registry before deleting so the audit trail is preserved.
-	Registry->ReviewAppeal(AppealId, EAppealStatus::Dismissed, SenderName, TEXT(""));
-
-	if (Registry->DeleteAppeal(AppealId))
-	{
-		UE_LOG(LogBanDiscord, Log,
-		       TEXT("BanDiscordSubsystem: Appeal #%lld dismissed by '%s'."),
-		       AppealId, *SenderName);
-
-		Respond(ChannelId,
-			FString::Printf(TEXT(":white_check_mark: Appeal `#%lld` dismissed."), AppealId));
-	}
-	else
+	// Check existence BEFORE mutating registry state so we do not fire
+	// ReviewAppeal on a non-existent ID and then respond with a failure.
+	const FBanAppealEntry DismissEntry = Registry->GetAppealById(AppealId);
+	if (DismissEntry.Uid.IsEmpty())
 	{
 		Respond(ChannelId,
 			FString::Printf(TEXT(":x: No appeal found with ID `%lld`."), AppealId));
+		return;
 	}
+
+	// Record the dismissal in the registry before deleting so the audit trail is preserved.
+	Registry->ReviewAppeal(AppealId, EAppealStatus::Dismissed, SenderName, TEXT(""));
+	Registry->DeleteAppeal(AppealId);
+
+	UE_LOG(LogBanDiscord, Log,
+	       TEXT("BanDiscordSubsystem: Appeal #%lld dismissed by '%s'."),
+	       AppealId, *SenderName);
+
+	Respond(ChannelId,
+		FString::Printf(TEXT(":white_check_mark: Appeal `#%lld` dismissed."), AppealId));
+
+	// Notify the moderation webhook — build a copy with the final reviewed status
+	// so the embed shows "Dismissed" rather than "Pending".
+	FBanAppealEntry ReviewedEntry = DismissEntry;
+	ReviewedEntry.Status     = EAppealStatus::Dismissed;
+	ReviewedEntry.ReviewedBy = SenderName;
+	FBanDiscordNotifier::NotifyAppealReviewed(ReviewedEntry);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -3945,7 +3977,15 @@ void UBanDiscordSubsystem::HandleAppealApproveCommand(const TArray<FString>& Arg
 		{
 			// Fallback: direct removal covers edge cases where the ban was stored
 			// with a Discord UID (e.g. manually added entries).
-			bUnbanned = DB->RemoveBanByUid(Entry.Uid);
+			// Use the two-arg overload so we can fire NotifyBanRemoved with the
+			// player name and clean up any linked counterpart bans.
+			FBanEntry RemovedFallback;
+			bUnbanned = DB->RemoveBanByUid(Entry.Uid, RemovedFallback);
+			if (bUnbanned)
+			{
+				BanDiscordHelpers::RemoveCounterpartBans(this, DB, RemovedFallback.Uid, RemovedFallback.LinkedUids);
+				FBanDiscordNotifier::NotifyBanRemoved(RemovedFallback.Uid, RemovedFallback.PlayerName, SenderName);
+			}
 		}
 	}
 
@@ -6639,11 +6679,11 @@ FString UBanDiscordSubsystem::ExecutePanelBanList() const
 	{
 		const FBanEntry& E = ActiveBans[i];
 		const FString UidShort    = BanDiscordHelpers::Truncate(E.Uid, 22);
-		const FString NameShort   = BanDiscordHelpers::Truncate(E.PlayerName, 16);
+		const FString NameShort   = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(E.PlayerName, 16));
 		const FString ExpiryShort = E.bIsPermanent
 			? TEXT("permanent")
 			: E.ExpireDate.ToString(TEXT("%m-%d %H:%M UTC"));
-		const FString ReasonShort = BanDiscordHelpers::Truncate(E.Reason, 28);
+		const FString ReasonShort = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(E.Reason, 28));
 		Body += FString::Printf(TEXT("%-4lld  %-22s  %-16s  %-20s  %s\n"),
 		                        E.Id, *UidShort, *NameShort, *ExpiryShort, *ReasonShort);
 	}
@@ -6961,8 +7001,8 @@ FString UBanDiscordSubsystem::ExecutePanelWarnList(const FString& PlayerArg) con
 	{
 		const FWarningEntry& W = Warnings[i];
 		const FString DateStr  = W.WarnDate.ToString(TEXT("%m-%d %H:%M"));
-		const FString ByShort  = BanDiscordHelpers::Truncate(W.WarnedBy, 12);
-		const FString ReasonSh = BanDiscordHelpers::Truncate(W.Reason, 40);
+		const FString ByShort  = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(W.WarnedBy, 12));
+		const FString ReasonSh = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(W.Reason, 40));
 		Body += FString::Printf(TEXT("%-4lld  %-20s  %-12s  %s\n"),
 			W.Id, *DateStr, *ByShort, *ReasonSh);
 	}
@@ -7007,9 +7047,10 @@ FString UBanDiscordSubsystem::ExecutePanelMuteCheck(const FString& PlayerArg) co
 	else
 	{
 		const FTimespan Remaining = Entry.ExpireDate - FDateTime::UtcNow();
-		const int32 TotalMins = static_cast<int32>(FMath::Min(
-			FMath::Max((int64)0, static_cast<int64>(Remaining.GetTotalMinutes())),
-			static_cast<int64>(INT32_MAX)));
+		const double RawMinsMC = Remaining.GetTotalMinutes();
+		const int32 TotalMins = (FMath::IsFinite(RawMinsMC) && RawMinsMC > 0.0)
+			? static_cast<int32>(FMath::Min(static_cast<int64>(RawMinsMC), static_cast<int64>(INT32_MAX)))
+			: 0;
 		ExpiryStr = FString::Printf(TEXT("for **%s** more (expires %s UTC)"),
 			*BanDiscordHelpers::FormatDuration(TotalMins),
 			*Entry.ExpireDate.ToString(TEXT("%Y-%m-%d %H:%M:%S")));
@@ -7166,7 +7207,7 @@ FString UBanDiscordSubsystem::ExecutePanelHistory(const FString& PlayerArg) cons
 	for (int32 i = 0; i < ShowCount; ++i)
 	{
 		const FPlayerSessionRecord& R = Results[i];
-		const FString NameShort = BanDiscordHelpers::Truncate(R.DisplayName, 16);
+		const FString NameShort = BanDiscordHelpers::SanitizeForCodeBlock(BanDiscordHelpers::Truncate(R.DisplayName, 16));
 		const FString UidShort  = BanDiscordHelpers::Truncate(R.Uid, 40);
 		const FString IpShort   = R.IpAddress.IsEmpty()
 			? TEXT("—")
