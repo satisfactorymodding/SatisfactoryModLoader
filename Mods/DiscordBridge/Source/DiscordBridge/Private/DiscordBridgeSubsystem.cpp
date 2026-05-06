@@ -6207,7 +6207,10 @@ if (!(*ObjPtr)->TryGetStringField(TEXT("name"), OptName) ||
 FString StrVal;
 if ((*ObjPtr)->TryGetStringField(TEXT("value"), StrVal)) return StrVal;
 double NumVal = 0.0;
-if ((*ObjPtr)->TryGetNumberField(TEXT("value"), NumVal))
+if ((*ObjPtr)->TryGetNumberField(TEXT("value"), NumVal) &&
+    FMath::IsFinite(NumVal) &&
+    NumVal >= static_cast<double>(INT64_MIN) &&
+    NumVal < static_cast<double>(INT64_MAX))
 return FString::Printf(TEXT("%lld"), static_cast<int64>(NumVal));
 return FString();
 }
