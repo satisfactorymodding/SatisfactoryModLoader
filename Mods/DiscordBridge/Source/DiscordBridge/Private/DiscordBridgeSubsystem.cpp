@@ -3919,7 +3919,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 	else if (Verb == TEXT("log"))
 	{
 		int32 N = 10;
-		if (!Arg.IsEmpty() && Arg.IsNumeric()) N = FMath::Clamp(FCString::Atoi(*Arg), 1, 20);
+		if (!Arg.IsEmpty() && Arg.IsNumeric() && Arg.Len() <= 9) N = FMath::Clamp(FCString::Atoi(*Arg), 1, 20);
 		const TArray<FWhitelistAuditEntry> Log = FWhitelistManager::GetAuditLog(N);
 		if (Log.Num() == 0)
 		{

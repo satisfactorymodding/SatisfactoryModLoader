@@ -1517,7 +1517,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 			else if (CustomId.StartsWith(TEXT("ticket_cr_")))
 			{
 				const FString IdxStr = CustomId.Mid(FCString::Strlen(TEXT("ticket_cr_")));
-				if (IdxStr.IsNumeric())
+				if (IdxStr.IsNumeric() && IdxStr.Len() <= 9)
 				{
 					const int32 CrIdx = FCString::Atoi(*IdxStr);
 					if (Config.CustomTicketReasons.IsValidIndex(CrIdx))
@@ -1673,7 +1673,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 	else if (CustomId.StartsWith(TEXT("ticket_cr_")))
 	{
 		const FString IdxStr = CustomId.Mid(FCString::Strlen(TEXT("ticket_cr_")));
-		if (!IdxStr.IsNumeric())
+		if (!IdxStr.IsNumeric() || IdxStr.Len() > 9)
 		{
 			Bridge->RespondToInteraction(InteractionId, InteractionToken, /*type=*/4,
 				TEXT(":no_entry: Invalid ticket button identifier."),
@@ -2036,7 +2036,7 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 			else if (ModalCustomId.StartsWith(TEXT("ticket_modal:cr_")))
 			{
 				const FString IdxStr = ModalCustomId.Mid(FCString::Strlen(TEXT("ticket_modal:cr_")));
-				if (IdxStr.IsNumeric())
+				if (IdxStr.IsNumeric() && IdxStr.Len() <= 9)
 				{
 					const int32 CrIdx = FCString::Atoi(*IdxStr);
 					if (Config.CustomTicketReasons.IsValidIndex(CrIdx))
@@ -2522,7 +2522,7 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 	else if (ModalCustomId.StartsWith(TEXT("ticket_modal:cr_")))
 	{
 		const FString IdxStr = ModalCustomId.Mid(FCString::Strlen(TEXT("ticket_modal:cr_")));
-		if (!IdxStr.IsNumeric())
+		if (!IdxStr.IsNumeric() || IdxStr.Len() > 9)
 		{
 			Bridge->RespondToInteraction(InteractionId, InteractionToken, /*type=*/4,
 				TEXT(":no_entry: Invalid ticket modal identifier."),

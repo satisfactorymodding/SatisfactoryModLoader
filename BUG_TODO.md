@@ -3034,3 +3034,104 @@ This is identical to the pattern already used in `TicketConfig.cpp` and `Discord
 ---
 
 *Last updated: 2026-05-06. All 1 Round-48 bug resolved.*
+
+---
+
+## Round 49
+
+**Scope:** Full audit of all source files; targeted search for unguarded `FCString::Atoi` calls
+(without `Len()` bound check) in Discord bot command handlers, ticket custom-id parsers,
+WebSocket URL parsing, and config file readers.
+9 bugs found and fixed across 5 files.
+
+---
+
+### ✅ Fixed — `DiscordBridgeSubsystem.cpp::HandleWhitelistCommand` — `/whitelist log <n>` `Atoi` without `Len()` guard (BUG-DS-R49-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp` (line ~3922)
+**Severity:** LOW
+
+**Root cause:** The `/whitelist log <n>` Discord bot command handler parsed the
+user-supplied count argument with `FCString::Atoi(*Arg)` guarded only by `Arg.IsNumeric()`
+with no `Len()` check.  A 20-digit numeric string passes `IsNumeric()` and causes
+`FCString::Atoi` (signed int32) to silently overflow — undefined behaviour in C++.
+
+**Fix:** Added `Arg.Len() <= 9` to the guard:
+```cpp
+if (!Arg.IsEmpty() && Arg.IsNumeric() && Arg.Len() <= 9)
+    N = FMath::Clamp(FCString::Atoi(*Arg), 1, 20);
+```
+
+---
+
+### ✅ Fixed — `TicketSubsystem.cpp` — Four `FCString::Atoi` calls on Discord `custom_id` index strings without `Len()` guard (BUG-TS-R49-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/TicketSubsystem.cpp`
+**Lines:** ~1520, ~1675, ~2039, ~2524
+**Severity:** LOW
+
+**Root cause:** Four call sites parsed the integer suffix of Discord button/modal `custom_id`
+strings (e.g. `ticket_cr_<N>`, `ticket_modal:cr_<N>`) using `FCString::Atoi(*IdxStr)` with
+only an `IsNumeric()` check and no `Len()` bound.  A `custom_id` string with a long numeric
+suffix (e.g. 20 digits) produces UB via int32 overflow.
+
+Two sites used the early-return pattern (`if (!IdxStr.IsNumeric()) return`) and two used the
+positive-branch pattern (`if (IdxStr.IsNumeric()) { ... Atoi ... }`).
+
+**Fix:** Extended each guard to also reject strings longer than 9 digits:
+- Early-return sites: `if (!IdxStr.IsNumeric() || IdxStr.Len() > 9)`.
+- Positive-branch sites: `if (IdxStr.IsNumeric() && IdxStr.Len() <= 9)`.
+
+---
+
+### ✅ Fixed — `SMLWebSocketRunnable.cpp` — Port number `Atoi` without `IsNumeric()` or `Len()` guard (BUG-SWS-R49-01)
+**File:** `Mods/SMLWebSocket/Source/SMLWebSocket/Private/SMLWebSocketRunnable.cpp`
+**Lines:** ~130 (IPv6 path), ~152 (IPv4/plain path)
+**Severity:** LOW
+
+**Root cause:** Both the IPv6 bracket path and the plain-host path extracted a port number
+substring from a URL string and passed it directly to `FCString::Atoi` without first checking
+`IsNumeric()` or constraining the string length.  A URL like `ws://host:99999999999/` (11+
+digits) could produce int32 overflow UB, and a non-numeric suffix (e.g. `ws://host:abc/`)
+would silently return 0 and then be rejected by the range check, but the absence of an
+`IsNumeric()` guard is inconsistent with the codebase convention.
+
+**Fix:** Extracted the port substring into a named variable, then guarded with
+`PortStr.IsNumeric() && PortStr.Len() <= 5` (valid ports are at most 5 digits: 1–65535)
+before calling `FCString::Atoi`.  Added an `else` branch that logs the same "invalid port"
+warning for the newly-rejected non-numeric / oversized cases.
+
+---
+
+### ✅ Fixed — `DiscordBridgeConfig.cpp` — Three `FCString::Atoi` calls without `Len()` guard (BUG-DBC-R49-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeConfig.cpp`
+**Lines:** ~110 (`GetIniIntOrDefault`), ~234 (`GetRawIntOrDefault`), ~663/670 (`IntervalMinutes` parsing)
+**Severity:** LOW
+
+**Root cause:** `GetIniIntOrDefault`, `GetRawIntOrDefault`, and the `ScheduledAnnouncement`
+`IntervalMinutes` parser all called `FCString::Atoi` on INI file strings guarded only by
+`IsNumeric()` without a `Len() <= 10` bound.  An admin-supplied INI value with more than 10
+numeric digits causes signed int32 overflow UB.
+
+**Fix:** Added `Value.Len() > 10` / `Found->Len() > 10` / `Left/Trimmed.Len() <= 10`
+co-conditions so that any over-length string returns the default value (INI helpers) or is
+silently skipped (IntervalMinutes parser), matching the pattern used for user-supplied input
+throughout the codebase.
+
+---
+
+### ✅ Fixed — `WhitelistConfig.cpp::GetWLInt` — `FCString::Atoi` without `Len()` guard (BUG-WC-R49-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/WhitelistConfig.cpp` (line ~76)
+**Severity:** LOW
+
+**Root cause:** `GetWLInt` called `FCString::Atoi(*Value)` after only an `IsNumeric()` check,
+with no `Len()` bound.  An INI value with more than 10 numeric digits overflows int32 (UB).
+
+**Fix:** Added `Value.Len() > 10` to the rejection condition, returning `Default` for
+oversized values:
+```cpp
+if (!Value.IsNumeric() || Value.Len() > 10)
+    return Default;
+```
+
+---
+
+*Last updated: 2026-05-06. All 9 Round-49 bugs resolved.*

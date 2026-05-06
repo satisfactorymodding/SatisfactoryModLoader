@@ -127,10 +127,20 @@ FSMLWebSocketRunnable::FSMLWebSocketRunnable(USMLWebSocketClient* InOwner,
 			const FString AfterBracket = ParsedHost.RightChop(BracketEnd + 1);
 			if (AfterBracket.StartsWith(TEXT(":")))
 			{
-				const int32 RawPort = FCString::Atoi(*AfterBracket.RightChop(1));
-				if (RawPort >= 1 && RawPort <= 65535)
+				const FString PortStr = AfterBracket.RightChop(1);
+				if (PortStr.IsNumeric() && PortStr.Len() <= 5)
 				{
-					ParsedPort = RawPort;
+					const int32 RawPort = FCString::Atoi(*PortStr);
+					if (RawPort >= 1 && RawPort <= 65535)
+					{
+						ParsedPort = RawPort;
+					}
+					else
+					{
+						UE_LOG(LogSMLWebSocket, Warning,
+						       TEXT("SMLWebSocket: Invalid port number in URL '%s' — using default port %d"),
+						       *InUrl, ParsedPort);
+					}
 				}
 				else
 				{
@@ -149,10 +159,20 @@ FSMLWebSocketRunnable::FSMLWebSocketRunnable(USMLWebSocketClient* InOwner,
 		int32 ColonIdx;
 		if (ParsedHost.FindChar(TEXT(':'), ColonIdx))
 		{
-			const int32 RawPort = FCString::Atoi(*ParsedHost.RightChop(ColonIdx + 1));
-			if (RawPort >= 1 && RawPort <= 65535)
+			const FString PortStr = ParsedHost.RightChop(ColonIdx + 1);
+			if (PortStr.IsNumeric() && PortStr.Len() <= 5)
 			{
-				ParsedPort = RawPort;
+				const int32 RawPort = FCString::Atoi(*PortStr);
+				if (RawPort >= 1 && RawPort <= 65535)
+				{
+					ParsedPort = RawPort;
+				}
+				else
+				{
+					UE_LOG(LogSMLWebSocket, Warning,
+					       TEXT("SMLWebSocket: Invalid port number in URL '%s' — using default port %d"),
+					       *InUrl, ParsedPort);
+				}
 			}
 			else
 			{
