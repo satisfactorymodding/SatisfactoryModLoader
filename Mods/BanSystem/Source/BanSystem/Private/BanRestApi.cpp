@@ -575,11 +575,13 @@ void UBanRestApi::RegisterRoutes()
 
             double DurationMinutesDbl = 0.0;
             Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
-            // Guard against out-of-range doubles: negative/zero means permanent.
+            // Guard against out-of-range doubles: NaN/negative/zero means permanent.
             // Values larger than INT_MAX are clamped to INT_MAX (~4083 years) rather
             // than silently becoming a permanent ban (PATCH /bans/:uid uses the same cap).
+            // FMath::IsFinite guards against NaN which evades both <= 0 and > INT_MAX checks,
+            // causing undefined behaviour in the static_cast.
             int32 DurationMinutes;
-            if (DurationMinutesDbl <= 0.0)
+            if (!FMath::IsFinite(DurationMinutesDbl) || DurationMinutesDbl <= 0.0)
                 DurationMinutes = 0;                              // permanent
             else if (DurationMinutesDbl > static_cast<double>(INT_MAX))
                 DurationMinutes = INT_MAX;                        // cap, not permanent
@@ -2673,10 +2675,8 @@ void UBanRestApi::RegisterRoutes()
 
             double DurDbl = 0.0;
             Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
-            const int32 DurationMinutes = (DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
+            const int32 DurationMinutes = (!FMath::IsFinite(DurDbl) || DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
                 ? 0 : static_cast<int32>(DurDbl);
-
-            const FScheduledBanEntry NewEntry = SchReg->AddScheduled(
                 Uid, PlayerName, Reason, ScheduledBy, EffectiveAt, DurationMinutes, Category);
 
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
@@ -2859,11 +2859,8 @@ void UBanRestApi::RegisterRoutes()
 
             double DurDbl = 0.0;
             Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
-            const int32 DurationMinutes = (DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
+            const int32 DurationMinutes = (!FMath::IsFinite(DurDbl) || DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
                 ? 0 : static_cast<int32>(DurDbl);
-
-            int32 Added = 0;
-            TArray<TSharedPtr<FJsonValue>> ResultArr;
             // Capture a single timestamp for the entire batch so all entries share
             // the same BanDate/ExpireDate regardless of how long the loop takes.
             const FDateTime BatchBanNow = FDateTime::UtcNow();

@@ -192,7 +192,9 @@ void UPlayerNoteRegistry::LoadFromFile()
     // older builds that did not persist nextId.
     FString StoredNextIdStr;
     double  StoredNextIdDbl = 0.0;
-    if (Root->TryGetStringField(TEXT("nextId"), StoredNextIdStr) && !StoredNextIdStr.IsEmpty())
+    if (Root->TryGetStringField(TEXT("nextId"), StoredNextIdStr) && !StoredNextIdStr.IsEmpty()
+        && StoredNextIdStr.IsNumeric() && StoredNextIdStr.Len() <= 19
+        && (StoredNextIdStr.Len() < 19 || StoredNextIdStr <= TEXT("9223372036854775807")))
     {
         const int64 Parsed = FCString::Atoi64(*StoredNextIdStr);
         NextId = (Parsed > 0) ? Parsed : 1;
