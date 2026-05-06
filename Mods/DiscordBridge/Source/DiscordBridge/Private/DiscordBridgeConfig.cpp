@@ -87,7 +87,8 @@ namespace
 		FString Value;
 		if (Cfg.GetString(ConfigSection, *Key, Value) && !Value.IsEmpty())
 		{
-			return FCString::Atof(*Value);
+			const float Result = FCString::Atof(*Value);
+			return FMath::IsFinite(Result) ? Result : Default;
 		}
 		return Default;
 	}
@@ -212,7 +213,9 @@ namespace
 	                           float Default)
 	{
 		const FString* Found = Raw.Find(Key);
-		return (Found && !Found->IsEmpty()) ? FCString::Atof(**Found) : Default;
+		if (!Found || Found->IsEmpty()) return Default;
+		const float Result = FCString::Atof(**Found);
+		return FMath::IsFinite(Result) ? Result : Default;
 	}
 
 	int32 GetRawIntOrDefault(const TMap<FString, FString>& Raw,

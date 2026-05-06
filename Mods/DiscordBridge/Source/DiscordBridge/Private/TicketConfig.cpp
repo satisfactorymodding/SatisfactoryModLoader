@@ -40,7 +40,10 @@ static float GetIniFloat(const FConfigFile& Cfg, const FString& Key, float Defau
 	{
 		StrVal.TrimStartAndEndInline();
 		if (!StrVal.IsEmpty())
-			return FCString::Atof(*StrVal);
+		{
+			const float Result = FCString::Atof(*StrVal);
+			return FMath::IsFinite(Result) ? Result : Default;
+		}
 	}
 	return Default;
 }

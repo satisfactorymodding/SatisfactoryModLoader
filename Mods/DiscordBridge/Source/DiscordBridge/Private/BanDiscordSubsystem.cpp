@@ -2385,10 +2385,18 @@ void UBanDiscordSubsystem::HandleBanNameCommand(const TArray<FString>& Args,
 	EosEntry.BanDate    = BanNow;
 	EosEntry.bIsPermanent = true;
 	EosEntry.ExpireDate   = FDateTime(0);
-	if (DB->AddBan(EosEntry))
+	bool bEosSkipped = false;
+	if (DB->AddBanSkipIfPermanentExists(EosEntry, bEosSkipped))
 	{
 		++Banned;
 		FBanDiscordNotifier::NotifyBanCreated(EosEntry);
+	}
+	else if (bEosSkipped)
+	{
+		Respond(ChannelId,
+			FString::Printf(TEXT("⚠️ **%s** (`%s`) already has a permanent ban — no duplicate record created."),
+				*BanDiscordHelpers::EscapeMarkdown(Record.DisplayName), *Record.Uid));
+		return;
 	}
 
 	// Also ban IP if recorded.
@@ -2407,7 +2415,8 @@ void UBanDiscordSubsystem::HandleBanNameCommand(const TArray<FString>& Args,
 		IpEntry.bIsPermanent = true;
 		IpEntry.ExpireDate   = FDateTime(0);
 		IpEntry.LinkedUids.Add(Record.Uid);
-		if (DB->AddBan(IpEntry))
+		bool bIpSkipped = false;
+		if (DB->AddBanSkipIfPermanentExists(IpEntry, bIpSkipped))
 		{
 			++Banned;
 			// Cross-link the EOS ban.
@@ -6338,8 +6347,13 @@ FString UBanDiscordSubsystem::ExecutePanelBan(const FString& PlayerArg,
 	Entry.bIsPermanent = true;
 	Entry.ExpireDate   = FDateTime(0);
 
-	if (!DB->AddBan(Entry))
+	bool bPanelPermSkipped = false;
+	if (!DB->AddBanSkipIfPermanentExists(Entry, bPanelPermSkipped))
+	{
+		if (bPanelPermSkipped)
+			return TEXT("⚠️ Player already has a permanent ban — no duplicate record created.");
 		return TEXT("❌ Failed to write the ban to the database. Check server logs.");
+	}
 
 	if (UWorld* World = GetGameInstance() ? GetGameInstance()->GetWorld() : nullptr)
 		UBanEnforcer::KickConnectedPlayer(World, Uid, Entry.GetKickMessage());
