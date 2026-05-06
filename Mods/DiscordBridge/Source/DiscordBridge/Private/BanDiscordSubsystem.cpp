@@ -2130,6 +2130,8 @@ void UBanDiscordSubsystem::HandleWarnCommand(const TArray<FString>& Args,
 					{
 						if (UWorld* World = GI->GetWorld())
 							UBanEnforcer::KickConnectedPlayer(World, Uid, AutoBan.GetKickMessage());
+						BanDiscordHelpers::AddCounterpartBans(this, DB, Uid, DisplayName,
+							AutoBan.Reason, SenderName, AutoBan.bIsPermanent, AutoBan.ExpireDate);
 						FBanDiscordNotifier::NotifyBanCreated(AutoBan);
 						FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
 						if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
@@ -3829,6 +3831,9 @@ void UBanDiscordSubsystem::HandleDismissAppealCommand(const TArray<FString>& Arg
 		return;
 	}
 
+	// Record the dismissal in the registry before deleting so the audit trail is preserved.
+	Registry->ReviewAppeal(AppealId, EAppealStatus::Dismissed, SenderName, TEXT(""));
+
 	if (Registry->DeleteAppeal(AppealId))
 	{
 		UE_LOG(LogBanDiscord, Log,
@@ -3931,7 +3936,10 @@ void UBanDiscordSubsystem::HandleAppealApproveCommand(const TArray<FString>& Arg
 			FBanEntry RemovedBan;
 			bUnbanned = DB->RemoveBanByUid(BanRecord.Uid, RemovedBan);
 			if (bUnbanned)
+			{
 				BanDiscordHelpers::RemoveCounterpartBans(this, DB, RemovedBan.Uid, RemovedBan.LinkedUids);
+				FBanDiscordNotifier::NotifyBanRemoved(RemovedBan.Uid, RemovedBan.PlayerName, SenderName);
+			}
 		}
 		else
 		{
@@ -6489,6 +6497,8 @@ FString UBanDiscordSubsystem::ExecutePanelWarn(const FString& PlayerArg,
 					{
 						if (UWorld* World = GI->GetWorld())
 							UBanEnforcer::KickConnectedPlayer(World, Uid, AutoBan.GetKickMessage());
+						BanDiscordHelpers::AddCounterpartBans(this, DB, Uid, DisplayName,
+							AutoBan.Reason, SenderName, AutoBan.bIsPermanent, AutoBan.ExpireDate);
 						FBanDiscordNotifier::NotifyBanCreated(AutoBan);
 						FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
 						if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())

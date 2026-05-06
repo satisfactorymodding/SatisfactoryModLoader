@@ -5358,7 +5358,7 @@ if (Config.bUseEmbedsForPhaseEvents)
 TSharedPtr<FJsonObject> EmbedObj = MakeShared<FJsonObject>();
 EmbedObj->SetStringField(TEXT("title"), TEXT("🏭 New Game Phase Reached!"));
 EmbedObj->SetNumberField(TEXT("color"), 16766720); // gold
-EmbedObj->SetStringField(TEXT("description"), FString::Printf(TEXT("**%s**"), *PhaseName));
+EmbedObj->SetStringField(TEXT("description"), FString::Printf(TEXT("**%s**"), *EscapeMarkdown(PhaseName)));
 EmbedObj->SetStringField(TEXT("timestamp"), FDateTime::UtcNow().ToIso8601());
 
 TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
@@ -5370,7 +5370,7 @@ else
 {
 TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
 Body->SetStringField(TEXT("content"),
-FString::Printf(TEXT("🏭 New game phase reached: **%s**"), *PhaseName));
+FString::Printf(TEXT("🏭 New game phase reached: **%s**"), *EscapeMarkdown(PhaseName)));
 SendMessageBodyToChannel(TargetChannel, Body);
 }
 }
@@ -5451,7 +5451,7 @@ F->SetBoolField  (TEXT("inline"), true);
 Fields.Add(MakeShared<FJsonValueObject>(F));
 };
 
-AddField(TEXT("Name"), SchematicName);
+AddField(TEXT("Name"), EscapeMarkdown(SchematicName));
 AddField(TEXT("Type"), TypeLabel);
 
 EmbedObj->SetArrayField(TEXT("fields"), Fields);
@@ -5466,7 +5466,7 @@ else
 {
 TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
 Body->SetStringField(TEXT("content"),
-FString::Printf(TEXT("🔬 Unlock achieved: **%s** (%s)"), *SchematicName, *TypeLabel));
+FString::Printf(TEXT("🔬 Unlock achieved: **%s** (%s)"), *EscapeMarkdown(SchematicName), *TypeLabel));
 SendMessageBodyToChannel(TargetChannel, Body);
 }
 }

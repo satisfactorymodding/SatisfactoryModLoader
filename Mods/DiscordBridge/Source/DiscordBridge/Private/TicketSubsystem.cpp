@@ -1426,7 +1426,7 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 										(*MsgObjPtr)->TryGetStringField(TEXT("content"), MsgContent);
 
 										if (!AuthorName.IsEmpty() && !MsgContent.IsEmpty())
-											PageLines.Add(FString::Printf(TEXT("[%s]: %s\n"), *AuthorName, *MsgContent));
+											PageLines.Add(FString::Printf(TEXT("[%s]: %s\n"), *EscapeMarkdown(AuthorName), *EscapeMarkdown(MsgContent)));
 									}
 
 									// The last entry in the array is the oldest message.
@@ -2443,6 +2443,34 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 									if (UWorld* World = GI->GetWorld())
 										UBanEnforcer::KickConnectedPlayer(World, WarnUid,
 										                                  AutoBan.GetKickMessage());
+									// Add counterpart bans (IP↔EOS) mirroring all other auto-ban paths.
+									if (UPlayerSessionRegistry* SR = GI->GetSubsystem<UPlayerSessionRegistry>())
+									{
+										FString Plat, RawId;
+										UBanDatabase::ParseUid(WarnUid, Plat, RawId);
+										if (Plat == TEXT("EOS"))
+										{
+											FPlayerSessionRecord SR_Rec;
+											if (SR->FindByUid(WarnUid, SR_Rec) && !SR_Rec.IpAddress.IsEmpty())
+											{
+												const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), SR_Rec.IpAddress);
+												FBanEntry IpBan;
+												IpBan.Uid = IpUid;
+												IpBan.Platform = TEXT("IP");
+												IpBan.PlayerUID = SR_Rec.IpAddress;
+												IpBan.PlayerName = ResolvedName;
+												IpBan.Reason = AutoBan.Reason;
+												IpBan.BannedBy = AutoBan.BannedBy;
+												IpBan.BanDate = AutoBan.BanDate;
+												IpBan.bIsPermanent = AutoBan.bIsPermanent;
+												IpBan.ExpireDate = AutoBan.ExpireDate;
+												IpBan.LinkedUids.Add(WarnUid);
+												bool bIpSkipped = false;
+												if (DB->AddBanSkipIfPermanentExists(IpBan, bIpSkipped) || bIpSkipped)
+													DB->LinkBans(WarnUid, IpUid);
+											}
+										}
+									}
 									FBanDiscordNotifier::NotifyBanCreated(AutoBan);
 									FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
 									if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
@@ -4201,7 +4229,7 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 			const TCHAR RemindSuffix = FChar::ToLower(RemindArg[RemindArg.Len() - 1]);
 			const FString RemindNumStr = RemindArg.Left(RemindArg.Len() - 1);
 			const double RemindVal = FCString::Atod(*RemindNumStr);
-			if (RemindVal > 0.0)
+			if (FMath::IsFinite(RemindVal) && RemindVal > 0.0)
 			{
 				if (RemindSuffix == TCHAR('w'))      { RemindSpan = FTimespan::FromDays(RemindVal * 7.0);  bParsedRemind = true; }
 				else if (RemindSuffix == TCHAR('d')) { RemindSpan = FTimespan::FromDays(RemindVal);         bParsedRemind = true; }
@@ -5068,7 +5096,7 @@ void UTicketSubsystem::CloseAppealTicketForOpener(const FString& DiscordUserId,
 								(*MsgObjPtr)->TryGetStringField(TEXT("content"), MsgContent);
 
 								if (!AuthorName.IsEmpty() && !MsgContent.IsEmpty())
-									TranscriptText += FString::Printf(TEXT("[%s]: %s\n"), *AuthorName, *MsgContent);
+									TranscriptText += FString::Printf(TEXT("[%s]: %s\n"), *EscapeMarkdown(AuthorName), *EscapeMarkdown(MsgContent));
 							}
 						}
 					}
@@ -5276,7 +5304,7 @@ void UTicketSubsystem::CloseTicketChannelInactive(const FString& ChannelId)
 								(*MsgObjPtr)->TryGetStringField(TEXT("content"), MsgContent);
 
 								if (!AuthorName.IsEmpty() && !MsgContent.IsEmpty())
-									TranscriptText += FString::Printf(TEXT("[%s]: %s\n"), *AuthorName, *MsgContent);
+									TranscriptText += FString::Printf(TEXT("[%s]: %s\n"), *EscapeMarkdown(AuthorName), *EscapeMarkdown(MsgContent));
 							}
 						}
 					}

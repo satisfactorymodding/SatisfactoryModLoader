@@ -264,6 +264,12 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
         FBanEntry Existing;
         if (DB->IsCurrentlyBanned(Uid, Existing))
         {
+            // Never downgrade a permanent ban to a temporary ban via peer sync.
+            // The origin server may have since extended the ban or it may have
+            // been placed manually; in either case the permanent record wins.
+            if (Existing.bIsPermanent && DurationMinutes > 0)
+                return;
+
             const FString IncomingReason   = Reason.IsEmpty() ? TEXT("Synced ban from peer server") : Reason;
             const FString IncomingBannedBy = BannedBy.IsEmpty() ? TEXT("peer") : BannedBy;
             const bool bPermanentMatch     = (Existing.bIsPermanent == (DurationMinutes <= 0));
@@ -350,7 +356,8 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
         // Register the UID in PeerAppliedUnbanUids before calling RemoveBanByUid()
         // so OnLocalBanRemoved suppresses re-broadcasting this peer-sourced unban.
         PeerAppliedUnbanUids.Add(Uid);
-        const bool bRemoved = DB->RemoveBanByUid(Uid);
+        FBanEntry RemovedEntry;
+        const bool bRemoved = DB->RemoveBanByUid(Uid, RemovedEntry);
         if (!bRemoved)
         {
             // Ban was not found — RemoveBanByUid will not fire OnBanRemoved,
@@ -360,6 +367,15 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
 
         if (bRemoved)
         {
+            // Also remove any counterpart bans (IP↔EOS links) so no linked
+            // ban is left behind after the peer-sourced unban is applied.
+            for (const FString& LinkedUid : RemovedEntry.LinkedUids)
+            {
+                PeerAppliedUnbanUids.Add(LinkedUid);
+                if (!DB->RemoveBanByUid(LinkedUid))
+                    PeerAppliedUnbanUids.Remove(LinkedUid);
+            }
+
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 AuditLog->LogAction(TEXT("unban"), Uid, PlayerName,
                     TEXT("peer"), TEXT("peer"),

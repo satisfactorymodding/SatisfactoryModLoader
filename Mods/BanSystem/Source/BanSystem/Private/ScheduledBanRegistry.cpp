@@ -6,6 +6,7 @@
 #include "BanSystemConfig.h"
 #include "BanAuditLog.h"
 #include "BanDiscordNotifier.h"
+#include "PlayerSessionRegistry.h"
 
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonReader.h"
@@ -262,6 +263,35 @@ bool UScheduledBanRegistry::ApplyScheduledBan(const FScheduledBanEntry& Entry)
     }
     if (UWorld* World = GI->GetWorld())
         UBanEnforcer::KickConnectedPlayer(World, Entry.Uid, Ban.GetKickMessage());
+
+    // Add counterpart bans (IP↔EOS) so the scheduled ban blocks all identities.
+    if (UPlayerSessionRegistry* SR = GI->GetSubsystem<UPlayerSessionRegistry>())
+    {
+        FString Plat, RawId;
+        UBanDatabase::ParseUid(Entry.Uid, Plat, RawId);
+        if (Plat == TEXT("EOS"))
+        {
+            FPlayerSessionRecord SR_Rec;
+            if (SR->FindByUid(Entry.Uid, SR_Rec) && !SR_Rec.IpAddress.IsEmpty())
+            {
+                const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), SR_Rec.IpAddress);
+                FBanEntry IpBan;
+                IpBan.Uid = IpUid;
+                IpBan.Platform = TEXT("IP");
+                IpBan.PlayerUID = SR_Rec.IpAddress;
+                IpBan.PlayerName = Entry.PlayerName;
+                IpBan.Reason = Ban.Reason;
+                IpBan.BannedBy = Ban.BannedBy;
+                IpBan.BanDate = Ban.BanDate;
+                IpBan.bIsPermanent = Ban.bIsPermanent;
+                IpBan.ExpireDate = Ban.ExpireDate;
+                IpBan.LinkedUids.Add(Entry.Uid);
+                bool bIpSkipped = false;
+                if (DB->AddBanSkipIfPermanentExists(IpBan, bIpSkipped) || bIpSkipped)
+                    DB->LinkBans(Entry.Uid, IpUid);
+            }
+        }
+    }
 
     FBanDiscordNotifier::NotifyBanCreated(Ban);
     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
