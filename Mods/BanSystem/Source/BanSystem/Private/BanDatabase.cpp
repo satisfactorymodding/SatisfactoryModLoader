@@ -354,7 +354,9 @@ void UBanDatabase::LoadFromFile()
     int64 NewNextId = 1;
     FString NextIdStr;
     double  NextIdDbl = 1.0;
-    if (Root->TryGetStringField(TEXT("nextId"), NextIdStr))
+    if (Root->TryGetStringField(TEXT("nextId"), NextIdStr) && NextIdStr.IsNumeric()
+        && NextIdStr.Len() <= 19
+        && (NextIdStr.Len() < 19 || NextIdStr <= TEXT("9223372036854775807")))
         NewNextId = FMath::Max((int64)1, FCString::Atoi64(*NextIdStr));
     else if (Root->TryGetNumberField(TEXT("nextId"), NextIdDbl))
         NewNextId = FMath::Max((int64)1, static_cast<int64>(NextIdDbl));

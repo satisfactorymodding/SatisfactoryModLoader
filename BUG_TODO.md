@@ -2648,4 +2648,81 @@ the existing `ToRemove` pattern at lines 277–300.
 
 ---
 
-*Last updated: 2026-05-06. All 2 Round-36 bugs resolved.*
+## Round 37 Audit (2026-05-06)
+
+### Round 36 verification
+
+**BUG-R36-01 (WhitelistManager ParseDuration) — CONFIRMED PRESENT.**
+All four suffix branches (`w`/`d`/`h`/`m`) in `WhitelistManager.cpp` contain the
+`FMath::IsFinite(Val) && Val > 0.0 && Val <= cap` guards added in Round 36.
+
+**BUG-R36-02 (SMLWebSocketServerRunnable shutdown Close frames) — CONFIRMED PRESENT.**
+The two-phase shutdown pattern (mutex-scoped collect into `ShutdownSockets`, then
+`SendFrame(Close 1001)` + `DestroySocket` outside the lock) is present at lines 305–330 of
+`SMLWebSocketServerRunnable.cpp`.
+
+---
+
+### ✅ Fixed — NaN UB in `double → int32` duration cast in REST API (BUG-R37-01 / BUG-R37-02)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp`
+
+**Root cause:** Three locations cast a `double DurationMinutes` value to `int32` without first
+checking for NaN. NaN evades both `<= 0.0` and `> INT_MAX` comparisons (both return `false` for
+NaN), causing the else-branch cast to execute — `static_cast<int32>(NaN)` is undefined behaviour.
+
+- **POST /bans** (~line 582): 3-way if/else on `DurationMinutesDbl`.
+- **POST /scheduled-bans** (~line 2678): ternary expression on `DurDbl`.
+- **POST /bans/batch** (~line 2864): identical ternary on `DurDbl`.
+
+**Fix:** Added `!FMath::IsFinite(x)` as the leading condition in each guard so NaN maps to the
+safe default (0 = permanent ban). The PATCH /bans/:uid handler was already safe because it uses
+`== 0.0` / `> 0.0` tests that simply skip for NaN, leaving the duration unchanged.
+
+Note: Standard JSON parsers cannot produce NaN (not valid JSON), so this is a defensive measure
+rather than a fix for an immediately exploitable path.
+
+---
+
+### ✅ Fixed — `FCString::Atoi64` called without `IsNumeric` or 19-digit overflow guard on `nextId` field (BUG-R37-03)
+**Files:**
+- `Mods/BanSystem/Source/BanSystem/Private/BanDatabase.cpp` (~line 357)
+- `Mods/BanSystem/Source/BanSystem/Private/ScheduledBanRegistry.cpp` (~line 369)
+- `Mods/BanSystem/Source/BanSystem/Private/BanAppealRegistry.cpp` (~line 319)
+- `Mods/BanSystem/Source/BanSystem/Private/PlayerWarningRegistry.cpp` (~line 392)
+- `Mods/BanSystem/Source/BanSystem/Private/BanAuditLog.cpp` (~line 222)
+- `Mods/BanChatCommands/Source/BanChatCommands/Private/PlayerNoteRegistry.cpp` (~line 195)
+
+**Root cause:** Each file's JSON load path called `FCString::Atoi64(*NextIdStr)` on the `"nextId"`
+string field without first validating that the string is numeric or that it fits within `int64`.
+A 19-digit string like `"9999999999999999999"` exceeds `INT64_MAX` (9223372036854775807) and
+silently overflows `Atoi64`. A non-numeric string also returns 0, silently resetting `NextId`.
+
+**Fix:** Added the same guard pattern used by `BanRestApi.cpp`'s `ParseInt64Param` (the project's
+gold-standard safe int64 parser):
+```cpp
+&& StoredNextIdStr.IsNumeric()
+&& StoredNextIdStr.Len() <= 19
+&& (StoredNextIdStr.Len() < 19 || StoredNextIdStr <= TEXT("9223372036854775807"))
+```
+This gates the `Atoi64` call behind a length check and lexicographic comparison to `INT64_MAX`.
+The attack surface is low (server-internal JSON files) but the guard is consistent with the
+rest of the codebase.
+
+---
+
+### Clean bill of health for other categories
+
+The following categories were audited and found clean in this round:
+
+| Category | Verdict |
+|---|---|
+| `BindLambda` raw-`this` captures | ✅ All use `WeakObjectPtr` or value captures |
+| `JsonEscape` lone-surrogate handling | ✅ All implementations map U+D800–U+DFFF → U+FFFD |
+| `EscapeMarkdown` usage correctness | ✅ Called correctly in `BanDiscordSubsystem` |
+| Timer accumulator drift (reset to 0 vs subtract) | ✅ All timers use correct subtraction pattern |
+| `AddBan` vs `AddBanSkipIfPermanentExists` | ✅ All call sites use the correct variant |
+| Atomic save pattern (.tmp + Move) | ✅ All registry Save methods use tmp-then-rename |
+
+---
+
+*Last updated: 2026-05-06. All 3 Round-37 bugs resolved. 2 Round-36 fixes verified.*
