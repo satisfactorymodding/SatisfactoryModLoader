@@ -2998,3 +2998,39 @@ if ((*ObjPtr)->TryGetNumberField(TEXT("value"), NumVal) &&
 ---
 
 *Last updated: 2026-05-28. All 1 Round-46 bug resolved.*
+
+---
+
+## Round 48 — Full Source Audit (2026-05-06)
+
+**Scope:** All `.cpp` / `.h` files across BanSystem, BanChatCommands, DiscordBridge, SMLWebSocket
+(fresh pass after Round 47). 1 bug found and fixed.
+
+---
+
+### ✅ Fixed — `WhitelistConfig.cpp::GetWLFloat` — `FCString::Atof` result not validated with `FMath::IsFinite` (BUG-WC-1)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/WhitelistConfig.cpp` (~line 85)
+**Severity:** MEDIUM
+
+**Root cause:** `GetWLFloat` called `FCString::Atof(*Value)` and returned the result directly
+without checking `FMath::IsFinite`. An INI value like `WhitelistExpiryWarningHours=Inf`,
+`WhitelistExpiryWarningHours=nan`, or `WhitelistExpiryWarningHours=-Infinity` causes
+`FCString::Atof` to return IEEE 754 ±infinity or NaN. The returned value propagates into
+timer interval calculations and float comparisons, potentially causing infinite loops in
+tick logic or silent NaN poisoning of the expiry warning timer.
+
+The identical pattern was already fixed in `TicketConfig.cpp` (`GetIniFloat` at line 44–45:
+`const float Result = FCString::Atof(*StrVal); return FMath::IsFinite(Result) ? Result : Default;`)
+and in `DiscordBridgeConfig.cpp` (`GetIniFloatOrDefault` at line 90–91 and line 217–218).
+`WhitelistConfig.cpp` was the only remaining unguarded `Atof` site across all four mods.
+
+**Fix:** Added `FMath::IsFinite(Result)` guard, returning `Default` on Infinity/NaN:
+```cpp
+const float Result = FCString::Atof(*Value);
+return FMath::IsFinite(Result) ? Result : Default;
+```
+This is identical to the pattern already used in `TicketConfig.cpp` and `DiscordBridgeConfig.cpp`.
+
+---
+
+*Last updated: 2026-05-06. All 1 Round-48 bug resolved.*
