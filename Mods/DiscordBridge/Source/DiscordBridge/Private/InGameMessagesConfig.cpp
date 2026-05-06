@@ -36,6 +36,20 @@ static void CleanInGameMessagesConfigBOM(const FString& FilePath)
 // -----------------------------------------------------------------------------
 
 static const TCHAR* IGMSection = TEXT("InGameMessages");
+static const TCHAR* MaxInt32String = TEXT("2147483647");
+
+static bool TryParseNonNegativeInt32(const FString& Value, int32& Out)
+{
+	if (!Value.IsNumeric() || Value.IsEmpty() || Value.Len() > 10)
+		return false;
+	if (Value.Len() == 10 && Value > MaxInt32String)
+		return false;
+	const int64 Parsed = FCString::Atoi64(*Value);
+	if (Parsed < 0 || Parsed > static_cast<int64>(INT32_MAX))
+		return false;
+	Out = static_cast<int32>(Parsed);
+	return true;
+}
 
 static FString GetIGMString(const FConfigFile& Cfg, const FString& Key,
                             const FString& Default = TEXT(""))
@@ -181,10 +195,12 @@ static int32 ExtractIntField(const FString& Cleaned, const FString& FieldName, i
 	if (Rest.FindChar(TEXT(','), Comma))
 	{
 		const FString Val = Rest.Left(Comma).TrimStartAndEnd();
-		return (Val.IsNumeric() && Val.Len() <= 10) ? FCString::Atoi(*Val) : Default;
+		int32 Parsed = 0;
+		return TryParseNonNegativeInt32(Val, Parsed) ? Parsed : Default;
 	}
 	const FString Val = Rest.TrimStartAndEnd();
-	return (Val.IsNumeric() && Val.Len() <= 10) ? FCString::Atoi(*Val) : Default;
+	int32 Parsed = 0;
+	return TryParseNonNegativeInt32(Val, Parsed) ? Parsed : Default;
 }
 
 // -----------------------------------------------------------------------------

@@ -36,6 +36,20 @@ static void CleanWhitelistConfigBOM(const FString& FilePath)
 // -----------------------------------------------------------------------------
 
 static const TCHAR* WLSection = TEXT("Whitelist");
+static const TCHAR* MaxInt32String = TEXT("2147483647");
+
+static bool TryParseNonNegativeInt32(const FString& Value, int32& Out)
+{
+	if (!Value.IsNumeric() || Value.IsEmpty() || Value.Len() > 10)
+		return false;
+	if (Value.Len() == 10 && Value > MaxInt32String)
+		return false;
+	const int64 Parsed = FCString::Atoi64(*Value);
+	if (Parsed < 0 || Parsed > static_cast<int64>(INT32_MAX))
+		return false;
+	Out = static_cast<int32>(Parsed);
+	return true;
+}
 
 static FString GetWLString(const FConfigFile& Cfg, const FString& Key,
                            const FString& Default = TEXT(""))
@@ -71,9 +85,10 @@ static int32 GetWLInt(const FConfigFile& Cfg, const FString& Key, int32 Default)
 	FString Value;
 	if (Cfg.GetString(WLSection, *Key, Value) && !Value.IsEmpty())
 	{
-		if (!Value.IsNumeric() || Value.Len() > 10)
+		int32 Parsed = 0;
+		if (!TryParseNonNegativeInt32(Value, Parsed))
 			return Default;
-		return FCString::Atoi(*Value);
+		return Parsed;
 	}
 	return Default;
 }

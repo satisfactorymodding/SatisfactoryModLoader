@@ -14,6 +14,7 @@
 namespace
 {
 	static const TCHAR* ConfigSection = TEXT("DiscordBridge");
+	static const TCHAR* MaxInt32String = TEXT("2147483647");
 
 	// Strip a leading UTF-8 BOM character (U+FEFF) from an FString in-place.
 	// This handles the case where LoadFileToString preserves the BOM character
@@ -93,6 +94,19 @@ namespace
 		return Default;
 	}
 
+	bool TryParseNonNegativeInt32(const FString& Value, int32& Out)
+	{
+		if (!Value.IsNumeric() || Value.IsEmpty() || Value.Len() > 10)
+			return false;
+		if (Value.Len() == 10 && Value > MaxInt32String)
+			return false;
+		const int64 Parsed = FCString::Atoi64(*Value);
+		if (Parsed < 0 || Parsed > static_cast<int64>(INT32_MAX))
+			return false;
+		Out = static_cast<int32>(Parsed);
+		return true;
+	}
+
 	int32 GetIniIntOrDefault(const FConfigFile& Cfg,
 	                         const FString& Key,
 	                         int32 Default)
@@ -100,14 +114,15 @@ namespace
 		FString Value;
 		if (Cfg.GetString(ConfigSection, *Key, Value) && !Value.IsEmpty())
 		{
-			if (!Value.IsNumeric() || Value.Len() > 10)
+			int32 Parsed = 0;
+			if (!TryParseNonNegativeInt32(Value, Parsed))
 			{
 				UE_LOG(LogDiscordBridge, Warning,
 					TEXT("DiscordBridgeConfig: '%s' = '%s' is not numeric, using default %d"),
 					*Key, *Value, Default);
 				return Default;
 			}
-			return FCString::Atoi(*Value);
+			return Parsed;
 		}
 		return Default;
 	}
@@ -224,14 +239,15 @@ namespace
 	{
 		const FString* Found = Raw.Find(Key);
 		if (!Found || Found->IsEmpty()) return Default;
-		if (!Found->IsNumeric() || Found->Len() > 10)
+		int32 Parsed = 0;
+		if (!TryParseNonNegativeInt32(*Found, Parsed))
 		{
 			UE_LOG(LogDiscordBridge, Warning,
 				TEXT("DiscordBridgeConfig: raw key '%s' = '%s' is not numeric, using default %d"),
 				*Key, **Found, Default);
 			return Default;
 		}
-		return FCString::Atoi(**Found);
+		return Parsed;
 	}
 
 	// Parses all values for a given key from a raw INI file content string.
@@ -659,15 +675,17 @@ FDiscordBridgeConfig FDiscordBridgeConfig::LoadOrCreate()
 						{
 							// Value is followed by more fields — read up to the comma.
 							const FString Left = Rest.Left(Comma).TrimStartAndEnd();
-							if (Left.IsNumeric() && Left.Len() <= 10)
-								SA.IntervalMinutes = FCString::Atoi(*Left);
+							int32 ParsedInterval = 0;
+							if (TryParseNonNegativeInt32(Left, ParsedInterval))
+								SA.IntervalMinutes = ParsedInterval;
 						}
 						else
 						{
 							// Value is the only / last field — use the whole remainder.
 							const FString Trimmed = Rest.TrimStartAndEnd();
-							if (Trimmed.IsNumeric() && Trimmed.Len() <= 10)
-								SA.IntervalMinutes = FCString::Atoi(*Trimmed);
+							int32 ParsedInterval = 0;
+							if (TryParseNonNegativeInt32(Trimmed, ParsedInterval))
+								SA.IntervalMinutes = ParsedInterval;
 						}
 					}
 				}
