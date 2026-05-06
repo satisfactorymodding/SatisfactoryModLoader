@@ -2872,3 +2872,84 @@ Round 13 for per-entry ID fields and Round 16 for `BanAppealRegistry::NextId`.
 ---
 
 *Last updated: 2026-05-06. All 2 Round-39 bugs resolved.*
+
+---
+
+## Round 40 — Full Audit (2026-05-06)
+
+### ✅ Fixed — `BanDiscordSubsystem::ExecutePanelBanCheck`: missing `EscapeMarkdown()` in currently-banned branch (BUG-R40-01)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/BanDiscordSubsystem.cpp`
+
+**Root cause:** `ExecutePanelBanCheck` has two branches for the "currently banned" case. The
+`HandleBanCheckCommand` Discord slash-command path at line ~1630 already correctly calls
+`EscapeMarkdown()` on `DisplayName`, `Entry.Reason`, and `Entry.BannedBy`. However the panel
+button path in `ExecutePanelBanCheck` at line ~6876 embedded all three of those player-controlled
+strings in the Discord embed message without `EscapeMarkdown()`. A player whose stored ban reason
+or "BannedBy" field contained Discord markdown characters (`*`, `_`, `` ` ``, etc.) could cause
+unintended formatting to appear in the panel response. BUG-R24-01 claimed to fix "all
+`ExecutePanel*` functions" but this asymmetric branch was overlooked.
+
+**Fix:** Applied `BanDiscordHelpers::EscapeMarkdown()` to `DisplayName`, `Entry.Reason`, and
+`Entry.BannedBy` at the three affected format-string arguments, matching the existing pattern in
+`HandleBanCheckCommand`.
+
+---
+
+*Last updated: 2026-05-06. All 1 Round-40 bug resolved.*
+
+---
+
+## Round 41 — Full Audit (2026-05-06)
+
+### ✅ Fixed — `BanDatabase::LoadFromFile()` — legacy `nextId` double path missing upper-bound guard (BUG-R41-01)
+**File:** `Mods/BanSystem/Source/BanSystem/Private/BanDatabase.cpp` (~line 363)
+
+**Root cause:** The legacy `nextId` JSON load path (used when reading database files written by
+builds before the int64-string serialisation fix) checked only that the field exists before
+calling `static_cast<int64>(NextIdDbl)`:
+```cpp
+else if (Root->TryGetNumberField(TEXT("nextId"), NextIdDbl))
+    NewNextId = FMath::Max((int64)1, static_cast<int64>(NextIdDbl));
+```
+`static_cast<int64>(Infinity)` is undefined behaviour in C++17. A corrupted database file with
+`"nextId": 1e400` passes the `TryGetNumberField` check with `Infinity` as the value, then invokes
+UB in the cast (typically producing `INT64_MIN` on x86, which becomes 1 after `FMath::Max`).
+
+Every other registry with a legacy double nextId path (`BanAppealRegistry`, `PlayerWarningRegistry`,
+`ScheduledBanRegistry`, `BanAuditLog`, `PlayerNoteRegistry`) already has the guard
+`&& StoredNextIdDbl >= 1.0 && StoredNextIdDbl < static_cast<double>(INT64_MAX)` on the
+`TryGetNumberField` condition. `BanDatabase` was the only remaining unguarded site.
+
+**Fix:** Added `&& NextIdDbl >= 1.0 && NextIdDbl < static_cast<double>(INT64_MAX)` to the
+`TryGetNumberField` condition, consistent with every other registry in the codebase.
+
+---
+
+### ✅ Fixed — `DiscordBridgeSubsystem::GetSlashOptionString()` — missing `FMath::IsFinite` guard before `int64` cast (BUG-R41-02)
+**File:** `Mods/DiscordBridge/Source/DiscordBridge/Private/DiscordBridgeSubsystem.cpp` (~line 6210)
+
+**Root cause:** `GetSlashOptionString()` is a helper that returns a Discord slash-command option
+value as a string. When the option value is a number it converts it via:
+```cpp
+double NumVal = 0.0;
+if ((*ObjPtr)->TryGetNumberField(TEXT("value"), NumVal))
+    return FString::Printf(TEXT("%lld"), static_cast<int64>(NumVal));
+```
+No `FMath::IsFinite` or range guard was applied before the cast. A crafted/malformed gateway
+payload supplying `NaN`, `±Infinity`, or a value outside `[INT64_MIN, INT64_MAX)` would invoke
+undefined behaviour in `static_cast<int64>` (same category as BUG-R35-03, which fixed the
+identical pattern in the `GetOpt` lambda in `BanDiscordSubsystem.cpp`).
+
+**Fix:** Added the same three-part guard used by the `GetOpt` lambda in `BanDiscordSubsystem.cpp`
+(fixed in R35-03) and `BanRestApi.cpp`'s numeric option extractions:
+```cpp
+if ((*ObjPtr)->TryGetNumberField(TEXT("value"), NumVal) &&
+    FMath::IsFinite(NumVal) &&
+    NumVal >= static_cast<double>(INT64_MIN) &&
+    NumVal < static_cast<double>(INT64_MAX))
+    return FString::Printf(TEXT("%lld"), static_cast<int64>(NumVal));
+```
+
+---
+
+*Last updated: 2026-05-06. All 2 Round-41 bugs resolved.*

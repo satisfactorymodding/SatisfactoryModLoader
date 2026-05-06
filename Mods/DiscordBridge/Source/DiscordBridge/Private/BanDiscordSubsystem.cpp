@@ -6879,9 +6879,9 @@ FString UBanDiscordSubsystem::ExecutePanelBanCheck(const FString& PlayerArg) con
 			     "Banned by: %s\n"
 			     "Ban date: %s UTC\n"
 			     "Expires: %s"),
-			*DisplayName, *Uid,
-			*Entry.Reason,
-			*Entry.BannedBy,
+			*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid,
+			*BanDiscordHelpers::EscapeMarkdown(Entry.Reason),
+			*BanDiscordHelpers::EscapeMarkdown(Entry.BannedBy),
 			*Entry.BanDate.ToString(TEXT("%Y-%m-%d %H:%M:%S")),
 			*BanDiscordHelpers::FormatExpiry(Entry));
 
