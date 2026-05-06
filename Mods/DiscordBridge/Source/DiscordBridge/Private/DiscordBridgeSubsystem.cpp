@@ -2913,6 +2913,35 @@ void UDiscordBridgeSubsystem::HandleIncomingChatMessage(const FString& PlayerNam
 										{
 											if (UWorld* WBan = GI->GetWorld())
 												UBanEnforcer::KickConnectedPlayer(WBan, Uid, AutoBan.GetKickMessage());
+											// Add counterpart IP ban if the player is currently online,
+											// mirroring HandleWarnCommand, ExecutePanelWarn, and BanRestApi.
+											if (UPlayerSessionRegistry* SR = GI->GetSubsystem<UPlayerSessionRegistry>())
+											{
+												FString PlatCF, RawIdCF;
+												UBanDatabase::ParseUid(Uid, PlatCF, RawIdCF);
+												if (PlatCF == TEXT("EOS"))
+												{
+													FPlayerSessionRecord SR_Rec;
+													if (SR->FindByUid(Uid, SR_Rec) && !SR_Rec.IpAddress.IsEmpty())
+													{
+														const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), SR_Rec.IpAddress);
+														FBanEntry IpBan;
+														IpBan.Uid         = IpUid;
+														IpBan.Platform    = TEXT("IP");
+														IpBan.PlayerUID   = SR_Rec.IpAddress;
+														IpBan.PlayerName  = AutoBan.PlayerName;
+														IpBan.Reason      = AutoBan.Reason;
+														IpBan.BannedBy    = AutoBan.BannedBy;
+														IpBan.BanDate     = AutoBan.BanDate;
+														IpBan.bIsPermanent = AutoBan.bIsPermanent;
+														IpBan.ExpireDate  = AutoBan.ExpireDate;
+														IpBan.LinkedUids.Add(Uid);
+														bool bIpSkipped = false;
+														if (DB->AddBanSkipIfPermanentExists(IpBan, bIpSkipped) || bIpSkipped)
+															DB->LinkBans(Uid, IpUid);
+													}
+												}
+											}
 											FBanDiscordNotifier::NotifyBanCreated(AutoBan);
 											FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, AutoWarnCount);
 											if (UBanAuditLog* AL = GI->GetSubsystem<UBanAuditLog>())
@@ -3766,14 +3795,14 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 		for (const FWhitelistEntry& E : AllEntries)
 		{
 			if (!bFilterByGroup || E.Group.Equals(Arg, ESearchCase::IgnoreCase))
-				Names.Add(E.Name);
+				Names.Add(EscapeMarkdown(E.Name));
 		}
 
 		const FString Status = FWhitelistManager::IsEnabled() ? TEXT("ENABLED") : TEXT("disabled");
 		if (Names.Num() == 0)
 		{
 			if (bFilterByGroup)
-				Response = FString::Printf(TEXT(":scroll: Whitelist is **%s**. No players in group `%s`."), *Status, *Arg);
+				Response = FString::Printf(TEXT(":scroll: Whitelist is **%s**. No players in group `%s`."), *Status, *EscapeMarkdown(Arg));
 			else
 				Response = FString::Printf(TEXT(":scroll: Whitelist is **%s**. No players listed."), *Status);
 		}
@@ -3782,7 +3811,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 			if (bFilterByGroup)
 				Response = FString::Printf(
 					TEXT(":scroll: Whitelist is **%s**. Group `%s` (%d players): %s"),
-					*Status, *Arg, Names.Num(), *FString::Join(Names, TEXT(", ")));
+					*Status, *EscapeMarkdown(Arg), Names.Num(), *FString::Join(Names, TEXT(", ")));
 			else
 				Response = FString::Printf(
 					TEXT(":scroll: Whitelist is **%s**. Players (%d): %s"),
@@ -3905,7 +3934,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 					*E.Timestamp.ToString(TEXT("%Y-%m-%d %H:%M")),
 					*E.Action,
 					*EscapeMarkdown(E.Target),
-					E.AdminName.IsEmpty() ? TEXT("system") : *E.AdminName);
+					E.AdminName.IsEmpty() ? TEXT("system") : *EscapeMarkdown(E.AdminName));
 			}
 			Response = LogText;
 		}
@@ -3973,7 +4002,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 				{
 					FString ExtraInfo;
 					if (!E.Group.IsEmpty())
-						ExtraInfo += FString::Printf(TEXT(" [%s]"), *E.Group);
+						ExtraInfo += FString::Printf(TEXT(" [%s]"), *EscapeMarkdown(E.Group));
 					if (E.ExpiresAt.GetTicks() > 0)
 						ExtraInfo += FString::Printf(TEXT(" (expires %s)"),
 							*E.ExpiresAt.ToString(TEXT("%Y-%m-%d %H:%M UTC")));
@@ -4006,7 +4035,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 			for (const auto& Pair : GroupCounts)
 			{
 				GroupText += FString::Printf(TEXT("• **%s** — %d player%s\n"),
-					*Pair.Key, Pair.Value, Pair.Value == 1 ? TEXT("") : TEXT("s"));
+					*EscapeMarkdown(Pair.Key), Pair.Value, Pair.Value == 1 ? TEXT("") : TEXT("s"));
 			}
 			Response = GroupText.TrimEnd();
 		}

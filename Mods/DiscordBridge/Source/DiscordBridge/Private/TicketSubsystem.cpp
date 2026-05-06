@@ -923,6 +923,13 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 						if (ExtraRemoved > 0)
 							ApproveResponse += FString::Printf(
 								TEXT("\nAlso removed %d linked ban(s)."), ExtraRemoved);
+
+						// Post a moderation-log notification for the unban.  bSilent=true above
+						// suppresses the generic OnBanRemoved broadcast to avoid a duplicate
+						// "✅ unbanned" post; we call NotifyBanRemoved here so the moderation
+						// log and webhook still receive a record of the removal.
+						FBanDiscordNotifier::NotifyBanRemoved(RemovedBan.Uid, RemovedBan.PlayerName,
+						                                      DiscordUsername);
 					}
 					else
 					{
@@ -2486,7 +2493,13 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 					TEXT(":warning: Warning issued for `%s` (%s) by <@%s>.\n"
 					     "Reason: %s\n"
 					     "Total warnings for this player: **%d**"),
-					*WarnUid, *ResolvedName, *DiscordUserId, *WarnReason, WarnCount);
+					*WarnUid, *EscapeMarkdown(ResolvedName), *DiscordUserId,
+					*EscapeMarkdown(WarnReason), WarnCount);
+
+				// Post to moderation log and webhook — mirrors BanChatCommands and
+				// BanDiscordSubsystem HandleWarnCommand/ExecutePanelWarn.
+				FBanDiscordNotifier::NotifyWarningIssued(WarnUid, ResolvedName, WarnReason,
+				                                         DiscordUsername, WarnCount);
 			}
 			else
 			{
@@ -4231,10 +4244,12 @@ void UTicketSubsystem::OnRawDiscordMessage(const TSharedPtr<FJsonObject>& Messag
 			const double RemindVal = FCString::Atod(*RemindNumStr);
 			if (FMath::IsFinite(RemindVal) && RemindVal > 0.0)
 			{
-				if (RemindSuffix == TCHAR('w'))      { RemindSpan = FTimespan::FromDays(RemindVal * 7.0);  bParsedRemind = true; }
-				else if (RemindSuffix == TCHAR('d')) { RemindSpan = FTimespan::FromDays(RemindVal);         bParsedRemind = true; }
-				else if (RemindSuffix == TCHAR('h')) { RemindSpan = FTimespan::FromHours(RemindVal);        bParsedRemind = true; }
-				else if (RemindSuffix == TCHAR('m')) { RemindSpan = FTimespan::FromMinutes(RemindVal);      bParsedRemind = true; }
+				// Cap each unit to 100 years (36 500 days) to prevent int64 overflow
+				// in FTimespan, mirroring the WhitelistManager::ParseDuration guards.
+				if      (RemindSuffix == TCHAR('w') && RemindVal <= 5214.0)   { RemindSpan = FTimespan::FromDays(RemindVal * 7.0);  bParsedRemind = true; }
+				else if (RemindSuffix == TCHAR('d') && RemindVal <= 36500.0)  { RemindSpan = FTimespan::FromDays(RemindVal);         bParsedRemind = true; }
+				else if (RemindSuffix == TCHAR('h') && RemindVal <= 876000.0) { RemindSpan = FTimespan::FromHours(RemindVal);        bParsedRemind = true; }
+				else if (RemindSuffix == TCHAR('m') && RemindVal <= 52560000.0) { RemindSpan = FTimespan::FromMinutes(RemindVal);    bParsedRemind = true; }
 			}
 		}
 		if (!bParsedRemind)
