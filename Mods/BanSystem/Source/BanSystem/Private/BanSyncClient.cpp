@@ -324,12 +324,30 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
         // Consume-once semantics: OnLocalBanAdded removes the entry when it fires,
         // so the guard holds whether OnBanAdded fires synchronously or asynchronously.
         PeerAppliedBanUids.Add(Uid);
-        const bool bAdded = DB->AddBan(Ban);
+
+        // Use AddBanSkipIfPermanentExists for temporary bans so that a permanent
+        // ban that was added between the IsCurrentlyBanned() check above and this
+        // AddBan call is never silently downgraded to a shorter temp ban (TOCTOU).
+        // Permanent bans are safe to use AddBan directly — an intentional overwrite
+        // is acceptable when the origin server explicitly escalated to permanent.
+        bool bPeerSyncSkipped = false;
+        const bool bAdded = Ban.bIsPermanent
+            ? DB->AddBan(Ban)
+            : DB->AddBanSkipIfPermanentExists(Ban, bPeerSyncSkipped);
+
         if (!bAdded)
         {
-            // AddBan failed and will not fire OnBanAdded — clean up the pre-added entry
-            // so it does not silently suppress a future legitimate local ban for this UID.
+            // AddBan / AddBanSkipIfPermanentExists failed or skipped — clean up the
+            // pre-added guard entry so it does not silently suppress a future
+            // legitimate local ban for this UID.
             PeerAppliedBanUids.Remove(Uid);
+
+            if (bPeerSyncSkipped)
+            {
+                UE_LOG(LogBanSyncClient, Log,
+                    TEXT("BanSyncClient: skipped temp sync ban for %s — a permanent ban already exists."),
+                    *Uid);
+            }
         }
 
         if (bAdded)
