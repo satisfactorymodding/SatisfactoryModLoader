@@ -257,9 +257,14 @@ private:
 	TQueue<FSMLWebSocketOutboundMessage, EQueueMode::Mpsc> OutboundMessages;
 	TQueue<FSMLWebSocketCloseRequest,    EQueueMode::Mpsc> CloseRequests;
 
-	// Reassembly buffer for fragmented WebSocket messages
+	// Reassembly buffer for fragmented WebSocket messages.
+	// bInFragment is a dedicated flag so that a valid zero-length first fragment
+	// does not leave FragmentBuffer empty and trigger the "no fragment in progress"
+	// protocol-error path in the Continuation handler (the server-side runnable
+	// uses the same pattern with FClientState::bInFragment).
 	TArray<uint8> FragmentBuffer;
 	bool          bFragmentIsBinary{false};
+	bool          bInFragment{false};
 
 	// ── Ping / pong keep-alive ────────────────────────────────────────────────
 

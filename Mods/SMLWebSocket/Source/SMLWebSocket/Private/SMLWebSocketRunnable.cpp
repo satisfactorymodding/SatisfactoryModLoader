@@ -267,6 +267,7 @@ uint32 FSMLWebSocketRunnable::Run()
 		bReceivedServerClose = false;
 		FragmentBuffer.Empty();
 		bFragmentIsBinary = false;
+		bInFragment = false;
 
 		// ── 1. Resolve host and connect TCP socket ────────────────────────────
 		State.store(ESMLWebSocketRunnableState::Connecting);
@@ -1447,7 +1448,7 @@ bool FSMLWebSocketRunnable::ProcessIncomingFrame()
 	case WsOpcode::Text:
 	case WsOpcode::Binary:
 	{
-		if (bFin && FragmentBuffer.IsEmpty())
+		if (bFin && !bInFragment)
 		{
 			// Unfragmented message
 			if (Opcode == WsOpcode::Text)
@@ -1462,7 +1463,7 @@ bool FSMLWebSocketRunnable::ProcessIncomingFrame()
 				NotifyBinaryMessage(Payload, true);
 			}
 		}
-		else if (!FragmentBuffer.IsEmpty())
+		else if (bInFragment)
 		{
 			// RFC 6455 §5.4: A new data frame must not start while a fragmented
 			// message is still being assembled. The server is misbehaving — send a
@@ -1475,14 +1476,20 @@ bool FSMLWebSocketRunnable::ProcessIncomingFrame()
 			       FragmentBuffer.Num());
 			FragmentBuffer.Empty();
 			bFragmentIsBinary = false;
+			bInFragment = false;
 			const uint8 ClosePayload[2] = { 0x03, 0xEA }; // status 1002
 			SendWsFrame(WsOpcode::Close, ClosePayload, 2);
 			return false;
 		}
 		else
 		{
-			// Start of a fragmented message (bFin == false, FragmentBuffer is empty)
+			// Start of a fragmented message (bFin == false, no fragment in progress).
+			// Use bInFragment rather than FragmentBuffer.IsEmpty() as the state
+			// indicator: a zero-length first fragment is valid per RFC 6455 §5.4
+			// and would leave FragmentBuffer empty, causing a false protocol-error
+			// on the subsequent Continuation frame if we relied on the buffer check.
 			bFragmentIsBinary = (Opcode == WsOpcode::Binary);
+			bInFragment = true;
 			FragmentBuffer = MoveTemp(Payload);
 		}
 		break;
@@ -1492,7 +1499,7 @@ bool FSMLWebSocketRunnable::ProcessIncomingFrame()
 		// RFC 6455 §5.4: a Continuation frame MUST follow a non-final Text or
 		// Binary frame.  Receiving one when no fragmented message is in progress
 		// is a protocol error — close the connection with status 1002.
-		if (FragmentBuffer.IsEmpty())
+		if (!bInFragment)
 		{
 			UE_LOG(LogSMLWebSocket, Warning,
 			       TEXT("SMLWebSocket: Continuation frame received with no open fragmented message – closing connection (1002)"));
@@ -1515,6 +1522,7 @@ bool FSMLWebSocketRunnable::ProcessIncomingFrame()
 				       NewTotalSize);
 				FragmentBuffer.Empty();
 				bFragmentIsBinary = false;
+				bInFragment = false;
 				const uint8 ClosePayload[2] = { 0x03, 0xEA }; // status 1002
 				SendWsFrame(WsOpcode::Close, ClosePayload, 2);
 				return false;
@@ -1536,6 +1544,7 @@ bool FSMLWebSocketRunnable::ProcessIncomingFrame()
 				NotifyMessage(Msg);
 			}
 			FragmentBuffer.Empty();
+			bInFragment = false;
 		}
 		break;
 	}
