@@ -538,6 +538,55 @@ pass "CHECK 16 done"
 echo
 
 # =============================================================================
+# CHECK 17: EscapeMarkdown applied to Uid in all Discord embed Field() calls
+#
+# Every user-controlled string in a Discord embed must go through EscapeMarkdown
+# before being placed in a Field() call.  The Uid (compound UID) is user-
+# controlled (includes "IP:" prefixes with caller-supplied values) and must be
+# escaped just like PlayerName, Reason, etc.
+# =============================================================================
+echo "--- CHECK 17: EscapeMarkdown applied to Uid in Discord embed Field() calls ---"
+
+while IFS= read -r -d '' file; do
+    # Look for Field(...Uid...) patterns where EscapeMarkdown is absent
+    if grep -qP 'Field\s*\(\s*TEXT\s*\(\s*"UID"\s*\)\s*,\s*(?!EscapeMarkdown)[A-Za-z]' "$file"; then
+        fail "CHECK 17 – raw Uid in Discord embed Field()" \
+            "File: $file" \
+            "A Field(TEXT(\"UID\"), ...) call passes a raw string without EscapeMarkdown()." \
+            "Fix: wrap the value with EscapeMarkdown(...)."
+        grep -nP 'Field\s*\(\s*TEXT\s*\(\s*"UID"\s*\)\s*,\s*(?!EscapeMarkdown)[A-Za-z]' "$file" | while IFS= read -r ln; do
+            echo "       Line: $ln"
+        done
+    fi
+done < <(list_cpp_files)
+
+pass "CHECK 17 done"
+echo
+
+# =============================================================================
+# CHECK 18: EAppealStatus::Dismissed is declared in BanTypes.h
+#
+# The codebase uses EAppealStatus::Dismissed in multiple call sites.  If the
+# enum value is not declared the project will not compile.
+# =============================================================================
+echo "--- CHECK 18: EAppealStatus::Dismissed declared in BanTypes.h ---"
+
+BANTYPES_H="$(find "$REPO_ROOT" -name BanTypes.h -path '*/BanSystem/*' | head -1)"
+if [[ -z "$BANTYPES_H" ]]; then
+    fail "CHECK 18 – BanTypes.h not found" \
+        "Expected file: Mods/BanSystem/Source/BanSystem/Public/BanTypes.h" \
+        "BanTypes.h could not be located in the repository."
+elif ! grep -q 'Dismissed' "$BANTYPES_H"; then
+    fail "CHECK 18 – EAppealStatus::Dismissed missing from BanTypes.h" \
+        "File: $BANTYPES_H" \
+        "EAppealStatus::Dismissed is used across the codebase but is not declared in the enum." \
+        "Fix: add 'Dismissed UMETA(DisplayName = \"Dismissed\"),' to EAppealStatus."
+fi
+
+pass "CHECK 18 done"
+echo
+
+# =============================================================================
 # SUMMARY
 # =============================================================================
 echo "========================================================"

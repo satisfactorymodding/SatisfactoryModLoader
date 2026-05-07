@@ -15,9 +15,10 @@ DECLARE_LOG_CATEGORY_EXTERN(LogBanTypes, Log, All);
 UENUM(BlueprintType)
 enum class EAppealStatus : uint8
 {
-    Pending  UMETA(DisplayName = "Pending"),
-    Approved UMETA(DisplayName = "Approved"),
-    Denied   UMETA(DisplayName = "Denied"),
+    Pending   UMETA(DisplayName = "Pending"),
+    Approved  UMETA(DisplayName = "Approved"),
+    Denied    UMETA(DisplayName = "Denied"),
+    Dismissed UMETA(DisplayName = "Dismissed"),
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

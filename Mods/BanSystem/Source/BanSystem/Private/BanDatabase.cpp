@@ -585,7 +585,61 @@ bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry, bool& bOu
     return bSaved;
 }
 
-bool UBanDatabase::RemoveBanByUid(const FString& Uid, bool bSilent)
+bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry,
+                                               FBanEntry*        OutSaved,
+                                               bool*             bOutSkippedPermanent)
+{
+    FBanEntry NewEntry;
+    bool bSaved = false;
+    if (bOutSkippedPermanent) *bOutSkippedPermanent = false;
+
+    {
+        FScopeLock Lock(&DbMutex);
+
+        for (const FBanEntry& E : Bans)
+        {
+            if (E.Uid.Equals(Entry.Uid, ESearchCase::IgnoreCase) && E.bIsPermanent)
+            {
+                if (bOutSkippedPermanent) *bOutSkippedPermanent = true;
+                if (OutSaved) *OutSaved = E;
+                return false;
+            }
+        }
+
+        Bans.RemoveAll([&Entry](const FBanEntry& E){ return E.Uid.Equals(Entry.Uid, ESearchCase::IgnoreCase); });
+
+        NewEntry = Entry;
+        if (NewEntry.Id <= 0)
+        {
+            if (NextId == 0)
+            {
+                UE_LOG(LogBanDatabase, Error,
+                    TEXT("BanDatabase: all 64-bit IDs have been used — cannot add more bans"));
+                return false;
+            }
+            NewEntry.Id = NextId;
+            NextId = (NextId < INT64_MAX) ? NextId + 1 : 0;
+        }
+        else
+        {
+            if (NextId != 0 && NewEntry.Id >= NextId)
+                NextId = (NewEntry.Id < INT64_MAX) ? NewEntry.Id + 1 : 0;
+        }
+
+        Bans.Add(NewEntry);
+        bSaved = SaveToFile();
+    }
+
+    if (bSaved)
+    {
+        if (OutSaved) *OutSaved = NewEntry;
+        OnBanAdded.Broadcast(NewEntry);
+    }
+
+    return bSaved;
+}
+
+
 {
     FBanEntry Ignored;
     return RemoveBanByUid(Uid, Ignored, bSilent);

@@ -261,11 +261,10 @@ void FBanDiscordNotifier::NotifyPlayerKicked(const FString& PlayerName, const FS
 
 void FBanDiscordNotifier::NotifyAppealSubmitted(const FBanAppealEntry& Appeal)
 {
-    const FString PlayerValue = Appeal.Uid.IsEmpty() ? TEXT("(unknown)") : Appeal.Uid;
     const FString SubmittedStr = Appeal.SubmittedAt.ToString(TEXT("%Y-%m-%d %H:%M:%S")) + TEXT(" UTC");
 
     const FString Fields =
-        Field(TEXT("UID"),         PlayerValue)        + TEXT(",") +
+        Field(TEXT("UID"),         EscapeMarkdown(Appeal.Uid.IsEmpty() ? TEXT("(unknown)") : Appeal.Uid)) + TEXT(",") +
         Field(TEXT("Contact"),     EscapeMarkdown(Appeal.ContactInfo.IsEmpty() ? TEXT("(not provided)") : Appeal.ContactInfo)) + TEXT(",") +
         Field(TEXT("Submitted"),   SubmittedStr,   false) + TEXT(",") +
         Field(TEXT("Reason"),      EscapeMarkdown(Appeal.Reason),  false);
@@ -356,9 +355,23 @@ void FBanDiscordNotifier::NotifyBanExpired(const FBanEntry& Entry)
 
 void FBanDiscordNotifier::NotifyAppealReviewed(const FBanAppealEntry& Appeal)
 {
-    const bool bApproved = (Appeal.Status == EAppealStatus::Approved);
-    const FString StatusLabel = bApproved ? TEXT("✅ Approved") : TEXT("❌ Denied");
-    const int32 Color         = bApproved ? 3066993 : 15158332; // green or red
+    FString StatusLabel;
+    int32 Color;
+    if (Appeal.Status == EAppealStatus::Approved)
+    {
+        StatusLabel = TEXT("✅ Approved");
+        Color       = 3066993;  // green
+    }
+    else if (Appeal.Status == EAppealStatus::Dismissed)
+    {
+        StatusLabel = TEXT("🚫 Dismissed");
+        Color       = 9807270;  // grey (#95A5A6)
+    }
+    else
+    {
+        StatusLabel = TEXT("❌ Denied");
+        Color       = 15158332; // red
+    }
 
     const FString Fields =
         Field(TEXT("Appeal #"),    FString::Printf(TEXT("%lld"), Appeal.Id)) + TEXT(",") +
@@ -376,9 +389,10 @@ void FBanDiscordNotifier::NotifyAppealReviewed(const FBanAppealEntry& Appeal)
         FString StatusStr;
         switch (Appeal.Status)
         {
-        case EAppealStatus::Approved: StatusStr = TEXT("approved"); break;
-        case EAppealStatus::Denied:   StatusStr = TEXT("denied");   break;
-        default:                      StatusStr = TEXT("pending");  break;
+        case EAppealStatus::Approved:  StatusStr = TEXT("approved");  break;
+        case EAppealStatus::Denied:    StatusStr = TEXT("denied");    break;
+        case EAppealStatus::Dismissed: StatusStr = TEXT("dismissed"); break;
+        default:                       StatusStr = TEXT("pending");   break;
         }
 
         TSharedPtr<FJsonObject> Obj = MakeShared<FJsonObject>();
@@ -435,7 +449,7 @@ void FBanDiscordNotifier::NotifyPlayerMuted(const FString& Uid, const FString& P
 
     const FString Fields =
         Field(TEXT("Player"),   EscapeMarkdown(PlayerName))  + TEXT(",") +
-        Field(TEXT("UID"),      Uid)                         + TEXT(",") +
+        Field(TEXT("UID"),      EscapeMarkdown(Uid))         + TEXT(",") +
         Field(TEXT("Muted By"), EscapeMarkdown(MutedBy))     + TEXT(",") +
         Field(TEXT("Duration"), DurationStr)                 + TEXT(",") +
         Field(TEXT("Reason"),   EscapeMarkdown(Reason), false);
@@ -462,7 +476,7 @@ void FBanDiscordNotifier::NotifyPlayerUnmuted(const FString& Uid, const FString&
 {
     const FString Fields =
         Field(TEXT("Player"),     EscapeMarkdown(PlayerName.IsEmpty() ? Uid : PlayerName)) + TEXT(",") +
-        Field(TEXT("UID"),        Uid)                          + TEXT(",") +
+        Field(TEXT("UID"),        EscapeMarkdown(Uid))               + TEXT(",") +
         Field(TEXT("Unmuted By"), EscapeMarkdown(UnmutedBy), false);
 
     // Green: 3066993
