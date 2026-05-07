@@ -1211,12 +1211,14 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 							{
 								AppealReg->ReviewAppeal(E.Id, EAppealStatus::Dismissed, TEXT("system"), TEXT("Ticket closed by staff"));
 								AppealReg->DeleteAppeal(E.Id);
-								OpenerToAppealId.Remove(RemovedOpener);
-								OpenerToEosUid.Remove(RemovedOpener);
 								UE_LOG(LogTicketSystem, Log,
 								       TEXT("TicketSystem: Auto-dismissed pending appeal id=%lld for Discord user %s on ticket close."),
 								       E.Id, *RemovedOpener);
 							}
+							// Always remove cached map entries regardless of appeal status so
+							// stale data from REST-reviewed appeals does not persist.
+							OpenerToAppealId.Remove(RemovedOpener);
+							OpenerToEosUid.Remove(RemovedOpener);
 						}
 					}
 					else
@@ -1232,12 +1234,14 @@ void UTicketSubsystem::HandleTicketButtonInteraction(
 								{
 									AppealReg->ReviewAppeal(E.Id, EAppealStatus::Dismissed, TEXT("system"), TEXT("Ticket closed by staff"));
 									AppealReg->DeleteAppeal(E.Id);
-									OpenerToAppealId.Remove(RemovedOpener);
-									OpenerToEosUid.Remove(RemovedOpener);
 									UE_LOG(LogTicketSystem, Log,
 									       TEXT("TicketSystem: Auto-dismissed pending appeal id=%lld for Discord user %s on ticket close."),
 									       E.Id, *RemovedOpener);
 								}
+								// Always remove cached map entries regardless of appeal status so
+								// stale data from REST-reviewed appeals does not persist.
+								OpenerToAppealId.Remove(RemovedOpener);
+								OpenerToEosUid.Remove(RemovedOpener);
 								break;
 							}
 						}
