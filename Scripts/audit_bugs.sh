@@ -676,10 +676,11 @@ BANDB_CPP="$(find "$REPO_ROOT" -name BanDatabase.cpp -path '*/BanSystem/*' | hea
 if [[ -z "$BANDB_CPP" ]]; then
     fail "CHECK 22 – BanDatabase.cpp not found"
 else
-    if ! grep -q 'rolling back in-memory removal' "$BANDB_CPP"; then
+    # The rollback inserts the captured OutEntry back via Bans.Add(OutEntry).
+    if ! grep -qP 'Bans\.Add\s*\(\s*OutEntry\s*\)' "$BANDB_CPP"; then
         fail "CHECK 22 – RemoveBanByUid/RemoveBanById does not roll back Bans on SaveToFile failure" \
             "File: $BANDB_CPP" \
-            "When SaveToFile fails after Bans.RemoveAll, the entry must be re-inserted (rollback)."
+            "When SaveToFile fails after Bans.RemoveAll, the entry must be re-inserted: Bans.Add(OutEntry)."
     fi
 fi
 pass "CHECK 22 done"
@@ -692,10 +693,11 @@ echo "--- CHECK 23: BanDatabase rolls back Bans entry on AddBan SaveToFile failu
 if [[ -z "$BANDB_CPP" ]]; then
     fail "CHECK 23 – BanDatabase.cpp not found"
 else
-    if ! grep -q 'rolling back in-memory addition' "$BANDB_CPP"; then
+    # The rollback removes the ghost entry via Bans.RemoveAll([&NewEntry]...).
+    if ! grep -qP 'Bans\.RemoveAll\s*\(\s*\[&NewEntry\]' "$BANDB_CPP"; then
         fail "CHECK 23 – AddBan/AddBanSkipIfPermanentExists does not roll back Bans on SaveToFile failure" \
             "File: $BANDB_CPP" \
-            "When SaveToFile fails after Bans.Add(NewEntry), the entry must be removed (rollback)."
+            "When SaveToFile fails after Bans.Add(NewEntry), the entry must be removed: Bans.RemoveAll([&NewEntry]...)."
     fi
 fi
 pass "CHECK 23 done"
@@ -709,7 +711,7 @@ BANREST_CPP="$(find "$REPO_ROOT" -name BanRestApi.cpp -path '*/BanSystem/*' | he
 if [[ -z "$BANREST_CPP" ]]; then
     fail "CHECK 24 – BanRestApi.cpp not found"
 else
-    # The function should call RemoveBanByUid with OutEntry and then NotifyBanRemoved
+    # Verify NotifyBanRemoved is called with LinkedUid inside RestApiRemoveCounterpartBans.
     if ! grep -qP 'NotifyBanRemoved\s*\(\s*LinkedUid' "$BANREST_CPP"; then
         fail "CHECK 24 – RestApiRemoveCounterpartBans does not call NotifyBanRemoved for linked counterparts" \
             "File: $BANREST_CPP" \
@@ -727,10 +729,11 @@ MUTEREG_CPP="$(find "$REPO_ROOT" -name MuteRegistry.cpp -path '*/BanChatCommands
 if [[ -z "$MUTEREG_CPP" ]]; then
     fail "CHECK 25 – MuteRegistry.cpp not found"
 else
-    if ! grep -q 'UBanSystemConfig' "$MUTEREG_CPP"; then
+    # The fix reads Cfg->DatabasePath inside GetRegistryPath.
+    if ! grep -qP 'Cfg\s*->\s*DatabasePath' "$MUTEREG_CPP"; then
         fail "CHECK 25 – MuteRegistry::GetRegistryPath() is hardcoded; it ignores UBanSystemConfig::DatabasePath" \
             "File: $MUTEREG_CPP" \
-            "GetRegistryPath() must read UBanSystemConfig::Get()->DatabasePath like other registries."
+            "GetRegistryPath() must read Cfg->DatabasePath like other registries."
     fi
 fi
 pass "CHECK 25 done"
@@ -744,10 +747,10 @@ NOTEREG_CPP="$(find "$REPO_ROOT" -name PlayerNoteRegistry.cpp -path '*/BanChatCo
 if [[ -z "$NOTEREG_CPP" ]]; then
     fail "CHECK 26 – PlayerNoteRegistry.cpp not found"
 else
-    if ! grep -q 'UBanSystemConfig' "$NOTEREG_CPP"; then
+    if ! grep -qP 'Cfg\s*->\s*DatabasePath' "$NOTEREG_CPP"; then
         fail "CHECK 26 – PlayerNoteRegistry::GetRegistryPath() is hardcoded; it ignores UBanSystemConfig::DatabasePath" \
             "File: $NOTEREG_CPP" \
-            "GetRegistryPath() must read UBanSystemConfig::Get()->DatabasePath like other registries."
+            "GetRegistryPath() must read Cfg->DatabasePath like other registries."
     fi
 fi
 pass "CHECK 26 done"
@@ -761,11 +764,11 @@ WARNREG_CPP="$(find "$REPO_ROOT" -name PlayerWarningRegistry.cpp -path '*/BanSys
 if [[ -z "$WARNREG_CPP" ]]; then
     fail "CHECK 27 – PlayerWarningRegistry.cpp not found"
 else
-    # After our fix, the struct overload should guard with FDateTime(0) check
-    if ! grep -q 'FDateTime(0)' "$WARNREG_CPP"; then
+    # The fix guards the WarnDate stamp with: if (Entry.WarnDate == FDateTime(0))
+    if ! grep -qP 'WarnDate\s*==\s*FDateTime\s*\(\s*0\s*\)' "$WARNREG_CPP"; then
         fail "CHECK 27 – AddWarning(FWarningEntry) unconditionally overwrites caller's WarnDate" \
             "File: $WARNREG_CPP" \
-            "The struct overload must only set WarnDate = UtcNow() when InEntry.WarnDate == FDateTime(0)."
+            "The struct overload must only set WarnDate = UtcNow() when Entry.WarnDate == FDateTime(0)."
     fi
 fi
 pass "CHECK 27 done"
@@ -779,6 +782,7 @@ DBS_CPP="$(find "$REPO_ROOT" -name DiscordBridgeSubsystem.cpp -path '*/DiscordBr
 if [[ -z "$DBS_CPP" ]]; then
     fail "CHECK 28 – DiscordBridgeSubsystem.cpp not found"
 else
+    # Negative: old vulnerable pattern must be absent.
     if grep -qP 'bHasRole\s*=\s*WhitelistConfig\.WhitelistCommandRoleId\.IsEmpty\(\)' "$DBS_CPP"; then
         fail "CHECK 28 – wl_approve handler sets bHasRole=true when WhitelistCommandRoleId is empty" \
             "File: $DBS_CPP" \
@@ -795,10 +799,12 @@ echo "--- CHECK 29: GET /notes serialises note entries via reflection ---"
 if [[ -z "$BANREST_CPP" ]]; then
     fail "CHECK 29 – BanRestApi.cpp not found"
 else
-    if ! grep -q 'ElemProp\|EntryStruct\|FStructProperty.*Inner' "$BANREST_CPP"; then
+    # Verify the handler uses FScriptArrayHelper to iterate entries and
+    # FStructProperty to access the inner struct.
+    if ! grep -qP 'CastField\s*<\s*FStructProperty\s*>\s*\(\s*NotesProp\s*->\s*Inner\s*\)' "$BANREST_CPP"; then
         fail "CHECK 29 – GET /notes always returns an empty notes array" \
             "File: $BANREST_CPP" \
-            "The handler must iterate NotesProp entries via FScriptArrayHelper and build JSON objects."
+            "The handler must iterate NotesProp entries via FScriptArrayHelper and read fields via CastField<FStructProperty>(NotesProp->Inner)."
     fi
 fi
 pass "CHECK 29 done"
