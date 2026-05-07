@@ -3791,9 +3791,12 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 		const bool bFilterByGroup = !Arg.IsEmpty();
 		TArray<FWhitelistEntry> AllEntries = FWhitelistManager::GetAllEntries();
 
+		const FDateTime NowList = FDateTime::UtcNow();
 		TArray<FString> Names;
 		for (const FWhitelistEntry& E : AllEntries)
 		{
+			// Skip expired entries so the count and list reflect only active players.
+			if (E.ExpiresAt.GetTicks() > 0 && E.ExpiresAt <= NowList) continue;
 			if (!bFilterByGroup || E.Group.Equals(Arg, ESearchCase::IgnoreCase))
 				Names.Add(EscapeMarkdown(E.Name));
 		}
@@ -4017,12 +4020,17 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 	else if (Verb == TEXT("groups"))
 	{
 		const TArray<FWhitelistEntry> AllEntries = FWhitelistManager::GetAllEntries();
+		const FDateTime NowGroups = FDateTime::UtcNow();
 		TMap<FString, int32> GroupCounts;
+		int32 ActiveTotal = 0;
 		for (const FWhitelistEntry& E : AllEntries)
 		{
+			// Skip expired entries — they are no longer whitelisted.
+			if (E.ExpiresAt.GetTicks() > 0 && E.ExpiresAt <= NowGroups) continue;
 			const FString GroupKey = E.Group.IsEmpty() ? TEXT("(default)") : E.Group;
 			int32& Count = GroupCounts.FindOrAdd(GroupKey);
 			++Count;
+			++ActiveTotal;
 		}
 		if (GroupCounts.Num() == 0)
 		{
@@ -4031,7 +4039,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 		else
 		{
 			FString GroupText = FString::Printf(TEXT(":busts_in_silhouette: **Whitelist Groups** (%d entries total):\n"),
-				AllEntries.Num());
+				ActiveTotal);
 			for (const auto& Pair : GroupCounts)
 			{
 				GroupText += FString::Printf(TEXT("• **%s** — %d player%s\n"),

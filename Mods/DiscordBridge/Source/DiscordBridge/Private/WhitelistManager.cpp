@@ -336,9 +336,14 @@ bool FWhitelistManager::RemovePlayer(const FString& PlayerName, const FString& E
 TArray<FString> FWhitelistManager::GetAll()
 {
 	FScopeLock Lock(&Mutex);
+	const FDateTime Now = FDateTime::UtcNow();
 	TArray<FString> Names;
 	for (const FWhitelistEntry& E : Entries)
+	{
+		// Skip expired entries so callers see only currently active whitelist players.
+		if (E.ExpiresAt.GetTicks() > 0 && E.ExpiresAt <= Now) continue;
 		Names.Add(E.Name);
+	}
 	return Names;
 }
 
@@ -437,6 +442,7 @@ FTimespan FWhitelistManager::ParseDuration(const FString& DurStr)
 void FWhitelistManager::RemoveExpiredEntries(TArray<FString>& OutExpiredNames)
 {
 	FScopeLock Lock(&Mutex);
+	OutExpiredNames.Reset(); // ensure callers always get exactly the expired set, not an accumulation
 	const FDateTime Now = FDateTime::UtcNow();
 	for (const FWhitelistEntry& E : Entries)
 		if (E.ExpiresAt.GetTicks() > 0 && E.ExpiresAt <= Now)

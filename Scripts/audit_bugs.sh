@@ -864,8 +864,106 @@ pass "CHECK 30 done"
 echo
 
 # =============================================================================
-# SUMMARY
+# CHECK 31: GET /notes serialises note IDs as string, not double
+#
+# int64 IDs cast to double lose precision for values > 2^53.  The fix is to use
+# SetStringField(TEXT("id"), FString::Printf(TEXT("%lld"), IdVal)) matching the
+# convention used for all other IDs in the REST API.
 # =============================================================================
+echo "--- CHECK 31: GET /notes serialises note IDs as decimal string not double ---"
+
+BANRESTAPI_CPP_CHECK31="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+
+if [[ -z "$BANRESTAPI_CPP_CHECK31" ]]; then
+    fail "CHECK 31 – BanRestApi.cpp not found"
+elif grep -qP 'SetNumberField\s*\(\s*TEXT\s*\(\s*"id"\s*\)' "$BANRESTAPI_CPP_CHECK31"; then
+    fail "CHECK 31 – GET /notes serialises note ID as double (precision loss for id > 2^53)" \
+        "File: $BANRESTAPI_CPP_CHECK31" \
+        "Use SetStringField(TEXT(\"id\"), FString::Printf(TEXT(\"%lld\"), IdVal)) instead."
+fi
+
+pass "CHECK 31 done"
+echo
+
+# =============================================================================
+# CHECK 32: BanSyncClient skips NotifyBanCreated for peer ban updates
+#
+# When a peer sync message updates an existing ban (bWasUpdate=true), firing
+# NotifyBanCreated posts a spurious "🔨 Player Banned" webhook for what was
+# merely a reason/duration edit.  The guard "if (!bWasUpdate)" must be present.
+# =============================================================================
+echo "--- CHECK 32: BanSyncClient skips NotifyBanCreated for peer ban updates ---"
+
+BANSYNC_CPP_CHECK32="$(list_cpp_files | tr '\0' '\n' | grep 'BanSyncClient\.cpp' | head -1)"
+
+if [[ -z "$BANSYNC_CPP_CHECK32" ]]; then
+    fail "CHECK 32 – BanSyncClient.cpp not found"
+elif ! grep -qP 'bWasUpdate' "$BANSYNC_CPP_CHECK32"; then
+    fail "CHECK 32 – BanSyncClient does not track bWasUpdate for peer ban updates" \
+        "File: $BANSYNC_CPP_CHECK32" \
+        "Set bWasUpdate=true when RemoveBanByUid is called before re-adding and guard" \
+        "NotifyBanCreated with 'if (!bWasUpdate)'."
+elif ! grep -qP '!\s*bWasUpdate' "$BANSYNC_CPP_CHECK32"; then
+    fail "CHECK 32 – BanSyncClient does not guard NotifyBanCreated with !bWasUpdate" \
+        "File: $BANSYNC_CPP_CHECK32" \
+        "NotifyBanCreated must be skipped when bWasUpdate is true."
+fi
+
+pass "CHECK 32 done"
+echo
+
+# =============================================================================
+# CHECK 33: RemoveExpiredEntries clears the output array before appending
+#
+# Without OutExpiredNames.Reset() at the top, callers that reuse the array
+# across multiple calls silently accumulate stale entries.
+# =============================================================================
+echo "--- CHECK 33: RemoveExpiredEntries clears output array before appending ---"
+
+WLMGR_CPP_CHECK33="$(list_cpp_files | tr '\0' '\n' | grep 'WhitelistManager\.cpp' | head -1)"
+
+if [[ -z "$WLMGR_CPP_CHECK33" ]]; then
+    fail "CHECK 33 – WhitelistManager.cpp not found"
+elif ! grep -qP 'OutExpiredNames\s*\.\s*(Reset|Empty)\s*\(' "$WLMGR_CPP_CHECK33"; then
+    fail "CHECK 33 – RemoveExpiredEntries does not clear OutExpiredNames before appending" \
+        "File: $WLMGR_CPP_CHECK33" \
+        "Add OutExpiredNames.Reset() at the start of RemoveExpiredEntries."
+fi
+
+pass "CHECK 33 done"
+echo
+
+# =============================================================================
+# CHECK 34: whitelist list / GetAll() / GetAllEntries() display code filters expired
+#
+# The whitelist list and groups commands call GetAllEntries() and must skip entries
+# where ExpiresAt is set and <= UtcNow().  The GetAll() helper also must filter.
+# =============================================================================
+echo "--- CHECK 34: whitelist list/groups display filters expired entries ---"
+
+WLMGR_CPP_CHECK34="$WLMGR_CPP_CHECK33"
+DSUB_CPP_CHECK34="$(list_cpp_files | tr '\0' '\n' | grep 'DiscordBridgeSubsystem\.cpp' | head -1)"
+
+if [[ -z "$WLMGR_CPP_CHECK34" ]]; then
+    fail "CHECK 34 – WhitelistManager.cpp not found"
+elif ! grep -qP 'ExpiresAt\s*<=\s*Now\w*' "$WLMGR_CPP_CHECK34"; then
+    fail "CHECK 34 – GetAll() in WhitelistManager.cpp does not filter expired entries" \
+        "File: $WLMGR_CPP_CHECK34" \
+        "Skip entries where ExpiresAt.GetTicks() > 0 && ExpiresAt <= Now in GetAll()."
+fi
+
+if [[ -z "$DSUB_CPP_CHECK34" ]]; then
+    fail "CHECK 34 – DiscordBridgeSubsystem.cpp not found"
+elif ! grep -qP 'ExpiresAt\s*<=\s*Now\w*' "$DSUB_CPP_CHECK34"; then
+    fail "CHECK 34 – whitelist list/groups in DiscordBridgeSubsystem.cpp do not filter expired entries" \
+        "File: $DSUB_CPP_CHECK34" \
+        "In 'whitelist list' and 'whitelist groups' skip entries where ExpiresAt <= Now."
+fi
+
+pass "CHECK 34 done"
+echo
+
+
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
     echo -e "${GRN}All checks passed — no issues found.${NC}"

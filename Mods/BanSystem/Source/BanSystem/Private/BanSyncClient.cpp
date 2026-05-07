@@ -262,6 +262,7 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
         // If they match exactly, skip (no change). If they differ (reason, duration,
         // category updated on the origin server), remove the stale entry so the
         // updated ban can be applied below.
+        bool bWasUpdate = false; // true when we're replacing an existing ban record
         FBanEntry Existing;
         if (DB->IsCurrentlyBanned(Uid, Existing))
         {
@@ -293,12 +294,12 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
                 return; // Identical — nothing to update.
             // Fields changed — remove the stale record and fall through to re-add.
             // bSilent=true suppresses OnBanRemoved so BanDiscordSubsystem does NOT
-            // post a spurious "✅ unbanned" message; the subsequent AddBan posts the
-            // real update notification.  Do NOT add Uid to PeerAppliedUnbanUids here:
-            // because bSilent=true means OnBanRemoved never fires, the guard entry
-            // would never be consumed and would silently suppress the next legitimate
-            // local unban broadcast for this UID.
+            // post a spurious "✅ unbanned" message.  Do NOT add Uid to
+            // PeerAppliedUnbanUids here: because bSilent=true means OnBanRemoved never
+            // fires, the guard entry would never be consumed and would silently suppress
+            // the next legitimate local unban broadcast for this UID.
             DB->RemoveBanByUid(Uid, /*bSilent=*/true);
+            bWasUpdate = true;
         }
 
         FBanEntry Ban;
@@ -355,7 +356,12 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
             if (UWorld* World = GI->GetWorld())
                 UBanEnforcer::KickConnectedPlayer(World, Uid, Ban.GetKickMessage());
 
-            FBanDiscordNotifier::NotifyBanCreated(Ban);
+            // Only fire the "🔨 Player Banned" webhook embed for genuinely new bans.
+            // When bWasUpdate is true the ban already existed on this peer; posting
+            // NotifyBanCreated would produce a spurious "Player Banned" Discord embed
+            // for what was merely a reason/duration/evidence edit on the origin server.
+            if (!bWasUpdate)
+                FBanDiscordNotifier::NotifyBanCreated(Ban);
 
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 AuditLog->LogAction(TEXT("ban"), Uid, PlayerName,
