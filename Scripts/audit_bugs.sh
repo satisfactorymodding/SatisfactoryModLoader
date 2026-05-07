@@ -601,8 +601,8 @@ if [[ -z "$RESTAPI_CPP" ]]; then
     fail "CHECK 19 – BanRestApi.cpp not found" \
         "Expected file: Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp"
 else
-    # Extract the AppealToJson function body and verify Dismissed is handled
-    if ! grep -qP 'Dismissed.*TEXT\s*\(\s*"dismissed"\s*\)' "$RESTAPI_CPP"; then
+    # Check for 'case EAppealStatus::Dismissed: StatusStr = TEXT("dismissed");' in AppealToJson
+    if ! grep -qP 'case\s+EAppealStatus::Dismissed\s*:\s*StatusStr\s*=\s*TEXT\s*\(\s*"dismissed"\s*\)' "$RESTAPI_CPP"; then
         fail "CHECK 19 – AppealToJson() missing Dismissed→\"dismissed\" mapping" \
             "File: $RESTAPI_CPP" \
             "AppealToJson() does not map EAppealStatus::Dismissed to the JSON string \"dismissed\"." \
@@ -626,7 +626,8 @@ if [[ -z "$RESTAPI_CPP" ]]; then
     fail "CHECK 20 – BanRestApi.cpp not found" \
         "Expected file: Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp"
 else
-    if ! grep -qP '"dismissed"\s*\)\s*\)\s*FilterStatus\s*=\s*EAppealStatus::Dismissed|Norm\s*==\s*TEXT\s*\(\s*"dismissed"\s*\)\s*\)\s*FilterStatus|"dismissed"\b.*FilterStatus\s*=\s*EAppealStatus::Dismissed' "$RESTAPI_CPP"; then
+    # Check for 'else if (Norm == TEXT("dismissed")) FilterStatus = EAppealStatus::Dismissed;'
+    if ! grep -qP 'Norm\s*==\s*TEXT\s*\(\s*"dismissed"\s*\)\s*\)\s*FilterStatus\s*=\s*EAppealStatus::Dismissed' "$RESTAPI_CPP"; then
         fail "CHECK 20 – GET /appeals filter missing \"dismissed\" mapping" \
             "File: $RESTAPI_CPP" \
             "The ?status= filter does not handle \"dismissed\", so ?status=dismissed returns wrong results." \
@@ -652,13 +653,13 @@ if [[ -z "$BANCHATCHMDS_CPP" ]]; then
     fail "CHECK 21 – BanChatCommands.cpp not found" \
         "Expected file: Mods/BanChatCommands/Source/BanChatCommands/Private/Commands/BanChatCommands.cpp"
 else
-    # The /history loop must not use "i + 1" as the displayed warning number
-    if grep -qP '#%d.*\bi\s*\+\s*1\b' "$BANCHATCHMDS_CPP"; then
+    # The /history loop must not use "i + 1" with %d as the displayed warning number in a Printf
+    if grep -qP 'FString::Printf\s*\(\s*TEXT\s*\([^)]*#%d[^)]*\)[^,]*,\s*i\s*\+\s*1\s*,' "$BANCHATCHMDS_CPP"; then
         fail "CHECK 21 – /history displays loop counter i+1 instead of W.Id" \
             "File: $BANCHATCHMDS_CPP" \
             "The warning display loop uses 'i + 1' as the displayed ID, not the persistent W.Id." \
             "Fix: replace '#%d ... i + 1' with '#%lld ... W.Id'."
-        grep -nP '#%d.*\bi\s*\+\s*1\b' "$BANCHATCHMDS_CPP" | while IFS= read -r ln; do
+        grep -nP 'FString::Printf\s*\(\s*TEXT\s*\([^)]*#%d[^)]*\)[^,]*,\s*i\s*\+\s*1\s*,' "$BANCHATCHMDS_CPP" | while IFS= read -r ln; do
             echo "       Line: $ln"
         done
     fi
