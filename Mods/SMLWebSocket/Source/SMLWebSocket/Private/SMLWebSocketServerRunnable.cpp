@@ -724,6 +724,16 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
                 }
                 else
                 {
+                    // RFC 6455 §5.4: a new fragmented data frame must not arrive
+                    // while another fragmented message is still being assembled.
+                    if (Client.bInFragment)
+                    {
+                        UE_LOG(LogWSServer, Warning,
+                            TEXT("WSServer: New fragmented data frame received while fragment in progress — dropping client"));
+                        Client.PendingCloseFrame = { 0x88, 0x02, 0x03, 0xEA }; // Close 1002
+                        return false;
+                    }
+
                     // First fragment of a multi-frame message — begin accumulation.
                     if (Payload.Num() > MaxMessageBytes)
                     {
@@ -748,7 +758,9 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
                 }
 
                 // Guard accumulated size before appending.
-                if (Client.FragmentBuffer.Num() + PayloadLen32 > MaxMessageBytes)
+                // Cast to int64 to prevent int32 wrap-around when both operands
+                // are near INT_MAX, which would bypass this check and cause OOM.
+                if (static_cast<int64>(Client.FragmentBuffer.Num()) + static_cast<int64>(PayloadLen32) > static_cast<int64>(MaxMessageBytes))
                 {
                     UE_LOG(LogWSServer, Error,
                         TEXT("WSServer: Fragmented message exceeds %d byte limit – dropping client"),
