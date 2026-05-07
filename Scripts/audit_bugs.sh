@@ -872,9 +872,6 @@ echo
 # =============================================================================
 echo "--- CHECK 31: GET /notes serialises note IDs as decimal string not double ---"
 
-BANRESTAPI_CPP_CHECK31="$(list_cpp_files | xargs -0 grep -l "BanRestApi" 2>/dev/null | head -1)"
-BANRESTAPI_CPP_CHECK31="$(list_cpp_files | xargs -0 -I{} bash -c 'grep -l "GET.*notes\|notes.*GET" "{}" 2>/dev/null' | head -1)"
-# Simpler: locate BanRestApi.cpp directly
 BANRESTAPI_CPP_CHECK31="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
 
 if [[ -z "$BANRESTAPI_CPP_CHECK31" ]]; then
@@ -949,7 +946,7 @@ DSUB_CPP_CHECK34="$(list_cpp_files | tr '\0' '\n' | grep 'DiscordBridgeSubsystem
 
 if [[ -z "$WLMGR_CPP_CHECK34" ]]; then
     fail "CHECK 34 – WhitelistManager.cpp not found"
-elif ! grep -qP 'ExpiresAt\s*<=\s*(Now|NowList|NowGroups)' "$WLMGR_CPP_CHECK34"; then
+elif ! grep -qP 'ExpiresAt\s*<=\s*Now\w*' "$WLMGR_CPP_CHECK34"; then
     fail "CHECK 34 – GetAll() in WhitelistManager.cpp does not filter expired entries" \
         "File: $WLMGR_CPP_CHECK34" \
         "Skip entries where ExpiresAt.GetTicks() > 0 && ExpiresAt <= Now in GetAll()."
@@ -957,7 +954,7 @@ fi
 
 if [[ -z "$DSUB_CPP_CHECK34" ]]; then
     fail "CHECK 34 – DiscordBridgeSubsystem.cpp not found"
-elif ! grep -qP 'ExpiresAt\s*<=\s*(Now|NowList|NowGroups)' "$DSUB_CPP_CHECK34"; then
+elif ! grep -qP 'ExpiresAt\s*<=\s*Now\w*' "$DSUB_CPP_CHECK34"; then
     fail "CHECK 34 – whitelist list/groups in DiscordBridgeSubsystem.cpp do not filter expired entries" \
         "File: $DSUB_CPP_CHECK34" \
         "In 'whitelist list' and 'whitelist groups' skip entries where ExpiresAt <= Now."
