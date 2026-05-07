@@ -17,34 +17,67 @@ bool FBanTemplate::FromConfigString(const FString& ConfigStr, FBanTemplate& OutT
 
     OutTemplate.Slug = Parts[0];
 
-    // H2: Reject templates whose duration field is non-numeric to avoid silent
-    // 0-minute (permanent) bans from misconfigured or typo'd ini entries.
-    for (TCHAR Ch : Parts[1])
+    // H2: Reject malformed signed integers before numeric conversion.
+    // Accept only an optional single leading '-' followed by one or more digits.
+    const FString& DurationStr = Parts[1];
+    const bool bNegative = DurationStr.StartsWith(TEXT("-"));
+    const int32 DigitsStart = bNegative ? 1 : 0;
+    if (DurationStr.IsEmpty() || (bNegative && DurationStr.Len() == 1))
     {
-        if (!FChar::IsDigit(Ch) && Ch != TEXT('-'))
+        UE_LOG(LogBanTypes, Warning,
+            TEXT("BanTypes: template slug='%s' has non-numeric durationMinutes '%s' — skipping"),
+            *Parts[0], *DurationStr);
+        return false;
+    }
+    for (int32 i = DigitsStart; i < DurationStr.Len(); ++i)
+    {
+        if (!FChar::IsDigit(DurationStr[i]))
         {
             UE_LOG(LogBanTypes, Warning,
                 TEXT("BanTypes: template slug='%s' has non-numeric durationMinutes '%s' — skipping"),
-                *Parts[0], *Parts[1]);
+                *Parts[0], *DurationStr);
             return false;
         }
     }
+
     // Use Atoi64 + clamp to safely handle large digit strings without int32 overflow.
-    // Reject strings exceeding 19 characters (the maximum decimal length of int64)
-    // before calling Atoi64 — beyond that length the conversion itself is UB even
-    // before the clamp below can run.  Values in the valid range that still fall
-    // outside [INT32_MIN, INT32_MAX] are saturated to the respective bound.
-    if (Parts[1].Len() > 19)
+    // Guard against Atoi64 overflow: max is 19 digits for positive values, or
+    // "-9223372036854775808" (20 chars including the sign) for negative values.
+    const int32 MaxLen = bNegative ? 20 : 19;
+    if (DurationStr.Len() > MaxLen)
     {
         UE_LOG(LogBanTypes, Warning,
-            TEXT("BanTypes: template slug='%s' has out-of-range durationMinutes '%s' — clamping to INT32_MAX"),
-            *Parts[0], *Parts[1]);
-        OutTemplate.DurationMinutes = (Parts[1][0] == TEXT('-')) ? INT32_MIN : INT32_MAX;
+            TEXT("BanTypes: template slug='%s' has out-of-range durationMinutes '%s' — clamping to int32 range"),
+            *Parts[0], *DurationStr);
+        OutTemplate.DurationMinutes = bNegative ? INT32_MIN : INT32_MAX;
         OutTemplate.Reason          = Parts[2];
         OutTemplate.Category        = Parts.Num() > 3 ? Parts[3] : FString();
         return true;
     }
-    const int64 DurI64 = FCString::Atoi64(*Parts[1]);
+    // Length alone is insufficient for int64 safety: 19-digit positives above
+    // INT64_MAX (or 20-char negatives below INT64_MIN) must be clamped before parse.
+    if (!bNegative && DurationStr.Len() == 19 && DurationStr > TEXT("9223372036854775807"))
+    {
+        UE_LOG(LogBanTypes, Warning,
+            TEXT("BanTypes: template slug='%s' has out-of-range durationMinutes '%s' — clamping to int32 range"),
+            *Parts[0], *DurationStr);
+        OutTemplate.DurationMinutes = INT32_MAX;
+        OutTemplate.Reason          = Parts[2];
+        OutTemplate.Category        = Parts.Num() > 3 ? Parts[3] : FString();
+        return true;
+    }
+    if (bNegative && DurationStr.Len() == 20 && DurationStr.Mid(1) > TEXT("9223372036854775808"))
+    {
+        UE_LOG(LogBanTypes, Warning,
+            TEXT("BanTypes: template slug='%s' has out-of-range durationMinutes '%s' — clamping to int32 range"),
+            *Parts[0], *DurationStr);
+        OutTemplate.DurationMinutes = INT32_MIN;
+        OutTemplate.Reason          = Parts[2];
+        OutTemplate.Category        = Parts.Num() > 3 ? Parts[3] : FString();
+        return true;
+    }
+
+    const int64 DurI64 = FCString::Atoi64(*DurationStr);
     OutTemplate.DurationMinutes = static_cast<int32>(
         FMath::Clamp<int64>(DurI64, static_cast<int64>(INT32_MIN), static_cast<int64>(INT32_MAX)));
     OutTemplate.Reason          = Parts[2];

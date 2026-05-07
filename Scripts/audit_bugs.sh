@@ -512,6 +512,32 @@ pass "CHECK 15 done"
 echo
 
 # =============================================================================
+# CHECK 16: Signed numeric validation must not allow '-' in non-leading positions
+#
+# Pattern to reject:
+#   if (!FChar::IsDigit(Ch) && Ch != TEXT('-')) { ... }
+# This accepts malformed values like "12-3", which then reach FCString::Atoi64
+# and can be misparsed.  Signed integer validators must only allow an optional
+# single leading '-' and require all remaining characters to be digits.
+# =============================================================================
+echo "--- CHECK 16: Signed numeric validation rejects interior '-' characters ---"
+
+while IFS= read -r -d '' file; do
+    if grep -qP '!\s*FChar::IsDigit\([^)]*\)\s*&&\s*[^;]*!=\s*TEXT\(\x27-\x27\)' "$file"; then
+        fail "CHECK 16 – permissive signed-number validator" \
+            "File: $file" \
+            "Uses '!FChar::IsDigit(...) && ... != TEXT(\"-\")' which allows '-' in non-leading positions." \
+            "Fix: validate as optional leading '-' only, then require digits for every remaining character."
+        grep -nP '!\s*FChar::IsDigit\([^)]*\)\s*&&\s*[^;]*!=\s*TEXT\(\x27-\x27\)' "$file" | while IFS= read -r ln; do
+            echo "       Line: $ln"
+        done
+    fi
+done < <(list_cpp_files)
+
+pass "CHECK 16 done"
+echo
+
+# =============================================================================
 # SUMMARY
 # =============================================================================
 echo "========================================================"
