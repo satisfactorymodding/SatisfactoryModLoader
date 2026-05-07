@@ -74,6 +74,16 @@ public:
     bool AddBanSkipIfPermanentExists(const FBanEntry& Entry, bool& bOutSkippedPermanent);
 
     /**
+     * Overload that additionally fills *OutSaved with the stored entry on
+     * success (including the DB-assigned Id), and fills *OutSaved with the
+     * existing permanent ban record when the call is skipped (bOutSkippedPermanent
+     * set to true).  Either output pointer may be null.
+     */
+    bool AddBanSkipIfPermanentExists(const FBanEntry& Entry,
+                                     FBanEntry*        OutSaved,
+                                     bool*             bOutSkippedPermanent);
+
+    /**
      * Remove a ban by compound UID ("EOS:xxx").
      * Returns true if a row was found and deleted.
      * When bSilent is true, OnBanRemoved is NOT broadcast after the removal

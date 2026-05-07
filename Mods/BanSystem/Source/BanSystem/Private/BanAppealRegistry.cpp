@@ -290,9 +290,10 @@ void UBanAppealRegistry::LoadFromFile()
             FString StatusStr;
             if ((*ObjPtr)->TryGetStringField(TEXT("status"), StatusStr))
             {
-                if (StatusStr == TEXT("approved"))      Entry.Status = EAppealStatus::Approved;
-                else if (StatusStr == TEXT("denied"))   Entry.Status = EAppealStatus::Denied;
-                else                                    Entry.Status = EAppealStatus::Pending;
+                if (StatusStr == TEXT("approved"))         Entry.Status = EAppealStatus::Approved;
+                else if (StatusStr == TEXT("denied"))      Entry.Status = EAppealStatus::Denied;
+                else if (StatusStr == TEXT("dismissed"))   Entry.Status = EAppealStatus::Dismissed;
+                else                                       Entry.Status = EAppealStatus::Pending;
             }
 
             (*ObjPtr)->TryGetStringField(TEXT("reviewedBy"),  Entry.ReviewedBy);
@@ -357,9 +358,10 @@ bool UBanAppealRegistry::SaveToFile() const
         FString StatusStr;
         switch (A.Status)
         {
-        case EAppealStatus::Approved: StatusStr = TEXT("approved"); break;
-        case EAppealStatus::Denied:   StatusStr = TEXT("denied");   break;
-        default:                      StatusStr = TEXT("pending");  break;
+        case EAppealStatus::Approved:   StatusStr = TEXT("approved");   break;
+        case EAppealStatus::Denied:     StatusStr = TEXT("denied");     break;
+        case EAppealStatus::Dismissed:  StatusStr = TEXT("dismissed");  break;
+        default:                        StatusStr = TEXT("pending");    break;
         }
         Obj->SetStringField(TEXT("status"), StatusStr);
 
