@@ -140,7 +140,7 @@ void FBanDiscordNotifier::PostWebhook(const FString& JsonPayload)
 
 void FBanDiscordNotifier::NotifyBanCreated(const FBanEntry& Entry)
 {
-    const FString PlayerValue = EscapeMarkdown(Entry.PlayerName) + TEXT(" (") + Entry.Uid + TEXT(")");
+    const FString PlayerValue = EscapeMarkdown(Entry.PlayerName) + TEXT(" (") + EscapeMarkdown(Entry.Uid) + TEXT(")");
     // When BanDate is unset (FDateTime(0) — common for peer-synced entries), use
     // the remaining time from now so the displayed duration is always meaningful.
     const FDateTime EffectiveBanDate = (Entry.BanDate == FDateTime(0))
@@ -179,8 +179,8 @@ void FBanDiscordNotifier::NotifyBanRemoved(const FString& Uid, const FString& Pl
                                            const FString& RemovedBy)
 {
     const FString PlayerValue = PlayerName.IsEmpty()
-        ? Uid
-        : EscapeMarkdown(PlayerName) + TEXT(" (") + Uid + TEXT(")");
+        ? EscapeMarkdown(Uid)
+        : EscapeMarkdown(PlayerName) + TEXT(" (") + EscapeMarkdown(Uid) + TEXT(")");
 
     const FString Fields =
         Field(TEXT("Player"),     PlayerValue)                     + TEXT(",") +
@@ -362,7 +362,7 @@ void FBanDiscordNotifier::NotifyAppealReviewed(const FBanAppealEntry& Appeal)
 
     const FString Fields =
         Field(TEXT("Appeal #"),    FString::Printf(TEXT("%lld"), Appeal.Id)) + TEXT(",") +
-        Field(TEXT("Player UID"),  Appeal.Uid)                               + TEXT(",") +
+        Field(TEXT("Player UID"),  EscapeMarkdown(Appeal.Uid))               + TEXT(",") +
         Field(TEXT("Contact"),     EscapeMarkdown(Appeal.ContactInfo))       + TEXT(",") +
         Field(TEXT("Reviewed By"), EscapeMarkdown(Appeal.ReviewedBy.IsEmpty() ? TEXT("-") : Appeal.ReviewedBy)) + TEXT(",") +
         Field(TEXT("Note"),        EscapeMarkdown(Appeal.ReviewNote.IsEmpty() ? TEXT("-") : Appeal.ReviewNote), false);

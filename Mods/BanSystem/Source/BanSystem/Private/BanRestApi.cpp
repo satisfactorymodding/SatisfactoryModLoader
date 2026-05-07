@@ -357,27 +357,58 @@ static void RestApiAddCounterpartBans(UBanDatabase* DB,
 
     FString Platform, RawId;
     UBanDatabase::ParseUid(PrimaryBan.Uid, Platform, RawId);
-    if (Platform != TEXT("EOS")) return;
 
-    FPlayerSessionRecord Rec;
-    if (!PlayerReg->FindByUid(PrimaryBan.Uid, Rec) || Rec.IpAddress.IsEmpty()) return;
+    if (Platform == TEXT("EOS"))
+    {
+        // EOS → add matching IP ban for the player's current session IP.
+        FPlayerSessionRecord Rec;
+        if (!PlayerReg->FindByUid(PrimaryBan.Uid, Rec) || Rec.IpAddress.IsEmpty()) return;
 
-    const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Rec.IpAddress);
-    FBanEntry IpBan;
-    IpBan.Uid         = IpUid;
-    IpBan.Platform    = TEXT("IP");
-    IpBan.PlayerUID   = Rec.IpAddress;
-    IpBan.PlayerName  = PrimaryBan.PlayerName;
-    IpBan.Reason      = PrimaryBan.Reason;
-    IpBan.BannedBy    = PrimaryBan.BannedBy;
-    IpBan.BanDate     = PrimaryBan.BanDate;
-    IpBan.bIsPermanent = PrimaryBan.bIsPermanent;
-    IpBan.ExpireDate  = PrimaryBan.ExpireDate;
-    IpBan.LinkedUids.Add(PrimaryBan.Uid);
+        const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Rec.IpAddress);
+        FBanEntry IpBan;
+        IpBan.Uid         = IpUid;
+        IpBan.Platform    = TEXT("IP");
+        IpBan.PlayerUID   = Rec.IpAddress;
+        IpBan.PlayerName  = PrimaryBan.PlayerName;
+        IpBan.Reason      = PrimaryBan.Reason;
+        IpBan.BannedBy    = PrimaryBan.BannedBy;
+        IpBan.BanDate     = PrimaryBan.BanDate;
+        IpBan.bIsPermanent = PrimaryBan.bIsPermanent;
+        IpBan.ExpireDate  = PrimaryBan.ExpireDate;
+        IpBan.LinkedUids.Add(PrimaryBan.Uid);
 
-    bool bIpSkipped = false;
-    if (DB->AddBanSkipIfPermanentExists(IpBan, bIpSkipped) || bIpSkipped)
-        DB->LinkBans(PrimaryBan.Uid, IpUid);
+        bool bIpSkipped = false;
+        if (DB->AddBanSkipIfPermanentExists(IpBan, bIpSkipped) || bIpSkipped)
+            DB->LinkBans(PrimaryBan.Uid, IpUid);
+    }
+    else if (Platform == TEXT("IP"))
+    {
+        // IP → add matching EOS bans for every player session with that IP.
+        TArray<FPlayerSessionRecord> Records = PlayerReg->FindByIp(RawId);
+        for (const FPlayerSessionRecord& Rec : Records)
+        {
+            if (Rec.Uid.IsEmpty()) continue;
+            FString RecPlat, RecRawId;
+            UBanDatabase::ParseUid(Rec.Uid, RecPlat, RecRawId);
+            const FString RecName = Rec.DisplayName.IsEmpty() ? PrimaryBan.PlayerName : Rec.DisplayName;
+
+            FBanEntry EosBan;
+            EosBan.Uid         = Rec.Uid;
+            EosBan.Platform    = RecPlat;
+            EosBan.PlayerUID   = RecRawId;
+            EosBan.PlayerName  = RecName;
+            EosBan.Reason      = PrimaryBan.Reason;
+            EosBan.BannedBy    = PrimaryBan.BannedBy;
+            EosBan.BanDate     = PrimaryBan.BanDate;
+            EosBan.bIsPermanent = PrimaryBan.bIsPermanent;
+            EosBan.ExpireDate  = PrimaryBan.ExpireDate;
+            EosBan.LinkedUids.Add(PrimaryBan.Uid);
+
+            bool bEosSkipped = false;
+            if (DB->AddBanSkipIfPermanentExists(EosBan, bEosSkipped) || bEosSkipped)
+                DB->LinkBans(PrimaryBan.Uid, Rec.Uid);
+        }
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -932,7 +963,8 @@ void UBanRestApi::RegisterRoutes()
                     TEXT("api"), TEXT("api"),
                     FString::Printf(TEXT("reason=%s"), *Updated.Reason));
 
-            FBanDiscordNotifier::NotifyBanCreated(Updated);
+            // PATCH is an update, not a new ban — do not fire NotifyBanCreated
+            // (which posts a "🔨 Player Banned" webhook and misleads moderators).
 
             Done(BanJson::Json(BanJson::ObjectToString(BanJson::EntryToJson(Updated))));
             return true;

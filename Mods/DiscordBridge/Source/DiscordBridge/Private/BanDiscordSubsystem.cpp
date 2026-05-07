@@ -4016,7 +4016,15 @@ void UBanDiscordSubsystem::HandleAppealApproveCommand(const TArray<FString>& Arg
 	Respond(ChannelId, Msg);
 	PostModerationLog(FString::Printf(TEXT("%s approved appeal #%lld (uid=%s)%s"), *SenderName, AppealId, *UnbannedUid, *NoteStr));
 
-	FBanDiscordNotifier::NotifyAppealReviewed(Entry);
+	// Build a reviewed-entry copy with the correct final status so the webhook
+	// does not show the pre-ReviewAppeal "Pending" value.
+	{
+		FBanAppealEntry ReviewedEntry = Entry;
+		ReviewedEntry.Status     = EAppealStatus::Approved;
+		ReviewedEntry.ReviewedBy = SenderName;
+		ReviewedEntry.ReviewNote = ReviewNote;
+		FBanDiscordNotifier::NotifyAppealReviewed(ReviewedEntry);
+	}
 
 	// Auto-close the associated ban-appeal ticket channel (if still open).
 	// The Uid stored in the entry is "Discord:<userId>"; extract the user ID.
@@ -4121,7 +4129,15 @@ void UBanDiscordSubsystem::HandleAppealDenyCommand(const TArray<FString>& Args,
 		FString::Printf(TEXT(":x: Appeal `#%lld` **denied**.%s"), AppealId, *NoteStr));
 	PostModerationLog(FString::Printf(TEXT("%s denied appeal #%lld (uid=%s)%s"), *SenderName, AppealId, *Entry.Uid, *NoteStr));
 
-	FBanDiscordNotifier::NotifyAppealReviewed(Entry);
+	// Build a reviewed-entry copy with the correct final status so the webhook
+	// does not show the pre-ReviewAppeal "Pending" value.
+	{
+		FBanAppealEntry ReviewedEntry = Entry;
+		ReviewedEntry.Status     = EAppealStatus::Denied;
+		ReviewedEntry.ReviewedBy = SenderName;
+		ReviewedEntry.ReviewNote = ReviewNote;
+		FBanDiscordNotifier::NotifyAppealReviewed(ReviewedEntry);
+	}
 
 	// Auto-close the associated ban-appeal ticket channel (if still open).
 	if (Entry.Uid.StartsWith(TEXT("Discord:")))
