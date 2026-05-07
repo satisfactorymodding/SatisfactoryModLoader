@@ -1960,7 +1960,12 @@ void UBanRestApi::RegisterRoutes()
                         TSharedPtr<FJsonObject> NoteObj = MakeShared<FJsonObject>();
 
                         if (IdProp)
-                            NoteObj->SetNumberField(TEXT("id"), static_cast<double>(IdProp->GetPropertyValue(IdProp->ContainerPtrToValuePtr<void>(ElemPtr))));
+                            // Serialise as a decimal string, not a double, so int64 values
+                            // above 2^53 are not silently truncated by IEEE 754 rounding.
+                            // This matches the convention used for ban IDs and warning IDs
+                            // everywhere else in the REST API.
+                            NoteObj->SetStringField(TEXT("id"), FString::Printf(TEXT("%lld"),
+                                IdProp->GetPropertyValue(IdProp->ContainerPtrToValuePtr<void>(ElemPtr))));
                         if (UidProp)
                             NoteObj->SetStringField(TEXT("uid"), UidProp->GetPropertyValue(UidProp->ContainerPtrToValuePtr<void>(ElemPtr)));
                         if (NameProp)
