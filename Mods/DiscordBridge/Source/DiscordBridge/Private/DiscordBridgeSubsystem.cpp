@@ -3748,12 +3748,12 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 				}
 			}
 			else if (FWhitelistManager::GetMaxSlots() > 0 &&
-			         FWhitelistManager::GetAllEntries().Num() >= FWhitelistManager::GetMaxSlots())
+			         FWhitelistManager::GetActiveEntryCount() >= FWhitelistManager::GetMaxSlots())
 			{
 				// AddPlayer returned false and capacity is still at or above max — report full.
 				Response = FString::Printf(
 					TEXT(":no_entry: Whitelist is full (%d/%d slots used)."),
-					FWhitelistManager::GetAllEntries().Num(),
+					FWhitelistManager::GetActiveEntryCount(),
 					FWhitelistManager::GetMaxSlots());
 			}
 			else
@@ -3823,7 +3823,7 @@ void UDiscordBridgeSubsystem::HandleWhitelistCommand(const FString& SubCommand,
 		const FString WhitelistState = FWhitelistManager::IsEnabled()
 			? TEXT(":white_check_mark: Whitelist: **ENABLED**")
 			: TEXT(":no_entry_sign: Whitelist: **disabled**");
-		const int32 Count = FWhitelistManager::GetAllEntries().Num();
+		const int32 Count = FWhitelistManager::GetActiveEntryCount();
 		const int32 Slots = FWhitelistManager::GetMaxSlots();
 		FString SlotInfo;
 		if (Slots > 0)
@@ -4782,10 +4782,10 @@ void UDiscordBridgeSubsystem::HandleInGameWhitelistCommand(const FString& SubCom
 				Arg, TEXT("[server]"), 3066993);
 		}
 		else if (FWhitelistManager::GetMaxSlots() > 0 &&
-		         FWhitelistManager::GetAllEntries().Num() >= FWhitelistManager::GetMaxSlots())
+		         FWhitelistManager::GetActiveEntryCount() >= FWhitelistManager::GetMaxSlots())
 		{
 			Response = FString::Printf(TEXT("Whitelist is full (%d/%d slots)."),
-				FWhitelistManager::GetAllEntries().Num(), FWhitelistManager::GetMaxSlots());
+				FWhitelistManager::GetActiveEntryCount(), FWhitelistManager::GetMaxSlots());
 		}
 		else
 		{
