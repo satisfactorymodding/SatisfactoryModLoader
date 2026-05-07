@@ -1665,19 +1665,49 @@ void UBanRestApi::RegisterRoutes()
             if (Reason.IsEmpty())   Reason   = TEXT("IP ban");
             if (BannedBy.IsEmpty()) BannedBy = TEXT("system");
 
+            double DurationMinutesDbl = 0.0;
+            Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
+            int32 DurationMinutes;
+            if (!FMath::IsFinite(DurationMinutesDbl) || DurationMinutesDbl <= 0.0)
+                DurationMinutes = 0;
+            else if (DurationMinutesDbl > static_cast<double>(INT_MAX))
+                DurationMinutes = INT_MAX;
+            else
+                DurationMinutes = static_cast<int32>(DurationMinutesDbl);
+
+            const FDateTime IpNow = FDateTime::UtcNow();
             FBanEntry Entry;
-            Entry.Uid        = UBanDatabase::MakeUid(TEXT("IP"), IpAddress);
-            Entry.PlayerUID  = IpAddress;
-            Entry.Platform   = TEXT("IP");
-            Entry.PlayerName = IpAddress;
-            Entry.Reason     = Reason;
-            Entry.BannedBy   = BannedBy;
-            Entry.BanDate    = FDateTime::UtcNow();
-            Entry.bIsPermanent = true;
-            Entry.ExpireDate   = FDateTime(0);
+            Entry.Uid          = UBanDatabase::MakeUid(TEXT("IP"), IpAddress);
+            Entry.PlayerUID    = IpAddress;
+            Entry.Platform     = TEXT("IP");
+            Entry.PlayerName   = IpAddress;
+            Entry.Reason       = Reason;
+            Entry.BannedBy     = BannedBy;
+            Entry.BanDate      = IpNow;
+            Entry.bIsPermanent = (DurationMinutes <= 0);
+            Entry.ExpireDate   = Entry.bIsPermanent
+                ? FDateTime(0)
+                : IpNow + FTimespan::FromMinutes(DurationMinutes);
 
             FBanEntry Saved;
-            if (!DB->AddBan(Entry, &Saved))
+            bool bIpBanAdded;
+            if (Entry.bIsPermanent)
+            {
+                bIpBanAdded = DB->AddBan(Entry, &Saved);
+            }
+            else
+            {
+                bool bSkippedPerm = false;
+                bIpBanAdded = DB->AddBanSkipIfPermanentExists(Entry, &Saved, &bSkippedPerm);
+                if (bSkippedPerm)
+                {
+                    auto Resp = BanJson::Json(BanJson::ObjectToString(BanJson::EntryToJson(Saved)));
+                    Resp->Code = EHttpServerResponseCodes::Ok;
+                    Done(MoveTemp(Resp));
+                    return true;
+                }
+            }
+            if (!bIpBanAdded)
             {
                 Done(BanJson::Error(TEXT("Failed to add IP ban"), EHttpServerResponseCodes::ServerError));
                 return true;

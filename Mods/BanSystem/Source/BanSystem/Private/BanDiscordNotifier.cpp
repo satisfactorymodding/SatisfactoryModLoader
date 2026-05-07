@@ -204,8 +204,8 @@ void FBanDiscordNotifier::NotifyWarningIssued(const FString& Uid, const FString&
                                               int32 TotalWarnings)
 {
     const FString PlayerValue = PlayerName.IsEmpty()
-        ? Uid
-        : EscapeMarkdown(PlayerName) + TEXT(" (") + Uid + TEXT(")");
+        ? EscapeMarkdown(Uid)
+        : EscapeMarkdown(PlayerName) + TEXT(" (") + EscapeMarkdown(Uid) + TEXT(")");
 
     const FString Fields =
         Field(TEXT("Player"),         PlayerValue)                               + TEXT(",") +
@@ -290,8 +290,8 @@ void FBanDiscordNotifier::NotifyAppealSubmitted(const FBanAppealEntry& Appeal)
 void FBanDiscordNotifier::NotifyAutoEscalationBan(const FBanEntry& Ban, int32 WarnCount)
 {
     const FString PlayerValue = Ban.PlayerName.IsEmpty()
-        ? Ban.Uid
-        : EscapeMarkdown(Ban.PlayerName) + TEXT(" (") + Ban.Uid + TEXT(")");
+        ? EscapeMarkdown(Ban.Uid)
+        : EscapeMarkdown(Ban.PlayerName) + TEXT(" (") + EscapeMarkdown(Ban.Uid) + TEXT(")");
 
     const double RawMin1 = (Ban.ExpireDate - Ban.BanDate).GetTotalMinutes();
     const FString DurationValue = Ban.bIsPermanent
@@ -330,8 +330,8 @@ void FBanDiscordNotifier::NotifyBanExpired(const FBanEntry& Entry)
     if (!Cfg || !Cfg->bNotifyBanExpired) return;
 
     const FString PlayerValue = Entry.PlayerName.IsEmpty()
-        ? Entry.Uid
-        : EscapeMarkdown(Entry.PlayerName) + TEXT(" (") + Entry.Uid + TEXT(")");
+        ? EscapeMarkdown(Entry.Uid)
+        : EscapeMarkdown(Entry.PlayerName) + TEXT(" (") + EscapeMarkdown(Entry.Uid) + TEXT(")");
 
     const FString ExpireStr = Entry.ExpireDate.ToString(TEXT("%Y-%m-%d %H:%M:%S")) + TEXT(" UTC");
 
@@ -395,8 +395,8 @@ void FBanDiscordNotifier::NotifyGeoIpBlocked(const FString& PlayerName, const FS
                                               const FString& IpAddress, const FString& CountryCode)
 {
     const FString PlayerValue = PlayerName.IsEmpty()
-        ? Uid
-        : EscapeMarkdown(PlayerName) + TEXT(" (") + Uid + TEXT(")");
+        ? EscapeMarkdown(Uid)
+        : EscapeMarkdown(PlayerName) + TEXT(" (") + EscapeMarkdown(Uid) + TEXT(")");
 
     const FString Fields =
         Field(TEXT("Player"),      PlayerValue)                   + TEXT(",") +
