@@ -315,6 +315,8 @@ namespace BanJson
 // Mirrors BanDiscordHelpers::RemoveCounterpartBans / BanChat::RemoveCounterpartBans.
 // Removes every ban listed in LinkedUids and also checks PlayerSessionRegistry for
 // an unlinked IP counterpart (e.g. a REST-API ban created before linking existed).
+// Fires FBanDiscordNotifier::NotifyBanRemoved for every successfully removed entry,
+// matching the behaviour of BanChat::RemoveCounterpartBans.
 static void RestApiRemoveCounterpartBans(UBanDatabase* DB,
                                          UPlayerSessionRegistry* PlayerReg,
                                          const FString& PrimaryUid,
@@ -324,7 +326,11 @@ static void RestApiRemoveCounterpartBans(UBanDatabase* DB,
 
     // 1. Explicitly linked bans (stored in the entry's LinkedUids array).
     for (const FString& LinkedUid : LinkedUids)
-        DB->RemoveBanByUid(LinkedUid);
+    {
+        FBanEntry LinkedRecord;
+        if (DB->RemoveBanByUid(LinkedUid, LinkedRecord))
+            FBanDiscordNotifier::NotifyBanRemoved(LinkedUid, LinkedRecord.PlayerName, TEXT("api"));
+    }
 
     // 2. Unlinked IP counterpart — session registry lookup for EOS-primary bans.
     if (PlayerReg)
@@ -337,8 +343,9 @@ static void RestApiRemoveCounterpartBans(UBanDatabase* DB,
             if (PlayerReg->FindByUid(PrimaryUid, Rec) && !Rec.IpAddress.IsEmpty())
             {
                 const FString IpUid = UBanDatabase::MakeUid(TEXT("IP"), Rec.IpAddress);
-                if (!LinkedUids.Contains(IpUid))
-                    DB->RemoveBanByUid(IpUid);
+                FBanEntry IpRecord;
+                if (!LinkedUids.Contains(IpUid) && DB->RemoveBanByUid(IpUid, IpRecord))
+                    FBanDiscordNotifier::NotifyBanRemoved(IpUid, IpRecord.PlayerName, TEXT("api"));
             }
         }
     }
@@ -1913,10 +1920,11 @@ void UBanRestApi::RegisterRoutes()
                 return true;
             }
 
-            // Reflect into the subsystem to read the note count from the internal
-            // Notes array property — this is safe across module boundaries because we
-            // only read the array's element count, not the element layout.
+            // Reflect into the subsystem to read note entries from the internal
+            // Notes array property using UE property reflection, which is safe across
+            // module boundaries without a direct type dependency on BanChatCommands.
             int32 NoteCount = 0;
+            TArray<TSharedPtr<FJsonValue>> Arr;
             FArrayProperty* NotesProp = FindFProperty<FArrayProperty>(
                     NoteSubsys->GetClass(), TEXT("Notes"));
             if (!NotesProp)
@@ -1928,16 +1936,54 @@ void UBanRestApi::RegisterRoutes()
                 return true;
             }
             {
+                const FStructProperty* ElemProp = CastField<FStructProperty>(NotesProp->Inner);
+                const UStruct* EntryStruct = ElemProp ? ElemProp->Struct : nullptr;
+
                 FScriptArrayHelper Helper(NotesProp,
                     NotesProp->ContainerPtrToValuePtr<void>(NoteSubsys));
                 NoteCount = Helper.Num();
+
+                if (EntryStruct)
+                {
+                    // Known fields of FPlayerNoteEntry — read by property name for
+                    // cross-module safety.
+                    const FInt64Property*  IdProp        = FindFProperty<FInt64Property> (EntryStruct, TEXT("Id"));
+                    const FStrProperty*    UidProp       = FindFProperty<FStrProperty>   (EntryStruct, TEXT("Uid"));
+                    const FStrProperty*    NameProp      = FindFProperty<FStrProperty>   (EntryStruct, TEXT("PlayerName"));
+                    const FStrProperty*    NoteProp      = FindFProperty<FStrProperty>   (EntryStruct, TEXT("Note"));
+                    const FStrProperty*    AddedByProp   = FindFProperty<FStrProperty>   (EntryStruct, TEXT("AddedBy"));
+                    const FStructProperty* NoteDateProp  = FindFProperty<FStructProperty>(EntryStruct, TEXT("NoteDate"));
+
+                    for (int32 i = 0; i < NoteCount; ++i)
+                    {
+                        const void* ElemPtr = Helper.GetElementPtr(i);
+                        TSharedPtr<FJsonObject> NoteObj = MakeShared<FJsonObject>();
+
+                        if (IdProp)
+                            NoteObj->SetNumberField(TEXT("id"), static_cast<double>(IdProp->GetPropertyValue(IdProp->ContainerPtrToValuePtr<void>(ElemPtr))));
+                        if (UidProp)
+                            NoteObj->SetStringField(TEXT("uid"), UidProp->GetPropertyValue(UidProp->ContainerPtrToValuePtr<void>(ElemPtr)));
+                        if (NameProp)
+                            NoteObj->SetStringField(TEXT("playerName"), NameProp->GetPropertyValue(NameProp->ContainerPtrToValuePtr<void>(ElemPtr)));
+                        if (NoteProp)
+                            NoteObj->SetStringField(TEXT("note"), NoteProp->GetPropertyValue(NoteProp->ContainerPtrToValuePtr<void>(ElemPtr)));
+                        if (AddedByProp)
+                            NoteObj->SetStringField(TEXT("addedBy"), AddedByProp->GetPropertyValue(AddedByProp->ContainerPtrToValuePtr<void>(ElemPtr)));
+                        if (NoteDateProp)
+                        {
+                            const FDateTime* DT = static_cast<const FDateTime*>(
+                                NoteDateProp->ContainerPtrToValuePtr<void>(ElemPtr));
+                            if (DT) NoteObj->SetStringField(TEXT("noteDate"), DT->ToIso8601());
+                        }
+
+                        Arr.Add(MakeShared<FJsonValueObject>(NoteObj));
+                    }
+                }
             }
 
-            TArray<TSharedPtr<FJsonValue>> Arr;
             TSharedPtr<FJsonObject> Root = MakeShared<FJsonObject>();
             Root->SetNumberField(TEXT("count"), static_cast<double>(NoteCount));
             Root->SetArrayField (TEXT("notes"),  Arr);
-            Root->SetStringField(TEXT("info"), TEXT("Note count is accurate. Full note data is accessible via BanChatCommands module directly."));
             Done(BanJson::Json(BanJson::ObjectToString(Root)));
             return true;
         }
