@@ -4783,7 +4783,11 @@ void UTicketSubsystem::LoadTicketState()
 			if ((*EntryObj)->TryGetStringField(TEXT("appeal_id"), AppealIdStr) && !AppealIdStr.IsEmpty()
 				&& AppealIdStr.IsNumeric() && AppealIdStr.Len() <= 19
 				&& (AppealIdStr.Len() < 19 || AppealIdStr <= TEXT("9223372036854775807")))
-				OpenerToAppealId.Add(OpenerId, FCString::Atoi64(*AppealIdStr));
+			{
+				const int64 ParsedAppealId = FCString::Atoi64(*AppealIdStr);
+				if (ParsedAppealId > 0)
+					OpenerToAppealId.Add(OpenerId, ParsedAppealId);
+			}
 			else if ((*EntryObj)->TryGetNumberField(TEXT("appeal_id"), AppealIdLoad)
 				&& AppealIdLoad > 0.0 && FMath::IsFinite(AppealIdLoad)
 				&& AppealIdLoad < static_cast<double>(INT64_MAX))

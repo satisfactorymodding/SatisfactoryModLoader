@@ -174,7 +174,8 @@ namespace BanDbJson
 
         // A-1: also require Platform and PlayerUID so malformed records are rejected
         return !OutEntry.Uid.IsEmpty() && !OutEntry.BannedBy.IsEmpty()
-            && !OutEntry.Platform.IsEmpty() && !OutEntry.PlayerUID.IsEmpty();
+            && !OutEntry.Platform.IsEmpty() && !OutEntry.PlayerUID.IsEmpty()
+            && OutEntry.Id > 0;
     }
 } // namespace BanDbJson
 

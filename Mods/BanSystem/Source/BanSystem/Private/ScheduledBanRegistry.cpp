@@ -352,6 +352,12 @@ void UScheduledBanRegistry::LoadFromFile()
                     && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))
                     Entry.Id = static_cast<int64>(IdDbl);
             }
+            if (Entry.Id <= 0)
+            {
+                UE_LOG(LogScheduledBanRegistry, Warning,
+                    TEXT("ScheduledBanRegistry: skipping entry with invalid id"));
+                continue;
+            }
 
             (*ObjPtr)->TryGetStringField(TEXT("uid"),          Entry.Uid);
             (*ObjPtr)->TryGetStringField(TEXT("playerName"),   Entry.PlayerName);
