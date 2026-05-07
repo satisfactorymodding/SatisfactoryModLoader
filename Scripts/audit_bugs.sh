@@ -56,10 +56,38 @@ for d in "${OWNER_MODS[@]}"; do
     fi
 done
 
+list_cpp_files() {
+    [[ ${#MOD_PATHS[@]} -gt 0 ]] || return 0
+    find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null
+}
+
+list_header_files() {
+    [[ ${#MOD_PATHS[@]} -gt 0 ]] || return 0
+    find "${MOD_PATHS[@]}" -name "*.h" -print0 2>/dev/null
+}
+
+list_source_files() {
+    [[ ${#MOD_PATHS[@]} -gt 0 ]] || return 0
+    find "${MOD_PATHS[@]}" \( -name "*.cpp" -o -name "*.h" \) -print0 2>/dev/null
+}
+
 echo "========================================================"
 echo " DiscordBridge bug-pattern audit"
 echo " Scanning ${#MOD_PATHS[@]} mod source tree(s)"
 echo "========================================================"
+echo
+
+echo " Files queued for scan:"
+found_any=0
+while IFS= read -r -d '' file; do
+    echo "  - $file"
+    found_any=1
+done < <(list_source_files | sort -z)
+
+if [[ "$found_any" -eq 0 ]]; then
+    echo "  (none)"
+fi
+
 echo
 
 # =============================================================================
@@ -85,7 +113,7 @@ while IFS= read -r -d '' file; do
                 "Fix: wrap the increment:  NextId = (X.Id < INT64_MAX) ? X.Id + 1 : X.Id;"
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 1 done"
 echo
@@ -116,7 +144,7 @@ while IFS= read -r -d '' file; do
                 "Fix: add IFileManager::Get().Delete(*TmpPath) in the Move failure branch."
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 2 done"
 echo
@@ -143,7 +171,7 @@ while IFS= read -r -d '' file; do
             echo "       Line: $ln"
         done
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 3 done"
 echo
@@ -167,7 +195,7 @@ while IFS= read -r -d '' file; do
                 "Fix: check 'if (Written < 0)' before '!= BytesRead' comparison."
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 4 done"
 echo
@@ -194,7 +222,7 @@ while IFS= read -r -d '' file; do
                 "Fix: add 'if (auto SizeErr = BanJson::CheckBodySize(Req)) { Done(MoveTemp(SizeErr)); return true; }' before each BodyToString call."
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 5 done"
 echo
@@ -224,7 +252,7 @@ while IFS= read -r -d '' file; do
                 "Fix: add 'mutable FCriticalSection Mutex;' and use FScopeLock in every public method."
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.h" -print0 2>/dev/null)
+done < <(list_header_files)
 
 pass "CHECK 6 done"
 echo
@@ -277,7 +305,7 @@ while IFS= read -r -d '' file; do
             echo "       Line: $ln"
         done
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 8 done"
 echo
@@ -308,7 +336,7 @@ while IFS= read -r -d '' file; do
                 "Fix: add 'if (Multiplier > 1 && Num > INT64_MAX / Multiplier) return 0/−1;' before each multiply."
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 9 done"
 echo
@@ -332,7 +360,7 @@ while IFS= read -r -d '' file; do
             "FJsonSerializer::Deserialize called $deser_count time(s) but IsValid() only $valid_count time(s)." \
             "Fix: every Deserialize call site must check '|| !Root.IsValid()'."
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 10 done"
 echo
@@ -365,7 +393,7 @@ while IFS= read -r -d '' file; do
             done
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 11 done"
 echo
@@ -393,7 +421,7 @@ while IFS= read -r -d '' file; do
             done
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 12 done"
 echo
@@ -427,7 +455,7 @@ while IFS= read -r -d '' file; do
             done
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 13 done"
 echo
@@ -453,7 +481,7 @@ while IFS= read -r -d '' file; do
                 "Fix: capture UObject* as 'TWeakObjectPtr<T> WeakX = this;' and check '.IsValid()' before use inside the lambda."
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 14 done"
 echo
@@ -478,7 +506,7 @@ while IFS= read -r -d '' file; do
                 "Fix: add 'const FString Uid = FGenericPlatformHttp::UrlDecode(RawUid);' after PathParams.FindRef(\"uid\")."
         fi
     fi
-done < <(find "${MOD_PATHS[@]}" -name "*.cpp" -print0 2>/dev/null)
+done < <(list_cpp_files)
 
 pass "CHECK 15 done"
 echo
