@@ -759,7 +759,7 @@ namespace BanChat
         // Bare integer — legacy format, treat as minutes.
         // Use Atoi64 so values above INT32_MAX are caught rather than silently
         // wrapping; reject values outside the representable int32 range.
-        if (DurationStr.IsNumeric())
+        if (DurationStr.IsNumeric() && DurationStr.Len() <= 19)
         {
             const int64 Raw = FCString::Atoi64(*DurationStr);
             if (Raw <= 0 || Raw > static_cast<int64>(INT32_MAX)) return -1;
@@ -2116,20 +2116,26 @@ EExecutionStatus AWarnChatCommand::ExecuteCommand_Implementation(
 
         if (SysCfg->WarnEscalationTiers.Num() > 0)
         {
-            // Apply the highest threshold tier that has been reached so the most
-            // severe applicable punishment is used regardless of config order.
-            int32 BestThreshold = -1;
+            // Apply the most severe tier that has been reached.
+            // Compare by DurationMinutes: 0 means permanent (most severe);
+            // among temporary bans, the longest duration wins.
+            // This avoids the old BestThreshold comparison which mixed
+            // point-threshold and warn-count values numerically (incomparable units).
             for (const FWarnEscalationTier& Tier : SysCfg->WarnEscalationTiers)
             {
                 const bool bByPoints  = (Tier.PointThreshold > 0);
                 const bool bHit = bByPoints
                     ? (WarnPoints >= Tier.PointThreshold)
                     : (WarnCount  >= Tier.WarnCount);
-                const int32 ThisThreshold = bByPoints
-                    ? Tier.PointThreshold : Tier.WarnCount;
-                if (bHit && ThisThreshold > BestThreshold)
+                if (!bHit) continue;
+
+                // A tier is more severe if it is permanent (0) and the current best
+                // is not, or if both are temporary and this tier is longer.
+                const bool bMoreSevere = (BanDurationMinutes < 0)
+                    || (BanDurationMinutes != 0 && (Tier.DurationMinutes == 0
+                        || Tier.DurationMinutes > BanDurationMinutes));
+                if (bMoreSevere)
                 {
-                    BestThreshold      = ThisThreshold;
                     BanDurationMinutes = Tier.DurationMinutes;
                     bTriggeredByPoints = bByPoints;
                 }
@@ -3142,11 +3148,12 @@ EExecutionStatus AMuteCheckChatCommand::ExecuteCommand_Implementation(
     else
     {
         const FTimespan Remaining = Entry.ExpireDate - FDateTime::UtcNow();
-        const int64 RemainingMin64 = static_cast<int64>(Remaining.GetTotalMinutes());
         // If the mute has already expired (remaining ≤ 0) the MuteRegistry
         // enforcement sweep hasn't run yet.  Report expiry and clean up the
         // stale entry rather than clamping to 1 and showing false "1m remaining".
-        if (RemainingMin64 <= 0)
+        // Use GetTotalSeconds() so a sub-minute remainder is not truncated to 0
+        // by integer cast, which would fire expiry up to 59 s prematurely.
+        if (Remaining.GetTotalSeconds() <= 0.0)
         {
             MuteReg->UnmutePlayer(Uid);
             Sender->SendChatMessage(
@@ -3154,7 +3161,8 @@ EExecutionStatus AMuteCheckChatCommand::ExecuteCommand_Implementation(
                 FLinearColor::Green);
             return EExecutionStatus::COMPLETED;
         }
-        const int32 RemainingMin = static_cast<int32>(FMath::Min(RemainingMin64, static_cast<int64>(INT32_MAX)));
+        const int64 RemainingMin64 = static_cast<int64>(Remaining.GetTotalMinutes());
+        const int32 RemainingMin = static_cast<int32>(FMath::Max(static_cast<int64>(1), FMath::Min(RemainingMin64, static_cast<int64>(INT32_MAX))));
         Sender->SendChatMessage(
             FString::Printf(TEXT("[BanChatCommands] '%s' is muted until %s UTC (%s remaining). Reason: %s."),
                 *DisplayName,

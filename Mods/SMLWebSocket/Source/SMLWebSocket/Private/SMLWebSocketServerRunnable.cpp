@@ -662,6 +662,12 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
             continue;
         }
 
+        if (Opcode == 0xA) // Pong — RFC 6455 §5.5.3: silently accept, no reply
+        {
+            Buf.RemoveAt(0, TotalSize);
+            continue;
+        }
+
         if (Opcode == 0x1 || Opcode == 0x2 || Opcode == 0x0) // Text, Binary, or Continuation
         {
             uint8 Mask[4] = {0,0,0,0};
@@ -680,6 +686,15 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
             {
                 if (bFin)
                 {
+                    // RFC 6455 §5.4: a new data frame must not arrive while a
+                    // fragmented message is being assembled.
+                    if (Client.bInFragment)
+                    {
+                        UE_LOG(LogWSServer, Warning,
+                            TEXT("WSServer: New data frame received while fragment in progress — dropping client"));
+                        Client.PendingCloseFrame = { 0x88, 0x02, 0x03, 0xEA }; // Close 1002
+                        return false;
+                    }
                     // Single unfragmented frame — deliver immediately.
                     if (Opcode == 0x2)
                     {
