@@ -616,11 +616,11 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
             if (PayloadLen32 >= 2)
             {
                 // Unmask the 2-byte status code using the mask key at Buf[HeaderSize].
-                const uint8 B0 = Buf[HeaderSize + MaskSize + 0] ^ (bMasked ? Buf[HeaderSize + 0] : 0);
-                const uint8 B1 = Buf[HeaderSize + MaskSize + 1] ^ (bMasked ? Buf[HeaderSize + 1] : 0);
+                const uint8 CloseB0 = Buf[HeaderSize + MaskSize + 0] ^ (bMasked ? Buf[HeaderSize + 0] : 0);
+                const uint8 CloseB1 = Buf[HeaderSize + MaskSize + 1] ^ (bMasked ? Buf[HeaderSize + 1] : 0);
                 CloseEcho.Add(0x02); // payload length = 2
-                CloseEcho.Add(B0);
-                CloseEcho.Add(B1);
+                CloseEcho.Add(CloseB0);
+                CloseEcho.Add(CloseB1);
             }
             else
             {

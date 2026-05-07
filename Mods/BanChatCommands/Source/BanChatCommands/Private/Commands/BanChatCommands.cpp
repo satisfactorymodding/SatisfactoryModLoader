@@ -2634,8 +2634,8 @@ EExecutionStatus AHistoryChatCommand::ExecuteCommand_Implementation(
             {
                 const FWarningEntry& W = Warnings[i];
                 Sender->SendChatMessage(
-                    FString::Printf(TEXT("  #%d %s — %s"),
-                        i + 1, *W.WarnDate.ToString(TEXT("%Y-%m-%d")), *W.Reason),
+                    FString::Printf(TEXT("  #%lld %s \u2014 %s"),
+                        W.Id, *W.WarnDate.ToString(TEXT("%Y-%m-%d")), *W.Reason),
                     FLinearColor::White);
             }
             if (Warnings.Num() > MaxShow)
