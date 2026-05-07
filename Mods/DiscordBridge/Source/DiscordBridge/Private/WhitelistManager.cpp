@@ -380,6 +380,19 @@ TArray<FWhitelistAuditEntry> FWhitelistManager::GetAuditLog(int32 MaxEntries)
 	return Result;
 }
 
+int32 FWhitelistManager::GetActiveEntryCount()
+{
+	FScopeLock Lock(&Mutex);
+	const FDateTime Now = FDateTime::UtcNow();
+	int32 ActiveCount = 0;
+	for (const FWhitelistEntry& E : Entries)
+	{
+		if (E.ExpiresAt.GetTicks() <= 0 || E.ExpiresAt > Now)
+			++ActiveCount;
+	}
+	return ActiveCount;
+}
+
 int32 FWhitelistManager::GetMaxSlots()
 {
 	FScopeLock Lock(&Mutex);

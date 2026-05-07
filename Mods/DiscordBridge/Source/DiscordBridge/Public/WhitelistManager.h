@@ -75,6 +75,8 @@ public:
 
     // ── Capacity ─────────────────────────────────────────────────────────────
 
+    /** Returns number of active (non-expired) whitelist entries. */
+    static int32 GetActiveEntryCount();
     static int32 GetMaxSlots();
     static void  SetMaxSlots(int32 InMaxSlots);
 
