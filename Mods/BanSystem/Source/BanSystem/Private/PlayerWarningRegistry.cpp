@@ -345,6 +345,12 @@ void UPlayerWarningRegistry::LoadFromFile()
                     && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))
                     Entry.Id = static_cast<int64>(IdDbl);
             }
+            if (Entry.Id <= 0)
+            {
+                UE_LOG(LogPlayerWarningRegistry, Warning,
+                    TEXT("PlayerWarningRegistry: skipping warning with invalid id"));
+                continue;
+            }
             (*ObjPtr)->TryGetStringField(TEXT("uid"),        Entry.Uid);
             (*ObjPtr)->TryGetStringField(TEXT("playerName"), Entry.PlayerName);
             (*ObjPtr)->TryGetStringField(TEXT("reason"),     Entry.Reason);

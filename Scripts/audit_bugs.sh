@@ -811,6 +811,59 @@ pass "CHECK 29 done"
 echo
 
 # =============================================================================
+# CHECK 30: Loader paths reject non-positive persisted IDs
+# =============================================================================
+echo "--- CHECK 30: persisted IDs are validated as > 0 on load ---"
+AUDITLOG_CPP="$(find "$REPO_ROOT" -name BanAuditLog.cpp -path '*/BanSystem/*' | head -1)"
+WARNREG_CPP_CHECK30="$(find "$REPO_ROOT" -name PlayerWarningRegistry.cpp -path '*/BanSystem/*' | head -1)"
+SCHEDREG_CPP="$(find "$REPO_ROOT" -name ScheduledBanRegistry.cpp -path '*/BanSystem/*' | head -1)"
+BANDB_CPP_CHECK30="$(find "$REPO_ROOT" -name BanDatabase.cpp -path '*/BanSystem/*' | head -1)"
+TICKETSUB_CPP="$(find "$REPO_ROOT" -name TicketSubsystem.cpp -path '*/DiscordBridge/*' | head -1)"
+
+if [[ -z "$AUDITLOG_CPP" ]]; then
+    fail "CHECK 30 – BanAuditLog.cpp not found"
+elif ! grep -qP 'Entry\.Id\s*<=\s*0' "$AUDITLOG_CPP"; then
+    fail "CHECK 30 – BanAuditLog accepts non-positive entry IDs from disk" \
+        "File: $AUDITLOG_CPP" \
+        "LoadFromFile() should skip entries when Entry.Id <= 0."
+fi
+
+if [[ -z "$WARNREG_CPP_CHECK30" ]]; then
+    fail "CHECK 30 – PlayerWarningRegistry.cpp not found"
+elif ! grep -qP 'Entry\.Id\s*<=\s*0' "$WARNREG_CPP_CHECK30"; then
+    fail "CHECK 30 – PlayerWarningRegistry accepts non-positive warning IDs from disk" \
+        "File: $WARNREG_CPP_CHECK30" \
+        "LoadFromFile() should skip warnings when Entry.Id <= 0."
+fi
+
+if [[ -z "$SCHEDREG_CPP" ]]; then
+    fail "CHECK 30 – ScheduledBanRegistry.cpp not found"
+elif ! grep -qP 'Entry\.Id\s*<=\s*0' "$SCHEDREG_CPP"; then
+    fail "CHECK 30 – ScheduledBanRegistry accepts non-positive scheduled-ban IDs from disk" \
+        "File: $SCHEDREG_CPP" \
+        "LoadFromFile() should skip entries when Entry.Id <= 0."
+fi
+
+if [[ -z "$BANDB_CPP_CHECK30" ]]; then
+    fail "CHECK 30 – BanDatabase.cpp not found"
+elif ! grep -qP 'OutEntry\.Id\s*>\s*0' "$BANDB_CPP_CHECK30"; then
+    fail "CHECK 30 – BanDatabase::JsonToEntry does not require positive IDs" \
+        "File: $BANDB_CPP_CHECK30" \
+        "JsonToEntry() should reject entries unless OutEntry.Id > 0."
+fi
+
+if [[ -z "$TICKETSUB_CPP" ]]; then
+    fail "CHECK 30 – TicketSubsystem.cpp not found"
+elif ! grep -qP 'ParsedAppealId\s*>\s*0' "$TICKETSUB_CPP"; then
+    fail "CHECK 30 – TicketSubsystem restores non-positive appeal IDs from ticket state" \
+        "File: $TICKETSUB_CPP" \
+        "State restore should add OpenerToAppealId only when ParsedAppealId > 0."
+fi
+
+pass "CHECK 30 done"
+echo
+
+# =============================================================================
 # SUMMARY
 # =============================================================================
 echo "========================================================"

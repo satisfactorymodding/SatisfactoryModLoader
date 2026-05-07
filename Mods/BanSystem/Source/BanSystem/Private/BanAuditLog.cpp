@@ -183,6 +183,12 @@ void UBanAuditLog::LoadFromFile()
                     && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))
                     Entry.Id = static_cast<int64>(IdDbl);
             }
+            if (Entry.Id <= 0)
+            {
+                UE_LOG(LogBanAuditLog, Warning,
+                    TEXT("BanAuditLog: skipping entry with invalid id"));
+                continue;
+            }
             (*ObjPtr)->TryGetStringField(TEXT("action"),     Entry.Action);
             (*ObjPtr)->TryGetStringField(TEXT("targetUid"),  Entry.TargetUid);
             (*ObjPtr)->TryGetStringField(TEXT("targetName"), Entry.TargetName);
