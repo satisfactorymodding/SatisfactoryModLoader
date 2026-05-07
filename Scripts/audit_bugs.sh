@@ -815,7 +815,9 @@ echo
 # =============================================================================
 echo "--- CHECK 30: persisted IDs are validated as > 0 on load ---"
 AUDITLOG_CPP="$(find "$REPO_ROOT" -name BanAuditLog.cpp -path '*/BanSystem/*' | head -1)"
+WARNREG_CPP_CHECK30="$(find "$REPO_ROOT" -name PlayerWarningRegistry.cpp -path '*/BanSystem/*' | head -1)"
 SCHEDREG_CPP="$(find "$REPO_ROOT" -name ScheduledBanRegistry.cpp -path '*/BanSystem/*' | head -1)"
+BANDB_CPP_CHECK30="$(find "$REPO_ROOT" -name BanDatabase.cpp -path '*/BanSystem/*' | head -1)"
 TICKETSUB_CPP="$(find "$REPO_ROOT" -name TicketSubsystem.cpp -path '*/DiscordBridge/*' | head -1)"
 
 if [[ -z "$AUDITLOG_CPP" ]]; then
@@ -826,11 +828,11 @@ elif ! grep -qP 'Entry\.Id\s*<=\s*0' "$AUDITLOG_CPP"; then
         "LoadFromFile() should skip entries when Entry.Id <= 0."
 fi
 
-if [[ -z "$WARNREG_CPP" ]]; then
+if [[ -z "$WARNREG_CPP_CHECK30" ]]; then
     fail "CHECK 30 – PlayerWarningRegistry.cpp not found"
-elif ! grep -qP 'Entry\.Id\s*<=\s*0' "$WARNREG_CPP"; then
+elif ! grep -qP 'Entry\.Id\s*<=\s*0' "$WARNREG_CPP_CHECK30"; then
     fail "CHECK 30 – PlayerWarningRegistry accepts non-positive warning IDs from disk" \
-        "File: $WARNREG_CPP" \
+        "File: $WARNREG_CPP_CHECK30" \
         "LoadFromFile() should skip warnings when Entry.Id <= 0."
 fi
 
@@ -842,11 +844,11 @@ elif ! grep -qP 'Entry\.Id\s*<=\s*0' "$SCHEDREG_CPP"; then
         "LoadFromFile() should skip entries when Entry.Id <= 0."
 fi
 
-if [[ -z "$BANDB_CPP" ]]; then
+if [[ -z "$BANDB_CPP_CHECK30" ]]; then
     fail "CHECK 30 – BanDatabase.cpp not found"
-elif ! grep -qP 'OutEntry\.Id\s*>\s*0' "$BANDB_CPP"; then
+elif ! grep -qP 'OutEntry\.Id\s*>\s*0' "$BANDB_CPP_CHECK30"; then
     fail "CHECK 30 – BanDatabase::JsonToEntry does not require positive IDs" \
-        "File: $BANDB_CPP" \
+        "File: $BANDB_CPP_CHECK30" \
         "JsonToEntry() should reject entries unless OutEntry.Id > 0."
 fi
 
