@@ -355,6 +355,8 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
             if (UWorld* World = GI->GetWorld())
                 UBanEnforcer::KickConnectedPlayer(World, Uid, Ban.GetKickMessage());
 
+            FBanDiscordNotifier::NotifyBanCreated(Ban);
+
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 AuditLog->LogAction(TEXT("ban"), Uid, PlayerName,
                     TEXT("peer"), TEXT("peer"),

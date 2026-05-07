@@ -714,7 +714,14 @@ void UBanRestApi::RegisterRoutes()
             else
             {
                 bBanAdded = DB->AddBanSkipIfPermanentExists(Entry, bSkippedPerm);
-                if (bBanAdded) Saved = Entry;
+                if (bBanAdded)
+                {
+                    // AddBanSkipIfPermanentExists assigns a new Id internally but does
+                    // not return the saved entry; look it up so the response carries
+                    // the correct id instead of 0.
+                    if (!DB->GetBanByUid(Entry.Uid, Saved))
+                        Saved = Entry;
+                }
             }
 
             if (bSkippedPerm)
@@ -924,6 +931,8 @@ void UBanRestApi::RegisterRoutes()
                 AuditLog->LogAction(TEXT("updateban"), Updated.Uid, Updated.PlayerName,
                     TEXT("api"), TEXT("api"),
                     FString::Printf(TEXT("reason=%s"), *Updated.Reason));
+
+            FBanDiscordNotifier::NotifyBanCreated(Updated);
 
             Done(BanJson::Json(BanJson::ObjectToString(BanJson::EntryToJson(Updated))));
             return true;
@@ -3001,7 +3010,12 @@ void UBanRestApi::RegisterRoutes()
                     : DB->AddBanSkipIfPermanentExists(Ban, bBatchSkipped);
                 if (bBatchAdded)
                 {
-                    const FBanEntry& AddedEntry = Ban.bIsPermanent ? Saved : Ban;
+                    // For temp bans, AddBanSkipIfPermanentExists assigns an Id internally
+                    // but does not return the saved entry; look it up for the correct Id.
+                    FBanEntry TempLookup;
+                    const FBanEntry& AddedEntry = Ban.bIsPermanent
+                        ? Saved
+                        : (DB->GetBanByUid(Ban.Uid, TempLookup) ? TempLookup : Ban);
                     FBanDiscordNotifier::NotifyBanCreated(AddedEntry);
                     RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), AddedEntry);
                     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
