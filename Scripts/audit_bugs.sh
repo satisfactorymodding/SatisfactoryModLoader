@@ -523,12 +523,12 @@ echo
 echo "--- CHECK 16: Signed numeric validation rejects interior '-' characters ---"
 
 while IFS= read -r -d '' file; do
-    if grep -qP '!\s*FChar::IsDigit\([^)]*\)\s*&&\s*[^;]*!=\s*TEXT\(\x27-\x27\)' "$file"; then
+    if grep -qP '!\s*FChar::IsDigit\([^)]*\)\s*&&\s*[^;]*!=\s*TEXT\((?:\x27-\x27|\x22-\x22)\)' "$file"; then
         fail "CHECK 16 – permissive signed-number validator" \
             "File: $file" \
-            "Uses '!FChar::IsDigit(...) && ... != TEXT(\"-\")' which allows '-' in non-leading positions." \
+            "Uses '!FChar::IsDigit(...) && ... != TEXT('-')' style validation, which allows '-' in non-leading positions." \
             "Fix: validate as optional leading '-' only, then require digits for every remaining character."
-        grep -nP '!\s*FChar::IsDigit\([^)]*\)\s*&&\s*[^;]*!=\s*TEXT\(\x27-\x27\)' "$file" | while IFS= read -r ln; do
+        grep -nP '!\s*FChar::IsDigit\([^)]*\)\s*&&\s*[^;]*!=\s*TEXT\((?:\x27-\x27|\x22-\x22)\)' "$file" | while IFS= read -r ln; do
             echo "       Line: $ln"
         done
     fi
