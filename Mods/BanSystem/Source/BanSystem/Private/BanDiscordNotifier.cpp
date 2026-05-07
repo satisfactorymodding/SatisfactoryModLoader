@@ -357,20 +357,21 @@ void FBanDiscordNotifier::NotifyAppealReviewed(const FBanAppealEntry& Appeal)
 {
     FString StatusLabel;
     int32 Color;
-    if (Appeal.Status == EAppealStatus::Approved)
+    switch (Appeal.Status)
     {
+    case EAppealStatus::Approved:
         StatusLabel = TEXT("✅ Approved");
         Color       = 3066993;  // green
-    }
-    else if (Appeal.Status == EAppealStatus::Dismissed)
-    {
+        break;
+    case EAppealStatus::Dismissed:
         StatusLabel = TEXT("🚫 Dismissed");
         Color       = 9807270;  // grey (#95A5A6)
-    }
-    else
-    {
+        break;
+    case EAppealStatus::Denied:
+    default:
         StatusLabel = TEXT("❌ Denied");
         Color       = 15158332; // red
+        break;
     }
 
     const FString Fields =

@@ -245,9 +245,10 @@ namespace BanJson
         FString StatusStr;
         switch (A.Status)
         {
-        case EAppealStatus::Approved: StatusStr = TEXT("approved"); break;
-        case EAppealStatus::Denied:   StatusStr = TEXT("denied");   break;
-        default:                      StatusStr = TEXT("pending");  break;
+        case EAppealStatus::Approved:  StatusStr = TEXT("approved");  break;
+        case EAppealStatus::Denied:    StatusStr = TEXT("denied");    break;
+        case EAppealStatus::Dismissed: StatusStr = TEXT("dismissed"); break;
+        default:                       StatusStr = TEXT("pending");   break;
         }
         Obj->SetStringField(TEXT("status"),     StatusStr);
         Obj->SetStringField(TEXT("reviewedBy"), A.ReviewedBy);
@@ -2142,14 +2143,15 @@ void UBanRestApi::RegisterRoutes()
 
             TArray<FBanAppealEntry> Appeals = AppealsReg->GetAllAppeals();
 
-            // Optional status filter: ?status=pending|approved|denied
+            // Optional status filter: ?status=pending|approved|denied|dismissed
             const FString* StatusFilter = Req.QueryParams.Find(TEXT("status"));
             if (StatusFilter && !StatusFilter->IsEmpty())
             {
                 EAppealStatus FilterStatus = EAppealStatus::Pending;
                 const FString Norm = StatusFilter->ToLower();
-                if (Norm == TEXT("approved"))      FilterStatus = EAppealStatus::Approved;
-                else if (Norm == TEXT("denied"))   FilterStatus = EAppealStatus::Denied;
+                if (Norm == TEXT("approved"))          FilterStatus = EAppealStatus::Approved;
+                else if (Norm == TEXT("denied"))       FilterStatus = EAppealStatus::Denied;
+                else if (Norm == TEXT("dismissed"))    FilterStatus = EAppealStatus::Dismissed;
                 Appeals.RemoveAll([FilterStatus](const FBanAppealEntry& A){ return A.Status != FilterStatus; });
             }
 

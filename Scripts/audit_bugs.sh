@@ -587,6 +587,88 @@ pass "CHECK 18 done"
 echo
 
 # =============================================================================
+# CHECK 19: AppealToJson() must handle EAppealStatus::Dismissed
+#
+# AppealToJson() serializes FBanAppealEntry to JSON for every REST endpoint
+# that returns appeal records.  If the Dismissed case is absent from the
+# switch the status is silently serialized as "pending", misleading API
+# consumers and any downstream tooling.
+# =============================================================================
+echo "--- CHECK 19: AppealToJson() handles EAppealStatus::Dismissed ---"
+
+RESTAPI_CPP="$(find "$REPO_ROOT" -name BanRestApi.cpp -path '*/BanSystem/*' | head -1)"
+if [[ -z "$RESTAPI_CPP" ]]; then
+    fail "CHECK 19 – BanRestApi.cpp not found" \
+        "Expected file: Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp"
+else
+    # Check for 'case EAppealStatus::Dismissed: StatusStr = TEXT("dismissed");' in AppealToJson
+    if ! grep -qP 'case\s+EAppealStatus::Dismissed\s*:\s*StatusStr\s*=\s*TEXT\s*\(\s*"dismissed"\s*\)' "$RESTAPI_CPP"; then
+        fail "CHECK 19 – AppealToJson() missing Dismissed→\"dismissed\" mapping" \
+            "File: $RESTAPI_CPP" \
+            "AppealToJson() does not map EAppealStatus::Dismissed to the JSON string \"dismissed\"." \
+            "Fix: add 'case EAppealStatus::Dismissed: StatusStr = TEXT(\"dismissed\"); break;' to the switch."
+    fi
+fi
+
+pass "CHECK 19 done"
+echo
+
+# =============================================================================
+# CHECK 20: GET /appeals status filter must recognise "dismissed"
+#
+# The ?status= query-parameter filter in the GET /appeals REST handler must
+# map the string "dismissed" to EAppealStatus::Dismissed.  Without this,
+# ?status=dismissed silently returns Pending appeals instead.
+# =============================================================================
+echo "--- CHECK 20: GET /appeals status filter maps \"dismissed\" ---"
+
+if [[ -z "$RESTAPI_CPP" ]]; then
+    fail "CHECK 20 – BanRestApi.cpp not found" \
+        "Expected file: Mods/BanSystem/Source/BanSystem/Private/BanRestApi.cpp"
+else
+    # Check for 'else if (Norm == TEXT("dismissed")) FilterStatus = EAppealStatus::Dismissed;'
+    if ! grep -qP 'Norm\s*==\s*TEXT\s*\(\s*"dismissed"\s*\)\s*\)\s*FilterStatus\s*=\s*EAppealStatus::Dismissed' "$RESTAPI_CPP"; then
+        fail "CHECK 20 – GET /appeals filter missing \"dismissed\" mapping" \
+            "File: $RESTAPI_CPP" \
+            "The ?status= filter does not handle \"dismissed\", so ?status=dismissed returns wrong results." \
+            "Fix: add 'else if (Norm == TEXT(\"dismissed\")) FilterStatus = EAppealStatus::Dismissed;' to the filter."
+    fi
+fi
+
+pass "CHECK 20 done"
+echo
+
+# =============================================================================
+# CHECK 21: /history command uses W.Id (persistent warning ID) not i+1
+#
+# The /history chat command must display the persistent database primary key
+# (W.Id, an int64) as the warning number, not a transient loop counter.
+# Using i+1 produces fake numbers that do not match the IDs required by
+# /clearwarn, causing player confusion and inability to clear specific warnings.
+# =============================================================================
+echo "--- CHECK 21: /history command uses W.Id, not loop counter i+1 ---"
+
+BANCHATCHMDS_CPP="$(find "$REPO_ROOT" -name BanChatCommands.cpp -path '*/BanChatCommands/*' | head -1)"
+if [[ -z "$BANCHATCHMDS_CPP" ]]; then
+    fail "CHECK 21 – BanChatCommands.cpp not found" \
+        "Expected file: Mods/BanChatCommands/Source/BanChatCommands/Private/Commands/BanChatCommands.cpp"
+else
+    # The /history loop must not use "i + 1" with %d as the displayed warning number in a Printf
+    if grep -qP 'FString::Printf\s*\(\s*TEXT\s*\([^)]*#%d[^)]*\)[^,]*,\s*i\s*\+\s*1\s*,' "$BANCHATCHMDS_CPP"; then
+        fail "CHECK 21 – /history displays loop counter i+1 instead of W.Id" \
+            "File: $BANCHATCHMDS_CPP" \
+            "The warning display loop uses 'i + 1' as the displayed ID, not the persistent W.Id." \
+            "Fix: replace '#%d ... i + 1' with '#%lld ... W.Id'."
+        grep -nP 'FString::Printf\s*\(\s*TEXT\s*\([^)]*#%d[^)]*\)[^,]*,\s*i\s*\+\s*1\s*,' "$BANCHATCHMDS_CPP" | while IFS= read -r ln; do
+            echo "       Line: $ln"
+        done
+    fi
+fi
+
+pass "CHECK 21 done"
+echo
+
+# =============================================================================
 # SUMMARY
 # =============================================================================
 echo "========================================================"

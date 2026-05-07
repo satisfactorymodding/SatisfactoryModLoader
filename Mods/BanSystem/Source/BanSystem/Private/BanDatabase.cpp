@@ -640,6 +640,7 @@ bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry,
 }
 
 
+bool UBanDatabase::RemoveBanByUid(const FString& Uid, bool bSilent)
 {
     FBanEntry Ignored;
     return RemoveBanByUid(Uid, Ignored, bSilent);
