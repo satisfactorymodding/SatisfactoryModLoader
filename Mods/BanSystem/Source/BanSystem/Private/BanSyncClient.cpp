@@ -397,6 +397,10 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
                     PeerAppliedUnbanUids.Remove(LinkedUid);
             }
 
+            // Notify Discord so the unban appears in the audit log channel —
+            // mirrors NotifyBanCreated fired on peer ban at line 358.
+            FBanDiscordNotifier::NotifyBanRemoved(Uid, PlayerName, TEXT("peer"));
+
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 AuditLog->LogAction(TEXT("unban"), Uid, PlayerName,
                     TEXT("peer"), TEXT("peer"),

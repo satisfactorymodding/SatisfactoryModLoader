@@ -246,7 +246,6 @@ void USMLWebSocketClient::Internal_OnConnected()
 
 	if (bHasConnectedOnce)
 	{
-		OnConnected.Broadcast();
 		OnReconnected.Broadcast();
 	}
 	else

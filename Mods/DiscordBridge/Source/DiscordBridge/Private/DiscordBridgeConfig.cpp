@@ -297,15 +297,15 @@ namespace
 			if (!bInSection)
 				continue;
 
-			if (Line.StartsWith(PlusPrefix))
+			if (Trimmed.StartsWith(PlusPrefix))
 			{
-				const FString Val = Line.Mid(PlusPrefix.Len());
+				const FString Val = Trimmed.Mid(PlusPrefix.Len());
 				if (!Val.IsEmpty())
 					Result.Add(Val);
 			}
-			else if (Line.StartsWith(PlainPrefix))
+			else if (Trimmed.StartsWith(PlainPrefix))
 			{
-				const FString Val = Line.Mid(PlainPrefix.Len());
+				const FString Val = Trimmed.Mid(PlainPrefix.Len());
 				if (!Val.IsEmpty())
 					Result.Add(Val);
 			}

@@ -48,15 +48,25 @@ static float GetIniFloat(const FConfigFile& Cfg, const FString& Key, float Defau
 	return Default;
 }
 
-/** Read a config key as int32, clamping to [0, INT32_MAX] so callers never
- *  receive a negative value from a mis-typed or pathologically large entry. */
+/** Read a config key as int32, clamped to [0, INT32_MAX].
+ *  Parses via the raw string (Atoi64 with range checks) to avoid the precision
+ *  loss from routing through a float intermediate (float only has 24-bit mantissa,
+ *  so integers above 16,777,216 would be silently rounded). */
 static int32 GetIniInt(const FConfigFile& Cfg, const FString& Key, int32 Default)
 {
-	const float Raw = GetIniFloat(Cfg, Key, static_cast<float>(Default));
-	if (!FMath::IsFinite(Raw)) return Default;
-	if (Raw < 0.0f) return 0;
-	if (Raw > static_cast<float>(INT32_MAX)) return INT32_MAX;
-	return static_cast<int32>(Raw);
+	FString StrVal;
+	if (Cfg.GetString(TEXT("TicketSystem"), *Key, StrVal))
+	{
+		StrVal.TrimStartAndEndInline();
+		if (!StrVal.IsEmpty() && StrVal.IsNumeric() && StrVal.Len() <= 10)
+		{
+			const int64 Raw64 = FCString::Atoi64(*StrVal);
+			if (Raw64 < 0)         return 0;
+			if (Raw64 > INT32_MAX) return INT32_MAX;
+			return static_cast<int32>(Raw64);
+		}
+	}
+	return Default;
 }
 
 /** Strip a leading UTF-8 BOM (EF BB BF) from a file on disk. */
@@ -77,17 +87,36 @@ static void CleanTicketConfigBOM(const FString& FilePath)
 	}
 }
 
-/** Parse every occurrence of "Key=Value" in a raw INI file string. */
+/** Parse every occurrence of "Key=Value" inside the [TicketSystem] section
+ *  of a raw INI file string.  Lines outside that section are ignored so that
+ *  a key present in another section cannot inject values into our arrays. */
 static TArray<FString> ParseRawIniArray(const FString& RawContent, const FString& Key)
 {
 	TArray<FString> Result;
 	TArray<FString> Lines;
 	RawContent.ParseIntoArrayLines(Lines);
 
-	const FString Prefix = Key + TEXT("=");
+	const FString SectionHeader = TEXT("[TicketSystem]");
+	const FString Prefix        = Key + TEXT("=");
+	bool bInSection = false;
+
 	for (const FString& Line : Lines)
 	{
 		const FString Trimmed = Line.TrimStartAndEnd();
+		if (Trimmed.IsEmpty() ||
+		    Trimmed.StartsWith(TEXT(";")) ||
+		    Trimmed.StartsWith(TEXT("#")))
+			continue;
+
+		if (Trimmed.StartsWith(TEXT("[")))
+		{
+			bInSection = (Trimmed.TrimEnd() == SectionHeader);
+			continue;
+		}
+
+		if (!bInSection)
+			continue;
+
 		if (Trimmed.StartsWith(Prefix))
 		{
 			Result.Add(Trimmed.Mid(Prefix.Len()).TrimStartAndEnd());

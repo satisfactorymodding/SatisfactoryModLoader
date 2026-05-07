@@ -2335,6 +2335,9 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 			{
 				if (MuteReg->UnmutePlayer(EosUid))
 				{
+					// Notify Discord — mirrors all other unmute paths (chat cmd, REST API, panel).
+					FBanDiscordNotifier::NotifyPlayerUnmuted(EosUid, EosUid, DiscordUsername);
+
 					LiftResult = FString::Printf(
 						TEXT(":white_check_mark: Mute lifted for `%s` by <@%s>."),
 						*EosUid, *DiscordUserId);
@@ -2413,19 +2416,22 @@ void UTicketSubsystem::HandleTicketModalSubmit(
 						int32 BanDurationMinutes = -1;
 						if (SysCfg->WarnEscalationTiers.Num() > 0)
 						{
-							int32 BestThreshold = -1;
+							// Pick the most severe tier the player qualifies for.
+							// "More severe" means: permanent (0) > longer duration > shorter
+							// duration.  PointThreshold and WarnCount are incomparable raw
+							// integers, so we compare only DurationMinutes — matching the
+							// algorithm in BanChatCommands.cpp HandleWarnCommand.
 							for (const FWarnEscalationTier& Tier : SysCfg->WarnEscalationTiers)
 							{
 								const bool bHit = (Tier.PointThreshold > 0)
 									? (WarnPoints >= Tier.PointThreshold)
 									: (WarnCount  >= Tier.WarnCount);
-								const int32 ThisThreshold = (Tier.PointThreshold > 0)
-									? Tier.PointThreshold : Tier.WarnCount;
-								if (bHit && ThisThreshold > BestThreshold)
-								{
-									BestThreshold      = ThisThreshold;
+								if (!bHit) continue;
+								const bool bMoreSevere = (BanDurationMinutes < 0)
+									|| (BanDurationMinutes != 0 && (Tier.DurationMinutes == 0
+										|| Tier.DurationMinutes > BanDurationMinutes));
+								if (bMoreSevere)
 									BanDurationMinutes = Tier.DurationMinutes;
-								}
 							}
 						}
 						else if (SysCfg->AutoBanWarnCount > 0 && WarnCount >= SysCfg->AutoBanWarnCount)
