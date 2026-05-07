@@ -103,7 +103,9 @@ FWarningEntry UPlayerWarningRegistry::AddWarning(const FWarningEntry& InEntry)
         }
         Entry.Id       = NextId;
         NextId         = (NextId < INT64_MAX) ? NextId + 1 : 0; // 0 = exhausted
-        Entry.WarnDate = FDateTime::UtcNow();
+        // Only stamp the current time when the caller did not supply a date.
+        if (Entry.WarnDate == FDateTime(0))
+            Entry.WarnDate = FDateTime::UtcNow();
 
         Warnings.Add(Entry);
         if (!SaveToFile())

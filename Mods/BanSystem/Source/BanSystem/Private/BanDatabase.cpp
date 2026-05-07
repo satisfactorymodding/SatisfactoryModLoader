@@ -521,6 +521,15 @@ bool UBanDatabase::AddBan(const FBanEntry& Entry, FBanEntry* OutSaved)
         Bans.Add(NewEntry);
         bSaved = SaveToFile();
 
+        if (!bSaved)
+        {
+            // Roll back the in-memory addition so memory and disk stay in sync.
+            UE_LOG(LogBanDatabase, Warning,
+                TEXT("AddBan: SaveToFile failed for Uid=%s; rolling back in-memory addition"),
+                *NewEntry.Uid);
+            Bans.RemoveAll([&NewEntry](const FBanEntry& E){ return E.Uid.Equals(NewEntry.Uid, ESearchCase::IgnoreCase); });
+        }
+
         // Populate the out-param inside the lock so the caller receives the
         // fully-assigned entry without a separate GetBanByUid() round-trip.
         if (bSaved && OutSaved)
@@ -577,6 +586,14 @@ bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry, bool& bOu
 
         Bans.Add(NewEntry);
         bSaved = SaveToFile();
+
+        if (!bSaved)
+        {
+            UE_LOG(LogBanDatabase, Warning,
+                TEXT("AddBanSkipIfPermanentExists: SaveToFile failed for Uid=%s; rolling back in-memory addition"),
+                *NewEntry.Uid);
+            Bans.RemoveAll([&NewEntry](const FBanEntry& E){ return E.Uid.Equals(NewEntry.Uid, ESearchCase::IgnoreCase); });
+        }
     }
 
     if (bSaved)
@@ -628,6 +645,14 @@ bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry,
 
         Bans.Add(NewEntry);
         bSaved = SaveToFile();
+
+        if (!bSaved)
+        {
+            UE_LOG(LogBanDatabase, Warning,
+                TEXT("AddBanSkipIfPermanentExists: SaveToFile failed for Uid=%s; rolling back in-memory addition"),
+                *NewEntry.Uid);
+            Bans.RemoveAll([&NewEntry](const FBanEntry& E){ return E.Uid.Equals(NewEntry.Uid, ESearchCase::IgnoreCase); });
+        }
     }
 
     if (bSaved)
@@ -669,7 +694,8 @@ bool UBanDatabase::RemoveBanByUid(const FString& Uid, FBanEntry& OutEntry, bool 
             if (!SaveToFile())
             {
                 UE_LOG(LogBanDatabase, Warning,
-                    TEXT("RemoveBanByUid: SaveToFile failed for Uid=%s"), *Uid);
+                    TEXT("RemoveBanByUid: SaveToFile failed for Uid=%s; rolling back in-memory removal"), *Uid);
+                Bans.Add(OutEntry);   // rollback
                 bSaveOk = false;
             }
         }
@@ -711,7 +737,8 @@ bool UBanDatabase::RemoveBanById(int64 Id, FBanEntry& OutEntry, bool bSilent)
             if (!SaveToFile())
             {
                 UE_LOG(LogBanDatabase, Warning,
-                    TEXT("RemoveBanById: SaveToFile failed for Id=%lld"), Id);
+                    TEXT("RemoveBanById: SaveToFile failed for Id=%lld; rolling back in-memory removal"), Id);
+                Bans.Add(OutEntry);   // rollback
                 bSaveOk = false;
             }
         }
@@ -920,6 +947,20 @@ bool UBanDatabase::LinkBans(const FString& UidA, const FString& UidB, bool* bOut
                 if (bOutPartialOnly) *bOutPartialOnly = true;
             }
             bSaved = SaveToFile();
+            if (!bSaved)
+            {
+                // Roll back in-memory cross-links so memory and disk stay in sync.
+                UE_LOG(LogBanDatabase, Warning,
+                    TEXT("BanDatabase: LinkBans — SaveToFile failed; rolling back in-memory links for '%s' <-> '%s'"),
+                    *UidA, *UidB);
+                for (FBanEntry& E : Bans)
+                {
+                    if (E.Uid.Equals(UidA, ESearchCase::IgnoreCase))
+                        E.LinkedUids.RemoveSingle(UidB);
+                    if (E.Uid.Equals(UidB, ESearchCase::IgnoreCase))
+                        E.LinkedUids.RemoveSingle(UidA);
+                }
+            }
         }
         else if (bFoundA && bFoundB)
         {

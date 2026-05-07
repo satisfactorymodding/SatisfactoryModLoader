@@ -1,6 +1,7 @@
 // Copyright Yamahasxviper. All Rights Reserved.
 
 #include "PlayerNoteRegistry.h"
+#include "BanSystemConfig.h"
 
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonReader.h"
@@ -115,7 +116,13 @@ bool UPlayerNoteRegistry::DeleteNote(int64 Id)
 
 FString UPlayerNoteRegistry::GetRegistryPath() const
 {
-    return FPaths::ProjectSavedDir() / TEXT("BanChatCommands") / TEXT("notes.json");
+    const UBanSystemConfig* Cfg = UBanSystemConfig::Get();
+    FString BaseDir;
+    if (Cfg && !Cfg->DatabasePath.IsEmpty())
+        BaseDir = FPaths::GetPath(Cfg->DatabasePath) / TEXT("BanChatCommands");
+    else
+        BaseDir = FPaths::ProjectSavedDir() / TEXT("BanChatCommands");
+    return BaseDir / TEXT("notes.json");
 }
 
 void UPlayerNoteRegistry::LoadFromFile()

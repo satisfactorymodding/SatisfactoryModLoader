@@ -971,7 +971,7 @@ void UDiscordBridgeSubsystem::HandleDispatch(const FString& EventType, int32 Seq
 				DataObj->TryGetStringField(TEXT("token"), InteractionToken);
 
 				// Verify that the clicker holds WhitelistCommandRoleId.
-				bool bHasRole = WhitelistConfig.WhitelistCommandRoleId.IsEmpty();
+				bool bHasRole = false;
 				const TSharedPtr<FJsonObject>* MemberObjPtr = nullptr;
 				if (DataObj->TryGetObjectField(TEXT("member"), MemberObjPtr) && MemberObjPtr)
 				{
