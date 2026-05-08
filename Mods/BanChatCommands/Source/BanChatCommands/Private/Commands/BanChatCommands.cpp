@@ -4507,10 +4507,9 @@ EExecutionStatus ABulkBanChatCommand::ExecuteCommand_Implementation(
             if (W)
                 UBanEnforcer::KickConnectedPlayer(W, Uid, BulkBanSaved.GetKickMessage());
 
-            FBanDiscordNotifier::NotifyBanCreated(BulkBanSaved);
-
             // Ban counterpart identifiers (IP↔EOS) matching the Discord bulk-ban path.
             BanChat::AddCounterpartBans(this, Sender, Uid, RawUid, 0 /* permanent */, Reason, AdminName);
+            FBanDiscordNotifier::NotifyBanCreated(BulkBanSaved);
 
             if (UBanAuditLog* AuditLog = GI ? GI->GetSubsystem<UBanAuditLog>() : nullptr)
                 AuditLog->LogAction(TEXT("ban"), Uid, RawUid, AdminUid, AdminName, Reason);

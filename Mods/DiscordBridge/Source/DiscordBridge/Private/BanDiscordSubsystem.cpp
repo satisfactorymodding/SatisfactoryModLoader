@@ -1445,13 +1445,12 @@ void UBanDiscordSubsystem::HandleBanCommand(const TArray<FString>& Args,
 	if (UWorld* World = GetGameInstance() ? GetGameInstance()->GetWorld() : nullptr)
 		UBanEnforcer::KickConnectedPlayer(World, Uid, Entry.GetKickMessage());
 
-	// Notify the webhook feed so Discord-slash bans appear alongside panel/REST bans.
-	FBanDiscordNotifier::NotifyBanCreated(Entry);
-
 	// Also ban the counterpart identifier (IP↔EOS) so every identity is blocked.
 	const TArray<FString> ExtraUids = BanDiscordHelpers::AddCounterpartBans(
 		this, DB, Uid, DisplayName, Entry.Reason, SenderName,
 		Entry.bIsPermanent, Entry.ExpireDate);
+	// Notify the webhook feed so Discord-slash bans appear alongside panel/REST bans.
+	FBanDiscordNotifier::NotifyBanCreated(Entry);
 
 	// Format confirmation message.
 	const FString SafeName = BanDiscordHelpers::EscapeMarkdown(DisplayName);
@@ -4804,10 +4803,10 @@ void UBanDiscordSubsystem::HandleBulkBanCommand(const TArray<FString>& Args,
 		{
 			if (UWorld* W = GI ? GI->GetWorld() : nullptr)
 				UBanEnforcer::KickConnectedPlayer(W, Uid, Ban.GetKickMessage());
-			FBanDiscordNotifier::NotifyBanCreated(Ban);
 			// Also ban counterpart identifiers (IP↔EOS).
 			BanDiscordHelpers::AddCounterpartBans(this, DB, Uid, RawUid,
 				Reason, SenderName, true, FDateTime(0));
+			FBanDiscordNotifier::NotifyBanCreated(Ban);
 			if (UGameInstance* GI2 = GetGameInstance())
 				if (UBanAuditLog* AL = GI2->GetSubsystem<UBanAuditLog>())
 					AL->LogAction(TEXT("ban"), Uid, RawUid, GetCurrentAuditAdminUid(SenderName), SenderName, Reason);

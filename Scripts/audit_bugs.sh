@@ -1362,6 +1362,40 @@ fi
 pass "CHECK 52 done"
 echo
 
+# =============================================================================
+# CHECK 53: Ban-created notifications fire after counterpart bans are added
+# =============================================================================
+echo "--- CHECK 53: counterpart-ban linking occurs before NotifyBanCreated in ban-create flows ---"
+
+BANCHCMD_CPP_CHECK53="$(list_cpp_files | tr '\0' '\n' | grep 'BanChatCommands\.cpp' | head -1)"
+BANREST_CPP_CHECK53="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+BANDISCORD_CPP_CHECK53="$(list_cpp_files | tr '\0' '\n' | grep 'BanDiscordSubsystem\.cpp' | head -1)"
+
+if [[ -z "$BANCHCMD_CPP_CHECK53" || -z "$BANREST_CPP_CHECK53" || -z "$BANDISCORD_CPP_CHECK53" ]]; then
+    fail "CHECK 53 – required source file(s) not found" \
+        "BanChatCommands: ${BANCHCMD_CPP_CHECK53:-missing}" \
+        "BanRestApi: ${BANREST_CPP_CHECK53:-missing}" \
+        "BanDiscordSubsystem: ${BANDISCORD_CPP_CHECK53:-missing}"
+else
+    if perl -0777 -ne 'exit 0 if /NotifyBanCreated\s*\(\s*BulkBanSaved\s*\)\s*;\s*(?:\/\/[^\n]*\n\s*)*BanChat::AddCounterpartBans\s*\(\s*this\s*,\s*Sender\s*,\s*Uid\s*,\s*RawUid/s; exit 1' "$BANCHCMD_CPP_CHECK53"; then
+        fail "CHECK 53 – BanChatCommands bulk-ban still notifies before AddCounterpartBans" \
+            "File: $BANCHCMD_CPP_CHECK53"
+    fi
+
+    if perl -0777 -ne 'exit 0 if /NotifyBanCreated\s*\(\s*(?:Saved|AddedEntry)\s*\)\s*;\s*(?:\/\/[^\n]*\n\s*)*RestApiAddCounterpartBans\s*\(/s; exit 1' "$BANREST_CPP_CHECK53"; then
+        fail "CHECK 53 – BanRestApi still notifies before RestApiAddCounterpartBans in a create path" \
+            "File: $BANREST_CPP_CHECK53"
+    fi
+
+    if perl -0777 -ne 'exit 0 if /NotifyBanCreated\s*\(\s*(?:Entry|Ban)\s*\)\s*;\s*(?:\/\/[^\n]*\n\s*)*BanDiscordHelpers::AddCounterpartBans\s*\(\s*this\s*,\s*DB\s*,\s*Uid/s; exit 1' "$BANDISCORD_CPP_CHECK53"; then
+        fail "CHECK 53 – BanDiscordSubsystem still notifies before AddCounterpartBans in a direct ban flow" \
+            "File: $BANDISCORD_CPP_CHECK53"
+    fi
+fi
+
+pass "CHECK 53 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
