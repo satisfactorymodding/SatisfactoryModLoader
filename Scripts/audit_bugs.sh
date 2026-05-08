@@ -2256,6 +2256,113 @@ pass "CHECK 88 done"
 echo
 
 
+# =============================================================================
+# CHECK 89: POST /warnings aborts on AddWarning persistence failure
+# =============================================================================
+echo "--- CHECK 89: POST /warnings checks AddWarning() result before side effects ---"
+
+BANRESTAPI_CPP_FILE89="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+
+if [[ -z "$BANRESTAPI_CPP_FILE89" ]]; then
+    fail "CHECK 89 – BanRestApi.cpp not found"
+else
+    if ! perl -0777 -ne 'exit 0 if /const\s+FWarningEntry\s+NewEntry\s*=\s*WarnReg->AddWarning\s*\(\s*NewWarnEntry\s*\)\s*;[\s\S]{0,250}?if\s*\(\s*NewEntry\.Id\s*==\s*0\s*\)[\s\S]{0,250}?return\s+true\s*;/s; exit 1' "$BANRESTAPI_CPP_FILE89"; then
+        fail "CHECK 89 – POST /warnings still ignores AddWarning save failure" \
+            "File: $BANRESTAPI_CPP_FILE89" \
+            "Fix: if NewEntry.Id == 0, return HTTP 500 before notifications, audit log, or auto-ban side effects."
+    fi
+fi
+
+pass "CHECK 89 done"
+echo
+
+# =============================================================================
+# CHECK 90: POST /warnings warn escalation uses DurationMinutes severity comparison
+# =============================================================================
+echo "--- CHECK 90: POST /warnings warn escalation uses DurationMinutes severity comparison ---"
+
+BANRESTAPI_CPP_FILE90="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+
+if [[ -z "$BANRESTAPI_CPP_FILE90" ]]; then
+    fail "CHECK 90 – BanRestApi.cpp not found"
+else
+    if grep -qP '\bBestThreshold\b' "$BANRESTAPI_CPP_FILE90"; then
+        fail "CHECK 90 – BanRestApi warn escalation still uses stale BestThreshold algorithm" \
+            "File: $BANRESTAPI_CPP_FILE90" \
+            "Fix: compare matching tiers by DurationMinutes severity (0 = permanent, otherwise longest duration wins)."
+    fi
+    if ! perl -0777 -ne 'exit 0 if /WarnEscalationTiers\.Num\(\)\s*>\s*0[\s\S]{0,1200}?const\s+bool\s+bMoreSevere\s*=\s*\(BanDurationMinutes\s*<\s*0\)[\s\S]{0,300}?Tier\.DurationMinutes\s*==\s*0[\s\S]{0,300}?Tier\.DurationMinutes\s*>\s*BanDurationMinutes/s; exit 1' "$BANRESTAPI_CPP_FILE90"; then
+        fail "CHECK 90 – BanRestApi warn escalation missing DurationMinutes-severity comparison" \
+            "File: $BANRESTAPI_CPP_FILE90"
+    fi
+fi
+
+pass "CHECK 90 done"
+echo
+
+# =============================================================================
+# CHECK 91: SMLWebSocket reconnect flush preserves outbound FIFO ordering
+# =============================================================================
+echo "--- CHECK 91: reconnect flush preserves the failed head outbound message ---"
+
+SMLWSRUN_CPP_FILE91="$(list_cpp_files | tr '\0' '\n' | grep 'SMLWebSocketRunnable\.cpp' | head -1)"
+SMLWSRUN_H_FILE91="$(list_header_files | tr '\0' '\n' | grep 'SMLWebSocketRunnable\.h' | head -1)"
+
+if [[ -z "$SMLWSRUN_CPP_FILE91" || -z "$SMLWSRUN_H_FILE91" ]]; then
+    fail "CHECK 91 – SMLWebSocketRunnable source/header not found"
+else
+    if ! grep -q 'PendingRetryMessage' "$SMLWSRUN_H_FILE91"; then
+        fail "CHECK 91 – SMLWebSocketRunnable.h missing PendingRetryMessage head-of-line buffer" \
+            "File: $SMLWSRUN_H_FILE91" \
+            "Fix: store the failed head outbound message separately so reconnect retries it before later queue entries."
+    fi
+    if perl -0777 -ne 'exit 0 if /SendWsFrame failed in FlushOutboundQueue[\s\S]{0,400}?OutboundMessages\.Enqueue\s*\(\s*MoveTemp\(Msg\)\s*\)/s; exit 1' "$SMLWSRUN_CPP_FILE91"; then
+        fail "CHECK 91 – FlushOutboundQueue still re-enqueues failed head message at queue tail" \
+            "File: $SMLWSRUN_CPP_FILE91" \
+            "Fix: preserve the failed message in PendingRetryMessage instead of OutboundMessages.Enqueue(MoveTemp(Msg))."
+    fi
+    if ! perl -0777 -ne 'exit 0 if /if\s*\(\s*bHasPendingRetryMessage\s*\)[\s\S]{0,600}?SendWsFrame[\s\S]{0,600}?PendingRetryMessage\s*=\s*MoveTemp\(Msg\)\s*;[\s\S]{0,200}?bHasPendingRetryMessage\s*=\s*true/s; exit 1' "$SMLWSRUN_CPP_FILE91"; then
+        fail "CHECK 91 – FlushOutboundQueue missing head-of-line retry preservation logic" \
+            "File: $SMLWSRUN_CPP_FILE91"
+    fi
+fi
+
+pass "CHECK 91 done"
+echo
+
+# =============================================================================
+# CHECK 92: WebSocket server handshake uses a short recv timeout plus wall-clock deadline
+# =============================================================================
+echo "--- CHECK 92: server handshake has bounded wall-clock stall time ---"
+
+WSSERVER_CPP_FILE92="$(list_cpp_files | tr '\0' '\n' | grep 'SMLWebSocketServerRunnable\.cpp' | head -1)"
+
+if [[ -z "$WSSERVER_CPP_FILE92" ]]; then
+    fail "CHECK 92 – SMLWebSocketServerRunnable.cpp not found"
+else
+    if grep -q 'SetReceiveTimeout(FTimespan::FromSeconds(5))' "$WSSERVER_CPP_FILE92"; then
+        fail "CHECK 92 – server handshake still uses a 5-second per-byte receive timeout" \
+            "File: $WSSERVER_CPP_FILE92" \
+            "Fix: use a short timeout (for example 200 ms) plus an overall handshake wall-clock deadline."
+    fi
+    if ! grep -q 'HandshakeTimeoutSeconds' "$WSSERVER_CPP_FILE92"; then
+        fail "CHECK 92 – server handshake missing overall timeout constant" \
+            "File: $WSSERVER_CPP_FILE92"
+    fi
+    if ! grep -q 'SetReceiveTimeout(FTimespan::FromMilliseconds(200))' "$WSSERVER_CPP_FILE92"; then
+        fail "CHECK 92 – server handshake missing short receive timeout" \
+            "File: $WSSERVER_CPP_FILE92"
+    fi
+    if ! grep -q 'HandshakeDeadline' "$WSSERVER_CPP_FILE92"; then
+        fail "CHECK 92 – server handshake missing wall-clock deadline check" \
+            "File: $WSSERVER_CPP_FILE92"
+    fi
+fi
+
+pass "CHECK 92 done"
+echo
+
+
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
     echo -e "${GRN}All checks passed — no issues found.${NC}"

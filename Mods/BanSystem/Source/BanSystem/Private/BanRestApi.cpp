@@ -1251,6 +1251,11 @@ void UBanRestApi::RegisterRoutes()
             // AddWarning returns the stored entry (with the assigned Id and WarnDate) in
             // a single lock acquisition, avoiding a TOCTOU race with concurrent warnings.
             const FWarningEntry NewEntry = WarnReg->AddWarning(NewWarnEntry);
+            if (NewEntry.Id == 0)
+            {
+                Done(BanJson::Error(TEXT("Failed to save warning"), EHttpServerResponseCodes::ServerError));
+                return true;
+            }
             const int32 WarnCount = WarnReg->GetWarningCount(Uid);
 
             FBanDiscordNotifier::NotifyWarningIssued(Uid, PlayerName, Reason, WarnedBy, WarnCount);
@@ -1265,21 +1270,23 @@ void UBanRestApi::RegisterRoutes()
                 const int32 WarnPoints = WarnReg->GetWarningPoints(Uid);
                 int32 BanDurationMinutes = -1;
 
-                // Check escalation tiers (highest matching tier wins).
-                // When a tier has PointThreshold > 0, use accumulated points; otherwise use count.
+                // Check escalation tiers and apply the most severe tier hit.
+                // Compare by DurationMinutes: 0 means permanent (most severe);
+                // among temporary bans, the longest duration wins.
                 if (Cfg->WarnEscalationTiers.Num() > 0)
                 {
-                    int32 BestThreshold = -1;
                     for (const FWarnEscalationTier& Tier : Cfg->WarnEscalationTiers)
                     {
                         const bool bHit = (Tier.PointThreshold > 0)
                             ? (WarnPoints >= Tier.PointThreshold)
                             : (WarnCount  >= Tier.WarnCount);
-                        const int32 ThisThreshold = (Tier.PointThreshold > 0)
-                            ? Tier.PointThreshold : Tier.WarnCount;
-                        if (bHit && ThisThreshold > BestThreshold)
+                        if (!bHit) continue;
+
+                        const bool bMoreSevere = (BanDurationMinutes < 0)
+                            || (BanDurationMinutes != 0 && (Tier.DurationMinutes == 0
+                                || Tier.DurationMinutes > BanDurationMinutes));
+                        if (bMoreSevere)
                         {
-                            BestThreshold      = ThisThreshold;
                             BanDurationMinutes = Tier.DurationMinutes;
                         }
                     }

@@ -4,6 +4,7 @@
 #include "SMLWebSocketServer.h"
 
 #include "Async/Async.h"
+#include "HAL/PlatformTime.h"
 #include "Sockets.h"
 #include "SocketSubsystem.h"
 #include "IPAddress.h"
@@ -373,6 +374,8 @@ void FSMLWebSocketServerRunnable::Exit()
 
 bool FSMLWebSocketServerRunnable::PerformHandshake(FClientState& Client)
 {
+    static constexpr double HandshakeTimeoutSeconds = 3.0;
+
     // Read HTTP request headers.
     TArray<uint8> HeaderBuf;
     HeaderBuf.Reserve(1024);
@@ -380,12 +383,20 @@ bool FSMLWebSocketServerRunnable::PerformHandshake(FClientState& Client)
     int32 Recv = 0;
     bool bFoundHeaderEnd = false;
 
-    // Prevent a slow/adversarial client from pinning this thread indefinitely
-    // by reading one byte at a time with no deadline.
-    Client.Socket->SetReceiveTimeout(FTimespan::FromSeconds(5));
+    // Keep each Recv wake-up short and cap the entire handshake wall-clock time
+    // so a slow client cannot monopolize the single server I/O thread.
+    Client.Socket->SetReceiveTimeout(FTimespan::FromMilliseconds(200));
+    const double HandshakeDeadline = FPlatformTime::Seconds() + HandshakeTimeoutSeconds;
 
     for (int32 i = 0; i < 8192 && !bStopping.load(); ++i)
     {
+        if (FPlatformTime::Seconds() > HandshakeDeadline)
+        {
+            UE_LOG(LogWSServer, Warning,
+                TEXT("WSServer: Rejected client — HTTP upgrade handshake exceeded %.1f seconds."),
+                HandshakeTimeoutSeconds);
+            return false;
+        }
         if (!Client.Socket->Recv(&Ch, 1, Recv) || Recv == 0) return false;
         HeaderBuf.Add(Ch);
         // Look for \r\n\r\n.
@@ -512,7 +523,7 @@ bool FSMLWebSocketServerRunnable::PerformHandshake(FClientState& Client)
         }
         TotalSent += Sent;
     }
-    // Clear the 5-second handshake guard so the normal message loop is not
+    // Clear the short handshake guard so the normal message loop is not
     // subject to a receive deadline it does not expect.
     Client.Socket->SetReceiveTimeout(FTimespan::Zero());
     return true;
