@@ -1629,8 +1629,22 @@ else
         fail "CHECK 64 – RemoveExpiredEntries does not snapshot Entries before mutation" \
             "File: $WM_CPP_CHECK64"
     fi
-    if ! perl -0777 -ne 'exit 0 if /RemoveExpiredEntries.*?if\s*\(\s*Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)\s*\)\s*\{[^}]*Entries\s*=\s*PrevEntries[^}]*OutExpiredNames\.Reset\s*\(\s*\)/s; exit 1' "$WM_CPP_CHECK64"; then
-        fail "CHECK 64 – RemoveExpiredEntries does not roll back Entries and clear OutExpiredNames on Save_Locked failure" \
+
+    # 1) Save failure branch exists for expired-entry persistence.
+    if ! grep -qP 'Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)' "$WM_CPP_CHECK64"; then
+        fail "CHECK 64 – RemoveExpiredEntries has no Save_Locked failure branch after removals" \
+            "File: $WM_CPP_CHECK64"
+    fi
+
+    # 2) The save-failure branch restores Entries from PrevEntries.
+    if ! perl -0777 -ne 'exit 0 if /if\s*\(\s*Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)\s*\)\s*\{[^}]*Entries\s*=\s*PrevEntries/s; exit 1' "$WM_CPP_CHECK64"; then
+        fail "CHECK 64 – RemoveExpiredEntries does not restore Entries from PrevEntries on save failure" \
+            "File: $WM_CPP_CHECK64"
+    fi
+
+    # 3) The save-failure branch clears OutExpiredNames to suppress false side effects.
+    if ! perl -0777 -ne 'exit 0 if /if\s*\(\s*Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)\s*\)\s*\{[^}]*OutExpiredNames\.Reset\s*\(\s*\)/s; exit 1' "$WM_CPP_CHECK64"; then
+        fail "CHECK 64 – RemoveExpiredEntries does not clear OutExpiredNames on save failure" \
             "File: $WM_CPP_CHECK64"
     fi
 fi
