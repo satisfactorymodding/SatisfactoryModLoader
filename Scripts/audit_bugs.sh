@@ -1105,6 +1105,29 @@ fi
 pass "CHECK 38 done"
 echo
 
+# =============================================================================
+# CHECK 39: PlayerSessionRegistry save-failure rollback + event gating
+# =============================================================================
+echo "--- CHECK 39: PlayerSessionRegistry rollback and event gating on save failure ---"
+
+SESSIONREG_CPP_CHECK39="$(list_cpp_files | tr '\0' '\n' | grep 'PlayerSessionRegistry\.cpp' | head -1)"
+
+if [[ -z "$SESSIONREG_CPP_CHECK39" ]]; then
+    fail "CHECK 39 – PlayerSessionRegistry.cpp not found"
+elif ! grep -qP 'const\s+FPlayerSessionRecord\s+PrevRecord\s*=\s*R' "$SESSIONREG_CPP_CHECK39" \
+     || ! grep -qP 'R\s*=\s*PrevRecord' "$SESSIONREG_CPP_CHECK39" \
+     || ! grep -qP 'Records\.RemoveAt\s*\(\s*Records\.Num\s*\(\s*\)\s*-\s*1\s*\)' "$SESSIONREG_CPP_CHECK39" \
+     || ! grep -qP 'const\s+TArray<FPlayerSessionRecord>\s+PrevRecords\s*=\s*Records' "$SESSIONREG_CPP_CHECK39" \
+     || ! grep -qP 'Records\s*=\s*PrevRecords' "$SESSIONREG_CPP_CHECK39" \
+     || ! grep -qP 'if\s*\(\s*bPersisted\s*\)' "$SESSIONREG_CPP_CHECK39" \
+     || ! grep -qP 'PushEvent\s*\(\s*TEXT\("player_join"\)' "$SESSIONREG_CPP_CHECK39"; then
+    fail "CHECK 39 – PlayerSessionRegistry does not fully roll back in-memory edits and gate player_join event on save success" \
+        "File: $SESSIONREG_CPP_CHECK39"
+fi
+
+pass "CHECK 39 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
