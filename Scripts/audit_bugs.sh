@@ -1191,9 +1191,19 @@ SYNCCLIENT_CPP_CHECK43="$(list_cpp_files | tr '\0' '\n' | grep 'BanSyncClient\.c
 
 if [[ -z "$SYNCCLIENT_CPP_CHECK43" ]]; then
     fail "CHECK 43 – BanSyncClient.cpp not found"
-elif ! perl -0777 -ne 'exit 0 if /DB->UpdateBan\s*\(.*?if\s*\(\s*bWasUpdate\s*\).*?return;.*?if\s*\(\s*DB->IsCurrentlyBanned\(Uid,\s*StillExisting\)\s*\)\s*return;/s; exit 1' "$SYNCCLIENT_CPP_CHECK43"; then
-    fail "CHECK 43 – BanSyncClient still has a peer-update silent-unban window" \
-        "File: $SYNCCLIENT_CPP_CHECK43"
+else
+    if ! grep -qP 'DB->UpdateBan\s*\(' "$SYNCCLIENT_CPP_CHECK43"; then
+        fail "CHECK 43 – BanSyncClient does not use UpdateBan for peer edits" \
+            "File: $SYNCCLIENT_CPP_CHECK43"
+    fi
+    if ! grep -qP 'if\s*\(\s*bWasUpdate\s*\)' "$SYNCCLIENT_CPP_CHECK43"; then
+        fail "CHECK 43 – BanSyncClient does not early-return after a successful in-place update" \
+            "File: $SYNCCLIENT_CPP_CHECK43"
+    fi
+    if ! perl -0777 -ne 'exit 0 if /FBanEntry\s+StillExisting\s*;\s*if\s*\(\s*DB->IsCurrentlyBanned\(Uid,\s*StillExisting\)\s*\)\s*return;/s; exit 1' "$SYNCCLIENT_CPP_CHECK43"; then
+        fail "CHECK 43 – BanSyncClient still has a peer-update silent-unban window" \
+            "File: $SYNCCLIENT_CPP_CHECK43"
+    fi
 fi
 
 pass "CHECK 43 done"
@@ -1731,7 +1741,8 @@ echo
 # =============================================================================
 echo "--- CHECK 69: nextId loaders preserve 0 as the exhausted sentinel ---"
 
-if grep -RP '\(Parsed > 0\) \? Parsed : 1|FMath::Max\(\(int64\)1' "${MOD_PATHS[@]}" >/dev/null 2>&1; then
+if grep -RP '\(Parsed > 0\) \? Parsed : 1' "${MOD_PATHS[@]}" >/dev/null 2>&1 \
+    || grep -RP 'FMath::Max\(\(int64\)1' "${MOD_PATHS[@]}" >/dev/null 2>&1; then
     fail "CHECK 69 – nextId loader still rewrites exhausted sentinel 0 to 1" \
         "Fix: accept stored 0 as the exhausted sentinel instead of clamping to 1."
 fi
