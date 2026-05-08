@@ -102,13 +102,13 @@ public:
 
 	// ── Thread-safe API (called from the game thread) ─────────────────────────
 
-	/** Queue a text message to be sent. Returns false when the connection is down and the message was dropped. */
+	/** Queue a text message to be sent. Returns false only when the runnable is stopping/closed. */
 	bool EnqueueText(const FString& Text);
 
-	/** Queue a binary message to be sent (copy overload). Returns false when the connection is down and the message was dropped. */
+	/** Queue a binary message to be sent (copy overload). Returns false only when the runnable is stopping/closed. */
 	bool EnqueueBinary(const TArray<uint8>& Data);
 
-	/** Queue a binary message to be sent (move overload — avoids an allocation for owned buffers). Returns false when the connection is down and the message was dropped. */
+	/** Queue a binary message to be sent (move overload — avoids an allocation for owned buffers). Returns false only when the runnable is stopping/closed. */
 	bool EnqueueBinary(TArray<uint8>&& Data);
 
 	/**
