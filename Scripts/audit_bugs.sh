@@ -2363,6 +2363,80 @@ pass "CHECK 92 done"
 echo
 
 
+# =============================================================================
+# CHECK 93: legacy numeric JSON integer fallbacks reject fractional values
+# =============================================================================
+echo "--- CHECK 93: legacy numeric JSON integer fallbacks use Fmod guards ---"
+
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("id"\),\s*IdDbl\)[\s\S]{0,120}?FMath::Fmod\(IdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,80}?static_cast<int64>\(IdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'BanDatabase\.cpp' | head -1)"; then
+    fail "CHECK 93 – BanDatabase legacy numeric id load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(IdDbl, 1.0) == 0.0 before static_cast<int64>(IdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("nextId"\),\s*NextIdDbl\)[\s\S]{0,140}?FMath::Fmod\(NextIdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,80}?static_cast<int64>\(NextIdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'BanDatabase\.cpp' | head -1)"; then
+    fail "CHECK 93 – BanDatabase legacy numeric nextId load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(NextIdDbl, 1.0) == 0.0 before static_cast<int64>(NextIdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("id"\),\s*IdDbl\)[\s\S]{0,120}?FMath::Fmod\(IdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,80}?static_cast<int64>\(IdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'BanAuditLog\.cpp' | head -1)"; then
+    fail "CHECK 93 – BanAuditLog legacy numeric id load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(IdDbl, 1.0) == 0.0 before static_cast<int64>(IdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("nextId"\),\s*StoredNextId\)[\s\S]{0,160}?FMath::Fmod\(StoredNextId,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,120}?static_cast<int64>\(StoredNextId\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'BanAuditLog\.cpp' | head -1)"; then
+    fail "CHECK 93 – BanAuditLog legacy numeric nextId load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(StoredNextId, 1.0) == 0.0 before static_cast<int64>(StoredNextId)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("id"\),\s*IdDbl\)[\s\S]{0,120}?FMath::Fmod\(IdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,80}?static_cast<int64>\(IdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'BanAppealRegistry\.cpp' | head -1)"; then
+    fail "CHECK 93 – BanAppealRegistry legacy numeric id load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(IdDbl, 1.0) == 0.0 before static_cast<int64>(IdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("nextId"\),\s*StoredNextIdDbl\)[\s\S]{0,160}?FMath::Fmod\(StoredNextIdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,120}?static_cast<int64>\(StoredNextIdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'BanAppealRegistry\.cpp' | head -1)"; then
+    fail "CHECK 93 – BanAppealRegistry legacy numeric nextId load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(StoredNextIdDbl, 1.0) == 0.0 before static_cast<int64>(StoredNextIdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("id"\),\s*IdDbl\)[\s\S]{0,120}?FMath::Fmod\(IdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,80}?static_cast<int64>\(IdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'PlayerWarningRegistry\.cpp' | head -1)"; then
+    fail "CHECK 93 – PlayerWarningRegistry legacy numeric id load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(IdDbl, 1.0) == 0.0 before static_cast<int64>(IdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("nextId"\),\s*StoredNextIdDbl\)[\s\S]{0,160}?FMath::Fmod\(StoredNextIdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,120}?static_cast<int64>\(StoredNextIdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'PlayerWarningRegistry\.cpp' | head -1)"; then
+    fail "CHECK 93 – PlayerWarningRegistry legacy numeric nextId load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(StoredNextIdDbl, 1.0) == 0.0 before static_cast<int64>(StoredNextIdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("id"\),\s*IdDbl\)[\s\S]{0,120}?FMath::Fmod\(IdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,80}?static_cast<int64>\(IdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'ScheduledBanRegistry\.cpp' | head -1)"; then
+    fail "CHECK 93 – ScheduledBanRegistry legacy numeric id load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(IdDbl, 1.0) == 0.0 before static_cast<int64>(IdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("durationMinutes"\),\s*DurDbl\)[\s\S]{0,140}?FMath::Fmod\(DurDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,80}?static_cast<int32>\(DurDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'ScheduledBanRegistry\.cpp' | head -1)"; then
+    fail "CHECK 93 – ScheduledBanRegistry legacy durationMinutes load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(DurDbl, 1.0) == 0.0 before static_cast<int32>(DurDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("retryCount"\),\s*RetryDbl\)[\s\S]{0,140}?FMath::Fmod\(RetryDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,80}?static_cast<int32>\(RetryDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'ScheduledBanRegistry\.cpp' | head -1)"; then
+    fail "CHECK 93 – ScheduledBanRegistry legacy retryCount load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(RetryDbl, 1.0) == 0.0 before static_cast<int32>(RetryDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("nextId"\),\s*StoredNextIdDbl\)[\s\S]{0,160}?FMath::Fmod\(StoredNextIdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,120}?static_cast<int64>\(StoredNextIdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'ScheduledBanRegistry\.cpp' | head -1)"; then
+    fail "CHECK 93 – ScheduledBanRegistry legacy numeric nextId load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(StoredNextIdDbl, 1.0) == 0.0 before static_cast<int64>(StoredNextIdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("id"\),\s*IdDbl\)[\s\S]{0,120}?FMath::Fmod\(IdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,80}?static_cast<int64>\(IdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'PlayerNoteRegistry\.cpp' | head -1)"; then
+    fail "CHECK 93 – PlayerNoteRegistry legacy numeric id load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(IdDbl, 1.0) == 0.0 before static_cast<int64>(IdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("nextId"\),\s*StoredNextIdDbl\)[\s\S]{0,160}?FMath::Fmod\(StoredNextIdDbl,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,120}?static_cast<int64>\(StoredNextIdDbl\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'PlayerNoteRegistry\.cpp' | head -1)"; then
+    fail "CHECK 93 – PlayerNoteRegistry legacy numeric nextId load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(StoredNextIdDbl, 1.0) == 0.0 before static_cast<int64>(StoredNextIdDbl)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("appeal_id"\),\s*AppealIdLoad\)[\s\S]{0,160}?FMath::Fmod\(AppealIdLoad,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,100}?static_cast<int64>\(AppealIdLoad\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'TicketSubsystem\.cpp' | head -1)"; then
+    fail "CHECK 93 – TicketSubsystem legacy numeric appeal_id load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(AppealIdLoad, 1.0) == 0.0 before static_cast<int64>(AppealIdLoad)."
+fi
+if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\(TEXT\("max_slots"\),\s*MaxSlotsD\)[\s\S]{0,160}?FMath::Fmod\(MaxSlotsD,\s*1\.0\)\s*==\s*0\.0[\s\S]{0,100}?static_cast<int32>\(MaxSlotsD\)/s; exit 1' "$(list_cpp_files | tr '\0' '\n' | grep 'WhitelistManager\.cpp' | head -1)"; then
+    fail "CHECK 93 – WhitelistManager max_slots load can still truncate fractional values" \
+        "Fix: require FMath::Fmod(MaxSlotsD, 1.0) == 0.0 before static_cast<int32>(MaxSlotsD)."
+fi
+
+pass "CHECK 93 done"
+echo
+
+
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
     echo -e "${GRN}All checks passed — no issues found.${NC}"

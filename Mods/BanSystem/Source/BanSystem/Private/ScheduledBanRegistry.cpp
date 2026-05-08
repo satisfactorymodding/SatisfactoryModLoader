@@ -408,7 +408,8 @@ void UScheduledBanRegistry::LoadFromFile()
                     && (IdStr.Len() < 19 || IdStr <= TEXT("9223372036854775807")))
                     Entry.Id = FCString::Atoi64(*IdStr);
                 else if ((*ObjPtr)->TryGetNumberField(TEXT("id"), IdDbl)
-                    && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))
+                    && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX)
+                    && FMath::Fmod(IdDbl, 1.0) == 0.0)
                     Entry.Id = static_cast<int64>(IdDbl);
             }
             if (Entry.Id <= 0)
@@ -427,12 +428,14 @@ void UScheduledBanRegistry::LoadFromFile()
             double DurDbl = 0.0;
             if ((*ObjPtr)->TryGetNumberField(TEXT("durationMinutes"), DurDbl)
                 && FMath::IsFinite(DurDbl) && DurDbl >= 0.0
-                && DurDbl <= static_cast<double>(MAX_int32))
+                && DurDbl <= static_cast<double>(MAX_int32)
+                && FMath::Fmod(DurDbl, 1.0) == 0.0)
                 Entry.DurationMinutes = static_cast<int32>(DurDbl);
 
             double RetryDbl = 0.0;
             if ((*ObjPtr)->TryGetNumberField(TEXT("retryCount"), RetryDbl)
-                && RetryDbl > 0.0 && RetryDbl <= static_cast<double>(MAX_int32))
+                && RetryDbl > 0.0 && RetryDbl <= static_cast<double>(MAX_int32)
+                && FMath::Fmod(RetryDbl, 1.0) == 0.0)
                 Entry.RetryCount = static_cast<int32>(RetryDbl);
 
             FString EffStr, CreatedStr;
@@ -475,7 +478,8 @@ void UScheduledBanRegistry::LoadFromFile()
     }
     else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl)
              && StoredNextIdDbl >= 0.0
-             && StoredNextIdDbl < static_cast<double>(INT64_MAX)) // guard against Inf/NaN before cast
+             && StoredNextIdDbl < static_cast<double>(INT64_MAX)
+             && FMath::Fmod(StoredNextIdDbl, 1.0) == 0.0) // guard against Inf/NaN before cast
     {
         NextId = static_cast<int64>(StoredNextIdDbl);
     }

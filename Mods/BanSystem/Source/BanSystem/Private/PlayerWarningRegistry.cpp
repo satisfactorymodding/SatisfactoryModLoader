@@ -387,7 +387,8 @@ void UPlayerWarningRegistry::LoadFromFile()
                     && (IdStr.Len() < 19 || IdStr <= TEXT("9223372036854775807")))
                     Entry.Id = FCString::Atoi64(*IdStr);
                 else if ((*ObjPtr)->TryGetNumberField(TEXT("id"), IdDbl)
-                    && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))
+                    && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX)
+                    && FMath::Fmod(IdDbl, 1.0) == 0.0)
                     Entry.Id = static_cast<int64>(IdDbl);
             }
             if (Entry.Id <= 0)
@@ -454,7 +455,8 @@ void UPlayerWarningRegistry::LoadFromFile()
     }
     else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl)
              && StoredNextIdDbl >= 0.0
-             && StoredNextIdDbl < static_cast<double>(INT64_MAX)) // guard against Inf/NaN and overflow before cast
+             && StoredNextIdDbl < static_cast<double>(INT64_MAX)
+             && FMath::Fmod(StoredNextIdDbl, 1.0) == 0.0) // guard against Inf/NaN and overflow before cast
     {
         NextId = static_cast<int64>(StoredNextIdDbl);
     }

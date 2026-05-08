@@ -191,7 +191,8 @@ void UBanAuditLog::LoadFromFile()
                     && (IdStr.Len() < 19 || IdStr <= TEXT("9223372036854775807")))
                     Entry.Id = FCString::Atoi64(*IdStr);
                 else if ((*ObjPtr)->TryGetNumberField(TEXT("id"), IdDbl)
-                    && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))
+                    && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX)
+                    && FMath::Fmod(IdDbl, 1.0) == 0.0)
                     Entry.Id = static_cast<int64>(IdDbl);
             }
             if (Entry.Id <= 0)
@@ -247,7 +248,8 @@ void UBanAuditLog::LoadFromFile()
             bHadStoredNextId = true;
         }
         else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextId)
-            && StoredNextId >= 0.0 && StoredNextId < static_cast<double>(INT64_MAX))
+            && StoredNextId >= 0.0 && StoredNextId < static_cast<double>(INT64_MAX)
+            && FMath::Fmod(StoredNextId, 1.0) == 0.0)
         {
             ParsedNextId = static_cast<int64>(StoredNextId);
             bHadStoredNextId = true;

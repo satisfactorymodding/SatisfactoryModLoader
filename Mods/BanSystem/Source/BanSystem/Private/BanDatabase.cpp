@@ -73,7 +73,8 @@ namespace BanDbJson
             && (IdStr.Len() < 19 || IdStr <= TEXT("9223372036854775807")))
             OutEntry.Id = FCString::Atoi64(*IdStr);
         else if (Obj->TryGetNumberField(TEXT("id"), IdDbl)
-            && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX))
+            && IdDbl >= 1.0 && IdDbl < static_cast<double>(INT64_MAX)
+            && FMath::Fmod(IdDbl, 1.0) == 0.0)
             OutEntry.Id = static_cast<int64>(IdDbl);
 
         Obj->TryGetStringField(TEXT("uid"),        OutEntry.Uid);
@@ -363,7 +364,8 @@ void UBanDatabase::LoadFromFile()
         && (NextIdStr.Len() < 19 || NextIdStr <= TEXT("9223372036854775807")))
         NewNextId = FMath::Max((int64)0, FCString::Atoi64(*NextIdStr));
     else if (Root->TryGetNumberField(TEXT("nextId"), NextIdDbl)
-        && NextIdDbl >= 0.0 && NextIdDbl < static_cast<double>(INT64_MAX)) // guard against Inf/NaN before cast
+        && NextIdDbl >= 0.0 && NextIdDbl < static_cast<double>(INT64_MAX)
+        && FMath::Fmod(NextIdDbl, 1.0) == 0.0) // guard against Inf/NaN before cast
         NewNextId = FMath::Max((int64)0, static_cast<int64>(NextIdDbl));
 
     // Build the new ban list into a local array first so that concurrent readers
