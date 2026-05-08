@@ -1755,6 +1755,40 @@ fi
 pass "CHECK 69 done"
 echo
 
+# =============================================================================
+# CHECK 70: Whitelist RemoveExpiredEntries rolls back Entries and suppresses output on save failure
+# =============================================================================
+echo "--- CHECK 70: Whitelist RemoveExpiredEntries rollback + output suppression on Save_Locked failure ---"
+
+WM_CPP_CHECK70="$(list_cpp_files | tr '\0' '\n' | grep 'WhitelistManager\.cpp' | head -1)"
+
+if [[ -z "$WM_CPP_CHECK70" ]]; then
+    fail "CHECK 70 – WhitelistManager.cpp not found"
+else
+    if ! grep -qP 'const\s+TArray<FWhitelistEntry>\s+PrevEntries\s*=\s*Entries' "$WM_CPP_CHECK70"; then
+        fail "CHECK 70 – RemoveExpiredEntries does not snapshot Entries before mutation" \
+            "File: $WM_CPP_CHECK70"
+    fi
+
+    if ! grep -qP 'Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)' "$WM_CPP_CHECK70"; then
+        fail "CHECK 70 – RemoveExpiredEntries has no Save_Locked failure branch after removals" \
+            "File: $WM_CPP_CHECK70"
+    fi
+
+    if ! perl -0777 -ne 'exit 0 if /if\s*\(\s*Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)\s*\)\s*\{[^}]*Entries\s*=\s*PrevEntries/s; exit 1' "$WM_CPP_CHECK70"; then
+        fail "CHECK 70 – RemoveExpiredEntries does not restore Entries from PrevEntries on save failure" \
+            "File: $WM_CPP_CHECK70"
+    fi
+
+    if ! perl -0777 -ne 'exit 0 if /if\s*\(\s*Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)\s*\)\s*\{[^}]*OutExpiredNames\.Reset\s*\(\s*\)/s; exit 1' "$WM_CPP_CHECK70"; then
+        fail "CHECK 70 – RemoveExpiredEntries does not clear OutExpiredNames on save failure" \
+            "File: $WM_CPP_CHECK70"
+    fi
+fi
+
+pass "CHECK 70 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then

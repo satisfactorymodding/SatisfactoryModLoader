@@ -473,6 +473,7 @@ void FWhitelistManager::RemoveExpiredEntries(TArray<FString>& OutExpiredNames)
 	FScopeLock Lock(&Mutex);
 	OutExpiredNames.Reset(); // ensure callers always get exactly the expired set, not an accumulation
 	const FDateTime Now = FDateTime::UtcNow();
+	const TArray<FWhitelistEntry> PrevEntries = Entries;
 	for (const FWhitelistEntry& E : Entries)
 		if (E.ExpiresAt.GetTicks() > 0 && E.ExpiresAt <= Now)
 			OutExpiredNames.Add(E.Name);
@@ -481,8 +482,13 @@ void FWhitelistManager::RemoveExpiredEntries(TArray<FString>& OutExpiredNames)
 	{
 		return E.ExpiresAt.GetTicks() > 0 && E.ExpiresAt <= Now;
 	});
-	if (Removed > 0)
-		Save_Locked();
+	if (Removed > 0 && !Save_Locked())
+	{
+		// Roll back so memory stays consistent with disk and callers don't emit
+		// expiry side effects for entries that were not actually persisted as removed.
+		Entries = PrevEntries;
+		OutExpiredNames.Reset();
+	}
 }
 
 TArray<FWhitelistEntry> FWhitelistManager::Search(const FString& PartialName)
