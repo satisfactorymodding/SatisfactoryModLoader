@@ -601,10 +601,11 @@ namespace BanChat
 
         // For temporary bans, use AddBanSkipIfPermanentExists to prevent a
         // /tempban from silently downgrading an existing permanent ban.
+        FBanEntry Saved;
         bool bSkippedPerm = false;
         const bool bBanAdded = Entry.bIsPermanent
-            ? DB->AddBan(Entry)
-            : DB->AddBanSkipIfPermanentExists(Entry, bSkippedPerm);
+            ? DB->AddBan(Entry, &Saved)
+            : DB->AddBanSkipIfPermanentExists(Entry, &Saved, &bSkippedPerm);
 
         if (bSkippedPerm)
         {
@@ -624,7 +625,7 @@ namespace BanChat
 
             // Kick immediately if the player is currently connected.
             UWorld* World = Ctx ? Ctx->GetWorld() : nullptr;
-            UBanEnforcer::KickConnectedPlayer(World, Uid, Entry.GetKickMessage());
+            UBanEnforcer::KickConnectedPlayer(World, Uid, Saved.GetKickMessage());
 
             // Also ban the counterpart identifier (IP↔EOS) so no identity escapes.
             AddCounterpartBans(Ctx, Sender, Uid, DisplayName, DurationMinutes, Reason, BannedBy);
@@ -637,7 +638,7 @@ namespace BanChat
                         Uid, DisplayName, AdminUid, BannedBy, Reason);
 
             // Notify the webhook feed so in-game bans appear in the Discord ban log.
-            FBanDiscordNotifier::NotifyBanCreated(Entry);
+            FBanDiscordNotifier::NotifyBanCreated(Saved);
 
             return EExecutionStatus::COMPLETED;
         }
@@ -2167,8 +2168,9 @@ EExecutionStatus AWarnChatCommand::ExecuteCommand_Implementation(
                 AutoBanEntry.ExpireDate   = AutoBanEntry.bIsPermanent
                     ? FDateTime(0)
                     : AutoNow + FTimespan::FromMinutes(BanDurationMinutes);
+                FBanEntry SavedAutoban;
                 bool bSkipped = false;
-                if (BanDB->AddBanSkipIfPermanentExists(AutoBanEntry, bSkipped))
+                if (BanDB->AddBanSkipIfPermanentExists(AutoBanEntry, &SavedAutoban, &bSkipped))
                 {
                     const FString ThresholdDesc = bTriggeredByPoints
                         ? FString::Printf(TEXT("%d points"), WarnPoints)
@@ -2178,7 +2180,7 @@ EExecutionStatus AWarnChatCommand::ExecuteCommand_Implementation(
                             *DisplayName, *ThresholdDesc),
                         FLinearColor::Red);
                     // Kick immediately if the player is currently connected.
-                    UBanEnforcer::KickConnectedPlayer(World, Uid, AutoBanEntry.GetKickMessage());
+                    UBanEnforcer::KickConnectedPlayer(World, Uid, SavedAutoban.GetKickMessage());
                     // Also ban the counterpart identifier (IPâEOS).
                     BanChat::AddCounterpartBans(this, Sender, Uid, DisplayName,
                         BanDurationMinutes, AutoBanEntry.Reason, WarnedBy);
@@ -2186,8 +2188,8 @@ EExecutionStatus AWarnChatCommand::ExecuteCommand_Implementation(
                     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                         AuditLog->LogAction(TEXT("ban"), Uid, DisplayName, AdminUid, WarnedBy, AutoBanEntry.Reason);
                     // Notify Discord ban log and auto-escalation review channel.
-                    FBanDiscordNotifier::NotifyBanCreated(AutoBanEntry);
-                    FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBanEntry, WarnCount);
+                    FBanDiscordNotifier::NotifyBanCreated(SavedAutoban);
+                    FBanDiscordNotifier::NotifyAutoEscalationBan(SavedAutoban, WarnCount);
                 }
                 else if (bSkipped)
                 {
@@ -4279,10 +4281,11 @@ EExecutionStatus AQBanChatCommand::ExecuteCommand_Implementation(
 
     // For temporary templates, use AddBanSkipIfPermanentExists to prevent
     // silently downgrading an existing permanent ban.
+    FBanEntry QBanSaved;
     bool bQBanChatSkipped = false;
     const bool bQBanChatAdded = Ban.bIsPermanent
-        ? DB->AddBan(Ban)
-        : DB->AddBanSkipIfPermanentExists(Ban, bQBanChatSkipped);
+        ? DB->AddBan(Ban, &QBanSaved)
+        : DB->AddBanSkipIfPermanentExists(Ban, &QBanSaved, &bQBanChatSkipped);
     if (!bQBanChatAdded)
     {
         if (bQBanChatSkipped)
@@ -4296,13 +4299,13 @@ EExecutionStatus AQBanChatCommand::ExecuteCommand_Implementation(
 
     // Kick if online.
     if (UWorld* W = GetWorld())
-        UBanEnforcer::KickConnectedPlayer(W, Uid, Ban.GetKickMessage());
+        UBanEnforcer::KickConnectedPlayer(W, Uid, QBanSaved.GetKickMessage());
 
     // Also ban counterpart identifiers (IP↔EOS).
     BanChat::AddCounterpartBans(this, Sender, Uid, PlayerName,
         Template->DurationMinutes, Template->Reason, AdminName);
 
-    FBanDiscordNotifier::NotifyBanCreated(Ban);
+    FBanDiscordNotifier::NotifyBanCreated(QBanSaved);
 
     UWorld* W = GetWorld();
     UGameInstance* GI = W ? W->GetGameInstance() : nullptr;
@@ -4498,12 +4501,13 @@ EExecutionStatus ABulkBanChatCommand::ExecuteCommand_Implementation(
         Ban.bIsPermanent    = true;
         Ban.ExpireDate      = FDateTime(0);
 
-        if (DB->AddBan(Ban))
+        FBanEntry BulkBanSaved;
+        if (DB->AddBan(Ban, &BulkBanSaved))
         {
             if (W)
-                UBanEnforcer::KickConnectedPlayer(W, Uid, Ban.GetKickMessage());
+                UBanEnforcer::KickConnectedPlayer(W, Uid, BulkBanSaved.GetKickMessage());
 
-            FBanDiscordNotifier::NotifyBanCreated(Ban);
+            FBanDiscordNotifier::NotifyBanCreated(BulkBanSaved);
 
             // Ban counterpart identifiers (IP↔EOS) matching the Discord bulk-ban path.
             BanChat::AddCounterpartBans(this, Sender, Uid, RawUid, 0 /* permanent */, Reason, AdminName);

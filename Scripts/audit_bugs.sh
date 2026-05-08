@@ -1199,6 +1199,169 @@ fi
 pass "CHECK 43 done"
 echo
 
+# =============================================================================
+# CHECK 44: POST /bans/ip returns 409 Conflict (not 200) when permanent ban exists
+# =============================================================================
+echo "--- CHECK 44: POST /bans/ip returns 409 Conflict on permanent-ban skip ---"
+
+RESTAPI_CPP_CHECK44="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+
+if [[ -z "$RESTAPI_CPP_CHECK44" ]]; then
+    fail "CHECK 44 – BanRestApi.cpp not found"
+else
+    # There must NOT be any path that sets Code=Ok immediately after a bSkippedPerm check in the IP ban block.
+    # More precisely: after the bIpBanAdded / bSkippedPerm block, the response must use Conflict.
+    if ! grep -qP 'bSkippedPerm.*\n.*Conflict|Resp->Code\s*=\s*EHttpServerResponseCodes::Conflict' "$RESTAPI_CPP_CHECK44"; then
+        # Try a two-line grep via pcregrep or perl
+        if ! perl -0777 -ne 'exit 0 if /bSkippedPerm[^}]*EHttpServerResponseCodes::Conflict/s; exit 1' "$RESTAPI_CPP_CHECK44"; then
+            fail "CHECK 44 – POST /bans/ip does not return 409 Conflict on permanent-ban skip" \
+                "File: $RESTAPI_CPP_CHECK44"
+        fi
+    fi
+fi
+
+pass "CHECK 44 done"
+echo
+
+# =============================================================================
+# CHECK 45: POST /warnings auto-ban escalation uses OutSaved (not 2-arg) so id != 0
+# =============================================================================
+echo "--- CHECK 45: POST /warnings auto-ban escalation uses 3-arg AddBanSkipIfPermanentExists ---"
+
+RESTAPI_CPP_CHECK45="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+
+if [[ -z "$RESTAPI_CPP_CHECK45" ]]; then
+    fail "CHECK 45 – BanRestApi.cpp not found"
+elif ! perl -0777 -ne 'exit 0 if /SavedAutoban.*\n.*AddBanSkipIfPermanentExists\s*\(\s*AutoBan\s*,\s*&SavedAutoban/s; exit 1' "$RESTAPI_CPP_CHECK45"; then
+    fail "CHECK 45 – POST /warnings auto-ban does not use 3-arg AddBanSkipIfPermanentExists with OutSaved" \
+        "File: $RESTAPI_CPP_CHECK45"
+fi
+
+pass "CHECK 45 done"
+echo
+
+# =============================================================================
+# CHECK 46: DoBan (BanChatCommands) uses OutSaved so NotifyBanCreated carries correct Id
+# =============================================================================
+echo "--- CHECK 46: BanChatCommands DoBan uses OutSaved for NotifyBanCreated ---"
+
+BANCHCMD_CPP_CHECK46="$(list_cpp_files | tr '\0' '\n' | grep 'BanChatCommands\.cpp' | head -1)"
+
+if [[ -z "$BANCHCMD_CPP_CHECK46" ]]; then
+    fail "CHECK 46 – BanChatCommands.cpp not found"
+elif ! grep -qP 'AddBan\s*\(\s*Entry\s*,\s*&Saved\s*\)' "$BANCHCMD_CPP_CHECK46"; then
+    fail "CHECK 46 – DoBan does not use AddBan with OutSaved" \
+        "File: $BANCHCMD_CPP_CHECK46"
+fi
+
+pass "CHECK 46 done"
+echo
+
+# =============================================================================
+# CHECK 47: HandleWarnCommand auto-ban uses OutSaved so NotifyBanCreated carries correct Id
+# =============================================================================
+echo "--- CHECK 47: BanChatCommands HandleWarnCommand auto-ban uses OutSaved ---"
+
+BANCHCMD_CPP_CHECK47="$(list_cpp_files | tr '\0' '\n' | grep 'BanChatCommands\.cpp' | head -1)"
+
+if [[ -z "$BANCHCMD_CPP_CHECK47" ]]; then
+    fail "CHECK 47 – BanChatCommands.cpp not found"
+elif ! grep -qP 'AddBanSkipIfPermanentExists\s*\(\s*AutoBanEntry\s*,\s*&SavedAutoban\s*,\s*&bSkipped\s*\)' "$BANCHCMD_CPP_CHECK47"; then
+    fail "CHECK 47 – HandleWarnCommand auto-ban does not use 3-arg AddBanSkipIfPermanentExists with OutSaved" \
+        "File: $BANCHCMD_CPP_CHECK47"
+fi
+
+pass "CHECK 47 done"
+echo
+
+# =============================================================================
+# CHECK 48: HandleQbanCommand uses OutSaved so NotifyBanCreated carries correct Id
+# =============================================================================
+echo "--- CHECK 48: BanChatCommands HandleQbanCommand uses OutSaved for NotifyBanCreated ---"
+
+BANCHCMD_CPP_CHECK48="$(list_cpp_files | tr '\0' '\n' | grep 'BanChatCommands\.cpp' | head -1)"
+
+if [[ -z "$BANCHCMD_CPP_CHECK48" ]]; then
+    fail "CHECK 48 – BanChatCommands.cpp not found"
+elif ! grep -qP 'AddBan\s*\(\s*Ban\s*,\s*&QBanSaved\s*\)' "$BANCHCMD_CPP_CHECK48"; then
+    fail "CHECK 48 – HandleQbanCommand does not use AddBan with OutSaved" \
+        "File: $BANCHCMD_CPP_CHECK48"
+fi
+
+pass "CHECK 48 done"
+echo
+
+# =============================================================================
+# CHECK 49: Bulk-ban path uses OutSaved so NotifyBanCreated carries correct Id
+# =============================================================================
+echo "--- CHECK 49: BanChatCommands bulk-ban uses OutSaved for NotifyBanCreated ---"
+
+BANCHCMD_CPP_CHECK49="$(list_cpp_files | tr '\0' '\n' | grep 'BanChatCommands\.cpp' | head -1)"
+
+if [[ -z "$BANCHCMD_CPP_CHECK49" ]]; then
+    fail "CHECK 49 – BanChatCommands.cpp not found"
+elif ! grep -qP 'AddBan\s*\(\s*Ban\s*,\s*&BulkBanSaved\s*\)' "$BANCHCMD_CPP_CHECK49"; then
+    fail "CHECK 49 – Bulk-ban does not use AddBan with OutSaved" \
+        "File: $BANCHCMD_CPP_CHECK49"
+fi
+
+pass "CHECK 49 done"
+echo
+
+# =============================================================================
+# CHECK 50: PlayerNoteRegistry uses static_cast<double>(INT64_MAX) for nextId guard
+# =============================================================================
+echo "--- CHECK 50: PlayerNoteRegistry uses INT64_MAX (not magic 9.2e18) for nextId guard ---"
+
+NOTEREG_CPP_CHECK50="$(list_cpp_files | tr '\0' '\n' | grep 'PlayerNoteRegistry\.cpp' | head -1)"
+
+if [[ -z "$NOTEREG_CPP_CHECK50" ]]; then
+    fail "CHECK 50 – PlayerNoteRegistry.cpp not found"
+elif grep -qP '9\.2e18' "$NOTEREG_CPP_CHECK50"; then
+    fail "CHECK 50 – PlayerNoteRegistry still uses magic 9.2e18 instead of static_cast<double>(INT64_MAX)" \
+        "File: $NOTEREG_CPP_CHECK50"
+fi
+
+pass "CHECK 50 done"
+echo
+
+# =============================================================================
+# CHECK 51: MuteRegistry writes null expireDate for indefinite mutes
+# =============================================================================
+echo "--- CHECK 51: MuteRegistry writes null expireDate for indefinite mutes ---"
+
+MUTEREG_CPP_CHECK51="$(list_cpp_files | tr '\0' '\n' | grep 'MuteRegistry\.cpp' | head -1)"
+
+if [[ -z "$MUTEREG_CPP_CHECK51" ]]; then
+    fail "CHECK 51 – MuteRegistry.cpp not found"
+elif ! grep -qP 'bIsIndefinite.*FJsonValueNull|FJsonValueNull.*bIsIndefinite' "$MUTEREG_CPP_CHECK51"; then
+    # Check via perl for multi-line
+    if ! perl -0777 -ne 'exit 0 if /bIsIndefinite.*\n.*FJsonValueNull/s; exit 1' "$MUTEREG_CPP_CHECK51"; then
+        fail "CHECK 51 – MuteRegistry does not write null expireDate for indefinite mutes" \
+            "File: $MUTEREG_CPP_CHECK51"
+    fi
+fi
+
+pass "CHECK 51 done"
+echo
+
+# =============================================================================
+# CHECK 52: WhitelistManager uses TryGetArrayField instead of GetArrayField
+# =============================================================================
+echo "--- CHECK 52: WhitelistManager uses TryGetArrayField (not GetArrayField) ---"
+
+WHITELIST_CPP_CHECK52="$(list_cpp_files | tr '\0' '\n' | grep 'WhitelistManager\.cpp' | head -1)"
+
+if [[ -z "$WHITELIST_CPP_CHECK52" ]]; then
+    fail "CHECK 52 – WhitelistManager.cpp not found"
+elif perl -ne 'exit 0 if /->GetArrayField\s*\(/; END { exit 1 }' "$WHITELIST_CPP_CHECK52"; then
+    fail "CHECK 52 – WhitelistManager still uses GetArrayField instead of TryGetArrayField" \
+        "File: $WHITELIST_CPP_CHECK52"
+fi
+
+pass "CHECK 52 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then

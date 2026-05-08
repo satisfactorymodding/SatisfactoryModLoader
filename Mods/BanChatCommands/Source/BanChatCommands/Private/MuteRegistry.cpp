@@ -355,7 +355,10 @@ bool UMuteRegistry::SaveToFile() const
         Obj->SetStringField(TEXT("reason"),      M.Reason);
         Obj->SetStringField(TEXT("mutedBy"),     M.MutedBy);
         Obj->SetStringField(TEXT("muteDate"),    M.MuteDate.ToIso8601());
-        Obj->SetStringField(TEXT("expireDate"),  M.ExpireDate.ToIso8601());
+        if (M.bIsIndefinite)
+            Obj->SetField(TEXT("expireDate"), MakeShared<FJsonValueNull>());
+        else
+            Obj->SetStringField(TEXT("expireDate"), M.ExpireDate.ToIso8601());
         Obj->SetBoolField  (TEXT("isIndefinite"), M.bIsIndefinite);
         MuteArr.Add(MakeShared<FJsonValueObject>(Obj));
     }
