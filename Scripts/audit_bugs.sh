@@ -2727,6 +2727,33 @@ pass "CHECK 106 done"
 echo
 
 
+# =============================================================================
+# CHECK 107: durationMinutes parsers reject non-integer positive JSON numbers
+# =============================================================================
+echo "--- CHECK 107: durationMinutes rejects fractional positive values (no truncation) ---"
+
+BANREST_CPP_CHECK107="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+BANSYNC_CPP_CHECK107="$(list_cpp_files | tr '\0' '\n' | grep 'BanSyncClient\.cpp' | head -1)"
+if [[ -z "$BANREST_CPP_CHECK107" || -z "$BANSYNC_CPP_CHECK107" ]]; then
+    fail "CHECK 107 – BanRestApi.cpp or BanSyncClient.cpp not found"
+else
+    # POST /bans, POST /bans/ip, POST /scheduled, POST /bans/bulk should all
+    # reject non-integer positive durationMinutes values instead of truncating.
+    int_msg_count=$(grep -cF 'durationMinutes must be an integer number of minutes' "$BANREST_CPP_CHECK107")
+    if [[ "$int_msg_count" -lt 4 ]]; then
+        fail "CHECK 107 – BanRestApi durationMinutes routes do not consistently reject fractional positive values" \
+            "Fix: for each route that reads durationMinutes, if value is finite and >0, require FMath::Fmod(value,1.0)==0.0 or return 400."
+    fi
+    if ! grep -qP 'FMath::Fmod\(DurDbl,\s*1\.0\)\s*!=\s*0\.0' "$BANSYNC_CPP_CHECK107"; then
+        fail "CHECK 107 – BanSyncClient peer durationMinutes parse can still truncate fractional values" \
+            "Fix: reject/drop peer ban messages when durationMinutes is finite, >0, and non-integer."
+    fi
+fi
+
+pass "CHECK 107 done"
+echo
+
+
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
     echo -e "${GRN}All checks passed — no issues found.${NC}"
