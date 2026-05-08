@@ -130,6 +130,38 @@ instead of clamping it back to `1`, preventing post-restart ID reuse after count
 
 ---
 
+## ✅ FIXED — Round 62 (Deep Pass 3)
+
+### DP3-1 · `AddBan` / `AddBanSkipIfPermanentExists` split-brain on ID exhaustion ✅ FIXED
+**Severity:** Medium  
+**Fix:** All three upsert overloads removed `OldEntry` from `Bans` before checking `NextId == 0`. The
+`return false` early exit now restores `OldEntry` with `if (bHadOldEntry) Bans.Add(OldEntry)` before
+returning, keeping the in-memory array consistent with the on-disk file when the ID counter is exhausted.
+
+### DP3-2 · `ScheduledBanRegistry::Tick` discards `RetryCount` increments on `SaveToFile` failure ✅ FIXED
+**Severity:** Medium  
+**Fix:** The `Pending = PrevPending` rollback after a failed `SaveToFile()` previously threw away all
+`RetryCount` increments that had been applied during the tick, preventing the 5-attempt drop-cap from
+ever being reached under sustained disk failure. The rollback now re-applies the incremented
+`RetryCount` values from `FailedEntries` back into `PrevPending` before restoring, so the cap
+advances correctly even when saves fail.
+
+### DP3-3 · `HandleWarnCommand` warn-escalation tier selection picks wrong tier ✅ FIXED
+**Severity:** Medium  
+**Fix:** `HandleWarnCommand` used the old `BestThreshold` algorithm that collapses both `PointThreshold`
+(e.g. 50 points) and `WarnCount` (e.g. 5 warnings) onto the same `int32` and compares raw integers.
+When mixed-unit tiers are configured this picks the tier with the largest number, not the most-severe
+ban. Replaced with the `DurationMinutes`-severity comparison already used in `BanChatCommands.cpp`
+and `TicketSubsystem.cpp`: permanent tiers (`DurationMinutes == 0`) beat all finite durations; among
+finite durations, the longer ban wins.
+
+### DP3-4 · `ExecutePanelWarn` warn-escalation tier selection picks wrong tier ✅ FIXED
+**Severity:** Medium  
+**Fix:** Identical stale `BestThreshold` algorithm in the admin-panel warn path. Applied the same
+`DurationMinutes`-severity replacement described in DP3-3.
+
+---
+
 ## 🟡 NOT FIXED — Low / dev-only
 
 ### BCC-PIE · Command cooldown statics persist across PIE sessions
@@ -169,3 +201,7 @@ refactoring the notification contract; the practical impact on automated integra
 | BUG-1 | 🟠 MEDIUM | BanRestApi | ✅ Round 60 |
 | BUG-2 | 🟠 MEDIUM | BanRestApi | ✅ Round 60 |
 | BUG-9 | 🟡 LOW | BanSyncClient | ✅ Round 60 |
+| DP3-1 | 🟠 MEDIUM | BanDatabase | ✅ Round 62 |
+| DP3-2 | 🟠 MEDIUM | ScheduledBanRegistry | ✅ Round 62 |
+| DP3-3 | 🟠 MEDIUM | BanDiscordSubsystem | ✅ Round 62 |
+| DP3-4 | 🟠 MEDIUM | BanDiscordSubsystem | ✅ Round 62 |
