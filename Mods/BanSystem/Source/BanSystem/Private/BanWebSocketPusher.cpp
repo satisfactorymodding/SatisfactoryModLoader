@@ -4,6 +4,7 @@
 #include "BanSystemConfig.h"
 #include "SMLWebSocketClient.h"
 
+#include "Async/Async.h"
 #include "Dom/JsonObject.h"
 #include "Serialization/JsonWriter.h"
 #include "Serialization/JsonSerializer.h"
@@ -66,6 +67,17 @@ void UBanWebSocketPusher::Deinitialize()
 void UBanWebSocketPusher::PushEvent(const FString& EventType,
                                      const TSharedPtr<FJsonObject>& Fields)
 {
+    if (!IsInGameThread())
+    {
+        const FString EventTypeCopy = EventType;
+        const TSharedPtr<FJsonObject> FieldsCopy = Fields;
+        AsyncTask(ENamedThreads::GameThread, [EventTypeCopy, FieldsCopy]()
+        {
+            UBanWebSocketPusher::PushEvent(EventTypeCopy, FieldsCopy);
+        });
+        return;
+    }
+
     UBanWebSocketPusher* Self = ActiveInstance.Get();
     if (!Self || !Self->Client)
         return;

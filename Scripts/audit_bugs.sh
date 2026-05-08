@@ -1812,6 +1812,26 @@ fi
 pass "CHECK 71 done"
 echo
 
+# =============================================================================
+# CHECK 72: BanWebSocketPusher PushEvent enforces game-thread dispatch
+# =============================================================================
+echo "--- CHECK 72: BanWebSocketPusher PushEvent dispatches to game thread ---"
+
+PUSHER_CPP_CHECK72="$(list_cpp_files | tr '\0' '\n' | grep 'BanWebSocketPusher\.cpp' | head -1)"
+
+if [[ -z "$PUSHER_CPP_CHECK72" ]]; then
+    fail "CHECK 72 – BanWebSocketPusher.cpp not found"
+else
+    if ! perl -0777 -ne 'exit 0 if /void\s+UBanWebSocketPusher::PushEvent\s*\([^)]*\)\s*\{[^}]*if\s*\(\s*!IsInGameThread\(\)\s*\)\s*\{[^}]*AsyncTask\s*\(\s*ENamedThreads::GameThread/s; exit 1' "$PUSHER_CPP_CHECK72"; then
+        fail "CHECK 72 – PushEvent missing non-game-thread dispatch guard" \
+            "File: $PUSHER_CPP_CHECK72" \
+            "Fix: early-guard with IsInGameThread() and AsyncTask(ENamedThreads::GameThread, ...)."
+    fi
+fi
+
+pass "CHECK 72 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
