@@ -56,6 +56,39 @@ BanChatCommands.
 
 ---
 
+## ✅ FIXED — Round 60
+
+### BUG-4 · `PruneExpiredBans` no rollback + spurious notifications on save failure ✅ FIXED
+**Severity:** High  
+**Fix:** Added `Bans.Append(Expired)` rollback and `Expired.Reset()` inside the lock block when
+`SaveToFile()` fails. This keeps in-memory state consistent with the on-disk file (matching the
+pattern used by `AddBan`, `RemoveBanByUid`, and `LinkBans`). Clearing `Expired` before exiting
+the lock also prevents the outer broadcast block from firing spurious `OnBanRemoved` /
+`NotifyBanExpired` events for entries whose removal was never persisted.
+
+### BUG-1 · `POST /bans` temp-ban path uses wrong overload + racy second `GetBanByUid` ✅ FIXED
+**Severity:** Medium  
+**Fix:** Replaced the 2-arg `AddBanSkipIfPermanentExists(Entry, bSkippedPerm)` call (which doesn't
+return the saved entry) and the subsequent `GetBanByUid` second-lookup (TOCTOU window) with the
+3-arg overload `AddBanSkipIfPermanentExists(Entry, &Saved, &bSkippedPerm)`. The response now
+carries the correct database-assigned `id` in all cases without an intermediate lookup.
+
+### BUG-2 · `PATCH /bans/:uid` silently ignores negative `durationMinutes` ✅ FIXED
+**Severity:** Medium  
+**Fix:** Captured the boolean return value of `TryGetNumberField` into `bHasDuration`. Added a
+pre-check that returns `400` with a clear error message when `bHasDuration && DurationMinutesDbl < 0.0`.
+Callers now get an explicit error instead of a silent no-op `200 OK`.
+
+### BUG-9 · `BanSyncClient` silently re-bans player after concurrent unban ✅ FIXED
+**Severity:** Low  
+**Fix:** Changed `DB->RemoveBanByUid(Uid, /*bSilent=*/true); bWasUpdate = true;` to
+`bWasUpdate = DB->RemoveBanByUid(Uid, /*bSilent=*/true);`. If a concurrent admin unban already
+removed the entry before peer-sync reached the `RemoveBanByUid` call, the return value is `false`,
+`bWasUpdate` stays `false`, and `NotifyBanCreated` fires when the entry is re-added — creating an
+audit trail instead of a silent re-ban.
+
+---
+
 ## 🟡 NOT FIXED — Low / dev-only
 
 ### BCC-PIE · Command cooldown statics persist across PIE sessions
@@ -91,3 +124,7 @@ refactoring the notification contract; the practical impact on automated integra
 | BCC-PIE | 🟡 LOW | BanChatCommands | ❌ Dev-only, not fixed |
 | SWR-1 | 🟡 LOW | SMLWebSocketRunnable | ❌ Documented known limitation |
 | BCC-CHATBAN-NONOTIFY | 🟠 MEDIUM | BanChatCommands | ❌ Ordering, minimal impact |
+| BUG-4 | 🔴 HIGH | BanDatabase | ✅ Round 60 |
+| BUG-1 | 🟠 MEDIUM | BanRestApi | ✅ Round 60 |
+| BUG-2 | 🟠 MEDIUM | BanRestApi | ✅ Round 60 |
+| BUG-9 | 🟡 LOW | BanSyncClient | ✅ Round 60 |

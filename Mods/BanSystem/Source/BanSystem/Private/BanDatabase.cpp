@@ -780,8 +780,16 @@ int32 UBanDatabase::PruneExpiredBans(bool bSilent)
             {
                 UE_LOG(LogBanDatabase, Error,
                     TEXT("BanDatabase: failed to persist pruning of %d expired ban(s) — "
-                         "they will reappear after a server restart if the disk issue persists"),
+                         "reverting in-memory removal; they will be retried on next prune"),
                     Expired.Num());
+                // Rollback: restore the removed entries so in-memory state
+                // stays consistent with the on-disk file (matches the pattern
+                // used by AddBan / RemoveBanByUid / LinkBans).
+                Bans.Append(Expired);
+                // Clear the Expired list so the broadcast block below does not
+                // fire spurious OnBanRemoved / NotifyBanExpired events for
+                // entries that are still present on disk.
+                Expired.Reset();
             }
         }
     }

@@ -298,8 +298,10 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
             // PeerAppliedUnbanUids here: because bSilent=true means OnBanRemoved never
             // fires, the guard entry would never be consumed and would silently suppress
             // the next legitimate local unban broadcast for this UID.
-            DB->RemoveBanByUid(Uid, /*bSilent=*/true);
-            bWasUpdate = true;
+            // Gate bWasUpdate on the actual removal result: if a concurrent unban
+            // already removed the entry the return value is false, and bWasUpdate
+            // must stay false so NotifyBanCreated fires and creates an audit trail.
+            bWasUpdate = DB->RemoveBanByUid(Uid, /*bSilent=*/true);
         }
 
         FBanEntry Ban;
