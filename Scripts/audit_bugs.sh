@@ -2689,7 +2689,7 @@ BANCHAT_CPP_CHECK105="$(list_cpp_files | tr '\0' '\n' | grep 'BanChatCommands\.c
 if [[ -z "$BANCHAT_CPP_CHECK105" ]]; then
     fail "CHECK 105 – BanChatCommands.cpp not found"
 else
-    if grep -qP "FChar::IsHexDigit" "$BANCHAT_CPP_CHECK105"; then
+    if grep -qF "FChar::IsHexDigit" "$BANCHAT_CPP_CHECK105"; then
         fail "CHECK 105 – IsValidEOSPUID still uses FChar::IsHexDigit which accepts uppercase A-F" \
             "Fix: replace with explicit (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') to reject uppercase."
     fi
