@@ -1354,7 +1354,7 @@ WHITELIST_CPP_CHECK52="$(list_cpp_files | tr '\0' '\n' | grep 'WhitelistManager\
 
 if [[ -z "$WHITELIST_CPP_CHECK52" ]]; then
     fail "CHECK 52 – WhitelistManager.cpp not found"
-elif grep -qP -- '->' "$WHITELIST_CPP_CHECK52" | grep -q 'GetArrayField\s*('; then
+elif perl -ne 'exit 0 if /->GetArrayField\s*\(/; END { exit 1 }' "$WHITELIST_CPP_CHECK52"; then
     fail "CHECK 52 – WhitelistManager still uses GetArrayField instead of TryGetArrayField" \
         "File: $WHITELIST_CPP_CHECK52"
 fi
