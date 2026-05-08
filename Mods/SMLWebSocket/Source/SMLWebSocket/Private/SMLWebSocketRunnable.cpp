@@ -507,13 +507,9 @@ void FSMLWebSocketRunnable::CleanupConnection()
 
 bool FSMLWebSocketRunnable::EnqueueText(const FString& Text)
 {
-	// NOTE: The bConnected check and the Enqueue call below are not atomic.
-	// A disconnect that occurs between these two operations will cause the
-	// message to be silently dropped when CleanupConnection drains the queue.
-	// Callers that require guaranteed delivery should use the
-	// bQueueMessagesWhileDisconnected option on USMLWebSocketClient, which
-	// buffers messages at the client layer and re-sends them on reconnect.
-	if (!bConnected) return false;
+	// Accept enqueue while temporarily disconnected so reconnect can flush it.
+	// Only reject when the runnable is stopping/closed and cannot send again.
+	if (bStopRequested || State.load() == ESMLWebSocketRunnableState::Closed) return false;
 	FSMLWebSocketOutboundMessage Msg;
 	Msg.bIsBinary = false;
 	const FTCHARToUTF8 Utf8(*Text);
@@ -524,7 +520,7 @@ bool FSMLWebSocketRunnable::EnqueueText(const FString& Text)
 
 bool FSMLWebSocketRunnable::EnqueueBinary(const TArray<uint8>& Data)
 {
-	if (!bConnected) return false;
+	if (bStopRequested || State.load() == ESMLWebSocketRunnableState::Closed) return false;
 	FSMLWebSocketOutboundMessage Msg;
 	Msg.bIsBinary = true;
 	Msg.Payload   = Data;
@@ -534,7 +530,7 @@ bool FSMLWebSocketRunnable::EnqueueBinary(const TArray<uint8>& Data)
 
 bool FSMLWebSocketRunnable::EnqueueBinary(TArray<uint8>&& Data)
 {
-	if (!bConnected) return false;
+	if (bStopRequested || State.load() == ESMLWebSocketRunnableState::Closed) return false;
 	FSMLWebSocketOutboundMessage Msg;
 	Msg.bIsBinary = true;
 	Msg.Payload   = MoveTemp(Data);
