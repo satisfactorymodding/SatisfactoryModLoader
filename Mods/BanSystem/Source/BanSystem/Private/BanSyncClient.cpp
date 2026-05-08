@@ -223,8 +223,14 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
 
         double DurDbl = 0.0;
         const bool bHasDurationMinutes = Root->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
-        if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl > 0.0
-            && FMath::Fmod(DurDbl, 1.0) != 0.0)
+        if (bHasDurationMinutes && (!FMath::IsFinite(DurDbl) || DurDbl < 0.0))
+        {
+            UE_LOG(LogBanSyncClient, Warning,
+                TEXT("BanSyncClient: dropping peer ban for uid '%s' due to invalid durationMinutes=%f"),
+                *Uid, DurDbl);
+            return;
+        }
+        if (bHasDurationMinutes && DurDbl > 0.0 && FMath::Fmod(DurDbl, 1.0) != 0.0)
         {
             UE_LOG(LogBanSyncClient, Warning,
                 TEXT("BanSyncClient: dropping peer ban for uid '%s' due to non-integer durationMinutes=%f"),

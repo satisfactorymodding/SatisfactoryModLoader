@@ -3051,13 +3051,12 @@ void UBanRestApi::RegisterRoutes()
 
             double DurDbl = 0.0;
             const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
-            if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl < 0.0)
+            if (bHasDurationMinutes && (!FMath::IsFinite(DurDbl) || DurDbl < 0.0))
             {
-                Done(BanJson::Error(TEXT("durationMinutes must be >= 0 (0 or omit for a permanent ban)")));
+                Done(BanJson::Error(TEXT("durationMinutes must be a finite number >= 0 (0 or omit for a permanent ban)")));
                 return true;
             }
-            if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl > 0.0
-                && FMath::Fmod(DurDbl, 1.0) != 0.0)
+            if (bHasDurationMinutes && DurDbl > 0.0 && FMath::Fmod(DurDbl, 1.0) != 0.0)
             {
                 Done(BanJson::Error(TEXT("durationMinutes must be an integer number of minutes")));
                 return true;
@@ -3253,13 +3252,12 @@ void UBanRestApi::RegisterRoutes()
 
             double DurDbl = 0.0;
             const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
-            if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl < 0.0)
+            if (bHasDurationMinutes && (!FMath::IsFinite(DurDbl) || DurDbl < 0.0))
             {
-                Done(BanJson::Error(TEXT("durationMinutes must be >= 0 (0 or omit for a permanent ban)")));
+                Done(BanJson::Error(TEXT("durationMinutes must be a finite number >= 0 (0 or omit for a permanent ban)")));
                 return true;
             }
-            if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl > 0.0
-                && FMath::Fmod(DurDbl, 1.0) != 0.0)
+            if (bHasDurationMinutes && DurDbl > 0.0 && FMath::Fmod(DurDbl, 1.0) != 0.0)
             {
                 Done(BanJson::Error(TEXT("durationMinutes must be an integer number of minutes")));
                 return true;
