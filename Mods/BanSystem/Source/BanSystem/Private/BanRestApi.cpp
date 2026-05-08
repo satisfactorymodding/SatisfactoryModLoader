@@ -975,6 +975,12 @@ void UBanRestApi::RegisterRoutes()
                 Done(BanJson::Error(TEXT("durationMinutes must be a finite number >= 0 (0 = permanent)")));
                 return true;
             }
+            if (bHasDuration && FMath::IsFinite(DurationMinutesDbl) && DurationMinutesDbl > 0.0
+                && FMath::Fmod(DurationMinutesDbl, 1.0) != 0.0)
+            {
+                Done(BanJson::Error(TEXT("durationMinutes must be an integer number of minutes")));
+                return true;
+            }
 
             // Atomically read-modify-write the ban record inside a single mutex
             // acquisition, eliminating the TOCTOU window that existed when
@@ -1888,6 +1894,7 @@ void UBanRestApi::RegisterRoutes()
 
             // Allow caller to override the retention window.
             int32 DaysToKeep = Cfg ? Cfg->SessionRetentionDays : 0;
+            bool bInvalidDaysToKeep = false;
             const FString BodyStr = BanJson::BodyToString(Req);
             if (BodyStr != TEXT("{}"))
             {
@@ -1896,13 +1903,23 @@ void UBanRestApi::RegisterRoutes()
                 if (FJsonSerializer::Deserialize(Reader, Body) && Body.IsValid())
                 {
                     double DaysDbl = 0.0;
-                    if (Body->TryGetNumberField(TEXT("daysToKeep"), DaysDbl)
-                        && FMath::IsFinite(DaysDbl) && DaysDbl > 0.0)
+                    const bool bHasDaysToKeep = Body->TryGetNumberField(TEXT("daysToKeep"), DaysDbl);
+                    if (bHasDaysToKeep && FMath::IsFinite(DaysDbl) && DaysDbl > 0.0
+                        && FMath::Fmod(DaysDbl, 1.0) == 0.0)
                     {
                         const int64 Clamped = FMath::Min(static_cast<int64>(DaysDbl), static_cast<int64>(INT32_MAX));
                         DaysToKeep = static_cast<int32>(Clamped);
                     }
+                    else if (bHasDaysToKeep)
+                    {
+                        bInvalidDaysToKeep = true;
+                    }
                 }
+            }
+            if (bInvalidDaysToKeep)
+            {
+                Done(BanJson::Error(TEXT("daysToKeep must be a positive integer")));
+                return true;
             }
 
             if (DaysToKeep <= 0)
