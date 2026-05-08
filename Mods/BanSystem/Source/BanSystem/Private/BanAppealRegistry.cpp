@@ -335,10 +335,10 @@ void UBanAppealRegistry::LoadFromFile()
         && (StoredNextIdStr.Len() < 19 || StoredNextIdStr <= TEXT("9223372036854775807")))
     {
         const int64 Parsed = FCString::Atoi64(*StoredNextIdStr);
-        NextId = (Parsed > 0) ? Parsed : 1;
+        NextId = (Parsed >= 0) ? Parsed : 1;
     }
     else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl)
-        && StoredNextIdDbl >= 1.0 && StoredNextIdDbl < static_cast<double>(INT64_MAX))
+        && StoredNextIdDbl >= 0.0 && StoredNextIdDbl < static_cast<double>(INT64_MAX))
     {
         NextId = static_cast<int64>(StoredNextIdDbl);
     }

@@ -260,8 +260,8 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
 
         // If the player is already banned, check whether key fields differ.
         // If they match exactly, skip (no change). If they differ (reason, duration,
-        // category updated on the origin server), remove the stale entry so the
-        // updated ban can be applied below.
+        // category updated on the origin server), update the existing record in
+        // place so a SaveToFile failure cannot silently unban the player.
         bool bWasUpdate = false; // true when we're replacing an existing ban record
         FBanEntry Existing;
         if (DB->IsCurrentlyBanned(Uid, Existing))
@@ -292,16 +292,60 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
             const bool bEvidenceMatch = (Existing.Evidence == IncomingEvidence);
             if (bPermanentMatch && bReasonMatch && bCategoryMatch && bExpiryMatch && bEvidenceMatch)
                 return; // Identical — nothing to update.
-            // Fields changed — remove the stale record and fall through to re-add.
-            // bSilent=true suppresses OnBanRemoved so BanDiscordSubsystem does NOT
-            // post a spurious "✅ unbanned" message.  Do NOT add Uid to
-            // PeerAppliedUnbanUids here: because bSilent=true means OnBanRemoved never
-            // fires, the guard entry would never be consumed and would silently suppress
-            // the next legitimate local unban broadcast for this UID.
-            // Gate bWasUpdate on the actual removal result: if a concurrent unban
-            // already removed the entry the return value is false, and bWasUpdate
-            // must stay false so NotifyBanCreated fires and creates an audit trail.
-            bWasUpdate = DB->RemoveBanByUid(Uid, /*bSilent=*/true);
+
+            FBanEntry UpdatedBan;
+            UpdatedBan.Uid        = Existing.Uid;
+            UpdatedBan.Platform   = Existing.Platform;
+            UpdatedBan.PlayerUID  = Existing.PlayerUID;
+            UpdatedBan.PlayerName = PlayerName;
+            UpdatedBan.Reason     = IncomingReason;
+            UpdatedBan.BannedBy   = IncomingBannedBy;
+            UpdatedBan.BanDate    = (OriginalBanDate.GetTicks() > 0) ? OriginalBanDate : Existing.BanDate;
+            UpdatedBan.Category   = Category;
+            UpdatedBan.bIsPermanent = (DurationMinutes <= 0);
+            UpdatedBan.ExpireDate   = UpdatedBan.bIsPermanent
+                ? FDateTime(0)
+                : FDateTime::UtcNow() + FTimespan::FromMinutes(DurationMinutes);
+            UpdatedBan.Evidence     = IncomingEvidence;
+            UpdatedBan.LinkedUids   = Existing.LinkedUids;
+
+            FBanEntry PersistedUpdate;
+            bWasUpdate = DB->UpdateBan(Uid,
+                [UpdatedBan](FBanEntry& BanToMutate)
+                {
+                    BanToMutate.PlayerName   = UpdatedBan.PlayerName;
+                    BanToMutate.Reason       = UpdatedBan.Reason;
+                    BanToMutate.BannedBy     = UpdatedBan.BannedBy;
+                    BanToMutate.BanDate      = UpdatedBan.BanDate;
+                    BanToMutate.Category     = UpdatedBan.Category;
+                    BanToMutate.bIsPermanent = UpdatedBan.bIsPermanent;
+                    BanToMutate.ExpireDate   = UpdatedBan.ExpireDate;
+                    BanToMutate.Evidence     = UpdatedBan.Evidence;
+                },
+                PersistedUpdate);
+
+            if (bWasUpdate)
+            {
+                if (UWorld* World = GI->GetWorld())
+                    UBanEnforcer::KickConnectedPlayer(World, Uid, PersistedUpdate.GetKickMessage());
+
+                if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
+                    AuditLog->LogAction(TEXT("ban"), Uid, PlayerName,
+                        TEXT("peer"), TEXT("peer"),
+                        FString::Printf(TEXT("Synced from peer. Reason: %s"), *PersistedUpdate.Reason));
+
+                UE_LOG(LogBanSyncClient, Log,
+                    TEXT("BanSyncClient: updated synced ban for %s"), *Uid);
+                return;
+            }
+
+            // UpdateBan() returns false both when the row disappeared concurrently
+            // and when persistence failed. If the old ban is still present, abort
+            // here so a follow-up AddBan attempt cannot overwrite it or emit a
+            // misleading OnBanAdded event.
+            FBanEntry StillExisting;
+            if (DB->IsCurrentlyBanned(Uid, StillExisting))
+                return;
         }
 
         FBanEntry Ban;

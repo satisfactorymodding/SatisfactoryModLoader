@@ -229,17 +229,24 @@ void UBanAuditLog::LoadFromFile()
     // logs and also handles the case where all entries were externally removed).
     {
         int64 ParsedNextId = 0;
+        bool bHadStoredNextId = false;
         FString NextIdStr;
         double StoredNextId = 0.0;
         if (Root->TryGetStringField(TEXT("nextId"), NextIdStr) && !NextIdStr.IsEmpty()
             && NextIdStr.IsNumeric() && NextIdStr.Len() <= 19
             && (NextIdStr.Len() < 19 || NextIdStr <= TEXT("9223372036854775807")))
+        {
             ParsedNextId = FCString::Atoi64(*NextIdStr);
+            bHadStoredNextId = true;
+        }
         else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextId)
-            && StoredNextId >= 1.0 && StoredNextId < static_cast<double>(INT64_MAX))
+            && StoredNextId >= 0.0 && StoredNextId < static_cast<double>(INT64_MAX))
+        {
             ParsedNextId = static_cast<int64>(StoredNextId);
+            bHadStoredNextId = true;
+        }
 
-        if (ParsedNextId >= 1)
+        if (bHadStoredNextId && ParsedNextId >= 0)
             NextId = ParsedNextId;
         else
         {

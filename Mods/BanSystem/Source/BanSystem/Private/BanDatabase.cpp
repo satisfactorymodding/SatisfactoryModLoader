@@ -361,10 +361,10 @@ void UBanDatabase::LoadFromFile()
     if (Root->TryGetStringField(TEXT("nextId"), NextIdStr) && NextIdStr.IsNumeric()
         && NextIdStr.Len() <= 19
         && (NextIdStr.Len() < 19 || NextIdStr <= TEXT("9223372036854775807")))
-        NewNextId = FMath::Max((int64)1, FCString::Atoi64(*NextIdStr));
+        NewNextId = FMath::Max((int64)0, FCString::Atoi64(*NextIdStr));
     else if (Root->TryGetNumberField(TEXT("nextId"), NextIdDbl)
-        && NextIdDbl >= 1.0 && NextIdDbl < static_cast<double>(INT64_MAX)) // guard against Inf/NaN before cast
-        NewNextId = FMath::Max((int64)1, static_cast<int64>(NextIdDbl));
+        && NextIdDbl >= 0.0 && NextIdDbl < static_cast<double>(INT64_MAX)) // guard against Inf/NaN before cast
+        NewNextId = FMath::Max((int64)0, static_cast<int64>(NextIdDbl));
 
     // Build the new ban list into a local array first so that concurrent readers
     // never observe an empty list during the parse phase.  The live Bans field is

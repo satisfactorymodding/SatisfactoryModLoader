@@ -230,14 +230,17 @@ bool FWhitelistManager::IsEnabled()
 void FWhitelistManager::SetEnabled(bool bNewEnabled, const FString& AdminName)
 {
 	FScopeLock Lock(&Mutex);
+	const bool PreviousEnabled = bEnabled;
+	const TArray<FWhitelistAuditEntry> OriginalAuditLog = AuditLog;
 	bEnabled = bNewEnabled;
+	LogAudit(AdminName, bNewEnabled ? TEXT("enable") : TEXT("disable"), TEXT("whitelist"));
 	if (!Save_Locked())
 	{
-		// Roll back the in-memory change so it stays consistent with disk.
-		bEnabled = !bNewEnabled;
+		// Roll back both the setting change and the audit append so memory stays in sync with disk.
+		bEnabled = PreviousEnabled;
+		AuditLog = OriginalAuditLog;
 		return;
 	}
-	LogAudit(AdminName, bNewEnabled ? TEXT("enable") : TEXT("disable"), TEXT("whitelist"));
 }
 
 bool FWhitelistManager::IsWhitelisted(const FString& PlayerName, const FString& EosPUID)
@@ -275,6 +278,7 @@ bool FWhitelistManager::AddPlayer(const FString& PlayerName,
                                    const FString& Group)
 {
 	FScopeLock Lock(&Mutex);
+	const TArray<FWhitelistAuditEntry> OriginalAuditLog = AuditLog;
 
 	// Capture a single timestamp used for both the capacity check and the
 	// duplicate check so both operate against the same instant.
@@ -309,21 +313,23 @@ bool FWhitelistManager::AddPlayer(const FString& PlayerName,
 	NewEntry.ExpiresAt = ExpiresAt;
 	NewEntry.Group     = Group;
 	Entries.Add(NewEntry);
+	LogAudit(AdminName, TEXT("add"), PlayerName);
 
 	if (!Save_Locked())
 	{
-		// Roll back the in-memory addition so memory and disk stay in sync.
+		// Roll back the in-memory addition and audit append so memory and disk stay in sync.
 		Entries.RemoveAt(Entries.Num() - 1);
+		AuditLog = OriginalAuditLog;
 		return false;
 	}
 
-	LogAudit(AdminName, TEXT("add"), PlayerName);
 	return true;
 }
 
 bool FWhitelistManager::RemovePlayer(const FString& PlayerName, const FString& EosPUID, const FString& AdminName)
 {
 	FScopeLock Lock(&Mutex);
+	const TArray<FWhitelistAuditEntry> OriginalAuditLog = AuditLog;
 
 	int32 RemovedIdx = INDEX_NONE;
 
@@ -343,15 +349,16 @@ bool FWhitelistManager::RemovePlayer(const FString& PlayerName, const FString& E
 	const FString RemovedName = Entries[RemovedIdx].Name;
 	FWhitelistEntry RemovedEntry = Entries[RemovedIdx];
 	Entries.RemoveAt(RemovedIdx);
+	LogAudit(AdminName, TEXT("remove"), RemovedName);
 
 	if (!Save_Locked())
 	{
-		// Roll back the in-memory removal so memory and disk stay in sync.
+		// Roll back the in-memory removal and audit append so memory and disk stay in sync.
 		Entries.Insert(RemovedEntry, RemovedIdx);
+		AuditLog = OriginalAuditLog;
 		return false;
 	}
 
-	LogAudit(AdminName, TEXT("remove"), RemovedName);
 	return true;
 }
 
