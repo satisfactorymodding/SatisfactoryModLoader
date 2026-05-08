@@ -720,33 +720,24 @@ void UBanEnforcer::PerformBanCheckForPlayer(UWorld* World, APlayerController* PC
 
                             if (!bBlock) return;
 
-                            APlayerController* PCKick = WeakPC.Get();
-                            if (!IsValid(PCKick)) return;
-
-                            // Use the already-validated PlayerController to obtain the World
-                            // so the kick succeeds even if the BanEnforcer subsystem has been
-                            // garbage-collected during a map transition or server shutdown.
-                            UWorld* W2 = PCKick->GetWorld();
-
                             const FString FinalMsg = KickMsg.Replace(TEXT("{country}"), *CountryCode);
                             UE_LOG(LogBanEnforcer, Log,
                                 TEXT("BanEnforcer: GeoIP block '%s' (%s) from %s"),
                                 *PlayerName, *CapturedUid, *CountryCode);
 
-                            if (W2)
-                            {
-                                // HTTP response callbacks fire on the HTTP thread; UE
-                                // world/player-controller operations must run on the game thread.
-                                TWeakObjectPtr<UWorld> WeakW2(W2);
-                                AsyncTask(ENamedThreads::GameThread,
-                                    [WeakW2, CapturedUid, FinalMsg, PlayerName, IpAddress, CountryCode]()
-                                    {
-                                        if (UWorld* SafeW = WeakW2.Get())
-                                            UBanEnforcer::KickConnectedPlayer(SafeW, CapturedUid, FinalMsg);
-                                        FBanDiscordNotifier::NotifyGeoIpBlocked(
-                                            PlayerName, CapturedUid, IpAddress, CountryCode);
-                                    });
-                            }
+                            // HTTP response callbacks fire on the HTTP thread; ALL UObject
+                            // operations — WeakPtr resolution, IsValid(), GetWorld() — must
+                            // run on the game thread to avoid data races with the GC.
+                            AsyncTask(ENamedThreads::GameThread,
+                                [WeakPC, CapturedUid, FinalMsg, PlayerName, IpAddress, CountryCode]()
+                                {
+                                    APlayerController* PCKick = WeakPC.Get();
+                                    if (!IsValid(PCKick)) return;
+                                    if (UWorld* W2 = PCKick->GetWorld())
+                                        UBanEnforcer::KickConnectedPlayer(W2, CapturedUid, FinalMsg);
+                                    FBanDiscordNotifier::NotifyGeoIpBlocked(
+                                        PlayerName, CapturedUid, IpAddress, CountryCode);
+                                });
                         });
                     GeoReq->ProcessRequest();
                 }
@@ -1042,29 +1033,20 @@ void UBanEnforcer::PerformBanCheckForUid(UWorld* World, APlayerController* PC, U
 
                             if (!bBlock) return;
 
-                            APlayerController* PCKick = WeakPC.Get();
-                            if (!IsValid(PCKick)) return;
-
-                            // Use the already-validated PlayerController to obtain the World
-                            // so the kick succeeds even if the BanEnforcer subsystem has been
-                            // garbage-collected during a map transition or server shutdown.
-                            UWorld* W2 = PCKick->GetWorld();
-
                             const FString FinalMsg = KickMsg.Replace(TEXT("{country}"), *CountryCode);
-                            if (W2 && IsValid(W2))
-                            {
-                                // HTTP response callbacks fire on the HTTP thread; UE
-                                // world/player-controller operations must run on the game thread.
-                                TWeakObjectPtr<UWorld> WeakW2(W2);
-                                AsyncTask(ENamedThreads::GameThread,
-                                    [WeakW2, CapturedUid, FinalMsg, CapturedName, IpAddress, CountryCode]()
-                                    {
-                                        if (UWorld* SafeW = WeakW2.Get())
-                                            UBanEnforcer::KickConnectedPlayer(SafeW, CapturedUid, FinalMsg);
-                                        FBanDiscordNotifier::NotifyGeoIpBlocked(
-                                            CapturedName, CapturedUid, IpAddress, CountryCode);
-                                    });
-                            }
+                            // HTTP response callbacks fire on the HTTP thread; ALL UObject
+                            // operations — WeakPtr resolution, IsValid(), GetWorld() — must
+                            // run on the game thread to avoid data races with the GC.
+                            AsyncTask(ENamedThreads::GameThread,
+                                [WeakPC, CapturedUid, FinalMsg, CapturedName, IpAddress, CountryCode]()
+                                {
+                                    APlayerController* PCKick = WeakPC.Get();
+                                    if (!IsValid(PCKick)) return;
+                                    if (UWorld* W2 = PCKick->GetWorld())
+                                        UBanEnforcer::KickConnectedPlayer(W2, CapturedUid, FinalMsg);
+                                    FBanDiscordNotifier::NotifyGeoIpBlocked(
+                                        CapturedName, CapturedUid, IpAddress, CountryCode);
+                                });
                         });
                     GeoReq->ProcessRequest();
                 }
