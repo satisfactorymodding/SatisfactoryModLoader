@@ -3047,6 +3047,7 @@ void UBanRestApi::RegisterRoutes()
             }
             const int32 DurationMinutes = (!FMath::IsFinite(DurDbl) || DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
                 ? 0 : FMath::Max(1, static_cast<int32>(DurDbl));
+            const FScheduledBanEntry NewEntry = SchReg->AddScheduled(
                 Uid, PlayerName, Reason, ScheduledBy, EffectiveAt, DurationMinutes, Category);
 
             if (NewEntry.Id <= 0)
