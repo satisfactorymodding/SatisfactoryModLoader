@@ -89,6 +89,47 @@ audit trail instead of a silent re-ban.
 
 ---
 
+## ✅ FIXED — Round 61
+
+### BUG-61-1 · peer ban edits could silently unban on update failure ✅ FIXED
+**Severity:** High  
+**Fix:** Replaced the remove-then-readd peer-edit path with `DB->UpdateBan(...)` so updates happen
+in place. If the row disappears concurrently, sync falls back to the add path; if persistence fails
+and the old row still exists, the handler now aborts instead of overwriting it with a misleading
+`OnBanAdded` flow.
+
+### BUG-61-2 · due scheduled bans could re-fire after a post-apply save failure ✅ FIXED
+**Severity:** High  
+**Fix:** `ApplyScheduledBan` now detects when the scheduled ban was already durably applied earlier
+by matching the active ban’s UID/reason/admin/category/permanence and remaining lifetime. Retries
+after a failed `Pending` save now just clear the stale scheduled entry instead of extending the ban,
+re-kicking the player, or re-firing Discord/audit side effects.
+
+### BUG-61-3 · `POST /scheduled` returned `201` even when scheduling failed ✅ FIXED
+**Severity:** Medium  
+**Fix:** The REST handler now validates `NewEntry.Id > 0` after `AddScheduled(...)`. Failed writes
+return `500 Failed to create scheduled ban` and skip the success audit log.
+
+### BUG-61-4 · whitelist audit entries were only in-memory until the next unrelated save ✅ FIXED
+**Severity:** Medium  
+**Fix:** `SetEnabled`, `AddPlayer`, and `RemovePlayer` now append the audit entry before the same
+`Save_Locked()` that persists the whitelist mutation, and roll back both the whitelist state and
+`AuditLog` snapshot if the save fails.
+
+### BUG-61-5 · reconnect flush dropped queued WebSocket messages on enqueue failure ✅ FIXED
+**Severity:** Medium  
+**Fix:** `USMLWebSocketClient::Internal_OnConnected` now keeps any text/binary payloads whose
+`EnqueueText` / `EnqueueBinary` call fails during reconnect flush, instead of unconditionally
+emptying both pending queues.
+
+### BUG-61-6 · persisted `nextId = 0` exhaustion sentinel revived as `1` on reload ✅ FIXED
+**Severity:** Low  
+**Fix:** The loaders for `BanDatabase`, `BanAuditLog`, `BanAppealRegistry`, `PlayerWarningRegistry`,
+`ScheduledBanRegistry`, and `PlayerNoteRegistry` now preserve stored `0` as the exhausted sentinel
+instead of clamping it back to `1`, preventing post-restart ID reuse after counter exhaustion.
+
+---
+
 ## 🟡 NOT FIXED — Low / dev-only
 
 ### BCC-PIE · Command cooldown statics persist across PIE sessions

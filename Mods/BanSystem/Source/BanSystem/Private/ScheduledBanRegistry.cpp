@@ -20,6 +20,26 @@
 
 DEFINE_LOG_CATEGORY(LogScheduledBanRegistry);
 
+namespace
+{
+    bool MatchesScheduledBan(const FBanEntry& Existing, const FScheduledBanEntry& Entry)
+    {
+        if (!Existing.Uid.Equals(Entry.Uid, ESearchCase::IgnoreCase)) return false;
+        if (Existing.Reason != Entry.Reason) return false;
+        if (Existing.BannedBy != Entry.ScheduledBy) return false;
+        if (Existing.Category != Entry.Category) return false;
+
+        const bool bShouldBePermanent = (Entry.DurationMinutes <= 0);
+        if (Existing.bIsPermanent != bShouldBePermanent) return false;
+        if (bShouldBePermanent) return true;
+
+        const double RemainingSeconds = (Existing.ExpireDate - FDateTime::UtcNow()).GetTotalSeconds();
+        return RemainingSeconds > 0.0
+            && FMath::Abs(RemainingSeconds - Entry.DurationMinutes * 60.0) < 60.0
+            && Existing.BanDate >= Entry.EffectiveAt;
+    }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 //  USubsystem lifecycle
 // ─────────────────────────────────────────────────────────────────────────────
@@ -246,6 +266,15 @@ bool UScheduledBanRegistry::ApplyScheduledBan(const FScheduledBanEntry& Entry)
     UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>();
     if (!DB) return false;
 
+    FBanEntry Existing;
+    if (DB->IsCurrentlyBanned(Entry.Uid, Existing) && MatchesScheduledBan(Existing, Entry))
+    {
+        UE_LOG(LogScheduledBanRegistry, Log,
+            TEXT("ScheduledBanRegistry: scheduled ban #%lld for %s was already applied earlier; removing stale pending entry"),
+            Entry.Id, *Entry.Uid);
+        return true;
+    }
+
     FBanEntry Ban;
     Ban.Uid        = Entry.Uid;
     UBanDatabase::ParseUid(Entry.Uid, Ban.Platform, Ban.PlayerUID);
@@ -428,10 +457,10 @@ void UScheduledBanRegistry::LoadFromFile()
         && (StoredNextIdStr.Len() < 19 || StoredNextIdStr <= TEXT("9223372036854775807")))
     {
         const int64 Parsed = FCString::Atoi64(*StoredNextIdStr);
-        NextId = (Parsed > 0) ? Parsed : 1;
+        NextId = (Parsed >= 0) ? Parsed : 1;
     }
     else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl)
-             && StoredNextIdDbl >= 1.0
+             && StoredNextIdDbl >= 0.0
              && StoredNextIdDbl < static_cast<double>(INT64_MAX)) // guard against Inf/NaN before cast
     {
         NextId = static_cast<int64>(StoredNextIdDbl);

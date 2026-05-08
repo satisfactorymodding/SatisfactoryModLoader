@@ -1183,17 +1183,27 @@ pass "CHECK 42 done"
 echo
 
 # =============================================================================
-# CHECK 43: BanSyncClient gates bWasUpdate on RemoveBanByUid return value (BUG-9)
+# CHECK 43: BanSyncClient updates existing peer bans without silent-unban window
 # =============================================================================
-echo "--- CHECK 43: BanSyncClient bWasUpdate gated on RemoveBanByUid return value ---"
+echo "--- CHECK 43: BanSyncClient updates existing peer bans in place ---"
 
 SYNCCLIENT_CPP_CHECK43="$(list_cpp_files | tr '\0' '\n' | grep 'BanSyncClient\.cpp' | head -1)"
 
 if [[ -z "$SYNCCLIENT_CPP_CHECK43" ]]; then
     fail "CHECK 43 – BanSyncClient.cpp not found"
-elif ! grep -qP 'bWasUpdate\s*=\s*DB->RemoveBanByUid' "$SYNCCLIENT_CPP_CHECK43"; then
-    fail "CHECK 43 – BanSyncClient does not gate bWasUpdate on RemoveBanByUid return value" \
-        "File: $SYNCCLIENT_CPP_CHECK43"
+else
+    if ! grep -qP 'DB->UpdateBan\s*\(' "$SYNCCLIENT_CPP_CHECK43"; then
+        fail "CHECK 43 – BanSyncClient does not use UpdateBan for peer edits" \
+            "File: $SYNCCLIENT_CPP_CHECK43"
+    fi
+    if ! grep -qP 'if\s*\(\s*bWasUpdate\s*\)' "$SYNCCLIENT_CPP_CHECK43"; then
+        fail "CHECK 43 – BanSyncClient does not early-return after a successful in-place update" \
+            "File: $SYNCCLIENT_CPP_CHECK43"
+    fi
+    if ! perl -0777 -ne 'exit 0 if /FBanEntry\s+StillExisting\s*;\s*if\s*\(\s*DB->IsCurrentlyBanned\(Uid,\s*StillExisting\)\s*\)\s*return;/s; exit 1' "$SYNCCLIENT_CPP_CHECK43"; then
+        fail "CHECK 43 – BanSyncClient still has a peer-update silent-unban window" \
+            "File: $SYNCCLIENT_CPP_CHECK43"
+    fi
 fi
 
 pass "CHECK 43 done"
@@ -1616,40 +1626,167 @@ pass "CHECK 63 done"
 echo
 
 # =============================================================================
-# CHECK 64: Whitelist RemoveExpiredEntries rolls back Entries and suppresses output on save failure
+# CHECK 64: ScheduledBanRegistry avoids re-applying already-applied due bans
 # =============================================================================
-echo "--- CHECK 64: Whitelist RemoveExpiredEntries rollback + output suppression on Save_Locked failure ---"
+echo "--- CHECK 64: ScheduledBanRegistry detects already-applied due bans ---"
 
-WM_CPP_CHECK64="$(list_cpp_files | tr '\0' '\n' | grep 'WhitelistManager\.cpp' | head -1)"
+SCHED_CPP_CHECK64="$(list_cpp_files | tr '\0' '\n' | grep 'ScheduledBanRegistry\.cpp' | head -1)"
 
-if [[ -z "$WM_CPP_CHECK64" ]]; then
-    fail "CHECK 64 – WhitelistManager.cpp not found"
+if [[ -z "$SCHED_CPP_CHECK64" ]]; then
+    fail "CHECK 64 – ScheduledBanRegistry.cpp not found"
 else
-    if ! grep -qP 'const\s+TArray<FWhitelistEntry>\s+PrevEntries\s*=\s*Entries' "$WM_CPP_CHECK64"; then
-        fail "CHECK 64 – RemoveExpiredEntries does not snapshot Entries before mutation" \
-            "File: $WM_CPP_CHECK64"
+    if ! grep -qP 'MatchesScheduledBan' "$SCHED_CPP_CHECK64"; then
+        fail "CHECK 64 – ScheduledBanRegistry missing already-applied match helper" \
+            "File: $SCHED_CPP_CHECK64"
     fi
-
-    # 1) Save failure branch exists for expired-entry persistence.
-    if ! grep -qP 'Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)' "$WM_CPP_CHECK64"; then
-        fail "CHECK 64 – RemoveExpiredEntries has no Save_Locked failure branch after removals" \
-            "File: $WM_CPP_CHECK64"
-    fi
-
-    # 2) The save-failure branch restores Entries from PrevEntries.
-    if ! perl -0777 -ne 'exit 0 if /if\s*\(\s*Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)\s*\)\s*\{[^}]*Entries\s*=\s*PrevEntries/s; exit 1' "$WM_CPP_CHECK64"; then
-        fail "CHECK 64 – RemoveExpiredEntries does not restore Entries from PrevEntries on save failure" \
-            "File: $WM_CPP_CHECK64"
-    fi
-
-    # 3) The save-failure branch clears OutExpiredNames to suppress false side effects.
-    if ! perl -0777 -ne 'exit 0 if /if\s*\(\s*Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)\s*\)\s*\{[^}]*OutExpiredNames\.Reset\s*\(\s*\)/s; exit 1' "$WM_CPP_CHECK64"; then
-        fail "CHECK 64 – RemoveExpiredEntries does not clear OutExpiredNames on save failure" \
-            "File: $WM_CPP_CHECK64"
+    if ! grep -qP 'IsCurrentlyBanned\(Entry\.Uid,\s*Existing\)\s*&&\s*MatchesScheduledBan\(Existing,\s*Entry\)' "$SCHED_CPP_CHECK64"; then
+        fail "CHECK 64 – ApplyScheduledBan does not detect already-applied bans before re-applying" \
+            "File: $SCHED_CPP_CHECK64"
     fi
 fi
 
 pass "CHECK 64 done"
+echo
+
+# =============================================================================
+# CHECK 65: BanSyncClient updates existing peer bans in place
+# =============================================================================
+echo "--- CHECK 65: BanSyncClient uses UpdateBan for peer ban edits ---"
+
+BANSYNC_CPP_CHECK65="$(list_cpp_files | tr '\0' '\n' | grep 'BanSyncClient\.cpp' | head -1)"
+
+if [[ -z "$BANSYNC_CPP_CHECK65" ]]; then
+    fail "CHECK 65 – BanSyncClient.cpp not found"
+else
+    if ! grep -qP 'DB->UpdateBan\(' "$BANSYNC_CPP_CHECK65"; then
+        fail "CHECK 65 – BanSyncClient does not update existing peer bans in place" \
+            "File: $BANSYNC_CPP_CHECK65"
+    fi
+fi
+
+pass "CHECK 65 done"
+echo
+
+# =============================================================================
+# CHECK 66: POST /scheduled rejects failed AddScheduled writes
+# =============================================================================
+echo "--- CHECK 66: POST /scheduled rejects AddScheduled failures ---"
+
+BANREST_CPP_CHECK66="$BANREST_CPP_CHECK57"
+
+if [[ -z "$BANREST_CPP_CHECK66" ]]; then
+    fail "CHECK 66 – BanRestApi.cpp not found"
+else
+    if ! perl -0777 -ne 'exit 0 if /AddScheduled\s*\([^;]+\);\s*if\s*\(\s*NewEntry\.Id\s*<=\s*0\s*\)\s*\{[^}]*Failed to create scheduled ban/s; exit 1' "$BANREST_CPP_CHECK66"; then
+        fail "CHECK 66 – POST /scheduled does not reject AddScheduled failure" \
+            "File: $BANREST_CPP_CHECK66"
+    fi
+fi
+
+pass "CHECK 66 done"
+echo
+
+# =============================================================================
+# CHECK 67: Whitelist mutations persist audit entries in the same save
+# =============================================================================
+echo "--- CHECK 67: WhitelistManager persists audit entries atomically with mutations ---"
+
+WM_CPP_CHECK67="$WM_CPP_CHECK61"
+
+if [[ -z "$WM_CPP_CHECK67" ]]; then
+    fail "CHECK 67 – WhitelistManager.cpp not found"
+else
+    if ! perl -0777 -ne 'exit 0 if /SetEnabled.*?OriginalAuditLog\s*=\s*AuditLog.*?LogAudit\(.*?Save_Locked\(\).*?AuditLog\s*=\s*OriginalAuditLog/s; exit 1' "$WM_CPP_CHECK67"; then
+        fail "CHECK 67 – SetEnabled does not roll back persisted audit state on save failure" \
+            "File: $WM_CPP_CHECK67"
+    fi
+    if ! perl -0777 -ne 'exit 0 if /AddPlayer.*?OriginalAuditLog\s*=\s*AuditLog.*?LogAudit\(.*?if\s*\(!Save_Locked\(\)\).*?AuditLog\s*=\s*OriginalAuditLog/s; exit 1' "$WM_CPP_CHECK67"; then
+        fail "CHECK 67 – AddPlayer does not persist/rollback audit entries atomically" \
+            "File: $WM_CPP_CHECK67"
+    fi
+    if ! perl -0777 -ne 'exit 0 if /RemovePlayer.*?OriginalAuditLog\s*=\s*AuditLog.*?LogAudit\(.*?if\s*\(!Save_Locked\(\)\).*?AuditLog\s*=\s*OriginalAuditLog/s; exit 1' "$WM_CPP_CHECK67"; then
+        fail "CHECK 67 – RemovePlayer does not persist/rollback audit entries atomically" \
+            "File: $WM_CPP_CHECK67"
+    fi
+fi
+
+pass "CHECK 67 done"
+echo
+
+# =============================================================================
+# CHECK 68: reconnect flush preserves queued messages on enqueue failure
+# =============================================================================
+echo "--- CHECK 68: SMLWebSocketClient keeps queued messages that fail reconnect flush ---"
+
+WSCLIENT_CPP_CHECK68="$(list_cpp_files | tr '\0' '\n' | grep 'SMLWebSocketClient\.cpp' | head -1)"
+
+if [[ -z "$WSCLIENT_CPP_CHECK68" ]]; then
+    fail "CHECK 68 – SMLWebSocketClient.cpp not found"
+else
+    if ! grep -qP 'RemainingTextQueue' "$WSCLIENT_CPP_CHECK68" || ! grep -qP 'PendingSendQueue\s*=\s*MoveTemp\(RemainingTextQueue\)' "$WSCLIENT_CPP_CHECK68"; then
+        fail "CHECK 68 – reconnect text flush still drops unsent queued messages" \
+            "File: $WSCLIENT_CPP_CHECK68"
+    fi
+    if ! grep -qP 'RemainingBinaryQueue' "$WSCLIENT_CPP_CHECK68" || ! grep -qP 'PendingSendBinaryQueue\s*=\s*MoveTemp\(RemainingBinaryQueue\)' "$WSCLIENT_CPP_CHECK68"; then
+        fail "CHECK 68 – reconnect binary flush still drops unsent queued messages" \
+            "File: $WSCLIENT_CPP_CHECK68"
+    fi
+fi
+
+pass "CHECK 68 done"
+echo
+
+# =============================================================================
+# CHECK 69: nextId loaders preserve the exhausted 0 sentinel
+# =============================================================================
+echo "--- CHECK 69: nextId loaders preserve 0 as the exhausted sentinel ---"
+
+if grep -RP '\(Parsed > 0\) \? Parsed : 1' "${MOD_PATHS[@]}" >/dev/null 2>&1 \
+    || grep -RP 'FMath::Max\(\(int64\)1' "${MOD_PATHS[@]}" >/dev/null 2>&1; then
+    fail "CHECK 69 – nextId loader still rewrites exhausted sentinel 0 to 1" \
+        "Fix: accept stored 0 as the exhausted sentinel instead of clamping to 1."
+fi
+
+if ! grep -qP 'bHadStoredNextId' "$AUDITLOG_CPP_CHECK36" 2>/dev/null; then
+    fail "CHECK 69 – BanAuditLog does not preserve persisted nextId=0" \
+        "File: $AUDITLOG_CPP_CHECK36"
+fi
+
+pass "CHECK 69 done"
+echo
+
+# =============================================================================
+# CHECK 70: Whitelist RemoveExpiredEntries rolls back Entries and suppresses output on save failure
+# =============================================================================
+echo "--- CHECK 70: Whitelist RemoveExpiredEntries rollback + output suppression on Save_Locked failure ---"
+
+WM_CPP_CHECK70="$(list_cpp_files | tr '\0' '\n' | grep 'WhitelistManager\.cpp' | head -1)"
+
+if [[ -z "$WM_CPP_CHECK70" ]]; then
+    fail "CHECK 70 – WhitelistManager.cpp not found"
+else
+    if ! grep -qP 'const\s+TArray<FWhitelistEntry>\s+PrevEntries\s*=\s*Entries' "$WM_CPP_CHECK70"; then
+        fail "CHECK 70 – RemoveExpiredEntries does not snapshot Entries before mutation" \
+            "File: $WM_CPP_CHECK70"
+    fi
+
+    if ! grep -qP 'Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)' "$WM_CPP_CHECK70"; then
+        fail "CHECK 70 – RemoveExpiredEntries has no Save_Locked failure branch after removals" \
+            "File: $WM_CPP_CHECK70"
+    fi
+
+    if ! perl -0777 -ne 'exit 0 if /if\s*\(\s*Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)\s*\)\s*\{[^}]*Entries\s*=\s*PrevEntries/s; exit 1' "$WM_CPP_CHECK70"; then
+        fail "CHECK 70 – RemoveExpiredEntries does not restore Entries from PrevEntries on save failure" \
+            "File: $WM_CPP_CHECK70"
+    fi
+
+    if ! perl -0777 -ne 'exit 0 if /if\s*\(\s*Removed\s*>\s*0\s*&&\s*!Save_Locked\(\)\s*\)\s*\{[^}]*OutExpiredNames\.Reset\s*\(\s*\)/s; exit 1' "$WM_CPP_CHECK70"; then
+        fail "CHECK 70 – RemoveExpiredEntries does not clear OutExpiredNames on save failure" \
+            "File: $WM_CPP_CHECK70"
+    fi
+fi
+
+pass "CHECK 70 done"
 echo
 
 

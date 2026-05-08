@@ -225,23 +225,37 @@ void USMLWebSocketClient::Internal_OnConnected()
 	// Flush messages that were queued while the connection was down.
 	{
 		FScopeLock Lock(&QueueMutex);
+		TArray<FString> RemainingTextQueue;
+		RemainingTextQueue.Reserve(PendingSendQueue.Num());
 		for (const FString& Msg : PendingSendQueue)
 		{
-			if (Runnable.IsValid())
+			if (Runnable.IsValid() && Runnable->EnqueueText(Msg))
 			{
-				Runnable->EnqueueText(Msg);
+				StatBytesSent.fetch_add(FTCHARToUTF8(Msg.GetCharArray().GetData()).Length());
+				StatMessagesSent.fetch_add(1);
+			}
+			else
+			{
+				RemainingTextQueue.Add(Msg);
 			}
 		}
-		PendingSendQueue.Empty();
+		PendingSendQueue = MoveTemp(RemainingTextQueue);
 
+		TArray<TArray<uint8>> RemainingBinaryQueue;
+		RemainingBinaryQueue.Reserve(PendingSendBinaryQueue.Num());
 		for (const TArray<uint8>& Payload : PendingSendBinaryQueue)
 		{
-			if (Runnable.IsValid())
+			if (Runnable.IsValid() && Runnable->EnqueueBinary(Payload))
 			{
-				Runnable->EnqueueBinary(Payload);
+				StatBytesSent.fetch_add(Payload.Num());
+				StatMessagesSent.fetch_add(1);
+			}
+			else
+			{
+				RemainingBinaryQueue.Add(Payload);
 			}
 		}
-		PendingSendBinaryQueue.Empty();
+		PendingSendBinaryQueue = MoveTemp(RemainingBinaryQueue);
 	}
 
 	if (bHasConnectedOnce)

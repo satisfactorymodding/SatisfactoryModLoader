@@ -2915,6 +2915,12 @@ void UBanRestApi::RegisterRoutes()
             const FScheduledBanEntry NewEntry = SchReg->AddScheduled(
                 Uid, PlayerName, Reason, ScheduledBy, EffectiveAt, DurationMinutes, Category);
 
+            if (NewEntry.Id <= 0)
+            {
+                Done(BanJson::Error(TEXT("Failed to create scheduled ban"), EHttpServerResponseCodes::ServerError));
+                return true;
+            }
+
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 AuditLog->LogAction(TEXT("schedule_ban"), Uid, PlayerName,
                     ScheduledBy, ScheduledBy,
