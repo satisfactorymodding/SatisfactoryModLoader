@@ -330,6 +330,8 @@ void USMLWebSocketClient::FlushQueue()
 	if (!bIsConnected || !Runnable.IsValid()) return;
 
 	FScopeLock Lock(&QueueMutex);
+	TArray<FString> RemainingTextQueue;
+	RemainingTextQueue.Reserve(PendingSendQueue.Num());
 	for (const FString& Msg : PendingSendQueue)
 	{
 		if (Runnable->EnqueueText(Msg))
@@ -337,9 +339,15 @@ void USMLWebSocketClient::FlushQueue()
 			StatBytesSent.fetch_add(FTCHARToUTF8(Msg.GetCharArray().GetData()).Length());
 			StatMessagesSent.fetch_add(1);
 		}
+		else
+		{
+			RemainingTextQueue.Add(Msg);
+		}
 	}
-	PendingSendQueue.Empty();
+	PendingSendQueue = MoveTemp(RemainingTextQueue);
 
+	TArray<TArray<uint8>> RemainingBinaryQueue;
+	RemainingBinaryQueue.Reserve(PendingSendBinaryQueue.Num());
 	for (const TArray<uint8>& Payload : PendingSendBinaryQueue)
 	{
 		if (Runnable->EnqueueBinary(Payload))
@@ -347,8 +355,12 @@ void USMLWebSocketClient::FlushQueue()
 			StatBytesSent.fetch_add(Payload.Num());
 			StatMessagesSent.fetch_add(1);
 		}
+		else
+		{
+			RemainingBinaryQueue.Add(Payload);
+		}
 	}
-	PendingSendBinaryQueue.Empty();
+	PendingSendBinaryQueue = MoveTemp(RemainingBinaryQueue);
 }
 
 void USMLWebSocketClient::SendJson(const FString& JsonString)

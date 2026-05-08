@@ -1789,6 +1789,29 @@ fi
 pass "CHECK 70 done"
 echo
 
+# =============================================================================
+# CHECK 71: manual FlushQueue preserves queued messages on enqueue failure
+# =============================================================================
+echo "--- CHECK 71: SMLWebSocketClient FlushQueue keeps unsent queued messages ---"
+
+WSCLIENT_CPP_CHECK71="$(list_cpp_files | tr '\0' '\n' | grep 'SMLWebSocketClient\.cpp' | head -1)"
+
+if [[ -z "$WSCLIENT_CPP_CHECK71" ]]; then
+    fail "CHECK 71 – SMLWebSocketClient.cpp not found"
+else
+    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::FlushQueue\s*\(\)\s*\{.*?RemainingTextQueue.*?PendingSendQueue\s*=\s*MoveTemp\(RemainingTextQueue\)/s; exit 1' "$WSCLIENT_CPP_CHECK71"; then
+        fail "CHECK 71 – FlushQueue text path still drops unsent messages" \
+            "File: $WSCLIENT_CPP_CHECK71"
+    fi
+    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::FlushQueue\s*\(\)\s*\{.*?RemainingBinaryQueue.*?PendingSendBinaryQueue\s*=\s*MoveTemp\(RemainingBinaryQueue\)/s; exit 1' "$WSCLIENT_CPP_CHECK71"; then
+        fail "CHECK 71 – FlushQueue binary path still drops unsent messages" \
+            "File: $WSCLIENT_CPP_CHECK71"
+    fi
+fi
+
+pass "CHECK 71 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
