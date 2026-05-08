@@ -1977,6 +1977,133 @@ fi
 pass "CHECK 76 done"
 echo
 
+# =============================================================================
+# CHECK 77: durationMinutes positive cast uses FMath::Max(1, ...) to prevent
+#           fractional values (0 < x < 1) from silently truncating to 0 and
+#           becoming a permanent ban.
+#
+# All ban-creation / ban-edit paths in BanRestApi.cpp that have a
+# "static_cast<int32>(DurationMinutesDbl)" (or DurDbl) in the positive branch
+# must be accompanied by a FMath::Max(1, ...) guard on the same or adjacent
+# line.  A bare static_cast in that path is a bug.
+# =============================================================================
+echo "--- CHECK 77: durationMinutes positive cast guarded with FMath::Max(1,...) ---"
+
+BANRESTAPI_CPP="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+
+if [[ -z "$BANRESTAPI_CPP" ]]; then
+    fail "CHECK 77 – BanRestApi.cpp not found"
+else
+    # Detect any bare static_cast<int32>(DurationMinutesDbl) or static_cast<int32>(DurDbl)
+    # that is NOT on the same line as FMath::Max(1, .
+    while IFS= read -r ln; do
+        lineno="${ln%%:*}"
+        content="${ln#*:}"
+        # Does the line have the cast but NOT Max(1, ?
+        if echo "$content" | grep -qP 'static_cast<int32>\s*\(\s*(DurationMinutesDbl|DurDbl)\s*\)' \
+           && ! echo "$content" | grep -qP 'FMath::Max\s*\(\s*1\s*,'; then
+            fail "CHECK 77 – bare durationMinutes cast without FMath::Max(1,...)" \
+                "File: $BANRESTAPI_CPP  Line $lineno: $content" \
+                "Fix: use FMath::Max(1, static_cast<int32>(DurDbl)) in the positive-value branch."
+        fi
+    done < <(grep -n 'static_cast<int32>\s*(\(DurationMinutesDbl\|DurDbl\))' "$BANRESTAPI_CPP" 2>/dev/null || true)
+fi
+
+pass "CHECK 77 done"
+echo
+
+# =============================================================================
+# CHECK 78: BanSyncClient durationMinutes receiver uses FMath::IsFinite guard
+#
+# The incoming durationMinutes field from a sync peer is a JSON double and
+# must be guarded with FMath::IsFinite before the comparison with INT32_MAX,
+# otherwise a NaN value evades the > 0 check and INT32_MAX bounds check,
+# potentially causing UB in the static_cast.
+# =============================================================================
+echo "--- CHECK 78: BanSyncClient durationMinutes receiver has FMath::IsFinite guard ---"
+
+BANSYNC_CPP="$(list_cpp_files | tr '\0' '\n' | grep 'BanSyncClient\.cpp' | head -1)"
+
+if [[ -z "$BANSYNC_CPP" ]]; then
+    fail "CHECK 78 – BanSyncClient.cpp not found"
+else
+    # Look for the durationMinutes ternary.  It must contain IsFinite.
+    if grep -qP 'TryGetNumberField.*durationMinutes' "$BANSYNC_CPP"; then
+        # The ternary that converts DurDbl to int32 must use IsFinite.
+        if ! perl -0777 -ne '
+            exit 0 if /TryGetNumberField.*"durationMinutes".*[\s\S]{0,300}?FMath::IsFinite.*DurDbl/s;
+            exit 1' "$BANSYNC_CPP"; then
+            fail "CHECK 78 – BanSyncClient durationMinutes parse missing FMath::IsFinite guard" \
+                "File: $BANSYNC_CPP" \
+                "Fix: add FMath::IsFinite(DurDbl) to the ternary condition."
+        fi
+        # Must also use FMath::Max(1, ...) in the positive branch.
+        if ! perl -0777 -ne '
+            exit 0 if /TryGetNumberField.*"durationMinutes".*[\s\S]{0,400}?FMath::Max\s*\(\s*1\s*,/s;
+            exit 1' "$BANSYNC_CPP"; then
+            fail "CHECK 78 – BanSyncClient durationMinutes cast missing FMath::Max(1,...)" \
+                "File: $BANSYNC_CPP" \
+                "Fix: use FMath::Max(1, static_cast<int32>(DurDbl)) to prevent fractional-floor-to-permanent."
+        fi
+    fi
+fi
+
+pass "CHECK 78 done"
+echo
+
+# =============================================================================
+# CHECK 79: TicketSubsystem OnInteractionReceived type field uses Fmod guard
+#
+# The interaction type field in OnInteractionReceived must use the same full
+# finite/range/integer guard as the other three parse sites (HandleSlashTicketCommand,
+# BanDiscordSubsystem, DiscordBridgeSubsystem).
+# =============================================================================
+echo "--- CHECK 79: TicketSubsystem OnInteractionReceived type parse uses Fmod guard ---"
+
+TICKET_CPP_FILE79="$(list_cpp_files | tr '\0' '\n' | grep 'TicketSubsystem\.cpp' | head -1)"
+
+if [[ -z "$TICKET_CPP_FILE79" ]]; then
+    fail "CHECK 79 – TicketSubsystem.cpp not found"
+else
+    # OnInteractionReceived's type parse must have Fmod guard.
+    if ! perl -0777 -ne '
+        exit 0 if /OnInteractionReceived[\s\S]{0,600}?FMath::Fmod\s*\(\s*TypeD\s*,\s*1\.0\s*\)\s*==\s*0\.0/s;
+        exit 1' "$TICKET_CPP_FILE79"; then
+        fail "CHECK 79 – TicketSubsystem::OnInteractionReceived type parse missing Fmod guard" \
+            "File: $TICKET_CPP_FILE79" \
+            "Fix: add '&& FMath::Fmod(TypeD, 1.0) == 0.0' to the InteractionType cast condition."
+    fi
+fi
+
+pass "CHECK 79 done"
+echo
+
+# =============================================================================
+# CHECK 80: Gateway opcode parse uses Fmod guard
+#
+# The Discord gateway opcode parse in DiscordBridgeSubsystem must reject
+# fractional opcode values via FMath::Fmod guard, consistent with the
+# comment in the same code that says non-integer opcodes are malformed.
+# =============================================================================
+echo "--- CHECK 80: DiscordBridgeSubsystem gateway opcode uses Fmod guard ---"
+
+BRIDGE_CPP_FILE80="$(list_cpp_files | tr '\0' '\n' | grep 'DiscordBridgeSubsystem\.cpp' | head -1)"
+
+if [[ -z "$BRIDGE_CPP_FILE80" ]]; then
+    fail "CHECK 80 – DiscordBridgeSubsystem.cpp not found"
+else
+    if ! perl -0777 -ne '
+        exit 0 if /TryGetNumberField.*"op".*[\s\S]{0,600}?FMath::Fmod\s*\(\s*OpCodeD\s*,\s*1\.0\s*\)/s;
+        exit 1' "$BRIDGE_CPP_FILE80"; then
+        fail "CHECK 80 – DiscordBridgeSubsystem opcode parse missing Fmod integer guard" \
+            "File: $BRIDGE_CPP_FILE80" \
+            "Fix: add '|| FMath::Fmod(OpCodeD, 1.0) != 0.0' to the opcode range-check condition."
+    fi
+fi
+
+pass "CHECK 80 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then

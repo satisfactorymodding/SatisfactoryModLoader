@@ -710,12 +710,14 @@ void UDiscordBridgeSubsystem::HandleGatewayPayload(const FString& RawJson)
 		UE_LOG(LogDiscordBridge, Warning, TEXT("DiscordBridge: Gateway payload missing 'op' field: %s"), *RawJson);
 		return;
 	}
-	// Guard against out-of-range or non-finite doubles before casting.
-	// Discord opcodes are 0–11; anything outside [0, 31] is unknown/malformed.
-	if (OpCodeD < 0.0 || OpCodeD > 31.0 || !FMath::IsFinite(OpCodeD))
+	// Guard against out-of-range, non-finite, or non-integer doubles before casting.
+	// Discord opcodes are 0–11; anything outside [0, 31], non-finite, or fractional
+	// is unknown/malformed and must be rejected.
+	if (!FMath::IsFinite(OpCodeD) || OpCodeD < 0.0 || OpCodeD > 31.0
+		|| FMath::Fmod(OpCodeD, 1.0) != 0.0)
 	{
 		UE_LOG(LogDiscordBridge, Warning,
-			TEXT("DiscordBridge: Gateway payload has out-of-range opcode (%.0f), ignoring"), OpCodeD);
+			TEXT("DiscordBridge: Gateway payload has out-of-range opcode (%.4f), ignoring"), OpCodeD);
 		return;
 	}
 	const int32 OpCode = static_cast<int32>(OpCodeD);
