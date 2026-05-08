@@ -222,6 +222,35 @@ namespace BanJson
         return nullptr;
     }
 
+    static bool ValidateUidParts(FString& Platform, FString& PlayerUID, FString& OutError)
+    {
+        Platform = Platform.ToUpper();
+        if (Platform.IsEmpty() || PlayerUID.IsEmpty())
+        {
+            OutError = TEXT("uid must include a non-empty platform and player id");
+            return false;
+        }
+
+        if (Platform == TEXT("EOS"))
+        {
+            PlayerUID = PlayerUID.ToLower();
+
+            bool bValidPuid = (PlayerUID.Len() == 32);
+            for (int32 i = 0; bValidPuid && i < 32; ++i)
+            {
+                const TCHAR C = PlayerUID[i];
+                bValidPuid = (C >= TEXT('0') && C <= TEXT('9')) || (C >= TEXT('a') && C <= TEXT('f'));
+            }
+            if (!bValidPuid)
+            {
+                OutError = TEXT("playerUID must be a valid 32-character hexadecimal EOS PUID");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     static TSharedPtr<FJsonObject> WarningToJson(const FWarningEntry& W)
     {
         TSharedPtr<FJsonObject> Obj = MakeShared<FJsonObject>();
@@ -710,26 +739,11 @@ void UBanRestApi::RegisterRoutes()
             if (Reason.IsEmpty())   Reason   = TEXT("No reason given");
             if (BannedBy.IsEmpty()) BannedBy = TEXT("system");
 
-            // Normalize EOS PUIDs to lowercase so they always match the lowercase
-            // UIDs extracted from the ClientIdentity connection option in BanEnforcer.
-            if (Platform == TEXT("EOS"))
+            FString UidValidationError;
+            if (!BanJson::ValidateUidParts(Platform, PlayerUID, UidValidationError))
             {
-                PlayerUID = PlayerUID.ToLower();
-
-                // Validate: EOS PUIDs must be exactly 32 lowercase hex characters.
-                // A misformatted PUID will never match a real player in BanEnforcer,
-                // silently polluting the ban database.
-                bool bValidPuid = (PlayerUID.Len() == 32);
-                for (int32 i = 0; bValidPuid && i < 32; ++i)
-                {
-                    const TCHAR C = PlayerUID[i];
-                    bValidPuid = (C >= TEXT('0') && C <= TEXT('9')) || (C >= TEXT('a') && C <= TEXT('f'));
-                }
-                if (!bValidPuid)
-                {
-                    Done(BanJson::Error(TEXT("playerUID must be a valid 32-character hexadecimal EOS PUID")));
-                    return true;
-                }
+                Done(BanJson::Error(UidValidationError));
+                return true;
             }
 
             FBanEntry Entry;
@@ -932,9 +946,9 @@ void UBanRestApi::RegisterRoutes()
 
             // Reject negative durations that have no defined meaning.
             // 0 == permanent; any positive value == minutes; field absent == no change.
-            if (bHasDuration && DurationMinutesDbl < 0.0)
+            if (bHasDuration && (!FMath::IsFinite(DurationMinutesDbl) || DurationMinutesDbl < 0.0))
             {
-                Done(BanJson::Error(TEXT("durationMinutes must be >= 0 (0 = permanent)")));
+                Done(BanJson::Error(TEXT("durationMinutes must be a finite number >= 0 (0 = permanent)")));
                 return true;
             }
 
@@ -1217,6 +1231,19 @@ void UBanRestApi::RegisterRoutes()
                 Done(BanJson::Error(TEXT("uid is required")));
                 return true;
             }
+            FString WarnPlatform, WarnPlayerUID, UidValidationError;
+            UBanDatabase::ParseUid(Uid, WarnPlatform, WarnPlayerUID);
+            if (WarnPlatform == TEXT("UNKNOWN"))
+            {
+                Done(BanJson::Error(TEXT("uid must include a platform prefix, e.g. EOS:<playerUID>")));
+                return true;
+            }
+            if (!BanJson::ValidateUidParts(WarnPlatform, WarnPlayerUID, UidValidationError))
+            {
+                Done(BanJson::Error(UidValidationError));
+                return true;
+            }
+            Uid = UBanDatabase::MakeUid(WarnPlatform, WarnPlayerUID);
             Body->TryGetStringField(TEXT("playerName"), PlayerName);
             Body->TryGetStringField(TEXT("reason"),     Reason);
             Body->TryGetStringField(TEXT("warnedBy"),   WarnedBy);
