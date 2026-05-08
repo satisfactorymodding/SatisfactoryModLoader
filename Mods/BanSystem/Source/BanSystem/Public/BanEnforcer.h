@@ -250,4 +250,16 @@ private:
      * Reset on Deinitialize() (i.e. server shutdown).
      */
     TSet<FString> AlreadyNotifiedExpiredBanUids;
+
+    /**
+     * Pending 20-second kick timers keyed by ban UID.
+     *
+     * When a player is kicked for a ban, ClientWasKicked() is sent immediately
+     * but the connection close is deferred by 20 seconds so the player can read
+     * the ban message.  Storing the FTimerHandle here (rather than as a transient
+     * local) lets the OnBanRemoved handler cancel the pending disconnect if the
+     * ban is lifted within the 20-second window — preventing a just-unbanned
+     * player from being disconnected anyway.
+     */
+    TMap<FString, FTimerHandle> PendingKickTimersByUid;
 };

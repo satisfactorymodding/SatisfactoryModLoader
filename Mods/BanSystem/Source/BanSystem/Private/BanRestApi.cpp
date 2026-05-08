@@ -159,7 +159,11 @@ namespace BanJson
         // accumulation loop once Diff becomes non-zero (which would break the constant-time
         // guarantee).  Length differences ≥ 256 are not masked because we use uint32.
         volatile uint32 Diff = static_cast<uint32>(Au.Length() != Bu.Length() ? 1 : 0);
-        const int32 N = FMath::Max(Au.Length(), Bu.Length());
+        // Always iterate at least 256 bytes regardless of either string's actual length.
+        // This prevents an attacker from inferring the stored API key's length by
+        // submitting strings of varying length and observing the response latency:
+        // all comparisons with strings ≤ 256 bytes complete in the same number of iterations.
+        const int32 N = FMath::Max(FMath::Max(Au.Length(), Bu.Length()), 256);
         for (int32 i = 0; i < N; ++i)
         {
             const uint8 ByteA = (i < Au.Length()) ? static_cast<uint8>(Au.Get()[i]) : 0;
@@ -2087,33 +2091,40 @@ void UBanRestApi::RegisterRoutes()
 
     // ── POST /appeals ────────────────────────────────────────────────────────
     // No auth required — players submit appeals from outside the game.
+    // C1: Global rate-limit state captured in a TSharedPtr so it is reset
+    // automatically on each server restart (when RegisterRoutes() is called
+    // again for a fresh UBanRestApi instance), unlike process-lifetime statics.
+    struct FAppealRateState
+    {
+        FCriticalSection Mutex;
+        TArray<FDateTime> Submissions;
+        static constexpr int32 MaxPerMinute = 5;
+    };
+    TSharedPtr<FAppealRateState> AppealRateState = MakeShared<FAppealRateState>();
+
     Routes->Handles.Add(Router->BindRoute(
         FHttpPath(TEXT("/appeals")),
         EHttpServerRequestVerbs::VERB_POST,
-        [WeakGI](const FHttpServerRequest& Req, const FHttpResultCallback& Done) -> bool
+        [WeakGI, AppealRateState](const FHttpServerRequest& Req, const FHttpResultCallback& Done) -> bool
         {
             if (auto SizeErr = BanJson::CheckBodySize(Req)) { Done(MoveTemp(SizeErr)); return true; }
 
             // C1: Global rate limit — max 5 appeal submissions per minute regardless
             // of UID, preventing flooding with cycling UIDs.
             {
-                static FCriticalSection AppealRateMutex;
-                static TArray<FDateTime> AppealSubmissions;
-                static constexpr int32 MaxAppealsPerMinute = 5;
-
-                FScopeLock RateLock(&AppealRateMutex);
+                FScopeLock RateLock(&AppealRateState->Mutex);
                 const FDateTime Now = FDateTime::UtcNow();
-                AppealSubmissions.RemoveAll([&Now](const FDateTime& T)
+                AppealRateState->Submissions.RemoveAll([&Now](const FDateTime& T)
                 {
                     return (Now - T).GetTotalMinutes() >= 1.0;
                 });
-                if (AppealSubmissions.Num() >= MaxAppealsPerMinute)
+                if (AppealRateState->Submissions.Num() >= FAppealRateState::MaxPerMinute)
                 {
                     Done(BanJson::Error(TEXT("Too many appeal submissions. Please try again later."),
                         EHttpServerResponseCodes::TooManyRequests));
                     return true;
                 }
-                AppealSubmissions.Add(Now);
+                AppealRateState->Submissions.Add(Now);
             }
 
             UGameInstance* GI = WeakGI.Get();
@@ -2443,13 +2454,25 @@ void UBanRestApi::RegisterRoutes()
 
             // Record the dismissal before deleting so the audit trail is preserved,
             // mirroring HandleDismissAppealCommand in BanDiscordSubsystem.
-            AppealsReg->ReviewAppeal(Id, EAppealStatus::Dismissed, TEXT("api"), TEXT(""));
-
-            if (!AppealsReg->DeleteAppeal(Id))
+            // Check the return value: if ReviewAppeal returns false the appeal does not
+            // exist (or its save failed), so report the appropriate error immediately
+            // rather than proceeding to DeleteAppeal in an inconsistent state.
+            if (!AppealsReg->ReviewAppeal(Id, EAppealStatus::Dismissed, TEXT("api"), TEXT("")))
             {
                 Done(BanJson::Error(
                     FString::Printf(TEXT("No appeal found with id %lld"), Id),
                     EHttpServerResponseCodes::NotFound));
+                return true;
+            }
+
+            if (!AppealsReg->DeleteAppeal(Id))
+            {
+                // ReviewAppeal committed (appeal is Dismissed on disk) but DeleteAppeal
+                // failed.  Return 500 so the caller knows the state is partially committed
+                // and can retry or investigate.
+                Done(BanJson::Error(
+                    FString::Printf(TEXT("Appeal id=%lld was marked dismissed but could not be deleted — retry"), Id),
+                    EHttpServerResponseCodes::ServerError));
                 return true;
             }
 
@@ -2775,6 +2798,11 @@ void UBanRestApi::RegisterRoutes()
                 return true;
             }
 
+            // Capture the appeal record before ReviewAppeal so the Uid is available
+            // for the auto-unban path even if the entry is concurrently deleted
+            // between ReviewAppeal and a subsequent GetAppealById call.
+            const FBanAppealEntry PreReviewAppeal = AppealsReg->GetAppealById(Id);
+
             if (!AppealsReg->ReviewAppeal(Id, NewStatus, ReviewedBy, ReviewNote))
             {
                 Done(BanJson::Error(
@@ -2784,9 +2812,14 @@ void UBanRestApi::RegisterRoutes()
             }
 
             // If approved, auto-unban the player.
+            // IMPORTANT: capture the appeal's Uid BEFORE calling ReviewAppeal so
+            // that a concurrent DELETE /appeals/:id between ReviewAppeal and
+            // GetAppealById cannot race to return an empty entry and silently
+            // skip the auto-unban.  We use the Uid returned by ReviewAppeal's
+            // pre-lookup rather than a second independent registry query.
             if (NewStatus == EAppealStatus::Approved)
             {
-                const FBanAppealEntry Appeal = AppealsReg->GetAppealById(Id);
+                const FBanAppealEntry Appeal = PreReviewAppeal;
                 if (!Appeal.Uid.IsEmpty())
                 {
                     UBanDatabase* DB = GI->GetSubsystem<UBanDatabase>();

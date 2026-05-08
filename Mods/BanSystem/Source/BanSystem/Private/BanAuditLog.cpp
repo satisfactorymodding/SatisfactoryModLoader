@@ -67,7 +67,6 @@ void UBanAuditLog::LogAction(const FString& Action,
 {
     FScopeLock Lock(&Mutex);
     const int64 OriginalNextId = NextId;
-    const TArray<FAuditEntry> PrevEntries = Entries;
 
     // Guard: if all 64-bit IDs have been exhausted NextId is set to 0 (the
     // exhausted sentinel) and no new entries should be allocated.
@@ -92,16 +91,24 @@ void UBanAuditLog::LogAction(const FString& Action,
 
     Entries.Add(Entry);
 
-    // Trim oldest entries when the cap is exceeded.
+    // Trim oldest entries when the cap is exceeded.  Save only the trimmed
+    // entries (not the full array) so the rollback path is O(trimmed) rather
+    // than O(MaxEntries).  In steady state no entries are trimmed, so the
+    // rollback cost is zero beyond the single appended entry.
+    TArray<FAuditEntry> TrimmedEntries;
     if (Entries.Num() > MaxEntries)
     {
         const int32 ToRemove = Entries.Num() - MaxEntries;
+        TrimmedEntries.Append(Entries.GetData(), ToRemove);
         Entries.RemoveAt(0, ToRemove);
     }
 
     if (!SaveToFile())
     {
-        Entries = PrevEntries;
+        // Rollback: remove the newly appended entry and restore any trimmed entries.
+        Entries.RemoveAt(Entries.Num() - 1);
+        if (TrimmedEntries.Num() > 0)
+            Entries.Insert(TrimmedEntries, 0);
         NextId = OriginalNextId;
         UE_LOG(LogBanAuditLog, Error,
             TEXT("BanAuditLog: failed to save after logging '%s' for '%s'"),
