@@ -1621,6 +1621,19 @@ void FSMLWebSocketRunnable::SendPing()
 
 void FSMLWebSocketRunnable::FlushOutboundQueue()
 {
+	if (bHasPendingRetryMessage)
+	{
+		const uint8 PendingOpcode = PendingRetryMessage.bIsBinary ? WsOpcode::Binary : WsOpcode::Text;
+		if (!SendWsFrame(PendingOpcode, PendingRetryMessage.Payload.GetData(), PendingRetryMessage.Payload.Num()))
+		{
+			UE_LOG(LogSMLWebSocket, Error,
+			       TEXT("SMLWebSocket: SendWsFrame failed while retrying the head outbound message — "
+			            "triggering reconnect."));
+			return;
+		}
+		bHasPendingRetryMessage = false;
+	}
+
 	FSMLWebSocketOutboundMessage Msg;
 	while (OutboundMessages.Dequeue(Msg))
 	{
@@ -1631,8 +1644,10 @@ void FSMLWebSocketRunnable::FlushOutboundQueue()
 			       TEXT("SMLWebSocket: SendWsFrame failed in FlushOutboundQueue — "
 			            "triggering reconnect."));
 			// Stop draining and let the run-loop detect the broken connection.
-			// Re-queue the failed message so it is not silently lost.
-			OutboundMessages.Enqueue(MoveTemp(Msg));
+			// Preserve the failed head message so reconnect flushes it before any
+			// later queued messages, keeping FIFO delivery intact across reconnects.
+			PendingRetryMessage = MoveTemp(Msg);
+			bHasPendingRetryMessage = true;
 			break;
 		}
 	}

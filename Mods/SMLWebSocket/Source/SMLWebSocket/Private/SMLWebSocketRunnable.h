@@ -256,6 +256,8 @@ private:
 	// Outbound queues (game thread → I/O thread)
 	TQueue<FSMLWebSocketOutboundMessage, EQueueMode::Mpsc> OutboundMessages;
 	TQueue<FSMLWebSocketCloseRequest,    EQueueMode::Mpsc> CloseRequests;
+	FSMLWebSocketOutboundMessage PendingRetryMessage;
+	bool bHasPendingRetryMessage{false};
 
 	// Reassembly buffer for fragmented WebSocket messages.
 	// bInFragment is a dedicated flag so that a valid zero-length first fragment
