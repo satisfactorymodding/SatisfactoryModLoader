@@ -1518,7 +1518,7 @@ else
         fail "CHECK 59 – WarningToJson missing SetBoolField(\"hasExpiry\",...)" \
             "File: $BANREST_CPP_CHECK59"
     fi
-    if ! grep -qP 'SetStringField.*expireDate.*ExpireDate\.ToIso8601' "$BANREST_CPP_CHECK59"; then
+    if ! grep -qP 'SetStringField.*expireDate.*ExpireDate\.ToIso8601\(\)' "$BANREST_CPP_CHECK59"; then
         fail "CHECK 59 – WarningToJson missing expireDate field" \
             "File: $BANREST_CPP_CHECK59"
     fi
@@ -1606,7 +1606,7 @@ BANDIS_CPP_CHECK63="$BANDIS_CPP_CHECK62"
 if [[ -z "$BANDIS_CPP_CHECK63" ]]; then
     fail "CHECK 63 – BanDiscordSubsystem.cpp not found"
 else
-    if ! grep -qP 'if \(E\.bIsPermanent\) return;' "$BANDIS_CPP_CHECK63"; then
+    if ! grep -qP 'if\s*\(\s*E\.bIsPermanent\s*\)\s*return;' "$BANDIS_CPP_CHECK63"; then
         fail "CHECK 63 – HandleExtendBanCommand lambda does not re-check E.bIsPermanent under lock" \
             "File: $BANDIS_CPP_CHECK63"
     fi
