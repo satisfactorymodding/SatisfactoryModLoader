@@ -839,7 +839,9 @@ private:
 	{
 		int32     LastBuildCount    = 0;
 		FDateTime LastActivityTime;
-		/** World-space location sampled each AFK tick; ZeroVector until first tick. */
+		/** Whether LastKnownLocation has been initialised at least once. */
+		bool      bHasKnownLocation = false;
+		/** World-space location sampled each AFK tick. */
 		FVector   LastKnownLocation = FVector::ZeroVector;
 	};
 

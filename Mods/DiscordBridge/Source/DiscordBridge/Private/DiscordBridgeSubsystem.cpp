@@ -5238,9 +5238,10 @@ bool UDiscordBridgeSubsystem::AfkKickTick(float /*DeltaTime*/)
 		if (APawn* Pawn = PC->GetPawn())
 		{
 			const FVector CurrentLoc = Pawn->GetActorLocation();
-			if (State.LastKnownLocation == FVector::ZeroVector)
+			if (!State.bHasKnownLocation)
 			{
 				// First tick for this player — record location without counting as activity.
+				State.bHasKnownLocation = true;
 				State.LastKnownLocation = CurrentLoc;
 			}
 			else if (!CurrentLoc.Equals(State.LastKnownLocation, 50.f))
