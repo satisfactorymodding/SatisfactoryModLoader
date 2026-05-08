@@ -3034,6 +3034,11 @@ void UBanRestApi::RegisterRoutes()
 
             double DurDbl = 0.0;
             const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
+            if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl < 0.0)
+            {
+                Done(BanJson::Error(TEXT("durationMinutes must be >= 0 (0 or omit for a permanent ban)")));
+                return true;
+            }
             if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl > 0.0
                 && FMath::Fmod(DurDbl, 1.0) != 0.0)
             {
@@ -3042,7 +3047,6 @@ void UBanRestApi::RegisterRoutes()
             }
             const int32 DurationMinutes = (!FMath::IsFinite(DurDbl) || DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
                 ? 0 : FMath::Max(1, static_cast<int32>(DurDbl));
-            const FScheduledBanEntry NewEntry = SchReg->AddScheduled(
                 Uid, PlayerName, Reason, ScheduledBy, EffectiveAt, DurationMinutes, Category);
 
             if (NewEntry.Id <= 0)
@@ -3231,6 +3235,11 @@ void UBanRestApi::RegisterRoutes()
 
             double DurDbl = 0.0;
             const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
+            if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl < 0.0)
+            {
+                Done(BanJson::Error(TEXT("durationMinutes must be >= 0 (0 or omit for a permanent ban)")));
+                return true;
+            }
             if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl > 0.0
                 && FMath::Fmod(DurDbl, 1.0) != 0.0)
             {

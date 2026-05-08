@@ -342,6 +342,16 @@ void UBanEnforcer::Deinitialize()
     CachedConnectionVersions.Empty();
 
     // Cancel and clear all pending kick timers.
+    // Use the stored world reference (GetGameInstance()->GetWorld() may already
+    // be null at this point) to reach the timer manager and invalidate each
+    // handle before emptying the map.  Without the ClearTimer calls the
+    // underlying FTimerManager callbacks remain registered and will fire after
+    // Deinitialize returns, closing connections that should stay open.
+    if (UWorld* World = PollTimerWorld.Get())
+    {
+        for (auto& KickPair : PendingKickTimersByUid)
+            World->GetTimerManager().ClearTimer(KickPair.Value);
+    }
     PendingKickTimersByUid.Empty();
 
     // Cancel any in-flight identity poll and clear the queue.
@@ -700,6 +710,10 @@ void UBanEnforcer::PerformBanCheckForPlayer(UWorld* World, APlayerController* PC
                         (FHttpRequestPtr /*Req*/, FHttpResponsePtr Resp, bool bSuccess)
                         {
                             if (!bSuccess || !Resp.IsValid()) return;
+                            // Treat non-2xx responses (rate-limits, errors, etc.) as
+                            // "no data" rather than silently acting on a stale/error body.
+                            const int32 Code = Resp->GetResponseCode();
+                            if (Code < 200 || Code >= 300) return;
 
                             TSharedPtr<FJsonObject> Root;
                             TSharedRef<TJsonReader<>> Reader =
@@ -1014,6 +1028,10 @@ void UBanEnforcer::PerformBanCheckForUid(UWorld* World, APlayerController* PC, U
                         (FHttpRequestPtr /*Req*/, FHttpResponsePtr Resp, bool bSuccess)
                         {
                             if (!bSuccess || !Resp.IsValid()) return;
+                            // Treat non-2xx responses (rate-limits, errors, etc.) as
+                            // "no data" rather than silently acting on a stale/error body.
+                            const int32 Code = Resp->GetResponseCode();
+                            if (Code < 200 || Code >= 300) return;
 
                             TSharedPtr<FJsonObject> Root;
                             TSharedRef<TJsonReader<>> Reader =

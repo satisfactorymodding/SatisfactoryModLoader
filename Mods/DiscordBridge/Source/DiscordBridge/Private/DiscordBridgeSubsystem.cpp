@@ -5554,7 +5554,12 @@ void UDiscordBridgeSubsystem::StartScheduledAnnouncementTickers()
 			FTickerDelegate::CreateLambda([WeakThis, TargetChannel, Msg](float) -> bool
 			{
 				UDiscordBridgeSubsystem* Self = WeakThis.Get();
-				if (!Self || !Self->bGatewayReady) return true;
+				// Subsystem has been destroyed — stop the ticker so it doesn't
+				// keep firing indefinitely (zombie ticker).  The handle in
+				// ScheduledAnnouncementHandles is already invalidated at this
+				// point so this is the only place to suppress it.
+				if (!Self) return false;
+				if (!Self->bGatewayReady) return true;
 				TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
 				Body->SetStringField(TEXT("content"), Msg);
 				Self->SendMessageBodyToChannel(TargetChannel, Body);
