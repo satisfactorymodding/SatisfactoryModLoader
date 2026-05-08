@@ -1397,6 +1397,225 @@ pass "CHECK 53 done"
 echo
 
 
+# =============================================================================
+# CHECK 54: UpdateBan snapshots entry before mutating (rollback on save failure)
+# =============================================================================
+echo "--- CHECK 54: UpdateBan snapshots entry before mutating ---"
+
+BANDB_CPP_CHECK54="$(list_cpp_files | tr '\0' '\n' | grep 'BanDatabase\.cpp' | head -1)"
+
+if [[ -z "$BANDB_CPP_CHECK54" ]]; then
+    fail "CHECK 54 – BanDatabase.cpp not found"
+else
+    # Snapshot must appear between "if (!Found) return false;" and "Mutator(*Found)"
+    if ! perl -0777 -ne 'exit 0 if /if\s*\(!Found\)\s*return false;\s*(?:\/\/[^\n]*\n\s*)*const FBanEntry Snapshot\s*=\s*\*Found;/s; exit 1' "$BANDB_CPP_CHECK54"; then
+        fail "CHECK 54 – UpdateBan does not snapshot *Found before calling Mutator" \
+            "File: $BANDB_CPP_CHECK54"
+    fi
+    # Rollback: *Found = Snapshot on save failure
+    if ! perl -0777 -ne 'exit 0 if /UpdateBan.*?if\s*\(!bSaved\).*?\*Found\s*=\s*Snapshot/s; exit 1' "$BANDB_CPP_CHECK54"; then
+        fail "CHECK 54 – UpdateBan does not restore *Found = Snapshot on SaveToFile failure" \
+            "File: $BANDB_CPP_CHECK54"
+    fi
+fi
+
+pass "CHECK 54 done"
+echo
+
+# =============================================================================
+# CHECK 55: AddBan/AddBanSkipIfPermanentExists upsert restores old entry on rollback
+# =============================================================================
+echo "--- CHECK 55: AddBan upsert restores old entry on save failure ---"
+
+BANDB_CPP_CHECK55="$BANDB_CPP_CHECK54"
+
+if [[ -z "$BANDB_CPP_CHECK55" ]]; then
+    fail "CHECK 55 – BanDatabase.cpp not found"
+else
+    # AddBan must call GetBanByUid_Locked before the upsert RemoveAll
+    if ! perl -0777 -ne 'exit 0 if /GetBanByUid_Locked\s*\(\s*Entry\.Uid\s*,\s*OldEntry\s*\).*?Bans\.RemoveAll.*?Entry\.Uid.*?bHadOldEntry.*?Bans\.Add\s*\(\s*OldEntry\s*\)/s; exit 1' "$BANDB_CPP_CHECK55"; then
+        fail "CHECK 55 – AddBan does not restore old entry on upsert rollback" \
+            "File: $BANDB_CPP_CHECK55"
+    fi
+fi
+
+pass "CHECK 55 done"
+echo
+
+# =============================================================================
+# CHECK 56: UnlinkBans rolls back LinkedUids on SaveToFile failure
+# =============================================================================
+echo "--- CHECK 56: UnlinkBans rolls back on SaveToFile failure ---"
+
+BANDB_CPP_CHECK56="$BANDB_CPP_CHECK54"
+
+if [[ -z "$BANDB_CPP_CHECK56" ]]; then
+    fail "CHECK 56 – BanDatabase.cpp not found"
+else
+    if ! perl -0777 -ne 'exit 0 if /UnlinkBans.*?LinkSnapshots.*?bDirty\s*&&\s*!bSaved.*?E\.LinkedUids\s*=\s*\*OldLinks/s; exit 1' "$BANDB_CPP_CHECK56"; then
+        fail "CHECK 56 – UnlinkBans does not roll back LinkedUids on SaveToFile failure" \
+            "File: $BANDB_CPP_CHECK56"
+    fi
+fi
+
+pass "CHECK 56 done"
+echo
+
+# =============================================================================
+# CHECK 57: POST /bans/bulk temp-ban uses 3-arg AddBanSkipIfPermanentExists
+# =============================================================================
+echo "--- CHECK 57: POST /bans/bulk temp-ban uses 3-arg AddBanSkipIfPermanentExists ---"
+
+BANREST_CPP_CHECK57="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+
+if [[ -z "$BANREST_CPP_CHECK57" ]]; then
+    fail "CHECK 57 – BanRestApi.cpp not found"
+else
+    # 3-arg form: AddBanSkipIfPermanentExists(Ban, &Saved, &bBatchSkipped)
+    if grep -qP 'AddBanSkipIfPermanentExists\s*\(\s*Ban\s*,\s*bBatchSkipped\s*\)' "$BANREST_CPP_CHECK57"; then
+        fail "CHECK 57 – POST /bans/bulk still uses 2-arg AddBanSkipIfPermanentExists (no &Saved)" \
+            "File: $BANREST_CPP_CHECK57"
+    fi
+    if ! grep -qP 'AddBanSkipIfPermanentExists\s*\(\s*Ban\s*,\s*&Saved\s*,\s*&bBatchSkipped\s*\)' "$BANREST_CPP_CHECK57"; then
+        fail "CHECK 57 – POST /bans/bulk does not use 3-arg AddBanSkipIfPermanentExists(&Saved)" \
+            "File: $BANREST_CPP_CHECK57"
+    fi
+fi
+
+pass "CHECK 57 done"
+echo
+
+# =============================================================================
+# CHECK 58: Rate-limit response uses HTTP 429 (not 400)
+# =============================================================================
+echo "--- CHECK 58: appeal rate-limit response uses HTTP 429 ---"
+
+BANREST_CPP_CHECK58="$BANREST_CPP_CHECK57"
+
+if [[ -z "$BANREST_CPP_CHECK58" ]]; then
+    fail "CHECK 58 – BanRestApi.cpp not found"
+else
+    if ! perl -0777 -ne 'exit 0 if /Too many appeal submissions.*TooManyRequests/s; exit 1' "$BANREST_CPP_CHECK58"; then
+        fail "CHECK 58 – appeal rate-limit still responds with 400 instead of 429" \
+            "File: $BANREST_CPP_CHECK58"
+    fi
+fi
+
+pass "CHECK 58 done"
+echo
+
+# =============================================================================
+# CHECK 59: WarningToJson includes hasExpiry and expireDate
+# =============================================================================
+echo "--- CHECK 59: WarningToJson serialises hasExpiry / expireDate ---"
+
+BANREST_CPP_CHECK59="$BANREST_CPP_CHECK57"
+
+if [[ -z "$BANREST_CPP_CHECK59" ]]; then
+    fail "CHECK 59 – BanRestApi.cpp not found"
+else
+    if ! grep -qP 'SetBoolField.*hasExpiry' "$BANREST_CPP_CHECK59"; then
+        fail "CHECK 59 – WarningToJson missing SetBoolField(\"hasExpiry\",...)" \
+            "File: $BANREST_CPP_CHECK59"
+    fi
+    if ! grep -qP 'SetStringField.*expireDate.*ExpireDate\.ToIso8601\(\)' "$BANREST_CPP_CHECK59"; then
+        fail "CHECK 59 – WarningToJson missing expireDate field" \
+            "File: $BANREST_CPP_CHECK59"
+    fi
+fi
+
+pass "CHECK 59 done"
+echo
+
+# =============================================================================
+# CHECK 60: ScheduledToJson includes retryCount
+# =============================================================================
+echo "--- CHECK 60: ScheduledToJson serialises retryCount ---"
+
+BANREST_CPP_CHECK60="$BANREST_CPP_CHECK57"
+
+if [[ -z "$BANREST_CPP_CHECK60" ]]; then
+    fail "CHECK 60 – BanRestApi.cpp not found"
+else
+    if ! grep -qP 'SetNumberField.*retryCount.*RetryCount' "$BANREST_CPP_CHECK60"; then
+        fail "CHECK 60 – ScheduledToJson missing retryCount field" \
+            "File: $BANREST_CPP_CHECK60"
+    fi
+fi
+
+pass "CHECK 60 done"
+echo
+
+# =============================================================================
+# CHECK 61: WhitelistManager Save_Locked returns bool + AddPlayer/RemovePlayer rollback
+# =============================================================================
+echo "--- CHECK 61: WhitelistManager Save_Locked returns bool; AddPlayer/RemovePlayer rollback ---"
+
+WM_CPP_CHECK61="$(list_cpp_files | tr '\0' '\n' | grep 'WhitelistManager\.cpp' | head -1)"
+WM_H_CHECK61="$(find "$MOD_ROOT" -name 'WhitelistManager.h' | head -1)"
+
+if [[ -z "$WM_CPP_CHECK61" || -z "$WM_H_CHECK61" ]]; then
+    fail "CHECK 61 – WhitelistManager source file(s) not found"
+else
+    if ! grep -qP 'bool\s+FWhitelistManager::Save_Locked' "$WM_CPP_CHECK61"; then
+        fail "CHECK 61 – WhitelistManager::Save_Locked does not return bool" \
+            "File: $WM_CPP_CHECK61"
+    fi
+    # AddPlayer must call Save_Locked and rollback on failure
+    if ! perl -0777 -ne 'exit 0 if /AddPlayer.*?if\s*\(!Save_Locked\(\)\).*?Entries\.RemoveAt/s; exit 1' "$WM_CPP_CHECK61"; then
+        fail "CHECK 61 – WhitelistManager::AddPlayer has no rollback on Save_Locked failure" \
+            "File: $WM_CPP_CHECK61"
+    fi
+    # RemovePlayer must rollback
+    if ! perl -0777 -ne 'exit 0 if /RemovePlayer.*?if\s*\(!Save_Locked\(\)\).*?Entries\.Insert/s; exit 1' "$WM_CPP_CHECK61"; then
+        fail "CHECK 61 – WhitelistManager::RemovePlayer has no rollback on Save_Locked failure" \
+            "File: $WM_CPP_CHECK61"
+    fi
+fi
+
+pass "CHECK 61 done"
+echo
+
+# =============================================================================
+# CHECK 62: HandleBanNameCommand returns early on DB write failure (no kick-without-ban)
+# =============================================================================
+echo "--- CHECK 62: HandleBanNameCommand returns early on EOS DB write failure ---"
+
+BANDIS_CPP_CHECK62="$(list_cpp_files | tr '\0' '\n' | grep 'BanDiscordSubsystem\.cpp' | head -1)"
+
+if [[ -z "$BANDIS_CPP_CHECK62" ]]; then
+    fail "CHECK 62 – BanDiscordSubsystem.cpp not found"
+else
+    # Must have an else branch (DB failure) that calls Respond and returns before kick
+    if ! perl -0777 -ne 'exit 0 if /AddBanSkipIfPermanentExists\s*\(\s*EosEntry\s*,\s*bEosSkipped\s*\).*?else\s*\{[^}]*Failed to write ban[^}]*return/s; exit 1' "$BANDIS_CPP_CHECK62"; then
+        fail "CHECK 62 – HandleBanNameCommand does not return early on EOS DB write failure" \
+            "File: $BANDIS_CPP_CHECK62"
+    fi
+fi
+
+pass "CHECK 62 done"
+echo
+
+# =============================================================================
+# CHECK 63: HandleExtendBanCommand lambda re-checks bIsPermanent under lock
+# =============================================================================
+echo "--- CHECK 63: HandleExtendBanCommand lambda re-checks bIsPermanent under lock ---"
+
+BANDIS_CPP_CHECK63="$BANDIS_CPP_CHECK62"
+
+if [[ -z "$BANDIS_CPP_CHECK63" ]]; then
+    fail "CHECK 63 – BanDiscordSubsystem.cpp not found"
+else
+    if ! grep -qP 'if\s*\(\s*E\.bIsPermanent\s*\)\s*return;' "$BANDIS_CPP_CHECK63"; then
+        fail "CHECK 63 – HandleExtendBanCommand lambda does not re-check E.bIsPermanent under lock" \
+            "File: $BANDIS_CPP_CHECK63"
+    fi
+fi
+
+pass "CHECK 63 done"
+echo
+
+
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
     echo -e "${GRN}All checks passed — no issues found.${NC}"

@@ -431,10 +431,11 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 				const FString DisplayName = Entry.PlayerName.IsEmpty() ? Entry.Uid : Entry.PlayerName;
 				const FString DurationStr = Entry.bIsPermanent
 					? TEXT("permanent")
-					: BanDiscordHelpers::FormatDuration(static_cast<int32>(FMath::Min(
-					    FMath::Max((int64)0,
-					        static_cast<int64>((Entry.ExpireDate - Entry.BanDate).GetTotalMinutes())),
-					    static_cast<int64>(INT32_MAX))));
+					: BanDiscordHelpers::FormatDuration([&]() -> int32 {
+					    const double TotalMins = (Entry.ExpireDate - Entry.BanDate).GetTotalMinutes();
+					    if (!FMath::IsFinite(TotalMins) || TotalMins < 0.0) return 0;
+					    return static_cast<int32>(FMath::Min(TotalMins, static_cast<double>(INT32_MAX)));
+					}());
 				const FString Msg = FString::Printf(
 					TEXT("🔨 **%s** (`%s`) banned.\nReason: %s\nBy: %s | Duration: %s"),
 					*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Entry.Uid,
@@ -465,10 +466,11 @@ void UBanDiscordSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 				const FString DurationStr = Entry.bIsPermanent
 					? TEXT("permanent")
-					: BanDiscordHelpers::FormatDuration(static_cast<int32>(FMath::Min(
-					    FMath::Max((int64)0,
-					        static_cast<int64>((Entry.ExpireDate - Entry.BanDate).GetTotalMinutes())),
-					    static_cast<int64>(INT32_MAX))));
+					: BanDiscordHelpers::FormatDuration([&]() -> int32 {
+					    const double TotalMins = (Entry.ExpireDate - Entry.BanDate).GetTotalMinutes();
+					    if (!FMath::IsFinite(TotalMins) || TotalMins < 0.0) return 0;
+					    return static_cast<int32>(FMath::Min(TotalMins, static_cast<double>(INT32_MAX)));
+					}());
 				const FString Msg = FString::Printf(
 					TEXT("✏️ **%s** (`%s`) ban record updated.\nReason: %s\nBy: %s | Duration: %s"),
 					*BanDiscordHelpers::EscapeMarkdown(Entry.PlayerName), *Entry.Uid,
@@ -2397,6 +2399,12 @@ void UBanDiscordSubsystem::HandleBanNameCommand(const TArray<FString>& Args,
 				*BanDiscordHelpers::EscapeMarkdown(Record.DisplayName), *Record.Uid));
 		return;
 	}
+	else
+	{
+		// SaveToFile failed — no persistent ban was written; do not kick.
+		Respond(ChannelId, TEXT("❌ Failed to write ban to the database. Check server logs."));
+		return;
+	}
 
 	// Also ban IP if recorded.
 	FString IpUid;
@@ -2675,6 +2683,9 @@ void UBanDiscordSubsystem::HandleExtendBanCommand(const TArray<FString>& Args,
 	if (!DB->UpdateBan(PrimaryUid,
 		[MinutesToAdd](FBanEntry& E)
 		{
+			// Re-check under the DB lock: if a concurrent operation upgraded this ban to
+			// permanent, we must not silently downgrade it back to temporary.
+			if (E.bIsPermanent) return;
 			const FDateTime BaseTime = FMath::Max(E.ExpireDate, FDateTime::UtcNow());
 			E.ExpireDate   = BaseTime + FTimespan::FromMinutes(MinutesToAdd);
 			E.bIsPermanent = false;
@@ -2685,6 +2696,15 @@ void UBanDiscordSubsystem::HandleExtendBanCommand(const TArray<FString>& Args,
 		Respond(ChannelId,
 			FString::Printf(TEXT("⚠️ **%s** (`%s`) is no longer banned — the ban may have expired. Cannot extend."),
 				*BanDiscordHelpers::EscapeMarkdown(DisplayName), *Uid));
+		return;
+	}
+
+	// If a concurrent upgrade to permanent happened inside UpdateBan, abort.
+	if (Updated.bIsPermanent)
+	{
+		Respond(ChannelId,
+			FString::Printf(TEXT("⚠️ **%s** has a **permanent** ban (upgraded concurrently) — cannot extend."),
+				*BanDiscordHelpers::EscapeMarkdown(DisplayName)));
 		return;
 	}
 

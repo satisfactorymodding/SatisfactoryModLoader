@@ -230,6 +230,9 @@ namespace BanJson
         // int32 value — exactly representable in double; the int64-string
         // convention applies only to ID fields that could exceed 2^53.
         Obj->SetNumberField(TEXT("points"),     static_cast<double>(W.Points > 0 ? W.Points : 1));
+        Obj->SetBoolField  (TEXT("hasExpiry"),  W.bHasExpiry);
+        if (W.bHasExpiry)
+            Obj->SetStringField(TEXT("expireDate"), W.ExpireDate.ToIso8601());
         return Obj;
     }
 
@@ -271,6 +274,7 @@ namespace BanJson
         Obj->SetNumberField(TEXT("durationMinutes"), static_cast<double>(S.DurationMinutes));
         Obj->SetStringField(TEXT("effectiveAt"),     S.EffectiveAt.ToIso8601());
         Obj->SetStringField(TEXT("createdAt"),       S.CreatedAt.ToIso8601());
+        Obj->SetNumberField(TEXT("retryCount"),      static_cast<double>(S.RetryCount));
         return Obj;
     }
 
@@ -2103,7 +2107,8 @@ void UBanRestApi::RegisterRoutes()
                 });
                 if (AppealSubmissions.Num() >= MaxAppealsPerMinute)
                 {
-                    Done(BanJson::Error(TEXT("Too many appeal submissions. Please try again later.")));
+                    Done(BanJson::Error(TEXT("Too many appeal submissions. Please try again later."),
+                        EHttpServerResponseCodes::TooManyRequests));
                     return true;
                 }
                 AppealSubmissions.Add(Now);
@@ -3123,23 +3128,17 @@ void UBanRestApi::RegisterRoutes()
                 bool bBatchSkipped = false;
                 const bool bBatchAdded = Ban.bIsPermanent
                     ? DB->AddBan(Ban, &Saved)
-                    : DB->AddBanSkipIfPermanentExists(Ban, bBatchSkipped);
+                    : DB->AddBanSkipIfPermanentExists(Ban, &Saved, &bBatchSkipped);
                 if (bBatchAdded)
                 {
-                    // For temp bans, AddBanSkipIfPermanentExists assigns an Id internally
-                    // but does not return the saved entry; look it up for the correct Id.
-                    FBanEntry TempLookup;
-                    const FBanEntry& AddedEntry = Ban.bIsPermanent
-                        ? Saved
-                        : (DB->GetBanByUid(Ban.Uid, TempLookup) ? TempLookup : Ban);
-                    RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), AddedEntry);
-                    FBanDiscordNotifier::NotifyBanCreated(AddedEntry);
+                    RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), Saved);
+                    FBanDiscordNotifier::NotifyBanCreated(Saved);
                     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                         AuditLog->LogAction(TEXT("ban"), Uid, TEXT(""), BannedBy, BannedBy, Reason);
                     // Kick the player if currently online.
                     if (UWorld* World = GI->GetWorld())
-                        UBanEnforcer::KickConnectedPlayer(World, Uid, AddedEntry.GetKickMessage());
-                    ResultArr.Add(MakeShared<FJsonValueObject>(BanJson::EntryToJson(AddedEntry)));
+                        UBanEnforcer::KickConnectedPlayer(World, Uid, Saved.GetKickMessage());
+                    ResultArr.Add(MakeShared<FJsonValueObject>(BanJson::EntryToJson(Saved)));
                     ++Added;
                 }
             }
