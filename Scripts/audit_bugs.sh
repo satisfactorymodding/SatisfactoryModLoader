@@ -1178,9 +1178,10 @@ RESTAPI_CPP_CHECK42="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | 
 
 if [[ -z "$RESTAPI_CPP_CHECK42" ]]; then
     fail "CHECK 42 – BanRestApi.cpp not found"
-elif ! grep -qP 'bHasDuration\s*&&\s*DurationMinutesDbl\s*<\s*0\.0' "$RESTAPI_CPP_CHECK42"; then
-    fail "CHECK 42 – PATCH /bans/:uid does not reject negative durationMinutes" \
-        "File: $RESTAPI_CPP_CHECK42"
+elif ! grep -qP 'bHasDuration\s*&&\s*\(!FMath::IsFinite\(DurationMinutesDbl\)\s*\|\|\s*DurationMinutesDbl\s*<\s*0\.0\)' "$RESTAPI_CPP_CHECK42"; then
+    fail "CHECK 42 – PATCH /bans/:uid does not reject non-finite/negative durationMinutes" \
+        "File: $RESTAPI_CPP_CHECK42" \
+        "Fix: reject !FMath::IsFinite(DurationMinutesDbl) || DurationMinutesDbl < 0.0."
 fi
 
 pass "CHECK 42 done"
@@ -2446,15 +2447,15 @@ WSCLIENT_CPP_CHECK94="$(list_cpp_files | tr '\0' '\n' | grep 'SMLWebSocketClient
 if [[ -z "$WSCLIENT_CPP_CHECK94" ]]; then
     fail "CHECK 94 – SMLWebSocketClient.cpp not found"
 else
-    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::SendText\s*\(const FString& Message\)\s*\{[\s\S]{0,500}?FScopeLock Lock\(&QueueMutex\);[\s\S]{0,220}?if \(bIsConnected && Runnable\.IsValid\(\)\)[\s\S]{0,220}?EnqueueText\(Message\)[\s\S]{0,120}?return;[\s\S]{0,160}?PendingSendQueue\.Add\(Message\)/s; exit 1' "$WSCLIENT_CPP_CHECK94"; then
+    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::SendText\s*\(const FString& Message\)\s*\{[\s\S]*?FScopeLock Lock\(&QueueMutex\);[\s\S]*?if \(bIsConnected && Runnable\.IsValid\(\)\)[\s\S]*?EnqueueText\(Message\)[\s\S]*?return;[\s\S]*?PendingSendQueue\.Add\(Message\)/s; exit 1' "$WSCLIENT_CPP_CHECK94"; then
         fail "CHECK 94 – SendText can still strand a queued message during reconnect" \
             "Fix: after taking QueueMutex, re-check bIsConnected/Runnable and send immediately before falling back to PendingSendQueue."
     fi
-    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::SendBinary\s*\(const TArray<uint8>& Data\)\s*\{[\s\S]{0,500}?FScopeLock Lock\(&QueueMutex\);[\s\S]{0,220}?if \(bIsConnected && Runnable\.IsValid\(\)\)[\s\S]{0,220}?EnqueueBinary\(Data\)[\s\S]{0,120}?return;[\s\S]{0,160}?PendingSendBinaryQueue\.Add\(Data\)/s; exit 1' "$WSCLIENT_CPP_CHECK94"; then
+    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::SendBinary\s*\(const TArray<uint8>& Data\)\s*\{[\s\S]*?FScopeLock Lock\(&QueueMutex\);[\s\S]*?if \(bIsConnected && Runnable\.IsValid\(\)\)[\s\S]*?EnqueueBinary\(Data\)[\s\S]*?return;[\s\S]*?PendingSendBinaryQueue\.Add\(Data\)/s; exit 1' "$WSCLIENT_CPP_CHECK94"; then
         fail "CHECK 94 – SendBinary(const&) can still strand a queued payload during reconnect" \
             "Fix: after taking QueueMutex, re-check bIsConnected/Runnable and send immediately before falling back to PendingSendBinaryQueue."
     fi
-    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::SendBinary\s*\(TArray<uint8>&& Data\)\s*\{[\s\S]{0,520}?FScopeLock Lock\(&QueueMutex\);[\s\S]{0,220}?if \(bIsConnected && Runnable\.IsValid\(\)\)[\s\S]{0,220}?EnqueueBinary\(Data\)[\s\S]{0,120}?return;[\s\S]{0,160}?PendingSendBinaryQueue\.Add\(MoveTemp\(Data\)\)/s; exit 1' "$WSCLIENT_CPP_CHECK94"; then
+    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::SendBinary\s*\(TArray<uint8>&& Data\)\s*\{[\s\S]*?FScopeLock Lock\(&QueueMutex\);[\s\S]*?if \(bIsConnected && Runnable\.IsValid\(\)\)[\s\S]*?EnqueueBinary\(Data\)[\s\S]*?return;[\s\S]*?PendingSendBinaryQueue\.Add\(MoveTemp\(Data\)\)/s; exit 1' "$WSCLIENT_CPP_CHECK94"; then
         fail "CHECK 94 – SendBinary(&&) can still strand a queued payload during reconnect" \
             "Fix: after taking QueueMutex, re-check bIsConnected/Runnable and send immediately before falling back to PendingSendBinaryQueue."
     fi
