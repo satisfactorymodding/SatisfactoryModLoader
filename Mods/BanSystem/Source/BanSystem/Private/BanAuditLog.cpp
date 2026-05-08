@@ -66,6 +66,8 @@ void UBanAuditLog::LogAction(const FString& Action,
                              const FString& Details)
 {
     FScopeLock Lock(&Mutex);
+    const int64 OriginalNextId = NextId;
+    const TArray<FAuditEntry> PrevEntries = Entries;
 
     // Guard: if all 64-bit IDs have been exhausted NextId is set to 0 (the
     // exhausted sentinel) and no new entries should be allocated.
@@ -99,6 +101,8 @@ void UBanAuditLog::LogAction(const FString& Action,
 
     if (!SaveToFile())
     {
+        Entries = PrevEntries;
+        NextId = OriginalNextId;
         UE_LOG(LogBanAuditLog, Error,
             TEXT("BanAuditLog: failed to save after logging '%s' for '%s'"),
             *Action, *TargetUid);

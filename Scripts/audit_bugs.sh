@@ -1001,6 +1001,105 @@ fi
 pass "CHECK 35 done"
 echo
 
+# =============================================================================
+# CHECK 36: Add/Log operations roll back in-memory state when save fails
+#
+# Persist-first semantics: when SaveToFile() fails, in-memory mutation must be
+# undone so memory and disk stay consistent.
+# =============================================================================
+echo "--- CHECK 36: add/log save-failure rollback restores in-memory state ---"
+
+NOTEREG_CPP_CHECK36="$(list_cpp_files | tr '\0' '\n' | grep 'PlayerNoteRegistry\.cpp' | head -1)"
+WARNREG_CPP_CHECK36="$(list_cpp_files | tr '\0' '\n' | grep 'PlayerWarningRegistry\.cpp' | head -1)"
+SCHEDREG_CPP_CHECK36="$(list_cpp_files | tr '\0' '\n' | grep 'ScheduledBanRegistry\.cpp' | head -1)"
+AUDITLOG_CPP_CHECK36="$(list_cpp_files | tr '\0' '\n' | grep 'BanAuditLog\.cpp' | head -1)"
+
+if [[ -z "$NOTEREG_CPP_CHECK36" ]]; then
+    fail "CHECK 36 – PlayerNoteRegistry.cpp not found"
+elif ! grep -qP 'OriginalNextId' "$NOTEREG_CPP_CHECK36" \
+     || ! grep -qP 'Notes\.RemoveAt\s*\(\s*Notes\.Num\s*\(\s*\)\s*-\s*1\s*\)' "$NOTEREG_CPP_CHECK36" \
+     || ! grep -qP 'NextId\s*=\s*OriginalNextId' "$NOTEREG_CPP_CHECK36"; then
+    fail "CHECK 36 – PlayerNoteRegistry AddNote does not roll back insert + NextId on save failure" \
+        "File: $NOTEREG_CPP_CHECK36"
+fi
+
+if [[ -z "$WARNREG_CPP_CHECK36" ]]; then
+    fail "CHECK 36 – PlayerWarningRegistry.cpp not found"
+elif ! grep -qP 'OriginalNextId' "$WARNREG_CPP_CHECK36" \
+     || ! grep -qP 'Warnings\.RemoveAt\s*\(\s*Warnings\.Num\s*\(\s*\)\s*-\s*1\s*\)' "$WARNREG_CPP_CHECK36" \
+     || ! grep -qP 'NextId\s*=\s*OriginalNextId' "$WARNREG_CPP_CHECK36"; then
+    fail "CHECK 36 – PlayerWarningRegistry AddWarning paths do not roll back insert + NextId on save failure" \
+        "File: $WARNREG_CPP_CHECK36"
+fi
+
+if [[ -z "$SCHEDREG_CPP_CHECK36" ]]; then
+    fail "CHECK 36 – ScheduledBanRegistry.cpp not found"
+elif ! grep -qP 'OriginalNextId' "$SCHEDREG_CPP_CHECK36" \
+     || ! grep -qP 'Pending\.RemoveAt\s*\(\s*Pending\.Num\s*\(\s*\)\s*-\s*1\s*\)' "$SCHEDREG_CPP_CHECK36" \
+     || ! grep -qP 'NextId\s*=\s*OriginalNextId' "$SCHEDREG_CPP_CHECK36"; then
+    fail "CHECK 36 – ScheduledBanRegistry AddScheduled does not roll back insert + NextId on save failure" \
+        "File: $SCHEDREG_CPP_CHECK36"
+fi
+
+if [[ -z "$AUDITLOG_CPP_CHECK36" ]]; then
+    fail "CHECK 36 – BanAuditLog.cpp not found"
+elif ! grep -qP 'Entries\s*=\s*PrevEntries' "$AUDITLOG_CPP_CHECK36" \
+     || ! grep -qP 'NextId\s*=\s*OriginalNextId' "$AUDITLOG_CPP_CHECK36"; then
+    fail "CHECK 36 – BanAuditLog::LogAction does not roll back memory and NextId on save failure" \
+        "File: $AUDITLOG_CPP_CHECK36"
+fi
+
+pass "CHECK 36 done"
+echo
+
+# =============================================================================
+# CHECK 37: Delete operations reinsert removed entry on save failure
+# =============================================================================
+echo "--- CHECK 37: delete save-failure rollback restores removed entries ---"
+
+if [[ -z "$NOTEREG_CPP_CHECK36" ]]; then
+    fail "CHECK 37 – PlayerNoteRegistry.cpp not found"
+elif ! grep -qP 'Notes\.Insert\s*\(\s*RemovedEntry\s*,\s*RemoveIdx\s*\)' "$NOTEREG_CPP_CHECK36"; then
+    fail "CHECK 37 – PlayerNoteRegistry::DeleteNote does not restore removed entry on save failure" \
+        "File: $NOTEREG_CPP_CHECK36"
+fi
+
+if [[ -z "$WARNREG_CPP_CHECK36" ]]; then
+    fail "CHECK 37 – PlayerWarningRegistry.cpp not found"
+elif ! grep -qP 'Warnings\.Insert\s*\(\s*RemovedEntry\s*,\s*RemovedIdx\s*\)' "$WARNREG_CPP_CHECK36"; then
+    fail "CHECK 37 – PlayerWarningRegistry::DeleteWarningById does not restore removed entry on save failure" \
+        "File: $WARNREG_CPP_CHECK36"
+fi
+
+if [[ -z "$SCHEDREG_CPP_CHECK36" ]]; then
+    fail "CHECK 37 – ScheduledBanRegistry.cpp not found"
+elif ! grep -qP 'Pending\.Insert\s*\(\s*RemovedEntry\s*,\s*RemoveIdx\s*\)' "$SCHEDREG_CPP_CHECK36"; then
+    fail "CHECK 37 – ScheduledBanRegistry::DeleteScheduled does not restore removed entry on save failure" \
+        "File: $SCHEDREG_CPP_CHECK36"
+fi
+
+pass "CHECK 37 done"
+echo
+
+# =============================================================================
+# CHECK 38: MuteRegistry save-failure rollback and broadcast suppression
+# =============================================================================
+echo "--- CHECK 38: MuteRegistry save-failure rollback keeps state + events consistent ---"
+
+MUTEREG_CPP_CHECK38="$(list_cpp_files | tr '\0' '\n' | grep 'MuteRegistry\.cpp' | head -1)"
+
+if [[ -z "$MUTEREG_CPP_CHECK38" ]]; then
+    fail "CHECK 38 – MuteRegistry.cpp not found"
+elif ! grep -qP 'Mutes\s*=\s*PrevMutes' "$MUTEREG_CPP_CHECK38" \
+     || ! grep -qP 'if\s*\(\s*bPersisted\s*\)\s*OnPlayerMuted\.Broadcast' "$MUTEREG_CPP_CHECK38" \
+     || ! grep -qP 'Expired\.Reset\s*\(' "$MUTEREG_CPP_CHECK38"; then
+    fail "CHECK 38 – MuteRegistry does not fully roll back in-memory changes and suppress events on save failure" \
+        "File: $MUTEREG_CPP_CHECK38"
+fi
+
+pass "CHECK 38 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then

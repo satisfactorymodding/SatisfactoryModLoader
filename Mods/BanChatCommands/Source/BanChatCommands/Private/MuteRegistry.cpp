@@ -70,8 +70,10 @@ void UMuteRegistry::MutePlayer(const FString& Uid, const FString& PlayerName,
         Entry.ExpireDate    = FDateTime(0);
     }
 
+    bool bPersisted = false;
     {
         FScopeLock Lock(&Mutex);
+        const TArray<FMuteEntry> PrevMutes = Mutes;
         // Replace any existing mute for this UID.
         Mutes.RemoveAll([&Uid](const FMuteEntry& M)
         {
@@ -79,12 +81,20 @@ void UMuteRegistry::MutePlayer(const FString& Uid, const FString& PlayerName,
         });
         Mutes.Add(Entry);
         if (!SaveToFile())
+        {
+            Mutes = PrevMutes;
             UE_LOG(LogMuteRegistry, Error,
                 TEXT("MuteRegistry: failed to save mutes.json after muting %s"), *Uid);
+        }
+        else
+        {
+            bPersisted = true;
+        }
     }
 
-    // Broadcast outside the lock.
-    OnPlayerMuted.Broadcast(Entry, ExpiryMinutes > 0);
+    // Broadcast outside the lock only after successful persistence.
+    if (bPersisted)
+        OnPlayerMuted.Broadcast(Entry, ExpiryMinutes > 0);
 }
 
 bool UMuteRegistry::UnmutePlayer(const FString& Uid)
@@ -94,6 +104,7 @@ bool UMuteRegistry::UnmutePlayer(const FString& Uid)
 
     {
         FScopeLock Lock(&Mutex);
+        const TArray<FMuteEntry> PrevMutes = Mutes;
         // Capture whether the entry was actively muting before removal so we
         // only broadcast OnPlayerUnmuted for entries that were actually live.
         // If the mute had already expired but TickExpiry() hasn't run yet,
@@ -114,8 +125,13 @@ bool UMuteRegistry::UnmutePlayer(const FString& Uid)
         });
         bRemoved = Mutes.Num() < Before;
         if (bRemoved && !SaveToFile())
+        {
+            Mutes = PrevMutes;
+            bRemoved = false;
+            bWasActive = false;
             UE_LOG(LogMuteRegistry, Error,
                 TEXT("MuteRegistry: failed to save mutes.json after unmuting %s"), *Uid);
+        }
     }
 
     if (bRemoved && bWasActive)
@@ -168,10 +184,15 @@ bool UMuteRegistry::UpdateMuteReason(const FString& Uid, const FString& NewReaso
     {
         if (M.Uid.Equals(Uid, ESearchCase::IgnoreCase) && !M.IsExpired())
         {
+            const FString PrevReason = M.Reason;
             M.Reason = NewReason;
             if (!SaveToFile())
+            {
+                M.Reason = PrevReason;
                 UE_LOG(LogMuteRegistry, Error,
                     TEXT("MuteRegistry: failed to save mutes.json after updating reason for %s"), *Uid);
+                return false;
+            }
             return true;
         }
     }
@@ -184,6 +205,7 @@ TArray<FString> UMuteRegistry::TickExpiry()
 
     {
         FScopeLock Lock(&Mutex);
+        const TArray<FMuteEntry> PrevMutes = Mutes;
         const int32 Before = Mutes.Num();
         Mutes.RemoveAll([&Expired](const FMuteEntry& M) -> bool
         {
@@ -199,13 +221,17 @@ TArray<FString> UMuteRegistry::TickExpiry()
         {
             if (!SaveToFile())
             {
+                Mutes = PrevMutes;
+                Expired.Reset();
                 UE_LOG(LogMuteRegistry, Error,
                     TEXT("MuteRegistry: failed to save mutes.json after expiry — "
-                         "expired entries removed from memory but not persisted. "
-                         "They may reappear after a server restart."));
+                         "rolling back in-memory expiry removals."));
             }
-            UE_LOG(LogMuteRegistry, Log,
-                TEXT("MuteRegistry: expired %d timed mute(s)."), Expired.Num());
+            else
+            {
+                UE_LOG(LogMuteRegistry, Log,
+                    TEXT("MuteRegistry: expired %d timed mute(s)."), Expired.Num());
+            }
         }
     }
 
