@@ -752,15 +752,7 @@ void UBanRestApi::RegisterRoutes()
             }
             else
             {
-                bBanAdded = DB->AddBanSkipIfPermanentExists(Entry, bSkippedPerm);
-                if (bBanAdded)
-                {
-                    // AddBanSkipIfPermanentExists assigns a new Id internally but does
-                    // not return the saved entry; look it up so the response carries
-                    // the correct id instead of 0.
-                    if (!DB->GetBanByUid(Entry.Uid, Saved))
-                        Saved = Entry;
-                }
+                bBanAdded = DB->AddBanSkipIfPermanentExists(Entry, &Saved, &bSkippedPerm);
             }
 
             if (bSkippedPerm)
@@ -928,7 +920,15 @@ void UBanRestApi::RegisterRoutes()
             Body->TryGetStringField(TEXT("reason"),    NewReason);
             Body->TryGetStringField(TEXT("bannedBy"),  NewBannedBy);
             double DurationMinutesDbl = -1.0;
-            Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
+            const bool bHasDuration = Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
+
+            // Reject negative durations that have no defined meaning.
+            // 0 == permanent; any positive value == minutes; field absent == no change.
+            if (bHasDuration && DurationMinutesDbl < 0.0)
+            {
+                Done(BanJson::Error(TEXT("durationMinutes must be >= 0 (0 = permanent)")));
+                return true;
+            }
 
             // Atomically read-modify-write the ban record inside a single mutex
             // acquisition, eliminating the TOCTOU window that existed when

@@ -1129,6 +1129,77 @@ pass "CHECK 39 done"
 echo
 
 
+# =============================================================================
+# CHECK 40: PruneExpiredBans rolls back in-memory removal and clears Expired
+#           on SaveToFile failure (BUG-4)
+# =============================================================================
+echo "--- CHECK 40: PruneExpiredBans rolls back on save failure and suppresses spurious events ---"
+
+BANDB_CPP_CHECK40="$(list_cpp_files | tr '\0' '\n' | grep 'BanDatabase\.cpp' | head -1)"
+
+if [[ -z "$BANDB_CPP_CHECK40" ]]; then
+    fail "CHECK 40 – BanDatabase.cpp not found"
+elif ! grep -qP 'Bans\.Append\s*\(\s*Expired\s*\)' "$BANDB_CPP_CHECK40" \
+     || ! grep -qP 'Expired\.Reset\s*\(' "$BANDB_CPP_CHECK40"; then
+    fail "CHECK 40 – PruneExpiredBans does not roll back Bans and clear Expired on SaveToFile failure" \
+        "File: $BANDB_CPP_CHECK40"
+fi
+
+pass "CHECK 40 done"
+echo
+
+# =============================================================================
+# CHECK 41: POST /bans temp-ban uses 3-arg AddBanSkipIfPermanentExists (BUG-1)
+# =============================================================================
+echo "--- CHECK 41: POST /bans temp-ban uses 3-arg AddBanSkipIfPermanentExists ---"
+
+RESTAPI_CPP_CHECK41="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+
+if [[ -z "$RESTAPI_CPP_CHECK41" ]]; then
+    fail "CHECK 41 – BanRestApi.cpp not found"
+elif ! grep -qP 'AddBanSkipIfPermanentExists\s*\(\s*Entry\s*,\s*&Saved\s*,\s*&bSkippedPerm\s*\)' "$RESTAPI_CPP_CHECK41"; then
+    fail "CHECK 41 – POST /bans temp-ban does not use 3-arg AddBanSkipIfPermanentExists" \
+        "File: $RESTAPI_CPP_CHECK41"
+fi
+
+pass "CHECK 41 done"
+echo
+
+# =============================================================================
+# CHECK 42: PATCH /bans/:uid rejects negative durationMinutes (BUG-2)
+# =============================================================================
+echo "--- CHECK 42: PATCH /bans/:uid rejects negative durationMinutes values ---"
+
+RESTAPI_CPP_CHECK42="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+
+if [[ -z "$RESTAPI_CPP_CHECK42" ]]; then
+    fail "CHECK 42 – BanRestApi.cpp not found"
+elif ! grep -qP 'bHasDuration\s*&&\s*DurationMinutesDbl\s*<\s*0\.0' "$RESTAPI_CPP_CHECK42"; then
+    fail "CHECK 42 – PATCH /bans/:uid does not reject negative durationMinutes" \
+        "File: $RESTAPI_CPP_CHECK42"
+fi
+
+pass "CHECK 42 done"
+echo
+
+# =============================================================================
+# CHECK 43: BanSyncClient gates bWasUpdate on RemoveBanByUid return value (BUG-9)
+# =============================================================================
+echo "--- CHECK 43: BanSyncClient bWasUpdate gated on RemoveBanByUid return value ---"
+
+SYNCCLIENT_CPP_CHECK43="$(list_cpp_files | tr '\0' '\n' | grep 'BanSyncClient\.cpp' | head -1)"
+
+if [[ -z "$SYNCCLIENT_CPP_CHECK43" ]]; then
+    fail "CHECK 43 – BanSyncClient.cpp not found"
+elif ! grep -qP 'bWasUpdate\s*=\s*DB->RemoveBanByUid' "$SYNCCLIENT_CPP_CHECK43"; then
+    fail "CHECK 43 – BanSyncClient does not gate bWasUpdate on RemoveBanByUid return value" \
+        "File: $SYNCCLIENT_CPP_CHECK43"
+fi
+
+pass "CHECK 43 done"
+echo
+
+
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
     echo -e "${GRN}All checks passed — no issues found.${NC}"
