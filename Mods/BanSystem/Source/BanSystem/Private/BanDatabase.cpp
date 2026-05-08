@@ -515,6 +515,9 @@ bool UBanDatabase::AddBan(const FBanEntry& Entry, FBanEntry* OutSaved)
             // Guard against ID exhaustion — 0 is the "exhausted" sentinel.
             if (NextId == 0)
             {
+                // OldEntry was already removed from Bans above; restore it so
+                // in-memory state stays consistent with the on-disk file.
+                if (bHadOldEntry) Bans.Add(OldEntry);
                 UE_LOG(LogBanDatabase, Error,
                     TEXT("BanDatabase: all 64-bit IDs have been used — cannot add more bans"));
                 return false;
@@ -594,6 +597,9 @@ bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry, bool& bOu
         {
             if (NextId == 0)
             {
+                // OldEntry was already removed from Bans above; restore it so
+                // in-memory state stays consistent with the on-disk file.
+                if (bHadOldEntry) Bans.Add(OldEntry);
                 UE_LOG(LogBanDatabase, Error,
                     TEXT("BanDatabase: all 64-bit IDs have been used — cannot add more bans"));
                 return false;
@@ -657,6 +663,9 @@ bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry,
         {
             if (NextId == 0)
             {
+                // OldEntry was already removed from Bans above; restore it so
+                // in-memory state stays consistent with the on-disk file.
+                if (bHadOldEntry) Bans.Add(OldEntry);
                 UE_LOG(LogBanDatabase, Error,
                     TEXT("BanDatabase: all 64-bit IDs have been used — cannot add more bans"));
                 return false;

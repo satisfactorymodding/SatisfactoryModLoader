@@ -250,6 +250,20 @@ void UScheduledBanRegistry::Tick(float DeltaTime)
 
         if (!SaveToFile())
         {
+            // Restore the structural state (re-add entries that were removed),
+            // but carry over the updated RetryCount values so the 5-attempt cap
+            // is honoured correctly even if the save keeps failing.
+            for (FScheduledBanEntry& Prev : PrevPending)
+            {
+                for (const FScheduledBanEntry& FE : FailedEntries)
+                {
+                    if (FE.Id == Prev.Id && FE.RetryCount > Prev.RetryCount)
+                    {
+                        Prev.RetryCount = FE.RetryCount;
+                        break;
+                    }
+                }
+            }
             Pending = PrevPending;
             UE_LOG(LogScheduledBanRegistry, Error,
                 TEXT("ScheduledBanRegistry: failed to save after processing %d due entry(ies)"),

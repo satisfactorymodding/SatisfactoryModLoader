@@ -1842,6 +1842,82 @@ fi
 pass "CHECK 72 done"
 echo
 
+# =============================================================================
+# CHECK 73: BanDatabase AddBan/AddBanSkipIfPermanentExists restores OldEntry on NextId==0
+# =============================================================================
+echo "--- CHECK 73: BanDatabase restores OldEntry when NextId is exhausted ---"
+
+BANDB_CPP_CHECK73="$(list_cpp_files | tr '\0' '\n' | grep 'BanDatabase\.cpp' | head -1)"
+
+if [[ -z "$BANDB_CPP_CHECK73" ]]; then
+    fail "CHECK 73 – BanDatabase.cpp not found"
+else
+    # Verify all three AddBan overloads restore OldEntry before the NextId==0 early return.
+    # The Perl check reads the whole file and counts the pattern across line boundaries.
+    if ! perl -0777 -ne '
+        my $src = $_;
+        my $hits = () = $src =~ /if\s*\(bHadOldEntry\)\s*Bans\.Add\(OldEntry\);\s*\n\s*UE_LOG\(LogBanDatabase[^)]*all 64-bit IDs/g;
+        exit 0 if $hits >= 3;
+        exit 1;
+    ' "$BANDB_CPP_CHECK73"; then
+        fail "CHECK 73 – AddBan/AddBanSkipIfPermanentExists (one or more overloads) missing OldEntry restore before NextId==0 early return" \
+            "File: $BANDB_CPP_CHECK73" \
+            "Fix: add 'if (bHadOldEntry) Bans.Add(OldEntry);' before each 'return false' in the NextId==0 branch."
+    fi
+fi
+
+pass "CHECK 73 done"
+echo
+
+# =============================================================================
+# CHECK 74: ScheduledBanRegistry Tick preserves RetryCount increments on SaveToFile failure
+# =============================================================================
+echo "--- CHECK 74: ScheduledBanRegistry Tick preserves RetryCount on rollback ---"
+
+SCHED_CPP_CHECK74="$(list_cpp_files | tr '\0' '\n' | grep 'ScheduledBanRegistry\.cpp' | head -1)"
+
+if [[ -z "$SCHED_CPP_CHECK74" ]]; then
+    fail "CHECK 74 – ScheduledBanRegistry.cpp not found"
+else
+    if ! perl -0777 -ne 'exit 0 if /if\s*\(\s*!SaveToFile\(\)\s*\)[\s\S]*?Prev\.RetryCount\s*=\s*FE\.RetryCount[\s\S]*?Pending\s*=\s*PrevPending/s; exit 1' "$SCHED_CPP_CHECK74"; then
+        fail "CHECK 74 – ScheduledBanRegistry Tick rollback overwrites RetryCount increments" \
+            "File: $SCHED_CPP_CHECK74" \
+            "Fix: carry over updated RetryCount from FailedEntries into PrevPending before restoring Pending."
+    fi
+fi
+
+pass "CHECK 74 done"
+echo
+
+# =============================================================================
+# CHECK 75: BanDiscordSubsystem warn escalation uses DurationMinutes comparison
+# =============================================================================
+echo "--- CHECK 75: BanDiscordSubsystem warn escalation uses DurationMinutes severity comparison ---"
+
+BANDISCORD_CPP_CHECK75="$(list_cpp_files | tr '\0' '\n' | grep 'BanDiscordSubsystem\.cpp' | head -1)"
+
+if [[ -z "$BANDISCORD_CPP_CHECK75" ]]; then
+    fail "CHECK 75 – BanDiscordSubsystem.cpp not found"
+else
+    # Must NOT contain the old BestThreshold pattern in warn escalation blocks
+    if grep -qP '^\s*int32\s+BestThreshold\s*=\s*-1;' "$BANDISCORD_CPP_CHECK75"; then
+        fail "CHECK 75 – BanDiscordSubsystem still uses stale BestThreshold algorithm in warn escalation" \
+            "File: $BANDISCORD_CPP_CHECK75" \
+            "Fix: replace BestThreshold comparison with DurationMinutes-severity comparison (same as BanChatCommands.cpp)."
+    fi
+    # Must contain the DurationMinutes-severity comparison in at least two places (HandleWarnCommand + ExecutePanelWarn)
+    COUNT75=$(grep -cP 'const bool bMoreSevere\s*=\s*\(BanDurationMinutes\s*<\s*0\)' "$BANDISCORD_CPP_CHECK75" 2>/dev/null || true)
+    COUNT75="${COUNT75:-0}"
+    if [[ "$COUNT75" -lt 2 ]]; then
+        fail "CHECK 75 – BanDiscordSubsystem warn escalation missing DurationMinutes-severity comparison in one or both warn paths" \
+            "File: $BANDISCORD_CPP_CHECK75" \
+            "Fix: apply the DurationMinutes-severity comparison to both HandleWarnCommand and ExecutePanelWarn."
+    fi
+fi
+
+pass "CHECK 75 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then

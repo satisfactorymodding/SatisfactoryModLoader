@@ -2099,19 +2099,23 @@ void UBanDiscordSubsystem::HandleWarnCommand(const TArray<FString>& Args,
 			int32 BanDurationMinutes = -1;
 			if (SysCfg->WarnEscalationTiers.Num() > 0)
 			{
-				int32 BestThreshold = -1;
+				// Apply the most severe tier that has been reached.
+				// Compare by DurationMinutes: 0 means permanent (most severe);
+				// among temporary bans, the longest duration wins.
+				// This avoids the old BestThreshold comparison which mixed
+				// point-threshold and warn-count values numerically (incomparable units).
 				for (const FWarnEscalationTier& Tier : SysCfg->WarnEscalationTiers)
 				{
 					const bool bHit = (Tier.PointThreshold > 0)
 						? (WarnPoints >= Tier.PointThreshold)
 						: (WarnCount  >= Tier.WarnCount);
-					const int32 ThisThreshold = (Tier.PointThreshold > 0)
-						? Tier.PointThreshold : Tier.WarnCount;
-					if (bHit && ThisThreshold > BestThreshold)
-					{
-						BestThreshold      = ThisThreshold;
+					if (!bHit) continue;
+
+					const bool bMoreSevere = (BanDurationMinutes < 0)
+						|| (BanDurationMinutes != 0 && (Tier.DurationMinutes == 0
+							|| Tier.DurationMinutes > BanDurationMinutes));
+					if (bMoreSevere)
 						BanDurationMinutes = Tier.DurationMinutes;
-					}
 				}
 			}
 			else if (SysCfg->AutoBanWarnCount > 0 && WarnCount >= SysCfg->AutoBanWarnCount)
@@ -6543,19 +6547,23 @@ FString UBanDiscordSubsystem::ExecutePanelWarn(const FString& PlayerArg,
 			int32 BanDurationMinutes = -1;
 			if (SysCfg->WarnEscalationTiers.Num() > 0)
 			{
-				int32 BestThreshold = -1;
+				// Apply the most severe tier that has been reached.
+				// Compare by DurationMinutes: 0 means permanent (most severe);
+				// among temporary bans, the longest duration wins.
+				// This avoids the old BestThreshold comparison which mixed
+				// point-threshold and warn-count values numerically (incomparable units).
 				for (const FWarnEscalationTier& Tier : SysCfg->WarnEscalationTiers)
 				{
 					const bool bHit = (Tier.PointThreshold > 0)
 						? (WarnPoints >= Tier.PointThreshold)
 						: (WarnCount  >= Tier.WarnCount);
-					const int32 ThisThreshold = (Tier.PointThreshold > 0)
-						? Tier.PointThreshold : Tier.WarnCount;
-					if (bHit && ThisThreshold > BestThreshold)
-					{
-						BestThreshold      = ThisThreshold;
+					if (!bHit) continue;
+
+					const bool bMoreSevere = (BanDurationMinutes < 0)
+						|| (BanDurationMinutes != 0 && (Tier.DurationMinutes == 0
+							|| Tier.DurationMinutes > BanDurationMinutes));
+					if (bMoreSevere)
 						BanDurationMinutes = Tier.DurationMinutes;
-					}
 				}
 			}
 			else if (SysCfg->AutoBanWarnCount > 0 && WarnCount >= SysCfg->AutoBanWarnCount)
