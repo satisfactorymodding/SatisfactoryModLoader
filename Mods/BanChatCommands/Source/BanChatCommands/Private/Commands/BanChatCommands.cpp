@@ -89,7 +89,13 @@ namespace BanChat
     {
         if (Id.Len() != 32) return false;
         for (TCHAR c : Id)
-            if (!FChar::IsHexDigit(c)) return false;
+        {
+            // Only lowercase hex digits are accepted; uppercase is rejected so
+            // that callers never create mixed-case UIDs that fail to match
+            // existing lowercase-stored bans.
+            if (!((c >= TEXT('0') && c <= TEXT('9')) || (c >= TEXT('a') && c <= TEXT('f'))))
+                return false;
+        }
         return true;
     }
 

@@ -49,6 +49,8 @@ struct FSMLWebSocketReconnectConfig
 	FString ProxyUser;
 	FString ProxyPassword;
 	// SSL settings
+	// Defaults to false because UE5 shipping builds do not include a CA bundle;
+	// set to true only if the server has a valid, trusted TLS certificate chain.
 	bool bVerifySSLCertificate{false};
 };
 

@@ -467,14 +467,21 @@ bool FSMLWebSocketServerRunnable::PerformHandshake(FClientState& Client)
         const int32 ExpectedLen = ExpectedUtf8.Length();
 
         // XOR-fold all bytes from both strings — result is 0 only when every
-        // byte matches.  Running the full loop regardless of length ensures the
-        // comparison takes the same time whether or not the lengths differ.
+        // byte matches.  Always iterate at least 256 bytes regardless of either
+        // string's actual length to prevent an attacker from inferring the stored
+        // token's length by submitting strings of varying length and observing
+        // response latency; all comparisons with tokens ≤ 256 bytes complete in
+        // the same number of iterations.
         // volatile prevents dead-store-elimination of the loop body when the
-        // compiler can infer from the length XOR that Diff is already non-zero.
-        volatile uint32 Diff = static_cast<uint32>(AuthLen ^ ExpectedLen);
-        const int32 CmpLen = FMath::Min(AuthLen, ExpectedLen);
-        for (int32 i = 0; i < CmpLen; ++i)
-            Diff |= static_cast<uint32>(static_cast<uint8>(AuthUtf8.Get()[i])) ^ static_cast<uint32>(static_cast<uint8>(ExpectedUtf8.Get()[i]));
+        // compiler can infer from the length mismatch that Diff is already non-zero.
+        volatile uint32 Diff = static_cast<uint32>(AuthLen != ExpectedLen ? 1 : 0);
+        const int32 N = FMath::Max(FMath::Max(AuthLen, ExpectedLen), 256);
+        for (int32 i = 0; i < N; ++i)
+        {
+            const uint8 ByteA = (i < AuthLen)     ? static_cast<uint8>(AuthUtf8.Get()[i])     : 0;
+            const uint8 ByteB = (i < ExpectedLen) ? static_cast<uint8>(ExpectedUtf8.Get()[i]) : 0;
+            Diff |= static_cast<uint32>(ByteA ^ ByteB);
+        }
 
         if (Diff != 0)
         {

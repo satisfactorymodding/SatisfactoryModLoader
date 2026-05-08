@@ -735,9 +735,17 @@ void UBanEnforcer::PerformBanCheckForPlayer(UWorld* World, APlayerController* PC
 
                             if (W2)
                             {
-                                UBanEnforcer::KickConnectedPlayer(W2, CapturedUid, FinalMsg);
-                                FBanDiscordNotifier::NotifyGeoIpBlocked(
-                                    PlayerName, CapturedUid, IpAddress, CountryCode);
+                                // HTTP response callbacks fire on the HTTP thread; UE
+                                // world/player-controller operations must run on the game thread.
+                                TWeakObjectPtr<UWorld> WeakW2(W2);
+                                AsyncTask(ENamedThreads::GameThread,
+                                    [WeakW2, CapturedUid, FinalMsg, PlayerName, IpAddress, CountryCode]()
+                                    {
+                                        if (UWorld* SafeW = WeakW2.Get())
+                                            UBanEnforcer::KickConnectedPlayer(SafeW, CapturedUid, FinalMsg);
+                                        FBanDiscordNotifier::NotifyGeoIpBlocked(
+                                            PlayerName, CapturedUid, IpAddress, CountryCode);
+                                    });
                             }
                         });
                     GeoReq->ProcessRequest();
@@ -1045,9 +1053,17 @@ void UBanEnforcer::PerformBanCheckForUid(UWorld* World, APlayerController* PC, U
                             const FString FinalMsg = KickMsg.Replace(TEXT("{country}"), *CountryCode);
                             if (W2 && IsValid(W2))
                             {
-                                UBanEnforcer::KickConnectedPlayer(W2, CapturedUid, FinalMsg);
-                                FBanDiscordNotifier::NotifyGeoIpBlocked(
-                                    CapturedName, CapturedUid, IpAddress, CountryCode);
+                                // HTTP response callbacks fire on the HTTP thread; UE
+                                // world/player-controller operations must run on the game thread.
+                                TWeakObjectPtr<UWorld> WeakW2(W2);
+                                AsyncTask(ENamedThreads::GameThread,
+                                    [WeakW2, CapturedUid, FinalMsg, CapturedName, IpAddress, CountryCode]()
+                                    {
+                                        if (UWorld* SafeW = WeakW2.Get())
+                                            UBanEnforcer::KickConnectedPlayer(SafeW, CapturedUid, FinalMsg);
+                                        FBanDiscordNotifier::NotifyGeoIpBlocked(
+                                            CapturedName, CapturedUid, IpAddress, CountryCode);
+                                    });
                             }
                         });
                     GeoReq->ProcessRequest();

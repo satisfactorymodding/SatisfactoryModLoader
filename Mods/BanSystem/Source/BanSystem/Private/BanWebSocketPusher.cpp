@@ -38,6 +38,7 @@ void UBanWebSocketPusher::Initialize(FSubsystemCollectionBase& Collection)
     Client->bAutoReconnect = true;
     Client->ReconnectInitialDelaySeconds = 5.0f;
     Client->MaxReconnectDelaySeconds     = 60.0f;
+    Client->bVerifySSLCertificate        = Cfg->bVerifyWSCertificate;
     Client->Connect(Cfg->WebSocketPushUrl, TArray<FString>(), TMap<FString, FString>());
 
     ActiveInstance = this;
