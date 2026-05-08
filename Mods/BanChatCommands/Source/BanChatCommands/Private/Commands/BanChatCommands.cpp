@@ -3299,7 +3299,9 @@ EExecutionStatus AStaffChatCommand::ExecuteCommand_Implementation(
 {
     FString CallerId;
     const UBanChatCommandsConfig* Cfg = UBanChatCommandsConfig::Get();
-    if (!BanChat::IsAdminSender(Sender, CallerId, false))
+    // Check admin first (silently), then moderator — send exactly one error
+    // message to callers who have neither permission so they don't see two.
+    if (!BanChat::IsAdminSender(Sender, CallerId, /*bSilent=*/true))
     {
         if (!Cfg || !Cfg->IsModeratorUid(CallerId))
         {
@@ -3309,10 +3311,6 @@ EExecutionStatus AStaffChatCommand::ExecuteCommand_Implementation(
             return EExecutionStatus::INSUFFICIENT_PERMISSIONS;
         }
     }
-
-    const FString Message = BanChat::JoinArgs(Arguments, 0);
-    const FString Formatted = FString::Printf(TEXT("[Staff] %s: %s"), *Sender->GetSenderName(), *Message);
-    const FLinearColor StaffColor(0.0f, 0.8f, 1.0f, 1.0f);
 
     // Send only to online admins and moderators.
     UWorld* World = GetWorld();
@@ -3849,7 +3847,18 @@ EExecutionStatus AFreezeChatCommand::ExecuteCommand_Implementation(
             if (!EosPuid.IsEmpty())
                 PcUid = UBanDatabase::MakeUid(TEXT("EOS"), EosPuid);
         }
-        if (PcUid == Uid)
+        // For IP-only players (no EOS identity) fall back to their remote IP
+        // address so that /freeze works regardless of the player's platform.
+        if (PcUid.IsEmpty())
+        {
+            if (UNetConnection* Conn = Cast<UNetConnection>(PC->Player))
+            {
+                const FString RemoteIp = Conn->LowLevelGetRemoteAddress(/*bAppendPort=*/false);
+                if (!RemoteIp.IsEmpty())
+                    PcUid = UBanDatabase::MakeUid(TEXT("IP"), RemoteIp);
+            }
+        }
+        if (!PcUid.IsEmpty() && PcUid == Uid)
         {
             bFoundOnline = true;
             TargetPC = PC;
@@ -4473,7 +4482,7 @@ EExecutionStatus ABulkBanChatCommand::ExecuteCommand_Implementation(
         if (Arguments[i] == TEXT("--")) { SepIdx = i; break; }
     }
 
-    if (SepIdx > 0 && SepIdx < Arguments.Num() - 1)
+    if (SepIdx >= 0 && SepIdx < Arguments.Num() - 1)
     {
         for (int32 i = 0; i < SepIdx; ++i)
             Uids.Add(Arguments[i]);

@@ -99,6 +99,7 @@ namespace BanDiscordHelpers
 	/**
 	 * Escape characters that have special meaning in Discord markdown so that
 	 * player names with *, _, `, ~, |, > or \ are rendered literally.
+	 * '@' is also escaped to prevent @everyone/@here mention injection.
 	 */
 	static FString EscapeMarkdown(const FString& Text)
 	{
@@ -110,7 +111,7 @@ namespace BanDiscordHelpers
 			{
 			case TEXT('*'): case TEXT('_'): case TEXT('`'): case TEXT('~'):
 			case TEXT('|'): case TEXT('>'): case TEXT('\\'): case TEXT('['):
-			case TEXT(']'): case TEXT('#'):
+			case TEXT(']'): case TEXT('#'): case TEXT('@'):
 				Out += TEXT('\\');
 				break;
 			default:

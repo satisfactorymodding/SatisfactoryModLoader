@@ -127,6 +127,12 @@ TArray<FScheduledBanEntry> UScheduledBanRegistry::GetAllPending() const
 
 bool UScheduledBanRegistry::DeleteScheduled(int64 Id)
 {
+    FScheduledBanEntry Unused;
+    return DeleteScheduled(Id, Unused);
+}
+
+bool UScheduledBanRegistry::DeleteScheduled(int64 Id, FScheduledBanEntry& OutEntry)
+{
     FScopeLock Lock(&Mutex);
 
     int32 RemoveIdx = INDEX_NONE;
@@ -150,6 +156,7 @@ bool UScheduledBanRegistry::DeleteScheduled(int64 Id)
             TEXT("ScheduledBanRegistry: failed to save after deleting scheduled ban #%lld"), Id);
         return false;
     }
+    OutEntry = RemovedEntry;
     return true;
 }
 

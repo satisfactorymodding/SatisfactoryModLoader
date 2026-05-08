@@ -41,6 +41,7 @@ namespace
 
 	// Escape Discord markdown special characters in a player-supplied string so
 	// that it is rendered literally and cannot inject bold/italic/code formatting.
+	// '@' is also escaped to prevent @everyone/@here mention injection.
 	FString EscapeMarkdown(const FString& Text)
 	{
 		FString Out;
@@ -51,7 +52,7 @@ namespace
 			{
 			case TEXT('*'): case TEXT('_'): case TEXT('`'): case TEXT('~'):
 			case TEXT('|'): case TEXT('>'): case TEXT('\\'): case TEXT('['):
-			case TEXT(']'): case TEXT('#'):
+			case TEXT(']'): case TEXT('#'): case TEXT('@'):
 				Out += TEXT('\\');
 				break;
 			default:
@@ -212,12 +213,14 @@ void UTicketSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 							TEXT(":alarm_clock: SLA WARNING: Ticket <#%s> opened by <@%s> "
 							     "has not received a staff response after %d minutes!"),
 							*SlaChanId, *SLAPair.Value, Config.TicketSlaWarningMinutes);
-						const TArray<FString> SlaChans =
-							FTicketConfig::ParseChannelIds(Config.TicketChannelId);
-						for (const FString& NChan : SlaChans)
+						// Send to the staff log channel (TicketLogChannelId) so that
+						// ticket opener identities are not disclosed in the public
+						// panel channel (TicketChannelId) visible to all members.
+						// Fall back to sending nowhere if TicketLogChannelId is not set
+						// rather than leaking private info to the public channel.
+						if (!Config.TicketLogChannelId.IsEmpty())
 						{
-							if (!NChan.IsEmpty())
-								SlaB->SendDiscordChannelMessage(NChan, WarnMsg);
+							SlaB->SendDiscordChannelMessage(Config.TicketLogChannelId, WarnMsg);
 						}
 						// Record that the SLA warning was sent for this ticket so it
 						// is not repeated.  Use SlaWarnedChannels instead of
