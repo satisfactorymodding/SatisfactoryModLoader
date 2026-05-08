@@ -54,8 +54,10 @@ void UPlayerWarningRegistry::AddWarning(const FString& Uid, const FString& Playe
     if (Uid.IsEmpty()) return;
 
     FWarningEntry Entry;
+    bool bPersisted = false;
     {
         FScopeLock Lock(&Mutex);
+        const int64 OriginalNextId = NextId;
 
         if (NextId == 0)
         {
@@ -75,14 +77,21 @@ void UPlayerWarningRegistry::AddWarning(const FString& Uid, const FString& Playe
         Warnings.Add(Entry);
         if (!SaveToFile())
         {
+            Warnings.RemoveAt(Warnings.Num() - 1);
+            NextId = OriginalNextId;
             UE_LOG(LogPlayerWarningRegistry, Error,
                 TEXT("PlayerWarningRegistry: failed to save after adding warning id=%lld for uid='%s'"),
                 Entry.Id, *Entry.Uid);
         }
+        else
+        {
+            bPersisted = true;
+        }
     }
 
     // Broadcast outside the lock so listeners can safely call back into the registry.
-    OnWarningAdded.Broadcast(Entry);
+    if (bPersisted)
+        OnWarningAdded.Broadcast(Entry);
 }
 
 FWarningEntry UPlayerWarningRegistry::AddWarning(const FWarningEntry& InEntry)
@@ -90,8 +99,10 @@ FWarningEntry UPlayerWarningRegistry::AddWarning(const FWarningEntry& InEntry)
     if (InEntry.Uid.IsEmpty()) return FWarningEntry();
 
     FWarningEntry Entry;
+    bool bPersisted = false;
     {
         FScopeLock Lock(&Mutex);
+        const int64 OriginalNextId = NextId;
 
         Entry = InEntry;
         Entry.Points = FMath::Max(1, InEntry.Points);
@@ -110,15 +121,25 @@ FWarningEntry UPlayerWarningRegistry::AddWarning(const FWarningEntry& InEntry)
         Warnings.Add(Entry);
         if (!SaveToFile())
         {
+            Warnings.RemoveAt(Warnings.Num() - 1);
+            NextId = OriginalNextId;
             UE_LOG(LogPlayerWarningRegistry, Error,
                 TEXT("PlayerWarningRegistry: failed to save after adding warning id=%lld for uid='%s'"),
                 Entry.Id, *Entry.Uid);
         }
+        else
+        {
+            bPersisted = true;
+        }
     }
 
     // Broadcast outside the lock so listeners can safely call back into the registry.
-    OnWarningAdded.Broadcast(Entry);
-    return Entry;
+    if (bPersisted)
+    {
+        OnWarningAdded.Broadcast(Entry);
+        return Entry;
+    }
+    return FWarningEntry();
 }
 
 TArray<FWarningEntry> UPlayerWarningRegistry::GetWarningsForUid(const FString& Uid) const
@@ -137,6 +158,7 @@ TArray<FWarningEntry> UPlayerWarningRegistry::GetWarningsForUid(const FString& U
 int32 UPlayerWarningRegistry::ClearWarningsForUid(const FString& Uid)
 {
     FScopeLock Lock(&Mutex);
+    const TArray<FWarningEntry> PrevWarnings = Warnings;
 
     const int32 Before = Warnings.Num();
     Warnings.RemoveAll([&Uid](const FWarningEntry& W)
@@ -149,9 +171,11 @@ int32 UPlayerWarningRegistry::ClearWarningsForUid(const FString& Uid)
     {
         if (!SaveToFile())
         {
+            Warnings = PrevWarnings;
             UE_LOG(LogPlayerWarningRegistry, Error,
                 TEXT("PlayerWarningRegistry: failed to save after clearing warnings for uid='%s'"),
                 *Uid);
+            return 0;
         }
     }
 
@@ -199,8 +223,10 @@ void UPlayerWarningRegistry::AddWarning(const FString& Uid, const FString& Playe
     if (Uid.IsEmpty()) return;
 
     FWarningEntry Entry;
+    bool bPersisted = false;
     {
         FScopeLock Lock(&Mutex);
+        const int64 OriginalNextId = NextId;
 
         if (NextId == 0)
         {
@@ -226,14 +252,21 @@ void UPlayerWarningRegistry::AddWarning(const FString& Uid, const FString& Playe
         Warnings.Add(Entry);
         if (!SaveToFile())
         {
+            Warnings.RemoveAt(Warnings.Num() - 1);
+            NextId = OriginalNextId;
             UE_LOG(LogPlayerWarningRegistry, Error,
                 TEXT("PlayerWarningRegistry: failed to save after adding warning id=%lld for uid='%s'"),
                 Entry.Id, *Entry.Uid);
         }
+        else
+        {
+            bPersisted = true;
+        }
     }
 
     // Broadcast outside the lock so listeners can safely call back into the registry.
-    OnWarningAdded.Broadcast(Entry);
+    if (bPersisted)
+        OnWarningAdded.Broadcast(Entry);
 }
 
 int32 UPlayerWarningRegistry::GetWarningPoints(const FString& Uid) const
@@ -260,6 +293,7 @@ int32 UPlayerWarningRegistry::GetWarningPoints(const FString& Uid) const
 int32 UPlayerWarningRegistry::PruneExpiredWarnings()
 {
     FScopeLock Lock(&Mutex);
+    const TArray<FWarningEntry> PrevWarnings = Warnings;
 
     const int32 Before = Warnings.Num();
     Warnings.RemoveAll([](const FWarningEntry& W) -> bool
@@ -272,8 +306,10 @@ int32 UPlayerWarningRegistry::PruneExpiredWarnings()
     {
         if (!SaveToFile())
         {
+            Warnings = PrevWarnings;
             UE_LOG(LogPlayerWarningRegistry, Error,
                 TEXT("PlayerWarningRegistry: failed to save after pruning %d expired warning(s)"), Removed);
+            return 0;
         }
         UE_LOG(LogPlayerWarningRegistry, Log,
             TEXT("PlayerWarningRegistry: pruned %d expired warning(s)."), Removed);
@@ -285,21 +321,30 @@ int32 UPlayerWarningRegistry::PruneExpiredWarnings()
 bool UPlayerWarningRegistry::DeleteWarningById(int64 Id)
 {
     FScopeLock Lock(&Mutex);
-
-    const int32 Before = Warnings.Num();
-    Warnings.RemoveAll([Id](const FWarningEntry& W) { return W.Id == Id; });
-    const bool bRemoved = Warnings.Num() < Before;
-
-    if (bRemoved)
+    int32 RemovedIdx = INDEX_NONE;
+    for (int32 i = 0; i < Warnings.Num(); ++i)
     {
-        if (!SaveToFile())
+        if (Warnings[i].Id == Id)
         {
-            UE_LOG(LogPlayerWarningRegistry, Error,
-                TEXT("PlayerWarningRegistry: failed to save after deleting warning id=%lld"), Id);
+            RemovedIdx = i;
+            break;
         }
     }
+    if (RemovedIdx == INDEX_NONE)
+        return false;
 
-    return bRemoved;
+    const FWarningEntry RemovedEntry = Warnings[RemovedIdx];
+    Warnings.RemoveAt(RemovedIdx);
+
+    if (!SaveToFile())
+    {
+        Warnings.Insert(RemovedEntry, RemovedIdx);
+        UE_LOG(LogPlayerWarningRegistry, Error,
+            TEXT("PlayerWarningRegistry: failed to save after deleting warning id=%lld"), Id);
+        return false;
+    }
+
+    return true;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

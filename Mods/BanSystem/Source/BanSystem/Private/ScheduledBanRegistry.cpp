@@ -58,6 +58,7 @@ FScheduledBanEntry UScheduledBanRegistry::AddScheduled(
     const FString& Category)
 {
     FScopeLock Lock(&Mutex);
+    const int64 OriginalNextId = NextId;
 
     // NextId == 0 is the exhausted sentinel (set when INT64_MAX has already
     // been allocated).  Using 0 allows INT64_MAX to be the last valid Id.
@@ -83,9 +84,12 @@ FScheduledBanEntry UScheduledBanRegistry::AddScheduled(
     Pending.Add(Entry);
     if (!SaveToFile())
     {
+        Pending.RemoveAt(Pending.Num() - 1);
+        NextId = OriginalNextId;
         UE_LOG(LogScheduledBanRegistry, Error,
             TEXT("ScheduledBanRegistry: failed to save after adding scheduled ban #%lld for %s"),
             Entry.Id, *Uid);
+        return FScheduledBanEntry{};
     }
 
     UE_LOG(LogScheduledBanRegistry, Log,
@@ -105,18 +109,28 @@ bool UScheduledBanRegistry::DeleteScheduled(int64 Id)
 {
     FScopeLock Lock(&Mutex);
 
-    const int32 Before = Pending.Num();
-    Pending.RemoveAll([Id](const FScheduledBanEntry& E) { return E.Id == Id; });
-    const bool bRemoved = Pending.Num() < Before;
-    if (bRemoved)
+    int32 RemoveIdx = INDEX_NONE;
+    for (int32 i = 0; i < Pending.Num(); ++i)
     {
-        if (!SaveToFile())
+        if (Pending[i].Id == Id)
         {
-            UE_LOG(LogScheduledBanRegistry, Error,
-                TEXT("ScheduledBanRegistry: failed to save after deleting scheduled ban #%lld"), Id);
+            RemoveIdx = i;
+            break;
         }
     }
-    return bRemoved;
+    if (RemoveIdx == INDEX_NONE)
+        return false;
+
+    const FScheduledBanEntry RemovedEntry = Pending[RemoveIdx];
+    Pending.RemoveAt(RemoveIdx);
+    if (!SaveToFile())
+    {
+        Pending.Insert(RemovedEntry, RemoveIdx);
+        UE_LOG(LogScheduledBanRegistry, Error,
+            TEXT("ScheduledBanRegistry: failed to save after deleting scheduled ban #%lld"), Id);
+        return false;
+    }
+    return true;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -175,6 +189,7 @@ void UScheduledBanRegistry::Tick(float DeltaTime)
     // once so the persisted RetryCount survives the next restart.
     {
         FScopeLock Lock(&Mutex);
+        const TArray<FScheduledBanEntry> PrevPending = Pending;
 
         // Build the set of IDs to remove entirely.
         TSet<int64> IdsToRemove(AppliedIds);
@@ -215,6 +230,7 @@ void UScheduledBanRegistry::Tick(float DeltaTime)
 
         if (!SaveToFile())
         {
+            Pending = PrevPending;
             UE_LOG(LogScheduledBanRegistry, Error,
                 TEXT("ScheduledBanRegistry: failed to save after processing %d due entry(ies)"),
                 Due.Num());

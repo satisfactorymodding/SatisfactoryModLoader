@@ -51,6 +51,7 @@ void UPlayerNoteRegistry::AddNote(const FString& Uid, const FString& PlayerName,
     if (Uid.IsEmpty()) return;
 
     FScopeLock Lock(&Mutex);
+    const int64 OriginalNextId = NextId;
 
     FPlayerNoteEntry Entry;
     // NextId == 0 is the exhausted sentinel: it is set in LoadFromFile when the
@@ -73,8 +74,12 @@ void UPlayerNoteRegistry::AddNote(const FString& Uid, const FString& PlayerName,
 
     Notes.Add(Entry);
     if (!SaveToFile())
+    {
+        Notes.RemoveAt(Notes.Num() - 1);
+        NextId = OriginalNextId;
         UE_LOG(LogPlayerNoteRegistry, Error,
             TEXT("PlayerNoteRegistry: failed to save notes.json after adding note for %s"), *Uid);
+    }
 }
 
 TArray<FPlayerNoteEntry> UPlayerNoteRegistry::GetNotesForUid(const FString& Uid) const
@@ -98,16 +103,28 @@ TArray<FPlayerNoteEntry> UPlayerNoteRegistry::GetAllNotes() const
 bool UPlayerNoteRegistry::DeleteNote(int64 Id)
 {
     FScopeLock Lock(&Mutex);
-    const int32 Before = Notes.Num();
-    Notes.RemoveAll([Id](const FPlayerNoteEntry& N)
+    int32 RemoveIdx = INDEX_NONE;
+    for (int32 i = 0; i < Notes.Num(); ++i)
     {
-        return N.Id == Id;
-    });
-    const bool bRemoved = Notes.Num() < Before;
-    if (bRemoved && !SaveToFile())
+        if (Notes[i].Id == Id)
+        {
+            RemoveIdx = i;
+            break;
+        }
+    }
+    if (RemoveIdx == INDEX_NONE)
+        return false;
+
+    const FPlayerNoteEntry RemovedEntry = Notes[RemoveIdx];
+    Notes.RemoveAt(RemoveIdx);
+    if (!SaveToFile())
+    {
+        Notes.Insert(RemovedEntry, RemoveIdx);
         UE_LOG(LogPlayerNoteRegistry, Error,
             TEXT("PlayerNoteRegistry: failed to save notes.json after deleting note id=%lld"), Id);
-    return bRemoved;
+        return false;
+    }
+    return true;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
