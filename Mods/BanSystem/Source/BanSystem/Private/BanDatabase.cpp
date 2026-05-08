@@ -366,32 +366,18 @@ void UBanDatabase::LoadFromFile()
         && (NextIdStr.Len() < 19 || NextIdStr <= TEXT("9223372036854775807")))
     {
         const int64 Parsed = FMath::Max((int64)0, FCString::Atoi64(*NextIdStr));
-        if (Parsed == 0)
-        {
-            // nextId=0 stored in file is treated as corrupt (0 is the exhausted
-            // sentinel set only after INT64_MAX allocations, which cannot happen).
-            UE_LOG(LogBanDatabase, Warning,
-                TEXT("BanDatabase: persisted nextId=0 is invalid; resetting to 1"));
-            NewNextId = 1;
-        }
-        else
-            NewNextId = Parsed;
+        // Preserve 0 as the exhausted-ID sentinel so counter exhaustion remains
+        // durable across restarts and cannot silently revive to 1.
+        NewNextId = Parsed;
     }
     else if (Root->TryGetNumberField(TEXT("nextId"), NextIdDbl)
         && NextIdDbl >= 0.0 && NextIdDbl < static_cast<double>(INT64_MAX)
         && FMath::Fmod(NextIdDbl, 1.0) == 0.0)
     {
         const int64 Parsed = static_cast<int64>(NextIdDbl);
-        if (Parsed == 0)
-        {
-            // nextId=0 stored in file is treated as corrupt (0 is the exhausted
-            // sentinel set only after INT64_MAX allocations, which cannot happen).
-            UE_LOG(LogBanDatabase, Warning,
-                TEXT("BanDatabase: persisted nextId=0 is invalid; resetting to 1"));
-            NewNextId = 1;
-        }
-        else
-            NewNextId = Parsed;
+        // Preserve 0 as the exhausted-ID sentinel so counter exhaustion remains
+        // durable across restarts and cannot silently revive to 1.
+        NewNextId = Parsed;
     }
 
     // Build the new ban list into a local array first so that concurrent readers

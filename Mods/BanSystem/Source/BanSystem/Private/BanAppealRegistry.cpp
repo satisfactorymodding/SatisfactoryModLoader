@@ -336,34 +336,18 @@ void UBanAppealRegistry::LoadFromFile()
         && (StoredNextIdStr.Len() < 19 || StoredNextIdStr <= TEXT("9223372036854775807")))
     {
         const int64 Parsed = FCString::Atoi64(*StoredNextIdStr);
-        if (Parsed == 0)
-        {
-            // nextId=0 is invalid here; 0 is only the exhausted sentinel after
-            // INT64_MAX allocations, which cannot happen in practice.  Treat as corrupt.
-            UE_LOG(LogBanAppealRegistry, Warning,
-                TEXT("BanAppealRegistry: persisted nextId=0 is invalid; resetting to 1"));
-            NextId = 1;
-            for (const FBanAppealEntry& A : Appeals)
-                if (A.Id >= NextId) NextId = (A.Id < INT64_MAX) ? A.Id + 1 : 0;
-        }
-        else
-            NextId = (Parsed >= 0) ? Parsed : 1;
+        // Preserve 0 as the exhausted-ID sentinel so counter exhaustion remains
+        // durable across restarts.
+        NextId = (Parsed >= 0) ? Parsed : 1;
     }
     else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl)
         && StoredNextIdDbl >= 0.0 && StoredNextIdDbl < static_cast<double>(INT64_MAX)
         && FMath::Fmod(StoredNextIdDbl, 1.0) == 0.0)
     {
         const int64 Parsed = static_cast<int64>(StoredNextIdDbl);
-        if (Parsed == 0)
-        {
-            UE_LOG(LogBanAppealRegistry, Warning,
-                TEXT("BanAppealRegistry: persisted nextId=0 is invalid; resetting to 1"));
-            NextId = 1;
-            for (const FBanAppealEntry& A : Appeals)
-                if (A.Id >= NextId) NextId = (A.Id < INT64_MAX) ? A.Id + 1 : 0;
-        }
-        else
-            NextId = Parsed;
+        // Preserve 0 as the exhausted-ID sentinel so counter exhaustion remains
+        // durable across restarts.
+        NextId = Parsed;
     }
     else
     {
