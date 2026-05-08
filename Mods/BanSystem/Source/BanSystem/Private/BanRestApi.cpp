@@ -730,20 +730,21 @@ void UBanRestApi::RegisterRoutes()
 
             double DurationMinutesDbl = 0.0;
             const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
-            if (bHasDurationMinutes && FMath::IsFinite(DurationMinutesDbl) && DurationMinutesDbl > 0.0
-                && FMath::Fmod(DurationMinutesDbl, 1.0) != 0.0)
+            if (bHasDurationMinutes && (!FMath::IsFinite(DurationMinutesDbl) || DurationMinutesDbl <= 0.0))
+            {
+                Done(BanJson::Error(TEXT("durationMinutes must be a positive integer; omit the field for a permanent ban")));
+                return true;
+            }
+            if (bHasDurationMinutes && FMath::Fmod(DurationMinutesDbl, 1.0) != 0.0)
             {
                 Done(BanJson::Error(TEXT("durationMinutes must be an integer number of minutes")));
                 return true;
             }
-            // Guard against out-of-range doubles: NaN/negative/zero means permanent.
-            // Values larger than INT_MAX are clamped to INT_MAX (~4083 years) rather
-            // than silently becoming a permanent ban (PATCH /bans/:uid uses the same cap).
-            // FMath::IsFinite guards against NaN which evades both <= 0 and > INT_MAX checks,
-            // causing undefined behaviour in the static_cast.
+            // When durationMinutes is absent the ban is permanent (DurationMinutes=0).
+            // Values larger than INT_MAX are clamped to INT_MAX (~4083 years).
             int32 DurationMinutes;
-            if (!FMath::IsFinite(DurationMinutesDbl) || DurationMinutesDbl <= 0.0)
-                DurationMinutes = 0;                              // permanent
+            if (!bHasDurationMinutes)
+                DurationMinutes = 0;                              // permanent (field absent)
             else if (DurationMinutesDbl > static_cast<double>(INT_MAX))
                 DurationMinutes = INT_MAX;                        // cap, not permanent
             else
@@ -1743,14 +1744,18 @@ void UBanRestApi::RegisterRoutes()
 
             double DurationMinutesDbl = 0.0;
             const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
-            if (bHasDurationMinutes && FMath::IsFinite(DurationMinutesDbl) && DurationMinutesDbl > 0.0
-                && FMath::Fmod(DurationMinutesDbl, 1.0) != 0.0)
+            if (bHasDurationMinutes && (!FMath::IsFinite(DurationMinutesDbl) || DurationMinutesDbl <= 0.0))
+            {
+                Done(BanJson::Error(TEXT("durationMinutes must be a positive integer; omit the field for a permanent ban")));
+                return true;
+            }
+            if (bHasDurationMinutes && FMath::Fmod(DurationMinutesDbl, 1.0) != 0.0)
             {
                 Done(BanJson::Error(TEXT("durationMinutes must be an integer number of minutes")));
                 return true;
             }
             int32 DurationMinutes;
-            if (!FMath::IsFinite(DurationMinutesDbl) || DurationMinutesDbl <= 0.0)
+            if (!bHasDurationMinutes)
                 DurationMinutes = 0;
             else if (DurationMinutesDbl > static_cast<double>(INT_MAX))
                 DurationMinutes = INT_MAX;

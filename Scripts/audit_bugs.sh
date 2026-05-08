@@ -2754,7 +2754,62 @@ pass "CHECK 107 done"
 echo
 
 
-echo "========================================================"
+# =============================================================================
+# CHECK 108: GeoIP AsyncTask — all UObject ops are inside the game-thread task
+# =============================================================================
+echo "--- CHECK 108: GeoIP AsyncTask boundary — no UObject ops before AsyncTask on HTTP thread ---"
+
+BANENFORCER_CPP_CHECK108="$(list_cpp_files | tr '\0' '\n' | grep 'BanEnforcer\.cpp' | head -1)"
+if [[ -z "$BANENFORCER_CPP_CHECK108" ]]; then
+    fail "CHECK 108 – BanEnforcer.cpp not found"
+else
+    # The old bug was calling WeakPC.Get() / IsValid / GetWorld() BEFORE AsyncTask
+    # on the HTTP thread.  After the fix those calls are inside the AsyncTask lambda.
+    # We verify by checking that the file no longer contains the pre-task raw-pointer
+    # pattern: "PCKick = WeakPC.Get();" followed within a few lines by "W2 = PCKick->GetWorld()"
+    # outside of a lambda body (i.e., as a plain statement).
+    # Simpler mechanical proxy: the two lines "APlayerController* PCKick = WeakPC.Get();"
+    # and "UWorld* W2 = PCKick->GetWorld();" should only appear INSIDE AsyncTask lambdas,
+    # never as bare statements before "AsyncTask(" in the same callback scope.
+    # We enforce this by counting occurrences of "PCKick = WeakPC.Get();" — they must
+    # ALL appear after (i.e., deeper indentation than) "AsyncTask(ENamedThreads::GameThread".
+    # The simplest scriptable check: no occurrence of
+    #   "APlayerController* PCKick = WeakPC.Get();"
+    # should appear in a line that is NOT inside a lambda (i.e., not preceded by "{" on the same
+    # or immediately preceding AsyncTask line). We approximate this by verifying that every
+    # occurrence of "PCKick = WeakPC.Get()" is preceded within 3 lines by "GameThread".
+    while IFS= read -r lineno; do
+        # Get the surrounding context (3 lines before)
+        context=$(awk "NR>=$((lineno-3)) && NR<$lineno" "$BANENFORCER_CPP_CHECK108")
+        if ! echo "$context" | grep -qF "GameThread"; then
+            fail "CHECK 108 – BanEnforcer.cpp line $lineno: WeakPC.Get() called outside AsyncTask(GameThread) lambda" \
+                "Fix: move WeakPC.Get(), IsValid(), and GetWorld() inside the AsyncTask body."
+        fi
+    done < <(grep -n 'PCKick = WeakPC\.Get()' "$BANENFORCER_CPP_CHECK108" | cut -d: -f1)
+fi
+
+pass "CHECK 108 done"
+echo
+
+
+# =============================================================================
+# CHECK 109: POST /bans and POST /bans/ip reject durationMinutes <= 0 explicitly
+# =============================================================================
+echo "--- CHECK 109: POST /bans and POST /bans/ip reject durationMinutes <= 0 with a 400 error ---"
+
+BANREST_CPP_CHECK109="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+if [[ -z "$BANREST_CPP_CHECK109" ]]; then
+    fail "CHECK 109 – BanRestApi.cpp not found"
+else
+    reject_count=$(grep -cF 'durationMinutes must be a positive integer; omit the field for a permanent ban' "$BANREST_CPP_CHECK109")
+    if [[ "$reject_count" -lt 2 ]]; then
+        fail "CHECK 109 – BanRestApi POST /bans and/or POST /bans/ip do not explicitly reject durationMinutes <= 0" \
+            "Fix: before the int32 cast, check 'if (bHasDurationMinutes && (<= 0 || !IsFinite))' and return 400."
+    fi
+fi
+
+pass "CHECK 109 done"
+echo
 if [[ "$ISSUES" -eq 0 ]]; then
     echo -e "${GRN}All checks passed — no issues found.${NC}"
     exit 0
