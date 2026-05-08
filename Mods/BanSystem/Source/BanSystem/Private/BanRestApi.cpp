@@ -774,8 +774,8 @@ void UBanRestApi::RegisterRoutes()
                 UBanEnforcer::KickConnectedPlayer(World, Entry.Uid, Entry.GetKickMessage());
             }
 
-            FBanDiscordNotifier::NotifyBanCreated(Saved);
             RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), Saved);
+            FBanDiscordNotifier::NotifyBanCreated(Saved);
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                 // REST API bans have no separate admin UID (BannedBy is a display name).
                 // Pass an empty adminUid so the audit log does not record the name twice.
@@ -1722,8 +1722,8 @@ void UBanRestApi::RegisterRoutes()
                 return true;
             }
 
-            FBanDiscordNotifier::NotifyBanCreated(Saved);
             RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), Saved);
+            FBanDiscordNotifier::NotifyBanCreated(Saved);
             if (UWorld* World2 = GI->GetWorld())
                 UBanEnforcer::KickConnectedPlayer(World2, Saved.Uid, Saved.GetKickMessage());
             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
@@ -3132,8 +3132,8 @@ void UBanRestApi::RegisterRoutes()
                     const FBanEntry& AddedEntry = Ban.bIsPermanent
                         ? Saved
                         : (DB->GetBanByUid(Ban.Uid, TempLookup) ? TempLookup : Ban);
-                    FBanDiscordNotifier::NotifyBanCreated(AddedEntry);
                     RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), AddedEntry);
+                    FBanDiscordNotifier::NotifyBanCreated(AddedEntry);
                     if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                         AuditLog->LogAction(TEXT("ban"), Uid, TEXT(""), BannedBy, BannedBy, Reason);
                     // Kick the player if currently online.
