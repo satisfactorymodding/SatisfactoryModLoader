@@ -1918,6 +1918,65 @@ fi
 pass "CHECK 75 done"
 echo
 
+# =============================================================================
+# CHECK 76: Discord interaction numeric "type" fields are parsed via guarded double->int conversion
+# =============================================================================
+echo "--- CHECK 76: interaction type parsing uses finite/range/integer guards ---"
+
+BANDISCORD_CPP_FILE="$(list_cpp_files | tr '\0' '\n' | grep 'BanDiscordSubsystem\.cpp' | head -1)"
+TICKET_CPP_FILE="$(list_cpp_files | tr '\0' '\n' | grep 'TicketSubsystem\.cpp' | head -1)"
+BRIDGE_CPP_FILE="$(list_cpp_files | tr '\0' '\n' | grep 'DiscordBridgeSubsystem\.cpp' | head -1)"
+
+if [[ -z "$BANDISCORD_CPP_FILE" ]]; then
+    fail "CHECK 76 – BanDiscordSubsystem.cpp not found"
+else
+    if grep -qP 'TryGetNumberField\s*\(\s*TEXT\("type"\)\s*,\s*InteractionType\s*\)' "$BANDISCORD_CPP_FILE"; then
+        fail "CHECK 76 – BanDiscordSubsystem uses direct TryGetNumberField(..., int32 InteractionType) parse" \
+            "File: $BANDISCORD_CPP_FILE" \
+            "Fix: parse into double, then gate cast with IsFinite/range/integer checks."
+    fi
+    if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\s*\(\s*TEXT\("type"\)\s*,\s*(\w+)\s*\)\s*;[\s\S]{0,500}?const\s+int32\s+\w+\s*=\s*\([\s\S]{0,300}?FMath::IsFinite\s*\(\s*\1\s*\)[\s\S]{0,300}?FMath::Fmod\s*\(\s*\1\s*,\s*1\.0\s*\)\s*==\s*0\.0/s; exit 1' "$BANDISCORD_CPP_FILE"; then
+        fail "CHECK 76 – BanDiscordSubsystem missing guarded interaction type parse" \
+            "File: $BANDISCORD_CPP_FILE"
+    fi
+fi
+
+if [[ -z "$TICKET_CPP_FILE" ]]; then
+    fail "CHECK 76 – TicketSubsystem.cpp not found"
+else
+    if grep -qP 'TryGetNumberField\s*\(\s*TEXT\("type"\)\s*,\s*InteractionType\s*\)' "$TICKET_CPP_FILE"; then
+        fail "CHECK 76 – TicketSubsystem uses direct TryGetNumberField(..., int32 InteractionType) parse in slash handler" \
+            "File: $TICKET_CPP_FILE" \
+            "Fix: parse into double, then gate cast with IsFinite/range/integer checks."
+    fi
+    if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\s*\(\s*TEXT\("type"\)\s*,\s*(\w+)\s*\)\s*;[\s\S]{0,500}?const\s+int32\s+\w+\s*=\s*\([\s\S]{0,300}?FMath::IsFinite\s*\(\s*\1\s*\)[\s\S]{0,300}?FMath::Fmod\s*\(\s*\1\s*,\s*1\.0\s*\)\s*==\s*0\.0/s; exit 1' "$TICKET_CPP_FILE"; then
+        fail "CHECK 76 – TicketSubsystem missing guarded slash interaction type parse" \
+            "File: $TICKET_CPP_FILE"
+    fi
+fi
+
+if [[ -z "$BRIDGE_CPP_FILE" ]]; then
+    fail "CHECK 76 – DiscordBridgeSubsystem.cpp not found"
+else
+    if grep -qP 'TryGetNumberField\s*\(\s*TEXT\("type"\)\s*,\s*InteractionType\s*\)' "$BRIDGE_CPP_FILE"; then
+        fail "CHECK 76 – DiscordBridgeSubsystem uses direct TryGetNumberField(..., int32 InteractionType) parse" \
+            "File: $BRIDGE_CPP_FILE" \
+            "Fix: parse into double, then gate cast with IsFinite/range/integer checks."
+    fi
+    if grep -qP 'if\s*\(\s*static_cast<int32>\s*\(\s*OptType\s*\)\s*==\s*1\s*\)' "$BRIDGE_CPP_FILE"; then
+        fail "CHECK 76 – DiscordBridgeSubsystem autocomplete path casts OptType without finite/range/integer guard" \
+            "File: $BRIDGE_CPP_FILE" \
+            "Fix: derive OptTypeInt through guarded conversion before comparing to SUB_COMMAND."
+    fi
+    if ! perl -0777 -ne 'exit 0 if /TryGetNumberField\s*\(\s*TEXT\("type"\)\s*,\s*(\w+)\s*\)\s*;[\s\S]{0,500}?const\s+int32\s+\w+\s*=\s*\([\s\S]{0,300}?FMath::IsFinite\s*\(\s*\1\s*\)[\s\S]{0,300}?FMath::Fmod\s*\(\s*\1\s*,\s*1\.0\s*\)\s*==\s*0\.0/s; exit 1' "$BRIDGE_CPP_FILE"; then
+        fail "CHECK 76 – DiscordBridgeSubsystem missing guarded OptTypeInt conversion in autocomplete path" \
+            "File: $BRIDGE_CPP_FILE"
+    fi
+fi
+
+pass "CHECK 76 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then

@@ -4863,8 +4863,15 @@ void UBanDiscordSubsystem::OnDiscordInteraction(const TSharedPtr<FJsonObject>& I
 	}
 
 	// Only handle APPLICATION_COMMAND interactions (type 2).
-	int32 InteractionType = 0;
-	InteractionObj->TryGetNumberField(TEXT("type"), InteractionType);
+	double InteractionTypeD = 0.0;
+	const bool bHasInteractionType = InteractionObj->TryGetNumberField(TEXT("type"), InteractionTypeD);
+	const int32 InteractionType = (bHasInteractionType
+		&& FMath::IsFinite(InteractionTypeD)
+		&& InteractionTypeD >= 0.0
+		&& InteractionTypeD <= static_cast<double>(MAX_int32)
+		&& FMath::Fmod(InteractionTypeD, 1.0) == 0.0)
+		? static_cast<int32>(InteractionTypeD)
+		: 0;
 
 	// Type 3 = MESSAGE_COMPONENT (button / select-menu clicks).
 	if (InteractionType == 3)

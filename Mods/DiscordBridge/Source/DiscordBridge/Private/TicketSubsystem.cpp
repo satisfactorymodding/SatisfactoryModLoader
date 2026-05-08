@@ -3274,8 +3274,15 @@ void UTicketSubsystem::HandleSlashTicketCommand(const TSharedPtr<FJsonObject>& D
 	if (!DataObj.IsValid()) return;
 
 	// Only handle APPLICATION_COMMAND interactions (type 2).
-	int32 InteractionType = 0;
-	DataObj->TryGetNumberField(TEXT("type"), InteractionType);
+	double InteractionTypeD = 0.0;
+	const bool bHasInteractionType = DataObj->TryGetNumberField(TEXT("type"), InteractionTypeD);
+	const int32 InteractionType = (bHasInteractionType
+		&& FMath::IsFinite(InteractionTypeD)
+		&& InteractionTypeD >= 0.0
+		&& InteractionTypeD <= static_cast<double>(MAX_int32)
+		&& FMath::Fmod(InteractionTypeD, 1.0) == 0.0)
+		? static_cast<int32>(InteractionTypeD)
+		: 0;
 	if (InteractionType != 2) return;
 
 	// Extract command data.

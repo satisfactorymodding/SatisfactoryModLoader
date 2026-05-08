@@ -925,8 +925,15 @@ void UDiscordBridgeSubsystem::HandleDispatch(const FString& EventType, int32 Seq
 		// Handle slash command interactions (type 2 = APPLICATION_COMMAND)
 		// and autocomplete interactions (type 4 = APPLICATION_COMMAND_AUTOCOMPLETE).
 		{
-			int32 InteractionType = 0;
-			DataObj->TryGetNumberField(TEXT("type"), InteractionType);
+			double InteractionTypeD = 0.0;
+			const bool bHasInteractionType = DataObj->TryGetNumberField(TEXT("type"), InteractionTypeD);
+			const int32 InteractionType = (bHasInteractionType
+				&& FMath::IsFinite(InteractionTypeD)
+				&& InteractionTypeD >= 0.0
+				&& InteractionTypeD <= static_cast<double>(MAX_int32)
+				&& FMath::Fmod(InteractionTypeD, 1.0) == 0.0)
+				? static_cast<int32>(InteractionTypeD)
+				: 0;
 			if (InteractionType == 2)
 			{
 				HandleSlashCommandInteraction(DataObj);
@@ -6285,9 +6292,16 @@ void UDiscordBridgeSubsystem::HandleAutocompleteInteraction(
 		const TSharedPtr<FJsonObject>* FirstOpt = nullptr;
 		if (!TopOptions->IsEmpty() && (*TopOptions)[0]->TryGetObject(FirstOpt) && FirstOpt)
 		{
-			double OptType = 0;
-			(*FirstOpt)->TryGetNumberField(TEXT("type"), OptType);
-			if (static_cast<int32>(OptType) == 1) // SUB_COMMAND
+			double OptType = 0.0;
+			const bool bHasOptType = (*FirstOpt)->TryGetNumberField(TEXT("type"), OptType);
+			const int32 OptTypeInt = (bHasOptType
+				&& FMath::IsFinite(OptType)
+				&& OptType >= 0.0
+				&& OptType <= static_cast<double>(MAX_int32)
+				&& FMath::Fmod(OptType, 1.0) == 0.0)
+				? static_cast<int32>(OptType)
+				: 0;
+			if (OptTypeInt == 1) // SUB_COMMAND
 			{
 				const TArray<TSharedPtr<FJsonValue>>* SubOpts = nullptr;
 				if ((*FirstOpt)->TryGetArrayField(TEXT("options"), SubOpts) && SubOpts)
