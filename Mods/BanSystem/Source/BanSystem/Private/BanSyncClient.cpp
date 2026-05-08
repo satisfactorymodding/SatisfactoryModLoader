@@ -222,7 +222,15 @@ void UBanSyncClient::OnPeerMessage(const FString& Message)
         Root->TryGetStringField(TEXT("category"),   Category);
 
         double DurDbl = 0.0;
-        Root->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
+        const bool bHasDurationMinutes = Root->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
+        if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl > 0.0
+            && FMath::Fmod(DurDbl, 1.0) != 0.0)
+        {
+            UE_LOG(LogBanSyncClient, Warning,
+                TEXT("BanSyncClient: dropping peer ban for uid '%s' due to non-integer durationMinutes=%f"),
+                *Uid, DurDbl);
+            return;
+        }
         const int32 DurationMinutes = (FMath::IsFinite(DurDbl) && DurDbl > 0.0 && DurDbl <= static_cast<double>(INT32_MAX))
             ? FMath::Max(1, static_cast<int32>(DurDbl))
             : 0;

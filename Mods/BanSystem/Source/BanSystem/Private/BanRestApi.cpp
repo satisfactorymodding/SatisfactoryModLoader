@@ -729,7 +729,13 @@ void UBanRestApi::RegisterRoutes()
             Body->TryGetStringField(TEXT("bannedBy"),   BannedBy);
 
             double DurationMinutesDbl = 0.0;
-            Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
+            const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
+            if (bHasDurationMinutes && FMath::IsFinite(DurationMinutesDbl) && DurationMinutesDbl > 0.0
+                && FMath::Fmod(DurationMinutesDbl, 1.0) != 0.0)
+            {
+                Done(BanJson::Error(TEXT("durationMinutes must be an integer number of minutes")));
+                return true;
+            }
             // Guard against out-of-range doubles: NaN/negative/zero means permanent.
             // Values larger than INT_MAX are clamped to INT_MAX (~4083 years) rather
             // than silently becoming a permanent ban (PATCH /bans/:uid uses the same cap).
@@ -1736,7 +1742,13 @@ void UBanRestApi::RegisterRoutes()
             if (BannedBy.IsEmpty()) BannedBy = TEXT("system");
 
             double DurationMinutesDbl = 0.0;
-            Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
+            const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
+            if (bHasDurationMinutes && FMath::IsFinite(DurationMinutesDbl) && DurationMinutesDbl > 0.0
+                && FMath::Fmod(DurationMinutesDbl, 1.0) != 0.0)
+            {
+                Done(BanJson::Error(TEXT("durationMinutes must be an integer number of minutes")));
+                return true;
+            }
             int32 DurationMinutes;
             if (!FMath::IsFinite(DurationMinutesDbl) || DurationMinutesDbl <= 0.0)
                 DurationMinutes = 0;
@@ -3016,7 +3028,13 @@ void UBanRestApi::RegisterRoutes()
             }
 
             double DurDbl = 0.0;
-            Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
+            const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
+            if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl > 0.0
+                && FMath::Fmod(DurDbl, 1.0) != 0.0)
+            {
+                Done(BanJson::Error(TEXT("durationMinutes must be an integer number of minutes")));
+                return true;
+            }
             const int32 DurationMinutes = (!FMath::IsFinite(DurDbl) || DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
                 ? 0 : FMath::Max(1, static_cast<int32>(DurDbl));
             const FScheduledBanEntry NewEntry = SchReg->AddScheduled(
@@ -3207,7 +3225,13 @@ void UBanRestApi::RegisterRoutes()
             if (BannedBy.IsEmpty()) BannedBy = TEXT("api");
 
             double DurDbl = 0.0;
-            Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
+            const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
+            if (bHasDurationMinutes && FMath::IsFinite(DurDbl) && DurDbl > 0.0
+                && FMath::Fmod(DurDbl, 1.0) != 0.0)
+            {
+                Done(BanJson::Error(TEXT("durationMinutes must be an integer number of minutes")));
+                return true;
+            }
             const int32 DurationMinutes = (!FMath::IsFinite(DurDbl) || DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
                 ? 0 : FMath::Max(1, static_cast<int32>(DurDbl));
             // Capture a single timestamp for the entire batch so all entries share
