@@ -963,6 +963,44 @@ fi
 pass "CHECK 34 done"
 echo
 
+# =============================================================================
+# CHECK 35: BanAppealRegistry rolls back + suppresses broadcasts on save failure
+#
+# AddAppeal/AddAppealIfNoDuplicate must remove in-memory inserts and restore NextId
+# when SaveToFile fails. Review/Delete paths must also roll back in-memory changes
+# so disk and memory do not diverge.
+# =============================================================================
+echo "--- CHECK 35: BanAppealRegistry save-failure rollback keeps memory/disk in sync ---"
+
+APPEALREG_CPP_CHECK35="$(list_cpp_files | tr '\0' '\n' | grep 'BanAppealRegistry\.cpp' | head -1)"
+
+if [[ -z "$APPEALREG_CPP_CHECK35" ]]; then
+    fail "CHECK 35 - BanAppealRegistry.cpp not found"
+elif ! grep -qP 'const\s+int64\s+OriginalNextId\s*=\s*NextId' "$APPEALREG_CPP_CHECK35"; then
+    fail "CHECK 35 - AddAppeal paths do not snapshot NextId before insert" \
+        "File: $APPEALREG_CPP_CHECK35" \
+        "AddAppeal/AddAppealIfNoDuplicate should capture OriginalNextId before incrementing."
+elif ! grep -qP 'Appeals\.RemoveAt\s*\(\s*Appeals\.Num\s*\(\s*\)\s*-\s*1\s*\)' "$APPEALREG_CPP_CHECK35"; then
+    fail "CHECK 35 - AddAppeal paths do not roll back in-memory insert on save failure" \
+        "File: $APPEALREG_CPP_CHECK35" \
+        "On SaveToFile failure, remove the just-added appeal from Appeals."
+elif ! grep -qP 'NextId\s*=\s*OriginalNextId' "$APPEALREG_CPP_CHECK35"; then
+    fail "CHECK 35 - AddAppeal paths do not restore NextId on save failure" \
+        "File: $APPEALREG_CPP_CHECK35" \
+        "On SaveToFile failure, restore NextId to OriginalNextId."
+elif ! grep -qP 'Appeals\.Insert\s*\(\s*RemovedEntry\s*,\s*RemoveIdx\s*\)' "$APPEALREG_CPP_CHECK35"; then
+    fail "CHECK 35 - DeleteAppeal does not restore removed entry when save fails" \
+        "File: $APPEALREG_CPP_CHECK35" \
+        "DeleteAppeal should reinsert RemovedEntry at RemoveIdx if SaveToFile fails."
+elif ! grep -qP 'A\s*=\s*PrevEntry' "$APPEALREG_CPP_CHECK35"; then
+    fail "CHECK 35 - ReviewAppeal does not restore previous entry when save fails" \
+        "File: $APPEALREG_CPP_CHECK35" \
+        "ReviewAppeal should restore A from PrevEntry if SaveToFile fails."
+fi
+
+pass "CHECK 35 done"
+echo
+
 
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then

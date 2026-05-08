@@ -73,6 +73,7 @@ FBanAppealEntry UBanAppealRegistry::AddAppealIfNoDuplicate(const FString& Uid,
                 TEXT("BanAppealRegistry: all 64-bit IDs have been used — cannot add more appeals"));
             return FBanAppealEntry{};
         }
+        const int64 OriginalNextId = NextId;
         Entry.Id          = NextId;
         NextId            = (NextId < INT64_MAX) ? NextId + 1 : 0;
         Entry.Uid         = Uid;
@@ -83,9 +84,12 @@ FBanAppealEntry UBanAppealRegistry::AddAppealIfNoDuplicate(const FString& Uid,
         Appeals.Add(Entry);
         if (!SaveToFile())
         {
+            Appeals.RemoveAt(Appeals.Num() - 1);
+            NextId = OriginalNextId;
             UE_LOG(LogBanAppealRegistry, Error,
                 TEXT("BanAppealRegistry: failed to save after adding appeal id=%lld for uid='%s'"),
                 Entry.Id, *Entry.Uid);
+            return FBanAppealEntry{};
         }
         bBroadcast = true;
     }
@@ -113,6 +117,7 @@ FBanAppealEntry UBanAppealRegistry::AddAppeal(const FString& Uid,
                 TEXT("BanAppealRegistry: all 64-bit IDs have been used — cannot add more appeals"));
             return FBanAppealEntry{};
         }
+        const int64 OriginalNextId = NextId;
         Entry.Id = NextId;
         NextId   = (NextId < INT64_MAX) ? NextId + 1 : 0; // 0 = exhausted
         Entry.Uid         = Uid;
@@ -123,9 +128,12 @@ FBanAppealEntry UBanAppealRegistry::AddAppeal(const FString& Uid,
         Appeals.Add(Entry);
         if (!SaveToFile())
         {
+            Appeals.RemoveAt(Appeals.Num() - 1);
+            NextId = OriginalNextId;
             UE_LOG(LogBanAppealRegistry, Error,
                 TEXT("BanAppealRegistry: failed to save after adding appeal id=%lld for uid='%s'"),
                 Entry.Id, *Entry.Uid);
+            return FBanAppealEntry{};
         }
     }
 
@@ -156,21 +164,24 @@ bool UBanAppealRegistry::DeleteAppeal(int64 Id)
 {
     FScopeLock Lock(&Mutex);
 
-    const int32 Before = Appeals.Num();
-    Appeals.RemoveAll([Id](const FBanAppealEntry& A)
+    const int32 RemoveIdx = Appeals.IndexOfByPredicate([Id](const FBanAppealEntry& A)
     {
         return A.Id == Id;
     });
-    const bool bRemoved = Appeals.Num() < Before;
-    if (bRemoved)
+    if (RemoveIdx != INDEX_NONE)
     {
+        const FBanAppealEntry RemovedEntry = Appeals[RemoveIdx];
+        Appeals.RemoveAt(RemoveIdx);
         if (!SaveToFile())
         {
+            Appeals.Insert(RemovedEntry, RemoveIdx);
             UE_LOG(LogBanAppealRegistry, Error,
                 TEXT("BanAppealRegistry: failed to save after deleting appeal id=%lld"), Id);
+            return false;
         }
+        return true;
     }
-    return bRemoved;
+    return false;
 }
 
 bool UBanAppealRegistry::ReviewAppeal(int64 Id, EAppealStatus NewStatus,
@@ -178,35 +189,35 @@ bool UBanAppealRegistry::ReviewAppeal(int64 Id, EAppealStatus NewStatus,
                                        const FString& ReviewNote)
 {
     FBanAppealEntry ReviewedEntry;
-    bool bFound = false;
+    bool bReviewed = false;
 
     {
         FScopeLock Lock(&Mutex);
         for (FBanAppealEntry& A : Appeals)
         {
             if (A.Id != Id) continue;
+            const FBanAppealEntry PrevEntry = A;
             A.Status     = NewStatus;
             A.ReviewedBy = ReviewedByName;
             A.ReviewNote = ReviewNote;
             A.ReviewedAt = FDateTime::UtcNow();
             ReviewedEntry = A;
-            bFound = true;
-            break;
-        }
-        if (bFound)
-        {
             if (!SaveToFile())
             {
+                A = PrevEntry;
                 UE_LOG(LogBanAppealRegistry, Error,
                     TEXT("BanAppealRegistry: failed to save after reviewing appeal id=%lld"), Id);
+                return false;
             }
+            bReviewed = true;
+            break;
         }
     }
 
-    if (bFound)
+    if (bReviewed)
         OnBanAppealReviewed.Broadcast(ReviewedEntry);
 
-    return bFound;
+    return bReviewed;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
