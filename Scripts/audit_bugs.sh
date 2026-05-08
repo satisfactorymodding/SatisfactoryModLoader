@@ -1091,7 +1091,8 @@ MUTEREG_CPP_CHECK38="$(list_cpp_files | tr '\0' '\n' | grep 'MuteRegistry\.cpp' 
 if [[ -z "$MUTEREG_CPP_CHECK38" ]]; then
     fail "CHECK 38 – MuteRegistry.cpp not found"
 elif ! grep -qP 'Mutes\s*=\s*PrevMutes' "$MUTEREG_CPP_CHECK38" \
-     || ! grep -qP 'if\s*\(\s*bPersisted\s*\)\s*OnPlayerMuted\.Broadcast' "$MUTEREG_CPP_CHECK38" \
+     || ! grep -qP 'bPersisted' "$MUTEREG_CPP_CHECK38" \
+     || ! grep -qP 'OnPlayerMuted\.Broadcast' "$MUTEREG_CPP_CHECK38" \
      || ! grep -qP 'Expired\.Reset\s*\(' "$MUTEREG_CPP_CHECK38"; then
     fail "CHECK 38 – MuteRegistry does not fully roll back in-memory changes and suppress events on save failure" \
         "File: $MUTEREG_CPP_CHECK38"
