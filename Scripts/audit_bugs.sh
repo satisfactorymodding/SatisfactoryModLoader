@@ -1043,8 +1043,10 @@ fi
 
 if [[ -z "$AUDITLOG_CPP_CHECK36" ]]; then
     fail "CHECK 36 – BanAuditLog.cpp not found"
-elif ! grep -qP 'Entries\s*=\s*PrevEntries' "$AUDITLOG_CPP_CHECK36" \
-     || ! grep -qP 'NextId\s*=\s*OriginalNextId' "$AUDITLOG_CPP_CHECK36"; then
+elif ! grep -qP 'NextId\s*=\s*OriginalNextId' "$AUDITLOG_CPP_CHECK36"; then
+    fail "CHECK 36 – BanAuditLog::LogAction does not roll back NextId on save failure" \
+        "File: $AUDITLOG_CPP_CHECK36"
+elif ! grep -qP 'Entries\.RemoveAt\s*\(\s*Entries\.Num\s*\(\s*\)\s*-\s*1\s*\)' "$AUDITLOG_CPP_CHECK36"; then
     fail "CHECK 36 – BanAuditLog::LogAction does not roll back memory and NextId on save failure" \
         "File: $AUDITLOG_CPP_CHECK36"
 fi
@@ -1094,11 +1096,13 @@ MUTEREG_CPP_CHECK38="$(list_cpp_files | tr '\0' '\n' | grep 'MuteRegistry\.cpp' 
 
 if [[ -z "$MUTEREG_CPP_CHECK38" ]]; then
     fail "CHECK 38 – MuteRegistry.cpp not found"
-elif ! grep -qP 'Mutes\s*=\s*PrevMutes' "$MUTEREG_CPP_CHECK38" \
-     || ! grep -qP 'bPersisted' "$MUTEREG_CPP_CHECK38" \
+elif ! grep -qP 'bPersisted' "$MUTEREG_CPP_CHECK38" \
      || ! grep -qP 'OnPlayerMuted\.Broadcast' "$MUTEREG_CPP_CHECK38" \
      || ! grep -qP 'Expired\.Reset\s*\(' "$MUTEREG_CPP_CHECK38"; then
     fail "CHECK 38 – MuteRegistry does not fully roll back in-memory changes and suppress events on save failure" \
+        "File: $MUTEREG_CPP_CHECK38"
+elif ! grep -qP 'Mutes\.RemoveAt\s*\(\s*Mutes\.Num\s*\(\s*\)\s*-\s*1\s*\)|Mutes\.Add\s*\(\s*(Prev|Removed)Entry\s*\)' "$MUTEREG_CPP_CHECK38"; then
+    fail "CHECK 38 – MuteRegistry does not roll back Mutes array on save failure" \
         "File: $MUTEREG_CPP_CHECK38"
 fi
 
@@ -2102,6 +2106,153 @@ else
 fi
 
 pass "CHECK 80 done"
+echo
+
+
+# =============================================================================
+# CHECK 81: BanRestApi ConstantTimeEquals always iterates at least 256 bytes
+# =============================================================================
+echo "--- CHECK 81: ConstantTimeEquals iterates at least 256 bytes ---"
+
+RESTAPI_CPP_FILE81="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+
+if [[ -z "$RESTAPI_CPP_FILE81" ]]; then
+    fail "CHECK 81 – BanRestApi.cpp not found"
+elif ! grep -qP 'FMath::Max.*256|Max.*256.*Length' "$RESTAPI_CPP_FILE81"; then
+    fail "CHECK 81 – ConstantTimeEquals does not enforce a minimum iteration count of 256" \
+        "File: $RESTAPI_CPP_FILE81" \
+        "Fix: use FMath::Max(FMath::Max(Au.Length(), Bu.Length()), 256) for N."
+fi
+
+pass "CHECK 81 done"
+echo
+
+# =============================================================================
+# CHECK 82: BanRestApi DELETE /appeals checks ReviewAppeal return value
+# =============================================================================
+echo "--- CHECK 82: DELETE /appeals checks ReviewAppeal return ---"
+
+RESTAPI_CPP_FILE82="$RESTAPI_CPP_FILE81"
+
+if [[ -z "$RESTAPI_CPP_FILE82" ]]; then
+    fail "CHECK 82 – BanRestApi.cpp not found"
+elif ! grep -qP '!\s*AppealsReg->ReviewAppeal' "$RESTAPI_CPP_FILE82"; then
+    fail "CHECK 82 – DELETE /appeals does not check ReviewAppeal return value" \
+        "File: $RESTAPI_CPP_FILE82" \
+        "Fix: wrap ReviewAppeal(...) in 'if (!...)' and return an error on failure."
+fi
+
+pass "CHECK 82 done"
+echo
+
+# =============================================================================
+# CHECK 83: BanRestApi POST /appeals rate limit uses TSharedPtr (not static)
+# =============================================================================
+echo "--- CHECK 83: POST /appeals rate-limit state captured in TSharedPtr ---"
+
+RESTAPI_CPP_FILE83="$RESTAPI_CPP_FILE81"
+
+if [[ -z "$RESTAPI_CPP_FILE83" ]]; then
+    fail "CHECK 83 – BanRestApi.cpp not found"
+elif grep -qP '^\s+static\s+(TArray|FCriticalSection)\s+(AppealSubmissions|AppealRateMutex)' "$RESTAPI_CPP_FILE83"; then
+    fail "CHECK 83 – POST /appeals rate-limit still uses process-lifetime static variables" \
+        "File: $RESTAPI_CPP_FILE83" \
+        "Fix: wrap rate-limit state in a TSharedPtr captured at route registration time."
+fi
+
+pass "CHECK 83 done"
+echo
+
+# =============================================================================
+# CHECK 84: BanRestApi PATCH /appeals reads appeal Uid before ReviewAppeal
+# =============================================================================
+echo "--- CHECK 84: PATCH /appeals reads appeal Uid before ReviewAppeal (TOCTOU fix) ---"
+
+RESTAPI_CPP_FILE84="$RESTAPI_CPP_FILE81"
+
+if [[ -z "$RESTAPI_CPP_FILE84" ]]; then
+    fail "CHECK 84 – BanRestApi.cpp not found"
+elif ! grep -qP 'PreReviewAppeal\s*=\s*AppealsReg->GetAppealById' "$RESTAPI_CPP_FILE84"; then
+    fail "CHECK 84 – PATCH /appeals does not capture appeal before ReviewAppeal" \
+        "File: $RESTAPI_CPP_FILE84" \
+        "Fix: call GetAppealById(Id) before ReviewAppeal to avoid TOCTOU on auto-unban."
+fi
+
+pass "CHECK 84 done"
+echo
+
+# =============================================================================
+# CHECK 85: BanDiscordSubsystem Discord→in-game relay caps message length
+# =============================================================================
+echo "--- CHECK 85: Discord→in-game relay caps message length ---"
+
+BDISCORD_CPP_FILE85="$(list_cpp_files | tr '\0' '\n' | grep 'BanDiscordSubsystem\.cpp' | head -1)"
+
+if [[ -z "$BDISCORD_CPP_FILE85" ]]; then
+    fail "CHECK 85 – BanDiscordSubsystem.cpp not found"
+elif ! grep -qP 'MaxRelayLength|RelayMsg' "$BDISCORD_CPP_FILE85"; then
+    fail "CHECK 85 – Discord→in-game relay does not cap message length" \
+        "File: $BDISCORD_CPP_FILE85" \
+        "Fix: truncate Formatted to MaxRelayLength before calling PC->ClientMessage."
+fi
+
+pass "CHECK 85 done"
+echo
+
+# =============================================================================
+# CHECK 86: BanEnforcer kick timers stored in PendingKickTimersByUid
+# =============================================================================
+echo "--- CHECK 86: BanEnforcer kick timers stored for cancellation on unban ---"
+
+ENFORCER_CPP_FILE86="$(list_cpp_files | tr '\0' '\n' | grep 'BanEnforcer\.cpp' | head -1)"
+
+if [[ -z "$ENFORCER_CPP_FILE86" ]]; then
+    fail "CHECK 86 – BanEnforcer.cpp not found"
+elif ! grep -qP 'PendingKickTimersByUid' "$ENFORCER_CPP_FILE86"; then
+    fail "CHECK 86 – BanEnforcer does not store kick timer handles for cancellation" \
+        "File: $ENFORCER_CPP_FILE86" \
+        "Fix: add TMap<FString,FTimerHandle> PendingKickTimersByUid and cancel on OnBanRemoved."
+fi
+
+pass "CHECK 86 done"
+echo
+
+# =============================================================================
+# CHECK 87: BanEnforcer OnBanRemoved cancels PendingKickTimersByUid entry
+# =============================================================================
+echo "--- CHECK 87: BanEnforcer OnBanRemoved cancels pending kick timer ---"
+
+ENFORCER_CPP_FILE87="$ENFORCER_CPP_FILE86"
+
+if [[ -z "$ENFORCER_CPP_FILE87" ]]; then
+    fail "CHECK 87 – BanEnforcer.cpp not found"
+elif ! perl -0777 -ne '
+    exit 0 if /PendingKickTimersByUid\.Find\s*\(\s*Uid\s*\)[\s\S]{0,400}?ClearTimer/s;
+    exit 1' "$ENFORCER_CPP_FILE87"; then
+    fail "CHECK 87 – BanEnforcer OnBanRemoved does not cancel kick timer via PendingKickTimersByUid" \
+        "File: $ENFORCER_CPP_FILE87" \
+        "Fix: in OnBanRemoved, call World->GetTimerManager().ClearTimer for the PendingKickTimersByUid entry."
+fi
+
+pass "CHECK 87 done"
+echo
+
+# =============================================================================
+# CHECK 88: BanAuditLog rollback uses lightweight per-entry state (not full copy)
+# =============================================================================
+echo "--- CHECK 88: BanAuditLog rollback uses lightweight TrimmedEntries (not full PrevEntries copy) ---"
+
+AUDITLOG_CPP_FILE88="$(list_cpp_files | tr '\0' '\n' | grep 'BanAuditLog\.cpp' | head -1)"
+
+if [[ -z "$AUDITLOG_CPP_FILE88" ]]; then
+    fail "CHECK 88 – BanAuditLog.cpp not found"
+elif grep -qP 'const\s+TArray<FAuditEntry>\s+PrevEntries\s*=' "$AUDITLOG_CPP_FILE88"; then
+    fail "CHECK 88 – BanAuditLog still uses full-array O(n) PrevEntries rollback copy" \
+        "File: $AUDITLOG_CPP_FILE88" \
+        "Fix: replace PrevEntries with TrimmedEntries + Entries.RemoveAt(Num()-1) lightweight rollback."
+fi
+
+pass "CHECK 88 done"
 echo
 
 

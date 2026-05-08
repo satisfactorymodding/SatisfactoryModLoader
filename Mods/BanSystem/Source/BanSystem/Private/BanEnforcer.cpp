@@ -279,12 +279,31 @@ void UBanEnforcer::Initialize(FSubsystemCollectionBase& Collection)
     // grow unboundedly.  When a ban record is deleted (manually, via REST API, or
     // by expiry pruning) the corresponding UID is evicted from the dedup set so
     // that a future re-ban + expiry cycle will still trigger a notification.
+    // Also cancel any pending 20-second kick timer for the removed UID so that
+    // a player who was just unbanned is not disconnected anyway.
     TWeakObjectPtr<UBanEnforcer> WeakThisBR(this);
     BanRemovedHandle = UBanDatabase::OnBanRemoved.AddLambda(
         [WeakThisBR](const FString& Uid, const FString& /*PlayerName*/)
         {
-            if (UBanEnforcer* Enforcer = WeakThisBR.Get())
-                Enforcer->AlreadyNotifiedExpiredBanUids.Remove(Uid);
+            UBanEnforcer* Enforcer = WeakThisBR.Get();
+            if (!Enforcer) return;
+
+            Enforcer->AlreadyNotifiedExpiredBanUids.Remove(Uid);
+
+            // Cancel the pending disconnect timer (if any) for this UID so a
+            // player unbanned within the 20-second kick-message window is not
+            // disconnected after the ban is lifted.
+            if (FTimerHandle* Handle = Enforcer->PendingKickTimersByUid.Find(Uid))
+            {
+                if (UGameInstance* GI = Enforcer->GetGameInstance())
+                {
+                    if (UWorld* World = GI->GetWorld())
+                        World->GetTimerManager().ClearTimer(*Handle);
+                }
+                Enforcer->PendingKickTimersByUid.Remove(Uid);
+                UE_LOG(LogBanEnforcer, Log,
+                    TEXT("BanEnforcer: cancelled pending kick timer for unbanned UID %s"), *Uid);
+            }
         });
 }
 
@@ -321,6 +340,9 @@ void UBanEnforcer::Deinitialize()
     CachedConnectionPuids.Empty();
     CachedConnectionIPs.Empty();
     CachedConnectionVersions.Empty();
+
+    // Cancel and clear all pending kick timers.
+    PendingKickTimersByUid.Empty();
 
     // Cancel any in-flight identity poll and clear the queue.
     PendingBanChecks.Empty();
@@ -610,13 +632,16 @@ void UBanEnforcer::PerformBanCheckForPlayer(UWorld* World, APlayerController* PC
                 {
                     PC->ClientWasKicked(FText::FromString(KickMsg));
                     TWeakObjectPtr<APlayerController> WeakPC(PC);
-                    // KickTimerHandle is intentionally transient: one-shot 20-second
-                    // timer so the player can read the ban message before disconnect.
-                    // WeakPC prevents a crash if the player leaves during the window.
-                    FTimerHandle KickTimerHandle;
+                    TWeakObjectPtr<UBanEnforcer> WeakEnforcer(this);
+                    // Store the handle in PendingKickTimersByUid so OnBanRemoved can
+                    // cancel the disconnect if the ban is lifted within 20 seconds.
+                    const FString BanUid = IpEntry.Uid;
+                    FTimerHandle& KickTimerHandle = PendingKickTimersByUid.FindOrAdd(BanUid);
                     World->GetTimerManager().SetTimer(KickTimerHandle,
-                        FTimerDelegate::CreateLambda([WeakPC]()
+                        FTimerDelegate::CreateLambda([WeakPC, WeakEnforcer, BanUid]()
                         {
+                            if (UBanEnforcer* E = WeakEnforcer.Get())
+                                E->PendingKickTimersByUid.Remove(BanUid);
                             APlayerController* PCToKick = WeakPC.Get();
                             if (!IsValid(PCToKick)) return;
                             if (UNetConnection* Conn = Cast<UNetConnection>(PCToKick->Player))
@@ -739,12 +764,16 @@ void UBanEnforcer::PerformBanCheckForPlayer(UWorld* World, APlayerController* PC
     {
         PC->ClientWasKicked(FText::FromString(KickMsg));
         TWeakObjectPtr<APlayerController> WeakPC(PC);
-        // KickTimerHandle is intentionally transient: one-shot 20-second timer.
-        // WeakPC prevents a crash if the player disconnects during the window.
-        FTimerHandle KickTimerHandle;
+        TWeakObjectPtr<UBanEnforcer> WeakEnforcer(this);
+        // Store the handle in PendingKickTimersByUid so OnBanRemoved can cancel
+        // the disconnect if the ban is lifted within the 20-second window.
+        const FString BanUid = Entry.Uid;
+        FTimerHandle& KickTimerHandle = PendingKickTimersByUid.FindOrAdd(BanUid);
         World->GetTimerManager().SetTimer(KickTimerHandle,
-            FTimerDelegate::CreateLambda([WeakPC]()
+            FTimerDelegate::CreateLambda([WeakPC, WeakEnforcer, BanUid]()
             {
+                if (UBanEnforcer* E = WeakEnforcer.Get())
+                    E->PendingKickTimersByUid.Remove(BanUid);
                 APlayerController* PCToKick = WeakPC.Get();
                 if (!IsValid(PCToKick)) return;
                 if (UNetConnection* Conn = Cast<UNetConnection>(PCToKick->Player))
@@ -829,12 +858,24 @@ bool UBanEnforcer::KickConnectedPlayer(UWorld* World, const FString& Uid, const 
         {
             PC->ClientWasKicked(FText::FromString(Reason));
             TWeakObjectPtr<APlayerController> WeakPC(PC);
-            // KickTimerHandle is intentionally transient: one-shot 20-second timer.
-            // WeakPC prevents a crash if the player disconnects during the window.
-            FTimerHandle KickTimerHandle;
+            // Look up the Enforcer instance so we can store the timer handle in
+            // PendingKickTimersByUid, allowing the OnBanRemoved handler to cancel
+            // the pending disconnect if the ban is lifted within the 20-second window.
+            UGameInstance* KickGI = World->GetGameInstance();
+            UBanEnforcer* Enforcer = KickGI ? KickGI->GetSubsystem<UBanEnforcer>() : nullptr;
+            TWeakObjectPtr<UBanEnforcer> WeakEnforcer(Enforcer);
+            const FString KickBanUid = Uid;
+
+            FTimerHandle LocalHandle; // fallback if Enforcer is unavailable
+            FTimerHandle& KickTimerHandle = Enforcer
+                ? Enforcer->PendingKickTimersByUid.FindOrAdd(KickBanUid)
+                : LocalHandle;
+
             World->GetTimerManager().SetTimer(KickTimerHandle,
-                FTimerDelegate::CreateLambda([WeakPC]()
+                FTimerDelegate::CreateLambda([WeakPC, WeakEnforcer, KickBanUid]()
                 {
+                    if (UBanEnforcer* E = WeakEnforcer.Get())
+                        E->PendingKickTimersByUid.Remove(KickBanUid);
                     APlayerController* PCToKick = WeakPC.Get();
                     if (!IsValid(PCToKick)) return;
                     if (UNetConnection* Conn = Cast<UNetConnection>(PCToKick->Player))
@@ -911,12 +952,14 @@ void UBanEnforcer::PerformBanCheckForUid(UWorld* World, APlayerController* PC, U
                 {
                     PC->ClientWasKicked(FText::FromString(KickMsg));
                     TWeakObjectPtr<APlayerController> WeakPC(PC);
-                    // KickTimerHandle is intentionally transient: one-shot 20-second timer.
-                    // WeakPC prevents a crash if the player disconnects during the window.
-                    FTimerHandle KickTimerHandle;
+                    TWeakObjectPtr<UBanEnforcer> WeakEnforcer(this);
+                    const FString BanUid = IpEntry.Uid;
+                    FTimerHandle& KickTimerHandle = PendingKickTimersByUid.FindOrAdd(BanUid);
                     World->GetTimerManager().SetTimer(KickTimerHandle,
-                        FTimerDelegate::CreateLambda([WeakPC]()
+                        FTimerDelegate::CreateLambda([WeakPC, WeakEnforcer, BanUid]()
                         {
+                            if (UBanEnforcer* E = WeakEnforcer.Get())
+                                E->PendingKickTimersByUid.Remove(BanUid);
                             APlayerController* PCToKick = WeakPC.Get();
                             if (!IsValid(PCToKick)) return;
                             if (UNetConnection* Conn = Cast<UNetConnection>(PCToKick->Player))
@@ -1026,12 +1069,14 @@ void UBanEnforcer::PerformBanCheckForUid(UWorld* World, APlayerController* PC, U
     {
         PC->ClientWasKicked(FText::FromString(KickMsg));
         TWeakObjectPtr<APlayerController> WeakPC(PC);
-        // KickTimerHandle is intentionally transient: one-shot 20-second timer.
-        // WeakPC prevents a crash if the player disconnects during the window.
-        FTimerHandle KickTimerHandle;
+        TWeakObjectPtr<UBanEnforcer> WeakEnforcer(this);
+        const FString BanUid = Entry.Uid;
+        FTimerHandle& KickTimerHandle = PendingKickTimersByUid.FindOrAdd(BanUid);
         World->GetTimerManager().SetTimer(KickTimerHandle,
-            FTimerDelegate::CreateLambda([WeakPC]()
+            FTimerDelegate::CreateLambda([WeakPC, WeakEnforcer, BanUid]()
             {
+                if (UBanEnforcer* E = WeakEnforcer.Get())
+                    E->PendingKickTimersByUid.Remove(BanUid);
                 APlayerController* PCToKick = WeakPC.Get();
                 if (!IsValid(PCToKick)) return;
                 if (UNetConnection* Conn = Cast<UNetConnection>(PCToKick->Player))

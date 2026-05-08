@@ -73,7 +73,21 @@ void UMuteRegistry::MutePlayer(const FString& Uid, const FString& PlayerName,
     bool bPersisted = false;
     {
         FScopeLock Lock(&Mutex);
-        const TArray<FMuteEntry> PrevMutes = Mutes;
+        // Find and save the existing entry for this UID so it can be restored
+        // if SaveToFile fails.  At most one entry exists per UID (MutePlayer
+        // enforces uniqueness via RemoveAll below), so this is O(1) storage
+        // rather than an O(n) full-array copy.
+        FMuteEntry PrevEntry;
+        bool bHadPrevEntry = false;
+        for (const FMuteEntry& M : Mutes)
+        {
+            if (M.Uid.Equals(Uid, ESearchCase::IgnoreCase))
+            {
+                PrevEntry = M;
+                bHadPrevEntry = true;
+                break;
+            }
+        }
         // Replace any existing mute for this UID.
         Mutes.RemoveAll([&Uid](const FMuteEntry& M)
         {
@@ -82,7 +96,9 @@ void UMuteRegistry::MutePlayer(const FString& Uid, const FString& PlayerName,
         Mutes.Add(Entry);
         if (!SaveToFile())
         {
-            Mutes = PrevMutes;
+            // Rollback: remove the newly added entry and restore the old one.
+            Mutes.RemoveAt(Mutes.Num() - 1);
+            if (bHadPrevEntry) Mutes.Add(PrevEntry);
             UE_LOG(LogMuteRegistry, Error,
                 TEXT("MuteRegistry: failed to save mutes.json after muting %s"), *Uid);
         }
@@ -104,17 +120,16 @@ bool UMuteRegistry::UnmutePlayer(const FString& Uid)
 
     {
         FScopeLock Lock(&Mutex);
-        const TArray<FMuteEntry> PrevMutes = Mutes;
-        // Capture whether the entry was actively muting before removal so we
-        // only broadcast OnPlayerUnmuted for entries that were actually live.
-        // If the mute had already expired but TickExpiry() hasn't run yet,
-        // the player is not muted and a manual /unmute should not fire a
-        // spurious "player was unmuted" notification.
+        // Capture the entry we are about to remove so it can be restored if
+        // SaveToFile fails.  At most one entry exists per UID, so this is
+        // O(1) storage rather than an O(n) full-array copy.
+        FMuteEntry RemovedEntry;
         for (const FMuteEntry& M : Mutes)
         {
             if (M.Uid.Equals(Uid, ESearchCase::IgnoreCase))
             {
                 bWasActive = !M.IsExpired();
+                RemovedEntry = M;
                 break;
             }
         }
@@ -126,7 +141,7 @@ bool UMuteRegistry::UnmutePlayer(const FString& Uid)
         bRemoved = Mutes.Num() < Before;
         if (bRemoved && !SaveToFile())
         {
-            Mutes = PrevMutes;
+            Mutes.Add(RemovedEntry);
             bRemoved = false;
             bWasActive = false;
             UE_LOG(LogMuteRegistry, Error,
@@ -205,12 +220,16 @@ TArray<FString> UMuteRegistry::TickExpiry()
 
     {
         FScopeLock Lock(&Mutex);
-        const TArray<FMuteEntry> PrevMutes = Mutes;
+        // Collect only the entries being expired so that, if SaveToFile fails,
+        // we can restore exactly those entries rather than copying the full Mutes
+        // array.  This is O(expired_count) storage, typically 0 in steady state.
+        TArray<FMuteEntry> ExpiredEntries;
         const int32 Before = Mutes.Num();
-        Mutes.RemoveAll([&Expired](const FMuteEntry& M) -> bool
+        Mutes.RemoveAll([&ExpiredEntries, &Expired](const FMuteEntry& M) -> bool
         {
             if (!M.bIsIndefinite && M.IsExpired())
             {
+                ExpiredEntries.Add(M);
                 Expired.Add(M.Uid);
                 return true;
             }
@@ -221,7 +240,8 @@ TArray<FString> UMuteRegistry::TickExpiry()
         {
             if (!SaveToFile())
             {
-                Mutes = PrevMutes;
+                for (const FMuteEntry& E : ExpiredEntries)
+                    Mutes.Add(E);
                 Expired.Reset();
                 UE_LOG(LogMuteRegistry, Error,
                     TEXT("MuteRegistry: failed to save mutes.json after expiry — "

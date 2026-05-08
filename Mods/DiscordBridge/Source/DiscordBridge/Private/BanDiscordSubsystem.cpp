@@ -855,6 +855,14 @@ void UBanDiscordSubsystem::SetProvider(IDiscordBridgeProvider* InProvider)
 				const FString Formatted = FString::Printf(
 					TEXT("[Discord Staff] %s: %s"), *DisplayName, *Content);
 
+				// Cap the relayed message length to prevent oversized Discord posts
+				// from flooding the in-game chat buffer.  500 chars is generous for
+				// a staff chat message while staying within UE's ClientMessage limits.
+				static constexpr int32 MaxRelayLength = 500;
+				const FString RelayMsg = (Formatted.Len() > MaxRelayLength)
+					? Formatted.Left(MaxRelayLength) + TEXT("\u2026") // HORIZONTAL ELLIPSIS
+					: Formatted;
+
 				// Deliver to all online admin/moderator players.
 				const UBanChatCommandsConfig* BccCfg = UBanChatCommandsConfig::Get();
 				UWorld* World = Self->GetGameInstance()
@@ -885,7 +893,7 @@ void UBanDiscordSubsystem::SetProvider(IDiscordBridgeProvider* InProvider)
 					if (PUIDStr.IsEmpty()) continue;
 					const FString CompoundUid = TEXT("EOS:") + PUIDStr.ToLower();
 					if (BccCfg && BccCfg->IsModeratorUid(CompoundUid))
-						PC->ClientMessage(Formatted);
+						PC->ClientMessage(RelayMsg);
 				}
 			});
 
