@@ -845,6 +845,18 @@ namespace BanChat
      */
     static TMap<FString, FDateTime> CommandCooldowns;
 
+    /** Build a per-session scope key so PIE/dev sessions don't inherit cooldown state. */
+    static FString GetCommandStateScope(UCommandSender* Sender)
+    {
+        if (!Sender) return TEXT("global");
+        if (AFGPlayerController* PC = Sender->GetPlayer())
+        {
+            if (UWorld* World = PC->GetWorld())
+                return World->GetPathName();
+        }
+        return TEXT("global");
+    }
+
     /**
      * Returns true if the sender is on cooldown for the given command.
      * Admin senders are never rate-limited.
@@ -865,7 +877,7 @@ namespace BanChat
         const UBanChatCommandsConfig* Cfg = UBanChatCommandsConfig::Get();
         if (Cfg && Cfg->IsAdminUid(SenderUid)) return false;
 
-        const FString Key = CommandName + TEXT(":") + SenderUid;
+        const FString Key = GetCommandStateScope(Sender) + TEXT(":") + CommandName + TEXT(":") + SenderUid;
         const FDateTime Now = FDateTime::UtcNow();
 
         // Prune stale entries at most once per minute so this map-sweep doesn't
@@ -933,7 +945,8 @@ namespace BanChat
                 It.RemoveCurrent();
         }
 
-        TArray<FDateTime>& Timestamps = AdminBanTimestamps.FindOrAdd(AdminUid);
+        const FString ScopedAdminUid = GetCommandStateScope(Sender) + TEXT(":") + AdminUid;
+        TArray<FDateTime>& Timestamps = AdminBanTimestamps.FindOrAdd(ScopedAdminUid);
 
         if (Timestamps.Num() >= LimitCount)
         {

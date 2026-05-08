@@ -209,7 +209,12 @@ void UScheduledBanRegistry::Tick(float DeltaTime)
     // once so the persisted RetryCount survives the next restart.
     {
         FScopeLock Lock(&Mutex);
-        const TArray<FScheduledBanEntry> PrevPending = Pending;
+        // Remove `const` so that the retry-count updates applied to PrevPending
+        // elements inside the rollback loop below are preserved when
+        // `Pending = PrevPending` restores the snapshot.  With `const` the
+        // range-for variable binds as a copy and mutations are silently lost,
+        // causing the 5-attempt retry cap to never advance past its pre-save value.
+        TArray<FScheduledBanEntry> PrevPending = Pending;
 
         // Build the set of IDs to remove entirely.
         TSet<int64> IdsToRemove(AppliedIds);
