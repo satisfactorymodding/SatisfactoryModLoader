@@ -51,6 +51,7 @@ void UPlayerSessionRegistry::RecordSession(const FString& Uid, const FString& Di
 {
     if (Uid.IsEmpty()) return;
 
+    bool bPersisted = false;
     {
         FScopeLock Lock(&Mutex);
 
@@ -63,6 +64,7 @@ void UPlayerSessionRegistry::RecordSession(const FString& Uid, const FString& Di
         {
             if (R.Uid.Equals(Uid, ESearchCase::IgnoreCase))
             {
+                const FPlayerSessionRecord PrevRecord = R;
                 R.DisplayName = DisplayName;
                 R.LastSeen    = NowStr;
                 if (!IpAddress.IsEmpty())
@@ -70,8 +72,15 @@ void UPlayerSessionRegistry::RecordSession(const FString& Uid, const FString& Di
                 if (!ClientVersion.IsEmpty())
                     R.ClientVersion = ClientVersion;
                 if (!SaveToFile())
+                {
+                    R = PrevRecord;
                     UE_LOG(LogPlayerSessionRegistry, Warning,
                         TEXT("PlayerSessionRegistry: failed to save updated session for uid='%s'"), *Uid);
+                }
+                else
+                {
+                    bPersisted = true;
+                }
                 bUpdated = true;
                 break;
             }
@@ -87,12 +96,21 @@ void UPlayerSessionRegistry::RecordSession(const FString& Uid, const FString& Di
             NewRec.ClientVersion = ClientVersion;
             Records.Add(NewRec);
             if (!SaveToFile())
+            {
+                Records.RemoveAt(Records.Num() - 1);
                 UE_LOG(LogPlayerSessionRegistry, Warning,
                     TEXT("PlayerSessionRegistry: failed to save new session for uid='%s'"), *Uid);
+            }
+            else
+            {
+                bPersisted = true;
+            }
         }
     }
 
-    // Push player-join event via WebSocket (outside the lock).
+    // Push player-join event via WebSocket (outside the lock) only after a
+    // successful save so events do not announce non-persisted state.
+    if (bPersisted)
     {
         TSharedPtr<FJsonObject> Fields = MakeShared<FJsonObject>();
         Fields->SetStringField(TEXT("uid"),         Uid);
@@ -164,6 +182,7 @@ int32 UPlayerSessionRegistry::PruneOldRecords(int32 DaysToKeep)
 
     const FDateTime Cutoff = FDateTime::UtcNow() - FTimespan::FromDays(static_cast<double>(DaysToKeep));
     FScopeLock Lock(&Mutex);
+    const TArray<FPlayerSessionRecord> PrevRecords = Records;
 
     const int32 Before = Records.Num();
     Records.RemoveAll([&Cutoff](const FPlayerSessionRecord& R) -> bool
@@ -179,8 +198,12 @@ int32 UPlayerSessionRegistry::PruneOldRecords(int32 DaysToKeep)
     if (Pruned > 0)
     {
         if (!SaveToFile())
+        {
+            Records = PrevRecords;
             UE_LOG(LogPlayerSessionRegistry, Warning,
                 TEXT("PlayerSessionRegistry: failed to save after pruning %d record(s)"), Pruned);
+            return 0;
+        }
         UE_LOG(LogPlayerSessionRegistry, Log,
             TEXT("PlayerSessionRegistry: pruned %d record(s) older than %d day(s)"),
             Pruned, DaysToKeep);
