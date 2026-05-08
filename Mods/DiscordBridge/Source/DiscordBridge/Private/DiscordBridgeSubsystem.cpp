@@ -6260,10 +6260,11 @@ if (!(*ObjPtr)->TryGetStringField(TEXT("name"), OptName) ||
 FString StrVal;
 if ((*ObjPtr)->TryGetStringField(TEXT("value"), StrVal)) return StrVal;
 double NumVal = 0.0;
+static constexpr double MaxSafeJsonInteger = 9007199254740991.0; // 2^53 - 1 (IEEE-754 exact integer limit)
 if ((*ObjPtr)->TryGetNumberField(TEXT("value"), NumVal) &&
     FMath::IsFinite(NumVal) &&
-    NumVal >= static_cast<double>(INT64_MIN) &&
-    NumVal <= static_cast<double>(INT64_MAX) &&
+    NumVal >= -MaxSafeJsonInteger &&
+    NumVal <= MaxSafeJsonInteger &&
     FMath::Fmod(NumVal, 1.0) == 0.0)
 return FString::Printf(TEXT("%lld"), static_cast<int64>(NumVal));
 return FString();
