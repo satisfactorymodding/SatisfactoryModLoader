@@ -14,6 +14,8 @@
 #include "HAL/FileManager.h"
 #include "HAL/PlatformFileManager.h"
 
+#include <atomic>
+
 DEFINE_LOG_CATEGORY(LogBanDatabase);
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -362,11 +364,35 @@ void UBanDatabase::LoadFromFile()
     if (Root->TryGetStringField(TEXT("nextId"), NextIdStr) && NextIdStr.IsNumeric()
         && NextIdStr.Len() <= 19
         && (NextIdStr.Len() < 19 || NextIdStr <= TEXT("9223372036854775807")))
-        NewNextId = FMath::Max((int64)0, FCString::Atoi64(*NextIdStr));
+    {
+        const int64 Parsed = FMath::Max((int64)0, FCString::Atoi64(*NextIdStr));
+        if (Parsed == 0)
+        {
+            // nextId=0 stored in file is treated as corrupt (0 is the exhausted
+            // sentinel set only after INT64_MAX allocations, which cannot happen).
+            UE_LOG(LogBanDatabase, Warning,
+                TEXT("BanDatabase: persisted nextId=0 is invalid; resetting to 1"));
+            NewNextId = 1;
+        }
+        else
+            NewNextId = Parsed;
+    }
     else if (Root->TryGetNumberField(TEXT("nextId"), NextIdDbl)
         && NextIdDbl >= 0.0 && NextIdDbl < static_cast<double>(INT64_MAX)
-        && FMath::Fmod(NextIdDbl, 1.0) == 0.0) // guard against Inf/NaN before cast
-        NewNextId = FMath::Max((int64)0, static_cast<int64>(NextIdDbl));
+        && FMath::Fmod(NextIdDbl, 1.0) == 0.0)
+    {
+        const int64 Parsed = static_cast<int64>(NextIdDbl);
+        if (Parsed == 0)
+        {
+            // nextId=0 stored in file is treated as corrupt (0 is the exhausted
+            // sentinel set only after INT64_MAX allocations, which cannot happen).
+            UE_LOG(LogBanDatabase, Warning,
+                TEXT("BanDatabase: persisted nextId=0 is invalid; resetting to 1"));
+            NewNextId = 1;
+        }
+        else
+            NewNextId = Parsed;
+    }
 
     // Build the new ban list into a local array first so that concurrent readers
     // never observe an empty list during the parse phase.  The live Bans field is
@@ -1107,10 +1133,15 @@ FString UBanDatabase::Backup(const FString& BackupDir, int32 MaxKeep) const
         PF.CreateDirectoryTree(*BackupDir);
 
     const FDateTime Now   = FDateTime::UtcNow();
+    // Use an atomic counter as a sub-second disambiguator so that two concurrent
+    // POST /bans/backup calls within the same second produce distinct filenames
+    // instead of silently overwriting each other.
+    static std::atomic<uint32> BackupSeq{0};
+    const uint32 Seq = BackupSeq.fetch_add(1, std::memory_order_relaxed) % 1000;
     const FString   Stamp = FString::Printf(
-        TEXT("%04d-%02d-%02d_%02d-%02d-%02d"),
+        TEXT("%04d-%02d-%02d_%02d-%02d-%02d_%03u"),
         Now.GetYear(), Now.GetMonth(),  Now.GetDay(),
-        Now.GetHour(), Now.GetMinute(), Now.GetSecond());
+        Now.GetHour(), Now.GetMinute(), Now.GetSecond(), Seq);
     const FString Dest = BackupDir / FString::Printf(TEXT("bans_%s.json"), *Stamp);
 
     if (!PF.CopyFile(*Dest, *DbPath))

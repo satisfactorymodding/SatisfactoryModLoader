@@ -256,7 +256,21 @@ void UBanAuditLog::LoadFromFile()
         }
 
         if (bHadStoredNextId && ParsedNextId >= 0)
-            NextId = ParsedNextId;
+        {
+            if (ParsedNextId == 0)
+            {
+                // nextId=0 stored in a file written by an external tool or corrupted.
+                // 0 is the exhausted-ID sentinel set only after INT64_MAX allocations,
+                // which cannot happen in practice; treat it as a corrupt value and reset.
+                UE_LOG(LogBanAuditLog, Warning,
+                    TEXT("BanAuditLog: persisted nextId=0 is invalid; resetting to 1"));
+                NextId = 1;
+                for (const FAuditEntry& E : Entries)
+                    if (E.Id >= NextId) NextId = (E.Id < INT64_MAX) ? E.Id + 1 : 0;
+            }
+            else
+                NextId = ParsedNextId;
+        }
         else
         {
             // Fallback: derive from loaded entries.

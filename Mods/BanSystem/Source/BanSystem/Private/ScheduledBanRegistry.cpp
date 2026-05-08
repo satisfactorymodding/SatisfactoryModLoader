@@ -221,6 +221,16 @@ void UScheduledBanRegistry::Tick(float DeltaTime)
                     TEXT("ScheduledBanRegistry: dropping entry id=%lld after %d failed attempts"),
                     FE.Id, FE.RetryCount);
                 IdsToRemove.Add(FE.Id);
+
+                // Write an audit log entry so admins can see that the ban was not enforced.
+                if (UBanAuditLog* AuditLog = GetGameInstance() ? GetGameInstance()->GetSubsystem<UBanAuditLog>() : nullptr)
+                {
+                    AuditLog->LogAction(
+                        TEXT("scheduled_ban_dropped"), FE.Uid, FE.PlayerName,
+                        TEXT("system"), FE.ScheduledBy,
+                        FString::Printf(TEXT("Scheduled ban id=%lld dropped after %d failed apply attempts"),
+                            FE.Id, FE.RetryCount));
+                }
             }
         }
 

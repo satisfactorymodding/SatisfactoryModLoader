@@ -2515,6 +2515,218 @@ pass "CHECK 96 done"
 echo
 
 
+# =============================================================================
+# CHECK 97: GeoIP HTTP response lambda wraps KickConnectedPlayer in AsyncTask
+# =============================================================================
+echo "--- CHECK 97: GeoIP HTTP callback dispatches to game thread via AsyncTask ---"
+
+BANENFORCER_CPP_CHECK97="$(list_cpp_files | tr '\0' '\n' | grep 'BanEnforcer\.cpp' | head -1)"
+if [[ -z "$BANENFORCER_CPP_CHECK97" ]]; then
+    fail "CHECK 97 – BanEnforcer.cpp not found"
+else
+    # The HTTP response lambda must dispatch through AsyncTask(ENamedThreads::GameThread,...) 
+    # before calling KickConnectedPlayer.
+    if ! grep -qP 'AsyncTask\s*\(\s*ENamedThreads::GameThread' "$BANENFORCER_CPP_CHECK97"; then
+        fail "CHECK 97 – GeoIP HTTP callback calls KickConnectedPlayer directly off the game thread" \
+            "Fix: wrap KickConnectedPlayer and NotifyGeoIpBlocked in AsyncTask(ENamedThreads::GameThread, ...)."
+    fi
+fi
+
+pass "CHECK 97 done"
+echo
+
+
+# =============================================================================
+# CHECK 98: SMLWebSocketServerRunnable token check uses 256-minimum constant-time loop
+# =============================================================================
+echo "--- CHECK 98: WS server token comparison uses 256-minimum constant-time loop ---"
+
+WSSRVRUNNABLE_CPP_CHECK98="$(list_cpp_files | tr '\0' '\n' | grep 'SMLWebSocketServerRunnable\.cpp' | head -1)"
+if [[ -z "$WSSRVRUNNABLE_CPP_CHECK98" ]]; then
+    fail "CHECK 98 – SMLWebSocketServerRunnable.cpp not found"
+else
+    if ! grep -qP 'FMath::Max\s*\(\s*FMath::Max\s*\(\s*AuthLen\s*,\s*ExpectedLen\s*\)\s*,\s*256\s*\)' "$WSSRVRUNNABLE_CPP_CHECK98"; then
+        fail "CHECK 98 – WS server token comparison iterates only min(AuthLen,ExpectedLen) bytes, leaking length via timing" \
+            "Fix: use N = FMath::Max(FMath::Max(AuthLen, ExpectedLen), 256) with out-of-bounds byte padding to 0."
+    fi
+fi
+
+pass "CHECK 98 done"
+echo
+
+
+# =============================================================================
+# CHECK 99: CSV export lambdas neutralise formula-injection prefixes
+# =============================================================================
+echo "--- CHECK 99: CSV export neutralises formula-injection prefixes (=, +, -, @) ---"
+
+BANREST_CPP_CHECK99="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+if [[ -z "$BANREST_CPP_CHECK99" ]]; then
+    fail "CHECK 99 – BanRestApi.cpp not found"
+else
+    if ! grep -qP "TEXT\(\"'\"\)" "$BANREST_CPP_CHECK99"; then
+        fail "CHECK 99 – CSV export lambdas do not prefix formula-injection chars with a single-quote" \
+            "Fix: in every CsvQuote/CsvQ lambda, if the field starts with =, +, -, or @ prepend a single-quote."
+    fi
+fi
+
+pass "CHECK 99 done"
+echo
+
+
+# =============================================================================
+# CHECK 100: POST /bans/backup returns filename only, not full filesystem path
+# =============================================================================
+echo "--- CHECK 100: POST /bans/backup response contains filename, not full path ---"
+
+BANREST_CPP_CHECK100="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+if [[ -z "$BANREST_CPP_CHECK100" ]]; then
+    fail "CHECK 100 – BanRestApi.cpp not found"
+else
+    # Must NOT return the full path field
+    if grep -qP '"path"\s*,\s*Dest' "$BANREST_CPP_CHECK100"; then
+        fail "CHECK 100 – backup endpoint still returns full filesystem path in 'path' field" \
+            "Fix: return only FPaths::GetCleanFilename(Dest) in a 'filename' field."
+    fi
+    # Must return the clean filename
+    if ! grep -qP 'FPaths::GetCleanFilename\s*\(\s*Dest\s*\)' "$BANREST_CPP_CHECK100"; then
+        fail "CHECK 100 – backup endpoint does not use FPaths::GetCleanFilename to strip the path" \
+            "Fix: Obj->SetStringField(TEXT(\"filename\"), FPaths::GetCleanFilename(Dest))."
+    fi
+fi
+
+pass "CHECK 100 done"
+echo
+
+
+# =============================================================================
+# CHECK 101: ValidateUidParts writes back normalised strings only on success
+# =============================================================================
+echo "--- CHECK 101: ValidateUidParts does not mutate caller args on failure ---"
+
+BANREST_CPP_CHECK101="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+if [[ -z "$BANREST_CPP_CHECK101" ]]; then
+    fail "CHECK 101 – BanRestApi.cpp not found"
+else
+    # Must use local copies P / U and write back at the end
+    if ! perl -0777 -ne 'exit 0 if /static bool ValidateUidParts.*?\{.*?FString P = Platform\.ToUpper\(\);.*?FString U = PlayerUID;.*?Platform\s+=\s+P;.*?PlayerUID\s+=\s+U;.*?return true;/s; exit 1' "$BANREST_CPP_CHECK101"; then
+        fail "CHECK 101 – ValidateUidParts still mutates Platform/PlayerUID before validation completes" \
+            "Fix: work on local copies P/U; write back to Platform/PlayerUID only after all validation passes."
+    fi
+fi
+
+pass "CHECK 101 done"
+echo
+
+
+# =============================================================================
+# CHECK 102: Persisted nextId=0 is rejected and reset to 1 with a warning
+# =============================================================================
+echo "--- CHECK 102: persisted nextId=0 triggers warning + reset in all 3 registries ---"
+
+BANDB_CPP_CHECK102="$(list_cpp_files | tr '\0' '\n' | grep 'BanDatabase\.cpp' | head -1)"
+BANAUDIT_CPP_CHECK102="$(list_cpp_files | tr '\0' '\n' | grep 'BanAuditLog\.cpp' | head -1)"
+BANAPPEAL_CPP_CHECK102="$(list_cpp_files | tr '\0' '\n' | grep 'BanAppealRegistry\.cpp' | head -1)"
+if [[ -z "$BANDB_CPP_CHECK102" || -z "$BANAUDIT_CPP_CHECK102" || -z "$BANAPPEAL_CPP_CHECK102" ]]; then
+    fail "CHECK 102 – one or more registry cpp files not found"
+else
+    for F in "$BANDB_CPP_CHECK102" "$BANAUDIT_CPP_CHECK102" "$BANAPPEAL_CPP_CHECK102"; do
+        if ! grep -qP 'persisted nextId=0 is invalid' "$F"; then
+            fail "CHECK 102 – $F does not warn and reset on persisted nextId=0" \
+                "Fix: if loaded nextId is 0, log Warning and reset to 1 (scan from existing entries)."
+        fi
+    done
+fi
+
+pass "CHECK 102 done"
+echo
+
+
+# =============================================================================
+# CHECK 103: Scheduled ban drop writes an audit log entry
+# =============================================================================
+echo "--- CHECK 103: scheduled ban drop writes an audit log entry ---"
+
+SCHEDBAN_CPP_CHECK103="$(list_cpp_files | tr '\0' '\n' | grep 'ScheduledBanRegistry\.cpp' | head -1)"
+if [[ -z "$SCHEDBAN_CPP_CHECK103" ]]; then
+    fail "CHECK 103 – ScheduledBanRegistry.cpp not found"
+else
+    if ! grep -qP 'scheduled_ban_dropped' "$SCHEDBAN_CPP_CHECK103"; then
+        fail "CHECK 103 – scheduled ban drop (RetryCount >= 5) does not write an audit log entry" \
+            "Fix: call AuditLog->LogAction(TEXT(\"scheduled_ban_dropped\"), ...) when dropping a retried entry."
+    fi
+fi
+
+pass "CHECK 103 done"
+echo
+
+
+# =============================================================================
+# CHECK 104: Backup filename uses atomic counter to disambiguate same-second calls
+# =============================================================================
+echo "--- CHECK 104: Backup() uses atomic counter to avoid same-second filename collision ---"
+
+BANDB_CPP_CHECK104="$(list_cpp_files | tr '\0' '\n' | grep 'BanDatabase\.cpp' | head -1)"
+if [[ -z "$BANDB_CPP_CHECK104" ]]; then
+    fail "CHECK 104 – BanDatabase.cpp not found"
+else
+    if ! grep -qP 'std::atomic<uint32>\s+BackupSeq' "$BANDB_CPP_CHECK104"; then
+        fail "CHECK 104 – Backup() does not use an atomic counter to disambiguate same-second filenames" \
+            "Fix: add static std::atomic<uint32> BackupSeq{0} and append its value (mod 1000) to the timestamp."
+    fi
+fi
+
+pass "CHECK 104 done"
+echo
+
+
+# =============================================================================
+# CHECK 105: IsValidEOSPUID rejects uppercase hex digits
+# =============================================================================
+echo "--- CHECK 105: IsValidEOSPUID rejects uppercase hex digits ---"
+
+BANCHAT_CPP_CHECK105="$(list_cpp_files | tr '\0' '\n' | grep 'BanChatCommands\.cpp' | head -1)"
+if [[ -z "$BANCHAT_CPP_CHECK105" ]]; then
+    fail "CHECK 105 – BanChatCommands.cpp not found"
+else
+    if grep -qF "FChar::IsHexDigit" "$BANCHAT_CPP_CHECK105"; then
+        fail "CHECK 105 – IsValidEOSPUID still uses FChar::IsHexDigit which accepts uppercase A-F" \
+            "Fix: replace with explicit (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') to reject uppercase."
+    fi
+    if ! grep -qP "c >= TEXT\('a'\) && c <= TEXT\('f'\)" "$BANCHAT_CPP_CHECK105"; then
+        fail "CHECK 105 – IsValidEOSPUID does not explicitly check lowercase a-f only" \
+            "Fix: use (c >= TEXT('0') && c <= TEXT('9')) || (c >= TEXT('a') && c <= TEXT('f'))."
+    fi
+fi
+
+pass "CHECK 105 done"
+echo
+
+
+# =============================================================================
+# CHECK 106: bVerifyWSCertificate config option is threaded through BanSyncClient
+# =============================================================================
+echo "--- CHECK 106: bVerifyWSCertificate config option threaded through BanSyncClient/BanWebSocketPusher ---"
+
+BANSYNC_CPP_CHECK106="$(list_cpp_files | tr '\0' '\n' | grep 'BanSyncClient\.cpp' | head -1)"
+BANWSPUSHER_CPP_CHECK106="$(list_cpp_files | tr '\0' '\n' | grep 'BanWebSocketPusher\.cpp' | head -1)"
+if [[ -z "$BANSYNC_CPP_CHECK106" || -z "$BANWSPUSHER_CPP_CHECK106" ]]; then
+    fail "CHECK 106 – BanSyncClient.cpp or BanWebSocketPusher.cpp not found"
+else
+    if ! grep -qP 'bVerifySSLCertificate\s*=\s*Cfg->bVerifyWSCertificate' "$BANSYNC_CPP_CHECK106"; then
+        fail "CHECK 106 – BanSyncClient does not propagate bVerifyWSCertificate to the WS client" \
+            "Fix: Client->bVerifySSLCertificate = Cfg->bVerifyWSCertificate; before Connect()."
+    fi
+    if ! grep -qP 'bVerifySSLCertificate\s*=\s*Cfg->bVerifyWSCertificate' "$BANWSPUSHER_CPP_CHECK106"; then
+        fail "CHECK 106 – BanWebSocketPusher does not propagate bVerifyWSCertificate to the WS client" \
+            "Fix: Client->bVerifySSLCertificate = Cfg->bVerifyWSCertificate; before Connect()."
+    fi
+fi
+
+pass "CHECK 106 done"
+echo
+
+
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
     echo -e "${GRN}All checks passed — no issues found.${NC}"

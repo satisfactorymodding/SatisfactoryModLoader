@@ -224,21 +224,25 @@ namespace BanJson
 
     static bool ValidateUidParts(FString& Platform, FString& PlayerUID, FString& OutError)
     {
-        Platform = Platform.ToUpper();
-        if (Platform.IsEmpty() || PlayerUID.IsEmpty())
+        // Work on local copies so that the caller's variables are only mutated
+        // (normalised to upper/lower case) when validation fully succeeds.
+        FString P = Platform.ToUpper();
+        FString U = PlayerUID;
+
+        if (P.IsEmpty() || U.IsEmpty())
         {
             OutError = TEXT("uid must include a non-empty platform and player id");
             return false;
         }
 
-        if (Platform == TEXT("EOS"))
+        if (P == TEXT("EOS"))
         {
-            PlayerUID = PlayerUID.ToLower();
+            U = U.ToLower();
 
-            bool bValidPuid = (PlayerUID.Len() == 32);
+            bool bValidPuid = (U.Len() == 32);
             for (int32 i = 0; bValidPuid && i < 32; ++i)
             {
-                const TCHAR C = PlayerUID[i];
+                const TCHAR C = U[i];
                 bValidPuid = (C >= TEXT('0') && C <= TEXT('9')) || (C >= TEXT('a') && C <= TEXT('f'));
             }
             if (!bValidPuid)
@@ -248,6 +252,9 @@ namespace BanJson
             }
         }
 
+        // Write normalised values back only on success.
+        Platform  = P;
+        PlayerUID = U;
         return true;
     }
 
@@ -880,6 +887,16 @@ void UBanRestApi::RegisterRoutes()
                 Escaped = Escaped.Replace(TEXT("\r\n"), TEXT(" "));
                 Escaped = Escaped.Replace(TEXT("\r"),   TEXT(" "));
                 Escaped = Escaped.Replace(TEXT("\n"),   TEXT(" "));
+                // Neutralise spreadsheet formula-injection: prefix any field whose
+                // first character is a formula trigger with a single-quote so that
+                // Excel / LibreOffice / Google Sheets treat it as a text literal.
+                if (!Escaped.IsEmpty())
+                {
+                    const TCHAR First = Escaped[0];
+                    if (First == TEXT('=') || First == TEXT('+') ||
+                        First == TEXT('-') || First == TEXT('@'))
+                        Escaped = TEXT("'") + Escaped;
+                }
                 return TEXT("\"") + Escaped + TEXT("\"");
             };
 
@@ -1093,7 +1110,7 @@ void UBanRestApi::RegisterRoutes()
             }
 
             TSharedPtr<FJsonObject> Obj = MakeShared<FJsonObject>();
-            Obj->SetStringField(TEXT("path"), Dest);
+            Obj->SetStringField(TEXT("filename"), FPaths::GetCleanFilename(Dest));
             Done(BanJson::Json(BanJson::ObjectToString(Obj)));
             return true;
         }
@@ -1908,6 +1925,13 @@ void UBanRestApi::RegisterRoutes()
                 Escaped = Escaped.Replace(TEXT("\r\n"), TEXT(" "));
                 Escaped = Escaped.Replace(TEXT("\r"),   TEXT(" "));
                 Escaped = Escaped.Replace(TEXT("\n"),   TEXT(" "));
+                if (!Escaped.IsEmpty())
+                {
+                    const TCHAR First = Escaped[0];
+                    if (First == TEXT('=') || First == TEXT('+') ||
+                        First == TEXT('-') || First == TEXT('@'))
+                        Escaped = TEXT("'") + Escaped;
+                }
                 return TEXT("\"") + Escaped + TEXT("\"");
             };
 
@@ -2059,6 +2083,13 @@ void UBanRestApi::RegisterRoutes()
                 Escaped = Escaped.Replace(TEXT("\r\n"), TEXT(" "));
                 Escaped = Escaped.Replace(TEXT("\r"),   TEXT(" "));
                 Escaped = Escaped.Replace(TEXT("\n"),   TEXT(" "));
+                if (!Escaped.IsEmpty())
+                {
+                    const TCHAR First = Escaped[0];
+                    if (First == TEXT('=') || First == TEXT('+') ||
+                        First == TEXT('-') || First == TEXT('@'))
+                        Escaped = TEXT("'") + Escaped;
+                }
                 return TEXT("\"") + Escaped + TEXT("\"");
             };
 
@@ -2102,6 +2133,13 @@ void UBanRestApi::RegisterRoutes()
                 Escaped = Escaped.Replace(TEXT("\r\n"), TEXT(" "));
                 Escaped = Escaped.Replace(TEXT("\r"),   TEXT(" "));
                 Escaped = Escaped.Replace(TEXT("\n"),   TEXT(" "));
+                if (!Escaped.IsEmpty())
+                {
+                    const TCHAR First = Escaped[0];
+                    if (First == TEXT('=') || First == TEXT('+') ||
+                        First == TEXT('-') || First == TEXT('@'))
+                        Escaped = TEXT("'") + Escaped;
+                }
                 return TEXT("\"") + Escaped + TEXT("\"");
             };
 

@@ -280,6 +280,25 @@ public:
     UPROPERTY(Config, BlueprintReadOnly, Category = "BanSystem")
     TArray<FString> PeerWebSocketUrls;
 
+    /**
+     * When true, SSL certificate chain validation is enforced for all wss://
+     * WebSocket connections (peer sync and push events).
+     *
+     * Enabling this prevents MITM attacks where an attacker could inject
+     * fabricated ban/unban messages into the peer-sync channel.
+     *
+     * IMPORTANT: Only enable this if every target server presents a valid,
+     * CA-signed TLS certificate and UE5's OpenSSL build is linked against a
+     * CA certificate bundle (system or bundled).  On a bare game-server install
+     * without a CA bundle, setting this to true will cause ALL wss:// connections
+     * to fail with an SSL verification error.
+     *
+     * Default: false (disabled) — TLS encryption is still used; only
+     * certificate-chain validation is skipped (SSL_VERIFY_NONE).
+     */
+    UPROPERTY(Config, BlueprintReadOnly, Category = "BanSystem")
+    bool bVerifyWSCertificate = false;
+
     // ─────────────────────────────────────────────────────────────────────────
     //  Geo-IP region blocking
     // ─────────────────────────────────────────────────────────────────────────
