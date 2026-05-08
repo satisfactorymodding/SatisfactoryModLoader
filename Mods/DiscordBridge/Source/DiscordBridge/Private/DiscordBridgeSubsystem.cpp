@@ -791,8 +791,9 @@ void UDiscordBridgeSubsystem::HandleHello(const TSharedPtr<FJsonObject>& DataObj
 {
 	// Discord sends the heartbeat interval in milliseconds.
 	double HeartbeatMs = 41250.0; // sensible default
-	DataObj->TryGetNumberField(TEXT("heartbeat_interval"), HeartbeatMs);
-	if (HeartbeatMs >= 1000.0 && HeartbeatMs <= 120000.0)
+	const bool bHasHeartbeatInterval = DataObj->TryGetNumberField(TEXT("heartbeat_interval"), HeartbeatMs);
+	if (bHasHeartbeatInterval && FMath::IsFinite(HeartbeatMs)
+		&& HeartbeatMs >= 1000.0 && HeartbeatMs <= 120000.0)
 	{
 		HeartbeatIntervalSeconds = static_cast<float>(HeartbeatMs) / 1000.0f;
 	}
