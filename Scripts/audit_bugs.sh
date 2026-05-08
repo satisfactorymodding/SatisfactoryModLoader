@@ -1046,7 +1046,7 @@ if [[ -z "$AUDITLOG_CPP_CHECK36" ]]; then
 elif ! grep -qP 'NextId\s*=\s*OriginalNextId' "$AUDITLOG_CPP_CHECK36"; then
     fail "CHECK 36 – BanAuditLog::LogAction does not roll back NextId on save failure" \
         "File: $AUDITLOG_CPP_CHECK36"
-elif ! grep -qP 'Entries\s*=\s*PrevEntries|Entries\.RemoveAt\s*\(\s*Entries\.Num\s*\(\s*\)\s*-\s*1\s*\)' "$AUDITLOG_CPP_CHECK36"; then
+elif ! grep -qP 'Entries\.RemoveAt\s*\(\s*Entries\.Num\s*\(\s*\)\s*-\s*1\s*\)' "$AUDITLOG_CPP_CHECK36"; then
     fail "CHECK 36 – BanAuditLog::LogAction does not roll back memory and NextId on save failure" \
         "File: $AUDITLOG_CPP_CHECK36"
 fi
@@ -1101,7 +1101,7 @@ elif ! grep -qP 'bPersisted' "$MUTEREG_CPP_CHECK38" \
      || ! grep -qP 'Expired\.Reset\s*\(' "$MUTEREG_CPP_CHECK38"; then
     fail "CHECK 38 – MuteRegistry does not fully roll back in-memory changes and suppress events on save failure" \
         "File: $MUTEREG_CPP_CHECK38"
-elif ! grep -qP 'Mutes\s*=\s*PrevMutes|Mutes\.RemoveAt\s*\(\s*Mutes\.Num\s*\(\s*\)\s*-\s*1\s*\)|Mutes\.Add\s*\(\s*(Prev|Removed)Entry\s*\)' "$MUTEREG_CPP_CHECK38"; then
+elif ! grep -qP 'Mutes\.RemoveAt\s*\(\s*Mutes\.Num\s*\(\s*\)\s*-\s*1\s*\)|Mutes\.Add\s*\(\s*(Prev|Removed)Entry\s*\)' "$MUTEREG_CPP_CHECK38"; then
     fail "CHECK 38 – MuteRegistry does not roll back Mutes array on save failure" \
         "File: $MUTEREG_CPP_CHECK38"
 fi
