@@ -400,6 +400,19 @@ void UBanDatabase::LoadFromFile()
         }
     }
 
+    // Guard against a persisted nextId=0 that was written by a corrupted build.
+    // 0 is the exhausted-ID sentinel produced only after all 2^63-1 IDs have
+    // been allocated; loading it from a fresh or small database almost certainly
+    // indicates file corruption.  Warn and recover by scanning the loaded entries.
+    if (NewNextId == 0)
+    {
+        UE_LOG(LogBanDatabase, Warning,
+            TEXT("BanDatabase: persisted nextId=0 is invalid — resetting counter from existing entries"));
+        NewNextId = 1;
+        for (const FBanEntry& E : NewBans)
+            if (E.Id >= NewNextId) NewNextId = (E.Id < INT64_MAX) ? E.Id + 1 : 1;
+    }
+
     // Atomic swap: readers either see the old complete list or the new complete
     // list — never an empty intermediate state.
     Bans    = MoveTemp(NewBans);
