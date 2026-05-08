@@ -54,11 +54,11 @@ private:
     FTSTicker::FDelegateHandle ConfigPollTickHandle;
 
     /** Accumulated time since the last scheduled backup (seconds). */
-    float BackupAccumulatedSeconds = 0.0f;
+    double BackupAccumulatedSeconds = 0.0;
     /** Accumulated time since the last scheduled prune (seconds). */
-    float PruneAccumulatedSeconds = 0.0f;
+    double PruneAccumulatedSeconds = 0.0;
     /** Accumulated time since the last session-records prune (seconds). */
-    float SessionPruneAccumulatedSeconds = 0.0f;
+    double SessionPruneAccumulatedSeconds = 0.0;
 
     /** How often (seconds) to poll for config-file changes (matches BanChatCommands). */
     static constexpr float ConfigPollIntervalSeconds = 60.0f;

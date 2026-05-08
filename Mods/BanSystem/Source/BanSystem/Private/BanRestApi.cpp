@@ -727,6 +727,9 @@ void UBanRestApi::RegisterRoutes()
             Body->TryGetStringField(TEXT("playerName"), PlayerName);
             Body->TryGetStringField(TEXT("reason"),     Reason);
             Body->TryGetStringField(TEXT("bannedBy"),   BannedBy);
+            PlayerName = PlayerName.Left(500);
+            Reason     = Reason.Left(500);
+            BannedBy   = BannedBy.Left(200);
 
             double DurationMinutesDbl = 0.0;
             const bool bHasDurationMinutes = Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
@@ -965,6 +968,8 @@ void UBanRestApi::RegisterRoutes()
             FString NewReason, NewBannedBy;
             Body->TryGetStringField(TEXT("reason"),    NewReason);
             Body->TryGetStringField(TEXT("bannedBy"),  NewBannedBy);
+            NewReason   = NewReason.Left(500);
+            NewBannedBy = NewBannedBy.Left(200);
             double DurationMinutesDbl = -1.0;
             const bool bHasDuration = Body->TryGetNumberField(TEXT("durationMinutes"), DurationMinutesDbl);
 
@@ -1277,6 +1282,9 @@ void UBanRestApi::RegisterRoutes()
             Body->TryGetStringField(TEXT("playerName"), PlayerName);
             Body->TryGetStringField(TEXT("reason"),     Reason);
             Body->TryGetStringField(TEXT("warnedBy"),   WarnedBy);
+            PlayerName = PlayerName.Left(500);
+            Reason     = Reason.Left(500);
+            WarnedBy   = WarnedBy.Left(200);
 
             if (Reason.IsEmpty())   Reason   = TEXT("No reason given");
             if (WarnedBy.IsEmpty()) WarnedBy = TEXT("console");
@@ -1745,6 +1753,8 @@ void UBanRestApi::RegisterRoutes()
             FString Reason, BannedBy;
             Body->TryGetStringField(TEXT("reason"),   Reason);
             Body->TryGetStringField(TEXT("bannedBy"), BannedBy);
+            Reason   = Reason.Left(500);
+            BannedBy = BannedBy.Left(200);
             if (Reason.IsEmpty())   Reason   = TEXT("IP ban");
             if (BannedBy.IsEmpty()) BannedBy = TEXT("system");
 
@@ -2893,6 +2903,8 @@ void UBanRestApi::RegisterRoutes()
             }
             Body->TryGetStringField(TEXT("reviewedBy"), ReviewedBy);
             Body->TryGetStringField(TEXT("reviewNote"), ReviewNote);
+            ReviewedBy = ReviewedBy.Left(200);
+            ReviewNote = ReviewNote.Left(500);
 
             const FString Norm = StatusStr.ToLower();
             EAppealStatus NewStatus;
@@ -3038,6 +3050,10 @@ void UBanRestApi::RegisterRoutes()
             Body->TryGetStringField(TEXT("scheduledBy"), ScheduledBy);
             Body->TryGetStringField(TEXT("effectiveAt"), EffectiveAtStr);
             Body->TryGetStringField(TEXT("category"),    Category);
+            PlayerName  = PlayerName.Left(500);
+            Reason      = Reason.Left(500);
+            ScheduledBy = ScheduledBy.Left(200);
+            Category    = Category.Left(200);
 
             if (Reason.IsEmpty())      Reason      = TEXT("Scheduled ban");
             if (ScheduledBy.IsEmpty()) ScheduledBy = TEXT("api");
@@ -3247,6 +3263,9 @@ void UBanRestApi::RegisterRoutes()
             Body->TryGetStringField(TEXT("reason"),   Reason);
             Body->TryGetStringField(TEXT("bannedBy"), BannedBy);
             Body->TryGetStringField(TEXT("category"), Category);
+            Reason   = Reason.Left(500);
+            BannedBy = BannedBy.Left(200);
+            Category = Category.Left(200);
             if (Reason.IsEmpty())   Reason   = TEXT("Bulk ban");
             if (BannedBy.IsEmpty()) BannedBy = TEXT("api");
 
@@ -3358,6 +3377,7 @@ void UBanRestApi::RegisterRoutes()
             }
             FString RemovedBy;
             Body->TryGetStringField(TEXT("removedBy"), RemovedBy);
+            RemovedBy = RemovedBy.Left(200);
             if (RemovedBy.IsEmpty()) RemovedBy = TEXT("api");
 
             int32 Removed = 0;

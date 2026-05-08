@@ -695,6 +695,18 @@ bool FSMLWebSocketServerRunnable::ProcessFrames(const FString& ClientId, FClient
                     Mask[i] = Buf[HeaderSize + i];
             }
 
+            // Guard against oversized single-frame messages before allocating.
+            // Without this check a client can send a single frame just under the
+            // MAX_int32 header guard but well above the application-level limit,
+            // causing a multi-hundred-MB allocation that starves the server.
+            if (PayloadLen32 > MaxMessageBytes)
+            {
+                UE_LOG(LogWSServer, Error,
+                    TEXT("WSServer: Single-frame message exceeds %d byte limit (%d bytes) — dropping client"),
+                    MaxMessageBytes, PayloadLen32);
+                return false;
+            }
+
             TArray<uint8> Payload;
             Payload.SetNum(PayloadLen32);
             for (int32 i = 0; i < PayloadLen32; ++i)
@@ -935,13 +947,13 @@ void FSMLWebSocketServerRunnable::DisconnectClient(const FString& ClientId)
 
 int32 FSMLWebSocketServerRunnable::GetClientCount() const
 {
-    FScopeLock L(const_cast<FCriticalSection*>(&ClientMutex));
+    FScopeLock L(&ClientMutex);
     return Clients.Num();
 }
 
 TArray<FString> FSMLWebSocketServerRunnable::GetClientIds() const
 {
-    FScopeLock L(const_cast<FCriticalSection*>(&ClientMutex));
+    FScopeLock L(&ClientMutex);
     TArray<FString> Ids;
     Clients.GetKeys(Ids);
     return Ids;

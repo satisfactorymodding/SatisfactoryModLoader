@@ -37,7 +37,7 @@ void FBanSystemModule::StartupModule()
     const UBanSystemConfig* Cfg = UBanSystemConfig::Get();
     if (Cfg && Cfg->BackupIntervalHours > 0.0f)
     {
-        BackupAccumulatedSeconds = 0.0f;
+        BackupAccumulatedSeconds = 0.0;
         BackupTickHandle = FTSTicker::GetCoreTicker().AddTicker(
             FTickerDelegate::CreateRaw(this, &FBanSystemModule::OnBackupTick),
             1.0f);
@@ -49,7 +49,7 @@ void FBanSystemModule::StartupModule()
     // Start the scheduled prune ticker if PruneIntervalHours > 0.
     if (Cfg && Cfg->PruneIntervalHours > 0.0f)
     {
-        PruneAccumulatedSeconds = 0.0f;
+        PruneAccumulatedSeconds = 0.0;
         PruneTickHandle = FTSTicker::GetCoreTicker().AddTicker(
             FTickerDelegate::CreateRaw(this, &FBanSystemModule::OnPruneTick),
             1.0f);
@@ -62,7 +62,7 @@ void FBanSystemModule::StartupModule()
     // Runs independently from the ban-prune ticker: once every 24 hours.
     if (Cfg && Cfg->SessionRetentionDays > 0)
     {
-        SessionPruneAccumulatedSeconds = 0.0f;
+        SessionPruneAccumulatedSeconds = 0.0;
         SessionPruneTickHandle = FTSTicker::GetCoreTicker().AddTicker(
             FTickerDelegate::CreateRaw(this, &FBanSystemModule::OnSessionPruneTick),
             1.0f);

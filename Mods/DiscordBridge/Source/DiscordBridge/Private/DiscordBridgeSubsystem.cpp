@@ -1773,7 +1773,9 @@ void UDiscordBridgeSubsystem::SendMessageToChannel(const FString& TargetChannelI
 	}
 
 	TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
-	Body->SetStringField(TEXT("content"), Message);
+	// Discord REST API enforces a 2 000-character limit on the content field.
+	// Truncate to 2 000 chars before sending to avoid HTTP 400 rejections.
+	Body->SetStringField(TEXT("content"), Message.Left(2000));
 
 	FString BodyString;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&BodyString);
@@ -1979,7 +1981,9 @@ void UDiscordBridgeSubsystem::FollowUpInteraction(const FString& InteractionToke
 		return;
 
 	TSharedPtr<FJsonObject> Body = MakeShared<FJsonObject>();
-	Body->SetStringField(TEXT("content"), Message);
+	// Discord REST API enforces a 2 000-character limit on the content field.
+	// Truncate to 2 000 chars before sending to avoid HTTP 400 rejections.
+	Body->SetStringField(TEXT("content"), Message.Left(2000));
 	if (bEphemeral)
 		Body->SetNumberField(TEXT("flags"), 64);
 

@@ -1046,9 +1046,22 @@ int32 FSMLWebSocketRunnable::RawRecvAvailable(uint8* Buffer, int32 BufferSize)
 bool FSMLWebSocketRunnable::RawRecvExact(uint8* Buffer, int32 BytesRequired)
 {
 	int32 Total = 0;
+	// Absolute wall-clock deadline: 10 × the per-read timeout.  Without this, a
+	// stalled peer that keeps the socket half-open can hold the recv thread in
+	// this loop forever even though every individual Wait() times out correctly.
+	const FDateTime Deadline = FDateTime::UtcNow()
+	    + FTimespan::FromMilliseconds(static_cast<double>(RecvTimeoutMs) * 10.0);
 	while (Total < BytesRequired)
 	{
 		if (bStopRequested) return false;
+
+		if (FDateTime::UtcNow() > Deadline)
+		{
+			UE_LOG(LogWSClient, Warning,
+			    TEXT("WSClient: RawRecvExact wall-clock deadline exceeded waiting for %d bytes (got %d)"),
+			    BytesRequired, Total);
+			return false;
+		}
 
 		// Wait for data
 		if (!Socket->Wait(ESocketWaitConditions::WaitForRead, FTimespan::FromMilliseconds(RecvTimeoutMs)))
