@@ -88,6 +88,15 @@ void USMLWebSocketClient::SendText(const FString& Message)
 	if (bQueueMessagesWhileDisconnected)
 	{
 		FScopeLock Lock(&QueueMutex);
+		if (bIsConnected && Runnable.IsValid())
+		{
+			if (Runnable->EnqueueText(Message))
+			{
+				StatBytesSent.fetch_add(FTCHARToUTF8(Message.GetCharArray().GetData()).Length());
+				StatMessagesSent.fetch_add(1);
+				return;
+			}
+		}
 		PendingSendQueue.Add(Message);
 		if (MaxQueuedMessages > 0 && PendingSendQueue.Num() > MaxQueuedMessages)
 		{
@@ -113,6 +122,15 @@ void USMLWebSocketClient::SendBinary(const TArray<uint8>& Data)
 	if (bQueueMessagesWhileDisconnected)
 	{
 		FScopeLock Lock(&QueueMutex);
+		if (bIsConnected && Runnable.IsValid())
+		{
+			if (Runnable->EnqueueBinary(Data))
+			{
+				StatBytesSent.fetch_add(Data.Num());
+				StatMessagesSent.fetch_add(1);
+				return;
+			}
+		}
 		PendingSendBinaryQueue.Add(Data);
 		if (MaxQueuedMessages > 0 && PendingSendBinaryQueue.Num() > MaxQueuedMessages)
 		{
@@ -139,6 +157,15 @@ void USMLWebSocketClient::SendBinary(TArray<uint8>&& Data)
 	if (bQueueMessagesWhileDisconnected)
 	{
 		FScopeLock Lock(&QueueMutex);
+		if (bIsConnected && Runnable.IsValid())
+		{
+			if (Runnable->EnqueueBinary(Data))
+			{
+				StatBytesSent.fetch_add(NumBytes);
+				StatMessagesSent.fetch_add(1);
+				return;
+			}
+		}
 		PendingSendBinaryQueue.Add(MoveTemp(Data));
 		if (MaxQueuedMessages > 0 && PendingSendBinaryQueue.Num() > MaxQueuedMessages)
 		{

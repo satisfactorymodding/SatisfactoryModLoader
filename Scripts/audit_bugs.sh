@@ -2437,6 +2437,83 @@ pass "CHECK 93 done"
 echo
 
 
+# =============================================================================
+# CHECK 94: queued WebSocket sends re-check connection state under QueueMutex
+# =============================================================================
+echo "--- CHECK 94: queued WebSocket sends re-check connection state under lock ---"
+
+WSCLIENT_CPP_CHECK94="$(list_cpp_files | tr '\0' '\n' | grep 'SMLWebSocketClient\.cpp' | head -1)"
+if [[ -z "$WSCLIENT_CPP_CHECK94" ]]; then
+    fail "CHECK 94 – SMLWebSocketClient.cpp not found"
+else
+    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::SendText\s*\(const FString& Message\)\s*\{[\s\S]{0,500}?FScopeLock Lock\(&QueueMutex\);[\s\S]{0,220}?if \(bIsConnected && Runnable\.IsValid\(\)\)[\s\S]{0,220}?EnqueueText\(Message\)[\s\S]{0,120}?return;[\s\S]{0,160}?PendingSendQueue\.Add\(Message\)/s; exit 1' "$WSCLIENT_CPP_CHECK94"; then
+        fail "CHECK 94 – SendText can still strand a queued message during reconnect" \
+            "Fix: after taking QueueMutex, re-check bIsConnected/Runnable and send immediately before falling back to PendingSendQueue."
+    fi
+    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::SendBinary\s*\(const TArray<uint8>& Data\)\s*\{[\s\S]{0,500}?FScopeLock Lock\(&QueueMutex\);[\s\S]{0,220}?if \(bIsConnected && Runnable\.IsValid\(\)\)[\s\S]{0,220}?EnqueueBinary\(Data\)[\s\S]{0,120}?return;[\s\S]{0,160}?PendingSendBinaryQueue\.Add\(Data\)/s; exit 1' "$WSCLIENT_CPP_CHECK94"; then
+        fail "CHECK 94 – SendBinary(const&) can still strand a queued payload during reconnect" \
+            "Fix: after taking QueueMutex, re-check bIsConnected/Runnable and send immediately before falling back to PendingSendBinaryQueue."
+    fi
+    if ! perl -0777 -ne 'exit 0 if /void\s+USMLWebSocketClient::SendBinary\s*\(TArray<uint8>&& Data\)\s*\{[\s\S]{0,520}?FScopeLock Lock\(&QueueMutex\);[\s\S]{0,220}?if \(bIsConnected && Runnable\.IsValid\(\)\)[\s\S]{0,220}?EnqueueBinary\(Data\)[\s\S]{0,120}?return;[\s\S]{0,160}?PendingSendBinaryQueue\.Add\(MoveTemp\(Data\)\)/s; exit 1' "$WSCLIENT_CPP_CHECK94"; then
+        fail "CHECK 94 – SendBinary(&&) can still strand a queued payload during reconnect" \
+            "Fix: after taking QueueMutex, re-check bIsConnected/Runnable and send immediately before falling back to PendingSendBinaryQueue."
+    fi
+fi
+
+pass "CHECK 94 done"
+echo
+
+
+# =============================================================================
+# CHECK 95: PATCH /bans/:uid rejects non-finite durationMinutes values
+# =============================================================================
+echo "--- CHECK 95: PATCH /bans rejects non-finite durationMinutes values ---"
+
+BANREST_CPP_CHECK95="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+if [[ -z "$BANREST_CPP_CHECK95" ]]; then
+    fail "CHECK 95 – BanRestApi.cpp not found"
+else
+    if ! grep -qP 'if\s*\(bHasDuration\s*&&\s*\(!FMath::IsFinite\(DurationMinutesDbl\)\s*\|\|\s*DurationMinutesDbl\s*<\s*0\.0\)\)' "$BANREST_CPP_CHECK95"; then
+        fail "CHECK 95 – PATCH /bans still accepts NaN/Inf durationMinutes" \
+            "Fix: reject !FMath::IsFinite(DurationMinutesDbl) before the negative-duration check."
+    fi
+fi
+
+pass "CHECK 95 done"
+echo
+
+
+# =============================================================================
+# CHECK 96: POST /warnings validates parsed uid before auto-ban escalation
+# =============================================================================
+echo "--- CHECK 96: POST /warnings validates and normalizes uid before auto-ban ---"
+
+BANREST_CPP_CHECK96="$(list_cpp_files | tr '\0' '\n' | grep 'BanRestApi\.cpp' | head -1)"
+if [[ -z "$BANREST_CPP_CHECK96" ]]; then
+    fail "CHECK 96 – BanRestApi.cpp not found"
+else
+    if ! grep -q 'UBanDatabase::ParseUid(Uid, WarnPlatform, WarnPlayerUID);' "$BANREST_CPP_CHECK96"; then
+        fail "CHECK 96 – POST /warnings does not parse uid into platform/raw id before auto-ban" \
+            "Fix: call UBanDatabase::ParseUid(Uid, WarnPlatform, WarnPlayerUID) before warning creation/auto-ban."
+    fi
+    if ! grep -q 'WarnPlatform == TEXT("UNKNOWN")' "$BANREST_CPP_CHECK96"; then
+        fail "CHECK 96 – POST /warnings still accepts uid values without a platform prefix" \
+            "Fix: reject UNKNOWN-parsed UIDs instead of creating unmatched auto-bans."
+    fi
+    if ! grep -q 'BanJson::ValidateUidParts(WarnPlatform, WarnPlayerUID, UidValidationError)' "$BANREST_CPP_CHECK96"; then
+        fail "CHECK 96 – POST /warnings missing uid validation before auto-ban" \
+            "Fix: validate parsed uid parts (including EOS PUID format) before continuing."
+    fi
+    if ! grep -q 'Uid = UBanDatabase::MakeUid(WarnPlatform, WarnPlayerUID);' "$BANREST_CPP_CHECK96"; then
+        fail "CHECK 96 – POST /warnings does not rebuild the normalized uid before storing warning/ban data" \
+            "Fix: rebuild Uid from the validated platform/raw id so EOS ids are normalized consistently."
+    fi
+fi
+
+pass "CHECK 96 done"
+echo
+
+
 echo "========================================================"
 if [[ "$ISSUES" -eq 0 ]]; then
     echo -e "${GRN}All checks passed — no issues found.${NC}"
