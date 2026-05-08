@@ -82,8 +82,12 @@ void USMLWebSocketClient::SendText(const FString& Message)
 		{
 			StatBytesSent.fetch_add(FTCHARToUTF8(Message.GetCharArray().GetData()).Length());
 			StatMessagesSent.fetch_add(1);
+			return;
 		}
-		return;
+		if (!bQueueMessagesWhileDisconnected)
+		{
+			return;
+		}
 	}
 	if (bQueueMessagesWhileDisconnected)
 	{
@@ -116,8 +120,12 @@ void USMLWebSocketClient::SendBinary(const TArray<uint8>& Data)
 		{
 			StatBytesSent.fetch_add(Data.Num());
 			StatMessagesSent.fetch_add(1);
+			return;
 		}
-		return;
+		if (!bQueueMessagesWhileDisconnected)
+		{
+			return;
+		}
 	}
 	if (bQueueMessagesWhileDisconnected)
 	{
@@ -151,8 +159,12 @@ void USMLWebSocketClient::SendBinary(TArray<uint8>&& Data)
 		{
 			StatBytesSent.fetch_add(NumBytes);
 			StatMessagesSent.fetch_add(1);
+			return;
 		}
-		return;
+		if (!bQueueMessagesWhileDisconnected)
+		{
+			return;
+		}
 	}
 	if (bQueueMessagesWhileDisconnected)
 	{
