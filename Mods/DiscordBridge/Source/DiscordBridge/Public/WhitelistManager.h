@@ -90,7 +90,7 @@ public:
 
 private:
     static FString GetFilePath();
-    static void    Save_Locked(); // caller must already hold Mutex
+    static bool    Save_Locked(); // caller must already hold Mutex; returns false on failure
 
     static bool                         bEnabled;
     static TArray<FWhitelistEntry>      Entries;

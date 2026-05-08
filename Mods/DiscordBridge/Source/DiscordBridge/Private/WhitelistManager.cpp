@@ -159,7 +159,7 @@ static bool WhitelistAtomicSave(const FString& JsonStr, const FString& FilePath)
 	return true;
 }
 
-void FWhitelistManager::Save_Locked()
+bool FWhitelistManager::Save_Locked()
 {
 	// Caller must already hold Mutex.
 	const FString FilePath = GetFilePath();
@@ -201,17 +201,18 @@ void FWhitelistManager::Save_Locked()
 	{
 		UE_LOG(LogWhitelistManager, Error,
 			TEXT("Failed to serialize whitelist JSON — aborting save to avoid data loss"));
-		return;
+		return false;
 	}
 
 	if (!WhitelistAtomicSave(OutJson, FilePath))
 	{
 		UE_LOG(LogWhitelistManager, Error,
 			TEXT("Failed to save whitelist to %s"), *FilePath);
-		return;
+		return false;
 	}
 	UE_LOG(LogWhitelistManager, Verbose,
 		TEXT("Whitelist saved to %s"), *FilePath);
+	return true;
 }
 
 void FWhitelistManager::Save()
@@ -230,8 +231,13 @@ void FWhitelistManager::SetEnabled(bool bNewEnabled, const FString& AdminName)
 {
 	FScopeLock Lock(&Mutex);
 	bEnabled = bNewEnabled;
+	if (!Save_Locked())
+	{
+		// Roll back the in-memory change so it stays consistent with disk.
+		bEnabled = !bNewEnabled;
+		return;
+	}
 	LogAudit(AdminName, bNewEnabled ? TEXT("enable") : TEXT("disable"), TEXT("whitelist"));
-	Save_Locked();
 }
 
 bool FWhitelistManager::IsWhitelisted(const FString& PlayerName, const FString& EosPUID)
@@ -304,8 +310,14 @@ bool FWhitelistManager::AddPlayer(const FString& PlayerName,
 	NewEntry.Group     = Group;
 	Entries.Add(NewEntry);
 
+	if (!Save_Locked())
+	{
+		// Roll back the in-memory addition so memory and disk stay in sync.
+		Entries.RemoveAt(Entries.Num() - 1);
+		return false;
+	}
+
 	LogAudit(AdminName, TEXT("add"), PlayerName);
-	Save_Locked();
 	return true;
 }
 
@@ -329,9 +341,17 @@ bool FWhitelistManager::RemovePlayer(const FString& PlayerName, const FString& E
 	if (RemovedIdx == INDEX_NONE) return false;
 
 	const FString RemovedName = Entries[RemovedIdx].Name;
+	FWhitelistEntry RemovedEntry = Entries[RemovedIdx];
 	Entries.RemoveAt(RemovedIdx);
+
+	if (!Save_Locked())
+	{
+		// Roll back the in-memory removal so memory and disk stay in sync.
+		Entries.Insert(RemovedEntry, RemovedIdx);
+		return false;
+	}
+
 	LogAudit(AdminName, TEXT("remove"), RemovedName);
-	Save_Locked();
 	return true;
 }
 

@@ -470,9 +470,21 @@ bool UBanDatabase::UpdateBan(const FString& Uid, TFunction<void(FBanEntry&)> Mut
 
         if (!Found) return false;
 
+        // Snapshot the original entry so we can roll back if SaveToFile fails.
+        const FBanEntry Snapshot = *Found;
         Mutator(*Found);
         OutUpdated = *Found;
         bSaved = SaveToFile();
+
+        if (!bSaved)
+        {
+            // Restore the pre-mutation state so memory and disk stay in sync.
+            UE_LOG(LogBanDatabase, Warning,
+                TEXT("UpdateBan: SaveToFile failed for Uid=%s; rolling back in-memory mutation"),
+                *Snapshot.Uid);
+            *Found = Snapshot;
+            OutUpdated = Snapshot;
+        }
     }
 
     if (bSaved)
@@ -488,6 +500,11 @@ bool UBanDatabase::AddBan(const FBanEntry& Entry, FBanEntry* OutSaved)
 
     {
         FScopeLock Lock(&DbMutex);
+
+        // Snapshot any existing entry with the same UID before removing it,
+        // so we can restore it if SaveToFile fails (upsert rollback).
+        FBanEntry OldEntry;
+        const bool bHadOldEntry = GetBanByUid_Locked(Entry.Uid, OldEntry);
 
         // Upsert: remove any existing record with the same UID first (case-insensitive).
         Bans.RemoveAll([&Entry](const FBanEntry& E){ return E.Uid.Equals(Entry.Uid, ESearchCase::IgnoreCase); });
@@ -524,11 +541,13 @@ bool UBanDatabase::AddBan(const FBanEntry& Entry, FBanEntry* OutSaved)
 
         if (!bSaved)
         {
-            // Roll back the in-memory addition so memory and disk stay in sync.
+            // Roll back the in-memory changes so memory and disk stay in sync.
             UE_LOG(LogBanDatabase, Warning,
                 TEXT("AddBan: SaveToFile failed for Uid=%s; rolling back in-memory addition"),
                 *NewEntry.Uid);
             Bans.RemoveAll([&NewEntry](const FBanEntry& E){ return E.Uid.Equals(NewEntry.Uid, ESearchCase::IgnoreCase); });
+            // Restore the old entry that was displaced by the upsert.
+            if (bHadOldEntry) Bans.Add(OldEntry);
         }
 
         // Populate the out-param inside the lock so the caller receives the
@@ -565,6 +584,9 @@ bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry, bool& bOu
         }
 
         // No permanent ban found — perform the standard upsert (identical to AddBan).
+        // Snapshot any existing non-permanent entry for rollback on save failure.
+        FBanEntry OldEntry;
+        const bool bHadOldEntry = GetBanByUid_Locked(Entry.Uid, OldEntry);
         Bans.RemoveAll([&Entry](const FBanEntry& E){ return E.Uid.Equals(Entry.Uid, ESearchCase::IgnoreCase); });
 
         NewEntry = Entry;
@@ -594,6 +616,7 @@ bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry, bool& bOu
                 TEXT("AddBanSkipIfPermanentExists: SaveToFile failed for Uid=%s; rolling back in-memory addition"),
                 *NewEntry.Uid);
             Bans.RemoveAll([&NewEntry](const FBanEntry& E){ return E.Uid.Equals(NewEntry.Uid, ESearchCase::IgnoreCase); });
+            if (bHadOldEntry) Bans.Add(OldEntry);
         }
     }
 
@@ -624,6 +647,9 @@ bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry,
             }
         }
 
+        // Snapshot any existing non-permanent entry for rollback on save failure.
+        FBanEntry OldEntry;
+        const bool bHadOldEntry = GetBanByUid_Locked(Entry.Uid, OldEntry);
         Bans.RemoveAll([&Entry](const FBanEntry& E){ return E.Uid.Equals(Entry.Uid, ESearchCase::IgnoreCase); });
 
         NewEntry = Entry;
@@ -653,6 +679,7 @@ bool UBanDatabase::AddBanSkipIfPermanentExists(const FBanEntry& Entry,
                 TEXT("AddBanSkipIfPermanentExists: SaveToFile failed for Uid=%s; rolling back in-memory addition"),
                 *NewEntry.Uid);
             Bans.RemoveAll([&NewEntry](const FBanEntry& E){ return E.Uid.Equals(NewEntry.Uid, ESearchCase::IgnoreCase); });
+            if (bHadOldEntry) Bans.Add(OldEntry);
         }
     }
 
@@ -1007,6 +1034,15 @@ bool UBanDatabase::UnlinkBans(const FString& UidA, const FString& UidB)
 
         bool bDirty = false;
 
+        // Snapshot the LinkedUids of both entries before modification so we
+        // can roll back if SaveToFile fails.
+        TMap<FString, TArray<FString>> LinkSnapshots;
+        for (const FBanEntry& E : Bans)
+        {
+            if (E.Uid.Equals(UidA, ESearchCase::IgnoreCase) || E.Uid.Equals(UidB, ESearchCase::IgnoreCase))
+                LinkSnapshots.Add(E.Uid, E.LinkedUids);
+        }
+
         for (FBanEntry& E : Bans)
         {
             if (E.Uid.Equals(UidA, ESearchCase::IgnoreCase) || E.Uid.Equals(UidB, ESearchCase::IgnoreCase))
@@ -1021,6 +1057,19 @@ bool UBanDatabase::UnlinkBans(const FString& UidA, const FString& UidB)
         }
 
         if (bDirty) bSaved = SaveToFile();
+
+        if (bDirty && !bSaved)
+        {
+            // Rollback: restore original LinkedUids for both affected entries.
+            UE_LOG(LogBanDatabase, Warning,
+                TEXT("UnlinkBans: SaveToFile failed; rolling back in-memory link removal"));
+            for (FBanEntry& E : Bans)
+            {
+                if (const TArray<FString>* OldLinks = LinkSnapshots.Find(E.Uid))
+                    E.LinkedUids = *OldLinks;
+            }
+            Modified.Reset();
+        }
     }
 
     if (bSaved)
