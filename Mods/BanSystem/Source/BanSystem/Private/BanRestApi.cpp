@@ -701,7 +701,7 @@ void UBanRestApi::RegisterRoutes()
             else if (DurationMinutesDbl > static_cast<double>(INT_MAX))
                 DurationMinutes = INT_MAX;                        // cap, not permanent
             else
-                DurationMinutes = static_cast<int32>(DurationMinutesDbl);
+                DurationMinutes = FMath::Max(1, static_cast<int32>(DurationMinutesDbl));
 
             if (Reason.IsEmpty())   Reason   = TEXT("No reason given");
             if (BannedBy.IsEmpty()) BannedBy = TEXT("system");
@@ -954,7 +954,7 @@ void UBanRestApi::RegisterRoutes()
                     {
                         const int32 Mins = (DurationMinutesDbl > static_cast<double>(INT_MAX))
                             ? INT_MAX
-                            : static_cast<int32>(DurationMinutesDbl);
+                            : FMath::Max(1, static_cast<int32>(DurationMinutesDbl));
                         E.bIsPermanent = false;
                         E.ExpireDate   = FDateTime::UtcNow() + FTimespan::FromMinutes(Mins);
                     }
@@ -1228,7 +1228,9 @@ void UBanRestApi::RegisterRoutes()
                 {
                     if (PointsDbl > static_cast<double>(MAX_int32))
                         PointsDbl = static_cast<double>(MAX_int32);
-                    Points = static_cast<int32>(PointsDbl);
+                    // Use Max(1,...) so fractional values like 0.7 become 1 point
+                    // rather than truncating to 0 (which would store a meaningless warning).
+                    Points = FMath::Max(1, static_cast<int32>(PointsDbl));
                 }
             }
 
@@ -1686,7 +1688,7 @@ void UBanRestApi::RegisterRoutes()
             else if (DurationMinutesDbl > static_cast<double>(INT_MAX))
                 DurationMinutes = INT_MAX;
             else
-                DurationMinutes = static_cast<int32>(DurationMinutesDbl);
+                DurationMinutes = FMath::Max(1, static_cast<int32>(DurationMinutesDbl));
 
             const FDateTime IpNow = FDateTime::UtcNow();
             FBanEntry Entry;
@@ -2911,7 +2913,7 @@ void UBanRestApi::RegisterRoutes()
             double DurDbl = 0.0;
             Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
             const int32 DurationMinutes = (!FMath::IsFinite(DurDbl) || DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
-                ? 0 : static_cast<int32>(DurDbl);
+                ? 0 : FMath::Max(1, static_cast<int32>(DurDbl));
             const FScheduledBanEntry NewEntry = SchReg->AddScheduled(
                 Uid, PlayerName, Reason, ScheduledBy, EffectiveAt, DurationMinutes, Category);
 
@@ -3102,7 +3104,7 @@ void UBanRestApi::RegisterRoutes()
             double DurDbl = 0.0;
             Body->TryGetNumberField(TEXT("durationMinutes"), DurDbl);
             const int32 DurationMinutes = (!FMath::IsFinite(DurDbl) || DurDbl <= 0.0 || DurDbl > static_cast<double>(INT_MAX))
-                ? 0 : static_cast<int32>(DurDbl);
+                ? 0 : FMath::Max(1, static_cast<int32>(DurDbl));
             // Capture a single timestamp for the entire batch so all entries share
             // the same BanDate/ExpireDate regardless of how long the loop takes.
             const FDateTime BatchBanNow = FDateTime::UtcNow();

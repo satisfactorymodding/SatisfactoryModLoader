@@ -563,7 +563,8 @@ void UTicketSubsystem::OnInteractionReceived(const TSharedPtr<FJsonObject>& Data
 
 	double TypeD = 0.0;
 	DataObj->TryGetNumberField(TEXT("type"), TypeD);
-	const int32 InteractionType = (FMath::IsFinite(TypeD) && TypeD >= 0.0 && TypeD <= static_cast<double>(MAX_int32))
+	const int32 InteractionType = (FMath::IsFinite(TypeD) && TypeD >= 0.0 && TypeD <= static_cast<double>(MAX_int32)
+		&& FMath::Fmod(TypeD, 1.0) == 0.0)
 		? static_cast<int32>(TypeD) : 0;
 
 	// We handle APPLICATION_COMMAND (2), MESSAGE_COMPONENT (3), and MODAL_SUBMIT (5).
