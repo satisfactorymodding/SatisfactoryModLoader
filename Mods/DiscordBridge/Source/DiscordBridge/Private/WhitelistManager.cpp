@@ -77,7 +77,9 @@ void FWhitelistManager::Load(bool bDefaultEnabled)
 	// Load max_slots
 	double MaxSlotsD = 0.0;
 	if (Root->TryGetNumberField(TEXT("max_slots"), MaxSlotsD))
-		MaxSlots = (MaxSlotsD >= 0.0 && MaxSlotsD <= static_cast<double>(INT_MAX))
+		MaxSlots = (FMath::IsFinite(MaxSlotsD) && MaxSlotsD >= 0.0
+		           && MaxSlotsD <= static_cast<double>(INT_MAX)
+		           && FMath::Fmod(MaxSlotsD, 1.0) == 0.0)
 		           ? static_cast<int32>(MaxSlotsD) : 0;
 
 	// Load players array (backward compat: string or object)
