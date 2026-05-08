@@ -227,7 +227,7 @@ void UPlayerNoteRegistry::LoadFromFile()
     }
     else if (Root->TryGetNumberField(TEXT("nextId"), StoredNextIdDbl)
              && StoredNextIdDbl >= 1.0
-             && StoredNextIdDbl < 9.2e18) // guard against Inf/NaN before cast
+             && StoredNextIdDbl < static_cast<double>(INT64_MAX)) // guard against Inf/NaN before cast
     {
         NextId = static_cast<int64>(StoredNextIdDbl);
     }

@@ -1302,14 +1302,15 @@ void UBanRestApi::RegisterRoutes()
                             ? FDateTime(0)
                             : AutoNow + FTimespan::FromMinutes(BanDurationMinutes);
 
+                        FBanEntry SavedAutoban;
                         bool bSkipped = false;
-                        if (DB->AddBanSkipIfPermanentExists(AutoBan, bSkipped))
+                        if (DB->AddBanSkipIfPermanentExists(AutoBan, &SavedAutoban, &bSkipped))
                         {
                             // Add counterpart IP ban if the player is currently online,
                             // mirroring HandleWarnCommand and TicketSubsystem issuewarn.
-                            RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), AutoBan);
-                            FBanDiscordNotifier::NotifyBanCreated(AutoBan);
-                            FBanDiscordNotifier::NotifyAutoEscalationBan(AutoBan, WarnCount);
+                            RestApiAddCounterpartBans(DB, GI->GetSubsystem<UPlayerSessionRegistry>(), SavedAutoban);
+                            FBanDiscordNotifier::NotifyBanCreated(SavedAutoban);
+                            FBanDiscordNotifier::NotifyAutoEscalationBan(SavedAutoban, WarnCount);
                             if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
                                 AuditLog->LogAction(TEXT("ban"), Uid, PlayerName, TEXT("system"), TEXT("system"), AutoBan.Reason);
                             // Kick the player immediately if they are currently online.
@@ -1710,7 +1711,7 @@ void UBanRestApi::RegisterRoutes()
                 if (bSkippedPerm)
                 {
                     auto Resp = BanJson::Json(BanJson::ObjectToString(BanJson::EntryToJson(Saved)));
-                    Resp->Code = EHttpServerResponseCodes::Ok;
+                    Resp->Code = EHttpServerResponseCodes::Conflict;
                     Done(MoveTemp(Resp));
                     return true;
                 }

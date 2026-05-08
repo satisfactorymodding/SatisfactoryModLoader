@@ -82,9 +82,10 @@ void FWhitelistManager::Load(bool bDefaultEnabled)
 
 	// Load players array (backward compat: string or object)
 	Entries.Empty();
-	if (Root->HasTypedField<EJson::Array>(TEXT("players")))
+	const TArray<TSharedPtr<FJsonValue>>* PlayersArr = nullptr;
+	if (Root->TryGetArrayField(TEXT("players"), PlayersArr) && PlayersArr)
 	{
-		for (const TSharedPtr<FJsonValue>& Val : Root->GetArrayField(TEXT("players")))
+		for (const TSharedPtr<FJsonValue>& Val : *PlayersArr)
 		{
 			if (Val->Type == EJson::String)
 			{
@@ -117,9 +118,10 @@ void FWhitelistManager::Load(bool bDefaultEnabled)
 
 	// Load audit log
 	AuditLog.Empty();
-	if (Root->HasTypedField<EJson::Array>(TEXT("audit_log")))
+	const TArray<TSharedPtr<FJsonValue>>* AuditArr = nullptr;
+	if (Root->TryGetArrayField(TEXT("audit_log"), AuditArr) && AuditArr)
 	{
-		for (const TSharedPtr<FJsonValue>& Val : Root->GetArrayField(TEXT("audit_log")))
+		for (const TSharedPtr<FJsonValue>& Val : *AuditArr)
 		{
 			const TSharedPtr<FJsonObject>* ObjPtr = nullptr;
 			if (!Val->TryGetObject(ObjPtr) || !ObjPtr) continue;
