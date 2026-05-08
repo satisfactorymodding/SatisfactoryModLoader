@@ -1057,25 +1057,29 @@ echo
 # =============================================================================
 echo "--- CHECK 37: delete save-failure rollback restores removed entries ---"
 
-if [[ -z "$NOTEREG_CPP_CHECK36" ]]; then
+NOTEREG_CPP_CHECK37="$NOTEREG_CPP_CHECK36"
+WARNREG_CPP_CHECK37="$WARNREG_CPP_CHECK36"
+SCHEDREG_CPP_CHECK37="$SCHEDREG_CPP_CHECK36"
+
+if [[ -z "$NOTEREG_CPP_CHECK37" ]]; then
     fail "CHECK 37 – PlayerNoteRegistry.cpp not found"
-elif ! grep -qP 'Notes\.Insert\s*\(\s*RemovedEntry\s*,\s*RemoveIdx\s*\)' "$NOTEREG_CPP_CHECK36"; then
+elif ! grep -qP 'Notes\.Insert\s*\(\s*RemovedEntry\s*,\s*RemoveIdx\s*\)' "$NOTEREG_CPP_CHECK37"; then
     fail "CHECK 37 – PlayerNoteRegistry::DeleteNote does not restore removed entry on save failure" \
-        "File: $NOTEREG_CPP_CHECK36"
+        "File: $NOTEREG_CPP_CHECK37"
 fi
 
-if [[ -z "$WARNREG_CPP_CHECK36" ]]; then
+if [[ -z "$WARNREG_CPP_CHECK37" ]]; then
     fail "CHECK 37 – PlayerWarningRegistry.cpp not found"
-elif ! grep -qP 'Warnings\.Insert\s*\(\s*RemovedEntry\s*,\s*RemovedIdx\s*\)' "$WARNREG_CPP_CHECK36"; then
+elif ! grep -qP 'Warnings\.Insert\s*\(\s*RemovedEntry\s*,\s*RemovedIdx\s*\)' "$WARNREG_CPP_CHECK37"; then
     fail "CHECK 37 – PlayerWarningRegistry::DeleteWarningById does not restore removed entry on save failure" \
-        "File: $WARNREG_CPP_CHECK36"
+        "File: $WARNREG_CPP_CHECK37"
 fi
 
-if [[ -z "$SCHEDREG_CPP_CHECK36" ]]; then
+if [[ -z "$SCHEDREG_CPP_CHECK37" ]]; then
     fail "CHECK 37 – ScheduledBanRegistry.cpp not found"
-elif ! grep -qP 'Pending\.Insert\s*\(\s*RemovedEntry\s*,\s*RemoveIdx\s*\)' "$SCHEDREG_CPP_CHECK36"; then
+elif ! grep -qP 'Pending\.Insert\s*\(\s*RemovedEntry\s*,\s*RemoveIdx\s*\)' "$SCHEDREG_CPP_CHECK37"; then
     fail "CHECK 37 – ScheduledBanRegistry::DeleteScheduled does not restore removed entry on save failure" \
-        "File: $SCHEDREG_CPP_CHECK36"
+        "File: $SCHEDREG_CPP_CHECK37"
 fi
 
 pass "CHECK 37 done"
