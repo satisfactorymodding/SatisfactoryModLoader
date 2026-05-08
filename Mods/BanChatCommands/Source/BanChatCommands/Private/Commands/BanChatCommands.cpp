@@ -2290,7 +2290,7 @@ EExecutionStatus AWarningsChatCommand::ExecuteCommand_Implementation(
     }
 
     const UBanChatCommandsConfig* Cfg = UBanChatCommandsConfig::Get();
-    const int32 PageSize   = Cfg ? Cfg->BanListPageSize : 10;
+    const int32 PageSize   = Cfg ? FMath::Clamp(Cfg->BanListPageSize, 1, 50) : 10;
     const int32 TotalPages = (Warnings.Num() + PageSize - 1) / FMath::Max(PageSize, 1);
     Page = FMath::Clamp(Page, 1, TotalPages);
     const int32 StartIdx   = (Page - 1) * PageSize;
