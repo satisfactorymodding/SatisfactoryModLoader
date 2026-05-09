@@ -257,9 +257,17 @@ void UBanAuditLog::LoadFromFile()
 
         if (bHadStoredNextId && ParsedNextId >= 0)
         {
-            // Preserve 0 as the exhausted-ID sentinel so counter exhaustion stays
-            // durable across restarts.
             NextId = ParsedNextId;
+            // Guard against a persisted nextId=0 that was written by a corrupted
+            // build.  Warn and recover by scanning the loaded entries.
+            if (NextId == 0)
+            {
+                UE_LOG(LogBanAuditLog, Warning,
+                    TEXT("BanAuditLog: persisted nextId=0 is invalid — resetting counter from existing entries"));
+                NextId = 1;
+                for (const FAuditEntry& E : Entries)
+                    if (E.Id >= NextId) NextId = (E.Id < INT64_MAX) ? E.Id + 1 : 1;
+            }
         }
         else
         {
