@@ -178,7 +178,7 @@ New recipes can be unlocked by completing Milestones, researching things in the 
 {1} = text, foliage name","UI","#common
 #look_at_description"
 "World/Foliage/NoSpaceForFoliage/Pattern","Not enough space to pick up {0}","","{0} = text, foliage name","UI",""
-"World/Foliage/ToggleAutoPickup","Hold <Key/> to toggle <Bold>Foliage Auto-Pickup</>","","","",""
+"World/Foliage/ToggleAutoPickup","Hold <Key/> to toggle <Bold>Auto-Pickup</>","","","",""
 "World/LizardDoggo/FunnyName","Lizardious Doggo","","","UI",""
 "World/LizardDoggo/FunnyName2","Lizardius Doggo","","","UI",""
 "World/LizardDoggo/GivenName","Name:","","","UI","#interface

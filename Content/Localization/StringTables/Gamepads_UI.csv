@@ -54,7 +54,7 @@
 "GamepadHints/Dismantle/SampleBuilding","Sample Building","","","UI","#gamepads"
 "GamepadHints/Dismantle/ToggleDismantleMode","Toggle Dismantle Mode","","","UI","#gamepads"
 "GamepadHints/DropPod/OpenHatch","Open Hatch","","","UI","#gamepads"
-"GamepadHints/FoliageToggle/HoldToggle","Hold {button_image} to toggle <Bold>Foliage Auto-Pickup</> ","Is displayed when looking at foliage. {Button_image} revers to the button that has to be held. It plays an animation when pressed down. Division of the string is handled in code via the tag.","","",""
+"GamepadHints/FoliageToggle/HoldToggle","Hold {button_image} to toggle <Bold>Auto-Pickup</> ","Is displayed when looking at foliage. {Button_image} revers to the button that has to be held. It plays an animation when pressed down. Division of the string is handled in code via the tag.","","",""
 "GamepadHints/Handheld/Holster","Holster","","","UI","#gamepads"
 "GamepadHints/Handheld/Holstered","Holstered","","","UI","#gamepads"
 "GamepadHints/Handheld/Unholster","Unholster","","","UI","#gamepads"

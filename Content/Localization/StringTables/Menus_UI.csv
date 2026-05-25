@@ -149,6 +149,14 @@ Are you sure you wish to continue?","","","UI","#ags"
 
 Note: Achievements are not blocked by enabling Game Modes.
 Game Modes can not be edited after a session is created.","","","",""
+"Games/GameModes/GameModesEnablePopupContent.TargetPS5","You are about to enable Game Modes. This will change the default experience of the game and affect all players in the session.
+
+Note: Trophies are not blocked by enabling Game Modes.
+Game Modes can not be edited after a session is created.","","","",""
+"Games/GameModes/GameModesEnablePopupContent.TargetXSX","You are about to enable Game Modes. This will change the default experience of the game and affect all players in the session.
+
+Note: Achievements are not blocked by enabling Game Modes.
+Game Modes can not be edited after a session is created.","","","",""
 "Games/GameModes/GameModesEnabled","Game Modes Enabled","","","",""
 "Games/GameModes/OptionCategory/CostMultipliers","Cost Multiplier","","","",""
 "Games/GameModes/OptionCategory/WorldRandomization","World Randomization","","","",""
@@ -164,7 +172,7 @@ Game Modes can not be edited after a session is created.","","","",""
 "Games/GameModes/ResourceNodePurity/MostlyPure","Mostly Pure","","","",""
 "Games/GameModes/ResourceNodePurity/Random","Random","","","",""
 "Games/GameModes/ResourceNodePurityDescription","Edit node purity, with the maximum remaining Pure, and the minimum remaining Impure. 
-Settings containting ""Mostly"" affect nodes by decreasing or increasing their purity by one level. 
+Settings containing ""Mostly"" affect nodes by decreasing or increasing their purity by one level. 
 <Orange>Note: Resource node locations remain the same as default.</>
 <Orange>Average turns all nodes into Normal purity. Random randomizes all purity levels.</>","","","",""
 "Games/GameModes/ResourceNodePurityName","Resource Node Purity","","","",""
@@ -205,6 +213,7 @@ Settings containting ""Mostly"" affect nodes by decreasing or increasing their p
 "Games/NewGame/Session/SkipIntro/Description","Enable to skip the onboarding process and start the game at Tier 1.","","","UI","#session"
 "Games/NewGame/Session/SkipIntro/Title","Skip Intro","","","UI","#session"
 "Games/NewGame/StartGame/Button","Start Game","","","UI","#session"
+"Games/NewGame/WorldSeed/Invalid","Invalid World Seed - has to be numeric","","","",""
 "Games/Savegames/List/Delete/Body","Are you sure you want to delete this save file?","","","UI",""
 "Games/Savegames/List/Delete/Button","Delete","","","UI",""
 "Games/Savegames/List/DeleteSave/Button","Delete Save","","","UI",""
@@ -417,13 +426,17 @@ Session Status???"
 "Options/FactoryClipboard/Paste/Button","Paste Factory Clipboard","","","UI","interface"
 "Options/KeyBinding/RebindingConflict","Rebinding Conflict","","","UI","#options"
 "Options/KeyBinding/RebindingConflict/Description/Pattern","{HardConflicts}
+
 {SoftConflicts}
+
 Rebind anyway?","","{HardConflicts} = text, key name
 {SoftConflicts} = text, key name","UI","#options"
 "Options/KeyBindings/Other","Other","","","UI","#options"
 "Options/KeyBindings/PressKeyToRebind","Press a key to rebind","","","UI","#options"
-"Options/KeyBindings/RebindingHardConflict/Description/Pattern","This binding is currently bound to ({HardConflicts}) in the same context.","","{SoftConflicts} = text, key name","UI","#options"
-"Options/KeyBindings/RebindingSoftConflict/Description/Pattern","This binding is currently bound to ({SoftConflicts}) in another context.","","{SoftConflicts} = text, key name","UI","#options"
+"Options/KeyBindings/RebindingHardConflict/Description/Pattern","This binding is currently bound to other actions in the same context:
+{HardConflicts}","","{SoftConflicts} = text, key name","UI","#options"
+"Options/KeyBindings/RebindingSoftConflict/Description/Pattern","This binding is currently bound to other actions in another context:
+{SoftConflicts}","","{SoftConflicts} = text, key name","UI","#options"
 "Options/MainScreen/Apply/Button","Apply","","","UI","#interface
 #common
 #options"

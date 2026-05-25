@@ -564,7 +564,7 @@ interface
 "HUD/ActiveSchematic/Milestone","Milestone:","To-Do List tooltip","","UI","#interface
 #tutorial
 #game"
-"HUD/AutoPickupLeavesActive","Auto-Pickup Active","","","UI",""
+"HUD/AutoPickupLeavesActive","<Orange>Auto-Pickup</> Active","","","UI",""
 "HUD/Box/Ammo/LoadedAmmo","Loaded Ammo","","","","interface
 hud_box"
 "HUD/Box/Ammo/NoAmmo","No Ammo","","","","interface

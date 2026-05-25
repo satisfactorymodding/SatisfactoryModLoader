@@ -84,6 +84,8 @@
 "ConstructDisqualifiers/Vehicles/TooSharp","Vehicle path turns too sharply!","Warning messages related to vehicle paths","","",""
 "ConstructDisqualifiers/Vehicles/TooShort","Vehicle path is too short!","Warning messages related to vehicle paths","","",""
 "ConstructDisqualifiers/Vehicles/TooSteep","Vehicle path is too steep!","Warning messages related to vehicle paths","","",""
+"ConstructDisqualifiers/Vehicles/IncompatiblePath","Incompatible Vehicle Path type!","Warning messages related to vehicle paths","","",""
+"ConstructDisqualifiers/Vehicles/InvalidDockingNodeElevation","Invalid Docking Node elevation!","Warning messages related to vehicle paths","","",""
 "Errors/AuthentificationFailed","External Login Failure","","","",""
 "Errors/AuthentificationFailed/Description","Can't connect to external authentification service. Please check your internet connection and contact support if the issue persists.","","","",""
 "Errors/AuthentificationFailed/Description.TargetPS5","Could not connect to Epic Online Services. Please check your internet connection.","","","",""
