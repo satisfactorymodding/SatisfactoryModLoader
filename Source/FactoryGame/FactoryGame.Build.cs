@@ -201,20 +201,6 @@ public class FactoryGame : ModuleRules
 			// 	"StreamlineDLSSGBlueprint",
 			// } );
 		}
-
-		// <FL> [PfaffN] Disable telemetry for consoles
-		if (/*Target.Platform == UnrealTargetPlatform.PS5 ||
-				Target.Platform == UnrealTargetPlatform.XSX ||*/
-				Target.Platform == UnrealTargetPlatform.Mac)
-		{
-			PrivateDefinitions.Add($"WITH_TELEMETRY=0");
-		}
-		else
-		{
-			// PublicDependencyModuleNames.Add("DSTelemetry");
-			// PrivateDefinitions.Add($"WITH_TELEMETRY=1");
-			PrivateDefinitions.Add($"WITH_TELEMETRY=0");
-		}
 		
 		// Determine whenever this build should have cheats and public build define set to zero or not
 		var publicBuildString = Target.bIsPublicBuild ? "1" : "0";

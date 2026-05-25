@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "FGWeatherPresetDataAsset.h"
+#include "FGWeatherReaction.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/VolumetricCloudComponent.h"
 #include "Curves/CurveFloat.h"
@@ -15,6 +16,7 @@
 
 #include "FGSkySphere.generated.h"
 
+enum class EWeatherInterpState : uint8;
 class UFGWeatherReaction;
 
 //Delegate for notifying weather state start
@@ -93,7 +95,7 @@ struct FACTORYGAME_API FSkySphereSettings
 };
 
 UCLASS(HideCategories=(Input,Rendering))
-class FACTORYGAME_API AFGSkySphere : public AActor, public ICurvePanningInterface
+class FACTORYGAME_API AFGSkySphere : public AActor, public ICurvePanningInterface, public IFGSaveInterface
 {
 	GENERATED_BODY()
 public:
@@ -111,12 +113,16 @@ public:
 	virtual void PostEditChangeChainProperty( struct FPropertyChangedChainEvent& propertyChangedEvent ) override;
 #endif
 	// End AActor interface
+	// Begin IFGSaveInterface
+	virtual bool ShouldSave_Implementation() const override { return true; }
+	// End
 
 	//	Begin ICurvePanningInterface
 #if WITH_EDITOR
 	virtual float GetViewMinInput() const override;
 	virtual float GetViewMaxInput() const override;
 	virtual void SetViewRange( float min, float max ) override;
+
 #endif
 	// End ICurvePanningInterface
 	
@@ -170,11 +176,19 @@ public:
 	/* Current assigned weather preset, will be saved to see if we have to clean the old weather state and rerun or not. */
 	UPROPERTY(EditAnywhere,Category = "Weather", SaveGame)
 	TObjectPtr<UFGWeatherPresetDataAsset> mCurrentWeatherPreset = {};
-
+	
 	/* Current active weather reaction object, will be saved so we can resume. */
-	UPROPERTY(EditAnywhere,Category = "Weather", SaveGame)
+	UPROPERTY(EditAnywhere,Category = "Weather")
 	TObjectPtr<AFGWeatherReaction> CurrentWeatherReaction;
+	
+	UPROPERTY(VisibleAnywhere,Category = "Weather", SaveGame)
+	TSubclassOf<AFGWeatherReaction> CurrentWeatherReactionClass = nullptr;
 
+	UPROPERTY(VisibleAnywhere,Category = "Weather", SaveGame)
+	EWeatherInterpState mCurrentWeatherState = EWeatherInterpState::EWeatherInterpState_Undefined;
+	
+	void UpdateWeatherState( EWeatherInterpState NewState ) { mCurrentWeatherState = NewState; }
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Weather", BlueprintReadWrite)
 	float mWeatherDurationMultiplier = 1;
 	
@@ -194,6 +208,9 @@ public:
 	/* Set when new weather type is picked.*/
 	float mCurrentWeatherDelay;
 
+	UPROPERTY(SaveGame)
+	float mTimeUntilNextWeatherState = 0;
+	
 	/* Texture used for rain occlusion. Updated on tick with grid snapping to the player location.*/
 	UPROPERTY( VisibleAnywhere, Category = "Weather|Occlusion", BlueprintReadOnly )
 	TObjectPtr<class USceneCaptureComponent2D> mRainOcclusionSceneCapture2DComponent;

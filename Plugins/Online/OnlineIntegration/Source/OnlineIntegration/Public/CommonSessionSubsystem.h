@@ -43,6 +43,8 @@ struct ONLINEINTEGRATION_API FSessionDelegates
 	static FOnJustAboutToTravel OnJustAboutToTravel;
 };
 
+DECLARE_MULTICAST_DELEGATE(FOnProtocolActivationReceivedDelegate);
+
 //////////////////////////////////////////////////////////////////////
 // CommonSessionSubsystem Events
 
@@ -115,15 +117,26 @@ public:
 
 	// <FL> [WuttkeP] Store platform invites that were received before logging into EOS so they can be joined later.
 	void SetPendingJoinRequest(const UE::Online::FUISessionJoinRequested& JoinRequest, UOnlineIntegrationBackend* = nullptr);
-	// </FL>
+
 	//<FL>[KonradA]
 	UFUNCTION(BlueprintCallable)
 	bool HasPendingJoinRequest() const;
+	void ResetPendingJoinRequest();
 	void ResetSessions();
 
 	TOptional<UE::Online::FUISessionJoinRequested> GetPendingJoinRequest();
 	UOnlineIntegrationBackend* GetPendingJoinRequestBackend();
+#if PLATFORM_XSX
+	FDelegateHandle XblFindFriendSessionDelegateHandle;
+#endif
+
+	//<FL>[ZimmermannA]
+	FOnProtocolActivationReceivedDelegate OnProtocolActivationReceivedDelegate;
 	//</FL>
+
+	TOptional<UE::Online::FOnlineSessionId> ProtocolJoinPendingSessionId;
+	UOnlineIntegrationBackend* ProtocolJoinPendingSessionBackend;
+	void OnFindFriendSessionFromProtocolCompleted(int32 userNum, bool success, const TArray<FOnlineSessionSearchResult>& result);
 
 	void RegisterSessionBackendMapping(UE::Online::FOnlineSessionId OnlineSessionId, UOnlineSessionBackendLink* SessionBackend);
 
@@ -145,6 +158,12 @@ public:
 
 	USessionInformation* GetOnlineSessionInfo(UE::Online::FOnlineSessionId SessionId);
 	void EnqueueSessionDataUpdate(USessionInformation* SessionInfo);
+
+	// If a shell join e.g. on consoles requests an action activation by protocol (e.g. join a session activity) this will be called. Converts into
+	// a session id if possible. If possible sets this as a startup session. This is an alternate path for platforms that do not support a native
+	// activity interface and handle shell joins via command line protocol arguments.
+	UFUNCTION()
+	void OnProtocolActivationReceived(const FString& protocolUri, FPlatformUserId id);
 
 protected:
 	// Begin FTickableGameObject

@@ -117,6 +117,8 @@ void AFGBuildable::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mBlueprintBuildEffectID, params );
 	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mReplicatedBuiltInsideBlueprintDesigner, params );
 	DOREPLIFETIME_WITH_PARAMS_FAST( AFGBuildable, mBlueprintDesigner, params );
+	
+	DOREPLIFETIME(AFGBuildable, BuiltBy);
 }
 
 AFGBuildable::AFGBuildable(const FObjectInitializer& ObjectInitializer) :
@@ -1642,7 +1644,7 @@ void AFGBuildable::Dismantle_Implementation()
 		if( mIsLightweightTemporary && !mIsStaleLightweightTemporary )
 		{
 			AFGLightweightBuildableSubsystem* lightweightSubsystem = AFGLightweightBuildableSubsystem::Get( GetWorld() );
-			lightweightSubsystem->RemoveByBuildable( this );
+			lightweightSubsystem->RemoveByInstanceIndex( GetClass(), mRuntimeDataIndex );
 		}
 	}
 	else

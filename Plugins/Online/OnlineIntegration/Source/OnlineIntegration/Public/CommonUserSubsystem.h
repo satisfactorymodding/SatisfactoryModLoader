@@ -10,7 +10,6 @@
 #include "Online/Connectivity.h"
 #include "Online/Stats.h"
 #include "OnlineIntegrationTypes.h"
-#include "GameFramework/PlayerController.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Online/OnlineServices.h"
 #include "Online/Sessions.h"
@@ -604,7 +603,3 @@ private:
 	bool bHasAvatarRequestFinished = false;
 	bool bHasUserInfoRequestFinished = false;
 };
-
-template <typename T>
-void UCommonUserSubsystem::ClearCacheMap(
-	TMap<UE::Online::FAccountId, TSharedRef<TPromise<UE::Online::TOnlineResult<T>>>>& Map){ }

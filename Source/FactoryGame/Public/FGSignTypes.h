@@ -217,10 +217,25 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Transient, Category = "Sign Data", meta=( ExposeOnSpawn ) )
 	FPrefabSignData mPrefabSignData;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	TArray<FString> EdGetBoundTextElements(UWidget* LayoutManager) const;
+	
+	/*Gets all text used text element keys, this way we only check against relevant entries.
+	 * When array is empty, we skip this check and use the original implementation as fallback. */
+	const TArray<FString>& GetCachedBoundTextElements() const { return CachedBoundTextElements;}
+	
 protected:
 	UPROPERTY( BlueprintReadWrite, Category = "Sign Data" )
 	TMap< FString, TObjectPtr<class URichTextBlock> > mNameToTextWidget;
 
 	UPROPERTY( BlueprintReadWrite, Category = "Sign Data" )
 	TMap< FString, TObjectPtr<class UImage> > mNameToIconWidget;
+	
+private:
+	UPROPERTY(VisibleDefaultsOnly)
+	TArray<FString> CachedBoundTextElements;
+	
+#if WITH_EDITOR
+	virtual void PreSave( FObjectPreSaveContext SaveContext ) override;
+#endif
 };

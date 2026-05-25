@@ -114,6 +114,8 @@ public:
 	bool WasLastChangedByLocalPlayer();
 	UFUNCTION(BlueprintCallable, Category = "WidgetSign")
 	void GetDefaultSignMaps( TMap< FString, FString >& TextElementToDataMap, TMap< FString, int32 >& IconElementToDataMap );
+
+	void RecalculateUGCVisibility();
 	//</FL>
 
 	FORCEINLINE float LastTimeSeen() const { return IsValid(mSignProxyPlane) ? mSignProxyPlane->GetLastRenderTime() : MAX_FLT; }
@@ -247,4 +249,5 @@ protected:
 	uint8 mDataVersion;
 	
 	uint32 mCachedGUID = 0;
+	bool mCachedUGCVisibility = true;
 };

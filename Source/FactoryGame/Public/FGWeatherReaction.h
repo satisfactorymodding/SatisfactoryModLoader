@@ -8,6 +8,7 @@
 
 #include "Engine/EngineTypes.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/Info.h"
 #include "UObject/NoExportTypes.h"
 #include "FGWeatherReaction.generated.h"
 
@@ -27,7 +28,7 @@ enum class EWeatherInterpState : uint8
 };
 
 UCLASS(Blueprintable)
-class FACTORYGAME_API AFGWeatherReaction : public AActor, public IFGSaveInterface
+class FACTORYGAME_API AFGWeatherReaction : public AInfo
 {
 	GENERATED_BODY()
 
@@ -39,12 +40,7 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-
-	// Begin IFGSaveInterface
-	virtual bool ShouldSave_Implementation() const override { return true; }
-	virtual bool NeedTransform_Implementation() override { return false; }
-	// End
-	
+		
 	UFUNCTION(BlueprintPure, Category = "Weather")
 	AFGSkySphere* GetSkySphere() const { return mSkySphere; }
 
@@ -56,6 +52,9 @@ public:
 	
 	// Ends the weather state, should only be called by server / listen server.
 	void ServerEndWeatherState();
+	
+	EWeatherInterpState GetCurrentState() const			{ return mCurrentState; }
+	void ForceSetState( EWeatherInterpState NewState)	{ mCurrentState = NewState; }
 	
 protected:
 	UFUNCTION( BlueprintImplementableEvent )
@@ -78,7 +77,7 @@ protected:
 	/* seconds the transition takes.*/
 	UPROPERTY( EditDefaultsOnly,BlueprintReadOnly )
 	float TransitionTime;
-	
+
 private:
 	UFUNCTION( )
 	void OnRep_OnStateUpdated( EWeatherInterpState OldState );

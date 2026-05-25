@@ -9,6 +9,7 @@
 #include "GameFramework/Actor.h"
 #include "Inventory.h"
 #include "FGBuildGunModeDescriptor.h"
+#include "Input/FGBoundMappingContextHandle.h"
 #include "FGBuildGun.generated.h"
 
  /**
@@ -231,6 +232,9 @@ private:
 
 	/** Is this state active? */
 	bool mIsActive;
+
+	/** Mapping context handle for the bound build gun input context */
+	FBoundMappingContextHandle mMappingContextHandle;
 };
 
 /**

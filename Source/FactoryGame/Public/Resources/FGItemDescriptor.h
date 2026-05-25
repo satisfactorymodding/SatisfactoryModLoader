@@ -148,8 +148,8 @@ public:
 
 	// Begin UObject interface
 	virtual void Serialize( FArchive& ar ) override;
+	virtual void PreSave( FObjectPreSaveContext SaveContext ) override;
 	virtual void PostLoad() override;
-	virtual void BeginDestroy() override;
 	virtual void GetAssetRegistryTags(FAssetRegistryTagsContext Context) const override;
 	// End UObject interface
 
@@ -363,6 +363,9 @@ protected:
 	virtual UTexture2D* Internal_GetSmallIcon() const;
 	virtual UTexture2D* Internal_GetBigIcon() const;
 
+	/** Updates cached stack size on the item descriptor */
+	void UpdateCachedStackSize();
+
 public:
 	/**
 	 * If mDisplayName and mDisplayName is overridden and specified elsewhere.
@@ -515,8 +518,7 @@ protected:
 	UPROPERTY()
 	int32 mResourceSinkPoints;
 
-	/** Stack size will be cached on post load, this way we dont need to cast every time to get the value.*/
-	UPROPERTY( Transient )
+	UPROPERTY()
 	int32 mCachedStackSize;
 public:
 	/*for by passing get CDO calls */

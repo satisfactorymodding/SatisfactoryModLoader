@@ -5,6 +5,7 @@
 #include "FGItemCategory.h"
 #include "FGResourceSettings.h"
 #include "UObject/AssetRegistryTagsContext.h"
+#include "UObject/ObjectSaveContext.h"
 
 EResourceForm UFGItemDescriptor::GetForm(TSubclassOf<UFGItemDescriptor> inClass) {
 	if (inClass)
@@ -185,7 +186,7 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 	this->mItemIndex = -1;
 }
 void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void UFGItemDescriptor::BeginDestroy(){ Super::BeginDestroy(); }
+void UFGItemDescriptor::PreSave(FObjectPreSaveContext SaveContext){ UObject::PreSave(SaveContext); }
 void UFGItemDescriptor::GetAssetRegistryTags(FAssetRegistryTagsContext Context) const{ UObject::GetAssetRegistryTags(Context); }
 EGasType UFGItemDescriptor::GetGasType(TSubclassOf< UFGItemDescriptor > inClass){ return EGasType(); }
 FText UFGItemDescriptor::GetAbbreviatedDisplayName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
@@ -219,3 +220,4 @@ FString UFGItemDescriptor::GetItemNameInternalAsString() const{ return FString()
 FText UFGItemDescriptor::GetItemDescriptionInternal() const{ return FText(); }
 UTexture2D* UFGItemDescriptor::Internal_GetSmallIcon() const{ return nullptr; }
 UTexture2D* UFGItemDescriptor::Internal_GetBigIcon() const{ return nullptr; }
+void UFGItemDescriptor::UpdateCachedStackSize(){ }

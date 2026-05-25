@@ -19,4 +19,3 @@ public:
 	 */
 	static void FilterInactiveGameFeaturePluginAssets(TArray<FAssetData>& AssetDataList);
 };
-

@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Input/FGBoundMappingContextHandle.h"
 #include "Templates/SubclassOf.h"
 #include "UObject/Object.h"
 #include "FGVisualizationMode.generated.h"
@@ -53,6 +54,8 @@ protected:
 	/** Mapping context bound when this visualization mode is active */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
 	TObjectPtr<UInputMappingContext> mMappingContext;
+
+	FBoundMappingContextHandle mMappingContextHandle;
 
 	UPROPERTY()
 	TSubclassOf<UFGVisualizationModeDescriptor> mVisualizationModeDescriptor;

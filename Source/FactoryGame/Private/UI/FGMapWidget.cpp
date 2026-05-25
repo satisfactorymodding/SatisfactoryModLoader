@@ -8,6 +8,7 @@ void UFGMapWidget::UpdateFogOfWarTexture(){ }
 void UFGMapWidget::SetupRepresentationManager(){ }
 void UFGMapWidget::BindActorRepresentationManager( AFGActorRepresentationManager* representationManager){ }
 void UFGMapWidget::RemoveBindings(){ }
+bool UFGMapWidget::ActorRepresentationSatisfiesUGCVisibility(class UFGActorRepresentation* actorRepresentation){ return false; }
 void UFGMapWidget::OnActorRepresentationAdded( UFGActorRepresentation* actorRepresentation){ }
 void UFGMapWidget::AddMapObject( UFGActorRepresentation* actorRepresentation, bool addedAfterMapOpened){ }
 void UFGMapWidget::OnActorRepresentationUpdated( UFGActorRepresentation* actorRepresentation){ }

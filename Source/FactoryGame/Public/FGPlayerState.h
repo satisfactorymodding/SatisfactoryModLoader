@@ -292,6 +292,7 @@ public:
 	// Begin IOnlinePlayerStateIdentityInterface
 	virtual UE::Online::FAccountId GetPlatformAccountId() const override;
 	virtual FString GetPlatformNickname() const override;
+	UFUNCTION( BlueprintCallable )
 	virtual FString GetPlatformAvatarURL() const override;
 	// End IOnlinePlayerStateIdentityInterface
 	
@@ -371,6 +372,9 @@ public:
 	void Server_MarkMessageAsPlayed( class UFGMessage* message );
 	/** Retrieves all important messages played so far and marks them as played. Useful for players who join mid-game */
 	void FetchImportantMessages();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsValidActivePlayerState() const;
 
 	/**
 	 * Updates the index of the currently selected hotbar for this player
@@ -781,6 +785,9 @@ public:
 
 	void SetLastSafeCharacterLocation( const FVector& lastLoc ) { mLastSafeCharacterLocation = lastLoc; }
 	const FVector& GetLastSafeCharacterLocation() const { return mLastSafeCharacterLocation; }
+
+	virtual void RegisterPlayerWithSession( bool bFromInvite ) override;
+	virtual void UnregisterPlayerWithSession() override;
 
 protected:
 	void Native_OnFactoryClipboardCopied( UObject* object, class UFGFactoryClipboardSettings* factoryClipboard );

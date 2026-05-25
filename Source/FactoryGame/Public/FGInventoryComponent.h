@@ -607,6 +607,7 @@ protected:
 	const FInventoryStack& GetStackFromIndex( int32 idx ) const;
 private:
 	void UpdateRadioactivity( int32 idx, TSubclassOf<UFGItemDescriptor> itemClass );
+	void ResetRadioactivity( int32 idx, TSubclassOf<UFGItemDescriptor> itemClass ); //this is similar to method above, but will always trigger either Remove or Add Emitter
 
 public:
 	/** Set this to filter out what items are allowed and not allowed in the inventory */

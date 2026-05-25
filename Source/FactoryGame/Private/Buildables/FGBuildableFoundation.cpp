@@ -29,6 +29,7 @@ AFGBuildableFoundation::AFGBuildableFoundation(const FObjectInitializer& ObjectI
 	this->mSwatchGroup = UFGSwatchGroup_FicsitFoundation::StaticClass();
 	this->mManagedByLightweightBuildableSubsystem = true;
 }
+void AFGBuildableFoundation::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ Super::PostLoadGame_Implementation(saveVersion, gameVersion); }
 AFGBuildableFoundationLightweight::AFGBuildableFoundationLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mMeshComponentProxy = nullptr;
 }

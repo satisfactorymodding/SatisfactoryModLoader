@@ -429,7 +429,6 @@ void AFGCharacterPlayer::Cheat_ToggleFly(){ }
 void AFGCharacterPlayer::Input_ToggleGhostFly(const FInputActionValue& actionValue){ }
 void AFGCharacterPlayer::Input_Teleport(const FInputActionValue& actionValue){ }
 void AFGCharacterPlayer::Input_CycleHyperTubeTravelDirection(const FInputActionValue& actionValue){  }
-void AFGCharacterPlayer::SetMappingContextBound(UInputMappingContext* context, bool bind, int32 priority){ }
 void AFGCharacterPlayer::RevivePlayerWithFullHealth(){ }
 bool AFGCharacterPlayer::SetPlayerFlyingOnSpawn(){ return bool(); }
 float AFGCharacterPlayer::GetUseDistance() const{ return float(); }
@@ -595,7 +594,7 @@ bool AFGCharacterPlayer::IsPlayerInOrAboveWater(const FVector& hitPosition) cons
 void AFGCharacterPlayer::ActivateCameraComponents(){ }
 void AFGCharacterPlayer::DeactivateCameraComponents(){ }
 void AFGCharacterPlayer::OnActiveEquipmentChangedInSlot(EEquipmentSlot slot){ }
-void AFGCharacterPlayer::StartRainEffects(UNiagaraSystem* SystemType){ }
+void AFGCharacterPlayer::StartRainEffects(UNiagaraSystem* SystemType, float DesiredIntensity){ }
 void AFGCharacterPlayer::EndRainEffects(){ }
 UNiagaraComponent* AFGCharacterPlayer::GetRainComponent(bool& bHasValidComponent){ return nullptr; }
 FOnPersistentEquipmentActivated AFGCharacterPlayer::OnPersistentEquipmentActivated = FOnPersistentEquipmentActivated();

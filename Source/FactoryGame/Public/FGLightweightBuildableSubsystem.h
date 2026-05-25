@@ -715,9 +715,6 @@ public:
 	// This should only be called when migrating from old save data to the new system. Ie. The buildable will detect its meant for lightweightbuildable system and call into this with itself
 	int32 AddFromBuildable(class AFGBuildable* buildable, AActor* buildEffectInstigator = nullptr, class AFGBlueprintProxy* blueprintProxy = nullptr );
 
-	// Removes a buildable and its instances - The buildable will be a lightweight temporary that has been spawned via an instigator
-	void RemoveByBuildable( class AFGBuildable* buildable );
-
 	// Removes a instance directly by its class and index
 	void RemoveByInstanceIndex( TSubclassOf< class AFGBuildable > buildableClass, int32 instanceIndex );
 

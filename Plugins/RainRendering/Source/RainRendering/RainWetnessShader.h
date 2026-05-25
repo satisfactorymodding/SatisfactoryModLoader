@@ -89,13 +89,13 @@ class FRainWetnessInjectionCS : public FGlobalShader
 		}
 	}
 
-	static void RunRainShader(FRDGBuilder& GraphBuilder,
-		FSceneView& InView,
-		const FRenderTargetBindingSlots& RenderTargets,
-		UTextureRenderTarget2D* FactoryOcclusionRenderTarget,
-		UTexture2D* DitherTexture,
-		UTexture2D* StaticWorldTexture,
-		float Intensity,
-		const FVector& FactoryDepthCaptureLocation,
-		const FVector& StaticOcclusionCaptureLocation);
+	static void RunRainShader(	FRDGBuilder& GraphBuilder,
+								FSceneView& InView,
+								const FRenderTargetBindingSlots& RenderTargets,
+								UTextureRenderTarget2D* FactoryOcclusionRenderTarget,
+								UTexture2D* DitherTexture,
+								UTexture2D* StaticWorldTexture,
+								float Intensity,
+								const FVector& FactoryDepthCaptureLocation,
+								const FVector& StaticOcclusionCaptureLocation);
 };

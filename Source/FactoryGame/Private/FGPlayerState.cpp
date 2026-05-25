@@ -146,6 +146,7 @@ bool AFGPlayerState::HasMessageBeenPlayed( UFGMessage* message) const{ return bo
 void AFGPlayerState::MarkMessageAsPlayed( UFGMessage* message){ }
 void AFGPlayerState::Server_MarkMessageAsPlayed_Implementation( UFGMessage* message){ }
 void AFGPlayerState::FetchImportantMessages(){ }
+bool AFGPlayerState::IsValidActivePlayerState() const{ return bool(); }
 void AFGPlayerState::SetHotbarIndex(int32 newHotbarIndex){ }
 UFGPlayerHotbar* AFGPlayerState::GetActiveHotbar() const{ return nullptr; }
 UFGPlayerHotbar* AFGPlayerState::GetHotbarAtIndex(int32 hotbarIndex) const{ return nullptr; }
@@ -241,6 +242,8 @@ void AFGPlayerState::Internal_NotifyPlayerSpecificSchematicsPurchased(const TArr
 void AFGPlayerState::SetClientIdentity(const FClientIdentityInfo& clientIdentity){ }
 const FClientIdentityInfo& AFGPlayerState::GetClientIdentity() const{ return *(new FClientIdentityInfo); }
 void AFGPlayerState::SetPlatformPlayerInfo(const FPlayerInfoHandle& newPlatformPlayerInfo){ }
+void AFGPlayerState::RegisterPlayerWithSession(bool bFromInvite){ Super::RegisterPlayerWithSession(bFromInvite); }
+void AFGPlayerState::UnregisterPlayerWithSession(){ Super::UnregisterPlayerWithSession(); }
 void AFGPlayerState::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::OnRep_PlayerHotbars(){ }

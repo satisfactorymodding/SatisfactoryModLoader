@@ -103,4 +103,5 @@ void UFGInventoryComponent::OnItemsRemoved(int32 idx, int32 num, const FInventor
 FInventoryStack& UFGInventoryComponent::GetStackFromIndex(int32 idx){ return *(new FInventoryStack); }
 const FInventoryStack& UFGInventoryComponent::GetStackFromIndex(int32 idx) const{ return *(new FInventoryStack); }
 void UFGInventoryComponent::UpdateRadioactivity(int32 idx, TSubclassOf<UFGItemDescriptor> itemClass){ }
+void UFGInventoryComponent::ResetRadioactivity(int32 idx, TSubclassOf<UFGItemDescriptor> itemClass){ }
 bool UFGInventoryComponent::NetDeltaSerializeInventoryStacksFast(FProperty* inventoryStacksProp, void* inventoryStacksPtr, FNetDeltaSerializeInfo& deltaParams){ return bool(); }

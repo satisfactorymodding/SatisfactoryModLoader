@@ -31,6 +31,7 @@ EFactoryConnectionDirection UFGFactoryConnectionComponent::GetCompatibleSnapDire
 bool UFGFactoryConnectionComponent::CanSnapTo(UFGFactoryConnectionComponent* otherConnection) const{ return bool(); }
 bool UFGFactoryConnectionComponent::CanConnectTo(const UFGFactoryConnectionComponent* otherConnection) const{ return bool(); }
 FVector UFGFactoryConnectionComponent::GetConnectorLocation(bool withClearance) const{ return FVector(); }
+bool UFGFactoryConnectionComponent::IsConnectionVertical() const{ return bool(); }
 bool UFGFactoryConnectionComponent::Factory_PeekOutput(TArray< FInventoryItem >& out_items, TSubclassOf<  UFGItemDescriptor > type) const{ return bool(); }
 bool UFGFactoryConnectionComponent::Factory_GrabOutput(FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type){ return bool(); }
 bool UFGFactoryConnectionComponent::Factory_Internal_PeekOutputInventory(TArray< FInventoryItem >& out_items, TSubclassOf<  UFGItemDescriptor > type) const{ return bool(); }

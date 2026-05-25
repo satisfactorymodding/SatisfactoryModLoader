@@ -239,7 +239,7 @@ protected:
 	void OnRep_ServerMapReveals();
 
 	UFUNCTION()
-	void OnRep_ResourceClassOverride();
+	virtual void OnRep_ResourceClassOverride();
 	
 private:
 	void UpdateNodeRepresentation();

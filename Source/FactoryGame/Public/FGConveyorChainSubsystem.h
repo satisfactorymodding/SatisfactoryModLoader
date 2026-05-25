@@ -216,6 +216,9 @@ public:
 	UPROPERTY()
 	TArray< TObjectPtr<AFGConveyorChainActor> > RequestedSegmentChainActors;
 
+	TMap< FNetworkGUID, TWeakObjectPtr<AFGConveyorChainActor> > mExpectedItemResponseActors;
+	TMap< FNetworkGUID, TWeakObjectPtr<AFGConveyorChainActor> > mExpectedSegmentResponseActors;
+
 	UPROPERTY()
 	bool HasPendingItemClientRequest = false;
 

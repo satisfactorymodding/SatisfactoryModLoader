@@ -34,6 +34,7 @@ void AFGFoliagePickup::Input_Use(const  FInputActionValue& actionValue){ }
 void AFGFoliagePickup::Input_ToggleAutoPickup_Started(){ }
 void AFGFoliagePickup::Input_ToggleAutoPickup_Triggered(){ }
 void AFGFoliagePickup::Input_ToggleAutoPickup_Canceled(){ }
+void AFGFoliagePickup::TurnOffAutoPickupToggleUI(){ }
 void AFGFoliagePickup::ToggleAutoPickUp(){ }
 void AFGFoliagePickup::SetItemToPickup(class AFGItemPickup* itemToPickup){ }
 void AFGFoliagePickup::OnAutoPickUpToggleDelayCompleted(){ }

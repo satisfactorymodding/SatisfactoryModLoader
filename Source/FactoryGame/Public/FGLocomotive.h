@@ -9,8 +9,6 @@
 #include "FGLocomotive.generated.h"
 
 
-struct FInputActionValue;
-
 UENUM( BlueprintType )
 namespace ELocomotiveHeadlightsMode
 {

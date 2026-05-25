@@ -13,7 +13,6 @@ void AFGVehicle::GetClearanceData_Implementation(TArray< FFGClearanceData >& out
 FVehicleSeat::FVehicleSeat(){ }
 void AFGVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGVehicle, mHealthComponent);
 	DOREPLIFETIME(AFGVehicle, mNetConstructionID);
 	DOREPLIFETIME(AFGVehicle, mCustomizationData);
 	DOREPLIFETIME(AFGVehicle, mBuiltWithRecipe);
@@ -32,7 +31,6 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mHologramClass = nullptr;
 	this->mMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("VehicleMesh"));
 	this->mMesh->SetMobility(EComponentMobility::Movable);
-	this->mHealthComponent = CreateDefaultSubobject<UFGHealthComponent>(TEXT("HealthComponent"));
 	this->mDOTReceiverComponent = nullptr;
 	this->mDisabledByWaterLocations.Add(FVector::ZeroVector);
 	this->CachedSkinDesc = nullptr;
@@ -45,7 +43,6 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mOwningPlayerState = nullptr;
 	this->mMatchCustomizationDataWithPlayerState = false;
 	this->mConstructSound = nullptr;
-	this->mIsDestructible = false;
 	this->mIsSubmergedInWater = false;
 	this->mSubmergedAngularDamping = 6.0;
 	this->mSubmergedLinearDamping = 15.0;
@@ -66,6 +63,7 @@ AFGVehicle::AFGVehicle() : Super() {
 }
 void AFGVehicle::BeginPlay(){ Super::BeginPlay(); }
 void AFGVehicle::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
+void AFGVehicle::Destroyed(){ Super::Destroyed(); }
 void AFGVehicle::Tick(float dt){ Super::Tick(dt); }
 float AFGVehicle::TakeDamage(float DamageAmount,  FDamageEvent const& DamageEvent,  AController* EventInstigator, AActor* DamageCauser){ return float(); }
 UPawnMovementComponent* AFGVehicle::GetMovementComponent() const{ return nullptr; }
@@ -138,8 +136,6 @@ void AFGVehicle::OnCustomizationDataSet(const FFactoryCustomizationData& previou
 void AFGVehicle::OnRelevantToNearbyPlayersChanged(){ }
 void AFGVehicle::OnRep_IsSimulated(){ }
 void AFGVehicle::ToggleEntireVehicleOutline(const bool isOutlined, const EOutlineColor& outlineColor){ }
-void AFGVehicle::OnTakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }
-void AFGVehicle::Died(AActor* thisActor){ }
 void AFGVehicle::OnDrivingStatusChanged(){ }
 void AFGVehicle::UpdateSubmergedInWater(float deltaTime){ }
 void AFGVehicle::SubmergedInWaterUpdated(bool newIsSubmerged){ }
@@ -148,6 +144,7 @@ void AFGVehicle::GetDismantleInventoryReturns(TArray< FInventoryStack >& out_ret
 void AFGVehicle::DestroyVehicle(){ }
 void AFGVehicle::ShowOutline(EOutlineColor color) const{ }
 void AFGVehicle::HideOutline(){ }
+bool AFGVehicle::ShouldDestroyVehicleOnContact(const TSubclassOf<UFGDamageType>& gameDamageTypeClass) const{ return bool(); }
 void AFGVehicle::UpdatePhysicsVolume(APhysicsVolume* physicsVolume){ }
 void AFGVehicle::OnRep_CustomColorData(){ }
 void AFGVehicle::OnRep_OwningPlayerState( AFGPlayerState* previousPlayerState){ }

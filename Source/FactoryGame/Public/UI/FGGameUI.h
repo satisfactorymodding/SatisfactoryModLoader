@@ -164,6 +164,12 @@ public:
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	bool IsPauseMenuOpen() const { return mPauseMenuOpen; }
 
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	FORCEINLINE UFGUserWidget* GetPauseMenu() { return mPauseMenu.Get(); }
+
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	void SetPauseMenu( UFGUserWidget* widget );
+
 	/** Triggered when we have finished playing the active audio message */
 	UFUNCTION()
     void AudioMessageFinishedPlayback();
@@ -309,6 +315,7 @@ protected:
 
 	virtual bool ShouldSuppressMessage( class UFGMessage* message ) const;
 
+
 private:
 	void SetupDelegates();
 	bool CanUnpauseTheGame() const;
@@ -351,6 +358,8 @@ private:
 
 	/** Whether or not the pause menu is open. */
 	bool mPauseMenuOpen;
+
+	TObjectPtr< class UFGUserWidget > mPauseMenu = nullptr;
 
 	/** Pooled widgets that we don't want to recreate */
 	UPROPERTY( Transient )

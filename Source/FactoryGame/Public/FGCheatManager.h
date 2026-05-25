@@ -615,6 +615,8 @@ public:
 	void Online_TriggerPresenceUpdate();
 	UFUNCTION( exec, category = "Online" )
 	void Online_DumpConnectionString();
+	UFUNCTION( exec, category = "Online" )
+	void Online_DebugPlayerInfoCache();
 	
 	/****************************************************************
 	 * Wheeled Vehicles

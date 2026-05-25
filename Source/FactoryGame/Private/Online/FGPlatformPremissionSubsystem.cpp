@@ -22,7 +22,7 @@ void UFGPlatformPermissionSubsystem::PollPrivilegeFromCode(EUserPrivilege privil
 EPrivilegeCheckResult UFGPlatformPermissionSubsystem::CheckPrivilegeValue(const EUserPrivilege& privilege) const{ return EPrivilegeCheckResult();  }
 bool UFGPlatformPermissionSubsystem::HasUserThisRight(const UE::Online::FAccountId& accountId, const PlatformSpecificPermissionType& privilege, EPrivilegeCheckResult& out_value) const{ return false; }
 void UFGPlatformPermissionSubsystem::NotifyGameStateBeginPlay(AFGGameState* currentGameState){ }
-void UFGPlatformPermissionSubsystem::RetrieveCrossplayTextPermission(TOptional<CrossplayTextPermissionResult>& permissionResult) const{ }
+void UFGPlatformPermissionSubsystem::RetrieveCrossplayPermissions(TOptional<CrossplayPermissionResult>& textCommunicationResult, TOptional<CrossplayPermissionResult>& ugcVisibilityResult) const{ }
 void UFGPlatformPermissionSubsystem::PollUserPrivilege(const EUserPrivilege& PrivilegeToQuery, FOnPrivilegeQueryDone Callback){ }
 void UFGPlatformPermissionSubsystem::UpdateBindingsAndPrivileges(UWorld* world){ }
 void UFGPlatformPermissionSubsystem::UpdatePrivileges(){ }
@@ -34,6 +34,7 @@ void UFGPlatformPermissionSubsystem::OnCachedPlayersUpdated(const FPlayerInfoHan
 void UFGPlatformPermissionSubsystem::OnFriendListUpdated(TArray<FUniqueNetIdRepl> friendList){ }
 void UFGPlatformPermissionSubsystem::OnPostLoadMap(UWorld* world){ }
 void UFGPlatformPermissionSubsystem::OnBackendLoginStatusChanged(ECommonUserLoginStatus loginStatus){ }
+void UFGPlatformPermissionSubsystem::OnVirtualKeyboardWasOpened(){ }
 ESessionMemberPlatformType UFGPlatformPermissionSubsystem::GetPlatformFromSessionMemberInformation(USessionMemberInformation* sessionMemberInfo) const{ return ESessionMemberPlatformType(); }
 FUniqueNetIdPtr UFGPlatformPermissionSubsystem::GetUniqueNetIdFromSessionMemberInformation(USessionMemberInformation* sessionMemberInfo) const{ return FUniqueNetIdPtr(); }
 UE::Online::FAccountId UFGPlatformPermissionSubsystem::GetAccountIdFromSessionMemberInformation(USessionMemberInformation* sessionMemberInfo) const{ return UE::Online::FAccountId(); }

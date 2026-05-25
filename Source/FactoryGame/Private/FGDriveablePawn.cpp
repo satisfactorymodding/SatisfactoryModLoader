@@ -13,6 +13,7 @@ AFGDriveablePawn::AFGDriveablePawn() : Super() {
 	this->mMappingContext = nullptr;
 	this->mMappingContextToDisable = nullptr;
 	this->mMappingContextPriority = 1;
+	this->mDisabledMappingContextPriority = 100;
 	this->mSpringArmComponent = nullptr;
 	this->mCameraComponent = nullptr;
 	this->mLastSafeLocation = FVector::ZeroVector;

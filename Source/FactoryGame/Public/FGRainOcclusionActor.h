@@ -4,11 +4,12 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "NiagaraSystem.h"
 #include "FGDynamicStruct.h"
 #include "Engine/StaticMesh.h"
 #include "GameFramework/Actor.h"
 #include "Math/GenericOctree.h"
-#include "UI/FGDebugOverlayWidget.h"
+#include "Subsystems/WorldSubsystem.h"
 #include "FGRainOcclusionActor.generated.h"
 
 class UNiagaraComponent;
@@ -304,6 +305,16 @@ class FACTORYGAME_API AFGRainActor : public AActor
 	AFGRainActor();
 	
 public:
-	UPROPERTY()
+	virtual void Tick(float DeltaSeconds) override;
+	void SpawnParticleSystem(float Intensity);
+	
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UNiagaraComponent> mRainComponent = nullptr;
+		
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UNiagaraSystem> mSystem = nullptr;
+
+	void UpdateIntensity(float NewValue);
+	
+	float DesiredIntensity = 0;
 };

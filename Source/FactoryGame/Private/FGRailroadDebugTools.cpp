@@ -8,7 +8,6 @@ void FGRailroadDebugWindowBase::OnSelectedSubsystemChanged(){ }
 void FGRailroadDebugWindowTrainBase::SetSelectedTrain(int32 index){ }
 AFGTrain* FGRailroadDebugWindowTrainBase::SelectTrainUI(AFGRailroadSubsystem* subsystem){ return nullptr; }
 void FGRailroadDebugWindowTrainBase::DrawWindow(float dt){ }
-void FGRailroadDebugWindowTrainBase::DrawContent(float dt, AFGRailroadSubsystem* subsystem, AFGTrain* train){ }
 void FGRailroadDebugWindowTrainBase::OnSelectedSubsystemChanged(){ FGRailroadDebugWindowBase::OnSelectedSubsystemChanged(); }
 void FGRailroadDebugWindowTrainBase::OnSelectedTrainChanged(){ }
 void FGRailroadDebugWindowTrain::DrawContent(float dt, AFGRailroadSubsystem* subsystem, AFGTrain* train){ }

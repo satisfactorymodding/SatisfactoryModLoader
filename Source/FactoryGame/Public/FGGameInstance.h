@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "EnhancedInputSubsystems.h"
 #include "FactoryGame.h"
 #include "Engine/GameInstance.h"
 #include "Online/FGOnlineHelpers.h"
@@ -15,7 +14,6 @@
 #include "Online/Sessions.h"
 #include "FGGameInstance.generated.h"
 
-class UOnlineIntegrationBackend;
 class FWidgetPath;
 // <FL> ZimmermannA For usage outside of game instance
 extern TAutoConsoleVariable< bool > CVarForceMouseAndKeyboardDeviceType;
@@ -216,9 +214,6 @@ public:
 	/** @return OnlineSession class to use for this game instance  */
 	virtual TSubclassOf<UOnlineSession> GetOnlineSessionClass() override;
 	
-	/** Returns the telemetry instance, if analytics are disabled it returns nullptr. */
-	static class UDSTelemetry* GetTelemetryInstanceFromWorld( UWorld* world );
-	
 	// @todo: Move error functions to a "message bus" class	
 	/** Pushes a error to the game, that handles it appropriately */
 	void PushError( TSubclassOf<class UFGErrorMessage> errorMessage );
@@ -335,7 +330,7 @@ protected:
 	void SendRecievedNetworkErrorOnDelegate( UWorld* world, UNetDriver* driver, ENetworkFailure::Type errorType, const FString& errorMsg );
 	void SwitchActiveInput( EInputDeviceType deviceType );
 
-	void OnLastInputDeviceTypeChanged(EInputDeviceType deviceType);
+	void OnLastInputDeviceTypeChanged( EInputDeviceType deviceType, const FInputEvent& InputEvent );
 
 	/** Called to preload assets for this game instance */
 	void PreloadAssetsForGameInstance();
@@ -351,8 +346,6 @@ private:
 	void ShutdownGameAnalytics();
 
 	/** Telemetry */
-	bool InitTelemetry( const FString& gameID, const FString& buildID, const FString& onlinePlatformIdentifier, const FString& onlinePlatformUserID );
-	void ShutdownTelemetry();
 	void SubmitGameStartTelemetry() const;
 	UFUNCTION()
 	void SubmitNetModeTelemetry( UWorld* world ) const;
@@ -374,12 +367,6 @@ protected:
 
 	UPROPERTY( BlueprintAssignable )
 	FOnNetworkErrorRecieved mOnNetworkErrorRecieved;
-	
-	///** Main telemetry instance, nullptr if telemetry is turned off by the player, class not defined if telemetry is disabled for a build. */
-	class UDSTelemetry* mTelemetryInstance;
-
-	UPROPERTY( Transient )
-	TObjectPtr<UObject> mTelemetryInstanceObject;
 	
 	/** List of errors that we should pop */
 	UPROPERTY()
@@ -482,7 +469,7 @@ private:
 						 const TSharedPtr< SWidget >& NewFocusedWidget );
 
 	//<FL> [BGR] Handling for console Suspend/Resume state switches
-#if( defined( PLATFORM_PS5 ) && PLATFORM_PS5 ) || ( defined( PLATFORM_XSX ) && 0 )
+#if( defined( PLATFORM_PS5 ) && PLATFORM_PS5 ) || ( defined( PLATFORM_XSX ) && PLATFORM_XSX )
 	void HandleAppSuspend();
 	void HandleAppResume();
 #endif
@@ -497,8 +484,6 @@ private:
 
 	UFUNCTION()
 	void OnInputModeUpdated( FString cvar );
-	UFUNCTION()
-	void OnDynamicInputSwapUpdated( FString cvar );
 	UFUNCTION()
 	void OnControllerConnectionChanged( EInputDeviceConnectionState NewConnectionState, FPlatformUserId UserID, FInputDeviceId InputDeviceId );
 	UFUNCTION()

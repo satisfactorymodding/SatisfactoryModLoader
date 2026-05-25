@@ -15,8 +15,6 @@
 #include "FGLocalizationSettings.h"
 #include "FGBlueprintFunctionLibrary.generated.h"
 
-class IFGAimAssistClient;
-class USessionMemberInformation;
 struct FSplinePointData;
 typedef UE::Online::FAccountId FAccountId;
 
@@ -976,7 +974,7 @@ public:
 	UFUNCTION( BlueprintCallable )
 	static void BlockUserOn( UOnlineUserInfo* BlockingUser, UOnlineUserInfo* UserToBlock, EBlockBackendTarget BackendTarget,
 							 FOnBlockOverlayClosed  OnPopupClosed);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION( BlueprintCallable )
 	static void BlockOfflineUserOn(UOnlineUserInfo* BlockingUser, FCachedPlayerInfo UserToBlock, EBlockBackendTarget BackendTarget, FOnBlockOverlayClosed OnPopupClosed);
 	static void BlockUserByAccountIdOn(UOnlineUserBackendLink* blockingBackendLink, FAccountId AccountToBlock, FOnBlockOverlayClosed OnPopupClosed);
 	 

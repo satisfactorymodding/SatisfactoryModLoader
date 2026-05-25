@@ -72,6 +72,7 @@ class FACTORYGAME_API AFGResourceNode : public AFGResourceNodeBase
 public:
 	AFGResourceNode();
 
+	void UpdateCanPlacePortableMiner();
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	// End AActor interface
@@ -155,6 +156,8 @@ protected:
 
 	/** Called when a resource is extracted. Never called on infinite resource nodes. */
 	virtual void UpdateRadioactivity();
+
+	virtual void OnRep_ResourceClassOverride() override;
 
 private:
 	/** How pure the resource is */

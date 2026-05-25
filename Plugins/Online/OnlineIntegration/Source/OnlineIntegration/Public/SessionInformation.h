@@ -171,7 +171,7 @@ protected:
 	ECommonSessionJoinPolicy JoinPolicy;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, FieldNotify)
-	int32 NumMaxConnections = 0;
+	int32 NumMaxConnections;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, FieldNotify)
 	FDateTime LastUpdateTimestampUtc;

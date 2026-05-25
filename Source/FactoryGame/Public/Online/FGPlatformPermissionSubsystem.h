@@ -182,7 +182,7 @@ class FACTORYGAME_API UFGPlatformPermissionSubsystem : public ULocalPlayerSubsys
 	UPROPERTY()
 	TArray<FUserHasPremiumAccountDelegate> mPremiumPollCompleteDelegates;
 
-	struct CrossplayTextPermissionResult
+	struct CrossplayPermissionResult
 	{
 		bool isFriendTextAllowed;
 		bool isAnonymousTextAllowed;
@@ -194,12 +194,19 @@ class FACTORYGAME_API UFGPlatformPermissionSubsystem : public ULocalPlayerSubsys
 	// Contains general permissions like crossplay, ugc, text communication
 	FGenericPermissionMap mLocalUserPermissionMap;
 	// Used to fill in the crossplay permission for ps5 users in the mPermissionMapCache
-	TOptional<CrossplayTextPermissionResult> mCrossplayTextPermission;
+	TOptional<CrossplayPermissionResult> mCrossplayTextPermission;
+	// Used to fill in the UGC permission for ps5 users in the mPermissionMapCache
+	TOptional<CrossplayPermissionResult > mCrossplayUGCPermission;
 
 	////////////////
 	// Functions to retrieve permissions or privileges
 	////////////////
-	void RetrieveCrossplayTextPermission(TOptional<CrossplayTextPermissionResult>& permissionResult) const;
+
+	#if defined(PLATFORM_XSX) && PLATFORM_XSX
+	void RetrieveCrossplayPermission_XSX( TOptional< CrossplayPermissionResult >& buffer, XblPermission permission ) const;
+	#endif
+	void RetrieveCrossplayPermissions( TOptional< CrossplayPermissionResult >& textCommunicationResult,
+										  TOptional< CrossplayPermissionResult >& ugcVisibilityResult ) const;
 	void PollUserPrivilege(const EUserPrivilege& PrivilegeToQuery, FOnPrivilegeQueryDone Callback);
 	void UpdateBindingsAndPrivileges(UWorld* world);
 	void UpdatePrivileges();
@@ -228,6 +235,14 @@ class FACTORYGAME_API UFGPlatformPermissionSubsystem : public ULocalPlayerSubsys
 
 	UFUNCTION()
 	void OnBackendLoginStatusChanged(ECommonUserLoginStatus loginStatus);
+
+
+	UFUNCTION()
+	// This seems random, but on consoles a virtual keyboard open often causes applications to lose focus. If a focus loss occured due to
+	// an open virtual keyboard we don't want to trigger the usual application refocus permission requery
+	void OnVirtualKeyboardWasOpened();
+	
+
 	////////////////
 	// ~Delegate bindings
 	////////////////
@@ -251,4 +266,6 @@ class FACTORYGAME_API UFGPlatformPermissionSubsystem : public ULocalPlayerSubsys
 									= FOnShowStoreUIClosedDelegate() ) const;
 
 	TWeakObjectPtr<AFGGameState> CurrentGameState;
+
+	bool bSuppressRequeryOnNextReactivate = false;
 };

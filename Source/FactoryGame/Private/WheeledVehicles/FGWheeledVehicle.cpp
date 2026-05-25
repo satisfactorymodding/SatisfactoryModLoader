@@ -90,6 +90,7 @@ AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 void AFGWheeledVehicle::BeginPlay(){ Super::BeginPlay(); }
 void AFGWheeledVehicle::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGWheeledVehicle::Tick(float dt){ Super::Tick(dt); }
+void AFGWheeledVehicle::Destroyed(){ Super::Destroyed(); }
 void AFGWheeledVehicle::NotifyControllerChanged(){ Super::NotifyControllerChanged(); }
 bool AFGWheeledVehicle::DriverEnter(AFGCharacterPlayer* driver){ return bool(); }
 void AFGWheeledVehicle::LeavesVehicle(){ }
@@ -124,6 +125,7 @@ void AFGWheeledVehicle::OnRelevantToNearbyPlayersChanged(){ Super::OnRelevantToN
 void AFGWheeledVehicle::SetCustomizationData_Native(const FFactoryCustomizationData& customizationData, bool skipCombine){ Super::SetCustomizationData_Native(customizationData, skipCombine); }
 void AFGWheeledVehicle::GetVehicleLocationAndRotation(FVector& OutVehicleLocation, FRotator& OutVehicleRotation) const{ Super::GetVehicleLocationAndRotation(OutVehicleLocation, OutVehicleRotation); }
 FBox AFGWheeledVehicle::GetVehicleBoundingBox() const{ return Super::GetVehicleBoundingBox(); }
+bool AFGWheeledVehicle::ShouldDestroyVehicleOnContact(const TSubclassOf<UFGDamageType>& gameDamageTypeClass) const{ return Super::ShouldDestroyVehicleOnContact(gameDamageTypeClass); }
 void AFGWheeledVehicle::TickPendingVehicleCollisions(float dt){ }
 void AFGWheeledVehicle::UpdateManualDockingTargetStation(){ }
 void AFGWheeledVehicle::TickClientMovementReplication(float deltaTime){ }

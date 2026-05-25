@@ -906,7 +906,10 @@ class FACTORYGAME_API UFGCDDockingStationInvalidDockingPathNodeElevation : publi
 {
 	GENERATED_BODY()
 
-	UFGCDDockingStationInvalidDockingPathNodeElevation() { mDisqfualifyingText = INVTEXT("Invalid Docking Node elevation"); }
+	UFGCDDockingStationInvalidDockingPathNodeElevation()
+	{
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Vehicles/InvalidDockingNodeElevation" );
+	}
 };
 
 UCLASS()
@@ -914,7 +917,10 @@ class FACTORYGAME_API UFGCDIncompatibleVehiclePathSegment : public UFGConstructD
 {
 	GENERATED_BODY()
 
-	UFGCDIncompatibleVehiclePathSegment() { mDisqfualifyingText = INVTEXT("Incompatible Vehicle Path type!"); }
+	UFGCDIncompatibleVehiclePathSegment()
+	{
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Vehicles/IncompatiblePath" );
+	}
 };
 
 

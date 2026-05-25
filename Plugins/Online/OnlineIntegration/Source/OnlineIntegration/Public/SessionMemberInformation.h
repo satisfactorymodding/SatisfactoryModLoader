@@ -22,11 +22,13 @@ class ONLINEINTEGRATION_API USessionMemberInformation : public UMVVMViewModelBas
 	friend class USessionInformation;
 public:
 
+	UFUNCTION(BlueprintCallable)
 	APlayerState* GetPlayerState() const
 	{
 		return PlayerState;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	UOnlineUserInfo* GetOnlineUserInfo() const
 	{
 		return OnlineUserInfo;

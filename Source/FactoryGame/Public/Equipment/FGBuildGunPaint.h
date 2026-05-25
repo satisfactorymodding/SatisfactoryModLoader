@@ -187,6 +187,9 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|BuildGunPaint" )
 	FOnCustomizeFilterChanged OnCustomizeFilterChanged;
 
+	// Max number of orientations, this is a little rough as we might want it per pattern. But generally we will never want more that 4
+	static const uint8 mNumPatternOrientations = 4;
+
 private:
 	/** Duplicate component for preview actor */
 	template< typename T >
@@ -242,8 +245,6 @@ private:
 	UPROPERTY()
 	uint8 mPatternRotation;
 
-	// Max number of orientations, this is a little rough as we might want it per pattern. But generally we will never want more that 4
-	const uint8 mNumPatternOrientations = 4;
 
 	bool mHitCanApplySwatch;
 	bool mHitCanApplyPattern;

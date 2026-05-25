@@ -32,9 +32,11 @@ void UCommonSessionSubsystem::JoinStartupSession(ULocalUserInfo* LocalUserInfo, 
 const TArray<FNetDriverDefinition>& UCommonSessionSubsystem::GetDefaultNetDriverDefinitions() const{ return *(new TArray<FNetDriverDefinition>); }
 void UCommonSessionSubsystem::SetPendingJoinRequest(const UE::Online::FUISessionJoinRequested& JoinRequest,	UOnlineIntegrationBackend*){ }
 bool UCommonSessionSubsystem::HasPendingJoinRequest() const{ return false; }
+void UCommonSessionSubsystem::ResetPendingJoinRequest(){ }
 void UCommonSessionSubsystem::ResetSessions(){ }
 TOptional<UE::Online::FUISessionJoinRequested> UCommonSessionSubsystem::GetPendingJoinRequest(){ return TOptional<UE::Online::FUISessionJoinRequested>(); }
 UOnlineIntegrationBackend* UCommonSessionSubsystem::GetPendingJoinRequestBackend(){ return nullptr; }
+void UCommonSessionSubsystem::OnFindFriendSessionFromProtocolCompleted(int32 userNum, bool success, const TArray<FOnlineSessionSearchResult>& result){ }
 void UCommonSessionSubsystem::RegisterSessionBackendMapping(UE::Online::FOnlineSessionId OnlineSessionId, UOnlineSessionBackendLink* SessionBackend){ }
 TFuture<USessionInformation*> UCommonSessionSubsystem::ResolveOnlineSession(ULocalUserInfo* LocalUser, UOnlineSessionBackendLink* BackendLink, TArray<FName> IgnorePlatformBackends, bool bForceSessionRequery, bool bSupressErrorDispatcher){ return TFuture<USessionInformation*>(); }
 TFuture<USessionInformation*> UCommonSessionSubsystem::ResolveOnlineSession(ULocalUserInfo* LocalUser, UE::Online::FOnlineSessionId SessionId, TArray<FName> IgnorePlatformBackends, bool bForceSessionRequery, bool bSupressErrorDispatcher){ return TFuture<USessionInformation*>(); }
@@ -43,6 +45,7 @@ UOnlineSessionBackendLink* UCommonSessionSubsystem::CreateSessionBackendLink(UE:
 UOnlineSessionBackendLink* UCommonSessionSubsystem::FindSessionBackendLink(UE::Online::FOnlineSessionId SessionId){ return nullptr; }
 USessionInformation* UCommonSessionSubsystem::GetOnlineSessionInfo(UE::Online::FOnlineSessionId SessionId){ return nullptr; }
 void UCommonSessionSubsystem::EnqueueSessionDataUpdate(USessionInformation* SessionInfo){ }
+void UCommonSessionSubsystem::OnProtocolActivationReceived(const FString& protocolUri, FPlatformUserId id){ }
 void UCommonSessionSubsystem::Tick(float DeltaTime){ }
 bool UCommonSessionSubsystem::IsTickable() const{ return bool(); }
 TStatId UCommonSessionSubsystem::GetStatId() const{ return TStatId(); }

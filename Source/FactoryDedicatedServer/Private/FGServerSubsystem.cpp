@@ -19,6 +19,7 @@ bool UFGServerSubsystem::IsServerClaimed() const{ return bool(); }
 void UFGServerSubsystem::ClaimServer(const FString& ServerName, const FString& AdminPassword) const{ }
 void UFGServerSubsystem::SetServerName(const FString& ServerName) const{ }
 void UFGServerSubsystem::SetAutoLoadSessionName(const FString& SessionName) const{ }
+void UFGServerSubsystem::SetAgreeToCrashUploadRequested(bool AgreeToCrashUploadRequested) const{ }
 void UFGServerSubsystem::SetAdminPassword(const FString& PlainTextPassword) const{ }
 void UFGServerSubsystem::SetClientPassword(const FString& PlainTextPassword) const{ }
 EPrivilegeLevel UFGServerSubsystem::CheckPasswordInUse(const FString& PlainTextPassword, EPrivilegeLevel IgnoredPrivilegeLevel) const{ return EPrivilegeLevel(); }
@@ -35,6 +36,7 @@ void UFGServerSubsystem::SetServerFlag(EServerFlags ServerFlags){ }
 void UFGServerSubsystem::ClearServerFlag(EServerFlags ServerFlags){ }
 void UFGServerSubsystem::IncrementSubStateVersion(EServerSubStateId ServerSubStateId){ }
 FString UFGServerSubsystem::GetAutoLoadSessionName() const{ return FString(); }
+bool UFGServerSubsystem::GetAgreeToCrashUploadRequested() const{ return bool(); }
 FServerGameState UFGServerSubsystem::GetServerGameState() const{ return FServerGameState(); }
 FFGGeneratedCertificateData UFGServerSubsystem::GetCertificateData() const{ return FFGGeneratedCertificateData(); }
 bool UFGServerSubsystem::CanReclaimSocket() const{ return bool(); }

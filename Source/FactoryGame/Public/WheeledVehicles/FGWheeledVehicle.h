@@ -32,6 +32,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 	virtual void Tick( float dt ) override;
+	virtual void Destroyed() override;
 	virtual void NotifyControllerChanged() override;
 	// End AActor interface
 
@@ -48,6 +49,7 @@ public:
 	virtual void SetCustomizationData_Native(const FFactoryCustomizationData& customizationData, bool skipCombine = false) override;
 	virtual void GetVehicleLocationAndRotation(FVector& OutVehicleLocation, FRotator& OutVehicleRotation) const override;
 	virtual FBox GetVehicleBoundingBox() const override;
+	virtual bool ShouldDestroyVehicleOnContact(const TSubclassOf<UFGDamageType>& gameDamageTypeClass) const override;
 	// End ADriveablePawn interface
 
 	// Begin IFGSignificanceInterface

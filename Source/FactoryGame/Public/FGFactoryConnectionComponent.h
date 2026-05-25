@@ -142,6 +142,9 @@ public:
 	/** Return the connectors world normal. */
 	FVector GetConnectorNormal() const { return GetComponentRotation().Vector(); }
 
+	/** Returns true if this connection belongs to a vertical lift attachment port */
+	bool IsConnectionVertical() const;
+
 	/**
 	 * Check this connection has a output
 	 * @param type - Optionally check the type of the output, nullptr for any.

@@ -47,3 +47,4 @@ void AFGSignSubsystem::UpdatePresetMaterialInstance(uint32 GUID, const TFunction
 void AFGSignSubsystem::ResolveRemoved(AFGBuildableWidgetSign* Sign, uint32 GUID){ }
 void AFGSignSubsystem::UpdateRelevancy(){ }
 UWidgetComponent* AFGSignSubsystem::GetWidgetByGUID(uint32 GUID){ return nullptr; }
+void AFGSignSubsystem::OnPlayerPermissionsUpdated(){ }

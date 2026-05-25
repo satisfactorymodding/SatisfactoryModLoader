@@ -433,14 +433,14 @@ protected:
 	void OnTrainsCollided( class AFGTrain* first, class AFGTrain* second );
 	
 private:
-	/** Called when world has begun play, before the first tick. */
-	void PostLoadGameWarmup();
-	
 	void TickTrackGraphs( float dt );
 	void TickPendingCollisions();
 	void TickBlockVisualization();
 
 	void PurgeInvalidStationsFromTimeTables();
+	
+	/** Clears out any third rail connections that are not referenced by any track graph, used to fix a bug with old saves where these have leaked. */
+	void CleanupThirdRailConnections( UWorld* world, ELevelTick tickType, float deltaSeconds );
 
 	/** Simple hit result struct for the custom train collisions. */
 	struct FRailroadHitResult
@@ -528,6 +528,8 @@ private:
 	int32 CreateTrackGraph();
 	/** Remove track graph. */
 	void RemoveTrackGraph( int32 graphID );
+	/** Create and setup the third rail for a track graph. */
+	void CreateThirdRail( int32 graphID );
 
 	/** Adds a track to a graph, performs a merge if the track is connected to another graph. */
 	void AddTrackToGraph( class AFGBuildableRailroadTrack* track, int32 graphID );
@@ -540,7 +542,7 @@ private:
 
 	/** Get a new UID for a track graph. */
 	int32 GenerateUniqueTrackGraphID();
-	
+
 public:
 	/**
 	 * How far apart can trains connect to each other.

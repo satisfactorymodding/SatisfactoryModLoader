@@ -58,7 +58,15 @@ public:
 
 	/** If this is checked, this damage type cannot be negated by anything on the player side, such as driving vehicles, having a god mode on, and so on. */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType" )
-	bool mPlayerIsAlwaysVulnerable;
+	bool mPlayerIsAlwaysVulnerable{false};
+
+	/** True if this damage type should immediately destroy vehicles upon contact (e.g. world perimeter damage) */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType" )
+	bool mDestroyVehicles{false};
+
+	/** True if remnants (e.g. indestructible drops) should be spawned at the world spawn, false to spawn them at the actors place of destruction */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType" )
+	bool mShouldSpawnRemnantsAtWorldSpawn{false};
 };
 
 UENUM()

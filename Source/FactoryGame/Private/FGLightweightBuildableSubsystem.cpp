@@ -118,7 +118,6 @@ AActor* AFGLightweightBuildableSubsystem::AddInstanceConverterInstigator(float r
 void AFGLightweightBuildableSubsystem::RemoveInstanceConverterInstigator(AActor* instigator){ }
 FInstanceToTemporaryBuildable* AFGLightweightBuildableSubsystem::FindOrSpawnBuildableForRuntimeData(TSubclassOf<AFGBuildable> buildableClass, FRuntimeBuildableInstanceData* runtimeData, int32 indexOfRunrtimeData, bool& out_DidSpawn){ return nullptr; }
 int32 AFGLightweightBuildableSubsystem::AddFromBuildable( AFGBuildable* buildable, AActor* buildEffectInstigator ,  AFGBlueprintProxy* blueprintProxy){ return int32(); }
-void AFGLightweightBuildableSubsystem::RemoveByBuildable( AFGBuildable* buildable){ }
 void AFGLightweightBuildableSubsystem::RemoveByInstanceIndex(TSubclassOf<  AFGBuildable > buildableClass, int32 instanceIndex){ }
 void AFGLightweightBuildableSubsystem::InvalidateRuntimeInstanceDataForIndex(TSubclassOf<AFGBuildable> buildableClass, int32 index){ }
 int32 AFGLightweightBuildableSubsystem::AddFromBuildableInstanceData(TSubclassOf< class AFGBuildable > buildableClass, FRuntimeBuildableInstanceData& buildableInstanceData, bool fromSaveData, int32 saveDataBuildableIndex, uint16 constructId, AActor* buildEffectInstigator, int32 blueprintBuildEffectIndex){ return int32(); }

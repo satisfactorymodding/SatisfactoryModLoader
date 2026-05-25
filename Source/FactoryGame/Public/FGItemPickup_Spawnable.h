@@ -83,6 +83,9 @@ public:
 	*/
 	static AFGItemPickup_Spawnable* CreateItemDrop( UFGInventoryComponent* inventoryComponent, UWorld* world, const FInventoryStack& item, const FVector& spawnLocation, const FRotator& spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None );
 
+	/** Drops all indestructible items from the inventory on the floor at the given location */
+	static void DropIndestructibleItems( UFGInventoryComponent* inventoryComponent, const FVector& spawnLocation, const TArray<AActor*>& ignoredActors );
+	
 	UFUNCTION()
 	void OnColorUpdated( int32 index );
 

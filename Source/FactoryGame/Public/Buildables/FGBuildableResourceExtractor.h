@@ -112,7 +112,7 @@ private:
 	TArray< TObjectPtr<class UFGPipeConnectionComponent> > mPipeOutputConnections;
 
 	/** Our output inventory, */
-	UPROPERTY( SaveGame )
+	UPROPERTY()
 	TObjectPtr<class UFGInventoryComponent> mOutputInventory;
 
 	//******* Begin Pipe Flow Output params *******/

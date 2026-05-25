@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "FGSaveInterface.h"
 #include "FGUnsafePawnRelocationInterface.h"
+#include "Input/FGBoundMappingContextHandle.h"
 #include "Replication/FGConditionalReplicationInterface.h"
 #include "FGDriveablePawn.generated.h"
 
@@ -208,7 +209,9 @@ protected:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
 	int32 mMappingContextPriority{1};
 
-	int32 mDisabledMappingContextPriority = INT32_MAX; //treat INT32_MAX as the unset default value
+	/** Priority of the disabled override we put on player input mapping context */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
+	int32 mDisabledMappingContextPriority{100};
 
 	/** Spring arm and camera components for the driver. */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Driveable" )
@@ -225,6 +228,9 @@ protected:
 
 	UPROPERTY( SaveGame )
 	bool mIsInUnsafeLoadLocation;
+
+	FBoundMappingContextHandle mMappingContextHandle;
+	FBoundMappingContextHandle mDisabledMappingContextHandle;
 	
 private:
 	/** If another driver is about to enter this vehicle. Used to not shutdown/startup the */

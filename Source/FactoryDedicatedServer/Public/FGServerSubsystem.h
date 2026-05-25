@@ -79,6 +79,8 @@ public:
 	/** Updates the name of the session to automatically load on server start and writes it to the server settings */
 	void SetAutoLoadSessionName( const FString& SessionName ) const;
 
+	void SetAgreeToCrashUploadRequested( bool AgreeToCrashUploadRequested ) const;
+
 	/** Updates admin password the server has set. This will automatically invalidate all admin tokens */
 	void SetAdminPassword( const FString& PlainTextPassword ) const;
 
@@ -134,6 +136,7 @@ public:
 	FORCEINLINE float GetAverageTickRate() const { return mAverageTickRate; }
 
 	FString GetAutoLoadSessionName() const;
+	bool GetAgreeToCrashUploadRequested() const;
 	FServerGameState GetServerGameState() const;
 	FFGGeneratedCertificateData GetCertificateData() const;
 

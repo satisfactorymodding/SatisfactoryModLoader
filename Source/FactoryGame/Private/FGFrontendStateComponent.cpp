@@ -19,3 +19,6 @@ void UFGFrontendStateComponent::TryShowMainScreen(){ }
 void UFGFrontendStateComponent::ShowUGCCommRestrictionDialog(){  }
 void UFGFrontendStateComponent::HandleAppResume(){  }
 void UFGFrontendStateComponent::HandleAppSuspend(){ }
+void UFGFrontendStateComponent::HandleProtocolActivationReceived(){ }
+bool UFGFrontendStateComponent::IsOnlineStateValidAndOnline(){ return false; }
+void UFGFrontendStateComponent::RecalibrateAfterAppResume(){ }

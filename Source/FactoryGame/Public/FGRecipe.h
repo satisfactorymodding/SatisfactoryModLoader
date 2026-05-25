@@ -8,7 +8,6 @@
 #include "Misc/DataValidation.h"
 #include "FGRecipe.generated.h"
 
-class UFGItemCategory;
 // A simple struct to expose a recipe amount pair to blueprints
 USTRUCT( BlueprintType )
 struct FRecipeAmountPair
@@ -125,7 +124,7 @@ public:
 	virtual FText GetDisplayName() const;
 	void GetProducedIn( TArray< TSubclassOf< UObject > >& out_producedIn ) const;
 	FORCEINLINE const TArray<FItemAmount>& GetProducts() const { return mProduct; }
-	FORCEINLINE const TArray<FItemAmount>& GetIngredients() const{ return mIngredients; }
+	FORCEINLINE const TArray<FItemAmount>& GetIngredients() const { return mIngredients; }
 	TArray<FItemAmount> GetIngredientsWithPartsCostMultiplier(const UObject* worldContext) const;
 	FORCEINLINE float GetManufacturingDuration() const { return mManufactoringDuration; }
 	FORCEINLINE float GetManualManufacturingDuration() const { return mManufactoringDuration * mManualManufacturingMultiplier; }

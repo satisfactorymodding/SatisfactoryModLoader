@@ -28,7 +28,10 @@ AFGSkySphere::AFGSkySphere() : Super() {
 	this->mSkyMeshComponent->SetMobility(EComponentMobility::Static);
 	this->mCurrentWeatherPreset = nullptr;
 	this->CurrentWeatherReaction = nullptr;
+	this->CurrentWeatherReactionClass = nullptr;
+	this->mCurrentWeatherState = EWeatherInterpState::EWeatherInterpState_Undefined;
 	this->mWeatherDurationMultiplier = 1.0;
+	this->mTimeUntilNextWeatherState = 0.0;
 	this->mRainOcclusionSceneCapture2DComponent = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("OcclusionSceneCapture"));
 	this->mRainOcclusionSceneCapture2DComponent->SetMobility(EComponentMobility::Movable);
 	this->mRainOcclusionRT = nullptr;

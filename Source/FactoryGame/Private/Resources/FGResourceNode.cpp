@@ -19,6 +19,8 @@ AFGResourceNode::AFGResourceNode() : Super() {
 	this->mCanPlaceResourceExtractor = true;
 	this->mExtractMultiplier = 1;
 }
+
+void AFGResourceNode::UpdateCanPlacePortableMiner(){ }
 void AFGResourceNode::BeginPlay(){ Super::BeginPlay(); }
 void AFGResourceNode::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGResourceNode::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
@@ -38,6 +40,7 @@ void AFGResourceNode::ExtractResourceAndGiveToPlayer(AFGCharacterPlayer* toPlaye
 int32 AFGResourceNode::GetNumResourcesPerExtract() const{ return int32(); }
 void AFGResourceNode::InitRadioactivity(){ }
 void AFGResourceNode::UpdateRadioactivity(){ }
+void AFGResourceNode::OnRep_ResourceClassOverride(){ Super::OnRep_ResourceClassOverride(); }
 void AFGResourceNode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGResourceNode, mPurityOverride);

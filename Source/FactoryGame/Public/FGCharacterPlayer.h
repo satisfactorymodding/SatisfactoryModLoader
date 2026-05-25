@@ -22,7 +22,6 @@
 #include "Online/CoreOnline.h"
 #include "FGCharacterPlayer.generated.h"
 
-class UNiagaraSystem;
 class AFGRainActor;
 class ULevelSequence;
 class AFGBuildablePortal;
@@ -351,6 +350,9 @@ struct FPlayerMappingContext
 
 	UPROPERTY( EditDefaultsOnly )
 	int32 Priority = 0;
+
+	// Transient, set when mapping context is bound
+	FBoundMappingContextHandle mBoundMappingContextHandle;
 };
 
 /**
@@ -1039,20 +1041,13 @@ public:
 	void NotifyOnToggleFlashlight();
 	
 	void Input_ToggleFly( const FInputActionValue& actionValue );
-	static void Cheat_ToggleFly();
+	void Cheat_ToggleFly();
 
 	void Input_ToggleGhostFly( const FInputActionValue& actionValue );
 
 	void Input_Teleport( const FInputActionValue& actionValue );
 	
 	void Input_CycleHyperTubeTravelDirection( const FInputActionValue& actionValue );
-	
-	/**
-	 * Binds the input context to the input subsystem owned by this local player
-	 * Will also apply additional associated mapping contexts on top with lower priority
-	 */
-	UFUNCTION( BlueprintCallable, Category = "Input" )
-	void SetMappingContextBound( UInputMappingContext* context, bool bind, int32 priority = 0 );
 
 	/** Revives the current player with full health. Needs to be called on the authority side */
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Player" )
@@ -2372,7 +2367,7 @@ private:
 
 	// Begin rain
 	UFUNCTION(BlueprintCallable)
-	void StartRainEffects( UNiagaraSystem* SystemType );
+	void StartRainEffects( UNiagaraSystem* SystemType, float DesiredIntensity );
 
 	UFUNCTION(BlueprintCallable)
 	void EndRainEffects();
@@ -2384,7 +2379,8 @@ private:
 	TObjectPtr<AFGRainActor> mRainActor = nullptr;
 
 	float UnderRainValue = 0;
-	
+
+	FBoundMappingContextHandle mIntroDropPodSequenceMappingContextHandle;
 public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsUnderRain = false;

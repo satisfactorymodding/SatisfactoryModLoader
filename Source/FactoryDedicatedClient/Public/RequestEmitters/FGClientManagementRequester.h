@@ -36,6 +36,9 @@ public:
 	FFGPendingClientRequest Request_SetAutoLoadSessionName( const FString& SessionName );
 
 	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "Administrator" )
+	FFGPendingClientRequest Request_SetAgreeToCrashUploadRequested( bool AgreeToCrashUploadRequested );
+	
+	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "Administrator" )
 	FFGPendingClientRequest Request_RunCommand( const FString& Command );
 
 	UFUNCTION( FGServerResponse )

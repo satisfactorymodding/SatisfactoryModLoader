@@ -42,6 +42,8 @@ private:
 	void BindActorRepresentationManager( class AFGActorRepresentationManager* representationManager );
 	void RemoveBindings();
 	
+	bool ActorRepresentationSatisfiesUGCVisibility( class UFGActorRepresentation* actorRepresentation );
+
 	UFUNCTION()
 	void OnActorRepresentationAdded( class UFGActorRepresentation* actorRepresentation );
 	void AddMapObject( class UFGActorRepresentation* actorRepresentation, bool addedAfterMapOpened );

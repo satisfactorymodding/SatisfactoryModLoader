@@ -80,11 +80,11 @@ void AFGRailroadSubsystem::Debug_VisualizeSignalReservations(){ }
 void AFGRailroadSubsystem::Debug_VisualizeTrackConnections(){ }
 void AFGRailroadSubsystem::ValidateAndFixupAllRailroadConnections(){ }
 void AFGRailroadSubsystem::Multicast_OnTrainsCollided_Implementation(class AFGTrain* first, class AFGTrain* second){ }
-void AFGRailroadSubsystem::PostLoadGameWarmup(){ }
 void AFGRailroadSubsystem::TickTrackGraphs(float dt){ }
 void AFGRailroadSubsystem::TickPendingCollisions(){ }
 void AFGRailroadSubsystem::TickBlockVisualization(){ }
 void AFGRailroadSubsystem::PurgeInvalidStationsFromTimeTables(){ }
+void AFGRailroadSubsystem::CleanupThirdRailConnections(UWorld* world, ELevelTick tickType, float deltaSeconds){ }
 AFGRailroadSubsystem::FRailroadHitResult AFGRailroadSubsystem::SolveVehicleCollisions( AFGTrain* forTrain,
 		 AFGRailroadVehicle* forVehicle,
 		FRailroadTrackPosition oldTrackPosition,
@@ -110,6 +110,7 @@ void AFGRailroadSubsystem::UpdateSimulationData( AFGTrain* train){ }
 void AFGRailroadSubsystem::MergeTrackGraphs(int32 first, int32 second){ }
 int32 AFGRailroadSubsystem::CreateTrackGraph(){ return int32(); }
 void AFGRailroadSubsystem::RemoveTrackGraph(int32 graphID){ }
+void AFGRailroadSubsystem::CreateThirdRail(int32 graphID){ }
 void AFGRailroadSubsystem::AddTrackToGraph( AFGBuildableRailroadTrack* track, int32 graphID){ }
 void AFGRailroadSubsystem::RemoveTrackFromGraph( AFGBuildableRailroadTrack* track){ }
 void AFGRailroadSubsystem::MarkGraphAsChanged(int32 graphID){ }

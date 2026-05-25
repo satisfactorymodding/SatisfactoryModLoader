@@ -57,6 +57,17 @@ AFGRainOcclusionActor::AFGRainOcclusionActor() : Super() {
 }
 AFGRainActor::AFGRainActor() : Super() {
 	this->mRainComponent = nullptr;
+	this->mSystem = nullptr;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 1.337;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }
+void AFGRainActor::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
+void AFGRainActor::SpawnParticleSystem(float Intensity){ }
+void AFGRainActor::UpdateIntensity(float NewValue){ }

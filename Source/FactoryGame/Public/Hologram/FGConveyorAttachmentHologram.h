@@ -52,6 +52,15 @@ protected:
 
 	void SnapToConnection( class UFGFactoryConnectionComponent* connectiontoSnapTo, class UFGFactoryConnectionComponent* myConnectionToSnapWith, FVector locationToDetermineSideIfAplicable );
 
+	/**
+	 * Searches nearby buildables for an unconnected factory connection whose height is within the snap threshold of the given location.
+	 * Used to snap lift attachments to matching port heights in the vertical plane (analogous to SnapLocationToGuidelines for horizontal belts).
+	 * @param location			The current world location to snap from.
+	 * @param excludedActor		Actor to ignore during the search (typically the lift being snapped onto).
+	 * @return					Snap result with mSnapLocation set to the adjusted world location, or mSuccessfulSnap=false if no candidate was found within range.
+	 */
+	FFGHologramGuidelineSnapResult SnapLocationToVerticalLiftGuideline( const FVector& location, const AActor* excludedActor ) const;
+
 public:
 	/** Name of the pass through input connection. */
 	static FName mInputConnection1;

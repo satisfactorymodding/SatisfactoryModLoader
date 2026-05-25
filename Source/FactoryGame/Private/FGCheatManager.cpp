@@ -228,6 +228,7 @@ void UFGCheatManager::Server_ForceFOWUpdate_Implementation(){  }
 void UFGCheatManager::ForceFOWUpdate(){  }
 void UFGCheatManager::Online_TriggerPresenceUpdate(){ }
 void UFGCheatManager::Online_DumpConnectionString(){ }
+void UFGCheatManager::Online_DebugPlayerInfoCache(){ }
 void UFGCheatManager::Server_Vehicle_FlipDrivenVehicle_Implementation( AFGWheeledVehicle* vehicle){ }
 void UFGCheatManager::Vehicle_FlipDrivenVehicle(){ }
 void UFGCheatManager::Vehicle_DumpInfoAboutLookedAtVehicle(){ }

@@ -94,6 +94,10 @@ struct FObjectSaveData
 
 	void Reset()
 	{
+		SaveVersion = FSaveCustomVersion::LatestVersion;
+		ShouldMigrateObjectRefsToPersistent = false;
+		ShouldSerializePerObjectVersionData = false;
+		PerObjectVersionData = FSaveObjectVersionData{};
 		Data.Reset();
 	}
 	

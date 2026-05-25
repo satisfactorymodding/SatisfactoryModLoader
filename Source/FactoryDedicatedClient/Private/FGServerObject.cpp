@@ -28,6 +28,7 @@ bool UFGServerObject::Join(){ return bool(); }
 void UFGServerObject::PromptChangeServerName(){ }
 void UFGServerObject::ChangeServerName(const FString& NewServerName){ }
 void UFGServerObject::SetAutoLoadSessionName(const FString& SessionName){ }
+void UFGServerObject::SetAgreeToCrashUploadRequested(bool AgreeToCrashUploadRequested){ }
 void UFGServerObject::ChangeClientPassword(){ }
 void UFGServerObject::ChangeAdminPassword(){ }
 void UFGServerObject::FetchGameState(){ }

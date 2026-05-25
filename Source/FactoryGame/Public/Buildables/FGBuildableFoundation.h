@@ -13,9 +13,14 @@ UCLASS(Abstract)
 class FACTORYGAME_API AFGBuildableFoundation : public AFGBuildableFactoryBuilding
 {
 	GENERATED_BODY()
+public:
+	// Begin IFGSaveGameInterface
+	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
+	// End IFGSaveGameInterface
+	
 protected:
 	AFGBuildableFoundation(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
+	
 public:
 	/** Width of the foundation. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Foundation" )

@@ -94,7 +94,11 @@ private:
 	void ShowUGCCommRestrictionDialog();
 	void HandleAppResume();
 	void HandleAppSuspend();
+	void HandleProtocolActivationReceived();
+	bool IsOnlineStateValidAndOnline();
 
+	UFUNCTION()
+	void RecalibrateAfterAppResume();
 	// </FL>
 
 	UPROPERTY()

@@ -134,10 +134,10 @@ struct FACTORYGAME_API FMappedSignData
 	
 	uint32 PresetGUID = 0;
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialInstanceDynamic> mMaterialInstance = nullptr;
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UWidgetComponent> mRootWidgetComponent = nullptr;
 	
 	FMappedSignData(UMaterialInstanceDynamic* InMaterial, UWidgetComponent* InWidget)
@@ -169,12 +169,11 @@ struct FACTORYGAME_API FMappedSignData
 	AFGBuildableWidgetSign* GetWidgetOwner() const					{ return Owners.IsValidIndex( 0 ) ? Owners[0] : nullptr; }
 	bool DoesContainSign(const AFGBuildableWidgetSign* Sign) const	{ return Owners.Contains( Sign); }
 	const TArray<AFGBuildableWidgetSign*>& GetOwnersConst()			{ return Owners; }
+	
 private:
 	/* First buildable will own the widget, must be modified through Add and Remove Owner. */
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<AFGBuildableWidgetSign>> Owners;
-
-
 };
 
 /**
@@ -240,6 +239,9 @@ public:
 
 	//<FL>[KonradA]
 	FORCEINLINE bool HasQueriedBlockedUsers() { return bHasQueriedBlockedUsers; };
+
+	UFUNCTION()
+	void OnPlayerPermissionsUpdated();
 	//</FL>
 private:
 	/** Tracks whether the subsystem is waiting for a sign data request is pending from the server. If so, no new requests will be issued */
@@ -247,9 +249,9 @@ private:
 	double mLastClientRequestTime;
 	double mPendingClientRequestTimeout = 5.0;
 
-	/** Array of every buildable. These are added from the signs begin play */
+	/** Set of every buildable. These are added from the signs begin play */
 	UPROPERTY()
-	TArray< TObjectPtr<AFGBuildableWidgetSign> > mAllWidgetSigns;
+	TSet< TObjectPtr<AFGBuildableWidgetSign> > mAllWidgetSigns;
 
 	/** The current list of signs that the player does not have the data for. These are sorted by distance to player so we always request those closest to us */
 	UPROPERTY()
@@ -260,7 +262,7 @@ private:
 	//UPROPERTY()
 	//TMap<uint32,FMappedSignData> mUniqueSignToRenderTargetSetup;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TArray<FMappedSignData> mUniqueSignToRenderTargetData; 
 
 	//////////////////////////////////////////////////////

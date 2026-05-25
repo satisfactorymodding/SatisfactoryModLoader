@@ -474,4 +474,7 @@ private:
 	
 	/** Handle for the vehicle path visualization when in build mode */
 	TSharedPtr<FVehiclePathVisualizationHandle> mVehiclePathVisualizationHandle;
+
+	/** Mapping context handle for the hologram input context */
+	FBoundMappingContextHandle mHologramMappingContextHandle;
 };

@@ -209,8 +209,6 @@ void AFGPlayerController::Input_HotbarShortcut7(const FInputActionValue& ActionV
 void AFGPlayerController::Input_HotbarShortcut8(const FInputActionValue& ActionValue){ }
 void AFGPlayerController::Input_HotbarShortcut9(const FInputActionValue& ActionValue){ }
 void AFGPlayerController::Input_HotbarShortcut10(const FInputActionValue& ActionValue){ }
-void AFGPlayerController::Input_CycleVisualizationMode_Started(const FInputActionValue& ActionValue){ }
-void AFGPlayerController::Input_CycleVisualizationMode_Completed(){ }
 void AFGPlayerController::Local_OnInputDeviceTypeChanged(EInputDeviceType newInputDeviceType){  }
 void AFGPlayerController::Input_HandheldRadialMenu_Started  (const FInputActionInstance& ActionInstance){ }
 void AFGPlayerController::Input_HandheldRadialMenu_Completed(const FInputActionInstance& ActionInstance){ }
@@ -247,8 +245,13 @@ void AFGPlayerController::Input_PhotoModeMoveSlower(const FInputActionValue& Act
 void AFGPlayerController::Input_PhotoModeToggleDecoupleCamera(const FInputActionValue& ActionValue){  }
 void AFGPlayerController::Input_ClipboardCopy(const FInputActionValue& actionValue){ }
 void AFGPlayerController::Input_ClipboardPaste(const FInputActionValue& actionValue){ }
-void AFGPlayerController::SetMappingContextBound(UInputMappingContext* context, bool bind, int32 priority){ }
-bool AFGPlayerController::GetPriorityOfAppliedMappingContext(UInputMappingContext* context, int32& out_priority){ return bool(); }
+void AFGPlayerController::ReevaluateMappingContextBindings(UInputMappingContext* context, FActiveMappingContextInfo& contextInfo){ }
+FBoundMappingContextHandle AFGPlayerController::BindMappingContextInternal(UInputMappingContext* context, int32 priority, bool bBindAsDisabled, UObject* ownerObject){ return FBoundMappingContextHandle(); }
+FBoundMappingContextHandle AFGPlayerController::BindMappingContext(UInputMappingContext* context, int32 priority, UObject* ownerObject){ return FBoundMappingContextHandle(); }
+FBoundMappingContextHandle AFGPlayerController::BindDisabledMappingContext(UInputMappingContext* context, int32 priority, UObject* ownerObject){ return FBoundMappingContextHandle(); }
+void AFGPlayerController::SetMappingContextBoundWithHandle(FBoundMappingContextHandle& mappingContextHandle, UInputMappingContext* context, bool bind, int32 priority, UObject* ownerObject){ }
+void AFGPlayerController::UnbindMappingContext(UInputMappingContext* context, FBoundMappingContextHandle& mappingContextHandle){ }
+void AFGPlayerController::UnbindAllMappingContextsByObject(UObject* ownerObject){ }
 void AFGPlayerController::BindToAction(const  UInputAction* action, ETriggerEvent triggerEvent, const FFGRuntimeInputActionDelegate& delegate){ }
 void AFGPlayerController::ClearActionBindingsForObject(UObject* object){ }
 void AFGPlayerController::CreateShortcutRadialMenu(TSubclassOf< UFGRecipe > RecipeClass, UFGBlueprintDescriptor* Blueprint){ }

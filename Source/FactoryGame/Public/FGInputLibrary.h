@@ -10,8 +10,6 @@
 #include "FGInputLibrary.generated.h"
 
 
-class UUserWidget;
-
 USTRUCT( BlueprintType )
 struct FFGKeyMapping
 {

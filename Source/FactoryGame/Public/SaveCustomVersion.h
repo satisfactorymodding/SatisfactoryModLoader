@@ -184,8 +184,15 @@ struct FACTORYGAME_API FSaveCustomVersion
 
 		// 2025-12-11: Treat Null online services Player Info Handles as valid, use INDEX_NONE to refer to invalid handles instead. Switched to int32 to refer to player info index
 		NewPlayerInfoHandleSerializationFormat,
+		
 		// 2025-12-12: Fix FPlayerInfoHandle serializing the data twice and not sticking to the old format in all cases
 		FixNewPlayerInfoHandleSerializationFormat,
+		
+		// 2026-04-12: Clamped the pattern rotation between 0-3. Foundations in blueprints need this to migrate on load.
+		FixedUpInvalidPatternRotationsBlueprintSupport,
+
+		// 2026-05-06: Fixed missing FICSIT materials. For saves that was created during 1.2 experimental
+		FixedMissingFICSITMaterials,
 		
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
@@ -211,6 +218,8 @@ struct FACTORYGAME_API FRuntimeBuildableInstanceDataVersion
 		AddedTypeSpecificData,
 		// 2025-09-26: Added BuiltBy info for leightweight buildables to make sure that things like foundations that are inherently lightweight dont violate sony TRC
 		AddedBuiltBy,
+		// 2026-03-19: Clamped the pattern rotation between 0-3. Any values over 3 were erroneously introduced and thus are wrapped to 0
+		FixedUpInvalidPatternRotations,
 		
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,

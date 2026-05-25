@@ -201,6 +201,9 @@ public:
 	/** Updates the name of the session that the server should automatically load on the start */
 	UFUNCTION( BlueprintCallable, Category = "Server" )
 	void SetAutoLoadSessionName( const FString& SessionName );
+
+	UFUNCTION( BlueprintCallable, Category = "Server" )
+	void SetAgreeToCrashUploadRequested( bool AgreeToCrashUploadRequested );
 	
 	/** Prompts the user to change the Client Password for the Server. The user must already have Administrator privileges. */
 	UFUNCTION( BlueprintCallable, Category = "Server" )
@@ -494,11 +497,7 @@ private:
 	/** The certificate that the server has presented and the player has agreed to trust */
 	UPROPERTY( SaveGame )
 	FFGServerCertificate mServerCertificate;
-
-	/** Ask for unattended crash upload consent once per server. */
-	UPROPERTY( SaveGame )
-	bool mAgreeToCrashUploadRequested;
-
+	
 	/** Current state of the server */
 	EServerState mServerState = EServerState::Offline;
 

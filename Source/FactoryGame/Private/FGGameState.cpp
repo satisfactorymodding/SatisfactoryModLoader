@@ -220,3 +220,4 @@ void AFGGameState::RemovePlayerStateFromLocalPlayerSession(APlayerState* playerS
 void AFGGameState::RegisterPlayer_OnPlayerPlatformInfoChanged(const FPlayerInfoHandle& playerInfoHandle){ }
 void AFGGameState::CachePlayerInfoAvatarImage_OnPlayerPlatformInfoChanged(const FPlayerInfoHandle& playerInfoHandle){ }
 void AFGGameState::CachePlayerInfoAvatarImageFromAvatarURL(const FCachedPlayerPlatformInfo& playerPlatformInfo) const{ }
+void AFGGameState::DebugPlayerInfoCache(){ }

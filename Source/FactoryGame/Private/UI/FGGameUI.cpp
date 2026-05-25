@@ -20,6 +20,7 @@ void UFGGameUI::AddPendingMessages(const TArray< UFGMessage* >& newMessages){ }
 void UFGGameUI::HandlePendingMessages(float InDeltaTime){ }
 void UFGGameUI::Native_HandlePauseGamePressed(){ }
 void UFGGameUI::SetPauseMenuOpen(bool isOpen){ }
+void UFGGameUI::SetPauseMenu(UFGUserWidget* widget){ }
 void UFGGameUI::AudioMessageFinishedPlayback(){ }
 AFGCharacterPlayer* UFGGameUI::GetFGCharacter(){ return nullptr; }
 void UFGGameUI::PlayAudioMessage(UFGMessage* message, TSubclassOf<UFGAudioMessage> messageClass){ }

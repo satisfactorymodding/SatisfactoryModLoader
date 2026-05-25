@@ -16,6 +16,7 @@
 #include "Replication/FGReplicationDependencyActorInterface.h"
 #include "PlayerCustomizationData.h"
 #include "Equipment/AimAssist/FGAimAssistClient.h"
+#include "Input/FGBoundMappingContextHandle.h"
 
 #include "FGEquipment.generated.h"
 
@@ -668,4 +669,7 @@ private:
 	
 	/** Whether or not the mapping contexts for this equipment are applied. */
 	bool mIsMappingContextApplied;
+
+	/** Handle for the mapping context bound for the equipment */
+	FBoundMappingContextHandle mMappingContextHandle;
 };

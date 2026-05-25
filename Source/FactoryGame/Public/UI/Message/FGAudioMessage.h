@@ -6,10 +6,10 @@
 #include "CoreMinimal.h"
 #include "AkGameplayTypes.h"
 #include "FGMessageBase.h"
+#include "Input/FGBoundMappingContextHandle.h"
 #include "FGAudioMessage.generated.h"
 
-struct FInputActionValue;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAudioMessageFinishedPlaying);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnAudioMessageFinishedPlaying );
 
 /** What is the priorty for this message. Not the same as message type since one kind of messag ecan have different priorities */
 UENUM( BlueprintType )
@@ -305,6 +305,8 @@ protected:
 	/** Mapping context which is applied when opening this audio message */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
 	TObjectPtr< class UInputMappingContext > mMappingContext;
+
+	FBoundMappingContextHandle mMappingContextHandle;
 	
 private:
 

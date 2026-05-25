@@ -833,5 +833,8 @@ private:
 	/** If the player have enabled creative mode for this game. This means they can change settings in advanced game settings menu */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CreativeModeEnabled )
 	bool mIsCreativeModeEnabled = false;
-	
+
+public:
+	UFUNCTION()
+	void DebugPlayerInfoCache();
 };

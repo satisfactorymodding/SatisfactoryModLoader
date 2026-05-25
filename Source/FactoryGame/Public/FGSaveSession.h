@@ -361,6 +361,9 @@ public:
 	/** Returns the unique identifier for this save. */
 	FORCEINLINE FString GetSaveIdentifier() { return mSaveHeader.SaveIdentifier; }
 
+	/** Returns the save header from the save game that was loaded last */
+	FORCEINLINE const FSaveHeader& GetLoadedSaveHeader() const { return mSaveHeader; }
+
 	/** Logs all Unresolved object references stored in the Destroyed Actors array */
 	void DumpUnresolvedDestroyedActors();
 

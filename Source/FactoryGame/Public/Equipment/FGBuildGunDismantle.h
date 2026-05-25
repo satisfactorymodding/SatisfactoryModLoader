@@ -143,6 +143,10 @@ public:
 	/** Give blueprint a chance to do effect when starting dismantle */
 	UFUNCTION( BlueprintImplementableEvent, Category = "BuildGunState" )
 	void OnStartDismantle();
+	
+	UFUNCTION()
+	void OnPendingLightweightRemoved( AActor* actor );
+	
 public:
 	/** Delegate for when the refunds used to preview dismantle refunds have been updated on local machine */
 	UPROPERTY( BlueprintAssignable, Category = "BuildGunState|Dismantle" )

@@ -12,6 +12,7 @@
 #include "FGPlayerControllerBase.h"
 #include "FGPlayerState.h"
 #include "PlayerPresenceState.h"
+#include "Input/FGBoundMappingContextHandle.h"
 #include "UI/Message/FGAudioMessage.h"
 #include "Online/PlayerInfoCache.h"
 
@@ -60,6 +61,28 @@ struct FClientRespawnPointInfo
 
 	UPROPERTY()
 	FLinearColor RespawnPointColor{FLinearColor::White};
+};
+
+struct FActiveMappingContextBinding
+{
+	int32 BoundPriority{0};
+	bool bBindAsDisabled{false};
+	FBoundMappingContextHandle Handle;
+	TWeakObjectPtr<UObject> OwningObject;
+};
+
+USTRUCT()
+struct FActiveMappingContextInfo
+{
+	GENERATED_BODY()
+
+	bool bIsCurrentlyBound{false};
+	int32 CurrentlyBoundPriority{0};
+	TArray<FActiveMappingContextBinding> Bindings;
+	bool bCachedLogicalMappingContexts{false};
+
+	UPROPERTY()
+	TArray<TObjectPtr<UInputMappingContext>> LogicalMappingContexts;
 };
 
 class UFGRecipe;
@@ -629,9 +652,6 @@ private:
 	virtual void Input_HotbarShortcut9( const FInputActionValue& ActionValue );
 	virtual void Input_HotbarShortcut10( const FInputActionValue& ActionValue );
 
-	void Input_CycleVisualizationMode_Started( const FInputActionValue& ActionValue );
-	void Input_CycleVisualizationMode_Completed();
-
 	/** Called when input device type is changed for the local player controller */
 	UFUNCTION()
 	void Local_OnInputDeviceTypeChanged(EInputDeviceType newInputDeviceType);
@@ -700,15 +720,41 @@ private:
 	virtual void Input_ClipboardCopy( const FInputActionValue& actionValue );
     virtual void Input_ClipboardPaste( const FInputActionValue& actionValue );
 
+	void ReevaluateMappingContextBindings( UInputMappingContext* context, FActiveMappingContextInfo& contextInfo );
+	FBoundMappingContextHandle BindMappingContextInternal( UInputMappingContext* context, int32 priority, bool bBindAsDisabled, UObject* ownerObject );
 public:
 	/**
-	 * Binds the input context to the input subsystem owned by this local player
-	 * Will also apply additional associated mapping contexts on top with lower priority
+	 * Requests the given mapping context to be bound. Returns a handle to the active binding.
+	 * Optionally, OwnerObject can be provided, and the binding will automatically be removed once the object is no longer valid.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
-	void SetMappingContextBound( UInputMappingContext* context, bool bind, int32 priority = 0 );
+	[[nodiscard]] FBoundMappingContextHandle BindMappingContext( UInputMappingContext* context, int32 priority = 0, UObject* ownerObject = nullptr );
 
-	bool GetPriorityOfAppliedMappingContext( UInputMappingContext* context, int32& out_priority );
+	/**
+	 * Requests the given mapping context to be unbound and disabled if it is currently bound.
+	 * Will prevent new bindings from mapping this context as long as the disabled binding is active and the disabled context priority is higher than the other priorities.
+	 * Optionally, OwnerObject can be provided, and the binding will automatically be removed once the object is no longer valid.
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	[[nodiscard]] FBoundMappingContextHandle BindDisabledMappingContext( UInputMappingContext* context, int32 priority = 0, UObject* ownerObject = nullptr );
+
+	/**
+	 * Works very similarly to old SetMappingContextBound, but will maintain the current state in handle object
+	 * and automatically unbind/rebind when necessary, and supports multiple parallel registrations.
+	 *
+	 * Keep in mind that this function assumes that once the context is bound, owner object and priority will not change across subsequent calls.
+	 * If you need to change the priority or the owner, you have to manually unbind the context first.
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void SetMappingContextBoundWithHandle( UPARAM(Ref) FBoundMappingContextHandle& mappingContextHandle, UInputMappingContext* context, bool bind, int32 priority = 0, UObject* ownerObject = nullptr );
+
+	/** Removes the previously bound mapping context by handle. Will also automatically reset the handle */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void UnbindMappingContext( UInputMappingContext* context, UPARAM(Ref) FBoundMappingContextHandle& mappingContextHandle );
+
+	/** Removes all mapping contexts previously bound by the given object */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void UnbindAllMappingContextsByObject( UObject* ownerObject );
 
 	/** Binds a specified delegate to an input action. Exists so actions can be bound in runtime for blueprints. */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
@@ -930,4 +976,16 @@ private:
 
 	/** Vehicle path visualization handle for when player wishes to have vehicle paths always visible */
 	TSharedPtr<FVehiclePathVisualizationHandle> mVehiclePathVisualizationHandle;
+
+	/** Currently bound (or explicitly unbound) mapping contexts with each binding request */
+	UPROPERTY()
+	TMap<TObjectPtr<UInputMappingContext>, FActiveMappingContextInfo> mActiveMappingContexts;
+
+	FBoundMappingContextHandle mDetachedCameraMappingContextHandle;
+	FBoundMappingContextHandle mPhotoModeMappingContextHandle;
+	FBoundMappingContextHandle mPortalMappingContextHandle;
+	FBoundMappingContextHandle mDeadMappingContextHandle;
+	FBoundMappingContextHandle mMapMarkerModeMappingContextHandle;
+	FBoundMappingContextHandle mPrimaryMappingContextHandle;
+	FBoundMappingContextHandle mChordsMappingContextHandle;
 };

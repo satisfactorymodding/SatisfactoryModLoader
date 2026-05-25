@@ -152,7 +152,11 @@ struct FACTORYGAME_API FElevatorFloorStopInfo
 		}
 	}
 
-	FORCEINLINE bool operator==( const FElevatorFloorStopInfo& other ) const { return this->FloorName.Equals( other.FloorName ) && this->IconId == other.IconId && this->IconColor == other.IconColor; }
+	FORCEINLINE bool operator==( const FElevatorFloorStopInfo& other ) const
+	{
+		return this->FloorName.Equals( other.FloorName ) && this->IconId == other.IconId && this->IconColor == other.IconColor
+			   && this->LastEditedBy == other.LastEditedBy;
+	}
 	FORCEINLINE bool operator!=( const FElevatorFloorStopInfo& other ) const { return !( *this == other); }
 	
 	UPROPERTY( BlueprintReadOnly, SaveGame )

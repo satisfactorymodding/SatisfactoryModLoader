@@ -57,7 +57,7 @@ protected:
 	AFGTrain* SelectTrainUI( AFGRailroadSubsystem* subsystem );
 
 	virtual void DrawWindow( float dt ) override final;
-	virtual void DrawContent( float dt, AFGRailroadSubsystem* subsystem, AFGTrain* train );
+	virtual void DrawContent( float dt, AFGRailroadSubsystem* subsystem, AFGTrain* train ) = 0;
 
 	virtual void OnSelectedSubsystemChanged() override;
 	virtual void OnSelectedTrainChanged();

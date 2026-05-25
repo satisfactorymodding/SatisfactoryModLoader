@@ -6,6 +6,8 @@
 #include "CoreMinimal.h"
 #include "Templates/SubclassOf.h"
 #include "UObject/NoExportTypes.h"
+#include "Online/PlayerInfoCache.h"
+
 #include "FGShoppingListObject.generated.h"
 
 /**
@@ -37,6 +39,11 @@ public:
 	UFUNCTION( BlueprintCallable )
 	void ClearAmount();
 
+	UFUNCTION(BlueprintCallable)
+	bool CanContainUGC() const { return Internal_CanContainUGC(); };
+	UFUNCTION(BlueprintCallable)
+	FPlayerInfoHandle GetLastEditedBy() const { return Internal_GetLastEditedBy(); }
+
 	virtual void Native_OnAmountUpdated();
 
 	virtual UObject* GetIdentifierObject() const;
@@ -44,6 +51,8 @@ public:
 
 protected:
 	virtual FText Internal_GetShoppingListName() const { return FText::GetEmpty(); }
+	virtual bool Internal_CanContainUGC() const { return false; }
+	virtual FPlayerInfoHandle Internal_GetLastEditedBy() const;
 	
 	int32 mAmount = 0;
 	
@@ -95,6 +104,8 @@ public:
 protected:
 	virtual FText Internal_GetShoppingListName() const override;
 	virtual void AddCost( TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost ) const override;
+	virtual bool Internal_CanContainUGC() const override;
+	virtual FPlayerInfoHandle Internal_GetLastEditedBy() const override;
 	
 	UPROPERTY( Transient, BlueprintReadOnly, Meta = ( ExposeOnSpawn = "true" ) )
 	TObjectPtr<UObject> mObject;

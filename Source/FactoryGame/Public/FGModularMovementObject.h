@@ -18,10 +18,10 @@ struct FACTORYGAME_API FGModularMovementDataContainer
 	virtual ~FGModularMovementDataContainer() = default;
 
 	/** Serializes this SavedMoveData to/from the specified archive. */
-	virtual void SerializeSavedMoveData( FArchive& ar );
+	virtual void SerializeSavedMoveData( FArchive& ar ) = 0;
 
 	/** Whether this saved move data can be combined with the specified saved move data. */
-	virtual bool CanCombineMove( const FGModularMovementDataContainer* OtherMove ) const;
+	virtual bool CanCombineMove( const FGModularMovementDataContainer* OtherMove ) const = 0;
 };
 
 /**
@@ -33,10 +33,10 @@ public:
 	virtual ~FGModularMovementDataFactoryBase() = default;
 
 	/** Creates a new modular movement data container object based on the movement mode data container type. */
-	virtual TUniquePtr< FGModularMovementDataContainer > CreateMoveData( const FGModularMovementDataContainer* CopyFrom = nullptr ) const;
+	virtual TUniquePtr< FGModularMovementDataContainer > CreateMoveData( const FGModularMovementDataContainer* CopyFrom = nullptr ) const = 0;
 
 	/** Copies data from one movement data container to another. */
-	virtual void CopyData( const FGModularMovementDataContainer* From, FGModularMovementDataContainer* To ) const;
+	virtual void CopyData( const FGModularMovementDataContainer* From, FGModularMovementDataContainer* To ) const = 0;
 };
 
 template< typename MoveDataContainerType >

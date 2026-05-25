@@ -135,6 +135,7 @@ public:
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
+	virtual void Destroyed() override;
 	virtual void Tick( float dt ) override;
 	virtual float TakeDamage( float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser ) override;
 	// End AActor interface
@@ -247,14 +248,6 @@ public:
 
 	/** Skel mesh for this vehicle **/
 	class USkeletalMeshComponent* GetMesh() const;
-
-	/** Health component for this vehicle */
-	UFUNCTION( BlueprintPure, Category = "Damage" )
-	class UFGHealthComponent* GetHealthComponent() const { return mHealthComponent; }
-
-	/** Is this vehicle destructible */
-	UFUNCTION( BlueprintPure, Category = "Damage" )
-	FORCEINLINE bool IsDestructible() const { return mIsDestructible; }
 	
 	// Begin ADriveablePawn interface
 
@@ -376,19 +369,6 @@ protected:
 	/** Updates the vehicles settings depending on if it should be simulated or "real" */
 	virtual void OnIsSimulatedChanged() {}
 
-	/** Notifies from our health component */
-	UFUNCTION()
-	virtual void OnTakeDamage( AActor* damagedActor, float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser );
-	UFUNCTION()
-	virtual void Died( AActor* thisActor );
-
-	/** We have taken damage */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Damage", meta = ( DisplayName = "OnTakeDamage" ) )
-	void NotifyOnTakeDamage( AActor* damagedActor, float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser );
-	/** We have died */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Damage", meta = ( DisplayName = "Died" ) )
-	void ReceiveDied( AActor* thisActor );
-
 	// Begin AFGDriveablePawn interface
 	virtual void OnDrivingStatusChanged() override;
 	// End AFGDriveablePawn interface
@@ -425,6 +405,8 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent )
 	void UpdateCamera( float DeltaTime );
 
+	/** Return true if vehicle should be allowed to be destroyed on the contact with the given vehicle type */
+	virtual bool ShouldDestroyVehicleOnContact( const TSubclassOf<UFGDamageType>& gameDamageTypeClass ) const;
 private:
 	/** Notifies from out mesh */
 	UFUNCTION()
@@ -462,10 +444,6 @@ protected:
 	/** The main skeletal mesh associated with this Vehicle */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Vehicle", meta = ( AllowPrivateAccess = "true" ) )
 	TObjectPtr<class USkeletalMeshComponent> mMesh;
-
-	/** Keeps track of our current health */
-	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Health" )
-	TObjectPtr<class UFGHealthComponent> mHealthComponent;
 
 	/** Keeps track of active DOT effects applied to us. */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
@@ -536,10 +514,6 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle|Sound" )
 	TObjectPtr<class UAkAudioEvent> mConstructSound;
 
-	/** Can this vehicle be destroyed by damage? */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	uint8 mIsDestructible : 1;
-
 	/** If true, then we are touching a water volume */
 	uint8 mTouchingWater:1;
 
@@ -561,10 +535,6 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	float mSubmergedLinearDamping;
 
-	/** Damage types that should be redirected to the driver. Damages here act as damage multipliers (i.e setting it to gas damage with 0.5 damage will x0.5 the incoming damages */
-	UPROPERTY( EditDefaultsOnly, Category= "Vehicle" )
-	TArray< TSubclassOf< UFGDamageType > > mDamageTypesRedirectedToDriver;
-	
 	/** How much to to multiply the jump pad force with. */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	float mJumpPadForceMultiplier;
@@ -604,7 +574,12 @@ protected:
 	/** Range after we disable simulation (remove collision) */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	float mSimulationDistance;
-	
+
+	/** Disable AFGVehicle DOTReceiverComponent management code that creates and destroys DOT when player enters/leaves the vehicle and lets derived class handle it instead */
+	bool mDisableVehicleDotManagement{false};
+
+	/** Damage type by which this vehicle has been destroyed (if destroyed by damage) */
+	TSubclassOf<UFGDamageType> mDestroyedByDamageType;
 public:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	TObjectPtr<class UTexture2D> mActorRepresentationTexture;

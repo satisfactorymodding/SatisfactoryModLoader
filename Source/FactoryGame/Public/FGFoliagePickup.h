@@ -82,6 +82,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Foliage" )
 	bool IsActive() const { return mIsAutoPickupActive; }
 
+	UFUNCTION( BlueprintCallable, Category = "Foliage" )
+	void TurnOffAutoPickupToggleUI();
+
 	bool IsTogglingOn() const { return mAutoPickupToggleUIState == EAutoPickupToggleUIState::TogglingOn; }
 
 	void ToggleAutoPickUp();

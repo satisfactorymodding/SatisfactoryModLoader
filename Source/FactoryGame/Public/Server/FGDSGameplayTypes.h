@@ -71,6 +71,9 @@ struct FACTORYGAME_API FServerGameState
 	/** Name of the session the most recent save of which will be automatically loaded by the server upon restart. */
 	UPROPERTY( BlueprintReadWrite, Category = "Server Game State" )
 	FString AutoLoadSessionName;
+
+	UPROPERTY( BlueprintReadWrite, Category = "Server Game State" )
+	bool AgreeToCrashUploadRequested;
 };
 
 /**

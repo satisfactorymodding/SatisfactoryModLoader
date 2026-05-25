@@ -14,6 +14,7 @@ AFGWeatherReaction::AFGWeatherReaction() : Super() {
 	this->PrimaryActorTick.bStartWithTickEnabled = false;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
+	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
 }
 void AFGWeatherReaction::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
