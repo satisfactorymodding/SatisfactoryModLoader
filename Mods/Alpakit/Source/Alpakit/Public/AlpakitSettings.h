@@ -45,7 +45,7 @@ public:
 
 ALPAKIT_API const TCHAR* LexToString(EAlpakitStartGameType StartGameType);
 
-UCLASS(config=Game)
+UCLASS(config=Alpakit)
 class ALPAKIT_API UAlpakitSettings : public UObject {
     GENERATED_BODY()
 public:
