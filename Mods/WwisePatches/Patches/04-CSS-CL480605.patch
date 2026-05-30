@@ -4,8 +4,8 @@ index 02742e8..0000000
 Binary files "a/Plugins/Wwise/Content/AnimNotify_AkEvent.uasset" and /dev/null differ
 diff --git "a/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs" "b/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs"
 index 6d6b9c8..a563cb5 100644
---- "a/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs"
-+++ "b/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs"
+--- a/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs
++++ b/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs
 @@ -137,6 +137,22 @@ public class AkAudio : ModuleRules
  			});
  		}
@@ -31,8 +31,8 @@ index 6d6b9c8..a563cb5 100644
  
 diff --git "a/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
 index 11dc656..943ea33 100644
---- "a/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-+++ "b/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h
 @@ -59,6 +59,18 @@ public:
  	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "AkAudioEvent")
  		float MaximumDuration = .0f;
@@ -76,8 +76,8 @@ index 11dc656..943ea33 100644
  
 diff --git "a/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h"
 index 120743d..72a149c 100644
---- "a/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h"
-+++ "b/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h"
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h
 @@ -19,6 +19,16 @@ Copyright (c) 2025 Audiokinetic Inc.
  	AkComponent.h:
  =============================================================================*/
@@ -173,8 +173,8 @@ index 120743d..72a149c 100644
  };
 diff --git "a/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h"
 index 146cd6d..89c6fa2 100644
---- "a/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h"
-+++ "b/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h"
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h
 @@ -144,6 +144,10 @@ public:
  	void SetRegisteredWithWwise(bool bInRegisteredWithWwise) { bIsRegisteredWithWwise = bInRegisteredWithWwise; }
  	bool IsRegisteredWithWwise() const { return bIsRegisteredWithWwise; }
@@ -188,8 +188,8 @@ index 146cd6d..89c6fa2 100644
  	bool bEventPosted;
 diff --git "a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h"
 index 2d901f4..a30c4e9 100644
---- "a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h"
-+++ "b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h"
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h
 @@ -93,12 +93,24 @@ public:
  	static class UAkComponent* GetOrCreateAkComponent(class USceneComponent* AttachToComponent, bool& ComponentCreated,
  		FName AttachPointName = NAME_None);
@@ -341,8 +341,8 @@ index 2d901f4..a30c4e9 100644
  	 */
 diff --git "a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h"
 index ae2eaf8..084ac9d 100644
---- "a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h"
-+++ "b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h"
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h
 @@ -1148,4 +1148,59 @@ struct AkDeviceAndWorld
  	AkDeviceAndWorld(const UObject* in_pWorldContextObject);
  
@@ -410,7 +410,7 @@ diff --git "b/Plugins/Wwise/Source/AkAudio/Classes/AkInstancedGeometryComponent.
 new file mode 100644
 index 0000000..d1aa8c6
 --- /dev/null
-+++ "b/Plugins/Wwise/Source/AkAudio/Classes/AkInstancedGeometryComponent.h"
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkInstancedGeometryComponent.h
 @@ -0,0 +1,158 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +
@@ -574,7 +574,7 @@ diff --git "b/Plugins/Wwise/Source/AkAudio/Classes/AkListenerComponent.h" "b/Plu
 new file mode 100644
 index 0000000..aac4f89
 --- /dev/null
-+++ "b/Plugins/Wwise/Source/AkAudio/Classes/AkListenerComponent.h"
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkListenerComponent.h
 @@ -0,0 +1,17 @@
 +#pragma once
 +
@@ -595,8 +595,8 @@ index 0000000..aac4f89
 +};
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp"
 index 0cad19f..024b1da 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp
 @@ -19,6 +19,9 @@ Copyright (c) 2025 Audiokinetic Inc.
  	AkAudioDevice.cpp: Audiokinetic Audio interface object.
  =============================================================================*/
@@ -921,8 +921,8 @@ index 0cad19f..024b1da 100644
 +// </CSS>
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp"
 index dc1be86..79c9a5a 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp
 @@ -47,6 +47,9 @@ Copyright (c) 2025 Audiokinetic Inc.
  #include "Wwise/WwiseResourceCooker.h"
  #endif
@@ -1150,8 +1150,8 @@ index dc1be86..79c9a5a 100644
  	{
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp"
 index aa2f574..719e1db 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp
 @@ -74,7 +74,6 @@ void UAkAudioInputComponent::PostUnregisterGameObject()
  	}
  	CurrentlyPlayingIDs.Empty();
@@ -1162,8 +1162,8 @@ index aa2f574..719e1db 100644
  	Super::Stop();
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp"
 index a95573b..f3cf900 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp
 @@ -353,4 +353,4 @@ void FAkAudioModule::ParseGeneratedSoundBankData()
  }
  #endif
@@ -1173,8 +1173,8 @@ index a95573b..f3cf900 100644
 +#undef LOCTEXT_NAMESPACE
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp"
 index ffe987a..0ced021 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp
 @@ -19,6 +19,12 @@ Copyright (c) 2025 Audiokinetic Inc.
  	AkComponent.cpp:
  =============================================================================*/
@@ -1368,8 +1368,8 @@ index ffe987a..0ced021 100644
 +//</CSS>
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp"
 index 0d347b7..cfd6b9d 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp
 @@ -27,6 +27,21 @@ Copyright (c) 2025 Audiokinetic Inc.
  #include "Wwise/WwiseRetriggerableAsyncTask.h"
  #include "UObject/UObjectThreadContext.h"
@@ -1470,8 +1470,8 @@ index 0d347b7..cfd6b9d 100644
  	}
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h" "b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h"
 index 55fb22f..21efd57 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h
 @@ -30,6 +30,11 @@ public:
  
  	bool HasExternalSources = false;
@@ -1486,8 +1486,8 @@ index 55fb22f..21efd57 100644
  	{}
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp"
 index b19bec6..74cc7e9 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp
 @@ -57,6 +57,25 @@ UAkGameplayStatics::UAkGameplayStatics(const class FObjectInitializer& ObjectIni
  	// Property initialization
  }
@@ -1755,8 +1755,8 @@ index b19bec6..74cc7e9 100644
  	FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp"
 index 1732c31..7e91af3 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp
 @@ -130,7 +130,6 @@ bool UAkGroupValue::SplitAssetName(FString& OutGroupName, FString& OutValueName)
  }
  
@@ -1769,7 +1769,7 @@ diff --git "b/Plugins/Wwise/Source/AkAudio/Private/AkInstancedGeometryComponent.
 new file mode 100644
 index 0000000..960250a
 --- /dev/null
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkInstancedGeometryComponent.cpp"
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkInstancedGeometryComponent.cpp
 @@ -0,0 +1,960 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +
@@ -2735,7 +2735,7 @@ diff --git "b/Plugins/Wwise/Source/AkAudio/Private/AkListenerComponent.cpp" "b/P
 new file mode 100644
 index 0000000..6c5ce13
 --- /dev/null
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkListenerComponent.cpp"
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkListenerComponent.cpp
 @@ -0,0 +1,26 @@
 +#include "AkListenerComponent.h"
 +#include "AkAudioDevice.h"
@@ -2766,8 +2766,8 @@ index 0000000..6c5ce13
 \ No newline at end of file
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp"
 index 29050ba..a50bc81 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp
 @@ -485,4 +485,4 @@ void FAkReverbDescriptor::UpdateAllRTPCs(const UAkRoomComponent* room) const
  			}
  		}
@@ -2777,8 +2777,8 @@ index 29050ba..a50bc81 100644
 +}
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp"
 index 65abdcf..8d42a60 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp
 @@ -181,4 +181,4 @@ void UAkSubmixInputComponent::GetChannelConfig(AkAudioFormat& AudioFormat)
  	default:
  		UE_LOG(LogAkAudio, Error, TEXT("AkSubmixInputComponent::GetChannelConfig (%s): Unknown number of channels (%" PRIu32 ")"), *GetOwner()->GetName(), SubmixListener->NumChannels);
@@ -2788,8 +2788,8 @@ index 65abdcf..8d42a60 100644
 +}
 diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp"
 index e3421d4..da3b52c 100644
---- "a/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp"
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp"
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp
 @@ -147,7 +147,8 @@ uint32 FAkWaapiClientConnectionHandler::Run()
  				{
  					if (LogOutputCount.GetValue() < 7)
@@ -2804,7 +2804,7 @@ diff --git "b/Plugins/Wwise/Source/AkAudio/Private/AnimNotify_AkEvent.cpp" "b/Pl
 new file mode 100644
 index 0000000..9365532
 --- /dev/null
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/AnimNotify_AkEvent.cpp"
++++ b/Plugins/Wwise/Source/AkAudio/Private/AnimNotify_AkEvent.cpp
 @@ -0,0 +1,58 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +//<CSS> We added this file, wwise provides a blueprint implementation that we replaced with a C++ one way back.
@@ -2868,7 +2868,7 @@ diff --git "b/Plugins/Wwise/Source/AkAudio/Private/Classes/AkAcousticTextureMult
 new file mode 100644
 index 0000000..4b2facc
 --- /dev/null
-+++ "b/Plugins/Wwise/Source/AkAudio/Private/Classes/AkAcousticTextureMultiSetComponent.cpp"
++++ b/Plugins/Wwise/Source/AkAudio/Private/Classes/AkAcousticTextureMultiSetComponent.cpp
 @@ -0,0 +1,206 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +
@@ -3078,8 +3078,8 @@ index 0000000..4b2facc
 +}
 diff --git "a/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h" "b/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h"
 index 54f73a9..2977d6b 100644
---- "a/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h"
-+++ "b/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h"
+--- a/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h
++++ b/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h
 @@ -19,6 +19,19 @@ Copyright (c) 2025 Audiokinetic Inc.
  	AkAudioDevice.h: Audiokinetic audio interface object.
  =============================================================================*/
@@ -3199,8 +3199,8 @@ index 54f73a9..2977d6b 100644
  	static TMap<uint32, EAkAudioContext> PlayingIDToAudioContextMap;
 diff --git "a/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h" "b/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h"
 index 565c99e..e6df157 100644
---- "a/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h"
-+++ "b/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h"
+--- a/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h
++++ b/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h
 @@ -31,20 +31,17 @@ struct AKAUDIO_API FAkCustomVersion
  		// Before any version changes were made in the plugin
  		BeforeCustomVersionWasAdded = 0,
@@ -3236,7 +3236,7 @@ diff --git "b/Plugins/Wwise/Source/AkAudio/Public/AnimNotify_AkEvent.h" "b/Plugi
 new file mode 100644
 index 0000000..c4992d2
 --- /dev/null
-+++ "b/Plugins/Wwise/Source/AkAudio/Public/AnimNotify_AkEvent.h"
++++ b/Plugins/Wwise/Source/AkAudio/Public/AnimNotify_AkEvent.h
 @@ -0,0 +1,32 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +//<CSS> We added this file, wwise provides a blueprint implementation that we replaced with a C++ one way back.
@@ -3274,7 +3274,7 @@ diff --git "b/Plugins/Wwise/Source/AkAudio/Public/Classes/AkAcousticTextureMulti
 new file mode 100644
 index 0000000..a87e381
 --- /dev/null
-+++ "b/Plugins/Wwise/Source/AkAudio/Public/Classes/AkAcousticTextureMultiSetComponent.h"
++++ b/Plugins/Wwise/Source/AkAudio/Public/Classes/AkAcousticTextureMultiSetComponent.h
 @@ -0,0 +1,78 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +
@@ -3356,8 +3356,8 @@ index 0000000..a87e381
 +};
 diff --git "a/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp" "b/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp"
 index cb04e10..7e3cd62 100644
---- "a/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp"
-+++ "b/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp"
+--- a/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp
++++ b/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp
 @@ -186,7 +186,8 @@ private:
  class FSlateShaderResource* AkAudioWaveformViewport::GetViewportRenderTargetTexture() const { return Texture; }
  
@@ -3370,8 +3370,8 @@ index cb04e10..7e3cd62 100644
  	if (NumChannels == 2)
 diff --git "a/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp" "b/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp"
 index 6b9ef16..02d4d89 100644
---- "a/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp"
-+++ "b/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp"
+--- a/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp
++++ b/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp
 @@ -48,4 +48,4 @@ void FWwiseConcurrencyModule::ShutdownModule()
  		Closing->CloseAndDelete();
  	}
@@ -3381,8 +3381,8 @@ index 6b9ef16..02d4d89 100644
 \ No newline at end of file
 diff --git "a/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileCache.cpp" "b/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileCache.cpp"
 index 569cb16..835d568 100644
---- "a/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileCache.cpp"
-+++ "b/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileCache.cpp"
+--- a/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileCache.cpp
++++ b/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileCache.cpp
 @@ -198,19 +198,26 @@ void FWwiseFileCacheHandle::CallDone(bool bResult, FWwiseFileOperationDone&& OnD
  
  void FWwiseFileCacheHandle::DeleteRequest(IAsyncReadRequest* Request)
@@ -3415,8 +3415,8 @@ index 569cb16..835d568 100644
  	delete Request;
 diff --git "a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp" "b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp"
 index 04b2385..f7ae34a 100644
---- "a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp"
-+++ "b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp"
+--- a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp
++++ b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp
 @@ -81,7 +81,8 @@ FWwiseResourceCooker* FWwiseResourceCookerModule::CreateCookerForPlatform(const
  					TargetPlatform ? *TargetPlatform->PlatformName() : TEXT("[nullptr]"),
  					TargetPlatform ? *TargetPlatform->IniPlatformName() : TEXT("[nullptr]"),
@@ -3429,8 +3429,8 @@ index 04b2385..f7ae34a 100644
  		}
 diff --git "a/Plugins/Wwise/Source/WwiseSoundEngine/Public/Wwise/PostSoundEngineInclude.h" "b/Plugins/Wwise/Source/WwiseSoundEngine/Public/Wwise/PostSoundEngineInclude.h"
 index fdb767c..b6b5b74 100644
---- "a/Plugins/Wwise/Source/WwiseSoundEngine/Public/Wwise/PostSoundEngineInclude.h"
-+++ "b/Plugins/Wwise/Source/WwiseSoundEngine/Public/Wwise/PostSoundEngineInclude.h"
+--- a/Plugins/Wwise/Source/WwiseSoundEngine/Public/Wwise/PostSoundEngineInclude.h
++++ b/Plugins/Wwise/Source/WwiseSoundEngine/Public/Wwise/PostSoundEngineInclude.h
 @@ -151,5 +151,17 @@ THIRD_PARTY_INCLUDES_END
  #define FALSE 0
  #undef AK_KEEP_FALSE
