@@ -24,6 +24,7 @@ public class PackagePlugin : BuildCookRun
 		projectParams.ModifyDeploymentContextCallback = (ProjectParams, SC) =>
 		{
 			ModifyModules(ProjectParams, SC);
+			MarkGameFeature(ProjectParams, SC);
 		};
 		
 		try
@@ -221,20 +222,23 @@ public class PackagePlugin : BuildCookRun
 		ZipFile.CreateFromDirectory(SourceDirectory.FullName, DestinationFile.FullName);
 	}
 
+	private static bool IsGameFeatureDLC(ProjectParams ProjectParams)
+	{
+		var gameFeaturesPluginsRoot = DirectoryReference.Combine(ProjectParams.RawProjectPath.Directory, "Plugins", "GameFeatures");
+		var gameFeaturesModsRoot = DirectoryReference.Combine(ProjectParams.RawProjectPath.Directory, "Mods", "GameFeatures");
+		return ProjectParams.DLCFile.IsUnderDirectory(gameFeaturesPluginsRoot) ||
+			ProjectParams.DLCFile.IsUnderDirectory(gameFeaturesModsRoot);
+	}
+
 	private static string GetCanonicalModPathRelativeToRoot(ProjectParams ProjectParams)
 	{
 		// All DLC paths are remapped to projectName/Mods/DLCName during RemapCookedPluginsContentPaths, regardless of nesting
 		// so the relative stage path is projectName/Mods/DLCName
 		var projectName = ProjectParams.RawProjectPath.GetFileNameWithoutAnyExtensions();
-
-		var gameFeaturesPluginsRoot = DirectoryReference.Combine(ProjectParams.RawProjectPath.Directory, "Plugins", "GameFeatures");
-		var gameFeaturesModsRoot = DirectoryReference.Combine(ProjectParams.RawProjectPath.Directory, "Mods", "GameFeatures");
-		var isGameFeatureDLC = ProjectParams.DLCFile.IsUnderDirectory(gameFeaturesPluginsRoot) ||
-			ProjectParams.DLCFile.IsUnderDirectory(gameFeaturesModsRoot);
 		
 		// Game features have to stay under Mods/GameFeatures to be picked up by the game as such
 		var dlcName = ProjectParams.DLCFile.GetFileNameWithoutAnyExtensions();
-		return isGameFeatureDLC ? CombinePaths(projectName, "Mods", "GameFeatures", dlcName) : CombinePaths(projectName, "Mods", dlcName);
+		return IsGameFeatureDLC(ProjectParams) ? CombinePaths(projectName, "Mods", "GameFeatures", dlcName) : CombinePaths(projectName, "Mods", dlcName);
 	}
 
 	private static void RemapCookedPluginsContentPaths(ProjectParams ProjectParams, DeploymentContext SC) {
@@ -277,5 +281,19 @@ public class PackagePlugin : BuildCookRun
 				SC.StageFile(StagedFileType.NonUFS, intermediateModuleFilePath, outputFilePath);
 			}
 		}
+	}
+
+	private void MarkGameFeature(ProjectParams ProjectParams, DeploymentContext SC)
+	{
+		if (!IsGameFeatureDLC(ProjectParams))
+			return;
+
+		JsonObject PluginDescriptor = JsonObject.Read(ProjectParams.DLCFile);
+		PluginDescriptor.AddOrSetFieldValue("GameFeature", true);
+		FileReference TempPluginFile = FileReference.Combine(ProjectParams.DLCFile.Directory, "Intermediate", "Staging", SC.FinalCookPlatform, ProjectParams.DLCFile.GetFileName());
+		CreateDirectory(TempPluginFile.Directory);
+		string jsonString = PluginDescriptor.ToJsonString();
+		FileReference.WriteAllText(TempPluginFile, jsonString);
+		SC.StageFile(StagedFileType.NonUFS, TempPluginFile, SC.GetStagedFileLocation(ProjectParams.DLCFile));
 	}
 }
