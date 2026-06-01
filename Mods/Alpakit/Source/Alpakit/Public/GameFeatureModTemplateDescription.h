@@ -18,6 +18,7 @@ struct FGameFeatureModTemplateDescription : FGameFeaturePluginTemplateDescriptio
 	// Begin FGameFeaturePluginTemplateDescription interface
 	virtual void UpdatePathWhenTemplateSelected(FString& InOutPath) override;
 	virtual void UpdatePathWhenTemplateUnselected(FString& InOutPath) override;
+	virtual void CustomizeDescriptorBeforeCreation(FPluginDescriptor& Descriptor) override;
 	virtual void OnPluginCreated(TSharedPtr<IPlugin> NewPlugin) override;
 	// End FGameFeaturePluginTemplateDescription interface
 };

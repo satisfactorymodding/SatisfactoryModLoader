@@ -29,6 +29,12 @@ void FGameFeatureModTemplateDescription::UpdatePathWhenTemplateUnselected(FStrin
 	FPaths::MakePlatformFilename(InOutPath);
 }
 
+void FGameFeatureModTemplateDescription::CustomizeDescriptorBeforeCreation(FPluginDescriptor& Descriptor)
+{
+	FGameFeaturePluginTemplateDescription::CustomizeDescriptorBeforeCreation(Descriptor);
+	Descriptor.bExplicitlyLoaded = false;
+}
+
 void FGameFeatureModTemplateDescription::OnPluginCreated(const TSharedPtr<IPlugin> NewPlugin)
 {
 	// Create a new game feature data asset
