@@ -31,7 +31,7 @@ Mods/**/Metadata/Crypto.json
 !Mods/WwisePatches/
 !Mods/SML/
 !Mods/SMLEditor/
-!Mods/GameFeatures/
+!Mods/GameFeatures/ExampleMod/
 
 # Mods binaries
 Mods/**/Binaries/*
