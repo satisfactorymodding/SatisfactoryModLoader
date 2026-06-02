@@ -145,15 +145,21 @@ jobs:
 
             echo "UE_WINE_MSVC=`realpath $MSVC_DIR`" >> $GITHUB_ENV
 
+      # SML and UE are copied/downloaded outside the github workspace, because of path length limiations in MSVC
       - uses: actions/checkout@v6
         with:
           path: SML
 
+      - name: Move SML to /tmp
+        run: |
+          mkdir -p /tmp/work
+          cp -r "$GITHUB_WORKSPACE/SML" /tmp/work
+
       - name: Create UE directory
-        run: mkdir ue
+        run: mkdir -p /tmp/work/ue
 
       - name: Download, Extract and Setup UE
-        working-directory: ue
+        working-directory: /tmp/work/ue
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
@@ -168,21 +174,21 @@ jobs:
           chmod +x ./wwise-cli
           # Discard stdout to not show signed download URLs while they are still valid
           ./wwise-cli download --sdk-version "2023.1.14.8770" --filter Packages=SDK --filter DeploymentPlatforms=Windows_vc160 --filter DeploymentPlatforms=Windows_vc170 --filter DeploymentPlatforms=Linux --filter DeploymentPlatforms= >/dev/null
-          ./wwise-cli integrate-ue --integration-version "2023.1.14.3555" --project "$GITHUB_WORKSPACE/SML/FactoryGame.uproject" >/dev/null
+          ./wwise-cli integrate-ue --integration-version "2023.1.14.3555" --project "/tmp/work/SML/FactoryGame.uproject" >/dev/null
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
           WWISE_EMAIL: ${{ secrets.WWISE_EMAIL }}
           WWISE_PASSWORD: ${{ secrets.WWISE_PASSWORD }}
 
       - name: Build for Development Editor
-        run: ./ue/Engine/Build/BatchFiles/Linux/Build.sh FactoryEditor Linux Development -project="$GITHUB_WORKSPACE/SML/FactoryGame.uproject"
+        run: /tmp/work/ue/Engine/Build/BatchFiles/Linux/Build.sh FactoryEditor Linux Development -project="/tmp/work/SML/FactoryGame.uproject"
 
       - name: Package SML Mod
-        run: ./ue/Engine/Build/BatchFiles/RunUAT.sh -ScriptsForProject="$GITHUB_WORKSPACE/SML/FactoryGame.uproject" PackagePlugin -Project="$GITHUB_WORKSPACE/SML/FactoryGame.uproject" -dlcname=SML -merge -build -server -clientconfig=Shipping -serverconfig=Shipping -platform=Win64 -serverplatform=Win64+Linux -nocompileeditor -installed
+        run: /tmp/work/ue/Engine/Build/BatchFiles/RunUAT.sh -ScriptsForProject="/tmp/work/SML/FactoryGame.uproject" PackagePlugin -Project="/tmp/work/SML/FactoryGame.uproject" -dlcname=SML -merge -build -server -clientconfig=Shipping -serverconfig=Shipping -platform=Win64 -serverplatform=Win64+Linux -nocompileeditor -installed
 
       - name: Archive SML artifact
         uses: actions/upload-artifact@v7
         if: ${{ github.event_name == 'push' }}
         with:
           name: sml
-          path: SML/Saved/ArchivedPlugins/SML/*.zip
+          path: /tmp/work/SML/Saved/ArchivedPlugins/SML/*.zip
