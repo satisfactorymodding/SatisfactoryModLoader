@@ -41,3 +41,5 @@ void AFGConveyorAttachmentHologram::SnapToConnection( UFGFactoryConnectionCompon
 FFGHologramGuidelineSnapResult AFGConveyorAttachmentHologram::SnapLocationToVerticalLiftGuideline(const FVector& location, const AActor* excludedActor) const{ return FFGHologramGuidelineSnapResult(); }
 FName AFGConveyorAttachmentHologram::mInputConnection1 = FName();
 FName AFGConveyorAttachmentHologram::mOutputConnection1 = FName();
+FName AFGConveyorAttachmentHologram::mLiftConnection_Top = FName();
+FName AFGConveyorAttachmentHologram::mLiftConnection_Bottom = FName();
