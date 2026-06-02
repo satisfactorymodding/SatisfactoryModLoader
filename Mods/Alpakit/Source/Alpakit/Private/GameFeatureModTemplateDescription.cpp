@@ -4,6 +4,7 @@
 #include "FileHelpers.h"
 #include "GameFeaturesSubsystem.h"
 #include "AssetRegistry/IAssetRegistry.h"
+#include "Dom/JsonValue.h"
 #include "Engine/AssetManagerTypes.h"
 #include "HAL/FileManager.h"
 #include "Interfaces/IPluginManager.h"
@@ -31,8 +32,8 @@ void FGameFeatureModTemplateDescription::UpdatePathWhenTemplateUnselected(FStrin
 
 void FGameFeatureModTemplateDescription::CustomizeDescriptorBeforeCreation(FPluginDescriptor& Descriptor)
 {
-	FGameFeaturePluginTemplateDescription::CustomizeDescriptorBeforeCreation(Descriptor);
-	Descriptor.bExplicitlyLoaded = false;
+	// Not calling Super because it changes Modules, and sets ExplicitlyLoaded=true, which results in paks never being loaded
+	Descriptor.AdditionalFieldsToWrite.FindOrAdd(TEXT("BuiltInInitialFeatureState")) = MakeShared<FJsonValueString>(TEXT("Active"));
 }
 
 void FGameFeatureModTemplateDescription::OnPluginCreated(const TSharedPtr<IPlugin> NewPlugin)
