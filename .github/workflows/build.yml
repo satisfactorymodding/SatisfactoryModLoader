@@ -5,13 +5,9 @@ on:
   pull_request:
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: C:/SML
-
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: arc-k8s
     steps:
       - name: Check for permission to run CI
         env:
@@ -19,50 +15,174 @@ jobs:
         if: ${{ env.GH_TOKEN == '' }}
         # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions?tool=powershell#setting-an-error-message
         run: | 
-          Write-Output "::error title=External Contributor PR::Pull requests made by users not in the organization intentionally can't access the CI secrets. Don't worry about the CI failure, the team will build the project locally to test it out anyways."
+          echo "::error title=External Contributor PR::Pull requests made by users not in the organization intentionally can't access the CI secrets. Don't worry about the CI failure, the team will build the project locally to test it out anyways."
           exit 1
 
-      - name: Cleanup
-        run: Remove-Item * -Recurse -Force -Confirm:$false -ErrorAction Ignore
+      - name: Dependencies
+        run: sudo apt update && sudo apt install -y wget build-essential zstd dos2unix
 
-      - uses: actions/checkout@v2
+      - name: Setup github CLI
+        run: |
+          (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
+            && sudo mkdir -p -m 755 /etc/apt/keyrings \
+            && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+            && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+            && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+            && sudo mkdir -p -m 755 /etc/apt/sources.list.d \
+            && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+            && sudo apt update \
+            && sudo apt install gh -y
+
+      - name: Setup Wine
+        run: |
+            export WINEPREFIX="$RUNNER_TEMP/.wine"
+            echo "WINEPREFIX=$WINEPREFIX" >> $GITHUB_ENV
+            echo "WINEDEBUG=-all" >> $GITHUB_ENV
+
+            ## When we switch back to the upstream build, check if the runner image has been updated to Ubuntu 26.04, which supports WoW64
+            # sudo dpkg --add-architecture i386
+            # sudo mkdir -pm755 /etc/apt/keyrings
+            # wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key -
+            # sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources
+            # sudo apt update && sudo apt install -y --no-install-recommends winehq-devel
+
+            ## Building from source with the oleaut32 typelib patch to properly compile with the VS typelib for opening blueprint nodes in VS
+            ## until https://gitlab.winehq.org/wine/wine/-/merge_requests/9640 is merged
+            sudo apt update
+            sudo apt install -y gcc-multilib gcc-mingw-w64 libasound2-dev bluez libpulse-dev libdbus-1-dev libfontconfig-dev libfreetype-dev libgnutls28-dev libgl-dev libunwind-dev libx11-dev libxcomposite-dev libxcursor-dev libxfixes-dev libxi-dev libxrandr-dev libxrender-dev libxext-dev libwayland-bin libwayland-dev libegl-dev libxkbcommon-dev libxkbregistry-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libosmesa6-dev libsdl2-dev libudev-dev libvulkan-dev flex bison
+
+            export WINE_VERSION="11.0"
+
+            wget -O $RUNNER_TEMP/wine_typelib.patch https://gitlab.winehq.org/wine/wine/-/merge_requests/9640.patch
+
+            export PATCH_HASH="$(sha256sum $RUNNER_TEMP/wine_typelib.patch | awk '{print $1}')"
+
+            export WINE_BUILD_ID="$WINE_VERSION-$PATCH_HASH"
+
+            if [ ! -d $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID ]; then
+                git clone -b wine-$WINE_VERSION https://gitlab.winehq.org/wine/wine.git $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID
+
+                cd $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID
+
+                git config user.email "ci@example.com"
+                git config user.name "CI"
+                git am $RUNNER_TEMP/wine_typelib.patch
+
+                mkdir build && cd build
+
+                ../configure --enable-archs=x86_64,i386 --without-tests
+                make -j$(nproc)
+            fi
+
+            cd $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID/build
+            sudo make install
+
+            mkdir -p $WINEPREFIX
+            WINEDLLOVERRIDES="mscoree,mshtml=" wineboot -u
+            wineserver -w
+
+      - name: Setup MSVC
+        run: |
+            sudo apt install -y msitools perl
+
+            git clone -b ue-patches https://github.com/mircearoata/msvc-wine.git $RUNNER_TEMP/msvc-wine
+
+            export MSVC_DOWNLOAD_ARGS='
+                --accept-license
+                --channel release.ltsc.17.8
+                --msvc-version 17.8
+                --sdk-version 10.0.22621
+                Microsoft.Net.4.8.SDK
+                Microsoft.VisualStudio.MinShell
+            '
+
+            # Avoid redownloading and reextracting files to reduce amount of rebuilds
+            CACHE_HASH=$($RUNNER_TEMP/msvc-wine/vsdownload.py --print-selection $MSVC_DOWNLOAD_ARGS | sha256sum | awk '{print $1}')
+            MSVC_DIR="$RUNNER_TOOL_CACHE/msvc/$CACHE_HASH"
+
+            if [ ! -f $RUNNER_TOOL_CACHE/msvc-download/X64.Debuggers.And.Tools-x64_en-us.msi ]; then
+                wget -P $RUNNER_TOOL_CACHE/msvc-download https://github.com/kbandla/installers/releases/latest/download/X64.Debuggers.And.Tools-x64_en-us.msi
+            fi
+
+            if [ ! -f $MSVC_DIR/.installed ]; then
+                $RUNNER_TEMP/msvc-wine/vsdownload.py \
+                    --dest $MSVC_DIR \
+                    --cache $RUNNER_TOOL_CACHE/msvc-download \
+                    $MSVC_DOWNLOAD_ARGS
+
+                msiextract -C $MSVC_DIR $RUNNER_TOOL_CACHE/msvc-download/X64.Debuggers.And.Tools-x64_en-us.msi > /dev/null
+
+                $RUNNER_TEMP/msvc-wine/install.sh $MSVC_DIR
+
+                cat > $MSVC_DIR/bin/x64/pdbcopy << 'EOF'
+            #!/usr/bin/env bash
+            #
+            # Copyright (c) 2025 Mircea Roata
+            #
+            # Permission to use, copy, modify, and/or distribute this software for any
+            # purpose with or without fee is hereby granted, provided that the above
+            # copyright notice and this permission notice appear in all copies.
+            #
+            # THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+            # WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+            # MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+            # ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+            # WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+            # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+            # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+            . "$(dirname "$0")"/msvcenv.sh
+
+            SDKDEBUGBINDIR="$SDKBASE/Debuggers/x64"
+            "$(dirname "$0")"/wine-msvc.sh "$SDKDEBUGBINDIR/pdbcopy.exe" "$@"
+            EOF
+
+                ln -sf ./pdbcopy $MSVC_DIR/bin/x64/pdbcopy.exe
+                chmod +x $MSVC_DIR/bin/x64/pdbcopy*
+
+                touch $MSVC_DIR/.installed
+            fi
+
+            echo "UE_WINE_MSVC=`realpath $MSVC_DIR`" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v6
         with:
           path: SML
-
-      - name: Copy repo to working directory
-        run: Copy-Item "$Env:GITHUB_WORKSPACE\\SML" -Destination "C:\\SML" -Recurse
 
       - name: Create UE directory
         run: mkdir ue
 
       - name: Download, Extract and Setup UE
-        working-directory: C:/SML/ue
+        working-directory: ue
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
-          gh release download --repo satisfactorymodding/UnrealEngine -p "UnrealEngine-CSS-Editor-Win64.7z.*"
-          7z x UnrealEngine-CSS-Editor-Win64.7z.001
-          rm UnrealEngine-CSS-Editor-Win64.7z*
-          .\\SetupScripts\\Register.bat
+          gh release download --repo satisfactorymodding/UnrealEngine -p "UnrealEngine-CSS-Editor-Linux.tar.zst.*"
+          cat UnrealEngine-CSS-Editor-Linux.tar.zst.* | zstd -d | tar -xf -
+          rm UnrealEngine-CSS-Editor-Linux.tar.zst.*
+          ./Engine/Binaries/Linux/UnrealVersionSelector -register
 
-      - name: Download and Extract Wwise
-      # TODO: Switch back to https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-windows.exe once b2 fixes their signing
+      - name: Download Wwise
         run: |
-          Invoke-WebRequest -Uri "https://github.com/Backblaze/B2_Command_Line_Tool/releases/download/v4.1.0/b2-windows.exe" -OutFile "b2.exe"
-          .\b2.exe account authorize "${{ secrets.WWISE_B2_KEY_ID }}" "${{ secrets.WWISE_B2_KEY }}"
-          .\b2.exe file download "b2://${{ secrets.WWISE_B2_BUCKET }}/Wwise.7z" "Wwise.7z"
-          7z x -aoa Wwise.7z -oSML\\Plugins\\
-          rm Wwise.7z
+          gh release download --repo mircearoata/wwise-cli -p wwise-cli_linux_amd64 -O wwise-cli
+          chmod +x ./wwise-cli
+          # Discard stdout to not show signed download URLs while they are still valid
+          ./wwise-cli download --sdk-version "2023.1.14.8770" --filter Packages=SDK --filter DeploymentPlatforms=Windows_vc160 --filter DeploymentPlatforms=Windows_vc170 --filter DeploymentPlatforms=Linux --filter DeploymentPlatforms= >/dev/null
+          ./wwise-cli integrate-ue --integration-version "2023.1.14.3555" --project "$GITHUB_WORKSPACE/SML/FactoryGame.uproject" >/dev/null
+        env:
+          GH_TOKEN: ${{ secrets.BOT_TOKEN }}
+          WWISE_EMAIL: ${{ secrets.WWISE_EMAIL }}
+          WWISE_PASSWORD: ${{ secrets.WWISE_PASSWORD }}
 
       - name: Build for Development Editor
-        run: .\\ue\\Engine\\Build\\BatchFiles\\Build.bat FactoryEditor Win64 Development -project="C:\\SML\\SML\\FactoryGame.uproject"
+        run: ./ue/Engine/Build/BatchFiles/Linux/Build.sh FactoryEditor Linux Development -project="$GITHUB_WORKSPACE/SML/FactoryGame.uproject"
 
       - name: Package SML Mod
-        run: .\\ue\\Engine\\Build\\BatchFiles\\RunUAT.bat -ScriptsForProject="C:\\SML\\SML\\FactoryGame.uproject" PackagePlugin -Project="C:\\SML\\SML\\FactoryGame.uproject" -dlcname=SML -merge -build -server -clientconfig=Shipping -serverconfig=Shipping -platform=Win64 -serverplatform=Win64+Linux -nocompileeditor -installed
+        run: ./ue/Engine/Build/BatchFiles/RunUAT.sh -ScriptsForProject="$GITHUB_WORKSPACE/SML/FactoryGame.uproject" PackagePlugin -Project="$GITHUB_WORKSPACE/SML/FactoryGame.uproject" -dlcname=SML -merge -build -server -clientconfig=Shipping -serverconfig=Shipping -platform=Win64 -serverplatform=Win64+Linux -nocompileeditor -installed
 
       - name: Archive SML artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ github.event_name == 'push' }}
         with:
           name: sml
-          path: C:\\SML\\SML\\Saved\\ArchivedPlugins\\SML\\*.zip
+          path: SML/Saved/ArchivedPlugins/SML/*.zip
