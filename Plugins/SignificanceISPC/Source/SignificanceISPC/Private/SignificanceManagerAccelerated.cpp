@@ -14,7 +14,7 @@
 bool USignificanceManagerAccelerated::DoesSupportWorldType(const EWorldType::Type WorldType) const{ return Super::DoesSupportWorldType(WorldType); }
 bool USignificanceManagerAccelerated::ShouldCreateSubsystem(UObject* Outer) const{ return Super::ShouldCreateSubsystem(Outer); }
 void USignificanceManagerAccelerated::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
-TStatId USignificanceManagerAccelerated::GetStatId() const{ return Super::GetStatId(); }
+TStatId USignificanceManagerAccelerated::GetStatId() const{ return TStatId(); }
 void USignificanceManagerAccelerated::RegisterObject(UObject* Object, bool bIsDynamicObject){
 	if (IsRunningDedicatedServer())
 	{

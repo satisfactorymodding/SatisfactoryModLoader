@@ -8,7 +8,7 @@ UFGServerSideSignificanceSubsystem::UFGServerSideSignificanceSubsystem() : Super
 }
 bool UFGServerSideSignificanceSubsystem::DoesSupportWorldType(const EWorldType::Type WorldType) const{ return Super::DoesSupportWorldType(WorldType); }
 void UFGServerSideSignificanceSubsystem::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
-TStatId UFGServerSideSignificanceSubsystem::GetStatId() const{ return Super::GetStatId(); }
+TStatId UFGServerSideSignificanceSubsystem::GetStatId() const{ return TStatId(); }
 void UFGServerSideSignificanceSubsystem::AddObjectToSignificanceOctTree(UObject* Object){ }
 void UFGServerSideSignificanceSubsystem::RemoveObjectFromSignificanceOctTree(UObject* Object){ }
 void UFGServerSideSignificanceSubsystem::ManuallyMarkObjectSignificant(UObject* Object){ }
