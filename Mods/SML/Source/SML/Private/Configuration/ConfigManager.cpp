@@ -4,6 +4,7 @@
 #include "Util/SemVersion.h"
 #include "TimerManager.h"
 #include "Configuration/RootConfigValueHolder.h"
+#include "Configuration/RawFileFormat/RawFormatValueObject.h"
 #include "Configuration/RawFileFormat/Json/JsonRawFormatConverter.h"
 #include "Dom/JsonValue.h"
 #include "Engine/GameInstance.h"
@@ -35,7 +36,7 @@ void UConfigManager::SaveConfigurationInternal(const FConfigId& ConfigId) {
     checkf(RawFormatValue, TEXT("Root RawFormatValue returned NULL for config %s"), *ConfigId.ModReference);
 
     //Root value should always be JsonObject, since root property is section property
-    const TSharedPtr<FJsonValue> JsonValue = FJsonRawFormatConverter::ConvertToJson(RawFormatValue);
+    const TSharedPtr<FJsonValue> JsonValue = RawFormatValue->ToJson();
     check(JsonValue->Type == EJson::Object);
     TSharedRef<FJsonObject> UnderlyingObject = JsonValue->AsObject().ToSharedRef();
 
@@ -95,7 +96,7 @@ void UConfigManager::LoadConfigurationInternal(const FConfigId& ConfigId, URootC
 
     //Convert JSON tree into the raw value tree and feed it to root section value
     const TSharedRef<FJsonValue> RootValue = MakeShareable(new FJsonValueObject(JsonObject));
-    URawFormatValue* RawFormatValue = FJsonRawFormatConverter::ConvertToRawFormat(this, RootValue);
+    URawFormatValue* RawFormatValue = URawFormatValueObject::FromJson(this, RootValue);
     RootConfigValueHolder->GetWrappedValue()->Deserialize(RawFormatValue);
 
     UE_LOG(LogConfigManager, Display, TEXT("Successfully loaded configuration from %s"), *ConfigurationFilePath);

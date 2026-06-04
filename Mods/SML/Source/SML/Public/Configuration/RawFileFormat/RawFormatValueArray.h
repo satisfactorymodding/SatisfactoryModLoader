@@ -1,8 +1,11 @@
 #pragma once
+#include "Configuration/ConfigProperty.h"
+#include "Configuration/RawFileFormat/Json/JsonRawFormatConverter.h"
 #include "Configuration/RawFileFormat/RawFormatValue.h"
 #include "Configuration/RawFileFormat/RawFormatValueNumber.h"
 #include "Configuration/RawFileFormat/RawFormatValueString.h"
 #include "Templates/SubclassOf.h"
+#include "SatisfactoryModLoader.h"
 #include "RawFormatValueArray.generated.h"
 
 /** Describes raw array value */
@@ -85,6 +88,12 @@ public:
 
     /** Returns underlying array object reference. Reference is valid as long as this object is valid. */
     FORCEINLINE const TArray<URawFormatValue*>& GetUnderlyingArrayRef() const { return Values; }
+
+    virtual TSharedPtr<FJsonValue> ToJson() const override;
+
+    /** Creates a new URawFormatValueArray from the given JSON value */
+    static URawFormatValueArray* FromJson(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue);
+
 private:
     /** Private to ensure that added objects have valid outer */
     UPROPERTY()
@@ -107,4 +116,23 @@ FORCEINLINE void URawFormatValueArray::AddValue(URawFormatValue* ValueClass) {
     //Sanity check to ensure hierarchical view inside this raw value
     checkf(ValueClass && ValueClass->GetOuter() == this, TEXT("Cannot add URawFormatValue residuing inside another outer object (should be URawFormatValueArray)"));
     Values.Add(ValueClass);
+}
+
+FORCEINLINE TSharedPtr<FJsonValue> URawFormatValueArray::ToJson() const {
+    TArray<TSharedPtr<FJsonValue>> OutJsonArray;
+    for (const URawFormatValue* ChildValue : Values) {
+      OutJsonArray.Add(ChildValue->ToJson());
+    }
+    return MakeShareable(new FJsonValueArray(OutJsonArray));
+}
+
+FORCEINLINE URawFormatValueArray* URawFormatValueArray::FromJson(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) {
+    URawFormatValueArray* Array = NewObject<URawFormatValueArray>(Outer);
+    for (const TSharedPtr<FJsonValue>& ChildValue : JsonValue->AsArray()) {
+        // TODO: Base child property deserialization on the child config property.
+        UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Deserializing JSON array value for property with fallback implementation."));
+        #pragma warning(suppress : 4996)
+        Array->AddValue(FJsonRawFormatConverter::ConvertToRawFormat(Array, ChildValue));
+    }
+    return Array;
 }
