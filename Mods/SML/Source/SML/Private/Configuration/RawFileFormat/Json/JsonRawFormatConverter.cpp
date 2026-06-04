@@ -3,6 +3,7 @@
 #include "Configuration/RawFileFormat/RawFormatValueBool.h"
 #include "Configuration/RawFileFormat/RawFormatValueNumber.h"
 #include "Configuration/RawFileFormat/RawFormatValueObject.h"
+#include "Configuration/RawFileFormat/RawFormatValueRawJson.h"
 #include "Configuration/RawFileFormat/RawFormatValueString.h"
 #include "Dom/JsonObject.h"
 
@@ -21,6 +22,9 @@ TSharedPtr<FJsonValue> FJsonRawFormatConverter::ConvertToJson(const URawFormatVa
     }
     if (const URawFormatValueObject* Object = Cast<URawFormatValueObject>(RawFormatValue)) {
         return Object->ToJson();
+    }
+    if (const URawFormatValueRawJson* RawJson = Cast<URawFormatValueRawJson>(RawFormatValue)) {
+        return RawJson->ToJson();
     }
     checkf(false, TEXT("Unreachable code"));
     return NULL;
