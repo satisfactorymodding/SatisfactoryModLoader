@@ -2,6 +2,7 @@
 #include "Configuration/ConfigProperty.h"
 #include "Configuration/ConfigValueDirtyHandlerInterface.h"
 #include "Configuration/ConfigValueObjectInterface.h"
+#include "Configuration/RawFileFormat/RawFormatValueObject.h"
 #include "ConfigPropertySection.generated.h"
 
 /** Describes a single configuration section with nested properties */
@@ -38,6 +39,10 @@ public:
 	virtual bool ResetToDefault_Implementation() override;
 	virtual bool IsSetToDefaultValue_Implementation() const override;
 	virtual FString GetDefaultValueAsString_Implementation() const override;
+
+    virtual URawFormatValueObject* CreateRawFormatValue(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) override {
+        return URawFormatValueObject::FromJson(Outer, JsonValue);
+    }
 	//End UConfigProperty
 
 	//Begin IConfigValueDirtyHandlerInterface

@@ -96,8 +96,7 @@ void UConfigManager::LoadConfigurationInternal(const FConfigId& ConfigId, URootC
 
     //Convert JSON tree into the raw value tree and feed it to root section value
     const TSharedRef<FJsonValue> RootValue = MakeShareable(new FJsonValueObject(JsonObject));
-    URawFormatValue* RawFormatValue = URawFormatValueObject::FromJson(this, RootValue);
-    RootConfigValueHolder->GetWrappedValue()->Deserialize(RawFormatValue);
+    RootConfigValueHolder->GetWrappedValue()->DeserializeFromJson(RootValue);
 
     UE_LOG(LogConfigManager, Display, TEXT("Successfully loaded configuration from %s"), *ConfigurationFilePath);
 

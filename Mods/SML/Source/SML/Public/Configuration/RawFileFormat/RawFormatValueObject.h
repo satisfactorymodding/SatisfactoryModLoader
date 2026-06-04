@@ -1,6 +1,7 @@
 #pragma once
 #include "Templates/SubclassOf.h"
 #include "Configuration/ConfigProperty.h"
+#include "Configuration/ConfigValueObjectInterface.h"
 #include "Configuration/RawFileFormat/Json/JsonRawFormatConverter.h"
 #include "Configuration/RawFileFormat/RawFormatValueArray.h"
 #include "SatisfactoryModLoader.h"
@@ -126,7 +127,15 @@ FORCEINLINE TSharedPtr<FJsonValue> URawFormatValueObject::ToJson() const {
 FORCEINLINE URawFormatValueObject* URawFormatValueObject::FromJson(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) {
     URawFormatValueObject* Object = NewObject<URawFormatValueObject>(Outer);
     for (const TPair<FString, TSharedPtr<FJsonValue>>& Pair : JsonValue->AsObject()->Values) {
-        // TODO: Base child property deserialization on the child config property.
+        UConfigProperty* Owner = Cast<UConfigProperty>(Outer);
+        if (IsValid(Owner) && Owner->Implements<UConfigValueObjectInterface>()) {
+            UConfigProperty* ChildProperty = IConfigValueObjectInterface::Execute_GetChildProperty(Owner, Pair.Key);
+            if (IsValid(ChildProperty)) {
+                Object->AddValue(Pair.Key, ChildProperty->CreateRawFormatValue(Object, Pair.Value));
+                continue;
+            }
+        }
+
         UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Deserializing JSON value for property %s with fallback implementation."), *Pair.Key);
         #pragma warning(suppress : 4996)
         Object->AddValue(Pair.Key, FJsonRawFormatConverter::ConvertToRawFormat(Object, Pair.Value));

@@ -1,5 +1,6 @@
 #pragma once
 #include "Configuration/ConfigProperty.h"
+#include "Configuration/ConfigValueArrayInterface.h"
 #include "Configuration/RawFileFormat/Json/JsonRawFormatConverter.h"
 #include "Configuration/RawFileFormat/RawFormatValue.h"
 #include "Configuration/RawFileFormat/RawFormatValueNumber.h"
@@ -128,8 +129,19 @@ FORCEINLINE TSharedPtr<FJsonValue> URawFormatValueArray::ToJson() const {
 
 FORCEINLINE URawFormatValueArray* URawFormatValueArray::FromJson(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) {
     URawFormatValueArray* Array = NewObject<URawFormatValueArray>(Outer);
-    for (const TSharedPtr<FJsonValue>& ChildValue : JsonValue->AsArray()) {
-        // TODO: Base child property deserialization on the child config property.
+    const TArray<TSharedPtr<FJsonValue>>& JsonArray = JsonValue->AsArray();
+    const int32 ChildNum = JsonArray.Num();
+    for (int32 ChildIndex = 0; ChildIndex < ChildNum; ChildIndex++) {
+        const TSharedPtr<FJsonValue>& ChildValue = JsonArray[ChildIndex];
+        UConfigProperty* Owner = Cast<UConfigProperty>(Outer);
+        if (IsValid(Owner) && Owner->Implements<UConfigValueArrayInterface>()) {
+            UConfigProperty* ChildProperty = IConfigValueArrayInterface::Execute_GetChildProperty(Owner, ChildIndex);
+            if (IsValid(ChildProperty)) {
+                Array->AddValue(ChildProperty->CreateRawFormatValue(Array, ChildValue));
+                continue;
+            }
+        }
+
         UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Deserializing JSON array value for property with fallback implementation."));
         #pragma warning(suppress : 4996)
         Array->AddValue(FJsonRawFormatConverter::ConvertToRawFormat(Array, ChildValue));

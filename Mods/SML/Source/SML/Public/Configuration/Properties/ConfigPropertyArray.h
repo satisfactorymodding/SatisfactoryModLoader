@@ -2,6 +2,7 @@
 #include "Configuration/ConfigProperty.h"
 #include "Configuration/ConfigValueArrayInterface.h"
 #include "Configuration/ConfigValueDirtyHandlerInterface.h"
+#include "Configuration/RawFileFormat/RawFormatValueArray.h"
 #include "ConfigPropertyArray.generated.h"
 
 /** Describes array configuration property with single nested element type */
@@ -58,6 +59,10 @@ public:
     virtual bool ResetToDefault_Implementation() override;
     virtual bool IsSetToDefaultValue_Implementation() const override;
     virtual FString GetDefaultValueAsString_Implementation() const override;
+
+    virtual URawFormatValueArray* CreateRawFormatValue(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) override {
+        return URawFormatValueArray::FromJson(Outer, JsonValue);
+    }
     //End UConfigProperty
 
     //Begin IConfigValueDirtyHandlerInterface
