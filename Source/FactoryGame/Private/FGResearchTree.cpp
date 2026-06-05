@@ -126,7 +126,7 @@ EDataValidationResult UFGResearchTree::IsDataValid(FDataValidationContext& valid
 #endif
 
 #if WITH_EDITOR
-void UFGResearchTree::PreSave(FObjectPreSaveContext SaveContext){ }
+void UFGResearchTree::PreSave(FObjectPreSaveContext SaveContext){ Super::PreSave(SaveContext); }
 #endif 
 #if WITH_EDITOR
 void UFGResearchTree::UpdateAssetBundleData(){ }

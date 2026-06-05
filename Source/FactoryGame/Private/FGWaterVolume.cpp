@@ -9,7 +9,7 @@ FString AFGWaterVolume::GetDebugName() const{ return FString(); }
 #endif 
 #if WITH_EDITOR
 void AFGWaterVolume::PostLoad(){ Super::PostLoad(); }
-void AFGWaterVolume::PreSave(FObjectPreSaveContext saveContext){ }
+void AFGWaterVolume::PreSave(FObjectPreSaveContext saveContext){ Super::PreSave(saveContext); }
 void AFGWaterVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 void AFGWaterVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 

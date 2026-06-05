@@ -16,7 +16,7 @@ void UFGCheatManager::InitCheatManager(){ }
 bool UFGCheatManager::IsSupportedForNetworking() const{ return bool(); }
 int32 UFGCheatManager::GetFunctionCallspace(UFunction* Function, FFrame* Stack){ return int32(); }
 bool UFGCheatManager::CallRemoteFunction(UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){ return bool(); }
-void UFGCheatManager::PreSave(FObjectPreSaveContext saveContext){ }
+void UFGCheatManager::PreSave(FObjectPreSaveContext saveContext){ Super::PreSave(saveContext); }
 void UFGCheatManager::InitDefaultCheats(){ }
 void UFGCheatManager::Cheats(){ }
 void UFGCheatManager::Server_NoCost_Implementation(bool enabled){ }

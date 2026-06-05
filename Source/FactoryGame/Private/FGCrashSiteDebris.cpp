@@ -6,7 +6,7 @@
 #include "UObject/ObjectSaveContext.h"
 
 #if WITH_EDITOR
-void AFGCrashSiteDebris::PreSave(FObjectPreSaveContext SaveContext){ }
+void AFGCrashSiteDebris::PreSave(FObjectPreSaveContext SaveContext){ Super::PreSave(SaveContext); }
 void AFGCrashSiteDebris::PreEditChange(FProperty* PropertyAboutToChange){ }
 void AFGCrashSiteDebris::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 void AFGCrashSiteDebris::Tick(float dt){ Super::Tick(dt); }

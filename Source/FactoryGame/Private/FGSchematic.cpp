@@ -85,7 +85,7 @@ EDataValidationResult UFGSchematic::IsDataValid(FDataValidationContext& validati
 #endif
 
 #if WITH_EDITOR
-void UFGSchematic::PreSave(FObjectPreSaveContext saveContext){ }
+void UFGSchematic::PreSave(FObjectPreSaveContext saveContext){ Super::PreSave(saveContext); }
 #endif 
 #if WITH_EDITOR
 void UFGSchematic::UpdateAssetBundleData(){ }
