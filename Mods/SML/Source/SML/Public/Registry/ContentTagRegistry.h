@@ -104,6 +104,7 @@ private:
 	void InternalAddGameplayTagsTo(UClass* content, const FGameplayTagContainer tags);
 	
 	FGameplayTagContainer* GetOrInitContainerFor(UClass* content);
+	FGameplayTagContainer* GetVanillaContainerFor(UClass* content);
 
 	// Gets tags offered via SML Extended Attribute Provider
 	FGameplayTagContainer GetTagsFromExtendedAttributeProvider(UClass* content);

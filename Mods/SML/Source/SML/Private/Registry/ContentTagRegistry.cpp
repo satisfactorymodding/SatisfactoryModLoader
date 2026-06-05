@@ -1,6 +1,10 @@
 #include "Registry/ContentTagRegistry.h"
 #include "Engine/Engine.h"
 #include "Registry/SMLExtendedAttributeProvider.h"
+#include "FGRecipe.h"
+#include "FGResearchTree.h"
+#include "FGSchematic.h"
+#include "Resources/FGItemDescriptor.h"
 
 #include "ModLoading/PluginModuleLoader.h"
 
@@ -63,15 +67,37 @@ void UContentTagRegistry::InternalAddGameplayTagsTo(UClass* content, const FGame
 
 FGameplayTagContainer* UContentTagRegistry::GetOrInitContainerFor(UClass* content) {
 	// Can't use FindOrAdd because we only want to run GetTagsFromExtendedAttributeProvider on first creation, otherwise it would interfere with tag removal
+	// When using vanilla GameplayTagContainers, we still create an entry in our registry as a marker for the ExtendedAttributeProvider having ran
+	FGameplayTagContainer* VanillaContainer = GetVanillaContainerFor(content);
 	if (!TagContainerRegistry.Contains(content)) {
 		UE_LOG(LogContentTagRegistry, Verbose, TEXT("First access of tags for class %s so checking for Extended Attribute Provider tags"), *GetFullNameSafe(content));
 		auto tagsFromProvider = GetTagsFromExtendedAttributeProvider(content);
 		UE_LOG(LogContentTagRegistry, Verbose, TEXT("Adding tags from provider %s for class %s"), *tagsFromProvider.ToString(), *GetFullNameSafe(content));
 		FGameplayTagContainer freshContainer;
-		freshContainer.AppendTags(tagsFromProvider);
+		if (VanillaContainer != nullptr) {
+			VanillaContainer->AppendTags(tagsFromProvider);
+		} else {
+			freshContainer.AppendTags(tagsFromProvider);
+		}
 		TagContainerRegistry.Add(content, freshContainer);
 	}
-	return TagContainerRegistry.Find(content);
+	return VanillaContainer != nullptr ? VanillaContainer : TagContainerRegistry.Find(content);
+}
+
+FGameplayTagContainer* UContentTagRegistry::GetVanillaContainerFor(UClass* content) {
+	if (content->IsChildOf(UFGItemDescriptor::StaticClass())) {
+		return &const_cast<FGameplayTagContainer&>(GetMutableDefault<UFGItemDescriptor>(content)->GetTagContainer());
+	}
+	if (content->IsChildOf(UFGRecipe::StaticClass())) {
+		return &const_cast<FGameplayTagContainer&>(GetMutableDefault<UFGRecipe>(content)->GetTagContainer());
+	}
+	if (content->IsChildOf(UFGSchematic::StaticClass())) {
+		return &const_cast<FGameplayTagContainer&>(GetMutableDefault<UFGSchematic>(content)->GetTagContainer());
+	}
+	if (content->IsChildOf(UFGResearchTree::StaticClass())) {
+		return &const_cast<FGameplayTagContainer&>(GetMutableDefault<UFGResearchTree>(content)->GetTagContainer());
+	}
+	return nullptr;
 }
 
 void UContentTagRegistry::AddGameplayTagsTo(UClass* content, const FGameplayTagContainer tags) {
