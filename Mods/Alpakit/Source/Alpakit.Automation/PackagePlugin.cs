@@ -71,14 +71,20 @@ public class PackagePlugin : BuildCookRun
 			{
 				var DeployContextList = Project.CreateDeploymentContext(projectParams, false, true);
 				foreach (var SC in DeployContextList)
+				{
 					Project.CleanStagingDirectory(projectParams, SC);
+					DeleteDirectory(GetTempDirForStaging(projectParams, SC));
+				}
 			}
 
 			if (projectParams.DedicatedServer)
 			{
 				var DeployContextList = Project.CreateDeploymentContext(projectParams, true, true);
 				foreach (var SC in DeployContextList)
+				{
 					Project.CleanStagingDirectory(projectParams, SC);
+					DeleteDirectory(GetTempDirForStaging(projectParams, SC));
+				}
 			}
 		}
 	}
@@ -274,8 +280,7 @@ public class PackagePlugin : BuildCookRun
 				// The game specifically allows SML as BuildId to be loaded by any game build
 				moduleManifestFile.BuildId = "SML";
 
-				var intermediateModuleFilePath = FileReference.Combine(ProjectParams.DLCFile.Directory, "Intermediate",
-					"Staging", SC.FinalCookPlatform, manifest.Path.MakeRelativeTo(ProjectParams.DLCFile.Directory));
+				var intermediateModuleFilePath = FileReference.Combine(GetTempDirForStaging(ProjectParams, SC), manifest.Path.MakeRelativeTo(ProjectParams.DLCFile.Directory));
 				var outputFilePath = SC.GetStagedFileLocation(manifest.Path);
 				moduleManifestFile.Write(intermediateModuleFilePath);
 				SC.StageFile(StagedFileType.NonUFS, intermediateModuleFilePath, outputFilePath);
@@ -290,10 +295,15 @@ public class PackagePlugin : BuildCookRun
 
 		JsonObject PluginDescriptor = JsonObject.Read(ProjectParams.DLCFile);
 		PluginDescriptor.AddOrSetFieldValue("GameFeature", true);
-		FileReference TempPluginFile = FileReference.Combine(ProjectParams.DLCFile.Directory, "Intermediate", "Staging", SC.FinalCookPlatform, ProjectParams.DLCFile.GetFileName());
+		FileReference TempPluginFile = FileReference.Combine(GetTempDirForStaging(ProjectParams, SC), ProjectParams.DLCFile.GetFileName());
 		CreateDirectory(TempPluginFile.Directory);
 		string jsonString = PluginDescriptor.ToJsonString();
 		FileReference.WriteAllText(TempPluginFile, jsonString);
 		SC.StageFile(StagedFileType.NonUFS, TempPluginFile, SC.GetStagedFileLocation(ProjectParams.DLCFile));
+	}
+
+	private DirectoryReference GetTempDirForStaging(ProjectParams ProjectParams, DeploymentContext SC)
+	{
+		return DirectoryReference.Combine(ProjectParams.DLCFile.Directory, "Intermediate", "Staging", SC.FinalCookPlatform);
 	}
 }
