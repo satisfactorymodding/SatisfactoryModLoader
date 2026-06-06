@@ -16,10 +16,12 @@
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
 	"Installed": false,
+	"BuiltInInitialFeatureState": "Active",
 	"LocalizationTargets": [
 		{
 			"Name": "ExampleMod",
-			"LoadingPolicy": "Always"
+			"LoadingPolicy": "Always",
+			"ConfigGenerationPolicy": "Never"
 		}
 	],
 	"Plugins": [
