@@ -37,7 +37,6 @@ public:
 			FGameplayTag MoveAxis;
 			
 			FGameplayTag LookAxis;
-			FGameplayTag TurnAxis;
 			
 			FGameplayTag Jump;
 
@@ -62,8 +61,7 @@ public:
 		{
 			FGameplayTag PhotoModeDecouple;
 			FGameplayTag TakePhoto;
-			FGameplayTag MoveMouseX;
-			FGameplayTag MoveMouseY;
+			FGameplayTag LookAxis;
 		} PhotoMode;
 
 		// Detached Camera
@@ -129,6 +127,7 @@ public:
 			// </FL>
 
 			FGameplayTag ToggleFlashlight;
+			FGameplayTag CycleVisualizationMode;
 
 			// Clipboard
 			struct FPlayerClipboardTags
@@ -162,6 +161,8 @@ public:
 		// Equipment
 		struct FEquipmentTags
 		{
+			FGameplayTag PrimaryFire;
+			FGameplayTag SecondaryFire;
 			FGameplayTag Cycle;
 			FGameplayTag CycleNext;
 			FGameplayTag Holster;
@@ -233,14 +234,15 @@ public:
         	
         	FGameplayTag Handbrake;
         	FGameplayTag Honk;
+        	FGameplayTag Dock;
         	
         	FGameplayTag ToggleCamera;
         	FGameplayTag ToggleLights;
+        	FGameplayTag TogglePathVisualization;
 
         	// Wheeled Vehicles
         	struct FWheeledVehicleTags
         	{
-        		FGameplayTag OpenRecorder;
         		FGameplayTag ThrottleSteerAxis;
 				FGameplayTag GamepadThrottle;
 				FGameplayTag GamepadBrake;

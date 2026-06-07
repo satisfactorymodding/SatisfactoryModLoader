@@ -14,6 +14,10 @@ class UGameplayTagContainerViewModel;
 class UOnlineIntegrationBackend;
 class UOnlineUserInfo;
 
+// <FL> [ZimmermannA]
+DECLARE_DELEGATE_OneParam(FOnUserBackendLoginStatusChanged, ECommonUserLoginStatus loginStatus);
+// </FL>
+
 /**
  * The link between an online user and an online backend.
  * Also serves as a data cache for the respective user on the respective backend
@@ -32,8 +36,14 @@ public:
 	[[nodiscard]] UE::Online::FAccountId GetAccountId() const;
 	[[nodiscard]] UOnlineIntegrationBackend* GetOnlineBackend() const;
 	[[nodiscard]] UOnlineUserInfo* GetOnlineUser() const;
+	[[nodiscard]] bool IsUserAuthenticatedAndCached() const;
 
 	const UGameplayTagContainerViewModel& GetTagContainer() const;
+
+// <FL> [ZimmermannA]
+	FOnUserBackendLoginStatusChanged OnUserBackendLoginStatusChanged;
+// </FL>
+
 protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UOnlineIntegrationBackend> OnlineBackend;

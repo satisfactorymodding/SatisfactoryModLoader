@@ -79,4 +79,5 @@ private:
 	TSet< FAudioInstanceData* > AddedInstances;
 
 	FGraphEventRef AudioGeometryUpdateTask;
+	float CurrentDistanceRadiusWT = 0.f; // Only used on worker thread
 };

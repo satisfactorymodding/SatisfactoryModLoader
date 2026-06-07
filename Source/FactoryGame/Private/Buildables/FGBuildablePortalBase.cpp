@@ -63,7 +63,7 @@ void AFGBuildablePortalBase::GetPortalSurfaceTransform_Implementation(FTransform
 void AFGBuildablePortalBase::OnPlayerTeleportBegin_Implementation(AFGCharacterPlayer* player, AFGBuildablePortalBase* toPortal, float totalTravelDistance){ }
 void AFGBuildablePortalBase::OnPlayerTeleportComplete_Implementation(AFGCharacterPlayer* player, AFGBuildablePortalBase* fromPortal, float totalTravelDistance){ }
 void AFGBuildablePortalBase::SetPortalName(const FText& inPortalName){ }
-void AFGBuildablePortalBase::SetLastEditedBy(const TArray<FLocalUserNetIdBundle>& lastEditedBy){ }
+void AFGBuildablePortalBase::SetLastEditedBy(const FPlayerInfoHandle& lastEditedBy){ }
 float AFGBuildablePortalBase::GetEstimatedPowerConsumptionForTeleport() const{ return float(); }
 float AFGBuildablePortalBase::CalculatePowerConsumptionForDistance(float distance) const{ return float(); }
 FFGPortalCachedFactoryTickData AFGBuildablePortalBase::GetCachedFactoryTickData_ThreadSafe(){ return FFGPortalCachedFactoryTickData(); }

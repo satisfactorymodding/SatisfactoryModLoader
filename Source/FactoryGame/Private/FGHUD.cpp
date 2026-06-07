@@ -47,6 +47,7 @@ void AFGHUD::OnActorRepresentationAdded(UFGActorRepresentation* actorRepresentat
 void AFGHUD::OnActorRepresentationRemoved(UFGActorRepresentation* actorRepresentation){ }
 void AFGHUD::OnActorRepresentationUpdated(UFGActorRepresentation* actorRepresentation){ }
 void AFGHUD::OnActorRepresentationFiltered(ERepresentationType type, bool visible){ }
+void AFGHUD::UpdateAllActorRepresentationPrivilegeState(){ }
 void AFGHUD::OnCultureChanged(){ }
 void AFGHUD::InvalidateCachedTextDimensionsAndGlyphs(){ }
 void AFGHUD::SetCompassEntryVisibility(UFGActorRepresentation* actorRepresentation, bool visible){ }

@@ -38,5 +38,8 @@ int32 AFGConveyorAttachmentHologram::GetRotationStep() const{ return int32(); }
 void AFGConveyorAttachmentHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGConveyorAttachmentHologram::CheckValidPlacement(){ }
 void AFGConveyorAttachmentHologram::SnapToConnection( UFGFactoryConnectionComponent* connectiontoSnapTo,  UFGFactoryConnectionComponent* myConnectionToSnapWith, FVector locationToDetermineSideIfAplicable){ }
+FFGHologramGuidelineSnapResult AFGConveyorAttachmentHologram::SnapLocationToVerticalLiftGuideline(const FVector& location, const AActor* excludedActor) const{ return FFGHologramGuidelineSnapResult(); }
 FName AFGConveyorAttachmentHologram::mInputConnection1 = FName();
 FName AFGConveyorAttachmentHologram::mOutputConnection1 = FName();
+FName AFGConveyorAttachmentHologram::mLiftConnection_Top = FName();
+FName AFGConveyorAttachmentHologram::mLiftConnection_Bottom = FName();

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FactoryGame.h"
 #include "FGDismantleInterface.h"
@@ -144,18 +143,18 @@ private:
 	
 	/** The buildables which are part of this blueprint. The buildables will register themselves on PostLoad. */
 	UPROPERTY( Replicated )
-	TArray< class AFGBuildable* > mBuildables;
+	TArray< TObjectPtr<class AFGBuildable> > mBuildables;
 
 	UPROPERTY( ReplicatedUsing=OnRep_LightweightIndices )
 	TArray< FBuildableClassLightweightIndices > mLightweightClassAndIndices;
 
 	/** Cached reference to the blueprint descriptor. */
 	UPROPERTY()
-	class UFGBlueprintDescriptor* mBlueprintDescriptor;
+	TObjectPtr<class UFGBlueprintDescriptor> mBlueprintDescriptor;
 
 	/** Bounding box of the blueprint. */
 	UPROPERTY()
-	class UBoxComponent* mBoundingBox;
+	TObjectPtr<class UBoxComponent> mBoundingBox;
 
 private:
 	friend class AFGBlueprintHologram;

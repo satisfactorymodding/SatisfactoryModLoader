@@ -18,7 +18,7 @@ struct FFGWorldPartitionContentBundleRegistration
 
 	/** Needed to keep the content bundle in memory as World Partition relies on clients doing that themselves for whatever reason */
 	UPROPERTY()
-	UFGWorldPartitionContentBundle* LoadedContentBundle{};
+	TObjectPtr<UFGWorldPartitionContentBundle> LoadedContentBundle{};
 	
 	TSharedPtr<FContentBundleClient> ContentBundleClient{};
 	bool RuntimeState{false};

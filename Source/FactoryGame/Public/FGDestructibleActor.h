@@ -68,6 +68,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsMeshChainSawable(UStaticMesh* Mesh) const;
 
+	UFUNCTION()
+	void SetResourceNodeActor( const TSoftObjectPtr< AFGResourceNode > resourceNodeActor );
 protected:
 	/** Updates the state, flushes net dormancy */
 	UFUNCTION(BlueprintCallable)
@@ -91,11 +93,11 @@ protected:
 	
 	/** The mesh that should be rendered before we start going destructible. Used for optimization as it has less triangles */
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly, Category = "Destructible" )
-	UStaticMeshComponent* mStaticMeshProxy;
+	TObjectPtr<UStaticMeshComponent> mStaticMeshProxy;
 
 	/** Geometry collection to use for when this actor is being fractured */
 	UPROPERTY( EditAnywhere, Category = "Destructible" )
-	UGeometryCollection* mGeometryCollection;
+	TObjectPtr<UGeometryCollection> mGeometryCollection;
 
 	/** Amount of time the destructible actor should stay in a fractured state before being forcefully removed */
 	UPROPERTY( EditAnywhere, Category = "Destructible" )
@@ -106,7 +108,7 @@ protected:
 	EDestructibleActorState mDestructibleActorState;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Transient, Category = "Destructible" )
-	UGeometryCollectionComponent* mGeometryCollectionComponent;
+	TObjectPtr<UGeometryCollectionComponent> mGeometryCollectionComponent;
 
 	UPROPERTY( VisibleAnywhere, Transient, Category = "Destructible" )
 	FTimerHandle mDestructibleRemovalTimerHandle;
@@ -127,8 +129,12 @@ protected:
 	UPROPERTY( Replicated )
 	float mRadialForceDestruction = 0.f;
 
+	// The Resource Node actor this destructible is associated with
+	UPROPERTY( EditInstanceOnly, Category = "Resources" )
+	TSoftObjectPtr< class AFGResourceNodeBase > mResourceNodeActor;
+	
 	UPROPERTY()
-	AActor* mDestroyedByActor;
+	TObjectPtr<AActor> mDestroyedByActor;
 	
 private:
 	/** Clearance data of this destructible */

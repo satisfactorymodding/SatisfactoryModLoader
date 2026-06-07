@@ -51,8 +51,15 @@ public class OnlineIntegration : ModuleRules
 		// <FL> [ZimmermannA] Needed to display xbox system messages during joining
 			if (/*Target.Platform == UnrealTargetPlatform.XSX*/ false)
 			{
-				PrivateDependencyModuleNames.AddRange(new string[] {
+			PublicDependencyModuleNames.AddRange(new string[] {
 					"OnlineSubsystemGDK",
+					"OnlineServicesXbl"
+
+				});
+			PrivateDependencyModuleNames.AddRange(new string[] {
+					"OnlineSubsystemGDK",
+					"OnlineServicesXbl"
+
 				});
 			}
 		// </FL> 

@@ -50,7 +50,7 @@ void AFGConveyorChainActor::PostLoadGame_Implementation(int32 saveVersion, int32
 void AFGConveyorChainActor::SetStartAndEndConveyors(AFGBuildableConveyorBase* start, AFGBuildableConveyorBase* end){ }
 void AFGConveyorChainActor::SanitizeItemsFromLoad(){ }
 void AFGConveyorChainActor::RegisterWithSubsystem(){ }
-void AFGConveyorChainActor::RevertChainActor(){ }
+void AFGConveyorChainActor::RevertChainActor_Unsafe(){ }
 bool AFGConveyorChainActor::BuildChain(){ return bool(); }
 void AFGConveyorChainActor::RebuildSplineComponent(int32 reparamStepsPerSeg){ }
 void AFGConveyorChainActor::MoveItemsFromBeltsToChain(){ }

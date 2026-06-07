@@ -4,7 +4,9 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Engine/DataAsset.h"
 #include "Engine/DeveloperSettings.h"
+#include "Internationalization/Regex.h"
 #include "FGFallbackProfanityFilter.generated.h"
 
 UCLASS()

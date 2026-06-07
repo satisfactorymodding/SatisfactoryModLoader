@@ -16,129 +16,111 @@ UCLASS()
 class FACTORYGAME_API UFGOptionsValueController : public UFGUserWidget
 {
 	GENERATED_BODY()
-
 public:
 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnRowHovered();
 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnRowUnhovered();
 
-	void InitValueController( FOptionRowData optionRowData, UFGDynamicOptionsRow* parentOptionRow, TScriptInterface< class IFGOptionInterface > optionInterface );
-	
 	void InitValueController( class UFGUserSetting* userSetting, UFGDynamicOptionsRow* parentOptionRow, TScriptInterface< class IFGOptionInterface > optionInterface );
 
-	UFUNCTION( BlueprintNativeEvent )
+	UFUNCTION( BlueprintNativeEvent, Category = "Option Controller" )
 	bool IsPendingApply();
 
-	UFUNCTION( BlueprintNativeEvent )
+	UFUNCTION( BlueprintNativeEvent, Category = "Option Controller" )
 	bool IsPendingRestart();
 	
-	UFUNCTION( BlueprintImplementableEvent )
+	UFUNCTION( BlueprintImplementableEvent, Category = "Option Controller" )
 	void OnInitValueController();
 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnOptionValueUpdated();
 
-	UFUNCTION( BlueprintNativeEvent, BlueprintCallable )
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Option Controller" )
 	bool ShouldBeClickable();
 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnOptionClicked();
 
 	// <FL> [WuttkeP] Added more callbacks for supporting several events with a controller.
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnOptionIncreased();
 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnOptionDecreased();
 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnOptionValueReset();
 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnOptionAnalogValueUpdated( float AnalogValue );
 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnRowFocused();
 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnRowUnfocused();
 
-	UFUNCTION( BlueprintNativeEvent, BlueprintCallable )
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Option Controller" )
 	bool HandleResetValueDetails( UPARAM(ref) FFGKeyHint& KeyHint );
 
-	UFUNCTION( BlueprintNativeEvent, BlueprintCallable )
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Option Controller" )
 	bool HandleActivateDetails( UPARAM(ref) FFGKeyHint& KeyHint );
 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnOptionSelectInputValueCustom();
 	// </FL>
 
 	// Called before an option is applied. So we can take action before option is applied 
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Meta = ( DisplayName=OnOptionPreApplied ) )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option Controller", Meta = ( DisplayName=OnOptionPreApplied ) )
 	void OnOptionApplied();
 
 	// Called when we reset an option. This is the first thing to be called before the applied value is reset back to the default value
 	// Gives the widget a chance to execute logic that is needed for the setting to be reset. Mostly useful for custom settings with custom widgets
-	UFUNCTION( BlueprintNativeEvent, BlueprintCallable )
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Option Controller" )
 	void OnOptionReverted();
 
-	UFUNCTION( BlueprintPure )
-	FText GetCurrentSelectionText();
-
 	// Is this option allowed to be edited
-	UFUNCTION( BlueprintPure )
+	UFUNCTION( BlueprintPure, Category = "Option Controller" )
 	bool IsOptionEditable() const;
 	
 	// when true the highlight should be on the option slot (ie OptionsSlider) instead of the whole OptionRow
-	UFUNCTION( BlueprintPure )
+	UFUNCTION( BlueprintPure, Category = "Option Controller" )
 	bool ShouldFocusOptionSlotToEdit() const;
-	
-	bool CanSelectIndex( int32 newIndex );
 
-	UFUNCTION( BlueprintCallable )
-	bool ChangeSelection( FText currentKey, bool incrementSelection );
+	/** Returns the string ID for the option represented by this selector */
+	UFUNCTION( BlueprintPure, Category = "Option Controller" )
+	FString GetSettingIdentifier() const;
 
-	UFUNCTION( BlueprintPure )
-	FString GetSettingIndentifier() const;
+	UFUNCTION( BlueprintPure, Category = "Option Controller" )
+	FORCEINLINE TScriptInterface<IFGOptionInterface> GetOptionInterface() const { return mOptionInterface; }
 
-	TArray<FIntegerSelection> GetIntegerSelectionValues() const;
-	
-	bool GetBlockLastIndexFromManualSelection() const;
-	
-	UFUNCTION( BlueprintCallable )
-	EOptionType GetOptionType() const;
+	UFUNCTION( BlueprintPure, Category = "Option Controller" )
+	FORCEINLINE UFGUserSetting* GetUserSetting() const { return mUserSetting; }
 
+	/** Returns the value of this option as a boolean, if this option value is of type boolean */
+	UFUNCTION( BlueprintPure, Category = "Option Controller" )
+	bool GetBoolOptionValue() const;
+
+	/** Legacy functions used by option selector widget to select int values */
+	UFUNCTION( BlueprintPure, Category = "Option Controller|Legacy" )
+	FText LegacyIntValueSelector_GetCurrentSelectionText() const;
+	UFUNCTION( BlueprintCallable, Category = "Option Controller|Legacy" )
+	bool LegacyIntValueSelector_ChangeSelection( const FText& currentKey, bool incrementSelection );
 protected:
-
+	// Begin UUserWidget interface
 	virtual void NativeConstruct() override;
-
-	UFUNCTION( BlueprintPure, Category = "Option" )
-	bool GetBoolOptionValue();
-
-	UFUNCTION(BlueprintGetter)
-	FOptionRowData GetOptionRowData() const;
-
-	UFUNCTION( BlueprintPure, Category = "Option" )
-	FORCEINLINE TScriptInterface< class IFGOptionInterface > GetOptionInterface() const { return mOptionInterface; } 
+	// End UUserWidget interface
 
 protected:
-
-	UPROPERTY( BlueprintReadOnly, BlueprintGetter = GetOptionRowData )
-	FOptionRowData mOptionRowData;
+	UPROPERTY( Transient )
+	TScriptInterface<IFGOptionInterface> mOptionInterface;
 
 	UPROPERTY( Transient, BlueprintReadOnly )
-	UFGUserSetting* mUserSetting;
-	
-	UPROPERTY( BlueprintReadOnly )
-	bool mIsDynamicOption;
+	TObjectPtr<UFGUserSetting> mUserSetting;
 
 	UPROPERTY( BlueprintReadOnly )
-	UFGDynamicOptionsRow* mParentOptionRow;
-
-	UPROPERTY( Transient )
-	TScriptInterface< class IFGOptionInterface > mOptionInterface;
-
+	TObjectPtr<UFGDynamicOptionsRow> mParentOptionRow;
 };

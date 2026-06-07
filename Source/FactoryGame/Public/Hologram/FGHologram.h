@@ -52,7 +52,7 @@ struct FACTORYGAME_API FFGHologramMaterialSlotOverride
 
 	/** The material that this material must be replaced with */
 	UPROPERTY( EditAnywhere, Category = "Hologram Material Override" )
-	UMaterialInterface* MaterialOverride{nullptr};
+	TObjectPtr<UMaterialInterface> MaterialOverride{nullptr};
 };
 
 /**
@@ -118,7 +118,7 @@ public:
 
 	FORCEINLINE AFGHologram* FindChildHologramByName( FName hologramName ) const
 	{
-		AFGHologram* const* hologram = mChildrenNameLookupMap.Find( hologramName );
+		TObjectPtr<AFGHologram> const* hologram = mChildrenNameLookupMap.Find( hologramName );
 		return hologram ? *hologram : nullptr;
 	}
 
@@ -139,6 +139,11 @@ public:
 	virtual void OnNearbyBuildableOverlapEnd( class AFGBuildable* buildable );
 
 	/**
+	 * Updates hologram position based on the specified HitResult.
+	 */
+	virtual void UpdateHologramPlacement( const FHitResult& hitResult );
+
+	/**
 	 * Let the hologram check if the hit result is valid.
 	 *Indicates to build gun if the placement logic an updating should continue or not. If hit is not valid, no location updating will be set, and the hologram will be hidden.
 
@@ -146,6 +151,11 @@ public:
 	 */
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const;
 
+	/**
+	 * Let the hologram try to zoop based on a hitresult.
+	 */
+	virtual bool TryZoop( const FHitResult& hitResult );
+	
 	/**
 	 * See if the hit actor can be upgraded with this hologram and set the holograms location and rotation accordingly.
 	 * @return true if an upgrade is possible; false if not.
@@ -246,6 +256,8 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	TSubclassOf< UFGHologramBuildModeDescriptor > GetDefaultBuildGunMode() const { return mDefaultBuildMode; }
+
+	virtual TSubclassOf< UFGHologramBuildModeDescriptor > SampleBuildGunMode( AFGBuildable* ) const { return nullptr; }
 
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	EHologramBuildModeCategory GetBuildModeCategory() const { return mBuildModeCategory; }
@@ -496,6 +508,7 @@ public:
 	void HideHologram(bool bVisible);
 
 	virtual bool ShouldBuildGunHitWireMeshes() const;
+	virtual bool ShouldBuildGunHitVehiclePaths() const;
 	
 	/**
 	 * Called when the hologram snapped to something.
@@ -515,6 +528,9 @@ protected:
 	 *
 	 */
 	virtual void OnHologramTransformUpdated();
+
+	/** Called when the locked state of the hologram changes */
+	virtual void OnHologramLockStateChanged();
 
 	/** Initializes our clearance data. */
 	virtual void InitializeClearanceData();
@@ -646,31 +662,31 @@ protected:
 
 	/** Looping sound to play on holograms */
 	UPROPERTY()
-	class UAkComponent* mLoopSound;
+	TObjectPtr<class UAkComponent> mLoopSound;
 
 	/** Clearance data for this hologram. */
 	UPROPERTY()
 	TArray< FFGClearanceData > mClearanceData;
 
 	UPROPERTY()
-	class UStaticMeshComponent* mClearanceSnapMeshVisualization;
+	TObjectPtr<class UStaticMeshComponent> mClearanceSnapMeshVisualization;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	bool mCreateClearanceSnapMeshVisualization;
 
 	UPROPERTY()
-	TMap< AActor*, EClearanceOverlapResult > mCachedClearanceOverlapResults;
+	TMap< TObjectPtr<AActor>, EClearanceOverlapResult > mCachedClearanceOverlapResults;
 
 	/** Clearance detector box. Used to detect nearby clearances an display them during the build steps */
 	UPROPERTY()
-	class UBoxComponent* mClearanceDetector = nullptr;
+	TObjectPtr<class UBoxComponent> mClearanceDetector = nullptr;
 
 	/** Array of nearby buildables found through the clearance detector. */
 	UPROPERTY()
-	TArray< class AFGBuildable* > mNearbyBuildables;
+	TArray< TObjectPtr<class AFGBuildable> > mNearbyBuildables;
 
 	UPROPERTY()
-	TArray<UStaticMeshComponent*> mGeneratedAbstractComponents;
+	TArray<TObjectPtr<UStaticMeshComponent>> mGeneratedAbstractComponents;
 
 	/** Whether the hologram should snap to guide lines or not */
 	bool mSnapToGuideLines;
@@ -693,11 +709,11 @@ protected:
 
 	/** Material on hologram for valid placement. */
 	UPROPERTY()
-	class UMaterialInstance* mValidPlacementMaterial;
+	TObjectPtr<class UMaterialInstance> mValidPlacementMaterial;
 
 	/** Material on hologram for invalid placement. */
 	UPROPERTY()
-	class UMaterialInstance* mInvalidPlacementMaterial;
+	TObjectPtr<class UMaterialInstance> mInvalidPlacementMaterial;
 
 	/**
 	 * Enables composite holograms.
@@ -710,11 +726,11 @@ protected:
 	 *  - set correct materials on children.
 	 */
 	UPROPERTY()
-	TArray< class AFGHologram* > mChildren;
+	TArray< TObjectPtr<class AFGHologram> > mChildren;
 
 	/** Name for looking up stable names of the child holograms */
 	UPROPERTY()
-	TMap< FName, AFGHologram* > mChildrenNameLookupMap;
+	TMap< FName, TObjectPtr<AFGHologram> > mChildrenNameLookupMap;
 
 	/** Whether or not this hologram should have the SpawnChildren function called when spawned. */
 	bool mShouldSpawnChildHolograms;
@@ -724,7 +740,7 @@ protected:
 	 * to for example prevent it from spawning child holograms.
 	 */ 
 	UPROPERTY()
-	AFGHologram* mParent = nullptr;
+	TObjectPtr<AFGHologram> mParent = nullptr;
 	
 	/** Name of the hologram within the parent, used for fast lookup */
 	UPROPERTY()
@@ -751,7 +767,7 @@ protected:
 	
 	/** Tracks the blueprint designer this hologram resides inside of */
 	UPROPERTY( CustomSerialization )
-	class AFGBuildableBlueprintDesigner* mBlueprintDesigner;
+	TObjectPtr<class AFGBuildableBlueprintDesigner> mBlueprintDesigner;
 	
 	/** Special override to allow certain buildables to intersect with the blueprint designer when theyre at the very edge (walls, poles) */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
@@ -790,7 +806,7 @@ private:
 	
 	/** Who is building */
 	UPROPERTY( Replicated, CustomSerialization )
-	APawn* mConstructionInstigator;
+	TObjectPtr<APawn> mConstructionInstigator;
 
 	/** If this hologram is disabled and should not be visible or constructed. */
 	UPROPERTY( CustomSerialization )

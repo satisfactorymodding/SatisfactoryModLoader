@@ -57,6 +57,8 @@ struct FACTORYGAME_API FHologramHelpers
 	/** Find how many degrees targetLocation is from location's right-angles (0, 90, 180, 270) given a direction. Will convert vectors to 2D space. */
 	static float FindRightAngleBetweenLocations( const FVector& location, const FVector& targetLocation, const FVector& direction );
 
+	/** Helper function to snap to the factory building grid. */
+	static float SnapToFloor( class AFGBuildable* floor, float gridSnapSize, bool constrainToBlueprintDesigner, FVector& location );
 };
 
 struct FACTORYGAME_API FSplineUtils
@@ -295,6 +297,8 @@ struct FACTORYGAME_API FSplineUtils
 	/** Calculates an optimal magnitude for a straight line between the points. */
 	static float CalcStraightTangentMagnitude( const FVector& startPos, const FVector& endPos, float targetTangetFactor = 1.0f );
 
+	/** Utility function to split the spline component at the given offset */
+	static void SplitSplineAtDistance( const USplineComponent* splineComponent, float splitDistance, TArray<FSplinePointData>& out_firstSplinePoints, TArray<FSplinePointData>& out_secondSplinePoints );
 private:
 	/** Internal helpers for building routing the splines. */
 	static void CalcBendDirections3D(

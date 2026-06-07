@@ -7,7 +7,7 @@ AFGWalkwayHologram::AFGWalkwayHologram() : Super() {
 	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 }
 bool AFGWalkwayHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
-void AFGWalkwayHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
-void AFGWalkwayHologram::CreateZoopInstances(){ Super::CreateZoopInstances(); }
+void AFGWalkwayHologram::SetZoopFromHitresult(const FHitResult& hitResult){ Super::SetZoopFromHitresult(hitResult); }
+void AFGWalkwayHologram::CreateZoopInstances(const FIntVector& DesiredZoop){ Super::CreateZoopInstances(DesiredZoop); }
 FVector AFGWalkwayHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return FVector(); }
 void AFGWalkwayHologram::BeginPlay(){ Super::BeginPlay(); }

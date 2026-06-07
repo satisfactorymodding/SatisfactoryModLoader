@@ -25,9 +25,6 @@ class FACTORYGAME_API IFGSplineBuildableInterface
 	GENERATED_BODY()
 
 public:
-	/** Returns the bounding box of the spline, taking the middle spline point and the half length of the spline. Only returns valid data after BeginPlay as it relies on spline component to have valid data! */
-	FBox GetSplineBoundingBox() const;
-
 	/** Returns the first connection of the spline buildable */
 	UFUNCTION( BlueprintCallable, Category = "Spline Buildable Interface" )
 	virtual UFGConnectionComponent* GetSplineConnection0() const = 0;

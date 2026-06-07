@@ -147,7 +147,7 @@ private:
 	bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
 	
 	void UpdateInInventoryFuelTypes( const UFGInventoryComponent* instigatorInventory );
-	TArray< TSubclassOf< UFGItemDescriptor > > UpdateUnlockedFuelTypes();
+	TArray<TSubclassOf<UFGItemDescriptor>> CalculateUnlockedFuelTypes() const;
 
 protected:
 	/** Kept for save game compatibility. @see mDefaultFuelClasses */
@@ -204,15 +204,15 @@ protected:
 
 	/** Inventory where fuel is loaded into. */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mFuelInventory;
+	TObjectPtr<class UFGInventoryComponent> mFuelInventory;
 
 	/** Cached input connections */
 	UPROPERTY()
-	TArray<class UFGFactoryConnectionComponent*> mCachedInputConnections;
+	TArray<TObjectPtr<class UFGFactoryConnectionComponent>> mCachedInputConnections;
 
 	/** Cached pipe input connections */
 	UPROPERTY()
-	TArray< class UFGPipeConnectionComponent* > mCachedPipeInputConnections;
+	TArray< TObjectPtr<class UFGPipeConnectionComponent> > mCachedPipeInputConnections;
 
 	/** Input inventory index to store the fuel */
 	int32 mFuelInventoryIndex;

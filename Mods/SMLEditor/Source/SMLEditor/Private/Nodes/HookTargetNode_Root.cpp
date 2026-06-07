@@ -165,14 +165,14 @@ FText UHookTargetNode_InsertionHook::GetTooltipText() const {
 
 void UHookTargetNode_InsertionHook::GetMenuEntries(FGraphContextMenuBuilder& ContextMenuBuilder) const {
 	// Utility lambda to create a template with the provided insert location
-	const auto RegisterInsertionHookAction = [&](const EBlueprintFunctionHookInsertLocation InsertLocation) {
+	const auto RegisterInsertionHookAction = [&](const EBlueprintFunctionHookInsertLocation RegisterInsertLocation) {
 		const TSharedPtr<FEdGraphSchemaAction_NewHookTargetNode> NodePlacementAction = MakeShared<FEdGraphSchemaAction_NewHookTargetNode>(
 			LOCTEXT("HookTargetNodeInsertionHook_Category", "Hooks"),
-			FText::Format(LOCTEXT("HookTargetNodeInsertionHook_MenuName", "Create Insertion Hook - {0}"), HookInsertLocationToText(InsertLocation)),
+			FText::Format(LOCTEXT("HookTargetNodeInsertionHook_MenuName", "Create Insertion Hook - {0}"), HookInsertLocationToText(RegisterInsertLocation)),
 			UHookTargetNode_InsertionHook::Description, 0);
 
 		UHookTargetNode_InsertionHook* NodeTemplate = ContextMenuBuilder.CreateTemplateNode<UHookTargetNode_InsertionHook>();
-		NodeTemplate->InsertLocation = InsertLocation;
+		NodeTemplate->InsertLocation = RegisterInsertLocation;
 		NodePlacementAction->NodeTemplate = NodeTemplate;
 
 		if (NodePlacementAction->IsNodeActionRelevantToTheGraphContext(ContextMenuBuilder)) {

@@ -9,5 +9,6 @@ public class FactoryGameSteamTarget : FactoryGameTarget
     {
 	    // CustomConfig = "Steam"; // MODDING EDIT: Cannot deploy targets with conflicting CustomConfig values
 	    GlobalDefinitions.Add("STOREFRONT_ID=steam");
+	    GlobalDefinitions.Add("UE_PROJECT_STEAMSHIPPINGID=526870");
     }
 }

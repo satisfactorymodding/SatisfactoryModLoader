@@ -114,20 +114,20 @@ private:
 
 	/** The two connection components we connect. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class UFGCircuitConnectionComponent* mConnections[ 2 ];
+	TObjectPtr<class UFGCircuitConnectionComponent> mConnections[ 2 ];
 
 	/** Automatically spawned child pole, can be null. */
 	UPROPERTY( Replicated )
-	class AFGPowerPoleHologram* mPowerPole;
+	TObjectPtr<class AFGPowerPoleHologram> mPowerPole;
 
 	UPROPERTY( Replicated )
-	class AFGPowerPoleWallHologram* mPowerPoleWall;
+	TObjectPtr<class AFGPowerPoleWallHologram> mPowerPoleWall;
 
 	UPROPERTY()
-	class AFGBuildableHologram* mActivePoleHologram;
+	TObjectPtr<class AFGBuildableHologram> mActivePoleHologram;
 
 	UPROPERTY()
-	class UFGCircuitConnectionComponent* mActiveSnapConnection;
+	TObjectPtr<class UFGCircuitConnectionComponent> mActiveSnapConnection;
 
 	/** Recipe to use for the automatically spawned child pole, can be null. */
 	UPROPERTY( EditDefaultsOnly, Category = "Power pole" )
@@ -158,5 +158,5 @@ private:
 	TArray< FWireInstance > mWireInstances;
 
 	UPROPERTY()
-	class AFGBuildableWire* mUpgradeTarget;
+	TObjectPtr<class AFGBuildableWire> mUpgradeTarget;
 };

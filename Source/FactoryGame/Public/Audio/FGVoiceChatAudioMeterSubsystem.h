@@ -1,6 +1,7 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 
@@ -37,18 +38,18 @@ public:
 
 	//RPTC for voice chat metering which ranges from -100 to 0 with default being to -100 (when no once is talking). The data is coming from the audio metering system (windows audio peaks)
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
-	class UAkRtpc* mAudioMeterPeakRtpc = nullptr;
+	TObjectPtr<class UAkRtpc> mAudioMeterPeakRtpc = nullptr;
 
 	//RPTC for voice chat metering which ranges from -100 to 0 with default being to -100 (when no once is talking). This is either -100 to 0, and is interpolating inside wwise
 	//Different strength rtpc for attenuation curves
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
-	class UAkRtpc* mAttenuationStrengthLowRtpc;
+	TObjectPtr<class UAkRtpc> mAttenuationStrengthLowRtpc;
 
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
-	class UAkRtpc* mAttenuationStrengthMediumRtpc;
+	TObjectPtr<class UAkRtpc> mAttenuationStrengthMediumRtpc;
 
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
-	class UAkRtpc* mAttenuationStrengthStrongRtpc;
+	TObjectPtr<class UAkRtpc> mAttenuationStrengthStrongRtpc;
 
 private:
 	void ConvertPeakToRTPC( float peak, float DeltaTime );

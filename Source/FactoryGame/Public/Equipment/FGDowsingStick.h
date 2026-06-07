@@ -29,7 +29,7 @@ private:
 	int32 mNumVolumesPerTick;
 
 	UPROPERTY()
-	TArray< AActor* > mWaterVolumes;
+	TArray< TObjectPtr<AActor> > mWaterVolumes;
 
 	FVector mClosestWaterLocation;
 

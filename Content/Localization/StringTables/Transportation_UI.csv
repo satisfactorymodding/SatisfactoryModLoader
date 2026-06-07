@@ -475,6 +475,8 @@ Are you sure you wish to close?","","","",""
 "Vehicles/CraftBench/LookAtDescription/Occupied","Crafting Bench is occupied!","Look-at description tooltip","","",""
 "Vehicles/CraftBench/LookAtDescription/Open/Pattern","Press [{BUTTON}] to open Crafting Bench","Look-at description tooltip","{BUTTON} = text, key name","UI","#interface
 Common Vehicles Tooltips"
+"Vehicles/CraftBench/Storage/CurrentAmountInVehicle","Current Amount In Vehicle","The trunk is called ""Craft Bench""","","UI","#interface
+#transportation"
 "Vehicles/CraftBench/Storage/WindowTitle","Vehicle Storage","The trunk is called ""Craft Bench""","","UI","#interface
 #transportation"
 "Vehicles/CraftBench/StoreAll/Button","STORE ALL","The trunk is called ""Craft Bench""","","UI","#interface
@@ -495,10 +497,16 @@ Common Vehicles Tooltips"
 #transportation"
 "Vehicles/DockingStation/Info/FuelPerMin/Pattern","{fuel} per min","","{fuel} = number, fuel consumption","UI","#buildable
 #transportation"
+"Vehicles/DockingStation/Info/IncomingTransferRate/Fluid/Pattern","<WhiteSmall>Incoming Transfer Rate:</>
+<OrangeSmall>{IncomingTransferRate} m³ per minute</>","","{IncomingTransferRate} = number","UI","#interface
+#transportation"
 "Vehicles/DockingStation/Info/IncomingTransferRate/Pattern","<WhiteSmall>Incoming Transfer Rate:</>
 <OrangeSmall>{IncomingTransferRate} items per minute</>","","{IncomingTransferRate} = number","UI","#interface
 #transportation"
 "Vehicles/DockingStation/Info/MaxTransferRate","Maximum Transfer Rate","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/MaxTransferRate/Fluid/Pattern","<WhiteSmall>Maximum Transfer Rate:</>
+<OrangeSmall>{MaxTransferRate} m³ per minute</>","","{MaxTransferRate} = number","UI","#interface
 #transportation"
 "Vehicles/DockingStation/Info/MaxTransferRate/Pattern","<WhiteSmall>Maximum Transfer Rate:</>
 <OrangeSmall>{MaxTransferRate} stacks per minute</>","","{MaxTransferRate} = number","UI","#interface
@@ -511,12 +519,21 @@ Common Vehicles Tooltips"
 #transportation"
 "Vehicles/DockingStation/Info/None","N/A","","","UI","#interface
 #transportation"
+"Vehicles/DockingStation/Info/OutgoingTransferRate/Fluid/Pattern","<WhiteSmall>Outgoing Transfer Rate:</>
+<OrangeSmall>{OutgoingTransferRate} m³ per minute</>","","{OutgoingTransferRate} = number","UI","#interface
+#transportation"
 "Vehicles/DockingStation/Info/OutgoingTransferRate/Pattern","<WhiteSmall>Outgoing Transfer Rate:</>
 <OrangeSmall>{OutgoingTransferRate} items per minute</>","","{OutgoingTransferRate} = number","UI","#interface
 #transportation"
 "Vehicles/DockingStation/Info/PowerConsumption","Power Consumption","","","UI","#interface
 #transportation"
 "Vehicles/DockingStation/Info/PowerConsumption/Description","The amount of power the Truck Station is currently consuming.","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/ReplaceDifferingFuel","Replace Differing Fuel:","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/ReplaceDifferingFuel/Description","Replaces the fuel in docking vehicles if that fuel type is different from the one in this station.","","","UI","#interface
+#transportation"
+"Vehicles/DockingStation/Info/ReplaceDifferingFuel/TooltipTitle","Replace Differing Fuel","Title on the tooltip","","UI","#interface
 #transportation"
 "Vehicles/DockingStation/Info/Status/Load","LOAD","Should the docking station load its inventory from the vehicle?","","",""
 "Vehicles/DockingStation/Info/Status/Unload","UNLOAD","Should the docking station unload its inventory into the vehicle?","","",""
@@ -536,12 +553,29 @@ Common Vehicles Tooltips"
 #transportation"
 "Vehicles/DockingStation/VehicleStatus/WrongFuel/Description","Please use a more efficient type of fuel. One of the vehicles passing through this station can't make a round trip on a full stack of the current fuel used in this station.","","","UI","#interface
 #transportation"
+"Vehicles/HUD/Keybindings/OpenMenu","Open Menu","","","",""
+"Vehicles/HUD/Keybindings/TogglePathVisualization","Toggle Path Visualization","","","",""
 "Vehicles/LookAtDescription/Drive/Pattern","Press [{0}] to drive {1}","","{0} = text, key name
 {1} = text, vehicle name","UI","#common
 #look_at_description"
 "Vehicles/LookAtDescription/Enter/Pattern","Press [{0}] to enter {1}","","{0} = text, key name
 {1} = text, vehicle name","UI","#common
 #look_at_description"
+"Vehicles/PathInfo/Autopilot/Pattern","<White12Reg>Autopilot Status: </><Orange12Reg>{status}</>","","{status} = Auto Pilot Status","",""
+"Vehicles/PathInfo/Autopilot/Status/Active","Active","","","",""
+"Vehicles/PathInfo/Autopilot/Status/Disabled","Disabled","","","",""
+"Vehicles/PathInfo/Autopilot/Status/NoFuel","Out of Fuel","","","",""
+"Vehicles/PathInfo/Autopilot/Status/NotOnPath","Missing path","","","",""
+"Vehicles/PathInfo/Autopilot/Status/StationUnreachable","Unable to reach station","","","",""
+"Vehicles/PathInfo/Autopilot/Status/TooFewStations","Too few stations","","","",""
+"Vehicles/PathInfo/Autopilot/Status/Waiting","Vehicle has spent too long waiting for a junction","","","",""
+"Vehicles/PathInfo/RouteCost/Cost/Pattern","{Value} per trip / {ValueMin} per min ({Part})","","{Value} = fuel cost per trip, {ValueMin} = fuel cost per min, {Part} = Item Name","",""
+"Vehicles/PathInfo/RouteCost/NoRoute","No Valid Route","","","",""
+"Vehicles/PathInfo/RouteCost/Pattern","<White12Reg>Route Cost: </><Orange12Reg>{amount}</>","","{amount} = fuel cost for route","",""
+"Vehicles/PathInfo/RouteCost/SelectFuelType","Select Fuel Type","","","",""
+"Vehicles/PathMenu/AvailableStations","Available Stations","","","",""
+"Vehicles/PathMenu/CurrentRoute","Current Route","","","",""
+"Vehicles/PathMenu/WindowTitle","Vehicle Path","","","",""
 "Vehicles/RecordMenu/AutopilotOff/Button","Disable Autopilot","Record menu that the player see when you enter a vehicle","","UI","#interface
 #transportation"
 "Vehicles/RecordMenu/AutopilotOn/Button","Enable Autopilot","Record menu that the player see when you enter a vehicle","","UI","#interface
@@ -552,7 +586,7 @@ Common Vehicles Tooltips"
 "Vehicles/RecordMenu/HUD/VehiclePath","Vehicle Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/HUD/VehiclePath/Autopilot/Disabled","Disabled","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/HUDVehiclePath/Autopilot/Enabled","Enabled","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
-"Vehicles/RecordMenu/Keybindings/ChangeCamera","Change Camera","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
+"Vehicles/RecordMenu/Keybindings/ChangeCamera","Fixed Camera","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/Keybindings/LoadPath","Load Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/Keybindings/OpenRecordMenu","Open Record Menu","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"
 "Vehicles/RecordMenu/Keybindings/PathShowHide","Show/Hide Path","Record menu that the player see when you enter a vehicle","","UI","Common Vehicles Tooltips"

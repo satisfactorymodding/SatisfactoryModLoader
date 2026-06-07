@@ -40,7 +40,6 @@ void UGameInstanceModule::RegisterDefaultContent() {
     //Register default content
     UGameInstance* GameInstance = GetGameInstance();
     UConfigManager* ConfigManager = GameInstance->GetSubsystem<UConfigManager>();
-    UItemTooltipSubsystem* ItemTooltipSubsystem = GameInstance->GetSubsystem<UItemTooltipSubsystem>();
 
     const FString OwnerModReferenceString = GetOwnerModReference().ToString();
     
@@ -49,19 +48,37 @@ void UGameInstanceModule::RegisterDefaultContent() {
         ConfigManager->RegisterModConfiguration(Configuration);
     }
 
-    for (const UClass* GlobalTooltipProvider : GlobalItemTooltipProviders) {
-        ItemTooltipSubsystem->RegisterGlobalTooltipProvider(OwnerModReferenceString, GlobalTooltipProvider->GetDefaultObject());
-    }
-
 	UBlueprintHookManager* BlueprintHookManager = GameInstance->GetEngine()->GetEngineSubsystem<UBlueprintHookManager>();
 	for (const TSubclassOf<UBlueprintHook>& HookBlueprintClass : BlueprintHooks) {
 		BlueprintHookManager->RegisterBlueprintHook(GameInstance, Cast<UHookBlueprintGeneratedClass>(HookBlueprintClass.Get()));
 	}
 
-    UWidgetBlueprintHookManager* WidgetHookManager = GameInstance->GetEngine()->GetEngineSubsystem<UWidgetBlueprintHookManager>();
-    for (UWidgetBlueprintHookData* HookData : WidgetBlueprintHooks) {
-        WidgetHookManager->RegisterWidgetBlueprintHook(HookData);
-    }
+	if (!IsRunningDedicatedServer())
+	{
+		UItemTooltipSubsystem* ItemTooltipSubsystem = GameInstance->GetSubsystem<UItemTooltipSubsystem>();
+		for (const TSoftClassPtr<UObject>& GlobalTooltipProvider : GlobalItemTooltipProviders) {
+			if (UClass* LoadedGlobalTooltipProvider = GlobalTooltipProvider.LoadSynchronous())
+			{
+				ItemTooltipSubsystem->RegisterGlobalTooltipProvider(OwnerModReferenceString, LoadedGlobalTooltipProvider->GetDefaultObject());	
+			}
+		}
+
+		for (const TSoftClassPtr<UBlueprintHook>& HookBlueprintClass : ClientBlueprintHooks) {
+			if (UHookBlueprintGeneratedClass* LoadedHookBlueprintClass = Cast<UHookBlueprintGeneratedClass>(HookBlueprintClass.LoadSynchronous()))
+			{
+				BlueprintHookManager->RegisterBlueprintHook(GameInstance, LoadedHookBlueprintClass);	
+			}
+		}
+
+		UWidgetBlueprintHookManager* WidgetHookManager = GameInstance->GetEngine()->GetEngineSubsystem<UWidgetBlueprintHookManager>();
+		for (const TObjectPtr<UWidgetBlueprintHookData>& WidgetHookData : WidgetBlueprintHooks)
+		{
+			if (WidgetHookData)
+			{
+				WidgetHookManager->RegisterWidgetBlueprintHook(WidgetHookData);	
+			}
+		}
+	}
 
     USMLGameMapRegistry* GameMapRegistry = GameInstance->GetSubsystem<USMLGameMapRegistry>();
     for (USMLGameMapData* MapData : GameMaps) {

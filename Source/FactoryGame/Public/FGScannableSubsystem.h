@@ -52,7 +52,7 @@ public:
 	void OnLevelPlacedActorDestroyed(AActor* destroyedActor);
 
 	void OnDropPodLooted( class AFGDropPod* dropPod );
-	
+
 	FORCEINLINE const TArray<FWorldScannableData>& GetAvailableItemPickups() const { return mAvailableItemPickups; }
 	FORCEINLINE const TArray<FWorldScannableData>& GetAvailableDropPods() const { return mAvailableDropPods; }
 	FORCEINLINE const TArray<FCreatureSpawnerWorldScannableData>& GetAvailableCreatureSpawners() const { return mAvailableCreatureSpawners; }
@@ -66,7 +66,7 @@ private:
 	void AssignScannableData( const class AFGWorldScannableDataGenerator* sourceGenerator );
 
 	UPROPERTY( Transient )
-	TArray< class AFGBuildableRadarTower* > mRadarTowers;
+	TArray< TObjectPtr<class AFGBuildableRadarTower> > mRadarTowers;
 	
 	UPROPERTY( Transient )
 	TArray<FWorldScannableData> mAvailableItemPickups;

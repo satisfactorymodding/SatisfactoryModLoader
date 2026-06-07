@@ -80,14 +80,14 @@ protected:
 
 	/** The scene captor component that will generate the result of our render target */
 	UPROPERTY(VisibleDefaultsOnly)
-	class USceneCaptureComponent2D* mSceneCaptureComponent;
+	TObjectPtr<class USceneCaptureComponent2D> mSceneCaptureComponent;
 
 	/**
 	 * The stage we want to change to preview the mesh when we do our preview, this is where the components will get attached when
 	 * they get set
 	 **/
 	UPROPERTY()
-	class USceneComponent* mStage;
+	TObjectPtr<class USceneComponent> mStage;
 
 	/** If true, then we create our own render target every time we want to play */
 	UPROPERTY(EditDefaultsOnly,Category="Stage|RenderTarget")

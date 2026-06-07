@@ -222,22 +222,22 @@ private:
 
 	/** The components we're connected to. If >1 this is a switch. */
 	UPROPERTY( SaveGame, Replicated )
-	TArray< UFGRailroadTrackConnectionComponent* > mConnectedComponents;
+	TArray< TObjectPtr<UFGRailroadTrackConnectionComponent> > mConnectedComponents;
 
 	/** The switch control associated with this connection, if any. */
 	UPROPERTY( Replicated )
-	class AFGBuildableRailroadSwitchControl* mSwitchControl;
+	TObjectPtr<class AFGBuildableRailroadSwitchControl> mSwitchControl;
 
 	/** The station associated with this connection, if any. */
 	UPROPERTY()
-	class AFGBuildableRailroadStation* mStation;
+	TObjectPtr<class AFGBuildableRailroadStation> mStation;
 
 	/**
 	 * The facing signal associated with this connection, if any.
 	 * This is the signal a train cares about when traversing this connection.
 	 */
 	UPROPERTY()
-	class AFGBuildableRailroadSignal* mFacingSignal;
+	TObjectPtr<class AFGBuildableRailroadSignal> mFacingSignal;
 	
 	/**
 	 * The trailing signals associated with this connection, if any.
@@ -246,5 +246,5 @@ private:
 	 * If this is set but the facing signal is null, traversing is disallowed based on the one-way rule of signalling.
 	 */
 	UPROPERTY()
-	class AFGBuildableRailroadSignal* mTrailingSignal;
+	TObjectPtr<class AFGBuildableRailroadSignal> mTrailingSignal;
 };

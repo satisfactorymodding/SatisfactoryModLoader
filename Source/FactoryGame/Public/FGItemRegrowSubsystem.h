@@ -34,7 +34,7 @@ protected:
 private:
 	/** all pickups we want to check for regrowth */
 	UPROPERTY()
-	TArray< class AFGItemPickup* > mPickups;
+	TArray< TObjectPtr<class AFGItemPickup> > mPickups;
 	/** */
 	int32 mCurrentIndex;
 

@@ -84,7 +84,7 @@ public:
 
 private:
 	UPROPERTY()
-	TMap<UClass*, FGameplayTagContainer> TagContainerRegistry;
+	TMap<TObjectPtr<UClass>, FGameplayTagContainer> TagContainerRegistry;
 
 	bool bRegistryFrozen{ false };
 
@@ -104,6 +104,7 @@ private:
 	void InternalAddGameplayTagsTo(UClass* content, const FGameplayTagContainer tags);
 	
 	FGameplayTagContainer* GetOrInitContainerFor(UClass* content);
+	FGameplayTagContainer* GetVanillaContainerFor(UClass* content);
 
 	// Gets tags offered via SML Extended Attribute Provider
 	FGameplayTagContainer GetTagsFromExtendedAttributeProvider(UClass* content);

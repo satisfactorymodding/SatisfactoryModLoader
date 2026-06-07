@@ -11,7 +11,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogGameplayEvents, Log, Verbose);
 void UGameplayEventsSubsystem::DispatchGameplayEvent(const FGameplayEvent& GameplayEvent)
 {
 	// These ensures should probably be removed later. They are very useful for Satisfactory but might not be correct in future projects.
-	for (const auto instigator : GameplayEvent.Instigators)
+	for (const auto& instigator : GameplayEvent.Instigators)
 	{
 		if (!IsValid(instigator))
 		{

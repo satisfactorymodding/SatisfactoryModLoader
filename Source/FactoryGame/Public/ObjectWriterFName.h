@@ -10,9 +10,11 @@
  */
 class FObjectWriterFName : public FObjectWriter
 {
+	FCustomVersionContainer& mCustomVersionContainer;
 public:
-	FObjectWriterFName( UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion );
+	FObjectWriterFName( UObject* Obj, TArray<uint8>& InBytes, FCustomVersionContainer& customVersionContainer );
 
+	virtual const FCustomVersionContainer& GetCustomVersions() const;
 	virtual FArchive& operator<<( class UObject*& Res ) override;
 	virtual FArchive& operator<<( FObjectPtr& Res ) override;
 	virtual FArchive& operator<<( class FName& N ) override;

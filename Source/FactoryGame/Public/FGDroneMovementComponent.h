@@ -102,14 +102,18 @@ public:
     UFUNCTION( BlueprintCallable, Category = "DroneMovement" )
     void FollowPath( const TArray< FVector >& Path, EDroneFlyingMode flyingMode, bool brakeWhenApproaching = true );
 
+	bool IsIdle() const;
+
+	bool IsRegisteredToSubsystem() const { return mIsRegisteredToSubsystem; }
+
+	void OnRegisteredToSubsystem();
+	void OnUnregisteredFromSubsystem();
+
 #if !UE_BUILD_SHIPPING
 	void ShowDebug();
 #endif
 
 private:
-	UFUNCTION()
-	void OnRep_MovementInstruction( EDroneMovementInstruction previousInstruction );
-
 	UFUNCTION()
 	void OnRep_FlyingMode();
 	
@@ -122,16 +126,14 @@ private:
 	/** Interrupts whatever movement the drone is doing right now. */
 	void CancelCurrentMovement();
 
-	void TickMovement_MoveTo( float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation );
-	void TickMovement_FollowPath( float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation );
-	void TickMovement_None( float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation );
+	bool TickMovement_MoveTo( float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation );
+	bool TickMovement_FollowPath( float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation );
+	bool TickMovement_None( float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation );
 
 	/** Helper function to move towards a location, returns true if we arrived at the location. */
 	bool MoveTowardsLocation( const FVector& location, float deltaSeconds, FVector& out_newLocation, FRotator& out_newRotation, bool brakeWhenApproaching = false );
 
 	bool HasAuthority() const;
-
-	void SetRegistered( bool registered, bool updateTransformWhenUnregistered = true );
 
 public:
 	/** Called whenever the drone finishes its movement instruction. */
@@ -151,14 +153,14 @@ public:
 private:
 	/** The drone this movement component belongs to. */
 	UPROPERTY()
-	class AFGDroneVehicle* mDrone;
+	TObjectPtr<class AFGDroneVehicle> mDrone;
 
 	/** The current flying mode of the drone. Used to determine how the flying should behave. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_FlyingMode )
 	EDroneFlyingMode mFlyingMode;
 
 	/** What the drone movement is currently instructed to do. */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_MovementInstruction )
+	UPROPERTY( SaveGame, Replicated )
 	EDroneMovementInstruction mCurrentMovementInstruction;
 
 	/** The path the drone is currently following. */
@@ -206,4 +208,7 @@ private:
 	/** Whether or not drone is currently braking. */
 	UPROPERTY()
 	bool mIsBraking;
+
+	/** Whether or not the movement component is currently registered to the drone subsystem. */
+	bool mIsRegisteredToSubsystem;
 };

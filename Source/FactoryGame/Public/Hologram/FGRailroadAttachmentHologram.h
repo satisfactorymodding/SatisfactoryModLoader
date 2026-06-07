@@ -31,10 +31,10 @@ public:
 
 private:
 	UPROPERTY( CustomSerialization )
-	class UFGRailroadTrackConnectionComponent* mConnection;
+	TObjectPtr<class UFGRailroadTrackConnectionComponent> mConnection;
 	
 	UPROPERTY( CustomSerialization )
-	class UFGRailroadTrackConnectionComponent* mSnappedConnection;
+	TObjectPtr<class UFGRailroadTrackConnectionComponent> mSnappedConnection;
 
 	FTransform mRelativeConnectionTransform;
 

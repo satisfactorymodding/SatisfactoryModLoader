@@ -100,3 +100,5 @@ void AFGSchematicManager::Internal_OpenSchematicUnlockTransaction(FScopedSchemat
 void AFGSchematicManager::Internal_CommitSchematicUnlockTransaction(const FScopedSchematicUnlockTransaction* transaction){  }
 void AFGSchematicManager::Internal_AddSchematicsToTransaction(const TArrayView<const TSubclassOf<UFGSchematic>>& schematics) const{  }
 void AFGSchematicManager::Internal_CommitCurrentSchematicTransaction(){  }
+void AFGSchematicManager::UnlockSchematicGameplayEvent(const TSubclassOf<UFGSchematic>& schematicClass){ }
+void AFGSchematicManager::CheckSchematicAchievement(){ }

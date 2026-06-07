@@ -5,5 +5,7 @@
 FFGGamepadCursor::FFGGamepadCursor(){ }
 FFGGamepadCursor::FFGGamepadCursor( APlayerController* inPC, float inRadius){ }
 void FFGGamepadCursor::Tick(const float DeltaTime, FSlateApplication& SlateApp, TSharedRef<ICursor> Cursor){ }
+bool FFGGamepadCursor::HandleKeyDownEvent(FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent){ return FAnalogCursor::HandleKeyDownEvent(SlateApp, InKeyEvent); }
+bool FFGGamepadCursor::HandleKeyUpEvent(FSlateApplication& SlateApp, const FKeyEvent& InKeyEvent){ return FAnalogCursor::HandleKeyUpEvent(SlateApp, InKeyEvent); }
 void FFGGamepadCursor::EnableAnalogCursor( APlayerController* PC, TSharedPtr<SWidget> WidgetToFocus){ }
 void FFGGamepadCursor::DisableAnalogCursor( APlayerController* PC){ }

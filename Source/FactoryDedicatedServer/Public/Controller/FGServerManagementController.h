@@ -43,6 +43,9 @@ public:
 
 	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator" )
 	void Handler_SetAutoLoadSessionName( const FString &SessionName ) const;
+
+	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator" )
+	void Handler_SetAgreeToCrashUploadRequested( bool AgreeToCrashUploadRequested ) const;
 	
 	// Runs a console command on the server
 	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator" )

@@ -24,7 +24,7 @@ public:
 	
 	/** Icon of the starting location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Starting Location Data")
-	UTexture2D* LocationIcon;
+	TObjectPtr<UTexture2D> LocationIcon;
 
 	/** PlayerStart tag associated with this starting location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Starting Location Data")
@@ -49,7 +49,7 @@ public:
 
 	/** Icon of the map to show in the map picker */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Map Data")
-	UTexture2D* MapIcon;
+	TObjectPtr<UTexture2D> MapIcon;
 
 	/** Starting locations */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Map Data")
@@ -66,7 +66,7 @@ struct SML_API FSMLGameMapRegistryEntry {
 
 	/** Registered map data */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Game Map Registry Entry")
-	USMLGameMapData* MapData;
+	TObjectPtr<USMLGameMapData> MapData;
 };
 
 UCLASS()

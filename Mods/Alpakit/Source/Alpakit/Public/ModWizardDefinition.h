@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IPluginWizardDefinition.h"
+#include "Styling/SlateTypes.h"
 
 struct FModTemplateDescription;
 
@@ -83,3 +84,4 @@ struct FModTemplateDescription
 	
 	static TSharedPtr<FModTemplateDescription> Load(const TSharedPtr<FJsonObject> JSON, const FString TemplatesPath, FString& Error);
 };
+

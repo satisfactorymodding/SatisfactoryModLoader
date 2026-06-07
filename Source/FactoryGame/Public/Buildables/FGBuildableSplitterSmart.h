@@ -176,5 +176,5 @@ private:
 	
 	/** Store last cached available space and if an item have been grabbed by the connected components  */
 	UPROPERTY( Transient )
-	TMap< UFGFactoryConnectionComponent*, FConveyorSpaceData > mConveyorSpaceData;
+	TMap< TObjectPtr<UFGFactoryConnectionComponent>, FConveyorSpaceData > mConveyorSpaceData;
 };

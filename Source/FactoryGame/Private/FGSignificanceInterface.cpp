@@ -2,5 +2,3 @@
 
 #include "FGSignificanceInterface.h"
 
-void IFGSignificanceInterface::SetupForSignificance(){ }
-float IFGSignificanceInterface::GetSignificanceRange(){ return float(); }

@@ -3,6 +3,5 @@
 #include "FGGlobalSettings.h"
 
 UFGFactorySettings* UFGGlobalSettings::GetFactorySettingsCDO(){ return nullptr; }
-UFGDropPodSettings* UFGGlobalSettings::GetDropPodSettingsCDO(){ return nullptr; }
 UFGHardDriveSettings* UFGGlobalSettings::GetHardDriveSettingsCDO(){ return nullptr; }
 UFGEnvironmentSettings* UFGGlobalSettings::GetEnvironmentSettingsCDO(){ return nullptr; }

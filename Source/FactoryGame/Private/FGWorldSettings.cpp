@@ -151,9 +151,11 @@ AFGWorldSettings::AFGWorldSettings() : Super() {
 	this->mAudioVolumeSubsystem = nullptr;
 	this->mVoiceChatAudioMeterSubsystem = nullptr;
 	this->mLocalAudioContextSubsystem = nullptr;
+	this->mRainAudioSubsystem = nullptr;
 	this->mFoliageRemovalSubsystem = nullptr;
 	this->mConveyorItemSubsystem = nullptr;
 	this->mProximitySubsystem = nullptr;
+	this->mResourceNodeManager = nullptr;
 	this->mAbstractInstanceManager = nullptr;
 }
 void AFGWorldSettings::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

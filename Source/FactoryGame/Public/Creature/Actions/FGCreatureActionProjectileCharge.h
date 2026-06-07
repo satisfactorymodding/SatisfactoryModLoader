@@ -78,7 +78,7 @@ protected:
 	
 	/** Magazine object of our ammo type. */
 	UPROPERTY( BlueprintReadOnly, Category = "Charge|Projectile" )
-	UFGAmmoType* mMagazineObject;
+	TObjectPtr<UFGAmmoType> mMagazineObject;
 
 private:
 	FTimerHandle mActiveChargeProjectileTimerHandle;

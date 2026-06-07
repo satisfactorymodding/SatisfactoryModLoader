@@ -13,7 +13,7 @@ public:
     
     /** Command Sender associated with this player */
     UPROPERTY(BlueprintReadOnly)
-    UPlayerCommandSender* CommandSender;
+    TObjectPtr<UPlayerCommandSender> CommandSender;
 
     /** Returns true whenever provided mod is installed on client side */
     UFUNCTION(BlueprintPure)

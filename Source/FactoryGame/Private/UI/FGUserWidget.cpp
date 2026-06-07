@@ -9,6 +9,7 @@ void UFGUserWidget::ValidateCompiledWidgetTree(const UWidgetTree& BlueprintWidge
 #endif 
 void UFGBaseWidget::NativeConstruct(){ Super::NativeConstruct(); }
 void UFGBaseWidget::NativeDestruct(){ Super::NativeDestruct(); }
+void UFGBaseWidget::StartTickForDuration(FTickDynamicDelegate Delegate, float Duration){ }
 void UFGUserWidget::NativeConstruct(){ Super::NativeConstruct(); }
 void UFGUserWidget::NativeDestruct(){ Super::NativeDestruct(); }
 FReply UFGUserWidget::NativeOnPreviewKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent){ return FReply::Unhandled(); }
@@ -30,7 +31,13 @@ bool UFGUserWidget::IsFocusWidgetForKeybindFound(const FFGKeybinding& Keybinding
 void UFGUserWidget::OverwriteKeybindings(TArray<FFGKeybinding> newkeyHints){  }
 FKey UFGUserWidget::FindKeyByBindingTag(FName HintTag){ return FKey(); }
 bool UFGUserWidget::UpdateKeybindingByTag(FName HintTag, FKey NewKey){ return false; }
+bool UFGUserWidget::UpdateHintTextByIndex(int Index, FText NewHintText){ return bool(); }
 void UFGUserWidget::AddChildKeybindings(UFGUserWidget* ChildWidget){ }
+bool UFGUserWidget::StoreFocusWidget(){ return bool(); }
+bool UFGUserWidget::RestoreFocusWidget(){ return bool(); }
+void UFGUserWidget::UpdateFocusHighlights(){ }
+void UFGUserWidget::ApplyFocusHighlightsOnInputDeviceTypeChanged(EInputDeviceType deviceType){ }
+void UFGUserWidget::ApplyFocusHighlight(FFGFocusHighlight& FocusHighlight, bool bInPath){ }
 FReply UFGUserWidget::CallDelegateForKeyEventOfType(const FKeyEvent& InKeyEvent, EFGKeyHintDelegateType DelegateType){ return FReply::Unhandled(); }
 FReply UFGUserWidget::CallKeybindingDelegate(const FFGKeybinding& Keybinding, EFGKeyHintDelegateType DelegateType){ return FReply::Unhandled(); }
 void UFGUserWidget::BeginLongPress(const FFGKeybinding& Keybinding){ }

@@ -429,7 +429,7 @@ void FScriptExprHelper::PerformReachabilityAnalysis(const TArray<TSharedPtr<FScr
 	
 	while (!UnvisitedStatements.IsEmpty()) {
 		// Mark the current statement as visited
-		const TSharedPtr<FScriptExpr> CurrentStatement = UnvisitedStatements.Pop(false);
+		const TSharedPtr<FScriptExpr> CurrentStatement = UnvisitedStatements.Pop(EAllowShrinking::No);
 		VisitedStatementSet.Add(CurrentStatement);
 
 		// Add all statements that have not been visited yet that this statement dependends to the unvisited statements set

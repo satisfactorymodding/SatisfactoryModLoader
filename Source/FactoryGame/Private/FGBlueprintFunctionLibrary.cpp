@@ -18,7 +18,7 @@ void UFGBlueprintFunctionLibrary::ApplyDefaultColorPrimitiveData( AActor* actor)
 void UFGBlueprintFunctionLibrary::GetAllMeshComponentsInClass(const TSubclassOf< AActor > inClass, TArray< UMeshComponent* >& out_components){ }
 void UFGBlueprintFunctionLibrary::GetAllComponentsInClass(const TSubclassOf<AActor> inClass, const TSubclassOf<UActorComponent> inActorComponentClass, TArray<UActorComponent*>& out_components, TMap<USceneComponent*, FFGComponentParentAttachmentInfo>& out_parentComponentMap){ }
 FBox UFGBlueprintFunctionLibrary::GetCollisionBoundingBoxFromActorClass(const TSubclassOf<AActor> inClass, const FTransform& originTransform){ return FBox(); }
-void UFGBlueprintFunctionLibrary::GetAllDescriptorsSorted(UObject* worldContext,  TArray< TSubclassOf< UFGItemDescriptor > >& out_descriptors){ }
+void UFGBlueprintFunctionLibrary::GetAllDescriptorsSorted(UObject* worldContext, TArray<TSubclassOf<UFGItemDescriptor>>& out_descriptors, bool includeFluids, bool includeBuildings, bool onlyUnlocked){ }
 void UFGBlueprintFunctionLibrary::ChangeLanguage(FString target){ }
 FString UFGBlueprintFunctionLibrary::GetLanguage(){ return FString(); }
 bool UFGBlueprintFunctionLibrary::IsEditorWorld( UObject* worldContext){ return bool(); }
@@ -27,33 +27,17 @@ float UFGBlueprintFunctionLibrary::LogX(float base, float value){ return float()
 float UFGBlueprintFunctionLibrary::RoundFloatWithPrecision(float value, int32 MaximumFractionalDigits){ return float(); }
 FName UFGBlueprintFunctionLibrary::GetComponentFlagSoftLanding(){ return FName(); }
 bool UFGBlueprintFunctionLibrary::IsInAlwaysLoadedLevel(AActor* actor){ return bool(); }
-UFGSignificanceManager* UFGBlueprintFunctionLibrary::GetSignificanceManager(UWorld* InWorld){ return nullptr; }
-void UFGBlueprintFunctionLibrary::AddStaticSignificance(UObject* WorldContextObject, UObject* Object){ }
-void UFGBlueprintFunctionLibrary::RemoveStaticSignificance(UObject* WorldContextObject, UObject* Object){ }
-void UFGBlueprintFunctionLibrary::AddGenericTickObjectToSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::RemoveGenericTickObjectFromSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::AddFactoryObjectToSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::RemoveFactoryObjectFromSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::AddConveyorBeltToSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::RemoveConveyorBeltFromSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::AddPipelineToSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::RemoveFromSignificanceManagerGeneric(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::AddGainSignificanceObjectToSignificanceManager(UObject* WorldContextObject, UObject* obj, float desiredGainDistance){ }
-void UFGBlueprintFunctionLibrary::RemoveGainSignificanceObjectFromSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::AddAudioVolumeToSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::RemoveAudioVolumeFromSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::AddAmbientSoundSplineToSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::RemoveAmbientSoundSplineFromSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::AddTrainToSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
-void UFGBlueprintFunctionLibrary::RemoveTrainFromSignificanceManager(UObject* WorldContextObject, UObject* obj){ }
+void UFGBlueprintFunctionLibrary::AddStaticSignificance(UObject* Object){ }
+void UFGBlueprintFunctionLibrary::AddDynamicSignificance(UObject* Object){ }
+void UFGBlueprintFunctionLibrary::RemoveStaticSignificance(UObject* Object){ }
 void UFGBlueprintFunctionLibrary::AddToServerSideSignificanceOctTree(UObject* obj){ }
 void UFGBlueprintFunctionLibrary::RemoveFromServerSideSignificanceOctTree(UObject* obj){ }
+void UFGBlueprintFunctionLibrary::ManuallyMarkObjectServerSideSignificant(UObject* Object){ }
 bool UFGBlueprintFunctionLibrary::ImpactEffectIsRelevant(UObject* worldContext, APawn* instigator, FVector spawnLocation, float visibleCullDistance , float alwaysSuccessDistance , bool skipLOSCheck){ return bool(); }
 bool UFGBlueprintFunctionLibrary::ImpactEffectIsWithinDistance(UObject* worldContext, APawn* instigator, FVector spawnLocation, float visibleCullDistance){ return bool(); }
 bool UFGBlueprintFunctionLibrary::IsLocallyHumanControlled(APawn* pawn){ return bool(); }
 FString UFGBlueprintFunctionLibrary::GetVersionString(){ return FString(); }
 bool UFGBlueprintFunctionLibrary::IsAlphaBuild(){ return bool(); }
-bool UFGBlueprintFunctionLibrary::CanBeOnConveyor(TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
 void UFGBlueprintFunctionLibrary::GetAvailableRecipesInCategory(UObject* worldContext, TSubclassOf<  UFGCategory > category, TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
 void UFGBlueprintFunctionLibrary::GetAvailableRecipesInSubCategory(UObject* worldContext, TSubclassOf<  UFGCategory > category, TSubclassOf<  UFGCategory > subCategory, TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
 void UFGBlueprintFunctionLibrary::GetAvailableRecipesWithDefaultMaterialInSubCategory(APlayerController* playerController, TSubclassOf<  UFGCategory > category, TSubclassOf<  UFGCategory > subCategory,
@@ -87,8 +71,6 @@ void UFGBlueprintFunctionLibrary::SetGlobalDefaultMaterialDescriptor(APlayerCont
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > UFGBlueprintFunctionLibrary::GetMaterialDescriptorForBuildingDescriptor(UObject* worldContext, TSubclassOf<  UFGBuildDescriptor > buildingDesc){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Material>(); }
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > UFGBlueprintFunctionLibrary::GetMaterialDescriptorForBuildableClass(UObject* worldContext, TSubclassOf<  AFGBuildable > buildable){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Material>(); }
 void UFGBlueprintFunctionLibrary::UpdateHotbarShortcutsForSpecifiedMaterialDescriptor(APlayerController* playerController, TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > materialDesc){ }
-bool UFGBlueprintFunctionLibrary::IsLocationNearABase(const UObject* worldContext, FVector inLocation, float closeDistance){ return bool(); }
-bool UFGBlueprintFunctionLibrary::IsLocationNearABaseFromResult(const UObject* worldContext, FVector inLocation, float closeDistance, const TArray< FOverlapResult >& Results){ return bool(); }
 bool UFGBlueprintFunctionLibrary::TryConvertShortMapNameToTopLevelAssetPath(const FString& mapName, FTopLevelAssetPath& outAssetPath){ return bool(); }
 void UFGBlueprintFunctionLibrary::TravelToMainMenu(APlayerController* playerController){ }
 void UFGBlueprintFunctionLibrary::SendLocalPlayerToMainMenu(UWorld* world){ }
@@ -140,6 +122,7 @@ bool UFGBlueprintFunctionLibrary::IsUsingController(const UObject* WorldContextO
 UFGGameInstance* UFGBlueprintFunctionLibrary::GetFGGameInstance(const UObject* WorldContextObject){ return nullptr; }
 UWidget* UFGBlueprintFunctionLibrary::FindWidgetToFocus(UWidget* Widget, EFGFocusReason FocusReason){ return nullptr; }
 bool UFGBlueprintFunctionLibrary::IsReallyVisible(UWidget* Widget){ return bool(); }
+bool UFGBlueprintFunctionLibrary::IsReallyVisible(TSharedPtr<class SWidget> Widget){ return bool(); }
 bool UFGBlueprintFunctionLibrary::HasAnyVisibleChildren(UPanelWidget* Parent){ return bool(); }
 UWidget* UFGBlueprintFunctionLibrary::GetPreviousChild(UWidget* widget){ return nullptr; }
 UWidget* UFGBlueprintFunctionLibrary::GetNextChild(UWidget* widget){ return nullptr; }
@@ -175,7 +158,7 @@ void UFGBlueprintFunctionLibrary::GetSlotDataForSwatchDesc(TSubclassOf<  UFGFact
 bool UFGBlueprintFunctionLibrary::GetIsCategoryDefaultForMaterialDesc(TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > materialDesc){ return bool(); }
 void UFGBlueprintFunctionLibrary::SortCustomizationRecipes(TArray< TSubclassOf<  UFGCustomizationRecipe > >& recipes){ }
 void UFGBlueprintFunctionLibrary::ApplySkinDataToMeshArray(TArray< UMeshComponent* >& compArr, FFactorySkinComponentGroup& groupData){ }
-UFXSystemAsset* UFGBlueprintFunctionLibrary::SpawnParticleSystemAtLocationFromFXSystem(UObject* WorldContext, UFXSystemAsset* Asset, FVector Location, FRotator Rotation, FVector Scale){ return nullptr; }
+class UFXSystemComponent* UFGBlueprintFunctionLibrary::SpawnParticleSystemAtLocationFromFXSystem(UObject* WorldContext, UFXSystemAsset* Asset, FVector Location, FRotator Rotation, FVector Scale){ return nullptr; }
 void UFGBlueprintFunctionLibrary::SetTraceDistance(UDirectionalLightComponent* DirectionalLight,float Value){ }
 float UFGBlueprintFunctionLibrary::GetPrimitiveDataFromIndex(int32 Index, UPrimitiveComponent* Component){ return float(); }
 float UFGBlueprintFunctionLibrary::GetPrimitiveDefaultDataFromIndex(int32 Index, UPrimitiveComponent* Component){ return float(); }
@@ -199,21 +182,43 @@ void UFGBlueprintFunctionLibrary::FilterText(const FString& text, const FOnMessa
 void UFGBlueprintFunctionLibrary::FilterText(const FString& text, const FOnMessageProcessedDynamic& completionDelegate){  }
 void UFGBlueprintFunctionLibrary::FilterTexts(const TArray<FString>& texts, const FOnMessageArrayProcessed& completionDelegate){  }
 void UFGBlueprintFunctionLibrary::FilterTexts(const TArray<FString>& texts, const FOnMessageArrayProcessedDynamic& completionDelegate){  }
-void UFGBlueprintFunctionLibrary::WaitForFilterText(const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo, const FString& Text, FString& out_Filtered){  }
-void UFGBlueprintFunctionLibrary::WaitForFilterTexts(const UObject* WorldContextObject, struct FLatentActionInfo LatentInfo, const TArray<FString>& texts, TArray<FString>& out_Filtered){  }
 FString UFGBlueprintFunctionLibrary::MakeStringUGCCompatible(const FString& inText, EUGCStringConversionResult& conversionResult){ return FString(); }
 bool UFGBlueprintFunctionLibrary::IsConsolePlatform(){ return false; }
 bool UFGBlueprintFunctionLibrary::IsConsolePlatformPure(){ return false; }
+bool UFGBlueprintFunctionLibrary::IsLowResMode(){ return false; }
 EFGTargetPlatform UFGBlueprintFunctionLibrary::GetCurrentPlatform(){ return EFGTargetPlatform::TP_Windows; }
 FString UFGBlueprintFunctionLibrary::GetPlatformAvatarURL(FName UserPlatform, FString UserPlatformAvatarURL, FString OnlineUserAvatarURL){ return FString(); }
-EUGCVisibilityErrors UFGBlueprintFunctionLibrary::UserCanSeeUGCInThisContext(AFGPlayerController* LocalPlayerController, TArray<FLocalUserNetIdBundle> LastUGCEditBy){ return EUGCVisibilityErrors::UGCVE_NoErrors; }
+EUGCVisibilityErrors UFGBlueprintFunctionLibrary::UserCanSeeUGCInThisContext(const UObject* WorldContextObject, AFGPlayerController* LocalPlayerController, const FPlayerInfoHandle& LastUGCEditBy){ return EUGCVisibilityErrors::UGCVE_NoErrors; }
 bool UFGBlueprintFunctionLibrary::UGCIsBlurExcempt(EUGCVisibilityErrors VisibilityResult){ return false; }
 bool UFGBlueprintFunctionLibrary::UGCVisibilityErrorsIsMatch(int32 Bitmask, int32 Bitmask2){ return false; }
-FString UFGBlueprintFunctionLibrary::ComposeLastEditedByStringForPlatform(const TArray<FLocalUserNetIdBundle>& LastEditedByData){ return FString(); }
+FString UFGBlueprintFunctionLibrary::ComposeLastEditedByStringForPlatform(UObject* worldContext, const FPlayerInfoHandle& LastEditedByData){ return FString(); }
+FString UFGBlueprintFunctionLibrary::GetPlayerNameFromPlayerInfoHandle(UObject* worldContext, const FPlayerInfoHandle& PlayerInfoHandle){ return FString(); }
+FString UFGBlueprintFunctionLibrary::GetPlatformNameFromPlayerInfoHandle(const FPlayerInfoHandle& playerInfoHandle){ return FString(); }
+void UFGBlueprintFunctionLibrary::BlockSessionMemberOn(UOnlineUserInfo* BlockingUser, USessionMemberInformation* SessionMember, EBlockBackendTarget BackendTarget, FOnBlockOverlayClosed OnPopupClosed){ }
+UOnlineUserBackendLink* UFGBlueprintFunctionLibrary::GetBackendOfUserTargeted(UOnlineUserInfo* User, EBlockBackendTarget TargetedBackend){ return nullptr; }
+DEFINE_FUNCTION(UFGBlueprintFunctionLibrary::execMakeDynamicStruct) {
+	PARAM_PASSED_BY_REF(inDynamicStruct, FIntProperty, int32);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_NATIVE_END;
+}
+DEFINE_FUNCTION(UFGBlueprintFunctionLibrary::execBreakDynamicStruct) {
+	PARAM_PASSED_BY_REF(inDynamicStruct, FStructProperty, FFGDynamicStruct);
+	PARAM_PASSED_BY_REF(out_structureValue, FIntProperty, int32);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_NATIVE_END;
+}
 void UFGBlueprintFunctionLibrary::BlockUser(UOnlineUserInfo* BlockingUser, UOnlineUserInfo* UserToBlock){  }
 void UFGBlueprintFunctionLibrary::BlockUserOn(UOnlineUserInfo* BlockingUser, UOnlineUserInfo* UserToBlock, EBlockBackendTarget BackendTarget, FOnBlockOverlayClosed OnPopupClosed){  }
+void UFGBlueprintFunctionLibrary::BlockOfflineUserOn(UOnlineUserInfo* BlockingUser, FCachedPlayerInfo UserToBlock, EBlockBackendTarget BackendTarget, FOnBlockOverlayClosed OnPopupClosed){ }
+void UFGBlueprintFunctionLibrary::BlockUserByAccountIdOn(UOnlineUserBackendLink* blockingBackendLink, FAccountId AccountToBlock, FOnBlockOverlayClosed OnPopupClosed){ }
+void UFGBlueprintFunctionLibrary::CloseOverlaysOfOnlineUser(UOnlineUserInfo* BlockingUser){ }
 bool UFGBlueprintFunctionLibrary::UserCanBeBlockedOn(UOnlineUserInfo* UserToBlock, EBlockBackendTarget BackendTarget){ return false; }
+bool UFGBlueprintFunctionLibrary::SessionWasEverMultiplayer(UObject* worldContext){ return false; }
 bool UFGBlueprintFunctionLibrary::UserIsBlockedFullyBy(UOnlineUserInfo* UserChecking, UOnlineUserInfo* UserToCheck){ return false; }
+bool UFGBlueprintFunctionLibrary::OfflineUserIsBlockedFully(UOnlineUserInfo* UserChecking, FCachedPlayerInfo UserToCheckByPlayerInfo){ return false; }
+bool UFGBlueprintFunctionLibrary::UserBackendHasBlockedUser(UOnlineUserBackendLink* UserCheckingBackendLink, const FAccountId& UserToCheckByID){ return false; }
 void UFGBlueprintFunctionLibrary::FullReAuth(UObject* WorldContextObject){  }
 bool UFGBlueprintFunctionLibrary::IsFrontEndLoadingScreenFinished(APlayerController* controller){ return false; }
 bool UFGBlueprintFunctionLibrary::CanDisplayPopup(APlayerController* controller){ return false; }
@@ -227,21 +232,38 @@ void UFGBlueprintFunctionLibrary::CheckAndFixPlatformAuthentication(UObject* Wor
 FString UFGBlueprintFunctionLibrary::GetDetailedPlatformConnectionStateString(UObject* WorldContext){ return FString(); }
 bool UFGBlueprintFunctionLibrary::IsCurrentOnlineIntegrationStateValid(UObject* WorldContext, FIntegrationStateCheckResult& out_detailedResult){ return false; }
 bool UFGBlueprintFunctionLibrary::IsAWithSoftRef(UObject* Object, TSoftClassPtr<UObject> SoftClass){ return false; }
+bool UFGBlueprintFunctionLibrary::IsCrossplayAllowed(APlayerController* playerController){ return false; }
+bool UFGBlueprintFunctionLibrary::IsInOnlineGame(APlayerController* playerController){ return false; }
+bool UFGBlueprintFunctionLibrary::IsSessionHost(APlayerController* playerController){ return false; }
 void UFGBlueprintFunctionLibrary::ActivateAimAssistClient(APlayerController* PlayerController, TScriptInterface<IFGAimAssistClient> AimAssistClient, bool IsActive){  }
 void UFGBlueprintFunctionLibrary::EnableAnalogUINavigation(bool bEnable){  }
 bool UFGBlueprintFunctionLibrary::IsTranslationSupportedByPlatform(FLocalizationEntry LocalizationEntry){ return false; }
+bool UFGBlueprintFunctionLibrary::IsPlayerInfoValid(FPlayerInfoHandle input){ return false; }
+void UFGBlueprintFunctionLibrary::BlueprintAssertMessage(UObject* caller, bool bCondition, const FString& Message){ }
+UUserWidget* UFGBlueprintFunctionLibrary::RequestWidgetFromPool(UObject* WorldContextObject, TSubclassOf<UFGUserWidget> WidgetType){ return nullptr; }
+void UFGBlueprintFunctionLibrary::ReleaseWidgetToPool(UObject* WorldContextObject, UFGUserWidget* Widget){ }
+void UFGBlueprintFunctionLibrary::DrawSplineCurve(FPaintContext& Context, const FVector2D& DrawOffset, const TArray<FSplinePointData>& SplinePoints, float CoordinateScale, FLinearColor Tint, float Thickness, float SegmentLength){ }
+bool UFGBlueprintFunctionLibrary::String_Less(const FString& A, const FString& B){ return false; }
+int32 UFGBlueprintFunctionLibrary::CompareText(const FText& A, const FText& B){ return int32(); }
+int32 UFGBlueprintFunctionLibrary::CompareTextIgnoreCase(const FText& A, const FText& B){ return int32(); }
+void UFGBlueprintFunctionLibrary::Array_Sort(const TArray<int32>& TargetArray, UObject* Object, FName FunctionName){ }
+void UFGBlueprintFunctionLibrary::GenericArray_Sort(const void* TargetArray, const FArrayProperty* ArrayProp, UObject* Object, FName FunctionName){ }
+DEFINE_FUNCTION(UFGBlueprintFunctionLibrary::execArray_Sort)
+{
+	Stack.MostRecentProperty = nullptr;
+	Stack.StepCompiledIn<FArrayProperty>(NULL);
 
-DEFINE_FUNCTION(UFGBlueprintFunctionLibrary::execMakeDynamicStruct) {
-	PARAM_PASSED_BY_REF(inDynamicStruct, FIntProperty, int32);
+	void* ArrayAddress = Stack.MostRecentPropertyAddress;
+	const FArrayProperty* ArrayProperty = CastField<FArrayProperty>(Stack.MostRecentProperty);
+	if (!ArrayProperty) {
+		Stack.bArrayContextFailed = true;
+		return;
+	}
+	P_GET_OBJECT(UObject, Object);
+	P_GET_PROPERTY(FNameProperty, FunctionName);
+
 	P_FINISH;
 	P_NATIVE_BEGIN;
-	P_NATIVE_END;
-}
-
-DEFINE_FUNCTION(UFGBlueprintFunctionLibrary::execBreakDynamicStruct) {
-	PARAM_PASSED_BY_REF(inDynamicStruct, FStructProperty, FFGDynamicStruct);
-	PARAM_PASSED_BY_REF(out_structureValue, FIntProperty, int32);
-	P_FINISH;
-	P_NATIVE_BEGIN;
+	GenericArray_Sort(ArrayAddress, ArrayProperty, Object, FunctionName);
 	P_NATIVE_END;
 }

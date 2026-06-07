@@ -4,7 +4,7 @@
 #include "Net/UnrealNetwork.h"
 
 void AFGResourceNode::InitResource(TSubclassOf<UFGResourceDescriptor> resourceClass, EResourceAmount amount, EResourcePurity purity) {
-  this->mResourceClass = resourceClass;
+  this->SetResourceClass(resourceClass);
   this->mAmount = amount;
   this->mPurity = purity;
 }
@@ -14,10 +14,13 @@ void AFGResourceNode::PostEditChangeProperty( FPropertyChangedEvent& propertyCha
 #endif 
 AFGResourceNode::AFGResourceNode() : Super() {
 	this->mPurity = EResourcePurity::RP_Normal;
+	this->mPurityOverride = EResourcePurity::RP_MAX;
 	this->mAmount = EResourceAmount::RA_Infinite;
 	this->mCanPlaceResourceExtractor = true;
 	this->mExtractMultiplier = 1;
 }
+
+void AFGResourceNode::UpdateCanPlacePortableMiner(){ }
 void AFGResourceNode::BeginPlay(){ Super::BeginPlay(); }
 void AFGResourceNode::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState){ }
 void AFGResourceNode::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
@@ -29,15 +32,17 @@ bool AFGResourceNode::HasAnyResources() const{ return bool(); }
 int32 AFGResourceNode::ExtractResource(int32 amount){ return int32(); }
 float AFGResourceNode::GetExtractionSpeedMultiplier() const{ return float(); }
 bool AFGResourceNode::CanPlaceResourceExtractor() const{ return bool(); }
-FText AFGResourceNode::GetResoucesLeftText() const{ return FText(); }
-FText AFGResourceNode::GetResoucePurityText() const{ return FText(); }
+FText AFGResourceNode::GetResourcesLeftText() const{ return FText(); }
+FText AFGResourceNode::GetResourcePurityText() const{ return FText(); }
 const FInt32Interval& AFGResourceNode::GetResourceAmount(EResourceAmount amount) const{ return *(new FInt32Interval); }
 int32 AFGResourceNode::GetRandomResourceAmount(EResourceAmount amount) const{ return int32(); }
 void AFGResourceNode::ExtractResourceAndGiveToPlayer(AFGCharacterPlayer* toPlayer, int32 amount){ }
 int32 AFGResourceNode::GetNumResourcesPerExtract() const{ return int32(); }
 void AFGResourceNode::InitRadioactivity(){ }
 void AFGResourceNode::UpdateRadioactivity(){ }
+void AFGResourceNode::OnRep_ResourceClassOverride(){ Super::OnRep_ResourceClassOverride(); }
 void AFGResourceNode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGResourceNode, mPurityOverride);
 	DOREPLIFETIME(AFGResourceNode, mResourcesLeft);
 }

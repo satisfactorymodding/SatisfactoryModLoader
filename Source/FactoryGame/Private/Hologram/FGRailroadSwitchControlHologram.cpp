@@ -3,6 +3,7 @@
 #include "Hologram/FGRailroadSwitchControlHologram.h"
 
 void AFGRailroadSwitchControlHologram::SetHologramLocationAndRotationFromConnection( UFGRailroadTrackConnectionComponent* controlledConnection){ }
+void AFGRailroadSwitchControlHologram::ReplaceControlledConnection(class UFGRailroadTrackConnectionComponent* newControlledConnection){ }
 void AFGRailroadSwitchControlHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGRailroadSwitchControlHologram::CheckClearance(){ }
 void AFGRailroadSwitchControlHologram::CheckValidFloor(){ }

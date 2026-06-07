@@ -73,6 +73,9 @@ public:
 	/** Generated certificate data that should be re-used across server restarts */
 	UPROPERTY( SaveGame )
 	FFGGeneratedCertificateData CertificateData;
+
+	UPROPERTY( SaveGame )
+	bool AgreeToCrashUploadRequested;
 };
 
 template<>

@@ -141,6 +141,6 @@ protected:
 
 	/* The areas defined as by this texture */
 	UPROPERTY( EditInstanceOnly, Category = "Minimap" )
-	UFGMapAreaTexture* mMapAreaTexture;
+	TObjectPtr<UFGMapAreaTexture> mMapAreaTexture;
 	
 };

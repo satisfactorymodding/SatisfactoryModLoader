@@ -60,7 +60,7 @@ protected:
 	float mDamageInterval;
 
 	UPROPERTY(EditDefaultsOnly, Instanced, Category= "Damage", meta = ( AllowAbstract=true ) )
-	TArray< UFGDamageType* > mDamageTypes;
+	TArray< TObjectPtr<UFGDamageType> > mDamageTypes;
 
 	/** Only deal damage to subclasses of these actor classes */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )

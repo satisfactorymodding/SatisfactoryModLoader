@@ -103,6 +103,7 @@ void AFGBuildableSubsystem::AddConveyorChainActor( AFGConveyorChainActor* chainA
 void AFGBuildableSubsystem::RemoveConveyorChainActor( AFGConveyorChainActor* ChainActor){ }
 void AFGBuildableSubsystem::RemoveBuildable( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::RemoveConveyor(AFGBuildableConveyorBase* conveyor){ }
+void AFGBuildableSubsystem::ForceDestroyChainActor(AFGConveyorChainActor* chainActor){ }
 void AFGBuildableSubsystem::SplitConveyorGroupFromAttachment(AFGBuildableConveyorBase* conveyor){ }
 bool AFGBuildableSubsystem::RemoveConveyorFromBucket(AFGBuildableConveyorBase* conveyorToRemove){ return bool(); }
 void AFGBuildableSubsystem::RearrangeConveyorBuckets(int32 emptiedBucketID){ }
@@ -112,6 +113,7 @@ int32 AFGBuildableSubsystem::GetBuildableCount(TSubclassOf<AFGBuildable> buildab
 void AFGBuildableSubsystem::GetTypedBuildable(TSubclassOf<  AFGBuildable > inClass, TArray<  AFGBuildable* >& out_buildables) const{ }
 void AFGBuildableSubsystem::GetOcclusionAffectingBuildebles(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range, bool bParallel) const{ }
 void AFGBuildableSubsystem::GetNearestBuildables(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range) const{ }
+void AFGBuildableSubsystem::GetCollidingBuildablesInBoundingBox(TArray<AFGBuildable*>& out_buildables, const FBox& boundingBox) const{ }
 void AFGBuildableSubsystem::PlayTimelapseEffect(int32 bucketId, bool playBuildEffect){ }
 void AFGBuildableSubsystem::SetTimelapseBucketHidden(int32 bucketId, bool hidden){ }
 const FFactoryCustomizationColorSlot& AFGBuildableSubsystem::GetColorSlot_Data(uint8 index) const{ return *(new FFactoryCustomizationColorSlot); }

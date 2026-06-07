@@ -25,6 +25,8 @@ public:
 	virtual FVector GetActorLocation() const override;
 	virtual bool GetShouldShowInCompass() const override;
 	virtual ECompassViewDistance GetCompassViewDistance() const override;
+	// todo: add overload to last edited by!
+	virtual FPlayerInfoHandle GetLastEditedBy() const override;
 	// End UFGActorRepresentation interface
 
 	virtual float GetScaleOnMap() const override;

@@ -113,14 +113,14 @@ private:
 
 	/** The track connections we have. */
 	UPROPERTY()
-	class UFGRailroadTrackConnectionComponent* mConnectionComponents[ 2 ];
+	TObjectPtr<class UFGRailroadTrackConnectionComponent> mConnectionComponents[ 2 ];
 
 	/** The track connection we snap when building the track. */
 	UPROPERTY( CustomSerialization )
-	class UFGRailroadTrackConnectionComponent* mSnappedConnectionComponents[ 2 ];
+	TObjectPtr<class UFGRailroadTrackConnectionComponent> mSnappedConnectionComponents[ 2 ];
 
 	UPROPERTY( CustomSerialization )
-	class AFGBuildableRailroadTrack* mSnappedRailroadTrack;
+	TObjectPtr<class AFGBuildableRailroadTrack> mSnappedRailroadTrack;
 	
 	UPROPERTY( CustomSerialization )
 	float mSnappedRailroadTrackDistance;
@@ -135,7 +135,7 @@ private:
 
 	/** All the generated spline meshes. */
 	UPROPERTY()
-	TArray< class USplineMeshComponent* > mSplineMeshes;
+	TArray< TObjectPtr<class USplineMeshComponent> > mSplineMeshes;
 
 	/** This is an additional floor data for the spline data (local space). */
 	UPROPERTY( CustomSerialization )
@@ -158,12 +158,12 @@ private:
 
 	/** Cached from the default buildable. */
 	UPROPERTY()
-	class UStaticMesh* mMesh;
+	TObjectPtr<class UStaticMesh> mMesh;
 	float mMeshLength;
 
 	/** Optional child hologram to build if we are dragging out a turnout */
 	UPROPERTY( Replicated )
-	class AFGRailroadSwitchControlHologram* mSwitchControls[ 2 ];
+	TObjectPtr<class AFGRailroadSwitchControlHologram> mSwitchControls[ 2 ];
 
 	UPROPERTY( Replicated )
 	int32 mNumSwitchConnections[2];

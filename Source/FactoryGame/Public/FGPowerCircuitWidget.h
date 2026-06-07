@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -38,5 +38,5 @@ public:
 private:
 	/** Power circuit we're observing. */
 	UPROPERTY()
-	class UFGPowerCircuit*  mPowerCircuit;
+	TObjectPtr<class UFGPowerCircuit>  mPowerCircuit;
 };

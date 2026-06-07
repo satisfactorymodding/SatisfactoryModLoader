@@ -4,11 +4,12 @@
 #include "Components/SceneComponent.h"
 #include "FGPowerConnectionComponent.h"
 #include "FGPowerInfoComponent.h"
+#include "Engine/World.h"
 
 DEFINE_LOG_CATEGORY(LogFGTestManager);
 
 AFGTestManager::AFGTestManager() : Super() {
-	this->mDefaultTestMap = FSoftObjectPath("/Game/FactoryGame/Map/TestMapFactoryGame.TestMapFactoryGame").ResolveObject();
+	this->mDefaultTestMap = FSoftObjectPath("/Game/FactoryGame/Map/TestMapFactoryGame.TestMapFactoryGame");
 	this->mDefaultTestMapOptions = TEXT("?skipOnboarding?allowPossessAny");
 	this->mCheatPowerSourcePowerInfo = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("CheatPowerSource"));
 	this->mCheatPowerSinkPowerInfo = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("CheatPowerSink"));

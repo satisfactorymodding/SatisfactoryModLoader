@@ -16,6 +16,4 @@ class FACTORYGAME_API UFGWildCardDescriptor : public UFGItemDescriptor
 	GENERATED_BODY()
 public:
 	UFGWildCardDescriptor();
-protected:
-	FORCEINLINE virtual bool Internal_CanItemBePickedup() const override { return false; }
 };

@@ -81,5 +81,5 @@ protected:
 
 	/** Magazine object of our ammo type. */
 	UPROPERTY( BlueprintReadOnly, Replicated, Category = "Projectile" )
-	UFGAmmoType* mMagazineObject = nullptr;
+	TObjectPtr<UFGAmmoType> mMagazineObject = nullptr;
 };

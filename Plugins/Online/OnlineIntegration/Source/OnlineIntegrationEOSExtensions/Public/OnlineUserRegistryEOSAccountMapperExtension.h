@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "IEOSSDKManager.h"
-#include "OnlineServicesEOS.h"
+#include "Online/OnlineServicesEOS.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Tickable.h"
 #include "User/OnlineUserRegistryExtension.h"

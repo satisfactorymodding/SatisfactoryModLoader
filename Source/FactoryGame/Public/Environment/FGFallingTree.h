@@ -45,19 +45,19 @@ protected:
 	void PostSetup();
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="visuals")
-	UDynamicMeshComponent* RootMesh;
+	TObjectPtr<UDynamicMeshComponent> RootMesh;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="visuals")
-	UDynamicMeshComponent* TrunkMesh;
+	TObjectPtr<UDynamicMeshComponent> TrunkMesh;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="Collision")
-	UCapsuleComponent* RootCapsule;
+	TObjectPtr<UCapsuleComponent> RootCapsule;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category="Collision")
-	UCapsuleComponent* TrunkCapsule;
+	TObjectPtr<UCapsuleComponent> TrunkCapsule;
 
 	UPROPERTY()
-	UStaticMesh* TreeMesh;
+	TObjectPtr<UStaticMesh> TreeMesh;
 	
 	UPROPERTY(DisplayName="CutPivot",VisibleAnywhere,BlueprintReadOnly,Category="MeshGeneration")
 	FVector SliceLocation;
@@ -76,26 +76,26 @@ protected:
 	FName LeafSplashSocketName;
 
 	UPROPERTY(BlueprintReadOnly)
-	UNiagaraSystem* LeafSplashVFXSystem;
+	TObjectPtr<UNiagaraSystem> LeafSplashVFXSystem;
 
 	UPROPERTY(BlueprintReadOnly)
-	UNiagaraSystem* TrunkSplashVFXSystem;
+	TObjectPtr<UNiagaraSystem> TrunkSplashVFXSystem;
 	
 	UPROPERTY(BlueprintReadOnly)
 	FName TrunkSplashVFXIndexName;
 
 	UPROPERTY(BlueprintReadOnly,Category="Audio")
-	UAkAudioEvent* mFoliageLeafSplatterAKEvent = nullptr;
+	TObjectPtr<UAkAudioEvent> mFoliageLeafSplatterAKEvent = nullptr;
 	
 	UPROPERTY(BlueprintReadOnly,Category="Audio")
-	UAkAudioEvent* mTreeFallCrumbleAKEvent = nullptr;
+	TObjectPtr<UAkAudioEvent> mTreeFallCrumbleAKEvent = nullptr;
 	
 	UPROPERTY(BlueprintReadOnly,Category="Audio")
-	UAkAudioEvent* mTreeFallHitAKEvent = nullptr;
+	TObjectPtr<UAkAudioEvent> mTreeFallHitAKEvent = nullptr;
 
 	/* Cap material read from the asset data, will be null if we use the default one. */
 	UPROPERTY(BlueprintReadOnly)
-	UMaterialInterface* mCapOverride = nullptr;
+	TObjectPtr<UMaterialInterface> mCapOverride = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
 	float MaxWedgeAngle = 15;

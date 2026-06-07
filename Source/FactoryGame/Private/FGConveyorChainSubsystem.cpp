@@ -25,7 +25,7 @@ AFGConveyorChainSubsystem::AFGConveyorChainSubsystem() : Super() {
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.1;
-	this->NetUpdateFrequency = 1000.0;
+	this->SetNetUpdateFrequency(1000.0);
 }
 AFGConveyorChainSubsystem* AFGConveyorChainSubsystem::Get(UWorld* world){ return nullptr; }
 AFGConveyorChainSubsystem* AFGConveyorChainSubsystem::Get(UObject* worldContext){ return nullptr; }
@@ -38,6 +38,7 @@ void AFGConveyorChainSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSecon
 void AFGConveyorChainSubsystem::OnConveyorItemMovementQualityUpdated(FString cvar){ }
 void AFGConveyorChainSubsystem::AddConveyorChain(AFGConveyorChainActor* chainActor){ }
 void AFGConveyorChainSubsystem::RemoveConveyorChain(AFGConveyorChainActor* chainActor){ }
+void AFGConveyorChainSubsystem::GatherAllItemDescriptorsThatCanAppearOnConveyorBelts(UWorld* worldContext, TArray<TSubclassOf<UFGItemDescriptor>>& out_itemDescriptors){ }
 void AFGConveyorChainSubsystem::BuildItemDescriptorRepArray(){ }
 void AFGConveyorChainSubsystem::ReceiveItemDescriptorRepArray(const TArray<TSubclassOf<UFGItemDescriptor>>& itemDescriptorRepArray){ }
 void AFGConveyorChainSubsystem::NotifyChainReceivedItemUpdate(AFGConveyorChainActor* chainActor){ }

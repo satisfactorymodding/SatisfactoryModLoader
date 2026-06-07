@@ -288,7 +288,7 @@ bool UEdGraphSchema_HookTarget::ConnectionCausesLoop(const UEdGraphPin* InputPin
 	}
 	while (!UnexploredDependencySet.IsEmpty()) {
 		// Pop the node and add it to the visited set
-		const UEdGraphNode* UnvisitedNode = UnexploredDependencySet.Pop(false);
+		const UEdGraphNode* UnvisitedNode = UnexploredDependencySet.Pop(EAllowShrinking::No);
 		VisitedGraphNodes.Add(UnvisitedNode);
 
 		// Also explore any input connections that this node has

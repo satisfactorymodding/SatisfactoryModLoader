@@ -56,7 +56,7 @@ protected:
 
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
+	virtual float GetSignificanceRange_Implementation() const override;
 
 	/* Started on significance gain running on a timer.*/
 	//UFUNCTION()
@@ -69,7 +69,7 @@ public:
 	
 private:
 	UPROPERTY(EditInstanceOnly, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* mMeshComponent;
+	TObjectPtr<UStaticMeshComponent> mMeshComponent;
 	
 	//TArray<FAsyncTask<class FFGAsyncCliffGrassBuilderTask>*> mAsyncTasks;
 
@@ -80,17 +80,17 @@ private:
 protected:
 	/* Components generated on gain significance. */
 	UPROPERTY( Transient, VisibleAnywhere )
-	TArray< class UGrassInstancedStaticMeshComponent* > mGeneratedMeshComponent;
+	TArray< TObjectPtr<class UGrassInstancedStaticMeshComponent> > mGeneratedMeshComponent;
 
 public:
 	UPROPERTY( EditInstanceOnly, Category = "Setting" )
-	UStaticMesh* mStaticMesh;
+	TObjectPtr<UStaticMesh> mStaticMesh;
 	
 	UPROPERTY( EditInstanceOnly, Category = "Setting" )
-	TArray< UFoliageType* > mFoliageTypes;
+	TArray< TObjectPtr<UFoliageType> > mFoliageTypes;
 
 	UPROPERTY( EditInstanceOnly, Category = "Setting" )
-	TMap< UFoliageType*, float > mFoliageTypesDensityMultiplier;
+	TMap< TObjectPtr<UFoliageType>, float > mFoliageTypesDensityMultiplier;
 	
 	/* Range multiplier for significance */
 	UPROPERTY( EditInstanceOnly, Category = "Setting" )

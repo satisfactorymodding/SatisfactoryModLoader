@@ -37,7 +37,7 @@ public:
 public:
 	/** Sound played when consuming */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Consumeable" )
-	class UAkAudioEvent* mConsumeEvent;
+	TObjectPtr<class UAkAudioEvent> mConsumeEvent;
 
 protected:
 	/** Custom scale of mesh in hands */
@@ -54,9 +54,9 @@ protected:
 
 	/** The skeletal  mesh we want for representing the resource when it is in first person. */
 	UPROPERTY( EditDefaultsOnly, Category = "Consumeable" )
-	class USkeletalMesh* mFPOverrideMesh;
+	TObjectPtr<class USkeletalMesh> mFPOverrideMesh;
 
 	/** The static mesh we want for representing the resource when it is in third person. */
 	UPROPERTY( EditDefaultsOnly, Category = "Consumeable" )
-	class UStaticMesh* mTPOverrideMesh;
+	TObjectPtr<class UStaticMesh> mTPOverrideMesh;
 };

@@ -12,10 +12,15 @@
 #include "FGPlayerControllerBase.h"
 #include "FGPlayerState.h"
 #include "PlayerPresenceState.h"
+#include "Input/FGBoundMappingContextHandle.h"
 #include "UI/Message/FGAudioMessage.h"
+#include "Online/PlayerInfoCache.h"
 
 #include "FGPlayerController.generated.h"
 
+struct FVehiclePathVisualizationHandle;
+class UFGVisualizationModeDescriptor;
+class UFGVisualizationMode;
 enum class EPrivilegeLevel : uint8;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FPawnChangedDelegate, APawn*, newPawn );
@@ -27,7 +32,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnFinishRespawn );
 DECLARE_MULTICAST_DELEGATE_TwoParams( FOnChatMessageEnteredDelegate, const FString& /* chatMessage */, bool& /* shouldSendMessage */ );
 DECLARE_MULTICAST_DELEGATE_OneParam( FOnPlayerControllerBegunPlay, class AFGPlayerController* );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FFGOnPlayerRespawnWithInventory, const FInventoryToRespawnWith&, respawnInventory );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnInputActionRemapped, const FName&, inActionName );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnInputActionRemapped );
 DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnPlayerControllerPawnChanged, class APlayerController*, APawn*, APawn* );
 
 DECLARE_DYNAMIC_DELEGATE( FFGRuntimeInputActionDelegate );
@@ -38,6 +43,46 @@ enum EHitFeedbackType
 	Normal,
 	WeakSpot,
 	Armor
+};
+
+USTRUCT()
+struct FClientRespawnPointInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	bool bRespawnPointValid{false};
+
+	UPROPERTY()
+	TSubclassOf<AActor> RespawnPointClass;
+
+	UPROPERTY()
+	FVector RespawnPointLocation{ForceInit};
+
+	UPROPERTY()
+	FLinearColor RespawnPointColor{FLinearColor::White};
+};
+
+struct FActiveMappingContextBinding
+{
+	int32 BoundPriority{0};
+	bool bBindAsDisabled{false};
+	FBoundMappingContextHandle Handle;
+	TWeakObjectPtr<UObject> OwningObject;
+};
+
+USTRUCT()
+struct FActiveMappingContextInfo
+{
+	GENERATED_BODY()
+
+	bool bIsCurrentlyBound{false};
+	int32 CurrentlyBoundPriority{0};
+	TArray<FActiveMappingContextBinding> Bindings;
+	bool bCachedLogicalMappingContexts{false};
+
+	UPROPERTY()
+	TArray<TObjectPtr<UInputMappingContext>> LogicalMappingContexts;
 };
 
 class UFGRecipe;
@@ -79,7 +124,7 @@ public:
 	virtual void PreClientTravel( const FString& pendingURL, ETravelType travelType, bool isSeamlessTravel ) override;
 	virtual void NotifyLoadedWorld( FName worldPackageName, bool isFinalDest ) override;
 	virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos) override;
-	virtual void GetNetViewerSpecificHighPriorityActors( TArray< AActor* >& HighPrioActors ) override;
+	virtual void GetNetViewerSpecificHighPriorityActors( TArray<TObjectPtr<AActor> >& HighPrioActors ) override;
 	// End APlayerController interface
 
 	/** Get the RCO of the given class. */
@@ -125,15 +170,16 @@ public:
 	/** @return true if we are currently waiting for the client to acknowledge the respawn sequence */
 	bool IsClientRespawnGracePeriodActive() const { return mPlayerRespawnGracePeriodActive; }
 
-	/** Set our suicide status */
-	void SetRespawningFromDeath( bool respawningFromDeath );
-
 	/** Did we just kill ourselves */
-	bool GetRespawningFromDeath();
+	bool IsRespawningFromDeath() const;
 
 	/** Called when the option for FOV changed */
 	UFUNCTION()
 	void OnFOVUpdated( FString cvar );
+
+	/** Called when always show vehicle paths option is changed */
+	void OnAlwaysShowVehiclePathsUpdated( FString cvar, FVariant newOptionValue );
+	void UpdateAlwaysShowVehiclePathsVisualization();
 
 	/** Updates default FOV of the camera manager from either photo mode FOV or */
 	void UpdateCameraManagerDefaultFOV();
@@ -187,10 +233,10 @@ public:
 
 	/** Set a saved color preset */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|GlobalColorPresets" )
-	void AddPlayerColorPreset( FText presetName, FLinearColor color );
+	void AddPlayerColorPreset( FText presetName, FLinearColor color, FPlayerInfoHandle lastEditor);
 
 	UFUNCTION( Reliable, Server )
-	void Server_AddPlayerColorPreset( const FText& presetName, FLinearColor color );
+	void Server_AddPlayerColorPreset( const FText& presetName, FLinearColor color, FPlayerInfoHandle lastEditor );
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|SwatchGroup" )
 	void SetDefaultSwatchForBuildableGroup( TSubclassOf< class UFGSwatchGroup > swatchGroup, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > newSwatch );
@@ -231,6 +277,10 @@ public:
 	*/
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
 	int32 GetShortcutIndexFromKey( const FKeyEvent& key ) const;
+
+	/* *True if we are currently playing a gameplay cinematic */
+	UFUNCTION( BlueprintPure, Category = "Gameplay Cinematic" )
+	bool IsPlayingGameplayCinematic() const;
 
 	/** Returns true if the intro sequence is currently playing on the pawn controlled by this player controller*/
 	UFUNCTION( BlueprintPure, Category = "Intro Sequence" )
@@ -277,7 +327,7 @@ public:
 	void Server_AddOrUpdateMapMarker( FMapMarker mapMarker );
 	UFUNCTION( Reliable, Server )
 	void Server_RemoveMapMarker( FGuid markerGuid );
-	
+
 	UFUNCTION( Reliable, Server )
 	void Server_SetHighlightRepresentation( class AFGPlayerState* fgPlayerState, class UFGActorRepresentation* actorRepresentation );
 	UFUNCTION( Reliable, Server )
@@ -287,11 +337,9 @@ public:
 	void Client_OnRepresentationHighlighted( class AFGPlayerState* fgPlayerState, class UFGActorRepresentation* actorRepresentation );
 	UFUNCTION( Reliable, Client )
 	void Client_OnMarkerHighlighted( class AFGPlayerState* fgPlayerState, FGuid markerID );
-
 	UFUNCTION(Server, Reliable)
 	void Server_UpdatePlayerRepresentations();
 	// End AFGMapManager RPCs
-
 
 	/** Play the indicated CameraAnim on this camera.
 	 * @param AnimToPlay - Camera animation to play
@@ -299,7 +347,7 @@ public:
 	 */
 	UFUNCTION(unreliable, client, BlueprintCallable, Category="Camera")
 	void ClientPlayCameraAnimationSequence(class UCameraAnimationSequence* AnimToPlay, float Scale=1.f, float Rate=1.f, float BlendInTime=0.f, float BlendOutTime=0.f, bool bLoop=false, bool bRandomStartTime=false, ECameraShakePlaySpace Space=ECameraShakePlaySpace::CameraLocal, FRotator CustomPlaySpace=FRotator::ZeroRotator );
-
+	
 	/** Stops the indicated CameraAnim on this camera.
 	 * @param AnimToStop - Camera animation to stop
 	 */
@@ -316,18 +364,16 @@ public:
 
 	FORCEINLINE class UFGMapAreaTexture* GetMapAreaTexture() const { return mCachedMapAreaTexture; }
 
-	/**
-	* Disables the ability to use certain aspects connected to input in the game. 
-	* When struct is changed, mDisabledInputGateChanged will broadcast to signal value changes. 
-	* 
-	* When true, the input is DISABLED. 
-	**/
-	UFUNCTION( BlueprintCallable, Category = "Input" )
-	void SetDisabledInputGate( FDisabledInputGate newDisabledInputGate );
+	// Native functions to allow movement mode to control whenever certain actions are enabled without overwriting input gate from other systems (such as tutorial)
+	void SetMovementModeDisabledInputGate( FDisabledInputGate newMovementModeDisabledInputGate );
+	void ResetMovementModeDisabledInputGate();
+
+	/** Recalculates the combined disable action input gate from various systems */
+	void UpdateDisabledInputGate();
 
 	/** Getter for current disabled input states */
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	FORCEINLINE FDisabledInputGate GetDisabledInputGate() const { return mDisabledInputGate; }
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	FDisabledInputGate GetDisabledInputGate() const { return mDisabledInputGate; }
 
 	UPROPERTY( BlueprintAssignable )
 	FDisabledInputGateDelegate mDisabledInputGateChanged;
@@ -419,23 +465,29 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	void SetShortcut( int ShortcutIndex, TSubclassOf< UFGRecipe > Recipe, UFGBlueprintDescriptor* Blueprint );
 
-	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame" )
-	TSubclassOf< class UFGInteractWidget > mHotbarRadialMenuWidgetClass;
+	/** Returns the visualization mode that is currently active */
+	UFUNCTION( BlueprintPure, Category = "Visualization Mode" )
+	FORCEINLINE UFGVisualizationMode* GetActiveVisualizationMode() const { return mCurrentVisualizationMode; }
 
-	UPROPERTY(EditDefaultsOnly, Category = "FactoryGame")
-	TSubclassOf< class UFGInteractWidget > mShortcutRadialMenuWidgetClass;
+	/** Returns all visualizations modes currently available to the player */
+	UFUNCTION( BlueprintPure, Category = "Visualization Mode" )
+	void GetAvailableVisualizationModes( TArray<TSubclassOf<UFGVisualizationModeDescriptor>>& out_visualizationModes );
 
-	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame" )
-	TSubclassOf< class UFGInteractWidget > mHandheldRadialMenuWidgetClass;
-	// </FL>
+	/** Actives the given visualization mode, or deactives the current one if the given mode is None */
+	UFUNCTION( BlueprintCallable, Category = "Visualization Mode" )
+	void SetActiveVisualizationMode( TSubclassOf<UFGVisualizationModeDescriptor> newVisualizationMode );
 
 	void OnSystemUIOverlayStateChanged(bool bOverlayShown);
-	
+
 	void SetDetachedCamera( const bool isEnabled );
 
 	void SetPhotoMode( const bool isEnabled );
-	
+
+	FORCEINLINE TSubclassOf<UFGInteractWidget> GetHandheldRadialMenuWidgetClass() const { return mHandheldRadialMenuWidgetClass; }
 protected:
+	/** Returns disabled input gate for the photo mode */
+	FDisabledInputGate GetDisabledInputGameForPhotoMode() const;
+
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn(AFGCharacterPlayer* playerPawn);
 
@@ -504,8 +556,8 @@ protected:
 
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Map" )
 	void ToggleMap();
-	
-	UFUNCTION( BlueprintCallable )
+
+	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
 	bool GetIsPhotoMode() const;
 
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Photo Mode" )
@@ -536,7 +588,6 @@ protected:
 	/** Returns true if level streaming has been completed in the proximity of this player */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Level Streaming" )
 	bool IsLevelStreamingComplete() const;
-	
 private:
 	void ListenForOnOnboardingStepUpdated();
 	UFUNCTION()
@@ -582,9 +633,7 @@ private:
 	void OnClientGracePeriodElapsed();
 	/** Called by the client to check if it has received the initial lightweight buildable replication data */
 	bool HasReceivedInitialLightweightReplicationData() const;
-	
-	static void testAndProcesAdaMessages( AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds, class APlayerState* PlayerState, class AFGGameState* fgGameState );
-	
+
 	/** Gets the saved mappings from game user settings and applies them to the enhanced input subsystem */
 	void SetupSavedKeyMappings( class UEnhancedInputLocalPlayerSubsystem* inputSubsystem );	
 
@@ -655,15 +704,14 @@ private:
 
 	virtual void Input_ToggleMap( const FInputActionValue& ActionValue );
 	virtual void Input_TogglePhotoMode( const FInputActionValue& ActionValue );
-
+	
 	virtual void Input_PhotoModeMoveForward( const FInputActionValue& ActionValue );
 	virtual void Input_PhotoModeMoveBackwards( const FInputActionValue& ActionValue );
 	virtual void Input_PhotoModeMoveLeft( const FInputActionValue& ActionValue );
 	virtual void Input_PhotoModeMoveRight( const FInputActionValue& ActionValue );
 	virtual void Input_PhotoModeMoveUp( const FInputActionValue& ActionValue );
 	virtual void Input_PhotoModeMoveDown( const FInputActionValue& ActionValue );
-	virtual void Input_PhotoModeMoveMouseX( const FInputActionValue& ActionValue );
-	virtual void Input_PhotoModeMoveMouseY( const FInputActionValue& ActionValue );
+	virtual void Input_PhotoModeLookAxis( const FInputActionValue& ActionValue );
 	virtual void Input_PhotoModeMoveFaster( const FInputActionValue& ActionValue );
 	virtual void Input_PhotoModeMoveSlower( const FInputActionValue& ActionValue );
 	
@@ -672,13 +720,41 @@ private:
 	virtual void Input_ClipboardCopy( const FInputActionValue& actionValue );
     virtual void Input_ClipboardPaste( const FInputActionValue& actionValue );
 
+	void ReevaluateMappingContextBindings( UInputMappingContext* context, FActiveMappingContextInfo& contextInfo );
+	FBoundMappingContextHandle BindMappingContextInternal( UInputMappingContext* context, int32 priority, bool bBindAsDisabled, UObject* ownerObject );
 public:
 	/**
-	 * Binds the input context to the input subsystem owned by this local player
-	 * Will also apply additional associated mapping contexts on top with lower priority
+	 * Requests the given mapping context to be bound. Returns a handle to the active binding.
+	 * Optionally, OwnerObject can be provided, and the binding will automatically be removed once the object is no longer valid.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
-	void SetMappingContextBound( UInputMappingContext* context, bool bind, int32 priority = 0 );
+	[[nodiscard]] FBoundMappingContextHandle BindMappingContext( UInputMappingContext* context, int32 priority = 0, UObject* ownerObject = nullptr );
+
+	/**
+	 * Requests the given mapping context to be unbound and disabled if it is currently bound.
+	 * Will prevent new bindings from mapping this context as long as the disabled binding is active and the disabled context priority is higher than the other priorities.
+	 * Optionally, OwnerObject can be provided, and the binding will automatically be removed once the object is no longer valid.
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	[[nodiscard]] FBoundMappingContextHandle BindDisabledMappingContext( UInputMappingContext* context, int32 priority = 0, UObject* ownerObject = nullptr );
+
+	/**
+	 * Works very similarly to old SetMappingContextBound, but will maintain the current state in handle object
+	 * and automatically unbind/rebind when necessary, and supports multiple parallel registrations.
+	 *
+	 * Keep in mind that this function assumes that once the context is bound, owner object and priority will not change across subsequent calls.
+	 * If you need to change the priority or the owner, you have to manually unbind the context first.
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void SetMappingContextBoundWithHandle( UPARAM(Ref) FBoundMappingContextHandle& mappingContextHandle, UInputMappingContext* context, bool bind, int32 priority = 0, UObject* ownerObject = nullptr );
+
+	/** Removes the previously bound mapping context by handle. Will also automatically reset the handle */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void UnbindMappingContext( UInputMappingContext* context, UPARAM(Ref) FBoundMappingContextHandle& mappingContextHandle );
+
+	/** Removes all mapping contexts previously bound by the given object */
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void UnbindAllMappingContextsByObject( UObject* ownerObject );
 
 	/** Binds a specified delegate to an input action. Exists so actions can be bound in runtime for blueprints. */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
@@ -693,8 +769,7 @@ public:
 	bool mCanAffectAudioVolumes;
 
 	float mRespawnInvincibilityTimer = 0.0f;
-
-
+	
 	UFUNCTION( BlueprintCallable, Category = "Shortcut Radial" )
 	void CreateShortcutRadialMenu(TSubclassOf< UFGRecipe > RecipeClass, UFGBlueprintDescriptor* Blueprint);
 
@@ -703,18 +778,38 @@ public:
 
 	UPROPERTY( Replicated )
 	TObjectPtr<class AFGLightweightBuildableRepProxy> mLightweightBuildableRepProxy;
-
+	
 	UPROPERTY( BlueprintReadWrite )
-	UDragDropOperation* mDragAndDropItemObject = nullptr;
+	TObjectPtr<UDragDropOperation> mDragAndDropItemObject = nullptr;
 	
 protected:
 	/** Object that manages non-cheat commands. Instantiated in shipping builds. */
 	UPROPERTY( Transient )
-	class UFGConsoleCommandManager* mConsoleCommandManager;
+	TObjectPtr<class UFGConsoleCommandManager> mConsoleCommandManager;
 
 	/** The array of all remote call objects this player controller has */
 	UPROPERTY( Replicated )
-	TArray< UFGRemoteCallObject* > mRemoteCallObjects;
+	TArray< TObjectPtr<UFGRemoteCallObject> > mRemoteCallObjects;
+
+	/** Radial menu used for the hotbar on gamepad */
+	UPROPERTY( EditDefaultsOnly, Category = "UI" )
+	TSubclassOf< UFGInteractWidget > mHotbarRadialMenuWidgetClass;
+
+	/** Radial menu used for shortcuts on gamepad */
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf< UFGInteractWidget > mShortcutRadialMenuWidgetClass;
+
+	/** Radial menu user for hand held equipments on gamepad */
+	UPROPERTY( EditDefaultsOnly, Category = "UI" )
+	TSubclassOf< UFGInteractWidget > mHandheldRadialMenuWidgetClass;
+
+	/** Radial menu widget for visualization modes */
+	UPROPERTY( EditDefaultsOnly, Category = "UI" )
+	TSubclassOf< UFGInteractWidget > mVisualizationModeRadialMenuWidgetClass;
+
+	/** How long the radial menu input should be held to activate the radial menu */
+	UPROPERTY( EditDefaultsOnly, Category = "UI" )
+	float mVisualizationModeRadialMenuActivationTime{1.5f};
 
 	/** Mapping context for chorded keys. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
@@ -765,7 +860,7 @@ protected:
 	TObjectPtr< UInputMappingContext > mMappingContextIntroDropPodSequence;
 
 	/** How often should we check which map area the pawn is in? */
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category = "Player" )
 	float mMapAreaCheckInterval;
 
 	/** In what map area is our pawn right now ? */
@@ -776,8 +871,11 @@ protected:
 	bool mCurrentAreaWasPreviouslyVisited;
 
 	UPROPERTY()
-	UAkComponent* mMovementWindComp;
+	TObjectPtr<UAkComponent> mMovementWindComp;
 
+	UPROPERTY()
+	TObjectPtr<UFGVisualizationMode> mCurrentVisualizationMode;
+	
 	FVector mMovementWindVelocityBuffer;
 	float mTurnOffMovementWindTimer;
 	float mMovementWindInAirTimer;
@@ -788,21 +886,23 @@ protected:
 	float mNoMovementTime; //Used to detect if player has been idling for a long time. ideally we should check for input too, but this should be good enough for now
 
 	// Defaulted to 150 km/h.
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category = "Achievement" )
 	float mSpeedToReachForAchievement = 4166.667f;
-	
+
 public:
-//<FL>[KonradA]
-	UFUNCTION(BlueprintCallable)
-	FString GetOnlineIdIfPossible( bool& hasValidOnlineId );
-	UFUNCTION( BlueprintCallable )
-	FString GetOnlineHandleIfPossible( bool& bHasValidOnlineHandle );
+	/**
+	 * Returns the player info handle containing the online identity information for this player controller for the platform they are currently logging in from (aka primary backend)
+	 * This information will be immediately available on the client and the server as it is set during the player login sequence very early into the player controller creation
+	 */
+	UFUNCTION( BlueprintPure, Category = "Player" )
+	FORCEINLINE FPlayerInfoHandle GetPlatformPlayerInfoHandle() const { return mPlatformPlayerInfoHandle; }
 
-	UFUNCTION( BlueprintCallable )
-	TArray< FLocalUserNetIdBundle > GetOnlineNetIdBundlesIfPossible( bool& bHasValidOnlineBundles );
+	/** Returns both if this player has the same account as the given player info handle */
+	UFUNCTION( BlueprintPure, Category = "Player" )
+	bool IsSameAccount( const FPlayerInfoHandle& OtherPlayerInfoHandle ) const;
 
-	bool IsSameAccount( TArray< FLocalUserNetIdBundle > OtherAccountBundles);
-	//</FL>
+	/** Internal function used by FGGameMode to assign the player platform handle on login during player controller creation */
+	void Internal_SetPlayerPlatformInfoHandle( const FPlayerInfoHandle& newPlatformPlayerInfoHandle );
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void StartLookInputDelay();
@@ -811,6 +911,9 @@ public:
 	float GetLookInputFadeFactor(); // Returns a factor to smoothly scale the looking input after closing the Handheld or Hotbar radial menu
 
 	float mLookInputDelay = 0.0f; // Remaining time in seconds until look input is fully activated again after closing the Handheld or Hotbar radial menu
+
+	virtual void EnterMouseAndKeyboardMode() override;
+	virtual void EnterGamepadMode() override;
 
 private:
 	/** If we're currently in the state of respawning */
@@ -825,24 +928,20 @@ private:
 
 	/** Cached info about the map areas */
 	UPROPERTY()
-	class UFGMapAreaTexture* mCachedMapAreaTexture;
+	TObjectPtr<class UFGMapAreaTexture> mCachedMapAreaTexture;
 
-	/** Did we died */
-	UPROPERTY()
-	bool mRespawnFromDeath;
-
-	/** Did we died */
-	UPROPERTY()
-	bool mRespawnFromJoin;
+	/** Are we currently respawning from death? If false but mIsRespawning is true, we are joining the game using an existing pawn */
+	bool mRespawningFromDeath{false};
 
 	/** Current field of view */
 	int32 mCurrentFOV;
 
+	TOptional<FDisabledInputGate> mMovementModeDisabledInputGate;
 	FDisabledInputGate mDisabledInputGate;
 
 	/** Subsystem that keeps track of effects in proximity to the player */
 	UPROPERTY()
-	class AFGProximitySubsystem* mProximitySubsystem;
+	TObjectPtr<class AFGProximitySubsystem> mProximitySubsystem;
 
 	/** How often to run UpdateMusicPlayers  */
 	UPROPERTY( EditDefaultsOnly, Category = "Photo Mode" )
@@ -856,15 +955,37 @@ private:
 
 	/** List of music player to keep track of  */
 	UPROPERTY()
-	TArray< UObject* > mMusicPlayerList;
+	TArray< TObjectPtr<UObject> > mMusicPlayerList;
 
 	bool mMapMarkerModeActive;
 	bool mMapMarkerModeButtonPressed;
+
+	bool mVisualizationModeRadialActive{false};
+	float mVisualizationModeRadialTimer{0.0f};
 
 	/** Privilege level of this player when playing on the dedicated server. None if not playing on Dedicated Server */
 	UPROPERTY( Replicated, Transient )
 	EPrivilegeLevel mDedicatedServerPrivilegeLevel;
 
+	/** Player info handle for the platform this player has logged in from currently. Will be set on login immediately */
+	UPROPERTY( Replicated, Transient )
+	FPlayerInfoHandle mPlatformPlayerInfoHandle;
+
 	/** Input device type used by the remote player client when this is not a local player */
 	EInputDeviceType mPlayerActiveInputDeviceType{EInputDeviceType::MouseAndKeyboard};
+
+	/** Vehicle path visualization handle for when player wishes to have vehicle paths always visible */
+	TSharedPtr<FVehiclePathVisualizationHandle> mVehiclePathVisualizationHandle;
+
+	/** Currently bound (or explicitly unbound) mapping contexts with each binding request */
+	UPROPERTY()
+	TMap<TObjectPtr<UInputMappingContext>, FActiveMappingContextInfo> mActiveMappingContexts;
+
+	FBoundMappingContextHandle mDetachedCameraMappingContextHandle;
+	FBoundMappingContextHandle mPhotoModeMappingContextHandle;
+	FBoundMappingContextHandle mPortalMappingContextHandle;
+	FBoundMappingContextHandle mDeadMappingContextHandle;
+	FBoundMappingContextHandle mMapMarkerModeMappingContextHandle;
+	FBoundMappingContextHandle mPrimaryMappingContextHandle;
+	FBoundMappingContextHandle mChordsMappingContextHandle;
 };

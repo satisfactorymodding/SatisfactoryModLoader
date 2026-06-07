@@ -16,8 +16,16 @@ public class FactorySharedTarget : TargetRules
 	[CommandLine("-Modular", Value = "Modular")]
 	public TargetLinkType LinkTypeOverride = TargetLinkType.Default;
 
+	[CommandLine("-WithPSA")]
+	public bool WithPSA = false;
+
 	public FactorySharedTarget(TargetInfo Target) : base(Target)
 	{
+		bIsPublicBuild = true;
+		//DefaultWarningLevel = WarningLevel.Error;
+		//bWarningsAsErrors = true;
+		//CppCompileWarningSettings.DeprecationWarningLevel = WarningLevel.Error;
+		
 		// Marked this as game because the project file generator was trying to initialize this class and failing because it was abstract. What a not very smart tool.
 		Type = UnrealBuildTool.TargetType.Game;
 		
@@ -32,20 +40,22 @@ public class FactorySharedTarget : TargetRules
 		bOverrideAppNameForSharedBuild = true;
 		bOverrideBuildEnvironment = true;
 		bUseLoggingInShipping = true;
+		bUseConsoleInShipping = true;
 		bAllowGeneratedIniWhenCooked = true;
 		// Enable diagnostics when disabled plugins are being pulled back into the build as dependencies for other plugins
-		DisablePluginsConflictWarningLevel = WarningLevel.Warning;
+		CppCompileWarningSettings.DisablePluginsConflictWarningLevel = WarningLevel.Warning;
 
 		// [ZolotukhinN:10/07/2023] Enabled Network Push Model support in normal game builds, it's disabled in non-editor by default
 		bWithPushModel = true;
 		// [ZolotukhinN:04/05/2023] Allow cheat manager initialization in Shipping builds to allow cheating even in shipping builds when compiling with WITH_CHEATS=1
 		if (true /*Target.Platform != UnrealTargetPlatform.PS5 && Target.Platform != UnrealTargetPlatform.XSX*/)
 		{
-		GlobalDefinitions.Add("UE_WITH_CHEAT_MANAGER=1");
+			GlobalDefinitions.Add("UE_WITH_CHEAT_MANAGER=1");
 		}
 		// Allow checks in shipping depending on the command line configuration
 		bUseChecksInShipping = UseChecksInShippingOverride;
-		
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
+
 		// Common module names for the game targets
 		ExtraModuleNames.AddRange(new[] {
 			"FactoryGame"
@@ -54,5 +64,14 @@ public class FactorySharedTarget : TargetRules
 		{
 			Logger.LogInformation($"{Target.Name}: Building with command line overrides: ChecksInShipping: {bUseChecksInShipping} (default: false); LinkType: {LinkType} (default: {defaultLinkTypeForPlatform})");
 		}
+
+		// if (bBuildEditor || WithPSA)
+		// {
+		// 	EnablePlugins.Add("PSA");
+		// }
+		// else
+		// {
+		// 	DisablePlugins.Add("PSA");
+		// }
 	}
 }

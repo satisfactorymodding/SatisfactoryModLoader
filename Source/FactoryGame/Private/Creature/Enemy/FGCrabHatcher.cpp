@@ -5,8 +5,8 @@
 
 AFGCrabHatcher::AFGCrabHatcher() : Super() {
 	this->mBabyClass = nullptr;
-	this->mBabySpawnCenterOffset = FVector((0, 0, 300));
-	this->mBabySpawnExtent = FVector((100, 100, 25));
+	this->mBabySpawnCenterOffset = FVector(0, 0, 300);
+	this->mBabySpawnExtent = FVector(100, 100, 25);
 	this->mBabySpawnImpulse = FFloatInterval(150.0, 500.0);
 	this->mCurrentHealth = 20.0;
 }

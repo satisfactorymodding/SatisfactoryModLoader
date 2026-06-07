@@ -23,8 +23,8 @@ void AFGPlayerControllerBase::OnUnPossess(){ Super::OnUnPossess(); }
 void AFGPlayerControllerBase::SetupWwise(){  }
 void AFGPlayerControllerBase::RemoveWwise(){  }
 void AFGPlayerControllerBase::ClientPlayForceFeedback(class UForceFeedbackEffect* ForceFeedbackEffect, FForceFeedbackParameters Params){ Super::ClientPlayForceFeedback(ForceFeedbackEffect, Params); }
+bool AFGPlayerControllerBase::GetIsUsingGamepad() const{ return bool(); }
 void AFGPlayerControllerBase::Client_SetupWwise_Implementation(){  }
-void AFGPlayerControllerBase::SetIsUsingGamepad(bool newIsUsingGamepad){ }
 void AFGPlayerControllerBase::OnControlledCharacterDied( AFGCharacterBase* character){ }
 void AFGPlayerControllerBase::OnControlledCharacterRevived( AFGCharacterBase* character){ }
 void AFGPlayerControllerBase::FlushPressedKeys(){ }
@@ -51,6 +51,8 @@ void AFGPlayerControllerBase::Server_Admin_Implementation(const FString& command
 TScriptInterface<class IFGSaveManagerInterface> AFGPlayerControllerBase::GetMostRelevantSaveManager(){ return TScriptInterface<class IFGSaveManagerInterface>(); }
 TScriptInterface<class IFGSaveManagerInterface> AFGPlayerControllerBase::GetLocalSaveManager(){ return TScriptInterface<class IFGSaveManagerInterface>(); }
 EInputDeviceType AFGPlayerControllerBase::GetPlayerInputDeviceType() const{ return EInputDeviceType(); }
+void AFGPlayerControllerBase::EnterMouseAndKeyboardMode(){ }
+void AFGPlayerControllerBase::EnterGamepadMode(){ }
 void AFGPlayerControllerBase::DiscardInput(){ }
 void AFGPlayerControllerBase::SetPlayer(UPlayer* InPlayer){ }
 void AFGPlayerControllerBase::OnNetCleanup( UNetConnection* Connection){ }

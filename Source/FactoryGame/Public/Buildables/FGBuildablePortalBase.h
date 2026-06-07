@@ -59,7 +59,7 @@ struct FACTORYGAME_API FFGPortalLinkCandidate
 	GENERATED_BODY()
 
 	UPROPERTY( BlueprintReadOnly, Category = "Portal" )
-	class AFGBuildablePortalBase* Portal;
+	TObjectPtr<class AFGBuildablePortalBase> Portal;
 
 	UPROPERTY( BlueprintReadOnly, Category = "Portal" )
 	EFGPortalLinkCandidateState State;
@@ -113,8 +113,11 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	//<FL>[KonradA]
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return mLastEditedBy; }
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) { SetLastEditedBy(LastEditedBy); }
+	UFUNCTION() virtual FPlayerInfoHandle GetLastEditedBy() const override { return mLastEditedBy; }
+	UFUNCTION() virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy ) { 
+		UE_LOG(LogTemp,Warning,TEXT("Called SetActorLastEditedByHandle!"));
+		SetLastEditedBy(LastEditedBy);
+	}
 	//</FL>
 	// End IFGActorRepresentationInterface
 	
@@ -177,8 +180,8 @@ public:
 	void SetPortalName( const FText& inPortalName );
 
 //<FL>[KonradA]
-	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Portal" )
-	void SetLastEditedBy( const TArray< FLocalUserNetIdBundle >& lastEditedBy );
+	UFUNCTION( Category = "Portal" )
+	void SetLastEditedBy( const FPlayerInfoHandle& lastEditedBy );
 //</FL>
 
 	/** Returns true if we are traversable, e.g. have heated up and have  */
@@ -230,7 +233,7 @@ public:
 	FOnPortalHeatUpStateChanged mOnHeatUpStateChanged;
 
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 
 protected:
 
@@ -259,14 +262,14 @@ public:
 	
 	/** Portal travel time based on the distance travelled (in kms) */
 	UPROPERTY( EditDefaultsOnly, Category = "Portal" )
-	UCurveFloat* mPortalTravelTimeOverDistance;
+	TObjectPtr<UCurveFloat> mPortalTravelTimeOverDistance;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Portal" )
 	float mMaxPortalTravelTime;
 private:
 	/** The portal we are currently linked to */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_LinkedPortal, EditInstanceOnly, Category = "Portal" )
-	AFGBuildablePortalBase* mLinkedPortal;
+	TObjectPtr<AFGBuildablePortalBase> mLinkedPortal;
 
 	/** True if we have opened the connection after 2 portals have heated up and are hosting a shared inventory now */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_PortalTraversable, VisibleInstanceOnly, Category = "Portal" )
@@ -274,11 +277,11 @@ private:
 
 	/** Power consumption the portal will have over the span of 1 second after player teleports, based on the distance travelled in kms */
 	UPROPERTY( EditDefaultsOnly, Category = "Portal", meta = ( ClampMin = "0.0" ) )
-	UCurveFloat* mPowerConsumptionPerTeleportOverDistance;
+	TObjectPtr<UCurveFloat> mPowerConsumptionPerTeleportOverDistance;
 	
 	/** Texture used for the portal representation on the map */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTexture;
+	TObjectPtr<class UTexture2D> mActorRepresentationTexture;
 
 	/** Color used for the portal representation on the map */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
@@ -311,6 +314,6 @@ private:
 protected:	
 //<FL>[KonradA]
 	UPROPERTY(BlueprintReadOnly, SaveGame, Replicated, Category = "Representation" )
-	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	FPlayerInfoHandle mLastEditedBy;
 //</FL>
 };

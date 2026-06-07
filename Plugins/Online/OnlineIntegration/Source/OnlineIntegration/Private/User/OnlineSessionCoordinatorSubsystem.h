@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WorldSubsystem.h"
+#include "Subsystems/WorldSubsystem.h"
 
 #include "OnlineSessionCoordinatorSubsystem.generated.h"
 

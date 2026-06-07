@@ -1,7 +1,8 @@
 #pragma once
+
 #include "CoreMinimal.h"
 #include "UObject/Class.h"
-#include "Templates/Casts.h"
+#include "Blueprint/BlueprintExceptionInfo.h"
 #include "ReflectionHelper.generated.h"
 
 USTRUCT(BlueprintInternalUseOnly)
@@ -9,7 +10,7 @@ struct SML_API FDynamicStructInfo {
     GENERATED_BODY()
 public:
     UPROPERTY()
-    UScriptStruct* Struct;    
+    TObjectPtr<UScriptStruct> Struct;    
     void* StructValue;
 };
 

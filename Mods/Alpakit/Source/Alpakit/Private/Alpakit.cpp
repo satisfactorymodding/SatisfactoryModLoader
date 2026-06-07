@@ -10,7 +10,7 @@
 #include "ISettingsSection.h"
 #include "LevelEditor.h"
 #include "IPluginBrowser.h"
-#include "UATHelper/Public/IUATHelperModule.h"
+#include "IUATHelperModule.h"
 #include "ModWizardDefinition.h"
 #include "ModTargetsConfig.h"
 #include "SAlpakitLogTabContent.h"
@@ -175,6 +175,7 @@ TSharedRef<FAlpakitProfile> MakeDevelopmentProfileForMod(TSharedRef<IPlugin> Mod
     UAlpakitSettings* Settings = UAlpakitSettings::Get();
 
     Profile->BuildConfiguration = Settings->GetBuildConfiguration();
+	Profile->BuildTargetNames = Settings->OverrideBuildTargets;
 
     for (auto& [CookedPlatform, TargetSetting] : Settings->GetPlatformTargetSettings()) {
         if (TargetSetting.bEnabled) {

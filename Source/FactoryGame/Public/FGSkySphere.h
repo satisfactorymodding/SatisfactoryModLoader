@@ -3,6 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGWeatherPresetDataAsset.h"
+#include "FGWeatherReaction.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/VolumetricCloudComponent.h"
 #include "Curves/CurveFloat.h"
@@ -14,26 +16,11 @@
 
 #include "FGSkySphere.generated.h"
 
+enum class EWeatherInterpState : uint8;
 class UFGWeatherReaction;
-UENUM( BlueprintType )
-enum class EWeatherType : uint8
-{
-	Weather_Default,
-	Weather_Thunder,
-	Weather_Rain,
-	Weather_Clear,
-	Weather_Overcast,
-	Weather_Unset
-};
 
-UENUM( BlueprintType )
-enum class EWeatherIntensity : uint8
-{
-	WeatherIntensity_Calm,
-	WeatherIntensity_Medium,
-	WeatherIntensity_High,
-	WeatherIntensity_Insane
-};
+//Delegate for notifying weather state start
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnWeatherStateStarted, TSubclassOf< AFGWeatherReaction >, WeatherState );
 
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FWeatherChanceEntry
@@ -108,7 +95,7 @@ struct FACTORYGAME_API FSkySphereSettings
 };
 
 UCLASS(HideCategories=(Input,Rendering))
-class FACTORYGAME_API AFGSkySphere : public AActor, public ICurvePanningInterface
+class FACTORYGAME_API AFGSkySphere : public AActor, public ICurvePanningInterface, public IFGSaveInterface
 {
 	GENERATED_BODY()
 public:
@@ -126,30 +113,34 @@ public:
 	virtual void PostEditChangeChainProperty( struct FPropertyChangedChainEvent& propertyChangedEvent ) override;
 #endif
 	// End AActor interface
+	// Begin IFGSaveInterface
+	virtual bool ShouldSave_Implementation() const override { return true; }
+	// End
 
 	//	Begin ICurvePanningInterface
 #if WITH_EDITOR
 	virtual float GetViewMinInput() const override;
 	virtual float GetViewMaxInput() const override;
 	virtual void SetViewRange( float min, float max ) override;
+
 #endif
 	// End ICurvePanningInterface
-
+	
 	//////////////////////////////////////////////////////////////////////////////
 	// Begin sky sphere mesh & material
 	/* Used when volumetric clouds are on. */
 	UPROPERTY(EditDefaultsOnly, Category = "SkySphere|Material")
-	UMaterialInterface* mDefaultMaterial;
+	TObjectPtr<UMaterialInterface> mDefaultMaterial;
 
 	/* Used when volumetric clouds are off. */
 	UPROPERTY(EditDefaultsOnly, Category = "SkySphere|Material")
-	UMaterialInterface* mDefaultLowSpecMaterial;
+	TObjectPtr<UMaterialInterface> mDefaultLowSpecMaterial;
 
 	UPROPERTY(EditDefaultsOnly, Category = "SkySphere")
-	UStaticMesh* mDefaultMesh;
+	TObjectPtr<UStaticMesh> mDefaultMesh;
 
 	UPROPERTY(BlueprintReadOnly)
-	UStaticMeshComponent* mSkyMeshComponent;
+	TObjectPtr<UStaticMeshComponent> mSkyMeshComponent;
 	
 	/* Called when volumetric clouds settings are changed. */
 	UFUNCTION(BlueprintCallable)
@@ -161,56 +152,55 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static float GetDirectionalLightIntensityMultiplierOverride();
 
+	UFUNCTION(BlueprintCallable)
+	void RequestCameraUpdate();
+	
+	UFUNCTION(BlueprintCallable,BlueprintImplementableEvent)
+	void UpdateRainbowAlpha(float AlphaValue);
+	
 	// End sky sphere mesh & materials.
 	///////////////////////////////////////////////////////////////////////////////
 	
 	//////////////////////////////////////////////////////////////////////////////
 	// Begin Weather
-	/* Index in the WeatherStateList */
-	UPROPERTY( VisibleAnywhere,ReplicatedUsing=OnRep_OnWeatherChanged, SaveGame )
-	int32 mCurrentSelectedWeather;
 	
-	UFUNCTION( BlueprintCallable, Category = "Weather" )
-    FWeatherChanceEntry GetNewWeatherState();
+	/* Sets weather preset and rolls new weather state.*/
+	UFUNCTION(BlueprintCallable)
+	void SetWeatherPreset(UFGWeatherPresetDataAsset* WeatherPreset );
 
-	UFUNCTION( BlueprintPure, Category = "Weather" )
-    FWeatherChanceEntry GetCurrentWeatherState() const { return mWeatherStateList[ mCurrentSelectedWeather ]; }
+	UFUNCTION(BlueprintCallable)
+	void ForceSetWeather(TSubclassOf< AFGWeatherReaction > ForcedWeatherState);
 
-	UFUNCTION( BlueprintPure, Category = "Weather" )
-	int32 GetCurrentWeatherStateID() const { return mCurrentSelectedWeather; }
+	void RollNewWeather();
+	
+	/* Current assigned weather preset, will be saved to see if we have to clean the old weather state and rerun or not. */
+	UPROPERTY(EditAnywhere,Category = "Weather", SaveGame)
+	TObjectPtr<UFGWeatherPresetDataAsset> mCurrentWeatherPreset = {};
+	
+	/* Current active weather reaction object, will be saved so we can resume. */
+	UPROPERTY(EditAnywhere,Category = "Weather")
+	TObjectPtr<AFGWeatherReaction> CurrentWeatherReaction;
+	
+	UPROPERTY(VisibleAnywhere,Category = "Weather", SaveGame)
+	TSubclassOf<AFGWeatherReaction> CurrentWeatherReactionClass = nullptr;
 
-	UFUNCTION( BlueprintCallable, Category = "Weather" )
-	void SetWeatherState( int32 NewTypeID );
-
-	UFUNCTION()
-	void OnRep_OnWeatherChanged( int32 OldState );
-
-	/* Set intensity on both moon and sun light directly. */
-	UFUNCTION(BlueprintCallable, Category = "Weather")
-	void SetCloudShadowIntensity(float NewValue);
-
-	/* Moon & sun should have the same values, so we only check one of them. */
-	UFUNCTION(BlueprintPure, Category = "Weather")
-	float GetCloudShadowIntensity() const;
-
+	UPROPERTY(VisibleAnywhere,Category = "Weather", SaveGame)
+	EWeatherInterpState mCurrentWeatherState = EWeatherInterpState::EWeatherInterpState_Undefined;
+	
+	void UpdateWeatherState( EWeatherInterpState NewState ) { mCurrentWeatherState = NewState; }
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Weather", BlueprintReadWrite)
+	float mWeatherDurationMultiplier = 1;
+	
 	UFUNCTION(BlueprintCallable, Category = "Weather")
 	void TryUpdateSceneCaptureLocation( bool bForce = false);
 
 	void UpdateOcclusionDistance();
+	
 
-	/* Array with the same size of mWeatherStateList containing pointers to weather reaction actors. */
-	UPROPERTY()
-	TArray< TWeakObjectPtr< class AFGWeatherReaction > > mWeatherReactionActors;
-		
+	/*DEPRECATED, Will keep for a while as reference*/
 	UPROPERTY( EditDefaultsOnly, Category = "Weather" )
 	TArray< FWeatherChanceEntry > mWeatherStateList;
-
-	/* Fallback entry id.*/
-	UPROPERTY( EditDefaultsOnly, Category = "Weather" )
-	int32 mDefaultWeatherEntry;
-
-	UPROPERTY( EditDefaultsOnly, Category = "Weather" )
-	FFloatInterval mWeatherChangeDelayTime;
 
 	/* Last time we changed the weather state. */
 	float mLastWeatherUpdateTime;
@@ -218,27 +208,31 @@ public:
 	/* Set when new weather type is picked.*/
 	float mCurrentWeatherDelay;
 
+	UPROPERTY(SaveGame)
+	float mTimeUntilNextWeatherState = 0;
+	
 	/* Texture used for rain occlusion. Updated on tick with grid snapping to the player location.*/
-	UPROPERTY( VisibleAnywhere, Category = "Weather|Occlusion" )
-	class USceneCaptureComponent2D* mRainOcclusionSceneCapture2DComponent;
+	UPROPERTY( VisibleAnywhere, Category = "Weather|Occlusion", BlueprintReadOnly )
+	TObjectPtr<class USceneCaptureComponent2D> mRainOcclusionSceneCapture2DComponent;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Weather|Occlusion" )
-	class UTextureRenderTarget2D* mRainOcclusionRT;
+	TObjectPtr<class UTextureRenderTarget2D> mRainOcclusionRT;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Weather|Occlusion" )
-	class UMaterialParameterCollection* mRainOcclusionMaterialParameterCollection;
+	TObjectPtr<class UMaterialParameterCollection> mRainOcclusionMaterialParameterCollection;
 
 	//TODO deprecate this or move this to weather data.
 	UPROPERTY( EditDefaultsOnly)
-	UMaterialParameterCollection* mTimeOfDayCollection;
+	TObjectPtr<UMaterialParameterCollection> mTimeOfDayCollection;
 
+	/*DEPRECATED*/
 	// TODO maybe we want to save this in the future.
 	UPROPERTY()
 	FRandomStream mWeatherSeed;
 
 	/* Cached occlusion actor for rain and maybe grass in the future. */
 	UPROPERTY()
-	class AFGRainOcclusionActor* mRainOcclusionActor;
+	TObjectPtr<class AFGRainOcclusionActor> mRainOcclusionActor;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AFGRainOcclusionActor> mDefaultRainOcclusionActorClass;
@@ -306,6 +300,10 @@ public:
 
 	UFUNCTION( BlueprintCallable )
 	void UpdateGlobalMaterialCollection();
+
+	//Delegate for notifying weather state start
+	UPROPERTY(BlueprintAssignable, Category = "Weather")
+	FOnWeatherStateStarted OnWeatherStateStarted;
 protected:
 #if WITH_EDITOR
 	friend class AFGWorldSettings;
@@ -346,19 +344,19 @@ protected:
 	FRuntimeCurveLinearColor mSkyLightColor;
 
 	UPROPERTY( Transient )
-	ADirectionalLight* mCurrentLight;
+	TObjectPtr<ADirectionalLight> mCurrentLight;
 	
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "World Actors")
-	ASkyLight* mSkyLight;
+	TObjectPtr<ASkyLight> mSkyLight;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "World Actors")
-	ADirectionalLight* mSunLight;
+	TObjectPtr<ADirectionalLight> mSunLight;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "World Actors")
-	ADirectionalLight* mMoonLight;
+	TObjectPtr<ADirectionalLight> mMoonLight;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "World Actors")
-	AVolumetricCloud* mClouds;
+	TObjectPtr<AVolumetricCloud> mClouds;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Default Settings")
 	FRotator mSunOriginRotation;
@@ -381,7 +379,7 @@ protected:
 	float mNightTickRate;
 
 	UPROPERTY(Transient)
-	class AFGTimeOfDaySubsystem* mCachedTimeOfDaySubSystem;
+	TObjectPtr<class AFGTimeOfDaySubsystem> mCachedTimeOfDaySubSystem;
 
 	bool mIsInitialized;
 

@@ -19,10 +19,10 @@ public:
 	//End AFGBuildable
 protected:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper" )
-	UFGPipeConnectionComponentBase* mConnection0;
+	TObjectPtr<UFGPipeConnectionComponentBase> mConnection0;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper" )
-	UFGPipeConnectionComponentBase* mConnection1;
+	TObjectPtr<UFGPipeConnectionComponentBase> mConnection1;
 
 	UPROPERTY( VisibleAnywhere, SaveGame, Category = "Pipe Hyper" )
 	TSubclassOf<UFGRecipe> mBuiltWithPipelineRecipe;

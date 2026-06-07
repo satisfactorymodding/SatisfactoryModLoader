@@ -20,6 +20,7 @@ FSphere FHologramHelpers::CreateSphereFromCombinedClearanceData(const TArray<con
 float FHologramHelpers::CalcPoleHeight(const  FHitResult& aimResult, const FVector& poleLocation){ return float(); }
 float FHologramHelpers::CalcPoleHeightAndHorisontalOffset(float& out_horisontalOffset, const  FHitResult& aimResult, const FVector& poleLocation){ return float(); }
 float FHologramHelpers::FindRightAngleBetweenLocations(const FVector& location, const FVector& targetLocation, const FVector& direction){ return float(); }
+float FHologramHelpers::SnapToFloor(class AFGBuildable* floor, float gridSnapSize, bool constrainToBlueprintDesigner, FVector& location){ return float(); }
 void FSplineUtils::FSplineSegmentPointData::InitializePoints(FVector startPos, FVector startForward, FVector startRight, FVector endPos, FVector endForward, FVector endRight, float startRadius, float endRadius){ }
 void FSplineUtils::FSplineSegmentPointData::AssignDebugObject( AActor* debugActor){ }
 void FSplineUtils::FSplineSegmentPointData::CalculateValues(float forceVerticalExceeding){ }
@@ -72,6 +73,7 @@ bool FSplineUtils::BuildCurveSpline( FSplineBuilder& builder,
 		const FVector& endPos,
 		FVector endForward){ return bool(); }
 float FSplineUtils::CalcStraightTangentMagnitude(const FVector& startPos, const FVector& endPos, float targetTangetFactor){ return float(); }
+void FSplineUtils::SplitSplineAtDistance(const USplineComponent* splineComponent, float splitDistance, TArray<FSplinePointData>& out_firstSplinePoints, TArray<FSplinePointData>& out_secondSplinePoints){ }
 void FSplineUtils::CalcBendDirections3D(const FVector& startPos,
 		const FVector& startForward,
 		float startRadius,

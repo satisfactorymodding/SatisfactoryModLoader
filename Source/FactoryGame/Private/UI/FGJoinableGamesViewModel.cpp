@@ -12,3 +12,5 @@ void UFGJoinableGamesViewModel::OnFriendListReset(ULocalUserInfo* UserInfo){  }
 void UFGJoinableGamesViewModel::ReAddFriends(ULocalUserInfo* UserInfo){  }
 void UFGJoinableGamesViewModel::UpdateFriendSession(UOnlineFriend* newFriend, USessionInformation* sessionInfo){ }
 void UFGJoinableGamesViewModel::UpdateAndFilterListEntries(){  }
+void UFGJoinableGamesViewModel::ApplyListEntryChanges(TArray<TObjectPtr<UFGGenericListItemDescriptor>> newListEntries){ }
+bool UFGJoinableGamesViewModel::CheckIfCustomAttributeIsMissing(USessionInformation* sessionInfo){ return bool(); }

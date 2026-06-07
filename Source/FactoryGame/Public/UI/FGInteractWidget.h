@@ -4,7 +4,8 @@
 
 #include "FactoryGame.h"
 #include "Blueprint/UserWidget.h"
-#include "UI/FGUserWidget.h" // <FL> [WuttkeP] Changed base type of UFGInteractWidget to UFGUserWidget to allow assigning keybindings to it.
+#include "UI/FGUserWidget.h"
+#include "Engine/HitResult.h"
 #include "FGInteractWidget.generated.h"
 
 // Simple object wrapper for a hit result so we can put it as the interact object for an interact widget
@@ -206,6 +207,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
 	bool mDisablePlayerEquipmentManagement;
 
+	/** Whether or not to we want to disable Visualization Mode actions while this widget is open. */
+	UPROPERTY( EditDefaultsOnly, Category = "Input" )
+	bool mDisableVisualizationModeActions;
+
 	/** Whether or not to flush mouse button input when opening the widget. */
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
 	bool mFlushMouseKeysOnOpen;
@@ -214,6 +219,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
 	bool mClearBindingsOnDestruct;
 	
+	/** If this is true, and the button hint bar is bound to the enhanced input system, it will be hidden when a menu is active. */
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	bool mHideEnhancedInputButtonBarWhenMenuIsActive = false;
+
 	// Begin Deprecated Input
 	/** Decides if we should share input with game or capture it completely */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Input Deprecated" )
@@ -234,11 +243,12 @@ public:
 
 	/** Object that we interacted with in order to show this widget ( can be nullPeter ) */
 	UPROPERTY( BlueprintReadWrite, Meta = (ExposeOnSpawn) )
-	UObject* mInteractObject;
+	TObjectPtr<UObject> mInteractObject;
 
 	/** Class of the default widget we want to give focus to */
 	UPROPERTY( config, EditDefaultsOnly, Category = "UI" ) 
 	TSoftClassPtr< UUserWidget > mDefaultFocusWidgetClass;
+
 
 protected:
 	/** Should gamepad act as cursor when using this widget? */
@@ -258,7 +268,7 @@ protected:
 
 	/** Used to give focus to an object when nothing else has focus */
 	UPROPERTY()
-	UWidget* mDefaultFocusWidget;
+	TObjectPtr<UWidget> mDefaultFocusWidget;
 
 	/** Does this widget support stacking widgets on top? */
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )

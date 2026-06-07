@@ -14,6 +14,8 @@
 class UHierarchicalInstancedStaticMeshComponent;
 DECLARE_STATS_GROUP( TEXT("FoliageRemovalSubsystem"), STATGROUP_FoliageRemovalSubsystem, STATCAT_Advanced );
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnFoliageInstanceRemoved );
+
 struct FFoliageOctreeSemantics
 {
 	// When a leaf gets more than this number of elements, it will split itself into a node with multiple child leaves
@@ -107,7 +109,7 @@ struct FFoliageRemovalSaveDataPerCell
 	using KeyType = const UFoliageType*;
 	
 	UPROPERTY(SaveGame)
-	TMap<const UFoliageType*, FFoliageRemovalSaveDataForFoliageType> SaveDataMap;
+	TMap<TObjectPtr<const UFoliageType>, FFoliageRemovalSaveDataForFoliageType> SaveDataMap;
 };
 
 USTRUCT()
@@ -198,7 +200,7 @@ public:
 							FVector& out_instanceLocation, TEnumAsByte< EProximityEffectTypes >& out_Type );
 
 	/**
-	* Finds the closest foliage instance to a location
+	* Finds the closest random foliage instance to a location
 	*
 	* @network: Server and Client
 	*
@@ -219,6 +221,28 @@ public:
 											   class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId,
 											   FVector& out_instanceLocation, TEnumAsByte< EProximityEffectTypes >& out_Type );
 
+
+	/**
+	 * Finds multiple foliage of a given type within a certain distance from a location.
+	 * 
+	 * @network: Server and Client
+	 * 
+	 * @param location - the location to search around
+	 * @param maxDistance - the maximum distance from the location to search for foliage
+	 * @param foliageIdentifier - the identifier for the foliage type to search for
+	 * @param desiredTypes - array of desired types that the system should consider
+	 * @param out_components - components that contain the found foliage instances, only valid if we return true
+	 * @param out_instanceIds - instance ids of the found foliage instances, only valid if we return true
+	 * @param out_instanceLocations - locations of the found foliage instances, only valid if we return true
+	 * @param out_Types - types of the found foliage instances, only valid if we return true
+	 * @return true if any foliage was found, false otherwise
+	 * **/
+	bool GetMultipleFoliageAroundLocationOfGivenTypes( const FVector& location, float maxDistance,
+											   TSubclassOf< class UFGFoliageIdentifier > foliageIdentifier,
+											   TArray< TEnumAsByte< EProximityEffectTypes > > desiredTypes,
+											   TArray<class UHierarchicalInstancedStaticMeshComponent*>& out_components, TArray<TArray<int32>>& out_instanceIds,
+											   TArray<TEnumAsByte< EProximityEffectTypes >>& out_Types ) const;
+	
 	/**
 	 * @return true if at least one instance was found
 	 */
@@ -312,6 +336,7 @@ public:
 	const FFoliageRemovalSaveDataForFoliageType* GetSaveDataForCellForFoliageType( const FIntVector& cell,
 																				   const UFoliageType* foliageType ) const;
 	FOnNewFoliageBucketRemoved OnNewFoliageBucketRemoved;
+	FOnFoliageInstanceRemoved OnFoliageInstanceRemoved;
 
 	/**
 	 * Attempts to find the HISM corresponding to a stable foliage id. This may fail if for example the foliage cell for that id isn't streamed in
@@ -377,10 +402,10 @@ private:
 	 * A Map of foliage grid cells to all the loaded IFAs.
 	 */
 	UPROPERTY()
-	TMap<FIntVector, AInstancedFoliageActor*> mCellToLoadedIFAMap;
+	TMap<FIntVector, TObjectPtr<AInstancedFoliageActor>> mCellToLoadedIFAMap;
 
 	UPROPERTY()
-	TMap< class UHierarchicalInstancedStaticMeshComponent*, class UFoliageType* > mFoliageComponentTypeMapping;
+	TMap< TObjectPtr<class UHierarchicalInstancedStaticMeshComponent>, TObjectPtr<class UFoliageType> > mFoliageComponentTypeMapping;
 
 	UPROPERTY()
 	uint32 mFoliageGridSize = 0;

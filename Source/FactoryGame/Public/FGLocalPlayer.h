@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -79,7 +79,7 @@ public:
 	void RefreshRecentRegisteredSocialAccountID();
 
 	void PopulateEnhancedInputUserSettingsWithContexts( class UEnhancedInputUserSettings* inputUserSettings );
-	void PopulateChildMappingContexts( const UFGInputMappingContext* mainContext, TArray<UFGInputMappingContext*>& out_childContexts );
+	void PopulateChildMappingContexts( UFGInputMappingContext* mainContext, TArray<UFGInputMappingContext*>& out_childContexts );
 
 	/** Forcefully hides the early loading screen if it is visible */
 	void ForceHideEarlyLoadingScreen();
@@ -146,7 +146,7 @@ protected:
 
 	/** A list of all mapping contexts that can be re-bound. Used for pre-populating input user settings with correct values */
 	UPROPERTY()
-	TArray<UFGInputMappingContext*> mAllRebindableMappingContexts;
+	TArray<TObjectPtr<UFGInputMappingContext>> mAllRebindableMappingContexts;
 
 	/**
 	 * A cache of the parent to children mapping contexts, built when the player is added

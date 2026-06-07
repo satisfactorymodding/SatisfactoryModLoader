@@ -10,11 +10,11 @@ class SML_API URawFormatValueObject : public URawFormatValue {
 public:
     /** Actual of raw map object */
     UPROPERTY(BlueprintReadWrite)
-    TMap<FString, URawFormatValue*> Values;
+    TMap<FString, TObjectPtr<URawFormatValue>> Values;
 
     UFUNCTION(BlueprintPure)
     FORCEINLINE URawFormatValue* GetValue(const FString& Key) const {
-        URawFormatValue* const* Value = Values.Find(Key);
+        const TObjectPtr<URawFormatValue>* Value = Values.Find(Key);
         return Value ? *Value : NULL;
     }
 

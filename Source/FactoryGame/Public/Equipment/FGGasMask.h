@@ -43,7 +43,7 @@ protected:
 	void PostProcessEnabled_OnRep();
 	
 	UPROPERTY( EditDefaultsOnly, Instanced, Category="DamageTypes" )
-	TArray<UFGDamageType*> mDamageTypesToProtectAgainst;
+	TArray<TObjectPtr<UFGDamageType>> mDamageTypesToProtectAgainst;
 	
 	UPROPERTY( Replicated )
 	bool mPostProcessEnabled = false;

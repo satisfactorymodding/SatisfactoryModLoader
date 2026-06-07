@@ -19,18 +19,18 @@ public:
 	virtual void BeginPlay() override;
 	// End AActor interface
 	
-	virtual float GetProducingPowerConsumptionBase() const override { return mVariablePowerConsumption; }
+	virtual float GetProducingPowerConsumptionBase() const override;
 	virtual void Factory_StartProducing() override;
 	virtual void Factory_TickProducing( float dt ) override;
 	// End AFGBuildableFactory interface
 	
 	/** @returns the minimum power this building can consume, in MW */
 	UFUNCTION( BlueprintPure, Category = "Power" )
-	float GetMinPowerConsumption() const { return mMinPowerConsumption; }
+	float GetMinPowerConsumption() const;
 	
 	/** @returns the maximum power this building can consume, in MW */
 	UFUNCTION( BlueprintPure, Category = "Power" )
-	float GetMaxPowerConsumption() const { return mMaxPowerConsumption; }
+	float GetMaxPowerConsumption() const;
 
 protected:
 	// Begin Factory_ interface
@@ -66,7 +66,7 @@ protected:
 	*	The range (all possible output values) should also cover [0.0, 1.0] (@see "Power Consumption Constant" and "Power Consumption Factor" from FGRecipe).
 	*/
 	UPROPERTY( EditDefaultsOnly, Category = "Power" )
-	UCurveFloat* mPowerConsumptionCurve;
+	TObjectPtr<UCurveFloat> mPowerConsumptionCurve;
 
 private:
 	float mVariablePowerConsumption = 0.0f;

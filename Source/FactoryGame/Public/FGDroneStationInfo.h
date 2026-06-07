@@ -189,10 +189,8 @@ public:
 	virtual void SetHasBuildingTag_Implementation( bool hasBuildingTag ) override { }
 	virtual FString GetBuildingTag_Implementation() const override { return mBuildingTag; }
 	virtual void SetBuildingTag_Implementation( const FString& buildingTag ) override;
-	//<FL>[KonradA]
-	virtual void SetLastEditedBy_Implementation( const TArray< FLocalUserNetIdBundle >& lastEditedBy ) override;
-	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy_Implementation() const override { return mLastEditedBy; };
-	//</FL>
+	virtual void SetLastEditedByHandle_Implementation( const FPlayerInfoHandle& lastEditedBy ) override;
+	virtual FPlayerInfoHandle GetLastEditedBy_Implementation() const override { return mLastEditedBy; };
 	//~ End FGBuildingTagInterface
 
 	/** @returns the status of the drone attached to this station */
@@ -393,7 +391,7 @@ private:
 
 	/** The station this info represents. */
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mStation;
+	TObjectPtr<class AFGBuildableDroneStation> mStation;
 
 	/** Info objects cannot have a location, so in order to keep track of the station location on both client and server we'll just cache it and replicate it. */
 	UPROPERTY( Replicated )
@@ -403,11 +401,11 @@ private:
 	TSubclassOf< AFGBuildableDroneStation > mStationClass;
 
 	UPROPERTY( SaveGame, Replicated )
-	AFGDroneStationInfo* mPairedStation;
+	TObjectPtr<AFGDroneStationInfo> mPairedStation;
 
 	/** Stations which are connected to this one */
 	UPROPERTY( Replicated )
-	TArray<AFGDroneStationInfo*> mConnectedStations;
+	TArray<TObjectPtr<AFGDroneStationInfo>> mConnectedStations;
 
 	UPROPERTY( SaveGame, Replicated )
 	FString mBuildingTag;
@@ -436,6 +434,6 @@ private:
 
 	//<FL>[KonradA]
 	UPROPERTY( SaveGame, Replicated )
-	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	FPlayerInfoHandle mLastEditedBy;
 	//</FL>
 };

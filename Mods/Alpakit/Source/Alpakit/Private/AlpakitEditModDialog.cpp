@@ -1,13 +1,23 @@
 ﻿#include "AlpakitEditModDialog.h"
 
 #include "Alpakit.h"
+#include "DetailsViewArgs.h"
 #include "ISourceControlModule.h"
 #include "ISourceControlProvider.h"
 #include "ISourceControlOperation.h"
 #include "ISourceControlState.h"
 #include "ModMetadataObject.h"
+#include "PropertyEditorModule.h"
 #include "SourceControlOperations.h"
+#include "Dom/JsonObject.h"
+#include "HAL/FileManager.h"
+#include "Misc/FileHelper.h"
+#include "Misc/MessageDialog.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 #include "Util/SemVersion.h"
+#include "Widgets/Input/SButton.h"
+#include "Widgets/Layout/SBox.h"
 
 #define LOCTEXT_NAMESPACE "AlpakitEditMod"
 
@@ -23,7 +33,10 @@ void SAlpakitEditModDialog::Construct(const FArguments& InArgs, TSharedRef<IPlug
 	// Create a property view
 	FPropertyEditorModule& EditModule = FModuleManager::Get().GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	EditModule.RegisterCustomClassLayout(UModMetadataObject::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FModMetadataCustomization::MakeInstance));
-	TSharedRef<IDetailsView> PropertyView = EditModule.CreateDetailView(FDetailsViewArgs(false, false, false, FDetailsViewArgs::ActorsUseNameArea, true));
+	FDetailsViewArgs DetailsViewArgs;
+	DetailsViewArgs.bAllowSearch = false;
+	DetailsViewArgs.bHideSelectionTip = true;
+	TSharedRef<IDetailsView> PropertyView = EditModule.CreateDetailView(DetailsViewArgs);
 	PropertyView->SetObject(MetadataObject, true);
 	PropertyView->OnFinishedChangingProperties().AddLambda([this](const FPropertyChangedEvent&){
 		UpdateGameVersionTarget();

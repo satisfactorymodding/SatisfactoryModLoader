@@ -44,7 +44,7 @@ public:
 	
 	/** Convenient accessor to build static meshes using the properties of this buildable. Used by the buildable itself and also by the hologram. */
 	template<typename MeshConstructor>
-	FORCEINLINE void BuildStaticMeshesForPassthrough( USceneComponent* parentComponent, float thickness, TArray< UStaticMeshComponent* >& meshPool, MeshConstructor meshConstructor ) const
+	FORCEINLINE void BuildStaticMeshesForPassthrough( USceneComponent* parentComponent, float thickness, TArray< TObjectPtr<UStaticMeshComponent> >& meshPool, MeshConstructor meshConstructor ) const
 	{
 		BuildStaticMeshes( parentComponent, FVector::UpVector, thickness, mMidMeshLength, mMidMeshRotation, mEndCapRotation, mEndCapTranslation, mCapMesh, mMidMesh, meshPool, meshConstructor );
 	}
@@ -70,11 +70,11 @@ protected:
 
 	/** Mesh place at each entrance to the passthrough */
 	UPROPERTY( EditDefaultsOnly, Category = "Passthrough" )
-	class UStaticMesh* mCapMesh;
+	TObjectPtr<class UStaticMesh> mCapMesh;
 
 	/** Mesh to repeat to create the center area */
 	UPROPERTY( EditDefaultsOnly, Category = "Passthrough" )
-	class UStaticMesh* mMidMesh;
+	TObjectPtr<class UStaticMesh> mMidMesh;
 
 	/** Rotation of the end cap mesh */
 	UPROPERTY( EditDefaultsOnly, Category = "Passthrough" )
@@ -101,11 +101,11 @@ protected:
 	float mCostSegmentLength;
 	
 	UPROPERTY()
-	TArray< UStaticMeshComponent* > mGeneratedMeshComponents;
+	TArray< TObjectPtr<UStaticMeshComponent> > mGeneratedMeshComponents;
 private:
 	template<typename MeshConstructor>
 	static void BuildStaticMeshes( USceneComponent* parent, const FVector& stepDir, float thickness, float stepSize, FRotator midRotation, FRotator endRotation,
-		FVector endCapTranslation, UStaticMesh* midMesh, UStaticMesh* capMesh, TArray< UStaticMeshComponent* >& meshPool, MeshConstructor meshConstructor );
+		FVector endCapTranslation, UStaticMesh* midMesh, UStaticMesh* capMesh, TArray< TObjectPtr<UStaticMeshComponent> >& meshPool, MeshConstructor meshConstructor );
 };
 
 /**
@@ -114,7 +114,7 @@ private:
 template< typename MeshConstructor >
 void AFGBuildablePassthroughBase::BuildStaticMeshes( USceneComponent* parent, const FVector& stepDir, float thickness, float stepSize, FRotator midRotation, FRotator endRotation,
 												 FVector capTranslation, UStaticMesh* capMesh, UStaticMesh* midMesh,
-												  TArray< UStaticMeshComponent* >& meshPool, MeshConstructor meshConstructor )
+												  TArray< TObjectPtr<UStaticMeshComponent> >& meshPool, MeshConstructor meshConstructor )
 {
 	const int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( thickness / stepSize ) + 2 );
 

@@ -2,5 +2,5 @@
 
 #include "User/OnlineUserPresencePrivate.h"
 
-void UOnlineUserPresencePrivate::Init(UOnlineIntegrationBackend* Backend){ }
+void UOnlineUserPresencePrivate::Init(UOnlineIntegrationBackend* backend){ }
 void UOnlineUserPresencePrivate::Update(TSharedRef<const UE::Online::FUserPresence> OnlinePresence){ }

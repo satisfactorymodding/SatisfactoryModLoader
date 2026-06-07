@@ -17,6 +17,9 @@ AFGBuildableRailroadSignal::AFGBuildableRailroadSignal() : Super() {
 	this->mIsBiDirectional = false;
 	this->mIsLeftHanded = false;
 	this->mSignificanceRange = 75000.0;
+	this->mSoundOnBlockValidationError = nullptr;
+	this->mSoundOnClearAspect = nullptr;
+	this->mSoundOnStopAspect = nullptr;
 	this->mSignalComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildableRailroadSignal::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
@@ -36,14 +39,15 @@ void AFGBuildableRailroadSignal::OnBuildEffectActorFinished(){ }
 void AFGBuildableRailroadSignal::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableRailroadSignal::GainedSignificance_Implementation(){ }
 void AFGBuildableRailroadSignal::LostSignificance_Implementation(){ }
-void AFGBuildableRailroadSignal::SetupForSignificance(){ }
 void AFGBuildableRailroadSignal::PreUpgrade_Implementation(){ }
 #if WITH_EDITOR
 void AFGBuildableRailroadSignal::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent){ Super::PostEditChangeChainProperty(PropertyChangedEvent); }
+void AFGBuildableRailroadSignal::OnAspectChanged(ERailroadSignalAspect previousAspect){ }
 #endif
-void AFGBuildableRailroadSignal::OnAspectChanged(){ }
 void AFGBuildableRailroadSignal::OnBlockValidationChanged(){ }
 void AFGBuildableRailroadSignal::OnDirectionalityChanged(){ }
+void AFGBuildableRailroadSignal::PlaySoundForAspectChange(){ }
+void AFGBuildableRailroadSignal::PlaySoundForBlockValidationError(){ }
 void AFGBuildableRailroadSignal::DisconnectSignal(){ }
 void AFGBuildableRailroadSignal::UpdateVisuals(){ }
 void AFGBuildableRailroadSignal::ApplyVisualState(int16 state){ }
@@ -52,7 +56,7 @@ void AFGBuildableRailroadSignal::AddObservedConnection( UFGRailroadTrackConnecti
 void AFGBuildableRailroadSignal::UpdateConnections(){ }
 void AFGBuildableRailroadSignal::SetObservedBlock(TWeakPtr< FFGRailroadSignalBlock > block){ }
 void AFGBuildableRailroadSignal::OnBlockChanged(){ }
-void AFGBuildableRailroadSignal::OnRep_Aspect(){ }
+void AFGBuildableRailroadSignal::OnRep_Aspect(ERailroadSignalAspect previousAspect){ }
 void AFGBuildableRailroadSignal::OnRep_BlockValidation(){ }
 void AFGBuildableRailroadSignal::OnRep_VisualState(){ }
 void AFGBuildableRailroadSignal::OnRep_GuardedConnections(const TArray<UFGRailroadTrackConnectionComponent*>& oldGuardedConnections){ }

@@ -18,13 +18,19 @@ struct FCompassCardinalDirection
 
 	/** Texture to use for displaying this cardinal direction */
 	UPROPERTY( EditAnywhere, Config, Category = "Cardinal Direction" )
-	TSoftObjectPtr<UTexture2D> CardinalDirectionTexture{};
+	TSoftObjectPtr<UObject> CardinalDirectionTexture{};
 
 	UPROPERTY( EditAnywhere, Config, Category = "Cardinal Direction" )
 	float CompassHeightOffset{0.0f};
 
 	UPROPERTY( EditAnywhere, Config, Category = "Cardinal Direction" )
 	FVector2f ImageSize = FVector2f::ZeroVector;
+
+	UPROPERTY( EditAnywhere, Config, Category = "Cardinal Direction" )
+	FText CardinalDirectionName;
+
+	UPROPERTY( EditAnywhere, Config, Category = "Cardinal Direction" )
+	float TextHeightOffset{0.0f};
 };
 
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Map and Compass" ) )

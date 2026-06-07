@@ -9,6 +9,7 @@
 #include "Engine/Canvas.h"
 #include "Engine/Engine.h"
 #include "Modules/ModuleManager.h"
+#include "Styling/SlateStyleMacros.h"
 
 void UEditorDebugSubsystem::Initialize( FSubsystemCollectionBase& Collection )
 {
@@ -42,7 +43,7 @@ void UEditorDebugSubsystem::DebugDrawCanvas( UCanvas* Canvas, APlayerController*
 			FEditorDebugString& currentDebugString = EditorDebugStrings[i];
 
 			FCanvasTextItem TextItem(FVector2D::ZeroVector, FText::FromString( currentDebugString.Text ), GEngine->GetSmallFont(), currentDebugString.TextColor);
-			TextItem.SlateFontInfo = FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), currentDebugString.FontSize);
+			TextItem.SlateFontInfo = DEFAULT_FONT("Regular", currentDebugString.FontSize);
 			currentDebugString.DrawShadow ? TextItem.EnableShadow(FLinearColor::Black) : TextItem.DisableShadow();
 			const FVector screenLocation = Canvas->Project(currentDebugString.TextLocation);
 			

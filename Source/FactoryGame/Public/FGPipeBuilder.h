@@ -104,7 +104,7 @@ protected:
 protected:
 	/** The main skeletal mesh associated with this Vehicle */
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = "FactoryGame|PipeBuilder", meta = (AllowPrivateAccess = "true") )
-	class UFloatingPawnMovement* mMovementComponent;
+	TObjectPtr<class UFloatingPawnMovement> mMovementComponent;
 
 	/** The human readable name for this vehicle. */
 	//UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "FactoryGame|PipeBuilder" )
@@ -112,15 +112,15 @@ protected:
 
 	/** Component used to determine generators location */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mPipeSupportLocation;
+	TObjectPtr<USceneComponent> mPipeSupportLocation;
 private:
 	/** The hologram to build. */
 	UPROPERTY( Replicated )
-	class AFGSplineHologram* mSplineHologram;
+	TObjectPtr<class AFGSplineHologram> mSplineHologram;
 
 	/** Hologra of pipe support that indicates where to build the pipe to */
 	UPROPERTY( Replicated )
-	class AFGPipelinePoleHologram* mSupportHologram;
+	TObjectPtr<class AFGPipelinePoleHologram> mSupportHologram;
 
 	/** What recipe to use for the pipe support */
 	UPROPERTY(  )
@@ -132,7 +132,7 @@ private:
 
 	/** The pipe support that the pipe is built from */
 	UPROPERTY( Replicated )
-	class AFGBuildablePolePipe* mInternalSplineSupport;
+	TObjectPtr<class AFGBuildablePolePipe> mInternalSplineSupport;
 
 	/** Result of the latest trace. */
 	UPROPERTY()
@@ -156,7 +156,7 @@ private:
 
 	/** Curve used for height offset when moving */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|PipeBuilder" )
-	UCurveFloat* mHeightCurve;
+	TObjectPtr<UCurveFloat> mHeightCurve;
 
 	/** Class of what trail to use */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|PipeBuilder" )
@@ -164,7 +164,7 @@ private:
 
 	/** Cached reference to the trail actor */
 	UPROPERTY( Replicated )
-	class AFGPipeBuilderTrail* mTrail;
+	TObjectPtr<class AFGPipeBuilderTrail> mTrail;
 
 	/** Array with what spline based recipes can be built and their corresponding supports */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|PipeBuilder" )

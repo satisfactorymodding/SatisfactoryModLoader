@@ -50,6 +50,7 @@ void AFGBuildableWidgetSign::UpdateSignElements(FPrefabSignData& prefabSignData)
 float AFGBuildableWidgetSign::GetAdjustedEmissiveValue(int32 Level) const{ return float(); }
 bool AFGBuildableWidgetSign::WasLastChangedByLocalPlayer(){ return false; }
 void AFGBuildableWidgetSign::GetDefaultSignMaps(TMap<FString, FString>& TextElementToDataMap, TMap<FString, int32>& IconElementToDataMap){ }
+void AFGBuildableWidgetSign::RecalculateUGCVisibility(){ }
 void AFGBuildableWidgetSign::UpdateRenderTargetReferenceInMaterialInstanceFromWidget(){ }
 void AFGBuildableWidgetSign::OnRep_SignDataDirty(){ }
 uint32 AFGBuildableWidgetSign::GenerateGUID(FPrefabSignData& signData, UClass* Prefab, FVector2D Size){ return uint32(); }

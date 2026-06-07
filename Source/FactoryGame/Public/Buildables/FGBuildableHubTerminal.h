@@ -25,6 +25,6 @@ public:
 	//~ End AFGBuildable interface
 public:
 	UPROPERTY()
-	class AFGBuildableTradingPost* mTradingPost;
+	TObjectPtr<class AFGBuildableTradingPost> mTradingPost;
 	
 };

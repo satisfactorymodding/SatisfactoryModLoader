@@ -58,7 +58,7 @@ protected:
 private:
 	/** The connection conveyors snap to, used when placing a support automatically. */
 	UPROPERTY()
-	UFGPipeConnectionComponentBase* mSnapConnection;
+	TObjectPtr<UFGPipeConnectionComponentBase> mSnapConnection;
 
 	//Used to rotate the connection and top part vetically
 	UPROPERTY( ReplicatedUsing = OnRep_VerticalAngle, CustomSerialization )
@@ -66,7 +66,7 @@ private:
 
 	/** The support mesh. */
 	UPROPERTY()
-	class UStaticMeshComponent* mSupportTopPartMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mSupportTopPartMeshComponent;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	FVector mClearanceExtent;

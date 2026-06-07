@@ -19,5 +19,4 @@ public:
 	// Begin FGUnlock interface
 	virtual void Apply( class AFGUnlockSubsystem* unlockSubsystem ) override;
 	// End FGUnlock interface
-	
 };

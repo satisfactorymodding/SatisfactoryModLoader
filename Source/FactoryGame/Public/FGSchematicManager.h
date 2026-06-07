@@ -379,6 +379,15 @@ private:
 	
 	/** Called when holding a give access to schematics lock to prevent re-entry caused by the unlock subsystem */
 	void Internal_CommitCurrentSchematicTransaction();
+	// <FL> [ZimmermannA] Moved this call into its own function to hotfix an issue on consoles
+	void UnlockSchematicGameplayEvent( const TSubclassOf< UFGSchematic >& schematicClass );
+
+public:
+	UFUNCTION( BlueprintCallable, Category = "Schematic" )
+	void CheckSchematicAchievement();
+	// </FL>
+
+
 protected:	
 	/** All schematics in the game. Populated early on both server and clients. */
 	UPROPERTY()
@@ -424,7 +433,7 @@ protected:
 	FScopedSchematicUnlockTransaction* mCurrentUnlockTransaction{};
 
 	UPROPERTY()
-	TArray<class UFGSchematicManagerReplicationComponent*> mReplicationComponents;
+	TArray<TObjectPtr<class UFGSchematicManagerReplicationComponent>> mReplicationComponents;
 
 #if WITH_EDITORONLY_DATA
 	// Schematics we shouldn't give when we use the cheat give all schematics in PIE and standalone.

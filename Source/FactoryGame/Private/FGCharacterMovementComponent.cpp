@@ -19,6 +19,7 @@ UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
 	this->mCachedJumpingStilts = nullptr;
 	this->mCachedHoverPack = nullptr;
 	this->mCachedSurfedRailroadTrack = nullptr;
+	this->mCurrentModularMovementMode = nullptr;
 	this->mOnLadder = nullptr;
 	this->mPendingHyperJunction.mJunction = nullptr;
 	this->mPendingHyperJunction.mConnectionEnteredThrough = nullptr;
@@ -56,6 +57,8 @@ UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
 }
 void UFGCharacterMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction){ }
 FNetworkPredictionData_Client* UFGCharacterMovementComponent::GetPredictionData_Client() const{ return nullptr; }
+bool UFGCharacterMovementComponent::ServerExceedsAllowablePositionError(float ClientTimeStamp, float DeltaTime, const FVector& Accel, const FVector& ClientWorldLocation, const FVector& RelativeClientLocation, UPrimitiveComponent* ClientMovementBase, FName ClientBaseBoneName, uint8 ClientMovementMode){ return Super::ServerExceedsAllowablePositionError(ClientTimeStamp, DeltaTime, Accel, ClientWorldLocation, RelativeClientLocation, ClientMovementBase, ClientBaseBoneName, ClientMovementMode); }
+void UFGCharacterMovementComponent::ApplyNetworkMovementMode(const uint8 ReceivedMode){ Super::ApplyNetworkMovementMode(ReceivedMode); }
 bool UFGCharacterMovementComponent::DoJump(bool isReplayingMoves){ return bool(); }
 void UFGCharacterMovementComponent::CalcVelocity(float dt, float friction, bool isFluid, float brakingDeceleration){ }
 float UFGCharacterMovementComponent::GetMaxSpeed() const{ return float(); }
@@ -73,6 +76,7 @@ bool UFGCharacterMovementComponent::ServerSetHookLocation_Validate(const FVector
 void UFGCharacterMovementComponent::SetHookLocation(const FVector& hookLocation){ }
 void UFGCharacterMovementComponent::ToggleWantsToSprintAndSetAutoRelease(bool holdToSprint, bool autoReleaseSprint){ }
 void UFGCharacterMovementComponent::SetWantsToSprintAndHoldSprint(bool wantsToSprint, bool holdToSprint, bool autoReleaseSprint){ }
+bool UFGCharacterMovementComponent::IsVisuallySliding() const{ return bool(); }
 bool UFGCharacterMovementComponent::CanGrabLadder(const  UFGLadderComponent* ladder) const{ return bool(); }
 void UFGCharacterMovementComponent::StartClimbLadder( UFGLadderComponent* ladder){ }
 void UFGCharacterMovementComponent::StopClimbLadder(){ }
@@ -94,6 +98,9 @@ const USceneComponent* UFGCharacterMovementComponent::GetUpdateComponent() const
 float UFGCharacterMovementComponent::GetZiplineSpeed() const{ return float(); }
 void UFGCharacterMovementComponent::StopZiplineMovement(const FVector& exitForce){ }
 void UFGCharacterMovementComponent::StartZiplineMovement(AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward){ }
+bool UFGCharacterMovementComponent::SetModularMovementMode(UFGModularMovementObject* modularMovementMode){ return bool(); }
+bool UFGCharacterMovementComponent::SetModularMovementMode(const TSubclassOf<UFGModularMovementObject>& ModularMovementClass){ return bool(); }
+UFGModularMovementObject* UFGCharacterMovementComponent::RegisterModularMovementMode(const TSubclassOf<UFGModularMovementObject>& ModularMovementClass){ return nullptr; }
 void UFGCharacterMovementComponent::UpdateFromCompressedFlags(uint8 flags){ }
 void UFGCharacterMovementComponent::OnMovementUpdated(float deltaSeconds, const FVector & oldLocation, const FVector & oldVelocity){ }
 void UFGCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode){ }
@@ -109,6 +116,7 @@ void UFGCharacterMovementComponent::PhysZipline(const float deltaTime){ }
 void UFGCharacterMovementComponent::PhysHover(const float deltaTime){ }
 void UFGCharacterMovementComponent::PhysParachute(const float deltaTime, int32 iterations){ }
 void UFGCharacterMovementComponent::PhysCinematic(const float deltaTime, int32 iterations){ }
+void UFGCharacterMovementComponent::PhysModularMovement(const float deltaTime, int32 iterations){ }
 void UFGCharacterMovementComponent::UpdateJetPack(float deltaSeconds){ }
 void UFGCharacterMovementComponent::UpdateHookshot(const float deltaSeconds, const FVector& oldLocation){ }
 void UFGCharacterMovementComponent::UpdateSprintStatus(){ }
@@ -129,5 +137,10 @@ uint8 FSavedMove_FGMovement::GetCompressedFlags() const{ return uint8(); }
 bool FSavedMove_FGMovement::CanCombineWith(const FSavedMovePtr& newMove, ACharacter* character, float maxDelta) const{ return bool(); }
 void FSavedMove_FGMovement::SetMoveFor(ACharacter* character, float inDeltaTime, FVector const& newAccel,  FNetworkPredictionData_Client_Character & clientData){ }
 void FSavedMove_FGMovement::PrepMoveFor( ACharacter* character){ }
+void FSavedMove_FGMovement::PostUpdate(ACharacter* character, EPostUpdateMode postUpdateMode){ FSavedMove_Character::PostUpdate(character, postUpdateMode); }
 FNetworkPredictionData_Client_FGMovement::FNetworkPredictionData_Client_FGMovement(const UCharacterMovementComponent& clientMovement) : FNetworkPredictionData_Client_Character(clientMovement) { }
 FSavedMovePtr FNetworkPredictionData_Client_FGMovement::AllocateNewMove(){ return FSavedMovePtr(); }
+void FFGCharacterNetworkMoveData::ClientFillNetworkMoveData(const FSavedMove_Character& ClientMove, ENetworkMoveType MoveType){ FCharacterNetworkMoveData::ClientFillNetworkMoveData(ClientMove, MoveType); }
+bool FFGCharacterNetworkMoveData::Serialize(UCharacterMovementComponent& CharacterMovement, FArchive& Ar, UPackageMap* PackageMap, ENetworkMoveType MoveType){ return FCharacterNetworkMoveData::Serialize(CharacterMovement, Ar, PackageMap, MoveType); }
+void FFGCharacterMoveResponseDataContainer::ServerFillResponseData(const UCharacterMovementComponent& CharacterMovement, const FClientAdjustment& PendingAdjustment){ FCharacterMoveResponseDataContainer::ServerFillResponseData(CharacterMovement, PendingAdjustment); }
+bool FFGCharacterMoveResponseDataContainer::Serialize(UCharacterMovementComponent& CharacterMovement, FArchive& Ar, UPackageMap* PackageMap){ return FCharacterMoveResponseDataContainer::Serialize(CharacterMovement, Ar, PackageMap); }

@@ -137,6 +137,9 @@ public:
 	/** Whether to accept solutions that do not reach the goal. */
 	bool WantsPartialSolution() const;
 
+	/** We always want the start node in the path. */
+	bool ShouldIncludeStartNodeInPath() const { return true; }
+
 public:
 	/** true if a partial solution is valid; false if we only want a path if the goal is reachable. */
 	bool AcceptsPartialSolution;

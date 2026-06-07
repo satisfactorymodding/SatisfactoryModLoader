@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Auth.h"
+#include "Online/Auth.h"
 #include "ControlFlowNode.h"
 #include "MVVMViewModelBase.h"
 #include "OnlineAsyncOperation.h"
@@ -55,7 +55,6 @@ private:
 
 	void SetLoginPendingFlag(UOnlineIntegrationBackend* Backend, bool bSet);
 	
-	void NotifyProgressUpdate(const FText& Update);
 	void AuthenticationCompleted();
 	void ResetLoginTypeIndex();
 	void IncrementBackendIndex();

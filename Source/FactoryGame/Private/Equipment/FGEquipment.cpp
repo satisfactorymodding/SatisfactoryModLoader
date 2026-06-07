@@ -32,6 +32,12 @@ AFGEquipment::AFGEquipment() : Super() {
 	this->mPickedEquipMontage.bSeparate3PAudioEvent = false;
 	this->mPickedEquipMontage.AudioEvent3P = nullptr;
 	this->mPickedEquipMontage.CameraAnim = nullptr;
+	this->mMagnetismStrength = 0.0;
+	this->mMagnetismZeroInputStrength = 0.0;
+	this->bMagnetismActive = false;
+	this->mMagnetismOuterRadiusByDistanceCurve = nullptr;
+	this->mMagnetismInnerRadiusByDistanceCurve = nullptr;
+	this->mMagnetismStrengthRadiusBlendCurve = nullptr;
 	this->mIdlePoseAnimation = nullptr;
 	this->mIdlePoseAnimation3p = nullptr;
 	this->mCrouchPoseAnimation3p = nullptr;
@@ -71,7 +77,7 @@ bool AFGEquipment::IsMagnetismActive_Implementation() const{ return false; }
 FFGDynamicStruct AFGEquipment::ConvertToItemState(TSubclassOf<UFGItemDescriptor> itemDescriptor) const{ return FFGDynamicStruct(); }
 void AFGEquipment::Equip( AFGCharacterPlayer* character){ }
 void AFGEquipment::UnEquip(){ }
-void AFGEquipment::OnCharacterMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode, EMovementMode NewMovementMode, uint8 NewCustomMode){ }
+void AFGEquipment::OnCharacterMovementModeChanged(class ACharacter* character, EMovementMode PreviousMovementMode, uint8 PreviousCustomMode){ }
 void AFGEquipment::UpdatePrimitiveColors(FLinearColor Primary, FLinearColor Secondary, FLinearColor Detail){ }
 void AFGEquipment::UpdateMaterialsFromCameraMode(){ }
 void AFGEquipment::DisableEquipment(){ }

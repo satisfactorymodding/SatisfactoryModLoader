@@ -8,7 +8,7 @@ FPrimaryAssetId UFGResearchRecipe::GetPrimaryAssetId() const {
 }
 
 #if WITH_EDITOR
-void UFGResearchRecipe::PreSave(FObjectPreSaveContext saveContext){ }
+void UFGResearchRecipe::PreSave(FObjectPreSaveContext saveContext){ Super::PreSave(saveContext); }
 void UFGResearchRecipe::UpdateAssetBundleData(){ }
 #endif 
 #if WITH_EDITORONLY_DATA

@@ -29,7 +29,7 @@ public:
 protected:
 	/** The messages require for this dependency to be met */
 	UPROPERTY( EditDefaultsOnly, Category="Dependency" )
-	TArray< class UFGMessage* > mMessages;
+	TArray< TObjectPtr<class UFGMessage> > mMessages;
 
 	/** Do we require all messages to be played for this dependency to be met */
 

@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "GameFramework/Info.h"
+#include "Online/PlayerInfoCache.h"
 #include "FGPriorityPowerSwitchInfo.generated.h"
 
 /**
@@ -28,6 +29,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Power|PrioritySwitchIdentifier" )
 	FString GetSwitchName() const { return mSwitchName; }
 	
+	UFUNCTION(BlueprintPure)
+	const FPlayerInfoHandle& GetLastEditedBy() const { return mLastEditedBy; }
+
 	/** Get the priority for this switch. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Power|PrioritySwitchIdentifier" )
 	int32 GetPriority() const { return mSwitchPriority; }
@@ -73,6 +77,8 @@ private:
 	UFUNCTION()
 	void OnRep_SwitchName() const;
 	UFUNCTION()
+	void OnRep_SwitchLastEditedBy() const;
+	UFUNCTION()
 	void OnRep_SwitchPriority() const;
 	UFUNCTION()
 	void OnRep_IsSwitchOn() const;
@@ -81,6 +87,7 @@ private:
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSwitchNameChanged, const FString&, name );
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSwitchLastEditedByChanged, const FPlayerInfoHandle&, lastEditedby );
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnIsSwitchOnChanged, bool, isSwitchOn );
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSwitchPriorityChanged, int32, priority );
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnCircuitsChanged, int32, circuitID0, int32, circuitID1 );
@@ -89,6 +96,8 @@ public:
 	/** Called when the name changes, on both server and client. */
 	UPROPERTY( BlueprintAssignable, Category = "Delegates" )
 	FOnSwitchNameChanged mOnSwitchNameChangedDelegate;
+	UPROPERTY( BlueprintAssignable, Category = "Delegates" )
+	FOnSwitchLastEditedByChanged mSwitchLastEditedByChangedDelegate;
 	/** Called when the switch is turned on or off, on both server and client. */
 	UPROPERTY( BlueprintAssignable, Category = "Delegates" )
 	FOnIsSwitchOnChanged mOnIsSwitchOnChangedDelegate;
@@ -117,6 +126,9 @@ private:
 	/** Cached from the buildable. */
 	UPROPERTY( ReplicatedUsing = OnRep_IsSwitchOn )
 	bool mIsSwitchOn;
+
+	UPROPERTY( ReplicatedUsing = OnRep_SwitchLastEditedBy )
+	FPlayerInfoHandle mLastEditedBy;
 
 	/**
 	 * Which circuits do we belong to.

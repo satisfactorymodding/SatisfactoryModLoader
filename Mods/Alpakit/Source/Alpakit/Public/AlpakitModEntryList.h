@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Interfaces/IPluginManager.h"
+#include "Widgets/SCompoundWidget.h"
 
 /**
  * Widget that lists all plugins that might be able to get packed as mods

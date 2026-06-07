@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "AkGameplayTypes.h"
 #include "FGMessageBase.h"
+#include "Input/FGBoundMappingContextHandle.h"
 #include "FGAudioMessage.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnAudioMessageFinishedPlaying );
@@ -31,7 +32,7 @@ struct FAudioSubtitlePair
 
 	/** Audio to play */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio Message" )
-	class UAkAudioEvent* AudioEvent;
+	TObjectPtr<class UAkAudioEvent> AudioEvent;
 
 	/** Subtitle to display */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Audio Message" )
@@ -108,7 +109,7 @@ struct FMessageDialogue
 
 	/** Audio to play */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio Message" )
-	class UAkAudioEvent* AudioEvent;
+	TObjectPtr<class UAkAudioEvent> AudioEvent;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Audio Message" )
 	TArray< FMessageSubtitle > MessageSubtitles;
@@ -152,6 +153,8 @@ public:
 
 	UFUNCTION()
 	void OnSkipButtonPressed();
+	UFUNCTION()
+	void OnSkipButtonTriggered();
 	UFUNCTION()
 	void OnSkipButtonReleased();
 	UFUNCTION()
@@ -258,7 +261,7 @@ private:
 public:
 	/** The Ak component */
 	UPROPERTY()
-	class UAkComponent* mAkAudioComponent;
+	TObjectPtr<class UAkComponent> mAkAudioComponent;
 
 	AkPlayingID mAkPlayingId = AK_INVALID_PLAYING_ID;
 
@@ -302,15 +305,17 @@ protected:
 	/** Mapping context which is applied when opening this audio message */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
 	TObjectPtr< class UInputMappingContext > mMappingContext;
+
+	FBoundMappingContextHandle mMappingContextHandle;
 	
 private:
 
 	UPROPERTY( Transient )
-	class UInputComponent* mAudioMessageInputComponent;
+	TObjectPtr<class UInputComponent> mAudioMessageInputComponent;
 
 	/** This is the message data for this audio message. This is not always valid. Old message system used derived audio message classes
 	 *	and some of them is still around. In those cases the data is specified directly in the UFGAudioMessage class  */  
 	UPROPERTY( Transient )
-	class UFGMessage* mMessage;
+	TObjectPtr<class UFGMessage> mMessage;
 	
 };

@@ -39,13 +39,13 @@ protected:
 	bool mIsPlayerCheckmarked;
 
 	UPROPERTY( BlueprintReadOnly, Category = "Character" )
-	UTexture2D* mOverrideIcon;
+	TObjectPtr<UTexture2D> mOverrideIcon;
 
 	/** The cached local players HUD. All name tags on the same instance of a game will have the same HUD */
 	UPROPERTY( Transient )
-	class AFGHUD* mCachedLocalHUD;
+	TObjectPtr<class AFGHUD> mCachedLocalHUD;
 
 	/** The cached icon for the player */
 	UPROPERTY( Transient )
-	UTexture2D* mCachedIcon;
+	TObjectPtr<UTexture2D> mCachedIcon;
 };

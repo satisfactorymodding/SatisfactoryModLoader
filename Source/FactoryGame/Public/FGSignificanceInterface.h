@@ -7,8 +7,26 @@
 #include "UObject/Interface.h"
 #include "FGSignificanceInterface.generated.h"
 
+/** Tick rate management settings for significance */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFGSignificanceTickRateSettings
+{
+	GENERATED_BODY()
+
+	/** Determines whenever object tick rate should be managed by the significance system */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Tick Settings" )
+	bool bTickRateManagedBySignificance{false};
+
+	/** Number of tick levels this actor has for distance-based tick throttle. Each level exponentially reduces the tick rate */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Tick Settings" )
+	int32 NumTickLevels{1};
+};
+
 /**
- * Interface for actors that are handled by UFGSignificanceManager.
+ * Interface for actors that are handled by UFGSignificanceManager
+ * Significance is handled only for local players and does not run on dedicated servers
+ * Objects must be registered to the significance manager to receive significance via UFGBlueprintFunctionLibrary::AddStaticSignificance
+ * and removed on EndPlay via UFGBlueprintFunctionLibrary::RemoveStaticSignificance
  */
 UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGSignificanceInterface : public UInterface
@@ -20,6 +38,14 @@ class FACTORYGAME_API IFGSignificanceInterface
 {
 	GENERATED_BODY()
 public:
+	/** Called to determine the object significance for local player. Range Defaults to 10000.0 if zero is provided in this function, or to the value provided to the registration functions in UFGBlueprintFunctionLibrary */
+	UFUNCTION( BlueprintNativeEvent, Category = "Significance" )
+	float GetSignificanceRange() const;
+
+	/** Called to notify the actor of the initial significance state it has after a call to USignificanceManagerAccelerated::RegisterStaticObject during BeginPlay */
+	UFUNCTION( BlueprintNativeEvent, Category = "Significance" )
+	void SetInitialSignificanceState( bool bIsInitiallySignificant );
+
 	/** Call when actor gained significance for the local player. Will not be fired for dedicated servers. Actor must be registered via USignificanceManagerAccelerated::RegisterStaticObject */
 	UFUNCTION( BlueprintNativeEvent, Category = "Significance" )
 	void GainedSignificance();
@@ -28,36 +54,11 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Significance" )
 	void LostSignificance();
 
+	/** Returns the significance tick rate settings for this object. It allows throttling object tick rate based on significance */
+	UFUNCTION( BlueprintNativeEvent, Category = "Significance" )
+	FFGSignificanceTickRateSettings GetSignificanceTickRateSettings() const;
+
 	/** Will be called to update the object with the throttled tick rate and enable/disable tick based on the local player proximity and number of tick levels */
 	UFUNCTION( BlueprintNativeEvent, Category = "Significance" )
 	void UpdateSignificanceTickRate( float NewTickRate, bool bTickEnabled );
-
-	/**
-	 * Called before the object is added to the significance manager for local player. Only called when using significance functions in UFGBlueprintFunctionLibrary, such as AddGenericTickObjectToSignificanceManager.
-	 * Can be used for bounding box setup, etc.
-	 * TODO @Ben @Nick: Do we need this function as a separate API? Could we just move logic inside of it to BeginPlay?
-	 */
-	virtual void SetupForSignificance();
-
-	/** Called to determine the object significance for local player. Range Defaults to 10000.0 if zero is provided in this function, or to the value provided to the registration functions in UFGBlueprintFunctionLibrary */
-	virtual float GetSignificanceRange();
-
-	/** Determines whenever the object needs UpdateSignificanceTickRate calls dispatched to it. As of now, never called, always assumed TRUE. TODO @Ben */
-	virtual bool DoesReduceTick() const { return false; };
-
-	/** Returns a number of tick levels this actor has for distance-based tick throttle. Each level exponentially reduces the tick rate */
-	virtual int32 NumTickLevels() const { return 0; };
-	/** Returns the exponent for the tick. As of right now, the value is NOT USED, and is always assumed to be 1.0f. TODO @Ben */
-	virtual float GetTickExponent() const { return 1.0f; }
-
-	/** Called when server-side significance of the object is gained, e.g. there is a local or remote player close by. Object needs to be registered to server side significance via UFGBlueprintFunctionLibrary::AddToServerSideSignificanceOctTree */
-	UFUNCTION(BlueprintNativeEvent, Category="Significance")
-	void GainedNetSignificance();
-
-	/** Called when server-side significance of the object is lost, e.g. no players are close by to it in the networked game */
-	UFUNCTION(BlueprintNativeEvent, Category="Significance")
-	void LostNetSignificance();
-
-	/** Called to notify the actor of the initial significance state it has after a call to USignificanceManagerAccelerated::RegisterStaticObject during BeginPlay */
-	virtual void SetInitialState(bool bState) {}
 };

@@ -88,6 +88,14 @@ FString FAlpakitProfile::MakeUATCommandLine() {
 
 	CommandLine += bMergeArchive ? TEXT(" -merge") : TEXT("");
 
+	for (const FString& BuildTargetName : BuildTargetNames)
+	{
+		if (!BuildTargetName.IsEmpty())
+		{
+			CommandLine += FString::Printf(TEXT(" -Target=%s"), *BuildTargetName);
+		}
+	}
+
 	for (auto& [Platform, GameInfo] : PlatformGameInfo) {
 		if (GameInfo.bCopyToGame) {
 			CommandLine += FString::Printf(TEXT(" -CopyToGameDirectory_%s=\"%s\""), *Platform, *GameInfo.GamePath.Path);

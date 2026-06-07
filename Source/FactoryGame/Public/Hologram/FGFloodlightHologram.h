@@ -77,5 +77,5 @@ private:
 
 	/** Scene component. */
 	UPROPERTY()
-	USceneComponent* mLightFixtureComponent;
+	TObjectPtr<USceneComponent> mLightFixtureComponent;
 };

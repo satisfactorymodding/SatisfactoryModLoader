@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "OnlineUserBackendLink.h"
+#include "User/OnlineUserBackendLink.h"
 
 #include "OnlineUserBackendLinkPrivate.generated.h"
 

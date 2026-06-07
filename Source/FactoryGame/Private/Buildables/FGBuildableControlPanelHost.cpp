@@ -7,6 +7,7 @@ AFGBuildableControlPanelHost::AFGBuildableControlPanelHost() : Super() {
 	this->mControlledBuildableType = nullptr;
 }
 void AFGBuildableControlPanelHost::BeginPlay(){ Super::BeginPlay(); }
-TArray< AFGBuildable* >& AFGBuildableControlPanelHost::GetControlledBuildables(TSubclassOf< AFGBuildable > outputType){ return *(new TArray< AFGBuildable* >); }
+TArray<AFGBuildable*> AFGBuildableControlPanelHost::GetControlledBuildables(TSubclassOf<AFGBuildable> outputType){ return TArray<AFGBuildable*>(); }
+void AFGBuildableControlPanelHost::DisplayDebug(class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ Super::DisplayDebug(canvas, debugDisplay, YL, YPos); }
 void AFGBuildableControlPanelHost::OnCircuitsRebuilt(){ }
 void AFGBuildableControlPanelHost::SearchDownstreamCircuit(){ }

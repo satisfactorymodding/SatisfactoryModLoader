@@ -30,5 +30,5 @@ protected:
 	FText mIconText;
 
 	UPROPERTY( EditDefaultsOnly, Category = "StingerWidgetRewardData" )
-	UTexture2D* mIconTexture;
+	TObjectPtr<UTexture2D> mIconTexture;
 };

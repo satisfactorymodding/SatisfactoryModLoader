@@ -6,7 +6,7 @@
 
 AFGPipelineAttachmentHologram::AFGPipelineAttachmentHologram() : Super() {
 	this->mUseProducerDirectionalArrow = true;
-	this->mProducerArrowRelativeLocation = FVector((0, 0, 200));
+	this->mProducerArrowRelativeLocation = FVector(0, 0, 200);
 	this->mBasePipeClass = AFGBuildablePipeline::StaticClass();
 	this->mPipeAttachmentInterfaceClass = UFGPipeAttachmentSnapTargetInterface::StaticClass();
 	this->mCreateClearanceSnapMeshVisualization = false;

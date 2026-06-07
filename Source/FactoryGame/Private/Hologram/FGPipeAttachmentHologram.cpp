@@ -11,7 +11,7 @@ AFGPipeAttachmentHologram::AFGPipeAttachmentHologram() : Super() {
 	this->mMaxValidTurnAngle = 3.0;
 	this->mRotationAxis = EAxis::Z;
 	this->mIncrementSnappedConnectionOnScroll = true;
-	this->mWallSnapOffset = FVector2D((0, 75));
+	this->mWallSnapOffset = FVector2D(0, 75);
 	this->mHasPipeRotationBuildStep = true;
 	this->mAllowSnapToPipeline = true;
 	this->mPipelineSnapOffset = FVector::ZeroVector;

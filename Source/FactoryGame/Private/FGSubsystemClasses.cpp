@@ -17,6 +17,7 @@ UFGSubsystemClasses::UFGSubsystemClasses() : Super() {
 	this->mCentralStorageSubsystemClass = FSoftClassPath("/Script/FactoryGame.FGCentralStorageSubsystem");
 	this->mMapManagerClass = FSoftClassPath("/Script/FactoryGame.FGMapManager");
 	this->mLocalAudioContextSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_LocalAudioContextSubsystem.BP_LocalAudioContextSubsystem_C");
+	this->mRainAudioSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_RainAudioSubsystem.BP_RainAudioSubsystem_C");
 	this->mBuildableSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_BuildableSubsystem.BP_BuildableSubsystem_C");
 	this->mVoiceChatAudioMeterSubsystemClass = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_VoiceChatAudioMeterSubsystem.BP_VoiceChatAudioMeterSubsystem_C").ResolveClass();
 	this->mLightweightBuildableSubsystemClass = FSoftClassPath("/Script/FactoryGame.FGLightweightBuildableSubsystem");
@@ -38,4 +39,5 @@ UFGSubsystemClasses::UFGSubsystemClasses() : Super() {
 	this->mBlueprintSubsystem = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_BlueprintSusbystem.BP_BlueprintSusbystem_C");
 	this->mIconDatabaseSubsystem = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_IconDatabaseSubsystem.BP_IconDatabaseSubsystem_C");
 	this->mWorldEventSubsystem = FSoftClassPath("/Script/FactoryGame.FGWorldEventSubsystem");
+	this->mResourceNodeManager = FSoftClassPath("/Game/FactoryGame/-Shared/Blueprint/BP_ResourceNodeManager.BP_ResourceNodeManager_C");
 }

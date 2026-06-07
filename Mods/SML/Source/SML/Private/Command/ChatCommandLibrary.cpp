@@ -33,7 +33,7 @@ AChatCommandSubsystem* AChatCommandSubsystem::Get(UObject* WorldContext) {
 }
 
 AChatCommandInstance* AChatCommandSubsystem::FindCommandByName(const FString& Name) {
-	AChatCommandInstance** ChatCommandInstance = CommandByNameMap.Find(Name);
+	const TObjectPtr<AChatCommandInstance>* ChatCommandInstance = CommandByNameMap.Find(Name);
 	return ChatCommandInstance ? *ChatCommandInstance : NULL;
 }
 

@@ -251,14 +251,14 @@ public:
 
 	bool IsNoPowerCheatOn() const;
 	
-	/** @returns true if the power production is this circuit is above zero, false otherwise. */
+	/** @returns true if this circuit can supply power, false otherwise. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	bool HasPower() const { return mHasPower; }
 
 	/** Event that will fire whenever mHasPower has changed */
 	DECLARE_EVENT_OneParam( UFGPowerCircuit, FOnHasPowerChanged, bool )
 	FOnHasPowerChanged OnHasPowerChanged;
-
+	
 	//DECLARE_EVENT_OneParam( UFGPowerCircuit, FOnFuseTriggered, bool )
 	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Circuits|PowerCircuit" )
 	FOnFuseTriggered OnFuseTriggeredDelegate;
@@ -274,6 +274,10 @@ protected:
 	// End UFGCircuit interface
 
 private:
+	/** Helper functions to manage the fuse, this also triggers delegates and logging as intended. */
+	void TriggerFuseInternal();
+	void ResetFuseInternal();
+	
 	/** Update the power stats. */
 	void UpdateStatsGeneral();
 	void UpdateStatsGraph();
@@ -295,7 +299,7 @@ private:
 private:
 	/** All power infos in this circuit, in the order they should be updated. */
 	UPROPERTY()
-	TArray< class UFGPowerInfoComponent* > mPowerInfos;
+	TArray< TObjectPtr<class UFGPowerInfoComponent> > mPowerInfos;
 
 	/** Total amount of power that can be produced in the circuit. Used for stats. */
 	UPROPERTY()
@@ -397,7 +401,11 @@ private:
 	/** Ticks a group of power circuits, making calculations as to power produced, power consumed, and if the fuse is blown. */
 	void TickPowerCircuitGroup( float deltaTime );
 
-	/** Specifically ticks the batteries connected to the power-circuit group, calculating the power input, output and charge increment to the batteries. */
+	/**
+	 * Updates the batteries connected to the group, charges or discharges them based on the given net power production.
+	 *
+	 * @return Net power calculated for the batteries, < 0 means discharge rate; > 0 means charge rate. [MW]
+	 */
 	float TickBatteries( float deltaTime, const float netPowerProduction, bool isFuseTriggered );
 
 	/** If a valid-numbered priority switch that is turned on is found, it will be turned off. @returns true if such a switch was found, false otherwise. */
@@ -413,7 +421,7 @@ private:
 private:
 	/** All the circuits that this group owns. */
 	UPROPERTY()
-	TArray< UFGPowerCircuit* > mCircuits;
+	TArray< TObjectPtr<UFGPowerCircuit> > mCircuits;
 
 	/** Per frame data. */
 	float mConsumption;

@@ -24,6 +24,7 @@ public class PackagePlugin : BuildCookRun
 		projectParams.ModifyDeploymentContextCallback = (ProjectParams, SC) =>
 		{
 			ModifyModules(ProjectParams, SC);
+			MarkGameFeature(ProjectParams, SC);
 		};
 		
 		try
@@ -70,14 +71,20 @@ public class PackagePlugin : BuildCookRun
 			{
 				var DeployContextList = Project.CreateDeploymentContext(projectParams, false, true);
 				foreach (var SC in DeployContextList)
+				{
 					Project.CleanStagingDirectory(projectParams, SC);
+					DeleteDirectory(GetTempDirForStaging(projectParams, SC));
+				}
 			}
 
 			if (projectParams.DedicatedServer)
 			{
 				var DeployContextList = Project.CreateDeploymentContext(projectParams, true, true);
 				foreach (var SC in DeployContextList)
+				{
 					Project.CleanStagingDirectory(projectParams, SC);
+					DeleteDirectory(GetTempDirForStaging(projectParams, SC));
+				}
 			}
 		}
 	}
@@ -116,8 +123,14 @@ public class PackagePlugin : BuildCookRun
 		return Params;
 	}
 
-	private ParamList<string> GetClientTargetsToCook()
+	private ParamList<string>? GetClientTargetsToCook()
 	{
+		// If we are given explicit targets on the command line, suppress the logic below and let BuildCookRun decide based on -Target= arguments
+		if (ParseParam("target"))
+		{
+			return null;
+		}
+
 		if (!ParseParam("merge"))
 		{
 			// Only build minimal targets in development mode
@@ -141,21 +154,15 @@ public class PackagePlugin : BuildCookRun
 				Logger.LogWarning("No game executable found in game directory, building all targets");
 			}
 		}
+
 		return new ParamList<string>("FactoryGameEGS", "FactoryGameSteam");
 	}
 
 	private static void DeployStagedPlugin(ProjectParams ProjectParams, DeploymentContext SC, DirectoryReference GameDir)
 	{
-		// We only want to archive the staged files of the plugin, not the entire stage directory
-		var stagedPluginDirectory = DeploymentContext.ApplyDirectoryRemap(SC, SC.GetStagedFileLocation(ProjectParams.DLCFile));
-		var fullStagedPluginDirectory = DirectoryReference.Combine(SC.StageDirectory, stagedPluginDirectory.Directory.Name);
+		var fullStagedPluginDirectory = DirectoryReference.Combine(SC.StageDirectory, GetCanonicalModPathRelativeToRoot(ProjectParams));
 
-		var projectName = ProjectParams.RawProjectPath.GetFileNameWithoutAnyExtensions();
-		
-		// Mods go into <GameDir>/<ProjectName>/Mods/<PluginName>
-		var gameModsDir = DirectoryReference.Combine(GameDir, projectName, "Mods");
-		var pluginName = ProjectParams.DLCFile.GetFileNameWithoutAnyExtensions();
-		var modDir = DirectoryReference.Combine(gameModsDir, pluginName);
+		var modDir = DirectoryReference.Combine(GameDir, GetCanonicalModPathRelativeToRoot(ProjectParams));
 
 		if (DirectoryReference.Exists(modDir))
 			DirectoryReference.Delete(modDir, true);
@@ -171,9 +178,7 @@ public class PackagePlugin : BuildCookRun
 		
 		var zipFileName = $"{dlcName}-{SC.FinalCookPlatform}.zip";
 
-		// We only want to archive the staged files of the plugin, not the entire stage directory
-		var stagedPluginDirectory = DeploymentContext.ApplyDirectoryRemap(SC, SC.GetStagedFileLocation(ProjectParams.DLCFile));
-		var fullStagedPluginDirectory = DirectoryReference.Combine(SC.StageDirectory, stagedPluginDirectory.Directory.Name);
+		var fullStagedPluginDirectory = DirectoryReference.Combine(SC.StageDirectory, GetCanonicalModPathRelativeToRoot(ProjectParams));
 
 		CreateZipFromDirectory(fullStagedPluginDirectory, FileReference.Combine(archiveDirectory, zipFileName));
 	}
@@ -195,10 +200,7 @@ public class PackagePlugin : BuildCookRun
 			DirectoryReference.CreateDirectory(mergedTempDir);
 			foreach (var SC in DeploymentContexts)
 			{
-				var stagedPluginDirectory =
-					DeploymentContext.ApplyDirectoryRemap(SC, SC.GetStagedFileLocation(ProjectParams.DLCFile));
-				var fullStagedPluginDirectory =
-					DirectoryReference.Combine(SC.StageDirectory, stagedPluginDirectory.Directory.Name);
+				var fullStagedPluginDirectory = DirectoryReference.Combine(SC.StageDirectory, GetCanonicalModPathRelativeToRoot(ProjectParams));
 				CopyDirectory_NoExceptions(fullStagedPluginDirectory, DirectoryReference.Combine(mergedTempDir, SC.FinalCookPlatform));
 			}
 
@@ -226,13 +228,23 @@ public class PackagePlugin : BuildCookRun
 		ZipFile.CreateFromDirectory(SourceDirectory.FullName, DestinationFile.FullName);
 	}
 
-	private static string GetPluginPathRelativeToStageRoot(ProjectParams ProjectParams)
+	private static bool IsGameFeatureDLC(ProjectParams ProjectParams)
+	{
+		var gameFeaturesPluginsRoot = DirectoryReference.Combine(ProjectParams.RawProjectPath.Directory, "Plugins", "GameFeatures");
+		var gameFeaturesModsRoot = DirectoryReference.Combine(ProjectParams.RawProjectPath.Directory, "Mods", "GameFeatures");
+		return ProjectParams.DLCFile.IsUnderDirectory(gameFeaturesPluginsRoot) ||
+			ProjectParams.DLCFile.IsUnderDirectory(gameFeaturesModsRoot);
+	}
+
+	private static string GetCanonicalModPathRelativeToRoot(ProjectParams ProjectParams)
 	{
 		// All DLC paths are remapped to projectName/Mods/DLCName during RemapCookedPluginsContentPaths, regardless of nesting
 		// so the relative stage path is projectName/Mods/DLCName
 		var projectName = ProjectParams.RawProjectPath.GetFileNameWithoutAnyExtensions();
+		
+		// Game features have to stay under Mods/GameFeatures to be picked up by the game as such
 		var dlcName = ProjectParams.DLCFile.GetFileNameWithoutAnyExtensions();
-		return CombinePaths(projectName, "Mods", dlcName);
+		return IsGameFeatureDLC(ProjectParams) ? CombinePaths(projectName, "Mods", "GameFeatures", dlcName) : CombinePaths(projectName, "Mods", dlcName);
 	}
 
 	private static void RemapCookedPluginsContentPaths(ProjectParams ProjectParams, DeploymentContext SC) {
@@ -248,7 +260,7 @@ public class PackagePlugin : BuildCookRun
 
 		SC.RemapDirectories.Add(Tuple.Create(
 			SC.GetStagedFileLocation(ProjectParams.DLCFile).Directory,
-			new StagedDirectoryReference(GetPluginPathRelativeToStageRoot(ProjectParams))
+			new StagedDirectoryReference(GetCanonicalModPathRelativeToRoot(ProjectParams))
 		));
 	}
 
@@ -268,12 +280,30 @@ public class PackagePlugin : BuildCookRun
 				// The game specifically allows SML as BuildId to be loaded by any game build
 				moduleManifestFile.BuildId = "SML";
 
-				var intermediateModuleFilePath = FileReference.Combine(ProjectParams.DLCFile.Directory, "Intermediate",
-					"Staging", SC.FinalCookPlatform, manifest.Path.MakeRelativeTo(ProjectParams.DLCFile.Directory));
+				var intermediateModuleFilePath = FileReference.Combine(GetTempDirForStaging(ProjectParams, SC), manifest.Path.MakeRelativeTo(ProjectParams.DLCFile.Directory));
 				var outputFilePath = SC.GetStagedFileLocation(manifest.Path);
 				moduleManifestFile.Write(intermediateModuleFilePath);
 				SC.StageFile(StagedFileType.NonUFS, intermediateModuleFilePath, outputFilePath);
 			}
 		}
+	}
+
+	private void MarkGameFeature(ProjectParams ProjectParams, DeploymentContext SC)
+	{
+		if (!IsGameFeatureDLC(ProjectParams))
+			return;
+
+		JsonObject PluginDescriptor = JsonObject.Read(ProjectParams.DLCFile);
+		PluginDescriptor.AddOrSetFieldValue("GameFeature", true);
+		FileReference TempPluginFile = FileReference.Combine(GetTempDirForStaging(ProjectParams, SC), ProjectParams.DLCFile.GetFileName());
+		CreateDirectory(TempPluginFile.Directory);
+		string jsonString = PluginDescriptor.ToJsonString();
+		FileReference.WriteAllText(TempPluginFile, jsonString);
+		SC.StageFile(StagedFileType.NonUFS, TempPluginFile, SC.GetStagedFileLocation(ProjectParams.DLCFile));
+	}
+
+	private DirectoryReference GetTempDirForStaging(ProjectParams ProjectParams, DeploymentContext SC)
+	{
+		return DirectoryReference.Combine(ProjectParams.DLCFile.Directory, "Intermediate", "Staging", SC.FinalCookPlatform);
 	}
 }

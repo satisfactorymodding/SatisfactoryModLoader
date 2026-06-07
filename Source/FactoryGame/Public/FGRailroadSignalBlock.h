@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -316,6 +316,7 @@ public:
 private:
 	friend struct FFGRailroadBlockReservation; // Access to the helper functions.
 	friend class AFGRailroadSubsystem; // Show debug command.
+	friend class FGRailroadDebugWindowSignal; // Debug tools.
 	
 	/** Vehicles currently occupying this block. */
 	TArray< TWeakObjectPtr< AFGRailroadVehicle > > mOccupiedBy;

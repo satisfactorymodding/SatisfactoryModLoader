@@ -13,11 +13,11 @@ class SML_API UWorldModuleManager : public UWorldSubsystem {
 private:
     /** Root map of modules for every registered mod reference */
     UPROPERTY()
-    TMap<FName, UWorldModule*> RootModuleMap;
+    TMap<FName, TObjectPtr<UWorldModule>> RootModuleMap;
 
     /** Root module list for fast iteration according to order of registration */
     UPROPERTY()
-    TArray<UWorldModule*> RootModuleList;
+    TArray<TObjectPtr<UWorldModule>> RootModuleList;
 public:
     /** Retrieves world module by provided mod reference */
     UFUNCTION(BlueprintPure)

@@ -27,5 +27,5 @@ public:
 	TArray<FTransform> Transforms;
 	
 	UPROPERTY(Replicated)
-	TArray<UStaticMesh*> Meshes;
+	TArray<TObjectPtr<UStaticMesh>> Meshes;
 };

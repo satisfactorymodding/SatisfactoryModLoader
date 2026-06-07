@@ -18,7 +18,7 @@ struct FACTORYGAME_API FTimeTableStop
 public:
 	/** Where to stop. */
 	UPROPERTY( SaveGame, BlueprintReadWrite, VisibleAnywhere )
-	class AFGTrainStationIdentifier* Station = nullptr;
+	TObjectPtr<class AFGTrainStationIdentifier> Station = nullptr;
 
 	/** Station Rules */
 	UPROPERTY( SaveGame, BlueprintReadWrite, VisibleAnywhere )

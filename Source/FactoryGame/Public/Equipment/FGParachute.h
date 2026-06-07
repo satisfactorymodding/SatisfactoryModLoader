@@ -97,7 +97,7 @@ protected:
 public:
 	/** Parachute settings to apply to the character using the parachute */
 	UPROPERTY( EditDefaultsOnly, Category = "Parachute" )
-	UFGParachuteSettings* mParachuteSettings;
+	TObjectPtr<UFGParachuteSettings> mParachuteSettings;
 
 	/** The use distance override when the parachute is equipped  if not zero */
 	UPROPERTY( EditDefaultsOnly, Category = "Parachute" )

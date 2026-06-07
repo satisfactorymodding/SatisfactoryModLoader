@@ -7,21 +7,18 @@
 #include "FGEquipment.h"
 #include "FGHoverPack.generated.h"
 
+class AFGBuildableRailroadTrack;
+class UFGPowerInfoComponent;
+class UFGPowerConnectionComponent;
+class UFGNoise;
+
+
 UENUM( BlueprintType )
 enum class EHoverPackMode : uint8
 {
 	HPM_Inactive			UMETA( DisplayName = "Inactive" ),
     HPM_Hover				UMETA( DisplayName = "Hover" ),
     HPM_HoverSlowFall		UMETA( DisplayName = "Slow Fall" )
-};
-
-UENUM( BlueprintType )
-enum class EHoverConnectionStatus : uint8
-{
-	HCS_NULL				UMETA( DisplayName = "Null" ),
-	HCS_OK					UMETA( DisplayName = "OK" ),
-    HCS_NO_POWER			UMETA( DisplayName = "No Power" ),
-    HCS_OUT_OF_RANGE		UMETA( DisplayName = "Out of Range" )
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnConnectionStatusUpdated, bool, status );
@@ -42,7 +39,7 @@ public:
 	AFGHoverPack();
 
 	/** Replication */
-	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
@@ -51,7 +48,7 @@ public:
 
 	// Begin AFGEquipment interface
 	virtual void UnEquip() override;
-	virtual void OnCharacterMovementModeChanged( EMovementMode PreviousMovementMode, uint8 PreviousCustomMode, EMovementMode NewMovementMode, uint8 NewCustomMode ) override;
+	virtual void OnCharacterMovementModeChanged( class ACharacter* character, EMovementMode PreviousMovementMode, uint8 PreviousCustomMode ) override;
 	virtual void AddEquipmentActionBindings() override;
 	virtual float GetCharacterUseDistanceOverride() const override;
 	// End AFGEquipment interface
@@ -72,17 +69,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
 	float GetFriction() const { return mHoverFriction; }
 
-	/** Gets the current power level of the hoverpack. */
+	/** @return true if we can slow fall; false if not allowed. */
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
-	float GetCurrentPowerLevel() const { return mCurrentPowerLevel; }
-
-	/** Gets the power capacity of the hoverpack. */
-	UFUNCTION( BlueprintPure, Category = "HoverPack" )
-	float GetPowerCapacity() const { return mPowerCapacity; }
-
-	/** Gets the power level of the hoverpack normalized between 0 and 1. */
-	UFUNCTION( BlueprintPure, Category = "HoverPack" )
-	float GetNormalizedPowerLevel() const { return mCurrentPowerLevel / mPowerCapacity; }
+	bool CanSlowFall() const { return mCanSlowFall; }
 
 	/** Gets the maximum fall speed allowed if the hoverpack has power. */
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
@@ -92,7 +81,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
 	bool HasConnection() const { return mHasConnection; }
 	
-	/** Gets the connection we're connected to (Server Only). */
+	/** @return Location of the current power connection, or along the current railroad. */
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
 	FVector GetCurrentConnectionLocation() const;
 
@@ -115,16 +104,17 @@ public:
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
 	float GetHeightAboveCurrentConnection() const;
 
-	/** Gets the railroad track we're connected to. */
+	/** @return The railroad track we're connected to, null if not connected to a track. (available on server and client) */
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
-	FORCEINLINE class AFGBuildableRailroadTrack* GetCurrentRailroadTrack() const { return mCurrentRailroadTrack; }
+	FORCEINLINE AFGBuildableRailroadTrack* GetCurrentRailroadTrack() const { return mCurrentRailroadTrack; }
 
 	/** Get the current mode of the hoverpack. */
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
 	FORCEINLINE EHoverPackMode GetCurrentHoverMode() const { return mCurrentHoverMode; }
 
+	/** @return The power connection we're connected to, null if not connected at all. (available on server and client) */
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
-	FORCEINLINE UFGPowerConnectionComponent* GetConnectedToComponent() const { return mCurrentPowerConnection; }
+	FORCEINLINE UFGPowerConnectionComponent* GetCurrentPowerConnection() const { return mCurrentPowerConnection; }
 	
 	/** Whether or not hoverpack is active. */
 	UFUNCTION( BlueprintPure, Category = "HoverPack" )
@@ -135,19 +125,6 @@ public:
 
 	/** Finds a nearby valid power connection. */
 	void ConnectToNearestPowerConnection();
-
-	/** Checks if a power connection is valid, and returns the reason if not. */
-	EHoverConnectionStatus GetPowerConnectionStatus( const UFGPowerConnectionComponent* connection ) const;
-
-	/** Checks if a power connection is valid for connection. */
-	bool IsPowerConnectionValid( const UFGPowerConnectionComponent* connection, bool checkDistance = true ) const;
-
-	/** Checks if a railroad track is valid for connection. */
-	bool IsRailroadTrackValid( class AFGBuildableRailroadTrack* RailroadTrack, bool CheckDistance = true ) const;
-
-	/** Called when the current power connection location changes. */
-	UPROPERTY( BlueprintAssignable, Category = "HoverPack", DisplayName = "On Connection Location Updated" )
-	FOnConnectionLocationUpdated ConnectionLocationUpdatedDelegate;
 	
 	/** Called when we go from connected to disconnected or vice versa. */
 	UPROPERTY( BlueprintAssignable, Category = "HoverPack", DisplayName = "On Connection Status Updated" )
@@ -175,18 +152,32 @@ protected:
 	void K2_OnRangeWarningToggle();
 	
 private:
+	enum class EHoverConnectionStatus : uint8
+	{
+		HCS_NOT_CONNECTED,
+		HCS_OK,
+		HCS_NO_POWER,
+		HCS_OUT_OF_RANGE,
+	};
+	
+	/** Checks if a power connection is valid, and returns the reason if not. */
+	EHoverConnectionStatus GetPowerConnectionStatus( const UFGPowerConnectionComponent* connection, const AFGBuildableRailroadTrack* track ) const;
+	
 	/** Wrapper to handle all power connection logic. */
 	void HandlePowerConnection( const float DeltaTime );
 	void UpdateShowRangeWarning();
 
-	/** Used to set up a connection to a power connection. */
-	void ConnectToPowerConnection( class UFGPowerConnectionComponent* Connection );
+	float GetPowerConsumptionMultiplier( ) const;
+	float GetPowerConsumption( ) const;
+
+	/**
+	 * Used to set up a connection to a power connection.
+	 * If already connected to the same connection, this does nothing.
+	 */
+	void ConnectToPowerConnection( UFGPowerConnectionComponent* connection, AFGBuildableRailroadTrack* track );
 
 	/** Disconnects the current power connection, if one exists. */
 	void DisconnectFromCurrentPowerConnection();
-
-	/** Used to set up a connection to a rail road track. */
-	void ConnectToRailroadTrack( class AFGBuildableRailroadTrack* RailroadTrack );
 
 	void UpdateHoverNoise();
 
@@ -206,18 +197,17 @@ private:
 	/** Input Actions */
 	void Input_Crouch( const FInputActionValue& actionValue );
 
-private:
+	void UpdateCurrentConnectionLocation();
+	
 	UFUNCTION()
 	void OnRep_HasConnection();
-
 	UFUNCTION()
 	void OnRep_CurrentHoverMode( EHoverPackMode previousHoverMode );
-
 	UFUNCTION()
-	void OnRep_CurrentConnectionLocation();
-
+	void OnRep_CurrentPowerConnection();
 	UFUNCTION()
 	void OnRep_DisplayRangeWarning();
+	
 private:
 	/** How fast the character moves with the hover pack. */
 	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
@@ -250,7 +240,6 @@ private:
 	/** How often we look for new connections. */
 	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
 	float mPowerConnectionSearchTickRate;
-
 	float mPowerConnectionSearchTimer;
 
 	/** How much time needs to pass after leaving a power connection before getting disconnected. */
@@ -260,24 +249,16 @@ private:
 	/** Timer for disconnecting from power connection if it is out of range. */
 	float mPowerDisconnectionTimer;
 
-	/** How much power the power pack battery can contain. */
-	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
-	float mPowerCapacity;
-
-	/** How much power is drained per second when using the slow fall mode. */
-	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
-	float mPowerDrainRate;
-
 	/** How much power the hoverpack drains when connected to a grid. */
 	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
 	float mPowerConsumption;
 
-	/** How much power the hoverpack currently has. */
-	UPROPERTY( VisibleAnywhere, Replicated, Category = "HoverPack" )
-	float mCurrentPowerLevel;
+	/** When disconnecting from power we are allowed to slow fall. This indicates when we can or cannot. */
+	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "HoverPack" )
+	bool mCanSlowFall;
 
 	/** 0-1 value how far away the player needs to be from the current connection when the warning indicator should start showing. */
-	UPROPERTY( EditDefaultsOnly, Category = "HoverPack", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0") )
+	UPROPERTY( EditDefaultsOnly, Category = "HoverPack", meta = ( ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0" ) )
 	float mRangeWarningNormalizedDistanceThreshold;
 	
 	/** Used to keep track of whether or not the range warning indicator is being displayed. */
@@ -289,15 +270,15 @@ private:
 	EHoverPackMode mCurrentHoverMode;
 
 	/** The current power connection we are connected to. */
-	UPROPERTY()
-	class UFGPowerConnectionComponent* mCurrentPowerConnection;
+	UPROPERTY( ReplicatedUsing = OnRep_CurrentPowerConnection )
+	TObjectPtr< UFGPowerConnectionComponent > mCurrentPowerConnection;
 
 	/** Whether or not we have an active location. */
 	UPROPERTY( ReplicatedUsing = OnRep_HasConnection )
 	bool mHasConnection;
 
 	/** Whether or not we should automatically start hovering when we get a connection. */
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, Replicated )
 	bool mShouldAutomaticallyHoverWhenConnected;
 
 	/** How fast the player has to double tap crouch in order to exit hover mode. */
@@ -313,27 +294,26 @@ private:
 
 	/** The noise to make when the hoverpack is active. */
 	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
-	TSubclassOf< class UFGNoise > mActiveNoise;
+	TSubclassOf< UFGNoise > mActiveNoise;
 
 	/** How often to make the noise (in seconds) while the hoverpack is active. */
 	UPROPERTY( EditDefaultsOnly, Category = "HoverPack" )
 	float mActiveNoiseFrequency;
-
 	FTimerHandle mActiveNoiseTimerHandle;
 
 	/** The location of our power connection. */
-	UPROPERTY( ReplicatedUsing = OnRep_CurrentConnectionLocation )
+	UPROPERTY()
 	FVector mCurrentConnectionLocation;
 
 	/** The rail road track we are currently surfing. */
 	UPROPERTY( Replicated )
-	class AFGBuildableRailroadTrack* mCurrentRailroadTrack;
+	TObjectPtr< AFGBuildableRailroadTrack > mCurrentRailroadTrack;
 
 	/** Our own power info component. */
 	UPROPERTY( VisibleAnywhere )
-	class UFGPowerInfoComponent* mPowerInfo;
+	TObjectPtr< UFGPowerInfoComponent > mPowerInfo;
 
 	/** Our own power connection component. */
 	UPROPERTY( VisibleAnywhere )
-	class UFGPowerConnectionComponent* mPowerConnection;
+	TObjectPtr< UFGPowerConnectionComponent > mPowerConnection;
 };

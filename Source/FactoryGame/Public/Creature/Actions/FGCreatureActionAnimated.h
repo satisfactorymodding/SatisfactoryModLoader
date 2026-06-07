@@ -28,7 +28,7 @@ public:
 protected:
 	/** Animation to play when starting the action. */
 	UPROPERTY( EditAnywhere, Category = "Animation" )
-	class UAnimMontage* mActionMontage;
+	TObjectPtr<class UAnimMontage> mActionMontage;
 
 	/** Whether or not to start the animation of the action immediately. */
 	UPROPERTY( EditAnywhere, Category = "Animation" )

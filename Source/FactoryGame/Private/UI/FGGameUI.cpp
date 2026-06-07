@@ -20,6 +20,7 @@ void UFGGameUI::AddPendingMessages(const TArray< UFGMessage* >& newMessages){ }
 void UFGGameUI::HandlePendingMessages(float InDeltaTime){ }
 void UFGGameUI::Native_HandlePauseGamePressed(){ }
 void UFGGameUI::SetPauseMenuOpen(bool isOpen){ }
+void UFGGameUI::SetPauseMenu(UFGUserWidget* widget){ }
 void UFGGameUI::AudioMessageFinishedPlayback(){ }
 AFGCharacterPlayer* UFGGameUI::GetFGCharacter(){ return nullptr; }
 void UFGGameUI::PlayAudioMessage(UFGMessage* message, TSubclassOf<UFGAudioMessage> messageClass){ }
@@ -28,6 +29,7 @@ UFGInteractWidget* UFGGameUI::FindWidgetByClass(TSubclassOf<UFGInteractWidget> w
 void UFGGameUI::ResumeGame(){ }
 void UFGGameUI::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboardSettings){ }
 void UFGGameUI::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboardSettings){ }
+void UFGGameUI::ClearMessageCooldowns(){ }
 float UFGGameUI::GetBarkMessageCooldown(TSubclassOf<class UFGBarkMessageType> barkMessageType) const{ return 0; }
 void UFGGameUI::ClearBarkMessageCooldown(TSubclassOf<class UFGBarkMessageType> barkMessageType){  }
 UUserWidget* UFGGameUI::RequestWidget(TSubclassOf< UUserWidget > widgetClass){ return nullptr; }
@@ -38,3 +40,4 @@ void UFGGameUI::Native_OnOnboardingStepUpdated(UFGOnboardingStep* currentOnboard
 bool UFGGameUI::ShouldShowFicsitSplashWidget() const{ return bool(); }
 bool UFGGameUI::ShouldSuppressMessage( UFGMessage* message) const{ return bool(); }
 void UFGGameUI::SetupDelegates(){ }
+bool UFGGameUI::CanUnpauseTheGame() const{ return bool(); }

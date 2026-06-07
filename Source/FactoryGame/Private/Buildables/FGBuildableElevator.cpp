@@ -21,7 +21,6 @@ AFGBuildableElevator::AFGBuildableElevator() : Super() {
 	this->mPowerConnectionComponent = CreateDefaultSubobject<UFGPowerConnectionComponent>(TEXT("PowerConnection "));
 	this->mPowerConnectionComponent->SetMobility(EComponentMobility::Movable);
 	this->mElevatorState = EElevatorState::EES_NONE;
-	this->mPowerConsumption = 20.0;
 	this->mMinimumProducingTime = 0.0;
 	this->mPowerConnectionComponent->SetupAttachment(RootComponent);
 }
@@ -68,6 +67,7 @@ const FElevatorFloorStopInfo& AFGBuildableElevator::GetFloorStopInfoByIndex(int3
 void AFGBuildableElevator::SetNameOfFloorStop(AFGBuildableElevatorFloorStop* floorStop, const FString& floorStopName){ }
 void AFGBuildableElevator::SetIconForFloorStop(AFGBuildableElevatorFloorStop* floorStop, int32 iconId){ }
 void AFGBuildableElevator::SetIconColorForFloorStop(AFGBuildableElevatorFloorStop* floorStop, FLinearColor color){ }
+void AFGBuildableElevator::SetLastEditedByForFloorStop(AFGBuildableElevatorFloorStop* floorStop, const FPlayerInfoHandle& playerHandle){ }
 int32 AFGBuildableElevator::IndexOfFloorStopInArray(const TArray<FElevatorFloorStopInfo>& infoArray, const FElevatorFloorStopInfo& info){ return 0; }
 void AFGBuildableElevator::OnRep_FloorStops(){ }
 void AFGBuildableElevator::RequestGotoFloorStop(AFGBuildableElevatorFloorStop* floorStop){ }

@@ -4,6 +4,7 @@ bool UFGLightweightBuildableBlueprintLibrary::IsLightweightValid(const FLightwei
 TSubclassOf<AFGBuildable> UFGLightweightBuildableBlueprintLibrary::GetLightweightClass(const FLightweightBuildableInstanceRef& instance){ return TSubclassOf<AFGBuildable>(); }
 FTransform UFGLightweightBuildableBlueprintLibrary::GetLightweightTransform(const FLightweightBuildableInstanceRef& instance){ return FTransform(); }
 TSubclassOf<UFGRecipe> UFGLightweightBuildableBlueprintLibrary::GetLightweightBuiltWithRecipe(const FLightweightBuildableInstanceRef& instance){ return TSubclassOf<UFGRecipe>(); }
+bool UFGLightweightBuildableBlueprintLibrary::GetLightweightTypeSpecificData(const FLightweightBuildableInstanceRef& instance, FFGDynamicStruct& out_typeSpecificData){ return bool(); }
 bool UFGLightweightBuildableBlueprintLibrary::ResolveLightweightCustomizationData(const FLightweightBuildableInstanceRef& instance, FFactoryCustomizationData& out_customizationData){ return bool(); }
 void UFGLightweightBuildableBlueprintLibrary::UpdateLightweightCustomizationData(const FLightweightBuildableInstanceRef& instance, const FFactoryCustomizationData& customizationData){ }
 void UFGLightweightBuildableBlueprintLibrary::RemoveLightweight(FLightweightBuildableInstanceRef& instance){ }

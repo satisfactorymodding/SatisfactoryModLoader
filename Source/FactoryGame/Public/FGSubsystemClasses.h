@@ -56,6 +56,9 @@ public:
 	/** Subsystem to manage audio space around player */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGLocalAudioContextSubsystem > mLocalAudioContextSubsystemClass;
+	/** Subsystem to manage rain audio emitters around player */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSoftClassPtr< class AFGRainAudioSubsystem > mRainAudioSubsystemClass;
 	/** Subsystem to manage all the buildables in the game. */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGBuildableSubsystem > mBuildableSubsystemClass;
@@ -116,4 +119,6 @@ public:
 	TSoftClassPtr< class AFGIconDatabaseSubsystem > mIconDatabaseSubsystem;
 	UPROPERTY( Config, EditDefaultsOnly, Category = "Subsystem" )
 	TSoftClassPtr< class AFGWorldEventSubsystem > mWorldEventSubsystem;
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Subsystem" )
+	TSoftClassPtr< class AFGResourceNodeManager > mResourceNodeManager;
 };

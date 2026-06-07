@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "FGSignificanceInterface.h"
+#include "FGNetSignificanceInterface.h"
 #include "FoliageInstancedStaticMeshComponent.h"
 #include "FGFoliageInstancedSMC.generated.h"
 
@@ -12,17 +12,18 @@
  * 
  */
 UCLASS()
-class FACTORYGAME_API UFGFoliageInstancedSMC : public UFoliageInstancedStaticMeshComponent, public IFGSignificanceInterface
+class FACTORYGAME_API UFGFoliageInstancedSMC : public UFoliageInstancedStaticMeshComponent, public IFGNetSignificanceInterface
 {
 	GENERATED_BODY()
 
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
 
-	/* Begin IFGSignificanceInterface*/
+	// Begin IFGNetSignificanceInterface
+	virtual float GetNetSignificanceRange_Implementation() const override;
 	virtual void GainedNetSignificance_Implementation() override;
 	virtual void LostNetSignificance_Implementation() override;
-	/* end IFGSignificanceInterface*/
+	// End IFGNetSignificanceInterface
 
 	virtual bool ShouldCreatePhysicsState() const override;
 	virtual bool ShouldRegisterToSignificanceManager() const;

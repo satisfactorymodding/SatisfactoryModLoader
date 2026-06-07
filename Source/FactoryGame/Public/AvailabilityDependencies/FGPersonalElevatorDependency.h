@@ -39,7 +39,7 @@ public:
 
 private:
 	/** What type of events this dependency should trigger on. */
-	UPROPERTY( EditDefaultsOnly, Category = "Dependency", meta = ( Bitmask, BitmaskEnum = "EElevatorDependencyEvent" ) )
+	UPROPERTY( EditDefaultsOnly, Category = "Dependency", meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.EElevatorDependencyEvent" ) )
 	uint8 mEvents;
 
 	/** How long the estimated travel time needs to be when using the Begin Move and End Move events. */

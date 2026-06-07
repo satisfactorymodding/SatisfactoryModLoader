@@ -21,7 +21,7 @@ void AFGFoliageRemovalSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGFoliageRemovalSubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGFoliageRemovalSubsystem::Destroyed(){ Super::Destroyed(); }
 void AFGFoliageRemovalSubsystem::Serialize(FArchive& Ar){ Super::Serialize(Ar); }
-void AFGFoliageRemovalSubsystem::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector){ }
+void AFGFoliageRemovalSubsystem::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector){ Super::AddReferencedObjects(InThis, Collector); }
 void AFGFoliageRemovalSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGFoliageRemovalSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGFoliageRemovalSubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -44,6 +44,7 @@ bool AFGFoliageRemovalSubsystem::GetFoliageAroundLocationOfGivenTypes(const FVec
 											   TArray< TEnumAsByte< EProximityEffectTypes > > desiredTypes,
 											    UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId,
 											   FVector& out_instanceLocation, TEnumAsByte< EProximityEffectTypes >& out_Type){ return bool(); }
+bool AFGFoliageRemovalSubsystem::GetMultipleFoliageAroundLocationOfGivenTypes(const FVector& location, float maxDistance, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier, TArray<TEnumAsByte<EProximityEffectTypes>> desiredTypes, TArray<class UHierarchicalInstancedStaticMeshComponent*>& out_components, TArray<TArray<int32>>& out_instanceIds, TArray<TEnumAsByte<EProximityEffectTypes>>& out_Types) const{ return bool(); }
 int32 AFGFoliageRemovalSubsystem::FindInstanceByTransform(const FTransform& foliageTransform, const  UHierarchicalInstancedStaticMeshComponent* component){ return int32(); }
 bool AFGFoliageRemovalSubsystem::GetFoliageWithinRadius(const FVector& location, float radius, TArray< int32 >& out_instanceArray,
 								 TArray< FVector >& out_locationArray,

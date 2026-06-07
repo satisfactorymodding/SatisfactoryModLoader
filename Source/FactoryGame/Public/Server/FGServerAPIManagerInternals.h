@@ -21,6 +21,7 @@ struct FACTORYGAME_API FFGRequestEmitterFunctionDefinition
 	TObjectPtr<UFunction> ReceiveResponseFunction{};
 	FString RequestName;
 	FString PrivilegeLevel;
+	FString SuppressClientAPIErrorPopupLevel;
 	TArray<FName> PassThroughParameterNames;
 };
 
@@ -29,7 +30,7 @@ class FACTORYGAME_API FFGRequestIORegistrar
 public:
 	using FRegistrationFunctionType = void(*)(TArray<FFGRequestHandlerFunctionDefinition>&, TArray<FFGRequestEmitterFunctionDefinition>&);
 
-	FFGRequestIORegistrar( FRegistrationFunctionType InRegistrar );
+	explicit FFGRequestIORegistrar( FRegistrationFunctionType InRegistrar );
 };
 
 class FACTORYGAME_API FFGRequestManagerRegistry

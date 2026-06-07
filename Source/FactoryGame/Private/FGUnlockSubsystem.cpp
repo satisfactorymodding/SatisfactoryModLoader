@@ -13,6 +13,7 @@ AFGUnlockSubsystem::AFGUnlockSubsystem() : Super() {
 	this->mNumTotalInventorySlots = 18;
 	this->mNumTotalArmEquipmentSlots = 1;
 	this->mUnlockedCentralStorageTimeToUploadDecrease = 0.0;
+	this->mUnlockedCircuitDaisyChaining = false;
 }
 void AFGUnlockSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -29,9 +30,11 @@ void AFGUnlockSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedEmotes);
 	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedTapes);
 	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedPlayerCustomizations);
+	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedVisualizationModes);
 	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedCentralStorageTimeToUploadDecrease);
 	DOREPLIFETIME(AFGUnlockSubsystem, mPlayersWithCheckmark);
 	DOREPLIFETIME(AFGUnlockSubsystem, mSAMIntensity);
+	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedCircuitDaisyChaining);
 }
 void AFGUnlockSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGUnlockSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -57,6 +60,8 @@ void AFGUnlockSubsystem::Cheat_SetCentralStorageUploadSpeed(float seconds){ }
 void AFGUnlockSubsystem::UnlockCentralStorageUploadSpeed(float uploadSpeedPercentageDecrease){ }
 void AFGUnlockSubsystem::UnlockCentralStorageUploadSlots(int32 numSlotsToUnlock){ }
 void AFGUnlockSubsystem::UnlockSAMIntensity(int32 newSamIntensity, bool forceSet){ }
+void AFGUnlockSubsystem::UnlockCircuitDaisyChaining(){ }
+void AFGUnlockSubsystem::UnlockVisualizationMode(const TSubclassOf<UFGVisualizationModeDescriptor>& newVisualizationMode){ }
 void AFGUnlockSubsystem::UnlockCheckmark(FString playerName){ }
 TArray<TSubclassOf<class UFGResourceDescriptor>> AFGUnlockSubsystem::GetScannableResources() const{ return TArray<TSubclassOf<class UFGResourceDescriptor>>(); }
 TArray<TSubclassOf<class UFGItemDescriptor>> AFGUnlockSubsystem::GetScannableObjects(const UObject* scannerObject) const{ return TArray<TSubclassOf<class UFGItemDescriptor>>(); }
@@ -73,6 +78,7 @@ int32 AFGUnlockSubsystem::GetCentralStorageItemStackLimit() const{ return int32(
 float AFGUnlockSubsystem::GetCentralStorageTimeToUpload() const{ return float(); }
 int32 AFGUnlockSubsystem::GetCentralStorageNumUploadSlots() const{ return int32(); }
 void AFGUnlockSubsystem::GetPlayersWithCheckmarks(TArray< FGCheckmarkUnlockData >& out_playersWithCheckmarks) const{ }
+void AFGUnlockSubsystem::GetUnlockedVisualizationModes(TArray<TSubclassOf<UFGVisualizationModeDescriptor>>& out_visualizationModes) const{ }
 void AFGUnlockSubsystem::SetNumOfAdditionalInventorySlots(int32 newNumSlots){ }
 void AFGUnlockSubsystem::SetNumAdditionalArmEquipmentSlots(int32 newNumSlots){ }
 void AFGUnlockSubsystem::OnRep_PlayerCheckmarks(){ }

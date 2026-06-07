@@ -15,6 +15,7 @@
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Subsystems/SubsystemBlueprintLibrary.h"
 #include "Kismet/BlueprintAssetHelperLibrary.h"
+#include "StructUtils/UserDefinedStruct.h"
 
 #define LOCTEXT_NAMESPACE "SML"
 

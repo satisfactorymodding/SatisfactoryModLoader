@@ -76,7 +76,7 @@ public:
 private:
 	/* Static mesh used.*/
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
-	UStaticMesh* mMesh;
+	TObjectPtr<UStaticMesh> mMesh;
 
 	/* Offset Applied to the helmet.*/
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
@@ -84,7 +84,7 @@ private:
 	
 	/* Used to override current materials, make sure it has the same length as the default number of materials the array ID should be the same as the material slot id.*/
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
-	TArray<UMaterialInterface*> mMaterialOverrides;
+	TArray<TObjectPtr<UMaterialInterface>> mMaterialOverrides;
 
 	/* Used to override current attached socket.*/
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
@@ -115,13 +115,13 @@ public:
 	// End UFGPlayerCustomizationDesc interface
 
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
-	USkeletalMesh* mTrinketChainMesh = nullptr;
+	TObjectPtr<USkeletalMesh> mTrinketChainMesh = nullptr;
 
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
 	FName mTrinketChainSocketName = NAME_None;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
-	UStaticMesh* mTrinketMesh = nullptr;
+	TObjectPtr<UStaticMesh> mTrinketMesh = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
 	FName mTrinketSocketName = NAME_None;
@@ -146,7 +146,7 @@ struct FSkinEntry
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<UMaterialInterface*> mMaterialData;
+	TArray<TObjectPtr<UMaterialInterface>> mMaterialData;
 };
 
 UCLASS(Blueprintable)
@@ -158,10 +158,10 @@ class FACTORYGAME_API UFGPlayerEquipmentSkinCustomizationDesc : public UFGPlayer
 	TSubclassOf<AFGEquipment> EquipmentClass;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
-	TArray<UMaterialInterface*> mFirstPersonMaterialData;
+	TArray<TObjectPtr<UMaterialInterface>> mFirstPersonMaterialData;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
-	TArray<UMaterialInterface*> mMaterialData;
+	TArray<TObjectPtr<UMaterialInterface>> mMaterialData;
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FName> MeshNames = {FName("EquipmentDefaultMesh")};

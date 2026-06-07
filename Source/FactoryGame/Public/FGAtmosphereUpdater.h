@@ -54,7 +54,7 @@ public:
 
 #if WITH_EDITORONLY_DATA
 	UPROPERTY()
-	class UFGBiome *BiomeOverride = nullptr;
+	TObjectPtr<class UFGBiome> BiomeOverride = nullptr;
 
 	bool SuspendSkyAtmosphereUpdates = false;
 	bool SuspendSkyBoxUpdates = false;

@@ -1,6 +1,6 @@
 ﻿"Key","SourceString","Context","VariableDescription","Type","Tag"
-"AGS/NoFuelEnabled","""No Fuel"" Setting Active","AGS = Advanced Game Settings ","","",""
-"AGS/NoPowerEnabled","""No Power"" Setting Active","AGS = Advanced Game Settings ","","",""
+"AGS/NoFuelEnabled","""No Fuel"" Setting Active","AGS = Creative Mode (Formerly Advanced Game Settings)","","",""
+"AGS/NoPowerEnabled","""No Power"" Setting Active","AGS = Creative Mode (Formerly Advanced Game Settings)","","",""
 "BlueprintDesigner/Details/Clear/Button","Clear Blueprint Designer","","","UI","#interface
 #buildable"
 "BlueprintDesigner/Details/Cost","Cost:","","","UI","#interface
@@ -208,6 +208,7 @@ Do you wish to continue?","","","UI","interface
 {Floor Name} = text, Name of floor or Floor Number if no name","",""
 "ElevatorCabin/LookAtDescription/Floor/GotoStop","Press <Key>{PlayerActions_Use}</> to Go to Stop: {FLOOR NAME}","Interact with panel to go to floor","{PlayerActions_Use} = text, Use Key 
 {Floor Name} = text, Name of floor or Floor Number if no name","",""
+"ElevatorCabin/LookAtDescription/Floor/SelectFloor","Select a Floor","Interact with panel to go to floor","","",""
 "ElevatorCabin/LookAtDescription/OpenInteract","Press <Key>{PlayerActions_Use}</> to Edit Floor Info","Interact with panel to edit floor names","{PlayerActions_Use} = text, Use Key ","",""
 "ElevatorFloorStop/LookAtDescription/CallElevator","Press <Key>{PlayerActions_Use}</> to Call Elevator","Call elevator down (from outside)","{PlayerActions_Use} = text, Use Key ","",""
 "Equipment/PortableMiner/FunnyName","Portobello Miner","","","UI","#resources"
@@ -230,6 +231,7 @@ Do you wish to continue?","","","UI","interface
 #workshop"
 "EquipmentWorkshop/Status/Occupied","Equipment Workshop is occupied!","","","UI","#interface
 #workshop"
+"Fluids/Buffer/Flush","FLUSH","Supports words that are 2-3 times longer than the word ""Flush"". Longer than that and readabilty might become a problem.","","UI",""
 "Fluids/Buffer/FlushMode","FLUSH MODE","","","UI","#interface
 #buildable
 #fluid_buffer"
@@ -520,6 +522,7 @@ Fluid Buffer
 "PersonnelElevator/Floors/FloorEditor/Icon","Floor Icon:","","","",""
 "PersonnelElevator/Floors/FloorEditor/Name","Floor Name:","","","",""
 "PersonnelElevator/Floors/FloorEditor/SelectColor","Select Color...","","","",""
+"PersonnelElevator/Music/Shuffle","Shuffle","Shuffles the songs in the Personnel Elevator","","",""
 "Player/Respawn/Status/Reviving","Reviving...","","","UI","interface"
 "Power/AlienPower/Graph/Label","Graph","","","UI","Alien Power Augmenter"
 "Power/AlienPower/Info/CircuitBoost","Circuit Boost:","","","UI","Alien Power Augmenter"
@@ -710,6 +713,7 @@ Power Switch"
 "ProjectAssembly/Presentations/51","Follow instructions when given! DO NOT do anything else!","","","UI",""
 "ProjectAssembly/Presentations/52","THE END","","","UI",""
 "ProjectAssembly/Presentations/53","The DAY will soon be SAVED!","","","UI",""
+"ProjectAssembly/Presentations/DefaultName","Pioneer Progress Presentation","Default sllide name for progress presentation","","",""
 "ProjectAssembly/Presentations/Motivational/Header","UPCOMING MILESTONES!","","","UI",""
 "ProjectAssembly/Presentations/NextObjective/Header","NEXT OBJECTIVE!","","","UI",""
 "ProjectAssembly/Presentations/NextObjective/YouCanDoItText","You can do it!","","","UI",""

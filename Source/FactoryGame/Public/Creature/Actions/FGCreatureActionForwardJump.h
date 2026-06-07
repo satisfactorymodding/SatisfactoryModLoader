@@ -51,7 +51,7 @@ private:
 
 	/** The montage to play before starting the jump. */
 	UPROPERTY( EditDefaultsOnly, Category = "Animation" )
-	class UAnimMontage* mJumpStartMontage;
+	TObjectPtr<class UAnimMontage> mJumpStartMontage;
 
 	bool mIsStartingJump;
 	bool mIsJumping;

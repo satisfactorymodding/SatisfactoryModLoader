@@ -30,6 +30,6 @@ public:
 protected:
 	/** The onboarding step that should have been reached or surpassed for this dependency to be met */
 	UPROPERTY( EditDefaultsOnly, Category="Dependency" )
-	UFGOnboardingStep* mOnboardingStep;
+	TObjectPtr<UFGOnboardingStep> mOnboardingStep;
 	
 };

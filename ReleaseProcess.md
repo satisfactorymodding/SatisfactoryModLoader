@@ -18,7 +18,9 @@ Rough notes on the steps we follow when making an SML release.
 1. After merging the PR, commit on master a `Bump version` commit
     - SML.uplugin GameVersion and SemVersion
     - ExampleMod.uplugin GameVersion and SML dependency version
-1. Wait for CI to finish. We don't upload locally compiled versions so the version detailed suffix is consistent across versions.
+1. Wait for CI to finish.
+   We don't upload locally compiled versions so the version detailed suffix is consistent across versions.
+   We want the CI result of the commit on `master`, so cancel the CI runs for the `dev` that probably started when those were pushed to save time.
 1. While waiting for CI to finish:
     1. Merge the docs PR to master
     1. Update [SMLFeatureTests](https://github.com/satisfactorymodding/SMLFeatureTests) SML dependency version

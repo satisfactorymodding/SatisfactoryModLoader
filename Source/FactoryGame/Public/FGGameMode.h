@@ -4,15 +4,17 @@
 #include "FactoryGame.h"
 #include "Engine/World.h"
 #include "FGSaveInterface.h"
+#include "TimerManager.h"
 #include "GameFramework/GameMode.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Online/PlayerInfoCache.h"
 #include "FGGameMode.generated.h"
 
 class AFGGameSession;
 class UFGRemoteCallObject;
 class AFGAdminInterface;
-class AFGGameMode;
 class FVariant;
+struct FPlayerInfoHandle;
 
 /** Struct holding a data about the save game data is pending to be loaded */
 struct FACTORYGAME_API FGameModeLoadData
@@ -75,12 +77,35 @@ public:
 	virtual TSubclassOf<AFGGameSession> OverrideGameSessionClass( TSubclassOf<AFGGameSession> InGameSessionClass ) const { return InGameSessionClass; }
 };
 
+// Lowest value defines the highest spawn point priority
+namespace EFGSpawnPointPriority
+{
+	enum Type
+	{
+		SpawnPointPriority_PIE = 0,
+		SpawnPointPriority_Debug = 1,
+		SpawnPointPriority_RespawnPoint = 2,
+		SpawnPointPriority_TradingPost = 3,
+		SpawnPointPriority_StartingPoint = 4,
+		SpawnPointPriority_Fallback = 5,
+		SpawnPointPriority_LastResort = 6,
+		SpawnPointPriority_Count = 7,
+	};
+}
+
+struct FFGPrioritizedSpawnPointList
+{
+	TArray<class APlayerStart*> PlayerStarts[EFGSpawnPointPriority::SpawnPointPriority_Count];
+};
+
 /** Base class for the FactoryGame GameModes, both in main menu and in game */
 UCLASS( Config = "Game" )
 class FACTORYGAME_API AFGGameMode : public AGameMode, public IFGSaveInterface
 {
 	GENERATED_BODY()
+
 	friend class UFGGameModeStatics;
+	
 public:
 	AFGGameMode();
 
@@ -201,6 +226,8 @@ public:
 	/** Name for the advanced game settings (Game Modes) option when starting a new session */
 	static const TCHAR* AdvancedGameSettingsOption;
 
+	static const TCHAR* GameModeSettings;
+
 	/** Name for the enabling advanced game settings (Game Modes) option when loading a save */
 	static const TCHAR* EnableAdvancedGameSettingsOption;
 
@@ -255,24 +282,21 @@ private:
 	/** Build the URL for restarting the session */
 	void BuildRestartSessionURL( const FString& saveName, FString& out_sessionUrl ) const;
 
-	/**
-	 * Caches the player starts by PlayerStartTag as the key.
-	 * @return Play from here player start, if found; otherwise nullptr.
-	 */
-	class APlayerStart* CachePlayerStarts( TMap< FName, TArray< APlayerStart* > >& out_playerStarts );
+	/** Calculates prioritized list of spawn points */
+	FFGPrioritizedSpawnPointList CalculatePrioritizedSpawnPoints( const APlayerStart* playerStateRespawnPoint ) const;
 
-	void PartitionPlayerStartsByOccupancy(
-		const TArray< APlayerStart* >& playerStarts,
-		TSubclassOf< APawn > pawnClassToFit,
-		TArray< APlayerStart* >& out_unOccupied,
-		TArray< APlayerStart* >& out_occupied ) const;
+	/** Finds the closest unoccupied respawn point to the given location */
+	const APlayerStart* GetClosestUnOccupiedRespawnPoint( const FVector& location, const TSubclassOf<AActor>& controllerPawnClass ) const;
 
+	/** Attempts to pick a random unoccupied player start, falls back to a random occupied one if no unoccupied player starts are available */
+	APlayerStart* PickPreferredPlayerStart( const TArray<APlayerStart*>& availablePlayerStarts, const TSubclassOf<AActor>& controllerPawnClass ) const;
+	
 	void DiscoverDefaultRemoteCallObjects();
 	void RecalculateSessionRestartTime();
 	void TickSessionRebootTimer();
 protected:
 	UPROPERTY()
-	UFGSaveSession* mSaveSession;
+	TObjectPtr<UFGSaveSession> mSaveSession;
 
 	/** Data about the save game we will load */
 	FGameModeLoadData mLoadData;
@@ -325,7 +349,7 @@ private:
 
 	/** Dedicated server component interface */
 	UPROPERTY( Transient )
-	UFGDedicatedServerGameModeComponentInterface* mDedicatedServerInterface;
+	TObjectPtr<UFGDedicatedServerGameModeComponentInterface> mDedicatedServerInterface;
 };
 
 UCLASS(BlueprintType)
@@ -339,6 +363,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	static bool HasSkipOnboardingOption(const TMap<FString, FString> &Options);
 
+	UFUNCTION(BlueprintPure)
+	static bool HasGameModeSettings(const TMap<FString, FString> &Options);
+	
 	UFUNCTION(BlueprintPure)
 	static bool HasAdvancedGameSettings(const TMap<FString, FString> &Options);
 };

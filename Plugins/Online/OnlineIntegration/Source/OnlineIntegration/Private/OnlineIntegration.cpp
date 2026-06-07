@@ -5,4 +5,4 @@
 void FOnlineIntegrationModule::StartupModule(){ }
 void FOnlineIntegrationModule::ShutdownModule(){ }
 
-IMPLEMENT_GAME_MODULE(FOnlineIntegrationModule, OnlineIntegrationModule);
+IMPLEMENT_GAME_MODULE(FOnlineIntegrationModule, OnlineIntegration);

@@ -3,4 +3,4 @@
 void FOnlineIntegrationEOSExtensionsModule::StartupModule() {}
 void FOnlineIntegrationEOSExtensionsModule::ShutdownModule() {}
 
-IMPLEMENT_GAME_MODULE(FOnlineIntegrationEOSExtensionsModule, OnlineIntegrationEOSExtensionsModule);
+IMPLEMENT_GAME_MODULE(FOnlineIntegrationEOSExtensionsModule, OnlineIntegrationEOSExtensions);

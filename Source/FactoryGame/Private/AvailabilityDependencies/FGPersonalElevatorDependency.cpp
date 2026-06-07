@@ -2,6 +2,7 @@
 
 UFGPersonalElevatorDependency::UFGPersonalElevatorDependency() : Super() {
 	this->mEvents = 0;
+	this->mMinimumRequiredTravelTime = 0.0;
 }
 bool UFGPersonalElevatorDependency::ShouldTriggerOnEvents(EElevatorDependencyEvent eventTypeFlags) const{ return false; }
 #if WITH_EDITOR

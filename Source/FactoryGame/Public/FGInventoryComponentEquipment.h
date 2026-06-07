@@ -115,7 +115,7 @@ private:
 
 	/** Equipments that are slotted into the actual inventory slots. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_SlottedInEquipments )
-	TArray<AFGEquipment*> mSlottedInEquipments;
+	TArray<TObjectPtr<AFGEquipment>> mSlottedInEquipments;
 
 	/** Local cache of slotted in equipments to be able to correctly dispatch WasSlottedIn/WasRemovedFromSlot on client */
 	TArray<TWeakObjectPtr<AFGEquipment>> mLastSlottedInEquipments;
@@ -126,11 +126,11 @@ private:
 	 * No need to replicate, this is simulated locally on the client.
 	 */
 	UPROPERTY()
-	AFGEquipment* mOverrideEquipmentInSlot;
+	TObjectPtr<AFGEquipment> mOverrideEquipmentInSlot;
 
 	/** This is the actual equipment in the slot */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_ActiveEquipment )
-	AFGEquipment* mEquipmentInSlot;
+	TObjectPtr<AFGEquipment> mEquipmentInSlot;
 
 	/** This inventory will only accept equipments that are supposed to be on this slot */
 	UPROPERTY( Replicated )

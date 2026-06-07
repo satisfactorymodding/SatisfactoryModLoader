@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -263,7 +263,7 @@ private:
 	float mActualProductionBoost;
 
 	UPROPERTY()
-	UFGBatteryInfo* mBatteryInfo;
+	TObjectPtr<UFGBatteryInfo> mBatteryInfo;
 
 	/** Do we have enough of the requested power. Do not set this directly, use SetHasPower. */
 	UPROPERTY( meta = ( FGReplicated ) )

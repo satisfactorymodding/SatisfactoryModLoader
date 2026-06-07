@@ -12,7 +12,7 @@
 #if PLATFORM_WINDOWS && defined(PLATFORM_WINDOWS)
 #include <mmdeviceapi.h>
 #include <propkey.h>
-#elif( PLATFORM_PS5 && defined( PLATFORM_PS5 ) || (PLATFORM_LINUX) && defined(PLATFORM_LINUX))
+#elif( PLATFORM_PS5 && defined( PLATFORM_PS5 ) || (PLATFORM_LINUX) && defined(PLATFORM_LINUX) || PLATFORM_MAC)
 // define the immdevice as something to make it compile, it will not be used outside of this context but we
 // want to retain the function signature
 typedef int32 IMMDevice;
@@ -55,10 +55,7 @@ public:
 	virtual void ClientPlayForceFeedback( class UForceFeedbackEffect* ForceFeedbackEffect, FForceFeedbackParameters Params = FForceFeedbackParameters() ) override;
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input" )
-	FORCEINLINE bool GetIsUsingGamepad(){ return mIsUsingGamepad; }
-
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Input" )
-	void SetIsUsingGamepad( bool newIsUsingGamepad );
+	bool GetIsUsingGamepad() const;
 
 	/**
 	 * Called on Server and Owning client when the character we controlled died
@@ -118,7 +115,7 @@ public:
 
 	UFUNCTION()
 	void OnGamepadSpeakerEnabledUpdated( FString updatedCvar );
-
+	
 	/** Returns readable name for an action */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input", meta = ( DeprecatedFunction, DeprecationMessage = "Use FGInpuLibrary::FormatStringWithInputActionNames or FGInpuLibrary::GetInputActionNameAsText" ) )
 	FText GetKeyNameForAction( FName inAction, bool getGamepadKey );
@@ -172,6 +169,11 @@ public:
 	/** Returns the input device type used by this player. This is synced with the client and is safe to use on the server */
 	UFUNCTION( BlueprintPure, Category = "Input" )
 	virtual EInputDeviceType GetPlayerInputDeviceType() const;
+
+
+	virtual void EnterMouseAndKeyboardMode();
+	virtual void EnterGamepadMode();
+
 protected:
 	/** Used to discard any input when we are dead */
 	UFUNCTION()
@@ -205,17 +207,14 @@ private:
 private:
 	/** Admin interface if we have one available */
 	UPROPERTY(Replicated)
-	class AFGAdminInterface* mAdminInterface;
+	TObjectPtr<class AFGAdminInterface> mAdminInterface;
 
 	/** If we are allowed to cheat, then we replicate the cheat manager */
 	UPROPERTY(ReplicatedUsing=OnRep_ReplicatedCheatManager)
-	class UFGCheatManager* mReplicatedCheatManager;
+	TObjectPtr<class UFGCheatManager> mReplicatedCheatManager;
 
-	/** If true, the our input is enabled */
+	/** If true, our input is enabled */
 	uint8 mInputEnabled:1;
-
-	/** Are we using gamepad? */
-	bool mIsUsingGamepad;
 
 protected:
 	//<FL>[KonradA] For WWise Motion Integration

@@ -23,7 +23,11 @@ public:
 	FOnGameStartupSequenceDone OnGameStartupSequenceDone;
 
 	UFUNCTION(BlueprintCallable)
-	void DispatchOnGameStartupSequenceDone() { OnGameStartupSequenceDone.Broadcast(); };
+	void DispatchOnGameStartupSequenceDone()
+	{
+		mGameStartupSequenceWasCompleted = true;
+		OnGameStartupSequenceDone.Broadcast();
+	};
 	//</FL>
 
 	virtual void BeginPlay() override;
@@ -31,5 +35,14 @@ public:
 	void Native_ShowMainMenu();
 	UFUNCTION( BlueprintImplementableEvent, Category = "HUD" )
 	void ShowMainMenu();
+	
+	bool WasStartupSequenceCompleted() const { return mGameStartupSequenceWasCompleted; }
+
+	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "UI" )
+	TObjectPtr< class UFGUserWidget > mMainMenu = nullptr;
+private:
+	bool mGameStartupSequenceWasCompleted = false;
+
+	
 	
 };

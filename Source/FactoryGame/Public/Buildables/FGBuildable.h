@@ -14,13 +14,13 @@
 #include "FGDecorationTemplate.h"
 #include "FGDismantleInterface.h"
 #include "FGFactoryClipboard.h"
-#include "FGRainOcclusionActor.h"
 #include "FGRemoteCallObject.h"
 #include "FGSaveInterface.h"
 #include "FGUseableInterface.h"
 #include "FactoryTick.h"
 #include "FGClearanceData.h"
 #include "FGClearanceInterface.h"
+#include "FGSampleInterface.h"
 #include "GameFramework/Actor.h"
 #include "ItemAmount.h"
 #include "GameplayTagContainer.h"
@@ -30,12 +30,8 @@
 class UAkComponent;
 class AFGBuildEffectActor;
 class UAkAudioEvent;
+enum class EFGRainOcclusionShape : uint8;
 // End
-
-DECLARE_STATS_GROUP( TEXT( "FactoryQuick" ), STATGROUP_FactoryQuick, STATCAT_Advanced );
-
-#define FACTORY_QUICK_SCOPE_CYCLE_COUNTER(Stat) \
-	DECLARE_SCOPE_CYCLE_COUNTER(TEXT(#Stat),Stat,STATGROUP_FactoryQuick)
 
 static const FString MAIN_MESH_NAME( TEXT( "MainMesh" ) );
 
@@ -107,19 +103,19 @@ public:
 	/* Array of particle effects used for alien overclocking, Expected usage:
 	 * For lookup AO_#ArrayIndex_01, AO_#ArrayIndex_02 etc.  */
 	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
-	TArray<class UNiagaraSystem*> AlienOverClockingParticles;
+	TArray<TObjectPtr<class UNiagaraSystem>> AlienOverClockingParticles;
 
 	/** Audio event to start the alien overclocking loop SFX */
 	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
-	UAkAudioEvent* AlienOverClockingLayeredLoopingEvent;
+	TObjectPtr<UAkAudioEvent> AlienOverClockingLayeredLoopingEvent;
 
 	/** Audio event to stop the alien overclocking loop SFX */
 	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
-	UAkAudioEvent* AlienOverClockingLayeredLoopingStopEvent;
+	TObjectPtr<UAkAudioEvent> AlienOverClockingLayeredLoopingStopEvent;
 
 	/** Audio switch to pass th the alien overclocking loop event, for customizing it */
 	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
-	UAkSwitchValue* AlienOverclockingSweetenerValue;
+	TObjectPtr<UAkSwitchValue> AlienOverclockingSweetenerValue;
 
 	/** Offset on the Z axis from the actor location on which the alien overclocking audio component should be spawned, in world units */
 	UPROPERTY( EditDefaultsOnly, Category = "Alien Overclocking" )
@@ -149,7 +145,7 @@ public:
 	TArray<FTransform> mFogPlaneLocations;
 
 	UPROPERTY( EditDefaultsOnly,Category = "Visuals|FogPlanes" )
-	UStaticMesh* FogPlaneMesh;
+	TObjectPtr<UStaticMesh> FogPlaneMesh;
 
 #if WITH_EDITORONLY_DATA
 	/** True if we migrated old data for alien overclocking from buildable to the Sparse Data Object */
@@ -167,7 +163,7 @@ public:
  * FactoryTick is always enabled (as long as bCanEverTick is true) so that the factory part of buildings always can simulate.
  */
 UCLASS( Abstract, Meta=(AutoJson=true) )
-class FACTORYGAME_API AFGBuildable : public AActor, public IFGDismantleInterface, public IFGSaveInterface, public IFGColorInterface, public IFGUseableInterface, public IFGFactoryClipboardInterface, public IAbstractInstanceInterface, public IFGClearanceInterface
+class FACTORYGAME_API AFGBuildable : public AActor, public IFGDismantleInterface, public IFGSaveInterface, public IFGColorInterface, public IFGUseableInterface, public IFGFactoryClipboardInterface, public IAbstractInstanceInterface, public IFGClearanceInterface, public IFGSampleInterface
 {
 	GENERATED_BODY()
 public:	
@@ -206,7 +202,7 @@ public:
 
 	// Begin IAbstractInstanceInterface
 	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() const override;
-	virtual bool DoesContainLightweightInstances_Implementation() override { return DoesContainLightweightInstances_Native(); }
+	virtual bool DoesContainLightweightInstances_Implementation() const override { return DoesContainLightweightInstances_Native(); }
 	virtual FTransform GetLightweightInstanceActorTransform_Implementation() const override { return GetActorTransform(); }
 	virtual FInstanceHandleArray GetLightweightInstanceHandles() const override;
 	virtual FInstanceHandleArray GetDynamicLightweightInstanceHandles() const override;
@@ -242,6 +238,7 @@ public:
 	void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData );
 	FFactoryCustomizationData GetCustomizationData_Implementation() const { return mCustomizationData; }
 	FFactoryCustomizationData& GetCustomizationData_Native() { return mCustomizationData; }
+	const FFactoryCustomizationData& GetCustomizationData_Native() const { return mCustomizationData; }
 	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Implementation() { return mFactorySkinClass; }
 	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Native() { return mFactorySkinClass; }
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin_Native();
@@ -307,6 +304,11 @@ public:
 	virtual void GetDismantleDependencies_Implementation(TArray<AActor*>& out_dismantleDependencies) const override;
 	//~ End IFGDismantleInterface
 
+	// Begin IFGSampleInterface
+	virtual bool CanSample_Implementation() const override;
+	virtual TSubclassOf<UFGRecipe> GetSampledRecipe_Implementation() const override;
+	// End IFGSampleInterface
+
 	/** Gets the parent actor that this buildable belongs to, if any. */
 	UFUNCTION( BlueprintPure, Category = "Dismantle" )
 	AActor* GetParentBuildableActor() const { return mParentBuildableActor; }
@@ -320,9 +322,6 @@ public:
 
 	/** Called in ConfigureActor from the hologram. */
 	void SetBuiltWithRecipe( TSubclassOf< class UFGRecipe > recipe ) { mBuiltWithRecipe = recipe; }
-
-	/** Called in ConfigureActor from the hologram. */
-	void SetOriginalBuildableVariant( const TSubclassOf< AFGBuildable > originalVariant ) { mOriginalBuildableVariant = originalVariant; }
 
 	/** Getters for the built with recipe. */
 	FORCEINLINE TSubclassOf< class UFGRecipe > GetBuiltWithRecipe() const { return mBuiltWithRecipe; }
@@ -420,7 +419,7 @@ public:
 	class UFGMaterialEffect_Build* GetActiveBuildEffect();
 
 	/** Returns true if this buildable can be sampled */
-	UFUNCTION( BlueprintNativeEvent )
+	UFUNCTION( BlueprintNativeEvent, Category = "Buildable" )
 	bool CanBeSampled() const;
 
 	/** Used by the blueprint subsystem to notify a buildable a build effect is playing (before the build effect starts so that begin play can expect it) */
@@ -508,20 +507,53 @@ public:
 	/** Is this buildable dismantled? */
 	FORCEINLINE bool GetIsDismantled() const { return mIsDismantled; }
 
-	FORCEINLINE bool DoesAffectOcclusionSystem() const 										{ return mAffectsOcclusion; }
-	FORCEINLINE EFGRainOcclusionShape GetOcclusionShape() const 							{ return mOcclusionShape; }
-	FORCEINLINE UStaticMesh* GetCustomOcclusionShape() const 								{ return mCustomOcclusionShape; }
-	FORCEINLINE TArray<FBox> GetOcclusionBoxes() const  									{ return mOcclusionBoxInfo; }
-	FORCEINLINE float GetOcclusionShapeCustomScaleOffset() const 							{ return mScaleCustomOffset; }
-	FORCEINLINE EFGRainOcclusionShapeScaling GetOcclusionShapeCustomScalingMode() const		{ return mCustomScaleType; }
-	FORCEINLINE virtual FSimpleBuildingInfo GetRainOcclusionShape()							{ return FSimpleBuildingInfo(this); }
+	/////////////////////////////////////////////////////////////////////////////
+	/** Begin Rain occlusion API*/
+	FORCEINLINE bool DoesAffectOcclusionSystem() const 					{ return mAffectsOcclusion; }
+	FORCEINLINE EFGRainOcclusionShape GetOcclusionShape() const 		{ return mOcclusionShape; }
+	FORCEINLINE UMaterialInterface* GetCustomOcclusionShape() const		{ return mCustomRainOcclusionMaterial; }
+	FORCEINLINE FVector GetOcclusionShapeOffset() const					{ return GetActorTransform().TransformVectorNoScale( OriginOffset ); }
+	FORCEINLINE UStaticMesh* GetCustomOcclusionMesh() const				{ return CustomMesh; }
+	FORCEINLINE FBox3f GetRainOcclusionBoundingBox() const				{ return mRainOcclusionBoundingBox; }
 
+	UPROPERTY( EditDefaultsOnly, Category = "Rain" )
+	FBox3f mRainOcclusionBoundingBox;
+	
+	/** Should affect the occlusion system .*/
+	UPROPERTY( EditDefaultsOnly, Category = "Rain" )
+	bool mAffectsOcclusion;
+	
+	/** Shape used for the occlusion system, used for weather and maybe grass in the future.*/
+	UPROPERTY( EditDefaultsOnly, Category = "Rain",meta= ( EditCondition="mAffectsOcclusion", EditConditionHides) )
+	EFGRainOcclusionShape mOcclusionShape;
+	
+	/* Custom rain occlusion depth & mask texture
+	 * Expected format:
+	 *		Linear color space, Single Channel R16f.
+	 *		Size: 32^2 or 64^2.
+	 *		< 0.0f is clipped, we always assume we push depth UP
+	 *		Texture assumes to be aligned to the bottom of the mesh */
+	UPROPERTY(EditDefaultsOnly, Category = "Rain", meta= ( EditCondition="mAffectsOcclusion", EditConditionHides))
+	TObjectPtr<UMaterialInterface> mCustomRainOcclusionMaterial = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Rain", meta= ( EditCondition="mAffectsOcclusion", EditConditionHides))
+	TObjectPtr<UStaticMesh> CustomMesh = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Rain", meta= ( EditCondition="mAffectsOcclusion", EditConditionHides))
+	FVector OriginOffset = {0,0,0};
+	/** End rain occlusion API */
+	/////////////////////////////////////////////////////////////////////////////
+	
 	/* Not replicated! */
 	void ToggleInstanceVisibility( bool bNewState );
 
 	/** Specify that this buildable is inside of a blueprint designer. */
 	void SetInsideBlueprintDesigner( class AFGBuildableBlueprintDesigner* designer );
 	class AFGBuildableBlueprintDesigner* GetBlueprintDesigner() const;
+
+	/** Returns true if this building is inside of a blueprint designer. Returns correct value on the client as well */
+	UFUNCTION( BlueprintPure, Category = "Blueprint Designer" )
+	FORCEINLINE bool IsBuildableInsideBlueprintDesigner() const { return mReplicatedBuiltInsideBlueprintDesigner; }
 
 	/** Gets the blueprint proxy this buildable belongs to. */
 	FORCEINLINE class AFGBlueprintProxy* GetBlueprintProxy() const { return mBlueprintProxy; }
@@ -620,7 +652,7 @@ public:
 	/** Get the refundable cost for this building, not including any connected buildings. Consolidated. */
 	void GetDismantleRefundReturns( TArray< FInventoryStack >& out_returns ) const;
 	/** Get the refundable cost for a lightweight buildable of this type. This will be called on the CDO. Consolidated. */
-	void GetLightweightBuildableDismantleRefundReturns( const TSubclassOf<UFGRecipe>& builtWithRecipe, const FFGDynamicStruct& typeSpecificData, TArray<FInventoryStack>& out_returns ) const;
+	void GetLightweightBuildableDismantleRefundReturns( UObject* worldContext, const TSubclassOf<UFGRecipe>& builtWithRecipe, const FFGDynamicStruct& typeSpecificData, TArray<FInventoryStack>& out_returns ) const;
 
 	/** Applies a buildable-type specific metadata from a lightweight buildable to this temporary buildable */
 	virtual void ApplyLightweightTypeSpecificData( const struct FFGDynamicStruct& typeSpecificData );
@@ -630,7 +662,19 @@ public:
 
 	/** Creates lightweight instance data for a lightweight buildable representation of this buildable. Will be called on the CDO! */
 	virtual void CreateLightweightBuildableInstanceData( const struct FFGDynamicStruct& typeSpecificData, TArray<FInstanceData>& outLightweightInstanceData ) const;
+
+	/** True if default customization application logic should run on buildable and its hologram meshes */
+	FORCEINLINE bool ShouldApplyCustomizationData() const { return mShouldApplyCustomizationData; }
 protected:
+	/**
+	 * Called when it is time to update the cached bounds for this buildable.
+	 *
+	 * Note: For this to work, all collisions need to be set up prior to Super::BeginPlay in the derived buildable.
+	 *
+	 * @return Must return valid bounds for this buildable, a zero extent at the buildable location is considered valid.
+	 */
+	virtual FBox CalculateBounds() const;
+	
 	/** Blueprint event for when materials are updated by the buildable subsystem*/
 	UFUNCTION( BlueprintImplementableEvent, Category = "Buildable|Build Effect" )
 	void OnMaterialInstancesUpdated();
@@ -678,13 +722,6 @@ protected:
 	*/
 	virtual uint8 EstimatedMaxNumGrab_Threadsafe( float estimatedDeltaTime ) const;
 
-	/**
-	 * Override this to verify the default configuration.
-	 * @param out_message - Designer friendly message to be displayed.
-	 * @return - true if the defaults are valid; false if the defaults are configured wrong.
-	 */
-	virtual bool VerifyDefaults( FString& out_message );
-
 	/** Get the multiplier for the refundable cost, e.g. for buildings that cost per length unit. */
 	virtual int32 GetDismantleRefundReturnsMultiplier() const;
 	/** Gets the multiplier for the refundable cost if this buildable is a lightweight. Will be called on the buildable CDO! */
@@ -729,6 +766,9 @@ protected:
 	UFUNCTION( BlueprintCallable, Category = "Buildable|Hologram" )
 	virtual bool HasOverrideForHologram( TSubclassOf<UFGItemDescriptor> itemDescriptor ) const { return false; }
 	
+	UFUNCTION(BlueprintCallable)
+	FPlayerInfoHandle GetBuiltBy() { return BuiltBy; };
+
 	UFUNCTION( BlueprintCallable, Category = "Buildable" )
 	TArray< UStaticMeshComponent* > CreateBuildEffectProxyComponents();
 
@@ -772,9 +812,6 @@ private:
 	
 	/** Create a stat for the buildable */
 	void CreateFactoryStatID() const;
-	
-	/** Helper to verify the connection naming. */
-	bool CheckFactoryConnectionComponents( FString& out_message );
 	
 	UFUNCTION()
 	void OnRep_LightweightTransform();
@@ -825,18 +862,20 @@ public:
 	UPROPERTY( BlueprintAssignable, Category="Buildable")
 	FOnBuildableReturnedToLightweightPool mOnBuildableReturnedToLightweightPool;
 	
-protected:
-	/* Sparse data for this buildable */
-	UPROPERTY( EditDefaultsOnly, Category = "Buildable", meta = (EditInline, DisplayName = "Buildable Sparse Data") )
-	UFGBuildableSparseDataObject* mBuildableSparseDataCDO;
+	UPROPERTY( Replicated, SaveGame );
+	FPlayerInfoHandle BuiltBy;
 
-	UPROPERTY()
-	AActor* mParentBuildableActor;
-	
 	//@todorefactor With meta = ( ShowOnlyInnerProperties ) it does not show and PrimaryActorTick seems to be all custom properties, so I moved to another category but could not expand.
 	/** Controls if we should receive Factory_Tick and how frequent. */
 	UPROPERTY( EditDefaultsOnly, Category = "Factory Tick", meta = (NoAutoJson = true) )
 	FFactoryTickFunction mFactoryTickFunction;
+protected:
+	/* Sparse data for this buildable */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable", meta = (EditInline, DisplayName = "Buildable Sparse Data") )
+	TObjectPtr<UFGBuildableSparseDataObject> mBuildableSparseDataCDO;
+
+	UPROPERTY()
+	TObjectPtr<AActor> mParentBuildableActor;
 
 	/** The color slot of this buildable */
 	UPROPERTY( EditAnywhere, SaveGame, Replicated, meta = (NoAutoJson = true) )
@@ -845,6 +884,13 @@ protected:
 	/** Custom Color/Mat data. Stored in a TArray so it can be variable (or 0 size) to reduce save footprint since many buildings will only utilize the slot index */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CustomizationData, meta = ( NoAutoJson = true ) )
 	FFactoryCustomizationData mCustomizationData;
+
+	//<FL>[VilagosD] for clients to track if SkinUpdate is needed - see OnRep_CustomizationData 
+	UPROPERTY()
+	TSubclassOf< class UFGFactoryCustomizationDescriptor_Skin > CachedSkinDesc = nullptr;
+
+	/*UPROPERTY( SaveGame, Replicated, meta = (NoAutoJson = true))
+	FPlayerInfoHandle BuiltBy;*/
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Buildable" )
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Swatch > mDefaultSwatchCustomizationOverride;
@@ -864,17 +910,17 @@ protected:
 	
 	/** Store the active effect so we can cancel an old one if we need to start a new. */
 	UPROPERTY()
-	UFGMaterialEffect_Build* mActiveBuildEffect;
+	TObjectPtr<UFGMaterialEffect_Build> mActiveBuildEffect;
 
 	/**
 	 * Used to sync and start build effect on buildings when created, but not after creation.
 	 * This is sett to null in default. If it's non null, we expect the build effects need to play.
 	 */
 	UPROPERTY(BlueprintReadOnly, Replicated, meta = ( NoAutoJson = true ) )
-	AActor* mBuildEffectInstignator;
+	TObjectPtr<AActor> mBuildEffectInstignator;
 
 	UPROPERTY()
-	class AFGBuildEffectActor* mBuildEffectActor;
+	TObjectPtr<class AFGBuildEffectActor> mBuildEffectActor;
 	
 	/** Build effect speed, a constant speed (distance over time) that the build effect should have, so bigger buildings take longer */
 	UPROPERTY( EditDefaultsOnly, Category = "Build Effect" )
@@ -895,6 +941,10 @@ protected:
 	/** Skip the build effect. */
 	UPROPERTY( EditDefaultsOnly, Category = "Build Effect" )
 	uint8 mSkipBuildEffect:1;
+
+	/** True if default customization application logic should be applied to buildable meshes */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	uint8 mShouldApplyCustomizationData:1;
 	
 	/** Whether or not this building should use ForceNetUpdate() when a player registers/unregisters from it. */
 	UPROPERTY( EditDefaultsOnly, Category = "Replication" )
@@ -903,10 +953,6 @@ protected:
 	/** Whether or not this building should set Dorm_Awake when a player registers interaction and to set Dorm_DormantAll when no more players are interacting. */
 	UPROPERTY( EditDefaultsOnly, Category = "Replication" )
 	uint8 mToggleDormancyOnInteraction:1;
-
-	/** Whenever the buildable is spawned through zooping, blueprints or any other mass building method. */
-	UPROPERTY( Replicated )
-	uint8 mIsMultiSpawnedBuildable:1;
 	
 	/** Flag for whether the build effect is active */
 	uint8 mBuildEffectIsPlaying : 1;
@@ -952,59 +998,36 @@ protected:
 
 	/** Abstract instances configuration data for the buildable */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Instances", meta = (EditInline, DisplayName = "Instance Data") )
-	UAbstractInstanceDataObject* mInstanceDataCDO;
+	TObjectPtr<UAbstractInstanceDataObject> mInstanceDataCDO;
 
 	/* All lightweight instance handles belonging to this buildable, both static (created from instance data) and dynamic (created in runtime) */
 	TArray<FInstanceOwnerHandlePtr> mInstanceHandles;
 	/** All dynamic lightweight instance handles belonging to this buildable. Dynamic instance handles are instances that are not created from instance data */
 	TArray<FInstanceOwnerHandlePtr> mDynamicInstanceHandles;
 	
-	/** Should affect the occlusion system .*/
-	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem" )
-	bool mAffectsOcclusion;
 	
-	/** Shape used for the occlusion system, used for weather and maybe grass in the future.*/
-	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem",meta= ( EditCondition="mAffectsOcclusion", EditConditionHides) )
-	EFGRainOcclusionShape mOcclusionShape;
-
-	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem",meta = ( EditCondition="mOcclusionShape == EFGRainOcclusionShape::ROCS_CustomMesh && mAffectsOcclusion", EditConditionHides ) )
-	UStaticMesh* mCustomOcclusionShape;
-
-	/* Scale offset */
-	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem",meta= ( EditCondition="mAffectsOcclusion", EditConditionHides) )
-	float mScaleCustomOffset = 1.f;
-
-	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem",meta= ( EditCondition="mAffectsOcclusion", EditConditionHides) )
-	EFGRainOcclusionShapeScaling mCustomScaleType = EFGRainOcclusionShapeScaling::ROCSS_Center;
-
-	/* Visible anywhere for editing reasons. */
-	UPROPERTY( EditAnywhere, Category = "Buildable|OcclusionSystem",meta = ( EditCondition="mOcclusionShape == EFGRainOcclusionShape::ROCS_Box_Special && mAffectsOcclusion", EditConditionHides ) )
-	TArray<FBox> mOcclusionBoxInfo;
-
 	/* Dev QOL. */
 #if WITH_EDITOR
-	UFUNCTION(CallInEditor, Category="Buildable|OcclusionSystem")
-	void DebugDrawOcclusionBoxes();
-
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent) override;
 
 #endif
 	
-	/** Caching the extent for use later */
-	FBox mCachedBounds;
-
 	/** List of attachmentpoints for this buildable. */
 	UPROPERTY()
 	TArray< FFGAttachmentPoint > mAttachmentPoints;
 	
 	/** If the buildable is inside of a blueprint designer, this will be the reference to the designer. */
 	UPROPERTY( SaveGame, Replicated )
-	class AFGBuildableBlueprintDesigner* mBlueprintDesigner;
+	TObjectPtr<class AFGBuildableBlueprintDesigner> mBlueprintDesigner;
 
 	/** True if this building was built inside of the blueprint designer. Used to make decisions early in BeginPlay on the clients when blueprint designer is not yet replicated. Not saved, derived from mBlueprintDesigner on load and on begin play on authority */
 	UPROPERTY( Replicated )
 	bool mReplicatedBuiltInsideBlueprintDesigner{false};
+
+	/** Clearance data of this buildable */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	TArray< FFGClearanceData > mClearanceData;
 private:
 	friend class UFGFactoryConnectionComponent;
 	friend class AFGBuildableSubsystem;
@@ -1012,6 +1035,9 @@ private:
 
 	/** Factory Stat id of this object, 0 if nobody asked for it yet */
 	STAT( mutable TStatId mFactoryStatID; )
+
+	/** Caching the extent for use later */
+	FBox mCachedBounds;
 	
 	/** The cached main mesh of this buildable */
 	TArray< UMeshComponent* > mCachedMainMeshes; //@todoGC Do we still use this? Probably not, check with Ben.
@@ -1025,7 +1051,7 @@ private:
 
 	/** Players interacting with this building */
 	UPROPERTY()
-	TArray< class AFGCharacterPlayer* > mInteractingPlayers;
+	TArray< TObjectPtr<class AFGCharacterPlayer> > mInteractingPlayers;
 
 	/** If you can interact with this buildable. */
 	UPROPERTY( EditDefaultsOnly, Category = "Interaction" )
@@ -1067,14 +1093,6 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	TSubclassOf< class UFGRecipe > mBuiltWithRecipe;
 
-	/** If we were built as a variant, this is the class of the buildable we are a variant of. */
-	UPROPERTY( SaveGame, Replicated )
-	TSubclassOf< class AFGBuildable > mOriginalBuildableVariant;
-
-	/** Clearance data of this buildable */
-	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
-	TArray< FFGClearanceData > mClearanceData;
-
 	/** Has this buildable created its material dynamic material instances for shared coloring? */
 	bool mHasInitializedMaterialManagers;
 
@@ -1090,13 +1108,13 @@ private:
 	bool mIsAboutToBeDismantled;
 	
 	UPROPERTY( Transient )
-	TArray< UStaticMeshComponent* > mProxyBuildEffectComponents;
+	TArray< TObjectPtr<UStaticMeshComponent> > mProxyBuildEffectComponents;
 
 	UPROPERTY( Transient, VisibleAnywhere )
-	TArray< class AFGPlayerController* > mActiveSignificantControllers;
+	TArray< TObjectPtr<class AFGPlayerController> > mActiveSignificantControllers;
 
 	UPROPERTY( Transient, VisibleAnywhere )
-	TArray< USceneComponent* > mGeneratedSignificantComponents;
+	TArray< TObjectPtr<USceneComponent> > mGeneratedSignificantComponents;
 
 #if WITH_EDITORONLY_DATA
 	/** ID of the Timelapse bucket this building belongs to. When replaying the build effect using the Timelapse tool, the bucket ID specifies which buildings should have the replayed */
@@ -1106,6 +1124,10 @@ private:
 	/** Delay from the start of the timelapse until this buildable will start playing it's build effect */
 	UPROPERTY( EditInstanceOnly, SaveGame, Category = "Cinematic | Timelapse", meta = (ClampMin = "0.0", UIMin = "0.0") )
 	float mTimelapseDelay;
+
+	/** Set this to true to allow editor buildable preview to render in custom depth. Useful for icon capture */
+	UPROPERTY( EditInstanceOnly, Category = "Rendering" )
+	uint8 mBuildablePreviewRenderCustomDepth:1{false};
 #endif
 
 #if WITH_EDITORONLY_DATA
@@ -1125,7 +1147,7 @@ private:
 #if WITH_EDITORONLY_DATA
 	/** Visualization components used by this building. Automatically cleaned up when visualization is updated */
 	UPROPERTY(Transient)
-	TArray<UActorComponent*> VisualizationComponents;
+	TArray<TObjectPtr<UActorComponent>> VisualizationComponents;
 #endif
 	
 	// Editor tools
@@ -1135,7 +1157,7 @@ private:
 
 	/** If we were built as part of a blueprint, this will reference the blueprint proxy. */
 	UPROPERTY( SaveGame, Replicated )
-	class AFGBlueprintProxy* mBlueprintProxy;
+	TObjectPtr<class AFGBlueprintProxy> mBlueprintProxy;
 	friend class AFGBlueprintProxy; // Friend in order for the proxy to set this reference.
 	friend class AFGBuildableBlueprintDesigner; // Friend in order for the blueprint designer to temporarily clear the proxy reference before serializing this building to a blueprint.
 
@@ -1145,10 +1167,10 @@ private:
 #if	WITH_EDITORONLY_DATA
 	/** Deprecated, use Buildable Sparse Data instead */
 	UPROPERTY(Instanced)
-	UFGBuildableSparseDataObject* mBuildableSparseDataEditorObject_DEPRECATED;
+	TObjectPtr<UFGBuildableSparseDataObject> mBuildableSparseDataEditorObject_DEPRECATED;
 	/** Deprecated, use Instance Data instead */
 	UPROPERTY(Instanced)
-	UAbstractInstanceDataObject* mInstanceData_DEPRECATED;
+	TObjectPtr<UAbstractInstanceDataObject> mInstanceData_DEPRECATED;
 #endif
 };
 

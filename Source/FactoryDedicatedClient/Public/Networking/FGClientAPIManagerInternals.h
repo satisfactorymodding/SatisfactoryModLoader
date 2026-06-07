@@ -43,8 +43,8 @@ private:
 	FFGRequestEmitterFunctionDefinition RequestEmitterFunctionDefinition{};
 	FStructOnScope ResponseParameterStruct{};
 	TOptional<FFGServerErrorResponse> ServerErrorResponse{}; 
-	UObject* ResponseHandlerObject{};
-	UFunction* ResponseHandler{};
+	TObjectPtr<UObject> ResponseHandlerObject{};
+	TObjectPtr<UFunction> ResponseHandler{};
 	FFGOnPendingClientRequestCompletedDelegate OnRequestCompletedDelegate;
 	FFGPendingClientRequestProgressDelegate RequestProgressDelegate;
 };

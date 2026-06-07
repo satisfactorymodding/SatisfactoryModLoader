@@ -39,7 +39,7 @@ public:
 private:
 	/** The inventory that holds the purchases we made in the resource sink shop */
 	UPROPERTY( VisibleDefaultsOnly, SaveGame, Category = "Resource Sink Shop" )
-	class UFGInventoryComponent* mShopInventory;
+	TObjectPtr<class UFGInventoryComponent> mShopInventory;
 
 	/** The size of the inventory that holds the purchases we made in the resource sink shop */
 	UPROPERTY( EditDefaultsOnly, Category = "Resource Sink Shop" )
@@ -47,6 +47,6 @@ private:
 
 	/** Cached resource sink subsystem */
 	UPROPERTY( Transient )
-	class AFGResourceSinkSubsystem* mResourceSinkSubsystem;
+	TObjectPtr<class AFGResourceSinkSubsystem> mResourceSinkSubsystem;
 
 };

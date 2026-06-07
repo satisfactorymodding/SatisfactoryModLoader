@@ -12,6 +12,7 @@
 
 DECLARE_DELEGATE_OneParam(FOnNewFoliageRemovalReplicated, uint32);
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogFoliageReplication, Verbose, Verbose );
+struct FGameplayTag;
 
 DECLARE_DELEGATE_TwoParams(FOnPostReplicatedAddFoliage, const TArrayView<int32>& AddedIndices, int32 FinalSize);
 
@@ -46,7 +47,7 @@ private:
 	UFUNCTION()
 	void OnFoliageBucketRemoved(const FIntVector& inCell, const UFoliageType* forFoliageType, int32 bucketId );
 
-	void HandleBulkDataReplicationMessage( TArray<uint8>&& Payload );
+	void HandleBulkDataReplicationMessage( FGameplayTag InTag, TArray<uint8>&& Payload );
 	
 	/**
 	 * Only relevant on the server. All the removal buckets that have been created but for which replication hasn't begun yet

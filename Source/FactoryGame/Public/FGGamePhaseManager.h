@@ -200,6 +200,9 @@ public:
 
 	/** Gives the last relevant game phase */
 	void UnlockAllGamePhases();
+
+	TArray<FItemAmount> GetGamePhaseCosts( class UFGGamePhase* inPhase ) const;
+	TArray<FItemAmount> GetTargetGamePhaseCosts() const;
 	
 	UE_DEPRECATED( 5.2, "Use GetCurrentGamePhase instead" )
 	UFUNCTION( BlueprintPure, Category = "Progression" )
@@ -354,7 +357,7 @@ private:
 	 * We rely on this being sorted firstly by mLastTierOfPhase and secondly by mPriority
 	 */
 	UPROPERTY( Transient )
-	TArray<class UFGGamePhase*> mCachedGamePhases;
+	TArray<TObjectPtr<class UFGGamePhase>> mCachedGamePhases;
 	
 	/** The current GamePhase that is applied */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CurrentGamePhase )

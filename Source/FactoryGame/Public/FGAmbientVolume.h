@@ -20,7 +20,7 @@ public:
 	//IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
+	virtual float GetSignificanceRange_Implementation() const override;
 	//End
 
 	/** Get the audio component you want */
@@ -64,7 +64,7 @@ protected:
 
 	/** The audio component we want to move around */
 	UPROPERTY( VisibleInstanceOnly, Category="Audio" )
-	class UAkComponent* mAudioComponent;
+	TObjectPtr<class UAkComponent> mAudioComponent;
 
 	/** How much further away than the attenuation distance do we want to start playing the ambient OnGeCloseSound */
 	UPROPERTY( EditInstanceOnly, Category="Audio")

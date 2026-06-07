@@ -24,7 +24,7 @@ struct FACTORYGAME_API FMapMarker
 		Color( FLinearColor::Black ),
 		Scale( 1.0 ),
 		CompassViewDistance( ECompassViewDistance::CVD_Off ),
-		MarkerPlacedByAccountID( "" )
+		LastEditedBy( FPlayerInfoHandle() )
 	{
 	};
 
@@ -61,7 +61,7 @@ struct FACTORYGAME_API FMapMarker
 	ECompassViewDistance CompassViewDistance;
 
 	UPROPERTY( SaveGame, BlueprintReadWrite )
-	FString MarkerPlacedByAccountID;
+	FPlayerInfoHandle LastEditedBy;
 
 	/** ID of the player that created this marker. This is not saved, and is only used to associate created markers with their authors in session */
 	UPROPERTY()
@@ -94,7 +94,7 @@ public:
 	FMapMarker mMapMarker;
 
 	UPROPERTY( Transient )
-	AActor* mHitActor;
+	TObjectPtr<AActor> mHitActor;
 };
 
 
@@ -104,13 +104,13 @@ class FACTORYGAME_API UFGHighlightedMarker : public UObject, public IFGSaveInter
 	GENERATED_BODY()
 public:
 	UPROPERTY( Transient )
-	class UFGActorRepresentation* mActorRepresentation;
+	TObjectPtr<class UFGActorRepresentation> mActorRepresentation;
 
 	UPROPERTY( Transient )
-	UStaticMeshComponent* mStaticMeshComponent;
+	TObjectPtr<UStaticMeshComponent> mStaticMeshComponent;
 
 	UPROPERTY( Transient )
-	class UNiagaraComponent* mNiagaraComponent;
+	TObjectPtr<class UNiagaraComponent> mNiagaraComponent;
 
 	virtual bool ShouldSave_Implementation() const override { return true; }
 };
@@ -121,7 +121,7 @@ class FACTORYGAME_API UFGHighlightedMarker_Actor : public UFGHighlightedMarker
 	GENERATED_BODY()
 public:
 	UPROPERTY( SaveGame )
-	UObject* mActor;
+	TObjectPtr<UObject> mActor;
 };
 
 UCLASS()

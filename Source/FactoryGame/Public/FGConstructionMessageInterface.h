@@ -22,7 +22,7 @@ struct FConstructHologramMessage
 	TSubclassOf< class UFGRecipe > Recipe;
 
 	UPROPERTY()
-	AActor* UpgradeActor;
+	TObjectPtr<AActor> UpgradeActor;
 
 	UPROPERTY()
 	TSubclassOf< AFGBuildable > LightweightUpgradeClass;

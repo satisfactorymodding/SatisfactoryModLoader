@@ -49,7 +49,7 @@ FInventoryStack GetStackFromSlot(UObject* SlotWidget) {
 }
 
 void UItemTooltipSubsystem::RegisterGlobalTooltipProvider(const FString& ModReference, UObject* ItemTooltipProvider) {
-    if (ItemTooltipProvider->Implements<USMLItemTooltipProvider>()) {
+    if (ItemTooltipProvider && ItemTooltipProvider->Implements<USMLItemTooltipProvider>()) {
         GlobalTooltipProviders.AddUnique(ItemTooltipProvider);
     }
 }

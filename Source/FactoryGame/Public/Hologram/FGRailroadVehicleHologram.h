@@ -54,5 +54,5 @@ private:
 
 	/** The snapped vehicle. */
 	UPROPERTY( CustomSerialization )
-	class AFGRailroadVehicle* mSnappedVehicle;
+	TObjectPtr<class AFGRailroadVehicle> mSnappedVehicle;
 };

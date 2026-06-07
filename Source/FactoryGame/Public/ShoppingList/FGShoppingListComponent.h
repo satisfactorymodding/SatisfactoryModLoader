@@ -178,7 +178,7 @@ public:
 private:
 	// Used for UI representation to expose a more scalable system
 	UPROPERTY( Transient )
-	TMap< UObject*, class UFGShoppingListObject* >mShoppingListObjects;
+	TMap< TObjectPtr<UObject>, TObjectPtr<class UFGShoppingListObject> >mShoppingListObjects;
 
 	// Underlying Shopping list data. Separated for different types.
 	// We could look into saving and replicating mShoppingListObjects as subobjects but this feels cheaper network wise

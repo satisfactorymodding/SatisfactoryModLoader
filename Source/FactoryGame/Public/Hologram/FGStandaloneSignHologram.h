@@ -45,6 +45,9 @@ public:
 	virtual AFGHologram* GetNudgeHologramTarget() override;
 	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual int32 GetRotationStep() const override;
+	virtual void SetZoopFromHitresult( const FHitResult& hitResult ) override;
+	virtual void CreateZoopInstances( const FIntVector& DesiredZoop ) override;
+	virtual bool ShouldGenerateChildZoopInstance( const FTransform& localInstanceTransform, int32 instanceIndex, int32 numInstances ) const override;
 	// End AFGHologram Interface
 	
 	// Begin AFGBuildableHologram Interface
@@ -66,7 +69,7 @@ private:
 
 	/** The child pole hologram active while the sign is placed under certain circumstances */
 	UPROPERTY( Replicated )
-	class AFGSignPoleHologram* mChildSignPoleHologram = nullptr;
+	TObjectPtr<class AFGSignPoleHologram> mChildSignPoleHologram = nullptr;
 
 	/* The world size sign dimensions of the sign being constructed */
 	FVector2D mSignDimensions;
@@ -76,7 +79,7 @@ private:
 	FVector2D mPoleScale;
 
 	UPROPERTY()
-	class UStaticMeshComponent* mOrientationVisualizationMesh;
+	TObjectPtr<class UStaticMeshComponent> mOrientationVisualizationMesh;
 
 	/** Optional value for aligning holograms on the Y axis for variable sizes */
 	float mSignToSignOffset;

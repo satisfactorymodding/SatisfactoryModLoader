@@ -48,7 +48,7 @@ static bool GIsRegisteringVanillaContent = false;
 		const FString ScriptCallstack = UModContentRegistry::GetCallStackContext(); \
 		UE_LOG(LogContentRegistry, Error, TEXT("Attempt to register invalid content: %s"), Context); \
 		UE_LOG(LogContentRegistry, Error, TEXT("Script Callstack: %s"), *ScriptCallstack); \
-		ensureMsgf( false, TEXT("%s"), *Context ); \
+		ensureMsgf( false, TEXT("%s"), Context ); \
 	} \
 
 UModContentRegistry::UModContentRegistry() {
@@ -733,6 +733,7 @@ void UModContentRegistry::OnActorPostSpawnInitialization( AActor* Actor )
 
 void UModContentRegistry::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector)
 {
+	Super::AddReferencedObjects(InThis, Collector);
 	UModContentRegistry* ModContentRegistry = CastChecked<UModContentRegistry>(InThis);
 
 	//Register all referenced objects from registry states
@@ -761,7 +762,7 @@ FString UModContentRegistry::GetCallStackContext()
 	if ( NativeStackTrace.IsEmpty() )
 	{
 		FProgramCounterSymbolInfo& Info = NativeStackTrace.Emplace_GetRef();
-		TCString<ANSICHAR>::Strcpy(Info.Filename, FProgramCounterSymbolInfo::MAX_NAME_LENGTH, "Unknown");
+		TCString<ANSICHAR>::Strncpy(Info.Filename, "Unknown", FProgramCounterSymbolInfo::MAX_NAME_LENGTH);
 		Info.LineNumber = 1;
 	}
 
@@ -852,7 +853,7 @@ void UModContentRegistry::AutoRegisterRecipeReferences( TSubclassOf<UFGRecipe> R
 	
 	TArray<FItemAmount> AllItemReferences;
 	AllItemReferences.Append( UFGRecipe::GetProducts( Recipe ) );
-	AllItemReferences.Append( UFGRecipe::GetIngredients( Recipe ) );
+	AllItemReferences.Append( UFGRecipe::GetIngredients( GetWorld(), Recipe ) );
 
 	for ( const FItemAmount& ItemAmount : AllItemReferences )
 	{
@@ -880,8 +881,6 @@ static bool IsResourceFormFilteredOut(EResourceForm ResourceForm, EGetObtainable
 	case RF_LIQUID:
 	case RF_GAS:
 		return !EnumHasAnyFlags(Flags, EGetObtainableItemDescriptorsFlags(IncludeNonSolid));
-	case RF_HEAT: /* FIXME: Could be omitted, so that the default case handles it */
-		return true;
 	default:
 		return true;
 	}
@@ -1029,7 +1028,7 @@ void UModContentRegistry::AutoRegisterAvailabilityDependencyReferences( UFGAvail
 	if ( const UFGResearchTreeProgressionDependency* ResearchTreeProgressionDependency = Cast<UFGResearchTreeProgressionDependency>( Dependency ) )
 	{
 		TArray<TSubclassOf<UFGResearchTree>> ResearchTrees;
-		ResearchTreeProgressionDependency->mResearchTrees.GetKeys( ResearchTrees );
+		ResearchTreeProgressionDependency->GetResearchTreeData().GetKeys( ResearchTrees );
 
 		for ( const TSubclassOf<UFGResearchTree>& ResearchTree : ResearchTrees )
 		{

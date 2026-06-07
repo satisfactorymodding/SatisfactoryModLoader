@@ -2,13 +2,12 @@
 
 #pragma once
 #include "BulkDataReplicationModule.h"
-#include "Delegate.h"
-#include "Guid.h"
+#include "Misc/Guid.h"
 #include "ReliableMessagingProtocol.h"
-#include "Queue.h"
-#include "Runnable.h"
+#include "Containers/Queue.h"
+#include "HAL/Runnable.h"
 #include "SocketSubsystem.h"
-#include "UniquePtr.h"
+#include "Templates/UniquePtr.h"
 
 enum class EReliableMessagingConnectionState : uint8;
 class FInternetAddr;
@@ -44,7 +43,7 @@ public:
 		RDTProtocol::FMessage DispatchMessage;
 		while(ReceiveQueue.Dequeue(DispatchMessage))
 		{
-			UE_LOG(LogReliableMessaging, Verbose, TEXT("Dispatching message with payload size %d on channel %d"), DispatchMessage.Data.Num(), DispatchMessage.ChannelId);
+			UE_LOG(LogReliableMessaging, Verbose, TEXT("Dispatching message with payload size %d on tag '%s'"), DispatchMessage.Data.Num(), *DispatchMessage.Tag.ToString());
 			Dispatcher(MoveTemp(DispatchMessage));
 		}
 	}

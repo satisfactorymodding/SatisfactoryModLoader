@@ -58,8 +58,8 @@ void USMLBlueprintArrayLibrary::GenericArray_Sort(const void* TargetArray, const
 		void* ElementBDestPtr = SecondParamProperty->ContainerPtrToValuePtr<void>(ComparatorCallFrame);
 
 		//Steal property values from the array into the comparator call frame
-		FMemory::Memcpy(ElementADestPtr, ElementAPtr, ArrayInnerProperty->ElementSize);
-		FMemory::Memcpy(ElementBDestPtr, ElementBPtr, ArrayInnerProperty->ElementSize);
+		FMemory::Memcpy(ElementADestPtr, ElementAPtr, ArrayInnerProperty->GetElementSize());
+		FMemory::Memcpy(ElementBDestPtr, ElementBPtr, ArrayInnerProperty->GetElementSize());
 
 		ReturnValueProperty->SetPropertyValue_InContainer(ComparatorCallFrame, false);
 		

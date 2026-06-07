@@ -41,5 +41,5 @@ public:
 	UFGDropPodRefundsLootPool* CreateDropPodLootPool( TSubclassOf<AFGCrashSiteBaseActor> ActorClass, TSubclassOf<UFGDropPodRefundsLootPool> LootPoolClass );
 protected:
 	UPROPERTY()
-	TMap<UClass*, UFGDropPodRefundsLootPool*> mDropPodLootPools;
+	TMap<TObjectPtr<UClass>, TObjectPtr<UFGDropPodRefundsLootPool>> mDropPodLootPools;
 };

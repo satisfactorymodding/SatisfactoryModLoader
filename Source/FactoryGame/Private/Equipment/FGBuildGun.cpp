@@ -15,6 +15,7 @@ int32 UFGBuildGunState::GetFunctionCallspace(UFunction* Function, FFrame* Stack)
 bool UFGBuildGunState::CallRemoteFunction(UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){ return bool(); }
 bool UFGBuildGunState::HasAuthority() const{ return bool(); }
 UWorld* UFGBuildGunState::GetWorld() const{ return nullptr; }
+bool UFGBuildGunState::IsValidActorSample(AActor* actor) const{ return bool(); }
 void UFGBuildGunState::BeginState_Implementation(){ }
 void UFGBuildGunState::EndState_Implementation(){ }
 void UFGBuildGunState::TickState_Implementation(float deltaTime){ }
@@ -22,12 +23,9 @@ void UFGBuildGunState::PrimaryFire_Implementation(){ }
 void UFGBuildGunState::PrimaryFireRelease_Implementation(){ }
 void UFGBuildGunState::SecondaryFire_Implementation(){ }
 void UFGBuildGunState::BuildSamplePressed_Implementation(){ }
-bool UFGBuildGunState::IsValidBuildingSample( AFGBuildable* buildable) const{ return bool(); }
-bool UFGBuildGunState::IsValidVehicleSample( AFGVehicle* vehicle) const{ return bool(); }
 void UFGBuildGunState::OnLightweightBuildableSampled_Implementation(struct FLightweightBuildableInstanceRef& buildableInstance){ }
-void UFGBuildGunState::OnVehicleSampled_Implementation(class AFGVehicle* vehicle){ }
-void UFGBuildGunState::OnBuildableSampled_Implementation(class AFGBuildable* buildable){ }
 void UFGBuildGunState::OnRecipeSampled_Implementation(TSubclassOf<class UFGRecipe> recipe){ }
+void UFGBuildGunState::OnActorSampled_Implementation(AActor* actor){ }
 void UFGBuildGunState::BuildSampleRelease_Implementation(){ }
 void UFGBuildGunState::OnCustomizationsSampled_Implementation(TArray< TSubclassOf<  UFGFactoryCustomizationDescriptor > >& newCustomizations){ }
 void UFGBuildGunState::Scroll_Implementation(int32 delta){ }
@@ -47,7 +45,6 @@ bool UFGBuildGunState::HasBuildGunDelay(){ return bool(); }
 void UFGBuildGunState::BindInputActions( UFGEnhancedInputComponent* inputComponent){ }
 void UFGBuildGunState::ClearInputActions( UEnhancedInputComponent* inputComponent){ }
 bool UFGBuildGunState::CanSampleBuildables() const{ return false; }
-bool UFGBuildGunState::CanSampleVehicles() const{ return false; }
 bool UFGBuildGunState::CanSampleCustomizations() const{ return bool(); }
 bool UFGBuildGunState::CanSampleBlueprints() const{ return bool(); }
 AFGBuildGun::AFGBuildGun() : Super() {
@@ -126,6 +123,7 @@ void AFGBuildGun::Server_SetCustomizationDataForSlot_Implementation(uint8 slotIn
 void AFGBuildGun::SetAllowRayClearanceHit(bool allow){ }
 void AFGBuildGun::SetAllowRayBlueprintProxyHit(bool allow){ }
 void AFGBuildGun::SetAllowRayWireMeshHit(bool allow){ }
+void AFGBuildGun::SetAllowVehiclePathHit(bool allow){ }
 void AFGBuildGun::SetPendingEntryState(EBuildGunState state){ }
 void AFGBuildGun::SetMenuStateSection(EMenuStateSection desiredSection, bool broadcastUpdate){ }
 void AFGBuildGun::TryBuildSample(){ }
@@ -133,8 +131,7 @@ void AFGBuildGun::SetCurrentBuildGunMode(TSubclassOf< UFGBuildGunModeDescriptor 
 bool AFGBuildGun::IsCurrentBuildGunMode(TSubclassOf< UFGBuildGunModeDescriptor > buildMode) const{ return bool(); }
 void AFGBuildGun::CycleBuildMode(int32 deltaIndex){ }
 float AFGBuildGun::GetBuildGunRange() const{ return float(); }
-void AFGBuildGun::OnBuildableSampled_Implementation(class AFGBuildable* buildable){ }
-void AFGBuildGun::OnVehicleSampled_Implementation(class AFGVehicle* vehicle){ }
+void AFGBuildGun::OnActorSampled_Implementation(AActor* actor){ }
 void AFGBuildGun::OnLightweightBuildableSampled_Implementation(struct FLightweightBuildableInstanceRef& buildableInstance){ }
 void AFGBuildGun::AddEquipmentActionBindings(){ }
 void AFGBuildGun::Server_PrimaryFireReleased_Implementation(){ }

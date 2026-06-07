@@ -26,7 +26,7 @@ struct FCreatureSound
 
 	/** Audio event to play */
 	UPROPERTY(EditAnywhere)
-	UAkAudioEvent* AudioEvent;
+	TObjectPtr<UAkAudioEvent> AudioEvent;
 };
 
 /**

@@ -59,9 +59,9 @@ public:
 	
 	/** Material on hologram for valid placement. */
 	UPROPERTY()
-	class UMaterialInstance* mValidPlacementMaterial;
+	TObjectPtr<class UMaterialInstance> mValidPlacementMaterial;
 
 	/** Material on hologram for invalid placement. */
 	UPROPERTY()
-	class UMaterialInstance* mInvalidPlacementMaterial;
+	TObjectPtr<class UMaterialInstance> mInvalidPlacementMaterial;
 };

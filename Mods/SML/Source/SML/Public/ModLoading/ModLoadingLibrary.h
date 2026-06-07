@@ -155,7 +155,7 @@ private:
     void LoadMetadataForPlugin(IPlugin& Plugin);
     
     UPROPERTY()
-    class UModIconStorage* ModIconStorage;
+    TObjectPtr<class UModIconStorage> ModIconStorage;
     
     TMap<FString, FSMLPluginDescriptorMetadata> PluginMetadata;
 };
@@ -167,11 +167,11 @@ class SML_API UModIconStorage : public UObject {
 private:
     /** Cache of loaded mod icon textures */
     UPROPERTY()
-    TMap<FString, class UTexture2D*> LoadedModIcons;
+    TMap<FString, TObjectPtr<class UTexture2D>> LoadedModIcons;
 
     /** Blank image returned when icon cannot be loaded */
     UPROPERTY()
-    UTexture2D* BlankTexture; 
+    TObjectPtr<UTexture2D> BlankTexture; 
 public:
     UModIconStorage();
 

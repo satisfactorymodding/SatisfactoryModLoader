@@ -98,6 +98,12 @@ public:
 	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Server UI Proxy" )
 	void HandleChangeServerNameCallback( const FServerChangeServerNameCallback& ChangeServerNameCallback );
+	
+	/**
+	 * Ask user if he agrees to upload crashes from dedicated server
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category = "Server UI Proxy" )
+	void HandleAgreeToCrashUpload(const FPopupClosed& callback);
 };
 
 UCLASS( Abstract, Blueprintable, BlueprintType )

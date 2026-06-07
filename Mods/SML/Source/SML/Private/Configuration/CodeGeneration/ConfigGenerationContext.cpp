@@ -10,6 +10,6 @@ UConfigGeneratedStruct* UConfigGenerationContext::CreateNewConfigStruct(const FS
 
 TArray<UConfigGeneratedStruct*> UConfigGenerationContext::GetAllGeneratedStructs() const {
     TArray<UConfigGeneratedStruct*> OutStructArray;
-    GeneratedStructs.GenerateValueArray(OutStructArray);
+    ObjectPtrDecay(GeneratedStructs).GenerateValueArray(OutStructArray);
     return OutStructArray;
 }

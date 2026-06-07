@@ -19,14 +19,14 @@ public:
 
 	// Begin AFGHologram interface
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
-	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual void SetZoopFromHitresult( const FHitResult& hitResult ) override;
 	// End AFGHologram interface
 
 protected:	
-	// Begin AFGFactoryBuildingHologram interface
-	virtual void CreateZoopInstances() override;
+	// Begin AFGBuildableHologram interface
+	virtual void CreateZoopInstances( const FIntVector& DesiredZoop ) override;
 	virtual FVector ConvertZoopToWorldLocation( const FIntVector& zoop ) const override;
-	// End AFGFactoryBuildingHologram interface
+	// End AFGBuildableHologram interface
 	
 	virtual void BeginPlay() override;
 

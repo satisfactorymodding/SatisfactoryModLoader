@@ -1,10 +1,52 @@
 ﻿#include "Configuration/Properties/ConfigPropertyArray.h"
+#include "Configuration/Properties/ConfigPropertyFloat.h"
 #include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 #include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
 #include "Configuration/RawFileFormat/RawFormatValueArray.h"
 #include "Reflection/BlueprintReflectedObject.h"
 
 #define LOCTEXT_NAMESPACE "SML"
+
+#if WITH_EDITOR
+void UConfigPropertyArray::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) {
+    Super::PostEditChangeProperty(PropertyChangedEvent);
+    // When DefaultValues is changed in the editor, sync Values to match it.
+    // This prevents the old Values from triggering migration on next load.
+    // [Remove this entire function once migration is no longer needed]
+    if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetFName() == GET_MEMBER_NAME_CHECKED(UConfigPropertyArray, DefaultValues)) {
+        Values.Empty(DefaultValues.Num());
+        for (UConfigProperty* Property : DefaultValues) {
+            if (Property) {
+                UConfigProperty* Clone = DuplicateObject<UConfigProperty>(Property, this);
+                Values.Add(Clone);
+            } else {
+                Values.Add(nullptr);
+            }
+        }
+    }
+}
+#endif
+
+void UConfigPropertyArray::PostLoad() {
+    Super::PostLoad();
+    // Migrate to DefaultValues from Values [Remove only this if statement once migration is no longer needed]
+    // PostLoad runs before the user config is deserialized, but it still has the values from the CDO. If DefaultValues
+    // is set to the type default and Values is not, then Values has the old default value that we need to migrate.
+    if (DefaultValues.Num() == 0 && Values.Num() > 0) {
+        DefaultValues = Values; // Hand off the pointer, no need to duplicate. Values.Empty() below will not delete the objects
+    }
+    // Set initial value to default value. This runs before the user config is deserialized
+    // and ensures that if the user has never set a value, it's set to the default.
+    Values.Empty(DefaultValues.Num());
+    for (UConfigProperty* Property : DefaultValues) {
+        if (Property) {
+            UConfigProperty* Clone = DuplicateObject<UConfigProperty>(Property, this);
+            Values.Add(Clone);
+        } else {
+            Values.Add(nullptr);
+        }
+    }
+}
 
 UConfigProperty* UConfigPropertyArray::AddNewElement() {
     checkf(DefaultValue, TEXT("Cannot add new element without default value defined"));
@@ -52,7 +94,7 @@ EDataValidationResult UConfigPropertyArray::IsDataValid(TArray<FText>& Validatio
                 FText::FromString(ConfigProperty ? ConfigProperty->GetClass()->GetName() : TEXT("None"))));
             ValidationResult = EDataValidationResult::Invalid;
         }
-    }    
+    }
     return ValidationResult;
 }
 #endif
@@ -80,7 +122,16 @@ void UConfigPropertyArray::Deserialize_Implementation(const URawFormatValue* Val
         //Just iterate raw format array and deserialize each of its items
         for (URawFormatValue* RawFormatValue : SerializedArray->GetUnderlyingArrayRef()) {
             UConfigProperty* AllocatedValue = AddNewElement();
+            if (!bAllowUserReset || !bParentSectionAllowsUserReset) {
+                AllocatedValue->bParentSectionAllowsUserReset = false;
+            }
             AllocatedValue->Deserialize(RawFormatValue);
+        }
+    }
+    // Set default values to inherit Allow User Reset
+    for (UConfigProperty* Property : DefaultValues) {
+        if (Property && (!bAllowUserReset || !bParentSectionAllowsUserReset)) {
+            Property->bParentSectionAllowsUserReset = false;
         }
     }
 }
@@ -95,8 +146,67 @@ void UConfigPropertyArray::FillConfigStruct_Implementation(const FReflectedObjec
     }
 }
 
-void UConfigPropertyArray::HandleMarkDirty_Implementation()
-{
+bool UConfigPropertyArray::ResetToDefault_Implementation() {
+    if (!CanResetNow()) {
+        return false;
+    }
+    Values.Empty(DefaultValues.Num());
+    for (UConfigProperty* Property : DefaultValues) {
+        if (Property) {
+            UConfigProperty* Clone = DuplicateObject<UConfigProperty>(Property, this);
+            Values.Add(Clone);
+        } else {
+            Values.Add(nullptr);
+        }
+    }
+    MarkDirty();
+    return true;
+}
+
+bool UConfigPropertyArray::IsSetToDefaultValue_Implementation() const {
+    if (Values.Num() != DefaultValues.Num()) {
+        return false;
+    }
+    for (int32 i = 0; i < Values.Num(); i++) {
+        const UConfigProperty* UserProperty = Values[i];
+        const UConfigProperty* DefaultProperty = DefaultValues.IsValidIndex(i) ? DefaultValues[i] : nullptr;
+        if (!UserProperty || !DefaultProperty) {
+            return false;
+        }
+        // Check if the classes match and if the values are equal
+        if (UserProperty->GetClass() != DefaultProperty->GetClass()) {
+            return false;
+        }
+        // Special case for float properties to use FMath::IsNearlyEqual for comparison
+        if (const UConfigPropertyFloat* UserFloat = Cast<UConfigPropertyFloat>(UserProperty)) {
+            const UConfigPropertyFloat* DefaultFloat = Cast<UConfigPropertyFloat>(DefaultProperty);
+            if (!DefaultFloat || !FMath::IsNearlyEqual(UserFloat->Value, DefaultFloat->Value, SMALL_NUMBER)) {
+                return false;
+            }
+        }
+        // For other property types, compare describe values
+        else if (UserProperty->DescribeValue() != DefaultProperty->DescribeValue()) {
+            return false;
+        }
+    }
+    // MarkDirty();
+    return true;
+}
+
+FString UConfigPropertyArray::GetDefaultValueAsString_Implementation() const {
+    // A bit hacky, but Property->GetDefaultValueAsString() does not work here as the default
+    // values are not initialized within the DefaultValues array for whatever reason.
+    return FString::JoinBy(DefaultValues, TEXT(", "), [](const UConfigProperty* Property) -> FString {
+        if (!Property) {
+            return TEXT("null");
+        }
+        const FString d = Property->DescribeValue();
+        int32 i = d.Find(TEXT(" "));
+        return (i == INDEX_NONE || d.Len() < 2) ? d : d.Mid(i + 1, d.Len() - i - 2);
+    });
+}
+
+void UConfigPropertyArray::HandleMarkDirty_Implementation() {
     MarkDirty();
 }
 

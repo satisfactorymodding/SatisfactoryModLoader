@@ -7,6 +7,7 @@
 "AGS/Gameplay/GiveItems/WindowTitle","Select items to give...","","","UI","#ags"
 "Account/Info/NoNetworkConnection","No Network Connection.","Info in the EOS Login Widget instead of the login button when there is no connection to the internet","","",""
 "Account/Overlay/Reauth","Re-Authenticating.","Main Menu full screen overlay when an invalid connection state to platform services was detected and we are currently fixing it by re-authenticating the user. This can take a while when this happens too often due to rate limits, so we need to show a blocking overlay. Can be triggered by disconnecting and reconnecting the lan cable","","",""
+"Account/Overlay/ReauthShellJoin","Restoring Online Authentication and resolving joining Online Session","","","",""
 "Accounts/ConnectAccounts/Close/Button","Close","Connecting account UI","","UI","#interface"
 "Accounts/ConnectAccounts/ConnectionStatus/Working","Working...","Connecting account UI","","UI","#interface"
 "Accounts/ConnectAccounts/ConnectionStatus/WorkingCheckBrowser","Working...
@@ -56,6 +57,8 @@ Please restart the game and try again.","Linking account UI","","UI","#interface
 "Accounts/ResetLinking/NoAccount/Body","No account is currently logged in.","Linking account UI","","UI","#interface"
 "Accounts/ResetLinking/PleaseTurnItOffAndOnAgain","Something went wrong. Please restart the game and try again.","Linking account UI","","UI","#interface"
 "Accounts/ResetLinking/aTitle","Reset Account Linking","Linking account UI","","UI","#interface"
+"ControllerScheme/NavigateMenuHorizontally","Navigate Menu (Horizontally)","","","",""
+"ControllerScheme/NavigateMenuVertically","Navigate Menu (Vertically)","","","",""
 "Errors/ErrorCodeMessage/HideInfo","Hide Advanced Info","","","UI",""
 "Errors/ErrorCodeMessage/ShowInfo","Show Advanced Info","","","UI",""
 "Games/AGS/ApplyChanges/Button","Apply","","","UI","#ags"
@@ -68,9 +71,10 @@ Please restart the game and try again.","Linking account UI","","UI","#interface
 "Games/AGS/ResetToDefaults/Body","Are you sure you want to reset all settings to default?","","","UI","#ags"
 "Games/AGS/ResetToDefaults/Button","Reset to Default","","","UI","#options"
 "Games/AGS/ResetToDefaults/Title","Reset to Defaults?","","","UI","#ags"
-"Games/AGS/UnsavedChanges/Body","You have unsaved changes to Advanced Game Settings.
+"Games/AGS/UnsavedChanges/Body","You have unsaved changes to the Cheat Settings.
 Are you sure you wish to continue?","","","UI","#ags"
 "Games/AGS/UnsavedChanges/Title","Unsaved Changes","","","UI","#ags"
+"Games/AGS/WorldSeed/ShowSeed","Show Seed","","","",""
 "Games/AutosaveNotifications/AutosaveCompleted","AUTOSAVE COMPLETE!","","","UI","#interface
 #common
 #game
@@ -87,6 +91,10 @@ Are you sure you wish to continue?","","","UI","#ags"
 #common
 #game
 #messages"
+"Games/AutosaveNotifications/Pattern/LoadingScreen","Autosave in *","Example text that is used when explaining Auto Saves in the Loading Screen.","","UI","#interface
+#common
+#game
+#messages"
 "Games/AutosaveNotifications/SaveCompleted","Save completed","","","UI","#interface
 #common
 #game
@@ -95,60 +103,117 @@ Are you sure you wish to continue?","","","UI","#ags"
 #common
 #game
 #messages"
-"Games/CreativeMode/ClientAGSWarning","<Default>The game host has not enabled Advanced Game Settings.</>
+"Games/CreativeMode/ClientAGSWarning","<Default>The game host has not enabled Creative Mode.</>
 
-<Default>If you want to access Advanced Game Settings, ask the game host to enable it.</>","","","UI","#interface"
+<Default>If you want to access Creative Mode, ask the game host to enable it.</>","","","UI","#interface"
 "Games/CreativeMode/GenericAGSWarning","<Default>You are currently playing the default version of the game.</>
 
-<Default>Would you like to access Advanced Game Settings?</> 
+<Default>Would you like to access Creative Mode?</> 
 
 <Default>Please note that editing these settings is a</><BoldRed> one-way action</><Default>, and you will not be able to switch back to the default version of the game unless you</><BoldRed> reload a save</> that was created before switching over.
 
-<Default>Enabling Advanced Game Settings means that you will</> <BoldRed>not be able to get any Achievements.</>
+<Default>Enabling Creative Mode means that you will</> <BoldRed>not be able to get any Achievements.</>
 
 <BoldRed>All players in this session will have access</> <Default>to these settings once activated.</> 
 
-<Default>If you want to proceed, press Confirm to access Advanced Game Settings.</>","","","UI","interface"
+<Default>If you want to proceed, press Confirm to access Creative Mode.</>","","","UI","interface"
 "Games/CreativeMode/GenericAGSWarning.TargetPS5","<Default>You are currently playing the default version of the game.</>
 
-<Default>Would you like to access Advanced Game Settings?</> 
+<Default>Would you like to access Creative Mode?</> 
 
 <Default>Please note that editing these settings is a</><BoldRed> one-way action</><Default>, and you will not be able to switch back to the default version of the game unless you</><BoldRed> reload a save</> that was created before switching over.
 
-<Default>Enabling Advanced Game Settings means that you will</> <BoldRed>not be able to get any Trophies.</>
+<Default>Enabling Creative Mode means that you will</> <BoldRed>not be able to get any Trophies.</>
 
 <BoldRed>All players in this session will have access</> <Default>to these settings once activated.</> 
 
-<Default>If you want to proceed, press Confirm to access Advanced Game Settings.</>","","","UI","interface"
+<Default>If you want to proceed, press Confirm to access Creative Mode.</>","","","UI","interface"
 "Games/CreativeMode/GenericAGSWarning.TargetXSX","<Default>You are currently playing the default version of the game.</>
 
-<Default>Would you like to access Advanced Game Settings?</> 
+<Default>Would you like to access Creative Mode?</> 
 
 <Default>Please note that editing these settings is a</><BoldRed> one-way action</><Default>, and you will not be able to switch back to the default version of the game unless you</><BoldRed> reload a save</> that was created before switching over.
 
-<Default>Enabling Advanced Game Settings means that you will</> <BoldRed>not be able to get any Achievements.</>
+<Default>Enabling Creative Mode means that you will</> <BoldRed>not be able to get any Achievements.</>
 
 <BoldRed>All players in this session will have access</> <Default>to these settings once activated.</> 
 
-<Default>If you want to proceed, press Confirm to access Advanced Game Settings.</>","","","UI","interface"
-"Games/LoadGame/AGS","Advanced Game Settings","","","UI",""
+<Default>If you want to proceed, press Confirm to access Creative Mode.</>","","","UI","interface"
+"Games/GameModes/DefaultMultiplierValue","1 (Default)","","","",""
+"Games/GameModes/EnergyCostMultiplierDescription","Increases all power consumption in the game with a set multiplier.
+
+<Orange>Values above 1 can lead to exceedingly high values and slow progression.</>","","","",""
+"Games/GameModes/EnergyCostMultiplierName","Power Consumption Multiplier","","","",""
+"Games/GameModes/GameModesEnablePopup","Enable Game Modes","","","",""
+"Games/GameModes/GameModesEnablePopupContent","You are about to enable Game Modes. This will change the default experience of the game and affect all players in the session.
+
+Note: Achievements are not blocked by enabling Game Modes.
+Game Modes can not be edited after a session is created.","","","",""
+"Games/GameModes/GameModesEnablePopupContent.TargetPS5","You are about to enable Game Modes. This will change the default experience of the game and affect all players in the session.
+
+Note: Trophies are not blocked by enabling Game Modes.
+Game Modes can not be edited after a session is created.","","","",""
+"Games/GameModes/GameModesEnablePopupContent.TargetXSX","You are about to enable Game Modes. This will change the default experience of the game and affect all players in the session.
+
+Note: Achievements are not blocked by enabling Game Modes.
+Game Modes can not be edited after a session is created.","","","",""
+"Games/GameModes/GameModesEnabled","Game Modes Enabled","","","",""
+"Games/GameModes/OptionCategory/CostMultipliers","Cost Multiplier","","","",""
+"Games/GameModes/OptionCategory/WorldRandomization","World Randomization","","","",""
+"Games/GameModes/RecipePartsMultiplierDescription","Increases the parts cost for each recipe with a set multiplier.
+
+<Orange>Values above 1 can lead to exceedingly high values and slow progression.</>","","","",""
+"Games/GameModes/RecipePartsMultiplierName","Recipe Parts Cost Multiplier","","","",""
+"Games/GameModes/ResourceNodePurity/AllImpure","All Impure","","","",""
+"Games/GameModes/ResourceNodePurity/AllPure","All Pure","","","",""
+"Games/GameModes/ResourceNodePurity/Average","Average ","","","",""
+"Games/GameModes/ResourceNodePurity/Default","Default","","","",""
+"Games/GameModes/ResourceNodePurity/MostlyImpure","Mostly Impure","","","",""
+"Games/GameModes/ResourceNodePurity/MostlyPure","Mostly Pure","","","",""
+"Games/GameModes/ResourceNodePurity/Random","Random","","","",""
+"Games/GameModes/ResourceNodePurityDescription","Edit node purity, with the maximum remaining Pure, and the minimum remaining Impure. 
+Settings containing ""Mostly"" affect nodes by decreasing or increasing their purity by one level. 
+<Orange>Note: Resource node locations remain the same as default.</>
+<Orange>Average turns all nodes into Normal purity. Random randomizes all purity levels.</>","","","",""
+"Games/GameModes/ResourceNodePurityName","Resource Node Purity","","","",""
+"Games/GameModes/ResourceRandomDescription","Edit node randomization, with default being the base game experience. Random randomizes the types of nodes, locations remain the same.
+<Orange>Basic Resource Rich:</> Increased iron, coal, copper, caterium and limestone ratio.
+<Orange>Advanced Resource Rich:</> Increased quartz, sulfur, bauxite, SAM and uranium ratio.
+<Orange>Fossil Fuel Rich:</> Increased oil, coal and sulfur ratio.","","","",""
+"Games/GameModes/ResourceRandomName","Resource Node Randomization","","","",""
+"Games/GameModes/ResourceRandomization/AdvancedRch","Advanced Resource Rich","","","",""
+"Games/GameModes/ResourceRandomization/BasicRich","Basic Resource Rich","","","",""
+"Games/GameModes/ResourceRandomization/Default","Default","","","",""
+"Games/GameModes/ResourceRandomization/FossilRich","Fossil Fuel Rich","","","",""
+"Games/GameModes/ResourceRandomization/Strict","Strict","","","",""
+"Games/GameModes/SpaceElevatorCostMultiplierDescription","Increases the parts cost for each Space Elevator Phase with a set multiplier.
+
+<Orange>Values above 1 can lead to exceedingly high values and slow progression.</>","","","",""
+"Games/GameModes/SpaceElevatorCostMultiplierName","Space Elevator Deliverable Cost Multiplier","","","",""
+"Games/GameModes/WorldSeedDescription","Seed of the current save. Share this seed with other players to allow them to create a world with the exact same settings.","","","",""
+"Games/GameModes/WorldSeedName","World Seed","","","",""
+"Games/LoadGame/AGS","Creative Mode","","","UI",""
 "Games/LoadGame/Button","Load Game","","","UI",""
-"Games/NewGame/AGS","Advanced Game Settings","","","UI","#ags"
-"Games/NewGame/AGS/Enabled","Advanced Game Settings (Enabled)","","","UI","#ags"
+"Games/NewGame/AGS","Creative Mode","","","UI","#ags"
+"Games/NewGame/AGS/Enabled","Creative Mode (Enabled)","","","UI","#ags"
 "Games/NewGame/Confirmation/Confirm/Button","Confirm","","","UI",""
 "Games/NewGame/Confirmation/StartingArea","Starting Area:","","","UI",""
 "Games/NewGame/Confirmation/Title","Starting New Game","","","UI",""
+"Games/NewGame/GameModes","Game Modes","","","",""
+"Games/NewGame/GameModes/Enabled","Game Modes (Enabled)","","","",""
 "Games/NewGame/MultiplayerSettings","Multiplayer Settings","","","UI","#multiplayer"
 "Games/NewGame/Preview/StartingArea","Starting Area:","","","UI",""
-"Games/NewGame/Session/EnableAGS","Enable Advanced Game Settings?","","","UI","#session"
+"Games/NewGame/Session/EnableAGS","Enable Creative Mode?","","","UI","#session"
 "Games/NewGame/Session/Name","Session Name","","","UI","#session"
 "Games/NewGame/Session/Name/TextBoxHint","Enter Name...","","","UI","#session"
+"Games/NewGame/Session/Name/TooLong","Session name must be 15 characters or fewer","","","",""
 "Games/NewGame/Session/Name/TooShort","Session name needs to be at least 3 characters","","","UI","#session"
 "Games/NewGame/Session/Name/UnsupportedCharacters","Session name contains unsupported characters or reserved names","","","UI","#session"
 "Games/NewGame/Session/Name/Used","Session name already in use","","","UI","#session"
 "Games/NewGame/Session/SkipIntro/Description","Enable to skip the onboarding process and start the game at Tier 1.","","","UI","#session"
 "Games/NewGame/Session/SkipIntro/Title","Skip Intro","","","UI","#session"
 "Games/NewGame/StartGame/Button","Start Game","","","UI","#session"
+"Games/NewGame/WorldSeed/Invalid","Invalid World Seed - has to be numeric","","","",""
 "Games/Savegames/List/Delete/Body","Are you sure you want to delete this save file?","","","UI",""
 "Games/Savegames/List/Delete/Button","Delete","","","UI",""
 "Games/Savegames/List/DeleteSave/Button","Delete Save","","","UI",""
@@ -165,7 +230,7 @@ Are you sure you wish to continue?","","","UI","#ags"
 "Games/Savegames/Row/PreviousSave/PlayDuration/Pattern","<Default>Play Duration: {hours}h {min}m {sec}s</>","","{hours} = number
 {min} = number
 {sec} = number","UI",""
-"Games/Savegames/Row/PreviousSaveWithAGS/Pattern","{PlayDuration} | {SaveTime} | Advanced Game Settings Enabled","","{PlayDuration} = text, time (0h 0m 0s)
+"Games/Savegames/Row/PreviousSaveWithAGS/Pattern","{PlayDuration} | {SaveTime} | Creative Mode Enabled","","{PlayDuration} = text, time (0h 0m 0s)
 {SaveTime} = text, time of save","UI",""
 "Games/Savegames/SaveRow/DeleteSave/Body","Are you sure you want to delete this save file?","Save settings UI","","UI","#interface"
 "Games/Savegames/SaveRow/DeleteSave/PlayDuration/Pattern","Play Duration: {hours}h {min}m {sec}s","Save settings UI","{hours} = number
@@ -179,6 +244,9 @@ Are you sure you wish to continue?","","","UI","#ags"
 "Games/Savegames/Warnings/Save/FileReadOnly","Failed to save game, file {0} was read only","Warning message. Appears when you try to save the game","{0} = text, file name","UI",""
 "Games/Savegames/Warnings/Save/InvalidFileName","Failed to save game, game has an invalid filename","Warning message. Appears when you try to save the game","","UI",""
 "JoinList/Warning/CrossPlayDisabled","Cross-Play is disabled in the Online Settings. You will only be able to see friend sessions that also have Cross-Play disabled.","","","",""
+"JoinSessionStatus/ConnectingToGame","Connecting to game...","LOCTEXT from source moved from the previous system to here","","",""
+"JoinSessionStatus/JoiningOnlineSession","Joining Online Session…","LOCTEXT from source moved from the previous system to here","","",""
+"JoinSessionStatus/JoiningSession","Joining Game…","LOCTEXT from source moved from the previous system to here","","",""
 "LoadingScreen/AutosaveWarning","THIS GAME USES AN AUTO-SAVE FEATURE. PLEASE DON'T TURN OFF THE POWER WHEN YOU SEE THIS INDICATOR.","","","UI","#console"
 "LoadingScreen/EpilepsyWarning","A very small percentage of individuals may experience epileptic seizures when exposed to certain visual images, including light patterns or flashing lights that may appear in videogames or other content. Exposure to certain patterns or backgrounds on a computer screen, or while playing videogames, may induce an epileptic seizure in these individuals. Certain conditions may induce previously undetected epileptic symptoms even in persons who have no history of prior seizures or epilepsy.
 
@@ -188,7 +256,7 @@ If you, or anyone in your family, have an epileptic condition, consult your phys
 "MainMenu/AlphaInfo/ExperimentalBuild","EXPERIMENTAL BUILD INFO","","","UI",""
 "MainMenu/AlphaInfo/ExperimentalBuild/Description","Greetings, pioneers!
 
-Welcome to the <BoldRed>Experimental Early Access build of Satisfactory.</> It includes the newest content that we need to test before we push it to the stable Early Access build. This means that we might introduce game- or potentially save- breaking bugs to this version, so <Bold>tread with caution!</> 
+Welcome to the <BoldRed>Experimental build of Satisfactory.</> It includes the newest content that we need to test before we push it to the stable build. This means that we might introduce game- or potentially save- breaking bugs to this version, so <Bold>tread with caution!</> 
 We advise backing up your save files before loading any of your precious stable games.
 
 This is the directory where you will find your saves:
@@ -202,7 +270,7 @@ You will also experience regular bugs, crashes, visual issues, and performance i
 "MainMenu/AlphaInfo/WelcomeInfo","WELCOME INFORMATION","","","",""
 "MainMenu/AlphaInfo/WelcomeInfo/Description","Greetings, pioneers!
 
-Welcome to the 1.0 Release of Satisfactory. If you experience any bugs, crashes, visual or performance issues, or have any feedback for us, please go to our questions site 
+Welcome to the 1.1 Release of Satisfactory. If you experience any bugs, crashes, visual or performance issues, or have any feedback for us, please go to our questions site 
 
 <Bold>https://questions.satisfactorygame.com</> and let us know what you think. We always appreciate your feedback.
  
@@ -230,9 +298,9 @@ Stay effective!","","","",""
 "Menu/Main/Popups/UnableToJoinGame/Title","Unable to Join Game","","","UI",""
 "Menu/Main/Session/LatestSave/Pattern","Latest Save: {A}","","{A} = text, save name","UI",""
 "Menu/Main/Session/SessionName/Pattern","Session Name: {A}","","{A} = text, session name","UI",""
-"Menu/Pause/AGS","Advanced Game Settings","","","UI","#ags"
-"Menu/Pause/AGS/Enable","Enable Advanced Game Settings?","","","UI","#ags"
-"Menu/Pause/AGS/NoPermission","No Permission to Access Advanced Game Settings","Session information block","","UI","#ags"
+"Menu/Pause/AGS","Creative Mode","","","UI","#ags"
+"Menu/Pause/AGS/Enable","Enable Creative Mode?","","","UI","#ags"
+"Menu/Pause/AGS/NoPermission","No Permission to Access Creative Mode","Session information block","","UI","#ags"
 "Menu/Pause/ExitGame/Body","Are you sure you want to exit the game?","","","UI",""
 "Menu/Pause/ExitToMainMenu/Body","Are you sure you want to go back to the Main Menu?","","","UI",""
 "Menu/Pause/FeedbackSite","Go to feedback site","","","UI",""
@@ -248,6 +316,8 @@ Stay effective!","","","",""
 {sec} = number","UI","#session"
 "Menu/Pause/SkipIntro","Skip Intro","","","UI",""
 "Menu/Pause/TakePhoto","Photo Mode","","","UI",""
+"Menu/Pause/TakePhoto/Exit/Body","Leaving Photomode will reset all your current settings. Are you sure you want to exit?","","","",""
+"Menu/Pause/TakePhoto/Exit/Title","Exit Photomode","","","",""
 "Menu/Pause/UnsavedChanges/Body","You have unsaved changes.
 Are you sure you wish to continue?","","","UI",""
 "Menu/Pause/UnsavedChanges/Title","Unsaved Changes","","","UI",""
@@ -297,8 +367,8 @@ Logging out of Epic will NOT unlink your account on PlayStation™Network from E
 
 Logging out of Epic will NOT unlink your Xbox account from Epic. Unlinking your Xbox account can be done from the Epic account management page.","","","UI",""
 "OnlineSettings/LogOutFromEpicOnlineServices/Title","Log out of Epic","","","UI",""
-"Options/AGS/CheckBox","Play with Advanced Game Settings","","","UI","#ags"
-"Options/AGS/Description","Enable this option to play Satisfactory with Advanced Game Settings. This will allow players to play the game with custom settings like no power cost, no fuel cost, etc.","","","UI","#ags"
+"Options/AGS/CheckBox","Play with Creative Mode","","","UI","#ags"
+"Options/AGS/Description","Enable this option to play Satisfactory with Creative Mode. This will allow players to play the game with custom settings like no power cost, no fuel cost, etc.","","","UI","#ags"
 "Options/Changes/ApplyConfirmation/Body","Are you sure you want to apply the changes?","","","UI","#interface
 #common
 #options"
@@ -356,13 +426,17 @@ Session Status???"
 "Options/FactoryClipboard/Paste/Button","Paste Factory Clipboard","","","UI","interface"
 "Options/KeyBinding/RebindingConflict","Rebinding Conflict","","","UI","#options"
 "Options/KeyBinding/RebindingConflict/Description/Pattern","{HardConflicts}
+
 {SoftConflicts}
+
 Rebind anyway?","","{HardConflicts} = text, key name
 {SoftConflicts} = text, key name","UI","#options"
 "Options/KeyBindings/Other","Other","","","UI","#options"
 "Options/KeyBindings/PressKeyToRebind","Press a key to rebind","","","UI","#options"
-"Options/KeyBindings/RebindingHardConflict/Description/Pattern","This binding is currently bound to ({HardConflicts}) in the same context.","","{SoftConflicts} = text, key name","UI","#options"
-"Options/KeyBindings/RebindingSoftConflict/Description/Pattern","This binding is currently bound to ({SoftConflicts}) in another context.","","{SoftConflicts} = text, key name","UI","#options"
+"Options/KeyBindings/RebindingHardConflict/Description/Pattern","This binding is currently bound to other actions in the same context:
+{HardConflicts}","","{SoftConflicts} = text, key name","UI","#options"
+"Options/KeyBindings/RebindingSoftConflict/Description/Pattern","This binding is currently bound to other actions in another context:
+{SoftConflicts}","","{SoftConflicts} = text, key name","UI","#options"
 "Options/MainScreen/Apply/Button","Apply","","","UI","#interface
 #common
 #options"
@@ -528,6 +602,11 @@ options"
 "Servers/ServerManager/AddServer/Port/TextBoxHint","Port","Server managing UI","","UI","#interface"
 "Servers/ServerManager/Console/Button","Console","Server managing UI","","UI","#interface"
 "Servers/ServerManager/ConsoleCommand","Command","Server managing UI","","UI","#interface"
+"Servers/ServerManager/CrashReports/Consent","In the event of this dedicated server crashing, do you agree to send crash report data to Coffee Stain Studios?
+
+When a crash occurs in Satisfactory, we rely on crash reports to assess and fix the underlying issue. If you want to change this later, you can do so in the Server Manager.","Server managing UI, pop-up that appears when adding a dedicated server.","","",""
+"Servers/ServerManager/CrashReports/Setting","Send crash reports from dedicated server","Server setting, toggles sending crash reports","","",""
+"Servers/ServerManager/CrashReports/ToolTip","When enabled and the dedicated server crashes, crash reports will be sent to Coffee Stain Studios.","Server setting tooltip, describing the ""send crash reports"" setting","","",""
 "Servers/ServerManager/CreateGame/Button","Create Game","Server managing UI","","UI","#interface"
 "Servers/ServerManager/Error","Failed to add Server","Server managing UI","","UI",""
 "Servers/ServerManager/ManageSaves/Button","Manage Saves","Server managing UI","","UI","#interface"
@@ -629,6 +708,8 @@ Server Version: {1}","Server information block","{0} = number, local game versio
 "Sessions/Errors/CouldNotJoin/CrossPlayFailure/Body","Could not join the requested session because it is a cross-play session but this account has no permissions to join cross-play sessions.","","","UI",""
 "Sessions/Errors/CouldNotJoin/NoPriviledges/Body","Could not join session because this account does not have online privileges.","","","UI",""
 "Sessions/Errors/CouldNotJoin/aTitle","Could not Join Session","","","UI",""
+"Sessions/Errors/FailedToAuth/Body","The game failed to authenticate because Epic Online Services are currently unavailable. Please try again later. For further assistance, visit Epic Games Support.","Error message displayed during logging into EOS but the services are blocked/not reachable","","UI",""
+"Sessions/Errors/FailedToAuth/Title","Failed to authenticate with the Epic service. ","Error message displayed during logging into EOS but the services are blocked/not reachable","","UI",""
 "Sessions/Errors/OfflineFallback/Body","Failed to create an online session. Falling back to an offline session. You'll need to rehost the same game session from the main menu for your friends to be able to join you.","Session managing UI","","UI","#interface"
 "Sessions/Errors/OfflineFallback/aTitle","Offline Session","Session managing UI","","UI","#interface"
 "Sessions/FindSession/Header","Find Session via IP Address or Session ID","","","UI",""
@@ -665,6 +746,7 @@ Server Version: {1}","Server information block","{0} = number, local game versio
 "Sessions/LoadSession/DownloadGame/Button","Download Game","","","UI","#session"
 "Sessions/LoadSession/Load/Button","Load","","","UI","#session"
 "Sessions/LoadSession/LoadGame/Button","Load Game","","","UI","#session"
+"Sessions/LoadSession/LoadGameWithAdvancedSettings/Button","Load with Creative Mode","""Advanced Settings"" changed to ""Creative Mode"" for 1.2","","",""
 "Sessions/LoadSession/LoadGameWithSettings/Button","Load Settings","It's a noun phrase (Settings of Load[ing the game]) that opens a ""Load game with settings"" popup","","UI","#session"
 "Sessions/LoadSession/Popups/DeleteSave/Body/Pattern","Are you sure you want to delete the save ""{SaveName}""?","Session managing UI","{SaveName} = text","UI","#interface"
 "Sessions/LoadSession/Popups/DeleteSave/aTitle","Delete Save File","","","UI","#session"
@@ -677,34 +759,34 @@ All saves in this session will also be deleted.","","{SessionName} = text","UI",
 "Sessions/LoadSession/Popups/DownloadSave/SaveExistsThisSession/Body/Pattern","Save ""{SaveName}"" already exists in the local save directory. Are you sure you want to overwrite it?","","{SaveName} = text","UI",""
 "Sessions/LoadSession/Popups/DownloadSave/aTitle","Download Save","","","UI",""
 "Sessions/LoadSession/Popups/DownloadingSave/aTitle","Downloading Save","","","",""
-"Sessions/LoadSession/Popups/LoadWithAGS/Body","You are about to load your save with Advanced Game Settings enabled.
+"Sessions/LoadSession/Popups/LoadWithAGS/Body","You are about to load your save with Creative Mode enabled.
 
 Please note that editing these settings is a one-way action, and you will not be able to switch back to the default version of the game unless you reload a save that was created before switching over. 
 
-Enabling Advanced Game Settings means that you will not be able to get any Achievements.
+Enabling Creative Mode means that you will not be able to get any Achievements.
 
 All players in this session will have access to these settings once activated.
 
 If you want to proceed, press Confirm to continue loading your save file.","","","UI","#session"
-"Sessions/LoadSession/Popups/LoadWithAGS/Body.TargetPS5","You are about to load your save with Advanced Game Settings enabled.
+"Sessions/LoadSession/Popups/LoadWithAGS/Body.TargetPS5","You are about to load your save with Creative Mode enabled.
 
 Please note that editing these settings is a one-way action, and you will not be able to switch back to the default version of the game unless you reload a save that was created before switching over. 
 
-Enabling Advanced Game Settings means that you will not be able to get any Trophies.
+Enabling Creative Mode means that you will not be able to get any Trophies.
 
 All players in this session will have access to these settings once activated.
 
 If you want to proceed, press Confirm to continue loading your save file.","","","UI","#session"
-"Sessions/LoadSession/Popups/LoadWithAGS/Body.TargetXSX","You are about to load your save with Advanced Game Settings enabled.
+"Sessions/LoadSession/Popups/LoadWithAGS/Body.TargetXSX","You are about to load your save with Creative Mode enabled.
 
 Please note that editing these settings is a one-way action, and you will not be able to switch back to the default version of the game unless you reload a save that was created before switching over. 
 
-Enabling Advanced Game Settings means that you will not be able to get any Achievements.
+Enabling Creative Mode means that you will not be able to get any Achievements.
 
 All players in this session will have access to these settings once activated.
 
 If you want to proceed, press Confirm to continue loading your save file.","","","UI","#session"
-"Sessions/LoadSession/Popups/LoadWithAGS/aTitle","Load Game with Advanced Game Settings enabled?","","","UI","#session"
+"Sessions/LoadSession/Popups/LoadWithAGS/aTitle","Load Game with Creative Mode enabled?","","","UI","#session"
 "Sessions/LoadSession/Popups/Modded/Description","The save you are loading has previously been loaded with mods. When loading a modded save without the mods installed, anything and everything can happen, including missing items, buildings, and all kinds of bugs and crashes. Do you still want to load it?","","","UI",""
 "Sessions/LoadSession/Popups/Modded/aTitle","Modded Save","","","UI",""
 "Sessions/LoadSession/Popups/NewerVersion/Body","The save you are loading was created in a newer version of the game. Anything and everything can happen, do you still want to load it?","","","UI",""
@@ -730,6 +812,7 @@ Do you still want to load it?","","","UI",""
 "Sessions/ManageSession/ManagePlayers/CurrentAmount","Current Amount of Players:","","","UI",""
 "Sessions/ManageSession/ResetToDefaults/Button","Reset to Default","","","UI",""
 "Sessions/ManageSession/SessionSettings/Category","Session Settings","Session settings UI","","UI","#interface"
+"Sessions/ManageSession/ShowHide/Button","Show/Hide Inactive Users","","","",""
 "Sessions/Messages/CrossplayInformation","Cross-Play Information","","","UI",""
 "Sessions/Messages/CrossplayInformation/Body","You are about to join a session that has Cross-Play enabled. This will potentially match you with players from different Platforms.
 
@@ -758,7 +841,7 @@ Online Session Prompt"
 {LastSaveTime} = text, save time","UI","#interface"
 "Sessions/SessionRow/Saves/NoSession","No Previous Sessions","Session information block","","UI","#interface"
 "Sessions/SessionRow/Saves/None","(No Previous Saves)","Session information block","","UI","#interface"
-"Sessions/SessionVisibility/EnableCrossPlay","Enable Cross-Play","","","UI","#interface
+"Sessions/SessionVisibility/EnableCrossPlay","Cross-Play","","","UI","#interface
 #multiplayer
 #session"
 "Sessions/SessionVisibility/EnableCrossPlay/PrivacyWarning","Cross-Play is disabled due to either Account Privacy Settings or not being connected to the internet.","","","UI",""
@@ -778,7 +861,7 @@ Online Session Prompt"
 "Sessions/ShowID/SessionID/Hint","Session ID...","","","UI",""
 "Sessions/ShowID/Show/Button","Show","","","UI",""
 "Sessions/ShowID/ShowSessionID/Title","Show Session ID","","","UI",""
-"Sessions/Summary/CreativeMode","Advanced Game Settings:","","","UI",""
+"Sessions/Summary/CreativeMode","Creative Mode:","","","UI",""
 "Sessions/Summary/CreativeMode/Disabled","Disabled","AGS disabled, session info block","","",""
 "Sessions/Summary/CreativeMode/Enabled","Enabled","AGS enabled, session info block","","",""
 "Sessions/Summary/CurrentMilestone","Current Milestone:","","","UI",""

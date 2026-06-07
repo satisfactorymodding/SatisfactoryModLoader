@@ -57,15 +57,15 @@ struct FVTXAnimationStateEntry
 	float AnimationLength = 1;
 	
 	UPROPERTY( EditAnywhere, Category = "Vertex Animations" )
-	UMaterialInterface* AnimationMaterialInstance;
+	TObjectPtr<UMaterialInterface> AnimationMaterialInstance;
 
 	UPROPERTY( EditAnywhere, Category = "Vertex Animations", meta = (EditInline, DisplayName = "Notifies") )
-	TArray< UFGNotifyBase* > mNotifiesCDO;
+	TArray< TObjectPtr<UFGNotifyBase> > mNotifiesCDO;
 
 #if WITH_EDITORONLY_DATA
 	/** Deprecated, use Notifies instead */
 	UPROPERTY( Instanced )
-	TArray<UFGNotifyBase*> mEdNotifies_DEPRECATED;
+	TArray<TObjectPtr<UFGNotifyBase>> mEdNotifies_DEPRECATED;
 #endif
 };
 
@@ -89,7 +89,8 @@ public:
 	
 	virtual ETickableTickType GetTickableTickType() const override
 	{
-		return ETickableTickType::Always;
+		// The CDO of this should never tick
+		return IsTemplate() ? ETickableTickType::Never : ETickableTickType::Always;
 	}
 	virtual TStatId GetStatId() const override
 	{
@@ -117,11 +118,11 @@ private:
 
 	/* List of current ticked notify timelines. */
 	UPROPERTY( VisibleInstanceOnly, Transient )
-	TArray<UFGVertexAnimatedMeshComponent*> mRelevantProxies;
+	TArray<TObjectPtr<UFGVertexAnimatedMeshComponent>> mRelevantProxies;
 
 	/* Queue of animations that have randomization support. */
 	UPROPERTY( VisibleInstanceOnly, Transient)
-	TArray<UFGVertexAnimatedMeshComponent*> mAnimationRandomizationList; 
+	TArray<TObjectPtr<UFGVertexAnimatedMeshComponent>> mAnimationRandomizationList; 
 };
 
 /**
@@ -144,7 +145,7 @@ public:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	// End IFGSignificanceInterface.
 	
 	virtual bool ShouldAddToSignificanceManager() const;
@@ -213,10 +214,10 @@ protected:
 	TMap<EVTXAnimProductionStatus,FVTXAnimationStates> mAnimationStateData;
 
 	UPROPERTY(EditDefaultsOnly,Category="Animation|Wire")
-	USkeletalMesh* mWireMesh;
+	TObjectPtr<USkeletalMesh> mWireMesh;
 
 	UPROPERTY(EditDefaultsOnly,Category="Animation|Wire")
-	UAnimationAsset* mAnimationAsset;
+	TObjectPtr<UAnimationAsset> mAnimationAsset;
 
 	UPROPERTY(EditDefaultsOnly,Category="Animation|Wire")
 	float mMaxDrawRangeCable = 5000;
@@ -268,7 +269,7 @@ protected:
 	
 private:
 	UPROPERTY(VisibleInstanceOnly,Transient)
-	USkeletalMeshComponent* mSpawnedWireMeshComponent;
+	TObjectPtr<USkeletalMeshComponent> mSpawnedWireMeshComponent;
 
 	/*	Current animation state. */
 	EVTXAnimProductionStatus CurrentStatus = EVTXAnimProductionStatus::IS_UNKNOWN;
@@ -305,10 +306,10 @@ public:
 	friend class UFGStaticSFXNotify;
 	
 	UPROPERTY()
-	TMap<FName, UAkComponent*> mSpawnedAkSoundComponents;
+	TMap<FName, TObjectPtr<UAkComponent>> mSpawnedAkSoundComponents;
 	
 	UPROPERTY()
-	TMap<FName, UParticleSystemComponent*> mSpawnedParticleEffects;
+	TMap<FName, TObjectPtr<UFXSystemComponent>> mSpawnedParticleEffects;
 	
 	FTimerHandle mStateSwitchTimer; 
 	FTimerHandle mDelayedOverclockTimer;
@@ -388,10 +389,10 @@ class FACTORYGAME_API UFGStaticVFXNotify : public UFGStaticNotifyBase
 	GENERATED_BODY()
 public:
 	UPROPERTY( EditDefaultsOnly)
-	UParticleSystem* PSSystem = nullptr;
+	TObjectPtr<UParticleSystem> PSSystem = nullptr;
 
 	UPROPERTY( EditDefaultsOnly)
-	UNiagaraSystem* NPSSystem = nullptr;
+	TObjectPtr<UNiagaraSystem> NPSSystem = nullptr;
 
 	virtual void Fire( UFGVertexAnimatedMeshComponent* Owner, float CurrentTime = 0.f, bool bForceSeek = false ) const override;
 };
@@ -404,7 +405,7 @@ class FACTORYGAME_API UFGStaticSFXNotify : public UFGStaticNotifyBase
 	GENERATED_BODY()
 public:
 	UPROPERTY( EditDefaultsOnly)
-	UAkAudioEvent* AKEvent = nullptr;
+	TObjectPtr<UAkAudioEvent> AKEvent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
 	FString RTPCName = FString("RTPC_Factory_OverclockRate");
@@ -475,8 +476,11 @@ public:
 	GENERATED_BODY()
 public:
 	UPROPERTY( EditDefaultsOnly)
-    UParticleSystem* PSSystem = nullptr;
-
+    TObjectPtr<UParticleSystem> PSSystem = nullptr;
+	
+	UPROPERTY( EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> NPSSystem = nullptr;
+	
 	virtual void Fire(UFGVertexAnimatedMeshComponent* Owner, float CurrentTime, bool bForceSeek) const override;
 	virtual void Deactivate(UFGVertexAnimatedMeshComponent* Owner) const override;
 };
@@ -488,7 +492,7 @@ class FACTORYGAME_API UFGAnimatedSFXNotify : public UFGAnimatedNotifyBase
 	GENERATED_BODY()
 public:
 	UPROPERTY( EditDefaultsOnly)
-	UAkAudioEvent* AKEvent = nullptr;
+	TObjectPtr<UAkAudioEvent> AKEvent = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly)
 	FString RTPCName = FString("RTPC_Factory_OverclockRate");

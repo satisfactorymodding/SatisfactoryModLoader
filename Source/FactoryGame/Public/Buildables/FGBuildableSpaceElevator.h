@@ -95,8 +95,8 @@ public:
 	UFUNCTION()
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	//<FL>[KonradA]
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray< struct FLocalUserNetIdBundle >(); }
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	UFUNCTION() virtual FPlayerInfoHandle GetLastEditedBy() const override { return FPlayerInfoHandle(); }
+	UFUNCTION() virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy ) {}
 	//</FL>
 
 	// End IFGActorRepresentationInterface
@@ -172,7 +172,7 @@ public:
 	FOnSpaceElevatorStateUpdated mOnSpaceElevatorStateUpdated;
 
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 protected:
 
 	/** Returns the game phase manager, finds it if it isn't cached */
@@ -190,7 +190,7 @@ private:
 protected:
 	/** Our input inventory, shared for all input connections. */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mInputInventory;
+	TObjectPtr<class UFGInventoryComponent> mInputInventory;
 
 	/** Our input inventory, shared for all input connections. */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_SpaceElevatorState )
@@ -200,7 +200,7 @@ protected:
 
 	/** A cached version of the game phase manager */
 	UPROPERTY()
-	AFGGamePhaseManager* mGamePhaseManager;
+	TObjectPtr<AFGGamePhaseManager> mGamePhaseManager;
 
 	/** Cached input connections (No need for UPROPERTY as they are referenced in component array) */
 	TArray< class UFGFactoryConnectionComponent* > mInputConnections;
@@ -208,7 +208,7 @@ protected:
 
 private:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTexture;
+	TObjectPtr<class UTexture2D> mActorRepresentationTexture;
 
 	UPROPERTY( EditDefaultsOnly, Category = "ProjectAssembly" )
 	TSubclassOf<AFGProjectAssembly> mProjectAssemblyClass;

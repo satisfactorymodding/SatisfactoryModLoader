@@ -13,7 +13,7 @@ struct FACTORYGAME_API FFGMeleeAttackHit
 	GENERATED_BODY()
 	
 	UPROPERTY()
-	class AFGCharacterBase* HitCharacter;
+	TObjectPtr<class AFGCharacterBase> HitCharacter;
 
 	UPROPERTY()
 	FHitResult HitResult;
@@ -92,7 +92,7 @@ protected:
 	
 	/** What damage we should deal to whatever we hit. */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category= "Attack" )
-	TArray < UFGDamageType* > mDamageTypes;
+	TArray < TObjectPtr<UFGDamageType> > mDamageTypes;
 
 private:
 	float mOldRotationRate;

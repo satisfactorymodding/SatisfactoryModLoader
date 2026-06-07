@@ -29,7 +29,7 @@ public:
 		return static_cast<const UPanelWidgetAccessor*>(PanelWidget)->GetSlotClass();
 	}
 
-	static TArray<UPanelSlot*>& GetPanelSlots(UPanelWidget* PanelWidget) {
+	static TArray<TObjectPtr<UPanelSlot>>& GetPanelSlots(UPanelWidget* PanelWidget) {
 		return static_cast<UPanelWidgetAccessor*>(PanelWidget)->Slots;
 	}
 	UPanelWidgetAccessor() = delete;
@@ -203,7 +203,7 @@ static UUserWidget* AttachWidgetToWidgetTreeArchetype(UPanelWidget* ParentWidget
 	PanelSlot->Parent = ParentWidget;
 
 	NewUserWidget->Slot = PanelSlot;
-	TArray<UPanelSlot*>& MutablePanelSlots = UPanelWidgetAccessor::GetPanelSlots(ParentWidget);
+	TArray<TObjectPtr<UPanelSlot>>& MutablePanelSlots = UPanelWidgetAccessor::GetPanelSlots(ParentWidget);
 	const int32 ParentSlotIndex = HookData->ParentSlotIndex;
 
 	if (ParentSlotIndex != INDEX_NONE && MutablePanelSlots.IsValidIndex(ParentSlotIndex)) {

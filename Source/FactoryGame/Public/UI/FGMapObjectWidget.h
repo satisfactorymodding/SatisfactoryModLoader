@@ -62,10 +62,10 @@ private:
 protected:
 	
 	UPROPERTY( BlueprintReadOnly, Category = "Map", Meta = ( ExposeOnSpawn = "true" ) )
-	class UFGActorRepresentation* mActorRepresentation;
+	TObjectPtr<class UFGActorRepresentation> mActorRepresentation;
 
 	UPROPERTY( BlueprintReadOnly, Category = "Map", Meta = ( ExposeOnSpawn = "true" ) )
-	class UFGMapWidget* mMapWidget;
+	TObjectPtr<class UFGMapWidget> mMapWidget;
 
 	/* True if this object was added after map was opened */ 
 	UPROPERTY( BlueprintReadOnly, Category = "Map", Meta = ( ExposeOnSpawn = "true" )  )
@@ -78,7 +78,7 @@ protected:
 private:
 	bool mIsActorStatic;
 	UPROPERTY()
-	class AFGMinimapCaptureActor* mMinimapCaptureActor;
+	TObjectPtr<class AFGMinimapCaptureActor> mMinimapCaptureActor;
 
 
 };

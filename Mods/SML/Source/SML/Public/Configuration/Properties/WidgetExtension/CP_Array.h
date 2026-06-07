@@ -19,4 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= "Default", meta = (DisplayAfter = "DefaultValue"))
 		ECP_ArrayWidgetType WidgetType;
 
+	UPROPERTY(Transient, BlueprintReadWrite, Category = "Default", meta = (DisplayAfter = "DefaultValue"))
+		bool Collapsed;
+
 };

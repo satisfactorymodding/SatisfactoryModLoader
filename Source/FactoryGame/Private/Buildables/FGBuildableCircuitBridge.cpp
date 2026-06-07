@@ -18,3 +18,4 @@ int32 AFGBuildableCircuitBridge::GetCircuitID0() const{ return int32(); }
 int32 AFGBuildableCircuitBridge::GetCircuitID1() const{ return int32(); }
 void AFGBuildableCircuitBridge::OnCircuitGroupCreated(){ }
 void AFGBuildableCircuitBridge::OnCircuitsRebuilt(){ }
+void AFGBuildableCircuitBridge::DisplayDebug(class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ Super::DisplayDebug(canvas, debugDisplay, YL, YPos); }

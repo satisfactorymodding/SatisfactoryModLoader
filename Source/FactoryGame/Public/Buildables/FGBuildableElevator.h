@@ -162,6 +162,14 @@ public:
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Factory|Elevator" )
 	void SetIconColorForFloorStop( AFGBuildableElevatorFloorStop* floorStop, FLinearColor color );
 	
+	/**
+	 * <FL> [MartinC] Sets the last edited by username for floor stop
+	 * @param floorStop Buildable Floor Stop to set the icon color of
+	 * @param FPlayerInfoHandle Player info of the last player who edited the floor stop
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Elevator" )
+	void SetLastEditedByForFloorStop( AFGBuildableElevatorFloorStop* floorStop, const FPlayerInfoHandle& playerHandle );
+	
 	/** Helper Function for getting the index of a FloorStopInfo struct in a given array of infos */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Factory|Elevator" )
 	int32 IndexOfFloorStopInArray( const TArray< FElevatorFloorStopInfo >& infoArray, const FElevatorFloorStopInfo& info );
@@ -338,11 +346,11 @@ public:
 	
 #if WITH_EDITORONLY_DATA
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Buildable")
-	UFGBuildableElevatorSparseData* mElevatorSparseData;
+	TObjectPtr<UFGBuildableElevatorSparseData> mElevatorSparseData;
 #endif
 
 	UPROPERTY( )
-	UFGBuildableElevatorSparseData* mElevatorSparseDataCDO;
+	TObjectPtr<UFGBuildableElevatorSparseData> mElevatorSparseDataCDO;
 
 
 
@@ -383,13 +391,13 @@ private:
 
 	// DEPRECATED - Left for converting to mAllPawnsInElevator 
 	UPROPERTY( SaveGame )
-	TArray< class AFGCharacterPlayer* > mCharactersInElevator;
+	TArray< TObjectPtr<class AFGCharacterPlayer> > mCharactersInElevator;
 
 	UPROPERTY()
-	TArray< AFGCharacterPlayer* > mOccupyingCharacters;
+	TArray< TObjectPtr<AFGCharacterPlayer> > mOccupyingCharacters;
 	
 	UPROPERTY( SaveGame )
-	TArray< class APawn* > mAllPawnsInElevator;
+	TArray< TObjectPtr<class APawn> > mAllPawnsInElevator;
 
 	// The position of the cabin in the elevator. This is only updated when a stop is reached. Saved so the Cabin can be spawned at the correct location
 	UPROPERTY( SaveGame, Replicated )
@@ -400,7 +408,7 @@ private:
 	uint8 mSongID; 
 
 	UPROPERTY()
-	AFGBuildableElevatorFloorStop* mCurrentFloorStop;
+	TObjectPtr<AFGBuildableElevatorFloorStop> mCurrentFloorStop;
 
 	UPROPERTY( EditDefaultsOnly, Category="Elevator")
 	float mDurationToOpenDoors = 1.f;

@@ -36,7 +36,7 @@ struct FACTORYGAME_API FConnectionItemStruct
 
 	/** The connection to put the item on */
 	UPROPERTY()
-	class UFGFactoryConnectionComponent* Connection;
+	TObjectPtr<class UFGFactoryConnectionComponent> Connection;
 
 	/** The item to put on the connection */
 	UPROPERTY()
@@ -144,7 +144,7 @@ protected:
 	
 	/** The buffer inventory to store the items in transit. */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mBufferInventory;
+	TObjectPtr<class UFGInventoryComponent> mBufferInventory;
 
 	//Saved direction of the connections
 	UPROPERTY( SaveGame )
@@ -162,7 +162,7 @@ protected:
 	// If the player hovers over a buildable of a certain type, we may want to hot swap the active conveyor attachment.
 	// Example: When building a normal conveyor splitter, and we hover over a conveyor lift, we want to switch to a conveyor lift splitter.
 	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintReadOnly, Category = "Buildable", meta = (AllowAbstract = false))
-	TArray<UFGHologramOverride*> mHologramOverrides;
+	TArray<TObjectPtr<UFGHologramOverride>> mHologramOverrides;
 };
 
 /* Lightweight class containing no components, used for abstract instances etc. */

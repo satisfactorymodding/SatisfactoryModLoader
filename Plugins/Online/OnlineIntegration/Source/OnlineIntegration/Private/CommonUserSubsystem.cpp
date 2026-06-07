@@ -18,6 +18,8 @@ void UCommonUserSubsystem::RemoveOnLocalUserInfoCreatedDelegate(FDelegateHandle 
 void UCommonUserSubsystem::NotifyUserJoinFailure(ULocalUserInfo* User, EUserJoinSessionFailureReason Reason){ }
 void UCommonUserSubsystem::QueryUserTryJoinCrossplay(ULocalUserInfo* User, TFunction<void()> OnConfirm, TFunction<void()> OnDeny){ }
 bool UCommonUserSubsystem::IsProcessingAuthenticationSequences(){ return false; }
+void UCommonUserSubsystem::RetryLastPendingJoinRequest(){ }
+void UCommonUserSubsystem::UpdatePlatformTelemetry(EOnlineSessionFeatureType message){ }
 void UCommonUserSubsystem::SetMaxLocalPlayers(int32 InMaxLocalPLayers){ }
 int32 UCommonUserSubsystem::GetMaxLocalPlayers() const{ return int32(); }
 int32 UCommonUserSubsystem::GetNumLocalPlayers() const{ return int32(); }
@@ -48,7 +50,7 @@ FText UCommonUserSubsystem::GetPrivilegeDescription(ECommonUserPrivilege Privile
 FText UCommonUserSubsystem::GetPrivilegeResultDescription(ECommonUserPrivilegeResult Result) const{ return FText(); }
 TFuture<UE::Online::TOnlineResult<UE::Online::FAuthLogin>> UCommonUserSubsystem::LoginLocalUser(ULocalUserInfo* UserInfo, FCommonUserInitializeParams Params){ return TFuture<UE::Online::TOnlineResult<UE::Online::FAuthLogin>>(); }
 void UCommonUserSubsystem::SetAchievementsEnabled(bool Enabled){ }
-void UCommonUserSubsystem::RegisterStats(UDataTable* StatTable){ }
+void UCommonUserSubsystem::RegisterStats(UDataTable* StatTable, UDataTable* AggregatedStatTable){ }
 void UCommonUserSubsystem::RegisterActivities(UDataTable* ActivityTable, UDataTable* StatToActivityTable){ }
 UOnlineUserBackendLink* UCommonUserSubsystem::GetOrCreateBackendLink(UE::Online::FAccountId AccountId){ return nullptr; }
 UOnlineUserBackendLink* UCommonUserSubsystem::FindBackendLink(UE::Online::FAccountId AccountId){ return nullptr; }
@@ -59,6 +61,7 @@ UOnlineUserInfo* UCommonUserSubsystem::GetOnlineUser(UE::Online::FAccountId Acco
 void UCommonUserSubsystem::RegisterExtension(TScriptInterface<IOnlineUserRegistryExtension> Extension){ }
 void UCommonUserSubsystem::RegisterBackendLinkConnection(UOnlineUserBackendLink* Link1, UOnlineUserBackendLink* Link2){ }
 TFuture<bool> UCommonUserSubsystem::QueryUserInfo(ULocalUserInfo* LocalUser, UOnlineUserBackendLink* BackendLink){ return TFuture<bool>(); }
+TFuture<UE::Online::TOnlineResult<UE::Online::FQueryPresence>> UCommonUserSubsystem::QueryFriendPresence(ULocalUserInfo* LocalUser, UOnlineUserBackendLink* FriendBackendLink){ return TFuture<UE::Online::TOnlineResult<UE::Online::FQueryPresence>>(); }
 TFuture<void> UCommonUserSubsystem::QueryEntitlements(ULocalUserInfo* LocalUser, const TArray<UAddOnEntitlement*>& Entitlements){ return TFuture<void>(); }
 UOnlineUserInfo* UCommonUserSubsystem::CreateOnlineUserForLink(UOnlineUserBackendLink* BackendLink){ return nullptr; }
 void UCommonUserSubsystem::RefreshFriends(){ }
@@ -86,3 +89,11 @@ void UCommonUserSubsystem::HandleInputDeviceConnectionChanged(EInputDeviceConnec
 bool UCommonUserSubsystem::OverrideInputKeyForLogin(FInputKeyEventArgs& EventArgs){ return bool(); }
 void UCommonUserSubsystem::UpdateAggregatedStat(FAggregatedOnlineStat& AggregatedStat, const UE::Online::FAccountId& AccountId, UOnlineIntegrationBackend* Backend){ }
 void UCommonUserSubsystem::AuthenticationSequenceFinished(UOnlineAsyncOperation* InAsyncOp){ }
+void UCommonUserSubsystem::TickBatchProcessing(){ }
+void UCommonUserSubsystem::ClearBatchQueryCaches(){ }
+void UCommonUserSubsystem::ClearPresenceQueryCaches(){ }
+TFuture<UE::Online::TOnlineResult<UE::Online::FQueryUserAvatar>> UCommonUserSubsystem::QueryUserAvatarBatched(
+	UE::Online::FQueryUserAvatar::Params&& Params){ return TFuture<UE::Online::TOnlineResult<UE::Online::FQueryUserAvatar>>(); }
+TFuture<UE::Online::TOnlineResult<UE::Online::FQueryUserInfo>> UCommonUserSubsystem::QueryUserInfoBatched(
+	UE::Online::FQueryUserInfo::Params&& Params){ return TFuture<UE::Online::TOnlineResult<UE::Online::FQueryUserInfo>>(); }
+bool UCommonUserSubsystem::HasPendingUserQueries() const{ return false; }

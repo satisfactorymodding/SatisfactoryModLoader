@@ -38,7 +38,7 @@ public:
 	//IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
+	virtual float GetSignificanceRange_Implementation() const override;
 	//End
 
 	/** Audio subsystem tells this water volume if the listener is inside */
@@ -82,11 +82,15 @@ public:
 	UFUNCTION()
 	virtual TSubclassOf<class UFGResourceDescriptor> GetResourceClass() const override;
 	UFUNCTION()
+	virtual bool DoesContainResource( TSubclassOf< class UFGResourceDescriptor > ResourceClass) const override;
+	UFUNCTION()
 	virtual int32 ExtractResource( int32 amount ) override;
 	UFUNCTION()
 	virtual float GetExtractionSpeedMultiplier() const override;
 	UFUNCTION()
 	virtual FVector GetPlacementLocation( const FVector& hitLocation ) const override;
+	UFUNCTION()
+	virtual FRotator GetPlacementRotation( const FVector& hitLocation ) const override;
 	UFUNCTION()
 	virtual bool CanPlaceResourceExtractor() const override;
 	// End Extractable Resource Interface
@@ -141,7 +145,7 @@ protected:
 #if WITH_EDITORONLY_DATA
 	/** Old deprecated data that isn't used anymore, but we want to be sure that the post process volumes will be deleted */
 	UPROPERTY()
-	class APostProcessVolume* mAssociatedPostProcessVolume_DEPRECATED;
+	TObjectPtr<class APostProcessVolume> mAssociatedPostProcessVolume_DEPRECATED;
 #endif
 
 	/** If true, then the camera is inside the volume */

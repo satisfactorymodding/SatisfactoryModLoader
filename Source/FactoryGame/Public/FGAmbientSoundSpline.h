@@ -23,7 +23,7 @@ public:
 	//IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override; 
-	virtual float GetSignificanceRange() override;
+	virtual float GetSignificanceRange_Implementation() const override;
 	//End
 public:
 	/** Gets the spline component */
@@ -32,11 +32,11 @@ public:
 protected:
 	/** Spline to put multiple positions along. */
 	UPROPERTY( EditAnywhere, Category = "Ambient Sound Spline" )
-	class USplineComponent* mSpline;
+	TObjectPtr<class USplineComponent> mSpline;
 
 	/** AkComponent that plays the sound on the spline. */
 	UPROPERTY( EditAnywhere, Category = "Ambient Sound Spline" )
-	class UFGSoundSplineComponent* mSoundSpline;
+	TObjectPtr<class UFGSoundSplineComponent> mSoundSpline;
 
 	/** Range that this volume should be significant within */
 	UPROPERTY( EditInstanceOnly, Category = "Significance" )

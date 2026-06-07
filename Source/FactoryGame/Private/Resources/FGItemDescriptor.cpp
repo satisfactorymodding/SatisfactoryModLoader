@@ -4,6 +4,8 @@
 #include "FGCategory.h"
 #include "FGItemCategory.h"
 #include "FGResourceSettings.h"
+#include "UObject/AssetRegistryTagsContext.h"
+#include "UObject/ObjectSaveContext.h"
 
 EResourceForm UFGItemDescriptor::GetForm(TSubclassOf<UFGItemDescriptor> inClass) {
 	if (inClass)
@@ -180,11 +182,12 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 	this->mScannerDisplayText = INVTEXT("");
 	this->mScannerLightColor = FColor(0, 0, 0, 0);
 	this->mNeedsPickUpMarker = false;
+	this->mCachedStackSize = -1;
 	this->mItemIndex = -1;
 }
 void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void UFGItemDescriptor::BeginDestroy(){ Super::BeginDestroy(); }
-void UFGItemDescriptor::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const{ UObject::GetAssetRegistryTags(OutTags); }
+void UFGItemDescriptor::PreSave(FObjectPreSaveContext SaveContext){ UObject::PreSave(SaveContext); }
+void UFGItemDescriptor::GetAssetRegistryTags(FAssetRegistryTagsContext Context) const{ UObject::GetAssetRegistryTags(Context); }
 EGasType UFGItemDescriptor::GetGasType(TSubclassOf< UFGItemDescriptor > inClass){ return EGasType(); }
 FText UFGItemDescriptor::GetAbbreviatedDisplayName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 UMaterialInterface* UFGItemDescriptor::GetCrosshairMaterial(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
@@ -199,6 +202,8 @@ float UFGItemDescriptor::GetMenuPriority(TSubclassOf< UFGItemDescriptor > inClas
 FColor UFGItemDescriptor::GetGasColor(TSubclassOf< UFGItemDescriptor > inClass){ return FColor(); }
 FLinearColor UFGItemDescriptor::GetGasColorLinear(TSubclassOf< UFGItemDescriptor > inClass){ return FLinearColor(); }
 TArray< FCompatibleItemDescriptors > UFGItemDescriptor::GetCompatibleItemDescriptors(TSubclassOf< UFGItemDescriptor > inClass){ return TArray<FCompatibleItemDescriptors>(); }
+bool UFGItemDescriptor::HasGameplayTag(TSubclassOf<UFGItemDescriptor> inClass, const FGameplayTag& inGameplayTag){ return bool(); }
+FGameplayTagContainer UFGItemDescriptor::GetAllGameplayTags(TSubclassOf<UFGItemDescriptor> inClass){ return FGameplayTagContainer(); }
 TSubclassOf< AActor > UFGItemDescriptor::GetClassToScanFor(TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<AActor>(); }
 TSubclassOf< class UFGScannableDetails > UFGItemDescriptor::GetCustomScannableDetails(TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<class UFGScannableDetails>(); }
 EScannableActorType UFGItemDescriptor::GetScannableActorType(TSubclassOf< UFGItemDescriptor > inClass){ return EScannableActorType(); }
@@ -210,10 +215,9 @@ void UFGItemDescriptor::SetItemEncountered(TSubclassOf<UFGItemDescriptor> Class,
 int32 UFGItemDescriptor::IsItemEncountered(TSubclassOf<UFGItemDescriptor> Class){ return int32(); }
 void UFGItemDescriptor::SetSmallIcon(TSubclassOf<UFGItemDescriptor> Class, UTexture2D* Icon){  }
 void UFGItemDescriptor::SetBigIcon(TSubclassOf<UFGItemDescriptor> Class, UTexture2D* Icon){  }
-bool UFGItemDescriptor::CanItemBePickedup(TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
-bool UFGItemDescriptor::CanItemBePickedup(UFGItemDescriptor* inClass){ return bool(); }
 FText UFGItemDescriptor::GetItemNameInternal() const{ return FText(); }
 FString UFGItemDescriptor::GetItemNameInternalAsString() const{ return FString(); }
 FText UFGItemDescriptor::GetItemDescriptionInternal() const{ return FText(); }
 UTexture2D* UFGItemDescriptor::Internal_GetSmallIcon() const{ return nullptr; }
 UTexture2D* UFGItemDescriptor::Internal_GetBigIcon() const{ return nullptr; }
+void UFGItemDescriptor::UpdateCachedStackSize(){ }

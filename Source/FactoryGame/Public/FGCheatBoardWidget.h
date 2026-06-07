@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "FGCheatManager.h"
 #include "Widgets/SCompoundWidget.h"
 #include "FactoryGame.h"
@@ -61,6 +60,9 @@ public:
 
 	/** Prompts the user to pick an asset of the given class from the asset registry */
 	void ShowInputForAsset( const UClass* AssetClass, TSharedPtr<IFGCheatBoardParameterFilter> ParameterFilter, const FCheatBoardParamSelectionData& CurrentSelectionData );
+
+	/** Prompts the user to pick an actor of the given class from the level */
+	void ShowInputForActor( const TSubclassOf<AActor>& ActorClass, TSharedPtr<IFGCheatBoardParameterFilter> ParameterFilter, const FCheatBoardParamSelectionData& CurrentSelectionData );
 
 	/** Prompts the user to input a text (FString, FText or FName) */
 	void ShowInputWindowForText( const FProperty* Property, const FCheatBoardParamSelectionData& CurrentSelectionData );

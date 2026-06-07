@@ -59,7 +59,7 @@ struct FActorToScan
 	{}
 
 	UPROPERTY()
-	AActor* FoundActor = nullptr;
+	TObjectPtr<AActor> FoundActor = nullptr;
 
 	/* This is the actor class specified to scan for. It might not be the same class as the instance above.
 	 * e.g if ScannedForActorClass is a creature FoundActor will probably be an CreatureSpawner
@@ -88,13 +88,13 @@ struct FScannedActor
 	FScannedActor(){}
 
 	UPROPERTY()
-	class AActor* Actor;
+	TObjectPtr<class AActor> Actor;
 
 	UPROPERTY()
-	class ULevel* Level;
+	TObjectPtr<class ULevel> Level;
 
 	UPROPERTY()
-	class UFGScannableDetails* ScannableDetails;
+	TObjectPtr<class UFGScannableDetails> ScannableDetails;
 	
 };
 

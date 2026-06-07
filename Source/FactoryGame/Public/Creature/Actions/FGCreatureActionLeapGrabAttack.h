@@ -32,7 +32,7 @@ protected:
 
 protected:
 	UPROPERTY()
-	TArray< class AFGCharacterBase* > mGrabbedCharacters;
+	TArray< TObjectPtr<class AFGCharacterBase> > mGrabbedCharacters;
 
 private:
 	UFUNCTION()

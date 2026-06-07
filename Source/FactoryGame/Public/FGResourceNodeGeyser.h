@@ -31,5 +31,5 @@ private:
 	 * (or likely abused the brief time during EXP blueprint release when this could be done via blueprints)
 	 */
 	UPROPERTY()
-	TArray< class AFGBuildableGeneratorGeoThermal* > mAttachedGeoThermals;
+	TArray< TObjectPtr<class AFGBuildableGeneratorGeoThermal> > mAttachedGeoThermals;
 };

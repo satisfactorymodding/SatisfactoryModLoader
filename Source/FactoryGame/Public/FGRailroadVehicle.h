@@ -51,6 +51,7 @@ public:
 	virtual bool CanDismantle_Implementation() const override;
 	virtual bool SupportsDismantleDisqualifiers_Implementation() const override { return true; }
 	virtual void GetDismantleDisqualifiers_Implementation(TArray<TSubclassOf<UFGConstructDisqualifier>>& out_dismantleDisqualifiers, const TArray<AActor*>& allSelectedActors) const override;
+	virtual void Dismantle_Implementation() override;
 	//~ End IFGDismantleInterface
 
 	//Begin IFGSignificanceInterface
@@ -205,7 +206,7 @@ protected:
 	
 	/** The train this vehicle is part of, updated from the railroad subsystem */
 	UPROPERTY( Replicated, VisibleAnywhere, Category = "Vehicle" )
-	class AFGTrain* mTrain;
+	TObjectPtr<class AFGTrain> mTrain;
 
 	/** How long is this vehicle. */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
@@ -226,9 +227,9 @@ private:
 	 * Saved in serialize.
 	 */
 	UPROPERTY( Replicated )
-	AFGRailroadVehicle* mCoupledVehicleFront;
+	TObjectPtr<AFGRailroadVehicle> mCoupledVehicleFront;
 	UPROPERTY( Replicated )
-	AFGRailroadVehicle* mCoupledVehicleBack;
+	TObjectPtr<AFGRailroadVehicle> mCoupledVehicleBack;
 
 	/** If this vehicle is reversed in the train formation. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsOrientationReversed )

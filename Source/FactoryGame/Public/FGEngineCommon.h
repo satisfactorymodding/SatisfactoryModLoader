@@ -157,11 +157,11 @@ private:
 	void HandleHiddenTextureStatsCommand( const TCHAR* cmd, FOutputDevice& ar );
 protected:
 	UPROPERTY( transient )
-	class UEngine* Engine{};
+	TObjectPtr<class UEngine> Engine{};
 
 	/** Height fog properties that's controlled from camera */
 	UPROPERTY()
-	class UFGAtmosphereUpdater* AtmosphereUpdater{};
+	TObjectPtr<class UFGAtmosphereUpdater> AtmosphereUpdater{};
 private:
 #if STATS
 	/** The current stats collectors, @note: Threadcontext StatsThread */

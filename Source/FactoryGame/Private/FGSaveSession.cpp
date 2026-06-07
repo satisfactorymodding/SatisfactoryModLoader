@@ -28,7 +28,6 @@ bool UFGSaveSession::ReadRawSaveGameData(const FString& saveGameName, TArray< ui
 bool UFGSaveSession::LoadGame(const FString& saveName){ return bool(); }
 bool UFGSaveSession::SerializeHeader(FArchive& Ar, FSaveHeader& saveHeader){ return bool(); }
 bool UFGSaveSession::PeekAtFileHeader(const FString& fullFilePath, FSaveHeader& out_fileHeader){ return bool(); }
-FString UFGSaveSession::SaveNameToFileName(const FString& saveName){ return FString(); }
 FObjectReferenceDisc UFGSaveSession::FixupObjectReferenceForPartitionedWorld(const FObjectReferenceDisc& Reference, const  AFGWorldSettings& WorldSettings){ return FObjectReferenceDisc(); }
 void UFGSaveSession::Autosave(){ }
 void UFGSaveSession::SetAutosaveInterval(int32 newInterval){ }
@@ -36,7 +35,6 @@ bool UFGSaveSession::ShouldPerformAutoSave(){ return bool(); }
 void UFGSaveSession::SetAutoSaveEnabled(bool enabled){ }
 void UFGSaveSession::DumpUnresolvedDestroyedActors(){ }
 void UFGSaveSession::PurgeUnresolvedDestroyedActors(){ }
-bool UFGSaveSession::LoadPreLevelStreamingSave(FString saveName){ return bool(); }
 void UFGSaveSession::OnLevelAddedToWorld(ULevel* inLevel, UWorld* inWorld){ }
 void UFGSaveSession::OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld){ }
 void UFGSaveSession::OnLevelPlacedActorDestroyed(AActor* destroyedActor){ }
@@ -45,12 +43,10 @@ void UFGSaveSession::OnActorSpawned(AActor* spawnedActor){ }
 void UFGSaveSession::SaveLevelState(ULevel* forLevel, bool markAsUpToDate){ }
 void UFGSaveSession::CleanupPerLevelData(){ }
 FString UFGSaveSession::GetSaveLevelName(const ULevel* level){ return FString(); }
-void UFGSaveSession::DeleteSave(FString sessionName, int32 autosaveNum){ }
 FString UFGSaveSession::GenerateAutosaveName(int32& out_autosaveNum, const FString& sessionName){ return FString(); }
 FString UFGSaveSession::GetFullMapName() const{ return FString(); }
 void UFGSaveSession::SetupAutosave(){ }
 void UFGSaveSession::CheckAutoSaveNotificationTimer(){ }
-void UFGSaveSession::SortObjectsByDependency(TArray< UObject* >& io_objectsToSerialize){ }
 void UFGSaveSession::CollectObjects(UWorld* world, ULevel* level, TArray<UObject*>& rootSet, TArray< UObject* >& out_objectsToSerialize){ }
 void UFGSaveSession::GenerateRootSet( ULevel* level, TArray<UObject*>& out_rootSet){ }
 void UFGSaveSession::LoadDestroyActors(ULevel* level){ }

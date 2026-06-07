@@ -58,8 +58,8 @@ public:
 	UFUNCTION()
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	//<FL>[KonradA]
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray< struct FLocalUserNetIdBundle >(); }
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	UFUNCTION() virtual FPlayerInfoHandle GetLastEditedBy() const override { return FPlayerInfoHandle(); }
+	UFUNCTION() virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy ) {}
 	//</FL>
 	// End IFGActorRepresentationInterface
 
@@ -95,7 +95,7 @@ private:
 	void TryUploadItem();
 
 	UPROPERTY( Transient )
-	class AFGCentralStorageSubsystem* mCentralStorageSubsystem;
+	TObjectPtr<class AFGCentralStorageSubsystem> mCentralStorageSubsystem;
 
 	/** The timer we use to track upload of an item to central storage */
 	UPROPERTY( SaveGame, Replicated )
@@ -106,5 +106,5 @@ private:
 	float mTimeToUpload = 1.f;
 
 	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 };

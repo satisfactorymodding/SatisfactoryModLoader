@@ -82,14 +82,13 @@ bool AFGGameMode::IsValidPawnToReclaim(APawn* pawn) const{ return bool(); }
 void AFGGameMode::OnSessionRestartTimeSlotUpdated(FString OptionName, FVariant OptionValue){ }
 void AFGGameMode::GetRestartSessionSaveName(FString& out_sessionName) const{ }
 void AFGGameMode::BuildRestartSessionURL(const FString& saveName, FString& out_sessionUrl) const{ }
-APlayerStart* AFGGameMode::CachePlayerStarts(TMap< FName, TArray< APlayerStart* > >& out_playerStarts){ return nullptr; }
-void AFGGameMode::PartitionPlayerStartsByOccupancy(const TArray< APlayerStart* >& playerStarts,
-		TSubclassOf< APawn > pawnClassToFit,
-		TArray< APlayerStart* >& out_unOccupied,
-		TArray< APlayerStart* >& out_occupied) const{ }
+FFGPrioritizedSpawnPointList AFGGameMode::CalculatePrioritizedSpawnPoints(const APlayerStart* playerStateRespawnPoint) const{ return FFGPrioritizedSpawnPointList(); }
+const APlayerStart* AFGGameMode::GetClosestUnOccupiedRespawnPoint(const FVector& location, const TSubclassOf<AActor>& controllerPawnClass) const{ return nullptr; }
+APlayerStart* AFGGameMode::PickPreferredPlayerStart(const TArray<APlayerStart*>& availablePlayerStarts, const TSubclassOf<AActor>& controllerPawnClass) const{ return nullptr; }
 void AFGGameMode::DiscoverDefaultRemoteCallObjects(){ }
 void AFGGameMode::RecalculateSessionRestartTime(){ }
 void AFGGameMode::TickSessionRebootTimer(){ }
 FName UFGGameModeStatics::GetStartingAreaNameFromOptions(const TMap<FString, FString> &Options){ return FName(); }
 bool UFGGameModeStatics::HasSkipOnboardingOption(const TMap<FString, FString> &Options){ return bool(); }
+bool UFGGameModeStatics::HasGameModeSettings(const TMap<FString, FString>& Options){ return bool(); }
 bool UFGGameModeStatics::HasAdvancedGameSettings(const TMap<FString, FString> &Options){ return bool(); }

@@ -34,7 +34,7 @@ protected:
 	TArray< TSubclassOf< AActor > > mSourceActorFilter;
 
 	/** States for which the accumulator will be blocked for: Default = none */
-	UPROPERTY( EditDefaultsOnly, meta = ( Bitmask, BitmaskEnum = "ECreatureState" ), Category = "Stimulus Accumulator" )
+	UPROPERTY( EditDefaultsOnly, meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.ECreatureState" ), Category = "Stimulus Accumulator" )
 	uint8 mBlockedStates;
 
 	/** Base amount to accumulate when stimuli is perceived. */

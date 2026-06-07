@@ -8,7 +8,7 @@
 
 TArray<FString> VersionRange = {"1.0.0-alpha", "1.0.0-alpha.1", "1.0.0-alpha.beta", "1.0.0-beta", "1.0.0-beta.2", "1.0.0-beta.11", "1.0.0-rc.1", "1.0.0"};
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVersionTest, "SMLEditor.Version", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::SmokeFilter)
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FVersionTest, "SMLEditor.Version", EAutomationTestFlags::ProgramContext | EAutomationTestFlags::SmokeFilter)
 
 FString TestVersion(FString AStr, FString BStr, int Expected)
 {

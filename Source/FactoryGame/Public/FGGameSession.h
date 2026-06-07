@@ -31,5 +31,5 @@ public:
 protected:
 	/** List of logged in admins */
 	UPROPERTY()
-	TArray<class APlayerController*> mLoggedInAdmins;
+	TArray<TObjectPtr<class APlayerController>> mLoggedInAdmins;
 };

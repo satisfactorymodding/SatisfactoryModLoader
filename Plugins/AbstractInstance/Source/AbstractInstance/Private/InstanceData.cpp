@@ -2,6 +2,7 @@
 
 #include "InstanceData.h"
 #include "AbstractInstance.h"
+#include "AbstractInstanceManager.h"
 #include "Engine/InstancedStaticMesh.h"
 #include "Components/InstancedStaticMeshComponent.h"
 
@@ -23,7 +24,7 @@ void FInstanceOwnershipHandle::HideInstance(bool bMarkRenderStateDirty )
 		return;
 	}
 	
-	if ( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
+	if ( ULightweightHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
 		FTransform T;
 		Hism->GetInstanceTransform(HandleID, T, false);
@@ -44,7 +45,7 @@ void FInstanceOwnershipHandle::UnHideInstance( bool bMarkRenderStateDirty )
 		return;
 	}
 	
-	if ( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
+	if ( ULightweightHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
 		FTransform T;
 		Hism->GetInstanceTransform( HandleID, T );
@@ -66,7 +67,7 @@ void FInstanceOwnershipHandle::ResetHandle()
 
 FTransform FInstanceHandle::GetWorldTransform() const
 {
-	if( const UHierarchicalInstancedStaticMeshComponent* MeshComponent = InstancedStaticMeshComponent.Get() )
+	if( const ULightweightHierarchicalInstancedStaticMeshComponent* MeshComponent = InstancedStaticMeshComponent.Get() )
 	{
 		FTransform InstanceRelativeTransform;
 		if ( MeshComponent->GetInstanceTransform( GetHandleID(), InstanceRelativeTransform, false ) )
@@ -86,7 +87,7 @@ FTransform FInstanceHandle::GetWorldTransform() const
 
 void FInstanceOwnershipHandle::SetLocalTransform( const FTransform& NewLocalTransform ) const
 {
-	if( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
+	if( ULightweightHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
 		Hism->UpdateInstanceTransform( HandleID, NewLocalTransform, false, true, false );
 		Scale = NewLocalTransform.GetScale3D();
@@ -100,7 +101,7 @@ void FInstanceOwnershipHandle::SetLocalTransform( const FTransform& NewLocalTran
 
 void FInstanceOwnershipHandle::SetLocalScale( const FVector& NewLocalState ) const
 {
-	if(UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get())
+	if(ULightweightHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get())
 	{
 		FTransform T;
 		Hism->GetInstanceTransform( HandleID, T,false );
@@ -117,7 +118,7 @@ void FInstanceOwnershipHandle::SetLocalScale( const FVector& NewLocalState ) con
 
 void FInstanceOwnershipHandle::SetPrimitiveDataByArray( const TArray<float> &Data, bool bMarkDirty ) const
 {
-	if( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
+	if( ULightweightHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
 #if WITH_EDITOR
 		if( Hism->NumCustomDataFloats != Data.Num() ) 
@@ -132,7 +133,7 @@ void FInstanceOwnershipHandle::SetPrimitiveDataByArray( const TArray<float> &Dat
 
 void FInstanceOwnershipHandle::SetPrimitiveDataByID( const float Value, const int32 Index, bool bMarkDirty ) const
 {
-	if( UHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
+	if( ULightweightHierarchicalInstancedStaticMeshComponent* Hism = InstancedStaticMeshComponent.Get() )
 	{
 #if WITH_EDITOR
 		if( Hism->NumCustomDataFloats > Index )

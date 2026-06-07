@@ -75,7 +75,6 @@ float AFGBuildableTrainPlatformCargo::GetDockedVehicleOffset() const{ return flo
 void AFGBuildableTrainPlatformCargo::NotifyTrainDocked( AFGRailroadVehicle* railroadVehicle,  AFGBuildableRailroadStation* initiatedByStation){ }
 void AFGBuildableTrainPlatformCargo::UpdateDockingSequence(){ }
 void AFGBuildableTrainPlatformCargo::CancelDockingSequence(){ }
-void AFGBuildableTrainPlatformCargo::UpdatePowerConnectionFromTrack(){ }
 void AFGBuildableTrainPlatformCargo::Factory_Tick(float dt){ }
 void AFGBuildableTrainPlatformCargo::Factory_CollectInput_Implementation(){ }
 void AFGBuildableTrainPlatformCargo::Factory_PullPipeInput_Implementation(float dt){ }

@@ -7,6 +7,7 @@
 #include "FGSignificanceInterface.h"
 #include "FGBuildableFactory.generated.h"
 
+class UFGPipeConnectionComponent;
 enum class EPowerShardType : uint8;
 enum class EVisibilityBasedAnimTickOption : uint8;
 struct FInstanceHandle;
@@ -44,15 +45,12 @@ public:
 	// End IFGSaveInterface
 
 	//Begin IFGSignificanceInterface
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
+	virtual void SetInitialSignificanceState_Implementation(bool bState) override { mIsSignificant = bState; }
+	virtual FFGSignificanceTickRateSettings GetSignificanceTickRateSettings_Implementation() const override;
 	virtual void UpdateSignificanceTickRate_Implementation(float NewTickRate, bool bTickEnabled) override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
-	virtual	void SetupForSignificance() override;
-	virtual void SetInitialState(bool bState) override { mIsSignificant = bState; }
-	virtual bool DoesReduceTick() const override;
-	virtual int32 NumTickLevels() const override;
-	virtual float GetTickExponent() const override { return mTickExponent; }
 	//End IFGSignificanceInterface
 
 	//~ Begin IFGUseableInterface
@@ -100,7 +98,7 @@ public:
 	 * @return - true if this machine runs on power; false if it does not.
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Power" )
-	bool RunsOnPower() const { return mPowerConsumption > 0.f; }
+	bool RunsOnPower() const { return mRunsOnPowerOverride || mPowerConsumption > 0.f; }
 
 	/**
 	 * Get the power info for this factory.
@@ -113,7 +111,10 @@ public:
 	virtual float GetIdlePowerConsumption() const;
 
 	/** Get the current producing consumption before overclocking is applied. */
-	virtual float GetProducingPowerConsumptionBase() const { return mPowerConsumption; }
+	virtual float GetProducingPowerConsumptionBase() const;
+
+	/** Override the power consumption for this factory. */
+	void OverridePowerConsumption( bool runsOnPower ) { mRunsOnPowerOverride = runsOnPower; }
 
 	/** The power consumption when producing. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Power" )
@@ -123,6 +124,8 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Power" )
 	float GetDefaultProducingPowerConsumption() const;
 
+	float GetPowerConsumptionMultiplier() const;
+	
 	/** Calculates power consumption for overclocking */
 	static float CalcOverclockPowerConsumption( float power, float overclock, float exponent );
 
@@ -341,6 +344,18 @@ public:
 	 * on the ground instead around the player
 	 */
 	static void MoveOrDropInventory( UFGInventoryComponent* inventory, AFGCharacterPlayer* player );
+
+	/** Utility function to pull items from a conveyor belt connection into an inventory */
+	static void PullItemFromConnectionToInventory( UFGFactoryConnectionComponent* sourceConnection, UFGInventoryComponent* targetInventory );
+
+	/** Utility function to pull items from a conveyor belt connection into a specific inventory slot */
+	static void PullItemFromConnectionToInventorySlot( UFGFactoryConnectionComponent* sourceConnection, UFGInventoryComponent* targetInventory, int32 slotIndex );
+
+	/** Utility function to pull fluid from a pipe connection into a specific inventory slot */
+	static void PullFluidFromConnectionToInventorySlot( UFGPipeConnectionComponent* sourceConnection, UFGInventoryComponent* targetInventory, int32 slotIndex, float deltaTime );
+
+	/** Utility function to push fluid from a specific inventory slot into a pipe connection */
+	static void PushFluidFromInventorySlotToConnection( UFGInventoryComponent* sourceInventory, int32 slotIndex, UFGPipeConnectionComponent* targetConnection, float deltaTime );
 protected:
 	/** Helper function to fill the potential inventory slots from the player inventory with the shards of the particular type, aiming to reach a target amount of shards in slots. Once this function returns, the ref parameter contains amount of slots the inventory was unable to accomodate */
 	void FillPotentialSlotsInternal( UFGInventoryComponent* playerInventory, EPowerShardType powerShardType, TSubclassOf<UFGPowerShardDescriptor> shardItemDescriptor, int32& ref_targetAmountOfShardsInSlots, TArray<FInventoryStack>& out_itemsToDrop ) const;
@@ -501,10 +516,6 @@ protected:
 	void RecalculateProducingPowerConsumption();
 	
 public:
-	/** Power consumption of this factory. */
-	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = "0.0" ) )
-	float mPowerConsumption;
-
 	/**
 	 * Exponent used in power consumption calculations.
 	 * To calculate maximum consumption: max = overclock ^ exponent
@@ -555,7 +566,7 @@ protected:
 
 	/** Power simulation info */
 	UPROPERTY( SaveGame )
-	class UFGPowerInfoComponent* mPowerInfo;
+	TObjectPtr<class UFGPowerInfoComponent> mPowerInfo;
 		
 	/**
 	 * The minimum time one production cycle must take.
@@ -645,9 +656,13 @@ protected:
 	bool mIsTickRateManaged = true;
 	
 private:
+	/** Power consumption of this factory. */
+	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = "0.0" ) )
+	float mPowerConsumption;
+
 	/** The input we place a crystal in to unlock the potential */
 	UPROPERTY( EditDefaultsOnly, SaveGame, Category = "Productivity" )
-	class UFGInventoryComponent* mInventoryPotential;
+	TObjectPtr<class UFGInventoryComponent> mInventoryPotential;
 	
 	/** This is the current potential (overclock, overcharge) of this factory [0..N]
 	* [FreiholtzK:Fri/4-12-2020]  encapsulated to make sure we catch changes of this value and can broadcast them
@@ -786,20 +801,23 @@ protected:
 	
 	/** Particle effects currently playing for the alien overclocking */
 	UPROPERTY( BlueprintReadWrite, Category = "Alien Overclocking" )
-	TArray<UNiagaraComponent*> mAlienOverClockingParticleEffects;
+	TArray<TObjectPtr<UNiagaraComponent>> mAlienOverClockingParticleEffects;
 
 	/** Audio component playing the alien overclocking audio */
 	UPROPERTY( BlueprintReadWrite, Category = "Alien Overclocking" )
-	UAkComponent* mAlienOverClockingLayerSFXComponent;
+	TObjectPtr<UAkComponent> mAlienOverClockingLayerSFXComponent;
 private:	
 	/** Caching all skeletal meshes so that we can set tick optimizations later from significance manager */
 	UPROPERTY()
-	TArray< USkeletalMeshComponent* > mCachedSkeletalMeshes;
+	TArray< TObjectPtr<USkeletalMeshComponent> > mCachedSkeletalMeshes;
 protected:
 	/** The range to keep the factory in significance */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
-	float mSignificanceRange;
+	float mSignificanceRange{0.0f};
 
-	UPROPERTY( EditDefaultsOnly,Category= "Significance")
-	float mTickExponent = 5;
+	/** Number of tick levels to throttle the factory building tick rate by. More levels means more granular throttling */
+	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
+	float mNumTickLevels{5.0f};
+
+	bool mRunsOnPowerOverride { false };
 };

@@ -46,15 +46,15 @@ public:
 
 private:
 	UPROPERTY( VisibleDefaultsOnly, SaveGame, Category = "Resource Sink" )
-	class UFGInventoryComponent* mCouponInventory;
+	TObjectPtr<class UFGInventoryComponent> mCouponInventory;
 	
 	/** Cached factory input connections */
 	UPROPERTY( Transient )
-	TArray<class UFGFactoryConnectionComponent*> mFactoryInputConnections;
+	TArray<TObjectPtr<class UFGFactoryConnectionComponent>> mFactoryInputConnections;
 	
 	/** Cached resource sink subsystem */
 	UPROPERTY( Transient )
-	class AFGResourceSinkSubsystem* mResourceSinkSubsystem;
+	TObjectPtr<class AFGResourceSinkSubsystem> mResourceSinkSubsystem;
 
 	/** The item descriptor that should be used as a coupon */
 	UPROPERTY( Transient )

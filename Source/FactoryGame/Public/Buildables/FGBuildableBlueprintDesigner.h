@@ -14,6 +14,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRecordDataChanged, FBlueprintRecord, blueprintRecord );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBlueprintCostChanged, const TArray< FItemAmount >&, cost );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnBlueprintHasBuildingsChanged );
 
 UENUM( BlueprintType )
 enum class EBlueprintDesignerLoadResult : uint8
@@ -87,7 +88,7 @@ public:
 	void CalculateBlueprintCost( TArray<FItemAmount>& cost ) const;
 	
 	UFUNCTION( BlueprintCallable, Category="Blueprint Designer" )
-	void SaveBlueprint( FBlueprintRecord blueprintRecord, AFGPlayerController* controller, bool bFromDesignerContext = false ); // <FL>[KonradA] Passing the context so we can know if we could have updated something UGC related to update the last ugc user;
+	void SaveBlueprint( FBlueprintRecord blueprintRecord, AFGPlayerController* controller, bool bUpdateLastEditedBy = false ); // <FL>[KonradA] Passing the context so we can know if we could have updated something UGC related to update the last ugc user;
 
 	/**
 	 * Dismantles buildings inside the designer
@@ -116,6 +117,10 @@ public:
 
 	UFUNCTION( BlueprintPure, Category="Blueprint Designer" )
 	FORCEINLINE FIntVector GetBlueprintDimensions() const { return mDimensions; }
+
+	/** Returns true if this blueprint designer contains a single buildable currently */
+	UFUNCTION( BlueprintPure, Category="Blueprint Designer" )
+	FORCEINLINE bool HasBuildings() const { return !mBuildables.IsEmpty(); }
 
 	FVector GetBlueprintDesignerSize() const;
 	
@@ -170,22 +175,22 @@ public:
 	
 	/** Collision Box */
 	UPROPERTY( EditAnywhere, Category="Blueprint Designer")
-	class UBoxComponent* mCollisionComponent;
+	TObjectPtr<class UBoxComponent> mCollisionComponent;
 
 	/** Colored Mesh Proxy for the Edit Terminal */
 	UPROPERTY(EditDefaultsOnly, Category="Blueprint Designer")
-	UFGColoredInstanceMeshProxy* mTerminalMesh;
+	TObjectPtr<UFGColoredInstanceMeshProxy> mTerminalMesh;
 
 	UPROPERTY(VisibleAnywhere, Category="Blueprint Designer")
-	UInstancedStaticMeshComponent* mFloorMeshComponent;
+	TObjectPtr<UInstancedStaticMeshComponent> mFloorMeshComponent;
 
 	/** Location to place refunds if invs are full. @TODO This doesnt need to be a scene comp */
 	UPROPERTY(VisibleAnywhere, Category="Blueprint Designer")
-	USceneComponent* mRefundLocationComponent;
+	TObjectPtr<USceneComponent> mRefundLocationComponent;
 	
 	/** Mesh to use for tiling along the floor (800x800x100)*/
 	UPROPERTY( EditDefaultsOnly, Category="Blueprint Designer")
-	UStaticMesh* mFloorMeshTile;
+	TObjectPtr<UStaticMesh> mFloorMeshTile;
 	
 	/** Distance from the edge to place the terminal mesh */
 	UPROPERTY( EditDefaultsOnly, Category="Blueprint Designer")
@@ -205,6 +210,9 @@ public:
 	UPROPERTY( BlueprintAssignable )
 	FOnBlueprintCostChanged OnBlueprintCostChanged;
 
+	UPROPERTY( BlueprintAssignable )
+	FOnBlueprintHasBuildingsChanged OnBlueprintHasBuildingsChanged;
+
 	UPROPERTY( EditDefaultsOnly, Category="Blueprint Designer")
 	TSubclassOf< class UFGRecipe > mDefaultStorageRecipe;
 	
@@ -216,23 +224,23 @@ private:
 	TArray< FItemAmount > mCurrentCost;
 	
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_Storage )
-	AFGBuildableStorage* mStorage;
+	TObjectPtr<AFGBuildableStorage> mStorage;
 	
 	/** Location to place refunds that dont fit in player or designer inventory */
 	// @TODO This can just be a transform - Im super strapped on time and this is the fastest way for now
 	UPROPERTY( EditDefaultsOnly, Category="Blueprint Designer")
-	USceneComponent* mStorageLocation;
+	TObjectPtr<USceneComponent> mStorageLocation;
 	
 	/** Actors active in the designer (buildings present in the designer) */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_Buildables )
-	TArray< class AFGBuildable* > mBuildables;
+	TArray< TObjectPtr<class AFGBuildable> > mBuildables;
 
 	/** The header data loaded or set on this designer */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_RecordData )
 	FBlueprintRecord mCurrentRecordData;
 
 	UPROPERTY()
-	UFGBlueprintDescriptor* mCurrentBlueprintDescriptor;
+	TObjectPtr<UFGBlueprintDescriptor> mCurrentBlueprintDescriptor;
 
 	UPROPERTY()
 	bool mIsDismantlingAll = false;

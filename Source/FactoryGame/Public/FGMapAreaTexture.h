@@ -94,12 +94,12 @@ private:
 #if WITH_EDITORONLY_DATA
 	/** This is the texture that the level designers made to define areas on the map  */
 	UPROPERTY( EditDefaultsOnly, Category = "1. Pick a texture" )
-	UTexture2D* mAreaTexture;
+	TObjectPtr<UTexture2D> mAreaTexture;
 #endif
 
 	/** The current fog of war is generated to this texture */
 	UPROPERTY()
-	UTexture2D* mFogOfWarTexture;
+	TObjectPtr<UTexture2D> mFogOfWarTexture;
 
 	/** This is where we store the raw data we generated from the texture */
 	UPROPERTY()
@@ -114,7 +114,7 @@ private:
 
 	/** A cached camera in the Skye */
 	UPROPERTY()
-	class AFGMinimapCaptureActor* mCaptureActor;
+	TObjectPtr<class AFGMinimapCaptureActor> mCaptureActor;
 
 	/** The width of the data and the texture */
 	UPROPERTY()
@@ -127,5 +127,5 @@ private:
 	float mWorldToMapScale;
 
 	UPROPERTY()
-	class AFGGameState* mCachedGameState;
+	TObjectPtr<class AFGGameState> mCachedGameState;
 };

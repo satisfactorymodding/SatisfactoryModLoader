@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
 #include "Configuration/CodeGeneration/ConfigGeneratedStruct.h"
+#include "Configuration/CodeGeneration/ConfigGenerationContext.h"
 #include "EdGraph/EdGraphPin.h"
 
 class SMLEDITOR_API FUserDefinedStructCodeGenerator {

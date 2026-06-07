@@ -10,18 +10,17 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "FGConveyorInstanceMeshBucket.generated.h"
 
-enum class UpdateCommand : uint8
-{
-	UC_None,
-	UC_UploadToGPU,
-	UC_Hide
-};
-
 class FACTORYGAME_API FConveyorBucketSceneProxy : public FInstancedStaticMeshSceneProxy
 {
 public:
 	FConveyorBucketSceneProxy(UInstancedStaticMeshComponent* InComponent, ERHIFeatureLevel::Type InFeatureLevel);
 
+	//Delete copy c-tor and assignment operator. Without it the compiler will generate them, which will cause issues with the FInstancedStaticMeshSceneProxy and deleted copy c-tors in its members like FRayTracingGeometry
+	FConveyorBucketSceneProxy(const FConveyorBucketSceneProxy&) = delete;
+	FConveyorBucketSceneProxy& operator=(const FConveyorBucketSceneProxy&) = delete;
+	FConveyorBucketSceneProxy(FConveyorBucketSceneProxy&&) = delete;
+	FConveyorBucketSceneProxy& operator=(FConveyorBucketSceneProxy&&) = delete;
+	
 	void UpdateInstanceData(const TArray<FRenderTransform>& CurrentFrame,const TArray<FRenderTransform>& PreviousFrame,int32 Offset, int32 Count);
 };
 
@@ -42,32 +41,6 @@ public:
 	{
 		mNumInstances = Count;
 	}
-
-	FORCEINLINE void PrepareInstanceUpdateBuffer( int32 Count )
-	{
-		{	// copy paste from epic's code, doesn't compile otherwise.
-			InstanceUpdateCmdBuffer.Cmds.Empty(Count);
-			InstanceUpdateCmdBuffer.NumCustomDataFloats = 0;
-			InstanceUpdateCmdBuffer.NumAdds = 0;
-			InstanceUpdateCmdBuffer.NumCustomFloatUpdates = 0;
-			InstanceUpdateCmdBuffer.NumRemoves = 0;
-		}
-	
-		InstanceUpdateCmdBuffer.Cmds.AddDefaulted(Count);
-		InstanceUpdateCmdBuffer.NumUpdates = Count;
-		InstanceUpdateCmdBuffer.NumEdits = Count;
-	}
-	
-	FORCEINLINE void UpdateInstanceData(const int32 Id, const FMatrix& M,const FMatrix& PrevM)
-	{
-		auto& Entry = InstanceUpdateCmdBuffer.Cmds.GetData()[Id];
-		Entry.InstanceIndex = Id;
-		FMemory::Memcpy(&Entry.XForm,&M,sizeof(FMatrix));
-		FMemory::Memcpy(&Entry.PreviousXForm,&PrevM,sizeof(FMatrix));
-		Entry.Type = FInstanceUpdateCmdBuffer::Update;
-	}
-	
-	UpdateCommand UpdateCommand = UpdateCommand::UC_None;
 	
 	void CheckNANs();
 	void SubmitToGPU(int32 StartID, int32 Count,const TArray<FRenderTransform>& CurrentPos,const TArray<FRenderTransform>& PrevPos);

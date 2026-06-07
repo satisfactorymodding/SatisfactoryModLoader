@@ -1,7 +1,6 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-
 #include "FactoryGame.h"
 #include "FGBuildable.h"
 #include "FGBuildableSplineSnappedBase.h"
@@ -61,7 +60,7 @@ public:
 	// End IFGUseableInterface
 
 	// Begin IFGSignificanceInterface
-	virtual float GetSignificanceRange() override;
+	virtual float GetSignificanceRange_Implementation() const override;
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
 	// End IFGSignificanceInterface
@@ -148,11 +147,11 @@ private:
 	
 	// Set by the chain actor calling reset on this monitor. We have special logic to adjust averaging times depending on chain layout
 	UPROPERTY()
-	AFGConveyorChainActor* mChainActor;
+	TObjectPtr<AFGConveyorChainActor> mChainActor;
 	
 	// Cached cast ConveyorBase from parent snapped spline buildable. Not saved because the parent class saves the snapped buildable
 	UPROPERTY()
-	AFGBuildableConveyorBase* mConveyorBase;
+	TObjectPtr<AFGBuildableConveyorBase> mConveyorBase;
 
 	UPROPERTY( meta = ( NoAutoJson = true, FGReplicated ) )
 	float mTimePerAverageSectionFromBeltSpeed;
@@ -170,10 +169,6 @@ private:
 	int32 mTotalItems = 0;
 	UPROPERTY()
 	float mTotalTime = 0;
-
-#if !UE_BUILD_SHIPPING
-	int32 mNumExpectedItemsPerSection;
-#endif
 	
 	// Percentage of Average sections that have been tallied. After all sections have been filled this will be 100%
 	UPROPERTY()

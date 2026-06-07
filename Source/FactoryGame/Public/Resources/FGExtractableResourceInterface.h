@@ -40,6 +40,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Resource" )
 	virtual TSubclassOf< class UFGResourceDescriptor > GetResourceClass() const = 0;
 
+	/** Check if descriptors are matched */
+	UFUNCTION( BlueprintCallable, Category = "Resource" )
+	virtual bool DoesContainResource( TSubclassOf< class UFGResourceDescriptor > ResourceClass) const = 0;
+	
 	/** Actually extract the resource 
 	 *	@param amount - quantity to attempt to mine
 	 *	@return - Actual amount that was able to be mined
@@ -55,6 +59,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Resource" )
 	virtual FVector GetPlacementLocation( const FVector& hitLocation ) const = 0;
 
+	/** Used by holograms to get the correct rotation for snapping when placed on this extractable resource */
+	UFUNCTION( BlueprintCallable, Category = "Resource" )
+	virtual FRotator GetPlacementRotation( const FVector& hitLocation ) const = 0;
+	
 	/** Can an extractor be placed on this resource object? */
 	UFUNCTION( BlueprintCallable, Category = "Resource" )
 	virtual bool CanPlaceResourceExtractor() const = 0;

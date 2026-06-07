@@ -27,6 +27,7 @@ namespace FactoryGameUbtPlugin
 		public string RequestName = "";
 		public string RequestHandlerPrivilegeLevel = "";
 		public List<string> PassthroughParams = new List<string>();
+		public string SuppressClientAPIErrorPopupLevel = "";
 	}
 
 	[UnrealHeaderTool]
@@ -35,6 +36,9 @@ namespace FactoryGameUbtPlugin
 	    private static readonly List<string> AllowedPrivilegeLevels =
 		    new() { "NotAuthenticated", "Client", "Administrator", "InitialAdmin" };
 	    private static readonly string DefaultPrivilegeLevel = "NotAuthenticated";
+
+	    private static readonly List<string> AllowedSuppressClientAPIErrorPopupValues =
+		    new() { "All", "Timeout" };
 
 	    // FGServerRequestHandler
 		[UhtSpecifier(Extends = UhtTableNames.Function, ValueType = UhtSpecifierValueType.OptionalString)]
@@ -103,6 +107,21 @@ namespace FactoryGameUbtPlugin
 			function.MetaData.Add("BlueprintInternalUseOnly", "true");
 		}
 		
+		// FGSuppressClientAPIErrorPopup
+		[UhtSpecifier(Extends = UhtTableNames.Function, ValueType = UhtSpecifierValueType.String)]
+		private static void FGSuppressClientAPIErrorPopupSpecifier(UhtSpecifierContext specifierContext, StringView value)
+		{
+			var suppressPopupsLevel = value.ToString();
+			if (!AllowedSuppressClientAPIErrorPopupValues.Contains(suppressPopupsLevel))
+			{
+				specifierContext.MessageSite.LogError(specifierContext.TokenReader.InputLine, 
+					$"FactoryGame: Only Allowed FGSuppressClientAPIErrorPopup values are {string.Join(", ", AllowedSuppressClientAPIErrorPopupValues)}. Found: {suppressPopupsLevel}");
+				suppressPopupsLevel = "";
+			}
+			UhtFunction function = (UhtFunction)specifierContext.Type;
+			function.MetaData.Add( "FGSuppressClientAPIErrorPopup", suppressPopupsLevel );
+		}
+		
 		// FGServerResponse
 		[UhtSpecifier(Extends = UhtTableNames.Function, ValueType = UhtSpecifierValueType.OptionalString)]
 		private static void FGServerResponseSpecifier(UhtSpecifierContext specifierContext, StringView? value)
@@ -163,6 +182,7 @@ namespace FactoryGameUbtPlugin
 			if (function.MetaData.TryGetValue("FGServerRequest", out clientRequestName))
 			{
 				var privilegeLevel = function.MetaData.GetValueOrDefault("FGServerRequestPrivilegeLevel");
+				var suppressClientAPIErrorPopupLevel = function.MetaData.GetValueOrDefault("FGSuppressClientAPIErrorPopup");
 				
 				if (string.IsNullOrEmpty(clientRequestName))
 				{
@@ -172,8 +192,9 @@ namespace FactoryGameUbtPlugin
 				{
 					requestEmitters.Add(clientRequestName, new FGServerRequestEmitterMetadata { RequestName = clientRequestName });
 				}
-				requestEmitters[clientRequestName]!.EmitterFunction = function;
-				requestEmitters[clientRequestName]!.RequestHandlerPrivilegeLevel = privilegeLevel;
+				requestEmitters[clientRequestName].EmitterFunction = function;
+				requestEmitters[clientRequestName].RequestHandlerPrivilegeLevel = privilegeLevel;
+				requestEmitters[clientRequestName].SuppressClientAPIErrorPopupLevel = suppressClientAPIErrorPopupLevel;
 				
 				for (int i = 0; i < function.ParameterProperties.Length; ++i)
 				{
@@ -197,7 +218,7 @@ namespace FactoryGameUbtPlugin
 			}
 		}
 
-		private static void GenerateRequestHandlers(IUhtExportFactory factory, UhtPackage package, List<FGServerRequestHandlerMetadata> requestHandlers, List<FGServerRequestEmitterMetadata> requestEmitters)
+		private static void GenerateRequestHandlers(IUhtExportFactory factory, UhtModule module, List<FGServerRequestHandlerMetadata> requestHandlers, List<FGServerRequestEmitterMetadata> requestEmitters)
 		{
 			StringBuilder stringBuilder = new StringBuilder();
 
@@ -245,7 +266,7 @@ namespace FactoryGameUbtPlugin
 			}
 			stringBuilder.AppendLine("");
 
-			stringBuilder.AppendLine($"static void Z_{package.ShortName}_PopulateIOHandlers( TArray<FFGRequestHandlerFunctionDefinition>& OutRequestHandlers, TArray<FFGRequestEmitterFunctionDefinition>& OutRequestEmitters )");
+			stringBuilder.AppendLine($"static void Z_{module.ShortName}_PopulateIOHandlers( TArray<FFGRequestHandlerFunctionDefinition>& OutRequestHandlers, TArray<FFGRequestEmitterFunctionDefinition>& OutRequestEmitters )");
 			stringBuilder.AppendLine("{");
 
 			foreach (var requestHandler in requestHandlers)
@@ -288,6 +309,7 @@ namespace FactoryGameUbtPlugin
 
 				stringBuilder.Append($"TEXT(\"{requestEmitter.RequestName}\"), ");
 				stringBuilder.Append($"TEXT(\"{requestEmitter.RequestHandlerPrivilegeLevel}\"), ");
+				stringBuilder.Append($"TEXT(\"{requestEmitter.SuppressClientAPIErrorPopupLevel}\"), ");
 				stringBuilder.Append("{ ");
 
 				for (int i = 0; i < requestEmitter.PassthroughParams.Count; ++i)
@@ -303,24 +325,28 @@ namespace FactoryGameUbtPlugin
 			stringBuilder.AppendLine("}");
 			stringBuilder.AppendLine("");
 			
-			stringBuilder.AppendLine($"static FFGRequestIORegistrar GRegisterIOHandlers_{package.ShortName}( &Z_{package.ShortName}_PopulateIOHandlers );");
+			stringBuilder.AppendLine($"static FFGRequestIORegistrar GRegisterIOHandlers_{module.ShortName}( &Z_{module.ShortName}_PopulateIOHandlers );");
 			stringBuilder.AppendLine("");
 			
-			var filePath = Path.Combine(package.Module.OutputDirectory, package.ShortName) + ".request_handlers.gen.cpp";
-			factory.CommitOutput( filePath, stringBuilder );
+			// Commit the generated request handlers file if we are allowed to write headers for that module
+			if (module.Module.SaveExportedHeaders)
+			{
+				string headerFilePath = factory.MakePath(module, "RequestHandlers.h");
+				factory.CommitOutput( headerFilePath, stringBuilder );
+			}
 		}
 
 		[UhtExporter(Name = "FactoryGameUbtPlugin", Description = "FactoryGame specific UBT Plugin", Options = UhtExporterOptions.Default, ModuleName="FactoryGame", 
-			CppFilters = new string[] {"*.request_handlers.gen.cpp"})]
+			HeaderFilters = new string[] {"*RequestHandlers.h"})]
 		private static void FactoryGameMain(IUhtExportFactory factory)
 		{
-			foreach (var uhtPackage in factory.Session.Packages)
+			foreach (var uhtModule in factory.Session.Modules)
 			{
-				if (uhtPackage.IsPartOfEngine) continue;
+				if (uhtModule.IsPartOfEngine) continue;
 				Dictionary<string, FGServerRequestHandlerMetadata> allRequestHandlers = new Dictionary<string, FGServerRequestHandlerMetadata>();
 				Dictionary<string, FGServerRequestEmitterMetadata> allRequestEmitters = new Dictionary<string, FGServerRequestEmitterMetadata>();
-				
-				foreach (var uhtHeaderFile in uhtPackage.Children)
+
+				foreach (var uhtHeaderFile in uhtModule.Headers)
 				{
 					foreach (var uhtType in uhtHeaderFile.Children)
 					{
@@ -337,7 +363,7 @@ namespace FactoryGameUbtPlugin
 
 				if (allRequestHandlers.Count != 0 || allRequestEmitters.Count != 0)
 				{
-					GenerateRequestHandlers(factory, uhtPackage, allRequestHandlers.Values.ToList(), allRequestEmitters.Values.ToList());
+					GenerateRequestHandlers(factory, uhtModule, allRequestHandlers.Values.ToList(), allRequestEmitters.Values.ToList());
 				}
 			}
 		}

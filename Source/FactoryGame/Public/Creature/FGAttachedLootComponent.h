@@ -38,5 +38,5 @@ private:
 	
 private:
 	UPROPERTY( SaveGame )
-	class AFGItemPickup_Spawnable* mAttachedItemPickup;
+	TObjectPtr<class AFGItemPickup_Spawnable> mAttachedItemPickup;
 };

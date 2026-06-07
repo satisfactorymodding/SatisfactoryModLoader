@@ -21,7 +21,7 @@ private:
     
     FConfigId ConfigId;
     UPROPERTY()
-    UConfigPropertySection* RootWrappedValue;
+    TObjectPtr<UConfigPropertySection> RootWrappedValue;
     UPROPERTY()
-    UConfigManager* ConfigManager;
+    TObjectPtr<UConfigManager> ConfigManager;
 };

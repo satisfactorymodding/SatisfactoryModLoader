@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -12,5 +12,7 @@ class FACTORYGAME_API UFGVehicleDockingStationRepresentation : public UFGWarning
 {
 	GENERATED_BODY()
 protected:
+	UFGVehicleDockingStationRepresentation();
+	
 	virtual bool IsWarningIndicatorVisible(AActor* realActor, FLinearColor& out_warningIndicatorColor) const override;
 };

@@ -22,6 +22,7 @@ public:
 	// Begin AActor Interface
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	virtual bool ShouldBeConsideredForBase_Implementation() override;
 	// End AActor Interface
 
 	// Begin Buildable interface
@@ -74,7 +75,7 @@ protected:
 
 	/** Mesh used for each segment of the ladder. */
 	UPROPERTY( EditDefaultsOnly, Category = "Ladder" )
-	UStaticMesh* mLadderSegmentMesh;
+	TObjectPtr<UStaticMesh> mLadderSegmentMesh;
 
 	/** Maximum number of segments for the ladder. */
 	UPROPERTY( EditDefaultsOnly, Category = "Ladder" )
@@ -86,13 +87,13 @@ protected:
 
 	/** Instanced Mesh Component. */
 	UPROPERTY( VisibleAnywhere )
-	TArray< UStaticMeshComponent* > mLadderMeshes;
+	TArray< TObjectPtr<UStaticMeshComponent> > mLadderMeshes;
 
 	/** Ladder component on the front. */
 	UPROPERTY( VisibleAnywhere )
-	class UFGLadderComponent* mFrontLadderComponent;
+	TObjectPtr<class UFGLadderComponent> mFrontLadderComponent;
 
 	/** Ladder component on the back. */
 	UPROPERTY( VisibleAnywhere )
-	class UFGLadderComponent* mBackLadderComponent;
+	TObjectPtr<class UFGLadderComponent> mBackLadderComponent;
 };

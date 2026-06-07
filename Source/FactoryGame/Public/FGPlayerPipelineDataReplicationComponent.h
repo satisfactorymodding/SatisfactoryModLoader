@@ -17,7 +17,7 @@ struct FACTORYGAME_API FFGPipelinePlayerReplicationData
 	GENERATED_BODY()
 
 	UPROPERTY()
-	AFGBuildablePipeline* OwningPipeline{};
+	TObjectPtr<AFGBuildablePipeline> OwningPipeline{};
 
 	UPROPERTY()
 	FPipelineIndicatorData ReplicationData;

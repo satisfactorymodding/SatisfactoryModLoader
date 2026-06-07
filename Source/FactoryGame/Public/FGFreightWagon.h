@@ -118,11 +118,11 @@ private:
 
 	/** vehicle simulation component */
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = Vehicle, meta = ( AllowPrivateAccess = "true" ) )
-	class UFGRailroadVehicleMovementComponent* mVehicleMovement;
+	TObjectPtr<class UFGRailroadVehicleMovementComponent> mVehicleMovement;
 
 	/** Responsible for handling our inventory */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mStorageInventory;
+	TObjectPtr<class UFGInventoryComponent> mStorageInventory;
 
 	/** Static mesh to use when freight is holding standard inventory ( factory items ) */
 	UPROPERTY( EditDefaultsOnly, Category = "FreightWagon" )
@@ -149,7 +149,7 @@ private:
 
 	/** Cached pointer to the cargo mesh, valid after BeginPlay. */
 	UPROPERTY()
-	class UStaticMeshComponent* mCargoMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mCargoMeshComponent;
 
 	/** Save and replicate the cargo mesh transform when derailed so that loaded crashes or client arriving late to the party get the correct thing. */
 	UPROPERTY( SaveGame, Replicated )

@@ -70,17 +70,17 @@ private:
 	*	This is the geyser this generator is placed on
 	*/
 	UPROPERTY( SaveGame )
-	class AFGResourceNode* mExtractResourceNode;
+	TObjectPtr<class AFGResourceNode> mExtractResourceNode;
 
 	UPROPERTY( SaveGame, Replicated )
-	AActor* mExtractableResource;
+	TObjectPtr<AActor> mExtractableResource;
 
 	/**
 	 * The curve determining the power variation, preferably with its domain (defined input) normalized to [0.0, 1.0]
 	 * and its range (possible output) within [0.0, 1.0].
 	*/
 	UPROPERTY( Replicated )
-	UCurveFloat* mPowerOutputCurve;
+	TObjectPtr<UCurveFloat> mPowerOutputCurve;
 	
 	/**
 	*	Added to the variable power production. If the power-production curve's range (all possible output values)
@@ -112,4 +112,7 @@ private:
 
 	UPROPERTY( SaveGame, Replicated )
 	float mVariablePowerProductionCycleOffset;
+public:
+	/** Gameplay tag used to check whenever the given resource type can support geothermal generators */
+	static FNativeGameplayTag ResourceCanSupportGeothermalGeneratorTag;
 };

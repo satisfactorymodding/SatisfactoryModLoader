@@ -16,7 +16,7 @@ class SML_API USubsystemActorManager : public UWorldSubsystem {
 private:
 	/** Map of subsystem class to the actor of the corresponding type. Contains both replicated and spawned subsystems */
 	UPROPERTY()
-	TMap<TSubclassOf<AModSubsystem>, AModSubsystem*> SubsystemActors;
+	TMap<TSubclassOf<AModSubsystem>, TObjectPtr<AModSubsystem>> SubsystemActors;
 
 	/** Array of registered subsystem classes and their corresponding policies, used to verify WaitForSubsystem call */
 	UPROPERTY()

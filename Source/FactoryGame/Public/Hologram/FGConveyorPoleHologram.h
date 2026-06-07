@@ -31,5 +31,5 @@ protected:
 private:
 	/** The connection conveyors snap to, used when placing a pole automatically. */
 	UPROPERTY( )
-	UFGFactoryConnectionComponent* mSnapConnection;
+	TObjectPtr<UFGFactoryConnectionComponent> mSnapConnection;
 };

@@ -48,7 +48,7 @@ public:
 
 	/** Character this anim belongs to */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim Player" )
-	class AFGCharacterPlayer* mCharacter;
+	TObjectPtr<class AFGCharacterPlayer> mCharacter;
 
 	/** is this character not controlled by anyone */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim Player" )
@@ -56,7 +56,7 @@ public:
 	
 	/** Tobias 2024-11-04: Hacky solution for overriding the idle animation for the snowball ammo. */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim Player" )
-	UAnimSequence* mNobeliskWeaponIdlePoseOverride;
+	TObjectPtr<UAnimSequence> mNobeliskWeaponIdlePoseOverride;
 };
 
 
@@ -69,7 +69,7 @@ class FACTORYGAME_API UFGAnimPlayer1p : public UFGAnimPlayer
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
-	USkeletalMeshComponent* mSkeletalmeshComponent;
+	TObjectPtr<USkeletalMeshComponent> mSkeletalmeshComponent;
 	
 	UPROPERTY(BlueprintReadOnly)
 	bool mIsPlayerSlidingCached;
@@ -178,7 +178,7 @@ protected:
 	FRotator mIKFootRRotationOffset;
 
 	UPROPERTY(BlueprintReadOnly)
-	UAnimSequence* mEquipmentIdlePose;
+	TObjectPtr<UAnimSequence> mEquipmentIdlePose;
 
 	// Ladder
 	UPROPERTY(BlueprintReadOnly)

@@ -16,5 +16,5 @@ public:
     TArray<UConfigGeneratedStruct*> GetAllGeneratedStructs() const;
 private:
     UPROPERTY()
-    TMap<FString, UConfigGeneratedStruct*> GeneratedStructs;
+    TMap<FString, TObjectPtr<UConfigGeneratedStruct>> GeneratedStructs;
 };

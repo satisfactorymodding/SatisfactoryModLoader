@@ -6,11 +6,12 @@
 #include "FGBuildableCircuitBridge.h"
 #include "FGBuildingTagInterface.h"
 #include "OnlineIntegration/Public/LocalUserInfo.h"
+#include "Online/PlayerInfoCache.h"
 #include "FGBuildableCircuitSwitch.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnCircuitSwitchPropertyChanged );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnCircuitSwitchBuildingTagChanged, bool, hasTag, const FString&, tag );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCircuitSwitchLastEditedByChanged, const TArray < FLocalUserNetIdBundle> &, lastEditedBy );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCircuitSwitchLastEditedByChanged, const  FPlayerInfoHandle &, lastEditedBy );
 
 /**
  * Building that connects two circuits, allowing them to act as one single circuit when the switch is turned on.
@@ -26,6 +27,7 @@ public:
 
 	//~ Begin AActor interface
 	virtual void BeginPlay() override;
+	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	//~ End AActor interface
 	
@@ -34,10 +36,8 @@ public:
 	virtual void SetHasBuildingTag_Implementation( bool hasBuildingTag ) override;
 	virtual FString GetBuildingTag_Implementation() const override { return mBuildingTag; }
 	virtual void SetBuildingTag_Implementation( const FString& buildingTag ) override;
-	//<FL>[KonradA]
-	virtual void SetLastEditedBy_Implementation( const TArray< FLocalUserNetIdBundle >& lastEditedBy ) override;
-	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy_Implementation() const;
-	//</FL>
+	virtual void SetLastEditedByHandle_Implementation( const FPlayerInfoHandle& lastEditedBy ) override;
+	virtual FPlayerInfoHandle GetLastEditedBy_Implementation() const override;
 	//~ End FGBuildingTagInterface
 
 	/**
@@ -81,6 +81,8 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "CircuitSwitch" )
 	FOnCircuitSwitchLastEditedByChanged mOnLastEditedByChanged;
 
+	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
+
 protected:
 	/**
 	 * Called when the switch is turned on or off.
@@ -101,7 +103,7 @@ protected:
 	void OnBuildingTagChanged( bool hasTag, const FString& tag );
 	
 	UFUNCTION( BlueprintImplementableEvent, Category = "CircuitSwitch" )
-	void OnLastEditedByChanged( const TArray< FLocalUserNetIdBundle >& lastEditedBy );
+	void OnLastEditedByChanged( const FPlayerInfoHandle& lastEditedBy );
 
 private:
 	UFUNCTION()
@@ -132,6 +134,6 @@ private:
 
 	//<FL>[KonradA]
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_LastEditedBy )
-	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	FPlayerInfoHandle mLastEditedBy;
 	//</FL>
 };

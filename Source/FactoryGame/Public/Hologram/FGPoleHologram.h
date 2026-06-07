@@ -40,6 +40,8 @@ public:
 	virtual void ResetBuildSteps();
 	// End AFGHologram interface
 
+	FORCEINLINE class UStaticMeshComponent* GetPoleMesh() const { return mPoleMeshComponent; }
+
 	/** Set the height of the pole, useful for parent holograms. */
 	void SetPoleHeight( float height );
 
@@ -69,7 +71,7 @@ protected:
 
 	/** The pole mesh. */
 	UPROPERTY()
-	class UStaticMeshComponent* mPoleMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mPoleMeshComponent;
 	
 private:
 	UPROPERTY( ReplicatedUsing = OnRep_PoleVariationIndex, CustomSerialization )

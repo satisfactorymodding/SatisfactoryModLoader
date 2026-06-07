@@ -319,16 +319,16 @@ protected:
 
 	/** Reference to the weapon's mesh. Set it in construction script of BP. */
 	UPROPERTY( BlueprintReadWrite)
-	USkeletalMeshComponent* mWeaponMesh;
+	TObjectPtr<USkeletalMeshComponent> mWeaponMesh;
 	
 	UPROPERTY( BlueprintReadOnly )
-	USkeletalMeshComponent* mCurrentMagazineMesh;
+	TObjectPtr<USkeletalMeshComponent> mCurrentMagazineMesh;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	FName mEjectMagazineBoneName;
 
 	UPROPERTY( BlueprintReadOnly )
-	USkeletalMeshComponent* mEjectMagazineMesh;
+	TObjectPtr<USkeletalMeshComponent> mEjectMagazineMesh;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Stats" )
 	float mDispersionOnNoMagazine = 5.0f;
@@ -350,11 +350,11 @@ protected:
 
 	/** Sound played when reloading */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Sound" )
-	UAkAudioEvent* mReloadSound;
+	TObjectPtr<UAkAudioEvent> mReloadSound;
 
 	/** Object created from the ammo class, required to call ammo types functionalities */
 	UPROPERTY( ReplicatedUsing = OnRep_CurrentMagazineObject )
-	UFGAmmoType* mCurrentMagazineObject;
+	TObjectPtr<UFGAmmoType> mCurrentMagazineObject;
 
 	UPROPERTY( BlueprintReadWrite, Category = "AmmoSwitching" )
 	bool mAmmoSwitchUsedRadialMenu = false;

@@ -27,7 +27,7 @@ public:
 	void AssignBoundingBox( class UBoxComponent* boxComponent );
 
 	UPROPERTY( )
-	UBoxComponent* mBoundingBox;
+	TObjectPtr<UBoxComponent> mBoundingBox;
 
 	
 };

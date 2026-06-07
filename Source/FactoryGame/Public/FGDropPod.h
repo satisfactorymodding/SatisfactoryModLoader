@@ -59,10 +59,10 @@ struct FACTORYGAME_API FFGCachedConnectedWire
 	GENERATED_BODY()
 	
 	UPROPERTY( EditAnywhere, Category = "Wire", SaveGame )
-	class AFGBuildableWire* mConnectedWire{};
+	TObjectPtr<class AFGBuildableWire> mConnectedWire{};
 
 	UPROPERTY( EditAnywhere, Category = "Wire", SaveGame )
-	class UFGCircuitConnectionComponent* mOtherConnection{};
+	TObjectPtr<class UFGCircuitConnectionComponent> mOtherConnection{};
 };
 
 UCLASS( Blueprintable )
@@ -90,7 +90,7 @@ public:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	// End IFGSignificanceInterface
 
 	// Begin IFGConditionalReplicationInterface
@@ -227,15 +227,15 @@ protected:
 	
 	/** Power connection for this drop pod */
 	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
-	UFGPowerConnectionComponent* mPowerConnectionComponent;
+	TObjectPtr<UFGPowerConnectionComponent> mPowerConnectionComponent;
 
 	/** Power info for this drop pod */
 	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
-	UFGPowerInfoComponent* mPowerInfoComponent;
+	TObjectPtr<UFGPowerInfoComponent> mPowerInfoComponent;
 
 	/** Inventory component containing the reward */
 	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
-	UFGInventoryComponent* mInventoryComponent;
+	TObjectPtr<UFGInventoryComponent> mInventoryComponent;
 
 	/** True if we have already spawned the debris around the drop pod, false otherwise */
 	UPROPERTY( VisibleInstanceOnly, Category = "Drop Pod", SaveGame )
@@ -250,10 +250,10 @@ protected:
 
 	/** Players currently interacting with the drop pod */
 	UPROPERTY( VisibleInstanceOnly, Category = "Drop Pod" )
-	TArray<AFGCharacterPlayer*> mInteractingPlayers;
+	TArray<TObjectPtr<AFGCharacterPlayer>> mInteractingPlayers;
 
 	UPROPERTY( VisibleInstanceOnly, Category = "Drop Pod", SaveGame )
-	TArray<AFGItemPickup_Spawnable*> mSpawnedPickups;
+	TArray<TObjectPtr<AFGItemPickup_Spawnable>> mSpawnedPickups;
 
 	/** Cached on lost significance when we disconnect the cables from the drop pod */
 	UPROPERTY( VisibleInstanceOnly, Category = "Drop Pod", SaveGame )

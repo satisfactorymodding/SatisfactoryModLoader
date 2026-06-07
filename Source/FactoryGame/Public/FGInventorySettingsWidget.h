@@ -19,7 +19,7 @@ class FACTORYGAME_API UFGInventorySettingsWidget : public UFGUserWidget
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings, meta = (ExposeOnSpawn = true))
-	class AFGEquipment* mEquipment;
+	TObjectPtr<class AFGEquipment> mEquipment;
 
 	UPROPERTY( BlueprintCallable, BlueprintAssignable, Category = Settings )
 	FOnInventorySettingsWidgetClosed OnInventorySettingsWidgetClosed;

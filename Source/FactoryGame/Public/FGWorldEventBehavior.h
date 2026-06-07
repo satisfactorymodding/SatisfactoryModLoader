@@ -43,7 +43,7 @@ protected:
 
 private:
 	UPROPERTY()
-	class AFGWorldEventActor* mWorldEventActor;
+	TObjectPtr<class AFGWorldEventActor> mWorldEventActor;
 };
 
 /**

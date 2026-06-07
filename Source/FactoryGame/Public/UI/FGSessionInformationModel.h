@@ -56,11 +56,27 @@ public:
 	UFUNCTION()
 	void SetPlatformAvatarURL( FString AvatarURL );
 
-	void AddPlayerToSession(AFGPlayerState* inPlayerState);
-	void RemovePlayerFromSession(AFGPlayerState* inPlayerState);
+	// <FL> [BGR] Set the platform name of the session host
+	UFUNCTION()
+	void SetPlatformPlayerName( FString PlayerName );
+
+	void AddPlayerToSession( APlayerState* inPlayerState );
+	void RemovePlayerFromSession( APlayerState* inPlayerState );
+
+	UFUNCTION( BlueprintPure, FieldNotify )
+	bool IsGameModeEnabled() const
+	{
+		return !FMath::IsNearlyEqual( mEnergyCostMultiplier, 1.0f, 0.01f ) or
+		       !FMath::IsNearlyEqual( mPartsCostMultiplier, 1.0f, 0.01f ) or
+		       !FMath::IsNearlyEqual( mSpacePartsCostMultiplier, 1.0f, 0.01f ) or
+		       mNodeRandomization != ENodeRandomizationMode::NRM_None or
+		       mNodePuritySettings != ENodePuritySettings::NPS_NoChange;
+	}
+
 
 	static TArray< FCustomOnlineSessionSetting > GetInitialSessionSettingsFromSaveHeader( const FSaveHeader& saveHeader );
-	static TArray< FCustomOnlineSessionSetting > GetInitialSessionSettingsForNewGame( const FString& sessionName, bool isCreativeModeEnabled );
+	static TArray< FCustomOnlineSessionSetting > GetInitialSessionSettingsForNewGame(
+		const FString& sessionName, bool isCreativeModeEnabled, TScriptInterface< IFGAdvancedGameSettingsInterface > );
 
 protected:
 	
@@ -72,6 +88,7 @@ protected:
 	
 
 	void SetCreativeModeEnabled( bool isEnabled );
+	void UpdateCurrentSessionMemberCount();
 
 #if( PLATFORM_PS5 || PLATFORM_XSX )
 public:
@@ -142,11 +159,35 @@ protected:
 	UPROPERTY( BlueprintReadOnly, FieldNotify )
 	FName mOriginLocalPlatformName;
 
+	//<FL>[BGR] Platform name of the host
+	UPROPERTY( BlueprintReadOnly, FieldNotify )
+	FString mPlatformPlayerName;
+	//</FL>
+
 	//<FL>[MartinC] Platform avatar URL of the host
 	UPROPERTY( BlueprintReadOnly, FieldNotify )
 	FString mPlatformAvatarURL;
 	//</FL>
 
+
+	UPROPERTY( BlueprintReadOnly, FieldNotify )
+	float mEnergyCostMultiplier = 1.0f;
+
+	UPROPERTY( BlueprintReadOnly, FieldNotify )
+	float mPartsCostMultiplier = 1.0f;;
+
+	UPROPERTY( BlueprintReadOnly, FieldNotify )
+	float mSpacePartsCostMultiplier = 1.0f;;
+
+	UPROPERTY( BlueprintReadOnly, FieldNotify )
+	ENodeRandomizationMode mNodeRandomization = ENodeRandomizationMode::NRM_None;
+
+	UPROPERTY( BlueprintReadOnly, FieldNotify )
+	ENodePuritySettings mNodePuritySettings = ENodePuritySettings::NPS_NoChange;
+
+	UPROPERTY( BlueprintReadOnly, FieldNotify )
+	int32 mNodeRandomizationSeed;
+	
 	UPROPERTY( BlueprintReadOnly, FieldNotify )
 	TSubclassOf<UFGSchematic> mActiveSchematic;
 	

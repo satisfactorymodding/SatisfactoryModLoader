@@ -127,7 +127,7 @@ private:
 
 	/** List of spawned gift bundles. */
 	UPROPERTY( Transient )
-	TArray< class AFGFallingGiftBundle* > mSpawnedGiftBundles;
+	TArray< TObjectPtr<class AFGFallingGiftBundle> > mSpawnedGiftBundles;
 
 	/** List of gift bundle classes that are not allowed to spawn. Their weight will still be part of the random gift selection, they just won't spawn if they get selected. */
 	UPROPERTY( Transient )

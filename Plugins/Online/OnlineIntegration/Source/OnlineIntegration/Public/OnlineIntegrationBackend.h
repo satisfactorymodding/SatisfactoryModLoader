@@ -95,6 +95,11 @@ public:
 		CrossplayGroup = Group;
 	}
 
+	FORCEINLINE bool ShouldReceiveAchievementStats() const
+	{
+		return !bSuppressAchievements;
+	}
+
 	FOnBackendConnectionStatusChanged OnBackendConnectionStatusChanged; // <FL> [TranN] Handle disconnect
 protected:
 	/**
@@ -138,6 +143,13 @@ protected:
 	 */
 	UPROPERTY(Config)
 	TArray<FGameplayTag> LoginTags;
+
+
+	/**
+	* Optionally on some backends we might not want to send achievement stats
+	*/
+	UPROPERTY(Config)
+	bool bSuppressAchievements;
 
 	/**
 	 *  Assigns a crossplay group which will be passed to the sessioninformation. Games can then filter to allow only sessions of the same group

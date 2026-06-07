@@ -45,7 +45,7 @@ public:
 	bool IsOccupied() const;
 
 	UPROPERTY()
-	class AFGResourceNodeBase* mResourceNode;
+	TObjectPtr<class AFGResourceNodeBase> mResourceNode;
 
 	/** How many times have an actor representation with the underlying resource node been added by a radar scan. Used to keep track of when we can remove this representation */
 	int32 mScanCount{0};

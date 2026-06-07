@@ -23,11 +23,11 @@ struct FActorBuiltData
 	
 	/** The total amount of built actors per player */
 	UPROPERTY( SaveGame )
-	TMap< class AFGPlayerState*, int64 > BuiltPerPlayer;
+	TMap< TObjectPtr<class AFGPlayerState>, int64 > BuiltPerPlayer;
 
 	/** The total amount of dismantled actors per player */
 	UPROPERTY( SaveGame )
-	TMap< class AFGPlayerState*, int64 > DismantledPerPlayer;
+	TMap< TObjectPtr<class AFGPlayerState>, int64 > DismantledPerPlayer;
 	
 	/** The current amount of built actors that is in the world */
 	UPROPERTY( SaveGame )
@@ -133,7 +133,7 @@ private:
 
 	/** How many items we have manually crafted */
 	UPROPERTY( SaveGame )
-	TMap< AFGPlayerState*, FMappedItemAmount > mItemsManuallyCraftedCount;
+	TMap< TObjectPtr<AFGPlayerState>, FMappedItemAmount > mItemsManuallyCraftedCount;
 
 	/** How many actors of each class we have built/dismantled */
 	UPROPERTY( SaveGame )
@@ -144,5 +144,5 @@ private:
 
 	/** How many items we picked up. This only handles placed items in the world. Not player dropped items */
 	UPROPERTY( SaveGame )
-	TMap< AFGPlayerState*, FMappedItemAmount > mItemsPickedUp;
+	TMap< TObjectPtr<AFGPlayerState>, FMappedItemAmount > mItemsPickedUp;
 };

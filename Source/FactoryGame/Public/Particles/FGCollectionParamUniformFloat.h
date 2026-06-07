@@ -25,7 +25,7 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-	UMaterialParameterCollection* Collection;
+	TObjectPtr<UMaterialParameterCollection> Collection;
 
 	UPROPERTY(EditAnywhere)
 	FName WindDirectionParamName;

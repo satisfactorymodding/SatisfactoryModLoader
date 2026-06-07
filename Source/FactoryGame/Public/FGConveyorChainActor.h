@@ -18,7 +18,7 @@ struct FACTORYGAME_API FConveyorMonitorChainData
 	GENERATED_BODY()
 
 	UPROPERTY()
-	class AFGBuildableConveyorMonitor* ConveyorMonitor = nullptr;
+	TObjectPtr<class AFGBuildableConveyorMonitor> ConveyorMonitor = nullptr;
 	float OffsetOnChain = -1.f;
 	int32 IndexOfNextItem = INDEX_NONE;
 };
@@ -80,7 +80,9 @@ public:
 	void RegisterWithSubsystem();
 
 	// When a conveyor is removed we are notified. This will cause the chain to self delete. Copying its information back onto the belts the remain
-	void RevertChainActor();
+	// Note: This function is not safe to call directly. Use AFGBuildableSubsystem::ForceDestroyChainActor instead. Calling this function when the chain actor
+	// is part of a conveyor tick group will result in a crash with dangling pointer to the destroyed chain actor.
+	void RevertChainActor_Unsafe();
 	
 	// Called by the Subsystem when this belt registers on begin play
 	bool BuildChain();
@@ -222,17 +224,17 @@ private:
 	friend class AFGConveyorItemSubsystem;
 	
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mSceneComponent;
+	TObjectPtr<USceneComponent> mSceneComponent;
 	
 	UPROPERTY( EditAnywhere )
-	USplineComponent* mSplineComponent;
+	TObjectPtr<USplineComponent> mSplineComponent;
 
 	UPROPERTY()
 	TArray< FConveyorChainSplineSegment > mChainSplineSegments;
 
 	// Quick way of resolving conveyors to their segment so the renderer can quickly get all the items for a given belt/lift
 	UPROPERTY()
-	TMap< AFGBuildableConveyorBase*, int32 > mConveyorToSplineSegment; 
+	TMap< TObjectPtr<AFGBuildableConveyorBase>, int32 > mConveyorToSplineSegment; 
 
 	// This array size is set on initialization of the chain and will never resize
 	UPROPERTY()
@@ -240,19 +242,19 @@ private:
 	
 	// The conveyor at the front of the chain ie. The one that will be grabbed from by a buildable
 	UPROPERTY()
-	class AFGBuildableConveyorBase* mFirstConveyor = nullptr;
+	TObjectPtr<class AFGBuildableConveyorBase> mFirstConveyor = nullptr;
 
 	// The conveyor at the end of a chain ie. The one that will be pulling from a buildable
 	UPROPERTY()
-	class AFGBuildableConveyorBase* mLastConveyor = nullptr;
+	TObjectPtr<class AFGBuildableConveyorBase> mLastConveyor = nullptr;
 
 	// The "first" connection of the "last" conveyor. That is, the connection component that grabs items from buildings onto the chain
 	UPROPERTY()
-	class UFGFactoryConnectionComponent* mConnection0;
+	TObjectPtr<class UFGFactoryConnectionComponent> mConnection0;
 
 	// The "last" connection of the "first" conveyor. That is, the connection component that buildings will pull items off the chain from
 	UPROPERTY()
-	class UFGFactoryConnectionComponent* mConnection1;
+	TObjectPtr<class UFGFactoryConnectionComponent> mConnection1;
 
 	UPROPERTY( Replicated)
 	float mTotalLength;
@@ -275,25 +277,25 @@ private:
 
 	// We use the subsystem a lot so cache it so we don't need frequent Gets
 	UPROPERTY()
-	class AFGConveyorChainSubsystem* mConveyorChainSubsystem;
+	TObjectPtr<class AFGConveyorChainSubsystem> mConveyorChainSubsystem;
 
 	// Map of connections to the current replication index of removals
 	UPROPERTY()
-	TMap< UNetConnection*, int32 > mConnectionToBaseStateRemovalIndex;
+	TMap< TObjectPtr<UNetConnection>, int32 > mConnectionToBaseStateRemovalIndex;
 
 	// Map of connections to the current replication index of additions
 	UPROPERTY()
-	TMap< UNetConnection*, int32 > mConnectionToBaseStateAdditionIndex;
+	TMap< TObjectPtr<UNetConnection>, int32 > mConnectionToBaseStateAdditionIndex;
 
 	// For quicker iteration store the connection map keys here
 	UPROPERTY()
-	TArray< UNetConnection* > mNetConnectionKeys;
+	TArray< TObjectPtr<UNetConnection> > mNetConnectionKeys;
 
 	// Cached list of Conveyors that "belong" to this chain. This is used client side as conveyors are added and removed
 	// we do this so we can assign a chain to a segment when its actually available. This in turn is used by the conveyor
 	// item subsystem to render the items
 	UPROPERTY()
-	TArray< class AFGBuildableConveyorBase* > mClientAvailableConveyors;
+	TArray< TObjectPtr<class AFGBuildableConveyorBase> > mClientAvailableConveyors;
 
 	// Size (num) of the chain item array. Cached to avoid numberous .Num() calls since this never changes
 	UPROPERTY( )

@@ -70,7 +70,10 @@ public:
 	TArray< float > mPurityMultiplier;
 
 	UPROPERTY( Config, EditDefaultsOnly, Category = "Resources" )
-	TSoftClassPtr< class UFGResourceDescriptor > mWaterResourceDescriptor; 
+	TSoftClassPtr< class UFGResourceDescriptor > mWaterResourceDescriptor;
+
+	UPROPERTY( Config, EditDefaultsOnly, Category = "Physics" )
+	TSoftObjectPtr<class UPhysicalMaterial> mWaterPhysicalMaterial;
 
 	/** Mesh used on items that do not have their own specified. */
 	UPROPERTY( Config, EditDefaultsOnly, Category = "Buildable" )

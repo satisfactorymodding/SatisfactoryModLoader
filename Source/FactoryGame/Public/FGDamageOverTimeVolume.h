@@ -40,5 +40,5 @@ protected:
 
 	/** The component that will do the damage to actors */
 	UPROPERTY( VisibleInstanceOnly, Category="Damage")
-	class UFGDotComponent* mDotComponent;
+	TObjectPtr<class UFGDotComponent> mDotComponent;
 };

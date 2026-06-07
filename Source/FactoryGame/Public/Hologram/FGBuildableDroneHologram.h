@@ -41,5 +41,5 @@ protected:
 protected:
 	/** The pipeline we snapped to. */
 	UPROPERTY( Replicated )
-	class AFGBuildableDroneStation* mSnappedStation;
+	TObjectPtr<class AFGBuildableDroneStation> mSnappedStation;
 };

@@ -21,7 +21,7 @@ enum class EEvents : uint8
 	EV_None						UMETA( DisplayName = "None"),
 	
 	EV_Christmas				UMETA( DisplayName = "Christmas"),
-	EV_Birthday					UMETA( DisplayName = "Satisfactory Birthday"),
+	EV_Birthday					UMETA( DisplayName = "Anniversary"),
 	EV_CSSBirthday				UMETA( DisplayName = "CSS Birthday"),
 	EV_FirstOfApril				UMETA( DisplayName = "First Of April"),
 
@@ -97,7 +97,7 @@ struct FACTORYGAME_API FPlayerStateSetWrapper
 	GENERATED_BODY()
 	
 	UPROPERTY( SaveGame )
-	TSet< class AFGPlayerState* > PlayerStates;
+	TSet< TObjectPtr<class AFGPlayerState> > PlayerStates;
 };
 
 /**
@@ -111,14 +111,18 @@ class FACTORYGAME_API AFGEventSubsystem : public AFGSubsystem, public IFGSaveInt
 public:	
 	AFGEventSubsystem();
 
-	//~ Begin AActor interface
-	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-	//~ End AActor interface
+	
+	// Begin AActor interface
+	virtual void BeginPlay() override;
+	// End AActor interface
 
 	// Begin IFGSaveInterface
 	virtual bool ShouldSave_Implementation() const override { return true; }
 	// End IFSaveInterface
+
+	/** Called by the game state to initialize the event subsystem */
+	void Init();
 
 	static AFGEventSubsystem* Get( UWorld* world );
 	
@@ -126,7 +130,7 @@ public:
 	static AFGEventSubsystem* GetEventSubsystem( UObject* worldContext );
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Events" )
-	const TArray< EEvents >& GetCurrentEvents() const;
+	const TArray<EEvents>& GetCurrentEvents() const { return mCurrentEvents; }
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Events" )
 	bool IsEventActive( EEvents event ) const { return GetCurrentEvents().Contains( event ); }
@@ -146,8 +150,8 @@ public:
 
 	void OnPlayerOpenedCalendar( class AFGCharacterPlayer* player, class AFGBuildableCalendar* calendar );
 
-	const TSet< class AFGPlayerState* >& GetPlayersThatHaveSeenCalendar( TSubclassOf< UFGCalendarRewards > calendar );
-	const TSet< class AFGPlayerState* >& GetPlayersThatHaveSeenCurrentCalendar();
+	const TSet< TObjectPtr<class AFGPlayerState> >& GetPlayersThatHaveSeenCalendar( TSubclassOf< UFGCalendarRewards > calendar );
+	const TSet< TObjectPtr<class AFGPlayerState> >& GetPlayersThatHaveSeenCurrentCalendar();
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Events|Calendar" )
 	TSubclassOf< UFGCalendarRewards > GetCalendarRewardsClass() const { return mCalendarRewardsClass; }
@@ -160,13 +164,11 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Events" )
 	class AFGGiftRainSpawner* GetRandomActiveGiftRainSpawner() const;
 
-	static bool GetOverridenEventDateTime( EEvents event, FDateTime& out_OverriddenDateTime );
-
 	bool ShouldRunEvent( const FSimpleDate& Begin, const FSimpleDate& End, const FDateTime& now );
 
 	TSubclassOf<class AActor> GetCalendarClassForCurrentEvent();
 	TSubclassOf<class AFGBuildable> GetHubMiniGameClassForCurrentEvent();
-	
+	FORCEINLINE FDateTime GetCurrentEventDateTime() const { return mCurrentEventDateTime; }
 protected:
 	/** Called from beginplay for each active event. */
 	virtual void OnBeginEvent_Native( EEvents event);
@@ -175,9 +177,7 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Events" )
 	void OnBeginEvent( EEvents event );
 
-private:
-	void CacheActiveEvents();
-	
+	void PopulateCurrentEvents();
 public:
 	UPROPERTY( Replicated )
 	TArray< EEvents > mCurrentEvents;
@@ -217,7 +217,8 @@ private:
 
 	/** Map of active gift rain spawners. */
 	UPROPERTY()
-	TMap< EEvents, class AFGGiftRainSpawner* > mActiveGiftRainSpawners;
+	TMap< EEvents, TObjectPtr<class AFGGiftRainSpawner> > mActiveGiftRainSpawners;
+	FDateTime mCurrentEventDateTime;
 };
 
 UCLASS( config = EditorPerProjectUserSettings, meta = ( DisplayName = "Satisfactory Local Event settings" ) )

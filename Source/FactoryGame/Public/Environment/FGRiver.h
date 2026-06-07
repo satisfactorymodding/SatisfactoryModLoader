@@ -31,7 +31,7 @@ public:
 	float GetRiverDepth() const 				{ return 1000; }
 
 	// Begin IFGSignificanceInterface
-	virtual float GetSignificanceRange() override { return 20000; }
+	virtual float GetSignificanceRange_Implementation() const override { return 20000; }
 	// End
 	
 protected:
@@ -48,7 +48,7 @@ protected:
 	void SetupMaterialValues(UMaterialInstanceDynamic* Material = nullptr);
 
 	/* Set Red vertex color on the mesh component based on spline Z scale / 100. */
-	void ApplyVertexColors(TArray<USplineMeshComponent*>& MeshComponents);
+	void ApplyVertexColors(TArray<TObjectPtr<USplineMeshComponent>>& MeshComponents);
 
 	FORCEINLINE float GetRiverLocationHeightOffset( FVector WorldLocation, float IntensityOnSpline) const
 	{
@@ -73,17 +73,17 @@ public:
 private:
 
 	UPROPERTY()
-	TArray<UBoxComponent*> mOverlappingShapes;
+	TArray<TObjectPtr<UBoxComponent>> mOverlappingShapes;
 	
 	UPROPERTY(VisibleAnywhere)
-	TArray<USplineMeshComponent*> mSplineMeshComponents;
+	TArray<TObjectPtr<USplineMeshComponent>> mSplineMeshComponents;
 	
 protected:
 	UPROPERTY( BlueprintReadOnly )
-	USplineComponent* mSplineComponent;
+	TObjectPtr<USplineComponent> mSplineComponent;
 
 	UPROPERTY(EditDefaultsOnly)
-	UStaticMesh* mSplineMesh;
+	TObjectPtr<UStaticMesh> mSplineMesh;
 	
 	UPROPERTY(EditAnywhere)
 	float mSegmentLengthMultiplier;
@@ -102,7 +102,7 @@ protected:
 	
 	/* Material used by the spline mesh component */
 	UPROPERTY(EditAnywhere, Category = "Art direction")
-	UMaterialInterface* mBaseMaterial;
+	TObjectPtr<UMaterialInterface> mBaseMaterial;
 
 	UPROPERTY(EditAnywhere, Category = "Art direction")
 	TMap< FString, float > mScalarParameters;
@@ -117,7 +117,7 @@ protected:
 	float BuoyancyMaxIntensity;
 
 	UPROPERTY(EditAnywhere)
-	class UMaterialParameterCollection* mDataCollection;
+	TObjectPtr<class UMaterialParameterCollection> mDataCollection;
 	
 	UPROPERTY(EditInstanceOnly,Category="Visuals")
 	bool bFadeIn = false;
@@ -144,7 +144,7 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	
 	UPROPERTY(VisibleAnywhere)
-	UMaterialInstanceDynamic* mEditorOnlyMaterialInstance;
+	TObjectPtr<UMaterialInstanceDynamic> mEditorOnlyMaterialInstance;
 	
 	bool bWasSelected;
 

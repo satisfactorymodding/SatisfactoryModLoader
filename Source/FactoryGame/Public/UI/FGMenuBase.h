@@ -35,5 +35,5 @@ protected:
 protected:
 	/** Cached switcher owning this widget */
 	UPROPERTY()
-	class UFGWidgetSwitcher* mCachedOwner;
+	TObjectPtr<class UFGWidgetSwitcher> mCachedOwner;
 };

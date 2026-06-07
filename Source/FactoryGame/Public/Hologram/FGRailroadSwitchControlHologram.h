@@ -28,8 +28,11 @@ public:
 	 */
 	void SetHologramLocationAndRotationFromConnection( class UFGRailroadTrackConnectionComponent* controlledConnection );
 
-	/** The the controlled connection, might be null if SetHologramLocationAndRotationFromConnection has not been called. */
+	/** The controlled connection might be null if SetHologramLocationAndRotationFromConnection has not been called. */
 	class UFGRailroadTrackConnectionComponent* GetControlledConnection() const { return mControlledConnection; }
+	
+	/** Replace the controlled connection explicitly, useful for blueprint auto connect which create switch controls without having a track hologram. */
+	void ReplaceControlledConnection( class UFGRailroadTrackConnectionComponent* newControlledConnection );
 	
 protected:
 	// Begin AFGHologram
@@ -41,5 +44,5 @@ protected:
 
 private:
 	UPROPERTY( CustomSerialization )
-	class UFGRailroadTrackConnectionComponent* mControlledConnection;
+	TObjectPtr<class UFGRailroadTrackConnectionComponent> mControlledConnection;
 };

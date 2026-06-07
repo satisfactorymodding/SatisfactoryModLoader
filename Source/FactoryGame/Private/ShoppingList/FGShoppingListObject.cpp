@@ -12,6 +12,7 @@ void UFGShoppingListObject::ClearAmount(){ }
 void UFGShoppingListObject::Native_OnAmountUpdated(){ }
 UObject* UFGShoppingListObject::GetIdentifierObject() const{ return nullptr; }
 void UFGShoppingListObject::AddCost(TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost) const{ }
+FPlayerInfoHandle UFGShoppingListObject::Internal_GetLastEditedBy() const{ return FPlayerInfoHandle(); }
 void UFGShoppingListObject_Class::Init(TSubclassOf<  UObject > subClass, int32 amount){ }
 void UFGShoppingListObject_Class::SetSubClass(TSubclassOf<  UObject > subClass){ }
 UObject* UFGShoppingListObject_Class::GetIdentifierObject() const{ return nullptr; }
@@ -24,3 +25,5 @@ UObject* UFGShoppingListObject_Object::GetIdentifierObject() const{ return nullp
 void UFGShoppingListObject_Object::Native_OnAmountUpdated(){ }
 FText UFGShoppingListObject_Object::Internal_GetShoppingListName() const{ return FText(); }
 void UFGShoppingListObject_Object::AddCost(TMap<TSubclassOf<class UFGItemDescriptor>, int32>& totalCost) const{ }
+bool UFGShoppingListObject_Object::Internal_CanContainUGC() const{ return Super::Internal_CanContainUGC(); }
+FPlayerInfoHandle UFGShoppingListObject_Object::Internal_GetLastEditedBy() const{ return Super::Internal_GetLastEditedBy(); }

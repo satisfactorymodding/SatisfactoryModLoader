@@ -42,7 +42,7 @@ private:
 
 public:	
 	UPROPERTY()
-	class UHierarchicalInstancedStaticMeshComponent* mInstanceComponent;
+	TObjectPtr<class UHierarchicalInstancedStaticMeshComponent> mInstanceComponent;
 
 	TSet< FSignHandle* > mSignHandles;
 };

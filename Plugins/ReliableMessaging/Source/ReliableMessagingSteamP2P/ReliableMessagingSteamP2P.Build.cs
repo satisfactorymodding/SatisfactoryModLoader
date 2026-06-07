@@ -22,6 +22,7 @@ public class ReliableMessagingSteamP2P : ModuleRules
                 "Slate",
                 "SlateCore",
                 "Sockets",
+                "GameplayTags",
                 "SteamSockets"
             }
         );

@@ -20,6 +20,7 @@
 #include "Slate/SceneViewport.h"
 #include "ThumbnailRendering/SceneThumbnailInfo.h"
 #include "ThumbnailRendering/ThumbnailManager.h"
+#include "ViewportToolbar/UnrealEdViewportToolbar.h"
 
 void SMixinBlueprintEditorViewportToolBar::Construct(const FArguments& InArgs) {
 	EditorViewport = InArgs._EditorViewport;
@@ -76,7 +77,7 @@ TSharedRef<SWidget> SMixinBlueprintEditorViewportToolBar::GeneratePreviewMenu() 
 
 FText SMixinBlueprintEditorViewportToolBar::GetCameraMenuLabel() const {
 	if(EditorViewport.IsValid()) {
-		return GetCameraMenuLabelFromViewportType(EditorViewport.Pin()->GetViewportClient()->GetViewportType());
+		return UE::UnrealEd::GetCameraSubmenuLabelFromViewportType(EditorViewport.Pin()->GetViewportClient()->GetViewportType());
 	}
 	return NSLOCTEXT("BlueprintEditor", "CameraMenuTitle_Default", "Camera");
 }
@@ -262,7 +263,7 @@ FMixinBlueprintEditorViewportClient::FMixinBlueprintEditorViewportClient(const T
 	PreviewScene->AddComponent(EditorFloorComp, FTransform::Identity);
 
 	// Turn off so that actors added to the world do not have a lifespan (so they will not auto-destroy themselves).
-	PreviewScene->GetWorld()->bBegunPlay = false;
+	PreviewScene->GetWorld()->SetBegunPlay(false);
 	// Set up the default ambient cubemap
 	PreviewScene->SetSkyCubemap(GUnrealEd->GetThumbnailManager()->AmbientCubemap);
 }

@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -267,7 +267,7 @@ protected:
 
 	// Array of actors owned by this gameplay test instance, the actors in question will be automatically removed when the test is finished
 	UPROPERTY( Transient, VisibleInstanceOnly, Category = "Gameplay Test" )
-	TArray<AActor*> mTestOwnedActors;
+	TArray<TObjectPtr<AActor>> mTestOwnedActors;
 
 	// Amount of time since this test has been started
 	float mCurrentTimeSinceTestStart;

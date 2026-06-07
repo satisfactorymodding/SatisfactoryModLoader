@@ -7,6 +7,10 @@ public class FactoryGameTarget : FactorySharedTarget
 {
     public FactoryGameTarget(TargetInfo Target) : base(Target)
     {
+	    //DefaultWarningLevel = WarningLevel.Error;
+	    //bWarningsAsErrors = true;
+	    //CppCompileWarningSettings.DeprecationWarningLevel = WarningLevel.Error;
+
 	    Type = TargetType.Game;
 
 	    // Compile automation tests for the test game builds

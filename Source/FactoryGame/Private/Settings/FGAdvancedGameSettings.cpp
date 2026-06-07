@@ -10,8 +10,8 @@ FString IFGAdvancedGameSettingsInterface::SerializeSettingsToString() const{ ret
 void IFGAdvancedGameSettingsInterface::DeserializeSettingsFromString(const FString& serializedString){ }
 void UFGAdvancedGameSettings::Initialize(FSubsystemCollectionBase& Collection){ }
 bool UFGAdvancedGameSettings::DoesSupportWorldType(const EWorldType::Type WorldType) const{ return Super::DoesSupportWorldType(WorldType); }
-void UFGAdvancedGameSettings::GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const{ }
-void UFGAdvancedGameSettings::GetAllUserSettingsMap(TMap<FString, UFGUserSettingApplyType*>& OutUserSettings) const{  }
+void UFGAdvancedGameSettings::GetAllUserSettings(TArray<TObjectPtr<UFGUserSettingApplyType>>& OutUserSettings) const{ }
+void UFGAdvancedGameSettings::GetAllUserSettingsMap(TMap<FString, TObjectPtr<UFGUserSettingApplyType>>& OutUserSettings) const{ }
 UFGUserSettingApplyType* UFGAdvancedGameSettings::FindUserSetting(const FString& SettingId) const{ return nullptr; }
 bool UFGAdvancedGameSettings::HasAnyUnsavedOptionValueChanges() const{ return bool(); }
 bool UFGAdvancedGameSettings::HasPendingApplyOptionValue(const FString& cvar) const{ return bool(); }

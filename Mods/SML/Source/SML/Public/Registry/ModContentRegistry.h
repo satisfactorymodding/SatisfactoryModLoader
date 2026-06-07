@@ -41,7 +41,7 @@ public:
 
 	/** Object that was registered */
     UPROPERTY(BlueprintReadWrite, Category = "Mod Content Registry")
-    UObject* RegisteredObject{};
+    TObjectPtr<UObject> RegisteredObject{};
 
 	/** Flags set on this object. */
 	UPROPERTY(BlueprintReadWrite, Category = "Mod Content Registry", meta = ( Bitmask, BitmaskEnum = "/Script/SML.EGameObjectRegistrationFlags" ))
@@ -49,7 +49,7 @@ public:
 	
 	/** List of all objects that reference this one */
 	UPROPERTY(BlueprintReadWrite, Category = "Mod Content Registry")
-	TArray<UObject*> ReferencedBy;
+	TArray<TObjectPtr<UObject>> ReferencedBy;
 
 	FORCEINLINE bool HasAnyFlags( EGameObjectRegistrationFlags InFlags ) const
 	{
@@ -123,7 +123,7 @@ struct FPendingResourceSinkRegistration {
     EResourceSinkTrack Track;
 
 	UPROPERTY()
-    UDataTable* PointTable;
+    TObjectPtr<UDataTable> PointTable;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnGameObjectRegistered, FGameObjectRegistration, Registration );

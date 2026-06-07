@@ -22,17 +22,22 @@ void AFGBuildableDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(AFGBuildableDoor, mDoorConfiguration);
 }
 void AFGBuildableDoor::ConfigureDynamicDecoratorComponent(USceneComponent* newComponent){ }
+void AFGBuildableDoor::RemoveDecoratorSignificantComponents(){ Super::RemoveDecoratorSignificantComponents(); }
 bool AFGBuildableDoor::IsUseable_Implementation() const{ return bool(); }
 void AFGBuildableDoor::OnUse_Implementation(AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGBuildableDoor::GainedSignificance_Implementation(){ }
 void AFGBuildableDoor::LostSignificance_Implementation(){ }
+void AFGBuildableDoor::NotifyPawnBeginOverlap(APawn* pawn){ }
+void AFGBuildableDoor::NotifyPawnEndOverlap(APawn* pawn){ }
+void AFGBuildableDoor::SetDoorOverlappingWithVehicles(bool newIsDoorOverlappingWithVehicles){ }
+void AFGBuildableDoor::UpdateAutomaticDoorState(){ }
 void AFGBuildableDoor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){ }
 void AFGBuildableDoor::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex){ }
 void AFGBuildableDoor::OnRep_DoorState(){ }
 void AFGBuildableDoor::OnRep_DoorConfiguration(){ }
 void AFGBuildableDoor::SetDoorLightFeedbackState(EDoorConfiguration Config){ }
 bool AFGBuildableDoor::CanClose_Implementation(){ return bool(); }
-void AFGBuildableDoor::Update(){ }
+void AFGBuildableDoor::UpdateDoorOpenAnimation(){ }
 void AFGBuildableDoor::BeginOpening(){ }
 void AFGBuildableDoor::BeginClosing(){ }
 void AFGBuildableDoor::FinishedMoving(bool shouldBlock){ }

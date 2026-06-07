@@ -255,27 +255,27 @@ protected:
 
 	/** Our input inventory, shared for all input connections. */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mInputInventory;
+	TObjectPtr<class UFGInventoryComponent> mInputInventory;
 
 	/** Cached factory input connections */
 	UPROPERTY()
-	TArray<class UFGFactoryConnectionComponent*> mFactoryInputConnections;
+	TArray<TObjectPtr<class UFGFactoryConnectionComponent>> mFactoryInputConnections;
 
 	/** Cached input pipe connections */
 	UPROPERTY()
-	TArray< class UFGPipeConnectionComponent* > mPipeInputConnections;
+	TArray< TObjectPtr<class UFGPipeConnectionComponent> > mPipeInputConnections;
 
 	/** Cached factory output connections */
 	UPROPERTY()
-	TArray<class UFGFactoryConnectionComponent*> mFactoryOutputConnections;
+	TArray<TObjectPtr<class UFGFactoryConnectionComponent>> mFactoryOutputConnections;
 
 	/** Cached output pipe connections */
 	UPROPERTY()
-	TArray< class UFGPipeConnectionComponent* > mPipeOutputConnections;
+	TArray< TObjectPtr<class UFGPipeConnectionComponent> > mPipeOutputConnections;
 
 	/** Our output inventory, shared for all output connections. */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mOutputInventory;
+	TObjectPtr<class UFGInventoryComponent> mOutputInventory;
 	
 	/** The recipe we're currently running. */
 	UPROPERTY( SaveGame, Replicated, ReplicatedUsing = OnRep_CurrentRecipe, Meta = (NoAutoJson = true) )
@@ -287,7 +287,7 @@ protected:
 
 	/** Cached Recipe CDO to reduce calls.*/
 	UPROPERTY()
-	const UFGRecipe* mCachedRecipe;
+	TObjectPtr<const UFGRecipe> mCachedRecipe;
 
 	/** Cached resource recipe ingredient data */
 	TArray<FSimpleIngredientData> mCachedIngredientData;

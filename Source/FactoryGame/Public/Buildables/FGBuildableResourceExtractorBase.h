@@ -112,6 +112,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Resources" )
 	class UFXSystemAsset* GetMiningParticle();
 
+	/** Get the inventory we output the extracted resources to */
+	UFUNCTION( BlueprintPure, Category = "Resource" )
+	virtual class UFGInventoryComponent* GetOutputInventory() const { return nullptr; }
+
 	 //type names are used to match types for upgrades and such
 	FName GetExtractorTypeName() const { return mExtractorTypeName; }
 
@@ -167,9 +171,9 @@ private:
 	*   The resource node we want to extract from.
 	*/
 	UPROPERTY( SaveGame )
-	class AFGResourceNode* mExtractResourceNode;
+	TObjectPtr<class AFGResourceNode> mExtractResourceNode;
 
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ExtractableResource )
-	AActor* mExtractableResource;
+	TObjectPtr<AActor> mExtractableResource;
 
 };

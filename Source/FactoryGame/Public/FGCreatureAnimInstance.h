@@ -24,7 +24,7 @@ public:
 public:
 	/** Caching the creature */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim" )
-	class AFGCreature* mCachedCreature;
+	TObjectPtr<class AFGCreature> mCachedCreature;
 
 	/** Whether or not the creature is threatened. Specifically being in Alert / Fight state. */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Anim" )

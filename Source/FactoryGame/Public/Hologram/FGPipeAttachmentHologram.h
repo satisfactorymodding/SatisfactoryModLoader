@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGBuildableHologram.h"
@@ -119,11 +119,11 @@ protected:
 	
 	/** The pipeline we snapped to. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildablePipeBase* mSnappedPipe;
+	TObjectPtr<class AFGBuildablePipeBase> mSnappedPipe;
 
 	/** Cached list of all connections in this attachment hologram */
 	UPROPERTY()
-	TArray< class UFGPipeConnectionComponentBase* > mPipeConnectionComponents;
+	TArray< TObjectPtr<class UFGPipeConnectionComponentBase> > mPipeConnectionComponents;
 
 	/** Index of the connection component we wish to snap */
 	UPROPERTY( Replicated, CustomSerialization )
@@ -133,7 +133,7 @@ protected:
 	 *  Used when attempting to place the attachment at the end of a pipe that is not connected
 	 */
 	UPROPERTY( Replicated, CustomSerialization )
-	class UFGPipeConnectionComponentBase* mSnappedConnectionComponent;
+	TObjectPtr<class UFGPipeConnectionComponentBase> mSnappedConnectionComponent;
 
 	/** Forward vector for the connection component we are snapped to. Usually identical to the -GetConnectorNormal, but when we are snapping to the snap-only connection it's orientation can change based on the player view angle */
 	FVector mSnappedConnectionComponentForwardVector{ForceInit};

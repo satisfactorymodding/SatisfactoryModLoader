@@ -7,18 +7,24 @@ UFGMusicManager* UFGMusicManager::Get(UWorld* world){ return nullptr; }
 UFGMusicManager* UFGMusicManager::Get(UObject* worldContext){ return nullptr; }
 void UFGMusicManager::BeginDestroy(){ Super::BeginDestroy(); }
 UWorld* UFGMusicManager::GetWorld() const{ return nullptr; }
-void UFGMusicManager::OnPlayerControllerBeginPlay( AFGPlayerControllerBase* pc){ }
-void UFGMusicManager::UpdateIncomingAttackers(int32 numAttackers){ }
+bool UFGMusicManager::IsTickableWhenPaused() const{ return FTickableGameObject::IsTickableWhenPaused(); }
+UWorld* UFGMusicManager::GetTickableGameObjectWorld() const{ return FTickableGameObject::GetTickableGameObjectWorld(); }
+ETickableTickType UFGMusicManager::GetTickableTickType() const{ return FTickableGameObject::GetTickableTickType(); }
+TStatId UFGMusicManager::GetStatId() const{ return TStatId(); }
+bool UFGMusicManager::IsTickable() const{ return FTickableGameObject::IsTickable(); }
+void UFGMusicManager::Tick(float DeltaTime){ }
+UAkAudioEvent* UFGMusicManager::GetLevelStartedAkEvent() const{ return nullptr; }
 void UFGMusicManager::OnPlayerEnteredArea_Implementation(AFGPlayerControllerBase* playerController, TSubclassOf<  UFGMapArea > mapArea){ }
 void UFGMusicManager::PostEvent( UAkAudioEvent* akEvent,  const int32 callbackMask, const FOnAkPostEventCallback& postEventCallback){ }
 void UFGMusicManager::SetRTPCValue(const  UAkRtpc* rtpcValue, float value, int32 interpolationTimeMs, FString rtpc){ }
 void UFGMusicManager::SetSwitch(const  UAkSwitchValue* switchValue, FString switchGroup, FString switchState){ }
+void UFGMusicManager::UpdatePlayerNearBaseState(const APlayerController* localPlayerController){ }
+void UFGMusicManager::InitializeWithCurrentWorld(){ }
 UFGMusicManager::UFGMusicManager() : Super() {
-	this->mUpdateInterval = 5.0;
+	this->mIsPlayerNearBaseUpdateInterval = 60.0;
 	this->mFactoryCloseDistance = 10000.0;
 	this->mHasPlayerAlreadyVisitedArea = false;
 	this->mMusicManagerClassName = FSoftClassPath(TEXT("/Game/FactoryGame/-Shared/Audio/Blueprints/BP_MusicManager.BP_MusicManager_C"));
+	this->mCurrentMapArea = nullptr;
 }
-void UFGMusicManager::Update(){ }
-void UFGMusicManager::Init(UWorld* inWorld){ }
 AkGameObjectID UFGMusicManager::GetAkGameObjectID() const{ return AkGameObjectID(); }

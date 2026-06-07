@@ -19,6 +19,7 @@ public:
 	virtual void PreExit() override;
 	virtual void Tick( float deltaSeconds, bool idleMode ) override;
 	virtual bool LoadMap( FWorldContext& WorldContext, FURL URL, class UPendingNetGame* Pending, FString& Error ) override;
+	virtual float GetMaxTickRate(float DeltaTime, bool bAllowFrameRateSmoothing = true) const override;
 	// End UEngine interface
 
 	virtual bool Exec( class UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& Ar/* =*GLog */ ) override;

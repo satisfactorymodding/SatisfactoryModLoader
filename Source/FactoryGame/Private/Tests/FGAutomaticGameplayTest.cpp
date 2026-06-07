@@ -4,7 +4,7 @@
 
 #if WITH_AUTOMATION_TESTS
 FFGRunGameplayAutomationTests::FFGRunGameplayAutomationTests(const FString& InName, EFGGameplayTestFlags InFilterTestFlags): FAutomationTestBase(InName, false){ }
-uint32 FFGRunGameplayAutomationTests::GetTestFlags() const{ return uint32(); }
+EAutomationTestFlags FFGRunGameplayAutomationTests::GetTestFlags() const{ return EAutomationTestFlags(); }
 bool FFGRunGameplayAutomationTests::IsStressTest() const{ return bool(); }
 uint32 FFGRunGameplayAutomationTests::GetRequiredDeviceNum() const{ return uint32(); }
 FString FFGRunGameplayAutomationTests::GetTestSourceFileName() const{ return FString(); }

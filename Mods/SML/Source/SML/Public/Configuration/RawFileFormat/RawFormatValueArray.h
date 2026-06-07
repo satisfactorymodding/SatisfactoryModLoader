@@ -88,7 +88,7 @@ public:
 private:
     /** Private to ensure that added objects have valid outer */
     UPROPERTY()
-    TArray<URawFormatValue*> Values;
+    TArray<TObjectPtr<URawFormatValue>> Values;
 };
 
 FORCEINLINE void URawFormatValueArray::AddString(const FString& Value) {

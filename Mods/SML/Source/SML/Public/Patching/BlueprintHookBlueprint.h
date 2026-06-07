@@ -50,11 +50,11 @@ public:
 
 	/** Template for the creation of this component. This template will be duplicated to create the final component. Template outer will be an SCS node */
 	UPROPERTY()
-	UActorComponent* ComponentTemplate{};
+	TObjectPtr<UActorComponent> ComponentTemplate{};
 
 	/** Child nodes for this component mixin node */
 	UPROPERTY()
-	TArray<UBlueprintMixinComponentNode*> ChildNodes;
+	TArray<TObjectPtr<UBlueprintMixinComponentNode>> ChildNodes;
 
 	/** Executes this node on the provided actor, and assigns the component variable to the mixin instance */
 	void ExecuteNodeOnActor(AActor* InTargetActor, UBlueprintActorMixin* InOwnerMixin, USceneComponent* InParentComponent);
@@ -92,11 +92,11 @@ public:
 	
 	/** All nodes that this overlay component tree contains */
 	UPROPERTY()
-	TArray<UBlueprintMixinComponentNode*> AllNodes;
+	TArray<TObjectPtr<UBlueprintMixinComponentNode>> AllNodes;
 
 	/** Root component tree nodes that can be parented to the external nodes in the target blueprint */
 	UPROPERTY()
-	TArray<UBlueprintMixinComponentNode*> RootNodes;
+	TArray<TObjectPtr<UBlueprintMixinComponentNode>> RootNodes;
 
 #if WITH_EDITOR
 	/** Resolves a reference to the SCS node using the blueprint class name and the name of the node variable */
@@ -132,15 +132,15 @@ public:
 
 	/** Root object derived hook descriptor objects will be parented to */
 	UPROPERTY()
-	UHookBlueprintDerivedDataRoot* HookDescriptorDerivedDataRoot;
+	TObjectPtr<UHookBlueprintDerivedDataRoot> HookDescriptorDerivedDataRoot;
 
 	/** Class into which this mixin will be injected*/
 	UPROPERTY()
-	UBlueprintGeneratedClass* MixinTargetClass{};
+	TObjectPtr<UBlueprintGeneratedClass> MixinTargetClass{};
 
 	/** Overlay component tree for this mixin. Can be nullptr if this blueprint is not a mixin */
 	UPROPERTY()
-	UBlueprintMixinOverlayComponentTree* OverlayComponentTree{};
+	TObjectPtr<UBlueprintMixinOverlayComponentTree> OverlayComponentTree{};
 
 	// Begin UBlueprintGeneratedClass interface
 	virtual void GetPreloadDependencies(TArray<UObject*>& OutDeps) override;
@@ -166,14 +166,14 @@ public:
 #if WITH_EDITORONLY_DATA
 	/** Editor graph with the data for the hook definition generation */
 	UPROPERTY()
-	UEdGraph* HookTargetGraph{};
+	TObjectPtr<UEdGraph> HookTargetGraph{};
 
 	/** Class into which this mixin will be injected, if this hook blueprint represents a mixin */
 	UPROPERTY(VisibleAnywhere, Category = "Hook Blueprint", AssetRegistrySearchable)
-	UBlueprintGeneratedClass* MixinTargetClass{};
+	TObjectPtr<UBlueprintGeneratedClass> MixinTargetClass{};
 
 	/** Overlay component tree for this mixin. Can be nullptr if this blueprint is not a mixin */
 	UPROPERTY()
-	UBlueprintMixinOverlayComponentTree* OverlayComponentTree{};
+	TObjectPtr<UBlueprintMixinOverlayComponentTree> OverlayComponentTree{};
 #endif
 };

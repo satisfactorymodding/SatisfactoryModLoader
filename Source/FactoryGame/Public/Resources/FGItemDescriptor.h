@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "FGScannableDetails.h"
+#include "GameplayTagContainer.h"
 #include "HAL/IConsoleManager.h"
 #include "UObject/Object.h"
 #include "FGItemDescriptor.generated.h"
@@ -20,7 +21,6 @@ enum class EResourceForm : uint8
 	RF_SOLID		UMETA( DisplayName = "Solid" ),
 	RF_LIQUID		UMETA( DisplayName = "Liquid" ),
 	RF_GAS			UMETA( DisplayName = "Gas" ),
-	RF_HEAT			UMETA( DisplayName = "Heat" ),
 	RF_LAST_ENUM	UMETA( Hidden )
 };
 
@@ -148,9 +148,9 @@ public:
 
 	// Begin UObject interface
 	virtual void Serialize( FArchive& ar ) override;
+	virtual void PreSave( FObjectPreSaveContext SaveContext ) override;
 	virtual void PostLoad() override;
-	virtual void BeginDestroy() override;
-	virtual void GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const override;
+	virtual void GetAssetRegistryTags(FAssetRegistryTagsContext Context) const override;
 	// End UObject interface
 
 	/** The state of this resource. */
@@ -311,6 +311,13 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|CompatibleType" )
 	static TArray< FCompatibleItemDescriptors > GetCompatibleItemDescriptors( TSubclassOf< UFGItemDescriptor > inClass );
 
+	/** Returns true if the item descriptor has a given gameplay tag */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	static bool HasGameplayTag( TSubclassOf<UFGItemDescriptor> inClass, const FGameplayTag& inGameplayTag );
+	/** Returns all gameplay tags for the given item descriptor */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	static FGameplayTagContainer GetAllGameplayTags( TSubclassOf<UFGItemDescriptor> inClass );
+
 	/** Returns the class we want to scan for when looking for this descriptor */
 	static TSubclassOf< AActor > GetClassToScanFor( TSubclassOf< UFGItemDescriptor > inClass );
 	/** Returns a custom class we want to use when we scan for mClassToScanFor */
@@ -343,11 +350,6 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Descriptor" )
 	static void SetBigIcon( TSubclassOf< UFGItemDescriptor > Class, UTexture2D* Icon );
 
-	/** Returns true if this item descriptor can be picked up and stored in player inventory. i.e if its a solid and not a building or other non pickupable item
-	 *  If it's a non pickupable class we will return false in the overridden Internal_CanItemBePickedup */
-	static bool CanItemBePickedup( TSubclassOf< UFGItemDescriptor > inClass );
-	static bool CanItemBePickedup( UFGItemDescriptor* inClass );
-
 protected:
 	/** Internal function to get the display name. */
 	virtual FText GetItemNameInternal() const;
@@ -360,8 +362,9 @@ protected:
 	
 	virtual UTexture2D* Internal_GetSmallIcon() const;
 	virtual UTexture2D* Internal_GetBigIcon() const;
-	
-	FORCEINLINE virtual bool Internal_CanItemBePickedup() const { return mForm == EResourceForm::RF_SOLID; }
+
+	/** Updates cached stack size on the item descriptor */
+	void UpdateCachedStackSize();
 
 public:
 	/**
@@ -419,11 +422,11 @@ protected:
 
 	/** Small icon of the item, always in memory */
 	UPROPERTY( EditDefaultsOnly, Category="UI", meta = ( AddAutoJSON = true ) )
-	UTexture2D* mSmallIcon;
+	TObjectPtr<UTexture2D> mSmallIcon;
 
 	/** Big icon of the item, SHOULD only be loaded by demand, but right now persistent in memory */
 	UPROPERTY( EditDefaultsOnly, Category = "UI", DisplayName="Big Icon", meta = ( AddAutoJSON = true ) )
-	UTexture2D* mPersistentBigIcon;
+	TObjectPtr<UTexture2D> mPersistentBigIcon;
 
 	/** The crosshair material used with this item */
 	UPROPERTY( EditDefaultsOnly, Category = "UI" )
@@ -443,7 +446,7 @@ protected:
 
 	/** The static mesh we want for representing the resource when they are in the production line. */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
-	class UStaticMesh* mConveyorMesh;
+	TObjectPtr<class UStaticMesh> mConveyorMesh;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Organization" )
 	TSubclassOf< class UFGCategory > mCategory;
@@ -504,6 +507,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	bool mNeedsPickUpMarker;
 	
+	/** Gameplay tags associated with this item descriptor. Can be used to provide additional metadata about the item without forcing it to be derived from a specific class. Use Has Gameplay Tag to check*/
+	UPROPERTY( EditDefaultsOnly, Category = "Item" )
+	FGameplayTagContainer mGameplayTags;
+	
 	/**
 	 * This is just a hook for the resource sink points so we can add them to the 
 	 * JSON wiki file even though they are in a separate datatable.  
@@ -511,8 +518,7 @@ protected:
 	UPROPERTY()
 	int32 mResourceSinkPoints;
 
-	/** Stack size will be cached on post load, this way we dont need to cast every time to get the value.*/
-	UPROPERTY( Transient )
+	UPROPERTY()
 	int32 mCachedStackSize;
 public:
 	/*for by passing get CDO calls */
@@ -520,6 +526,7 @@ public:
 	FColor GasColor() const		{ return mGasColor; }
 	EResourceForm Form() const	{ return mForm; }
 	EGasType GasType() const	{ return mGasType; }
+	const FGameplayTagContainer& GetTagContainer() const { return mGameplayTags; }
 
 	FORCEINLINE int32 GetConveyorRendererItemIndex() const { return mItemIndex;}
 

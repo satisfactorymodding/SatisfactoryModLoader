@@ -9,6 +9,7 @@ UFGMapMarkerRepresentation::UFGMapMarkerRepresentation() : Super() {
 FVector UFGMapMarkerRepresentation::GetActorLocation() const{ return FVector(); }
 bool UFGMapMarkerRepresentation::GetShouldShowInCompass() const{ return bool(); }
 ECompassViewDistance UFGMapMarkerRepresentation::GetCompassViewDistance() const{ return ECompassViewDistance(); }
+FPlayerInfoHandle UFGMapMarkerRepresentation::GetLastEditedBy() const{ return Super::GetLastEditedBy(); }
 float UFGMapMarkerRepresentation::GetScaleOnMap() const{ return float(); }
 bool UFGMapMarkerRepresentation::CanBeHighlighted() const{ return bool(); }
 UFGHighlightedMarker* UFGMapMarkerRepresentation::CreateHighlightedMarker(UObject* owner){ return nullptr; }

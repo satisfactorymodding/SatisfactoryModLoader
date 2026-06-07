@@ -63,7 +63,12 @@
             "items": {
               "$ref": "#/definitions/dependency"
             }
-          }
+          },
+		  "game_feature": {
+            "type": "boolean",
+            "title": "Is Game Feature Template",
+            "description": "True if this template is a game feature template, false otherwise"
+          },
         },
         "required": [
           "name",

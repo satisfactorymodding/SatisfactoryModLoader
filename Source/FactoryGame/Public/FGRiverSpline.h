@@ -24,7 +24,7 @@ public:
 protected:
 	/** The audio event this river plays */
 	UPROPERTY( BlueprintReadOnly, EditInstanceOnly, Category="Audio", Meta=(EditCondition=mShouldHaveAudio) )
-	class UAkAudioEvent* mAudioEvent;
+	TObjectPtr<class UAkAudioEvent> mAudioEvent;
 
 	/** Distance between each emitter on the spline */
 	UPROPERTY( BlueprintReadOnly, EditAnywhere, Category="Audio", Meta = ( EditCondition = mShouldHaveAudio,UIMin=100,ClampMin=50,UIMax=1000) )
@@ -32,7 +32,7 @@ protected:
 
 	/** The component that has our sound spline */
 	UPROPERTY()
-	class UFGSoundSplineComponent* mSoundSplineComponent_DEPRECATED;
+	TObjectPtr<class UFGSoundSplineComponent> mSoundSplineComponent_DEPRECATED;
 
 	/** If true, then we should have no audio */
 	UPROPERTY( BlueprintReadOnly, EditInstanceOnly, Category = "Audio" )

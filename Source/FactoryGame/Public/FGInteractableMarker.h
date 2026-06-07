@@ -31,18 +31,18 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY( VisibleAnywhere, Category = "InteractableMarker" )
-	class UWidgetComponent* mIconWidget;
+	TObjectPtr<class UWidgetComponent> mIconWidget;
 
 	UPROPERTY( VisibleAnywhere, Category = "InteractableMarker" )
-	class USplineMeshComponent* mSplineMesh;
+	TObjectPtr<class USplineMeshComponent> mSplineMesh;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "InteractableMarker" )
 	float mDesiredScreenRadius;
 
 	UPROPERTY()
-	class AActor* mTrackedActor;
+	TObjectPtr<class AActor> mTrackedActor;
 
 private:
 	UPROPERTY()
-	class AFGPlayerController* mCachePlayerController;
+	TObjectPtr<class AFGPlayerController> mCachePlayerController;
 };

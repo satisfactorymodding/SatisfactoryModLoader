@@ -2,7 +2,7 @@
 
 #include "Sequences/OnlineAuthenticationSequence.h"
 
-void UOnlineAuthenticationSequence::Initialize(FPlatformUserId PlatformUserId){ }
+void UOnlineAuthenticationSequence::Initialize(FPlatformUserId platformUserId){ }
 void UOnlineAuthenticationSequence::Start(FOnOnlineAsyncOperationCompleted_Native::FDelegate&& CompleteDelegate){ }
 bool UOnlineAuthenticationSequence::HasErrors() const{ return bool(); }
 void UOnlineAuthenticationSequence::OverridePerObjectConfigSection(FString& SectionName){ }
@@ -13,7 +13,6 @@ void UOnlineAuthenticationSequence::QueryExternalAuthToken(TSharedRef<FControlFl
 void UOnlineAuthenticationSequence::LoginToProvider(TSharedRef<FControlFlowNode> FlowNodeRef, FName LoginType, FName ServiceProvider){ }
 void UOnlineAuthenticationSequence::LogoutFromProvider(TSharedRef<FControlFlowNode> FlowNodeRef, FName ServiceProvider, bool bForgetAuth){ }
 void UOnlineAuthenticationSequence::SetLoginPendingFlag(UOnlineIntegrationBackend* Backend, bool bSet){ }
-void UOnlineAuthenticationSequence::NotifyProgressUpdate(const FText& Update){ }
 void UOnlineAuthenticationSequence::AuthenticationCompleted(){ }
 void UOnlineAuthenticationSequence::ResetLoginTypeIndex(){ }
 void UOnlineAuthenticationSequence::IncrementBackendIndex(){ }

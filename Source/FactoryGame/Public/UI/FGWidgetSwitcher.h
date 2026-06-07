@@ -104,13 +104,13 @@ protected:
 
 	/** Pending widget that will be set when the animations is done */
 	UPROPERTY()
-	UWidget* mPendingNewWidget;
+	TObjectPtr<UWidget> mPendingNewWidget;
 
 	// Widget currently running it's entering animation
 	UPROPERTY()
-	UFGMenuBase* mEnteringWidget;
+	TObjectPtr<UFGMenuBase> mEnteringWidget;
 
 	// Widget currently running it's exiting animation
 	UPROPERTY()
-	UFGMenuBase* mExitingWidget;
+	TObjectPtr<UFGMenuBase> mExitingWidget;
 };

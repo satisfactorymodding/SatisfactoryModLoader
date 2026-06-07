@@ -54,5 +54,5 @@ protected:
 	float mCurrentPeriodTime;
 
 	UPROPERTY( Transient )
-	TArray<UFGFactoryConnectionComponent*> mInputConnections;
+	TArray<TObjectPtr<UFGFactoryConnectionComponent>> mInputConnections;
 };

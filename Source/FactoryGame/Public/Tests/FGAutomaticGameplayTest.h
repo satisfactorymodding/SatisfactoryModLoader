@@ -21,7 +21,7 @@ class FACTORYGAME_API FFGRunGameplayAutomationTests : public FAutomationTestBase
 public:
 	FFGRunGameplayAutomationTests( const FString& InName, EFGGameplayTestFlags InFilterTestFlags );
 
-	virtual uint32 GetTestFlags() const override;
+	virtual EAutomationTestFlags GetTestFlags() const override;
 	virtual bool IsStressTest() const;
 	virtual uint32 GetRequiredDeviceNum() const override;
 	virtual FString GetTestSourceFileName() const override;

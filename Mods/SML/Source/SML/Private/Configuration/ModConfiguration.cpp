@@ -1,18 +1,20 @@
 #include "Configuration/ModConfiguration.h"
+
+#include "Misc/DataValidation.h"
 #define LOCTEXT_NAMESPACE "SML"
 
 #if WITH_EDITOR
-EDataValidationResult UModConfiguration::IsDataValid(TArray<FText>& ValidationErrors) {
+EDataValidationResult UModConfiguration::IsDataValid(FDataValidationContext& Context) const {
 	EDataValidationResult ValidationResult = EDataValidationResult::Valid;
 	if (DisplayName.IsEmpty()) {
-		ValidationErrors.Add(LOCTEXT("ConfigDisplayNameEmpty", "Configuration Display Name is not set"));
+		Context.AddError(LOCTEXT("ConfigDisplayNameEmpty", "Configuration Display Name is not set"));
 		ValidationResult = EDataValidationResult::Invalid;
 	}
 	if (!IsValid(RootSection)) {
-		ValidationErrors.Add(LOCTEXT("ConfigRootSectionNull", "Root Section value is not set"));
+		Context.AddError(LOCTEXT("ConfigRootSectionNull", "Root Section value is not set"));
 		ValidationResult = EDataValidationResult::Invalid;
 	} else {
-		const EDataValidationResult ChildResult = RootSection->IsDataValid(ValidationErrors);
+		const EDataValidationResult ChildResult = RootSection->IsDataValid(Context);
 		if (ChildResult == EDataValidationResult::Invalid) {
 			ValidationResult = EDataValidationResult::Invalid;
 		}

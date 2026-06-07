@@ -4,11 +4,23 @@
         {
             "name": "Blueprint Only",
             "description": "Create a mod that contains only Blueprint code. (You can add C++ code later)",
+			"game_feature": true,
             "path": "BlueprintBlank"
         },
         {
             "name": "C++ & Blueprint",
             "description": "Create a mod that contains both C++ and Blueprint code.",
+			"game_feature": true,
+            "path": "CPPAndBlueprintBlank"
+        },
+        {
+            "name": "Blueprint Library (Advanced)",
+            "description": "Create a library mod that does not contain a game feature. Can contain only Blueprint code (You can add C++ code later)",
+            "path": "BlueprintBlank"
+        },
+        {
+            "name": "C++ & Blueprint Library (Advanced)",
+            "description": "Create a library mod that does not contain a game feature. Can contain both C++ and Blueprint code.",
             "path": "CPPAndBlueprintBlank"
         }
     ]

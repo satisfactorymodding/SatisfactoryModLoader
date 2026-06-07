@@ -51,8 +51,8 @@ public:
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION() virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	//<FL>[KonradA]
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return GetRepresentationLastUpdatedBy(); }
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle > &  LastEditedBy) override;
+	UFUNCTION() virtual FPlayerInfoHandle GetLastEditedBy() const override { return GetRepresentationLastUpdatedBy(); }
+	UFUNCTION() virtual void SetActorLastEditedByHandle(const FPlayerInfoHandle& playerHandle) override;
 	//</FL>
 	// End IFGActorRepresentationInterface
 
@@ -68,7 +68,7 @@ public:
 	
 //<FL>[KonradA]
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
-	void SetLastEditedByPlayer( const TArray< FLocalUserNetIdBundle >& LastEditedBy );
+	void SetLastEditedByPlayer( const FPlayerInfoHandle& LastEditedBy );
 //</FL>
 
 	/** Fetches the color to use for this actors representation */
@@ -85,7 +85,7 @@ public:
 
 //<FL>[KonradA]
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
-	TArray< FLocalUserNetIdBundle > GetRepresentationLastUpdatedBy() const;
+	FPlayerInfoHandle GetRepresentationLastUpdatedBy() const;
 //</FL>
 
 	/** Gets the height of the radar tower. */
@@ -132,17 +132,17 @@ protected:
 	TArray< TSubclassOf< class UFGItemDescriptor > > mScannableDescriptors;
 
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 
 private:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTexture;
+	TObjectPtr<class UTexture2D> mActorRepresentationTexture;
 
 	UPROPERTY( Transient )
-	TArray< class AFGResourceNodeBase* > mScannedResourceNodes;
+	TArray< TObjectPtr<class AFGResourceNodeBase> > mScannedResourceNodes;
 
 	UPROPERTY( Transient )
-	UFGRadarTowerRepresentation* mRadarTowerRepresentation;
+	TObjectPtr<UFGRadarTowerRepresentation> mRadarTowerRepresentation;
 
 	TMap<TSubclassOf<UFGItemDescriptor>, int32> mFoundDescriptors;
 	TMap< TSubclassOf<AActor>, TSubclassOf<UFGItemDescriptor> > mActorToDescriptorMapping;

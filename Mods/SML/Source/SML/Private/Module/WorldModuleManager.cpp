@@ -9,7 +9,7 @@
 #include "Subsystem/SubsystemActorManager.h"
 
 UWorldModule* UWorldModuleManager::FindModule(const FName& ModReference) const {
-    UWorldModule* const* WorldModule = RootModuleMap.Find(ModReference);
+    const TObjectPtr<UWorldModule>* WorldModule = RootModuleMap.Find(ModReference);
     if (WorldModule != NULL) {
         return *WorldModule;
     }

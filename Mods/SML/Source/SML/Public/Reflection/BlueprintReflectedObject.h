@@ -70,7 +70,7 @@ public:
     UEnum* GetEnumerationType() const;
 private:
     UPROPERTY()
-    UEnum* EnumerationType;
+    TObjectPtr<UEnum> EnumerationType;
     /** Raw enumeration value represented as integer */
     UPROPERTY()
     int64 RawEnumValue;
@@ -226,7 +226,7 @@ public:
     virtual void* GetObjectData() override;
     virtual void AddReferencedObjects(FReferenceCollector& ReferenceCollector) override;
 private:
-    UObject* ReferencedObject;
+    TObjectPtr<UObject> ReferencedObject;
 };
 
 class SML_API FReflectedObjectState_ScriptStruct : public FReflectedObjectState {
@@ -241,6 +241,6 @@ public:
     virtual void* GetObjectData() override;
     virtual void AddReferencedObjects(FReferenceCollector& ReferenceCollector) override;
 private:
-    UScriptStruct* ScriptStruct;
+    TObjectPtr<UScriptStruct> ScriptStruct;
     void* StructDataPointer;
 };

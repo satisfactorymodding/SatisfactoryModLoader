@@ -17,7 +17,7 @@ FText UFGRecipe::GetRecipeName(TSubclassOf<UFGRecipe> inClass) {
 	else
 		return FText();
 }
-TArray<FItemAmount> UFGRecipe::GetIngredients(TSubclassOf<UFGRecipe> inClass) {
+TArray<FItemAmount> UFGRecipe::GetIngredients(const UObject* worldContext, TSubclassOf<UFGRecipe> inClass) {
 	if (inClass)
 		return inClass.GetDefaultObject()->mIngredients;
 	else
@@ -61,6 +61,7 @@ TArray<TSubclassOf<UObject>> UFGRecipe::GetProducedIn(TSubclassOf<UFGRecipe> inC
 void UFGRecipe::GetProducedIn(TArray<TSubclassOf<UObject>> &out_producedIn) const {
 	out_producedIn = UFGRecipe::GetProducedIn(this->GetClass());
 }
+TArray<FItemAmount> UFGRecipe::GetIngredientsWithPartsCostMultiplier(const UObject* worldContext) const{ return TArray<FItemAmount>(); }
 
 #if WITH_EDITOR
 EDataValidationResult UFGRecipe::IsDataValid(FDataValidationContext& validationContext ) const {
@@ -68,7 +69,7 @@ EDataValidationResult UFGRecipe::IsDataValid(FDataValidationContext& validationC
 	EDataValidationResult ValidationResult = Super::IsDataValid(validationContext);
 
 	TArray<FItemAmount> AllReferencedItems;
-	AllReferencedItems.Append(UFGRecipe::GetIngredients(GetClass()));
+	AllReferencedItems.Append(UFGRecipe::GetIngredients(this, GetClass()));
 	AllReferencedItems.Append(UFGRecipe::GetProducts(GetClass()));
 
 	for (const FItemAmount& ItemAmount : AllReferencedItems) {
@@ -106,5 +107,7 @@ void UFGRecipe::SortByManufacturingMenuPriority(TArray< TSubclassOf< UFGRecipe >
 TSubclassOf< class UFGCustomizationRecipe > UFGRecipe::GetMaterialCustomizationRecipe(TSubclassOf< UFGRecipe > recipe){ return TSubclassOf<class UFGCustomizationRecipe>(); }
 TSubclassOf< class UFGItemDescriptor > UFGRecipe::GetDescriptorForRecipe(TSubclassOf<  UFGRecipe > recipe){ return TSubclassOf<class UFGItemDescriptor>(); }
 TArray< EEvents > UFGRecipe::GetRelevantEvents(TSubclassOf< UFGRecipe > inClass){ return TArray<EEvents>(); }
+bool UFGRecipe::HasGameplayTag(TSubclassOf<UFGRecipe> inClass, const FGameplayTag& inGameplayTag){ return bool(); }
+FGameplayTagContainer UFGRecipe::GetAllGameplayTags(TSubclassOf<UFGRecipe> inClass){ return FGameplayTagContainer(); }
 FText UFGRecipe::GetDisplayName() const{ return FText(); }
 bool UFGRecipe::IsProducedIn(TSubclassOf<  UFGRecipe > inClass, TSubclassOf< UObject > inProducer){ return bool(); }

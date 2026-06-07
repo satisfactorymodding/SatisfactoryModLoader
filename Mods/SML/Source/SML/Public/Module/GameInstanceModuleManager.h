@@ -10,11 +10,11 @@ class SML_API UGameInstanceModuleManager : public UGameInstanceSubsystem {
 private:
     /** Root map of modules for every registered mod reference */
     UPROPERTY()
-    TMap<FName, UGameInstanceModule*> RootModuleMap;
+    TMap<FName, TObjectPtr<UGameInstanceModule>> RootModuleMap;
 
     /** Root module list for fast iteration according to order of registration */
     UPROPERTY()
-    TArray<UGameInstanceModule*> RootModuleList;
+    TArray<TObjectPtr<UGameInstanceModule>> RootModuleList;
 public:
     UGameInstanceModuleManager();
     

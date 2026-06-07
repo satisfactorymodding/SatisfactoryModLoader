@@ -3,12 +3,14 @@
 #include "FactoryGameModule.h"
 
 #include "FGLocalizationSettings.h"
+#include "HAL/FileManager.h"
 #include "Internationalization/StringTableRegistry.h"
+#include "Misc/Paths.h"
 
 void FFactoryGameModule::StartupModule() {
 	const UFGLocalizationSettings* LocalizationSettings = UFGLocalizationSettings::Get();
 	IFileManager::Get().IterateDirectoryStatRecursively(
-		*(FPaths::ProjectContentDir() / LocalizationSettings->StringTablesFolder.Path),
+		*(FPaths::ProjectContentDir() / TEXT("Localization/StringTables")),
 		[](const TCHAR* FileName, const FFileStatData& FileStatData) -> bool {
 			if (FileStatData.bIsDirectory) {
 				return true;
@@ -21,7 +23,10 @@ void FFactoryGameModule::StartupModule() {
 			}
 			FString ContentPath = FPaths::ConvertRelativePathToFull(FileName);
 			FPaths::MakePathRelativeTo(ContentPath, *FPaths::ProjectContentDir());
-			FStringTableRegistry::Get().Internal_LocTableFromFile(*FPaths::GetBaseFilename(ContentPath), *FPaths::GetBaseFilename(ContentPath), ContentPath, FPaths::ProjectContentDir());
+			FStringTableRegistry& Registry = FStringTableRegistry::Get();
+			FString TableName = FPaths::GetBaseFilename(ContentPath);
+			Registry.UnregisterStringTable(*TableName); // Ensure the table doesn't exist, such as when hot-reloading
+			Registry.Internal_LocTableFromFile(*TableName, TableName, ContentPath, FPaths::ProjectContentDir());
 			return true;
 		});
 }

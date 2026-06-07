@@ -10,6 +10,7 @@
 #include "RailroadNavigation.h"
 #include "LocalUserInfo.h"
 #include "FGTrainDockingRules.h"
+#include "Online/PlayerInfoCache.h"
 #include "FGTrain.generated.h"
 
 
@@ -105,7 +106,7 @@ GENERATED_BODY()
 public:
 	/** The vehicles in this consist. */
 	UPROPERTY( BlueprintReadOnly )
-	TArray< AFGRailroadVehicle* > Vehicles;
+	TArray< TObjectPtr<AFGRailroadVehicle> > Vehicles;
 
 	/** Length of the consist, [cm] */
 	UPROPERTY( BlueprintReadOnly )
@@ -134,7 +135,7 @@ struct FACTORYGAME_API FTrainAtcPoint
 public:
 	/** The track connection. */
 	UPROPERTY()
-	UFGRailroadTrackConnectionComponent* TrackConnection = nullptr;
+	TObjectPtr<UFGRailroadTrackConnectionComponent> TrackConnection = nullptr;
 
 	/** Path segment for this point, if none, we do not have a path. */
 	int32 PathSegment = INDEX_NONE;
@@ -301,11 +302,11 @@ struct FACTORYGAME_API FTrainSimulationData
 public:
 	/** Cached vehicles for faster iterations when updating physics. */
 	UPROPERTY()
-	TArray< class AFGRailroadVehicle* > SimulatedVehicles;
+	TArray< TObjectPtr<class AFGRailroadVehicle> > SimulatedVehicles;
 
 	/** Cached movements in the same order as the vehicles. */
 	UPROPERTY()
-	TArray< class UFGRailroadVehicleMovementComponent* > SimulatedMovements;
+	TArray< TObjectPtr<class UFGRailroadVehicleMovementComponent> > SimulatedMovements;
 
 	/** The approximated location and bounds for the vehicles combined. */
 	FVector TrainLocation = FVector::ZeroVector;
@@ -313,11 +314,11 @@ public:
 
 	/** Cached master locomotive. */
 	UPROPERTY()
-	class UFGLocomotiveMovementComponent* MasterMovement = nullptr;
+	TObjectPtr<class UFGLocomotiveMovementComponent> MasterMovement = nullptr;
 
 	/** First vehicle in the direction of travel when we did ticked the movement. */
 	UPROPERTY()
-	AFGRailroadVehicle* FirstVehicle = nullptr;
+	TObjectPtr<AFGRailroadVehicle> FirstVehicle = nullptr;
 	
 	// Real-time measurements from the simulation.
 	float GravitationalForce = 0.f;
@@ -420,7 +421,7 @@ public:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
+	virtual float GetSignificanceRange_Implementation() const override;
 	// Significance helpers
 	//@todo-trains Look over the significance calculation on the trains, I was a bit confused how it all works.
 	FORCEINLINE bool IsSignificant() const { return mIsSignificant; }
@@ -450,7 +451,7 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 //<FL>[KonradA]
-	virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) { SetLastEditedBy(mLastEditedBy); }
+	virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy ) override; 
 //</FL>
 	// End IFGActorRepresentationInterface
 
@@ -728,11 +729,9 @@ public: //@todo-trains private
 	FText mTrainName;
 
 	//<FL>[KonradA]
-	UFUNCTION( BlueprintCallable, Category = "Train" )
-	void SetLastEditedBy( TArray< FLocalUserNetIdBundle > lastEditedBy );
 	// This is also part of the IFGActorRepresentation Interface
 	UFUNCTION( BlueprintPure, Category = "Train" )
-	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return mLastEditedBy; };
+	virtual FPlayerInfoHandle GetLastEditedBy() const override { return mLastEditedBy; };
 	//</FL>
 
 	/** The track this train is on. */
@@ -741,17 +740,17 @@ public: //@todo-trains private
 
 	/** Train are a doubly linked list, use TTrainIterator to iterate over a train. */
 	UPROPERTY( SaveGame )
-	class AFGRailroadVehicle* FirstVehicle;
+	TObjectPtr<class AFGRailroadVehicle> FirstVehicle;
 	UPROPERTY( SaveGame )
-	class AFGRailroadVehicle* LastVehicle;
+	TObjectPtr<class AFGRailroadVehicle> LastVehicle;
 
 	/** This is the master locomotives that sends its input (throttle/brake/etc) to all other locomotives in the train. */
 	UPROPERTY( ReplicatedUsing = OnRep_MultipleUnitMaster )
-	class AFGLocomotive* mMultipleUnitMaster;
+	TObjectPtr<class AFGLocomotive> mMultipleUnitMaster;
 
 	/** This trains time table. */
 	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Train" )
-	class AFGRailroadTimeTable* TimeTable;
+	TObjectPtr<class AFGRailroadTimeTable> TimeTable;
 
 	/** This is the trains current status. */
 	UPROPERTY( ReplicatedUsing = OnRep_TrainStatus, VisibleAnywhere, Category = "Train" )
@@ -775,29 +774,30 @@ public: //@todo-trains private
 
 	/** The station this train is docked at. This is now cached when docked as we needed a means to Cancel a dock sequence from the UI Train menu */
 	UPROPERTY( Replicated, VisibleAnywhere, Category = "Train" )
-	class AFGBuildableRailroadStation* mDockedAtStation;
+	TObjectPtr<class AFGBuildableRailroadStation> mDockedAtStation;
 
 	/** True if this train is derailed and needs player attention. */
 	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Train" )
 	bool mIsDerailed;
 
 	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 
 //<FL>[KonradA]
 	UPROPERTY(SaveGame, Replicated)
-	TArray<FLocalUserNetIdBundle> mLastEditedBy;
+	FPlayerInfoHandle mLastEditedBy;
+
 //</FL>
 private:
 	/** If this train has any pending collisions that needs to be handled this frame. */
 	bool mHasPendingCollision;
 	
 	UPROPERTY( ReplicatedUsing = OnRep_TrainReplicationActor )
-	AFGTrainReplicationActor* mTrainReplicationActor;
+	TObjectPtr<AFGTrainReplicationActor> mTrainReplicationActor;
 	
 	/** Sound component controlling all the moving/idle sounds for the train */
 	UPROPERTY()
-	class UFGTrainSoundComponent* mSoundComponent;
+	TObjectPtr<class UFGTrainSoundComponent> mSoundComponent;
 
 	/** Significance data */
 	bool mIsSignificant;

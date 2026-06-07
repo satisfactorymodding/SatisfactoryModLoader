@@ -22,6 +22,7 @@ public class ReliableMessagingTCP : ModuleRules
                 "Slate",
                 "SlateCore",
                 "Sockets",
+                "GameplayTags",
                 "OnlineSubsystemUtils"
             }
         );

@@ -104,7 +104,7 @@ void USubsystemActorManager::WaitForSubsystem(TSubclassOf<AModSubsystem> Subsyst
 }
 
 AModSubsystem* USubsystemActorManager::K2_GetSubsystemActor(TSubclassOf<AModSubsystem> SubsystemClass) {
-	AModSubsystem** SubsystemEntry = SubsystemActors.Find(SubsystemClass);
+	const TObjectPtr<AModSubsystem>* SubsystemEntry = SubsystemActors.Find(SubsystemClass);
 	return SubsystemEntry ? *SubsystemEntry : NULL;
 }
 

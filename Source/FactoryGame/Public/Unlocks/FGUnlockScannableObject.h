@@ -22,12 +22,11 @@ public:
 	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
 	// End FGUnlock interface
 
+	UFUNCTION( BlueprintPure, Category=Unlocks )
+	FORCEINLINE TArray< FScannableObjectData > GetScannableObjectsToUnlock() const { return mScannableObjects; }
 protected:
 	/** The schematics you get from this unlock */
 	UPROPERTY( EditDefaultsOnly, Category = "Scannable Object" )
 	TArray< FScannableObjectData > mScannableObjects;
 
-	UFUNCTION( BlueprintPure, Category=Unlocks )
-	FORCEINLINE TArray< FScannableObjectData > GetScannableObjectsToUnlock() const { return mScannableObjects; }
-	
 };

@@ -18,7 +18,7 @@ struct FACTORYGAME_API FSpawnInventoryCrateParameters
 
 	/** Actors to ignore the collision with when spawning the crate */
 	UPROPERTY(EditAnywhere, Category = "Inventory Crate")
-	TArray<AActor*> ActorsToIgnore;
+	TArray<TObjectPtr<AActor>> ActorsToIgnore;
 
 	/** Whenever to allow merging of this crate with another crate of the same type in proximity */
 	UPROPERTY(EditAnywhere, Category = "Inventory Crate")
@@ -83,6 +83,9 @@ public:
 	*/
 	static AFGItemPickup_Spawnable* CreateItemDrop( UFGInventoryComponent* inventoryComponent, UWorld* world, const FInventoryStack& item, const FVector& spawnLocation, const FRotator& spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass = nullptr, ULevel* spawnLevelOverride = nullptr, FName spawnNameOverride = NAME_None );
 
+	/** Drops all indestructible items from the inventory on the floor at the given location */
+	static void DropIndestructibleItems( UFGInventoryComponent* inventoryComponent, const FVector& spawnLocation, const TArray<AActor*>& ignoredActors );
+	
 	UFUNCTION()
 	void OnColorUpdated( int32 index );
 
@@ -186,7 +189,7 @@ public:
 
 	/** Audio event to spawn on pickup */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-	class UAkAudioEvent* mPickupSound;
+	TObjectPtr<class UAkAudioEvent> mPickupSound;
 
 	virtual void PlayPickupEffectImpl() override;
 
@@ -196,11 +199,11 @@ protected:
 protected:
 	/** The mesh to represent the item */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-	class UStaticMeshComponent* mMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mMeshComponent;
 
 	/** Marker on the map associated with this pickup */
 	UPROPERTY( SaveGame )
-	class AFGItemPickupMarker* mPickupMarker;
+	TObjectPtr<class AFGItemPickupMarker> mPickupMarker;
 private:
 	/** Should we play a spawn effect? */
 	UPROPERTY( SaveGame )

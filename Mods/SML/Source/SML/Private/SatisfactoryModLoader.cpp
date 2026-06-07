@@ -109,8 +109,9 @@ void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
 void FSatisfactoryModLoader::CheckGameVersion() {
     const uint32 CurrentChangelist = FEngineVersion::Current().GetChangelist();
     const uint32 MinChangelistSupported = (uint32) targetGameVersion;
-    
-    if (!(CurrentChangelist >= MinChangelistSupported)) {
+
+	// Ignore game version check if game changelist is not set (e.g. this is a local source build with no version set)
+    if (CurrentChangelist != 0 && !(CurrentChangelist >= MinChangelistSupported)) {
         UE_LOG(LogSatisfactoryModLoader, Fatal, TEXT("Game version check failed: Game version is %d, but this SML version is built for %d"), CurrentChangelist, MinChangelistSupported);
     }
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Version check passed successfully! Game Changelist: %d"), CurrentChangelist);

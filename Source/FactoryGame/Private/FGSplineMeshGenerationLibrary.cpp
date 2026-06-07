@@ -3,11 +3,7 @@
 #include "FGSplineMeshGenerationLibrary.h"
 
 void UFGSplineMeshGenerationLibrary::BuildNaniteSplineMeshes(USplineComponent* spline,UStaticMesh* Mesh, float meshLength, TArray<USplineMeshComponent*>& outMeshes){ }
-void UFGSplineMeshGenerationLibrary::BuildSplineMeshesInstanced(USplineComponent* spline, float meshLength,  UInstancedSplineMeshComponent* splineInstances){ }
-void UFGSplineMeshGenerationLibrary::BuildSplineMeshesPerSegmentInstanced(USplineComponent* spline,
-		UStaticMesh* mesh,
-		float meshLength,
-	    UInstancedSplineMeshComponent* splineInstances){ }
+void UFGSplineMeshGenerationLibrary::BuildLightweightSplineMeshes(const USplineComponent* splineComponent, UStaticMesh* mesh, float meshLength, int32 splineInstanceDataOffset, TArray<FInstanceData>& out_lightweightInstances, float staticInstanceScale, FMeshGenerationSettings Settings){ }
 void UFGSplineMeshGenerationLibrary::BuildSplineCollisionBoxesWithFixedSteps_DEPRECATED( USplineComponent* spline,
 		const FVector& collisionExtent,
 		float collisionSpacing,
@@ -36,3 +32,9 @@ bool UFGSplineMeshGenerationLibrary::GetNextDistanceExceedingTolerance(USplineCo
 		uint8 fineTuningIterations ,
 		float minStepFactor ,
 		ESplineCoordinateSpace::Type space){ return bool(); }
+
+void UFGSplineMeshGenerationLibrary::BuildSplineCollisionInfoBoxesWithVariableSteps(USplineComponent* InSpline,
+	const FVector& InCollisionExtent,
+	float InCollisionSpacing,
+	TArray<FCachedCollisionBoxInfo>& OutInfo,
+	const FVector& Offset){ }

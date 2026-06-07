@@ -28,9 +28,17 @@ public:
 	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
 	static float GetFloatValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, float& out_displayValue, UObject* worldContext );
 	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
+	static FString GetStringValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, FString& out_displayValue, UObject* worldContext );
+	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
+	static FLinearColor GetLinearColorValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, FLinearColor& out_displayValue, UObject* worldContext );
+	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
 	static void SetBoolValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, bool value, bool forceSet, UObject* worldContext );
 	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
 	static void SetInt32Value( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, int32 value, bool forceSet, UObject* worldContext );
 	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
 	static void SetFloatValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, float value, bool forceSet, UObject* worldContext );
+	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
+	static void SetStringValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, const FString& value, bool forceSet, UObject* worldContext );
+	UFUNCTION (BlueprintCallable, meta=( BlueprintInternalUseOnly="true", WorldContext = "worldContext" ) )
+	static void SetLinearColorValue( TScriptInterface<IFGOptionInterface> optionInterface, UFGUserSetting* setting, const FLinearColor& value, bool forceSet, UObject* worldContext );
 };

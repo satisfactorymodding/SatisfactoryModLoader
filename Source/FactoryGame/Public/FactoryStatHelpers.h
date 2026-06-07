@@ -25,7 +25,6 @@ public:
 	float TotalConveyorLiftHeight = 0.f;
 	float TotalPipelineLength = 0.f;
 	float TotalRailroadTrackLength = 0.f;
-	float TotalRoadLength = 0.f;
 	float TotalWireLength = 0.f;
 	float TotalHyperTubeLength = 0.f;
 

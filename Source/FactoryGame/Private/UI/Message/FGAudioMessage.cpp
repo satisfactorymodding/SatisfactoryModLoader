@@ -30,6 +30,7 @@ void UFGAudioMessage::NativeDestruct(){ Super::NativeDestruct(); }
 int32 UFGAudioMessage::GetMessagePriority() const{ return int32(); }
 void UFGAudioMessage::StartPlayback(){ }
 void UFGAudioMessage::OnSkipButtonPressed(){ }
+void UFGAudioMessage::OnSkipButtonTriggered(){ }
 void UFGAudioMessage::OnSkipButtonReleased(){ }
 void UFGAudioMessage::OnSkipButtonHeld(FInputActionValue ActionValue, float ElapsedTime, float TriggeredTime, const UInputAction* SourceAction){  }
 void UFGAudioMessage::PlayNextDialogue_Implementation(bool skipToNextTimeStamp){ }

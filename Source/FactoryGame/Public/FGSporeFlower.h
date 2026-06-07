@@ -30,7 +30,7 @@ public:
 	//IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	//End
 
 	// Begin IFGSaveInterface
@@ -59,7 +59,7 @@ protected:
 
 	/** Holds a list of all actors inside trigger spehere */
 	UPROPERTY( )
-	TArray<AActor*> mTriggerActors;
+	TArray<TObjectPtr<AActor>> mTriggerActors;
 
 	UPROPERTY(EditDefaultsOnly)
 	float mDeathTime = 10;

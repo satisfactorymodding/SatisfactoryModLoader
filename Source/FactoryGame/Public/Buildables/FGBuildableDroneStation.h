@@ -62,9 +62,13 @@ public:
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION() virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	//<FL>[KonradA]
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return GetInfo()->mLastEditedBy; }
+	UFUNCTION() virtual FPlayerInfoHandle GetLastEditedBy() const override { return GetInfo()->mLastEditedBy; }
 	// Drone Port has Building Tags which also handle this so we dont need this to do anything
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {  }
+	UFUNCTION() virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy )
+	{
+		UE_LOG( LogTemp, Warning, TEXT( "SetLastActorEditedByHandle in DroneStation.h" ) );
+		GetInfo()->SetLastEditedByHandle( LastEditedBy );
+	}
 	//</FL>
 	// End IFGActorRepresentationInterface
 
@@ -200,9 +204,6 @@ protected:
 	
 private:
 	UFUNCTION()
-	void OnRep_ItemTransferringStage();
-
-	UFUNCTION()
     void OnRep_StationHasDronesInQueue();
 
 	UFUNCTION()
@@ -222,9 +223,6 @@ private:
 private:
 	friend class AFGDroneStationInfo;
 	friend class AFGDroneSubsystem;
-
-	/** All connection components tagged with this is considered fuel components */
-	static FName sFuelTag;
 	
 	/** Where the drones should fly to before starting docking procedure. Local Space. */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone Station" )
@@ -240,7 +238,7 @@ private:
 	
 	/** Drones waiting to dock. */
 	UPROPERTY( SaveGame )
-	TArray<class AFGDroneVehicle*> mDroneDockingQueue;
+	TArray<TObjectPtr<class AFGDroneVehicle>> mDroneDockingQueue;
 
 	/** Whether or not the station has drones in queue. */
 	UPROPERTY( ReplicatedUsing=OnRep_StationHasDronesInQueue )
@@ -248,10 +246,10 @@ private:
 
 	UPROPERTY( SaveGame )
 	/** The most recent drone to dock. Gets cleared after traveling a certain distance away. */
-	class AFGDroneVehicle* mRecentlyDockedDrone;
+	TObjectPtr<class AFGDroneVehicle> mRecentlyDockedDrone;
 
 	/** Whether we are in the process of transferring items, and what stage. */
-	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_ItemTransferringStage )
+	UPROPERTY( SaveGame, Replicated )
 	EItemTransferringStage mItemTransferringStage;
 
 	/** Current progress on transfer from/to docking station ( in seconds ) */
@@ -292,11 +290,11 @@ private:
 	
 	/** The drone belonging to this station. */
 	UPROPERTY( Replicated, SaveGame )
-	class AFGDroneVehicle* mStationDrone;
+	TObjectPtr<class AFGDroneVehicle> mStationDrone;
 
 	/** The currently docked drone. */
 	UPROPERTY( Replicated, SaveGame )
-	class AFGDroneVehicle* mDockedDrone;
+	TObjectPtr<class AFGDroneVehicle> mDockedDrone;
 
 	/** SizeX of input and output inventories */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone Station" )
@@ -316,31 +314,31 @@ private:
 	
 	/** Inventory where we transfer items from when loading a drone.  */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mInputInventory;
+	TObjectPtr<class UFGInventoryComponent> mInputInventory;
 
 	/** Inventory where we transfer items to when unloading from a drone.  */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mOutputInventory;
+	TObjectPtr<class UFGInventoryComponent> mOutputInventory;
 	
 	/** Inventory where fuel is stored. */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mFuelInventory;
+	TObjectPtr<class UFGInventoryComponent> mFuelInventory;
 
 	/** All connections that can pull to data to our storage, (References hold by Components array, no need for UPROPERTY) */
 	TArray<class UFGFactoryConnectionComponent*> mStorageInputConnections;
 	
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_DroneStationInfo )
-	AFGDroneStationInfo* mInfo;
+	TObjectPtr<AFGDroneStationInfo> mInfo;
 
 	/** Used to hold a reference to the mInfo during blueprint serialization. Holds a reference to mInfo which is nulled during blueprint serialization */
 	UPROPERTY()
-	AFGDroneStationInfo* mTempInfo;
+	TObjectPtr<AFGDroneStationInfo> mTempInfo;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTexture;
+	TObjectPtr<class UTexture2D> mActorRepresentationTexture;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	UMaterialInterface* mActorRepresentationCompassMaterial;
+	TObjectPtr<UMaterialInterface> mActorRepresentationCompassMaterial;
 	
 	UPROPERTY( Replicated )
 	FText mMapText;

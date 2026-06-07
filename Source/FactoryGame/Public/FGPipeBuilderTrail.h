@@ -37,15 +37,15 @@ public:
 private:
 	/** Saved pipelines we have to traverse */
 	UPROPERTY()
-	TArray< class AFGBuildablePipeline* > mPipesToTraverse;
+	TArray< TObjectPtr<class AFGBuildablePipeline> > mPipesToTraverse;
 	
 	/** Pipeline we are currently traversing */
 	UPROPERTY()
-	class AFGBuildablePipeline* mCurrentPipeline;
+	TObjectPtr<class AFGBuildablePipeline> mCurrentPipeline;
 
 	/** Cached spline to traverse */
 	UPROPERTY()
-	class USplineComponent* mSpline;
+	TObjectPtr<class USplineComponent> mSpline;
 
 	/** Current distance along spline 0-1 */
 	float mCurrentDistance; 

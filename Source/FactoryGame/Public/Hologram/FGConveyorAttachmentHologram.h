@@ -52,6 +52,15 @@ protected:
 
 	void SnapToConnection( class UFGFactoryConnectionComponent* connectiontoSnapTo, class UFGFactoryConnectionComponent* myConnectionToSnapWith, FVector locationToDetermineSideIfAplicable );
 
+	/**
+	 * Searches nearby buildables for an unconnected factory connection whose height is within the snap threshold of the given location.
+	 * Used to snap lift attachments to matching port heights in the vertical plane (analogous to SnapLocationToGuidelines for horizontal belts).
+	 * @param location			The current world location to snap from.
+	 * @param excludedActor		Actor to ignore during the search (typically the lift being snapped onto).
+	 * @return					Snap result with mSnapLocation set to the adjusted world location, or mSuccessfulSnap=false if no candidate was found within range.
+	 */
+	FFGHologramGuidelineSnapResult SnapLocationToVerticalLiftGuideline( const FVector& location, const AActor* excludedActor ) const;
+
 public:
 	/** Name of the pass through input connection. */
 	static FName mInputConnection1;
@@ -77,14 +86,14 @@ protected:
 
 	/** The conveyor we snapped to. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableConveyorBase* mSnappedConveyor;
+	TObjectPtr<class AFGBuildableConveyorBase> mSnappedConveyor;
 
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableConveyorAttachment* mUpgradedConveyorAttachment;
+	TObjectPtr<class AFGBuildableConveyorAttachment> mUpgradedConveyorAttachment;
 
 	/** The connection we snapped to. */
 	UPROPERTY( CustomSerialization )
-	class UFGFactoryConnectionComponent* mSnappedConnection = nullptr;
+	TObjectPtr<class UFGFactoryConnectionComponent> mSnappedConnection = nullptr;
 
 	TArray<class UFGFactoryConnectionComponent* > mConnections;
 

@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "Templates/SubclassOf.h"
 #include "FGFactoryClipboard.generated.h"
 
 UCLASS( Blueprintable, Abstract )
@@ -27,7 +28,6 @@ class UFGFactoryClipboardInterface : public UInterface
 class FACTORYGAME_API IFGFactoryClipboardInterface
 {
 	GENERATED_BODY()
-
 public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Factory Clipboard" )
 	bool CanUseFactoryClipboard();

@@ -17,8 +17,8 @@ struct FWorldScannableData
 
 	FWorldScannableData() = default;
 #if WITH_EDITOR
-	explicit FWorldScannableData( const AActor* actor );
-	explicit FWorldScannableData( const class FWorldPartitionActorDesc* ActorDesc, int32 PIEInstanceIndex = INDEX_NONE );
+	explicit FWorldScannableData( AActor* actor );
+	explicit FWorldScannableData( const class FWorldPartitionActorDescInstance* ActorDesc, int32 PIEInstanceIndex = INDEX_NONE );
 #endif
 
 	UPROPERTY( VisibleAnywhere, Category = "Scannable Data" )
@@ -38,11 +38,11 @@ USTRUCT()
 struct FCreatureSpawnerWorldScannableData : public FWorldScannableData
 {
 	GENERATED_BODY()
-	
+
 	FCreatureSpawnerWorldScannableData() = default;
 #if WITH_EDITOR
-	explicit FCreatureSpawnerWorldScannableData( const AFGCreatureSpawner* actor );
-	explicit FCreatureSpawnerWorldScannableData( const class FWorldPartitionActorDesc* ActorDesc, int32 PIEInstanceIndex = INDEX_NONE );
+	explicit FCreatureSpawnerWorldScannableData( AFGCreatureSpawner* actor );
+	explicit FCreatureSpawnerWorldScannableData( const class FWorldPartitionActorDescInstance* ActorDesc, int32 PIEInstanceIndex = INDEX_NONE );
 #endif
 
 	/** Class of the creature that is spawned by this spawner */

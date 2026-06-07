@@ -3,7 +3,7 @@
 #include "Equipment/FGGolfCartDispenser.h"
 
 AFGGolfCartDispenser::AFGGolfCartDispenser() : Super() {
-	this->mCartPlacementClearance = FVector((120, 80, 100));
+	this->mCartPlacementClearance = FVector(120, 80, 100);
 	this->mCartPlacementDistance = 500.0;
 	this->mGolfCartClass = nullptr;
 	this->mValidPlacementMaterial = nullptr;

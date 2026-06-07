@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -60,7 +60,7 @@ private:
 
 	/** The spline buildable we snapped to. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildable* mSnappedSplineBuildable;
+	TObjectPtr<class AFGBuildable> mSnappedSplineBuildable;
 
 	UPROPERTY()
 	TScriptInterface<IFGSplineBuildableInterface> mSplineInterface;

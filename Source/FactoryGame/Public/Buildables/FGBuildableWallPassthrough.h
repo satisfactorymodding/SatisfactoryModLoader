@@ -55,14 +55,14 @@ private:
 
 	/** The mesh that will be used for the connections of the passthrough. */
 	UPROPERTY( EditDefaultsOnly, Category = "WallPassthrough" )
-	class UStaticMesh* mPassthroughConnectionMesh;
+	TObjectPtr<class UStaticMesh> mPassthroughConnectionMesh;
 
 	/** How much to offset the connection locations, positive value will move the connections further out. */
 	UPROPERTY( EditDefaultsOnly, Category = "WallPassthrough" )
 	float mConnectionDepthOffset;
 	
 	UPROPERTY( Replicated )
-	UFGConnectionComponent* mConnections[2];
+	TObjectPtr<UFGConnectionComponent> mConnections[2];
 
 	FFGClearanceData mConnectionMeshClearanceData[ 2 ];
 

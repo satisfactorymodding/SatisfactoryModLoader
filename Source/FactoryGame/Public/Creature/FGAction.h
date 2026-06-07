@@ -205,13 +205,13 @@ protected:	// PROTECTED FUNC
 protected:	// PROTECTED MEMBERS
 	/** Each scorer gives a weight and they are summed up when called "ScoreAction" */
 	UPROPERTY(EditAnywhere, Instanced, Category="Scoring, Interrupt & Filtering")
-	TArray<UFGActionScorer*> mActionScorers;
+	TArray<TObjectPtr<UFGActionScorer>> mActionScorers;
 
 	/** Tests that perform at the beginning of every tick whilst an action runs.
 	 * If any of them succeeds, the action gets cancelled.
 	 * No tests = no interruption */
 	UPROPERTY(EditAnywhere, Instanced, Category="Scoring, Interrupt & Filtering")
-	TArray<UFGActionTest*> mActionInterrupts;
+	TArray<TObjectPtr<UFGActionTest>> mActionInterrupts;
 
 	UPROPERTY(EditAnywhere, Category="General Settings")
 	FString mActionDescription = "";
@@ -266,13 +266,13 @@ protected:	// PROTECTED MEMBERS
 
 	/** Action to run in the same way as post action, but *before* the actual action runs (i.e: Relocate to range) */
 	UPROPERTY(EditAnywhere, Instanced, Category="Linked Actions")
-	UFGAction* mPreAction = nullptr;
+	TObjectPtr<UFGAction> mPreAction = nullptr;
 
 	/** Ability to chain actions. Post action will execute when the current action successfully finishes.
 	  * Post Action Setup checks happens at the same as the current action.
 	  * Scoring and CanPerform are ignored for post actions, they simply execute if they can perform and their parent (this) executes.*/
 	UPROPERTY(EditAnywhere, Instanced, Category="Linked Actions")
-	UFGAction* mPostAction = nullptr;
+	TObjectPtr<UFGAction> mPostAction = nullptr;
 
 	/** The pawn performing the action */
 	UPROPERTY()
@@ -307,7 +307,7 @@ private:	// PRIVATE MEMBERS
 
 	/** If we are a pre or post action this is our parent action. */
 	UPROPERTY()
-	UFGAction* mParentAction;
+	TObjectPtr<UFGAction> mParentAction;
 
 	/** The duration of the current execution of this action, as specified by mActionDuration. */
 	float mCurrentActionDuration;
