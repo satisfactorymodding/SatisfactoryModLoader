@@ -54,6 +54,13 @@ public:
     bool DeleteScheduled(int64 Id);
 
     /**
+     * Delete a scheduled ban by integer Id (before it fires) and return the
+     * removed entry via OutEntry for audit-log purposes.
+     * Returns true if found and removed. Thread-safe.
+     */
+    bool DeleteScheduled(int64 Id, FScheduledBanEntry& OutEntry);
+
+    /**
      * Tick: check each pending entry, apply any that are now due.
      * Called every 30 s by the module ticker.
      */

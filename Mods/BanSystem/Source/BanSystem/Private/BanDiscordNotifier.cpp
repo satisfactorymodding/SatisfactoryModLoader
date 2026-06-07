@@ -93,10 +93,13 @@ namespace
     /** Builds a single inline Discord embed field JSON fragment. */
     FString Field(const FString& Name, const FString& Value, bool bInline = true)
     {
+        // Discord API enforces: field name ≤ 256 chars, field value ≤ 1024 chars.
+        // Exceeding either limit causes the entire webhook POST to return HTTP 400,
+        // silently dropping the notification.
         return FString::Printf(
             TEXT("{\"name\":\"%s\",\"value\":\"%s\",\"inline\":%s}"),
-            *JsonEscape(Name),
-            *JsonEscape(Value),
+            *JsonEscape(Name.Left(256)),
+            *JsonEscape(Value.Left(1024)),
             bInline ? TEXT("true") : TEXT("false"));
     }
 } // anonymous namespace

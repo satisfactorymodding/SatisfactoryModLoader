@@ -77,6 +77,8 @@ static FString JsonEscapeStr(const FString& S)
 
 // Escapes Discord markdown special characters so player-supplied strings
 // (names, reasons, etc.) are rendered literally, not as formatting.
+// '@' is also escaped to prevent @everyone/@here mention injection in
+// status messages and moderation log entries that don't set allowed_mentions.
 static FString EscapeMarkdown(const FString& Text)
 {
 	FString Out;
@@ -87,7 +89,7 @@ static FString EscapeMarkdown(const FString& Text)
 		{
 		case TEXT('*'): case TEXT('_'): case TEXT('`'): case TEXT('~'):
 		case TEXT('|'): case TEXT('>'): case TEXT('\\'): case TEXT('['):
-		case TEXT(']'): case TEXT('#'):
+		case TEXT(']'): case TEXT('#'): case TEXT('@'):
 			Out += TEXT('\\');
 			break;
 		default:
@@ -2241,10 +2243,12 @@ void UDiscordBridgeSubsystem::RespondWithMultiFieldModal(const FString& Interact
 	}
 
 	// Each FModalField becomes one ACTION_ROW containing a single TEXT_INPUT.
-	// Discord allows a maximum of 5 ACTION_ROWs per modal.
+	// Discord allows a maximum of 5 ACTION_ROWs per modal; silently drop extras.
 	TArray<TSharedPtr<FJsonValue>> Rows;
-	for (const FModalField& F : Fields)
+	const int32 MaxRows = FMath::Min(Fields.Num(), 5);
+	for (int32 FieldIdx = 0; FieldIdx < MaxRows; ++FieldIdx)
 	{
+		const FModalField& F = Fields[FieldIdx];
 		TSharedPtr<FJsonObject> TextInput = MakeShared<FJsonObject>();
 		TextInput->SetNumberField(TEXT("type"),      4); // TEXT_INPUT
 		TextInput->SetStringField(TEXT("custom_id"), F.CustomId);

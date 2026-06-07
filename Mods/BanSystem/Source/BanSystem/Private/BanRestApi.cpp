@@ -2271,6 +2271,22 @@ void UBanRestApi::RegisterRoutes()
             ContactInfo = ContactInfo.Left(500).TrimStartAndEnd();
             if (Reason.IsEmpty()) Reason = TEXT("No reason given");
 
+            // Normalize a bare 32-character hex PUID (submitted by the appeal
+            // portal HTML form) to the canonical "EOS:<puid>" form that the
+            // ban database stores.  Without this prefix the ban lookup in
+            // PATCH /appeals/:id silently fails and the player stays banned
+            // even after their appeal is approved.
+            if (!Uid.Contains(TEXT(":")) && Uid.Len() == 32)
+            {
+                bool bAllHex = true;
+                for (TCHAR C : Uid)
+                {
+                    if (!FChar::IsHexDigit(C)) { bAllHex = false; break; }
+                }
+                if (bAllHex)
+                    Uid = TEXT("EOS:") + Uid.ToLower();
+            }
+
             // Reject duplicate appeals atomically: AddAppealIfNoDuplicate checks for an
             // existing Pending entry and inserts the new one inside a single mutex lock,
             // closing the TOCTOU window that existed when doing GetAllAppeals()+AddAppeal().
@@ -3122,13 +3138,21 @@ void UBanRestApi::RegisterRoutes()
             UScheduledBanRegistry* SchReg = GI->GetSubsystem<UScheduledBanRegistry>();
             if (!SchReg) { Done(BanJson::Error(TEXT("ScheduledBanRegistry unavailable"), EHttpServerResponseCodes::ServerError)); return true; }
 
-            if (!SchReg->DeleteScheduled(Id))
+            FScheduledBanEntry DeletedEntry;
+            if (!SchReg->DeleteScheduled(Id, DeletedEntry))
             {
                 Done(BanJson::Error(
                     FString::Printf(TEXT("No scheduled ban found with id %lld"), Id),
                     EHttpServerResponseCodes::NotFound));
                 return true;
             }
+
+            // Audit the cancellation so there is a record of who removed it.
+            if (UBanAuditLog* AuditLog = GI->GetSubsystem<UBanAuditLog>())
+                AuditLog->LogAction(TEXT("cancel_scheduled_ban"),
+                    DeletedEntry.Uid, DeletedEntry.PlayerName,
+                    TEXT("api"), TEXT("api"),
+                    FString::Printf(TEXT("scheduledBanId=%lld reason=%s"), Id, *DeletedEntry.Reason));
 
             Done(BanJson::Ok(FString::Printf(TEXT("Scheduled ban #%lld cancelled"), Id)));
             return true;
