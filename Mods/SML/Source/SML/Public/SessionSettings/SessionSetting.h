@@ -18,5 +18,6 @@ public:
 
 #if WITH_EDITOR
 	virtual EDataValidationResult IsDataValid(FDataValidationContext& ValidationContext) const override;
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
 #endif
 };
