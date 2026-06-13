@@ -33,6 +33,10 @@ AFGResourceNodeBase::AFGResourceNodeBase() : Super() {
 	this->mMeshActor = nullptr;
 	this->mAddToSignificanceManager = true;
 	this->mSignificanceRange = 18000.0;
+	// MODDING EDIT: In CSS editor this is false by default https://discord.com/channels/555424930502541343/555515791592652823/1515489860444749965
+#if WITH_EDITOR
+	this->bIsSpatiallyLoaded = false;
+#endif 
 }
 void AFGResourceNodeBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
