@@ -1,11 +1,13 @@
 ﻿#pragma once
 #include "Configuration/ConfigProperty.h"
+#include "Configuration/ConfigValueArrayInterface.h"
 #include "Configuration/ConfigValueDirtyHandlerInterface.h"
+#include "Configuration/RawFileFormat/RawFormatValueArray.h"
 #include "ConfigPropertyArray.generated.h"
 
 /** Describes array configuration property with single nested element type */
 UCLASS()
-class SML_API UConfigPropertyArray : public UConfigProperty, public IConfigValueDirtyHandlerInterface {
+class SML_API UConfigPropertyArray : public UConfigProperty, public IConfigValueDirtyHandlerInterface, public IConfigValueArrayInterface {
     GENERATED_BODY()
 public:
     /** Defines the "template" default value used for allocating other values in the array */
@@ -57,9 +59,19 @@ public:
     virtual bool ResetToDefault_Implementation() override;
     virtual bool IsSetToDefaultValue_Implementation() const override;
     virtual FString GetDefaultValueAsString_Implementation() const override;
+
+    virtual URawFormatValueArray* CreateRawFormatValue(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) override {
+        return URawFormatValueArray::FromJson(Outer, JsonValue);
+    }
     //End UConfigProperty
 
     //Begin IConfigValueDirtyHandlerInterface
     virtual void HandleMarkDirty_Implementation() override;
     //End IConfigValueDirtyHandlerInterface
+
+    //Begin IConfigPropertyArrayInterface
+    /** Returns the child property of this property at the specified index */
+    UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DisplayName = "Get Child By Index", CompactNodeTitle = ".", BlueprintAutocast), Category = "SML | Configuration")
+    virtual UConfigProperty* GetChildProperty_Implementation(const int32 PropertyIndex) override;
+    //End IConfigPropertyArrayInterface
 };
