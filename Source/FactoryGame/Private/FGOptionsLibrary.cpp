@@ -2,7 +2,8 @@
 
 #include "FGOptionsLibrary.h"
 
-void UFGOptionsLibrary::GatherUserSettings(IFGOptionInterface* manager, TMap< FString,  UFGUserSettingApplyType* >& out_userSettings, UClass* managerAvailabilityOverride , bool bDedicatedServerRelevantOnly){ }
-TArray<FUserSettingCategoryMapping> UFGOptionsLibrary::GetCategorizedUserSettingsWidgets(ESettingVisiblityDisqualifier visibilityDisqualifiers, UUserWidget* owningWidget, TScriptInterface<class IFGOptionInterface> optionInterface, TMap< FString,  UFGUserSettingApplyType* > userSettings){ return TArray<FUserSettingCategoryMapping>(); }
-TArray<FUserSettingCategoryMapping> UFGOptionsLibrary::GetCategorizedUserSettingsWidgets(UObject* worldContext, UUserWidget* owningWidget, TScriptInterface<class IFGOptionInterface> optionInterface, TMap< FString,  UFGUserSettingApplyType* > userSettings){ return TArray<FUserSettingCategoryMapping>(); }
-UFGDynamicOptionsRow* UFGOptionsLibrary::SetupUserSetting(UUserWidget* owningWidget,  UFGUserSetting* userSetting, TScriptInterface<  IFGOptionInterface > optionInterface){ return nullptr; }
+void UFGOptionsLibrary::GatherUserSettings(IFGOptionInterface* manager, TMap<FString, TObjectPtr<UFGUserSettingApplyType>>& out_userSettings, UClass* managerAvailabilityOverride, bool bDedicatedServerRelevantOnly){ }
+TArray<FUserSettingCategoryMapping> UFGOptionsLibrary::GetCategorizedUserSettingsWidgets(ESettingVisiblityDisqualifier visibilityDisqualifiers, UUserWidget* owningWidget, TScriptInterface<class IFGOptionInterface> optionInterface, TMap<FString, TObjectPtr<UFGUserSettingApplyType>> userSettings){ return TArray<FUserSettingCategoryMapping>(); }
+TArray<FUserSettingCategoryMapping> UFGOptionsLibrary::GetCategorizedUserSettingsWidgets(UObject* worldContext, UUserWidget* owningWidget, TScriptInterface<class IFGOptionInterface> optionInterface, TMap<FString, TObjectPtr<UFGUserSettingApplyType>> userSettings){ return TArray<FUserSettingCategoryMapping>(); }
+TObjectPtr<UFGUserSetting> UFGOptionsLibrary::GetUserSettingDataAsset(const FString& SettingName){ return TObjectPtr<UFGUserSetting>(); }
+UFGDynamicOptionsRow* UFGOptionsLibrary::SetupUserSetting(UUserWidget* owningWidget, class UFGUserSetting* userSetting, TScriptInterface<class IFGOptionInterface> optionInterface, FSettingsWidgetLocationDescriptor widgetLocator){ return nullptr; }

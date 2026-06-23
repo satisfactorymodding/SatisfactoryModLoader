@@ -7,8 +7,10 @@
 #include "FGFactoryBlueprintTypes.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "Settings/FGUserSetting.h"
+#include "FGGameUserSettings.h"
 #include "FGAlternativeSettingsSaver.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN( LogAlternativeSettingsSaver, Log, All );
 
 UCLASS()
 class FACTORYGAME_API UFGAlternativeSettingSaveGame : public USaveGame
@@ -23,13 +25,22 @@ public:
 	TMap< FString, float > mFloatValues;
 
 	UPROPERTY( )
+	TMap< FString, FString > mStringValues;
+
+	UPROPERTY( )
+	TMap< FString, FLinearColor > mLinearColorValues;
+
+	UPROPERTY( )
 	FString mLanguage;
+
+	UPROPERTY( )
+	EOnlineIntegrationMode LastSeenOnlineMode;
 
 	void FilterBySettingsAvailability();
 
 private:
 	template< typename ValueType >
-	void FilterValueMap( const TArray< UFGUserSettingApplyType* >& AllUserSettings, const ESettingVisiblityDisqualifier& VisiblityDisqualifier, TMap< FString, ValueType >& Values );
+	void FilterValueMap( const TArray< TObjectPtr<UFGUserSettingApplyType> >& AllUserSettings, const ESettingVisiblityDisqualifier& VisiblityDisqualifier, TMap< FString, ValueType >& Values );
 };
 
 
@@ -80,8 +91,10 @@ class FACTORYGAME_API UFGAlternativeSaveSubsystem : public UEngineSubsystem
 {
 	GENERATED_BODY()
 public:
-	bool SaveCurrentSettings( const TMap< FString, int32 > & inIntValues, const TMap< FString, float >& inFloatValues, FString inLanguage );
-	bool LoadCurrentSettings( TMap< FString, int32 >& outIntValues, TMap< FString, float >& outFloatValues, FString& outLanguage );
+	bool SaveCurrentSettings( const TMap< FString, int32 > & inIntValues, const TMap< FString, float >& inFloatValues, const TMap<FString, FString>& inStringValues, const TMap<FString, FLinearColor>& inLinearColorValues, FString inLanguage );
+	bool SetLastOnlineMode( EOnlineIntegrationMode Value );
+	EOnlineIntegrationMode GetLastOnlineMode();	
+	bool LoadCurrentSettings( TMap< FString, int32 >& outIntValues, TMap< FString, float >& outFloatValues, TMap<FString, FString>& outStringValues, TMap<FString, FLinearColor>& outLinearColorValues, FString& outLanguage );
 
 // <Blueprints>
 	bool LoadBlueprintRecords( const FString& sessionName, TArray< FBlueprintRecord >& out_Records );
@@ -121,11 +134,11 @@ private:
 //  </Blueprint>
 
 	UPROPERTY()
-	UFGAlternativeSettingSaveGame* mSaveGame;
+	TObjectPtr<UFGAlternativeSettingSaveGame> mSaveGame;
 
 	UPROPERTY()
-	TArray<UFGBlueprintSaveGame*> mBlueprintSaveGames;
+	TArray<TObjectPtr<UFGBlueprintSaveGame>> mBlueprintSaveGames;
 
 	UPROPERTY()
-	UFGPlayerReportSaveGame* mPlayerReportSaveGame;
+	TObjectPtr<UFGPlayerReportSaveGame> mPlayerReportSaveGame;
 };

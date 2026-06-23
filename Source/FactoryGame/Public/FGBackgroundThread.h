@@ -528,8 +528,8 @@ private:
 	// TODO consider a weak ptr?
 	/** Cached pointer to the world, made when initialized. */
 	UWorld* mWorldContext;
-	
-	FRunnableThread* Thread;
+
+	TSharedPtr<FRunnableThread> Thread;
 	
 	// Actor
 	TWeakObjectPtr<AActor> mPoolRootActor;
@@ -774,13 +774,13 @@ public:
 	void DisplayDebug( UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos ) override;
 
 	UFUNCTION( BlueprintCallable, Category = "Pool sytem" )
-	static void SetFlag( AFGBuildable* Buildable, UPARAM( meta = (Bitmask, BitmaskEnum = EPoolInstanceFlags) ) int32 Flags );
+	static void SetFlag( AFGBuildable* Buildable, UPARAM( meta = (Bitmask, BitmaskEnum = "/Script/FactoryGame.EPoolInstanceFlags") ) int32 Flags );
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 public:
 	UPROPERTY( VisibleAnywhere )
-	TArray<UActorComponent*> Components;
+	TArray<TObjectPtr<UActorComponent>> Components;
 };
 
 UENUM()

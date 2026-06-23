@@ -8,15 +8,17 @@ void UFGSessionInformationModel::SetSessionState(EFactorySessionState inSessionS
 void UFGSessionInformationModel::SetCrossPlayAllowed(bool bAllowCrossPlay){  }
 void UFGSessionInformationModel::SetOriginLocalPlatformName(FString OLPName){  }
 void UFGSessionInformationModel::SetPlatformAvatarURL(FString AvatarURL){  }
-void UFGSessionInformationModel::AddPlayerToSession(AFGPlayerState* inPlayerState){ }
-void UFGSessionInformationModel::RemovePlayerFromSession(AFGPlayerState* inPlayerState){ }
+void UFGSessionInformationModel::SetPlatformPlayerName(FString PlayerName){ }
+void UFGSessionInformationModel::AddPlayerToSession(APlayerState* inPlayerState){ }
+void UFGSessionInformationModel::RemovePlayerFromSession(APlayerState* inPlayerState){ }
 TArray< FCustomOnlineSessionSetting > UFGSessionInformationModel::GetInitialSessionSettingsFromSaveHeader(const FSaveHeader& saveHeader){ return TArray<FCustomOnlineSessionSetting>(); }
-TArray< FCustomOnlineSessionSetting > UFGSessionInformationModel::GetInitialSessionSettingsForNewGame(const FString& sessionName, bool isCreativeModeEnabled){ return TArray<FCustomOnlineSessionSetting>(); }
+TArray<FCustomOnlineSessionSetting> UFGSessionInformationModel::GetInitialSessionSettingsForNewGame(const FString& sessionName, bool isCreativeModeEnabled, TScriptInterface<IFGAdvancedGameSettingsInterface>){ return TArray<FCustomOnlineSessionSetting>(); }
 void UFGSessionInformationModel::OnSessionAttributesAdded(const TArray<FCustomOnlineSessionSetting>& newAttributes){ }
 void UFGSessionInformationModel::OnSessionAttributesRemoved(const TArray<FName>& removedAttributes){ }
 void UFGSessionInformationModel::OnSessionAttributesUpdated(const TArray<FCustomOnlineSessionSetting>& updatedAttributes){ }
 void UFGSessionInformationModel::RebuildRows(){ }
 void UFGSessionInformationModel::SetCreativeModeEnabled(bool isEnabled){ }
+void UFGSessionInformationModel::UpdateCurrentSessionMemberCount(){ }
 void UFGSessionInformationModel::SetSessionName(const FString& inSessionName){ }
 void UFGSessionInformationModel::SetCurrentGamePhase(UFGGamePhase* inCurrentPhase, bool bSuppressNarrativeMessages){ }
 void UFGSessionInformationModel::SetActiveSchematic(TSubclassOf<UFGSchematic> inActiveSchematic){ }

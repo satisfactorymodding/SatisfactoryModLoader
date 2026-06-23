@@ -47,6 +47,8 @@ public:
 	UFUNCTION( BlueprintPure, Category="Resources" )
 	UPARAM( DisplayName="numOccupiedSatellites" )int32 GetNumOccupiedSatellites( int32& numSatellites ) const;
 
+	virtual UParticleSystem* GetHighlightParticleSystemTemplate_Implementation() const override;
+	
 	bool IsAllSatellitesOccupied() const;
 
 	/** Called when satellite node's occupied status changes */

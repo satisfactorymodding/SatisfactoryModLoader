@@ -1,6 +1,8 @@
 #include "Module/GameInstanceModuleManager.h"
 #include "SatisfactoryModLoader.h"
 #include "Configuration/ConfigManager.h"
+#include "Engine/GameInstance.h"
+#include "ModLoading/ModLoadingLibrary.h"
 #include "ModLoading/PluginModuleLoader.h"
 #include "Registry/GameMapRegistry.h"
 #include "Registry/RemoteCallObjectRegistry.h"
@@ -13,7 +15,7 @@ UGameInstanceModuleManager::UGameInstanceModuleManager() {
 }
 
 UGameInstanceModule* UGameInstanceModuleManager::FindModule(const FName& ModReference) const {
-    UGameInstanceModule* const* GameInstanceModule = RootModuleMap.Find(ModReference);
+    const TObjectPtr<UGameInstanceModule>* GameInstanceModule = RootModuleMap.Find(ModReference);
     if (GameInstanceModule != NULL) {
         return *GameInstanceModule;
     }
@@ -21,6 +23,20 @@ UGameInstanceModule* UGameInstanceModuleManager::FindModule(const FName& ModRefe
 }
 
 void UGameInstanceModuleManager::Initialize(FSubsystemCollectionBase& Collection) {
+
+	// Initialize dependencies that we need to proceed
+	Collection.InitializeDependency<UModLoadingLibrary>();
+	Collection.InitializeDependency<UConfigManager>();
+	Collection.InitializeDependency<URemoteCallObjectRegistry>();
+	Collection.InitializeDependency<USMLSessionSettingsRegistry>();
+	Collection.InitializeDependency<USMLGameMapRegistry>();
+
+	// Initialize client side only dependencies
+	if (!IsRunningDedicatedServer())
+	{
+		Collection.InitializeDependency<UItemTooltipSubsystem>();
+	}
+	
 	this->bIsInitializingCurrently = true;
     this->CurrentSubsystemCollection = &Collection;
     EnsureSMLSubsystemsInitialized();

@@ -27,15 +27,15 @@ public:
 
 	/** Jingle to play when receiving a message from this sender. */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
-	class UAkAudioEvent* mMessageJingle;
+	TObjectPtr<class UAkAudioEvent> mMessageJingle;
 
 	/** Music to play when displaying a presentation from this sender. */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
-	class UAkAudioEvent* mPresentationMusic;
+	TObjectPtr<class UAkAudioEvent> mPresentationMusic;
 
 	/** Logo material for this sender. */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
-	class UMaterialInterface* mLogoMaterial;
+	TObjectPtr<class UMaterialInterface> mLogoMaterial;
 
 	/** The tag used when importing messages. Case-insensitive. */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Import" )

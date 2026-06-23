@@ -177,6 +177,14 @@ public:
 	
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static FGameplayTag GetSchematicUnlockTag( TSubclassOf< UFGSchematic > inClass );
+
+	/** Returns true if the schematic has a given gameplay tag */
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+	static bool HasGameplayTag( TSubclassOf<UFGSchematic> inClass, const FGameplayTag& inGameplayTag );
+	
+	/** Returns all gameplay tags for the given schematic */
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+	static FGameplayTagContainer GetAllGameplayTags( TSubclassOf<UFGSchematic> inClass );
 	
 #if WITH_EDITOR
 	/** Add a recipe to this schematic. Only for editor use */
@@ -186,6 +194,7 @@ public:
 	/** This migrates the old schematic dependencies to the new dependency system */
 	void MigrateDataToNewDependencySystem();
 #endif
+	const FGameplayTagContainer& GetTagContainer() const { return mGameplayTags; }
 
 protected:
 	/** What type of schematic is this. */
@@ -239,7 +248,7 @@ protected:
 	
 	/** The unlocks you get when purchasing */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Unlocks" )
-	TArray< class UFGUnlock* > mUnlocks;
+	TArray< TObjectPtr<class UFGUnlock> > mUnlocks;
 	
 	/** Icon used when displaying this schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "UI" )
@@ -247,11 +256,11 @@ protected:
 	
 	/** Small version of the icon used when displaying this schematic  */
 	UPROPERTY( EditDefaultsOnly, Category="UI", meta = ( AddAutoJSON = true ) )
-	UTexture2D* mSmallSchematicIcon;
+	TObjectPtr<UTexture2D> mSmallSchematicIcon;
 
 	/** Is this schematic dependant on anything to be available for purchase? */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Dependencies" )
-	TArray< class UFGAvailabilityDependency* > mSchematicDependencies;
+	TArray< TObjectPtr<class UFGAvailabilityDependency> > mSchematicDependencies;
 
 	/** Should schematic dependencies block the access to the schematic. This doesn't store the schematic and checks if dependencies are met later. You need to try and give access to it again. */
 	UPROPERTY( EditDefaultsOnly, Category = "Dependencies" )
@@ -278,6 +287,10 @@ protected:
 
 	UPROPERTY( EditDefaultsOnly )
 	FGameplayTag mSchematicUnlockTag;
+
+	/** Gameplay tags associated with this schematic. Can be used to provide additional information about the schematic */
+	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
+	FGameplayTagContainer mGameplayTags;
 	
 private:
 	/** Asset Bundle data computed at save time. In cooked builds this is accessible from AssetRegistry */

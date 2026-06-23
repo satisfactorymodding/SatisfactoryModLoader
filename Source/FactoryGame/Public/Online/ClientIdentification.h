@@ -46,9 +46,17 @@ struct FClientIdentityInfo
 	 * Online identity for the client for each service. Stored as a map so we can only have one identity per service even though the service
 	 * id is also embedded in the account id.
 	 */
-	TMap<UE::Online::EOnlineServices, UE::Online::FAccountId> AccountIds;
+	TMap< UE::Online::EOnlineServices, UE::Online::FAccountId > AccountIds;
 	bool operator==(const FClientIdentityInfo&) const;
 	
+	/**
+	* Primarily used for pawn possession if accountid possession fails. This can happen e.g. when no internet connection is present or there is an outage in a platformholders auth
+	* server which results in invalid/logged out FAccountIDs. We then still want the same pawn so we can fall back onto account name matching automatically.
+	* Note: This is never serialized! This is data is also sent seperately to the host and not as part of the struct as this data is a) not needed in a persistent manner and b) adding this to serialization would
+	* invalidate old saves.
+	*/
+	TArray< FString > FallbackAccountNames;
+
 	bool Serialize(FArchive& ar);
 };
 

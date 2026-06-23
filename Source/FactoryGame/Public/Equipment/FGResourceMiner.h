@@ -121,11 +121,11 @@ protected:
 	
 	/** The resource node we are currently looking at */
 	UPROPERTY()
-	class AFGResourceNode* mPendingResourceNode;
+	TObjectPtr<class AFGResourceNode> mPendingResourceNode;
 
 	/** The node we are currently mining resources from. If set, we are actively mining. */
 	UPROPERTY( ReplicatedUsing = OnRep_ActiveResourceNode )
-	class AFGResourceNode* mActiveResourceNode;
+	TObjectPtr<class AFGResourceNode> mActiveResourceNode;
 
 	/** Mining progress of the current cycle */
 	float mCurrentMiningProgress;

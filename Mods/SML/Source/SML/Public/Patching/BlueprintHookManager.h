@@ -26,11 +26,11 @@ public:
 protected:
 	/** Mixin classes installed on this host */
 	UPROPERTY(VisibleAnywhere, Category = "Mixin Host")
-	TArray<UHookBlueprintGeneratedClass*> MixinClasses;
+	TArray<TObjectPtr<UHookBlueprintGeneratedClass>> MixinClasses;
 
 	/** Constructed mixins for this actor instance */
 	UPROPERTY()
-	TArray<UBlueprintActorMixin*> MixinInstances;
+	TArray<TObjectPtr<UBlueprintActorMixin>> MixinInstances;
 
 	friend class UBlueprintHookManager;
 	friend class UMixinInputDelegateBinding;

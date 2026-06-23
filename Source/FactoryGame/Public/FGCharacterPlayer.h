@@ -22,6 +22,8 @@
 #include "Online/CoreOnline.h"
 #include "FGCharacterPlayer.generated.h"
 
+class AFGRainActor;
+class ULevelSequence;
 class AFGBuildablePortal;
 class AFGStartingPod;
 
@@ -69,11 +71,9 @@ enum class EPlayerKeepInventoryMode : uint8
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FDisabledInputGate
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
-public:
-	FDisabledInputGate() : FDisabledInputGate( false )
-	{}
+	FDisabledInputGate() : FDisabledInputGate( false ) {}
 
 	explicit FDisabledInputGate( const bool disabled ) :
 		mJump( disabled ),
@@ -126,6 +126,45 @@ public:
 	uint8 mHotbar : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
 	uint8 mToggleMap : 1;
+
+	/** Returns true if two disabled input gates are identical */
+	friend bool operator==( const FDisabledInputGate& A, const FDisabledInputGate& B )
+	{
+		return A.mJump == B.mJump && A.mCrouch == B.mCrouch && A.mOpenSearch == B.mOpenSearch &&
+			A.mChat == B.mChat && A.mInventory == B.mInventory && A.mDismantle == B.mDismantle &&
+			A.mUse == B.mUse && A.mVehicleRecording == B.mVehicleRecording && A.mEmote == B.mEmote &&
+			A.mPhotoMode == B.mPhotoMode && A.mFlashLight == B.mFlashLight && A.mOpenCodex == B.mOpenCodex &&
+			A.mResourceScanner == B.mResourceScanner && A.mBuildGun == B.mBuildGun && A.mHotbar == B.mHotbar &&
+			A.mToggleMap == B.mToggleMap;
+	}
+
+	/** Combines two disabled input gates together. Resulting input gate has action disabled if either of the input ones does */
+	friend FDisabledInputGate operator|( const FDisabledInputGate& A, const FDisabledInputGate& B )
+	{
+		FDisabledInputGate result;
+		result.mJump = A.mJump | B.mJump;
+		result.mCrouch = A.mCrouch | B.mCrouch;
+		result.mOpenSearch = A.mOpenSearch | B.mOpenSearch;
+		result.mChat = A.mChat | B.mChat;
+		result.mInventory = A.mInventory | B.mInventory;
+		result.mDismantle = A.mDismantle | B.mDismantle;
+		result.mUse = A.mUse | B.mUse;
+		result.mVehicleRecording = A.mVehicleRecording | B.mVehicleRecording;
+		result.mEmote = A.mEmote | B.mEmote;
+		result.mPhotoMode = A.mPhotoMode | B.mPhotoMode;
+		result.mFlashLight = A.mFlashLight | B.mFlashLight;
+		result.mOpenCodex = A.mOpenCodex | B.mOpenCodex;
+		result.mResourceScanner = A.mResourceScanner | B.mResourceScanner;
+		result.mBuildGun = A.mBuildGun | B.mBuildGun;
+		result.mHotbar = A.mHotbar | B.mHotbar;
+		result.mToggleMap = A.mToggleMap | B.mToggleMap;
+		return result;
+	}
+	FDisabledInputGate& operator|=(const FDisabledInputGate& Other)
+	{
+		*this = *this | Other;
+		return *this;
+	}
 };
 
 /**
@@ -163,7 +202,7 @@ struct FACTORYGAME_API FFGActorPlayerPerceptionInfo
 
 	/** The actor which is perceiving us. */
 	UPROPERTY( BlueprintReadOnly )
-	class AActor* Actor;
+	TObjectPtr<class AActor> Actor;
 	
 	/** Value representing the current aggro level of the creature. */
 	UPROPERTY( BlueprintReadOnly )
@@ -186,11 +225,11 @@ struct FFGPipeHyperConnectionHistoryEntry
 
 	/** The connection the player is expected to enter through */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Pipe Hyper" )
-	UFGPipeConnectionComponentBase* ConnectionEnteredThrough{};
+	TObjectPtr<UFGPipeConnectionComponentBase> ConnectionEnteredThrough{};
 
 	/** The connection the player is expected to transit to */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Pipe Hyper" )
-	UFGPipeConnectionComponentBase* PickedOutputConnection{};
+	TObjectPtr<UFGPipeConnectionComponentBase> PickedOutputConnection{};
 };
 
 /** Structs that holds the data about the currently pending teleportation of the player */
@@ -205,11 +244,11 @@ struct FACTORYGAME_API FFGPlayerPortalData
 
 	/** The portal player has entered through */
 	UPROPERTY( BlueprintReadOnly, NotReplicated, Category = "Portal" )
-	class AFGBuildablePortalBase* SourcePortal;
+	TObjectPtr<class AFGBuildablePortalBase> SourcePortal;
 
 	/** The portal player has exited from */
 	UPROPERTY( BlueprintReadOnly, NotReplicated, Category = "Portal" )
-	class AFGBuildablePortalBase* DestinationPortal;
+	TObjectPtr<class AFGBuildablePortalBase> DestinationPortal;
 
 	/** The portal exit location for us */
 	UPROPERTY( BlueprintReadOnly, Category = "Portal" )
@@ -311,21 +350,10 @@ struct FPlayerMappingContext
 
 	UPROPERTY( EditDefaultsOnly )
 	int32 Priority = 0;
+
+	// Transient, set when mapping context is bound
+	FBoundMappingContextHandle mBoundMappingContextHandle;
 };
-
-// <FL> [TranN] TMap replacement for replication
-USTRUCT()
-struct FServiceNameAndPlayerName
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FName Service;
-
-	UPROPERTY()
-	FString PlayerName;
-};
-// </FL>
 
 /**
  * Base class for all player characters in the game.
@@ -349,6 +377,9 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	virtual void Tick( float deltaTime ) override;
+	virtual void PreNetReceive() override;
+	virtual void PostNetReceive() override;
+	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
 
 	virtual bool CanBeBaseForCharacter( APawn* Pawn ) const override;
 
@@ -360,7 +391,6 @@ public:
 	virtual void PossessedBy( AController* newController ) override;
 	virtual void UnPossessed() override;
 	virtual void OnRep_Controller() override;
-	virtual void AddControllerPitchInput( float Val ) override;
 	virtual void Jump() override;
 	virtual void OnJumped_Implementation() override;
 	virtual FVector GetPawnViewLocation() const override;
@@ -379,6 +409,7 @@ public:
 	virtual void Died( AActor* died ) override;
 	virtual const FFootstepEffect& GetFootstepEffect( const FHitResult& hitResult ) const override;
 	virtual void OnTakeDamage( AActor* damagedActor, float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser ) override;
+	virtual void RagdollCharacter(bool newRagdoll) override;
 	// End AFGCharacterBase interface
 
 	// Begin ACharacter interface
@@ -434,14 +465,9 @@ public:
 	UFUNCTION() virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION()	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
-	//<FL>[KonradA]
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray< FLocalUserNetIdBundle >(); }
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
-
-	virtual UE::Online::FAccountId GetPlatformAccountID() const override;
-	virtual FString GetPlatformAccountIDString() const override;
-	//</FL>
 	// End IFGActorRepresentationInterface
+
+	void UpdateVisorTick(float DeltaTime);
 	
 	/** Whether or not the player is currently inside the starting pod. */
 	UFUNCTION( BlueprintPure, Category = "Player", meta = ( DeprecatedFunction, DeprecationMessage = "Use Is Playing Intro Sequence instead" ) )
@@ -718,9 +744,6 @@ public:
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_ToggleSwitchControl( class AFGBuildableRailroadSwitchControl* switchControl );
 
-	/** Ticks drown damage. Tests drown interval and applies drown damage when appropriate */
-	void TickDrownDamage( float delta );
-
 	/** Ticks health regen */
 	void TickHealthGeneration( float delta );
 
@@ -745,12 +768,6 @@ public:
 	/** Gets a PreCasted movement component. We should be able to optimize this by ensuring that this component is the right type when assigning it and then do a free cast here ans have it faster. So making this way of fetching it now. Even though it's not really faster atm, it can be optimized later.*/
 	UFUNCTION( BlueprintPure )
 	UFGCharacterMovementComponent* GetFGMovementComponent() const;
-
-	UFUNCTION( BlueprintPure )
-	class AFGPlayerController* GetFGPlayerController() const;
-
-	UFUNCTION( BlueprintPure )
-	AFGPlayerController* FindWaywardPlayerController() const;
 	
 	/** Whether or not an interact widget is open. */
 	UFUNCTION( BlueprintPure, Category = "UI" )
@@ -913,7 +930,7 @@ public:
 
 	/** Enables / disables specified mapping contexts. Can change multiple at the same time. */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
-	void SetMappingContextEnabled( UPARAM( meta = ( Bitmask, BitmaskEnum = "EPlayerMappingContextCategory" ) )int32 contextMask, bool enabled );
+	void SetMappingContextEnabled( UPARAM( meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.EPlayerMappingContextCategory" ) )int32 contextMask, bool enabled );
 	void SetMappingContextEnabled( EPlayerMappingContextCategory contextMask, bool enabled );
 
 	/** Returns the input device type used by this player. This is synced with the client and is safe to use on the server. Will return mouse and keyboard if the player is not possessed */
@@ -928,7 +945,7 @@ public:
 	void UpdateBonk(FRotator viewRotation, FVector viewLocation);
 
 	UPROPERTY(EditDefaultsOnly,Category = "Bonk")
-	UAkAudioEvent* mBonkSound;
+	TObjectPtr<UAkAudioEvent> mBonkSound;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bonk")
 	TArray<TSubclassOf<AFGBuildable>> mBonkClasses;
@@ -955,7 +972,6 @@ public:
 	
 	void Input_MoveAxis( const FInputActionValue& actionValue );
 	void Input_LookAxis( const FInputActionValue& actionValue );
-	void Input_TurnAxis( const FInputActionValue& actionValue );
 
 	// <FL> [KajtaziT] actions for radial menu direction
 	// alternative actions to control radial menu direction
@@ -982,8 +998,10 @@ public:
 	void Input_Holster( const FInputActionValue& ActionValue );
 
 	void Input_EmoteWheel( const FInputActionValue& actionValue );
+	bool IsEmoteMenuWidgetActive();
+	void CloseEmoteMenuWidget();
 
-	void Input_SampleBuilding( const FInputActionValue& actionValue );
+	void Input_SampleBuilding(const FInputActionValue& actionValue);
 
 	void Input_ToggleInventory( const FInputActionValue& actionValue );
 
@@ -1005,6 +1023,7 @@ public:
 	// <FL> [MartinC] Actions for showing a button hints bar with options to quickly sample,
 	// copy and paste buildings using gamepad
 	void Input_ShowSampleGamepadHints( const FInputActionValue& actionValue );
+	void HideSampleGamepadHints();
 	// </FL>
 
 
@@ -1029,13 +1048,6 @@ public:
 	void Input_Teleport( const FInputActionValue& actionValue );
 	
 	void Input_CycleHyperTubeTravelDirection( const FInputActionValue& actionValue );
-	
-	/**
-	 * Binds the input context to the input subsystem owned by this local player
-	 * Will also apply additional associated mapping contexts on top with lower priority
-	 */
-	UFUNCTION( BlueprintCallable, Category = "Input" )
-	void SetMappingContextBound( UInputMappingContext* context, bool bind, int32 priority = 0 );
 
 	/** Revives the current player with full health. Needs to be called on the authority side */
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Player" )
@@ -1049,6 +1061,30 @@ public:
 
 	bool GetIsInGasCloud() const;
 	void SetIsInGasCloud( const bool isInGas );
+
+	/** Returns true if the player is currently playing a gameplay cinematic */
+	UFUNCTION( BlueprintPure, Category = "Gameplay Cinematic" )
+	FORCEINLINE bool IsPlayingGameplayCinematic() const { return mIsPlayingGameplayCinematic; }
+
+	/** Level sequence actor for the currently playing gameplay cinematic (actor is local) */
+	UFUNCTION( BlueprintPure, Category = "Gameplay Cinematic" )
+	FORCEINLINE class ALevelSequenceActor* GetCurrentlyPlayingGameplayCinematic() const { return mCurrentlyPlayingGameplayCinematic; }
+
+	/** Returns true if the player is currently snapping into a position to play a gameplay cinematic */
+	UFUNCTION( BlueprintPure, Category = "Gameplay Cinematic" )
+	FORCEINLINE bool IsSnappingToGameplayCinematic() const { return mIsSnappingToGameplayCinematic; }
+
+	/** Snaps to the given snap target over short period of time and immediately starts playback of a gameplay cinematic */
+	UFUNCTION( BlueprintAuthorityOnly, BlueprintCallable, Category = "Gameplay Cinematic" )
+	void SnapAndPlayGameplayCinematic( USceneComponent* snapTarget, ULevelSequence* gameplayCinematic );
+
+	/** Aborts the gameplay cinematic snap that might currently be pending */
+	UFUNCTION( BlueprintAuthorityOnly, BlueprintCallable, Category = "Gameplay Cinematic" )
+	void AbortPendingGameplayCinematicSnap();
+
+	/** Plays the given gameplay cinematic. Must be called on the server. SourceActor can be provided to expose another actor to the level sequence */
+	UFUNCTION( BlueprintAuthorityOnly, BlueprintCallable, Category = "Gameplay Cinematic" )
+	void PlayGameplayCinematic( ULevelSequence* gameplayCinematic, AActor* sourceActor );
 
 	/** Returns true if the player is currently playing intro sequence */
 	UFUNCTION( BlueprintPure, Category = "Intro Sequence" )
@@ -1096,6 +1132,10 @@ public:
 	/** Returns the current third person mesh Z adjust applied by the movement logic. Used in character movement component to re-apply it when doing movement smoothing */
 	UFUNCTION(BlueprintPure, Category = "Character")
 	FORCEINLINE float GetCurrentThirdPersonMeshZAdjust() const { return mCurrentThirdPersonZAdjust; }
+
+	/** Dispatched when disabled input gate on the player controller that possesses this pawn changes */
+	UFUNCTION( BlueprintNativeEvent, Category = "Input" )
+	void OnDisabledInputGateChanged( const FDisabledInputGate newValue);
 protected:
 	// Begin APawn interface
 	virtual void SetupPlayerInputComponent( class UInputComponent* inputComponent ) override;
@@ -1142,9 +1182,6 @@ protected:
 
 	/** For playing 1P events */
 	virtual class UAkAudioEvent* GetFootstepEvent( int32 footDown ) const override;
-
-	UFUNCTION( BlueprintNativeEvent, Category = "Input" )
-	void OnDisabledInputGateChanged( const FDisabledInputGate newValue);
 
 	/**
 	 * Initiates player teleportation from the source portal to the destination portal
@@ -1194,18 +1231,6 @@ protected:
 
 	/** Checks if what we hit can be picked up */
 	bool CanBePickedUp( const FHitResult& hitResult ) const;
-
-	/**
-	 * Called via input to turn at a given rate.
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void TurnAtRate( float Rate );
-
-	/**
-	 * Called via input to turn look up/down at a given rate.
-	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
-	 */
-	void LookUpAtRate( float Rate );
 
 	/** Returns Camera SubObject **/
 	UFUNCTION( BlueprintPure, Category = "Camera" )
@@ -1293,12 +1318,23 @@ protected:
 	UFUNCTION( BlueprintNativeEvent, Category = "Character" )
 	bool ShouldShowPlayer() const;
 
-	/** True if player is online. By online we mean this player or the driven vehicle has a player state and someone is controlling it */
-	UFUNCTION( BlueprintPure, Category = "Radiation" )
-	FORCEINLINE bool IsPlayerOnline() const { return mIsPlayerOnline.IsSet() ? mIsPlayerOnline.GetValue() : false; }
+	/** True if player is online. By online we mean this player or the driven vehicle has a player state and someone is controlling it (either directly or indirectly) */
+	UFUNCTION( BlueprintPure, Category = "Character" )
+	bool IsPlayerOnline() const;
 
 	UFUNCTION( BlueprintCallable )
 	void ToggleFlashlight();
+ 
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_PlayGameplayCinematic( ULevelSequence* gameplayCinematic, AActor* sourceActor );
+	UFUNCTION()
+	void OnGameplayCinematicFinished();
+
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_BeginGameplayCinematicSnap( USceneComponent* targetSnapPoint );
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_AbortSnappingToGameplayCinematic();
+	void TickGameplayCinematicSnap( float dt );
 	
 	/** Called when we update the best useable actor */
 	UPROPERTY( BlueprintAssignable, Category = "UI"  )
@@ -1323,6 +1359,7 @@ protected:
 	UPROPERTY( BlueprintAssignable, Category = "Equipment" )
 	FOnActiveEquipmentChangedInSlot mOnActiveEquipmentChangedInSlot;
 
+	int32 mToggleFlyCheatCount = 0;
 	float mFlyToggleTimeStamp = 0.0f;
 	/* Time between pressing jump twice for the Flying Mode to toggle. */
 	UPROPERTY( EditDefaultsOnly, Category = "Character Movement: Flying" )
@@ -1403,9 +1440,9 @@ public:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateZiplineEffects, const FVector& /* newAttachmentLocation */);
 	FOnUpdateZiplineEffects mOnZiplineEffectsUpdate;
 
-	/** Cached player start actor that was used to restart this player. If player pawn was loaded from the save game, this will be null */
+	/** Cached player start actor that was used to restart this player. This is not replicated or saved */
 	UPROPERTY()
-	AActor* mPlayerStartActor;
+	TObjectPtr<AActor> mPlayerStartActor;
 
 	bool mHasEnteredPhotoMode = false;
 	
@@ -1430,7 +1467,6 @@ public:
 	bool IsInPumpiMode() const;
 
 	/** Update name and color on player name widget */
-	UFUNCTION( BlueprintCallable, Category = "Player Name" )
 	void UpdatePlayerNameWidget();
 
 	/** Forcefully updates the player customization data from the correct place (either offline cache or player state) */
@@ -1441,7 +1477,14 @@ public:
 
 	/** Gets the players state for this player. Either from this character or the driven vehicle */
     UFUNCTION( BlueprintPure, Category = "General" )
-    class AFGPlayerState* GetControllingPlayerState() const;
+	AFGPlayerState* GetControllingPlayerState() const;
+
+	// TODO @Nick: This should be merged with FindWaywardPlayerController
+	UFUNCTION( BlueprintPure, Category = "General" )
+	AFGPlayerController* GetFGPlayerController() const;
+
+	UFUNCTION( BlueprintPure, Category = "General" )
+	AFGPlayerController* FindWaywardPlayerController() const;
 
 	/** This function tells us if we should be able to interact with objects such as vehicles, foliage, ores, or use equipments. */
 	bool CanInteractWithEnvironment() const;
@@ -1578,8 +1621,12 @@ private:
 	
 	virtual void OnRep_IsPossessed() override;
 	virtual void OnRep_PlayerState() override;
-	
-	void SetOnlineState( const bool isPlayerOnline );
+
+	/** Called when cached player info is updated */
+	UFUNCTION()
+	void OnCachedPlayerInfoUpdated( const FPlayerInfoHandle& playerInfoHandle );
+	/** Updates player name from online info handle when possible. Must only be called on the server */
+	void UpdatePlayerNameFromOnlineIdentity();
 
 	/** Checks the player state if flying is toggleable */
 	void UpdateFlyingIsToggleable();
@@ -1607,49 +1654,36 @@ private:
 	void Local_ZiplineStart( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
 	void Local_ZiplineEnd( const FVector& exitForce );
 public:
-	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Camera )
-	float mBaseTurnRate;
-
-	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Camera )
-	float mBaseLookUpRate;
-
 	/** The default arms animation when we're idle. */
 	UPROPERTY( EditDefaultsOnly, Category = Mesh )
 	TSubclassOf< class UAnimInstance > mMesh1PAnimClass;
 
-	UPROPERTY( BlueprintReadWrite )
-	bool mIsCurrentlyTryingToEnterVehicle = false;
-
 	// <FL> [KajtaziT] decoupling radial menus from input
 	UPROPERTY( DisplayName = "RadialMenuDirection" )
 	FVector2f mRadialMenuDirection;
-	
-	// <FL> [KajtaziT] workaround to ignore held input when adding gamepad mappings context after leaving a menu
-	UPROPERTY( DisplayName = "MenuWasDeactivatedTickDelay" )
-	int mMenuWasDeactivatedTickDelay = 0;
 
 	UFUNCTION( BlueprintPure, Category = "Map" )
 	FORCEINLINE FVector2f GetRadialMenuDirection() const { return mRadialMenuDirection; }
 	// </FL>
 
-	// <FL> [TranN] If an other player is on the same platform, display the platform name. Otherwise, display Epic name
-	void SetPlayerNames( const TArray<FServiceNameAndPlayerName>& playerNames );
-	UFUNCTION()
-	void OnRep_PlayerNames();
-	FString GetOnlinePlayerName( const AFGPlayerState* playerState );
-	// </FL>
+	/** Returns the handle to the online identity of the player who has last possessed this pawn */
+	UFUNCTION( BlueprintPure, Category = "General" )
+	FORCEINLINE FPlayerInfoHandle GetPlayerInfoHandle() const { return mPlayerInfoHandle; }
 
-	/** Returns the cached player customization data. Note that unlike retrieving player state, this handles offline players correctly by remembering their customizations */
-	FORCEINLINE FPlayerCustomizationData GetCachedPlayerCustomizationData() const { return mCachedPlayerCustomizationData; }
+	/** Returns the name of the last player who has possessed this pawn */
+	UFUNCTION( BlueprintPure, Category = "General" )
 	FORCEINLINE FString GetCachedPlayerName() const { return mCachedPlayerName; }
 	
+	/** Returns the cached player customization data. Note that unlike retrieving player state, this handles offline players correctly by remembering their customizations */
+	FORCEINLINE FPlayerCustomizationData GetCachedPlayerCustomizationData() const { return mCachedPlayerCustomizationData; }
 	FORCEINLINE float GetFloorIsLavaAchievementTimerDuration() const { return mFloorIsLavaAchievementTimerDuration; }
+	FORCEINLINE int32 GetNumIncomingAttackers() const { return mIncomingAttackers; }
+	
+	FORCEINLINE const TSubclassOf< UFGModularMovementObject >& GetReplicatedModularMovementMode() const { return mReplicatedModularMovementModeClass; }
 protected:
 	/** Pawn mesh: 3rd person view */
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = Mesh )
-	class USkeletalMeshComponent* mMesh3P;
+	TObjectPtr<class USkeletalMeshComponent> mMesh3P;
 
 	/** Helmet Mesh */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = Mesh )
@@ -1673,7 +1707,7 @@ protected:
 	
 	/** The widget component used to show the players name */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Player Name" )
-	class UWidgetComponent* mPlayerNameWidgetComponent;
+	TObjectPtr<class UWidgetComponent> mPlayerNameWidgetComponent;
 
 	/** As we have no foliage actor to actually put pickup code in, we use this actor as a proxy */
 	UPROPERTY( EditDefaultsOnly, Category = "Use" )
@@ -1681,27 +1715,27 @@ protected:
 
 	/** Actor that's used when trying to pickup foliage */
 	UPROPERTY( Replicated, BlueprintReadOnly, Category = "Use" )
-	class AFGFoliagePickup* mFoliagePickupProxy;
+	TObjectPtr<class AFGFoliagePickup> mFoliagePickupProxy;
 
 	/* This is the infamous build gun. */
 	UPROPERTY( SaveGame, BlueprintReadOnly, Replicated, Category = "Equipment" )
-	class AFGBuildGun* mBuildGun;
+	TObjectPtr<class AFGBuildGun> mBuildGun;
 
 	/*Reference to the resource scanner */
 	UPROPERTY( SaveGame, Replicated )
-	AFGResourceScanner* mResourceScanner;
+	TObjectPtr<AFGResourceScanner> mResourceScanner;
 
 	/* Reference to the resource miner */
 	UPROPERTY( SaveGame, Replicated )
-	class AFGResourceMiner* mResourceMiner;
+	TObjectPtr<class AFGResourceMiner> mResourceMiner;
 
 	/** Reference to pending Vehicle (this is set when a client joins that left while in a game. This is used when the player joins so they can locally run their AttachDriver logic on the vehicle*/
 	UPROPERTY( Replicated )
-	class AFGDriveablePawn* mWaitingClientAttachDrivable;
+	TObjectPtr<class AFGDriveablePawn> mWaitingClientAttachDrivable;
 
 	/** The best usable actor nearby. */
 	UPROPERTY()
-	class AActor* mBestUsableActor;
+	TObjectPtr<class AActor> mBestUsableActor;
 
 	/** Of the usable actor we are looking at, UPROPERTY to prevent the AdditionalData to be garbage collected */
 	UPROPERTY( BlueprintReadOnly )
@@ -1734,21 +1768,13 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Revive" )
 	float mReviveDuration;
 
-	/** @todo: This should not be specified for each pawn */
-	UPROPERTY(EditDefaultsOnly, Instanced, Category= "Swimming")
-	TArray< UFGDamageType* > mDrownDamageTypes;
-
-	/** Time between each application of drowning damage (in seconds) */
-	UPROPERTY( EditDefaultsOnly, Category = "Swimming" )
-	float mDrownDamageInterval;
-
 	/** The player that we are reviving */
 	UPROPERTY( BlueprintReadOnly, Category = "Revive" )
-	AFGCharacterPlayer* mPlayerToRevive;
+	TObjectPtr<AFGCharacterPlayer> mPlayerToRevive;
 
 	/** The pickup we are collecting */
 	UPROPERTY( BlueprintReadOnly, Category = "Use" )
-	class AFGItemPickup* mPickupToCollect;
+	TObjectPtr<class AFGItemPickup> mPickupToCollect;
 
 	/** Default effects to play when a foot hits the ground when the material does not exist in m1PFootstepEffect */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
@@ -1760,7 +1786,7 @@ protected:
 
 	/** Effects to play when a foot hits the ground in first person */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
-	TArray<class UAkAudioEvent*> m1PFootstepEvent;
+	TArray<TObjectPtr<class UAkAudioEvent>> m1PFootstepEvent;
 
 	/** Info about creatures which currently perceive us. */
 	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_ActorPerceptionInfo, Category = "UI" )
@@ -1778,6 +1804,10 @@ protected:
 	/** used for knowing which is the latest written safe ground position */
 	UPROPERTY( SaveGame )
 	int32 mLastSafeGroundPositionLoopHead = 0;
+	
+	/** Modular movement mode replicated for simulated proxies */
+    UPROPERTY( Replicated )
+    TSubclassOf< UFGModularMovementObject > mReplicatedModularMovementModeClass;
 
 	/** The Hazmat suit does not exist as a native class so this member is here to identify it in code. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Default" )
@@ -1788,7 +1818,7 @@ protected:
 	TArray< FPlayerMappingContext > mMappingContexts;	
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly)
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 
 	// <FL> [MartinC] Reference to the Widget Class with the gamepad sample button hints bar
 	UPROPERTY( EditDefaultsOnly, Category = "Gamepad|UI" )
@@ -1880,7 +1910,7 @@ private:
 protected:
 	/** Player camera */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-	class UCameraComponent* mCameraComponent;
+	TObjectPtr<class UCameraComponent> mCameraComponent;
     
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "HUD" )
 	TSoftClassPtr<UUserWidget> mPlayerHUDClass;
@@ -1978,15 +2008,15 @@ private:
 
 	/** Spring arm for camera */
 	UPROPERTY( EditAnywhere )
-	class USpringArmComponent* mSpringArmComponent;
+	TObjectPtr<class USpringArmComponent> mSpringArmComponent;
 
 	/** This is the equipment we hold in our hands.*/
 	UPROPERTY( ReplicatedUsing = OnRep_ActiveEquipments )
-	TArray< class AFGEquipment* > mActiveEquipments;
+	TArray< TObjectPtr<class AFGEquipment> > mActiveEquipments;
 
 	/** Simulated on the client so they know what to unequip. */
 	UPROPERTY()
-	TArray< class AFGEquipment* > mClientActiveEquipments;
+	TArray< TObjectPtr<class AFGEquipment> > mClientActiveEquipments;
 
 	/** Current camera mode for the character */
 	UPROPERTY()
@@ -2001,33 +2031,33 @@ private:
 	ECameraMode mPlayerPreferredCameraMode;
 
 	UPROPERTY( SaveGame )
-	UFGInventoryComponent* mInventory;
+	TObjectPtr<UFGInventoryComponent> mInventory;
 	
 	bool mIsShoppingListDelegateBound = false;
 	
 	/** The players inventory that we use to upload items to central storage */
 	UPROPERTY( SaveGame, EditDefaultsOnly )
-	class UFGInventoryComponent* mUploadInventory;
+	TObjectPtr<class UFGInventoryComponent> mUploadInventory;
 
 	/** Arms equipment slot */
 	UPROPERTY( SaveGame )
-	UFGInventoryComponentEquipment* mArmsEquipmentSlot;
+	TObjectPtr<UFGInventoryComponentEquipment> mArmsEquipmentSlot;
 
 	/** Back equipment slot */
 	UPROPERTY( SaveGame )
-	UFGInventoryComponentEquipment* mBackEquipmentSlot;
+	TObjectPtr<UFGInventoryComponentEquipment> mBackEquipmentSlot;
 
 	/** Legs equipment slot */
 	UPROPERTY( SaveGame )
-	UFGInventoryComponentEquipment* mLegsEquipmentSlot;
+	TObjectPtr<UFGInventoryComponentEquipment> mLegsEquipmentSlot;
 
 	/** Head equipment slot */
 	UPROPERTY( SaveGame )
-	UFGInventoryComponentEquipment* mHeadEquipmentSlot;
+	TObjectPtr<UFGInventoryComponentEquipment> mHeadEquipmentSlot;
 
 	/** Body equipment slot */
 	UPROPERTY( SaveGame )
-	UFGInventoryComponentEquipment* mBodyEquipmentSlot;
+	TObjectPtr<UFGInventoryComponentEquipment> mBodyEquipmentSlot;
 
 	/** The resource forms that are allowed in players inventory. */
 	UPROPERTY( EditDefaultsOnly )
@@ -2035,7 +2065,7 @@ private:
 
 	/** The players trash slot inventory. */
 	UPROPERTY()
-	UFGInventoryComponent* mTrashSlot;
+	TObjectPtr<UFGInventoryComponent> mTrashSlot;
 
 	/** How long the player needs to stay off the ground for the floor is lava achievement. */
 	UPROPERTY( EditDefaultsOnly, Category = "Achievement" )
@@ -2051,9 +2081,9 @@ private:
 	/** Maximum distance we use objects on */
 	UPROPERTY( EditDefaultsOnly, Category = "Use" )
 	float mUseDistance;
-
-	/** keeps track of current drown damage interval time */
-	float mTimeToApplyDrownDamage;
+	
+	float mCurrentCameraOffset;
+	float mCurrentCameraPipeOffset;
 
 	/** Counter used for replicating to remote clients when something is picked up */
 	UPROPERTY( ReplicatedUsing = OnRep_PickupCounter )
@@ -2061,18 +2091,18 @@ private:
 
 	/** The player that is reviving me */
 	UPROPERTY()
-	AFGCharacterPlayer* mReviver;
+	TObjectPtr<AFGCharacterPlayer> mReviver;
 
 	/** Revive timer handle, started locally on revived clients to show progress */
 	FTimerHandle mReviveTimerHandle;
 
 	/** Cached walk head bob camera anim reference from the FGPlayerSettings */
 	UPROPERTY( Transient )
-	UCameraAnimationSequence* mDefaultWalkHeadBobCameraAnim;
+	TObjectPtr<UCameraAnimationSequence> mDefaultWalkHeadBobCameraAnim;
 
 	/** Cached sprint head bob camera anim reference from the FGPlayerSettings */
 	UPROPERTY( Transient )
-	UCameraAnimationSequence* mDefaultSprintHeadBobCameraAnim;
+	TObjectPtr<UCameraAnimationSequence> mDefaultSprintHeadBobCameraAnim;
 
 	/** Indicates if the player is sprinting and wants to use the sprint bobbing */
 	bool mWantsSprintBobbing;
@@ -2088,17 +2118,17 @@ private:
 
 	/** Vehicle currently driven by pawn. */
 	UPROPERTY( ReplicatedUsing = OnRep_DrivenVehicle )
-	class AFGDriveablePawn* mDrivenVehicle;
+	TObjectPtr<class AFGDriveablePawn> mDrivenVehicle;
 	/**
 	 * Saved vehicle currently driven by pawn.
 	 * Used by server to remember which vehicle we drove when saving.
 	 * Used by client to remember which vehicle we drove when leaving the vehicle.
 	 */
 	UPROPERTY( SaveGame )
-	class AFGDriveablePawn* mSavedDrivenVehicle;
+	TObjectPtr<class AFGDriveablePawn> mSavedDrivenVehicle;
 
 	UPROPERTY()
-	class UFGOutlineComponent* mOutlineComponent;
+	TObjectPtr<class UFGOutlineComponent> mOutlineComponent;
 
 	/** How much time to wait after taking damage until health regeneration starts. */
 	UPROPERTY( EditDefaultsOnly, Category = "HealthGeneration" )
@@ -2147,18 +2177,8 @@ private:
 	/** Number of starting slots for players arm equipments */
 	int32 mDefaultPlayerArmEquipmentSlots;
 
-	/** Current offset when blending the camera between stand and crouch */
-	float mCurrentCameraRelativeOffset;
-
 	/** Z location offset for  the arms mesh  */
 	float mArmBoneLocation;
-
-	/** Current blend value */
-	float mCameraOffsetBlend;
-
-	/** How fast the blend is */
-	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Movement|Crouch" )
-	float mCameraOffsetBlendSpeed;
 
 	/** Replicated value of sliding status. Used to let non owning player know whats happening */
 	UPROPERTY( replicatedUsing = OnRep_IsSliding )
@@ -2182,16 +2202,7 @@ private:
 
 	FTimerHandle mSlideNoiseTimerHandle;
 
-	/** New offset that we want to have */
-	float mTargetCameraRelativeOffset;
-
-	/* Old offset we are interpolating from */
-	float mOldCameraRelativeOffset;
-
 	float mSpringArmOffsetX; // Fetched during begin play from the spring arm, and used to be able to restore it's value later on.
-
-	/** New offset that we want to have */
-	float mCurrentCameraPipeOffset = 0;
 	
 	/** Locally cached fly speed multiplier. Fetched from the options menu in cheat builds */
 	float mFlySpeedMultiplier{1.0f};
@@ -2201,21 +2212,6 @@ private:
 	int32 mDismantleCratePlacementMode{0};
 	/** Whenever to allow merging dismantle crates */
 	bool mAllowDismantleCrateMerging{false};
-	
-	/** How fast the blend is for crouch and slide */
-	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Movement|Crouch" )
-	float mCrouchSpeed;
-
-	/** How fast the blend is from crouch/slide to stand */
-	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Movement|Crouch" )
-	float mStandSpeed;
-
-	/** How fast the blend is from slide to crouch */
-	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Movement|Crouch" )
-	float mSlideToCrouchSpeed;
-
-	/** Saving the default value of the crouch height since we manipulate it when sliding */
-	float mDefaultCrouchHalfHeight;
 
 	/** We are trying to raise capsule collision to default size after a slide has ended */
 	bool mTryToUnSlide;
@@ -2230,16 +2226,16 @@ private:
 	FText mCachedLookAtDescription;
 
 	UPROPERTY()
-	class UFGEmote* mCurrentEmote;
+	TObjectPtr<class UFGEmote> mCurrentEmote;
 
 	UPROPERTY()
-	class UAkComponent* mCurrentEmoteSFX;
+	TObjectPtr<class UAkComponent> mCurrentEmoteSFX;
 
 	UPROPERTY()
-	UFGInteractWidget* mEmoteMenuWidget;
+	TObjectPtr<UFGInteractWidget> mEmoteMenuWidget;
 
 	UPROPERTY( VisibleDefaultsOnly, Category = Mesh )
-	class USkeletalMeshComponent* mEmoteSkelMeshComp;
+	TObjectPtr<class USkeletalMeshComponent> mEmoteSkelMeshComp;
 
 	FTimerHandle mEmoteSkelMeshTimer;
 	
@@ -2251,7 +2247,7 @@ private:
 	
 	// <FL> [MartinC] Reference to the widget with the gamepad sample button hints bar
 	UPROPERTY()
-	UFGInteractWidget* mGamepadSampleWidget;
+	TObjectPtr<UFGInteractWidget> mGamepadSampleWidget;
 	// </FL>
 
 	// <FL> [MartinC] Result of the latest trace for the gamepad quick sampling
@@ -2263,8 +2259,6 @@ private:
 	
 	// <FL> [PfaffN] Why are these variables public? Why nobody reviewed this code?
 public:
-	/** Whenever we should skip the next camera offset update */
-	uint8 mSkipNextCameraOffsetUpdate : 1;
 	/** Whenever we are partially submerged into the water volume and should not be allowed to crouch */
 	uint8 mIsPartiallySubmergedInWater : 1;
 
@@ -2275,17 +2269,17 @@ public:
 
 private:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTexture;
+	TObjectPtr<class UTexture2D> mActorRepresentationTexture;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTextureDead;
+	TObjectPtr<class UTexture2D> mActorRepresentationTextureDead;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTextureOffline;
+	TObjectPtr<class UTexture2D> mActorRepresentationTextureOffline;
 
 	/** This players actor representation */
 	UPROPERTY( Transient )
-	class UFGActorRepresentation* mCachedActorRepresentation;
+	TObjectPtr<class UFGActorRepresentation> mCachedActorRepresentation;
 
 	/** The indexed of the holstered hand equipment, if we have any. Replicated for UI use */
 	UPROPERTY( SaveGame, Replicated )
@@ -2293,17 +2287,17 @@ private:
 
 	TSet< EEquipmentSlot > mQueuedEquipmentChangedInSlotNotifies;
 
-	/** The player name of the last logged in player that possessed this pawn */
+	/** The player name of the last logged in player that possessed this pawn. Will be updated from game state if player name changes */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CachedPlayerName )
 	FString mCachedPlayerName;
 
 	/** Player controller that has controlled this pawn previously, before we entered the photo mode decoupled camera */
 	UPROPERTY()
-	AFGPlayerController* mCachedPhotoModeController;
+	TObjectPtr<AFGPlayerController> mCachedPhotoModeController;
 	
 	/** Cached reference to the photo mode component of this player. Replicated to all clients from the server. */
 	UPROPERTY( Replicated )
-	class UFGPhotoModeComponent* mCachedPhotoModeComponent;
+	TObjectPtr<class UFGPhotoModeComponent> mCachedPhotoModeComponent;
 
 	/** Customization data for the player that has been cached the last time player was possessed by a player state */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CachedPlayerCustomizationData )
@@ -2312,10 +2306,6 @@ private:
 	/** Default customization in case the player state is missing. */
 	UPROPERTY( EditDefaultsOnly )
 	FPlayerCustomizationData mDefaultPlayerCustomization;
-
-	/** True if player is online. Update on both server and client By online we mean this player or the driven vehicle has a player state and someone is controlling it.
-	 *	It does not care about platform logins */
-	TOptional<bool> mIsPlayerOnline;
 	
 	UPROPERTY( ReplicatedUsing=OnRep_PendingHyperJunctionOutputConnection )
 	FFGPipeHyperConnectionHistoryEntry mPendingHyperJunctionOutputConnection;
@@ -2334,7 +2324,7 @@ private:
 	
 	/** Cinematic driver that is currently controlling this pawn. */
 	UPROPERTY( VisibleInstanceOnly, Transient, Interp, BlueprintGetter = "GetCinematicDriver", Category = "Cinematic" )
-	class UFGPlayerCinematicDriver* mCinematicDriver;
+	TObjectPtr<class UFGPlayerCinematicDriver> mCinematicDriver;
 
 	UPROPERTY( SaveGame, Replicated )
 	FFGPlayerPortalData mPortalData;
@@ -2352,10 +2342,53 @@ private:
 
 	/** Set to the drop pod associated with the intro sequence if it is currently playing. That means they should be invincible, do not get aggro'd by the creatures, and not get saved into the save game */
 	UPROPERTY( Transient )
-	AFGStartingPod* mIntroSequenceStartingPod;
+	TObjectPtr<AFGStartingPod> mIntroSequenceStartingPod;
 
-	// <FL> [TranN] player names for all the services
-	UPROPERTY( ReplicatedUsing = OnRep_PlayerNames )
-	TArray< struct FServiceNameAndPlayerName > mPlayerNames;
-	// </FL>
+	/** Online identity handle for the player that last possessed this pawn. Will not be set on older saves, in which case only mCachedPlayerName will be populated */
+	UPROPERTY( SaveGame, Replicated )
+	FPlayerInfoHandle mPlayerInfoHandle;
+
+	/** True if we are attempting to snap to the gameplay cinematic starting point. During this time some of the player inputs are limited */
+	bool mIsSnappingToGameplayCinematic{false};
+	/** Time that we have been snapping to a gameplay cinematic. If this is too long, we abort the snap */
+	float mGameplayCinematicSnapTime{0.0f};
+
+	UPROPERTY()
+	TObjectPtr<USceneComponent> mPendingGameplayCinematicSnapTarget;
+	UPROPERTY()
+	TObjectPtr<ULevelSequence> mPendingGameplaySnapCinematic;
+	
+	/** True if we are currently playing a gameplay cinematic. This is a special state where we are watching a cinematic and are shielded from some of the interactions */
+	bool mIsPlayingGameplayCinematic{false};
+
+	/** Level sequence actor for the currently playing gameplay cinematic (actor is local) */
+	UPROPERTY()
+	TObjectPtr<class ALevelSequenceActor> mCurrentlyPlayingGameplayCinematic;
+
+	// Begin rain
+	UFUNCTION(BlueprintCallable)
+	void StartRainEffects( UNiagaraSystem* SystemType, float DesiredIntensity );
+
+	UFUNCTION(BlueprintCallable)
+	void EndRainEffects();
+
+	UFUNCTION(BlueprintCallable)
+	UNiagaraComponent* GetRainComponent(bool& bHasValidComponent);
+	
+	UPROPERTY()
+	TObjectPtr<AFGRainActor> mRainActor = nullptr;
+
+	float UnderRainValue = 0;
+
+	FBoundMappingContextHandle mIntroDropPodSequenceMappingContextHandle;
+public:
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsUnderRain = false;
+	
+	UPROPERTY(EditDefaultsOnly,Category= "Weather")
+	float UnderRainInterpSpeed = 2;
+
+	UPROPERTY(EditDefaultsOnly,Category= "Weather")
+	TObjectPtr<UMaterialInterface> mVisorRainEffectMaterial = nullptr;
+	// End rain
 };

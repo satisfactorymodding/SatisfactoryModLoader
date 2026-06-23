@@ -42,6 +42,7 @@ void AFGBuildableTrainPlatform::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 void AFGBuildableTrainPlatform::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableTrainPlatform::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGBuildableTrainPlatform::CanDismantle_Implementation() const{ return bool(); }
+void AFGBuildableTrainPlatform::GetDismantleDependencies_Implementation(TArray<AActor*>& out_dismantleDependencies) const{ Super::GetDismantleDependencies_Implementation(out_dismantleDependencies); }
 void AFGBuildableTrainPlatform::GetChildDismantleActors_Implementation(TArray<AActor*>& out_ChildDismantleActors) const{ }
 void AFGBuildableTrainPlatform::Dismantle_Implementation(){ }
 bool AFGBuildableTrainPlatform::IsUseable_Implementation() const{ return bool(); }

@@ -63,7 +63,7 @@ public:
 	int32 mNumFrames;
 
 	UPROPERTY( EditDefaultsOnly, Instanced )
-	TArray< UFGAnimationTimeLineEntryBase* > mTimelineData;
+	TArray< TObjectPtr<UFGAnimationTimeLineEntryBase> > mTimelineData;
 };
 
 /* Base class for vfx & sfx entries. */
@@ -114,7 +114,7 @@ class FACTORYGAME_API UFGAnimationTimeLineSFXEntry : public UFGAnimationTimeLine
 	
 public:
 	UPROPERTY( EditDefaultsOnly, Category = "Base|Audio" )
-	UAkAudioEvent* AudioEvent;
+	TObjectPtr<UAkAudioEvent> AudioEvent;
 	 
 	UPROPERTY( EditDefaultsOnly, Category = "Base|Audio" )
 	FTransform LocalTransform;
@@ -133,7 +133,7 @@ class FACTORYGAME_API UFGAnimationTimeLineVFXEntry : public UFGAnimationTimeLine
 	GENERATED_BODY()
 public:
 	UPROPERTY( EditDefaultsOnly, Category = "Base|VFX" )
-	UParticleSystem* PSSystem;
+	TObjectPtr<UParticleSystem> PSSystem;
 	
 	UPROPERTY( EditDefaultsOnly, Category = "Base|VFX" )
 	FTransform LocalTransform;
@@ -177,7 +177,7 @@ class FACTORYGAME_API UFGAnimationTimeLineAnimatedVFXEntry : public UFGAnimation
 
 public:
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* PSSystem;
+	TObjectPtr<UParticleSystem> PSSystem;
 
 	virtual void Fire(UFGColoredVTXAnimMesh* Owner, float CurrentTime, bool bForceSeek) const override;
 	virtual void Deactivate(UFGColoredVTXAnimMesh* Owner) const override;
@@ -192,7 +192,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual ETickableTickType GetTickableTickType() const override
 	{
-		return ETickableTickType::Always;
+		// The CDO of this should never tick
+		return IsTemplate() ? ETickableTickType::Never : ETickableTickType::Always;
 	}
 	virtual TStatId GetStatId() const override
 	{
@@ -215,7 +216,7 @@ private:
 	TQueue< UFGColoredVTXAnimMesh*, EQueueMode::Mpsc > mRemovedRelevantObjects;
 
 	UPROPERTY( VisibleInstanceOnly, Transient )
-	TArray<UFGColoredVTXAnimMesh*> mRelevantProxies;
+	TArray<TObjectPtr<UFGColoredVTXAnimMesh>> mRelevantProxies;
 };
 
 /**
@@ -228,7 +229,7 @@ class FACTORYGAME_API UFGColoredVTXAnimMesh : public UFGColoredVTXAnimMeshInterf
 	UFGColoredVTXAnimMesh();
 
 public:
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 
 	FORCEINLINE void IncrementTimeSinceLastTick( float DT ) { mTimeSinceLastTick += DT; }
 	FORCEINLINE float GetTimeSinceLastTick() const			{ return mTimeSinceLastTick; }
@@ -275,19 +276,19 @@ protected:
 	
 	/* Mesh for wires, will be spawned on significance.*/
 	UPROPERTY(EditAnywhere)
-	USkeletalMesh* mWireMesh = nullptr;
+	TObjectPtr<USkeletalMesh> mWireMesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	UAnimationAsset* mAnimationAsset = nullptr;
+	TObjectPtr<UAnimationAsset> mAnimationAsset = nullptr;
 
 #if WITH_EDITORONLY_DATA
 	/* Array of animation sequences. */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Vertex animimations" )
-	TArray< UFGAnimationTimeLineObject* > mAnimationTimelineData;
+	TArray< TObjectPtr<UFGAnimationTimeLineObject> > mAnimationTimelineData;
 #endif
 	
 	UPROPERTY( VisibleDefaultsOnly, Category = "Vertex animimations" )
-	TArray< UFGAnimationTimeLineObject* > mAnimationTimelineDataCDO;
+	TArray< TObjectPtr<UFGAnimationTimeLineObject> > mAnimationTimelineDataCDO;
 
 private:
 	UPROPERTY(EditDefaultsOnly)
@@ -321,13 +322,13 @@ private:
 	bool bIsPaused;
 
 	UPROPERTY()
-	TMap<FName, UAkComponent*> mSpawnedAkSoundComponents;
+	TMap<FName, TObjectPtr<UAkComponent>> mSpawnedAkSoundComponents;
 
 	UPROPERTY()
-	TMap<FName, UParticleSystemComponent*> mSpawnedParticleEffects;
+	TMap<FName, TObjectPtr<UParticleSystemComponent>> mSpawnedParticleEffects;
 
 	UPROPERTY(VisibleInstanceOnly)
-	USkeletalMeshComponent* mSpawnedWireMeshComponent;
+	TObjectPtr<USkeletalMeshComponent> mSpawnedWireMeshComponent;
 
 	UPROPERTY(EditDefaultsOnly)
 	float mWireMeshTimeAdjustment;

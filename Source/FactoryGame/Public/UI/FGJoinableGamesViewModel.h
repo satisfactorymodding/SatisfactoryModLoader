@@ -16,6 +16,8 @@ class UOnlineFriend;
 class ULocalUserInfo;
 class UFGSessionInformationModel;
 
+DECLARE_LOG_CATEGORY_EXTERN(FGLogSessionDiscovery,Log,All)
+
 USTRUCT()
 struct FOnlineSessionInfoCache
 {
@@ -65,8 +67,10 @@ protected:
 	void UpdateFriendSession( UOnlineFriend* newFriend, USessionInformation* sessionInfo );
 	UFUNCTION( BlueprintCallable )
 	void UpdateAndFilterListEntries();
-	
-	UPROPERTY( BlueprintSetter=SetLocalUser, FieldNotify )
+
+	void ApplyListEntryChanges( TArray< TObjectPtr< UFGGenericListItemDescriptor > > newListEntries );
+
+	UPROPERTY( BlueprintSetter = SetLocalUser, FieldNotify )
 	TObjectPtr< ULocalUserInfo > mLocalUser;
 	
 	UPROPERTY()
@@ -77,4 +81,10 @@ protected:
 
 	UPROPERTY()
 	TArray< TObjectPtr< UFGGenericListItemDescriptor > > mUnfilteredListEntires;
+
+	// <FL> [BGR]
+	FTimerHandle RefreshSessionTimer;
+
+	bool CheckIfCustomAttributeIsMissing(USessionInformation* sessionInfo);
+	// </FL>
 };

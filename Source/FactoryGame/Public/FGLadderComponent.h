@@ -57,5 +57,5 @@ private:
 	 * Players that do climb on the ladder is also in this list.
 	 */
 	UPROPERTY()
-	TArray< class AFGCharacterPlayer* > mPotentialClimbers;
+	TArray< TObjectPtr<class AFGCharacterPlayer> > mPotentialClimbers;
 };

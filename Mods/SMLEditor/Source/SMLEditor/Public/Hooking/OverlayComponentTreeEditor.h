@@ -233,8 +233,8 @@ public:
 
 	// Begin FGraphEditorDragDropAction interface
 	virtual void HoverTargetChanged() override;
-	virtual FReply DroppedOnPanel(const TSharedRef<SWidget>& Panel, FVector2D ScreenPosition, FVector2D GraphPosition, UEdGraph& Graph) override;
-	virtual FReply DroppedOnPin(FVector2D ScreenPosition, FVector2D GraphPosition) override;
+	virtual FReply DroppedOnPanel(const TSharedRef<SWidget>& Panel, const FVector2f& ScreenPosition, const FVector2f& GraphPosition, UEdGraph& Graph) override;
+	virtual FReply DroppedOnPin(const FVector2f& ScreenPosition, const FVector2f& GraphPosition) override;
 	// End FGraphEditorDragDropAction interface
 
 	/** Nodes that we started the drag from */
@@ -245,7 +245,7 @@ public:
 	static TSharedRef<FOverlayComponentTreeRowDragDropOp> Create(const TArray<TSharedPtr<FOverlayComponentData>>& InSourceNodes);
 protected:
 	/** Creates a variable getter node for the provided component data */
-	static class UK2Node_VariableGet* SpawnVariableGetNodeForComponentData(UEdGraph* InTargetGraph, const TSharedPtr<FOverlayComponentData>& InComponentData, const FVector2D& InScreenPosition);
+	static class UK2Node_VariableGet* SpawnVariableGetNodeForComponentData(UEdGraph* InTargetGraph, const TSharedPtr<FOverlayComponentData>& InComponentData, const FVector2f& InScreenPosition);
 };
 
 class SOverlayComponentTreeViewRowWidget : public SMultiColumnTableRow<TSharedPtr<FOverlayComponentData>> {

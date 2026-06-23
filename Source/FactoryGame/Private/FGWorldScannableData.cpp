@@ -14,17 +14,19 @@
 
 #if WITH_EDITOR
 
-FWorldScannableData::FWorldScannableData(const AActor* actor)
+FWorldScannableData::FWorldScannableData(AActor* actor)
 {
 	if (actor) {
 		Actor = TSoftObjectPtr<AActor>(actor);
 		ActorGuid = actor->GetActorGuid();
 		ActorClass = actor->GetClass();
-		ActorLocation = actor->GetStreamingBounds().GetCenter();
+		FBox RuntimeBounds, EditorBounds;
+		actor->GetStreamingBounds(RuntimeBounds, EditorBounds);
+		ActorLocation = RuntimeBounds.GetCenter();
 	}
 }
 
-FWorldScannableData::FWorldScannableData(const FWorldPartitionActorDesc* ActorDesc, int32 PIEInstanceIndex)
+FWorldScannableData::FWorldScannableData(const FWorldPartitionActorDescInstance* ActorDesc, int32 PIEInstanceIndex)
 {
 	check(ActorDesc);
 	Actor = ActorDesc->GetActorSoftPath();
@@ -50,14 +52,14 @@ FWorldScannableData::FWorldScannableData(const FWorldPartitionActorDesc* ActorDe
 	}
 }
 
-FCreatureSpawnerWorldScannableData::FCreatureSpawnerWorldScannableData(const AFGCreatureSpawner* actor) : FWorldScannableData(actor)
+FCreatureSpawnerWorldScannableData::FCreatureSpawnerWorldScannableData(AFGCreatureSpawner* actor) : FWorldScannableData(actor)
 {
 	if (actor) {
 		CreatureClass = actor->GetCreatureToSpawn();
 	}
 }
 
-FCreatureSpawnerWorldScannableData::FCreatureSpawnerWorldScannableData(const FWorldPartitionActorDesc* ActorDesc, int32 PIEInstanceIndex) : FWorldScannableData(ActorDesc, PIEInstanceIndex)
+FCreatureSpawnerWorldScannableData::FCreatureSpawnerWorldScannableData(const FWorldPartitionActorDescInstance* ActorDesc, int32 PIEInstanceIndex) : FWorldScannableData(ActorDesc, PIEInstanceIndex)
 {
 	if (AFGCreatureSpawner* actor = Cast<AFGCreatureSpawner>(Actor.Get())) {
 		CreatureClass = actor->GetCreatureToSpawn();
@@ -120,7 +122,7 @@ void AFGWorldScannableDataGenerator::CacheWorldScannableData()
 
 	// This is a world partitioned level, so we need to use world partition actor iterator to find all actors. We do not actually need to load them to retrieve their data
 	check(WorldPartition);
-	UActorDescContainer* ActorDescContainer = WorldPartition->GetActorDescContainer();
+	UActorDescContainerInstance* ActorDescContainer = WorldPartition->GetActorDescContainerInstance();
 
 	// Determine the path to the source asset in case we need to remap paths to PIE
 	FString SourceAssetPath, UnusedRemappedPath;
@@ -133,15 +135,15 @@ void AFGWorldScannableDataGenerator::CacheWorldScannableData()
 		if (const UWorld* OriginalWorldAsset = FindObject<UWorld>(SourceAssetTopLevelPath)) {
 			const UWorldPartition* OriginalWorldPartition = OriginalWorldAsset->GetWorldPartition();
 			if (OriginalWorldPartition != nullptr) {
-				ActorDescContainer = OriginalWorldPartition->GetActorDescContainer();
+				ActorDescContainer = OriginalWorldPartition->GetActorDescContainerInstance();
 			}
 		}
 	}
 	// If we were unable to find the original world (it could have been garbage collected by now, or never had it's actor desc initialized),
 	// create our own actor desc container using the original asset path
 	if (ActorDescContainer == nullptr) {
-		ActorDescContainer = NewObject<UActorDescContainer>(GetTransientPackage());
-		ActorDescContainer->Initialize(UActorDescContainer::FInitializeParams(GetWorld(), SourceAssetTopLevelPath.GetPackageName()));
+		ActorDescContainer = NewObject<UActorDescContainerInstance>(GetTransientPackage());
+		ActorDescContainer->Initialize(UActorDescContainerInstance::FInitializeParams(SourceAssetTopLevelPath.GetPackageName()));
 	}
 
 	// At this point we should always have a valid actor desc container, but ensure and not crash if we do not
@@ -153,8 +155,8 @@ void AFGWorldScannableDataGenerator::CacheWorldScannableData()
 	// We have to fix up the path in case this is a PIE instance
 	const int32 PIEInstanceIndex = GetWorld()->GetPackage()->GetPIEInstanceID();
 
-	for (FActorDescList::TConstIterator<AActor> It(ActorDescContainer); It; ++It) {
-		const FWorldPartitionActorDesc* ActorDescriptor = *It;
+	for (FActorDescInstanceList::TConstIterator<AActor> It(ActorDescContainer); It; ++It) {
+		const FWorldPartitionActorDescInstance* ActorDescriptor = *It;
 		const UClass* ActorNativeClass = ActorDescriptor->GetActorNativeClass();
 
 		if (ActorNativeClass->IsChildOf(AFGItemPickup::StaticClass())) {

@@ -3,6 +3,7 @@
 #include "ModMetadataObject.h"
 #include "Interfaces/IPluginManager.h"
 #include "Util/SemVersion.h"
+#include "Widgets/SWindow.h"
 
 class SAlpakitEditModDialog : public SWindow
 {

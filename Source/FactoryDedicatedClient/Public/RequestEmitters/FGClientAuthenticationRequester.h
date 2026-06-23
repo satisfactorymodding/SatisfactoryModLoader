@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "FGClientRequestBase.h"
+#include "Networking/FGClientAPIManager.h"
 #include "FGClientAuthenticationRequester.generated.h"
 
+struct FServerAuthenticationToken;
 enum class EPrivilegeLevel : uint8;
 struct FFGServerErrorResponse;
 UCLASS()
@@ -14,15 +16,15 @@ class FACTORYDEDICATEDCLIENT_API UFGClientAuthenticationRequester : public UFGCl
 	GENERATED_BODY()
 public:
 	/** Returns OK when login token is valid and has at least the given privilege level, or an error otherwise. */
-	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "Client" )
-	FFGPendingClientRequest Request_VerifyAuthenticationToken( UPARAM( FGServerRequestPassThrough ) EPrivilegeLevel MinimumPrivilegeLevel, UPARAM( FGServerRequestPassThrough ) bool bAutomaticLogin );
+	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "NotAuthenticated", FGSuppressClientAPIErrorPopup = "Timeout" )
+	FFGPendingClientRequest Request_VerifyAuthenticationToken( const FString& AuthenticationToken, EPrivilegeLevel PrivilegeLevel, UPARAM( FGServerRequestPassThrough ) EPrivilegeLevel MinimumPrivilegeLevel, UPARAM( FGServerRequestPassThrough ) bool bAutomaticLogin, UPARAM( FGServerRequestPassThrough ) bool bIsSavedAuthenticationToken );
 
 	/** Called to handle the login token verification result */
 	UFUNCTION( FGServerResponse )
-	void Response_VerifyAuthenticationToken( FFGServerErrorResponse& ErrorResponse, EPrivilegeLevel MinimumPrivilegeLevel, bool bAutomaticLogin ) const;
+	void Response_VerifyAuthenticationToken( FFGServerErrorResponse& ErrorResponse, EPrivilegeLevel MinimumPrivilegeLevel, bool bAutomaticLogin, bool bIsSavedAuthenticationToken ) const;
 	
 	/** Attempts a password-less login when the server is not claimed or when the client password is not set */
-	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "NotAuthenticated" )
+	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "NotAuthenticated", FGSuppressClientAPIErrorPopup = "Timeout" )
 	FFGPendingClientRequest Request_PasswordlessLogin( EPrivilegeLevel MinimumPrivilegeLevel, UPARAM( FGServerRequestPassThrough ) EPrivilegeLevel LocalMinimumPrivilegeLevel, UPARAM( FGServerRequestPassThrough ) bool bAutomaticLogin ) const;
 
 	/** Called as a result of the passwordless login */
@@ -30,7 +32,7 @@ public:
 	void Response_PasswordlessLogin( FFGServerErrorResponse& ErrorResponse, const FString& AuthenticationToken, EPrivilegeLevel LocalMinimumPrivilegeLevel, bool bAutomaticLogin ) const;
 	
 	/** Logins the client to the server using the given password. */
-	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "NotAuthenticated" )
+	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "NotAuthenticated", FGSuppressClientAPIErrorPopup = "Timeout" )
 	FFGPendingClientRequest Request_PasswordLogin( const FString& Password, EPrivilegeLevel MinimumPrivilegeLevel, UPARAM( FGServerRequestPassThrough ) EPrivilegeLevel LocalMinimumPrivilegeLevel ) const;
 
 	/** Called as a result of the password login */

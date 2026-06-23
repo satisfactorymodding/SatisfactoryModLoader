@@ -104,7 +104,7 @@ void AFGTrain::TickSelfDriving(float dt){ }
 void AFGTrain::TickPlayerDriving(float dt){ }
 void AFGTrain::GainedSignificance_Implementation(){ }
 void AFGTrain::LostSignificance_Implementation(){ }
-float AFGTrain::GetSignificanceRange(){ return float(); }
+float AFGTrain::GetSignificanceRange_Implementation() const{ return IFGSignificanceInterface::GetSignificanceRange_Implementation(); }
 bool AFGTrain::AddAsRepresentation(){ return bool(); }
 bool AFGTrain::UpdateRepresentation(){ return bool(); }
 bool AFGTrain::UpdateRepresentation_Local(){ return bool(); }
@@ -125,6 +125,7 @@ float AFGTrain::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGTrain::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGTrain::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 UMaterialInterface* AFGTrain::GetActorRepresentationCompassMaterial(){ return nullptr; }
+void AFGTrain::SetActorLastEditedByHandle(const FPlayerInfoHandle& LastEditedBy){ IFGActorRepresentationInterface::SetActorLastEditedByHandle(LastEditedBy); }
 void AFGTrain::SetTrainName(const FText& name){ }
 void AFGTrain::SetTrackGraphID(int32 newID){ }
 bool AFGTrain::IsPlayerDriven() const{ return bool(); }
@@ -183,4 +184,3 @@ void AFGTrain::OnRep_TrainStatus(){ }
 void AFGTrain::OnRep_MultipleUnitMaster(){ }
 void AFGTrain::OnRep_TrainReplicationActor(){ }
 void AFGTrain::Cheat_Teleport( AFGBuildableRailroadStation* station){ }
-void AFGTrain::SetLastEditedBy(TArray<FLocalUserNetIdBundle> lastEditedBy){ }

@@ -11,9 +11,9 @@ void AFGEventSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGEventSubsystem, mCurrentEvents);
 }
+void AFGEventSubsystem::Init(){ }
 AFGEventSubsystem* AFGEventSubsystem::Get(UWorld* world){ return nullptr; }
 AFGEventSubsystem* AFGEventSubsystem::GetEventSubsystem(UObject* worldContext){ return nullptr; }
-const TArray<EEvents>& AFGEventSubsystem::GetCurrentEvents() const{ return *(new TArray<EEvents>); }
 void AFGEventSubsystem::StoreCurrentCalendarData(const FCalendarData& calendarData){ }
 void AFGEventSubsystem::StoreCalendarData(TSubclassOf<class UFGCalendarRewards> calendarRewardClass, const FCalendarData& calendarData){ }
 const FCalendarData* AFGEventSubsystem::GetStoredCalendarData(TSubclassOf<class UFGCalendarRewards> calendarRewardClass) const{ return nullptr; }
@@ -22,13 +22,12 @@ FCalendarData* AFGEventSubsystem::GetStoredCalendarData(TSubclassOf<class UFGCal
 FCalendarData* AFGEventSubsystem::GetStoredCurrentCalendarData(){ return nullptr; }
 bool AFGEventSubsystem::CanOpenCalendarSlot(EEvents event, int32 dayNumber){ return bool(); }
 void AFGEventSubsystem::OnPlayerOpenedCalendar(class AFGCharacterPlayer* player, class AFGBuildableCalendar* calendar){ }
-const TSet<class AFGPlayerState*>& AFGEventSubsystem::GetPlayersThatHaveSeenCalendar(TSubclassOf<UFGCalendarRewards> calendar){ return *(new TSet<class AFGPlayerState*>()); }
-const TSet<class AFGPlayerState*>& AFGEventSubsystem::GetPlayersThatHaveSeenCurrentCalendar(){ return *(new TSet<class AFGPlayerState*>()); }
+const TSet<TObjectPtr<class AFGPlayerState>>& AFGEventSubsystem::GetPlayersThatHaveSeenCalendar(TSubclassOf<UFGCalendarRewards> calendar){ return *(new TSet<TObjectPtr<AFGPlayerState>>()); }
+const TSet<TObjectPtr<class AFGPlayerState>>& AFGEventSubsystem::GetPlayersThatHaveSeenCurrentCalendar(){ return *(new TSet<TObjectPtr<AFGPlayerState>>()); }
 class AFGGiftRainSpawner* AFGEventSubsystem::GetRandomActiveGiftRainSpawner() const{ return nullptr; }
 class AFGGiftRainSpawner* AFGEventSubsystem::GetGiftRainSpawnerForEvent(EEvents event) const{ return nullptr; }
-bool AFGEventSubsystem::GetOverridenEventDateTime(EEvents event, FDateTime& out_OverriddenDateTime){ return bool(); }
 bool AFGEventSubsystem::ShouldRunEvent(const FSimpleDate& Begin, const FSimpleDate& End, const FDateTime& now){ return bool(); }
 void AFGEventSubsystem::OnBeginEvent_Native(EEvents event){}
-void AFGEventSubsystem::CacheActiveEvents(){}
+void AFGEventSubsystem::PopulateCurrentEvents(){ }
 TSubclassOf<class AActor> AFGEventSubsystem::GetCalendarClassForCurrentEvent(){ return TSubclassOf<class AActor>(); }
 TSubclassOf<class AFGBuildable> AFGEventSubsystem::GetHubMiniGameClassForCurrentEvent(){ return TSubclassOf<class AFGBuildable>(); }

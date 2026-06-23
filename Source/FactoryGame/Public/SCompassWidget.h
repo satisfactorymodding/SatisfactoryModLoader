@@ -9,6 +9,7 @@
 #include "Components/Widget.h"
 #include "SCompassWidget.generated.h"
 
+struct FCompassCachedTextRenderInfo;
 class AFGHUD;
 struct FCompassEntry;
 
@@ -39,8 +40,13 @@ public:
 	UPROPERTY( EditAnywhere, Category = "Compass Widget" )
 	float CompassWidth;
 
+	/** Font used for rendering labels under the compass objects */
 	UPROPERTY( EditAnywhere, Category="Compass Widget" )
-	FSlateFontInfo FontInfo;
+	FSlateFontInfo LabelFontInfo;
+
+	/** Font used for rendering overlay text on top of font objects (used by cardinal directions mostly) */
+	UPROPERTY( EditAnywhere, Category="Compass Widget" )
+	FSlateFontInfo OverlayTextFontInfo;
 	
 #if WITH_EDITORONLY_DATA
 	/** Compass entries to use for previewing the widget */
@@ -71,15 +77,18 @@ public:
 	virtual bool ComputeVolatility() const override { return false; }
 	// End SWidget interface
 
-	static void DrawEntry(const FVector2f& RootLocation, const FCompassEntry& Entry, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32& LayerId);
-	static void DrawEntrySpecialEffect(const FVector2f& RootLocation, const FCompassEntry& Entry, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32& LayerId);
+	static void DrawEntry( const FVector2f& RootLocation, FCompassEntry& Entry, const FGeometry& AllottedGeometry, const FSlateFontInfo& OverlayTextFont, FSlateWindowElementList& OutDrawElements, int32& LayerId );
+	static void DrawEntrySpecialEffect( const FVector2f& RootLocation, const FCompassEntry& Entry, const FGeometry& AllottedGeometry, FSlateWindowElementList& OutDrawElements, int32& LayerId );
 	static FVector3f CalculateBlurParametersFromStrength( float blurStrength );
-	static void UpdateEntryTextRenderData( FCompassEntry& Entry, const FSlateFontInfo& FontInfo );
+
+	static void ConditionalUpdateEntryTextRenderData( const FText& Text, FCompassCachedTextRenderInfo& TextRenderInfo, const FGeometry& AllottedGeometry, const FSlateFontInfo& Font );
+	static void UpdateEntryTextRenderData( const FText& Text, FCompassCachedTextRenderInfo& TextRenderInfo, const FSlateFontInfo& FontInfo );
 	
 protected:
 	TWeakObjectPtr<UFGCompassWidget> mOwnerCompassWidget;
 	FVector2f mCompassAnchorPoint{};
 	float mCompassWidth{};
 	FCurveSequence Anim;
-	FSlateFontInfo mFont;
+	FSlateFontInfo mLabelFont;
+	FSlateFontInfo mOverlayTextFont;
 };

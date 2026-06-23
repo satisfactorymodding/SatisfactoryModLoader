@@ -159,27 +159,27 @@ private:
 
 	/**Used to redirect input and construct poles when needed*/
 	UPROPERTY( Replicated )
-	class AFGPipelinePoleHologram* mChildPoleHologram[ 2 ];
+	TObjectPtr<class AFGPipelinePoleHologram> mChildPoleHologram[ 2 ];
 
 	/**Used to redirect input and construct wall poles when needed*/
 	UPROPERTY( Replicated )
-	class AFGWallAttachmentHologram* mChildWallPoleHologram[ 2 ];
+	TObjectPtr<class AFGWallAttachmentHologram> mChildWallPoleHologram[ 2 ];
 
 	/** Connection component used for snapping with our child wall pole. */
 	UPROPERTY()
-	UFGPipeConnectionComponentBase* mChildWallPoleConnection[ 2 ];
+	TObjectPtr<UFGPipeConnectionComponentBase> mChildWallPoleConnection[ 2 ];
 
 	/** The two connection components for this pipeline. */
 	UPROPERTY()
-	class UFGPipeConnectionComponentBase* mConnectionComponents[ 2 ];
+	TObjectPtr<class UFGPipeConnectionComponentBase> mConnectionComponents[ 2 ];
 
 	/** The connections we've made. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class UFGPipeConnectionComponentBase* mSnappedConnectionComponents[ 2 ];
+	TObjectPtr<class UFGPipeConnectionComponentBase> mSnappedConnectionComponents[ 2 ];
 
 	/** If we upgrade another pipeline this is the pipeline we replace. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildablePipeline* mUpgradedPipeline;
+	TObjectPtr<class AFGBuildablePipeline> mUpgradedPipeline;
 	
 	/** Class of pipe pole to place at the end. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
@@ -207,15 +207,15 @@ private:
 
 	/** Arrow to indicate the direction of the conveyor while placing it. */
 	UPROPERTY()
-	class UStaticMeshComponent* mConnectionArrowComponent;
+	TObjectPtr<class UStaticMeshComponent> mConnectionArrowComponent;
 
 	/** All the generated spline meshes. */
 	UPROPERTY()
-	TArray< class USplineMeshComponent* > mSplineMeshes;
+	TArray< TObjectPtr<class USplineMeshComponent> > mSplineMeshes;
 
 	/** All the generated collision meshes. */
 	UPROPERTY()
-	TArray< class UShapeComponent* > mCollisionMeshes;
+	TArray< TObjectPtr<class UShapeComponent> > mCollisionMeshes;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode")
 	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeAuto;
@@ -236,17 +236,17 @@ private:
 	TSubclassOf< UFGHologramBuildModeDescriptor > mBuildModeStraight;
 
 	UPROPERTY( Replicated, CustomSerialization )
-	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
+	TArray< TObjectPtr<class AFGBuildablePassthrough> > mSnappedPassthroughs;
 
 	UPROPERTY( CustomSerialization )
 	FVector mPassthroughSnapDirection;
 
 	/** Cached from the default buildable. */
 	UPROPERTY()
-	class UStaticMesh* mMesh;
+	TObjectPtr<class UStaticMesh> mMesh;
 	
 	UPROPERTY()
-	class UMaterialInterface* mMeshMaterial;
+	TObjectPtr<class UMaterialInterface> mMeshMaterial;
 	
 	float mMeshLength;
 };

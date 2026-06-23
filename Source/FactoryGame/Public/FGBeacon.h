@@ -33,6 +33,6 @@ public:
 
 private:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTexture;
+	TObjectPtr<class UTexture2D> mActorRepresentationTexture;
 	
 };

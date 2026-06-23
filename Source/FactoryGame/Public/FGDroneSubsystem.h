@@ -139,15 +139,15 @@ private:
 	
 	/** All the drone stations in the world */
 	UPROPERTY( Replicated )
-	TArray< class AFGDroneStationInfo* > mStations;
+	TArray< TObjectPtr<class AFGDroneStationInfo> > mStations;
 
 	/** All the drones in the world */
 	UPROPERTY( Replicated )
-	TArray< class AFGDroneVehicle* > mDrones;
+	TArray< TObjectPtr<class AFGDroneVehicle> > mDrones;
 
 	/** All the drone movement components which need ticking. */
 	UPROPERTY()
-	TArray< class UFGDroneMovementComponent* > mTickingMovementComponents;
+	TArray< TObjectPtr<class UFGDroneMovementComponent> > mTickingMovementComponents;
 
 	/** A random name is picked from here when placing a stop. */
 	UPROPERTY()

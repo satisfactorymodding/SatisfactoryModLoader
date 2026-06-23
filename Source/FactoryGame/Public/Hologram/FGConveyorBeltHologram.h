@@ -114,23 +114,23 @@ private:
 	
 	/** Child pole hologram used for normal placement */
 	UPROPERTY( Replicated )
-	class AFGConveyorPoleHologram* mChildPoleHologram[ 2 ];
+	TObjectPtr<class AFGConveyorPoleHologram> mChildPoleHologram[ 2 ];
 
 	/** Child pole hologram used for wall placement */
 	UPROPERTY( Replicated )
-	class AFGWallAttachmentHologram* mChildWallPoleHologram[ 2 ];
+	TObjectPtr<class AFGWallAttachmentHologram> mChildWallPoleHologram[ 2 ];
 
 	/** Child pole hologram used for ceiling placement */
 	UPROPERTY( Replicated )
-	class AFGWallAttachmentHologram* mChildCeilingPoleHologram[ 2 ];
+	TObjectPtr<class AFGWallAttachmentHologram> mChildCeilingPoleHologram[ 2 ];
 
 	/** Snap connection of our child wall pole hologram. */
 	UPROPERTY()
-	class UFGFactoryConnectionComponent* mChildWallPoleSnapConnection[ 2 ];
+	TObjectPtr<class UFGFactoryConnectionComponent> mChildWallPoleSnapConnection[ 2 ];
 
 	/** Snap connection of our child ceiling pole hologram. */
 	UPROPERTY()
-	class UFGFactoryConnectionComponent* mChildCeilingPoleSnapConnection[ 2 ];
+	TObjectPtr<class UFGFactoryConnectionComponent> mChildCeilingPoleSnapConnection[ 2 ];
 
 	/** Whether or not to flip the direction our belt snaps to our child wall pole hologram. */
 	UPROPERTY( CustomSerialization )
@@ -138,21 +138,21 @@ private:
 	
 	/** The two connection components for this conveyor. */
 	UPROPERTY()
-	class UFGFactoryConnectionComponent* mConnectionComponents[ 2 ];
+	TObjectPtr<class UFGFactoryConnectionComponent> mConnectionComponents[ 2 ];
 
 	/** The connections we've made. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class UFGFactoryConnectionComponent* mSnappedConnectionComponents[ 2 ];
+	TObjectPtr<class UFGFactoryConnectionComponent> mSnappedConnectionComponents[ 2 ];
 
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableWallPassthrough* mSnappedWallPassthrough[ 2 ];
+	TObjectPtr<class AFGBuildableWallPassthrough> mSnappedWallPassthrough[ 2 ];
 
 	UPROPERTY( Replicated, CustomSerialization )
 	int32 mSnappedWallPassthroughConnectionIndex[ 2 ];
 
 	/** If we upgrade another conveyor belt this is the belt we replaces. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableConveyorBelt* mUpgradedConveyorBelt;
+	TObjectPtr<class AFGBuildableConveyorBelt> mUpgradedConveyorBelt;
 
 	/** Class of conveyor pole to place at the end. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
@@ -192,18 +192,18 @@ private:
 
 	/** Arrow to indicate the direction of the conveyor while placing it. */
 	UPROPERTY()
-	class UStaticMeshComponent* mConnectionArrowComponent;
+	TObjectPtr<class UStaticMeshComponent> mConnectionArrowComponent;
 	
 	/** All the generated spline meshes. */
 	UPROPERTY()
-	TArray< class USplineMeshComponent* > mSplineMeshes;
+	TArray< TObjectPtr<class USplineMeshComponent> > mSplineMeshes;
 
 	/** All the generated collision meshes. */
 	UPROPERTY()
-	TArray< class UShapeComponent* > mCollisionMeshes;
+	TArray< TObjectPtr<class UShapeComponent> > mCollisionMeshes;
 
 	/** Cached from the default buildable. */
 	UPROPERTY()
-	class UStaticMesh* mMesh;
+	TObjectPtr<class UStaticMesh> mMesh;
 	float mMeshLength;
 };

@@ -3,13 +3,13 @@
 #include "Online/FGOnlineIntegrationSettings.h"
 
 UFGOnlineIntegrationSettings::UFGOnlineIntegrationSettings() : Super() {
-	this->mOnlineStatDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/Achievements/DT_OnlineStats.DT_OnlineStats").ResolveObject();
-	this->mOnlineAggregatedStatDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/Achievements/DT_OnlineStatsAggregated.DT_OnlineStatsAggregated").ResolveObject();
-	this->mOnlineActivityDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/DT_OnlineActivities.DT_OnlineActivities").ResolveObject();
-	this->mOnlineStatToActivityMappingTable = FSoftObjectPath("/Game/FactoryGame/Testing/DT_OnlineStatToActivityMapping.DT_OnlineStatToActivityMapping").ResolveObject();
-	this->mSessionValidationRowDescTable = FSoftObjectPath("/Game/FactoryGame/Interface/UI/Online/SessionCreationSummaryFields/DT_SessionSummaryRowDescTable.DT_SessionSummaryRowDescTable").ResolveObject();
-	this->mSessionInformationRowDescTable = FSoftObjectPath("/Game/FactoryGame/Interface/UI/Online/DT_ReadOnlySessionInfoRowDescs.DT_ReadOnlySessionInfoRowDescs").ResolveObject();
-	this->mAddonEntitlements.Add(FSoftObjectPath("/Game/FactoryGame/DLC/AddOn_EarlySupporterPack.AddOn_EarlySupporterPack").ResolveObject());
+	this->mOnlineStatDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/Achievements/DT_OnlineStats.DT_OnlineStats");
+	this->mOnlineAggregatedStatDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/Achievements/DT_OnlineStatsAggregated.DT_OnlineStatsAggregated");
+	this->mOnlineActivityDataTable = FSoftObjectPath("/Game/FactoryGame/Testing/DT_OnlineActivities.DT_OnlineActivities");
+	this->mOnlineStatToActivityMappingTable = FSoftObjectPath("/Game/FactoryGame/Testing/DT_OnlineStatToActivityMapping.DT_OnlineStatToActivityMapping");
+	this->mSessionValidationRowDescTable = FSoftObjectPath("/Game/FactoryGame/Interface/UI/Online/SessionCreationSummaryFields/DT_SessionSummaryRowDescTable.DT_SessionSummaryRowDescTable");
+	this->mSessionInformationRowDescTable = FSoftObjectPath("/Game/FactoryGame/Interface/UI/Online/DT_ReadOnlySessionInfoRowDescs.DT_ReadOnlySessionInfoRowDescs");
+	this->mAddonEntitlements.Add(TSoftObjectPtr<UAddOnEntitlement>(FSoftObjectPath("/Game/FactoryGame/DLC/AddOn_EarlySupporterPack.AddOn_EarlySupporterPack")));
 }
 const UFGOnlineIntegrationSettings* UFGOnlineIntegrationSettings::Get(){ return nullptr; }
 UDataTable* UFGOnlineIntegrationSettings::GetOnlineStatDataTable() const{ return nullptr; }

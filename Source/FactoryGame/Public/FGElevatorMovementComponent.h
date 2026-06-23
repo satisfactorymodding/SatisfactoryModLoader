@@ -1,10 +1,8 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-
 #include "FactoryGame.h"
 #include "GameFramework/MovementComponent.h"
-#include "Kismet/BlueprintTypeConversions.h"
 #include "FGElevatorMovementComponent.generated.h"
 
 class AFGBuildableElevatorFloorStop;

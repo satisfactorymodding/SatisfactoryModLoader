@@ -24,7 +24,7 @@ public class AccessTransformerTable<TAccessTransformerType> where TAccessTransfo
             result.AddRange(transformers.Where(transformer => transformer.Class == className || transformer.Class == alternativeClassName));
         }
 
-        return result;
+        return result.Distinct().ToList();
     }
     
     public void MarkUsed(TAccessTransformerType transformer)

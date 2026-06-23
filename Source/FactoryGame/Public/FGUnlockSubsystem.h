@@ -12,6 +12,7 @@
 #include "Unlocks/FGUnlockScannableResource.h"
 #include "FGUnlockSubsystem.generated.h"
 
+class UFGVisualizationModeDescriptor;
 class UFGPlayerCustomizationDesc;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FUnlockMoreInventorySlots, int32, newUnlockedSlots );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewTapeUnlocked, TSubclassOf< UFGTapeData >, newTape );
@@ -77,6 +78,8 @@ public:
 	void UnlockCentralStorageUploadSpeed( float uploadSpeedPercentageDecrease );
 	void UnlockCentralStorageUploadSlots( int32 numSlotsToUnlock );
 	void UnlockSAMIntensity( int32 newSamIntensity, bool forceSet = false );
+	void UnlockCircuitDaisyChaining();
+	void UnlockVisualizationMode( const TSubclassOf<UFGVisualizationModeDescriptor>& newVisualizationMode );
 
 	UFUNCTION( BlueprintCallable, Category = "Unlocks" )
 	void UnlockCheckmark( FString playerName );
@@ -163,7 +166,14 @@ public:
 	}
 	
 	UFUNCTION( BlueprintPure, Category = "Narrative" )
-	FORCEINLINE int32 GetSAMIntensity() const { return mSAMIntensity; } 
+	FORCEINLINE int32 GetSAMIntensity() const { return mSAMIntensity; }
+
+	UFUNCTION( BlueprintPure, Category = "Circuits" )
+	FORCEINLINE bool IsCircuitDaisyChainingUnlocked() const { return mUnlockedCircuitDaisyChaining; }
+
+	/** Returns a list of all unlocked visualization modes */
+	UFUNCTION( BlueprintPure, Category = "Visualization Mode" )
+	void GetUnlockedVisualizationModes( TArray<TSubclassOf<UFGVisualizationModeDescriptor>>& out_visualizationModes ) const;
 
 private:
 	void SetNumOfAdditionalInventorySlots( int32 newNumSlots );
@@ -269,6 +279,9 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf< class UFGPlayerCustomizationDesc > > mUnlockedPlayerCustomizations;
 
+	UPROPERTY( SaveGame, Replicated )
+	TArray<TSubclassOf<UFGVisualizationModeDescriptor>> mUnlockedVisualizationModes;
+
 	/** Increases the limit for how many item stacks we can store in the central storage. Added on top of UFGCentralStorageSettings::mDefaultItemLimit */
 	int32 mUnlockedCentralStorageItemStackLimit;
 
@@ -290,4 +303,8 @@ private:
 	/** How intense the effects like VO on the SAM nodes should be. Starts at 0 */ 
 	UPROPERTY( SaveGame, Replicated )
 	int32 mSAMIntensity = 0;
+
+	/** Whether the player has unlocked daisy-chaining of power connections. */
+	UPROPERTY( SaveGame, Replicated )
+	bool mUnlockedCircuitDaisyChaining = false;
 };

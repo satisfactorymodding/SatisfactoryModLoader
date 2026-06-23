@@ -15,7 +15,7 @@ struct FTextRendererImageEntry
 {
 	GENERATED_BODY()
 	UPROPERTY(EditDefaultsOnly, Category="Render Settings")
-	UFont* RenderFont;
+	TObjectPtr<UFont> RenderFont;
 
 	/* 0.0 - 1.0*/
 	UPROPERTY(EditDefaultsOnly, Category="Render Settings", meta = (ClampMin = 0.f, ClampMax = 1.f))
@@ -62,7 +62,7 @@ struct FTextRendererImageEntry
 	FString Text = "Awesome String here";
 	
 	UPROPERTY(VisibleInstanceOnly)
-	UCanvasRenderTarget2D* GeneratedTexture = nullptr;
+	TObjectPtr<UCanvasRenderTarget2D> GeneratedTexture = nullptr;
 
 	// Begin future proof if we want to expose this later down the line.
 	bool bCentreX = true;
@@ -101,10 +101,10 @@ protected:
 	float mSignificanceRange = 5000.f;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
-	UMaterialInterface* mBaseMaterial = nullptr;
+	TObjectPtr<UMaterialInterface> mBaseMaterial = nullptr;
 	
 	UPROPERTY(VisibleInstanceOnly)
-	UMaterialInstanceDynamic* mMaterialInstance = nullptr;
+	TObjectPtr<UMaterialInstanceDynamic> mMaterialInstance = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
 	TArray<FTextRendererImageEntry> Elements;

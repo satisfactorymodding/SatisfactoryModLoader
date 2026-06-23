@@ -25,7 +25,6 @@ UFGUserSetting::UFGUserSetting() : Super() {
 	this->EditabilityDisqualifiers = 0;
 	this->ShowInBuilds = EIncludeInBuilds::IIB_Development;
 }
-FOptionRowData UFGUserSetting::ToOptionRowData() const{ return FOptionRowData(); }
 ESettingVisiblityDisqualifier UFGUserSetting::GetVisibilityDisqualifiers(UWorld* world){ return ESettingVisiblityDisqualifier(); }
 bool UFGUserSetting::ShouldShowInCurrentConfig(ESettingVisiblityDisqualifier visibilityDisqualifiers) const{ return bool(); }
 FVariant UFGUserSetting::GetDefaultValue() const{ return FVariant(); }
@@ -45,22 +44,19 @@ void UFGUserSetting::PostLoad() {
 void UFGUserSetting::Serialize(FStructuredArchive::FRecord Record){ Super::Serialize(Record); }
 bool UFGUserSetting::HasVisibilityDisqualifier(ESettingVisiblityDisqualifier disqualifier) const{ return bool(); }
 bool UFGUserSetting::HasEditabilityDisqualifier(ESettingEditabilityDisqualifier disqualifier) const{ return bool(); }
+bool UFGUserSetting::HasVisibilityDisqualifier(int32 disqualifier){ return bool(); }
 bool UFGUserSetting::ShouldUseCVar() const{ return bool(); }
 bool UFGUserSetting::IsDedicatedServerRelevant() const{ return bool(); }
 bool UFGUserSetting::ShouldShowInBuild() const{ return bool(); }
 #if WITH_EDITOR
-FName UFGUserSetting_ValueSelector::GetGraphSchemaName() const{ return FName(); }
-#endif 
-TSubclassOf< class UFGOptionsValueController > UFGUserSetting_ValueSelector::GetValueSelectorWidgetClass() const{ return TSubclassOf<class UFGOptionsValueController>(); }
-#if WITH_EDITOR
-FName UFGUserSetting_CheckBox::GetGraphSchemaName() const{ return FName(); }
+bool UFGUserSetting_CheckBox::GetGraphPinType(FEdGraphPinType& out_graphPinType) const{ return Super::GetGraphPinType(out_graphPinType); }
 bool UFGUserSetting_CheckBox::SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction) const{ return bool(); }
-#endif 
+#endif
 TSubclassOf< class UFGOptionsValueController > UFGUserSetting_CheckBox::GetValueSelectorWidgetClass() const{ return TSubclassOf<class UFGOptionsValueController>(); }
 FVariant UFGUserSetting_CheckBox::GetDefaultValue() const{ return FVariant(); }
 FVariant UFGUserSetting_IntSelector::GetDefaultValue() const{ return Super::GetDefaultValue(); }
 #if WITH_EDITOR
-FName UFGUserSetting_IntSelector::GetGraphSchemaName() const{ return FName(); }
+bool UFGUserSetting_IntSelector::GetGraphPinType(FEdGraphPinType& out_graphPinType) const{ return Super::GetGraphPinType(out_graphPinType); }
 bool UFGUserSetting_IntSelector::SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction) const{ return bool(); }
 #endif 
 UFGUserSetting_IntSelector::UFGUserSetting_IntSelector() : Super() {
@@ -81,7 +77,14 @@ UFGUserSetting_IntSelector::UFGUserSetting_IntSelector() : Super() {
 }
 TSubclassOf< class UFGOptionsValueController > UFGUserSetting_IntSelector::GetValueSelectorWidgetClass() const{ return TSubclassOf<class UFGOptionsValueController>(); }
 #if WITH_EDITOR
+bool UFGUserSetting_Slider::GetGraphPinType(FEdGraphPinType& out_graphPinType) const{ return Super::GetGraphPinType(out_graphPinType); }
 bool UFGUserSetting_Slider::SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction) const{ return bool(); }
-#endif 
+#endif
+TSubclassOf<UFGOptionsValueController> UFGUserSetting_LinearColorPicker::GetValueSelectorWidgetClass() const{ return Super::GetValueSelectorWidgetClass(); }
+FVariant UFGUserSetting_LinearColorPicker::GetDefaultValue() const{ return Super::GetDefaultValue(); }
+#if WITH_EDITOR
+bool UFGUserSetting_LinearColorPicker::GetGraphPinType(FEdGraphPinType& out_graphPinType) const{ return Super::GetGraphPinType(out_graphPinType); }
+bool UFGUserSetting_LinearColorPicker::SetupValueFunction(UK2Node_CallFunction* callFunction, bool isGetterFunction) const{ return Super::SetupValueFunction(callFunction, isGetterFunction); }
+#endif
 TSubclassOf< class UFGOptionsValueController > UFGUserSetting_Slider::GetValueSelectorWidgetClass() const{ return TSubclassOf<class UFGOptionsValueController>(); }
 FVariant UFGUserSetting_Slider::GetDefaultValue() const{ return FVariant(); }

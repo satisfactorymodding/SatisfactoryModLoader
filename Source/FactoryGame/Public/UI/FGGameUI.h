@@ -36,7 +36,7 @@ struct FQueuedMessage
 	FQueuedMessage(){}
 
 	UPROPERTY( Transient )
-	class UFGMessage* Message = nullptr;
+	TObjectPtr<class UFGMessage> Message = nullptr;
 	
 	UPROPERTY( Transient )
 	float TriggerDelay = 0;
@@ -164,6 +164,12 @@ public:
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	bool IsPauseMenuOpen() const { return mPauseMenuOpen; }
 
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	FORCEINLINE UFGUserWidget* GetPauseMenu() { return mPauseMenu.Get(); }
+
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	void SetPauseMenu( UFGUserWidget* widget );
+
 	/** Triggered when we have finished playing the active audio message */
 	UFUNCTION()
     void AudioMessageFinishedPlayback();
@@ -178,6 +184,9 @@ public:
 	/** Allow the gameUI to remove pawn specific HUD */
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "UI" )
 	void RemovePawnHUD();
+
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "UI" )
+	void SetPawnHUDVisibility( ESlateVisibility newVisibility );
 
 	/** Temp Solution to remove dependencies */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI" )
@@ -253,10 +262,14 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
 	bool OnShortcutPressed( int32 shortcutIndex );
 
-	TMap< UFGMessage*, double > GetPlayedMessages() const { return mPlayedMessages; }
+	TMap< TObjectPtr<UFGMessage>, double > GetPlayedMessages() const { return mPlayedMessages; }
 
-	FORCEINLINE float GetMessageCooldown() const { return mMessageCooldown; }
-	FORCEINLINE void ClearMessageCooldown() { mMessageCooldown = 0.f; }
+	void ClearMessageCooldowns();
+	
+	FORCEINLINE float GetGlobalMessageCooldown() const { return mMessageCooldown; }
+	FORCEINLINE void ClearGlobalMessageCooldown() { mMessageCooldown = 0.f; }
+
+	const TMap< TSubclassOf< class UFGBarkMessageType >, float >& GetActiveBarkMessageCooldowns() const { return mBarkMessageTypeCooldowns; }
 
 	float GetBarkMessageCooldown( TSubclassOf< class UFGBarkMessageType > barkMessageType ) const;
 	void ClearBarkMessageCooldown( TSubclassOf< class UFGBarkMessageType > barkMessageType );
@@ -302,13 +315,14 @@ protected:
 
 	virtual bool ShouldSuppressMessage( class UFGMessage* message ) const;
 
+
 private:
 	void SetupDelegates();
-
+	bool CanUnpauseTheGame() const;
 public:
 	/** This is the interrupt message we want to play in between if a message was interrupted by a higher prio message. Populated when message is interrupted */
 	UPROPERTY( Transient )
-	class UFGMessage* mPendingInterruptMessage;
+	TObjectPtr<class UFGMessage> mPendingInterruptMessage;
 	/** Queue of messages pending playback. The trigger delay of the queued messages does not matter for the order of the queue. The first message
 	 * can be waiting for it's delay while the second isn't and that is fine. The trigger delay is just a way to make sure we don't trigger messages to early. */
 	UPROPERTY(Transient)
@@ -326,15 +340,15 @@ public:
 private:
 	/** A stack with widgets that are currently open */
 	UPROPERTY()
-	TArray< UFGInteractWidget* > mInteractWidgetStack;
+	TArray< TObjectPtr<UFGInteractWidget> > mInteractWidgetStack;
 
 	/** Message that is being played now ( can be null ) */
 	UPROPERTY()
-	class UFGAudioMessage* mActiveAudioMessage = nullptr;
+	TObjectPtr<class UFGAudioMessage> mActiveAudioMessage = nullptr;
 
 	/** Array with messages that have been played this session mapped to the world time */
 	UPROPERTY( Transient )
-	TMap< UFGMessage*, double > mPlayedMessages;
+	TMap< TObjectPtr<UFGMessage>, double > mPlayedMessages;
 
 	/* Every time a message is triggered a cooldown will start running. Some message will not be played if triggered while this cooldown is active. */
 	float mMessageCooldown = 0.f;
@@ -345,11 +359,13 @@ private:
 	/** Whether or not the pause menu is open. */
 	bool mPauseMenuOpen;
 
+	TObjectPtr< class UFGUserWidget > mPauseMenu = nullptr;
+
 	/** Pooled widgets that we don't want to recreate */
 	UPROPERTY( Transient )
 	FUserWidgetPool mUserWidgetPool;
 
 	/** Floating inventory slot used when dragging an item with the controller. */
 	UPROPERTY()
-	class UFGControllerDragWidget* mControllerDragWidget;
+	TObjectPtr<class UFGControllerDragWidget> mControllerDragWidget;
 };

@@ -2,13 +2,11 @@
 
 #include "OnlineFriend.h"
 #include "User/OnlineUserPresence.h"
-#include "Auth.h"
 #include "Online/Presence.h"
-#include "OnlineIntegrationBackendPrivate.h"
 #include "OnlineIntegrationStatePrivate.h"
 #include "OnlineIntegrationSubsystem.h"
-#include "Sessions.h"
-#include "Social.h"
+#include "Online/Auth.h"
+#include "Online/Social.h"
 
 inline UE::Online::EUserPresenceStatus MapOnlineUserPresenceStatus(EOnlineUserPresenceStatus OnlineUserPresenceStatus)
 {

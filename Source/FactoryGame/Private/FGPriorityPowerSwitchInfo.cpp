@@ -16,6 +16,7 @@ void AFGPriorityPowerSwitchInfo::GetLifetimeReplicatedProps(TArray< FLifetimePro
 	DOREPLIFETIME(AFGPriorityPowerSwitchInfo, mSwitchName);
 	DOREPLIFETIME(AFGPriorityPowerSwitchInfo, mSwitchPriority);
 	DOREPLIFETIME(AFGPriorityPowerSwitchInfo, mIsSwitchOn);
+	DOREPLIFETIME(AFGPriorityPowerSwitchInfo, mLastEditedBy);
 	DOREPLIFETIME(AFGPriorityPowerSwitchInfo, mCircuitGroupID0);
 	DOREPLIFETIME(AFGPriorityPowerSwitchInfo, mCircuitGroupID1);
 }
@@ -30,6 +31,7 @@ void AFGPriorityPowerSwitchInfo::OnIsSwitchOnChanged(){ }
 void AFGPriorityPowerSwitchInfo::OnSwitchPriorityChanged(int32 priority){ }
 void AFGPriorityPowerSwitchInfo::OnCircuitsChanged(){ }
 void AFGPriorityPowerSwitchInfo::OnRep_SwitchName() const{ }
+void AFGPriorityPowerSwitchInfo::OnRep_SwitchLastEditedBy() const{ }
 void AFGPriorityPowerSwitchInfo::OnRep_SwitchPriority() const{ }
 void AFGPriorityPowerSwitchInfo::OnRep_IsSwitchOn() const{ }
 void AFGPriorityPowerSwitchInfo::OnRep_GroupIDX() const{ }

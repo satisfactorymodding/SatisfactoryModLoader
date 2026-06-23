@@ -4,6 +4,7 @@
 #include "DirectoryWatcherModule.h"
 #include "IDirectoryWatcher.h"
 #include "Framework/Notifications/NotificationManager.h"
+#include "Misc/ConfigCacheIni.h"
 #include "Widgets/Notifications/SNotificationList.h"
 
 #define LOCTEXT_NAMESPACE "AccessTransformers"
@@ -230,7 +231,7 @@ bool UAccessTransformersSubsystem::GetAccessTransformersForPlugin(IPlugin& Plugi
 	FConfigFile AccessTransformersConfig;
 	AccessTransformersConfig.Read(AccessTransformersPath);
 
-	FConfigSection* AccessTransformersSection = AccessTransformersConfig.Find(TEXT("AccessTransformers"));
+	const FConfigSection* AccessTransformersSection = AccessTransformersConfig.FindSection(TEXT("AccessTransformers"));
 	if (!AccessTransformersSection) {
 		return false;
 	}

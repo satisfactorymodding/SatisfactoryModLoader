@@ -139,8 +139,10 @@ void AFGBoomBoxPlayer::PrevNow(AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::FireTurboBassNow(AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::TogglePlaybackNow(AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::UpdateMaterialsFromCameraMode(){ }
+void AFGBoomBoxPlayer::OnSetAudioVolumeDelayCompleted(){ }
 void AFGBoomBoxPlayer::SetPlaybackStateFlag(EBoomBoxPlaybackStateBitfield flag, bool set){ }
 void AFGBoomBoxPlayer::ApplyTurboBassGameplayEffects( AFGCharacterPlayer* character){ }
+void AFGBoomBoxPlayer::OnSongDurationTimerElapsed(){ }
 void AFGBoomBoxPlayer::SetAudioVolumeLocally(float normalizedVolume, bool notifyListeners){ }
 UMaterialInterface* AFGBoomBoxPlayer::GetDefaultTapeMaterial(){ return nullptr; }
 void AFGBoomBoxPlayer::BeginPlay(){ Super::BeginPlay(); }

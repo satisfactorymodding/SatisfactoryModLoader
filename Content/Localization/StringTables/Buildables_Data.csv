@@ -107,6 +107,10 @@ Useful for routing Conveyor Belts more precisely and over long distances.","",""
 #item"
 "Logistics/PipelineJunctionCross/Description","Attaches to a Pipeline, allowing it to be split up to 4 ways.","","","Game","#buildable
 #item"
+"Logistics/PipelineJunctionT","Pipeline T-Junction","","","Game","#buildable
+#item"
+"Logistics/PipelineJunctionT/Description","Attaches to a Pipeline, allowing it to be split up to 3 ways.","","","Game","#buildable
+#item"
 "Logistics/PipelineMk1","Pipeline Mk.1","","","Game","#buildable
 #item"
 "Logistics/PipelineMk1/Description","Transports fluids.
@@ -670,6 +674,9 @@ Through the MAM, R&D will assist pioneers in turning any valuable data into usab
 "Special/SpaceElevator/Description","Requires deliveries of special Project Parts to complete Project Assembly Phases.
 Completing these Phases will unlock new Tiers in the HUB Terminal.","","","Game","#buildable
 #item"
+"Special/Utility/SPWN","SPWN","","","",""
+"Special/Utility/SPWN/Description","The SAM-based Portable Waste Network can be placed down and used to set an alternative respawn point from the HUB. Upon fatal accidents, pioneers will respawn at their closest respawn point.","","","",""
+"Special/Utility/SPWN/WashHands/Button","Press <Key>{PlayerActions_Use}</> to wash hands","","","",""
 "Transport/Drones/Drone","Drone","","","Game","#buildable
 #item
 #transportation"
@@ -782,6 +789,26 @@ Has 12 inventory slots and a built-in Crafting Bench.
 Fuel: Any fuel type","","","Game","#buildable
 #item
 #transportation"
+"Transport/RoadVehicles/FluidTruck","Fluid Truck","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/FluidTruck/Description","Picks up and delivers liquids at Fluid Truck Stations. This process can be automated. Nicknamed 'The Soda Can' by FICSIT pioneers because of its bi-cylindrical frame.
+
+Has a capacity of 3200 m³ for fluid storage.
+
+Fuel: Any fuel type","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/Infrastructure/FluidTruckStation","Fluid Truck Station","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/Infrastructure/FluidTruckStation/Description","Sends or receives fluid to/from vehicles.
+
+Has 3200 m³ of fluid storage capacity.
+
+Always refuels vehicles to maximum capacity if fuel is available. Fuel types can be prioritised.","","","Game","#buildable
+#item
+#transportation"
 "Transport/RoadVehicles/Infrastructure/TruckStation","Truck Station","","","Game","#buildable
 #item
 #transportation"
@@ -811,6 +838,52 @@ Fuel: Any fuel type","","","Game","#buildable
 Has 48 inventory slots and a built-in Crafting Bench.
 
 Fuel: Any fuel type","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/Explorer","Explorer Vehicle Path","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/Explorer/Description","Vehicle Paths define roads that the vehicles can drive on to automatically transfer resources across the vehicle stations.
+
+Vehicle: Explorer","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/FactoryCart","Factory Cart Vehicle Path","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/FactoryCart/Description","Vehicle Paths define roads that the vehicles can drive on to automatically transfer resources across the vehicle stations.
+
+Vehicle: Factory Cart","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/Node","Vehicle Path Node","String is not displayed anywhere as of 1.2 experimental release, but that might change in the future.","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/StationNode","Vehicle Station Node","String is not displayed anywhere as of 1.2 experimental release, but that might change in the future.","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/Tractor","Tractor Vehicle Path","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/Tractor/Description","Vehicle Paths define roads that the vehicles can drive on to automatically transfer resources across the vehicle stations.
+
+Vehicle: Tractor","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/Truck","Truck Vehicle Path","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/Truck/Description","Vehicle Paths define roads that the vehicles can drive on to automatically transfer resources across the vehicle stations.
+
+Vehicle: Truck/Fluid Truck","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/Universal","Universal Vehicle Path","","","Game","#buildable
+#item
+#transportation"
+"Transport/RoadVehicles/VehiclePath/Universal/Description","Vehicle Paths define roads that the vehicles can drive on to automatically transfer resources across the vehicle stations.
+
+Vehicle: Universal (Tractor/Truck/Fluid Truck/Explorer)","","","Game","#buildable
 #item
 #transportation"
 "Transport/Trains/Infrastructure/PlaftformIntegratedTrack","Integrated Platform Track","","","Game","#buildable

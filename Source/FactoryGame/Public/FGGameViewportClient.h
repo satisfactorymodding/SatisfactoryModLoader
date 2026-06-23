@@ -22,10 +22,6 @@ public:
 
 	FOnViewportReceivedFocus OnViewportReceivedFocus;
 
-	// Begin UEngine interface
-	virtual void Tick( float deltaSeconds ) override;
-	// End UEngine interface
-
 	//~ Begin FViewportClient Interface.
 	// <FL> [WuttkeP] Added input handler to move focus when attempting to navigate without having anything focused.
 	virtual bool InputKey( const FInputKeyEventArgs& EventArgs ) override;

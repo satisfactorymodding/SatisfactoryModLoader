@@ -65,6 +65,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
 	static class UFXSystemAsset* GetFactoryMiningParticle( TSubclassOf< UFGResourceDescriptor > inClass );
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
+	static class UParticleSystem* GetFrackingHighlightParticleSystemTemplate( TSubclassOf< UFGResourceDescriptor > inClass );
+
 #if WITH_EDITOR
 	/** When this is changed in the editor, propagate the changes to the preview window */
 	virtual void PostEditChangeProperty( struct FPropertyChangedEvent& propertyChangedEvent ) override;
@@ -72,19 +75,19 @@ public:
 	
 protected:
 	/** The static mesh we want the Resource Deposit to use when it has this class selected */
-	UPROPERTY( EditDefaultsOnly, Category = "Item|World", meta = ( EditCondition = "!mUseMaterialDecal" ) )
-	class UStaticMesh* mDepositMesh;
+	UPROPERTY( EditDefaultsOnly, Category = "Item|World")
+	TObjectPtr<class UStaticMesh> mDepositMesh;
 
 	/** The material this resource deposit use (if any) */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|World" )
-	class UMaterialInstance* mDepositMaterial;
+	TObjectPtr<class UMaterialInstance> mDepositMaterial;
 
 	/** The decal this resource use (if any) */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|World" )
-	class UMaterial* mDecalMaterial;
+	TObjectPtr<class UMaterial> mDecalMaterial;
 
-	/** How big will the decal on the ground be (and the collision for it) if we have mUseMaterialDecal enabled */
-	UPROPERTY( EditDefaultsOnly, Category="Item|World", meta = ( EditCondition = "mUseMaterialDecal" ) )
+	/** How big will the decal on the ground be (and the collision for it)*/
+	UPROPERTY( EditDefaultsOnly, Category="Item|World")
 	float mDecalSize;
 	
 	//@todo This may not be the best place but break it out if there is a need for it.
@@ -98,22 +101,26 @@ protected:
 
 	/** Texture to show in the compass when this resource has been scanned and found. */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|Resource" )
-	UTexture2D* mCompassTexture;
+	TObjectPtr<UTexture2D> mCompassTexture;
 
 	/** Particle to show when mining by hand */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|FX" )
-	class UFXSystemAsset* mManualMiningParticle;
+	TObjectPtr<class UFXSystemAsset> mManualMiningParticle;
 
 	/** Particle to show when mining with machine */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|FX" )
-	class UFXSystemAsset* mFactoryMiningParticle;
+	TObjectPtr<class UFXSystemAsset> mFactoryMiningParticle;
 
 	/** Particle to show when mining with machine */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|FX" )
-	class UFXSystemAsset* mDestroyedParticle;
+	TObjectPtr<class UFXSystemAsset> mDestroyedParticle;
 
 	/** name of sound to play when mining by hand */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|FX" )
 	FName mManualMiningAudioName;
+
+	UPROPERTY( EditAnywhere, Category = "Item|FX" )
+	TObjectPtr< class UParticleSystem > mFrackingHighlightParticleSystemTemplate;
+
 private:
 };

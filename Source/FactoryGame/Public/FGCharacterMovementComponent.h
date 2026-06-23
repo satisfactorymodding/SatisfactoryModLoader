@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "FGDynamicStruct.h"
+#include "FGModularMovementObject.h"
 #include "FGCharacterMovementComponent.generated.h"
 
 class AFGParachute;
@@ -20,7 +21,7 @@ struct FFGHypertubeJunctionOutputConnectionInfo
 
 	/** The connection this info is associated with */
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, SaveGame, Category = "Pipe Hyper" )
-	UFGPipeConnectionComponentBase* Connection{};
+	TObjectPtr<UFGPipeConnectionComponentBase> Connection{};
 
 	/** Custom data for this output connection */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category = "Pipe Hyper")
@@ -34,10 +35,10 @@ struct FACTORYGAME_API FFGPendingHyperJunctionInfo
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper")
-	AFGBuildablePipeHyperJunction* mJunction = nullptr;
+	TObjectPtr<AFGBuildablePipeHyperJunction> mJunction = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper")
-	UFGPipeConnectionComponentBase* mConnectionEnteredThrough = nullptr;
+	TObjectPtr<UFGPipeConnectionComponentBase> mConnectionEnteredThrough = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pipe Hyper")
 	float mDistanceToJunction = 0.0f;
@@ -59,14 +60,14 @@ struct FACTORYGAME_API FPlayerPipeHyperData
 	
 	/** The pipe we are currently traveling in (real) */
 	UPROPERTY()
-	AActor* mTravelingPipeHyperReal;
+	TObjectPtr<AActor> mTravelingPipeHyperReal;
 	/** Pipe data associated with our travel in mTravelingPipeHyper */
 	UPROPERTY()
 	FFGDynamicStruct mTravelingPipeHyperRealData;
 
 	/** The pipe that we have been traveling during the last substep */
 	UPROPERTY()
-	AActor* mTravelingPipeHyperLast;
+	TObjectPtr<AActor> mTravelingPipeHyperLast;
 	/** Pipe data associated with our travel in mTravelingPipeHyperLast */
 	UPROPERTY()
 	FFGDynamicStruct mTravelingPipeHyperLastData;
@@ -94,7 +95,7 @@ struct FACTORYGAME_API FPlayerPipeHyperData
 	bool bPendingEject;
 	float mPendingEjectOffset;
 	UPROPERTY()
-	class UFGPipeConnectionComponentBase* mConnectionToEjectThrough;
+	TObjectPtr<class UFGPipeConnectionComponentBase> mConnectionToEjectThrough;
 	float mEjectTimeWorldSeconds;
 
 	/** Total distance travelled to this point, unsigned and irrelevant of direction changes */
@@ -102,7 +103,7 @@ struct FACTORYGAME_API FPlayerPipeHyperData
 
 	/** The pipe we are traveling in right now */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Hyper Tube" )
-	AActor* mTravelingPipeHyper;
+	TObjectPtr<AActor> mTravelingPipeHyper;
 	/**The spline progress in the pipe we are currently in */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Hyper Tube" )
 	float mPipeProgress = 0.f;
@@ -189,7 +190,7 @@ struct FACTORYGAME_API FPlayerZiplineData
 	FVector ProjectedZiplineLocation = FVector::ZeroVector;
 	
 	UPROPERTY()
-	AActor* AttachActor = nullptr;
+	TObjectPtr<AActor> AttachActor = nullptr;
 };
 
 /**
@@ -218,7 +219,8 @@ enum class ECustomMovementMode : uint8
 	CMM_Hover				UMETA( DisplayName = "Hover" ),
 	CMM_HoverSlowFall		UMETA( DisplayName = "Hover Slow Fall" ),
 	CMM_Parachute			UMETA( DisplayName = "Parachute" ),
-	CMM_Cinematic			UMETA( DisplayName = "Cinematic (Root Motion/Intro Sequence)" )
+	CMM_Cinematic			UMETA( DisplayName = "Cinematic (Root Motion/Intro Sequence)" ),
+	CMM_ModularMovement		UMETA( DisplayName = "Modular Movement Mode (External object responsible for movement)" ),
 };
 inline bool operator==(const uint8 a, const ECustomMovementMode b)
 {
@@ -229,6 +231,101 @@ inline bool operator==(const ECustomMovementMode b , const uint8 a)
 {
 	return a == static_cast<uint8>( b );
 }
+
+class FSavedMove_FGMovement final : public FSavedMove_Character
+{
+	typedef FSavedMove_Character Super;
+public:
+	///@brief Resets all saved variables.
+	virtual void Clear() override;
+
+	///@brief Store input commands in the compressed flags.
+	virtual uint8 GetCompressedFlags() const override;
+
+	///@brief This is used to check whether or not two moves can be combined into one.
+	///Basically you just check to make sure that the saved variables are the same.
+	virtual bool CanCombineWith(const FSavedMovePtr& newMove, ACharacter* character, float maxDelta) const override;
+
+	///@brief Sets up the move before sending it to the server. 
+	virtual void SetMoveFor(ACharacter* character, float inDeltaTime, FVector const& newAccel, class FNetworkPredictionData_Client_Character& clientData) override;
+	///@brief Sets variables on character movement component before making a predictive correction.
+	virtual void PrepMoveFor(class ACharacter* character) override;
+	
+	virtual void PostUpdate(ACharacter* character, EPostUpdateMode postUpdateMode) override;
+
+	uint8 mSavedIsThrusting : 1;
+
+	uint8 mSavedIsSprinting : 1;
+
+	uint8 mSavedIsParachuting : 1;
+
+	uint8 mSavedIsSliding : 1;
+
+	uint8 mSavedIsPressingJump : 1;
+
+	uint8 mSavedWantsToSprintOnZipline : 1;
+	
+	TObjectPtr< UFGModularMovementObject > mStartModularMovementMode;
+	TObjectPtr< UFGModularMovementObject > mEndModularMovementMode;
+	TUniquePtr< FGModularMovementDataContainer > mStartModularMovementModeDataContainer;
+	TUniquePtr< FGModularMovementDataContainer > mEndModularMovementModeDataContainer;
+	
+	FVector mSavedHookLocation;
+
+	TSoftObjectPtr<class UFGParachuteSettings> mParachuteSettings;
+
+	// TODO @Nick: We should probably remember pipe data here to make sure the player takes the same junction path if their movement is rolled back, but this is not important enough right now to look into
+};
+
+class FNetworkPredictionData_Client_FGMovement final : public FNetworkPredictionData_Client_Character
+{
+public:
+	explicit FNetworkPredictionData_Client_FGMovement(const UCharacterMovementComponent& clientMovement);
+
+	typedef FNetworkPredictionData_Client_Character Super;
+
+	///@brief Allocates a new copy of our custom saved move
+	virtual FSavedMovePtr AllocateNewMove() override;
+};
+
+struct FFGCharacterNetworkMoveData : public FCharacterNetworkMoveData
+{
+	typedef FCharacterNetworkMoveData Super;
+	
+	virtual ~FFGCharacterNetworkMoveData() override
+	{
+	}
+
+	virtual void ClientFillNetworkMoveData( const FSavedMove_Character& ClientMove, ENetworkMoveType MoveType ) override;
+	virtual bool Serialize( UCharacterMovementComponent& CharacterMovement, FArchive& Ar, UPackageMap* PackageMap, ENetworkMoveType MoveType ) override;
+
+	TObjectPtr< UFGModularMovementObject > ModularMovementMode;
+	TUniquePtr< FGModularMovementDataContainer > ModularMovementDataContainer;
+};
+
+struct FFGCharacterNetworkMoveDataContainer : public FCharacterNetworkMoveDataContainer
+{
+	FFGCharacterNetworkMoveDataContainer()
+	{
+		NewMoveData		= &DefaultMoveData[0];
+		PendingMoveData	= &DefaultMoveData[1];
+		OldMoveData		= &DefaultMoveData[2];
+	}
+	
+private:
+	FFGCharacterNetworkMoveData DefaultMoveData[3];
+};
+
+struct FFGCharacterMoveResponseDataContainer : public FCharacterMoveResponseDataContainer
+{
+	typedef FCharacterMoveResponseDataContainer Super;
+	
+	virtual void ServerFillResponseData( const UCharacterMovementComponent& CharacterMovement, const FClientAdjustment& PendingAdjustment ) override;
+	virtual bool Serialize( UCharacterMovementComponent& CharacterMovement, FArchive& Ar, UPackageMap* PackageMap ) override;
+
+	TObjectPtr< UFGModularMovementObject > ModularMovementMode;
+	TUniquePtr< FGModularMovementDataContainer > ModularMovementDataContainer;
+};
 
 UCLASS()
 class FACTORYGAME_API UFGCharacterMovementComponent final : public UCharacterMovementComponent
@@ -243,6 +340,8 @@ public:
 
 	// Begin UCharacterMovementComponent
 	virtual FNetworkPredictionData_Client* GetPredictionData_Client() const override;
+	virtual bool ServerExceedsAllowablePositionError( float ClientTimeStamp, float DeltaTime, const FVector& Accel, const FVector& ClientWorldLocation, const FVector& RelativeClientLocation, UPrimitiveComponent* ClientMovementBase, FName ClientBaseBoneName, uint8 ClientMovementMode ) override;
+	virtual void ApplyNetworkMovementMode( const uint8 ReceivedMode ) override;
 	virtual bool DoJump( bool isReplayingMoves ) override;
 	virtual void CalcVelocity( float dt, float friction, bool isFluid, float brakingDeceleration ) override;
 	virtual float GetMaxSpeed() const override;
@@ -255,6 +354,11 @@ public:
 	virtual float ImmersionDepth() const override;
 	virtual float BoostAirControl(float DeltaTime, float TickAirControl, const FVector& FallAcceleration) override;
 	virtual FRotator ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaTime, FRotator& DeltaRotation) const override;
+	// End UCharacterMovementComponent
+
+	// Begin UCharacterMovementComponent - protected to public access overrides
+	virtual void HandleImpact( const FHitResult& Hit, float TimeSlice = 0.0f, const FVector& MoveDelta = FVector::ZeroVector ) override { Super::HandleImpact( Hit, TimeSlice, MoveDelta ); }
+	virtual float SlideAlongSurface( const FVector& Delta, float Time, const FVector& Normal, FHitResult& Hit, bool bHandleImpact = false ) override { return Super::SlideAlongSurface( Delta, Time, Normal, Hit, bHandleImpact ); }
 	// End UCharacterMovementComponent
 
 	UFUNCTION( Reliable, Server, WithValidation )
@@ -286,6 +390,9 @@ public:
 
 	/** Get mIsSliding */
 	FORCEINLINE bool IsSliding() const { return mIsSliding; }
+	
+	/** Whether or not we are visually sliding. Is only used to make the character look like they are sliding without applying any regular sliding movement.*/
+	bool IsVisuallySliding() const;
 
 	/** Gets the accumulated impulse we want to apply */
 	FORCEINLINE FVector GetPendingImpulseToApply() const { return PendingImpulseToApply; }
@@ -422,6 +529,23 @@ public:
 	/** Only to be called from the internal movement logic or from AFGCharacterPlayer. For external interface, use AFGCharacterPlayer functions with the same names */
 	void StopZiplineMovement( const FVector& exitForce = FVector::ZeroVector );
 	void StartZiplineMovement( AActor* ziplineActor, const FVector& point1, const FVector& point2, const FVector& actorForward );
+
+	bool SetModularMovementMode( UFGModularMovementObject* modularMovementMode );
+	bool SetModularMovementMode( const TSubclassOf< UFGModularMovementObject >& ModularMovementClass );
+
+	template< typename ModularMovementObjectClass >
+	bool SetModularMovementMode();
+
+	/** Registers a modular movement mode with the movement component. */
+	template< typename ModularMovementObjectClass >
+	ModularMovementObjectClass* RegisterModularMovementMode();
+
+	UFGModularMovementObject* RegisterModularMovementMode( const TSubclassOf< UFGModularMovementObject >& ModularMovementClass );
+	
+	template< typename ModularMovementObjectClass >
+	ModularMovementObjectClass* GetModularMovementMode();
+
+	UFGModularMovementObject* GetCurrentModularMovementMode() const { return mCurrentModularMovementMode; }
 protected:
 	// Begin UCharacterMovementComponent
 	virtual void UpdateFromCompressedFlags(uint8 flags) override;
@@ -461,6 +585,9 @@ private:
 
 	/** Applies cinematic root motion physics, and nothing else */
 	void PhysCinematic( const float deltaTime, int32 iterations );
+
+	/** Applies modular movement physics, and nothing else */
+	void PhysModularMovement( const float deltaTime, int32 iterations );
 
 	/** Updates everything that has to do with JetPack */
 	void UpdateJetPack( float deltaSeconds );
@@ -544,12 +671,13 @@ public:
 
 	/** Cached Reference to the Owning FGPlayerCharacter */
 	UPROPERTY()
-	class AFGCharacterPlayer* mFGCharacterOwner;
+	TObjectPtr<class AFGCharacterPlayer> mFGCharacterOwner;
 
 	UPROPERTY( VisibleInstanceOnly, Category = "Movement|Parachute" )
-	class UFGParachuteSettings* mParachuteSettings;
+	TObjectPtr<class UFGParachuteSettings> mParachuteSettings;
 private:
 	friend class FSavedMove_FGMovement;
+	friend struct FFGCharacterMoveResponseDataContainer;
 
 	/** Keeps is the player sprinting this update or not? */
 	bool mIsSprinting;
@@ -561,30 +689,44 @@ private:
 	
 	/** A cached instance of the equipment that issued jet pack thrust */
 	UPROPERTY()
-	class AFGJetPack* mCachedJetPack;
+	TObjectPtr<class AFGJetPack> mCachedJetPack;
 
 	/** A cached instance of the equipment that set our hookshot location */
 	UPROPERTY()
-	class AFGHookshot* mCachedHookshot;
+	TObjectPtr<class AFGHookshot> mCachedHookshot;
 
 	/** A cached instance of the equipment that set our jumping stilts */
 	UPROPERTY()
-	class AFGJumpingStilts* mCachedJumpingStilts;
+	TObjectPtr<class AFGJumpingStilts> mCachedJumpingStilts;
 
 	/** A cached instance of the equipment that set our hover pack */
 	UPROPERTY()
-	class AFGHoverPack* mCachedHoverPack;
+	TObjectPtr<class AFGHoverPack> mCachedHoverPack;
 
 	/** A cached instance of rail we're surfing with the hoverpack */
 	UPROPERTY()
-	class AFGBuildableRailroadTrack* mCachedSurfedRailroadTrack;
+	TObjectPtr<class AFGBuildableRailroadTrack> mCachedSurfedRailroadTrack;
+
+	/** The current modular movement mode. */
+	UPROPERTY()
+	TObjectPtr< UFGModularMovementObject > mCurrentModularMovementMode;
+
+	/** List of modular movement modes that have been registered to the player. */
+	UPROPERTY()
+	TArray< TObjectPtr< UFGModularMovementObject > > mRegisteredModularMovementModes;
+
+	/** Overridden version of FCharacterNetworkMoveDataContainer. */
+	FFGCharacterNetworkMoveDataContainer mNetworkMoveDataContainer;
+
+	/** Overridden version of FCharacterMoveResponseDataContainer. */
+	FFGCharacterMoveResponseDataContainer mMoveResponseDataContainer;
 
 	/** The location that our hook sits at */
 	FVector mHookLocation;
 
 	/** The ladder we're climbing; null if not climbing. */
 	UPROPERTY()
-	UFGLadderComponent* mOnLadder;
+	TObjectPtr<UFGLadderComponent> mOnLadder;
 
 	UPROPERTY(EditAnywhere, meta = ( ShowOnlyInnerProperties ) )
 	FPlayerPipeHyperData mPipeData;
@@ -594,11 +736,11 @@ private:
 
 	/** Get velocity from curve when sliding */
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
-	UCurveFloat* mSlideCurve;
+	TObjectPtr<UCurveFloat> mSlideCurve;
 
 	/** Gets the multiplier for slope velocity */
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
-	UCurveFloat* mSlopeCurve;
+	TObjectPtr<UCurveFloat> mSlopeCurve;
 
 	/** How long have we been sliding */
 	float mSlideTime;
@@ -723,50 +865,47 @@ private:
 	//end Cheat
 };
 
-class FSavedMove_FGMovement final : public FSavedMove_Character
+template< typename ModularMovementObjectClass >
+bool UFGCharacterMovementComponent::SetModularMovementMode()
 {
-	typedef FSavedMove_Character Super;
-public:
-	///@brief Resets all saved variables.
-	virtual void Clear() override;
+	static_assert( TIsDerivedFrom< ModularMovementObjectClass, UFGModularMovementObject >::Value, "ModularMovementClass is not derived from UFGModularMovementObject." );
 
-	///@brief Store input commands in the compressed flags.
-	virtual uint8 GetCompressedFlags() const override;
+	if( TSubclassOf< UFGModularMovementObject > MovementModeClass = ModularMovementObjectClass::StaticClass() )
+	{
+		return SetModularMovementMode( MovementModeClass );
+	}
 
-	///@brief This is used to check whether or not two moves can be combined into one.
-	///Basically you just check to make sure that the saved variables are the same.
-	virtual bool CanCombineWith(const FSavedMovePtr& newMove, ACharacter* character, float maxDelta) const override;
+	return false;
+}
 
-	///@brief Sets up the move before sending it to the server. 
-	virtual void SetMoveFor(ACharacter* character, float inDeltaTime, FVector const& newAccel, class FNetworkPredictionData_Client_Character & clientData) override;
-	///@brief Sets variables on character movement component before making a predictive correction.
-	virtual void PrepMoveFor(class ACharacter* character) override;
-
-	uint8 mSavedIsThrusting : 1;
-
-	uint8 mSavedIsSprinting : 1;
-
-	uint8 mSavedIsParachuting : 1;
-
-	uint8 mSavedIsSliding : 1;
-
-	uint8 mSavedIsPressingJump : 1;
-
-	uint8 mSavedWantsToSprintOnZipline : 1;
-	FVector mSavedHookLocation;
-
-	TSoftObjectPtr<UFGParachuteSettings> mParachuteSettings;
-
-	// TODO @Nick: We should probably remember pipe data here to make sure the player takes the same junction path if their movement is rolled back, but this is not important enough right now to look into
-};
-
-class FNetworkPredictionData_Client_FGMovement final : public FNetworkPredictionData_Client_Character
+template< typename ModularMovementObjectClass >
+ModularMovementObjectClass* UFGCharacterMovementComponent::RegisterModularMovementMode()
 {
-public:
-	explicit FNetworkPredictionData_Client_FGMovement(const UCharacterMovementComponent& clientMovement);
+	static_assert( TIsDerivedFrom< ModularMovementObjectClass, UFGModularMovementObject >::Value, "ModularMovementClass is not derived from UFGModularMovementObject." );
 
-	typedef FNetworkPredictionData_Client_Character Super;
+	if( TSubclassOf< UFGModularMovementObject > MovementModeClass = ModularMovementObjectClass::StaticClass() )
+	{
+		return Cast< ModularMovementObjectClass >( RegisterModularMovementMode( MovementModeClass ) );
+	}
 
-	///@brief Allocates a new copy of our custom saved move
-	virtual FSavedMovePtr AllocateNewMove() override;
-};
+	return nullptr;
+}
+
+template< typename ModularMovementObjectClass >
+ModularMovementObjectClass* UFGCharacterMovementComponent::GetModularMovementMode()
+{
+	static_assert( TIsDerivedFrom< ModularMovementObjectClass, UFGModularMovementObject >::Value, "ModularMovementClass is not derived from UFGModularMovementObject." );
+
+	if( TSubclassOf< UFGModularMovementObject > MovementClass = ModularMovementObjectClass::StaticClass() )
+	{
+		// Check for already existing movement mode
+		if( TObjectPtr< UFGModularMovementObject >* existingMode =
+			mRegisteredModularMovementModes.FindByPredicate( [ MovementClass ]( const TUniquePtr< UFGModularMovementObject >& mode ) { return mode->GetClass() == MovementClass; } ) )
+			
+		{
+			return Cast< ModularMovementObjectClass >( *existingMode );
+		}
+	}
+
+	return nullptr;
+}

@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 3,
+	"VersionName": "0.0.0",
+	"Category": "Modding",
+	"CreatedBy": "SML Team",
+	"CreatedByURL": "https://github.com/satisfactorymodding/SatisfactoryModLoader",
+	"DocsURL": "https://docs.ficsit.app",
+	"MarketplaceURL": "",
+	"SupportURL": "https://discord.ficsit.app",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"PreBuildSteps":
+	{
+		"Win64": [
+			"powershell -Command \"Set-ExecutionPolicy Bypass -Scope Process -Force;Unblock-File '$(ProjectDir)\\Mods\\WwisePatches\\applyPatches.ps1';& '$(ProjectDir)\\Mods\\WwisePatches\\applyPatches.ps1' '$(ProjectDir)'\""
+		],
+		"Linux": [
+			"bash '$(ProjectDir)/Mods/WwisePatches/applyPatches.sh' '$(ProjectDir)'"
+		]
+	}
+}

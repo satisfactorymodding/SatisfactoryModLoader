@@ -147,7 +147,7 @@ UConfigProperty* URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertySectionToC
 	if (Property == NULL) {
 		return nullptr;
 	}
-	UConfigProperty* const* Result = Property->SectionProperties.Find(Key);
+	const TObjectPtr<UConfigProperty>* Result = Property->SectionProperties.Find(Key);
 	return Result ? *Result : NULL;
 };
 
@@ -161,7 +161,7 @@ TArray<UConfigProperty*> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyAr
 TArray<FString> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToStringArray(UConfigPropertyArray* Property) {
 	TArray<FString> Out;
 	if (Property)
-		for (auto* i : Property->Values)
+		for (const TObjectPtr<UConfigProperty>& i : Property->Values)
 			Out.Add(Conv_ConfigPropertyToString(i));
 	return Out;
 };
@@ -169,7 +169,7 @@ TArray<FString> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToStri
 TArray<float> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToFloatArray(UConfigPropertyArray* Property) {
 	TArray<float> Out;
 	if (Property)
-		for (auto* i : Property->Values)
+		for (const TObjectPtr<UConfigProperty>& i : Property->Values)
 			Out.Add(Conv_ConfigPropertyToFloat(i));
 	return Out;
 };
@@ -177,7 +177,7 @@ TArray<float> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToFloatA
 TArray<int32> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToIntegerArray(UConfigPropertyArray* Property) {
 	TArray<int32> Out;
 	if (Property)
-		for (auto* i : Property->Values)
+		for (const TObjectPtr<UConfigProperty>& i : Property->Values)
 			Out.Add(Conv_ConfigPropertyToInteger(i));
 	return Out;
 }
@@ -185,7 +185,7 @@ TArray<int32> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToIntege
 TArray<bool> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToBoolArray(UConfigPropertyArray* Property) {
 	TArray<bool> Out;
 	if (Property)
-		for (auto* i : Property->Values)
+		for (const TObjectPtr<UConfigProperty>& i : Property->Values)
 			Out.Add(Conv_ConfigPropertyToBool(i));
 	return Out;
 };
@@ -287,12 +287,12 @@ UUserWidget* URuntimeBlueprintFunctionLibrary::CreateSMLWidget(UUserWidget* Owni
 
 void URuntimeBlueprintFunctionLibrary::SetSpinBoxFont(USpinBox* Box, FSlateFontInfo Font) {
 	if (Box) {
-		Box->Font = Font;
+		Box->SetFont(Font);
 	}
 }
 
 void URuntimeBlueprintFunctionLibrary::SetComboBoxFont(UComboBoxString* Box, FSlateFontInfo Font) {
 	if (Box) {
-		Box->Font = Font;
+		Box->Font = Font; // TODO: This is marked as deprecated, but doesn't have a setter
 	}
 }

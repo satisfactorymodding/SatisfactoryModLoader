@@ -32,7 +32,7 @@ struct FACTORYGAME_API FFGAttachmentPoint
 
 	/** The actor this attachment point belongs to. */
 	UPROPERTY(BlueprintReadOnly, Category = "Attachment Point")
-	AActor* Owner;
+	TObjectPtr<AActor> Owner;
 };
 
 /** Type class for attachment points, used to allow / disallow snapping. */

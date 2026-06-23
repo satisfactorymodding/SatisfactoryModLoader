@@ -1,21 +1,29 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-
 #include "FactoryGame.h"
 #include "Components/ActorComponent.h"
 #include "Engine/DataAsset.h"
 #include "GameFramework/Character.h"
 #include "FGPhotoModeComponent.generated.h"
 
+struct FInputActionValue;
 class AFGPlayerController;
 class AFGCharacterPlayer;
 class AFGPhotoModeCamera;
 
+UENUM( BlueprintType )
+enum class EPhotoCameraMode : uint8
+{
+	PCM_FirstPerson		UMETA( DisplayName = "First Person" ),
+	PCM_Decoupled		UMETA( DisplayName = "Decoupled" ),
+	PCM_Selfie			UMETA( DisplayName = "Selfie" )
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams( FOnPMOptionChanged, FString, optionKey, float, optionValue, bool, isValueReset );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnPMOMapCleared );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDecoupledCameraToggled, bool, isOn );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPhotoModeToggled, bool, isOn );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnPhotoCameraModeChanged, EPhotoCameraMode, previousMode, EPhotoCameraMode, newMode );
 
 UCLASS( Blueprintable )
 class FACTORYGAME_API UPhotoModeOptionBase : public UDataAsset
@@ -42,7 +50,7 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	FText mName;
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
-	TArray< UPhotoModeOptionBase* > mOptions;
+	TArray< TObjectPtr<UPhotoModeOptionBase> > mOptions;
 };
 
 USTRUCT( Blueprintable )
@@ -101,18 +109,21 @@ public:
 	bool EnterPhotoMode();
 	bool ExitPhotoMode();
 
-	UFUNCTION( BlueprintCallable )
-	void ToggleDecoupledCamera();
-
 	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
 	void SetPlayerVisibilityInPhotoMode( const bool isVisible );
 
+	UFUNCTION( BlueprintCallable )
+	void SetPhotoCameraMode( EPhotoCameraMode mode );
+	
 	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
 	bool GetIsPhotoModeOn() const { return mIsPhotoModeOn; }
 	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
-	bool GetIsDecoupledCameraOn() const { return mIsCameraDecoupled; }
+	bool GetIsDecoupledCameraOn() const { return mPhotoCameraMode == EPhotoCameraMode::PCM_Decoupled; }
 	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
 	bool GetIsPlayerVisible() const { return mIsPlayerVisible; }
+
+	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
+	EPhotoCameraMode GetPhotoCameraMode() const { return mPhotoCameraMode; }
 
 	void MoveForward( const float moveValue );
 	void MoveBackwards( const float moveValue );
@@ -120,13 +131,9 @@ public:
 	void MoveRight( const float moveValue );
 	void MoveUp( const float moveValue );
 	void MoveDown( const float moveValue );
-	void MoveMouseX( const float axisValue );
-	void MoveMouseY( const float axisValue );
+	void LookAxis( const FInputActionValue& actionValue ) const;
 	void MoveFaster( const float moveValue );
 	void MoveSlower( const float moveValue );
-	
-	UPROPERTY( BlueprintAssignable, Category = "Photo Mode" )
-	FOnDecoupledCameraToggled mOnDecoupledCameraToggled;
 
 	UPROPERTY( BlueprintAssignable, Category = "Photo Mode" )
 	FOnPhotoModeToggled mOnPhotoModeToggled;
@@ -138,9 +145,13 @@ public:
 	/** Called when the Photo Mode Option is cleared. */
 	UPROPERTY( BlueprintAssignable, Category = "Photo Mode" )
 	FOnPMOMapCleared mOnPMOMapCleared;
+
+	/** Called whenever the photo camera mode changes. */
+	UPROPERTY( BlueprintAssignable, Category = "Photo Mode" )
+	FOnPhotoCameraModeChanged mOnPhotoCameraModeChanged;
 	
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Photo Mode" )
-	UPhotoModeOptions* mAllOptions;
+	TObjectPtr<UPhotoModeOptions> mAllOptions;
 
 	/** Class of photo mode camera to use for decoupled camera */
 	UPROPERTY( EditDefaultsOnly, Category = "Photo Mode" )
@@ -181,13 +192,10 @@ protected:
     float GetOptionValueFromID( const FString& ID ) const;
 
 	UFUNCTION( Server, Reliable )
-	void Server_TogglePhotoMode( const bool isOn );
-	
-	UFUNCTION( Server, Reliable )
-	void Server_ToggleDecoupledCamera( const bool isOn );
+	void Server_SetPhotoCameraMode( EPhotoCameraMode newMode );
 
-	UFUNCTION( Client, Reliable )
-	void Client_ProperlyResetClientAfterTogglingDecoupledCamera();
+	UFUNCTION( Server, Reliable )
+	void Server_TogglePhotoMode( const bool isOn );
 	
 	AFGCharacterPlayer* GetOwnerPlayerCharacter() const;
 	AFGPlayerController* GetPlayerController() const;
@@ -206,27 +214,32 @@ protected:
 private:
 	FString CreateScreenShotCommand( const int captureX = 0, const int captureY = 0, const int captureW = 0, const int captureH = 0 ) const;
 
-	void HandleDecoupledCameraPlacing( const bool isDecoupled );
+	void HandleDecoupledCameraPlacing();
 	void PlaceDecoupledCameraAtPlayerCharacter( const AFGCharacterPlayer* playerCharacter );
 
-	float GetMouseMovementFromAxisValue( const float axisValue ) const;
+	void OnPhotoCameraModeChanged( EPhotoCameraMode prevMode );
 	
 	UFUNCTION()
 	void OnRep_CameraCharacter();
 
+	UFUNCTION()
+	void OnRep_PhotoCameraMode( EPhotoCameraMode prevMode );
+
 	/** The camera character used for the photo mode camera and the decoupled camera. */
 	UPROPERTY( ReplicatedUsing = OnRep_CameraCharacter )
-	class AFGPhotoModeCamera* mCameraCharacter;
+	TObjectPtr<class AFGPhotoModeCamera> mCameraCharacter;
 
 	/** A map that stores all Photo Mode options (and their values) that the player has modified this play session. */
 	TMap< FString, float > mModifiedPMOptions;
 	
-	bool mIsPhotoModeOn = false;
-	bool mIsCameraDecoupled = false;
+	bool mIsPhotoModeOn = false;	
 	bool mIsPlayerVisible = true;
-	
-	float ControllerTurnAtRate( float rate, bool WithInvertHandling = true );
-	float ControllerLookUpAtRate( float rate, bool WithInvertHandling = true );
+
+	UPROPERTY( ReplicatedUsing = OnRep_PhotoCameraMode )
+	EPhotoCameraMode mPhotoCameraMode;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Photo Mode" )
+	FTransform mSelfieModeRelativeTransform;
 };
 
 UCLASS( Blueprintable )
@@ -238,13 +251,13 @@ public:
 
 	/** The character that we were controlling before we used the decoupled camera */
 	UPROPERTY( Replicated )
-	class AFGCharacterPlayer* mControllingPlayerCharacter;
+	TObjectPtr<class AFGCharacterPlayer> mControllingPlayerCharacter;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Photo Mode" )
-	class UCineCameraComponent* mCameraComp;
+	TObjectPtr<class UCineCameraComponent> mCameraComp;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Photo Mode" )
-	class USpringArmComponent* mSpringArmComp;
+	TObjectPtr<class USpringArmComponent> mSpringArmComp;
 
 	void HandleDecoupledCameraMoveSpeed();
 

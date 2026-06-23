@@ -35,10 +35,11 @@ TArray<FString> UAlpakitSettings::GetAllowedBuildConfigurations() const
 {
 	return TArray<FString>
 	{
-		// LexToString(EBuildConfiguration::Debug      ),
-		// LexToString(EBuildConfiguration::DebugGame  ),
-		// LexToString(EBuildConfiguration::Development),
-		// LexToString(EBuildConfiguration::Test       ),
+		TEXT(""),
+		LexToString(EBuildConfiguration::Debug      ),
+		LexToString(EBuildConfiguration::DebugGame  ),
+		LexToString(EBuildConfiguration::Development),
+		LexToString(EBuildConfiguration::Test       ),
 		LexToString(EBuildConfiguration::Shipping   ),
 	};
 }
@@ -46,7 +47,13 @@ TArray<FString> UAlpakitSettings::GetAllowedBuildConfigurations() const
 EBuildConfiguration UAlpakitSettings::GetBuildConfiguration() const
 {
 	EBuildConfiguration ResultBuildConfiguration = EBuildConfiguration::Shipping;
-	// LexTryParseString( ResultBuildConfiguration, *BuildConfiguration );
+	if (!OverrideBuildConfiguration.IsEmpty())
+	{
+		if (!LexTryParseString(ResultBuildConfiguration, *OverrideBuildConfiguration))
+		{
+			ResultBuildConfiguration = EBuildConfiguration::Shipping;
+		}
+	}
 	return ResultBuildConfiguration;
 }
 

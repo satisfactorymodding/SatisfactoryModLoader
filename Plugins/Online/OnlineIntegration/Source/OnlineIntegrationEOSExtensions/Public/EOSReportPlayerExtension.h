@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "IEOSSDKManager.h"
-#include "OnlineServicesEOS.h"
+#include "Online/OnlineServicesEOS.h"
 #include "EOSReportPlayerExtension.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerReportSendComplete, bool, isSuccessful);
@@ -36,6 +36,10 @@ protected:
 public:
 	UFUNCTION(BlueprintCallable)
 	void SendReportToEOS(UOnlineUserBackendLink* SenderBackend, UOnlineUserBackendLink* ReportedBackend, EPlayerReportsCategoryFrontEnd ReportsCategory, FString Description);
+	UFUNCTION(BlueprintCallable)
+	void SendReportToEOSWithPlayerNetID(UOnlineUserBackendLink* SenderBackend, FUniqueNetIdRepl ReportedPlayerInfo, EPlayerReportsCategoryFrontEnd ReportsCategory, FString Description);
+
+	void SendReportToEOS(EOS_ProductUserId LocalProductUserId, EOS_ProductUserId ReportedProductUserId, EPlayerReportsCategoryFrontEnd ReportsCategory, FString Description);
 
 	static void OnReportSendCompleted(const EOS_Reports_SendPlayerBehaviorReportCompleteCallbackInfo* Data);
 	
@@ -45,4 +49,3 @@ public:
 private:
 	EOS_HReports EOSReportsHandle;
 };
-

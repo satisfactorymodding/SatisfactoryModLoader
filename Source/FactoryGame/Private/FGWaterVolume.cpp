@@ -9,7 +9,7 @@ FString AFGWaterVolume::GetDebugName() const{ return FString(); }
 #endif 
 #if WITH_EDITOR
 void AFGWaterVolume::PostLoad(){ Super::PostLoad(); }
-void AFGWaterVolume::PreSave(FObjectPreSaveContext saveContext){ }
+void AFGWaterVolume::PreSave(FObjectPreSaveContext saveContext){ Super::PreSave(saveContext); }
 void AFGWaterVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 void AFGWaterVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
@@ -30,7 +30,7 @@ void AFGWaterVolume::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::E
 bool AFGWaterVolume::IsOverlapInVolume(const  USceneComponent& testComponent) const{ return bool(); }
 void AFGWaterVolume::GainedSignificance_Implementation(){ }
 void AFGWaterVolume::LostSignificance_Implementation(){ }
-float AFGWaterVolume::GetSignificanceRange(){ return float(); }
+float AFGWaterVolume::GetSignificanceRange_Implementation() const{ return IFGSignificanceInterface::GetSignificanceRange_Implementation(); }
 void AFGWaterVolume::SetCameraIsInside(bool cameraInside, FVector cameraLocation,  AFGPlayerController* PC){ }
 const UFGWaterAudio* AFGWaterVolume::GetAudioSettings() const{ return nullptr; }
 bool AFGWaterVolume::EncompassesPoint(FVector point, float sphereRadius , float* out_distanceToPoint){ return bool(); }
@@ -46,9 +46,11 @@ bool AFGWaterVolume::IsOccupied() const{ return bool(); }
 bool AFGWaterVolume::CanBecomeOccupied() const{ return bool(); }
 bool AFGWaterVolume::HasAnyResources() const{ return bool(); }
 TSubclassOf<class UFGResourceDescriptor> AFGWaterVolume::GetResourceClass() const{ return TSubclassOf<class UFGResourceDescriptor>(); }
+bool AFGWaterVolume::DoesContainResource(TSubclassOf<class UFGResourceDescriptor> ResourceClass) const{ return bool(); }
 int32 AFGWaterVolume::ExtractResource(int32 amount){ return int32(); }
 float AFGWaterVolume::GetExtractionSpeedMultiplier() const{ return float(); }
 FVector AFGWaterVolume::GetPlacementLocation(const FVector& hitLocation) const{ return FVector(); }
+FRotator AFGWaterVolume::GetPlacementRotation(const FVector& hitLocation) const{ return FRotator(); }
 bool AFGWaterVolume::CanPlaceResourceExtractor() const{ return bool(); }
 void AFGWaterVolume::OnPrimitiveComponentEntered(UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult){ }
 void AFGWaterVolume::OnPrimitiveComponentExited(UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex){ }

@@ -26,19 +26,19 @@ public:
 	FORCEINLINE UFGClientDebugRequester* GetDebugRequester() const { return mDebugRequester; }
 private:
 	UPROPERTY()
-	UFGClientStateRequester* mStateRequester;
+	TObjectPtr<UFGClientStateRequester> mStateRequester;
 
 	UPROPERTY()
-	UFGClientManagementRequester* mManagementRequester;
+	TObjectPtr<UFGClientManagementRequester> mManagementRequester;
 
 	UPROPERTY()
-	UFGClientSaveGameRequester* mSaveGameRequester;
+	TObjectPtr<UFGClientSaveGameRequester> mSaveGameRequester;
 
 	UPROPERTY()
-	UFGClientAuthenticationRequester* mAuthenticationRequester;
+	TObjectPtr<UFGClientAuthenticationRequester> mAuthenticationRequester;
 
 	UPROPERTY()
-	UFGClientDebugRequester* mDebugRequester;
+	TObjectPtr<UFGClientDebugRequester> mDebugRequester;
 };
 
 

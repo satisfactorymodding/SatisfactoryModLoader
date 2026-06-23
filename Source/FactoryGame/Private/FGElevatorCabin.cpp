@@ -54,7 +54,7 @@ void AFGElevatorCabin::StopIsLookedAt_Implementation(AFGCharacterPlayer* byChara
 FText AFGElevatorCabin::GetLookAtDecription_Implementation(AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return IFGUseableInterface::GetLookAtDecription_Implementation(byCharacter, state); }
 void AFGElevatorCabin::GainedSignificance_Implementation(){ IFGSignificanceInterface::GainedSignificance_Implementation(); }
 void AFGElevatorCabin::LostSignificance_Implementation(){ IFGSignificanceInterface::LostSignificance_Implementation(); }
-float AFGElevatorCabin::GetSignificanceRange(){ return IFGSignificanceInterface::GetSignificanceRange(); }
+float AFGElevatorCabin::GetSignificanceRange_Implementation() const{ return IFGSignificanceInterface::GetSignificanceRange_Implementation(); }
 void AFGElevatorCabin::OnPawnEnterCabin(APawn* pawn, const FVector& lastLocation){  }
 void AFGElevatorCabin::OnPawnExitCabin(APawn* pawn){  }
 void AFGElevatorCabin::NotifyElevatorStateChanged(EElevatorState newState){  }

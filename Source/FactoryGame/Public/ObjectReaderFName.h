@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "Serialization/ObjectReader.h"
 
+struct FObjectSaveData;
 struct FObjectReferenceDisc;
 /**
  * Our modded version of object reader. When this is used we have already spawned/created dummy object. We then use this class 
@@ -13,7 +14,7 @@ struct FObjectReferenceDisc;
 class FACTORYGAME_API FObjectReaderFName : public FObjectReader
 {
 public:
-	FObjectReaderFName( UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion, class UWorld* world, FPackageFileVersion version, bool migrateObjectRefsToPersistent );
+	FObjectReaderFName( UWorld* World, UObject* Obj, const FArchive& InnerArchive, const FObjectSaveData& ObjectSaveData );
 
 	virtual FArchive& operator<<( class UObject*& Res ) override;
 	virtual FArchive& operator<<( FObjectPtr& Res ) override;

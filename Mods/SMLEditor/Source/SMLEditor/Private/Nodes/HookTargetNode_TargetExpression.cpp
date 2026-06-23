@@ -270,7 +270,7 @@ void UHookTargetNode_TargetExpression::CreateTargetClassSpecificData() {
 		MemberReferences.Add(Descriptor.Name, bCanReuseMemberReference ? *ExistingMemberReference : FMemberReference());
 	}
 
-	const UEdGraphSchema_HookTarget* GraphSchema = Cast<UEdGraphSchema_HookTarget>(GetGraph()) ? Cast<UEdGraphSchema_HookTarget>(GetGraph()) : GetDefault<UEdGraphSchema_HookTarget>();
+	const UEdGraphSchema_HookTarget* GraphSchema = Cast<UEdGraphSchema_HookTarget>(GetGraph()->GetSchema()) ? Cast<UEdGraphSchema_HookTarget>(GetGraph()->GetSchema()) : GetDefault<UEdGraphSchema_HookTarget>();
 	TArray<UEdGraphPin*> GeneratedInputPins;
 
 	// Generate pins from class properties

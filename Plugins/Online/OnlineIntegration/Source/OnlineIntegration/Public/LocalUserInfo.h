@@ -25,6 +25,7 @@ namespace UE::Online
 {
 struct FPresenceUpdated;
 struct FRelationshipUpdated;
+struct FQueryPresence;
 }
 
 class UOnlineFriend;
@@ -123,22 +124,21 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnPlayerLoginStateChanged, ULocalUserInf
 //<FL>[KonradA] Adding delegates to help the forced nuclear friend list re-cache
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnFriendListReset, ULocalUserInfo* UserInfo);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnQueryFriendsAllCompleted, ULocalUserInfo* UserInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOnlineSessionResolutionBegun, ULocalUserInfo*, Sender);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnOnlineSessionResolutionEnded, ULocalUserInfo*, Sender);
 //</FL>
+
+// <FL> [ZimmermannA] 
+DECLARE_DELEGATE_OneParam(FOnPremiumCheckedDone, bool hasPremium);
+DECLARE_DELEGATE_OneParam(FOnPremiumPrivilegeChecked, FOnPremiumCheckedDone onPremiumCheckedDone)
 DECLARE_DELEGATE_OneParam(FOnPrivilegeQueryDone, EPrivilegeResults privilegeResult)
+DECLARE_DELEGATE_TwoParams(FOnPrivilegeQueried, EUserPrivilege privilegeToQuery, FOnPrivilegeQueryDone onPrivilegeQueryDone)
+DECLARE_DELEGATE_OneParam(FOnFriendQueryReturned, TArray<FUniqueNetIdRepl> friendList);
+// </FL>
+
 
 DECLARE_MULTICAST_DELEGATE(FOnQueryAllBlockedUsersDone)
 
-// <FL> [ZimmermannA] 
-UENUM(BlueprintType)
-enum class EPrivilegeCheckResult : uint8
-{
-	PCR_NoPrivilege = 0,
-	PCR_InvalidResult,
-	PCR_HasPrivilege
-};
-// </FL> 
-
-DECLARE_DYNAMIC_DELEGATE_OneParam(FUserHasPremiumAccountDelegate, bool, hasPremium);
 // [TranN] FOnShowStoreUIClosedDelegate is in OnlineExternalUIInterface.h
 // If I include OnlineExternalUIInterface.h here, it would cause a lot of compiling errors due to ambiguous FOnlineError definition.
 // So FOnShowStoreUIClosedDelegate2 is just the same delegate without the need to include that header.
@@ -171,7 +171,8 @@ public:
 	UOnlineUserBackendLink* GetUserBackendByProvider(FName ProviderName) const;
 	TArray<UOnlineUserBackendLink*> GetUserBackends() const;
 	UOnlineUserInfo& GetOnlineUserInfo() const;
-	
+	bool IsFriendsWithAccount(UE::Online::FAccountId AccountId) const;
+
 	UFUNCTION(BlueprintCallable)
 	UOnlineUserBackendLink* GetUserBackendEpic() const;
 	
@@ -179,7 +180,14 @@ public:
 
 	FOnQueryAllBlockedUsersDone OnQueryAllBlockedusersDone;
 	UPROPERTY()
-	TArray<UOnlineIntegrationBackend*> BackendsToQueryBlockedUsersQueue = TArray<UOnlineIntegrationBackend*>();
+	TArray<TObjectPtr<UOnlineIntegrationBackend>> BackendsToQueryBlockedUsersQueue = TArray<TObjectPtr<UOnlineIntegrationBackend>>();
+
+// <FL> [ZimmermannA]
+	// Needs to be bound by a subsystem that implements the privilege checking
+	FOnPremiumPrivilegeChecked onPremiumPrivilegeChecked;
+	FOnPrivilegeQueried onPrivilegeQueried;
+	FOnFriendQueryReturned onFriendQueryReturned;
+	// </FL>
 
 	/** Return the subsystem this is owned by */
 	class UCommonUserSubsystem* GetSubsystem() const;
@@ -217,39 +225,20 @@ public:
 	void ShowExternalInviteUI() const;
 
 	TArray<UOnlineFriend*> GetFriends() const;
-	
-	//<FL> [ZimmermannA] [KonradA:extended for different privilege types]
-	bool GetPrivilegeResult(EPrivilegeResults& privileges, EUserPrivilege Privilege) const;
 
 	/**
 	 * Queries the availability of a privilege for this user on a given backend. 
 	 */
 	TFuture<ECommonUserPrivilegeResult> FetchPrivilegeResultForBackend(UOnlineIntegrationBackend* Backend, ECommonUserPrivilege Privilege) const;
 	
-	UFUNCTION()
-	void UpdateCrossplayUGCPrivileges();
-	void UpdatePrivileges();
-
-	//<FL>[KonradA]
-	UFUNCTION(BlueprintCallable)
-	TArray<FLocalUserNetIdBundle> GetUserNetIdBundles();
+	//<FL>[KonradA] todo: do i need a shorthand to get the PlayeHandle here?
+	//UFUNCTION(BlueprintCallable)
+	//TArray<FLocalUserNetIdBundle> GetUserNetIdBundles();
 	//</FL>
-	
-	// privilege checking
-	void PollHasPremiumPrivilege(FUserHasPremiumAccountDelegate completeDelegate);
-
-	UFUNCTION(BlueprintCallable) 
-	void UserCanCrossPlay(EPrivilegeCheckResult& privilegeResult);
-
-	UFUNCTION(BlueprintCallable) 
-	void UserCanSeeUGC(EPrivilegeCheckResult& privilegeResult);
-
-	UFUNCTION(BlueprintCallable)
-	void UserHasNoTextCommunicationRestrictions(EPrivilegeCheckResult& privilegeResult);
-
-
-	void UserHasPrivilegeGeneric(EUserPrivilege Privilege, EPrivilegeCheckResult& privilegeResult) const;
-	// ~ privilege checking
+	UPROPERTY(BlueprintAssignable)
+	FOnOnlineSessionResolutionBegun OnUIJoinSessionResolveStart;
+	UPROPERTY(BlueprintAssignable)
+	FOnOnlineSessionResolutionEnded OnUIJoinSessionResolveCompleted;
 	//</FL>
 
 	void QueryFriends(); // <FL> [TranN]
@@ -257,7 +246,12 @@ public:
 	void QueryFriendsAll(); //<FL> [KonradA]
 
 	UOnlinePrivilegeObserver* GetPrivilegeObserverForSession(const USessionDefinition* SessionDefinition) const;
-protected:
+
+	const TMap<FString, int32>& GetTrackedStats() const { return TrackedStats; }
+
+	void AddStat(FString StatId, int32 Value);
+
+ protected:
 	UPROPERTY(BlueprintReadOnly, FieldNotify)
 	TObjectPtr<UOnlineUserInfo> OnlineUserInfo;
 
@@ -330,7 +324,7 @@ protected:
 	void QueryBlocked(UOnlineIntegrationBackend* Backend);
 
 	TFuture<bool> FetchFriendInfoAsync(UOnlineFriend* Friend, UOnlineIntegrationBackend* Backend);
-	
+	TFuture<UE::Online::TOnlineResult<UE::Online::FQueryPresence>> FetchFriendPresenceAsync(UOnlineUserBackendLink* FriendBackendLink);
 	TMap<TWeakObjectPtr<UOnlineIntegrationBackend>, UE::Online::FOnlineEventDelegateHandle> RelationshipUpdatedDelegateHandles;
 
 
@@ -343,32 +337,22 @@ protected:
 	static double sLastPrivilegeUpdateTime;
 	//</FL>
 
-	
-	//<FL> [ZimmermannA] [KonradA: added support for all privilege query types and a function that receives an outer callback]
-public:
-	// Queries a privilege check. Returns false if query request was not successful.
-	bool RetrievePrivileges(TOptional<EPrivilegeResults>& Result, EUserPrivilege PrivilegeToQuery) const;
-	bool RetrievePrivileges(TOptional<EPrivilegeResults>& PrivilegeResult, EUserPrivilege PrivilegeToQuery, FOnPrivilegeQueryDone Callback) const;
-	void DisplayPremiumInformation(const FOnShowStoreUIClosedDelegate2& OnShowStoreUIClosedDelegate = FOnShowStoreUIClosedDelegate2()) const;
-
-private:
 	bool bUsesMultiplayerFeature = false;
-	//</FL> 
+
+	/*
+	* Holds the current value of a state.
+	* TODO: Need to be saved at some point.
+	*/
+	TMap<FString, int32> TrackedStats;
+
 public:
 
 	//<FL>[KonradA]
 	bool HasUserBlocked(FUserNetIdBundles userBundlesToCheck);
+	bool HasUserBlockedByAccountId(UE::Online::FAccountId accountId);
 	void QueryBlockedAll();
-
 	//</FL
 
 protected:
-	
-	TOptional<EPrivilegeResults> mPrivilegeResultCanPlayOnline;
-	TOptional<EPrivilegeResults> mPrivilegeResultCanCrossPlay;
-	TOptional<EPrivilegeResults> mPrivilegeResultCanUseUserGeneratedContent;
-	TOptional<EPrivilegeResults> mPrivilegeResultIsSocialRestricted;
 	bool bDisableCrossplayGlobally = false;
-
-	//</FL>
 };

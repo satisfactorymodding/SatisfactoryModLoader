@@ -25,5 +25,5 @@ public:
 	FORCEINLINE AAbstractInstanceManager* GetAbstractInstanceManager() const { return WorldAbstractInstanceManager; }
 protected:
 	UPROPERTY()
-	AAbstractInstanceManager* WorldAbstractInstanceManager{};
+	TObjectPtr<AAbstractInstanceManager> WorldAbstractInstanceManager{};
 };

@@ -18,6 +18,14 @@ AFGRailroadTrackHologram::AFGRailroadTrackHologram() : Super() {
 	this->mSnappedRailroadTrackDistance = 0.0;
 	this->mFlipSnappedDirection = false;
 	this->mStraightMode = false;
+	this->mFloorData.Add(FVector(1.0909748856083e-311, 0, 1.7801935384691925e-306));
+	this->mFloorData.Add(FVector(2.5590403494288636e-307, 8.344455619610517e-308, 1.3796001161023775e-306));
+	this->mHitLocation = FVector::ZeroVector;
+	this->mHitTangent = FVector::ZeroVector;
+	this->mHitFloor = FVector::ZeroVector;
+	this->mSnappedStartLocation = FVector::ZeroVector;
+	this->mSnappedStartTangent = FVector::ZeroVector;
+	this->mUseCustomEndRotation = false;
 	this->mMesh = nullptr;
 	this->mSwitchControls[0] = nullptr;
 	this->mSwitchControls[1] = nullptr;

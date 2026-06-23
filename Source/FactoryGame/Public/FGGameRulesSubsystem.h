@@ -73,7 +73,7 @@ public:
 
 	/** Get the game rules subsystem. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame", DisplayName = "GetGameRulesSubsystem", Meta = ( DefaultToSelf = "worldContext" ) )
-	static AFGGameRulesSubsystem* Get( UObject* worldContext );
+	static AFGGameRulesSubsystem* Get(const UObject* worldContext );
 
 	void UnlockAllMileStoneSchematics();
 	void UnlockAllResourceSinkSchematics();
@@ -133,6 +133,6 @@ private:
 	// Any unlock can be obtained without paying the resource cost.
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_NoUnlockCost )
 	uint8 mNoUnlockCost : 1 = false;
-
+	
 	// bool NoPower is handled through AFGGameState::mCheatNoPower
 };

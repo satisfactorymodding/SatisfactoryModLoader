@@ -30,7 +30,7 @@ struct FDestroyedFoliageEffectData
 	UPROPERTY()
 	FVector SpawnLocation;
 	UPROPERTY()
-	class UParticleSystem* DestroyedEffect;
+	TObjectPtr<class UParticleSystem> DestroyedEffect;
 	UPROPERTY()
 	int32 Priority;
 };
@@ -62,7 +62,7 @@ protected:
 protected:
 	/** Collision Component used to determine which objects should be considered for destruction */
 	UPROPERTY( EditDefaultsOnly, Category = "Desctruction" )
-	class USphereComponent* mDestructionCollisionComp;
+	TObjectPtr<class USphereComponent> mDestructionCollisionComp;
 
 	/** Should actors implementing destructable interfaces be considered for destruction */
 	UPROPERTY( EditDefaultsOnly, Category = "Destruction" )

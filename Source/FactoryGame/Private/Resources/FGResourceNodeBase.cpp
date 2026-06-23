@@ -11,13 +11,21 @@ void AFGResourceNodeBase::GetClearanceData_Implementation(TArray< FFGClearanceDa
 bool AFGResourceNodeBase::IsGeyserDescButNotGeyserNode(){ return bool(); }
 void AFGResourceNodeBase::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 void AFGResourceNodeBase::CheckForErrors(){ Super::CheckForErrors(); }
+void AFGResourceNodeBase::UpdateMeshFromDescriptor(bool needRegister, UMaterial* decalMaterial){ }
 #endif 
+void AFGNodeMeshActor::BeginPlay(){ Super::BeginPlay(); }
+void AFGNodeMeshActor::SetNodeActor(AFGResourceNodeBase* node){ }
+bool AFGNodeMeshActor::IsPlayerPositionParameterUpdateOn() const{ return false; }
+void AFGNodeMeshActor::OverrideMaterials(const TArray<TObjectPtr<UMaterialInterface>>& materials, UStaticMeshComponent* meshComp){ }
+void AFGNodeMeshActor::OverrideMeshAndMaterials_Implementation(AFGResourceNodeBase* nodeActor, TSubclassOf<UFGResourceDescriptor> originalDescriptor, TSubclassOf<UFGResourceDescriptor> overrideDescriptor){ }
 AFGResourceNodeBase::AFGResourceNodeBase() : Super() {
 	this->mResourceClass = nullptr;
+	this->mResourceClassOverride = nullptr;
 	this->mDecalComponent = nullptr;
 	this->mBoxComponent = nullptr;
 	this->mIsOccupied = false;
 	this->mResourceNodeRepresentation = nullptr;
+	this->mResourceNodeType = EResourceNodeType::Node;
 	this->mAllowDecal = true;
 	this->mHighlightParticleSystemTemplate = nullptr;
 	this->mHighlightParticleSystemComponent = nullptr;
@@ -25,9 +33,14 @@ AFGResourceNodeBase::AFGResourceNodeBase() : Super() {
 	this->mMeshActor = nullptr;
 	this->mAddToSignificanceManager = true;
 	this->mSignificanceRange = 18000.0;
+	// MODDING EDIT: In CSS editor this is false by default https://discord.com/channels/555424930502541343/555515791592652823/1515489860444749965
+#if WITH_EDITOR
+	this->bIsSpatiallyLoaded = false;
+#endif 
 }
 void AFGResourceNodeBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGResourceNodeBase, mResourceClassOverride);
 	DOREPLIFETIME(AFGResourceNodeBase, mIsOccupied);
 	DOREPLIFETIME(AFGResourceNodeBase, mServerMapReveals);
 	DOREPLIFETIME(AFGResourceNodeBase, mDoSpawnParticle);
@@ -49,17 +62,28 @@ void AFGResourceNodeBase::SetIsOccupied(bool occupied){ }
 bool AFGResourceNodeBase::IsOccupied() const{ return bool(); }
 bool AFGResourceNodeBase::CanBecomeOccupied() const{ return bool(); }
 TSubclassOf< UFGResourceDescriptor > AFGResourceNodeBase::GetResourceClass() const{ return TSubclassOf<UFGResourceDescriptor>(); }
+bool AFGResourceNodeBase::DoesContainResource(TSubclassOf<class UFGResourceDescriptor> ResourceClass) const{ return bool(); }
+void AFGResourceNodeBase::SetResourceClass(const TSubclassOf<UFGResourceDescriptor> resource){
+	this->mResourceClass = resource;
+}
+void AFGResourceNodeBase::SetResourceClassOverride(const TSubclassOf<UFGResourceDescriptor> resource){
+	this->mResourceClassOverride = resource;
+}
 FVector AFGResourceNodeBase::GetPlacementLocation(const FVector& hitLocation) const{ return FVector(); }
+FRotator AFGResourceNodeBase::GetPlacementRotation(const FVector& hitLocation) const{ return FRotator(); }
 FText AFGResourceNodeBase::GetResourceName() const{ return FText(); }
 EResourceForm AFGResourceNodeBase::GetResourceForm() const{ return EResourceForm(); }
 void AFGResourceNodeBase::OnRep_IsOccupied(){ }
-void AFGResourceNodeBase::UpdateMeshFromDescriptor(bool needRegister){ }
 void AFGResourceNodeBase::ScanResourceNode_Local(float lifeSpan){ }
 void AFGResourceNodeBase::RemoveResourceNodeScan_Local(){ }
 void AFGResourceNodeBase::ScanResourceNodeScan_Server(){ }
 void AFGResourceNodeBase::RemoveResourceNodeScan_Server(){ }
+UMaterial* AFGResourceNodeBase::GetDecalMaterial(){ return nullptr; }
 void AFGResourceNodeBase::InitResource(TSubclassOf<UFGResourceDescriptor> resourceClass){ }
-void AFGResourceNodeBase::ConditionallySetupComponents(bool needRegister){ }
+void AFGResourceNodeBase::ConditionallySetupComponents(bool needRegister, UMaterial* decalMaterial){ }
 void AFGResourceNodeBase::UpdateHighlightParticleSystem(){ }
 void AFGResourceNodeBase::OnRep_ServerMapReveals(){ }
+void AFGResourceNodeBase::OnRep_ResourceClassOverride(){ }
 void AFGResourceNodeBase::UpdateNodeRepresentation(){ }
+UParticleSystem* AFGResourceNodeBase::GetHighlightParticleSystemTemplate_Implementation() const{ return nullptr; }
+FVector AFGResourceNodeBase::GetBoxExtent() const{ return FVector(); }

@@ -26,6 +26,16 @@ enum class ECrosshairState : uint8
 		ECS_Hidden			UMETA( DisplayName = "Hidden" )
 };
 
+struct FCompassCachedTextRenderInfo
+{
+	/** This is actually not just text dimensions, but also the glyph sequence for this text */
+	bool bHasCachedTextDimensions{false};
+	FVector2f CachedTextDimensions{ForceInit};
+	/** Current font scaling this glyph sequence has been initialized with. Used to invalidate text dimensions if scaling changes */
+	float CachedRenderedTextScaling{0.0f};
+	TSharedPtr<const FShapedGlyphSequence> CachedShapedGlyphSequence;
+};
+
 USTRUCT(BlueprintType)
 struct FCompassEntry
 {
@@ -55,6 +65,14 @@ struct FCompassEntry
 	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
 	FSlateBrush EffectBrush;
 
+	/** Overlay text displayed over the brush when present */
+	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
+	FText OverlayText;
+
+	/** Offset to the bottom of the text to the compass line */
+	UPROPERTY( EditAnywhere, Category = "Compass Entry" )
+	float OverlayTextOffset{0.0f};
+
 	bool bEnabled{true};
 	bool bCanShowName{true};
 	bool bDynamicScale{false};
@@ -65,14 +83,10 @@ struct FCompassEntry
 	/** True if special effect is visible, special effect will be set to false if time left expires */
 	bool bSpecialEffectVisible{true};
 	float SpecialEffectTime{0.0f};
-	/** This is actually not just text dimensions, but also the glyph sequence for this text */
-	bool bHasCachedTextDimensions{false};
-	FVector2f CachedTextDimensions{ForceInit};
-	/** Current font scaling this glyph sequence has been initialized with. Used to invalidate text dimensions if scaling changes */
-	float CachedRenderedTextScaling{0.0f};
-	TSharedPtr<const FShapedGlyphSequence> CachedShapedGlyphSequence;
+	
 	float CachedDistanceToCamera{0.0f};
-
+	FCompassCachedTextRenderInfo TextRenderInfo;
+	FCompassCachedTextRenderInfo OverlayTextRenderInfo;
 	float MaxDrawRange{-1.0f};
 	FVector2f StaticDirection{ForceInit};
 	float StaticDistanceToCamera{0.0f};
@@ -86,14 +100,33 @@ struct FCompassEntry
 	bool bNeedsUGCCensoring{ false };
 	// Also cache the last edited by that was used for evaluating the bNeedsUGCCensoring so we can react and update the former if the field has been updated instead 
 	// of running the expensive update operation often.
-	TArray< FLocalUserNetIdBundle > CachedLastEditedBy;
+	FPlayerInfoHandle CachedLastEditedBy;
 	// </FL>
 
 	/** The representation this compass entry is bound to. Can be NULL in some cases */
 	UPROPERTY()
-	UFGActorRepresentation* RepresentingActor{};
-};
+	TObjectPtr<UFGActorRepresentation> RepresentingActor{};
 
+	/** Updates the text and resets cached text dimensions */
+	FORCEINLINE void SetText(const FText& NewText)
+	{
+		if ( !Text.EqualTo( NewText ) )
+		{
+			Text = NewText;
+			TextRenderInfo.bHasCachedTextDimensions = false;
+		}
+	}
+
+	/** Updates the overlay text and resets cached text dimensions */
+	FORCEINLINE void SetOverlayText(const FText& NewOverlayText)
+	{
+		if ( !OverlayText.EqualTo( NewOverlayText ) )
+		{
+			OverlayText = NewOverlayText;
+			OverlayTextRenderInfo.bHasCachedTextDimensions = false;
+		}
+	}
+};
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPumpiModeChanged, bool, hideHUD );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPartialPumpiModeChanged, bool, partialHideHUD );
@@ -269,6 +302,9 @@ public:
 	UFUNCTION()
 	void OnActorRepresentationFiltered( ERepresentationType type, bool visible );
 
+	UFUNCTION()
+	void UpdateAllActorRepresentationPrivilegeState();
+	
 	void OnCultureChanged();
 
 	/** Invalidates text dimensions and glyph sequences that have been cached by the compass widget */
@@ -331,31 +367,31 @@ protected:
 	TSoftClassPtr< UUserWidget > mRespawnUIClass;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Crosshair" )
-	class UTexture2D* mDefaultCrosshair;
+	TObjectPtr<class UTexture2D> mDefaultCrosshair;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Crosshair" )
-	class UTexture2D* mPickupCrosshair;
+	TObjectPtr<class UTexture2D> mPickupCrosshair;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Crosshair" )
-	class UTexture2D* mVehicleCrosshair;
+	TObjectPtr<class UTexture2D> mVehicleCrosshair;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Crosshair" )
-	class UTexture2D* mWeaponCrosshair;
+	TObjectPtr<class UTexture2D> mWeaponCrosshair;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Crosshair" )
-	class UTexture2D* mWorkbenchCrosshair;
+	TObjectPtr<class UTexture2D> mWorkbenchCrosshair;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Crosshair" )
-	class UTexture2D* mBuildCrosshair;
+	TObjectPtr<class UTexture2D> mBuildCrosshair;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Crosshair" )
-	class UTexture2D* mDismantleCrosshair;
+	TObjectPtr<class UTexture2D> mDismantleCrosshair;
 
 	UPROPERTY( BlueprintReadWrite , Category = "Crosshair" )
-	class UTexture2D* mCustomCrosshair;
+	TObjectPtr<class UTexture2D> mCustomCrosshair;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Crosshair" )
-	class UTexture2D* mGeneralCrosshair;
+	TObjectPtr<class UTexture2D> mGeneralCrosshair;
 
 	// Entries in the compass.
 	UPROPERTY()
@@ -364,7 +400,7 @@ protected:
 	void UpdateCompassData( float deltaTime );
 
 	UPROPERTY(EditDefaultsOnly)
-	TMap<ERepresentationType,UTexture2D*> mCompassTextureOverrides;
+	TMap<ERepresentationType,TObjectPtr<UTexture2D>> mCompassTextureOverrides;
 
 private:
 
@@ -393,19 +429,19 @@ private:
 
 	/** Input component for blocking input during respawn */
 	UPROPERTY()
-	class UInputComponent* mRespawnInputComponent;
+	TObjectPtr<class UInputComponent> mRespawnInputComponent;
 
 	UPROPERTY( transient )
-	class UUserWidget* mRespawnUI;
+	TObjectPtr<class UUserWidget> mRespawnUI;
 
 	UPROPERTY( transient )
-	class UFGGameUI* mGameUI;
+	TObjectPtr<class UFGGameUI> mGameUI;
 
 	/** The latest created pawn HUD widget */
 	UPROPERTY()
-	UUserWidget* mPawnHUD;
+	TObjectPtr<UUserWidget> mPawnHUD;
 
 	/** Widgets we cached to avoid recreating all the time. Legacy implementation. Could/should be replaced by UFGGameUI::mUserWidgetPool */
 	UPROPERTY( Transient )
-	TMap< TSubclassOf< UUserWidget >, UUserWidget* > mCachedWidgets;
+	TMap< TSubclassOf< UUserWidget >, TObjectPtr<UUserWidget> > mCachedWidgets;
 };

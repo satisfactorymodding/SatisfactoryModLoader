@@ -103,7 +103,7 @@ protected:
 private:
 	// Cached array of connection components
 	UPROPERTY()
-	TArray< UFGPipeConnectionComponent* > mPipeConnections;
+	TArray< TObjectPtr<UFGPipeConnectionComponent> > mPipeConnections;
 
 	/** Quantized data used by the indicators. */
 	UPROPERTY( Replicated )

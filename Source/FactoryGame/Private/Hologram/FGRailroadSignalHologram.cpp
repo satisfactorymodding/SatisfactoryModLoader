@@ -31,6 +31,7 @@ bool AFGRailroadSignalHologram::CanNudgeHologram() const{ return bool(); }
 void AFGRailroadSignalHologram::GetSupportedBuildModes_Implementation(TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes) const{ Super::GetSupportedBuildModes_Implementation(out_buildmodes); }
 void AFGRailroadSignalHologram::OnBuildModeChanged(TSubclassOf<UFGHologramBuildModeDescriptor> buildMode){ Super::OnBuildModeChanged(buildMode); }
 int32 AFGRailroadSignalHologram::GetRotationStep() const{ return Super::GetRotationStep(); }
+TSubclassOf<UFGHologramBuildModeDescriptor> AFGRailroadSignalHologram::SampleBuildGunMode(AFGBuildable* AfgBuildable) const{ return Super::SampleBuildGunMode(AfgBuildable); }
 bool AFGRailroadSignalHologram::IsLocallyOwnedHologram() const{ return bool(); }
 void AFGRailroadSignalHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGRailroadSignalHologram::CheckValidPlacement(){ }

@@ -45,7 +45,7 @@ public:
 
 ALPAKIT_API const TCHAR* LexToString(EAlpakitStartGameType StartGameType);
 
-UCLASS(config=Game)
+UCLASS(config=Alpakit)
 class ALPAKIT_API UAlpakitSettings : public UObject {
     GENERATED_BODY()
 public:
@@ -54,13 +54,6 @@ public:
 
     /** Saves alpakit settings to configuration file */
     void SaveSettings();
-	
-	// Hide this field for now, as the game is only built for Shipping
-	/*
-	// Name of the build configuration in which the mod should be built
-	UPROPERTY(EditAnywhere, config, Category = "Dev Packaging Settings", meta = ( GetOptions = GetAllowedBuildConfigurations ))
-	FString BuildConfiguration;
-	*/
 
     UPROPERTY(EditAnywhere, config, Category = "Dev Packaging Settings", DisplayName = "Windows", meta = (ToolTip = "Development-time packaging settings for the Windows target"))
     FAlpakitTargetSettings WindowsGameTargetSettings;
@@ -70,7 +63,17 @@ public:
 
     UPROPERTY(EditAnywhere, config, Category = "Dev Packaging Settings", DisplayName="Linux Server", meta = (ToolTip = "Development-time packaging settings for the Linux Server target"))
     FAlpakitTargetSettings LinuxServerTargetSettings;
-    
+
+	// Name of the build configuration in which the mod should be built.
+	// This is exclusively for internal CSS use for now, there are no publicly available builds in configurations other than Shipping.
+	// Default value is Shipping when left blank
+	UPROPERTY(EditAnywhere, config, Category = "Advanced Settings", meta = ( GetOptions = GetAllowedBuildConfigurations ))
+	FString OverrideBuildConfiguration;
+
+	// Name of the targets for which the mod should be built. When left empty, default values are used (FactoryServer, FactoryGameSteam and FactoryGameEGS)
+	UPROPERTY(EditAnywhere, config, Category = "Advanced Settings")
+	TArray<FString> OverrideBuildTargets;
+
     UPROPERTY(BlueprintReadOnly, config, Category = Config)
     TMap<FString, bool> ModSelection;
 

@@ -68,7 +68,7 @@ public:
 protected:
 	/** Component handling our hookshot sounds */
 	UPROPERTY(VisibleDefaultsOnly,BlueprintReadOnly,Category="Equipment")
-	class UAkComponent* mHookshotAudio;
+	TObjectPtr<class UAkComponent> mHookshotAudio;
 private:
 	/** Distance from player when attached, caluclated from mHookshotAudio */
 	float mAttachDistance;

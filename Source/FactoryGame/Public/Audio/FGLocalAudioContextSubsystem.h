@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 #include "WorldCollision.h"
 #include "FGSubsystem.h"
-#include "Containers/Queue.h"
+#include "Wwise/API/WwiseSoundEngineAPI.h"
 #include "FGLocalAudioContextSubsystem.generated.h"
 
 /*
@@ -45,17 +45,27 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 
 public:
 	// Called every frame
 	virtual void Tick( float DeltaTime ) override;
-	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 
+	const TArray<AudioHitInfo> & GetAngularHits() const { return AngularHitPointsHistory; }
+	const TArray<bool> & GetAngularHistory() const { return AngularHistory; }
+	const TMap< TSoftObjectPtr< UPhysicalMaterial >, TObjectPtr<class UAkSwitchValue> > & GetMaterialTypeToAkSwitchMap() const { return mMaterialTypeToAkSwitchMap; }
+	TWeakObjectPtr<UPhysicalMaterial> GetMostHitMaterial() const { return MostHitMaterial; }
+	
+	float GetIsInsideFactor() const { return mPreviousIsInside; }
+	float GetHeightFactor() const { return mPreviousRTPCHeight; }
+	
 	void TickHorizontalRTPC();
 	void TickVerticalRTPC();
 	void TickAngularRTPC();
 	void TickSlapbackRTPC();
 	void TickMaterialTypeRTPC();
+
+	void SetActiveChannelsNumberRTPC();
 
 	float CalculateAzimuthPlane();
 	float CalculateZenithPlane();
@@ -63,10 +73,10 @@ public:
 	void CalculateWallPlanes( float& AveragedLeftPlane, float& AveragedRightPlane );
 
 	//Performs 3 evenly placed raycasts across horizontal plane, and returns averaged width of 2 smallest one
-	float PerformHorizontalPhase( int offsetDegree, TArray< AudioHitInfo >& HitPoints );
+	float PerformHorizontalPhase( int32 OffsetDegree, TArray< AudioHitInfo >& HitPoints );
 
 	//Perform 3 evenly placed raycasts across vertical plane. Return height if all of them agree with each other, otherwise return -1
-	float PerformVerticalPhase();
+	void PerformVerticalPhase( float& out_resultedAverageHeight, TWeakObjectPtr< UPhysicalMaterial >& out_mostHitMaterial );
 
 	//Perform 3 evenly placed raycasts across angular plane. Returns largest distance from the casts
 	void PerformAngularPhase( float OffsetZ );
@@ -75,48 +85,73 @@ public:
 	void OnVerticalTraceCompleted( const FTraceHandle& Handle, FTraceDatum& Data );
 	void OnAngularTraceCompleted( const FTraceHandle& Handle, FTraceDatum& Data );
 
-	void DisplayDebugGraphs( UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent );
-	void DisplayDebugWalls();
-	void DisplayDebugHits();
+	static TWeakObjectPtr< UPhysicalMaterial > FindMostHitMaterial( const TArray< TWeakObjectPtr< UPhysicalMaterial > >& MaterialsHistory );
 
-	static void MakeAsyncAudioRaycast( UWorld* World, const FVector& Start, const FVector& End, const FTraceDelegate& Delegate );
+	static void MakeAsyncAudioRaycast( UWorld* World, const FVector& Start, const FVector& End, const FTraceDelegate& Delegate);
 
 	UFUNCTION(BlueprintPure, Category = "Audio")
 	static UAkAudioEvent* ResolveSoftAudioReference(TSoftObjectPtr< UAkAudioEvent> InputSoftObject);
 	
 public:
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
-	class UAkRtpc* mLocalAcousticContextHeight = nullptr;
+	TObjectPtr<class UAkRtpc> mLocalAcousticContextHeight = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
-	class UAkRtpc* mLocalAcousticContextWidth = nullptr;
+	TObjectPtr<class UAkRtpc> mLocalAcousticContextWidth = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
-	class UAkRtpc* mSlapbackLeft = nullptr;
+	TObjectPtr<class UAkRtpc> mSlapbackLeft = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
-	class UAkRtpc* mSlapbackRight = nullptr;
+	TObjectPtr<class UAkRtpc> mSlapbackRight = nullptr;
 
 	UPROPERTY( EditDefaultsOnly, Category = Audio )
-	class UAkRtpc* mIsInside = nullptr;
+	TObjectPtr<class UAkRtpc> mIsInside = nullptr;
 
+	UPROPERTY( EditDefaultsOnly, Category = Audio )
+	TObjectPtr<class UAkRtpc> mCurrentChannelNumber = nullptr;
+	
 	//Material type to AK state value mapping
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
-	TMap< TSoftObjectPtr< UPhysicalMaterial >, class UAkStateValue* > mMaterialTypeToAkStateMap;
+	TMap< TSoftObjectPtr< UPhysicalMaterial >, TObjectPtr<class UAkStateValue> > mMaterialTypeToAkStateMap;
+
+	//Height Material type to AK state value mapping. It should be a separate set because of wwise limitations
+	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
+	TMap< TSoftObjectPtr< UPhysicalMaterial >, TObjectPtr<class UAkStateValue> > mHeightMaterialTypeToAkStateMap;
+	
+	//Default ak state value to set when no material type is found
+	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
+	TObjectPtr<class UAkStateValue> mDefaultMaterialTypeState = nullptr;
 
 	//Default ak state value to set when no material type is found
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
-	class UAkStateValue* mDefaultMaterialTypeState = nullptr;
+	TObjectPtr<class UAkStateValue> mDefaultHeightMaterialTypeState = nullptr;
 
+	//Default ak state value to set when no material type is found
+    UPROPERTY( EditDefaultsOnly, Category = "Audio" )
+    TObjectPtr<class UAkStateValue> mNoHitHeightMaterialTypeState = nullptr;
+	
+	//Material type to AK switch value mapping
+	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
+	TMap< TSoftObjectPtr< UPhysicalMaterial >, TObjectPtr<class UAkSwitchValue> > mMaterialTypeToAkSwitchMap;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
+	TObjectPtr<class UAkSwitchValue> mDefaultMaterialTypeSwitch = nullptr;
+	
 	//Default states per group
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
-	TMap< FString, class UAkStateValue* > mDefaultStatesPerGroup;
+	TMap< FString, TObjectPtr<class UAkStateValue> > mDefaultStatesPerGroup;
+
+protected:
+	friend class FGLocalAudioContextDebugWindow;
+
+	AkUInt32 MaterialStateGroupLacMaterialType { 0 };
+	AkUInt32 MaterialStateGroupLacHeightMaterialType { 0 };
 	
-public:
 	// Frame stats
-	int ActualFrameNum{0}; // Frame number in [0-15] range, always updated
-	int ProcessingFrameNum{0}; // Frame number in [0-15] range, updated only during processing
-	int CurrentPhaseNum{0};
+	int32 ActualFrameNum{0}; // Frame number in [0-15] range, always updated
+	int32 ProcessingFrameNum{0}; // Frame number in [0-15] range, updated only during processing
+	int32 CurrentPhaseNum{0};
 
 	FVector mCurrentLocation{FVector::ZeroVector};
 
@@ -127,29 +162,35 @@ public:
 
 	// History of height (fed by PerformVerticalPhase)
 	TArray<float> HeightHistory; // 4-element history of height (fed by each phase)
+	TArray<TWeakObjectPtr<UPhysicalMaterial>> HeightMaterialsHistory;
 
 	// Angular
-	TArray<float> AngularHistory;
+	TArray<bool> AngularHistory;
+	TArray<AudioHitInfo> AngularHitPointsHistory;
 	TArray<TWeakObjectPtr<UPhysicalMaterial>> AngularMaterialsHistory;
-	int AngularCounter{0};
+	int32 AngularCounter{0};
 
-	// Material type
+	//Most hit material around the player
 	TWeakObjectPtr<UPhysicalMaterial> MostHitMaterial;
 
+	// Most hit vertical material
+	TWeakObjectPtr<UPhysicalMaterial> MostHitVerticalMaterial;
+
 	UPROPERTY()
-	UAkStateValue* MostHitMaterialState { nullptr };
+	TObjectPtr<UAkStateValue> MostHitMaterialState { nullptr };
 
-	int MostHitMaterialCounter{0};
-
+	UPROPERTY()
+	TObjectPtr<UAkStateValue> MostHitVerticalMaterialState { nullptr };
+	
 	float mPreviousRTPCWidth{0.0f};
 	float mPreviousRTPCHeight{0.0f};
 	float mPreviousSlapbackLeft{0.0f};
 	float mPreviousSlapbackRight{0.0f};
 	float mPreviousIsInside{0.0f};
 
-	TArray<AudioHitInfo> HorizontalHitPoints;
-	TArray<AudioHitInfo> VerticalHitPoints;
-	TArray<AudioHitInfo> AngularHitPoints;
+	TArray<AudioHitInfo> mHorizontalHitPoints;
+	TArray<AudioHitInfo> mVerticalHitPoints;
+	TArray<AudioHitInfo> mAngularHitPoints;
 
 	FTraceDelegate mTraceDelegateHorizontal;
 	FTraceDelegate mTraceDelegateVertical;

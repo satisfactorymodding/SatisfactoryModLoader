@@ -47,7 +47,7 @@ protected:
 	void OnRep_BoomBoxPlayer( class AFGBoomBoxPlayer* oldPlayer );
 		
 	UPROPERTY( BlueprintReadOnly, ReplicatedUsing=OnRep_BoomBoxPlayer, SaveGame )
-	class AFGBoomBoxPlayer* mBoomBoxPlayer = nullptr;
+	TObjectPtr<class AFGBoomBoxPlayer> mBoomBoxPlayer = nullptr;
 
 	/** Cached item state, stored here in case we do not have a boombox when we receive LoadFromItemState. In that case we will load again in BeginPlay */
 	UPROPERTY( Transient )

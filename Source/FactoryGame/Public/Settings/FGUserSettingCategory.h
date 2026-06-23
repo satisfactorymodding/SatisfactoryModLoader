@@ -16,7 +16,7 @@ struct FACTORYGAME_API FUserSettingSubCategoryMapping
 	TSubclassOf< class UFGUserSettingCategory > SubCategory;
 	
 	UPROPERTY( BlueprintReadWrite )
-	TArray< class UUserWidget* > SettingWidgets;
+	TArray< TObjectPtr<class UUserWidget> > SettingWidgets;
 };
 
 USTRUCT( BlueprintType )

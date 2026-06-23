@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -125,5 +125,5 @@ private:
 	FVector mLastActorLocation;
 
 	UPROPERTY( VisibleInstanceOnly, Transient, Category = "Cinematic" )
-	AFGPlayerState* mCinematicPlayerState;
+	TObjectPtr<AFGPlayerState> mCinematicPlayerState;
 };

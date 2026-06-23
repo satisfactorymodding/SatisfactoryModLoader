@@ -6,6 +6,7 @@
 #include "ItemAmount.h"
 #include "Resources/FGItemDescriptor.h"
 #include "Engine/Texture2D.h"
+#include "Online/PlayerInfoCache.h"
 #include "FGFactoryColoringTypes.generated.h"
 
 static const uint8 BUILDABLE_COLORS_MAX_SLOTS_LEGACY = 18;
@@ -26,13 +27,15 @@ public:
 
 	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadWrite )
 	FLinearColor Color = FLinearColor::Black;
+
+	UPROPERTY( SaveGame, BlueprintReadWrite )
+	FPlayerInfoHandle LastEditedBy;
 };
 
 
 
 namespace BuildableColorConstants
 {
-
 	enum class EColorDataIndices : uint8
 	{
 		CDI_Primary_R = 0,
@@ -50,10 +53,6 @@ namespace BuildableColorConstants
 		//... Add new data here
 		CDI_Max = 19
 	};
-
-	// The length of the data for saving (we won't save all properties)
-	const uint8 SAVE_DATA_LENGTH = (uint8)EColorDataIndices::CDI_Roughness - (uint8)EColorDataIndices::CDI_Primary_R + 1;
-
 }
 
 // Base Customization Descriptor. Holds most, if not all, data we need to define a customization.
@@ -89,10 +88,6 @@ public:
 
 	UPROPERTY( EditDefaultsOnly )
 	TSoftObjectPtr< UTexture2D > mIcon;
-
-protected:
-	FORCEINLINE virtual bool Internal_CanItemBePickedup() const override { return false; }
-
 };
 
 // Swatch Class
@@ -196,7 +191,7 @@ struct FACTORYGAME_API FIndexToMaterialData
 	int32 Index;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	UMaterialInterface* Material;	
+	TObjectPtr<UMaterialInterface> Material;	
 };
 
 /**

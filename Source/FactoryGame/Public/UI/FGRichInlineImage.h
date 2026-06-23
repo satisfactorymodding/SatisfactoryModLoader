@@ -1,3 +1,6 @@
+#pragma once
+
+#include "FactoryGame.h"
 #include "Fonts/FontMeasure.h"
 #include "Widgets/Layout/SScaleBox.h"
 #include "Components/RichTextBlockDecorator.h"

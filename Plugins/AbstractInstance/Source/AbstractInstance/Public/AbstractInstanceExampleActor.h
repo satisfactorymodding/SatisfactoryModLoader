@@ -26,7 +26,7 @@ protected:
 	
 protected:
 	UPROPERTY( EditDefaultsOnly, Instanced )
-	UAbstractInstanceDataObject* InstanceData;
+	TObjectPtr<UAbstractInstanceDataObject> InstanceData;
 
 	TArray<FInstanceOwnerHandlePtr> InstanceHandles;
 };

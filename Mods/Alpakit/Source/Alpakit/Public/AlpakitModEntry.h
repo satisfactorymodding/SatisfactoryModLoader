@@ -1,8 +1,9 @@
 #pragma once
+
 #include "AlpakitModEntryList.h"
 #include "AlpakitProfile.h"
-#include "ModTargetsConfig.h"
 #include "Interfaces/IPluginManager.h"
+#include "Widgets/SCompoundWidget.h"
 
 /**
  * Entry of a mod within the mod list of the alpakit window

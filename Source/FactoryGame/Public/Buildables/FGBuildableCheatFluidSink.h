@@ -92,7 +92,7 @@ protected:
 private:
 	/** Cached input component from blueprint. */
 	UPROPERTY()
-	class UFGPipeConnectionComponent* mInputConnection;
+	TObjectPtr<class UFGPipeConnectionComponent> mInputConnection;
 
 	/** Simulation data for this fluid integrant. */
 	UPROPERTY( SaveGame )

@@ -13,5 +13,6 @@ void UFGDebugOverlayWidget::GetOptionsOverlayData(TArray<FString>& out_debugOver
 void UFGDebugOverlayWidget::GetStatisticsOverlayData(TArray<FString>& out_debugOverlayData){ }
 void UFGDebugOverlayWidget::GetShoppingListOverlayData(TArray<FString>& out_debugOverlayData){ }
 void UFGDebugOverlayWidget::GetAdvancedGameSettingsOverlayData(TArray<FString>& out_debugOverlayData){ }
+void UFGDebugOverlayWidget::GetGameModeSettingsOverlayData(TArray<FString>& out_debugOverlayData) const{ }
 void UFGDebugOverlayWidget::GetOnlineInfoOverlayData(TArray<FString>& out_debugOverlayData){ }
 void UFGDebugOverlayWidget::KickOffUpdateTimer(){ }

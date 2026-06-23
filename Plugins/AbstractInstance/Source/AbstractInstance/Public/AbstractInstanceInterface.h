@@ -33,7 +33,7 @@ public:
 	TArray<struct FInstanceData> GetActorLightweightInstanceData() const;
 
 	UFUNCTION( BlueprintNativeEvent, Category = "LightweightInstances" )
-	bool DoesContainLightweightInstances();
+	bool DoesContainLightweightInstances() const;
 
 	/*Lightweight actors could have NO transform, but have them set on spawn,
 	 *to get the true transform this function call needs to be made and implemented*/

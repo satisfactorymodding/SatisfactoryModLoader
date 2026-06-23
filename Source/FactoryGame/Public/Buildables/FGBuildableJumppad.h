@@ -5,7 +5,6 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGBuildableFactory.h"
-#include "InstancedSplineMeshComponent.h"
 #include "FGBuildableJumppad.generated.h"
 
 USTRUCT( BlueprintType )
@@ -146,8 +145,8 @@ private:
 	UFUNCTION()
 	void OnRep_LaunchAngle();
 
-	void GenerateSplineMesh();
-	void DestroySplineMesh();
+	void GenerateSplineMesh( TArray<FInstanceData>& OutSplineInstances );
+	void DestroySplineMeshInstances();
 
 	UFUNCTION()
 	void DestroyVisualizer();
@@ -190,19 +189,19 @@ protected:
 
 	/** Components which are inside the launcher trigger box, ready to be launched. */
 	UPROPERTY()
-	TArray<class UPrimitiveComponent*> ComponentsToLaunch;
+	TArray<TObjectPtr<class UPrimitiveComponent>> ComponentsToLaunch;
 
 	/** Characters which are inside the launcher trigger box, ready to be launched. */
 	UPROPERTY()
-	TArray<class AFGCharacterBase*> CharactersToLaunch;
+	TArray<TObjectPtr<class AFGCharacterBase>> CharactersToLaunch;
 
 	/** Vehicles which are inside the launcher trigger box, ready to be launched. */
 	UPROPERTY()
-	TArray<class AFGVehicle*> VehiclesToLaunch;
+	TArray<TObjectPtr<class AFGVehicle>> VehiclesToLaunch;
 
 	/** Objects entering this box will be launched. */
 	UPROPERTY( VisibleAnywhere, Category = "JumpPad" )
-	class UBoxComponent* mLauncherBox;
+	TObjectPtr<class UBoxComponent> mLauncherBox;
 
 	/** Data for the current trajectory, such as landing location and points along the trajectory. */
 	UPROPERTY( BlueprintReadOnly, Category = "JumpPad" )
@@ -210,7 +209,7 @@ protected:
 
 	/** The part of the jump pad that angles up and down. */
 	UPROPERTY( BlueprintReadOnly, Category = "Jump Pad" )
-	class UStaticMeshComponent* mLauncherMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mLauncherMeshComponent;
 
 	/** The scale used for the instances in the spline mesh. */
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory|Transforms" )
@@ -225,35 +224,23 @@ protected:
 	
 	/** The mesh that shows where launched objects will land. */
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory|Mesh" )
-	UStaticMesh* mDestinationMesh;
+	TObjectPtr<UStaticMesh> mDestinationMesh;
 
 	/** StaticMesh used for spline visualization */
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory|Mesh")
-    UStaticMesh* mTrajectorySplineMesh;
-	
-	/** The offset for the spline data for the block visualization */
-	UPROPERTY( EditDefaultsOnly, Category = "Trajectory|Mesh" )
-	int32 mTrajectorySplineMeshNumPrimitiveDataFloats;
-	
-	/** Spline data settings for the trajectory spline mesh */
-	UPROPERTY( EditDefaultsOnly, Category = "Trajectory|Mesh" )
-	FSplineDataSettings mTrajectorySplineMeshSplineDataSettings;
+    TObjectPtr<UStaticMesh> mTrajectorySplineMesh;
 	
 	/* Number of arrows generated over the spline. */
 	UPROPERTY( EditDefaultsOnly, Category = "Trajectory")
 	int32 mNumArrows;
-
-	/* Generated on command */
-	UPROPERTY()
-	UInstancedSplineMeshComponent* mTrajectorySplineComponent;
 	
 	/* Generated on command */
 	UPROPERTY()
-    class UStaticMeshComponent* mDestinationMeshComponent;
+    TObjectPtr<class UStaticMeshComponent> mDestinationMeshComponent;
 
 	/* Generated on command */
 	UPROPERTY( )
-    class USplineComponent* mSplineComponent;
+    TObjectPtr<class USplineComponent> mSplineComponent;
 
 	/* Lifetime timer for the temporary components. */
 	UPROPERTY()
@@ -268,7 +255,8 @@ protected:
 	UPROPERTY( VisibleAnywhere, Category = "Trajectory" )
 	int32 mShowTrajectoryCounter;
 
-	
+	/** Abstract instances for the trajectory spline */
+	TArray<FInstanceOwnerHandlePtr> TrajectorySplineInstances;
 
 	/** Used to track players and how many jumps theyve done. Initially intended for playing sounds in a sequence for christmas event.*/
 	// TODO: This isn't very clean, as it will keep old data between sessions and only really reset once the game shuts down

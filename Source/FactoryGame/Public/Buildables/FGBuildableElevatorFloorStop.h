@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "FactoryGame.h"
 #include "FGBuildable.h"
@@ -42,7 +42,7 @@ public:
 	// End Useable Interface
 
 	// Begin significance Interface.
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	// End
 	// Assigns the Elevator that owns this stop. Occurs in PostLoadGame if coming from a save
 	void SetOwningElevator( class AFGBuildableElevator* elevator );
@@ -86,7 +86,7 @@ public:
 	
 public:
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
-	class UFGColoredInstanceMeshProxy* mMesh;
+	TObjectPtr<class UFGColoredInstanceMeshProxy> mMesh;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	TObjectPtr< UFGColoredInstanceMeshProxy > mButtonMesh;

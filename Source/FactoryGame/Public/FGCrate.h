@@ -73,8 +73,8 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	//<FL>[KonradA]
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray< struct FLocalUserNetIdBundle >(); }
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	UFUNCTION() virtual FPlayerInfoHandle GetLastEditedBy() const override { return FPlayerInfoHandle(); }
+	UFUNCTION() virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy ) {}
 
 	// End IFGActorRepresentationInterface
 
@@ -119,7 +119,7 @@ protected:
 
 	/** Compass material for the crate */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	UMaterialInterface* mCompassMaterial;
+	TObjectPtr<UMaterialInterface> mCompassMaterial;
 
 	/** Name of the crate on the map (before distinction between dismantle and death crates was added) */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
@@ -135,15 +135,15 @@ protected:
 
 	/** Icon of the crate on the map (before distinction between dismantle and death crates was added) */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	UTexture2D* mCrateIcon;
+	TObjectPtr<UTexture2D> mCrateIcon;
 
 	/** Icon for the dismantle crate */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	UTexture2D* mDismantleCrateIcon;
+	TObjectPtr<UTexture2D> mDismantleCrateIcon;
 
 	/** Icon for the death crate */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	UTexture2D* mDeathCrateIcon;
+	TObjectPtr<UTexture2D> mDeathCrateIcon;
 private:
 	UFUNCTION()
 	void OnInventoryItemRemoved( TSubclassOf< UFGItemDescriptor > itemClass, const int32 numRemoved, UFGInventoryComponent* targetInventory = nullptr );
@@ -153,9 +153,9 @@ private:
 
 	/** The inventory of this crate */
 	UPROPERTY()
-	class UFGInventoryComponent* mInventory;
+	TObjectPtr<class UFGInventoryComponent> mInventory;
 
 	/** Players interacting with this crate, used to toggle dormancy */
 	UPROPERTY()
-	TArray< class AFGCharacterPlayer* > mInteractingPlayers;
+	TArray< TObjectPtr<class AFGCharacterPlayer> > mInteractingPlayers;
 };

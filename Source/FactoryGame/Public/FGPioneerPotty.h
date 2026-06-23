@@ -25,5 +25,5 @@ protected:
 
 private:
 	UPROPERTY( SaveGame )
-	UFGInventoryComponent* mStorageInventory;
+	TObjectPtr<UFGInventoryComponent> mStorageInventory;
 };

@@ -3,7 +3,7 @@
 #include "User/OnlineFriendPrivate.h"
 
 void UOnlineFriendPrivate::SetRelationshipForBackend(const EOnlineRelationship Relationship, UOnlineIntegrationBackend* Backend){ }
-void UOnlineFriendPrivate::SetGameSession(USessionInformation* GameSession){ }
+void UOnlineFriendPrivate::SetGameSession(USessionInformation* gameSession){ }
 void UOnlineFriendPrivate::SetOnlineUser(UOnlineUserInfo* InOnlineUser){ }
 void UOnlineFriendPrivate::HandlePresenceUpdated(const UE::Online::FPresenceUpdated& PresenceUpdated, UOnlineIntegrationBackend* Backend){ }
 void UOnlineFriendPrivate::InitPresence(TSharedRef<const UE::Online::FUserPresence> PresenceRef, UOnlineIntegrationBackend* Backend){ }

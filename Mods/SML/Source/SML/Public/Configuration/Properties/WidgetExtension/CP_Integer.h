@@ -29,7 +29,7 @@ public:
 
 	// Custom Enum Class to use for the display Widget
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "WidgetType == ECP_IntegerWidgetType::CPI_Enum", EditConditionHides, DisplayAfter = "WidgetType"))
-	class UEnum * EnumClass;
+	TObjectPtr<class UEnum>  EnumClass;
 
 	UFUNCTION(BlueprintPure)
 	TArray<FName> GetEnumNames() const;

@@ -5,9 +5,10 @@
 #include "Net/UnrealNetwork.h"
 
 AFGResourceDeposit::AFGResourceDeposit() : Super() {
+	this->mResourceNodeActor = nullptr;
 	this->mResourceDepositPackage.DropChance = 0.0;
 	this->mResourceDepositPackage.ResourceClass = nullptr;
-	this->mResourceDepositTableIndex = -1;
+	this->mResourceDepositTableIndex = -2;
 	this->mIsEmptied = false;
 	this->mHasInitializedVisuals = false;
 	this->mDepositMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DepositMesh"));
@@ -16,6 +17,7 @@ AFGResourceDeposit::AFGResourceDeposit() : Super() {
 	this->mCanBeRadioactive = true;
 	this->mCanPlaceResourceExtractor = false;
 	this->mExtractMultiplier = 2;
+	this->mResourceNodeType = EResourceNodeType::Deposit;
 	this->RootComponent = mDepositMeshComponent;
 }
 void AFGResourceDeposit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -26,13 +28,17 @@ void AFGResourceDeposit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 }
 void AFGResourceDeposit::PostLoad(){ Super::PostLoad(); }
 void AFGResourceDeposit::BeginPlay(){ Super::BeginPlay(); }
+float AFGResourceDeposit::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser){ return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser); }
 void AFGResourceDeposit::RollResourceType(){ }
-void AFGResourceDeposit::TrySetDesiredResourceType(){ }
+void AFGResourceDeposit::TrySetDesiredResourceType(TSubclassOf<UFGResourceDescriptor> resourceDescriptor){ }
 void AFGResourceDeposit::SetupResourceInfo(){ }
 void AFGResourceDeposit::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGResourceDeposit::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGResourceDeposit::ExtractResourceAndGiveToPlayer(AFGCharacterPlayer* toPlayer, int32 amount){ }
+void AFGResourceDeposit::SetOverrideResourceClass(const TSubclassOf<UFGResourceDescriptor> resourceDescriptor){ }
+void AFGResourceDeposit::SetResourceNodeActor(const TSoftObjectPtr<AFGResourceNode> resourceNodeActor){ }
+void AFGResourceDeposit::Multicast_PlayDepletedEffect_Implementation(){ }
 void AFGResourceDeposit::OnRep_ResourceDepositTableIndex(){ }
-void AFGResourceDeposit::OnRep_ResourceDepositEmptied(){ }
 void AFGResourceDeposit::InitRadioactivity(){ }
 void AFGResourceDeposit::UpdateRadioactivity(){ }
+bool AFGResourceDeposit::IsDepositTableIndexValid() const{ return bool(); }

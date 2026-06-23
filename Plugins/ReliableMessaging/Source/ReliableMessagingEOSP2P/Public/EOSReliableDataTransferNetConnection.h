@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ReliableDataTransferNetConnection.h"
 #include "ReliableMessagingTransportLayer.h"
 #include "SocketEOS.h"
 
@@ -36,7 +35,7 @@ public:
 
 	// Begin IReliableMessageTransportConnection interface
 	virtual FGuid GetConnectionId() const override;
-	virtual void EnqueueMessage(uint8 Channel, TArray<uint8>&& Message) override;
+	virtual void EnqueueTaggedMessage(FGameplayTag Tag, TArray<uint8>&& Message) override;
 	virtual EReliableMessagingConnectionState Tick(float DeltaTime) override;
 	virtual void DispatchMessages(TFunction<void(RDTProtocol::FMessage&&)> MessageDispatcher) override;
 	virtual void Close() override;
@@ -58,6 +57,7 @@ protected:
 	// End UReliableDataTransferNetConnection interface
 
 private:
+	bool TrySendHandshake();
 	bool SendPacket(const uint8* Data, int32 Count);
 
 	FSocketSubsystemEOS* SocketSubsystem = nullptr;;
@@ -67,6 +67,8 @@ private:
 	
 	TSharedPtr<FInternetAddrEOS> SenderAddress;
 	bool bHasReceivedConnectionId = false;
+	bool bHandshakePending = false;
+	bool bLastSendWasTransientFailure = false;
 	FReliableMessagingServerEOS* Server = nullptr;
 
 	FGuid ConnectionId;

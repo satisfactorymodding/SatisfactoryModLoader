@@ -19,6 +19,7 @@ struct FAlpakitProfile {
 	
 	bool bBuild{false};
 	EBuildConfiguration BuildConfiguration;
+	TArray<FString> BuildTargetNames;
 	TArray<FString> CookedPlatforms;
 	FString PluginName;
 	TMap<FString, FAlpakitProfileGameInfo> PlatformGameInfo;

@@ -10,6 +10,8 @@ UFGPhotoModeComponent::UFGPhotoModeComponent() : Super() {
 	this->mDCMoveDistanceLimit = 3000.0;
 	this->mDCCutoffDistanceLimit = 4000.0;
 	this->mCameraCharacter = nullptr;
+	this->mPhotoCameraMode = EPhotoCameraMode::PCM_FirstPerson;
+	this->mSelfieModeRelativeTransform = FTransform(FQuat(0, 0, 0.9999999999999999, 6.123233995736766e-17), FVector(18, -22, 2), FVector::OneVector);
 	this->PrimaryComponentTick.TickGroup = ETickingGroup::TG_DuringPhysics;
 	this->PrimaryComponentTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryComponentTick.bTickEvenWhenPaused = false;
@@ -23,6 +25,7 @@ UFGPhotoModeComponent* UFGPhotoModeComponent::GetUFGPhotoModeComponent(const APl
 void UFGPhotoModeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGPhotoModeComponent, mCameraCharacter);
+	DOREPLIFETIME(UFGPhotoModeComponent, mPhotoCameraMode);
 }
 void UFGPhotoModeComponent::BeginPlay(){ Super::BeginPlay(); }
 void UFGPhotoModeComponent::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
@@ -31,38 +34,35 @@ void UFGPhotoModeComponent::TakePhoto(const int captureX, const int captureY, co
 bool UFGPhotoModeComponent::TogglePhotoMode(){ return bool(); }
 bool UFGPhotoModeComponent::EnterPhotoMode(){ return bool(); }
 bool UFGPhotoModeComponent::ExitPhotoMode(){ return bool(); }
-void UFGPhotoModeComponent::ToggleDecoupledCamera(){  }
 void UFGPhotoModeComponent::SetPlayerVisibilityInPhotoMode(const bool isVisible){  }
+void UFGPhotoModeComponent::SetPhotoCameraMode(EPhotoCameraMode mode){ }
 void UFGPhotoModeComponent::MoveForward(const float moveValue){  }
 void UFGPhotoModeComponent::MoveBackwards(const float moveValue){  }
 void UFGPhotoModeComponent::MoveLeft(const float moveValue){  }
 void UFGPhotoModeComponent::MoveRight(const float moveValue){  }
 void UFGPhotoModeComponent::MoveUp(const float moveValue){  }
 void UFGPhotoModeComponent::MoveDown(const float moveValue){  }
-void UFGPhotoModeComponent::MoveMouseX(const float axisValue){  }
-void UFGPhotoModeComponent::MoveMouseY(const float axisValue){  }
+void UFGPhotoModeComponent::LookAxis(const FInputActionValue& actionValue) const{ }
 void UFGPhotoModeComponent::MoveFaster(const float moveValue){ }
 void UFGPhotoModeComponent::MoveSlower(const float moveValue){ }
 bool UFGPhotoModeComponent::SetPMOption(const FString& optionKey, const float optionValue, const bool isResetCall){ return bool(); }
 bool UFGPhotoModeComponent::ClearPMOption(const FString& optionKey){ return bool(); }
 void UFGPhotoModeComponent::ClearPMOMap(const int expectedNumElements){  }
 float UFGPhotoModeComponent::GetOptionValueFromID(const FString& ID) const{ return float(); }
-void UFGPhotoModeComponent::Client_ProperlyResetClientAfterTogglingDecoupledCamera_Implementation(){ }
+void UFGPhotoModeComponent::Server_SetPhotoCameraMode_Implementation(EPhotoCameraMode newMode){ }
 AFGCharacterPlayer* UFGPhotoModeComponent::GetOwnerPlayerCharacter() const{ return nullptr; }
 AFGPlayerController* UFGPhotoModeComponent::GetPlayerController() const{ return nullptr; }
 void UFGPhotoModeComponent::SetHandEquipmentVisibility(const bool isVisible){  }
 FString UFGPhotoModeComponent::CreateScreenShotPath() const{ return FString(); }
 FString UFGPhotoModeComponent::CreateScreenShotName(){ return FString(); }
 FString UFGPhotoModeComponent::CreateScreenShotCommand(const int captureX, const int captureY, const int captureW, const int captureH) const{ return FString(); }
-void UFGPhotoModeComponent::HandleDecoupledCameraPlacing(const bool isDecoupled){  }
+void UFGPhotoModeComponent::HandleDecoupledCameraPlacing(){ }
 void UFGPhotoModeComponent::PlaceDecoupledCameraAtPlayerCharacter(const AFGCharacterPlayer* playerCharacter){  }
-float UFGPhotoModeComponent::GetMouseMovementFromAxisValue(const float axisValue) const{ return float(); }
+void UFGPhotoModeComponent::OnPhotoCameraModeChanged(EPhotoCameraMode prevMode){ }
 void UFGPhotoModeComponent::OnRep_CameraCharacter(){  }
-void UFGPhotoModeComponent::Server_ToggleDecoupledCamera_Implementation(const bool isOn){  }
+void UFGPhotoModeComponent::OnRep_PhotoCameraMode(EPhotoCameraMode prevMode){ }
 void UFGPhotoModeComponent::Server_TogglePhotoMode_Implementation(const bool isOn){  }
 class UCineCameraComponent* UFGPhotoModeComponent::GetCameraComponent() const{ return nullptr; }
-float UFGPhotoModeComponent::ControllerTurnAtRate(float rate, bool WithInvertHandling){ return float(); }
-float UFGPhotoModeComponent::ControllerLookUpAtRate(float rate, bool WithInvertHandling){ return float(); }
 AFGPhotoModeCamera::AFGPhotoModeCamera() : Super() {
 	this->mControllingPlayerCharacter = nullptr;
 	this->mCameraComp = CreateDefaultSubobject<UCineCameraComponent>(TEXT("Camera"));
@@ -70,8 +70,15 @@ AFGPhotoModeCamera::AFGPhotoModeCamera() : Super() {
 	this->mSpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	this->mSpringArmComp->SetMobility(EComponentMobility::Movable);
 	this->mCameraComp->SetupAttachment(mSpringArmComp);
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = false;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bOnlyRelevantToOwner = true;
-	this->NetCullDistanceSquared = 1000000000000.0;
+	this->SetNetCullDistanceSquared(1000000000000.0);
 	this->mSpringArmComp->SetupAttachment(GetCapsuleComponent());
 }
 void AFGPhotoModeCamera::HandleDecoupledCameraMoveSpeed(){ }

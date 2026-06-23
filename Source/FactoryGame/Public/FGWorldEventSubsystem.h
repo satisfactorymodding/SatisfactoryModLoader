@@ -109,7 +109,7 @@ private:
 
 	/** All registered world event actors. */
 	UPROPERTY( Replicated )
-	TArray< class AFGWorldEventActor* > mWorldEventActors;
+	TArray< TObjectPtr<class AFGWorldEventActor> > mWorldEventActors;
 
 	/** Timer used for triggering world events automatically. */
 	FTimerHandle mWorldEventTimerHandle;

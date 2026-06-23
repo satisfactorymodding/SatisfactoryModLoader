@@ -29,13 +29,13 @@ struct FACTORYGAME_API FPickedUpInstance
 	}
 
 	UPROPERTY()
-	class UStaticMesh* InstanceMesh;
+	TObjectPtr<class UStaticMesh> InstanceMesh;
 
 	UPROPERTY()
 	FTransform Transform;
 
 	UPROPERTY()
-	UHierarchicalInstancedStaticMeshComponent* SourceHISM;
+	TObjectPtr<UHierarchicalInstancedStaticMeshComponent> SourceHISM;
 };
 
 UENUM( BlueprintType )
@@ -253,7 +253,7 @@ protected:
 
 	/** Component we are currently sawing on */
 	UPROPERTY( Transient )
-	class USceneComponent* mSawingComponent;
+	TObjectPtr<class USceneComponent> mSawingComponent;
 
 	/** Current state of the chainsaw, server controlled */
 	UPROPERTY( ReplicatedUsing = OnRep_ChainsawState )

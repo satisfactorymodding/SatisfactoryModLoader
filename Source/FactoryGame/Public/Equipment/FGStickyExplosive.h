@@ -54,5 +54,5 @@ protected:
 	float mDetonateIn;
 
 	UPROPERTY( EditDefaultsOnly )
-	class USphereComponent* mEnvironmentDestructionSphere;
+	TObjectPtr<class USphereComponent> mEnvironmentDestructionSphere;
 };

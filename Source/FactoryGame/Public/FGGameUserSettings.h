@@ -184,6 +184,9 @@ public:
 	void InitVideoQualityValues();
 	void UpdateVideoQualityCvars( const FString& cvar );
 	void OnUpScalingUpdated( FString strId, FVariant value );
+	void OnVehiclePathSettingUpdated( FString strId, FVariant value );
+	void OnVehiclePathRenderDistanceChanged( FString strId, FVariant value );
+	static void UpdateVehiclePathRenderDistanceForWorld( UWorld* world );
 
 	void OnFrameGenerationUpdated(FString strId, FVariant value);
 	void InitFrameGeneration();
@@ -209,7 +212,7 @@ public:
 	
 	/** Returns the option interface that handles getting and settings options*/
 	UFUNCTION( BlueprintCallable, Category = Settings )
-	static UFGOptionInterface* GetOptionInterface();
+	static TScriptInterface<IFGOptionInterface> GetOptionInterface();
 
 	UFUNCTION()
 	void UpdateAudioOption( FString updatedCvar );
@@ -231,6 +234,12 @@ public:
 	UFUNCTION()
 	void OnGamepadSpeakerVolumeUpdated( FString updatedCVar );
 	//</FL>
+
+	// <FL> [ZimmermannA] Used for conveyor item frequency setting
+	UFUNCTION()
+	void OnConveyorItemFrequencyUpdated( FString updatedCvar );
+	//</FL>
+
 	/** Triggered when foliage quality option have changed */
 	UFUNCTION()
 	void OnFoliageQualityUpdated( FString updatedCvar );
@@ -266,10 +275,6 @@ public:
 	// Getter for the current cross-play setting. Does not check privileges.
 	virtual bool GetIsCrossPlayEnabledWithoutCheck() override;
 
-	/** Attempts polling for user privilege. Returns true if an attempt to polling was made. Returns false if there was no neccessity to poll user premium privilege*/
-	UFUNCTION( BlueprintCallable )
-	bool PollHasUserPremiumPrivilege( FUserHasPremiumAccountDelegate completeDelegate );
-
 	UFUNCTION(BlueprintCallable)
 	void ForceOnlineIntegrationDisconnect();
 	//</FL>
@@ -301,6 +306,12 @@ public:
 	/** Update network values in config files */
 	void RefreshNetworkQualityValues();
 
+	UFUNCTION()
+	void OnAgreeToCrashUploadUpdated( FString updateCvar );
+
+	void RefreshAgreeToCrashUpload( bool flush );
+
+
 	/** Get custom enhanced bindings */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	FORCEINLINE TArray< FFGCustomInputActionMapping >GetPlayerMappedKeys() { return mPlayerMappedKeys; }
@@ -311,11 +322,12 @@ public:
 
 	/** Remove all player mapped keys that the player have rebound */
 	void RemoveAllPlayerMappedKeys();
+	void RemovePlayerMappedKeysForCurrentDevice();
 
 	// Begin IFGOptionInterface
-	virtual void GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const;
+	virtual void GetAllUserSettings(TArray<TObjectPtr<UFGUserSettingApplyType>>& OutUserSettings) const;
 //<FL>[KonradA] Add a direct map getter to avoid conversions from and to a map with loss of key data in certain situations
-	virtual void GetAllUserSettingsMap( TMap< FString, UFGUserSettingApplyType* >& OutUserSettings ) const;
+	virtual void GetAllUserSettingsMap( TMap< FString, TObjectPtr<UFGUserSettingApplyType> >& OutUserSettings ) const;
 //</FL>
 	virtual UFGUserSettingApplyType* FindUserSetting(const FString& SettingId) const override;
 	virtual void SetOptionValue(const FString& strId, const FVariant& value) override;
@@ -334,6 +346,7 @@ public:
 	
 	void InitSavedValues();
 	void SetupAudioSettingBindings();
+	void SetupVehiclePathSettingBindings();
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	void OnExitToMainMenu();
@@ -395,6 +408,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
 	void ApplyHologramColoursToCollectionParameterInstance( UObject* World );
 
+	/** Applies vehicle path colors to the world's material parameter collection instance */
+	void ApplyVehiclePathColorsToCollectionParameterInstance( UWorld* World );
+
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
 	void UpdateFoliageLoadingDistance(UObject* World, bool bBlockForLevelStreaming = true);
 
@@ -415,6 +431,9 @@ public:
 	EOnlineIntegrationMode GetPreferredOnlineIntegrationMode();
 
 	UFUNCTION( BlueprintCallable )
+	bool IsPreferredOnlineIntegrationModeSet();
+
+	UFUNCTION( BlueprintCallable )
 	void SetPreferredOnlineIntegrationMode( EOnlineIntegrationMode preferredOnlineIntegrationMode, bool bInvokedByUser = true ); // <FL>[KonradA] Added bInvokedByUser to keep track if this action was done by the player or backend systems
 
 	//<FL>[BGR] Handling for console fidelity modes
@@ -430,6 +449,8 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	static void OverrideDeviceProfileForMode( EDeviceProfileFidelityMode NewMode, bool bForce = false );
 	//</FL>
+
+	FORCEINLINE float GetCurrentVehiclePathRenderDistanceScale() const { return mCurrentVehiclePathRenderDistanceScale; }
 
 	/** Debug */
 	void DumpDynamicOptionsSettings();
@@ -457,12 +478,17 @@ private:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	void SetPrimaryLangaugeToPlatformDefault();
 
+	void UpdateCurrentVehiclePathRenderDistance();
+
 	//<FL>[KonradA] Sanitizing/AutoUpdating some settings needs access to a game instance, provide utility functions
 	class UFGGameInstance* mCachedGameInstance;
 
 public:
 	UFGGameInstance* GetPrimaryGameInstance();
 
+	// <FL> [ZimmermannA]
+	static bool IsRunningOnSteamDeckOrConsole();
+	// </FL>
 private:
 
 	// Helper function to get the current users localuserinfo
@@ -530,7 +556,7 @@ public:
 protected:
 
 	UPROPERTY( Transient )
-	TMap< FString, class UFGUserSettingApplyType* > mUserSettings;
+	TMap< FString, TObjectPtr<class UFGUserSettingApplyType> > mUserSettings;
 
 	/** List of remapped enhanced key mappings */
 	UPROPERTY( config, EditAnywhere, Category = "Bindings" )
@@ -546,6 +572,10 @@ private:
 	TMap<FString, int32> mIntValues;
 	UPROPERTY( Config )
 	TMap<FString, float> mFloatValues;
+	UPROPERTY( Config )
+	TMap<FString, FString> mStringValues;
+	UPROPERTY( Config )
+	TMap<FString, FLinearColor> mLinearColorValues;
 
 	TArray<FString> mAudioOptions;
 
@@ -599,11 +629,14 @@ private:
 
 	TOptional<EGraphicsAPI> mDesiredGraphicsAPI;
 
+	float mCurrentVehiclePathRenderDistanceScale{1.0f};
+
 	/** Current state if user setting. Used so we can know when we are taking actions like reset and apply so we can gate certain actions */ 
 	EGameUserSettingsState mCurrentState = EGameUserSettingsState::EGUSS_Default;
 	
 	/** const variables */
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;
+	static const TArray<FString> NET_DRIVER_CLASS_PATHS;
 };
 
 

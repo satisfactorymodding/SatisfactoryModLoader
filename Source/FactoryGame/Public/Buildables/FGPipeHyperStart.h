@@ -28,7 +28,7 @@ public:
 	float mInitialMinSpeedFactor = 1.4f;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadWrite, Category = "Hyper Tube" )
-	class UFGPipeConnectionComponentBase* mConnection0;
+	TObjectPtr<class UFGPipeConnectionComponentBase> mConnection0;
 };
 
 

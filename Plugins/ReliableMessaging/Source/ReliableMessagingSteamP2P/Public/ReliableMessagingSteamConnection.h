@@ -23,13 +23,14 @@ public:
 	
 	virtual ~FReliableMessagingSteamConnection() override;
 	
-	virtual void EnqueueMessage(uint8 Channel, TArray<uint8>&& Message) override;
+	virtual void EnqueueTaggedMessage(FGameplayTag Tag, TArray<uint8>&& Message) override;
 	virtual FGuid GetConnectionId() const override;
 	[[nodiscard]] virtual EReliableMessagingConnectionState Tick(float DeltaTime) override;
 	virtual void DispatchMessages(TFunction<void(RDTProtocol::FMessage&&)> MessageDispatcher) override;
 	virtual void Close() override;
 
 	bool HasReceivedConnectionId() const;
+	EReliableMessagingConnectionState GetConnectionState() const { return ConnectionState; }
 
 	void HandleConnectionIdReceived(FGuid InConnectionId);
 	void HandleMessageReceived(RDTProtocol::FMessage&& InMessage);
@@ -39,10 +40,12 @@ public:
 	
 private:
 	void OnSteamConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* Callback);
+	bool TrySendHandshake();
 	// FUniqueSocket Socket;
 	FGuid ConnectionId;
 
 	bool bHasReceivedConnectionId = false;
+	bool bHandshakePending = false;
 
 	TArray<RDTProtocol::FMessage> IncomingMessages;
 	HSteamNetConnection ConnectionHandle;

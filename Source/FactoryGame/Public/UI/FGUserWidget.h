@@ -9,6 +9,7 @@
 #include "Engine/Blueprint.h"
 #include "FGWidgetChild.h"
 #include "GameplayTagContainer.h"
+#include "Extensions/FGWidgetTimerExtension.h"
 #include "FGUserWidget.generated.h"
 
 class UInputAction;
@@ -50,45 +51,45 @@ struct FFGKeybinding // this has a details customization in FGKeybindingDetails.
 {
 	GENERATED_BODY()
 
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FKey Key;
 
 	// if set, this key must be pressed simulataneously with the key above for the action to trigger.
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FKey ComboKey;
 
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	EFGKeyHintVariant Variant = EFGKeyHintVariant::Default;
 
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FText HintText;
 
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FName HintTag;
 
 	// <FL>[KonradA] Make an override tag accessible for the keybindings menu as well
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FGameplayTag OverrideHintImageTag;
 	// </FL>
 
 	// if set, this widget must be in the focus path (or visible if EvaluationMethod is UseFocusWidgetVisibility) for the keybinding to be active.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite )
 	FFGWidgetChild FocusWidget;
 
-	UPROPERTY(EditAnywhere, meta = (Bitmask, BitmaskEnum = EKeybindingEvaluationMethod))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,  meta = (Bitmask, BitmaskEnum = "/Script/FactoryGame.EKeybindingEvaluationMethod"))
 	int32 EvaluationMethod = 0;
 
 	// KeyDownCallback
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FName Callback;
 
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FName OnKeyUpCallback;
 
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FName DetailsCallback;
 
-	UPROPERTY( EditAnywhere )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FName OnLongPressKeyDownCallback;
 
 	bool operator==(const FFGKeybinding& Rhs) const
@@ -200,6 +201,13 @@ public:
 	void OnGlobalFocusChanged();
 	virtual void OnGlobalFocusChanged_Implementation() {}
 
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "UI" )
+	void OnConstructedOnLowRes();
+	virtual void OnConstructedOnLowRes_Implementation() {}
+
+	UFUNCTION(BlueprintCallable, Category = "Animation|Tick")
+	void StartTickForDuration(UPARAM(DisplayName="CustomTickEvent") FTickDynamicDelegate Delegate, float Duration);
+
 	// if set to true, the widget will receive OnGlobalFocusChanged events
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Input")
 	bool bGlobalFocusChangedEvents = false;
@@ -259,6 +267,8 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Input" )
 	bool bIsPopup = false;
 
+	TWeakPtr< SWidget > LastFocusedChild = nullptr;
+
 	UWidgetTree* GetWidgetTree(UWidget* Widget);
 
 	UFUNCTION( BlueprintPure, Category = "Input" )
@@ -290,10 +300,33 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	bool UpdateKeybindingByTag( FName HintTag, FKey NewKey );
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	bool UpdateHintTextByIndex(int Index, FText NewHintText);
+
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	void AddChildKeybindings(UFGUserWidget* ChildWidget);
 
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	bool StoreFocusWidget();
+
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	bool RestoreFocusWidget();
+
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void UpdateFocusHighlights();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (ToolTip = "This will be called whenever widget is retrieved from widget pool and is reactivated (including first construction)"), Category = "Input")
+	void OnReconstructedFromPool();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (ToolTip = "This will be called whenever widget is going to be returned to pool. Perfect place to unbind your delegates!"), Category = "Input")
+	void OnReleasedToPool();
+	
+	UFUNCTION()
+	void ApplyFocusHighlightsOnInputDeviceTypeChanged(EInputDeviceType deviceType);
+
 private:
+
+	void ApplyFocusHighlight(FFGFocusHighlight& FocusHighlight, bool bInPath);
 
 	FReply CallDelegateForKeyEventOfType(const FKeyEvent& InKeyEvent, EFGKeyHintDelegateType DelegateType);
 	FReply CallKeybindingDelegate(const FFGKeybinding& Keybinding, EFGKeyHintDelegateType DelegateType);
@@ -302,4 +335,5 @@ private:
 	static void FakeKeyUpEvent(const FKeyEvent& InKeyEvent);
 	void AddParentKeybindings();
 	TArray< FFGKeybinding > AllKeybindings;
+	TSharedPtr<SWidget> StoredFocusWidget;
 };

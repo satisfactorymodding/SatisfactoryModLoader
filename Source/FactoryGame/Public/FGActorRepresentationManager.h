@@ -200,19 +200,19 @@ private:
 
 	/** All actor representations. Parts of it are synced over network and other parts is added locally. Used to get all relevant representations for the current instance */
 	UPROPERTY()
-	TArray<class UFGActorRepresentation*> mAllRepresentations;
+	TArray<TObjectPtr<class UFGActorRepresentation>> mAllRepresentations;
 
 	/** Representations of moving objects. These need to be updated regularly to keep their position in sync with the representation */
 	UPROPERTY()
-	TArray<class UFGActorRepresentation*> mMovingRepresentations;
+	TArray<TObjectPtr<class UFGActorRepresentation>> mMovingRepresentations;
 	
 	/** These are all the representations of actors that should replicate from server to clients */
 	UPROPERTY()
-	TArray<class UFGActorRepresentation* > mReplicatedRepresentations;
+	TArray<TObjectPtr<class UFGActorRepresentation> > mReplicatedRepresentations;
 
 	/** A map of replicated representation ID to the representation object. Used for fast lookups */
 	UPROPERTY()
-	TMap<FGuid, UFGActorRepresentation*> mReplicatedRepresentationMap;
+	TMap<FGuid, TObjectPtr<UFGActorRepresentation>> mReplicatedRepresentationMap;
 
 	UPROPERTY( Replicated )
 	FFGActorRepresentationReplicator mActorRepresentationReplicator;

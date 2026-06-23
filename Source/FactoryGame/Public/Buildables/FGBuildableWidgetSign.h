@@ -84,7 +84,7 @@ public:
 	// Begin Significance Interface Implementation
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mGainSignificanceDistance; }
+	virtual float GetSignificanceRange_Implementation() const override { return mGainSignificanceDistance; }
 	// End  Significance Interface Implementation
 
 	//~ Begin IFGFactoryClipboardInterface
@@ -114,6 +114,8 @@ public:
 	bool WasLastChangedByLocalPlayer();
 	UFUNCTION(BlueprintCallable, Category = "WidgetSign")
 	void GetDefaultSignMaps( TMap< FString, FString >& TextElementToDataMap, TMap< FString, int32 >& IconElementToDataMap );
+
+	void RecalculateUGCVisibility();
 	//</FL>
 
 	FORCEINLINE float LastTimeSeen() const { return IsValid(mSignProxyPlane) ? mSignProxyPlane->GetLastRenderTime() : MAX_FLT; }
@@ -149,7 +151,7 @@ protected:
 
 //<FL>[KonradA]
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	TArray< FLocalUserNetIdBundle > GetLastEditedBy() const { return mLastEditedBy; };
+	FPlayerInfoHandle GetLastEditedBy() const { return mLastEditedBy; };
 //</FL>
 
 protected:
@@ -185,13 +187,13 @@ protected:
 	TMap< FString, int32 > mIconElementToDataMap;
 
 	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mWidgetMaterial;
+	TObjectPtr<UMaterialInterface> mWidgetMaterial;
 
 	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mEmissiveOnlySignMaterial;
+	TObjectPtr<UMaterialInterface> mEmissiveOnlySignMaterial;
 	
 	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mDefaultSignMaterial;
+	TObjectPtr<UMaterialInterface> mDefaultSignMaterial;
 
 	UPROPERTY(EditDefaultsOnly)
 	FIntPoint mSignDrawSize;
@@ -237,7 +239,7 @@ protected:
 
 	//<FL> [KonradA] For Parental Control reasons we need to keep track of who last edited this sign
 	UPROPERTY(SaveGame)
-	TArray< FLocalUserNetIdBundle > mLastEditedBy;
+	FPlayerInfoHandle mLastEditedBy;
 	FDelegateHandle hOnQueryAllBlockedComplete;
 	bool mDelayInitForBlockedUserData = false;
 	//</FL>
@@ -247,4 +249,5 @@ protected:
 	uint8 mDataVersion;
 	
 	uint32 mCachedGUID = 0;
+	bool mCachedUGCVisibility = true;
 };

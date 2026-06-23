@@ -41,5 +41,5 @@ public:
 private:
     /** Array of registered tooltip providers, UPROPERTY to avoid garbage collection */
     UPROPERTY()
-    TArray<UObject*> GlobalTooltipProviders;
+    TArray<TObjectPtr<UObject>> GlobalTooltipProviders;
 };

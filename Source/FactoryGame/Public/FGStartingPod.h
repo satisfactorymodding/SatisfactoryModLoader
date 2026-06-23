@@ -20,7 +20,7 @@ class ALevelSequenceActor;
 
 /** Possible states of the intro sequence */
 UENUM( BlueprintType )
-enum class EIntroSequencePlayState
+enum class EIntroSequencePlayState : uint8
 {
 	/** Intro sequence is not started or has ended */
 	None UMETA( DisplayName = "None" ),
@@ -81,8 +81,8 @@ public:
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION() virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	//<FL>[KonradA] 
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray<struct FLocalUserNetIdBundle >(); }
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	UFUNCTION() virtual FPlayerInfoHandle GetLastEditedBy() const override { return FPlayerInfoHandle(); }
+	UFUNCTION() virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy ) {}
 	//</FL>
 	// End IFGActorRepresentationInterface
 
@@ -191,7 +191,7 @@ protected:
 
 	/** Onboarding step to complete when we are done with the intro sequence */
 	UPROPERTY( EditDefaultsOnly, Category = "Intro Sequence" )
-	UFGOnboardingStep* mPlanetFallOnboardingStep;
+	TObjectPtr<UFGOnboardingStep> mPlanetFallOnboardingStep;
 
 	/** Distance to teleport the player forward after skipping the intro sequence */
 	UPROPERTY( EditDefaultsOnly, Category = "Intro Sequence" )
@@ -211,7 +211,7 @@ protected:
 
 	/** Representation texture to use for the drop pod */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	UTexture2D* mActorRepresentationTexture;
+	TObjectPtr<UTexture2D> mActorRepresentationTexture;
 
 	/** Representation color to use for the drop pod */
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
@@ -223,7 +223,7 @@ protected:
 
 	/** Main mesh component of the drop pod */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Starting Pod" )
-	USkeletalMeshComponent* mDropPodMeshComponent;
+	TObjectPtr<USkeletalMeshComponent> mDropPodMeshComponent;
 
 	/** Mesh to lazily load for the drop pod */
 	UPROPERTY( EditDefaultsOnly, Category = "Starting Pod" )
@@ -238,24 +238,24 @@ protected:
 
 	/** Camera modifier that is used to limit the FOV for the duration of the intro sequence */
 	UPROPERTY( Transient )
-	UFGCameraModifierLimitFOV* mCameraModifierLimitFOV;
+	TObjectPtr<UFGCameraModifierLimitFOV> mCameraModifierLimitFOV;
 
 	/** Camera modifier for limiting the look of the player */
 	UPROPERTY( Transient )
-	UFGCameraModifierLimitLook* mCameraModifierLimitLook;
+	TObjectPtr<UFGCameraModifierLimitLook> mCameraModifierLimitLook;
 
 	/** Level sequence player for the intro level sequence */
 	UPROPERTY( Transient, BlueprintReadOnly, Category = "Starting Pod" )
-	ALevelSequenceActor* mLevelSequenceActor;
+	TObjectPtr<ALevelSequenceActor> mLevelSequenceActor;
 
 	/** Cached previous owner, when the server wants to immediately end the level sequence */
 	UPROPERTY( Transient )
-	AActor* mPreviousOwner;
+	TObjectPtr<AActor> mPreviousOwner;
 
 	/** Spawn location of the drop pod as reported by the server before the intro sequence started playing. We do not replicate movement so we need to replicate it separately. */
 	UPROPERTY( Replicated )
 	FVector mDropPodSpawnLocation;
 
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 };

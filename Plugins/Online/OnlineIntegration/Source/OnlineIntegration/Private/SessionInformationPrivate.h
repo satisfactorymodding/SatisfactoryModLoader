@@ -1,4 +1,4 @@
-﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -22,8 +22,13 @@ public:
 	void SetSessionHost(UOnlineUserInfo* InUserInfo);
 	void SetSessionDefinition(USessionDefinition* InSessionDefinition);
 	void SetSessionProfile(const FName& InProfile); // <FL> [TranN] Required for the initial UpdatePresenceForSessionMembers()
+	void SetNumMaxConnections(int32 InNumMaxConnections);
 
 	virtual void RefreshCachedData(FDateTime UpdateTimestampUtc) override;
 	void InitializeSessionData(TSharedRef<const UE::Online::ISession> Session, UOnlineSessionBackendLink* Backend);
 	void SetGameSessionActor(AGameSession* GameSession);
+
+	void ReadCustomSettings(TSharedRef<const UE::Online::ISession> Session, UOnlineSessionBackendLink* Backend);
+	void UpdateFullCustomSettingsArray();
+
 };

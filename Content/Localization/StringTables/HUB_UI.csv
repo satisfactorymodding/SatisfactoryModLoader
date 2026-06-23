@@ -54,6 +54,8 @@ Please select a Tier ","","","UI","#interface
 "HUB/Props/CoffeeMachine","Coffee Machine","","","",""
 "HUB/Props/Faucet","Faucet","","","",""
 "HUB/Props/Microwave","Microwave","","","",""
+"HUB/Props/NewtonsCradle","Newton's Cradle","","","",""
+"HUB/Props/Speaker","Speaker","","","",""
 "HUB/Rewards/HandEquipmentSlots/1","+1 Hand Equipment Slot","","","UI","#buildable
 #interface
 #hub
@@ -178,6 +180,8 @@ Please select a Tier ","","","UI","#interface
 #interface
 #hub
 #tier"
+"HUB/Setting/LightIntensity","Disco Light Intensity","","","",""
+"HUB/Setting/LightTempo","Disco Light Tempo","","","",""
 "HUB/SpaceElevator/CompletePhase1","Complete Space Elevator Phase 1","","","UI","#buildable
 #space_elevator"
 "HUB/SpaceElevator/CompletePhase2","Complete Space Elevator Phase 2","","","UI","#buildable

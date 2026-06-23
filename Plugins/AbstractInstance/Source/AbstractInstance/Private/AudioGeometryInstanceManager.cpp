@@ -3,7 +3,6 @@
 
 #include "AudioGeometryInstanceManager.h"
 
-#include "Async.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 

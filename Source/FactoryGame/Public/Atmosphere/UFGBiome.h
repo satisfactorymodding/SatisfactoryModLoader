@@ -4,10 +4,9 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "FGCyclicCurve.h"
+#include "Engine/DataAsset.h"
 #include "UFGBiome.generated.h"
-
 
 UENUM()
 enum class EWeatherStateMask : uint8
@@ -24,8 +23,8 @@ ENUM_CLASS_FLAGS( EWeatherStateMask );
 /**
  * 
  */
-UCLASS(BlueprintType, Blueprintable, EditInlineNew, Category="Atmosphere & Weather")
-class FACTORYGAME_API UFGBiome : public UObject
+UCLASS(BlueprintType, EditInlineNew, Category="Atmosphere & Weather")
+class FACTORYGAME_API UFGBiome : public UDataAsset
 {
 	GENERATED_BODY()
 
@@ -33,12 +32,12 @@ public:
 	UFGBiome();
 
 	UPROPERTY( EditAnywhere )
-	UFGBiome* BaseBiome = nullptr;
+	TObjectPtr<UFGBiome> BaseBiome = nullptr;
 	
 	UPROPERTY( EditAnywhere )
 	FName DebugName;
 
-	UPROPERTY( EditAnywhere, Category = "Weather", meta = ( Bitmask, BitmaskEnum = "EWeatherStateMask" ) )
+	UPROPERTY( EditAnywhere, Category = "Weather", meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.EWeatherStateMask" ) )
 	uint8 WeatherStatesMask;
 
 	UPROPERTY()

@@ -46,7 +46,7 @@ protected:
 	UFGSignPixelInstanceManager::FSignHandle mSignHandle;
 
 	UPROPERTY()
-	UFGSignPixelInstanceManager* mPixelInstanceManager;
+	TObjectPtr<UFGSignPixelInstanceManager> mPixelInstanceManager;
 
 	UPROPERTY( SaveGame )
 	TArray< uint8 > mColorArray;
@@ -61,7 +61,7 @@ protected:
 
 	// The Mesh to be used as the pixel (origin should be at the center of the mesh)
 	UPROPERTY( EditDefaultsOnly, Category = "Pixel Sign" )
-	UStaticMesh* mPixelMesh;
+	TObjectPtr<UStaticMesh> mPixelMesh;
 
 	
 };

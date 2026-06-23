@@ -39,6 +39,7 @@ public:
 	virtual void ConfigureActor( AFGBuildable* inBuildable ) const override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual bool CanBeZooped() const override;
+	virtual bool IsZoopBuildModeSupported() const override;
 	virtual bool CanIntersectWithDesigner( AFGBuildableBlueprintDesigner* designer ) const override;
 	// End AFGHologram interface
 protected:
@@ -68,10 +69,10 @@ protected:
 	
 private:
 	UPROPERTY()
-	UStaticMeshComponent* mBeamMesh;
+	TObjectPtr<UStaticMeshComponent> mBeamMesh;
 
 	UPROPERTY()
-	TArray<UStaticMeshComponent*> mGeneratedComponents;
+	TArray<TObjectPtr<UStaticMeshComponent>> mGeneratedComponents;
 	
 	float mSize;
 

@@ -7,6 +7,7 @@
 #include "FGSaveManagerInterface.h"
 #include "FGClientSaveGameRequester.generated.h"
 
+struct FFGServerErrorResponse;
 struct FFGPendingClientRequest;
 
 UCLASS()
@@ -47,7 +48,7 @@ public:
 	static void Response_DeleteSaveSession( FFGServerErrorResponse& ErrorResponse, const FOnSaveMgrInterfaceDeleteSaveGameComplete& CompleteDelegate );
 
 	/** Enumerates all sessions on the server and returns them as a list */
-	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "Administrator" )
+	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "Administrator", FGSuppressClientAPIErrorPopup = "Timeout" )
 	FFGPendingClientRequest Request_EnumerateSessions();
 
 	/** Response to the session enumeration request */

@@ -6,4 +6,5 @@
 UFGNoneDescriptor::UFGNoneDescriptor() : Super() {
 	this->mDisplayName = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/None");
 	this->mDescription = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/None/Description");
+	this->mForm = EResourceForm::RF_INVALID;
 }

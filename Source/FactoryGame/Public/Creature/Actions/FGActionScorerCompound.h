@@ -24,5 +24,5 @@ public:
 protected:
 	/** The compounded scorer will succeed if all of these scorers succeed, and combine the score from every successful one. */
 	UPROPERTY( EditDefaultsOnly, Instanced )
-	TArray< UFGActionScorer* > mActionScorers;
+	TArray< TObjectPtr<UFGActionScorer> > mActionScorers;
 };

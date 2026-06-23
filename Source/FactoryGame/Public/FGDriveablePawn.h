@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "FGSaveInterface.h"
 #include "FGUnsafePawnRelocationInterface.h"
+#include "Input/FGBoundMappingContextHandle.h"
 #include "Replication/FGConditionalReplicationInterface.h"
 #include "FGDriveablePawn.generated.h"
 
@@ -151,6 +152,7 @@ protected:
 	void SetDriving( bool isDriving );
 
 	virtual void SetupPlayerInputComponent( UInputComponent* PlayerInputComponent ) override;
+	virtual void LeavesVehicle() {}
 	
 	/** Input Bindings */
 	UFUNCTION()
@@ -164,8 +166,6 @@ private:
 	
 	UFUNCTION()
 	void OnRep_Driver( AFGCharacterPlayer* previousDriver );
-
-	virtual void LeavesVehicle() {}
 	
 public:
 	/** True if the driver should be attached, false if this is a "remote controlled" pawn. */
@@ -182,7 +182,7 @@ public:
 
 	/** Animation to play on the character player when in the driver seat, set from FVehicleSeat */
 	UPROPERTY( EditDefaultsOnly, Category = "Driveable" )
-	class UAnimSequence* mDriverSeatAnimation;
+	TObjectPtr<class UAnimSequence> mDriverSeatAnimation;
 
 	/** Where to place the driver upon exiting (local space), set from FVehicleSeat */
 	UPROPERTY( EditDefaultsOnly, Category = "Driveable" )
@@ -202,9 +202,16 @@ protected:
 	/** Mapping context which is applied when entering. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
 	TObjectPtr< class UInputMappingContext > mMappingContext;
-
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
-	int32 mMappingContextPriority = 0;
+	TObjectPtr< class UInputMappingContext > mMappingContextToDisable;
+
+	/** [ZolotukhinN:05/08/2025] Bumped from 0 to 1 because vehicle actions should take precedence over default player actions (e.g. for vehicle docking) */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
+	int32 mMappingContextPriority{1};
+
+	/** Priority of the disabled override we put on player input mapping context */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="Input" )
+	int32 mDisabledMappingContextPriority{100};
 
 	/** Spring arm and camera components for the driver. */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Driveable" )
@@ -221,6 +228,9 @@ protected:
 
 	UPROPERTY( SaveGame )
 	bool mIsInUnsafeLoadLocation;
+
+	FBoundMappingContextHandle mMappingContextHandle;
+	FBoundMappingContextHandle mDisabledMappingContextHandle;
 	
 private:
 	/** If another driver is about to enter this vehicle. Used to not shutdown/startup the */
@@ -229,7 +239,7 @@ private:
 	//@todo Verify if vehicle should be occupied when client leaves or not.
 	/** The driver, not saved, pawns remember their last driven vehicle and enters it in begin play. */
 	UPROPERTY( ReplicatedUsing = OnRep_Driver )
-	class AFGCharacterPlayer* mDriver;
+	TObjectPtr<class AFGCharacterPlayer> mDriver;
 
 	/** Is this vehicle being driven. */
 	UPROPERTY( ReplicatedUsing = OnRep_IsDriving )

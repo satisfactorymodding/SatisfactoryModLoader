@@ -875,7 +875,7 @@ class FACTORYGAME_API UFGCDElevatorIsOccupied : public UFGConstructDisqualifier
 
 	UFGCDElevatorIsOccupied()
 	{
-		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Elevator/Occupied" );
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/DismantleMode/OccupiedElevator" );
 	}
 };
 
@@ -900,6 +900,29 @@ class FACTORYGAME_API UFGCDElevatorStopUpgradeMustChange : public UFGConstructDi
 		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Elevator/ElevatorStopUpgradeMustChange" );
 	}
 };
+
+UCLASS()
+class FACTORYGAME_API UFGCDDockingStationInvalidDockingPathNodeElevation : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDDockingStationInvalidDockingPathNodeElevation()
+	{
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Vehicles/InvalidDockingNodeElevation" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDIncompatibleVehiclePathSegment : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDIncompatibleVehiclePathSegment()
+	{
+		mDisqfualifyingText = LOCTABLE( "Messages_UI", "ConstructDisqualifiers/Vehicles/IncompatiblePath" );
+	}
+};
+
 
 #undef LOCTEXT_NAMESPACE
 

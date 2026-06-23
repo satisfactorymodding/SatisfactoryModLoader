@@ -87,7 +87,7 @@ bool AFGBlueprintSubsystem::ReadBlueprintFromDisc(const FString& blueprintName){
 void AFGBlueprintSubsystem::EnumerateBlueprints(){ }
 void AFGBlueprintSubsystem::EnumerateBlueprintConfigs(){ }
 void AFGBlueprintSubsystem::FindBlueprintHeaders(FString blueprintDir, TArray< FBlueprintHeader >& out_Headers){ }
-void AFGBlueprintSubsystem::LoadStoredBlueprint(UFGBlueprintDescriptor* blueprintDesc, const FTransform& blueprintOrigin, TArray<class AFGBuildable*>& out_spawnedBuildables, bool useBlueprintWorld, class AFGBuildableBlueprintDesigner*, APawn* instigator, class AFGBlueprintProxy* blueprintProxy, const TFunction<void(AFGBuildable*, int32)>& buildablePostSerializeCallback){  }
+void AFGBlueprintSubsystem::LoadStoredBlueprint(UFGBlueprintDescriptor* blueprintDesc, const FTransform& blueprintOrigin, TArray<class AFGBuildable*>& out_spawnedBuildables, bool useBlueprintWorld, class AFGBuildableBlueprintDesigner*, APawn* instigator, class AFGBlueprintProxy* blueprintProxy, const TFunction<void(AFGBuildable*, int32)>& buildablePostSerializeCallback, const TFunction<void()>& preBeginPlayCallback){ }
 void AFGBlueprintSubsystem::CollectObjects(TArray<  AFGBuildable* >& buildables, TArray< UObject* >& out_objectsToSerialize){ }
 FString AFGBlueprintSubsystem::GetSessionBlueprintPath(){ return FString(); }
 FString AFGBlueprintSubsystem::SanitizeBlueprintFileName(const FString& blueprintName){ return FString(); }
@@ -114,7 +114,7 @@ void AFGBlueprintSubsystem::FindSubcategoryAndAddBlueprintDescriptor(UFGBlueprin
 void AFGBlueprintSubsystem::RemoveBlueprintDescriptorFromSubCategory(UFGBlueprintDescriptor* blueprintDesc){ }
 void AFGBlueprintSubsystem::RebuildCategoryRecordsFromDescriptors(TArray< FBlueprintCategoryRecord >& out_categoryRecords){ }
 UFGBlueprintCategory* AFGBlueprintSubsystem::CreateBlueprintCategory(const FBlueprintCategoryRecord& record){ return nullptr; }
-UFGBlueprintCategory* AFGBlueprintSubsystem::CreateBlueprintCategory(FText categoryName, int32 iconID, float menuPriority, TArray<FLocalUserNetIdBundle> createdBy){ return nullptr; }
+UFGBlueprintCategory* AFGBlueprintSubsystem::CreateBlueprintCategory(FText categoryName, int32 iconID, float menuPriority, FPlayerInfoHandle createdBy){ return nullptr; }
 UFGBlueprintSubCategory* AFGBlueprintSubsystem::CreateBlueprintSubCategory(const FBlueprintSubCategoryRecord& record){ return nullptr; }
 FBlueprintCategoryRecord& AFGBlueprintSubsystem::FindOrAddCategoryRecordForCategory(UFGBlueprintCategory* category){ return *(new FBlueprintCategoryRecord); }
 void AFGBlueprintSubsystem::FindOrAddBlueprintRecordFromHeader(const FBlueprintHeader& header, FBlueprintRecord& out_record){ }

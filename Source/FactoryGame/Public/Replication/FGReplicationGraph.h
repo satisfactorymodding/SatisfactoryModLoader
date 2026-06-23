@@ -37,10 +37,10 @@ struct FConnectionAlwaysRelevant_NodePair
 	bool operator==( const UNetConnection* InConnection ) const { return InConnection == NetConnection; }
 
 	UPROPERTY()
-	UNetConnection* NetConnection = nullptr;
+	TObjectPtr<UNetConnection> NetConnection = nullptr;
 
 	UPROPERTY()
-	UReplicationGraphNode_AlwaysRelevant_ForConnection* Node = nullptr;
+	TObjectPtr<UReplicationGraphNode_AlwaysRelevant_ForConnection> Node = nullptr;
 };
 
 class UReplicationGraphNode_GridSpatialization2D;
@@ -68,32 +68,32 @@ public:
 	void InitClassReplicationInfo( struct FClassReplicationInfo& classInfo, UClass* inClass, bool isSpatialized, int32 NetServerMaxTickRate );
 
 	UPROPERTY()
-	TArray<UClass*> mSpatializedClasses;
+	TArray<TObjectPtr<UClass>> mSpatializedClasses;
 
 	UPROPERTY()
-	TArray<UClass*> mNonSpatializedClasses;
+	TArray<TObjectPtr<UClass>> mNonSpatializedClasses;
 
 	UPROPERTY()
-	TArray<UClass*> mAlwaysRelevantClasses;
+	TArray<TObjectPtr<UClass>> mAlwaysRelevantClasses;
 
 	/** Grid Node that divides the map into grids and determines if an actor should send network updates to a connection depending on the different pre-defined grids. */
 	UPROPERTY()
-	UReplicationGraphNode_GridSpatialization2D* mGridNode;
+	TObjectPtr<UReplicationGraphNode_GridSpatialization2D> mGridNode;
 
 	/** Grid Node that is dedicated for more Dynamic actors ie. Pawns / Characters */
 	UPROPERTY()
-	UReplicationGraphNode_GridSpatialization2D* mPrioritizedGridNode;
+	TObjectPtr<UReplicationGraphNode_GridSpatialization2D> mPrioritizedGridNode;
 
 	/** Node that holds a list of actors that are always Net Relevant. */
 	UPROPERTY()
-	UFGReplicationGraphNode_AlwaysRelevantWithDormancy* mAlwaysRelevantNode;
+	TObjectPtr<UFGReplicationGraphNode_AlwaysRelevantWithDormancy> mAlwaysRelevantNode;
 
 	UPROPERTY()
-	class UFGReplicationGraphNode_ConditionallyAlwaysRelevant* mConditionalRelevancyNode;
+	TObjectPtr<class UFGReplicationGraphNode_ConditionallyAlwaysRelevant> mConditionalRelevancyNode;
 
 	/** Node holds all player states and cycles through them so they do not all attempt replication every frame */
 	UPROPERTY()
-	UFGReplicationGraphNode_PlayerStateFrequencyLimiter* mPlayerStateNode;
+	TObjectPtr<UFGReplicationGraphNode_PlayerStateFrequencyLimiter> mPlayerStateNode;
 
 	UPROPERTY()
 	TArray<FConnectionAlwaysRelevant_NodePair> mAlwaysRelevantForConnectionList;
@@ -112,7 +112,7 @@ protected:
 	 
 	/** Class types of equipment who's dependency to the pawn shouldn't be removed if they're unequipped. */
 	UPROPERTY()
-	TSet<UClass*> mPersistentDependencyClasses;
+	TSet<TObjectPtr<UClass>> mPersistentDependencyClasses;
 
 	// Actor Dependencies
 	/** Callback on when a train replication actor is added to the game so we can add the vehicles in the consist as dependencies. */
@@ -173,7 +173,7 @@ protected:
 private:
 	/** Actors that are only supposed to replicate to their owning connection, but that did not have a connection on spawn */
 	UPROPERTY()
-	TArray<AActor*> mActorsWithoutNetConnection;
+	TArray<TObjectPtr<AActor>> mActorsWithoutNetConnection;
 
 	UReplicationGraphNode_AlwaysRelevant_ForConnection* GetAlwaysRelevantNodeForConnection( UNetConnection* Connection );
 };
@@ -194,7 +194,7 @@ public:
 	void RemoveActor(const FNewReplicatedActorInfo& ActorInfo);
 protected:
 	UPROPERTY()
-	UReplicationGraphNode_DormancyNode* mDormancyNode;
+	TObjectPtr<UReplicationGraphNode_DormancyNode> mDormancyNode;
 	
 	void OnActorDormancyChanged(AActor* Actor, FGlobalActorReplicationInfo& GlobalInfo, ENetDormancy NewValue, ENetDormancy OldValue);
 	

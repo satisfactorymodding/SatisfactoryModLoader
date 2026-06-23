@@ -27,11 +27,11 @@ public:
 public:
 	/** The collection containing the world bounds*/
 	UPROPERTY( EditDefaultsOnly )
-	class UMaterialParameterCollection* mWorldBoundsParameters;
+	TObjectPtr<class UMaterialParameterCollection> mWorldBoundsParameters;
 
 	/** The collection containing weather parameters like wind direction */
 	UPROPERTY( EditDefaultsOnly )
-	class UMaterialParameterCollection* mWeatherParameters;
+	TObjectPtr<class UMaterialParameterCollection> mWeatherParameters;
 
 	/** The parameter name of Min of mWorldBoundsParameters */
 	static FName WorldBoundsMinName;

@@ -168,7 +168,7 @@ struct FHologramGraphAStar
 		int32 PopIndex( bool bAllowShrinking = true )
 		{
 			int32 SearchNodeIndex = INDEX_NONE;
-			HeapPop( SearchNodeIndex, NodeSorter, /*bAllowShrinking = */false );
+			HeapPop( SearchNodeIndex, NodeSorter, EAllowShrinking::No );
 			NodePool[ SearchNodeIndex ].MarkNotOpened();
 			return SearchNodeIndex;
 		}

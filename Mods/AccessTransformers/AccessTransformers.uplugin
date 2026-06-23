@@ -10,5 +10,15 @@
 			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
-	]
+	],
+	"Description": "Make accessors, U-macro edits, and more without modifying the game headers",
+	"CreatedBy": "Mircea Roata",
+	"CreatedByURL": "",
+	"DocsURL": "https://docs.ficsit.app/satisfactory-modding/latest/Development/ModLoader/AccessTransformers.html",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false
 }

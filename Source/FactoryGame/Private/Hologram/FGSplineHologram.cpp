@@ -10,12 +10,12 @@ AFGSplineHologram::AFGSplineHologram() : Super() {
 	this->mSplineComponent->SetMobility(EComponentMobility::Movable);
 	this->mSplineData.Emplace();
 	this->mSplineData[0].Location = FVector::ZeroVector;
-	this->mSplineData[0].ArriveTangent = FVector((1, 0, 0));
-	this->mSplineData[0].LeaveTangent = FVector((1, 0, 0));
+	this->mSplineData[0].ArriveTangent = FVector(1, 0, 0);
+	this->mSplineData[0].LeaveTangent = FVector(1, 0, 0);
 	this->mSplineData.Emplace();
 	this->mSplineData[1].Location = FVector::ZeroVector;
-	this->mSplineData[1].ArriveTangent = FVector((1, 0, 0));
-	this->mSplineData[1].LeaveTangent = FVector((1, 0, 0));
+	this->mSplineData[1].ArriveTangent = FVector(1, 0, 0);
+	this->mSplineData[1].LeaveTangent = FVector(1, 0, 0);
 	this->mBuildStep = ESplineHologramBuildStep::SHBS_FindStart;
 	this->mSplineComponent->SetupAttachment(RootComponent);
 }

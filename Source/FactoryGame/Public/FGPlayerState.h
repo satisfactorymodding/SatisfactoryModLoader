@@ -9,6 +9,7 @@
 #include "FGFactoryColoringTypes.h"
 #include "FGHotbarShortcut.h"
 #include "FGInventoryToRespawnWith.h"
+#include "OnlinePlayerStateIdentityInterface.h"
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/Interface_ActorSubobject.h"
 #include "Online/ClientIdentification.h"
@@ -17,6 +18,7 @@
 #include "UI/Message/FGMessageBase.h"
 #include "FGPlayerState.generated.h"
 
+class APlayerStart;
 enum class ESchematicUnlockFlags : uint8;
 class UFGPlayerHotbar;
 class UFGShoppingListComponent;
@@ -180,7 +182,7 @@ public:
 protected:
 	/** Shortcuts that this hotbar has, fixed size and with potential null pointers. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_Shortcuts )
-	TArray< UFGHotbarShortcut* > mShortcuts;
+	TArray< TObjectPtr<UFGHotbarShortcut> > mShortcuts;
 	
 private:
 	
@@ -195,7 +197,7 @@ struct FACTORYGAME_API FHotbar
 	GENERATED_BODY();
 	
 	UPROPERTY( SaveGame )
-	TArray< class UFGHotbarShortcut* > HotbarShortcuts;
+	TArray< TObjectPtr<class UFGHotbarShortcut> > HotbarShortcuts;
 };
 
 USTRUCT()
@@ -256,7 +258,7 @@ struct FPlayerRules
 };
 
 UCLASS()
-class FACTORYGAME_API AFGPlayerState final : public APlayerState, public IFGSaveInterface
+class FACTORYGAME_API AFGPlayerState final : public APlayerState, public IFGSaveInterface, public IOnlinePlayerStateIdentityInterface
 {
 	GENERATED_BODY()
 public:
@@ -274,8 +276,7 @@ public:
 	// Begin APlayerState interface
 	virtual void CopyProperties( APlayerState* playerState ) override;
 	virtual void ClientInitialize(AController* C) override;
-	virtual void RegisterPlayerWithSession(bool bWasFromInvite) override;
-	virtual void UnregisterPlayerWithSession() override;
+	virtual void OnRep_PlayerName() override;
 	// End APlayerState interface
 
 	// Begin IFGSaveInterface
@@ -288,18 +289,22 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
-	// <FL> [TranN] The purpose of these two is to fix a crash when a new player joins.
-	// However, RegisterPlayerWithSessionRemote() is not called consistently on the client side leading to missing players in session player list.
-	// And the crash can be fixed by checking mIsOnline
-	// void RegisterPlayerWithSessionRemote(bool bWasFromInvite);
-	// void RegisterPlayerWithSessionAuthoritative(bool bWasFromInvite);
-	// </FL>
+	// Begin IOnlinePlayerStateIdentityInterface
+	virtual UE::Online::FAccountId GetPlatformAccountId() const override;
+	virtual FString GetPlatformNickname() const override;
+	UFUNCTION( BlueprintCallable )
+	virtual FString GetPlatformAvatarURL() const override;
+	// End IOnlinePlayerStateIdentityInterface
 	
 	/** Set the pawn we controls (it should be the character, not a vehicle) */
 	FORCEINLINE void SetOwnedPawn( class APawn* pawn ){ mOwnedPawn = pawn; }
 
 	/** Get the character we control (not a vehicle) */
 	FORCEINLINE class APawn* GetOwnedPawn() const{ return mOwnedPawn; }
+
+	/** Attempts to resolve the player character currently being controlled by the player controller controlling the player state */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Player" )
+	AFGCharacterPlayer* GetControlledPlayerCharacter() const;
 
 	/** Return true if we have received our initial items */
 	FORCEINLINE bool HasReceiveInitialItems() const { return mHasReceivedInitialItems; }
@@ -316,7 +321,7 @@ public:
 	FORCEINLINE void SetSlotNum( const int32 slotNr ){ mSlotNum = slotNr; }
 	
 	/** Set the color data for this player */
-	void SetPlayerColorData( FPlayerColorData slotData );
+	void SetPlayerColorData( const FPlayerColorData& slotData );
 
 	/** get the color data for this player */
 	FORCEINLINE FPlayerColorData GetSlotData() const { return mPlayerColorData; }
@@ -367,6 +372,9 @@ public:
 	void Server_MarkMessageAsPlayed( class UFGMessage* message );
 	/** Retrieves all important messages played so far and marks them as played. Useful for players who join mid-game */
 	void FetchImportantMessages();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsValidActivePlayerState() const;
 
 	/**
 	 * Updates the index of the currently selected hotbar for this player
@@ -461,7 +469,7 @@ public:
 	
 	/** Get if the central storage widget is expanded in the player inventory widget */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|CentralStorage" )
-	FORCEINLINE bool IsCentralStorageInventoryWidgetExpanded() { return mCentralStorageInventoryWidgetExpanded; }
+	FORCEINLINE bool IsCentralStorageInventoryWidgetExpanded() const { return mCentralStorageInventoryWidgetExpanded; }
 
 	/** Set if the central storage widget is expanded in the player inventory widget */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|CentralStorage" )
@@ -473,7 +481,11 @@ public:
 
 	/** Get the item categories that the user have collapsed in manufacturing widgets  */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|ItemCategory" )
-	FORCEINLINE TArray< TSubclassOf< class UFGItemCategory > > GetCollapsedItemCategories() { return mCollapsedItemCategories; }
+	const TArray<TSubclassOf<class UFGItemCategory>>& GetCollapsedItemCategories() const { return mCollapsedItemCategories; }
+
+	/** Returns true if the given item category is collapsed */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|ItemCategory" )
+	bool IsItemCategoryCollapsed(TSubclassOf<UFGItemCategory> itemCategory) const;
 
 	/** Set if an item category is collapsed in manufacturing widgets  */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|ItemCategory" )
@@ -651,13 +663,13 @@ public:
 	void UpdateHotbarShortcutsForMaterialDesc( TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > newDefaultMaterialDesc );
 
 	UFUNCTION( BlueprintCallable, Category = "Todo List" )
-	void SetPublicTodoList( const FString& newTodoList, const TArray< FLocalUserNetIdBundle >& lastEditedBy );
+	void SetPublicTodoList( const FString& newTodoList, const FPlayerInfoHandle& lastEditedBy );
 	
 	UFUNCTION( Server, Reliable )
-	void Server_SetPublicTodoList( const FString& newTodoList, const TArray< FLocalUserNetIdBundle >& lastEditedBy );
+	void Server_SetPublicTodoList( const FString& newTodoList, const FPlayerInfoHandle& lastEditedBy );
 	
 	UFUNCTION( Client, Reliable )
-	void Client_UpdatePublicTodoList( const FString& updatedTodoList, const TArray< FLocalUserNetIdBundle >& lastEditedBy );
+	void Client_UpdatePublicTodoList( const FString& updatedTodoList, const FPlayerInfoHandle& lastEditedBy );
 	
 	UFUNCTION( BlueprintCallable, Category = "Todo List" )
 	void SetPrivateTodoList( const FString& newTodoList );
@@ -669,7 +681,7 @@ public:
 	FString GetPublicTodoList() const;
 //<FL>[KonradA]
 	UFUNCTION( BlueprintPure, Category = "Todo List" )
-	TArray<FLocalUserNetIdBundle> GetPublicTodoListLastEditedBy() const;
+	FPlayerInfoHandle GetPublicTodoListLastEditedBy() const;
 //</FL>
 	UFUNCTION( BlueprintPure, Category = "Todo List" )
 	FString GetPrivateTodoList() const { return mPrivateTodoList; }
@@ -753,9 +765,17 @@ public:
 	void Internal_NotifyPlayerSpecificSchematicsPurchased( const TArray<TSubclassOf<UFGSchematic>>& schematics, ESchematicUnlockFlags unlockFlags );
 
 	void SetClientIdentity(const FClientIdentityInfo& clientIdentity);
+
+	/** Returns the client identity associated with this player state. Client identity allows building associations between player states and player controllers */
 	const FClientIdentityInfo& GetClientIdentity() const;
 
-	void SetOnlineState( bool isPlayerOnline );
+	/** Returns the handle to the player info for the online platform the player has logged in with last time */
+	UFUNCTION(BlueprintPure, Category = "FactoryGame|Player" )
+	FORCEINLINE FPlayerInfoHandle GetPlatformPlayerInfo() const { return mPlatformPlayerInfoHandle; }
+	
+	/** Updates the platform info for the player that has possessed this player state last */
+	void SetPlatformPlayerInfo( const FPlayerInfoHandle& newPlatformPlayerInfo );
+
 	UFUNCTION( BlueprintCallable )
 	class UFGPhotoModeComponent* GetPhotoModeComponent() const { return mPhotoModeComponent; }
 	
@@ -765,7 +785,10 @@ public:
 
 	void SetLastSafeCharacterLocation( const FVector& lastLoc ) { mLastSafeCharacterLocation = lastLoc; }
 	const FVector& GetLastSafeCharacterLocation() const { return mLastSafeCharacterLocation; }
-	
+
+	virtual void RegisterPlayerWithSession( bool bFromInvite ) override;
+	virtual void UnregisterPlayerWithSession() override;
+
 protected:
 	void Native_OnFactoryClipboardCopied( UObject* object, class UFGFactoryClipboardSettings* factoryClipboard );
 	void Native_OnFactoryClipboardPasted( UObject* object, class UFGFactoryClipboardSettings* factoryClipboard );
@@ -787,7 +810,7 @@ protected:
 
 	UFUNCTION()
 	void OnRep_IsServerAdmin();
-	
+
 	void CreateDefaultHotbars();
 
 	/** Updates the recipe of the provided shortcut on the server side */
@@ -835,60 +858,10 @@ private:
 	void UnsubscribeFromHotbar( UFGPlayerHotbar* hotbar );
 	void OnShortcutConstructed( UFGHotbarShortcut* shortcut );
 	void OnShortcutDestroyed( UFGHotbarShortcut* shortcut );
-	
-	// <FL> [TranN] See mPlayingPlatformName
-	UFUNCTION( Server, Reliable )
-	void Server_SetPlayingPlatformName( const FName& platformName );
-
-	// <FL> [MartinC] mPlatformAvatarURL
-	UFUNCTION( Server, Reliable )
-	void Server_SetPlatformAvatarURL( const FString& avatarURL );
-
-
-
-	//<FL>[KonradA]
-	UFUNCTION( Server, Reliable )
-	void Server_SetPlatformAccountIdString(const FString& stringAccountId );
 
 public: 
-	UE::Online::FAccountId GetPlatformAccountId(bool bForceFromReplication) const;
-	virtual UE::Online::FAccountId GetPlatformAccountId() const override;
-	USessionMemberInformation* GetSessionMemberInformation() const;
-
-private:
-	//</FL>
-
-
-	UFUNCTION()
-	void OnRep_PlayingPlatformName();
-
-	//<FL> [MartinC] Handle mPlatformAvatarURL replication
-	UFUNCTION()
-	void OnRep_PlatformAvatarURL();
-
-	//<FL> [MartinC] If needed, cache the texture for the mPlatformAvatarURL direction
-	void CachePlatformAvatar();
-	//</FL>
-
-	UFUNCTION()
-	void OnPlatformAvatarDownloaded( UTexture2DDynamic* DownloadedTexture );
-
-	// </FL>
-	// <FL> [TranN]
-	UFUNCTION( Server, Reliable )
-	void Server_SetPlayerNames( const TArray<struct FServiceNameAndPlayerName>& playerNames );
-	// </FL>
-
-	
 	friend class UFGPlayerHotbar;
 
-//<FL>[KonradA]
-public:
-	UFUNCTION()
-	FString GetPlayingPlatformName() const { return mPlayingPlatformName.ToString(); }
-//</FL>
-
-public:
 	/** Broadcast when a buildable or decor has been constructed. */
 	UPROPERTY( BlueprintAssignable, Category = "Build", DisplayName = "OnBuildableConstructed" )
 	FOnBuildableConstructedNew BuildableConstructedDelegate;
@@ -925,20 +898,6 @@ public:
 	/** Holds the item stacks that the player can get copied to their inventory on respawn. */
 	UPROPERTY( SaveGame )
 	FInventoryToRespawnWith mInventoryToRespawnWith;
-
-	// <FL> [TranN]
-	// In a crossplay session, a player's primary backend might not be the platform he's playing on.
-	// e.g. If you are playing on platform A and your friend has an Epic account that is linked to platform A and B.
-	//      Even when he is playing on platform B, his primary backend is still A from your perspective. This variable is used to address that.
-	UPROPERTY( ReplicatedUsing=OnRep_PlayingPlatformName, BlueprintReadOnly )
-	FName mPlayingPlatformName;
-
-	// <FL> [MartinC] URL direction for the profile picture of the platform account     
-	UPROPERTY( ReplicatedUsing = OnRep_PlatformAvatarURL, BlueprintReadOnly )
-	FString mPlatformAvatarURL;
-
-	USessionMemberInformation* mSessionMemberInformation;
-	// </FL>
 private:
 	/** Legacy hotbars in the game */
 	UPROPERTY( SaveGame )
@@ -950,7 +909,7 @@ private:
 protected:
 	/** Hotbars that the player has, in the new format */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_PlayerHotbars )
-	TArray< UFGPlayerHotbar* > mPlayerHotbars;
+	TArray< TObjectPtr<UFGPlayerHotbar> > mPlayerHotbars;
 	
 	/** The index of the current hotbar*/
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CurrentHotbarIndex )
@@ -1004,7 +963,7 @@ protected:
 
 	/** Pawn we should take control of when rejoining game/loading game */
 	UPROPERTY( SaveGame )
-	class APawn* mOwnedPawn;
+	TObjectPtr<class APawn> mOwnedPawn;
 
 	/** Set to true after we have received our initial items */
 	UPROPERTY( SaveGame )
@@ -1030,18 +989,22 @@ protected:
 
 	/** Recipe producers the recipes of which we want to track as "New Recipe" */
 	UPROPERTY( EditDefaultsOnly, Category = "Recipe Tracking", meta = (MustImplement = "/Script/FactoryGame.FGRecipeProducerInterface") )
-	TArray<UClass*> mTrackedRecipeProducers;
+	TArray<TObjectPtr<UClass>> mTrackedRecipeProducers;
 
+	/** Cached client identification information used to find the player state to give to a particular player controller on join */
 	UPROPERTY( SaveGame )
 	FClientIdentityInfo mClientIdentityInfo;
 
+	/** Handle to the player info for the platform the player who owns this player state has logged in from last time (or is currently logged in from) */
+	UPROPERTY( SaveGame, Replicated )
+	FPlayerInfoHandle mPlatformPlayerInfoHandle;
+
 	UPROPERTY( EditDefaultsOnly )
-	UFGPhotoModeComponent* mPhotoModeComponent;
-	
+	TObjectPtr<UFGPhotoModeComponent> mPhotoModeComponent;
 private:
 	/** All messages that have been played for this player */
 	UPROPERTY( SaveGame, Replicated )
-	TArray< class UFGMessage* > mPlayedMessages;
+	TArray< TObjectPtr<class UFGMessage> > mPlayedMessages;
 
 	/** List of equipment classes that have been equipped at least once. */
 	UPROPERTY( SaveGame, Replicated )
@@ -1068,7 +1031,7 @@ private:
 	TArray< TSubclassOf< class UFGItemCategory > > mCollapsedItemCategories;
 	
 	UPROPERTY( SaveGame, Replicated )
-	TArray< ERepresentationType > mFilteredOutMapTypes;
+	TArray< ERepresentationType > mFilteredOutMapTypes; 
 	
 	UPROPERTY( SaveGame, Replicated )
 	TArray< ERepresentationType > mFilteredOutCompassTypes;
@@ -1100,13 +1063,13 @@ private:
 	FString mPrivateTodoList;
 	
 	UPROPERTY( SaveGame, Replicated )
-	class UFGShoppingListComponent* mShoppingListComponent;
+	TObjectPtr<class UFGShoppingListComponent> mShoppingListComponent;
 
 	/** The current factory clipboard. Used to copy and paste settings between buildings. Buildings with the same key use can copy/paste between each other.
 	 *	The key is usually the most derived class for the building/object but can be changed by developers to share key with other buildings. Key could be any UObject subclass.
 	 */
 	UPROPERTY( Transient )
-	TMap< TSubclassOf<UObject>, class UFGFactoryClipboardSettings* > mFactoryClipboard;
+	TMap< TSubclassOf<UObject>, TObjectPtr<class UFGFactoryClipboardSettings> > mFactoryClipboard;
 
 	/** Track whether or not we opened a widget */
 	UPROPERTY( Transient ) 
@@ -1125,10 +1088,11 @@ private:
 	/** Maximum number of item stacks to keep in the inventory as a result of dismantle */
 	UPROPERTY( SaveGame, Replicated )
 	int32 mMaxDismantleStacksInInventory;
-	
-	UPROPERTY( Replicated ) 
-	bool mIsOnline;
 
 	UPROPERTY( SaveGame )
 	FVector mLastSafeCharacterLocation;
+
+public:
+	UPROPERTY( BlueprintReadWrite, Category = "BuildGunState|Build" )
+	bool mIsSnapModeEnabledForGamepad;
 };

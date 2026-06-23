@@ -208,7 +208,7 @@ protected:
 	
 	/** Rotating component for projectiles that need rotation when thrown */
 	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
-	class URotatingMovementComponent* mRotatingMovementComp;
+	TObjectPtr<class URotatingMovementComponent> mRotatingMovementComp;
 
 	/** What class to use for spawning cluster projectiles. */
 	UPROPERTY( EditDefaultsOnly, Category = "Projectile|Cluster" )
@@ -240,7 +240,7 @@ protected:
 	
 	/** The target of the projectile. */
 	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_TargetActor, Category = "Projectile" )
-	AActor* mTargetActor;
+	TObjectPtr<AActor> mTargetActor;
 	
 	/** Location we are aiming at ( if any ) */
 	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_TargetLocation, Category = "Projectile" )
@@ -250,13 +250,13 @@ protected:
 	bool mIsHomingProjectile;
 
 	UPROPERTY( BlueprintReadOnly, Replicated, SaveGame, Category = "Projectile" )
-	class UFGAmmoTypeProjectile* mSourceAmmoDescriptor;
+	TObjectPtr<class UFGAmmoTypeProjectile> mSourceAmmoDescriptor;
 
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Damage" )
-	TArray< UFGDamageType* > mDamageTypesOnImpact;
+	TArray< TObjectPtr<UFGDamageType> > mDamageTypesOnImpact;
 
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Damage" )
-	TArray< UFGDamageType* > mDamageTypesAtEndOfLife;
+	TArray< TObjectPtr<UFGDamageType> > mDamageTypesAtEndOfLife;
 
 	UPROPERTY( EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "Projectile" )
 	FRuntimeFloatCurve mGravityScaleOverLifespan;
@@ -305,11 +305,11 @@ private:
 	
 	/** Sphere collision component */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Projectile" )
-	class USphereComponent* mCollisionComp;
+	TObjectPtr<class USphereComponent> mCollisionComp;
 
 	/** Projectile movement component */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true") )
-	class UFGProjectileMovementComponent* mProjectileMovement;
+	TObjectPtr<class UFGProjectileMovementComponent> mProjectileMovement;
 
 	/** Was projectile fired by a weapon */
 	bool mWasFiredByWeapon;

@@ -9,6 +9,7 @@ FFGServerErrorResponse UFGServerManagementController::Handler_RenameServer(const
 FFGServerErrorResponse UFGServerManagementController::Handler_SetClientPassword(const FString& Password) const { return FFGServerErrorResponse(); }
 FFGServerErrorResponse UFGServerManagementController::Handler_SetAdminPassword(const FString& Password, FString& OutAuthenticationToken, const FFGRequestHandlerContextWrapper& RequestContext) const { return FFGServerErrorResponse(); }
 void UFGServerManagementController::Handler_SetAutoLoadSessionName(const FString& SessionName) const {}
+void UFGServerManagementController::Handler_SetAgreeToCrashUploadRequested(bool AgreeToCrashUploadRequested) const{ }
 bool UFGServerManagementController::Handler_RunCommand(const FString& Command, FString& OutCommandResult) const { return false; }
 void UFGServerManagementController::Handler_Shutdown(const FFGRequestHandlerContextWrapper& RequestContext) {}
 void UFGServerManagementController::Handler_ApplyServerOptions(const TMap<FString, FString>& UpdatedServerOptions) const {}

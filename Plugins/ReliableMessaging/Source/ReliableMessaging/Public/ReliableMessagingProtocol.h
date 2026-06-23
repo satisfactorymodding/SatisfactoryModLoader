@@ -1,6 +1,10 @@
-﻿#pragma once
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
+
+#pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "Misc/AutomationTest.h"
 #include "Serialization/MemoryReader.h"
 #include "Containers/Queue.h"
 #include "Serialization/MemoryWriter.h"
@@ -16,6 +20,14 @@ enum class EReliableDataProtocolOpCode : uint8
 	 **/
 	Handshake,
 	/**
+	 * Registers a gameplay tag to an internal protocol id for this connection.
+	 * Payload:
+	 * 4 bytes: InternalTagId
+	 * 4 bytes: UTF-8 byte length of tag name
+	 * N bytes: UTF-8 tag name
+	 */
+	TagRegistration,
+	/**
 	 * The initial message chunk is exactly what its name suggests. In addition to being like any other chunk, it also contains the total size of the message.
 	 * We have a separate type for it to avoid sending the total size with every chunk. If the entire message fits in one chunk, this will also be the last chunk.
 	 */
@@ -30,7 +42,12 @@ enum class EReliableDataProtocolOpCode : uint8
 	 * 8 bytes * NumChunks: The message ids that we acknowledge for.
 	 * 4 bytes * NumChunks: The chunk indexes that we acknowledge for. One for every message id. The assumption is that if chunk n is acknowledged, all chunks before it are also acknowledged. We can make that assumption since we are using a reliable transport layer.
 	 */
-	Ack
+	Ack,
+	/**
+	 * Keep alive message. This is sent periodically to keep the connection alive. It has no payload.
+	 * At the moment this is not handled by the reader except for skipping it. It's only meant to convince NATs and firewalls that the connection is still alive.
+	 */
+	KeepAlive
 };
 
 namespace RDTProtocol
@@ -45,11 +62,11 @@ namespace RDTProtocol
 	 */
 	struct RELIABLEMESSAGING_API FMessageHeader
 	{
-		static constexpr uint32 SerializedSize = sizeof(MessageIdType) + sizeof(uint8) + sizeof(SizeType);
+		static constexpr uint32 SerializedSize = sizeof(MessageIdType) + sizeof(int32) + sizeof(SizeType);
 		/** A message id used to internally track messages. */
 		MessageIdType MessageId;
-		/** The channel id that this message is associated with. */
-		uint8 ChannelId;
+		/** Internal protocol id for a registered gameplay tag. */
+		int32 InternalTagId = INDEX_NONE;
 		/** The *TOTAL* length of the message. */
 		SizeType Length;
 	};
@@ -57,16 +74,16 @@ namespace RDTProtocol
 	struct RELIABLEMESSAGING_API FMessage
 	{
 		FMessage() = default;
-		explicit FMessage(const FMessageHeader& InHeader)
+		explicit FMessage(const FMessageHeader& InHeader, FGameplayTag InTag)
 			: MessageId(InHeader.MessageId)
-			, ChannelId(InHeader.ChannelId)
+			, Tag(InTag)
 		{
 			Data.SetNumUninitialized(InHeader.Length);
 		}
 
-		FMessage(const uint64 InMessageId, const uint8 InChannelId, TArray<uint8>&& InData)
+		FMessage(const uint64 InMessageId, FGameplayTag InTag, TArray<uint8>&& InData)
 			: MessageId(InMessageId)
-			, ChannelId(InChannelId)
+			, Tag(InTag)
 			, Data(MoveTemp(InData))
 		{
 		}
@@ -78,17 +95,17 @@ namespace RDTProtocol
 		FMessage& operator=(FMessage&&) = default;
 
 		MessageIdType MessageId = std::numeric_limits<MessageIdType>::max();
-		uint8 ChannelId = std::numeric_limits<uint8>::max();
+		FGameplayTag Tag;
 		TArray<uint8> Data;
 	};
 
 	struct RELIABLEMESSAGING_API FChunkHeader
 	{
-		static constexpr uint32 SerializedSize = sizeof(MessageIdType) + sizeof(uint8) + sizeof(SizeType);
+		static constexpr uint32 SerializedSize = sizeof(MessageIdType) + sizeof(int32) + sizeof(SizeType);
 		/* Same as the message id from the message header */
 		MessageIdType MessageId;
 		/* Same as above */
-		uint8 ChannelId;
+		int32 InternalTagId = INDEX_NONE;
 		/* The length of this chunk. */
 		SizeType Length;
 	};
@@ -97,7 +114,7 @@ namespace RDTProtocol
 inline FArchive& operator<<(FArchive& Ar, RDTProtocol::FMessageHeader& Header)
 {
 	Ar << Header.MessageId;
-	Ar << Header.ChannelId;
+	Ar << Header.InternalTagId;
 	Ar << Header.Length;
 	return Ar;
 }
@@ -105,7 +122,7 @@ inline FArchive& operator<<(FArchive& Ar, RDTProtocol::FMessageHeader& Header)
 inline FArchive& operator<<(FArchive& Ar, RDTProtocol::FChunkHeader& Header)
 {
 	Ar << Header.MessageId;
-	Ar << Header.ChannelId;
+	Ar << Header.InternalTagId;
 	Ar << Header.Length;
 	return Ar;
 }
@@ -144,6 +161,31 @@ public:
 			}
 			else if (PendingMessage.MessageBytesSent < PendingMessage.Data.Num())
 			{
+				if (PendingMessage.InternalTagId == INDEX_NONE)
+				{
+					if (const int32* ExistingInternalTagId = InternalTagIdByTag.Find(PendingMessage.Tag))
+					{
+						PendingMessage.InternalTagId = *ExistingInternalTagId;
+					}
+					else
+					{
+						const int32 NewInternalTagId = NextInternalTagId++;
+						PendingMessage.InternalTagId = NewInternalTagId;
+						InternalTagIdByTag.Add(PendingMessage.Tag, NewInternalTagId);
+						CreatePendingTagRegistration(PendingMessage.Tag, NewInternalTagId);
+					}
+				}
+
+				if (PendingTagRegistration.IsSet())
+				{
+					bCanStillSend = TrySendPendingTagRegistration();
+					if (PendingTagRegistration.IsSet())
+					{
+						// Failed to fully send the tag registration. Try again next tick.
+						break;
+					}
+				}
+
 				if (!PendingMessage.bHasSentHeader)
 				{
 					// If we're at the start of the message and haven't sent a single byte of the header yet,
@@ -152,10 +194,10 @@ public:
 					{
 						RDTProtocol::FMessageHeader Header;
 						Header.MessageId = PendingMessage.MessageId;
-						Header.ChannelId = PendingMessage.ChannelId;
+						Header.InternalTagId = PendingMessage.InternalTagId;
 						Header.Length = PendingMessage.Data.Num();
 
-						WriteBuffer.SetNumUninitialized(0, false);
+						WriteBuffer.SetNumUninitialized(0, EAllowShrinking::No);
 						FMemoryWriter HeaderWriter(WriteBuffer);
 						EReliableDataProtocolOpCode HeaderType = EReliableDataProtocolOpCode::MessageHeader;
 						HeaderWriter << HeaderType;
@@ -192,9 +234,9 @@ public:
 							static_cast<int32>(MaxPacketSize - (1 + RDTProtocol::FChunkHeader::SerializedSize)),
 							PendingMessage.Data.Num() - PendingMessage.MessageBytesSent);
 						ChunkHeader.Length = PendingMessage.CurrentChunkSize;
-						ChunkHeader.ChannelId = PendingMessage.ChannelId;
+						ChunkHeader.InternalTagId = PendingMessage.InternalTagId;
 
-						WriteBuffer.SetNumUninitialized(0, false);
+						WriteBuffer.SetNumUninitialized(0, EAllowShrinking::No);
 						FMemoryWriter ChunkDataWriter(WriteBuffer);
 						EReliableDataProtocolOpCode ChunkType = EReliableDataProtocolOpCode::ChunkHeader;
 						ChunkDataWriter << ChunkType;
@@ -231,7 +273,7 @@ public:
 
 	bool SendConnectionId(FGuid ConnectionId)
 	{
-		WriteBuffer.SetNumUninitialized(0, false);
+		WriteBuffer.SetNumUninitialized(0, EAllowShrinking::No);
 		FMemoryWriter Writer(WriteBuffer);
 		uint8 HeaderType = static_cast<uint8>(EReliableDataProtocolOpCode::Handshake);
 		
@@ -245,9 +287,41 @@ public:
 		return bSendResult && BytesWritten == WriteBuffer.Num();
 	}
 
-	void EnqueueMessage(uint8 ChannelId, TArray<uint8>&& Data, bool bSendImmediately = false)
+	/**
+	 * Immediately send out a keep alive message.
+	 * !!!Warning!!!: Do not call this from within a write cycle. This should only be called when there is no other data to send.
+	 */
+	void SendKeepAlive()
 	{
-		PendingMessages.Enqueue(FOutboundMessage(NextMessageId++, ChannelId, MoveTemp(Data)));
+		WriteBuffer.SetNumUninitialized(0, EAllowShrinking::No);
+		FMemoryWriter Writer(WriteBuffer);
+		uint8 HeaderType = static_cast<uint8>(EReliableDataProtocolOpCode::KeepAlive);
+		
+		Writer << HeaderType;
+		
+		check(WriteBuffer.Num() == 1);
+
+		RDTProtocol::SizeType BytesWritten = 0;
+		static_cast<BaseType&>(*this).WriteData(WriteBuffer.GetData(), WriteBuffer.Num(), BytesWritten);
+	}
+
+	void EnqueueTaggedMessage(FGameplayTag Tag, TArray<uint8>&& Data, bool bSendImmediately = false)
+	{
+		bool bShouldEnsureOnInvalidTag = true;
+#if WITH_DEV_AUTOMATION_TESTS || WITH_PERF_AUTOMATION_TESTS || WITH_LOW_LEVEL_TESTS
+		bShouldEnsureOnInvalidTag = FAutomationTestFramework::Get().GetCurrentTest() == nullptr;
+#endif
+		if (!Tag.IsValid())
+		{
+			if (bShouldEnsureOnInvalidTag)
+			{
+				ensureMsgf(false, TEXT("Attempted to enqueue reliable message with invalid gameplay tag."));
+			}
+			UE_LOG(LogReliableMessaging, Error, TEXT("Attempted to enqueue message with invalid gameplay tag. Message dropped."));
+			return;
+		}
+
+		PendingMessages.Enqueue(FOutboundMessage(NextMessageId++, Tag, MoveTemp(Data)));
 		if (bSendImmediately)
 		{
 			WriteCycle();
@@ -296,7 +370,62 @@ private:
 		 *
 		 */
 		RDTProtocol::SizeType CurrentChunkSize = 0;
+		int32 InternalTagId = INDEX_NONE;
 	};
+
+	struct FPendingTagRegistration
+	{
+		TArray<uint8> Payload;
+		RDTProtocol::SizeType BytesSent = 0;
+	};
+
+	void CreatePendingTagRegistration(const FGameplayTag& Tag, int32 InternalTagId)
+	{
+		check(!PendingTagRegistration.IsSet());
+
+		FPendingTagRegistration Registration;
+		FMemoryWriter Writer(Registration.Payload);
+
+		uint8 OpCode = static_cast<uint8>(EReliableDataProtocolOpCode::TagRegistration);
+		int32 TagNameUtf8ByteLength = 0;
+		const FString TagString = Tag.ToString();
+		FTCHARToUTF8 Utf8TagName(*TagString);
+		TagNameUtf8ByteLength = Utf8TagName.Length();
+
+		Writer << OpCode;
+		Writer << InternalTagId;
+		Writer << TagNameUtf8ByteLength;
+		if (TagNameUtf8ByteLength > 0)
+		{
+			TArray<ANSICHAR> Utf8TagBytes;
+			Utf8TagBytes.Append(Utf8TagName.Get(), TagNameUtf8ByteLength);
+			Writer.Serialize(Utf8TagBytes.GetData(), TagNameUtf8ByteLength);
+		}
+
+		PendingTagRegistration.Emplace(MoveTemp(Registration));
+	}
+
+	bool TrySendPendingTagRegistration()
+	{
+		if (!PendingTagRegistration.IsSet())
+		{
+			return true;
+		}
+
+		FPendingTagRegistration& Registration = PendingTagRegistration.GetValue();
+		RDTProtocol::SizeType BytesWritten = 0;
+		if (static_cast<BaseType&>(*this).WriteData(Registration.Payload.GetData() + Registration.BytesSent,
+			Registration.Payload.Num() - Registration.BytesSent, BytesWritten))
+		{
+			Registration.BytesSent += BytesWritten;
+			if (Registration.BytesSent == Registration.Payload.Num())
+			{
+				PendingTagRegistration.Reset();
+			}
+			return true;
+		}
+		return false;
+	}
 	
 	/**
 	 * All the messages that are pending to be sent. They are not sorted in any way, it's a purely FIFO queue.
@@ -311,8 +440,11 @@ private:
 	
 	const RDTProtocol::SizeType MaxPacketSize = 0;
 	TArray<uint8> WriteBuffer;
+	TOptional<FPendingTagRegistration> PendingTagRegistration;
+	TMap<FGameplayTag, int32> InternalTagIdByTag;
 
 	RDTProtocol::MessageIdType NextMessageId = 0;
+	int32 NextInternalTagId = 0;
 };
 
 /**
@@ -350,13 +482,14 @@ private:
 
 	void ParseHeaderType(FArchive& Ar);
 	void ParseConnectionId(FArchive& Ar);
+	void ParseTagRegistration(FArchive& Ar);
 	void ParseMessageHeader(FArchive& Ar);
 	void ParseChunk(FArchive& Ar);
 	
 	struct FInboundMessage: RDTProtocol::FMessage
 	{
-		FInboundMessage(const RDTProtocol::FMessageHeader& InHeader)
-			: FMessage(InHeader)
+		FInboundMessage(const RDTProtocol::FMessageHeader& InHeader, FGameplayTag InTag)
+			: FMessage(InHeader, InTag)
 		{
 		}
 
@@ -379,7 +512,7 @@ private:
 		RDTProtocol::SizeType Offset = 0;
 	};
 
-	struct FChannelData
+	struct FTagData
 	{
 		/** Messages that are currently being parsed are stored here until they are fully */
 		TArray<FInboundMessage> PendingMessages;
@@ -407,15 +540,14 @@ private:
 	{
 		ParsingHeaderType,
 		ParsingConnectionId,
-		WaitingForChannelId,
-		WaitingForTaggedPayloadLength,
-		WaitingForTaggedPayloadData,
+		ParsingTagRegistration,
 		ParsingMessageHeader,
 		ParsingChunk,
 		Error
 	};
 
-	TArray<FChannelData> PerChannelData = {};
+	TMap<int32, FTagData> PerTagData = {};
+	TMap<int32, FGameplayTag> TagByInternalTagId = {};
 	TOptional<FPendingChunk> PendingChunk = {};
 
 	EParserState ParserState = EParserState::ParsingHeaderType;
@@ -435,7 +567,7 @@ void FReliableDataTransferProtocolReader<Base>::ReadCycle()
 	while(static_cast<BaseType&>(*this).ReadData(GetParseBuffer().GetData(), GetParseBuffer().Num(), BytesRead) && BytesRead > 0)
 	{
 		// Resize the buffer to the actual size of the data within
-		ReadBuffer.SetNum(ReadBufferOffset + BytesRead, false);
+		ReadBuffer.SetNum(ReadBufferOffset + BytesRead, EAllowShrinking::No);
 
 		ParsePacket();
 	}
@@ -477,6 +609,9 @@ void FReliableDataTransferProtocolReader<Base>::ParsePacket()
 			case EParserState::ParsingConnectionId:
 				ParseConnectionId(MemoryReader);
 				break;
+			case EParserState::ParsingTagRegistration:
+				ParseTagRegistration(MemoryReader);
+				break;
 			default:
 			{
 				// Set the error flag so we can stop trying to parse any data this tick
@@ -495,17 +630,17 @@ void FReliableDataTransferProtocolReader<Base>::ParsePacket()
 	{
 		RDTProtocol::SizeType UnreadBytesOffset = MemoryReader.Tell();
 		// First move the unread bytes to the beginning of the buffer
-		ReadBuffer.RemoveAt(0, UnreadBytesOffset, false);
+		ReadBuffer.RemoveAt(0, UnreadBytesOffset, EAllowShrinking::No);
 		// And record the position so we don't overwrite these bytes until we've processed them
 		ReadBufferOffset = ReadBuffer.Num();
 		// Ultimately make sure the read buffer has enough room for next read
-		ReadBuffer.SetNumUninitialized(ReadBufferOffset + ReadBufferLength, false);
+		ReadBuffer.SetNumUninitialized(ReadBufferOffset + ReadBufferLength, EAllowShrinking::No);
 	}
 	else
 	{
 		// We've read all the data in the buffer, so we can reset the buffer offset. We can let the read buffer keep it's size. 
 		ReadBufferOffset = 0;
-		ReadBuffer.SetNumUninitialized(ReadBufferLength, false);
+		ReadBuffer.SetNumUninitialized(ReadBufferLength, EAllowShrinking::No);
 	}
 }
 
@@ -531,6 +666,9 @@ void FReliableDataTransferProtocolReader<Base>::ParseHeaderType(FArchive& Ar)
 		case EReliableDataProtocolOpCode::Handshake:
 			NewState = EParserState::ParsingConnectionId;
 			break;
+		case EReliableDataProtocolOpCode::TagRegistration:
+			NewState = EParserState::ParsingTagRegistration;
+			break;
 		case EReliableDataProtocolOpCode::MessageHeader:
 			// We need to read the message header next
 			NewState = EParserState::ParsingMessageHeader;
@@ -538,6 +676,10 @@ void FReliableDataTransferProtocolReader<Base>::ParseHeaderType(FArchive& Ar)
 		case EReliableDataProtocolOpCode::ChunkHeader:
 			// We need to read the chunk header next
 			NewState = EParserState::ParsingChunk;
+			break;
+		case EReliableDataProtocolOpCode::KeepAlive:
+			// Nothing to do here, just go back to waiting for the next header type
+			NewState = EParserState::ParsingHeaderType;
 			break;
 		default:
 			// We've received an invalid message type, so we need to reset the state machine. Means we must have a bug in the protocol or parser.
@@ -570,6 +712,73 @@ void FReliableDataTransferProtocolReader<Base>::ParseConnectionId(FArchive& Ar)
 }
 
 template <typename Base>
+void FReliableDataTransferProtocolReader<Base>::ParseTagRegistration(FArchive& Ar)
+{
+	const int64 StartOffset = Ar.Tell();
+	if (Ar.Tell() + static_cast<int64>(sizeof(int32) * 2) <= Ar.TotalSize())
+	{
+		int32 InternalTagId = INDEX_NONE;
+		int32 TagNameUtf8ByteLength = 0;
+		Ar << InternalTagId;
+		Ar << TagNameUtf8ByteLength;
+		check(!Ar.IsError());
+
+		constexpr int32 MaxTagNameUtf8Len = 1024;
+		if (InternalTagId < 0 || TagNameUtf8ByteLength <= 0 || TagNameUtf8ByteLength > MaxTagNameUtf8Len)
+		{
+			Ar.SetError();
+			UE_LOG(LogReliableMessaging, Error, TEXT("Received invalid tag registration payload. Closing connection."));
+			static_cast<BaseType&>(*this).CloseConnection();
+			return;
+		}
+
+		if (Ar.Tell() + TagNameUtf8ByteLength > Ar.TotalSize())
+		{
+			Ar.Seek(StartOffset);
+			Ar.SetError();
+			return;
+		}
+
+		TArray<UTF8CHAR> Utf8TagName;
+		Utf8TagName.SetNumUninitialized(TagNameUtf8ByteLength);
+		Ar.Serialize(Utf8TagName.GetData(), TagNameUtf8ByteLength);
+		check(!Ar.IsError());
+
+		const FUTF8ToTCHAR ConvertedTagName(reinterpret_cast<const ANSICHAR*>(Utf8TagName.GetData()), Utf8TagName.Num());
+		const FString TagString(ConvertedTagName.Length(), ConvertedTagName.Get());
+		const FGameplayTag Tag = FGameplayTag::RequestGameplayTag(FName(*TagString), false);
+		if (!Tag.IsValid())
+		{
+			Ar.SetError();
+			UE_LOG(LogReliableMessaging, Error, TEXT("Received unknown gameplay tag '%s'. Closing connection."), *TagString);
+			static_cast<BaseType&>(*this).CloseConnection();
+			return;
+		}
+
+		if (const FGameplayTag* ExistingTag = TagByInternalTagId.Find(InternalTagId))
+		{
+			if (*ExistingTag != Tag)
+			{
+				Ar.SetError();
+				UE_LOG(LogReliableMessaging, Error, TEXT("Internal tag id '%d' was remapped to a different tag. Closing connection."), InternalTagId);
+				static_cast<BaseType&>(*this).CloseConnection();
+				return;
+			}
+		}
+		else
+		{
+			TagByInternalTagId.Add(InternalTagId, Tag);
+		}
+
+		SwitchState(EParserState::ParsingHeaderType);
+	}
+	else
+	{
+		Ar.SetError();
+	}
+}
+
+template <typename Base>
 void FReliableDataTransferProtocolReader<Base>::ParseMessageHeader(FArchive& Ar)
 {
 	if (Ar.Tell() + RDTProtocol::FMessageHeader::SerializedSize <= Ar.TotalSize())
@@ -577,13 +786,18 @@ void FReliableDataTransferProtocolReader<Base>::ParseMessageHeader(FArchive& Ar)
 		RDTProtocol::FMessageHeader MessageHeader;
 		Ar << MessageHeader;
 		check(!Ar.IsError());
-		
-		if (PerChannelData.Num() < MessageHeader.ChannelId + 1)
+
+		const FGameplayTag* TagPtr = TagByInternalTagId.Find(MessageHeader.InternalTagId);
+		if (TagPtr == nullptr)
 		{
-			PerChannelData.SetNum(MessageHeader.ChannelId + 1);
+			Ar.SetError();
+			UE_LOG(LogReliableMessaging, Error, TEXT("Received message header with unknown internal tag id '%d'. Closing connection."), MessageHeader.InternalTagId);
+			static_cast<BaseType&>(*this).CloseConnection();
+			return;
 		}
 
-		if (PerChannelData[MessageHeader.ChannelId].PendingMessages.FindByPredicate(
+		FTagData& TagData = PerTagData.FindOrAdd(MessageHeader.InternalTagId);
+		if (TagData.PendingMessages.FindByPredicate(
 			[&MessageHeader](const FInboundMessage& PendingMessage)
 		{
 			return PendingMessage.MessageId == MessageHeader.MessageId;
@@ -596,7 +810,7 @@ void FReliableDataTransferProtocolReader<Base>::ParseMessageHeader(FArchive& Ar)
 			return;
 		}
 		
-		PerChannelData[MessageHeader.ChannelId].PendingMessages.Emplace(MoveTemp(MessageHeader));
+		TagData.PendingMessages.Emplace(MessageHeader, *TagPtr);
 		SwitchState(EParserState::ParsingHeaderType);
 	}
 	else
@@ -618,18 +832,18 @@ void FReliableDataTransferProtocolReader<Base>::ParseChunk(FArchive& Ar)
 			check(!Ar.IsError());
 
 			// Make sure this chunk was expected at this time. 
-			if (!PerChannelData.IsValidIndex(ChunkHeader.ChannelId))
+			if (!PerTagData.Contains(ChunkHeader.InternalTagId))
 			{
-				// Semantic error, if the channel id is invalid, this chunk header wasn't preceded by a message header.
+				// Semantic error, if the internal tag id is invalid, this chunk header wasn't preceded by a message header.
 				Ar.SetError();
 				UE_LOG(LogReliableMessaging, Error,
-					TEXT("Chunk header refers to an invalid channel id. A message header wasn't sent before this chunk. Closing connection."));
+					TEXT("Chunk header refers to an invalid internal tag id. A message header wasn't sent before this chunk. Closing connection."));
 				static_cast<BaseType&>(*this).CloseConnection();
 				return;
 			}
 
 			PendingChunk.Emplace(ChunkHeader);
-			PendingChunk->PendingMessagePtr = PerChannelData[PendingChunk->ChannelId].PendingMessages.FindByPredicate(
+			PendingChunk->PendingMessagePtr = PerTagData[PendingChunk->InternalTagId].PendingMessages.FindByPredicate(
 				[this](const FInboundMessage& PendingMessage)
 			{
 				return PendingMessage.MessageId == PendingChunk->MessageId;
@@ -675,8 +889,8 @@ void FReliableDataTransferProtocolReader<Base>::ParseChunk(FArchive& Ar)
             {
             	// This message is now fully read, so we can move it to the fully read messages array
 				RDTProtocol::FMessage FullyReadMessage = MoveTemp(static_cast<RDTProtocol::FMessage&>(*PendingChunk->PendingMessagePtr));
-				const int32 PendingMessageIndex = PendingChunk->PendingMessagePtr - PerChannelData[PendingChunk->ChannelId].PendingMessages.GetData();
-				PerChannelData[PendingChunk->ChannelId].PendingMessages.RemoveAt(PendingMessageIndex);
+				const int32 PendingMessageIndex = PendingChunk->PendingMessagePtr - PerTagData[PendingChunk->InternalTagId].PendingMessages.GetData();
+				PerTagData[PendingChunk->InternalTagId].PendingMessages.RemoveAt(PendingMessageIndex);
 
 				
 				static_cast<BaseType&>(*this).HandleMessageReceived(MoveTemp(FullyReadMessage));

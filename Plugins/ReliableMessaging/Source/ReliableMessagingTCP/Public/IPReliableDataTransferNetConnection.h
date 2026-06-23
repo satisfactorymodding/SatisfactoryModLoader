@@ -3,6 +3,5 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ReliableDataTransferNetConnection.h"
 
 class FReliableMessagingTCPAsyncConnHandler;

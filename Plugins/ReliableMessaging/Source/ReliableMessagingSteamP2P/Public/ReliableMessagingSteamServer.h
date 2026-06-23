@@ -16,7 +16,7 @@ public:
 	bool StartListening(UNetDriver* InNetDriver);
 	virtual TArray<TUniquePtr<IReliableMessageTransportConnection>> Tick(float DeltaTime) override;
 	virtual void Shutdown() override;
-
+	virtual void RegisterIncomingConnection(TSharedRef<FInternetAddr> Address, FGuid ConnectionId) override;
 private:
 	void OnSteamConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* Callback);
 	FSteamSocketsSubsystem* SocketSubsystem = nullptr;

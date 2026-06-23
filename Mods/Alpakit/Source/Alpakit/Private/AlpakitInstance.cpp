@@ -7,10 +7,10 @@
 #include "Async/Async.h"
 #include "Framework/Docking/TabManager.h"
 #include "Framework/Notifications/NotificationManager.h"
-#include "LauncherServices/Public/ILauncher.h"
-#include "LauncherServices/Public/ILauncherServicesModule.h"
+#include "ILauncher.h"
+#include "ILauncherServicesModule.h"
 #include "Modules/ModuleManager.h"
-#include "TargetDeviceServices/Public/ITargetDeviceServicesModule.h"
+#include "ITargetDeviceServicesModule.h"
 #include "Widgets/Docking/SDockTab.h"
 
 #define LOCTEXT_NAMESPACE "Alpakit"

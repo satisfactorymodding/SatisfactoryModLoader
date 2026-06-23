@@ -131,7 +131,7 @@ protected:
 
 	/** What damage we should deal to whatever we hit. */
     UPROPERTY( EditDefaultsOnly, Instanced, Category= "Combat" )
-    TArray < UFGDamageType* > mDamageTypes;
+    TArray < TObjectPtr<UFGDamageType> > mDamageTypes;
 
     /** How much force to apply to characters we hit. */
     UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category= "Combat" )
@@ -199,23 +199,23 @@ protected:
 	
 	/** The flying baby crabs which are considered nearby to this one, used for swarm behavior. */
 	UPROPERTY( BlueprintReadOnly, Category = "Movement" )
-	TArray< AFGFlyingBabyCrab* > mNearbyBabyCrabs;
+	TArray< TObjectPtr<AFGFlyingBabyCrab> > mNearbyBabyCrabs;
 
 	/** The home location of this baby crab. */
 	UPROPERTY( BlueprintReadOnly, Category = "Movement" )
 	FVector mHomeLocation;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Movement" )
-	class UProjectileMovementComponent* mProjectileMovementComponent;
+	TObjectPtr<class UProjectileMovementComponent> mProjectileMovementComponent;
 
 private:
 	/** If spawned from a crab hatcher, this will be a reference to it. */
 	UPROPERTY()
-	class AFGCrabHatcher* mParentCrabHatcher;
+	TObjectPtr<class AFGCrabHatcher> mParentCrabHatcher;
 	
 	/** Our current target. */
 	UPROPERTY( ReplicatedUsing = OnRep_CurrentTarget )
-	AActor* mCurrentTarget;
+	TObjectPtr<AActor> mCurrentTarget;
 
 	TArray< AFGCharacterPlayer* > mHostilePlayers;
 

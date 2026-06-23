@@ -19,6 +19,7 @@ AFGDestructibleActor::AFGDestructibleActor() : Super() {
 	this->mBindChaosPhysicsCollisionEvent = false;
 	this->mDestroyedByForceLocation = FVector::ZeroVector;
 	this->mRadialForceDestruction = 0.0;
+	this->mResourceNodeActor = nullptr;
 	this->mDestroyedByActor = nullptr;
 	this->mHasBeenFractured = false;
 	this->bReplicates = true;
@@ -35,6 +36,7 @@ void AFGDestructibleActor::GatherDependencies_Implementation(TArray< UObject* >&
 bool AFGDestructibleActor::NeedTransform_Implementation(){ return bool(); }
 bool AFGDestructibleActor::ShouldSave_Implementation() const{ return bool(); }
 bool AFGDestructibleActor::IsMeshChainSawable(UStaticMesh* Mesh) const{ return bool(); }
+void AFGDestructibleActor::SetResourceNodeActor(const TSoftObjectPtr<AFGResourceNode> resourceNodeActor){ }
 void AFGDestructibleActor::SetDestructibleActorState(EDestructibleActorState newState){ }
 void AFGDestructibleActor::ApplyDestructibleActorState(){ }
 void AFGDestructibleActor::OnDestructibleFractured(){ }

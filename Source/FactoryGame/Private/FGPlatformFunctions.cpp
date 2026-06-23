@@ -8,3 +8,5 @@ bool UFGPlatformFunctionsSubsystem::PlatformHasFeature(EFGPlatformFeature Featur
 int UFGPlatformFunctionsSubsystem::GetPlatformMaxSavegames(){ return int(); }
 bool UFGPlatformFunctionsSubsystem::PlatformSupportsCommunityTranslations(){ return bool(); }
 bool UFGPlatformFunctionsSubsystem::HasPlatform120HzEnabled(int32& RefreshRate){ return bool(); }
+uint8 UFGPlatformFunctionsSubsystem::GetPlatformCrossplayGroup(){ return uint8(); }
+uint8 UFGPlatformFunctionsSubsystem::GetPlatformNetworkVersion(){ return uint8(); }

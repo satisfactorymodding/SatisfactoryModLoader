@@ -13,7 +13,7 @@ void AFGWallHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGWallHologram, mUpgradeTarget);
 }
-void AFGWallHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
+void AFGWallHologram::SetZoopFromHitresult(const FHitResult& hitResult){ Super::SetZoopFromHitresult(hitResult); }
 bool AFGWallHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 AActor* AFGWallHologram::GetUpgradedActor() const{ return nullptr; }
 bool AFGWallHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
@@ -21,7 +21,7 @@ bool AFGWallHologram::DoMultiStepPlacement(bool isInputFromARelease){ return boo
 void AFGWallHologram::ConfigureActor(AFGBuildable* inBuildable) const{ }
 void AFGWallHologram::ScrollRotate(int32 delta, int32 step){ }
 int32 AFGWallHologram::GetRotationStep() const{ return int32(); }
-void AFGWallHologram::CreateZoopInstances(){ Super::CreateZoopInstances(); }
+void AFGWallHologram::CreateZoopInstances(const FIntVector& DesiredZoop){ Super::CreateZoopInstances(DesiredZoop); }
 FVector AFGWallHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return FVector(); }
 bool AFGWallHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramTransform) const{ return Super::IsHologramIdenticalToActor(actor, hologramTransform); }
 void AFGWallHologram::SelectWallVariantForElevation(float NewAngle){ }

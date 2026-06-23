@@ -92,9 +92,6 @@ public:
 	virtual void CancelDockingSequence() override;
 	// End BuildableTrainPlatform Implementation
 
-	/** Sets the hidden power connection from the child track assigned to this platform */
-	void UpdatePowerConnectionFromTrack();
-
 	/** Get mIsFullLoad */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
 	FORCEINLINE uint8 IsFullLoad() const{ return mIsFullLoad; }
@@ -215,11 +212,11 @@ protected:
 
 	/** Magic box skeletal mesh component. Plays load / unload animations during partial load / unload sequences */
 	UPROPERTY()
-	class USkeletalMeshComponent* mMagicBoxSkelMeshComponent;
+	TObjectPtr<class USkeletalMeshComponent> mMagicBoxSkelMeshComponent;
 
 	/** Cargo container mesh component. Shown / Hidden during full load and unload sequences */
 	UPROPERTY()
-	class UStaticMeshComponent* mCargoMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mCargoMeshComponent;
 
 	/** Set during a dock sequence, indicating if any items can be moved from the train to the platform */
 	UPROPERTY( Replicated, BlueprintReadOnly, Category = "FactoryGame|Railroad|CargoPlatform" )
@@ -273,15 +270,15 @@ protected:
 
 	/** All factory connections that can pull to our storage */
 	UPROPERTY()
-	TArray<class UFGFactoryConnectionComponent*> mStorageInputConnections;
+	TArray<TObjectPtr<class UFGFactoryConnectionComponent>> mStorageInputConnections;
 
 	/** All pipe connections that can pull to our storage */
 	UPROPERTY()
-	TArray<class UFGPipeConnectionComponent*> mPipeInputConnections;
+	TArray<TObjectPtr<class UFGPipeConnectionComponent>> mPipeInputConnections;
 
 	/** All pipe connections that can push to pipelines from our storage */
 	UPROPERTY()
-	TArray< class UFGPipeConnectionComponent*> mPipeOutputConnections;
+	TArray< TObjectPtr<class UFGPipeConnectionComponent>> mPipeOutputConnections;
 
 	/** The current docking rules set from a docked train */
 	UPROPERTY()
@@ -319,7 +316,7 @@ protected:
 private:
 	/** Inventory where we transfer items to when unloading from a vehicle. Never reference this pointer directly. Use mCargoInventoryHandler->GetActiveInventory(). */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mInventory;
+	TObjectPtr<class UFGInventoryComponent> mInventory;
 
 	/** If an actor is docked to this station. Used to detect actor becomes invalid due to e.g. dismantle. */
 	UPROPERTY( SaveGame, Meta = ( NoAutoJson = true ) )
@@ -341,7 +338,7 @@ private:
 	uint8 mRanCompleteBeforeNone : 1;
 
 	UPROPERTY()
-	class AFGFreightWagon* mLastDockedFreight;
+	TObjectPtr<class AFGFreightWagon> mLastDockedFreight;
 
 	/** Set during a docking sequence update to toggle the visibility of the platform and freight cargo meshes*/
 	UPROPERTY()

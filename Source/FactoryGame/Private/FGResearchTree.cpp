@@ -126,7 +126,7 @@ EDataValidationResult UFGResearchTree::IsDataValid(FDataValidationContext& valid
 #endif
 
 #if WITH_EDITOR
-void UFGResearchTree::PreSave(FObjectPreSaveContext SaveContext){ }
+void UFGResearchTree::PreSave(FObjectPreSaveContext SaveContext){ Super::PreSave(SaveContext); }
 #endif 
 #if WITH_EDITOR
 void UFGResearchTree::UpdateAssetBundleData(){ }
@@ -135,4 +135,6 @@ void UFGResearchTree::UpdateAssetBundleData(){ }
 #endif 
 void UFGResearchTree::PostLoad(){ Super::PostLoad(); }
 TArray< EEvents > UFGResearchTree::GetRelevantEvents(TSubclassOf< UFGResearchTree > inClass){ return TArray<EEvents>(); }
+bool UFGResearchTree::HasGameplayTag(TSubclassOf<UFGResearchTree> inClass, const FGameplayTag& inGameplayTag){ return bool(); }
+FGameplayTagContainer UFGResearchTree::GetAllGameplayTags(TSubclassOf<UFGResearchTree> inClass){ return FGameplayTagContainer(); }
 EResearchTreeStatus UFGResearchTree::GetResearchTreeStatus(TSubclassOf< UFGResearchTree > inClass, UObject* worldContext){ return EResearchTreeStatus(); }

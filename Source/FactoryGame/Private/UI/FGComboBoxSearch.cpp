@@ -42,6 +42,7 @@ UFGComboBoxSearch::UFGComboBoxSearch(const FObjectInitializer& ObjectInitializer
 	this->EnableGamepadNavigationMode = true;
 	this->Font.FontObject = FSoftObjectPath("/Engine/EngineFonts/Roboto.Roboto").ResolveObject();
 	this->Font.FontMaterial = nullptr;
+	this->Font.OutlineSettings.bMiteredCorners = false;
 	this->Font.OutlineSettings.bSeparateFillAlpha = false;
 	this->Font.OutlineSettings.bApplyOutlineToDropShadows = false;
 	this->Font.OutlineSettings.OutlineMaterial = nullptr;
@@ -49,5 +50,8 @@ UFGComboBoxSearch::UFGComboBoxSearch(const FObjectInitializer& ObjectInitializer
 	this->Font.TypefaceFontName = TEXT("Bold");
 	this->Font.Size = 16.0;
 	this->Font.SkewAmount = 0.0;
+	this->Font.bForceMonospaced = false;
+	this->Font.bMaterialIsStencil = false;
+	this->Font.MonospacedWidth = 1.0;
 	this->bIsFocusable = true;
 }

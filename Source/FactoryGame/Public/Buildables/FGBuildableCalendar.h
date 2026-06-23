@@ -87,7 +87,7 @@ public:
 protected:
 	/** The inventory for the christmas calendar. Each slot is one slot in the calendar */
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mInventory;
+	TObjectPtr<class UFGInventoryComponent> mInventory;
 
 	/** True if we have populated the calendar inventory with the initial rewards */
 	UPROPERTY( SaveGame )

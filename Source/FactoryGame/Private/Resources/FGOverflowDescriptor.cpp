@@ -6,4 +6,5 @@
 UFGOverflowDescriptor::UFGOverflowDescriptor() : Super() {
 	this->mDisplayName = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/Overflow");
 	this->mDescription = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/Overflow/Description");
+	this->mForm = EResourceForm::RF_INVALID;
 }

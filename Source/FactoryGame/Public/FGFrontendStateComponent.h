@@ -48,13 +48,14 @@ protected:
 	UFUNCTION()
 	void OnPremiumChecked(bool hasPremium);
 	UFUNCTION()
-	void TickCheckInvalidOnlineIntegrationState();
+	void TickCheckInvalidOnlineIntegrationState(bool suppressDisconectNotification = false);
 	
 	//[KonradA] Keep track of last auth error
 	TArray< UE::Online::FOnlineError > mLastAuthError;
 	bool bSuppressPlatformReauth = false; // Keep track of reauth attempts
 	//</FL>
-	
+	bool bSuppressDisconectNotification = false;	// To handle console app resume events
+
 	/** Gets the game state that owns the component, this will always be valid during gameplay but can return null in the editor */
 	template <class T>
 	T* GetGameState() const
@@ -92,6 +93,12 @@ private:
 		// This function does nothing on platforms that dont require this message dialog.
 	void ShowUGCCommRestrictionDialog();
 	void HandleAppResume();
+	void HandleAppSuspend();
+	void HandleProtocolActivationReceived();
+	bool IsOnlineStateValidAndOnline();
+
+	UFUNCTION()
+	void RecalibrateAfterAppResume();
 	// </FL>
 
 	UPROPERTY()
@@ -100,6 +107,7 @@ private:
 	TOptional< TPromise< EOnlineIntegrationMode > > mOnlineIntegrationModePromise;
 
 	bool mUserInitiatedCrossPlayLogin = false;
+	FTimerHandle hTickStateValidityTimer;
 
 	UPROPERTY()
 	TObjectPtr< UFGOnlineModePreferenceViewModel > mOnlineIntegrationModeModel;

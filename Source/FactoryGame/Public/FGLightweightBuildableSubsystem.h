@@ -40,7 +40,7 @@ struct FACTORYGAME_API FBuildEffectAndRuntimeInfo
 	int32 RuntimeIndex = INDEX_NONE;
 
 	UPROPERTY()
-	class AFGBuildEffectActor* BuildEffectActor = nullptr;
+	TObjectPtr<class AFGBuildEffectActor> BuildEffectActor = nullptr;
 };
 
 USTRUCT()
@@ -66,7 +66,7 @@ struct FACTORYGAME_API FRuntimeBuildableInstanceData
 	TSubclassOf< class UFGRecipe > BuiltWithRecipe;
 
 	// Saved - Holds runtime object for the ObjectReferenceDisc of the proxy
-	class AFGBlueprintProxy* BlueprintProxy  = nullptr;
+	TObjectPtr<class AFGBlueprintProxy> BlueprintProxy  = nullptr;
 
 	// Not Serialized - Truly runtime only data
 	TArray< FInstanceOwnerHandlePtr > Handles;
@@ -82,6 +82,9 @@ struct FACTORYGAME_API FRuntimeBuildableInstanceData
 	// Not serialized. Bounding box of this buildable that contains bounding boxes of all of its instances. This is in local space, not in world space!
 	FBox BoundingBox{ForceInit};
 	
+	// Saved
+	FPlayerInfoHandle BuiltBy;
+
 	bool IsValid() const { return Handles.Num() > 0 && BuiltWithRecipe; }
 	bool IsValidOnLoad() const { return BuiltWithRecipe != nullptr; }
 	void Clear()
@@ -93,6 +96,7 @@ struct FACTORYGAME_API FRuntimeBuildableInstanceData
 		TypeSpecificData.Destroy();
 		GridElementIds.Empty();
 		BoundingBox = FBox{};
+		BuiltBy = FPlayerInfoHandle();
 	}
 
 	// Used on empty (place holder) runtimedata
@@ -109,6 +113,7 @@ struct FACTORYGAME_API FRuntimeBuildableInstanceData
 		GridElementIds = from.GridElementIds;
 		BoundingBox = from.BoundingBox;
 		Handles.Append( from.Handles );
+		BuiltBy = from.BuiltBy;
 	}
 
 	void AddReferencedObjects( FReferenceCollector& referenceCollector )
@@ -135,7 +140,7 @@ public:
 	AFGBuildable* SpawnBuildableForPool( AActor* owner, TSubclassOf< AFGBuildable > buildableClass );
 	void AddReferencedObjects( FReferenceCollector& referenceCollector );
 public:
-	TMap< TSubclassOf< AFGBuildable >, TArray< AFGBuildable* > > BuildableClassToPool;
+	TMap< TSubclassOf< AFGBuildable >, TArray< TObjectPtr<AFGBuildable> > > BuildableClassToPool;
 	inline static const FTransform PoolTransform = FTransform( FVector( 0.f, 0.f, -100000.f ) );
 	TArray< FInstanceOwnerHandlePtr > emptyHandles;
 };
@@ -156,8 +161,8 @@ struct FACTORYGAME_API FInstanceToTemporaryBuildable
 
 	TSubclassOf<AFGBuildable> BuildableClass;
 	int32 RuntimeDataIndex = INDEX_NONE;
-	AFGBuildable* Buildable = nullptr;
-	AFGBlueprintProxy* BlueprintProxy = nullptr;
+	TObjectPtr<AFGBuildable> Buildable = nullptr;
+	TObjectPtr<AFGBlueprintProxy> BlueprintProxy = nullptr;
 
 	void AddReferencedObjects( FReferenceCollector& referenceCollector );
 };
@@ -176,7 +181,7 @@ struct FACTORYGAME_API FInstanceConverterInstigator
 	FORCEINLINE bool TryAddInstigatedBuildable( FInstanceToTemporaryBuildable* instanceToTemp );
 	
 	UPROPERTY()
-	AActor* Instigator = nullptr;
+	TObjectPtr<AActor> Instigator = nullptr;
 
 	float InfluenceRadius = 0.f;
 
@@ -204,7 +209,8 @@ struct FLightweightBuildableReplicationItem
 		CustomizationData( runtimeData.CustomizationData ),
 		TypeSpecificData( runtimeData.TypeSpecificData ),
 		Index( index ),
-		IsValid( runtimeData.IsValid() )
+		IsValid( runtimeData.IsValid() ),
+		BuiltBy(runtimeData.BuiltBy)
 	{}
 	
 	FLightweightBuildableReplicationItem( const FLightweightBuildableReplicationItem& lightWeightReplicationItem ) :
@@ -212,7 +218,8 @@ struct FLightweightBuildableReplicationItem
 		CustomizationData( lightWeightReplicationItem.CustomizationData ),
 		TypeSpecificData( lightWeightReplicationItem.TypeSpecificData ),
 		Index( lightWeightReplicationItem.Index ),
-		IsValid( lightWeightReplicationItem.IsValid )
+		IsValid( lightWeightReplicationItem.IsValid ),
+		BuiltBy( lightWeightReplicationItem.BuiltBy)
 	{}
 	
 	UPROPERTY()
@@ -229,6 +236,9 @@ struct FLightweightBuildableReplicationItem
 
 	UPROPERTY()
 	uint8 IsValid;
+
+	UPROPERTY()
+	FPlayerInfoHandle BuiltBy;
 };
 
 USTRUCT()
@@ -335,7 +345,7 @@ public:
 	void OnRep_BuildableClass();
 	
 	UPROPERTY()
-	AFGLightweightBuildableSubsystem* mCachedLightweightSubsystem;
+	TObjectPtr<AFGLightweightBuildableSubsystem> mCachedLightweightSubsystem;
 	
 	UPROPERTY()
 	TArray< FLightweightBuildableReplicationItem > mLightweightBuildableArray;
@@ -360,7 +370,7 @@ public:
 	TArray< uint16 > mIncomingNetConstructIds;
 
 	UPROPERTY( Replicated )
-	AActor* mConstructionInstigator;
+	TObjectPtr<AActor> mConstructionInstigator;
 	
 	UPROPERTY()
 	bool mClientHasReceivedInitial = false;
@@ -394,10 +404,10 @@ public:
 	void OnRep_BuildableClass();
 	
 	UPROPERTY()
-	AFGLightweightBuildableSubsystem* mCachedLightweightSubsystem;
+	TObjectPtr<AFGLightweightBuildableSubsystem> mCachedLightweightSubsystem;
 
 	UPROPERTY()
-	AFGLightweightBuildableRepProxy* mCachedRepProxy;
+	TObjectPtr<AFGLightweightBuildableRepProxy> mCachedRepProxy;
 	
 	UPROPERTY( Replicated )
 	FLightweightBuildableRemovalArray mLightweightBuildableRemovalArray;
@@ -430,7 +440,7 @@ public:
 	void OnRep_BuildableClass();
 
 	UPROPERTY()
-	AFGLightweightBuildableSubsystem* mCachedLightweightSubsystem;
+	TObjectPtr<AFGLightweightBuildableSubsystem> mCachedLightweightSubsystem;
 	
 	UPROPERTY( Replicated )
 	FLightweightBuildableCustomizationArray mLightweightCustomizationArray;
@@ -447,6 +457,20 @@ public:
 	UPROPERTY()
 	int32 mNumReceived = 0;
 	
+};
+
+USTRUCT()
+struct FPendingLightweightBlueprintProxyAssignment
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TSubclassOf<AFGBuildable> BuildableClass;
+
+	int32 RuntimeDataIndex{0};
+
+	UPROPERTY()
+	TObjectPtr<AFGBlueprintProxy> BlueprintProxy;
 };
 
 UCLASS()
@@ -484,17 +508,17 @@ public:
 	void Server_NotifyCustomizationBundleReplicated( int32 clientCount, UFGLightweightCustomizationBundle* customizationBundle );
 	
 	UPROPERTY( Replicated )
-	TArray< UFGLightweightBuildableConstructionBundle* > mPendingConstructionBundles;
+	TArray< TObjectPtr<UFGLightweightBuildableConstructionBundle> > mPendingConstructionBundles;
 
 	// Bundles which are in the process of being sent
 	UPROPERTY()
-	TArray< UFGLightweightBuildableConstructionBundle* > mSendingBundles;
+	TArray< TObjectPtr<UFGLightweightBuildableConstructionBundle> > mSendingBundles;
 	
 	UPROPERTY( Replicated )
-	TArray< UFGLightweightBuildableRemovalBundle* > mPendingRemovalBundles;
+	TArray< TObjectPtr<UFGLightweightBuildableRemovalBundle> > mPendingRemovalBundles;
 
 	UPROPERTY( Replicated )
-	TArray< UFGLightweightCustomizationBundle* > mPendingCustomizationBundle;
+	TArray< TObjectPtr<UFGLightweightCustomizationBundle> > mPendingCustomizationBundle;
 	
 	// Removals that were sent BEFORE client ever recieved the full bundle state
 	TMap< TSubclassOf< AFGBuildable >, TArray< int32 > > mRemovalsPendingIntialRep; 
@@ -610,7 +634,10 @@ public:
 	bool SetCustomizationData(const FFactoryCustomizationData& customizationData) const;
 
 	/** Returns the customization data for this buildable, will return nullptr if the instance is not valid. */
-	const FFactoryCustomizationData* GetCustomizationData();
+	const FFactoryCustomizationData* GetCustomizationData() const;
+
+	/** Returns type-specific data for this buildable. Will return nullptr if the instance is not valid */
+	const FFGDynamicStruct* GetTypeSpecificData() const;
 
 	/** Spawns a temporary buildable for this lightweights. Must only be called on game thread, buildable is not replicated or saved. */
 	AFGBuildable* SpawnTemporaryBuildable() const;
@@ -687,9 +714,6 @@ public:
 	
 	// This should only be called when migrating from old save data to the new system. Ie. The buildable will detect its meant for lightweightbuildable system and call into this with itself
 	int32 AddFromBuildable(class AFGBuildable* buildable, AActor* buildEffectInstigator = nullptr, class AFGBlueprintProxy* blueprintProxy = nullptr );
-
-	// Removes a buildable and its instances - The buildable will be a lightweight temporary that has been spawned via an instigator
-	void RemoveByBuildable( class AFGBuildable* buildable );
 
 	// Removes a instance directly by its class and index
 	void RemoveByInstanceIndex( TSubclassOf< class AFGBuildable > buildableClass, int32 instanceIndex );
@@ -783,7 +807,7 @@ private:
 
 	// Cached Gamestate to allow us to initialize customization data without getting it everytime
 	UPROPERTY()
-	class AFGGameState* mCachedGameState;
+	TObjectPtr<class AFGGameState> mCachedGameState;
 
 	// When color slots change mark it here so we can update color data on instances in tick - like we do for buildables
 	bool mColorSlotDataDirty;
@@ -798,18 +822,18 @@ private:
 	
 	// For clients they can keep a cached ref to their rep proxy
 	UPROPERTY()
-	AFGLightweightBuildableRepProxy* mCachedLocalRepProxy;
+	TObjectPtr<AFGLightweightBuildableRepProxy> mCachedLocalRepProxy;
 	
 	// The actor to attach temporary build components effects too
 	UPROPERTY()
-	class AActor* mBuildEffectComponentActor;
+	TObjectPtr<class AActor> mBuildEffectComponentActor;
 
 	// For clients there is a race condition where they might receive instance data before the game state is ready, in which case that data is added here while we wait for the gamestate
 	TMap< TSubclassOf < class AFGBuildable >, TArray< FPendingGamestateRuntimeDataAdd > > mPendingGameStateInstances;
 	
 	// Generic Actor that can be utilized as an instance converter - Useful for build gun states that are isolated and dont have a placement actor ie. hologram
 	UPROPERTY()
-	TArray< AActor* > mGenericInstanceInstigators;
+	TArray< TObjectPtr<AActor> > mGenericInstanceInstigators;
 	
 	// Holds a map of each buildable type to its corresponding runtime instance data. Each data holds handles to the managers instanceID
 	TMap< TSubclassOf< class AFGBuildable >, TArray< FRuntimeBuildableInstanceData > > mBuildableClassToInstanceArray;
@@ -834,7 +858,7 @@ private:
 
 	// Array of Instance to temporaries for a given blueprintProxy
 	UPROPERTY()
-	TArray< class AFGBlueprintProxy* > mCurrentlyHoveredBlueprintProxies;
+	TArray< TObjectPtr<class AFGBlueprintProxy> > mCurrentlyHoveredBlueprintProxies;
 
 	// Active instance converters. Updated in tick, when the AActor in question is removed the converter will self destruct
 	UPROPERTY()
@@ -842,18 +866,19 @@ private:
 
 	// Each replication proxy created per player (cached for quick access)
 	UPROPERTY()
-	TArray< class AFGLightweightBuildableRepProxy* > mAllLightweightReplicationProxies;
+	TArray< TObjectPtr<class AFGLightweightBuildableRepProxy> > mAllLightweightReplicationProxies;
 	
 	/** All replication components created per player */
 	UPROPERTY()
-	TArray< class UFGLightweightBuildableReplicationComponent* > mAllLightweightReplicationComponents;
+	TArray< TObjectPtr<class UFGLightweightBuildableReplicationComponent> > mAllLightweightReplicationComponents;
 
 	// Array of all newly created runtime data that is pending add from build effects 
 	TMap< UFGMaterialEffect_Build*, FRuntimeDataBuildEffectProxyData > mPendingAddFromBuildEffect;
 
 	TMap< UFGMaterialEffect_Build*, FRuntimeDataBuildEffectProxyData > mPendingRemovalFromDismantleEffect;
 
-	TArray< TTuple < TSubclassOf< AFGBuildable >, int32, class AFGBlueprintProxy* >> mPendingAssignBlueprintProxy;
+	UPROPERTY()
+	TArray<FPendingLightweightBlueprintProxyAssignment> mPendingAssignBlueprintProxy;
 
 	UPROPERTY()
 	TSubclassOf< UFGMaterialEffect_Build > mCachedBuildEffectTemplate;

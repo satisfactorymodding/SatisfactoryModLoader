@@ -6,6 +6,7 @@
 FString IFGCheatBoardParameterFilter::GetPrettifiedNativeClassName(UClass* InNativeClass) const{ return FString(); }
 FString IFGCheatBoardParameterFilter::GetPrettifiedBlueprintName(const FCheatBoardBlueprintContext& Context) const{ return FString(); }
 FString IFGCheatBoardParameterFilter::GetPrettifiedAssetName(const FAssetData& InAssetData) const{ return FString(); }
+FString IFGCheatBoardParameterFilter::GetPrettifiedActorName(const AActor* InActor) const{ return FString(); }
 FString FFGCheatBoardParameterFilter_ItemDescriptor::GetPrettifiedNativeClassName(UClass* InNativeClass) const{ return IFGCheatBoardParameterFilter::GetPrettifiedNativeClassName(InNativeClass); }
 bool FFGCheatBoardParameterFilter_ItemDescriptor::IsNativeClassFilteredOut(UClass* InNativeClass) const{ return IFGCheatBoardParameterFilter::IsNativeClassFilteredOut(InNativeClass); }
 FString FFGCheatBoardParameterFilter_ItemDescriptor::GetPrettifiedBlueprintName(const FCheatBoardBlueprintContext& Context) const{ return IFGCheatBoardParameterFilter::GetPrettifiedBlueprintName(Context); }
@@ -15,7 +16,7 @@ void UFGCheatManager::InitCheatManager(){ }
 bool UFGCheatManager::IsSupportedForNetworking() const{ return bool(); }
 int32 UFGCheatManager::GetFunctionCallspace(UFunction* Function, FFrame* Stack){ return int32(); }
 bool UFGCheatManager::CallRemoteFunction(UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){ return bool(); }
-void UFGCheatManager::PreSave(FObjectPreSaveContext saveContext){ }
+void UFGCheatManager::PreSave(FObjectPreSaveContext saveContext){ Super::PreSave(saveContext); }
 void UFGCheatManager::InitDefaultCheats(){ }
 void UFGCheatManager::Cheats(){ }
 void UFGCheatManager::Server_NoCost_Implementation(bool enabled){ }
@@ -23,6 +24,9 @@ void UFGCheatManager::NoCost(bool enabled){ }
 bool UFGCheatManager::NoCost_Get(){ return bool(); }
 void UFGCheatManager::NoUnlockCost(bool enabled){ }
 bool UFGCheatManager::NoUnlockCost_Get(){ return bool(); }
+void UFGCheatManager::EnergyCostMultiplier(float multiplier){ }
+void UFGCheatManager::PartsCostMultiplier(float multiplier){ }
+void UFGCheatManager::SpacePartsCostMultiplier(float multiplier){ }
 void UFGCheatManager::Server_NoPower_Implementation(bool enabled){ }
 void UFGCheatManager::NoPower(bool enabled){ }
 bool UFGCheatManager::NoPower_Get(){ return bool(); }
@@ -73,6 +77,7 @@ void UFGCheatManager::Server_SetPlanetMovementEnabled_Implementation(bool enable
 void UFGCheatManager::SetPlanetMovementEnabled(bool enabled){ }
 void UFGCheatManager::Server_SetPlanetSpeedMultiplier_Implementation(float multiplier){ }
 void UFGCheatManager::SetPlanetSpeedMultiplier(float multiplier){ }
+void UFGCheatManager::Server_ForceSetWeatherType_Implementation(TSubclassOf<class AFGWeatherReaction> Reaction){ }
 void UFGCheatManager::ForceSetWeatherType(TSubclassOf<class AFGWeatherReaction> Reaction){ }
 void UFGCheatManager::LockWeather(bool bState){ }
 void UFGCheatManager::HighlightPickupable(TSubclassOf< AFGItemPickup > pickupClass){ }
@@ -151,6 +156,9 @@ void UFGCheatManager::SetPlayerSecondaryCustomizationColor(const FString& NewCol
 void UFGCheatManager::SetPlayerDetailCustomizationColor(const FString& NewColorHex){ }
 void UFGCheatManager::SetPlayerCustomizationHelmetDesc(TSubclassOf<UFGPlayerHelmetCustomizationDesc> NewHelmetDesc){ }
 void UFGCheatManager::FastForwardIntroSequence(float SecondsToFastForward){ }
+void UFGCheatManager::SaveDismantleSelectionToBlueprint(const FString& newBlueprintName){ }
+void UFGCheatManager::Server_SaveDismantleSelectionToBlueprint_Implementation(const FString& newBlueprintName, const TArray<AFGBuildable*>& buildables, const TArray<FDismantleLightweightBundle>& lightweightBuildables){ }
+void UFGCheatManager::Client_GotoBlueprintBuildMode_Implementation(const FString& blueprintName){ }
 void UFGCheatManager::Foliage_RemoveOneByOne(int32 maxNumInstances){ }
 void UFGCheatManager::Server_Foliage_RemoveOneByOne_Implementation(int32 maxNumInstances){ }
 void UFGCheatManager::Foliage_RemoveInBulk(int32 maxNumInstances){ }
@@ -220,12 +228,9 @@ void UFGCheatManager::Server_ForceFOWUpdate_Implementation(){  }
 void UFGCheatManager::ForceFOWUpdate(){  }
 void UFGCheatManager::Online_TriggerPresenceUpdate(){ }
 void UFGCheatManager::Online_DumpConnectionString(){ }
+void UFGCheatManager::Online_DebugPlayerInfoCache(){ }
 void UFGCheatManager::Server_Vehicle_FlipDrivenVehicle_Implementation( AFGWheeledVehicle* vehicle){ }
 void UFGCheatManager::Vehicle_FlipDrivenVehicle(){ }
-void UFGCheatManager::Server_Vehicle_ResetDeadlocks_Implementation(){ }
-void UFGCheatManager::Vehicle_ResetDeadlocks(){ }
-void UFGCheatManager::Server_Vehicle_ResetTheChosenVehicle_Implementation(){ }
-void UFGCheatManager::Vehicle_ResetTheChosenVehicle(){ }
 void UFGCheatManager::Vehicle_DumpInfoAboutLookedAtVehicle(){ }
 void UFGCheatManager::Trains_EnableSelfDriving(bool requireValidTimeTable){ }
 void UFGCheatManager::Trains_EnableSelfDrivingForTestCase(FString trainNameTag){ }
@@ -273,7 +278,10 @@ void UFGCheatManager::Server_Circuit_ResetFuses_Implementation(){ }
 void UFGCheatManager::Circuit_ResetFuses(){ }
 void UFGCheatManager::Circuit_Bug_InsertDupeComponentIntoCircuit(int32 target){ }
 void UFGCheatManager::Circuit_Bug_InsertDupeComponentIntoAnotherCircuit(int32 source, int32 target){ }
-void UFGCheatManager::ClearMessageCooldown(){ }
+void UFGCheatManager::ClearMessageCooldowns(){ }
+void UFGCheatManager::ClearGlobalMessageCooldown(){ }
+void UFGCheatManager::ClearBarkMessageCooldown(TSubclassOf<class UFGBarkMessageType> barkMessageType){ }
+void UFGCheatManager::NarrationPlayMessage(TSoftObjectPtr<class UFGMessage> messageToPlay){ }
 void UFGCheatManager::Server_PurgeInactiveClientsFromSave_Implementation( AFGCharacterPlayer* characterToReceiveInventories, bool fetchInventories){ }
 void UFGCheatManager::PurgeInactiveClientsFromSave(bool fetchInventories){ }
 void UFGCheatManager::Server_PurgeAllBeaconsFromSave_Implementation(){ }
@@ -313,6 +321,7 @@ void UFGCheatManager::DumpGamePhases(){ }
 void UFGCheatManager::DumpPlayerCustomizationData(){ }
 void UFGCheatManager::LogPerInstancePrimitiveDataInfo(){  }
 void UFGCheatManager::Audio_ToggleLandingDebug(){ }
+void UFGCheatManager::Audio_ToggleTriggerOnOutdoorRoom(){ }
 void UFGCheatManager::Audio_TriggerAkEvent(TSoftObjectPtr<class UAkAudioEvent> EventName){  }
 void UFGCheatManager::Audio_SetGlobalRTPC(TSoftObjectPtr<class UAkRtpc> RtpcObject, float RtpcValue){  }
 void UFGCheatManager::RunHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ }

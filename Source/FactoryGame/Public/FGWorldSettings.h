@@ -32,8 +32,11 @@ public:
 	FORCEINLINE class AFGConveyorItemSubsystem* GetConveyorItemSubsystem() const { return mConveyorItemSubsystem; }
 	FORCEINLINE AFGTimeOfDaySubsystem* GetTimeOfDaySubsystem() const { return mTimeOfDaySubsystem; }
 	FORCEINLINE class AFGLocalAudioContextSubsystem* GetLocalAudioContextSubsystem() const { return mLocalAudioContextSubsystem; }
+	FORCEINLINE class AFGRainAudioSubsystem* GetRainAudioSubsystem() const { return mRainAudioSubsystem; }
 	FORCEINLINE class AFGProximitySubsystem* GetProximitySubsystem() const { return mProximitySubsystem; }
 	FORCEINLINE class AAbstractInstanceManager* GetAbstractInstanceManager() const { return mAbstractInstanceManager; }
+	FORCEINLINE class AFGResourceNodeManager* GetResourceNodeManager() const { return mResourceNodeManager; }
+
 
 	// Begin UObject interface
 	virtual void BeginDestroy() override;
@@ -75,7 +78,6 @@ public:
 	class AFGSkySphere* GetSkySphere() const;
 
 	/** Get the event to post when we start the level */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Level|Audio" )
 	FORCEINLINE class UAkAudioEvent* GetLevelStartedAkEvent() const{ return mLevelStartedEvent; }
 
 	/** Save we will load by default when entering the map */
@@ -102,7 +104,7 @@ protected:
 private:
 	/** Helper to spawn subsystems. */
 	template< class C >
-	void SpawnSubsystem( C*& out_spawnedSubsystem, UClass* spawnClass, FName spawnName )
+	void SpawnSubsystem( TObjectPtr<C>& out_spawnedSubsystem, UClass* spawnClass, FName spawnName )
 	{
 		// @todo: Refactor, haxx as we didn't think about that there are several world infos in one world
 		// Avoid spawning subsystems if not in a persistent level, as we never expected a level to not be persistent
@@ -140,17 +142,17 @@ public:
 	// @todo: Verify that this really is ALL volumes, if we stream one volume in, is it really added to the same array
 	/** All the fog volumes currently streamed in, sorted in ascending order of priority. */
 	UPROPERTY(transient)
-	TArray< class AFGAtmosphereVolume* > mFogVolumes;
+	TArray< TObjectPtr<class AFGAtmosphereVolume> > mFogVolumes;
 
 	// @todo: Verify that this really is ALL volumes, if we stream one volume in, is it really added to the same array
 	/** All the ambient volumes currently streamed in */
 	UPROPERTY( transient )
-	TArray< class AFGAmbientVolume* > mAmbientVolumes;
+	TArray< TObjectPtr<class AFGAmbientVolume> > mAmbientVolumes;
 
 	// @todo: Verify that this really is ALL volumes, if we stream one volume in, is it really added to the same array
 	/** All the water volumes currently streamed in */
 	UPROPERTY( transient )
-	TArray< class AFGWaterVolume* > mWaterVolumes;
+	TArray< TObjectPtr<class AFGWaterVolume> > mWaterVolumes;
 
 	/** The default settings of the exponential height fog to apply */
 	UPROPERTY( EditInstanceOnly, Category = "HeightFog" )
@@ -190,15 +192,15 @@ protected:
 
 	/** The minimap capture actor of this level, might be null */
 	UPROPERTY( EditInstanceOnly, Category = "Minimap" )
-	class AFGMinimapCaptureActor* mMinimapCaptureActor;
+	TObjectPtr<class AFGMinimapCaptureActor> mMinimapCaptureActor;
 
 	/** Time of day subsystem that should be placed into the map */
 	UPROPERTY( EditInstanceOnly, Category = "Time" )
-	AFGTimeOfDaySubsystem* mTimeOfDaySubsystem;
+	TObjectPtr<AFGTimeOfDaySubsystem> mTimeOfDaySubsystem;
 
 	/** Different events for different levels, so they can start different playlists */
 	UPROPERTY( EditInstanceOnly, Category = "Audio" )
-	class UAkAudioEvent* mLevelStartedEvent;
+	TObjectPtr<class UAkAudioEvent> mLevelStartedEvent;
 
 	/** Save game that we should load by default when entering the map */
 	UPROPERTY( EditInstanceOnly, Category="Save" )
@@ -211,32 +213,39 @@ protected:
 
 private:
 	UPROPERTY( SaveGame )
-	class AFGBuildableSubsystem* mBuildableSubsystem;
+	TObjectPtr<class AFGBuildableSubsystem> mBuildableSubsystem;
 
 	UPROPERTY( SaveGame )
-	class AFGLightweightBuildableSubsystem* mLightweightBuildableSubsystem;
+	TObjectPtr<class AFGLightweightBuildableSubsystem> mLightweightBuildableSubsystem;
 
 	UPROPERTY()
-	class AFGAudioVolumeSubsystem* mAudioVolumeSubsystem;
+	TObjectPtr<class AFGAudioVolumeSubsystem> mAudioVolumeSubsystem;
 	
 	UPROPERTY()
-	class AFGVoiceChatAudioMeterSubsystem* mVoiceChatAudioMeterSubsystem;
+	TObjectPtr<class AFGVoiceChatAudioMeterSubsystem> mVoiceChatAudioMeterSubsystem;
 	
 	UPROPERTY()
-	class AFGLocalAudioContextSubsystem* mLocalAudioContextSubsystem;
-	
-	UPROPERTY()
-	class AFGFoliageRemovalSubsystem* mFoliageRemovalSubsystem;
+	TObjectPtr<class AFGLocalAudioContextSubsystem> mLocalAudioContextSubsystem;
 
 	UPROPERTY()
-	class AFGConveyorItemSubsystem* mConveyorItemSubsystem;
+    TObjectPtr<class AFGRainAudioSubsystem> mRainAudioSubsystem;
+	
+	UPROPERTY()
+	TObjectPtr<class AFGFoliageRemovalSubsystem> mFoliageRemovalSubsystem;
 
 	UPROPERTY()
-	class AFGProximitySubsystem* mProximitySubsystem;
+	TObjectPtr<class AFGConveyorItemSubsystem> mConveyorItemSubsystem;
+
+	UPROPERTY()
+	TObjectPtr<class AFGProximitySubsystem> mProximitySubsystem;
+
+	UPROPERTY()
+	TObjectPtr< class AFGResourceNodeManager > mResourceNodeManager;
+
 
 	/** Cached from the abstract instance subsystem, not actually spawned by the world settings */
 	UPROPERTY()
-	class AAbstractInstanceManager* mAbstractInstanceManager;
+	TObjectPtr<class AAbstractInstanceManager> mAbstractInstanceManager;
 
 #if WITH_EDITORONLY_DATA
 	/** Set the hour you want to preview here, 16.25 means 16h 15min */

@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 #include "LocalUserInfo.h"
 #include "Online/CoreOnline.h"
+#include "Online/PlayerInfoCache.h"
 #include "FGActorRepresentationInterface.generated.h"
 
 /**
@@ -16,13 +17,13 @@
 UINTERFACE( BlueprintType, NotBlueprintable )
 class FACTORYGAME_API UFGActorRepresentationInterface : public UInterface
 {
-	GENERATED_UINTERFACE_BODY()
+	GENERATED_BODY()
 };
 
 class FACTORYGAME_API IFGActorRepresentationInterface
 {
-	GENERATED_IINTERFACE_BODY()
-
+	GENERATED_BODY()
+public:
 	/** Adds the actor to the actor representation manager */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
 	virtual bool AddAsRepresentation() = 0;
@@ -37,7 +38,7 @@ class FACTORYGAME_API IFGActorRepresentationInterface
 
 	/** Tells us if the actor is static or not. */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	virtual bool IsActorStatic() = 0;
+	virtual bool IsActorStatic() { return true; }
 
 	/** Called on the server to get the location of this actor so it can be replicated to clients. */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
@@ -45,7 +46,7 @@ class FACTORYGAME_API IFGActorRepresentationInterface
 
 	/** Called on the server to get the rotation of this actor so it can be replicated to clients. */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	virtual FRotator GetRealActorRotation() = 0;
+	virtual FRotator GetRealActorRotation() { return FRotator::ZeroRotator; }
 
 	/** Fetches the texture to use for this actors representation */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
@@ -61,7 +62,7 @@ class FACTORYGAME_API IFGActorRepresentationInterface
 
 	/** Set the text to use for this actors representation */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	virtual void SetActorRepresentationText( const FText& newText ) = 0;
+	virtual void SetActorRepresentationText( const FText& newText ) {};
 
 	/** Fetches the color to use for this actors representation */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
@@ -69,7 +70,7 @@ class FACTORYGAME_API IFGActorRepresentationInterface
 
 	/** Set the color to use for this actors representation */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	virtual void SetActorRepresentationColor( FLinearColor newColor ) = 0;
+	virtual void SetActorRepresentationColor( FLinearColor newColor ) {};
 
 	/** Fetches the representation type to use for this actor */
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
@@ -84,25 +85,22 @@ class FACTORYGAME_API IFGActorRepresentationInterface
 	virtual bool GetActorShouldShowOnMap() = 0;
 
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() = 0;
+	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() { return EFogOfWarRevealType::FOWRT_None; }
 
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	virtual float GetActorFogOfWarRevealRadius() = 0;
+	virtual float GetActorFogOfWarRevealRadius() { return 0.0f; }
 
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	virtual ECompassViewDistance GetActorCompassViewDistance() = 0;
+	virtual ECompassViewDistance GetActorCompassViewDistance() { return ECompassViewDistance::CVD_Always; }
 
 	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) = 0;
-//<FL>[KonradA]
-	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const  = 0;
-	UFUNCTION( BlueprintCallable, Category = "Representation" )
-	virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle > & LastEditedBy) = 0;
-//<FL>[VilagosD]
-	virtual UE::Online::FAccountId GetPlatformAccountID() const { return UE::Online::FAccountId(); };
-	virtual FString GetPlatformAccountIDString() const { return ""; };
-//</FL>
+	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) {};
 
+	/** Returns the handle of the last player who has edited this representation, if any */
+	UFUNCTION( BlueprintCallable, Category = "Representation" )
+	virtual FPlayerInfoHandle GetLastEditedBy() const { return FPlayerInfoHandle(); }
 
+	/** Updates the handle of the last player who has edited this representation (if this representation can be edited) */
+	UFUNCTION( BlueprintCallable, Category = "Representation" )
+	virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& playerInfoHandle ) {}
 };

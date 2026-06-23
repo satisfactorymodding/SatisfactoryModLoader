@@ -6,9 +6,10 @@
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "FGBuildable.h"
+#include "FGNetSignificanceInterface.h"
 #include "FGRailroadSignalBlock.h"
 #include "FGSplineBuildableInterface.h"
-#include "InstancedSplineMeshComponent.h"
+#include "FGSplineCollisionComponent.h"
 #include "FGBuildableRailroadTrack.generated.h"
 
 class USplineComponent;
@@ -96,7 +97,7 @@ struct TStructOpsTypeTraits< FRailroadTrackPosition > : public TStructOpsTypeTra
  * A piece of train track, it has a spline and to ends.
  */
 UCLASS( Abstract )
-class FACTORYGAME_API AFGBuildableRailroadTrack : public AFGBuildable, public IFGSplineBuildableInterface
+class FACTORYGAME_API AFGBuildableRailroadTrack : public AFGBuildable, public IFGSplineBuildableInterface, public IFGNetSignificanceInterface
 {
 	GENERATED_BODY()
 public:
@@ -120,6 +121,12 @@ public:
 	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
 	// End Save Interface
 
+	// Begin IFGNetSignificanceInterface
+	virtual void GainedNetSignificance_Implementation() override;
+	virtual void LostNetSignificance_Implementation() override;
+	virtual float GetNetSignificanceRange_Implementation() const override;
+	// End IFGNetSignificanceInterface
+	
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
 	virtual bool ShouldBeConsideredForBase_Implementation() override { return false; }
@@ -208,7 +215,7 @@ public:
 	/**
 	 * @return The vehicles on this track.
 	 */
-	const TSet< class AFGRailroadVehicle* >& GetVehicles() const { return mVehicles; }
+	const TSet< TObjectPtr<class AFGRailroadVehicle> >& GetVehicles() const { return mVehicles; }
 
 	/** @return true if this track is occupied by any vehicles. */
 	bool IsOccupied() const { return mVehicles.Num() > 0; }
@@ -220,8 +227,11 @@ public:
 	/** Get the signal block this track belongs to, can be null. */
 	TWeakPtr< FFGRailroadSignalBlock > GetSignalBlock() const { return mSignalBlock; }
 
-	/** Call this to update this tracks overlapping tracks. true if we have any overlapping. */
+	/** Call this to update this track's overlapping tracks. true if we have any overlapping. */
 	bool UpdateOverlappingTracks();
+
+	void SetupCollisionInfo() const;
+	
 	/** @return Get any tracks adjacent or overlapping this one. */
 	TArray< AFGBuildableRailroadTrack* > GetOverlappingTracks();
 	/** Add an overlapping track */
@@ -242,7 +252,20 @@ public:
 
 	static void CreateClearanceData( class USplineComponent* splineComponent, const TArray< FSplinePointData >& splineData, const FTransform& trackTransform, TArray< FFGClearanceData >& out_clearanceData, float maxDistance = -1.0f );
 
+	/**
+	 * Get evenly spaced points along the track spline with a specified maximum distance between each point.
+	 * 
+	 * @param maxDistance - Maximum distance between points along the track spline.
+	 * @param startOffset - Offset from the start of the track to the first point.
+	 * @param endOffset - Offset from the end of the track to the last point.
+	 */
+	TArray< FVector > GetPointsAlongTrack( float maxDistance, float startOffset, float endOffset ) const;
+
 protected:
+	// Begin AFGBuildable interface
+	virtual FBox CalculateBounds() const override;
+	// End AFGBuildable interface
+	
 	void GenerateCachedClearanceData( TArray< FFGClearanceData >& out_clearanceData );
 	
 private:
@@ -259,11 +282,15 @@ private:
 protected:
 	/** Mesh to use for his track. */
 	UPROPERTY( EditDefaultsOnly, Category = "Track" )
-	class UStaticMesh* mMesh;
+	TObjectPtr<class UStaticMesh> mMesh;
 
 	/** Length of the mesh to use for this track */
 	UPROPERTY( EditDefaultsOnly, Category = "Track" )
 	float mMeshLength;
+
+	/** Index of the spline instance deformation data in the per instance custom data buffer */
+	UPROPERTY( EditDefaultsOnly, Category = "Track" )
+	int32 mSplineInstanceStartDataIndex{15};
 	
 private:
 	friend class AFGRailroadTrackHologram;
@@ -275,7 +302,7 @@ private:
 
 	/** The spline component for this train track. */
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
-	class USplineComponent* mSplineComponent;
+	TObjectPtr<class USplineComponent> mSplineComponent;
 
 
 	/** Spline data saved in a compact form for saving and replicating. All the vectors are in local space. */
@@ -287,14 +314,14 @@ private:
 	//                     but during play... nothing. mConnectedComponents stays empty for index 1 for some unknown reason.
 	/** This tracks connection components. Created locally with net stable naming. */
 	UPROPERTY()
-	TArray< class UFGRailroadTrackConnectionComponent* > mConnections;
+	TArray< TObjectPtr<class UFGRailroadTrackConnectionComponent> > mConnections;
 
 	/** Was this track created and is owned by a platform. */
 	UPROPERTY( EditDefaultsOnly, Category = "Track" )
 	bool mIsOwnedByPlatform;
 
 	/** The graph this track belongs to. */
-	UPROPERTY( VisibleAnywhere, Category = "Track" )
+	UPROPERTY( SaveGame, VisibleAnywhere, Category = "Track" )
 	int32 mTrackGraphID;
 
 	/** Length of this track. [cm] */
@@ -302,11 +329,11 @@ private:
 
 	/** Tracks that are overlapping this one but not connected to us. E.g. turnouts and crossings. */
 	UPROPERTY( VisibleAnywhere, Category = "Track" )
-	TArray< AFGBuildableRailroadTrack* > mOverlappingTracks;
+	TArray< TObjectPtr<AFGBuildableRailroadTrack> > mOverlappingTracks;
 	
 	/** The vehicles currently occupying this track. */
 	UPROPERTY( VisibleAnywhere, Category = "Track" )
-	TSet< class AFGRailroadVehicle* > mVehicles;
+	TSet< TObjectPtr<class AFGRailroadVehicle> > mVehicles;
 
 	/** The signal block this track section is part of. */
 	TWeakPtr< FFGRailroadSignalBlock > mSignalBlock;
@@ -320,11 +347,11 @@ private:
 
 	/* Mesh to use for block feedback. */
 	UPROPERTY( EditDefaultsOnly, Category = "Track|Block Visualization" )
-	UStaticMesh* mBlockVisualizationMesh;
+	TObjectPtr<UStaticMesh> mBlockVisualizationMesh;
 
 	/* Material assigned to the collision box proxies. */
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
-	UPhysicalMaterial* PhysicalMaterial;
+	TObjectPtr<UPhysicalMaterial> PhysicalMaterial;
 
 	/** First index of the Custom Data used for the block visualization color. It will use 3 custom data floats for R/G/B channels of the color */
 	UPROPERTY( EditDefaultsOnly, Category = "Track|Block Visualization" )
@@ -333,9 +360,15 @@ private:
 	/** Clearance data generated upon request for this track. */
 	TArray< FFGClearanceData > mCachedClearanceData;
 
+	UPROPERTY(VisibleInstanceOnly)
+	TObjectPtr<UFGSplineCollisionComponent> mCollisionComponent = nullptr;
+
 	// Collision Constants. These used to be magic numbers in the .cpp but were moved here so they could be accessed via the SplineBuildableInterface
 	static inline const FVector COLLISION_EXTENT = FVector( 200.f, 300.f, 30.f );
 	static inline const float COLLISION_SPACING =   300.f;
 	static inline const FVector COLLISION_OFFSET = FVector( 0.f, 0.f, 30.f + 1.f );
+	// Constants for grouping tracks into blocks.
+	static inline const float RAILROAD_BLOCK_OVERLAP_DISTANCE = 600.f;
+	static inline const float RAILROAD_BLOCK_OVERLAP_COLLISION_SPACING = 900.f;
 };
 

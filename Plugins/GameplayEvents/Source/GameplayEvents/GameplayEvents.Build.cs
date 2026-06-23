@@ -7,7 +7,7 @@ public class GameplayEvents : ModuleRules
 	public GameplayEvents(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		CppStandard = CppStandardVersion.Latest;
+		CppStandard = CppStandardVersion.Cpp20;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {

@@ -11,12 +11,7 @@ void AFGIconDatabaseSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGIconDatabaseSubsystem, mGlobalIconLibraries);
 }
-void AFGIconDatabaseSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGIconDatabaseSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGIconDatabaseSubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGIconDatabaseSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGIconDatabaseSubsystem::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
-bool AFGIconDatabaseSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGIconDatabaseSubsystem::ShouldSave_Implementation() const{ return bool(); }
 void AFGIconDatabaseSubsystem::Init(){ }
 void AFGIconDatabaseSubsystem::GetIconData(TArray<FIconData>& out_allIconData) const{ }
@@ -31,4 +26,4 @@ AFGIconDatabaseSubsystem* AFGIconDatabaseSubsystem::Get(const UObject* worldCont
 void AFGIconDatabaseSubsystem::OnRep_GlobalIconLibraries(){ }
 void AFGIconDatabaseSubsystem::ScanForIconLibraries(){ }
 void AFGIconDatabaseSubsystem::TryInitializeDatabase(){ }
-void AFGIconDatabaseSubsystem::BuildGlobalIconData(){ }
+void AFGIconDatabaseSubsystem::RebuildGlobalIconData(){ }

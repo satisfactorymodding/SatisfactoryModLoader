@@ -25,12 +25,12 @@ protected:
 	FText mUnlockDescription;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	UTexture2D* mUnlockIconBig;
+	TObjectPtr<UTexture2D> mUnlockIconBig;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	UTexture2D* mUnlockIconSmall;
+	TObjectPtr<UTexture2D> mUnlockIconSmall;
 	
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	UTexture2D* mUnlockIconCategory;
+	TObjectPtr<UTexture2D> mUnlockIconCategory;
 
 };

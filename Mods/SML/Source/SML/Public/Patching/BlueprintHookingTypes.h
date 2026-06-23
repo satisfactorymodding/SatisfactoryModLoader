@@ -144,15 +144,15 @@ struct FBlueprintHookDefinition {
 	GENERATED_BODY()
 
 	UPROPERTY()
-	UFunction* TargetFunction{};
+	TObjectPtr<UFunction> TargetFunction{};
 	UPROPERTY()
-	UFunction* HookFunction{};
+	TObjectPtr<UFunction> HookFunction{};
 	UPROPERTY()
 	EBlueprintFunctionHookType Type{};
 	UPROPERTY()
 	EBlueprintFunctionHookInsertLocation InsertLocation{};
 	UPROPERTY()
-	UBlueprintHookTargetSpecifier* TargetSpecifier{};
+	TObjectPtr<UBlueprintHookTargetSpecifier> TargetSpecifier{};
 	UPROPERTY()
 	EBlueprintFunctionHookTargetSelectionMode TargetSelectionMode{};
 	UPROPERTY()

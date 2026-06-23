@@ -12,6 +12,8 @@
 {MaxValue} = number","UI","#interface"
 "Megawatt/Pattern","{Value} MW","","{Value} = number","UI","#interface"
 "Meter/m","m","","","UI","#interface"
+"Meter/m/Pattern","{Value}m","Value = Distance in meters","","",""
+"Number/Parts/Per/Minute/Pattern","{Value} {Part} per min","Example: 10 Coal per min","{Value} = number, {Part} = Item name","UI","#interface"
 "Number/Per/Minute/Pattern","{Value} per minute","","{Value} = number","UI","#interface"
 "Parts","Parts","Suffix for Solids, not sure if used","","",""
 "Slash/Per/Minute","/min","","","",""

@@ -1,0 +1,18 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
+#pragma once
+
+#include "FactoryGame.h"
+#include "NativeGameplayTags.h"
+
+namespace FGReliableMessagingTags
+{
+	FACTORYGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(LightweightSubsystem);
+	FACTORYGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SchematicManager);
+	FACTORYGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(RecipeManager);
+	FACTORYGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(MapManager);
+	FACTORYGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(ConveyorChainSubsystem);
+	FACTORYGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(BlueprintSubsystem);
+	FACTORYGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(VehicleSubsystem);
+	FACTORYGAME_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(FoliageRemoval);
+}

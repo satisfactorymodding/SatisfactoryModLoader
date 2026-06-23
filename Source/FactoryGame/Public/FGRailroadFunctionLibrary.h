@@ -25,8 +25,8 @@ public:
 	static void DrawDebugRailroadPath( FRailroadPathSharedPtr path, int32 currentSegment = INDEX_NONE, bool isPersistentLines = false );
 
 	/** Draw a track segment. */
-	static void DrawDebugTrack( AFGBuildableRailroadTrack* track, float startOffset, float endOffset, const FColor& color, float height = 0.f, bool isPersistentLines = false );
-	static void DrawDebugTrackStriped( AFGBuildableRailroadTrack* track, float startOffset, float endOffset, const FColor& primaryColor, const FColor& secondaryColor, float height = 0.f, bool isPersistentLines = false );
+	static void DrawDebugTrack( AFGBuildableRailroadTrack* track, float startOffset, float endOffset, const FColor& color, float heightOffset = 0.f, bool isPersistentLines = false );
+	static void DrawDebugTrackStriped( AFGBuildableRailroadTrack* track, float startOffset, float endOffset, const FColor& primaryColor, const FColor& secondaryColor, float heightOffset = 0.f, bool isPersistentLines = false );
 
 	/** Draw a railroad position. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Debug" )

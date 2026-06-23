@@ -124,7 +124,8 @@ struct FACTORYGAME_API FSaveHeader
 		bool isModdedSave,
 		FString saveIdentifier,
 		bool isPartitionedWorld,
-		bool isCreativeModeEnabled) :
+		bool isCreativeModeEnabled,
+		EUnrealEngineObjectUE5Version unrealEngineObjectUE5Version) :
 		SaveVersion( saveVersion ),
 		BuildVersion( buildVersion ),
 		SaveName( saveName ),	// <FL> [bgr] Required for console saves; File names have to many restrictions
@@ -355,6 +356,9 @@ struct FACTORYGAME_API FCreateNewGameParameters
 	/** Advanced game settings values provider */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "New Game Parameters" )
 	TScriptInterface<IFGAdvancedGameSettingsInterface> AdvancedGameSettings;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "New Game Parameters" )
+	TScriptInterface< IFGAdvancedGameSettingsInterface > GameModeSettings;
 
 	// Additional options to be passed as map options for creating a new game
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "New Game Parameters" )

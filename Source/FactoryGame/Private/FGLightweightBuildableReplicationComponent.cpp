@@ -1,5 +1,7 @@
 #include "FGLightweightBuildableReplicationComponent.h"
 
+#include "GameplayTagContainer.h"
+
 UFGLightweightBuildableReplicationComponent::UFGLightweightBuildableReplicationComponent() : Super() {
 	this->LightweightBuildableSubsystem = nullptr;
 	this->BuildableSubsystem = nullptr;
@@ -17,7 +19,7 @@ void UFGLightweightBuildableReplicationComponent::TickComponent(float DeltaTime,
 void UFGLightweightBuildableReplicationComponent::HandleBuildableInstanceConstructed(const TSubclassOf<AFGBuildable>& BuildableClass, const FRuntimeBuildableInstanceData& RuntimeData, int32 InstanceID, uint16 ConstructionID, AActor* ConstructionInstigator, int32 BlueprintBuildEffectIndex) const{  }
 void UFGLightweightBuildableReplicationComponent::HandleBuildableInstanceRemoved(const TSubclassOf<AFGBuildable>& BuildableClass, int32 InstanceID) const{  }
 void UFGLightweightBuildableReplicationComponent::HandleBuildableInstanceUpdated(const TSubclassOf<AFGBuildable>& BuildableClass, const FRuntimeBuildableInstanceData& RuntimeData, int32 InstanceID) const{  }
-void UFGLightweightBuildableReplicationComponent::HandleRawLightweightBuildableMessage(TArray<uint8>&& InMessageData){  }
+void UFGLightweightBuildableReplicationComponent::HandleRawLightweightBuildableMessage(FGameplayTag InTag, TArray<uint8>&& InMessageData){ }
 void UFGLightweightBuildableReplicationComponent::SendRawLightweightBuildableMessage(ELightweightBuildableMessageId MessageId, const TFunctionRef<void(FArchive&)>& MessageSerializer) const{  }
 void UFGLightweightBuildableReplicationComponent::ReceivedInitialReplicationMessage(const FLightweightBuildableInitialReplicationMessage& InitialReplicationMessage){  }
 void UFGLightweightBuildableReplicationComponent::ReceivedConstructionMessage(const FLightweightBuildableConstructionMessage& ConstructionMessage) const{  }

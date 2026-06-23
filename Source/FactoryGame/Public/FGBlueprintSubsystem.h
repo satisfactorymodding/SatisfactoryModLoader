@@ -99,7 +99,7 @@ struct FBlueprintBuildEffectData
 	int32 NumBuildables;
 
 	UPROPERTY( NotReplicated )
-	TArray< class AFGBuildable* > Buildables;
+	TArray< TObjectPtr<class AFGBuildable> > Buildables;
 
 	UPROPERTY( NotReplicated )
 	TArray< FLightweightBuildEffectData > LightweightData;
@@ -263,7 +263,7 @@ public:
 	/** Load Actors into blueprint designer
 	 * @param instigator (optional)  AActor* the actor that requested the blueprint. */
 	void LoadStoredBlueprint(UFGBlueprintDescriptor* blueprintDesc, const FTransform& blueprintOrigin, TArray< class AFGBuildable* >& out_spawnedBuildables, bool useBlueprintWorld = false, class
-	                         AFGBuildableBlueprintDesigner* = nullptr, APawn* instigator = nullptr, class AFGBlueprintProxy* blueprintProxy = nullptr, const TFunction<void(AFGBuildable*, int32)>& buildablePostSerializeCallback = nullptr );
+	                         AFGBuildableBlueprintDesigner* = nullptr, APawn* instigator = nullptr, class AFGBlueprintProxy* blueprintProxy = nullptr, const TFunction<void(AFGBuildable*, int32)>& buildablePostSerializeCallback = nullptr, const TFunction<void()>& preBeginPlayCallback = nullptr );
 
 	/** Collects all objects for a given "root set". The root set in this case will be a list of buildables and we gather objects from them */
 	void CollectObjects( TArray< class AFGBuildable* >& buildables, TArray< UObject* >& out_objectsToSerialize );
@@ -392,7 +392,7 @@ public:
 	void RebuildCategoryRecordsFromDescriptors( TArray< FBlueprintCategoryRecord >& out_categoryRecords );
 	
 	UFGBlueprintCategory* CreateBlueprintCategory( const FBlueprintCategoryRecord& record );
-	UFGBlueprintCategory* CreateBlueprintCategory( FText categoryName, int32 iconID, float menuPriority, TArray<FLocalUserNetIdBundle> createdBy ); // <FL> [KonradA] adding CreatedBy for UGC tracking
+	UFGBlueprintCategory* CreateBlueprintCategory( FText categoryName, int32 iconID, float menuPriority, FPlayerInfoHandle createdBy ); // <FL> [KonradA] adding CreatedBy for UGC tracking
 	
 	UFGBlueprintSubCategory* CreateBlueprintSubCategory( const FBlueprintSubCategoryRecord& record );
 
@@ -628,7 +628,7 @@ public:
 
 	/** Stores an array of all buildables that have been loaded into the blueprint world */
 	UPROPERTY()
-	TArray< AFGBuildable* > mBlueprintWorldBuildables;
+	TArray< TObjectPtr<AFGBuildable> > mBlueprintWorldBuildables;
 
 	/** UI Callback for when blueprint descriptors have changed */
 	UPROPERTY( BlueprintAssignable )
@@ -660,13 +660,13 @@ private:
 	///
 
 	UPROPERTY()
-	TArray< UFGBlueprintDescriptor* > mAllBlueprintDescriptors;
+	TArray< TObjectPtr<UFGBlueprintDescriptor> > mAllBlueprintDescriptors;
 
 	UPROPERTY()
-	TArray< UFGBlueprintCategory* > mAllBlueprintCategories;
+	TArray< TObjectPtr<UFGBlueprintCategory> > mAllBlueprintCategories;
 
 	UPROPERTY()
-	TArray< UFGBlueprintSubCategory* > mAllBlueprintSubCategories;
+	TArray< TObjectPtr<UFGBlueprintSubCategory> > mAllBlueprintSubCategories;
 
 	/** For saving/loading and replication we want the Blueprint information in an easy to modify environment
 	 * Initially the blueprint info was only stored on the blueprints themselves (in the header). This leads to
@@ -702,7 +702,7 @@ private:
 	
 	/** A world for loading Blueprint Data into so that the buildables can be analyzed / duplicated for holograms in the actual world */
 	UPROPERTY()
-	UWorld* mBlueprintWorld;
+	TObjectPtr<UWorld> mBlueprintWorld;
 
 	UPROPERTY()
 	TArray< FBlueprintRecord > mCachedRecords;
@@ -715,11 +715,11 @@ private:
 
 	/** This property is used to specify locally to the blueprint hologram which file to use in construction when the player selects a descriptor */
 	UPROPERTY()
-	UFGBlueprintDescriptor* mActiveBlueprintDescriptor;
+	TObjectPtr<UFGBlueprintDescriptor> mActiveBlueprintDescriptor;
 
 	/** List of all Blueprint Designers active in the world */
 	UPROPERTY()
-	TArray< class AFGBuildableBlueprintDesigner* > mAllBlueprintDesigners;
+	TArray< TObjectPtr<class AFGBuildableBlueprintDesigner> > mAllBlueprintDesigners;
 
 	// List of all blueprints and their hash values on the server
 	UPROPERTY( ReplicatedUsing=OnRep_ServerManifest )

@@ -3,7 +3,7 @@
 FReliableMessagingSteamConnection::FReliableMessagingSteamConnection(UNetConnection* Connection, FGuid ConnectionId): FReliableDataTransferProtocolReader(0), FReliableDataTransferProtocolWriter(0){ }
 FReliableMessagingSteamConnection::FReliableMessagingSteamConnection(HSteamNetConnection InConnectionHandle, FSteamSocketsSubsystem* InSocketSubsystem): FReliableDataTransferProtocolReader(0), FReliableDataTransferProtocolWriter(0){ }
 FReliableMessagingSteamConnection::~FReliableMessagingSteamConnection(){ }
-void FReliableMessagingSteamConnection::EnqueueMessage(uint8 Channel, TArray<uint8>&& Message){ }
+void FReliableMessagingSteamConnection::EnqueueTaggedMessage(FGameplayTag Tag, TArray<uint8>&& Message){ }
 FGuid FReliableMessagingSteamConnection::GetConnectionId() const { return FGuid(); }
 EReliableMessagingConnectionState FReliableMessagingSteamConnection::Tick(float DeltaTime){ return EReliableMessagingConnectionState::Disconnected; }
 void FReliableMessagingSteamConnection::DispatchMessages(TFunction<void(RDTProtocol::FMessage&&)> MessageDispatcher){ }
@@ -16,3 +16,4 @@ bool FReliableMessagingSteamConnection::WriteData(const uint8* Data, const int32
 void FReliableMessagingSteamConnection::CloseConnection(){ }
 void FReliableMessagingSteamConnection::OnSteamConnectionStatusChanged(
 	SteamNetConnectionStatusChangedCallback_t* Callback){ }
+bool FReliableMessagingSteamConnection::TrySendHandshake(){ return false; }

@@ -69,11 +69,11 @@ bool USessionSettingsManager::ShouldCreateSubsystem( UObject* Outer ) const
 	return FPluginModuleLoader::ShouldLoadModulesForWorld(WorldOuter);
 }
 
-void USessionSettingsManager::GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const {
+void USessionSettingsManager::GetAllUserSettings(TArray<TObjectPtr<UFGUserSettingApplyType>>& OutUserSettings) const {
 	return SessionSettings.GenerateValueArray(OutUserSettings);
 }
 
-void USessionSettingsManager::GetAllUserSettingsMap( TMap<FString, UFGUserSettingApplyType*>& OutUserSettings ) const {
+void USessionSettingsManager::GetAllUserSettingsMap( TMap<FString, TObjectPtr<UFGUserSettingApplyType>>& OutUserSettings ) const {
 	OutUserSettings.Append( SessionSettings );
 }
 
@@ -117,7 +117,7 @@ void USessionSettingsManager::OnOptionUpdated(FString String, FVariant Value) co
 FString USessionSettingsManager::SerializeSettingsToString() const {
 	TArray<FString> OptionStrings;
 	
-	for (const TPair<FString, UFGUserSettingApplyType*>& Pair : SessionSettings) {
+	for (const TPair<FString, TObjectPtr<UFGUserSettingApplyType>>& Pair : SessionSettings) {
 		FString Name = Pair.Key;
 		FVariant Value = Pair.Value->GetPendingAppliedValue();
 		if (Value.IsEmpty())
@@ -164,7 +164,7 @@ FVariant USessionSettingsManager::StringToVariant(const FString& String) {
 }
 
 UFGUserSettingApplyType* USessionSettingsManager::FindSessionSetting(const FString& strId) const {
-	UFGUserSettingApplyType* const* SessionSetting = SessionSettings.Find(strId);
+	const TObjectPtr<UFGUserSettingApplyType>* SessionSetting = SessionSettings.Find(strId);
 	if (!SessionSetting) {
 		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Could not find session setting '%s'"), *strId);
 		return nullptr;
@@ -193,13 +193,13 @@ bool USessionSettingsManager::IsGlobalManager() const {
 }
 
 void USessionSettingsManager::SubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate) {
-	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
+	for (const TTuple<FString, TObjectPtr<UFGUserSettingApplyType>>& Options : SessionSettings) {
 		Options.Value->AddSubscriber(onOptionUpdatedDelegate);
 	}
 }
 
 void USessionSettingsManager::UnsubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate) {
-	for (const TTuple<FString, UFGUserSettingApplyType*>& Options : SessionSettings) {
+	for (const TTuple<FString, TObjectPtr<UFGUserSettingApplyType>>& Options : SessionSettings) {
 		Options.Value->RemoveSubscriber(onOptionUpdatedDelegate);
 	}
 }

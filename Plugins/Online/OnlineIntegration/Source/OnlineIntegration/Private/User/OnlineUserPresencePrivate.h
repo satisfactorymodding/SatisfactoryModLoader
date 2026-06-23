@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "OnlineUserPresence.h"
+#include "User/OnlineUserPresence.h"
 
 #include "OnlineUserPresencePrivate.generated.h"
 

@@ -7,6 +7,7 @@
 #include "FGUISettings.generated.h"
 
 class UFGPopupWidgetContent;
+class UUserWidget;
 
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Satisfactory UI Settings" ) )
 class FACTORYGAME_API UFGUISettings : public UDeveloperSettings

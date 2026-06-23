@@ -90,7 +90,7 @@ public:
 
 	/** Caching the character one */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim" )
-	AFGCharacterBase* mCachedCharacter;
+	TObjectPtr<AFGCharacterBase> mCachedCharacter;
 
 	/** Caching movement mode */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim" )
@@ -154,11 +154,11 @@ public:
 
 	/** Rotation values when turning left */
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
-	UCurveFloat* mTurnLeftCurve;
+	TObjectPtr<UCurveFloat> mTurnLeftCurve;
 
 	/** Rotation values when turning right */
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
-	UCurveFloat* mTurnRightCurve;
+	TObjectPtr<UCurveFloat> mTurnRightCurve;
 
 	/** I don't even know anymore, converting BP stuff */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim" )

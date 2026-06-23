@@ -49,8 +49,8 @@ public:
 	// End USubsystem
 	
 	// Begin IFGAdvancedGameSettingsInterface
-	virtual void GetAllUserSettings( TArray< UFGUserSettingApplyType* >& OutUserSettings ) const override;
-	virtual void GetAllUserSettingsMap( TMap< FString, UFGUserSettingApplyType* >& OutUserSettings ) const override; //<FL>[KonradA] Add a direct map getter to avoid conversions from and to a map with loss of key data in certain situations
+	virtual void GetAllUserSettings( TArray< TObjectPtr<UFGUserSettingApplyType> >& OutUserSettings ) const override;
+	virtual void GetAllUserSettingsMap( TMap< FString, TObjectPtr<UFGUserSettingApplyType> >& OutUserSettings ) const override; //<FL>[KonradA] Add a direct map getter to avoid conversions from and to a map with loss of key data in certain situations
 	virtual UFGUserSettingApplyType* FindUserSetting(const FString& SettingId) const override;
 	virtual bool HasAnyUnsavedOptionValueChanges() const override;
 	virtual bool HasPendingApplyOptionValue(const FString& cvar) const override;
@@ -70,5 +70,5 @@ private:
 	void TryInitAdvancedGameSettings();
 private:
 	UPROPERTY( Transient )
-	TMap< FString, class UFGUserSettingApplyType* > mUserSettings;
+	TMap< FString, TObjectPtr<class UFGUserSettingApplyType> > mUserSettings;
 };

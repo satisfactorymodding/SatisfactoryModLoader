@@ -13,7 +13,7 @@ struct FPoleVariation
 	GENERATED_BODY()
 
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* StaticMesh;
+	TObjectPtr<UStaticMesh> StaticMesh;
 	
 	UPROPERTY( EditDefaultsOnly )
 	float Height;
@@ -57,6 +57,8 @@ public:
 	bool virtual DoesContainLightweightInstances_Native() const override { return mCanContainLightweightInstances && mPoleVariations.Num() > 0; }
 	virtual TArray<struct FInstanceData> GetActorLightweightInstanceData_Implementation() const override;
 
+	virtual struct FInstanceData CreatePoleInstanceData( int32 variationIndex ) const;
+
 	/** This poles height. */
 	UPROPERTY( SaveGame, Replicated )
 	float mHeight;
@@ -67,7 +69,7 @@ public:
 
 	/** Connection component for this pole. */
 	UPROPERTY( VisibleAnywhere, Category = "Pole" )
-	class UFGConnectionComponent* mSnapOnly0;
+	TObjectPtr<class UFGConnectionComponent> mSnapOnly0;
 
 	/** Which pole variation index to use */
 	UPROPERTY( Replicated, SaveGame )

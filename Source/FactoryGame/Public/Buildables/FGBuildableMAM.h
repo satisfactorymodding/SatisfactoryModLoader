@@ -26,7 +26,7 @@ public:
 	//Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	//End IFGSignificanceInterface
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "MAM" )

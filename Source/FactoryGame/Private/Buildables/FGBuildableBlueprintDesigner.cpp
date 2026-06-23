@@ -60,7 +60,7 @@ void AFGBuildableBlueprintDesigner::OnBuildableConstructedInsideDesigner(AFGBuil
 void AFGBuildableBlueprintDesigner::OnBuildableDismantledInsideDesigner(AFGBuildable* buildable){ }
 void AFGBuildableBlueprintDesigner::OnBuildableChangedInsideDesigner(AFGBuildable* buildable){ }
 void AFGBuildableBlueprintDesigner::CalculateBlueprintCost(TArray<FItemAmount>& cost) const{ }
-void AFGBuildableBlueprintDesigner::SaveBlueprint(FBlueprintRecord blueprintRecord, AFGPlayerController* controller, bool bFromDesignerContext){ }
+void AFGBuildableBlueprintDesigner::SaveBlueprint(FBlueprintRecord blueprintRecord, AFGPlayerController* controller, bool bUpdateLastEditedBy){ }
 void AFGBuildableBlueprintDesigner::DismantleCurrentBuildables(AFGPlayerController* controller){ }
 void AFGBuildableBlueprintDesigner::GetCurrentBuildablesDismantleRefund(TArray< FInventoryStack >& out_refund, bool noBuildCostEnabled){ }
 EBlueprintDesignerLoadResult AFGBuildableBlueprintDesigner::LoadBlueprintIntoDesigner(UFGBlueprintDescriptor* blueprintDescriptor, AFGPlayerController* controller){ return EBlueprintDesignerLoadResult(); }

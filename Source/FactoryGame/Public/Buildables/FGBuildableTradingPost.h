@@ -87,8 +87,8 @@ public:
 	UFUNCTION()
 	virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
 	//<FL>[KonradA]
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override { return TArray< struct FLocalUserNetIdBundle >(); }
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	UFUNCTION() virtual FPlayerInfoHandle GetLastEditedBy() const override { return FPlayerInfoHandle(); }
+	UFUNCTION() virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy ) {}
 	//</FL>
 	// End IFGActorRepresentationInterface
 
@@ -168,7 +168,7 @@ public:
 
 	/** References to the created generators */
 	UPROPERTY( ReplicatedUsing = OnRep_Generators, SaveGame )
-	TArray< AFGBuildableGenerator* > mGenerators;
+	TArray< TObjectPtr<AFGBuildableGenerator> > mGenerators;
 
 	//@todo Why are these recipes and not only TSubclassOf<AFGBuildable>? This seems like a lot of setup just for the extra buildables? Hologram can be created for buildables as well and not just recipes!
 	/** Class of storage to create with the trading post */
@@ -193,30 +193,30 @@ public:
 	
 	/** References to the created storage */
 	UPROPERTY( ReplicatedUsing = OnRep_Storage, SaveGame )
-	class AFGBuildable* mStorage;
+	TObjectPtr<class AFGBuildable> mStorage;
 
 	/** References to the created Hub Terminal */
 	UPROPERTY( ReplicatedUsing = OnRep_HubTerminalOrWorkBench, SaveGame )
-	class AFGBuildableHubTerminal* mHubTerminal;
+	TObjectPtr<class AFGBuildableHubTerminal> mHubTerminal;
 
 	/** References to the created work bench */
 	UPROPERTY( ReplicatedUsing = OnRep_HubTerminalOrWorkBench, SaveGame )
-	class AFGBuildable* mWorkBench;
+	TObjectPtr<class AFGBuildable> mWorkBench;
 
 	/** References to customization locker */
 	UPROPERTY( ReplicatedUsing = OnRep_Locker, SaveGame )
-	AFGBuildable* mLocker;
+	TObjectPtr<AFGBuildable> mLocker;
 
 	UPROPERTY( ReplicatedUsing = OnRep_Potty, SaveGame )
-	AFGBuildable* mPioneerPotty;
+	TObjectPtr<AFGBuildable> mPioneerPotty;
 
 	/** References to the created calendar */
 	UPROPERTY( ReplicatedUsing = OnRep_Calendar )
-	class AFGBuildableCalendar* mCalendar;
+	TObjectPtr<class AFGBuildableCalendar> mCalendar;
 
 	/** References to the created mini game */
 	UPROPERTY( ReplicatedUsing = OnRep_MiniGame )
-	AFGBuildable* mMiniGame;
+	TObjectPtr<AFGBuildable> mMiniGame;
 	
 	/** Arrays containing ints for what level  we should activate/show the generator */
 	UPROPERTY( EditDefaultsOnly, Category = "Trading Post", Meta = (NoAutoJson = true) )
@@ -239,7 +239,7 @@ public:
 	int32 mMiniGameAndCalendarVisibilityLevel;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Trading Post" )
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 
 protected:
 
@@ -253,7 +253,7 @@ protected:
 
 	/** A cached schematic manager */
 	UPROPERTY()
-	class AFGSchematicManager* mSchematicManager;
+	TObjectPtr<class AFGSchematicManager> mSchematicManager;
 
 	/** The starting resources in the tradingpost storage */
 	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
@@ -261,43 +261,43 @@ protected:
 
 	/** Component used to determine generators location */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mGenerator1Location;
+	TObjectPtr<USceneComponent> mGenerator1Location;
 
 	/** Component used to determine generators location */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mGenerator2Location;
+	TObjectPtr<USceneComponent> mGenerator2Location;
 
 	/** Component used to determine storage location */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mStorageLocation;
+	TObjectPtr<USceneComponent> mStorageLocation;
 
 	/** Component used to determine Hub terminal location */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mHubTerminalLocation;
+	TObjectPtr<USceneComponent> mHubTerminalLocation;
 
 	/** Component used to determine work bench terminal location */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mWorkBenchLocation;
+	TObjectPtr<USceneComponent> mWorkBenchLocation;
 
 	/** Component used to determine calendar location */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mCalendarLocation;
+	TObjectPtr<USceneComponent> mCalendarLocation;
 
 	/** Component used to determine mini game location */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mMiniGameLocation;
+	TObjectPtr<USceneComponent> mMiniGameLocation;
 
 	/** Component used to determine customization location */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mCharacterCustomizationLocation;
+	TObjectPtr<USceneComponent> mCharacterCustomizationLocation;
 
 	/** Component used to determine customization location */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mPioneerPottyLocation;
+	TObjectPtr<USceneComponent> mPioneerPottyLocation;
 
 private:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTexture;
+	TObjectPtr<class UTexture2D> mActorRepresentationTexture;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	FText mRepresentationText;

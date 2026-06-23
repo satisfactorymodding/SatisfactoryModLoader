@@ -33,6 +33,7 @@ public:
 	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf<UFGBuildGunModeDescriptor> >& out_buildmodes ) const override;
 	virtual void OnBuildModeChanged( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) override;
 	virtual int32 GetRotationStep() const override;
+	virtual TSubclassOf< UFGHologramBuildModeDescriptor > SampleBuildGunMode( AFGBuildable* ) const override;
 	// End AFGHologram Interface
 
 protected:
@@ -63,18 +64,18 @@ protected:
 	
 private:
 	UPROPERTY()
-	const class UFGBuildableRailroadSignalSparseData* mSparseData;
+	TObjectPtr<const class UFGBuildableRailroadSignalSparseData> mSparseData;
 	
 	UPROPERTY()
-	class UStaticMeshComponent* mSignalComponent;
+	TObjectPtr<class UStaticMeshComponent> mSignalComponent;
 	
 	/** The track connection we snapped to. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class UFGRailroadTrackConnectionComponent* mSnappedConnection;
+	TObjectPtr<class UFGRailroadTrackConnectionComponent> mSnappedConnection;
 
 	/** The track we snapped to. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableRailroadTrack* mSnappedRailroadTrack;
+	TObjectPtr<class AFGBuildableRailroadTrack> mSnappedRailroadTrack;
 
 	/** The distance at which we snapped to the railroad track. */
 	float mSnappedDistance;
@@ -85,5 +86,5 @@ private:
 
 	/** If we upgrade a signal to another type of signal, this is the signal we are replacing. */
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableRailroadSignal* mUpgradeTarget;
+	TObjectPtr<class AFGBuildableRailroadSignal> mUpgradeTarget;
 };

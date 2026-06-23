@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "MVVMViewModelBase.h"
-
+#include "Online/CoreOnline.h"
 #include "SessionMemberInformation.generated.h"
 
+class APlayerState;
 class UOnlineUserInfo;
 
 /**
@@ -21,25 +22,37 @@ class ONLINEINTEGRATION_API USessionMemberInformation : public UMVVMViewModelBas
 	friend class USessionInformation;
 public:
 
+	UFUNCTION(BlueprintCallable)
 	APlayerState* GetPlayerState() const
 	{
 		return PlayerState;
 	}
 
+	UFUNCTION(BlueprintCallable)
 	UOnlineUserInfo* GetOnlineUserInfo() const
 	{
 		return OnlineUserInfo;
 	}
 
+	/**
+	 * Account ID for the platform the player is currently logged in on (main backend)
+	 * This is different from PlayerState UniqueId which will be the cross play ID
+	 * This information is only available when player state is provided and is game-defined
+	 */
+	FORCEINLINE UE::Online::FAccountId GetPlatformAccountId() const
+	{
+		return PlatformAccountId;
+	}
+
 	// Do not call these setters from the outside, they are meant for internal use only.
 	void SetPlayerState(APlayerState* InPlayerState);
 	void SetOnlineUserInfo(UOnlineUserInfo* InOnlineUserInfo);
-	void SetPlayingPlatformName(const FName& InPlayingPlatformName); // <FL> [TranN] See FGPlayerState::mPlayingPlatformName
-	void SetPlatformAvatarURL(const FString& InPlatformAvatarURL);	// <FL> [MartinC] See FGPlayerState::mPlatformAvatarURL
 
 	UFUNCTION(BlueprintCallable)
-	void ShowProfileUI();
+	virtual void ShowProfileUI();
 protected:
+	void SetPlatformAvatarURL(const FString& InPlatformAvatarURL);
+	void SetPlayingPlatformName(const FName& InPlayingPlatformName);
 	
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Category="Session Member")
 	TObjectPtr<class APlayerState> PlayerState;
@@ -47,13 +60,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Category="Session Member")
 	TObjectPtr<UOnlineUserInfo> OnlineUserInfo;
 
-	// <FL> [TranN] See FGPlayerState::mPlayingPlatformName
+	UE::Online::FAccountId PlatformAccountId;
+
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Category="Session Member")
 	FName PlayingPlatformName;
-	// </FL>
 
-	// <FL> [MartinC] See FGPlayerState::mPlatformAvatarURL
 	UPROPERTY(BlueprintReadOnly, FieldNotify, Category = "Session Member")
 	FString PlatformAvatarURL;
-	// </FL>
 };

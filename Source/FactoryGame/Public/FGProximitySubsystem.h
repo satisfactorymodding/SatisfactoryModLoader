@@ -5,7 +5,10 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagContainer.h"
 #include "FGProximitySubsystem.generated.h"
+
+class UNiagaraSystem;
 
 USTRUCT( BlueprintType )
 struct FMapAreaParticleCollection
@@ -18,7 +21,11 @@ struct FMapAreaParticleCollection
 
 	/* Particle associated with map areas */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Proximity" )
-	class UParticleSystem* Particle;
+	TObjectPtr<class UParticleSystem> Particle;
+
+	/* Particle associated with map areas */
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Proximity" )
+	TObjectPtr<UNiagaraSystem> NiagaraSystem;
 };
 
 /*Struct for future extend~ability.*/
@@ -73,6 +80,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Proximity" )
 	class UParticleSystem* GetParticleSystemFromMapArea( TSubclassOf< class UFGMapArea > inArea );
 
+	/** Gets particle system mapped to provided map area. Can return null if no mapping exist */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Proximity" )
+	UNiagaraSystem* GetNiagaraParticleSystemFromMapArea( TSubclassOf< class UFGMapArea > inArea );
+
 	/** Spawns a decal at the given location and rotation, fire and forget. Does not replicate.
 		If we reached max amount of decals an old one will be replaced
 
@@ -84,6 +95,9 @@ public:
 	 */
 	void SpawnPooledDecal( const UObject* WorldContextObject, class UMaterialInterface* DecalMaterial, FVector DecalSize, FVector Location, FRotator Rotation = FRotator( 0, 0, 0 ), float LifeSpan = 0 );
 
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "FactoryGame|Proximity" )
+	TMap< TSubclassOf< UFGMapArea > ,FGameplayTag > mAchievementAreas;
+	
 protected:
 	// Begin AActor interface
 	virtual void BeginPlay() override;
@@ -132,10 +146,10 @@ private:
 	
 private:
 	UPROPERTY()
-	class AFGPlayerController* mOwningController;
+	TObjectPtr<class AFGPlayerController> mOwningController;
 
 	UPROPERTY(  )
-	USceneComponent* mRootComponent;
+	TObjectPtr<USceneComponent> mRootComponent;
 
 	/** Contains mappings of particle system that should play when entering a given map area */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Proximity" )
@@ -143,7 +157,7 @@ private:
 
 	/** Pool of decals */
 	UPROPERTY()
-	TArray< UDecalComponent* > mPooledDecals;
+	TArray< TObjectPtr<UDecalComponent> > mPooledDecals;
 
 	/** How many decals we want to show */	
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Proximity" )

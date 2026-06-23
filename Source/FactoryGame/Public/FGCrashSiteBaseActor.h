@@ -72,5 +72,5 @@ protected:
 
 	/** Active dismantle build effect currently playing */
 	UPROPERTY()
-	UFGMaterialEffect_Build* mActiveDismantleEffect;
+	TObjectPtr<UFGMaterialEffect_Build> mActiveDismantleEffect;
 };

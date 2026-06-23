@@ -85,7 +85,7 @@ struct FFGCreaturePerceptionSettings
 	
 	/** The sight configuration for this creature. */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Perception" )
-	class UAISenseConfig_Sight* SightConfig;
+	TObjectPtr<class UAISenseConfig_Sight> SightConfig;
 
 	/** If something is within this radius, it will immediately be fully visible instead of slowly building up. */
 	UPROPERTY( EditDefaultsOnly, Category = "Perception" )
@@ -93,7 +93,7 @@ struct FFGCreaturePerceptionSettings
 	
 	/** The hearing configuration for this creature. */
     UPROPERTY( EditDefaultsOnly, Instanced, Category = "Perception" )
-    class UAISenseConfig_Hearing* HearingConfig;
+    TObjectPtr<class UAISenseConfig_Hearing> HearingConfig;
 };
 
 UENUM( BlueprintType, Meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
@@ -138,9 +138,9 @@ public:
 
 private:
 	UPROPERTY()
-	AFGCreature* mCreature = nullptr;
+	TObjectPtr<AFGCreature> mCreature = nullptr;
 	UPROPERTY()
-	AFGCreatureController* mCreatureController = nullptr;
+	TObjectPtr<AFGCreatureController> mCreatureController = nullptr;
 
 };
 
@@ -151,7 +151,7 @@ struct FCreatureAction
 	GENERATED_BODY()
 
 	/** States for which the action will be enabled for: Default = none */
-	UPROPERTY( EditAnywhere, meta=(Bitmask,BitmaskEnum="ECreatureState") )
+	UPROPERTY( EditAnywhere, meta=(Bitmask,BitmaskEnum="/Script/FactoryGame.ECreatureState") )
 	uint8 RequiredStates;
 
 	/** Whether or not the action should start on cooldown when it enters a state where it can be used. */
@@ -164,7 +164,7 @@ struct FCreatureAction
 	
 	/** Action to use */
 	UPROPERTY( EditAnywhere, Instanced )
-	UFGAction* Action;
+	TObjectPtr<UFGAction> Action;
 
 	FCreatureAction()
 	{
@@ -181,7 +181,7 @@ struct FCreatureActionInterrupt
 	GENERATED_BODY()
 
 	/** States for which the interrupt can take place for: Default = none */
-	UPROPERTY( EditAnywhere, meta=(Bitmask,BitmaskEnum="ECreatureState") )
+	UPROPERTY( EditAnywhere, meta=(Bitmask,BitmaskEnum="/Script/FactoryGame.ECreatureState") )
 	uint8 StateInterrupt;
 
 	/** Action Name. Only used for display purpose in arrays. */
@@ -190,11 +190,11 @@ struct FCreatureActionInterrupt
 
 	/** Checks to pass to trigger interrupt */
 	UPROPERTY( EditAnywhere, Instanced )
-	TArray<UFGCreatureInterruptTest*> Interrupts;
+	TArray<TObjectPtr<UFGCreatureInterruptTest>> Interrupts;
 
 	/** Action to play on Interrupt */
 	UPROPERTY( EditAnywhere, Instanced )
-	UFGAction* Action;
+	TObjectPtr<UFGAction> Action;
 
 	FCreatureActionInterrupt()
 	{
@@ -211,12 +211,12 @@ struct FACTORYGAME_API FCreatureBehaviorOverride
 	GENERATED_BODY()
 	
 	/** The behavior tree will only be executed for the following states. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, meta=(Bitmask,BitmaskEnum="ECreatureState") )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, meta=(Bitmask,BitmaskEnum="/Script/FactoryGame.ECreatureState") )
 	uint8 OverriddenStates = {};
 
 	/** The custom behavior tree to run. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	UBehaviorTree* BehaviorTree = {};
+	TObjectPtr<UBehaviorTree> BehaviorTree = {};
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCreatureStunnedChanged, bool, isStunned );
@@ -501,7 +501,7 @@ private:
 public:
 	/** Spline we are set to follow */
 	UPROPERTY( SaveGame, EditInstanceOnly, Category = "Creature" )
-	class AFGSplinePath* mSpline;
+	TObjectPtr<class AFGSplinePath> mSpline;
 
 	/** Indicates if we should optimize this creatures mesh ( disable ticking ) when looking at it from a distance ( not good on large creatures ) */
 	UPROPERTY( EditDefaultsOnly, Category = "Creature" )
@@ -545,7 +545,7 @@ protected:
 
 	/** What behavior to use for this creature. */
 	UPROPERTY( EditAnywhere, Category = "AI" )
-	UBehaviorTree* mBehaviorTree;
+	TObjectPtr<UBehaviorTree> mBehaviorTree;
 
 	/** Noises that we want to investigate. Usually creatures just investigate whatever they can be hostile against, but exceptions can be made with this. */
 	UPROPERTY( EditAnywhere, Category = "AI" )
@@ -572,7 +572,7 @@ protected:
 	float mUnreachableTargetDamageStressMultiplier;
 	
 	/** Which behavior states are disabled for this creature. */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "AI", meta=(Bitmask,BitmaskEnum="ECreatureState") )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "AI", meta=(Bitmask,BitmaskEnum="/Script/FactoryGame.ECreatureState") )
 	uint8 mDisabledBehaviorStates;
 
 	/** The current behavior state of the creature. Replicated to clients. */
@@ -588,7 +588,7 @@ protected:
 
 	/** Used to accumulate stress for the creature based on perception. */
 	UPROPERTY( EditAnywhere, Instanced, Category = "AI" )
-	TArray< class UFGStimulusAccumulator* > mStimuliStressAccumulators;
+	TArray< TObjectPtr<class UFGStimulusAccumulator> > mStimuliStressAccumulators;
 
 	/** Maximum amount of aggro a target can have. */
 	UPROPERTY( EditAnywhere, Category = "AI" )
@@ -600,15 +600,15 @@ protected:
 
 	/** Used to accumulate stress for the creature based on damage taken. */
 	UPROPERTY( EditAnywhere, Instanced, Category = "AI" )
-	TArray< class UFGDamageTypeAccumulator* > mDamageTypeStressAccumulators;
+	TArray< TObjectPtr<class UFGDamageTypeAccumulator> > mDamageTypeStressAccumulators;
 
 	/** Curve used to increase aggro per second for a visible target based on distance towards it. */
 	UPROPERTY( EditAnywhere, Category = "AI" )
-	UCurveFloat* mAggroGainRateCurve;
+	TObjectPtr<UCurveFloat> mAggroGainRateCurve;
 	
 	/** Curve used to describe the rate of how fast a creature sees something based on distance. The thing is considered visible once its visibility value reaches 1.0. */
 	UPROPERTY( EditAnywhere, Category = "AI" )
-	UCurveFloat* mVisibilityGainRateCurve;
+	TObjectPtr<UCurveFloat> mVisibilityGainRateCurve;
 
 	/** How much aggro per second the creature builds up for a target when they're visible. Gets multiplied with AggroGainRateCurve. */
 	UPROPERTY( EditAnywhere, Category = "AI" )
@@ -624,7 +624,7 @@ protected:
 	
 	/** Materials that may be used on arachnids */
 	UPROPERTY( EditAnywhere, Category = "Arachnophobia" )
-	TArray< UMaterialInstance* > mArachnophobiaModeMaterials;
+	TArray< TObjectPtr<UMaterialInstance> > mArachnophobiaModeMaterials;
 
 	/** Is creature considered an arachnid */
 	UPROPERTY( EditAnywhere, Category = "Arachnophobia" )
@@ -648,7 +648,7 @@ protected:
 private:
 	/** Our controller. */
 	UPROPERTY()
-	class AFGCreatureController* mCreatureController;
+	TObjectPtr<class AFGCreatureController> mCreatureController;
 	
 	/** Should this creature be able to persist in the world */
 	UPROPERTY( SaveGame, EditAnywhere, Category = "Creature" )
@@ -668,19 +668,19 @@ private:
 
 	/** Component used to determine eye location for a creature */
 	UPROPERTY( EditAnywhere )
-	USceneComponent* mEyeLocationComponent;
+	TObjectPtr<USceneComponent> mEyeLocationComponent;
 
 	/**Sprite for the arachnophobia mode */
 	UPROPERTY( EditAnywhere )
-	class UBillboardComponent* mArachnophobia_Sprite;
+	TObjectPtr<class UBillboardComponent> mArachnophobia_Sprite;
 
 	/** Material for the arachnophobia mode */
 	UPROPERTY( EditAnywhere )
-	class UMaterialBillboardComponent* mArachnophobia_Material;
+	TObjectPtr<class UMaterialBillboardComponent> mArachnophobia_Material;
 
 	/** Particle for the arachnophobia mode */
 	UPROPERTY( EditAnywhere )
-	class UParticleSystemComponent* mArachnophobia_Particle;
+	TObjectPtr<class UParticleSystemComponent> mArachnophobia_Particle;
 
 	/** How much of day time percentage ( 0.0 - 1.0 ) should count towards night time  */
 	UPROPERTY( EditAnywhere, Category = "Spawning" )
@@ -696,7 +696,7 @@ private:
 
 	/** Reference to the spawner that handles this creature */
 	UPROPERTY( SaveGame )
-	class AFGCreatureSpawner* mOwningSpawner;
+	TObjectPtr<class AFGCreatureSpawner> mOwningSpawner;
 	
 	/** Whether or not this creature can be stunned at all. */
 	UPROPERTY( EditAnywhere, Category = "Stun" )

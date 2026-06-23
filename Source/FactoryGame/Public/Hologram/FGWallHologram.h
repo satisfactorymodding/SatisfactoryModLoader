@@ -22,7 +22,7 @@ public:
 	// End AActor Interface
 
 	// Begin AFGHologram interface
-	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual void SetZoopFromHitresult( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
@@ -36,12 +36,9 @@ protected:
 	virtual int32 GetRotationStep() const override;
 	// End of AFGHologram interface
 
-	// Begin AFGFactoryBuildingHologram Interface
-	virtual void CreateZoopInstances() override;
+	// Begin AFGBuildableHologram Interface
+	virtual void CreateZoopInstances( const FIntVector& DesiredZoop ) override;
 	virtual FVector ConvertZoopToWorldLocation( const FIntVector& zoop ) const override;
-	// End AFGFactoryBuildingHologram Interface
-
-	// Begin AFGBuildableHologram interface
 	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	// End AFGBuildableHologram interface
 
@@ -82,7 +79,7 @@ protected:
 	TSubclassOf<class AFGBuildableWall> mOriginalWallBuildClass;
 
 	UPROPERTY( CustomSerialization, Replicated )
-	class AFGBuildableWall* mUpgradeTarget;
+	TObjectPtr<class AFGBuildableWall> mUpgradeTarget;
 
 	/** Limits zooping to only lines */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )

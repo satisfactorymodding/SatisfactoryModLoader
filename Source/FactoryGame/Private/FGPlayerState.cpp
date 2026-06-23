@@ -42,8 +42,6 @@ void UFGPlayerHotbar::Internal_DestroyShortcutAtIndex(int32 shortcutIndex, bool 
 void UFGPlayerHotbar::Internal_InitializeShortcutAtIndex(int32 shortcutIndex, UFGHotbarShortcut* newShortcut, bool silent){ }
 void FPlayerRules::GetDebugOverlayData(TArray<FString>& out_debugOverlayData) const{ }
 AFGPlayerState::AFGPlayerState() : Super() {
-	this->mPlayingPlatformName = TEXT("None");
-	this->mPlatformAvatarURL = TEXT("");
 	this->mLastActivePlayerHotbar = nullptr;
 	this->mDefaultEmoteShortcut = nullptr;
 	this->mSlotNum = -1;
@@ -75,8 +73,8 @@ AFGPlayerState::AFGPlayerState() : Super() {
 	this->mLastSelectedResourceSinkShopCategory = nullptr;
 	this->mPrivateTodoList = TEXT("");
 	this->mShoppingListComponent = CreateDefaultSubobject<UFGShoppingListComponent>(TEXT("ShoppingListComponent"));
-	this->mIsOnline = false;
 	this->mLastSafeCharacterLocation = FVector::ZeroVector;
+	this->mIsSnapModeEnabledForGamepad = false;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -85,13 +83,11 @@ AFGPlayerState::AFGPlayerState() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bReplicateUsingRegisteredSubObjectList = true;
-	this->NetUpdateFrequency = 10.0;
+	this->SetNetUpdateFrequency(10.0);
 }
 void AFGPlayerState::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGPlayerState, mPlayingPlatformName);
-	DOREPLIFETIME(AFGPlayerState, mPlatformAvatarURL);
 	DOREPLIFETIME(AFGPlayerState, mPlayerHotbars);
 	DOREPLIFETIME(AFGPlayerState, mCurrentHotbarIndex);
 	DOREPLIFETIME(AFGPlayerState, mBuildableSubCategoryDefaultMatDesc);
@@ -105,6 +101,7 @@ void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(AFGPlayerState, mCustomColorData);
 	DOREPLIFETIME(AFGPlayerState, mShoppingListSettings);
 	DOREPLIFETIME(AFGPlayerState, mPlayerCustomizationData);
+	DOREPLIFETIME(AFGPlayerState, mPlatformPlayerInfoHandle);
 	DOREPLIFETIME(AFGPlayerState, mPlayedMessages);
 	DOREPLIFETIME(AFGPlayerState, mRememberedFirstTimeEquipmentClasses);
 	DOREPLIFETIME(AFGPlayerState, mNumArmSlots);
@@ -124,13 +121,11 @@ void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(AFGPlayerState, mPlayerSpecificSchematics);
 	DOREPLIFETIME(AFGPlayerState, mCentralStoragePinnedItems);
 	DOREPLIFETIME(AFGPlayerState, mMaxDismantleStacksInInventory);
-	DOREPLIFETIME(AFGPlayerState, mIsOnline);
 }
 void AFGPlayerState::BeginPlay(){ Super::BeginPlay(); }
 void AFGPlayerState::CopyProperties(APlayerState* playerState){ }
 void AFGPlayerState::ClientInitialize(AController* C){ }
-void AFGPlayerState::RegisterPlayerWithSession(bool bWasFromInvite){ }
-void AFGPlayerState::UnregisterPlayerWithSession(){ }
+void AFGPlayerState::OnRep_PlayerName(){ Super::OnRep_PlayerName(); }
 void AFGPlayerState::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGPlayerState::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGPlayerState::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -138,7 +133,8 @@ void AFGPlayerState::PostLoadGame_Implementation(int32 saveVersion, int32 gameVe
 void AFGPlayerState::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGPlayerState::NeedTransform_Implementation(){ return bool(); }
 bool AFGPlayerState::ShouldSave_Implementation() const{ return bool(); }
-void AFGPlayerState::SetPlayerColorData(FPlayerColorData slotData){ }
+UE::Online::FAccountId AFGPlayerState::GetPlatformAccountId() const{ return UE::Online::FAccountId(); }
+void AFGPlayerState::SetPlayerColorData(const FPlayerColorData& slotData){ }
 void AFGPlayerState::SetCreatureHostility(EPlayerHostilityMode hostility){ }
 void AFGPlayerState::Server_SetCreatureHostility_Implementation(EPlayerHostilityMode hostility){ }
 void AFGPlayerState::SetKeepInventory(const EPlayerKeepInventoryMode keepInventoryMode){ }
@@ -150,6 +146,7 @@ bool AFGPlayerState::HasMessageBeenPlayed( UFGMessage* message) const{ return bo
 void AFGPlayerState::MarkMessageAsPlayed( UFGMessage* message){ }
 void AFGPlayerState::Server_MarkMessageAsPlayed_Implementation( UFGMessage* message){ }
 void AFGPlayerState::FetchImportantMessages(){ }
+bool AFGPlayerState::IsValidActivePlayerState() const{ return bool(); }
 void AFGPlayerState::SetHotbarIndex(int32 newHotbarIndex){ }
 UFGPlayerHotbar* AFGPlayerState::GetActiveHotbar() const{ return nullptr; }
 UFGPlayerHotbar* AFGPlayerState::GetHotbarAtIndex(int32 hotbarIndex) const{ return nullptr; }
@@ -173,6 +170,7 @@ void AFGPlayerState::SetTakeFromInventoryBeforeCentralStorage(bool takeFromInven
 void AFGPlayerState::Server_SetTakeFromInventoryBeforeCentralStorage_Implementation(bool takeFromInventoryBeforeCentralStorage){ }
 void AFGPlayerState::SetCentralStorageInventoryWidgetExpanded(bool centralStorageInventoryWidgetExpanded){ }
 void AFGPlayerState::Server_SetCentralStorageInventoryWidgetExpanded_Implementation(bool centralStorageInventoryWidgetExpanded){ }
+bool AFGPlayerState::IsItemCategoryCollapsed(TSubclassOf<UFGItemCategory> itemCategory) const{ return bool(); }
 void AFGPlayerState::SetItemCategoryCollapsed(TSubclassOf<  UFGItemCategory > itemCategory, bool collapsed){ }
 void AFGPlayerState::Server_SetItemCategoryCollapsed_Implementation(TSubclassOf<  UFGItemCategory > itemCategory, bool collapsed){ }
 bool AFGPlayerState::Server_SetItemCategoryCollapsed_Validate(TSubclassOf<  UFGItemCategory > itemCategory, bool collapsed){ return bool(); }
@@ -209,13 +207,13 @@ TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > AFGPlayerState::
 void AFGPlayerState::SetSavedMatDescForMaterialCategory(TSubclassOf<  UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc, bool updateHotbarShortcuts){ }
 void AFGPlayerState::Server_SetSavedMatDescForMaterialCategory_Implementation(TSubclassOf<  UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc){ }
 void AFGPlayerState::UpdateHotbarShortcutsForMaterialDesc(TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > newDefaultMaterialDesc){ }
-void AFGPlayerState::SetPublicTodoList(const FString& newTodoList, const TArray< FLocalUserNetIdBundle >& lastEditedBy){ }
-void AFGPlayerState::Server_SetPublicTodoList_Implementation(const FString& newTodoList, const TArray< FLocalUserNetIdBundle >& lastEditedBy){ }
-void AFGPlayerState::Client_UpdatePublicTodoList_Implementation(const FString& updatedTodoList, const TArray< FLocalUserNetIdBundle >& lastEditedBy){ }
+void AFGPlayerState::SetPublicTodoList(const FString& newTodoList, const FPlayerInfoHandle& lastEditedBy){ }
+void AFGPlayerState::Server_SetPublicTodoList_Implementation(const FString& newTodoList, const FPlayerInfoHandle& lastEditedBy){ }
+void AFGPlayerState::Client_UpdatePublicTodoList_Implementation(const FString& updatedTodoList, const FPlayerInfoHandle& lastEditedBy){ }
 void AFGPlayerState::SetPrivateTodoList(const FString& newTodoList){ }
 void AFGPlayerState::Server_SetPrivateTodoList_Implementation(const FString& newTodoList){ }
 FString AFGPlayerState::GetPublicTodoList() const{ return FString(); }
-TArray<FLocalUserNetIdBundle> AFGPlayerState::GetPublicTodoListLastEditedBy() const{ return TArray<FLocalUserNetIdBundle>(); }
+FPlayerInfoHandle AFGPlayerState::GetPublicTodoListLastEditedBy() const{ return FPlayerInfoHandle(); }
 void AFGPlayerState::SetShoppingListSettings(const FShoppingListSettings& newShoppingListSettings){ }
 void AFGPlayerState::Server_SetShoppingListSettings_Implementation(const FShoppingListSettings& newShoppingListSettings){ }
 void AFGPlayerState::SetMaxDismantleStacksInInventory(int32 newMaxDismantleStacksInInventory){  }
@@ -243,7 +241,9 @@ void AFGPlayerState::Internal_AddPurchasedPlayerSpecificSchematic(const TSubclas
 void AFGPlayerState::Internal_NotifyPlayerSpecificSchematicsPurchased(const TArray<TSubclassOf<UFGSchematic>>& schematics, ESchematicUnlockFlags unlockFlags){  }
 void AFGPlayerState::SetClientIdentity(const FClientIdentityInfo& clientIdentity){ }
 const FClientIdentityInfo& AFGPlayerState::GetClientIdentity() const{ return *(new FClientIdentityInfo); }
-void AFGPlayerState::SetOnlineState(bool isPlayerOnline){  }
+void AFGPlayerState::SetPlatformPlayerInfo(const FPlayerInfoHandle& newPlatformPlayerInfo){ }
+void AFGPlayerState::RegisterPlayerWithSession(bool bFromInvite){ Super::RegisterPlayerWithSession(bFromInvite); }
+void AFGPlayerState::UnregisterPlayerWithSession(){ Super::UnregisterPlayerWithSession(); }
 void AFGPlayerState::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::OnRep_PlayerHotbars(){ }
@@ -276,14 +276,6 @@ void AFGPlayerState::SubscribeToHotbar(UFGPlayerHotbar* hotbar){ }
 void AFGPlayerState::UnsubscribeFromHotbar(UFGPlayerHotbar* hotbar){ }
 void AFGPlayerState::OnShortcutConstructed(UFGHotbarShortcut* shortcut){ }
 void AFGPlayerState::OnShortcutDestroyed(UFGHotbarShortcut* shortcut){ }
-UE::Online::FAccountId AFGPlayerState::GetPlatformAccountId(bool bForceFromReplication) const{ return UE::Online::FAccountId(); }
-UE::Online::FAccountId AFGPlayerState::GetPlatformAccountId() const{ return Super::GetPlatformAccountId(); }
-USessionMemberInformation* AFGPlayerState::GetSessionMemberInformation() const{ return nullptr; }
-void AFGPlayerState::OnRep_PlayingPlatformName(){  }
-void AFGPlayerState::OnRep_PlatformAvatarURL(){  }
-void AFGPlayerState::CachePlatformAvatar(){  }
-void AFGPlayerState::OnPlatformAvatarDownloaded(UTexture2DDynamic* DownloadedTexture){  }
-void AFGPlayerState::Server_SetPlayerNames_Implementation(const TArray<struct FServiceNameAndPlayerName>& playerNames){  }
-void AFGPlayerState::Server_SetPlatformAccountIdString_Implementation(const FString& stringAccountId){  }
-void AFGPlayerState::Server_SetPlatformAvatarURL_Implementation(const FString& avatarURL){  }
-void AFGPlayerState::Server_SetPlayingPlatformName_Implementation(const FName& platformName){  }
+FString AFGPlayerState::GetPlatformNickname() const{ return IOnlinePlayerStateIdentityInterface::GetPlatformNickname(); }
+FString AFGPlayerState::GetPlatformAvatarURL() const{ return IOnlinePlayerStateIdentityInterface::GetPlatformAvatarURL(); }
+AFGCharacterPlayer* AFGPlayerState::GetControlledPlayerCharacter() const{ return nullptr; }

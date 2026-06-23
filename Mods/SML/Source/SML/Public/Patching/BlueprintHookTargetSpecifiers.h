@@ -52,7 +52,7 @@ class SML_API UBlueprintHookTargetSpecifier_OuterExpression : public UBlueprintH
 public:
 	/** The expression that this target should get the outer expression from */
 	UPROPERTY(meta = (GraphPin))
-	UBlueprintHookTargetSpecifier* InnerExpression{};
+	TObjectPtr<UBlueprintHookTargetSpecifier> InnerExpression{};
 	
 	// Begin UBlueprintHookTargetSpecifier interface
 	virtual TSharedPtr<FBlueprintHookTargetResolver> CreateTargetResolver() const override;
@@ -69,7 +69,7 @@ class SML_API UBlueprintHookTargetSpecifier_ExpressionOperand : public UBlueprin
 public:
 	/** The expression operand of which we should retrieve */
 	UPROPERTY(meta = (GraphPin))
-	UBlueprintHookTargetSpecifier* Expression{};
+	TObjectPtr<UBlueprintHookTargetSpecifier> Expression{};
 
 	/** Index of the operand that this specifier should target in the provided expression. Indices are zero-based. Non-expression operands are not considered */
 	UPROPERTY(EditAnywhere, Category = "Expression Operand")
@@ -199,7 +199,7 @@ class SML_API UBlueprintHookTargetSpecifier_TargetSelector : public UBlueprintHo
 public:
 	/** The expression result of matching which we should filter */
 	UPROPERTY(meta = (GraphPin))
-	UBlueprintHookTargetSpecifier* InnerExpression{};
+	TObjectPtr<UBlueprintHookTargetSpecifier> InnerExpression{};
 	
 	/** Selection Mode for the Inner Expression results */
 	UPROPERTY(EditAnywhere, Category = "Target Selector")

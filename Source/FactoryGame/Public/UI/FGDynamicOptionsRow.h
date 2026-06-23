@@ -26,17 +26,10 @@ class FACTORYGAME_API UFGDynamicOptionsRow : public UFGUserWidget // <FL> [AZimm
 public:
 	virtual void NativePreConstruct() override;
 
-	void InitOptionRow( FOptionRowData optionRowData, TSubclassOf<class UFGOptionsValueController> widgetOptionClass, TScriptInterface< class IFGOptionInterface > optionInterface );
-	void InitOptionRow( class UFGUserSetting* userSetting, TScriptInterface< class IFGOptionInterface > optionInterface );
-	
-	UFUNCTION( Blueprintpure, Category = "Option" )
-	FORCEINLINE EOptionCategory GetOptionCategory() const { return EOptionCategory::OC_Gameplay; }
+	void InitOptionRow( UFGUserSetting* userSetting, TScriptInterface<IFGOptionInterface> optionInterface );
 
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	void AddSubOption( UFGDynamicOptionsRow* dynamicOptionsRow );
-	
-	UFUNCTION( Blueprintpure, Category = "Option", meta=(DeprecatedFunction,DeprecationMessage = "DEPRECATED Use GetUserSetting instead") )
-	FORCEINLINE FOptionRowData GetOptionRowData() const { return mUserSetting ? mUserSetting->ToOptionRowData() : mOptionRowData; }
 
 	UFUNCTION( Blueprintpure, Category = "Option" )
 	FORCEINLINE UFGUserSetting* GetUserSetting() const { return mUserSetting; }
@@ -45,10 +38,10 @@ public:
 	FORCEINLINE UFGOptionsValueController* GetValueControllerWidget() const { return mValueControllerWidget; }
 
 	UFUNCTION( BlueprintPure, Category = "Option" )
-	bool IsPendingApply();
+	bool IsPendingApply() const;
 
 	UFUNCTION( BlueprintPure, Category = "Option" )
-	bool IsPendingRestart();
+	bool IsPendingRestart() const;
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "Option" )
 	void OnOptionRowInit();
@@ -75,7 +68,7 @@ public:
 	FORCEINLINE TArray< UFGDynamicOptionsRow* > GetSubOptions() { return mSubOptions; }
 
 	UFUNCTION( BlueprintPure, Category = "Option" )
-	FORCEINLINE bool GetSubOptionsVisibility() { return mSubOptionsVisibility; }
+	FORCEINLINE bool GetSubOptionsVisibility() const { return mSubOptionsVisibility; }
 	
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	void SetSubOptionsVisibility( bool newVisibilty ) { mSubOptionsVisibility = newVisibilty; }
@@ -100,27 +93,20 @@ protected:
 	FSettingsWidgetLocationDescriptor mWidgetLocator;
 	
 private:
-
-	FOptionRowData mOptionRowData;
+	UPROPERTY( Transient )
+	TObjectPtr<UFGUserSetting> mUserSetting;
 
 	UPROPERTY( Transient )
-	UFGUserSetting* mUserSetting;
-
-	EOptionType mOptionType;
-
-	UPROPERTY( Transient )
-	TScriptInterface< class IFGOptionInterface > mOptionInterface;
+	TScriptInterface<IFGOptionInterface> mOptionInterface;
 	
 	UPROPERTY( Transient )
-	TSubclassOf<class UFGOptionsValueController> mWidgetOptionClass;
+	TSubclassOf<UFGOptionsValueController> mWidgetOptionClass;
 
 	UPROPERTY( Transient )
-	UFGOptionsValueController* mValueControllerWidget;
+	TObjectPtr<UFGOptionsValueController> mValueControllerWidget;
 
 	UPROPERTY( Transient )
-	TArray< UFGDynamicOptionsRow* > mSubOptions;
+	TArray< TObjectPtr<UFGDynamicOptionsRow> > mSubOptions;
 
-	bool mSubOptionsVisibility;
-
-
+	bool mSubOptionsVisibility{false};
 };

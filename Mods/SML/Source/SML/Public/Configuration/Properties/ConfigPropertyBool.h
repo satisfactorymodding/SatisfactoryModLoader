@@ -6,11 +6,22 @@ UCLASS()
 class SML_API UConfigPropertyBool : public UConfigProperty {
     GENERATED_BODY()
 public:
-    /** Current value of this configuration property */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration Property")
+    /** Default value of this configuration property. This is the value the property resets to. */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
+    bool DefaultValue;
+
+    /** Runtime value of this configuration property. */
+    UPROPERTY(BlueprintReadWrite, Category = "Configuration Property")
     bool Value;
-    
-    UConfigPropertyBool();
+
+public:
+    //Begin UObject
+#if WITH_EDITOR
+    virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+    //End UObject
+
+    virtual void PostLoad() override;
 
     //Begin UConfigProperty
     virtual FString DescribeValue_Implementation() const override;
@@ -18,5 +29,8 @@ public:
     virtual void Deserialize_Implementation(const URawFormatValue* Value) override;
     virtual FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
     virtual void FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const override;
+    virtual bool ResetToDefault_Implementation() override;
+    virtual bool IsSetToDefaultValue_Implementation() const override;
+    virtual FString GetDefaultValueAsString_Implementation() const override;
     //End UConfigProperty
 };

@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -24,7 +24,7 @@ struct FACTORYGAME_API FFGTestBuildableDescriptor_Manufacturer
 
 	// Buildable associated with this descriptor
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "FactoryGame | Manufacturer" )
-	class AFGBuildableManufacturer* Buildable{};
+	TObjectPtr<class AFGBuildableManufacturer> Buildable{};
 
 	// Whenever we should automatically populate inputs
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "FactoryGame | Manufacturer" )
@@ -43,7 +43,7 @@ struct FACTORYGAME_API FFGTestBuildableDescriptor_GeneratorFuel
 
 	// Buildable associated with this descriptor
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "FactoryGame | Generator" )
-	class AFGBuildableGeneratorFuel* Buildable{};
+	TObjectPtr<class AFGBuildableGeneratorFuel> Buildable{};
 
 	// Class of the fuel to automatically saturate the generator with
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "FactoryGame | Generator" )
@@ -144,14 +144,14 @@ protected:
 	FString mDefaultTestMapOptions;
 	
 	UPROPERTY()
-	UFGPowerInfoComponent* mCheatPowerSourcePowerInfo;
+	TObjectPtr<UFGPowerInfoComponent> mCheatPowerSourcePowerInfo;
 	UPROPERTY()
-	UFGPowerInfoComponent* mCheatPowerSinkPowerInfo;
+	TObjectPtr<UFGPowerInfoComponent> mCheatPowerSinkPowerInfo;
 
 	UPROPERTY()
-	UFGPowerConnectionComponent* mCheatPowerSourceConnection;
+	TObjectPtr<UFGPowerConnectionComponent> mCheatPowerSourceConnection;
 	UPROPERTY()
-	UFGPowerConnectionComponent* mCheatPowerSinkConnection;
+	TObjectPtr<UFGPowerConnectionComponent> mCheatPowerSinkConnection;
 	
 	UPROPERTY( Transient )
 	TArray<FFGTestBuildableDescriptor_Manufacturer> mTestManufacturers;
@@ -160,5 +160,5 @@ protected:
 
 	// List of running gameplay tests. This will include states in Running and Finished states.
 	UPROPERTY( Transient )
-	TArray<UFGGameplayTest*> mActiveGameplayTests;
+	TArray<TObjectPtr<UFGGameplayTest>> mActiveGameplayTests;
 };

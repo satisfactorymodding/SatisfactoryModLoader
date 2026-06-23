@@ -54,5 +54,5 @@ public:
 	
 private:
 	UPROPERTY()
-	TMap<FString, UFGAudioBusMonitor*> mRegisteredMonitors;
+	TMap<FString, TObjectPtr<UFGAudioBusMonitor>> mRegisteredMonitors;
 };

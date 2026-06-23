@@ -16,13 +16,13 @@ public:
 	FName VariableName;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Default", meta = (ShowInnerProperties))
-	UActorComponent* ActorComponentTemplate;
+	TObjectPtr<UActorComponent> ActorComponentTemplate;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Default")
 	FName AttachToName;
 
 	UPROPERTY(Instanced, VisibleDefaultsOnly, Category = "Default")
-	TArray<UObject*> Children;
+	TArray<TObjectPtr<UObject>> Children;
 };
 
 /** DEPRECATED - to be removed. Only exists to make the migration to new Actor Mixins easier. */

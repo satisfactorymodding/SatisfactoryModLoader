@@ -12,7 +12,7 @@
 
 
 USTRUCT( BlueprintType )
-struct FScannableResourcePair
+struct FACTORYGAME_API FScannableResourcePair
 {
 	GENERATED_BODY()
 
@@ -57,7 +57,7 @@ class FACTORYGAME_API UFGUnlockScannableResource : public UFGUnlock
 
 public:
 	// Begin FGUnlock interface
-	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
+	virtual void Apply( class AFGUnlockSubsystem* unlockSubsystem ) override;
 	// End FGUnlock interface
 
 	// Only for migrate mResourcesToAddToScanner to new system

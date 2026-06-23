@@ -110,5 +110,5 @@ private:
 	const TSubclassOf< class AFGBuildableFrackingExtractor > mExtractorClass;
 
 	UPROPERTY()
-	const class AFGBuildableFrackingExtractor* mDefaultExtractor;
+	TObjectPtr<const class AFGBuildableFrackingExtractor> mDefaultExtractor;
 };

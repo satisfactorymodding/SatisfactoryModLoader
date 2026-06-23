@@ -91,14 +91,6 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	virtual void SetIntOptionValue( const FString& cvar, int32 newValue ) { SetOptionValueTyped<int32>( cvar, newValue ); }
 
-	/** Set the option value for a string, will need to be applied to take effect and/or get saved */
-	UFUNCTION( BlueprintCallable, Category = "Option" )
-	virtual void SetNameOptionValue( const FString& cvar, const FName& newValue ) { SetOptionValueTyped<FName>( cvar, newValue ); }
-
-	/** Get the option value for a String */
-	UFUNCTION( BlueprintCallable, Category = "Option" )
-	virtual FName GetNameOptionValue( const FString& cvar ) const { return GetOptionValueTyped<FName>( cvar ); }
-
 	/** Get the option value for a float */
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	virtual float GetFloatOptionValue( const FString& cvar ) const { return GetOptionValueTyped<float>( cvar ); }
@@ -110,6 +102,30 @@ public:
 	/** Set the option value for an float, will need to be applied to take affect and/or get saved */
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	virtual void SetFloatOptionValue( const FString& cvar, float newValue ) { SetOptionValueTyped<float>( cvar, newValue ); }
+
+	/** Get the option value for a string */
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	virtual FString GetStringOptionValue( const FString& cvar ) const { return GetOptionValueTyped<FString>( cvar ); }
+
+	/** Get the current UI value for a string. Doesn't always match the active value. Should only be used in the options menu. */
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	virtual FString GetStringUIDisplayValue( const FString& cvar ) const { return GetOptionDisplayValueTyped<FString>( cvar ); }
+
+	/** Set the option value for a string, will need to be applied to take effect and/or get saved */
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	virtual void SetStringOptionValue( const FString& cvar, const FString& newValue ) { SetOptionValueTyped<FString>( cvar, newValue ); }
+
+	/** Get the option value for a linear color */
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	virtual FLinearColor GetLinearColorOptionValue( const FString& cvar ) const { return GetOptionValueTyped<FLinearColor>( cvar ); }
+
+	/** Get the current UI value for a linear color. Doesn't always match the active value. Should only be used in the options menu. */
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	virtual FLinearColor GetLinearColorUIDisplayValue( const FString& cvar ) const { return GetOptionDisplayValueTyped<FLinearColor>( cvar ); }
+
+	/** Set the option value for a linear color, will need to be applied to take effect and/or get saved */
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	virtual void SetLinearColorOptionValue( const FString& cvar, const FLinearColor& newValue ) { SetOptionValueTyped<FLinearColor>( cvar, newValue ); }
 
 	/** Returns true if we have any option changes that haven't been applied yet */
 	UFUNCTION( BlueprintCallable, Category = "Option" )

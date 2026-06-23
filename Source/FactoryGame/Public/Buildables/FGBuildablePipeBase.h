@@ -6,17 +6,20 @@
 #include "Components/SplineComponent.h"
 #include "CoreMinimal.h"
 #include "FGBuildable.h"
+#include "FGNetSignificanceInterface.h"
 #include "FGSignificanceInterface.h"
 #include "FGSplineBuildableInterface.h"
 #include "Templates/SubclassOf.h"
+#include "FGSplineCollisionComponent.h"
 #include "FGBuildablePipeBase.generated.h"
 
 class UFGPipeConnectionComponentBase;
+
 /**
  * Pipeline for transferring liquid and gases to factory buildings.
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildablePipeBase : public AFGBuildable, public IFGSignificanceInterface, public IFGSplineBuildableInterface
+class FACTORYGAME_API AFGBuildablePipeBase : public AFGBuildable, public IFGSignificanceInterface, public IFGSplineBuildableInterface, public IFGNetSignificanceInterface
 {
 	GENERATED_BODY()
 public:
@@ -25,7 +28,7 @@ public:
 	// Begin Actor Interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
-	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 	// End Actor Interface 
 
 	// Begin Buildable interface
@@ -45,18 +48,21 @@ public:
 	// Begin abstract instance interface.
 	virtual TArray<FInstanceData> GetActorLightweightInstanceData_Implementation() const override;
 	virtual bool DoesContainLightweightInstances_Native() const override { return true; }
-	// End
-	
-	// Begin IFGSignificance Interface
+
+	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
-	virtual	void SetupForSignificance() override;					// TODO deprecate		
+	virtual float GetSignificanceRange_Implementation() const override;
+	// End IFGSignificanceInterface
 
-	virtual float GetSignificanceRange() override;
+	// Begin IFGNetSignificanceInterface
+	virtual void GainedNetSignificance_Implementation() override;
+	virtual void LostNetSignificance_Implementation() override;
+	virtual float GetNetSignificanceRange_Implementation() const override;
+	// End IFGNetSignificanceInterface
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|PipeBase" )
 	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
-	// End IFGSignificance Interface
 
 	/** @return The connections, safe to assume its always valid. */
 	FORCEINLINE UFGPipeConnectionComponentBase* GetConnection0() const { return mConnection0; }
@@ -69,7 +75,7 @@ public:
 	virtual float FindOffsetClosestToLocation( const FVector& location ) const;
 	virtual void GetLocationAndDirectionAtOffset( float offset, FVector& out_location, FVector& out_direction ) const;
 
-	virtual TArray<FInstanceData> SetupAbstractInstances(const FFactoryCustomizationData& CustomizationData);
+	virtual TArray<FInstanceData> SetupAbstractInstances(const FFactoryCustomizationData& CustomizationData) const;
 	
 	// Begin IFGSplineBuildableInterface
 	virtual UFGConnectionComponent* GetSplineConnection0() const override;
@@ -86,7 +92,7 @@ public:
 	static void CreateClearanceData( class USplineComponent* splineComponent, const TArray< FSplinePointData >& splineData, const FTransform& pipeTransform, TArray< FFGClearanceData >& out_clearanceData, float maxDistance = -1.0f );
 
 	UPROPERTY(EditDefaultsOnly,Category="Visuals")
-	UMaterialInterface* mSplineMeshMaterial = nullptr;
+	TObjectPtr<UMaterialInterface> mSplineMeshMaterial = nullptr;
 	/**
 	 * Splices the provided pipeline into two pieces.
 	 * Unlike splitting, splicing does decrease the size of the pipeline and leads an empty area in the middle,
@@ -104,6 +110,10 @@ public:
 	virtual void PostSerializedFromBlueprint(bool isBlueprintWorld) override;
 	
 protected:
+	// Begin AFGBuildable interface
+	virtual FBox CalculateBounds() const override;
+	// End AFGBuildable interface
+	
 	/**
 	 * @return The UClass for the connection type for this pipe. All pipe types should have their own function here, or their connection can snap to the wrong type of pipes.
 	 * [DavalliusA:Tue/22-10-2019] this is med with a function, so we don't have to store a variable in all the instances of this class
@@ -127,11 +137,15 @@ public:
 protected:
 	/** Mesh to use for his pipe. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
-	class UStaticMesh* mMesh;
+	TObjectPtr<class UStaticMesh> mMesh;
 
 	/** Length of the mesh to use for this pipe. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
 	float mMeshLength;
+	
+	/** Index of the spline instance deformation data in the per instance custom data buffer */
+	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
+	int32 mSplineInstanceStartDataIndex{20};
 
 	/** Length of the pipe in centimeters. */
 	float mLength;
@@ -143,13 +157,13 @@ protected:
 	 * First connection on the pipe (can be an input and an output, because, again, pipes)
 	 */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Pipes" )
-	UFGPipeConnectionComponentBase* mConnection0;
+	TObjectPtr<UFGPipeConnectionComponentBase> mConnection0;
 
 	/**
 	 * Second connection on the pipe (can be an input and an output, because, again, pipes)
 	 */
 	UPROPERTY( VisibleAnywhere, BlueprintReadWrite, Category = "Pipes" )
-	UFGPipeConnectionComponentBase* mConnection1;
+	TObjectPtr<UFGPipeConnectionComponentBase> mConnection1;
 
 	/** Compact representation of mSplineComponent, used for replication and save game */
 	UPROPERTY( SaveGame, Replicated, Meta = ( NoAutoJson ) )
@@ -157,19 +171,19 @@ protected:
 
 	/** The spline component for this splined factory. */
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
-	class USplineComponent* mSplineComponent;
-	
-	UPROPERTY( VisibleAnywhere, Category = "Spline" )
-	class UInstancedSplineMeshComponent* mInstancedSplineMeshComponent;
+	TObjectPtr<class USplineComponent> mSplineComponent;
 	
 	/** Saved passthroughs this pipeline is connected to. Used to notify passthrough when dismantled. */
 	UPROPERTY( SaveGame, Replicated )
-	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
+	TArray< TObjectPtr<class AFGBuildablePassthrough> > mSnappedPassthroughs;
 
 	/* Material assigned to the collision box proxies. */
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
-	UPhysicalMaterial* PhysicalMaterial;
+	TObjectPtr<UPhysicalMaterial> PhysicalMaterial;
 
+	UPROPERTY(VisibleInstanceOnly)
+	TObjectPtr<UFGSplineCollisionComponent> mCollisionComponent = nullptr;
+	
 private:
 	friend class AFGPipelineHologram;
 	

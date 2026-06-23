@@ -94,10 +94,10 @@ public:
 	bool IsConnected() const;
 	
 	/** Check if the given connection can snap to this. */
-	bool CanSnapTo( UFGPipeConnectionComponentBase* otherConnection ) const;
+	virtual bool CanSnapTo( UFGPipeConnectionComponentBase* otherConnection ) const;
 	
 	/** Check if the given connection can connect to this. */
-	bool CanConnectTo( const UFGPipeConnectionComponentBase* otherConnection ) const;
+	virtual bool CanConnectTo( const UFGPipeConnectionComponentBase* otherConnection ) const;
 
 	/** Block snapping to this connection. Used for special cases where we don't want to allow direct snapping Tex. When a connection is snapped to a buildable passthrough */
 	void SetDisallowSnappingTo( bool shouldBlock ) { mDisallowSnappingTo = shouldBlock; }
@@ -161,7 +161,7 @@ protected:
 protected:
 	/** Connection to another component. If this is set we're connected. */
 	UPROPERTY( SaveGame, Replicated )
-	class UFGPipeConnectionComponentBase* mConnectedComponent;
+	TObjectPtr<class UFGPipeConnectionComponentBase> mConnectedComponent;
 
 	UPROPERTY()
 	bool mDisallowSnappingTo;
@@ -270,7 +270,7 @@ protected:
 	// @todoPipes - I don't think this is used anymore. This should be fully deprecated and removed. This is a carry over from conveyor belts. 
 	// The final implementation of pipes works by them being pushed to from buildings (rather than pulling like belts), so they don't need an inventory to access
 	UPROPERTY( SaveGame )
-	class UFGInventoryComponent* mConnectionInventory;
+	TObjectPtr<class UFGInventoryComponent> mConnectionInventory;
 
 	/**
 	 * The inventory index utilized by this connection ( -1 for none specified )

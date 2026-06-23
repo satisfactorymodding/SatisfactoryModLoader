@@ -18,7 +18,7 @@ AFGProjectile::AFGProjectile() : Super() {
 	this->mClusterProjectileSpreadIntervalAngle = FFloatInterval(0.0, 360.0);
 	this->mClusterProjectileSidewaysLaunchSpeed = FFloatInterval(500.0, 1000.0);
 	this->mClusterProjectileVerticalLaunchSpeed = FFloatInterval(500.0, 1000.0);
-	this->mClusterUpVector = FVector((0, 0, 1));
+	this->mClusterUpVector = FVector(0, 0, 1);
 	this->mThrowRotation = FRotator::ZeroRotator;
 	this->mTargetActor = nullptr;
 	this->mTargetLocation = FVector::ZeroVector;

@@ -28,7 +28,7 @@ struct FACTORYGAME_API FNodeClusterData
 
 	/** Cost of schematic if there are more than once item in this array the true cost will be randomly selected. */
 	UPROPERTY( BluePrintReadOnly )
-	TArray< class AFGResourceNodeBase* > Nodes;
+	TArray< TObjectPtr<class AFGResourceNodeBase> > Nodes;
 
 	/** The average location of all the nodes */
 	UPROPERTY( BluePrintReadOnly )
@@ -116,6 +116,7 @@ protected:
 	/** Finds nodes within a radius of the passed node */
 	void GetNodesWithinDistance( class AFGResourceNodeBase* node, float dist, TArray< class AFGResourceNodeBase* >& clusterNodes, TArray< class AFGResourceNodeBase* >& remainingNodes );
 
+	void RequestNodeClustersUpdate( AFGResourceNodeBase*, TSubclassOf< UFGResourceDescriptor >, TSubclassOf< UFGResourceDescriptor > );
 	void GetClosetClusters( TArray<FNodeClusterData>& closestClusters );
 
 	void SplitNearbyClusters( TArray< FNodeClusterData >& clusters );
@@ -162,4 +163,7 @@ protected:
 	/** A list of all the clusters of nodes non the level */
 	UPROPERTY()
 	TArray< FNodeClusterData > mNodeClusters;
+
+	UPROPERTY()
+	bool mNodeClustersUpToDate = false;
 };

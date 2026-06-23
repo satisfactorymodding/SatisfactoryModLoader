@@ -117,8 +117,7 @@ struct FFGDroneFuelRuntimeData
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDroneActiveFuelTypeChanged, const FFGDroneFuelType&, newFuelType );
 
 /** Drone Vehicle */
-
-UCLASS()
+UCLASS( Abstract )
 class FACTORYGAME_API AFGDroneVehicle : public AFGVehicle, public IFGActorRepresentationInterface
 {
 	GENERATED_BODY()
@@ -181,23 +180,15 @@ public:
 	UFUNCTION() virtual ECompassViewDistance GetActorCompassViewDistance() override;
 	UFUNCTION() virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	UFUNCTION() virtual UMaterialInterface* GetActorRepresentationCompassMaterial() override;
-	//<FL>[KonradA] TODO:UGC C
-	UFUNCTION() virtual TArray< FLocalUserNetIdBundle > GetLastEditedBy() const override;
-	UFUNCTION() virtual void SetActorLastEditedBy( const TArray< FLocalUserNetIdBundle >& LastEditedBy ) {}
+	//<FL>[KonradA] 
+	UFUNCTION() virtual FPlayerInfoHandle GetLastEditedBy() const override;
+	UFUNCTION() virtual void SetActorLastEditedByHandle( const FPlayerInfoHandle& LastEditedBy ) {}
 	//</FL>
 	// End IFGActorRepresentationInterface
 
 	void NotifyPairedStationUpdated( class AFGBuildableDroneStation* NewPairedStation );
-	
 	void OnUndocked();
-
 	void OnDockedStationDestroyed();
-
-	//~ Begin IFGDockableInterface
-	virtual void OnBeginLoadVehicle_Implementation() override;
-	virtual void OnBeginUnloadVehicle_Implementation() override;
-	virtual void OnTransferComplete_Implementation() override;
-	//~ End IFGDockableInterface
 
 	static TArray<FVector> GeneratePathToDestination( const FVector& CurrentLocation, const FVector& Destination, UWorld* World );
 
@@ -378,12 +369,12 @@ public:
 	FOnDroneActiveFuelTypeChanged DroneFuelTypeChangedDelegate;
 
 	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* mCompassMaterialInstance;
+	TObjectPtr<UMaterialInterface> mCompassMaterialInstance;
 
 private:
 	/** The drone's movement component. */
 	UPROPERTY( Replicated )
-	class UFGDroneMovementComponent* mMovementComponent;
+	TObjectPtr<class UFGDroneMovementComponent> mMovementComponent;
 	
 	/** Default fuel type of the drone. Backup for when no fuel exists. The item property is not used. */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone" )
@@ -395,7 +386,7 @@ private:
 	
 	/** Inventory for storage. */
 	UPROPERTY( VisibleDefaultsOnly, SaveGame )
-	class UFGInventoryComponent* mStorageInventory;
+	TObjectPtr<class UFGInventoryComponent> mStorageInventory;
 
 	/** Size of the drone's inventory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Drone", meta = ( AddAutoJSON = true ) )
@@ -432,20 +423,20 @@ private:
 	FDroneDockingStateInfo mCurrentDockingState;
 	
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_DockedStation )
-	class AFGBuildableDroneStation* mDockedStation;
+	TObjectPtr<class AFGBuildableDroneStation> mDockedStation;
 
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mHomeStation;
+	TObjectPtr<class AFGBuildableDroneStation> mHomeStation;
 	
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mCurrentDestinationStation;
+	TObjectPtr<class AFGBuildableDroneStation> mCurrentDestinationStation;
 
 	// Actions (Legacy, only here for backwards compatibility with saves)
 	UPROPERTY( SaveGame )
-	TArray< UFGDroneAction* > mActionsToExecute;
+	TArray< TObjectPtr<UFGDroneAction> > mActionsToExecute;
 
 	UPROPERTY( SaveGame )
-	UFGDroneAction* mCurrentAction;
+	TObjectPtr<UFGDroneAction> mCurrentAction;
 
 	// Actions
 	TArray< FDroneAction* > mActionQueue;
@@ -502,7 +493,7 @@ class FACTORYGAME_API UFGDroneAction_RequestDocking : public UFGDroneAction
 	GENERATED_BODY()
 public:	
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mStation;
+	TObjectPtr<class AFGBuildableDroneStation> mStation;
 
 	UPROPERTY( SaveGame )
 	EDroneDockingRequestState mCurrentState;
@@ -526,7 +517,7 @@ class FACTORYGAME_API UFGDroneAction_DockingSequence : public UFGDroneAction_Tim
 	GENERATED_BODY()
 public:
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mStation;
+	TObjectPtr<class AFGBuildableDroneStation> mStation;
 
 	UPROPERTY( SaveGame )
 	bool mShouldTransferItems;
@@ -539,10 +530,10 @@ class FACTORYGAME_API UFGDroneAction_TakeoffSequence : public UFGDroneAction_Tim
 	GENERATED_BODY()
 public:
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mStation;
+	TObjectPtr<class AFGBuildableDroneStation> mStation;
 
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mNewTravelDestination;
+	TObjectPtr<class AFGBuildableDroneStation> mNewTravelDestination;
 
 	UPROPERTY( SaveGame )
 	bool mHasNewPairedStation;
@@ -751,7 +742,7 @@ private:
 
 private:
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mStation;
+	TObjectPtr<class AFGBuildableDroneStation> mStation;
 
 	UPROPERTY( SaveGame )
 	bool mShouldTransferItems;
@@ -789,7 +780,7 @@ public:
 	
 private:
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mStation;
+	TObjectPtr<class AFGBuildableDroneStation> mStation;
 
 	UPROPERTY( SaveGame )
 	bool mShouldTransferItems;
@@ -818,10 +809,10 @@ public:
 	
 private:
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mStation;
+	TObjectPtr<class AFGBuildableDroneStation> mStation;
 
 	UPROPERTY( SaveGame )
-	class AFGBuildableDroneStation* mNewTravelDestination;
+	TObjectPtr<class AFGBuildableDroneStation> mNewTravelDestination;
 
 	UPROPERTY( SaveGame )
 	bool mHasNewPairedStation;

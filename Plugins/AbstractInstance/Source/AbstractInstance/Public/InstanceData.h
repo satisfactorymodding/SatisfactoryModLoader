@@ -11,6 +11,7 @@
 
 class UAkInstancedGeometryComponent;
 class ULightweightCollisionComponent;
+class ULightweightHierarchicalInstancedStaticMeshComponent;
 
 USTRUCT( BlueprintType )
 struct ABSTRACTINSTANCE_API FInstanceData
@@ -18,13 +19,13 @@ struct ABSTRACTINSTANCE_API FInstanceData
 	GENERATED_BODY()
 
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* StaticMesh = nullptr;
+	TObjectPtr<UStaticMesh> StaticMesh = nullptr;
 
 	UPROPERTY( EditDefaultsOnly )
 	FTransform RelativeTransform = FTransform::Identity;
 
 	UPROPERTY( EditDefaultsOnly )
-	TArray<UMaterialInterface*> OverridenMaterials;
+	TArray<TObjectPtr<UMaterialInterface>> OverridenMaterials;
 
 	UPROPERTY( EditDefaultsOnly )
 	TArray<float> DefaultPerInstanceCustomData;
@@ -104,7 +105,18 @@ struct ABSTRACTINSTANCE_API FInstanceData
 	{
 		return Other.StaticMesh == this->StaticMesh && Other.OverridenMaterials == OverridenMaterials;
 	}
-	
+
+	FORCEINLINE void SetPerInstanceCustomDataFloat(const int32 StartIndex, const float Value)
+	{
+		DefaultPerInstanceCustomData[StartIndex] = Value;
+	}
+
+	FORCEINLINE void SetPerInstanceCustomDataVector(const int32 StartIndex, const FVector3f& Vector)
+	{
+		DefaultPerInstanceCustomData[StartIndex + 0] = Vector.X;
+		DefaultPerInstanceCustomData[StartIndex + 1] = Vector.Y;
+		DefaultPerInstanceCustomData[StartIndex + 2] = Vector.Z;
+	}
 public:
 	UStaticMeshComponent* CreateStaticMeshComponent( UObject* Outer ) const;
 };
@@ -180,11 +192,11 @@ struct ABSTRACTINSTANCE_API FInstanceHandle
 
 	FORCEINLINE int32 GetNumPrimitiveData() const { return NumPrimitiveFloatData; }
 
-	FORCEINLINE const UHierarchicalInstancedStaticMeshComponent* GetInstanceComponent() const
+	FORCEINLINE const ULightweightHierarchicalInstancedStaticMeshComponent* GetInstanceComponent() const
 	{
 		return InstancedStaticMeshComponent.Get();
 	}
-	FORCEINLINE const UInstancedStaticMeshComponent* GetCollisionInstanceComponent() const
+	FORCEINLINE const ULightweightCollisionComponent* GetCollisionInstanceComponent() const
 	{
 		return BatchCollisionMeshComponent.Get();
 	}
@@ -204,8 +216,8 @@ protected:
 	TWeakObjectPtr<AActor> Owner;
 	
 	/* Pointer to instance component. */
-	TWeakObjectPtr< UHierarchicalInstancedStaticMeshComponent > InstancedStaticMeshComponent;
-	TWeakObjectPtr< UInstancedStaticMeshComponent > BatchCollisionMeshComponent;
+	TWeakObjectPtr< ULightweightHierarchicalInstancedStaticMeshComponent > InstancedStaticMeshComponent;
+	TWeakObjectPtr< ULightweightCollisionComponent > BatchCollisionMeshComponent;
 	TWeakObjectPtr< UAkInstancedGeometryComponent > AkInstancedGeometryComponent;
 
 	// Transient data, flushed after adding to the system.
@@ -262,12 +274,12 @@ struct ABSTRACTINSTANCE_API FInstanceOwnershipHandle : FInstanceHandle, TSharedF
 		Owner = owner;
 	}
 	
-	FORCEINLINE UHierarchicalInstancedStaticMeshComponent* GetInstanceComponent() const
+	FORCEINLINE ULightweightHierarchicalInstancedStaticMeshComponent* GetInstanceComponent() const
 	{
 		return InstancedStaticMeshComponent.Get();
 	}
 
-	FORCEINLINE UInstancedStaticMeshComponent* GetCollisionInstanceComponent() const
+	FORCEINLINE ULightweightCollisionComponent* GetCollisionInstanceComponent() const
 	{
 		return BatchCollisionMeshComponent.Get();
 	}

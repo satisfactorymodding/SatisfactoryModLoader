@@ -119,7 +119,9 @@ public:
     bool HasPower() const { return mHasPower; }
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Buildable|Light" )
-	float GetDefaultPowerConsumption() const { return mPowerConsumption; }
+	float GetDefaultPowerConsumption() const;
+
+	float GetPowerConsumptionMultiplier() const;
 
 	/** Called when light color slots have been updated */
 	void OnLightColorSlotsUpdated( const TArray< FLinearColor >& colors );
@@ -190,7 +192,7 @@ private:
 	
 	/** The power info for this light so it can consume power. */
 	UPROPERTY()
-	class UFGPowerInfoComponent* mPowerInfo;
+	TObjectPtr<class UFGPowerInfoComponent> mPowerInfo;
 
 	/** Locally cached has power. */
 	UPROPERTY( ReplicatedUsing = OnRep_HasPower )

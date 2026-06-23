@@ -49,7 +49,7 @@ public static class AccessTransformers
         }
     }
 
-    public class AccessorAccessTransformer : BaseAccessTransformer
+    public class AccessorAccessTransformer : BaseAccessTransformer, IEquatable<AccessorAccessTransformer>
     {
         private readonly string _className;
         private readonly string _fieldName;
@@ -63,6 +63,18 @@ public static class AccessTransformers
         public override string ToString()
         {
             return $"{_className}:{_fieldName}";
+        }
+
+        public bool Equals(AccessorAccessTransformer? other)
+        {
+	        if (other is null) return false;
+	        if (ReferenceEquals(this, other)) return true;
+	        return _className == other._className && _fieldName == other._fieldName;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_className, _fieldName);
         }
 
         public override string Class => _className;

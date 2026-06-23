@@ -360,10 +360,10 @@ IMPLEMENT_PROPERTY_TYPE(BoolProperty, false);
 IMPLEMENT_PROPERTY_TYPE(NameProperty, NAME_None);
 IMPLEMENT_PROPERTY_TYPE(TextProperty, FText::GetEmpty());
 IMPLEMENT_PROPERTY_TYPE(StrProperty, TEXT(""));
-IMPLEMENT_PROPERTY_TYPE(ObjectProperty, NULL);
-IMPLEMENT_PROPERTY_TYPE(WeakObjectProperty, NULL);
-IMPLEMENT_PROPERTY_TYPE(LazyObjectProperty, FLazyObjectPtr(NULL));
-IMPLEMENT_PROPERTY_TYPE(SoftObjectProperty, FSoftObjectPtr(NULL));
+IMPLEMENT_PROPERTY_TYPE(ObjectProperty, nullptr);
+IMPLEMENT_PROPERTY_TYPE(WeakObjectProperty, nullptr);
+IMPLEMENT_PROPERTY_TYPE(LazyObjectProperty, FLazyObjectPtr());
+IMPLEMENT_PROPERTY_TYPE(SoftObjectProperty, FSoftObjectPtr());
 
 FReflectedObject FReflectedObject::GetStructProperty(FName PropertyName) const {
     FReflectedObject ReflectedObject{};

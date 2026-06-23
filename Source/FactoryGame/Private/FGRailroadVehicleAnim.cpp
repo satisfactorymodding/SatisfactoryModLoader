@@ -39,7 +39,6 @@ UFGRailroadVehicleAnim::UFGRailroadVehicleAnim() : Super() {
 	this->mProxy.mAGHandBrakeReset01 = false;
 	this->mProxy.mAGHandBrakeReset02 = false;
 	this->mProxy.mAGHandBrakeStop = false;
-	this->mTrainMaterial = nullptr;
 	this->mBrakeSparkTemplate = nullptr;
 	this->mSteamTemplate = nullptr;
 	this->mBrakeSound = nullptr;

@@ -29,6 +29,7 @@ void AFGBeamHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf<
 void AFGBeamHologram::ConfigureActor(AFGBuildable* inBuildable) const{ }
 int32 AFGBeamHologram::GetBaseCostMultiplier() const{ return int32(); }
 bool AFGBeamHologram::CanBeZooped() const{ return bool(); }
+bool AFGBeamHologram::IsZoopBuildModeSupported() const{ return Super::IsZoopBuildModeSupported(); }
 bool AFGBeamHologram::CanIntersectWithDesigner(AFGBuildableBlueprintDesigner* designer) const{ return bool(); }
 void AFGBeamHologram::OnRep_CurrentLength(){ }
 bool AFGBeamHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramLocationOffset) const{ return bool(); }

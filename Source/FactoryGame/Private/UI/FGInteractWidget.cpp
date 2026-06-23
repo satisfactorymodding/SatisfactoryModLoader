@@ -12,8 +12,10 @@ UFGInteractWidget::UFGInteractWidget(const FObjectInitializer& ObjectInitializer
 	this->mDisablePlayerActions = true;
 	this->mDisableBuildGunActions = true;
 	this->mDisablePlayerEquipmentManagement = true;
+	this->mDisableVisualizationModeActions = true;
 	this->mFlushMouseKeysOnOpen = false;
 	this->mClearBindingsOnDestruct = true;
+	this->mHideEnhancedInputButtonBarWhenMenuIsActive = false;
 	this->mCaptureInput = false;
 	this->mDesiredHorizontalAlignment = EHorizontalAlignment::HAlign_Fill;
 	this->mDesiredVerticalAlignment = EVerticalAlignment::VAlign_Fill;

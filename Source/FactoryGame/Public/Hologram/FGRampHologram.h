@@ -29,9 +29,9 @@ protected:
 	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	// End AFGHologram interface
 	
-	// Begin AFGFactoryBuildingHologram interface
-	virtual void CreateZoopInstances() override;
-	// End AFGFactoryBuildingHologram interface
+	// Begin AFGBuildableHologram interface
+	virtual void CreateZoopInstances( const FIntVector& DesiredZoop ) override;
+	// End AFGBuildableHologram interface
 
 	// Begin AFGFoundationHologram interface
 	virtual void SetZoopFromHitresult( const FHitResult& hitResult ) override;

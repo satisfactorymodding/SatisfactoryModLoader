@@ -24,8 +24,8 @@ protected:
 	/**
 	 * Called once on cook before @PopulateGeneratedPackageForCook gets called for every generated level (WP Cell). In this context, we use it to
 	 * gather WP runtime data that we need to later perform validation against
-	 */ 
-	virtual bool PopulateGeneratorPackageForCook(const TArray<FWorldPartitionCookPackage*>& PackagesToCook, TArray<UPackage*>& OutModifiedPackage) override;
+	 */
+	virtual void OnPreparedGeneratorPackagesForCook() override;
 #endif
 
 	/** We override these to dispatch a delegate when they are changed */
@@ -44,7 +44,7 @@ private:
 	
 	/** Maps cell names to */
 	UPROPERTY( Transient )
-	mutable TMap<FName, UWorldPartitionRuntimeCell*> mNameToCellMap;
+	mutable TMap<FName, TObjectPtr<UWorldPartitionRuntimeCell>> mNameToCellMap;
 	
 	/** True if the cell to name map has not been rebuilt yet */
 	mutable bool mNameToCellMapDirty = true;

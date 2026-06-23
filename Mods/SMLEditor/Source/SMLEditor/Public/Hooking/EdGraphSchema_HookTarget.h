@@ -16,7 +16,7 @@ struct SMLEDITOR_API FEdGraphSchemaAction_NewHookTargetNode : public FEdGraphSch
 
 	/** Template of node we want to create */
 	UPROPERTY()
-	UEdGraphNode* NodeTemplate{};
+	TObjectPtr<UEdGraphNode> NodeTemplate{};
 
 	FEdGraphSchemaAction_NewHookTargetNode() = default;
 

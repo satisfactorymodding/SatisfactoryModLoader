@@ -35,6 +35,7 @@ void AFGEquipmentZipline::HandleDefaultEquipmentActionEvent(EDefaultEquipmentAct
 void AFGEquipmentZipline::Input_Crouch(const FInputActionValue& actionValue){ }
 void AFGEquipmentZipline::Input_Jump(const FInputActionValue& actionValue){ }
 void AFGEquipmentZipline::PlayZiplineEffects_Implementation(const FVector &inLocation){ }
+void AFGEquipmentZipline::SetControllerGrabZipline(bool holdZipline, EDefaultEquipmentActionEvent actionEvent){ }
 void AFGEquipmentZipline::OnZiplineStatusChanged(bool bIsOnZipline){ }
 void AFGEquipmentZipline::Local_OnZiplineStarted(){ }
 void AFGEquipmentZipline::Local_OnZiplineEnded(){ }
@@ -45,3 +46,4 @@ void AFGEquipmentZipline::Server_DoDrop_Implementation(){ }
 void AFGEquipmentZipline::Server_JumpExit_Implementation(){ }
 void AFGEquipmentZipline::SetWantsToGrab(bool wantsToGrab, bool jumpExit){ }
 void AFGEquipmentZipline::OnRep_WantToGrab(){ }
+void AFGEquipmentZipline::Server_ControllerdGrabZipline_Implementation(bool holdZipline, EDefaultEquipmentActionEvent actionEvent){ }

@@ -2,7 +2,8 @@
 
 #include "ObjectWriterFName.h"
 
-FObjectWriterFName::FObjectWriterFName(UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion) : FObjectWriter(Obj, InBytes) { }
+FObjectWriterFName::FObjectWriterFName(UObject* Obj, TArray<uint8>& InBytes, FCustomVersionContainer& customVersionContainer) : FObjectWriter(Obj, InBytes), mCustomVersionContainer(customVersionContainer){ }
+const FCustomVersionContainer& FObjectWriterFName::GetCustomVersions() const{ return FObjectWriter::GetCustomVersions(); }
 FArchive& FObjectWriterFName::operator<<( UObject*& Res){ return *(new FArchive); }
 FArchive& FObjectWriterFName::operator<<(FObjectPtr& Res){ return *(new FArchive); }
 FArchive& FObjectWriterFName::operator<<( FName& N){ return *(new FArchive); }

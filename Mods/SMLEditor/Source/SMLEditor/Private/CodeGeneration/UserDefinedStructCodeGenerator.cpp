@@ -3,13 +3,17 @@
 #include "EdGraphSchema_K2.h"
 #include "FileHelpers.h"
 #include "PackageTools.h"
+#include "ScopedTransaction.h"
 #include "Configuration/ModConfiguration.h"
 #include "Configuration/CodeGeneration/ConfigGenerationContext.h"
 #include "Engine/UserDefinedStruct.h"
 #include "Factories/StructureFactory.h"
 #include "Framework/Notifications/NotificationManager.h"
+#include "Misc/MessageDialog.h"
 #include "UserDefinedStructure/UserDefinedStructEditorData.h"
 #include "Widgets/Notifications/SNotificationList.h"
+#include "Engine/UserDefinedStruct.h"
+
 #define LOCTEXT_NAMESPACE "SML"
 
 void FUserDefinedStructCodeGenerator::ShowSuccessNotification(const FText& NotificationText) {

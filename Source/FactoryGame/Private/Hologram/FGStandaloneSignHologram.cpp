@@ -4,13 +4,15 @@
 #include "Net/UnrealNetwork.h"
 
 AFGStandaloneSignHologram::AFGStandaloneSignHologram() : Super() {
+	this->mBuildStep = ESignHologramBuildStep::ESHBS_SnapToActor;
 	this->mDefaultSignSupportRecipe = nullptr;
 	this->mChildSignPoleHologram = nullptr;
 	this->mOrientationVisualizationMesh = nullptr;
 	this->mBeamSnappingMode = EBeamSnappingMode::BSM_AllSides;
 	this->mPillarSnappingMode = EPillarSnappingMode::PSM_AllSides;
-	this->mWallSnapOffset = FVector((50, 0, 0));
+	this->mWallSnapOffset = FVector(50, 0, 0);
 	this->mUseGradualFoundationRotations = true;
+	this->mMaxZoopAmount = 9;
 	this->mAttachmentPointSnapDistanceThreshold = 10000.0;
 }
 void AFGStandaloneSignHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
@@ -30,4 +32,7 @@ void AFGStandaloneSignHologram::OnInvalidHitResult(){ }
 AFGHologram* AFGStandaloneSignHologram::GetNudgeHologramTarget(){ return nullptr; }
 void AFGStandaloneSignHologram::PostHologramPlacement(const FHitResult& hitResult, bool callForChildren){ Super::PostHologramPlacement(hitResult, callForChildren); }
 int32 AFGStandaloneSignHologram::GetRotationStep() const{ return int32(); }
+void AFGStandaloneSignHologram::SetZoopFromHitresult(const FHitResult& hitResult){ Super::SetZoopFromHitresult(hitResult); }
+void AFGStandaloneSignHologram::CreateZoopInstances(const FIntVector& DesiredZoop){ Super::CreateZoopInstances(DesiredZoop); }
+bool AFGStandaloneSignHologram::ShouldGenerateChildZoopInstance(const FTransform& localInstanceTransform, int32 instanceIndex, int32 numInstances) const{ return Super::ShouldGenerateChildZoopInstance(localInstanceTransform, instanceIndex, numInstances); }
 void AFGStandaloneSignHologram::CheckValidFloor(){ }

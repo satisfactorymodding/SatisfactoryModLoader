@@ -47,6 +47,8 @@ public:
 	UFUNCTION( Exec )
 	void ToggleAdvancedGameSettingsDebugOverlay();
 	UFUNCTION( Exec )
+	void ToggleGameModeSettingsDebugOverlay();
+	UFUNCTION( Exec )
 	void ToggleStatisticsDebugOverlay();
 	UFUNCTION( Exec )
 	void ToggleShoppingListDebugOverlay();
@@ -58,6 +60,6 @@ public:
 private:
 	/** Reference to the UI widget */
 	UPROPERTY()
-	class UFGBaseUI* mBaseUI;
+	TObjectPtr<class UFGBaseUI> mBaseUI;
 	
 };

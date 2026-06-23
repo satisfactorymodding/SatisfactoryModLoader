@@ -48,7 +48,7 @@ void AFGBuildablePipeline::PreUpgrade_Implementation(){ }
 void AFGBuildablePipeline::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildablePipeline::GainedSignificance_Implementation(){ }
 void AFGBuildablePipeline::LostSignificance_Implementation(){ }
-float AFGBuildablePipeline::GetSignificanceRange(){ return float(); }
+float AFGBuildablePipeline::GetSignificanceRange_Implementation() const{ return Super::GetSignificanceRange_Implementation(); }
 TSubclassOf< UFGPipeConnectionComponentBase > AFGBuildablePipeline::GetConnectionType_Implementation(){ return TSubclassOf<UFGPipeConnectionComponentBase>(); }
 void AFGBuildablePipeline::SetCustomizationData_Native(const FFactoryCustomizationData& customizationData, bool skipCombine){ }
 void AFGBuildablePipeline::ApplyCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }

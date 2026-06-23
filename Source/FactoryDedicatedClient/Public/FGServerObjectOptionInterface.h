@@ -22,8 +22,8 @@ class FACTORYDEDICATEDCLIENT_API UFGServerObjectOptionAdapter : public UObject, 
 	GENERATED_BODY()
 public:
 	// Begin IFGAdvancedGameSettingsInterface
-	virtual void GetAllUserSettings( TArray< UFGUserSettingApplyType* >& OutUserSettings ) const override;
-	virtual void GetAllUserSettingsMap( TMap< FString, UFGUserSettingApplyType* >& OutUserSettings ) const override; //<FL>[KonradA] Add a direct map getter to avoid conversions from and to a map with loss of key data in certain situations
+	virtual void GetAllUserSettings( TArray< TObjectPtr<UFGUserSettingApplyType> >& OutUserSettings ) const override;
+	virtual void GetAllUserSettingsMap( TMap< FString, TObjectPtr<UFGUserSettingApplyType> >& OutUserSettings ) const override; //<FL>[KonradA] Add a direct map getter to avoid conversions from and to a map with loss of key data in certain situations
 	virtual UFGUserSettingApplyType* FindUserSetting(const FString& SettingId) const override;
 	virtual void ApplyChanges() override;
 	virtual bool HasAnyUnsavedOptionValueChanges() const override;
@@ -44,7 +44,7 @@ public:
 
 protected:
 	UPROPERTY( Transient )
-	TMap<FString, UFGUserSettingApplyType*> mUserSettings;
+	TMap<FString, TObjectPtr<UFGUserSettingApplyType>> mUserSettings;
 
 	/** Setting values that are currently set on the server */
 	TMap<FString, FVariant> mServerValues;

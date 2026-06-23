@@ -1,12 +1,16 @@
 #include "ModWizardDefinition.h"
 
 #include "Alpakit.h"
+#include "FGGameFeatureData.h"
+#include "GameFeatureModTemplateDescription.h"
+#include "GameFeaturePluginTemplate.h"
 #include "Dom/JsonObject.h"
 #include "Features/IPluginsEditorFeature.h"
 #include "GenericPlatform/GenericPlatformFile.h"
 #include "Interfaces/IPluginManager.h"
-#include "HAL/PlatformFilemanager.h"
+#include "HAL/PlatformFileManager.h"
 #include "Misc/App.h"
+#include "Misc/Paths.h"
 
 #define LOCTEXT_NAMESPACE "NewModWizard"
 
@@ -273,14 +277,33 @@ TSharedPtr<FModTemplateDescription> FModTemplateDescription::Load(const TSharedP
 		}
 	}
 
-	TSharedRef<FPluginTemplateDescription> PluginTemplateDescription = MakeShareable(new FPluginTemplateDescription(
+	TSharedPtr<FPluginTemplateDescription> PluginTemplateDescription;
+	
+	bool bIsGameFeaturePlugin = false;
+	JSON->TryGetBoolField(TEXT("game_feature"), bIsGameFeaturePlugin);
+	if (bIsGameFeaturePlugin)
+	{
+		PluginTemplateDescription = MakeShareable(new FGameFeatureModTemplateDescription(
+			FText::FromString(TemplateName),
+			FText::FromString(TemplateDescription),
+			TemplatesPath / TemplateFolderName,
+			TEXT(""), TEXT(""),
+			UFGGameFeatureData::StaticClass(),
+			TEXT(""), EPluginEnabledByDefault::Unspecified
+		));
+	}
+	else
+	{
+		PluginTemplateDescription = MakeShareable(new FPluginTemplateDescription(
 			FText::FromString(TemplateName),
 			FText::FromString(TemplateDescription),
 			TemplatesPath / TemplateFolderName,
 			true,
 			EHostType::Runtime));
+	}
+	
 	PluginTemplateDescription->bCanBePlacedInEngine = false;
-    return MakeShareable(new FModTemplateDescription(PluginTemplateDescription, Dependencies));
+    return MakeShareable(new FModTemplateDescription(PluginTemplateDescription.ToSharedRef(), Dependencies));
 }
 
 #undef LOCTEXT_NAMESPACE

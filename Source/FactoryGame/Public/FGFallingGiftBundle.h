@@ -23,7 +23,7 @@ struct FFGRandomGiftReward
 
 	/** The type of unlocks to give to the player when picked up. */
 	UPROPERTY( EditDefaultsOnly, Instanced )
-	TArray< class UFGUnlock* > mUnlocks;
+	TArray< TObjectPtr<class UFGUnlock> > mUnlocks;
 
 	/** The chance of this reward being chosen. All weights are added up and the percentage chance of being selected is Weight / TotalWeight. Weight of <= 0 will never be selected.*/
 	UPROPERTY( EditDefaultsOnly )
@@ -62,7 +62,7 @@ public:
 	// Begin IFGSaveInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
 	// End IFGSaveInterface
 
 	// Begin IFGUseableInterface
@@ -134,7 +134,7 @@ private:
 
 protected:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-	class UStaticMeshComponent* mMeshComponent;
+	TObjectPtr<class UStaticMeshComponent> mMeshComponent;
 	
 private:
 	/** Localized name of this gift bundle. */
@@ -143,7 +143,7 @@ private:
 
 	/** The audio event to fire when picking up this bundle */
 	UPROPERTY( EditDefaultsOnly, Category = "Falling Gift Bundle" )
-	class UAkAudioEvent* mPickupAudioEvent;
+	TObjectPtr<class UAkAudioEvent> mPickupAudioEvent;
 	
 	/** A list of random rewards of which one will be selected for this gift. */
 	UPROPERTY( EditDefaultsOnly, Category = "Falling Gift Bundle" )
@@ -170,7 +170,7 @@ private:
 	
 	/** The gift spawner that spawned us. */
 	UPROPERTY()
-	class AFGGiftRainSpawner* mGiftSpawner;
+	TObjectPtr<class AFGGiftRainSpawner> mGiftSpawner;
 
 	/** The currently selected random reward. */
 	const FFGRandomGiftReward* mSelectedRandomReward;

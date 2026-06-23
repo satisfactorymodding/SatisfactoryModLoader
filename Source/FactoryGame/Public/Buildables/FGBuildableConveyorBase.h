@@ -138,7 +138,6 @@ public:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual	void SetupForSignificance() override;
 
 	// Server Use
 	void OnUseServerRepInput( class AFGCharacterPlayer* byCharacter, float itemOffset, TSubclassOf< class UFGItemDescriptor > desiredItemClass );
@@ -201,12 +200,12 @@ public:
 	/** Returns how much room there currently is on the belt. If the belt is empty it will return the length of the belt */
 	FORCEINLINE float GetAvailableSpace() const
 	{
-		for ( int32 i = mItems.Num() - 1; i >= 0; --i )
+		if ( mItems.Num() == 0 )
 		{
-			return mItems[ i ].Offset;
+			return GetLength();
 		}
 
-		return GetLength();
+		return mItems[0].Offset;
 	}
 
 
@@ -381,33 +380,33 @@ protected:
 
 	/** First connection on conveyor belt, Connections are always in the same order, mConnection0 is the input, mConnection1 is the output. */
 	UPROPERTY( VisibleAnywhere, Category = "Conveyor" )
-	class UFGFactoryConnectionComponent* mConnection0;
+	TObjectPtr<class UFGFactoryConnectionComponent> mConnection0;
 	/** Second connection on conveyor belt */
 	UPROPERTY( VisibleAnywhere, Category = "Conveyor" )
-	class UFGFactoryConnectionComponent* mConnection1;
+	TObjectPtr<class UFGFactoryConnectionComponent> mConnection1;
 
 	/** Stores how much space is available on this belt after its tick runs (thread safe way to access how much space there is to enqueue new items) */
 	float mCachedAvailableBeltSpace;
 
 	/** When ticking this conveyor should tick this conveyor next */
 	UPROPERTY()
-	AFGBuildableConveyorBase* mNextConveyor;
+	TObjectPtr<AFGBuildableConveyorBase> mNextConveyor;
 
 	UPROPERTY()
 	uint8 mConveyorChainFlags;
 
 	UPROPERTY(Transient)
-	TArray<UInstancedStaticMeshComponent*> mFrozenItemsInstancedStaticMeshComponents;
+	TArray<TObjectPtr<UInstancedStaticMeshComponent>> mFrozenItemsInstancedStaticMeshComponents;
 
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_ChainInformation )
-	AFGConveyorChainActor* mConveyorChainActor = nullptr;
+	TObjectPtr<AFGConveyorChainActor> mConveyorChainActor = nullptr;
 
 	UPROPERTY( Replicated )
 	int32 mChainSegmentIndex = INDEX_NONE;
 
 	// Replicate to clients so they can retrieve child dismantle actors
 	UPROPERTY( Replicated )
-	TArray< AFGBuildableConveyorMonitor* > mAttachedThroughputMonitors;
+	TArray< TObjectPtr<AFGBuildableConveyorMonitor> > mAttachedThroughputMonitors;
 	
 	/** For conveyor chain support this is a quick way to tell if this base conveyor is a lift or not */
 	bool mIsConveyorLift = false;

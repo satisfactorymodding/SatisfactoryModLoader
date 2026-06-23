@@ -17,4 +17,5 @@ void AFGBuildableSignSupport::GetLifetimeReplicatedProps(TArray< FLifetimeProper
 void AFGBuildableSignSupport::SetPoleScale(const FVector2D& poleScale){ }
 void AFGBuildableSignSupport::OnBuildEffectActorFinished(){ }
 bool AFGBuildableSignSupport::CanBeSampled_Implementation() const{ return Super::CanBeSampled_Implementation(); }
+struct FInstanceData AFGBuildableSignSupport::CreatePoleInstanceData(int32 variationIndex) const{ return Super::CreatePoleInstanceData(variationIndex); }
 void AFGBuildableSignSupport::OnRep_PoleScale(){ }

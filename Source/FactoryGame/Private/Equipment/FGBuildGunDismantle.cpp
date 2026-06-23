@@ -10,6 +10,7 @@ UFGBuildGunStateDismantle::UFGBuildGunStateDismantle() : Super() {
 	this->mCurrentlyAimedAtActor = nullptr;
 	this->mDefaultDismantleMode = nullptr;
 	this->mBlueprintDismantleMode = nullptr;
+	this->mVehiclePathRecipe = nullptr;
 	this->mBlueprintProxyDetector = nullptr;
 	this->mInstanceConverterInstigator = nullptr;
 }
@@ -41,6 +42,7 @@ bool UFGBuildGunStateDismantle::CanDismantle() const{ return bool(); }
 bool UFGBuildGunStateDismantle::CanBeginBuildGunDelay() const{ return bool(); }
 void UFGBuildGunStateDismantle::BeginBuildGunDelay(){ }
 void UFGBuildGunStateDismantle::ResetBuildGunDelay(){ }
+void UFGBuildGunStateDismantle::OnPendingLightweightRemoved(AActor* actor){ }
 void UFGBuildGunStateDismantle::Internal_OnMultiDismantleStateChanged(bool newValue){ }
 void UFGBuildGunStateDismantle::SanitizeLightweightRemovalBundle(FDismantleLightweightBundle& removalBundle){ }
 void UFGBuildGunStateDismantle::Server_DismantleActors_Implementation(const TArray<class AActor*>& selectedActors, const TArray< FDismantleLightweightBundle >& lightweightBundles){ }

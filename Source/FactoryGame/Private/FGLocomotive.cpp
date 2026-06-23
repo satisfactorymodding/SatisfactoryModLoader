@@ -58,6 +58,8 @@ void AFGLocomotive::Input_Honk(const FInputActionValue& actionValue){ }
 void AFGLocomotive::Input_OpenLocomotiveMenu(const FInputActionValue& actionValue){ }
 void AFGLocomotive::SetPowerConsumption(float pct){ }
 void AFGLocomotive::SetPowerRegeneration(float pct){ }
+float AFGLocomotive::GetPowerConsumptionMultiplier() const{ return float(); }
+FFloatInterval AFGLocomotive::GetPowerConsumption() const{ return FFloatInterval(); }
 void AFGLocomotive::OnHasPowerChanged(){ }
 void AFGLocomotive::OnRep_HeadlightMode(){ }
 FName AFGLocomotive::VehicleMovementComponentName = FName();

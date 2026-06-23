@@ -34,7 +34,7 @@ public:
 	//IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
+	virtual float GetSignificanceRange_Implementation() const override;
 
 	FORCEINLINE bool IsSignificant(){ return mIsSignificant; }
 
@@ -82,7 +82,7 @@ public:
 protected:
 	/** Mesh for the gas pillar */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|GasPillar" )
-	class UStaticMeshComponent* mMesh;
+	TObjectPtr<class UStaticMeshComponent> mMesh;
 
 	// Set by GasVolumes when they collect the pillars. Used as a quick reference when destroyed to easily notify nearby clouds without needing to do an expensive runtime overlap
 	UPROPERTY( VisibleAnywhere, Category="FactoryGame|GasPillar" )
@@ -94,11 +94,11 @@ protected:
 
 	/** Collision for when to activate dot component  */
 	UPROPERTY( EditAnywhere, Category = "FactoryGame|GasPillar" )
-	class USphereComponent* mOverlapCollision;
+	TObjectPtr<class USphereComponent> mOverlapCollision;
 
 	/** The component that will do the damage to actors */
 	UPROPERTY( EditAnywhere, Category = "FactoryGame|GasPillar" )
-	class UFGDotComponent* mDotComponent;
+	TObjectPtr<class UFGDotComponent> mDotComponent;
 
 	/** Some damage over time volumes will want a post process effect attached to it*/
 	UPROPERTY( EditInstanceOnly, Category = "FactoryGame|GasPillar" )

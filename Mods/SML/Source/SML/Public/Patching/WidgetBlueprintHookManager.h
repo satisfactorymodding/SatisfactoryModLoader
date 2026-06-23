@@ -16,10 +16,10 @@ struct SML_API FWidgetBlueprintHookDescriptor {
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, Category = "Default")
-	UWidgetBlueprintHookData* HookData{};
+	TObjectPtr<UWidgetBlueprintHookData> HookData{};
 	
 	UPROPERTY(VisibleAnywhere, Category = "Default")
-	UUserWidget* InstalledWidget{};
+	TObjectPtr<UUserWidget> InstalledWidget{};
 
 	int32 RegistrationCount{0};
 };
@@ -148,7 +148,7 @@ public:
 	
 	/** Configuration for the slot */
 	UPROPERTY(EditAnywhere, Instanced, Category = "Default")
-	UWidgetBlueprintHookSlot* SlotConfiguration{};
+	TObjectPtr<UWidgetBlueprintHookSlot> SlotConfiguration{};
 
 	UFUNCTION(BlueprintPure)
 	TArray<FString> GetParentWidgetNames() const;

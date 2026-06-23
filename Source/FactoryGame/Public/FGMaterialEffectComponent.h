@@ -33,7 +33,7 @@ struct FCachedMaterialArray
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TArray< UMaterialInterface* > MaterialInterfaces;
+	TArray< TObjectPtr<UMaterialInterface> > MaterialInterfaces;
 
 	// Component FName for each material interface
 	UPROPERTY()
@@ -138,11 +138,11 @@ public:
 protected:
 	/** Meshes affected by the material effect. */
 	UPROPERTY()
-	TArray< UMeshComponent* > mMeshes;
+	TArray< TObjectPtr<UMeshComponent> > mMeshes;
 
 	/** Material to display. */
 	UPROPERTY( EditDefaultsOnly, Category = "Material Effect" )
-	class UMaterialInterface* mMaterial;
+	TObjectPtr<class UMaterialInterface> mMaterial;
 
 	/** How long is this effect. */
 	float mDuration;
@@ -159,7 +159,7 @@ protected:
 
 	/** The cached mids we apply effects to. */
 	UPROPERTY( BlueprintReadOnly )
-	TArray< class UMaterialInstanceDynamic* > mMids;
+	TArray< TObjectPtr<class UMaterialInstanceDynamic> > mMids;
 
 	/** The cached override materials present before initializing (Takes into account custom override materials on meshes)*/
 	UPROPERTY()

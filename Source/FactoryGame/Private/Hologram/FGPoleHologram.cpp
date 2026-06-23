@@ -7,6 +7,7 @@
 #include "Net/UnrealNetwork.h"
 
 AFGPoleHologram::AFGPoleHologram() : Super() {
+	this->mBuildStep = EPoleHologramBuildStep::PHBS_PlacementAndRotation;
 	this->mPoleMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PoleMesh"));
 	this->mPoleMeshComponent->SetMobility(EComponentMobility::Movable);
 	this->mPoleVariationIndex = -1;

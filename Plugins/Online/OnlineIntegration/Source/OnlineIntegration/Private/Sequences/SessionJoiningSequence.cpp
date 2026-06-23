@@ -9,5 +9,6 @@ void USessionJoiningSequence::JoinSession(TSharedRef<FControlFlowNode>, FCommonS
 void USessionJoiningSequence::ClientTravel(){ }
 void USessionJoiningSequence::CleanupSessions(TSharedRef<FControlFlowNode> SubFlow){ }
 void USessionJoiningSequence::JoinSessions(TSharedRef<FControlFlowNode> SubFlow){ }
+void USessionJoiningSequence::FinalizeSequence(){ }
 void USessionJoiningSequence::IncrementBackendIndex(){ }
 void USessionJoiningSequence::OnTimeout(){ }

@@ -44,6 +44,7 @@ public:
 	virtual void CreateLightweightBuildableInstanceData(const struct FFGDynamicStruct& typeSpecificData, TArray<FInstanceData>& outLightweightInstanceData) const override;
 	virtual FFGDynamicStruct GetLightweightTypeSpecificData() const override;
 	virtual void ApplyLightweightTypeSpecificData(const struct FFGDynamicStruct& typeSpecificData) override;
+	virtual void GetClearanceData_Implementation(TArray<FFGClearanceData>& out_data) const override;
 	// End AFGBuildable interface
 	
 	// Begin IFGDismantleInterface
@@ -54,6 +55,9 @@ public:
 	// Begin IFGSaveInterface
 	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
 	// End IFGSaveInterface
+
+	// Used by the hologram to calculate the size of the clearance based on the length
+	void GetBeamClearanceData(TArray<FFGClearanceData>& out_clearanceData, float beamLength) const;
 
 	float GetSize() const { return mSize; }
 	float GetDefaultLength() const { return mDefaultLength; }

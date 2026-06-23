@@ -4,6 +4,7 @@
 #include "Net/UnrealNetwork.h"
 
 AFGConveyorBeltHologram::AFGConveyorBeltHologram() : Super() {
+	this->mUsingCutstomPoleRotation = false;
 	this->mChildPoleHologram[0] = nullptr;
 	this->mChildPoleHologram[1] = nullptr;
 	this->mChildWallPoleHologram[0] = nullptr;
@@ -14,6 +15,7 @@ AFGConveyorBeltHologram::AFGConveyorBeltHologram() : Super() {
 	this->mChildWallPoleSnapConnection[1] = nullptr;
 	this->mChildCeilingPoleSnapConnection[0] = nullptr;
 	this->mChildCeilingPoleSnapConnection[1] = nullptr;
+	this->mFlipWallPoleSnapDirection = false;
 	this->mConnectionComponents[0] = nullptr;
 	this->mConnectionComponents[1] = nullptr;
 	this->mSnappedConnectionComponents[0] = nullptr;

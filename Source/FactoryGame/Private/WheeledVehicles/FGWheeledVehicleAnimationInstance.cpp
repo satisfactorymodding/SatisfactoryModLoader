@@ -2,3 +2,11 @@
 
 #include "WheeledVehicles/FGWheeledVehicleAnimationInstance.h"
 
+FFGVehicleAnimationInstanceProxy::FFGVehicleAnimationInstanceProxy(){ }
+void FFGVehicleAnimationInstanceProxy::InitializeWithVehicle(AFGWheeledVehicle* ownerWheeledVehicle){ }
+void FFGVehicleAnimationInstanceProxy::PreUpdate(UAnimInstance* InAnimInstance, float DeltaSeconds){ FVehicleAnimationInstanceProxy::PreUpdate(InAnimInstance, DeltaSeconds); }
+UFGWheeledVehicleAnimationInstance::UFGWheeledVehicleAnimationInstance() : Super() {
+}
+void UFGWheeledVehicleAnimationInstance::NativeInitializeAnimation(){ }
+FAnimInstanceProxy* UFGWheeledVehicleAnimationInstance::CreateAnimInstanceProxy(){ return new FFGVehicleAnimationInstanceProxy(); }
+void UFGWheeledVehicleAnimationInstance::DestroyAnimInstanceProxy(FAnimInstanceProxy* InProxy){ }

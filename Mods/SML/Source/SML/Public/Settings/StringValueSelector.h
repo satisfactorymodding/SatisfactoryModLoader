@@ -12,8 +12,6 @@ class SML_API UStringValueSelector : public UFGUserSetting_ValueSelector
 	GENERATED_BODY()
 	
 public:
-	virtual EOptionType GetOptionType() const override { return EOptionType::OT_Custom; }
-
 	virtual FVariant GetDefaultValue() const override { return Default; }
 
 	virtual bool ShouldFocusOptionSlotToEdit() const override { return true; }

@@ -40,10 +40,6 @@ void SAlpakitReleaseWidget::Construct(const FArguments& InArgs) {
 						FPlatformProcess::ExploreFolder(*archivePath);
 						return FReply::Handled();
 					})
-					.IsEnabled_Lambda([this]
-					{
-						return !FAlpakitModule::Get().IsPackaging();
-					})
 					.Visibility_Lambda([this, archivePath]
 					{
 						if (FPaths::DirectoryExists(archivePath))

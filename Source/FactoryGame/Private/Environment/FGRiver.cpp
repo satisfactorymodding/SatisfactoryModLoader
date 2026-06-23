@@ -51,7 +51,7 @@ void AFGRiver::FixupSplinePoints(){ }
 void AFGRiver::ConstructMesh(){ }
 void AFGRiver::ConstructVolumes(){ }
 void AFGRiver::SetupMaterialValues(UMaterialInstanceDynamic* Material){ }
-void AFGRiver::ApplyVertexColors(TArray<USplineMeshComponent*>& MeshComponents){ }
+void AFGRiver::ApplyVertexColors(TArray<TObjectPtr<USplineMeshComponent>>& MeshComponents){ }
 void AFGRiver::HandlePush(float DeltaTime, ACharacter* Actor){ }
 void AFGRiver::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
 void AFGRiver::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){ }

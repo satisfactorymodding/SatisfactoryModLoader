@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGLightweightBuildableSubsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
@@ -32,7 +33,11 @@ public:
 	/** Returns the recipe that the given lightweight buildable was built with */
 	UFUNCTION(BlueprintPure, Category = "Lightweight Buildable")
 	static TSubclassOf<UFGRecipe> GetLightweightBuiltWithRecipe(const FLightweightBuildableInstanceRef& instance);
-	
+
+	/** Resolves the lightweight buildable type-specific data from the instance. Returns false if the buildable no longer exists */
+	UFUNCTION(BlueprintPure, Category = "Lightweight Buildable")
+	static bool GetLightweightTypeSpecificData(const FLightweightBuildableInstanceRef& instance, FFGDynamicStruct& out_typeSpecificData);
+
 	/** Resolves the lightweight buildable customization data from the instance. Returns false if the buildable no longer exists */
 	UFUNCTION(BlueprintCallable, Category = "Lightweight Buildable")
 	static bool ResolveLightweightCustomizationData(const FLightweightBuildableInstanceRef& instance, FFactoryCustomizationData& out_customizationData);

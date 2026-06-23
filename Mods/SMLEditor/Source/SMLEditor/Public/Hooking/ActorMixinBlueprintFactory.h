@@ -21,5 +21,5 @@ public:
 	// End of UFactory interface
 
 	UPROPERTY()
-	UBlueprintGeneratedClass* MixinTargetClass{};
+	TObjectPtr<UBlueprintGeneratedClass> MixinTargetClass{};
 };

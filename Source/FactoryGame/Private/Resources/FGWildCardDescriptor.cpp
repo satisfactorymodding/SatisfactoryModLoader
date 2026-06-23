@@ -6,4 +6,5 @@
 UFGWildCardDescriptor::UFGWildCardDescriptor() : Super() {
 	this->mDisplayName = NSLOCTEXT("WildCardDescriptor", "DisplayName", "*");
 	this->mDescription = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/Any/Description");
+	this->mForm = EResourceForm::RF_INVALID;
 }

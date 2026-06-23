@@ -33,7 +33,7 @@ private:
 	float mConnectionDepthOffset;
 
 	UPROPERTY()
-	UStaticMeshComponent* mConnectionMeshes[ 2 ];
+	TObjectPtr<UStaticMeshComponent> mConnectionMeshes[ 2 ];
 
 	FFGClearanceData mConnectionMeshClearanceData[ 2 ];
 };

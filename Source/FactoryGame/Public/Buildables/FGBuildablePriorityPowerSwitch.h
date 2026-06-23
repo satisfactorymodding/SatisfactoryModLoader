@@ -57,6 +57,8 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "CircuitSwitch" )
 	FOnPriorityChanged mOnPriorityChanged;
 
+	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
+
 protected:
 	/**
 	 * Called when the priority of this switch changes.
@@ -83,5 +85,5 @@ private:
 
 	/** Always relevant info storing info about this switch that should be accessible from anywhere. */
 	UPROPERTY( Replicated )
-	AFGPriorityPowerSwitchInfo* mInfo;
+	TObjectPtr<AFGPriorityPowerSwitchInfo> mInfo;
 };

@@ -24,7 +24,7 @@ class SML_API UModModule : public UObject {
     GENERATED_BODY()
 public:
 #if WITH_EDITOR
-	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
 #endif
 private:
     /** Private field holding owner mod reference, accessible directly only by mod loader */
@@ -32,7 +32,7 @@ private:
     
     /** Child modules of this module */
     UPROPERTY()
-    TMap<FName, UModModule*> ChildModules;
+    TMap<FName, TObjectPtr<UModModule>> ChildModules;
     
     /** Events that we already received. Will be dispatched immediately on child modules */
     TArray<ELifecyclePhase> EventsReceived;

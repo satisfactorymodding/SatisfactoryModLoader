@@ -12,9 +12,9 @@ public:
     UPROPERTY()
     FInventoryStack InventoryStack;
     UPROPERTY()
-    APlayerController* PlayerController;
+    TObjectPtr<APlayerController> PlayerController;
     UPROPERTY()
-    UItemTooltipSubsystem* ItemTooltipSubsystem;
+    TObjectPtr<UItemTooltipSubsystem> ItemTooltipSubsystem;
 
     UFUNCTION(BlueprintPure)
     FText GetItemName() const;

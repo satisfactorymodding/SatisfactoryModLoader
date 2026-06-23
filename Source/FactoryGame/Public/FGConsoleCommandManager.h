@@ -7,29 +7,6 @@
 #include "FGCheatManager.h"
 #include "FGConsoleCommandManager.generated.h"
 
-// This should later be moved into a plugin dedicated to localization
-class FPatchTable
-{
-	// We need an array keyed on namespace+key
-	// and an interface to retrieve a row given namespace and key
-	// Row should support metadata retrieval given metadata column name
-public:
-	struct FPatchTableRow
-	{
-		FString Path = TEXT( "" );
-		FString Namespace = TEXT( "" );
-		FString Key = TEXT( "" );
-		FString StringTable = TEXT( "" );
-		FString NewKey = TEXT( "" );
-		FString SourceString = TEXT( "" );
-		TMap<FName, FString> MetdataByColumnName; // This oughtta be initialized from locaSettings
-	};
-	TArray<FPatchTableRow> Rows;
-
-	bool Init( const FString& patchTableFilePathName );
-	const FPatchTable::FPatchTableRow* FindRow( const FString& inNamespace, const FString& inKey ) const;
-};
-
 /**
  * Console commands that are non-cheats that can be exposed to the players.
  */
@@ -115,16 +92,4 @@ public:
 	/** Disable the train scheduler's black box and optionally dumps state. */
 	UFUNCTION( exec )
 	void DisableTrainSchedulerBlackBox( bool dump );
-
-	/** Tries to dismantle vehicles that are under the player (50m down or lower in a 100m radius) and places the recovered resources in front of the player. */
-	UFUNCTION( Exec, CheatBoard )
-	void DismantleVehiclesUnderWorld();
-
-#if WITH_EDITOR
-	static bool ParsePatchTableArgs( const TArray<FString>& args, TSet<FString>& out_paths, TSet<FString>& out_stringTables, int32& out_limit, bool& out_ignoreSourceStringMismatch );
-	static void PatchUpFTextInAssets( const TArray<FString>& args );
-	
-	static void PatchUpTextFiles( const TSet<TPair<FString, FString>>& textKeysToPatch, const FPatchTable& patchTable );
-
-#endif
 };

@@ -71,6 +71,9 @@ struct FACTORYGAME_API FServerGameState
 	/** Name of the session the most recent save of which will be automatically loaded by the server upon restart. */
 	UPROPERTY( BlueprintReadWrite, Category = "Server Game State" )
 	FString AutoLoadSessionName;
+
+	UPROPERTY( BlueprintReadWrite, Category = "Server Game State" )
+	bool AgreeToCrashUploadRequested;
 };
 
 /**
@@ -100,6 +103,9 @@ struct FACTORYGAME_API FFGServerNewGameData
 	// Map of the overriden advanced game settings values to set on the save game.
 	UPROPERTY( BlueprintReadWrite, Category = "New Game Data" )
 	TMap<FString, FString> AdvancedGameSettings;
+
+	UPROPERTY( BlueprintReadWrite, Category = "New Game Data" )
+	TMap< FString, FString > GameModeSettings;
 
 	// Custom options to be passed as map options for creating a new game.
 	// ONLY FOR MODDING/THIRD PARTY SUPPORT. IF YOU ARE A COFFEE STAIN EMPLOYEE, MAKE A NEW PROPERTY ABOVE INSTEAD

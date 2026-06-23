@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "LocalUserInfo.h"
-#include "Presence.h"
+#include "Online/Presence.h"
 
 #include "LocalUserInfoPrivate.generated.h"
 

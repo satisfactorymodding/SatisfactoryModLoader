@@ -16,7 +16,7 @@
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <RootNamespace>Alpakit.Automation</RootNamespace>
         <AssemblyName>Alpakit.Automation</AssemblyName>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <FileAlignment>512</FileAlignment>
     </PropertyGroup>
     

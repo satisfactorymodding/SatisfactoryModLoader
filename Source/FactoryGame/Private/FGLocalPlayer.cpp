@@ -19,7 +19,7 @@ void UFGLocalPlayer::GetUserWatermarkInformation(TArray<FString>& OutWatermarkDa
 void UFGLocalPlayer::UpdatePresence(){ }
 void UFGLocalPlayer::RefreshRecentRegisteredSocialAccountID(){ }
 void UFGLocalPlayer::PopulateEnhancedInputUserSettingsWithContexts( UEnhancedInputUserSettings* inputUserSettings){ }
-void UFGLocalPlayer::PopulateChildMappingContexts(const UFGInputMappingContext* mainContext, TArray<UFGInputMappingContext*>& out_childContexts){ }
+void UFGLocalPlayer::PopulateChildMappingContexts(UFGInputMappingContext* mainContext, TArray<UFGInputMappingContext*>& out_childContexts){ }
 void UFGLocalPlayer::ForceHideEarlyLoadingScreen(){ }
 void UFGLocalPlayer::JoinPendingActivity(){  }
 void UFGLocalPlayer::OnLoginStatusChanged(ULocalUserInfo* userInfo, TSharedRef<UE::Online::FAccountInfo> accountInfo, UOnlineIntegrationBackend* backend){ }

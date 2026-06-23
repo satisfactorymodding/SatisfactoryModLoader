@@ -28,6 +28,7 @@ public:
 
 	// Begin IFGSaveInterface interface
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual bool ShouldSave_Implementation() const override;
 	// End IFGSaveInterface interface
 
 	/** Set if this connection is hidden. */
@@ -43,7 +44,7 @@ public:
 
 	/** Get the maximum allowed connections to this connection. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Connection" )
-	FORCEINLINE int32 GetMaxNumConnections() const { return mMaxNumConnectionLinks; }
+	int32 GetMaxNumConnections() const;
 
 	/** Get How many free connections this connection has. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Connection" )
@@ -165,6 +166,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	int32 mMaxNumConnectionLinks;
 
+	/** If this connection allows daisy chaining, the maximum number of connections will be at minimum 2 if the player has daisy-chaining unlocked. */
+	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
+	bool mAllowDaisyChaining;
+
 	/** This connection is hidden and can only be connected through the code. E.g. powered walls have a hidden connection all machines connect to. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	bool mIsHiddenConnection;
@@ -176,7 +181,7 @@ protected:
 private:
 	/** The wired connections to this. */
 	UPROPERTY( VisibleAnywhere, SaveGame, Replicated, Category = "Connection" )
-	TArray< AFGBuildableWire* > mWires;
+	TArray< TObjectPtr<AFGBuildableWire> > mWires;
 
 	/** The wired connections to this. */
 	UPROPERTY( VisibleAnywhere, Replicated, Category = "Connection" )
@@ -184,7 +189,7 @@ private:
 
 	/** The non-wired (if this or the other is hidden) connections to this. */
 	UPROPERTY( VisibleAnywhere, SaveGame )
-	TArray< UFGCircuitConnectionComponent* > mHiddenConnections;
+	TArray< TObjectPtr<UFGCircuitConnectionComponent> > mHiddenConnections;
 
 	/** If any locations are added in here, they will be used when creating wire meshes between the connections. Otherwise component location will be used. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection", meta = ( MakeEditWidget = true ) )

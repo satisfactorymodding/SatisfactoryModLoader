@@ -21,15 +21,15 @@ public:
 	virtual void BeginPlay() override;
 
 	// Begin AFGHologram Interface
-	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual void SetZoopFromHitresult( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	// End AFGHologram Interface
 
 protected:
-	// Begin AFGFactoryBuildingHologram Interface
-	virtual void CreateZoopInstances() override;
+	// Begin AFGBuildableHologram Interface
+	virtual void CreateZoopInstances( const FIntVector& DesiredZoop ) override;
 	virtual FVector ConvertZoopToWorldLocation( const FIntVector& zoop ) const override;
-	// End AFGFactoryBuildingHologram Interface
+	// End AFGBuildableHologram Interface
 
 private:
 	FVector mSize;

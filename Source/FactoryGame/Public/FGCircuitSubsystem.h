@@ -248,7 +248,7 @@ public:
 private:
 	/** Map with all circuits and the circuit ID as the key. */
 	UPROPERTY()
-	TMap< int32, class UFGCircuit* > mCircuits;
+	TMap< int32, TObjectPtr<class UFGCircuit> > mCircuits;
 
 	//@todo-power This name is misleading now, but hey it works. This is rebuild or changed.
 	/** Set if the circuits have been rebuilt this frame so we know if we need to trigger any delegates. */
@@ -256,7 +256,7 @@ private:
 
 	/** There is no support for TMap replication so this is a duplicate of mCircuits in a simple array. */
 	UPROPERTY( ReplicatedUsing = OnRep_ReplicatedCircuits )
-	TArray< class UFGCircuit* > mReplicatedCircuits;
+	TArray< TObjectPtr<class UFGCircuit> > mReplicatedCircuits;
 
 	/** Counter for generating new circuit ids. */
 	int32 IDCounter;
@@ -269,7 +269,7 @@ private:
 
 	/** A list of circuits groups. Circuit groups logically work as one circuit. */
 	UPROPERTY()
-	TArray< class UFGCircuitGroup* > mCircuitGroups;
+	TArray< TObjectPtr<class UFGCircuitGroup> > mCircuitGroups;
 
 	/** Used to keep track of rebuilds during tick. */
 	bool mAreCircuitGroupsDirty;
@@ -279,7 +279,7 @@ private:
 
 	/** Power circuits: all the priority switches in the world. */
 	UPROPERTY( Replicated )
-	TArray< class AFGPriorityPowerSwitchInfo* > mPriorityPowerSwitchInfos;
+	TArray< TObjectPtr<class AFGPriorityPowerSwitchInfo> > mPriorityPowerSwitchInfos;
 
 	/** Power circuits: Fuse stability timer data. Key is Circuit ID */
 	UPROPERTY()

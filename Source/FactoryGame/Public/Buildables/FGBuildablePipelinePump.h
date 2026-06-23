@@ -177,37 +177,37 @@ private:
 
 	/* AK Sound for playing pipeline pistons */
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
-	class UAkAudioEvent* mPipelinePistonSound;
+	TObjectPtr<class UAkAudioEvent> mPipelinePistonSound;
 
 	/* AK sound for stop playing pipeline pistons */
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
-	class UAkAudioEvent* mStopPipelinePistonSound;
+	TObjectPtr<class UAkAudioEvent> mStopPipelinePistonSound;
 	
 	/* Ak sound for playing headlift sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
-	class UAkAudioEvent* mHeadLiftSound;
+	TObjectPtr<class UAkAudioEvent> mHeadLiftSound;
 
 	/* Ak sound for stop playing headlift sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
-	class UAkAudioEvent* mStopHeadLiftSound;
+	TObjectPtr<class UAkAudioEvent> mStopHeadLiftSound;
 
 	/* AK sound for playing pipeline pump sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
-	class UAkAudioEvent* mPipelineEngineSound;
+	TObjectPtr<class UAkAudioEvent> mPipelineEngineSound;
 
 	/* AK sound for stop playing pipeline pump sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
-	class UAkAudioEvent* mStopPipelineEngineSound;
+	TObjectPtr<class UAkAudioEvent> mStopPipelineEngineSound;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
 	float mUpdateAudioFlowTime;
 
 	UPROPERTY()
-	UAkComponent* mPlayPumpEngineComponent;
+	TObjectPtr<UAkComponent> mPlayPumpEngineComponent;
 	UPROPERTY()
-	UAkComponent* mPlayHeadLiftComponent;
+	TObjectPtr<UAkComponent> mPlayHeadLiftComponent;
 	UPROPERTY()
-	UAkComponent* mPlayPipePistonsComponent;
+	TObjectPtr<UAkComponent> mPlayPipePistonsComponent;
 
 	float mLastFlowUpdate;
 	float mCurrentAudioHeadlift;

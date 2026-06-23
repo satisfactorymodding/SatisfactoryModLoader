@@ -57,13 +57,13 @@ protected:
 
 protected:
 	UPROPERTY()
-	const class AFGBuildableResourceExtractorBase* mDefaultExtractor;
+	TObjectPtr<const class AFGBuildableResourceExtractorBase> mDefaultExtractor;
 
 	/** The resource node we snapped to. */
 	UPROPERTY( Replicated, CustomSerialization )
 	TScriptInterface< class IFGExtractableResourceInterface > mSnappedExtractableResource;
 
 	UPROPERTY( Replicated, CustomSerialization )
-	class AFGBuildableResourceExtractorBase* mUpgradeTarget;
+	TObjectPtr<class AFGBuildableResourceExtractorBase> mUpgradeTarget;
 
 };

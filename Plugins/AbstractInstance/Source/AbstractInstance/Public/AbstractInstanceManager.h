@@ -74,13 +74,13 @@ struct ABSTRACTINSTANCE_API FInstanceComponentData
 	void RemoveInstance( FInstanceOwnerHandlePtr& HandlePtr );
 	
 	UPROPERTY(VisibleInstanceOnly, Category = "Instance Component Data")
-	TArray< ULightweightHierarchicalInstancedStaticMeshComponent* > InstancedStaticMeshComponents{};
+	TArray< TObjectPtr<ULightweightHierarchicalInstancedStaticMeshComponent> > InstancedStaticMeshComponents{};
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Instance Component Data")
-	TArray<ULightweightCollisionComponent*> InstancedCollisionComponents{};
+	TArray<TObjectPtr<ULightweightCollisionComponent>> InstancedCollisionComponents{};
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Instance Component Data")
-	UAkInstancedGeometryComponent* AkInstancedGeometryComponent {};
+	TObjectPtr<UAkInstancedGeometryComponent> AkInstancedGeometryComponent {};
 
 	// Map of all instance handles to their visual mesh component. For non-bucketed visuals this map will only have a single key
 	TMap< int32, TArray<FInstanceOwnerHandlePtr> > InstanceHandles;
@@ -185,7 +185,7 @@ public:
 	static AActor* GetOwnerByHandle( const FInstanceHandle& Handle ) { return Handle.Owner.Get(); } 
 
 	UFUNCTION(BlueprintCallable, Category = "Lightweight Instances" )
-	static const UHierarchicalInstancedStaticMeshComponent* GetHandleInfo( const FInstanceHandle& Handle, int32& OutInstanceID );
+	static const ULightweightHierarchicalInstancedStaticMeshComponent* GetHandleInfo( const FInstanceHandle& Handle, int32& OutInstanceID );
 
 	static void SetCustomPrimitiveDataOnHandle( const FInstanceOwnerHandlePtr& Handle,const TArray<float>& Values, bool bMarkDirty = true );
 	static void SetCustomPrimitiveDataOnHandles( const TArray<FInstanceOwnerHandlePtr>& Handles,const TArray<float>& Values, bool bMarkDirty = true );
@@ -223,16 +223,16 @@ protected:
 
 	/* Last actor that was resolved for lazy load, if the last actor and current dont match we fire a post lazy load event. */
 	UPROPERTY()
-	AActor* LastResolvedLazyTaskActor;
+	TObjectPtr<AActor> LastResolvedLazyTaskActor;
 	
 	/*Set that gets marked dirty in the end of the frame so we can avoid marking to many component dirty in the end of the frame.*/
 	UPROPERTY()
-	TSet<UInstancedStaticMeshComponent*> DeferredMarkDirtySet;
+	TSet<TObjectPtr<UInstancedStaticMeshComponent>> DeferredMarkDirtySet;
 
 	FTimerHandle UpdateDeferredTimerHandle;
 
 	UPROPERTY()
-	AActor* CachedPlayerCharacter;
+	TObjectPtr<AActor> CachedPlayerCharacter;
 	
 private:
 	friend struct FInstanceComponentData;
@@ -244,7 +244,7 @@ private:
 	static FName BuildUniqueName( const UInstancedStaticMeshComponent* MeshComponent );
 	
 	UPROPERTY()
-	class UAudioGeometryInstanceManager* AudioGeometryInstanceManager;
+	TObjectPtr<class UAudioGeometryInstanceManager> AudioGeometryInstanceManager;
 };
 
 UCLASS()
@@ -258,7 +258,8 @@ public:
 };
 
 UCLASS()
-class ABSTRACTINSTANCE_API ULightweightHierarchicalInstancedStaticMeshComponent : public UHierarchicalInstancedStaticMeshComponent
+//class ABSTRACTINSTANCE_API ULightweightHierarchicalInstancedStaticMeshComponent : public UHierarchicalInstancedStaticMeshComponent
+class ABSTRACTINSTANCE_API ULightweightHierarchicalInstancedStaticMeshComponent : public UInstancedStaticMeshComponent
 {
 	GENERATED_BODY()
 

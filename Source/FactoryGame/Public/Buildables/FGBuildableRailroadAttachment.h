@@ -33,5 +33,5 @@ private:
 	bool mIsEndStop;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Railroad Attachment" )
-	class UFGRailroadTrackConnectionComponent* mConnection;
+	TObjectPtr<class UFGRailroadTrackConnectionComponent> mConnection;
 };

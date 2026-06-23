@@ -25,6 +25,8 @@ public:
 
 	virtual bool CanBeSampled_Implementation() const override;
 
+	virtual struct FInstanceData CreatePoleInstanceData( int32 variationIndex ) const override;
+
 	const FVector2D& GetPoleScale() const { return mPoleScale; }
 
 private:
@@ -33,6 +35,6 @@ private:
 	
 private:
 	// 2D scale for pole meshes
-	UPROPERTY( ReplicatedUsing = OnRep_PoleScale )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_PoleScale )
 	FVector2D mPoleScale;
 };

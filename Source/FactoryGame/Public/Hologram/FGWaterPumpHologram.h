@@ -41,6 +41,6 @@ protected:
 
 protected:
 	UPROPERTY()
-	const class AFGBuildableWaterPump* mDefaultWaterPump = nullptr;
+	TObjectPtr<const class AFGBuildableWaterPump> mDefaultWaterPump = nullptr;
 
 };

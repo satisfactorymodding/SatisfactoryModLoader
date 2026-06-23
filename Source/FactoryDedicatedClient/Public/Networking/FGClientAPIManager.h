@@ -77,6 +77,14 @@ struct TFGPooledRequestData
 using FFGPooledRequestData = TFGPooledRequestData<true>;
 using FFGWeakPooledRequestData = TFGPooledRequestData<false>;
 
+/** Suppress levels for Client API error popups. All errors will still be logged, but this decides which of them will be presented to the user */
+enum class EFGClientAPIErrorPopupSuppressLevel : uint8
+{
+	None,
+	Timeout,
+	All,
+};
+
 /**
  * Client API is an entrypoint to the Client API system that is capable of sending the requests to the Server API and automatically
  * parsing the responses while taking care of aspects such as security, persistence and marshalling/unmarshalling of the data.

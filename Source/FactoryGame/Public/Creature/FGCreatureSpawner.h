@@ -28,7 +28,7 @@ struct FACTORYGAME_API FSpawnData
 
 	/** Reference to creature */
 	UPROPERTY( SaveGame )
-	class AFGCreature* Creature;
+	TObjectPtr<class AFGCreature> Creature;
 
 	/** We save if the creature was killed so we know if we want to respawn the creature when in range of the spawner */
 	UPROPERTY( SaveGame )
@@ -53,7 +53,7 @@ UCLASS()
 class FACTORYGAME_API AFGCreatureSpawner : public AActor, public IFGSaveInterface
 {
 	GENERATED_BODY()
-public:	
+public:
 	static const FName CreatureClassPropertyName;
 	
 	AFGCreatureSpawner();
@@ -184,13 +184,13 @@ public:
 protected:
 	/** For showing a preview of what will happen in the editor */
 	UPROPERTY()
-	class UFGCreatureSpawnerDebugComponent* mDebugComponent;
+	TObjectPtr<class UFGCreatureSpawnerDebugComponent> mDebugComponent;
 
 	UPROPERTY()
-	class UBillboardComponent* mEditorSprite;
+	TObjectPtr<class UBillboardComponent> mEditorSprite;
 
 	UPROPERTY()
-	class UCapsuleComponent* mCapsuleComponent;
+	TObjectPtr<class UCapsuleComponent> mCapsuleComponent;
 
 	/** The creature we should spawn */
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Spawning" )
@@ -226,7 +226,7 @@ protected:
 
 	/** Path splines that enemies in this spawner should set to follow */
 	UPROPERTY( EditAnywhere, Category = "Spawning" )
-	TArray< class AFGSplinePath* > mSplines;
+	TArray< TObjectPtr<class AFGSplinePath> > mSplines;
 
 	/** For creatures with attached items, the item we attach to the creature will get chosen from this list at random. */
 	UPROPERTY( EditAnywhere, Category = "Spawning" )

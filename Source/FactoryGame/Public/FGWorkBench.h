@@ -127,7 +127,7 @@ public:
 
 private:
 	UPROPERTY( Replicated )
-	class AFGCharacterPlayer* mPlayerWorkingAtBench;
+	TObjectPtr<class AFGCharacterPlayer> mPlayerWorkingAtBench;
 
 	/** Manufacturing rate in product per second. */
 	UPROPERTY()
@@ -139,7 +139,7 @@ private:
 
 	/** The inventory this workbench is set to work with */
 	UPROPERTY()
-	class UFGInventoryComponent* mInventory;
+	TObjectPtr<class UFGInventoryComponent> mInventory;
 
 	/** Actual time spent producing ( holding button ) */
 	float mActiveManufacturingTime;
@@ -160,7 +160,7 @@ private:
 	float mHoldProduceTime;
 
 	UPROPERTY()
-	class UFGManufacturingButton* mManufacturingButton;
+	TObjectPtr<class UFGManufacturingButton> mManufacturingButton;
 
 	/** at what interval should the fatigue multiplier be applied? */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Workbench" )

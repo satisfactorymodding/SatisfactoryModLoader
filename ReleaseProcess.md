@@ -18,67 +18,14 @@ Rough notes on the steps we follow when making an SML release.
 1. After merging the PR, commit on master a `Bump version` commit
     - SML.uplugin GameVersion and SemVersion
     - ExampleMod.uplugin GameVersion and SML dependency version
-1. Wait for CI to finish. We don't upload locally compiled versions so the version detailed suffix is consistent across versions.
+1. Wait for CI to finish.
+   We don't upload locally compiled versions so the version detailed suffix is consistent across versions.
+   We want the CI result of the commit on `master`, so cancel the CI runs for the `dev` that probably started when those were pushed to save time.
 1. While waiting for CI to finish:
     1. Merge the docs PR to master
     1. Update [SMLFeatureTests](https://github.com/satisfactorymodding/SMLFeatureTests) SML dependency version
-1. Upload CI artifact to GitHub as release. Attach all of the CI zip file contents as release items (Windows (Client), Windows Server, Linux Server, SML (multi-target))
-1. Upload CI artifact to SMR as a new version of the SML mod (multi-target zip file), SMR changelog is the GitHub changelog
-1. Post in #toolkit-updates and/or #announcements on Discord
-1. Clear/create ficsit.app announcements as needed
-    1. Get a token from your browser cookies after logging into ficsit.app
-    1. Visit <https://api.ficsit.app/v2>
-    1. Set headers to:
-
-        ```json
-        {
-            "Authorization": "your_token_here",
-        }
-        ```
-
-    - To get active announcements, use:
-
-        ```gql
-        {
-            getAnnouncements {
-                importance
-                message
-                id
-            }
-        }
-        ```
-
-    - To create an announcement, use:
-
-        ```gql
-        # Query
-        mutation CreateAnnouncement($announcement: NewAnnouncement!) {
-            createAnnouncement(announcement: $announcement) {
-                id
-                message
-                importance
-            }
-        }
-
-        # Variables
-        {
-            "announcement": {
-                "message": "Hello World",
-                "importance": "Info"
-            }
-        }
-        ```
-
-    - To delete an announcement, use:
-
-        ```gql
-        # Query
-        mutation DeleteAnnouncement($id: AnnouncementID!) {
-            deleteAnnouncement(announcementId: $id)
-        }
-
-        # Variables
-        {
-            "id": "idFromGetGoesHere"
-        }
-        ```
+1. Upload files to the draft GitHub release. Attach all of the CI zip file contents as release items (Windows (Client), Windows Server, Linux Server, SML (multi-target))
+1. Attach CI artifact to SMR as a new version of the SML mod (multi-target zip file), SMR changelog is the GitHub changelog
+1. Upload the ficsit.app version, and once virus scan succeeds, publish the GitHub draft release
+1. Post in `#toolkit-updates` and/or `#announcements` on Discord
+1. Clear/create ficsit.app announcements as needed via site admin announcements panel

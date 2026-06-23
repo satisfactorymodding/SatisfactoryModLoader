@@ -14,7 +14,7 @@ struct SML_API FSMLSessionSettingInfo {
 	FString OwningPluginName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Session Setting Info")
-	USMLSessionSetting* SessionSetting;
+	TObjectPtr<USMLSessionSetting> SessionSetting;
 
 	FORCEINLINE FSMLSessionSettingInfo() : SessionSetting(NULL) {
 	}

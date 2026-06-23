@@ -9,6 +9,7 @@
 #include "GameFramework/Actor.h"
 #include "Inventory.h"
 #include "FGBuildGunModeDescriptor.h"
+#include "Input/FGBoundMappingContextHandle.h"
 #include "FGBuildGun.generated.h"
 
  /**
@@ -101,11 +102,8 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
 	void BuildSamplePressed();
 
-	/** If true, then the building is valid to sample in this state */
-	virtual bool IsValidBuildingSample( class AFGBuildable* buildable ) const;
-
-	/** If true, then this vehicle should be able to be sampled */
-	virtual bool IsValidVehicleSample( class AFGVehicle* vehicle ) const;
+	/** If true, then the actor is valid to sample in this state */
+	virtual bool IsValidActorSample( AActor* actor ) const;
 
 	/**
 	 * We have sampled a new recipe
@@ -113,13 +111,9 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
 	void OnRecipeSampled( TSubclassOf<class UFGRecipe> recipe );
 
-	/** Called whenever a buildable is sampled. */
+	/** Called whenever an actor is sampled (could be a building, vehicle or another type of actor) */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void OnBuildableSampled( class AFGBuildable* buildable );
-
-	/** Called whenever a vehicle is sampled. */
-	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void OnVehicleSampled( class AFGVehicle* vehicle );
+	void OnActorSampled( AActor* actor );
 
 	/** Called whenever a lightweight buildable is sampled. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
@@ -213,9 +207,6 @@ public:
 protected:
 	/** If true, then we can sample buildables in this state */
 	virtual bool CanSampleBuildables() const;
-
-	/** If true, then we can sample vehicles in this state */
-	virtual bool CanSampleVehicles() const;
 	
 	/** If true, the we can sample customizations in this state */
 	virtual bool CanSampleCustomizations() const;
@@ -241,6 +232,9 @@ private:
 
 	/** Is this state active? */
 	bool mIsActive;
+
+	/** Mapping context handle for the bound build gun input context */
+	FBoundMappingContextHandle mMappingContextHandle;
 };
 
 /**
@@ -419,6 +413,7 @@ public:
 	void SetAllowRayClearanceHit( bool allow );
 	void SetAllowRayBlueprintProxyHit( bool allow );
 	void SetAllowRayWireMeshHit( bool allow );
+	void SetAllowVehiclePathHit( bool allow );
 
 	bool IsRayClearanceHitAllowed() const { return mAllowCleranceRayHits; }
 	bool IsRayBlueprintProxyHitAllowed() const { return mAllowBlueprintProxyRayHits; }
@@ -466,13 +461,9 @@ public:
 
 	void GotoNoneState() { GotoState(EBuildGunState::BGS_NONE); } // i am not feeling good about this :( but it seems necessary in order to switch back to the build menu state after shortcut radial menu closes
 
-	/** Called whenever a buildable is sampled. */
+	/** Called whenever an actor is sampled (could be a building, vehicle or another type of actor) */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void OnBuildableSampled( class AFGBuildable* buildable );
-
-	/** Called whenever a vehicle is sampled. */
-	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
-	void OnVehicleSampled( class AFGVehicle* vehicle );
+	void OnActorSampled( AActor* actor );
 
 	/** Called whenever a lightweight buildable is sampled. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
@@ -589,6 +580,8 @@ protected:
 	
 	bool mAllowWireMeshRayHits = false;
 
+	bool mAllowVehiclePathHits = false;
+
 	// <FL> [MartinC] Radius for the extra sphere trace used when aiming with the gamepad
 	UPROPERTY( EditDefaultsOnly, Category = "Gamepad Aim Assist" )
 	float mGamepadTraceRadius = 80.0f;
@@ -599,7 +592,7 @@ protected:
 private:
 	/** All the states. */
 	UPROPERTY( Replicated )
-	UFGBuildGunState* mStates[ ( uint8 )EBuildGunState::BGS_MAX ] {};
+	TObjectPtr<UFGBuildGunState> mStates[ ( uint8 )EBuildGunState::BGS_MAX ] {};
 
 	/** Current mode on the buildgun. */
 	UPROPERTY( ReplicatedUsing = OnRep_CurrentBuildGunMode )
@@ -633,7 +626,7 @@ private:
 
 	/** @see mCurrentStateIndex. */
 	UPROPERTY()
-	UFGBuildGunState* mCurrentState;
+	TObjectPtr<UFGBuildGunState> mCurrentState;
 
 	/** wait for primary fire release event before re-initiating another build gun fire. Does not affect click+hold. */
 	bool mWaitingForPrimaryFireRelease;

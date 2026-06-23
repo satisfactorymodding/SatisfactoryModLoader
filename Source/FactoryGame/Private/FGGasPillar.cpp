@@ -36,7 +36,7 @@ void AFGGasPillar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 }
 void AFGGasPillar::GainedSignificance_Implementation(){ }
 void AFGGasPillar::LostSignificance_Implementation(){ }
-float AFGGasPillar::GetSignificanceRange(){ return float(); }
+float AFGGasPillar::GetSignificanceRange_Implementation() const{ return IFGSignificanceInterface::GetSignificanceRange_Implementation(); }
 void AFGGasPillar::RemoveGasComponents(){ }
 void AFGGasPillar::NotifyGasCloudOfRemoval(){ }
 void AFGGasPillar::OnDestructibleFractured(){ }

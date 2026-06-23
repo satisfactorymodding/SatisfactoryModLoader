@@ -10,3 +10,6 @@ UFGSignTypeDescriptor::UFGSignTypeDescriptor() : Super() {
 }
 uint32 FPrefabSignData::GetGUID() const{ return uint32(); }
 void UFGSignPrefabWidget::OnToggleBackground(bool NewVisibility) const{ }
+#if WITH_EDITOR
+void UFGSignPrefabWidget::PreSave(FObjectPreSaveContext SaveContext){ Super::PreSave(SaveContext); }
+#endif

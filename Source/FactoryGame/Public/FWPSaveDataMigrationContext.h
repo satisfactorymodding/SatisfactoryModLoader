@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "Equipment/FGAmmoType.h"
 #include "FGActorSaveHeaderTypes.h"
+#include "FGSaveSession.h"
 #include "SaveCustomVersion.h"
 #include "UObject/Object.h"
 #include "FWPSaveDataMigrationContext.generated.h"
@@ -87,10 +88,16 @@ struct FObjectSaveData
 {
 	int32 SaveVersion = FSaveCustomVersion::LatestVersion;
 	bool ShouldMigrateObjectRefsToPersistent = false;
-	TArray< uint8 > Data;
+	bool ShouldSerializePerObjectVersionData = false;
+	FSaveObjectVersionData PerObjectVersionData;
+	TArray<uint8> Data;
 
 	void Reset()
 	{
+		SaveVersion = FSaveCustomVersion::LatestVersion;
+		ShouldMigrateObjectRefsToPersistent = false;
+		ShouldSerializePerObjectVersionData = false;
+		PerObjectVersionData = FSaveObjectVersionData{};
 		Data.Reset();
 	}
 	
@@ -111,6 +118,16 @@ struct FObjectSaveData
 			}
 		}
 		Ar << saveData.Data;
+
+		if ( saveData.SaveVersion >= FSaveCustomVersion::SerializeDataPackageVersionAndCustomVersions )
+		{
+			// Serialize per object version data if we were asked to. This is only used for WP data repacking
+			Ar << saveData.ShouldSerializePerObjectVersionData;
+			if ( saveData.ShouldSerializePerObjectVersionData )
+			{
+				Ar << saveData.PerObjectVersionData;
+			}
+		}
 		return Ar;
 	}
 };
@@ -246,7 +263,7 @@ public:
 	
 private:
 	void MigrateBlobs( const TArray<uint8> &TOCBlob, const TArray<uint8> &DataBlob, const bool DataIsFromPersistentLevel );
-	void MigrateBlobs( int32 saveVersion, const TArray<uint8, TSizedDefaultAllocator<64>> &TOCBlob, const TArray<uint8, TSizedDefaultAllocator<64>> &DataBlo0b, const bool DataIsFromPersistentLevel );
+	void MigrateBlobs( int32 saveVersion, const TArray<uint8, TSizedDefaultAllocator<64>> &TOCBlob, const TArray<uint8, TSizedDefaultAllocator<64>> &DataBlo0b, const bool DataIsFromPersistentLevel, const TOptional<FSaveObjectVersionData>& levelSaveObjectVersionData );
 	void MigrateDestroyedActors( const TArray<FObjectReferenceDisc>& DestroyedActors );
 	void RepackSaveData( class UFGSaveSession& SaveSession );
 

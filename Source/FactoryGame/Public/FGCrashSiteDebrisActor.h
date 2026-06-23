@@ -25,7 +25,7 @@ public:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override { return 10000.f; }
+	virtual float GetSignificanceRange_Implementation() const override { return 10000.f; }
 	// End IFGSignificanceInterface
 
 	UFUNCTION( BlueprintPure, Category = "Crash Site Debris Actor" )
@@ -37,5 +37,5 @@ public:
 	TSoftObjectPtr<AFGCrashSiteDebris> mOwnerCrashSiteDebris;
 protected:
 	UPROPERTY( EditAnywhere, Category = "Crash Site Debris Actor" )
-	class UStaticMeshComponent* mMesh;
+	TObjectPtr<class UStaticMeshComponent> mMesh;
 };

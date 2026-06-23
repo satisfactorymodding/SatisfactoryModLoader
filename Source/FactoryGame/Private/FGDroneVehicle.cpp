@@ -74,13 +74,10 @@ float AFGDroneVehicle::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGDroneVehicle::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGDroneVehicle::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 UMaterialInterface* AFGDroneVehicle::GetActorRepresentationCompassMaterial(){ return nullptr; }
-TArray<FLocalUserNetIdBundle> AFGDroneVehicle::GetLastEditedBy() const{ return TArray<FLocalUserNetIdBundle>(); }
+FPlayerInfoHandle AFGDroneVehicle::GetLastEditedBy() const{ return FPlayerInfoHandle();; }
 void AFGDroneVehicle::NotifyPairedStationUpdated( AFGBuildableDroneStation* NewPairedStation){ }
 void AFGDroneVehicle::OnUndocked(){ }
 void AFGDroneVehicle::OnDockedStationDestroyed(){ }
-void AFGDroneVehicle::OnBeginLoadVehicle_Implementation(){ }
-void AFGDroneVehicle::OnBeginUnloadVehicle_Implementation(){ }
-void AFGDroneVehicle::OnTransferComplete_Implementation(){ }
 TArray<FVector> AFGDroneVehicle::GeneratePathToDestination(const FVector& CurrentLocation, const FVector& Destination, UWorld* World){ return TArray<FVector>(); }
 void AFGDroneVehicle::BeginDocking( AFGBuildableDroneStation* station){ }
 void AFGDroneVehicle::UpdateDockingQueuePosition(int NewPosition){ }

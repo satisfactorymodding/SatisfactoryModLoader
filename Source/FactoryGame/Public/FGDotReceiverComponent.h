@@ -27,7 +27,7 @@ struct FACTORYGAME_API FActiveDOT
 
 	/** Actors which are currently applying this dot to us. */
 	UPROPERTY( BlueprintReadOnly, Category = "DOT" )
-	TArray< AActor* > SourceActors;
+	TArray< TObjectPtr<AActor> > SourceActors;
 
 	// Last time damage was taken by this DOT
 	float LastDamageTimestamp;

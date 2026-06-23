@@ -260,8 +260,9 @@ void UModLoadingLibrary::VerifyPluginDependencies(IPlugin& Plugin, TArray<FStrin
     }
 
     const uint32 CurrentChangelist = FEngineVersion::Current().GetChangelist();
-    
-    if (!PluginDescriptorMetadata.GameVersion.Matches(FVersion(CurrentChangelist, 0, 0))) {
+
+	// Ignore game version check if game changelist is not set (e.g. this is a local source build with no version set)
+    if (CurrentChangelist != 0 && !PluginDescriptorMetadata.GameVersion.Matches(FVersion(CurrentChangelist, 0, 0))) {
         const FString Message = FString::Printf(TEXT("Plugin %s requires game version %s (current: %d)"),
             *Plugin.GetName(), *PluginDescriptorMetadata.GameVersion.ToString().Replace(TEXT(".0.0"), TEXT("")), CurrentChangelist);
         MismatchedDependencies.Add(Message);

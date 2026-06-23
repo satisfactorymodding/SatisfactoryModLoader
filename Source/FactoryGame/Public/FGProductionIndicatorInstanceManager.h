@@ -47,7 +47,7 @@ private:
 	 * Since these need to be attached to an actor to be rendered, our outer is used for this purpose.
 	 */
 	UPROPERTY()
-	UHierarchicalInstancedStaticMeshComponent* mInstanceComponents[ static_cast<std::underlying_type_t<EProductionStatus>>(EProductionStatus::IS_MAX) ];
+	TObjectPtr<UHierarchicalInstancedStaticMeshComponent> mInstanceComponents[ static_cast<std::underlying_type_t<EProductionStatus>>(EProductionStatus::IS_MAX) ];
 
 	/** Handles from all the managed indicators. */
 	TArray< InstanceHandle* > mHandles[ static_cast<std::underlying_type_t<EProductionStatus>>(EProductionStatus::IS_MAX) ];

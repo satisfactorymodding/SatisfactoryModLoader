@@ -28,7 +28,7 @@ struct FPlayingAudioEventInfo
 
 	// The component that this sound was started on
 	UPROPERTY()
-	UAkComponent* Component = nullptr;
+	TObjectPtr<UAkComponent> Component = nullptr;
 };
 
 

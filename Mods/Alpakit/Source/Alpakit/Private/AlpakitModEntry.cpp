@@ -12,11 +12,12 @@
 #include "SourceControlOperations.h"
 #include "Async/Async.h"
 #include "Framework/Notifications/NotificationManager.h"
-#include "LauncherServices/Public/ILauncherProfile.h"
-#include "LauncherServices/Public/ILauncherServicesModule.h"
-#include "TargetDeviceServices/Public/ITargetDeviceServicesModule.h"
-#include "UATHelper/Public/IUATHelperModule.h"
+#include "ILauncherProfile.h"
+#include "ILauncherServicesModule.h"
+#include "ITargetDeviceServicesModule.h"
+#include "IUATHelperModule.h"
 #include "Widgets/Notifications/SNotificationList.h"
+#include "Widgets/Text/STextBlock.h"
 
 #define LOCTEXT_NAMESPACE "AlpakitModListEntry"
 

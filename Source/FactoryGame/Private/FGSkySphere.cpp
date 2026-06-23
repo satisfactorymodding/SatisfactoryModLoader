@@ -26,7 +26,12 @@ AFGSkySphere::AFGSkySphere() : Super() {
 	this->mDefaultMesh = nullptr;
 	this->mSkyMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SkySphere"));
 	this->mSkyMeshComponent->SetMobility(EComponentMobility::Static);
-	this->mWeatherChangeDelayTime = FFloatInterval(3.40282e+38, -3.40282e+38);
+	this->mCurrentWeatherPreset = nullptr;
+	this->CurrentWeatherReaction = nullptr;
+	this->CurrentWeatherReactionClass = nullptr;
+	this->mCurrentWeatherState = EWeatherInterpState::EWeatherInterpState_Undefined;
+	this->mWeatherDurationMultiplier = 1.0;
+	this->mTimeUntilNextWeatherState = 0.0;
 	this->mRainOcclusionSceneCapture2DComponent = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("OcclusionSceneCapture"));
 	this->mRainOcclusionSceneCapture2DComponent->SetMobility(EComponentMobility::Movable);
 	this->mRainOcclusionRT = nullptr;
@@ -87,17 +92,16 @@ void AFGSkySphere::Tick(float DeltaTime){ Super::Tick(DeltaTime); }
 void AFGSkySphere::BeginPlay(){ Super::BeginPlay(); }
 void AFGSkySphere::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGSkySphere, mCurrentSelectedWeather);
+
 }
 void AFGSkySphere::OnConstruction(const FTransform& Transform){ }
 void AFGSkySphere::UpdateMaterial(bool bWithVolumetricClouds){ }
 void AFGSkySphere::SetDirectionalLightIntensityMultiplierOverride(float multiplier){ }
 float AFGSkySphere::GetDirectionalLightIntensityMultiplierOverride(){ return float(); }
-FWeatherChanceEntry AFGSkySphere::GetNewWeatherState(){ return FWeatherChanceEntry(); }
-void AFGSkySphere::SetWeatherState(int32 NewTypeID){ }
-void AFGSkySphere::OnRep_OnWeatherChanged(int32 OldState){ }
-void AFGSkySphere::SetCloudShadowIntensity(float NewValue){ }
-float AFGSkySphere::GetCloudShadowIntensity() const{ return float(); }
+void AFGSkySphere::RequestCameraUpdate(){ }
+void AFGSkySphere::SetWeatherPreset(UFGWeatherPresetDataAsset* WeatherPreset){ }
+void AFGSkySphere::ForceSetWeather(TSubclassOf<AFGWeatherReaction> ForcedWeatherState){ }
+void AFGSkySphere::RollNewWeather(){ }
 void AFGSkySphere::TryUpdateSceneCaptureLocation(bool bForce){ }
 void AFGSkySphere::UpdateOcclusionDistance(){ }
 void AFGSkySphere::UpdateLightRotation(){ }

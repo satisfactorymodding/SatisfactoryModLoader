@@ -7,6 +7,25 @@
 #include "FGHologram.h"
 #include "FGBuildableHologram.generated.h"
 
+UENUM( Blueprintable, Meta = ( Bitflags, UseEnumValuesAsMaskValuesInEditor = "true" ) )
+enum class EHologramZoopDirections : uint8
+{
+	HZD_None		= 0			UMETA( displayName = "None" ),
+	HZD_Forward		= 1 << 0	UMETA( displayName = "Forward" ),
+	HZD_Backward	= 1 << 1	UMETA( displayName = "Backward" ),
+	HZD_Left		= 1 << 2	UMETA( displayName = "Left" ),
+	HZD_Right		= 1 << 3	UMETA( displayName = "Right" ),
+	HZD_Up			= 1 << 4	UMETA( displayName = "Up" ),
+	HZD_Down		= 1 << 5	UMETA( displayName = "Down" )
+};
+
+UENUM()
+enum class EBuildableHologramBuildStep : uint8
+{
+	BHBS_PlacementAndRotation,
+	BHBS_Zoop
+};
+
 UENUM()
 enum class EGuideLineType : uint8
 {
@@ -52,11 +71,11 @@ struct FFGHologramGuidelineData
 
 	// The object this guideline was created from
 	UPROPERTY()
-	class UObject* mGuidelineStartObject;
+	TObjectPtr<class UObject> mGuidelineStartObject;
 
 	// The object this guideline was created for
 	UPROPERTY()
-	class UObject* mGuidelineEndObject;
+	TObjectPtr<class UObject> mGuidelineEndObject;
 
 	// Transform of the object the guideline was created for
 	FTransform mTransform;
@@ -125,17 +144,25 @@ public:
 	void SetBuildableClass( TSubclassOf< class AFGBuildable > buildableClass );
 
 	// AFGHologram interface
+	virtual bool CanBeZooped() const override;
+	virtual bool IsZoopBuildModeSupported() const;
+	virtual void GetSupportedBuildModes_Implementation( TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes ) const override;
+	virtual int32 GetBaseCostMultiplier() const override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
+	virtual bool TryZoop( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual void PreHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual void PostHologramPlacement( const FHitResult& hitResult, bool callForChildren ) override;
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
-	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
+	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID constructionID ) override;
 	virtual void GetIgnoredClearanceActors( TSet< AActor* >& ignoredActors ) const override;
 	virtual ENudgeFailReason NudgeTowardsWorldDirection( const FVector& Direction ) override;
 	virtual FTransform GetNudgeSpaceTransform() const override;
+	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
+	virtual void OnBuildModeChanged( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) override;
+	virtual void GetClearanceData( TArray< const FFGClearanceData* >& out_ClearanceData ) const override;
 	// End AFGHologram interface
 
 	class AFGBuildable* GetSnappedBuilding() { return mSnappedBuilding; }
@@ -198,6 +225,34 @@ public:
 	FORCEINLINE void SetSuppressBuildEffect( bool bNewSuppressBuildEffect ) { mSuppressBuildEffect = bNewSuppressBuildEffect; }
 
 	void SetCustomizationData( const struct FFactoryCustomizationData& customizationData );
+
+	const TArray< FTransform >& GetZoopInstanceTransforms() const { return mZoopInstanceTransforms; }
+	const TArray< FTransform >& GetZoopChildInstanceTransforms() const { return mZoopChildInstanceTransforms; }
+
+	virtual bool IsInZoopBuildMode() const;
+	int32 GetMaxZoopAmount() const { return mMaxZoopAmount; }
+	void SetMaxZoopAmount( int32 amount );
+
+	void SetZoopAmount( const FIntVector& Zoop );
+
+	/** Function called ervery frame when zooping instead of the usual positioning logic. Allows setting zoop amount through SetZoopAmount() based on hitresult. Zooping happens in local space of the hologram. */
+	virtual void SetZoopFromHitresult( const FHitResult& hitResult );
+
+	/** Function used for creating new zoop instances. Zoop instances are reset each frame and are intended to be recreated through this function by calling GenerateZoopInstance(). */
+	virtual void CreateZoopInstances( const FIntVector& DesiredZoop );
+
+	/** Used for determining the intended "End Location" of a zoop, not needed for zoop functionality but can be used for cosmetic functionality like VFX and SFX. */
+	virtual FVector ConvertZoopToWorldLocation( const FIntVector& zoop ) const;
+
+	void ClearZoopInstances();
+	void GenerateZoopInstance( const FTransform& instanceTransform, bool isChildZoopInstance = false );
+
+	void RegenerateZoopInstances();
+
+	/** When zooping, this function determines whether the child holograms should be zooped as well for a specified instance. */
+	virtual bool ShouldGenerateChildZoopInstance( const FTransform& localInstanceTransform, int32 instanceIndex, int32 numInstances ) const;
+
+	class AFGBuildable* ConstructInstance( const FTransform& localInstanceTransform, TArray< class AActor* >& out_children, FNetConstructionID netConstructionID, int32 zoopInstanceCounter );
 
 protected:
 	// Begin AFGHologram interface
@@ -358,6 +413,16 @@ protected:
 	// Delayed client apply customization
 	virtual void OnGamestateReceived() override;
 
+	/** Clamps the desired zoop to be within max zoop range. */
+	void ApplyMaxZoopClamp( FIntVector& Zoop );
+
+	void BlockZoopDirectionsBasedOnSnapDirection( const FVector& worldSpaceSnapDirection );
+
+	void CreateZoopInstanceMeshComponent( class UStaticMeshComponent* forComponent, class USceneComponent* attachParent, const FName& attachSocket = NAME_None );
+	
+	UFUNCTION()
+	void OnRep_DesiredZoop();
+
 private:
 	UFUNCTION()
 	void OnRep_CustomizationData();
@@ -367,7 +432,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram", meta = ( ClampMin = "0.0", ClampMax = "90.0", UIMin = "0.0", UIMax = "90.0" ) )
 	float mMaxPlacementFloorAngle;
 	UPROPERTY()
-	class UFGFactoryLegsComponent* mLegs;
+	TObjectPtr<class UFGFactoryLegsComponent> mLegs;
 
 	//If set to true, the building will be allowed to snap to 45 degree intervals on fonudations instead of only 90 as the default.
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
@@ -392,9 +457,6 @@ protected:
 	/** True if the build effect should be suppressed for the buildable constructed from this hologram */
 	uint32 mSuppressBuildEffect : 1;
 
-	/** Whether or not to delay begin play until after child holograms are spawned (useful if you need to run special logic dependant on the children) */
-	uint32 mDelayBeginPlayUntilAfterChildSpawns : 1;
-
 	/** Cached array of all our factory connection components. */
 	TArray< class UFGFactoryConnectionComponent* > mCachedFactoryConnectionComponents;
 
@@ -406,20 +468,47 @@ protected:
 	
 	/** Mesh component used to display the active guideline */
 	UPROPERTY()
-	class UInstancedStaticMeshComponent* mInstancedGuidelineMeshComponent;
+	TObjectPtr<class UInstancedStaticMeshComponent> mInstancedGuidelineMeshComponent;
 
 	UPROPERTY()
 	FFGHologramGuidelineSnapResult mGuidelineSnapResult;
 
 	/** If we have snapped to another buildable, i.e. foundation, floor etc, this is it. */
 	UPROPERTY( CustomSerialization, Replicated )
-	class AFGBuildable* mSnappedBuilding;
+	TObjectPtr<class AFGBuildable> mSnappedBuilding;
 
 	UPROPERTY()
-	class AFGBuildable* mSnappedFloor;
+	TObjectPtr<class AFGBuildable> mSnappedFloor;
 
 	UPROPERTY()
-	class AFGBuildable* mSnappedWall;
+	TObjectPtr<class AFGBuildable> mSnappedWall;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeZoop;
+
+	/** Max zoop amount in each local space direction. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram", meta=(UIMin=0, ClampMin=0) )
+	int32 mMaxZoopAmount;
+
+	/** Whether or not to use the default zoop implementation, which is based on the clearance snapping box. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	bool mUseDefaultZoopImplementation;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram", meta=(Bitmask,BitmaskEnum="/Script/FactoryGame.EHologramZoopDirections"))
+	uint8 mDefaultBlockedZoopDirections;
+
+	/** Transforms for our zoop instances. */
+	TArray< FTransform > mZoopInstanceTransforms;
+
+	/** Instance transforms created due to our parent zooping us as a child hologram. */
+	TArray< FTransform > mZoopChildInstanceTransforms;
+
+	/** Clearance data for our zoop instances. */
+	TArray< FFGClearanceData > mZoopClearanceData;
+
+	/** Instanced Mesh Components. Used for zooping. */
+	UPROPERTY()
+	TMap< TObjectPtr<UStaticMeshComponent>, TObjectPtr<class UInstancedStaticMeshComponent> > mZoopInstancedMeshComponents;
 
 	/** If we've snapped a wall, this is the worldspace direction from us towards the "wall". */
 	FVector mWorldSpaceSnapDirection;
@@ -463,4 +552,14 @@ protected:
 	FFactoryCustomizationData mCustomizationData;
 
 	int32 mSelectedHologramAttachmentPointIndex;
+
+	uint8 mBlockedZoopDirectionMask;
+
+	UPROPERTY( Replicated, CustomSerialization )
+	EBuildableHologramBuildStep mBuildableHologramBuildStep;
+
+private:
+	/** Zoop amount. In what local space directions to extend the building and by how much. */
+	UPROPERTY( ReplicatedUsing = OnRep_DesiredZoop, CustomSerialization )
+	FIntVector mDesiredZoop;
 };

@@ -2,4 +2,8 @@
 
 #include "Representation/FGVehicleDockingStationRepresentation.h"
 
+UFGVehicleDockingStationRepresentation::UFGVehicleDockingStationRepresentation() : Super() {
+	this->mBackgroundIsPrimaryColor = false;
+	this->mAllowRealActorLocationOnClient = false;
+}
 bool UFGVehicleDockingStationRepresentation::IsWarningIndicatorVisible(AActor* realActor, FLinearColor& out_warningIndicatorColor) const{ return bool(); }

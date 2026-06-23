@@ -11,6 +11,7 @@
 #include "FGBuildGunPaint.generated.h"
 
 
+class UInstancedStaticMeshComponent;
 struct FInstanceData;
 
 UENUM( BlueprintType )
@@ -186,6 +187,9 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|BuildGunPaint" )
 	FOnCustomizeFilterChanged OnCustomizeFilterChanged;
 
+	// Max number of orientations, this is a little rough as we might want it per pattern. But generally we will never want more that 4
+	static const uint8 mNumPatternOrientations = 4;
+
 private:
 	/** Duplicate component for preview actor */
 	template< typename T >
@@ -203,7 +207,7 @@ private:
 protected:
 	/** Material used on stencil proxies */
 	UPROPERTY( EditDefaultsOnly )
-	UMaterialInterface* mHoverProxyMaterial;
+	TObjectPtr<UMaterialInterface> mHoverProxyMaterial;
 
 	/** Invisible Material Descriptor (for hiding meshes when they're hovered to for material replacement )*/
 	UPROPERTY( EditDefaultsOnly )
@@ -241,8 +245,6 @@ private:
 	UPROPERTY()
 	uint8 mPatternRotation;
 
-	// Max number of orientations, this is a little rough as we might want it per pattern. But generally we will never want more that 4
-	const uint8 mNumPatternOrientations = 4;
 
 	bool mHitCanApplySwatch;
 	bool mHitCanApplyPattern;
@@ -260,24 +262,24 @@ private:
 	float mRefireTime;
 
 	UPROPERTY()
-	AActor* mCurrentCustomizationTarget;
+	TObjectPtr<AActor> mCurrentCustomizationTarget;
 
 	UPROPERTY()
-	AActor* mCurrentlyAimedAtActor;
+	TObjectPtr<AActor> mCurrentlyAimedAtActor;
 
 	// Utilized by the Custom Color application so that we don't spam apply on the same building while holding down the fire key
 	UPROPERTY()
-	AActor* mLastAppliedActor;
+	TObjectPtr<AActor> mLastAppliedActor;
 
 	UPROPERTY()
-	AActor* mPreviewActor;
+	TObjectPtr<AActor> mPreviewActor;
 
 	UPROPERTY( Transient )
-	TMap< UStaticMesh*, UInstancedStaticMeshComponent* > mPendingPreviewMeshes;
+	TMap< TObjectPtr<UStaticMesh>, TObjectPtr<UInstancedStaticMeshComponent> > mPendingPreviewMeshes;
 
 	/** Track the instance converter so we know which one to remove from the subsystem */
 	UPROPERTY()
-	AActor* mInstanceConverterInstigator;
+	TObjectPtr<AActor> mInstanceConverterInstigator;
 
 };
 

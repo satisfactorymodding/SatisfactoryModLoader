@@ -22,31 +22,31 @@ public:
 
 	/** Mesh at the bottom of the lift. */
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mBottomMesh;
+	TObjectPtr<UStaticMesh> mBottomMesh;
 	
 	/** Mesh repeated for the mid section. */
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mMidMesh;
+	TObjectPtr<UStaticMesh> mMidMesh;
 	
 	/** Half Size Mid Mesh for passthrough visuals (200 units is too long so we use a half mesh in certain cases). */
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mHalfMidMesh;
+	TObjectPtr<UStaticMesh> mHalfMidMesh;
 	
 	/** Mesh at the top of the lift. */
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mTopMesh;
+	TObjectPtr<UStaticMesh> mTopMesh;
 	
 	/** Mesh placed on the input/output as a bellow between a wall or factory. */
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mBellowMesh;
+	TObjectPtr<UStaticMesh> mBellowMesh;
 	
 	/** Mesh placed between two joined lift sections. */
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mJointMesh;
+	TObjectPtr<UStaticMesh> mJointMesh;
 	
 	/** Shelf placed under each item. */
 	UPROPERTY( EditDefaultsOnly )
-	UStaticMesh* mShelfMesh;
+	TObjectPtr<UStaticMesh> mShelfMesh;
 };
 
 /* What should the lift endings look like? Should they be bellows or just empty? (or Auto)*/
@@ -159,11 +159,11 @@ public:
 	
 #if WITH_EDITORONLY_DATA
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Buildable")
-	UFGBuildableConveyorLiftSparseData* mConveyorLiftSparesData;
+	TObjectPtr<UFGBuildableConveyorLiftSparseData> mConveyorLiftSparesData;
 #endif
 
 	UPROPERTY( )
-	UFGBuildableConveyorLiftSparseData* mConveyorLiftSparesDataCDO;
+	TObjectPtr<UFGBuildableConveyorLiftSparseData> mConveyorLiftSparesDataCDO;
 	
 	FORCEINLINE const UFGBuildableConveyorLiftSparseData* GetConveyorLiftSparesData() const { return mConveyorLiftSparesDataCDO; }
 	
@@ -219,25 +219,25 @@ public:
 
 	/** Mesh at the bottom of the lift. */
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMesh* mBottomMesh;
+	TObjectPtr<class UStaticMesh> mBottomMesh;
 	/** Mesh repeated for the mid section. */
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMesh* mMidMesh;
+	TObjectPtr<class UStaticMesh> mMidMesh;
 	/** Half Size Mid Mesh for passthrough visuals (200 units is too long so we use a half mesh in certain cases). */
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMesh* mHalfMidMesh;
+	TObjectPtr<class UStaticMesh> mHalfMidMesh;
 	/** Mesh at the top of the lift. */
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMesh* mTopMesh;
+	TObjectPtr<class UStaticMesh> mTopMesh;
 	/** Mesh placed on the input/output as a bellow between a wall or factory. */
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMesh* mBellowMesh;
+	TObjectPtr<class UStaticMesh> mBellowMesh;
 	/** Mesh placed between two joined lift sections. */
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMesh* mJointMesh;
+	TObjectPtr<class UStaticMesh> mJointMesh;
 	/** Shelf placed under each item. */
 	UPROPERTY( EditDefaultsOnly )
-	class UStaticMesh* mShelfMesh;
+	TObjectPtr<class UStaticMesh> mShelfMesh;
 	/** How we visualize the output of the lift */
 	UPROPERTY( EditDefaultsOnly, SaveGame, Replicated )
 	EFGBuildableConveyorLiftMeshDisplayMode mOutputMeshDisplayMode = EFGBuildableConveyorLiftMeshDisplayMode::MDM_Auto;
@@ -282,17 +282,17 @@ private:
 	/* DEPRECATED */
 	/** Meshes for items. */
 	UPROPERTY( Meta = ( NoAutoJson ) )
-	TMap< FName, class UInstancedStaticMeshComponent* > mItemMeshMap;
+	TMap< FName, TObjectPtr<class UInstancedStaticMeshComponent> > mItemMeshMap;
 
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_SnappedPassthroughs )
-	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
+	TArray< TObjectPtr<class AFGBuildablePassthrough> > mSnappedPassthroughs;
 
 	/** Tobias 2024-05-20: We need this data replicated in order to scale the bellows on client, because clients can't access the opposing connections. */
 	UPROPERTY( Replicated )
 	float mOpposingConnectionClearance[2];
 
 	UPROPERTY( EditDefaultsOnly, meta = (AllowPrivateAccess = "true") )
-	UStaticMeshComponent* mVisibilityComponent;
+	TObjectPtr<UStaticMeshComponent> mVisibilityComponent;
 	
 	/** The names of the fog plane components so they can be referenced */
 	inline static const FName FOG_PLANE_0 = FName( TEXT( "FogPlane0" ) );
@@ -301,6 +301,29 @@ private:
 	/** Cached values for conveyor renderer. */
 	FRenderTransform PreCachedBaseRenderTransform;
 	FVector3f ItemDirection;
+};
+
+UCLASS()
+class FACTORYGAME_API UFGConveyorLiftVisibilityMesh : public UStaticMeshComponent
+{
+	GENERATED_BODY()
+public:
+	// Begin UStaticMeshComponent interface
+	virtual void BeginPlay() override;
+	virtual void ReportVisibility() const override;
+	virtual bool ShouldReportVisibility() const override { return !IsRelevantToConveyorRenderer(); }
+	// End UStaticMeshComponent interface
+	
+	FORCEINLINE bool IsRelevantToConveyorRenderer() const { return bIsRelevantToConveyorRenderer; }
+	FORCEINLINE void SetRelevant(const bool Value) const { bIsRelevantToConveyorRenderer = Value; }
+	FORCEINLINE AFGBuildableConveyorLift* GetOuterConveyorLift() const { return mOwnerLift; }
+
+private:
+	// We mark this true once it has been reported.
+	mutable bool bIsRelevantToConveyorRenderer{false};
+
+	UPROPERTY()
+	TObjectPtr<AFGBuildableConveyorLift> mOwnerLift;
 };
 
 inline void AFGBuildableConveyorLift::PostSerializedFromBlueprint( bool isBlueprintWorld )

@@ -7,5 +7,5 @@ AFGRampHologram::AFGRampHologram() : Super() {
 }
 void AFGRampHologram::BeginPlay(){ Super::BeginPlay(); }
 bool AFGRampHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramLocationOffset) const{ return bool(); }
-void AFGRampHologram::CreateZoopInstances(){ Super::CreateZoopInstances(); }
+void AFGRampHologram::CreateZoopInstances(const FIntVector& DesiredZoop){ Super::CreateZoopInstances(DesiredZoop); }
 void AFGRampHologram::SetZoopFromHitresult(const FHitResult& hitResult){ }

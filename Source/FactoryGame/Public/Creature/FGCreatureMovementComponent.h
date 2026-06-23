@@ -27,5 +27,5 @@ public:
 
 protected:
 	UPROPERTY()
-	class AFGCreature* mCreature;
+	TObjectPtr<class AFGCreature> mCreature;
 };

@@ -6,21 +6,23 @@
 "Architecture/Beam/GenericDescription","Snaps to other Beams and various other structural buildings.
 Beams support multiple build modes for different use cases.","","","Game","#prototype
 #item"
-"Architecture/BeamBraidedCable","Braided Cable","Currently not implemented in-game. Basically a Beam in functionality, just a different look.","","",""
-"Architecture/BeamBraidedCableCluster","Braided Cable Cluster","Currently not implemented in-game. Basically a Beam in functionality, just a different look.","","",""
-"Architecture/BeamConcrete","Round Concrete Beam","Currently not implemented in-game. Will share generic beam description.","","",""
+"Architecture/BeamBraidedCable","Braided Cable","","","",""
+"Architecture/BeamBraidedCableCluster","Braided Cable Cluster","","","",""
+"Architecture/BeamConcrete","Round Concrete Beam","","","",""
 "Architecture/BeamConnector","Beam Connector","","","Game","#prototype
 #item"
 "Architecture/BeamConnector/GenericDescription","Hides seams and makes Beam connections more visually pleasing.","","","Game","#prototype
 #item"
 "Architecture/BeamConnectorDouble","Double Beam Connector","","","Game","#prototype
 #item"
-"Architecture/BeamH","H-Beam","Currently not implemented in-game. Will share generic beam description.","","",""
+"Architecture/BeamCross","Cross Beam","","","Game","#prototype
+#item"
+"Architecture/BeamH","H-Beam","","","",""
 "Architecture/BeamMetal","Metal Beam","","","Game","#prototype
 #item"
 "Architecture/BeamPainted","Painted Beam","","","Game","#prototype
 #item"
-"Architecture/BeamShelf","Shelf Beam","Currently not implemented in-game. Will share generic beam description.","","",""
+"Architecture/BeamShelf","Shelf Beam","","","",""
 "Architecture/BeamSupport","Beam Support","","","Game","#prototype
 #item"
 "Architecture/BeamSupport/Description","Snaps to Beams and various other structural buildings.

@@ -188,7 +188,7 @@ public:
 	FORCEINLINE FRuntimeFloatCurve GetAmmoDamageFalloffCurve() const { return mAmmoDamageFalloff; }
 
 	UFUNCTION( BlueprintPure, Category = "Ammunition|FX" )
-	FORCEINLINE UParticleSystem* GetMuzzleFlashVFX() const { return mMuzzleFlashVFX; }
+	FORCEINLINE UFXSystemAsset* GetMuzzleFlashVFX() const { return mMuzzleFlashVFX; }
 
 	UFUNCTION( BlueprintPure, Category = "Ammunition|FX" )
 	FORCEINLINE FVector GetMuzzleFlashScale() const { return mMuzzleFlashScale; }
@@ -235,11 +235,11 @@ private:
 protected:
 	/** Weapon owning this ammo type descriptor and most likely the firing actor */
 	UPROPERTY( Replicated )
-	AFGWeapon* mWeapon = nullptr;
+	TObjectPtr<AFGWeapon> mWeapon = nullptr;
 
 	/** The actor responsible for dealing the damage of the weapon */
 	UPROPERTY( Replicated )
-	APawn* mInstigator = nullptr;
+	TObjectPtr<APawn> mInstigator = nullptr;
 
 	/** The transform used for spawning the projectile. Affected by dispersion. */
 	UPROPERTY( Replicated )
@@ -295,13 +295,13 @@ private:
 	bool mHasBeenInitialized = false;
 
 	UPROPERTY( Replicated )
-	AActor* mAmmoTarget = nullptr;
+	TObjectPtr<AActor> mAmmoTarget = nullptr;
 
 	UPROPERTY( Replicated )
 	float mWeaponDamageMultiplier = 1.0f;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
-	USkeletalMesh* mMagazineMesh = nullptr;
+	TObjectPtr<USkeletalMesh> mMagazineMesh = nullptr;
  
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	TSubclassOf< class UAnimInstance > mMagazineMeshAnimClass = nullptr;
@@ -314,10 +314,10 @@ private:
 	TArray<FSkeletalMaterial> mMagazineMeshMaterials;
 
 	UPROPERTY( EditDefaultsOnly, Category="Item" )
-	TArray<UMaterialInstance* > mMagazineMeshMaterials1p;
+	TArray<TObjectPtr<UMaterialInstance> > mMagazineMeshMaterials1p;
 
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Ammunition|Damage" )
-	TArray<  UFGDamageType*  > mDamageTypesOnImpact;
+	TArray<  TObjectPtr<UFGDamageType>  > mDamageTypesOnImpact;
 
 	/** The noise to make when we fire the weapon. */
 	UPROPERTY( EditDefaultsOnly, Category = "Ammunition|Noise" )
@@ -329,7 +329,7 @@ private:
 	FRuntimeFloatCurve mAmmoDamageFalloff;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Ammunition|FX" )
-	UParticleSystem* mMuzzleFlashVFX = nullptr;
+	TObjectPtr<UFXSystemAsset> mMuzzleFlashVFX = nullptr;
 	
 	UPROPERTY( EditDefaultsOnly, meta=(AllowPreserveRatio), Category = "Ammunition|FX" )
 	FVector mMuzzleFlashScale = FVector::OneVector;

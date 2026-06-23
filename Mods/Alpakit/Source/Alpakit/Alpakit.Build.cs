@@ -16,6 +16,9 @@ public class Alpakit : ModuleRules
 		
 		PublicDependencyModuleNames.AddRange(new[] {
 			"SML",
+			"FactoryGame",
+			"GameFeatures",
+			"GameFeaturesEditor",
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new[] {
@@ -33,7 +36,8 @@ public class Alpakit : ModuleRules
 			"EditorStyle",
 			"PluginBrowser",
 			"LauncherServices",
-			"TargetDeviceServices",
+			"TargetDeviceServices", 
+			"UATHelper",
 		});
 	}
 }

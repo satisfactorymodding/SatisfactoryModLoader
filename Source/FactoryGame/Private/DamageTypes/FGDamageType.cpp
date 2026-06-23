@@ -13,6 +13,8 @@ UFGDamageType::UFGDamageType(const FObjectInitializer& ObjectInitializer) : Supe
 	this->mIsGasPointType = false;
 	this->mIsGasRadialType = false;
 	this->mPlayerIsAlwaysVulnerable = false;
+	this->mDestroyVehicles = false;
+	this->mShouldSpawnRemnantsAtWorldSpawn = false;
 	this->DamageImpulse = 0.0;
 	this->DestructibleImpulse = 0.0;
 }

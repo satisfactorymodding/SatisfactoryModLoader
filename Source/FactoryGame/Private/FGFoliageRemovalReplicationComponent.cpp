@@ -1,4 +1,6 @@
 #include "FGFoliageRemovalReplicationComponent.h"
+
+#include "GameplayTagContainer.h"
 #include "Components/SceneComponent.h"
 
 UFGFoliageRemovalReplicationComponent::UFGFoliageRemovalReplicationComponent() : Super() {
@@ -14,7 +16,7 @@ UFGFoliageRemovalReplicationComponent::UFGFoliageRemovalReplicationComponent() :
 void UFGFoliageRemovalReplicationComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction){ Super::TickComponent(DeltaTime, TickType, ThisTickFunction); }
 void UFGFoliageRemovalReplicationComponent::BeginPlay(){ Super::BeginPlay(); }
 void UFGFoliageRemovalReplicationComponent::OnFoliageBucketRemoved(const FIntVector& inCell, const UFoliageType* forFoliageType, int32 bucketId){  }
-void UFGFoliageRemovalReplicationComponent::HandleBulkDataReplicationMessage(TArray<uint8>&& Payload){  }
+void UFGFoliageRemovalReplicationComponent::HandleBulkDataReplicationMessage(FGameplayTag InTag, TArray<uint8>&& Payload){ }
 AFGFoliageStateRepProxy::AFGFoliageStateRepProxy() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	this->RootComponent->SetMobility(EComponentMobility::Movable);

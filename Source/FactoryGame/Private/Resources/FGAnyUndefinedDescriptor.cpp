@@ -6,4 +6,5 @@
 UFGAnyUndefinedDescriptor::UFGAnyUndefinedDescriptor() : Super() {
 	this->mDisplayName = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/AnyUndefined");
 	this->mDescription = LOCTABLE("Buildables_UI", "Splitters/Smart/AddItem/AnyUndefined/Description");
+	this->mForm = EResourceForm::RF_INVALID;
 }

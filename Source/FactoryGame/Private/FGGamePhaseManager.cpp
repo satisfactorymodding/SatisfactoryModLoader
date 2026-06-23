@@ -37,6 +37,8 @@ bool AFGGamePhaseManager::IsLastGamePhaseReached() const{ return bool(); }
 bool AFGGamePhaseManager::ReadyToGoToNextGamePhase() const{ return bool(); }
 void AFGGamePhaseManager::SetGamePhaseForTier(int32 tier, bool bSuppressNarrativeMessages){ }
 void AFGGamePhaseManager::UnlockAllGamePhases(){ }
+TArray<FItemAmount> AFGGamePhaseManager::GetGamePhaseCosts(class UFGGamePhase* inPhase) const{ return TArray<FItemAmount>(); }
+TArray<FItemAmount> AFGGamePhaseManager::GetTargetGamePhaseCosts() const{ return TArray<FItemAmount>(); }
 EGamePhase AFGGamePhaseManager::GetGamePhase() const{ return EGamePhase(); }
 UFGGamePhase* AFGGamePhaseManager::GetGamePhaseFromGamePhaseEnum(EGamePhase gamePhase) const{ return nullptr; }
 FText AFGGamePhaseManager::GetGamePhaseName(EGamePhase gamePhase) const{ return FText(); }

@@ -27,6 +27,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "GameFeatures",
+			"Enabled": true
+		},
+		{
 			"Name": "SML",
 			"Enabled": true
 		}

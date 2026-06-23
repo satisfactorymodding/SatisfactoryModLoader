@@ -6,9 +6,10 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "FGOptionInterface.h"
-#include "FGOptionsSettings.h"
 #include "Misc/Variant.h"
 #include "FGUserSetting.generated.h"
+
+struct FEdGraphPinType;
 
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogUserSetting, Log, All );
 
@@ -47,7 +48,7 @@ public:
 	TSubclassOf< class UFGUserSettingCategory > SubCategoryClass;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Availability" )
-	UFGUserSetting* SubOptionTo;
+	TObjectPtr<UFGUserSetting> SubOptionTo;
 	/** The order in menus is decided by this value. Lower values means earlier in menu. Negative values are allowed. [-N..0..N]*/
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "User Interface" )
 	float MenuPriority;
@@ -79,8 +80,14 @@ enum class ESettingVisiblityDisqualifier : uint64
 	// TODO @Nick: Rename this from NotOnWindows to NotOnDesktop in C++
 	USAD_NotOnWindows = 1 << 7 UMETA( DisplayName = "Don't show on Desktop" ),
 	USAD_NotOnPS5 = 1 << 8 UMETA( DisplayName = "Don't show on Playstation 5" ),
-	USAD_NotOnXSX = 1 << 9 UMETA( DisplayName = "Don't show on Xbox Series X|S" )
+	USAD_NotOnXSX = 1 << 9 UMETA( DisplayName = "Don't show on Xbox Series X|S" ),
+	USAD_NotOnSteamDeck = 1 << 10 UMETA( DisplayName = "Don't show on Steam Deck" ),
 	// </FL>
+	/* <FL> [MartinC] Visibility flag for controller only options */
+	USAD_ControllerOnly = 1 << 11 UMETA( DisplayName = "Only show when using Controller" ),
+	/* <FL> [MartinC] Visibility flag for mouse and keyboard only options */
+	USAD_MouseAndKeyboardOnly = 1 << 12 UMETA( DisplayName = "Only show when using Mouse and Keyboard" )
+
 };
 ENUM_CLASS_FLAGS( ESettingVisiblityDisqualifier );
 
@@ -97,14 +104,15 @@ enum class ESettingEditabilityDisqualifier : uint8
 // <FL> [PfaffN] Platform type to identify the target platform setting
 // Windows, Mac, Linux, IOS, Android
 UENUM( BlueprintType )
-enum class ETargetPlatformSettings
+enum class ETargetPlatformSettings : uint8
 {
 	TPS_Windows UMETA( DisplayName = "Windows" ),
 	TPS_Linux UMETA( DisplayName = "Linux" ),
 	TPS_PS5 UMETA( DisplayName = "Playstation 5" ),
 	TPS_PS5_Pro UMETA( DisplayName = "Playstation 5 Pro" ),
 	TPS_XSX_Lockhart UMETA( DisplayName = "Xbox Series S (Lockhart)" ),
-	TPS_XSX_Anaconda UMETA( DisplayName = "Xbox Series X (Anaconda)" )
+	TPS_XSX_Anaconda UMETA( DisplayName = "Xbox Series X (Anaconda)" ),
+	TPS_SteamDeck UMETA( DisplayName = "Steam Deck" )
 };
 // </FL>
 
@@ -118,9 +126,6 @@ class FACTORYGAME_API UFGUserSetting : public UPrimaryDataAsset
 
 public:
 	UFGUserSetting();
-
-	// Used for legacy support until all settings are migrated
-	FOptionRowData ToOptionRowData() const;
 
 	/** Returns a set of visibility disqualifiers for the given world. That means, the setting will not be shown if any of them are set on
 	 * the option */
@@ -157,6 +162,12 @@ public:
 	bool HasVisibilityDisqualifier( ESettingVisiblityDisqualifier disqualifier ) const;
 	bool HasEditabilityDisqualifier( ESettingEditabilityDisqualifier disqualifier ) const;
 
+	// <FL> [MartinC] Utility function to check if the setting has a specific visibility disqualifier
+	UFUNCTION( BlueprintCallable, Category = "Visibility" )
+	bool HasVisibilityDisqualifier( UPARAM( meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.ESettingVisiblityDisqualifier" ) )
+										  int32 disqualifier );
+
+
 	/** Returns true if this variable should create and use a Console Variable */
 	bool ShouldUseCVar() const;
 
@@ -175,11 +186,11 @@ public:
 	// Should we manage and if needed create a cvar for this setting based on StrId. Not needed for any functionality so leave it empty if
 	// you don't know you want it.
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Setting" )
-	bool UseCVar;
+	bool UseCVar{false};
 
 	// True if this setting is relevant for the dedicated server and changing it's value has an effect on the server or the players
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Setting" )
-	bool bRelevantForDedicatedServer;
+	bool bRelevantForDedicatedServer{false};
 
 	/** If this option is handled by a cvar this text will set as the help text, if this text is empty we will use ToolTip instead.
 	 * If the cvar already exists, then we don't override it's help text.
@@ -196,7 +207,7 @@ public:
 
 	/** The tooltip that is showed for this setting in the UI. Used for cvar help text as well, see DocString for more information about
 	 * that  */
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Setting" )
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Setting", meta = ( MultiLine ) )
 	FText ToolTip;
 
 	/** This is the main category class for this setting. It represents the broader category under which a specific setting falls */
@@ -210,14 +221,14 @@ public:
 
 	/** The order in menus is decided by this value. Lower values means earlier in menu. Negative values are allowed. [-N..0..N]*/
 	UPROPERTY()
-	float MenuPriority_DEPRECATED;
+	float MenuPriority_DEPRECATED{0.0f};
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "UserInterface" )
 	TArray< FSettingsWidgetLocationDescriptor > WidgetsToCreate;
 
 	/** If true this setting affect the whole session and not only the local player */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Setting" )
-	bool IsSettingSessionWide;
+	bool IsSettingSessionWide{false};
 
 	/** The class that we want to use to apply values of this setting. Leave at default if you want a "normal" setting */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Apply Type" )
@@ -226,7 +237,7 @@ public:
 	/** What kind of value does this setting contain. The widget shown in the UI for this setting is decided by this unless a
 	 * CustomValueSelectorWidget is defined */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Instanced, Category = "Value Selector" )
-	class UFGUserSetting_ValueSelector* ValueSelector;
+	TObjectPtr<class UFGUserSetting_ValueSelector> ValueSelector;
 
 	/** Select a custom widget to override the value selctors default widget */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value Selector" )
@@ -236,29 +247,30 @@ public:
 	 * loading assets unnecessarily. */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Availability",
 			   meta = ( MustImplement = "/Script/FactoryGame.FGOptionInterface" ) )
-	UClass* ManagerTypeAvailability;
+	TObjectPtr<UClass> ManagerTypeAvailability;
 
 	// When any of these are true in the current menu we don't show the setting
 	UPROPERTY( EditDefaultsOnly, Category = "Availability",
 			   meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.ESettingVisiblityDisqualifier" ) )
-	int64 VisibilityDisqualifiers;
+	int64 VisibilityDisqualifiers{0};
 
 	// When any of these are true in the current menu we don't allow the user to edit the setting
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Availability",
 			   meta = ( Bitmask, BitmaskEnum = "/Script/FactoryGame.ESettingEditabilityDisqualifier" ) )
-	uint8 EditabilityDisqualifiers;
+	uint8 EditabilityDisqualifiers{0};
 
 	// Not used for now but we want support for it later
 	UPROPERTY()
-	UFGUserSetting* SubOptionTo_DEPRECATED;
+	TObjectPtr<UFGUserSetting> SubOptionTo_DEPRECATED;
 
-private:
+protected:
 	/** Slightly misleading name, as this doesn't only apply to builds. If set to Never, it won't show up in editor
 	 * 	We could strip the settings from builds but I assumed added settings that is not meant to be in build might rely on the default
 	 * values so felt safer to keep the setting in the build but hide it.
 	 */
 	UPROPERTY( EditDefaultsOnly, Category = "Availability" )
 	EIncludeInBuilds ShowInBuilds = EIncludeInBuilds::IIB_Development;
+private:
 
 	/** Deprecated property holding the availability for the manager type */
 	UPROPERTY()
@@ -271,26 +283,15 @@ class FACTORYGAME_API UFGUserSetting_ValueSelector : public UObject
 	GENERATED_BODY()
 
 public:
-	virtual TSubclassOf< class UFGOptionsValueController > GetValueSelectorWidgetClass() const;
-
-	// Legacy helper
-	virtual EOptionType GetOptionType() const
-	{
-		checkNoEntry();
-		return EOptionType::OT_Checkbox;
-	}
-
-	virtual bool ShouldFocusOptionSlotToEdit() const
-	{
-		checkNoEntry();
-		return false;
-	}
-
+	/** Returns the widget class for this user setting value selector */
+	virtual TSubclassOf<UFGOptionsValueController> GetValueSelectorWidgetClass() const { return nullptr; }
+	/** Returns the default value for the option */
 	virtual FVariant GetDefaultValue() const { return FVariant(); }
-
+	/** Returns true if the option slot should be focused on selection instead of the entire option */
+	virtual bool ShouldFocusOptionSlotToEdit() const { return false; }
 #if WITH_EDITOR
-	virtual FName GetGraphSchemaName() const;
-	virtual bool SetupValueFunction( class UK2Node_CallFunction* callFunction, bool isGetterFunction ) const { return false; }
+	virtual bool GetGraphPinType( FEdGraphPinType& out_graphPinType ) const { return false; }
+	virtual bool SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction ) const { return false; }
 #endif
 };
 
@@ -299,18 +300,15 @@ class FACTORYGAME_API UFGUserSetting_CheckBox : public UFGUserSetting_ValueSelec
 {
 	GENERATED_BODY()
 public:
-	virtual TSubclassOf< class UFGOptionsValueController > GetValueSelectorWidgetClass() const override;
-
-	virtual EOptionType GetOptionType() const override { return EOptionType::OT_Checkbox; }
-	
+	// Begin UFGUserSetting_ValueSelector interface
+	virtual TSubclassOf<UFGOptionsValueController> GetValueSelectorWidgetClass() const override;
 	virtual bool ShouldFocusOptionSlotToEdit() const override { return false; }
 	virtual FVariant GetDefaultValue() const override;
-
 #if WITH_EDITOR
-	virtual FName GetGraphSchemaName() const override;
-
-	virtual bool SetupValueFunction( class UK2Node_CallFunction* callFunction, bool isGetterFunction ) const override;
+	virtual bool GetGraphPinType( FEdGraphPinType& out_graphPinType ) const override;
+	virtual bool SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction ) const override;
 #endif
+	// End UFGUserSetting_ValueSelector interface
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
 	bool DefaultCheckBoxValue;
@@ -321,91 +319,95 @@ public:
 	// </FL>
 };
 
+USTRUCT( BlueprintType )
+struct FIntegerSelection
+{
+	GENERATED_BODY()
+
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	FText Name;
+
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	int32 Value{0};
+};
+
 UCLASS( Blueprintable, DefaultToInstanced, editinlinenew, meta = ( DisplayName = "Integer Selector" ) )
 class FACTORYGAME_API UFGUserSetting_IntSelector : public UFGUserSetting_ValueSelector
 {
 	GENERATED_BODY()
-
+public:
 	UFGUserSetting_IntSelector();
 
-public:
-	virtual TSubclassOf< class UFGOptionsValueController > GetValueSelectorWidgetClass() const override;
-
-	virtual EOptionType GetOptionType() const override { return EOptionType::OT_IntegerSelection; }
-
-	virtual bool ShouldFocusOptionSlotToEdit() const override { return ShowAsDropdown == false; }
-
+	// Begin UFGUserSetting_ValueSelector interface
+	virtual TSubclassOf<UFGOptionsValueController> GetValueSelectorWidgetClass() const override;
+	virtual bool ShouldFocusOptionSlotToEdit() const override { return !ShowAsDropdown; }
 	virtual FVariant GetDefaultValue() const override;
-
 #if WITH_EDITOR
-	virtual FName GetGraphSchemaName() const override;
-
-	virtual bool SetupValueFunction( class UK2Node_CallFunction* callFunction, bool isGetterFunction ) const override;
+	virtual bool GetGraphPinType( FEdGraphPinType& out_graphPinType ) const override;
+	virtual bool SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction ) const override;
 #endif
+	// End UFGUserSetting_ValueSelector interface
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
-	int32 Defaultvalue;
+	int32 DefaultValue{0};
 
 	// <FL> [PfaffN] Default values for different platforms
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
-	TMap< ETargetPlatformSettings, int32 > PlatformDefaultIntValues;
+	TMap<ETargetPlatformSettings, int32> PlatformDefaultIntValues;
 	// </FL>
 
 	/** The values that this setting can be set to. Notice that the index is only for the order. The FIntegerSelection::Value can be set to
 	 * any int32 value */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
-	TArray< FIntegerSelection > IntegerSelectionValues;
+	TArray<FIntegerSelection> IntegerSelectionValues;
 
 	/** When his is true the user can't select the last index manually. It has to be set programmatically */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
-	bool BlockLastIndexFromManualSelection;
+	bool BlockLastIndexFromManualSelection{false};
 
 	/** When last index is selected from automatic selection the user can't change the setting. Only valid if
 	 * BlockLastIndexFromManualSelection is enabled */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value",
 			   meta = ( EditCondition = "BlockLastIndexFromManualSelection", EditConditionHides ) )
-	bool LockLastIndexWhenSelected;
+	bool LockLastIndexWhenSelected{false};
 
 	/** Should this integer selection be shown as a dropdown instead of a  */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
-	bool ShowAsDropdown;
+	bool ShowAsDropdown{false};
 };
 
 UCLASS( Blueprintable, DefaultToInstanced, editinlinenew, meta = ( DisplayName = "Slider" ) )
 class FACTORYGAME_API UFGUserSetting_Slider : public UFGUserSetting_ValueSelector
 {
 	GENERATED_BODY()
-
 public:
-	virtual TSubclassOf< class UFGOptionsValueController > GetValueSelectorWidgetClass() const override;
-
-	virtual EOptionType GetOptionType() const override { return EOptionType::OT_Slider; }
-
+	// Begin UFGUserSetting_ValueSelector interface
+	virtual TSubclassOf<UFGOptionsValueController> GetValueSelectorWidgetClass() const override;
 	virtual bool ShouldFocusOptionSlotToEdit() const override { return true; }
-
 	virtual FVariant GetDefaultValue() const override;
-
 #if WITH_EDITOR
-	virtual bool SetupValueFunction( class UK2Node_CallFunction* callFunction, bool isGetterFunction ) const override;
+	virtual bool GetGraphPinType( FEdGraphPinType& out_graphPinType ) const override;
+	virtual bool SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction ) const override;
 #endif
+	// End UFGUserSetting_ValueSelector interface
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
-	float MinValue = 0.f;
+	float MinValue = 0.0f;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
-	float MaxValue = 1.f;
+	float MaxValue = 1.0f;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
-	float MinDisplayValue = 0.f;
+	float MinDisplayValue = 0.0f;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
-	float MaxDisplayValue = 1.f;
+	float MaxDisplayValue = 1.0f;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
 	int32 MaxFractionalDigits = 1;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
-	bool ShowZeroAsOff;
+	bool ShowZeroAsOff{false};
 
 	// The default value the slider will show. This should be in the MinDisplayValue - MaxDisplayValue range
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Value" )
@@ -417,14 +419,27 @@ public:
 	// </FL>
 };
 
+UCLASS( Blueprintable, DefaultToInstanced, editinlinenew, meta = ( DisplayName = "Linear Color Picker" ) )
+class FACTORYGAME_API UFGUserSetting_LinearColorPicker : public UFGUserSetting_ValueSelector
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY( BlueprintReadOnly, EditAnywhere, Category = "Value" )
+	FLinearColor mDefaultValue{FLinearColor::White};
+
+	// Begin UFGUserSetting_ValueSelector interface
+	virtual TSubclassOf<UFGOptionsValueController> GetValueSelectorWidgetClass() const override;
+	virtual bool ShouldFocusOptionSlotToEdit() const override { return true; }
+	virtual FVariant GetDefaultValue() const override;
+#if WITH_EDITOR
+	virtual bool GetGraphPinType( FEdGraphPinType& out_graphPinType ) const override;
+	virtual bool SetupValueFunction( UK2Node_CallFunction* callFunction, bool isGetterFunction ) const override;
+#endif
+	// End UFGUserSetting_ValueSelector interface
+};
+
 UCLASS( Blueprintable, DefaultToInstanced, editinlinenew, meta = ( DisplayName = "Custom" ) )
 class FACTORYGAME_API UFGUserSetting_Custom : public UFGUserSetting_ValueSelector
 {
 	GENERATED_BODY()
-public:
-	virtual EOptionType GetOptionType() const override { return EOptionType::OT_Custom; }
-
-	virtual bool ShouldFocusOptionSlotToEdit() const override { return false; }
-
-	// @todok2 Add support for GetDefaultValue
 };

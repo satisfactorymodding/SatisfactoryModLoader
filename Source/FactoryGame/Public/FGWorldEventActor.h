@@ -139,7 +139,7 @@ private:
 
 	/** List of World Event Behaviors which will influence the world event. */
 	UPROPERTY( EditAnywhere, Instanced, Category = "WorldEvent" )
-	TArray< class UFGWorldEventBehavior* > mWorldEventBehaviors;
+	TArray< TObjectPtr<class UFGWorldEventBehavior> > mWorldEventBehaviors;
 
 	/** Current state of this world event. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_WorldEventState )

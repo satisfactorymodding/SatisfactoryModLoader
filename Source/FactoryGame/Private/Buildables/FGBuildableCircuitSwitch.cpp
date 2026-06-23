@@ -10,6 +10,7 @@ AFGBuildableCircuitSwitch::AFGBuildableCircuitSwitch() : Super() {
 	this->mInteractionRegisterPlayerWithCircuit = true;
 }
 void AFGBuildableCircuitSwitch::BeginPlay(){ Super::BeginPlay(); }
+void AFGBuildableCircuitSwitch::EndPlay(const EEndPlayReason::Type EndPlayReason){ Super::EndPlay(EndPlayReason); }
 void AFGBuildableCircuitSwitch::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableCircuitSwitch, mIsSwitchOn);
@@ -19,9 +20,10 @@ void AFGBuildableCircuitSwitch::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 }
 void AFGBuildableCircuitSwitch::SetHasBuildingTag_Implementation(bool hasBuildingTag){ }
 void AFGBuildableCircuitSwitch::SetBuildingTag_Implementation(const FString& buildingTag){ }
-void AFGBuildableCircuitSwitch::SetLastEditedBy_Implementation(const TArray<FLocalUserNetIdBundle>& lastEditedBy){ }
-TArray<FLocalUserNetIdBundle> AFGBuildableCircuitSwitch::GetLastEditedBy_Implementation() const{ return TArray<FLocalUserNetIdBundle>(); }
+void AFGBuildableCircuitSwitch::SetLastEditedByHandle_Implementation(const FPlayerInfoHandle& lastEditedBy){ }
+FPlayerInfoHandle AFGBuildableCircuitSwitch::GetLastEditedBy_Implementation() const{ return FPlayerInfoHandle(); }
 void AFGBuildableCircuitSwitch::SetSwitchOn(bool isSwitchOn){ }
+void AFGBuildableCircuitSwitch::DisplayDebug(class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ Super::DisplayDebug(canvas, debugDisplay, YL, YPos); }
 void AFGBuildableCircuitSwitch::OnRep_IsSwitchOn(){ }
 void AFGBuildableCircuitSwitch::OnRep_HasBuildingTag(){ }
 void AFGBuildableCircuitSwitch::OnRep_BuildingTag(){ }

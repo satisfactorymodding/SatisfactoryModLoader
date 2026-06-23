@@ -24,17 +24,17 @@ public:
 	void RegisterControllers( UFGServerAPIManager* ServerAPIManager ) const;
 protected:
 	UPROPERTY()
-	UFGServerAuthenticationController* mServerAuthenticationController;
+	TObjectPtr<UFGServerAuthenticationController> mServerAuthenticationController;
 
 	UPROPERTY()
-	UFGServerStateController* mServerStateController;
+	TObjectPtr<UFGServerStateController> mServerStateController;
 
 	UPROPERTY()
-	UFGServerSaveGameController* mServerSaveGameController;
+	TObjectPtr<UFGServerSaveGameController> mServerSaveGameController;
 
 	UPROPERTY()
-	UFGServerManagementController* mServerManagementController;
+	TObjectPtr<UFGServerManagementController> mServerManagementController;
 
 	UPROPERTY()
-	UFGServerDebugController* mServerDebugController;
+	TObjectPtr<UFGServerDebugController> mServerDebugController;
 };

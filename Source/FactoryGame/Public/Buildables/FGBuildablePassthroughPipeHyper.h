@@ -32,8 +32,8 @@ public:
 	// End IFGPipeHyperInterface
 protected:
 	UPROPERTY( EditDefaultsOnly, SaveGame, Category = "Passthrough" )
-	UFGPipeConnectionComponentBase* mConnection0;
+	TObjectPtr<UFGPipeConnectionComponentBase> mConnection0;
 
 	UPROPERTY( EditDefaultsOnly, SaveGame, Category = "Passthrough" )
-	UFGPipeConnectionComponentBase* mConnection1;
+	TObjectPtr<UFGPipeConnectionComponentBase> mConnection1;
 };

@@ -4,6 +4,6 @@
 
 #include "Networking/FGClientAPIManager.h"
 
-void UFGClientAuthenticationRequester::Response_VerifyAuthenticationToken(FFGServerErrorResponse& ErrorResponse, EPrivilegeLevel MinimumPrivilegeLevel, bool bAutomaticLogin) const {}
+void UFGClientAuthenticationRequester::Response_VerifyAuthenticationToken(FFGServerErrorResponse& ErrorResponse, EPrivilegeLevel MinimumPrivilegeLevel, bool bAutomaticLogin, bool bIsSavedAuthenticationToken) const{ }
 void UFGClientAuthenticationRequester::Response_PasswordlessLogin(FFGServerErrorResponse& ErrorResponse, const FString& AuthenticationToken, EPrivilegeLevel LocalMinimumPrivilegeLevel, bool bAutomaticLogin) const {}
 void UFGClientAuthenticationRequester::Response_PasswordLogin(FFGServerErrorResponse& ErrorResponse, const FString& AuthenticationToken, EPrivilegeLevel LocalMinimumPrivilegeLevel) const {}

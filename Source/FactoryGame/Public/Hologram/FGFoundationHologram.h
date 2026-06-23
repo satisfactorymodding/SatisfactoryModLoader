@@ -27,19 +27,18 @@ public:
 	virtual int32 GetRotationStep() const override;
 	// End AFGHologram interface
 
+	virtual bool IsInZoopBuildMode() const override;
+
 protected:
 	bool CanSnapVertically( class AFGBuildableFoundation* toFoundation, float dirZ ) const;
 
-	// Begin AFGFactoryBuildingHologram interface
-	virtual void CreateZoopInstances() override;
+	// Begin AFGBuildableHologram interface
+	virtual void CreateZoopInstances( const FIntVector& DesiredZoop ) override;
 	virtual FVector ConvertZoopToWorldLocation( const FIntVector& zoop ) const override;
-	// End AFGFactoryBuildingHologram interface
-	
-	// Begin AFGBuildableHologram Interface
 	virtual bool IsHologramIdenticalToActor( AActor* actor, const FTransform& hologramTransform ) const override;
 	// End AFGBuildableHologram Interface
 
-	virtual void SetZoopFromHitresult( const FHitResult& hitResult );
+	virtual void SetZoopFromHitresult( const FHitResult& hitResult ) override;
 
 	void CreateDefaultFoundationZoop( const FHitResult& hitResult );
 	void CreateVerticalFoundationZoop( const FHitResult& hitResult );

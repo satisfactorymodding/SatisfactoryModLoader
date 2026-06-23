@@ -22,6 +22,7 @@ void AFGItemPickup_Spawnable::StopIsLookedAt_Implementation( AFGCharacterPlayer*
 bool AFGItemPickup_Spawnable::ShouldBeRegisteredForPickup() const{ return bool(); }
 bool AFGItemPickup_Spawnable::CanEverRespawn() const{ return Super::CanEverRespawn(); }
 AFGItemPickup_Spawnable* AFGItemPickup_Spawnable::CreateItemDrop( UFGInventoryComponent* inventoryComponent, UWorld* world, const FInventoryStack& item, const FVector& spawnLocation, const FRotator& spawnRotation, TSubclassOf< AFGItemPickup_Spawnable> itemDropClass, ULevel* spawnLevelOverride, FName spawnNameOverride){ return nullptr; }
+void AFGItemPickup_Spawnable::DropIndestructibleItems(UFGInventoryComponent* inventoryComponent, const FVector& spawnLocation, const TArray<AActor*>& ignoredActors){ }
 void AFGItemPickup_Spawnable::OnColorUpdated(int32 index){ }
 void AFGItemPickup_Spawnable::ConfigureMeshComponent(const FInventoryStack& item){ }
 void AFGItemPickup_Spawnable::SetCanMove(bool canMove){ }

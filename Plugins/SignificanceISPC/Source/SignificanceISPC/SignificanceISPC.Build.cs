@@ -25,8 +25,7 @@ public class SignificanceISPC : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", 
-				"SignificanceManager",
+				"Core", "Engine", 
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -21,8 +21,8 @@ public:
 	// End USubsystem interface
 	
 	// Begin IFGOptionInterfaceImpl
-	virtual void GetAllUserSettings( TArray<UFGUserSettingApplyType*>& OutUserSettings ) const override;
-	virtual void GetAllUserSettingsMap( TMap<FString, UFGUserSettingApplyType* >& OutUserSettings ) const override;
+	virtual void GetAllUserSettings( TArray<TObjectPtr<UFGUserSettingApplyType>>& OutUserSettings ) const override;
+	virtual void GetAllUserSettingsMap( TMap<FString, TObjectPtr<UFGUserSettingApplyType> >& OutUserSettings ) const override;
 	virtual UFGUserSettingApplyType* FindUserSetting( const FString& SettingId ) const override;
 	// End IFGOptionInterfaceImpl
 
@@ -35,7 +35,7 @@ public:
 	void SubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate);
 	void UnsubscribeToAllOptionUpdates(const FOnOptionUpdated& onOptionUpdatedDelegate);
 
-	TMap<FString, UFGUserSettingApplyType*> GetAllSessionSettings() { return SessionSettings; };
+	const TMap<FString, UFGUserSettingApplyType*>& GetAllSessionSettings() { return ObjectPtrDecay(SessionSettings); }
 
 	UFUNCTION(BlueprintCallable, Category = "Session Settings Manager")
 	void InitializeForMap(const TSoftObjectPtr<UWorld>& World, bool bAttemptPreserveValues);
@@ -60,5 +60,5 @@ private:
 	void OnOptionUpdated(FString String, FVariant Value) const;
 private:
 	UPROPERTY(Transient)
-	TMap<FString, UFGUserSettingApplyType*> SessionSettings;
+	TMap<FString, TObjectPtr<UFGUserSettingApplyType>> SessionSettings;
 };

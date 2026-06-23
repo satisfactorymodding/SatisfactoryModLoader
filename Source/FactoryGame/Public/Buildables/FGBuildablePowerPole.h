@@ -81,7 +81,7 @@ private:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PowerPole")
-	class UWidgetComponent* mConnectionsWidgetComponent;
+	TObjectPtr<class UWidgetComponent> mConnectionsWidgetComponent;
 
 	UPROPERTY( EditDefaultsOnly, Category = "PowerPole")
 	TSubclassOf<class UFGPoleConnectionsWidget> mConnectionWidgetClass;
@@ -89,11 +89,11 @@ protected:
 private:
 	/** The connection on this pole. */
 	UPROPERTY( VisibleAnywhere, Category = "PowerPole" )
-	TArray<class UFGPowerConnectionComponent*> mPowerConnections;
+	TArray<TObjectPtr<class UFGPowerConnectionComponent>> mPowerConnections;
 
 	/** The mesh component for this pole. */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true") )
-	class UFGColoredInstanceMeshProxy* mMeshComponentProxy = nullptr;
+	TObjectPtr<class UFGColoredInstanceMeshProxy> mMeshComponentProxy = nullptr;
 
 	/** What kind of power pole this is. */
 	UPROPERTY( EditDefaultsOnly, Category = "PowerPole" )

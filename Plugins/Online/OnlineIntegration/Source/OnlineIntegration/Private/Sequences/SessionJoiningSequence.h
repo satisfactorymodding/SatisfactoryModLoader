@@ -33,6 +33,7 @@ private:
 	void ClientTravel();
 	void CleanupSessions(TSharedRef<FControlFlowNode> SubFlow);
 	void JoinSessions(TSharedRef<FControlFlowNode> SubFlow);
+	void FinalizeSequence();
 	
 	void IncrementBackendIndex();
 	
@@ -44,6 +45,9 @@ private:
 
 	UPROPERTY()
 	FSessionJoinParams JoinParams;
+
+	TArray<UE::Online::TOnlineResult<UE::Online::FJoinSession>> JoinResultCache;
+
 
 	// <FL> [BGR] Error collection to select propper one for user messaging
 	TArray<TTuple<FGameplayTag, UE::Online::FOnlineError>> Errors;

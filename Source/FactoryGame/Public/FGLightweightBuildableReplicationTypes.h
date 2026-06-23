@@ -24,6 +24,7 @@ struct FLightweightBuildableInstanceSerialData
 	FFactoryCustomizationData CustomizationData;
 	int32 InstanceID{INDEX_NONE};
 	FFGDynamicStruct BuildableTypeSpecificData;
+	FPlayerInfoHandle BuiltBy;
 
 	friend FArchive& operator<<(FArchive& Ar, FLightweightBuildableInstanceSerialData& SerialData);
 };
@@ -38,7 +39,6 @@ struct FLightweightBuildableConstructionData
 	TSet<uint16> IncomingNetConstructIds;
 	AActor* ConstructionInstigator{};
 	TSet<int32> NotReplicatedContainedInstanceIDs;
-
 	// Note that this does not compare incoming net construct IDs and instances
 	friend bool operator==(const FLightweightBuildableConstructionData& A, const FLightweightBuildableConstructionData& B);
 

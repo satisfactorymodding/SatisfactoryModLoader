@@ -29,9 +29,9 @@ protected:
 private:
 	/** component matching the location where the storage is placed */
 	UPROPERTY()
-	USceneComponent* mStorageLocation;
+	TObjectPtr<USceneComponent> mStorageLocation;
 	
 	/** The storage hologram */
 	UPROPERTY( Replicated )
-	class AFGBuildableHologram* mStorageHologram;
+	TObjectPtr<class AFGBuildableHologram> mStorageHologram;
 };

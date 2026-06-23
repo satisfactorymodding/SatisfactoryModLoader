@@ -37,5 +37,5 @@ protected:
 	
 	/** Directional indicator. Added to visualize "Producer" type pipe connection components direction */
 	UPROPERTY()
-	TArray< class UStaticMeshComponent* > mProducerComponentArrows;
+	TArray< TObjectPtr<class UStaticMeshComponent> > mProducerComponentArrows;
 };

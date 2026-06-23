@@ -12,10 +12,10 @@ class SML_API AChatCommandSubsystem : public AModSubsystem {
 private:
 	//Array of registered command actors
 	UPROPERTY()
-	TArray<AChatCommandInstance*> RegisteredCommands;
+	TArray<TObjectPtr<AChatCommandInstance>> RegisteredCommands;
 	//Map to lookup command instances fast
 	UPROPERTY()
-	TMap<FString, AChatCommandInstance*> CommandByNameMap;
+	TMap<FString, TObjectPtr<AChatCommandInstance>> CommandByNameMap;
 public:
 	AChatCommandSubsystem();
 	

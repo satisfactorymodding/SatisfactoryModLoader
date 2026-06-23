@@ -9,6 +9,7 @@
 #include "ItemAmount.h"
 #include "FGCentralStorageSubsystem.generated.h"
 
+struct FInventoryItem;
 DECLARE_LOG_CATEGORY_EXTERN( LogCentralStorage, Log, All );
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FCentralStorageAddedOrRemovedDelegate );
@@ -61,10 +62,10 @@ public:
 
 	/** @return Number of items available across all the central storages. */
 	UFUNCTION( BlueprintCallable, Category = "Central Storage" )
-	int32 GetNumItemsFromCentralStorage( TSubclassOf< class UFGItemDescriptor > itemClass );
+	int32 GetNumItemsFromCentralStorage( TSubclassOf< class UFGItemDescriptor > itemClass ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "Central Storage" )
-	void GetAllItemsFromCentralStorage( TArray<FItemAmount>& out_allItems );
+	void GetAllItemsFromCentralStorage( TArray<FItemAmount>& out_allItems ) const;
 	
 	/**
 	 * Tries to remove the number of specified items from the central storage. Returns how many items we could remove
@@ -80,11 +81,11 @@ public:
 	void RemoveCentralStorage( class AFGCentralStorageContainer* centralStorage );
 
 	/** If we can hold an item of the given class we upload it and remove it from the given inventory */ 
-	bool UploadItemFromInventoryToCentralStorage( class UFGInventoryComponent* inventoryComponent, int32 slotIndexToRemoveFrom, TSubclassOf< class UFGItemDescriptor > inClass );
+	bool UploadItemFromInventoryToCentralStorage( class UFGInventoryComponent* inventoryComponent, int32 slotIndexToRemoveFrom );
 
-	/** Return true if we can add more of the given item descriptor class */ 
+	/** Returns true if the given inventory item can be uploaded to central storage */
 	UFUNCTION( BlueprintPure, Category = "Central Storage" )
-	bool CanUploadItemsToCentralStorage( TSubclassOf<class UFGItemDescriptor> inClass ) const;
+	bool CanUploadInventoryItemToCentralStorage( const FInventoryItem& inventoryItem ) const;
 
 	/** Returns the total number of items we can store of the given item descriptor class */ 
 	UFUNCTION( BlueprintPure, Category = "Central Storage" )
@@ -112,6 +113,7 @@ protected:
 	void Client_NewItemAddedToCentralStorage( TSubclassOf<UFGItemDescriptor> inClass );
 	
 private:
+	bool IsInventoryItemValidForCentralStorage( const FInventoryItem& inventoryItem ) const;
 	void OnCentralStorageItemLimitReachedUpdated( TSubclassOf< class UFGItemDescriptor > itemDescriptor, bool itemLimitReached );
 
 public:
@@ -134,7 +136,7 @@ public:
 private:
 	/** All the central storages built. */
 	UPROPERTY()
-	TArray< class AFGCentralStorageContainer* > mCentralStorages;
+	TArray< TObjectPtr<class AFGCentralStorageContainer> > mCentralStorages;
 
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_StorageUpdated )
 	TArray< FItemAmount > mStoredItems;

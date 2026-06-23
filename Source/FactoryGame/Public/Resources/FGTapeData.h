@@ -16,7 +16,7 @@ struct FSongData
 
 	/** The actual audio event for this song */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	class UAkAudioEvent* Song = nullptr;
+	TObjectPtr<class UAkAudioEvent> Song = nullptr;
 
 	/** The name of the artist */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )

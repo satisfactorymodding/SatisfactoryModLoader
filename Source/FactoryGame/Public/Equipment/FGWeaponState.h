@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "FactoryGame.h"
+#include "UObject/ObjectMacros.h"
+
 UENUM( BlueprintType )
 enum class EWeaponState : uint8
 {

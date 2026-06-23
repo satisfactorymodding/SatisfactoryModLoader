@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -12,7 +12,7 @@ class APlayerController;
 /**
  * Archive that will serialize objects as index of their soft object path after they appear once
  */
-class FObjectAsReferenceIndexArchive : public FArchiveProxy
+class FACTORYGAME_API FObjectAsReferenceIndexArchive : public FArchiveProxy
 {
 	bool bAttemptToLoadIfFindFails{false};
 	TMap<UObject*, int32> ObjectToSerializedIndexLookup;

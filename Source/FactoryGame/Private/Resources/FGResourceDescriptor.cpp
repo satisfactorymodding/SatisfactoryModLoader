@@ -17,6 +17,7 @@ UFGResourceDescriptor::UFGResourceDescriptor() : Super() {
 	this->mFactoryMiningParticle = nullptr;
 	this->mDestroyedParticle = nullptr;
 	this->mManualMiningAudioName = TEXT("Metal");
+	this->mFrackingHighlightParticleSystemTemplate = nullptr;
 }
 bool UFGResourceDescriptor::CanBeHandMined(TSubclassOf< UFGResourceDescriptor > inClass){ return bool(); }
 UMaterialInstance* UFGResourceDescriptor::GetDepositMaterial(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
@@ -30,3 +31,4 @@ UFXSystemAsset* UFGResourceDescriptor::GetManualMiningParticle(TSubclassOf< UFGR
 UFXSystemAsset* UFGResourceDescriptor::GetDestroyedParticle(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
 FName UFGResourceDescriptor::GetManualMiningAudioName(TSubclassOf< UFGResourceDescriptor > inClass){ return FName(); }
 UFXSystemAsset* UFGResourceDescriptor::GetFactoryMiningParticle(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
+class UParticleSystem* UFGResourceDescriptor::GetFrackingHighlightParticleSystemTemplate(TSubclassOf<UFGResourceDescriptor> inClass){ return nullptr; }

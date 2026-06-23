@@ -74,10 +74,14 @@ public:
     
 private:
     EConfigVariableType VariableType;
-    UScriptStruct* CustomStructType;
-    UClass* BaseObjectClass;
-    UClass* BaseClassType;
-    class UConfigGeneratedStruct* ConfigGeneratedStructType;
+    UPROPERTY()
+    TObjectPtr<UScriptStruct> CustomStructType;
+    UPROPERTY()
+    TObjectPtr<UClass> BaseObjectClass;
+    UPROPERTY()
+    TObjectPtr<UClass> BaseClassType;
+    UPROPERTY()
+    TObjectPtr<UConfigGeneratedStruct> ConfigGeneratedStructType;
     TSharedPtr<FConfigVariableDescriptor> ArrayElementDescriptor;
     TSharedPtr<FConfigVariableDescriptor> MapKeyDescriptor;
     TSharedPtr<FConfigVariableDescriptor> MapValueDescriptor;

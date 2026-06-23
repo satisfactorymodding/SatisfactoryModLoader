@@ -16,8 +16,9 @@ void AFGFoundationHologram::SetHologramLocationAndRotation(const FHitResult& hit
 bool AFGFoundationHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGFoundationHologram::GetSupportedBuildModes_Implementation(TArray<TSubclassOf<UFGBuildGunModeDescriptor>>& out_buildmodes) const{ }
 int32 AFGFoundationHologram::GetRotationStep() const{ return int32(); }
+bool AFGFoundationHologram::IsInZoopBuildMode() const{ return Super::IsInZoopBuildMode(); }
 bool AFGFoundationHologram::CanSnapVertically( AFGBuildableFoundation* toFoundation, float dirZ) const{ return bool(); }
-void AFGFoundationHologram::CreateZoopInstances(){ Super::CreateZoopInstances(); }
+void AFGFoundationHologram::CreateZoopInstances(const FIntVector& DesiredZoop){ Super::CreateZoopInstances(DesiredZoop); }
 FVector AFGFoundationHologram::ConvertZoopToWorldLocation(const FIntVector& zoop) const{ return FVector(); }
 bool AFGFoundationHologram::IsHologramIdenticalToActor(AActor* actor, const FTransform& hologramLocationOffset) const{ return bool(); }
 void AFGFoundationHologram::SetZoopFromHitresult(const FHitResult& hitResult){ }

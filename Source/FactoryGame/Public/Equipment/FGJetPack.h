@@ -30,7 +30,7 @@ struct FACTORYGAME_API FFGJetPackItemState
 };
 
 UCLASS()
-class FACTORYGAME_API AFGJetPack final : public AFGEquipment
+class FACTORYGAME_API AFGJetPack : public AFGEquipment
 {
 	GENERATED_BODY()
 public:
@@ -172,7 +172,7 @@ protected:
 
 	/** Array of Fuel Parameters that give stats to the JetPack. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "JetPack" )
-	TArray<class UFGJetPackFuelParameters*> mAllowedFuelTypes;
+	TArray<TObjectPtr<class UFGJetPackFuelParameters>> mAllowedFuelTypes;
 
 	/** The fuel type selected to be default by the player. */
 	UPROPERTY( BlueprintReadOnly, SaveGame, Replicated, Category = "JetPack" )

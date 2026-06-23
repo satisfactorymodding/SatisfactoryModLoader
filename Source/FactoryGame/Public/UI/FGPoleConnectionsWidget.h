@@ -26,5 +26,5 @@ public:
 	
 protected:
 	UPROPERTY()
-	class UFGCircuitConnectionComponent* mConnection;
+	TObjectPtr<class UFGCircuitConnectionComponent> mConnection;
 };

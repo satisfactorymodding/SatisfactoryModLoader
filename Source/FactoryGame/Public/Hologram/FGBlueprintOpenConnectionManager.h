@@ -60,7 +60,10 @@ private:
 	class AFGBlueprintHologram* mHologram;
 };
 
-/** Class responsible for connecting open ended connections on a blueprint to buildables in the world. This is the base manager class containing some basic functionality and boilerplate functions for managing connections of a certain type. */
+/**
+ * Class responsible for connecting open ended connections on a blueprint to buildables in the world.
+ * This is the base manager class containing some basic functionality and boilerplate functions for managing connections of a certain type.
+ */
 template<class ConnectionClass, class BridgeHologramClass>
 class FGBlueprintOpenConnectionManager : public FGBlueprintOpenConnectionManagerBase
 {
@@ -85,7 +88,10 @@ public:
 		int32 ConnectionIndex;
 	};
 	
-	/** An open connection state manages connecting one or several open connections to a target connection. */
+	/**
+	 * An open connection state manages connecting an open connection ( or several, in cases such as open ended train track junctions ) to a target connection.
+	 * Generally assumes all open connections that belong to it are positioned in the same place.
+	 */
 	struct OpenConnectionState
 	{
 		OpenConnectionState() :
@@ -208,6 +214,9 @@ protected:
 
 	/** Used to directly connect an OpenConnectionState to its target connection without a bridge hologram. */
 	virtual void ConnectStateDirectly( OpenConnectionState& State ) = 0;
+	
+	/** Called after a bridge is constructed between the blueprint and a snapped buildable. */
+	virtual void OnBridgeConstructed( const OpenConnectionState& state, AFGBuildable* bridgeBuildable ) = 0;
 
 	/** Generates a list of Open Connection States based on the open connections on the blueprint. One state can be responsible for multiple Open Connections (Open ended train track junctions will only have one state, for example) */
 	virtual void GenerateOpenConnectionStates();
@@ -567,8 +576,10 @@ void FGBlueprintOpenConnectionManager<ConnectionClass, BridgeHologramClass>::Con
 				{
 					TArray< AActor* > constructedChildren;
 					AFGBuildable* newBridgeBuildable = CastChecked< AFGBuildable >( State.BridgeHologram->Construct( constructedChildren, NetConstructionID ) );
-
 					out_ConstructedBridgeBuildables.Add( newBridgeBuildable );
+					
+					// Since this is called before the buildable spawned by the blueprint gets its BeginPlay(), we cannot rely on the bridge hologram to find all opposite connections.
+					OnBridgeConstructed( State, newBridgeBuildable );
 				}
 			}
 		}
@@ -681,6 +692,7 @@ protected:
 protected:
 	virtual bool CanDirectlyConnectOpenState( const OpenConnectionState& State ) const override;
 	virtual void ConnectStateDirectly( OpenConnectionState& State ) override;
+	virtual void OnBridgeConstructed( const OpenConnectionState& state, AFGBuildable* bridgeBuildable ) override;
 };
 
 // Pipe Connections
@@ -701,6 +713,7 @@ protected:
 protected:
 	virtual bool CanDirectlyConnectOpenState( const OpenConnectionState& State ) const override;
 	virtual void ConnectStateDirectly( OpenConnectionState& State ) override;
+	virtual void OnBridgeConstructed( const OpenConnectionState& state, AFGBuildable* bridgeBuildable ) override;
 };
 
 // Railroad Connections
@@ -727,6 +740,7 @@ public:
 protected:
 	virtual bool CanDirectlyConnectOpenState( const OpenConnectionState& State ) const override;
 	virtual void ConnectStateDirectly( OpenConnectionState& State ) override;
+	virtual void OnBridgeConstructed( const OpenConnectionState& state, AFGBuildable* bridgeBuildable ) override;
 
 private:
 	/** Cached list of duplicated connection components for all open ended railroad track connections in the blueprint. */

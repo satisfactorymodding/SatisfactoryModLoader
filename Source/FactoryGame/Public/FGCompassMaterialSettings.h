@@ -1,4 +1,4 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+﻿// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -10,7 +10,7 @@
 enum class ESelfDrivingLocomotiveError : uint8;
 enum class ETrainStatus : uint8;
 enum class EDockingStationStatus : uint8;
-enum class EVehicleStatus : uint8;
+enum class EVehicleAutopilotErrorStatus : uint8;
 class UMaterialInterface;
 class UTexture2D;
 
@@ -81,7 +81,7 @@ public:
 	FLinearColor mWarningIconColor = FLinearColor( 0.783538f, 0.291771f, 0.057805f );
 
 	UPROPERTY( EditAnywhere, Config, Category = "Compass|Vehicle")
-	TMap<EVehicleStatus, FLinearColor> mVehicleStatusWarningColors;
+	TMap<EVehicleAutopilotErrorStatus, FLinearColor> mVehicleStatusWarningColors;
 
 	UPROPERTY( EditAnywhere, Config, Category = "Compass|Vehicle")
 	TMap<EDockingStationStatus, FLinearColor> mDockingStationWarningColors;

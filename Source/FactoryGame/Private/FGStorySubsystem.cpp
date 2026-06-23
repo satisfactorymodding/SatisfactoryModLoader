@@ -35,6 +35,7 @@ void AFGStorySubsystem::OnMessageFinishedForPlayer(class AFGPlayerController* pl
 void AFGStorySubsystem::OnPlayerFinishedSpawning(class AFGCharacterPlayer* player){ }
 void AFGStorySubsystem::OnPersonalElevatorBeginMove(const TArray<class AFGCharacterPlayer*>& OccupyingPlayers, float estimatedTravelTime){  }
 void AFGStorySubsystem::OnPersonalElevatorEndMove(const TArray<class AFGCharacterPlayer*>& OccupyingPlayers, float estimatedTravelTime){  }
+void AFGStorySubsystem::OnWeatherStateStarted(TSubclassOf<class AFGWeatherReaction> weatherReaction){ }
 void AFGStorySubsystem::OnToiletFlushed(class AFGCharacterPlayer* byCharacter, class AFGPioneerPotty* toilet){ }
 void AFGStorySubsystem::OnActorTookDamage(AActor* damagedActor, float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser){  }
 void AFGStorySubsystem::OnSpaceElevatorShipmentLockedIn(AFGPlayerState* playerState,  UFGGamePhase* gamePhase){ }

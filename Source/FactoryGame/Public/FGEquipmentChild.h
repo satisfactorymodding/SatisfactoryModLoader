@@ -64,7 +64,7 @@ public:
 protected:
 	/** stores a reference to the FGEquipment that spawned this class */
 	UPROPERTY( BlueprintReadOnly, Category = "Equipment" )
-	class AFGEquipment* mParentEquipment;
+	TObjectPtr<class AFGEquipment> mParentEquipment;
 
 	/** Each Mesh Component should have an entry here to remap its materials to the First person material (one with the panini switch enabled) */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment")

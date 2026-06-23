@@ -6,6 +6,7 @@
 #include "Buildables/FGBuildable.h"
 #include "Buildables/FGBuildablePipeline.h"
 #include "CoreMinimal.h"
+#include "FGNetSignificanceInterface.h"
 #include "FGPipelineIndicatorData.h"
 #include "FGSignificanceInterface.h"
 #include "FGBuildablePipelineFlowIndicator.generated.h"
@@ -14,7 +15,7 @@
  * Actor for the flow indicators that are attached to pipelines.
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildablePipelineFlowIndicator : public AFGBuildable, public IFGSignificanceInterface
+class FACTORYGAME_API AFGBuildablePipelineFlowIndicator : public AFGBuildable, public IFGSignificanceInterface, public IFGNetSignificanceInterface
 {
 	GENERATED_BODY()
 public:	
@@ -30,10 +31,14 @@ public:
 	// Begin SignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
+	virtual float GetSignificanceRange_Implementation() const override;
+	// End SignificanceInterface
+
+	// Begin IFGNetSignificanceInterface
 	virtual void GainedNetSignificance_Implementation() override;
 	virtual void LostNetSignificance_Implementation() override;
-	virtual float GetSignificanceRange() override;
-	// End SignificanceInterface
+	virtual float GetNetSignificanceRange_Implementation() const override;
+	// End IFGNetSignificanceInterface
 
 	/** Updates whenever the pipeline indicator should presently be ticking */
 	void UpdateActorTickEnabled();
@@ -60,12 +65,12 @@ private:
 protected:
 	/** Mesh for the indicator. */
 	UPROPERTY( VisibleAnywhere )
-	UFGColoredInstanceMeshProxy* mIndicatorComponent;
+	TObjectPtr<UFGColoredInstanceMeshProxy> mIndicatorComponent;
 
 private:
 	/** The pipe we are attached to. Only available on the server */
 	UPROPERTY()
-	AFGBuildablePipeline* mOwningPipeline;
+	TObjectPtr<AFGBuildablePipeline> mOwningPipeline;
 
 	/** Fluid descriptor replicated from the pipeline */
 	UPROPERTY(Replicated)

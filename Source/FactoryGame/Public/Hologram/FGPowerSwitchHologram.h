@@ -28,5 +28,5 @@ public:
 private:
 	/** Power switch we are upgrading */
 	UPROPERTY()
-	class AFGBuildableCircuitSwitch* mUpgradeTarget;
+	TObjectPtr<class AFGBuildableCircuitSwitch> mUpgradeTarget;
 };

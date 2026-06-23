@@ -2,7 +2,6 @@
 
 #include "FGGameViewportClient.h"
 
-void UFGGameViewportClient::Tick(float deltaSeconds){ }
 bool UFGGameViewportClient::InputKey(const FInputKeyEventArgs& EventArgs){ return bool(); }
 void UFGGameViewportClient::LostFocus(FViewport* Viewport1){ }
 void UFGGameViewportClient::ReceivedFocus(FViewport* Viewport1){ }

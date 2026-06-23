@@ -3,8 +3,8 @@
 #include "FGServerObjectOptionInterface.h"
 #include "Settings/FGUserSettingCategory.h"
 
-void UFGServerObjectOptionAdapter::GetAllUserSettings(TArray<UFGUserSettingApplyType*>& OutUserSettings) const{ }
-void UFGServerObjectOptionAdapter::GetAllUserSettingsMap(TMap<FString, UFGUserSettingApplyType*>& OutUserSettings) const{ }
+void UFGServerObjectOptionAdapter::GetAllUserSettings(TArray<TObjectPtr<UFGUserSettingApplyType>>& OutUserSettings) const{ }
+void UFGServerObjectOptionAdapter::GetAllUserSettingsMap(TMap<FString, TObjectPtr<UFGUserSettingApplyType>>& OutUserSettings) const{ }
 UFGUserSettingApplyType* UFGServerObjectOptionAdapter::FindUserSetting(const FString& SettingId) const{ return nullptr; }
 void UFGServerObjectOptionAdapter::ApplyChanges(){ }
 bool UFGServerObjectOptionAdapter::HasAnyUnsavedOptionValueChanges() const{ return bool(); }

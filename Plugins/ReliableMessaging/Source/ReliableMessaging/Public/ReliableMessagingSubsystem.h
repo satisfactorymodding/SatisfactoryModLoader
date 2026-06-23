@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Subsystems/WorldSubsystem.h"
+#include "GameplayTagContainer.h"
 #include "ReliableMessagingTransportLayer.h"
 
 #include "ReliableMessagingSubsystem.generated.h"
@@ -13,12 +14,14 @@ class IReliableMessageTransportServer;
 class UReliableMessagingPlayerComponent;
 class APlayerController;
 
-UCLASS()
+UCLASS(Config=Engine)
 class RELIABLEMESSAGING_API UReliableMessagingSubsystem : public UWorldSubsystem, public FTickableGameObject
 {
 	GENERATED_BODY()
 	friend class UReliableMessagingPlayerComponent;
 public:
+	static float GetDefaultConnectionTimeoutSeconds();
+
 	/**
 	 * Will initialize the server side of the reliable message protocol. This should only be called on the server. Will be called by the world subsystem
 	 * on BeginPlay but if the game code needs to initialize the server before that, this function can be called basically at any time after net driver is initialized.
@@ -39,7 +42,7 @@ public:
 	/**
 	 * Sends a single message. If called on the client, the payload is sent to the server. If called on the server, the payload is sent to the client.
 	 */
-	static void SendMessage(const APlayerController* Player, int32 Channel, TArray<uint8> InPayload);
+	static void SendTaggedMessage(const APlayerController* Player, FGameplayTag Tag, TArray<uint8> InPayload);
 
 	/**
 	 * Returns the server instance. This is only valid on the server and only as long as the server is correctly initialized.
@@ -47,7 +50,7 @@ public:
 	IReliableMessageTransportServer* GetServer() const;
 
 protected:
-	void RegisterControllerComponentPendingConnection(UReliableMessagingPlayerComponent* UnmappedComponent);
+	bool RegisterControllerComponentPendingConnection(UReliableMessagingPlayerComponent* UnmappedComponent);
 	void RegisterControllerComponentClientSide(UReliableMessagingPlayerComponent* ClientComponent);
 	void UnregisterControllerComponent(UReliableMessagingPlayerComponent* Component);
 	
@@ -66,6 +69,9 @@ protected:
 	// End FTickableGameObject interface
 
 	void OnNewIncomingConnection(TUniquePtr<IReliableMessageTransportConnection> Connection);
+
+	UPROPERTY(Config)
+	float ConnectionTimeoutSeconds = 20.0f;
 private:
 	UPROPERTY()
 	TMap<FGuid, TObjectPtr<UReliableMessagingPlayerComponent>> ControllerComponentsPendingConnection;

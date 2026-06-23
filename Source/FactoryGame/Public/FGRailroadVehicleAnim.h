@@ -241,15 +241,15 @@ protected:
 public:
 	/** The UCurveFloat specifying brake force */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
-	UCurveFloat* mBrakeCurve;
+	TObjectPtr<UCurveFloat> mBrakeCurve;
 	
 	/** Cached in init. */
 	UPROPERTY()
-	class AFGRailroadVehicle* mVehicle;
+	TObjectPtr<class AFGRailroadVehicle> mVehicle;
 	
 	/** Cached in init. */
 	UPROPERTY()
-	class AFGLocomotive* mLocomotive;
+	TObjectPtr<class AFGLocomotive> mLocomotive;
 
 protected:
 	UPROPERTY( Transient, BlueprintReadOnly, Category = "Rail Road Vehicle Anim", meta = ( AllowPrivateAccess = "true" ) )
@@ -260,18 +260,14 @@ private:
 	
 	/** Are the handbrake effects playing? */
 	bool mIsUsingHandBrake;
-
-	/** Trains material */
-	UPROPERTY()
-	UMaterialInstanceDynamic* mTrainMaterial;
-
+	
 	/** Collection of brake socket names */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
 	TArray< FName > mBrakeSocketNames;
 
 	/** Collection of brake effect particle components */
 	UPROPERTY()
-	TArray< UParticleSystemComponent* > mBrakeEffects;
+	TArray< TObjectPtr<UParticleSystemComponent> > mBrakeEffects;
 
 	/** Collection of steam socket names */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
@@ -279,25 +275,25 @@ private:
 
 	/** Collection of brake effect particle components */
 	UPROPERTY()
-	TArray< UParticleSystemComponent* > mSteamEffects;
+	TArray< TObjectPtr<UParticleSystemComponent> > mSteamEffects;
 
 	/** Template for brake sparks particle */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
-	UParticleSystem* mBrakeSparkTemplate;
+	TObjectPtr<UParticleSystem> mBrakeSparkTemplate;
 
 	/** Template for steam particle */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
-	UParticleSystem* mSteamTemplate;
+	TObjectPtr<UParticleSystem> mSteamTemplate;
 
 	/** Sound for when braking stops and steam occurs */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
-	class UAkAudioEvent* mBrakeSound;
+	TObjectPtr<class UAkAudioEvent> mBrakeSound;
 
 	/** Template for brake effect */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
-	UParticleSystem* mHandBrakeVfxTemplate;
+	TObjectPtr<UParticleSystem> mHandBrakeVfxTemplate;
 
 	/** Template for brake effect */
 	UPROPERTY()
-	UParticleSystemComponent* mHandBrakeVfxComponent;
+	TObjectPtr<UParticleSystemComponent> mHandBrakeVfxComponent;
 };

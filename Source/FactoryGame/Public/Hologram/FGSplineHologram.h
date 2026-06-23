@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -62,7 +62,7 @@ protected:
 protected:
 	/** The spline component we're placing. */
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
-	class USplineComponent* mSplineComponent;
+	TObjectPtr<class USplineComponent> mSplineComponent;
 
 	/** This is the data needed to create the spline component (local space). */
 	UPROPERTY( ReplicatedUsing = OnRep_SplineData, CustomSerialization )

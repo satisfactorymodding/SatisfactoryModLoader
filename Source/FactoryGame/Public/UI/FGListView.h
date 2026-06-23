@@ -30,6 +30,9 @@ public:
 	
 	virtual TSharedRef<STableViewBase> RebuildListWidget() override;
 
+	UFUNCTION( BlueprintCallable, Category=Default )
+	void SetBarStyle( const FScrollBarStyle& inBarStyle );
+
 	UPROPERTY(EditAnywhere, BlueprintAssignable, Category = ListView)
 	FOnListViewItemsChangedEventDynamic OnListViewItemsChangedEvent;
 
