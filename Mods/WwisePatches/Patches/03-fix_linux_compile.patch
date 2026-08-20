@@ -1,14 +1,13 @@
-diff --git a/Plugins/Wwise/Source/AudiokineticTools/Private/WwiseBrowser/DataSource/WaapiDataSource.cpp b/Plugins/Wwise/Source/AudiokineticTools/Private/WwiseBrowser/DataSource/WaapiDataSource.cpp
+diff --git a/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp
 index 9dfaeac..f4ecb73 100755
---- a/Plugins/Wwise/Source/AudiokineticTools/Private/WwiseBrowser/DataSource/WaapiDataSource.cpp
-+++ b/Plugins/Wwise/Source/AudiokineticTools/Private/WwiseBrowser/DataSource/WaapiDataSource.cpp
-@@ -1078,7 +1078,9 @@ EWwiseConnectionStatus FWaapiDataSource::IsProjectLoaded()
-		{
- 			FString WaapiPath;
- 			TSharedPtr<FJsonObject> outJsonResult;
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp
+@@ -73,7 +73,7 @@
+ 
+ void FAkWaapiClientConnectionHandler::RegisterAutoConnectChangedCallback()
+ {
+-#if WITH_EDITOR
 +#if AK_SUPPORT_WAAPI
- 			AkWaapiClient->Call(ak::wwise::core::getProjectInfo, MakeShareable(new FJsonObject()), MakeShareable(new FJsonObject()), outJsonResult, 500, false);
-+#endif
- 			if(auto directoriesObject = outJsonResult->GetObjectField(TEXT("directories")))
- 			{
-				WaapiPath = directoriesObject->GetStringField(TEXT("soundBankOutputRoot"));
+ 	FScopeLock Lock(&AkSettingsSection);
+ 	if (auto AkSettingsPerUser = GetDefault<UAkSettingsPerUser>())
+ 	{

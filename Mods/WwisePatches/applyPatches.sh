@@ -59,8 +59,18 @@ is_patch_applied() {
     return 1
 }
 
+# Convert line endings on patched text files
+convert_wwise_line_endings() {
+    local conversion_tool="$1" # 'dos2unix' or 'unix2dos'
+
+    find "$project_dir"/Plugins/Wwise*/Source \
+         "$project_dir"/Plugins/Wwise*/*.uplugin \
+         "$project_dir"/Plugins/Wwise*/**/*.ini \
+         -type f -print0 2>/dev/null | xargs -0 "$conversion_tool" -q -k
+}
+
 # Convert Wwise source file line endings to LF for patching
-find "$project_dir"/Plugins/Wwise*/Source -type f | xargs dos2unix -q -k
+convert_wwise_line_endings "dos2unix"
 
 # Iterate through the patch files
 for patch_file in "${patch_files[@]}"; do
@@ -87,6 +97,7 @@ for patch_file in "${patch_files[@]}"; do
     if ! patch -N -s -p1 -d "$project_dir" -i "$temp_file" --dry-run; then
         echo "Error: Dry run failed for patch '$patch_filename'. Exiting."
         rm -f "$temp_file"
+        convert_wwise_line_endings "unix2dos"
         exit 1
     fi
     
@@ -97,6 +108,7 @@ for patch_file in "${patch_files[@]}"; do
     if ! patch -N -s -p1 -d "$project_dir" -i "$temp_file"; then
         echo "Error: Failed to apply patch '$patch_filename'. Exiting."
         rm -f "$temp_file"
+        convert_wwise_line_endings "unix2dos"
         exit 1
     fi
     
@@ -109,4 +121,4 @@ for patch_file in "${patch_files[@]}"; do
 done
 
 # Undo the dos2unix conversion for Wwise source files
-find "$project_dir"/Plugins/Wwise*/Source -type f | xargs unix2dos -q -k
+convert_wwise_line_endings "unix2dos"

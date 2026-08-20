@@ -16,8 +16,7 @@ Makefile
 
 # Wwise
 *_WwiseProject/*
-Plugins/Wwise/*
-Plugins/WwiseNiagara/*
+Plugins/Wwise*/*
 Plugins/Developer/RiderLink/*
 
 # SML mod configs

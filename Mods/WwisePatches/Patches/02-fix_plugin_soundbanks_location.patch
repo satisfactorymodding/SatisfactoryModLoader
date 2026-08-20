@@ -1,18 +1,18 @@
-diff --git a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCooker.cpp b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCooker.cpp
+diff --git a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerImpl.cpp b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerImpl.cpp
 index 9cee64f..013f8a0 100644
---- a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCooker.cpp
-+++ b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCooker.cpp
-@@ -479,6 +479,13 @@ void FWwiseResourceCooker::SetSandboxRootPath(const TCHAR* InPackageFilename)
- 		SandboxPath = FPaths::GetPath(SandboxPath);
+--- a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerImpl.cpp
++++ b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerImpl.cpp
+@@ -922,6 +922,13 @@ void FString FWwiseResourceCookerImpl::GetCookRootPath(const TCHAR* PackageFilename)
+ 		Path = FPaths::GetPath(Path);
  	}
  
-+	while (!SandboxPath.IsEmpty() && FPaths::GetCleanFilename(SandboxPath) != FApp::GetProjectName())
++	while (!Path.IsEmpty() && FPaths::GetCleanFilename(Path) != FApp::GetProjectName())
 +	{
-+		SandboxPath = FPaths::GetPath(SandboxPath);
++		Path = FPaths::GetPath(Path);
 +	}
 +
-+	SandboxPath = SandboxPath / TEXT("Content");
++	Path = Path / TEXT("Content");
 +
- 	UE_LOG(LogWwiseResourceCooker, Display, TEXT("SetSandboxRootPath: Updating Sandbox Root Path: %s"), *SandboxPath);
+ 	return Path;
+ }
  
- 	SandboxRootPath = SandboxPath;

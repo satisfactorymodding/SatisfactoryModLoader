@@ -1,12 +1,17 @@
-﻿diff --git "a/Plugins/Wwise/Content/AnimNotify_AkEvent.uasset" "a/Plugins/Wwise/Content/AnimNotify_AkEvent.uasset"
-deleted file mode 100644
-index 02742e8..0000000
-Binary files "a/Plugins/Wwise/Content/AnimNotify_AkEvent.uasset" and /dev/null differ
-diff --git "a/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs" "b/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs"
-index 6d6b9c8..a563cb5 100644
---- a/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs
-+++ b/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs
-@@ -137,6 +137,22 @@ public class AkAudio : ModuleRules
+diff -urN a/Plugins/Wwise/Config/BaseWwise.ini b/Plugins/Wwise/Config/BaseWwise.ini
+--- a/Plugins/Wwise/Config/BaseWwise.ini	2026-03-30 10:53:16.602244100 +0200
++++ b/Plugins/Wwise/Config/BaseWwise.ini	2026-06-29 11:27:12.633525700 +0200
+@@ -13,4 +13,4 @@
+ +FunctionRedirects=(OldName="AkPortalComponent.OpenPortal",NewName="EnablePortal")
+ +FunctionRedirects=(OldName="AkPortalComponent.ClosePortal",NewName="DisablePortal")
+ +FunctionRedirects=(OldName="AkAcousticPortal.OpenPortal",NewName="EnablePortal")
+-+FunctionRedirects=(OldName="AkAcousticPortal.ClosePortal",NewName="DisablePortal")
+\ No newline at end of file
+++FunctionRedirects=(OldName="AkAcousticPortal.ClosePortal",NewName="DisablePortal")
+diff -urN a/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs b/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs
+--- a/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs	2026-03-30 10:53:16.664513700 +0200
++++ b/Plugins/Wwise/Source/AkAudio/AkAudio.Build.cs	2026-07-06 16:39:44.786434800 +0200
+@@ -143,6 +143,22 @@
  			});
  		}
  
@@ -29,11 +34,10 @@ index 6d6b9c8..a563cb5 100644
  		PrivateIncludePaths.Add("AkAudio/Private");
  		PrivateIncludePaths.Add("AkAudio/Classes/GTE");
  
-diff --git "a/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-index 11dc656..943ea33 100644
---- a/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h
-+++ b/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h
-@@ -59,6 +59,18 @@ public:
+diff -urN a/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h b/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h	2026-03-30 10:53:16.672024900 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h	2026-07-06 16:39:44.796945200 +0200
+@@ -59,6 +59,18 @@
  	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "AkAudioEvent")
  		float MaximumDuration = .0f;
  
@@ -52,15 +56,18 @@ index 11dc656..943ea33 100644
  #if WITH_EDITORONLY_DATA
  	UPROPERTY(EditAnywhere, Category = "AkAudioEvent")
  		FWwiseEventInfo EventInfo;
-@@ -372,6 +384,7 @@ public:
+@@ -401,7 +413,9 @@
+ 	// begins, data will be unloaded, allowing to replicate in-game behaviour more
  	// closely.
  	void LoadEventDataForContentBrowserPreview();
- 
+-
++#if 0
 +	virtual void GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize) override; //CSS Added possibility to track audio media memory usage
++#endif
  private:
  	void OnBeginPIE(const bool bIsSimulating);
  	FDelegateHandle OnBeginPIEDelegateHandle;
-@@ -402,6 +415,13 @@ public:
+@@ -432,6 +446,13 @@
  private:
  	void LoadEventData();
  	void UnloadEventData(bool bAsync);
@@ -74,11 +81,10 @@ index 11dc656..943ea33 100644
  	FWwiseLoadedEventPtrAtomic LoadedEvent{nullptr};
  };
  
-diff --git "a/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h"
-index 120743d..72a149c 100644
---- a/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h
-+++ b/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h
-@@ -19,6 +19,16 @@ Copyright (c) 2025 Audiokinetic Inc.
+diff -urN a/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h b/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h	2026-03-30 10:53:16.681559700 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkComponent.h	2026-07-06 16:39:44.807454400 +0200
+@@ -19,6 +19,16 @@
  	AkComponent.h:
  =============================================================================*/
  
@@ -95,17 +101,15 @@ index 120743d..72a149c 100644
  #pragma once
  
  #include "Runtime/Launch/Resources/Version.h"
-@@ -266,7 +276,8 @@ public:
+@@ -244,6 +254,7 @@
  	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category="Audiokinetic|AkComponent")
  	float GetAttenuationRadius() const;
  
--	void UpdateGameObjectPosition();
 +	//<CSS> virtual
-+	virtual void UpdateGameObjectPosition();
+ 	virtual void UpdateGameObjectPosition();
  
  	void GetAkGameObjectName(FString& Name) const;
- 
-@@ -298,10 +309,18 @@ public:
+@@ -276,10 +287,18 @@
  	 */
  	virtual void ShutdownAfterError();
  
@@ -126,7 +130,7 @@ index 120743d..72a149c 100644
  	virtual void OnUpdateTransform(EUpdateTransformFlags UpdateTransformFlags, ETeleportType Teleport = ETeleportType::None) override;
  	// End USceneComponent Interface
  
-@@ -418,4 +437,44 @@ private:
+@@ -401,4 +420,44 @@
  
  	void DebugDrawDiffraction() const;
  	void _DebugDrawDiffraction(const AkVector64& akEmitterPos, const AkVector64& akListenerPos, const AkDiffractionPathInfo* paths, AkUInt32 uNumPaths) const;
@@ -152,7 +156,7 @@ index 120743d..72a149c 100644
 +
 +	/** Sets multiple positions to a single game object. See AkGameplayStatics for more info. */
 +	UFUNCTION( BlueprintCallable, Category = "Audiokinetic|AkComponent" )
-+	void SetMultiplePositions( const TArray<FVector>& Positions, AkMultiPositionType MultiPositionType );
++	void SetMultiplePositions( const TArray<FVector>& Positions, EAkMultiPositionType MultiPositionType );
 +protected:
 +
 +	/** Called by the callback manager on playback end. Used for auto cleanup of components in stead of the Tick function.
@@ -168,14 +172,38 @@ index 120743d..72a149c 100644
 +	bool mIsReuseable = true;
 +
 +	/** Default is SingleSource for regular components, if SetMultiplePositions is called this is set to the given type. */
-+	AkMultiPositionType PositionType;
++	EAkMultiPositionType PositionType;
 +//</CSS>
  };
-diff --git "a/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h"
-index 146cd6d..89c6fa2 100644
---- a/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h
-+++ b/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h
-@@ -144,6 +144,10 @@ public:
+diff -urN a/Plugins/Wwise/Source/AkAudio/Classes/AkDebugging.h b/Plugins/Wwise/Source/AkAudio/Classes/AkDebugging.h
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkDebugging.h	1970-01-01 01:00:00.000000000 +0100
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkDebugging.h	2026-06-29 11:27:12.705555000 +0200
+@@ -0,0 +1,21 @@
++// Copyright Coffee Stain Studios. All Rights Reserved.
++
++// <CSS> We added this file
++
++#pragma once
++
++#include "Engine/GameEngine.h"
++#include "AkInclude.h"
++#include "AkDebugging.generated.h"
++
++
++UCLASS()
++class AKAUDIO_API UAkDebugging : public UObject
++{
++	GENERATED_BODY()
++public:
++	static void DisplayDebug( class UWorld* world, bool showAttenuations, class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos );
++	
++	static void TrackAkComponents( UWorld* world, bool byClass );
++	static void TrackAkComponentsWithNoPositionOrOwner( UWorld* world );
++};
+diff -urN a/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h b/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h	2026-03-30 10:53:16.695071000 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkGameObject.h	2026-07-06 16:39:44.820472200 +0200
+@@ -220,6 +220,10 @@
  	void SetRegisteredWithWwise(bool bInRegisteredWithWwise) { bIsRegisteredWithWwise = bInRegisteredWithWwise; }
  	bool IsRegisteredWithWwise() const { return bIsRegisteredWithWwise; }
  	void EventPosted() {bEventPosted = true;}
@@ -186,11 +214,10 @@ index 146cd6d..89c6fa2 100644
  protected:
  	// Whether an event was posted on the game object. Never reset to false. 
  	bool bEventPosted;
-diff --git "a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h"
-index 2d901f4..a30c4e9 100644
---- a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h
-+++ b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h
-@@ -93,12 +93,24 @@ public:
+diff -urN a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h	2026-03-30 10:53:16.697070300 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayStatics.h	2026-07-06 16:39:44.821472400 +0200
+@@ -93,12 +93,24 @@
  	static class UAkComponent* GetOrCreateAkComponent(class USceneComponent* AttachToComponent, bool& ComponentCreated,
  		FName AttachPointName = NAME_None);
  
@@ -215,7 +242,7 @@ index 2d901f4..a30c4e9 100644
  	/** Posts a Wwise Event attached to and following the root component of the specified actor.
  	 *
  	 * @param AkEvent - Event to play.
-@@ -135,7 +147,48 @@ public:
+@@ -135,7 +147,48 @@
  	 */
  	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category="Audiokinetic", meta=(WorldContext="WorldContextObject", AdvancedDisplay = "3"))
  	static int32 PostEventAtLocation(UAkAudioEvent* AkEvent, FVector Location, FRotator Orientation, UObject* WorldContextObject);
@@ -265,20 +292,20 @@ index 2d901f4..a30c4e9 100644
  	/** Spawn an AkComponent at a location. Allows, for example, to set a switch on a fire and forget sound.
  	 * @param AkEvent - Wwise Event to post.
  	 * @param Location - Location from which to post the Wwise Event.
-@@ -145,7 +198,8 @@ public:
+@@ -145,7 +198,8 @@
  	 */
  	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category="Audiokinetic|AkComponent", meta=(WorldContext="WorldContextObject", AdvancedDisplay = "6"))
- 	static class UAkComponent* SpawnAkComponentAtLocation(UObject* WorldContextObject, class UAkAudioEvent* AkEvent, FVector Location, FRotator Orientation, bool AutoPost, const FString& EventName, bool AutoDestroy = true);
+ 	static class UAkComponent* SpawnAkComponentAtLocation(UObject* WorldContextObject, class UAkAudioEvent* AkEvent, FVector Location, FRotator Orientation, bool AutoPost, bool AutoDestroy = true);
 -
 +// <CSS> Our own overloads with customized semantics
 +#if 0
  	/**
  	* Sets the value of a Game Parameter, optionally targeting the root component of a specified actor.
  	* @param RTPC - The name of the Game Parameter to set
-@@ -175,7 +229,21 @@ public:
+@@ -175,7 +229,21 @@
  	*/
  	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category = "Audiokinetic", meta = (AdvancedDisplay = "8"))
- 	static void ResetRTPCValue(class UAkRtpc const* RTPCValue, int32 InterpolationTimeMs, class AActor* Actor, FName RTPC);
+ 	static void ResetRTPCValue(class UAkRtpc const* RTPCValue, int32 InterpolationTimeMs, class AActor* Actor);
 +#endif
 +	
 +	/** Sets the value of a Game Parameter, targeting all AkComponents of a specified actor. */
@@ -297,19 +324,19 @@ index 2d901f4..a30c4e9 100644
  	/**
  	 * Set the active State for a given State Group.
  	 * @param StateGroup - Name of the State Group to be modified
-@@ -214,7 +282,8 @@ public:
+@@ -214,7 +282,8 @@
      UFUNCTION(BlueprintCallable, Category = "Audiokinetic")
      static void SetMultiplePositions(UAkComponent* GameObjectAkComponent, TArray<FTransform> Positions,
-                                      AkMultiPositionType MultiPositionType = AkMultiPositionType::MultiDirections);
+                                      EAkMultiPositionType MultiPositionType = EAkMultiPositionType::MultiDirections);
 -
 +//<CSS> These do not respect the invariant of AkComponent, which requires that the PositionType is set.
 +#if 0
      /** Sets multiple positions to a single game object, with flexible assignment of input channels.
      *  Setting multiple positions on a single game object is a way to simulate multiple emission sources while using the resources of only one voice.
      *  This can be used to simulate wall openings, area sounds, or multiple objects emitting the same sound in the same area.
-@@ -248,7 +317,17 @@ public:
+@@ -248,7 +317,17 @@
  			TArray<FTransform> Positions,
- 			AkMultiPositionType MultiPositionType = AkMultiPositionType::MultiDirections
+ 			EAkMultiPositionType MultiPositionType = EAkMultiPositionType::MultiDirections
  	);
 +#endif//</CSS>
  
@@ -325,7 +352,7 @@ index 2d901f4..a30c4e9 100644
  	/**
  	* Sets UseReverbVolumes flag on a specified actor. Set value to true to use reverb volumes on this component.
  	*
-@@ -484,6 +563,13 @@ public:
+@@ -532,6 +611,13 @@
  	UFUNCTION(BlueprintCallable, BlueprintCosmetic, Category="Audiokinetic|Actor", meta = (DisplayName = "Set Obstruction Occlusion Refresh Interval"))
  	static void SetOcclusionRefreshInterval(float RefreshInterval, class AActor* Actor );
  
@@ -339,11 +366,10 @@ index 2d901f4..a30c4e9 100644
  	/**
  	 * Stop all sounds for an actor.
  	 */
-diff --git "a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h"
-index ae2eaf8..084ac9d 100644
---- a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h
-+++ b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h
-@@ -1148,4 +1148,59 @@ struct AkDeviceAndWorld
+diff -urN a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h	2026-03-30 10:53:16.698070800 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkGameplayTypes.h	2026-07-06 16:39:44.822471800 +0200
+@@ -1258,4 +1258,59 @@
  	AkDeviceAndWorld(const UObject* in_pWorldContextObject);
  
  	bool IsValid() const;
@@ -406,12 +432,10 @@ index ae2eaf8..084ac9d 100644
 +
 +// </CSS>
 \ No newline at end of file
-diff --git "b/Plugins/Wwise/Source/AkAudio/Classes/AkInstancedGeometryComponent.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkInstancedGeometryComponent.h"
-new file mode 100644
-index 0000000..d1aa8c6
---- /dev/null
-+++ b/Plugins/Wwise/Source/AkAudio/Classes/AkInstancedGeometryComponent.h
-@@ -0,0 +1,158 @@
+diff -urN a/Plugins/Wwise/Source/AkAudio/Classes/AkInstancedGeometryComponent.h b/Plugins/Wwise/Source/AkAudio/Classes/AkInstancedGeometryComponent.h
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkInstancedGeometryComponent.h	1970-01-01 01:00:00.000000000 +0100
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkInstancedGeometryComponent.h	2026-07-06 16:39:44.829472700 +0200
+@@ -0,0 +1,160 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +
 +#pragma once
@@ -423,7 +447,7 @@ index 0000000..d1aa8c6
 +struct FStaticMeshLODResources;
 +class FPositionVertexBuffer;
 +
-+UENUM()
++UENUM(meta=(ScriptName="EAkInstancedMeshType"))
 +enum class AkInstancedMeshType : uint8
 +{
 +	BoundingBox UMETA(DisplayName = "Bounding Box"),
@@ -480,7 +504,7 @@ index 0000000..d1aa8c6
 +
 +	/** Override the acoustic properties of this mesh per material.*/
 +	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Geometry", DisplayName = "Acoustic Properties Override")
-+	TMap<UMaterialInterface*, FAkGeometrySurfaceOverride> StaticMeshSurfaceOverride;
++	TMap<TObjectPtr<UMaterialInterface>, FAkGeometrySurfaceOverride> StaticMeshSurfaceOverride;
 +
 +	/** Override the acoustic properties of the collision mesh.*/
 +	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Geometry", DisplayName = "Acoustic Properties Override")
@@ -494,14 +518,16 @@ index 0000000..d1aa8c6
 +	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Geometry", meta = (EditCondition = "bEnableDiffraction"))
 +	bool bEnableDiffractionOnBoundaryEdges = false;
 +
-+	/** (Deprecated) Associate this Geometry component with a Room.
-+	* This property is deprecated and will be removed in a future version. We recommend not using it by leaving it set to None.
-+	* Associating a Geometry component with a particular Room limits the scope in which the geometry is accessible. Doing so reduces the search space for ray casting performed by reflection and diffraction calculations.
-+	* When set to None, this geometry has a global scope.
-+	* Note if one or more geometry sets are associated with a room, that room can no longer access geometry that is in the global scope.
++	/**
++	* When set to false (default), the intersection of the geometry instance with any portal bounding box is subtracted from the geometry.In effect, an opening is created at the portal location through which sound can pass.
++	* When set to true, portals cannot create openings in the geometry instance. Enable this to allow the geometry instance to be an obstacle to paths going into or through portal bounds.
 +	*/
-+	UPROPERTY(EditAnywhere, AdvancedDisplay, BlueprintReadWrite, Category = "Geometry")
-+	AActor* AssociatedRoom = nullptr;
++	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Geometry", DisplayName = "Bypass Portal Subtraction [Experimental]")
++	bool bBypassPortalSubtraction = false;
++
++	/** A solid geometry instance applies transmission loss once for each time a transmission path enters and exits its volume, using the max transmission loss between each hit surface. A non-solid geometry instance is one where each surface is infinitely thin, applying transmission loss at each surface. This option has no effect if the Transmission Operation is set to Max. */
++	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Geometry")
++	bool bSolid = false;
 +
 +	float GetSurfaceAreaSquaredMeters(const int& surfaceIndex) const;
 +
@@ -552,7 +578,7 @@ index 0000000..d1aa8c6
 +	UPROPERTY()
 +	TMap<int, double> SurfaceAreas;
 +	
-+	TMap<UMaterialInterface*, FAkGeometrySurfaceOverride> PreviousStaticMeshSurfaceOverride;
++	TMap<TObjectPtr<UMaterialInterface>, FAkGeometrySurfaceOverride> PreviousStaticMeshSurfaceOverride;
 +
 +	void BeginPlayInternal();
 +#if WITH_EDITOR
@@ -570,11 +596,9 @@ index 0000000..d1aa8c6
 +	TObjectPtr<UStaticMesh> StaticMeshInstance;
 +	float WorldScale = 1.0f;
 +};
-diff --git "b/Plugins/Wwise/Source/AkAudio/Classes/AkListenerComponent.h" "b/Plugins/Wwise/Source/AkAudio/Classes/AkListenerComponent.h"
-new file mode 100644
-index 0000000..aac4f89
---- /dev/null
-+++ b/Plugins/Wwise/Source/AkAudio/Classes/AkListenerComponent.h
+diff -urN a/Plugins/Wwise/Source/AkAudio/Classes/AkListenerComponent.h b/Plugins/Wwise/Source/AkAudio/Classes/AkListenerComponent.h
+--- a/Plugins/Wwise/Source/AkAudio/Classes/AkListenerComponent.h	1970-01-01 01:00:00.000000000 +0100
++++ b/Plugins/Wwise/Source/AkAudio/Classes/AkListenerComponent.h	2026-06-29 11:27:12.734153200 +0200
 @@ -0,0 +1,17 @@
 +#pragma once
 +
@@ -593,11 +617,10 @@ index 0000000..aac4f89
 +	virtual void TickComponent( float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction ) override;
 +	//~ End UActorComponent interface
 +};
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp"
-index 0cad19f..024b1da 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp
-@@ -19,6 +19,9 @@ Copyright (c) 2025 Audiokinetic Inc.
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp	2026-03-30 10:53:17.380127100 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioDevice.cpp	2026-07-06 16:39:44.940005900 +0200
+@@ -19,6 +19,9 @@
  	AkAudioDevice.cpp: Audiokinetic Audio interface object.
  =============================================================================*/
  
@@ -607,7 +630,7 @@ index 0cad19f..024b1da 100644
  #define AK_ENABLE_ROOMS
  #define AK_ENABLE_PORTALS
  
-@@ -75,6 +78,10 @@ Copyright (c) 2025 Audiokinetic Inc.
+@@ -73,6 +76,10 @@
  #include "UObject/UObjectGlobals.h"
  #include "UObject/UObjectIterator.h"
  #include "Wwise/WwiseExternalSourceManager.h"
@@ -618,18 +641,17 @@ index 0cad19f..024b1da 100644
  
  #if WITH_EDITOR
  #include "Editor.h"
-@@ -95,6 +102,10 @@ Copyright (c) 2025 Audiokinetic Inc.
+@@ -100,6 +107,9 @@
  
- #include <inttypes.h>
+ #include "Wwise/WwiseGlobalCallbacks.h"
  
 +//<CSS> Stats
 +extern int32 ENGINE_API GCurrentRunningSounds;
 +//</CSS>
-+
+ 
  /*------------------------------------------------------------------------------------
  	Statics and Globals
- ------------------------------------------------------------------------------------*/
-@@ -114,6 +125,36 @@ FCriticalSection FAkAudioDevice::EventToPlayingIDMapCriticalSection;
+@@ -120,6 +130,36 @@
  
  static constexpr auto InvariantLCID = 0x7F;
  
@@ -666,9 +688,9 @@ index 0cad19f..024b1da 100644
  /*------------------------------------------------------------------------------------
  	Helpers
  ------------------------------------------------------------------------------------*/
-@@ -777,6 +818,10 @@ bool FAkAudioDevice::Init()
- void FAkAudioDevice::BeginPIE(const bool bIsSimulating)
+@@ -840,6 +880,10 @@
  {
+ 	SCOPED_AKAUDIO_EVENT_3(TEXT("FAkAudioDevice::BeginPIE"));
  	CleanDefaultListeners();
 +	//<CSS>
 +	GCurrentRunningSounds = 0;
@@ -677,7 +699,7 @@ index 0cad19f..024b1da 100644
  	if (!bIsSimulating && EditorListener != nullptr)
  	{
  		RemoveDefaultListener(EditorListener);
-@@ -1780,6 +1825,51 @@ void FAkAudioDevice::SAComponentAddedRemoved(UWorld* World)
+@@ -2001,6 +2045,51 @@
  	}
  }
  
@@ -729,7 +751,7 @@ index 0cad19f..024b1da 100644
  /** Find UAkLateReverbComponents at a given location. */
  TArray<class UAkLateReverbComponent*> FAkAudioDevice::FindLateReverbComponentsAtLocation(const FVector& Loc, const UWorld* World)
  {
-@@ -1919,6 +2009,26 @@ AKRESULT FAkAudioDevice::SeekOnEvent(
+@@ -2142,6 +2231,26 @@
      return AKRESULT::AK_Fail;
  }
  
@@ -755,16 +777,16 @@ index 0cad19f..024b1da 100644
 +// </CSS>
  void FAkAudioDevice::UpdateAllSpatialAudioPortals(UWorld* InWorld)
  {
- #ifdef AK_ENABLE_PORTALS
-@@ -2517,6 +2627,7 @@ AKRESULT FAkAudioDevice::SetSwitch(
+ 	SCOPED_AKAUDIO_EVENT_3(TEXT("FAkAudioDevice::UpdateAllSpatialAudioPortals"));
+@@ -2770,6 +2879,7 @@
  	}
  	return eResult;
  }
 +//</CSS>
  
- static AK::SoundEngine::MultiPositionType GetSoundEngineMultiPositionType(AkMultiPositionType in_eType)
+ static AkMultiPositionType GetSoundEngineMultiPositionType(EAkMultiPositionType in_eType)
  {
-@@ -2552,7 +2663,9 @@ AKRESULT FAkAudioDevice::SetMultiplePositions(
+@@ -2806,7 +2916,9 @@
  	}
  	auto* SoundEngine = IWwiseSoundEngineAPI::Get();
  	if (UNLIKELY(!SoundEngine)) return AK_NotInitialized;
@@ -775,7 +797,7 @@ index 0cad19f..024b1da 100644
  
  	const int numPositions = in_aPositions.Num();
      TArray<AkSoundPosition> aPositions;
-@@ -2581,6 +2694,9 @@ AKRESULT FAkAudioDevice::SetMultiplePositions(
+@@ -2836,6 +2948,9 @@
  	}
  	auto* SoundEngine = IWwiseSoundEngineAPI::Get();
  	if (UNLIKELY(!SoundEngine)) return AK_NotInitialized;
@@ -785,7 +807,7 @@ index 0cad19f..024b1da 100644
  
  	const int32 numPositions = FMath::Min(in_aPositions.Num(), in_aChannelConfigurations.Num());
  
-@@ -2669,6 +2785,30 @@ AKRESULT FAkAudioDevice::SetMultiplePositions(
+@@ -2926,6 +3041,30 @@
  	return SoundEngine->SetMultiplePositions(in_GameObjectID, in_pPositions, in_NumPositions, in_eMultiPositionType);
  }
  
@@ -793,7 +815,7 @@ index 0cad19f..024b1da 100644
 +AKRESULT FAkAudioDevice::SetMultiplePositions(
 +	AkGameObjectID in_GameObjectID,
 +	TArray< FVector > in_aPositions,
-+	AkMultiPositionType in_eMultiPositionType
++	EAkMultiPositionType in_eMultiPositionType
 +)
 +{
 +	auto* SoundEngine = IWwiseSoundEngineAPI::Get();
@@ -816,7 +838,7 @@ index 0cad19f..024b1da 100644
  /**
   * Set auxiliary sends
   *
-@@ -3624,7 +3764,7 @@ UAkComponent* FAkAudioDevice::GetAkComponent( class USceneComponent* AttachToCom
+@@ -3932,7 +4071,7 @@
  			for ( int32 CompIdx = 0; CompIdx < AkComponents.Num(); CompIdx++ )
  			{
  				UAkComponent* pCompI = AkComponents[CompIdx];
@@ -825,7 +847,7 @@ index 0cad19f..024b1da 100644
  				{
  					if ( AttachToComponent == pCompI )
  					{
-@@ -4065,7 +4205,7 @@ void FAkAudioDevice::OnActorSpawned(AActor* SpawnedActor)
+@@ -4409,7 +4548,7 @@
  		APlayerController* CameraOwner = Cast<APlayerController>(AsPlayerCameraManager->GetOwner());
  		if (CameraOwner && CameraOwner->IsLocalPlayerController())
  		{
@@ -834,7 +856,7 @@ index 0cad19f..024b1da 100644
  			if (pAkComponent != nullptr)
  			{
  				pAkComponent->RegisterComponentWithWorld(SpawnedActor->GetWorld());
-@@ -4431,3 +4571,84 @@ void FAkAudioDevice::GetObsOccServicePortalMap(const TWeakObjectPtr<UAkRoomCompo
+@@ -4802,3 +4941,84 @@
  		ConnectedPortals->Remove(PortalID);
  	}
  }
@@ -919,11 +941,10 @@ index 0cad19f..024b1da 100644
 +}
 +
 +// </CSS>
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp"
-index dc1be86..79c9a5a 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp
-@@ -47,6 +47,9 @@ Copyright (c) 2025 Audiokinetic Inc.
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp	2026-03-30 10:53:17.382128200 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioEvent.cpp	2026-07-06 16:39:44.943010600 +0200
+@@ -48,6 +48,9 @@
  #include "Wwise/WwiseResourceCooker.h"
  #endif
  
@@ -933,7 +954,7 @@ index dc1be86..79c9a5a 100644
  int32 UAkAudioEvent::PostOnActor(const AActor* Actor, const FOnAkPostEventCallback& Delegate, const int32 CallbackMask,
                                   const bool bStopWhenAttachedObjectDestroyed)
  {
-@@ -196,7 +199,10 @@ int32 UAkAudioEvent::ExecuteAction(const AkActionOnEventType ActionType, const A
+@@ -197,7 +200,10 @@
  	const auto* AudioDevice = FAkAudioDevice::Get();
  	if (UNLIKELY(!AudioDevice))
  	{
@@ -945,7 +966,7 @@ index dc1be86..79c9a5a 100644
  		return AK_NotInitialized;
  	}
  
-@@ -254,7 +260,10 @@ AkPlayingID UAkAudioEvent::PostOnActor(const AActor* Actor, const FOnAkPostEvent
+@@ -301,7 +307,10 @@
  	const auto* AudioDevice = FAkAudioDevice::Get();
  	if (UNLIKELY(!AudioDevice))
  	{
@@ -957,7 +978,7 @@ index dc1be86..79c9a5a 100644
  		return AK_INVALID_PLAYING_ID;
  	}
  
-@@ -335,7 +344,10 @@ AkPlayingID UAkAudioEvent::PostAtLocation(const FVector& Location, const FRotato
+@@ -382,7 +391,10 @@
  	auto* AudioDevice = FAkAudioDevice::Get();
  	if (UNLIKELY(!AudioDevice))
  	{
@@ -969,7 +990,7 @@ index dc1be86..79c9a5a 100644
  		return AK_INVALID_PLAYING_ID;
  	}
  
-@@ -497,10 +509,18 @@ AkPlayingID UAkAudioEvent::PostEvent(const AkGameObjectID GameObjectID, FCreateC
+@@ -544,10 +556,18 @@
  	const EAkAudioContext AudioContext)
  {
  	SCOPED_AKAUDIO_EVENT_2(TEXT("UAkAudioEvent::PostEvent"));
@@ -989,7 +1010,7 @@ index dc1be86..79c9a5a 100644
  		return AK_INVALID_PLAYING_ID;
  	}
  
-@@ -573,6 +593,10 @@ AkPlayingID UAkAudioEvent::PostEvent(const AkGameObjectID GameObjectID, FCreateC
+@@ -619,6 +639,10 @@
  	}
  
  	AudioDevice->AddPlayingID(GetShortID(), PlayingID, AudioContext);
@@ -1000,20 +1021,21 @@ index dc1be86..79c9a5a 100644
  
  	UE_LOG(LogAkAudio, VeryVerbose, TEXT("Posted AkAudioEvent '%s' as PlayingId %" PRIu32 "."), *GetName(), PlayingID);
  	return PlayingID;
-@@ -731,7 +755,11 @@ void UAkAudioEvent::LoadEventData()
+@@ -788,6 +812,13 @@
  	{
  		return;
  	}
--
-+	// <FL> [n.tran] See declaration
++
++	// <FL> [n.tran] See declaration: AkAudioEvent was waiting for I/O to load before using the data, which blocked the next requests. So on XSX, the I/O requests are issued without watiing, then being loaded in the next frame.
 +#if defined(PLATFORM_XSX) && PLATFORM_XSX
 +	WaitForLoadEventAsync();
 +#endif
 +	// </FL>
- 	UnloadEventData(false);
- 	
- #if WITH_EDITORONLY_DATA
-@@ -758,16 +786,58 @@ void UAkAudioEvent::LoadEventData()
++
+ 	if (IsLoaded())
+ 	{
+ 		UnloadEventData(false);
+@@ -828,16 +859,58 @@
  #endif
  
  	UE_LOG(LogAkAudio, Verbose, TEXT("%s - LoadEventData"), *GetName());
@@ -1079,11 +1101,13 @@ index dc1be86..79c9a5a 100644
  
  #if WITH_EDITOR
  void UAkAudioEvent::LoadEventDataForContentBrowserPreview()
-@@ -780,6 +850,57 @@ void UAkAudioEvent::LoadEventDataForContentBrowserPreview()
+@@ -849,6 +922,59 @@
+ 
  	LoadEventData();
  }
- 
 +// <CSS> Added possibility to track audio media memory usage
++#pragma message("TODO CSS: Review this implementation of GetResourceSizeEx to see if this is still needed. With new wwise packaging uasset may already include media size.")
++#if 0
 +void UAkAudioEvent::GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize)
 +{
 +	Super::GetResourceSizeEx(CumulativeResourceSize);
@@ -1116,8 +1140,8 @@ index dc1be86..79c9a5a 100644
 +	// Add the size of the main event media
 +	for (const auto& Media : CookedData->Media)
 +	{
-+		int64 MediaSize = Media.PrefetchSize;
-+		if(!MediaSize && !Media.bStreaming)
++		int64 MediaSize = Media.PackagedFile.PrefetchSize;
++		if(!MediaSize && !Media.PackagedFile.bStreaming)
 +		{
 +			MediaSize = GetFileSize( FWwiseResourceLoader::Get()->GetUnrealPath(Media.MediaPathName.ToString()));
 +		}
@@ -1132,15 +1156,16 @@ index dc1be86..79c9a5a 100644
 +	}
 +	
 +}
++#endif
 +// </CSS> Added possibility to track audio media memory usage
-+
+ 
  void UAkAudioEvent::OnBeginPIE(const bool bIsSimulating)
  {
- 	FEditorDelegates::BeginPIE.Remove(OnBeginPIEDelegateHandle);
-@@ -804,6 +925,10 @@ void UAkAudioEvent::BeginDestroy()
- 
+@@ -876,6 +1002,11 @@
  void UAkAudioEvent::UnloadEventData(bool bAsync)
  {
+ 	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkAudioEvent::UnloadEventData"));
++
 +	// <FL> [n.tran] See declaration
 +#if defined(PLATFORM_XSX) && PLATFORM_XSX
 +	WaitForLoadEventAsync();
@@ -1148,34 +1173,21 @@ index dc1be86..79c9a5a 100644
  	auto PreviouslyLoadedEvent = LoadedEvent.exchange(nullptr);
  	if (PreviouslyLoadedEvent)
  	{
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp"
-index aa2f574..719e1db 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp
-@@ -74,7 +74,6 @@ void UAkAudioInputComponent::PostUnregisterGameObject()
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp	2026-03-30 10:53:17.384127300 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioInputComponent.cpp	2026-07-06 16:39:44.944010500 +0200
+@@ -76,7 +76,6 @@
  	}
  	CurrentlyPlayingIDs.Empty();
  }
 -
  void UAkAudioInputComponent::Stop()
  {
- 	Super::Stop();
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp"
-index a95573b..f3cf900 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp
-@@ -353,4 +353,4 @@ void FAkAudioModule::ParseGeneratedSoundBankData()
- }
- #endif
- 
--#undef LOCTEXT_NAMESPACE
-\ No newline at end of file
-+#undef LOCTEXT_NAMESPACE
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp"
-index ffe987a..0ced021 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp
-@@ -19,6 +19,12 @@ Copyright (c) 2025 Audiokinetic Inc.
+ 	SCOPED_AKAUDIO_EVENT(TEXT("UAkAudioInputComponent::Stop"));
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp	2026-03-30 10:53:17.393640400 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkComponent.cpp	2026-07-06 16:39:44.954009600 +0200
+@@ -19,6 +19,12 @@
  	AkComponent.cpp:
  =============================================================================*/
  
@@ -1188,7 +1200,7 @@ index ffe987a..0ced021 100644
  #include "AkComponent.h"
  
  #include "AkAudioDevice.h"
-@@ -46,6 +52,10 @@ Copyright (c) 2025 Audiokinetic Inc.
+@@ -44,6 +50,10 @@
  #include "Editor.h"
  #endif
  
@@ -1199,7 +1211,7 @@ index ffe987a..0ced021 100644
  /*------------------------------------------------------------------------------------
  Component Helpers
  ------------------------------------------------------------------------------------*/
-@@ -67,6 +77,14 @@ namespace UAkComponentUtils
+@@ -66,6 +76,14 @@
  			Up = FVector::CrossProduct(Front, Right);
  			return;
  		}
@@ -1214,7 +1226,7 @@ index ffe987a..0ced021 100644
  
  #if WITH_EDITORONLY_DATA
  		auto& Clients = GEditor->GetAllViewportClients();
-@@ -221,9 +239,9 @@ Super(ObjectInitializer)
+@@ -223,9 +241,9 @@
  
   	StopWhenOwnerDestroyed = true;
  	bUseReverbVolumes = true;
@@ -1226,17 +1238,17 @@ index ffe987a..0ced021 100644
  	PrimaryComponentTick.TickGroup = TG_DuringPhysics;
  	PrimaryComponentTick.bAllowTickOnDedicatedServer = false;
  	bTickInEditor = true;
-@@ -239,6 +257,9 @@ Super(ObjectInitializer)
+@@ -241,6 +259,9 @@
  	bAutoDestroy = false;
  	bUseDefaultListeners = true;
  
 +	//<CSS>
-+	PositionType = AkMultiPositionType::SingleSource;
++	PositionType = EAkMultiPositionType::SingleSource;
 +	//</CSS>
  	OcclusionCollisionChannel = EAkCollisionChannel::EAKCC_UseIntegrationSettingsDefault;
  
  	outerRadius = 0.0f;
-@@ -494,6 +515,10 @@ void UAkComponent::OnUnregister()
+@@ -464,6 +485,10 @@
  	{
  		Stop();
  	}
@@ -1247,15 +1259,15 @@ index ffe987a..0ced021 100644
  }
  
  void UAkComponent::OnComponentDestroyed( bool bDestroyingHierarchy )
-@@ -565,6 +590,7 @@ void UAkComponent::ApplyAkReverbVolumeList(float DeltaTime)
+@@ -542,6 +567,7 @@
  	}
  }
  
 +#if 0 //<CSS>
  void UAkComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
  {
- 	auto* SoundEngine = IWwiseSoundEngineAPI::Get();
-@@ -631,10 +657,14 @@ void UAkComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FAct
+ 	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkComponent::TickComponent"));
+@@ -609,11 +635,16 @@
  #endif
  	}
  }
@@ -1267,12 +1279,14 @@ index ffe987a..0ced021 100644
 +void UAkComponent::Activate( bool bReset /*= false */ )
 +//void UAkComponent::BeginPlay()
  {
+ 	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkComponent::BeginPlay"));
 -	Super::BeginPlay();
++
 +	Super::Activate( bReset );
  	UpdateGameObjectPosition();
  
  	// If spawned inside AkReverbVolume(s), we do not want the fade in effect to kick in.
-@@ -661,8 +691,10 @@ void UAkComponent::OnUpdateTransform(EUpdateTransformFlags UpdateTransformFlags,
+@@ -648,8 +679,10 @@
  }
  
  UAkComponent* UAkComponent::GetAkComponent(AkGameObjectID GameObjectID)
@@ -1285,12 +1299,13 @@ index ffe987a..0ced021 100644
  }
  
  void UAkComponent::GetAkGameObjectName(FString& Name) const
-@@ -807,6 +839,12 @@ bool UAkComponent::HasMoved()
- 
+@@ -802,6 +835,13 @@
  void UAkComponent::UpdateGameObjectPosition()
  {
+ 	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkComponent::UpdateGameObjectPosition"));
++
 +	//<CSS>
-+	if( PositionType != AkMultiPositionType::SingleSource )
++	if( PositionType != EAkMultiPositionType::SingleSource )
 +	{
 +		return;
 +	}
@@ -1298,7 +1313,7 @@ index ffe987a..0ced021 100644
  	FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
  	if (IsActive() && AkAudioDevice)
  	{
-@@ -817,7 +855,9 @@ void UAkComponent::UpdateGameObjectPosition()
+@@ -812,7 +852,9 @@
  			UAkComponentUtils::GetLocationFrontUp(this, Location, Front, Up);
  			FAkAudioDevice::FVectorsToAKWorldTransform(Location, Front, Up, soundpos);
  
@@ -1308,7 +1323,7 @@ index ffe987a..0ced021 100644
  
  			AkAudioDevice->SetPosition(this, soundpos);
  			CurrentSoundPosition = soundpos;
-@@ -1077,4 +1117,57 @@ void UAkComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChanged
+@@ -1075,4 +1117,57 @@
  	}
  }
  #endif
@@ -1344,7 +1359,7 @@ index ffe987a..0ced021 100644
 +	return false;
 +}
 +
-+void UAkComponent::SetMultiplePositions( const TArray<FVector>& Positions, AkMultiPositionType MultiPositionType )
++void UAkComponent::SetMultiplePositions( const TArray<FVector>& Positions, EAkMultiPositionType MultiPositionType )
 +{
 +	PositionType = MultiPositionType;
 +
@@ -1366,11 +1381,10 @@ index ffe987a..0ced021 100644
 +
  
 +//</CSS>
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp"
-index 0d347b7..cfd6b9d 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp
-@@ -27,6 +27,21 @@ Copyright (c) 2025 Audiokinetic Inc.
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp	2026-03-30 10:53:17.395640200 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.cpp	2026-07-06 16:39:44.955010300 +0200
+@@ -27,6 +27,21 @@
  #include "Wwise/WwiseRetriggerableAsyncTask.h"
  #include "UObject/UObjectThreadContext.h"
  
@@ -1392,17 +1406,12 @@ index 0d347b7..cfd6b9d 100644
  struct FAkComponentCallbackManager_Constants
  {
  	/// Optimization policy
-@@ -103,14 +118,15 @@ void FAkBlueprintDelegateEventCallbackPackage::HandleAction(AkCallbackType in_eT
- 				UE_LOG(LogAkAudio, Log, TEXT("FAkBlueprintDelegateEventCallbackPackage::HandleAction: Blueprint delegate is not bound, it will be ignored."));
- 				return EWwiseDeferredAsyncResult::Done;
- 			}
--
- 			UAkComponent* akComponent = (UAkComponent*)cbInfoCopy->gameObjID;
--
--			if (cbInfoCopy->gameObjID != DUMMY_GAMEOBJ && !IsValid(akComponent))
-+			// <CSS>: There are cases where game object is not a component (see class UAkObject or even the UAkComponent base class)
-+			// and callbacks are useful in those situations as well.
-+			if ( cbInfoCopy->gameObjID >= CUSTOM_GAMEOBJ_MAX && !akComponent->IsValidLowLevel() )
+@@ -125,11 +140,12 @@
+ 
+ 			UAkComponent* akComponent = (UAkComponent*)cbInfoCopy->eventInfo.gameObjID;
+ 
+-			if (cbInfoCopy->eventInfo.gameObjID != DUMMY_GAMEOBJ && !IsValid(akComponent))
++			if (cbInfoCopy->eventInfo.gameObjID >= CUSTOM_GAMEOBJ_MAX && !akComponent->IsValidLowLevel() )
  			{
  				UE_LOG(LogAkAudio, Log, TEXT("FAkBlueprintDelegateEventCallbackPackage::HandleAction: Could not get valid AkComponent, callback will be ignored."));
  				return EWwiseDeferredAsyncResult::Done;
@@ -1411,8 +1420,8 @@ index 0d347b7..cfd6b9d 100644
  
  			UAkCallbackInfo*  BlueprintAkCallbackInfo = AkCallbackTypeHelpers::GetBlueprintableCallbackInfo(BlueprintCallbackType, cbInfoCopy);
  			CachedBlueprintCallback.ExecuteIfBound(BlueprintCallbackType, BlueprintAkCallbackInfo);
-@@ -180,6 +196,23 @@ void FAkComponentCallbackManager::AkComponentCallback(AkCallbackType in_eType, A
- 			pPackage->HandleAction(in_eType, in_pCallbackInfo);
+@@ -221,6 +237,23 @@
+ #endif
  		}
  
 +		// <CSS> Notify components when event playback ends so they may clean up
@@ -1435,7 +1444,7 @@ index 0d347b7..cfd6b9d 100644
  		{
  			FScopeLock Lock(&Instance->CriticalSection);
  			auto pPackageSet = Instance->GameObjectToPackagesMap.Find(gameObjID);
-@@ -188,7 +221,7 @@ void FAkComponentCallbackManager::AkComponentCallback(AkCallbackType in_eType, A
+@@ -229,7 +262,7 @@
  				Instance->RemovePackageFromSet(pPackageSet, pPackage, gameObjID);
  			}
  		}
@@ -1444,37 +1453,36 @@ index 0d347b7..cfd6b9d 100644
  		if (deletePackage)
  		{
  			delete pPackage;
-@@ -225,6 +258,7 @@ IAkUserEventCallbackPackage* FAkComponentCallbackManager::CreateCallbackPackage(
- 	auto pPackage = new FAkFunctionPtrEventCallbackPackage(in_cbFunc, in_Cookie, in_Flags, KeyHash, HasExternalSources);
+@@ -266,6 +299,7 @@
+ 	auto pPackage = new FAkFunctionPtrEventCallbackPackage(in_cbFunc, in_Cookie, in_Flags, KeyHash, HasExternalSources, in_EventId);
  	if (pPackage)
  	{
 +		StoreGameObject(pPackage, in_gameObjID); // <CSS> See declaration
  		FScopeLock Lock(&CriticalSection);
  		GameObjectToPackagesMap.FindOrAdd(in_gameObjID).Add(pPackage);
  		UserCookieHashToPackageMap.Add(KeyHash, pPackage);
-@@ -239,6 +273,7 @@ IAkUserEventCallbackPackage* FAkComponentCallbackManager::CreateCallbackPackage(
- 	auto pPackage = new FAkBlueprintDelegateEventCallbackPackage(BlueprintCallback, in_Flags, KeyHash, HasExternalSources);
+@@ -280,6 +314,7 @@
+ 	auto pPackage = new FAkBlueprintDelegateEventCallbackPackage(BlueprintCallback, in_Flags, KeyHash, HasExternalSources, in_EventId);
  	if (pPackage)
  	{
 +		StoreGameObject(pPackage, in_gameObjID); // <CSS> See declaration
  		FScopeLock Lock(&CriticalSection);
  		GameObjectToPackagesMap.FindOrAdd(in_gameObjID).Add(pPackage);
  		UserCookieHashToPackageMap.Add(KeyHash, pPackage);
-@@ -252,6 +287,7 @@ IAkUserEventCallbackPackage* FAkComponentCallbackManager::CreateCallbackPackage(
- 	auto pPackage = new FAkLatentActionEventCallbackPackage(LatentAction, 0, HasExternalSources);
+@@ -293,6 +328,7 @@
+ 	auto pPackage = new FAkLatentActionEventCallbackPackage(LatentAction, 0, HasExternalSources, in_EventId);
  	if (pPackage)
  	{
 +		StoreGameObject(pPackage, in_gameObjID); // <CSS> See declaration
  		FScopeLock Lock(&CriticalSection);
  		GameObjectToPackagesMap.FindOrAdd(in_gameObjID).Add(pPackage);
  	}
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h" "b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h"
-index 55fb22f..21efd57 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h
-@@ -30,6 +30,11 @@ public:
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h	2026-03-30 10:53:17.396640700 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkComponentCallbackManager.h	2026-07-06 16:39:44.956009700 +0200
+@@ -32,6 +32,11 @@
  
- 	bool HasExternalSources = false;
+ 	uint32 EventId;
  
 +	// <CSS>: Keep a weak object pointer to the UAkComponent that created this callback package so we can perform auto cleanup
 +	// This pointer is set by FAkAudioDevice when the callback packages are created
@@ -1484,11 +1492,240 @@ index 55fb22f..21efd57 100644
  	IAkUserEventCallbackPackage()
  		: uUserFlags(0)
  	{}
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp"
-index b19bec6..74cc7e9 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp
-@@ -57,6 +57,25 @@ UAkGameplayStatics::UAkGameplayStatics(const class FObjectInitializer& ObjectIni
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkDebugging.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkDebugging.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkDebugging.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkDebugging.cpp	2026-06-29 11:27:13.737747400 +0200
+@@ -0,0 +1,226 @@
++// Copyright Coffee Stain Studios. All Rights Reserved.
++
++// <CSS> We added this file
++
++#include "AkDebugging.h"
++#include "AkComponent.h"
++#include "AkAudioEvent.h"
++#include "AkComponentCallbackManager.h"
++#include "GameFramework/Actor.h"
++#include "EngineUtils.h"
++
++// DisplayDebug
++#include "DisplayDebugHelpers.h"
++#include "Engine/Canvas.h"
++#include "DrawDebugHelpers.h"
++#include "EngineGlobals.h"
++#include "SceneView.h"
++
++
++void UAkDebugging::DisplayDebug( UWorld* world, bool showAttenuations, UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos )
++{
++	const FColor COLOR_INACTIVE = FColor( 255, 0, 0, 100 );
++	const FColor COLOR_ACTIVE = FColor::Green;
++	const FColor COLOR_NO_ATTENUATION = FColor::Cyan;
++
++	const FVector camPos = canvas->SceneView->ViewLocation;
++	const FVector camForward = canvas->SceneView->ViewRotation.Vector();
++
++	int32 countActive = 0;
++	int32 count = 0;
++	int32 countNoAttenuation = 0;
++	int32 countNoPosition = 0;
++	int32 countNoOwner = 0;
++
++	TArray< UAkComponent* > noPositionComps;
++
++	for( TActorIterator< AActor > it( world ); it; ++it )
++	{
++		TArray< UAkComponent* > akComps;
++		it->GetComponents( akComps );
++		for( auto akComp : akComps )
++		{
++			FColor color = COLOR_INACTIVE;
++			++count;
++
++			if( !IsValid( akComp->GetOwner() ) )
++			{
++				countNoOwner++;
++			}
++
++			const FVector wPos = akComp->GetComponentLocation();
++			if( wPos.IsNearlyZero() )
++			{
++				countNoPosition++;
++			}
++			else
++			{
++				const float DOT_BEHIND_PLAYER = 0.2f;
++				const float DOT_DETAILED_VIEW = 0.985f;
++				const float DIST_FADE_TEXT = 15000.0f;
++				const float DIST_SHOW_POSITION_SPHERE = 40000.0f;
++				const float DIST_TOO_FAR_AWAY = 50000.0f;
++				const float DIST_TOO_FAR_AWAY_WHEN_ACTIVE = DIST_TOO_FAR_AWAY * 2.0f;
++
++				const FVector camToSound = wPos - camPos;
++				FVector dir;
++				float dist;
++				camToSound.ToDirectionAndLength( dir, dist );
++				const float dot = dir | camForward;
++
++				const float textAlpha = FMath::Clamp( 1.1f - ( dist / DIST_FADE_TEXT ), 0.05f, 1.0f );
++				const uint8 textColorBrightening = 25;
++				const FColor textColor = FColor(
++					FMath::Min( color.R + textColorBrightening, 255 ),
++					FMath::Min( color.G + textColorBrightening, 255 ),
++					FMath::Min( color.B + textColorBrightening, 255 ),
++					uint8( 255.f * textAlpha ) );
++
++				FString text;
++				
++				DrawDebugString( world, wPos, text, nullptr, textColor, 0.01f );
++
++				if( dist < DIST_SHOW_POSITION_SPHERE )
++				{
++					DrawDebugSphere( world, wPos, 150.0f, 3, color );
++				}
++			}
++		}
++	}
++
++	FDisplayDebugManager& displayDebugManager = canvas->DisplayDebugManager;
++	displayDebugManager.SetFont( GEngine->GetSmallFont() );
++
++	displayDebugManager.SetLinearDrawColor( COLOR_INACTIVE );
++	displayDebugManager.DrawString( FString::Printf( TEXT( "Total count: %d" ), count ) );
++	displayDebugManager.SetLinearDrawColor( COLOR_ACTIVE );
++	displayDebugManager.DrawString( FString::Printf( TEXT( "Active components: %d" ), countActive ) );
++	displayDebugManager.SetLinearDrawColor( COLOR_NO_ATTENUATION );
++	displayDebugManager.DrawString( FString::Printf( TEXT( "Components with no attenuation: %d" ), countNoAttenuation ) );
++
++	displayDebugManager.SetLinearDrawColor( FColor::White );
++	displayDebugManager.DrawString( FString::Printf( TEXT( "Components with no position: %i" ), countNoPosition ) );
++	displayDebugManager.DrawString( FString::Printf( TEXT( "Components with no owner: %i" ), countNoOwner ) );
++}
++
++static FString BytesToText( AkUInt32 bytes )
++{
++	const int32 MEGABYTE = 1024 * 1024;
++	const int32 KILOBYTE = 1024;
++
++	if( bytes > MEGABYTE )
++	{
++		return FString::Printf( TEXT( "%i MB" ), bytes / MEGABYTE );
++	}
++	else if( bytes > KILOBYTE )
++	{
++		return FString::Printf( TEXT( "%i KB" ), bytes / KILOBYTE );
++	}
++
++	return FString::Printf( TEXT( "%i B" ), bytes );
++}
++
++struct FInternalActorTracker
++{
++	AActor* Actor;
++	int32 NumTotalEvents;
++	TMap< UAkAudioEvent*, int32 > EventCounts;
++	TArray< UAkComponent* > Components;
++};
++
++void UAkDebugging::TrackAkComponents( UWorld* world, bool byClass )
++{
++	TArray< UAkComponent* > compsWithNoOwner;
++	TMap< FName, FInternalActorTracker > actorToEventsMap;
++
++	// Gather all components.
++	for( TActorIterator< AActor > it( world ); it; ++it )
++	{
++		TArray< UAkComponent* > akComps;
++		it->GetComponents( akComps );
++		for( UAkComponent* comp : akComps )
++		{
++			if( AActor* owner = comp->GetOwner() )
++			{
++				FInternalActorTracker* actorInfo = nullptr;
++
++				if( byClass )
++				{
++					actorInfo = &actorToEventsMap.FindOrAdd( owner->GetClass()->GetFName() );
++				}
++				else
++				{
++					actorInfo = &actorToEventsMap.FindOrAdd( owner->GetFName() );
++				}
++				
++
++				actorInfo->Actor = owner;
++				actorInfo->Components.Add( comp );
++			}
++			else
++			{
++				compsWithNoOwner.Add( comp );
++			}
++		}
++	}
++
++	// Sort the results
++	TArray< FInternalActorTracker > actorInfoValues;
++	actorToEventsMap.GenerateValueArray( actorInfoValues );
++
++	actorInfoValues.Sort( []( const FInternalActorTracker& lhs, const FInternalActorTracker& rhs )
++	{
++		return lhs.NumTotalEvents > rhs.NumTotalEvents;
++	} );
++
++	// Print results
++	UE_LOG( LogAkAudio, Log, TEXT( "===== TrackAkComponents =======================================================" ) );
++	UE_LOG( LogAkAudio, Log, TEXT( "Grouped by %s" ), byClass ? TEXT( "class" ) : TEXT( "object instance" ) );
++	for( const FInternalActorTracker& actorInfo : actorInfoValues )
++	{
++		FString byWhom;
++		if( byClass )
++		{
++			byWhom = actorInfo.Actor->GetClass()->GetName();
++		}
++		else
++		{
++			byWhom = actorInfo.Actor->GetName();
++		}
++
++		UE_LOG( LogAkAudio, Log, TEXT( "[%s] Events: %i, Components: %i" ), *byWhom, actorInfo.NumTotalEvents, actorInfo.Components.Num() );
++
++		for( auto it : actorInfo.EventCounts )
++		{
++			UE_LOG( LogAkAudio, Log, TEXT( "  %i\t%s" ), it.Value, *it.Key->GetName() );
++		}
++	}
++	UE_LOG( LogAkAudio, Log, TEXT( "===============================================================================" ) );
++}
++
++void UAkDebugging::TrackAkComponentsWithNoPositionOrOwner( UWorld* world )
++{
++	TArray< UAkComponent* > comps;
++
++	UE_LOG( LogAkAudio, Log, TEXT( "===== TrackAkComponentsWithNoPositionOrOwner ==================================" ) );
++
++	for( TActorIterator< AActor > it( world ); it; ++it )
++	{
++		TArray< UAkComponent* > akComps;
++		it->GetComponents( akComps );
++		for( UAkComponent* comp : akComps )
++		{
++			auto owner = comp->GetOwner();
++			const FVector wPos = comp->GetComponentLocation();
++
++			if( !owner || wPos.IsNearlyZero() )
++			{
++				const FString ownerText = comp->GetOwner() ? comp->GetOwner()->GetName() : FString( TEXT( "<no owner>" ) );
++
++				UE_LOG( LogAkAudio, Log, TEXT( "[%s.%s] (%.0f, %.0f, %.0f)" ), *ownerText, *comp->GetName(), wPos.X, wPos.Y, wPos.Z );
++			}
++		}
++	}
++
++	UE_LOG( LogAkAudio, Log, TEXT( "===============================================================================" ) );
++}
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp	2026-03-30 10:53:17.412205800 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkGameplayStatics.cpp	2026-08-07 10:49:59.330947500 +0200
+@@ -57,6 +57,25 @@
  	// Property initialization
  }
  
@@ -1514,7 +1751,7 @@ index b19bec6..74cc7e9 100644
  class UAkComponent * UAkGameplayStatics::GetAkComponent(USceneComponent* AttachToComponent, bool& ComponentCreated, FName AttachPointName, FVector Location, EAttachLocation::
  	Type LocationType)
  {
-@@ -116,7 +135,8 @@ bool UAkGameplayStatics::IsGame(UObject* WorldContextObject)
+@@ -119,7 +138,8 @@
  
  	return WorldType == EWorldType::Game || WorldType == EWorldType::GamePreview || WorldType == EWorldType::PIE;
  }
@@ -1524,7 +1761,7 @@ index b19bec6..74cc7e9 100644
  int32 UAkGameplayStatics::PostEvent(UAkAudioEvent* AkEvent, AActor* Actor, int32 CallbackMask,
  	const FOnAkPostEventCallback& PostEventCallback, bool bStopWhenAttachedToDestroyed)
  {
-@@ -151,7 +171,85 @@ int32 UAkGameplayStatics::PostEventAtLocation(class UAkAudioEvent* AkEvent, FVec
+@@ -157,7 +177,85 @@
  	UE_LOG(LogAkAudio, Error, TEXT("Failed to post event at location: posting a NULL event is not allowed."));
  	return AK_INVALID_PLAYING_ID;
  }
@@ -1589,7 +1826,7 @@ index b19bec6..74cc7e9 100644
 +
 +	return PostAkEventAttached( AkEvent, Actor->GetRootComponent(), NAME_None, CallbackMask, PostEventCallback, ExternalSources, out_PlayingID, bStopWhenAttachedToDestroyed );
 +}
-+
+ 
 +UAkComponent* UAkGameplayStatics::PostAkEventAtLocation(UObject* WorldContextObject, class UAkAudioEvent* in_pAkEvent, FVector Location, FRotator Orientation)
 +{
 +	if ( in_pAkEvent == NULL )
@@ -1601,24 +1838,24 @@ index b19bec6..74cc7e9 100644
 +	AkDeviceAndWorld DeviceAndWorld(WorldContextObject);
 +	if (DeviceAndWorld.IsValid())
 +	{
-+		return DeviceAndWorld.AkAudioDevice->SpawnAkComponentAtLocation(in_pAkEvent, Location, Orientation, true, FString(), true, DeviceAndWorld.CurrentWorld);
++		return DeviceAndWorld.AkAudioDevice->SpawnAkComponentAtLocation(in_pAkEvent, Location, Orientation, true, true, DeviceAndWorld.CurrentWorld);
 +	}
- 
++
 +	return nullptr;
 +}
 +//</CSS>
- UAkComponent* UAkGameplayStatics::SpawnAkComponentAtLocation(UObject* WorldContextObject, class UAkAudioEvent* AkEvent, FVector Location, FRotator Orientation, bool AutoPost, const FString& EventName, bool AutoDestroy /* = true*/)
+ UAkComponent* UAkGameplayStatics::SpawnAkComponentAtLocation(UObject* WorldContextObject, class UAkAudioEvent* AkEvent, FVector Location, FRotator Orientation, bool AutoPost, bool AutoDestroy /* = true*/)
  {
- 	AkDeviceAndWorld DeviceAndWorld(WorldContextObject);
-@@ -162,6 +260,7 @@ UAkComponent* UAkGameplayStatics::SpawnAkComponentAtLocation(UObject* WorldConte
- 	return DeviceAndWorld.AkAudioDevice->SpawnAkComponentAtLocation(AkEvent, Location, Orientation, AutoPost, EventName, AutoDestroy, DeviceAndWorld.CurrentWorld);
+ 	SCOPED_AKAUDIO_EVENT(TEXT("UAkGameplayStatics::SpawnAkComponentAtLocation"));
+@@ -169,6 +267,7 @@
+ 	return DeviceAndWorld.AkAudioDevice->SpawnAkComponentAtLocation(AkEvent, Location, Orientation, AutoPost, AutoDestroy, DeviceAndWorld.CurrentWorld);
  }
  
 +#if 0
- void UAkGameplayStatics::SetRTPCValue(const UAkRtpc* RTPCValue, float Value, int32 InterpolationTimeMs, AActor* Actor, FName RTPC)
+ void UAkGameplayStatics::SetRTPCValue(const UAkRtpc* RTPCValue, float Value, int32 InterpolationTimeMs, AActor* Actor)
  {
- 	FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
-@@ -250,6 +349,62 @@ void UAkGameplayStatics::ResetRTPCValue(UAkRtpc const* RTPCValue, int32 Interpol
+ 	SCOPED_AKAUDIO_EVENT(TEXT("UAkGameplayStatics::SetRTPCValue"));
+@@ -245,6 +344,62 @@
  		}
  	}
  }
@@ -1679,9 +1916,9 @@ index b19bec6..74cc7e9 100644
 +}
 +// </CSS>
  
- void UAkGameplayStatics::SetState(const UAkStateValue* StateValue, FName stateGroup, FName state)
+ void UAkGameplayStatics::SetState(const UAkStateValue* StateValue)
  {
-@@ -326,7 +481,8 @@ void UAkGameplayStatics::SetMultiplePositions(UAkComponent* GameObjectAkComponen
+@@ -310,7 +465,8 @@
          pAudioDevice->SetMultiplePositions(GameObjectAkComponent, Positions, MultiPositionType);
      }
  }
@@ -1689,9 +1926,9 @@ index b19bec6..74cc7e9 100644
 +//<CSS>
 +#if 0
  void UAkGameplayStatics::SetMultipleChannelEmitterPositions(UAkComponent* GameObjectAkComponent,
- 	TArray<AkChannelConfiguration> ChannelMasks,
+ 	TArray<EAkChannelConfiguration> ChannelMasks,
  	TArray<FTransform> Positions,
-@@ -364,6 +520,35 @@ void UAkGameplayStatics::SetMultipleChannelMaskEmitterPositions(UAkComponent* Ga
+@@ -350,6 +506,35 @@
  		pAudioDevice->SetMultiplePositions(GameObjectAkComponent, ChannelMasks, Positions, MultiPositionType);
  	}
  }
@@ -1727,15 +1964,15 @@ index b19bec6..74cc7e9 100644
  
  void UAkGameplayStatics::UseReverbVolumes(bool inUseReverbVolumes, class AActor* Actor )
  {
-@@ -778,7 +963,6 @@ void UAkGameplayStatics::SetOcclusionRefreshInterval(float RefreshInterval, clas
+@@ -825,7 +1010,6 @@
  	}
  }
  	
 -
  void UAkGameplayStatics::StopActor(class AActor* Actor)
  {
- 	if ( Actor == NULL )
-@@ -808,6 +992,17 @@ void UAkGameplayStatics::StopAll()
+ 	SCOPED_AKAUDIO_EVENT(TEXT("UAkGameplayStatics::StopActor"));
+@@ -857,6 +1041,17 @@
  	AudioDevice->StopAllSounds();
  }
  
@@ -1752,12 +1989,11 @@ index b19bec6..74cc7e9 100644
 +
  void UAkGameplayStatics::CancelEventCallback(const FOnAkPostEventCallback& PostEventCallback)
  {
- 	FAkAudioDevice * AudioDevice = FAkAudioDevice::Get();
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp"
-index 1732c31..7e91af3 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp
-@@ -130,7 +130,6 @@ bool UAkGroupValue::SplitAssetName(FString& OutGroupName, FString& OutValueName)
+ 	SCOPED_AKAUDIO_EVENT(TEXT("UAkGameplayStatics::CancelEventCallback"));
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp	2026-03-30 10:53:17.418205500 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkGroupValue.cpp	2026-07-06 16:39:44.974516400 +0200
+@@ -131,7 +131,6 @@
  }
  
  #endif
@@ -1765,12 +2001,10 @@ index 1732c31..7e91af3 100644
  #if WITH_EDITOR
  #if UE_5_4_OR_LATER
  	void UAkGroupValue::GetAssetRegistryTags(FAssetRegistryTagsContext Context) const
-diff --git "b/Plugins/Wwise/Source/AkAudio/Private/AkInstancedGeometryComponent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkInstancedGeometryComponent.cpp"
-new file mode 100644
-index 0000000..960250a
---- /dev/null
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkInstancedGeometryComponent.cpp
-@@ -0,0 +1,960 @@
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkInstancedGeometryComponent.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkInstancedGeometryComponent.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkInstancedGeometryComponent.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkInstancedGeometryComponent.cpp	2026-07-06 16:39:44.977516400 +0200
+@@ -0,0 +1,929 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +
 +#include "AkInstancedGeometryComponent.h"
@@ -1869,24 +2103,21 @@ index 0000000..960250a
 +#endif
 +		GeometryData.Surfaces[PosIndex].Name = OwnerName + GetName() + FString::FromInt(PosIndex);
 +
-+		UPhysicalMaterial* physMat = GeometryData.ToOverrideAcousticTexture[PosIndex];
-+		if (physMat)
++		// update the acoustic textures of the geometry according to the stored physical materials if the saved physical material is not null
 +		{
-+			UAkAcousticTexture* acousticTexture = nullptr;
-+			if (GetDefault<UAkSettings>()->GetAssociatedAcousticTexture(physMat, acousticTexture))
++			const TWeakObjectPtr<UPhysicalMaterial> physMat = GeometryData.ToOverrideAcousticTexture[PosIndex];
++			if (physMat.IsValid() && physMat.Get() != nullptr)
 +			{
-+				if (acousticTexture)
-+					GeometryData.Surfaces[PosIndex].Texture =  acousticTexture->GetShortID();
++				GeometryData.Surfaces[PosIndex].Texture = GetDefault<UAkSettings>()->GetAssociatedAcousticTextureID(physMat);
 +			}
 +		}
 +
-+		physMat = GeometryData.ToOverrideOcclusion[PosIndex];
-+		if (physMat)
++		// update the transmission loss values of the geometry according to the stored physical materials if the saved physical material is not null
 +		{
-+			float occlusionValue = 1.f;
-+			if (GetDefault<UAkSettings>()->GetAssociatedOcclusionValue(physMat, occlusionValue))
++			const TWeakObjectPtr<UPhysicalMaterial> physMat = GeometryData.ToOverrideOcclusion[PosIndex];
++			if (physMat.IsValid() && physMat.Get() != nullptr)
 +			{
-+				GeometryData.Surfaces[PosIndex].Occlusion = occlusionValue;
++				GeometryData.Surfaces[PosIndex].Occlusion = GetDefault<UAkSettings>()->GetAssociatedOcclusionValue(physMat);
 +			}
 +		}
 +	}
@@ -1916,15 +2147,6 @@ index 0000000..960250a
 +	}
 +
 +	DampingEstimationNeedsUpdate = true;
-+
-+	if (AssociatedRoom != nullptr)
-+	{
-+		UAkRoomComponent* room = Cast<UAkRoomComponent>(AssociatedRoom->GetComponentByClass(UAkRoomComponent::StaticClass()));
-+		if (room != nullptr)
-+		{
-+			UE_LOG(LogAkAudio, Warning, TEXT("AkGeometryComponent %s is associated to Room %s. The AssociatedRoom property is deprecated, it will be removed in a future version. We recommend not using it and leaving it set to None."), *GetOwner()->GetName(), *room->GetRoomName());
-+		}
-+	}
 +#endif
 +}
 +
@@ -1944,13 +2166,9 @@ index 0000000..960250a
 +	SurfaceAreas.Empty();
 +
 +	UStaticMesh* mesh = StaticMesh.Get();
-+#if UE_4_27_OR_LATER
++
 +	if (mesh == nullptr || !mesh->GetRenderData())
 +		return;
-+#else
-+	if (mesh == nullptr || !mesh->RenderData)
-+		return;
-+#endif
 +
 +	const FStaticMeshLODResources& RenderMesh = mesh->GetLODForExport(LOD);
 +	FIndexArrayView RawIndices = RenderMesh.IndexBuffer.GetArrayView();
@@ -2091,13 +2309,8 @@ index 0000000..960250a
 +	if (LOD > mesh->GetNumLODs() - 1)
 +		LOD = mesh->GetNumLODs() - 1;
 +
-+#if UE_4_27_OR_LATER
 +	if (!mesh->GetRenderData())
 +		return;
-+#else
-+	if (!mesh->RenderData)
-+		return;
-+#endif
 +
 +	const FStaticMeshLODResources& RenderMesh = mesh->GetLODForExport(LOD);
 +	if (RenderMesh.IndexBuffer.GetAllowCPUAccess() == false)
@@ -2291,7 +2504,7 @@ index 0000000..960250a
 +	int32 numBoxes = bodySetup->AggGeom.BoxElems.Num();
 +	for (int32 i = 0; i < numBoxes; i++)
 +	{
-+		FKBoxElem box = bodySetup->AggGeom.BoxElems[i];
++		const FKBoxElem& box = bodySetup->AggGeom.BoxElems[i];
 +
 +		FVector extent;
 +		extent.X = box.X / 2;
@@ -2315,14 +2528,14 @@ index 0000000..960250a
 +	int32 numSpheres = bodySetup->AggGeom.SphereElems.Num();
 +	for (int32 i = 0; i < numSpheres; i++)
 +	{
-+		FKSphereElem sphere = bodySetup->AggGeom.SphereElems[i];
++		const FKSphereElem& sphere = bodySetup->AggGeom.SphereElems[i];
 +		GeometryData.AddSphere(surfIdx, sphere.Center, sphere.Radius, kNumSides, kNumRings);
 +	}
 +
 +	int32 numCapsules = bodySetup->AggGeom.SphylElems.Num();
 +	for (int32 i = 0; i < numCapsules; i++)
 +	{
-+		FKSphylElem capsule = bodySetup->AggGeom.SphylElems[i];
++		const FKSphylElem& capsule = bodySetup->AggGeom.SphylElems[i];
 +
 +		FVector X = capsule.GetTransform().GetUnitAxis(EAxis::X);
 +		FVector Y = capsule.GetTransform().GetUnitAxis(EAxis::Y);
@@ -2485,17 +2698,7 @@ index 0000000..960250a
 +
 +void UAkInstancedGeometryComponent::AddGeometryInstance( const FVector& Position, const FRotator& Orientation, const FVector& Scale, void* InstanceId)
 +{
-+	AkRoomID roomID = AkRoomID();
-+
-+	if (AssociatedRoom)
-+	{
-+		UAkRoomComponent* room = Cast<UAkRoomComponent>(AssociatedRoom->GetComponentByClass(UAkRoomComponent::StaticClass()));
-+
-+		if (room != nullptr)
-+			roomID = room->GetRoomID();
-+	}
-+
-+	SendGeometryInstanceToWwise(Orientation, Position, Scale, roomID, !bWasAddedByRoom, AkGeometryInstanceID(InstanceId));
++	SendGeometryInstanceToWwise(Orientation, Position, Scale, !bWasAddedByRoom, AkGeometryInstanceID(InstanceId), bSolid, bBypassPortalSubtraction);
 +}
 +
 +void UAkInstancedGeometryComponent::RemoveGeometryInstance(void* InstanceId)
@@ -2731,11 +2934,9 @@ index 0000000..960250a
 +	}
 +}
 +#endif
-diff --git "b/Plugins/Wwise/Source/AkAudio/Private/AkListenerComponent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkListenerComponent.cpp"
-new file mode 100644
-index 0000000..6c5ce13
---- /dev/null
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkListenerComponent.cpp
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkListenerComponent.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkListenerComponent.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkListenerComponent.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkListenerComponent.cpp	2026-06-29 11:27:13.763840600 +0200
 @@ -0,0 +1,26 @@
 +#include "AkListenerComponent.h"
 +#include "AkAudioDevice.h"
@@ -2764,33 +2965,30 @@ index 0000000..6c5ce13
 +	}
 +}
 \ No newline at end of file
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp"
-index 29050ba..a50bc81 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp
-@@ -485,4 +485,4 @@ void FAkReverbDescriptor::UpdateAllRTPCs(const UAkRoomComponent* room) const
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp	2026-03-30 10:53:17.422720100 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkReverbDescriptor.cpp	2026-07-06 16:39:44.981516200 +0200
+@@ -467,4 +467,4 @@
  			}
  		}
  	}
 -}
 \ No newline at end of file
 +}
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp"
-index 65abdcf..8d42a60 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp
-@@ -181,4 +181,4 @@ void UAkSubmixInputComponent::GetChannelConfig(AkAudioFormat& AudioFormat)
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp	2026-03-30 10:53:17.439740400 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkSubmixInputComponent.cpp	2026-07-06 16:39:44.998514900 +0200
+@@ -184,4 +184,4 @@
  	default:
  		UE_LOG(LogAkAudio, Error, TEXT("AkSubmixInputComponent::GetChannelConfig (%s): Unknown number of channels (%" PRIu32 ")"), *GetOwner()->GetName(), SubmixListener->NumChannels);
  	}
 -}
 \ No newline at end of file
 +}
-diff --git "a/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp"
-index e3421d4..da3b52c 100644
---- a/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp
-@@ -147,7 +147,8 @@ uint32 FAkWaapiClientConnectionHandler::Run()
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp	2026-03-30 10:53:17.447753800 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkWaapiClient.cpp	2026-07-06 16:39:45.007149300 +0200
+@@ -182,7 +182,8 @@
  				{
  					if (LogOutputCount.GetValue() < 7)
  					{
@@ -2800,11 +2998,9 @@ index e3421d4..da3b52c 100644
  						LogOutputCount.Increment();
  					}
  				}
-diff --git "b/Plugins/Wwise/Source/AkAudio/Private/AnimNotify_AkEvent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/AnimNotify_AkEvent.cpp"
-new file mode 100644
-index 0000000..9365532
---- /dev/null
-+++ b/Plugins/Wwise/Source/AkAudio/Private/AnimNotify_AkEvent.cpp
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/AnimNotify_AkEvent.cpp b/Plugins/Wwise/Source/AkAudio/Private/AnimNotify_AkEvent.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/AnimNotify_AkEvent.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/Plugins/Wwise/Source/AkAudio/Private/AnimNotify_AkEvent.cpp	2026-06-29 11:27:13.810366900 +0200
 @@ -0,0 +1,58 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +//<CSS> We added this file, wwise provides a blueprint implementation that we replaced with a C++ one way back.
@@ -2864,12 +3060,10 @@ index 0000000..9365532
 +
 +	return;
 +}
-diff --git "b/Plugins/Wwise/Source/AkAudio/Private/Classes/AkAcousticTextureMultiSetComponent.cpp" "b/Plugins/Wwise/Source/AkAudio/Private/Classes/AkAcousticTextureMultiSetComponent.cpp"
-new file mode 100644
-index 0000000..4b2facc
---- /dev/null
-+++ b/Plugins/Wwise/Source/AkAudio/Private/Classes/AkAcousticTextureMultiSetComponent.cpp
-@@ -0,0 +1,206 @@
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/Classes/AkAcousticTextureMultiSetComponent.cpp b/Plugins/Wwise/Source/AkAudio/Private/Classes/AkAcousticTextureMultiSetComponent.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/Classes/AkAcousticTextureMultiSetComponent.cpp	1970-01-01 01:00:00.000000000 +0100
++++ b/Plugins/Wwise/Source/AkAudio/Private/Classes/AkAcousticTextureMultiSetComponent.cpp	2026-07-06 16:39:45.014149800 +0200
+@@ -0,0 +1,216 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +
 +#include "Classes/AkAcousticTextureMultiSetComponent.h"
@@ -2889,6 +3083,7 @@ index 0000000..4b2facc
 +
 +void UAkAcousticTextureMultiSetComponent::OnRegister()
 +{
++	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkAcousticTextureMultiSetComponent::OnRegister"));
 +	Super::OnRegister();
 +#if WITH_EDITOR
 +	RegisterAllTextureParamCallbacks();
@@ -2900,6 +3095,7 @@ index 0000000..4b2facc
 +
 +void UAkAcousticTextureMultiSetComponent::OnUnregister()
 +{
++	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkAcousticTextureMultiSetComponent::OnUnregister"));
 +#if WITH_EDITOR
 +	UnregisterTextureParamChangeCallbacks();
 +	UAkSettings* AkSettings = GetMutableDefault<UAkSettings>();
@@ -2920,6 +3116,7 @@ index 0000000..4b2facc
 +
 +void UAkAcousticTextureMultiSetComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 +{
++	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkAcousticTextureMultiSetComponent::TickComponent"));
 +	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 +
 +	if (SecondsSinceDampingUpdate < PARAM_ESTIMATION_UPDATE_PERIOD)
@@ -3024,6 +3221,7 @@ index 0000000..4b2facc
 +
 +void UAkAcousticTextureMultiSetComponent::SendGeometryToWwise(const AkGeometryParams& params)
 +{
++	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkAcousticTextureMultiSetComponent::SendGeometryToWwise"));
 +	if (ShouldSendGeometry())
 +	{
 +		FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
@@ -3032,8 +3230,9 @@ index 0000000..4b2facc
 +	}
 +}
 +
-+void UAkAcousticTextureMultiSetComponent::SendGeometryInstanceToWwise(const FRotator& rotation, const FVector& location, const FVector& scale, const AkRoomID roomID, bool useForReflectionAndDiffraction, AkGeometryInstanceID instanceID)
++void UAkAcousticTextureMultiSetComponent::SendGeometryInstanceToWwise(const FRotator& rotation, const FVector& location, const FVector& scale, bool useForReflectionAndDiffraction, AkGeometryInstanceID instanceID, bool solid, bool bypassPortalSubtraction)
 +{
++	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkAcousticTextureMultiSetComponent::SendGeometryInstanceToWwise"));
 +	if (ShouldSendGeometry() && GeometryHasBeenSent)
 +	{
 +		AkVector front, up;
@@ -3046,7 +3245,10 @@ index 0000000..4b2facc
 +		params.PositionAndOrientation.Set(position, front, up);
 +		FAkAudioDevice::FVectorToAKVector(scale, params.Scale);
 +		params.GeometrySetID = GetGeometrySetID();
-+		params.RoomID = roomID;
++#if WWISE_2024_1_OR_LATER
++		params.BypassPortalSubtraction = bypassPortalSubtraction;
++		params.IsSolid = solid;
++#endif
 +#if WWISE_2023_1_OR_LATER
 +		params.UseForReflectionAndDiffraction = useForReflectionAndDiffraction;
 +#endif
@@ -3061,6 +3263,7 @@ index 0000000..4b2facc
 +
 +void UAkAcousticTextureMultiSetComponent::RemoveGeometryFromWwise()
 +{
++	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkAcousticTextureMultiSetComponent::RemoveGeometryFromWwise"));
 +	if (GeometryHasBeenSent)
 +	{
 +		FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
@@ -3073,14 +3276,28 @@ index 0000000..4b2facc
 +
 +void UAkAcousticTextureMultiSetComponent::RemoveGeometryInstanceFromWwise(AkGeometryInstanceID instanceID)
 +{
++	SCOPED_AKAUDIO_EVENT_3(TEXT("UAkAcousticTextureMultiSetComponent::RemoveGeometryInstanceFromWwise"));
 +	FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
 +	AkAudioDevice->RemoveGeometryInstance(instanceID);
 +}
-diff --git "a/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h" "b/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h"
-index 54f73a9..2977d6b 100644
---- a/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h
-+++ b/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h
-@@ -19,6 +19,19 @@ Copyright (c) 2025 Audiokinetic Inc.
+diff -urN a/Plugins/Wwise/Source/AkAudio/Private/UAkEventAnimNotify.cpp b/Plugins/Wwise/Source/AkAudio/Private/UAkEventAnimNotify.cpp
+--- a/Plugins/Wwise/Source/AkAudio/Private/UAkEventAnimNotify.cpp	2026-03-30 10:53:17.489336500 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Private/UAkEventAnimNotify.cpp	2026-07-06 16:39:45.054163100 +0200
+@@ -54,6 +54,9 @@
+ 	}
+ 	else
+ 	{
+-		UAkGameplayStatics::PostEventAtLocation(Event, MeshComp->GetComponentLocation(), FRotator::ZeroRotator, MeshComp->GetWorld());
++		//<CSS>: Use our PostAkEventAtLocation instead of PostEventAtLocation
++		//UAkGameplayStatics::PostEventAtLocation(Event, MeshComp->GetComponentLocation(), FRotator::ZeroRotator, );
++		UAkGameplayStatics::PostAkEventAtLocation(MeshComp->GetWorld(), Event, MeshComp->GetComponentLocation(), FRotator::ZeroRotator);
++		//</CSS>
+ 	}
+ }
+diff -urN a/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h b/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h
+--- a/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h	2026-03-30 10:53:17.497414100 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Public/AkAudioDevice.h	2026-07-06 16:39:45.060172300 +0200
+@@ -19,6 +19,19 @@
  	AkAudioDevice.h: Audiokinetic audio interface object.
  =============================================================================*/
  
@@ -3100,7 +3317,7 @@ index 54f73a9..2977d6b 100644
  #pragma once
  
  /*------------------------------------------------------------------------------------
-@@ -76,6 +89,9 @@ class AkUnrealErrorTranslator;
+@@ -79,6 +92,9 @@
  
  #define DUMMY_GAMEOBJ ((AkGameObjectID)0x2)
  #define SOUNDATLOCATION_GAMEOBJ ((AkGameObjectID)0x3)
@@ -3110,9 +3327,9 @@ index 54f73a9..2977d6b 100644
  
  
  struct AKAUDIO_API FAkAudioDeviceDelegates
-@@ -360,6 +376,27 @@ public:
+@@ -366,6 +382,27 @@
  	 */
- 	void SetCurrentAudioCultureAsync(const FString& AudioCulture, const FOnSetCurrentAudioCultureCompleted& CompletedCallback);
+ 	void SetCurrentAudioCultureAsync(const FString& AudioCulture, const FOnSetCurrentAudioCultureCompleted& CompletedCallback, EAudioCultureType InAudioCultureType = EAudioCultureType::Unreal);
  
 +// <CSS>
 +	/**
@@ -3138,7 +3355,7 @@ index 54f73a9..2977d6b 100644
  	/** Spawn an AkComponent at a location. Allows, for example, to set a switch on a fire and forget sound.
  	 * @param AkEvent - Wwise Event to post.
  	 * @param Location - Location from which to post the Wwise Event.
-@@ -402,6 +439,17 @@ public:
+@@ -408,6 +445,17 @@
  	    AkPlayingID PlayingID = AK_INVALID_PLAYING_ID
      );
  
@@ -3156,8 +3373,8 @@ index 54f73a9..2977d6b 100644
  	/**
  	 * Post a trigger to ak soundengine
  	 *
-@@ -753,6 +801,18 @@ public:
-         AK::SoundEngine::MultiPositionType in_eMultiPositionType = AK::SoundEngine::MultiPositionType_MultiDirections
+@@ -759,6 +807,18 @@
+         AkMultiPositionType in_eMultiPositionType = AkMultiPositionType_MultiDirections
          );
  
 +	//<CSS>
@@ -3167,7 +3384,7 @@ index 54f73a9..2977d6b 100644
 +    AKRESULT SetMultiplePositions(
 +        AkGameObjectID in_GameObjectID,
 +        TArray< FVector > in_aPositions,
-+        AkMultiPositionType in_eMultiPositionType = AkMultiPositionType::MultiDirections
++        EAkMultiPositionType in_eMultiPositionType = EAkMultiPositionType::MultiDirections
 +    );
 +	//</CSS>
 +
@@ -3175,7 +3392,7 @@ index 54f73a9..2977d6b 100644
  	/**
  	 * Set auxiliary sends
  	 *
-@@ -1503,6 +1563,10 @@ public:
+@@ -1502,6 +1562,10 @@
  	static void LoadAudioObjectsAfterInitialization(TWeakObjectPtr<UAkAudioType>&& InAudioType);
  	void LoadDelayedObjects();
  
@@ -3183,10 +3400,10 @@ index 54f73a9..2977d6b 100644
 +	void RegisterBusMeteringDelegate(const FString &BusName, EAkMeteringFlags MeteringFlags, UObject* LifetimeObject, IAkBusMeteringInterface* ListenerInterface);
 +	// </CSS>
 +
- private:
- 	bool EnsureInitialized();
+ 	void CleanupUnfinishedResourceUnload();
+ 	void AddUnfinishedResourceUnload(FWwiseResourceUnloadFuture&& ResourceUnload);
  
-@@ -1615,6 +1679,10 @@ private:
+@@ -1622,6 +1686,10 @@
  #if !WITH_EDITOR
  	TMap<FCulturePtr, FString> CachedUnrealToWwiseCulture;
  #endif
@@ -3197,17 +3414,16 @@ index 54f73a9..2977d6b 100644
  	static FCriticalSection EventToPlayingIDMapCriticalSection;
  	static TMap<uint32, TArray<uint32>> EventToPlayingIDMap;
  	static TMap<uint32, EAkAudioContext> PlayingIDToAudioContextMap;
-diff --git "a/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h" "b/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h"
-index 565c99e..e6df157 100644
---- a/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h
-+++ b/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h
-@@ -31,20 +31,17 @@ struct AKAUDIO_API FAkCustomVersion
+diff -urN a/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h b/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h
+--- a/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h	2026-03-30 10:53:17.499414500 +0200
++++ b/Plugins/Wwise/Source/AkAudio/Public/AkCustomVersion.h	2026-07-06 16:39:45.063175800 +0200
+@@ -31,20 +31,17 @@
  		// Before any version changes were made in the plugin
  		BeforeCustomVersionWasAdded = 0,
  
 +		//<CSS> We added AddedAttenuationCheckToEvent and increased the number on the subsequent ones, will need manual attention if wwise makes changes here.
  		AddedSpatialAudio = 1,
--		NewRTPCTrackDataContainer = 2,
+-		NewGameParameterTrackDataContainer = 2,
 -		
 -		NewAssetManagement = 3,
 -
@@ -3221,7 +3437,7 @@ index 565c99e..e6df157 100644
 -
 -		SSOTAkAssetRefactor =8,
 +		AddedAttenuationCheckToEvent = 2, //<CSS>
-+		NewRTPCTrackDataContainer = 3,
++		NewGameParameterTrackDataContainer = 3,
 +		NewAssetManagement = 4,
 +		APIChange = 5,
 +		SpatialAudioExtentAPIChange = 6,
@@ -3232,11 +3448,9 @@ index 565c99e..e6df157 100644
  
  		ReverbZoneComponentisation = 9,
  
-diff --git "b/Plugins/Wwise/Source/AkAudio/Public/AnimNotify_AkEvent.h" "b/Plugins/Wwise/Source/AkAudio/Public/AnimNotify_AkEvent.h"
-new file mode 100644
-index 0000000..c4992d2
---- /dev/null
-+++ b/Plugins/Wwise/Source/AkAudio/Public/AnimNotify_AkEvent.h
+diff -urN a/Plugins/Wwise/Source/AkAudio/Public/AnimNotify_AkEvent.h b/Plugins/Wwise/Source/AkAudio/Public/AnimNotify_AkEvent.h
+--- a/Plugins/Wwise/Source/AkAudio/Public/AnimNotify_AkEvent.h	1970-01-01 01:00:00.000000000 +0100
++++ b/Plugins/Wwise/Source/AkAudio/Public/AnimNotify_AkEvent.h	2026-06-29 11:27:13.879822700 +0200
 @@ -0,0 +1,32 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +//<CSS> We added this file, wwise provides a blueprint implementation that we replaced with a C++ one way back.
@@ -3270,11 +3484,9 @@ index 0000000..c4992d2
 +	UPROPERTY( EditAnywhere, Category = "Audio" )
 +	bool bFollow;
 +};
-diff --git "b/Plugins/Wwise/Source/AkAudio/Public/Classes/AkAcousticTextureMultiSetComponent.h" "b/Plugins/Wwise/Source/AkAudio/Public/Classes/AkAcousticTextureMultiSetComponent.h"
-new file mode 100644
-index 0000000..a87e381
---- /dev/null
-+++ b/Plugins/Wwise/Source/AkAudio/Public/Classes/AkAcousticTextureMultiSetComponent.h
+diff -urN a/Plugins/Wwise/Source/AkAudio/Public/Classes/AkAcousticTextureMultiSetComponent.h b/Plugins/Wwise/Source/AkAudio/Public/Classes/AkAcousticTextureMultiSetComponent.h
+--- a/Plugins/Wwise/Source/AkAudio/Public/Classes/AkAcousticTextureMultiSetComponent.h	1970-01-01 01:00:00.000000000 +0100
++++ b/Plugins/Wwise/Source/AkAudio/Public/Classes/AkAcousticTextureMultiSetComponent.h	2026-07-06 16:39:45.066684700 +0200
 @@ -0,0 +1,78 @@
 +// Copyright Coffee Stain Studios. All Rights Reserved.
 +
@@ -3334,7 +3546,7 @@ index 0000000..a87e381
 +	void SendGeometryToWwise(const AkGeometryParams& params);
 +	/* Add or update an instance of the geometry. A geometry instance is a unique instance of a geometry set with a specified transform (position, rotation and scale) and room association. 
 +	* It is necessary to create at least one geometry instance for each geometry set that is to be used for diffraction and reflection simulation. */
-+	void SendGeometryInstanceToWwise(const FRotator& rotation, const FVector& location, const FVector& scale, const AkRoomID roomID, bool useForReflectionAndDiffraction, AkGeometryInstanceID instanceID);
++	void SendGeometryInstanceToWwise(const FRotator& rotation, const FVector& location, const FVector& scale, bool useForReflectionAndDiffraction, AkGeometryInstanceID instanceID, bool solid, bool bypassPortalSubtraction);
 +	/* Remove a geometry and the corresponding instance from Wwise. */
 +	void RemoveGeometryFromWwise();
 +	/* Remove a geometry instance from Wwise. */
@@ -3354,11 +3566,10 @@ index 0000000..a87e381
 +	bool GeometryHasBeenSent = false;
 +	bool GeometryInstanceHasBeenSent = false;
 +};
-diff --git "a/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp" "b/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp"
-index cb04e10..7e3cd62 100644
---- a/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp
-+++ b/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp
-@@ -186,7 +186,8 @@ private:
+diff -urN a/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp b/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp
+--- a/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp	2026-03-30 10:53:17.572941700 +0200
++++ b/Plugins/Wwise/Source/AudiokineticTools/Private/Sequencer/MovieSceneAkAudioEventTrackEditor.cpp	2026-07-06 16:39:45.147234600 +0200
+@@ -183,7 +183,8 @@
  class FSlateShaderResource* AkAudioWaveformViewport::GetViewportRenderTargetTexture() const { return Texture; }
  
  /** Lookup a pixel in the given data buffer based on the specified X and Y */
@@ -3368,24 +3579,22 @@ index cb04e10..7e3cd62 100644
  {
  	int32 Y = Height - YPos - 1;
  	if (NumChannels == 2)
-diff --git "a/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp" "b/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp"
-index 6b9ef16..02d4d89 100644
---- a/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp
-+++ b/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp
-@@ -48,4 +48,4 @@ void FWwiseConcurrencyModule::ShutdownModule()
- 		Closing->CloseAndDelete();
+diff -urN a/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp b/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp
+--- a/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp	2026-03-30 10:53:17.681303100 +0200
++++ b/Plugins/Wwise/Source/WwiseConcurrency/Private/Wwise/WwiseConcurrencyModuleImpl.cpp	2026-07-06 16:39:45.261178100 +0200
+@@ -54,4 +54,4 @@
+ 		FWwiseExecutionQueue::DefaultWwiseThreadPool = nullptr;
  	}
  	IWwiseConcurrencyModule::ShutdownModule();
 -}
 +}
 \ No newline at end of file
-diff --git "a/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileCache.cpp" "b/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileCache.cpp"
-index 569cb16..835d568 100644
---- a/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileCache.cpp
-+++ b/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileCache.cpp
-@@ -198,19 +198,26 @@ void FWwiseFileCacheHandle::CallDone(bool bResult, FWwiseFileOperationDone&& OnD
+diff -urN a/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileSystemCacheHandle.cpp b/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileSystemCacheHandle.cpp
+--- a/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileSystemCacheHandle.cpp	2026-03-30 10:53:17.729057800 +0200
++++ b/Plugins/Wwise/Source/WwiseFileHandler/Private/Wwise/WwiseFileSystemCacheHandle.cpp	2026-07-06 16:39:45.314317700 +0200
+@@ -158,19 +158,25 @@
  
- void FWwiseFileCacheHandle::DeleteRequest(IAsyncReadRequest* Request)
+ void FWwiseFileSystemCacheHandle::DeleteRequest(IAsyncReadRequest* Request)
  {
 -	LaunchWwiseTask(TEXT("FWwiseFileSystemCacheHandle::OnDeleteRequest"), EWwiseTaskPriority::GameThread,
 +	// <CSS> [SAT-641] Use BackgroundLow priority instead of GameThread to safely wait for completion
@@ -3398,12 +3607,11 @@ index 569cb16..835d568 100644
 +	// </CSS>
  }
  
- void FWwiseFileCacheHandle::OnDeleteRequest(IAsyncReadRequest* Request)
+ void FWwiseFileSystemCacheHandle::OnDeleteRequest(IAsyncReadRequest* Request)
  {
 -	if (Request && !Request->PollCompletion())
-+	// <CSS> [SAT-641] Wait for full completion instead of polling to avoid race condition.
-+	// Previous PollCompletion was checking only when we began the cleanup and there might be other blocks which are still processed
-+	// This is now safe because we run on a background thread, not the game thread. We are 
++	// <CSS> [SAT-641] Wait for full completion instead of polling to avoid race condition
++	// This is now safe because we run on a background thread, not the game thread
 +	if (Request)
  	{
 -		return DeleteRequest(Request);
@@ -3411,13 +3619,12 @@ index 569cb16..835d568 100644
  	}
 +	// </CSS>
  
- 	UE_LOG(LogWwiseFileHandler, VeryVerbose, TEXT("FWwiseFileCacheHandle::DeleteRequest (%p req:%p) [%" PRIi32 "]: Deleting request."), this, Request, FPlatformTLS::GetCurrentThreadId());
+ 	UE_LOG(LogWwiseFileHandler, VeryVerbose, TEXT("FWwiseFileSystemCacheHandle::DeleteRequest (%p req:%p) [%" PRIi32 "]: Deleting request."), this, Request, FPlatformTLS::GetCurrentThreadId());
  	delete Request;
-diff --git "a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp" "b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp"
-index 04b2385..f7ae34a 100644
---- a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp
-+++ b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp
-@@ -81,7 +81,8 @@ FWwiseResourceCooker* FWwiseResourceCookerModule::CreateCookerForPlatform(const
+diff -urN a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp
+--- a/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp	2026-03-30 10:53:18.149286400 +0200
++++ b/Plugins/Wwise/Source/WwiseResourceCooker/Private/Wwise/WwiseResourceCookerModuleImpl.cpp	2026-07-06 16:39:45.722056900 +0200
+@@ -92,7 +92,8 @@
  					TargetPlatform ? *TargetPlatform->PlatformName() : TEXT("[nullptr]"),
  					TargetPlatform ? *TargetPlatform->IniPlatformName() : TEXT("[nullptr]"),
  					*InPlatform.GetPlatformName().ToString());
@@ -3425,28 +3632,15 @@ index 04b2385..f7ae34a 100644
 +				// <CSS> Allow initializing cookers for other platforms even when cooking by the book to allow Dedicated Servers to cache data from Game platforms
 +				// return nullptr;
  			}
- #endif
  		}
-diff --git "a/Plugins/Wwise/Source/WwiseSoundEngine/Public/Wwise/PostSoundEngineInclude.h" "b/Plugins/Wwise/Source/WwiseSoundEngine/Public/Wwise/PostSoundEngineInclude.h"
-index fdb767c..b6b5b74 100644
---- a/Plugins/Wwise/Source/WwiseSoundEngine/Public/Wwise/PostSoundEngineInclude.h
-+++ b/Plugins/Wwise/Source/WwiseSoundEngine/Public/Wwise/PostSoundEngineInclude.h
-@@ -151,5 +151,17 @@ THIRD_PARTY_INCLUDES_END
- #define FALSE 0
- #undef AK_KEEP_FALSE
- #endif
-+//<CSS> From CL246574 "Fix few errors with the new includes" by ZolotukhinN.
-+#if defined(GetUserName)
-+#undef GetUserName
-+#endif
-+//[ZolotukhinN:28/08/2023] I don't know where exactly this is leaking from, but this is causing issues all across the UE codebase
-+#if defined(max)
-+#undef max
-+#endif
-+#if defined(min)
-+#undef min
-+#endif
-+// </CSS>
+ 		else if (*CookingPlatform)
+diff -urN a/Plugins/Wwise/Wwise.uplugin b/Plugins/Wwise/Wwise.uplugin
+--- a/Plugins/Wwise/Wwise.uplugin	2026-03-30 10:53:18.287507400 +0200
++++ b/Plugins/Wwise/Wwise.uplugin	2026-07-06 16:39:45.871707700 +0200
+@@ -127,4 +127,4 @@
+ 	],
  
- #endif
+ 	"CanContainContent": true
+-}
++}
 \ No newline at end of file
