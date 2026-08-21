@@ -107,6 +107,10 @@ void FConfigVariableDescriptor::SetupAsObject(UClass* NewBaseObjectClass) {
     this->BaseObjectClass = NewBaseObjectClass;   
 }
 
+void FConfigVariableDescriptor::SetupAsRawJsonValue() {
+    this->VariableType = EConfigVariableType::ECVT_RawJsonValue;
+}
+
 UScriptStruct* FConfigVariableDescriptor::GetCustomStructType() const {
     if (VariableType == EConfigVariableType::ECVT_CustomStruct)
         return CustomStructType;

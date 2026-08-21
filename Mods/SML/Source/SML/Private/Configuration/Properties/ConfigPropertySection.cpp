@@ -162,4 +162,8 @@ FConfigVariableDescriptor UConfigPropertySection::CreatePropertyDescriptor_Imple
     return UConfigVariableLibrary::MakeConfigVariableGeneratedStruct(GeneratedStruct);
 }
 
+UConfigProperty* UConfigPropertySection::GetChildProperty_Implementation(const FString& PropertyName) {
+    return SectionProperties.FindRef(PropertyName);
+}
+
 #undef LOCTEXT_NAMESPACE

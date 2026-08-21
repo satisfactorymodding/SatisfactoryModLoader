@@ -1,6 +1,10 @@
 #pragma once
 #include "Templates/SubclassOf.h"
+#include "Configuration/ConfigProperty.h"
+#include "Configuration/ConfigValueObjectInterface.h"
+#include "Configuration/RawFileFormat/Json/JsonRawFormatConverter.h"
 #include "Configuration/RawFileFormat/RawFormatValueArray.h"
+#include "SatisfactoryModLoader.h"
 #include "RawFormatValueObject.generated.h"
 
 /** Describes raw map (also known as object) value */
@@ -87,6 +91,11 @@ public:
     FORCEINLINE T* AddNewValue(const FString& Key) {
         return Cast<T>(AddNewValue(Key, T::StaticClass()));
     }
+
+    virtual TSharedPtr<FJsonValue> ToJson() const override;
+
+    /** Creates a new URawFormatValueObject from the given JSON value */
+    static URawFormatValueObject* FromJson(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue);
 };
 
 FORCEINLINE void URawFormatValueObject::SetString(const FString& Key, const FString& Value) {
@@ -106,3 +115,30 @@ FORCEINLINE void URawFormatValueObject::AddValue(const FString& Key, URawFormatV
     checkf(ValueClass && ValueClass->GetOuter() == this, TEXT("Cannot add URawFormatValue residuing inside another outer object (should be URawFormatValueArray)"));
     Values.Add(Key, ValueClass);
 };
+
+FORCEINLINE TSharedPtr<FJsonValue> URawFormatValueObject::ToJson() const {
+    TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+    for (TPair<FString, URawFormatValue*> Pair : Values) {
+        JsonObject->SetField(Pair.Key, Pair.Value->ToJson());
+    }
+    return MakeShareable(new FJsonValueObject(JsonObject));
+}
+
+FORCEINLINE URawFormatValueObject* URawFormatValueObject::FromJson(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) {
+    URawFormatValueObject* Object = NewObject<URawFormatValueObject>(Outer);
+    for (const TPair<FString, TSharedPtr<FJsonValue>>& Pair : JsonValue->AsObject()->Values) {
+        UConfigProperty* Owner = Cast<UConfigProperty>(Outer);
+        if (IsValid(Owner) && Owner->Implements<UConfigValueObjectInterface>()) {
+            UConfigProperty* ChildProperty = IConfigValueObjectInterface::Execute_GetChildProperty(Owner, Pair.Key);
+            if (IsValid(ChildProperty)) {
+                Object->AddValue(Pair.Key, ChildProperty->CreateRawFormatValue(Object, Pair.Value));
+                continue;
+            }
+        }
+
+        UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Deserializing JSON value for property %s with fallback implementation."), *Pair.Key);
+        #pragma warning(suppress : 4996)
+        Object->AddValue(Pair.Key, FJsonRawFormatConverter::ConvertToRawFormat(Object, Pair.Value));
+    }
+    return Object;
+}

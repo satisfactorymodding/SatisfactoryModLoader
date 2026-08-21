@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Configuration/ConfigProperty.h"
+#include "Configuration/RawFileFormat/RawFormatValueBool.h"
 #include "ConfigPropertyBool.generated.h"
 
 UCLASS()
@@ -32,5 +33,9 @@ public:
     virtual bool ResetToDefault_Implementation() override;
     virtual bool IsSetToDefaultValue_Implementation() const override;
     virtual FString GetDefaultValueAsString_Implementation() const override;
+    
+    virtual URawFormatValueBool* CreateRawFormatValue(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) override {
+        return URawFormatValueBool::FromJson(Outer, JsonValue);
+    }
     //End UConfigProperty
 };
