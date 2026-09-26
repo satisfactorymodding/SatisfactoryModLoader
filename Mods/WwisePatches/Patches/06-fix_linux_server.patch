@@ -1,0 +1,19 @@
+diff --git a/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp b/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp
+index 9dfaeac..f4ecb73 100755
+--- a/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp
++++ b/Plugins/Wwise/Source/AkAudio/Private/AkAudioModule.cpp
+@@ -468,9 +468,14 @@
+ #if WITH_EDITORONLY_DATA
+ void FAkAudioModule::CreateResourceCookerForPlatform(const ITargetPlatform* TargetPlatform)
+ {
+ 	SCOPED_AKAUDIO_EVENT(TEXT("CreateResourceCookerForPlatform"));
+
++	if (TargetPlatform->IsServerOnly())
++	{
++		return;
++	}
++
+ 	auto* ResourceCooker = IWwiseResourceCooker::GetForPlatform(TargetPlatform);
+ 	FWwiseProjectDatabase* ProjectDatabase;
+ 
+ 	if (LIKELY(ResourceCooker))
