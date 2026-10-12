@@ -23,5 +23,6 @@ void AFGSplineBuildableSnapHologram::GetIgnoredClearanceActors(TSet<AActor*>& ig
 bool AFGSplineBuildableSnapHologram::CanNudgeHologram() const{ return Super::CanNudgeHologram(); }
 bool AFGSplineBuildableSnapHologram::ShouldActorBeConsideredForGuidelines(class AActor* actor) const{ return Super::ShouldActorBeConsideredForGuidelines(actor); }
 int32 AFGSplineBuildableSnapHologram::GetRotationStep() const{ return Super::GetRotationStep(); }
+void AFGSplineBuildableSnapHologram::PostConstructMessageDeserialization(){ Super::PostConstructMessageDeserialization(); }
 void AFGSplineBuildableSnapHologram::ConfigureComponents(class AFGBuildable* inBuildable) const{ Super::ConfigureComponents(inBuildable); }
 void AFGSplineBuildableSnapHologram::CheckValidPlacement(){ Super::CheckValidPlacement(); }

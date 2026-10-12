@@ -18,6 +18,7 @@ void AFGBuildableConveyorBase::DebugDrawStalled() const{ }
 void AFGBuildableConveyorBase::SetStalled(bool stall) const{ }
 void AFGBuildableConveyorBase::RegisterThroughputMonitor(AFGBuildableConveyorMonitor* monitor){ }
 void AFGBuildableConveyorBase::UnregisterThroughputMonitor(AFGBuildableConveyorMonitor* monitor){ }
+void AFGBuildableConveyorBase::GetThroughputMonitors(TArray<AFGBuildableConveyorMonitor*>& out_Monitors) const{ }
 #endif
 #endif 
 #if UE_BUILD_SHIPPING
@@ -79,8 +80,8 @@ void AFGBuildableConveyorBase::Upgrade_Implementation(AActor* newActor){ Super::
 void AFGBuildableConveyorBase::GetChildDismantleActors_Implementation(TArray<AActor*>& out_ChildDismantleActors) const{ Super::GetChildDismantleActors_Implementation(out_ChildDismantleActors); }
 float AFGBuildableConveyorBase::GetDistanceBetweenFirstConnection(){ return float(); }
 float AFGBuildableConveyorBase::GetDistanceBetweenLastConnection(){ return float(); }
+bool AFGBuildableConveyorBase::HasAnyThroughputMonitorsAttached() const{ return bool(); }
 void AFGBuildableConveyorBase::SetConveyorChainActor(AFGConveyorChainActor* chainActor){ }
-void AFGBuildableConveyorBase::ReportInvalidStateAndRequestConveyorRepReset(){ }
 bool AFGBuildableConveyorBase::Factory_PeekOutput_Implementation(const  UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type) const{ return bool(); }
 bool AFGBuildableConveyorBase::Factory_GrabOutput_Implementation( UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type){ return bool(); }
 bool AFGBuildableConveyorBase::Factory_QuickPullConveyorToConveyor(FConveyorBeltItem& out_item, float availableSpace, float deltaTime){ return bool(); }

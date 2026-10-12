@@ -40,6 +40,7 @@ public:
 protected:
 	// Begin AFGHologram interface
 	virtual int32 GetRotationStep() const override;
+	virtual void PostConstructMessageDeserialization() override;
 	// End of AFGHologram interface
 
 	// Begin AFGBuildableHologram Interface

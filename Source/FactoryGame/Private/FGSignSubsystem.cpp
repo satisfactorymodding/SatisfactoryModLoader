@@ -37,6 +37,8 @@ void AFGSignSubsystem::BeginPlay(){ Super::BeginPlay(); }
 void AFGSignSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGSignSubsystem::UpdateAndSortPendingSigns(){ }
 void AFGSignSubsystem::AddWidgetSign(AFGBuildableWidgetSign* widgetSign){ }
+void AFGSignSubsystem::SweepForUntrackedWidgetSigns(){ }
+void AFGSignSubsystem::OnGameStateSet(class AGameStateBase* newGameState){ }
 void AFGSignSubsystem::RemoveWidgetSign(AFGBuildableWidgetSign* widgetSign){ }
 void AFGSignSubsystem::NotifySignDataDirty(AFGBuildableWidgetSign* widgetSign){ }
 void AFGSignSubsystem::AddPixelSign(AFGBuildablePixelSign* pixelSign){ }

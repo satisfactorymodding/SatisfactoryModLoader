@@ -194,6 +194,7 @@ void AFGGameState::OnRep_ActorRepresentationManager(){  }
 void AFGGameState::OnRep_ConveyorChainSubsystem(){  }
 void AFGGameState::OnRep_BlueprintSubsystem(){  }
 void AFGGameState::OnRep_VehicleSubsystem(){ }
+void AFGGameState::OnRep_SignSubsystem(){ }
 void AFGGameState::Server_SetPublicTodoList(const FString& newTodoList, const FPlayerInfoHandle& lastEditedBy){ }
 void AFGGameState::SetCreativeModeEnabled(){ }
 void AFGGameState::BroadcastAutoSaveTimeNotification(float timeLeft) const{ }

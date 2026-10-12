@@ -191,7 +191,7 @@ public:
 		}
 	}
 
-	FORCEINLINE bool HasAnyThroughputMonitorsAttached() const { return mAttachedThroughputMonitors.Num() > 0; }
+	bool HasAnyThroughputMonitorsAttached() const;
 
 	/** Assigns a Chain Actor to a Conveyor. This will also clear temporary ism instances for clients if there are any */
 	void SetConveyorChainActor( AFGConveyorChainActor* chainActor );
@@ -207,9 +207,6 @@ public:
 
 		return mItems[0].Offset;
 	}
-
-
-	void ReportInvalidStateAndRequestConveyorRepReset();
 
 	FORCEINLINE void MarkItemTransformsDirty()
 	{
@@ -236,7 +233,7 @@ public:
 	
 	void RegisterThroughputMonitor( AFGBuildableConveyorMonitor* monitor );
 	void UnregisterThroughputMonitor( AFGBuildableConveyorMonitor* monitor );
-	void GetThroughputMonitors( TArray< AFGBuildableConveyorMonitor *>& out_Monitors ) const { out_Monitors.Append( mAttachedThroughputMonitors ); }
+	void GetThroughputMonitors( TArray< AFGBuildableConveyorMonitor *>& out_Monitors ) const;
 
 protected:
 	// Begin Factory_ interface

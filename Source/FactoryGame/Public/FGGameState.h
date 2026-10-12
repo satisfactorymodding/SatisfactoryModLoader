@@ -456,6 +456,7 @@ public:
 	UFUNCTION() void OnRep_ConveyorChainSubsystem();
 	UFUNCTION() void OnRep_BlueprintSubsystem();
 	UFUNCTION() void OnRep_VehicleSubsystem();
+	UFUNCTION() void OnRep_SignSubsystem();
 	
 	FORCEINLINE FString GetPublicTodoList() const { return mPublicTodoList; }
 //<FL>[KonradA] edited to support last edited by
@@ -636,6 +637,8 @@ public:
 	FOnSingleSubsystemReplicatedDelegate mOnBlueprintSubsystemReplicated;
 	/** Called on the client when the vehicle subsystem is available */
 	FOnSingleSubsystemReplicatedDelegate mOnVehicleSubsystemReplicated;
+	/** Called on the client when the sign subsystem is available */
+	FOnSingleSubsystemReplicatedDelegate mOnSignSubsystemReplicated;
 
 private:
 	/** Spawned subsystems */
@@ -683,7 +686,7 @@ private:
 	TObjectPtr<class AFGDroneSubsystem> mDroneSubsystem;
 	UPROPERTY( SaveGame )
 	TObjectPtr<class AFGStatisticsSubsystem> mStatisticsSubsystem;
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_SignSubsystem )
 	TObjectPtr<class AFGSignSubsystem> mSignSubsystem;
 	UPROPERTY( Replicated )
 	TObjectPtr<class AFGCreatureSubsystem> mCreatureSubsystem;

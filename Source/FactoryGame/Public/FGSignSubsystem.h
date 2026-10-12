@@ -208,6 +208,12 @@ public:
 	/** Called on BeginPlay of sign actors to add themselves to the tracking list */
 	void AddWidgetSign( AFGBuildableWidgetSign* widgetSign );
 
+	/** Finds signs not yet tracked and adds them. */
+	void SweepForUntrackedWidgetSigns();
+
+	/** Bound to UWorld::GameStateSetEvent for when GameState itself isn't set yet at BeginPlay. */
+	void OnGameStateSet( class AGameStateBase* newGameState );
+
 	/** Called on EndPlay of sign actors to remove themselves from the tracking list */
 	void RemoveWidgetSign( AFGBuildableWidgetSign* widgetSign );
 
