@@ -49,3 +49,9 @@ FConfigVariableDescriptor UConfigVariableLibrary::MakeConfigVariableMap(const FC
     VariableDescriptor.SetupAsMap(KeyType, ValueType);
     return VariableDescriptor;
 }
+
+FConfigVariableDescriptor UConfigVariableLibrary::MakeConfigVariableRawJsonValue() {
+    FConfigVariableDescriptor VariableDescriptor{};
+    VariableDescriptor.SetupAsRawJsonValue();
+    return VariableDescriptor;
+}

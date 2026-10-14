@@ -3,7 +3,9 @@
 #include "FGGameMode.h"
 #include "UObject/Object.h"
 #include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
+#include "Configuration/RawFileFormat/Json/JsonRawFormatConverter.h"
 #include "Reflection/BlueprintReflectedObject.h"
+#include "SatisfactoryModLoader.h"
 #include "ConfigProperty.generated.h"
 
 class URawFormatValue;
@@ -58,6 +60,19 @@ public:
 	/** Deserializes passed raw file format value into this property state */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
     void Deserialize(const URawFormatValue* Value);
+
+    /** Deserializes passed json value into this property state */
+    void DeserializeFromJson(const TSharedPtr<FJsonValue>& JsonValue) {
+      Deserialize(CreateRawFormatValue(this, JsonValue));
+    }
+
+    /** Creates a raw format value from the passed json value */
+    virtual URawFormatValue* CreateRawFormatValue(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) {
+        // This is a fallback. Derived classes should create a specific raw format value based on the expected type.
+        UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Creating raw format value for property %s with fallback implementation."), *GetName());
+        #pragma warning(suppress : 4996)
+        return FJsonRawFormatConverter::ConvertToRawFormat(Outer, JsonValue);
+    }
 
 	/** Marks this property directly, forcing file system synchronization to happen afterwards */
 	UFUNCTION(BlueprintCallable)

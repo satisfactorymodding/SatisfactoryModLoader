@@ -1,11 +1,13 @@
 ﻿#pragma once
 #include "Configuration/ConfigProperty.h"
 #include "Configuration/ConfigValueDirtyHandlerInterface.h"
+#include "Configuration/ConfigValueObjectInterface.h"
+#include "Configuration/RawFileFormat/RawFormatValueObject.h"
 #include "ConfigPropertySection.generated.h"
 
 /** Describes a single configuration section with nested properties */
 UCLASS()
-class SML_API UConfigPropertySection : public UConfigProperty, public IConfigValueDirtyHandlerInterface {
+class SML_API UConfigPropertySection : public UConfigProperty, public IConfigValueDirtyHandlerInterface, public IConfigValueObjectInterface {
     GENERATED_BODY()
 public:
     /**
@@ -37,9 +39,19 @@ public:
 	virtual bool ResetToDefault_Implementation() override;
 	virtual bool IsSetToDefaultValue_Implementation() const override;
 	virtual FString GetDefaultValueAsString_Implementation() const override;
+
+    virtual URawFormatValueObject* CreateRawFormatValue(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) override {
+        return URawFormatValueObject::FromJson(Outer, JsonValue);
+    }
 	//End UConfigProperty
 
 	//Begin IConfigValueDirtyHandlerInterface
 	virtual void HandleMarkDirty_Implementation() override;
 	//End IConfigValueDirtyHandlerInterface
+
+    //Begin IConfigPropertyObjectInterface
+		/** Returns the child property of this property with the specified key */
+		UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DisplayName = "Get Child By Key", CompactNodeTitle = ".", BlueprintAutocast), Category = "SML | Configuration")
+    virtual UConfigProperty* GetChildProperty_Implementation(const FString& PropertyKey) override;
+    //End IConfigPropertyObjectInterface
 };
