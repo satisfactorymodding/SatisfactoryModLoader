@@ -471,9 +471,7 @@ void UBlueprintHookManager::ApplyActorMixinsToBlueprintClass(UBlueprintGenerated
 		UMixinInputDelegateBinding* InputDelegateBindingWrapper = NewObject<UMixinInputDelegateBinding>(BlueprintGeneratedClass, UMixinInputDelegateBinding::StaticClass(), TEXT("TRANSIENT_MixinInputDelegateBindingWrapper"), RF_Transient);
 		BlueprintGeneratedClass->DynamicBindingObjects.Add(InputDelegateBindingWrapper);
 
-		// Cooked blueprint classes can be in a GC cluster, whose references are gathered once when the cluster is created, so the GC will not see the references we have just added
-		// and will collect these objects while the class still points at them. Register them as mutable objects of the cluster so they live exactly as long as the class does.
-		// The component template does not need this, since the host node references it directly. This does nothing if the class is not in a cluster.
+		// Cooked BPGC may be a GC cluster that won't see these new references; register them as mutable so they live as long as the class
 		MixinComponentHostNode->AddToCluster(BlueprintGeneratedClass, true);
 		InputDelegateBindingWrapper->AddToCluster(BlueprintGeneratedClass, true);
 	}
