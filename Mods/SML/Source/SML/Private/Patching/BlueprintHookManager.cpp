@@ -473,9 +473,8 @@ void UBlueprintHookManager::ApplyActorMixinsToBlueprintClass(UBlueprintGenerated
 
 		// Cooked blueprint classes can be in a GC cluster, whose references are gathered once when the cluster is created, so the GC will not see the references we have just added
 		// and will collect these objects while the class still points at them. Register them as mutable objects of the cluster so they live exactly as long as the class does.
-		// This does nothing if the class is not in a cluster.
+		// The component template does not need this, since the host node references it directly. This does nothing if the class is not in a cluster.
 		MixinComponentHostNode->AddToCluster(BlueprintGeneratedClass, true);
-		MixinComponentHostNode->ComponentTemplate->AddToCluster(BlueprintGeneratedClass, true);
 		InputDelegateBindingWrapper->AddToCluster(BlueprintGeneratedClass, true);
 	}
 
