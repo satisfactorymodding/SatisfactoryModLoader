@@ -49,6 +49,14 @@ class SML_API UBlueprintHookManager : public UEngineSubsystem {
 private:
 	/** Installed hooks per blueprint generated class */
 	TMap<FTopLevelAssetPath, TArray<TSoftObjectPtr<UHookBlueprintGeneratedClass>>> InstalledHooksPerBlueprintGeneratedClass;
+
+	/**
+	 * Transient objects created to apply actor mixins (SCS host nodes, their component templates and input binding wrappers).
+	 * The classes they are added to can be part of a GC cluster, and references added to a cluster after it was created are not seen by the GC,
+	 * so without this the objects get collected while the class still points at them
+	 */
+	UPROPERTY()
+	TArray<TObjectPtr<UObject>> TransientMixinObjects;
 public:
     /** Registers a blueprint hook. Blueprints will only be kept loaded for the lifetime of the game instance */
     void RegisterBlueprintHook(UGameInstance* OwnerGameInstance, UHookBlueprintGeneratedClass* HookBlueprintGeneratedClass);
@@ -69,13 +77,13 @@ private:
 	static void SanitizeBlueprintGeneratedClass(UBlueprintGeneratedClass* BlueprintGeneratedClass);
 
 	/** Applies currently registered and valid hooks and mixins to the blueprint class */
-	void ApplyRegisteredHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass) const;
+	void ApplyRegisteredHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass);
 	
 	/** Re-applies currently registered blueprint hooks to the provided BPGC */
 	void ApplyBlueprintHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass, const TArray<FBlueprintHookDefinition>& BlueprintHooks) const;
 
 	/** Re-applies currently registered blueprint mixins to the provided BPGC */
-	void ApplyActorMixinsToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass, TArray<UHookBlueprintGeneratedClass*>& BlueprintMixins) const;
+	void ApplyActorMixinsToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass, TArray<UHookBlueprintGeneratedClass*>& BlueprintMixins);
 
 	/** Registers the mixin component on level actors which do not run the construction script */
 	void ApplyMixinsToLevelActors(ULevel* Level);
