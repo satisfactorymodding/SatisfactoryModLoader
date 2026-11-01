@@ -474,7 +474,6 @@ void UBlueprintHookManager::ApplyActorMixinsToBlueprintClass(UBlueprintGenerated
 		// BPGC loaded during engine init is disregarded for GC and never traced, so nothing keeps these alive. It is never collected either, so rooting them is safe
 		if (GUObjectArray.IsDisregardForGC(BlueprintGeneratedClass)) {
 			MixinComponentHostNode->AddToRoot();
-			MixinComponentHostNode->ComponentTemplate->AddToRoot();
 			InputDelegateBindingWrapper->AddToRoot();
 		}
 	}
