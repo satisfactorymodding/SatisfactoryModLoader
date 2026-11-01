@@ -471,9 +471,12 @@ void UBlueprintHookManager::ApplyActorMixinsToBlueprintClass(UBlueprintGenerated
 		UMixinInputDelegateBinding* InputDelegateBindingWrapper = NewObject<UMixinInputDelegateBinding>(BlueprintGeneratedClass, UMixinInputDelegateBinding::StaticClass(), TEXT("TRANSIENT_MixinInputDelegateBindingWrapper"), RF_Transient);
 		BlueprintGeneratedClass->DynamicBindingObjects.Add(InputDelegateBindingWrapper);
 
-		// Cooked BPGC may be a GC cluster that won't see these new references; register them as mutable so they live as long as the class
-		MixinComponentHostNode->AddToCluster(BlueprintGeneratedClass, true);
-		InputDelegateBindingWrapper->AddToCluster(BlueprintGeneratedClass, true);
+		// BPGC loaded during engine init is disregarded for GC and never traced, so nothing keeps these alive. It is never collected either, so rooting them is safe
+		if (GUObjectArray.IsDisregardForGC(BlueprintGeneratedClass)) {
+			MixinComponentHostNode->AddToRoot();
+			MixinComponentHostNode->ComponentTemplate->AddToRoot();
+			InputDelegateBindingWrapper->AddToRoot();
+		}
 	}
 
 	// Replace the mixin classes on the component template. All new actors created from the template will have the provided mixins initialized.
