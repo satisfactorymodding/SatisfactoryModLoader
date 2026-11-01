@@ -187,7 +187,7 @@ static TAutoConsoleVariable<bool> CVarDumpBlueprintPatchingResults(
 	TEXT("1 = Dump function code to log after blueprint hook application; 0 = only dump on errors"),
 	ECVF_Default);
 
-void UBlueprintHookManager::ApplyRegisteredHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass) {
+void UBlueprintHookManager::ApplyRegisteredHooksToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass) const {
 	TArray<FBlueprintHookDefinition> BlueprintHooks;
 	TArray<UHookBlueprintGeneratedClass*> ActorMixins;
 	
@@ -439,7 +439,7 @@ void UBlueprintHookManager::ApplyBlueprintHooksToBlueprintClass(UBlueprintGenera
 	}
 }
 
-void UBlueprintHookManager::ApplyActorMixinsToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass, TArray<UHookBlueprintGeneratedClass*>& BlueprintMixins) {
+void UBlueprintHookManager::ApplyActorMixinsToBlueprintClass(UBlueprintGeneratedClass* BlueprintGeneratedClass, TArray<UHookBlueprintGeneratedClass*>& BlueprintMixins) const {
 	// Find an existing mixin host component node on the actor
 	USCS_Node* MixinComponentHostNode = nullptr;
 	for (USCS_Node* RootNode : BlueprintGeneratedClass->SimpleConstructionScript->GetRootNodes()) {
@@ -471,10 +471,12 @@ void UBlueprintHookManager::ApplyActorMixinsToBlueprintClass(UBlueprintGenerated
 		UMixinInputDelegateBinding* InputDelegateBindingWrapper = NewObject<UMixinInputDelegateBinding>(BlueprintGeneratedClass, UMixinInputDelegateBinding::StaticClass(), TEXT("TRANSIENT_MixinInputDelegateBindingWrapper"), RF_Transient);
 		BlueprintGeneratedClass->DynamicBindingObjects.Add(InputDelegateBindingWrapper);
 
-		// Cooked classes can be in a GC cluster that will not see the references we have just added, so keep the objects alive ourselves
-		TransientMixinObjects.Add(MixinComponentHostNode);
-		TransientMixinObjects.Add(MixinComponentHostNode->ComponentTemplate);
-		TransientMixinObjects.Add(InputDelegateBindingWrapper);
+		// Cooked blueprint classes can be in a GC cluster, whose references are gathered once when the cluster is created, so the GC will not see the references we have just added
+		// and will collect these objects while the class still points at them. Register them as mutable objects of the cluster so they live exactly as long as the class does.
+		// This does nothing if the class is not in a cluster.
+		MixinComponentHostNode->AddToCluster(BlueprintGeneratedClass, true);
+		MixinComponentHostNode->ComponentTemplate->AddToCluster(BlueprintGeneratedClass, true);
+		InputDelegateBindingWrapper->AddToCluster(BlueprintGeneratedClass, true);
 	}
 
 	// Replace the mixin classes on the component template. All new actors created from the template will have the provided mixins initialized.
