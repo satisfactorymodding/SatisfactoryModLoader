@@ -173,7 +173,6 @@ AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializ
 	this->mPendingGameplayCinematicSnapTarget = nullptr;
 	this->mPendingGameplaySnapCinematic = nullptr;
 	this->mCurrentlyPlayingGameplayCinematic = nullptr;
-	this->mRainActor = nullptr;
 	this->bIsUnderRain = false;
 	this->UnderRainInterpSpeed = 2.0;
 	this->mVisorRainEffectMaterial = nullptr;
@@ -595,9 +594,6 @@ bool AFGCharacterPlayer::IsPlayerInOrAboveWater(const FVector& hitPosition) cons
 void AFGCharacterPlayer::ActivateCameraComponents(){ }
 void AFGCharacterPlayer::DeactivateCameraComponents(){ }
 void AFGCharacterPlayer::OnActiveEquipmentChangedInSlot(EEquipmentSlot slot){ }
-void AFGCharacterPlayer::StartRainEffects(UNiagaraSystem* SystemType, float DesiredIntensity){ }
-void AFGCharacterPlayer::EndRainEffects(){ }
-UNiagaraComponent* AFGCharacterPlayer::GetRainComponent(bool& bHasValidComponent){ return nullptr; }
 FOnPersistentEquipmentActivated AFGCharacterPlayer::OnPersistentEquipmentActivated = FOnPersistentEquipmentActivated();
 FOnEquipmentEquipped AFGCharacterPlayer::OnEquipmentEquipped = FOnEquipmentEquipped();
 FOnEquipmentUnequipped AFGCharacterPlayer::OnEquipmentUnequipped = FOnEquipmentUnequipped();

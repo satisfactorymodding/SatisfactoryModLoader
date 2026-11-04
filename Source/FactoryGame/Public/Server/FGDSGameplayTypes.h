@@ -73,7 +73,7 @@ struct FACTORYGAME_API FServerGameState
 	FString AutoLoadSessionName;
 
 	UPROPERTY( BlueprintReadWrite, Category = "Server Game State" )
-	bool AgreeToCrashUploadRequested;
+	bool HasAskedForDataSharingConsent;
 };
 
 /**

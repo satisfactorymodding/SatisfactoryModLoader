@@ -28,7 +28,8 @@ bool UFGServerObject::Join(){ return bool(); }
 void UFGServerObject::PromptChangeServerName(){ }
 void UFGServerObject::ChangeServerName(const FString& NewServerName){ }
 void UFGServerObject::SetAutoLoadSessionName(const FString& SessionName){ }
-void UFGServerObject::SetAgreeToCrashUploadRequested(bool AgreeToCrashUploadRequested){ }
+void UFGServerObject::SetHasAskedForDataSharingConsent(bool hasAskedForConsent){ }
+void UFGServerObject::GetTelemetryId(FOnTelemetryIDReceived callback){ }
 void UFGServerObject::ChangeClientPassword(){ }
 void UFGServerObject::ChangeAdminPassword(){ }
 void UFGServerObject::FetchGameState(){ }
@@ -93,7 +94,8 @@ void UFGServerObject::OnUserPasswordRequestCancelled(){ }
 void UFGServerObject::OnUserAcceptedRemoteCertificate(FFGServerCertificate ServerCertificate){ }
 void UFGServerObject::OnUserDeclinedRemoteCertificate(){ }
 void UFGServerObject::OnAuthenticationTokenChanged(){ }
-void UFGServerObject::OnAgreeToCrashUpload(bool confirmed){ }
+void UFGServerObject::OnAskForDataSharingConsent(bool allowUnattendedCrashReports, bool allowGameplayTelemetry){ }
+void UFGServerObject::OnTelemetryIDReceived(const FString& TelemetryID){ }
 void UFGServerObject::RequestPassword(EPrivilegeLevel MinPrivilegeLevel){ }
 bool UFGServerObject::CheckVersionCompatibility() const{ return bool(); }
 void UFGServerObject::SaveState() const{ }

@@ -317,4 +317,7 @@ public:
 	void UpdateIntensity(float NewValue);
 	
 	float DesiredIntensity = 0;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateRainMask();
 };

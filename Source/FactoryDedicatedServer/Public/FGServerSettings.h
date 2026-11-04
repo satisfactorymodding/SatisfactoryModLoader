@@ -74,8 +74,9 @@ public:
 	UPROPERTY( SaveGame )
 	FFGGeneratedCertificateData CertificateData;
 
+	/** Remember if we already asked for consent. */
 	UPROPERTY( SaveGame )
-	bool AgreeToCrashUploadRequested;
+	bool HasAskedForDataSharingConsent;
 };
 
 template<>

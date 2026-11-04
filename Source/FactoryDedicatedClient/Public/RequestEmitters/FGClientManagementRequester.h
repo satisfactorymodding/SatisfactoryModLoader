@@ -36,7 +36,16 @@ public:
 	FFGPendingClientRequest Request_SetAutoLoadSessionName( const FString& SessionName );
 
 	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "Administrator" )
-	FFGPendingClientRequest Request_SetAgreeToCrashUploadRequested( bool AgreeToCrashUploadRequested );
+	FFGPendingClientRequest Request_SetHasAskedForDataSharingConsent( bool hasAskedForConsent );
+	
+	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "Administrator" )
+	FFGPendingClientRequest Request_CallOnTelemetryConsentAnswered( bool allowGameplayTelemetry );
+	
+	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "Administrator" )
+	FFGPendingClientRequest Request_GetTelemetryID();
+	
+	UFUNCTION( FGServerResponse )
+	void Response_GetTelemetryID( const FFGServerErrorResponse& ErrorResponse, const FString& TelemetryID ) const;
 	
 	UFUNCTION( FGServerRequest, FGServerRequestPrivilegeLevel = "Administrator" )
 	FFGPendingClientRequest Request_RunCommand( const FString& Command );

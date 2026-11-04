@@ -7,6 +7,8 @@
 #include "FGHUD.h"
 #include "FGPlayerState.h"
 
+void AFGGameMode::AddGameplayTelemetryStates(){ }
+void AFGGameMode::RemoveGameplayTelemetryStates(){ }
 const TCHAR* AFGGameMode::StartLocationOption = TEXT("startloc");
 const TCHAR* AFGGameMode::LoadGameOption = TEXT("loadgame");
 const TCHAR* AFGGameMode::SkipOnboarding = TEXT("skiponboarding");
@@ -80,6 +82,8 @@ void AFGGameMode::ShowInviteUI(){ }
 void AFGGameMode::PrintSessionId(){ }
 bool AFGGameMode::IsValidPawnToReclaim(APawn* pawn) const{ return bool(); }
 void AFGGameMode::OnSessionRestartTimeSlotUpdated(FString OptionName, FVariant OptionValue){ }
+void AFGGameMode::SubmitPlayerJoinedTelemetry(){ }
+void AFGGameMode::SubmitPlayerLeftTelemetry(){ }
 void AFGGameMode::GetRestartSessionSaveName(FString& out_sessionName) const{ }
 void AFGGameMode::BuildRestartSessionURL(const FString& saveName, FString& out_sessionUrl) const{ }
 FFGPrioritizedSpawnPointList AFGGameMode::CalculatePrioritizedSpawnPoints(const APlayerStart* playerStateRespawnPoint) const{ return FFGPrioritizedSpawnPointList(); }

@@ -75,7 +75,7 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	virtual bool GetBoolUIDisplayValue( const FString& cvar ) const { return GetOptionDisplayValueTyped<bool>( cvar ); }
 
-	/** Set a option value for a bool, will need to be applied to take affect and/or get saved */
+	/** Set an option value for a bool, will need to be applied to take affect and/or get saved */
 	UFUNCTION( BlueprintCallable, Category = "Option" )
 	virtual void SetBoolOptionValue( const FString& cvar, bool value ) { SetOptionValueTyped<bool>( cvar, value ); }
 

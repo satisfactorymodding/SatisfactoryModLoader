@@ -452,6 +452,9 @@ public:
 
 	FORCEINLINE float GetCurrentVehiclePathRenderDistanceScale() const { return mCurrentVehiclePathRenderDistanceScale; }
 
+	bool HasAskedForGameplayDataConsent() const { return mHasAskedForGameplayDataConsent; }
+	void SetHasAskedForGameplayDataConsent( bool bHasAskedForGameplayDataConsent ) { mHasAskedForGameplayDataConsent = bHasAskedForGameplayDataConsent; }
+	
 	/** Debug */
 	void DumpDynamicOptionsSettings();
 	void GetOptionsDebugData( TArray<FString>& out_debugData );
@@ -615,10 +618,12 @@ private:
 
 	UPROPERTY( Config )
 	FVector mSoftClearanceHologramColour;
-
-	/** True if first launch pop-up screen has been dismissed by the user */
+	
 	UPROPERTY( Config )
-	bool mDismissedFirstLaunchPopupScreen;
+	bool mHasSeenFirstLaunchPopupScreen;
+	
+	UPROPERTY( Config )
+	bool mHasAskedForGameplayDataConsent;
 
 	TOptional<EOnlineIntegrationMode> mPreferredOnlineIntegrationMode;
 

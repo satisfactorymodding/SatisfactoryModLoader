@@ -171,6 +171,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ForceSetWeather(TSubclassOf< AFGWeatherReaction > ForcedWeatherState);
 
+	UFUNCTION(BlueprintCallable)
+	void UpdateRainEffects(UNiagaraSystem* SystemType, float DesiredIntensity);
+
+	UFUNCTION(BlueprintCallable)
+	void EndRainEffects();
+	
+	UFUNCTION(BlueprintCallable)
+	UNiagaraComponent* GetRainComponent(bool& bHasValidComponent);
+
 	void RollNewWeather();
 	
 	/* Current assigned weather preset, will be saved to see if we have to clean the old weather state and rerun or not. */
@@ -381,6 +390,13 @@ protected:
 	UPROPERTY(Transient)
 	TObjectPtr<class AFGTimeOfDaySubsystem> mCachedTimeOfDaySubSystem;
 
+	/* Rain actor class to spawn. */
+	UPROPERTY(EditDefaultsOnly, Category = "Weather")
+	TSubclassOf<class AFGRainActor> RainActorClass = nullptr;
+	
+	UPROPERTY()
+	TObjectPtr<class AFGRainActor> mRainActor = nullptr;
+	
 	bool mIsInitialized;
 
 #if WITH_EDITORONLY_DATA

@@ -17,7 +17,6 @@ class AFGBuildableConveyorBase;
 
 constexpr int32 NumTasks = 16;
 
-#define WITH_PIE_SUPPORT 0 //WITH_EDITOR
 #define NUM_LANES 16
 #define DEBUG_CONVEYOR_RENDERER 0
 #define LUT_STEPSIZE 30
@@ -117,13 +116,7 @@ class FACTORYGAME_API AFGConveyorItemSubsystem : public AFGSubsystem
 	
 public:
 	static AFGConveyorItemSubsystem* Get( UWorld* world );
-
-#if WITH_PIE_SUPPORT
-	static TMap<UWorld*,AFGConveyorItemSubsystem*> mGlobalSystemPtrPIEMap;
-#else
-	static AFGConveyorItemSubsystem* mGlobalSystemPtr;
-#endif
-
+	
 	FORCEINLINE void ReportVisibleBelt( const UFGConveyorBeltVisibilityMesh* Component )
 	{
 		mVisibleConveyors.Enqueue( Component );
@@ -137,7 +130,6 @@ public:
 	}
 
 	bool IsKnown(UClass* Descriptor) const { return mKnownItems.Contains( Descriptor ); }
-	void LazyAddConveyorItemOfClass(UClass* Descriptor);
 
 	static void AddLookupTable(AFGConveyorChainActor* Actor, const TArray<FVector3f>& Position, const TArray<FQuat4f>& Quats);
 	static void RemoveChainActorFromLookupTable(AFGConveyorChainActor* ChainActor);
@@ -146,7 +138,6 @@ private:
 	// Begin AActor interface
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// End AActor interface
 
 	void InitializeConveyorItems();

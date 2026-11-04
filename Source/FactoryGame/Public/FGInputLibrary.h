@@ -114,7 +114,7 @@ public:
 
 	/** Rebind a mapping with the given action name. If there is a hard conflict, Binding with the same exact keys in the same context, the conflicting key will be overwritten with None (FKeys:Invalid)   */
 	UFUNCTION( BlueprintCallable, Category = "Input" )
-	static void RebindEnhancedKeyMapping( APlayerController* playerController, const FName& inActionName, const FKey& primaryKey, const TArray<FKey>& modifierKeys );
+	static void RebindEnhancedKeyMapping( APlayerController* playerController, const FName& inActionName, const FKey& primaryKey, const TArray<FKey>& modifierKeys, UPlayerMappableKeySettings* mappableKeySettings = nullptr );
 	
 	UFUNCTION( BlueprintCallable, Category = "Input" )
 	static void RebindEnhancedControllerMappings( APlayerController* playerController, const TMap<FName,FKey>& pendingRebindMappings);

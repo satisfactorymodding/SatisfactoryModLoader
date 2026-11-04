@@ -13,4 +13,5 @@ void AFGDockingStationHologram::PostHologramPlacement(const FHitResult& hitResul
 void AFGDockingStationHologram::PreConfigureActor(class AFGBuildable* inBuildable){ Super::PreConfigureActor(inBuildable); }
 void AFGDockingStationHologram::CheckValidPlacement(){ Super::CheckValidPlacement(); }
 void AFGDockingStationHologram::ScrollRotate(int32 delta, int32 step){ Super::ScrollRotate(delta, step); }
+bool AFGDockingStationHologram::CanNudgeHologram() const{ return Super::CanNudgeHologram(); }
 AFGVehiclePathNode* AFGDockingStationHologram::GetPathNodeFromHitResult(const FHitResult& hitResult) const{ return nullptr; }

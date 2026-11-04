@@ -214,6 +214,13 @@ public:
 	/** @return OnlineSession class to use for this game instance  */
 	virtual TSubclassOf<UOnlineSession> GetOnlineSessionClass() override;
 	
+	/** @return The active telemetry session; if telemetry is disabled based on platform or player consent, it returns a nullptr. */
+	static class UTelemetrySession* GetTelemetrySession( UWorld* world );
+	
+	/** @return The player id used for telemetry, an empty guid if telemetry is disabled based on player consent. */
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Telemetry" )
+	FString GetTelemetryPlayerIdAsString() const { return mTelemetryPlayerId.ToString( EGuidFormats::Digits ); }
+	
 	// @todo: Move error functions to a "message bus" class	
 	/** Pushes a error to the game, that handles it appropriately */
 	void PushError( TSubclassOf<class UFGErrorMessage> errorMessage );
@@ -304,6 +311,16 @@ public:
 	/** Add a callback to the input device type changed event and immediately call it, for convenience. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI"  )
 	void AddAndCallDeviceTypeChangedCallback( UPARAM(DisplayName="Event") FFGInputDeviceTypeChangedDelegate Delegate);
+	
+	void StartInputTelemetry();
+	void StopInputTelemetry();
+	
+	/**
+	 * Called from UI when the player has given consent to collect gameplay data.
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Telemetry" )
+	void OnTelemetryConsentAnswered( bool allowSendGameplayData );
+	
 protected:
 	// Called when a map has loaded properly in Standalone
 	virtual void LoadComplete( const float loadTime, const FString& mapName ) override;
@@ -341,15 +358,15 @@ private:
 	
 	void OnPreLoadMap( const FString& levelName );
 
-	/** Initializes the Game Analytics Service. Requires that the Epic Online Services handle has been created beforehand. */
-	void InitGameAnalytics();
-	void ShutdownGameAnalytics();
-
 	/** Telemetry */
-	void SubmitGameStartTelemetry() const;
+	bool StartTelemetry();
+	bool CreateTelemetrySession( const FGuid& playerId );
+	bool IsTelemetrySessionActive();
+	void DestroyTelemetrySession();
+	void SetupTelemetryStates();
+	void SubmitHardwareTelemetry();
 	UFUNCTION()
-	void SubmitNetModeTelemetry( UWorld* world ) const;
-	void SubmitModTelemetry() const;
+	void SubmitInputTelemetry( EInputDeviceType deviceType );
 
 	void JoinSession_Internal();
 
@@ -367,6 +384,12 @@ protected:
 
 	UPROPERTY( BlueprintAssignable )
 	FOnNetworkErrorRecieved mOnNetworkErrorRecieved;
+	
+	/** Unique player id used for telemetry, initialized when telemetry is enabled. */
+	FGuid mTelemetryPlayerId;
+	
+	UPROPERTY()
+	TObjectPtr< class UTelemetrySession > mTelemetrySession;
 	
 	/** List of errors that we should pop */
 	UPROPERTY()

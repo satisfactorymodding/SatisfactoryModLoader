@@ -18,6 +18,7 @@ void UFGGameInstance::ReceivedNetworkEncryptionAck(const FOnEncryptionKeyRespons
 void UFGGameInstance::ReceivedNetworkEncryptionToken(const FString& EncryptionToken, const FOnEncryptionKeyResponse& Delegate){ }
 EEncryptionFailureAction UFGGameInstance::ReceivedNetworkEncryptionFailure(UNetConnection* Connection){ return EEncryptionFailureAction(); }
 TSubclassOf<UOnlineSession> UFGGameInstance::GetOnlineSessionClass(){ return TSubclassOf<UOnlineSession>(); }
+class UTelemetrySession* UFGGameInstance::GetTelemetrySession(UWorld* world){ return nullptr; }
 void UFGGameInstance::PushError(TSubclassOf<class UFGErrorMessage> errorMessage){ }
 void UFGGameInstance::PushError(UObject* worldContext, TSubclassOf<class UFGErrorMessage> errorMessage){ }
 UFGErrorMessage* UFGGameInstance::GetNextError(){ return nullptr; }
@@ -54,12 +55,17 @@ class UCommonUserSubsystem* UFGGameInstance::GetCommonUserSubsystem() const{ ret
 const UTexture* UFGGameInstance::GetCachedAvatarTexture(const FString& avatarURL){ return nullptr; }
 void UFGGameInstance::AddAvatarToTextureCache(const FString& avatarURL, UTexture* texture){  }
 void UFGGameInstance::AddAndCallDeviceTypeChangedCallback(FFGInputDeviceTypeChangedDelegate Delegate){ }
+void UFGGameInstance::StartInputTelemetry(){ }
+void UFGGameInstance::StopInputTelemetry(){ }
+void UFGGameInstance::OnTelemetryConsentAnswered(bool allowSendGameplayData){ }
 void UFGGameInstance::OnPreLoadMap(const FString& levelName){ }
-void UFGGameInstance::InitGameAnalytics(){ }
-void UFGGameInstance::ShutdownGameAnalytics(){ }
-void UFGGameInstance::SubmitGameStartTelemetry() const{ }
-void UFGGameInstance::SubmitNetModeTelemetry(UWorld* world) const{ }
-void UFGGameInstance::SubmitModTelemetry() const{ }
+bool UFGGameInstance::StartTelemetry(){ return false; }
+bool UFGGameInstance::CreateTelemetrySession(const FGuid& playerId){ return false; }
+bool UFGGameInstance::IsTelemetrySessionActive(){ return false; }
+void UFGGameInstance::DestroyTelemetrySession(){ }
+void UFGGameInstance::SetupTelemetryStates(){ }
+void UFGGameInstance::SubmitHardwareTelemetry(){ }
+void UFGGameInstance::SubmitInputTelemetry(EInputDeviceType deviceType){ }
 void UFGGameInstance::JoinSession_Internal(){ }
 void UFGGameInstance::SetInputDeviceMode(EInputDeviceMode InputDeviceMode, bool bForce){  }
 bool UFGGameInstance::GetConsoleVariableBool(const char* Variable){ return bool(); }

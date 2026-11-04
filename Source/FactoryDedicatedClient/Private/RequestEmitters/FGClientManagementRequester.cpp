@@ -4,5 +4,6 @@
 
 void UFGClientManagementRequester::Response_ClaimServer(FFGServerErrorResponse& ErrorResponse, const FString& AuthenticationToken) const {}
 void UFGClientManagementRequester::Response_SetAdminPassword(const FString& AuthenticationToken) const {}
+void UFGClientManagementRequester::Response_GetTelemetryID(const FFGServerErrorResponse& ErrorResponse, const FString& TelemetryID) const{ }
 void UFGClientManagementRequester::Response_RunCommand(const FFGServerErrorResponse& ErrorResponse,	const FString& CommandResult) const {}
 void UFGClientManagementRequester::Response_ApplyServerOptions(const FFGServerErrorResponse& ErrorResponse) const {}

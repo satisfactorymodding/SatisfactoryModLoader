@@ -237,6 +237,8 @@ protected:
 	void CalculateDestinationStopTarget( float maxLookaheadDistance, TArray<FVehicleStopTarget>& out_stopTargets ) const;
 	/** Checks if there are any vehicles ahead of us that we should avoid by slowing down to their own speed (or waiting for them if they are completely still). Returns false if the path is clear, or true and the distance to vehicle plus vehicle speed */
 	void CalculateVehicleAvoidanceTarget( float maxLookaheadDistance, float vehicleHalfLength, TArray<FVehicleStopTarget>& out_stopTargets ) const;
+	/** Returns the closest vehicle ahead of us along the route within the given distance, and the distance between vehicle centers */
+	const AFGWheeledVehicle* FindClosestVehicleAhead( float maxLookaheadDistance, float& out_distanceToVehicle ) const;
 	/** Calculates the most significant stop target for the vehicle autopilot */
 	TOptional<FVehicleStopTarget> CalculateClosestStopTarget( const FVehicleCommonInputs& commonInputs, const FVehicleAutopilotState& autopilotState ) const;
 	/** Calculates the vehicle speed limit based on the path curvature */

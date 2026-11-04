@@ -34,6 +34,7 @@ float UFGGameUI::GetBarkMessageCooldown(TSubclassOf<class UFGBarkMessageType> ba
 void UFGGameUI::ClearBarkMessageCooldown(TSubclassOf<class UFGBarkMessageType> barkMessageType){  }
 UUserWidget* UFGGameUI::RequestWidget(TSubclassOf< UUserWidget > widgetClass){ return nullptr; }
 void UFGGameUI::ReleaseWidget(UUserWidget* widgetToRelease){ }
+int UFGGameUI::GetNumActiveWidgetsFromPool() const{ return 0; }
 void UFGGameUI::SetControllerDragWidget( UFGControllerDragWidget* widget){ }
 FReply UFGGameUI::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent){ return FReply::Unhandled(); }
 void UFGGameUI::Native_OnOnboardingStepUpdated(UFGOnboardingStep* currentOnboardingStep){ }
@@ -41,3 +42,5 @@ bool UFGGameUI::ShouldShowFicsitSplashWidget() const{ return bool(); }
 bool UFGGameUI::ShouldSuppressMessage( UFGMessage* message) const{ return bool(); }
 void UFGGameUI::SetupDelegates(){ }
 bool UFGGameUI::CanUnpauseTheGame() const{ return bool(); }
+bool UFGGameUI::ShouldLogPoolIssueOnce(const UUserWidget* widget, const UUserWidget* ownedWidget){ return false; }
+void UFGGameUI::WarnOnOwnedPooledWidgets(UUserWidget* widget){ }

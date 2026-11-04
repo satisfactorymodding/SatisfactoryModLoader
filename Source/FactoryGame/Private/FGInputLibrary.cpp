@@ -18,7 +18,7 @@ void UFGInputLibrary::FindAllChildMappingContexts(TMultiMap<TSoftObjectPtr<UFGIn
 TSoftObjectPtr< class UInputAction > UFGInputLibrary::FindInputActionByTag(const FGameplayTag& tag){ return TSoftObjectPtr<class UInputAction>(); }
 TSoftObjectPtr<const UInputAction> UFGInputLibrary::FindInputActionByMappingName(APlayerController* playerController, const FName& mappingName){ return TSoftObjectPtr<const UInputAction>(); }
 bool UFGInputLibrary::GetOverlappingEnhancedKeyMappings(APlayerController* playerController, const FName& inActionName, const FKey& primaryKey, const TArray<FKey>& modifierKeys, TArray<FEnhancedActionKeyMapping>& out_HardConflicts, TArray<FEnhancedActionKeyMapping>& out_SoftConflicts){ return bool(); }
-void UFGInputLibrary::RebindEnhancedKeyMapping(APlayerController* playerController, const FName& inActionName, const FKey& primaryKey, const TArray<FKey>& modifierKeys){ }
+void UFGInputLibrary::RebindEnhancedKeyMapping(APlayerController* playerController, const FName& inActionName, const FKey& primaryKey, const TArray<FKey>& modifierKeys, UPlayerMappableKeySettings* mappableKeySettings){ }
 void UFGInputLibrary::RebindEnhancedControllerMappings(APlayerController* playerController, const TMap<FName, FKey>& pendingRebindMappings){ }
 void UFGInputLibrary::ResetAllEnhancedKeyBindings(APlayerController* playerController, bool currentDeviceOnly){ }
 bool UFGInputLibrary::GetCurrentMappingForAction(APlayerController* playerController, const FName& inActionName, FKey& out_primaryKey, TArray<FKey>& out_modifierKeys){ return bool(); }

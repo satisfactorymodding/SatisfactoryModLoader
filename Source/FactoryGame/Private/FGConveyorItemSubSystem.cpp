@@ -22,12 +22,10 @@ AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
 	this->RootComponent->SetMobility(EComponentMobility::Movable);
 }
 AFGConveyorItemSubsystem* AFGConveyorItemSubsystem::Get(UWorld* world){ return nullptr; }
-void AFGConveyorItemSubsystem::LazyAddConveyorItemOfClass(UClass* Descriptor){ }
 void AFGConveyorItemSubsystem::AddLookupTable(AFGConveyorChainActor* Actor, const TArray<FVector3f>& Position, const TArray<FQuat4f>& Quats){ }
 void AFGConveyorItemSubsystem::RemoveChainActorFromLookupTable(AFGConveyorChainActor* ChainActor){ }
 void AFGConveyorItemSubsystem::Tick(float DeltaSeconds){ Super::Tick(DeltaSeconds); }
 void AFGConveyorItemSubsystem::BeginPlay(){ Super::BeginPlay(); }
-void AFGConveyorItemSubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGConveyorItemSubsystem::InitializeConveyorItems(){ }
 void AFGConveyorItemSubsystem::Update(){ }
 void AFGConveyorItemSubsystem::CleanupLookupTables(){ }

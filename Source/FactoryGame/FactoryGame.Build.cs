@@ -188,6 +188,7 @@ public class FactoryGame : ModuleRules
 			"SSL", 
 			"Gauntlet", 
 			"RainRendering",
+			// "Telemetry",
 		});
 
 		// Only depend on XESS and DLSS blueprint module for non-dedicated servers

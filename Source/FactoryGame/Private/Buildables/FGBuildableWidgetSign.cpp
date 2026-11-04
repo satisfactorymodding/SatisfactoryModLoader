@@ -44,7 +44,7 @@ UFGFactoryClipboardSettings* AFGBuildableWidgetSign::CopySettings_Implementation
 bool AFGBuildableWidgetSign::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings, class AFGPlayerController* player){ return bool(); }
 void AFGBuildableWidgetSign::OnBuildEffectFinished(){ }
 void AFGBuildableWidgetSign::OnLegacyBuildEffectFinished(){ }
-void AFGBuildableWidgetSign::SetPrefabSignData(FPrefabSignData& signData, bool bFilterText){ }
+void AFGBuildableWidgetSign::SetPrefabSignData(FPrefabSignData& signData){ }
 void AFGBuildableWidgetSign::GetSignPrefabData(FPrefabSignData& out_signData) const{ }
 void AFGBuildableWidgetSign::UpdateSignElements(FPrefabSignData& prefabSignData){ }
 float AFGBuildableWidgetSign::GetAdjustedEmissiveValue(int32 Level) const{ return float(); }

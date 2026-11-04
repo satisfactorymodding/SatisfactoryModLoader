@@ -22,6 +22,8 @@ UFGPlayerReportSaveGame* UFGAlternativeSaveSubsystem::LoadPlayerReports(){ retur
 bool UFGAlternativeSaveSubsystem::SavePlayerReports(){ return false; }
 bool UFGAlternativeSaveSubsystem::SavePlayerReportsAsync(){ return false; }
 const FString& UFGAlternativeSaveSubsystem::GetPlayerReportSaveSlotName() const{ return *(new FString()); }
+bool UFGAlternativeSaveSubsystem::SaveTelemetrySettings(class UFGTelemetrySettingsSaveGame* settings){ return false; }
+class UFGTelemetrySettingsSaveGame* UFGAlternativeSaveSubsystem::LoadTelemetrySettings(){ return nullptr; }
 bool UFGAlternativeSaveSubsystem::LoadSettingsFromDisc(){ return false; }
 bool UFGAlternativeSaveSubsystem::SaveCurrentSettingsToDisc(){ return false; }
 bool UFGAlternativeSaveSubsystem::LoadBlueprintsFromDisc(){ return false; }

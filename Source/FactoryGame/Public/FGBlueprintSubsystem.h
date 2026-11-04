@@ -555,6 +555,9 @@ public:
 	UPROPERTY()
 	FBlueprintSaveData mStoredBlueprintData;
 
+	/** SAT-4382: Guards mStoredBlueprintData. */
+	bool mIsSerializingBlueprintData = false;
+
 	/** Stores an array of all buildables that have been loaded into the blueprint world */
 	UPROPERTY()
 	TArray< TObjectPtr<AFGBuildable> > mBlueprintWorldBuildables;

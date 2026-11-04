@@ -149,9 +149,10 @@ public:
 		// 	}
 		// }
 
-		// Then dispatch any pending messages, in order of priority, until the socket is full.
+		// Then dispatch any pending messages, in order of priority, until the socket is full or the cycle's send budget is used up.
 		bool bCanStillSend = true;
-		while (bCanStillSend && !PendingMessages.IsEmpty())
+		RDTProtocol::SizeType BytesSentThisCycle = 0;
+		while (bCanStillSend && BytesSentThisCycle < MaxSendBytesPerCycle && !PendingMessages.IsEmpty())
 		{
 			FOutboundMessage& PendingMessage = *PendingMessages.Peek();
 			if (PendingMessage.MessageBytesSent == PendingMessage.Data.Num())
@@ -209,6 +210,7 @@ public:
 						WriteBuffer.Num() - PendingMessage.HeaderBytesSent, BytesWritten))
 					{
 						PendingMessage.HeaderBytesSent += BytesWritten;
+						BytesSentThisCycle += BytesWritten;
 						bCanStillSend = BytesWritten == WriteBuffer.Num();
 						if (PendingMessage.HeaderBytesSent == WriteBuffer.Num())
 						{
@@ -222,8 +224,8 @@ public:
 					}
 				}
 
-				// Send out as many chunks as the socket can handle.
-				while (PendingMessage.MessageBytesSent < PendingMessage.Data.Num() && bCanStillSend)
+				// Send out as many chunks as the socket can handle, up to this cycle's byte budget.
+				while (PendingMessage.MessageBytesSent < PendingMessage.Data.Num() && bCanStillSend && BytesSentThisCycle < MaxSendBytesPerCycle)
 				{
 					if (PendingMessage.ChunkBytesSent == 0)
 					{
@@ -249,6 +251,7 @@ public:
 					if (static_cast<BaseType&>(*this).WriteData(WriteBuffer.GetData() + PendingMessage.ChunkBytesSent, WriteBuffer.Num() - PendingMessage.ChunkBytesSent, BytesWritten))
 					{
 						PendingMessage.ChunkBytesSent += BytesWritten;
+						BytesSentThisCycle += BytesWritten;
 						if (PendingMessage.ChunkBytesSent == WriteBuffer.Num())
 						{
 							PendingMessage.MessageBytesSent += PendingMessage.CurrentChunkSize;
@@ -326,6 +329,18 @@ public:
 		{
 			WriteCycle();
 		}
+	}
+
+	/**
+	 * Caps how many bytes a single WriteCycle may push into the transport.
+	 * Without a cap the writer fills the transport's send queue every tick. On a shared EOS P2P peer connection
+	 * that starves the game net driver sharing it, which times the client out part way through a transfer.
+	 * The budget is only checked between chunks, so a cycle can overshoot it by at most one packet.
+	 * A value <= 0 restores the previous unbounded behaviour.
+	 */
+	void SetMaxSendBytesPerCycle(RDTProtocol::SizeType InMaxSendBytesPerCycle)
+	{
+		MaxSendBytesPerCycle = InMaxSendBytesPerCycle > 0 ? InMaxSendBytesPerCycle : TNumericLimits<RDTProtocol::SizeType>::Max();
 	}
 
 	bool HasOutboundMessages() const
@@ -445,6 +460,9 @@ private:
 
 	RDTProtocol::MessageIdType NextMessageId = 0;
 	int32 NextInternalTagId = 0;
+
+	/** Per-cycle send budget in bytes. Unbounded by default; transports opt in via SetMaxSendBytesPerCycle. */
+	RDTProtocol::SizeType MaxSendBytesPerCycle = TNumericLimits<RDTProtocol::SizeType>::Max();
 };
 
 /**

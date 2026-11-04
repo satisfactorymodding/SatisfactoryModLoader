@@ -30,6 +30,10 @@ class UFGServerManager;
 class UFGClientRequesterArray;
 class IFGAdvancedGameSettingsInterface;
 
+
+DECLARE_DYNAMIC_DELEGATE_OneParam( FOnTelemetryIDReceived, const FString&, TelemetryID );
+
+
 /**
  * Possible states of the Server API for a particular Server Object.
  * Most of the operations on the Server Object require the Server API to be initialized and available.
@@ -203,7 +207,11 @@ public:
 	void SetAutoLoadSessionName( const FString& SessionName );
 
 	UFUNCTION( BlueprintCallable, Category = "Server" )
-	void SetAgreeToCrashUploadRequested( bool AgreeToCrashUploadRequested );
+	void SetHasAskedForDataSharingConsent( bool hasAskedForConsent );
+	
+	/** @return The server id used for telemetry, an empty guid if telemetry is disabled based on server owner's consent. */
+	UFUNCTION( BlueprintCallable, Category = "Server" )
+	void GetTelemetryId( FOnTelemetryIDReceived callback );
 	
 	/** Prompts the user to change the Client Password for the Server. The user must already have Administrator privileges. */
 	UFUNCTION( BlueprintCallable, Category = "Server" )
@@ -432,9 +440,12 @@ protected:
 	/** Called when we update the authentication token to a new value. This is a good place to re-request certain parts of the server state that might need some privileges to be read */
 	void OnAuthenticationTokenChanged();
 
-	/** UI proxy response to consent request for crash uploading in unattended mode */
+	/** UI proxy response to consent request for data sharing. */
 	UFUNCTION()
-	void OnAgreeToCrashUpload( bool confirmed );
+	void OnAskForDataSharingConsent( bool allowUnattendedCrashReports, bool allowGameplayTelemetry );
+	
+	/** Called when the telemetry ID is received from the server. */
+	void OnTelemetryIDReceived( const FString& TelemetryID );
 
 	/** Requests the password from the user */
 	void RequestPassword( EPrivilegeLevel MinPrivilegeLevel );
@@ -573,6 +584,8 @@ private:
 	bool mAdvancedGameSettingsEnabled;
 	/** Cached claimed server name when we are claiming the server */
 	FString mCachedClaimedServerName;
+	
+	FOnTelemetryIDReceived mOnTelemetryIDReceivedCallback;
 
 	UPROPERTY( Transient )
 	TObjectPtr<UFGClientAPIManager> mClientAPIManager;

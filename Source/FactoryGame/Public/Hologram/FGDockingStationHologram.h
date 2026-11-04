@@ -25,6 +25,7 @@ public:
 	virtual void PreConfigureActor(class AFGBuildable* inBuildable) override;
 	virtual void CheckValidPlacement() override;
 	virtual void ScrollRotate(int32 delta, int32 step) override;
+	virtual bool CanNudgeHologram() const override;
 	// End AFGBuildableHologram interface
 protected:
 	AFGVehiclePathNode* GetPathNodeFromHitResult( const FHitResult& hitResult ) const;

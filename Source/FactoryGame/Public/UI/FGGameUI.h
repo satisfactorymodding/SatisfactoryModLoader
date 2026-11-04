@@ -280,6 +280,8 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
 	void ReleaseWidget( UUserWidget* widgetToRelease );
 	
+	int GetNumActiveWidgetsFromPool() const;
+	
 	UFUNCTION( BlueprintPure )
 	class UFGControllerDragWidget* GetControllerDragWidget() { return mControllerDragWidget; }
 
@@ -319,6 +321,9 @@ protected:
 private:
 	void SetupDelegates();
 	bool CanUnpauseTheGame() const;
+
+	bool ShouldLogPoolIssueOnce( const UUserWidget* widget, const UUserWidget* ownedWidget );
+	void WarnOnOwnedPooledWidgets( UUserWidget* widget );
 public:
 	/** This is the interrupt message we want to play in between if a message was interrupted by a higher prio message. Populated when message is interrupted */
 	UPROPERTY( Transient )
@@ -364,6 +369,8 @@ private:
 	/** Pooled widgets that we don't want to recreate */
 	UPROPERTY( Transient )
 	FUserWidgetPool mUserWidgetPool;
+
+	TSet< TPair< FName, FName > > mLoggedPoolIssueClasses;
 
 	/** Floating inventory slot used when dragging an item with the controller. */
 	UPROPERTY()

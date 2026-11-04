@@ -210,6 +210,13 @@ public:
 	FORCEINLINE FGameModeLoadData GetLoadData() const { return mLoadData; }
 
 	FORCEINLINE UFGDedicatedServerGameModeComponentInterface* GetDedicatedServerInterface() const { return mDedicatedServerInterface; }
+	
+	FName GetStartingPointTagName() const { return mStartingPointTagName; }
+	
+	/** Telemetry helpers */
+	void AddGameplayTelemetryStates();
+	void RemoveGameplayTelemetryStates();
+	
 public:
 	/** Name of the start location option that is parsed */
 	static const TCHAR* StartLocationOption;
@@ -273,6 +280,10 @@ protected:
 private:
 	/** Called by the option manager when the session restart interval has changed */
 	void OnSessionRestartTimeSlotUpdated( FString OptionName, FVariant OptionValue );
+	
+	/** Telemetry helpers */
+	void SubmitPlayerJoinedTelemetry();
+	void SubmitPlayerLeftTelemetry();
 public:
 	/**
 	 * Get the name of the save that we want to create when rebooting the session due to long server uptimes

@@ -99,6 +99,7 @@ bool UFGVehicleAutopilotComponent::UpdateVehiclePathReservations_Parallel(const 
 void UFGVehicleAutopilotComponent::CalculatePathReservationStopTarget(float maxLookaheadDistance, float vehicleHalfLength, TArray<FVehicleStopTarget>& out_stopTargets) const{ }
 void UFGVehicleAutopilotComponent::CalculateDestinationStopTarget(float maxLookaheadDistance, TArray<FVehicleStopTarget>& out_stopTargets) const{ }
 void UFGVehicleAutopilotComponent::CalculateVehicleAvoidanceTarget(float maxLookaheadDistance, float vehicleHalfLength, TArray<FVehicleStopTarget>& out_stopTargets) const{ }
+const AFGWheeledVehicle* UFGVehicleAutopilotComponent::FindClosestVehicleAhead(float maxLookaheadDistance, float& out_distanceToVehicle) const{ return nullptr; }
 TOptional<FVehicleStopTarget> UFGVehicleAutopilotComponent::CalculateClosestStopTarget(const FVehicleCommonInputs& commonInputs, const FVehicleAutopilotState& autopilotState) const{ return TOptional<FVehicleStopTarget>(); }
 float UFGVehicleAutopilotComponent::CalculatePathCurvatureSpeedLimit(const FVehicleCommonInputs& commonInputs) const{ return float(); }
 void UFGVehicleAutopilotComponent::OnRep_CurrentServerTimestamp(){ }

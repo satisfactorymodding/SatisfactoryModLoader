@@ -101,6 +101,9 @@ float AFGSkySphere::GetDirectionalLightIntensityMultiplierOverride(){ return flo
 void AFGSkySphere::RequestCameraUpdate(){ }
 void AFGSkySphere::SetWeatherPreset(UFGWeatherPresetDataAsset* WeatherPreset){ }
 void AFGSkySphere::ForceSetWeather(TSubclassOf<AFGWeatherReaction> ForcedWeatherState){ }
+void AFGSkySphere::UpdateRainEffects(UNiagaraSystem* SystemType, float DesiredIntensity){ }
+void AFGSkySphere::EndRainEffects(){ }
+UNiagaraComponent* AFGSkySphere::GetRainComponent(bool& bHasValidComponent){ return nullptr; }
 void AFGSkySphere::RollNewWeather(){ }
 void AFGSkySphere::TryUpdateSceneCaptureLocation(bool bForce){ }
 void AFGSkySphere::UpdateOcclusionDistance(){ }

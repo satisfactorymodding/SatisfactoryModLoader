@@ -79,7 +79,8 @@ public:
 	/** Updates the name of the session to automatically load on server start and writes it to the server settings */
 	void SetAutoLoadSessionName( const FString& SessionName ) const;
 
-	void SetAgreeToCrashUploadRequested( bool AgreeToCrashUploadRequested ) const;
+	void SetHasAskedForDataSharingConsent( bool hasAskedForConsent ) const;
+	void CallOnTelemetryConsentAnswered( bool allowGameplayTelemetry ) const;
 
 	/** Updates admin password the server has set. This will automatically invalidate all admin tokens */
 	void SetAdminPassword( const FString& PlainTextPassword ) const;
@@ -136,7 +137,7 @@ public:
 	FORCEINLINE float GetAverageTickRate() const { return mAverageTickRate; }
 
 	FString GetAutoLoadSessionName() const;
-	bool GetAgreeToCrashUploadRequested() const;
+	bool HasAskedForDataSharingConsent() const;
 	FServerGameState GetServerGameState() const;
 	FFGGeneratedCertificateData GetCertificateData() const;
 
@@ -146,6 +147,9 @@ public:
 	FUniqueSocket ReclaimServerQuerySocket();
 	/** Re-claims the socket from the net driver and ticks it off main thread */
 	void ClaimServerQuerySocket( FUniqueSocket&& NetDriverSocket );
+	
+	/** Get the unique telemetry ID for this server. */
+	FString GetTelemetryID() const;
 public:
 	static const TCHAR* EntryTicketOptionName;
 
@@ -202,4 +206,3 @@ private:
 	/** Result of the last hard map travel (e.g. GEngine::Browse). First hard travel is the startup of the server */
 	bool mLastTravelToMapResult{false};
 };
-

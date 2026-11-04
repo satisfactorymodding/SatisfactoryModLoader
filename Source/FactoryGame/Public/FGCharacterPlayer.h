@@ -2366,20 +2366,7 @@ private:
 	/** Level sequence actor for the currently playing gameplay cinematic (actor is local) */
 	UPROPERTY()
 	TObjectPtr<class ALevelSequenceActor> mCurrentlyPlayingGameplayCinematic;
-
-	// Begin rain
-	UFUNCTION(BlueprintCallable)
-	void StartRainEffects( UNiagaraSystem* SystemType, float DesiredIntensity );
-
-	UFUNCTION(BlueprintCallable)
-	void EndRainEffects();
-
-	UFUNCTION(BlueprintCallable)
-	UNiagaraComponent* GetRainComponent(bool& bHasValidComponent);
-	
-	UPROPERTY()
-	TObjectPtr<AFGRainActor> mRainActor = nullptr;
-
+		
 	float UnderRainValue = 0;
 
 	FBoundMappingContextHandle mIntroDropPodSequenceMappingContextHandle;

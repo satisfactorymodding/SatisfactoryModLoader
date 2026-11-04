@@ -98,7 +98,7 @@ public:
 	
 	// When a text element is updated, this call will update that element and set the save data
 	UFUNCTION( BlueprintCallable, Category = "WidgetSign" )
-	void SetPrefabSignData( UPARAM( ref ) FPrefabSignData& signData, bool bFilterText = true );  // <FL> [WuttkeP] Added bFilterText parameter.
+	void SetPrefabSignData( UPARAM( ref ) FPrefabSignData& signData); 
 
 	// When a text element is updated, this call will update that element and set the save data
 	UFUNCTION( BlueprintPure, Category = "WidgetSign" )

@@ -123,6 +123,11 @@ public:
 	const FString& GetPlayerReportSaveSlotName() const;
 // </Reported players>
 
+// <Telemetry>
+	bool SaveTelemetrySettings( class UFGTelemetrySettingsSaveGame* settings );
+	class UFGTelemetrySettingsSaveGame* LoadTelemetrySettings();
+// </Telemetry>
+	
 private:
 
 	bool LoadSettingsFromDisc();

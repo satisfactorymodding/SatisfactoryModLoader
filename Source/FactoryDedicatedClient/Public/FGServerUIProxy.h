@@ -18,6 +18,7 @@ DECLARE_DYNAMIC_DELEGATE( FFGServerDeclineCertificateCallback );
 DECLARE_DYNAMIC_DELEGATE( FServerCancelOperationCallback );
 DECLARE_DYNAMIC_DELEGATE_TwoParams( FServerTryPasswordCallback, const FString&, Password, EPrivilegeLevel, MinimumTargetPrivilege );
 DECLARE_DYNAMIC_DELEGATE_OneParam( FServerChangeServerNameCallback, const FString&, NewServerName );
+DECLARE_DYNAMIC_DELEGATE_TwoParams( FOnDataSharingConsentCallback, bool, allowUnattendedCrashReports, bool, allowGameplayTelemetry  );
 
 UENUM( BlueprintType )
 enum class EServerMessage : uint8
@@ -100,10 +101,10 @@ public:
 	void HandleChangeServerNameCallback( const FServerChangeServerNameCallback& ChangeServerNameCallback );
 	
 	/**
-	 * Ask user if he agrees to upload crashes from dedicated server
+	 * Ask the user if they agree to share crash reports and gameplay data from their dedicated server.
 	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Server UI Proxy" )
-	void HandleAgreeToCrashUpload(const FPopupClosed& callback);
+	void HandleAskForDataSharingConsent( const FOnDataSharingConsentCallback& callback );
 };
 
 UCLASS( Abstract, Blueprintable, BlueprintType )
@@ -121,4 +122,3 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Server UI Proxy" )
 	static FText GetServerMessageDescription( EServerMessage Message );
 };
-

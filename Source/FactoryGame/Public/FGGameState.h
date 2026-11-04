@@ -528,6 +528,8 @@ public:
 	/** Broadcast to let the clients now that build effect with the given ID has finished playing */
 	UFUNCTION( NetMulticast, Reliable )
 	void Multicast_ForceCleanupPendingBlueprintBuildEffect( int32 blueprintBuildEffectID );
+	
+	void StartGameplayTelemetry();
 private:
 
 	UFUNCTION()
@@ -562,8 +564,15 @@ private:
 		fgcheck( out_spawnedSubsystem );
 	}
 
-	void SubmitNumPlayersTelemetry() const;
-	void SubmitCheatTelemetry() const;
+	void AddGameplayTelemetryStates();
+	void RemoveGameplayTelemetryStates();
+	void SetCreativeModeTelemetry( bool enabled );
+	void SubmitSessionStartedTelemetry();
+	void SubmitSessionEndedTelemetry();
+	void StartPlayDurationTelemetry();
+	void StopPlayDurationTelemetry();
+	void UpdatePlayDurationTelemetry();
+	
 
 	void TryGiveStartingRecipes( class AFGCharacterPlayer* inPlayer );
 	
@@ -853,7 +862,13 @@ private:
 	bool mIsCreativeModeEnabled = false;
 
 	int32 mCurrentBlueprintBuildEffectID{0};
-
+	
+	UPROPERTY( Replicated )
+	FGuid mTelemetryHostId;
+	
+	float mTelemetryPlayStartTime{0.0f};
+	FTimerHandle mTelemetryPlayDurationTimerHandle;
+	
 public:
 	UFUNCTION()
 	void DebugPlayerInfoCache();

@@ -81,6 +81,7 @@ static const FString GAME_MODE_NODE_RANDOMIZATION_SEED = "FG.GameMode.NodeRandom
 static const FString GAME_RULE_NO_POWER = "FG.GameRules.NoPower";
 static const FString GAME_RULE_NO_FUEL_COST = "FG.GameRules.NoFuelCost";
 static const FString AGREE_TO_CRASH_UPLOAD = "FG.AgreeToCrashUpload";
+static const FString AGREE_TO_SEND_GAMEPLAY_DATA = "FG.SendGameplayData";
 
 /** Logs */
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogGame, Log, All );
@@ -106,6 +107,7 @@ FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogInventory, Log, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogBlackBox, Log, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogConveyorChain, Log, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogWeather, Log, All );
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogGameTelemetry, Log, All );
 
 // Helper macro for detecting if the class has a function implemented in blueprint (Only usable for BlueprintNativeEvent)
 // TODO @Nick: this is such a slow and unnecessary way of looking up whenever UFunction has a script implementation, instead we could just check if it's Script array is not empty

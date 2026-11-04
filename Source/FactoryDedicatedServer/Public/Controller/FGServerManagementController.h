@@ -45,7 +45,13 @@ public:
 	void Handler_SetAutoLoadSessionName( const FString &SessionName ) const;
 
 	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator" )
-	void Handler_SetAgreeToCrashUploadRequested( bool AgreeToCrashUploadRequested ) const;
+	void Handler_SetHasAskedForDataSharingConsent( bool hasAskedForConsent ) const;
+	
+	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator" )
+	void Handler_CallOnTelemetryConsentAnswered( bool allowGameplayTelemetry ) const;
+	
+	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator" )
+	FFGServerErrorResponse Handler_GetTelemetryID( FString& OutTelemetryID ) const;
 	
 	// Runs a console command on the server
 	UFUNCTION( FGServerRequestHandler, FGServerRequestPrivilegeLevel = "Administrator" )
