@@ -57,6 +57,21 @@ EDataValidationResult USMLSessionSetting::IsDataValid(FDataValidationContext& Va
 	}
 	return ValidationResult;
 }
+
+bool USMLSessionSetting::CanEditChange(const FProperty* InProperty) const {
+	auto Name = InProperty->GetFName();
+	if (Name == GET_MEMBER_NAME_CHECKED(USMLSessionSetting, ShowInBuilds)) {
+		return false;
+	}
+	if (Name == GET_MEMBER_NAME_CHECKED(USMLSessionSetting, ManagerTypeAvailability)) {
+		return false;
+	}
+	if (Name == GET_MEMBER_NAME_CHECKED(USMLSessionSetting, IsSettingSessionWide)) {
+		return false;
+	}
+
+	return Super::CanEditChange(InProperty);
+}
 #endif
 
 #undef LOCTEXT_NAMESPACE
