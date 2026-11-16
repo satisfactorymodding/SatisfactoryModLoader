@@ -804,6 +804,7 @@ Synthesized by FICSIT to be the perfect construction material, and used in the m
 "Parts/Fabric","Fabric","","","Game","#resource #item"
 "Parts/Fabric/Description","Used to craft equipment.
 Flexible but durable fabric.","","","Game","#resource #item"
+"Parts/FabricALTPolyester","Alternate: Polyester Fabric","","","",""
 "Parts/Ficsomium","Ficsonium","","","Game","#resource
 #item"
 "Parts/Ficsomium/Description","Usage and production of this material is strictly prohibited. On Earth, that is. There are no rules in space, only efficiency. 
