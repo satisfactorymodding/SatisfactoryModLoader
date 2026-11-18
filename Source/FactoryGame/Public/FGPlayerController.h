@@ -18,6 +18,10 @@
 
 #include "FGPlayerController.generated.h"
 
+
+
+struct FClientInitialLoadStatusData;
+
 struct FVehiclePathVisualizationHandle;
 class UFGVisualizationModeDescriptor;
 class UFGVisualizationMode;
@@ -340,6 +344,11 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_UpdatePlayerRepresentations();
 	// End AFGMapManager RPCs
+	
+	UFUNCTION( Reliable, Client )
+	void Client_InitialNetLoadStatusUpdate( const FClientInitialLoadStatusData& NetLoadStatus );
+	UFUNCTION( Reliable, Server )
+	void Server_RespondNetLoadStatus();
 
 	/** Play the indicated CameraAnim on this camera.
 	 * @param AnimToPlay - Camera animation to play
@@ -380,7 +389,7 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "Input")
 	bool IsInTutorialMode();
-
+	
 	UFUNCTION( Client, Reliable )
 	void Client_NotifyHitFeedback( EHitFeedbackType feedbackType, AActor* damageCauser, AFGCharacterBase* hitCharacter );
 
@@ -888,7 +897,7 @@ protected:
 	// Defaulted to 150 km/h.
 	UPROPERTY( EditDefaultsOnly, Category = "Achievement" )
 	float mSpeedToReachForAchievement = 4166.667f;
-
+	
 public:
 	/**
 	 * Returns the player info handle containing the online identity information for this player controller for the platform they are currently logging in from (aka primary backend)

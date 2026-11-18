@@ -65,6 +65,7 @@ bool AFGGameMode::FindInactivePlayer(APlayerController* PC){ return bool(); }
 void AFGGameMode::GenericPlayerInitialization(AController* C){ }
 bool AFGGameMode::IsPaused() const{ return bool(); }
 void AFGGameMode::InitStartSpot_Implementation(AActor* StartSpot, AController* NewPlayer){ }
+void AFGGameMode::GameWelcomePlayer(UNetConnection* Connection, FString& RedirectURL){ Super::GameWelcomePlayer(Connection, RedirectURL); }
 void AFGGameMode::PostActorsInitialized(const UWorld::FActorsInitializedParams& inParams){ }
 void AFGGameMode::SetLastAutoSaveId(uint8 newId){ }
 uint8 AFGGameMode::GenerateNextAutoSaveId(){ return uint8(); }

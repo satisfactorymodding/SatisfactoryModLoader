@@ -106,6 +106,10 @@ public:
 
 	UFUNCTION( Client, Reliable )
 	void Client_SendRestartTimeNotification( float timeLeft );
+	
+	// Notify the server we have received initial load data
+	UFUNCTION( Server, Reliable )
+	void Server_InitialNetLoadComplete(); 
 };
 
 /**
@@ -162,6 +166,9 @@ public:
 
 	UFUNCTION()
 	void CheckClientSubsystemsValid();
+	
+	UFUNCTION()
+	bool IsWaitingForNetLoadProgress() const;
 
 	/** Finds a free slot for a new player state */
 	int32 FindFreeSlot( class AFGPlayerState* playerState );
@@ -517,7 +524,18 @@ public:
 	/** Returns information about all players that are not currently online in the session */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Online" )
 	TArray<FCachedPlayerInfo> GetOfflineCachedPlayerInfosInSession() const;
+	
+	/** UNetConnection will fire a delegate when a NetConnections initial load is satisfied */
+	void OnInitialNetLoadStatusUpdate( UNetConnection* connection, const FClientInitialLoadStatusData& statusData ); 
 
+	/** Called from a clients PlayerController when they receive information about their status on join */
+	void ClientSetInitialNetLoadStatus( const FClientInitialLoadStatusData& statusData );
+	
+	/** Remove Pending response from NetLoadStatus map */
+	void ReceivedResponseForNetLoadStatusFromClient( APlayerController* playerController  );
+	
+	/** Remove Pending NetLoad Entry for Controller (disconnect or removed) **/
+	void RemoveControllerFromPendingReplyNetLoadStatus( const APlayerController* playerController ) { mPendingReplyNetLoadStatusMap.Remove( playerController ); }
 	/** Allocates a new blueprint build effect ID. To play a Blueprint build effect, call this, then SetBlueprintBuildEffectID on buildings, and then finish with Server_FinalizeBlueprintBuildEffect */
 	int32 Authority_AllocateNewBlueprintBuildEffectID();
 
@@ -531,6 +549,14 @@ public:
 	
 	void StartGameplayTelemetry();
 private:
+	UPROPERTY()
+	TMap< TObjectPtr <APlayerController >, bool > mPendingReplyNetLoadStatusMap; 
+
+	//---Client Side Load Tracking--- 
+	TUniquePtr<FClientInitialLoadStatusData> mClientInitialNetLoadStatus;
+	int32 mHighestAckedNetLoadCount = 0;
+	int32 mInitialNetLoadNoProgress = 0;
+	// ----------------------------//
 
 	UFUNCTION()
 	void OnRep_CheatNoPower();

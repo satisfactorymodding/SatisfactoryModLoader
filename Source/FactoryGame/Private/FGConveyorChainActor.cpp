@@ -58,7 +58,7 @@ void AFGConveyorChainActor::MoveItemsFromChainToBelts(){ }
 void AFGConveyorChainActor::ClientMoveItemsFromChainToBelts(){ }
 void AFGConveyorChainActor::NetUpdateBuildSpline(){ }
 void AFGConveyorChainActor::NetUpdateBuildItemsFromRanges(int32 numItems, const TArray< FConveyorItemDescRange >& descRanges, const TArray< FConveyorItemSpacingRange >& spacingRanges, int32 currentRemovalIndex, int32 currentAdditionIndex){ }
-void AFGConveyorChainActor::MarkChainForItemUpdate(){ }
+bool AFGConveyorChainActor::MarkChainForItemUpdate(){ return bool(); }
 int32 AFGConveyorChainActor::GetNumItemsInSegment(const FConveyorChainSplineSegment& splineSegment) const{ return int32(); }
 int32 AFGConveyorChainActor::GetNumActualItems() const{ return int32(); }
 bool AFGConveyorChainActor::IsItemIndexValid(int32 index) const{ return bool(); }
@@ -85,11 +85,14 @@ void AFGConveyorChainActor::RemoveClientAvailableConveyor( AFGBuildableConveyorB
 void AFGConveyorChainActor::HandleClientRemovals(){ }
 void AFGConveyorChainActor::HandleClientAdditions(){ }
 void AFGConveyorChainActor::AddConnectionEntryForItemStateIndices(UNetConnection* connection){ }
+void AFGConveyorChainActor::AddConnectionEntryForItemStateIndices(UNetConnection* connection, int32 removalIndex, int32 additionIndex){ }
 void AFGConveyorChainActor::RemoveConnectionEntryForItemStateIndices(UNetConnection* connection){ }
 uint8 AFGConveyorChainActor::EstimatedMaxNumGrab_Threadsafe(float estimatedDeltaTime) const{ return uint8(); }
 float AFGConveyorChainActor::GetAndUseTimeDebtForItem(int32 itemIndex, float dt){ return float(); }
 void AFGConveyorChainActor::RegisterConveyorMonitor(class AFGBuildableConveyorMonitor* monitor){  }
 void AFGConveyorChainActor::UnregisterConveyorMonitor(class AFGBuildableConveyorMonitor* monitor){  }
 void AFGConveyorChainActor::UpdateAttachedMonitors(float deltaTime){ }
+float AFGConveyorChainActor::CalculateLengthWithoutLifts(){ return float(); }
+void AFGConveyorChainActor::SetNetCullDistanceFromLength(){ }
 void AFGConveyorChainActor::DebugDrawChainInfo(){ }
 void AFGConveyorChainActor::DebugDrawItemTimeDebt(int32 itemIndex){ }

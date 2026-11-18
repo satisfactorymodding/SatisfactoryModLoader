@@ -75,7 +75,9 @@ void AFGBuildableFactory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(AFGBuildableFactory, mHasPower);
 	DOREPLIFETIME(AFGBuildableFactory, mIsOverclocked);
 	DOREPLIFETIME(AFGBuildableFactory, mIsAlienOverclocked);
+	DOREPLIFETIME(AFGBuildableFactory, mFactoryConnectionStates);
 }
+void AFGBuildableFactory::SetFactoryConnectionConnected(const UFGFactoryConnectionComponent* connection, bool isConnected){ }
 void AFGBuildableFactory::BeginPlay(){ Super::BeginPlay(); }
 void AFGBuildableFactory::EndPlay(const EEndPlayReason::Type endPlayReason){ Super::EndPlay(endPlayReason); }
 void AFGBuildableFactory::Tick(float dt){ Super::Tick(dt); }
@@ -175,3 +177,4 @@ void AFGBuildableFactory::StartAlienOverclockingEffects(){ }
 void AFGBuildableFactory::GetSlotsForPowerShardType(EPowerShardType powerShardType, TArray< int32 >& out_slotIndices) const{ }
 EPowerShardType AFGBuildableFactory::GetPowerShardTypeForSlot(int32 slotIdx) const{ return EPowerShardType(); }
 void AFGBuildableFactory::RecalculateProducingPowerConsumption(){ }
+void AFGBuildableFactory::OnRep_FactoryConnectionStates(){ }

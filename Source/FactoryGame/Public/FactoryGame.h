@@ -108,6 +108,12 @@ FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogBlackBox, Log, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogConveyorChain, Log, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogWeather, Log, All );
 FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogGameTelemetry, Log, All );
+#if !IS_PUBLIC_BUILD
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogClientJoinRepStatus, Log, All );
+#else
+FACTORYGAME_API DECLARE_LOG_CATEGORY_EXTERN( LogClientJoinRepStatus, Verbose, All );
+#endif
+
 
 // Helper macro for detecting if the class has a function implemented in blueprint (Only usable for BlueprintNativeEvent)
 // TODO @Nick: this is such a slow and unnecessary way of looking up whenever UFunction has a script implementation, instead we could just check if it's Script array is not empty

@@ -28,8 +28,14 @@ public:
 	bool IsValid() const;
 	
 public:
-	/** When this state was received. */
+	/** When this state was received (client time). */
 	double TimeStamp = 0.f;
+
+	/**
+	 * Server time the state was taken at. The client extrapolates from this rather than from when the state was received, so uneven delivery doesn't move its prediction.
+	 * Not a UPROPERTY on purpose, it only replicates along with a change to the position (stationary trains don't replicate the state every frame).
+	 */
+	double ServerTime = 0.0;
 
 	/** Server's first vehicle, this is dependent on the direction of travel. */
 	UPROPERTY()

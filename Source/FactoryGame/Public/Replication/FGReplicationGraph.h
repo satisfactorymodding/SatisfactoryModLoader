@@ -20,6 +20,9 @@ enum class EClassRepPolicy : uint8
 	CRP_RelevantAllConnections,			// Routes to mAlwaysRelevantNode or mAlwaysRelevantStreamingLevelNode node
 	CRP_ConditionalRelevant,			// Routes to mConditionalRelevantNode that runs IsNetRelevantFor() on each actor. Expects each actor to be relevant for all connections 
 
+	// Route To Player State node
+	CRP_PlayerStateFrequencyLimiter,
+	
 	// Spatialized routes into the grid node
 	CRP_Spatialize_Static,				// Routes to mGridNode: these actors don't move and don't need to be updated every frame.
 	CRP_Spatialize_Dynamic,				// Routes to mGridNode: these actors move frequently and are updated once per frame.
@@ -66,6 +69,9 @@ public:
 
 	/** Sets the class replication info for a class */
 	void InitClassReplicationInfo( struct FClassReplicationInfo& classInfo, UClass* inClass, bool isSpatialized, int32 NetServerMaxTickRate );
+
+	/** Debugging (Net.RepGraph.CellCounts): the cull distance the spatial grid uses to place this actor into cells. 0 if the actor isn't in the graph */
+	float GetGridCullDistance_Debug( AActor* actor ) const;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UClass>> mSpatializedClasses;
@@ -218,15 +224,19 @@ private:
 };
 
 /** This is a specialized node for handling PlayerState replication in a frequency limited fashion. It tracks all player states but only returns a subset of them to the replication driver each frame. */
+// @TODOrepGraph -	Might be good to do a better rework of player states to utilize dormancy. That could mean modifying this Node to support DORM 
+//					or it could mean removing this node entirely and just using the AlwaysRelevantNode. At time of writing PlayerStates do not utilize dormancy
+//					and introducing it close to a release is undesirable as there are numerous ways that could go quite noticeably wrong for players
 UCLASS()
 class FACTORYGAME_API UFGReplicationGraphNode_PlayerStateFrequencyLimiter : public UReplicationGraphNode
 {
 	GENERATED_BODY()
 
+public:
 	UFGReplicationGraphNode_PlayerStateFrequencyLimiter();
 
-	virtual void NotifyAddNetworkActor( const FNewReplicatedActorInfo& Actor ) override { }
-	virtual bool NotifyRemoveNetworkActor( const FNewReplicatedActorInfo& ActorInfo, bool bWarnIfNotFound = true ) override { return false; }
+	virtual void NotifyAddNetworkActor( const FNewReplicatedActorInfo& ActorInfo ) override;
+	virtual bool NotifyRemoveNetworkActor( const FNewReplicatedActorInfo& ActorInfo, bool bWarnIfNotFound = true ) override;
 
 	virtual void GatherActorListsForConnection( const FConnectionGatherActorListParameters& Params ) override;
 
@@ -234,13 +244,19 @@ class FACTORYGAME_API UFGReplicationGraphNode_PlayerStateFrequencyLimiter : publ
 
 	virtual void LogNode( FReplicationGraphDebugInfo& DebugInfo, const FString& NodeName ) const override;
 
+	void BindForceNetUpdateDelegate( const FActorRepListType& actor, FGlobalActorReplicationInfo& globalActorInfo );
+	void UnbindForceNetUpdateDelegate( const FActorRepListType& actor, FGlobalActorReplicationInfo& globalActorInfo );
+	void ForceNetUpdateEvent( FActorRepListType actor, FGlobalActorReplicationInfo& globalInfo );
+	
 	/** How many actors we want to return to the replication driver per frame. Will not suppress ForceNetUpdate. */
 	int32 TargetActorsPerFrame = 1;
 
 private:
-
+	TMap< FDelegateHandle, TWeakObjectPtr< AActor > > ActorForceNetUpdateDelegateHandleMap;
+	
 	TArray<FActorRepListRefView> ReplicationActorLists;
 	FActorRepListRefView ForceNetUpdateReplicationActorList;
+	FActorRepListRefView PendingForceNetUpdateActorList;
 };
 
 UCLASS()

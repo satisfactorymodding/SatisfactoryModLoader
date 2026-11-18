@@ -46,6 +46,7 @@ bool AFGRailroadSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGRailroadSubsystem::ShouldSave_Implementation() const{ return bool(); }
 AFGRailroadSubsystem* AFGRailroadSubsystem::Get(UWorld* world){ return nullptr; }
 AFGRailroadSubsystem* AFGRailroadSubsystem::Get(UObject* worldContext){ return nullptr; }
+void AFGRailroadSubsystem::OnServerSimulationStateReceived(double serverTime, double receiveTime){ }
 void AFGRailroadSubsystem::AddRailroadVehicle(AFGRailroadVehicle* vehicle){ }
 void AFGRailroadSubsystem::RemoveRailroadVehicle(AFGRailroadVehicle* vehicle){ }
 void AFGRailroadSubsystem::CoupleTrains(AFGRailroadVehicle* parentVehicle, AFGRailroadVehicle* otherVehicle){ }

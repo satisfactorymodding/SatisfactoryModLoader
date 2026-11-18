@@ -13,6 +13,8 @@ void UFGConveyorChainRemoteCallObject::Server_RequestChainItemUpdate_Implementat
 void UFGConveyorChainRemoteCallObject::Client_RespondChainItemUpdate_Implementation(const FConveyorChainItemRPCData& chainData){ }
 void UFGConveyorChainRemoteCallObject::Server_RequestChainSegmentData_Implementation(const FConveyorChainSegmentRPCData& segmentData){ }
 void UFGConveyorChainRemoteCallObject::Client_RespondChainSegmentData_Implementation(const FConveyorChainSegmentRPCData& segmentData){ }
+void UFGConveyorChainRemoteCallObject::TryAnswerParkedRequests(){ }
+bool UFGConveyorChainRemoteCallObject::IsRelayOverBudget() const{ return bool(); }
 AFGConveyorChainSubsystem::AFGConveyorChainSubsystem() : Super() {
 	this->mReparamStepsPerSegment = 10;
 	this->mServerFactoryTickTime = 0.0;
@@ -44,10 +46,13 @@ void AFGConveyorChainSubsystem::ReceiveItemDescriptorRepArray(const TArray<TSubc
 void AFGConveyorChainSubsystem::NotifyChainReceivedItemUpdate(AFGConveyorChainActor* chainActor){ }
 void AFGConveyorChainSubsystem::NotifyChainNeedsSegmentUpdate(AFGConveyorChainActor* ChainActor){ }
 void AFGConveyorChainSubsystem::NotifyChainReceiveSegmentUpdate(AFGConveyorChainActor* chainActor){ }
-void AFGConveyorChainSubsystem::NotifyChainNeedsItemUpdate(AFGConveyorChainActor* ChainActor){ }
+bool AFGConveyorChainSubsystem::NotifyChainNeedsItemUpdate(AFGConveyorChainActor* ChainActor){ return bool(); }
+void AFGConveyorChainSubsystem::OnClientItemResponseProcessed(UFGConveyorChainRemoteCallObject* chainRCO){ }
 void AFGConveyorChainSubsystem::OnRep_ServerFactoryTickTime(float oldValue){ }
 float AFGConveyorChainSubsystem::GetAndConsumeClientTimeDebt(float updateDelta){ return float(); }
 float AFGConveyorChainSubsystem::GetAverageServerTickDeltaTime(){ return float(); }
 bool AFGConveyorChainSubsystem::IsUnusuallyLargeTickDelta(){ return bool(); }
-
+float AFGConveyorChainSubsystem::GetNetActorFrequencyFromBeltSpeed(float slowestBeltSpeed){ return float(); }
 FGetAdditionalConveyorItemDescriptors AFGConveyorChainSubsystem::GetAdditionalItemDescriptors;
+void AFGConveyorChainSubsystem::TickServerRelay(float deltaSeconds){ }
+void AFGConveyorChainSubsystem::TrackClientItemRelayDrain(){ }

@@ -12,6 +12,7 @@ void UFGGameStateRemoteCallObject::Server_SetCreativeModeEnabled_Implementation(
 void UFGGameStateRemoteCallObject::Client_SendAutoSaveTimeNotification_Implementation(float timeLeft){ }
 void UFGGameStateRemoteCallObject::Client_SendAutoSaveFinishedNotification_Implementation(){ }
 void UFGGameStateRemoteCallObject::Client_SendRestartTimeNotification_Implementation(float timeLeft){ }
+void UFGGameStateRemoteCallObject::Server_InitialNetLoadComplete_Implementation(){ }
 AFGGameState::AFGGameState() : Super() {
 	this->mTurboModeMultiplier = 0.0;
 	this->mStorySubsystem = nullptr;
@@ -144,6 +145,7 @@ void AFGGameState::Init(){ }
 bool AFGGameState::AreClientSubsystemsValid() const{ return bool(); }
 const TArray<TSubclassOf<AFGSubsystem>>& AFGGameState::GetClientGatingSubsystemClasses(){ return *(new TArray<TSubclassOf<AFGSubsystem>>); }
 void AFGGameState::CheckClientSubsystemsValid(){ }
+bool AFGGameState::IsWaitingForNetLoadProgress() const{ return bool(); }
 int32 AFGGameState::FindFreeSlot( AFGPlayerState* playerState){ return int32(); }
 bool AFGGameState::IsTradingPostBuilt() const{ return bool(); }
 bool AFGGameState::HasInitalTradingPostLandAnimPlayed() const{ return bool(); }
@@ -208,6 +210,9 @@ UE::Online::FAccountId AFGGameState::FindPlayerAccountIdByHandle(const FPlayerIn
 UE::Online::FAccountId AFGGameState::FindLastSeenPlayerAccountIdByHandle(const FPlayerInfoHandle& playerInfoHandle) const{ return UE::Online::FAccountId(); }
 const FCachedPlayerInfo* AFGGameState::FindPlayerInfoDataByHandle(const FPlayerInfoHandle& playerInfoHandle) const{ return nullptr; }
 TArray<FCachedPlayerInfo> AFGGameState::GetOfflineCachedPlayerInfosInSession() const{ return TArray<FCachedPlayerInfo>(); }
+void AFGGameState::OnInitialNetLoadStatusUpdate(UNetConnection* connection, const FClientInitialLoadStatusData& statusData){ }
+void AFGGameState::ClientSetInitialNetLoadStatus(const FClientInitialLoadStatusData& statusData){ }
+void AFGGameState::ReceivedResponseForNetLoadStatusFromClient(APlayerController* playerController){ }
 int32 AFGGameState::Authority_AllocateNewBlueprintBuildEffectID(){ return int32(); }
 void AFGGameState::Multicast_AddPendingBlueprintBuildEffect_Implementation(int32 blueprintBuildEffectID, const FTransform& originTransform, int32 expectedBuildingsAndLightweightsCount, APawn* buildEffectInstigator){ }
 void AFGGameState::Multicast_ForceCleanupPendingBlueprintBuildEffect_Implementation(int32 blueprintBuildEffectID){ }

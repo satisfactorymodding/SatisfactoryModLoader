@@ -19,6 +19,7 @@ void UFGFactoryConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetime
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGFactoryConnectionComponent, mHasConnectedComponent);
 }
+void UFGFactoryConnectionComponent::PostInitProperties(){ Super::PostInitProperties(); }
 void UFGFactoryConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGFactoryConnectionComponent::OnRegister(){ Super::OnRegister(); }
 void UFGFactoryConnectionComponent::OnUnregister(){ Super::OnUnregister(); }
@@ -45,5 +46,6 @@ UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindCompatibleOver
 		float radius){ return nullptr; }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindOverlappingConnections(UWorld* world, const FVector& location, const AActor* priorityActor, float radius, EFactoryConnectionDirection direction, const TArray<TSubclassOf<class AFGBuildable>>& buildableClassFilter, const TSet<class UFGFactoryConnectionComponent*>& ignoredConnections){ return nullptr; }
 int32 UFGFactoryConnectionComponent::FindAllOverlappingConnections(TArray<UFGFactoryConnectionComponent*>& out_Connections, UWorld* world, const FVector& location, float radius, EFactoryConnectionDirection direction, const TArray<TSubclassOf<class AFGBuildable>>& buildableClassFilter, const TSet<class UFGFactoryConnectionComponent*>& ignoredConnections){ return int32(); }
+void UFGFactoryConnectionComponent::UpdateOwnerConnectedState() const{ }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::CheckIfSnapOnlyIsBlockedByOtherConnection(UFGFactoryConnectionComponent* connectionToCheck,
 		const TArray< FOverlapResult >& potentialBlockers){ return nullptr; }
