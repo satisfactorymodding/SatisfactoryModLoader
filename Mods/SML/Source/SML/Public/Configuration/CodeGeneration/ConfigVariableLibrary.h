@@ -68,6 +68,10 @@ public:
     UFUNCTION(BlueprintPure, Category="ConfigVariables", meta=(DisplayName = "Make Config Variable (Map)", Keywords="construct build", NativeMakeFunc))
     static FConfigVariableDescriptor MakeConfigVariableMap(const FConfigVariableDescriptor& KeyType, const FConfigVariableDescriptor& ValueType);
 
+    /** Creates new instance of raw json value config variable */
+    UFUNCTION(BlueprintPure, Category="ConfigVariables", meta=(DisplayName = "Make Config Variable (Raw Json Value)", Keywords="construct build", NativeMakeFunc))
+    static FConfigVariableDescriptor MakeConfigVariableRawJsonValue();
+
     DECLARE_FUNCTION(execMakeConfigVariableStruct) {
         const FDynamicStructInfo StructInfo = FReflectionHelper::CheckStructParameter(Context, Stack);
         P_FINISH;

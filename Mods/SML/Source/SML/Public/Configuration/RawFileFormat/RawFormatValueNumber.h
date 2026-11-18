@@ -26,6 +26,11 @@ public:
     /** Updates raw value to specified 32-bit signed integer */
     UFUNCTION(BlueprintCallable)
     void SetValueInt(int32 NewValue);
+
+    virtual TSharedPtr<FJsonValue> ToJson() const override;
+
+    /** Creates a new URawFormatValueNumber from the given JSON value */
+    static URawFormatValueNumber* FromJson(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue);
 };
 
 FORCEINLINE void URawFormatValueNumber::SetValueFloat(float NewValue) {
@@ -34,4 +39,14 @@ FORCEINLINE void URawFormatValueNumber::SetValueFloat(float NewValue) {
 
 FORCEINLINE void URawFormatValueNumber::SetValueInt(int32 NewValue) {
     this->Value = NewValue;
+}
+
+FORCEINLINE TSharedPtr<FJsonValue> URawFormatValueNumber::ToJson() const {
+    return MakeShareable(new FJsonValueNumber(Value));
+}
+
+FORCEINLINE URawFormatValueNumber* URawFormatValueNumber::FromJson(UObject* Outer, const TSharedPtr<FJsonValue>& JsonValue) {
+    URawFormatValueNumber* Number = NewObject<URawFormatValueNumber>(Outer);
+    Number->Value = JsonValue->AsNumber();
+    return Number;
 }

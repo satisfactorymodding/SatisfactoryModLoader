@@ -215,4 +215,8 @@ FConfigVariableDescriptor UConfigPropertyArray::CreatePropertyDescriptor_Impleme
     return UConfigVariableLibrary::MakeConfigVariableArray(DefaultValue->CreatePropertyDescriptor(Context, OuterPath));
 }
 
+UConfigProperty* UConfigPropertyArray::GetChildProperty_Implementation(const int32 PropertyIndex) {
+    return Values[PropertyIndex];
+}
+
 #undef LOCTEXT_NAMESPACE
