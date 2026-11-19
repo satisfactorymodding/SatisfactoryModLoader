@@ -53,6 +53,10 @@ public:
 	virtual void OnUnregister() override;
 	// End ActorComponent interface
 
+	// Begin UObject interface
+	virtual void PostInitProperties() override;
+	// End UObject interface
+
 	// Begin save interface
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	// End save interface

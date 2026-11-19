@@ -94,3 +94,5 @@ void AFGBuildableConveyorBase::OnRep_ChainInformation(){ }
 void AFGBuildableConveyorBase::PlayPickupFX(int32 itemIndex) const{ }
 void AFGBuildableConveyorBase::Factory_DequeueItem(){ }
 void AFGBuildableConveyorBase::Factory_EnqueueItem(const FInventoryItem& item, float initialOffset){ }
+void AFGBuildableConveyorBase::SetFactoryConnectionConnected(const UFGFactoryConnectionComponent* connection, bool connected){ }
+void AFGBuildableConveyorBase::OnRep_FactoryConnectionStates(){ }

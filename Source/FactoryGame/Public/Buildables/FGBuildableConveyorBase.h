@@ -7,6 +7,7 @@
 #include "FGConveyorChainActor.h"
 #include "FGRemoteCallObject.h"
 #include "FGSignificanceInterface.h"
+#include "FGFactoryConnectionStateOwner.h"
 #include "FGConveyorItem.h"
 #include "FGFactoryConnectionComponent.h"
 #include "FGBuildableConveyorBase.generated.h"
@@ -94,7 +95,7 @@ extern bool GIsConveyorFreezingEnabled;
  * Responsible for common logic such as the factory ticking, replication, interactions etc.
  */
 UCLASS(Abstract)
-class FACTORYGAME_API AFGBuildableConveyorBase : public AFGBuildable, public IFGSignificanceInterface
+class FACTORYGAME_API AFGBuildableConveyorBase : public AFGBuildable, public IFGSignificanceInterface, public IFGFactoryConnectionStateOwner
 {
 	GENERATED_BODY()
 public:
@@ -149,6 +150,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Significance" )
 	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
 	// End IFGSignificanceInterface
+
+	// Begin IFGFactoryConnectionStateOwner
+	virtual void SetFactoryConnectionConnected( const UFGFactoryConnectionComponent* connection, bool connected ) override;
+	// End IFGFactoryConnectionStateOwner
 
 	//~ Begin IFGDismantleInterface
 	virtual void Upgrade_Implementation( AActor* newActor ) override;
@@ -407,6 +412,13 @@ protected:
 	
 	/** For conveyor chain support this is a quick way to tell if this base conveyor is a lift or not */
 	bool mIsConveyorLift = false;
+
+	/** Replizierte Verbindungszustände (Bitmaske je Verbindung). */
+	UPROPERTY( ReplicatedUsing = OnRep_FactoryConnectionStates )
+	FFGFactoryConnectionStates mFactoryConnectionStates;
+
+	UFUNCTION()
+	void OnRep_FactoryConnectionStates();
 	
 private:
 	int16 mLastItemsDirtyKey = -2;

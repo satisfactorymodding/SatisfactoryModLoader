@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "FGBuildable.h"
 #include "FGFactoryConnectionComponent.h"
+#include "FGFactoryConnectionStateOwner.h"
 #include "FGBuildableConveyorAttachment.generated.h"
 
 /**
@@ -105,15 +106,20 @@ protected:
  * Base class for conveyor attachments such as the splitters and mergers.
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildableConveyorAttachment : public AFGBuildable
+class FACTORYGAME_API AFGBuildableConveyorAttachment : public AFGBuildable, public IFGFactoryConnectionStateOwner
 {
 	GENERATED_BODY()
 public:
 	AFGBuildableConveyorAttachment();
 
 	// Begin AActor interface
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	// End AActor interface
+
+	// Begin IFGFactoryConnectionStateOwner
+	virtual void SetFactoryConnectionConnected( const UFGFactoryConnectionComponent* connection, bool connected ) override;
+	// End IFGFactoryConnectionStateOwner
 
 	// Begin AFGBuildable interface
 	virtual bool ShouldShowCenterGuidelinesForHologram( const AFGHologram* hologram ) const override;
@@ -163,6 +169,13 @@ protected:
 	// Example: When building a normal conveyor splitter, and we hover over a conveyor lift, we want to switch to a conveyor lift splitter.
 	UPROPERTY(Instanced, EditDefaultsOnly, BlueprintReadOnly, Category = "Buildable", meta = (AllowAbstract = false))
 	TArray<TObjectPtr<UFGHologramOverride>> mHologramOverrides;
+
+	/** Replizierte Verbindungszustände (Bitmaske je Verbindung). */
+	UPROPERTY( ReplicatedUsing = OnRep_FactoryConnectionStates )
+	FFGFactoryConnectionStates mFactoryConnectionStates;
+
+	UFUNCTION()
+	void OnRep_FactoryConnectionStates();
 };
 
 /* Lightweight class containing no components, used for abstract instances etc. */

@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "FGBuildable.h"
 #include "FGSignificanceInterface.h"
+#include "FGFactoryConnectionStateOwner.h"
 #include "FGBuildableFactory.generated.h"
 
 class UFGPipeConnectionComponent;
@@ -24,7 +25,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam( FBuildingCurrentPotentialChanged, float );
  * @todorefactor Comments about the Factory_ and non factory code.
  */
 UCLASS( Abstract )
-class FACTORYGAME_API AFGBuildableFactory : public AFGBuildable, public IFGSignificanceInterface, public IFGConditionalReplicationInterface
+class FACTORYGAME_API AFGBuildableFactory : public AFGBuildable, public IFGSignificanceInterface, public IFGConditionalReplicationInterface, public IFGFactoryConnectionStateOwner
 {
 	GENERATED_BODY()
 public:
@@ -43,6 +44,10 @@ public:
 	// Begin IFGSaveInterface
 	virtual void PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion) override;
 	// End IFGSaveInterface
+
+	//Begin IFGFactoryConnectionStateOwner
+	virtual void SetFactoryConnectionConnected( const UFGFactoryConnectionComponent* connection, bool connected ) override;
+	//End IFGFactoryConnectionStateOwner
 
 	//Begin IFGSignificanceInterface
 	virtual float GetSignificanceRange_Implementation() const override { return mSignificanceRange; }
@@ -810,6 +815,12 @@ private:
 	/** Caching all skeletal meshes so that we can set tick optimizations later from significance manager */
 	UPROPERTY()
 	TArray< TObjectPtr<USkeletalMeshComponent> > mCachedSkeletalMeshes;
+	/** Replizierte Verbindungszustände (Bitmaske je Verbindung). */
+	UPROPERTY( ReplicatedUsing = OnRep_FactoryConnectionStates )
+	FFGFactoryConnectionStates mFactoryConnectionStates;
+
+	UFUNCTION()
+	void OnRep_FactoryConnectionStates();
 protected:
 	/** The range to keep the factory in significance */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )

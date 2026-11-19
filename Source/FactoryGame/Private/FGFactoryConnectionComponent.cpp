@@ -22,6 +22,7 @@ void UFGFactoryConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetime
 void UFGFactoryConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGFactoryConnectionComponent::OnRegister(){ Super::OnRegister(); }
 void UFGFactoryConnectionComponent::OnUnregister(){ Super::OnUnregister(); }
+void UFGFactoryConnectionComponent::PostInitProperties(){ Super::PostInitProperties(); }
 void UFGFactoryConnectionComponent::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGFactoryConnectionComponent::SetInventory( UFGInventoryComponent* inventory){ }
 void UFGFactoryConnectionComponent::SetInventoryAccessIndex(int32 index){ }

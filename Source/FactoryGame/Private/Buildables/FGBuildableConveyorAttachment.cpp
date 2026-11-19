@@ -22,3 +22,6 @@ void AFGBuildableConveyorAttachment::SaveCurrentDirections(){ }
 AFGBuildableConveyorAttachmentLightweight::AFGBuildableConveyorAttachmentLightweight() : Super() {
 
 }
+void AFGBuildableConveyorAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const { Super::GetLifetimeReplicatedProps(OutLifetimeProps); }
+void AFGBuildableConveyorAttachment::SetFactoryConnectionConnected(const UFGFactoryConnectionComponent* connection, bool connected){ }
+void AFGBuildableConveyorAttachment::OnRep_FactoryConnectionStates(){ }
