@@ -19,6 +19,7 @@ enum class EClassRepPolicy : uint8
 	CRP_NotRouted,						// Doesn't map to any node. Used for special case actors that handled by special case nodes (UShooterReplicationGraphNode_PlayerStateFrequencyLimiter)
 	CRP_RelevantAllConnections,			// Routes to mAlwaysRelevantNode or mAlwaysRelevantStreamingLevelNode node
 	CRP_ConditionalRelevant,			// Routes to mConditionalRelevantNode that runs IsNetRelevantFor() on each actor. Expects each actor to be relevant for all connections 
+	CRP_PlayerStateFrequencyLimiter,	// Routes to mPlayerStateNode (Spielbuild 520140, eigene Rekonstruktion)
 
 	// Spatialized routes into the grid node
 	CRP_Spatialize_Static,				// Routes to mGridNode: these actors don't move and don't need to be updated every frame.
@@ -239,8 +240,10 @@ class FACTORYGAME_API UFGReplicationGraphNode_PlayerStateFrequencyLimiter : publ
 
 private:
 
+	TMap<FDelegateHandle, TWeakObjectPtr<AActor>> ActorForceNetUpdateDelegateHandleMap;
 	TArray<FActorRepListRefView> ReplicationActorLists;
 	FActorRepListRefView ForceNetUpdateReplicationActorList;
+	FActorRepListRefView PendingForceNetUpdateActorList;
 };
 
 UCLASS()

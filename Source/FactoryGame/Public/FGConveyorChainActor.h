@@ -259,6 +259,10 @@ private:
 	UPROPERTY( Replicated)
 	float mTotalLength;
 
+	/** Eigene Rekonstruktion (Spielbuild 520140): Länge der Kette ohne die Lifte. */
+	UPROPERTY()
+	float mLengthWithoutLifts;
+
 	// Index of the item at the front of the line - Inclusive
 	UPROPERTY( )
 	int32 mLeadItemIndex = INDEX_NONE;

@@ -199,6 +199,10 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
 	TObjectPtr<class UAkAudioEvent> mStopPipelineEngineSound;
 
+	/** Eigene Rekonstruktion (Spielbuild 520140): Abstand, in dem die Pumpe ihren Ruhezustand für die Replikation aufhebt. */
+	UPROPERTY( EditDefaultsOnly, Category = "Pump/Replication" )
+	float mFlushDormancyEvery;
+
 	UPROPERTY( EditDefaultsOnly, Category = "Pump/Audio" )
 	float mUpdateAudioFlowTime;
 
@@ -208,6 +212,8 @@ private:
 	TObjectPtr<UAkComponent> mPlayHeadLiftComponent;
 	UPROPERTY()
 	TObjectPtr<UAkComponent> mPlayPipePistonsComponent;
+
+	float mTimeSinceLastNetFlush;
 
 	float mLastFlowUpdate;
 	float mCurrentAudioHeadlift;

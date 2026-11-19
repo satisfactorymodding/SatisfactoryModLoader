@@ -31,6 +31,9 @@ public:
 	/** When this state was received. */
 	double TimeStamp = 0.f;
 
+	/** Serverzeit zum Zeitpunkt des Zustands. */
+	double ServerTime = 0.0;
+
 	/** Server's first vehicle, this is dependent on the direction of travel. */
 	UPROPERTY()
 	TObjectPtr<AFGRailroadVehicle> FirstVehicle = nullptr;

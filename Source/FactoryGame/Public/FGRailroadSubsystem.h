@@ -575,6 +575,11 @@ public:
 	float mClientSimulationServerVelocityBlend = 0.5f;
 	/** How much corrective velocity to blend in per second. [0, 1] */
 	float mClientSimulationCorrectionVelocityBlend = 0.8f;
+	/** Eigene Rekonstruktion (Spielbuild 520140): Zeitabgleich zwischen Client und Server. */
+	float mClientServerTimeOffsetRiseTime = 0.f;
+	double mServerTimeOffset = 0.0;
+	double mLastServerTimeSampleTime = 0.0;
+	bool mHasServerTimeOffset = false;
 	
 	/** Whether or not trains should derail when exiting tracks. */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Railroad" )

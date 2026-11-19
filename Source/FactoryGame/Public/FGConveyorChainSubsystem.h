@@ -224,6 +224,13 @@ public:
 
 	UPROPERTY()
 	bool HasPendingSegmentClientRequest = false;
+
+	TArray< TWeakObjectPtr<AFGConveyorChainActor> > mParkedItemRequestChains;
+	bool mHasParkedItemRequest = false;
+	TArray< TWeakObjectPtr<AFGConveyorChainActor> > mParkedSegmentRequestChains;
+	bool mHasParkedSegmentRequest = false;
+	float mRelayByteCredit = 0.f;
+	int32 mLastResponseBytes = 0;
 };
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FGetAdditionalConveyorItemDescriptors, UWorld* /* worldContext */, TSet<TSubclassOf<UFGItemDescriptor>>& /* out_itemDescriptors */);
@@ -388,6 +395,13 @@ private:
 	
 	UPROPERTY()
 	TArray< TSubclassOf< UFGItemDescriptor > > mAllItemDescriptors;
+
+	UPROPERTY()
+	TArray< float > mAllConveyorSpeeds;
+
+	double mItemRelayBusySince;
+	int32 mItemRelayChainsUpdated;
+	int32 mItemRelayResets;
 
 };
 
