@@ -7,6 +7,7 @@
 #include "Equipment/FGBuildGun.h"
 #include "FGCharacterPlayer.h"
 #include "FGChatManager.h"
+#include "FGClientInitialLoadStatusData.h"
 #include "FGMapMarker.h"
 #include "FGOnboardingStep.h"
 #include "FGPlayerControllerBase.h"
@@ -339,6 +340,10 @@ public:
 	void Client_OnMarkerHighlighted( class AFGPlayerState* fgPlayerState, FGuid markerID );
 	UFUNCTION(Server, Reliable)
 	void Server_UpdatePlayerRepresentations();
+	UFUNCTION( Reliable, Client )
+	void Client_InitialNetLoadStatusUpdate( const FClientInitialLoadStatusData& status );
+	UFUNCTION( Reliable, Server )
+	void Server_RespondNetLoadStatus();
 	// End AFGMapManager RPCs
 
 	/** Play the indicated CameraAnim on this camera.

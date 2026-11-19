@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGClientInitialLoadStatusData.h"
 #include "FGFactoryColoringTypes.h"
 #include "FGGamePhaseManager.h"
 #include "FGPlayerState.h"
@@ -106,6 +107,9 @@ public:
 
 	UFUNCTION( Client, Reliable )
 	void Client_SendRestartTimeNotification( float timeLeft );
+
+	UFUNCTION( Server, Reliable )
+	void Server_InitialNetLoadComplete();
 };
 
 /**
@@ -260,6 +264,15 @@ public:
 
 	UFUNCTION()
 	void OnRep_SessionName();
+
+	/** @return true, solange der Server auf den Ladefortschritt der Clients wartet. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Session" )
+	bool IsWaitingForNetLoadProgress() const;
+
+	void OnInitialNetLoadStatusUpdate( UNetConnection* connection, const FClientInitialLoadStatusData& status );
+	void ClientSetInitialNetLoadStatus( const FClientInitialLoadStatusData& status );
+	void ReceivedResponseForNetLoadStatusFromClient( APlayerController* controller );
+	void RemoveControllerFromPendingReplyNetLoadStatus( const APlayerController* controller );
 
 	/** Called on all players when any player enters a new map area. */
 	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Map Area", DisplayName = "OnNewMapAreaEntered" )
@@ -592,6 +605,15 @@ private:
 	UFUNCTION()
 	void CachePlayerInfoAvatarImage_OnPlayerPlatformInfoChanged( const FPlayerInfoHandle& playerInfoHandle );
 	void CachePlayerInfoAvatarImageFromAvatarURL( const FCachedPlayerPlatformInfo& playerPlatformInfo ) const;
+
+	/** Clients, die auf die Antwort zum Ladestand der Anfangsreplikation warten. */
+	TMap< TObjectPtr< APlayerController >, bool > mPendingReplyNetLoadStatusMap;
+
+	/** Zuletzt an die Clients gemeldeter Ladestand der Anfangsreplikation. */
+	TUniquePtr< FClientInitialLoadStatusData > mClientInitialNetLoadStatus;
+
+	int32 mHighestAckedNetLoadCount;
+	int32 mInitialNetLoadNoProgress;
 
 public:
 	//@todo When was this used last time? Cleanup?

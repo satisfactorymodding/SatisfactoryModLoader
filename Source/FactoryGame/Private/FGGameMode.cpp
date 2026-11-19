@@ -61,6 +61,7 @@ void AFGGameMode::RestartPlayer(AController* newPlayer){ }
 void AFGGameMode::PostLogin(APlayerController* newPlayer){ }
 APlayerController* AFGGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage){ return nullptr; }
 void AFGGameMode::Logout(AController* exiting){ }
+void AFGGameMode::GameWelcomePlayer(UNetConnection* connection, FString& redirectURL){ }
 bool AFGGameMode::FindInactivePlayer(APlayerController* PC){ return bool(); }
 void AFGGameMode::GenericPlayerInitialization(AController* C){ }
 bool AFGGameMode::IsPaused() const{ return bool(); }

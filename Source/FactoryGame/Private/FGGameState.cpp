@@ -233,3 +233,9 @@ void AFGGameState::RegisterPlayer_OnPlayerPlatformInfoChanged(const FPlayerInfoH
 void AFGGameState::CachePlayerInfoAvatarImage_OnPlayerPlatformInfoChanged(const FPlayerInfoHandle& playerInfoHandle){ }
 void AFGGameState::CachePlayerInfoAvatarImageFromAvatarURL(const FCachedPlayerPlatformInfo& playerPlatformInfo) const{ }
 void AFGGameState::DebugPlayerInfoCache(){ }
+bool AFGGameState::IsWaitingForNetLoadProgress() const{ return bool(); }
+void AFGGameState::OnInitialNetLoadStatusUpdate(UNetConnection* connection, const FClientInitialLoadStatusData& status){ }
+void AFGGameState::ClientSetInitialNetLoadStatus(const FClientInitialLoadStatusData& status){ }
+void AFGGameState::ReceivedResponseForNetLoadStatusFromClient(APlayerController* controller){ }
+void AFGGameState::RemoveControllerFromPendingReplyNetLoadStatus(const APlayerController* controller){ }
+void UFGGameStateRemoteCallObject::Server_InitialNetLoadComplete_Implementation(){ }

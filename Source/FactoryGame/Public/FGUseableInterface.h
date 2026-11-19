@@ -170,4 +170,8 @@ class FACTORYGAME_API IFGUseableInterface
 	/** Called from widgets that are opened by the use functionality */
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Use" )
 	void UnregisterInteractingPlayer( class AFGCharacterPlayer* player );
+
+	/** Eigene Rekonstruktion (Spielbuild 520140): Akteure, die zusammen mit diesem mit hoher Priorität repliziert werden müssen. */
+	UFUNCTION( BlueprintNativeEvent, Category = "Use" )
+	void GetDependantHighPriorityReplicationActors( UPARAM( ref ) TArray< AActor* >& out_actors );
 };

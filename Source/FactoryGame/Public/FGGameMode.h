@@ -140,6 +140,7 @@ public:
 	virtual void PostLogin( APlayerController* newPlayer ) override;
 	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void Logout( AController* exiting ) override;
+	virtual void GameWelcomePlayer( UNetConnection* connection, FString& redirectURL ) override;
 	virtual bool FindInactivePlayer( APlayerController* PC ) override;
 	virtual void GenericPlayerInitialization(AController* C) override;
 	virtual bool IsPaused() const override;
