@@ -96,3 +96,4 @@ void AFGBuildableConveyorBase::Factory_DequeueItem(){ }
 void AFGBuildableConveyorBase::Factory_EnqueueItem(const FInventoryItem& item, float initialOffset){ }
 void AFGBuildableConveyorBase::SetFactoryConnectionConnected(const UFGFactoryConnectionComponent* connection, bool connected){ }
 void AFGBuildableConveyorBase::OnRep_FactoryConnectionStates(){ }
+void AFGBuildableConveyorBase::GetDependantHighPriorityReplicationActors_Implementation(TArray< AActor* >& out_actors){ }
