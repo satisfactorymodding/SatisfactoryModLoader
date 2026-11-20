@@ -179,6 +179,17 @@ jobs:
           fi
           echo "UE_DIR=$UE_DIR" >> $GITHUB_ENV
 
+          # Pod is allocated 64GB, and UE wants 1.5GB per action, so 36 threads to be on the safe side
+          mkdir -p $UE_DIR/Engine/Saved/UnrealBuildTool
+          cat > $UE_DIR/Engine/Saved/UnrealBuildTool/BuildConfiguration.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8" ?>
+          <Configuration xmlns="https://www.unrealengine.com/BuildConfiguration">
+              <BuildConfiguration>
+                  <MaxParallelActions>36</MaxParallelActions>
+              </BuildConfiguration>
+          </Configuration>
+          EOF
+
       - name: Download Wwise
         run: |
           gh release download --repo mircearoata/wwise-cli -p wwise-cli_linux_amd64 -O wwise-cli
