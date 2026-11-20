@@ -64,9 +64,40 @@ FMessageEntry& UModNetworkHandler::RegisterMessageType(const FMessageType& Messa
     return ModEntries.Add(MessageType.MessageId, FMessageEntry{});
 }
 
+UNetDriver* UModNetworkHandler::GetNetDriverFromConnection( const UNetConnection* Connection ) {
+    if (!Connection) {
+        return nullptr;
+    }
+    static const FObjectPropertyBase* DriverProp = CastField<FObjectPropertyBase>(
+        UNetConnection::StaticClass()->FindPropertyByName(TEXT("Driver"))
+    );
+    return DriverProp ? Cast<UNetDriver>(DriverProp->GetObjectPropertyValue_InContainer(Connection)) : nullptr;
+}
+
+static UNetConnection* GetServerConnectionFromNetDriver(const UNetDriver* NetDriver) {
+    if (!NetDriver) {
+        return nullptr;
+    }
+    static const FObjectPropertyBase* ServerConnProp = CastField<FObjectPropertyBase>(
+        UNetDriver::StaticClass()->FindPropertyByName(TEXT("ServerConnection"))
+    );
+    return ServerConnProp ? Cast<UNetConnection>(ServerConnProp->GetObjectPropertyValue_InContainer(NetDriver)) : nullptr;
+}
+
+static UWorld* GetWorldFromNetDriver(const UNetDriver* NetDriver) {
+    if (!NetDriver) {
+        return nullptr;
+    }
+    static const FObjectPropertyBase* WorldProp = CastField<FObjectPropertyBase>(
+        UNetDriver::StaticClass()->FindPropertyByName(TEXT("World"))
+    );
+    return WorldProp ? Cast<UWorld>(WorldProp->GetObjectPropertyValue_InContainer(NetDriver)) : nullptr;
+}
+
 void UModNetworkHandler::CloseWithFailureMessage(UNetConnection* Connection, const FString& Message) {
     FString MutableMessage = Message;
-    if (Connection->GetDriver()->ServerConnection == Connection) {
+    UNetDriver* Driver = GetNetDriverFromConnection(Connection);
+    if (Driver && GetServerConnectionFromNetDriver(Driver) == Connection) {
         // We are a client. Nothing is listening for NMT_Failure on the remote
         // so we must "send" ourselves the message.
         // We cannot use GEngine->BroadcastNetworkFailure, followed by Connection->Close,
@@ -77,7 +108,7 @@ void UModNetworkHandler::CloseWithFailureMessage(UNetConnection* Connection, con
         FControlChannelOutBunch Bunch(GetControlChannel(Connection), false);
         Bunch << MutableMessage;
         FInBunch InBunch(Connection, Bunch.GetData(), Bunch.GetNumBits());
-        Connection->GetDriver()->Notify->NotifyControlMessage(Connection, NMT_Failure, InBunch);
+        Driver->Notify->NotifyControlMessage(Connection, NMT_Failure, InBunch);
     } else {
         // We are the server. Send NMT_Failure with the message to the client.
         SendControlMessage<NMT_Failure>(Connection, MutableMessage);
@@ -126,9 +157,12 @@ UGameInstance* UModNetworkHandler::GetGameInstanceFromNetDriver( const UNetDrive
 {
 	if ( NetDriver )
 	{
-		if ( NetDriver->World != nullptr && NetDriver->World->GetGameInstance() != nullptr )
+		if ( UWorld* DriverWorld = GetWorldFromNetDriver( NetDriver ) )
 		{
-			return NetDriver->World->GetGameInstance();
+			if ( DriverWorld->GetGameInstance() != nullptr )
+			{
+				return DriverWorld->GetGameInstance();
+			}
 		}
 		const FWorldContext* Context = GEngine->GetWorldContextFromPendingNetGameNetDriver( NetDriver );
 		if ( Context != nullptr && Context->OwningGameInstance != nullptr )
@@ -144,7 +178,8 @@ void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FStrin
     if (Result != nullptr) {
         const FMessageEntry* MessageEntry = Result->Find(MessageId);
         if (MessageEntry != nullptr) {
-            const bool bIsClientSide = Connection->ClientLoginState == EClientLoginState::Invalid;
+            const UNetDriver* Driver = GetNetDriverFromConnection(Connection);
+            const bool bIsClientSide = Driver != nullptr && GetServerConnectionFromNetDriver(Driver) == Connection;
             const bool bCanBeHandled = (bIsClientSide && MessageEntry->bClientHandled) || (!bIsClientSide && MessageEntry->bServerHandled);
             if (bCanBeHandled) {
                 MessageEntry->MessageReceived.ExecuteIfBound(Connection, Content);
@@ -199,7 +234,7 @@ void UModNetworkHandler::InitializePatches() {
 	
     SUBSCRIBE_METHOD_AFTER(UPendingNetGame::SendInitialJoin, [=](UPendingNetGame* NetGame) {
         if (NetGame->NetDriver != nullptr) {
-            UNetConnection* ServerConnection = NetGame->NetDriver->ServerConnection;
+            UNetConnection* ServerConnection = GetServerConnectionFromNetDriver(NetGame->NetDriver);
             if (ServerConnection != nullptr) {
                 UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
                 NetworkHandler->OnClientInitialJoin().Broadcast(ServerConnection);

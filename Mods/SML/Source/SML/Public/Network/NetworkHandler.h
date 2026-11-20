@@ -94,6 +94,11 @@ public:
 	static void SetConnectionSupportsModMessages(class UNetConnection* Connection);
 
 	/**
+	 * Retrieves the net driver owning the specified connection via reflection
+	 */
+	static class UNetDriver* GetNetDriverFromConnection( const class UNetConnection* Connection );
+
+	/**
 	 * Retrieves the game instance owning the specified net driver
 	 */
 	static UGameInstance* GetGameInstanceFromNetDriver( const UNetDriver* NetDriver );

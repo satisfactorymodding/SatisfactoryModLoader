@@ -91,7 +91,7 @@ FString FSMLNetworkManager::SerializeLocalModList(UNetConnection* Connection)
 {
 	const TSharedRef<FJsonObject> ModListObject = MakeShareable(new FJsonObject());
 	
-	if (const UGameInstance* GameInstance = UModNetworkHandler::GetGameInstanceFromNetDriver( Connection->GetDriver() ) )
+	if (const UGameInstance* GameInstance = UModNetworkHandler::GetGameInstanceFromNetDriver( UModNetworkHandler::GetNetDriverFromConnection( Connection ) ) )
 	{
 		if ( UModLoadingLibrary* ModLoadingLibrary = GameInstance->GetSubsystem<UModLoadingLibrary>() )
 		{
@@ -152,7 +152,7 @@ void FSMLNetworkManager::ValidateSMLConnectionData(UNetConnection* Connection, b
         return;
     }
 
-	if (const UGameInstance* GameInstance = UModNetworkHandler::GetGameInstanceFromNetDriver( Connection->GetDriver() ) )
+	if (const UGameInstance* GameInstance = UModNetworkHandler::GetGameInstanceFromNetDriver( UModNetworkHandler::GetNetDriverFromConnection( Connection ) ) )
 	{
 		if ( UModLoadingLibrary* ModLoadingLibrary = GameInstance->GetSubsystem<UModLoadingLibrary>() )
 		{
