@@ -35,56 +35,60 @@ jobs:
 
       - name: Setup Wine
         run: |
-            export WINEPREFIX="$RUNNER_TEMP/.wine"
-            echo "WINEPREFIX=$WINEPREFIX" >> $GITHUB_ENV
-            echo "WINEDEBUG=-all" >> $GITHUB_ENV
+            if ! command -v wine >/dev/null 2>&1; then
+              ## When we switch back to the upstream build, check if the runner image has been updated to Ubuntu 26.04, which supports WoW64
+              # sudo dpkg --add-architecture i386
+              # sudo mkdir -pm755 /etc/apt/keyrings
+              # wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key -
+              # sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources
+              # sudo apt update && sudo apt install -y --no-install-recommends winehq-devel
 
-            ## When we switch back to the upstream build, check if the runner image has been updated to Ubuntu 26.04, which supports WoW64
-            # sudo dpkg --add-architecture i386
-            # sudo mkdir -pm755 /etc/apt/keyrings
-            # wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key -
-            # sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources
-            # sudo apt update && sudo apt install -y --no-install-recommends winehq-devel
+              ## Building from source with the oleaut32 typelib patch to properly compile with the VS typelib for opening blueprint nodes in VS
+              ## until https://gitlab.winehq.org/wine/wine/-/merge_requests/9640 is merged
+              sudo apt update
+              sudo apt install -y gcc-multilib gcc-mingw-w64 libasound2-dev bluez libpulse-dev libdbus-1-dev libfontconfig-dev libfreetype-dev libgnutls28-dev libgl-dev libunwind-dev libx11-dev libxcomposite-dev libxcursor-dev libxfixes-dev libxi-dev libxrandr-dev libxrender-dev libxext-dev libwayland-bin libwayland-dev libegl-dev libxkbcommon-dev libxkbregistry-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libosmesa6-dev libsdl2-dev libudev-dev libvulkan-dev flex bison
 
-            ## Building from source with the oleaut32 typelib patch to properly compile with the VS typelib for opening blueprint nodes in VS
-            ## until https://gitlab.winehq.org/wine/wine/-/merge_requests/9640 is merged
-            sudo apt update
-            sudo apt install -y gcc-multilib gcc-mingw-w64 libasound2-dev bluez libpulse-dev libdbus-1-dev libfontconfig-dev libfreetype-dev libgnutls28-dev libgl-dev libunwind-dev libx11-dev libxcomposite-dev libxcursor-dev libxfixes-dev libxi-dev libxrandr-dev libxrender-dev libxext-dev libwayland-bin libwayland-dev libegl-dev libxkbcommon-dev libxkbregistry-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libosmesa6-dev libsdl2-dev libudev-dev libvulkan-dev flex bison
+              export WINE_VERSION="11.0"
 
-            export WINE_VERSION="11.0"
+              wget -O $RUNNER_TEMP/wine_typelib.patch https://gitlab.winehq.org/wine/wine/-/merge_requests/9640.patch
 
-            wget -O $RUNNER_TEMP/wine_typelib.patch https://gitlab.winehq.org/wine/wine/-/merge_requests/9640.patch
+              export PATCH_HASH="$(sha256sum $RUNNER_TEMP/wine_typelib.patch | awk '{print $1}')"
 
-            export PATCH_HASH="$(sha256sum $RUNNER_TEMP/wine_typelib.patch | awk '{print $1}')"
+              export WINE_BUILD_ID="$WINE_VERSION-$PATCH_HASH"
 
-            export WINE_BUILD_ID="$WINE_VERSION-$PATCH_HASH"
+              if [ ! -d $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID ]; then
+                  git clone -b wine-$WINE_VERSION https://gitlab.winehq.org/wine/wine.git $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID
 
-            if [ ! -d $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID ]; then
-                git clone -b wine-$WINE_VERSION https://gitlab.winehq.org/wine/wine.git $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID
+                  cd $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID
 
-                cd $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID
+                  git config user.email "ci@example.com"
+                  git config user.name "CI"
+                  git am $RUNNER_TEMP/wine_typelib.patch
 
-                git config user.email "ci@example.com"
-                git config user.name "CI"
-                git am $RUNNER_TEMP/wine_typelib.patch
+                  mkdir build && cd build
 
-                mkdir build && cd build
+                  ../configure --enable-archs=x86_64,i386 --without-tests
+                  make -j$(nproc)
+              fi
 
-                ../configure --enable-archs=x86_64,i386 --without-tests
-                make -j$(nproc)
+              cd $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID/build
+              sudo make install
             fi
 
-            cd $RUNNER_TOOL_CACHE/wine-source-$WINE_BUILD_ID/build
-            sudo make install
+            if [[ -z "${WINEPREFIX}" ]]; then
+              export WINEPREFIX="$RUNNER_TEMP/.wine"
+              mkdir -p $WINEPREFIX
+              WINEDLLOVERRIDES="mscoree,mshtml=" wineboot -u
+              wineserver -w
+              echo "WINEPREFIX=$WINEPREFIX" >> $GITHUB_ENV
+            fi
 
-            mkdir -p $WINEPREFIX
-            WINEDLLOVERRIDES="mscoree,mshtml=" wineboot -u
-            wineserver -w
+            if [[ -z "${WINEDEBUG}" ]]; then
+              echo "WINEDEBUG=-all" >> $GITHUB_ENV
+            fi
 
       - name: Setup MSVC
         run: |
-            sudo apt install -y msitools perl
-
             git clone -b ue-patches https://github.com/mircearoata/msvc-wine.git $RUNNER_TEMP/msvc-wine
 
             export MSVC_DOWNLOAD_ARGS='
@@ -98,23 +102,25 @@ jobs:
 
             # Avoid redownloading and reextracting files to reduce amount of rebuilds
             CACHE_HASH=$($RUNNER_TEMP/msvc-wine/vsdownload.py --print-selection $MSVC_DOWNLOAD_ARGS | sha256sum | awk '{print $1}')
-            MSVC_DIR="$RUNNER_TOOL_CACHE/msvc/$CACHE_HASH"
+            MSVC_DIR="$RUNNER_TOOL_CACHE/msvc/17.8-$CACHE_HASH"
 
-            if [ ! -f $RUNNER_TOOL_CACHE/msvc-download/X64.Debuggers.And.Tools-x64_en-us.msi ]; then
-                wget -P $RUNNER_TOOL_CACHE/msvc-download https://github.com/kbandla/installers/releases/latest/download/X64.Debuggers.And.Tools-x64_en-us.msi
-            fi
+            if [ ! -f $MSVC_DIR.complete ]; then
+              sudo apt install -y msitools perl
 
-            if [ ! -f $MSVC_DIR/.installed ]; then
-                $RUNNER_TEMP/msvc-wine/vsdownload.py \
-                    --dest $MSVC_DIR \
-                    --cache $RUNNER_TOOL_CACHE/msvc-download \
-                    $MSVC_DOWNLOAD_ARGS
+              $RUNNER_TEMP/msvc-wine/vsdownload.py \
+                  --dest $MSVC_DIR \
+                  --cache $RUNNER_TOOL_CACHE/msvc-download \
+                  $MSVC_DOWNLOAD_ARGS
 
-                msiextract -C $MSVC_DIR $RUNNER_TOOL_CACHE/msvc-download/X64.Debuggers.And.Tools-x64_en-us.msi > /dev/null
+              if [ ! -f $RUNNER_TOOL_CACHE/msvc-download/X64.Debuggers.And.Tools-x64_en-us.msi ]; then
+                  wget -P $RUNNER_TOOL_CACHE/msvc-download https://github.com/kbandla/installers/releases/latest/download/X64.Debuggers.And.Tools-x64_en-us.msi
+              fi
 
-                $RUNNER_TEMP/msvc-wine/install.sh $MSVC_DIR
+              msiextract -C $MSVC_DIR $RUNNER_TOOL_CACHE/msvc-download/X64.Debuggers.And.Tools-x64_en-us.msi > /dev/null
 
-                cat > $MSVC_DIR/bin/x64/pdbcopy << 'EOF'
+              $RUNNER_TEMP/msvc-wine/install.sh $MSVC_DIR
+
+              cat > $MSVC_DIR/bin/x64/pdbcopy << 'EOF'
             #!/usr/bin/env bash
             #
             # Copyright (c) 2025 Mircea Roata
@@ -137,10 +143,10 @@ jobs:
             "$(dirname "$0")"/wine-msvc.sh "$SDKDEBUGBINDIR/pdbcopy.exe" "$@"
             EOF
 
-                ln -sf ./pdbcopy $MSVC_DIR/bin/x64/pdbcopy.exe
-                chmod +x $MSVC_DIR/bin/x64/pdbcopy*
+              ln -sf ./pdbcopy $MSVC_DIR/bin/x64/pdbcopy.exe
+              chmod +x $MSVC_DIR/bin/x64/pdbcopy*
 
-                touch $MSVC_DIR/.installed
+              touch $MSVC_DIR.complete
             fi
 
             echo "UE_WINE_MSVC=`realpath $MSVC_DIR`" >> $GITHUB_ENV
@@ -155,41 +161,45 @@ jobs:
           mkdir -p /tmp/work
           cp -r "$GITHUB_WORKSPACE/SML" /tmp/work
 
-      - name: Create UE directory
-        run: mkdir -p /tmp/work/ue
-
       - name: Download, Extract and Setup UE
-        working-directory: /tmp/work/ue
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
-          gh release download --repo satisfactorymodding/UnrealEngine -p "UnrealEngine-CSS-Editor-Linux.tar.zst.*"
-          cat UnrealEngine-CSS-Editor-Linux.tar.zst.* | zstd -d | tar -xf -
-          rm UnrealEngine-CSS-Editor-Linux.tar.zst.*
-          ./Engine/Binaries/Linux/UnrealVersionSelector -register
+          LATEST_RELEASE=$(gh release view -R satisfactorymodding/UnrealEngine --json tagName -q .tagName)
+          UE_DIR=$RUNNER_TOOL_CACHE/unrealengine/$LATEST_RELEASE
+          if [ ! -f $UE_DIR.complete ]; then
+            mkdir -p $UE_DIR
+            pushd $UE_DIR
+            gh release download --repo satisfactorymodding/UnrealEngine -p "UnrealEngine-CSS-Editor-Linux.tar.zst.*"
+            cat UnrealEngine-CSS-Editor-Linux.tar.zst.* | zstd -d | tar -xf -
+            rm UnrealEngine-CSS-Editor-Linux.tar.zst.*
+            ./Engine/Binaries/Linux/UnrealVersionSelector -register
+            touch $UE_DIR.complete
+            popd
+          fi
+          echo "UE_DIR=$UE_DIR" >> $GITHUB_ENV
 
       - name: Download Wwise
         run: |
           gh release download --repo mircearoata/wwise-cli -p wwise-cli_linux_amd64 -O wwise-cli
           chmod +x ./wwise-cli
-          # Discard stdout to not show signed download URLs while they are still valid
-          ./wwise-cli download --sdk-version "2025.1.6.9117" --filter Packages=SDK --filter DeploymentPlatforms=Windows_vc160 --filter DeploymentPlatforms=Windows_vc170 --filter DeploymentPlatforms=Linux --filter DeploymentPlatforms= >/dev/null
+          ./wwise-cli download --sdk-version "2025.1.6.9117" --filter Packages=SDK --filter DeploymentPlatforms=Windows_vc160 --filter DeploymentPlatforms=Windows_vc170 --filter DeploymentPlatforms=Linux --filter DeploymentPlatforms=
           # Note that sdk-version and integration-version are intentionally different - wwise's API uses the first 3 version portions, skips the 4th, and adds a 5th 'integration' portion you can find in the launcher
-          ./wwise-cli integrate-ue --integration-version "2025.1.6.4248" --project "/tmp/work/SML/FactoryGame.uproject" >/dev/null
+          ./wwise-cli integrate-ue --integration-version "2025.1.6.4248" --project "/tmp/work/SML/FactoryGame.uproject"
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN }}
           WWISE_EMAIL: ${{ secrets.WWISE_EMAIL }}
           WWISE_PASSWORD: ${{ secrets.WWISE_PASSWORD }}
 
       - name: Build for Development Editor
-        run: /tmp/work/ue/Engine/Build/BatchFiles/Linux/Build.sh FactoryEditor Linux Development -project="/tmp/work/SML/FactoryGame.uproject"
+        run: $UE_DIR/Engine/Build/BatchFiles/Linux/Build.sh FactoryEditor Linux Development -project="/tmp/work/SML/FactoryGame.uproject"
 
       - name: Package SML Mod
         run: |
           # Default is infinity (2^30), and zen (when called during paking) will try to set the current limit to that,
           # which fails because infinity is larger than fs.nr_open. We set this to a sane value instead
           ulimit -n 1048576
-          /tmp/work/ue/Engine/Build/BatchFiles/RunUAT.sh -ScriptsForProject="/tmp/work/SML/FactoryGame.uproject" PackagePlugin -Project="/tmp/work/SML/FactoryGame.uproject" -dlcname=SML -merge -build -server -clientconfig=Shipping -serverconfig=Shipping -platform=Win64 -serverplatform=Win64+Linux -nocompileeditor -installed
+          $UE_DIR/Engine/Build/BatchFiles/RunUAT.sh -ScriptsForProject="/tmp/work/SML/FactoryGame.uproject" PackagePlugin -Project="/tmp/work/SML/FactoryGame.uproject" -dlcname=SML -merge -build -server -clientconfig=Shipping -serverconfig=Shipping -platform=Win64 -serverplatform=Win64+Linux -nocompileeditor -installed
 
       - name: Archive SML artifact
         uses: actions/upload-artifact@v7
